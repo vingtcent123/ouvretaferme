@@ -34,6 +34,7 @@ class LegalUi {
 			$h .= '<li>'.s("être distribué sous la présente licence.").'</li>';
 		$h .= '</ul>';
 		$h .= '<p>'.s("Toute modification effectuée sur le code source de Ouvretaferme, même si elle est réalisée dans un cadre privé, doit être partagée publiquement par son auteur sur le dépôt officiel du code source. L'intégralité du code source de tout programme informatique qui utilise tout ou partie du code source de Ouvretaferme doit être publié publiquement sous la présente licence, y compris les parties du code source qui ne proviennent pas de Ouvretaferme.").'</p>';
+		$h .= '<p><a href="https://github.com/vingtcent123/ouvretaferme" class="btn btn-outline-primary">'.s("Voir le dépôt du code source").'</a></p>';
 
 		return $h;
 
