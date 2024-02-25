@@ -725,6 +725,10 @@ class ProductUi {
 
 		switch($property) {
 
+			case 'name' :
+				$d->placeholder = s("Ex. : Pomme de terre");
+				break;
+
 			case 'plant' :
 				$d->after = \util\FormUi::info(s("Sélectionnez l'espèce à laquelle est rattaché ce produit s'il est directement tiré du champ."));
 				$d->autocompleteBody = function(\util\FormUi $form, Product $e) {
@@ -742,6 +746,11 @@ class ProductUi {
 					'columns' => 3
 				];
 				$d->after = \util\FormUi::info(s("L'unité de vente ne pourra pas être modifiée par la suite. Si vous choisissez de modifier le conditionnement, vous devrez créer un autre produit."));
+				break;
+
+			case 'variety' :
+				$d->after = \util\FormUi::info(s("N'indiquez la variété que si elle apporte une information supplémentaire par rapport au nom du produit que vous souhaitez communiquer à vos clients."));
+				$d->placeholder = s("Ex. : Chérie");
 				break;
 
 			case 'private' :
