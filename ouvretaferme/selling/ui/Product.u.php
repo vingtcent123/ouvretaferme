@@ -749,7 +749,7 @@ class ProductUi {
 				break;
 
 			case 'variety' :
-				$d->after = \util\FormUi::info(s("N'indiquez la variété que si elle apporte une information supplémentaire par rapport au nom du produit que vous souhaitez communiquer à vos clients."));
+				$d->after = \util\FormUi::info(s("N'indiquez la variété que si elle apporte une information supplémentaire utile à vos clients par rapport au nom du produit que vous souhaitez communiquer à vos clients."));
 				$d->placeholder = s("Ex. : Chérie");
 				break;
 
