@@ -1,0 +1,267 @@
+Configuration:
+  id: serial32
+  farm: farm\Farm
+  documentSales: int32(1, null) = 0
+  documentInvoices: int32(1, null) = 0
+  hasVat: bool = TRUE
+  defaultVat: int8(0, null)
+  legalEmail: ?email
+  legalName: ?text8
+  invoiceStreet1: ?text8
+  invoiceStreet2: ?text8
+  invoicePostcode: ?text8
+  invoiceCity: ?text8
+  invoiceRegistration: ?text8
+  invoiceVat: ?text8
+  organicCertifier: ?text8
+  paymentMode: ?editor16(1, 400)
+  documentCopy: bool = FALSE
+  orderFormDelivery: bool = TRUE
+  orderFormPaymentCondition: ?editor16(1, 400)
+  orderFormHeader: ?editor16(1, 400)
+  orderFormFooter: ?editor16(1, 400)
+  invoicePaymentCondition: ?editor16(1, 400)
+  invoiceHeader: ?editor16(1, 400)
+  invoiceFooter: ?editor16(1, 400)
+  UNIQUE: [
+    ["farm"]
+  ]
+  
+Customer:
+  id: serial32
+  name: text8(1, null) @collate(general)
+  legalName: ?text8
+  email: ?text8
+  farm: farm\Farm
+  user: ?user\User
+  type: enum(PRIVATE, PRO)
+  contact: ?text8
+  discount: int8(0, 100) = 0
+  invoiceStreet1: ?text8
+  invoiceStreet2: ?text8
+  invoicePostcode: ?text8
+  invoiceCity: ?text8
+  deliveryStreet1: ?text8
+  deliveryStreet2: ?text8
+  deliveryPostcode: ?text8
+  deliveryCity: ?text8
+  phone: ?text8
+  color: ?color
+  emailOptIn: ?bool
+  emailOptOut: bool = TRUE
+  createdAt: datetime = SPECIAL(now)
+  status: enum(ACTIVE, INACTIVE) = ACTIVE
+  UNIQUE: [
+    ["farm", "user"]
+  ]
+
+Event:
+  id: serial32
+  name: text8(1, null) @collate(general)
+  fqn: fqn
+  color: color = PHP('#AAAAAA')
+  UNIQUE: [
+    ["fqn"]
+  ]
+
+Grid:
+  id: serial32
+  customer: selling\Customer
+  farm: farm\Farm
+  product: selling\Product
+  price: ?decimal(8, 2, 0.0, null)
+  packaging: ?float32(0.01, null)
+  createdAt: datetime = SPECIAL(now)
+  updatedAt: datetime = SPECIAL(now)
+  INDEX: [
+    ["product"]
+  ]
+  UNIQUE: [
+    ["customer", "product"]
+  ]
+
+History:
+  id: serial32
+  sale: selling\Sale
+  farm: farm\Farm
+  event: selling\Event
+  payment: ?selling\Payment
+  comment: ?text24
+  date: datetime = SPECIAL(now)
+  user: ?user\User = SPECIAL(user)
+  INDEX: [
+    ["sale"]
+  ]
+  
+Invoice:
+  id: serial32
+  document: int32(1, null)
+  customer: selling\Customer
+  sales: json
+  taxes: enum(INCLUDING, EXCLUDING)
+  organic: bool
+  description: ?text16
+  content: ?selling\PdfContent
+  farm: farm\Farm
+  hasVat: bool
+  vatByRate: ?json
+  vat: decimal(8, 2)
+  priceExcludingVat: decimal(8, 2)
+  priceIncludingVat: decimal(8, 2)
+  date: date
+  paymentStatus: enum(PAID, NOT_PAID) = NOT_PAID
+  paymentCondition: ?editor16(1, 400)
+  emailedAt: ?datetime
+  createdAt: datetime = SPECIAL(now)
+  INDEX: [
+    ["farm", "customer"],
+  ]
+  UNIQUE: [
+    ["farm", "document"],
+  ]
+
+Item:
+  id: serial32
+  name: text8(1, null) @collate(general)
+  sale: selling\Sale
+  customer: ?selling\Customer
+  type: enum(PRIVATE, PRO)
+  farm: farm\Farm
+  shop: ?shop\Shop
+  shopDate: ?shop\Date
+  product: ?selling\Product
+  quality: ?enum(ORGANIC, NATURE_PROGRES)
+  parent: ?selling\Item
+  description: ?text8(1, null)
+  packaging: ?float32(0.01, null)
+  unit: ?enum(KG, GRAM, GRAM_100, GRAM_250, GRAM_500, UNIT, BUNCH, PLANT)
+  unitPrice: decimal(8, 2)
+  discount: int8(0, 100) = 0
+  number: float32(0.0, null)
+  price: ?decimal(8, 2)
+  priceExcludingVat: ?decimal(8, 2)
+  locked: enum(UNIT_PRICE, NUMBER, PRICE) = PRICE
+  vatRate: ?decimal(4, 2, 0.0, 100)
+  stats: bool = TRUE
+  status: enum(PHP(Sale::model()->getPropertyEnum('preparationStatus')))
+  createdAt: datetime = SPECIAL(now)
+  deliveredAt: ?date
+  INDEX: [
+    ["farm", "customer"],
+    ["product"],
+    ["sale"],
+    ["parent"]
+  ]
+
+Payment:
+  id: serial32
+  sale: selling\Sale
+  customer: selling\Customer
+  farm: farm\Farm
+  provider: enum(STRIPE)
+  providerId: text8
+  status: enum(PENDING, SUCCESS, FAILURE) = PENDING
+  INDEX: [
+    ["farm"],
+    ["sale"]
+  ]
+  UNIQUE: [
+    ["provider", "providerId"]
+  ]
+
+Pdf:
+  id: serial32
+  sale: selling\Sale
+  used: int16(0, null) = 1
+  farm: farm\Farm
+  content: ?selling\PdfContent
+  type: enum(DELIVERY_NOTE, ORDER_FORM, INVOICE)
+  emailedAt: ?datetime
+  createdAt: datetime = SPECIAL(now)
+  UNIQUE: [
+    ["sale", "type"]
+  ]
+  INDEX: [
+    ["content"]
+  ]
+  
+PdfContent:
+  id: serial32
+  binary: binary32
+  createdAt: datetime = SPECIAL(now)
+  
+
+Product:
+  id: serial32
+  name: text8(1, null) @collate(general)
+  description: ?editor24
+  vignette: ?textFixed(30, 30) @charset(ascii)
+  plant: ?plant\Plant
+  variety: ?text8(1, null)
+  size: ?text8(1, null)
+  farm: farm\Farm
+  unit: enum(KG, GRAM, GRAM_100, GRAM_250, GRAM_500, UNIT, BUNCH, PLANT) = KG
+  private: bool = TRUE
+  privatePrice: ?decimal(8, 2)
+  privateStep: ?float32(0.01, null)
+  pro: bool = TRUE
+  proPrice: ?decimal(8, 2)
+  proPackaging: ?float32(0.01, null)
+  vat: int8(1, null)
+  quality: ?enum(ORGANIC, NATURE_PROGRES)
+  createdAt: datetime = SPECIAL(now)
+  status: enum(ACTIVE, INACTIVE) = ACTIVE
+  INDEX: [
+    ["farm"]
+  ]
+
+Sale:
+  id: serial32
+  document: int32(1, null)
+  farm: farm\Farm
+  customer: ?selling\Customer
+  from: enum(USER, SHOP)
+  taxes: enum(INCLUDING, EXCLUDING)
+  organic: bool = FALSE
+  type: enum(PRIVATE, PRO)
+  discount: int8(0, 100) = 0
+  items: int16(0, null) = 0
+  hasVat: bool
+  vat: ?decimal(8, 2)
+  vatByRate: ?json
+  priceExcludingVat: ?decimal(8, 2)
+  priceIncludingVat: ?decimal(8, 2)
+  shippingVatRate: ?decimal(4, 2)
+  shipping: ?decimal(8, 2, 0.01, null)
+  shippingExcludingVat: ?decimal(8, 2)
+  preparationStatus: enum(DRAFT, BASKET, CONFIRMED, SELLING, PREPARED, DELIVERED, CANCELED) = DRAFT
+  paymentStatus: enum(UNDEFINED, WAITING, PROCESSING, PAID, FAILED) = UNDEFINED
+  paymentMethod: ?enum(ONLINE_CARD, ONLINE_SEPA, OFFLINE)
+  market: bool = FALSE
+  marketSales: ?int(0, null)
+  marketParent: ?selling\Sale
+  orderFormValidUntil: ?date
+  orderFormPaymentCondition: ?editor16(1, 400)
+  invoice: ?selling\Invoice
+  shop: ?shop\Shop
+  shopDate: ?shop\Date
+  shopUpdated: bool = FALSE
+  shopPoint: ?shop\Point
+  deliveryStreet1: ?text8
+  deliveryStreet2: ?text8
+  deliveryPostcode: ?text8
+  deliveryCity: ?text8
+  comment: ?text24
+  stats: bool = TRUE
+  createdAt: datetime = SPECIAL(now)
+  createdBy: ?user\User = SPECIAL(user)
+  deliveredAt: ?date
+  INDEX: [
+    ["customer"],
+    ["shopDate"],
+    ["shop"]
+  ]
+  UNIQUE: [
+    ["farm", "document"],
+  ]
+

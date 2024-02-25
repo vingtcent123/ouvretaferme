@@ -1,0 +1,256 @@
+body[data-template^="home"] header {
+   background-position: center center;
+   background-size: cover;
+   min-height: 20rem;
+	padding: 5rem 0;
+   display: flex;
+   align-items: center;
+   justify-content: center;
+   box-shadow: 0 0 2rem var(--border);
+}
+
+body[data-template="home-main"] header {
+   background-image: url(/asset/ouvretaferme/main/image/banner.jpg);
+}
+
+body[data-template="home-farmer"] header {
+   background-image: url(/asset/ouvretaferme/main/image/banner-farmer.jpg);
+}
+
+body[data-template="home-legal"] header {
+   background-color: var(--secondary);
+   color: white;
+}
+
+body[data-template^="home"] main {
+   font-size: 1.1rem;
+}
+
+body[data-template^="home"] header h1 {
+   color: white;
+   text-align: center;
+   font-family: 'Itim', cursive;
+   font-size: 4rem;
+	max-width: 80rem;
+	margin: auto;
+}
+
+@media (max-width: 767px) {
+
+   body[data-template^="home"] header h1 {
+      font-size: 3rem;
+   }
+
+}
+
+.home-blog {
+	display: grid;
+	grid-template-columns: max-content 1fr;
+	grid-column-gap: 2rem;
+	align-items: stretch;
+	margin-bottom: 2rem;
+}
+
+.home-blog img {
+	width: 10rem;
+	height: 10rem;
+}
+
+@media (max-width: 575px) {
+
+	.home-blog img {
+		width: 5rem;
+		height: 5rem;
+	}
+
+}
+
+.home-blog div.util-block {
+	margin-bottom: 0;
+}
+
+.home-domain {
+   color: white;
+   text-align: center;
+	font-size: 1.4rem;
+	line-height: 1.2;
+	text-transform: uppercase;
+	margin-top: 1.5rem;
+	font-weight: bold;
+}
+
+body[data-template^="home"] main h2 {
+   font-family: 'Itim', cursive;
+	font-size: 1.9rem;
+}
+
+.home-presentation {
+   display: grid;
+   grid-template-columns: 1fr 1fr;
+   grid-gap: 2rem;
+   margin: 1rem 0 2rem;
+}
+
+@media (max-width: 767px) {
+
+   .home-presentation {
+      grid-template-columns: 1fr;
+   }
+
+
+}
+
+.home-presentation > * {
+   padding: 1.5rem;
+   display: grid;
+   grid-template-columns: 1fr;
+   grid-template-rows: auto 1fr auto;
+	border-radius: var(--radius);
+	line-height: 1.4;
+	box-shadow: 0 0 1rem #eee;
+}
+
+.home-presentation > *:not(.home-presentation-dark) {
+	background-color: white;
+}
+
+.home-presentation > *.home-presentation-dark {
+	color: white;
+}
+
+.home-presentation > * h2 {
+   color: var(--secondary);
+	font-size: 2rem;
+	margin-bottom: 1.5rem;
+}
+
+.home-presentation > *.home-presentation-dark h2 {
+	color: white;
+}
+
+.home-presentation > * h2 svg {
+   margin-right: 1rem;
+}
+
+.home-presentation > * ul {
+   font-size: 1.2rem;
+}
+
+.home-presentation > * ul:last-child {
+	margin-bottom: 0;
+}
+
+.home-presentation > * li:not(:last-child) {
+   margin-bottom: 0.5rem;
+}
+
+.home-presentation > * small {
+   font-size: 1rem;
+	color: var(--secondary);
+}
+
+.home-story {
+   padding: 1rem;
+   background-color: var(--background);
+   margin-bottom: 2rem;
+}
+
+ul.home-story {
+   padding: 1rem 1rem 1rem 3rem;
+}
+
+.home-points {
+   display: grid;
+   grid-gap: 1rem;
+   grid-template-columns: repeat(4, 1fr);
+   margin-bottom: 2rem;
+}
+
+@media (max-width: 767px) {
+
+   .home-points {
+      display: grid;
+      grid-gap: 1rem;
+      grid-template-columns: 1fr 1fr;
+   }
+
+
+}
+
+.home-point {
+   background-color: white;
+   border-radius: var(--radius);
+   padding: 1rem;
+   text-align: center;
+	color: var(--shop);
+	font-family: 'Oswald', sans-serif;
+	margin-bottom: 0;
+	box-shadow: 0 0 1rem #eee;
+}
+
+.home-point svg {
+   font-size: 3rem;
+   margin: 1rem 0;
+}
+
+.home-point h4 {
+   margin-bottom: 0rem;
+}
+
+div.home-user-types {
+	display: flex;
+	justify-content: center;
+	flex-wrap: wrap;
+	column-gap: 2rem;
+	margin-top: 2rem;
+}
+
+a.home-user-type {
+	width: 20rem;
+	height: 20rem;
+	background-color: white;
+	border-radius: 50%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex-direction: column;
+	padding: 2rem;
+	border: 1rem solid var(--muted);
+}
+
+a.home-user-type:hover,
+a.home-user-type-selected {
+	border-color: var(--shop);
+	opacity: 1;
+}
+
+a.home-user-type-other {
+	opacity: 0.33;
+}
+
+a.home-user-type h2 {
+	font-size: 7rem;
+	margin-bottom: 1.5rem;
+}
+
+a.home-user-type h4 {
+	color: var(--text);
+	font-size: 1.5rem;
+	text-align: center;
+}
+
+div.home-user-already {
+	text-align: center;
+	font-weight: bold;
+	margin-bottom: 2rem;
+	padding: 1rem 0.5rem;
+	border-radius: var(--radius);
+	background-color: var(--background);
+	color: var(--text);
+}
+
+div.home-category {
+	margin-left: 1rem;
+	border-left: 0.5em solid var(--border);
+	padding-left: 1rem;
+}

@@ -1,0 +1,115 @@
+div.analyze-working-time-wrapper {
+	margin-bottom: 1rem;
+}
+
+div.analyze-working-time-user {
+	display: flex;
+	justify-content: space-between;
+	margin-top: 2rem;
+}
+
+div.analyze-working-time-value {
+	font-size: 1.5rem;
+	font-weight: lighter;
+}
+
+div.analyze-working-time-months {
+	display: grid;
+	grid-template-columns: repeat(12, 1fr);
+	grid-gap: 1px 1px;
+	margin-bottom: 1rem;
+}
+
+@media (max-width: 991px) {
+
+	div.analyze-working-time-months {
+		grid-template-columns: repeat(6, 1fr);
+	}
+
+}
+
+@media (max-width: 575px) {
+
+	div.analyze-working-time-months {
+		grid-template-columns: repeat(3, 1fr);
+	}
+
+}
+
+div.analyze-working-time-month {
+	text-align: center;
+	padding: 0.5rem;
+	background-color: white;
+}
+
+.analyze-working-time-week-name,
+.analyze-working-time-month-name {
+	color: var(--muted);
+}
+
+div.analyze-working-time-weeks {
+	display: grid;
+	grid-template-columns: repeat(8, 1fr);
+	grid-gap: 1px 1px;
+	margin-bottom: 1rem;
+}
+
+@media (max-width: 991px) {
+
+	div.analyze-working-time-weeks {
+		grid-template-columns: repeat(4, 1fr);
+	}
+
+}
+
+@media (max-width: 575px) {
+
+	div.analyze-working-time-weeks {
+		grid-template-columns: repeat(2, 1fr);
+	}
+
+}
+
+div.analyze-working-time-week {
+	padding: 0.5rem;
+	background-color: white;
+}
+
+.analyze-working-time-icon {
+	font-size: 1.5rem;
+	line-height: 1.1;
+}
+
+div.analyze-working-time-wrapper small.task-time-hour {
+	margin: 0.125rem;
+}
+
+div.analyze-working-time-wrapper span.task-time-minutes {
+	font-size: 80%;
+}
+
+
+
+.analyze-tasks-wrapper {
+   overflow-y: auto;
+}
+
+.analyze-tasks {
+   min-width: 500px;
+}
+
+.analyze-tasks .tasks-planning-item-series {
+   margin-bottom: 0.25rem;
+}
+
+.analyze-tasks .tasks-item-users-list {
+   margin-top: 0.25rem;
+}
+
+@media (max-width: 767px) {
+
+   .analyze-tasks-users {
+      display: none;
+   }
+
+}

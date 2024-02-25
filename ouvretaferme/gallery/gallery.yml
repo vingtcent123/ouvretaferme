@@ -1,0 +1,19 @@
+Photo:
+  id: serial32
+  farm: farm\Farm
+  sequence: ?production\Sequence
+  series: ?series\Series
+  task: ?series\Task
+  author: user\User = SPECIAL(user)
+  hash: textFixed(20, 20)
+  title: ?text16(1, 500)
+  width: int16(0, null)
+  height: int16(0, null)
+  takenAt: ?month(1900-01-01, PHP(currentDate()))
+  createdAt: datetime = SPECIAL(now)
+  INDEX: [
+    ["series"],
+    ["task"],
+    ["sequence"]
+  ]
+

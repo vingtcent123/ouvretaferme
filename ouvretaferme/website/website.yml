@@ -1,0 +1,90 @@
+Design:
+  id: serial32
+  name: text8(1, null)
+  maxWidth: text8 = PHP("100%")
+
+Menu:
+  id: serial32
+  website: website\Website
+  farm: farm\Farm
+  url: ?url
+  webpage: ?website\Webpage
+  label: text8(1, 50)
+  position: ?int32(0, null)
+  status: enum(ACTIVE, INACTIVE)
+  INDEX: [
+    ["website"]
+  ]
+  UNIQUE: [
+    ["webpage"]
+  ]
+
+News:
+  id: serial32
+  website: website\Website
+  farm: farm\Farm
+  title: text8(1, null)
+  content: editor24(1, null)
+  status: enum(DRAFT, READY) = DRAFT
+  createdAt: datetime = SPECIAL(now)
+  publishedAt: datetime
+  INDEX: [
+    ["website"]
+  ]
+
+Template:
+  id: serial32
+  fqn: fqn
+  name: text8(1, null)
+  description: text8(1, null)
+  defaultUrl: ?text8(0, null)
+  defaultLabel: ?text8(1, null)
+  defaultTitle: text8(1, null)
+  defaultDescription: ?text8(1, 200)
+  defaultContent: ?editor24
+  autocreate: bool = FALSE
+  UNIQUE: [
+    ["fqn"]
+  ]
+
+Webpage:
+  id: serial32
+  title: text8(1, null)
+  website: website\Website
+  farm: farm\Farm
+  template: website\Template
+  url: text8(0, 50)
+  description: ?text8(1, 200)
+  content: ?editor24
+  createdAt: datetime = SPECIAL(now)
+  status: enum(ACTIVE, INACTIVE) = INACTIVE
+  INDEX: [
+    ["website"]
+  ]
+  UNIQUE: [
+    ["website", "url"]
+  ]
+
+Website:
+  id: serial32
+  farm: farm\Farm
+  internalDomain: text8(1, null)
+  domain: ?text8(1, null)
+  domainStatus: ?enum(PENDING, CONFIGURED_UNSECURED, PINGED_UNSECURED, FAILURE_UNSECURED, CERTIFICATE_CREATED, FAILURE_CERTIFICATE_CREATED, CONFIGURED_SECURED, PINGED_SECURED, FAILURE_SECURED)
+  logo: ?textFixed(30, 30) @charset(ascii)
+  favicon: ?textFixed(30, 30)
+  name: text8(1, 40)
+  description: ?text8(1, 200)
+  customDesign: website\Design = PHP(\Setting::get('website\designDefaultId'))
+  customColor: color = PHP("#505075")
+  customDisabledFooter: bool = FALSE
+  customTitleFont: text8 = PHP("'PT Serif', serif")
+  customFont: text8 = PHP("'PT Serif', serif")
+  createdAt: datetime = SPECIAL(now)
+  status: enum(ACTIVE, INACTIVE) = ACTIVE
+  UNIQUE: [
+    ["farm"],
+    ["internalDomain"],
+    ["domain"]
+  ]
+

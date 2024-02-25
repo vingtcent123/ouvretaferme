@@ -1,0 +1,6 @@
+/* Subscription table */
+table.table-subscriptions .subscriptions-description {
+	color: var(--muted);
+	font-weight: lighter;
+	font-size: 0.85rem;
+}

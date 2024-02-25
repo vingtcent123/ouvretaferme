@@ -1,0 +1,87 @@
+#dev-error {
+	display: none;
+	bottom: 1rem;
+	left: 1rem;
+	right: 1rem;
+	padding: 1rem;
+	z-index: 10000;
+	position: fixed;
+	background-color: #fafafa;
+	border: 2px solid #88c;
+}
+#dev-error .btn-close {
+	float: right;
+	padding-left: 1rem;
+}
+
+#dev-error-content {
+	max-height: 400px;
+	max-width: 1000px;
+	overflow-y: auto;
+}
+
+.dev-error-php {
+	display: inline-block;
+	padding: 1rem;
+	background-color: white;
+	border:2px #008 solid;
+	border-radius: 5px;
+	margin-right: 5px;
+	margin-bottom: 15px;
+	color: black;
+}
+
+.dev-error-php h3 {
+	margin-top: 10px;
+}
+
+.dev-error-php p {
+	padding: 0.25rem 1rem;
+	margin: 1rem -1rem;
+	font-size: 120%;
+	background-color: var(--background-light);
+}
+
+.dev-error-php div.dev-error-php-place {
+	margin-bottom: 1rem;
+}
+
+.dev-block {
+	margin: 2px;
+	color: #555;
+}
+
+.dev-error-trace {
+	margin-top: 0.75rem;
+}
+
+.dev-error-php a,
+.dev-error-trace a {
+	color: #444;
+	font-weight: bold;
+}
+
+.dev-sql,
+.dev-cache {
+	display: none;
+}
+
+.dev-extends {
+	cursor: pointer;
+}
+
+span.sql-query-time {
+	color: #006;
+}
+
+.dev-trace {
+	display: none;
+}
+
+span.sql-keyword {
+	font-weight: bold;
+}
+
+span.sql-table {
+	color: #050;
+}

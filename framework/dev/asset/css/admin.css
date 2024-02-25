@@ -1,0 +1,10 @@
+div.admin-dev-close {
+	margin-bottom: 1rem;
+	display: flex;
+	justify-content: flex-end;
+}
+
+div.admin-dev-close > form {
+	background-color: var(--background-light);
+	max-width: 400px;
+}

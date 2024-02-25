@@ -1,0 +1,80 @@
+Family:
+  id: serial32
+  name: text8(1, null) @collate(general)
+  fqn: fqn
+  color: color = PHP('#000000')
+  UNIQUE: [
+    ["fqn"]
+  ]
+
+Forecast:
+  id: serial32
+  farm: farm\Farm
+  season: int16(0, null)
+  plant: plant\Plant
+  unit: enum(KG, UNIT, BUNCH)
+  harvestObjective: ?int(0, null)
+  proPart: int8(0, 100) = 0
+  proPrice: ?decimal(8, 2)
+  privatePart: int8(0, 100) = 100
+  privatePrice: ?decimal(8, 2)
+  INDEX: [
+    ["plant"]
+  ]
+  UNIQUE: [
+    ["farm", "season", "plant", "unit"]
+  ]
+
+Plant:
+  id: serial32
+  name: text8(1, null) @collate(general)
+  fqn: ?text8
+  aliases: ?text8(0, null)
+  latinName: text8(1, null) @collate(general)
+  farm: ?farm\Farm
+  family: ?plant\Family
+  vignette: ?text8(30, 30)
+  cycle: enum(ANNUAL, PERENNIAL)
+  status: enum(ACTIVE, INACTIVE) = ACTIVE
+  createdAt: date = SPECIAL(now)
+  INDEX: [
+    ["family"]
+  ]
+  UNIQUE: [
+    ["farm", "name"]
+  ]
+
+Quality:
+  id: serial32
+  name: text8(1, 50) @collate(general)
+  comment: ?editor16(1, null)
+  plant: ?plant\Plant
+  farm: ?farm\Farm
+  yield: bool
+  createdAt: date = SPECIAL(now)
+  INDEX: [
+    ["plant"]
+  ]
+  UNIQUE: [
+    ["farm", "plant", "name"]
+  ]
+
+Variety:
+  id: serial32
+  name: text8(1, 50) @collate(general)
+  fqn: ?fqn
+  plant: ?plant\Plant
+  farm: ?farm\Farm
+  supplierSeed: ?farm\Supplier
+  supplierPlant: ?farm\Supplier
+  weightSeed1000: ?float32(0.01, null)
+  numberPlantKilogram: ?int32(1, null)
+  createdAt: date = SPECIAL(now)
+  INDEX: [
+    ["plant"]
+  ]
+  UNIQUE: [
+    ["fqn"],
+    ["farm", "plant", "name"]
+  ]
+

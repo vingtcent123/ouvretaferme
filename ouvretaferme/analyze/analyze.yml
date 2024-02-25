@@ -1,0 +1,55 @@
+Report:
+  id: serial32
+  name: ?text8(1, 50) @collate(general)
+  description: ?editor16
+  farm: farm\Farm
+  season: int16(0, null)
+  plant: plant\Plant
+  area: int(0, null)
+  workingTime: float(0.0, null)
+  costs: int(0, null)
+  turnover: int(0, null)
+  testArea: ?int24
+  testAreaOperator: ?enum(RELATIVE, ABSOLUTE)
+  testWorkingTime: ?int24
+  testWorkingTimeOperator: ?enum(RELATIVE, ABSOLUTE)
+  testCosts: ?int24
+  testCostsOperator: ?enum(RELATIVE, ABSOLUTE)
+  testTurnover: ?int24
+  testTurnoverOperator: ?enum(RELATIVE, ABSOLUTE)
+  firstSaleAt: ?date
+  lastSaleAt: ?date
+  createdAt: datetime = SPECIAL(now)
+  UNIQUE: [
+    ["plant", "season", "name"]
+  ]
+  INDEX: [
+    ["farm"]
+  ]
+
+Cultivation:
+  id: serial32
+  report: analyze\Report
+  farm: farm\Farm
+  series: series\Series
+  cultivation: series\Cultivation
+  harvestedByUnit: ?json
+  turnoverByUnit: ?json
+  area: int(0, null) = 0
+  workingTime: float(0.0, null) = 0.0
+  costs: int(0, null) = 0
+  turnover: int(0, null) = 0
+  INDEX: [
+    ["report"]
+  ]
+
+Product:
+  report: analyze\Report
+  farm: farm\Farm
+  product: selling\Product
+  unit: enum(KG, UNIT, BUNCH)
+  turnover: int(0, null) = 0
+  quantity: ?int(0, null)
+  INDEX: [
+    ["report"]
+  ]

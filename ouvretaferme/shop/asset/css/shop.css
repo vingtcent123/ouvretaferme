@@ -1,0 +1,290 @@
+.shop-title {
+	display: flex;
+	column-gap: 1rem;
+}
+
+.shop-payment-options > * {
+	display: block;
+}
+.shop-header {
+	display: grid;
+	grid-template:
+			"image content" auto
+			"image flow" 1fr / min-content 1fr;
+	grid-gap: 1rem 2rem;
+}
+
+@media (min-width: 576px) and (max-width: 767px) {
+
+	.shop-header {
+		grid-template:
+			"image content" auto
+			"flow flow" 1fr / min-content 1fr;
+	}
+
+}
+
+@media (max-width: 575px) {
+
+	.shop-header {
+		grid-template:
+			"image" auto
+			"content" auto
+			"flow" auto / 1fr;
+		align-items: center;
+	}
+
+}
+
+.shop-header-image {
+	grid-area: image;
+}
+
+.shop-header-image:not(:empty) {
+	width: 10rem;
+}
+
+@media (max-width: 575px) {
+
+	.shop-header-image {
+		justify-self: center;
+	}
+
+}
+
+.shop-header-content {
+	grid-area: content;
+}
+@media (max-width: 575px) {
+
+	.shop-header-content {
+		text-align: center;
+	}
+
+}
+
+.shop-header-content h1 {
+	margin-bottom: 0.5rem;
+	font-size: 3rem;
+}
+
+@media (max-width: 449px) {
+
+	.shop-header-content h1 {
+		font-size: 2.5rem;
+	}
+
+}
+
+.shop-header-flow {
+	grid-area: flow;
+}
+
+@media (max-width: 575px) {
+
+	.shop-header-flow {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+	}
+
+}
+
+.shop-header-date {
+	grid-area: date;
+	display: grid;
+	grid-column-gap: 1rem;
+	grid-template-columns: 1fr 1fr;
+	max-width: 45rem;
+	text-align: center;
+}
+
+@media (max-width: 575px) {
+
+	.shop-header-date {
+		grid-column-gap: var(--container-xs-padding);
+	}
+
+}
+
+.shop-header-block {
+	width: 100%;
+	max-width: 22rem;
+	padding: 1rem;
+	margin: 0;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	border-radius: var(--radius);
+	background-color: white;
+	text-align: center;
+}
+
+.shop-header-date-day,
+.shop-header-date-content {
+	line-height: 1.2;
+	font-size: 1.1rem;
+	font-weight: lighter;
+}
+
+.shop-header-block h4 {
+	margin-left: auto;
+	margin-right: auto;
+	font-size: 1.2rem;
+	font-weight: bold;
+}
+
+@media (max-width: 449px) {
+
+	.shop-header-block h4 {
+		font-size: 1.2rem;
+	}
+
+}
+
+.shop-header-period {
+	line-height: 1.4;
+	font-size: 0.9rem;
+}
+
+.shop-header-period > div {
+	padding: 0 0.5rem;
+	color: var(--secondary);
+}
+
+.shop-header-description {
+	color: var(--primary);
+	text-align: left;
+}
+
+.shop-header-description-full-link {
+	text-align: center;
+}
+
+@media (max-width: 575px) {
+
+	.shop-header-description {
+		background: transparent;
+		margin: 1rem 0;
+	}
+
+	.shop-header-description .reador > p:first-child {
+		text-align: center;
+	}
+
+	.shop-header-description:not(.shop-header-description-full) .reador > *:not(:first-child) {
+		display: none;
+	}
+
+	.shop-header-description.shop-header-description-full .shop-header-description-full-link {
+		display: none;
+	}
+
+}
+
+@media (min-width: 575px) {
+
+	.shop-header-description-full-link {
+		display: none;
+	}
+
+}
+
+h2.shop-date a {
+	color: var(--text);
+}
+
+/********** SHOP ADMIN **********/
+span.shop-active {
+
+}
+span.shop-closed {
+	color: var(--danger);
+}
+
+div.shop-identification {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	grid-gap: 1rem;
+	margin-top: 1rem;
+}
+
+@media (max-width: 767px) {
+
+	div.shop-identification {
+		grid-template-columns: 1fr;
+	}
+
+}
+
+div.shop-identification > * {
+	border: 1px solid var(--border);
+	border-radius: var(--radius);
+	padding: 1rem;
+}
+
+div.shop-widget-wrapper {
+	display: grid;
+	grid-gap: 1rem;
+	grid-template-columns: 1fr 1fr;
+	margin-bottom: 2rem;
+}
+
+@media (max-width: 767px) {
+
+	div.shop-widget-wrapper {
+		grid-template-columns: 1fr;
+	}
+
+}
+
+div.shop-widget {
+	padding: 1rem;
+	background-color: var(--secondary);
+}
+
+@media (max-width: 575px) {
+
+	div.shop-widget:not(:last-child) {
+		border-bottom: 1px solid var(--border);
+	}
+
+}
+
+div.shop-widget-farm {
+	margin-bottom: 1rem;
+}
+
+div.shop-widget-farm ,
+div.shop-widget-farm a {
+	font-weight: normal;
+	font-size: 1.2rem;
+	color: white;
+}
+
+div.shop-widget-farm .farm-vignette-view {
+	margin-right: 0.5rem;
+}
+
+div.shop-widget > h4 a {
+	text-transform: uppercase;
+	color: white;
+	letter-spacing: 0.6px;
+}
+
+@media (min-width: 576px) {
+
+	div.shop-widget {
+		border: 1px solid var(--border);
+		border-radius: var(--radius);
+	}
+
+}
+
+div.shop-widget .shop-header-date {
+	max-width: 100%;
+}
+
+div.shop-widget-order {
+	margin-top: 1rem;
+}

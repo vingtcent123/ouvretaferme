@@ -1,0 +1,108 @@
+#cartography-farm-container {
+	height: 50vh;
+	position: relative;
+}
+
+#cartography-farm-container.cartography-farm-container-hide {
+	opacity: 0;
+	position: absolute;
+	pointer-events: none;
+	width: 100%;
+	transform: translate(0, -100vw);
+}
+
+#cartography-farm-zoom-out {
+	position: absolute;
+	left: 1rem;
+	top: 1rem;
+	width: 3rem;
+	height: 3rem;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background-color: white;
+	color: var(--text);
+	font-size: 1.3rem;
+	border-radius: 50%;
+	z-index: 1;
+	transition: all 0.5s;
+}
+
+#cartography-farm-zoom-out:hover {
+	background-color: var(--background);
+}
+
+#cartography-farm {
+   width: 100%;
+   height: 100%;
+}
+
+#cartography-farm-tabs .tabs-item {
+	margin-bottom: 0;
+	border-bottom: 0;
+}
+
+div.cartography-popup:hover {
+	cursor: pointer;
+	z-index: 2;
+}
+
+div.cartography-zone-popup:hover .mapboxgl-popup-content,
+div.cartography-zone-popup.selected .mapboxgl-popup-content {
+	background-color: var(--secondary);
+}
+
+div.cartography-plot-popup:hover .mapboxgl-popup-content,
+div.cartography-plot-popup.selected .mapboxgl-popup-content {
+	background-color: #93b96d;
+}
+
+div.cartography-popup .mapboxgl-popup-content {
+	font-size: 0.9rem;
+	line-height: 1;
+	border-radius: var(--radius);
+	color: white;
+	border: 0;
+}
+
+div.cartography-zone-popup .mapboxgl-popup-content {
+	padding: 0.5rem;
+	background-color: #505075aa;
+}
+
+div.cartography-plot-popup .mapboxgl-popup-content {
+	padding: 0.25rem;
+	background-color: #93b96d;
+}
+
+div.cartography-popup .mapboxgl-popup-content h4,
+div.cartography-popup .mapboxgl-popup-content h5 {
+	margin-bottom: 0;
+	line-height: 1;
+}
+
+div.cartography-popup .mapboxgl-popup-content h5 {
+	font-weight: normal;
+}
+
+div.cartography-farm[data-zoom="farm"] div.cartography-plot-popup {
+	display: none;
+}
+
+div.cartography-popup .mapboxgl-popup-tip {
+	display: none;
+}
+
+.form-group[data-wrapper="coordinates"] {
+	align-items: start !important;
+}
+
+div.cartography-beds-popup .mapboxgl-popup-content {
+	padding: 0.25rem;
+	background-color: var(--primary);
+	color: white;
+}
+
+div.cartography-beds-popup .mapboxgl-popup-tip {
+	border-top-color: var(--primary);
+}

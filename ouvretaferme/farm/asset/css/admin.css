@@ -1,0 +1,14 @@
+tr.farm-admin-closed {
+	text-decoration: line-through;
+	opacity: 0.5;
+}
+
+td.farm-admin-vignette {
+	width: 48px;
+}
+
+td.farm-admin-vignette img {
+	width: 48px;
+	height: 48px;
+	border-radius: 50%;
+}

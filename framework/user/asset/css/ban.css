@@ -1,0 +1,30 @@
+.ban-table {
+	margin-top: 1rem;
+	font-size: 1rem;
+}
+.ban-table td, .ban-table th {
+	border: none;
+}
+.ban-nav {
+	margin-top: 1rem;
+}
+.ban-btn-bar {
+	text-align: right;
+}
+.ban-form {
+	display: none;
+}
+.ban-table .ban-cell {
+	vertical-align: top;
+}
+.ban-date-cell {
+	min-width: 170px;
+}
+.ban-long-text-cell {
+	font-size: 0.9rem;
+}
+
+div.ban-action {
+	margin: 1rem 0;
+	text-align: center;
+}

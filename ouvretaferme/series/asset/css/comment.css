@@ -1,0 +1,12 @@
+div.comment-item-wrapper {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    grid-column-gap: 0.5rem;
+    grid-row-gap: 0.25rem;
+    align-items: baseline;
+}
+
+div.comment-item-wrapper.comment-item-update-wrapper {
+    grid-template-columns: auto 1fr auto;
+    grid-row-gap: 0.5rem;
+}

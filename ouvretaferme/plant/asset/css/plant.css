@@ -1,0 +1,144 @@
+/* Plant as items */
+div.plant-item-grid {
+	display: grid;
+	grid-template-columns: repeat(3, 1fr);
+	grid-column-gap: 0.75rem;
+	grid-row-gap: 0.75rem;
+	margin-bottom: 2rem;
+}
+
+@media (min-width: 576px) and (max-width: 991px) {
+
+	div.plant-item-grid {
+		grid-template-columns: repeat(2, 1fr);
+	}
+
+}
+
+@media (max-width: 575px) {
+
+	div.plant-item-grid {
+		grid-template-columns: 1fr;
+	}
+
+}
+
+div.plant-item-grid > * {
+}
+
+
+a.plant-item {
+	display: flex;
+	color: inherit;
+	align-items: center;
+}
+
+a.plant-item:hover {
+	text-decoration: none;
+}
+
+div.plant-item-name {
+	line-height: 1;
+	margin-bottom: 0.25rem;
+}
+
+a.plant-item:hover div.plant-item-name {
+	text-decoration: underline;
+}
+
+div.plant-item-image {
+	width: 60px;
+	min-width: 60px;
+	height: 60px;
+	margin-right: 0.75rem;
+	border-radius: 50%;
+	background-size: cover;
+	background-position: center center;
+}
+
+div.plant-item-latin {
+	color: #bbb;
+	font-size: 0.9rem;
+	line-height: 1;
+}
+
+#plant-flow {
+	grid-area: flow;
+	padding: 1rem;
+}
+
+#plant-calendar {
+	grid-area: calendar;
+}
+
+div.plant-section {
+	margin-bottom: 2rem;
+}
+
+div.plant-block {
+	position: relative;
+}
+
+div.plant-block:empty {
+	display: none;
+}
+
+div.plant-block a.data-block-update {
+	opacity: 0;
+	position: absolute;
+	right: 0rem;
+	top: 0rem;
+	border-radius: 50%;
+	background-color: var(--secondary);
+	margin: 1rem;
+	padding: 0.75rem;
+	color: white;
+	transition: opacity 0.5s;
+	line-height: 1;
+	z-index: 1000;
+}
+
+div.plant-block:hover a {
+	opacity: 1;
+}
+
+div.plant-block-submit {
+	margin-top: 1rem;
+	display: flex;
+	justify-content: space-between;
+}
+
+#plant-manage {
+	overflow-y: auto;
+}
+
+#plant-manage table.plant-manage-list {
+	min-width: 600px;
+}
+
+#plant-manage .plant-manage-locked {
+	font-size: 0.8rem;
+	color: var(--muted);
+}
+
+#plant-manage-search {
+	display: grid;
+	grid-auto-flow: column;
+	justify-content: start;
+	grid-column-gap: 1rem;
+	margin-bottom: 1rem;
+}
+
+#plant-manage-search input {
+	width: 20rem;
+}
+
+.plant-vignette {
+	display: inline-block;
+}
+
+.plant-vignette img {
+	width: 100%;
+	height: 100%;
+}
+

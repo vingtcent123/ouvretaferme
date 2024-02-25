@@ -1,0 +1,79 @@
+div.analyze-plant-cycle-tabs {
+    border-bottom: 0;
+    margin-bottom: 0;
+}
+
+div.analyze-plant-cycle-tabs .tab-item.selected {
+    background-color: var(--background);
+    color: var(--text);
+}
+
+div.analyze-plant-cycle-panel {
+    padding: 1rem;
+    background-color: var(--background);
+}
+
+@media (max-width: 991px) {
+
+	table.analyze-plant-summary {
+		width: max-content;
+		min-width: 100%;
+	}
+
+}
+
+@media (max-width: 575px) {
+
+	table.analyze-plant-summary th:first-child,
+	table.analyze-plant-summary td:first-child {
+		max-width: 200px;
+		line-height: 1.2;
+	}
+
+}
+
+thead.analyze-plant-summary-developed th {
+	padding-top: 2rem;
+}
+
+th.analyze-plant-area-season {
+	text-align: right;
+	width: 6rem;
+}
+
+th.analyze-plant-area-season + th {
+	width: 4rem;
+}
+
+td.analyze-rotation-unknown,
+td.analyze-rotation-yes,
+td.analyze-rotation-no {
+	min-width: 6rem;
+}
+
+td.analyze-rotation-unknown {
+	color: var(--muted);
+	text-align: center;
+}
+
+td.analyze-rotation-yes {
+	color: var(--success);
+	background-color: white;
+	text-align: center;
+}
+
+td.analyze-rotation-no {
+	color: var(--danger);
+	background-color: white;
+	text-align: center;
+}
+
+.analyze-rotation-seen {
+	text-align: center;
+	background-color: white;
+}
+
+.analyze-rotation-label {
+	font-size: 0.9rem;
+	margin-right: 0.5rem;
+}

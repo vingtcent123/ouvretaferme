@@ -1,0 +1,13 @@
+div.configuration-sale-example-wrapper {
+	width: 100%;
+	max-width: 22cm;
+	height: 29.7cm;
+	overflow: auto;
+	background-color: white;
+}
+
+div.configuration-sale-example {
+	width: 21cm;
+	padding: 1cm;
+	font-size: 12px;
+}

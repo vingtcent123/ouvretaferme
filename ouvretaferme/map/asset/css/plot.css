@@ -1,0 +1,73 @@
+/* Items */
+div.plot-item-wrapper {
+   box-shadow: 1px 1px 1px var(--border);
+}
+
+div.plot-item {
+   background: white;
+   padding: var(--responsive-padding);
+   margin-top: 2rem;
+}
+
+div.plot-item:not(:only-child) {
+   border-bottom: 1px solid var(--border);
+}
+
+h4.plot-item-title {
+	text-transform: uppercase;
+   font-weight: bold;
+   color: var(--primary);
+	margin: 0;
+}
+
+h4.plot-item-title .plot-item-no-cartography {
+	margin-left: 0.5rem;
+	font-weight: normal;
+	font-size: 60%;
+	color: var(--muted);
+}
+
+div.plot-item-beds {
+	margin-bottom: 1rem;
+   background-color: white;
+}
+
+div.plot-item-beds:not(:empty) {
+   padding: var(--responsive-padding);
+}
+
+/* Maps */
+
+p.plot-map-help {
+	font-size: 0.9rem;
+	color: var(--secondary);
+}
+
+div.plot-map {
+	width: 100%;
+	height: 300px;
+}
+
+#plot-map-write {
+	width: 100%;
+	height: 500px;
+}
+
+#plot-map-polygon {
+	background-color: var(--background-light);
+	padding: 1rem;
+	text-align: center;
+	display: none;
+	justify-content: space-between;
+	align-items: center;
+}
+
+/* Use */
+form.plot-use {
+	padding: 1rem;
+	background-color: #eee;
+}
+
+div.plot-use-options {
+	margin: 1rem 0 0.5rem;
+}

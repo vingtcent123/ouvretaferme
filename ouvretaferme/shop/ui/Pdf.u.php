@@ -1,0 +1,159 @@
+<?php
+namespace shop;
+
+class PdfUi {
+
+	public function __construct() {
+
+		\Asset::css('shop', 'pdf.css');
+
+	}
+
+	public function getSales(Date $eDate, \Collection $cSale): string {
+
+		$items = [];
+
+		foreach($cSale as $eSale) {
+			$items = array_merge($items, $this->getLabel($eDate, $eSale));
+		}
+
+		$itemsPerPage = 4;
+
+		$itemsChunk = array_chunk($items, $itemsPerPage);
+
+		if($itemsChunk === []) {
+			$itemsChunk[] = [];
+		}
+
+		$h = '<style>@page {	margin: 0.5cm; }</style>';
+
+		foreach($itemsChunk as $itemsByN) {
+
+			$h .= '<div class="shop-pdf-label-wrapper">';
+
+				$h .= implode('', $itemsByN);
+
+			$h .= '</div>';
+
+		}
+
+		return $h;
+
+	}
+
+	public function getLabel(Date $eDate, \selling\Sale $eSale): array {
+
+		$eCustomer = $eSale['customer'];
+
+		$itemsList = [];
+
+		foreach($eSale['cItem'] as $eItem) {
+
+			if($eItem['packaging'] !== NULL) {
+				// Gérer les colis en nombre entier
+				$quantity = $eItem['packaging'] * $eItem['number'];
+			} else {
+				$quantity = $eItem['number'];
+			}
+
+			$item = '<div>';
+				$item .= encode($eItem['name'] ?? '');
+				$item .= '<span class="shop-pdf-label-size">'.encode($eItem['product']['size'] ?? '').'</span>';
+			$item .= '</div>';
+			$item .= '<div>';
+				$item .= \main\UnitUi::getValue($quantity, $eItem['unit']);
+			$item .= '</div>';
+			$item .= '<div>';
+				$item .= \util\TextUi::money($eItem['price']);
+			$item .= '</div>';
+
+			$itemsList[] = $item;
+
+		}
+
+		$itemsChunck = array_chunk($itemsList, 15);
+		$pages = count($itemsChunck);
+
+		$entries = [];
+
+		foreach($itemsChunck as $position => $items) {
+
+			$entry = '<div class="shop-pdf-label-item">';
+
+				$entry .= '<div class="shop-pdf-label-customer">';
+					$entry .= '<span>'.encode($eCustomer['name']).'</span>';
+
+					if(count($itemsChunck) > 1) {
+						$entry .= '<span class="shop-pdf-label-page">'.($position + 1).' / '.$pages.'</span>';
+					}
+
+				$entry.= '</div>';
+
+				$entry .= '<div class="shop-pdf-label-details '.($position > 0 ? 'shop-pdf-label-details-next' : '').'">';
+
+					if($position === 0) {
+
+
+						$entry .= '<div class="shop-pdf-label-detail">';
+							$entry .= '<div class="shop-pdf-label-detail-title">'.s("Commande").'</div>';
+							$entry .= '<div class="shop-pdf-label-detail-value">'.$eSale['id'].'</div>';
+						$entry .= '</div>';
+						$entry .= '<div class="shop-pdf-label-detail">';
+							$entry .= '<div class="shop-pdf-label-detail-title">'.s("Date de retrait").'</div>';
+							$entry .= '<div class="shop-pdf-label-detail-value">'.\util\DateUi::numeric($eDate['deliveryDate']).'</div>';
+						$entry .= '</div>';
+						$entry .= '<div class="shop-pdf-label-detail">';
+							$entry .= '<div class="shop-pdf-label-detail-title">'.s("Montant").'</div>';
+							$entry .= '<div class="shop-pdf-label-detail-value">'.\util\TextUi::money($eSale['priceIncludingVat']).'</div>';
+						$entry .= '</div>';
+						$entry .= '<div class="shop-pdf-label-detail">';
+							$entry .= '<div class="shop-pdf-label-detail-title">'.s("Moyen de paiement").'</div>';
+							$entry .= '<div class="shop-pdf-label-detail-value">';
+								$entry .= $eSale['paymentMethod'] ? \selling\SaleUi::p('paymentMethod')->values[$eSale['paymentMethod']] : '?';
+							$entry .= '</div>';
+						$entry .= '</div>';
+						if($eSale->isPaymentOnline()) {
+							$entry .= '<div class="shop-pdf-label-detail">';
+								$entry .= '<div class="shop-pdf-label-detail-title">'.s("Paiement").'</div>';
+								$entry .= '<div class="shop-pdf-label-detail-value">';
+									$entry .= \selling\SaleUi::getPaymentStatusForCustomer($eSale, withColors: TRUE);
+								$entry .= '</div>';
+							$entry .= '</div>';
+						}
+						$entry .= '<div class="shop-pdf-label-detail">';
+							$entry .= '<div class="shop-pdf-label-detail-title">'.PointUi::p('type')->values[$eSale['shopPoint']['type']].'</div>';
+							$entry .= '<div class="shop-pdf-label-detail-value">';
+								$entry .= match($eSale['shopPoint']['type']) {
+									\shop\Point::HOME => '<div class="shop-pdf-label-address">'.nl2br(encode($eSale->getDeliveryAddress())).'</div>',
+									\shop\Point::PLACE => encode($eSale['shopPoint']['name'])
+								};
+							$entry .= '</div>';
+						$entry .= '</div>';
+
+					} else {
+
+						$entry .= '<div class="shop-pdf-label-detail">';
+							$entry .= '<div class="shop-pdf-label-detail-title">'.s("Suite de commande").'</div>';
+							$entry .= '<div class="shop-pdf-label-detail-value">'.$eSale['id'].'</div>';
+						$entry .= '</div>';
+
+					}
+
+				$entry .= '</div>';
+
+				$entry .= '<div class="shop-pdf-label-content">';
+					$entry .= implode('', $items);
+				$entry .= '</div>';
+
+			$entry .= '</div>';
+
+			$entries[] = $entry;
+
+		}
+
+		return $entries;
+
+	}
+
+}
+?>

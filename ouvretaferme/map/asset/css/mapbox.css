@@ -1,0 +1,93 @@
+div.mapbox-polygon-container {
+	position: relative;
+}
+
+#mapbox-polygon-shapes {
+	position: absolute;
+	left: 0;
+	right: 0;
+	top: 0;
+	bottom: 0;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background-color: #0007;
+	column-gap: 2rem;
+}
+
+a.mapbox-polygon-shape-link {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	row-gap: 0.5rem;
+	width: 7rem;
+	height: 7rem;
+	border-radius: 50%;
+	background-color: white;
+	line-height: 1;
+}
+
+a.mapbox-polygon-shape-link:hover {
+	text-decoration: none;
+}
+
+a.mapbox-polygon-shape-link svg {
+	font-size: 2rem;
+}
+
+a.mapbox-polygon-shape-link span {
+	font-size: 0.9rem;
+}
+
+div.mapbox-polygon-shape-form {
+	background-color: white;
+	width: 20rem;
+	padding: 1rem;
+}
+
+div.mapbox-polygon-actions {
+	position: absolute;
+	left: 0;
+	right: 0;
+	top: 1rem;
+	display: flex;
+	justify-content: center;
+	pointer-events: none;
+}
+
+a.mapbox-polygon-action {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	row-gap: 0.5rem;
+	background-color: white;
+	color: var(--text);
+	font-size: 1.3rem;
+	line-height: 1;
+	z-index: 1;
+	transition: all 0.5s;
+	text-decoration: none;
+	padding: 1rem;
+	pointer-events: initial;
+}
+
+a.mapbox-polygon-action.selected,
+a.mapbox-polygon-action:hover {
+	background-color: var(--background);
+}
+
+a.mapbox-polygon-action span {
+	font-size: 0.9rem;
+}
+
+a.mapbox-polygon-action:first-child {
+	border-top-left-radius: var(--radius);
+	border-bottom-left-radius: var(--radius);
+}
+
+a.mapbox-polygon-action:last-child {
+	border-top-right-radius: var(--radius);
+	border-bottom-right-radius: var(--radius);
+}

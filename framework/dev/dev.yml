@@ -1,0 +1,51 @@
+Error:
+  id: serial32
+  message: text24(1, null)
+  code: text8(1, null)
+  app: text8(1, null)
+  file: ?text8(1, null) @charset(ascii)
+  line: ?int32(1, null)
+  user: ?user\User
+  mode: text8(1, null) = PHP(\Route::getRequestedWith()) @charset(ascii)
+  modeVersion: ?text8 @charset(ascii)
+  tag: ?text8 @charset(ascii)
+  method: ?text8 @charset(ascii)
+  type: enum(EXCEPTION, PHP, UNEXPECTED, NGINX, IOS, ANDROID)
+  request: text16
+  createdAt: datetime = SPECIAL(now)
+  status: enum(OPEN, CLOSE) = OPEN
+  statusUpdatedAt: ?datetime
+  table: ?text8
+  server: ?text8
+  browser: ?text8
+  device: text8(1, null) @charset(ascii)
+  referer: ?text8
+  deprecated: bool = FALSE
+  exported: bool = FALSE
+  INDEX: [
+    ["file"],
+    ["createdAt"]
+  ]
+
+ErrorParameter:
+  id: serial32
+  error: dev\Error
+  type: enum(GET, POST, COOKIE)
+  name: text8(1, null)
+  value: text24(1, null)
+  INDEX: [
+    ["error"]
+  ]
+
+ErrorTrace:
+  id: serial32
+  error: dev\Error
+  file: ?text8(1, null)
+  line: ?int32(1, null)
+  class: ?text8(1, null)
+  function: ?text8(1, null)
+  arguments: ?text16(1, null)
+  INDEX: [
+    ["error"]
+  ]
+

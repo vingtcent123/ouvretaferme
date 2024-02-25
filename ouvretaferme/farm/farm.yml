@@ -1,0 +1,134 @@
+Action:
+  id: serial32
+  name: text8(1, null) @collate(general)
+  fqn: ?text8 @charset(ascii)
+  short: ?text8(1, 2)
+  farm: ?farm\Farm
+  color: color = PHP('#AAAAAA')
+  pace: ?enum(BY_HARVEST, BY_AREA, BY_PLANT)
+  categories: json = PHP([])
+  series: bool = TRUE
+  INDEX: [
+    ["farm"]
+  ]
+  
+Category:
+  id: serial32
+  name: text8(1, null) @collate(general)
+  fqn: ?text8 @charset(ascii)
+  farm: ?farm\Farm
+  position: int8(0, null)
+  INDEX: [
+    ["farm"]
+  ]
+
+Farm:
+  id: serial32
+  name: text8(1, null) @collate(general)
+  vignette: ?textFixed(30, 30) @charset(ascii)
+  place: ?text8(1, null)
+  placeLngLat: ?point
+  url: ?url
+  description: ?editor24
+  logo: ?textFixed(30, 30) @charset(ascii)
+  banner: ?textFixed(30, 30) @charset(ascii)
+  seasonFirst: int16(0, null)
+  seasonLast: int16(0, null)
+  rotationYears: int8(2, 5) = 4
+  rotationExclude: json = PHP([])
+  quality: ?enum(ORGANIC, NATURE_PROGRES) = ORGANIC
+  defaultBedLength: ?int16(1, null)
+  defaultBedWidth: ?int16(1, null)
+  defaultAlleyWidth: ?int16(1, null)
+  calendarMonthStart: ?int8(7, 12) = 10
+  calendarMonthStop: ?int8(1, 6) = 3
+  featureTime: bool = TRUE
+  featureDocument: enum(ALL, PRIVATE, PRO, DISABLED) = PRO
+  startedAt: int16(PHP(date('Y') - 100), PHP(date('Y') + 10))
+  createdAt: datetime = SPECIAL(now)
+  status: enum(ACTIVE, CLOSED) = ACTIVE
+
+Farmer:
+  id: serial32
+  user: ?user\User
+  farm: farm\Farm
+  farmGhost: bool = FALSE
+  farmStatus: enum(ACTIVE, CLOSED) = ACTIVE
+  status: enum(INVITED, IN, OUT) = INVITED
+  role: ?enum(SEASONAL, PERMANENT, OWNER, OBSERVER)
+  viewPlanning: enum(DAILY, WEEKLY, YEARLY, TEAM) = WEEKLY
+  viewPlanningYear: ?int16(0, null)
+  viewPlanningCategory: enum(TIME, TEAM, PACE, PERIOD) = TIME
+  viewPlanningHarvestExpected: enum(TOTAL, WEEKLY) = TOTAL
+  viewPlanningField: enum(VARIETY, SOIL) = SOIL
+  viewPlanningSearch: ?json
+  viewPlanningUser: ?user\User
+  viewCultivation: enum(SERIES, SEQUENCE, PLANT) = SERIES
+  viewCultivationCategory: enum(AREA, PLANT, FAMILY, ROTATION) = AREA
+  viewSeries: enum(AREA, FORECAST, SEEDLING, HARVESTING, WORKING_TIME, TOOL) = AREA
+  viewSelling: enum(SALE, PRODUCT, CUSTOMER, SHOP) = SALE
+  viewSellingSales: enum(ALL, PRIVATE, PRO, INVOICE, LABEL) = ALL
+  viewSellingCategory: enum(ITEM, CUSTOMER, SHOP, PERIOD) = ITEM
+  viewMap: enum(CARTOGRAPHY, SOIL, HISTORY) = CARTOGRAPHY
+  viewAnalyze: enum(WORKING_TIME, REPORT, SALES, CULTIVATION) = WORKING_TIME
+  viewAnalyzeYear: ?int16(0, null)
+  viewSettings: enum(SETTINGS, WEBSITE) = SETTINGS
+  viewSeason: ?int16(0, null)
+  viewShop: ?shop\Shop
+  createdAt: datetime = SPECIAL(now)
+  UNIQUE: [
+    ["user", "farm"]
+  ]
+
+Invite:
+  id: serial32
+  farm: farm\Farm
+  email: email
+  type: enum(FARMER, CUSTOMER)
+  customer: ?selling\Customer
+  farmer: ?farm\Farmer
+  expiresAt: date = SQL(NOW() + INTERVAL 3 DAY)
+  key: ?text8 = PHP(bin2hex(random_bytes(16)))
+  status: enum(PENDING, ACCEPTED) = PENDING
+  INDEX: [
+    ["customer"],
+    ["email"],
+    ["key"]
+  ]
+
+Supplier:
+  id: serial32
+  name: text8(1, 50) @collate(general)
+  farm: farm\Farm
+  createdAt: date = SPECIAL(now)
+
+Tip:
+  id: serial32
+  user: user\User
+  list: json = PHP([])
+  shown: int16(0, null) = 0
+  clicked: int16(0, null) = 0
+  closed: int16(0, null) = 0
+  unmatched: int16(0, null) = 0
+  lastSeniority: int16(0, null) = 0
+  pickPosition: int16(0, null) = 0
+  UNIQUE: [
+    ["user"]
+  ]
+
+Tool:
+  id: serial32
+  name: text8(1, 40) @collate(general)
+  farm: farm\Farm
+  action: ?farm\Action
+  vignette: ?textFixed(30, 30) @charset(ascii)
+  stock: ?int16(0, null)
+  routineName: ?text8
+  routineValue: ?json
+  comment: ?text16
+  status: enum(ACTIVE, INACTIVE) = ACTIVE
+  createdAt: datetime = SPECIAL(now)
+  UNIQUE: [
+    ["farm", "name"]
+  ]
+

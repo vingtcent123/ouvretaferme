@@ -1,0 +1,93 @@
+Bed:
+  id: serial32
+  name: ?text8(1, 20) @collate(general)
+  farm: farm\Farm
+  zone: map\Zone
+  zoneFill: bool = FALSE
+  plot: map\Plot
+  plotFill: bool = FALSE
+  length: ?int16(1, null)
+  width: ?int16(1, null)
+  area: float32(0.01, null) = SQL(length * width / 100)
+  greenhouse: ?map\Greenhouse
+  seasonFirst: ?int16(0, null)
+  seasonLast: ?int16(0, null)
+  createdAt: datetime = SPECIAL(now)
+  createdBy: user\User = SPECIAL(user)
+  updatedAt: ?datetime
+  INDEX: [
+    ["zone"],
+    ["plot"],
+    ["greenhouse"]
+  ]
+  UNIQUE: [
+    ["plot", "name"]
+  ]
+  
+Draw:
+  id: serial32
+  farm: farm\Farm
+  zone: map\Zone
+  plot: map\Plot
+  season: int16(0, null)
+  beds: json
+  coordinates: json
+  INDEX: [
+    ["farm"],
+    ["plot"]
+  ]
+
+Greenhouse:
+  id: serial32
+  name: text8(1, null) @collate(general)
+  farm: farm\Farm
+  zone: map\Zone
+  zoneFill: bool
+  plot: map\Plot
+  length: int16(1, null)
+  width: float32(1, null)
+  area: float32(1, null) = SQL(length * width)
+  seasonFirst: ?int16(0, null)
+  seasonLast: ?int16(0, null)
+  createdAt: datetime = SPECIAL(now)
+  createdBy: user\User = SPECIAL(user)
+  INDEX: [
+    ["farm"],
+    ["zone"],
+    ["plot"]
+  ]
+
+Plot:
+  id: serial32
+  name: ?text8(1, null) @collate(general)
+  farm: farm\Farm
+  zone: map\Zone
+  zoneFill: bool = FALSE
+  mode: enum(GREENHOUSE, OUTDOOR) = OUTDOOR
+  area: int32(1, null)
+  coordinates: ?polygon
+  seasonFirst: ?int16(0, null)
+  seasonLast: ?int16(0, null)
+  createdAt: datetime = SPECIAL(now)
+  createdBy: user\User = SPECIAL(user)
+  updatedAt: ?datetime
+  INDEX: [
+    ["farm"],
+    ["zone"]
+  ]
+
+Zone:
+  id: serial32
+  name: text8(1, null) @collate(general)
+  farm: farm\Farm
+  area: int32(1, null)
+  coordinates: ?polygon
+  seasonFirst: ?int16(0, null)
+  seasonLast: ?int16(0, null)
+  createdAt: datetime = SPECIAL(now)
+  createdBy: user\User = SPECIAL(user)
+  updatedAt: ?datetime
+  INDEX: [
+    ["farm"]
+  ]
+

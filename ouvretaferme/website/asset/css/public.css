@@ -1,0 +1,71 @@
+nav {
+   grid-area: nav;
+}
+
+header {
+   grid-area: header;
+	position: relative;
+}
+
+main {
+   grid-area: main;
+}
+
+footer {
+   grid-area: footer;
+}
+
+.website-logo {
+   display: inline-block;
+}
+
+a {
+   color: black;
+   text-decoration: underline;
+}
+
+div.website-widget-shop {
+	border-radius: var(--radius);
+	border: 1px solid var(--border);
+	background-color: white;
+}
+
+div.website-widget-shop > h4 {
+	padding: 0.75rem 1rem;
+	margin: 0 !important;
+}
+
+div.website-widget-shop > h4 a {
+	color: var(--primary);
+	text-decoration: none;
+}
+
+div.website-widget-shop > h4 a:hover {
+	text-decoration: underline;
+}
+
+div.website-widget-shop > div.shop-header-date {
+	border-top: 1px solid var(--border);
+	max-width: 100%;
+	grid-column-gap: 0;
+}
+
+div.website-widget-shop > div.shop-header-date > * {
+	padding: 0.5rem;
+}
+
+div.website-widget-shop > div.shop-header-date > *:first-child {
+	border-right: 1px solid var(--border);
+	border-radius: 0;
+}
+
+div.website-widget-shop-order {
+	border-top: 1px solid var(--border);
+	padding: 0.75rem 1rem;
+}
+
+div.website-admin {
+	position: absolute;
+	top: 1rem;
+	right: 0;
+}

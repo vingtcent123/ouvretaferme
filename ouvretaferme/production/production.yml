@@ -1,0 +1,101 @@
+Crop:
+  id: serial32
+  plant: plant\Plant
+  startWeek: ?int16
+  startAction: ?enum(SOWING, PLANTING)
+  sequence: production\Sequence
+  farm: farm\Farm
+  distance: enum(SPACING, DENSITY) = SPACING
+  rows: ?int8(1, null)
+  rowSpacing: ?int16(1, null)
+  plantSpacing: ?int16(1, null)
+  density: ?float32(0.01, null)
+  mainUnit: enum(KG, UNIT, BUNCH) = KG
+  seedling: ?enum(SOWING, YOUNG_PLANT)
+  seedlingSeeds: ?int8(1, null)
+  yieldExpected: ?float32(0.0, null)
+  INDEX: [
+    ["farm"],
+    ["plant", "farm"]
+  ]
+  UNIQUE: [
+    ["sequence", "plant"]
+  ]
+
+Flow:
+  id: serial32
+  crop: ?production\Crop
+  plant: ?plant\Plant
+  sequence: production\Sequence
+  farm: farm\Farm
+  action: farm\Action
+  description: ?text16(1, null)
+  fertilizer: ?json
+  weekOnly: ?int8(1, 52)
+  weekStart: ?int8(1, 52)
+  weekStop: ?int8(1, 52)
+  yearOnly: ?int8(-1, 1)
+  yearStart: ?int8(-1, 1)
+  yearStop: ?int8(-1, 1)
+  seasonOnly: ?int8(1, 100)
+  seasonStart: ?int8(1, 100)
+  seasonStop: ?int8(1, 100)
+  positionOnly: ?int16(0, null)
+  positionStart: ?int16(0, null)
+  positionStop: ?int16(0, null)
+  frequency: ?enum(W1, W2, W3, W4, M1)
+  INDEX: [
+    ["plant"],
+    ["crop"],
+    ["sequence"]
+  ]
+
+Requirement:
+  id: serial32
+  farm: farm\Farm
+  sequence: production\Sequence
+  crop: ?production\Crop
+  flow: production\Flow
+  tool: farm\Tool
+  INDEX: [
+    ["farm", "tool"],
+    ["sequence"]
+  ]
+  UNIQUE: [
+    ["flow", "tool"]
+  ]
+
+Sequence:
+  id: serial32
+  name: text8(1, null) @collate(general)
+  summary: ?text8(1, 100)
+  description: ?editor16
+  cycle: enum(ANNUAL, PERENNIAL)
+  perennialLifetime: ?int8(2, null)
+  farm: farm\Farm
+  author: user\User = SPECIAL(user)
+  duplicateOf: ?production\Sequence
+  plants: int8(1, null)
+  use: enum(BED, BLOCK)
+  bedWidth: ?int16(1, null)
+  alleyWidth: ?int16(1, null)
+  mode: enum(GREENHOUSE, OUTDOOR, MIX) = OUTDOOR
+  comment: ?editor16
+  visibility: enum(PRIVATE, PUBLIC) = PRIVATE
+  createdAt: datetime = SPECIAL(now)
+  status: enum(ACTIVE, CLOSED) = ACTIVE
+  INDEX: [
+    ["farm"]
+  ]
+
+Slice:
+  id: serial32
+  farm: farm\Farm
+  sequence: production\Sequence
+  crop: production\Crop
+  plant: plant\Plant
+  variety: plant\Variety
+  partPercent: ?float32(0.0, 100.0)
+  UNIQUE: [
+    ["crop", "variety"]
+  ]

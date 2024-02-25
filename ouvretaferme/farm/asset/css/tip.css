@@ -1,0 +1,223 @@
+#tip-wrapper {
+	overflow: hidden;
+}
+
+.tip-block {
+	position: relative;
+	background-color: #2e687f;
+	width: calc(100% - 4rem);
+	max-width: 50rem;
+}
+
+@media (max-width: 575px) {
+
+	.tip-block {
+		width: 100%;
+		overflow: hidden;
+	}
+
+}
+
+@media (min-width: 576px) {
+
+	#tip-wrapper:not(.tip-wrapper-inline) {
+		z-index: 2000;
+		position: absolute;
+		margin-top: calc(var(--mainNav) + var(--farmNav) + var(--farmSubNav));
+		padding-top: 2rem;
+		display: flex;
+		justify-content: center;
+		align-items: start;
+		left: 0;
+		right: 0;
+		top: 0;
+		height: 100vh;
+		pointer-events: none;
+	}
+
+	#tip-wrapper.tip-wrapper-inline .tip-block {
+		margin: 1rem auto;
+	}
+
+	#tip-wrapper:not(.tip-wrapper-inline) .tip-block {
+		border-radius: var(--radius);
+		box-shadow: 0 0 50rem var(--muted);
+		pointer-events: initial;
+	}
+
+}
+
+.tip-icons {
+	position: absolute;
+	left: 0;
+	line-height: 1;
+	text-align: center;
+	color: #CCC3;
+	display: grid;
+	grid-template-columns: 1fr 1fr 1fr;
+	align-items: center;
+	gap: 3rem;
+	pointer-events: none;
+	transform: rotate(18deg);
+}
+
+@media (min-width: 576px) {
+
+	.tip-icons {
+		top: -100%;
+		left: -100%;
+	}
+
+}
+
+@media (max-width: 575px) {
+
+	.tip-icons {
+		overflow: hidden;
+	}
+
+}
+
+.tip-icons svg:nth-child(4n) {
+	font-size: 25vw;
+	align-self: start;
+	justify-self: center;
+}
+
+.tip-icons svg:nth-child(4n + 1) {
+	font-size: 35vw;
+	transform: rotate(45deg);
+}
+
+.tip-icons svg:nth-child(4n + 2) {
+	font-size: 30vw;
+	align-self: end;
+}
+
+.tip-icons svg:nth-child(4n + 3) {
+	font-size: 40vw;
+	transform: rotate(-30deg);
+}
+
+.tip-icon-end {
+	top: 50%;
+}
+
+.tip-icon-end svg:nth-child(3) {
+	font-size: 20vw;
+}
+
+.tip-icon-end svg:nth-child(2) {
+	font-size: 35vw;
+}
+
+.tip-icon-end svg:nth-child(1) {
+	font-size: 50vw;
+}
+
+.tip-header {
+	padding: 2rem 2rem 0 2rem;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	position: relative;
+}
+
+.tip-intro {
+	position: relative;
+	color: white;
+	letter-spacing: 2px;
+	text-transform: uppercase;
+	margin-bottom: 0;
+	line-height: 1;
+	font-size: 1.1rem;
+}
+
+.tip-title {
+	padding: 1rem 2rem 1rem 2rem;
+	position: relative;
+	font-size: 3rem;
+	line-height: 1;
+	color: white;
+	margin-bottom: 0;
+}
+
+.tip-content {
+	margin-top: -1rem;
+	position: relative;
+	font-size: 1.1rem;
+	min-height: 5vw;
+	padding: 5vw 2rem 1rem 2rem;
+	color: white;
+}
+
+.tip-content a {
+	color: white;
+	text-decoration: underline;
+}
+
+.tip-image {
+	margin-top: 1.5rem;
+}
+
+.tip-image img {
+	width: 100%;
+}
+
+.tip-button {
+	position: relative;
+	border-top: 1px solid #FFF6;
+	padding: 1.5rem 2rem;
+	background-color: #0006;
+	display: flex;
+	flex-wrap: wrap;
+	row-gap: 0.5rem;
+	justify-content: space-between;
+	border-bottom-left-radius: var(--radius);
+	border-bottom-right-radius: var(--radius);
+}
+
+.tip-button .btn-tip {
+	color: white;
+}
+
+.tip-button .btn-outline-tip {
+	border-color: white;
+	color: white;
+}
+
+@media (max-width: 575px) {
+
+	.tip-header {
+		padding: 1rem 1rem 0 1rem;
+	}
+
+	.tip-title,
+	.tip-button,
+	.tip-content {
+		padding: 1rem;
+	}
+
+}
+
+.tip-list > * {
+	padding: 0.5rem;
+	border-radius: var(--radius);
+	border: 1px solid white;
+	display: inline-block;
+	margin: 0.25rem 0;
+}
+
+.tip-list > a {
+	text-decoration: none;
+	color: white;
+}
+
+.tip-list > a:hover {
+	background-color: white;
+	color: black;
+}
+
+.tip-list > *:not(:last-child) {
+	margin-right: 0.5rem;
+}

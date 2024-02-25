@@ -1,0 +1,93 @@
+div.slice-items {
+	display: grid;
+	grid-row-gap: 0.5rem;
+}
+
+div.slice-actions {
+	text-align: right;
+	margin-top: 0.25rem;
+	display: none;
+}
+
+div.slice-actions span.slice-action-limit {
+	font-weight: bold;
+}
+
+div.slice-wrapper:not([data-n="1"]):not([data-n="0"]) div.slice-actions {
+	display: block;
+}
+
+div.slice-spare {
+	display: none;
+}
+
+div.slice-item {
+	display: grid;
+	grid-template: "variety parts remove" 1fr / 1fr 1fr auto;
+	grid-column-gap: 0.5rem;
+	align-items: center;
+	padding: 0.5rem;
+	border-radius: var(--radius);
+	background-color: rgba(0, 0, 0, 0.05);
+}
+
+div.slice-wrapper[data-n="1"] div.slice-item {
+	grid-template-columns: 1fr auto;
+}
+
+@media (max-width: 575px) {
+
+	div.slice-item {
+		grid-template:
+			"variety remove" auto
+			"parts parts" 1fr / 1fr auto;
+		grid-row-gap: 0.5rem;
+	}
+
+	div.slice-wrapper[data-n="1"] div.slice-item {
+		grid-template: "variety remove" auto / 1fr auto;
+	}
+
+}
+
+div.slice-item div.slice-item-variety {
+	grid-area: variety;
+}
+
+div.slice-item div.slice-item-parts {
+	grid-area: parts;
+	display: none;
+}
+
+div.slice-wrapper:not([data-n="1"]) div.slice-item div.slice-item-parts {
+	display: block;
+}
+
+div.slice-item a.slice-item-remove {
+	grid-area: remove;
+	padding: 0 0.5rem;
+}
+
+div.slice-item-create {
+	display: none;
+}
+
+a.slice-item-create-cancel {
+	display: none;
+}
+
+div.slice-item:only-child div.slice-item-create {
+	grid-template-columns: 1fr auto;
+	grid-column-gap: 0.5rem;
+	align-items: center;
+}
+
+div.slice-item:only-child a.slice-item-create-cancel {
+	display: inline-block;
+}
+
+option.variety-field-new {
+	color: var(--secondary);
+	font-weight: bold;
+}
+

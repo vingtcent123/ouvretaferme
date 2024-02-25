@@ -1,0 +1,677 @@
+<?php
+namespace selling;
+
+class SaleLib extends SaleCrud {
+
+	public static function getPropertiesCreate(): array {
+		return ['market', 'customer', 'deliveredAt', 'comment', 'shipping'];
+	}
+
+	public static function getPropertiesUpdate(): \Closure {
+
+		return function(Sale $e) {
+
+			$e->expects(['preparationStatus']);
+
+			$properties = ['comment'];
+
+			if($e->isClosed() === FALSE) {
+
+				$properties[] = 'deliveredAt';
+
+				if($e->hasDiscount()) {
+					$properties[] = 'discount';
+				}
+
+				if($e->hasShipping()) {
+					$properties[] = 'shipping';
+				}
+
+			}
+
+			return $properties;
+
+		};
+
+	}
+
+	public static function getForLabelsByIds(\farm\Farm $eFarm, array $ids, bool $selectItems = FALSE): \Collection {
+
+		Sale::model()->whereId('IN', $ids);
+
+		return self::getForLabels($eFarm, $selectItems);
+	}
+
+	public static function getForLabelsByDate(\shop\Date $eDate, bool $selectItems = FALSE, bool $selectPoint = FALSE): \Collection {
+
+		Sale::model()
+			->whereShopDate($eDate)
+			->wherePreparationStatus('IN', [Sale::CONFIRMED, Sale::PREPARED, Sale::DELIVERED]);
+
+
+		return self::getForLabels($eDate['farm'], $selectItems, $selectPoint);
+
+	}
+
+	private static function getForLabels(\farm\Farm $eFarm, bool $selectItems = FALSE, bool $selectPoint = FALSE): \Collection {
+
+		if($selectItems) {
+			Sale::model()->select([
+				'cItem' => Item::model()
+					->select(Item::getSelection())
+					->select([
+						'product' => ['plant']
+					])
+					->sort([
+						'name' => SORT_ASC,
+						'id' => SORT_ASC
+					])
+					->delegateCollection('sale')
+			]);
+		}
+
+		if($selectPoint) {
+			Sale::model()->select([
+				'shopPoint' => \shop\Point::getSelection()
+			]);
+		}
+
+		return Sale::model()
+			->select(Sale::getSelection())
+			->whereFarm($eFarm)
+			->getCollection();
+	}
+
+	public static function getByFarm(\farm\Farm $eFarm, ?string $type = NULL, ?int $position = NULL, ?int $number = NULL, \Search $search = new \Search()): array {
+
+		if($search->get('document')) {
+			Sale::model()->whereDocument($search->get('document'));
+		}
+
+		if($search->get('customerName')) {
+			$cCustomer = CustomerLib::getFromQuery($search->get('customerName'), $eFarm);
+			Sale::model()->whereCustomer('IN', $cCustomer);
+		}
+
+		if($search->get('customer')) {
+			Sale::model()->whereCustomer($search->get('customer'));
+		}
+
+		if($search->get('delivered')) {
+			Sale::model()->whereDeliveredAt('>', new \Sql('CURDATE() - INTERVAL '.Sale::model()->format($search->get('delivered')).' DAY'));
+		}
+
+		if($search->get('deliveredAt')) {
+			Sale::model()->whereDeliveredAt('LIKE', '%'.$search->get('deliveredAt').'%');
+		}
+
+		if($search->get('notId')?->notEmpty()) {
+			Sale::model()->whereId('NOT IN', $search->get('notId'));
+		}
+
+		if($search->get('invoicing')) {
+			Sale::model()
+				->whereInvoice(NULL)
+				->whereMarket(FALSE)
+				->wherePreparationStatus(Sale::DELIVERED);
+		}
+
+		$search->validateSort(['id', 'customer', 'deliveredAt', 'items', 'priceExcludingVat', 'preparationStatus'], 'preparationStatus-');
+
+		if($type !== NULL) {
+			Sale::model()->whereType($type);
+		}
+
+		$sortToday = 'FIELD(preparationStatus, "'.Sale::SELLING.'", "'.Sale::CONFIRMED.'", "'.Sale::PREPARED.'", "'.Sale::DRAFT.'", "'.Sale::DELIVERED.'", "'.Sale::CANCELED.'")';
+		$sortOtherDay1 = 'preparationStatus IN ("'.Sale::DELIVERED.'", "'.Sale::CANCELED.'")';
+		$sortOtherDay2 = 'FIELD(preparationStatus, "'.Sale::DRAFT.'", "'.Sale::CONFIRMED.'", "'.Sale::PREPARED.'", "'.Sale::SELLING.'")';
+
+		$cSale = Sale::model()
+			->select(Sale::getSelection())
+			->select([
+				'cPdf' => Pdf::model()
+					->select(Pdf::getSelection())
+					->delegateCollection('sale', 'type')
+			])
+			->option('count')
+			->whereFarm($eFarm)
+			->whereMarketParent(NULL)
+			->sort($search->buildSort([
+				'preparationStatus' => fn($direction) => match($direction) {
+					SORT_ASC => new \Sql('IF(preparationStatus = "'.Sale::CANCELED.'", FALSE, deliveredAt = CURDATE()) DESC, IF(deliveredAt = CURDATE(), '.$sortToday.', '.$sortOtherDay1.') DESC, '.$sortOtherDay2.' DESC, id ASC'),
+					SORT_DESC => new \Sql('IF(preparationStatus = "'.Sale::CANCELED.'", FALSE, deliveredAt = CURDATE()) DESC, IF(deliveredAt = CURDATE(), '.$sortToday.', '.$sortOtherDay1.'), '.$sortOtherDay2.', id DESC')
+				}
+			]))
+			->getCollection($position, $number);
+
+		return [$cSale, Sale::model()->found()];
+
+	}
+
+	public static function getNextByFarm(\farm\Farm $eFarm, ?string $type = NULL): array {
+
+		if($type !== NULL) {
+			Sale::model()->whereType($type);
+		}
+
+		return Sale::model()
+			->select([
+				'deliveredAt',
+				'turnover' => new \Sql('SUM(priceExcludingVat)', 'float')
+			])
+			->whereFarm($eFarm)
+			->wherePreparationStatus('IN', [Sale::CONFIRMED, Sale::PREPARED, Sale::SELLING, Sale::DELIVERED])
+			->whereDeliveredAt('>=', currentDate())
+			->whereMarketParent(NULL)
+			->group('deliveredAt')
+			->sort('deliveredAt')
+			->getCollection(0, 4)
+			->getArrayCopy();
+
+	}
+
+	public static function getByFarmForLabel(\farm\Farm $eFarm): \Collection {
+
+		return Sale::model()
+			->select(Sale::getSelection())
+			->whereFarm($eFarm)
+			->wherePreparationStatus('IN', [Sale::CONFIRMED, Sale::PREPARED])
+			->whereType(Customer::PRO)
+			->sort(new \Sql('FIELD(preparationStatus, "'.Sale::CONFIRMED.'", "'.Sale::PREPARED.'") DESC, id DESC'))
+			->getCollection();
+
+	}
+
+	public static function getByDeliveredDay(\farm\Farm $eFarm, string $date, ?string $type = NULL): \Collection {
+
+		if($type !== NULL) {
+			Sale::model()->whereType($type);
+		}
+
+		return Sale::model()
+			->select(Sale::getSelection())
+			->whereFarm($eFarm)
+			->whereDeliveredAt($date)
+			->wherePreparationStatus('IN', [Sale::CONFIRMED, Sale::PREPARED, Sale::DELIVERED])
+			->whereMarketParent(NULL)
+			->sort('id')
+			->getCollection(NULL, NULL, 'id');
+
+	}
+
+	public static function getByDate(
+		\shop\Date $eDate,
+		?array $preparationStatus = [Sale::CONFIRMED, Sale::PREPARED, Sale::DELIVERED],
+		?array $select = NULL
+	): \Collection {
+
+		return Sale::model()
+			->select($select ?? Sale::getSelection())
+			->whereShopDate($eDate)
+			->wherePreparationStatus('IN', $preparationStatus, if: empty($preparationStatus) === FALSE)
+			->sort('id')
+			->getCollection(NULL, NULL, 'id');
+
+	}
+
+	public static function getByCustomer(Customer $eCustomer): \Collection {
+
+		return Sale::model()
+			->select(Sale::getSelection())
+			->select([
+				'cPdf' => Pdf::model()
+					->select(Pdf::getSelection())
+					->delegateCollection('sale', 'type')
+			])
+			->whereCustomer($eCustomer)
+			->sort(new \Sql('FIELD(preparationStatus, "'.Sale::DRAFT.'", "'.Sale::CONFIRMED.'", "'.Sale::PREPARED.'", "other") DESC, id DESC'))
+			->getCollection();
+
+	}
+
+	public static function getByInvoice(Invoice $eInvoice): \Collection {
+
+		return Sale::model()
+			->select(Sale::getSelection())
+			->whereInvoice($eInvoice)
+			->sort(['deliveredAt' => SORT_ASC])
+			->getCollection();
+
+	}
+
+	public static function getForInvoice(Customer $eCustomer, array $ids, bool $checkInvoice = TRUE, bool $selectItems = TRUE): Sale|\Collection {
+
+		if($selectItems) {
+			Sale::model()->select([
+				'cItem' => Item::model()
+					->select(Item::getSelection())
+					->sort([
+						'name' => SORT_ASC,
+						'id' => SORT_ASC
+					])
+					->delegateCollection('sale')
+			]);
+		}
+
+		return Sale::model()
+			->select(SaleElement::getSelection())
+			->select([
+				'cPdf' => Pdf::model()
+					->select(Pdf::getSelection())
+					->delegateCollection('sale', 'type')
+			])
+			->whereCustomer($eCustomer)
+			->whereId('IN', $ids)
+			->whereInvoice(NULL, if: $checkInvoice)
+			->whereMarket(FALSE)
+			->whereMarketParent(NULL)
+			->wherePreparationStatus(Sale::DELIVERED)
+			->sort(['id' => SORT_ASC])
+			->getCollection();
+
+	}
+
+	public static function getByCustomers(\Collection $cCustomer, ?int $limit = 10): \Collection {
+
+		if($cCustomer->empty()) {
+			return new \Collection();
+		}
+
+		return Sale::model()
+			->select(Sale::getSelection())
+			->whereCustomer('IN', $cCustomer)
+			->sort([
+				'id' => SORT_DESC
+			])
+			->getCollection(0, $limit);
+
+	}
+
+	public static function getByParent(Sale $eSale): \Collection {
+
+		$ccSale = Sale::model()
+			->select(Sale::getSelection() + [
+				'createdBy' => ['firstName', 'lastName', 'vignette']
+			])
+			->whereFarm($eSale['farm']['id'])
+			->whereMarketParent($eSale)
+			->sort(new \Sql('FIELD(preparationStatus, "'.Sale::DRAFT.'", "'.Sale::CONFIRMED.'", "'.Sale::CANCELED.'") ASC, createdAt DESC'))
+			->getCollection(NULL, NULL, ['preparationStatus', NULL]);
+
+		$ccSale[Sale::DRAFT] ??= new \Collection();
+		$ccSale[Sale::DELIVERED] ??= new \Collection();
+		$ccSale[Sale::CANCELED] ??= new \Collection();
+
+		return $ccSale;
+
+	}
+
+	public static function create(Sale $e): void {
+
+		$e->expects([
+			'farm',
+			'type',
+			'customer',
+		]);
+
+		$eConfiguration = \selling\ConfigurationLib::getByFarm($e['farm']);
+
+		$e['taxes'] = match($e['type']) {
+			Sale::PRO => Sale::EXCLUDING,
+			Sale::PRIVATE => Sale::INCLUDING
+		};
+
+		$e['hasVat'] = $eConfiguration['hasVat'];
+
+		if($e['market']) {
+			$e['marketSales'] = 0;
+			$e['paymentStatus'] = Sale::UNDEFINED;
+		}
+
+		Sale::model()->beginTransaction();
+
+		$e['document'] = ConfigurationLib::getNextDocument($e['farm'], 'documentSales');
+
+		parent::create($e);
+
+		HistoryLib::createBySale($e, 'sale-created');
+
+		Sale::model()->commit();
+
+	}
+
+	public static function createFromMarket(Sale $eSale): Sale {
+
+		$eSale->expects(['id', 'farm', 'market']);
+
+		if($eSale['market'] === FALSE) {
+			throw new \Exception('Invalid sale');
+		}
+
+		$e = new Sale();
+
+		$e['customer'] = new Customer();
+		$e['farm'] = $eSale['farm'];
+		$e['from'] = Sale::USER;
+		$e['type'] = Customer::PRIVATE;
+		$e['deliveredAt'] = $eSale['deliveredAt'];
+		$e['market'] = FALSE;
+		$e['marketParent'] = $eSale;
+		$e['stats'] = FALSE;
+
+		self::create($e);
+
+		return $e;
+
+	}
+
+	/**
+	 * Copier une vente
+	 */
+	public static function duplicate(Sale $eSale): Sale {
+
+		$properties = array_diff(
+			Sale::model()->getProperties(),
+			['id', 'createdAt', 'createdBy']
+		);
+		
+		$eSale->expects($properties);
+
+		if($eSale->canDuplicate() === FALSE) {
+			throw new NotExpectedAction('Can duplicate');
+		}
+
+		Sale::model()->beginTransaction();
+
+		// Créer une nouvelle vente
+		$eSaleNew = new Sale($eSale->extracts($properties));
+		$eSaleNew['preparationStatus'] = Sale::DRAFT;
+		$eSaleNew['paymentStatus'] = Sale::UNDEFINED;
+		$eSaleNew['paymentMethod'] = NULL;
+
+		if($eSaleNew['market']) {
+			$eSaleNew['marketSales'] = 0;
+			$eSaleNew['priceExcludingVat'] = 0;
+			$eSaleNew['priceIncludingVat'] = 0;
+		}
+
+		self::create($eSaleNew);
+
+		// Dupliquer les items
+		$cItem = self::getItems($eSale);
+
+		foreach($cItem as $eItem) {
+
+			$eItem['sale'] = $eSaleNew;
+			$eItem['deliveredAt'] = $eSaleNew['deliveredAt'];
+
+			if($eSaleNew['market']) {
+
+				unset($eItem['price'], $eItem['priceExcludingVat']);
+
+			}
+
+			unset($eItem['id'], $eItem['createdAt']);
+
+		}
+
+		Item::model()->insert($cItem);
+
+		Sale::model()->commit();
+
+		return $eSaleNew;
+
+	}
+
+	public static function update(Sale $e, array $properties): void {
+
+		Sale::model()->beginTransaction();
+
+		$updatePreparationStatus = (
+			in_array('preparationStatus', $properties) and
+			$e->expects(['oldStatus']) and
+			($e['oldStatus'] !== $e['preparationStatus'])
+		);
+
+		parent::update($e, $properties);
+
+		$newItems = [];
+
+		if($updatePreparationStatus) {
+
+			if($e['oldStatus'] === Sale::DELIVERED) {
+				HistoryLib::createBySale($e, 'sale-delivered-cancel');
+			} else {
+				HistoryLib::createBySale($e, 'sale-'.$e['preparationStatus']);
+			}
+
+			$newItems['status'] = $e['preparationStatus'];
+
+			if($e['preparationStatus'] === Sale::SELLING) {
+
+				MarketLib::updateSaleMarket($e);
+
+			}
+
+		}
+
+		if(in_array('deliveredAt', $properties)) {
+			$newItems['deliveredAt'] = $e['deliveredAt'];
+		}
+
+		if(in_array('shopDate', $properties)) {
+			$newItems['shop'] = $e['shop'];
+			$newItems['shopDate'] = $e['shopDate'];
+		}
+
+		if(in_array('type', $properties)) {
+			$newItems['type'] = $e['type'];
+		}
+
+		if($newItems) {
+
+			Item::model()
+				->whereSale($e)
+				->update($newItems);
+
+		}
+
+		if($updatePreparationStatus) {
+
+			if($e['marketParent']->notEmpty()) {
+				MarketLib::updateSaleMarket($e['marketParent']);
+			}
+
+		}
+
+		if(in_array('shipping', $properties)) {
+			self::recalculate($e);
+		}
+
+		Sale::model()->commit();
+
+	}
+
+	public static function updateCustomer(Sale $e, Customer $eCustomer): void {
+
+		Sale::model()->beginTransaction();
+
+		Sale::model()->update($e, [
+			'customer' => $eCustomer
+		]);
+
+		Pdf::model()
+			->whereSale($e)
+			->delete();
+
+		Item::model()
+			->whereSale($e)
+			->update([
+				'customer' => $eCustomer,
+			]);
+
+		Sale::model()->commit();
+
+	}
+
+	public static function delete(Sale $e): void {
+
+		$e->expects([
+			'id',
+			'shopDate',
+			'preparationStatus', 'marketParent'
+		]);
+
+		Sale::model()->beginTransaction();
+
+		$deleted = Sale::model()
+			->wherePreparationStatus('IN', $e->getDeleteStatuses()) // Gestion parfaite de la concurrence
+			->wherePaymentStatus('IN', $e->getDeletePaymentStatuses())
+			->delete($e);
+
+		if($deleted > 0) {
+
+			Item::model()
+				->whereSale($e)
+				->delete();
+
+			if($e['marketParent']->notEmpty()) {
+
+				MarketLib::updateSaleMarket($e['marketParent']);
+
+			}
+
+		}
+
+		Sale::model()->commit();
+
+	}
+
+	public static function getItems(Sale $e, mixed $index = NULL): \Collection {
+
+		return Item::model()
+			->select(Item::getSelection())
+			->whereSale($e)
+			->sort([
+				'name' => SORT_ASC,
+				'id' => SORT_ASC
+			])
+			->getCollection(NULL, NULL, $index);
+
+	}
+
+	public static function countItems(Sale $e): int {
+
+		return Item::model()
+			->whereSale($e)
+			->count();
+
+	}
+
+	/**
+	 * Recalculer la TVA et les prix de la vente en fonction des items
+	 */
+	public static function recalculate(Sale $e): void {
+
+		$e->expects(['taxes']);
+
+		$cItem = Item::model()
+			->select(['price', 'vatRate', 'quality'])
+			->whereSale($e)
+			->getCollection();
+
+		$vatList = [];
+
+		$newValues = [
+			'items' => $cItem->count(),
+			'vat' => 0.0,
+			'vatByRate' => [],
+			'organic' => FALSE,
+			'shippingVatRate' => ($e['shipping'] === NULL) ? NULL : \Setting::get('defaultVatRate'),
+			'priceIncludingVat' => 0.0,
+			'priceExcludingVat' => 0.0,
+		];
+
+		// Add items
+		foreach($cItem as $eItem) {
+
+			$vatList[(string)$eItem['vatRate']] ??= 0;
+			$vatList[(string)$eItem['vatRate']] += $eItem['price'];
+
+			if($e['shipping'] !== NULL) {
+				$newValues['shippingVatRate'] ??= $eItem['vatRate'];
+				$newValues['shippingVatRate'] = min($newValues['shippingVatRate'], $eItem['vatRate']);
+			}
+
+			if($eItem['quality'] === \farm\Farm::ORGANIC) {
+				$newValues['organic'] = TRUE;
+			}
+
+		}
+
+		if($e['shipping'] !== NULL) {
+
+			$newValues['shippingExcludingVat'] = match($e['taxes']) {
+				Sale::INCLUDING => round($e['shipping'] / (1 + $newValues['shippingVatRate'] / 100), 2),
+				Sale::EXCLUDING => $e['shipping']
+			};
+
+			$vatList[(string)$newValues['shippingVatRate']] ??= 0;
+			$vatList[(string)$newValues['shippingVatRate']] += $e['shipping'];
+
+		} else {
+			$newValues['shippingExcludingVat'] = NULL;
+		}
+
+		foreach($vatList as $vatRate => $amount) {
+
+			$vatRate = (float)$vatRate;
+			$amount = round($amount, 2);
+
+			$vat = match($e['taxes']) {
+				Sale::INCLUDING => round($amount - $amount / (1 + $vatRate / 100), 2),
+				Sale::EXCLUDING => round($amount * $vatRate / 100, 2)
+			};
+
+			$newValues['priceExcludingVat'] += match($e['taxes']) {
+				Sale::INCLUDING => $amount - $vat,
+				Sale::EXCLUDING => $amount
+			};
+
+			$newValues['priceIncludingVat'] += match($e['taxes']) {
+				Sale::INCLUDING => $amount,
+				Sale::EXCLUDING => $amount + $vat
+			};
+
+			$newValues['vatByRate'][] = [
+				'vatRate' => $vatRate,
+				'amount' => $amount,
+				'vat' => $vat
+			];
+
+			$newValues['vat'] += $vat;
+
+		}
+
+		Sale::model()->update($e, $newValues);
+
+	}
+
+	public static function getDefaultVat(\farm\Farm $eFarm): int {
+		return 2;
+	}
+
+	public static function getVatRate(int $vat): int {
+		return \Setting::get('selling\vatRates')[$vat];
+	}
+
+	public static function getVatRates(\farm\Farm $eFarm): array {
+
+		// A filtrer selon les pays le cas échéant
+
+		return \Setting::get('selling\vatRates');
+
+	}
+
+}
+?>

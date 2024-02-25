@@ -1,0 +1,38 @@
+span.action-name {
+	font-weight: bold;
+	text-transform: uppercase;
+	font-size: 90%;
+}
+
+span.action-variety-name {
+	font-weight: normal;
+	font-size: 90%;
+}
+
+span.action-quality-name {
+	font-size: 90%;
+	font-weight: bold;
+	font-style: italic;
+}
+
+div.action-color-circle {
+	display: inline-block;
+	width: 1rem;
+	height: 1rem;
+	border-radius: 50%;
+	margin-right: 0.5rem;
+	vertical-align: middle;
+}
+
+div.action-icon {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 1.3rem;
+	height: 1.3rem;
+	border-radius: var(--radius);
+	line-height: 1;
+	font-size: 0.85rem;
+	font-weight: bold;
+	color: white;
+}

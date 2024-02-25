@@ -1,0 +1,33 @@
+Absence:
+  id: serial32
+  farm: farm\Farm
+  user: user\User
+  from: datetime
+  to: datetime
+  duration: float32(0.0, null)
+  type: enum(VACATION, RTT, RECOVERY, OTHER)
+  INDEX: [
+    ["farm", "user"]
+  ]
+
+Presence:
+  id: serial32
+  farm: farm\Farm
+  user: user\User
+  from: date
+  to: ?date
+  INDEX: [
+    ["farm", "user"]
+  ]
+
+WorkingTime:
+  id: serial32
+  farm: farm\Farm
+  user: user\User
+  date: date(null, PHP(currentDate()))
+  time: float32(0.0, null)
+  auto: bool = FALSE
+  createdAt: datetime = SPECIAL(now)
+  UNIQUE: [
+    ["farm", "user", "date"]
+  ]

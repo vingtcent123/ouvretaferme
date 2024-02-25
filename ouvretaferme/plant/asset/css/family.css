@@ -1,0 +1,19 @@
+/* Family vignette */
+.family-vignette-letter {
+	width: 2rem;
+	height: 2rem;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	line-height: 1;
+	color: white;
+	background-color: black;
+	font-weight: bold;
+	text-decoration: none;
+	font-variant: small-caps;
+	border-radius: 50%;
+}
+
+a.family-vignette-letter:hover {
+	color: white;
+}

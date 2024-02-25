@@ -1,0 +1,48 @@
+div.dev-error-other,
+div.dev-error-main{
+	font-size: 80%;
+	color: #555;
+}
+
+div.dev-error-trace {
+	display: none;
+}
+
+a.dev-error-message {
+	font-weight: bold;
+	color: black;
+	display: block;
+	word-wrap: break-word;
+	line-height: 1.2;
+	max-width: 800px;
+}
+
+div.dev-error-message:hover {
+	color: #005;
+}
+
+#errors-monitoring tr td:nth-child(2) {
+	width: 120px;
+}
+
+#errors-monitoring tr td:nth-child(3) {
+	width: 100px;
+}
+
+#errors-monitoring tr.new-day {
+	background-color: white;
+}
+
+#errors-monitoring tr.status-close {
+	background-color: #F5FFF5;
+}
+
+#errors-monitoring div.dev-error-main {
+	display: flex;
+	justify-content: space-between;
+}
+
+.dev-error-checked {
+	color: #0A0;
+	font-size: 2rem;
+}

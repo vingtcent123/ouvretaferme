@@ -1,0 +1,53 @@
+tr.user-admin-status-closed td {
+	text-decoration: line-through;
+	color: var(--muted);
+}
+
+div.user-admin-stats {
+	display: grid;
+	grid-template-columns: repeat(4, 1fr);
+	column-gap: 1rem;
+	max-width: 50rem;
+	margin-bottom: 2rem;
+}
+
+@media (max-width: 575px) {
+
+	div.user-admin-stats {
+		grid-template-columns: repeat(2, 1fr);
+		row-gap: 0.25rem;
+	}
+
+}
+
+div.user-admin-stats-period {
+	font-weight: bold;
+	text-align: center;
+	background-color: var(--background);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: 1rem;
+}
+
+div.user-admin-stats-roles {
+	display: grid;
+	grid-template-columns: max-content 1fr;
+	grid-column-gap: 1rem;
+	align-items: baseline;
+	line-height: 1.4;
+	padding: 0.5rem 0;
+}
+
+div.user-admin-stats-role {
+	font-size: 0.9rem;
+}
+
+span.user-admin-stats-emoji {
+	font-size: 1.5rem;
+}
+
+div.user-admin-stats-value {
+	font-size: 1.3rem;
+	text-align: right;
+}

@@ -1,0 +1,20 @@
+Email:
+  id: serial32
+  html: ?text24(0, null)
+  text: ?text24(0, null)
+  subject: text24(0, null)
+  server: text8(1, null)
+  fromEmail: ?text8(0, null)
+  fromName: text8(0, null)
+  to: json
+  cc: json
+  bcc: json
+  replyTo: ?text8
+  attachments: binary32
+  status: enum(WAITING, SENDING, FAIL, SUCCESS) = WAITING
+  createdAt: datetime = SPECIAL(now)
+  sentAt: ?datetime
+  INDEX: [
+    ["status"]
+  ]
+

@@ -1,0 +1,38 @@
+div.hr-user-grid {
+	display: grid;
+	grid-template-columns: auto auto;
+	align-items: baseline;
+	grid-row-gap: 0.5rem;
+}
+
+div.hr-user-grid h5 {
+	margin-bottom: .5rem;
+}
+
+div.hr-user-name {
+	display: grid;
+	grid-template-columns: 1fr auto;
+	grid-column: span 2;
+	align-items: center;
+}
+
+div.hr-user-name:not(.util-grid-header) {
+	background: var(--background);
+	padding: 0.5rem;
+}
+
+@media (max-width: 575px) {
+
+	div.hr-user-grid {
+		grid-template-columns: auto;
+	}
+
+	div.hr-user-name {
+		grid-column: span 1;
+	}
+
+	div.hr-user-grid .util-grid-header {
+		display: none;
+	}
+
+}

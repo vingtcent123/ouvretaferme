@@ -1,0 +1,7 @@
+div.place-map {
+	width: 100%;
+	height: 250px;
+	display: none;
+	margin-top: 0.5rem;
+	border-radius: var(--radius);
+}

@@ -1,0 +1,23 @@
+div.routine-fertilizer-wrapper {
+	display: grid;
+	grid-template-columns: repeat(5, min-content);
+	grid-column-gap: 1rem;
+	align-items: center;
+}
+
+div.routine-fertilizer-element {
+	text-align: center;
+	background-color: rgba(0, 0, 0, 0.05);
+	padding: 0.5rem;
+	border-radius: var(--radius);
+	min-width: 3rem;
+}
+
+div.routine-fertilizer-element h5 {
+	text-align: center;
+	margin-bottom: 0.5rem;
+}
+
+div.routine-fertilizer-wrapper-field div.routine-fertilizer-element div.routine-fertilizer-value input {
+	width: 5rem;
+}

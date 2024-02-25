@@ -1,0 +1,53 @@
+/* Map */
+#zone-tabs .tabs-item {
+   margin-bottom: 0;
+}
+
+/* Cartographie */
+div.zone-cartography {
+	display: grid;
+	grid-template-rows: auto 1fr auto;
+	position: relative;
+   background-color: var(--secondary);
+   color: white;
+   padding: var(--responsive-padding);
+}
+
+span.zone-cartography-interval {
+	font-size: 0.9rem;
+	margin-left: 0.5rem;
+}
+
+div.zone-cartography h3 {
+	padding: 0;
+	margin-bottom: 0.5rem;
+}
+
+div.zone-cartography .zone-no-cartography {
+	margin-left: 0.5rem;
+	font-weight: normal;
+	font-size: 50%;
+	opacity: 0.7;
+	text-transform: uppercase;
+}
+
+div.zone-cartography > *:last-child {
+	margin-bottom: 0;
+}
+
+div.zone-map {
+   width: 100%;
+   height: 100%;
+}
+
+#zone-map-write {
+   width: 100%;
+   height: 500px;
+}
+
+/* Items */
+div.zone-item {
+   background-color: var(--secondary);
+   padding: 1rem;
+   color: white;
+}

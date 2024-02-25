@@ -1,0 +1,12 @@
+div.forecast-create-part {
+	display: flex;
+	gap: 0.5rem 1rem;
+}
+
+@media (max-width: 768px) {
+
+	div.forecast-create-part {
+		flex-wrap: wrap;
+	}
+
+}

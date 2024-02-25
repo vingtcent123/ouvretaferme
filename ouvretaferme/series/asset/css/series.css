@@ -1,0 +1,1217 @@
+/* Header d'une série */
+h1.series-header-title svg {
+	font-size: 80%;
+	margin-left: 1rem !important;
+}
+
+div.series-header-perennial-seasons {
+	background: white;
+	padding: 1rem;
+	display: flex;
+	align-items: center;
+	line-height: 1;
+}
+
+div.series-header-perennial-seasons-label {
+	margin-right: 1rem;
+}
+
+div.series-header-perennial-seasons-separator {
+	width: 1rem;
+	border-top: 1px dashed #ccc;
+}
+
+.series-header-perennial-seasons-one {
+	width: 1.75rem;
+	height: 1.75rem;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	border-radius: 0.75rem;
+	background-color: var(--text);
+	color: white;
+	font-weight: bold;
+	transition: background-color 0.5s;
+}
+
+a.series-header-perennial-seasons-one-selected {
+	background-color: var(--secondary);
+}
+
+a.series-header-perennial-seasons-one:hover {
+	text-decoration: none;
+	background-color: var(--secondary);
+	color: white;
+}
+
+div.series-header-perennial-seasons-one-future {
+	color: #ccc;
+	background-color: transparent;
+	border: 1px dashed #ccc;
+}
+
+/* Liste de séries */
+div.series-item-wrapper {
+	margin-bottom: 2rem;
+	position: relative;
+	padding-bottom: 1rem; /* Eviter une scrollbar verticale */
+}
+
+div.series-season {
+	display: grid;
+	padding: 0.5rem 0 !important;
+}
+
+div.series-season-year {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background: var(--muted);
+	font-weight: bold;
+	border-left: 2px solid var(--background-light);
+	border-right: 2px solid var(--background-light);
+	line-height: 1;
+	font-size: 0.9rem;
+	padding: 0.25rem 0;
+	border-radius: var(--radius);
+	color: white;
+}
+
+div.series-season-year.series-season-year-current {
+	grid-column: span 12;
+}
+
+div.series-season-month {
+	text-align: center;
+	font-weight: bold;
+	height: 100%;
+	padding-top: 0.5rem;
+	line-height: 1;
+}
+
+div.series-grid-now {
+	position: absolute;
+	border-right: 1px solid var(--secondary);
+	background: linear-gradient(to right, transparent 0, #C1426920 100%);
+	opacity: 0.5;
+	left: 0;
+	top: 0;
+	bottom: 0;
+}
+
+div.series-grid {
+	position: absolute;
+	right: 0;
+	top: 0;
+	bottom: 0;
+	display: grid;
+}
+
+div.series-grid > div.series-grid-month:not(:first-child) {
+	border-left: 1px dashed #ddd;
+}
+
+div.series-item-header {
+	background: var(--background-light);
+	padding-bottom: 1rem;
+	padding-left: 1rem;
+	padding-right: 1rem;
+}
+
+div.series-item-header.series-item-planning {
+	padding-right: 0;
+}
+
+@media (min-width: 768px) {
+
+	div.series-item-header:not(.series-item-forecast):not(.series-item-header-not-sticky) {
+		position: sticky;
+		top: calc(var(--mainSticky) - 1px);
+		z-index: 1;
+	}
+
+}
+
+@media (min-width: 992px) {
+
+	div.series-item-header.series-item-forecast {
+		position: sticky;
+		top: calc(var(--mainSticky) - 1px);
+		z-index: 1;
+	}
+
+}
+
+div.series-item-header-highlight {
+	border-bottom: 1px solid var(--border);
+}
+
+div.series-item-header > * {
+	padding-bottom: 0.25rem;
+}
+
+div.series-item-body {
+	position: relative;
+	background-color: white;
+	box-sizing: content-box;
+	box-shadow: 1px 1px 5px #ccc7;
+	border-bottom-left-radius: var(--radius);
+	border-bottom-right-radius: var(--radius);
+}
+
+.series-item-title {
+	background-color: #7771;
+	align-items: center;
+	margin-bottom: 0.5rem;
+	line-height: 1;
+	align-items: center !important;
+}
+
+.series-item-title-plant {
+	display: flex;
+	align-items: center;
+	font-size: 0.9rem;
+	line-height: 1;
+	text-transform: uppercase;
+	font-weight: bold;
+	letter-spacing: 0.3px;
+	padding: 0.25rem 0;
+}
+
+.series-item-title-plant div.plant-vignette,
+.series-item-title-plant div.media-circle-view {
+	margin-right: 0.75rem;
+}
+
+.series-item {
+	padding-left: 1rem;
+	padding-right: 1rem;
+}
+
+.series-item:not(.series-item-title) {
+	padding-top: 0.25rem;
+	padding-bottom: 0.25rem;
+}
+
+.series-item.series-item-planning {
+	padding-right: 0;
+}
+
+.series-item.series-item-compare {
+	opacity: 0.5;
+}
+
+.series-item + .series-item.series-item-title {
+	margin-top: 0.5rem;
+}
+
+.series-item.series-item-title div.media-circle-view {
+	margin-top: -0.3rem;
+	margin-bottom: -0.3rem;
+}
+
+.series-item.series-item-title div.plant-vignette {
+	margin-top: -0.5rem;
+	margin-bottom: -0.5rem;
+}
+
+.series-item-body .series-item:not(.series-item-title):not(.series-item-gap) + .series-item:not(.series-item-title):not(.series-item-group):not(.series-item-gap) {
+	border-top: 1px dashed #ddd;
+}
+
+.series-item-planning {
+	display: grid;
+	align-items: center;
+	position: relative;
+	transition: background-color 0.5s;
+	text-decoration: none;
+}
+
+.series-item-planning-wrapper div.series-grid {
+	margin-left: 1rem;
+}
+
+@media (min-width: 1200px) {
+
+	.series-item-planning {
+		grid-template-columns: 23rem 15rem 7rem 1fr;
+	}
+
+	.series-item-planning-wrapper div.series-grid {
+		left: calc(23rem + 15rem + 7rem);
+	}
+
+	.series-item-planning-harvest .series-item-planning {
+		grid-template-columns: 23rem 10rem 7rem 7rem 1fr;
+	}
+
+	.series-item-planning-wrapper.series-item-planning-harvest div.series-grid {
+		left: calc(1rem + 23rem + 10rem + 7rem + 7rem);
+	}
+
+}
+
+a.series-item-planning {
+	text-decoration: none;
+}
+
+@media (min-width: 992px) and (max-width: 1199px) {
+
+	.series-item-planning {
+		grid-template-columns: 20rem 7rem 1fr;
+	}
+
+	.series-item-planning-wrapper div.series-grid {
+		left: calc(20rem + 7rem);
+	}
+
+	.series-item-planning-harvest .series-item-planning {
+		grid-template-columns: 20rem 7rem 7rem 1fr;
+	}
+
+	.series-item-planning-wrapper.series-item-planning-harvest div.series-grid {
+		left: calc(1rem + 20rem + 7rem + 7rem);
+	}
+
+	.series-item-planning-place {
+		display: none;
+	}
+
+}
+
+@media (max-width: 991px) {
+
+	.series-item-planning {
+		grid-template-columns: 20rem 7rem 1fr;
+	}
+
+	.series-item-planning-wrapper div.series-grid {
+		left: calc(20rem + 7rem);
+	}
+
+	.series-item-planning-harvest .series-item-planning {
+		grid-template-columns: 17rem 6rem 6rem 1fr;
+	}
+
+	.series-item-planning-wrapper.series-item-planning-harvest div.series-grid {
+		left: calc(1rem + 17rem + 6rem + 6rem);
+	}
+
+	.series-item-planning-place {
+		display: none;
+	}
+
+}
+
+
+/* Affichage de la planification */
+
+a.series-item-planning:hover {
+	background-color: #7771;
+}
+
+a.series-item-planning:hover span.series-item-planning-details-name {
+	text-decoration: underline;
+}
+
+.series-item-status-closed {
+	opacity: 0.5;
+	transition: opacity .5s;
+}
+
+.series-item-status-closed:hover {
+	opacity: 1;
+}
+
+.series-item-planning-details {
+	line-height: 1.2;
+}
+
+@media (min-width: 1200px) {
+
+	.series-item-planning-details.series-item-planning-details-with-variety {
+		grid-column: span 2;
+	}
+
+}
+
+.series-item-planning-details .plant-start {
+	margin-left: 0.25rem;
+}
+
+span.series-item-planning-details-cycle {
+	margin-left: 0.5rem;
+	color: var(--muted);
+	font-size: 0.9rem;
+	text-decoration: underline;
+}
+
+div.series-item-timeline {
+	align-self: start;
+	position: relative;
+	display: flex;
+	align-items: center;
+	height: 100%;
+	overflow: hidden;
+}
+
+div.series-item-timeline-event {
+	position: absolute;
+	color: white;
+	font-weight: bold;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	line-height: 1;
+	font-size: .75rem;
+}
+
+div.series-item-timeline:not(.series-item-timeline-full) div.series-item-timeline-event {
+	border: 1px solid var(--muted) !important;
+}
+
+div.series-item-timeline-event:not(.series-item-timeline-event-full) {
+	height: calc(100% - 2px);
+	top: 1px;
+}
+
+div.series-item-timeline-event.series-item-timeline-event-expected > span {
+	background-color: white;
+	padding: 0.1rem;
+	border-radius: var(--radius);
+}
+
+div.series-item-timeline-event.series-item-timeline-event-full {
+	top: 0;
+	height: 100%;
+	background-color: white;
+	border: 1px solid var(--muted);
+	border-radius: calc(var(--radius) / 3);
+}
+
+div.series-item-timeline-event.series-item-timeline-event-expected {
+	border-left: 1px solid var(--muted);
+	border-right: 1px solid var(--muted);
+}
+
+div.series-item-timeline-event.series-item-timeline-event-done {
+	border-left: 1px solid white;
+	border-right: 1px solid white;
+}
+
+div.series-item-timeline-event-min div.series-item-timeline-event:not(.series-item-timeline-event-full) {
+	border-top-left-radius: calc(var(--radius) / 3);
+	border-bottom-left-radius: calc(var(--radius) / 3);
+	transform: translate(1px, 0);
+	border-left: 0;
+}
+
+div.series-item-timeline-event-max div.series-item-timeline-event:not(.series-item-timeline-event-full) {
+	border-top-right-radius: calc(var(--radius) / 3);
+	border-bottom-right-radius: calc(var(--radius) / 3);
+	transform: translate(-1px, 0);
+	border-right: 0;
+}
+
+a.series-item:not(.series-item-header) div.series-item-planning-place {
+	position: relative;
+	font-size: 0.9rem;
+	line-height: 1.2;
+	color: var(--text);
+	overflow: hidden;
+	white-space: nowrap;
+}
+
+a.series-item:not(.series-item-header) div.series-item-planning-area {
+	color: var(--text);
+	text-align: right;
+	font-size: 0.9rem;
+}
+
+div.series-item-planning-timeline {
+	margin-left: 1rem;
+}
+
+a.series-item:not(.series-item-header) div.series-item-planning-timeline {
+	height: 100%;
+}
+
+div.series-item-planning-harvest-objective {
+	text-align: right;
+	font-size: 0.9rem;
+}
+
+a.series-item:not(.series-item-header) div.series-item-planning-harvest-objective {
+	color: var(--text);
+}
+
+div.series-item-title div.series-item-planning-harvest-objective {
+	color: var(--muted);
+}
+
+/* Affichage des semences et plants */
+div.series-item-seeds {
+	display: grid;
+	grid-template-columns: minmax(10rem, 20%) 7rem 7rem 7rem 1fr 10rem 8rem 5rem;
+	grid-column-gap: 0.5rem;
+	align-items: baseline;
+	min-width: calc(767px - 2 * var(--container-md-padding));
+}
+
+@media (min-width: 1200px) {
+
+	.series-item-seeds {
+		font-size: 0.9rem;
+	}
+
+}
+
+@media (max-width: 991px) {
+
+	div.series-item-seeds {
+		grid-template-columns: minmax(10rem, 20%) 7rem 7rem 7rem 1fr 9rem;
+	}
+
+	div.series-item-seeds div.series-item-seeds-density,
+	div.series-item-seeds div.series-item-seeds-area {
+		display: none;
+	}
+
+}
+
+div.series-item-header div.series-item-seeds-series {
+	grid-column: span 4;
+}
+
+@media (max-width: 991px) {
+
+	div.series-item-header div.series-item-seeds-series {
+		grid-column: span 2;
+	}
+
+}
+
+div.series-item-seeds-value {
+	text-align: right;
+}
+
+div.series-item-seeds-supplier {
+	font-size: 0.75rem;
+	line-height: 1;
+}
+
+div.series-item-seeds-seedling {
+	text-transform: uppercase;
+	font-size: 0.8rem;
+}
+
+div.series-item-seeds-series {
+	margin-left: 1rem;
+}
+
+div.series-item-seeds-area {
+	text-align: right;
+}
+div.series-item-seeds-density {
+	line-height: 1.2;
+}
+
+/* Affichage du prévisionnel */
+div.series-item-forecast {
+	display: grid;
+	grid-template-columns: 1fr 10rem 10rem 5rem 3rem 7rem 7rem 5rem 3rem 7rem 4rem;
+	align-items: center;
+	text-decoration: none;
+	padding-bottom: 0 !important;
+	padding-top: 0 !important;
+}
+
+@media (min-width: 1200px) {
+
+	div.series-item-forecast {
+		grid-template-columns: 1fr 10rem 10rem 6rem 4rem 7rem 8rem 5rem 3rem 7rem 4rem;
+	}
+
+}
+
+div.series-item-forecast:hover {
+	background-color: #7771;
+}
+
+div.series-item-forecast > * {
+	padding-bottom: 0.25rem;
+	padding-top: 0.25rem;
+}
+
+div.series-item-forecast .util-grid-header {
+	padding-top: 0.5rem;
+	padding-bottom: 0.5rem;
+}
+
+div.series-item-forecast.series-item-title {
+	margin-bottom: 0 !important;
+	margin-top: 0 !important;
+}
+
+div.series-item-forecast.series-item-gap {
+	height: 0.5rem;
+}
+
+.series-item-forecast-objective-title {
+	text-align: center;
+	text-transform: uppercase;
+	font-weight: bold;
+	border-top-left-radius: var(--radius);
+	border-top-right-radius: var(--radius);
+	background-color: #7771;
+	padding: 0.5rem 0;
+	border-left: 1px solid var(--muted);
+	border-right: 1px solid var(--muted);
+	border-top: 1px solid var(--muted);
+}
+
+
+.series-item-forecast-objective {
+	background-color: #bbb1;
+	padding: 0 0.5rem;
+	align-self: stretch;
+	display: flex;
+	align-items: center;
+	justify-content: end;
+}
+.series-item-forecast-objective.series-item-forecast-objective-unit {
+	justify-content: start;
+}
+
+.series-item-forecast-objective-first {
+	border-left: 1px solid var(--muted);
+	align-self: stretch;
+}
+.series-item-forecast-objective-last {
+	border-right: 1px solid var(--muted);
+	align-self: stretch;
+	padding-right: 1rem;
+}
+
+.series-item-forecast-objective-title,
+.series-item-forecast-objective-first {
+	margin-left: 1rem;
+}
+
+.series-item-forecast-objective.util-grid-header {
+	align-self: stretch;
+	display: flex;
+	align-items: end;
+	justify-content: end;
+	text-align: center;
+}
+
+.series-item-forecast-series {
+	padding-right: 0.5rem;
+}
+
+a.series-item-forecast-missing {
+	font-size: 0.9rem;
+	letter-spacing: -0.1px;
+	color: var(--muted);
+}
+
+.series-item-forecast-series-gap {
+	padding-left: 1rem;
+	border-left: 2px solid var(--muted);
+	margin-left: 1rem;
+}
+
+.series-item-forecast-area {
+	text-align: right;
+}
+
+.series-item-forecast-sales {
+	text-align: right;
+}
+
+.series-item-forecast-sales:not(.color-muted) {
+	font-weight: bold;
+	font-size: 1.2rem;
+}
+
+.series-item-forecast-harvest-expected {
+	text-align: right;
+	padding-right: 0;
+}
+
+.series-item-forecast-price {
+	display: grid;
+	align-items: center;
+	column-gap: 1rem;
+	grid-template-columns: 1fr 3rem;
+}
+
+.series-item-forecast-price > div:first-child {
+	text-align: right;
+}
+
+.series-item-forecast-price > div:last-child {
+	font-size: 0.8rem;
+}
+
+.series-item-forecast-price .util-badge {
+	text-align: center;
+}
+
+.series-item-forecast-actions {
+	text-align: right;
+}
+
+.series-total-forecast {
+	display: grid;
+	grid-template-columns: repeat(6, auto);
+	gap: 0.5rem 1rem;
+	align-items: baseline;
+	background-color: var(--secondary);
+	color: white;
+}
+
+@media (max-width: 575px) {
+
+	.series-total-forecast {
+		grid-template-columns: repeat(2, auto);
+	}
+
+}
+
+.series-total-forecast-label {
+	line-height: 1.2;
+	text-align: right;
+}
+
+.series-total-forecast-value {
+	font-size: 1.5rem;
+	font-weight: bold;
+}
+
+/* Affichage des récoltes */
+div.series-item-harvesting {
+	display: grid;
+	grid-template-columns: 1fr 6rem 6rem 6rem 6rem 6rem 12rem;
+	grid-column-gap: 1rem;
+	align-items: baseline;
+	text-decoration: none;
+}
+
+@media (min-width: 1200px) {
+
+	.series-item-harvesting {
+		font-size: 0.9rem;
+	}
+
+}
+
+@media (max-width: 991px) {
+
+	div.series-item-harvesting {
+		grid-template-columns: 1fr 6rem 5rem 5rem 5rem 5rem 12rem;
+		grid-column-gap: .5rem;
+	}
+
+
+}
+
+div.series-item-title div.series-item-harvesting-yield {
+	color: var(--muted);
+}
+
+div.series-item-harvesting-weeks {
+	text-align: right;
+	line-height: 1.4;
+}
+
+div.series-item-harvesting-evolution {
+	font-size: 0.8rem;
+	line-height: 1.2;
+}
+
+span.series-item-planning-details-variety {
+	margin-left: 0.5rem;
+}
+
+span.series-item-planning-details-variety,
+span.series-item-harvesting-weeks-year {
+	color: var(--muted);
+	line-height: 1.2;
+	font-size: 0.9rem;
+}
+
+@media (max-width: 1199px) {
+	.series-item-planning-details-variety {
+		display: none;
+	}
+}
+
+/* Affichage du temps de travail */
+div.series-item-working-time {
+	display: grid;
+	grid-template-columns: 22rem 7rem 7rem 7rem 1fr;
+	grid-column-gap: 0.5rem;
+	align-items: baseline;
+	text-decoration: none;
+}
+
+
+@media (max-width: 1199px) {
+
+	div.series-item-working-time {
+		grid-template-columns: 18rem 6rem 6rem 1fr;
+	}
+
+	div.series-item-working-time > .series-item-working-time-harvested {
+		display: none;
+	}
+
+}
+
+@media (max-width: 575px) {
+
+	div.series-item-working-time {
+		grid-template-columns: 12rem 6rem 6rem 1fr;
+	}
+
+}
+
+div.series-item-working-time > .series-item-working-time-tasks {
+	overflow: hidden;
+	position: relative;
+}
+
+div.series-item-working-time > .series-item-working-time-tasks:not(.util-grid-header):after {
+	content: ' ';
+	width: 1rem;
+	top: 0;
+	bottom: 0;
+	right: 0;
+	background: linear-gradient(to right, transparent 0, white 100%);
+	position: absolute;
+}
+
+div.series-item-working-time-tasks {
+	display: flex;
+	align-items: start;
+	column-gap: 0.5rem;
+}
+
+div.series-item-working-time-task {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	text-align: center;
+}
+
+div.series-item-working-time-task-content {
+	padding: 0.5rem 0.75rem;
+	border-radius: var(--radius);
+	text-align: center;
+	color: white;
+}
+
+div.series-item-working-time-task-content h5 {
+	margin: 0;
+	white-space: nowrap;
+}
+
+
+@media (min-width: 1200px) {
+
+	div.series-item-working-time-task-content h5 {
+		font-size: 0.9rem;
+		letter-spacing: -0.1px;
+	}
+
+}
+
+span.series-item-working-time-task-value {
+	font-size: 1rem;
+}
+
+div.series-item-working-time-task-pace {
+	margin-top: 0.25rem;
+	font-size: 0.8rem;
+	white-space: nowrap;
+}
+
+/* Affichage des outils */
+@media (max-width: 1199px) {
+
+	div.series-item-tool-wrapper div.series-grid {
+		display: none;
+	}
+
+}
+
+div.series-item-tool-list-header {
+	display: flex;
+	justify-content: space-between;
+	align-items: flex-end;
+}
+
+div.series-item-tool {
+	display: grid;
+	grid-template-columns: 12rem 6rem 6rem 1fr;
+	grid-column-gap: 0.5rem;
+	align-items: center;
+	text-decoration: none;
+}
+
+@media (min-width: 1200px) {
+
+	.series-item-tool {
+		font-size: 0.9rem;
+	}
+
+}
+
+@media (max-width: 1199px) {
+
+	div.series-item-tool {
+		grid-template-columns: 15rem 8rem 8rem 1fr;
+	}
+
+}
+
+@media (max-width: 991px) {
+
+	div.series-item-tool {
+		grid-template-columns: 15rem 6rem 6rem 1fr;
+	}
+
+}
+
+@media (max-width: 575px) {
+
+	div.series-item-tool {
+		grid-template-columns: 10rem 6rem 6rem 1fr;
+	}
+
+}
+
+table.series-item-tool-list {
+	margin: 0;
+}
+
+table.series-item-tool-list tr:not(:last-child) {
+	border-bottom: 1px dashed var(--border);
+}
+
+td.series-item-tool-list-plant {
+	line-height: 1.2;
+	white-space: nowrap;
+	width: 12rem;
+}
+
+/* Form */
+div.series-create-use {
+	background-color: white;
+	position: relative;
+	margin-bottom: 1.5rem;
+}
+
+#series-create-plant-list {
+	margin-bottom: 2rem;
+	display: grid;
+	grid-row-gap: 1.5rem;
+}
+
+@media (max-width: 991px) {
+
+	#series-create-plant-list {
+		grid-template-columns: 1fr;
+	}
+
+}
+
+#series-create-add-plant {
+	margin: 0 0 3rem 0;
+	opacity: 0.7;
+	transition: opacity 0.5s;
+}
+
+#series-create-add-plant:hover {
+	opacity: 1;
+}
+
+div.series-create-plant {
+	padding: 1rem;
+	background-color: var(--background-light);
+	position: relative;
+	border-radius: var(--radius);
+}
+
+div.series-create-plant:not(:last-child):after {
+	position: absolute;
+	content: '+';
+	background-color: var(--primary);
+	width: 3.5rem;
+	height: 3.5rem;
+	border-radius: 50%;
+	color: white;
+	font-size: 3rem;
+	font-weight: bold;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	left: calc(50% - 1.75rem);
+	bottom: -2.5rem;
+	z-index: 1;
+	line-height: 1;
+}
+
+div.series-create-plant .util-action {
+	margin-bottom: 2rem;
+}
+
+div.series-create-plant-title {
+	display: grid;
+	grid-template-columns: auto 1fr;
+	grid-column-gap: 0.5rem;
+	align-items: center;
+}
+
+div.series-create-plant-title h4 {
+	margin: 0;
+}
+
+div.series-submit {
+	margin-bottom: 1rem;
+}
+
+/* Gestion du sol */
+#series-soil {
+	width: 100%;
+	margin-bottom: 1.5rem;
+}
+
+#series-soil .crop-item-body {
+	overflow-x: auto;
+}
+
+.series-soil-title {
+	line-height: 1;
+}
+
+/* Affichage des pérennes pour import sur une saison donnée */
+div.series-import-grid-wrapper {
+	overflow-x: auto;
+}
+
+div.series-import-grid {
+	display: grid;
+	min-width:calc(767px - 2 * var(--container-md-padding));
+	grid-template-columns: auto 1fr auto auto auto auto;
+	grid-column-gap: 1rem;
+	grid-row-gap: 0.5rem;
+	align-items: baseline;
+}
+
+div.series-import-grid-cultivation {
+	display: grid;
+	grid-auto-flow: row;
+	grid-row-gap: 0.25rem;
+}
+
+@media (max-width: 991px) {
+
+	div.series-import-grid-cultivation > * {
+		display: none;
+	}
+
+}
+
+/* Affichage des emplacements */
+div.series-soil-grid {
+	display: grid;
+	grid-template-columns: auto auto auto auto auto auto 1fr;
+	align-items: center;
+	grid-row-gap: 0.25rem;
+	grid-column-gap: 1rem;
+	padding: 0.5rem;
+	min-width: 600px;
+}
+
+@media (min-width: 768px) {
+
+	div.series-soil-grid {
+		display: grid;
+		grid-template-columns: auto auto auto 1fr auto auto auto;
+		align-items: center;
+		grid-column-gap: 1.5rem;
+	}
+
+}
+
+div.series-soil-grid div.series-soil-grid-total {
+	border-top: 1px solid var(--border);
+	align-self: start;
+}
+
+div.series-soil-grid div.series-soil-grid-zone {
+	text-transform: uppercase;
+	white-space: nowrap;
+}
+
+div.series-soil-grid div.series-soil-grid-plot {
+	white-space: nowrap;
+}
+
+div.series-soil-grid div.series-soil-grid-bed {
+	font-weight: bold;
+	white-space: nowrap;
+}
+
+div.series-soil-grid div.series-soil-grid-size {
+	text-align: right;
+}
+
+div.series-soil-grid div.series-soil-grid-use {
+	text-align: right;
+}
+
+div.series-soil-grid div.series-soil-grid-area {
+	text-align: right;
+	white-space: nowrap;
+}
+
+div.series-soil-grid div.series-soil-grid-greenhouse {
+	white-space: nowrap;
+}
+
+div.series-soil-empty {
+	padding: 1rem;
+}
+
+/* Affichage du temps de travail sur une série */
+div.series-timesheet {
+	display: grid;
+	grid-template-columns: min-content auto auto 1fr 1fr;
+	grid-column-gap: 2rem;
+	grid-row-gap: 1rem;
+	align-items: center;
+	margin-bottom: 1rem;
+}
+
+@media (max-width: 767px) {
+
+	div.series-timesheet {
+		grid-template-columns: auto auto;
+	}
+
+
+	div.series-timesheet-image {
+		display: none;
+	}
+
+}
+
+div.series-timesheet-cultivation {
+	display: flex;
+}
+
+div.series-timesheet-cultivation h4 {
+	margin: 0;
+}
+
+div.series-timesheet-total,
+div.series-timesheet-sum {
+	text-align: right;
+	font-weight: bold;
+	font-size: 1.2rem;
+}
+
+div.series-timesheet-sum {
+	margin-right: -0.75rem;
+}
+
+div.series-timesheet-content {
+	display: flex;
+	align-items: start;
+	flex-wrap: wrap;
+	grid-column: span 2;
+	column-gap: 1rem;
+	row-gap: 0.5rem;
+}
+
+/* Notes à propos des séries */
+#series-comment {
+	margin-bottom: 1rem;
+}
+
+#series-comment:empty {
+	display: none;
+}
+
+div.series-comment-submit {
+	margin-top: 1rem;
+}
+
+div.series-comment-title {
+	display: grid;
+	grid-template-columns: 1fr auto;
+}
+
+.series-field-search {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	grid-column-gap: 0.5rem;
+	align-items: center;
+}
+
+.series-field-link {
+	line-height: 1.2;
+	margin-bottom: 0.2rem;
+}
+
+.series-field-place {
+	font-size: 0.8rem;
+	line-height: 1.2;
+}
+
+.series-field-place a {
+	color: var(--muted);
+	text-decoration: none;
+}
+
+.series-field-place a:hover {
+	color: var(--primary)
+}
+
+.series-field-area {
+	text-align: right;
+}
+
+@media (max-width: 575px) {
+
+	.series-field-area {
+		display: none;
+	}
+
+}
+
+td.series-field-cultivations {
+	background: linear-gradient(150deg, rgba(0, 0, 0, 0.03) 0, rgba(255, 255, 255, 0) 75%, rgba(255, 255, 255, 0) 100%);
+	line-height: 1.3;
+	padding-top: 0;
+	padding-bottom: 0;
+	padding-left: 1rem;
+}
+
+.series-field-cultivation {
+	font-size: 0.9rem;
+	padding-top: 0.5rem;
+	padding-bottom: 0.5rem;
+}
+
+.series-field-cultivation:not(:last-child) {
+	padding-right: 0.5rem;
+}
+
+.series-field-cultivation input:checked + * {
+	font-weight: bold;
+}

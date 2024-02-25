@@ -1,0 +1,145 @@
+div.analyze-chart-table {
+   display: grid;
+   grid-template:
+      "pie" auto
+      "values" auto / 1fr;
+   grid-row-gap: 1rem;
+}
+
+div.analyze-chart-table .analyze-values {
+   grid-area: values;
+}
+
+.analyze-values-balance {
+	display: flex;
+}
+
+.analyze-values-private,
+.analyze-values-pro {
+   font-size: 0.8rem;
+	text-align: center;
+	white-space: nowrap;
+	overflow: hidden;
+	letter-spacing: -0.5px;
+}
+
+div.analyze-chart-table .analyze-values-pro {
+	color: var(--pro);
+	text-align: right;
+	padding-right: 0.25rem;
+	background-color: rgba(0, 136, 116, 0.1);
+}
+
+div.analyze-chart-table .analyze-values-private {
+	color: var(--private);
+	text-align: left;
+	padding-left: 0.25rem;
+	background-color: rgba(82, 122, 0, 0.1);
+}
+
+div.analyze-chart-table .analyze-values-private + .analyze-values-pro {
+	border-left: 1px solid var(--muted);
+}
+
+div.analyze-chart-table .analyze-pie {
+   grid-area: pie;
+}
+
+div.analyze-chart-table .analyze-bar {
+   grid-area: pie;
+}
+
+.analyze-bar {
+   height: 300px;
+}
+
+@media (min-width: 768px) {
+
+   div.analyze-chart-table {
+      grid-column-gap: 2rem;
+      align-items: start;
+		grid-template: "values pie" auto / 3fr 2fr;
+   }
+
+}
+
+div.analyze-charts {
+   display: grid;
+}
+
+@media (max-width: 767px) {
+
+   div.analyze-charts {
+      grid-template-columns: 1fr;
+   }
+
+}
+
+@media (min-width: 768px) {
+
+   div.analyze-charts {
+      grid-template-columns: 1fr 1fr;
+      grid-column-gap: 2rem;
+   }
+
+}
+
+.analyze-pie {
+   overflow-y: auto;
+}
+
+.analyze-pie > h5 {
+   text-align: center;
+}
+
+.analyze-pie > .analyze-pie-canvas {
+   height: 300px;
+}
+
+.analyze-total {
+   font-weight: bold;
+}
+
+.analyze-lost {
+   opacity: 0.33;
+}
+
+.analyze-empty {
+	background: repeating-linear-gradient(135deg, var(--border) 0, var(--border) 2px, #fff8 2px, #fff8 8px)
+}
+
+.analyze-month-th {
+	display: inline-grid;
+	align-items: end;
+	grid-template-columns: auto auto;
+	grid-column-gap: 0.5rem;
+}
+
+table.analyze-month-table-3 td:nth-child(2n + 3),
+table.analyze-month-table-4 td:nth-child(2n + 4),
+table.analyze-month-table-5 td:nth-child(2n + 5),
+table.analyze-month-table-6 td:nth-child(2n + 6) {
+	background-color: rgba(0, 0, 0, 0.05);
+}
+
+td.analyze-month-value {
+	min-width: 3.5rem;
+	width: 1%;
+	white-space: nowrap;
+}
+
+@media (min-width: 992px) and (max-width: 992px) {
+
+	td.analyze-month-value {
+		min-width: 4rem;
+	}
+
+}
+
+@media (min-width: 1200px) {
+
+	td.analyze-month-value {
+		min-width: 4.5rem;
+	}
+
+}

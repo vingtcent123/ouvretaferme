@@ -1,0 +1,126 @@
+/* Create */
+#shop-date-create:not(.form-error) .util-danger {
+	display: none;
+}
+#shop-date-create.form-error .util-danger {
+	display: block;
+}
+div.shop-write-fqn {
+	display: grid;
+	grid-template-columns: 1fr auto;
+	grid-column-gap: 1rem;
+	align-items: baseline;
+}
+
+@media (max-width: 991px) {
+
+	div.shop-write-fqn {
+		grid-template-columns: 1fr;
+	}
+
+}
+
+div.shop-write-fqn .input-group-addon {
+	font-size: 0.8rem;
+}
+
+div.shop-write-fqn label {
+	text-align: right;
+	white-space: nowrap;
+}
+
+.date-products-item {
+	display: grid;
+	align-items: center;
+	grid-column-gap: 1rem;
+	grid-template-columns: auto 1fr auto 6rem 10rem;
+	padding: 0;
+	border-bottom: 1px dashed #ddd;
+}
+
+.date-products-item:not(.util-grid-header):hover {
+	background-color: #f5f5f5;
+}
+
+.date-products-item > * {
+	padding-top: 0.25rem;
+	padding-bottom: 0.25rem;
+}
+
+.date-points-title {
+	padding: 0.25rem 0;
+	font-weight: lighter;
+}
+
+.date-points-item {
+	display: grid;
+	align-items: center;
+	grid-column-gap: 1rem;
+	grid-template-columns: auto 1fr;
+	padding: 0;
+	border-bottom: 1px dashed #ddd;
+}
+
+.date-points-item:not(.util-grid-header):hover {
+	background-color: #f5f5f5;
+}
+
+.date-points-item > * {
+	padding-top: 0.25rem;
+	padding-bottom: 0.25rem;
+}
+
+.shop-select {
+	background-color: var(--secondary);
+	padding: 0 0.75rem;
+	margin: 0;
+	min-height: 2rem;
+	height: 100%;
+	display: flex;
+	align-items: center;
+}
+
+.util-grid-header .shop-select {
+	background-color: var(--background);
+}
+
+.date-products-item-configure {
+	grid-column: span 2;
+}
+
+.date-products-item-configure > div {
+	max-width: 15rem;
+}
+
+@media (max-width: 991px) {
+
+	.date-products-item {
+		grid-column-gap: 0.5rem;
+		grid-template-columns: auto 1fr auto 9rem;
+	}
+
+	.date-products-item-unit {
+		display: none;
+	}
+
+}
+
+@media (max-width: 575px) {
+
+	.date-products-item-price {
+		font-size: 0.9rem;
+	}
+
+}
+
+.date-products-item.selected label {
+	font-weight: bold;
+}
+
+.date-products-item-configure-info {
+	grid-column: span 4;
+}
+.date-products-item-stock.hidden {
+	opacity: 0.25;
+	pointer-events: none;
+}

@@ -1,0 +1,224 @@
+Comment:
+  id: serial32
+  farm: farm\Farm
+  user: user\User = SPECIAL(user)
+  series: ?series\Series
+  cultivation: ?series\Cultivation
+  task: series\Task
+  text: text8(1, 250)
+  createdAt: datetime = SPECIAL(now)
+  updatedAt: ?datetime
+  INDEX: [
+    ["task"],
+    ["series"]
+  ]
+
+Cultivation:
+  id: serial32
+  farm: farm\Farm
+  season: int16(0, null)
+  series: series\Series
+  sequence: ?production\Sequence
+  crop: ?production\Crop
+  plant: plant\Plant
+  startWeek: ?int16
+  startAction: ?enum(SOWING, PLANTING)
+  distance: enum(SPACING, DENSITY) = SPACING
+  rows: ?int8(1, null)
+  rowSpacing: ?int16(1, null)
+  plantSpacing: ?int16(1, null)
+  density: ?float32(0.01, null)
+  sliceUnit: enum(PERCENT, AREA, LENGTH) = PERCENT
+  area: ?int24(0, null)
+  areaPermanent: ?int24(1, null)
+  length: ?int16(1, null)
+  lengthPermanent: ?int24(1, null)
+  seedling: ?enum(SOWING, YOUNG_PLANT, YOUNG_PLANT_BOUGHT)
+  seedlingSeeds: ?int8(1, null)
+  harvested: ?float32(0.0, null)
+  harvestedNormalized: ?float32(0.0, null)
+  harvestedByUnit: ?json
+  mainUnit: enum(KG, UNIT, BUNCH) = KG
+  unitWeight: ?float32(0.0, null)
+  bunchWeight: ?float32(0.0, null)
+  yieldExpected: ?float32(0.0, null)
+  harvestMonths: ?json
+  harvestWeeks: ?json
+  harvestPeriodExpected: enum(WEEK, MONTH) = MONTH
+  harvestMonthsExpected: ?json
+  harvestWeeksExpected: ?json
+  createdAt: datetime = SPECIAL(now)
+  createdBy: user\User = SPECIAL(user)
+  INDEX: [
+    ["farm", "season"],
+    ["farm", "plant"],
+    ["sequence"]
+  ]
+  UNIQUE: [
+    ["series", "plant"]
+  ]
+
+Harvest:
+  id: serial32
+  farm: farm\Farm
+  series: ?series\Series
+  cultivation: ?series\Cultivation
+  task: series\Task
+  quantity: float32
+  unit: enum(KG, UNIT, BUNCH)
+  date: date
+  week: week
+  createdAt: datetime = SPECIAL(now)
+  createdBy: user\User = SPECIAL(user)
+  INDEX: [
+    ["farm", "date"],
+    ["farm", "week"],
+    ["task", "date"]
+  ]
+
+Place:
+  id: serial32
+  farm: farm\Farm
+  season: int16(0, null)
+  series: series\Series
+  zone: map\Zone
+  plot: map\Plot
+  bed: map\Bed
+  length: ?int16(1, null)
+  width: ?int16(1, null)
+  area: float32(0.01, null) = SQL(length * width / 100)
+  createdAt: datetime = SPECIAL(now)
+  createdBy: user\User = SPECIAL(user)
+  INDEX: [
+    ["farm", "season"],
+    ["bed"],
+    ["zone"],
+    ["plot"]
+  ]
+  UNIQUE: [
+    ["series", "bed"]
+  ]
+
+Requirement:
+  id: serial32
+  farm: farm\Farm
+  series: ?series\Series
+  cultivation: ?series\Cultivation
+  task: series\Task
+  tool: farm\Tool
+  createdAt: datetime = SPECIAL(now)
+  createdBy: user\User = SPECIAL(user)
+  INDEX: [
+    ["farm", "tool"],
+    ["series"]
+  ]
+  UNIQUE: [
+    ["task", "tool"]
+  ]
+
+Series:
+  id: serial32
+  name: text8(1, 50) @collate(general)
+  farm: farm\Farm
+  season: int16(0, null)
+  use: enum(BED, BLOCK)
+  mode: enum(GREENHOUSE, OUTDOOR, MIX) = OUTDOOR
+  plants: int8(1, null)
+  area: ?int24(1, null)
+  areaPermanent: ?int24(1, null)
+  areaTarget: ?int24(1, null)
+  length: ?int16(1, null)
+  lengthPermanent: ?int16(1, null)
+  lengthTarget: ?int16(1, null)
+  bedWidth: ?int16(1, null)
+  bedStartCalculated: ?int16
+  bedStartUser: ?int16
+  bedStartAction: ?farm\Action
+  bedStopCalculated: ?int16
+  bedStopUser: ?int16
+  bedStopAction: ?farm\Action
+  alleyWidth: ?int16(1, null)
+  comment: ?editor16
+  sequence: ?production\Sequence
+  cycle: enum(ANNUAL, PERENNIAL)
+  perennialLifetime: ?int8(2, null)
+  perennialSeason: ?int8(1, null)
+  perennialFirst: ?series\Series
+  perennialStatus: ?enum(GROWING, CONTINUED, FINISHED)
+  createdAt: datetime = SPECIAL(now)
+  createdBy: user\User = SPECIAL(user)
+  status: enum(OPEN, CLOSED) = OPEN
+  INDEX: [
+    ["farm", "season"],
+    ["perennialFirst"]
+  ]
+
+Slice:
+  id: serial32
+  farm: farm\Farm
+  series: series\Series
+  cultivation: series\Cultivation
+  plant: plant\Plant
+  variety: plant\Variety
+  partPercent: ?float32(0.0, 100.0)
+  partArea: ?int32(0, null)
+  partLength: ?int32(0, null)
+  UNIQUE: [
+    ["cultivation", "variety"]
+  ]
+
+Task:
+  id: serial32
+  farm: farm\Farm
+  season: ?int16(0, null)
+  cultivation: ?series\Cultivation
+  series: ?series\Series
+  plant: ?plant\Plant
+  variety: ?plant\Variety
+  action: farm\Action
+  category: farm\Category
+  zone: ?map\Zone
+  plot: ?map\Plot
+  description: ?text16(1, null)
+  time: ?float32(0.0, null)
+  timeExpected: ?float32(0.0, null)
+  harvest: ?float32(0.0, null)
+  harvestUnit: ?enum(KG, UNIT, BUNCH)
+  harvestQuality: ?plant\Quality
+  fertilizer: ?json
+  plannedWeek: ?week(PHP(toWeek('NOW - 2 YEAR')), PHP(toWeek('NOW + 10 YEAR')))
+  plannedDate: ?date
+  plannedUsers: json = PHP([])
+  doneWeek: ?week
+  doneDate: ?date
+  timesheetStart: ?date
+  timesheetStop: ?date
+  createdAt: datetime = SPECIAL(now)
+  createdBy: user\User = SPECIAL(user)
+  updatedAt: ?datetime
+  status: enum(TODO, DONE)
+  INDEX: [
+    ["farm", "status"],
+    ["series"]
+  ]
+
+Timesheet:
+  id: serial32
+  farm: farm\Farm
+  user: ?user\User
+  series: ?series\Series
+  cultivation: ?series\Cultivation
+  plant: ?plant\Plant
+  task: series\Task
+  time: float32(0.0, null) = 0.0
+  date: date
+  week: week
+  createdAt: datetime = SPECIAL(now)
+  createdBy: user\User = SPECIAL(user)
+  INDEX: [
+    ["farm", "date"],
+    ["user", "date", "task"],
+    ["task"],
+    ["series"]
+  ]
+

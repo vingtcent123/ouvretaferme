@@ -1,0 +1,107 @@
+Ban:
+  id: serial32
+  user: ?user\User = NULL
+  ip: ?ipv4 = NULL
+  reason: text8(0, null)
+  admin: user\User
+  since: datetime = SPECIAL(now)
+  until: ?datetime
+  INDEX: [
+    ["user"],
+    ["ip"]
+  ]
+
+Country:
+  id: serial32
+  code: textFixed(2, 2)
+  name: text8
+  UNIQUE: [
+    ["code"]
+  ]
+
+Log:
+  user: user\User
+  action: enum(LOGIN, LOGOUT, LOGIN_EXTERNAL, LOGIN_AUTO)
+  ip: ipv4 = SPECIAL(ip)
+  sid: sid = SPECIAL(sid)
+  device: enum(WEB, APP, MOBILE_WEB, TABLET_WEB, CRAWLER)
+  deviceVersion: ?int16
+  createdAt: datetime = SPECIAL(now)
+  userAction: ?user\User
+  SPLIT: [user, SETTING(logSplit)]
+  INDEX: [
+    ["user", "createdAt"]
+  ]
+
+Role:
+  id: serial32
+  fqn: fqn
+  name: text8
+  emoji: ?textFixed(1, 3)
+  level: int8(0, null)
+  can: ?json
+  UNIQUE: [
+    ["fqn"]
+  ]
+
+User:
+  id: serial32
+  firstName: ?text8(1, SETTING(nameSizeMax)) @collate(general)
+  lastName: text8(1, SETTING(nameSizeMax)) @collate(general)
+  email: ?email(1, 100) @collate(general)
+  birthdate: ?date(PHP(toDate('NOW - 100 YEARS')), PHP(toDate('NOW - 10 YEARS')))
+  phone: ?text8(1, null)
+  street1: ?text8(1, null)
+  street2: ?text8(1, null)
+  postcode: ?text8(1, null)
+  city: ?text8(1, null)
+  verified: bool = FALSE
+  country: ?user\Country
+  visibility: enum(PUBLIC, PRIVATE) = PUBLIC
+  status: enum(ACTIVE, SUSPENDED, CLOSED) = ACTIVE
+  referer: ?user\User
+  seen: int32(0, null) = 0
+  seniority: int16(0, null) = 1
+  role: ?user\Role
+  vignette: ?textFixed(30, 30) @charset(ascii)
+  onlineToday: bool = FALSE
+  loggedAt: datetime = SPECIAL(now)
+  createdAt: datetime = SPECIAL(now)
+  ping: datetime = SPECIAL(now)
+  deletedAt: ?datetime
+  bounce: bool = FALSE
+  INDEX: [
+    ["referer"]
+  ]
+  UNIQUE: [
+    ["email"]
+  ]
+
+UserAuth:
+  id: serial32
+  user: ?user\User
+  userArchive: ?user\User
+  type: enum(BASIC, IMAP)
+  login: ?text8(0, 100) @collate(general)
+  loginArchive: ?text8(0, 100) @collate(general)
+  password: ?text8(1, null)
+  loggedAt: datetime = SPECIAL(now)
+  createdAt: datetime = SPECIAL(now)
+  passwordHash: ?text8(1, null)
+  hashExpirationDate: ?datetime
+  UNIQUE: [
+    ["user", "type"],
+    ["login", "type"]
+  ]
+
+UserAuto:
+  id: serial32
+  user: user\User
+  key: text8
+  usedAt: datetime = SPECIAL(now)
+  expiresAt: datetime
+  status: enum(ACTIVE, DELETED) = ACTIVE
+  INDEX: [
+    ["user"]
+  ]
+
