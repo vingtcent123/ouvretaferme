@@ -2545,7 +2545,7 @@ a.util-bar-menu-item svg {
 	position: absolute;
 	top: calc(50% - 2rem);
 	border-radius: var(--radius);
-	z-index: 10;
+	z-index: 20;
 	background-color: var(--secondary);
 	padding-left: 0.25rem;
 }
