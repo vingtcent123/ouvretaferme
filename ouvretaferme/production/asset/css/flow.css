@@ -220,7 +220,7 @@ div.flow-timeline-description-list {
 
 div.flow-timeline-description-list div[data-action="task-checkbox"] {
 	margin: 0 -0.5rem;
-	padding: 0.25rem 0.5rem;
+	padding: 0.125rem 0.5rem;
 }
 
 div.flow-timeline-description-list div[data-action="task-checkbox"]:hover {
