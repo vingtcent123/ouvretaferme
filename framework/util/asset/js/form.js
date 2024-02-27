@@ -432,13 +432,13 @@ class ColorField {
 
 	}
 
-	static setEmpty(field) {
+	static setEmpty(field, emptyColor = '#000000') {
 
 		const wrapper = field.firstParent('.field-color')
 
 		const hiddenField = wrapper.qs('input[type="hidden"]');
-		wrapper.qs('input[type="color"]').value = '#000000';
-		hiddenField.value = (field.checked ? '' : '#000000');
+		wrapper.qs('input[type="color"]').value = emptyColor;
+		hiddenField.value = (field.checked ? '' : emptyColor);
 		hiddenField.dispatchEvent(new CustomEvent("input"));
 
 	}

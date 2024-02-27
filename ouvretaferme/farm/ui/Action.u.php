@@ -287,6 +287,10 @@ class ActionUi {
 				$d->placeholder = s("Non pertinent");
 				break;
 
+			case 'color' :
+				$d->attributes['emptyColor'] = (new ActionModel())->getDefaultValue('color');
+				break;
+
 			case 'short' :
 				$d->after = '<small>'.s("Laisser vide si la première lettre du nom convient").'</small>';
 				break;

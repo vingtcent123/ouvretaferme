@@ -39,6 +39,16 @@ class Action extends ActionElement {
 						->count() === count($categories)
 				);
 
+			},
+
+			'color.prepare' => function(?string &$color): bool {
+
+				if($color === '') {
+					$color = (new ActionModel())->getDefaultValue('color');
+				}
+
+				return TRUE;
+
 			}
 
 		]);
