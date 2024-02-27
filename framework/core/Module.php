@@ -5406,9 +5406,9 @@ abstract class ModulePage extends Page {
 
 	}
 
-	public function write(string $page, \Closure $callback, \Closure $action, array $validate = ['canWrite']): ModulePage {
+	public function write(string $page, \Closure $action, array $validate = ['canWrite']): ModulePage {
 
-		$this->post($page, function($data) use ($callback, $action, $validate) {
+		$this->post($page, function($data) use ($action, $validate) {
 
 			$e = $this->element->call($this, $data);
 
@@ -5426,15 +5426,9 @@ abstract class ModulePage extends Page {
 			$e->validate(...$validate);
 
 			$this->applyElement->call($this, $data, $e);
-
-			$fw = new \FailWatch();
-
-			$callback($data, $e, $fw);
-
-			$fw->validate();
-
 			$data->e = $e;
-			$action->call($this, $data);
+
+			$action->call($this, $data, $e);
 
 		});
 
@@ -5466,14 +5460,9 @@ abstract class ModulePage extends Page {
 			$e->validate(...$validate);
 
 			$this->applyElement->call($this, $data, $e);
-
-			$fw = new \FailWatch();
-
 			$data->e = $e;
 
 			$action->call($this, $data);
-
-			$fw->validate();
 
 		});
 

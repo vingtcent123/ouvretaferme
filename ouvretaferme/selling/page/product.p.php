@@ -62,20 +62,16 @@
 		throw new ViewAction($data);
 
 	})
-	->write('doUpdateGrid', function($data, \selling\Product $e) {
+	->write('doUpdateGrid', function($data) {
 
-		$data->cGrid = \selling\GridLib::prepareByProduct($e, $_POST);
-
-	}, function($data) {
+		$data->cGrid = \selling\GridLib::prepareByProduct($data->e, $_POST);
 
 		\selling\GridLib::updateGrid($data->cGrid);
 
 		throw new ViewAction();
 
 	})
-	->write('doDeleteGrid', function($data, \selling\Product $e) {
-
-	}, function($data) {
+	->write('doDeleteGrid', function($data) {
 
 		\selling\GridLib::deleteByProduct($data->e);
 

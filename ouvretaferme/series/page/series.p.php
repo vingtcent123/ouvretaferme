@@ -257,9 +257,9 @@
 		throw new ViewAction($data);
 
 	})
-	->write('doDuplicate', function($data, \series\Series $e) {
+	->write('doDuplicate', function($data) {
 
-		if($e['cycle'] !== \series\Series::ANNUAL) {
+		if($data->e['cycle'] !== \series\Series::ANNUAL) {
 			throw new NotExpectedAction('Can duplicate only annual series');
 		}
 
@@ -280,20 +280,19 @@
 
 		$fw = new FailWatch();
 
-		$e['oldSeason'] = $e['season'];
-		$e->build(['season'], $_POST);
+		$data->e['oldSeason'] = $data->e['season'];
+		$data->e->build(['season'], $_POST);
 
 		$fw->validate();
 
 		$data->eSeriesNew = \series\SeriesLib::duplicate(
-			$e,
+			$data->e,
 			$copyTasks,
 			$cAction,
 			POST('copyTimesheet', 'bool'),
 			POST('copyPlaces', 'bool')
 		);
 
-	}, function($data) {
 		throw new RedirectAction(\series\SeriesUi::url($data->eSeriesNew).'?success=series:Series::duplicated');
 	})
 	->doDelete(function($data) {

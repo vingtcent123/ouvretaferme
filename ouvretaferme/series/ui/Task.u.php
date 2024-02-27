@@ -1422,15 +1422,11 @@ class TaskUi {
 
 		}
 
-		$description .= $this->getDescription($eTask);
-
 		$h = '';
 
-		if($description) {
-			$h = '<div class="tasks-planning-item-description">';
-				$h .= $description;
-			$h .= '</div>';
-		}
+		$h = '<div class="tasks-planning-item-description">';
+			$h .= $this->getDescription($eTask);
+		$h .= '</div>';
 
 		return $h;
 	}
@@ -1681,8 +1677,30 @@ class TaskUi {
 
 		$description = \util\TextUi::tiny(nl2br(encode($eTask['description'])), FALSE);
 
-		$h = '<div class="flow-timeline-description">';
-			$h .= $description;
+		$lines = [];
+
+		foreach(explode("\n", $description) as $position => $content) {
+
+			if(str_starts_with($content, 'o ') or str_starts_with($content, 'O ')) {
+				$line = '<div class="flow-timeline-description-list">';
+					$line .= '<div data-action="task-checkbox" post-id="'.$eTask['id'].'" post-position="'.$position.'" post-check="1" data-ajax-navigation="never">'.\Asset::icon('circle').'</div>';
+					$line .= '<div>'.ltrim(mb_substr($content, 1)).'</div>';
+				$line .= '</div>';
+			} else if(str_starts_with($content, 'x ') or str_starts_with($content, 'X ')) {
+				$line = '<div class="flow-timeline-description-list">';
+					$line .= '<div data-action="task-checkbox" post-id="'.$eTask['id'].'" post-position="'.$position.'" post-check="0" data-ajax-navigation="never">'.\Asset::icon('check-circle').'</div>';
+					$line .= '<div>'.ltrim(mb_substr($content, 1)).'</div>';
+				$line .= '</div>';
+			} else {
+				$line = $content;
+			}
+
+			$lines[] = $line;
+
+		}
+
+		$h = '<div class="flow-timeline-description" data-task="'.$eTask['id'].'">';
+			$h .= implode("\n", $lines);
 		$h .= '</div>';
 
 		return $h;
@@ -1987,7 +2005,7 @@ class TaskUi {
 
 		if($eTask['description'] !== NULL) {
 			$h .= '<div class="util-action-subtitle">';
-				$h .= \util\TextUi::tiny(nl2br(encode($eTask['description'])), TRUE);
+				$h .= $this->getDescription($eTask);
 			$h .= '</div>';
 		}
 
@@ -4520,6 +4538,10 @@ class TaskUi {
 			case 'harvestQuality' :
 				$d->attributes = ['placeholder' => s("Aucun")];
 				$d->values = fn(Task $e) => $e['cQuality'] ?? $e->expects(['cQuality']);
+				break;
+
+			case 'description' :
+				$d->labelAfter = \util\FormUi::info(s("Ajoutez un O en début de chaque ligne pour créer des listes de tâches avec des cases à cocher."));
 				break;
 
 			case 'status' :

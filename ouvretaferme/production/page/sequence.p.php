@@ -76,12 +76,12 @@
 	->update()
 	->doUpdate(fn($data) => throw new ReloadAction('production', 'Sequence::updated'))
 	->doUpdateProperties('doUpdateStatus', ['status'], fn() => throw new ReloadAction('production', 'Sequence::updated'))
-	->write('doDuplicate', function($data, \production\Sequence $e) {
+	->write('doDuplicate', function($data) {
 
-		$data->eSequenceNew = \production\SequenceLib::duplicate($e);
+		$data->eSequenceNew = \production\SequenceLib::duplicate($data->e);
 
-	}, function($data) {
 		throw new RedirectAction(\production\SequenceUi::url($data->eSequenceNew).'?success=production:Sequence::duplicated');
+
 	})
 	->doDelete(fn($data) => throw new RedirectAction(\farm\FarmUi::urlCultivationSequences($data->e['farm']).'?success=production:Sequence::deleted'));
 

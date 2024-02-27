@@ -19,12 +19,14 @@
 (new \farm\CategoryPage())
 	->update()
 	->doUpdate(fn($data) => throw new ViewAction($data))
-	->write('doIncrementPosition', function($data, \farm\Category $e) {
+	->write('doIncrementPosition', function($data) {
 
 		$increment = POST('increment', 'int');
-		\farm\CategoryLib::incrementPosition($e, $increment);
+		\farm\CategoryLib::incrementPosition($data->e, $increment);
 
-	}, fn($data) => throw new ReloadAction())
+		throw new ReloadAction();
+
+	})
 	->doDelete(fn($data) => throw new ViewAction($data));
 
 (new Page())

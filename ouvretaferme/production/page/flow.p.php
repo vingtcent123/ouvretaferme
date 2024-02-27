@@ -52,19 +52,23 @@ $do = function($data) {
 
 	})
 	->doUpdate($do)
-	->write('doPosition', function($data, \production\Flow $e) {
+	->write('doPosition', function($data) use ($do) {
 
 		$positions = POST('positions', 'json', []);
 
-		\production\FlowLib::updatePosition($e['sequence'], $positions);
+		\production\FlowLib::updatePosition($data->e['sequence'], $positions);
 
-	}, $do)
-	->write('doIncrementWeek', function($data, Element $e, FailWatch $fw) {
+		$do($data);
+
+	})
+	->write('doIncrementWeek', function($data) use ($do) {
 
 		$increment = POST('increment', 'int');
-		\production\FlowLib::incrementWeek($e, $increment);
+		\production\FlowLib::incrementWeek($data->e, $increment);
 
-	}, $do)
+		$do($data);
+
+	})
 	->doDelete($do);
 
 (new Page())

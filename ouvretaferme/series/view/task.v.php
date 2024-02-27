@@ -17,6 +17,12 @@ new AdaptativeView('incrementPlannedCollection', function($data, PanelTemplate $
 	return (new \series\TaskUi())->updateIncrementPlannedCollection($data->c);
 });
 
+new AdaptativeView('doCheck', function($data, AjaxTemplate $t) {
+
+	$t->qsa('.flow-timeline-description[data-task="'.$data->e['id'].'"]')->outerHtml((new \series\TaskUi())->getDescription($data->e));
+
+});
+
 new AdaptativeView('getToolsField', function($data, AjaxTemplate $t) {
 
 	if($data->cToolAvailable->empty()) {

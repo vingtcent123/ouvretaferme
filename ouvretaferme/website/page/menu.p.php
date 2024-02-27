@@ -34,7 +34,8 @@
 	});
 
 (new \website\WebsitePage())
-	->write('doUpdatePositions', function($data, \website\Website $e) {
-		\website\MenuLib::updatePositions($e, explode(',', POST('positions')));
-	}, fn() => throw new ReloadAction());
+	->write('doUpdatePositions', function($data) {
+		\website\MenuLib::updatePositions($data->e, explode(',', POST('positions')));
+		throw new ReloadAction();
+	});
 ?>

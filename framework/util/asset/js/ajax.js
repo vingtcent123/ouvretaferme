@@ -1448,23 +1448,31 @@ document.delegateEventListener('click', '[data-href]', function(e) {
 
 document.delegateEventListener('click', 'a[href]', function(e) {
 
-	switch(this.getAttribute('data-ajax-navigation')) {
+	let node = e.target;
 
-		case 'never' :
-			return true;
+	do {
 
-		case 'touch' :
-			if(isTouch() === FALSE) {
+		switch(node.dataset.ajaxNavigation) {
+
+			case 'never' :
 				return true;
-			}
-			break;
 
-		case 'notouch' :
-			if(isTouch()) {
-				return true;
-			}
+			case 'touch' :
+				if(isTouch() === FALSE) {
+					return true;
+				}
+				break;
 
-	}
+			case 'notouch' :
+				if(isTouch()) {
+					return true;
+				}
+
+		}
+
+		node = node.parentElement;
+
+	} while(node !== null && node != this);
 
 	if(this.getAttribute('target') === '_blank') {
 		return true;

@@ -39,11 +39,13 @@
 		throw new ViewAction($data);
 
 	}, method: 'post')
-	->write('doAdd', function($data, \selling\Sale $e) {
+	->write('doAdd', function($data) {
 
-		$data->cItem = \selling\ItemLib::build($e, $_POST);
+		$fw = new FailWatch();
 
-	}, function($data) {
+		$data->cItem = \selling\ItemLib::build($data->e, $_POST);
+
+		$fw->validate();
 
 		\selling\ItemLib::createCollection($data->cItem);
 

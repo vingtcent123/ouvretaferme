@@ -20,13 +20,15 @@
 	}, page: 'doCreateCustomer');
 
 (new \farm\InvitePage())
-	->write('doExtends', function($data, \farm\Invite $e) {
+	->write('doExtends', function($data) {
 
-		$e['farm'] = \farm\FarmLib::getById($e['farm']);
+		$data->e['farm'] = \farm\FarmLib::getById($data->e['farm']);
 
-		\farm\InviteLib::extends($e);
+		\farm\InviteLib::extends($data->e);
 
-	}, fn() => throw new ReloadAction('farm', 'Invite::extended'))
+		throw new ReloadAction('farm', 'Invite::extended');
+
+	})
 	->doDelete(fn() => throw new ReloadAction());
 
 (new Page())

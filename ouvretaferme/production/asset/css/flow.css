@@ -211,8 +211,42 @@ span.flow-timeline-fertilizer {
 	margin-bottom: .25rem;
 }
 
+div.flow-timeline-description-list {
+	display: grid;
+	grid-template-columns: auto 1fr;
+	grid-column-gap: 0.5rem;
+	align-items: baseline;
+}
+
+div.flow-timeline-description-list div[data-action="task-checkbox"] {
+	margin: 0 -0.5rem;
+	padding: 0.25rem 0.5rem;
+}
+
+div.flow-timeline-description-list div[data-action="task-checkbox"]:hover {
+	cursor: pointer;
+}
+
+div.flow-timeline-description-list div[data-action="task-checkbox"] svg {
+	font-size: 1.2rem;
+}
+
+div.flow-timeline-description-list div[data-action="task-checkbox"] svg.asset-icon-circle,
+div.flow-timeline-description-list div[data-action="task-checkbox"]:hover svg.asset-icon-check-circle {
+	color: var(--todo);
+}
+
+div.flow-timeline-description-list div[data-action="task-checkbox"]:hover svg.asset-icon-circle,
+div.flow-timeline-description-list div[data-action="task-checkbox"] svg.asset-icon-check-circle {
+	color: var(--done);
+}
+
 div.flow-timeline-description {
 	font-size: 0.9rem;
+}
+
+div.util-action-subtitle div.flow-timeline-description {
+	font-size: 1rem;
 }
 
 div.flow-timeline-description:not(:first-child) {

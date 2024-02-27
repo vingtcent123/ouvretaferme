@@ -64,12 +64,12 @@
 		throw new \ViewAction($data);
 
 	})
-	->write('doCreateProducts', function($data, \shop\Date $eDate) {
+	->write('doCreateProducts', function($data) {
 
 		$data->eFarm = \farm\FarmLib::getById(POST('farm'))->validate('canManage');
-		$eShop = \shop\ShopLib::getById($eDate['shop']['id'] ?? NULL)->validate('canWrite');
+		$eShop = \shop\ShopLib::getById($data->e['shop']['id'] ?? NULL)->validate('canWrite');
 
-		if($eDate['shop']['id'] !== $eShop['id']) {
+		if($data->e['shop']['id'] !== $eShop['id']) {
 			throw new NotExpectedAction();
 		}
 
@@ -77,9 +77,7 @@
 		$stocks = POST('stock', 'array', []);
 
 		$cProductSelling = \selling\ProductLib::getForShop($data->eFarm);
-		$data->cProduct = \shop\ProductLib::prepareSeveral($eDate, $cProductSelling, $products, $stocks);
-
-	}, function($data) {
+		$data->cProduct = \shop\ProductLib::prepareSeveral($data->e, $cProductSelling, $products, $stocks);
 
 		\shop\ProductLib::addSeveral($data->cProduct);
 

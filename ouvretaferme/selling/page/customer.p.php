@@ -67,24 +67,20 @@
 		throw new ViewAction($data);
 
 	}, validate: ['canManage'])
-	->write('doUpdateGrid', function($data, \selling\Customer $e) {
+	->write('doUpdateGrid', function($data) {
 
-		if($e['type'] === \selling\Customer::PRIVATE) {
+		if($data->e['type'] === \selling\Customer::PRIVATE) {
 			throw new NotExpectedAction('Invalid customer type');
 		}
 
-		$data->cGrid = \selling\GridLib::prepareByCustomer($e, $_POST);
-
-	}, function($data) {
+		$data->cGrid = \selling\GridLib::prepareByCustomer($data->e, $_POST);
 
 		\selling\GridLib::updateGrid($data->cGrid);
 
 		throw new ViewAction();
 
 	}, validate: ['canManage'])
-	->write('doDeleteGrid', function($data, \selling\Customer $e) {
-
-	}, function($data) {
+	->write('doDeleteGrid', function($data) {
 
 		\selling\GridLib::deleteByCustomer($data->e);
 

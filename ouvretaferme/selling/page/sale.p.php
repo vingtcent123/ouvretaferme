@@ -104,18 +104,18 @@
 		throw new ViewAction($data);
 
 	})
-	->write('doGenerateDocument', function($data, \selling\Sale $e) {
+	->write('doGenerateDocument', function($data) {
 
-		$e->validate('canManage');
+		$data->e->validate('canManage');
 
-		if($e['items'] === 0) {
+		if($data->e['items'] === 0) {
 			throw new FailAction('selling\Pdf::emptySale');
 		}
 
-		$e['farm']->hasFeatureDocument($e['type']) ?: throw new FailAction('farm\Farm::disabled');
+		$data->e['farm']->hasFeatureDocument($data->e['type']) ?: throw new FailAction('farm\Farm::disabled');
 
-		$e['farm']['selling'] = \selling\ConfigurationLib::getByFarm($e['farm']);
-		$e['farm']['selling']->isComplete() ?: throw new FailAction('selling\Configuration::notComplete', ['farm' => $e['farm']]);
+		$data->e['farm']['selling'] = \selling\ConfigurationLib::getByFarm($data->e['farm']);
+		$data->e['farm']['selling']->isComplete() ?: throw new FailAction('selling\Configuration::notComplete', ['farm' => $data->e['farm']]);
 
 		$type = POST('type', [\selling\Pdf::DELIVERY_NOTE, \selling\Pdf::ORDER_FORM], fn() => throw new NotExpectedAction());
 
@@ -125,41 +125,39 @@
 
 			case \selling\Pdf::DELIVERY_NOTE:
 
-				$e->canGenerateDeliveryNote() ?: throw new FailAction('selling\Sale::generateDeliveryNote');
+				$data->e->canGenerateDeliveryNote() ?: throw new FailAction('selling\Sale::generateDeliveryNote');
 
 				break;
 
 			case \selling\Pdf::ORDER_FORM :
 
-				$e->canGenerateOrderForm() ?: throw new FailAction('selling\Sale::generateOrderForm');
+				$data->e->canGenerateOrderForm() ?: throw new FailAction('selling\Sale::generateOrderForm');
 
-				$e->build(['orderFormValidUntil', 'orderFormPaymentCondition'], $_POST);
+				$data->e->build(['orderFormValidUntil', 'orderFormPaymentCondition'], $_POST);
 
 				$fw->validate();
 
 				\selling\Sale::model()
 					->select(['orderFormValidUntil', 'orderFormPaymentCondition'])
-					->update($e);
+					->update($data->e);
 
 				break;
 
 		};
 
-		$data->ePdf = \selling\PdfLib::generate($type, $e);
+		$data->ePdf = \selling\PdfLib::generate($type, $data->e);
 
-	}, function($data) {
 		throw new ViewAction($data);
 	})
-	->write('doSendDocument', function($data, \selling\Sale $e) {
+	->write('doSendDocument', function($data) {
 
-		$eFarm = \farm\FarmLib::getById($e['farm']);
+		$eFarm = \farm\FarmLib::getById($data->e['farm']);
 		$eFarm['selling'] = \selling\ConfigurationLib::getByFarm($eFarm);
 
 		$data->type = POST('type', [\selling\Pdf::ORDER_FORM, \selling\Pdf::DELIVERY_NOTE], fn($value) => throw new NotExpectedAction('Invalid type \''.$value.'\''));
 
-		\selling\PdfLib::sendBySale($eFarm, $e, $data->type);
+		\selling\PdfLib::sendBySale($eFarm, $data->e, $data->type);
 
-	}, function($data) {
 		throw new ReloadAction('selling', match($data->type) {
 			\selling\Pdf::ORDER_FORM =>'Pdf::orderFormSent',
 			\selling\Pdf::DELIVERY_NOTE =>'Pdf::deliveryNoteSent'
@@ -183,31 +181,39 @@
 		throw new ViewAction($data);
 
 	}, validate: ['canWrite', 'canSetShop'])
-	->write('doUpdateShop', function($data, $e, $fw) {
+	->write('doUpdateShop', function($data) {
+		
+		$fw = new FailWatch();
 
-		$e['from'] = \selling\Sale::SHOP;
+		$data->e['from'] = \selling\Sale::SHOP;
 
-		$e->build(['shopDate'], $_POST, for: 'update');
+		$data->e->build(['shopDate'], $_POST, for: 'update');
 
 		$fw->validate();
 
-		\selling\SaleLib::update($e, ['from', 'shop', 'shopDate']);
+		\selling\SaleLib::update($data->e, ['from', 'shop', 'shopDate']);
 
-	}, fn() => throw new ReloadAction('selling', 'Sale::updated'), validate: ['canWrite', 'canSetShop'])
+		throw new ReloadAction('selling', 'Sale::updated');
+
+	}, validate: ['canWrite', 'canSetShop'])
 	->read('updateCustomer', function($data) {
 
 		throw new ViewAction($data);
 
 	}, validate: ['canUpdateCustomer'])
-	->write('doUpdateCustomer', function($data, $e, $fw) {
+	->write('doUpdateCustomer', function($data) {
 
-		$e->build(['customer'], $_POST, for: 'update');
+		$fw = new FailWatch();
+
+		$data->e->build(['customer'], $_POST, for: 'update');
 
 		$fw->validate();
 
-		\selling\SaleLib::updateCustomer($e, $e['customer']);
+		\selling\SaleLib::updateCustomer($data->e, $data->e['customer']);
 
-	}, fn() => throw new ReloadAction('selling', 'Sale::customerUpdated'), validate: ['canUpdateCustomer'])
+		throw new ReloadAction('selling', 'Sale::customerUpdated');
+
+	}, validate: ['canUpdateCustomer'])
 	->doUpdateProperties('doUpdatePreparationStatus', ['preparationStatus'], fn() => throw new ReloadAction(), validate: ['canWritePreparationStatus'])
 	->read('duplicate', function($data) {
 
@@ -218,43 +224,41 @@
 		throw new ViewAction($data);
 
 	})
-	->write('doDuplicate', function($data, \selling\Sale $e) {
+	->write('doDuplicate', function($data) {
 
-		if($e->canDuplicate() === FALSE) {
+		if($data->e->canDuplicate() === FALSE) {
 			throw new NotExpectedAction('Can duplicate');
 		}
 
 		$fw = new \FailWatch();
 
-		$e->build(['deliveredAt'], $_POST, for: 'create');
+		$data->e->build(['deliveredAt'], $_POST, for: 'create');
 
 		$fw->validate();
 
-		$data->eSaleNew = \selling\SaleLib::duplicate($e);
+		$data->eSaleNew = \selling\SaleLib::duplicate($data->e);
 
-	}, function($data) {
 		throw new RedirectAction(\selling\SaleUi::url($data->eSaleNew).'?success=series:Series::duplicated');
 	})
-	->write('doDelete', function($data, \selling\Sale $e) {
+	->write('doDelete', function($data) {
 
 		$fw = new \FailWatch();
 
 		if(
-			$e->canDeleteStatus() === FALSE or
-			$e->canDeletePaymentStatus() === FALSE
+			$data->e->canDeleteStatus() === FALSE or
+			$data->e->canDeletePaymentStatus() === FALSE
 		) {
 			Sale::fail('deletedNotDraft');
-		} else if($e->canDeleteMarket() === FALSE) {
+		} else if($data->e->canDeleteMarket() === FALSE) {
 			Sale::fail('deletedMarket');
-		} else if($e->canDeleteMarketSale() === FALSE) {
+		} else if($data->e->canDeleteMarketSale() === FALSE) {
 			Sale::fail('deletedMarketSale');
 		}
 
 		$fw->validate();
 
-		\selling\SaleLib::delete($e);
+		\selling\SaleLib::delete($data->e);
 
-	}, function($data) {
 		throw new RedirectAction(\farm\FarmUi::urlSellingSalesAll($data->e['farm']).'?success=selling:Sale::deleted');
 	});
 
@@ -262,14 +266,14 @@
 	->doDelete(fn($data) => throw new ReloadAction('selling', 'Pdf::deleted'), page: 'doDeleteDocument');
 
 (new \farm\FarmPage())
-	->write('downloadLabels', function($data, \farm\Farm $e) {
+	->write('downloadLabels', function($data) {
 
 		if(POST('checkSales', 'bool')) {
 
-			$data->cSale = \selling\SaleLib::getForLabelsByIds($e, POST('sales', 'array'));
+			$data->cSale = \selling\SaleLib::getForLabelsByIds($data->e, POST('sales', 'array'));
 
 			if($data->cSale->empty()) {
-				throw new RedirectAction(\farm\FarmUi::urlSellingSalesLabel($e).'?error=selling:Sale::downloadEmpty');
+				throw new RedirectAction(\farm\FarmUi::urlSellingSalesLabel($data->e).'?error=selling:Sale::downloadEmpty');
 			}
 
 			$data->cSale->validate('canUpdate');
@@ -278,10 +282,7 @@
 			$data->cSale = new Collection();
 		}
 
-		$data->content = \selling\PdfLib::buildLabels($e, $data->cSale);
-
-
-	}, function($data) {
+		$data->content = \selling\PdfLib::buildLabels($data->e, $data->cSale);
 
 		$filename = $data->cSale->empty() ?
 			'labels-empty.pdf' :

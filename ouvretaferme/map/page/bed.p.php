@@ -73,26 +73,28 @@
 		throw new ViewAction($data);
 
 	})
-	->write('doSwapSeries', function($data, $eBed1) {
+	->write('doSwapSeries', function($data) {
 
-		if($eBed1['plotFill']) {
+		if($data->e['plotFill']) {
 			throw new NotExpectedAction('Invalid plot');
 		}
 
 		$data->season = POST('season', 'int');
 
-		$eBed1['farm']->validateSeason($data->season);
+		$data->e['farm']->validateSeason($data->season);
 
 		$eBed2 = \map\BedLib::getById(POST('swapId'))->validate('canWrite');
 
 		if(
-			$eBed1['id'] !== $eBed2['id'] and
-			$eBed1['farm']['id'] === $eBed2['farm']['id']
+			$data->e['id'] !== $eBed2['id'] and
+			$data->e['farm']['id'] === $eBed2['farm']['id']
 		) {
-			\map\BedLib::swapSeries($data->season, $eBed1, $eBed2);
+			\map\BedLib::swapSeries($data->season, $data->e, $eBed2);
 		}
 
-	}, fn() => throw new ReloadAction());
+		throw new ReloadAction();
+
+	});
 
 $updateCollection = function($data, ?Closure $callback = NULL) {
 

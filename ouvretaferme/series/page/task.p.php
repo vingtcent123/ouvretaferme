@@ -407,6 +407,13 @@
 
 	}, page: 'updateCultivation')
 	->doUpdateProperties('doUpdateCultivation', ['cultivation'], fn($data) => throw new ViewAction($data))
+	->write('doCheck', function($data) {
+
+		\series\TaskLib::updateCheck($data->e, POST('position', 'int'), POST('check', 'bool'));
+
+		throw new ViewAction($data);
+
+	}, validate: ['isTodo', 'canWrite'])
 	->doDelete(function() {
 		return match(POST('action', default: 'reload')) {
 			'reload' => throw new ReloadAction(),

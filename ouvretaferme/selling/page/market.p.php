@@ -50,31 +50,26 @@
 
 
 	}, validate: ['canWrite'])
-	->write('doClose', function($data, \selling\Sale $e) {
+	->write('doClose', function($data) {
 
-		\selling\MarketLib::close($e);
-
-	}, function($data) {
+		\selling\MarketLib::close($data->e);
 
 		throw new RedirectAction(\selling\SaleUi::urlMarket($data->e).'?success=selling:Market::closed');
 
-
 	})
-	->write('doUpdatePrices', function($data, \selling\Sale $e) {
+	->write('doUpdatePrices', function($data) {
 
-		$cItem = \selling\MarketLib::checkNewPrices($e, POST('unitPrice', 'array', []));
+		$cItem = \selling\MarketLib::checkNewPrices($data->e, POST('unitPrice', 'array', []));
 
-		\selling\MarketLib::updateMarketPrices($e, $cItem);
-
-	}, function($data) {
+		\selling\MarketLib::updateMarketPrices($data->e, $cItem);
 
 		throw new RedirectAction(\selling\SaleUi::urlMarket($data->e).'/articles?success=selling:Market::pricesUpdated');
 
 
 	})
-	->write('doUpdateSale', function($data, \selling\Sale $e) {
+	->write('doUpdateSale', function($data) {
 
-		$e->checkMarketSelling();
+		$data->e->checkMarketSelling();
 
 		$data->eSale = \selling\SaleLib::getById(POST('subId'));
 
@@ -82,11 +77,9 @@
 			throw new NotExpectedAction('Invalid sale status');
 		}
 
-		$cItemSale = \selling\MarketLib::checkNewItems($e, $data->eSale, $_POST);
+		$cItemSale = \selling\MarketLib::checkNewItems($data->e, $data->eSale, $_POST);
 
 		\selling\MarketLib::updateSaleItems($data->eSale, $cItemSale);
-
-	}, function($data) {
 
 		$data->eSale = \selling\SaleLib::getById(POST('subId'), \selling\Sale::getSelection() + [
 			'createdBy' => ['firstName', 'lastName', 'vignette']
@@ -109,11 +102,9 @@
 
 
 	}, validate: ['canWrite'])
-	->write('doCreateSale', function($data, \selling\Sale $e) {
+	->write('doCreateSale', function($data) {
 
-		$data->eSale = \selling\SaleLib::createFromMarket($e);
-
-	}, function($data) {
+		$data->eSale = \selling\SaleLib::createFromMarket($data->e);
 
 		throw new RedirectAction(\selling\SaleUi::urlMarket($data->e).'/vente/'.$data->eSale['id']);
 

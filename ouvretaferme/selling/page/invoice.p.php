@@ -72,14 +72,16 @@
 		throw new ViewAction($data);
 
 	}, validate: ['canWrite'])
-	->write('doSend', function($data, \selling\Invoice $e) {
+	->write('doSend', function($data) {
 
-		$eFarm = \farm\FarmLib::getById($e['farm']);
+		$eFarm = \farm\FarmLib::getById($data->e['farm']);
 		$eFarm['selling'] = \selling\ConfigurationLib::getByFarm($eFarm);
 
-		\selling\PdfLib::sendByInvoice($eFarm, $e);
+		\selling\PdfLib::sendByInvoice($eFarm, $data->e);
 
-	}, fn() => throw new ReloadAction('selling', 'Invoice::sent'))
+		throw new ReloadAction('selling', 'Invoice::sent');
+
+	})
 	->doUpdate(function($data) {
 
 		$data->e['cSale'] = \selling\SaleLib::getForInvoice($data->e['customer'], $data->e['sales'], checkInvoice: FALSE);

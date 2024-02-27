@@ -1223,6 +1223,33 @@ class TaskLib extends TaskCrud {
 
 	}
 
+	public static function updateCheck(Task $e, int $position, bool $checked): void {
+
+		if(
+			$e['description'] === NULL or
+			substr_count($e['description'], "\n") < $position
+		) {
+			return;
+		}
+
+		$lines = explode("\n", $e['description']);
+
+		if(str_starts_with($lines[$position], 'x ') or str_starts_with($lines[$position], 'o ')) {
+			$lines[$position] = ($checked ? 'X' : 'O').' '.substr($lines[$position], 2);
+		} else if(str_starts_with($lines[$position], 'X ') or str_starts_with($lines[$position], 'O ')) {
+			$lines[$position] = ($checked ? 'X' : 'O').' '.substr($lines[$position], 2);
+		} else {
+			$lines[$position] = ($checked ? 'X' : 'O').' '.$lines[$position];
+		}
+
+		$e['description'] = implode("\n", $lines);
+
+		Task::model()
+			->select('description')
+			->update($e);
+
+	}
+
 	public static function updateTools(Task $e): void {
 
 		$e->expects(['series', 'cultivation', 'farm', 'cTool']);

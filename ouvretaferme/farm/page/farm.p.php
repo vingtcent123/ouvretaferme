@@ -34,33 +34,33 @@
 		throw new ViewAction($data);
 
 	})
-	->write('doSeasonFirst', function($data, Element $e) {
+	->write('doSeasonFirst', function($data) {
 
 		$data->increment = POST('increment', 'int');
-		\farm\FarmLib::updateSeasonFirst($e, $data->increment);
+		\farm\FarmLib::updateSeasonFirst($data->e, $data->increment);
 
-	}, function($data) {
 		throw new RedirectAction(\farm\FarmUi::urlCultivationSeries($data->e, \farm\Farmer::AREA, season: $data->e['seasonFirst'] + $data->increment));
+
 	})
-	->write('doSeasonLast', function($data, Element $e) {
+	->write('doSeasonLast', function($data) {
 
 		$data->increment = POST('increment', 'int');
-		\farm\FarmLib::updateSeasonLast($e, $data->increment);
+		\farm\FarmLib::updateSeasonLast($data->e, $data->increment);
 
-	}, function($data) {
 		throw new RedirectAction(\farm\FarmUi::urlCultivationSeries($data->e, \farm\Farmer::AREA, season: $data->e['seasonLast'] + $data->increment));
+
 	})
-	->write('doClose', function($data, \farm\Farm $e) {
+	->write('doClose', function($data) {
 
 		if(OTF_DEMO) {
 			throw new \FailAction('farm\Farm::demo.delete');
 		}
 
-		$e['status'] = \farm\Farm::CLOSED;
+		$data->e['status'] = \farm\Farm::CLOSED;
 
-		\farm\FarmLib::update($e, ['status']);
+		\farm\FarmLib::update($data->e, ['status']);
 
-	}, function($data) {
 		throw new RedirectAction('/?success=farm:Farm.closed');
+
 	});
 ?>

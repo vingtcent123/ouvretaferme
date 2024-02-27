@@ -132,12 +132,12 @@
 
 	})
 	->doCreate(fn($data) => throw new RedirectAction('/farm/farmer:manage?farm='.$data->e['farm']['id'].'&success=farm:Farmer::created'))
-	->write('doDeleteInvite', function($data, \farm\Farmer $e) {
+	->write('doDeleteInvite', function($data) {
 
-		\farm\InviteLib::deleteFromFarmer($e);
+		\farm\InviteLib::deleteFromFarmer($data->e);
 
-	}, function($data) {
 		throw new RedirectAction('/farm/farmer:manage?farm='.$data->e['farm']['id'].'&success=farm:Invite::deleted');
+
 	})
 	->doUpdateProperties('doUpdateStatus', ['status'], function($data) {
 		$eFarm = \farm\FarmLib::getById($data->e['farm']);

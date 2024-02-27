@@ -81,6 +81,18 @@ document.delegateEventListener("scroll", '#planning-container-daily', (e) => {
 
 });
 
+document.delegateEventListener("click", '[data-action="task-checkbox"]', (e) => {
+
+	e.preventDefault();
+	e.stopImmediatePropagation();
+
+	new Ajax.Query(e.target)
+		.url('/series/task:doCheck')
+		.body(e.delegateTarget.post())
+		.fetch();
+
+});
+
 
 document.delegateEventListener("touchend", '#planning-container-daily', (e) => {
 
@@ -113,7 +125,6 @@ document.delegateEventListener("touchend", '#planning-container-daily', (e) => {
 
 		qs('#planning-container-daily').style.overflowX = 'hidden';
 
-	//	qs('#planning-container-daily').style.overflowX = 'hidden';
 		const startPosition = qs('#planning-container-daily').scrollLeft;
 		const newPosition = window.innerWidth * (screen - 1);
 

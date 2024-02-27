@@ -339,7 +339,7 @@ div.tasks-planning-plant {
 div.tasks-planning-action {
 	position: sticky;
 	top: var(--mainSticky);
-	z-index: 1;
+	z-index: 12;
 	background-color: var(--background);
 	height: 3rem;
 }
@@ -495,8 +495,8 @@ label.tasks-planning-select {
 label.tasks-planning-select input {
 	position: relative;
 	z-index: 11;
-	width: 1.1rem;
-	height: 1.1rem;
+	width: 1.2rem;
+	height: 1.2rem;
 }
 
 div.tasks-planning-item:not(.tasks-planning-item-with-series):not(.tasks-planning-item-with-content) div.tasks-planning-item-base {
@@ -626,6 +626,10 @@ div.tasks-planning-item-actions {
 
 div.tasks-planning-item-actions:only-child {
 	justify-self: end;
+}
+
+div.tasks-planning-item-description:empty {
+	display: none;
 }
 
 div.tasks-planning-item-description {
