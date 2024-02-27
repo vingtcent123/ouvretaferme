@@ -1422,11 +1422,15 @@ class TaskUi {
 
 		}
 
+		$description .= $this->getDescription($eTask);
+
 		$h = '';
 
-		$h = '<div class="tasks-planning-item-description">';
-			$h .= $this->getDescription($eTask);
-		$h .= '</div>';
+		if($description) {
+			$h = '<div class="tasks-planning-item-description">';
+				$h .= $description;
+			$h .= '</div>';
+		}
 
 		return $h;
 	}
