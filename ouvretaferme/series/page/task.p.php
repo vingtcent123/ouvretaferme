@@ -413,7 +413,7 @@
 
 		throw new ViewAction($data);
 
-	}, validate: ['isTodo', 'canWrite'])
+	})
 	->doDelete(function() {
 		return match(POST('action', default: 'reload')) {
 			'reload' => throw new ReloadAction(),

@@ -1683,12 +1683,20 @@ class TaskUi {
 
 			if(str_starts_with($content, 'o ') or str_starts_with($content, 'O ')) {
 				$line = '<div class="flow-timeline-description-list">';
-					$line .= '<div data-action="task-checkbox" post-id="'.$eTask['id'].'" post-position="'.$position.'" post-check="1" data-ajax-navigation="never">'.\Asset::icon('circle').'</div>';
+					if($eTask->canWrite()) {
+						$line .= '<div data-action="task-checkbox" post-id="'.$eTask['id'].'" post-position="'.$position.'" post-check="1" data-ajax-navigation="never">'.\Asset::icon('circle').'</div>';
+					} else {
+						$line .= \Asset::icon('circle');
+					}
 					$line .= '<div>'.ltrim(mb_substr($content, 1)).'</div>';
 				$line .= '</div>';
 			} else if(str_starts_with($content, 'x ') or str_starts_with($content, 'X ')) {
 				$line = '<div class="flow-timeline-description-list">';
-					$line .= '<div data-action="task-checkbox" post-id="'.$eTask['id'].'" post-position="'.$position.'" post-check="0" data-ajax-navigation="never">'.\Asset::icon('check-circle').'</div>';
+					if($eTask->canWrite()) {
+						$line .= '<div data-action="task-checkbox" post-id="'.$eTask['id'].'" post-position="'.$position.'" post-check="0" data-ajax-navigation="never">'.\Asset::icon('check-circle').'</div>';
+					} else {
+						$line .= \Asset::icon('check-circle');
+					}
 					$line .= '<div>'.ltrim(mb_substr($content, 1)).'</div>';
 				$line .= '</div>';
 			} else {
@@ -1761,6 +1769,8 @@ class TaskUi {
 				$h .= '</div>';
 			$h .= '</div>';
 
+		} else {
+			$h = '';
 		}
 
 		return $h;
