@@ -69,10 +69,8 @@ class SeriesModel extends \ModuleModel {
 			'bedWidth' => ['int16', 'min' => 1, 'max' => NULL, 'null' => TRUE, 'cast' => 'int'],
 			'bedStartCalculated' => ['int16', 'null' => TRUE, 'cast' => 'int'],
 			'bedStartUser' => ['int16', 'null' => TRUE, 'cast' => 'int'],
-			'bedStartAction' => ['element32', 'farm\Action', 'null' => TRUE, 'cast' => 'element'],
 			'bedStopCalculated' => ['int16', 'null' => TRUE, 'cast' => 'int'],
 			'bedStopUser' => ['int16', 'null' => TRUE, 'cast' => 'int'],
-			'bedStopAction' => ['element32', 'farm\Action', 'null' => TRUE, 'cast' => 'element'],
 			'alleyWidth' => ['int16', 'min' => 1, 'max' => NULL, 'null' => TRUE, 'cast' => 'int'],
 			'comment' => ['editor16', 'null' => TRUE, 'cast' => 'string'],
 			'sequence' => ['element32', 'production\Sequence', 'null' => TRUE, 'cast' => 'element'],
@@ -87,13 +85,11 @@ class SeriesModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'name', 'farm', 'season', 'use', 'mode', 'plants', 'area', 'areaPermanent', 'areaTarget', 'length', 'lengthPermanent', 'lengthTarget', 'bedWidth', 'bedStartCalculated', 'bedStartUser', 'bedStartAction', 'bedStopCalculated', 'bedStopUser', 'bedStopAction', 'alleyWidth', 'comment', 'sequence', 'cycle', 'perennialLifetime', 'perennialSeason', 'perennialFirst', 'perennialStatus', 'createdAt', 'createdBy', 'status'
+			'id', 'name', 'farm', 'season', 'use', 'mode', 'plants', 'area', 'areaPermanent', 'areaTarget', 'length', 'lengthPermanent', 'lengthTarget', 'bedWidth', 'bedStartCalculated', 'bedStartUser', 'bedStopCalculated', 'bedStopUser', 'alleyWidth', 'comment', 'sequence', 'cycle', 'perennialLifetime', 'perennialSeason', 'perennialFirst', 'perennialStatus', 'createdAt', 'createdBy', 'status'
 		]);
 
 		$this->propertiesToModule += [
 			'farm' => 'farm\Farm',
-			'bedStartAction' => 'farm\Action',
-			'bedStopAction' => 'farm\Action',
 			'sequence' => 'production\Sequence',
 			'perennialFirst' => 'series\Series',
 			'createdBy' => 'user\User',
@@ -227,20 +223,12 @@ class SeriesModel extends \ModuleModel {
 		return $this->where('bedStartUser', ...$data);
 	}
 
-	public function whereBedStartAction(...$data): SeriesModel {
-		return $this->where('bedStartAction', ...$data);
-	}
-
 	public function whereBedStopCalculated(...$data): SeriesModel {
 		return $this->where('bedStopCalculated', ...$data);
 	}
 
 	public function whereBedStopUser(...$data): SeriesModel {
 		return $this->where('bedStopUser', ...$data);
-	}
-
-	public function whereBedStopAction(...$data): SeriesModel {
-		return $this->where('bedStopAction', ...$data);
 	}
 
 	public function whereAlleyWidth(...$data): SeriesModel {

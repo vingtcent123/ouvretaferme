@@ -1374,8 +1374,11 @@ td.util-manage-vignette {
 .bg-background {
 	background-color: var(--background) !important;
 }
-.bg-background-global {
+.bg-background-light {
 	background-color: var(--background-light) !important;
+}
+.bg-background-dark {
+	background-color: var(--background-dark) !important;
 }
 
 /* Annotation */

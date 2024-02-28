@@ -820,7 +820,7 @@ class CultivationUi {
 								$h .= '<div class="series-item-seeds-seedling">';
 									if($eCultivation['seedling'] !== NULL) {
 										$h .= [
-											Cultivation::SOWING => s("en place"),
+											Cultivation::SOWING => s("direct"),
 											Cultivation::YOUNG_PLANT => s("plant autoproduit"),
 											Cultivation::YOUNG_PLANT_BOUGHT => s("plant acheté")
 										][$eCultivation['seedling']];
@@ -1924,7 +1924,7 @@ class CultivationUi {
 				$h .= '<dt>'.s("Semis").'</dt>';
 				$h .= '<dd>';
 					$h .= $eCultivation['seedling'] ? [
-						\series\Cultivation::SOWING => s("en place"),
+						\series\Cultivation::SOWING => s("direct"),
 						\series\Cultivation::YOUNG_PLANT => '<span title="'.s("Autoproduction du plant").'">'.s("plant autoproduit").'</span>',
 						\series\Cultivation::YOUNG_PLANT_BOUGHT => '<span title="'.s("Achat du plant").'">'.s("plant acheté").'</span>'
 					][$eCultivation['seedling']] : '';
@@ -2491,7 +2491,7 @@ class CultivationUi {
 			case 'seedling' :
 				$d->field = 'select';
 				$d->values = [
-					Cultivation::SOWING => s("semis en place"),
+					Cultivation::SOWING => s("semis direct"),
 					Cultivation::YOUNG_PLANT => s("plant autoproduit"),
 					Cultivation::YOUNG_PLANT_BOUGHT => s("plant acheté")
 				];

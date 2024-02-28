@@ -506,7 +506,7 @@ class CustomerUi {
 				}
 			]);
 
-			$h .= '<div class="util-block-flat bg-background-global customer-pro '.($eCustomer['type'] === Customer::PRO ? '' : 'hide').'">';
+			$h .= '<div class="util-block-flat bg-background-light customer-pro '.($eCustomer['type'] === Customer::PRO ? '' : 'hide').'">';
 				$h .= $form->group(content: '<h4>'.s("Gestion des clients professionnels").'</h4>');
 				$h .= $form->dynamicGroups($eCustomer, ['contact', 'legalName']);
 				$h .= $form->addressGroup(s("Adresse de facturation"), 'invoice', $eCustomer);
@@ -541,14 +541,14 @@ class CustomerUi {
 			);
 
 			$h .= $form->dynamicGroups($eCustomer, ['type', 'name', 'email', 'phone']);
-			$h .= '<div class="util-block-flat bg-background-global customer-pro '.($eCustomer['type'] === Customer::PRO ? '' : 'hide').'">';
+			$h .= '<div class="util-block-flat bg-background-light customer-pro '.($eCustomer['type'] === Customer::PRO ? '' : 'hide').'">';
 				$h .= $form->group(content: '<h4>'.s("Gestion des clients professionnels").'</h4>');
 				$h .= $form->dynamicGroups($eCustomer, ['contact', 'legalName']);
 				$h .= $form->addressGroup(s("Adresse de facturation"), 'invoice', $eCustomer);
 			$h .= '</div>';
 			$h .= $form->dynamicGroups($eCustomer, ['discount', 'color']);
 
-			$h .= '<div class="util-block-flat bg-background-global">';
+			$h .= '<div class="util-block-flat bg-background-light">';
 				$h .= $form->group(content: '<h4>'.s("Gestion de la communication par e-mail").'</h4>');
 				$h .= $form->dynamicGroup($eCustomer, 'emailOptOut');
 				$h .= $form->group(

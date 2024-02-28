@@ -1042,7 +1042,7 @@ class SeriesLib extends SeriesCrud {
 
 		// On récupére les données de la série à jour
 		Series::model()
-			->select(['bedStartCalculated', 'bedStartUser', 'bedStartAction', 'bedStopCalculated', 'bedStopUser', 'bedStopAction'])
+			->select(['bedStartCalculated', 'bedStartUser', 'bedStopCalculated', 'bedStopUser'])
 			->get($e);
 
 		// Recalculer les données internes à chaque culture
@@ -1065,28 +1065,10 @@ class SeriesLib extends SeriesCrud {
 		$e['bedStartCalculated'] = NULL;
 		$e['bedStopCalculated'] = NULL;
 
-		if($e['bedStartAction']->notEmpty()) {
-
-			$e['bedStartCalculated'] = Task::model()
-				->whereSeries($e)
-				->whereAction('bedStartAction')
-				->getValue($min);
-		}
-
 		if($e['bedStartCalculated'] === NULL) {
 
 			$values = array_filter($cCrop->getColumn('startWeek'));
 			$e['bedStartCalculated'] = $values ? min($values) : NULL;
-
-		}
-
-		// On cherche une action alternative
-		if($e['bedStopAction']->notEmpty()) {
-
-			$e['bedStopCalculated'] = Task::model()
-				->whereSeries($e)
-				->whereAction('bedStartAction')
-				->getValue($max);
 
 		}
 

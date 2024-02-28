@@ -2812,7 +2812,7 @@ class TaskUi {
 	protected function displaySowing(Task $eTask): string {
 
 		if($eTask['cultivation']['seedling'] !== Cultivation::SOWING) {
-			return $this->displayAction($eTask, '<div class="util-warning">'.s("Cette intervention de semis en place est incohérente avec les informations renseignées dans la série.").'</div>');
+			return $this->displayAction($eTask, '<div class="util-warning">'.s("Cette intervention de semis direct est incohérente avec les informations renseignées dans la série.").'</div>');
 		}
 
 		$h = '<dl class="util-presentation util-presentation-2">';

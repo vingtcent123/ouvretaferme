@@ -133,10 +133,8 @@ Series:
   bedWidth: ?int16(1, null)
   bedStartCalculated: ?int16
   bedStartUser: ?int16
-  bedStartAction: ?farm\Action
   bedStopCalculated: ?int16
   bedStopUser: ?int16
-  bedStopAction: ?farm\Action
   alleyWidth: ?int16(1, null)
   comment: ?editor16
   sequence: ?production\Sequence

@@ -48,7 +48,7 @@ class PlaceUi {
 			if($eSeries['bedStartCalculated'] === NULL or $eSeries['bedStopCalculated'] === NULL) {
 
 				$h .= '<div class="util-warning">';
-					$h .= \Asset::icon('exclamation-triangle-fill').' '.s("Pensez à renseigner sur la série {value} les dates de semis en place ou de plantation ainsi que les périodes de récolte attendues afin qu'elle s'affiche au bon endroit sur le diagramme de temps.", SeriesUi::link($eSeries, TRUE));
+					$h .= \Asset::icon('exclamation-triangle-fill').' '.s("Pensez à renseigner sur la série {value} les dates de semis direct ou de plantation ainsi que les périodes de récolte attendues afin qu'elle s'affiche au bon endroit sur le diagramme de temps.", SeriesUi::link($eSeries, TRUE));
 				$h .= '</div>';
 
 			}
@@ -56,7 +56,7 @@ class PlaceUi {
 			if($this->alert) {
 
 				$h .= '<div class="util-warning">';
-					$h .= s("Indiquez les dates de semis en place, de plantation ou les périodes de récolte attendues sur les séries {value} pour qu'elles s'affichent au bon endroit sur le diagramme.", \Asset::icon('exclamation-triangle-fill'));
+					$h .= s("Indiquez les dates de semis direct, de plantation ou les périodes de récolte attendues sur les séries {value} pour qu'elles s'affichent au bon endroit sur le diagramme.", \Asset::icon('exclamation-triangle-fill'));
 				$h .= '</div>';
 
 			}
@@ -147,7 +147,7 @@ class PlaceUi {
 								2 => s("À ± 2 semaines"),
 							], $search->get('available'), ['mandatory' => TRUE]);
 					} else {
-						$input = $form->addon(\Asset::icon('exclamation-triangle-fill'), ['title' => s("Indiquez les dates de semis en place, de plantation ou les périodes de récolte attendues sur cette séries pour utiliser ce filtre.")]);
+						$input = $form->addon(\Asset::icon('exclamation-triangle-fill'), ['title' => s("Indiquez les dates de semis direct, de plantation ou les périodes de récolte attendues sur cette séries pour utiliser ce filtre.")]);
 					}
 
 					$h .= $form->inputGroup(
