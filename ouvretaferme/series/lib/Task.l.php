@@ -59,7 +59,7 @@ class TaskLib extends TaskCrud {
 
 		$e->expects(['status', 'series', 'category']);
 
-		$properties = ['action', 'description', 'plot', 'harvestQuality', 'fertilizer', 'toolsList'];
+		$properties = ['action', 'description', 'harvestQuality', 'fertilizer', 'toolsList'];
 
 		switch($e['status']) {
 
@@ -217,6 +217,7 @@ class TaskLib extends TaskCrud {
 		return Task::model()
 			->select(Task::getSelection())
 			->select([
+				'cccPlace' => PlaceLib::delegateByTask(),
 				'display' => new \Sql('IF(doneWeek IS NULL, plannedWeek, doneWeek)'),
 				'plant' => ['name'],
 				'cultivation' => ['seedlingSeeds', 'startWeek', 'startAction'],
@@ -553,6 +554,7 @@ class TaskLib extends TaskCrud {
 		$ccTask = Task::model()
 			->select(Task::getSelection())
 			->select([
+				'cccPlace' => PlaceLib::delegateByTask(),
 				'series' => [
 					'cccPlace' => PlaceLib::delegateBySeries()
 				],
@@ -1179,7 +1181,6 @@ class TaskLib extends TaskCrud {
 			'series',
 			'farm',
 			'category',
-			'plot',
 			'status'
 		]);
 
@@ -1193,11 +1194,6 @@ class TaskLib extends TaskCrud {
 		if($e['series']->notEmpty()) {
 			$e['series']->expects(['season']);
 			$e['season'] = $e['series']['season'];
-		}
-
-		if($e['plot']->notEmpty()) {
-			$e['plot']->expects(['zone']);
-			$e['zone'] = $e['plot']['zone'];
 		}
 
 		if($e['status'] === Task::DONE) {
@@ -1533,19 +1529,6 @@ class TaskLib extends TaskCrud {
 			}
 
 			$properties[] = 'plant';
-
-		}
-
-		if(in_array('plot', $properties)) {
-
-			if($e['plot']->notEmpty()) {
-				$e['plot']->expects(['zone']);
-				$e['zone'] = $e['plot']['zone'];
-			} else {
-				$e['zone'] = new \map\Zone();
-			}
-
-			$properties[] = 'zone';
 
 		}
 

@@ -8,7 +8,7 @@
 
         foreach($cSeries as $eSeries) {
 
-            $cPlace = \series\PlaceLib::getBySeries($eSeries);
+            $cPlace = \series\PlaceLib::getByElement($eSeries);
 
             \series\Series::model()->beginTransaction();
 

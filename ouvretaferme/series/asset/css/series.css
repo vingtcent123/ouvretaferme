@@ -1028,7 +1028,6 @@ div.series-import-grid-cultivation {
 /* Affichage des emplacements */
 div.series-soil-grid {
 	display: grid;
-	grid-template-columns: auto auto auto auto auto auto 1fr;
 	align-items: center;
 	grid-row-gap: 0.25rem;
 	grid-column-gap: 1rem;
@@ -1036,13 +1035,28 @@ div.series-soil-grid {
 	min-width: 600px;
 }
 
+div.series-soil-grid-series {
+	grid-template-columns: auto auto auto auto auto auto 1fr;
+}
+
+div.series-soil-grid-task {
+	grid-template-columns: auto auto auto 1fr;
+}
+
 @media (min-width: 768px) {
 
 	div.series-soil-grid {
 		display: grid;
-		grid-template-columns: auto auto auto 1fr auto auto auto;
 		align-items: center;
 		grid-column-gap: 1.5rem;
+	}
+
+	div.series-soil-grid-series {
+		grid-template-columns: auto auto auto 1fr auto auto auto;
+	}
+
+	div.series-soil-grid-task {
+		grid-template-columns: auto auto 1fr auto;
 	}
 
 }

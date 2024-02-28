@@ -19,6 +19,16 @@ class TaskUi {
 		return '/tache/'.$eTask['id'];
 	}
 
+	public static function getPanelHeader(Task $eTask): string {
+
+		$eTask->expects([
+			'action' => ['name']
+		]);
+
+		return encode($eTask['action']['name']);
+
+	}
+
 	public function getDayPlanning(\farm\Farm $eFarm, string $week, \Collection $cccTask, \Collection $cccTaskAssign, \Collection $cUserFarm, \user\User $eUser, array $seasonsWithSeries, \Collection $cCategory): string {
 
 		$this->period = 'day';
@@ -1375,14 +1385,10 @@ class TaskUi {
 			$place .= s("Série {value}", $name);
 			$place .= \production\CropUi::start($eTask['cultivation'], \Setting::get('farm\mainActions'));
 			if($eTask['series']['cccPlace']->notEmpty()) {
-				$place .= ' - <div class="tasks-planning-item-series-places">'.(new CultivationUi())->displayPlaces($eTask['series'], $eTask['series']['cccPlace']).'</div>';
+				$place .= ' - <div class="tasks-planning-item-series-places">'.(new CultivationUi())->displayPlaces($eTask['series']['use'], $eTask['series']['cccPlace']).'</div>';
 			}
-		} else if($eTask['plot']->empty() === FALSE) {
-			if($eTask['plot']['zoneFill']) {
-				$place .= s("Parcelle {value}", encode($eTask['zone']['name']));
-			} else {
-				$place .= s("Parcelle {value}", encode($eTask['zone']['name'])).' '.\Asset::icon('chevron-right').' '.s("Bloc {value}", encode($eTask['plot']['name']));
-			}
+		} else if($eTask['cccPlace']->notEmpty()) {
+			$place .= '<div class="tasks-planning-item-series-places">'.(new CultivationUi())->displayPlaces(Series::BED, $eTask['cccPlace']).'</div>';
 		} else {
 			return '';
 		}
@@ -1471,13 +1477,10 @@ class TaskUi {
 
 					if($eTask['series']->empty() === FALSE) {
 						$h .= s("Série {value}", encode($eTask['series']['name']));
-					} else if($eTask['plot']->empty() === FALSE) {
-						$h .= s("Parcelle {value}", encode($eTask['zone']['name'])).' '.\Asset::icon('chevron-right').' '.s("Bloc {value}", encode($eTask['plot']['name']));
-					} else if($eTask['zone']->empty() === FALSE) {
-						$h .= s("Parcelle {value}", encode($eTask['zone']['name']));
-					} else {
-						$h .= s("Ferme");
+					} else if($eTask['cccPlace']->notEmpty()) {
+						$h .= (new CultivationUi())->displayPlaces(Series::BED, $eTask['cccPlace']);
 					}
+
 				$h .= '</div>';
 
 				$h .= '<div class="tasks-planning-item-description">';
@@ -1746,6 +1749,10 @@ class TaskUi {
 					}
 					$h .= '<a href="/series/task:update?id='.$eTask['id'].'" class="dropdown-item">'.s("Modifier l'intervention").'</a>';
 					$h .= '<a href="/series/comment:createCollection?ids[]='.$eTask['id'].'" class="dropdown-item">'.s("Ajouter un commentaire").'</a>';
+
+					if($eTask->canSoil()) {
+						$h .= '<a href="/series/place:update?task='.$eTask['id'].'" class="dropdown-item">'.s("Assoler l'intervention").'</a>';
+					}
 
 					if($eTask->isDone()) {
 						$h .= '<a data-ajax="/series/task:doUpdateTodoCollection" post-id="'.$eTask['id'].'" '.attrAjaxBody([["ids[]", $eTask['id']]]).' class="dropdown-item" data-confirm="'.s("Annuler la réalisation de l'intervention ?").'">'.s("Marquer &laquo; À faire &raquo;").'</a>';
@@ -2046,11 +2053,6 @@ class TaskUi {
 						$h .= '<dd>';
 							$h .= SeriesUi::link($eTask['series']);
 						$h .= '</dd>';
-					} else {
-						$h .= '<dt>'.s("Emplacement").'</dt>';
-						$h .= '<dd>';
-							$h .= $this->getPlace($eTask);
-						$h .= '</dd>';
 					}
 
 					if(
@@ -2205,14 +2207,28 @@ class TaskUi {
 
 		}
 
-
 		if($cPlace->empty() === FALSE) {
 
-			$h .= '<h3>'.s("Assolement").'</h3>';
+			if($eTask['series']->notEmpty()) {
 
-			$h .= '<div class="util-overflow-md">';
-				$h .= (new SeriesUi())->getPlace($eTask['series'], $cPlace);
-			$h .= '</div>';
+				$h .= '<h3>'.s("Assolement").'</h3>';
+
+				$h .= '<div class="util-overflow-md">';
+					$h .= (new SeriesUi())->getPlace('series', $eTask['series'], $cPlace);
+				$h .= '</div>';
+
+			} else {
+
+				$h .= '<div class="util-action">';
+					$h .= '<h3>'.s("Assolement").'</h3>';
+					$h .= '<a href="/series/place:update?task='.$eTask['id'].'" class="btn btn-outline-primary">'.\Asset::icon('gear-fill').'</a>';
+				$h .= '</div>';
+
+				$h .= '<div class="util-overflow-md">';
+					$h .= (new SeriesUi())->getPlace('task', $eTask, $cPlace);
+				$h .= '</div>';
+
+			}
 
 			$h .= '<br/>';
 
@@ -3227,16 +3243,12 @@ class TaskUi {
 	public function getPlace(Task $eTask): string {
 
 		if($eTask['series']->empty() === FALSE) {
-			$h = SeriesUi::getPanelHeader($eTask['series']);
-		} else if($eTask['plot']->empty() === FALSE) {
-			$h = s("Parcelle {value}", encode($eTask['zone']['name'])).' '.\Asset::icon('chevron-right').' '.s("Bloc {value}", encode($eTask['plot']['name']));
-		} else if($eTask['zone']->empty() === FALSE) {
-			$h = s("Parcelle {value}", encode($eTask['zone']['name']));
+			return s("Série {value}", SeriesUi::link($eTask['series'], newTab: TRUE));
+		} else if($eTask['cccPlace']->notEmpty()) {
+			return (new CultivationUi())->displayPlaces(Series::BED, $eTask['cccPlace']);
 		} else {
-			$h = s("À la ferme");
+			return '';
 		}
-
-		return $h;
 
 	}
 
@@ -3337,7 +3349,7 @@ class TaskUi {
 				$association = $cCultivation->count() > 1;
 				$checked = ($cSeries->count() === 1 and $association === FALSE);
 
-				$places = (new CultivationUi())->displayPlaces($eSeries, $eSeries['cccPlace']);
+				$places = (new CultivationUi())->displayPlaces($eSeries['use'], $eSeries['cccPlace']);
 
 				$h .= '<tbody>';
 
@@ -3808,16 +3820,6 @@ class TaskUi {
 					$h .= $this->getVarietyGroup($form, $eTask, $cVariety);
 				}
 			$h .= '</div>';
-
-			if($eTask['series']->empty()) {
-
-				$h .= $form->group(
-					s("Zone de l'intervention"),
-					(new \map\ZoneUi())->getZonePlotWidget($form, $cZone, $eTask['plot'], s("Toute la ferme")),
-					['wrapper' => 'zone plot']
-				);
-
-			}
 
 			if($eTask['action']['fqn'] === ACTION_RECOLTE and $eTask['cQuality']->notEmpty()) {
 				$h .= $this->getHarvestQualityField($form, $eTask);

@@ -41,13 +41,13 @@ class Place {
 		Place.updateSelected();
 
 		// Présence d'onglets
-		if(qs('#place-tabs')) {
+		if(qs('#place-grid-wrapper')) {
 
 			const panel = target.firstParent('.tab-panel');
 			const beds = panel.qsa('[name="beds[]"]:checked').length;
 			const zone = panel.dataset.tab;
 
-			qs('#place-tabs [data-tab="'+ zone +'"] .place-tab-beds').innerHTML = (beds > 0) ? '('+ beds +')' : '';
+			qs('#place-grid-wrapper [data-tab="'+ zone +'"] .place-tab-beds').innerHTML = (beds > 0) ? '('+ beds +')' : '';
 
 		}
 
@@ -62,10 +62,14 @@ class Place {
 		const area = qs('#place-update-area');
 		const length = qs('#place-update-length');
 
+		if(area === null || length === null) {
+			return;
+		}
+
 		const form = qs('#place-update');
 
 		let total = 0;
-		form.qsa('div.place-grid.selected [name^="sizes"]', (node) => total += parseInt(node.value));
+		form.qsa('div.place-grid.selected [name^="sizes"]', (node) => total += parseInt(node.value || 0));
 
 		if(length) {
 			length.innerHTML = total;

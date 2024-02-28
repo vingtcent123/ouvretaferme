@@ -176,7 +176,7 @@
 		$data->cCultivation = \series\CultivationLib::getBySeries($data->e);
 		$data->cTask = \series\TaskLib::getBySeries($data->e);
 		$data->cPhoto = \gallery\PhotoLib::getBySeries($data->e);
-		$data->cPlace = \series\PlaceLib::getBySeries($data->e);
+		$data->cPlace = \series\PlaceLib::getByElement($data->e);
 		$data->ccTask = \series\TaskLib::getWorkingTimeBySeries($data->e);
 		$data->ccTaskHarvested = \series\TaskLib::getHarvestedBySeries($data->e);
 
@@ -236,7 +236,7 @@
 
 		$cCultivation = \series\CultivationLib::getBySeries($data->e);
 
-		$data->e['cPlace'] = \series\PlaceLib::getBySeries($data->e);
+		$data->e['cPlace'] = \series\PlaceLib::getByElement($data->e);
 		$data->e['cCultivation'] = \series\CultivationLib::getBySeries($data->e);
 		$data->e['cSequence'] = \production\SequenceLib::getForSeries($data->e, $cCultivation);
 		$data->e['sequence'] = \production\SequenceLib::getById($data->e['sequence']);
@@ -252,7 +252,7 @@
 		}
 
 		$data->cTask = \series\TaskLib::getBySeries($data->e);
-		$data->cPlace = \series\PlaceLib::getBySeries($data->e);
+		$data->cPlace = \series\PlaceLib::getByElement($data->e);
 
 		throw new ViewAction($data);
 

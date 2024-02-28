@@ -533,8 +533,7 @@ div.tasks-planning-items-last div.tasks-planning-item:last-child a.flow-timeline
 
 a.tasks-year-item {
 	display: grid;
-	grid-row-gap: 0.25rem;
-	padding: 0.75rem;
+	padding: 0.5rem 0.75rem;
 	color: inherit;
 	text-decoration: none;
 	border-top: 1px solid var(--border);
@@ -596,7 +595,7 @@ span.tasks-planning-item-series-name {
 div.tasks-planning-item-series-places,
 div.tasks-planning-item-series-places > div {
 	display: inline;
-	font-size: 0.7rem;
+	font-size: 0.8rem;
 	letter-spacing: -0.1px;
 }
 

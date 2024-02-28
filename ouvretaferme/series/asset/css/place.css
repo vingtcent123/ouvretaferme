@@ -34,10 +34,14 @@ div.place-grid-label {
 		left: 24rem;
 	}
 
-	div.place-grid {
+	div.place-grid-series div.place-grid {
 		grid-template:
 			"select name area series" auto
 			"select range range range" auto / 3rem 12rem 9rem 1fr;
+	}
+
+	div.place-grid-task div.place-grid {
+		grid-template: "select name area series" auto / 3rem 12rem 9rem 1fr;
 	}
 
 }
@@ -52,10 +56,14 @@ div.place-grid-label {
 		left: 13rem;
 	}
 
-	div.place-grid {
+	div.place-grid-series div.place-grid {
 		grid-template:
 			"select name series" auto
 			"select range range" auto / 3rem 10rem 1fr;
+	}
+
+	div.place-grid-task div.place-grid {
+		grid-template: "select name series" auto / 3rem 10rem 1fr;
 	}
 
 }
@@ -404,7 +412,7 @@ div.place-update-submit {
 	justify-content: space-between;
 }
 
-#place-tabs .tabs-item {
+#place-grid-wrapper .tabs-item {
 	margin-bottom: 0;
 	border-bottom: 0;
 }

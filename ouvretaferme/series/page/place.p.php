@@ -1,31 +1,58 @@
 <?php
 (new Page(function($data) {
 
-		$data->eSeries = \series\SeriesLib::getById(INPUT('series'))
-			->validate('canWrite');
+		if(input_exists('series')) {
+
+			$data->e = \series\SeriesLib::getById(INPUT('series'))->validate('canWrite');
+			$data->source = 'series';
+
+		} else if(input_exists('task')) {
+
+			$data->e = \series\TaskLib::getById(INPUT('task'))->validate('canWrite', 'canSoil');
+			$data->e['season'] = 2024;
+			$data->e['use'] = \series\Series::BED;
+
+			$data->source = 'task';
+
+		} else {
+			throw new NotExpectedAction('Missing entry');
+		}
 
 	}))
 	->get('update', function($data) {
 
-		\series\SeriesLib::fillTimeline($data->eSeries);
+		$data->e['farm'] = \farm\FarmLib::getById($data->e['farm']);
 
-		$data->eSeries['farm'] = \farm\FarmLib::getById($data->eSeries['farm']);
+		// On récupère les emplacements
+		$data->cZone = \map\ZoneLib::getByFarm($data->e['farm'], season: $data->e['season']);
+		\map\PlotLib::putFromZoneWithSeries($data->e['farm'], $data->cZone, $data->e['season'], [$data->e['season'], $data->e['season'] - 1, $data->e['season'] + 1]);
 
-		$data->cZone = \map\ZoneLib::getByFarm($data->eSeries['farm'], season: $data->eSeries['season']);
-		\map\PlotLib::putFromZoneWithSeries($data->eSeries['farm'], $data->cZone, $data->eSeries['season'], [$data->eSeries['season'], $data->eSeries['season'] - 1, $data->eSeries['season'] + 1]);
+		$data->cPlace = \series\PlaceLib::getByElement($data->e);
 
-		$data->cPlace = \series\PlaceLib::getBySeries($data->eSeries);
+		switch($data->source) {
 
-		$hasAlternativeBedWidth = $data->cPlace->match(fn($ePlace) => $ePlace['bed']['width'] !== $data->eSeries['bedWidth']);
+			case 'series' :
 
-		$data->search = new Search([
-			'canAll' => ($hasAlternativeBedWidth === FALSE),
-			'all' => GET('all', 'bool', $hasAlternativeBedWidth),
-			'available' => GET('available', 'int', 0),
-			'rotation' => GET('rotation', 'int', 0)
-		]);
+				$hasAlternativeBedWidth = $data->cPlace->match(fn($ePlace) => $ePlace['bed']['width'] !== $data->e['bedWidth']);
 
-		\map\ZoneLib::filter($data->cZone, $data->search, $data->eSeries);
+				$data->search = new Search([
+					'canAll' => ($hasAlternativeBedWidth === FALSE),
+					'all' => GET('all', 'bool', $hasAlternativeBedWidth),
+					'available' => GET('available', 'int', 0),
+					'rotation' => GET('rotation', 'int', 0)
+				]);
+
+				\map\ZoneLib::filter($data->cZone, $data->search, $data->e);
+
+				\series\SeriesLib::fillTimeline($data->e);
+
+				break;
+
+			case 'task' :
+				$data->search = new Search();
+				break;
+
+		}
 
 		throw new \ViewAction($data);
 
@@ -34,15 +61,19 @@
 
 		$fw = new \FailWatch();
 
-		$cPlace = \series\PlaceLib::buildFromBeds($data->eSeries, POST('beds', 'array'), POST('sizes', 'array'));
+		$cPlace = \series\PlaceLib::buildFromBeds($data->source, $data->e, POST('beds', 'array'), POST('sizes', 'array'));
 
 		if($fw->ok()) {
-			\series\PlaceLib::replaceForSeries($data->eSeries, $cPlace);
+
+			match($data->source) {
+				'series' => \series\PlaceLib::replaceForSeries($data->e, $cPlace),
+				'task' => \series\PlaceLib::replaceForTask($data->e, $cPlace),
+			};
 		}
 
 		$fw->validate();
 
-		$data->cPlace = \series\PlaceLib::getBySeries($data->eSeries);
+		$data->cPlace = \series\PlaceLib::getByElement($data->e);
 
 		throw new \ViewAction($data);
 

@@ -111,6 +111,7 @@ class SeriesLib extends SeriesCrud {
 								'status'
 							])
 							->whereAction('IN', $cAction)
+							->whereSeries($e)
 							->delegateCollection('cultivation')
 					])
 					->sort(['startWeek' => SORT_ASC])

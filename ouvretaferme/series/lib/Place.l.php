@@ -27,7 +27,7 @@ class PlaceLib extends PlaceCrud {
 
 	}
 
-	public static function getBySeries(Series $eSeries): \Collection {
+	public static function getByElement(Series|Task $e): \Collection {
 
 		$cPlace = Place::model()
 			->select([
@@ -41,7 +41,8 @@ class PlaceLib extends PlaceCrud {
 				],
 				'length', 'width', 'area'
 			])
-			->whereSeries($eSeries)
+			->whereSeries($e, if: $e instanceof Series)
+			->whereTask($e, if: $e instanceof Task)
 			->getCollection(NULL, NULL, 'bed');
 
 		$cPlace->sort([
@@ -54,9 +55,23 @@ class PlaceLib extends PlaceCrud {
 
 	}
 
+	public static function delegateByTask(): PlaceModel {
+
+		return (new PlaceModel())
+			->select([
+				'task',
+				'zone' => ['name'],
+				'plot' => ['name', 'zoneFill'],
+				'bed' => ['name', 'plotFill']
+			])
+			->sort(['plot' => SORT_ASC, 'bed' => SORT_ASC])
+			->delegateCollection('task', ['zone', 'plot', NULL]);
+
+	}
+
 	public static function delegateBySeries(): PlaceModel {
 
-		return Place::model()
+		return (new PlaceModel())
 			->select([
 				'series',
 				'zone' => ['name'],
@@ -68,9 +83,9 @@ class PlaceLib extends PlaceCrud {
 
 	}
 
-	public static function buildFromBeds(Series $eSeries, array $beds, array $sizes): \Collection {
+	public static function buildFromBeds(string $source, Series|Task $e, array $beds, array $sizes): \Collection {
 
-		$eSeries->expects(['farm', 'season']);
+		$e->expects(['farm', 'season', 'use']);
 
 		$cBed = \map\Bed::model()
 			->select([
@@ -79,7 +94,7 @@ class PlaceLib extends PlaceCrud {
 				'length', 'width', 'area'
 			])
 			->whereId('IN', $beds)
-			->whereFarm($eSeries['farm'])
+			->whereFarm($e['farm'])
 			->getCollection();
 
 		if($cBed->count() !== count($beds)) {
@@ -92,9 +107,9 @@ class PlaceLib extends PlaceCrud {
 		foreach($cBed as $eBed) {
 
 			$ePlace = new Place([
-				'farm' => $eSeries['farm'],
-				'season' => $eSeries['season'],
-				'series' => $eSeries,
+				'farm' => $e['farm'],
+				'season' => $e['season'],
+				$source => $e,
 				'bed' => $eBed,
 				'plot' => $eBed['plot'],
 				'zone' => $eBed['zone'],
@@ -104,35 +119,51 @@ class PlaceLib extends PlaceCrud {
 				'area' => NULL
 			]);
 
-			$size = (int)($sizes[$eBed['id']] ?? 0);
+			switch($source) {
 
-			switch($eSeries['use']) {
+				case 'series' :
 
-				case Series::BED :
+					$size = (int)($sizes[$eBed['id']] ?? 0);
 
-					if(
-						$size <= 0 or
-						($eBed['length'] !== NULL and $size > $eBed['length'])
-					) {
-						Place::fail('bedsSize');
-						return new \Collection();
+					switch($e['use']) {
+
+						case Series::BED :
+
+							if(
+								$size <= 0 or
+								($eBed['length'] !== NULL and $size > $eBed['length'])
+							) {
+								Place::fail('bedsSize');
+								return new \Collection();
+							}
+
+							$ePlace['length'] = $size;
+							$ePlace['width'] = $eBed['width'] /* Planche permanente */ ?? $e['bedWidth'] /* Planche temporaire */;
+
+							$ePlace['area'] = $size * ($ePlace['width'] + $e['alleyWidth'] ?? 0) / 100;
+
+							break;
+
+						case Series::BLOCK :
+
+							if($size <= 0 or $size > $eBed['area']) {
+								Place::fail('bedsSize');
+								return new \Collection();
+							}
+
+							$ePlace['area'] = $size;
+
+							break;
+
 					}
-
-					$ePlace['length'] = $size;
-					$ePlace['width'] = $eBed['width'] /* Planche permanente */ ?? $eSeries['bedWidth'] /* Planche temporaire */;
-
-					$ePlace['area'] = $size * ($ePlace['width'] + $eSeries['alleyWidth'] ?? 0) / 100;
 
 					break;
 
-				case Series::BLOCK :
+				case 'task' :
 
-					if($size <= 0 or $size > $eBed['area']) {
-						Place::fail('bedsSize');
-						return new \Collection();
-					}
-
-					$ePlace['area'] = $size;
+					$ePlace['length'] = NULL;
+					$ePlace['width'] = NULL;
+					$ePlace['area'] = NULL;
 
 					break;
 
@@ -150,7 +181,7 @@ class PlaceLib extends PlaceCrud {
 
 		$eSeries->expects(['id', 'alleyWidth']);
 
-		$cPlace = self::getBySeries($eSeries);
+		$cPlace = self::getByElement($eSeries);
 
 		$fullArea = NULL;
 		$fullAreaPermanent = NULL;
@@ -214,7 +245,30 @@ class PlaceLib extends PlaceCrud {
 
 		try {
 			Place::model()->insert($cPlace);
-		} catch(\DuplicateException $e) {
+		} catch(\DuplicateException) {
+
+			Place::fail('bedsDuplicate');
+
+			Series::model()->rollBack();
+			return;
+
+		}
+
+		Series::model()->commit();
+
+	}
+
+	public static function replaceForTask(Task $eTask, \Collection $cPlace): void {
+
+		Series::model()->beginTransaction();
+
+		Place::model()
+			->whereTask($eTask)
+			->delete();
+
+		try {
+			Place::model()->insert($cPlace);
+		} catch(\DuplicateException) {
 
 			Place::fail('bedsDuplicate');
 

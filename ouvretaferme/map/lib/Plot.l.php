@@ -214,7 +214,6 @@ class PlotLib extends PlotCrud {
 			->select([
 				'cPlot' => Plot::model()
 					->select($selection)
-					->sort(new \Sql('zoneFill DESC, name ASC'))
 					->delegateCollection('zone')
 			])
 			->get($value)) {
@@ -385,7 +384,10 @@ class PlotLib extends PlotCrud {
 						// Tri des séries par par saison puis date de première tâche
 						$cPlace->setColumn('firstTaskAt', function($ePlace) {
 
-							if($ePlace['series']['cCultivation']->empty()) {
+							if(
+								$ePlace['series']->empty() or
+								$ePlace['series']['cCultivation']->empty()
+							) {
 								return 0;
 							} else {
 								$week = $ePlace['series']['cCultivation']->first()['firstTaskWeek'];

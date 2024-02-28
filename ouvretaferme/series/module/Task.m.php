@@ -52,8 +52,6 @@ class TaskModel extends \ModuleModel {
 			'variety' => ['element32', 'plant\Variety', 'null' => TRUE, 'cast' => 'element'],
 			'action' => ['element32', 'farm\Action', 'cast' => 'element'],
 			'category' => ['element32', 'farm\Category', 'cast' => 'element'],
-			'zone' => ['element32', 'map\Zone', 'null' => TRUE, 'cast' => 'element'],
-			'plot' => ['element32', 'map\Plot', 'null' => TRUE, 'cast' => 'element'],
 			'description' => ['text16', 'min' => 1, 'max' => NULL, 'null' => TRUE, 'cast' => 'string'],
 			'time' => ['float32', 'min' => 0.0, 'max' => NULL, 'null' => TRUE, 'cast' => 'float'],
 			'timeExpected' => ['float32', 'min' => 0.0, 'max' => NULL, 'null' => TRUE, 'cast' => 'float'],
@@ -66,6 +64,8 @@ class TaskModel extends \ModuleModel {
 			'plannedUsers' => ['json', 'cast' => 'array'],
 			'doneWeek' => ['week', 'null' => TRUE, 'cast' => 'string'],
 			'doneDate' => ['date', 'null' => TRUE, 'cast' => 'string'],
+			'timelineStart' => ['date', 'null' => TRUE, 'cast' => 'string'],
+			'timelineStop' => ['date', 'null' => TRUE, 'cast' => 'string'],
 			'timesheetStart' => ['date', 'null' => TRUE, 'cast' => 'string'],
 			'timesheetStop' => ['date', 'null' => TRUE, 'cast' => 'string'],
 			'createdAt' => ['datetime', 'cast' => 'string'],
@@ -75,7 +75,7 @@ class TaskModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'farm', 'season', 'cultivation', 'series', 'plant', 'variety', 'action', 'category', 'zone', 'plot', 'description', 'time', 'timeExpected', 'harvest', 'harvestUnit', 'harvestQuality', 'fertilizer', 'plannedWeek', 'plannedDate', 'plannedUsers', 'doneWeek', 'doneDate', 'timesheetStart', 'timesheetStop', 'createdAt', 'createdBy', 'updatedAt', 'status'
+			'id', 'farm', 'season', 'cultivation', 'series', 'plant', 'variety', 'action', 'category', 'description', 'time', 'timeExpected', 'harvest', 'harvestUnit', 'harvestQuality', 'fertilizer', 'plannedWeek', 'plannedDate', 'plannedUsers', 'doneWeek', 'doneDate', 'timelineStart', 'timelineStop', 'timesheetStart', 'timesheetStop', 'createdAt', 'createdBy', 'updatedAt', 'status'
 		]);
 
 		$this->propertiesToModule += [
@@ -86,15 +86,14 @@ class TaskModel extends \ModuleModel {
 			'variety' => 'plant\Variety',
 			'action' => 'farm\Action',
 			'category' => 'farm\Category',
-			'zone' => 'map\Zone',
-			'plot' => 'map\Plot',
 			'harvestQuality' => 'plant\Quality',
 			'createdBy' => 'user\User',
 		];
 
 		$this->indexConstraints = array_merge($this->indexConstraints, [
 			['farm', 'status'],
-			['series']
+			['series'],
+			['cultivation']
 		]);
 
 	}
@@ -203,14 +202,6 @@ class TaskModel extends \ModuleModel {
 		return $this->where('category', ...$data);
 	}
 
-	public function whereZone(...$data): TaskModel {
-		return $this->where('zone', ...$data);
-	}
-
-	public function wherePlot(...$data): TaskModel {
-		return $this->where('plot', ...$data);
-	}
-
 	public function whereDescription(...$data): TaskModel {
 		return $this->where('description', ...$data);
 	}
@@ -257,6 +248,14 @@ class TaskModel extends \ModuleModel {
 
 	public function whereDoneDate(...$data): TaskModel {
 		return $this->where('doneDate', ...$data);
+	}
+
+	public function whereTimelineStart(...$data): TaskModel {
+		return $this->where('timelineStart', ...$data);
+	}
+
+	public function whereTimelineStop(...$data): TaskModel {
+		return $this->where('timelineStop', ...$data);
 	}
 
 	public function whereTimesheetStart(...$data): TaskModel {

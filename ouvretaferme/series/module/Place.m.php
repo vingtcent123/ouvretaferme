@@ -39,24 +39,26 @@ class PlaceModel extends \ModuleModel {
 			'id' => ['serial32', 'cast' => 'int'],
 			'farm' => ['element32', 'farm\Farm', 'cast' => 'element'],
 			'season' => ['int16', 'min' => 0, 'max' => NULL, 'cast' => 'int'],
-			'series' => ['element32', 'series\Series', 'cast' => 'element'],
+			'series' => ['element32', 'series\Series', 'null' => TRUE, 'cast' => 'element'],
+			'task' => ['element32', 'series\Task', 'null' => TRUE, 'cast' => 'element'],
 			'zone' => ['element32', 'map\Zone', 'cast' => 'element'],
 			'plot' => ['element32', 'map\Plot', 'cast' => 'element'],
 			'bed' => ['element32', 'map\Bed', 'cast' => 'element'],
 			'length' => ['int16', 'min' => 1, 'max' => NULL, 'null' => TRUE, 'cast' => 'int'],
 			'width' => ['int16', 'min' => 1, 'max' => NULL, 'null' => TRUE, 'cast' => 'int'],
-			'area' => ['float32', 'min' => 0.01, 'max' => NULL, 'cast' => 'float'],
+			'area' => ['float32', 'min' => 0.01, 'max' => NULL, 'null' => TRUE, 'cast' => 'float'],
 			'createdAt' => ['datetime', 'cast' => 'string'],
 			'createdBy' => ['element32', 'user\User', 'cast' => 'element'],
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'farm', 'season', 'series', 'zone', 'plot', 'bed', 'length', 'width', 'area', 'createdAt', 'createdBy'
+			'id', 'farm', 'season', 'series', 'task', 'zone', 'plot', 'bed', 'length', 'width', 'area', 'createdAt', 'createdBy'
 		]);
 
 		$this->propertiesToModule += [
 			'farm' => 'farm\Farm',
 			'series' => 'series\Series',
+			'task' => 'series\Task',
 			'zone' => 'map\Zone',
 			'plot' => 'map\Plot',
 			'bed' => 'map\Bed',
@@ -71,7 +73,8 @@ class PlaceModel extends \ModuleModel {
 		]);
 
 		$this->uniqueConstraints = array_merge($this->uniqueConstraints, [
-			['series', 'bed']
+			['series', 'bed'],
+			['task', 'bed']
 		]);
 
 	}
@@ -81,7 +84,7 @@ class PlaceModel extends \ModuleModel {
 		switch($property) {
 
 			case 'area' :
-				return new \Sql('length * width / 100');
+				return new \Sql('IF(length IS NOT NULL AND width IS NOT NULL, length * width / 100, NULL)');
 
 			case 'createdAt' :
 				return new \Sql('NOW()');
@@ -118,6 +121,10 @@ class PlaceModel extends \ModuleModel {
 
 	public function whereSeries(...$data): PlaceModel {
 		return $this->where('series', ...$data);
+	}
+
+	public function whereTask(...$data): PlaceModel {
+		return $this->where('task', ...$data);
 	}
 
 	public function whereZone(...$data): PlaceModel {

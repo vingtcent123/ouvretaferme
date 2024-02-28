@@ -12,8 +12,6 @@ class Task extends TaskElement {
 			'variety' => ['name'],
 			'category' => ['fqn', 'name'],
 			'series' => ['name', 'cycle', 'mode', 'season', 'area', 'areaTarget', 'length', 'lengthTarget', 'bedWidth', 'use'],
-			'zone' => ['name'],
-			'plot' => ['name', 'zoneFill'],
 			'action' => ['fqn', 'name', 'short', 'categories', 'color', 'pace', 'series'],
 			'delayed' => function(Task $e): bool {
 
@@ -101,6 +99,20 @@ class Task extends TaskElement {
 
 	public function canPostpone(): bool {
 		return ($this->isTodo() and $this['plannedWeek'] !== NULL);
+	}
+
+	public function canSoil(): bool {
+
+		$this->expects([
+			'series',
+			'category' => ['fqn']
+		]);
+
+		return (
+			$this['series']->empty() and
+			in_array($this['category']['fqn'], ['culture', 'production'])
+		);
+
 	}
 
 	public function format(string $property, array $options = []): ?string {
@@ -329,23 +341,6 @@ class Task extends TaskElement {
 				}
 
 				return TRUE;
-
-			},
-
-			'plot.check' => function(\map\Plot $ePlot): bool {
-
-				if($ePlot->empty()) {
-					return TRUE;
-				}
-
-				if($this->offsetExists('farm') === FALSE) {
-					return FALSE;
-				}
-
-				return \map\Plot::model()
-					->select('zone')
-					->whereFarm($this['farm'])
-					->get($ePlot);
 
 			},
 

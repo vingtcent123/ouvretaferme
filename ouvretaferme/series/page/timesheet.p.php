@@ -2,7 +2,9 @@
 // Affichage des participants pour une tâche
 (new Page(function($data) {
 
-		$data->cTask = \series\TaskLib::getByIds(REQUEST('ids', 'array'));
+		$data->cTask = \series\TaskLib::getByIds(REQUEST('ids', 'array'), properties: \series\Task::getSelection() + [
+			'cccPlace' => \series\PlaceLib::delegateByTask()
+		]);
 
 		\series\Task::validateBatch($data->cTask);
 		\series\Task::validateSameAction($data->cTask);

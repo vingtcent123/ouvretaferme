@@ -177,7 +177,7 @@ class CultivationUi {
 
 							if($field === \farm\Farmer::SOIL) {
 								$cultivations .= '<div class="series-item-planning-place">';
-									$places = $this->displayPlaces($eSeries, $eSeries['cccPlace']);
+									$places = $this->displayPlaces($eSeries['use'], $eSeries['cccPlace']);
 									if($places) {
 										$cultivations .= $places;
 									} else {
@@ -350,7 +350,7 @@ class CultivationUi {
 
 	}
 
-	public function displayPlaces(Series $eSeries, \Collection $cccPlace): string {
+	public function displayPlaces(string $use, \Collection $cccPlace): string {
 
 		$list = [];
 
@@ -366,7 +366,7 @@ class CultivationUi {
 					$h = encode($ePlaceFirst['zone']['name']);
 				}
 
-				if($eSeries['use'] === Series::BED) {
+				if($use === Series::BED) {
 
 					$beds = $cPlace
 						->find(fn($ePlace) => $ePlace['bed']['plotFill'] === FALSE)

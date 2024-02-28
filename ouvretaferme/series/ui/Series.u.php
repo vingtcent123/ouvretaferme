@@ -170,7 +170,7 @@ class SeriesUi {
 					}
 
 				} else {
-					$h .= $this->getPlace($eSeries, $cPlace);
+					$h .= $this->getPlace('series', $eSeries, $cPlace);
 				}
 			$h .= '</div>';
 
@@ -236,19 +236,23 @@ class SeriesUi {
 
 	}
 
-	public function getPlace(Series $eSeries, \Collection $cPlace): string {
+	public function getPlace(string $source, Series|Task $e, \Collection $cPlace): string {
 
-		$h = '<div class="series-soil-grid">';
+		$use = ($source === 'task') ? Series::BED : $e['use'];
+
+		$h = '<div class="series-soil-grid series-soil-grid-'.$source.'">';
 
 			$h .= '<div class="util-grid-header">'.s("Parcelle").'</div>';
 			$h .= '<div class="util-grid-header">'.s("Bloc").'</div>';
 			$h .= '<div class="util-grid-header">';
-				if($eSeries['use'] === Series::BED) {
+				if($use === Series::BED) {
 					$h .= s("Planche");
 				}
 			$h .= '</div>';
-			$h .= '<div class="util-grid-header text-end">'.s("Utilisation").'</div>';
-			$h .= '<div class="util-grid-header text-end" style="grid-column: span 2">'.s("Surface").'</div>';
+			if($source === 'series') {
+				$h .= '<div class="util-grid-header text-end">'.s("Utilisation").'</div>';
+				$h .= '<div class="util-grid-header text-end" style="grid-column: span 2">'.s("Surface").'</div>';
+			}
 			$h .= '<div class="util-grid-header">'.\Asset::icon('greenhouse').'</div>';
 
 			foreach($cPlace as $ePlace) {
@@ -256,7 +260,7 @@ class SeriesUi {
 				$h .= '<div class="series-soil-grid-zone">'.encode($ePlace['zone']['name']).'</div>';
 				$h .= '<div class="series-soil-grid-plot">'.encode($ePlace['plot']['name']).'</div>';
 				$h .= '<div class="series-soil-grid-bed">';
-					if($eSeries['use'] === Series::BED) {
+					if($use === Series::BED) {
 
 						if($ePlace['bed']['name'] !== NULL) {
 							$h .= encode($ePlace['bed']['name']);
@@ -268,25 +272,31 @@ class SeriesUi {
 
 					}
 				$h .= '</div>';
-				$h .= '<div class="series-soil-grid-use">';
-					$h .= match($eSeries['use']) {
-						Series::BED => ($ePlace['bed']['length'] !== NULL) ? s("{value} %", round($ePlace['length'] / $ePlace['bed']['length'] * 100)) : '',
-						Series::BLOCK => s("{value} %", round($ePlace['area'] / $ePlace['bed']['area'] * 100))
-					};
-				$h .= '</div>';
-				$h .= '<div class="series-soil-grid-area">';
 
-					if($eSeries['use'] === Series::BED) {
-						$h .= '<b class="util-unit">'.s("{length} mL x {width} cm", $ePlace).'</b>';
-					}
+				if($source === 'series') {
 
-				$h .= '</div>';
-				$h .= '<div class="series-soil-grid-size util-unit">';
-					$h .= match($eSeries['use']) {
-						Series::BED => s("({value} m²)", round($ePlace['area'])),
-						Series::BLOCK => '<b>'.s("({value} m²)", round($ePlace['area'])).'</b>'
-					};
-				$h .= '</div>';
+					$h .= '<div class="series-soil-grid-use">';
+						$h .= match($use) {
+							Series::BED => ($ePlace['bed']['length'] !== NULL) ? s("{value} %", round($ePlace['length'] / $ePlace['bed']['length'] * 100)) : '',
+							Series::BLOCK => s("{value} %", round($ePlace['area'] / $ePlace['bed']['area'] * 100))
+						};
+					$h .= '</div>';
+					$h .= '<div class="series-soil-grid-area">';
+
+						if($use === Series::BED) {
+							$h .= '<b class="util-unit">'.s("{length} mL x {width} cm", $ePlace).'</b>';
+						}
+
+					$h .= '</div>';
+					$h .= '<div class="series-soil-grid-size util-unit">';
+						$h .= match($use) {
+							Series::BED => s("({value} m²)", round($ePlace['area'])),
+							Series::BLOCK => '<b>'.s("({value} m²)", round($ePlace['area'])).'</b>'
+						};
+					$h .= '</div>';
+
+				}
+
 				$h .= '<div class="series-soil-grid-greenhouse">';
 
 					if($ePlace['bed']['greenhouse']->empty() or $ePlace['bed']['name'] === NULL) {
@@ -299,30 +309,34 @@ class SeriesUi {
 
 			}
 
-			if($cPlace->count() > 1) {
+			if(
+				$source === 'series' and
+				$cPlace->count() > 1
+			) {
+
 				$h .= '<div style="grid-column: span 4"></div>';
 
-					if($eSeries['use'] === Series::BED) {
+					if($use === Series::BED) {
 						$h .= '<div class="series-soil-grid-area series-soil-grid-total">';
-							$h .= '<b class="util-unit">'.s("{length} mL", $eSeries).'</b>';
+							$h .= '<b class="util-unit">'.s("{length} mL", $e).'</b>';
 						$h .= '</div>';
 					} else {
 						$h .= '<div></div>';
 					}
 
 				$h .= '<div class="series-soil-grid-size util-unit series-soil-grid-total">';
-					$h .= match($eSeries['use']) {
-						Series::BED => s("({value} m²)", round($eSeries['area'])),
-						Series::BLOCK => '<b>'.s("({value} m²)", round($eSeries['area'])).'</b>'
+					$h .= match($use) {
+						Series::BED => s("({value} m²)", round($e['area'])),
+						Series::BLOCK => '<b>'.s("({value} m²)", round($e['area'])).'</b>'
 					};
 				$h .= '</div>';
 
-				switch($eSeries['use']) {
+				switch($use) {
 
 					case Series::BED;
-						if($eSeries['lengthTarget']) {
+						if($e['lengthTarget']) {
 							$h .= '<div class="series-soil-grid-total">';
-								$h .= s("{value} de l'objectif", \util\TextUi::pc($eSeries['length'] / $eSeries['lengthTarget'] * 100));
+								$h .= s("{value} de l'objectif", \util\TextUi::pc($e['length'] / $e['lengthTarget'] * 100));
 							$h .= '</div>';
 						} else {
 							$h .= '<div></div>';
@@ -330,9 +344,9 @@ class SeriesUi {
 						break;
 
 					case Series::BLOCK;
-						if($eSeries['areaTarget']) {
+						if($e['areaTarget']) {
 							$h .= '<div class="series-soil-grid-total">';
-								$h .= s("{value} de l'objectif", \util\TextUi::pc($eSeries['area'] / $eSeries['areaTarget'] * 100));
+								$h .= s("{value} de l'objectif", \util\TextUi::pc($e['area'] / $e['areaTarget'] * 100));
 							$h .= '</div>';
 						} else {
 							$h .= '<div></div>';
@@ -340,7 +354,9 @@ class SeriesUi {
 						break;
 
 				}
+
 			}
+
 		$h .= '</div>';
 
 		return $h;

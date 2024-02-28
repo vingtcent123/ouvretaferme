@@ -322,9 +322,9 @@
 		\series\TaskLib::fillHarvestDates($data->e);
 
 		if($data->e['series']->empty()) {
-			$data->cPlace = new \Collection();
+			$data->cPlace = \series\PlaceLib::getByElement($data->e);
 		} else {
-			$data->cPlace = \series\PlaceLib::getBySeries($data->e['series']);
+			$data->cPlace = \series\PlaceLib::getByElement($data->e['series']);
 		}
 
 		$data->e['cTool'] = \series\TaskLib::getTools($data->e);
@@ -423,7 +423,9 @@
 
 (new Page(function($data) {
 
-		$data->c = \series\TaskLib::getByIds(REQUEST('ids', 'array'));
+		$data->c = \series\TaskLib::getByIds(REQUEST('ids', 'array'), properties: \series\Task::getSelection() + [
+			'cccPlace' => \series\PlaceLib::delegateByTask()
+		]);
 
 		\series\Task::validateBatch($data->c);
 
@@ -433,7 +435,7 @@
 	->get('updateHarvestCollection', function($data) {
 
 		$data->c->validate('canWrite');
-		$data->c->setColumn('harvestDate', GET('date'));
+		$data->c->setColumn('harvestDate', GET('date', default: currentDate()));
 
 		\series\Task::validateSameAction($data->c, \farm\ActionLib::getByFarm($data->eFarm, fqn: ACTION_RECOLTE));
 

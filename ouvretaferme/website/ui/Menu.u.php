@@ -31,13 +31,13 @@ class MenuUi {
 				$h .= $form->hidden('website', $eWebsite['id']);
 
 				$h .= match($for) {
-					'webpage' => $form->dynamicGroup($eMenu, 'webpage', function($d) use ($cWebpage) {
+					'webpage' => $form->dynamicGroup($eMenu, 'webpage*', function($d) use ($cWebpage) {
 						$d->values = $cWebpage;
 					}),
-					'url' => $form->dynamicGroup($eMenu, 'url')
+					'url' => $form->dynamicGroup($eMenu, 'url*')
 				};
 
-				$h .= $form->dynamicGroup($eMenu, 'label');
+				$h .= $form->dynamicGroup($eMenu, 'label*');
 
 				$h .= $form->group(
 					content: $form->submit(s("Ajouter au menu"))

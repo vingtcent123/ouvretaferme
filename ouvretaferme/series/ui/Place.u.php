@@ -12,25 +12,38 @@ class PlaceUi {
 
 	}
 
-	public function update(Series $eSeries, \Collection $cZone, \Collection $cPlace, \Search $search): \Panel {
+	public function update(string $source, Series|Task $e, \Collection $cZone, \Collection $cPlace, \Search $search): \Panel {
 
 		$form = new \util\FormUi();
 
-		$title = match($eSeries['use']) {
-			Series::BED => s("Assolement sur planches de {value} cm", $eSeries['bedWidth']),
-			Series::BLOCK => s("Assolement sur surface libre")
+		$title = match($source) {
+			'series' => match($e['use']) {
+				Series::BED => s("Assolement sur planches de {value} cm", $e['bedWidth']),
+				Series::BLOCK => s("Assolement sur surface libre")
+			},
+			'task' => s("Assolement")
+		};
+
+		$subTitle = match($source) {
+			'series' => SeriesUi::getPanelHeader($e),
+			'task' => TaskUi::getPanelHeader($e)
 		};
 
 		if($cZone->empty()) {
 
 			$h = '<div class="util-block-help">';
-				$h .= '<p>'.s("Vous ne pouvez pas assoler cette série car vous n'avez pas encore configuré vos parcelles et vos planches de culture.", $eSeries['season']).'</p>';
-				$h .= '<a href="'.\farm\FarmUi::urlSoil($eSeries['farm'], $eSeries['season']).'" class="btn btn-secondary">'.s("Configurer mes emplacements").'</a>';
+				$h .= '<p>';
+					$h .= match($source) {
+						'series' => s("Vous ne pouvez pas assoler cette série car vous n'avez pas encore configuré vos parcelles et vos planches de culture."),
+						'task' => s("Vous ne pouvez pas assoler cette intervention car vous n'avez pas encore configuré vos parcelles et vos planches de culture.")
+					};
+				$h .= '</p>';
+				$h .= '<a href="'.\farm\FarmUi::urlSoil($e['farm'], $e['season']).'" class="btn btn-secondary">'.s("Configurer mes emplacements").'</a>';
 			$h .= '</div>';
 
 			return new \Panel(
 				title: $title,
-				subTitle: SeriesUi::getPanelHeader($eSeries),
+				subTitle: $subTitle,
 				body: $h,
 			);
 
@@ -39,19 +52,11 @@ class PlaceUi {
 
 
 		// Positionné avant pour récupérer les alertes
-		$places = $this->getUpdatePlaces($form, $eSeries, $cZone, $cPlace);
+		$places = $this->getUpdatePlaces($form, $source, $e, $cZone, $cPlace);
 
 		$h = '';
 
-		if($eSeries['use'] === Series::BED) {
-
-			if($eSeries['bedStartCalculated'] === NULL or $eSeries['bedStopCalculated'] === NULL) {
-
-				$h .= '<div class="util-warning">';
-					$h .= \Asset::icon('exclamation-triangle-fill').' '.s("Pensez à renseigner sur la série {value} les dates de semis direct ou de plantation ainsi que les périodes de récolte attendues afin qu'elle s'affiche au bon endroit sur le diagramme de temps.", SeriesUi::link($eSeries, TRUE));
-				$h .= '</div>';
-
-			}
+		if($e['use'] === Series::BED) {
 
 			if($this->alert) {
 
@@ -61,42 +66,60 @@ class PlaceUi {
 
 			}
 
-			$h .= '<div class="place-update-filter">';
-				$h .= ' <a '.attr('onclick', 'Lime.Search.toggle("#place-search")').' class="btn btn-primary">';
-					$h .= \Asset::icon('search').' '.s("Filtrer les planches");
-				$h .= '</a>';
-			$h .= '</div>';
+			if($source === 'series') {
 
-			$h .= $this->getPlaceSearch($eSeries, $search);
+				if($e['bedStartCalculated'] === NULL or $e['bedStopCalculated'] === NULL) {
+
+					$h .= '<div class="util-warning">';
+						$h .= \Asset::icon('exclamation-triangle-fill').' '.s("Pensez à renseigner sur la série {value} les dates de semis direct ou de plantation ainsi que les périodes de récolte attendues afin qu'elle s'affiche au bon endroit sur le diagramme de temps.", SeriesUi::link($e, TRUE));
+					$h .= '</div>';
+
+				}
+
+				$h .= '<div class="place-update-filter">';
+					$h .= ' <a '.attr('onclick', 'Lime.Search.toggle("#place-search")').' class="btn btn-primary">';
+						$h .= \Asset::icon('search').' '.s("Filtrer les planches");
+					$h .= '</a>';
+				$h .= '</div>';
+
+				$h .= $this->getPlaceSearch($e, $search);
+
+			}
 
 		}
 
 		$h .= $form->openAjax('/series/place:doUpdate', ['id' => 'place-update']);
 
-			$h .= $form->hidden('series', $eSeries['id']);
+			$h .= $form->hidden($source, $e['id']);
 			$h .=	$places;
 			$h .= $form->submit(attributes: ['style' => 'visibility: hidden']); // Juste pour la validation avec Entrée
 
 			$submit = '<div class="place-update-submit">';
 				$submit .= $form->button(s("Enregistrer"), ['onclick' => 'Place.submitUpdate()']);
 				$submit .= '<div>';
-					switch($eSeries['use']) {
 
-						case Series::BED;
-							$submit .= s("Sélectionné : {value} mL", '<span id="place-update-length">'.($eSeries['length'] ?? 0).'</span>');
-							if($eSeries['lengthTarget']) {
-								$submit .= s(" / Objectif : {value} mL", $eSeries['lengthTarget']);
-							}
-							break;
+					if($source === 'series') {
 
-						case Series::BLOCK;
-							$submit .= s("Sélectionné : {value} m²", '<span id="place-update-area">'.($eSeries['area'] ?? 0).'</span>');
-							if($eSeries['areaTarget']) {
-								$submit .= s(" / Objectif : {value} m²", $eSeries['areaTarget']);
-							}
-							break;
+						switch($e['use']) {
+
+							case Series::BED;
+								$submit .= s("Sélectionné : {value} mL", '<span id="place-update-length">'.($e['length'] ?? 0).'</span>');
+								if($e['lengthTarget']) {
+									$submit .= s(" / Objectif : {value} mL", $e['lengthTarget']);
+								}
+								break;
+
+							case Series::BLOCK;
+								$submit .= s("Sélectionné : {value} m²", '<span id="place-update-area">'.($e['area'] ?? 0).'</span>');
+								if($e['areaTarget']) {
+									$submit .= s(" / Objectif : {value} m²", $e['areaTarget']);
+								}
+								break;
+
+						}
 
 					}
+
 				$submit .= '</div>';
 			$submit .= '</div>';
 
@@ -105,7 +128,7 @@ class PlaceUi {
 		return new \Panel(
 			id: 'panel-place-update',
 			title: $title,
-			subTitle: SeriesUi::getPanelHeader($eSeries),
+			subTitle: $subTitle,
 			body: $h,
 			footer: $submit
 		);
@@ -179,18 +202,18 @@ class PlaceUi {
 
 	}
 	
-	protected function getUpdatePlaces(\util\FormUi $form, Series $eSeries, \Collection $cZone, \Collection $cPlace): string {
+	protected function getUpdatePlaces(\util\FormUi $form, string $source, Series|Task $e, \Collection $cZone, \Collection $cPlace): string {
 
 		$this->alert = FALSE;
 
 		if($cZone->count() === 1) {
-			return $this->getUpdateZone($form, $eSeries, $cZone->first(), $cPlace);
+			return $this->getUpdateZone($form, $source, $e, $cZone->first(), $cPlace);
 		}
 
 		$zones = array_count_values($cPlace->getColumnCollection('zone')->getIds());
 		asort($zones);
 
-		$h = '<div class="tabs-h" id="place-tabs" onrender="'.encode('Lime.Tab.restore(this, "map-place-update"'.($zones ? ', '.array_key_last($zones) : '').')').'">';
+		$h = '<div class="tabs-h place-grid-'.$source.'" id="place-grid-wrapper" onrender="'.encode('Lime.Tab.restore(this, "map-place-update"'.($zones ? ', '.array_key_last($zones) : '').')').'">';
 
 			$h .= '<div class="tabs-item">';
 
@@ -212,7 +235,7 @@ class PlaceUi {
 			$h .= '</div>';
 
 			foreach($cZone as $eZone) {
-				$h .= $this->getUpdateZone($form, $eSeries, $eZone, $cPlace);
+				$h .= $this->getUpdateZone($form, $source, $e, $eZone, $cPlace);
 			}
 
 		$h .= '</div>';
@@ -221,9 +244,9 @@ class PlaceUi {
 
 	}
 
-	protected function getUpdateZone(\util\FormUi $form, Series $eSeries, \map\Zone $eZone, \Collection $cPlace): string {
+	protected function getUpdateZone(\util\FormUi $form, string $source, Series|Task $e, \map\Zone $eZone, \Collection $cPlace): string {
 
-		$eSeries->expects([
+		$e->expects([
 			'farm' => ['calendarMonths', 'calendarMonthStart', 'calendarMonthStop'],
 			'season'
 		]);
@@ -236,7 +259,8 @@ class PlaceUi {
 
 			$h .= $this->getUpdatePlace(
 				$form,
-				$eSeries,
+				$source,
+				$e,
 				$cPlace[$eBedZone['id']] ?? new Place(),
 				'zone',
 				$eBedZone,
@@ -248,7 +272,7 @@ class PlaceUi {
 			// Planches de la zone
 			if($ePlotZone['beds'] > 0) {
 
-				$beds = $this->getUpdateBeds($form, $eSeries, $cPlace, $ePlotZone['cBed']);
+				$beds = $this->getUpdateBeds($form, $source, $e, $cPlace, $ePlotZone['cBed']);
 
 				if($beds !== '') {
 
@@ -258,10 +282,10 @@ class PlaceUi {
 								$h .= '<input type="checkbox" onclick="Place.toggleSelection(this)"/>';
 							$h .= '</label>';
 							$h .= '<div></div>';
-							$h .= (new CultivationUi())->getListSeason($eSeries['farm'], $eSeries['season']);
+							$h .= (new CultivationUi())->getListSeason($e['farm'], $e['season']);
 						$h .= '</div>';
 						$h .= '<div class="place-grid-content">';
-							$h .= (new CultivationUi())->getListGrid($eSeries['farm'], $eSeries['season']);
+							$h .= (new CultivationUi())->getListGrid($e['farm'], $e['season']);
 							$h .= $beds;
 						$h .= '</div>';
 					$h .= '</div>';
@@ -283,7 +307,8 @@ class PlaceUi {
 
 					$h .= $this->getUpdatePlace(
 						$form,
-						$eSeries,
+						$source,
+						$e,
 						$cPlace[$eBedPlot['id']] ?? new Place(),
 						'plot',
 						$eBedPlot,
@@ -292,7 +317,7 @@ class PlaceUi {
 
 					if($ePlot['beds'] > 0) {
 
-						$beds = $this->getUpdateBeds($form, $eSeries, $cPlace, $ePlot['cBed']);
+						$beds = $this->getUpdateBeds($form, $source, $e, $cPlace, $ePlot['cBed']);
 
 						if($beds !== '') {
 
@@ -302,11 +327,11 @@ class PlaceUi {
 										$h .= '<input type="checkbox" onclick="Place.toggleSelection(this)"/>';
 									$h .= '</label>';
 									$h .= '<div></div>';
-									$h .= (new CultivationUi())->getListSeason($eSeries['farm'], $eSeries['season']);
+									$h .= (new CultivationUi())->getListSeason($e['farm'], $e['season']);
 								$h .= '</div>';
 
 								$h .= '<div class="place-grid-content">';
-									$h .= (new CultivationUi())->getListGrid($eSeries['farm'], $eSeries['season']);
+									$h .= (new CultivationUi())->getListGrid($e['farm'], $e['season']);
 									$h .= $beds;
 								$h .= '</div>';
 							$h .= '</div>';
@@ -328,7 +353,7 @@ class PlaceUi {
 
 	}
 
-	protected function getUpdateBeds(\util\FormUi $form, Series $eSeries, \Collection $cPlace, \Collection $cBed): string {
+	protected function getUpdateBeds(\util\FormUi $form, string $source, Series|Task $e, \Collection $cPlace, \Collection $cBed): string {
 
 		$h = '';
 
@@ -348,7 +373,8 @@ class PlaceUi {
 
 			$h .= $this->getUpdatePlace(
 				$form,
-				$eSeries,
+				$source,
+				$e,
 				$ePlace,
 				'bed',
 				$eBed,
@@ -360,16 +386,16 @@ class PlaceUi {
 
 	}
 
-	protected function getUpdatePlace(\util\FormUi $form, Series $eSeries, Place $ePlace, string $type, \map\Bed $eBed, string $name): string {
+	protected function getUpdatePlace(\util\FormUi $form, string $source, Series|Task $e, Place $ePlace, string $type, \map\Bed $eBed, string $name): string {
 
 		$h = '<div class="place-grid place-grid-'.$type.' '.($ePlace->notEmpty() ? 'selected' : '').'">';
 
 			if(
-				($eSeries['use'] === Series::BED and $type === 'bed') or
-				($eSeries['use'] === Series::BLOCK and in_array($type, ['plot', 'zone']))
+				($e['use'] === Series::BED and $type === 'bed') or
+				($e['use'] === Series::BLOCK and in_array($type, ['plot', 'zone']))
 			) {
 				$h .= '<label class="place-grid-select">'.$form->inputCheckbox('beds[]', $eBed['id'], ['checked' => $ePlace->notEmpty()]).'</label>';
-			} else if($eSeries['use'] === Series::BED and in_array($type, ['plot', 'zone'])) {
+			} else if($e['use'] === Series::BED and in_array($type, ['plot', 'zone'])) {
 				$h .= '<label class="place-grid-select">'.$form->inputCheckbox('beds[]', $eBed['id'], ['checked' => $ePlace->notEmpty()]).'</label>';
 			} else {
 				$h .= '<div class="place-grid-select place-grid-noselect">×</div>';
@@ -389,38 +415,42 @@ class PlaceUi {
 				}
 			$h .= '</div>';
 
-			$h .= '<div class="place-grid-range">';
+			if($source === 'series') {
 
-				if($eBed['length'] !== NULL) {
+				$h .= '<div class="place-grid-range">';
 
-					$h .= $form->inputGroup(
-						$form->addon(s("Utiliser")).
-						'<div class="form-control">'.$form->range('sizes['.$eBed['id'].']', 0, $eBed['length'], 1, $ePlace->notEmpty() ? $ePlace['length'] : $eBed['length'], [
-							'data-label' => 'mL'
-						]).'</div>'
-					);
+					if($eBed['length'] !== NULL) {
 
-				} else {
+						$h .= $form->inputGroup(
+							$form->addon(s("Utiliser")).
+							'<div class="form-control">'.$form->range('sizes['.$eBed['id'].']', 0, $eBed['length'], 1, $ePlace->notEmpty() ? $ePlace['length'] : $eBed['length'], [
+								'data-label' => 'mL'
+							]).'</div>'
+						);
 
-					$h .= match($eSeries['use']) {
+					} else {
 
-						Series::BED => $form->inputGroup(
-							$form->addon(s("Planche temporaire")).
-							$form->number('sizes['.$eBed['id'].']', $ePlace->notEmpty() ? $ePlace['length'] : '', ['min' => 0]).
-							$form->addon(s("mL"))
-						),
+						$h .= match($e['use']) {
 
-						Series::BLOCK => $form->inputGroup(
-							$form->addon(s("Surface cultivée")).
-							$form->number('sizes['.$eBed['id'].']', $ePlace->notEmpty() ? $ePlace['area'] : $eBed['area'], ['min' => 0, 'max' => $eBed['area']]).
-							$form->addon(s("m²"))
-						)
+							Series::BED => $form->inputGroup(
+								$form->addon(s("Planche temporaire")).
+								$form->number('sizes['.$eBed['id'].']', $ePlace->notEmpty() ? $ePlace['length'] : '', ['min' => 0]).
+								$form->addon(s("mL"))
+							),
 
-					};
+							Series::BLOCK => $form->inputGroup(
+								$form->addon(s("Surface cultivée")).
+								$form->number('sizes['.$eBed['id'].']', $ePlace->notEmpty() ? $ePlace['area'] : $eBed['area'], ['min' => 0, 'max' => $eBed['area']]).
+								$form->addon(s("m²"))
+							)
 
-				}
+						};
 
-			$h .= '</div>';
+					}
+
+				$h .= '</div>';
+
+			}
 
 			$h .= '<div class="place-grid-series">';
 
@@ -434,7 +464,10 @@ class PlaceUi {
 					foreach($eBed['cPlace'] as $ePlaceCurrent) {
 
 						// Filtre uniquement sur la série en cours sur le parcellaire
-						if($ePlaceCurrent['series']['season'] !== $eSeries['season']) {
+						if(
+							$ePlaceCurrent['series']->empty() or
+							$ePlaceCurrent['series']['season'] !== $e['season']
+						) {
 							continue;
 						}
 
@@ -463,7 +496,7 @@ class PlaceUi {
 
 				} else {
 
-					$h .= $this->getTimeline($eSeries['farm'], $eBed, $eBed['cPlace'], $eSeries['season'], $eSeries);
+					$h .= $this->getTimeline($e['farm'], $eBed, $eBed['cPlace'], $e['season'], $source, $e);
 
 				}
 
@@ -475,7 +508,7 @@ class PlaceUi {
 
 	}
 
-	public function getTimeline(\farm\Farm $eFarm, \map\Bed $eBed, \Collection $cPlace, int $season, Series $eSeriesPlaceholder = new Series()): string {
+	public function getTimeline(\farm\Farm $eFarm, \map\Bed $eBed, \Collection $cPlace, int $season, ?string $placeholderSource = NULL, Series|Task|null $ePlaceholder = NULL): string {
 
 		$lines = [];
 
@@ -485,9 +518,7 @@ class PlaceUi {
 
 		// Tri par démarrage
 		foreach($cPlace as $ePlace) {
-
 			$this->positionPlace($ePlace, $season, $firstWeekShown, $lastWeekShown);
-
 		}
 
 		$cPlace->sort('positionStart');
@@ -548,8 +579,8 @@ class PlaceUi {
 				foreach($line as $ePlace) {
 
 					$isPlaceholder = (
-						$eSeriesPlaceholder->notEmpty() and
-						$eSeriesPlaceholder['id'] === $ePlace['series']['id']
+						$ePlaceholder->notEmpty() and
+						$ePlaceholder['id'] === $ePlace['series']['id']
 					);
 
 					if($isPlaceholder) {
@@ -591,17 +622,20 @@ class PlaceUi {
 
 			}
 
-			if($eSeriesPlaceholder->notEmpty()) {
+			if($placeholderSource !== NULL) {
 
 				$ePlace = new Place([
 					'missing' => FALSE,
-					'series' => $eSeriesPlaceholder
+					'series' => new Series(),
+					'task' => new Task()
 				]);
+
+				$ePlace[$placeholderSource] = $ePlaceholder;
 
 				$this->positionPlace($ePlace, $season, $firstWeekShown, $lastWeekShown);
 
 				if($ePlace['positionStart'] !== NULL and $ePlace['positionStop'] !== NULL) {
-					$h .= $this->getSeriesTimeline($eFarm, $eBed, $season, $ePlace, $eSeriesPlaceholder, $eSeriesPlaceholder['cCultivation'], TRUE, 'height: '.$totalHeight.'; top: 0;');
+					$h .= $this->getSeriesTimeline($eFarm, $eBed, $season, $ePlace, $ePlaceholder, $ePlaceholder['cCultivation'], TRUE, 'height: '.$totalHeight.'; top: 0;');
 				}
 
 			}
@@ -612,7 +646,13 @@ class PlaceUi {
 
 	}
 
-	protected function positionPlace(Place $ePlace, int $season, int $firstWeekShown, int $lastWeekShown) {
+	protected function positionPlace(Place $ePlace, int $season, int $firstWeekShown, int $lastWeekShown): void {
+
+		if($ePlace['series']->empty()) {
+			$ePlace['positionStart'] = NULL;
+			$ePlace['positionStop'] = NULL;
+			return;
+		}
 
 		$ePlace['missing'] = FALSE;
 
