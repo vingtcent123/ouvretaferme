@@ -243,6 +243,7 @@ div.flow-timeline-description-list div[data-action="task-checkbox"] svg.asset-ic
 
 div.flow-timeline-description {
 	font-size: 0.9rem;
+	user-select: none;
 }
 
 div.util-action-subtitle div.flow-timeline-description {
