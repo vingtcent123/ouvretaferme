@@ -65,6 +65,8 @@
 
 			$data->eDateSelected['cProduct'] = $cProduct;
 
+		} else {
+			$data->eDateSelected = new \shop\Date();
 		}
 
 		throw new ViewAction($data, path: ':shop');

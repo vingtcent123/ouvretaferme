@@ -1617,6 +1617,11 @@ class CultivationUi {
 			$eAction = $eTask['action'];
 
 			$week = $eTask['doneWeek'] ?? $eTask['plannedWeek'];
+
+			if($week === NULL) {
+				continue;
+			}
+
 			$ts = strtotime($week);
 
 			if($eTask['status'] === Task::DONE) {
@@ -1716,6 +1721,11 @@ class CultivationUi {
 			foreach($cTask as $eTask) {
 
 				$week = $eTask['doneWeek'] ?? $eTask['plannedWeek'];
+
+				if($week === NULL) {
+					continue;
+				}
+
 				$ts = strtotime($week);
 
 				$minTs = ($minTs === NULL) ? $ts : min($minTs, $ts);

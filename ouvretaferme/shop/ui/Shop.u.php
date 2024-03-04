@@ -392,13 +392,28 @@ class ShopUi {
 
 			$h .= '<div class="shop-header-flow">';
 
-				$h .= '<div class="shop-header-block util-block">';
-					if($cDate->count() > 1) {
-						$h .= (new \shop\DateUi())->getDeliveryPeriods($eShop, $cDate);
+				if($cDate->notEmpty()) {
+
+					$h .= '<div class="shop-header-block util-block">';
+						if($cDate->count() > 1) {
+							$h .= (new \shop\DateUi())->getDeliveryPeriods($eShop, $cDate);
+						} else {
+							$h .= (new \shop\DateUi())->getDeliveryPeriod($cDate->first());
+						}
+					$h .= '</div>';
+
+				} else {
+
+					if($eShop->canWrite()) {
+						$h .= '<div class="util-block-help">';
+							$h .= '<p>'.s("Pour activer votre boutique, vous devez créer une première date avec les produits que vous souhaitez vendre !").'</p>';
+							$h .= '<a href="'.\Lime::getUrl().''.ShopUi::adminUrl($eShop['farm'], $eShop).'" class="btn btn-secondary">'.s("Configurer ma boutique").'</a>';
+						$h .= '</div>';
 					} else {
-						$h .= (new \shop\DateUi())->getDeliveryPeriod($cDate->first());
+						$h .= '<div class="util-info">'.s("Cette boutique n'est pas encore ouverte, revenez un peu plus tard !").'</div>';
 					}
-				$h .= '</div>';
+
+				}
 
 			$h .= '</div>';
 
