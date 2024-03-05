@@ -579,6 +579,7 @@ class PlaceUi {
 				foreach($line as $ePlace) {
 
 					$isPlaceholder = (
+						$placeholderSource !== NULL and
 						$ePlaceholder->notEmpty() and
 						$ePlaceholder['id'] === $ePlace['series']['id']
 					);

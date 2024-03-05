@@ -72,6 +72,10 @@ class StripeFarmUi {
 
 		$form = new \util\FormUi();
 
+		$eStripeFarm = new StripeFarm([
+			'farm' => $eFarm
+		]);
+
 		$h = '<h1>';
 			$h .= s("Configurer le paiement en ligne");
 		$h .= '</h1>';
@@ -92,7 +96,7 @@ class StripeFarmUi {
 				\farm\FarmUi::link($eFarm, TRUE)
 			);
 
-			$h .= $form->dynamicGroups(new StripeFarm(), ['apiSecretKey', 'webhookSecretKey']);
+			$h .= $form->dynamicGroups($eStripeFarm, ['apiSecretKey', 'webhookSecretKey']);
 
 			$h .= $form->group(
 				content: $form->submit(s("Enregistrer les clés"))
@@ -117,6 +121,16 @@ class StripeFarmUi {
 
 			case 'apiSecretKey' :
 				$d->placeholder = 'sk_live_...';
+				$d->before = function(\util\FormUi $form, StripeFarm $eStripeFarm) {
+
+					$h = '<div class="util-block-help">';
+						$h .= '<h4>'.s("Obtenir la clé API secrète").'</h4>';
+						$h .= '<p>'.s("La clé API secrète peut être récupérée dans la section <i>Développeurs</i> de {icon} Stripe. Veillez à bien récupérer la clé secrète et pas la clé publique.", ['icon' => \Asset::icon('stripe')]).'</p>';
+					$h .= '</div>';
+
+					return $h;
+
+				};
 				break;
 
 			case 'apiSecretKeyTest' :
@@ -126,7 +140,21 @@ class StripeFarmUi {
 			case 'webhookSecretKey' :
 			case 'webhookSecretKeyTest' :
 				$d->placeholder = 'whsec_...';
-				$d->after = \util\FormUi::info(s("L'URL du webhook à renseigner sur Stripe est :").'<br/><u>'.\Lime::getUrl().'/payment/stripe:webhook</u>');
+				$d->before = function(\util\FormUi $form, StripeFarm $eStripeFarm) {
+
+					$h = '<div class="util-block-help">';
+						$h .= '<h4>'.s("Configurer le Webhook").'</h4>';
+						$h .= '<p>'.s("Le webhook se configure dans la section <i>Développeurs</i> de {icon} Stripe. Dans cette section, vous devez ajouter un <i>endpoint</i> que vous configurez de la manière suivante :", ['icon' => \Asset::icon('stripe')]).'</p>';
+						$h .= '<ul>';
+							$h .= '<li>'.s("URL :").' <u>'.\Lime::getUrl().'/payment/stripe:webhook?farm='.$eStripeFarm['farm']['id'].'</u></li>';
+							$h .= '<li>'.s("Événements à écouter :").' '.s("<b>Tous</b> les événements <i>Checkout</i> ET <b>tous</b> les événements <i>Payment Intent</i>").'</li>';
+						$h .= '</ul>';
+						$h .= '<p>'.s("Une fois que vous avez créé votre <i>endpoint</i>, récupérez sa clé secrète de signature et renseignez-là ci-dessous.").'</p>';
+					$h .= '</div>';
+
+					return $h;
+
+				};
 				break;
 
 		}
