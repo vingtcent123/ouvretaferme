@@ -3,13 +3,48 @@ namespace selling;
 
 class PaymentLib extends PaymentCrud {
 
-	public static function getByProviderId(string $provider, string $providerId): Payment {
+	public static function getByCheckoutId(string $id): Payment {
 
 		return Payment::model()
 			->select(Payment::getSelection())
-			->whereProvider($provider)
-			->whereProviderId($providerId)
+			->whereCheckoutId($id)
 			->get();
+
+	}
+
+	public static function getByPaymentIntentId(\payment\StripeFarm $eStripeFarm, string $id): Payment {
+
+		$ePayment = Payment::model()
+			->select(Payment::getSelection())
+			->wherePaymentIntentId($id)
+			->get();
+
+		if($ePayment->notEmpty()) {
+			return $ePayment;
+		}
+
+		self::associatePaymentIntentId($eStripeFarm, $id);
+
+		return Payment::model()
+			->select(Payment::getSelection())
+			->wherePaymentIntentId($id)
+			->get();
+
+	}
+
+	public static function associatePaymentIntentId(\payment\StripeFarm $eStripeFarm, string $id): void {
+
+		$checkout = \payment\StripeLib::getStripeCheckoutSessionFromPaymentIntent($eStripeFarm, $id);
+
+		if(isset($checkout['error'])) {
+			throw new \Exception(var_export($checkout['error'], TRUE));
+		}
+
+		Payment::model()
+			->whereCheckoutId($checkout['data'][0]['id'])
+			->update([
+				'paymentIntentId' => $id
+			]);
 
 	}
 
@@ -23,28 +58,25 @@ class PaymentLib extends PaymentCrud {
 
 	}
 
-	public static function updateStatus(string $provider, string $providerId, string $newStatus): int {
+	public static function updateStatus(string $id, string $newStatus): int {
 
 		return Payment::model()
-			->whereProvider($provider)
-			->whereProviderId($providerId)
+			->wherePaymentIntentId($id)
 			->update([
 				'status' => $newStatus
 			]);
 
 	}
 
-	public static function createBySale(Sale $eSale, string $provider, ?string $providerId = NULL): Payment {
+	public static function createBySale(Sale $eSale, string $providerId = NULL): Payment {
 
 		$eSale->expects(['customer', 'farm']);
-
 
 		$e = new Payment([
 			'sale' => $eSale,
 			'customer' => $eSale['customer'],
 			'farm' => $eSale['farm'],
-			'provider' => $provider,
-			'providerId' => $providerId
+			'checkoutId' => $providerId
 		]);
 
 		Payment::model()->insert($e);

@@ -101,6 +101,7 @@ class StripeLib {
 			'payment_method_types' => ['sepa_debit'],
 			'customer' => $customerSepa['stripeCustomerId'],
 			'payment_method' => $customerSepa['stripePaymentMethodId'],
+			'return_url' => 'TODO',// \shop\ShopUi::url(),
 			'confirm' => 'true',
 		];
 
@@ -130,6 +131,16 @@ class StripeLib {
 			StripeCustomerSepa::model()->update($eCustomer['stripeSepa'], ['stripeCustomerId' => $customer['id']]);
 
 		}
+
+	}
+
+	public static function getStripeCheckoutSessionFromPaymentIntent(StripeFarm $eStripeFarm, string $paymentIntentId) {
+
+		$endpoint = 'checkout/sessions';
+		$arguments = [
+			'payment_intent' => $paymentIntentId,
+		];
+		return self::sendStripeRequest($eStripeFarm, $endpoint, $arguments, mode: 'GET');
 
 	}
 
@@ -191,19 +202,19 @@ class StripeLib {
 
 	}
 
-	public static function webhook(array $event): void {
+	public static function webhook(StripeFarm $eStripeFarm, array $event): void {
 
 		if($event['type'] === 'checkout.session.completed' and $event['data']['object']['mode'] === 'setup') {
 			self::webhookSetupSepaDebit($event);
 		} else if(str_starts_with($event['type'], 'payment_intent')) {
-			self::webhookPaymentIntent($event);
+			self::webhookPaymentIntent($eStripeFarm, $event);
 		}
 
 	}
 
-	public static function webhookPaymentIntent(array $event): void {
+	public static function webhookPaymentIntent(StripeFarm $eStripeFarm, array $event): void {
 
-		$eSale = self::getSaleFromPaymentIntent($event);
+		$eSale = self::getSaleFromPaymentIntent($eStripeFarm, $event);
 		$object = $event['data']['object'];
 
 		$error = FALSE;
@@ -267,11 +278,11 @@ class StripeLib {
 
 	}
 
-	private static function getSaleFromPaymentIntent(array $event) {
+	private static function getSaleFromPaymentIntent(StripeFarm $eStripeFarm, array $event) {
 
 		$object = $event['data']['object'];
 
-		$ePayment = \selling\PaymentLib::getByProviderId(\selling\Payment::STRIPE, $object['id']);
+		$ePayment = \selling\PaymentLib::getByPaymentIntentId($eStripeFarm, $object['id']);
 
 		if($ePayment->empty()) {
 			throw new \Exception('Unknown payment intent '.$object['id']);

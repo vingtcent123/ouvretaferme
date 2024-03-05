@@ -158,15 +158,16 @@ Payment:
   sale: selling\Sale
   customer: selling\Customer
   farm: farm\Farm
-  provider: enum(STRIPE)
-  providerId: text8
+  checkoutId: ?text8
+  paymentIntentId: ?text8
   status: enum(PENDING, SUCCESS, FAILURE) = PENDING
   INDEX: [
     ["farm"],
     ["sale"]
   ]
   UNIQUE: [
-    ["provider", "providerId"]
+    ["checkoutId"],
+    ["paymentIntentId"]
   ]
 
 Pdf:

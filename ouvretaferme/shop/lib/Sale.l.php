@@ -328,9 +328,9 @@ class SaleLib {
 
 		\selling\SaleLib::update($eSale, ['paymentMethod']);
 
-		$ePayment = \selling\PaymentLib::createBySale($eSale, \selling\Payment::STRIPE, $stripeSession['payment_intent']);
+		$ePayment = \selling\PaymentLib::createBySale($eSale, $stripeSession['id']);
 
-		\selling\HistoryLib::createBySale($eSale, 'shop-payment-initiated', 'Stripe payment intent #'.$stripeSession['payment_intent'], ePayment: $ePayment);
+		\selling\HistoryLib::createBySale($eSale, 'shop-payment-initiated', 'Stripe ID #'.$stripeSession['id'], ePayment: $ePayment);
 
 		\selling\Sale::model()->commit();
 
@@ -434,17 +434,11 @@ class SaleLib {
 
 		$object = $event['data']['object'];
 
-		$ePayment = \selling\PaymentLib::getByProviderId(\selling\Payment::STRIPE, $object['id']);
-
-		if($ePayment->empty()) {
-			throw new \Exception('Missing Payment for intent "'.$object['id'].'"');
-		}
-
-		$affected = \selling\PaymentLib::updateStatus(\selling\Payment::STRIPE, $object['id'], \selling\Payment::FAILURE);
+		$affected = \selling\PaymentLib::updateStatus($object['id'], \selling\Payment::FAILURE);
 
 		if(
 			$affected > 0 and
-			\selling\PaymentLib::hasSuccess($ePayment['sale']) === FALSE
+			\selling\PaymentLib::hasSuccess($eSale) === FALSE
 		) {
 
 			\selling\Sale::model()
@@ -455,7 +449,7 @@ class SaleLib {
 
 			if($affected > 0) {
 
-				\selling\HistoryLib::createBySale($eSale, 'shop-payment-failed', 'Stripe event id #'.$event['id'].' (event type '.$event['type'].')');
+				\selling\HistoryLib::createBySale($eSale, 'shop-payment-failed', 'Stripe event id #'.$object['id'].' (event type '.$event['type'].')');
 
 				self::notify('saleFailed', $eSale);
 
@@ -489,13 +483,13 @@ class SaleLib {
 		$amountExpected = (int)round($eSale['priceIncludingVat'] * 100);
 
 		if($amountReceived !== $amountExpected) {
-			trigger_error('Amount received '.($object['amount_received'] / 100).' different from amount expected '.($eSale['priceIncludingVat']).' in sale #'.$eSale['id'].' (event #'.$event['id'].')', E_USER_WARNING);
+			trigger_error('Amount received '.($object['amount_received'] / 100).' different from amount expected '.($eSale['priceIncludingVat']).' in sale #'.$eSale['id'].' (event #'.$object['id'].')', E_USER_WARNING);
 			return;
 		}
 
-		\selling\PaymentLib::updateStatus(\selling\Payment::STRIPE, $object['id'], \selling\Payment::SUCCESS);
+		\selling\PaymentLib::updateStatus($object['id'], \selling\Payment::SUCCESS);
 
-		self::completePaid($eSale, $event['id']);
+		self::completePaid($eSale, $object['id']);
 
 	}
 

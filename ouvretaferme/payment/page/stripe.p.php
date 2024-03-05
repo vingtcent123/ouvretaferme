@@ -42,7 +42,7 @@
 		$eStripeFarm = \payment\StripeLib::getByFarm($eFarm)->validate();
 
 		$event = \payment\StripeLib::getEvent($eStripeFarm);
-		\payment\StripeLib::webhook($event);
+		\payment\StripeLib::webhook($eStripeFarm, $event);
 
 		throw new VoidAction();
 

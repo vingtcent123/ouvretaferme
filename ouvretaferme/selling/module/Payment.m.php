@@ -7,8 +7,6 @@ abstract class PaymentElement extends \Element {
 
 	private static ?PaymentModel $model = NULL;
 
-	const STRIPE = 'stripe';
-
 	const PENDING = 'pending';
 	const SUCCESS = 'success';
 	const FAILURE = 'failure';
@@ -46,13 +44,13 @@ class PaymentModel extends \ModuleModel {
 			'sale' => ['element32', 'selling\Sale', 'cast' => 'element'],
 			'customer' => ['element32', 'selling\Customer', 'cast' => 'element'],
 			'farm' => ['element32', 'farm\Farm', 'cast' => 'element'],
-			'provider' => ['enum', [\selling\Payment::STRIPE], 'cast' => 'enum'],
-			'providerId' => ['text8', 'cast' => 'string'],
+			'checkoutId' => ['text8', 'null' => TRUE, 'unique' => TRUE, 'cast' => 'string'],
+			'paymentIntentId' => ['text8', 'null' => TRUE, 'unique' => TRUE, 'cast' => 'string'],
 			'status' => ['enum', [\selling\Payment::PENDING, \selling\Payment::SUCCESS, \selling\Payment::FAILURE], 'cast' => 'enum'],
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'sale', 'customer', 'farm', 'provider', 'providerId', 'status'
+			'id', 'sale', 'customer', 'farm', 'checkoutId', 'paymentIntentId', 'status'
 		]);
 
 		$this->propertiesToModule += [
@@ -67,7 +65,8 @@ class PaymentModel extends \ModuleModel {
 		]);
 
 		$this->uniqueConstraints = array_merge($this->uniqueConstraints, [
-			['provider', 'providerId']
+			['checkoutId'],
+			['paymentIntentId']
 		]);
 
 	}
@@ -89,9 +88,6 @@ class PaymentModel extends \ModuleModel {
 	public function encode(string $property, $value) {
 
 		switch($property) {
-
-			case 'provider' :
-				return ($value === NULL) ? NULL : (string)$value;
 
 			case 'status' :
 				return ($value === NULL) ? NULL : (string)$value;
@@ -127,12 +123,12 @@ class PaymentModel extends \ModuleModel {
 		return $this->where('farm', ...$data);
 	}
 
-	public function whereProvider(...$data): PaymentModel {
-		return $this->where('provider', ...$data);
+	public function whereCheckoutId(...$data): PaymentModel {
+		return $this->where('checkoutId', ...$data);
 	}
 
-	public function whereProviderId(...$data): PaymentModel {
-		return $this->where('providerId', ...$data);
+	public function wherePaymentIntentId(...$data): PaymentModel {
+		return $this->where('paymentIntentId', ...$data);
 	}
 
 	public function whereStatus(...$data): PaymentModel {
