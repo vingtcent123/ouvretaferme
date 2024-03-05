@@ -3624,13 +3624,13 @@ class TaskUi {
 			} else {
 				$zone = (new \map\ZoneUi())->getZonePlotWidget($form, $cZone, placeholder: s("Toute la ferme"));
 			}
-
+/*
 			$h .= $form->group(
 				s("Zone de l'intervention"),
 				$zone,
 				['wrapper' => 'zone plot']
 			);
-
+*/
 			if($eTask['cQuality']->notEmpty()) {
 				$h .= $this->getHarvestQualityField($form, $eTask);
 			}
