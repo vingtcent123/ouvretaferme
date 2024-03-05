@@ -198,7 +198,7 @@ Task:
   updatedAt: ?datetime
   status: enum(TODO, DONE)
   INDEX: [
-    ["farm", "status"],
+    ["farm", "status", "doneWeek"],
     ["series"],
     ["cultivation"]
   ]

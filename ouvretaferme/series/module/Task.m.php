@@ -91,7 +91,7 @@ class TaskModel extends \ModuleModel {
 		];
 
 		$this->indexConstraints = array_merge($this->indexConstraints, [
-			['farm', 'status'],
+			['farm', 'status', 'doneWeek'],
 			['series'],
 			['cultivation']
 		]);
