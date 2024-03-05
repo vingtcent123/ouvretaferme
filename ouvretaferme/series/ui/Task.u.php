@@ -1153,7 +1153,7 @@ class TaskUi {
 		foreach($cTask as $eTask) {
 
 			$ePlant = $eTask['plant'];
-			
+
 			if(
 				$ePlant->notEmpty() and (
 					$ePlantCurrent->empty() or

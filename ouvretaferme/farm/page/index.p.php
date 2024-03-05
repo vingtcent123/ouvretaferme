@@ -290,10 +290,6 @@
 
 		\farm\FarmerLib::setView('viewPlanningSearch', $data->eFarm, $data->search->toArray() ?: NULL);
 
-		if($data->search->get('plot') and $data->search->get('plot')->notEmpty()) {
-			$data->search->set('cSeries', \series\PlaceLib::getSeriesByPlot($data->search->get('plot')));
-		}
-
 		$data->cActionMain = \farm\ActionLib::getMainByFarm($data->eFarm);
 
 		switch(Setting::get('main\viewPlanning')) {

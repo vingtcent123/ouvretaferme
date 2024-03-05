@@ -214,10 +214,13 @@ class TaskLib extends TaskCrud {
 
 		self::applySearch($search);
 
-		return Task::model()
+		$ccTask = Task::model()
 			->select(Task::getSelection())
 			->select([
 				'cccPlace' => PlaceLib::delegateByTask(),
+				'series' => [
+					'cccPlace' => PlaceLib::delegateBySeries()
+				],
 				'display' => new \Sql('IF(doneWeek IS NULL, plannedWeek, doneWeek)'),
 				'plant' => ['name'],
 				'cultivation' => ['seedlingSeeds', 'startWeek', 'startAction'],
@@ -231,6 +234,21 @@ class TaskLib extends TaskCrud {
 			])
 			->getCollection(NULL, NULL, ['display', NULL]);
 
+		$delete = [];
+
+		foreach($ccTask as $key => $cTask) {
+			self::filterPlot($search, $cTask);
+			if($cTask->empty()) {
+				$delete[] = $key;
+			}
+		}
+
+		foreach($delete as $key) {
+			$ccTask->offsetUnset($key);
+		}
+
+		return $ccTask;
+
 	}
 
 	protected static function applySearch(\Search $search): void {
@@ -241,32 +259,6 @@ class TaskLib extends TaskCrud {
 
 		if($search->get('plant') and $search->get('plant')->notEmpty()) {
 			Task::model()->wherePlant($search->get('plant'));
-		}
-
-		if($search->get('plot') and $search->get('plot')->notEmpty()) {
-
-			if($search->get('cSeries')->empty()) {
-				Task::model()->wherePlot($search->get('plot'));
-			} else {
-				Task::model()->or(
-					fn() => $this->wherePlot($search->get('plot')),
-					fn() => $this->whereSeries('IN', $search->get('cSeries'))
-				);
-			}
-
-		}
-
-		if($search->get('zone') and $search->get('zone')->notEmpty()) {
-
-			if($search->get('cSeries')->empty()) {
-				Task::model()->wherePlot($search->get('zone'));
-			} else {
-				Task::model()->or(
-					fn() => $this->whereZone($search->get('zone')),
-					fn() => $this->whereSeries('IN', $search->get('cSeries'))
-				);
-			}
-
 		}
 
 	}
@@ -412,11 +404,13 @@ class TaskLib extends TaskCrud {
 		foreach($cccTask as $type => $ccTask) {
 
 			if($type !== 'harvested') {
+
 				if($ccTask->offsetExists($eActionHarvest['id'])) {
 					$cTask = $ccTask[$eActionHarvest['id']];
 				} else {
 					continue;
 				}
+
 			} else {
 				$cTask = $ccTask;
 			}
@@ -598,9 +592,56 @@ class TaskLib extends TaskCrud {
 
 			}
 
+			$delete = [];
+
+			foreach($ccTask as $key => $cTask) {
+				self::filterPlot($search, $cTask);
+				if($cTask->empty()) {
+					$delete[] = $key;
+				}
+			}
+
+			foreach($delete as $key) {
+				$ccTask->offsetUnset($key);
+			}
+
+		} else {
+			self::filterPlot($search, $ccTask);
 		}
 
 		return $ccTask;
+
+	}
+
+	private static function filterPlot(\Search $search, \Collection $cTask): void {
+
+		$delete = [];
+		$ePlotSearch = $search->get('plot');
+
+		if($ePlotSearch !== NULL) {
+
+			foreach($cTask as $key => $eTask) {
+
+				if($eTask['series']->notEmpty()) {
+					$cccPlace = $eTask['series']['cccPlace'];
+				} else {
+					$cccPlace = $eTask['cccPlace'];
+				}
+
+				if(
+					$cccPlace->empty() or
+					$cccPlace->find(fn($ePlace) => $ePlace['plot']['id'] === $ePlotSearch['id'], depth: 3, limit: 1)->empty()
+				) {
+					$delete[] = $key;
+				}
+
+			}
+
+		}
+
+		foreach($delete as $key) {
+			$cTask->offsetUnset($key);
+		}
 
 	}
 

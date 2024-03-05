@@ -3,30 +3,6 @@ namespace series;
 
 class PlaceLib extends PlaceCrud {
 
-	public static function getSeriesByZone(\map\Zone $eZone): \Collection {
-
-		return Place::model()
-			->select([
-				'series'
-			])
-			->whereZone($eZone)
-			->group('series')
-			->getColumn('series');
-
-	}
-
-	public static function getSeriesByPlot(\map\Plot $ePlot): \Collection {
-
-		return Place::model()
-			->select([
-				'series'
-			])
-			->wherePlot($ePlot)
-			->group('series')
-			->getColumn('series');
-
-	}
-
 	public static function getByElement(Series|Task $e): \Collection {
 
 		$cPlace = Place::model()
