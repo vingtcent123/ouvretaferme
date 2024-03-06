@@ -539,11 +539,11 @@ class TaskLib extends TaskCrud {
 
 	}
 
-	protected static function getForPlanning(\farm\Farm $eFarm, \Search $search = NULL, bool $indexByAction = TRUE, \user\User $eUser = new \user\User(), ?string $timesheetWeek = NULL, ?string $timesheetDate = NULL): \Collection {
+	protected static function getForPlanning(\farm\Farm $eFarm, \Search $search = new \Search(), bool $indexByAction = TRUE, \user\User $eUser = new \user\User(), ?string $timesheetWeek = NULL, ?string $timesheetDate = NULL): \Collection {
 
 		$index = $indexByAction ? ['action', NULL] : NULL;
 
-		self::applySearch($search ?? new \Search());
+		self::applySearch($search);
 
 		$ccTask = Task::model()
 			->select(Task::getSelection())
