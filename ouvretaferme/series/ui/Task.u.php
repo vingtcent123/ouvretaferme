@@ -2128,7 +2128,10 @@ class TaskUi {
 
 				$h .= '<div>';
 
-					$h .= '<h4>'.s("Récolte").'</h4>';
+					$h .= '<div class="util-action">';
+						$h .= '<h4>'.s("Récolte").'</h4>';
+						$h .= '<a href="/series/task:updateHarvestCollection?ids[]='.$eTask['id'].'" class="btn btn-secondary btn">'.\Asset::icon('plus-circle').'</a>';
+					$h .= '</div>';
 
 					if($eTask['harvestDates']) {
 
@@ -3616,21 +3619,6 @@ class TaskUi {
 
 			}
 
-			if($cZone->empty()) {
-				$zone = '<p>'.s("Il est nécessaire de cartographier la ferme pour définir une zone d'intervention.", ['link' => '<a href="'.\farm\FarmUi::urlCartography($eTask['farm']).'">']).'</p>';
-				$zone .= '<p>';
-					$zone .= '<a href="'.\farm\FarmUi::urlCartography($eTask['farm']).'" class="btn btn-primary">'.s("Cartographier la ferme").'</a>';
-				$zone .= '</p>';
-			} else {
-				$zone = (new \map\ZoneUi())->getZonePlotWidget($form, $cZone, placeholder: s("Toute la ferme"));
-			}
-/*
-			$h .= $form->group(
-				s("Zone de l'intervention"),
-				$zone,
-				['wrapper' => 'zone plot']
-			);
-*/
 			if($eTask['cQuality']->notEmpty()) {
 				$h .= $this->getHarvestQualityField($form, $eTask);
 			}
@@ -3642,6 +3630,24 @@ class TaskUi {
 			}
 
 			$h .= $this->getTimeGroup($form, $eTask);
+
+			if($cZone->empty()) {
+				$soil = '<p>'.s("Il est nécessaire de cartographier la ferme pour définir une zone d'intervention.", ['link' => '<a href="'.\farm\FarmUi::urlCartography($eTask['farm']).'">']).'</p>';
+				$soil .= '<p>';
+					$soil .= '<a href="'.\farm\FarmUi::urlCartography($eTask['farm']).'" class="btn btn-primary">'.s("Cartographier la ferme").'</a>';
+				$soil .= '</p>';
+			} else {
+				$soil = $form->yesNo('soil', FALSE);
+			}
+
+			if($eTask->canSoil()) {
+				$h .= '<div id="task-create-soil">';
+					$h .= $form->group(
+						s("Assoler l'intervention"),
+						$soil
+					);
+				$h .= '</div>';
+			}
 
 			$h .= $form->dynamicGroup($eTask, 'description');
 			$h .= $this->getToolsGroup($form, $eTask, $cToolAvailable);

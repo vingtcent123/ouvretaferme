@@ -96,32 +96,41 @@ new JsonView('doCreateFromSeriesCollection', function($data, AjaxTemplate $t) {
 
 new JsonView('doCreate', function($data, AjaxTemplate $t) {
 
-	if($data->e['status'] === \series\Task::DONE) {
+	if(POST('soil', 'bool')) {
 
-		if($data->e['doneDate']) {
-			$date = '&date='.$data->e['doneDate'];
-		} else {
-			$date = '';
-		}
-
-		if($data->e['action']['fqn'] === ACTION_RECOLTE) {
-
-			$t->ajaxRedirect('/series/task:updateHarvestCollection?ids[]='.$data->e['id'].$date, purgeLayers: TRUE);
-			$t->ajaxReload(purgeLayers: FALSE);
-
-		} else {
-
-			if($data->eFarm->hasFeatureTime()) {
-				$t->ajaxRedirect('/series/timesheet?ids[]='.$data->e['id'].$date, purgeLayers: true);
-				$t->ajaxReload(purgeLayers: FALSE);
-			} else {
-				$t->ajaxReload();
-			}
-
-		}
+		$t->ajaxRedirect('/series/place:update?task='.$data->e['id'], purgeLayers: TRUE);
+		$t->ajaxReload(purgeLayers: FALSE); // Le contexte principal ne doit pas interférer
 
 	} else {
-		$t->ajaxReload();
+
+		if($data->e['status'] === \series\Task::DONE) {
+
+			if($data->e['doneDate']) {
+				$date = '&date='.$data->e['doneDate'];
+			} else {
+				$date = '';
+			}
+
+			if($data->e['action']['fqn'] === ACTION_RECOLTE) {
+
+				$t->ajaxRedirect('/series/task:updateHarvestCollection?ids[]='.$data->e['id'].$date, purgeLayers: TRUE);
+				$t->ajaxReload(purgeLayers: FALSE);
+
+			} else {
+
+				if($data->eFarm->hasFeatureTime()) {
+					$t->ajaxRedirect('/series/timesheet?ids[]='.$data->e['id'].$date, purgeLayers: true);
+					$t->ajaxReload(purgeLayers: FALSE);
+				} else {
+					$t->ajaxReload();
+				}
+
+			}
+
+		} else {
+			$t->ajaxReload();
+		}
+
 	}
 
 });
