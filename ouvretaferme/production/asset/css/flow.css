@@ -246,8 +246,20 @@ div.flow-timeline-description {
 	user-select: none;
 }
 
-div.task-item-header-description div.flow-timeline-description {
-	font-size: 1.2rem;
+@media (min-width: 576px) {
+
+	div.task-item-header-description div.flow-timeline-description {
+		font-size: 1.2rem;
+	}
+
+}
+
+@media (max-width: 575px) {
+
+	div.task-item-header-description div.flow-timeline-description {
+		font-size: 1.1rem;
+	}
+
 }
 
 div.flow-timeline-description:not(:first-child) {
