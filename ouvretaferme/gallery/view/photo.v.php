@@ -8,8 +8,7 @@ new JsonView('doCreate', function($data, AjaxTemplate $t) {
 	$t->js()->success('gallery', 'Photo.created');
 
 	if($data->e['task']->notEmpty()) {
-		$t->ajaxRedirect(\series\TaskUi::url($data->e['task']), purgeLayers: true);
-		$t->qs('#scroll-photos')->scrollTo();
+		$t->ajaxReloadLayer();
 	} else {
 		$t->ajaxReload();
 	}

@@ -12,7 +12,6 @@ new AdaptativeView('index', function($data, PanelTemplate $t) {
 new JsonView('update', function($data, AjaxTemplate $t) {
 
 	$t->ajaxReloadLayer();
-	$t->ajaxReload(purgeLayers: FALSE);
 
 });
 ?>

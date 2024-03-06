@@ -25,6 +25,7 @@ class CommentUi {
 		return new \Panel(
 			title: s("Commenter"),
 			body: $h,
+			close: 'reloadOnHistory'
 		);
 
 	}
@@ -93,7 +94,7 @@ class CommentUi {
 		return new \Panel(
 			title: s("Modifier un utilisateur de la ferme"),
 			body: $h,
-			close: 'reload'
+			close: 'reloadOnHistory'
 		);
 
 	}

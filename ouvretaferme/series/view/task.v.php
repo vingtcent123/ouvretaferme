@@ -1,16 +1,6 @@
 <?php
-new AdaptativeView('/tache/{id}', function($data, FarmTemplate $t) {
-
-	if($data->e['plant']->notEmpty()) {
-		$t->title = s("{action} de {plant}", ['action' => $data->e['action']['name'], 'plant' => $data->e['plant']['name']]);
-	} else {
-		$t->title = $data->e['action']['name'];
-	}
-
-	$t->tab = GET('tab', ['home', 'cultivation'], 'home');
-	$t->subNav = (new \farm\FarmUi())->getSubNav($t->tab, $data->eFarm);
-
-	echo (new \series\TaskUi())->getOne($data->e, $data->cPlace, $data->cPhoto, $data->cUser, $data->cComment);
+new AdaptativeView('/tache/{id}', function($data, PanelTemplate $t) {
+	return (new \series\TaskUi())->getOne($data->e, $data->cPlace, $data->cPhoto, $data->cUser, $data->cComment);
 });
 
 new AdaptativeView('incrementPlannedCollection', function($data, PanelTemplate $t) {
@@ -164,10 +154,6 @@ new AdaptativeView('updateCultivation', function($data, PanelTemplate $t) {
 	return (new \series\TaskUi())->updateCultivation($data->e, $data->cCultivation);
 });
 
-new JsonView('doUpdate', function($data, AjaxTemplate $t) {
-	$t->ajaxReload();
-});
-
 new JsonView('doUpdateCultivation', function($data, AjaxTemplate $t) {
 
 	$t->ajaxRedirect(\series\SeriesUi::url($data->e['series']), purgeLayers: true);
@@ -188,6 +174,13 @@ new JsonView('getCreateCollectionFields', function($data, AjaxTemplate $t) {
 		new \util\FormUi(),
 		$data->eTask
 	) : '');
+
+});
+
+new JsonView('doDelete', function($data, AjaxTemplate $t) {
+
+	$t->ajaxReload();
+	$t->js()->success('series', 'Task::deleted');
 
 });
 ?>

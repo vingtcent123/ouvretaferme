@@ -1099,7 +1099,7 @@ Lime.Panel = class {
 			case 'navigation' :
 
 				panel.dataset.context = 'layer';
-				Lime.History.pushLayer(panel, () => this.internalClose(panel), false /* No new entry in the history */, document.location.href);
+				Lime.History.pushLayer(panel, (history) => this.internalClose(panel, history), false /* No new entry in the history */, document.location.href);
 
 				break;
 
@@ -1180,20 +1180,31 @@ Lime.Panel = class {
 
 	};
 
-	static internalClose(panel) {
+	static internalClose(panel, history = false) {
 
 		if(panel.classList.contains('closing')) {
 			return false;
 		}
 
 		// Reload panel
-		if(panel.dataset.close === 'reload') {
+		if(
+			panel.dataset.close === 'reload' ||
+			(history && panel.dataset.close === 'reloadOnHistory')
+		) {
 
-			new Ajax.Query(panel)
+			const query = new Ajax.Query(panel);
+
+			// Restauration du scroll
+			Lime.History.saveScroll(Lime.History.currentTimestamp);
+			query.headers.set('x-requested-history', Lime.History.currentTimestamp);
+
+			query
 				.method('get')
 				.waiter(panel.style.zIndex - 1, 333)
 				.url(location.href)
 				.fetch();
+
+			qsa('.panel[data-close="reloadOnCascade"]', panel => panel.dataset.close = 'reload');
 
 		}
 
@@ -2068,12 +2079,10 @@ Lime.History = class {
 	}
 
 	static saveScroll(state) {
-	//	console.log('saveScroll #'+state+':'+ window.scrollY);
 		this.scrolls[state] = window.scrollY;
 	}
 
 	static restoreScroll(state) {
-	//	console.log('restoreScroll #'+ state +':'+this.scrolls[state]);
 		window.scrollTo(0, this.scrolls[state]);
 	}
 
@@ -2110,7 +2119,7 @@ Lime.History = class {
 					const layer = this.layers[i];
 
 					if(isOnPop) {
-						layer.onPop.call(this);
+						layer.onPop.call(this, false);
 					}
 
 					window.scrollTo(0, layer.scrollY);
@@ -2140,7 +2149,7 @@ Lime.History = class {
 
 			const layer = this.layers.pop();
 
-			layer.onPop.call(this);
+			layer.onPop.call(this, true);
 			window.scrollTo(0, layer.scrollY);
 
 			// Div lost, fully reloaded

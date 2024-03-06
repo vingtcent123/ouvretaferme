@@ -5,8 +5,8 @@
 
 	}))
 	->update(fn($data) => throw new ViewAction($data))
-	->doUpdate(fn() => throw new ReloadAction())
-	->doDelete(fn() => throw new ReloadAction());
+	->doUpdate(fn() => throw new BackAction())
+	->doDelete(fn($data) => throw new ViewAction($data));
 
 (new Page(function($data) {
 
@@ -30,7 +30,7 @@
 
 		\series\CommentLib::createForTasks($data->cTask, $e);
 
-		throw new ReloadAction();
+		throw new BackAction();
 
 	});
 ?>

@@ -936,11 +936,20 @@ table.tasks-week-plant-list tbody:hover tr {
 
 }
 
+div.task-item-header {
+	display: grid;
+	grid-template-columns: 1fr auto;
+	grid-column-gap: 1rem;
+	margin-bottom: 1rem;
+}
+
 div.task-item-presentation {
 	display: grid;
 	margin-bottom: 2rem;
 	grid-template-rows: auto auto;
 	padding: 0;
+	border: 1px solid var(--border);
+	border-radius: var(--radius);
 }
 
 .task-item-presentation > div {
@@ -1106,6 +1115,20 @@ div.task-fertilizer-grid div.task-fertilizer-grid-greenhouse {
 
 div.task-item-action {
 	margin-bottom: 2rem;
+}
+
+div.task-item-action dl {
+	grid-row-gap: 0.5rem;
+}
+
+div.task-item-action dt {
+	padding: 0.5rem 0;
+}
+
+div.task-item-action dd {
+	background-color: var(--background-light);
+	padding: 0.5rem;
+	border-radius: var(--radius);
 }
 
 div.task-presentation-seedling {

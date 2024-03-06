@@ -142,6 +142,7 @@ class TimesheetUi {
 			title: s("Compléter le temps de travail"),
 			dialogOpen: $formOpen,
 			dialogClose: $formClose,
+			close: 'reload',
 			body: $h
 		);
 

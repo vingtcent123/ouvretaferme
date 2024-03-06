@@ -393,7 +393,7 @@
 		throw new ViewAction($data);
 
 	})
-	->doUpdate(fn($data) => throw new ViewAction($data))
+	->doUpdate(fn($data) => throw new BackAction())
 	->quick(['description'])
 	->update(function($data) {
 
@@ -414,12 +414,7 @@
 		throw new ViewAction($data);
 
 	})
-	->doDelete(function() {
-		return match(POST('action', default: 'reload')) {
-			'reload' => throw new ReloadAction(),
-			'back' => throw new BackAction('series', 'Task::deleted')
-		};
-	});
+	->doDelete(fn($data) => throw new ViewAction($data));
 
 (new Page(function($data) {
 

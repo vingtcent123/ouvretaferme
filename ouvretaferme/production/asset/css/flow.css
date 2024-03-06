@@ -246,8 +246,8 @@ div.flow-timeline-description {
 	user-select: none;
 }
 
-div.util-action-subtitle div.flow-timeline-description {
-	font-size: 1rem;
+div.task-item-header-description div.flow-timeline-description {
+	font-size: 1.2rem;
 }
 
 div.flow-timeline-description:not(:first-child) {

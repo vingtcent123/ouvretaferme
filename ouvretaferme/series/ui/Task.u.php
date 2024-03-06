@@ -1748,11 +1748,6 @@ class TaskUi {
 						$h .= '<a href="/series/task:updateHarvestCollection?ids[]='.$eTask['id'].'" class="dropdown-item">'.s("Compléter la récolte").'</a>';
 					}
 					$h .= '<a href="/series/task:update?id='.$eTask['id'].'" class="dropdown-item">'.s("Modifier l'intervention").'</a>';
-					$h .= '<a href="/series/comment:createCollection?ids[]='.$eTask['id'].'" class="dropdown-item">'.s("Ajouter un commentaire").'</a>';
-
-					if($eTask->canSoil()) {
-						$h .= '<a href="/series/place:update?task='.$eTask['id'].'" class="dropdown-item">'.s("Assoler l'intervention").'</a>';
-					}
 
 					if($eTask->isDone()) {
 						$h .= '<a data-ajax="/series/task:doUpdateTodoCollection" post-id="'.$eTask['id'].'" '.attrAjaxBody([["ids[]", $eTask['id']]]).' class="dropdown-item" data-confirm="'.s("Annuler la réalisation de l'intervention ?").'">'.s("Marquer &laquo; À faire &raquo;").'</a>';
@@ -1763,20 +1758,10 @@ class TaskUi {
 					}
 
 					$h .= '<div class="dropdown-divider"></div>';
-					$h .= '<a data-ajax="/series/task:doDelete" class="dropdown-item" post-id="'.$eTask['id'].'" post-action="back" data-confirm="'.s("Confirmer la suppression de cette intervention ?").'">'.s("Supprimer l'intervention").'</a>';
+					$h .= '<a data-ajax="/series/task:doDelete" class="dropdown-item" post-id="'.$eTask['id'].'" data-confirm="'.s("Confirmer la suppression de cette intervention ?").'">'.s("Supprimer l'intervention").'</a>';
 
 
 
-				$h .= '</div>';
-			$h .= '</div>';
-
-		} else if((new Comment(['farm' => $eTask['farm']]))->canCreate()) {
-
-			$h = '<div>';
-				$h .= '<a data-dropdown="bottom-end" class="dropdown-toggle btn '.$btn.'">'.\Asset::icon('gear-fill').'</a>';
-				$h .= '<div class="dropdown-list">';
-					$h .= '<div class="dropdown-title">'.s("Intervention").'</div>';
-					$h .= '<a href="/series/comment:createCollection?ids[]='.$eTask['id'].'" class="dropdown-item">'.s("Ajouter un commentaire").'</a>';
 				$h .= '</div>';
 			$h .= '</div>';
 
@@ -2011,24 +1996,22 @@ class TaskUi {
 
 	}
 
-	public function getOne(Task $eTask, \Collection $cPlace, \Collection $cPhoto, \Collection $cUser, \Collection $cComment): string {
+	public function getOne(Task $eTask, \Collection $cPlace, \Collection $cPhoto, \Collection $cUser, \Collection $cComment): \Panel {
 
 		$eTask->expects([
 			'cultivation'
 		]);
 
-		$h = '<div class="util-action">';
-			$h .= '<h1>'.$this->getAction($eTask).'</h1>';
+		$h = '<div class="task-item-header">';
+			$h .= '<div class="task-item-header-description">';
+				if($eTask['description'] !== NULL) {
+					$h .= $this->getDescription($eTask);
+				}
+			$h .= '</div>';
 			$h .= '<div>';
 				$h .= $this->getUpdate($eTask, 'btn-primary');
 			$h .= '</div>';
 		$h .= '</div>';
-
-		if($eTask['description'] !== NULL) {
-			$h .= '<div class="util-action-subtitle">';
-				$h .= $this->getDescription($eTask);
-			$h .= '</div>';
-		}
 
 		$columns = 2;
 
@@ -2040,7 +2023,7 @@ class TaskUi {
 			$columns++;
 		}
 
-		$h .= '<div class="task-item-presentation task-item-presentation-'.$columns.' util-card stick-xs">';
+		$h .= '<div class="task-item-presentation task-item-presentation-'.$columns.'">';
 
 			$h .= '<div>';
 
@@ -2191,28 +2174,29 @@ class TaskUi {
 
 		}
 
+		$h .= '<div class="util-action">';
+			$h .= '<h3>'.s("Commentaires").'</h3>';
+			$h .= '<div>';
+				if((new \series\Comment(['farm' => $eTask['farm']]))->canCreate()) {
+					$h .= '<a href="/series/comment:createCollection?ids[]='.$eTask['id'].'" class="btn btn-outline-primary">';
+						$h .= \Asset::icon('plus-circle').' '.s("Nouveau commentaire");
+					$h .= '</a>';
+				}
+			$h .= '</div>';
+		$h .= '</div>';
+
 		if($cComment->notEmpty()) {
 
-			$h .= '<div class="util-action">';
-				$h .= '<h3>'.s("Commentaires").'</h3>';
-				$h .= '<div>';
-					if((new \series\Comment(['farm' => $eTask['farm']]))->canWrite()) {
-						$h .= '<a href="/series/comment:createCollection?ids[]='.$eTask['id'].'" class="btn btn-outline-primary">';
-							$h .= \Asset::icon('plus-circle').' '.s("Nouveau commentaire");
-						$h .= '</a>';
-					}
-				$h .= '</div>';
-			$h .= '</div>';
-
-			$h .= '<div class="util-block stick-xs">';
+			$h .= '<div>';
 				$h .= (new CommentUi())->getList($cComment, TRUE, TRUE);
 			$h .= '</div>';
+			$h .= '<br/>';
 
 		}
 
-		if($cPlace->empty() === FALSE) {
+		if($eTask['series']->notEmpty()) {
 
-			if($eTask['series']->notEmpty()) {
+			if($cPlace->empty() === FALSE) {
 
 				$h .= '<h3>'.s("Assolement").'</h3>';
 
@@ -2220,20 +2204,33 @@ class TaskUi {
 					$h .= (new SeriesUi())->getPlace('series', $eTask['series'], $cPlace);
 				$h .= '</div>';
 
-			} else {
+				$h .= '<br/>';
 
-				$h .= '<div class="util-action">';
-					$h .= '<h3>'.s("Assolement").'</h3>';
-					$h .= '<a href="/series/place:update?task='.$eTask['id'].'" class="btn btn-outline-primary">'.\Asset::icon('gear-fill').'</a>';
-				$h .= '</div>';
+			}
+
+		} else if($eTask->canSoil()) {
+
+			$h .= '<div class="util-action">';
+				$h .= '<h3>'.s("Assolement").'</h3>';
+				if($eTask->canWrite()) {
+					$h .= '<a href="/series/place:update?task='.$eTask['id'].'" class="btn btn-outline-primary">';
+						if($cPlace->empty()) {
+							$h .= \Asset::icon('plus-circle').' '.s("Assoler");
+						} else {
+							$h .= \Asset::icon('gear-fill');
+						}
+					$h .= '</a>';
+				}
+			$h .= '</div>';
+
+			if($cPlace->empty() === FALSE) {
 
 				$h .= '<div class="util-overflow-md">';
 					$h .= (new SeriesUi())->getPlace('task', $eTask, $cPlace);
 				$h .= '</div>';
+				$h .= '<br/>';
 
 			}
-
-			$h .= '<br/>';
 
 		}
 
@@ -2250,7 +2247,7 @@ class TaskUi {
 
 					$h .= '<div data-media="gallery" post-task="'.$eTask['id'].'">';
 						$h .= (new \media\GalleryUi())->getDropdownLinks(
-							\Asset::icon('plus-circle').' <span>'.s("Ajouter une photo").'</span>',
+							\Asset::icon('plus-circle').' <span>'.s("Nouvelle photo").'</span>',
 							'btn-outline-primary',
 							uploadInputAttributes: ['multiple' => 'multiple']
 						);
@@ -2266,7 +2263,19 @@ class TaskUi {
 			$h .= (new \gallery\PhotoUi())->getList($cPhoto, NULL, 4);
 		}
 
-		return $h;
+
+		if($eTask['plant']->notEmpty()) {
+			$title = s("{action} de {plant}", ['action' => encode($eTask['action']['name']), 'plant' => encode($eTask['plant']['name'])]);
+		} else {
+			$title = encode($eTask['action']['name']);
+		}
+
+		return new \Panel(
+			id: 'panel-task',
+			title: $title,
+			body: $h,
+			close: 'reloadOnCascade'
+		);
 
 	}
 
@@ -3851,7 +3860,7 @@ class TaskUi {
 			title: s("Modifier une intervention"),
 			subTitle: $eTask['series']->empty() ? NULL : SeriesUi::getPanelHeader($eTask['series']),
 			body: $h,
-			close: (\Route::getRequestedOrigin() === 'analyze') ? 'reload' : 'passthrough'
+			close: 'reloadOnHistory'
 		);
 
 	}
