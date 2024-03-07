@@ -10,7 +10,7 @@ class TimesheetUi {
 
 	}
 
-	public function getList(Task $eTask, \Collection $cUser): string {
+	public function getList(Task $eTask, \Collection $cUser, ?string $close = NULL): string {
 
 		$eTask->expects([
 			'farm' => ['featureTime']
@@ -41,7 +41,7 @@ class TimesheetUi {
 				$h .= '</div>';
 
 				if($eTask['farm']->hasFeatureTime()) {
-					$h .= '<a href="/series/timesheet?ids[]='.$eTask['id'].'&user='.$eUser['id'].'" class="timesheet-list-time">';
+					$h .= '<a href="/series/timesheet?ids[]='.$eTask['id'].'&user='.$eUser['id'].''.($close ? '&close='.$close : '').'" class="timesheet-list-time">';
 						$h .= TaskUi::convertTime($eUser['time']);
 					$h .= '</a>';
 				} else {
@@ -142,8 +142,8 @@ class TimesheetUi {
 			title: s("Compléter le temps de travail"),
 			dialogOpen: $formOpen,
 			dialogClose: $formClose,
-			close: 'reload',
-			body: $h
+			body: $h,
+			close: INPUT('close', ['reloadIgnoreCascade', 'passthrough'], 'passthrough')
 		);
 
 	}

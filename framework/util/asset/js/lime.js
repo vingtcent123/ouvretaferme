@@ -1189,6 +1189,7 @@ Lime.Panel = class {
 		// Reload panel
 		if(
 			panel.dataset.close === 'reload' ||
+			panel.dataset.close === 'reloadIgnoreCascade' ||
 			(history && panel.dataset.close === 'reloadOnHistory')
 		) {
 
@@ -1204,7 +1205,9 @@ Lime.Panel = class {
 				.url(location.href)
 				.fetch();
 
-			qsa('.panel[data-close="reloadOnCascade"]', panel => panel.dataset.close = 'reload');
+			if(panel.dataset.close !== 'reloadIgnoreCascade') {
+				qsa('.panel[data-close="reloadOnCascade"]', panel => panel.dataset.close = 'reload');
+			}
 
 		}
 

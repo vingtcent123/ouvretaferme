@@ -2086,10 +2086,10 @@ class TaskUi {
 
 					$h .= '<div class="util-action">';
 						$h .= '<h4>'.s("Temps de travail").'</h4>';
-						$h .= '<a href="/series/timesheet?ids[]='.$eTask['id'].'" class="btn btn-secondary btn">'.\Asset::icon('clock').'</a>';
+						$h .= '<a href="/series/timesheet?ids[]='.$eTask['id'].'&close=reloadIgnoreCascade" class="btn btn-secondary btn">'.\Asset::icon('clock').'</a>';
 					$h .= '</div>';
 					$h .= '<div>';
-						$h .= (new TimesheetUi())->getList($eTask, $cUser);
+						$h .= (new TimesheetUi())->getList($eTask, $cUser, 'reloadIgnoreCascade');
 					$h .= '</div>';
 				$h .= '</div>';
 
