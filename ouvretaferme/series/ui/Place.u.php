@@ -130,7 +130,8 @@ class PlaceUi {
 			title: $title,
 			subTitle: $subTitle,
 			body: $h,
-			footer: $submit
+			footer: $submit,
+			close: INPUT('close', ['reloadIgnoreCascade', 'passthrough'], 'passthrough')
 		);
 
 	}

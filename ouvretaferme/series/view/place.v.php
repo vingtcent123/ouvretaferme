@@ -7,13 +7,14 @@ new JsonView('doUpdate', function($data, AjaxTemplate $t) {
 
 	switch($data->source) {
 
-		case 'series ' :
+		case 'series' :
 			$t->js()->moveHistory(-1);
 			$t->qs('#series-soil')->outerHtml((new \series\SeriesUi())->updatePlace($data->e, $data->cPlace));
 			break;
 
 		case 'task' :
-			$t->ajaxReload();
+			$t->js()->moveHistory(-1);
+			$t->ajaxReload(purgeLayers: FALSE);
 			break;
 
 	}

@@ -2213,7 +2213,7 @@ class TaskUi {
 			$h .= '<div class="util-action">';
 				$h .= '<h3>'.s("Assolement").'</h3>';
 				if($eTask->canWrite()) {
-					$h .= '<a href="/series/place:update?task='.$eTask['id'].'" class="btn btn-outline-primary">';
+					$h .= '<a href="/series/place:update?task='.$eTask['id'].'&close=reloadIgnoreCascade" class="btn btn-outline-primary">';
 						if($cPlace->empty()) {
 							$h .= \Asset::icon('plus-circle').' '.s("Assoler");
 						} else {
