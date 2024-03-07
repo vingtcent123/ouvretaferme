@@ -1561,6 +1561,7 @@ class TaskLib extends TaskCrud {
 			if($e['cultivation']->notEmpty()) {
 
 				$e['cultivation']->expects(['series']);
+				$e['series'] = $e['cultivation']['series'];
 				$e['plant'] = $e['cultivation']['plant'];
 
 				$properties[] = 'series';
