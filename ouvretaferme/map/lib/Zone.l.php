@@ -108,6 +108,10 @@ class ZoneLib extends ZoneCrud {
 
 						foreach($eBed['cPlace'] as $ePlace) {
 
+							if($ePlace['series']->empty()) {
+								continue;
+							}
+
 							if(
 								$ePlace['series']['bedStartCalculated'] === NULL or
 								$ePlace['series']['bedStopCalculated'] === NULL
