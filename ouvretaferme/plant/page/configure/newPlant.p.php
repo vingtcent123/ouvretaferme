@@ -3,7 +3,7 @@
 	->get('index', function($data) {
 
 		$cPlant = new Collection();
-/*
+
 		$cPlant[] = new \plant\Plant([
 			'name' => 'Blé',
 			'fqn' => 'ble',
@@ -59,7 +59,7 @@
 			'latinName' => 'Crocus sativus',
 			'cycle' => \plant\Plant::PERENNIAL,
 			'family' => \plant\FamilyLib::getByFqn('iridacees')
-		]);*/
+		]);
 		$cPlant[] = new \plant\Plant([
 			'name' => 'Sarrasin',
 			'fqn' => 'sarrasin',
