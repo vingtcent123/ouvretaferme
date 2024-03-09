@@ -1014,7 +1014,7 @@ class TaskUi {
 
 			if($seasonsWithSeries) {
 
-				$h .= '<div class="dropdown-subtitle">';
+				$h .= '<div class="dropdown-title">';
 					$h .= s("Dans une série");
 				$h .= '</div>';
 
@@ -1032,7 +1032,7 @@ class TaskUi {
 
 				}
 
-				$h .= '<div class="dropdown-subtitle">';
+				$h .= '<div class="dropdown-title">';
 					$h .= s("Intervention hors série");
 				$h .= '</div>';
 
@@ -1098,7 +1098,7 @@ class TaskUi {
 					}
 
 					$h .= '<div class="dropdown-title">';
-						$h .= s("Hors série");
+						$h .= s("Récolte hors série");
 					$h .= '</div>';
 
 				}
