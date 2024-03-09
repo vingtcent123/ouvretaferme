@@ -16,11 +16,18 @@
 	})
 	->create(function($data) {
 
+		$plannedWeek = \series\Task::GET('plannedWeek', 'plannedWeek');
+		$plannedDate = \series\Task::GET('plannedDate', 'plannedDate');
+		$doneWeek = \series\Task::GET('doneWeek', 'doneWeek', currentWeek());
+		$doneDate = \series\Task::GET('doneDate', 'doneDate');
+
 		$data->e->merge([
-			'plannedWeek' => \series\Task::GET('plannedWeek', 'plannedWeek'),
-			'plannedDate' => \series\Task::GET('plannedDate', 'plannedDate'),
+			'plannedWeek' => $plannedWeek,
+			'plannedDate' => $plannedDate ?? ($plannedWeek === currentWeek() ? currentDate() : NULL),
+			'plannedSelection' => ($plannedDate !== NULL) ? 'date' : 'week',
 			'doneWeek' => \series\Task::GET('doneWeek', 'doneWeek', currentWeek()),
-			'doneDate' => \series\Task::GET('doneDate', 'doneDate'),
+			'doneDate' => $doneDate ?? ($doneWeek === currentWeek() ? currentDate() : NULL),
+			'doneSelection' => ($plannedDate !== NULL) ? 'date' : 'week',
 			'action' => \farm\ActionLib::getByFarm($data->eFarm, id: GET('action'))
 		]);
 
@@ -562,7 +569,7 @@
 
 		\series\TaskLib::updateUser($data->c, $eUser, $action);
 
-		throw new ReloadAction();
+		throw new ViewAction($data);
 
 	})
 	->post('doDeleteCollection', function($data) {

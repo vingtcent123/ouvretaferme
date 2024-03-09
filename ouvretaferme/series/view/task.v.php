@@ -86,41 +86,34 @@ new JsonView('doCreateFromSeriesCollection', function($data, AjaxTemplate $t) {
 
 new JsonView('doCreate', function($data, AjaxTemplate $t) {
 
-	if(POST('soil', 'bool')) {
+	if($data->e['status'] === \series\Task::DONE) {
 
-		$t->ajaxRedirect('/series/place:update?task='.$data->e['id'], purgeLayers: TRUE);
-		$t->ajaxReload(purgeLayers: FALSE); // Le contexte principal ne doit pas interférer
-
-	} else {
-
-		if($data->e['status'] === \series\Task::DONE) {
-
-			if($data->e['doneDate']) {
-				$date = '&date='.$data->e['doneDate'];
-			} else {
-				$date = '';
-			}
-
-			if($data->e['action']['fqn'] === ACTION_RECOLTE) {
-
-				$t->ajaxRedirect('/series/task:updateHarvestCollection?ids[]='.$data->e['id'].$date, purgeLayers: TRUE);
-				$t->ajaxReload(purgeLayers: FALSE);
-
-			} else {
-
-				if($data->eFarm->hasFeatureTime()) {
-					$t->ajaxRedirect('/series/timesheet?ids[]='.$data->e['id'].$date, purgeLayers: true);
-					$t->ajaxReload(purgeLayers: FALSE);
-				} else {
-					$t->ajaxReload();
-				}
-
-			}
-
+		if($data->e['doneDate']) {
+			$date = '&date='.$data->e['doneDate'];
 		} else {
-			$t->ajaxReload();
+			$date = '';
 		}
 
+		if($data->e['action']['fqn'] === ACTION_RECOLTE) {
+
+			$t->ajaxRedirect('/series/task:updateHarvestCollection?ids[]='.$data->e['id'].$date, purgeLayers: TRUE);
+			$t->ajaxReload(purgeLayers: FALSE);
+
+		} else {
+
+			if($data->eFarm->hasFeatureTime()) {
+				$t->ajaxRedirect('/series/timesheet?ids[]='.$data->e['id'].$date, purgeLayers: true);
+			} else {
+				$t->ajaxRedirect('/tache/'.$data->e['id'], purgeLayers: true);
+			}
+
+			$t->ajaxReload(purgeLayers: FALSE);
+
+		}
+
+	} else {
+		$t->ajaxRedirect('/tache/'.$data->e['id'], purgeLayers: true);
+		$t->ajaxReload(purgeLayers: FALSE);
 	}
 
 });
@@ -147,6 +140,23 @@ new JsonView('doUpdateHarvestCollection', function($data, AjaxTemplate $t) {
 	} else {
 		$t->ajaxReload();
 	}
+
+});
+
+new JsonView('doUpdateUserCollection', function($data, AjaxTemplate $t) {
+
+	switch(POST('reload')) {
+
+		case 'context' :
+			$t->ajaxReload();
+			break;
+
+		case 'layer' :
+			$t->ajaxReloadLayer();
+			$t->ajaxReload(purgeLayers: FALSE); // Le contexte principal ne doit pas interférer
+			break;
+
+	};
 
 });
 

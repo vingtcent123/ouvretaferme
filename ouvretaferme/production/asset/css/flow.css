@@ -248,7 +248,7 @@ div.flow-timeline-description {
 
 @media (min-width: 576px) {
 
-	div.task-item-header-description div.flow-timeline-description {
+	div.task-item-header div.flow-timeline-description {
 		font-size: 1.2rem;
 	}
 
@@ -256,7 +256,7 @@ div.flow-timeline-description {
 
 @media (max-width: 575px) {
 
-	div.task-item-header-description div.flow-timeline-description {
+	div.task-item-header div.flow-timeline-description {
 		font-size: 1.1rem;
 	}
 

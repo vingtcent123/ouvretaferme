@@ -937,9 +937,6 @@ table.tasks-week-plant-list tbody:hover tr {
 }
 
 div.task-item-header {
-	display: grid;
-	grid-template-columns: 1fr auto;
-	grid-column-gap: 1rem;
 	margin-bottom: 1rem;
 }
 
@@ -1377,10 +1374,6 @@ body[data-template~="farm-planning-daily"] .util-bar-inline-item span {
 		font-size: 0.75rem;
 	}
 
-}
-
-.batch-planned-user svg {
-	margin-right: 0.5rem;
 }
 
 .batch-planned-user[post-action="add"] .asset-icon-x-lg {

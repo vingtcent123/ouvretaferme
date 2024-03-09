@@ -534,10 +534,10 @@ class TaskUi {
 		$h = '<div class="dropdown-list bg-secondary">';
 			$h .= '<div class="dropdown-title">'.s("Affecter à...").'</div>';
 			foreach($cUser as $eUser) {
-				$h .= '<a data-ajax-submit="/series/task:doUpdateUserCollection" data-ajax-target="#'.$formId.'" post-user="'.$eUser['id'].'" class="batch-planned-user dropdown-item">';
+				$h .= '<a data-ajax-submit="/series/task:doUpdateUserCollection" data-ajax-target="#'.$formId.'" post-user="'.$eUser['id'].'" post-reload="context" class="batch-planned-user dropdown-item">';
 					$h .= \Asset::icon('plus-lg');
 					$h .= \Asset::icon('x-lg');
-					$h .= \user\UserUi::getVignette($eUser, '1.5rem').'  '.\user\UserUi::name($eUser);
+					$h .= '  '.\user\UserUi::getVignette($eUser, '1.5rem').'  '.\user\UserUi::name($eUser);
 				$h .= '</a>';
 			}
 		$h .= '</div>';
@@ -1740,29 +1740,27 @@ class TaskUi {
 
 		if($eTask->canWrite()) {
 
-			$h = '<div data-media="gallery" post-task="'.$eTask['id'].'">';
-				$h .= '<a data-dropdown="bottom-end" class="dropdown-toggle btn '.$btn.'">'.\Asset::icon('gear-fill').'</a>';
-				$h .= '<div class="dropdown-list">';
-					$h .= '<div class="dropdown-title">'.s("Intervention").'</div>';
-					if($eTask['action']['fqn'] === ACTION_RECOLTE) {
-						$h .= '<a href="/series/task:updateHarvestCollection?ids[]='.$eTask['id'].'" class="dropdown-item">'.s("Compléter la récolte").'</a>';
-					}
-					$h .= '<a href="/series/task:update?id='.$eTask['id'].'" class="dropdown-item">'.s("Modifier l'intervention").'</a>';
+			$h = '<a data-dropdown="bottom-end" class="dropdown-toggle btn '.$btn.'">'.\Asset::icon('gear-fill').'</a>';
+			$h .= '<div class="dropdown-list">';
+				$h .= '<div class="dropdown-title">'.s("Intervention").'</div>';
+				if($eTask['action']['fqn'] === ACTION_RECOLTE) {
+					$h .= '<a href="/series/task:updateHarvestCollection?ids[]='.$eTask['id'].'" class="dropdown-item">'.s("Compléter la récolte").'</a>';
+				}
+				$h .= '<a href="/series/task:update?id='.$eTask['id'].'" class="dropdown-item">'.s("Modifier l'intervention").'</a>';
 
-					if($eTask->isDone()) {
-						$h .= '<a data-ajax="/series/task:doUpdateTodoCollection" post-id="'.$eTask['id'].'" '.attrAjaxBody([["ids[]", $eTask['id']]]).' class="dropdown-item" data-confirm="'.s("Annuler la réalisation de l'intervention ?").'">'.s("Marquer &laquo; À faire &raquo;").'</a>';
-					}
+				if($eTask->isDone()) {
+					$h .= '<a data-ajax="/series/task:doUpdateTodoCollection" post-id="'.$eTask['id'].'" '.attrAjaxBody([["ids[]", $eTask['id']]]).' class="dropdown-item" data-confirm="'.s("Annuler la réalisation de l'intervention ?").'">'.s("Marquer &laquo; À faire &raquo;").'</a>';
+				}
 
-					if($eTask['cultivation']->notEmpty()) {
-						$h .= '<a href="/series/task:updateCultivation?id='.$eTask['id'].'" class="dropdown-item">'.s("Changer de série").'</a>';
-					}
+				if($eTask['cultivation']->notEmpty()) {
+					$h .= '<a href="/series/task:updateCultivation?id='.$eTask['id'].'" class="dropdown-item">'.s("Changer de série").'</a>';
+				}
 
-					$h .= '<div class="dropdown-divider"></div>';
-					$h .= '<a data-ajax="/series/task:doDelete" class="dropdown-item" post-id="'.$eTask['id'].'" data-confirm="'.s("Confirmer la suppression de cette intervention ?").'">'.s("Supprimer l'intervention").'</a>';
-
+				$h .= '<div class="dropdown-divider"></div>';
+				$h .= '<a data-ajax="/series/task:doDelete" class="dropdown-item" post-id="'.$eTask['id'].'" data-confirm="'.s("Confirmer la suppression de cette intervention ?").'">'.s("Supprimer l'intervention").'</a>';
 
 
-				$h .= '</div>';
+
 			$h .= '</div>';
 
 		} else {
@@ -2003,17 +2001,12 @@ class TaskUi {
 		]);
 
 		$h = '<div class="task-item-header">';
-			$h .= '<div class="task-item-header-description">';
-				if($eTask['description'] !== NULL) {
-					$h .= $this->getDescription($eTask);
-				}
-			$h .= '</div>';
-			$h .= '<div>';
-				$h .= $this->getUpdate($eTask, 'btn-primary');
-			$h .= '</div>';
+			if($eTask['description'] !== NULL) {
+				$h .= $this->getDescription($eTask);
+			}
 		$h .= '</div>';
 
-		$columns = 2;
+		$columns = 1;
 
 		if($eTask['farm']->hasFeatureTime()) {
 			$columns++;
@@ -2023,11 +2016,48 @@ class TaskUi {
 			$columns++;
 		}
 
+		if($eTask['cTool']->notEmpty()) {
+			$columns++;
+		}
+
 		$h .= '<div class="task-item-presentation task-item-presentation-'.$columns.'">';
 
 			$h .= '<div>';
 
-				$h .= '<h4>'.s("Intervention").'</h4>';
+				$h .= '<div class="util-action">';
+					$h .= '<h4>'.s("Intervention").'</h4>';
+					$h .= '<div>';
+
+						if($eTask->isTodo()) {
+
+							$h .= '<a data-dropdown="bottom-end" class="btn btn-secondary">'.($eTask['plannedUsers'] ? \Asset::icon('people-fill') : \Asset::icon('person-fill-add')).'</a>';
+							$h .= '<div class="dropdown-list bg-secondary">';
+
+								$h .= '<div class="dropdown-title">'.s("Affecter à...").'</div>';
+
+								foreach($cUser as $eUser) {
+
+									if(\hr\Presence::isWeekPresent($eUser['cPresence'], $eTask['doneWeek'] ?? $eTask['plannedWeek'])->empty()) {
+										continue;
+									}
+
+									$has = in_array($eUser['id'], $eTask['plannedUsers']);
+
+									$h .= '<a data-ajax="/series/task:doUpdateUserCollection" post-ids="'.$eTask['id'].'" post-user="'.$eUser['id'].'" post-action="'.($has ? 'delete' : 'add').'" post-reload="layer" class="dropdown-item">';
+										$h .= $has ? \Asset::icon('x-lg') : \Asset::icon('plus-lg');
+										$h .= '  '.\user\UserUi::getVignette($eUser, '1.5rem').'  '.\user\UserUi::name($eUser);
+									$h .= '</a>';
+
+								}
+
+							$h .= '</div>';
+
+						}
+
+						$h .= ' '.$this->getUpdate($eTask, 'btn-secondary');
+
+					$h .= '</div>';
+				$h .= '</div>';
 
 				$h .= '<dl class="util-presentation util-presentation-1">';
 
@@ -2071,6 +2101,29 @@ class TaskUi {
 
 					}
 
+					if(
+						$cUser->count() > 1 and
+						$eTask['plannedUsers']
+					) {
+
+						$h .= '<dt>'.s("Affectée").'</dt>';
+						$h .= '<dd class="util-action-subtitle">';
+
+							foreach($eTask['plannedUsers'] as $user) {
+
+								if($cUser->offsetExists($user)) {
+
+									$eUser = $cUser[$user];
+									$h .= ' '.\user\UserUi::getVignette($eUser, '1rem');
+
+								}
+
+							}
+
+						$h .= '</dd>';
+
+					}
+
 					$h .= '<dt>'.s("Créée").'</dt>';
 					$h .= '<dd class="util-action-subtitle" title="'.s("Plus précisément à {value}", \util\DateUi::numeric($eTask['createdAt'], \util\DateUi::TIME)).'">';
 						$h .= s("{date} par {user}", ['date' => \util\DateUi::numeric($eTask['createdAt'], \util\DateUi::DATE), 'user' => \user\UserUi::name($eTask['createdBy'])]);
@@ -2086,7 +2139,7 @@ class TaskUi {
 
 					$h .= '<div class="util-action">';
 						$h .= '<h4>'.s("Temps de travail").'</h4>';
-						$h .= '<a href="/series/timesheet?ids[]='.$eTask['id'].'&close=reloadIgnoreCascade" class="btn btn-secondary btn">'.\Asset::icon('clock').'</a>';
+						$h .= '<a href="/series/timesheet?ids[]='.$eTask['id'].'&close=reloadIgnoreCascade" class="btn btn-secondary">'.\Asset::icon('clock').'</a>';
 					$h .= '</div>';
 					$h .= '<div>';
 						$h .= (new TimesheetUi())->getList($eTask, $cUser, 'reloadIgnoreCascade');
@@ -2095,17 +2148,14 @@ class TaskUi {
 
 			}
 
-			$h .= '<div>';
+			if($eTask['cTool']->notEmpty()) {
 
-				$h .= '<h4>'.s("Matériel").'</h4>';
-
-				if($eTask['cTool']->notEmpty()) {
+				$h .= '<div>';
+					$h .= '<h4>'.s("Matériel").'</h4>';
 					$h .= (new \farm\ToolUi())->getList($eTask['cTool']);
-				} else {
-					$h .= '/';
-				}
+				$h .= '</div>';
 
-			$h .= '</div>';
+			}
 
 			if($eTask['action']['fqn'] === ACTION_RECOLTE) {
 
@@ -3640,24 +3690,6 @@ class TaskUi {
 
 			$h .= $this->getTimeGroup($form, $eTask);
 
-			if($cZone->empty()) {
-				$soil = '<p>'.s("Il est nécessaire de cartographier la ferme pour définir une zone d'intervention.", ['link' => '<a href="'.\farm\FarmUi::urlCartography($eTask['farm']).'">']).'</p>';
-				$soil .= '<p>';
-					$soil .= '<a href="'.\farm\FarmUi::urlCartography($eTask['farm']).'" class="btn btn-primary">'.s("Cartographier la ferme").'</a>';
-				$soil .= '</p>';
-			} else {
-				$soil = $form->yesNo('soil', FALSE);
-			}
-
-			if($eTask->canSoil()) {
-				$h .= '<div id="task-create-soil">';
-					$h .= $form->group(
-						s("Assoler l'intervention"),
-						$soil
-					);
-				$h .= '</div>';
-			}
-
 			$h .= $form->dynamicGroup($eTask, 'description');
 			$h .= $this->getToolsGroup($form, $eTask, $cToolAvailable);
 
@@ -4455,8 +4487,17 @@ class TaskUi {
 
 					$e->expects([$property.'Week', $property.'Date']);
 
-					$isWeek = ($e[$property.'Week'] !== NULL and $e[$property.'Date'] === NULL);
-					$isDate = ($e[$property.'Date'] !== NULL);
+					if(isset($e[$property.'Selection'])) {
+
+						$isWeek = ($e[$property.'Selection'] === 'week');
+						$isDate = ($e[$property.'Selection'] === 'date');
+
+					} else {
+
+						$isWeek = ($e[$property.'Week'] !== NULL and $e[$property.'Date'] === NULL);
+						$isDate = ($e[$property.'Date'] !== NULL);
+
+					}
 
 					$h = '<div class="task-write-planned" data-period="'.($isWeek ? 'week' : ($isDate ? 'date' : 'unplanned')).'">';
 
@@ -4569,10 +4610,6 @@ class TaskUi {
 			case 'harvestQuality' :
 				$d->attributes = ['placeholder' => s("Aucun")];
 				$d->values = fn(Task $e) => $e['cQuality'] ?? $e->expects(['cQuality']);
-				break;
-
-			case 'description' :
-				$d->labelAfter = \util\FormUi::info(s("Ajoutez un O en début de chaque ligne pour créer des listes de tâches avec des cases à cocher."));
 				break;
 
 			case 'status' :
