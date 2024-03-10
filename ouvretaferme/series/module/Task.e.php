@@ -13,6 +13,7 @@ class Task extends TaskElement {
 			'category' => ['fqn', 'name'],
 			'series' => ['name', 'cycle', 'mode', 'season', 'area', 'areaTarget', 'length', 'lengthTarget', 'bedWidth', 'use'],
 			'action' => ['fqn', 'name', 'short', 'categories', 'color', 'pace', 'series'],
+			'repeat' => ['frequency', 'stop', 'deleted'],
 			'delayed' => function(Task $e): bool {
 
 				$week = currentWeek();
@@ -249,6 +250,29 @@ class Task extends TaskElement {
 
 			},
 
+			'repeatMaster.check' => function() use ($input) {
+
+				// Pas de fréquence, pas de répétition
+				$frequency = var_filter($input['frequency'] ?? NULL, '?string');
+
+				if($frequency === NULL) {
+					$this['repeatMaster'] = new Repeat();
+					return TRUE;
+				}
+
+				$eRepeat = new Repeat([
+					'task' => $this
+				]);
+
+				if($eRepeat->build(['frequency', 'stop'], $input)) {
+					$this['repeatMaster'] = $eRepeat;
+					return TRUE;
+				} else {
+					return FALSE;
+				}
+
+			},
+
 			'harvest.check' => function(?float &$harvest) use ($fw): bool {
 
 				if($fw->has('Task::action.check')) { // L'action génère déjà une erreur
@@ -400,7 +424,10 @@ class Task extends TaskElement {
 							(
 								$eCultivation->empty() or
 								Cultivation::model()
-									->select(['series', 'plant'])
+									->select([
+										'series' => ['season'],
+										'plant'
+									])
 									->whereSeries($this['series'])
 									->get($eCultivation)
 							)

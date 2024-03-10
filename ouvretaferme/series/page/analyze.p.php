@@ -29,6 +29,7 @@
 		\farm\FarmerLib::register($data->e);
 
 		$data->search = new Search([
+			'time' => TRUE,
 			'year' => $data->year,
 			'month' => $data->month,
 			'week' => $data->week,

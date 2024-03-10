@@ -529,6 +529,38 @@ class Task {
 		wrapper.qsa('div.task-write-planned-'+ period +' input', field => field.removeAttribute('disabled'));
 		wrapper.qsa('div.task-write-planned-field:not(.task-write-planned-'+ period +') input', field => field.setAttribute('disabled', 'disabled'));
 
+		if(period === 'unplanned') {
+
+			this.changeRepeat(target, false);
+
+			wrapper.qsa('.task-write-norepeat, .task-write-repeat', node => node.classList.add('hide'));
+
+		} else {
+			wrapper.qs('.task-write-repeat', node => node.classList.remove('hide'));
+		}
+
+	}
+
+	static changeRepeat(target, repeat) {
+
+		const wrapper = target.firstParent('.task-write-planned');
+
+		if(repeat) {
+
+			wrapper.qs('.task-write-repeat', node => node.classList.add('hide'));
+			wrapper.qsa('.task-write-norepeat, .task-write-repeat-field', node => node.classList.remove('hide'));
+
+			wrapper.qsa('.task-write-repeat-field input', field => field.removeAttribute('disabled'));
+
+		} else {
+
+			wrapper.qs('.task-write-repeat', node => node.classList.remove('hide'));
+			wrapper.qsa('.task-write-norepeat, .task-write-repeat-field', node => node.classList.add('hide'));
+
+			wrapper.qsa('.task-write-repeat-field input', field => field.setAttribute('disabled', 'disabled'));
+
+		}
+
 	}
 
 	static isScrollByDay() {

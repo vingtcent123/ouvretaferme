@@ -56,9 +56,12 @@ class PdfUi {
 				$quantity = $eItem['number'];
 			}
 
-			$item = '<div>';
-				$item .= encode($eItem['name'] ?? '');
-				$item .= '<span class="shop-pdf-label-size">'.encode($eItem['product']['size'] ?? '').'</span>';
+			$item = '<div class="'.(mb_strlen($eItem['name']) > 50 ? 'shop-pdf-label-content-shrink-strong' : (mb_strlen($eItem['name']) > 40 ? 'shop-pdf-label-content-shrink' : '')).'">';
+				if(mb_strlen($eItem['name']) >= 60) {
+					$item .= mb_substr($eItem['name'], 0, 55).'...';
+				} else {
+					$item .= encode($eItem['name'] ?? '');
+				}
 			$item .= '</div>';
 			$item .= '<div>';
 				$item .= \main\UnitUi::getValue($quantity, $eItem['unit']);

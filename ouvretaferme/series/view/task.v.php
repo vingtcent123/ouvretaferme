@@ -97,7 +97,6 @@ new JsonView('doCreate', function($data, AjaxTemplate $t) {
 		if($data->e['action']['fqn'] === ACTION_RECOLTE) {
 
 			$t->ajaxRedirect('/series/task:updateHarvestCollection?ids[]='.$data->e['id'].$date, purgeLayers: TRUE);
-			$t->ajaxReload(purgeLayers: FALSE);
 
 		} else {
 
@@ -107,14 +106,13 @@ new JsonView('doCreate', function($data, AjaxTemplate $t) {
 				$t->ajaxRedirect('/tache/'.$data->e['id'], purgeLayers: true);
 			}
 
-			$t->ajaxReload(purgeLayers: FALSE);
-
 		}
 
 	} else {
 		$t->ajaxRedirect('/tache/'.$data->e['id'], purgeLayers: true);
-		$t->ajaxReload(purgeLayers: FALSE);
 	}
+
+	$t->ajaxReload(purgeLayers: FALSE);
 
 });
 

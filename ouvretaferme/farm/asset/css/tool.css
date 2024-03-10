@@ -1,5 +1,6 @@
 div.tool-list {
 	display: flex;
+	align-items: start;
 	flex-wrap: wrap;
 	line-height: 1.2;
 	gap: 0.5rem 1rem;

@@ -798,6 +798,10 @@ function week_date_ends(string $week): string {
 	return date('Y-m-d', strtotime($week.' + 6 DAYS'));
 }
 
+function week_date_day(string $week, int $day): string {
+	return date('Y-m-d', strtotime($week.' + '.($day - 1).' DAYS'));
+}
+
 function date_year(string $date): ?int {
 	return (strlen($date) >= 7 and $date[4] === '-') ? (int)substr($date, 0, 4) : NULL;
 }

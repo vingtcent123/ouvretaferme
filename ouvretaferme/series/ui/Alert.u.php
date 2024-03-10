@@ -28,6 +28,9 @@ class AlertUi {
 			'Place::bedsCheck' => s("Veuillez sélectionner au moins un emplacement pour cette série !"),
 			'Place::bedsSize' => s("Vous avez choisi une utilisation incorrecte sur certains emplacements !"),
 
+			'Repeat::stop.future' => s("La fin de répétition de l'intervention doit être dans le futur"),
+			'Repeat::stop.series' => s("Vous devez indiquer une fin de répétition qui corresponde à l'année de la saison de la série, l'année précédente ou l'année suivante"),
+
 			'Task::cultivation.check' => s("Vous n'avez pas saisi de production pour cette intervention"),
 			'Task::plannedWeek.check' => s("Merci d'indiquer une semaine cohérente"),
 			'Task::harvest.check' => s("La récolte ne peut pas être négative"),

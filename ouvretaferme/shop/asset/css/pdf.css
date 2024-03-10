@@ -8,7 +8,7 @@
 	display: grid;
 	grid-template-columns: 1fr 1fr;
 	grid-template-rows: 1fr 1fr;
-	height: 20cm;
+	height: 19.9cm;
 	grid-gap: 0.5cm;
 	page-break-after: always;
 }
@@ -78,7 +78,7 @@
 .shop-pdf-label-content {
 	align-self: start;
 	display: grid;
-	grid-template-columns: auto 1fr auto;
+	grid-template-columns: auto auto max-content;
 	grid-template-rows: auto;
 	grid-row-gap: 0.15cm;
 	align-items: stretch;
@@ -92,13 +92,15 @@
 	padding-bottom: 0.05cm;
 }
 
+.shop-pdf-label-content-shrink {
+	letter-spacing: -0.2px;
+}
+
+.shop-pdf-label-content-shrink-strong {
+	letter-spacing: -0.3px;
+}
+
 .shop-pdf-label-content > *:nth-child(3n + 2) {
 	font-weight: bold;
 	padding-left: 0.5cm;
-}
-
-.shop-pdf-label-size {
-	font-size: 80%;
-	color: var(--muted);
-	padding-left: 0.1cm;
 }

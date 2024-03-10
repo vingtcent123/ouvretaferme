@@ -68,6 +68,7 @@ class TaskModel extends \ModuleModel {
 			'timelineStop' => ['date', 'null' => TRUE, 'cast' => 'string'],
 			'timesheetStart' => ['date', 'null' => TRUE, 'cast' => 'string'],
 			'timesheetStop' => ['date', 'null' => TRUE, 'cast' => 'string'],
+			'repeat' => ['element32', 'series\Repeat', 'null' => TRUE, 'cast' => 'element'],
 			'createdAt' => ['datetime', 'cast' => 'string'],
 			'createdBy' => ['element32', 'user\User', 'cast' => 'element'],
 			'updatedAt' => ['datetime', 'null' => TRUE, 'cast' => 'string'],
@@ -75,7 +76,7 @@ class TaskModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'farm', 'season', 'cultivation', 'series', 'plant', 'variety', 'action', 'category', 'description', 'time', 'timeExpected', 'harvest', 'harvestUnit', 'harvestQuality', 'fertilizer', 'plannedWeek', 'plannedDate', 'plannedUsers', 'doneWeek', 'doneDate', 'timelineStart', 'timelineStop', 'timesheetStart', 'timesheetStop', 'createdAt', 'createdBy', 'updatedAt', 'status'
+			'id', 'farm', 'season', 'cultivation', 'series', 'plant', 'variety', 'action', 'category', 'description', 'time', 'timeExpected', 'harvest', 'harvestUnit', 'harvestQuality', 'fertilizer', 'plannedWeek', 'plannedDate', 'plannedUsers', 'doneWeek', 'doneDate', 'timelineStart', 'timelineStop', 'timesheetStart', 'timesheetStop', 'repeat', 'createdAt', 'createdBy', 'updatedAt', 'status'
 		]);
 
 		$this->propertiesToModule += [
@@ -87,11 +88,13 @@ class TaskModel extends \ModuleModel {
 			'action' => 'farm\Action',
 			'category' => 'farm\Category',
 			'harvestQuality' => 'plant\Quality',
+			'repeat' => 'series\Repeat',
 			'createdBy' => 'user\User',
 		];
 
 		$this->indexConstraints = array_merge($this->indexConstraints, [
 			['farm', 'status', 'doneWeek'],
+			['repeat'],
 			['series'],
 			['cultivation']
 		]);
@@ -264,6 +267,10 @@ class TaskModel extends \ModuleModel {
 
 	public function whereTimesheetStop(...$data): TaskModel {
 		return $this->where('timesheetStop', ...$data);
+	}
+
+	public function whereRepeat(...$data): TaskModel {
+		return $this->where('repeat', ...$data);
 	}
 
 	public function whereCreatedAt(...$data): TaskModel {

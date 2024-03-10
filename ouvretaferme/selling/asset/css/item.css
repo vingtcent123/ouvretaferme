@@ -135,7 +135,7 @@ div.item-add-one-actions {
 /* Articles commandés par jour */
 .item-day-wrapper {
 	display: grid;
-	grid-template-columns: auto 1fr;
+	grid-template-columns: minmax(auto, 20rem) 1fr;
 	grid-gap: 1rem;
 	align-items: start;
 	margin-bottom: 2rem;

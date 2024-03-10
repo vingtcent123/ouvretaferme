@@ -299,6 +299,8 @@
 				$data->date = date('Y-m-d', strtotime(date('Y-m-d', strtotime($period)).' + '.($subPeriod - 1).' DAYS'));
 				$data->week = $period;
 
+				\series\RepeatLib::createForWeek($data->eFarm, $data->week);
+
 				if(get_exists('user')) {
 					$data->eUserSelected = GET('user', 'user\User');
 					\farm\FarmerLib::setView('viewPlanningUser', $data->eFarm, $data->eUserSelected);
@@ -325,6 +327,8 @@
 
 				$data->week = $period;
 
+				\series\RepeatLib::createForWeek($data->eFarm, $data->week);
+
 				$data->cccTask = \series\TaskLib::getForWeek($data->eFarm, $data->week, $data->cActionMain[ACTION_RECOLTE], $data->search);
 
 				$data->seasonsWithSeries = \series\SeriesLib::getSeasonsAround($data->eFarm, week_year($data->week));
@@ -343,6 +347,8 @@
 				$data->week = NULL;
 				$data->year = (int)$period;
 				$data->month = (int)$subPeriod;
+
+				\series\RepeatLib::createForYear($data->eFarm, $data->year);
 
 				$data->cUserFarm = \farm\FarmerLib::getUsersByFarmForPeriod($data->eFarm, $data->year.'-01-01', $data->year.'-12-31', withPresenceAbsence: TRUE);
 
@@ -363,6 +369,8 @@
 		$data->eAction = \farm\ActionLib::getById(GET('action'))->validate('canRead');
 
 		\farm\ActionLib::getMainByFarm($data->eFarm);
+
+		\series\RepeatLib::createForWeek($data->eFarm, $data->week);
 
 		$data->cTask = \series\TaskLib::getByWeekAndAction($data->eFarm, $data->week, $data->eAction);
 

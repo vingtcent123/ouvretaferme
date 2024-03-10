@@ -101,6 +101,34 @@ Place:
     ["task", "bed"]
   ]
 
+Repeat:
+  id: serial32
+  farm: farm\Farm
+  season: ?int16(0, null)
+  cultivation: ?series\Cultivation
+  series: ?series\Series
+  plant: ?plant\Plant
+  variety: ?plant\Variety
+  action: farm\Action
+  category: farm\Category
+  description: ?text16(1, null)
+  timeExpected: ?float32(0.0, null)
+  fertilizer: ?json
+  tools: json
+  status: enum(TODO, DONE)
+  frequency: enum(W1, W2, W3, W4, M1)
+  start: date
+  current: date
+  discrete: json = PHP([])
+  stop: ?week
+  completed: bool = FALSE
+  deleted: bool = FALSE
+  createdBy: user\User = SPECIAL(user)
+  createdAt: datetime = SPECIAL(now)
+  INDEX: [
+    ["farm", "current"]
+  ]
+
 Requirement:
   id: serial32
   farm: farm\Farm
@@ -193,12 +221,14 @@ Task:
   timelineStop: ?date
   timesheetStart: ?date
   timesheetStop: ?date
+  repeat: ?series\Repeat
   createdAt: datetime = SPECIAL(now)
   createdBy: user\User = SPECIAL(user)
   updatedAt: ?datetime
   status: enum(TODO, DONE)
   INDEX: [
     ["farm", "status", "doneWeek"],
+    ["repeat"],
     ["series"],
     ["cultivation"]
   ]

@@ -2230,12 +2230,8 @@ body[data-touch="yes"] .dropdown-item {
 	color: white;
 	padding: 0.75rem 1rem;
 	white-space: nowrap;
-	text-transform: uppercase;
-	font-size: 0.75rem;
-	font-weight: bold;
 	line-height: 1.2;
 	letter-spacing: 0.5px;
-	background-color: rgba(255, 255, 255, 0.05);
 }
 
 .dropdown-title + .dropdown-subtitle,

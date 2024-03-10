@@ -1757,7 +1757,22 @@ class TaskUi {
 				}
 
 				$h .= '<div class="dropdown-divider"></div>';
-				$h .= '<a data-ajax="/series/task:doDelete" class="dropdown-item" post-id="'.$eTask['id'].'" data-confirm="'.s("Confirmer la suppression de cette intervention ?").'">'.s("Supprimer l'intervention").'</a>';
+
+				if($eTask['repeat']->empty()) {
+
+					$h .= '<a data-ajax="/series/task:doDelete" class="dropdown-item" post-id="'.$eTask['id'].'" data-confirm="'.s("Confirmer la suppression de cette intervention ?").'">'.s("Supprimer l'intervention").'</a>';
+
+				} else {
+
+					if($eTask['repeat']['deleted'] === FALSE) {
+						$h .= '<a data-ajax="/series/repeat:doUpdateDeleted" class="dropdown-item" post-id="'.$eTask['repeat']['id'].'" post-deleted="1" data-confirm="'.s("Aucune nouvelle intervention ne sera créée pour cette répétition, mais les interventions déjà créées ne seront pas supprimées. Continuer ?").'">'.s("Désactiver la répétition").'</a>';
+						$h .= '<div class="dropdown-divider"></div>';
+					}
+					$h .= '<div class="dropdown-subtitle">'.s("Supprimer").'</div>';
+					$h .= '<a data-ajax="/series/task:doDelete" class="dropdown-item" post-id="'.$eTask['id'].'" data-confirm="'.s("Confirmer la suppression de cette intervention ?").'"> '.\Asset::icon('arrow-right').'  '.s("Uniquement cette intervention").'</a>';
+					$h .= '<a data-ajax="/series/task:doDeleteRepeat" class="dropdown-item" post-id="'.$eTask['id'].'" data-confirm="'.s("Confirmer la suppression de cette intervention et de toutes les suivantes de cette répétition ?").'"> '.\Asset::icon('arrow-right').'  '.s("Cette intervention et toutes les suivantes").'</a>';
+
+				}
 
 
 
@@ -2028,7 +2043,10 @@ class TaskUi {
 					$h .= '<h4>'.s("Intervention").'</h4>';
 					$h .= '<div>';
 
-						if($eTask->isTodo()) {
+						if(
+							$eTask->isTodo() and
+							$eTask['plannedWeek'] !== NULL
+						) {
 
 							$h .= '<a data-dropdown="bottom-end" class="btn btn-secondary">'.($eTask['plannedUsers'] ? \Asset::icon('people-fill') : \Asset::icon('person-fill-add')).'</a>';
 							$h .= '<div class="dropdown-list bg-secondary">';
@@ -2037,7 +2055,7 @@ class TaskUi {
 
 								foreach($cUser as $eUser) {
 
-									if(\hr\Presence::isWeekPresent($eUser['cPresence'], $eTask['doneWeek'] ?? $eTask['plannedWeek'])->empty()) {
+									if(\hr\Presence::isWeekPresent($eUser['cPresence'], $eTask['plannedWeek'])->empty()) {
 										continue;
 									}
 
@@ -2120,6 +2138,15 @@ class TaskUi {
 
 							}
 
+						$h .= '</dd>';
+
+					}
+
+					if($eTask['repeat']->notEmpty()) {
+
+						$h .= '<dt>'.s("Répétée").'</dt>';
+						$h .= '<dd class="util-action-subtitle">';
+							$h .= RepeatUi::getSequence($eTask['repeat']);
 						$h .= '</dd>';
 
 					}
@@ -4515,12 +4542,12 @@ class TaskUi {
 
 						$labelWeek = match($property) {
 							'planned' => s("Planifier à la semaine"),
-							'done' => s("Raisonner à la semaine")
+							'done' => s("Consigner à la semaine")
 						};
 
 						$labelDate = match($property) {
 							'planned' => s("Planifier à la journée"),
-							'done' => s("Raisonner à la journée")
+							'done' => s("Consigner à la journée")
 						};
 
 						$h .= '<div class="field-followup">';
@@ -4537,6 +4564,27 @@ class TaskUi {
 									$h .= '<a '.attr('onclick', 'Task.changePlanned(this, "unplanned")').'>'.s("Non planifié").'</a>';
 								$h .= '</span>';
 							}
+							$h .= '<span class="task-write-repeat">';
+								$h .= ' | '.\Asset::icon('caret-down-fill').' <a '.attr('onclick', 'Task.changeRepeat(this, true)').'>'.s("Répéter").'</a>';
+							$h .= '</span>';
+							$h .= '<span class="task-write-norepeat hide">';
+								$h .= ' | '.\Asset::icon('caret-up-fill').' <a '.attr('onclick', 'Task.changeRepeat(this, false)').'>'.s("Une seule fois").'</a>';
+							$h .= '</span>';
+						$h .= '</div>';
+
+						$eRepeat = new Repeat();
+
+						$h .= '<div class="task-write-repeat-field hide">';
+							$h .= '<h5>'.s("Répéter l'intervention").'</h5>';
+							$h .= $form->dynamicField($eRepeat, 'frequency', function($d) {
+								$d->attributes['callbackRadioAttributes'] = fn() => ['disabled'];
+							});
+							$h .= '<div class="mt-1">';
+								$h .= '<h5>'.s("Jusqu'à :").'</h5>';
+								$h .= $form->dynamicField($eRepeat, 'stop', function($d) {
+									$d->attributes = ['disabled'];
+								});
+							$h .= '</div>';
 						$h .= '</div>';
 
 					$h .= '</div>';
@@ -4544,7 +4592,7 @@ class TaskUi {
 					return $h;
 
 				};
-				$d->group = ['wrapper' => $property.'Week '.$property.'Date '.$property];
+				$d->group = ['wrapper' => $property.'Week '.$property.'Date '.$property.' frequency stop'];
 				break;
 
 			case 'plant' :

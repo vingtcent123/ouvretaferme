@@ -21,6 +21,8 @@ class TaskLib extends TaskCrud {
 
 			}
 
+			$properties[] = 'repeatMaster';
+
 			return $properties;
 
 		};
@@ -113,26 +115,6 @@ class TaskLib extends TaskCrud {
 
 		}
 
-		if($search->get('plant')) {
-			Task::model()->wherePlant($search->get('plant'));
-		}
-
-		if($search->get('series')) {
-			Task::model()->whereSeries($search->get('series'));
-		}
-
-		if($search->get('action')) {
-			Task::model()->whereAction($search->get('action'));
-		}
-
-		if($search->get('category')) {
-			Task::model()->whereCategory($search->get('category'));
-		}
-
-		if($search->get('status')) {
-			Task::model()->whereStatus($search->get('status'));
-		}
-
 		if($search->get('user')) {
 			Task::model()
 				->where('m1.farm', $eFarm)
@@ -158,9 +140,16 @@ class TaskLib extends TaskCrud {
 				'series' => [
 					'cccPlace' => PlaceLib::delegateBySeries()
 				],
+				'cccPlace' => PlaceLib::delegateByTask(),
 				'plant' => ['name'],
 				'times' => TimesheetLib::delegateByTask()
 			])
+			->whereSeries($search->get('series'), if: $search->get('series'))
+			->wherePlant($search->get('plant'), if: $search->get('plant'))
+			->whereAction($search->get('action'), if: $search->get('action'))
+			->whereCategory($search->get('category'), if: $search->get('category'))
+			->whereStatus($search->get('status'), if: $search->get('status'))
+			->where('time > 0', if: $search->get('time'))
 			->option('count')
 			->sort(new \Sql('IF(status = "'.Task::TODO.'", IF(plannedWeek IS NOT NULL, plannedWeek, "0000-00-00"), NULL) DESC, IF(timesheetStop IS NOT NULL, timesheetStop, updatedAt) DESC'))
 			->getCollection($position, $limit, $index);
@@ -1222,7 +1211,8 @@ class TaskLib extends TaskCrud {
 			'series',
 			'farm',
 			'category',
-			'status'
+			'status',
+			'repeatMaster'
 		]);
 
 		if($e['category']['fqn'] === CATEGORIE_CULTURE) {
@@ -1250,11 +1240,59 @@ class TaskLib extends TaskCrud {
 
 		Task::model()->beginTransaction();
 
+		if($e['repeatMaster']->notEmpty()) {
+
+			$eRepeat = RepeatLib::createFromTask($e);
+
+			// Si c'est pour une série, on crée immédiatement toutes les tâches car il y a une finitude dans le temps
+			if($e['series']->notEmpty()) {
+				RepeatLib::createForSeries($eRepeat);
+			}
+
+		}
+
 		parent::create($e);
 
 		self::updateTools($e);
 
 		SeriesLib::recalculate($e['farm'], $e['series'], $e['action']);
+
+		Task::model()->commit();
+
+	}
+
+	public static function createFromRepeat(Repeat $e, string $week): void {
+
+		$eTask = new Task($e->extracts(RepeatLib::getTaskProperties()));
+		$eTask['repeat'] = $e;
+
+		switch($eTask['status']) {
+
+			case Task::TODO :
+				$eTask['plannedWeek'] = $week;
+				break;
+
+			case Task::DONE :
+				$eTask['plannedWeek'] = $week;
+				$eTask['doneWeek'] = $week;
+				$eTask['doneDate'] = week_date_day($week, 3);
+				break;
+
+		}
+
+		$eTask['cTool'] = new \Collection();
+
+		foreach($e['tools'] as $tool) {
+			$eTask['cTool'][] = new \farm\Tool(['id' => $tool]);
+		}
+
+		Task::model()->beginTransaction();
+
+			parent::create($eTask);
+
+			self::updateTools($eTask);
+
+			SeriesLib::recalculate($eTask['farm'], $eTask['series'], $eTask['action']);
 
 		Task::model()->commit();
 
@@ -1541,7 +1579,9 @@ class TaskLib extends TaskCrud {
 		}
 
 		if(array_intersect(['plannedWeek', 'doneWeek'], $properties)) {
+
 			SeriesLib::recalculate($e['farm'], $e['series'], $e['action']);
+
 		}
 
 		Task::model()->commit();
@@ -1558,9 +1598,14 @@ class TaskLib extends TaskCrud {
 			$e->expects(['oldCultivation']);
 
 			// La production peut avoir changé
-			if($e['cultivation']->notEmpty()) {
+			if(
+				$e['cultivation']->notEmpty() and
+				$e['oldCultivation']->notEmpty() and
+				$e['cultivation']['id'] !== $e['oldCultivation']['id']
+			) {
 
 				$e['cultivation']->expects(['series']);
+
 				$e['series'] = $e['cultivation']['series'];
 				$e['plant'] = $e['cultivation']['plant'];
 
@@ -1637,6 +1682,8 @@ class TaskLib extends TaskCrud {
 	}
 
 	public static function delete(Task $e): void {
+
+		$e->expects(['farm', 'series', 'cultivation', 'plant', 'action']);
 
 		Task::model()->beginTransaction();
 

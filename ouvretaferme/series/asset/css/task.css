@@ -1203,6 +1203,10 @@ div.task-write-planned[data-period="unplanned"] span.task-write-planned-separato
 	display: none;
 }
 
+div.task-write-repeat-field {
+	margin: 1rem 0;
+}
+
 #panel-task-create h3 {
 	margin-bottom: 0;
 }
