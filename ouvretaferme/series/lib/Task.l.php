@@ -1598,20 +1598,23 @@ class TaskLib extends TaskCrud {
 			$e->expects(['oldCultivation']);
 
 			// La production peut avoir changé
-			if(
-				$e['cultivation']->notEmpty() and
-				$e['oldCultivation']->notEmpty() and
-				$e['cultivation']['id'] !== $e['oldCultivation']['id']
-			) {
+			if($e['cultivation']->notEmpty()) {
 
-				$e['cultivation']->expects(['series']);
+				if(
+					$e['oldCultivation']->empty() or
+					$e['cultivation']['id'] !== $e['oldCultivation']['id']
+				) {
 
-				$e['series'] = $e['cultivation']['series'];
-				$e['plant'] = $e['cultivation']['plant'];
+					$e['cultivation']->expects(['series']);
 
-				$properties[] = 'series';
+					$e['series'] = $e['cultivation']['series'];
+					$e['plant'] = $e['cultivation']['plant'];
 
-			} else {
+					$properties[] = 'series';
+
+				}
+
+			} else if($e['cultivation']->empty()) {
 				$e['plant'] = new \plant\Plant();
 			}
 
