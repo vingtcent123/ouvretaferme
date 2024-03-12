@@ -30,6 +30,61 @@ class HomeUi {
 
 	}
 
+	public function getTraining(bool $hide = FALSE): string {
+
+		if(currentDate() > \Setting::get('main\limitTraining')) {
+			return '';
+		}
+
+		if(\user\ConnectionLib::isLogged() and $hide) {
+
+			$eUser = \user\ConnectionLib::getOnline();
+
+			$key = 'training-202403-'.$eUser['id'];
+			$expires = (strtotime(\Setting::get('main\limitTraining')) + 86400 * 7 - time());
+
+			if(get_exists('training')) {
+				\Cache::redis()->set($key, 5);
+				return '';
+			}
+
+			if(\Cache::redis()->add($key, 0, $expires) === FALSE) {
+
+				$newValue = \Cache::redis()->get($key) + 1;
+
+				if($newValue > 3) {
+					return '';
+				}
+
+				\Cache::redis()->set($key, $newValue);
+
+			}
+
+		}
+
+		$h = '<div class="home-blog bg-training util-block">';
+			$h .= '<div>';
+				$h .= \Asset::image('main', 'favicon.png').'';
+			$h .= '</div>';
+			$h .= '<div>';
+				$h .= '<h4 class="mb-0 color-secondary">'.s("21, 22 ou 26 mars 2024 en Auvergne").'</h4>';
+				$h .= '<h2 class="font-oswald">';
+					$h .= s("Formations sur {siteName} !");
+				$h .= '</h2>';
+				$h .= '<div>';
+					$h .= '<p>'.s("Des formations à la journée finançables VIVEA sont organisées pour {siteName}. Une occasion idéale pour prendre en main ou se perfectionner sur {siteName}, discuter des évolutions possibles et échanger sur vos problématiques !").'</p>';
+					$h .= '<a href="/presentation/formations" target="_blank" class="btn btn-secondary" style="margin-bottom: 0.25rem">'.\Asset::icon('chevron-right').' '.s("En savoir plus").'</a>';
+					if(\user\ConnectionLib::isLogged() and $hide) {
+						$h .= ' <a href="'.\util\HttpUi::setArgument(LIME_REQUEST, 'training', 1).'" class="btn btn-secondary" style="margin-bottom: 0.25rem">'.\Asset::icon('x-lg').' '.s("Ok, cacher ce message").'</a>';
+					}
+				$h .= '</div>';
+			$h .= '</div>';
+		$h .= '</div>';
+
+		return $h;
+
+	}
+
 	public function getBlog(\website\News $eNews, bool $displayFallback): string {
 
 		\Asset::css('main', 'font-oswald.css');

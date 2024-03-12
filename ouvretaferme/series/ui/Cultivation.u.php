@@ -409,7 +409,7 @@ class CultivationUi {
 				if($ccForecast->empty()) {
 					$help .= '<a href="/plant/forecast:create?farm='.$eFarm['id'].'&season='.$season.'" class="btn btn-secondary">'.s("Ajouter une espèce cultivée au prévisionnel").'</a>';
 				} else {
-					$help .= '<a href="'.\farm\FarmUi::urlCultivationSeries($eFarm, \farm\Farmer::FORECAST, $season).'&help" class="btn btn-secondary">'.\Asset::icon('x-circle-fill').' '.s("Ok, fermer ce message").'</a>';
+					$help .= '<a href="'.\farm\FarmUi::urlCultivationSeries($eFarm, \farm\Farmer::FORECAST, $season).'&help" class="btn btn-secondary">'.\Asset::icon('x-lg').' '.s("Ok, cacher ce message").'</a>';
 				}
 			$help .= '</div>';
 

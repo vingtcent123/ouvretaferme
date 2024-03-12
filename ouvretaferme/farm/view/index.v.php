@@ -41,6 +41,8 @@ new AdaptativeView('planning', function($data, FarmTemplate $t) {
 				fn() => $uiTask->getCalendarFilter()
 			);
 
+			echo (new \main\HomeUi())->getTraining(TRUE);
+
 			echo $uiTask->getCalendarSearch($data->eFarm, $data->search, $data->cAction, $data->cZone);
 
 			echo $uiTask->getWeekPlanning($data->eFarm, $data->week, $data->cccTask, $data->cUserFarm, $data->eUserTime, $data->seasonsWithSeries, $data->cActionMain, $data->cCategory);

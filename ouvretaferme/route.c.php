@@ -258,6 +258,11 @@ Route::register([
 			'priority' => 5,
 			'route' => ['presentation', 'faq'],
 		],
+		'/presentation/formations' => [
+			'request' => 'main/index',
+			'priority' => 5,
+			'route' => ['presentation', 'formations'],
+		],
 		'/presentation/invitation' => [
 			'request' => 'main/index',
 			'priority' => 5,

@@ -1347,6 +1347,9 @@ td.util-manage-vignette {
 .bg-info {
 	background-color: var(--info) !important;
 }
+.bg-training {
+	background-color: var(--training) !important;
+}
 .bg-success {
 	background-color: var(--success) !important;
 }
