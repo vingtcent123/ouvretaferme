@@ -421,7 +421,14 @@
 		throw new ViewAction($data);
 
 	})
-	->doDelete(fn($data) => throw new ViewAction($data));
+	->doDelete(fn($data) => throw new ViewAction($data))
+	->write('doDeleteRepeat', function($data) {
+
+		\series\TaskLib::deleteRepeat($data->e);
+
+		throw new ViewAction($data, ':doDelete');
+
+	}, validate: ['canDelete']);
 
 (new Page(function($data) {
 

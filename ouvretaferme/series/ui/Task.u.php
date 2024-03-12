@@ -1202,7 +1202,12 @@ class TaskUi {
 			'data-filter-user' => implode(' ', $users)
 		];
 
-		$h = '<div class="tasks-planning-item '.($series ? 'tasks-planning-item-with-series' : '').' '.($content ? 'tasks-planning-item-with-content' : '').' '.($eTask->isDone() ? 'tasks-planning-item-done' : 'tasks-planning-item-todo').' batch-item" id="task-item-'.$eTask['id'].'" '.attrs($filters).'>';
+		$withContent = (
+			$content !== '' or
+			$series === ''
+		);
+
+		$h = '<div class="tasks-planning-item '.($series ? 'tasks-planning-item-with-series' : '').' '.($withContent ? 'tasks-planning-item-with-content' : '').' '.($eTask->isDone() ? 'tasks-planning-item-done' : 'tasks-planning-item-todo').' batch-item" id="task-item-'.$eTask['id'].'" '.attrs($filters).'>';
 
 			$h .= '<label class="tasks-planning-select">';
 				$h .= $this->getBatchCheckbox($form, $eTask);
@@ -1214,7 +1219,7 @@ class TaskUi {
 					$h .= '<a href="'.TaskUi::url($eTask).'" class="tasks-planning-item-top">'.$series.'</a>';
 				}
 
-				if($content) {
+				if($withContent) {
 					$h .= '<a href="'.self::url($eTask).'" class="tasks-planning-item-content">'.$content.'</a>';
 				}
 
@@ -1770,7 +1775,7 @@ class TaskUi {
 					}
 					$h .= '<div class="dropdown-subtitle">'.s("Supprimer").'</div>';
 					$h .= '<a data-ajax="/series/task:doDelete" class="dropdown-item" post-id="'.$eTask['id'].'" data-confirm="'.s("Confirmer la suppression de cette intervention ?").'"> '.\Asset::icon('arrow-right').'  '.s("Uniquement cette intervention").'</a>';
-					$h .= '<a data-ajax="/series/task:doDeleteRepeat" class="dropdown-item" post-id="'.$eTask['id'].'" data-confirm="'.s("Confirmer la suppression de cette intervention et de toutes les suivantes de cette répétition ?").'"> '.\Asset::icon('arrow-right').'  '.s("Cette intervention et toutes les suivantes").'</a>';
+					$h .= '<a data-ajax="/series/task:doDeleteRepeat" class="dropdown-item" post-id="'.$eTask['id'].'" data-confirm="'.s("Confirmer la suppression de cette intervention et de toutes les suivantes de cette répétition ? La répétition sera également désactivée.").'"> '.\Asset::icon('arrow-right').'  '.s("Cette intervention et toutes les suivantes").'</a>';
 
 				}
 
