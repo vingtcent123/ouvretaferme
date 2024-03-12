@@ -249,9 +249,9 @@ new AdaptativeView('/presentation/formations', function($data, MainTemplate $t) 
 			echo '<div>';
 				echo '<h2>'.Asset::icon('arrow-right').''.s("Les dates").'</h2>';
 				echo '<ul>';
-					echo '<li class="mb-2">'.s("<b>Le 21 mars 2024 autour d'Aurillac (15)</b>").'<br/><a href="https://docs.google.com/forms/d/e/1FAIpQLSc2xziOQjYoaFBiw_DVQQg15JgHXGSv6JcpEkfUd42YAAQBKg/viewform" class="btn btn-secondary" style="margin-top: 0.5rem">'.s("Inscription le 21 mars").'</a></li>';
-					echo '<li class="mb-2">'.s("<b>Le 22 mars 2024 autour de Clermont-Ferrand (63)</b>").'<br/><a href="https://docs.google.com/forms/d/e/1FAIpQLSfsFQU5vDBqyQwqfBBEwFQp8x1dT3U2U2oryyu5HMYkZCA7qQ/viewform" class="btn btn-secondary" style="margin-top: 0.5rem">'.s("Inscription le 22 mars").'</a></li>';
-					echo '<li class="mb-2">'.s("<b>Le 26 mars 2024 en Haute-Loire (43)</b>").'<br/><a href="https://docs.google.com/forms/d/e/1FAIpQLSeegKAfhpkFX4kgxuikqMSxank7_zSkJRg1stfg3HeniNTTdQ/viewform" class="btn btn-secondary" style="margin-top: 0.5rem">'.s("Inscription le 26 mars").'</a></li>';
+					echo '<li class="mb-2">'.s("<b>Le 21 mars 2024 autour d'Aurillac (15)</b>").'<br/><a href="https://docs.google.com/forms/d/e/1FAIpQLSc2xziOQjYoaFBiw_DVQQg15JgHXGSv6JcpEkfUd42YAAQBKg/viewform" class="btn btn-secondary" style="margin-top: 0.5rem">'.s("Inscription pour le 21 mars").'</a></li>';
+					echo '<li class="mb-2">'.s("<b>Le 22 mars 2024 autour de Clermont-Ferrand (63)</b>").'<br/><a href="https://docs.google.com/forms/d/e/1FAIpQLSfsFQU5vDBqyQwqfBBEwFQp8x1dT3U2U2oryyu5HMYkZCA7qQ/viewform" class="btn btn-secondary" style="margin-top: 0.5rem">'.s("Inscription pour le 22 mars").'</a></li>';
+					echo '<li class="mb-2">'.s("<b>Le 26 mars 2024 en Haute-Loire (43)</b>").'<br/><a href="https://docs.google.com/forms/d/e/1FAIpQLSeegKAfhpkFX4kgxuikqMSxank7_zSkJRg1stfg3HeniNTTdQ/viewform" class="btn btn-secondary" style="margin-top: 0.5rem">'.s("Inscription pour le 26 mars").'</a></li>';
 				echo '</ul>';
 			echo '</div>';
 
