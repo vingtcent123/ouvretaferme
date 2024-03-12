@@ -62,5 +62,15 @@
 
 		throw new RedirectAction('/?success=farm:Farm.closed');
 
-	});
+	})
+	->read('export', function($data) {
+
+		$data->eFarm = $data->e;
+		$data->year = GET('year', default: $data->e['seasonLast']);
+
+		\farm\FarmerLib::register($data->e);
+
+		throw new \ViewAction($data);
+
+	}, validate: ['canPersonalData']);
 ?>

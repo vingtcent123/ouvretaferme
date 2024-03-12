@@ -1470,9 +1470,13 @@ document.delegateEventListener('click', 'a[href]', function(e) {
 
 		}
 
+		if(node === this) {
+			break;
+		}
+
 		node = node.parentElement;
 
-	} while(node !== null && node != this);
+	} while(node !== null);
 
 	if(this.getAttribute('target') === '_blank') {
 		return true;

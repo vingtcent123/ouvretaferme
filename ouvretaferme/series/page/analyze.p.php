@@ -1,15 +1,27 @@
 <?php
 (new \farm\FarmPage())
-	->read('export', function($data) {
+	->read('exportTasks', function($data) {
 
 		$data->e->validate('canAnalyze', 'canPersonalData');
 
 		$year = GET('year', 'int');
 
-		$export = \series\AnalyzeLib::getExport($data->e, $year);
-		array_unshift($export, (new \series\AnalyzeUi())->getExportHeader());
+		$export = \series\AnalyzeLib::getExportTasks($data->e, $year);
+		array_unshift($export, (new \series\AnalyzeUi())->getExportTasksHeader());
 
 		throw new CsvAction($export, 'planning-'.$year.'.csv');
+
+	})
+	->read('exportHarvests', function($data) {
+
+		$data->e->validate('canAnalyze', 'canPersonalData');
+
+		$year = GET('year', 'int');
+
+		$export = \series\AnalyzeLib::getExportHarvests($data->e, $year);
+		array_unshift($export, (new \series\AnalyzeUi())->getExportHarvestsHeader());
+
+		throw new CsvAction($export, 'harvests-'.$year.'.csv');
 
 	})
 	->read('tasks', function($data) {

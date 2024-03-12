@@ -418,6 +418,50 @@ class FarmUi {
 
 	}
 
+	public function export(Farm $eFarm, int $year): string {
+
+		$form = new \util\FormUi();
+
+		$h = $form->open(attributes: ['action' => '/farm/farm:export', 'method' => 'get']);
+			$h .= '<div class="util-block-search" style="display: flex; column-gap: 1rem">';
+				$h .= $form->hidden('id', $eFarm['id']);
+				$h .= $form->inputGroup(
+					$form->addon(s("Année")).
+					$form->rangeSelect('year', $eFarm['seasonLast'], $eFarm['seasonFirst'], -1, $year, ['mandatory' => TRUE])
+				);
+				$h .= $form->submit(s("Valider"));
+			$h .= '</div>';
+		$h .= $form->close();
+
+		$h .= '<div class="util-buttons">';
+
+			$h .= '<a href="/series/analyze:exportTasks?id='.$eFarm['id'].'&year='.$year.'" class="bg-secondary util-button" data-ajax-navigation="never">';
+				$h .= '<div>';
+					$h .= '<h4>'.s("Exporter le planning").'</h4>';
+				$h .= '</div>';
+				$h .= \Asset::icon('calendar3');
+			$h .= '</a>';
+
+			$h .= '<a href="/series/analyze:exportHarvests?id='.$eFarm['id'].'&year='.$year.'" class="bg-secondary util-button" data-ajax-navigation="never">';
+				$h .= '<div>';
+					$h .= '<h4>'.s("Exporter les récoltes").'</h4>';
+				$h .= '</div>';
+				$h .= \Asset::icon('basket2-fill');
+			$h .= '</a>';
+
+			$h .= '<a href="/selling/analyze:export?id='.$eFarm['id'].'&year='.$year.'" class="bg-secondary util-button" data-ajax-navigation="never">';
+				$h .= '<div>';
+					$h .= '<h4>'.s("Exporter les ventes").'</h4>';
+				$h .= '</div>';
+				$h .= \Asset::icon('piggy-bank');
+			$h .= '</a>';
+
+		$h .= '</div>';
+
+		return $h;
+
+	}
+
 	public function getMainTabs(Farm $eFarm, string $tab): string {
 
 		$h = '<nav id="farm-nav">';
@@ -941,10 +985,6 @@ class FarmUi {
 					foreach($categories as $key => $value) {
 						$h .= '<a href="'.\farm\FarmUi::urlAnalyzeWorkingTime($eFarm, $selectedYear, $key).'" class="dropdown-item '.($key === $selectedView ? 'selected' : '').'">'.$value.'</a> ';
 					}
-					if($eFarm->canPersonalData()) {
-						$h .= '<div class="dropdown-divider"></div>';
-						$h .= '<a href="/series/analyze:export?id='.$eFarm['id'].'&year='.$selectedYear.'" class="dropdown-item" data-ajax-navigation="never">'.\Asset::icon('filetype-csv').' '.s("Exporter le planning").'</a>';
-					}
 				$h .= '</div>';
 				$h .= (new AnalyzeUi())->getYears($eFarm, $years, $selectedYear, $selectedMonth, $selectedWeek, $selectedView);
 			$h .= '</h1>';
@@ -993,10 +1033,6 @@ class FarmUi {
 					$h .= '<div class="dropdown-title">'.s("Ventes").'</div>';
 					foreach($categories as $key => $value) {
 						$h .= '<a href="'.\farm\FarmUi::urlAnalyzeSelling($eFarm, $selectedYear, $key).'" class="dropdown-item '.($key === $selectedView ? 'selected' : '').'">'.$value.'</a> ';
-					}
-					if($eFarm->canPersonalData()) {
-						$h .= '<div class="dropdown-divider"></div>';
-						$h .= '<a href="/selling/analyze:export?id='.$eFarm['id'].'&year='.$selectedYear.'" class="dropdown-item" data-ajax-navigation="never">'.\Asset::icon('filetype-csv').' '.s("Exporter les ventes").'</a>';
 					}
 				$h .= '</div>';
 				$h .= (new \selling\AnalyzeUi())->getYears($eFarm, $years, $selectedYear, $selectedMonth, $selectedWeek, $selectedView);
@@ -1222,6 +1258,15 @@ class FarmUi {
 				$h .= '<a href="/payment/stripe:manage?farm='.$eFarm['id'].'" class="bg-secondary util-button">';
 					$h .= '<h4>'.s("Configurer le paiement en ligne").'</h4>';
 					$h .= \Asset::icon('stripe');
+				$h .= '</a>';
+
+			}
+
+			if($eFarm->canPersonalData()) {
+
+				$h .= '<a href="/farm/farm:export?id='.$eFarm['id'].'" class="bg-secondary util-button">';
+					$h .= '<h4>'.s("Exporter les données de la ferme").'</h4>';
+					$h .= \Asset::icon('database');
 				$h .= '</a>';
 
 			}

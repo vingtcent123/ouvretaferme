@@ -496,7 +496,7 @@ class AnalyzeLib {
 
 	}
 
-	public static function getExport(\farm\Farm $eFarm, int $year): array {
+	public static function getExportTasks(\farm\Farm $eFarm, int $year): array {
 
 		$ccTimesheet = Timesheet::model()
 			->select([
@@ -508,8 +508,6 @@ class AnalyzeLib {
 				->select([
 					'task' => new \Sql('m2.id'),
 					'action' => ['name'],
-					'zone' => ['name'],
-					'plot' => ['name'],
 					'category' => ['name'],
 					'series' => ['name', 'mode'],
 					'plant' => ['name'],
@@ -553,8 +551,6 @@ class AnalyzeLib {
 					$eTimesheet['series']->empty() ? '' : $eTimesheet['series']['name'],
 					$eTimesheet['plant']->empty() ? '' : $eTimesheet['plant']['name'],
 					$eTimesheet['variety']->empty() ? '' : $eTimesheet['variety']['name'],
-					$eTimesheet['zone']->empty() ? '' : $eTimesheet['zone']['name'],
-					$eTimesheet['plot']->empty() ? '' : $eTimesheet['plot']['name'],
 					$eTimesheet['harvestUser'] ? \util\TextUi::csvNumber($eTimesheet['harvestUser']) : '',
 					($eTimesheet['harvestUser'] and $eTimesheet['harvestUnit']) ? \main\UnitUi::getSingular($eTimesheet['harvestUnit']) : '',
 					$eTimesheet['harvestQuality']->empty() ? '' : $eTimesheet['harvestQuality']['name'],
@@ -562,6 +558,50 @@ class AnalyzeLib {
 				];
 
 			}
+
+		}
+
+		return $output;
+
+	}
+
+	public static function getExportHarvests(\farm\Farm $eFarm, int $year): array {
+
+		$cHarvest = Harvest::model()
+			->select([
+				'date',
+				'task' => [
+					'series' => ['name'],
+					'plant' => ['name'],
+					'variety' => ['name'],
+					'harvestQuality' => ['name'],
+				],
+				'quantity' => new \Sql('SUM(quantity)', 'float'),
+				'unit'
+			])
+			->whereFarm($eFarm)
+			->where('EXTRACT(YEAR FROM date) = '.$year)
+			->where('quantity > 0')
+			->group(['date', 'unit', 'task'])
+			->sort('date')
+			->getCollection();
+
+		$output = [];
+
+		foreach($cHarvest as $eHarvest) {
+
+			$eTask = $eHarvest['task'];
+
+			$output[] = [
+				\util\DateUi::numeric($eHarvest['date']),
+				$eTask['series']->empty() ? '' : $eTask['series']['id'],
+				$eTask['series']->empty() ? '' : $eTask['series']['name'],
+				$eTask['plant']->empty() ? '' : $eTask['plant']['name'],
+				$eTask['variety']->empty() ? '' : $eTask['variety']['name'],
+				\util\TextUi::csvNumber($eHarvest['quantity']),
+				\main\UnitUi::getSingular($eHarvest['unit']),
+				$eTask['harvestQuality']->empty() ? '' : $eTask['harvestQuality']['name']
+			];
 
 		}
 
