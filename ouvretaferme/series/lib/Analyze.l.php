@@ -581,7 +581,7 @@ class AnalyzeLib {
 			])
 			->whereFarm($eFarm)
 			->where('EXTRACT(YEAR FROM date) = '.$year)
-			->where('quantity > 0')
+			->where('quantity IS NOT NULL')
 			->group(['date', 'unit', 'task'])
 			->sort('date')
 			->getCollection();
@@ -591,6 +591,10 @@ class AnalyzeLib {
 		foreach($cHarvest as $eHarvest) {
 
 			$eTask = $eHarvest['task'];
+
+			if(round($eHarvest['quantity'], 2) === 0.0) {
+				continue;
+			}
 
 			$output[] = [
 				\util\DateUi::numeric($eHarvest['date']),
