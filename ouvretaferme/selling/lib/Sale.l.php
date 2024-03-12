@@ -298,6 +298,10 @@ class SaleLib extends SaleCrud {
 			->sort(new \Sql('FIELD(preparationStatus, "'.Sale::DRAFT.'", "'.Sale::CONFIRMED.'", "'.Sale::CANCELED.'") ASC, createdAt DESC'))
 			->getCollection(NULL, NULL, ['preparationStatus', NULL]);
 
+		if($ccSale->empty()) {
+			return $ccSale;
+		}
+
 		$ccSale[Sale::DRAFT] ??= new \Collection();
 		$ccSale[Sale::DELIVERED] ??= new \Collection();
 		$ccSale[Sale::CANCELED] ??= new \Collection();

@@ -18,6 +18,13 @@ class ItemUi {
 
 		$h = '';
 
+		if($eSale['comment']) {
+			$h .= '<h3>'.s("Observations").'</h3>';
+			$h .= '<div class="util-block">';
+				$h .= encode($eSale['comment']);
+			$h .= '</div>';
+		}
+
 		if($cItem->empty()) {
 
 			if(
@@ -45,7 +52,7 @@ class ItemUi {
 
 		} else {
 
-			$h = '<div class="h-line">';
+			$h .= '<div class="h-line">';
 
 				if($eSale->isMarketPreparing()) {
 					$h .= '<h3>'.s("Préparation du marché").'</h3>';

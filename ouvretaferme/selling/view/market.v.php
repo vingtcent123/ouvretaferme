@@ -50,7 +50,6 @@ new AdaptativeView('/vente/{id}/marche/ventes', function($data, MarketTemplate $
 
 	$t->selected = 'sales';
 
-
 	if($data->ccSale->empty()) {
 
 		echo '<div class="util-info">';

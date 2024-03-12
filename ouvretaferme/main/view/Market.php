@@ -52,10 +52,6 @@ class MarketTemplate extends BaseTemplate {
 
 	protected function getMain(string $main): string {
 
-		$cSaleDraft = $this->data->ccSale[\selling\Sale::DRAFT];
-		$cSaleDelivered = $this->data->ccSale[\selling\Sale::DELIVERED];
-		$cSaleCanceled = $this->data->ccSale[\selling\Sale::CANCELED];
-
 		$h = '<div class="market-top-wrapper">';
 			$h .= '<div class="market-top">';
 				$h .= $this->getTop();
@@ -64,31 +60,54 @@ class MarketTemplate extends BaseTemplate {
 		$h .= '<div class="market-content">';
 			$h .= '<div class="market-sales">';
 
-				if($this->data->e['preparationStatus'] !== \selling\Sale::DELIVERED) {
+				if($this->data->ccSale->empty()) {
 
-					$h .= '<h3>'.s("Ventes en cours ({value})", $cSaleDraft->count()).'</h3>';
-					$h .= '<div class="market-sales-list">';
-						$h .= (new \selling\MarketUi())->getList($this->data->e, $cSaleDraft, $this->eSaleSelected);
-						$h .= '<a data-ajax="/selling/market:doCreateSale" post-id="'.$this->data->e['id'].'" class="market-sales-item market-sales-item-new">';
-							$h .= Asset::icon('plus-circle');
-							$h .= '<div>'.s("Nouvelle vente").'</div>';
-						$h .= '</a>';
-					$h .= '</div>';
+					if($this->data->e['preparationStatus'] !== \selling\Sale::DELIVERED) {
+
+						$h .= '<div class="market-sales-list">';
+							$h .= '<a data-ajax="/selling/market:doCreateSale" post-id="'.$this->data->e['id'].'" class="market-sales-item market-sales-item-new">';
+								$h .= Asset::icon('plus-circle');
+								$h .= '<div>'.s("Créer une première vente").'</div>';
+							$h .= '</a>';
+						$h .= '</div>';
+
+					}
+
+				} else {
+
+					$cSaleDraft = $this->data->ccSale[\selling\Sale::DRAFT];
+					$cSaleDelivered = $this->data->ccSale[\selling\Sale::DELIVERED];
+					$cSaleCanceled = $this->data->ccSale[\selling\Sale::CANCELED];
+
+					if($this->data->e['preparationStatus'] !== \selling\Sale::DELIVERED) {
+
+						$h .= '<h3>'.s("Ventes en cours ({value})", $cSaleDraft->count()).'</h3>';
+						$h .= '<div class="market-sales-list">';
+							$h .= (new \selling\MarketUi())->getList($this->data->e, $cSaleDraft, $this->eSaleSelected);
+							$h .= '<a data-ajax="/selling/market:doCreateSale" post-id="'.$this->data->e['id'].'" class="market-sales-item market-sales-item-new">';
+								$h .= Asset::icon('plus-circle');
+								$h .= '<div>'.s("Nouvelle vente").'</div>';
+							$h .= '</a>';
+						$h .= '</div>';
+
+					}
+
+					$h .= '<h3>'.s("Ventes terminées ({value})", $cSaleDelivered->count()).'</h3>';
+
+					if($cSaleDelivered->notEmpty()) {
+						$h .= '<div class="market-sales-list">';
+							$h .= (new \selling\MarketUi())->getList($this->data->e, $cSaleDelivered, $this->eSaleSelected);
+						$h .= '</div>';
+					}
+					if($cSaleCanceled->notEmpty()) {
+						$h .= '<h3>'.s("Ventes annulées ({value})", $cSaleDraft->count()).'</h3>';
+						$h .= '<div class="market-sales-list">';
+							$h .= (new \selling\MarketUi())->getList($this->data->e, $cSaleCanceled, $this->eSaleSelected);
+						$h .= '</div>';
+					}
 
 				}
 
-				$h .= '<h3>'.s("Ventes terminées ({value})", $cSaleDelivered->count()).'</h3>';
-				if($cSaleDelivered->notEmpty()) {
-					$h .= '<div class="market-sales-list">';
-						$h .= (new \selling\MarketUi())->getList($this->data->e, $cSaleDelivered, $this->eSaleSelected);
-					$h .= '</div>';
-				}
-				if($cSaleCanceled->notEmpty()) {
-					$h .= '<h3>'.s("Ventes annulées ({value})", $cSaleDraft->count()).'</h3>';
-					$h .= '<div class="market-sales-list">';
-						$h .= (new \selling\MarketUi())->getList($this->data->e, $cSaleCanceled, $this->eSaleSelected);
-					$h .= '</div>';
-				}
 			$h .= '</div>';
 			$h .= '<div class="market-main">';
 				$h .= '<div class="market-main-width">';
@@ -140,7 +159,7 @@ class MarketTemplate extends BaseTemplate {
 				$h .= Asset::icon('check');
 			$h .= '</span>';
 
-		} else if($this->data->ccSale[\selling\Sale::DRAFT]->notEmpty()) {
+		} else if($this->data->ccSale->offsetExists(\selling\Sale::DRAFT)) {
 
 			$h .= '<a class="market-top-close market-top-close-disabled" title="'.s("Clôturer ce marché").'" data-alert="'.s("Le marché pourra être clôturé lorsqu'il n'y aura plus de vente en cours !").'">';
 				$h .= Asset::icon('check-circle-fill');

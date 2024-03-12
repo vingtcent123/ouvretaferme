@@ -979,7 +979,6 @@ class SaleUi {
 					$h .= '<dd>'.($eSale['discount'] > 0 ? s("{value} %", $eSale['discount']) : '').'</dd>';
 				}
 
-
 				if($eSale->canAnyDocument()) {
 
 					$h .= '<dt>'.s("Documents").'</dt>';
