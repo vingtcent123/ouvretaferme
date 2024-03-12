@@ -62,7 +62,7 @@ class HomeUi {
 
 		}
 
-		$h = '<div class="home-blog bg-training util-block">';
+		$h = '<div class="home-blog bg-training util-block-flat">';
 			$h .= '<div>';
 				$h .= \Asset::image('main', 'favicon.png').'';
 			$h .= '</div>';
@@ -97,7 +97,7 @@ class HomeUi {
 
 			$h = '<h2>'.s("Quoi de neuf sur {siteName} ?").'</h2>';
 
-			$h .= '<div class="home-blog util-block">';
+			$h .= '<div class="home-blog bg-info util-block-flat">';
 				$h .= \Asset::image('main', 'favicon.png', ['style' => 'width: 6rem; height: 6rem']).'';
 				$h .= '<div>';
 					$h .= '<p class="font-oswald" style="font-size: 1.3rem; line-height: 1.3">'.s("Suivez le blog de {siteName} pour retrouver les annonces de nouvelles fonctionnalités, la feuille de route avec les priorités de développement pour les mois à venir  et des ressources pour faciliter la prise en main du site !").'</p>';
@@ -116,7 +116,7 @@ class HomeUi {
 
 			$h = '<h2>'.s("Du nouveau sur {siteName} !").'</h2>';
 
-			$h .= '<div class="home-blog bg-info util-block">';
+			$h .= '<div class="home-blog bg-info util-block-flat">';
 				$h .= '<div>';
 					$h .= \Asset::image('main', 'favicon.png').'';
 				$h .= '</div>';
