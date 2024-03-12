@@ -17,15 +17,6 @@ class Repeat extends RepeatElement {
 
 	}
 
-	public function canUpdateStop(): bool {
-
-		return (
-			$this->canUpdate() and
-			$this['completed'] === FALSE
-		);
-
-	}
-
 	public function build(array $properties, array $input, array $callbacks = [], ?string $for = NULL): array {
 
 		return parent::build($properties, $input, $callbacks + [

@@ -1769,17 +1769,6 @@ class TaskUi {
 
 				} else {
 
-					$week = $eTask->isDone() ? $eTask['doneWeek'] : $eTask['plannedWeek'];
-
-					if(
-						$eTask['repeat']['completed'] === FALSE and
-						($eTask['repeat']['stop'] === NULL or $eTask['repeat']['stop'] > $week)
-					) {
-
-						$h .= '<a data-ajax="/series/repeat:doUpdateStop" class="dropdown-item" post-id="'.$eTask['repeat']['id'].'" post-stop="'.$week.'" data-confirm="'.s("Cette intervention ne sera plus répétée après la semaine {week} de {year}, mais les interventions déjà créées ne seront pas supprimées. Continuer ?", ['week' => week_number($week), 'year' => week_year($week)]).'">'.s("Ne plus répéter à partir de la semaine {week} de {year}", ['week' => week_number($week), 'year' => week_year($week)]).'</a>';
-						$h .= '<div class="dropdown-divider"></div>';
-
-					}
 					$h .= '<div class="dropdown-subtitle">'.s("Supprimer").'</div>';
 					$h .= '<a data-ajax="/series/task:doDelete" class="dropdown-item" post-id="'.$eTask['id'].'" data-confirm="'.s("Confirmer la suppression de cette intervention ?").'"> '.\Asset::icon('arrow-right').'  '.s("Uniquement cette intervention").'</a>';
 					$h .= '<a data-ajax="/series/task:doDeleteRepeat" class="dropdown-item" post-id="'.$eTask['id'].'" data-confirm="'.s("Confirmer la suppression de cette intervention et de toutes les suivantes ?").'"> '.\Asset::icon('arrow-right').'  '.s("Cette intervention et toutes les suivantes").'</a>';
