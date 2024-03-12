@@ -13,11 +13,12 @@ class RepeatLib extends RepeatCrud {
 	public static function createForSeries(Repeat $eRepeat): void {
 
 		$eRepeat->expects([
+			'start', 'current',
 			'series' => ['season'],
 			'action' => ['fqn']
 		]);
 
-		$week = toWeek(strtotime($eRepeat['current']));
+		$week = toWeek(strtotime($eRepeat['current'] ?? $eRepeat['start']));
 
 		do {
 
@@ -170,7 +171,10 @@ class RepeatLib extends RepeatCrud {
 		if($has) {
 
 			// On doit vérifier si la date réelle est toujours valide car la sélection initiale récupère en fonction du dernier jour de la semaine
-			if($date <= $eRepeat['current']) {
+			if(
+				$eRepeat['current'] !== NULL and
+				$date <= $eRepeat['current']
+			) {
 				return;
 			}
 
@@ -182,7 +186,7 @@ class RepeatLib extends RepeatCrud {
 
 			foreach($eRepeat['discrete'] as $key => $discreteWeek) {
 
-				$nextTimestamp = self::addFrequency($eRepeat, $eRepeat['current']);
+				$nextTimestamp = self::addFrequency($eRepeat, $eRepeat['current'] ?? $eRepeat['start']);
 				$nextDate = date('Y-m-d', $nextTimestamp);
 				$nextWeek = toWeek($nextTimestamp);
 
@@ -255,6 +259,7 @@ class RepeatLib extends RepeatCrud {
 
 		$e['completed'] = (
 			$e['stop'] !== NULL and
+			$e['current'] !== NULL and
 			$e['stop'] < toWeek(self::addFrequency($e, $e['current']))
 		);
 

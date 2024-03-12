@@ -61,7 +61,7 @@ class RepeatModel extends \ModuleModel {
 			'status' => ['enum', [\series\Repeat::TODO, \series\Repeat::DONE], 'cast' => 'enum'],
 			'frequency' => ['enum', [\series\Repeat::W1, \series\Repeat::W2, \series\Repeat::W3, \series\Repeat::W4, \series\Repeat::M1], 'cast' => 'enum'],
 			'start' => ['date', 'cast' => 'string'],
-			'current' => ['date', 'cast' => 'string'],
+			'current' => ['date', 'null' => TRUE, 'cast' => 'string'],
 			'discrete' => ['json', 'cast' => 'array'],
 			'stop' => ['week', 'null' => TRUE, 'cast' => 'string'],
 			'completed' => ['bool', 'cast' => 'bool'],

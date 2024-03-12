@@ -1074,13 +1074,14 @@ class TaskLib extends TaskCrud {
 	/**
 	 * Construit une liste de Task à partir de Flow
 	 */
-	public static function buildFromFlow(\Collection $cFlow, Series $eSeries, \Collection $cCultivation, int $season, int $referenceYear = NULL): \Collection {
+	public static function buildFromFlow(\Collection $cFlow, Series $eSeries, \Collection $cCultivation, int $season, int $referenceYear = NULL): array {
 
 		$eSeries->expects(['farm']);
 		$cCultivation->expects(['crop']);
 
 		$eCategory = \farm\CategoryLib::getByFarm($eSeries['farm'], fqn: CATEGORIE_CULTURE);
 		$cTask = (new \Collection())->setDepth(2);
+		$cRepeat = new \Collection();
 
 		$referenceYear ??= $season;
 
@@ -1100,8 +1101,11 @@ class TaskLib extends TaskCrud {
 				]);
 			}
 
-			$eTask = new Task([
+			$e = ($eFlow['weekOnly'] === NULL) ? new Repeat() : new Task();
+
+			$e->merge([
 				'season' => $season,
+				'farm' => $eSeries['farm'],
 				'series' => $eSeries,
 				'plant' => $eFlow['plant'],
 				'action' => $eAction,
@@ -1114,63 +1118,41 @@ class TaskLib extends TaskCrud {
 				'cRequirement' => $cRequirement
 			]);
 
-			if($eTask['crop']->notEmpty()) {
-				$eTask['cultivation'] = $cCultivation->find(fn($eCultivation) => ($eCultivation['crop']->notEmpty() and $eCultivation['crop']['id'] === $eTask['crop']['id']), TRUE, 1);
-				$eTask['series'] = $eTask['cultivation']['series'];
+			if($eFlow['crop']->notEmpty()) {
+				$e['cultivation'] = $cCultivation->find(fn($eCultivation) => ($eCultivation['crop']->notEmpty() and $eCultivation['crop']['id'] === $eFlow['crop']['id']), TRUE, 1);
+				$e['series'] = $e['cultivation']['series'];
 			} else {
-				$eTask['cultivation'] = new Cultivation();
+				$e['cultivation'] = new Cultivation();
 			}
 
 			if($eFlow['weekOnly'] !== NULL) {
 
+				$e['cRequirement'] = $cRequirement;
+
 				$plannedWeek = ($referenceYear + $eFlow['yearOnly']).'-W'.sprintf('%02d', $eFlow['weekOnly']);
 
-				$eTask['plannedWeek'] = $plannedWeek;
-				$eTask['position'] = $eFlow['positionOnly'];
-				$eTask['display'] = $eTask['plannedWeek'];
+				$e['plannedWeek'] = $plannedWeek;
+				$e['position'] = $eFlow['positionOnly'];
+				$e['display'] = $e['plannedWeek'];
 
-				$cTask->append($eTask);
+				$cTask->append($e);
 
 			} else {
 
-				$weekInterval = [
-					\production\Flow::W1 => 1,
-					\production\Flow::W2 => 2,
-					\production\Flow::W3 => 3,
-					\production\Flow::W4 => 4,
-					\production\Flow::M1 => (365 / 12 / 7),
-				][$eFlow['frequency']] ?? 1;
+				$e['tools'] = [];
 
-				for($year = $eFlow['yearStart']; $year <= $eFlow['yearStop']; $year++) {
-
-					for(
-						$weekNumber = ($year === $eFlow['yearStart'] ? $eFlow['weekStart'] : 1);
-						$weekNumber <= ($year === $eFlow['yearStop'] ? $eFlow['weekStop'] : 52);
-						$weekNumber += $weekInterval
-					) {
-
-						if($weekNumber === $eFlow['weekStart']) {
-							$position = $eFlow['weekStart'];
-						} else if($weekNumber === $eFlow['weekStop']) {
-							$position = $eFlow['weekStop'];
-						} else {
-							$position = NULL;
-						}
-
-						$plannedWeek = ($referenceYear + $year).'-W'.sprintf('%02d', round($weekNumber));
-
-						$eTaskWeek = (clone $eTask)->merge([
-							'plannedWeek' => $plannedWeek,
-							'position' => $position
-						]);
-
-						$eTaskWeek['display'] = $eTaskWeek['plannedWeek'];
-
-						$cTask->append($eTaskWeek);
-
-					}
-
+				foreach($e['cRequirement'] as $eRequirement) {
+					$e['tools'][] = $eRequirement['tool']['id'];
 				}
+
+				$weekStart = ($referenceYear + $eFlow['yearStart']).'-W'.sprintf('%02d', round($eFlow['weekStart']));
+				$weekStop = ($referenceYear + $eFlow['yearStop']).'-W'.sprintf('%02d', round($eFlow['weekStop']));
+
+				$e['frequency'] = $eFlow['frequency'];
+				$e['start'] = week_date_day($weekStart, 3);
+				$e['stop'] = $weekStop;
+
+				$cRepeat->append($e);
 
 			}
 
@@ -1193,7 +1175,7 @@ class TaskLib extends TaskCrud {
 
 		});
 
-		return $cTask;
+		return [$cTask, $cRepeat];
 
 	}
 

@@ -357,8 +357,12 @@ class SeriesLib extends SeriesCrud {
 
 		// Create tasks and add into the database
 		if($cFlow->notEmpty()) {
-			$cTask = \series\TaskLib::buildFromFlow($cFlow, $e, $cCultivation, $e['season'], $referenceYear);
-			self::createTasks($e, $cTask);
+
+			[$cTask, $cRepeat] = \series\TaskLib::buildFromFlow($cFlow, $e, $cCultivation, $e['season'], $referenceYear);
+
+			self::createTasks($cTask);
+			self::createRepeats($cRepeat);
+
 		}
 
 		self::recalculate($e['farm'], $e);
@@ -371,23 +375,32 @@ class SeriesLib extends SeriesCrud {
 
 	}
 
-	private static function createTasks(Series $e, \Collection $cTask): void {
+	private static function createTasks(\Collection $cTask): void {
 
 		foreach($cTask as $eTask) {
-
-			$eTask['series'] = $e;
-			$eTask['farm'] = $e['farm'];
 
 			Task::model()->insert($eTask);
 
 			foreach($eTask['cRequirement'] as $eRequirement) {
-				$eRequirement['farm'] = $e['farm'];
+				$eRequirement['farm'] = $eTask['farm'];
 				$eRequirement['series'] = $eTask['series'];
 				$eRequirement['cultivation'] = $eTask['cultivation'];
 				$eRequirement['task'] = $eTask;
 			}
 
 			Requirement::model()->insert($eTask['cRequirement']);
+
+		}
+
+	}
+
+	private static function createRepeats(\Collection $cRepeat): void {
+
+		foreach($cRepeat as $eRepeat) {
+
+			Repeat::model()->insert($eRepeat);
+
+			RepeatLib::createForSeries($eRepeat);
 
 		}
 
@@ -562,8 +575,10 @@ class SeriesLib extends SeriesCrud {
 		self::createCultivations($cCultivation);
 
 		// Créer les nouvelles tâches
-		$cTask = \series\TaskLib::buildFromFlow($cFlow, $eSeriesNew, $cCultivation, $eSeriesNew['season']);
-		self::createTasks($eSeriesNew, $cTask);
+		[$cTask, $cRepeat] = \series\TaskLib::buildFromFlow($cFlow, $eSeriesNew, $cCultivation, $eSeriesNew['season']);
+
+		self::createTasks($cTask);
+		self::createRepeats($cRepeat);
 
 		// Réaffecter les emplacements
 		self::duplicatePlaces($eSeries, $eSeriesNew);
