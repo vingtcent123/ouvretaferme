@@ -13,7 +13,7 @@ class Task extends TaskElement {
 			'category' => ['fqn', 'name'],
 			'series' => ['name', 'cycle', 'mode', 'season', 'area', 'areaTarget', 'length', 'lengthTarget', 'bedWidth', 'use'],
 			'action' => ['fqn', 'name', 'short', 'categories', 'color', 'pace', 'series'],
-			'repeat' => ['frequency', 'stop', 'deleted'],
+			'repeat' => ['frequency', 'current', 'stop', 'completed'],
 			'delayed' => function(Task $e): bool {
 
 				$week = currentWeek();

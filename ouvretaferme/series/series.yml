@@ -122,7 +122,6 @@ Repeat:
   discrete: json = PHP([])
   stop: ?week
   completed: bool = FALSE
-  deleted: bool = FALSE
   createdBy: user\User = SPECIAL(user)
   createdAt: datetime = SPECIAL(now)
   INDEX: [

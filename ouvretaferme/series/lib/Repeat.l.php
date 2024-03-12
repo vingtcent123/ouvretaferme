@@ -35,7 +35,6 @@ class RepeatLib extends RepeatCrud {
 			->select(Repeat::getSelection())
 			->whereFarm($eFarm)
 			->whereCompleted(FALSE)
-			->whereDeleted(FALSE)
 			->where(new \Sql('
 				IF(
 					frequency = \''.Repeat::M1.'\',
@@ -85,7 +84,6 @@ class RepeatLib extends RepeatCrud {
 			->select(Repeat::getSelection())
 			->whereFarm($eFarm)
 			->whereCompleted(FALSE)
-			->whereDeleted(FALSE)
 			->where(new \Sql('
 				IF(
 					frequency = \''.Repeat::M1.'\',
@@ -240,7 +238,20 @@ class RepeatLib extends RepeatCrud {
 
 	}
 
-	private static function calculateCompleted(Repeat $e): void {
+	public static function update(Repeat $e, array $properties = []): void {
+
+		if(in_array('stop', $properties)) {
+
+			self::calculateCompleted($e);
+			$properties[] = 'completed';
+
+		}
+
+		parent::update($e, $properties);
+
+	}
+
+	public static function calculateCompleted(Repeat $e): void {
 
 		$e['completed'] = (
 			$e['stop'] !== NULL and

@@ -65,13 +65,12 @@ class RepeatModel extends \ModuleModel {
 			'discrete' => ['json', 'cast' => 'array'],
 			'stop' => ['week', 'null' => TRUE, 'cast' => 'string'],
 			'completed' => ['bool', 'cast' => 'bool'],
-			'deleted' => ['bool', 'cast' => 'bool'],
 			'createdBy' => ['element32', 'user\User', 'cast' => 'element'],
 			'createdAt' => ['datetime', 'cast' => 'string'],
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'farm', 'season', 'cultivation', 'series', 'plant', 'variety', 'action', 'category', 'description', 'timeExpected', 'fertilizer', 'tools', 'status', 'frequency', 'start', 'current', 'discrete', 'stop', 'completed', 'deleted', 'createdBy', 'createdAt'
+			'id', 'farm', 'season', 'cultivation', 'series', 'plant', 'variety', 'action', 'category', 'description', 'timeExpected', 'fertilizer', 'tools', 'status', 'frequency', 'start', 'current', 'discrete', 'stop', 'completed', 'createdBy', 'createdAt'
 		]);
 
 		$this->propertiesToModule += [
@@ -99,9 +98,6 @@ class RepeatModel extends \ModuleModel {
 				return [];
 
 			case 'completed' :
-				return FALSE;
-
-			case 'deleted' :
 				return FALSE;
 
 			case 'createdBy' :
@@ -249,10 +245,6 @@ class RepeatModel extends \ModuleModel {
 
 	public function whereCompleted(...$data): RepeatModel {
 		return $this->where('completed', ...$data);
-	}
-
-	public function whereDeleted(...$data): RepeatModel {
-		return $this->where('deleted', ...$data);
 	}
 
 	public function whereCreatedBy(...$data): RepeatModel {

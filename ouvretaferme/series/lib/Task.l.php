@@ -1686,22 +1686,29 @@ class TaskLib extends TaskCrud {
 
 	public static function deleteRepeat(Task $e): void {
 
+		$e->expects([
+			'repeat' => ['current']
+		]);
+
 		Task::model()->beginTransaction();
+
+		$week = $e->isDone() ? $e['doneWeek'] : $e['plannedWeek'];
 
 		// Désactivation de la répétition
 		$eRepeat = $e['repeat'];
+		$eRepeat['stop'] = $week;
 
-		Repeat::model()->update($eRepeat, [
-			'deleted' => TRUE
-		]);
+		RepeatLib::calculateCompleted($eRepeat);
+
+		Repeat::model()
+			->select('stop', 'completed')
+			->update($eRepeat);
 
 		// Suppression des tâches
-		$date = $e->isDone() ? $e['doneWeek'] : $e['plannedWeek'];
-
 		$cTask = Task::model()
 			->select(Task::getSelection())
 			->whereRepeat($eRepeat)
-			->where(new \Sql('IF(status = "'.Task::DONE.'", doneWeek, plannedWeek)'), '>', $date)
+			->where(new \Sql('IF(status = "'.Task::DONE.'", doneWeek, plannedWeek)'), '>', $week)
 			->getCollection();
 
 		$cTask[] = $e;

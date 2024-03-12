@@ -17,6 +17,15 @@ class Repeat extends RepeatElement {
 
 	}
 
+	public function canUpdateStop(): bool {
+
+		return (
+			$this->canUpdate() and
+			$this['completed'] === FALSE
+		);
+
+	}
+
 	public function build(array $properties, array $input, array $callbacks = [], ?string $for = NULL): array {
 
 		return parent::build($properties, $input, $callbacks + [
@@ -30,7 +39,27 @@ class Repeat extends RepeatElement {
 
 			},
 
-			'stop.series' => function(?string $stop): bool {
+			// On ne peut qu'avancer une date de fin de répétition
+			'stop.consistency' => function(?string $stop) use ($for): bool {
+
+				if($for !== 'update') {
+					return TRUE;
+				}
+
+				$this->expects(['stop']);
+
+				return (
+					$this['stop'] === NULL or
+					$stop < $this['stop']
+				);
+
+			},
+
+			'stop.series' => function(?string $stop) use ($for): bool {
+
+				if($for !== 'create') {
+					return TRUE;
+				}
 
 				$this->expects([
 					'task' => ['series']

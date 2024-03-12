@@ -5,7 +5,7 @@ class RepeatUi {
 
 	public static function getSequence(Repeat $e): string {
 
-		$e->expects(['frequency', 'stop', 'deleted']);
+		$e->expects(['frequency', 'stop']);
 
 		$frequency = self::p('frequency')->values[$e['frequency']];
 
@@ -15,11 +15,7 @@ class RepeatUi {
 			$repeated = $frequency;
 		}
 
-		if($e['deleted']) {
-			return '<span style="text-decoration: line-through" title="'.s("Répétition désactivée").'">'.$repeated.'</span>';
-		} else {
-			return $repeated;
-		}
+		return $repeated;
 
 	}
 

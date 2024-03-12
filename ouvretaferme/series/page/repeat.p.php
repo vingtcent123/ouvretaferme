@@ -1,6 +1,6 @@
 <?php
 (new \series\RepeatPage())
-	->doUpdateProperties('doUpdateDeleted', ['deleted'], function($data) {
+	->doUpdateProperties('doUpdateStop', ['stop'], function($data) {
 		throw new ReloadLayerAction();
-	});
+	}, validate: ['canUpdateStop']);
 ?>
