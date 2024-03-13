@@ -208,7 +208,10 @@ class PlaceUi {
 		$this->alert = FALSE;
 
 		if($cZone->count() === 1) {
-			return $this->getUpdateZone($form, $source, $e, $cZone->first(), $cPlace);
+			$h = '<div id="place-grid-wrapper">';
+				$h .= $this->getUpdateZone($form, $source, $e, $cZone->first(), $cPlace);
+			$h .= '</div>';
+			return $h;
 		}
 
 		$zones = array_count_values($cPlace->getColumnCollection('zone')->getIds());
