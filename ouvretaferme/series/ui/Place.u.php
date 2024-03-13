@@ -208,7 +208,7 @@ class PlaceUi {
 		$this->alert = FALSE;
 
 		if($cZone->count() === 1) {
-			$h = '<div id="place-grid-wrapper">';
+			$h = '<div class="place-grid-'.$source.'">';
 				$h .= $this->getUpdateZone($form, $source, $e, $cZone->first(), $cPlace);
 			$h .= '</div>';
 			return $h;
