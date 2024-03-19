@@ -13,7 +13,7 @@
 		$data->cFlow = \production\FlowLib::getBySequence($data->e);
 
 		if($data->cFlow->count() === 2) {
-			$data->tip = \farm\TipLib::pickOne($data->eUserOnline, 'sequence-weeks');$data->tip = 'sequence-weeks';
+			$data->tip = \farm\TipLib::pickOne($data->eUserOnline, 'sequence-weeks');
 			$data->tipNavigation = 'inline';
 		}
 
