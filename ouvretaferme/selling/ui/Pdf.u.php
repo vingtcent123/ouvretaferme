@@ -781,21 +781,16 @@ class PdfUi {
 
 	}
 
-	public function getOrderFormMail(\farm\Farm $eFarm, Sale $eSale): array {
+	public function getOrderFormMail(\farm\Farm $eFarm, Sale $eSale, string $template): array {
 
-		$eCustomer = $eSale['customer'];
+		$template ??= \mail\CustomizeUi::getDefaultTemplate(\mail\Customize::SALE_ORDER_FORM);
+		$variables = \mail\CustomizeUi::getSaleVariables(\mail\Customize::SALE_ORDER_FORM, $eFarm, $eSale);
 
-		$title = s("Devis {value}", $eSale->getOrderForm().' - '.($eCustomer['legalName'] ?? $eCustomer['name']));
+		$title = s("Devis {value}", $variables['number'].' - '.$variables['customer']);
+		$content = \mail\CustomizeUi::convertTemplate($template, $variables);
 
-		$text = s("Bonjour,
-
-Vous trouverez en pièce jointe notre proposition commerciale.
-
-Cordialement,
-{name}", ['name' => $eFarm['name']]);
-
-		$html = \mail\DesignUi::getBanner($eFarm);
-		$html .= nl2br($text);
+		$html = \mail\DesignUi::getBanner($eFarm).nl2br($content);
+		$text = strip_tags($html);
 
 		return [
 			$title,
@@ -804,21 +799,16 @@ Cordialement,
 		];
 	}
 
-	public function getDeliveryNoteMail(\farm\Farm $eFarm, Sale $eSale): array {
+	public function getDeliveryNoteMail(\farm\Farm $eFarm, Sale $eSale, ?string $template): array {
 
-		$eCustomer = $eSale['customer'];
+		$template ??= \mail\CustomizeUi::getDefaultTemplate(\mail\Customize::SALE_DELIVERY_NOTE);
+		$variables = \mail\CustomizeUi::getSaleVariables(\mail\Customize::SALE_DELIVERY_NOTE, $eFarm, $eSale);
 
-		$title = s("Bon de livraison {value}", $eSale->getDeliveryNote().' - '.($eCustomer['legalName'] ?? $eCustomer['name']));
+		$title = s("Bon de livraison {value}", $variables['number'].' - '.$variables['customer']);
+		$content = \mail\CustomizeUi::convertTemplate($template, $variables);
 
-		$text = s("Bonjour,
-
-Vous trouverez en pièce jointe le bon de livraison pour la commande livrée le {date}.
-
-Cordialement,
-{name}", ['date' => \util\DateUi::textual($eSale['deliveredAt'], \util\DateUi::DATE), 'name' => $eFarm['name']]);
-
-		$html = \mail\DesignUi::getBanner($eFarm);
-		$html .= nl2br($text);
+		$html = \mail\DesignUi::getBanner($eFarm).nl2br($content);
+		$text = strip_tags($html);
 
 		return [
 			$title,
@@ -827,68 +817,24 @@ Cordialement,
 		];
 	}
 
-	public function getInvoiceMail(\farm\Farm $eFarm, Invoice $eInvoice, \Collection $cSale): array {
+	public function getInvoiceMail(\farm\Farm $eFarm, Invoice $eInvoice, \Collection $cSale, ?string $template): array {
+
+		$template ??= \mail\CustomizeUi::getDefaultTemplate(\mail\Customize::SALE_INVOICE);
+		$variables = \mail\CustomizeUi::getSaleVariables(\mail\Customize::SALE_INVOICE, $eFarm, $eInvoice, $cSale);
 
 		$eCustomer = $eInvoice['customer'];
 
 		$title = s("Facture {value}", $eInvoice->getInvoice().' - '.($eCustomer['legalName'] ?? $eCustomer['name']));
+		$content = \mail\CustomizeUi::convertTemplate($template, $variables);
 
-		$content = function(array $variables) {
-
-			return s("Bonjour,
-
-Vous trouverez en pièce jointe notre facture d'un montant de {amount}.
-{sales}
-
-Cordialement,
-{name}", $variables);
-
-		};
-
-		$text = $content(self::getInvoiceVariables('text', $eFarm, $eInvoice, $cSale));
-
-		$html = \mail\DesignUi::getBanner($eFarm);
-		$html .= nl2br($content(self::getInvoiceVariables('html', $eFarm, $eInvoice, $cSale)));
+		$html = \mail\DesignUi::getBanner($eFarm).nl2br($content);
+		$text = strip_tags($html);
 
 		return [
 			$title,
 			$text,
 			$html
 		];
-	}
-
-	protected static function getInvoiceVariables(string $mode, \farm\Farm $eFarm, Invoice $eInvoice, \Collection $cSale): array {
-
-		$encode = fn($value) => ($mode === 'html') ? encode($value) : $value;
-
-		if($cSale->count() === 1) {
-			$sales = s("Cette facture correspond à notre livraison du {date}.", ['date' => \util\DateUi::numeric($cSale->first()['deliveredAt'])]);
-		} else {
-
-			$sales = s("Cette facture inclut :");
-
-			$sales .= ($mode === 'html') ? '<ul>' : "\n";
-	
-			foreach($cSale as $eSale) {
-
-				$sales .= ($mode === 'html') ? '<li>' : '- ';
-				$sales .= s("Livraison du {date} ({amount})", ['date' => \util\DateUi::numeric($eSale['deliveredAt']), 'amount' => \util\TextUi::money($eSale['priceIncludingVat'])]);
-				$sales .= ($mode === 'html') ? '</li>' : "\n";
-	
-	
-			}
-	
-			$sales .= ($mode === 'html') ? '</ul>' : '';
-
-		}
-
-		return [
-			'amount' => \util\TextUi::money($eInvoice['priceIncludingVat']),
-			'date' => \util\DateUi::textual($eInvoice['date']),
-			'name' => $encode($eFarm['name']),
-			'sales' => $sales
-		];
-
 	}
 
 	public static function getTexts(string $type): array {

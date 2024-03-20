@@ -35,6 +35,35 @@ class SaleLib extends SaleCrud {
 
 	}
 
+	public static function getExample(\farm\Farm $eFarm): Sale {
+
+		$eFarm->expects(['selling']);
+
+		$eSale = \selling\SaleLib::getById(\Setting::get('selling\exampleSale'));
+		$eSale['farm'] = $eFarm;
+		$eSale['hasVat'] = $eFarm['selling']['hasVat'];
+		$eSale['customer']['legalName'] = 'Magasin BioZoop';
+		$eSale['customer']['invoiceStreet1'] = '123 rue des Ours';
+		$eSale['customer']['invoiceStreet2'] = NULL;
+		$eSale['customer']['invoicePostcode'] = '63000';
+		$eSale['customer']['invoiceCity'] = 'Clermont-Ferrand';
+		$eSale['customer']['email'] = 'client@email.com';
+		$eSale['orderFormValidUntil'] = currentDate();
+		$eSale['orderFormPaymentCondition'] = $eFarm['selling']['orderFormPaymentCondition'];
+		$eSale['invoice']['taxes'] = \selling\Invoice::INCLUDING;
+		$eSale['invoice']['hasVat'] = $eFarm['selling']['hasVat'];
+		$eSale['invoice']['document'] = '287';
+		$eSale['invoice']['priceExcludingVat'] = $eSale['priceExcludingVat'];
+		$eSale['invoice']['priceIncludingVat'] = $eSale['priceIncludingVat'];
+		$eSale['invoice']['date'] = currentDate();
+		$eSale['invoice']['paymentCondition'] = $eFarm['selling']['invoicePaymentCondition'];
+		$eSale['invoice']['customer'] = $eSale['customer'];
+		$eSale['cItem'] = self::getItems($eSale);
+
+		return $eSale;
+		
+	}
+
 	public static function getForLabelsByIds(\farm\Farm $eFarm, array $ids, bool $selectItems = FALSE): \Collection {
 
 		Sale::model()->whereId('IN', $ids);

@@ -1227,6 +1227,15 @@ class Element extends ArrayObject {
 		return ($this->count() === 0);
 	}
 
+	public function exists(): bool {
+
+		return (
+			$this->offsetExists('id') and
+			$this['id'] !== NULL
+		);
+
+	}
+
 	/**
 	 * Check validity of an element
 	 */

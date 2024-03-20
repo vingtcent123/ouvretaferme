@@ -223,7 +223,7 @@ class ShopUi {
 
 			$h .= '<h3>'.s("Intégration").'</h3>';
 			$h .= '<p>'.s("Copiez ce morceau de code sur n'importe quelle page de votre site pour y mettre en avant cette boutique :").'</p>';
-			$h .= '<code>[shop='.$eShop['id'].']</code>';
+			$h .= '<code>@shop='.$eShop['id'].'</code>';
 
 			if($eDate->notEmpty()) {
 

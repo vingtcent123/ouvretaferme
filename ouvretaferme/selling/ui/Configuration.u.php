@@ -10,7 +10,7 @@ class ConfigurationUi {
 
 	}
 
-	public function update(Configuration $eConfiguration, \farm\Farm $eFarm, Sale $eSaleExample, \Collection $cItemExample): string {
+	public function update(Configuration $eConfiguration, \Collection $cCustomize, \farm\Farm $eFarm, Sale $eSaleExample, \Collection $cItemExample): string {
 
 		$h = '<div class="tabs-h" id="selling-configure" onrender="'.encode('Lime.Tab.restore(this, "settings")').'">';
 
@@ -19,6 +19,7 @@ class ConfigurationUi {
 				$h .= '<a class="tab-item" data-tab="orderForm" onclick="Lime.Tab.select(this)">'.s("Devis").'</a>';
 				$h .= '<a class="tab-item" data-tab="deliveryNote" onclick="Lime.Tab.select(this)">'.s("Bons de livraisons").'</a>';
 				$h .= '<a class="tab-item" data-tab="invoice" onclick="Lime.Tab.select(this)">'.s("Factures").'</a>';
+				$h .= '<a class="tab-item" data-tab="mail" onclick="Lime.Tab.select(this)">'.s("E-mails").'</a>';
 			$h .= '</div>';
 
 			$h .= '<div class="tab-panel selected" data-tab="settings">';
@@ -35,6 +36,10 @@ class ConfigurationUi {
 
 			$h .= '<div class="tab-panel" data-tab="invoice">';
 				$h .= $this->updateInvoice($eConfiguration, $eFarm, $eSaleExample, $cItemExample);
+			$h .= '</div>';
+
+			$h .= '<div class="tab-panel" data-tab="mail">';
+				$h .= $this->updateMail($eConfiguration, $cCustomize, $eFarm, $eSaleExample, $cItemExample);
 			$h .= '</div>';
 
 		$h .= '</div>';
@@ -216,6 +221,70 @@ class ConfigurationUi {
 			$h .= '<div class="configuration-sale-example">';
 				$h .= (new \selling\PdfUi())->getDocument($eSaleExample, Pdf::DELIVERY_NOTE, $eFarm, $cItemExample);
 			$h .= '</div>';
+		$h .= '</div>';
+
+		return $h;
+
+	}
+
+	public function updateMail(Configuration $eConfiguration, \Collection $cCustomize, \farm\Farm $eFarm, Sale $eSaleExample, \Collection $cItemExample): string {
+
+		$h = '';
+
+		if($eConfiguration->isComplete() === FALSE) {
+
+			$h .= '<div class="util-block-help">';
+				$h .= '<p>'.s("Vous pourrez personnaliser les e-mails dès lors que vous aurez terminé la configuration administrative de la commercialisation !").'</p>';
+			$h .= '</div>';
+
+			return $h;
+
+		}
+
+		$h .= '<div class="util-block-help">';
+			$h .= '<h4>'.s("Personnalisation des e-mails").'</h4>';
+			$h .= '<p>'.s("Vous pouvez personnaliser le contenu des e-mails envoyés à vos clients pour leur transmettre vos devis, bons de livraison et factures. Veuillez noter que les informations telles que le nom du client ou le montant données dans les mails d'exemple sont fictives et ne correspondent donc pas à vos ventes.").'</p>';
+		$h .= '</div>';
+
+		$h .= '<br/>';
+
+		$h .= '<div class="util-action">';
+			$h .= '<h3>'.s("Envoi de devis").'</h3>';
+			$h .= '<a href="/mail/customize:create?farm='.$eFarm['id'].'&type='.\mail\Customize::SALE_ORDER_FORM.'" class="btn btn-outline-primary">'.s("Personnaliser l'e-mail").'</a>';
+		$h .= '</div>';
+
+		[$title, , $html] = (new PdfUi())->getOrderFormMail($eFarm, $eSaleExample, $cCustomize[\mail\Customize::SALE_ORDER_FORM]['template'] ?? NULL);
+		$h .= $this->getMailExample($title, $html);
+
+		$h .= '<div class="util-action">';
+			$h .= '<h3>'.s("Envoi de bon de livraison").'</h3>';
+			$h .= '<a href="/mail/customize:create?farm='.$eFarm['id'].'&type='.\mail\Customize::SALE_DELIVERY_NOTE.'" class="btn btn-outline-primary">'.s("Personnaliser l'e-mail").'</a>';
+		$h .= '</div>';
+
+		[$title, , $html] = (new PdfUi())->getDeliveryNoteMail($eFarm, $eSaleExample, $cCustomize[\mail\Customize::SALE_DELIVERY_NOTE]['template'] ?? NULL);
+		$h .= $this->getMailExample($title, $html);
+
+		$h .= '<div class="util-action">';
+			$h .= '<h3>'.s("Envoi de facture").'</h3>';
+			$h .= '<a href="/mail/customize:create?farm='.$eFarm['id'].'&type='.\mail\Customize::SALE_INVOICE.'" class="btn btn-outline-primary">'.s("Personnaliser l'e-mail").'</a>';
+		$h .= '</div>';
+
+		[$title, , $html] = (new PdfUi())->getInvoiceMail($eFarm, $eSaleExample['invoice'], new \Collection([$eSaleExample]), $cCustomize[\mail\Customize::SALE_INVOICE]['template'] ?? NULL);
+		$h .= $this->getMailExample($title, $html);
+
+		return $h;
+
+	}
+
+	protected function getMailExample(string $title, string $content): string {
+
+		$h = '<div class="util-overflow-md mt-2 mb-2">';
+			$h .= '<dl class="util-presentation util-presentation-1" style="column-gap: 2rem; row-gap: 0.5rem; max-width: 1000px">';
+				$h .= '<dt>'.s("Titre de l'e-mail").'</dt>';
+				$h .= '<dd><b>'.encode($title).'</b></dd>';
+				$h .= '<dt>'.s("Contenu de l'e-mail").'</dt>';
+				$h .= '<dd><div class="util-block" style="font-weight: normal">'.$content.'</div></dd>';
+			$h .= '</dl>';
 		$h .= '</div>';
 
 		return $h;

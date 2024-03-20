@@ -109,10 +109,19 @@ class PdfLib extends PdfCrud {
 			return;
 		}
 
-		$content = match($type) {
-			Pdf::ORDER_FORM => (new PdfUi())->getOrderFormMail($eFarm, $eSale),
-			Pdf::DELIVERY_NOTE => (new PdfUi())->getDeliveryNoteMail($eFarm, $eSale)
-		};
+		switch($type) {
+
+			case Pdf::ORDER_FORM :
+				$template = \mail\CustomizeLib::getTemplate($eFarm, \mail\Customize::SALE_ORDER_FORM);
+				$content = (new PdfUi())->getOrderFormMail($eFarm, $eSale, $template);
+				break;
+
+			case Pdf::DELIVERY_NOTE :
+				$template = \mail\CustomizeLib::getTemplate($eFarm, \mail\Customize::SALE_DELIVERY_NOTE);
+				$content = (new PdfUi())->getDeliveryNoteMail($eFarm, $eSale, $template);
+				break;
+
+		}
 
 		$libMail = (new \mail\MailLib());
 
@@ -179,7 +188,8 @@ class PdfLib extends PdfCrud {
 
 		$cSale = SaleLib::getByInvoice($eInvoice);
 
-		$content = (new PdfUi())->getInvoiceMail($eFarm, $eInvoice, $cSale);
+		$template = \mail\CustomizeLib::getTemplate($eFarm, \mail\Customize::SALE_INVOICE);
+		$content = (new PdfUi())->getInvoiceMail($eFarm, $eInvoice, $cSale, $template);
 
 		$libMail = (new \mail\MailLib());
 

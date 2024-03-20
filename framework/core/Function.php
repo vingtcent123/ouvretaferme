@@ -580,6 +580,17 @@ function encode(string $content = NULL): string {
 }
 
 /*
+ * Decode HTML string
+ */
+function decode(string $content = NULL): string {
+	if(is_scalar($content) or is_null($content)) {
+		return htmlspecialchars_decode((string)$content);
+	} else {
+		return getType($content);
+	}
+}
+
+/*
  * Ensure that a string contains only valid UTF-8
  */
 function str_utf8(string &$string) {
