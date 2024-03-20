@@ -2,7 +2,7 @@ Customize:
   id: serial32
   farm: farm\Farm
   shop: ?shop\Shop
-  type: enum(SALE_ORDER_FORM, SALE_DELIVERY_NOTE, SALE_INVOICE, SHOP_CONFIRMED_HOME, SHOP_CONFIRMED_PLACE, SHOP_CANCELED)
+  type: enum(SALE_ORDER_FORM, SALE_DELIVERY_NOTE, SALE_INVOICE, SHOP_CONFIRMED_HOME, SHOP_CONFIRMED_PLACE)
   template: text24(0, null)
   UNIQUE: [
     ["farm", "type"]

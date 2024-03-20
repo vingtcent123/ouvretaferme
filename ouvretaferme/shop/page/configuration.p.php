@@ -5,8 +5,13 @@
 		$data->e['stripe'] = \payment\StripeLib::getByFarm($data->e['farm']);
 
 		$data->eFarm = \farm\FarmLib::getById($data->e['farm']);
+		$data->eFarm['selling'] = \selling\ConfigurationLib::getByFarm($data->eFarm);
 
 		\farm\FarmerLib::register($data->eFarm);
+
+		$data->cCustomize = \mail\CustomizeLib::getByFarm($data->eFarm);
+		$data->eSaleExample = \selling\SaleLib::getExample($data->eFarm, \selling\Customer::PRIVATE);
+		$data->eSaleExample['paymentMethod'] = \selling\Sale::GET('paymentMethod', 'paymentMethod', \selling\Sale::OFFLINE);
 
 		throw new ViewAction($data);
 

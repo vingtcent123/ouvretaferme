@@ -7,7 +7,7 @@ new AdaptativeView('update', function($data, FarmTemplate $t) {
 
 	echo '<h1>'.s("Configurer la commercialisation").'</h1>';
 	echo '<br/>';
-	echo (new \selling\ConfigurationUi())->update($data->e['selling'], $data->cCustomize, $data->e, $data->eSaleExample, $data->eSaleExample['cItem']);
+	echo (new \selling\ConfigurationUi())->update($data->e, $data->e['selling'], $data->cCustomize, $data->eSaleExample);
 
 });
 ?>

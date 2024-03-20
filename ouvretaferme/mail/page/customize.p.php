@@ -24,7 +24,7 @@
 
 		$data->eFarm['selling'] = \selling\ConfigurationLib::getByFarm($data->eFarm);
 
-		$data->eSaleExample = \selling\SaleLib::getExample($data->eFarm);
+		$data->eSaleExample = \selling\SaleLib::getExample($data->eFarm, \selling\Customer::PRO);
 
 		throw new ViewAction($data);
 

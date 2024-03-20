@@ -35,14 +35,22 @@ class SaleLib extends SaleCrud {
 
 	}
 
-	public static function getExample(\farm\Farm $eFarm): Sale {
+	public static function getExample(\farm\Farm $eFarm, string $type): Sale {
 
 		$eFarm->expects(['selling']);
 
-		$eSale = \selling\SaleLib::getById(\Setting::get('selling\exampleSale'));
+		$id = match($type) {
+			Customer::PRO => \Setting::get('selling\exampleSalePro'),
+			Customer::PRIVATE => \Setting::get('selling\exampleSalePrivate')
+		};
+
+		$eSale = \selling\SaleLib::getById($id);
 		$eSale['farm'] = $eFarm;
 		$eSale['hasVat'] = $eFarm['selling']['hasVat'];
-		$eSale['customer']['legalName'] = 'Magasin BioZoop';
+		$eSale['customer']['legalName'] = match($type) {
+			Customer::PRO => 'Magasin BioZoop',
+			Customer::PRIVATE => 'Jules Humus'
+		};
 		$eSale['customer']['invoiceStreet1'] = '123 rue des Ours';
 		$eSale['customer']['invoiceStreet2'] = NULL;
 		$eSale['customer']['invoicePostcode'] = '63000';

@@ -43,7 +43,7 @@ class ShopUi {
 
 	}
 
-	public function update(Shop $eShop): string {
+	public function update(Shop $eShop, \Collection $cCustomize, \selling\Sale $eSaleExample): string {
 
 		$h = '<div class="tabs-h" id="selling-configure" onrender="'.encode('Lime.Tab.restore(this, "settings")').'">';
 
@@ -51,6 +51,7 @@ class ShopUi {
 				$h .= '<a class="tab-item selected" data-tab="settings" onclick="Lime.Tab.select(this)">'.s("Général").'</a>';
 				$h .= '<a class="tab-item" data-tab="payment" onclick="Lime.Tab.select(this)">'.s("Paiement").'</a>';
 				$h .= '<a class="tab-item" data-tab="terms" onclick="Lime.Tab.select(this)">'.s("Conditions de vente").'</a>';
+				$h .= '<a class="tab-item" data-tab="mail" onclick="Lime.Tab.select(this)">'.s("E-mails").'</a>';
 			$h .= '</div>';
 
 			$h .= '<div class="tab-panel selected" data-tab="settings">';
@@ -63,6 +64,10 @@ class ShopUi {
 
 			$h .= '<div class="tab-panel" data-tab="terms">';
 				$h .= $this->updateTerms($eShop);
+			$h .= '</div>';
+
+			$h .= '<div class="tab-panel" data-tab="mail">';
+				$h .= $this->updateMail($eShop, $cCustomize, $eSaleExample);
 			$h .= '</div>';
 
 		$h .= '</div>';
@@ -195,6 +200,72 @@ class ShopUi {
 		);
 
 		$h .= $form->close();
+
+		return $h;
+
+	}
+
+	public function updateMail(Shop $eShop, \Collection $cCustomize, \selling\Sale $eSaleExample): string {
+
+		$h = '';
+
+		$form = new \util\FormUi();
+
+		$h .= '<div class="util-block-help">';
+			$h .= '<h4>'.s("Personnalisation des e-mails").'</h4>';
+			$h .= '<p>'.s("Vous pouvez personnaliser le contenu des e-mails envoyés à vos clients lorsqu'ils commandent dans votre boutique. Le contenu des e-mails envoyés dépend aussi du moyen de paiement sélectionné par le client, si vous avez activé différentes moyens de paiement sur votre boutique.").'</p>';
+			$h .= $form->open(attributes: ['action' => '/shop/configuration:update', 'method' => 'get']);
+				$h .= $form->hidden('id', $eShop['id']);
+				$h .= $form->inputGroup(
+					$form->addon(s("Moyen de paiement")).
+					$form->select('paymentMethod', [
+						\selling\Sale::OFFLINE => s("Direct avec le producteur"),
+						\selling\Sale::ONLINE_CARD => s("Carte bancaire"),
+						\selling\Sale::ONLINE_SEPA => s("Prélèvement SEPA")
+					], $eSaleExample['paymentMethod'], attributes: ['mandatory' => TRUE]).
+					$form->submit(s("Afficher"))
+				);
+			$h .= $form->close();
+		$h .= '</div>';
+
+		$h .= '<br/>';
+/*
+		$h .= '<div class="util-action">';
+			$h .= '<h3>'.s("Envoi de devis").'</h3>';
+			$h .= '<a href="/mail/customize:create?farm='.$eFarm['id'].'&type='.\mail\Customize::SALE_ORDER_FORM.'" class="btn btn-outline-primary">'.s("Personnaliser l'e-mail").'</a>';
+		$h .= '</div>';
+
+		[$title, , $html] = (new PdfUi())->getOrderFormMail($eFarm, $eSaleExample, $cCustomize[\mail\Customize::SALE_ORDER_FORM]['template'] ?? NULL);
+		$h .= (new \mail\CustomizeUi())->getMailExample($title, $html);
+
+		$h .= '<div class="util-action">';
+			$h .= '<h3>'.s("Envoi de bon de livraison").'</h3>';
+			$h .= '<a href="/mail/customize:create?farm='.$eFarm['id'].'&type='.\mail\Customize::SALE_DELIVERY_NOTE.'" class="btn btn-outline-primary">'.s("Personnaliser l'e-mail").'</a>';
+		$h .= '</div>';
+
+		[$title, , $html] = (new PdfUi())->getDeliveryNoteMail($eFarm, $eSaleExample, $cCustomize[\mail\Customize::SALE_DELIVERY_NOTE]['template'] ?? NULL);
+		$h .= (new \mail\CustomizeUi())->getMailExample($title, $html);
+*/
+
+		$h .= '<div class="util-action">';
+			$h .= '<h3>'.s("Commande annulée").'</h3>';
+			$h .= '<div class="btn btn-disabled">'.s("Non personnalisable").'</div>';
+		$h .= '</div>';
+
+		[$title, , $html] = (new MailUi())->getSaleCanceled($eSaleExample);
+		$h .= (new \mail\CustomizeUi())->getMailExample($title, $html);
+
+		if($eSaleExample['paymentMethod'] === \selling\Sale::ONLINE_CARD) {
+
+			$h .= '<div class="util-action">';
+				$h .= '<h3>'.s("Paiement par carte bancaire échoué").'</h3>';
+				$h .= '<div class="btn btn-disabled">'.s("Non personnalisable").'</div>';
+			$h .= '</div>';
+
+			[$title, , $html] = (new MailUi())->getCardSaleFailed($eSaleExample, test: TRUE);
+			$h .= (new \mail\CustomizeUi())->getMailExample($title, $html);
+
+		}
 
 		return $h;
 

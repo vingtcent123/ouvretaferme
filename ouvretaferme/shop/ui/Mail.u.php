@@ -55,7 +55,7 @@ Vous avez commandé :
 
 {delivery}
 
-Merci et à bientôt !
+Merci et à bientôt,
 {farm}", $variables);
 
 		};
@@ -175,7 +175,7 @@ Merci et à bientôt !
 
 Votre commande n°{id} d'un montant de {amount} a bien été annulée.
 {payment}
-À bientôt !
+À bientôt,
 {farm}", [
 			'id' => $eSale['document'],
 			'farm' => $eSale['farm']['name'],
@@ -193,11 +193,15 @@ Votre commande n°{id} d'un montant de {amount} a bien été annulée.
 		];
 	}
 
-	public static function getCardSaleFailed(\selling\Sale $eSale): array {
+	public static function getCardSaleFailed(\selling\Sale $eSale, bool $test = FALSE): array {
 
 		$title = s("Le paiement de la commande n°{id} a échoué", ['id' => $eSale['document']]);
 
-		$link = \shop\ShopUi::dateUrl($eSale['shop'], $eSale['shopDate'], 'paiement', showDomain: TRUE);
+		if($test) {
+			$link = LIME_URL;
+		} else {
+			$link = \shop\ShopUi::dateUrl($eSale['shop'], $eSale['shopDate'], 'paiement', showDomain: TRUE);
+		}
 
 		$get = fn($payment) => s("Bonjour,
 
@@ -206,7 +210,7 @@ Votre commande n'a pas donc pas été validée et votre compte n'a pas été dé
 
 {payment}
 
-Merci et à bientôt !
+Merci et à bientôt,
 {farm}", [
 			'id' => $eSale['document'],
 			'farm' => $eSale['farm']['name'],

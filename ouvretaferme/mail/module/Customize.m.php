@@ -12,7 +12,6 @@ abstract class CustomizeElement extends \Element {
 	const SALE_INVOICE = 'sale-invoice';
 	const SHOP_CONFIRMED_HOME = 'shop-confirmed-home';
 	const SHOP_CONFIRMED_PLACE = 'shop-confirmed-place';
-	const SHOP_CANCELED = 'shop-canceled';
 
 	public static function getSelection(): array {
 		return Customize::model()->getProperties();
@@ -46,7 +45,7 @@ class CustomizeModel extends \ModuleModel {
 			'id' => ['serial32', 'cast' => 'int'],
 			'farm' => ['element32', 'farm\Farm', 'cast' => 'element'],
 			'shop' => ['element32', 'shop\Shop', 'null' => TRUE, 'cast' => 'element'],
-			'type' => ['enum', [\mail\Customize::SALE_ORDER_FORM, \mail\Customize::SALE_DELIVERY_NOTE, \mail\Customize::SALE_INVOICE, \mail\Customize::SHOP_CONFIRMED_HOME, \mail\Customize::SHOP_CONFIRMED_PLACE, \mail\Customize::SHOP_CANCELED], 'cast' => 'enum'],
+			'type' => ['enum', [\mail\Customize::SALE_ORDER_FORM, \mail\Customize::SALE_DELIVERY_NOTE, \mail\Customize::SALE_INVOICE, \mail\Customize::SHOP_CONFIRMED_HOME, \mail\Customize::SHOP_CONFIRMED_PLACE], 'cast' => 'enum'],
 			'template' => ['text24', 'min' => 0, 'max' => NULL, 'cast' => 'string'],
 		]);
 

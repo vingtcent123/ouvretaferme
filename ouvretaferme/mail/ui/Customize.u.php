@@ -213,6 +213,21 @@ Cordialement,
 
 	}
 
+	public function getMailExample(string $title, string $content): string {
+
+		$h = '<div class="util-overflow-md mt-2 mb-2">';
+			$h .= '<dl class="util-presentation util-presentation-1" style="column-gap: 2rem; row-gap: 0.5rem; max-width: 1000px">';
+				$h .= '<dt>'.s("Titre de l'e-mail").'</dt>';
+				$h .= '<dd><b>'.encode($title).'</b></dd>';
+				$h .= '<dt>'.s("Contenu de l'e-mail").'</dt>';
+				$h .= '<dd><div class="util-block" style="font-weight: normal">'.$content.'</div></dd>';
+			$h .= '</dl>';
+		$h .= '</div>';
+
+		return $h;
+
+	}
+
 	public static function p(string $property): \PropertyDescriber {
 
 		$d = Customize::model()->describer($property, [

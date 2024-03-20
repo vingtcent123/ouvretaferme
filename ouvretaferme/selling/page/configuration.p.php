@@ -6,7 +6,7 @@
 
 		\farm\FarmerLib::register($data->e);
 
-		$data->eSaleExample = \selling\SaleLib::getExample($data->e);
+		$data->eSaleExample = \selling\SaleLib::getExample($data->e, \selling\Customer::PRO);
 
 		$data->eFarm = $data->e;
 

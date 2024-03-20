@@ -28,11 +28,12 @@ class CustomizeLib extends CustomizeCrud {
 
 	}
 
-	public static function getByFarm(\farm\Farm $eFarm): \Collection {
+	public static function getByFarm(\farm\Farm $eFarm, \shop\Shop $eShop = new \shop\Shop()): \Collection {
 
 		return Customize::model()
 			->select(Customize::getSelection())
 			->whereFarm($eFarm)
+			->whereShop($eShop)
 			->getCollection(index: 'type');
 
 	}
