@@ -781,7 +781,7 @@ class PdfUi {
 
 	}
 
-	public function getOrderFormMail(\farm\Farm $eFarm, Sale $eSale, string $template): array {
+	public function getOrderFormMail(\farm\Farm $eFarm, Sale $eSale, ?string $template): array {
 
 		$template ??= \mail\CustomizeUi::getDefaultTemplate(\mail\Customize::SALE_ORDER_FORM);
 		$variables = \mail\CustomizeUi::getSaleVariables(\mail\Customize::SALE_ORDER_FORM, $eFarm, $eSale);
