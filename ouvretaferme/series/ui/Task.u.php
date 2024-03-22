@@ -43,7 +43,7 @@ class TaskUi {
 		$form = new \util\FormUi();
 
 		if($week === currentWeek()) {
-			$position = (int)date('N');
+			$position = (int)date('N') + 1;
 		} else {
 			$position = 1;
 		}
