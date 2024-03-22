@@ -3,7 +3,7 @@ namespace shop;
 
 class ShopObserverLib {
 
-	public static function saleConfirmed(\selling\Sale $eSale, \Collection $cItem, \Collection $cProduct): void {
+	public static function saleConfirmed(\selling\Sale $eSale, \Collection $cItem): void {
 
 		$eSale->expects([
 			'shop' => ['email'],
@@ -15,17 +15,21 @@ class ShopObserverLib {
 
 		$eConfiguration = \selling\ConfigurationLib::getByFarm($eSale['farm']);
 		$replyTo = $eSale['shop']['email'] ?? $eConfiguration['legalEmail'];
+		$template = \mail\CustomizeLib::getTemplate($eSale['farm'], match($eSale['shopPoint']['type']) {
+			Point::PLACE => \mail\Customize::SHOP_CONFIRMED_PLACE,
+			Point::HOME => \mail\Customize::SHOP_CONFIRMED_HOME,
+		});
 
 		(new \mail\MailLib())
 			->setReplyTo($replyTo)
 			->setFromName($eSale['farm']['name'])
 			->addTo($eUser['email'])
-			->setContent(...MailUi::getSaleConfirmed($eSale, $cItem, $cProduct))
+			->setContent(...MailUi::getSaleConfirmed($eSale, $cItem, $template))
 			->send('shop');
 
 	}
 
-	public static function saleUpdated(\selling\Sale $eSale, \Collection $cItem, \Collection $cProduct): void {
+	public static function saleUpdated(\selling\Sale $eSale, \Collection $cItem): void {
 
 		$eSale->expects([
 			'shop' => ['email'],
@@ -37,17 +41,21 @@ class ShopObserverLib {
 
 		$eConfiguration = \selling\ConfigurationLib::getByFarm($eSale['farm']);
 		$replyTo = $eSale['shop']['email'] ?? $eConfiguration['legalEmail'];
+		$template = \mail\CustomizeLib::getTemplate($eSale['farm'], match($eSale['shopPoint']['type']) {
+			Point::PLACE => \mail\Customize::SHOP_CONFIRMED_PLACE,
+			Point::HOME => \mail\Customize::SHOP_CONFIRMED_HOME,
+		});
 
 		(new \mail\MailLib())
 			->setReplyTo($replyTo)
 			->setFromName($eSale['farm']['name'])
 			->addTo($eUser['email'])
-			->setContent(...MailUi::getSaleUpdated($eSale, $cItem, $cProduct))
+			->setContent(...MailUi::getSaleUpdated($eSale, $cItem, $template))
 			->send('shop');
 
 	}
 
-	public static function salePaid(\selling\Sale $eSale, \Collection $cItem, \Collection $cProduct): void {
+	public static function salePaid(\selling\Sale $eSale, \Collection $cItem): void {
 
 		$eSale->expects([
 			'shop' => ['email'],
@@ -66,7 +74,7 @@ class ShopObserverLib {
 			->setReplyTo($replyTo)
 			->setFromName($eSale['farm']['name'])
 			->addTo($eUser['email'])
-			->setContent(...MailUi::getSaleConfirmed($eSale, $cItem, $cProduct))
+			->setContent(...MailUi::getSaleConfirmed($eSale, $cItem))
 			->send('shop');
 
 	}

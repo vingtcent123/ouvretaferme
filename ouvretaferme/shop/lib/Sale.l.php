@@ -359,7 +359,7 @@ class SaleLib {
 
 		\selling\SaleLib::update($eSale, ['paymentMethod']);
 
-		self::notify($eSale['shopUpdated'] ? 'saleUpdated' : 'saleConfirmed', $eSale, $eSale['cItem'], $eDate['cProduct']);
+		self::notify($eSale['shopUpdated'] ? 'saleUpdated' : 'saleConfirmed', $eSale, $eSale['cItem']);
 
 		$stripeSession = \payment\StripeLib::createCheckoutSessionSepa($eStripeFarm, $arguments);
 		return $stripeSession['url'];
@@ -378,7 +378,7 @@ class SaleLib {
 
 		\selling\HistoryLib::createBySale($eSale, 'shop-payment-delivery');
 
-		self::notify($eSale['shopUpdated'] ? 'saleUpdated' : 'saleConfirmed', $eSale, $eSale['cItem'], $eDate['cProduct']);
+		self::notify($eSale['shopUpdated'] ? 'saleUpdated' : 'saleConfirmed', $eSale, $eSale['cItem']);
 
 		return \Lime::getProtocol().'://'.\Setting::get('shop\domain').ShopUi::dateUrl($eSale['shop'], $eSale['shopDate'], 'confirmation');
 
@@ -550,9 +550,8 @@ class SaleLib {
 		\selling\HistoryLib::createBySale($eSale, 'shop-payment-succeeded', 'Stripe event #'.$eventId);
 
 		$cItem = \selling\ItemLib::getBySale($eSale);
-		$cProduct = ProductLib::getByDate($eSale['shopDate']);
 
-		self::notify('salePaid', $eSale, $cItem, $cProduct);
+		self::notify('salePaid', $eSale, $cItem);
 
 	}
 

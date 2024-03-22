@@ -229,23 +229,27 @@ class ShopUi {
 		$h .= '</div>';
 
 		$h .= '<br/>';
-/*
+
 		$h .= '<div class="util-action">';
-			$h .= '<h3>'.s("Envoi de devis").'</h3>';
-			$h .= '<a href="/mail/customize:create?farm='.$eFarm['id'].'&type='.\mail\Customize::SALE_ORDER_FORM.'" class="btn btn-outline-primary">'.s("Personnaliser l'e-mail").'</a>';
+			$h .= '<h3>'.s("Confirmation de commande livrée en point retrait").'</h3>';
+			$h .= '<a href="/mail/customize:create?farm='.$eShop['farm']['id'].'&type='.\mail\Customize::SHOP_CONFIRMED_PLACE.'&shop='.$eShop['id'].'" class="btn btn-outline-primary">'.s("Personnaliser l'e-mail").'</a>';
 		$h .= '</div>';
 
-		[$title, , $html] = (new PdfUi())->getOrderFormMail($eFarm, $eSaleExample, $cCustomize[\mail\Customize::SALE_ORDER_FORM]['template'] ?? NULL);
+		$eSaleExample['shopPoint'] = $eSaleExample['shopPoints'][Point::PLACE];
+
+		[$title, , $html] = (new MailUi())->getSaleConfirmed($eSaleExample, $eSaleExample['cItem'], $cCustomize[\mail\Customize::SHOP_CONFIRMED_PLACE]['template'] ?? NULL);
 		$h .= (new \mail\CustomizeUi())->getMailExample($title, $html);
 
 		$h .= '<div class="util-action">';
-			$h .= '<h3>'.s("Envoi de bon de livraison").'</h3>';
-			$h .= '<a href="/mail/customize:create?farm='.$eFarm['id'].'&type='.\mail\Customize::SALE_DELIVERY_NOTE.'" class="btn btn-outline-primary">'.s("Personnaliser l'e-mail").'</a>';
+			$h .= '<h3>'.s("Confirmation de commande livrée à domicile").'</h3>';
+			$h .= '<a href="/mail/customize:create?farm='.$eShop['farm']['id'].'&type='.\mail\Customize::SHOP_CONFIRMED_HOME.'&shop='.$eShop['id'].'" class="btn btn-outline-primary">'.s("Personnaliser l'e-mail").'</a>';
 		$h .= '</div>';
 
-		[$title, , $html] = (new PdfUi())->getDeliveryNoteMail($eFarm, $eSaleExample, $cCustomize[\mail\Customize::SALE_DELIVERY_NOTE]['template'] ?? NULL);
+		$eSaleExample['shopPoint'] = $eSaleExample['shopPoints'][Point::HOME];
+
+		[$title, , $html] = (new MailUi())->getSaleConfirmed($eSaleExample, $eSaleExample['cItem'], $cCustomize[\mail\Customize::SHOP_CONFIRMED_HOME]['template'] ?? NULL);
 		$h .= (new \mail\CustomizeUi())->getMailExample($title, $html);
-*/
+
 
 		$h .= '<div class="util-action">';
 			$h .= '<h3>'.s("Commande annulée").'</h3>';

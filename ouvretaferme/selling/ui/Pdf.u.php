@@ -789,14 +789,8 @@ class PdfUi {
 		$title = s("Devis {value}", $variables['number'].' - '.$variables['customer']);
 		$content = \mail\CustomizeUi::convertTemplate($template, $variables);
 
-		$html = \mail\DesignUi::getBanner($eFarm).nl2br($content);
-		$text = strip_tags($html);
+		return \mail\DesignUi::format($eFarm, $title, $content);
 
-		return [
-			$title,
-			$text,
-			$html
-		];
 	}
 
 	public function getDeliveryNoteMail(\farm\Farm $eFarm, Sale $eSale, ?string $template): array {
@@ -807,14 +801,8 @@ class PdfUi {
 		$title = s("Bon de livraison {value}", $variables['number'].' - '.$variables['customer']);
 		$content = \mail\CustomizeUi::convertTemplate($template, $variables);
 
-		$html = \mail\DesignUi::getBanner($eFarm).nl2br($content);
-		$text = strip_tags($html);
+		return \mail\DesignUi::format($eFarm, $title, $content);
 
-		return [
-			$title,
-			$text,
-			$html
-		];
 	}
 
 	public function getInvoiceMail(\farm\Farm $eFarm, Invoice $eInvoice, \Collection $cSale, ?string $template): array {
@@ -827,14 +815,8 @@ class PdfUi {
 		$title = s("Facture {value}", $eInvoice->getInvoice().' - '.($eCustomer['legalName'] ?? $eCustomer['name']));
 		$content = \mail\CustomizeUi::convertTemplate($template, $variables);
 
-		$html = \mail\DesignUi::getBanner($eFarm).nl2br($content);
-		$text = strip_tags($html);
+		return \mail\DesignUi::format($eFarm, $title, $content);
 
-		return [
-			$title,
-			$text,
-			$html
-		];
 	}
 
 	public static function getTexts(string $type): array {

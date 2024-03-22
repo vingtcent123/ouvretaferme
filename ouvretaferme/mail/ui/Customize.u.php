@@ -12,6 +12,10 @@ class CustomizeUi {
 			$h .= $form->hidden('farm', $e['farm']);
 			$h .= $form->hidden('type', $e['type']);
 
+			if($e['shop']->notEmpty()) {
+				$h .= $form->hidden('shop', $e['shop']['id']);
+			}
+
 			$h .= '<div class="util-block-gradient">';
 				$h .= '<p>'.s("Vous pouvez personnaliser dynamiquement le contenu de cet e-mail en copiant les variables suivantes, qui s'adapteront automatiquement à la vente sélectionnée :").'</p>';
 
@@ -33,7 +37,7 @@ class CustomizeUi {
 								$h .= '<tr>';
 									$h .= '<td><b>@'.$name.'</b></td>';
 									$h .= '<td>'.$title.'</td>';
-									$h .= '<td>'.encode($variables[$name]).'</td>';
+									$h .= '<td>'.nl2br($variables[$name]).'</td>';
 								$h .= '</tr>';
 
 							}
@@ -42,6 +46,14 @@ class CustomizeUi {
 					$h .= '</table>';
 				$h .= '</div>';
 			$h .= '</div>';
+
+			if(in_array($e['type'], [Customize::SHOP_CONFIRMED_HOME, Customize::SHOP_CONFIRMED_PLACE])) {
+
+				$h .= '<div class="util-info">';
+					$h .= \Asset::icon('exclamation-triangle-fill').' '.s("L'e-mail de confirmation de commande est le même pour toutes les commandes, quelque soit le moyen de paiement utilisé. Vous devez en tenir compte lorsque vous le rédigez. Pensez à utiliser la variable <i>@payment</i> pour rappeler à votre client le moyen de paiement qu'il a sélectionné.");
+				$h .= '</div>';
+
+			}
 
 			$e['template'] ??= self::getDefaultTemplate($e['type']);
 			$h .= $form->dynamicGroup($e, 'template');
@@ -67,6 +79,8 @@ class CustomizeUi {
 			Customize::SALE_ORDER_FORM => s("Personnaliser l'e-mail pour les devis"),
 			Customize::SALE_DELIVERY_NOTE => s("Personnaliser l'e-mail pour les bons de livraison"),
 			Customize::SALE_INVOICE => s("Personnaliser l'e-mail pour les factures"),
+			Customize::SHOP_CONFIRMED_PLACE => s("Personnaliser l'e-mail de confirmation de commande pour les livraisons en point de retrait"),
+			Customize::SHOP_CONFIRMED_HOME => s("Personnaliser l'e-mail de confirmation de commande pour les livraisons à domicile"),
 
 		};
 
@@ -99,21 +113,46 @@ class CustomizeUi {
 				'sales' => s("Ventes facturées")
 			],
 
+			Customize::SHOP_CONFIRMED_PLACE, Customize::SHOP_CONFIRMED_HOME => [
+				'number' => s("Numéro de vente"),
+				'farm' => s("Nom de votre ferme"),
+				'amount' => s("Montant de la vente"),
+				'products' => s("Liste des produits commandés"),
+				'payment' => s("Moyen de paiement utilisé"),
+				'delivery' => s("Date de livraison"),
+				'address' => s("Adresse de livraison")
+			],
+
 		};
 
 	}
 
 	public static function getExampleVariables(string $type, \farm\Farm $eFarm, \selling\Sale $eSaleExample): array {
 
-		return match($type) {
-			Customize::SALE_ORDER_FORM, Customize::SALE_DELIVERY_NOTE => self::getSaleVariables($type, $eFarm, $eSaleExample),
-			Customize::SALE_INVOICE => self::getSaleVariables($type, $eFarm, $eSaleExample['invoice'], new \Collection([$eSaleExample])),
+		switch($type) {
+			case Customize::SALE_ORDER_FORM :
+			case Customize::SALE_DELIVERY_NOTE :
+				return self::getSaleVariables($type, $eFarm, $eSaleExample);
+
+			case Customize::SALE_INVOICE :
+				return self::getSaleVariables($type, $eFarm, $eSaleExample['invoice'], new \Collection([$eSaleExample]));
+
+			case Customize::SHOP_CONFIRMED_HOME :
+			case Customize::SHOP_CONFIRMED_PLACE :
+
+				$eSaleExample['paymentMethod'] = \selling\Sale::OFFLINE;
+				$eSaleExample['shopPoint'] = $eSaleExample['shopPoints'][match($type) {
+					Customize::SHOP_CONFIRMED_HOME => \shop\Point::HOME,
+					Customize::SHOP_CONFIRMED_PLACE => \shop\Point::PLACE
+				}];
+
+				return self::getShopVariables($type, $eSaleExample, $eSaleExample['cItem']);
+
 		};
 
 	}
 
 	public static function getSaleVariables(string $type, \farm\Farm $eFarm, ...$more): array {
-
 
 		switch($type) {
 
@@ -168,6 +207,80 @@ class CustomizeUi {
 
 	}
 
+	public static function getShopVariables(string $type, \selling\Sale $eSale, \Collection $cItem): array {
+
+		switch($type) {
+
+			case Customize::SHOP_CONFIRMED_HOME :
+			case Customize::SHOP_CONFIRMED_PLACE :
+
+				$ePoint = $eSale['shopPoint'];
+
+				switch($eSale['paymentMethod']) {
+
+					case \selling\Sale::ONLINE_SEPA :
+						$payment = s("Vous avez choisi de régler cette commande par prélèvement bancaire.");
+						break;
+
+					case \selling\Sale::ONLINE_CARD :
+						$payment = s("Vous avez choisi de régler cette commande par carte bancaire.");
+						break;
+
+					case \selling\Sale::OFFLINE :
+						$payment = s("Vous avez choisi de régler cette commande en direct avec votre producteur.");
+						if($eSale['shop']['paymentOfflineHow']) {
+							$payment .= "\n".encode($eSale['shop']['paymentOfflineHow']);
+						}
+						break;
+
+					default :
+						throw new \Exception('Not compatible');
+
+				}
+
+				$products = '';
+
+				foreach($cItem as $eItem) {
+					$products .= '- '.encode($eItem['name']).' : '.\main\UnitUi::getValue($eItem['number'], $eItem['unit'], noWrap: FALSE)."\n";
+				}
+
+				$products = rtrim($products);
+
+				$address = '<div style="padding-left: 1rem; border-left: 3px solid #888888">';
+
+				switch($ePoint['type']) {
+
+					case \shop\Point::HOME :
+						$address .= encode($eSale->getDeliveryAddress());
+						break;
+
+					case \shop\Point::PLACE :
+						$address .= encode($ePoint['name'])."\n";
+						if($ePoint['description']) {
+							$address .= encode($ePoint['description'])."\n\n";
+						}
+						$address .= encode($ePoint['address'])."\n";
+						$address .= encode($ePoint['place']);
+						break;
+
+				};
+
+				$address .= '</div>';
+
+				return [
+					'number' => $eSale['document'],
+					'farm' => encode($eSale['farm']['name']),
+					'amount' => \util\TextUi::money($eSale['priceIncludingVat']),
+					'products' => $products,
+					'payment' => $payment,
+					'delivery' => \util\DateUi::numeric($eSale['shopDate']['deliveryDate']),
+					'address' => $address,
+				];
+
+		}
+
+	}
+
 	public static function convertTemplate(string $template, array $variables) {
 
 		$template = encode($template);
@@ -207,6 +320,38 @@ Vous trouverez en pièce jointe notre facture d'un montant de @amount.
 @sales
 
 Cordialement,
+@farm");
+
+			case Customize::SHOP_CONFIRMED_PLACE :
+				return s("Bonjour,
+
+Votre commande n°@number d'un montant de @amount a bien été enregistrée.
+
+Vous avez commandé :
+@products
+
+@payment
+
+Vous pourrez venir retirer votre commande le @delivery au point de retrait suivant :
+@address
+
+Merci et à bientôt,
+@farm");
+
+			case Customize::SHOP_CONFIRMED_HOME :
+				return s("Bonjour,
+
+Votre commande n°@number d'un montant de @amount a bien été enregistrée.
+
+Vous avez commandé :
+@products
+
+@payment
+
+Votre commande vous sera livrée le @delivery à l'adresse suivante :
+@address
+
+Merci et à bientôt,
 @farm");
 
 		}

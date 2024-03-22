@@ -3,6 +3,19 @@ namespace mail;
 
 class DesignUi {
 
+	public static function format(\farm\Farm $eFarm, string $title, string $content): array {
+
+		$html = \mail\DesignUi::getBanner($eFarm).nl2br($content);
+		$text = decode(strip_tags($html));
+
+		return [
+			$title,
+			$text,
+			$html
+		];
+
+	}
+
 	public static function getBanner(\farm\Farm $eFarm): string {
 
 		$eFarm->expects(['banner']);

@@ -9,8 +9,8 @@
 
 		\farm\FarmerLib::register($data->eFarm);
 
-		$data->cCustomize = \mail\CustomizeLib::getByFarm($data->eFarm);
-		$data->eSaleExample = \selling\SaleLib::getExample($data->eFarm, \selling\Customer::PRIVATE);
+		$data->cCustomize = \mail\CustomizeLib::getByFarm($data->eFarm, $data->e);
+		$data->eSaleExample = \selling\SaleLib::getExample($data->eFarm, \selling\Customer::PRIVATE, shop: TRUE);
 		$data->eSaleExample['paymentMethod'] = \selling\Sale::GET('paymentMethod', 'paymentMethod', \selling\Sale::OFFLINE);
 
 		throw new ViewAction($data);

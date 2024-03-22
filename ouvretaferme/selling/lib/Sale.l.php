@@ -35,7 +35,7 @@ class SaleLib extends SaleCrud {
 
 	}
 
-	public static function getExample(\farm\Farm $eFarm, string $type): Sale {
+	public static function getExample(\farm\Farm $eFarm, string $type, bool $shop = FALSE): Sale {
 
 		$eFarm->expects(['selling']);
 
@@ -55,6 +55,10 @@ class SaleLib extends SaleCrud {
 		$eSale['customer']['invoiceStreet2'] = NULL;
 		$eSale['customer']['invoicePostcode'] = '63000';
 		$eSale['customer']['invoiceCity'] = 'Clermont-Ferrand';
+		$eSale['deliveryStreet1'] = $eSale['customer']['invoiceStreet1'];
+		$eSale['deliveryStreet2'] = $eSale['customer']['invoiceStreet2'];
+		$eSale['deliveryPostcode'] = $eSale['customer']['invoicePostcode'];
+		$eSale['deliveryCity'] = $eSale['customer']['invoiceCity'];
 		$eSale['customer']['email'] = 'client@email.com';
 		$eSale['orderFormValidUntil'] = currentDate();
 		$eSale['orderFormPaymentCondition'] = $eFarm['selling']['orderFormPaymentCondition'];
@@ -67,6 +71,27 @@ class SaleLib extends SaleCrud {
 		$eSale['invoice']['paymentCondition'] = $eFarm['selling']['invoicePaymentCondition'];
 		$eSale['invoice']['customer'] = $eSale['customer'];
 		$eSale['cItem'] = self::getItems($eSale);
+
+		if($shop) {
+			$eSale['shop'] = new \shop\Shop([
+				'paymentOfflineHow' => NULL
+			]);
+			$eSale['shopDate'] = new \shop\Shop([
+				'deliveryDate' => currentDate()
+			]);
+			$eSale['shopPoints'] = [
+				\shop\Point::PLACE => new \shop\Point([
+					'type' => \shop\Point::PLACE,
+					'name' => s("À la ferme"),
+					'description' => s("Retrait des commandes de 19:00 à 19:00"),
+					'address' => $eSale['deliveryStreet1'],
+					'place' => $eSale['deliveryCity']
+				]),
+				\shop\Point::HOME => new \shop\Point([
+					'type' => \shop\Point::HOME
+				])
+			];
+		}
 
 		return $eSale;
 		

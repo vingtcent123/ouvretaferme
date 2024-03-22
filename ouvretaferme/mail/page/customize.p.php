@@ -24,7 +24,11 @@
 
 		$data->eFarm['selling'] = \selling\ConfigurationLib::getByFarm($data->eFarm);
 
-		$data->eSaleExample = \selling\SaleLib::getExample($data->eFarm, \selling\Customer::PRO);
+		$data->eSaleExample = \selling\SaleLib::getExample(
+			$data->eFarm,
+			$data->e['shop']->notEmpty() ? \selling\Customer::PRIVATE : \selling\Customer::PRO,
+			$data->e['shop']->notEmpty()
+		);
 
 		throw new ViewAction($data);
 

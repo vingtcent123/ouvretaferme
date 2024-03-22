@@ -6,7 +6,7 @@ Privilege::register('selling', [
 Setting::register('selling', [
 
 	'exampleSalePro' => 1736,
-	'exampleSalePrivate' => 261,
+	'exampleSalePrivate' => 3133,
 
 	'vatRates' => [
 
