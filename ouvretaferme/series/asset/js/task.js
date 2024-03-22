@@ -611,7 +611,7 @@ class Task {
 				this.setScrollStorage([target.dataset.week, screen]);
 			}
 
-			position = document.documentElement.clientWidth * (screen - 1);
+			position = document.documentElement.clientWidth * screen;
 
 		} else {
 
