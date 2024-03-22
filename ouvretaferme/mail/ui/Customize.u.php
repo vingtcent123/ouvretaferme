@@ -223,7 +223,8 @@ class CustomizeUi {
 						break;
 
 					case \selling\Sale::ONLINE_CARD :
-						$payment = s("Vous avez choisi de régler cette commande par carte bancaire.");
+						$payment = s("Vous avez choisi de régler cette commande par carte bancaire.")."\n";
+						$payment .= s("Votre paiement a bien été accepté.");
 						break;
 
 					case \selling\Sale::OFFLINE :

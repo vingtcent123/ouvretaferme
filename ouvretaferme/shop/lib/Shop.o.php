@@ -15,16 +15,12 @@ class ShopObserverLib {
 
 		$eConfiguration = \selling\ConfigurationLib::getByFarm($eSale['farm']);
 		$replyTo = $eSale['shop']['email'] ?? $eConfiguration['legalEmail'];
-		$template = \mail\CustomizeLib::getTemplate($eSale['farm'], match($eSale['shopPoint']['type']) {
-			Point::PLACE => \mail\Customize::SHOP_CONFIRMED_PLACE,
-			Point::HOME => \mail\Customize::SHOP_CONFIRMED_HOME,
-		});
 
 		(new \mail\MailLib())
 			->setReplyTo($replyTo)
 			->setFromName($eSale['farm']['name'])
 			->addTo($eUser['email'])
-			->setContent(...MailUi::getSaleConfirmed($eSale, $cItem, $template))
+			->setContent(...MailUi::getSaleConfirmed($eSale, $cItem, self::getTemplate($eSale)))
 			->send('shop');
 
 	}
@@ -41,16 +37,12 @@ class ShopObserverLib {
 
 		$eConfiguration = \selling\ConfigurationLib::getByFarm($eSale['farm']);
 		$replyTo = $eSale['shop']['email'] ?? $eConfiguration['legalEmail'];
-		$template = \mail\CustomizeLib::getTemplate($eSale['farm'], match($eSale['shopPoint']['type']) {
-			Point::PLACE => \mail\Customize::SHOP_CONFIRMED_PLACE,
-			Point::HOME => \mail\Customize::SHOP_CONFIRMED_HOME,
-		});
 
 		(new \mail\MailLib())
 			->setReplyTo($replyTo)
 			->setFromName($eSale['farm']['name'])
 			->addTo($eUser['email'])
-			->setContent(...MailUi::getSaleUpdated($eSale, $cItem, $template))
+			->setContent(...MailUi::getSaleUpdated($eSale, $cItem, self::getTemplate($eSale)))
 			->send('shop');
 
 	}
@@ -74,8 +66,17 @@ class ShopObserverLib {
 			->setReplyTo($replyTo)
 			->setFromName($eSale['farm']['name'])
 			->addTo($eUser['email'])
-			->setContent(...MailUi::getSaleConfirmed($eSale, $cItem))
+			->setContent(...MailUi::getSaleConfirmed($eSale, $cItem, self::getTemplate($eSale)))
 			->send('shop');
+
+	}
+
+	private static function getTemplate(\selling\Sale $eSale): ?string {
+
+		return \mail\CustomizeLib::getTemplate($eSale['farm'], match($eSale['shopPoint']['type']) {
+			Point::PLACE => \mail\Customize::SHOP_CONFIRMED_PLACE,
+			Point::HOME => \mail\Customize::SHOP_CONFIRMED_HOME,
+		}, $eSale['shop']);
 
 	}
 
