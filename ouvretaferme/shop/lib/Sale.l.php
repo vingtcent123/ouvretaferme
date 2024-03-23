@@ -238,6 +238,7 @@ class SaleLib {
 				'customer' => $eSale['customer'],
 				'product' => $eProduct,
 				'name' => $eProduct->getName(),
+				'quality' => $eProduct['quality'],
 				'packaging' => NULL,
 				'unit' => $eProduct['unit'],
 				'unitPrice' => $eProduct['privatePrice'],

@@ -67,7 +67,7 @@ class PdfUi {
 							$h .= '<td>'.$eItem['name'].'</th>';
 							$h .= '<td>';
 								if($eItem['quality']) {
-									$h .= \Asset::image('main', $eItem['quality'].'.png', ['style' => 'height: 0.5cm']);
+									$h .= \Asset::image('main', $eItem['quality'].'.png', ['style' => 'height: 0.4cm']);
 								}
 							$h .= '</th>';
 							$h .= '<td class="shop-pdf-summary-quantity text-end">'.$eItem['quantity'].'</td>';
