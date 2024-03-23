@@ -1217,6 +1217,16 @@ dl.util-presentation {
 	align-items: start;
 }
 
+dl.util-presentation-max-content {
+	display: grid;
+	margin: 0;
+	padding: 0;
+	grid-column-gap: 0.75rem;
+	grid-row-gap: 0.125rem;
+	grid-auto-rows: min-content;
+	align-items: start;
+}
+
 @media (min-width: 576px) {
 
 	dl.util-presentation-1 {
@@ -1226,6 +1236,11 @@ dl.util-presentation {
 	dl.util-presentation-2,
 	dl.util-presentation-3 {
 		grid-template-columns: auto 1fr auto 1fr;
+	}
+
+	dl.util-presentation-max-content.util-presentation-2,
+	dl.util-presentation-max-content.util-presentation-3 {
+		grid-template-columns: auto minmax(max-content, 1fr) auto minmax(max-content, 1fr);
 	}
 
 }

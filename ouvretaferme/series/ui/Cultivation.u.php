@@ -1923,7 +1923,7 @@ class CultivationUi {
 
 		$h .= '<div class="crop-item-presentation">';
 
-			$h .= '<dl class="util-presentation util-presentation-2">';
+			$h .= '<dl class="util-presentation util-presentation-max-content util-presentation-2">';
 
 				$h .= $uiCrop->getPresentationYieldExpected($eSeries, $eCultivation);
 
@@ -1931,7 +1931,7 @@ class CultivationUi {
 				$h .= '<dt>'.$this->p('yield').'</dt>';
 				$h .= '<dd>'.$this->getYieldByUnits($eSeries, $eCultivation).'</dd>';
 
-				$h .= '<dt>'.s("Semis").'</dt>';
+				$h .= '<dt>'.s("Implantation").'</dt>';
 				$h .= '<dd>';
 					$h .= $eCultivation['seedling'] ? [
 						\series\Cultivation::SOWING => s("direct"),

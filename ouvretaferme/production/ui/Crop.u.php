@@ -148,7 +148,7 @@ class CropUi {
 				$h .= '</div>';
 
 				$h .= '<div class="crop-item-presentation">';
-					$h .= '<dl class="util-presentation util-presentation-2">';
+					$h .= '<dl class="util-presentation util-presentation-max-content util-presentation-2">';
 						$h .= $this->getPresentationYieldExpected($eSequence, $eCrop);
 						$h .= $this->getPresentationDistance($eSequence, $eCrop);
 						$h .= $this->getPresentationSeedling($eSequence, $eCrop);
@@ -170,7 +170,7 @@ class CropUi {
 
 	public function getPresentationSeedling(\Element $eSequence, \Element $eCrop): string {
 
-		return '<dt>'.s("Semis").'</dt><dd>'.($eCrop['seedling'] ? self::p('seedling')->values[$eCrop['seedling']] : '').'</dd>';
+		return '<dt>'.s("Implantation").'</dt><dd>'.($eCrop['seedling'] ? self::p('seedling')->values[$eCrop['seedling']] : '').'</dd>';
 
 	}
 
