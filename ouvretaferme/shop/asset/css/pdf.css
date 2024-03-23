@@ -13,8 +13,13 @@
 	text-align: center;
 }
 
-.shop-pdf-summary {
-	margin-top: 1cm;
+table.shop-pdf-summary {
+	margin-top: 0.5cm;
+}
+
+.shop-pdf-summary td {
+	padding-top: 0.1cm;
+	padding-bottom: 0.1cm;
 }
 
 .shop-pdf-summary-comment {
@@ -22,7 +27,7 @@
 }
 
 .shop-pdf-summary-quantity {
-	font-size: 1.4rem;
+	font-size: 1.3rem;
 	font-weight: lighter;
 	padding-right: 0;
 }
