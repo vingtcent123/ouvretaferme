@@ -104,8 +104,10 @@
 	->get('getSales', function($data) {
 
 		$data->e = \shop\DateLib::getById(GET('id'))->validate('canRemote');
+		$data->e['shop'] = \shop\ShopLib::getById($data->e['shop']);
 
 		$data->cSale = \selling\SaleLib::getForLabelsByDate($data->e, selectItems: TRUE, selectPoint: TRUE);
+		$data->cItem = \selling\ItemLib::getSummaryForLabels($data->e);
 
 		throw new ViewAction($data);
 

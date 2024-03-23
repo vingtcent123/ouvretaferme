@@ -121,6 +121,23 @@ class ItemLib extends ItemCrud {
 
 	}
 
+	public static function getSummaryForLabels(\shop\Date $eDate): \Collection {
+
+		return Item::model()
+			->select([
+				'name', 'quality',
+				'unit',
+				'price' => new \Sql('SUM(price)', 'float'),
+				'quantity' => new \Sql('SUM(IF(packaging IS NULL, 1, packaging) * number)', 'float'),
+				'product' => ['vignette']
+			])
+			->whereFarm($eDate['farm'])
+			->whereShopDate($eDate)
+			->group(['product', 'name', 'unit', 'quality'])
+			->sort('name')
+			->getCollection();
+	}
+
 	public static function createCollection(\Collection $c): void {
 
 		if($c->empty()) {

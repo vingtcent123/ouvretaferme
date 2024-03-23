@@ -45,7 +45,7 @@ class UnitUi {
 
 		}
 
-		return $noWrap ? str_replace(' ', '&nbsp;', $text) : $text;
+		return $noWrap ? str_replace(' ', ' ', $text) : $text;
 
 	}
 

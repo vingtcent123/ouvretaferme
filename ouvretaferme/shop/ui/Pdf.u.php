@@ -9,7 +9,7 @@ class PdfUi {
 
 	}
 
-	public function getSales(Date $eDate, \Collection $cSale): string {
+	public function getSales(Date $eDate, \Collection $cSale, \Collection $cItem): string {
 
 		$items = [];
 
@@ -27,6 +27,8 @@ class PdfUi {
 
 		$h = '<style>@page {	margin: 0.5cm; }</style>';
 
+		$h .= $this->getSalesSummary($eDate, $cSale, $cItem);
+
 		foreach($itemsChunk as $itemsByN) {
 
 			$h .= '<div class="shop-pdf-label-wrapper">';
@@ -36,6 +38,49 @@ class PdfUi {
 			$h .= '</div>';
 
 		}
+
+		return $h;
+
+	}
+
+	protected function getSalesSummary(Date $eDate, \Collection $cSale, \Collection $cItem): string {
+
+		$h = '<div class="shop-pdf-summary-wrapper">';
+
+			$h .= '<h1>'.$eDate['shop']['name'].'</h1>';
+			$h .= '<h2>'.s("Vente du {value}", \util\DateUi::numeric($eDate['deliveryDate'])).' | '.p("{value} commande", "{value} commandes", $cSale->count()).'</h2>';
+
+			$h .= '<table class="shop-pdf-summary tr-bordered tr-even">';
+
+				$h .= '<thead>';
+					$h .= '<tr>';
+						$h .= '<th colspan="2">'.s("Produit").'</th>';
+						$h .= '<th class="text-end" colspan="2">'.s("Quantité").'</th>';
+						$h .= '<th class="text-end">'.s("Montant").'</th>';
+						$h .= '<th class="shop-pdf-summary-comment">'.s("Observations").'</th>';
+					$h .= '</tr>';
+				$h .= '</thead>';
+
+				$h .= '<tbody>';
+					foreach($cItem as $eItem) {
+						$h .= '<tr>';
+							$h .= '<td>'.$eItem['name'].'</th>';
+							$h .= '<td>';
+								if($eItem['quality']) {
+									$h .= \Asset::image('main', $eItem['quality'].'.png', ['style' => 'height: 0.5cm']);
+								}
+							$h .= '</th>';
+							$h .= '<td class="shop-pdf-summary-quantity text-end">'.$eItem['quantity'].'</td>';
+							$h .= '<td class="td-min-content">'.\main\UnitUi::getSingular($eItem['unit'], short: TRUE).'</td>';
+							$h .= '<td class="text-end">'.\util\TextUi::money($eItem['price']).'</td>';
+							$h .= '<td></td>';
+						$h .= '</tr>';
+					}
+				$h .= '</tbody>';
+
+			$h .= '</table>';
+
+		$h .= '</div>';
 
 		return $h;
 
@@ -64,7 +109,7 @@ class PdfUi {
 				}
 			$item .= '</div>';
 			$item .= '<div>';
-				$item .= \main\UnitUi::getValue($quantity, $eItem['unit']);
+				$item .= \main\UnitUi::getValue($quantity, $eItem['unit'], short: TRUE);
 			$item .= '</div>';
 			$item .= '<div>';
 				$item .= \util\TextUi::money($eItem['price']);
@@ -104,6 +149,10 @@ class PdfUi {
 						$entry .= '<div class="shop-pdf-label-detail">';
 							$entry .= '<div class="shop-pdf-label-detail-title">'.s("Date de retrait").'</div>';
 							$entry .= '<div class="shop-pdf-label-detail-value">'.\util\DateUi::numeric($eDate['deliveryDate']).'</div>';
+						$entry .= '</div>';
+						$entry .= '<div class="shop-pdf-label-detail">';
+							$entry .= '<div class="shop-pdf-label-detail-title">'.s("Produits").'</div>';
+							$entry .= '<div class="shop-pdf-label-detail-value">'.$eSale['cItem']->count().'</div>';
 						$entry .= '</div>';
 						$entry .= '<div class="shop-pdf-label-detail">';
 							$entry .= '<div class="shop-pdf-label-detail-title">'.s("Montant").'</div>';
