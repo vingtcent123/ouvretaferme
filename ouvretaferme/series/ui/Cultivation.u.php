@@ -2447,7 +2447,7 @@ class CultivationUi {
 			'rows' => s("Nombre de rangs par planche"),
 			'rowSpacing' => s("Espace inter-rangs"),
 			'plantSpacing' => s("Espace sur le rang"),
-			'seedling' => s("Type de semis"),
+			'seedling' => s("Implantation"),
 			'seedlingSeeds' => s("Nombre de graines par plant"),
 			'harvested' => s("Récolte"),
 			'yield' => s("Rendement obtenu"),

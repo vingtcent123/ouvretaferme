@@ -594,7 +594,7 @@ class CropUi {
 			'rows' => s("Nombre de rangs par planche"),
 			'rowSpacing' => s("Espace inter-rangs"),
 			'plantSpacing' => s("Espace sur le rang"),
-			'seedling' => s("Type de semis"),
+			'seedling' => s("Implantation"),
 			'seedlingSeeds' => s("Nombre de graines par plant"),
 			'yieldExpected' => s("Objectif de rendement"),
 			'mainUnit' => s("Unité de récolte principale"),
