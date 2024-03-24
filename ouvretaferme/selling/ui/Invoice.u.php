@@ -39,7 +39,7 @@ class InvoiceUi {
 			return '';
 		}
 
-		return '<span class="util-badge sale-payment-status-'.$eInvoice['paymentStatus'].'">'.self::p('paymentStatus')->values[$eInvoice['paymentStatus']].'</span>';
+		return '<span class="util-badge sale-payment-status sale-payment-status-'.$eInvoice['paymentStatus'].'">'.self::p('paymentStatus')->values[$eInvoice['paymentStatus']].'</span>';
 
 	}
 

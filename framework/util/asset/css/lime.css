@@ -861,7 +861,7 @@ div.util-action-subtitle:not(:last-child) {
 }
 
 .util-badge {
-	font-size: 80%;
+	font-size: 90%;
 	line-height: 1.2;
 	display: inline-block;
 	padding: calc(0.375rem / 2) 0.375rem;

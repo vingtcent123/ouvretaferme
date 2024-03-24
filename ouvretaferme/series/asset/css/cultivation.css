@@ -118,10 +118,6 @@ label.cultivation-month > input + div {
 	cursor: pointer;
 }
 
-label.cultivation-month > input + div:hover {
-	background-color: #ccc;
-}
-
 label.cultivation-month > div {
 	width: 100%;
 	height: 100%;
@@ -135,6 +131,7 @@ label.cultivation-month > div {
 
 div.cultivation-periods-form label.cultivation-month > div {
 	border: 1px solid var(--border);
+	background-color: white;
 }
 
 label.cultivation-month > span.cultivation-month-checked.cultivation-month-done + div {

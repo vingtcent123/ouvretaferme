@@ -456,7 +456,7 @@ class SeriesUi {
 
 	}
 
-	public function createFromPlant(\farm\Farm $eFarm, int $season, \farm\Farmer $eFarmer, \plant\Plant $ePlant, \Collection $ccVariety): \Panel {
+	public function createFromPlant(\farm\Farm $eFarm, int $season, \farm\Farmer $eFarmer, \plant\Plant $ePlant, \Collection $ccVariety, \Collection $cAction): \Panel {
 
 		$form = new \util\FormUi([
 			'firstColumnSize' => 40
@@ -504,7 +504,7 @@ class SeriesUi {
 		$h .= '</div>';
 
 		$h .= '<div id="series-create-plant-list">';
-			$h .= $this->addFromPlant($eSeries, $ePlant, $index, $ccVariety, $form);
+			$h .= $this->addFromPlant($eSeries, $ePlant, $index, $ccVariety, $cAction, $form);
 		$h .= '</div>';
 
 		$h .= $form->group(
@@ -558,7 +558,7 @@ class SeriesUi {
 
 	}
 
-	public function addFromPlant(Series $eSeries, \plant\Plant $ePlant, int $index, \Collection $ccVariety, ?\util\FormUi $form = NULL): string {
+	public function addFromPlant(Series $eSeries, \plant\Plant $ePlant, int $index, \Collection $ccVariety, \Collection $cAction, ?\util\FormUi $form = NULL): string {
 
 		$eSeries->expects(['use', 'cycle', 'season']);
 
@@ -574,6 +574,7 @@ class SeriesUi {
 			'ccVariety' => $ccVariety,
 			'cSlice' => new \Collection(),
 			'series' => $eSeries,
+			'season' => $eSeries['season'],
 			'sequence' => new \production\Sequence(),
 			'seedling' => NULL,
 			'sliceUnit' => Cultivation::PERCENT,
@@ -602,7 +603,7 @@ class SeriesUi {
 
 			$h .= '</div>';
 
-			$h .= (new CultivationUi())->getFieldsCreate($form, $eSeries['use'], $eCultivation, $suffix);
+			$h .= (new CultivationUi())->getFieldsCreate($form, $eSeries['use'], $eCultivation, $cAction, $suffix);
 
 		$h .= '</div>';
 
@@ -674,7 +675,7 @@ class SeriesUi {
 
 			$h .= '<div class="series-create-plant">';
 				$h .= (new CultivationUi())->getCropTitle($eFarm, $ePlant);
-				$h .= (new CultivationUi())->getFieldsCreate($form, $eSequence['use'], $eCultivation, $suffix);
+				$h .= (new CultivationUi())->getFieldsCreate($form, $eSequence['use'], $eCultivation, new \Collection(), $suffix);
 			$h .= '</div>';
 
 			$index++;

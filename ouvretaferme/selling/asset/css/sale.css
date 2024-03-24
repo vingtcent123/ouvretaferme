@@ -139,6 +139,10 @@ a.sale-preparation-status-action {
 
 }
 
+.sale-payment-status {
+	font-size: 0.8rem;
+}
+
 .sale-payment-status-paid {
 	background-color: var(--success);
 }

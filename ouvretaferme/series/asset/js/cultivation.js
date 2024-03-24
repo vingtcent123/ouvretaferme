@@ -53,18 +53,54 @@ class Cultivation {
 
 	static changeSeedling(target) {
 
-		const seeds = target.firstParent('.form-group').nextElementSibling;
+		const wrapper = target.firstParent('.series-create-plant');
+
+		const seeds = wrapper.qs('[data-wrapper^="seedlingSeeds"]');
+
+		if(target.value === 'young-plant') {
+			seeds.removeHide();
+			seeds.qs('input').value = '1';
+		} else {
+			seeds.hide();
+			seeds.qs('input').value = '';
+		}
+
+		const actionSemisPepiniere = wrapper.qs('[data-wrapper*="semis-pepiniere"]');
+		const actionSemisDirect = wrapper.qs('[data-wrapper*="semis-direct"]');
+		const actionPlantation = wrapper.qs('[data-wrapper*="plantation"]');
+
+		if(
+			actionSemisPepiniere === null ||
+			actionSemisDirect === null ||
+			actionPlantation === null
+		) {
+			return;
+		}
 
 		switch(target.value) {
 
 			case 'young-plant' :
-				seeds.style.display = '';
-				seeds.qs('input').value = '1';
+				actionSemisPepiniere.removeHide();
+				actionSemisDirect.hide();
+				actionPlantation.removeHide();
+				break;
+
+			case 'young-plant-bought' :
+				actionSemisPepiniere.hide();
+				actionSemisDirect.hide();
+				actionPlantation.removeHide();
+				break;
+
+			case 'sowing' :
+				actionSemisPepiniere.hide();
+				actionSemisDirect.removeHide();
+				actionPlantation.hide();
 				break;
 
 			default :
-				seeds.style.display = 'none';
-				seeds.qs('input').value = '';
+				actionSemisPepiniere.hide();
+				actionSemisDirect.hide();
+				actionPlantation.hide();
 				break;
 
 		}

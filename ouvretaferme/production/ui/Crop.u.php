@@ -148,15 +148,18 @@ class CropUi {
 				$h .= '</div>';
 
 				$h .= '<div class="crop-item-presentation">';
-					$h .= '<dl class="util-presentation util-presentation-max-content util-presentation-2">';
-						$h .= $this->getPresentationYieldExpected($eSequence, $eCrop);
-						$h .= $this->getPresentationDistance($eSequence, $eCrop);
-						$h .= $this->getPresentationSeedling($eSequence, $eCrop);
-						$h .= $this->getPresentationSeedlingSeeds($eSequence, $eCrop);
-						if($harvests) {
-							$h .= $this->getPresentationHarvest($eSequence, $eCrop, $harvest);
-						}
-					$h .= '</dl>';
+
+					$filled = 0;
+					$presentation = $this->getPresentation($eSequence, $eCrop, $harvest, $filled);
+
+					if($filled > 0) {
+						$h .= $presentation;
+					} else {
+						$h .= '<div class="text-center">';
+							$h .= '<a href="/production/crop:update?id='.$eCrop['id'].'" class="btn mt-1 mb-1 btn-outline-primary">'.s("Configurer maintenant").'</a>';
+						$h .= '</div>';
+					}
+
 				$h .= '</div>';
 			$h .= '</div>';
 
@@ -168,8 +171,25 @@ class CropUi {
 
 	}
 
-	public function getPresentationSeedling(\Element $eSequence, \Element $eCrop): string {
+	public function getPresentation(\Element $eSequence, \Element $eCrop, array $harvest, int &$filled): string {
 
+		$h = '<dl class="util-presentation util-presentation-max-content util-presentation-2">';
+			$h .= $this->getPresentationYieldExpected($eSequence, $eCrop, $filled);
+			$h .= $this->getPresentationDistance($eSequence, $eCrop, $filled);
+			$h .= $this->getPresentationSeedling($eSequence, $eCrop, $filled);
+			$h .= $this->getPresentationSeedlingSeeds($eSequence, $eCrop);
+			if($harvest) {
+				$h .= $this->getPresentationHarvest($eSequence, $eCrop, $harvest, $filled);
+			}
+		$h .= '</dl>';
+
+			return $h;
+
+	}
+
+	public function getPresentationSeedling(\Element $eSequence, \Element $eCrop, ?int &$filled = 0): string {
+
+		$filled += (int)($eCrop['seedling'] !== NULL);
 		return '<dt>'.s("Implantation").'</dt><dd>'.($eCrop['seedling'] ? self::p('seedling')->values[$eCrop['seedling']] : '').'</dd>';
 
 	}
@@ -185,7 +205,9 @@ class CropUi {
 
 	}
 
-	public function getPresentationYieldExpected(\Element $eSequence, \Element $eCrop): string {
+	public function getPresentationYieldExpected(\Element $eSequence, \Element $eCrop, ?int &$filled = 0): string {
+
+		$filled += (int)($eCrop['yieldExpected'] !== NULL);
 
 		$h = '<dt>'.$this->p('yieldExpected').'</dt>';
 		$h .= '<dd>';
@@ -196,27 +218,33 @@ class CropUi {
 
 	}
 
-	public function getPresentationDistance(\Element $eSequence, \Element $eCrop): string {
+	public function getPresentationDistance(\Element $eSequence, \Element $eCrop, ?int &$filled = 0): string {
 
-		return match($eCrop['distance']) {
-			Crop::SPACING => $this->getPresentationSpacing($eSequence, $eCrop),
-			Crop::DENSITY => '<dt>'.s("Densité").'</dt><dd>'.s("{value} / m²", $eCrop['density'] ?? '?').'</dd>'
-		};
+		switch($eCrop['distance']) {
+
+			case Crop::SPACING :
+				return $this->getPresentationSpacing($eSequence, $eCrop, $filled);
+
+			case Crop::DENSITY :
+				$filled += (int)($eCrop['density'] !== NULL);
+				return '<dt>'.s("Densité").'</dt><dd>'.s("{value} / m²", $eCrop['density'] ?? '?').'</dd>';
+
+		}
 
 	}
 
-	public function getPresentationHarvest(\Element $eSequence, \Element $eCrop, array $harvest): string {
+	public function getPresentationHarvest(\Element $eSequence, \Element $eCrop, array $harvest, ?int &$filled = 0): string {
 
 		$h = '<dt class="crop-item-harvest-label">';
 			$h .= s("Mois de récolte");
 		$h .= '</dt>';
-		$h .= '<dd class="crop-item-harvest-value">'.$this->getMonthlyPeriod(date('Y'), $eSequence, $harvest).'</dd>';
+		$h .= '<dd class="crop-item-harvest-value">'.$this->getMonthlyPeriod(date('Y'), $eSequence, $harvest, $filled).'</dd>';
 
 		return $h;
 
 	}
 
-	public function getPresentationSpacing(\Element $eSequence, \Element $eCrop): string {
+	public function getPresentationSpacing(\Element $eSequence, \Element $eCrop, ?int &$filled = 0): string {
 
 		$h = '';
 
@@ -228,6 +256,8 @@ class CropUi {
 				$h .= '<dd>';
 
 					if($eCrop['plantSpacing'] !== NULL or $eCrop['rows'] !== NULL) {
+
+						$filled++;
 
 						$distance = p("{plantSpacing} cm x {rows} rang", "{plantSpacing} cm x {rows} rangs", $eCrop['rows'] ?? 0, ['plantSpacing' => $eCrop['plantSpacing'] ?? '?', 'rows' => $eCrop['rows'] ?? '?']);
 
@@ -255,6 +285,8 @@ class CropUi {
 
 					if($eCrop['plantSpacing'] !== NULL or $eCrop['rowSpacing'] !== NULL) {
 
+						$filled++;
+
 						$distance = s("{value} cm", ($eCrop['plantSpacing'] ?? '?').' x '.($eCrop['rowSpacing'] ?? '?'));
 
 						if($eCrop['density'] !== NULL) {
@@ -275,7 +307,7 @@ class CropUi {
 
 	}
 
-	public function getMonthlyPeriod(int $season, Sequence $eSequence, array $harvest): string {
+	public function getMonthlyPeriod(int $season, Sequence $eSequence, array $harvest, ?int &$filled = 0): string {
 
 		\Asset::css('series', 'cultivation.css');
 
@@ -297,6 +329,10 @@ class CropUi {
 			$harvestMonths[$year] = $this->getHarvestMonths($harvest, $year, $months);
 			$harvestMonthsFilled[$year] = array_filter($harvestMonths[$year]);
 
+		}
+
+		if($harvestMonthsFilled) {
+			$filled++;
 		}
 
 		$sequence = ($harvestMonthsFilled[$season - 1] ? '1' : '0').''.($harvestMonthsFilled[$season + 1] ? '1' : '0');

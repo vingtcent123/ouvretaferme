@@ -4,7 +4,7 @@ namespace series;
 class CultivationLib extends CultivationCrud {
 
 	public static function getPropertiesCreate(): array {
-		return ['plant', 'distance', 'density', 'rows', 'plantSpacing', 'rowSpacing', 'seedling', 'seedlingSeeds', 'yieldExpected', 'mainUnit', 'harvestPeriodExpected', 'harvestMonthsExpected', 'harvestWeeksExpected', 'sliceUnit', 'variety'];
+		return ['plant', 'distance', 'density', 'rows', 'plantSpacing', 'rowSpacing', 'seedling', 'seedlingSeeds', 'yieldExpected', 'mainUnit', 'harvestPeriodExpected', 'harvestMonthsExpected', 'harvestWeeksExpected', 'sliceUnit', 'variety', 'actions'];
 	}
 
 	public static function getPropertiesUpdate(): array {
@@ -874,7 +874,7 @@ class CultivationLib extends CultivationCrud {
 		$e->expects([
 			'series' => ['area'],
 			'season', 'farm',
-			'cSlice'
+			'cSlice', 'actions'
 		]);
 
 		Cultivation::model()->beginTransaction();
@@ -889,6 +889,8 @@ class CultivationLib extends CultivationCrud {
 		try {
 
 			parent::create($e);
+
+			self::createTasks($e);
 
 			$fw = new \FailWatch();
 
@@ -916,6 +918,38 @@ class CultivationLib extends CultivationCrud {
 			Cultivation::model()->rollBack();
 
 		}
+
+	}
+
+	public static function createTasks(Cultivation $e): void {
+
+		$e->expects(['actions']);
+
+		$cAction = \farm\ActionLib::getByFarm($e['farm'], fqn: array_keys($e['actions']), index: 'fqn');
+		$eCategory = \farm\CategoryLib::getByFarm($e['farm'], fqn: CATEGORIE_CULTURE);
+
+		$cTask = new \Collection();
+
+		foreach($e['actions'] as $action => $week) {
+
+			$eAction = $cAction[$action];
+
+			$cTask[] = new \series\Task([
+				'farm' => $e['farm'],
+				'action' => $eAction,
+				'category' => $eCategory,
+				'series' => $e['series'],
+				'cultivation' => $e,
+				'plant' => $e['plant'],
+				'plannedWeek' => $week,
+				'status' => Task::TODO,
+				'repeatMaster' => new Repeat(),
+				'cTool' => new \Collection()
+			]);
+
+		}
+
+		TaskLib::createCollection($cTask);
 
 	}
 

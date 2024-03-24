@@ -1194,7 +1194,8 @@ class TaskLib extends TaskCrud {
 			'farm',
 			'category',
 			'status',
-			'repeatMaster'
+			'repeatMaster',
+			'cTool'
 		]);
 
 		if($e['category']['fqn'] === CATEGORIE_CULTURE) {

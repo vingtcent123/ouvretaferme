@@ -735,7 +735,7 @@ class SaleUi {
 
 	public static function getPaymentStatus(Sale $eSale): string {
 
-		return '<span class="util-badge sale-payment-status-'.$eSale['paymentStatus'].'">'.self::p('paymentStatus')->values[$eSale['paymentStatus']].'</span>';
+		return '<span class="util-badge sale-payment-status sale-payment-status-'.$eSale['paymentStatus'].'">'.self::p('paymentStatus')->values[$eSale['paymentStatus']].'</span>';
 
 	}
 

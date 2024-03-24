@@ -287,7 +287,7 @@ class SeriesLib extends SeriesCrud {
 
 			}
 
-			$properties = ['distance', 'density', 'rows', 'plantSpacing', 'rowSpacing', 'seedling', 'seedlingSeeds', 'yieldExpected', 'mainUnit'];
+			$properties = ['distance', 'density', 'rows', 'plantSpacing', 'rowSpacing', 'seedling', 'seedlingSeeds', 'yieldExpected', 'mainUnit', 'actions'];
 
 			if($eSeries['sequence']->empty()) {
 				$properties = array_merge($properties, ['harvestPeriodExpected', 'harvestMonthsExpected', 'harvestWeeksExpected']);
@@ -408,13 +408,15 @@ class SeriesLib extends SeriesCrud {
 
 	public static function createCultivations(\Collection $cCultivation): void {
 
-		$cCultivation->expects(['cSlice']);
+		$cCultivation->expects(['cSlice', 'actions']);
 
 		// Ajout des cultures sans parent une par une pour récupérer les IDs
 
 		foreach($cCultivation as $eCultivation) {
 
 			Cultivation::model()->insert($eCultivation); // Pour mettre l'ID
+
+			CultivationLib::createTasks($eCultivation);
 
 			$eCultivation['cSlice']->setColumn('id', NULL);
 			$eCultivation['cSlice']->setColumn('cultivation', $eCultivation);
@@ -620,6 +622,7 @@ class SeriesLib extends SeriesCrud {
 			->getCollection(NULL, NULL, 'id');
 
 		$cCultivation->setColumn('id', NULL);
+		$cCultivation->setColumn('actions', []);
 
 		return $cCultivation;
 

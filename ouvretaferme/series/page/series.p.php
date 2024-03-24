@@ -95,6 +95,7 @@
 		]);
 
 		$data->ccVariety = \plant\VarietyLib::query($data->eFarm, $data->ePlant);
+		$data->cAction = \farm\ActionLib::getByFarm($data->eFarm, fqn: [ACTION_SEMIS_PEPINIERE, ACTION_SEMIS_DIRECT, ACTION_PLANTATION], index: 'fqn');
 
 		$data->nextIndex = POST('index', 'int', 0) + 1;
 
@@ -117,6 +118,7 @@
 		$data->eFarmer = \farm\FarmerLib::getOnlineByFarm($data->eFarm);
 		$data->ePlant = \plant\PlantLib::getById(GET('plant'))->validate('notEmpty');
 		$data->ccVariety = \plant\VarietyLib::query($data->eFarm, $data->ePlant);
+		$data->cAction = \farm\ActionLib::getByFarm($data->eFarm, fqn: [ACTION_SEMIS_PEPINIERE, ACTION_SEMIS_DIRECT, ACTION_PLANTATION], index: 'fqn');
 
 		throw new ViewAction($data);
 

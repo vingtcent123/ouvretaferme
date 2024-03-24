@@ -1919,62 +1919,31 @@ class CultivationUi {
 
 		$h .= '</div>';
 
-		$uiCrop = new \production\CropUi();
-
 		$h .= '<div class="crop-item-presentation">';
 
-			$h .= '<dl class="util-presentation util-presentation-max-content util-presentation-2">';
+			$filled = 0;
+			$presentation = $this->getPresentation($eSeries, $eCultivation, $filled);
 
-				$h .= $uiCrop->getPresentationYieldExpected($eSeries, $eCultivation);
+			if($filled > 0) {
+				$h .= $presentation;
+			} else {
+				$h .= '<div class="text-center">';
+					$h .= '<a href="/series/cultivation:update?id='.$eCultivation['id'].'" class="btn mt-1 mb-1 btn-outline-primary">'.s("Configurer maintenant").'</a>';
+				$h .= '</div>';
+			}
 
-				$h .= $uiCrop->getPresentationDistance($eSeries, $eCultivation);
-				$h .= '<dt>'.$this->p('yield').'</dt>';
-				$h .= '<dd>'.$this->getYieldByUnits($eSeries, $eCultivation).'</dd>';
+			// Incohérence entre l'assolement et la répartition des variétés
+			if($eCultivation['sliceUnit'] === Cultivation::LENGTH) {
 
-				$h .= '<dt>'.s("Implantation").'</dt>';
-				$h .= '<dd>';
-					$h .= $eCultivation['seedling'] ? [
-						\series\Cultivation::SOWING => s("direct"),
-						\series\Cultivation::YOUNG_PLANT => '<span title="'.s("Autoproduction du plant").'">'.s("plant autoproduit").'</span>',
-						\series\Cultivation::YOUNG_PLANT_BOUGHT => '<span title="'.s("Achat du plant").'">'.s("plant acheté").'</span>'
-					][$eCultivation['seedling']] : '';
-				$h .= '</dd>';
+				$sliceLength = $eCultivation['cSlice']->sum('partLength');
+				$length = $eCultivation['series']['length'] ?? 0;
 
-				$h .= '<dt>'.$this->p('harvested').'</dt>';
-				$h .= '<dd>'.$this->getHarvestedByUnits($eCultivation).'</dd>';
-
-				$h .= $uiCrop->getPresentationSeedlingSeeds($eSeries, $eCultivation);
-
-				$h .= '<dt class="crop-item-harvest-label">'.self::p('harvestMonths')->label.'</dt>';
-
-				if($eCultivation['harvestMonthsExpected'] !== NULL) {
-
-					$h .= '<dd class="crop-item-harvest-value">';
-						$h .= $this->getPeriod($eSeries['season'], 'month', $eSeries, $eCultivation);
-					$h .= '</dd>';
-
-				} else {
-
-					$h .= '<dd class="crop-item-harvest-value color-muted">';
-						$h .= $this->getPeriod($eSeries['season'], 'month', $eSeries, $eCultivation);
-					$h .= '</dd>';
-
+				if($sliceLength !== $length) {
+					$h .= '<div class="crop-item-error">'.s("L'assolement de cette production couvre {total} mL, mais vous avez réparti les variétés sur {current} mL (<link>corriger cette anomalie</link>).", ['total' => $length, 'current' => $sliceLength, 'link' => '<a href="/series/cultivation:update?id='.$eCultivation['id'].'">']).'</div>';
 				}
 
-				// Incohérence entre l'assolement et la répartition des variétés
-				if($eCultivation['sliceUnit'] === Cultivation::LENGTH) {
 
-					$sliceLength = $eCultivation['cSlice']->sum('partLength');
-					$length = $eCultivation['series']['length'] ?? 0;
-
-					if($sliceLength !== $length) {
-						$h .= '<div class="crop-item-error">'.s("L'assolement de cette production couvre {total} mL mais vous avez réparti les variétés sur {current} mL (<link>corriger cette anomalie</link>).", ['total' => $length, 'current' => $sliceLength, 'link' => '<a href="/series/cultivation:update?id='.$eCultivation['id'].'">']).'</div>';
-					}
-
-
-				}
-
-			$h .= '</dl>';
+			}
 
 		$h .= '</div>';
 
@@ -1982,7 +1951,61 @@ class CultivationUi {
 
 	}
 
-	public function getHarvestedByUnits(Cultivation $eCultivation): ?string {
+	protected function getPresentation(Series $eSeries, Cultivation $eCultivation, int &$filled): string {
+
+		$uiCrop = new \production\CropUi();
+
+		$h = '<dl class="util-presentation util-presentation-max-content util-presentation-2">';
+
+			$h .= $uiCrop->getPresentationYieldExpected($eSeries, $eCultivation, $filled);
+
+			$h .= $uiCrop->getPresentationDistance($eSeries, $eCultivation, $filled);
+			$h .= '<dt>'.$this->p('yield').'</dt>';
+			$h .= '<dd>'.$this->getYieldByUnits($eSeries, $eCultivation, $filled).'</dd>';
+
+			$h .= '<dt>'.s("Implantation").'</dt>';
+			$h .= '<dd>';
+				if($eCultivation['seedling']) {
+
+					$filled++;
+
+					$h .= [
+						\series\Cultivation::SOWING => s("direct"),
+						\series\Cultivation::YOUNG_PLANT => '<span title="'.s("Autoproduction du plant").'">'.s("plant autoproduit").'</span>',
+						\series\Cultivation::YOUNG_PLANT_BOUGHT => '<span title="'.s("Achat du plant").'">'.s("plant acheté").'</span>'
+					][$eCultivation['seedling']];
+
+				}
+			$h .= '</dd>';
+
+			$h .= '<dt>'.$this->p('harvested').'</dt>';
+			$h .= '<dd>'.$this->getHarvestedByUnits($eCultivation, $filled).'</dd>';
+
+			$h .= $uiCrop->getPresentationSeedlingSeeds($eSeries, $eCultivation);
+
+			$h .= '<dt class="crop-item-harvest-label">'.self::p('harvestMonths')->label.'</dt>';
+
+			if($eCultivation['harvestMonthsExpected'] !== NULL) {
+
+				$h .= '<dd class="crop-item-harvest-value">';
+					$h .= $this->getPeriod($eSeries['season'], 'month', $eSeries, $eCultivation, filled: $filled);
+				$h .= '</dd>';
+
+			} else {
+
+				$h .= '<dd class="crop-item-harvest-value color-muted">';
+					$h .= $this->getPeriod($eSeries['season'], 'month', $eSeries, $eCultivation, filled: $filled);
+				$h .= '</dd>';
+
+			}
+
+		$h .= '</dl>';
+
+		return $h;
+
+	}
+
+	public function getHarvestedByUnits(Cultivation $eCultivation, ?int &$filled = 0): ?string {
 
 		if($eCultivation['harvestedByUnit'] === NULL) {
 			return NULL;
@@ -1998,11 +2021,16 @@ class CultivationUi {
 			}
 		}
 
-		return $harvested ? '<a href="/series/cultivation:harvest?id='.$eCultivation['id'].'">'.implode('<br/>', $harvested).'</a>' : NULL;
+		if($harvested) {
+			$filled++;
+			return '<a href="/series/cultivation:harvest?id='.$eCultivation['id'].'">'.implode('<br/>', $harvested).'</a>';
+		} else {
+			return NULL;
+		}
 
 	}
 
-	public function getYieldByUnits(Series $eSeries, Cultivation $eCultivation): ?string {
+	public function getYieldByUnits(Series $eSeries, Cultivation $eCultivation, ?int &$filled = 0): ?string {
 
 		if($eCultivation['harvestedByUnit'] === NULL) {
 			return NULL;
@@ -2014,6 +2042,10 @@ class CultivationUi {
 			if($eSeries['area'] > 0 and $value > 0) {
 				$values[] = s("{value} / m²", \main\UnitUi::getValue(round($value / $eSeries['area'], 1), $unit, TRUE));
 			}
+		}
+
+		if($values) {
+			$filled++;
 		}
 
 		return $values ? implode('<br/>', $values) : NULL;
@@ -2044,7 +2076,7 @@ class CultivationUi {
 
 	}
 
-	public function getPeriod(int $season, string $interval, Series $eSeries, Cultivation $eCultivation, ?\util\FormUi $form = NULL, ?string $name = NULL): string {
+	public function getPeriod(int $season, string $interval, Series $eSeries, Cultivation $eCultivation, ?\util\FormUi $form = NULL, ?string $name = NULL, ?int $filled = 0): string {
 
 		$eSeries->expects([
 			'cycle'
@@ -2079,6 +2111,10 @@ class CultivationUi {
 				$harvestMonths[$year] = $this->getHarvestMonths($eCultivation, $form, $year, $months);
 				$harvestMonthsFilled[$year] = array_filter($harvestMonths[$year]);
 
+			}
+
+			if($harvestMonthsFilled) {
+				$filled++;
 			}
 
 			if($form !== NULL) {
@@ -2273,7 +2309,7 @@ class CultivationUi {
 
 	}
 
-	public function createContent(Series $eSeries, \Collection $ccVariety): string {
+	public function createContent(Series $eSeries, \Collection $ccVariety, \Collection $cAction): string {
 
 		$form = new \util\FormUi([
 			'firstColumnSize' => 50
@@ -2283,6 +2319,7 @@ class CultivationUi {
 			'ccVariety' => $ccVariety,
 			'cSlice' => new \Collection(),
 			'series' => $eSeries,
+			'season' => $eSeries['season'],
 			'sequence' => new \production\Sequence(),
 			'sliceUnit' => Cultivation::PERCENT,
 			'seedling' => NULL,
@@ -2292,7 +2329,11 @@ class CultivationUi {
 			'harvestPeriodExpected' => Cultivation::MONTH
 		]);
 
-		$h = $this->getFieldsCreate($form, $eSeries['use'], $eCultivation, '');
+		$h = '<div id="series-create-plant-list">';
+			$h .= '<div class="series-create-plant">';
+				$h .= $this->getFieldsCreate($form, $eSeries['use'], $eCultivation, $cAction, '');
+			$h .= '</div>';
+		$h .= '</div>';
 
 		$h .= $form->group(
 			content: $form->submit(s("Ajouter la production"))
@@ -2302,10 +2343,10 @@ class CultivationUi {
 
 	}
 
-	public function getFieldsCreate(\util\FormUi $form, string $use, Cultivation $eCultivation, string $suffix): string {
+	public function getFieldsCreate(\util\FormUi $form, string $use, Cultivation $eCultivation, \Collection $cAction, string $suffix): string {
 
 		$eCultivation->expects([
-			'sequence',
+			'sequence', 'season',
 			'series' => ['season', 'cycle', 'area', 'length'],
 			'distance',
 			'ccVariety', 'cSlice'
@@ -2323,6 +2364,10 @@ class CultivationUi {
 
 		$h .= $form->dynamicGroup($eCultivation, 'seedling'.$suffix);
 		$h .= $form->dynamicGroup($eCultivation, 'seedlingSeeds'.$suffix);
+
+		if($eCultivation['sequence']->empty()) {
+			$h .= self::getActionsField($form, $eCultivation, $cAction, $suffix);
+		}
 
 		$h .= self::getMainUnitField($form, $eCultivation, $suffix);
 		$h .= self::getYieldExpectedField($form, $eCultivation, $suffix);
@@ -2437,6 +2482,30 @@ class CultivationUi {
 
 	}
 
+	private static function getActionsField(\util\FormUi $form, Cultivation $eCultivation, \Collection $cAction, ?string $suffix = NULL): string {
+
+		$h = $form->group(
+			'<span class="util-badge ml-1" style="background-color: '.$cAction[ACTION_SEMIS_PEPINIERE]['color'].'">'.s("Semaine de semis en pépinière").'</span>',
+			$form->week('actions'.$suffix.'['.ACTION_SEMIS_PEPINIERE.']', $eCultivation['season']),
+			['class' => 'hide']
+		);
+
+		$h .= $form->group(
+			'<span class="util-badge ml-1" style="background-color: '.$cAction[ACTION_PLANTATION]['color'].'">'.s("Semaine de plantation").'</span>',
+			$form->week('actions'.$suffix.'['.ACTION_PLANTATION.']', $eCultivation['season']),
+			['class' => 'hide']
+		);
+
+		$h .= $form->group(
+			'<span class="util-badge ml-1" style="background-color: '.$cAction[ACTION_SEMIS_DIRECT]['color'].'">'.s("Semaine de semis direct").'</span>',
+			$form->week('actions'.$suffix.'['.ACTION_SEMIS_DIRECT.']', $eCultivation['season']),
+			['class' => 'hide']
+		);
+
+		return $h;
+
+	}
+
 	public static function p(string $property): \PropertyDescriber {
 
 		$d = Cultivation::model()->describer($property, [
@@ -2517,7 +2586,7 @@ class CultivationUi {
 					$e->expects(['seedling']);
 
 					return [
-						'style' => ($e['seedling'] === Cultivation::YOUNG_PLANT) ? '' : 'display: none'
+						'class' => ($e['seedling'] === Cultivation::YOUNG_PLANT) ? '' : 'hide'
 					];
 
 				};
@@ -2539,13 +2608,13 @@ class CultivationUi {
 
 			case 'harvestMonthsExpected' :
 				$d->field = function(\util\FormUi $form, Cultivation $e, string $property, \PropertyDescriber $d) {
-					return (new CultivationUi())->getPeriod($e['series']['season'], 'month', $e['series'], $e, $form, $d->name);
+					return (new CultivationUi())->getPeriod($e['series']['season'], 'month', $e['series'], $e, form: $form, name: $d->name);
 				};
 				break;
 
 			case 'harvestWeeksExpected' :
 				$d->field = function(\util\FormUi $form, Cultivation $e, string $property, \PropertyDescriber $d) {
-					return (new CultivationUi())->getPeriod($e['series']['season'], 'week', $e['series'], $e, $form, $d->name);
+					return (new CultivationUi())->getPeriod($e['series']['season'], 'week', $e['series'], $e, form: $form, name: $d->name);
 				};
 				break;
 

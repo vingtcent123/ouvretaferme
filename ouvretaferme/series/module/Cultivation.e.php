@@ -429,6 +429,41 @@ class Cultivation extends CultivationElement {
 
 			},
 
+			'actions.set' => function(?array $actions): bool {
+
+				$this->expects(['seedling']);
+
+				$this['actions'] = [];
+
+				switch($this['seedling']) {
+
+					case Cultivation::SOWING :
+						if(\Filter::check('week', $actions[ACTION_SEMIS_DIRECT] ?? NULL)) {
+							$this['actions'][ACTION_SEMIS_DIRECT] = $actions[ACTION_SEMIS_DIRECT];
+						}
+						break;
+
+					case Cultivation::YOUNG_PLANT :
+						if(\Filter::check('week', $actions[ACTION_SEMIS_PEPINIERE] ?? NULL)) {
+							$this['actions'][ACTION_SEMIS_PEPINIERE] = $actions[ACTION_SEMIS_PEPINIERE];
+						}
+						if(\Filter::check('week', $actions[ACTION_PLANTATION] ?? NULL)) {
+							$this['actions'][ACTION_PLANTATION] = $actions[ACTION_PLANTATION];
+						}
+						break;
+
+					case Cultivation::YOUNG_PLANT_BOUGHT :
+						if(\Filter::check('week', $actions[ACTION_PLANTATION] ?? NULL)) {
+							$this['actions'][ACTION_PLANTATION] = $actions[ACTION_PLANTATION];
+						}
+						break;
+
+				}
+
+				return TRUE;
+
+			},
+
 		]);
 
 	}
