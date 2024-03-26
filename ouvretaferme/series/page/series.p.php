@@ -34,9 +34,9 @@
 
 			if($eSeries['sequence']->notEmpty()) {
 
-				if($eSeries['cycle'] === \series\Series::ANNUAL) {
+				$cFlow = \production\FlowLib::getBySequence($eSeries['sequence'], $season, ['plant' => ['name']]);
 
-					$cFlow = \production\FlowLib::getBySequence($eSeries['sequence'], $season, ['plant' => ['name']]);
+				if($eSeries['cycle'] === \series\Series::ANNUAL) {
 
 					if($cFlow->notEmpty()) {
 

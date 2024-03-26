@@ -69,7 +69,7 @@ class ProductUi {
 
 		$eProductSelling = $eProduct['product'];
 
-		$h = '<div class="shop-product" data-id="'.$eProductSelling['id'].'" data-price="'.$eProductSelling['privatePrice'].'">';
+		$h = '<div class="shop-product" data-id="'.$eProductSelling['id'].'" data-price="'.$eProduct['price'].'">';
 
 			if($eProductSelling['vignette'] !== NULL) {
 				$url = (new \media\ProductVignetteUi())->getUrlByElement($eProductSelling, 'l');
@@ -113,7 +113,7 @@ class ProductUi {
 				$h .= '<div class="shop-product-buy">';
 
 					$h .= '<div class="shop-product-buy-price">';
-						$h .= \util\TextUi::money($eProductSelling['privatePrice']).'&nbsp;/&nbsp;'.\main\UnitUi::getSingular($eProductSelling['unit'], by: TRUE);
+						$h .= \util\TextUi::money($eProduct['price']).'&nbsp;/&nbsp;'.\main\UnitUi::getSingular($eProductSelling['unit'], by: TRUE);
 						if($eProduct['stock'] !== NULL) {
 							$h.= '<br>';
 							if($eProduct->isInStock() === FALSE) {
@@ -148,7 +148,7 @@ class ProductUi {
 
 		$h = '<div class="shop-product-quantity">';
 			$h .= '<a class="btn btn-outline-primary btn-sm" onclick="'.$attributesDecrease.'">-</a>';
-			$h .= '<span class="shop-product-quantity-value" data-price="'.$eProductSelling['privatePrice'].'" data-remaining-stock="'.$eProduct->getRemainingStock().'" data-product="'.$eProductSelling['id'].'" data-field="quantity">';
+			$h .= '<span class="shop-product-quantity-value" data-price="'.$eProduct['price'].'" data-remaining-stock="'.$eProduct->getRemainingStock().'" data-product="'.$eProductSelling['id'].'" data-field="quantity">';
 				$h .= '<span>'.$quantity.'</span>&nbsp;';
 				$h .= \main\UnitUi::getSingular($eProductSelling['unit'], TRUE);
 			$h .= '</span>';
@@ -236,7 +236,7 @@ class ProductUi {
 				$h .= '<div class="shop-product-manage-details">';
 
 					$h .= '<div>';
-						$h .= \util\TextUi::money($eProductSelling['privatePrice']).'&nbsp;/&nbsp;'.\main\UnitUi::getSingular($eProductSelling['unit'], short: TRUE, by: TRUE, noWrap: TRUE);
+						$h .= $eProduct->quick('price', \util\TextUi::money($eProduct['price']).'&nbsp;/&nbsp;'.\main\UnitUi::getSingular($eProductSelling['unit'], short: TRUE, by: TRUE, noWrap: TRUE));
 					$h .= '</div>';
 
 					$h .= '<div>';
@@ -279,12 +279,15 @@ class ProductUi {
 		]);
 
 		$h = $form->openAjax('/shop/date:doCreateProducts');
+
 			$h .= $form->hidden('id', $eDate['id']);
 			$h .= $form->hidden('farm', $eFarm['id']);
 
 			$h .= (new DateUi())->getProducts($form, $eDate);
+			$h .= '<br/>';
+			$h .= $form->submit(s("Ajouter"), ['class' => 'btn btn-primary']);
 
-		$h .= $form->submit(s("Ajouter"), ['class' => 'btn btn-primary']);
+		$h .= $form->close();
 
 		return new \Panel(
 			title: s("Ajouter des produits à la vente"),
@@ -297,31 +300,37 @@ class ProductUi {
 		$d = Product::model()->describer($property, [
 			'product' => s("Produit"),
 			'stock' => s("Stock"),
+			'price' => s("Prix unitaire"),
 			'date' => s("Vente"),
 		]);
 
 		switch($property) {
 
 			case 'stock' :
-				$d->field = function(\util\FormUi $form, Product $eProduct) use($d) {
+				$d->field = function(\util\FormUi $form, Product $e) use($d) {
 
-					$h = '<div class="input-group" data-product="'.$eProduct['product']['id'].'" data-element="input-group-stock">';
-						$h .= $form->number($d->name, $eProduct['stock'] ?? NULL, [
-							'data-product' => $eProduct['product']['id'],
+					$h = '<div class="input-group" data-product="'.$e['product']['id'].'" data-element="input-group-stock">';
+						$h .= $form->number($d->name, $e['stock'] ?? NULL, [
+							'data-product' => $e['product']['id'],
 							'onfocusin' => 'DateManage.checkStockFocusIn(this)',
 							'onfocusout' => 'DateManage.checkStockFocusOut(this)',
 							'placeholder' => s("Illimité"),
 							'data-placeholder' => s("Illimité"),
-							'min' => in_array($eProduct['product']['unit'], [\selling\Product::UNIT, \selling\Product::BUNCH]) ? 1 : 0.1,
-							'step' => in_array($eProduct['product']['unit'], [\selling\Product::UNIT, \selling\Product::BUNCH]) ? 1 : 0.1,
+							'min' => in_array($e['product']['unit'], [\selling\Product::UNIT, \selling\Product::BUNCH]) ? 1 : 0.1,
+							'step' => in_array($e['product']['unit'], [\selling\Product::UNIT, \selling\Product::BUNCH]) ? 1 : 0.1,
 						]);
-						$h .= $form->addon(\main\UnitUi::getNeutral($eProduct['product']['unit'], TRUE));
+						$h .= $form->addon(\main\UnitUi::getNeutral($e['product']['unit'], TRUE));
 					$h .= '</div>';
 
 					return $h;
 
 				};
 				break;
+
+			case 'price' :
+				$d->append = fn(\util\FormUi $form, Product $e) => $form->addon('€ / '.\main\UnitUi::getSingular($e['product']['unit'], short: TRUE));
+				break;
+
 
 		}
 

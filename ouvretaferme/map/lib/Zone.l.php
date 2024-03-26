@@ -65,7 +65,7 @@ class ZoneLib extends ZoneCrud {
 		}
 
 		$filterRotation = [];
-
+		
 		if($search->get('rotation') >= 1) {
 
 			$cFamily = $eSeries['cCultivation']->getColumnCollection('plant')->getColumnCollection('family');

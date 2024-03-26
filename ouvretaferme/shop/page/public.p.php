@@ -219,7 +219,7 @@
 		}
 
 		$data->price = round(array_reduce($data->basket, function($total, $item) {
-			return $total + $item['product']['privatePrice'] * $item['quantity'];
+			return $total + $item['price'] * $item['quantity'];
 		}, 0), 2);
 
 		throw new ViewAction($data);

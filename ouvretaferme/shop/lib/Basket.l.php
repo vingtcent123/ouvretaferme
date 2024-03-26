@@ -21,6 +21,7 @@ class BasketLib {
 			}
 
 			$product = [
+				'price' => $eProduct['price'],
 				'product' => $eProductSelling,
 			];
 

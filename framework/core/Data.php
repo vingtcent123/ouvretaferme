@@ -1567,7 +1567,7 @@ class Element extends ArrayObject {
 				$values[$inputProperty] = $inputValues[$index];
 			}
 		}
-
+		
 		return $this->build(
 			$properties,
 			$values,

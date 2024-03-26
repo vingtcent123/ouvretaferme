@@ -200,8 +200,8 @@ class SaleLib extends SaleCrud {
 			->whereMarketParent(NULL)
 			->sort($search->buildSort([
 				'preparationStatus' => fn($direction) => match($direction) {
-					SORT_ASC => new \Sql('IF(preparationStatus = "'.Sale::CANCELED.'", FALSE, deliveredAt = CURDATE()) DESC, IF(deliveredAt = CURDATE(), '.$sortToday.', '.$sortOtherDay1.') DESC, '.$sortOtherDay2.' DESC, id ASC'),
-					SORT_DESC => new \Sql('IF(preparationStatus = "'.Sale::CANCELED.'", FALSE, deliveredAt = CURDATE()) DESC, IF(deliveredAt = CURDATE(), '.$sortToday.', '.$sortOtherDay1.'), '.$sortOtherDay2.', id DESC')
+					SORT_ASC => new \Sql('IF(preparationStatus = "'.Sale::CANCELED.'", FALSE, deliveredAt = CURDATE()) DESC, IF(deliveredAt = CURDATE(), '.$sortToday.', '.$sortOtherDay1.') DESC, '.$sortOtherDay2.' DESC, deliveredAt ASC, id ASC'),
+					SORT_DESC => new \Sql('IF(preparationStatus = "'.Sale::CANCELED.'", FALSE, deliveredAt = CURDATE()) DESC, IF(deliveredAt = CURDATE(), '.$sortToday.', '.$sortOtherDay1.'), '.$sortOtherDay2.', deliveredAt DESC, id DESC')
 				}
 			]))
 			->getCollection($position, $number);

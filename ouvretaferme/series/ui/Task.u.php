@@ -4645,7 +4645,7 @@ class TaskUi {
 				$d->type = 'float';
 				$d->attributes = [
 					'onrender' => 'this.focus();',
-					'step' => 0.1
+					'step' => 0.001
 				];
 				$d->group = ['wrapper' => 'harvest'];
 				break;

@@ -24,7 +24,7 @@ class ProductLib extends ProductCrud {
 		}
 
 		foreach($cProduct as $eProduct) {
-			$eProduct['product']['privatePrice'] = round($eProduct['product']['privatePrice'] * (1 - $discount / 100), 2);
+			$eProduct['price'] = round($eProduct['price'] * (1 - $discount / 100), 2);
 		}
 
 	}
@@ -51,13 +51,13 @@ class ProductLib extends ProductCrud {
 
 	}
 
-	public static function prepareSeveral(Date $eDate, \Collection $cProductSelling, array $products, array $stocks): \Collection {
+	public static function prepareSeveral(Date $eDate, \Collection $cProductSelling, array $products, array $input): \Collection {
 
 		$eDate->expects(['shop']);
 
 		$cProduct = new \Collection();
 
-		foreach($products as $product) {
+		foreach($products as $index => $product) {
 
 			$product = (int)$product;
 
@@ -65,21 +65,13 @@ class ProductLib extends ProductCrud {
 				continue;
 			}
 
-			if(
-				array_key_exists($product, $stocks) and
-				$stocks[$product] !== ''
-			) {
-				$stock = (float)($stocks[$product]);
-			} else {
-				$stock = NULL;
-			}
-
 			$eProduct = new Product([
 				'date' => $eDate,
 				'shop' => $eDate['shop'],
-				'product' => $cProductSelling->offsetGet($product),
-				'stock' => $stock,
+				'product' => $cProductSelling->offsetGet($product)
 			]);
+
+			$eProduct->buildIndex(['stock', 'price'], $input, $index);
 
 			$cProduct->append($eProduct);
 

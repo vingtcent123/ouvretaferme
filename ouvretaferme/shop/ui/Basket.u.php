@@ -179,7 +179,8 @@ class BasketUi {
 			$h .= '<tbody>';
 				foreach($basket as $productId => $product) {
 
-					$eProductSelling = $cProduct->offsetGet($productId)['product'];
+					$eProduct = $cProduct->offsetGet($productId);
+					$eProductSelling = $eProduct['product'];
 
 					$deleteAttributes = [
 						'data-confirm' => s("Souhaitez-vous réellement supprimer ce produit ?"),
@@ -187,7 +188,7 @@ class BasketUi {
 						'title' => s("Supprimer cet article"),
 					];
 
-					$unitPrice = \util\TextUi::money($eProductSelling['privatePrice']).'&nbsp;/&nbsp;'.\main\UnitUi::getSingular($eProductSelling['unit'], short: TRUE, by: TRUE);
+					$unitPrice = \util\TextUi::money($eProduct['price']).'&nbsp;/&nbsp;'.\main\UnitUi::getSingular($eProductSelling['unit'], short: TRUE, by: TRUE);
 
 					$h .= '<tr>';
 						$h .= '<td class="td-min-content">';
@@ -205,7 +206,7 @@ class BasketUi {
 							$h .= ProductUi::quantityOrder($eDate, $eProductSelling, $cProduct->offsetGet($productId), $product['quantity']);
 						$h .= '</td>';
 						$h .= '<td class="text-end hide-xs-down">'.$unitPrice.'</td>';
-						$h .= '<td class="text-end">'.\util\TextUi::money($eProductSelling['privatePrice'] * $product['quantity']).'</td>';
+						$h .= '<td class="text-end">'.\util\TextUi::money($eProduct['price'] * $product['quantity']).'</td>';
 						$h .= '<td class="hide-xs-down text-center">';
 							$h .= '<a '.attrs($deleteAttributes).'>'.\Asset::icon('trash').'</a>';
 						$h .= '</td>';
@@ -215,7 +216,7 @@ class BasketUi {
 						$updateBasket = TRUE;
 					}
 
-					$total += $eProductSelling['privatePrice'] * $product['quantity'];
+					$total += $eProduct['price'] * $product['quantity'];
 
 				}
 

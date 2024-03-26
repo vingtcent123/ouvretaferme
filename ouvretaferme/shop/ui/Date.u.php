@@ -215,10 +215,11 @@ class DateUi {
 
 			$this->calculateDates($e, $eDateBase);
 
-			// Setter les produits sélectionnés s'ils sont toujours disponibles.
+			// Setter les produits sélectionnés et leur prix s'ils sont toujours disponibles
 			foreach($eDateBase['cProduct'] as $eProduct) {
 				if($cProduct[$eProduct['product']['id']]) {
 					$cProduct[$eProduct['product']['id']]['checked'] = TRUE;
+					$cProduct[$eProduct['product']['id']]['privatePrice'] = $eProduct['price'];
 				}
 			}
 
@@ -360,17 +361,20 @@ class DateUi {
 						'onclick' => 'DateManage.selectProduct(this)'
 					];
 
-					if($eProduct['privatePrice'] === NULL) {
-						$attributes['disabled'] = 'disabled';
-						$attributes['title'] = s("Configurez un prix pour pouvoir proposer ce produit à la vente");
-					} else if($eProduct['checked'] ?? FALSE) {
+					if($eProduct['checked'] ?? FALSE) {
 						$attributes['checked'] = $checked;
 					}
+
+					$eShopProduct = new Product([
+						'product' => $eProduct,
+						'price' => $eProduct['privatePrice'],
+						'stock' => NULL,
+					]);
 
 					$h .= '<div class="date-products-item '.($checked ? 'selected' : '').'">';
 
 						$h .= '<label class="shop-select">';
-							$h .= $form->inputCheckbox('products[]', $eProduct['id'], $attributes);
+							$h .= $form->inputCheckbox('products['.$eProduct['id'].']', $eProduct['id'], $attributes);
 						$h .= '</label>';
 						$h .= '<label class="date-products-item-product" for="'.$attributes['id'].'">';
 							$h .= \selling\ProductUi::getVignette($eProduct, '2rem');
@@ -380,20 +384,15 @@ class DateUi {
 						$h .= '<label class="date-products-item-unit text-end" for="'.$attributes['id'].'">';
 							$h .= \main\UnitUi::getValue($step, $eProduct['unit']);
 						$h .= '</label>';
-						if($eProduct['privatePrice']) {
-							$h .= '<label class="date-products-item-price text-end" for="'.$attributes['id'].'">';
-								$h .= \util\TextUi::money($eProduct['privatePrice']).'&nbsp;/&nbsp;'.\main\UnitUi::getSingular($eProduct['unit'], short: TRUE, by: TRUE);
-							$h .= '</label>';
-							$h .= '<div class="date-products-item-stock '.($checked ? '' : 'hidden').'">';
-								$h .= $form->dynamicField(new Product(['stock' => NULL, 'product' => $eProduct]), 'stock', function($d) use ($eProduct) {
-									$d->name = 'stock['.$eProduct['id'].']';
-								});
-							$h .= '</div>';
-						} else {
-							$h .= '<div class="date-products-item-configure text-end">';
-								$h .= $form->info(s("Configurez un prix pour proposer ce produit à la vente"));
-							$h .= '</div>';
-						}
+						$h .= '<div data-wrapper="price['.$eProduct['id'].']" class="date-products-item-price '.($checked ? '' : 'hidden').'">';
+							$h .= $form->dynamicField($eShopProduct, 'price['.$eProduct['id'].']', function($d) use ($eProduct) {
+							});
+						$h .= '</div>';
+						$h .= '<div data-wrapper="stock['.$eProduct['id'].']" class="date-products-item-stock '.($checked ? '' : 'hidden').'">';
+							$h .= $form->dynamicField($eShopProduct, 'stock', function($d) use ($eProduct) {
+								$d->name = 'stock['.$eProduct['id'].']';
+							});
+						$h .= '</div>';
 
 					$h .= '</div>';
 
@@ -588,7 +587,7 @@ class DateUi {
 				if($eDate->canWrite()) {
 
 					$h .= '<a href="/shop/date:update?id='.$eDate['id'].'" class="dropdown-item">'.s("Paramétrer cette date").'</a>';
-					$h .= '<a href="/shop/date:create?shop='.$eShop['id'].'&farm='.$eDate['farm']['id'].'&date='.$eDate['id'].'" class="dropdown-item">'.s("Copier cette date").'</a>';
+					$h .= '<a href="/shop/date:create?shop='.$eShop['id'].'&farm='.$eDate['farm']['id'].'&date='.$eDate['id'].'" class="dropdown-item">'.s("Créer une nouvelle date à partir de celle-ci").'</a>';
 
 					$h .= '<div class="dropdown-divider"></div>';
 					$h .= match($eDate['status']) {

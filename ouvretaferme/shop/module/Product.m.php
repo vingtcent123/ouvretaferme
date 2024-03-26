@@ -40,11 +40,12 @@ class ProductModel extends \ModuleModel {
 			'shop' => ['element32', 'shop\Shop', 'cast' => 'element'],
 			'date' => ['element32', 'shop\Date', 'cast' => 'element'],
 			'product' => ['element32', 'selling\Product', 'cast' => 'element'],
-			'stock' => ['float32', 'null' => TRUE, 'cast' => 'float'],
+			'price' => ['decimal', 'digits' => 8, 'decimal' => 2, 'min' => 0.0, 'max' => NULL, 'cast' => 'float'],
+			'stock' => ['float32', 'min' => 0.0, 'max' => NULL, 'null' => TRUE, 'cast' => 'float'],
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'shop', 'date', 'product', 'stock'
+			'id', 'shop', 'date', 'product', 'price', 'stock'
 		]);
 
 		$this->propertiesToModule += [
@@ -85,6 +86,10 @@ class ProductModel extends \ModuleModel {
 
 	public function whereProduct(...$data): ProductModel {
 		return $this->where('product', ...$data);
+	}
+
+	public function wherePrice(...$data): ProductModel {
+		return $this->where('price', ...$data);
 	}
 
 	public function whereStock(...$data): ProductModel {

@@ -117,9 +117,9 @@ class SaleLib {
 
 		// Création des produits
 		$cItem = new \Collection();
-		$price = 0.0;
+		$total = 0.0;
 
-		foreach($eSale['basket'] as ['product' => $eProduct, 'quantity' => $quantity]) {
+		foreach($eSale['basket'] as ['price' => $price, 'product' => $eProduct, 'quantity' => $quantity]) {
 
 			$eItem = new \selling\Item([
 				'sale' => $eSale,
@@ -131,24 +131,24 @@ class SaleLib {
 				'packaging' => NULL,
 				'locked' => \selling\Item::PRICE,
 				'unit' => $eProduct['unit'],
-				'unitPrice' => $eProduct['privatePrice'],
+				'unitPrice' => $price,
 				'number' => $quantity,
 				'vatRate' => \Setting::get('selling\vatRates')[$eProduct['vat']],
 			]);
 
-			$price += $quantity * $eProduct['privatePrice'];
+			$total += $quantity * $price;
 
 			$cItem->append($eItem);
 
 		}
 
-		$price = round($price, 2);
+		$total = round($total, 2);
 
-		if(self::applyShopOrderMin($eSale, $price) === FALSE) {
+		if(self::applyShopOrderMin($eSale, $total) === FALSE) {
 			return new \selling\Sale();
 		}
 
-		self::applyShopShipping($eSale, $price);
+		self::applyShopShipping($eSale, $total);
 
 		\selling\Sale::model()->beginTransaction();
 
@@ -228,9 +228,9 @@ class SaleLib {
 
 		// Ajout des produits
 		$cItem = new \Collection();
-		$price = 0.0;
+		$total = 0.0;
 
-		foreach($eSale['basket'] as ['product' => $eProduct, 'quantity' => $quantity]) {
+		foreach($eSale['basket'] as ['price' => $price, 'product' => $eProduct, 'quantity' => $quantity]) {
 
 			$eItem = new \selling\Item([
 				'sale' => $eSale,
@@ -241,23 +241,23 @@ class SaleLib {
 				'quality' => $eProduct['quality'],
 				'packaging' => NULL,
 				'unit' => $eProduct['unit'],
-				'unitPrice' => $eProduct['privatePrice'],
+				'unitPrice' => $price,
 				'number' => $quantity,
 				'vatRate' => \Setting::get('selling\vatRates')[$eProduct['vat']],
 				'locked' => \selling\Item::PRICE
 			]);
 
-			$price += $quantity * $eProduct['privatePrice'];
+			$total += $quantity * $price;
 
 			$cItem->append($eItem);
 
 		}
 
-		if(self::applyShopOrderMin($eSale, $price) === FALSE) {
+		if(self::applyShopOrderMin($eSale, $total) === FALSE) {
 			return;
 		}
 
-		self::applyShopShipping($eSale, $price);
+		self::applyShopShipping($eSale, $total);
 
 		\selling\Sale::model()->beginTransaction();
 

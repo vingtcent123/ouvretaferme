@@ -43,10 +43,13 @@ class TaskLib extends TaskCrud {
 			// On ne peut pas changer l'action si c'est une récolte
 			if($e['action']['fqn'] === ACTION_RECOLTE) {
 				array_delete($properties, 'action');
-			}
+			} else {
 
-			if($e['series']->notEmpty()) {
-				$properties[] = 'cultivation';
+				// On ne peut changer de culture que si ce n'est pas une récolte
+				if($e['series']->notEmpty()) {
+					$properties[] = 'cultivation';
+				}
+
 			}
 
 			$properties[] = 'variety';

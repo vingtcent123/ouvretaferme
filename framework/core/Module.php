@@ -648,7 +648,10 @@ abstract class ModuleModel {
 				if(
 					$preserveEmptyStrings === FALSE and
 					$isProperty and
-					$this->isPropertyNull($property) and
+					(
+						$this->isPropertyNull($property) or
+						in_array($cast, ['int', 'float']) // Un champ laissé vide pour un nombre est toujours considéré comme NULL et non égal à zéro
+					) and
 					$value === ''
 				) {
 					$value = NULL;

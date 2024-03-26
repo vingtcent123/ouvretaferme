@@ -45,7 +45,7 @@ class FlowLib extends FlowCrud {
 			])
 			->select($properties)
 			->sort([
-				'weekStart' => SORT_ASC,
+				new \Sql('IF(weekOnly IS NOT NULL, CAST(weekOnly AS SIGNED) + CAST(yearOnly AS SIGNED) * 100, CAST(weekStart AS SIGNED) + CAST(yearStart AS SIGNED) * 100)'),
 				'id' => SORT_ASC
 			])
 			->whereSequence($eSequence)

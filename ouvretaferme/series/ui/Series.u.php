@@ -134,7 +134,7 @@ class SeriesUi {
 								$h .= ' / '.$eSeries->quick('areaTarget', s("Objectif de {areaTarget} m²", $eSeries));
 							}
 							if($eSeries['area']) {
-								$h .= ' / '.s("Actuellement {area} mL", $eSeries);
+								$h .= ' / '.s("Actuellement {area} m²", $eSeries);
 							}
 							break;
 

@@ -21,6 +21,10 @@
 	}))
 	->get('update', function($data) {
 
+		if($data->source === 'series') {
+			\series\SeriesLib::fillTimeline($data->e);
+		}
+
 		$data->e['farm'] = \farm\FarmLib::getById($data->e['farm']);
 
 		// On récupère les emplacements

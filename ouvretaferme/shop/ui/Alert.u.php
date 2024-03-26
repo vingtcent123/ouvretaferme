@@ -14,6 +14,9 @@ class AlertUi {
 
 			'Point::name.duplicate' => s("Une point de retrait existe déjà avec le même nom, merci de choisir un autre nom."),
 
+			'Product::stock.check' => s("Vous devez indiquer un stock disponible positif ou laisser ce champ vide."),
+			'Product::price.check' => s("Vous devez indiquer un prix valable."),
+
 			'Sale::update.payment' => s("Vous ne pouvez pas modifier votre panier alors qu'un paiement est en cours."),
 			'Sale::terms' => s("Veuillez accepter les conditions générales de vente pour continuer."),
 

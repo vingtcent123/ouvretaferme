@@ -72,13 +72,13 @@ class DateManage {
 	static selectProduct(input) {
 
 		const parent = input.firstParent('.date-products-item');
-		const stock = parent.qs('.date-products-item-stock');
+		const fields = parent.qsa('.date-products-item-stock, .date-products-item-price');
 
 		if(input.checked === false) {
-			stock.classList.add('hidden');
+			fields.forEach(field => field.classList.add('hidden'));
 			parent.classList.remove('selected');
 		} else {
-			stock.classList.remove('hidden');
+			fields.forEach(field => field.classList.remove('hidden'));
 			parent.classList.add('selected');
 		}
 

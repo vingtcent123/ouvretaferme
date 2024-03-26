@@ -34,5 +34,5 @@
 	->doDelete(function($data) {
 		throw new ReloadAction('shop', 'Product::deleted');
 	})
-	->quick(['stock']);
+	->quick(['stock', 'price']);
 ?>

@@ -33,7 +33,7 @@ div.shop-write-fqn label {
 	display: grid;
 	align-items: center;
 	grid-column-gap: 1rem;
-	grid-template-columns: auto 1fr auto 6rem 10rem;
+	grid-template-columns: auto 1fr auto 12rem 10rem;
 	padding: 0;
 	border-bottom: 1px dashed #ddd;
 }
@@ -84,14 +84,6 @@ div.shop-write-fqn label {
 	background-color: var(--background);
 }
 
-.date-products-item-configure {
-	grid-column: span 2;
-}
-
-.date-products-item-configure > div {
-	max-width: 15rem;
-}
-
 @media (max-width: 991px) {
 
 	.date-products-item {
@@ -117,9 +109,7 @@ div.shop-write-fqn label {
 	font-weight: bold;
 }
 
-.date-products-item-configure-info {
-	grid-column: span 4;
-}
+.date-products-item-price.hidden,
 .date-products-item-stock.hidden {
 	opacity: 0.25;
 	pointer-events: none;

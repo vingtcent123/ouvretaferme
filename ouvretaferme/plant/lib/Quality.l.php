@@ -63,7 +63,7 @@ class QualityLib extends QualityCrud {
 		$e->expects(['id']);
 
 		if(\series\Task::model()
-				->whereQuality($e)
+				->whereHarvestQuality($e)
 				->exists()) {
 			Quality::fail('deleteUsed');
 			return;

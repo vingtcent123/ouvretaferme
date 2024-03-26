@@ -73,13 +73,17 @@
 			throw new NotExpectedAction();
 		}
 
+		$fw = new FailWatch();
+
 		$products = POST('products', 'array', []);
-		$stocks = POST('stock', 'array', []);
 
 		$cProductSelling = \selling\ProductLib::getForShop($data->eFarm);
-		$data->cProduct = \shop\ProductLib::prepareSeveral($data->e, $cProductSelling, $products, $stocks);
+		$data->cProduct = \shop\ProductLib::prepareSeveral($data->e, $cProductSelling, $products, $_POST);
+
+		$fw->validate();
 
 		\shop\ProductLib::addSeveral($data->cProduct);
+
 
 		throw new ReloadAction('shop', 'Products::created');
 
