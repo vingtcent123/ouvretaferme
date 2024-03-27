@@ -45,16 +45,17 @@ class SaleLib extends SaleCrud {
 		};
 
 		$eSale = \selling\SaleLib::getById($id);
+		$eSale['document'] = '123';
 		$eSale['farm'] = $eFarm;
 		$eSale['hasVat'] = $eFarm['selling']['hasVat'];
 		$eSale['customer']['legalName'] = match($type) {
-			Customer::PRO => 'Magasin BioZoop',
-			Customer::PRIVATE => 'Jules Humus'
+			Customer::PRO => 'Magasin ABC',
+			Customer::PRIVATE => 'A. Bécé'
 		};
-		$eSale['customer']['invoiceStreet1'] = '123 rue des Ours';
+		$eSale['customer']['invoiceStreet1'] = '[Addresse]';
 		$eSale['customer']['invoiceStreet2'] = NULL;
-		$eSale['customer']['invoicePostcode'] = '63000';
-		$eSale['customer']['invoiceCity'] = 'Clermont-Ferrand';
+		$eSale['customer']['invoicePostcode'] = '[Code postal]';
+		$eSale['customer']['invoiceCity'] = '[Ville]';
 		$eSale['deliveryStreet1'] = $eSale['customer']['invoiceStreet1'];
 		$eSale['deliveryStreet2'] = $eSale['customer']['invoiceStreet2'];
 		$eSale['deliveryPostcode'] = $eSale['customer']['invoicePostcode'];
@@ -64,13 +65,18 @@ class SaleLib extends SaleCrud {
 		$eSale['orderFormPaymentCondition'] = $eFarm['selling']['orderFormPaymentCondition'];
 		$eSale['invoice']['taxes'] = \selling\Invoice::INCLUDING;
 		$eSale['invoice']['hasVat'] = $eFarm['selling']['hasVat'];
-		$eSale['invoice']['document'] = '287';
+		$eSale['invoice']['document'] = '123';
 		$eSale['invoice']['priceExcludingVat'] = $eSale['priceExcludingVat'];
 		$eSale['invoice']['priceIncludingVat'] = $eSale['priceIncludingVat'];
 		$eSale['invoice']['date'] = currentDate();
 		$eSale['invoice']['paymentCondition'] = $eFarm['selling']['invoicePaymentCondition'];
 		$eSale['invoice']['customer'] = $eSale['customer'];
 		$eSale['cItem'] = self::getItems($eSale);
+
+		$position = 0;
+		foreach($eSale['cItem'] as $eItem) {
+			$eItem['name'] = 'Produit '.(++$position);
+		}
 
 		if($shop) {
 			$eSale['shop'] = new \shop\Shop([
@@ -82,8 +88,8 @@ class SaleLib extends SaleCrud {
 			$eSale['shopPoints'] = [
 				\shop\Point::PLACE => new \shop\Point([
 					'type' => \shop\Point::PLACE,
-					'name' => s("À la ferme"),
-					'description' => s("Retrait des commandes de 16:00 à 19:00"),
+					'name' => s("[Nom du point de retrait]"),
+					'description' => s("Retrait des commandes de HH:MM à HH:MM"),
 					'address' => $eSale['deliveryStreet1'],
 					'place' => $eSale['deliveryCity']
 				]),
