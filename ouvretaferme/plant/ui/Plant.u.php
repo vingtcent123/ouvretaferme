@@ -214,7 +214,6 @@ class PlantUi {
 					'farm' => $eFarm
 				]), 'id', function($d) use ($search) {
 					$d->name = 'plantId';
-					$d->autocompleteDefault = $search->get('id');
 					$d->attributes = [
 						'data-autocomplete-select' => 'submit'
 					];
