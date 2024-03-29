@@ -382,7 +382,7 @@ class PlotLib extends PlotCrud {
 					->whereSeason('IN', $withSeries)
 					->delegateCollection('bed', callback: function($cPlace) {
 
-						// Tri des séries par par saison puis date de première tâche
+						// Tri des séries par saison puis date de première tâche
 						$cPlace->setColumn('firstTaskAt', function($ePlace) {
 
 							if(
