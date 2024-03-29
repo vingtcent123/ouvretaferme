@@ -4565,28 +4565,34 @@ class TaskUi {
 									$h .= '<a '.attr('onclick', 'Task.changePlanned(this, "unplanned")').'>'.s("Non planifié").'</a>';
 								$h .= '</span>';
 							}
-							$h .= '<span class="task-write-repeat">';
-								$h .= ' | '.\Asset::icon('caret-down-fill').' <a '.attr('onclick', 'Task.changeRepeat(this, true)').'>'.s("Répéter").'</a>';
-							$h .= '</span>';
-							$h .= '<span class="task-write-norepeat hide">';
-								$h .= ' | '.\Asset::icon('caret-up-fill').' <a '.attr('onclick', 'Task.changeRepeat(this, false)').'>'.s("Une seule fois").'</a>';
-							$h .= '</span>';
+							if($e->exists() === FALSE) {
+								$h .= '<span class="task-write-repeat">';
+									$h .= ' | '.\Asset::icon('caret-down-fill').' <a '.attr('onclick', 'Task.changeRepeat(this, true)').'>'.s("Répéter").'</a>';
+								$h .= '</span>';
+								$h .= '<span class="task-write-norepeat hide">';
+									$h .= ' | '.\Asset::icon('caret-up-fill').' <a '.attr('onclick', 'Task.changeRepeat(this, false)').'>'.s("Une seule fois").'</a>';
+								$h .= '</span>';
+							}
 						$h .= '</div>';
 
-						$eRepeat = new Repeat();
+						if($e->exists() === FALSE) {
 
-						$h .= '<div class="task-write-repeat-field hide">';
-							$h .= '<h5>'.s("Répéter l'intervention").'</h5>';
-							$h .= $form->dynamicField($eRepeat, 'frequency', function($d) {
-								$d->attributes['callbackRadioAttributes'] = fn() => ['disabled'];
-							});
-							$h .= '<div class="mt-1">';
-								$h .= '<h5>'.s("Jusqu'à :").'</h5>';
-								$h .= $form->dynamicField($eRepeat, 'stop', function($d) {
-									$d->attributes = ['disabled'];
+							$eRepeat = new Repeat();
+
+							$h .= '<div class="task-write-repeat-field hide">';
+								$h .= '<h5>'.s("Répéter l'intervention").'</h5>';
+								$h .= $form->dynamicField($eRepeat, 'frequency', function($d) {
+									$d->attributes['callbackRadioAttributes'] = fn() => ['disabled'];
 								});
+								$h .= '<div class="mt-1">';
+									$h .= '<h5>'.s("Jusqu'à :").'</h5>';
+									$h .= $form->dynamicField($eRepeat, 'stop', function($d) {
+										$d->attributes = ['disabled'];
+									});
+								$h .= '</div>';
 							$h .= '</div>';
-						$h .= '</div>';
+
+						}
 
 					$h .= '</div>';
 
