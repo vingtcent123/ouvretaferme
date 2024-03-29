@@ -90,6 +90,7 @@ class InvoiceLib extends InvoiceCrud {
 			$e['taxes'] = $e['cSale']->first()['taxes'];
 			$e['hasVat'] = $e['cSale']->first()['hasVat'];
 			$e['organic'] = FALSE;
+			$e['conversion'] = FALSE;
 			$e['createdAt'] = Invoice::model()->now(); // Besoin de la date pour pouvoir envoyer le PDF par e-mail dans la foulée
 
 			$totalVat = 0.0;
@@ -105,6 +106,10 @@ class InvoiceLib extends InvoiceCrud {
 
 				if($eSale['organic']) {
 					$e['organic'] = TRUE;
+				}
+
+				if($eSale['conversion']) {
+					$e['conversion'] = TRUE;
 				}
 
 				// Calcul de la somme de TVA sur les différentes ventes

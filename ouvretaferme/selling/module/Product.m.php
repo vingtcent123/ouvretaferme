@@ -18,6 +18,7 @@ abstract class ProductElement extends \Element {
 
 	const ORGANIC = 'organic';
 	const NATURE_PROGRES = 'nature-progres';
+	const CONVERSION = 'conversion';
 
 	const ACTIVE = 'active';
 	const INACTIVE = 'inactive';
@@ -67,7 +68,7 @@ class ProductModel extends \ModuleModel {
 			'proPrice' => ['decimal', 'digits' => 8, 'decimal' => 2, 'null' => TRUE, 'cast' => 'float'],
 			'proPackaging' => ['float32', 'min' => 0.01, 'max' => NULL, 'null' => TRUE, 'cast' => 'float'],
 			'vat' => ['int8', 'min' => 1, 'max' => NULL, 'cast' => 'int'],
-			'quality' => ['enum', [\selling\Product::ORGANIC, \selling\Product::NATURE_PROGRES], 'null' => TRUE, 'cast' => 'enum'],
+			'quality' => ['enum', [\selling\Product::ORGANIC, \selling\Product::NATURE_PROGRES, \selling\Product::CONVERSION], 'null' => TRUE, 'cast' => 'enum'],
 			'createdAt' => ['datetime', 'cast' => 'string'],
 			'status' => ['enum', [\selling\Product::ACTIVE, \selling\Product::INACTIVE], 'cast' => 'enum'],
 		]);

@@ -677,6 +677,8 @@ class SaleLib extends SaleCrud {
 
 			if($eItem['quality'] === \farm\Farm::ORGANIC) {
 				$newValues['organic'] = TRUE;
+			} else if($eItem['quality'] === \farm\Farm::CONVERSION) {
+				$newValues['conversion'] = TRUE;
 			}
 
 		}

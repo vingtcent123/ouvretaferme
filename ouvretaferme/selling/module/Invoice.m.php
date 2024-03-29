@@ -48,6 +48,7 @@ class InvoiceModel extends \ModuleModel {
 			'sales' => ['json', 'cast' => 'array'],
 			'taxes' => ['enum', [\selling\Invoice::INCLUDING, \selling\Invoice::EXCLUDING], 'cast' => 'enum'],
 			'organic' => ['bool', 'cast' => 'bool'],
+			'conversion' => ['bool', 'cast' => 'bool'],
 			'description' => ['text16', 'null' => TRUE, 'cast' => 'string'],
 			'content' => ['element32', 'selling\PdfContent', 'null' => TRUE, 'cast' => 'element'],
 			'farm' => ['element32', 'farm\Farm', 'cast' => 'element'],
@@ -64,7 +65,7 @@ class InvoiceModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'document', 'customer', 'sales', 'taxes', 'organic', 'description', 'content', 'farm', 'hasVat', 'vatByRate', 'vat', 'priceExcludingVat', 'priceIncludingVat', 'date', 'paymentStatus', 'paymentCondition', 'emailedAt', 'createdAt'
+			'id', 'document', 'customer', 'sales', 'taxes', 'organic', 'conversion', 'description', 'content', 'farm', 'hasVat', 'vatByRate', 'vat', 'priceExcludingVat', 'priceIncludingVat', 'date', 'paymentStatus', 'paymentCondition', 'emailedAt', 'createdAt'
 		]);
 
 		$this->propertiesToModule += [
@@ -170,6 +171,10 @@ class InvoiceModel extends \ModuleModel {
 
 	public function whereOrganic(...$data): InvoiceModel {
 		return $this->where('organic', ...$data);
+	}
+
+	public function whereConversion(...$data): InvoiceModel {
+		return $this->where('conversion', ...$data);
 	}
 
 	public function whereDescription(...$data): InvoiceModel {

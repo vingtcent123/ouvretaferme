@@ -457,11 +457,25 @@ class PdfUi {
 		$h = '<tr class="pdf-document-item-total">';
 			$h .= '<td class="pdf-document-item-quality">';
 
-				if($e['organic']) {
+				if($e['organic'] or $e['conversion']) {
+
+					$h .= '<div class="pdf-document-quality">';
+						$h .= \Asset::image('main', 'organic.png', ['style' => 'width: 5rem; margin-right: 1rem']);
+						$h .= '<div>'.s("Produits issus de l’agriculture biologique ou en conversion vers l'agriculture biologique certifiés par {value}", '<span style="white-space: nowrap">'.$eFarm['selling']['organicCertifier'].'</span>').'</div>';
+					$h .= '</div>';
+
+				} else if($e['organic']) {
 
 					$h .= '<div class="pdf-document-quality">';
 						$h .= \Asset::image('main', 'organic.png', ['style' => 'width: 5rem; margin-right: 1rem']);
 						$h .= '<div>'.s("Produits issus de l’agriculture biologique certifiés par {value}", '<span style="white-space: nowrap">'.$eFarm['selling']['organicCertifier'].'</span>').'</div>';
+					$h .= '</div>';
+
+				} else if($e['conversion']) {
+
+					$h .= '<div class="pdf-document-quality">';
+						$h .= \Asset::image('main', 'organic.png', ['style' => 'width: 5rem; margin-right: 1rem']);
+						$h .= '<div>'.s("Produits en conversion vers l’agriculture biologique certifiés par {value}", '<span style="white-space: nowrap">'.$eFarm['selling']['organicCertifier'].'</span>').'</div>';
 					$h .= '</div>';
 
 				}

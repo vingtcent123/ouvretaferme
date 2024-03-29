@@ -100,6 +100,7 @@ Invoice:
   sales: json
   taxes: enum(INCLUDING, EXCLUDING)
   organic: bool
+  conversion: bool
   description: ?text16
   content: ?selling\PdfContent
   farm: farm\Farm
@@ -130,7 +131,7 @@ Item:
   shop: ?shop\Shop
   shopDate: ?shop\Date
   product: ?selling\Product
-  quality: ?enum(ORGANIC, NATURE_PROGRES)
+  quality: ?enum(ORGANIC, NATURE_PROGRES, CONVERSION)
   parent: ?selling\Item
   description: ?text8(1, null)
   packaging: ?float32(0.01, null)
@@ -209,7 +210,7 @@ Product:
   proPrice: ?decimal(8, 2)
   proPackaging: ?float32(0.01, null)
   vat: int8(1, null)
-  quality: ?enum(ORGANIC, NATURE_PROGRES)
+  quality: ?enum(ORGANIC, NATURE_PROGRES, CONVERSION)
   createdAt: datetime = SPECIAL(now)
   status: enum(ACTIVE, INACTIVE) = ACTIVE
   INDEX: [
@@ -224,6 +225,7 @@ Sale:
   from: enum(USER, SHOP)
   taxes: enum(INCLUDING, EXCLUDING)
   organic: bool = FALSE
+  conversion: bool = FALSE
   type: enum(PRIVATE, PRO)
   discount: int8(0, 100) = 0
   items: int16(0, null) = 0

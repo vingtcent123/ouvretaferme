@@ -70,6 +70,7 @@ class SaleModel extends \ModuleModel {
 			'from' => ['enum', [\selling\Sale::USER, \selling\Sale::SHOP], 'cast' => 'enum'],
 			'taxes' => ['enum', [\selling\Sale::INCLUDING, \selling\Sale::EXCLUDING], 'cast' => 'enum'],
 			'organic' => ['bool', 'cast' => 'bool'],
+			'conversion' => ['bool', 'cast' => 'bool'],
 			'type' => ['enum', [\selling\Sale::PRIVATE, \selling\Sale::PRO], 'cast' => 'enum'],
 			'discount' => ['int8', 'min' => 0, 'max' => 100, 'cast' => 'int'],
 			'items' => ['int16', 'min' => 0, 'max' => NULL, 'cast' => 'int'],
@@ -106,7 +107,7 @@ class SaleModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'document', 'farm', 'customer', 'from', 'taxes', 'organic', 'type', 'discount', 'items', 'hasVat', 'vat', 'vatByRate', 'priceExcludingVat', 'priceIncludingVat', 'shippingVatRate', 'shipping', 'shippingExcludingVat', 'preparationStatus', 'paymentStatus', 'paymentMethod', 'market', 'marketSales', 'marketParent', 'orderFormValidUntil', 'orderFormPaymentCondition', 'invoice', 'shop', 'shopDate', 'shopUpdated', 'shopPoint', 'deliveryStreet1', 'deliveryStreet2', 'deliveryPostcode', 'deliveryCity', 'comment', 'stats', 'createdAt', 'createdBy', 'deliveredAt'
+			'id', 'document', 'farm', 'customer', 'from', 'taxes', 'organic', 'conversion', 'type', 'discount', 'items', 'hasVat', 'vat', 'vatByRate', 'priceExcludingVat', 'priceIncludingVat', 'shippingVatRate', 'shipping', 'shippingExcludingVat', 'preparationStatus', 'paymentStatus', 'paymentMethod', 'market', 'marketSales', 'marketParent', 'orderFormValidUntil', 'orderFormPaymentCondition', 'invoice', 'shop', 'shopDate', 'shopUpdated', 'shopPoint', 'deliveryStreet1', 'deliveryStreet2', 'deliveryPostcode', 'deliveryCity', 'comment', 'stats', 'createdAt', 'createdBy', 'deliveredAt'
 		]);
 
 		$this->propertiesToModule += [
@@ -137,6 +138,9 @@ class SaleModel extends \ModuleModel {
 		switch($property) {
 
 			case 'organic' :
+				return FALSE;
+
+			case 'conversion' :
 				return FALSE;
 
 			case 'discount' :
@@ -253,6 +257,10 @@ class SaleModel extends \ModuleModel {
 
 	public function whereOrganic(...$data): SaleModel {
 		return $this->where('organic', ...$data);
+	}
+
+	public function whereConversion(...$data): SaleModel {
+		return $this->where('conversion', ...$data);
 	}
 
 	public function whereType(...$data): SaleModel {

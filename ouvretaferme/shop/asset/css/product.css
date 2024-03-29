@@ -89,6 +89,10 @@
 	color: #bbb;
 }
 
+.shop-header-image-quality {
+	color: white;
+}
+
 .shop-header-image-quality .media-rectangle-view {
 	background-position: center bottom;
 }

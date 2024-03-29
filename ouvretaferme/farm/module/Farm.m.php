@@ -9,6 +9,7 @@ abstract class FarmElement extends \Element {
 
 	const ORGANIC = 'organic';
 	const NATURE_PROGRES = 'nature-progres';
+	const CONVERSION = 'conversion';
 
 	const ALL = 'all';
 	const PRIVATE = 'private';
@@ -60,7 +61,7 @@ class FarmModel extends \ModuleModel {
 			'seasonLast' => ['int16', 'min' => 0, 'max' => NULL, 'cast' => 'int'],
 			'rotationYears' => ['int8', 'min' => 2, 'max' => 5, 'cast' => 'int'],
 			'rotationExclude' => ['json', 'cast' => 'array'],
-			'quality' => ['enum', [\farm\Farm::ORGANIC, \farm\Farm::NATURE_PROGRES], 'null' => TRUE, 'cast' => 'enum'],
+			'quality' => ['enum', [\farm\Farm::ORGANIC, \farm\Farm::NATURE_PROGRES, \farm\Farm::CONVERSION], 'null' => TRUE, 'cast' => 'enum'],
 			'defaultBedLength' => ['int16', 'min' => 1, 'max' => NULL, 'null' => TRUE, 'cast' => 'int'],
 			'defaultBedWidth' => ['int16', 'min' => 1, 'max' => NULL, 'null' => TRUE, 'cast' => 'int'],
 			'defaultAlleyWidth' => ['int16', 'min' => 1, 'max' => NULL, 'null' => TRUE, 'cast' => 'int'],

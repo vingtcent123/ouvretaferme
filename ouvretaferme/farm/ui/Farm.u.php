@@ -18,12 +18,17 @@ class FarmUi {
 		return [
 			Farm::ORGANIC => $short ? s("AB") : s("Agriculture biologique"),
 			Farm::NATURE_PROGRES => $short ? s("N&P") : s("Nature & Progrès"),
+			Farm::CONVERSION => $short ? s("En conversion") : s("En conversion vers l'agriculture biologique"),
 		];
 	}
 
 	public static function getQualityLogo(string $quality, string $size): string {
 
-		return '<div class="media-rectangle-view" style="'.\media\MediaUi::getSquareCss($size).'; background-image: url('.\Asset::path('farm', $quality.'.png').');"></div>';
+		if($quality === Farm::CONVERSION) {
+			return s("En conversion");
+		} else {
+			return '<div class="media-rectangle-view" style="'.\media\MediaUi::getSquareCss($size).'; background-image: url('.\Asset::path('farm', $quality.'.png').');"></div>';
+		}
 
 	}
 

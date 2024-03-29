@@ -12,6 +12,7 @@ abstract class ItemElement extends \Element {
 
 	const ORGANIC = 'organic';
 	const NATURE_PROGRES = 'nature-progres';
+	const CONVERSION = 'conversion';
 
 	const KG = 'kg';
 	const GRAM = 'gram';
@@ -64,7 +65,7 @@ class ItemModel extends \ModuleModel {
 			'shop' => ['element32', 'shop\Shop', 'null' => TRUE, 'cast' => 'element'],
 			'shopDate' => ['element32', 'shop\Date', 'null' => TRUE, 'cast' => 'element'],
 			'product' => ['element32', 'selling\Product', 'null' => TRUE, 'cast' => 'element'],
-			'quality' => ['enum', [\selling\Item::ORGANIC, \selling\Item::NATURE_PROGRES], 'null' => TRUE, 'cast' => 'enum'],
+			'quality' => ['enum', [\selling\Item::ORGANIC, \selling\Item::NATURE_PROGRES, \selling\Item::CONVERSION], 'null' => TRUE, 'cast' => 'enum'],
 			'parent' => ['element32', 'selling\Item', 'null' => TRUE, 'cast' => 'element'],
 			'description' => ['text8', 'min' => 1, 'max' => NULL, 'null' => TRUE, 'cast' => 'string'],
 			'packaging' => ['float32', 'min' => 0.01, 'max' => NULL, 'null' => TRUE, 'cast' => 'float'],
