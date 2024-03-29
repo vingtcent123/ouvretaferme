@@ -159,7 +159,7 @@ class MarketTemplate extends BaseTemplate {
 				$h .= Asset::icon('check');
 			$h .= '</span>';
 
-		} else if($this->data->ccSale->offsetExists(\selling\Sale::DRAFT)) {
+		} else if($this->data->ccSale[\selling\Sale::DRAFT]->notEmpty()) {
 
 			$h .= '<a class="market-top-close market-top-close-disabled" title="'.s("Clôturer ce marché").'" data-alert="'.s("Le marché pourra être clôturé lorsqu'il n'y aura plus de vente en cours !").'">';
 				$h .= Asset::icon('check-circle-fill');
@@ -167,7 +167,7 @@ class MarketTemplate extends BaseTemplate {
 
 		} else {
 
-			$h .= '<a data-ajax="/selling/market:doClose" post-id="'.$eSale['id'].'" class="market-top-close disabled" title="'.s("Clôturer ce marché").'" data-confirm="'.s("Voulez-vous vraiment clôturer ce marché ? Vous ne pourrez plus saisir de nouvelles ventes et les éventuelles ventes en cours seront annulées.").'">';
+			$h .= '<a data-ajax="/selling/market:doClose" post-id="'.$eSale['id'].'" class="market-top-close disabled" title="'.s("Clôturer ce marché").'" data-confirm="'.s("Voulez-vous vraiment clôturer ce marché ? Vous ne pourrez plus saisir de nouvelles ventes.").'">';
 				$h .= Asset::icon('check-circle-fill');
 			$h .= '</a>';
 

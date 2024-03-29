@@ -1091,10 +1091,17 @@ class SaleUi {
 
 		if(
 			$eSale->isMarket() and
-			$eSale->isMarketPreparing() === FALSE and
 			$eSale->canWrite()
 		) {
-			$primaryList .= ' <a href="'.SaleUi::urlMarket($eSale).'" class="dropdown-item">'.s("Ouvrir l'interface de vente").'</a>';
+
+			if($eSale->isMarketPreparing() === FALSE) {
+				$primaryList .= ' <a href="'.SaleUi::urlMarket($eSale).'" class="dropdown-item">'.s("Ouvrir l'interface de vente").'</a>';
+			}
+
+			if($eSale->isMarketClosed()) {
+				$primaryList = '<a data-ajax="/selling/sale:doUpdatePreparationStatus" post-id="'.$eSale['id'].'" post-preparation-status="'.Sale::SELLING.'" class="dropdown-item">'.s("Réouvrir le marché").'</a>';
+			}
+
 		}
 
 		if($eSale->canUpdate()) {

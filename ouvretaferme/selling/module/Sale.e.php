@@ -521,7 +521,7 @@ class Sale extends SaleElement {
 				return match($preparationStatus) {
 					Sale::DRAFT => in_array($this['oldStatus'], $this['marketParent']->notEmpty() ? [Sale::CANCELED, Sale::DELIVERED] : [Sale::CONFIRMED, Sale::PREPARED, Sale::SELLING]),
 					Sale::CONFIRMED => in_array($this['oldStatus'], $this['marketParent']->notEmpty() ? [] : [Sale::BASKET, Sale::DRAFT, Sale::PREPARED, Sale::DELIVERED, Sale::SELLING, Sale::CANCELED]),
-					Sale::SELLING => in_array($this['oldStatus'], $this['market'] ? [Sale::CONFIRMED] : []),
+					Sale::SELLING => in_array($this['oldStatus'], $this['market'] ? [Sale::CONFIRMED, Sale::DELIVERED] : []),
 					Sale::PREPARED => in_array($this['oldStatus'], $this['marketParent']->notEmpty() ? [] : [Sale::CONFIRMED]),
 					Sale::CANCELED => in_array($this['oldStatus'], $this['marketParent']->notEmpty() ? [Sale::DRAFT, Sale::DELIVERED] : [Sale::BASKET, Sale::CONFIRMED, Sale::PREPARED, Sale::DELIVERED, Sale::SELLING]),
 					Sale::DELIVERED => in_array($this['oldStatus'], $this['marketParent']->notEmpty() ? [Sale::DRAFT] : [Sale::CONFIRMED, Sale::PREPARED]),
