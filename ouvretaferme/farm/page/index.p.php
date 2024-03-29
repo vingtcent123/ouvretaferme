@@ -543,7 +543,7 @@
 
 		\map\GreenhouseLib::putFromZone($data->cZone);
 
-		\map\PlotLib::putFromZoneWithSeries($data->eFarm, $data->cZone, $data->season, $data->selectedSeasons);
+		\map\PlotLib::putFromZoneWithSeries($data->eFarm, $data->cZone, $data->season, $data->selectedSeasons, onlySeries: TRUE);
 
 		$data->search = new Search([
 			'cFamily' => \plant\FamilyLib::getList(),
