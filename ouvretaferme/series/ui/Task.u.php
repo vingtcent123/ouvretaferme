@@ -2581,8 +2581,6 @@ class TaskUi {
 				continue;
 			}
 
-			if($eTask['plant']->empty()) ;
-
 			$ePlant = $eTask['plant'];
 			$eSeries = $eTask['series'];
 

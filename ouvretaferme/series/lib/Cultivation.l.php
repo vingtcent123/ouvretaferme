@@ -1150,14 +1150,16 @@ class CultivationLib extends CultivationCrud {
 				->whereSeries($e['series'])
 				->whereCultivation(NULL)
 				->update([
-					'cultivation' => $eCultivationRemaining
+					'cultivation' => $eCultivationRemaining,
+					'plant' => $eCultivationRemaining['plant']
 				]);
 
 			Timesheet::model()
 				->whereSeries($e['series'])
 				->whereCultivation(NULL)
 				->update([
-					'cultivation' => $eCultivationRemaining
+					'cultivation' => $eCultivationRemaining,
+					'plant' => $eCultivationRemaining['plant']
 				]);
 
 			Requirement::model()
