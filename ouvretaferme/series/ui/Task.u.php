@@ -3473,13 +3473,11 @@ class TaskUi {
 								}
 							$h .= '</div>';
 							$h .= '<div class="series-field-place">';
-								$h .= '<a href="/series/place:update?series='.$eSeries['id'].'">';
-									if($places) {
-										$h .= $places;
-									} else {
-										$h .= s("Assolement non renseigné");
-									}
-								$h .= '</a>';
+								if($places) {
+									$h .= $places;
+								} else {
+									$h .= s("Assolement non renseigné");
+								}
 							$h .= '</div>';
 
 						$h .= '</td>';
@@ -3487,7 +3485,7 @@ class TaskUi {
 							if($eSeries['area']) {
 								$h .= s("{value} m²", $eSeries['area']);
 							} else {
-								$h .= '<a href="/series/place:update?series='.$eSeries['id'].'" class="btn btn-outline-secondary">'.s("Assoler").'</a>';
+								$h .= '<a href="/series/place:update?series='.$eSeries['id'].($eSeries['mode'] === Series::GREENHOUSE ? '&mode='.Series::GREENHOUSE : '').'" class="btn btn-outline-secondary">'.s("Assoler").'</a>';
 							}
 						$h .= '</td>';
 					$h .= '</tr>';

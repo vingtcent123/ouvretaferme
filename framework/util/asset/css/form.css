@@ -543,7 +543,7 @@ a.field-week-selector-month:hover {
 #form-search {
 }
 
-#form-search > div:first-child {
+#form-search > div:first-of-type {
 	display: flex;
 	flex-wrap: wrap;
 	align-items: center;
@@ -551,17 +551,17 @@ a.field-week-selector-month:hover {
 	margin-bottom: 0.5rem;
 }
 
-#form-search > div:first-child > select,
-#form-search > div:first-child > input	,
-#form-search > div:first-child > .input-group {
+#form-search > div:first-of-type > select,
+#form-search > div:first-of-type > input	,
+#form-search > div:first-of-type > .input-group {
 	width: auto;
 }
 
-#form-search > div:first-child > span {
+#form-search > div:first-of-type > span {
 	white-space: nowrap;
 }
 
-#form-search > div:last-child {
+#form-search > div:last-of-type {
 	display: flex;
 	column-gap: 0.5rem;
 }

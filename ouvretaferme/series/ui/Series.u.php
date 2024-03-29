@@ -148,7 +148,7 @@ class SeriesUi {
 					$cPlace->notEmpty()
 				) {
 					$h .= '<div>';
-						$h .= '<a href="/series/place:update?series='.$eSeries['id'].'" class="btn btn-color-primary">'.\Asset::icon('gear-fill').'</a>';
+						$h .= '<a href="/series/place:update?series='.$eSeries['id'].($eSeries['mode'] === Series::GREENHOUSE ? '&mode='.Series::GREENHOUSE : '').'" class="btn btn-color-primary">'.\Asset::icon('gear-fill').'</a>';
 					$h .= '</div>';
 				}
 			$h .= '</div>';
@@ -161,7 +161,7 @@ class SeriesUi {
 						$eSeries['status'] === Series::OPEN
 					) {
 						$h .= '<div class="series-soil-empty">';
-							$h .= '<a href="/series/place:update?series='.$eSeries['id'].'" class="btn btn-outline-primary">'.\Asset::icon('plus-circle').' '.s("Définir l'assolement pour cette série").'</a>';
+							$h .= '<a href="/series/place:update?series='.$eSeries['id'].($eSeries['mode'] === Series::GREENHOUSE ? '&mode='.Series::GREENHOUSE : '').'" class="btn btn-outline-primary">'.\Asset::icon('plus-circle').' '.s("Définir l'assolement pour cette série").'</a>';
 						$h .= '</div>';
 					} else {
 						$h .= '<div class="series-soil-empty">';

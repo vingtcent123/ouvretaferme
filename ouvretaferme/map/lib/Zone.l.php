@@ -46,7 +46,8 @@ class ZoneLib extends ZoneCrud {
 			return;
 		}
 
-		$filterAll = ($search->get('all') === FALSE);
+		$filterAll = $search->get('width');
+		$filterMode = $search->get('mode');
 
 		if(
 			$eSeries['bedStartCalculated'] !== NULL and
@@ -102,6 +103,15 @@ class ZoneLib extends ZoneCrud {
 						$eSeries['bedWidth'] !== $eBed['width']
 					) {
 						$cBed[$key]['ignore'] = TRUE;
+					}
+
+					if(
+						($filterMode === Plot::GREENHOUSE and $eBed['greenhouse']->empty()) or
+						($filterMode === Plot::OUTDOOR and $eBed['greenhouse']->notEmpty())
+					) {
+
+						$cBed[$key]['ignore'] = TRUE;
+
 					}
 
 					if($filterAvailable !== NULL) {

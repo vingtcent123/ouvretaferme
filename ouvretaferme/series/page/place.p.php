@@ -40,8 +40,9 @@
 				$hasAlternativeBedWidth = $data->cPlace->match(fn($ePlace) => $ePlace['bed']['width'] !== $data->e['bedWidth']);
 
 				$data->search = new Search([
-					'canAll' => ($hasAlternativeBedWidth === FALSE),
-					'all' => GET('all', 'bool', $hasAlternativeBedWidth),
+					'canWidth' => ($hasAlternativeBedWidth === FALSE),
+					'width' => GET('width', 'bool', !$hasAlternativeBedWidth),
+					'mode' => GET('mode', [NULL, \map\Plot::GREENHOUSE, \map\Plot::OUTDOOR], NULL),
 					'available' => GET('available', 'int', 0),
 					'rotation' => GET('rotation', 'int', 0)
 				]);

@@ -1185,15 +1185,7 @@ div.series-comment-title {
 .series-field-place {
 	font-size: 0.8rem;
 	line-height: 1.2;
-}
-
-.series-field-place a {
 	color: var(--muted);
-	text-decoration: none;
-}
-
-.series-field-place a:hover {
-	color: var(--primary)
 }
 
 .series-field-area {

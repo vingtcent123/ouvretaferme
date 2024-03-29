@@ -148,17 +148,26 @@ class PlaceUi {
 
 				$h .= '<div>';
 
-					if($search->get('canAll')) {
+					if($search->get('canWidth')) {
 
 						$h .= $form->inputGroup(
-							$form->addon('Largeur travaillée :').
-							$form->select('all', [
-								1 => s("Toutes"),
-								0 => s("Seulement {value} cm", $eSeries['bedWidth']),
-							], (int)$search->get('all'), ['mandatory' => TRUE])
+							$form->addon('Largeur travaillée').
+							$form->select('width', [
+								0 => s("Toutes"),
+								1 => s("Seulement {value} cm", $eSeries['bedWidth']),
+							], (int)$search->get('width'), ['mandatory' => TRUE])
 						);
 
 					}
+
+					$h .= $form->inputGroup(
+						$form->addon('Mode de culture').
+						$form->select('mode', [
+							NULL => s("Tous"),
+							\map\Plot::OUTDOOR => s("Plein champ"),
+							\map\Plot::GREENHOUSE => s("Tunnel"),
+						], $search->get('mode'), ['mandatory' => TRUE])
+					);
 
 					if(
 						$eSeries['bedStartCalculated'] !== NULL and
@@ -175,12 +184,12 @@ class PlaceUi {
 					}
 
 					$h .= $form->inputGroup(
-						$form->addon('Uniquement les planches libres').
+						$form->addon('Seulement les planches libres').
 						$input
 					);
 
 					$h .= $form->inputGroup(
-						$form->addon('Délai de retour sur les mêmes familles').
+						$form->addon('Délai de retour sur même famille').
 						$form->select('rotation', [
 							0 => s("Non"),
 							1 => s("2 saisons"),
@@ -189,6 +198,9 @@ class PlaceUi {
 							4 => s("5 saisons")
 						], $search->get('rotation'), ['mandatory' => TRUE])
 					);
+
+				$h .= '</div>';
+				$h .= '<div>';
 
 					$h .= $form->submit(s("Chercher"), ['class' => 'btn btn-secondary']);
 					$h .= '<a href="'.LIME_REQUEST_PATH.'?series='.$eSeries['id'].'" class="btn btn-secondary">'.\Asset::icon('x-lg').'</a>';
