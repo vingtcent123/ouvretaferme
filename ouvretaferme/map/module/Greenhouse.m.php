@@ -42,7 +42,7 @@ class GreenhouseModel extends \ModuleModel {
 			'zone' => ['element32', 'map\Zone', 'cast' => 'element'],
 			'zoneFill' => ['bool', 'cast' => 'bool'],
 			'plot' => ['element32', 'map\Plot', 'cast' => 'element'],
-			'length' => ['int16', 'min' => 1, 'max' => NULL, 'cast' => 'int'],
+			'length' => ['float32', 'min' => 1, 'max' => NULL, 'cast' => 'float'],
 			'width' => ['float32', 'min' => 1, 'max' => NULL, 'cast' => 'float'],
 			'area' => ['float32', 'min' => 1, 'max' => NULL, 'cast' => 'float'],
 			'seasonFirst' => ['int16', 'min' => 0, 'max' => NULL, 'null' => TRUE, 'cast' => 'int'],
