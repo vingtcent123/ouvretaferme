@@ -80,6 +80,7 @@ class SaleModel extends \ModuleModel {
 			'priceExcludingVat' => ['decimal', 'digits' => 8, 'decimal' => 2, 'null' => TRUE, 'cast' => 'float'],
 			'priceIncludingVat' => ['decimal', 'digits' => 8, 'decimal' => 2, 'null' => TRUE, 'cast' => 'float'],
 			'shippingVatRate' => ['decimal', 'digits' => 4, 'decimal' => 2, 'null' => TRUE, 'cast' => 'float'],
+			'shippingVatFixed' => ['bool', 'cast' => 'bool'],
 			'shipping' => ['decimal', 'digits' => 8, 'decimal' => 2, 'min' => 0.01, 'max' => NULL, 'null' => TRUE, 'cast' => 'float'],
 			'shippingExcludingVat' => ['decimal', 'digits' => 8, 'decimal' => 2, 'null' => TRUE, 'cast' => 'float'],
 			'preparationStatus' => ['enum', [\selling\Sale::DRAFT, \selling\Sale::BASKET, \selling\Sale::CONFIRMED, \selling\Sale::SELLING, \selling\Sale::PREPARED, \selling\Sale::DELIVERED, \selling\Sale::CANCELED], 'cast' => 'enum'],
@@ -107,7 +108,7 @@ class SaleModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'document', 'farm', 'customer', 'from', 'taxes', 'organic', 'conversion', 'type', 'discount', 'items', 'hasVat', 'vat', 'vatByRate', 'priceExcludingVat', 'priceIncludingVat', 'shippingVatRate', 'shipping', 'shippingExcludingVat', 'preparationStatus', 'paymentStatus', 'paymentMethod', 'market', 'marketSales', 'marketParent', 'orderFormValidUntil', 'orderFormPaymentCondition', 'invoice', 'shop', 'shopDate', 'shopUpdated', 'shopPoint', 'deliveryStreet1', 'deliveryStreet2', 'deliveryPostcode', 'deliveryCity', 'comment', 'stats', 'createdAt', 'createdBy', 'deliveredAt'
+			'id', 'document', 'farm', 'customer', 'from', 'taxes', 'organic', 'conversion', 'type', 'discount', 'items', 'hasVat', 'vat', 'vatByRate', 'priceExcludingVat', 'priceIncludingVat', 'shippingVatRate', 'shippingVatFixed', 'shipping', 'shippingExcludingVat', 'preparationStatus', 'paymentStatus', 'paymentMethod', 'market', 'marketSales', 'marketParent', 'orderFormValidUntil', 'orderFormPaymentCondition', 'invoice', 'shop', 'shopDate', 'shopUpdated', 'shopPoint', 'deliveryStreet1', 'deliveryStreet2', 'deliveryPostcode', 'deliveryCity', 'comment', 'stats', 'createdAt', 'createdBy', 'deliveredAt'
 		]);
 
 		$this->propertiesToModule += [
@@ -148,6 +149,9 @@ class SaleModel extends \ModuleModel {
 
 			case 'items' :
 				return 0;
+
+			case 'shippingVatFixed' :
+				return FALSE;
 
 			case 'preparationStatus' :
 				return Sale::DRAFT;
@@ -297,6 +301,10 @@ class SaleModel extends \ModuleModel {
 
 	public function whereShippingVatRate(...$data): SaleModel {
 		return $this->where('shippingVatRate', ...$data);
+	}
+
+	public function whereShippingVatFixed(...$data): SaleModel {
+		return $this->where('shippingVatFixed', ...$data);
 	}
 
 	public function whereShipping(...$data): SaleModel {

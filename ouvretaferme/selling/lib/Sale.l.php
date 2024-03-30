@@ -25,6 +25,10 @@ class SaleLib extends SaleCrud {
 
 				if($e->hasShipping()) {
 					$properties[] = 'shipping';
+
+					if($e['hasVat']) {
+						$properties[] = 'shippingVatRate';
+					}
 				}
 
 			}
@@ -505,6 +509,13 @@ class SaleLib extends SaleCrud {
 			($e['oldStatus'] !== $e['preparationStatus'])
 		);
 
+		if(in_array('shippingVatRate', $properties)) {
+
+			$e['shippingVatFixed'] = ($e['shippingVatRate'] !== NULL);
+			$properties[] = 'shippingVatFixed';
+
+		}
+
 		parent::update($e, $properties);
 
 		$newItems = [];
@@ -645,7 +656,7 @@ class SaleLib extends SaleCrud {
 	 */
 	public static function recalculate(Sale $e): void {
 
-		$e->expects(['taxes']);
+		$e->expects(['farm', 'taxes', 'shippingVatFixed']);
 
 		$cItem = Item::model()
 			->select(['price', 'vatRate', 'quality'])
@@ -659,10 +670,17 @@ class SaleLib extends SaleCrud {
 			'vat' => 0.0,
 			'vatByRate' => [],
 			'organic' => FALSE,
-			'shippingVatRate' => ($e['shipping'] === NULL) ? NULL : \Setting::get('defaultVatRate'),
 			'priceIncludingVat' => 0.0,
 			'priceExcludingVat' => 0.0,
 		];
+
+		if($e['shippingVatFixed'] === FALSE) {
+
+			$newValues += [
+				'shippingVatRate' => ($e['shipping'] === NULL) ? NULL : \Setting::get('defaultVatRate'),
+			];
+
+		}
 
 		// Add items
 		foreach($cItem as $eItem) {
@@ -670,7 +688,7 @@ class SaleLib extends SaleCrud {
 			$vatList[(string)$eItem['vatRate']] ??= 0;
 			$vatList[(string)$eItem['vatRate']] += $eItem['price'];
 
-			if($e['shipping'] !== NULL) {
+			if($e['shippingVatFixed'] === FALSE and $e['shipping'] !== NULL) {
 				$newValues['shippingVatRate'] ??= $eItem['vatRate'];
 				$newValues['shippingVatRate'] = min($newValues['shippingVatRate'], $eItem['vatRate']);
 			}
@@ -685,13 +703,28 @@ class SaleLib extends SaleCrud {
 
 		if($e['shipping'] !== NULL) {
 
+			if($e['shippingVatFixed'] === FALSE) {
+
+				// On écrase le taux de TVA calculé
+				$eConfiguration = \selling\ConfigurationLib::getByFarm($e['farm']);
+
+				if($eConfiguration['defaultVatShipping'] !== NULL) {
+					$newValues['shippingVatRate'] = \Setting::get('selling\vatRates')[$eConfiguration['defaultVatShipping']];
+				}
+
+				$shippingVatRate = $newValues['shippingVatRate'];
+
+			} else {
+				$shippingVatRate = $e['shippingVatRate'];
+			}
+
 			$newValues['shippingExcludingVat'] = match($e['taxes']) {
-				Sale::INCLUDING => round($e['shipping'] / (1 + $newValues['shippingVatRate'] / 100), 2),
+				Sale::INCLUDING => round($e['shipping'] / (1 + $shippingVatRate / 100), 2),
 				Sale::EXCLUDING => $e['shipping']
 			};
 
-			$vatList[(string)$newValues['shippingVatRate']] ??= 0;
-			$vatList[(string)$newValues['shippingVatRate']] += $e['shipping'];
+			$vatList[(string)$shippingVatRate] ??= 0;
+			$vatList[(string)$shippingVatRate] += $e['shipping'];
 
 		} else {
 			$newValues['shippingExcludingVat'] = NULL;

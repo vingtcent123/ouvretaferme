@@ -990,14 +990,14 @@ class SaleUi {
 
 				if($eSale->hasShipping()) {
 
-					if($eSale['items'] > 0) {
-						$vatRate = s("Taux de TVA appliqué de {value} % correspondant au taux de TVA le plus faible des articles livrés.", $eSale['shippingVatRate']);
+					if($eSale['hasVat'] and $eSale['items'] > 0) {
+						$vatRate = 'title="'.s("Taux de TVA appliqué de {value} %", $eSale['shippingVatRate']).'"';
 					} else {
-						$vatRate = s("Le taux de TVA appliqué à la livraison est par défaut de {value} % sera recalculé lorsque vous aurez ajouté au moins un article.", $eSale['shippingVatRate']);
+						$vatRate = '';
 					}
 
 					$h .= '<dt>'.SaleUi::getShippingName().'</dt>';
-					$h .= '<dd title="'.$vatRate.'">';
+					$h .= '<dd '.$vatRate.'>';
 
 						if($eSale['shipping'] !== NULL) {
 
@@ -1370,7 +1370,13 @@ class SaleUi {
 				}
 
 				if($eSale->hasShipping()) {
+
 					$h .= $form->dynamicGroup($eSale, 'shipping');
+
+					if($eSale['hasVat']) {
+						$h .= $form->dynamicGroup($eSale, 'shippingVatRate');
+					}
+
 				}
 			}
 
@@ -1481,6 +1487,7 @@ class SaleUi {
 			'orderFormPaymentCondition' => s("Conditions de paiement"),
 			'discount' => s("Remise commerciale"),
 			'shipping' => self::getShippingName(),
+			'shippingVatRate' => s("Taux de TVA sur les frais de livraison"),
 			'shop' => s("Boutique"),
 			'shopDate' => s("Date"),
 			'comment' => s("Observations internes"),
@@ -1573,6 +1580,32 @@ class SaleUi {
 			case 'shipping' :
 				$d->append = function(\util\FormUi $form, Sale $e) {
 					return $form->addon(s("€ {taxes}", ['taxes' => $e->getTaxes()]));
+				};
+				break;
+
+			case 'shippingVatRate' :
+				$d->field = function(\util\FormUi $form, Sale $e) {
+
+					$e->expects([
+						'farm' => [
+							'selling' => ['defaultVatShipping']
+						]
+					]);
+
+					$values = [];
+
+					foreach(SaleUi::getVat($e['farm']) as $position => $text) {
+						$rate = \Setting::get('selling\vatRates')[$position];
+						$values[(string)$rate] = s("Personnalisé - {value}", $text);
+					}
+
+					$defaultVatRate = $e['farm']['selling']['defaultVatShipping'] ? \Setting::get('selling\vatRates')[$e['farm']['selling']['defaultVatShipping']] : NULL;
+					$calculatedVatRate = ($e['shippingVatFixed'] ? NULL : $e['shippingVatRate']) ?? $defaultVatRate;
+
+					return $form->select('shippingVatRate', $values, $e['shippingVatFixed'] ? $e['shippingVatRate'] : NULL, [
+						'placeholder' => $calculatedVatRate ? s("Par défaut - {value} %", $calculatedVatRate) : s("Par défaut")
+					]);
+
 				};
 				break;
 

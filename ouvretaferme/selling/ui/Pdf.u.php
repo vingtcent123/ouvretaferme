@@ -329,6 +329,8 @@ class PdfUi {
 
 							foreach($eSale['vatByRate'] as $key => ['vat' => $vat, 'vatRate' => $vatRate, 'amount' => $amount]) {
 
+								$vatRate = (float)$vatRate;
+
 								$h .= '<tr class="pdf-document-item pdf-document-item-main">';
 									$h .= '<td class="pdf-document-product" colspan="3">';
 										$h .= s("Livraison du {value}", \util\DateUi::numeric($eSale['deliveredAt']));
@@ -364,7 +366,7 @@ class PdfUi {
 
 								foreach($eSale['cItem'] as $eItem) {
 
-									if($eItem['vatRate'] !== (float)$vatRate) {
+									if($eItem['vatRate'] !== $vatRate) {
 										continue;
 									}
 

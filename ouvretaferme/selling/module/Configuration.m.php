@@ -42,6 +42,7 @@ class ConfigurationModel extends \ModuleModel {
 			'documentInvoices' => ['int32', 'min' => 1, 'max' => NULL, 'cast' => 'int'],
 			'hasVat' => ['bool', 'cast' => 'bool'],
 			'defaultVat' => ['int8', 'min' => 0, 'max' => NULL, 'cast' => 'int'],
+			'defaultVatShipping' => ['int8', 'min' => 0, 'max' => NULL, 'null' => TRUE, 'cast' => 'int'],
 			'legalEmail' => ['email', 'null' => TRUE, 'cast' => 'string'],
 			'legalName' => ['text8', 'null' => TRUE, 'cast' => 'string'],
 			'invoiceStreet1' => ['text8', 'null' => TRUE, 'cast' => 'string'],
@@ -63,7 +64,7 @@ class ConfigurationModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'farm', 'documentSales', 'documentInvoices', 'hasVat', 'defaultVat', 'legalEmail', 'legalName', 'invoiceStreet1', 'invoiceStreet2', 'invoicePostcode', 'invoiceCity', 'invoiceRegistration', 'invoiceVat', 'organicCertifier', 'paymentMode', 'documentCopy', 'orderFormDelivery', 'orderFormPaymentCondition', 'orderFormHeader', 'orderFormFooter', 'invoicePaymentCondition', 'invoiceHeader', 'invoiceFooter'
+			'id', 'farm', 'documentSales', 'documentInvoices', 'hasVat', 'defaultVat', 'defaultVatShipping', 'legalEmail', 'legalName', 'invoiceStreet1', 'invoiceStreet2', 'invoicePostcode', 'invoiceCity', 'invoiceRegistration', 'invoiceVat', 'organicCertifier', 'paymentMode', 'documentCopy', 'orderFormDelivery', 'orderFormPaymentCondition', 'orderFormHeader', 'orderFormFooter', 'invoicePaymentCondition', 'invoiceHeader', 'invoiceFooter'
 		]);
 
 		$this->propertiesToModule += [
@@ -132,6 +133,10 @@ class ConfigurationModel extends \ModuleModel {
 
 	public function whereDefaultVat(...$data): ConfigurationModel {
 		return $this->where('defaultVat', ...$data);
+	}
+
+	public function whereDefaultVatShipping(...$data): ConfigurationModel {
+		return $this->where('defaultVatShipping', ...$data);
 	}
 
 	public function whereLegalEmail(...$data): ConfigurationModel {

@@ -663,6 +663,13 @@ class Sale extends SaleElement {
 
 			},
 
+			'shippingVatRate.check' => function(?float $vat): bool {
+				return (
+					$vat === NULL or
+					in_array($vat, \Setting::get('selling\vatRates'))
+				);
+			},
+
 			'preparationStatus.checkOutOfDraft' => function(string $preparationStatus): bool {
 
 				$this->expects(['preparationStatus', 'deliveredAt']);

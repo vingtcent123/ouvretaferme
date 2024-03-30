@@ -102,6 +102,9 @@ class ConfigurationUi {
 				$h .= $form->dynamicGroup($eConfiguration, 'defaultVat', $eConfiguration['hasVat'] ? NULL : function(\PropertyDescriber $d) {
 					$d->group['class'] = 'hide';
 				});
+				$h .= $form->dynamicGroup($eConfiguration, 'defaultVatShipping', $eConfiguration['hasVat'] ? NULL : function(\PropertyDescriber $d) {
+					$d->group['class'] = 'hide';
+				});
 				$h .= $form->group(content: '<h3>'.s("Certification").'</h3>');
 				$h .= $form->dynamicGroups($eConfiguration, ['organicCertifier']);
 
@@ -283,6 +286,7 @@ class ConfigurationUi {
 			'invoiceVat' => s("Numéro de TVA intracommunautaire"),
 			'legalEmail' => s("Adresse e-mail utilisée pour la facturation de vos clients"),
 			'defaultVat' => s("Taux de TVA par défaut sur vos produits"),
+			'defaultVatShipping' => s("Taux de TVA par défaut sur les frais de livraison"),
 			'organicCertifier' => s("Organisme de certification pour l'Agriculture Biologique"),
 			'paymentMode' => s("Moyens de paiement affichés sur les devis et les factures"),
 			'orderFormDelivery' => s("Afficher la date de livraison de la commande sur les devis"),
@@ -322,6 +326,16 @@ class ConfigurationUi {
 				};
 				$d->attributes = [
 					'mandatory' => TRUE
+				];
+				break;
+
+			case 'defaultVatShipping' :
+				$d->field = 'select';
+				$d->values = function(Configuration $e) {
+					return SaleUi::getVat($e['farm']);
+				};
+				$d->attributes = [
+					'placeholder' => s("Calculé automatiquement en fonction du taux de TVA des articles vendus")
 				];
 				break;
 

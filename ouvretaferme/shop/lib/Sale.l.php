@@ -189,8 +189,7 @@ class SaleLib {
 
 		if(
 			$shipping > 0 and
-			$shippingUntil > 0 and
-			$price < $shippingUntil
+			($shippingUntil === NULL or $price < $shippingUntil)
 		) {
 			$eSale['shipping'] = $shipping;
 		} else {

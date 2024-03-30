@@ -5,6 +5,7 @@ Configuration:
   documentInvoices: int32(1, null) = 0
   hasVat: bool = TRUE
   defaultVat: int8(0, null)
+  defaultVatShipping: ?int8(0, null)
   legalEmail: ?email
   legalName: ?text8
   invoiceStreet1: ?text8
@@ -235,6 +236,7 @@ Sale:
   priceExcludingVat: ?decimal(8, 2)
   priceIncludingVat: ?decimal(8, 2)
   shippingVatRate: ?decimal(4, 2)
+  shippingVatFixed: bool = FALSE
   shipping: ?decimal(8, 2, 0.01, null)
   shippingExcludingVat: ?decimal(8, 2)
   preparationStatus: enum(DRAFT, BASKET, CONFIRMED, SELLING, PREPARED, DELIVERED, CANCELED) = DRAFT

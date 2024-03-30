@@ -52,6 +52,13 @@ class Configuration extends ConfigurationElement {
 				return array_key_exists($vat, SaleLib::getVatRates($this['farm']));
 			},
 
+			'defaultVatShipping.check' => function(?int $vat): bool {
+				return (
+					$vat === NULL or
+					array_key_exists($vat, SaleLib::getVatRates($this['farm']))
+				);
+			},
+
 		]);
 
 	}

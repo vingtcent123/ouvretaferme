@@ -106,7 +106,7 @@ class ItemLib extends ItemCrud {
 
 		return Item::model()
 			->select([
-				'sale' => ['hasVat', 'taxes', 'document'],
+				'sale' => ['farm', 'hasVat', 'taxes', 'shippingVatFixed', 'document'],
 				'customer' => ['name'],
 				'quantity' => new \Sql('IF(packaging IS NULL, 1, packaging) * number', 'float'),
 				'unit', 'unitPrice',
@@ -248,7 +248,7 @@ class ItemLib extends ItemCrud {
 	private static function preparePricing(Item $e, array &$properties = []): void {
 
 		$e->expects([
-			'sale' => ['taxes', 'market'],
+			'sale' => ['farm', 'taxes', 'market'],
 			'locked',
 			'unitPrice', 'number', 'packaging', 'vatRate'
 		]);

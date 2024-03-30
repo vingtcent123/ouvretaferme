@@ -166,6 +166,7 @@
 	->quick(['deliveredAt', 'shipping'], validate: ['canUpdate', 'isOpen'])
 	->update(function($data) {
 
+		$data->e['farm']['selling'] = \selling\ConfigurationLib::getByFarm($data->e['farm']);
 		$data->e['cShop'] = \shop\ShopLib::getAroundByFarm($data->e['farm']);
 
 		throw new ViewAction($data);
