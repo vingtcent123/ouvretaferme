@@ -51,7 +51,9 @@ abstract class FormatterUi {
 
 		}
 
-		$this->options = $options;
+		$this->options = $options + [
+			'domain' => \Lime::getDomain()
+		];
 
 		for($i = 0; $i < $main->childNodes->length; $i++) {
 
