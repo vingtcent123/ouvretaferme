@@ -59,17 +59,27 @@ new JsonView('doCreateFromSeriesCollection', function($data, AjaxTemplate $t) {
 
 	if($data->e['status'] === \series\Task::DONE) {
 
-		$eAction = $data->c->first()['action'];
+		$eTaskFirst = $data->c->first();
+
+		$eAction = $eTaskFirst['action'];
+
+		if($eTaskFirst['doneDate']) {
+			$date = '&date='.$eTaskFirst['doneDate'];
+		} else if($eTaskFirst['doneWeek']) {
+			$date = '&date='.week_date_starts($eTaskFirst['doneWeek']);
+		} else {
+			$date = '';
+		}
 
 		$ids = $data->c->makeArray(fn($e) => 'ids[]='.$e['id']);
 
 		if($eAction['fqn'] === ACTION_RECOLTE) {
-			$t->ajaxRedirect('/series/task:updateHarvestCollection?'.implode('&', $ids), purgeLayers: TRUE);
+			$t->ajaxRedirect('/series/task:updateHarvestCollection?'.implode('&', $ids).$date, purgeLayers: TRUE);
 			$t->ajaxReload(purgeLayers: FALSE); // Le contexte principal ne doit pas interférer
 		} else {
 
 			if($data->eFarm->hasFeatureTime()) {
-				$t->ajaxRedirect('/series/timesheet?'.implode('&', $ids), purgeLayers: TRUE);
+				$t->ajaxRedirect('/series/timesheet?'.implode('&', $ids).$date, purgeLayers: TRUE);
 				$t->ajaxReload(purgeLayers: FALSE); // Le contexte principal ne doit pas interférer
 			} else {
 				$t->ajaxReload();
@@ -90,6 +100,8 @@ new JsonView('doCreate', function($data, AjaxTemplate $t) {
 
 		if($data->e['doneDate']) {
 			$date = '&date='.$data->e['doneDate'];
+		} else if($data->e['doneWeek']) {
+			$date = '&date='.week_date_starts($data->e['doneWeek']);
 		} else {
 			$date = '';
 		}
