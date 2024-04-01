@@ -382,6 +382,9 @@ class SaleUi {
 											$h .= '<div>'.s("Facture").'</div>';
 											$h .= '<div>'.InvoiceUi::getPaymentStatus($eSale['invoice']).'</div>';
 										}
+									} else if($eSale['paymentMethod'] === Sale::TRANSFER) {
+										$h .= '<div>'.s("Virement bancaire").'</div>';
+										$h .= '<div>'.SaleUi::getPaymentStatus($eSale).'</span></div>';
 									} else {
 										$h .= '/';
 									}
@@ -735,6 +738,10 @@ class SaleUi {
 
 	public static function getPaymentStatus(Sale $eSale): string {
 
+		if($eSale['paymentMethod'] === Sale::TRANSFER and $eSale['invoice']->empty()) {
+			return '<span class="util-badge sale-payment-status sale-payment-status-not-paid">'.s("Facture à éditer").'</span>';
+		}
+
 		return '<span class="util-badge sale-payment-status sale-payment-status-'.$eSale['paymentStatus'].'">'.self::p('paymentStatus')->values[$eSale['paymentStatus']].'</span>';
 
 	}
@@ -928,6 +935,9 @@ class SaleUi {
 				$h .= '<dt>'.s("Moyen de paiement").'</dt>';
 				$h .= '<dd>';
 					if(in_array($eSale['paymentMethod'], [Sale::TRANSFER, Sale::ONLINE_CARD])) {
+						$h .= \selling\SaleUi::p('paymentMethod')->values[$eSale['paymentMethod']];
+						$h .= ' '.\selling\SaleUi::getPaymentStatus($eSale);
+					} else if(in_array($eSale['paymentMethod'], [Sale::TRANSFER, Sale::ONLINE_CARD])) {
 						$h .= \selling\SaleUi::p('paymentMethod')->values[$eSale['paymentMethod']];
 						$h .= ' '.\selling\SaleUi::getPaymentStatus($eSale);
 					} else {
