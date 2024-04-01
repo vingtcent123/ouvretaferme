@@ -106,7 +106,7 @@ class ItemLib extends ItemCrud {
 
 		return Item::model()
 			->select([
-				'sale' => ['farm', 'hasVat', 'taxes', 'shippingVatFixed', 'document'],
+				'sale' => ['farm', 'hasVat', 'taxes', 'shippingVatRate', 'shippingVatFixed', 'document'],
 				'customer' => ['name'],
 				'quantity' => new \Sql('IF(packaging IS NULL, 1, packaging) * number', 'float'),
 				'unit', 'unitPrice',

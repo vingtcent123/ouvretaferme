@@ -19,6 +19,7 @@ new AdaptativeView('/ferme/{farm}/boutique/{shop}/date/{id}', function($data, Fa
 
 	\Asset::js('shop', 'manage.js');
 
+	echo '<a href="'.\shop\ShopUi::adminUrl($data->eFarm, $data->e['shop']).'" class="btn btn-outline-primary btn-sm mb-1">'.Asset::icon('arrow-left').' '.s("Revenir sur la boutique").'</a>';
 	echo '<div class="util-action">';
 		echo '<h1>';
 			echo $t->title;

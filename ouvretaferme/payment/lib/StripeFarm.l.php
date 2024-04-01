@@ -16,8 +16,13 @@ class StripeFarmLib extends StripeFarmCrud {
 		\shop\Shop::model()
 			->whereFarm($e['farm'])
 			->update([
-				'paymentCard' => FALSE,
-				'paymentSepaDebit' => FALSE
+				'paymentCard' => FALSE
+			]);
+
+		\shop\Point::model()
+			->whereFarm($e['farm'])
+			->update([
+				'paymentCard' => FALSE
 			]);
 
 		parent::delete($e);

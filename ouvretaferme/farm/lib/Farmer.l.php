@@ -162,21 +162,6 @@ class FarmerLib extends FarmerCrud {
 
 	}
 
-	public static function getByUserAndFarm(\user\User $eUser, Farm $eFarm, ?string $status = Farmer::IN): Farmer {
-
-		if($status !== NULL) {
-			Farmer::model()->whereStatus($status);
-		}
-
-		return Farmer::model()
-			->select(Farmer::getSelection())
-			->whereUser($eUser)
-			->whereFarm($eFarm)
-			->whereFarmStatus(Farmer::ACTIVE)
-			->get();
-
-	}
-
 	public static function getUsersByFarm(Farm $eFarm, bool $selectInvite = FALSE, bool $onlyGhost = FALSE, bool $withPresenceAbsence = FALSE): \Collection {
 
 		$cUser = self::getByFarm($eFarm, $selectInvite, $onlyGhost)

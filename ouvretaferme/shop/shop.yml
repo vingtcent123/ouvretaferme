@@ -23,7 +23,9 @@ Point:
   place: ?text8(1, null)
   address: ?text16
   used: int32 = 0
-  paymentOnlineOnly: bool = false
+  paymentCard: ?bool
+  paymentTransfer: ?bool
+  paymentOffline: ?bool
   orderMin: ?int(0, NULL)
   shipping: ?decimal(8, 2, 0.0, null)
   shippingUntil: ?int(0, NULL)
@@ -41,9 +43,10 @@ Shop:
   name: text8(1, null) @collate(general)
   email: email
   frequency: enum(WEEKLY, BIMONTHLY, MONTHLY, OTHER) = WEEKLY
-  paymentOnlineOnly: bool = false
-  paymentCard: bool = false
-  paymentSepaDebit: bool = false
+  paymentCard: bool = FALSE
+  paymentTransfer: bool = FALSE
+  paymentTransferHow: ?text8(1, null)
+  paymentOffline: bool = TRUE
   paymentOfflineHow: ?text8(1, null)
   description: ?editor24
   terms: ?editor24

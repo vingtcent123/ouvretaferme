@@ -28,8 +28,6 @@ class AlertUi {
 			'StripeFarm::created' => s("Votre compte Stripe a bien été paramétré."),
 			'StripeFarm::deleted' => s("Les données de votre compte Stripe ont bien été supprimées."),
 
-			'Stripe::sepaDataCreated' => s("Vos données bancaires ont bien été enregistrées."),
-
 			default => null
 
 		};

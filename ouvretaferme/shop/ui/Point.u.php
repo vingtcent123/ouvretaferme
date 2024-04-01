@@ -441,8 +441,9 @@ class PointUi {
 				};
 
 				$h .= $form->group(content: '<h3>'.$title.'</h3>');
-				if($e['shop']->hasOnlinePayment()) {
-					$h .= $form->dynamicGroups($e, ['paymentOnlineOnly']);
+				$h .= $form->dynamicGroups($e, ['paymentOffline', 'paymentTransfer']);
+				if($e['shop']['stripe']->notEmpty()) {
+					$h .= $form->dynamicGroups($e, ['paymentCard']);
 				}
 				$h .= $form->dynamicGroups($e, ['orderMin', 'shipping', 'shippingUntil']);
 			$h .= '</div>';
@@ -472,10 +473,12 @@ class PointUi {
 			'description' => s("Informations sur le point de retrait"),
 			'place' => s("Ville du point de retrait"),
 			'address' => s("Adresse du point de retrait"),
-			'paymentOnlineOnly' => s("Rendre le paiement en ligne obligatoire"),
 			'orderMin' => s("Montant minimal de commande"),
 			'shipping' => s("Frais de livraison par commande"),
 			'shippingUntil' => s("Montant minimal de commande au delà duquel les frais de livraison sont offerts"),
+			'paymentOffline' => s("Activer le paiement en direct"),
+			'paymentTransfer' => s("Activer le paiement par virement bancaire"),
+			'paymentCard' => s("Activer le paiement en ligne par carte bancaire"),
 		]);
 
 		switch($property) {
@@ -509,11 +512,15 @@ class PointUi {
 				$d->after = \util\FormUi::info(s("Indiquez une zone géographique par ligne. Vous pouvez également ajouter du texte si vous souhaitez apporter des précisions supplémentaires à vos clients."));
 				break;
 
-			case 'paymentOnlineOnly' :
-				$d->field = 'yesNo';
-				$d->attributes = fn(\util\FormUi $form, Point $e) => [
-					'no' => s("la valeur  choisie pour la boutique ({value})", $e['shop']['paymentOnlineOnly'] ? s("oui") : s("non"))
+			case 'paymentOffline' :
+			case 'paymentTransfer' :
+			case 'paymentCard' :
+				$d->field = 'radio';
+				$d->values = fn(Point $e) => [
+					1 => s("oui"),
+					0 => s("non"),
 				];
+				$d->placeholder = fn(Point $e) => s("la valeur choisie pour la boutique ({value})", $e['shop'][$property] ? s("oui") : s("non"));
 				break;
 
 			case 'orderMin' :

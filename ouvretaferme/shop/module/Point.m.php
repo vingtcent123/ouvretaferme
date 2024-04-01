@@ -52,7 +52,9 @@ class PointModel extends \ModuleModel {
 			'place' => ['text8', 'min' => 1, 'max' => NULL, 'null' => TRUE, 'cast' => 'string'],
 			'address' => ['text16', 'null' => TRUE, 'cast' => 'string'],
 			'used' => ['int32', 'cast' => 'int'],
-			'paymentOnlineOnly' => ['bool', 'cast' => 'bool'],
+			'paymentCard' => ['bool', 'null' => TRUE, 'cast' => 'bool'],
+			'paymentTransfer' => ['bool', 'null' => TRUE, 'cast' => 'bool'],
+			'paymentOffline' => ['bool', 'null' => TRUE, 'cast' => 'bool'],
 			'orderMin' => ['int32', 'min' => 0, 'max' => NULL, 'null' => TRUE, 'cast' => 'int'],
 			'shipping' => ['decimal', 'digits' => 8, 'decimal' => 2, 'min' => 0.0, 'max' => NULL, 'null' => TRUE, 'cast' => 'float'],
 			'shippingUntil' => ['int32', 'min' => 0, 'max' => NULL, 'null' => TRUE, 'cast' => 'int'],
@@ -61,7 +63,7 @@ class PointModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'shop', 'farm', 'type', 'zone', 'name', 'description', 'place', 'address', 'used', 'paymentOnlineOnly', 'orderMin', 'shipping', 'shippingUntil', 'status', 'createdAt'
+			'id', 'shop', 'farm', 'type', 'zone', 'name', 'description', 'place', 'address', 'used', 'paymentCard', 'paymentTransfer', 'paymentOffline', 'orderMin', 'shipping', 'shippingUntil', 'status', 'createdAt'
 		]);
 
 		$this->propertiesToModule += [
@@ -81,9 +83,6 @@ class PointModel extends \ModuleModel {
 
 			case 'used' :
 				return 0;
-
-			case 'paymentOnlineOnly' :
-				return FALSE;
 
 			case 'status' :
 				return Point::ACTIVE;
@@ -163,8 +162,16 @@ class PointModel extends \ModuleModel {
 		return $this->where('used', ...$data);
 	}
 
-	public function wherePaymentOnlineOnly(...$data): PointModel {
-		return $this->where('paymentOnlineOnly', ...$data);
+	public function wherePaymentCard(...$data): PointModel {
+		return $this->where('paymentCard', ...$data);
+	}
+
+	public function wherePaymentTransfer(...$data): PointModel {
+		return $this->where('paymentTransfer', ...$data);
+	}
+
+	public function wherePaymentOffline(...$data): PointModel {
+		return $this->where('paymentOffline', ...$data);
 	}
 
 	public function whereOrderMin(...$data): PointModel {

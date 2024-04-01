@@ -13,6 +13,7 @@ class AlertUi {
 			'Date::canNotOrder' => s("Votre commande a été annulée car vous êtes hors de la période de commande. Vous pourrez passer commander la prochaine fois !"),
 
 			'Point::name.duplicate' => s("Une point de retrait existe déjà avec le même nom, merci de choisir un autre nom."),
+			'Point::payment.check' => s("Veuillez sélectionner au moins un moyen de paiement."),
 
 			'Product::stock.check' => s("Vous devez indiquer un stock disponible positif ou laisser ce champ vide."),
 			'Product::price.check' => s("Vous devez indiquer un prix valable."),
@@ -22,7 +23,7 @@ class AlertUi {
 
 			'Shop::name.fqn' => s("Une boutique existe déjà avec la même adresse."),
 			'Shop::name.duplicate' => s("Une boutique existe déjà avec le même nom, merci de choisir un autre nom."),
-			'Shop::payment.null' => s("Veuillez sélectionner au moins un moyen de paiement."),
+			'Shop::payment.check' => s("Veuillez sélectionner au moins un moyen de paiement."),
 			'Shop::terms.check' => s("Vos conditions générales de ventes ne doivent pas être vides de texte."),
 
 			default => NULL
@@ -35,9 +36,9 @@ class AlertUi {
 
 		return match($fqn) {
 
-			'Date::copied' => s("La date a bien été copiée, vous pouvez maintenant la gérer !"),
-			'Date::created' => s("La date a bien été créée, ajoutez maintenant les produits qui seront disponibles à la vente !"),
-			'Date::deleted' => s("La date a bien été supprimée"),
+			'Date::copied' => s("La nouvelle date de vente a bien été copiée à partir d'une date précédente !"),
+			'Date::created' => s("La nouvelle date de vente a bien été créée !"),
+			'Date::deleted' => s("La date de vente a bien été supprimée"),
 			'Date::updated' => s("Le paramétrage a bien été enregistré."),
 
 			'Shop::activated' => s("Votre boutique a bien été activée !"),

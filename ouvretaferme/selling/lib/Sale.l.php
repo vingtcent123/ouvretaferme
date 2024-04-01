@@ -39,7 +39,7 @@ class SaleLib extends SaleCrud {
 
 	}
 
-	public static function getExample(\farm\Farm $eFarm, string $type, bool $shop = FALSE): Sale {
+	public static function getExample(\farm\Farm $eFarm, string $type, \shop\Shop $eShop = new \shop\Shop()): Sale {
 
 		$eFarm->expects(['selling']);
 
@@ -82,10 +82,11 @@ class SaleLib extends SaleCrud {
 			$eItem['name'] = 'Produit '.(++$position);
 		}
 
-		if($shop) {
-			$eSale['shop'] = new \shop\Shop([
-				'paymentOfflineHow' => NULL
-			]);
+		if($eShop->notEmpty()) {
+
+			$eShop->expects(['paymentOfflineHow', 'paymentTransferHow']);
+
+			$eSale['shop'] = $eShop;
 			$eSale['shopDate'] = new \shop\Shop([
 				'deliveryDate' => currentDate()
 			]);
@@ -656,7 +657,7 @@ class SaleLib extends SaleCrud {
 	 */
 	public static function recalculate(Sale $e): void {
 
-		$e->expects(['farm', 'taxes', 'shippingVatFixed']);
+		$e->expects(['farm', 'taxes', 'shippingVatRate', 'shippingVatFixed']);
 
 		$cItem = Item::model()
 			->select(['price', 'vatRate', 'quality'])

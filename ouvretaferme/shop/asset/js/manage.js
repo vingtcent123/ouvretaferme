@@ -29,18 +29,10 @@ class ShopManage {
 	static updatePayment(target) {
 
 		const form = target.firstParent('form');
-		const paymentMethods = form.qsa('[name="paymentCard"][value="1"]:checked').length;
 
-		form.qs('[data-wrapper="paymentOnlineOnly"]', wrapper => (paymentMethods > 0) ? wrapper.classList.remove('hide') : wrapper.classList.add('hide'));
+		form.qs('[name="paymentOffline"]:checked', field => (field.value === '1') ? qs('[data-wrapper="paymentOfflineHow"]').classList.remove('hide') : qs('[data-wrapper="paymentOfflineHow"]').classList.add('hide'));
+		form.qs('[name="paymentTransfer"]:checked', field => (field.value === '1') ? qs('[data-wrapper="paymentTransferHow"]').classList.remove('hide') : qs('[data-wrapper="paymentTransferHow"]').classList.add('hide'));
 
-	}
-
-	static updatePaymentOnlineOnly(target) {
-
-		const form = target.firstParent('form');
-
-		form.ref('payment-online', node => parseBool(target.value) ? node.removeHide() : node.hide());
-		form.ref('payment-offline', node => parseBool(target.value) ? node.hide() : node.removeHide());
 	}
 
 }

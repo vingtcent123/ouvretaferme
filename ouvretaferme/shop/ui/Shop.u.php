@@ -115,19 +115,29 @@ class ShopUi {
 
 		$h .= $form->hidden('id', $eShop['id']);
 
-		$h .= $form->group(content: '<h3>'.s("Paiement en direct avec le producteur", ['icon' => \Asset::icon('stripe')]).'</h3>');
+		$h .= $form->group(content: '<h3>'.s("Paiement en direct avec le producteur").'</h3>');
 
+		$h .= $form->dynamicGroup($eShop, 'paymentOffline');
 		$h .= $form->dynamicGroup($eShop, 'paymentOfflineHow', function(\PropertyDescriber $d) use ($eShop) {
-
-			$d->group['data-ref'] = 'payment-offline';
-			$d->group['class'] = $eShop['paymentOnlineOnly'] ? 'hide' : '';
-
+			$d->group['class'] = $eShop['paymentOffline'] ? '' : 'hide';
 		});
 
-		$h .= $form->group(content: '<div class="util-info">'.s("Le paiement en direct avec le producteur est désactivé car vous avez rendu le paiement en ligne obligatoire.").'</div>', attributes: [
-			'data-ref' => 'payment-online',
-			'class' => $eShop['paymentOnlineOnly'] ? '' : 'hide'
-		]);
+		$h .= $form->group(content: '<h3>'.s("Paiement par virement bancaire").'</h3>');
+
+		$content = '<p>'.s("Le paiement par virement bancaire fonctionne selon le principe suivant :").'</p>';
+		$content .= '<ol>';
+			$content .= '<li>'.s("Vos clients passent leurs commandes sans les régler immédiatement").'</li>';
+			$content .= '<li>'.s("Chaque début de mois, vous leur éditez une facture que vous pouvez envoyer automatiquement par e-mail").'</li>';
+			$content .= '<li>'.s("Vous faites le rapprochement entre votre compte bancaire habituel et les factures éditées pour vérifier que tous vos clients ont bien réglé leur facture").'</li>';
+		$content .= '</ol>';
+		$content .= '<p>'.s("Le paiement par virement bancaire bancaire est surtout intéressant pour vos clients qui passent plusieurs commandes dans le mois et pour vous éviter les commissions liées au paiement par carte bancaire.").'</p>';
+
+		$h .= $form->group(content: '<div class="util-block-help">'.$content.'</div>');
+
+		$h .= $form->dynamicGroup($eShop, 'paymentTransfer');
+		$h .= $form->dynamicGroup($eShop, 'paymentTransferHow', function(\PropertyDescriber $d) use ($eShop) {
+			$d->group['class'] = $eShop['paymentTransfer'] ? '' : 'hide';
+		});
 
 		$h .= '<br/>';
 
@@ -144,14 +154,7 @@ class ShopUi {
 			$h .= $form->group(content: '<div class="util-block-help">'.\payment\StripeFarmUi::getWarning().'</div>');
 		}
 
-		$h .= $form->dynamicGroups($eShop, ['paymentCard']);
-		$h .= $form->dynamicGroup($eShop, 'paymentOnlineOnly', function(\PropertyDescriber $d) use ($eShop) {
-
-			if($eShop['paymentCard'] === FALSE) {
-				$d->group['class'] = 'hide';
-			}
-
-		});
+		$h .= $form->dynamicGroup($eShop, 'paymentCard');
 
 		$h .= '<br/>';
 
@@ -221,7 +224,7 @@ class ShopUi {
 					$form->select('paymentMethod', [
 						\selling\Sale::OFFLINE => s("Direct avec le producteur"),
 						\selling\Sale::ONLINE_CARD => s("Carte bancaire"),
-						\selling\Sale::ONLINE_SEPA => s("Prélèvement SEPA")
+						\selling\Sale::TRANSFER => s("Virement bancaire")
 					], $eSaleExample['paymentMethod'], attributes: ['mandatory' => TRUE]).
 					$form->submit(s("Afficher"))
 				);
@@ -538,22 +541,25 @@ class ShopUi {
 				$h .= '</dd>';
 
 				$h .= '<dt>';
-					$h .= s("Paiement en ligne");
+					$h .= s("Moyens de paiement");
 				$h .= '</dt>';
 				$h .= '<dd>';
-					if($eShop['paymentCard']) {
 
-						$modes = s("Carte bancaire");
+					$modes = [];
 
-						if($eShop['paymentOnlineOnly']) {
-							$h .= s("<u>Obligatoire</u> par {value}", $modes);
-						} else {
-							$h .= s("Possible par {value}", $modes);
-						}
-
-					} else {
-						$h .= '/';
+					if($eShop['paymentOffline']) {
+						$modes[] = s("En direct");
 					}
+
+					if($eShop['paymentTransfer']) {
+						$modes[] = s("Virement bancaire");
+					}
+
+					if($eShop['paymentCard']) {
+						$modes[] = s("Carte bancaire");
+					}
+
+					$h .= implode(' / ', $modes);
 				$h .= '</dd>';
 
 			$h .= '</dl>';
@@ -571,10 +577,11 @@ class ShopUi {
 			'frequency' => s("Fréquence d'ouverture des ventes"),
 			'name' => s("Nom de la boutique"),
 			'logo' => s("Image de présentation"),
-			'paymentOnlineOnly' => s("Rendre le paiement en ligne obligatoire sur votre boutique"),
 			'paymentCard' => s("Activer le paiement en ligne par carte bancaire"),
-			'paymentSepaDebit' => s("Activer le paiement en ligne par prélèvement bancaire SEPA"),
-			'paymentOfflineHow' => s("Modalités de paiement"),
+			'paymentOffline' => s("Activer le paiement en direct"),
+			'paymentOfflineHow' => s("Modalités du paiement en direct"),
+			'paymentTransfer' => s("Activer le paiement par virement bancaire"),
+			'paymentTransferHow' => s("Modalités du paiement par virement bancaire"),
 			'orderMin' => s("Montant minimal de commande"),
 			'shipping' => s("Frais de livraison par commande"),
 			'shippingUntil' => s("Montant minimal de commande au delà duquel les frais de livraison sont offerts"),
@@ -639,15 +646,16 @@ class ShopUi {
 				break;
 
 			case 'paymentCard':
-			case 'paymentSepaDebit':
+			case 'paymentOffline' :
+			case 'paymentTransfer' :
 				$d->field = 'yesNo';
-				$d->attributes = function(\util\FormUi $form, Shop $eShop) {
+				$d->attributes = function(\util\FormUi $form, Shop $eShop) use ($property) {
 
 					$eShop->expects(['stripe']);
 
 					$attributes = [];
 
-					if($eShop['stripe']->empty()) {
+					if($property === 'paymentCard' and $eShop['stripe']->empty()) {
 						$attributes['disabled'] = 'disabled';
 					}
 
@@ -662,25 +670,14 @@ class ShopUi {
 				};
 				break;
 
-			case 'paymentOnlineOnly' :
-				$d->field = 'yesNo';
-				$d->attributes = function() {
-
-					$attributes['callbackRadioAttributes'] = function() {
-						return [
-							'onclick' => 'ShopManage.updatePaymentOnlineOnly(this)'
-						];
-					};
-
-					return $attributes;
-
-				};
-				$d->after = \util\FormUi::info(s("Si vous rendez le paiement en ligne obligatoire sur votre boutique, alors vos clients devront obligatoirement payer leur commande avec les moyens de paiement en ligne que vous aurez autorisés. Si le paiement en ligne n'est pas obligatoire, le choix sera laissé au client de payer en ligne ou directement avec le producteur."));
-				break;
-
 			case 'paymentOfflineHow' :
 				$d->placeholder = s("Exemple : Règlement en espèces ou par chèque au moment du retrait des commandes.");
 				$d->after = \util\FormUi::info(s("Indiquez ici comment vous pouvez être payé par vos clients s'ils choisissent de régler leurs commandes en direct avec vous."));
+				break;
+
+			case 'paymentTransferHow' :
+				$d->placeholder = s("Exemple : Règlement des commandes par virement bancaire chaque début de mois à réception de facture.");
+				$d->after = \util\FormUi::info(s("Indiquez ici comment vous comptez facturer vos clients pour qu'ils vous règlent par virement."));
 				break;
 
 			case 'orderMin' :

@@ -292,23 +292,4 @@
 		throw new PdfAction($data->content, $filename);
 
 	});
-
-(new Page())
-	->post('doCollect', function($data) {
-
-		$eSale = \selling\SaleLib::getById(POST('sale'))->validate('canWriteItems');
-
-		if($eSale['from'] !== \selling\Sale::SHOP) {
-			throw new NotExpectedAction('Unknown parameters for collecting money via SEPA for sale #'.$eSale['id']);
-		}
-
-		$fw = new FailWatch();
-
-		\shop\SaleLib::collect($eSale);
-
-		$fw->validate();
-
-		throw new ReloadAction('shop', 'Shop::collected');
-
-	});
 ?>

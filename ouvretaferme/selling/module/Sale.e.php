@@ -7,7 +7,7 @@ class Sale extends SaleElement {
 
 		return parent::getSelection() + [
 			'customer' => ['name', 'email', 'color', 'user', 'type', 'discount', 'legalName', 'invoiceStreet1', 'invoiceStreet2', 'invoicePostcode', 'invoiceCity'],
-			'shop' => ['fqn', 'name', 'email', 'paymentOfflineHow', 'shipping', 'shippingUntil', 'orderMin'],
+			'shop' => ['fqn', 'name', 'email', 'paymentOfflineHow', 'paymentTransferHow', 'shipping', 'shippingUntil', 'orderMin'],
 			'shopDate' => ['status', 'deliveryDate', 'orderStartAt', 'orderEndAt'],
 			'farm' => ['name', 'url', 'vignette', 'banner', 'featureDocument'],
 			'invoice' => ['emailedAt', 'createdAt', 'paymentStatus', 'priceExcludingVat'],
@@ -224,7 +224,7 @@ class Sale extends SaleElement {
 		return (
 			$this['market'] === FALSE and (
 				$this['invoice']->notEmpty() or // Paiement par facturation
-				in_array($this['paymentMethod'], [Sale::ONLINE_SEPA, Sale::ONLINE_CARD]) // Ou paiement CB/SEPA
+				$this->isPaymentOnline() // Ou paiement CB
 			)
 		);
 
@@ -234,7 +234,7 @@ class Sale extends SaleElement {
 
 		$this->expects(['paymentMethod']);
 
-		return in_array($this['paymentMethod'], [Sale::ONLINE_SEPA, Sale::ONLINE_CARD]);
+		return ($this['paymentMethod'] === Sale::ONLINE_CARD);
 
 	}
 
@@ -352,7 +352,7 @@ class Sale extends SaleElement {
 		return (
 			// Seulement certains types de paiement
 			(
-				in_array($this['paymentMethod'], [NULL, Sale::OFFLINE, Sale::ONLINE_SEPA]) or
+				in_array($this['paymentMethod'], [NULL, Sale::OFFLINE, Sale::TRANSFER]) or
 				($this['paymentMethod'] === Sale::ONLINE_CARD and in_array($this['paymentStatus'], [Sale::UNDEFINED, Sale::FAILED]))
 			) and
 			// Seulement pour les commandes en brouillon ou confirmées

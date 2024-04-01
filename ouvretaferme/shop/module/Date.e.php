@@ -105,17 +105,15 @@ class Date extends DateElement {
 					->getCollection();
 
 				$cProduct = new \Collection();
-				$stocks = cast($input['stock'] ?? [], 'array');
 
 				foreach($cProductSelling as $eProductSelling) {
 
-					$stock = $stocks[$eProductSelling['id']] ?? '';
-
 					$eProduct = new Product([
 						'product' => $eProductSelling,
-						'stock' => ($stock === '') ? NULL : (int)$stock,
 						'shop' => $this['shop'],
 					]);
+
+					$eProduct->buildIndex(['stock', 'price'], $input, $eProductSelling['id']);
 
 					$cProduct->append($eProduct);
 

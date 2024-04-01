@@ -39,15 +39,21 @@ class Shop extends ShopElement {
 
 		$payments = [];
 
-		if($this['paymentCard']) {
+		if(
+			$ePoint['paymentCard'] or
+			($ePoint['paymentCard'] === NULL and $this['paymentCard'])
+		) {
 			$payments[] = 'onlineCard';
 		}
-		if($this['paymentSepaDebit']) {
-			$payments[] = 'onlineSepaDebit';
+		if(
+			$ePoint['paymentTransfer'] or
+			($ePoint['paymentTransfer'] === NULL and $this['paymentTransfer'])
+		) {
+			$payments[] = 'transfer';
 		}
 		if(
-			$ePoint['paymentOnlineOnly'] === FALSE and
-			$this['paymentOnlineOnly'] === FALSE
+			$ePoint['paymentOffline'] or
+			($ePoint['paymentOffline'] === NULL and $this['paymentOffline'])
 		) {
 			$payments[] = 'offline';
 		}
@@ -56,22 +62,11 @@ class Shop extends ShopElement {
 
 	}
 
-	public function hasOnlinePayment(): bool {
-
-		return (
-			$this['paymentSepaDebit'] or
-			$this['paymentCard']
-		);
-
-	}
-
-	public function hasOfflinePayment(): array {
-
-		return ($this['paymentOnlineOnly'] === FALSE);
-
-	}
-
 	public function build(array $properties, array $input, array $callbacks = [], ?string $for = NULL): array {
+
+		if(array_intersect($properties, ['paymentCard', 'paymentOffline', 'paymentTransfer'])) {
+			$properties[] = 'payment';
+		}
 
 		return parent::build($properties, $input, $callbacks + [
 
@@ -95,18 +90,6 @@ class Shop extends ShopElement {
 
 			},
 
-			'paymentOnlineOnly.prepare' => function(bool &$paymentOnlineOnly) {
-
-				$this->expects(['paymentCard']);
-
-				if(
-					$this['paymentCard'] === FALSE
-				) {
-					$paymentOnlineOnly = FALSE;
-				}
-
-			},
-
 			'terms.check' => function(?string $terms) {
 
 				return (
@@ -114,6 +97,17 @@ class Shop extends ShopElement {
 					mb_strlen(strip_tags($terms)) > 0
 				);
 
+			},
+
+			'payment.check' => function() {
+
+				$this->expects(['paymentCard', 'paymentOffline', 'paymentTransfer']);
+
+				return (
+					$this['paymentCard'] or
+					$this['paymentOffline'] or
+					$this['paymentTransfer']
+				);
 
 			}
 

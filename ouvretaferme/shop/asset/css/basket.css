@@ -90,6 +90,10 @@
 	white-space: normal;
 }
 
+.shop-payment-description {
+	margin-bottom: 0;
+}
+
 .shop-payment-cancel {
 	color: var(--secondary);
 }

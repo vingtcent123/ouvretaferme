@@ -1,13 +1,3 @@
-StripeCustomerSepa:
-  customer: selling\Customer
-  stripeCustomerId: text8
-  stripeSessionIntentId: ?text8
-  stripePaymentMethodId: ?text8
-  status: enum(CONFIGURING, FAILED, VALID) = CONFIGURING
-  UNIQUE: [
-    ["customer"]
-  ]
-
 StripeFarm:
   id: serial32
   farm: farm\Farm

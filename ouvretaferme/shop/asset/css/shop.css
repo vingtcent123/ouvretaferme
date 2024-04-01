@@ -3,9 +3,6 @@
 	column-gap: 1rem;
 }
 
-.shop-payment-options > * {
-	display: block;
-}
 .shop-header {
 	display: grid;
 	grid-template:

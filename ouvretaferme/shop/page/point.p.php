@@ -28,6 +28,7 @@
 (new shop\PointPage())
 	->applyElement(function($data, \shop\Point $e) {
 		$e['shop'] = \shop\ShopLib::getById($e['shop']);
+		$e['shop']['stripe'] = \payment\StripeLib::getByFarm($e['farm']);
 	})
 	->update()
 	->doUpdate(function($data) {

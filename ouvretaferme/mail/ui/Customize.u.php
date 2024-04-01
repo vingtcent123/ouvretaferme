@@ -183,7 +183,7 @@ class CustomizeUi {
 				[$eInvoice, $cSale] = $more;
 
 				if($cSale->count() === 1) {
-					$sales = s("Cette facture correspond à notre livraison du {date}.", ['date' => \util\DateUi::numeric($cSale->first()['deliveredAt'])]);
+					$sales = s("Cette facture correspond à la livraison du {date}.", ['date' => \util\DateUi::numeric($cSale->first()['deliveredAt'])]);
 				} else {
 
 					$sales = s("Cette facture inclut :")."\n\n";
@@ -218,8 +218,11 @@ class CustomizeUi {
 
 				switch($eSale['paymentMethod']) {
 
-					case \selling\Sale::ONLINE_SEPA :
-						$payment = s("Vous avez choisi de régler cette commande par prélèvement bancaire.");
+					case \selling\Sale::TRANSFER :
+						$payment = s("Vous avez choisi de régler cette commande par virement bancaire.");
+						if($eSale['shop']['paymentTransferHow']) {
+							$payment .= "\n".encode($eSale['shop']['paymentTransferHow']);
+						}
 						break;
 
 					case \selling\Sale::ONLINE_CARD :

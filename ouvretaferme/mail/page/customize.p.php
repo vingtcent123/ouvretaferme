@@ -27,7 +27,7 @@
 		$data->eSaleExample = \selling\SaleLib::getExample(
 			$data->eFarm,
 			$data->e['shop']->notEmpty() ? \selling\Customer::PRIVATE : \selling\Customer::PRO,
-			$data->e['shop']->notEmpty()
+			$data->e['shop']
 		);
 
 		throw new ViewAction($data);

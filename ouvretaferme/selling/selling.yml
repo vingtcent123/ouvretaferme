@@ -241,7 +241,7 @@ Sale:
   shippingExcludingVat: ?decimal(8, 2)
   preparationStatus: enum(DRAFT, BASKET, CONFIRMED, SELLING, PREPARED, DELIVERED, CANCELED) = DRAFT
   paymentStatus: enum(UNDEFINED, WAITING, PROCESSING, PAID, FAILED) = UNDEFINED
-  paymentMethod: ?enum(ONLINE_CARD, ONLINE_SEPA, OFFLINE)
+  paymentMethod: ?enum(ONLINE_CARD, TRANSFER, OFFLINE)
   market: bool = FALSE
   marketSales: ?int(0, null)
   marketParent: ?selling\Sale

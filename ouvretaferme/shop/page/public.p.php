@@ -160,7 +160,6 @@
 
 		$eFarm = $data->eShop['farm'];
 		$data->eCustomer = \selling\CustomerLib::getByUserAndFarm($data->eUserOnline, $eFarm);
-		\payment\StripeLib::loadSepa($data->eCustomer);
 
 		$data->eStripeFarm = \payment\StripeLib::getByFarm($eFarm);
 
@@ -321,22 +320,7 @@
 
 		throw new ViewAction($data);
 
-	})
-	->get('/shop/public/{fqn}/{date}/:sepaQuelqueChose', function($data) {
-
-		($data->validateSale)();
-
-		$stripe_session_id = GET('stripe_sid');
-
-		$fw = new \FailWatch;
-
-		\shop\SaleLib::attachCustomer($data->eDate, $data->eUserOnline, $stripe_session_id);
-
-		$fw->validate();
-
-		throw new RedirectAction(\shop\ShopUi::dateUrl($data->eShop, $data->eDate, 'paiement?success=payment:Stripe::sepaDataCreated'));
-
-	});
+	}) ;
 
 (new \user\UserPage())
 	->getElement(fn() => \user\ConnectionLib::getOnline())

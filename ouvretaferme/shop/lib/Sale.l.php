@@ -201,7 +201,7 @@ class SaleLib {
 	public static function canUpdateForShop(\selling\Sale $eSale): bool {
 
 		return (
-			$eSale['paymentMethod'] === \selling\Sale::ONLINE_SEPA or
+			$eSale['paymentMethod'] === \selling\Sale::TRANSFER or
 			$eSale['paymentMethod'] === \selling\Sale::OFFLINE or
 			$eSale['paymentMethod'] === NULL
 		);
@@ -277,8 +277,8 @@ class SaleLib {
 
 		return match($payment) {
 			'onlineCard' => self::createCardPayment($eDate, $eSale),
-			'onlineSepaDebit' => self::createSepaPayment($eDate, $eSale),
-			'offline' => self::createOfflinePayment($eDate, $eSale)
+			'offline' => self::createDirectPayment(\selling\Sale::OFFLINE, $eDate, $eSale),
+			'transfer' => self::createDirectPayment(\selling\Sale::TRANSFER, $eDate, $eSale)
 		};
 
 	}
@@ -316,7 +316,7 @@ class SaleLib {
 			'cancel_url' => $redirectUrl,
 		];
 
-		$stripeSession = \payment\StripeLib::createCheckoutSession($eStripeFarm, $arguments, \selling\Sale::ONLINE_CARD);
+		$stripeSession = \payment\StripeLib::createCheckoutSession($eStripeFarm, $arguments);
 
 		if(isset($stripeSession['error'])) {
 			throw new \Exception(var_export($stripeSession['error'], TRUE));
@@ -338,41 +338,13 @@ class SaleLib {
 
 	}
 
-	public static function createSepaPayment(Date $eDate, \selling\Sale $eSale): string {
-
-		$eSale->expects(['farm', 'shopDate', 'shop', 'customer']);
-
-		$eStripeFarm = \payment\StripeLib::getByFarm($eSale['farm']);
-
-		if($eStripeFarm->empty()) {
-			throw new \Exception('Missing stripe configuration');
-		}
-
-		$redirectUrl = \Lime::getProtocol().'://'.\Setting::get('shop\domain').ShopUi::dateUrl($eSale['shop'], $eSale['shopDate'], 'confirmation');
-
-		$arguments = [
-			'success_url' => $redirectUrl,
-			'cancel_url' => $redirectUrl,
-		];
-
-		$eSale['paymentMethod'] = \selling\Sale::ONLINE_SEPA;
-
-		\selling\SaleLib::update($eSale, ['paymentMethod']);
-
-		self::notify($eSale['shopUpdated'] ? 'saleUpdated' : 'saleConfirmed', $eSale, $eSale['cItem']);
-
-		$stripeSession = \payment\StripeLib::createCheckoutSessionSepa($eStripeFarm, $arguments);
-		return $stripeSession['url'];
-
-	}
-
-	public static function createOfflinePayment(Date $eDate, \selling\Sale $eSale): string {
+	public static function createDirectPayment(string $method, Date $eDate, \selling\Sale $eSale): string {
 
 		$eSale->expects(['farm', 'shopDate', 'shop', 'customer']);
 
 		$eSale['oldStatus'] = $eSale['preparationStatus'];
 		$eSale['preparationStatus'] = \selling\Sale::CONFIRMED;
-		$eSale['paymentMethod'] = \selling\Sale::OFFLINE;
+		$eSale['paymentMethod'] = $method;
 
 		\selling\SaleLib::update($eSale, ['preparationStatus', 'paymentMethod']);
 
@@ -381,20 +353,6 @@ class SaleLib {
 		self::notify($eSale['shopUpdated'] ? 'saleUpdated' : 'saleConfirmed', $eSale, $eSale['cItem']);
 
 		return \Lime::getProtocol().'://'.\Setting::get('shop\domain').ShopUi::dateUrl($eSale['shop'], $eSale['shopDate'], 'confirmation');
-
-	}
-
-	public static function attachCustomer(Date $eDate, \user\User $eUser, string $sessionId): void {
-
-		$eDate['shop']->expects(['farm']);
-
-		$eCustomer = self::getShopCustomer($eDate['shop'], $eUser);
-		\payment\StripeLib::loadSepa($eCustomer);
-
-		$eFarm = $eDate['shop']['farm'];
-		$eStripeFarm = \payment\StripeLib::getByFarm($eFarm);
-
-		\payment\StripeLib::attachPaymentMethodToCustomerViaSession($eStripeFarm, $sessionId, $eCustomer);
 
 	}
 
@@ -460,20 +418,7 @@ class SaleLib {
 	}
 
 	/**
-	 * Passe un paiement SEPA au statut en cours.
-	 * Lancé par Stripe après la création du payment intent (completeCheckoutSepaDebit).
-	 */
-	public static function paymentProcessingSepaDebit(\selling\Sale $eSale, array $event): void {
-
-		\selling\Sale::model()->update($eSale, ['paymentStatus' => \selling\Sale::PROCESSING]);
-
-		\selling\HistoryLib::createBySale($eSale, 'shop-payment-sepa-processing', 'Stripe event id #'.$event['id']);
-
-	}
-
-	/**
-	 * Validation d'un paiement asynchrone comme le prélèvement SEPA.
-	 * https://stripe.com/docs/testing#sepa-direct-debit
+	 * Validation d'un paiement par carte bancaire
 	 */
 	public static function paymentSucceeded(\selling\Sale $eSale, array $event): void {
 
@@ -490,52 +435,6 @@ class SaleLib {
 		\selling\PaymentLib::updateStatus($object['id'], \selling\Payment::SUCCESS);
 
 		self::completePaid($eSale, $object['id']);
-
-	}
-
-	/**
-	 * Lance la collecte d'un prélèvement SEPA.
-	 */
-	public static function collect(\selling\Sale $eSale) {
-
-		$eSale->expects(['id', 'customer', 'farm', 'shop', 'paymentStatus']);
-
-		$eCustomer = \selling\CustomerLib::getById($eSale['customer']['id']);
-		\payment\StripeLib::loadSepa($eCustomer);
-
-		$arguments = [
-			'amount' => $eSale['priceIncludingVat'] * 100
-		];
-
-		if($eCustomer['email']) {
-			$arguments['receipt_email'] = $eCustomer['email'];
-		}
-		$eStripeFarm = \payment\StripeLib::getByFarm($eSale['farm']);
-
-		if($eSale['paymentStatus'] !== \selling\Sale::UNDEFINED) {
-			throw new \Exception('Sale '.$eSale['id'].' is not allowed for collection');
-		}
-
-		$payment_intent = \payment\StripeLib::createPayment($eCustomer['stripeSepa'], $eStripeFarm, $arguments);
-
-		\selling\Sale::model()->update($eSale, ['paymentStatus' => \selling\Sale::WAITING]);
-
-		\selling\HistoryLib::createBySale($eSale, 'shop-payment-sepa-collect', 'Stripe payment_intent id #'.$payment_intent['id']);
-
-	}
-
-	/**
-	 * Création d'un payment intent pour un paiement par prélèvement SEPA.
-	 *
-	 * Lancé par Stripe après que OTF a lancé la collecte (collect).
-	 */
-	public static function completeCheckoutSepaDebit(\selling\Sale $eSale, array $event): void {
-
-		$object = $event['data']['object'];
-
-		\selling\Sale::model()->update($eSale, ['paymentStatus' => \selling\Sale::WAITING]);
-
-		\selling\HistoryLib::createBySale($eSale, 'shop-payment-sepa-created', 'Stripe event id #'.$event['id']);
 
 	}
 

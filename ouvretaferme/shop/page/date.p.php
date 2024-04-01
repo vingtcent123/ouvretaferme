@@ -28,7 +28,7 @@
 		throw new \ViewAction($data);
 
 	})
-	->doCreate(fn() => throw new ReloadAction('shop', GET('copied', 'bool') ? 'Date::created' : 'Date::copied'))
+	->doCreate(fn($data) => throw new RedirectAction(\shop\ShopUi::adminDateUrl($data->e['farm'], $data->e['shop'], $data->e).'?success=shop:'.(GET('copied', 'bool') ? 'Date::created' : 'Date::copied')))
 	->update(function($data) {
 
 		$data->e['ccPoint'] = \shop\PointLib::getByShop($data->e['shop']);

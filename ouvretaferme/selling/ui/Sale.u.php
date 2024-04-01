@@ -927,12 +927,9 @@ class SaleUi {
 				$h .= '<dd>'.CustomerUi::link($eSale['customer']).'</dd>';
 				$h .= '<dt>'.s("Moyen de paiement").'</dt>';
 				$h .= '<dd>';
-					if(in_array($eSale['paymentMethod'], [Sale::ONLINE_SEPA, Sale::ONLINE_CARD])) {
+					if(in_array($eSale['paymentMethod'], [Sale::TRANSFER, Sale::ONLINE_CARD])) {
 						$h .= \selling\SaleUi::p('paymentMethod')->values[$eSale['paymentMethod']];
 						$h .= ' '.\selling\SaleUi::getPaymentStatus($eSale);
-						if($eSale['paymentMethod'] === Sale::ONLINE_SEPA and $eSale['paymentStatus'] === Sale::UNDEFINED) {
-							$h .= '&nbsp;(<a data-ajax="/selling/sale:doCollect" post-sale="'.$eSale['id'].'">'.\Asset::icon('piggy-bank').'&nbsp;'.s("Collecter {value}", \util\TextUi::money($eSale['priceIncludingVat'])).'</a>)';
-						}
 					} else {
 						if($eSale['market'] or $eSale['marketParent']->notEmpty()) {
 							$h .= s("Marché");
@@ -1649,8 +1646,8 @@ class SaleUi {
 			case 'paymentMethod' :
 				$d->values = [
 					Sale::OFFLINE => s("Direct avec le producteur"),
-					Sale::ONLINE_CARD => \Asset::icon('stripe', ['title' => 'Stripe']).' '.s("Carte bancaire"),
-					Sale::ONLINE_SEPA => \Asset::icon('stripe', ['title' => 'Stripe']).' '.s("Prélèvement SEPA"),
+					Sale::TRANSFER => s("Virement bancaire"),
+					Sale::ONLINE_CARD => \Asset::icon('stripe', ['title' => 'Stripe']).' '.s("Carte bancaire")
 				];
 				break;
 

@@ -19,6 +19,10 @@ class Point extends PointElement {
 
 	public function build(array $properties, array $input, array $callbacks = [], ?string $for = NULL): array {
 
+		if(array_intersect($properties, ['paymentCard', 'paymentOffline', 'paymentTransfer'])) {
+			$properties[] = 'payment';
+		}
+
 		return parent::build($properties, $input, $callbacks + [
 
 			'name.notNull' => function(?string $name) {
@@ -36,6 +40,18 @@ class Point extends PointElement {
 			'zone.notNull' => function(?string $zone) {
 				return ($zone !== NULL);
 			},
+
+			'payment.check' => function() {
+
+				$this->expects(['paymentCard', 'paymentOffline', 'paymentTransfer']);
+
+				return (
+					$this['paymentCard'] !== FALSE or
+					$this['paymentOffline'] !== FALSE or
+					$this['paymentTransfer'] !== FALSE
+				);
+
+			}
 
 		]);
 

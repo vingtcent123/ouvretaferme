@@ -124,13 +124,11 @@ class BasketUi {
 			ShopUi::dateUrl($eShop, $eDate, 'panier')
 		];
 
-		if($eShop->hasOnlinePayment()) {
-				$steps[] = [
-					self::STEP_PAYMENT,
-					s("Paiement"),
-					ShopUi::dateUrl($eShop, $eDate, 'paiement')
-				];
-		}
+		$steps[] = [
+			self::STEP_PAYMENT,
+			s("Paiement"),
+			ShopUi::dateUrl($eShop, $eDate, 'paiement')
+		];
 
 		$steps[] = [
 			self::STEP_CONFIRMATION,
@@ -487,7 +485,7 @@ class BasketUi {
 
 			if(
 				$eStripeFarm->empty() and
-				($payment === 'onlineCard' or $payment === 'onlineSepaDebit')
+				$payment === 'onlineCard'
 			) {
 				unset($payments[$key]);
 			}
@@ -557,48 +555,41 @@ class BasketUi {
 				$h .= match($payment) {
 					'offline' => s("Paiement avec le producteur"),
 					'onlineCard' => s("Carte Bancaire"),
-					'onlineSepaDebit' => s("Prélèvement bancaire (SEPA)"),
+					'transfer' => s("Virement bancaire"),
 				};
 			$h .= '</h4>';
 
-			$h .= '<p class="shop-payment-description" style="font-weight: bold">';
-				$h .= match($payment) {
-					'offline' => $eShop['paymentOfflineHow'] ? encode($eShop['paymentOfflineHow']) : s("Vous gérez le paiement de votre commande directement avec votre producteur."),
-					'onlineCard' => s("Payez maintenant votre commande en ligne avec votre carte bancaire."),
-					'onlineSepaDebit' => s("Entrez vos coordonnées bancaires une seule fois et payer vos futures commandes en un clic ! Prélèvement après la livraison.")
-				};
+			$h .= '<p class="shop-payment-description">';
+
+				$h .= '<b>';
+					$h .= match($payment) {
+						'offline' => $eShop['paymentOfflineHow'] ? encode($eShop['paymentOfflineHow']) : s("Vous gérez le paiement de votre commande directement avec votre producteur."),
+						'onlineCard' => s("Payez maintenant votre commande en ligne avec votre carte bancaire."),
+						'transfer' => $eShop['paymentTransferHow'] ? encode($eShop['paymentTransferHow']) : s("Vous paierez plus tard votre commande par virement bancaire à réception de facture.")
+					};
+				$h .= '</b>';
+
 			$h .= '</p>';
 
-			if($payment === 'onlineSepaDebit') {
-
-				$eCustomer->expects(['stripeSepa']);
-
-				if($eCustomer['stripeSepa']->hasValid() === FALSE) {
-					$h .= '<p>';
-						$h .= s("Vous avez d'abord besoin de configurer vos coordonnées bancaires pour utiliser ce moyen de paiement.");
-					$h .= '</p>';
-				}
-
-			}
 		$h .= '</div>';
 
-		$editCancel = s("Commande annulable et modifiable jusqu'au {value}.", ['value' => \util\DateUi::textual($eDate['orderEndAt'], \util\DateUi::DATE_HOUR_MINUTE)]);
+		$editCancel = \Asset::icon('check-lg').' '.s("Commande annulable et modifiable jusqu'au {value}.", ['value' => \util\DateUi::textual($eDate['orderEndAt'], \util\DateUi::DATE_HOUR_MINUTE)]);
 		$notEditCancel = s("Commande non annulable et non modifiable.");
 
 		$h .= '<div class="shop-payment-cancel">';
 			$h .= match($payment) {
 				'offline' => $editCancel,
 				'onlineCard' => $notEditCancel,
-				'onlineSepaDebit' => $editCancel
+				'transfer' => $editCancel
 			};
 		$h .= '</div>';
 
 		$h .= '<span class="btn btn-secondary">';
 
 			$h .= match($payment) {
-				'offline' => s("Payer en direct avec le producteur").' ',
-				'onlineCard' => s("Payer par carte bancaire").' ',
-				'onlineSepaDebit' => s("Payer par prélèvement bancaire").' '
+				'offline' => s("Choisir le paiement avec le producteur").' ',
+				'onlineCard' => s("Payer maintenant par carte bancaire").' ',
+				'transfer' => s("Choisir le paiement par virement bancaire").' '
 			};
 
 		$h .= '</span>';
@@ -639,19 +630,23 @@ class BasketUi {
 				};
 				break;
 
-			case \selling\Sale::ONLINE_SEPA :
+			case \selling\Sale::TRANSFER :
+
 				$content .= '<h2>'.\Asset::icon('check').' '.s("Merci, votre commande est confirmée !").'</h2>';
-				$content .= s("Vous allez bientôt recevoir un e-mail de confirmation.<br/>Vous avez choisi de régler cette commande par prélèvement SEPA, votre compte bancaire sera débité le jour du retrait des paniers du montant de la commande qui vous aura été livrée.");
+				$content .= '<p>'.s("Vous allez bientôt recevoir un e-mail de confirmation.").'</p>';
+				$content .= '<p>';
+					$content .= s("Vous avez choisi de régler cette commande par virement bancaire.<br/>Vous recevrez ultérieurement une facture de votre producteur afin de procéder au règlement.");
+				$content .= '</p>';
 				break;
 
 			case \selling\Sale::OFFLINE :
 
 				$content .= '<h2>'.\Asset::icon('check').' '.s("Merci, votre commande est confirmée !").'</h2>';
-				$content .= s("Vous allez bientôt recevoir un e-mail de confirmation.<br/>Vous avez choisi de régler cette commande en direct avec votre producteur.");
-
-				if($eShop['paymentOfflineHow'] !== NULL) {
-					$content .= ' '.encode($eShop['paymentOfflineHow']);
-				}
+				$content .= '<p>'.s("Vous allez bientôt recevoir un e-mail de confirmation.").'</p>';
+				$content .= '<p>';
+					$content .= s("Vous avez choisi de régler cette commande en direct avec votre producteur.");
+				$content .= '</p>';
+				break;
 
 		}
 

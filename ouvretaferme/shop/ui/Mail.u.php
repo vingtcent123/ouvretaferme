@@ -7,7 +7,7 @@ class MailUi {
 
 		$eSale->expects([
 			'shopPoint' => ['type'],
-			'shop' => ['paymentOfflineHow']
+			'shop' => ['paymentOfflineHow', 'paymentTransferHow']
 		]);
 
 		return match($eSale['shopPoint']['type']) {
@@ -21,7 +21,7 @@ class MailUi {
 
 		$eSale->expects([
 			'shopPoint' => ['type'],
-			'shop' => ['paymentOfflineHow']
+			'shop' => ['paymentOfflineHow', 'paymentTransferHow']
 		]);
 
 		return match($eSale['shopPoint']['type']) {
@@ -65,8 +65,8 @@ class MailUi {
 
 		switch($eSale['paymentMethod']) {
 
-			case \selling\Sale::ONLINE_SEPA :
-				$payment = s("Vous ne serez donc pas prélevé du montant de cette commande.")."\n";
+			case \selling\Sale::TRANSFER :
+				$payment = s("Vous ne serez donc pas facturé du montant de cette commande.")."\n";
 				break;
 
 			case \selling\Sale::OFFLINE :

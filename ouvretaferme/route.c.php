@@ -343,11 +343,6 @@ Route::register([
 			'priority' => 1,
 			'route' => ['shop', 'public', 'robots.txt'],
 		],
-		'/shop/public/{fqn}/{date}/:sepaQuelqueChose' => [
-			'request' => 'shop/public',
-			'priority' => 5,
-			'route' => ['shop', 'public', '{fqn}', '{date}', ':sepaQuelqueChose'],
-		],
 		'/shop/public/{fqn}/{date}/confirmation' => [
 			'request' => 'shop/public',
 			'priority' => 5,

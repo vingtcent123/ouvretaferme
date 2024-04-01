@@ -51,9 +51,10 @@ class ShopModel extends \ModuleModel {
 			'name' => ['text8', 'min' => 1, 'max' => NULL, 'collate' => 'general', 'cast' => 'string'],
 			'email' => ['email', 'cast' => 'string'],
 			'frequency' => ['enum', [\shop\Shop::WEEKLY, \shop\Shop::BIMONTHLY, \shop\Shop::MONTHLY, \shop\Shop::OTHER], 'cast' => 'enum'],
-			'paymentOnlineOnly' => ['bool', 'cast' => 'bool'],
 			'paymentCard' => ['bool', 'cast' => 'bool'],
-			'paymentSepaDebit' => ['bool', 'cast' => 'bool'],
+			'paymentTransfer' => ['bool', 'cast' => 'bool'],
+			'paymentTransferHow' => ['text8', 'min' => 1, 'max' => NULL, 'null' => TRUE, 'cast' => 'string'],
+			'paymentOffline' => ['bool', 'cast' => 'bool'],
 			'paymentOfflineHow' => ['text8', 'min' => 1, 'max' => NULL, 'null' => TRUE, 'cast' => 'string'],
 			'description' => ['editor24', 'null' => TRUE, 'cast' => 'string'],
 			'terms' => ['editor24', 'null' => TRUE, 'cast' => 'string'],
@@ -67,7 +68,7 @@ class ShopModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'fqn', 'farm', 'logo', 'name', 'email', 'frequency', 'paymentOnlineOnly', 'paymentCard', 'paymentSepaDebit', 'paymentOfflineHow', 'description', 'terms', 'termsField', 'orderMin', 'shipping', 'shippingUntil', 'status', 'createdAt', 'createdBy'
+			'id', 'fqn', 'farm', 'logo', 'name', 'email', 'frequency', 'paymentCard', 'paymentTransfer', 'paymentTransferHow', 'paymentOffline', 'paymentOfflineHow', 'description', 'terms', 'termsField', 'orderMin', 'shipping', 'shippingUntil', 'status', 'createdAt', 'createdBy'
 		]);
 
 		$this->propertiesToModule += [
@@ -89,14 +90,14 @@ class ShopModel extends \ModuleModel {
 			case 'frequency' :
 				return Shop::WEEKLY;
 
-			case 'paymentOnlineOnly' :
-				return FALSE;
-
 			case 'paymentCard' :
 				return FALSE;
 
-			case 'paymentSepaDebit' :
+			case 'paymentTransfer' :
 				return FALSE;
+
+			case 'paymentOffline' :
+				return TRUE;
 
 			case 'termsField' :
 				return FALSE;
@@ -170,16 +171,20 @@ class ShopModel extends \ModuleModel {
 		return $this->where('frequency', ...$data);
 	}
 
-	public function wherePaymentOnlineOnly(...$data): ShopModel {
-		return $this->where('paymentOnlineOnly', ...$data);
-	}
-
 	public function wherePaymentCard(...$data): ShopModel {
 		return $this->where('paymentCard', ...$data);
 	}
 
-	public function wherePaymentSepaDebit(...$data): ShopModel {
-		return $this->where('paymentSepaDebit', ...$data);
+	public function wherePaymentTransfer(...$data): ShopModel {
+		return $this->where('paymentTransfer', ...$data);
+	}
+
+	public function wherePaymentTransferHow(...$data): ShopModel {
+		return $this->where('paymentTransferHow', ...$data);
+	}
+
+	public function wherePaymentOffline(...$data): ShopModel {
+		return $this->where('paymentOffline', ...$data);
 	}
 
 	public function wherePaymentOfflineHow(...$data): ShopModel {
