@@ -340,15 +340,58 @@ a.sale-document-new .sale-document-status {
 }
 
 .sale-next {
-	display: grid;
-	grid-template-columns: auto 1fr;
-	grid-column-gap: 1rem;
-	align-items: center;
 	margin-bottom: 1rem;
 }
 
-.sale-next svg {
-	font-size: 2rem;
+.sale-next h4 {
+	color: var(--primary);
+}
+
+.sale-next-list {
+	display: flex;
+	align-items: center;
+	flex-wrap: wrap;
+	gap: 0.5rem 0.75rem;
+}
+
+.sale-next-title {
+	font-weight: bold;
+	padding-right: 0.5rem;
+}
+
+a.sale-next-item {
+	padding: .75rem;
+	display: inline-block;
+	text-align: center;
+	border-radius: var(--radius);
+}
+
+a.sale-next-item:hover {
+	text-decoration: none;
+	background-color: var(--secondary);
+	color: white;
+}
+
+.sale-next-item h5 {
+	padding-bottom: 0.5rem;
+	margin-bottom: 0.5rem;
+	font-weight: normal;
+	font-size: 1.1rem;
+}
+
+.sale-next-item div {
+	font-size: 1.5rem;
+	line-height: 1;
+	font-weight: lighter;
+}
+
+a.sale-next-item:not(:hover) h5 {
+	border-bottom: 1px solid var(--secondary);
+	color: var(--muted);
+}
+
+a.sale-next-item:not(:hover) div {
+	color: var(--secondary);
 }
 
 tbody.sale-invoice-paid td {

@@ -102,7 +102,7 @@ class ShopManageUi {
 		$h = '<div class="tabs-h" id="shop-tabs" onrender="'.encode('Lime.Tab.restore(this, "dates"'.(get_exists('tab') ? ', "'.GET('tab', ['dates', 'points'], 'dates').'"' : '').')').'">';
 
 			$h .= '<div class="tabs-item">';
-				$h .= '<a class="tab-item selected" data-tab="dates" onclick="Lime.Tab.select(this)">'.s("Dernières dates").'</a>';
+				$h .= '<a class="tab-item selected" data-tab="dates" onclick="Lime.Tab.select(this)">'.s("Dernières dates de vente").'</a>';
 				$h .= '<a class="tab-item" data-tab="points" onclick="Lime.Tab.select(this)">'.s("Modes de livraison").'</a>';
 			$h .= '</div>';
 
@@ -181,7 +181,7 @@ class ShopManageUi {
 
 			$h .= '<div>';
 				if($eShop->canWrite()) {
-					$h .= '<a href="/shop/date:create?shop='.$eShop['id'].'&farm='.$eFarm['id'].'" class="btn btn-outline-primary">'.\Asset::icon('plus-circle').'<span class="hide-xs-down">  '.s("Nouvelle date").'</span></a>';
+					$h .= '<a href="/shop/date:create?shop='.$eShop['id'].'&farm='.$eFarm['id'].'" class="btn btn-outline-primary">'.\Asset::icon('plus-circle').'<span class="hide-xs-down">  '.s("Nouvelle date de vente").'</span></a>';
 				}
 			$h .= '</div>';
 		$h .= '</div>';

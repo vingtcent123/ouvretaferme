@@ -111,30 +111,28 @@ class SaleUi {
 
 		$h = '<div class="sale-next">';
 
-			$h .= '<div title="'.s("Ventes à venir").'">';
-				$h .= \Asset::icon('arrow-up-right');
-			$h .= '</div>';
+			$h .= '<div class="sale-next-list">';
 
-			$h .= '<ul class="util-summarize util-summarize-column">';
+				$h .= '<div class="sale-next-title">';
+					$h .= s("À venir");
+				$h .= '</div>';
 
 				foreach($nextSales as ['deliveredAt' => $date, 'turnover' => $turnover]) {
 
-					$h .= '<li>';
-						$h .= '<a href="/selling/item:getDeliveredAt?farm='.$eFarm['id'].'&date='.$date.''.($type ? '&type='.$type : '').'">';
-							$h .= '<h5>'.\util\DateUi::numeric($date).'</h5>';
-							$h .= '<div>';
-								if($turnover > 0) {
-									$h .= \util\TextUi::money($turnover, precision: 0);
-								} else {
-									$h .= '?';
-								}
-							$h .= '</div>';
-						$h .= '</a>';
-					$h .= '</li>';
+					$h .= '<a class="sale-next-item" href="/selling/item:getDeliveredAt?farm='.$eFarm['id'].'&date='.$date.''.($type ? '&type='.$type : '').'">';
+						$h .= '<h5>'.\util\DateUi::numeric($date).'</h5>';
+						$h .= '<div>';
+							if($turnover > 0) {
+								$h .= \util\TextUi::money($turnover, precision: 0);
+							} else {
+								$h .= '?';
+							}
+						$h .= '</div>';
+					$h .= '</a>';
 
 				}
 
-			$h .= '</ul>';
+			$h .= '</div>';
 
 		$h .= '</div>';
 

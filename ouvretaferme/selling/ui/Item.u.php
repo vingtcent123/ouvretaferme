@@ -313,7 +313,7 @@ class ItemUi {
 
 			$h .= '<div class="tabs-h" id="item-preparation-wrapper">';
 
-				$h .= '<div class="tabs-item hide-md-up">';
+				$h .= '<div class="tabs-item">';
 					$h .= '<a class="tab-item selected" data-tab="product" onclick="Lime.Tab.select(this)">';
 						$h .= s("Par produit");
 					$h .= '</a>';
@@ -324,11 +324,9 @@ class ItemUi {
 
 				$h .= '<div id="item-preparation">';
 					$h .= '<div data-tab="product" class="tab-panel selected">';
-						$h .= '<h3 class="hide-sm-down">'.s("Par produit").'</h3>';
 						$h .= $this->getItemsByProduct($cSale, $ccItemProduct);
 					$h .= '</div>';
 					$h .= '<div data-tab="sale" class="tab-panel">';
-						$h .= '<h3 class="hide-sm-down">'.s("Par vente").'</h3>';
 						$h .= $this->getItemsBySale($cSale, $ccItemSale);
 					$h .= '</div>';
 				$h .= '</div>';

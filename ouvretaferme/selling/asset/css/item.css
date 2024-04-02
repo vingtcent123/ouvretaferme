@@ -135,13 +135,13 @@ div.item-add-one-actions {
 /* Articles commandés par jour */
 .item-day-wrapper {
 	display: grid;
-	grid-template-columns: minmax(auto, 20rem) 1fr;
+	grid-template-columns: auto 1fr;
 	grid-gap: 1rem;
 	align-items: start;
 	margin-bottom: 2rem;
 }
 
-@media (max-width: 499px) {
+@media (max-width: 767px) {
 
 	.item-day-wrapper {
 		grid-template-columns: 1fr;
@@ -160,19 +160,11 @@ div.item-add-one-actions {
 	line-height: 1.5;
 }
 
-@media (min-width: 992px) and (max-width: 1199px) {
-
-	.item-day-product {
-		max-width: 12rem;
-	}
-
-}
-
 .item-day-sales {
 	margin-bottom: 0;
 }
 
-@media (max-width: 499px) {
+@media (max-width: 767px) {
 
 	.item-day-sales {
 		border-bottom: 1px solid var(--border);
@@ -182,7 +174,7 @@ div.item-add-one-actions {
 
 }
 
-@media (min-width: 499px) {
+@media (min-width: 768px) {
 
 	.item-day-sales {
 		border-left: 1px solid var(--border);
@@ -195,41 +187,6 @@ div.item-add-one-actions {
 .item-day-sales li:not(:last-child) {
 	margin-bottom: 0.25rem;
 }
-
-@media (min-width: 768px) {
-
-	#item-preparation {
-		display: grid;
-	}
-
-	#item-preparation > *:not(.selected) {
-		display: block;
-	}
-
-}
-
-@media (max-width: 991px) {
-
-	#item-preparation {
-		grid-template-columns: 1fr;
-	}
-
-}
-
-@media (min-width: 992px) {
-
-	#item-preparation {
-		grid-template-columns: 1fr 1fr;
-		grid-column-gap: 1rem;
-	}
-
-	#item-preparation > *:not(:last-child) {
-		border-right: 1px solid var(--border);
-		padding-right: 1rem;
-	}
-
-}
-
 
 
 @media (max-width: 575px) {
