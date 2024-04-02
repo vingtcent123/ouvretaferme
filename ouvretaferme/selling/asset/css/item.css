@@ -133,6 +133,28 @@ div.item-add-one-actions {
 }
 
 /* Articles commandés par jour */
+.item-day-summary {
+	margin-bottom: 2rem;
+}
+
+@media (min-width: 767px) {
+
+	.item-day-summary {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		grid-column-gap: 2rem;
+	}
+
+}
+
+.item-day-summary table {
+	margin-bottom: 0;
+}
+
+.item-day-summary-product {
+	line-height: 1.3;
+}
+
 .item-day-wrapper {
 	display: grid;
 	grid-template-columns: auto 1fr;

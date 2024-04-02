@@ -314,7 +314,10 @@ class ItemUi {
 			$h .= '<div class="tabs-h" id="item-preparation-wrapper">';
 
 				$h .= '<div class="tabs-item">';
-					$h .= '<a class="tab-item selected" data-tab="product" onclick="Lime.Tab.select(this)">';
+					$h .= '<a class="tab-item selected" data-tab="summary" onclick="Lime.Tab.select(this)">';
+						$h .= s("Synthèse");
+					$h .= '</a>';
+					$h .= '<a class="tab-item" data-tab="product" onclick="Lime.Tab.select(this)">';
 						$h .= s("Par produit");
 					$h .= '</a>';
 					$h .= '<a class="tab-item" data-tab="sale" onclick="Lime.Tab.select(this)">';
@@ -323,16 +326,18 @@ class ItemUi {
 				$h .= '</div>';
 
 				$h .= '<div id="item-preparation">';
-					$h .= '<div data-tab="product" class="tab-panel selected">';
+					$h .= '<div data-tab="summary" class="tab-panel selected">';
+						$h .= $this->getItemsBySummary($cSale, $ccItemProduct);
+						$h .= '<h3>'.s("État des ventes").'</h3>';
+						$h .= (new SaleUi())->getList($eFarm, $cSale);
+					$h .= '</div>';
+					$h .= '<div data-tab="product" class="tab-panel">';
 						$h .= $this->getItemsByProduct($cSale, $ccItemProduct);
 					$h .= '</div>';
 					$h .= '<div data-tab="sale" class="tab-panel">';
 						$h .= $this->getItemsBySale($cSale, $ccItemSale);
 					$h .= '</div>';
 				$h .= '</div>';
-
-				$h .= '<h3>'.s("État des ventes").'</h3>';
-				$h .= (new SaleUi())->getList($eFarm, $cSale);
 
 			$h .= '</div>';
 
@@ -342,6 +347,52 @@ class ItemUi {
 			title: s("Commandes pour le {value}", lcfirst(\util\DateUi::getDayName(date('N', strtotime($date)))).' '.\util\DateUi::textual($date, \util\DateUi::DAY_MONTH)),
 			body: $h
 		);
+
+	}
+
+	public function getItemsBySummary(\Collection $cSale, \Collection $ccItem): string {
+
+		$middle = (int)($ccItem->count() / 2);
+		$ccItemFirst = $ccItem->slice(0, $middle);
+		$ccItemLast = $ccItem->slice($middle);
+
+		$h = '<div class="item-day-summary">';
+
+		foreach([$ccItemFirst, $ccItemLast] as $ccItemChunk) {
+
+			$h .= '<table class="tr-bordered">';
+
+				$h .= '<tbody>';
+
+				foreach($ccItemChunk as $cItem) {
+
+					$eProduct = $cItem->first()['product'];
+					$total = $cItem->reduce(fn($eItem, $v) => $v + ($eItem['packaging'] ?? 1) * $eItem['number'], 0);
+
+					$h .= '<tr>';
+						$h .= '<td class="td-min-content">'.ProductUi::getVignette($eProduct, '2.5rem').'</td>';
+						$h .= '<td class="item-day-summary-product">';
+							$h .= encode($eProduct->getName());
+							if($eProduct['size']) {
+								$h .= ' <br class="hide-lg-up"/><small class="color-muted">'.s("Calibre {value}", '<u>'.encode($eProduct['size']).'</u>').'</small>';
+							}
+						$h .= '</td>';
+						$h .= '<td class="text-end" style="padding-right: 1rem">';
+							$h .= '&nbsp;<span class="annotation" style="color: var(--order)">'.\main\UnitUi::getValue(round($total, 2), $cItem->first()['unit'], TRUE).'</span>';
+						$h .= '</td>';
+					$h .= '</tr>';
+
+
+				}
+
+				$h .= '</tbody>';
+			$h .= '</table>';
+
+		}
+
+		$h .= '</div>';
+
+		return $h;
 
 	}
 
