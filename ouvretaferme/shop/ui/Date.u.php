@@ -543,7 +543,7 @@ class DateUi {
 
 							$h .= '<td class="text-end">';
 								if($eDate['sales']['countValid'] > 0) {
-									$h .= $eDate['sales']['amountIncludingVat'] ? \util\TextUi::money($eDate['sales']['amountIncludingVat']) : '-';
+									$h .= $eDate['sales']['amountValidIncludingVat'] ? \util\TextUi::money($eDate['sales']['amountValidIncludingVat']) : '-';
 								}
 							$h .= '</td>';
 
