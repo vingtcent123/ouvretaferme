@@ -829,7 +829,17 @@ tbody .td-checkbox > label {
 }
 
 a.util-action-navigation > svg {
-	font-size: 1rem;
+	font-size: 1.3rem;
+	vertical-align: baseline;
+}
+
+a.util-action-navigation:hover > svg.asset-icon-caret-down-fill,
+a.util-action-navigation[data-dropdown-display] > svg.asset-icon-caret-down-fill {
+	display: none;
+}
+
+a.util-action-navigation:not(:hover):not([data-dropdown-display]) > svg.asset-icon-caret-down-square-fill {
+	display: none;
 }
 
 div.util-action-subtitle {

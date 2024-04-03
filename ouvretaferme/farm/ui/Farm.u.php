@@ -583,8 +583,8 @@ class FarmUi {
 
 		$h = '<div class="util-action">';
 			$h .= '<h1>';
-				$h .= '<a class="util-action-navigation dropdown-toggle" data-dropdown="bottom-start" data-dropdown-hover="true">';
-					$h .= $uiFarm->getSeriesCategories($eFarm)[$selectedView];
+				$h .= '<a class="util-action-navigation" data-dropdown="bottom-start" data-dropdown-hover="true">';
+					$h .= $uiFarm->getSeriesCategories($eFarm)[$selectedView].' '.self::getNavigation();
 				$h .= '</a>';
 				$h .= '<div class="dropdown-list bg-secondary">';
 					$h .= '<div class="dropdown-title">'.s("Séries").'</div>';
@@ -859,7 +859,7 @@ class FarmUi {
 		$h = '<div class="util-action">';
 			$h .= '<h1>';
 				$h .= '<a class="util-action-navigation" data-dropdown="bottom-start" data-dropdown-hover="true">';
-					$h .= $title.' '.\Asset::icon('caret-down-fill');
+					$h .= $title.' '.self::getNavigation();
 				$h .= '</a>';
 				$h .= '<div class="dropdown-list bg-secondary">';
 					$h .= '<div class="dropdown-title">'.s("Ventes").'</div>';
@@ -961,7 +961,7 @@ class FarmUi {
 		$h = '<div class="util-action">';
 			$h .= '<h1>';
 				$h .= '<a class="util-action-navigation" data-dropdown="bottom-start" data-dropdown-hover="true">';
-					$h .= s("Rapports de production");
+					$h .= s("Rapports de production").' '.self::getNavigation();
 				$h .= '</a>';
 				$h .= $uiFarm->getSeasonsTabs($eFarm, fn($season) => \farm\FarmUi::urlAnalyzeReport($eFarm, season: $season), $selectedSeason);
 			$h .= '</h1>';
@@ -983,7 +983,7 @@ class FarmUi {
 		$h = '<div class="util-action">';
 			$h .= '<h1>';
 				$h .= '<a class="util-action-navigation" data-dropdown="bottom-start" data-dropdown-hover="true">';
-					$h .= $categories[$selectedView].' '.\Asset::icon('caret-down-fill');
+					$h .= $categories[$selectedView].' '.self::getNavigation();
 				$h .= '</a>';
 				$h .= '<div class="dropdown-list bg-secondary">';
 					$h .= '<div class="dropdown-title">'.s("Temps de travail").'</div>';
@@ -1032,7 +1032,7 @@ class FarmUi {
 		$h = '<div class="util-action">';
 			$h .= '<h1>';
 				$h .= '<a class="util-action-navigation" data-dropdown="bottom-start" data-dropdown-hover="true">';
-					$h .= $categories[$selectedView].' '.\Asset::icon('caret-down-fill');
+					$h .= $categories[$selectedView].' '.self::getNavigation();
 				$h .= '</a>';
 				$h .= '<div class="dropdown-list bg-secondary">';
 					$h .= '<div class="dropdown-title">'.s("Ventes").'</div>';
@@ -1091,7 +1091,7 @@ class FarmUi {
 		$h = '<div class="util-action">';
 			$h .= '<h1>';
 				$h .= '<a class="util-action-navigation" data-dropdown="bottom-start" data-dropdown-hover="true">';
-					$h .= $categories[$selectedView].' '.\Asset::icon('caret-down-fill');
+					$h .= $categories[$selectedView].' '.self::getNavigation();
 				$h .= '</a>';
 				$h .= '<div class="dropdown-list bg-secondary">';
 					$h .= '<div class="dropdown-title">'.s("Cultures").'</div>';
@@ -1439,6 +1439,10 @@ class FarmUi {
 
 		return '<div class="'.$class.'" style="width: '.$width.'; max-width: 100%; height: auto; aspect-ratio: 5; '.$style.'"></div>';
 
+	}
+
+	public static function getNavigation(): string {
+		return \Asset::icon('caret-down-fill').\Asset::icon('caret-down-square-fill');
 	}
 
 	public static function p(string $property): \PropertyDescriber {

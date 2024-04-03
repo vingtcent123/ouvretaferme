@@ -83,7 +83,7 @@ class AnalyzeUi {
 			return $h;
 		}
 
-		$h .= '<a data-dropdown="bottom-start" data-dropdown-hover="true" class="util-action-navigation">'.$selectedYear.' '.\Asset::icon('caret-down-fill').'</a>';
+		$h .= '<a data-dropdown="bottom-start" data-dropdown-hover="true" class="util-action-navigation">'.$selectedYear.' '.FarmUi::getNavigation().'</a>';
 
 		$h .= '<div class="dropdown-list dropdown-list-3 bg-secondary">';
 
