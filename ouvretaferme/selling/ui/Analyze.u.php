@@ -12,7 +12,7 @@ class AnalyzeUi {
 
 	public function getTurnover(\farm\Farm $eFarm, \Collection $cSaleTurnover, ?int $year, ?string $month, ?string $week): string {
 
-		$h = '<ul class="util-summarize">';
+		$h = '<ul class="util-summarize util-summarize-overflow">';
 
 			foreach($cSaleTurnover as $eSaleTurnover) {
 				$h .= '<li '.($eSaleTurnover['year'] === $year ? 'class="selected"' : '').'>';

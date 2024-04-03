@@ -109,12 +109,12 @@ class SaleUi {
 			return '';
 		}
 
-		$h = '<ul class="util-summarize">';
+		$h = '<ul class="util-summarize util-summarize-overflow">';
 
 			foreach($nextSales as ['deliveredAt' => $date, 'turnover' => $turnover]) {
 
 				$h .= '<li>';
-					$h .= '<a href="/selling/item:getDeliveredAt?farm='.$eFarm['id'].'&date='.$date.''.($type ? '&type='.$type : '').'">';
+					$h .= '<a href="/selling/item:getDeliveredAt?farm='.$eFarm['id'].'&date='.$date.''.($type ? '&type='.$type : '').'" style="'.($date < currentDate() ? 'opacity: 0.5' : '').'">';
 						$h .= '<h5>'.\util\DateUi::numeric($date).'</h5>';
 						$h .= '<div>';
 							if($turnover > 0) {

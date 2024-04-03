@@ -227,19 +227,33 @@ class SaleLib extends SaleCrud {
 			Sale::model()->whereType($type);
 		}
 
-		return Sale::model()
+		$getSales = fn(string $sign, int $sort, int $number) => Sale::model()
 			->select([
 				'deliveredAt',
 				'turnover' => new \Sql('SUM(priceExcludingVat)', 'float')
 			])
 			->whereFarm($eFarm)
 			->wherePreparationStatus('IN', [Sale::CONFIRMED, Sale::PREPARED, Sale::SELLING, Sale::DELIVERED])
-			->whereDeliveredAt('>=', currentDate())
+			->whereDeliveredAt($sign, currentDate())
 			->whereMarketParent(NULL)
 			->group('deliveredAt')
-			->sort('deliveredAt')
-			->getCollection(0, 4)
+			->sort(['deliveredAt' => $sort])
+			->getCollection(0, $number)
 			->getArrayCopy();
+
+		$sales = $getSales('>=', SORT_ASC, 5);
+
+		if(count($sales) < 5) {
+
+			$oldSales = $getSales('<', SORT_DESC, 5 - count($sales));
+
+			if($oldSales) {
+				$sales = array_merge($sales, $oldSales);
+			}
+
+		}
+
+		return $sales;
 
 	}
 

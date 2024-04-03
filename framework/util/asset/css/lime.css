@@ -1114,6 +1114,11 @@ ul.util-summarize {
 	list-style-type: none;
 }
 
+ul.util-summarize-overflow {
+	overflow-x: auto;
+	flex-wrap: nowrap;
+}
+
 ul.util-summarize:not(:last-child) {
 	margin-bottom: 1rem;
 }
@@ -1169,11 +1174,16 @@ ul.util-summarize li .util-summarize-muted {
 	color: var(--muted);
 }
 
+ul.util-summarize li.selected .util-summarize-muted,
+ul.util-summarize li > a:hover .util-summarize-muted {
+	color: #fffd;
+}
+
 @media (max-width: 575px) {
 
 	ul.util-summarize li {
 		font-size: 1.4rem;
-		padding: 0.75rem 1rem;
+		padding: 0.5rem;
 	}
 
 	ul.util-summarize li h5 {
@@ -1181,8 +1191,8 @@ ul.util-summarize li .util-summarize-muted {
 	}
 
 	ul.util-summarize li > a {
-		padding: 0.75rem 1rem;
-		margin: -0.75rem -1rem;
+		padding: 0.75rem;
+		margin: -0.5rem;
 	}
 
 }
