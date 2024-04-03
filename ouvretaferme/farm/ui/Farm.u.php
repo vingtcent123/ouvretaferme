@@ -906,7 +906,7 @@ class FarmUi {
 	protected function getSellingSalesCategories(): array {
 		return [
 			Farmer::ALL => s("Toutes les ventes"),
-			Farmer::PRO => s("Ventes aux professionels"),
+			Farmer::PRO => s("Ventes aux professionnels"),
 			Farmer::PRIVATE => s("Ventes aux particuliers"),
 			NULL,
 			Farmer::INVOICE => s("Factures"),
