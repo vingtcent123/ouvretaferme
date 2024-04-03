@@ -371,7 +371,7 @@ class ItemUi {
 
 					$h .= '<tr>';
 						$h .= '<td class="td-min-content">'.ProductUi::getVignette($eProduct, '2.5rem').'</td>';
-						$h .= '<td class="item-day-summary-product">';
+						$h .= '<td class="item-day-product-name">';
 							$h .= encode($eProduct->getName());
 							if($eProduct['size']) {
 								$h .= ' <br class="hide-lg-up"/><small class="color-muted">'.s("Calibre {value}", '<u>'.encode($eProduct['size']).'</u>').'</small>';
@@ -407,11 +407,11 @@ class ItemUi {
 
 			$h .= '<div class="item-day-product">';
 				$h .= ProductUi::getVignette($eProduct, '2.5rem');
-				$h .= '<div>';
+				$h .= '<div class="item-day-product-name">';
 					$h .= encode($eProduct->getName());
 					$h .= '&nbsp;<span class="annotation" style="color: var(--order)">'.\main\UnitUi::getValue(round($total, 2), $cItem->first()['unit'], TRUE).'</span>';
 					if($eProduct['size']) {
-						$h .= '<div><small>'.s("Calibre {value}", '<u>'.encode($eProduct['size']).'</u>').'</small></div>';
+						$h .= '<div><small class="color-muted">'.s("Calibre {value}", '<u>'.encode($eProduct['size']).'</u>').'</small></div>';
 					}
 				$h .= '</div>';
 			$h .= '</div>';

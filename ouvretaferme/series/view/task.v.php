@@ -101,7 +101,11 @@ new JsonView('doCreate', function($data, AjaxTemplate $t) {
 		if($data->e['doneDate']) {
 			$date = '&date='.$data->e['doneDate'];
 		} else if($data->e['doneWeek']) {
-			$date = '&date='.week_date_starts($data->e['doneWeek']);
+			if($data->e['doneWeek'] === currentWeek()) {
+				$date = '&date='.currentDate();
+			} else {
+				$date = '&date='.week_date_starts($data->e['doneWeek']);
+			}
 		} else {
 			$date = '';
 		}
