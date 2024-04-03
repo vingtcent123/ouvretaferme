@@ -12,7 +12,7 @@ class AnalyzeUi {
 
 	public function getTurnover(\farm\Farm $eFarm, \Collection $cSaleTurnover, ?int $year, ?string $month, ?string $week): string {
 
-		$h = '<ul class="util-summarize util-summarize-column">';
+		$h = '<ul class="util-summarize">';
 
 			foreach($cSaleTurnover as $eSaleTurnover) {
 				$h .= '<li '.($eSaleTurnover['year'] === $year ? 'class="selected"' : '').'>';
@@ -30,7 +30,7 @@ class AnalyzeUi {
 
 	public function getShopTurnover(\farm\Farm $eFarm, \shop\Shop $eShop, \Collection $cSaleTurnover, ?int $year): string {
 
-		$h = '<ul class="util-summarize util-summarize-column">';
+		$h = '<ul class="util-summarize">';
 
 			foreach($cSaleTurnover as $eSaleTurnover) {
 				$h .= '<li '.($eSaleTurnover['year'] === $year ? 'class="selected"' : '').'>';
@@ -1197,7 +1197,7 @@ class AnalyzeUi {
 								if($eItem['product']['id'] !== NULL) {
 									$h .= ProductUi::getVignette($eItem['product'], '2rem').'&nbsp;&nbsp;'.ProductUi::link($eItem['product']);
 								} else {
-									$h .= encode($eItem['product']->getName());
+									$h .= encode($eItem['product']['name']);
 								}
 							$h .= '</td>';
 
@@ -1582,7 +1582,7 @@ class AnalyzeUi {
 
 	public function getCustomerTurnover(\Collection $cSaleTurnover, ?int $year, Customer $eCustomer, bool $inPanel = FALSE): string {
 
-		$h = '<ul class="util-summarize util-summarize-column">';
+		$h = '<ul class="util-summarize">';
 
 			foreach($cSaleTurnover as $eSaleTurnover) {
 				$h .= '<li '.($eSaleTurnover['year'] === $year ? 'class="selected"' : '').'>';
@@ -1679,7 +1679,7 @@ class AnalyzeUi {
 
 	public function getPlantTurnover(\Collection $cItemTurnover, ?int $year, ?\plant\Plant $ePlantLink): string {
 
-		$h = '<ul class="util-summarize util-summarize-column">';
+		$h = '<ul class="util-summarize">';
 
 			foreach($cItemTurnover as $eItemTurnover) {
 				$h .= '<li '.($eItemTurnover['year'] === $year ? 'class="selected"' : '').'>';
@@ -1770,7 +1770,7 @@ class AnalyzeUi {
 
 	public function getProductTurnover(\Collection $cItemTurnover, ?int $year, ?Product $eProductLink): string {
 
-		$h = '<ul class="util-summarize util-summarize-column">';
+		$h = '<ul class="util-summarize">';
 
 			foreach($cItemTurnover as $eItemTurnover) {
 				$h .= '<li '.($eItemTurnover['year'] === $year ? 'class="selected"' : '').'>';

@@ -168,7 +168,7 @@ class ReportUi {
 
 			$h .= $form->hidden('id', $eReport['id']);
 
-			$h .= '<ul class="util-summarize util-summarize-column report-test-form">';
+			$h .= '<ul class="util-summarize report-test-form">';
 				if($eReport['area'] > 0) {
 					$h .= '<li>';
 						$h .= '<h5>'.s("Surface").'</h5>';
@@ -912,7 +912,7 @@ class ReportUi {
 
 		$h = '<h3>'.s("Synthèse du rapport").'</h3>';
 
-		$h .= '<ul class="util-summarize util-summarize-column">';
+		$h .= '<ul class="util-summarize">';
 			$h .= '<li>';
 				$h .= '<h5>'.s("Ventes").'</h5>';
 				$h .= '<div>'.s("{value} €", '<span id="report-create-turnover"></span>').'</div>';

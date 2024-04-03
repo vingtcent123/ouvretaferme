@@ -344,7 +344,7 @@ class OrderUi {
 			$eSale['type'] === Sale::PRO
 		) {
 
-			$h .= '<ul class="util-summarize util-summarize-column">';
+			$h .= '<ul class="util-summarize">';
 				$h .= '<li>';
 					$h .= '<h5>'.s("Montant HT").'</h5>';
 					$h .= \util\TextUi::money($eSale['priceExcludingVat']);

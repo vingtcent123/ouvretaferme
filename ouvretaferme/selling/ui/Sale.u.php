@@ -109,17 +109,12 @@ class SaleUi {
 			return '';
 		}
 
-		$h = '<div class="sale-next">';
+		$h = '<ul class="util-summarize">';
 
-			$h .= '<div class="sale-next-list">';
+			foreach($nextSales as ['deliveredAt' => $date, 'turnover' => $turnover]) {
 
-				$h .= '<div class="sale-next-title">';
-					$h .= s("À venir");
-				$h .= '</div>';
-
-				foreach($nextSales as ['deliveredAt' => $date, 'turnover' => $turnover]) {
-
-					$h .= '<a class="sale-next-item" href="/selling/item:getDeliveredAt?farm='.$eFarm['id'].'&date='.$date.''.($type ? '&type='.$type : '').'">';
+				$h .= '<li>';
+					$h .= '<a href="/selling/item:getDeliveredAt?farm='.$eFarm['id'].'&date='.$date.''.($type ? '&type='.$type : '').'">';
 						$h .= '<h5>'.\util\DateUi::numeric($date).'</h5>';
 						$h .= '<div>';
 							if($turnover > 0) {
@@ -129,12 +124,11 @@ class SaleUi {
 							}
 						$h .= '</div>';
 					$h .= '</a>';
+				$h .= '</li>';
 
-				}
+			}
 
-			$h .= '</div>';
-
-		$h .= '</div>';
+		$h .= '</ul>';
 
 		return $h;
 
@@ -808,7 +802,7 @@ class SaleUi {
 							$h .= '<h4>'.CustomerUi::getColorCircle($eSale['customer']).' '.CustomerUi::link($eSale['customer']).'</h4>';
 							$h .= $form->inputCheckbox('sales[]', $eSale['id']);
 						$h .= '</div>';
-						$h .= '<ul class="util-summarize util-summarize-column">';
+						$h .= '<ul class="util-summarize">';
 							$h .= '<li>';
 								$h .= '<h5>'.s("Articles").'</h5>';
 								$h .= $eSale['items'];
@@ -1047,7 +1041,7 @@ class SaleUi {
 
 	public static function getSummary(Sale $eSale, bool $onlyIncludingVat = FALSE): string {
 
-			$h = '<ul class="util-summarize util-summarize-column">';
+			$h = '<ul class="util-summarize">';
 				$h .= '<li>';
 					$h .= '<h5>'.s("Articles").'</h5>';
 					$h .= $eSale['items'];

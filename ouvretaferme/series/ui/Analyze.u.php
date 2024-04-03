@@ -565,7 +565,7 @@ class AnalyzeUi {
 
 	public function getPlantTimesheet(\plant\Plant $ePlant, \Collection $cPlantTimesheet, ?int $year): string {
 
-		$h = '<ul class="util-summarize util-summarize-column">';
+		$h = '<ul class="util-summarize">';
 
 			foreach($cPlantTimesheet as $ePlantTimesheet) {
 

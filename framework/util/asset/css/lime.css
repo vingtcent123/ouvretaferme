@@ -1107,6 +1107,7 @@ a.util-box-close {
 
 ul.util-summarize {
 	display: flex;
+	gap: 0.5rem;
 	flex-wrap: wrap;
 	margin: 0;
 	padding: 0;
@@ -1118,9 +1119,12 @@ ul.util-summarize:not(:last-child) {
 }
 
 ul.util-summarize li {
-	font-size: 1.75rem;
+	font-size: 1.5rem;
 	font-weight: lighter;
 	line-height: 1.2;
+	padding: 1rem;
+	text-align: center;
+	border-radius: var(--radius);
 }
 
 ul.util-summarize li.selected {
@@ -1129,21 +1133,31 @@ ul.util-summarize li.selected {
 
 ul.util-summarize li > a {
 	display: block;
-	transition: all 0.5s;
+	margin: -1rem -1rem;
+	padding: 1rem 1rem;
+	border-radius: var(--radius);
 }
 
+ul.util-summarize li.selected > a,
 ul.util-summarize li > a:hover {
 	text-decoration: none;
-	background-color: var(--background);
+	background-color: var(--secondary);
+	color: white;
 }
 
 ul.util-summarize li h5 {
-	font-size: 1rem;
-	margin-bottom: .25rem;
-	font-weight: lighter;
-	text-transform: uppercase;
-	color: var(--primary);
-	transition: all 0.5s;
+	padding-bottom: 0.5rem;
+	margin-bottom: 0.5rem;
+	font-weight: normal;
+	font-size: 1.1rem;
+	border-bottom: 1px solid var(--secondary);
+	color: var(--muted);
+}
+
+ul.util-summarize li.selected > a h5,
+ul.util-summarize li > a:hover h5 {
+	color: white;
+	border-bottom: 1px solid #fff8;
 }
 
 ul.util-summarize li > div:not(:last-child) {
@@ -1155,64 +1169,20 @@ ul.util-summarize li .util-summarize-muted {
 	color: var(--muted);
 }
 
-ul.util-summarize.util-summarize-column li {
-	padding: 1rem 1rem;
-	text-align: center;
-}
-
-ul.util-summarize.util-summarize-column li > a {
-	margin: -1rem -1rem;
-	padding: 1rem 1rem;
-}
-
-ul.util-summarize.util-summarize-column li:not(:last-child) {
-	border-right: 1px solid var(--border);
-}
-
-ul.util-summarize.util-summarize-row {
-	flex-direction: column;
-	column-gap: 1rem;
-}
-
-ul.util-summarize.util-summarize-row li {
-	display: flex;
-	align-items: baseline;
-}
-
-ul.util-summarize.util-summarize-row li h5 {
-	margin-bottom: 0;
-	margin-right: 0.75rem;
-}
-
-ul.util-summarize.util-summarize-row li .util-summarize-muted {
-	margin-left: 0.5rem;
-}
-
 @media (max-width: 575px) {
 
-	ul.util-summarize {
+	ul.util-summarize li {
+		font-size: 1.4rem;
+		padding: 0.75rem 1rem;
 	}
 
 	ul.util-summarize li h5 {
 		font-size: 1rem;
 	}
 
-	ul.util-summarize li {
-		font-size: 1.4rem;
-	}
-
-	ul.util-summarize.util-summarize-column li {
-		font-size: 1.4rem;
-		padding: 0.75rem 1rem;
-	}
-
-	ul.util-summarize.util-summarize-column li > a {
+	ul.util-summarize li > a {
 		padding: 0.75rem 1rem;
 		margin: -0.75rem -1rem;
-	}
-
-	ul.util-summarize li .util-summarize-muted {
-		font-size: 0.9rem;
 	}
 
 }

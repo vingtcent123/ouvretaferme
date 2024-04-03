@@ -55,7 +55,7 @@ class AnalyzeUi {
 
 	public function getActionTimesheet(\farm\Action $eAction, Category $eCategory, \Collection $cActionTimesheet, ?int $year): string {
 
-		$h = '<ul class="util-summarize util-summarize-column">';
+		$h = '<ul class="util-summarize">';
 
 			foreach($cActionTimesheet as $eActionTimesheet) {
 
