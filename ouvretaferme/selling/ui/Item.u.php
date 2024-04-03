@@ -352,7 +352,7 @@ class ItemUi {
 
 	public function getItemsBySummary(\Collection $cSale, \Collection $ccItem): string {
 
-		$middle = (int)($ccItem->count() / 2);
+		$middle = ceil($ccItem->count() / 2);
 		$ccItemFirst = $ccItem->slice(0, $middle);
 		$ccItemLast = $ccItem->slice($middle);
 
