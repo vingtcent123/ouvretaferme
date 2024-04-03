@@ -171,6 +171,7 @@ table.pdf-document-items tbody tr.pdf-document-item-total td {
 
 table.pdf-document-items tbody td.pdf-document-item-quality {
 	vertical-align: bottom;
+	max-width: 7cm;
 }
 
 td.pdf-document-item-vat-rates {
