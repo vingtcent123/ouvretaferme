@@ -448,7 +448,7 @@ class ItemLib extends ItemCrud {
 					->select('name')
 					->get($eItem['product']);
 
-				Item::fail('createDuplicateProductMarket', ['name' => $eItem['product']->getName()]);
+				Item::fail('createDuplicateProductMarket', ['name' => encode($eItem['product']['name'])]  );
 
 			}
 

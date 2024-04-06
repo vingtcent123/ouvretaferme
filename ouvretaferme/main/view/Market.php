@@ -159,7 +159,7 @@ class MarketTemplate extends BaseTemplate {
 				$h .= Asset::icon('check');
 			$h .= '</span>';
 
-		} else if($this->data->ccSale[\selling\Sale::DRAFT]->notEmpty()) {
+		} else if($this->data->ccSale->notEmpty() and $this->data->ccSale[\selling\Sale::DRAFT]->notEmpty()) {
 
 			$h .= '<a class="market-top-close market-top-close-disabled" title="'.s("Clôturer ce marché").'" data-alert="'.s("Le marché pourra être clôturé lorsqu'il n'y aura plus de vente en cours !").'">';
 				$h .= Asset::icon('check-circle-fill');
