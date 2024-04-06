@@ -166,12 +166,25 @@ class ProductUi {
 			return '<div class="util-info">'.s("Vous ne vendez encore aucun produit à cette date !").'</div>';
 		}
 
-		$h = '<div class="shop-product-wrapper">';
+		$h = '<div class="util-overflow-xs stick-xs">';
+			$h .= '<table class="tr-even">';
+				$h .= '<thead>';
+					$h .= '<tr>';
+						$h .= '<th colspan="2">'.s("Produit").'</th>';
+						$h .= '<th class="text-end">'.s("Prix").'</th>';
+						$h .= '<th class="text-end">'.s("Stock").'</th>';
+						$h .= '<th class="text-end">'.s("Vendu").'</th>';
+						$h .= '<th></th>';
+					$h .= '</tr>';
+				$h .= '</theaf>';
+				$h .= '<tbody>';
 
-			foreach($cProduct as $eProduct) {
-				$h .= $this->getUpdateProduct($eDate, $eProduct);
-			}
+					foreach($cProduct as $eProduct) {
+						$h .= $this->getUpdateProduct($eDate, $eProduct);
+					}
 
+				$h .= '</tbody>';
+			$h .= '</table>';
 		$h .= '</div>';
 
 		return $h;
@@ -181,90 +194,48 @@ class ProductUi {
 	public function getUpdateProduct(Date $eDate, Product $eProduct): string {
 
 		$eProductSelling = $eProduct['product'];
+		$uiProductSelling = new \selling\ProductUi();
 
-		$h = '<div class="shop-product">';
+		$h = '<tr>';
 
-			if($eProductSelling['vignette'] !== NULL) {
-				$url = (new \media\ProductVignetteUi())->getUrlByElement($eProductSelling, 'm');
-			} else if($eProductSelling['plant']->notEmpty()) {
-				$url = (new \media\PlantVignetteUi())->getUrlByElement($eProductSelling['plant'], 'm');
-			} else {
-				$url = NULL;
-			}
+			$h .= '<td class="td-min-content">';
+				if($eProductSelling['vignette'] !== NULL) {
+					$h .= \selling\ProductUi::getVignette($eProductSelling, '3rem');
+				} else if($eProductSelling['plant']->notEmpty()) {
+					$h .= \plant\PlantUi::getVignette($eProductSelling['plant'], '3rem');
+				}
+			$h .= '</td>';
 
-			$h .= '<div class="shop-product-image" ';
-			if($url !== NULL) {
-				$h .= 'style="background-image: url('.$url.')"';
-			}
-			$h .= '>';
-				if($eProductSelling['quality']) {
-					$h .= '<div class="shop-header-image-quality">'.\farm\FarmUi::getQualityLogo($eProductSelling['quality'], '2.5rem').'</div>';
+			$h .= '<td>';
+				$h .= $uiProductSelling->getInfos($eProductSelling);
+			$h .= '</td>';
+			$h .= '<td class="text-end">';
+				$h .= $eProduct->quick('price', \util\TextUi::money($eProduct['price']).'&nbsp;/&nbsp;'.\main\UnitUi::getSingular($eProductSelling['unit'], short: TRUE, by: TRUE, noWrap: TRUE));
+			$h .= '</td>';
+			$h .= '<td class="text-end">';
+				if($eProduct['stock'] === NULL) {
+					$stock = s("illimité");
+				} else {
+					$stock = $eProduct['stock'];
+				}
+				$h .= $eProduct->quick('stock', $stock);
+			$h .= '</td>';
+			$h .= '<td class="text-end">';
+				$h .= $eProduct['sold'] ?? 0;
+			$h .= '</td>';
+			$h .= '<td class="text-end">';
+
+				if($eProduct['sold'] === 0.0) {
+					$h .= '<a data-ajax="/shop/product:doDelete" class="btn btn-danger" data-confirm="'.s("Voulez-vous vraiment supprimer ce produit de cette vente ?").'" post-id="'.$eProduct['id'].'">'.\Asset::icon('trash-fill').'</a>';
+				} else {
+					$h .= '<a class="btn btn-readonly btn-secondary disabled" disabled title="'.s("Vous ne pouvez pas supprimer ce produit car des ventes ont déjà été réalisées.").'">'.\Asset::icon('trash-fill').'</a>';
+
 				}
 
-				$h .= '<div class="shop-product-delete">';
-					if($eProduct['sold'] === 0.0) {
-						$h .= '<a data-ajax="/shop/product:doDelete" class="btn btn-danger" data-confirm="'.s("Voulez-vous vraiment supprimer ce produit de cette vente ?").'" post-id="'.$eProduct['id'].'">'.\Asset::icon('trash-fill').'</a>';
-					} else {
-						$h .= '<a class="btn btn-readonly btn-secondary disabled" disabled title="'.s("Vous ne pouvez pas supprimer ce produit car des ventes ont déjà été réalisées.").'">'.\Asset::icon('trash-fill').'</a>';
-
-					}
-				$h .= '</div>';
-
 			$h .= '</div>';
+			$h .= '</td>';
 
-			$h .= '<div class="shop-product-text">';
-				$h .= '<div class="shop-product-content">';
-
-					$h .= '<h4>';
-						$h .= '<a href="'.\selling\ProductUi::url($eProductSelling).'">'.encode($eProductSelling->getName()).'</a>';
-					$h .= '</h4>';
-
-					if($eProductSelling['size'] !== NULL) {
-						$h .= '<div class="shop-product-manage-size">';
-							$h .= s("Calibre {value}", '<u>'.encode($eProductSelling['size']).'</u>');
-						$h .= '</div>';
-					}
-
-					if($eProductSelling['description'] !== NULL) {
-						$h .= '<div class="shop-product-manage-description">';
-							$h .= (new \editor\EditorUi())->value($eProductSelling['description']);
-						$h .= '</div>';
-					}
-
-				$h .= '</div>';
-
-				$h .= '<div class="shop-product-manage-details">';
-
-					$h .= '<div>';
-						$h .= $eProduct->quick('price', \util\TextUi::money($eProduct['price']).'&nbsp;/&nbsp;'.\main\UnitUi::getSingular($eProductSelling['unit'], short: TRUE, by: TRUE, noWrap: TRUE));
-					$h .= '</div>';
-
-					$h .= '<div>';
-						$h .= '<div class="shop-product-manage-stock">';
-							if($eProduct['stock'] === NULL) {
-								$stock = s("illimité");
-							} else {
-								$stock = $eProduct['stock'];
-							}
-							$h .= '<span class="shop-product-manage-quantity-value">';
-								if($eProduct['sold'] > 0) {
-									$h .= s("Stock initial : {value}", $eProduct->quick('stock', $stock));
-								} else {
-									$h .= s("Stock : {value}", $eProduct->quick('stock', $stock));
-								}
-							$h.= '</span>';
-						$h .= '</div>';
-
-						$h .= '<div class="shop-product-manage-sales">';
-							$h .= '<span class="shop-product-manage-quantity-value">'.s("Vendu : {value}", $eProduct['sold'] ?? 0).'</span>';
-						$h .= '</div>';
-					$h .= '</div>';
-
-				$h .= '</div>';
-
-			$h .= '</div>';
-
-		$h .= '</div>';
+		$h .= '</tr>';
 
 		return $h;
 	}

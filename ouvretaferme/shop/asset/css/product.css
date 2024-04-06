@@ -79,16 +79,6 @@
 
 }
 
-.shop-product-delete {
-	position: absolute;
-	right: 0.5rem;
-	top: 0.5rem;
-}
-
-.shop-product-delete > .btn[disabled] {
-	color: #bbb;
-}
-
 .shop-header-image-quality {
 	color: white;
 }

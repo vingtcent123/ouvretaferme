@@ -57,6 +57,7 @@ div.product-item-name a {
 	font-weight: bold;
 	color: var(--text);
 }
+
 div.product-item-infos {
 	font-size: 0.9rem;
 	line-height: 1.2;
@@ -67,8 +68,8 @@ div.product-item-infos {
 }
 
 @media (max-width: 575px) {
-	.product-item-infos {
-		max-width: 120px;
+	div.product-item-infos {
+		display: none;
 	}
 }
 

@@ -145,22 +145,7 @@ class ProductUi {
 					$h .= '</td>';
 
 					$h .= '<td class="product-item-name">';
-						$h .= '<a href="/produit/'.$eProduct['id'].'">'.encode($eProduct->getName()).'</a>';
-
-						$more = [];
-
-						if($eProduct['size']) {
-							$more[] = '<span>'.s("Calibre {value}", '<u>'.encode($eProduct['size']).'</u>').'</span>';
-						}
-
-						if($eProduct['quality'] !== NULL) {
-							$more[] = \farm\FarmUi::getQualityLogo($eProduct['quality'], '1.5rem');
-						}
-
-						if($more) {
-							$h .= '<div class="product-item-infos">'.implode('', $more).'</div>';
-						}
-
+						$h .= $this->getInfos($eProduct);
 					$h .= '</td>';
 
 					$h .= '<td class="product-item-unit">';
@@ -265,6 +250,28 @@ class ProductUi {
 		$h .= '</div>';
 
 		return $h;
+
+	}
+
+	public function getInfos(Product $eProduct): string {
+
+		$h = '<a href="/produit/'.$eProduct['id'].'">'.encode($eProduct->getName()).'</a>';
+		$more = [];
+
+		if($eProduct['size']) {
+			$more[] = '<span>'.s("Calibre {value}", '<u>'.encode($eProduct['size']).'</u>').'</span>';
+		}
+
+		if($eProduct['quality'] !== NULL) {
+			$more[] = \farm\FarmUi::getQualityLogo($eProduct['quality'], '1.5rem');
+		}
+
+		if($more) {
+			$h .= '<div class="product-item-infos">'.implode('', $more).'</div>';
+		}
+
+		return $h;
+
 
 	}
 
