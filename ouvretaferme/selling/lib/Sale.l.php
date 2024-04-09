@@ -157,29 +157,9 @@ class SaleLib extends SaleCrud {
 
 	public static function getByFarm(\farm\Farm $eFarm, ?string $type = NULL, ?int $position = NULL, ?int $number = NULL, \Search $search = new \Search()): array {
 
-		if($search->get('document')) {
-			Sale::model()->whereDocument($search->get('document'));
-		}
-
 		if($search->get('customerName')) {
 			$cCustomer = CustomerLib::getFromQuery($search->get('customerName'), $eFarm);
 			Sale::model()->whereCustomer('IN', $cCustomer);
-		}
-
-		if($search->get('customer')) {
-			Sale::model()->whereCustomer($search->get('customer'));
-		}
-
-		if($search->get('delivered')) {
-			Sale::model()->whereDeliveredAt('>', new \Sql('CURDATE() - INTERVAL '.Sale::model()->format($search->get('delivered')).' DAY'));
-		}
-
-		if($search->get('deliveredAt')) {
-			Sale::model()->whereDeliveredAt('LIKE', '%'.$search->get('deliveredAt').'%');
-		}
-
-		if($search->get('notId')?->notEmpty()) {
-			Sale::model()->whereId('NOT IN', $search->get('notId'));
 		}
 
 		if($search->get('invoicing')) {
@@ -207,7 +187,14 @@ class SaleLib extends SaleCrud {
 					->delegateCollection('sale', 'type')
 			])
 			->option('count')
+			->whereId('NOT IN', $search->get('notId'), if: $search->get('notId')?->notEmpty())
+			->whereDocument($search->get('document'), if: $search->get('document'))
 			->whereFarm($eFarm)
+			->whereCustomer($search->get('customer'), if: $search->get('customer'))
+			->whereDeliveredAt('LIKE', '%'.$search->get('deliveredAt').'%', if: $search->get('deliveredAt'))
+			->whereDeliveredAt('>', new \Sql('CURDATE() - INTERVAL '.Sale::model()->format($search->get('delivered')).' DAY'), if: $search->get('delivered'))
+			->wherePreparationStatus($search->get('preparationStatus'), if: $search->get('preparationStatus'))
+			->wherePaymentMethod($search->get('paymentMethod'), if: $search->get('paymentMethod'))
 			->whereMarketParent(NULL)
 			->sort($search->buildSort([
 				'preparationStatus' => fn($direction) => match($direction) {

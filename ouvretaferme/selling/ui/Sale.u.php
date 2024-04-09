@@ -83,10 +83,18 @@ class SaleUi {
 			$form = new \util\FormUi();
 			$url = LIME_REQUEST_PATH;
 
+			$statuses = SaleUi::p('preparationStatus')->values;
+			unset($statuses[Sale::BASKET], $statuses[Sale::SELLING]);
+
+			$paymentMethods = SaleUi::p('paymentMethod')->values;
+			$paymentMethods[Sale::ONLINE_CARD] = s("Carte bancaire avec Stripe");
+
 			$h .= $form->openAjax($url, ['method' => 'get', 'id' => 'form-search']);
 
 				$h .= '<div>';
 					$h .= $form->text('document', $search->get('document'), ['placeholder' => s("Numéro")]);
+					$h .= $form->select('preparationStatus', $statuses, $search->get('preparationStatus'), ['placeholder' => s("État")]);
+					$h .= $form->select('paymentMethod', $paymentMethods, $search->get('paymentMethod'), ['placeholder' => s("Moyen de paiement")]);
 					$h .= $form->text('customerName', $search->get('customerName'), ['placeholder' => s("Client")]);
 					$h .= $form->month('deliveredAt', $search->get('deliveredAt'), ['placeholder' => s("Mois")]);
 				$h .= '</div>';

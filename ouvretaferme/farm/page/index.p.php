@@ -113,6 +113,8 @@
 			'document' => GET('document', '?int'),
 			'customerName' => GET('customerName'),
 			'deliveredAt' => GET('deliveredAt'),
+			'preparationStatus' => GET('preparationStatus'),
+			'paymentMethod' => GET('paymentMethod'),
 		], GET('sort'));
 
 		[$data->cSale, $data->nSale] = \selling\SaleLib::getByFarm($data->eFarm, $data->type, $data->page * 100, 100, $data->search);
