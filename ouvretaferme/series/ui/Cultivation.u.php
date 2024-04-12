@@ -2330,7 +2330,7 @@ class CultivationUi {
 		]);
 
 		$h = '<div id="series-create-plant-list">';
-			$h .= '<div class="series-create-plant">';
+			$h .= '<div class="series-create-plant series-write-plant">';
 				$h .= $this->getFieldsCreate($form, $eSeries['use'], $eCultivation, $cAction, '');
 			$h .= '</div>';
 		$h .= '</div>';
@@ -2389,7 +2389,7 @@ class CultivationUi {
 
 		$form = new \util\FormUi();
 
-		$h = $form->openAjax('/series/cultivation:doUpdate', ['id' => 'cultivation-update', 'autocomplete' => 'off']);
+		$h = $form->openAjax('/series/cultivation:doUpdate', ['id' => 'cultivation-update', 'class' => 'series-write-plant', 'autocomplete' => 'off']);
 
 			$h .= $form->hidden('id', $eCultivation['id']);
 

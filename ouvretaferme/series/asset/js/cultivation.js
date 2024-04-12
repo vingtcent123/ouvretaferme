@@ -53,7 +53,7 @@ class Cultivation {
 
 	static changeSeedling(target) {
 
-		const wrapper = target.firstParent('.series-create-plant');
+		const wrapper = target.firstParent('.series-write-plant');
 
 		const seeds = wrapper.qs('[data-wrapper^="seedlingSeeds"]');
 

@@ -586,7 +586,7 @@ class SeriesUi {
 
 		$suffix = '['.$index.']';
 
-		$h = '<div class="series-create-plant">';
+		$h = '<div class="series-create-plant series-write-plant">';
 
 			$h .= $form->hidden('plant'.$suffix, $ePlant['id']);
 
@@ -673,7 +673,7 @@ class SeriesUi {
 			$h .= $form->hidden('plant'.$suffix, $ePlant);
 			$h .= $form->hidden('crop'.$suffix, $eCrop);
 
-			$h .= '<div class="series-create-plant">';
+			$h .= '<div class="series-create-plant series-write-plant">';
 				$h .= (new CultivationUi())->getCropTitle($eFarm, $ePlant);
 				$h .= (new CultivationUi())->getFieldsCreate($form, $eSequence['use'], $eCultivation, new \Collection(), $suffix);
 			$h .= '</div>';
