@@ -3,16 +3,38 @@ namespace selling;
 
 class CustomerLib extends CustomerCrud {
 
-	public static function getPropertiesCreate(): array {
-		return self::getPropertiesWrite();
+	public static function getPropertiesCreate(): \Closure {
+
+		return fn() => CustomerLib::getPropertiesDefault('create', POST('category'));
+
 	}
 
-	public static function getPropertiesUpdate(): array {
-		return self::getPropertiesWrite();
+	public static function getPropertiesUpdate(): \Closure {
+
+		return fn(Customer $e) => array_merge(
+			CustomerLib::getPropertiesDefault(
+				'update',
+				POST('category', default: ($e['destination'] === Customer::COLLECTIVE ? Customer::COLLECTIVE : $e['type']))
+			),
+			($e['destination'] === Customer::COLLECTIVE) ? ['color'] : ['discount', 'color', 'emailOptOut']
+		);
+
 	}
 
-	public static function getPropertiesWrite(): array {
-		return ['name', 'type', 'contact', 'discount', 'legalName', 'invoiceStreet1', 'invoiceStreet2', 'invoicePostcode', 'invoiceCity', 'email', 'phone', 'color', 'emailOptOut'];
+	public static function getPropertiesDefault(string $for, string $category): array {
+
+		return match($category) {
+
+			Customer::PRO => ['name', 'category', 'legalName', 'invoiceStreet1', 'invoiceStreet2', 'invoicePostcode', 'invoiceCity', 'email', 'phone'],
+			Customer::PRIVATE => ['name', 'category', 'email', 'phone'],
+			Customer::COLLECTIVE => match($for) {
+				'create' => ['name', 'category'],
+				'update' => ['name']
+			},
+			default => ['category']
+
+		};
+
 	}
 
 	public static function getFromQuery(string $query, \farm\Farm $eFarm, ?array $properties = []): \Collection {
@@ -187,6 +209,10 @@ class CustomerLib extends CustomerCrud {
 		$eCustomer = new Customer([
 			'name' => self::getNameFromUser($eUser),
 			'type' => $type,
+			'destination' => match($type) {
+				Customer::PRIVATE => Customer::INDIVIDUAL,
+				Customer::PRO => NULL
+			},
 			'farm' => $eFarm,
 			'user' => $eUser
 		]);
@@ -214,6 +240,21 @@ class CustomerLib extends CustomerCrud {
 		Customer::model()->update($e, [
 			'user' => $eUser
 		]);
+
+	}
+
+	public static function update(Customer $e, array $properties): void {
+
+		if(array_delete($properties, 'category')) {
+			$properties[] = 'type';
+			$properties[] = 'destination';
+		}
+
+		Customer::model()->beginTransaction();
+
+		parent::update($e, $properties);
+
+		Customer::model()->commit();
 
 	}
 

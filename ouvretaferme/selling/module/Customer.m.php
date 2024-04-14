@@ -10,6 +10,9 @@ abstract class CustomerElement extends \Element {
 	const PRIVATE = 'private';
 	const PRO = 'pro';
 
+	const INDIVIDUAL = 'individual';
+	const COLLECTIVE = 'collective';
+
 	const ACTIVE = 'active';
 	const INACTIVE = 'inactive';
 
@@ -49,7 +52,7 @@ class CustomerModel extends \ModuleModel {
 			'farm' => ['element32', 'farm\Farm', 'cast' => 'element'],
 			'user' => ['element32', 'user\User', 'null' => TRUE, 'cast' => 'element'],
 			'type' => ['enum', [\selling\Customer::PRIVATE, \selling\Customer::PRO], 'cast' => 'enum'],
-			'contact' => ['text8', 'null' => TRUE, 'cast' => 'string'],
+			'destination' => ['enum', [\selling\Customer::INDIVIDUAL, \selling\Customer::COLLECTIVE], 'null' => TRUE, 'cast' => 'enum'],
 			'discount' => ['int8', 'min' => 0, 'max' => 100, 'cast' => 'int'],
 			'invoiceStreet1' => ['text8', 'null' => TRUE, 'cast' => 'string'],
 			'invoiceStreet2' => ['text8', 'null' => TRUE, 'cast' => 'string'],
@@ -68,7 +71,7 @@ class CustomerModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'name', 'legalName', 'email', 'farm', 'user', 'type', 'contact', 'discount', 'invoiceStreet1', 'invoiceStreet2', 'invoicePostcode', 'invoiceCity', 'deliveryStreet1', 'deliveryStreet2', 'deliveryPostcode', 'deliveryCity', 'phone', 'color', 'emailOptIn', 'emailOptOut', 'createdAt', 'status'
+			'id', 'name', 'legalName', 'email', 'farm', 'user', 'type', 'destination', 'discount', 'invoiceStreet1', 'invoiceStreet2', 'invoicePostcode', 'invoiceCity', 'deliveryStreet1', 'deliveryStreet2', 'deliveryPostcode', 'deliveryCity', 'phone', 'color', 'emailOptIn', 'emailOptOut', 'createdAt', 'status'
 		]);
 
 		$this->propertiesToModule += [
@@ -110,6 +113,9 @@ class CustomerModel extends \ModuleModel {
 		switch($property) {
 
 			case 'type' :
+				return ($value === NULL) ? NULL : (string)$value;
+
+			case 'destination' :
 				return ($value === NULL) ? NULL : (string)$value;
 
 			case 'status' :
@@ -158,8 +164,8 @@ class CustomerModel extends \ModuleModel {
 		return $this->where('type', ...$data);
 	}
 
-	public function whereContact(...$data): CustomerModel {
-		return $this->where('contact', ...$data);
+	public function whereDestination(...$data): CustomerModel {
+		return $this->where('destination', ...$data);
 	}
 
 	public function whereDiscount(...$data): CustomerModel {

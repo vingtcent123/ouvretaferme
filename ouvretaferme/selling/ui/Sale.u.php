@@ -267,7 +267,7 @@ class SaleUi {
 								$h .= CustomerUi::link($eSale['customer']);
 								if($eSale['customer']->notEmpty()) {
 									$h .= '<div class="util-annotation">';
-										$h .= CustomerUi::p('type')->values[$eSale['customer']['type']];
+										$h .= CustomerUi::category($eSale['customer']);
 									$h .= '</div>';
 								}
 							$h .= '</td>';
@@ -1542,6 +1542,7 @@ class SaleUi {
 				$d->group = function(Sale $e) {
 
 					$e->expects(['from']);
+
 
 					$hide = ($e['from'] === Sale::SHOP) ? '' : 'hide';
 

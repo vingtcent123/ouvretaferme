@@ -5151,13 +5151,13 @@ abstract class ModulePage extends Page {
 		return is_closure($propertiesUpdate) ? $propertiesUpdate->call($this, $e) : $propertiesUpdate;
 	}
 
-	public function create(?\Closure $action = NULL, string|array $method = 'get', ?array $propertiesCreate = NULL, string $page = 'create'): ModulePage {
+	public function create(?\Closure $action = NULL, string|array $method = 'get', ?array $propertiesCreate = NULL, string $page = 'create', array $validate = ['canCreate']): ModulePage {
 
-		$this->match((array)$method, $page, function($data) use ($action, $propertiesCreate) {
+		$this->match((array)$method, $page, function($data) use ($action, $propertiesCreate, $validate) {
 
 			$data->e = $this->createElement->call($this, $data);
 
-			$data->e->validate('canCreate');
+			$data->e->validate(...$validate);
 
 			$data->properties = $this->getPropertiesCreate($data->e, $propertiesCreate);
 
@@ -5173,16 +5173,16 @@ abstract class ModulePage extends Page {
 
 	}
 
-	public function doCreate(\Closure $action, ?array $propertiesCreate = NULL, string $page = 'doCreate'): ModulePage {
+	public function doCreate(\Closure $action, ?array $propertiesCreate = NULL, string $page = 'doCreate', array $validate = ['canCreate']): ModulePage {
 
-		$this->post($page, function($data) use ($action, $propertiesCreate) {
+		$this->post($page, function($data) use ($action, $propertiesCreate, $validate) {
 
 			$fw = new \FailWatch();
 
 			$e = $this->createElement->call($this, $data);
 			$e['id'] = NULL;
 
-			$e->validate('canCreate');
+			$e->validate(...$validate);
 
 			$properties = $this->getPropertiesCreate($e, $propertiesCreate);
 			$e->build($properties, $_POST, for: 'create');
@@ -5202,9 +5202,9 @@ abstract class ModulePage extends Page {
 
 	}
 
-	public function update(\Closure $action = NULL, string|array $method = 'get', ?array $propertiesUpdate = NULL, string $page = 'update'): ModulePage {
+	public function update(\Closure $action = NULL, string|array $method = 'get', ?array $propertiesUpdate = NULL, string $page = 'update', array $validate = ['canUpdate']): ModulePage {
 
-		$this->match((array)$method, $page, function($data) use ($action, $method, $propertiesUpdate) {
+		$this->match((array)$method, $page, function($data) use ($action, $method, $propertiesUpdate, $validate) {
 
 			$e = $this->element->call($this, $data);
 
@@ -5223,7 +5223,7 @@ abstract class ModulePage extends Page {
 
 			}
 
-			$e->validate('canUpdate');
+			$e->validate(...$validate);
 
 			$this->applyElement->call($this, $data, $e);
 
@@ -5243,9 +5243,9 @@ abstract class ModulePage extends Page {
 
 	}
 
-	public function doUpdate(\Closure $action, ?array $propertiesUpdate = NULL, string $page = 'doUpdate'): ModulePage {
+	public function doUpdate(\Closure $action, ?array $propertiesUpdate = NULL, string $page = 'doUpdate', array $validate = ['canUpdate']): ModulePage {
 
-		$this->post($page, function($data) use ($action, $propertiesUpdate) {
+		$this->post($page, function($data) use ($action, $propertiesUpdate, $validate) {
 
 			$e = $this->element->call($this, $data);
 
@@ -5260,7 +5260,7 @@ abstract class ModulePage extends Page {
 
 			}
 
-			$e->validate('canUpdate');
+			$e->validate(...$validate);
 
 			$this->applyElement->call($this, $data, $e);
 

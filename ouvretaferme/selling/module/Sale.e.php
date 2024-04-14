@@ -6,7 +6,7 @@ class Sale extends SaleElement {
 	public static function getSelection(): array {
 
 		return parent::getSelection() + [
-			'customer' => ['name', 'email', 'color', 'user', 'type', 'discount', 'legalName', 'invoiceStreet1', 'invoiceStreet2', 'invoicePostcode', 'invoiceCity'],
+			'customer' => ['name', 'email', 'color', 'user', 'type', 'destination', 'discount', 'legalName', 'invoiceStreet1', 'invoiceStreet2', 'invoicePostcode', 'invoiceCity'],
 			'shop' => ['fqn', 'name', 'email', 'paymentOfflineHow', 'paymentTransferHow', 'shipping', 'shippingUntil', 'orderMin'],
 			'shopDate' => ['status', 'deliveryDate', 'orderStartAt', 'orderEndAt'],
 			'farm' => ['name', 'url', 'vignette', 'banner', 'featureDocument'],

@@ -222,6 +222,14 @@ class InviteLib extends InviteCrud {
 
 	}
 
+	public static function deleteFromCustomer(\selling\Customer $e): void {
+
+		Invite::model()
+			->whereCustomer($e)
+			->delete();
+
+	}
+
 	public static function acceptByUser(\user\User $eUser): void {
 
 		Invite::model()

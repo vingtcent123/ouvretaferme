@@ -917,7 +917,7 @@ class FormUi {
 
 			if(empty($attributes['mandatory'])) {
 
-				$h .= '<label>'.$this->inputRadio($name, '', $attributes['placeholder'] ?? s("Aucun"), $selectedValue, call_user_func($callbackRadioAttributes, NULL)).'</label>';
+				$h .= '<label>'.$this->inputRadio($name, '', $attributes['placeholder'] ?? s("Aucun"), $selectedValue, call_user_func($callbackRadioAttributes, NULL, NULL)).'</label>';
 				unset($attributes['placeholder']);
 
 			}

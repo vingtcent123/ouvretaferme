@@ -75,3 +75,13 @@ table.customer-price td {
 form.customer-form-private .customer-form-itself-private {
 	display: block;
 }
+
+form.customer-form-unknown .customer-form-type {
+	display: none;
+}
+
+form.customer-form-pro .customer-form-category:not(.customer-form-pro),
+form.customer-form-private .customer-form-category:not(.customer-form-private),
+form.customer-form-collective .customer-form-category:not(.customer-form-collective) {
+	display: none;
+}

@@ -27,7 +27,7 @@ class GridLib extends GridCrud {
 		$cGrid = Grid::model()
 			->select(Grid::getSelection())
 			->select([
-				'customer' => ['name', 'type']
+				'customer' => ['name', 'type', 'destination']
 			])
 			->whereProduct($e)
 			->getCollection();

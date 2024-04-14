@@ -36,7 +36,7 @@ Customer:
   farm: farm\Farm
   user: ?user\User
   type: enum(PRIVATE, PRO)
-  contact: ?text8
+  destination: ?enum(INDIVIDUAL, COLLECTIVE)
   discount: int8(0, 100) = 0
   invoiceStreet1: ?text8
   invoiceStreet2: ?text8

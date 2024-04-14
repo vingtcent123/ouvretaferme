@@ -17,7 +17,7 @@
 
 	})
 	->doCreate(function($data) {
-		throw new ReloadAction('selling', 'Customer::created');
+		throw new RedirectAction(\selling\CustomerUi::url($data->e));
 	});
 
 (new \selling\CustomerPage())
@@ -93,7 +93,7 @@
 	})
 	->doUpdateProperties('doUpdateStatus', ['status'], fn() => throw new ReloadAction(), validate: ['canManage'])
 	->doDelete(function($data) {
-		throw new ReloadAction('selling', 'Customer::deleted');
+		throw new RedirectAction(\farm\FarmUi::urlSellingCustomer($data->e['farm']).'?success=selling:Customer::deleted');
 	});
 
 (new Page())

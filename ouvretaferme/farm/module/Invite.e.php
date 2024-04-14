@@ -18,6 +18,16 @@ class Invite extends InviteElement {
 
 	}
 
+	public function canCreate(): bool {
+
+		$this->expects(['farm', 'customer']);
+		return (
+			$this->canWrite() and
+			$this['customer']['destination'] !== \selling\Customer::COLLECTIVE
+		);
+
+	}
+
 	public function canWrite(): bool {
 
 		$this->expects(['farm']);

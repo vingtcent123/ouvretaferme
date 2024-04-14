@@ -93,5 +93,48 @@ class Customer extends CustomerElement {
 		return hash('sha256', random_bytes(1024));
 	}
 
+	public function build(array $properties, array $input, array $callbacks = [], ?string $for = NULL): array {
+
+		return parent::build($properties, $input, $callbacks + [
+
+			'category.user' => function(?string $category) use ($for): bool {
+
+				return match($for) {
+					'create' => TRUE,
+					'update' => ($category !== Customer::COLLECTIVE)
+				};
+
+			},
+
+			'category.set' => function(?string $category) use ($for): bool {
+
+				switch($category) {
+
+					case Customer::PRIVATE :
+						$this['type'] = Customer::PRIVATE;
+						$this['destination'] = Customer::INDIVIDUAL;
+						return TRUE;
+
+					case Customer::COLLECTIVE :
+						$this['type'] = Customer::PRIVATE;
+						$this['destination'] = Customer::COLLECTIVE;
+						return TRUE;
+
+					case Customer::PRO :
+						$this['type'] = Customer::PRO;
+						$this['destination'] = NULL;
+						return TRUE;
+
+					default :
+						return FALSE;
+
+				};
+
+			},
+
+		]);
+
+	}
+
 }
 ?>
