@@ -16,7 +16,11 @@ class CustomerLib extends CustomerCrud {
 				'update',
 				POST('category', default: ($e['destination'] === Customer::COLLECTIVE ? Customer::COLLECTIVE : $e['type']))
 			),
-			($e['destination'] === Customer::COLLECTIVE) ? ['color'] : ['discount', 'color', 'emailOptOut']
+			match($e->getCategory()) {
+				Customer::PRO => ['discount', 'color', 'emailOptOut'],
+				Customer::PRIVATE => ['discount', 'emailOptOut'],
+				Customer::COLLECTIVE => ['color'],
+			}
 		);
 
 	}

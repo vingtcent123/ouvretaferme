@@ -563,8 +563,6 @@ class CustomerUi {
 			}
 			$h .= $this->write('update', $form, $eCustomer);
 
-			$h .= $form->dynamicGroup($eCustomer, 'color');
-
 			$h .= '<div class="customer-form-category customer-form-private customer-form-pro">';
 				$h .= '<div class="util-block-flat bg-background-light">';
 					$h .= $form->group(content: '<h4>'.s("Gestion de la communication par e-mail").'</h4>');
@@ -617,6 +615,9 @@ class CustomerUi {
 			if($action === 'update') {
 				$h .= '<div class="customer-form-category customer-form-private customer-form-pro">';
 					$h .= $form->dynamicGroup($eCustomer, 'discount');
+				$h .= '</div>';
+				$h .= '<div class="customer-form-category customer-form-collective customer-form-pro">';
+					$h .= $form->dynamicGroup($eCustomer, 'color');
 				$h .= '</div>';
 			}
 		$h .= '</div>';

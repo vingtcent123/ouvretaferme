@@ -12,6 +12,18 @@ class Customer extends CustomerElement {
 
 	}
 
+	public function getCategory(): string {
+
+		$this->expects(['type', 'destination']);
+
+		if($this['destination'] === Customer::COLLECTIVE) {
+			return Customer::COLLECTIVE;
+		} else {
+			return $this['type'];
+		}
+
+	}
+
 	public function canRead(): bool {
 		return $this->canWrite();
 	}
