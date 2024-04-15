@@ -32,13 +32,23 @@ class CustomerUi {
 
 		return match($eCustomer['type']) {
 
-			Customer::PRO => s("Professionnel"),
+			Customer::PRO => self::getCategories()[Customer::PRO],
 			Customer::PRIVATE => match($eCustomer['destination']) {
-				Customer::INDIVIDUAL => s("Particulier"),
-				Customer::COLLECTIVE => s("Point de vente")
+				Customer::INDIVIDUAL => self::getCategories()[Customer::PRIVATE],
+				Customer::COLLECTIVE => self::getCategories()[Customer::COLLECTIVE]
 			}
 
 		};
+
+	}
+
+	public static function getCategories(): array {
+
+		return [
+			Customer::PRO => s("Professionnel"),
+			Customer::PRIVATE => s("Particulier"),
+			Customer::COLLECTIVE => s("Point de vente")
+		];
 
 	}
 
@@ -125,6 +135,7 @@ class CustomerUi {
 			$h .= $form->openAjax($url, ['method' => 'get', 'id' => 'form-search']);
 				$h .= '<div>';
 					$h .= $form->text('name', $search->get('name'), ['placeholder' => s("Nom du client")]);
+					$h .= $form->select('category', self::getCategories(), $search->get('category'), ['placeholder' => s("Catégorie")]);
 					$h .= $form->submit(s("Chercher"), ['class' => 'btn btn-secondary']);
 					$h .= '<a href="'.$url.'" class="btn btn-secondary">'.\Asset::icon('x-lg').'</a>';
 				$h .= '</div>';

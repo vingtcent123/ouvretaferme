@@ -134,7 +134,8 @@
 		$data->page = GET('page', 'int');
 
 		$data->search = new Search([
-			'name' => GET('name')
+			'name' => GET('name'),
+			'category' => GET('category')
 		], GET('sort', default: 'name'));
 
 		[$data->cCustomer, $data->nCustomer] = \selling\CustomerLib::getByFarm($data->eFarm, selectPrices: TRUE, selectSales: TRUE, selectInvite: TRUE, page: $data->page, search: $data->search);

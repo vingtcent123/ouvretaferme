@@ -112,11 +112,27 @@ class CustomerLib extends CustomerCrud {
 				]);
 		}
 
-		if($search->get('name')) {
-			Customer::model()->whereName('LIKE', '%'.$search->get('name').'%');
-		}
-
 		$search->validateSort(['name']);
+
+		switch($search->get('category')) {
+
+			case Customer::PRO :
+				Customer::model()->whereType(Customer::PRO);
+				break;
+
+			case Customer::PRIVATE :
+				Customer::model()
+					->whereType(Customer::PRIVATE)
+					->whereDestination(Customer::INDIVIDUAL);
+				break;
+
+			case Customer::COLLECTIVE :
+				Customer::model()
+					->whereType(Customer::PRIVATE)
+					->whereDestination(Customer::COLLECTIVE);
+				break;
+
+		}
 
 		$number = 100;
 		$position = $page * $number;
@@ -125,6 +141,7 @@ class CustomerLib extends CustomerCrud {
 			->select(Customer::getSelection())
 			->option('count')
 			->whereFarm($eFarm)
+			->whereName('LIKE', '%'.$search->get('name').'%', if: $search->get('name'))
 			->sort($search->buildSort())
 			->getCollection($position, $number);
 
