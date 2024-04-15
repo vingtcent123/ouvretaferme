@@ -66,7 +66,7 @@ class GridUi {
 
 					$h .= '<td>';
 						$h .= CustomerUi::link($eCustomer);
-						$h .= ' <span class="util-annotation">'.CustomerUi::category($eCustomer).'</span>';
+						$h .= ' <span class="util-annotation">'.CustomerUi::getCategory($eCustomer).'</span>';
 					$h .= '</td>';
 
 					$h .= '<td>';

@@ -110,7 +110,7 @@ class InvoiceUi {
 								$h .= '<td class="sale-invoice-customer">';
 									$h .= CustomerUi::link($eInvoice['customer']);
 									$h .= '<div class="util-annotation">';
-										$h .= CustomerUi::p('type')->values[$eInvoice['customer']['type']];
+										$h .= CustomerUi::getCategory($eInvoice['customer']);
 									$h .= '</div>';
 								$h .= '</td>';
 							}

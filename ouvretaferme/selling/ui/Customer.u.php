@@ -28,7 +28,7 @@ class CustomerUi {
 		}
 	}
 
-	public static function category(Customer $eCustomer): string {
+	public static function getCategory(Customer $eCustomer): string {
 
 		return match($eCustomer['type']) {
 
@@ -37,6 +37,17 @@ class CustomerUi {
 				Customer::INDIVIDUAL => self::getCategories()[Customer::PRIVATE],
 				Customer::COLLECTIVE => self::getCategories()[Customer::COLLECTIVE]
 			}
+
+		};
+
+	}
+
+	public static function getType(Customer|Sale $eCustomer): string {
+
+		return match($eCustomer['type']) {
+
+			Customer::PRO => self::getCategories()[Customer::PRO],
+			Customer::PRIVATE => self::getCategories()[Customer::PRIVATE]
 
 		};
 
@@ -107,7 +118,7 @@ class CustomerUi {
 
 		\Asset::css('media', 'media.css');
 
-		$item = '<div>'.encode($eCustomer['name']).'<br/><small class="color-muted">'.self::category($eCustomer).'</small></div>';
+		$item = '<div>'.encode($eCustomer['name']).'<br/><small class="color-muted">'.self::getCategory($eCustomer).'</small></div>';
 
 		return [
 			'value' => $eCustomer['id'],
@@ -188,7 +199,7 @@ class CustomerUi {
 						$h .= '<td class="customer-item-name">';
 							$h .= '<a href="/client/'.$eCustomer['id'].'">'.encode($eCustomer['name']).'</a>';
 							$h .= '<div class="util-annotation">';
-								$h .= self::category($eCustomer);
+								$h .= self::getCategory($eCustomer);
 								if($eCustomer['color']) {
 									$h .= ' | '.CustomerUi::getColorCircle($eCustomer);
 								}
@@ -303,7 +314,7 @@ class CustomerUi {
 
 		if($eCustomer['destination'] !== Customer::COLLECTIVE) {
 
-			$type = self::category($eCustomer);
+			$type = self::getCategory($eCustomer);
 
 			$h .= '<div class="util-block stick-xs">';
 				$h .= '<dl class="util-presentation util-presentation-2">';

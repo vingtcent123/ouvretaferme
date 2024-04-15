@@ -267,7 +267,7 @@ class SaleUi {
 								$h .= CustomerUi::link($eSale['customer']);
 								if($eSale['customer']->notEmpty()) {
 									$h .= '<div class="util-annotation">';
-										$h .= CustomerUi::category($eSale['customer']);
+										$h .= CustomerUi::getCategory($eSale['customer']);
 									$h .= '</div>';
 								}
 							$h .= '</td>';
