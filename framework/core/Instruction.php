@@ -264,6 +264,38 @@ class QuerySelectorInstruction implements Instruction {
 	}
 
 	/**
+	 * Toggle something
+	 */
+	public function toggle(): self {
+		$this->instructions[] = ['toggle'];
+		return $this;
+	}
+
+	/**
+	 * Hide something
+	 */
+	public function hide(): self {
+		$this->instructions[] = ['hide'];
+		return $this;
+	}
+
+	/**
+	 * Show something
+	 */
+	public function removeHide(): self {
+		$this->instructions[] = ['removeHide'];
+		return $this;
+	}
+
+	/**
+	 * Toggle switch element
+	 */
+	public function toggleSwitch(): self {
+		$this->instructions[] = ['toggleSwitch'];
+		return $this;
+	}
+
+	/**
 	 * Scroll to to something
 	 */
 	public function scrollTo(string $block = 'start', string $behavior = 'auto'): self {

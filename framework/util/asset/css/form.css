@@ -386,7 +386,7 @@ div.form-group.form-group-nested > .form-control-label {
 	transition: all 0.5s;
 	position: relative;
 	cursor: pointer;
-	display: block;
+	display: inline-block;
 }
 
 .field-switch:hover {

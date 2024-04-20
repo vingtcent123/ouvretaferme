@@ -115,7 +115,7 @@
 
 	})
 	->doUpdateProperties('doUpdateStatus', ['status'], function($data) {
-		throw new ReloadAction('plant', 'Plant::updated'.ucfirst($data->e['status']));
+		throw new ViewAction($data);
 	})
 	->update(fn($data) => throw new ViewAction($data))
 	->doUpdate(fn($data) => throw new ViewAction($data))

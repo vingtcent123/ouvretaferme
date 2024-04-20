@@ -87,7 +87,7 @@
 
 	})
 	->doUpdate(fn() => throw new ReloadAction('selling', 'Product::updated'))
-	->doUpdateProperties('doUpdateStatus', ['status'], fn() => throw new ReloadAction())
+	->doUpdateProperties('doUpdateStatus', ['status'], fn($data) => throw new ViewAction($data))
 	->doDelete(fn() => throw new ReloadAction('selling', 'Product::deleted'));
 
 (new Page())

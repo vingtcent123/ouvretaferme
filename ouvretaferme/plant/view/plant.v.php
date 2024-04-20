@@ -46,6 +46,11 @@ new JsonView('doUpdate', function($data, AjaxTemplate $t) {
 	$t->js()->moveHistory(-1);
 });
 
+new JsonView('doUpdateStatus', function($data, AjaxTemplate $t) {
+	$t->js()->success('plant', 'Plant::updated'.ucfirst($data->e['status']));
+	$t->qs('#plant-switch-'.$data->e['id'])->toggleSwitch();
+});
+
 new JsonView('doDelete', function($data, AjaxTemplate $t) {
 
 	$t->js()->success('plant', 'Plant::deleted');

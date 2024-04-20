@@ -884,6 +884,22 @@ Ajax.Instruction = class {
 					setTimeout(() => node.focus(), 100);
 					break;
 
+				case 'hide' :
+					node.hide();
+					break;
+
+				case 'removeHide' :
+					node.removeHide();
+					break;
+
+				case 'toggle' :
+					node.toggle();
+					break;
+
+				case 'toggleSwitch' :
+					node.toggleSwitch();
+					break;
+
 				case 'outerHtml' :
 					node.renderOuter(...data);
 					break;

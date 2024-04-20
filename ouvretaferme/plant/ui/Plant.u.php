@@ -238,7 +238,7 @@ class PlantUi {
 					$h .= '<th class="text-center">'.s("Variétés").'</th>';
 					$h .= '<th class="text-center">'.s("Critères<br/>de&nbsp;qualité").'</th>';
 					$h .= '<th>'.s("Famille").'</th>';
-					$h .= '<th>'.s("État").'</th>';
+					$h .= '<th>'.s("Activé").'</th>';
 					$h .= '<th></th>';
 				$h .= '</tr>';
 			$h .= '</thead>';
@@ -278,6 +278,7 @@ class PlantUi {
 					$h .= '</td>';
 					$h .= '<td class="text-center td-min-content">';
 						$h .= \util\TextUi::switch([
+							'id' => 'plant-switch-'.$ePlant['id'],
 							'data-ajax' => '/plant/plant:doUpdateStatus',
 							'post-id' => $ePlant['id'],
 							'post-status' => ($ePlant['status'] === Plant::ACTIVE) ? Plant::INACTIVE : Plant::ACTIVE
@@ -294,30 +295,17 @@ class PlantUi {
 									$h .= '<a href="/plant/variety?id='.$eFarm['id'].'&plant='.$ePlant['id'].'" class="dropdown-item">'.s("Gérer les variétés").'</a>';
 									$h .= '<a href="/plant/quality?id='.$eFarm['id'].'&plant='.$ePlant['id'].'" class="dropdown-item">'.s("Gérer les critères de qualité").'</a>';
 
-									$h .= '<div class="dropdown-divider"></div>';
-
 									if($ePlant->isOwner()) {
+
+										$h .= '<div class="dropdown-divider"></div>';
 
 										$h .= '<a href="/plant/plant:update?id='.$ePlant['id'].'" class="dropdown-item">';
 											$h .= s("Modifier l'espèce");
 										$h .= '</a> ';
 
-									}
-
-									if($ePlant->canDelete()) {
-
 										$h .= '<a data-ajax="/plant/plant:doDelete" data-confirm="'.s("Supprimer cette espèce ?").'" post-id="'.$ePlant['id'].'" class="dropdown-item">';
 											$h .= s("Supprimer l'espèce");
 										$h .= '</a>';
-
-									} else {
-
-										$h .= match($ePlant['status']) {
-
-											Plant::ACTIVE => '<a data-ajax="/plant/plant:doUpdateStatus" post-id="'.$ePlant['id'].'" post-status="'.Plant::INACTIVE.'" class="dropdown-item">'.s("Désactiver l'espèce").'</a>',
-											Plant::INACTIVE => '<a data-ajax="/plant/plant:doUpdateStatus" post-id="'.$ePlant['id'].'" post-status="'.Plant::ACTIVE.'" class="dropdown-item">'.s("Réactiver l'espèce").'</a>'
-
-										};
 
 									}
 

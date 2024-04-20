@@ -119,7 +119,7 @@ class ProductUi {
 						$h .= '<th rowspan="2" class="text-center product-item-vat">'.s("TVA").'</th>';
 					}
 					$h .= '<th rowspan="2" class="product-item-plant">'.self::p('plant')->label.'</th>';
-					$h .= '<th rowspan="2" class="text-center">'.s("État").'</th>';
+					$h .= '<th rowspan="2" class="text-center">'.s("Activé").'</th>';
 					$h .= '<th rowspan="2"></th>';
 				$h .= '</tr>';
 
@@ -229,10 +229,7 @@ class ProductUi {
 					$h .= '</td>';
 
 					$h .= '<td class="product-item-status text-center">';
-						$h .= match($eProduct['status']) {
-							Product::ACTIVE => '<span class="color-success" title="'.s("Actif").'">'.\Asset::icon('check-lg').'</span>',
-							Product::INACTIVE => '<span class="color-warning" title="'.s("Désactivé").'">'.\Asset::icon('pause-fill').'</span>'
-						};
+						$h .= $this->toggle($eProduct);
 					$h .= '</td>';
 
 					$h .= '<td class="product-item-actions">';
@@ -302,6 +299,17 @@ class ProductUi {
 
 	}
 
+	public function toggle(Product $eProduct) {
+
+		return \util\TextUi::switch([
+			'id' => 'product-switch-'.$eProduct['id'],
+			'data-ajax' => '/selling/product:doUpdateStatus',
+			'post-id' => $eProduct['id'],
+			'post-status' => ($eProduct['status'] === Product::ACTIVE) ? Product::INACTIVE : Product::ACTIVE
+		], $eProduct['status'] === Product::ACTIVE);
+
+	}
+
 	public function display(Product $eProduct, \Collection $cItemTurnover): string {
 
 		$h = '<div class="util-vignette">';
@@ -316,10 +324,7 @@ class ProductUi {
 					$h .= '</div>';
 				$h .= '</div>';
 				$h .= '<div class="util-action-subtitle">';
-					$h .= match($eProduct['status']) {
-						Product::ACTIVE => '<span class="color-success">'.\Asset::icon('check-lg').'</span> '.s("Produit actif"),
-						Product::INACTIVE => '<span class="color-warning">'.\Asset::icon('pause-fill').'</span> '.s("Produit désactivé")
-					};
+					$h .= $this->toggle($eProduct);
 				$h .= '</div>';
 			$h .= '</div>';
 
@@ -487,10 +492,6 @@ class ProductUi {
 		$h .= '<div class="dropdown-list">';
 			$h .= '<div class="dropdown-title">'.encode($eProduct->getName()).'</div>';
 			$h .= '<a href="/selling/product:update?id='.$eProduct['id'].'" class="dropdown-item">'.s("Modifier le produit").'</a>';
-			$h .= match($eProduct['status']) {
-				Product::INACTIVE => '<a data-ajax="/selling/product:doUpdateStatus" post-id="'.$eProduct['id'].'" post-status="'.Product::ACTIVE.'" class="dropdown-item">'.s("Activer le produit").'</a>',
-				Product::ACTIVE => '<a data-ajax="/selling/product:doUpdateStatus" post-id="'.$eProduct['id'].'" post-status="'.Product::INACTIVE.'" class="dropdown-item">'.s("Désactiver le produit").'</a>'
-			};;
 			$h .= '<a data-ajax="/selling/product:doDelete" post-id="'.$eProduct['id'].'" class="dropdown-item" data-confirm="'.s("Confirmer la suppression du produit ?").'">'.s("Supprimer le produit").'</a>';
 		$h .= '</div>';
 

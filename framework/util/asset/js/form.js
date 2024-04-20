@@ -185,8 +185,7 @@ class SwitchField {
 
 		const active = target.classList.contains('field-switch-off');
 
-		target.classList.toggle('field-switch-off');
-		target.classList.toggle('field-switch-on');
+		target.toggleSwitch();
 
 		const input = target.qs('input');
 

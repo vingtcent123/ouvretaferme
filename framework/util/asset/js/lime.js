@@ -344,6 +344,11 @@ Element.prototype.toggle = function() {
 	}
 }
 
+Element.prototype.toggleSwitch = function() {
+	this.classList.toggle('field-switch-off');
+	this.classList.toggle('field-switch-on');
+}
+
 Element.prototype.slideUp = function(options = {}) {
 
 	const duration = options.duration || 0.5;
