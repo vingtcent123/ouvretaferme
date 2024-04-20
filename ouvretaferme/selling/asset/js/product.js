@@ -20,7 +20,7 @@ class Product {
 
 		wrapper.qsa('[name^="'+ type +'Price"], [name^="'+ type +'Packaging"], [name^="'+ type +'Step"]', (node) => {
 
-			if(target.value === '0') {
+			if(target.checked === false) {
 				node.setAttribute('disabled', 'disabled');
 			} else {
 				node.removeAttribute('disabled');

@@ -238,6 +238,7 @@ class PlantUi {
 					$h .= '<th class="text-center">'.s("Variétés").'</th>';
 					$h .= '<th class="text-center">'.s("Critères<br/>de&nbsp;qualité").'</th>';
 					$h .= '<th>'.s("Famille").'</th>';
+					$h .= '<th>'.s("État").'</th>';
 					$h .= '<th></th>';
 				$h .= '</tr>';
 			$h .= '</thead>';
@@ -274,6 +275,13 @@ class PlantUi {
 						} else {
 							$h .= FamilyUi::link($ePlant['family'], $eFarm);
 						}
+					$h .= '</td>';
+					$h .= '<td class="text-center td-min-content">';
+						$h .= \util\TextUi::switch([
+							'data-ajax' => '/plant/plant:doUpdateStatus',
+							'post-id' => $ePlant['id'],
+							'post-status' => ($ePlant['status'] === Plant::ACTIVE) ? Plant::INACTIVE : Plant::ACTIVE
+						], $ePlant['status'] === Plant::ACTIVE);
 					$h .= '</td>';
 					$h .= '<td class="text-end">';
 

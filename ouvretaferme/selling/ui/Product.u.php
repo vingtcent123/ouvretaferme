@@ -762,11 +762,9 @@ class ProductUi {
 
 			case 'private' :
 			case 'pro' :
-				$d->field = 'yesNo';
+				$d->field = 'switch';
 				$d->attributes += [
-					'callbackRadioAttributes' => function() use ($property) {
-						return ['oninput' => 'Product.changeType(this, "'.$property.'")'];
-					}
+					'onchange' => 'Product.changeType(input, "'.$property.'")'
 				];
 				break;
 

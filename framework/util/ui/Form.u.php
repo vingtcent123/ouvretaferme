@@ -463,6 +463,7 @@ class FormUi {
 
 			case 'textarea' :
 			case 'yesNo' :
+			case 'switch' :
 			case 'weekNumber' :
 			case 'week' :
 			case 'month' :
@@ -967,6 +968,27 @@ class FormUi {
 		unset($attributes['yes'], $attributes['no']);
 
 		return $this->radios($name, $values, $selectedValue, $attributes);
+
+	}
+
+	public function switch(?string $name, mixed $selectedValue = NULL, array $attributes = []): string {
+
+		$h = '';
+
+		if(isset($attributes['onchange'])) {
+			$onclick = 'SwitchField.change(this, (input) => '.$attributes['onchange'].')';
+		} else {
+			$onclick = 'SwitchField.change(this)';
+		}
+
+		$h .= '<div class="field-switch '.($selectedValue ? 'field-switch-on' : 'field-switch-off').'" '.attr('onclick', $onclick).'>';
+			$h .= '<div class="field-switch-circle"></div>';
+			$h .= $this->inputCheckbox($name, TRUE, [
+				'checked' => (bool)$selectedValue,
+			]);
+		$h .= '</div>';
+
+		return $h;
 
 	}
 

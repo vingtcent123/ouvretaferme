@@ -376,6 +376,52 @@ div.form-group.form-group-nested > .form-control-label {
 	font-style: italic;
 }
 
+/* Switch */
+.field-switch {
+	padding: 0.3rem;
+	height: 2rem;
+	width: 4rem;
+	border-radius: 1rem;
+	border: 1px solid white;
+	transition: all 0.5s;
+	position: relative;
+	cursor: pointer;
+	display: block;
+}
+
+.field-switch:hover {
+	box-shadow: 0 0 0.5rem var(--border);
+}
+
+.field-switch input {
+	display: none;
+}
+
+.field-switch-on {
+	background-color: var(--success);
+}
+
+.field-switch-off {
+	background-color: var(--muted);
+}
+
+.field-switch-circle {
+	height: calc(1.4rem - 2px);
+	width: calc(1.4rem - 2px);
+	border-radius: 50%;
+	background-color: white;
+	position: absolute;
+	transition: left 0.25s;
+}
+
+.field-switch-circle {
+	left: 0.3rem;
+}
+
+.field-switch-off .field-switch-circle {
+	left: calc(100% - 1.4rem + 2px - 0.3rem);
+}
+
 /* Weeks */
 div.input-group > .input-group-addon.field-week-preview {
 	border-left: 0;

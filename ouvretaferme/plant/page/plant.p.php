@@ -114,8 +114,8 @@
 		$e['cFamily'] = \plant\FamilyLib::getList();
 
 	})
-	->doUpdateProperties('doUpdateStatus', ['status'], function() {
-		throw new ReloadAction('plant', 'Plant::updated');
+	->doUpdateProperties('doUpdateStatus', ['status'], function($data) {
+		throw new ReloadAction('plant', 'Plant::updated'.ucfirst($data->e['status']));
 	})
 	->update(fn($data) => throw new ViewAction($data))
 	->doUpdate(fn($data) => throw new ViewAction($data))

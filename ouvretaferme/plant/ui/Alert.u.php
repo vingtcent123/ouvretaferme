@@ -38,6 +38,9 @@ class AlertUi {
 
 			'Plant::created' => s("L'espèce a bien été créée."),
 			'Plant::updated' => s("L'espèce a bien été mise à jour."),
+			'Plant::updatedActive' => s("L'espèce a bien été réactivée."),
+			'Plant::updatedInactive' => s("L'espèce a bien été désactivée."),
+			'Plant::updated' => s("L'espèce a bien été mise à jour."),
 			'Plant::deleted' => s("L'espèce a bien été supprimée."),
 
 			'Forecast::created' => s("L'espèce a bien été ajoutée au prévisionnel."),

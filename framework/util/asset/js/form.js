@@ -177,6 +177,37 @@ class RangeField {
 }
 
 /**
+ * Manipulates switch
+ */
+class SwitchField {
+
+	static change(target, onchange) {
+
+		const active = target.classList.contains('field-switch-off');
+
+		target.classList.toggle('field-switch-off');
+		target.classList.toggle('field-switch-on');
+
+		const input = target.qs('input');
+
+		input.checked = active;
+
+		if(onchange) {
+			onchange(input);
+		}
+
+	}
+
+	static updateLabel(target) {
+
+		const label = target.firstParent('div.form-range').qs('[type="number"]');
+		label.value = target.value;
+
+	}
+
+}
+
+/**
  * Manipulates dates
  */
 

@@ -106,6 +106,21 @@ class TextUi {
 	}
 
 	/**
+	 * Switch item
+	 */
+	public static function switch(array $attributes, bool $on = FALSE): string {
+
+		\Asset::css('util', 'form.css');
+
+		$h = '<a '.attrs($attributes).' class="field-switch '.($on ? 'field-switch-on' : 'field-switch-off').'">';
+			$h .= '<div class="field-switch-circle"></div>';
+		$h .= '</a>';
+
+		return $h;
+
+	}
+
+	/**
 	 * Display a success message
 	 *
 	 * @param string $message
