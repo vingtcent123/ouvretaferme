@@ -620,7 +620,7 @@ class CustomerUi {
 				$h .= $form->group(content: '<h4>'.s("Client particulier").'</h4>');
 			$h .= '</div>';
 			$h .= '<div class="customer-form-category customer-form-collective">';
-				$h .= $form->group(content: '<h4>'.s("Point de vente aux particuliers").'</h4>');
+				$h .= $form->group(content: '<h4>'.s("Point de vente pour les particuliers").'</h4>');
 			$h .= '</div>';
 			$h .= $form->dynamicGroup($eCustomer, match($action) {
 				'create' => 'name*',
@@ -714,7 +714,7 @@ class CustomerUi {
 					$values[Customer::PRIVATE] = s("Client particulier");
 
 					if($e['type'] === NULL) {
-						$values[Customer::COLLECTIVE] = s("Point de vente aux particuliers").' - <small style="text-transform: uppercase">'.s("Marché / Vente à la ferme / ...").'</small>';
+						$values[Customer::COLLECTIVE] = s("Point de vente pour les particuliers").'<br/><small style="color: var(--muted); margin-left: 2rem">'.\Asset::icon('arrow-return-right').' '.s("Marché / Vente à la ferme / AMAP").'</small>';
 					}
 
 					$values[Customer::PRO] = s("Client professionnel");
