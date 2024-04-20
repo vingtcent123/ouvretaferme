@@ -478,7 +478,7 @@ class Sale extends SaleElement {
 				if(
 					$eCustomer->notEmpty() and
 					Customer::model()
-						->select(['id', 'type', 'discount'])
+						->select(['id', 'type', 'destination', 'discount'])
 						->whereFarm($this['farm'])
 						->whereStatus(Customer::ACTIVE)
 						->get($eCustomer)
@@ -501,7 +501,7 @@ class Sale extends SaleElement {
 				}
 
 				if($this['market']) {
-					return ($eCustomer['type'] === Customer::PRIVATE);
+					return ($eCustomer['destination'] === Customer::COLLECTIVE);
 				} else {
 					return TRUE;
 				}

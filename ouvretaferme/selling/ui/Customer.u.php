@@ -357,7 +357,7 @@ class CustomerUi {
 			$h .= '</div>';
 
 		} else {
-			$h .= '<div class="util-block">'.s("Ce client est un point de vente collectif aux particuliers.").'</div>';
+			$h .= '<div class="util-block">'.s("Ce client est un point de vente aux particuliers.").'</div>';
 		}
 
 		$h .= '<div class="tabs-h" id="customer-tabs-wrapper" onrender="'.encode('Lime.Tab.restore(this, "sales")').'">';
@@ -422,6 +422,7 @@ class CustomerUi {
 		$h = '<a data-dropdown="bottom-end" class="dropdown-toggle btn '.$btn.'">'.\Asset::icon('gear-fill').'</a>';
 		$h .= '<div class="dropdown-list">';
 			$h .= '<div class="dropdown-title">'.encode($eCustomer['name']).'</div>';
+			$h .= '<a href="/selling/sale:create?farm='.$eCustomer['farm']['id'].'&customer='.$eCustomer['id'].'" class="dropdown-item">'.s("Créer une vente").'</a>';
 			$h .= '<a href="/selling/customer:update?id='.$eCustomer['id'].'" class="dropdown-item">'.s("Modifier le client").'</a>';
 
 			if($eCustomer->canManage()) {
@@ -619,7 +620,7 @@ class CustomerUi {
 				$h .= $form->group(content: '<h4>'.s("Client particulier").'</h4>');
 			$h .= '</div>';
 			$h .= '<div class="customer-form-category customer-form-collective">';
-				$h .= $form->group(content: '<h4>'.s("Point de vente collectif aux particuliers").'</h4>');
+				$h .= $form->group(content: '<h4>'.s("Point de vente aux particuliers").'</h4>');
 			$h .= '</div>';
 			$h .= $form->dynamicGroup($eCustomer, match($action) {
 				'create' => 'name*',

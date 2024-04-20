@@ -881,9 +881,6 @@ class FarmUi {
 					$h .= '<div>';
 						$h .= '<a '.attr('onclick', 'Lime.Search.toggle("#sale-search")').' class="btn btn-primary">'.\Asset::icon('search').'</a> ';
 						$h .= '<a href="/selling/sale:create?farm='.$eFarm['id'].'" class="btn btn-primary">'.\Asset::icon('plus-circle').'<span class="hide-xs-down"> '.s("Nouvelle vente").'</span></a> ';
-						if($selectedView !== Farmer::PRO) {
-							$h .= '<a href="/selling/sale:create?farm='.$eFarm['id'].'&market=1" class="btn btn-primary">'.\Asset::icon('shop-window').'<span class="hide-xs-down"> '.s("Nouveau marché").'</span></a>';
-						}
 					$h .= '</div>';
 					break;
 

@@ -32,9 +32,11 @@ class SaleUi {
 
 	public static function getName(Sale $eSale): string {
 
-		$eSale->expects(['id', 'priceExcludingVat']);
+		$eSale->expects(['id', 'priceExcludingVat', 'market']);
 
-		if($eSale['priceExcludingVat'] < 0) {
+		if($eSale['market']) {
+			return s("Marché #{value}", $eSale->getNumber());
+		} else if($eSale['priceExcludingVat'] < 0) {
 			return s("Avoir #{value}", $eSale->getNumber());
 		} else {
 			return s("Vente #{value}", $eSale->getNumber());
@@ -365,30 +367,21 @@ class SaleUi {
 
 							$h .= '<td class="sale-item-payment-type '.($dynamicHide['paymentMethod'] ?? 'hide-sm-down').'">';
 
-								if(
-									$eSale['market'] or
-									$eSale['marketParent']->notEmpty()
-								) {
-									$h .= s("Marché");
-								} else {
-
-									if($eSale->isPaymentOnline()) {
-										$h .= '<div>'.SaleUi::p('paymentMethod')->values[$eSale['paymentMethod']].'</div>';
-										$h .= '<div>'.SaleUi::getPaymentStatus($eSale).'</div>';
-									} else if($eSale['invoice']->notEmpty()) {
-										if($eSale['invoice']->isCreditNote()) {
-											$h .= '<div>'.s("Avoir").'</div>';
-										} else {
-											$h .= '<div>'.s("Facture").'</div>';
-											$h .= '<div>'.InvoiceUi::getPaymentStatus($eSale['invoice']).'</div>';
-										}
-									} else if($eSale['paymentMethod'] === Sale::TRANSFER) {
-										$h .= '<div>'.s("Virement bancaire").'</div>';
-										$h .= '<div>'.SaleUi::getPaymentStatus($eSale).'</span></div>';
+								if($eSale->isPaymentOnline()) {
+									$h .= '<div>'.SaleUi::p('paymentMethod')->values[$eSale['paymentMethod']].'</div>';
+									$h .= '<div>'.SaleUi::getPaymentStatus($eSale).'</div>';
+								} else if($eSale['invoice']->notEmpty()) {
+									if($eSale['invoice']->isCreditNote()) {
+										$h .= '<div>'.s("Avoir").'</div>';
 									} else {
-										$h .= '/';
+										$h .= '<div>'.s("Facture").'</div>';
+										$h .= '<div>'.InvoiceUi::getPaymentStatus($eSale['invoice']).'</div>';
 									}
-
+								} else if($eSale['paymentMethod'] === Sale::TRANSFER) {
+									$h .= '<div>'.s("Virement bancaire").'</div>';
+									$h .= '<div>'.SaleUi::getPaymentStatus($eSale).'</span></div>';
+								} else {
+									$h .= '/';
 								}
 
 							$h .= '</td>';
@@ -932,20 +925,18 @@ class SaleUi {
 			$h .= '<dl class="util-presentation util-presentation-2">';
 				$h .= '<dt>'.s("Client").'</dt>';
 				$h .= '<dd>'.CustomerUi::link($eSale['customer']).'</dd>';
-				$h .= '<dt>'.s("Moyen de paiement").'</dt>';
-				$h .= '<dd>';
-					if(in_array($eSale['paymentMethod'], [Sale::TRANSFER, Sale::ONLINE_CARD])) {
-						$h .= \selling\SaleUi::p('paymentMethod')->values[$eSale['paymentMethod']];
-						$h .= ' '.\selling\SaleUi::getPaymentStatus($eSale);
-					} else if(in_array($eSale['paymentMethod'], [Sale::TRANSFER, Sale::ONLINE_CARD])) {
-						$h .= \selling\SaleUi::p('paymentMethod')->values[$eSale['paymentMethod']];
-						$h .= ' '.\selling\SaleUi::getPaymentStatus($eSale);
-					} else {
-						if($eSale['market'] or $eSale['marketParent']->notEmpty()) {
-							$h .= s("Marché");
+				if($eSale['market'] === FALSE) {
+					$h .= '<dt>'.s("Moyen de paiement").'</dt>';
+					$h .= '<dd>';
+						if(in_array($eSale['paymentMethod'], [Sale::TRANSFER, Sale::ONLINE_CARD])) {
+							$h .= \selling\SaleUi::p('paymentMethod')->values[$eSale['paymentMethod']];
+							$h .= ' '.\selling\SaleUi::getPaymentStatus($eSale);
+						} else if(in_array($eSale['paymentMethod'], [Sale::TRANSFER, Sale::ONLINE_CARD])) {
+							$h .= \selling\SaleUi::p('paymentMethod')->values[$eSale['paymentMethod']];
+							$h .= ' '.\selling\SaleUi::getPaymentStatus($eSale);
 						}
-					}
-				$h .= '</dd>';
+					$h .= '</dd>';
+				}
 
 				if($eSale['from'] === Sale::SHOP) {
 
@@ -1293,15 +1284,24 @@ class SaleUi {
 					$d->autocompleteDispatch = '#sale-create';
 				});
 
-			$h .= $form->dynamicGroups($eSale, ['deliveredAt', 'comment']);
+			if($eSale['customer']->notEmpty()) {
 
-			$h .= $form->group(
-				content: $form->submit(s("Créer la vente"))
-			);
+				if($eSale['customer']['destination'] === Customer::COLLECTIVE) {
+					$h .= $form->dynamicGroup($eSale, 'market');
+				}
+
+				$h .= $form->dynamicGroups($eSale, ['deliveredAt', 'comment']);
+
+				$h .= $form->group(
+					content: $form->submit(s("Créer la vente"))
+				);
+
+			}
 
 		$h .= $form->close();
 
 		return new \Panel(
+			id: 'panel-sale-create',
 			title: s("Ajouter une vente"),
 			body: $h
 		);
@@ -1488,6 +1488,7 @@ class SaleUi {
 			'customer' => s("Client"),
 			'deliveredAt' => s("Date de vente"),
 			'from' => s("Origine de la vente"),
+			'market' => s("Activer le mode <i>Marché</i>"),
 			'preparationStatus' => s("Statut de préparation"),
 			'paymentStatus' => s("État du paiement"),
 			'orderFormValidUntil' => s("Date d'échéance du devis"),
@@ -1576,6 +1577,10 @@ class SaleUi {
 					];
 
 				};
+				break;
+
+			case 'market' :
+				$d->field = 'yesNo';
 				break;
 
 			case 'taxes' :

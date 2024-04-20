@@ -909,9 +909,7 @@ class AutocompleteField {
 						item.appendChild(newInput);
 					});
 
-
 					input.value = value.itemText;
-
 					this.onSelect(input, value);
 
 				} else {

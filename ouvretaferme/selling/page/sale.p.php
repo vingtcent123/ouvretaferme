@@ -14,7 +14,8 @@
 
 		$data->e->merge([
 			'cShop' => \shop\ShopLib::getAroundByFarm($data->eFarm),
-			'market' => GET('market', 'bool')
+			'market' => GET('market', 'bool'),
+			'customer' => get_exists('customer') ? \selling\CustomerLib::getById(GET('customer')) : new \selling\Customer()
 		]);
 
 		throw new \ViewAction($data);
