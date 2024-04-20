@@ -77,11 +77,6 @@ class ShopManageUi {
 						$h .= '<a href="/shop/configuration:update?id='.$eShopCurrent['id'].'" class="dropdown-item">'.s("Paramétrer la boutique").'</a>';
 						$h .= '<a href="/shop/:website?id='.$eShopCurrent['id'].'&farm='.$eFarm['id'].'" class="dropdown-item">'.s("Intégrer sur votre site internet").'</a>';
 						$h .= '<a href="/shop/:emails?id='.$eShopCurrent['id'].'&farm='.$eFarm['id'].'" class="dropdown-item">'.s("Obtenir les adresses e-mail des clients").'</a>';
-						$h .= '<div class="dropdown-divider"></div>';
-						$h .= match($eShopCurrent['status']) {
-							Shop::ACTIVE => '<a data-ajax="/shop/:doUpdateStatus" post-id="'.$eShopCurrent['id'].'" post-status="'.Shop::CLOSED.'" class="dropdown-item">'.s("Mettre la boutique hors-ligne").'</a>',
-							Shop::CLOSED => '<a data-ajax="/shop/:doUpdateStatus" post-id="'.$eShopCurrent['id'].'" post-status="'.Shop::ACTIVE.'" class="dropdown-item">'.s("Activer la boutique").'</a>',
-						};
 						if($eShopCurrent['cDate']->empty()) {
 							$h .= '<div class="dropdown-divider"></div>';
 							$h .= '<a data-ajax="/shop/:doDelete" post-id="'.$eShopCurrent['id'].'" class="dropdown-item" data-confirm="'.s("Voulez-vous réellement supprimer définitivement cette boutique ?").'">'.s("Supprimer la boutique").'</a>';

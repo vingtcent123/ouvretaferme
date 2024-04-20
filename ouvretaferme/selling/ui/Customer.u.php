@@ -176,7 +176,7 @@ class CustomerUi {
 					$h .= '<th colspan="2" class="text-center">'.s("Ventes").'</th>';
 					$h .= '<th rowspan="2" class="customer-item-grid">'.s("Grille tarifaire").'</th>';
 					$h .= '<th rowspan="2" class="customer-item-contact">'.s("Contact").'</th>';
-					$h .= '<th rowspan="2" class="text-center">'.s("Actif").'</th>';
+					$h .= '<th rowspan="2" class="text-center">'.s("Activé").'</th>';
 					$h .= '<th rowspan="2"></th>';
 				$h .= '</tr>';
 				$h .= '<tr>';
@@ -190,11 +190,7 @@ class CustomerUi {
 
 					$eSaleTotal = $eCustomer['eSaleTotal'];
 
-					$h .= '<tr';
-						if($eCustomer['status'] === Customer::INACTIVE) {
-							$h .= ' class="color-muted"';
-						}
-					$h .= '>';
+					$h .= '<tr>';
 
 						$h .= '<td class="customer-item-name">';
 							$h .= '<a href="/client/'.$eCustomer['id'].'">'.encode($eCustomer['name']).'</a>';
@@ -253,10 +249,7 @@ class CustomerUi {
 						$h .= '</td>';
 
 						$h .= '<td class="customer-item-status text-center">';
-							$h .= match($eCustomer['status']) {
-								Customer::ACTIVE => '<span class="color-success" title="'.s("Actif").'">'.\Asset::icon('check-lg').'</span>',
-								Customer::INACTIVE => '<span class="color-warning" title="'.s("Désactivé").'">'.\Asset::icon('pause-fill').'</span>'
-							};
+							$h .= $this->toggle($eCustomer);
 						$h .= '</td>';
 
 						$h .= '<td class="customer-item-actions">';
@@ -276,6 +269,17 @@ class CustomerUi {
 		}
 
 		return $h;
+
+	}
+
+	public function toggle(Customer $eCustomer) {
+
+		return \util\TextUi::switch([
+			'id' => 'customer-switch-'.$eCustomer['id'],
+			'data-ajax' => $eCustomer->canManage() ? '/selling/customer:doUpdateStatus' : NULL,
+			'post-id' => $eCustomer['id'],
+			'post-status' => ($eCustomer['status'] === Customer::ACTIVE) ? Customer::INACTIVE : Customer::ACTIVE
+		], $eCustomer['status'] === Customer::ACTIVE);
 
 	}
 
@@ -299,10 +303,7 @@ class CustomerUi {
 		$h .= '</div>';
 
 		$h .= '<div class="util-action-subtitle">';
-			$h .= match($eCustomer['status']) {
-				Customer::ACTIVE => '<span class="color-success">'.\Asset::icon('check-lg').'</span> '.s("Client actif"),
-				Customer::INACTIVE => '<span class="color-warning">'.\Asset::icon('pause-fill').'</span> '.s("Client désactivé")
-			};
+			$h .= $this->toggle($eCustomer);
 		$h .= '</div>';
 
 		if($eCustomer['invite']->isValid() and $eCustomer['invite']->canWrite()) {
@@ -447,15 +448,6 @@ class CustomerUi {
 			) {
 
 				$h .= '<div class="dropdown-divider"></div>';
-
-				if($eCustomer->canManage()) {
-
-					$h .= match($eCustomer['status']) {
-						Customer::INACTIVE => '<a data-ajax="/selling/customer:doUpdateStatus" post-id="'.$eCustomer['id'].'" post-status="'.Customer::ACTIVE.'" class="dropdown-item">'.s("Réactiver le client").'</a>',
-						Customer::ACTIVE => '<a data-ajax="/selling/customer:doUpdateStatus" post-id="'.$eCustomer['id'].'" post-status="'.Customer::INACTIVE.'" class="dropdown-item">'.s("Désactiver le client").'</a>'
-					};
-
-				}
 
 				if($eCustomer->canDelete()) {
 					$h .= '<a data-ajax="/selling/customer:doDelete" post-id="'.$eCustomer['id'].'" class="dropdown-item" data-confirm="'.s("Confirmer la suppression du client ?").'">'.s("Supprimer le client").'</a>';

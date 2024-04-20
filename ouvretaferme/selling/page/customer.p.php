@@ -91,7 +91,7 @@
 	->doUpdate(function($data) {
 		throw new ReloadAction('selling', 'Customer::updated');
 	})
-	->doUpdateProperties('doUpdateStatus', ['status'], fn() => throw new ReloadAction(), validate: ['canManage'])
+	->doUpdateProperties('doUpdateStatus', ['status'], fn($data) => throw new ViewAction($data), validate: ['canManage'])
 	->doDelete(function($data) {
 		throw new RedirectAction(\farm\FarmUi::urlSellingCustomer($data->e['farm']).'?success=selling:Customer::deleted');
 	});

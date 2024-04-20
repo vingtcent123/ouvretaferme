@@ -303,7 +303,7 @@ class ProductUi {
 
 		return \util\TextUi::switch([
 			'id' => 'product-switch-'.$eProduct['id'],
-			'data-ajax' => '/selling/product:doUpdateStatus',
+			'data-ajax' => $eProduct->canWrite() ? '/selling/product:doUpdateStatus' : NULL,
 			'post-id' => $eProduct['id'],
 			'post-status' => ($eProduct['status'] === Product::ACTIVE) ? Product::INACTIVE : Product::ACTIVE
 		], $eProduct['status'] === Product::ACTIVE);

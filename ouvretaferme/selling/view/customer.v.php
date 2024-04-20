@@ -30,6 +30,10 @@ new JsonView('doUpdateGrid', function($data, AjaxTemplate $t) {
 	$t->js()->moveHistory(-1);
 });
 
+new JsonView('doUpdateStatus', function($data, AjaxTemplate $t) {
+	$t->qs('#customer-switch-'.$data->e['id'])->toggleSwitch();
+});
+
 new JsonView('query', function($data, AjaxTemplate $t) {
 
 	$results = $data->cCustomer->makeArray(fn($eCustomer) => \selling\CustomerUi::getAutocomplete($eCustomer));

@@ -518,6 +518,17 @@ class ShopUi {
 
 	}
 
+	public function toggle(Shop $eShop) {
+
+		return \util\TextUi::switch([
+			'id' => 'shop-switch-'.$eShop['id'],
+			'data-ajax' => $eShop->canWrite() ? '/shop/:doUpdateStatus' : NULL,
+			'post-id' => $eShop['id'],
+			'post-status' => ($eShop['status'] === Shop::ACTIVE) ? Shop::CLOSED : Shop::ACTIVE
+		], $eShop['status'] === Shop::ACTIVE, s("En ligne"), s("Hors-ligne"));
+
+	}
+
 	public function getDetails(Shop $eShop): string {
 
 		$h = '<div class="util-block" style="margin-bottom: 2rem">';
@@ -527,10 +538,7 @@ class ShopUi {
 					$h .= s("Statut de la boutique");
 				$h .= '</dt>';
 				$h .= '<dd>';
-					$h .= match($eShop['status']) {
-						\shop\Shop::ACTIVE => '<span class="color-success">'.s("En ligne").'</span>',
-						\shop\Shop::CLOSED => '<span class="color-warning">'.\Asset::icon('pause-fill').' '.s("Hors ligne").'</span>'
-					};
+					$h .= $this->toggle($eShop);
 				$h .= '</dd>';
 
 				$h .= '<dt>';

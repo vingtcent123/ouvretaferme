@@ -31,7 +31,7 @@
 
 	}, validate: ['canWrite'])
 	->doUpdateProperties('doUpdateStatus', ['status'], function($data) {
-		throw new ReloadAction('shop', $data->e['status'] === \shop\Shop::ACTIVE ? 'Shop::closed' : 'Shop::activated');
+		throw new ReloadAction('shop', $data->e['status'] === \shop\Shop::ACTIVE ? 'Shop::activated' : 'Shop::closed');
 	})
 	->doDelete(function() {
 		throw new ReloadAction('shop', 'Shop::deleted');
