@@ -622,8 +622,7 @@ class DateUi {
 		$now = currentDatetime();
 
 		if($eShop['status'] === Shop::CLOSED) {
-			$h .= '<span class="color-danger">'.\Asset::icon('exclamation-triangle').'</span> '.s("Boutique fermée");
-			$h .= '<br />';
+			$h .= '<div class="color-danger">'.\Asset::icon('exclamation-triangle-fill').' '.s("Boutique fermée").'</div>';
 		}
 		if($eDate['status'] === Date::CLOSED) {
 			$h .= '<span class="color-muted">'.\Asset::icon('pause-fill').'</span> '.s("Vente hors ligne");
