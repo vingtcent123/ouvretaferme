@@ -424,7 +424,7 @@ div.form-group.form-group-nested > .form-control-label {
 	height: calc(1.8rem - 2px);
 	display: flex;
 	align-items: center;
-	font-size: 0.75rem;
+	font-size: 0.8rem;
 	line-height: 1;
 	color: white;
 }

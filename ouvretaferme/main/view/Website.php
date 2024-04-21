@@ -105,7 +105,7 @@ class WebsiteTemplate extends BaseTemplate {
 
 			if($this->data->eWebsite['status'] === \website\Website::INACTIVE) {
 				$alert = '<p>';
-					$alert .= Asset::icon('exclamation-triangle-fill').' '.s("Le site de votre ferme est pour le moment hors-ligne, vous seul pouvez le consulter !");
+					$alert .= Asset::icon('exclamation-triangle-fill').' '.s("Le site de votre ferme est pour le moment hors ligne, vous seul pouvez le consulter !");
 				$alert .= '</p>';
 				$alerts[] = $alert;
 			}
@@ -115,7 +115,7 @@ class WebsiteTemplate extends BaseTemplate {
 				$this->data->eWebpage['status'] === \website\Webpage::INACTIVE
 			) {
 				$alert = '<p>';
-					$alert .= Asset::icon('exclamation-triangle-fill').' '.s("Cette page est actuellement hors-ligne, vous seul pouvez la consulter !");
+					$alert .= Asset::icon('exclamation-triangle-fill').' '.s("Cette page est actuellement hors ligne, vous seul pouvez la consulter !");
 				$alert .= '</p>';
 				$alerts[] = $alert;
 			}

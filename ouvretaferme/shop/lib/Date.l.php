@@ -18,7 +18,6 @@ class DateLib extends DateCrud {
 		return function(Date $eDate) {
 
 			$properties = [
-				'status',
 				'orderStartAt', 'orderEndAt',
 				'deliveryDate',
 			];

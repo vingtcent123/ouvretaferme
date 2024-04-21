@@ -13,6 +13,17 @@ class DateUi {
 		return s("Vente du {value}", lcfirst(\util\DateUi::getDayName(date('N', strtotime($e['deliveryDate'])))).' '.\util\DateUi::textual($e['deliveryDate']));
 	}
 
+	public function toggle(Date $eDate) {
+
+		return \util\TextUi::switch([
+			'id' => 'date-switch-'.$eDate['id'],
+			'data-ajax' => $eDate->canWrite() ? '/shop/date:doUpdateStatus' : NULL,
+			'post-id' => $eDate['id'],
+			'post-status' => ($eDate['status'] === Date::ACTIVE) ? Date::CLOSED : Date::ACTIVE
+		], $eDate['status'] === Date::ACTIVE, s("En ligne"), ("Hors ligne"));
+
+	}
+
 	public function togglePoint(Date $eDate, Point $ePoint, bool $selected) {
 
 		return \util\TextUi::switch([
@@ -304,8 +315,6 @@ class DateUi {
 
 		$h .= $form->hidden('id', $eDate['id']);
 
-		$h .= $form->dynamicGroup($eDate, 'status');
-
 		if($eDate->isExpired() === FALSE) {
 			$h .= $form->dynamicGroup($eDate, 'points');
 		}
@@ -512,7 +521,7 @@ class DateUi {
 			return '<div class="util-info">'.s("Il n'y a aucune vente à afficher.").'</div>';
 		}
 
-		$h = '<div class="dates-item-wrapper stick-xs util-overflow-xs">';
+		$h = '<div class="dates-item-wrapper stick-sm util-overflow-sm">';
 
 			$h .= '<table class="sale-item-table tr-bordered tr-even">';
 
@@ -611,12 +620,6 @@ class DateUi {
 					$h .= '<a href="/shop/date:update?id='.$eDate['id'].'" class="dropdown-item">'.s("Paramétrer cette date de vente").'</a>';
 					$h .= '<a href="/shop/date:create?shop='.$eShop['id'].'&farm='.$eDate['farm']['id'].'&date='.$eDate['id'].'" class="dropdown-item">'.s("Créer une nouvelle date à partir de celle-ci").'</a>';
 
-					$h .= '<div class="dropdown-divider"></div>';
-					$h .= match($eDate['status']) {
-						\shop\Date::ACTIVE => '<a data-ajax="/shop/date:doUpdateStatus" post-id="'.$eDate['id'].'" post-status="'.\shop\Date::CLOSED.'" class="dropdown-item">'.s("Mettre la vente hors-ligne").'</a>',
-						\shop\Date::CLOSED => '<a data-ajax="/shop/date:doUpdateStatus" post-id="'.$eDate['id'].'" post-status="'.\shop\Date::ACTIVE.'" class="dropdown-item">'.s("Réactiver la vente à cette date").'</a>',
-					};
-
 					if($sales === 0) {
 						$h .= '<div class="dropdown-divider"></div>';
 						$h .= '<a data-ajax="/shop/date:doDelete" post-id="'.$eDate['id'].'" post-farm="'.$eDate['farm']['id'].'" post-shop="'.$eShop['id'].'" class="dropdown-item" data-confirm="'.s("Êtes-vous sûr de vouloir supprimer cette date de vente ?").'">'.s("Supprimer cette date de vente").'</a>';
@@ -641,7 +644,7 @@ class DateUi {
 		} else {
 
 			if($eDate['status'] === Date::CLOSED) {
-				$h .= '<span class="color-danger">'.\Asset::icon('exclamation-triangle-fill').'</span> '.s("Vente fermée");
+				$h .= '<span class="color-danger">'.\Asset::icon('exclamation-triangle-fill').' '.s("Vente hors ligne").'</span>';
 			} else if($eDate['deliveryDate'] < $now) {
 				$h .= '<span class="color-success">'.s("Vente terminée").'</span>';
 			} else if($eDate['orderEndAt'] <= $now) {
@@ -733,21 +736,18 @@ class DateUi {
 		$h = '<div class="util-block" style="margin-bottom: 2rem">';
 			$h .= '<dl class="util-presentation util-presentation-2">';
 
+				$h .= '<dt>';
+					$h .= s("Statut de la vente");
+				$h .= '</dt>';
+				$h .= '<dd>';
+					$h .= $this->toggle($eDate);
+				$h .= '</dd>';
+
 				$h .= '<dt style="grid-row: span 2">';
 					$h .= s("Prise des commandes");
 				$h .= '</dt>';
 				$h .= '<dd style="grid-row: span 2">';
 					$h .= $this->getOrderHours($eDate);
-				$h .= '</dd>';
-
-				$h .= '<dt>';
-					$h .= s("Statut");
-				$h .= '</dt>';
-				$h .= '<dd>';
-					$h .= match($eDate['status']) {
-						\shop\Date::ACTIVE => '<span class="color-success">'.\Asset::icon('check-lg').'</span> '.\shop\DateUi::p('status')->values[\shop\Date::ACTIVE],
-						\shop\Date::CLOSED => '<span class="color-warning">'.\Asset::icon('pause-fill').'</span> '.\shop\DateUi::p('status')->values[\shop\Date::CLOSED]
-					};
 				$h .= '</dd>';
 
 				$h .= '<dt>';
@@ -777,9 +777,10 @@ class DateUi {
 		switch($property) {
 
 			case 'status' :
-				$d->values = [
-					Date::ACTIVE => s("En ligne - visible pour tous"),
-					Date::CLOSED => '<span class="color-muted">'.s("Hors ligne - visible seulement pour vous même").'</span>',
+				$d->field = 'switch';
+				$d->attributes = [
+					'labelOn' => s("En ligne - visible pour tous"),
+					'labelOff' => s("Hors ligne - visible seulement de vous"),
 				];
 				break;
 

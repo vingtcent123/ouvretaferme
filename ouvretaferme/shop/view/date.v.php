@@ -11,6 +11,10 @@ new AdaptativeView('update', function($data, PanelTemplate $t) {
 
 });
 
+new JsonView('doUpdateStatus', function($data, AjaxTemplate $t) {
+	$t->qs('#date-switch-'.$data->e['id'])->toggleSwitch();
+});
+
 new JsonView('doUpdatePoint', function($data, AjaxTemplate $t) {
 	$t->qs('#point-switch-'.$data->ePoint['id'])->toggleSwitch();
 });
@@ -35,7 +39,8 @@ new AdaptativeView('/ferme/{farm}/boutique/{shop}/date/{id}', function($data, Fa
 		echo '</div>';
 	echo '</div>';
 	echo '<div class="util-action-subtitle">';
-		echo '<a href="'.\shop\ShopUi::url($data->eShop).'">'.\shop\ShopUi::url($data->eShop, showProtocol: FALSE).'</a>';;
+			$url = \shop\ShopUi::dateUrl($data->eShop, $data->e, showDomain: TRUE);
+			echo '<a href="'.$url.'">'.$url.'</a>';
 	echo '</div>';
 
 	echo (new \shop\DateUi())->getDetails($data->eShop, $data->e);

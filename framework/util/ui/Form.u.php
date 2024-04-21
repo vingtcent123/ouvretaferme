@@ -983,6 +983,12 @@ class FormUi {
 
 		$h .= '<div class="field-switch '.($selectedValue ? 'field-switch-on' : 'field-switch-off').'" '.attr('onclick', $onclick).'>';
 			$h .= '<div class="field-switch-circle"></div>';
+			if(isset($attributes['labelOn']) or isset($attributes['labelOff'])) {
+				$h .= '<div class="field-switch-text">';
+					$h .= '<div>'.($attributes['labelOn'] ?? '').'</div>';
+					$h .= '<div>'.($attributes['labelOff'] ?? '').'</div>';
+				$h .= '</div>';
+			}
 			$h .= $this->inputCheckbox($name, TRUE, [
 				'checked' => (bool)$selectedValue,
 			]);

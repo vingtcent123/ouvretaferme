@@ -36,7 +36,7 @@
 		throw new \ViewAction($data);
 
 	})
-	->doUpdateProperties('doUpdateStatus', ['status'], fn() => throw new ReloadAction())
+	->doUpdateProperties('doUpdateStatus', ['status'], fn($data) => throw new ViewAction($data))
 	->doUpdate(fn() => throw new ReloadAction('shop', 'Date::updated'))
 	->read('/ferme/{farm}/boutique/{shop}/date/{id}', function($data) {
 

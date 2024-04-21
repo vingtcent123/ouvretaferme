@@ -69,6 +69,22 @@ class Date extends DateElement {
 
 		return parent::build($properties, $input, $callbacks + [
 
+			'status.prepare' => function(mixed &$status): bool {
+
+				if(in_array($status, [Date::ACTIVE, Date::CLOSED])) {
+					return TRUE;
+				}
+
+				if($status) {
+					$status = Date::ACTIVE;
+				} else {
+					$status = Date::CLOSED;
+				}
+
+				return TRUE;
+
+			},
+
 			// End of order must be after start of order.
 			'orderEndAt.consistency' => function($orderEndAt): bool {
 

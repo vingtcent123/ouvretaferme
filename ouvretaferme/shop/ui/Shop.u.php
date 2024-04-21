@@ -542,7 +542,7 @@ class ShopUi {
 				$h .= '</dd>';
 
 				$h .= '<dt>';
-					$h .= s("Fréquence");
+					$h .= s("Fréquence des ventes");
 				$h .= '</dt>';
 				$h .= '<dd>';
 					$h .= self::p('frequency')->values[$eShop['frequency']];

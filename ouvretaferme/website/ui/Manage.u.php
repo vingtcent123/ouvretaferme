@@ -94,7 +94,7 @@ class ManageUi {
 					$h .= '<a href="/website/manage:update?id='.$eWebsite['id'].'" class="dropdown-item">'.s("Paramétrer le site").'</a>';
 					$h .= match($eWebsite['status']) {
 						Website::INACTIVE => '<a data-ajax="/website/manage:doUpdateStatus" post-id="'.$eWebsite['id'].'" post-status="'.Website::ACTIVE.'" class="dropdown-item" data-confirm="'.s("Le site sera rendu accessible au public, voulez-vous continuer ?").'">'.s("Mettre en ligne le site").'</a>',
-						Website::ACTIVE => '<a data-ajax="/website/manage:doUpdateStatus" post-id="'.$eWebsite['id'].'" post-status="'.Website::INACTIVE.'" class="dropdown-item" data-confirm="'.s("Le site deviendra inaccessible au public, voulez-vous continuer ?").'">'.s("Mettre hors-ligne le site").'</a>'
+						Website::ACTIVE => '<a data-ajax="/website/manage:doUpdateStatus" post-id="'.$eWebsite['id'].'" post-status="'.Website::INACTIVE.'" class="dropdown-item" data-confirm="'.s("Le site deviendra inaccessible au public, voulez-vous continuer ?").'">'.s("Mettre hors ligne le site").'</a>'
 					};
 					$h .= '<div class="dropdown-divider"></div>';
 					$h .= '<a data-ajax="/website/manage:doDelete" post-id="'.$eWebsite['id'].'" class="dropdown-item" data-confirm="'.s("Le site ainsi que toutes les données seront supprimées, êtes-vous sûr de vouloir continuer ?").'">'.s("Supprimer définitivement le site").'</a>';
@@ -265,7 +265,7 @@ class ManageUi {
 							if($eWebpage['template']['fqn'] !== 'homepage') {
 								$h .= match($eWebpage['status']) {
 									Webpage::INACTIVE => '<a data-ajax="/website/webpage:doUpdateStatus" post-id="'.$eWebpage['id'].'" post-status="'.Webpage::ACTIVE.'" class="dropdown-item">'.s("Mettre en ligne la page").'</a>',
-									Webpage::ACTIVE => '<a data-ajax="/website/webpage:doUpdateStatus" post-id="'.$eWebpage['id'].'" post-status="'.Webpage::INACTIVE.'" class="dropdown-item" data-confirm="'.s("La page deviendra inaccessible au public, voulez-vous continuer ?").'">'.s("Mettre hors-ligne la page").'</a>'
+									Webpage::ACTIVE => '<a data-ajax="/website/webpage:doUpdateStatus" post-id="'.$eWebpage['id'].'" post-status="'.Webpage::INACTIVE.'" class="dropdown-item" data-confirm="'.s("La page deviendra inaccessible au public, voulez-vous continuer ?").'">'.s("Mettre hors ligne la page").'</a>'
 								};
 							}
 							if($eWebpage['template']['fqn'] === 'open') {
