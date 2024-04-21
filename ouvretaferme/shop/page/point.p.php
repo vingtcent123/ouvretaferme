@@ -38,6 +38,6 @@
 		throw new ReloadAction('shop', 'Point::'.$data->e['type'].'.deleted');
 	})
 	->doUpdateProperties('doUpdateStatus', ['status'], function($data) {
-		throw new ReloadAction('shop', $data->e['status'] === \shop\Shop::ACTIVE ? 'Point::'.$data->e['type'].'.closed' : 'Point::'.$data->e['type'].'.activated');
+		throw new ReloadAction('shop', $data->e['status'] === \shop\Shop::OPEN ? 'Point::'.$data->e['type'].'.closed' : 'Point::'.$data->e['type'].'.opened');
 	});
 ?>

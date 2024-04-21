@@ -632,7 +632,7 @@ class DateUi {
 			$h .= '<span class="color-order">'.s("Fin des commandes").'</span>';
 		} else if($eDate['orderStartAt'] < $now and $eDate['orderEndAt'] > $now) {
 			$h .= '<span class="color-order">'.s("Commandes ouvertes encore {value}", \util\DateUi::secondToDuration(strtotime($eDate['orderEndAt']) - time(), \util\DateUi::AGO, maxNumber: 1)).'</span>';
-		} else if($eShop['status'] === Shop::ACTIVE) {
+		} else if($eShop['status'] === Shop::OPEN) {
 			$h .= s("Ouverture des commandes dans {value}", \util\DateUi::secondToDuration(strtotime($eDate['orderStartAt']) - time(), \util\DateUi::AGO, maxNumber: 1));
 		}
 

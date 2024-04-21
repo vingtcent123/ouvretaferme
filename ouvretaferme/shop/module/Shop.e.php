@@ -21,6 +21,20 @@ class Shop extends ShopElement {
 
 	}
 
+	public function isOpen(): bool {
+
+		$this->expects(['status']);
+		return $this['status'] === Shop::OPEN;
+
+	}
+
+	public function isClosed(): bool {
+
+		$this->expects(['status']);
+		return $this['status'] === Shop::CLOSED;
+
+	}
+
 	public function canRead(): bool {
 
 		$this->expects(['farm']);

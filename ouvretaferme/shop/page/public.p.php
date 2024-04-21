@@ -75,7 +75,7 @@
 
 (new Page(function($data) {
 
-		$data->eShop = \shop\ShopLib::getByFqn(GET('fqn'))->validate();
+		$data->eShop = \shop\ShopLib::getByFqn(GET('fqn'))->validate('isOpen');
 		$data->eDate = \shop\DateLib::getById(GET('date'))->validateProperty('shop', $data->eShop);
 		$data->eCustomer = \shop\SaleLib::getShopCustomer($data->eShop, $data->eUserOnline);
 		$data->eSaleExisting = \shop\SaleLib::getSaleForDate($data->eDate, $data->eCustomer);

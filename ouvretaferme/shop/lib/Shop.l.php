@@ -36,7 +36,7 @@ class ShopLib extends ShopCrud {
 			->getColumn('shop')
 			->filter(function($eShop) {
 				return (
-					$eShop['status'] === Shop::ACTIVE and
+					$eShop['status'] === Shop::OPEN and
 					$eShop['eDate']->notEmpty()
 				);
 			})

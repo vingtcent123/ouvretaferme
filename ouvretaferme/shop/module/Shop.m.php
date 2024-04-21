@@ -12,7 +12,7 @@ abstract class ShopElement extends \Element {
 	const MONTHLY = 'monthly';
 	const OTHER = 'other';
 
-	const ACTIVE = 'active';
+	const OPEN = 'open';
 	const CLOSED = 'closed';
 
 	public static function getSelection(): array {
@@ -62,7 +62,7 @@ class ShopModel extends \ModuleModel {
 			'orderMin' => ['int32', 'min' => 0, 'max' => NULL, 'null' => TRUE, 'cast' => 'int'],
 			'shipping' => ['decimal', 'digits' => 8, 'decimal' => 2, 'min' => 0.01, 'max' => NULL, 'null' => TRUE, 'cast' => 'float'],
 			'shippingUntil' => ['int32', 'min' => 0, 'max' => NULL, 'null' => TRUE, 'cast' => 'int'],
-			'status' => ['enum', [\shop\Shop::ACTIVE, \shop\Shop::CLOSED], 'cast' => 'enum'],
+			'status' => ['enum', [\shop\Shop::OPEN, \shop\Shop::CLOSED], 'cast' => 'enum'],
 			'createdAt' => ['datetime', 'cast' => 'string'],
 			'createdBy' => ['element32', 'user\User', 'cast' => 'element'],
 		]);
@@ -103,7 +103,7 @@ class ShopModel extends \ModuleModel {
 				return FALSE;
 
 			case 'status' :
-				return Shop::ACTIVE;
+				return Shop::OPEN;
 
 			case 'createdAt' :
 				return new \Sql('NOW()');

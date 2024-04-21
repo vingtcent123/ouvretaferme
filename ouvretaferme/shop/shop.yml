@@ -54,7 +54,7 @@ Shop:
   orderMin: ?int(0, NULL)
   shipping: ?decimal(8, 2, 0.01, null)
   shippingUntil: ?int(0, NULL)
-  status: enum(ACTIVE, CLOSED) = ACTIVE
+  status: enum(OPEN, CLOSED) = OPEN
   createdAt: datetime = SPECIAL(now)
   createdBy: user\User = SPECIAL(user)
   UNIQUE: [

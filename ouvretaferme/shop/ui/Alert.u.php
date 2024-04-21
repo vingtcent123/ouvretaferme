@@ -41,7 +41,7 @@ class AlertUi {
 			'Date::deleted' => s("La date de vente a bien été supprimée"),
 			'Date::updated' => s("Le paramétrage a bien été enregistré."),
 
-			'Shop::activated' => s("Votre boutique a bien été activée !"),
+			'Shop::opened' => s("Votre boutique a bien été ouverte !"),
 			'Shop::closed' => s("Votre boutique a bien été fermée !"),
 			'Shop::created' => s("Votre boutique a bien été créée. Vous pouvez maintenant paramétrer votre première vente !"),
 			'Shop::updated' => s("Votre boutique a bien été mise à jour."),

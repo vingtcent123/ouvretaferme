@@ -9,9 +9,21 @@ new AdaptativeView('shop', function($data, ShopTemplate $t) {
 
 	if($data->eShop['status'] === \shop\Shop::CLOSED) {
 
-		echo '<div class="util-warning">';
-			echo s("Cette boutique est actuellement hors-ligne. Vos clients ne pourront pas consulter cette page tant que vous ne l'aurez pas remis en ligne !");
-		echo '</div>';
+		if($data->eShop->canWrite()) {
+
+			echo '<div class="util-warning">';
+				echo s("Cette boutique est actuellement fermée. Vos clients ne pourront pas consulter cette page tant que vous ne l'aurez pas ouverte !");
+			echo '</div>';
+
+		} else {
+
+			echo '<div class="util-info">';
+				echo s("La boutique est actuellement fermée.");
+			echo '</div>';
+
+			return;
+
+		}
 
 	}
 

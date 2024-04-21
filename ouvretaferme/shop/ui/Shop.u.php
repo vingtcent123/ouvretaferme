@@ -524,8 +524,8 @@ class ShopUi {
 			'id' => 'shop-switch-'.$eShop['id'],
 			'data-ajax' => $eShop->canWrite() ? '/shop/:doUpdateStatus' : NULL,
 			'post-id' => $eShop['id'],
-			'post-status' => ($eShop['status'] === Shop::ACTIVE) ? Shop::CLOSED : Shop::ACTIVE
-		], $eShop['status'] === Shop::ACTIVE, s("En ligne"), s("Hors-ligne"));
+			'post-status' => ($eShop['status'] === Shop::OPEN) ? Shop::CLOSED : Shop::OPEN
+		], $eShop['status'] === Shop::OPEN, s("Ouverte"), s("Fermée"));
 
 	}
 
@@ -535,7 +535,7 @@ class ShopUi {
 			$h .= '<dl class="util-presentation util-presentation-2">';
 
 				$h .= '<dt>';
-					$h .= s("Statut de la boutique");
+					$h .= s("État de la boutique");
 				$h .= '</dt>';
 				$h .= '<dd>';
 					$h .= $this->toggle($eShop);
