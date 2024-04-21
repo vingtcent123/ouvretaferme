@@ -192,7 +192,7 @@ class PointUi {
 						$h .= $this->getPoints($eShop, $cc[Point::PLACE], write: FALSE);
 					} else {
 						$h .= '<div class="util-info">';
-							$h .= s("La livraison en point de retrait collectif n'est pas activée pour cette date !");
+							$h .= s("La livraison en point de retrait collectif n'est pas activée pour cette date de vente !");
 						$h .= '</div>';
 					}
 
@@ -209,7 +209,7 @@ class PointUi {
 						$h .= $this->getPoints($eShop, $cc[Point::HOME], write: FALSE);
 					} else {
 						$h .= '<div class="util-info">';
-							$h .= s("La livraison à domicile n'est pas activée pour cette date !");
+							$h .= s("La livraison à domicile n'est pas activée pour cette date de vente !");
 						$h .= '</div>';
 					}
 

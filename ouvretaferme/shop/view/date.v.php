@@ -26,7 +26,7 @@ new AdaptativeView('/ferme/{farm}/boutique/{shop}/date/{id}', function($data, Fa
 		echo '</h1>';
 		echo '<div>';
 			if($data->e->canWrite()) {
-				echo (new \shop\DateUi())->getMenu($data->e['shop'], $data->e, $data->e['sales']['count'], $data->e['sales']['countValid'], 'btn-primary');
+				echo (new \shop\DateUi())->getMenu($data->e['shop'], $data->e, $data->e['sales']['count'], 'btn-primary');
 			}
 		echo '</div>';
 	echo '</div>';

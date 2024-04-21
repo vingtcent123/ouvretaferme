@@ -507,9 +507,9 @@ class DateUi {
 				$h .= '<thead>';
 
 					$h .= '<tr>';
-						$h .= '<th></th>';
-						$h .= '<th>'.s("État").'</th>';
-						$h .= '<th class="text-center">'.s("Commandes").'</th>';
+						$h .= '<th class="text-center">'.s("Date de vente").'</th>';
+						$h .= '<th>'.s("Ouverture des ventes").'</th>';
+						$h .= '<th class="text-center" colspan="2">'.s("Commandes").'</th>';
 						$h .= '<th class="text-end">';
 							$h .= s("Montant");
 							if($eFarm['selling']['hasVat']) {
@@ -537,8 +537,18 @@ class DateUi {
 								$h .= $this->getStatus($eShop, $eDate);
 							$h .= '</td>';
 
-							$h .= '<td class="text-center">';
+							$h .= '<td class="text-end td-min-content">';
 								$h .= '<a href="'.ShopUi::adminDateUrl($eFarm, $eShop, $eDate).'?tab=sales">'.$eDate['sales']['countValid'].'</a>';
+
+							$h .= '</td>';
+							$h .= '<td class="td-min-content">';
+
+								if($eDate['sales']['countValid'] > 0) {
+
+									$h .= '<a href="/shop/date:downloadSales?id='.$eDate['id'].'&farm='.$eDate['farm']['id'].'" data-ajax-navigation="never" class="btn btn-outline-secondary" title="'.s("Exporter les commandes").'">'.\Asset::icon('filetype-pdf').'</a>';
+
+								}
+
 							$h .= '</td>';
 
 							$h .= '<td class="text-end">';
@@ -554,7 +564,7 @@ class DateUi {
 									$eDate['sales']['count'] > 0
 								) {
 
-									$h .= $this->getMenu($eShop, $eDate, $eDate['sales']['count'], $eDate['sales']['countValid'], 'btn-outline-secondary');
+									$h .= $this->getMenu($eShop, $eDate, $eDate['sales']['count'], 'btn-outline-secondary');
 
 								}
 
@@ -574,7 +584,7 @@ class DateUi {
 
 	}
 
-	public function getMenu(Shop $eShop, Date $eDate, int $sales, int $salesValid, string $btn): string {
+	public function getMenu(Shop $eShop, Date $eDate, int $sales, string $btn): string {
 
 		$eDate->expects(['farm']);
 
@@ -586,7 +596,7 @@ class DateUi {
 
 				if($eDate->canWrite()) {
 
-					$h .= '<a href="/shop/date:update?id='.$eDate['id'].'" class="dropdown-item">'.s("Paramétrer cette date").'</a>';
+					$h .= '<a href="/shop/date:update?id='.$eDate['id'].'" class="dropdown-item">'.s("Paramétrer cette date de vente").'</a>';
 					$h .= '<a href="/shop/date:create?shop='.$eShop['id'].'&farm='.$eDate['farm']['id'].'&date='.$eDate['id'].'" class="dropdown-item">'.s("Créer une nouvelle date à partir de celle-ci").'</a>';
 
 					$h .= '<div class="dropdown-divider"></div>';
@@ -597,15 +607,8 @@ class DateUi {
 
 					if($sales === 0) {
 						$h .= '<div class="dropdown-divider"></div>';
-						$h .= '<a data-ajax="/shop/date:doDelete" post-id="'.$eDate['id'].'" post-farm="'.$eDate['farm']['id'].'" post-shop="'.$eShop['id'].'" class="dropdown-item" data-confirm="'.s("Êtes-vous sûr de vouloir supprimer cette date ?").'">'.s("Supprimer cette date").'</a>';
+						$h .= '<a data-ajax="/shop/date:doDelete" post-id="'.$eDate['id'].'" post-farm="'.$eDate['farm']['id'].'" post-shop="'.$eShop['id'].'" class="dropdown-item" data-confirm="'.s("Êtes-vous sûr de vouloir supprimer cette date de vente ?").'">'.s("Supprimer cette date de vente").'</a>';
 					}
-
-				}
-
-				if($salesValid > 0) {
-
-					$h .= '<div class="dropdown-divider"></div>';
-					$h .= '<a href="/shop/date:downloadSales?id='.$eDate['id'].'&farm='.$eDate['farm']['id'].'" data-ajax-navigation="never" class="dropdown-item">'.\Asset::icon('filetype-pdf').' '.s("Exporter les commandes").'</a>';
 
 				}
 
@@ -623,17 +626,20 @@ class DateUi {
 
 		if($eShop['status'] === Shop::CLOSED) {
 			$h .= '<div class="color-danger">'.\Asset::icon('exclamation-triangle-fill').' '.s("Boutique fermée").'</div>';
-		}
-		if($eDate['status'] === Date::CLOSED) {
-			$h .= '<span class="color-muted">'.\Asset::icon('pause-fill').'</span> '.s("Vente hors ligne");
-		} else if($eDate['deliveryDate'] < $now) {
-			$h .= '<span class="color-success">'.s("Vente terminée").'</span>';
-		} else if($eDate['orderEndAt'] > $now and $eDate['deliveryDate'] < $now) {
-			$h .= '<span class="color-order">'.s("Fin des commandes").'</span>';
-		} else if($eDate['orderStartAt'] < $now and $eDate['orderEndAt'] > $now) {
-			$h .= '<span class="color-order">'.s("Commandes ouvertes encore {value}", \util\DateUi::secondToDuration(strtotime($eDate['orderEndAt']) - time(), \util\DateUi::AGO, maxNumber: 1)).'</span>';
-		} else if($eShop['status'] === Shop::OPEN) {
-			$h .= s("Ouverture des commandes dans {value}", \util\DateUi::secondToDuration(strtotime($eDate['orderStartAt']) - time(), \util\DateUi::AGO, maxNumber: 1));
+		} else {
+
+			if($eDate['status'] === Date::CLOSED) {
+				$h .= '<span class="color-danger">'.\Asset::icon('exclamation-triangle-fill').'</span> '.s("Vente fermée");
+			} else if($eDate['deliveryDate'] < $now) {
+				$h .= '<span class="color-success">'.s("Vente terminée").'</span>';
+			} else if($eDate['orderEndAt'] <= $now) {
+				$h .= '<span class="color-order">'.s("Ventes fermées").'</span>';
+			} else if($eDate['orderStartAt'] < $now and $eDate['orderEndAt'] > $now) {
+				$h .= '<span class="color-order">'.s("Ventes ouvertes encore {value}", \util\DateUi::secondToDuration(strtotime($eDate['orderEndAt']) - time(), \util\DateUi::AGO, maxNumber: 1)).'</span>';
+			} else if($eShop['status'] === Shop::OPEN) {
+				$h .= s("Ouverture des ventes dans {value}", \util\DateUi::secondToDuration(strtotime($eDate['orderStartAt']) - time(), \util\DateUi::AGO, maxNumber: 1));
+			}
+
 		}
 
 		return $h;
@@ -677,7 +683,7 @@ class DateUi {
 							$h .= s("Ajouter d'autres produits à la vente");
 						}
 					$h .= '</a>';
-						
+
 				$h .= '</div>';
 
 				$h .= (new \shop\ProductUi())->getUpdateList($eDate, $cProduct);
@@ -685,6 +691,15 @@ class DateUi {
 			$h .= '</div>';
 
 			$h .= '<div class="tab-panel" data-tab="sales">';
+
+				$h .= '<div class="util-action">';
+
+					$h .= '<div></div>';
+
+					$h .= '<a href="/shop/date:downloadSales?id='.$eDate['id'].'&farm='.$eDate['farm']['id'].'" data-ajax-navigation="never" class="btn btn-primary">'.\Asset::icon('filetype-pdf').' '.s("Exporter les commandes").'</a>';
+
+				$h .= '</div>';
+
 				if($cSale->empty()) {
 					$h .= '<div class="util-info">'.s("Aucune commande n'a encore été enregistrée pour cette vente !").'</div>';
 				} else {
@@ -724,7 +739,7 @@ class DateUi {
 				$h .= '</dd>';
 
 				$h .= '<dt>';
-					$h .= s("État");
+					$h .= s("Ouverture des ventes");
 				$h .= '</dt>';
 				$h .= '<dd>';
 					$h .= $this->getStatus($eShop, $eDate);
@@ -771,7 +786,7 @@ class DateUi {
 				$d->field = function(\util\FormUi $form, Date $e) {
 					return (new DateUi())->getPoints($form, $e);
 				};
-				$d->labelAfter = \util\FormUi::info(s("Sélectionnez au moins un mode de livraison pour cette date."));
+				$d->labelAfter = \util\FormUi::info(s("Sélectionnez au moins un mode de livraison pour cette date de vente."));
 				break;
 
 		}
