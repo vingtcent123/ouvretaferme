@@ -18,8 +18,15 @@ div.point-list:not(:last-child) {
 }
 
 .point-element {
-	padding: 0.5rem 0;
 	display: block;
+}
+
+.point-element:not(:last-child) {
+	padding-bottom: 1rem;
+}
+
+.point-element:not(:first-child) {
+	padding-top: 1rem;
 }
 
 label.point-element {
@@ -65,6 +72,7 @@ label.point-element:not(:hover) div.point-update input:not(:checked) + .point-up
 div.point-name {
 	display: grid;
 	grid-template-columns: auto 1fr auto;
+	align-items: start;
 	column-gap: 0.75rem;
 }
 
@@ -76,6 +84,12 @@ div.point-name svg.point-icon {
 
 div.point-name h4 {
 	margin-bottom: 0;
+}
+
+div.point-name > div:last-child {
+	display: flex;
+	align-items: center;
+	column-gap: 0.5rem;
 }
 
 .point-description  {
@@ -121,10 +135,4 @@ label.point-element .point-address {
 
 label.point-element .point-badge {
 	margin-left: 3.25rem;
-}
-
-.point-update-zone {
-	font-size: 0.8rem;
-	opacity: 0.7;
-	width: 20rem;
 }

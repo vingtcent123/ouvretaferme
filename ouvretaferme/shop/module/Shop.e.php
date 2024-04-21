@@ -6,17 +6,7 @@ class Shop extends ShopElement {
 	public static function getSelection(): array {
 
 		return parent::getSelection() + [
-			'farm' => ['name', 'vignette', 'url', 'status'],
-			'ccPoint' => Point::model()
-				->select(Point::getSelection())
-				->whereStatus(Point::ACTIVE)
-				->sort([
-					'zone' => SORT_ASC,
-					'name' => SORT_ASC,
-					'type' => SORT_ASC,
-					'place' => SORT_ASC
-				])
-				->delegateCollection('shop', index: ['type', 'id'])
+			'farm' => ['name', 'vignette', 'url', 'status']
 		];
 
 	}

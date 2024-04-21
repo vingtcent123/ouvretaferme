@@ -145,6 +145,33 @@ class DateLib extends DateCrud {
 
 	}
 
+	public static function updatePoint(Date $eDate, Point $ePoint, bool $status): void {
+
+		$points = $eDate['points'];
+
+		if($status) {
+			if(in_array($ePoint['id'], $points) === FALSE) {
+				$points[] = $ePoint['id'];
+			}
+		} else {
+			array_delete($points, $ePoint['id']);
+		}
+
+		if($points === []) {
+			Date::fail('points.check');
+			return;
+		}
+
+		if($points !== $eDate['points']) {
+
+			Date::model()->update($eDate, [
+				'points' => $points,
+			]);
+
+		}
+
+	}
+
 	public static function delete(Date $eDate): void {
 
 		if(\selling\Sale::model()

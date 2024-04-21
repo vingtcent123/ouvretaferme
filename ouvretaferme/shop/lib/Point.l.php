@@ -28,7 +28,7 @@ class PointLib extends PointCrud {
 
 			return array_merge($options, match($e['type']) {
 				Point::PLACE => ['name', 'description', 'place', 'address'],
-				Point::HOME => $e['used'] ? [] : ['zone']
+				Point::HOME => ['zone']
 			});
 
 		};
@@ -101,13 +101,14 @@ class PointLib extends PointCrud {
 
 	}
 
-	public static function getByShop(Shop $eShop): \Collection {
+	public static function getByShop(Shop $eShop, bool $onlyActive = TRUE): \Collection {
 
 		return Point::model()
 			->select(Point::getSelection())
-			->whereStatus(Point::ACTIVE)
+			->whereStatus(Point::ACTIVE, if: $onlyActive)
 			->whereShop($eShop)
 			->sort([
+				'status' => SORT_DESC,
 				'zone' => SORT_ASC,
 				'name' => SORT_ASC,
 				'type' => SORT_ASC,
@@ -156,21 +157,23 @@ class PointLib extends PointCrud {
 
 		$ePoint->expects(['shop']);
 
-		$used = Date::model()
+		if(Date::model()
 			->whereShop($ePoint['shop'])
 			->where('JSON_CONTAINS(points, \''.$ePoint['id'].'\')')
-			->exists();
-
-		if($used) {
-
-			Point::model()->update($ePoint, [
-				'status' => Point::CLOSED
-			]);
-
-		} else {
-			Point::model()->delete($ePoint);
+			->exists()) {
+			Point::fail('deletedDateUsed');
+			return;
 		}
 
+		if(\selling\Sale::model()
+			->whereShop($ePoint['shop'])
+			->whereShopPoint($ePoint)
+			->exists()) {
+			Point::fail('deletedSaleUsed');
+			return;
+		}
+
+		Point::model()->delete($ePoint);
 
 	}
 

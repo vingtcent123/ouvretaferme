@@ -185,11 +185,15 @@
 		}
 
 		if($data->eShop->notEmpty()) {
-			\farm\FarmerLib::setView('viewShop', $data->eFarm, $data->eShop);
-		}
 
-		// Liste des dates de la boutique sélectionnée
-		$data->eShop['cDate'] = \shop\DateLib::getByShop($data->eShop);
+			\farm\FarmerLib::setView('viewShop', $data->eFarm, $data->eShop);
+
+			$data->eShop['ccPoint'] = \shop\PointLib::getByShop($data->eShop, onlyActive: FALSE);
+
+			// Liste des dates de la boutique sélectionnée
+			$data->eShop['cDate'] = \shop\DateLib::getByShop($data->eShop);
+
+		}
 
 		throw new ViewAction($data);
 

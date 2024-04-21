@@ -37,7 +37,5 @@
 	->doDelete(function($data) {
 		throw new ReloadAction('shop', 'Point::'.$data->e['type'].'.deleted');
 	})
-	->doUpdateProperties('doUpdateStatus', ['status'], function($data) {
-		throw new ReloadAction('shop', $data->e['status'] === \shop\Shop::OPEN ? 'Point::'.$data->e['type'].'.closed' : 'Point::'.$data->e['type'].'.opened');
-	});
+	->doUpdateProperties('doUpdateStatus', ['status'], fn($data) => throw new ViewAction($data));
 ?>

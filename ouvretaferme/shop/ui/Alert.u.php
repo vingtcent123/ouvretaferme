@@ -7,13 +7,16 @@ class AlertUi {
 
 		return match($fqn) {
 
-			'Date::points.check' => s("Merci de sélectionner au moins un mode de livraison."),
+			'Date::points.check' => s("Merci de conserver au moins un mode de livraison."),
 			'Date::orderEndAt.consistency' => s("La fin de la prise des commandes doit avoir lieu après le début de prise des commandes."),
 			'Date::deliveryDate.consistency' => s("La fin des retraits doit avoir lieu après le début des retraits."),
 			'Date::canNotOrder' => s("Votre commande a été annulée car vous êtes hors de la période de commande. Vous pourrez passer commander la prochaine fois !"),
 
 			'Point::name.duplicate' => s("Une point de retrait existe déjà avec le même nom, merci de choisir un autre nom."),
 			'Point::payment.check' => s("Veuillez sélectionner au moins un moyen de paiement."),
+
+			'Point::deletedSaleUsed' => s("Ce mode de livraison ne peut pas être supprimé car il a déjà été utilisé pour une vente."),
+			'Point::deletedDateUsed' => s("Ce mode de livraison ne peut pas être supprimé car il a déjà été utilisé dans une date de vente."),
 
 			'Product::stock.check' => s("Vous devez indiquer un stock disponible positif ou laisser ce champ vide."),
 			'Product::price.check' => s("Vous devez indiquer un prix valable."),
@@ -48,14 +51,10 @@ class AlertUi {
 			'Shop::collected' => s("La collecte des fonds a bien été lancée."),
 			'Shop::deleted' => s("La boutique a bien été supprimée."),
 
-			'Point::home.activated' => s("Le point de livraison à domicile a bien été activé !"),
-			'Point::home.closed' => s("Le point de livraison à domicile a bien été fermé !"),
 			'Point::home.created' => s("Le point de livraison à domicile a bien été créé !"),
 			'Point::home.updated' => s("Le point de livraison à domicile a bien été mis à jour."),
 			'Point::home.deleted' => s("Le point de livraison à domicile a bien été supprimé."),
 
-			'Point::place.activated' => s("Le point de retrait a bien été activé !"),
-			'Point::place.closed' => s("Le point de retrait a bien été fermé !"),
 			'Point::place.created' => s("Le point de retrait a bien été créé !"),
 			'Point::place.updated' => s("Le point de retrait a bien été mis à jour."),
 			'Point::place.deleted' => s("Le point de retrait a bien été supprimé."),

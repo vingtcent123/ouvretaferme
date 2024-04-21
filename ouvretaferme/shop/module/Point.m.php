@@ -11,7 +11,7 @@ abstract class PointElement extends \Element {
 	const PLACE = 'place';
 
 	const ACTIVE = 'active';
-	const CLOSED = 'closed';
+	const INACTIVE = 'inactive';
 
 	public static function getSelection(): array {
 		return Point::model()->getProperties();
@@ -51,19 +51,18 @@ class PointModel extends \ModuleModel {
 			'description' => ['text8', 'min' => 1, 'max' => NULL, 'null' => TRUE, 'cast' => 'string'],
 			'place' => ['text8', 'min' => 1, 'max' => NULL, 'null' => TRUE, 'cast' => 'string'],
 			'address' => ['text16', 'null' => TRUE, 'cast' => 'string'],
-			'used' => ['int32', 'cast' => 'int'],
 			'paymentCard' => ['bool', 'null' => TRUE, 'cast' => 'bool'],
 			'paymentTransfer' => ['bool', 'null' => TRUE, 'cast' => 'bool'],
 			'paymentOffline' => ['bool', 'null' => TRUE, 'cast' => 'bool'],
 			'orderMin' => ['int32', 'min' => 0, 'max' => NULL, 'null' => TRUE, 'cast' => 'int'],
 			'shipping' => ['decimal', 'digits' => 8, 'decimal' => 2, 'min' => 0.0, 'max' => NULL, 'null' => TRUE, 'cast' => 'float'],
 			'shippingUntil' => ['int32', 'min' => 0, 'max' => NULL, 'null' => TRUE, 'cast' => 'int'],
-			'status' => ['enum', [\shop\Point::ACTIVE, \shop\Point::CLOSED], 'cast' => 'enum'],
+			'status' => ['enum', [\shop\Point::ACTIVE, \shop\Point::INACTIVE], 'cast' => 'enum'],
 			'createdAt' => ['datetime', 'cast' => 'string'],
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'shop', 'farm', 'type', 'zone', 'name', 'description', 'place', 'address', 'used', 'paymentCard', 'paymentTransfer', 'paymentOffline', 'orderMin', 'shipping', 'shippingUntil', 'status', 'createdAt'
+			'id', 'shop', 'farm', 'type', 'zone', 'name', 'description', 'place', 'address', 'paymentCard', 'paymentTransfer', 'paymentOffline', 'orderMin', 'shipping', 'shippingUntil', 'status', 'createdAt'
 		]);
 
 		$this->propertiesToModule += [
@@ -80,9 +79,6 @@ class PointModel extends \ModuleModel {
 	public function getDefaultValue(string $property) {
 
 		switch($property) {
-
-			case 'used' :
-				return 0;
 
 			case 'status' :
 				return Point::ACTIVE;
@@ -156,10 +152,6 @@ class PointModel extends \ModuleModel {
 
 	public function whereAddress(...$data): PointModel {
 		return $this->where('address', ...$data);
-	}
-
-	public function whereUsed(...$data): PointModel {
-		return $this->where('used', ...$data);
 	}
 
 	public function wherePaymentCard(...$data): PointModel {

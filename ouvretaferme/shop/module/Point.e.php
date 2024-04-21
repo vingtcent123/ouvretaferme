@@ -3,6 +3,12 @@ namespace shop;
 
 class Point extends PointElement {
 
+	public function isActive(): bool {
+
+		return ($this['status'] === Point::ACTIVE);
+
+	}
+
 	public function canRead(): bool {
 
 		$this->expects(['farm']);

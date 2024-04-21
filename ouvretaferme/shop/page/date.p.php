@@ -46,6 +46,8 @@
 			throw new NotExpectedAction('Inconsistency');
 		}
 
+		$data->eShop['ccPoint'] = \shop\PointLib::getByShop($data->eShop);
+
 		\shop\DateLib::applySales($data->e);
 
 		$data->eFarm = $data->eShop['farm'];
@@ -86,6 +88,21 @@
 
 
 		throw new ReloadAction('shop', 'Products::created');
+
+	})
+	->write('doUpdatePoint', function($data) {
+
+		$data->ePoint = \shop\PointLib::getById(POST('point'))
+			->validate('isActive')
+			->validateProperty('shop', $data->e['shop']);
+
+		$fw = new FailWatch();
+
+		\shop\DateLib::updatePoint($data->e, $data->ePoint, POST('status', 'bool'));
+
+		$fw->validate();
+
+		throw new ViewAction($data);
 
 	})
 	->read('downloadSales', function($data) {

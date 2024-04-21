@@ -22,14 +22,13 @@ Point:
   description: ?text8(1, null)
   place: ?text8(1, null)
   address: ?text16
-  used: int32 = 0
   paymentCard: ?bool
   paymentTransfer: ?bool
   paymentOffline: ?bool
   orderMin: ?int(0, NULL)
   shipping: ?decimal(8, 2, 0.0, null)
   shippingUntil: ?int(0, NULL)
-  status: enum(ACTIVE, CLOSED) = ACTIVE
+  status: enum(ACTIVE, INACTIVE) = ACTIVE
   createdAt: datetime = SPECIAL(now)
   UNIQUE: [
     ["shop", "name"]

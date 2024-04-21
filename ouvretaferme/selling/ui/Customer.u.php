@@ -248,7 +248,7 @@ class CustomerUi {
 							}
 						$h .= '</td>';
 
-						$h .= '<td class="customer-item-status text-center">';
+						$h .= '<td class="customer-item-status td-min-content">';
 							$h .= $this->toggle($eCustomer);
 						$h .= '</td>';
 

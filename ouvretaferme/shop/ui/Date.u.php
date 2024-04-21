@@ -13,6 +13,18 @@ class DateUi {
 		return s("Vente du {value}", lcfirst(\util\DateUi::getDayName(date('N', strtotime($e['deliveryDate'])))).' '.\util\DateUi::textual($e['deliveryDate']));
 	}
 
+	public function togglePoint(Date $eDate, Point $ePoint, bool $selected) {
+
+		return \util\TextUi::switch([
+			'id' => 'point-switch-'.$ePoint['id'],
+			'data-ajax' => '/shop/date:doUpdatePoint',
+			'post-id' => $eDate['id'],
+			'post-point' => $ePoint['id'],
+			'post-status' => $selected ? 0 : 1
+		], $selected);
+
+	}
+
 	private function calculateDates(Date $eDate, Date $eDateBase): void {
 
 		$frequency = $eDate['shop']['frequency'];
@@ -665,7 +677,7 @@ class DateUi {
 					}
 				$h .= '</a>';
 				$h .= '<a class="tab-item" data-tab="points" onclick="Lime.Tab.select(this)">';
-					$h .= s("Modes de livraison");
+					$h .= s("Modes de livraison").' ('.(($eDate['ccPoint'][Point::HOME] ?? new \Collection())->count() + ($eDate['ccPoint'][Point::PLACE] ?? new \Collection())->count()).')';
 				$h .= '</a>';
 			$h .= '</div>';
 

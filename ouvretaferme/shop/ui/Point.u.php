@@ -9,6 +9,18 @@ class PointUi {
 
 	}
 
+	public function toggle(Point $ePoint) {
+
+		return \util\TextUi::switch([
+			'id' => 'point-switch-'.$ePoint['id'],
+			'data-ajax' => $ePoint->canWrite() ? '/shop/point:doUpdateStatus' : NULL,
+			'post-id' => $ePoint['id'],
+			'post-status' => $ePoint->isActive() ? Point::INACTIVE : Point::ACTIVE,
+			'data-confirm' => s("Cette modification prendra effet pour les prochaines dates de vente. Les modes de livraison disponibles pour les ventes en cours ne seront pas modifiés.")
+		], $ePoint->isActive(), s("Disponible"), s("Désactivé"));
+
+	}
+
 	public function createFirst(): string {
 
 		$h = '<div class="util-block-help">';
@@ -37,7 +49,7 @@ class PointUi {
 				$h .= '<div class="util-block">';
 
 					if($cc->offsetExists(Point::PLACE)) {
-						$h .= $this->getPoints($eShop, $cc[Point::PLACE]);
+						$h .= $this->getPoints('write', $eShop, $cc[Point::PLACE]);
 					} else {
 
 						if($eShop->canWrite()) {
@@ -61,7 +73,7 @@ class PointUi {
 				$h .= '<div class="util-block">';
 
 					if($cc->offsetExists(Point::HOME)) {
-						$h .= $this->getPoints($eShop, $cc[Point::HOME]);
+						$h .= $this->getPoints('write', $eShop, $cc[Point::HOME]);
 					} else {
 
 						if($eShop->canWrite()) {
@@ -116,7 +128,7 @@ class PointUi {
 			$h .= '<div>';
 				$h .= '<h3>'.s("Livraison en point de retrait").'</h3>';
 				$h .= '<div class="util-block point-place-wrapper">';
-					$h .= $this->getPoints($eShop, $cc[Point::PLACE], ePointSelected: $ePointSelected, update: TRUE);
+					$h .= $this->getPoints('update', $eShop, $cc[Point::PLACE], ePointSelected: $ePointSelected);
 				$h .= '</div>';
 			$h .= '</div>';
 			$h .= '<div>';
@@ -125,7 +137,7 @@ class PointUi {
 
 					$h .= '<p>'.s("Vous pouvez choisir la livraison à domicile si vous habitez :").'</p>';
 
-					$h .= $this->getPoints($eShop, $cc[Point::HOME], ePointSelected: $ePointSelected, update: TRUE);
+					$h .= $this->getPoints('update', $eShop, $cc[Point::HOME], ePointSelected: $ePointSelected);
 
 					$h .= '<p>'.s("<b>Attention !</b> Si votre adresse ne correspond pas à l'une de ces zones, votre commande pourra être annulée.").'</p>';
 
@@ -148,7 +160,7 @@ class PointUi {
 		$h .= '<p class="util-info">'.s("Les commandes sont livrées uniquement à domicile.<br/>Vous êtes éligible à la livraison à domicile si vous habitez dans l'une des zones suivantes :").'</p>';
 
 		$h .= '<div class="util-block point-home-wrapper">';
-			$h .= $this->getPoints($eShop, $c, ePointSelected: $ePointSelected, update: TRUE);
+			$h .= $this->getPoints('update', $eShop, $c, ePointSelected: $ePointSelected);
 			$h .= '<p>'.s("<b>Attention !</b> Si votre adresse ne correspond pas à l'une de ces zones, votre commande sera annulée.").'</p>';
 		$h .= '</div>';
 
@@ -171,7 +183,7 @@ class PointUi {
 		}
 
 		$h .= '<div class="util-block point-place-wrapper">';
-			$h .= $this->getPoints($eShop, $c, ePointSelected: $ePointSelected, update: TRUE);
+			$h .= $this->getPoints('update', $eShop, $c, ePointSelected: $ePointSelected);
 		$h .= '</div>';
 
 		$h .= '<br/>';
@@ -188,8 +200,8 @@ class PointUi {
 				$h .= '<h2>'.s("Livraison en point de retrait").'</h2>';
 				$h .= '<div class="util-block">';
 
-					if($cc->offsetExists(Point::PLACE)) {
-						$h .= $this->getPoints($eShop, $cc[Point::PLACE], write: FALSE);
+					if($eShop['ccPoint']->offsetExists(Point::PLACE)) {
+						$h .= $this->getPoints('date', $eShop, $eShop['ccPoint'][Point::PLACE], cPointSelected: $cc[Point::PLACE] ?? new \Collection(), eDate: $eDate);
 					} else {
 						$h .= '<div class="util-info">';
 							$h .= s("La livraison en point de retrait collectif n'est pas activée pour cette date de vente !");
@@ -202,14 +214,11 @@ class PointUi {
 				$h .= '<h2>'.s("Livraison à domicile").'</h2>';
 				$h .= '<div class="util-block">';
 
-					if($cc->offsetExists(Point::HOME)) {
-						$h .= '<p class="util-info">';
-							$h .= s("Vous avez activé la livraison à domicile dans les zones suivantes pour le {value} :", \util\DateUi::textual($eDate['deliveryDate']));
-						$h .= '</p>';
-						$h .= $this->getPoints($eShop, $cc[Point::HOME], write: FALSE);
+					if($eShop['ccPoint']->offsetExists(Point::HOME)) {
+						$h .= $this->getPoints('date', $eShop, $eShop['ccPoint'][Point::HOME], cPointSelected: $cc[Point::HOME] ?? new \Collection(), eDate: $eDate);
 					} else {
 						$h .= '<div class="util-info">';
-							$h .= s("La livraison à domicile n'est pas activée pour cette date de vente !");
+							$h .= s("La livraison à domicile n'est pas activée dans cette boutique !");
 						$h .= '</div>';
 					}
 
@@ -225,12 +234,16 @@ class PointUi {
 
 	}
 
-	public function getPoints(Shop $eShop, \Collection $c, bool $update = FALSE, Point $ePointSelected = new Point(), bool $write = TRUE): string {
+	public function getPoints(string $mode, Shop $eShop, \Collection $c, Point $ePointSelected = new Point(), \Collection $cPointSelected = new \Collection(), Date $eDate = new Date()): string {
+
+		if($ePointSelected->notEmpty()) {
+			$cPointSelected[] = $ePointSelected;
+		}
 
 		$h = '<div class="point-list">';
 
 			foreach($c as $e) {
-				$h .= $this->getPoint($eShop, $e, $update, $ePointSelected, $write);
+				$h .= $this->getPoint($mode, $eShop, $e, $cPointSelected, $eDate);
 			}
 
 		$h .= '</div>';
@@ -239,20 +252,15 @@ class PointUi {
 
 	}
 
-	public function getPoint(Shop $eShop, Point $e, bool $update = FALSE, Point $ePointSelected = new Point(), bool $write = TRUE): string {
+	public function getPoint(string $mode, Shop $eShop, Point $e, \Collection $cPointSelected = new \Collection(), Date $eDate = new Date()): string {
 
-		if($update === TRUE) {
-			$write = FALSE;
-		}
+		$tag = ($mode === 'update') ? 'label' : 'div';
 
-		$tag = $update ? 'label' : 'div';
+		$selected = $e->empty() ?
+			FALSE :
+			$cPointSelected->match(fn($ePoint) => $ePoint['id'] === $e['id']);
 
-		if($update) {
-
-			$selected = (
-				$ePointSelected->notEmpty() and
-				$ePointSelected['id'] === $e['id']
-			);
+		if($mode === 'update') {
 
 			$icon = '<div class="point-update">';
 				$icon .= '<input type="radio" name="shopPoint" value="'.$e['id'].'" '.($selected ? 'checked' : '').'/>';
@@ -275,30 +283,11 @@ class PointUi {
 			Point::HOME => nl2br(encode($e['zone'])),
 		};
 
-		$updateText = match($e['type']) {
-			Point::PLACE => s("Modifier le point de retrait"),
-			Point::HOME => s("Modifier les zones de livraison"),
-		};
-
-		$deleteText = match($e['type']) {
-			Point::PLACE => s("Supprimer le point de retrait"),
-			Point::HOME => s("Fermer la livraison à domicile"),
-		};
-
-		$deleteConfirm = match($e['type']) {
-			Point::PLACE => s("Voulez-vous vraiment supprimer définitivement ce point de retrait ?"),
-			Point::HOME => s("Voulez-vous vraiment fermer la livraison à domicile ?"),
-		};
-
 		$orderMin = $e['orderMin'] ?? $eShop['orderMin'];
 		$shipping = $e['shipping'] ?? $eShop['shipping'];
 		$shippingUntil = $e['shippingUntil'] ?? $eShop['shippingUntil'];
 
 		$h = '<'.$tag.' class="point-element" data-order-min="'.$orderMin.'" data-shipping="'.$shipping.'" data-shipping-until="'.$shippingUntil.'">';
-
-			if($write and $e['type'] === Point::HOME) {
-				$h .= '<p class="util-info">'.s("Vous autorisez actuellement la livraison à domicile sur les zones suivantes :").'</p>';
-			}
 
 			$h .= '<div class="point-name">';
 				$h .= $icon;
@@ -309,20 +298,21 @@ class PointUi {
 					}
 				$h .= '</div>';
 
-				if($write and $e->canWrite()) {
+				if($mode === 'write' and $e->canWrite()) {
 
 					$h .= '<div>';
-						$h .= '<a data-dropdown="bottom-end" class="btn btn-sm btn-color-primary dropdown-toggle">'.\Asset::icon('gear-fill').'</a>';
-						$h .= '<div class="dropdown-list">';
-							$h .= match($e['type']) {
-								Point::PLACE => '<a href="/shop/point:update?id='.$e['id'].'" class="dropdown-item">'.$updateText.'</a>',
-								Point::HOME => $e['used'] ? '<span class="dropdown-item point-update-zone">'.s("Vous ne pouvez pas modifier un lieu déjà utilisé dans une vente. Veuillez le supprimer et en ajouter un autre si vous souhaitez le modifier.").'</span>' : '<a href="/shop/point:update?id='.$e['id'].'" class="dropdown-item">'.$updateText.'</a>',
-							};
-							$h .= '<div class="dropdown-divider"></div>';
-							$h .= '<a data-ajax="/shop/point:doDelete" post-id="'.$e['id'].'" data-confirm="'.$deleteConfirm.'" class="dropdown-item">'.$deleteText.'</a>';
-						$h .= '</div>';
+						$h .= $this->toggle($e);
+						$h .= '<a href="/shop/point:update?id='.$e['id'].'" class="btn btn-outline-primary">'.\Asset::icon('gear-fill').'</a>';
 					$h .= '</div>';
 
+				} else if($mode === 'date') {
+
+					$h .= '<div>';
+						$h .= (new DateUi())->togglePoint($eDate, $e, $selected);
+					$h .= '</div>';
+
+				} else {
+					$h .= '<div></div>';
 				}
 
 			$h .= '</div>';
@@ -336,7 +326,7 @@ class PointUi {
 				$h .= '</div>';
 			}
 
-			if($update or $write) {
+			if($mode === 'update' or $mode === 'write') {
 
 				$badges = '';
 
@@ -347,7 +337,7 @@ class PointUi {
 				if($shipping > 0) {
 					if($shippingUntil > 0) {
 						$badges .= ' <span class="point-shipping util-badge">';
-							$badges .= s("Frais de livraison : <charged>{value} €</charged> et <free>offerts au delà de {until} € de commande</free>", ['value' => $shipping, 'until' => $shippingUntil, 'charged' => $write ? '<span>' : '<span class="point-shipping-charged">', 'free' => $write ? '<span>' : '<span class="point-shipping-free">']);
+							$badges .= s("Frais de livraison : <charged>{value} €</charged> et <free>offerts au delà de {until} € de commande</free>", ['value' => $shipping, 'until' => $shippingUntil, 'charged' => ($mode === 'write') ? '<span>' : '<span class="point-shipping-charged">', 'free' => ($mode === 'write') ? '<span>' : '<span class="point-shipping-free">']);
 					} else {
 						$badges .= ' <span class="point-shipping util-badge">';
 							$badges .= s("Frais de livraison : {value} €", $shipping);
@@ -454,12 +444,24 @@ class PointUi {
 
 		$h .= $form->close();
 
+
+		if($e['type'] === Point::PLACE) {
+
+			$footer = '<div class="text-end">';
+				$footer .= '<a data-ajax="/shop/point:doDelete" post-id="'.$e['id'].'" class="btn btn-danger" data-confirm="'.s("Voulez-vous vraiment supprimer définitivement ce point de retrait ?").'">'.s("Supprimer le point de retrait").'</a>';
+			$footer .= '</div>';
+
+		} else {
+			$footer = '';
+		}
+
 		return new \Panel(
 			title: match($e['type']) {
 				Point::PLACE => s("Modifier un point de retrait"),
 				Point::HOME => s("Modifier les zones de livraison à domicile"),
 			},
-			body: $h
+			body: $h,
+			footer: $footer
 		);
 
 	}

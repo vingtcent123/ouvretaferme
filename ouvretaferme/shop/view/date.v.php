@@ -11,6 +11,10 @@ new AdaptativeView('update', function($data, PanelTemplate $t) {
 
 });
 
+new JsonView('doUpdatePoint', function($data, AjaxTemplate $t) {
+	$t->qs('#point-switch-'.$data->ePoint['id'])->toggleSwitch();
+});
+
 new AdaptativeView('/ferme/{farm}/boutique/{shop}/date/{id}', function($data, FarmTemplate $t) {
 
 	$t->tab = 'selling';

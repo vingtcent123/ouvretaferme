@@ -98,7 +98,7 @@ class ShopManageUi {
 
 			$h .= '<div class="tabs-item">';
 				$h .= '<a class="tab-item selected" data-tab="dates" onclick="Lime.Tab.select(this)">'.s("Dernières dates de vente").'</a>';
-				$h .= '<a class="tab-item" data-tab="points" onclick="Lime.Tab.select(this)">'.s("Modes de livraison").'</a>';
+				$h .= '<a class="tab-item" data-tab="points" onclick="Lime.Tab.select(this)">'.s("Tous les modes de livraison").'</a>';
 			$h .= '</div>';
 
 			$h .= '<div class="tab-panel selected" data-tab="dates">';

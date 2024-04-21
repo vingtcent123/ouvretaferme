@@ -228,7 +228,7 @@ class ProductUi {
 						}
 					$h .= '</td>';
 
-					$h .= '<td class="product-item-status text-center">';
+					$h .= '<td class="product-item-status td-min-content">';
 						$h .= $this->toggle($eProduct);
 					$h .= '</td>';
 
