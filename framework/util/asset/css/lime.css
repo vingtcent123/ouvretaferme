@@ -833,12 +833,12 @@ a.util-action-navigation > svg {
 	vertical-align: baseline;
 }
 
-a.util-action-navigation:hover > svg:first-child,
-a.util-action-navigation[data-dropdown-display] > svg:first-child {
+a.util-action-navigation:hover > svg:nth-child(1),
+a.util-action-navigation[data-dropdown-display] > svg:nth-child(1) {
 	display: none;
 }
 
-a.util-action-navigation:not(:hover):not([data-dropdown-display]) > svg:last-child {
+a.util-action-navigation:not(:hover):not([data-dropdown-display]) > svg:nth-child(2) {
 	display: none;
 }
 
