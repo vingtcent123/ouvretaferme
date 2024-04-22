@@ -61,7 +61,7 @@
 			$data->eSaleExisting = \shop\SaleLib::getSaleForDate($data->eDateSelected, $data->eCustomer);
 			$data->discount = \shop\SaleLib::getDiscount($data->eSaleExisting, $data->eCustomer);
 
-			$cProduct = \shop\ProductLib::getByDate($data->eDateSelected, $data->isModifying ? $data->eSaleExisting : new \selling\Sale());
+			$cProduct = \shop\ProductLib::getByDate($data->eDateSelected, eSaleExclude: $data->isModifying ? $data->eSaleExisting : new \selling\Sale());
 			\shop\ProductLib::applyDiscount($cProduct, $data->discount);
 
 			$data->eDateSelected['cProduct'] = $cProduct;
@@ -87,7 +87,7 @@
 
 		$data->eDate['shop'] = $data->eShop;
 
-		$data->eDate['cProduct'] = \shop\ProductLib::getByDate($data->eDate, $data->eSaleExisting);
+		$data->eDate['cProduct'] = \shop\ProductLib::getByDate($data->eDate, eSaleExclude: $data->eSaleExisting);
 		\shop\ProductLib::applyDiscount($data->eDate['cProduct'], $data->discount);
 
 		$data->eDate['ccPoint'] = $data->eShop['ccPoint'];

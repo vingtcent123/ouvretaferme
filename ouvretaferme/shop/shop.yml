@@ -68,6 +68,7 @@ Product:
   product: selling\Product
   price: decimal(8, 2, 0.0, null)
   stock: ?float32(0.0, null)
+  status: enum(ACTIVE, INACTIVE) = ACTIVE
   INDEX: [
     ["product"]
   ]

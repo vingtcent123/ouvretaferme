@@ -9,6 +9,17 @@ class ProductUi {
 
 	}
 
+	public function toggle(Product $eProduct) {
+
+		return \util\TextUi::switch([
+			'id' => 'product-switch-'.$eProduct['id'],
+			'data-ajax' => $eProduct->canWrite() ? '/shop/product:doUpdateStatus' : NULL,
+			'post-id' => $eProduct['id'],
+			'post-status' => ($eProduct['status'] === Product::ACTIVE) ? Product::INACTIVE : Product::ACTIVE
+		], $eProduct['status'] === Product::ACTIVE);
+
+	}
+
 	public function getList(Shop $eShop, Date $eDate, \selling\Sale $eSale, bool $isModifying): string {
 
 		$eDate->expects(['cProduct']);
@@ -174,6 +185,10 @@ class ProductUi {
 						$h .= '<th class="text-end">'.s("Prix").'</th>';
 						$h .= '<th class="text-end">'.s("Stock").'</th>';
 						$h .= '<th class="text-end">'.s("Vendu").'</th>';
+						$h .= '<th class="text-end">';
+							$h .= '<span class="hide-md-down">'.s("Vente en cours").'</span>';
+							$h .= '<span class="hide-lg-up">'.s("Vente").'</span>';
+						$h .= '</th>';
 						$h .= '<th></th>';
 					$h .= '</tr>';
 				$h .= '</theaf>';
@@ -224,6 +239,9 @@ class ProductUi {
 				$h .= $eProduct['sold'] ?? 0;
 			$h .= '</td>';
 			$h .= '<td class="text-end">';
+				$h .= $this->toggle($eProduct);
+			$h .= '</td>';
+			$h .= '<td class="td-min-content">';
 
 				if($eProduct['sold'] === 0.0) {
 					$h .= '<a data-ajax="/shop/product:doDelete" class="btn btn-danger" data-confirm="'.s("Voulez-vous vraiment supprimer ce produit de cette vente ?").'" post-id="'.$eProduct['id'].'">'.\Asset::icon('trash-fill').'</a>';

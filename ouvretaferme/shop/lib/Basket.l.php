@@ -8,6 +8,8 @@ class BasketLib {
 
 	public static function checkProductsAndStock(array $products, Date $eDate): array {
 
+		$eDate->expects(['cProduct']);
+
 		$cProduct = $eDate['cProduct'];
 
 		$cleanBasket = [];

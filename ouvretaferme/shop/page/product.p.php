@@ -18,7 +18,7 @@
 		$data->eDate = \shop\DateLib::getById(GET('date'));
 
 		$cProductSelling = \selling\ProductLib::getForShop($data->eFarm);
-		$cProduct = \shop\ProductLib::getByDate($data->eDate);
+		$cProduct = \shop\ProductLib::getByDate($data->eDate, onlyActive: FALSE);
 
 		foreach($cProduct as $eProduct) {
 			$cProductSelling->offsetUnset($eProduct['product']['id']);
@@ -34,5 +34,6 @@
 	->doDelete(function($data) {
 		throw new ReloadAction('shop', 'Product::deleted');
 	})
+	->doUpdateProperties('doUpdateStatus', ['status'], fn($data) => throw new ViewAction($data))
 	->quick(['stock', 'price']);
 ?>

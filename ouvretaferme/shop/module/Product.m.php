@@ -7,6 +7,9 @@ abstract class ProductElement extends \Element {
 
 	private static ?ProductModel $model = NULL;
 
+	const ACTIVE = 'active';
+	const INACTIVE = 'inactive';
+
 	public static function getSelection(): array {
 		return Product::model()->getProperties();
 	}
@@ -42,10 +45,11 @@ class ProductModel extends \ModuleModel {
 			'product' => ['element32', 'selling\Product', 'cast' => 'element'],
 			'price' => ['decimal', 'digits' => 8, 'decimal' => 2, 'min' => 0.0, 'max' => NULL, 'cast' => 'float'],
 			'stock' => ['float32', 'min' => 0.0, 'max' => NULL, 'null' => TRUE, 'cast' => 'float'],
+			'status' => ['enum', [\shop\Product::ACTIVE, \shop\Product::INACTIVE], 'cast' => 'enum'],
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'shop', 'date', 'product', 'price', 'stock'
+			'id', 'shop', 'date', 'product', 'price', 'stock', 'status'
 		]);
 
 		$this->propertiesToModule += [
@@ -61,6 +65,34 @@ class ProductModel extends \ModuleModel {
 		$this->uniqueConstraints = array_merge($this->uniqueConstraints, [
 			['date', 'product']
 		]);
+
+	}
+
+	public function getDefaultValue(string $property) {
+
+		switch($property) {
+
+			case 'status' :
+				return Product::ACTIVE;
+
+			default :
+				return parent::getDefaultValue($property);
+
+		}
+
+	}
+
+	public function encode(string $property, $value) {
+
+		switch($property) {
+
+			case 'status' :
+				return ($value === NULL) ? NULL : (string)$value;
+
+			default :
+				return parent::encode($property, $value);
+
+		}
 
 	}
 
@@ -94,6 +126,10 @@ class ProductModel extends \ModuleModel {
 
 	public function whereStock(...$data): ProductModel {
 		return $this->where('stock', ...$data);
+	}
+
+	public function whereStatus(...$data): ProductModel {
+		return $this->where('status', ...$data);
 	}
 
 

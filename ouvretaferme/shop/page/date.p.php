@@ -20,7 +20,7 @@
 
 		if($data->eDateBase->notEmpty()) {
 			$data->eDateBase->validate('canRead');
-			$data->eDateBase['cProduct'] = \shop\ProductLib::getByDate($data->eDateBase);
+			$data->eDateBase['cProduct'] = \shop\ProductLib::getByDate($data->eDateBase, onlyActive: FALSE);
 		}
 
 		$data->e['ccPoint'] = \shop\PointLib::getByShop($data->e['shop']);
@@ -54,7 +54,7 @@
 		\farm\FarmerLib::register($data->eFarm);
 
 		if($data->e->notEmpty()) {
-			$data->e['cProduct'] = \shop\ProductLib::getByDate($data->e);
+			$data->e['cProduct'] = \shop\ProductLib::getByDate($data->e, onlyActive: FALSE);
 		}
 
 		$data->cSale = \selling\SaleLib::getByDate($data->e, select: \selling\Sale::getSelection() + [

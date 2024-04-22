@@ -3,11 +3,12 @@ namespace shop;
 
 class ProductLib extends ProductCrud {
 
-	public static function getByDate(Date $eDate, \selling\Sale $eSaleExclude = new \selling\Sale()): \Collection {
+	public static function getByDate(Date $eDate, bool $onlyActive = TRUE, \selling\Sale $eSaleExclude = new \selling\Sale()): \Collection {
 
 		$cProduct = Product::model()
 			->select(Product::getSelection())
 			->whereDate($eDate)
+			->whereStatus(Product::ACTIVE, if: $onlyActive)
 			->getCollection(NULL, NULL, 'product')
 			->sort(['product' => ['name']], natural: TRUE);
 
