@@ -26,7 +26,7 @@ class AnalyzeLib {
 			->whereFarm($eFarm)
 			->where('EXTRACT(YEAR from date) = '.$year)
 			->where($month ? 'EXTRACT(MONTH FROM date) = '.$month : NULL)
-			->where($week ? 'WEEK(date) = '.week_number($week) : NULL)
+			->where($week ? 'WEEK(date, 1) = '.week_number($week) : NULL)
 			->getValue(new \Sql('SUM(time)', 'float'));
 
 		if($workingTime !== NULL) {
@@ -154,7 +154,7 @@ class AnalyzeLib {
 			->where('m1.time > 0')
 			->where('EXTRACT(YEAR FROM date) = '.$year)
 			->where($month ? 'EXTRACT(MONTH FROM date) = '.$month : NULL)
-			->where($week ? 'WEEK(date) = '.week_number($week) : NULL)
+			->where($week ? 'WEEK(date, 1) = '.week_number($week) : NULL)
 			->group(['category'])
 			->sort(new \Sql('m1_time DESC'))
 			->getCollection();
@@ -236,7 +236,7 @@ class AnalyzeLib {
 					->where('m2.cultivation IS NULL')
 					->where('EXTRACT(YEAR FROM date) = '.$year)
 					->where($month ? 'EXTRACT(MONTH FROM date) = '.$month : NULL)
-					->where($week ? 'WEEK(date) = '.week_number($week) : NULL)
+					->where($week ? 'WEEK(date, 1) = '.week_number($week) : NULL)
 					->group(new \Sql('m3.plant'))
 					->delegateProperty('propertySource', new \Sql('SUM(m1.time / m4.plants)', 'float'), fn($value) => $value ?? 0, 'plant')
 			])
@@ -245,7 +245,7 @@ class AnalyzeLib {
 			->where('plant IS NOT NULL')
 			->where('EXTRACT(YEAR FROM date) = '.$year)
 			->where($month ? 'EXTRACT(MONTH FROM date) = '.$month : NULL)
-			->where($week ? 'WEEK(date) = '.week_number($week) : NULL)
+			->where($week ? 'WEEK(date, 1) = '.week_number($week) : NULL)
 			->group(['plant'])
 			->sort(new \Sql('timePlant DESC'))
 			->getCollection();
@@ -402,7 +402,7 @@ class AnalyzeLib {
 			->where('time > 0')
 			->where('EXTRACT(YEAR FROM date) = '.$year)
 			->where($month ? 'EXTRACT(MONTH FROM date) = '.$month : NULL)
-			->where($week ? 'WEEK(date) = '.week_number($week) : NULL)
+			->where($week ? 'WEEK(date, 1) = '.week_number($week) : NULL)
 			->group(['series'])
 			->sort(new \Sql('time DESC'))
 			->getCollection(index: 'series');
@@ -441,7 +441,7 @@ class AnalyzeLib {
 			->where('m1.time > 0')
 			->where('EXTRACT(YEAR FROM date) = '.$year)
 			->where($month ? 'EXTRACT(MONTH FROM date) = '.$month : NULL)
-			->where($week ? 'WEEK(date) = '.week_number($week) : NULL)
+			->where($week ? 'WEEK(date, 1) = '.week_number($week) : NULL)
 			->group(['action', 'category'])
 			->sort(new \Sql('m1_time DESC'))
 			->getCollection();

@@ -114,7 +114,7 @@ class TaskLib extends TaskCrud {
 
 			Task::model()
 				->where($weekYear.' BETWEEN EXTRACT(YEAR FROM timesheetStart) AND EXTRACT(YEAR FROM timesheetStop)')
-				->where('WEEK(timesheetStart) = '.$weekNumber);
+				->where('WEEK(timesheetStart, 1) = '.$weekNumber);
 
 		}
 

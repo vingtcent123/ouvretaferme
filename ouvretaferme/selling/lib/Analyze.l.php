@@ -202,7 +202,7 @@ class AnalyzeLib {
 			->join(Customer::model(), 'm1.customer = m2.id')
 			->where(new \Sql('EXTRACT(YEAR FROM deliveredAt)'), 'IN', [$year, $year - 1])
 			->where($month ? 'EXTRACT(MONTH FROM deliveredAt) = '.$month : NULL)
-			->where($week ? 'WEEK(deliveredAt) = '.week_number($week) : NULL)
+			->where($week ? 'WEEK(deliveredAt, 1) = '.week_number($week) : NULL)
 			->group(['m1_year', 'customer'])
 			->sort(new \Sql('m1_turnover DESC'))
 			->getCollection(NULL, NULL, ['year', 'customer']);
@@ -242,7 +242,7 @@ class AnalyzeLib {
 			->join(Customer::model(), 'm1.customer = m2.id')
 			->where(new \Sql('EXTRACT(YEAR FROM deliveredAt)'), 'IN', [$year, $year - 1])
 			->where($month ? 'EXTRACT(MONTH FROM deliveredAt) = '.$month : NULL)
-			->where($week ? 'WEEK(deliveredAt) = '.week_number($week) : NULL)
+			->where($week ? 'WEEK(deliveredAt, 1) = '.week_number($week) : NULL)
 			->group(['m1_year', 'm1_type'])
 			->sort(new \Sql('m1_type'))
 			->getCollection(NULL, NULL, ['year', 'type']);
@@ -290,7 +290,7 @@ class AnalyzeLib {
 			->whereFarm($eFarm)
 			->where(new \Sql('EXTRACT(YEAR FROM deliveredAt)'), 'IN', $years)
 			->where($month ? 'EXTRACT(MONTH FROM deliveredAt) = '.$month : NULL) 
-			->where($week ? 'WEEK(deliveredAt) = '.week_number($week) : NULL)
+			->where($week ? 'WEEK(deliveredAt, 1) = '.week_number($week) : NULL)
 			->group(new \Sql('year'))
 			->sort(new \Sql('year DESC'))
 			->getCollection(index: 'year');
@@ -310,7 +310,7 @@ class AnalyzeLib {
 			->whereShop($eShop)
 			->where(new \Sql('EXTRACT(YEAR FROM deliveredAt)'), 'IN', $years)
 			->where($month ? 'EXTRACT(MONTH FROM deliveredAt) = '.$month : NULL)
-			->where($week ? 'WEEK(deliveredAt) = '.week_number($week) : NULL)
+			->where($week ? 'WEEK(deliveredAt, 1) = '.week_number($week) : NULL)
 			->group(new \Sql('year'))
 			->sort(new \Sql('year DESC'))
 			->getCollection(index: 'year');
@@ -452,7 +452,7 @@ class AnalyzeLib {
 			->where(new \Sql('EXTRACT(YEAR FROM deliveredAt)'), $year)
 			->where('number != 0')
 			->where($month ? 'EXTRACT(MONTH FROM deliveredAt) = '.$month : NULL)
-			->where($week ? 'WEEK(deliveredAt) = '.week_number($week) : NULL)
+			->where($week ? 'WEEK(deliveredAt, 1) = '.week_number($week) : NULL)
 			->whereProduct('!=', NULL)
 			->group(['product', 'unit'])
 			->sort(new \Sql('m1_turnover DESC'))
@@ -578,7 +578,7 @@ class AnalyzeLib {
 			->where('number != 0')
 			->where(new \Sql('EXTRACT(YEAR FROM deliveredAt)'), $year)
 			->where($month ? 'EXTRACT(MONTH FROM deliveredAt) = '.$month : NULL)
-			->where($week ? 'WEEK(deliveredAt) = '.week_number($week) : NULL)
+			->where($week ? 'WEEK(deliveredAt, 1) = '.week_number($week) : NULL)
 			->where('m1.product', '!=', NULL)
 			->where('m2.plant', '!=', NULL)
 			->group(new \Sql('m2_plant, m2_unit'))
