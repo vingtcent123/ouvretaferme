@@ -3,7 +3,7 @@ namespace shop;
 
 class AlertUi {
 
-	public static function getError(string $fqn): mixed {
+	public static function getError(string $fqn, array $options = []): mixed {
 
 		return match($fqn) {
 
@@ -28,6 +28,8 @@ class AlertUi {
 			'Shop::name.duplicate' => s("Une boutique existe déjà avec le même nom, merci de choisir un autre nom."),
 			'Shop::payment.check' => s("Veuillez sélectionner au moins un moyen de paiement."),
 			'Shop::terms.check' => s("Vos conditions générales de ventes ne doivent pas être vides de texte."),
+			'Shop::payment.createOwner' => s("La transaction ne peut pas aboutir avec ce moyen de paiement à cause d'une erreur de configuration : {message}.", $options),
+			'Shop::payment.create' => s("La transaction ne peut pas aboutir avec ce moyen de paiement à cause d'une erreur de configuration, veuillez vous rapprocher de votre producteur ou utiliser un autre moyen de paiement."),
 
 			default => NULL
 

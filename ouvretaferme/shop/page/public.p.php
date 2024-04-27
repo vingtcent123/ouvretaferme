@@ -199,7 +199,13 @@
 			throw new NotExpectedAction('Invalid payment for shop');
 		}
 
-		$url = \shop\SaleLib::createPayment($payment, $data->eDate, $data->eSaleExisting);
+		try {
+			$url = \shop\SaleLib::createPayment($payment, $data->eDate, $data->eSaleExisting);
+		} catch(Exception $e) {
+			throw new FailAction($data->eDate->canWrite() ? 'shop\Shop::payment.createOwner' : 'shop\Shop::payment.create', ['message' => $e->getMessage()]);
+		}
+
+
 		throw new RedirectAction($url);
 
 	})
