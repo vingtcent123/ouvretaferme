@@ -186,10 +186,26 @@ class MarketUi {
 							$h .= '</div>';
 						}
 					$h .= '</dd>';
-					$h .= '<dt>'.s("État").'</dt>';
-					$h .= '<dd>'.$this->getCircle($eSale).' '.$this->getStatus($eSale).'</dd>';
 					$h .= '<dt>'.s("Créée par").'</dt>';
 					$h .= '<dd>'.\user\UserUi::getVignette($eSale['createdBy'], '1.5rem').' '.\user\UserUi::name($eSale['createdBy']).'</dd>';
+					$h .= '<dt>'.s("État").'</dt>';
+					$h .= '<dd>'.$this->getCircle($eSale).' '.$this->getStatus($eSale).'</dd>';
+					$h .= '<dt>'.s("Moyen de paiement").'</dt>';
+					$h .= '<dd>';
+						$h .= '<a data-dropdown="bottom-start" class="dropdown-toggle">';
+							if($eSale['paymentMethod']) {
+								$h .= SaleUi::p('paymentMethod')->values[$eSale['paymentMethod']];
+							} else {
+								$h .= '<span style="font-weight: normal">...</span>';
+							}
+						$h .= '</a>';
+						$h .= '<div class="dropdown-list bg-secondary">';
+							$h .= '<div class="dropdown-title">'.s("Moyen de paiement").'</div>';
+							foreach([Sale::CASH, Sale::CARD, Sale::CHECK, Sale::TRANSFER] as $paymentMethod) {
+								$h .= '<a data-ajax="/selling/sale:doUpdatePaymentMethod" post-id="'.$eSale['id'].'" post-payment-method="'.$paymentMethod.'" class="dropdown-item">'.SaleUi::p('paymentMethod')->values[$paymentMethod].'</a>';
+							}
+						$h .= '</div>';
+					$h .= '</dd>';
 				$h .= '</dl>';
 			$h .= '</div>';
 

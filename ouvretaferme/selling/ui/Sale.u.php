@@ -421,6 +421,8 @@ class SaleUi {
 								} else if($eSale['paymentMethod'] === Sale::TRANSFER) {
 									$h .= '<div>'.s("Virement bancaire").'</div>';
 									$h .= '<div>'.SaleUi::getPaymentStatus($eSale).'</span></div>';
+								} else if(in_array($eSale['paymentMethod'], [Sale::CASH, Sale::CHECK, Sale::CARD])) {
+									$h .= self::p('paymentMethod')->values[$eSale['paymentMethod']];
 								} else {
 									$h .= '/';
 								}
@@ -1292,7 +1294,7 @@ class SaleUi {
 				\selling\Sale::CANCELED => s("Ventes annulés")
 			}.'</h3>';
 
-			$h .= $this->getList($eFarm, $cSale, hide: ['deliveredAt', 'paymentMethod', 'actions', 'documents'], show: ['createdAt']);
+			$h .= $this->getList($eFarm, $cSale, hide: ['deliveredAt', 'actions', 'documents'], show: ['createdAt']);
 
 		}
 
@@ -1758,6 +1760,9 @@ class SaleUi {
 				$d->values = [
 					Sale::OFFLINE => s("Direct avec le producteur"),
 					Sale::TRANSFER => s("Virement bancaire"),
+					Sale::CHECK => s("Chèque"),
+					Sale::CASH => s("Espèces"),
+					Sale::CARD => s("Carte bancaire"),
 					Sale::ONLINE_CARD => \Asset::icon('stripe', ['title' => 'Stripe']).' '.s("Carte bancaire")
 				];
 				break;

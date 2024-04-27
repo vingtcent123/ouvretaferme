@@ -101,7 +101,7 @@
 
 		$eFarm = \farm\FarmLib::getById(POST('farm'))->validate('canWrite');;
 
-		$data->cCustomer = \selling\CustomerLib::getFromQuery(POST('query'), $eFarm);
+		$data->cCustomer = \selling\CustomerLib::getFromQuery(POST('query'), $eFarm, POST('withCollective', 'bool', TRUE));
 
 		throw new \ViewAction($data);
 

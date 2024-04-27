@@ -216,6 +216,7 @@
 		throw new ReloadAction('selling', 'Sale::customerUpdated');
 
 	}, validate: ['canUpdateCustomer'])
+	->doUpdateProperties('doUpdatePaymentMethod', ['paymentMethod'], fn() => throw new ReloadAction(), validate: ['canWrite'])
 	->doUpdateProperties('doUpdatePreparationStatus', ['preparationStatus'], fn() => throw new ReloadAction(), validate: ['canWritePreparationStatus'])
 	->read('duplicate', function($data) {
 

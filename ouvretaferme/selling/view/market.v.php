@@ -71,7 +71,7 @@ new AdaptativeView('/vente/{id}/marche/ventes', function($data, MarketTemplate $
 					\selling\Sale::CANCELED => s("Ventes annulés")
 				};
 			echo '</h2>';
-			echo (new \selling\SaleUi())->getList($data->e['farm'], $cSale, hide: ['deliveredAt', 'paymentMethod', 'actions', 'documents'], show: ['createdAt'], link: fn($eSale) => \selling\SaleUi::urlMarket($data->e).'/vente/'.$eSale['id']);
+			echo (new \selling\SaleUi())->getList($data->e['farm'], $cSale, hide: ['deliveredAt', 'actions', 'documents'], show: ['createdAt'], link: fn($eSale) => \selling\SaleUi::urlMarket($data->e).'/vente/'.$eSale['id']);
 
 		}
 

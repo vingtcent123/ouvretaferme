@@ -485,7 +485,8 @@ class InvoiceUi {
 				$d->autocompleteBody = function(\util\FormUi $form, Invoice $e) {
 					$e->expects(['farm']);
 					return [
-						'farm' => $e['farm']['id']
+						'farm' => $e['farm']['id'],
+						'withCollective' => 0
 					];
 				};
 				(new CustomerUi())->query($d);

@@ -41,7 +41,7 @@ class CustomerLib extends CustomerCrud {
 
 	}
 
-	public static function getFromQuery(string $query, \farm\Farm $eFarm, ?array $properties = []): \Collection {
+	public static function getFromQuery(string $query, \farm\Farm $eFarm, bool $withCollective = TRUE, ?array $properties = []): \Collection {
 
 		if(str_starts_with($query, '#') and ctype_digit(substr($query, 1))) {
 
@@ -70,6 +70,7 @@ class CustomerLib extends CustomerCrud {
 		return Customer::model()
 			->select($properties ?: Customer::getSelection())
 			->whereFarm($eFarm)
+			->whereDestination('!=', Customer::COLLECTIVE, if: $withCollective === FALSE)
 			->whereStatus(Customer::ACTIVE)
 			->getCollection();
 

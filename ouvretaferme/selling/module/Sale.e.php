@@ -192,6 +192,15 @@ class Sale extends SaleElement {
 
 	}
 
+	public function canWritePaymentMethod(): bool {
+
+		return (
+			$this['marketParent']->notEmpty() and
+			$this['paymentMethod'] !== Sale::ONLINE_CARD
+		);
+
+	}
+
 	public function canWriteDeliveredAt(): bool {
 
 		$this->expects(['preparationStatus', 'from', 'marketParent']);
@@ -314,6 +323,7 @@ class Sale extends SaleElement {
 
 		return (
 			$this['customer']->notEmpty() and
+			$this['customer']['destination'] !== Customer::COLLECTIVE and
 			$this['market'] === FALSE and
 			$this['marketParent']->empty() and
 			$this['shop']->empty() and
@@ -332,6 +342,7 @@ class Sale extends SaleElement {
 
 		return (
 			$this['customer']->notEmpty() and
+			$this['customer']['destination'] !== Customer::COLLECTIVE and
 			$this['market'] === FALSE and
 			$this['marketParent']->empty()
 		);
@@ -582,6 +593,19 @@ class Sale extends SaleElement {
 				} else {
 					return TRUE;
 				}
+
+			},
+
+			'paymentMethod.check' => function(?string $paymentMethod): bool {
+
+				if($this->canWritePaymentMethod() === FALSE) {
+					return FALSE;
+				}
+
+				return (
+					$paymentMethod === NULL or
+					in_array($paymentMethod, [Sale::CARD, Sale::CHECK, Sale::CASH, Sale::TRANSFER])
+				);
 
 			},
 
