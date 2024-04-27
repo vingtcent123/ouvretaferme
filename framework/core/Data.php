@@ -609,7 +609,7 @@ class Collection extends ArrayIterator {
 		}
 
 		if($c->empty() and $limit === 1) {
-			return is_closure($default) ? $default($value) : $default;
+			return is_closure($default) ? $default() : $default;
 		}
 
 		return $c;
