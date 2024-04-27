@@ -15,6 +15,28 @@ td.sale-item-invoice {
 	padding: 0.5rem 1rem;
 }
 
+.sale-item-select {
+	padding: 0;
+	background-color: rgba(0, 0, 0, 0.05);
+}
+
+.sale-item-select label {
+	width: 2.25rem;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	padding: 0.5rem;
+	height: 100%;
+}
+
+th.sale-item-select label {
+	height: 2.5rem;
+}
+
+td.sale-item-select label {
+	height: 3rem;
+}
+
 td.sale-item-date {
 	text-transform: uppercase;
 	background-color: var(--background);
@@ -120,6 +142,11 @@ a.sale-preparation-status-action,
 .sale-preparation-status-label {
 	color: white;
 	font-weight: bold;
+}
+
+.sale-preparation-status-batch {
+	text-decoration: none;
+	margin-bottom: 0.25rem;
 }
 
 a.sale-preparation-status-action {

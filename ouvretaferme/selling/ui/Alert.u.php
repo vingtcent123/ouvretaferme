@@ -46,6 +46,7 @@ class AlertUi {
 			'Sale::downloadEmpty' => s("Sélectionnez au moins une vente pour générer des étiquettes"),
 			'Sale::canNotSell' => s("L'interface de vente n'est plus accessible pour ce marché !"),
 			'Sale::orderFormValidUntil.check' => s("La date d'échéance doit être au plus tôt la date d'aujourd'hui."),
+			'Sale::sales.check' => s("Merci de sélectionner au moins une vente"),
 
 
 			'Sale::generateDeliveryNote' => s("Vous ne pouvez générer de bon de livraison que pour les ventes livrées !"),

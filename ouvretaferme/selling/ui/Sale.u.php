@@ -158,17 +158,24 @@ class SaleUi {
 
 		$link ??= fn($eSale) => '/vente/'.$eSale['id'];
 
-		$h = '';
-
-		$h .= '<div class="util-overflow-md stick-md">';
+		$h = '<div class="util-overflow-md stick-md">';
 
 		$columns = 5;
+		$hasToday = $cSale->match(fn($eSale) => $eSale['deliveredAt'] === currentDate());
 
 		$h .= '<table class="sale-item-table tr-bordered tr-even">';
 
 			$h .= '<thead>';
 
 				$h .= '<tr>';
+
+					$h .= '<th class="td-min-content">';
+						if($hasToday === FALSE) {
+							$h .= '<label title="'.s("Tout cocher / Tout décocher").'">';
+								$h .= '<input type="checkbox" class="batch-all" onclick="Sale.toggleSelection(this)"/>';
+							$h .= '</label>';
+						}
+					$h .= '</th>';
 
 					$label = s("#");
 					$h .= '<th class="text-center td-min-content">'.($search ? $search->linkSort('id', $label, SORT_DESC) : $label).'</th>';
@@ -220,29 +227,32 @@ class SaleUi {
 			$h .= '</thead>';
 			$h .= '<tbody>';
 
-				$hasToday = NULL;
+				if($hasToday) {
+
+					$h .= '<tr>';
+						$h .= '<th class="td-min-content sale-item-select">';
+							$h .= '<label title="'.s("Cocher aujourd'hui / Décocher aujourd'hui").'">';
+								$h .= '<input type="checkbox" class="batch-all" onclick="Sale.toggleDaySelection(this)"/>';
+							$h .= '</label>';
+						$h .= '</th>';
+						$h .= '<td colspan="'.$columns.'" class="sale-item-date">'.s("Aujourd'hui").'</td>';
+					$h .= '</tr>';
+
+				}
 
 				foreach($cSale as $eSale) {
 
-					if($hasToday === NULL) {
-
-						if($eSale['deliveredAt'] === currentDate()) {
-
-							$h .= '<tr>';
-								$h .= '<td colspan="'.$columns.'" class="sale-item-date">'.s("Aujourd'hui").'</td>';
-							$h .= '</tr>';
-
-							$hasToday = TRUE;
-
-						} else {
-							$hasToday = FALSE;
-						}
-
-					}
-
 					if($hasToday === TRUE and $eSale['deliveredAt'] !== currentDate()) {
 
+						$h .= '</tbody>';
+						$h .= '<tbody>';
+
 						$h .= '<tr>';
+							$h .= '<th class="td-min-content sale-item-select">';
+								$h .= '<label title="'.s("Cocher les autres jours / Décocher les autres jours").'">';
+									$h .= '<input type="checkbox" class="batch-all" onclick="Sale.toggleDaySelection(this)"/>';
+								$h .= '</label>';
+							$h .= '</th>';
 							$h .= '<td colspan="'.$columns.'" class="sale-item-date">'.s("Autres jours").'</td>';
 						$h .= '</tr>';
 
@@ -250,11 +260,31 @@ class SaleUi {
 
 					}
 
+					$batch = [];
+
+					if($eSale->canStatusCancel() === FALSE) {
+						$batch[] = 'not-cancel';
+					}
+
+					if($eSale->canStatusDelivered() === FALSE) {
+						$batch[] = 'not-delivered';
+					}
+
+					if($eSale->canDeleteSale() === FALSE) {
+						$batch[] = 'not-delete';
+					}
+
 					$h .= '<tr class="';
 						if($eSale['preparationStatus'] === Sale::CANCELED) {
 							$h .= 'color-muted ';
 						}
 					$h .= '">';
+
+						$h .= '<td class="td-min-content sale-item-select">';
+							$h .= '<label>';
+								$h .= '<input type="checkbox" name="batch[]" value="'.$eSale['id'].'" oninput="Sale.changeSelection()" data-batch="'.implode(' ', $batch).'"/>';
+							$h .= '</label>';
+						$h .= '</td>';
 
 						$h .= '<td class="td-min-content text-center">';
 							if($eSale['marketParent']->notEmpty()) {
@@ -408,6 +438,57 @@ class SaleUi {
 		if($nSale !== NULL and $page !== NULL) {
 			$h .= \util\TextUi::pagination($page, $nSale / 100);
 		}
+
+
+		$h .= $this->getBatch();
+
+		return $h;
+
+	}
+
+	public function getBatch(): string {
+
+		$form = new \util\FormUi();
+
+		$h = '<div id="batch-several" class="util-bar hide">';
+
+			$h .= $form->open('batch-several-form');
+
+			$h .= '<div class="batch-ids hide"></div>';
+
+			$h .= '<div class="batch-title">';
+				$h .= '<h4>'.s("Pour la sélection").' (<span id="batch-menu-count"></span>)</h4>';
+				$h .= '<a onclick="Sale.hideSelection()" class="btn btn-transparent">'.s("Annuler").'</a>';
+			$h .= '</div>';
+
+			$h .= '<div class="batch-menu">';
+				$h .= '<div class="util-bar-menu">';
+
+					$h .= '<p class="batch-menu-empty">';
+						$h .= s("Il n'y a aucune action en commun possible pour cette sélection.");
+					$h .= '</p>';
+
+					$h .= '<a data-ajax-submit="/selling/sale:doUpdateDeliveredCollection" data-confirm="'.s("Marquer ces ventes comme livrées ?").'" class="batch-menu-delivered util-bar-menu-item">';
+						$h .= '<span class="sale-preparation-status-label sale-preparation-status-batch sale-preparation-status-delivered">'.self::p('preparationStatus')->shortValues[Sale::DELIVERED].'</span>';
+						$h .= '<span>'.s("Livré").'</span>';
+					$h .= '</a>';
+
+					$h .= '<a data-ajax-submit="/selling/sale:doUpdateCancelCollection" data-confirm="'.s("Annuler ces ventes ?").'" class="batch-menu-cancel util-bar-menu-item">';
+						$h .= '<span class="sale-preparation-status-label sale-preparation-status-batch sale-preparation-status-draft">'.self::p('preparationStatus')->shortValues[Sale::CANCELED].'</span>';
+						$h .= '<span>'.s("Annuler").'</span>';
+					$h .= '</a>';
+
+					$h .= '<a data-ajax-submit="/selling/sale:doDeleteCollection" data-confirm="'.s("Confirmer la suppression de ces ventes ?").'" class="batch-menu-delete util-bar-menu-item">';
+						$h .= \Asset::icon('trash');
+						$h .= '<span>'.s("Supprimer").'</span>';
+					$h .= '</a>';
+
+				$h .= '</div>';
+			$h .= '</div>';
+
+			$h .= $form->close();
+
+		$h .= '</div>';
 
 		return $h;
 
@@ -1116,17 +1197,19 @@ class SaleUi {
 		) {
 
 			$draft = '<a data-ajax="/selling/sale:doUpdatePreparationStatus" post-id="'.$eSale['id'].'" post-preparation-status="'.Sale::DRAFT.'" class="dropdown-item">'.s("Repasser en brouillon").'</a>';
-			$cancel = '<a data-ajax="/selling/sale:doUpdatePreparationStatus" post-id="'.$eSale['id'].'" post-preparation-status="'.Sale::CANCELED.'" class="dropdown-item">'.s("Annuler la vente").'</a>';
 
 			$statusList = match($eSale['preparationStatus']) {
 
-				Sale::CONFIRMED => $draft.$cancel,
-				Sale::PREPARED, Sale::SELLING => '<a data-ajax="/selling/sale:doUpdatePreparationStatus" post-id="'.$eSale['id'].'" post-preparation-status="'.Sale::CONFIRMED.'" class="dropdown-item">'.s("Remettre à préparer").'</a>'.$draft.$cancel,
+				Sale::CONFIRMED => $draft,
+				Sale::PREPARED, Sale::SELLING => '<a data-ajax="/selling/sale:doUpdatePreparationStatus" post-id="'.$eSale['id'].'" post-preparation-status="'.Sale::CONFIRMED.'" class="dropdown-item">'.s("Remettre à préparer").'</a>'.$draft,
 				Sale::DELIVERED => $eSale->canCancelDelivered() ? '<a data-ajax="/selling/sale:doUpdatePreparationStatus" post-id="'.$eSale['id'].'" post-preparation-status="'.Sale::CONFIRMED.'" class="dropdown-item">'.s("Annuler la livraison").'</a>' : '',
 				Sale::CANCELED => '<a data-ajax="/selling/sale:doUpdatePreparationStatus" post-id="'.$eSale['id'].'" post-preparation-status="'.Sale::CONFIRMED.'" class="dropdown-item">'.s("Revalider la vente").'</a>',
-				Sale::BASKET => ($eSale['shopDate']->canOrder() === FALSE) ? $cancel : '',
 				default => ''
 			};
+
+			if($eSale->canStatusCancel()) {
+				$statusList .= '<a data-ajax="/selling/sale:doUpdatePreparationStatus" post-id="'.$eSale['id'].'" post-preparation-status="'.Sale::CANCELED.'" class="dropdown-item">'.s("Annuler la vente").'</a>';
+			}
 
 		} else {
 			$statusList = '';
@@ -1134,11 +1217,7 @@ class SaleUi {
 
 		$secondaryList = '';
 
-		if(
-			$eSale->canDeleteStatus() and
-			$eSale->canDeletePaymentStatus() and
-			$eSale->canDeleteMarket()
-		) {
+		if($eSale->canDeleteSale()) {
 			$secondaryList .= '<a data-ajax="/selling/sale:doDelete" post-id="'.$eSale['id'].'" class="dropdown-item" data-confirm="'.s("Confirmer la suppression de la vente ?").'">'.s("Supprimer la vente").'</a>';
 		}
 

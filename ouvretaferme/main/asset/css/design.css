@@ -647,8 +647,6 @@ code {
 	justify-content: space-between;
 	align-items: center;
 	margin-bottom: 0.5rem;
-	margin-left: 0.5rem;
-	margin-right: 0.5rem;
 	color: white;
 }
 
@@ -670,6 +668,7 @@ code {
 
 .batch-menu {
 	overflow-x: auto;
+	color: white;
 }
 
 address {

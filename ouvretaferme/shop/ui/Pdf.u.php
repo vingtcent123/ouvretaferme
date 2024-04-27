@@ -70,7 +70,7 @@ class PdfUi {
 									$h .= \Asset::image('main', $eItem['quality'].'.png', ['style' => 'height: 0.4cm']);
 								}
 							$h .= '</th>';
-							$h .= '<td class="shop-pdf-summary-quantity text-end">'.$eItem['quantity'].'</td>';
+							$h .= '<td class="shop-pdf-summary-quantity text-end">'.round($eItem['quantity'], 2).'</td>';
 							$h .= '<td class="td-min-content">'.\main\UnitUi::getSingular($eItem['unit'], short: TRUE).'</td>';
 							$h .= '<td class="text-end">'.\util\TextUi::money($eItem['price']).'</td>';
 							$h .= '<td></td>';

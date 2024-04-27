@@ -18,6 +18,25 @@ class Sale extends SaleElement {
 
 	}
 
+	public static function validateBatch(\Collection $cSale): void {
+
+		if($cSale->empty()) {
+			throw new \FailAction('selling\Sale::sales.check');
+		} else {
+
+			$eFarm = $cSale->first()['farm'];
+
+			foreach($cSale as $eSale) {
+
+				if($eSale['farm']['id'] !== $eFarm['id']) {
+					throw new \NotExpectedAction('Different farms');
+				}
+
+			}
+		}
+
+	}
+
 	public function getDeliveryAddress(string $separator = "\n"): ?string {
 
 		if($this->hasDeliveryAddress() === FALSE) {
@@ -389,6 +408,16 @@ class Sale extends SaleElement {
 		return 'BL'.$this['document'];
 	}
 
+	public function canDeleteSale(): bool {
+
+		return (
+			$this->canDeleteStatus() and
+			$this->canDeletePaymentStatus() and
+			$this->canDeleteMarket()
+		);
+
+	}
+
 	public function canDeleteMarket(): bool {
 
 		$this->expects(['market', 'marketSales']);
@@ -465,6 +494,33 @@ class Sale extends SaleElement {
 
 	}
 
+	public function canStatusDelivered(): bool {
+
+		return in_array($this['preparationStatus'], $this['marketParent']->notEmpty() ? [Sale::DRAFT] : [Sale::CONFIRMED, Sale::PREPARED]);
+
+	}
+
+	public function canStatusCancel(): bool {
+
+		if(in_array($this['preparationStatus'], $this['marketParent']->notEmpty() ? [Sale::DRAFT, Sale::DELIVERED] : [Sale::BASKET, Sale::CONFIRMED, Sale::PREPARED, Sale::DELIVERED, Sale::SELLING]) === FALSE) {
+			return FALSE;
+		}
+
+		if($this['invoice']->notEmpty()) {
+			return FALSE;
+		}
+
+		if(
+			$this['preparationStatus'] === Sale::BASKET and
+			$this['shopDate']->canOrder() === FALSE
+		) {
+			return FALSE;
+		}
+
+		return TRUE;
+
+	}
+
 	public function build(array $properties, array $input, array $callbacks = [], ?string $for = NULL): array {
 
 		$fw = new \FailWatch();
@@ -523,8 +579,8 @@ class Sale extends SaleElement {
 					Sale::CONFIRMED => in_array($this['oldStatus'], $this['marketParent']->notEmpty() ? [] : [Sale::BASKET, Sale::DRAFT, Sale::PREPARED, Sale::DELIVERED, Sale::SELLING, Sale::CANCELED]),
 					Sale::SELLING => in_array($this['oldStatus'], $this['market'] ? [Sale::CONFIRMED, Sale::DELIVERED] : []),
 					Sale::PREPARED => in_array($this['oldStatus'], $this['marketParent']->notEmpty() ? [] : [Sale::CONFIRMED]),
-					Sale::CANCELED => in_array($this['oldStatus'], $this['marketParent']->notEmpty() ? [Sale::DRAFT, Sale::DELIVERED] : [Sale::BASKET, Sale::CONFIRMED, Sale::PREPARED, Sale::DELIVERED, Sale::SELLING]),
-					Sale::DELIVERED => in_array($this['oldStatus'], $this['marketParent']->notEmpty() ? [Sale::DRAFT] : [Sale::CONFIRMED, Sale::PREPARED]),
+					Sale::CANCELED => $this->canStatusCancel(),
+					Sale::DELIVERED => $this->canStatusDelivered(),
 				};
 
 				if($test === FALSE) {

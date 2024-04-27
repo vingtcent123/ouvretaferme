@@ -2475,7 +2475,7 @@ div.util-buttons > .util-button h4 {
 	z-index: 20;
 	border-top: 1px solid var(--background);
 	background-color: var(--secondary);
-	padding: 0.5rem var(--container-xs-padding) 0;
+	padding: 0.75rem 0.75rem 0;
 }
 
 @media (max-width: 575px) {
@@ -2493,6 +2493,7 @@ div.util-buttons > .util-button h4 {
 .util-bar-menu {
 	display: flex;
 	justify-content: start;
+	align-items: end;
 	width: max-content;
 	min-width: 100%;
 }
@@ -2523,6 +2524,10 @@ a.util-bar-menu-item {
 	min-width: 5rem;
 }
 
+a.util-bar-menu-item:hover {
+	text-decoration: none;
+}
+
 a.util-bar-menu-item:not(:last-child) {
 	border-right: 1px solid var(--background);
 }
@@ -2532,9 +2537,13 @@ a.util-bar-menu-item svg {
 	font-size: 1.2rem;
 }
 
+a.util-bar-menu-item:hover span:last-child {
+	text-decoration: underline;
+}
+
 @media (max-width: 575px) {
 
-	a.util-bar-menu-item {
+	a.util-bar-menu-item span:last-child {
 		font-size: 0.9rem;
 	}
 
@@ -2542,7 +2551,7 @@ a.util-bar-menu-item svg {
 
 @media (max-width: 449px) {
 
-	a.util-bar-menu-item {
+	a.util-bar-menu-item span:last-child {
 		font-size: 0.8rem;
 	}
 

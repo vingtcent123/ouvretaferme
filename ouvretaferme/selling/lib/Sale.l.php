@@ -577,6 +577,28 @@ class SaleLib extends SaleCrud {
 
 	}
 
+	public static function updatePreparationStatusCollection(\Collection $c, string $newStatus): void {
+
+		Sale::model()->beginTransaction();
+
+		foreach($c as $e) {
+
+			if($e['preparationStatus'] === $newStatus) {
+				continue;
+			}
+
+			$e['oldStatus'] = $e['preparationStatus'];
+			$e['preparationStatus'] = $newStatus;
+
+			self::update($e, ['preparationStatus']);
+
+		}
+
+		Sale::model()->commit();
+
+	}
+
+
 	public static function updateCustomer(Sale $e, Customer $eCustomer): void {
 
 		Sale::model()->beginTransaction();
@@ -596,6 +618,14 @@ class SaleLib extends SaleCrud {
 			]);
 
 		Sale::model()->commit();
+
+	}
+
+	public static function deleteCollection(\Collection $cSale): void {
+
+		foreach($cSale as $eSale) {
+			self::delete($eSale);
+		}
 
 	}
 

@@ -264,6 +264,43 @@
 		throw new RedirectAction(\farm\FarmUi::urlSellingSalesAll($data->e['farm']).'?success=selling:Sale::deleted');
 	});
 
+(new Page(function($data) {
+
+		$data->c = \selling\SaleLib::getByIds(REQUEST('ids', 'array'));
+
+		\selling\Sale::validateBatch($data->c);
+
+		$data->eFarm = $data->c->first()['farm'];
+
+	}))
+	->post('doUpdateCancelCollection', function($data) {
+
+		$data->c->validate('canWrite', 'canStatusCancel');
+
+		\selling\SaleLib::updatePreparationStatusCollection($data->c, \selling\Sale::CANCELED);
+
+		throw new ReloadAction();
+
+	})
+	->post('doUpdateDeliveredCollection', function($data) {
+
+		$data->c->validate('canWrite', 'canStatusDelivered');
+
+		\selling\SaleLib::updatePreparationStatusCollection($data->c, \selling\Sale::DELIVERED);
+
+		throw new ReloadAction();
+
+	})
+	->post('doDeleteCollection', function($data) {
+
+		$data->c->validate('canDelete', 'canDeleteSale');
+
+		\selling\SaleLib::deleteCollection($data->c);
+
+		throw new ReloadAction();
+
+	});
+
 (new \selling\PdfPage())
 	->doDelete(fn($data) => throw new ReloadAction('selling', 'Pdf::deleted'), page: 'doDeleteDocument');
 
