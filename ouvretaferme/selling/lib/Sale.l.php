@@ -175,9 +175,7 @@ class SaleLib extends SaleCrud {
 			Sale::model()->whereType($type);
 		}
 
-		$sortToday = 'FIELD(preparationStatus, "'.Sale::SELLING.'", "'.Sale::CONFIRMED.'", "'.Sale::PREPARED.'", "'.Sale::DRAFT.'", "'.Sale::DELIVERED.'", "'.Sale::CANCELED.'")';
-		$sortOtherDay1 = 'preparationStatus IN ("'.Sale::DELIVERED.'", "'.Sale::CANCELED.'")';
-		$sortOtherDay2 = 'FIELD(preparationStatus, "'.Sale::DRAFT.'", "'.Sale::CONFIRMED.'", "'.Sale::PREPARED.'", "'.Sale::SELLING.'")';
+		$sort = 'FIELD(preparationStatus, "'.Sale::SELLING.'", "'.Sale::DRAFT.'", "'.Sale::CONFIRMED.'", "'.Sale::PREPARED.'", "'.Sale::DELIVERED.'", "'.Sale::CANCELED.'")';
 
 		$cSale = Sale::model()
 			->select(Sale::getSelection())
@@ -198,8 +196,22 @@ class SaleLib extends SaleCrud {
 			->whereMarketParent(NULL)
 			->sort($search->buildSort([
 				'preparationStatus' => fn($direction) => match($direction) {
-					SORT_ASC => new \Sql('IF(preparationStatus = "'.Sale::CANCELED.'", FALSE, deliveredAt = CURDATE()) DESC, IF(deliveredAt = CURDATE(), '.$sortToday.', '.$sortOtherDay1.') DESC, '.$sortOtherDay2.' DESC, deliveredAt ASC, id ASC'),
-					SORT_DESC => new \Sql('IF(preparationStatus = "'.Sale::CANCELED.'", FALSE, deliveredAt = CURDATE()) DESC, IF(deliveredAt = CURDATE(), '.$sortToday.', '.$sortOtherDay1.'), '.$sortOtherDay2.', deliveredAt DESC, id DESC')
+					SORT_ASC => new \Sql('
+						(deliveredAt = CURDATE()) ASC,
+						(preparationStatus = "'.Sale::DRAFT.'") ASC,
+						(deliveredAt < CURDATE()) DESC,
+						IF(deliveredAt > CURDATE(), TO_DAYS(deliveredAt), TO_DAYS(deliveredAt) * -1) DESC,
+						'.$sort.' DESC,
+						id ASC
+					'),
+					SORT_DESC => new \Sql('
+						(deliveredAt = CURDATE()) DESC,
+						(preparationStatus = "'.Sale::DRAFT.'") DESC,
+						(deliveredAt < CURDATE()) ASC,
+						IF(deliveredAt > CURDATE(), TO_DAYS(deliveredAt), TO_DAYS(deliveredAt) * -1) ASC,
+						'.$sort.' ASC,
+						id DESC
+					')
 				}
 			]))
 			->getCollection($position, $number);

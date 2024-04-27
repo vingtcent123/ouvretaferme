@@ -161,7 +161,12 @@ class SaleUi {
 		$h = '<div class="util-overflow-md stick-md">';
 
 		$columns = 5;
-		$hasToday = $cSale->match(fn($eSale) => $eSale['deliveredAt'] === currentDate());
+
+		$hasSubtitles = (
+			$cSale->count() > 10 and
+			str_starts_with($search->getSort(), 'preparationStatus')
+		);
+		$previousSubtitle = NULL;
 
 		$h .= '<table class="sale-item-table tr-bordered tr-even">';
 
@@ -170,7 +175,7 @@ class SaleUi {
 				$h .= '<tr>';
 
 					$h .= '<th class="td-min-content">';
-						if($hasToday === FALSE) {
+						if($hasSubtitles === FALSE) {
 							$h .= '<label title="'.s("Tout cocher / Tout décocher").'">';
 								$h .= '<input type="checkbox" class="batch-all" onclick="Sale.toggleSelection(this)"/>';
 							$h .= '</label>';
@@ -227,36 +232,38 @@ class SaleUi {
 			$h .= '</thead>';
 			$h .= '<tbody>';
 
-				if($hasToday) {
-
-					$h .= '<tr>';
-						$h .= '<th class="td-min-content sale-item-select">';
-							$h .= '<label title="'.s("Cocher aujourd'hui / Décocher aujourd'hui").'">';
-								$h .= '<input type="checkbox" class="batch-all" onclick="Sale.toggleDaySelection(this)"/>';
-							$h .= '</label>';
-						$h .= '</th>';
-						$h .= '<td colspan="'.$columns.'" class="sale-item-date">'.s("Aujourd'hui").'</td>';
-					$h .= '</tr>';
-
-				}
-
 				foreach($cSale as $eSale) {
 
-					if($hasToday === TRUE and $eSale['deliveredAt'] !== currentDate()) {
+					if($hasSubtitles) {
 
-						$h .= '</tbody>';
-						$h .= '<tbody>';
+						$currentSubtitle = ($eSale['preparationStatus'] === Sale::DRAFT) ? Sale::DRAFT : $eSale['deliveredAt'];
 
-						$h .= '<tr>';
-							$h .= '<th class="td-min-content sale-item-select">';
-								$h .= '<label title="'.s("Cocher les autres jours / Décocher les autres jours").'">';
-									$h .= '<input type="checkbox" class="batch-all" onclick="Sale.toggleDaySelection(this)"/>';
-								$h .= '</label>';
-							$h .= '</th>';
-							$h .= '<td colspan="'.$columns.'" class="sale-item-date">'.s("Autres jours").'</td>';
-						$h .= '</tr>';
+						if($currentSubtitle !== $previousSubtitle) {
 
-						$hasToday = FALSE;
+							if($previousSubtitle !== NULL) {
+								$h .= '</tbody>';
+								$h .= '<tbody>';
+							}
+
+							$h .= '<tr>';
+								$h .= '<th class="td-min-content sale-item-select">';
+									$h .= '<label title="'.s("Cocher ces ventes / Décocher ces ventes").'">';
+										$h .= '<input type="checkbox" class="batch-all" onclick="Sale.toggleDaySelection(this)"/>';
+									$h .= '</label>';
+								$h .= '</th>';
+								$h .= '<td colspan="'.$columns.'" class="sale-item-date">';
+									$h .= match($currentSubtitle) {
+										Sale::DRAFT => s("Brouillon"),
+										currentDate() => s("Aujourd'hui"),
+										default => \util\DateUi::textual($currentSubtitle)
+									};
+								$h .= '</td>';
+							$h .= '</tr>';
+
+							$previousSubtitle = $currentSubtitle;
+
+
+						}
 
 					}
 
