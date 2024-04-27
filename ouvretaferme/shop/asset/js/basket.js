@@ -159,7 +159,7 @@ class BasketManage {
 		this.setBasket(dateId, basket);
 
 		// Quand on est sur le résumé du panier, on reload le panier pour tout mettre à jour.
-		if(location.pathname.indexOf('panier') !== -1) {
+		if(qs('#shop-basket-summary')) {
 
 			this.loadSummary(dateId, basket.sale, isModifying);
 
