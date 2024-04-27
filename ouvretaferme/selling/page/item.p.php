@@ -71,7 +71,7 @@
 (new Page())
 	->get('getDeliveredAt', function($data) {
 
-		$data->eFarm = \farm\FarmLib::getById(GET('farm'))->validate('canWrite');
+		$data->eFarm = \farm\FarmLib::getById(GET('farm'))->validate('canSelling');
 
 		$data->date = GET('date');
 		$data->type = GET('type', [\selling\Customer::PRO, \selling\Customer::PRIVATE], NULL);

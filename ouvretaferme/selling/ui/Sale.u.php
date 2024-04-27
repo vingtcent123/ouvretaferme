@@ -164,7 +164,7 @@ class SaleUi {
 
 		$hasSubtitles = (
 			$cSale->count() > 10 and
-			str_starts_with($search->getSort(), 'preparationStatus')
+			($search !== NULL and str_starts_with($search->getSort(), 'preparationStatus'))
 		);
 		$previousSubtitle = NULL;
 
