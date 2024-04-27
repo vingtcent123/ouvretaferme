@@ -81,7 +81,17 @@ class Sale {
 
 		qsa(
 			'.batch-menu-cancel',
-			selection.filter('[data-batch~="not-cancel"]').length > 0 ?
+			selection.filter('[data-batch~="not-canceled"]').length > 0 ?
+				node => node.hide() :
+				node => {
+					node.removeHide();
+					actions++;
+				}
+		);
+
+		qsa(
+			'.batch-menu-confirmed',
+			selection.filter('[data-batch~="not-confirmed"]').length > 0 ?
 				node => node.hide() :
 				node => {
 					node.removeHide();

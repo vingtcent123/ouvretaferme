@@ -2478,14 +2478,6 @@ div.util-buttons > .util-button h4 {
 	padding: 0.75rem 0.75rem 0;
 }
 
-@media (max-width: 575px) {
-
-	.util-bar {
-		padding: 0;
-	}
-
-}
-
 .util-bar h4 {
 	margin-bottom: 0.5rem;
 }

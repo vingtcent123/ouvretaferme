@@ -650,14 +650,6 @@ code {
 	color: white;
 }
 
-@media (max-width: 575px) {
-
-	.batch-title {
-		margin-top: 0.5rem;
-	}
-
-}
-
 .batch-title h4 {
 	margin-bottom: 0;
 }

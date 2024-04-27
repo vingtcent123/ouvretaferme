@@ -500,6 +500,27 @@ class Sale extends SaleElement {
 
 	}
 
+	public function canStatusConfirmed(): bool {
+
+		if(in_array($this['preparationStatus'], $this['marketParent']->notEmpty() ? [] : [Sale::BASKET, Sale::DRAFT, Sale::PREPARED, Sale::DELIVERED, Sale::SELLING, Sale::CANCELED]) === FALSE) {
+			return FALSE;
+		}
+
+		if($this['invoice']->notEmpty()) {
+			return FALSE;
+		}
+
+		if(
+			$this['preparationStatus'] === Sale::BASKET and
+			$this['shopDate']->canOrder() === FALSE
+		) {
+			return FALSE;
+		}
+
+		return TRUE;
+
+	}
+
 	public function canStatusCancel(): bool {
 
 		if(in_array($this['preparationStatus'], $this['marketParent']->notEmpty() ? [Sale::DRAFT, Sale::DELIVERED] : [Sale::BASKET, Sale::CONFIRMED, Sale::PREPARED, Sale::DELIVERED, Sale::SELLING]) === FALSE) {
@@ -576,7 +597,7 @@ class Sale extends SaleElement {
 
 				return match($preparationStatus) {
 					Sale::DRAFT => in_array($this['oldStatus'], $this['marketParent']->notEmpty() ? [Sale::CANCELED, Sale::DELIVERED] : [Sale::CONFIRMED, Sale::PREPARED, Sale::SELLING]),
-					Sale::CONFIRMED => in_array($this['oldStatus'], $this['marketParent']->notEmpty() ? [] : [Sale::BASKET, Sale::DRAFT, Sale::PREPARED, Sale::DELIVERED, Sale::SELLING, Sale::CANCELED]),
+					Sale::CONFIRMED => $this->canStatusConfirmed(),
 					Sale::SELLING => in_array($this['oldStatus'], $this['market'] ? [Sale::CONFIRMED, Sale::DELIVERED] : []),
 					Sale::PREPARED => in_array($this['oldStatus'], $this['marketParent']->notEmpty() ? [] : [Sale::CONFIRMED]),
 					Sale::CANCELED => $this->canStatusCancel(),

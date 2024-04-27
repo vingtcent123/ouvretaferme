@@ -291,6 +291,15 @@
 		throw new ReloadAction();
 
 	})
+	->post('doUpdateConfirmedCollection', function($data) {
+
+		$data->c->validate('canWrite', 'canStatusConfirmed');
+
+		\selling\SaleLib::updatePreparationStatusCollection($data->c, \selling\Sale::CONFIRMED);
+
+		throw new ReloadAction();
+
+	})
 	->post('doDeleteCollection', function($data) {
 
 		$data->c->validate('canDelete', 'canDeleteSale');

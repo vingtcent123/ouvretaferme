@@ -262,8 +262,12 @@ class SaleUi {
 
 					$batch = [];
 
+					if($eSale->canStatusConfirmed() === FALSE) {
+						$batch[] = 'not-confirmed';
+					}
+
 					if($eSale->canStatusCancel() === FALSE) {
-						$batch[] = 'not-cancel';
+						$batch[] = 'not-canceled';
 					}
 
 					if($eSale->canStatusDelivered() === FALSE) {
@@ -467,6 +471,11 @@ class SaleUi {
 					$h .= '<p class="batch-menu-empty">';
 						$h .= s("Il n'y a aucune action en commun possible pour cette sélection.");
 					$h .= '</p>';
+
+					$h .= '<a data-ajax-submit="/selling/sale:doUpdateConfirmedCollection" data-confirm="'.s("Marquer ces ventes comme confirmées ?").'" class="batch-menu-confirmed util-bar-menu-item">';
+						$h .= '<span class="sale-preparation-status-label sale-preparation-status-batch sale-preparation-status-confirmed">'.self::p('preparationStatus')->shortValues[Sale::CONFIRMED].'</span>';
+						$h .= '<span>'.s("Confirmé").'</span>';
+					$h .= '</a>';
 
 					$h .= '<a data-ajax-submit="/selling/sale:doUpdateDeliveredCollection" data-confirm="'.s("Marquer ces ventes comme livrées ?").'" class="batch-menu-delivered util-bar-menu-item">';
 						$h .= '<span class="sale-preparation-status-label sale-preparation-status-batch sale-preparation-status-delivered">'.self::p('preparationStatus')->shortValues[Sale::DELIVERED].'</span>';
