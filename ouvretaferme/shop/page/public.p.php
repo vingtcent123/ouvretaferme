@@ -30,13 +30,14 @@
 		}
 
 		$data->eShop = \shop\ShopLib::getByFqn(GET('id'));
-		$data->eShop['ccPoint'] = \shop\PointLib::getByShop($data->eShop);
 
 		if($data->eShop->empty()) {
 			$action = new ViewAction($data, '/error:404');
 			$action->setStatusCode(404);
 			throw $action;
 		}
+
+		$data->eShop['ccPoint'] = \shop\PointLib::getByShop($data->eShop);
 
 	}))
 	->get('/shop/public/{id}:conditions', function($data) {
