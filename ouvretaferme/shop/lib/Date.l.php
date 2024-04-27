@@ -218,6 +218,7 @@ class DateLib extends DateCrud {
 		$cDate = Date::model()
 			->select(Date::getSelection())
 			->whereShop($eShop)
+			->whereStatus(Date::ACTIVE)
 			->whereDeliveryDate('>',  new \Sql('NOW()'))
 			->sort([
 				'isOrderable' => SORT_DESC,
