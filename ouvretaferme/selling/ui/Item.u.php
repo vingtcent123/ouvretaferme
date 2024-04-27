@@ -620,7 +620,7 @@ class ItemUi {
 				};
 
 				// La réduction s'applique uniquement pour les produits qui disposent d'un prix pour ce type de client (particulier / professionnel)
-				if($eItem['sale']['discount'] > 0) {
+				if($eItem['sale']['discount'] > 0 and $eItem['unitPrice'] !== NULL) {
 					$eItem['baseUnitPrice'] = $eItem['unitPrice'];
 					$eItem['unitPrice'] = round($eItem['unitPrice'] * (1 - $eItem['sale']['discount'] / 100), 2);
 				}
@@ -655,7 +655,7 @@ class ItemUi {
 						($eItem['sale']['preparationStatus'] !== Sale::SELLING ? ['unitPrice[]', 'number[]'] : ['unitPrice[]']) :
 						['unitPrice[]', 'number[]', 'price[]'], [
 							'unitPrice[]' => function(\PropertyDescriber $d) use ($eItem) {
-								if($eItem['sale']['discount'] > 0) {
+								if($eItem['sale']['discount'] > 0 and $eItem['unitPrice'] !== NULL) {
 									$d->after = \util\FormUi::info(s("Prix de base : {value}", \util\TextUi::money($eItem['baseUnitPrice'])));
 								}
 							}
