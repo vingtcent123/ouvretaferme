@@ -38,7 +38,7 @@ class StripeFarmUi {
 
 		$h .= '<dl class="util-presentation util-presentation-1">';
 			$h .= '<dt>'.self::p('apiSecretKey')->label.'</dt>';
-			$h .= '<dd>sk_live_...'.substr($eStripeFarm['apiSecretKey'], -4).'</dd>';
+			$h .= '<dd>rk_live_...'.substr($eStripeFarm['apiSecretKey'], -4).'</dd>';
 			if($eStripeFarm['apiSecretKeyTest'] !== NULL) {
 				$h .= '<dt>'.self::p('apiSecretKeyTest')->label.'</dt>';
 				$h .= '<dd>sk_test_...'.substr($eStripeFarm['apiSecretKeyTest'], -4).'</dd>';
@@ -111,8 +111,8 @@ class StripeFarmUi {
 	public static function p(string $property): \PropertyDescriber {
 
 		$d = StripeFarm::model()->describer($property, [
-			'apiSecretKey' => s("Clé API secrète Stripe"),
-			'apiSecretKeyTest' => s("Clé API secrète Stripe pour le mode test"),
+			'apiSecretKey' => s("Clé API limitée Stripe"),
+			'apiSecretKeyTest' => s("Clé API Stripe pour le mode test"),
 			'webhookSecretKey' => s("Clé Webhook secrète de signature Stripe"),
 			'webhookSecretKeyTest' => s("Clé Webhook secrète de signature Stripe pour le mode test"),
 		]);
@@ -120,12 +120,12 @@ class StripeFarmUi {
 		switch($property) {
 
 			case 'apiSecretKey' :
-				$d->placeholder = 'sk_live_...';
+				$d->placeholder = 'rk_live...';
 				$d->before = function(\util\FormUi $form, StripeFarm $eStripeFarm) {
 
 					$h = '<div class="util-block-help">';
-						$h .= '<h4>'.s("Obtenir la clé API secrète").'</h4>';
-						$h .= '<p>'.s("La clé API secrète peut être récupérée dans la section <i>Développeurs</i> de {icon} Stripe. Veillez à bien récupérer la clé secrète et pas la clé publique.", ['icon' => \Asset::icon('stripe')]).'</p>';
+						$h .= '<h4>'.s("Obtenir la clé API").'</h4>';
+						$h .= '<p>'.s("La clé API peut être récupérée dans la section <i>Développeurs</i> de {icon} Stripe. Veillez à bien copier une clé limitée que vous créez pour l'occasion pour {siteName}.", ['icon' => \Asset::icon('stripe')]).'</p>';
 					$h .= '</div>';
 
 					return $h;

@@ -19,7 +19,7 @@ class StripeFarm extends StripeFarmElement {
 		return parent::build($properties, $input, $callbacks + [
 
 			'apiSecretKey.check' => function(string $key): bool {
-				return str_starts_with($key, 'sk_live_') and strlen($key) > 10;
+				return str_starts_with($key, 'rk_live_') and strlen($key) > 10;
 			},
 
 			'apiSecretKeyTest.check' => function(?string $key): bool {
