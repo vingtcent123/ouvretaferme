@@ -617,12 +617,12 @@ class DateUi {
 
 				if($eDate->canWrite()) {
 
-					$h .= '<a href="/shop/date:update?id='.$eDate['id'].'" class="dropdown-item">'.s("Paramétrer la date de vente").'</a>';
-					$h .= '<a href="/shop/date:create?shop='.$eShop['id'].'&farm='.$eDate['farm']['id'].'&date='.$eDate['id'].'" class="dropdown-item">'.s("Nouvelle date de vente à partir de celle-ci").'</a>';
+					$h .= '<a href="/shop/date:update?id='.$eDate['id'].'" class="dropdown-item">'.s("Paramétrer la vente").'</a>';
+					$h .= '<a href="/shop/date:create?shop='.$eShop['id'].'&farm='.$eDate['farm']['id'].'&date='.$eDate['id'].'" class="dropdown-item">'.s("Nouvelle vente à partir de celle-ci").'</a>';
 
 					if($sales === 0) {
 						$h .= '<div class="dropdown-divider"></div>';
-						$h .= '<a data-ajax="/shop/date:doDelete" post-id="'.$eDate['id'].'" post-farm="'.$eDate['farm']['id'].'" post-shop="'.$eShop['id'].'" class="dropdown-item" data-confirm="'.s("Êtes-vous sûr de vouloir supprimer cette date de vente ?").'">'.s("Supprimer la date de vente").'</a>';
+						$h .= '<a data-ajax="/shop/date:doDelete" post-id="'.$eDate['id'].'" post-farm="'.$eDate['farm']['id'].'" post-shop="'.$eShop['id'].'" class="dropdown-item" data-confirm="'.s("Êtes-vous sûr de vouloir supprimer cette vente ?").'">'.s("Supprimer la date de vente").'</a>';
 					}
 
 				}
@@ -799,7 +799,7 @@ class DateUi {
 				$d->field = function(\util\FormUi $form, Date $e) {
 					return (new DateUi())->getPoints($form, $e);
 				};
-				$d->labelAfter = \util\FormUi::info(s("Sélectionnez au moins un mode de livraison pour cette date de vente."));
+				$d->labelAfter = \util\FormUi::info(s("Sélectionnez au moins un mode de livraison pour cette vente."));
 				break;
 
 		}

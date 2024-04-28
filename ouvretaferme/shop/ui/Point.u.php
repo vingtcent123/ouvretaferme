@@ -16,7 +16,7 @@ class PointUi {
 			'data-ajax' => $ePoint->canWrite() ? '/shop/point:doUpdateStatus' : NULL,
 			'post-id' => $ePoint['id'],
 			'post-status' => $ePoint->isActive() ? Point::INACTIVE : Point::ACTIVE,
-			'data-confirm' => s("Cette modification prendra effet pour les prochaines dates de vente. Les modes de livraison disponibles pour les ventes en cours ne seront pas modifiés.")
+			'data-confirm' => s("Cette modification prendra effet pour les prochaines ventes. Les modes de livraison disponibles pour les ventes en cours ne seront pas modifiés.")
 		], $ePoint->isActive(), s("Disponible"), s("Désactivé"));
 
 	}
@@ -204,7 +204,7 @@ class PointUi {
 						$h .= $this->getPoints('date', $eShop, $eShop['ccPoint'][Point::PLACE], cPointSelected: $cc[Point::PLACE] ?? new \Collection(), eDate: $eDate);
 					} else {
 						$h .= '<div class="util-info">';
-							$h .= s("La livraison en point de retrait collectif n'est pas activée pour cette date de vente !");
+							$h .= s("La livraison en point de retrait collectif n'est pas activée pour cette vente !");
 						$h .= '</div>';
 					}
 

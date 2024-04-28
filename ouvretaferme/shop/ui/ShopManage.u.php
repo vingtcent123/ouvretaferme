@@ -97,7 +97,7 @@ class ShopManageUi {
 		$h = '<div class="tabs-h" id="shop-tabs" onrender="'.encode('Lime.Tab.restore(this, "dates"'.(get_exists('tab') ? ', "'.GET('tab', ['dates', 'points'], 'dates').'"' : '').')').'">';
 
 			$h .= '<div class="tabs-item">';
-				$h .= '<a class="tab-item selected" data-tab="dates" onclick="Lime.Tab.select(this)">'.s("Dernières dates de vente").'</a>';
+				$h .= '<a class="tab-item selected" data-tab="dates" onclick="Lime.Tab.select(this)">'.s("Dernières ventes").'</a>';
 				$h .= '<a class="tab-item" data-tab="points" onclick="Lime.Tab.select(this)">'.s("Tous les modes de livraison").'</a>';
 			$h .= '</div>';
 
@@ -158,7 +158,7 @@ class ShopManageUi {
 			$h .= '<p>'.s("Lorsque vous êtes satisfait de la configuration de votre boutique, créez une première vente en choisissant une date et la liste des produits que vous avez en stock et que vous souhaitez proposer à vos clients !").'</p>';
 		$h .= '</div>';
 
-		$h .= '<a href="/shop/date:create?shop='.$eShop['id'].'&farm='.$eFarm['id'].'" class="btn btn-primary">'.\Asset::icon('plus-circle').' '.s("Ajouter une première date de vente").'</a>';
+		$h .= '<a href="/shop/date:create?shop='.$eShop['id'].'&farm='.$eFarm['id'].'" class="btn btn-primary">'.\Asset::icon('plus-circle').' '.s("Ajouter une première vente").'</a>';
 
 		return $h;
 		
@@ -176,7 +176,7 @@ class ShopManageUi {
 
 			$h .= '<div>';
 				if($eShop->canWrite()) {
-					$h .= '<a href="/shop/date:create?shop='.$eShop['id'].'&farm='.$eFarm['id'].'" class="btn btn-outline-primary">'.\Asset::icon('plus-circle').'<span class="hide-xs-down">  '.s("Nouvelle date de vente").'</span></a>';
+					$h .= '<a href="/shop/date:create?shop='.$eShop['id'].'&farm='.$eFarm['id'].'" class="btn btn-outline-primary">'.\Asset::icon('plus-circle').'<span class="hide-xs-down">  '.s("Nouvelle vente").'</span></a>';
 				}
 			$h .= '</div>';
 		$h .= '</div>';

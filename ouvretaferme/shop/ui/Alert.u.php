@@ -15,8 +15,8 @@ class AlertUi {
 			'Point::name.duplicate' => s("Une point de retrait existe déjà avec le même nom, merci de choisir un autre nom."),
 			'Point::payment.check' => s("Veuillez sélectionner au moins un moyen de paiement."),
 
-			'Point::deletedSaleUsed' => s("Ce mode de livraison ne peut pas être supprimé car il a déjà été utilisé pour une vente."),
-			'Point::deletedDateUsed' => s("Ce mode de livraison ne peut pas être supprimé car il a déjà été utilisé dans une date de vente."),
+			'Point::deletedSaleUsed' => s("Ce mode de livraison ne peut pas être supprimé car il a déjà été utilisé pour une commande."),
+			'Point::deletedDateUsed' => s("Ce mode de livraison ne peut pas être supprimé car il a déjà été utilisé dans une vente."),
 
 			'Product::stock.check' => s("Vous devez indiquer un stock disponible positif ou laisser ce champ vide."),
 			'Product::price.check' => s("Vous devez indiquer un prix valable."),
@@ -41,9 +41,9 @@ class AlertUi {
 
 		return match($fqn) {
 
-			'Date::copied' => s("La nouvelle date de vente a bien été copiée à partir d'une date précédente !"),
-			'Date::created' => s("La nouvelle date de vente a bien été créée !"),
-			'Date::deleted' => s("La date de vente a bien été supprimée"),
+			'Date::copied' => s("La nouvelle vente a bien été copiée à partir d'une date précédente !"),
+			'Date::created' => s("La nouvelle vente a bien été créée !"),
+			'Date::deleted' => s("La vente a bien été supprimée"),
 			'Date::updated' => s("Le paramétrage a bien été enregistré."),
 
 			'Shop::opened' => s("Votre boutique a bien été ouverte !"),
