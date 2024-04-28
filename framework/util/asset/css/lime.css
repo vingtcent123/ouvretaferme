@@ -2235,7 +2235,9 @@ body[data-touch="yes"] .dropdown-item {
 .dropdown-subtitle {
 	display: flex;
 	align-items: center;
-	color: white;
+	color: #fff;
+	text-transform: uppercase;
+	font-size: .9rem;
 	padding: 0.75rem 1rem;
 	white-space: nowrap;
 	line-height: 1.2;

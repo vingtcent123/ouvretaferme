@@ -165,23 +165,41 @@ class ShopManageUi {
 	}
 	
 	public function getDateList(\farm\Farm $eFarm, Shop $eShop, bool $inTabs): string {
-		
+
+		$cDate = $eShop['cDate'];
+
 		$h = '<div class="util-action">';
 
 			if($inTabs) {
 				$h .= '<div></div>';
 			} else {
-				$h .= '<h2>'.s("Prochaines date").'</h2>';
+				$h .= '<h2>'.s("Prochaines ventes").'</h2>';
 			}
 
 			$h .= '<div>';
 				if($eShop->canWrite()) {
-					$h .= '<a href="/shop/date:create?shop='.$eShop['id'].'&farm='.$eFarm['id'].'" class="btn btn-outline-primary">'.\Asset::icon('plus-circle').'<span class="hide-xs-down">  '.s("Nouvelle vente").'</span></a>';
+					if($cDate->empty()) {
+						$h .= '<a href="/shop/date:create?shop='.$eShop['id'].'&farm='.$eFarm['id'].'" class="btn btn-outline-primary">'.\Asset::icon('plus-circle').' '.s("Nouvelle vente").'</a>';
+					} else {
+						$h .= '<a data-dropdown="bottom-end" class="btn btn-outline-primary dropdown-toggle">'.\Asset::icon('plus-circle').' '.s("Nouvelle vente").'</a>';
+						$h .= '<div class="dropdown-list">';
+							$h .= '<a href="/shop/date:create?shop='.$eShop['id'].'&farm='.$eFarm['id'].'" class="dropdown-item">'.s("Créer une vente de zéro").'</a>';
+							$h .= '<div class="dropdown-divider"></div>';
+							$h .= '<div class="dropdown-item" style="font-style: italic">'.s("Créer à partir une autre vente :").'</div>';
+							$count = 0;
+							foreach($cDate as $eDate) {
+								if($count++ >= 3) {
+									break;
+								}
+								$h .= '<a href="/shop/date:create?shop='.$eShop['id'].'&farm='.$eFarm['id'].'&date='.$eDate['id'].'" class="dropdown-item">'.\Asset::icon('chevron-right').' '.s("Vente du {value}", \util\DateUi::textual($eDate['deliveryDate'])).'</a>';
+							}
+						$h .= '</div>';
+					}
 				}
 			$h .= '</div>';
 		$h .= '</div>';
 
-		$h .= (new DateUi())->getList($eFarm, $eShop);
+		$h .= (new DateUi())->getList($eFarm, $eShop, $cDate);
 
 		return $h;
 	}

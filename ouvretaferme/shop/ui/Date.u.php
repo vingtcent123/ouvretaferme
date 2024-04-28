@@ -284,7 +284,7 @@ class DateUi {
 		$h .= $form->close();
 
 		return new \Panel(
-			title: s("Préparer une nouvelle date de vente"),
+			title: s("Préparer une nouvelle de vente"),
 			body: $h
 		);
 	}
@@ -514,9 +514,8 @@ class DateUi {
 		return $h;
 	}
 
-	public function getList(\farm\Farm $eFarm, Shop $eShop): string {
+	public function getList(\farm\Farm $eFarm, Shop $eShop, \Collection $cDate): string {
 
-		$cDate = $eShop['cDate'];
 		if($cDate->empty()) {
 			return '<div class="util-info">'.s("Il n'y a aucune vente à afficher.").'</div>';
 		}
@@ -622,7 +621,7 @@ class DateUi {
 
 					if($sales === 0) {
 						$h .= '<div class="dropdown-divider"></div>';
-						$h .= '<a data-ajax="/shop/date:doDelete" post-id="'.$eDate['id'].'" post-farm="'.$eDate['farm']['id'].'" post-shop="'.$eShop['id'].'" class="dropdown-item" data-confirm="'.s("Êtes-vous sûr de vouloir supprimer cette vente ?").'">'.s("Supprimer la date de vente").'</a>';
+						$h .= '<a data-ajax="/shop/date:doDelete" post-id="'.$eDate['id'].'" post-farm="'.$eDate['farm']['id'].'" post-shop="'.$eShop['id'].'" class="dropdown-item" data-confirm="'.s("Êtes-vous sûr de vouloir supprimer cette vente ?").'">'.s("Supprimer la de vente").'</a>';
 					}
 
 				}
