@@ -621,7 +621,7 @@ class DateUi {
 
 					if($sales === 0) {
 						$h .= '<div class="dropdown-divider"></div>';
-						$h .= '<a data-ajax="/shop/date:doDelete" post-id="'.$eDate['id'].'" post-farm="'.$eDate['farm']['id'].'" post-shop="'.$eShop['id'].'" class="dropdown-item" data-confirm="'.s("Êtes-vous sûr de vouloir supprimer cette vente ?").'">'.s("Supprimer la de vente").'</a>';
+						$h .= '<a data-ajax="/shop/date:doDelete" post-id="'.$eDate['id'].'" post-farm="'.$eDate['farm']['id'].'" post-shop="'.$eShop['id'].'" class="dropdown-item" data-confirm="'.s("Êtes-vous sûr de vouloir supprimer cette vente ?").'">'.s("Supprimer la vente").'</a>';
 					}
 
 				}

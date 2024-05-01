@@ -164,7 +164,7 @@ class CustomizeUi {
 					'number' => $eSale->getOrderForm(),
 					'customer' => encode($eSale['customer']['legalName'] ?? $eSale['customer']['name']),
 					'farm' => encode($eFarm['name']),
-					'valid' => \util\DateUi::numeric($eSale['orderFormValidUntil']),
+					'valid' => $eSale['orderFormValidUntil'] ? \util\DateUi::numeric($eSale['orderFormValidUntil']) : s("limite de validitée inconnue"),
 				];
 
 			case Customize::SALE_DELIVERY_NOTE :
