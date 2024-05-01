@@ -256,20 +256,8 @@ class DateLib extends DateCrud {
 
 			foreach($cDate as $eDate) {
 
-				if($cProduct->offsetExists($eDate['id']) === FALSE) {
-					continue;
-				}
-
-				if($eDate['isOrderable']) {
+				if($cProduct->offsetExists($eDate['id'])) {
 					$cDateRelevant[$eDate['id']] = $eDate;
-				} else {
-
-					if($cDateRelevant->empty()) {
-						$cDateRelevant[$eDate['id']] = $eDate;
-					}
-
-					break;
-
 				}
 
 			}

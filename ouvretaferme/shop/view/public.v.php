@@ -3,7 +3,7 @@ new AdaptativeView('shop', function($data, ShopTemplate $t) {
 
 	$t->metaDescription = 'description';
 	$t->title = encode($data->eShop['name']);
-	$t->header = (new \shop\ShopUi())->getHeader($data->eShop, $data->cDate);
+	$t->header = (new \shop\ShopUi())->getHeader($data->eShop, $data->cDate, $data->eDateSelected);
 
 	Asset::js('shop', 'basket.js');
 
@@ -30,25 +30,7 @@ new AdaptativeView('shop', function($data, ShopTemplate $t) {
 	if($data->eDateSelected->notEmpty()) {
 
 		echo '<h2 class="shop-date">';
-
-			if($data->cDate->count() > 1) {
-
-				echo '<a data-dropdown="bottom-start" class="dropdown-toggle">'.\shop\DateUi::name($data->eDateSelected).'</a>';
-				echo '<div class="dropdown-list bg-primary">';
-					echo '<div class="dropdown-title">'.s("Prochaines ventes").'</div>';
-					foreach($data->cDate as $eDate) {
-						if($eDate['id'] === $data->eDateSelected['id']) {
-							echo '<div class="dropdown-item"><b>'.\shop\DateUi::name($eDate).'</b></div>';
-						} else {
-							echo '<a href="'.\shop\ShopUi::dateUrl($data->eShop, $eDate).'" class="dropdown-item">'.\shop\DateUi::name($eDate).'</a>';
-						}
-					}
-				echo '</div>';
-
-			} else {
-				echo \shop\DateUi::name($data->eDateSelected);
-			}
-
+			echo \shop\DateUi::name($data->eDateSelected);
 		echo '</h2>';
 
 		if($data->eDateSelected['isOrderable']) {
@@ -88,6 +70,12 @@ new AdaptativeView('shop', function($data, ShopTemplate $t) {
 			echo '<div class="util-block">';
 				echo s("Les prises de commandes démarrent bientôt, revenez le {date} pour passer commande !",
 					['date' => \util\DateUi::textual($data->eDateSelected['orderStartAt'], \util\DateUi::DATE_HOUR_MINUTE)]);
+			echo '</div>';
+
+		} else {
+
+			echo '<div class="util-block">';
+				echo s("Cette vente est désormais terminée !");
 			echo '</div>';
 
 		}

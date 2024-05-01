@@ -441,7 +441,7 @@ class ShopUi {
 
 	}
 
-	public function getHeader(Shop $eShop, \Collection $cDate): string {
+	public function getHeader(Shop $eShop, \Collection $cDate, Date $eDateSelected): string {
 
 		$h = '<div class="shop-header">';
 
@@ -468,19 +468,18 @@ class ShopUi {
 
 			$h .= '</div>';
 
-			$h .= '<div class="shop-header-flow">';
 
-				if($cDate->notEmpty()) {
+			if($cDate->notEmpty()) {
 
-					$h .= '<div class="shop-header-block util-block">';
-						if($cDate->count() > 1) {
-							$h .= (new \shop\DateUi())->getDeliveryPeriods($eShop, $cDate);
-						} else {
-							$h .= (new \shop\DateUi())->getDeliveryPeriod($cDate->first());
-						}
+				if($cDate->count() > 1) {
+					$h .= '<div class="shop-header-flow">';
+						$h .= (new \shop\DateUi())->getDeliveryPeriods($eShop, $cDate, $eDateSelected);
 					$h .= '</div>';
+				}
 
-				} else {
+			} else {
+
+				$h .= '<div class="shop-header-flow">';
 
 					if($eShop->canWrite()) {
 						$h .= '<div class="util-block-help">';
@@ -490,10 +489,10 @@ class ShopUi {
 					} else {
 						$h .= '<div class="util-info">'.s("Cette boutique n'est pas encore ouverte, revenez un peu plus tard !").'</div>';
 					}
+				$h .= '</div>';
 
-				}
+			}
 
-			$h .= '</div>';
 
 		$h .= '</div>';
 

@@ -101,16 +101,21 @@ class DateUi {
 
 	}
 
-	public function getDeliveryPeriods(Shop $eShop, \Collection $cDate): string {
+	public function getDeliveryPeriods(Shop $eShop, \Collection $cDate, Date $eDateSelected): string {
 
 		$h = '';
 
 		if($cDate->notEmpty()) {
 
-			$h .= '<h4>'.\Asset::icon('calendar3').'&nbsp;&nbsp;'.s("Prochaines ventes").'</h4>';
-			$h .= '<div class="shop-header-date-day">';
+			$h .= '<h3>'.\Asset::icon('calendar3').'&nbsp;&nbsp;'.s("Prochaines ventes").'</h3>';
+			$h .= '<div class="shop-header-date-days">';
 				foreach($cDate as $eDate) {
-					$h .= '<a href="'.ShopUi::dateUrl($eShop, $eDate).'">'.\util\DateUi::getDayName(date('N', strtotime($eDate['deliveryDate']))).' '.\util\DateUi::textual($eDate['deliveryDate']).'</a><br/>';
+
+					$h .= '<a href="'.ShopUi::dateUrl($eShop, $eDate).'" class="'.($eDate['id'] === $eDateSelected['id'] ? 'selected' : '').'">';
+						$h .= '<div class="shop-header-date-day-name">'.\util\DateUi::getDayName(date('N', strtotime($eDate['deliveryDate']))).'</div>';
+						$h .= '<div class="shop-header-date-day-value">'.\util\DateUi::textual($eDate['deliveryDate'], \util\DateUi::DAY_MONTH).'</div>';
+					$h .= '</a>';
+
 				}
 			$h .= '</div>';
 
