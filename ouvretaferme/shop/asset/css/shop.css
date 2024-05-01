@@ -135,6 +135,7 @@
 	letter-spacing: -0.1px;
 }
 
+.shop-header-date-days a:hover,
 .shop-header-date-days a.selected {
 	background-color: var(--secondary);
 	color: white;
