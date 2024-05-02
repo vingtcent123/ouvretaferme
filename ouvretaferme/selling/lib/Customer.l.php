@@ -67,10 +67,17 @@ class CustomerLib extends CustomerCrud {
 			Customer::model()->sort('name');
 		}
 
+		if($withCollective === FALSE) {
+			Customer::model()
+				->or(
+					fn() => $this->whereDestination(NULL),
+					fn() => $this->whereDestination(Customer::INDIVIDUAL)
+				);
+		}
+
 		return Customer::model()
 			->select($properties ?: Customer::getSelection())
 			->whereFarm($eFarm)
-			->whereDestination('!=', Customer::COLLECTIVE, if: $withCollective === FALSE)
 			->whereStatus(Customer::ACTIVE)
 			->getCollection();
 
