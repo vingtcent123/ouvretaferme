@@ -66,7 +66,11 @@ new JsonView('doCreateFromSeriesCollection', function($data, AjaxTemplate $t) {
 		if($eTaskFirst['doneDate']) {
 			$date = '&date='.$eTaskFirst['doneDate'];
 		} else if($eTaskFirst['doneWeek']) {
-			$date = '&date='.week_date_starts($eTaskFirst['doneWeek']);
+			if($eTaskFirst['doneWeek'] === currentWeek()) {
+				$date = '&date='.currentDate();
+			} else {
+				$date = '&date='.week_date_starts($eTaskFirst['doneWeek']);
+			}
 		} else {
 			$date = '';
 		}
