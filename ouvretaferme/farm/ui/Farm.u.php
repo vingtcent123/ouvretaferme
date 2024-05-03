@@ -887,8 +887,12 @@ class FarmUi {
 				case Farmer::INVOICE :
 					$h .= '<div>';
 						$h .= '<a '.attr('onclick', 'Lime.Search.toggle("#sale-search")').' class="btn btn-primary">'.\Asset::icon('search').'</a> ';
-						$h .= '<a href="/selling/configuration:update?id='.$eFarm['id'].'" class="btn btn-primary" title="'.s("Configurer la commercialisation").'">'.\Asset::icon('gear-fill').'</a> ';
-						$h .= '<a href="/selling/invoice:create?farm='.$eFarm['id'].'" class="btn btn-primary">'.\Asset::icon('plus-circle').'<span class="hide-xs-down"> '.s("Nouvelle facture").'</span></a> ';
+						$h .= '<a class="btn btn-primary" data-dropdown="bottom-end">'.\Asset::icon('plus-circle').'<span class="hide-xs-down"> '.s("Nouvelle facture").'</span></a> ';
+						$h .= '<div class="dropdown-list">';
+							$h .= '<div class="dropdown-title">'.s("Facturer les ventes").'</div> ';
+							$h .= '<a href="/selling/invoice:create?farm='.$eFarm['id'].'" class="dropdown-item">'.s("D'un seul client").'</a> ';
+						//	$h .= '<a href="/selling/invoice:createCollection?farm='.$eFarm['id'].'" class="dropdown-item">'.s("De plusieurs clients sur un mois donné").'</a> ';
+						$h .= '</div>';
 					$h .= '</div>';
 					break;
 

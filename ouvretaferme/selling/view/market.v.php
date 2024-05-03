@@ -5,7 +5,7 @@ new AdaptativeView('/vente/{id}/marche', function($data, MarketTemplate $t) {
 
 		echo match($data->e['preparationStatus']) {
 			\selling\Sale::DELIVERED => s("Ce marché est clôturé !"),
-			default => s("Bienvenue sur l'interface de vente de votre marché, à vous de jouer !")
+			default => s("Bienvenue sur la console de votre marché, à vous de jouer !")
 		};
 
 	echo '</h2>';

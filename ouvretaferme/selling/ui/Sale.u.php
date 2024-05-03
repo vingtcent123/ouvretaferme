@@ -767,6 +767,12 @@ class SaleUi {
 					);
 					break;
 
+				case Sale::SELLING :
+					$h .= $wrapper(
+						' <a href="'.SaleUi::urlMarket($eSale).'" class="sale-preparation-status-action btn-outline-selling">'.\Asset::icon('shop-window').'  '.s("Console de vente").'</a>'
+					);
+					break;
+
 			};
 
 		} else {
@@ -1121,7 +1127,7 @@ class SaleUi {
 			$eSale->canWrite()
 		) {
 			$h .= '<div class="mb-1">';
-				$h .= '<a href="'.SaleUi::urlMarket($eSale).'" class="btn btn-xl btn-selling" style="width: 100%">'.\Asset::icon('shop-window', ['style' => 'font-size: 1.3em']).' '.s("Ouvrir l'interface de vente").'</a>';
+				$h .= '<a href="'.SaleUi::urlMarket($eSale).'" class="btn btn-xl btn-selling" style="width: 100%">'.\Asset::icon('shop-window').'  '.s("Ouvrir la console de vente").'</a>';
 			$h .= '</div>';
 		}
 
@@ -1192,7 +1198,7 @@ class SaleUi {
 		) {
 
 			if($eSale->isMarketPreparing() === FALSE) {
-				$primaryList .= ' <a href="'.SaleUi::urlMarket($eSale).'" class="dropdown-item">'.s("Ouvrir l'interface de vente").'</a>';
+				$primaryList .= ' <a href="'.SaleUi::urlMarket($eSale).'" class="dropdown-item">'.s("Ouvrir la console de vente").'</a>';
 			}
 
 			if($eSale->isMarketClosed()) {
