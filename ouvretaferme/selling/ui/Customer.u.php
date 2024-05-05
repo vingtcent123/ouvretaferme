@@ -146,6 +146,7 @@ class CustomerUi {
 			$h .= $form->openAjax($url, ['method' => 'get', 'id' => 'form-search']);
 				$h .= '<div>';
 					$h .= $form->text('name', $search->get('name'), ['placeholder' => s("Nom du client")]);
+					$h .= $form->email('email', $search->get('email'), ['placeholder' => s("E-mail du client")]);
 					$h .= $form->select('category', self::getCategories(), $search->get('category'), ['placeholder' => s("Catégorie")]);
 					$h .= $form->submit(s("Chercher"), ['class' => 'btn btn-secondary']);
 					$h .= '<a href="'.$url.'" class="btn btn-secondary">'.\Asset::icon('x-lg').'</a>';

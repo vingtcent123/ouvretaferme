@@ -135,6 +135,7 @@
 
 		$data->search = new Search([
 			'name' => GET('name'),
+			'email' => GET('email'),
 			'category' => GET('category')
 		], GET('sort', default: 'name'));
 

@@ -30,7 +30,7 @@ Package::setObservers([
 	'lib' => [
 		'user' => [
 			'sendVerifyEmail' => ['main'],
-			'signUpCreate' => ['main'],
+			'signUpCreate' => ['main', 'selling'],
 			'close' => ['main'],
 			'logIn' => ['session', 'farm'],
 			'logOut' => ['session'],

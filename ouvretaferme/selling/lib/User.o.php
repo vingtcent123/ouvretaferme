@@ -3,6 +3,16 @@ namespace selling;
 
 class UserObserverLib {
 
+	public static function signUpCreate(\user\User $eUser) {
+
+		Customer::model()
+			->whereEmail($eUser['email'])
+			->update([
+				'user' => $eUser,
+			]);
+
+	}
+
 	/**
 	 * Lorsque l'utilisateur est mis à jour, modifier ses données clients particulier
 	 */

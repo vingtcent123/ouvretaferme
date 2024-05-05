@@ -150,6 +150,7 @@ class CustomerLib extends CustomerCrud {
 			->option('count')
 			->whereFarm($eFarm)
 			->whereName('LIKE', '%'.$search->get('name').'%', if: $search->get('name'))
+			->whereEmail('LIKE', '%'.$search->get('email').'%', if: $search->get('email'))
 			->sort($search->buildSort())
 			->getCollection($position, $number);
 
@@ -235,8 +236,11 @@ class CustomerLib extends CustomerCrud {
 
 	public static function createFromUser(\user\User $eUser, \farm\Farm $eFarm, string $type): Customer {
 
+		$eUser->expects(['email']);
+
 		$eCustomer = new Customer([
 			'name' => self::getNameFromUser($eUser),
+			'email' => $eUser['email'],
 			'type' => $type,
 			'destination' => match($type) {
 				Customer::PRIVATE => Customer::INDIVIDUAL,
