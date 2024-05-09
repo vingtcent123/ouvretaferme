@@ -218,7 +218,13 @@ class BasketManage {
 
 		// Met à jour toutes les quantités.
 		Object.entries(basket.products).forEach(([productId, {quantity}]) => {
-			qs('[data-product="' + productId + '"][data-field="quantity"] > span:first-child').renderInner(quantity);
+
+			qs(
+				'[data-product="' + productId + '"][data-field="quantity"] > span:first-child',
+				node => node.renderInner(quantity),
+				() => this.deleteBasket(dateId, productId)
+			);
+
 		});
 
 		// Met à jour la barre du bas.
@@ -356,11 +362,20 @@ class BasketManage {
 
 	static deleteProduct(dateId, productId) {
 
+		this.deleteBasket(dateId, productId);
+
+		const basket = this.newBasket();
+		this.loadSummary(dateId, basket.sale);
+
+		return false;
+
+	}
+
+	static deleteBasket(dateId, productId) {
+
 		let basket = this.getBasket(dateId);
 		delete basket.products[productId];
 		this.setBasket(dateId, basket);
-
-		this.loadSummary(dateId, basket.sale);
 
 		return false;
 
