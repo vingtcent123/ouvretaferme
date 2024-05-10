@@ -797,7 +797,7 @@ class ReportUi {
 
 				$h .= '<div class="text-end">';
 					$h .= '<div class="input-group">';
-						$h .= $form->number('costs['.$eCultivation['id'].']', $eCultivationFrom['costs'] ?? '', attributes: [
+						$h .= $form->number('costs['.$eCultivation['id'].']', $eCultivationFrom['costs'] ?? 0, attributes: [
 							'min' => 0,
 							'oninput' => 'Report.refreshStats()'
 						]);
