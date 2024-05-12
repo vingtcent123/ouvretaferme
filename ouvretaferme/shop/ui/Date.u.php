@@ -245,10 +245,12 @@ class DateUi {
 
 			// Setter les produits sélectionnés et leur prix s'ils sont toujours disponibles
 			foreach($eDateBase['cProduct'] as $eProduct) {
+
 				if($cProduct[$eProduct['product']['id']]) {
 					$cProduct[$eProduct['product']['id']]['checked'] = TRUE;
 					$cProduct[$eProduct['product']['id']]['privatePrice'] = $eProduct['price'];
 				}
+
 			}
 
 			$e['points'] = $eDateBase['points'];

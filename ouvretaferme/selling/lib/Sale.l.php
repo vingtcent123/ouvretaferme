@@ -94,7 +94,7 @@ class SaleLib extends SaleCrud {
 				\shop\Point::PLACE => new \shop\Point([
 					'type' => \shop\Point::PLACE,
 					'name' => s("[Nom du point de retrait]"),
-					'description' => s("Retrait des commandes de HH:MM à HH:MM"),
+					'description' => s("[Informations sur le point de retrait]"),
 					'address' => $eSale['deliveryStreet1'],
 					'place' => $eSale['deliveryCity']
 				]),
