@@ -141,7 +141,6 @@ class PdfUi {
 
 					if($position === 0) {
 
-
 						$entry .= '<div class="shop-pdf-label-detail">';
 							$entry .= '<div class="shop-pdf-label-detail-title">'.s("Commande").'</div>';
 							$entry .= '<div class="shop-pdf-label-detail-value">'.$eSale['id'].'</div>';
@@ -164,6 +163,7 @@ class PdfUi {
 								$entry .= $eSale['paymentMethod'] ? \selling\SaleUi::p('paymentMethod')->values[$eSale['paymentMethod']] : '?';
 							$entry .= '</div>';
 						$entry .= '</div>';
+
 						if($eSale->isPaymentOnline()) {
 							$entry .= '<div class="shop-pdf-label-detail">';
 								$entry .= '<div class="shop-pdf-label-detail-title">'.s("Paiement").'</div>';
@@ -172,15 +172,18 @@ class PdfUi {
 								$entry .= '</div>';
 							$entry .= '</div>';
 						}
-						$entry .= '<div class="shop-pdf-label-detail">';
-							$entry .= '<div class="shop-pdf-label-detail-title">'.PointUi::p('type')->values[$eSale['shopPoint']['type']].'</div>';
-							$entry .= '<div class="shop-pdf-label-detail-value">';
-								$entry .= match($eSale['shopPoint']['type']) {
-									\shop\Point::HOME => '<div class="shop-pdf-label-address">'.nl2br(encode($eSale->getDeliveryAddress())).'</div>',
-									\shop\Point::PLACE => encode($eSale['shopPoint']['name'])
-								};
+
+						if($eSale['shopPoint']->notEmpty()) {
+							$entry .= '<div class="shop-pdf-label-detail">';
+								$entry .= '<div class="shop-pdf-label-detail-title">'.PointUi::p('type')->values[$eSale['shopPoint']['type']].'</div>';
+								$entry .= '<div class="shop-pdf-label-detail-value">';
+									$entry .= match($eSale['shopPoint']['type']) {
+										\shop\Point::HOME => '<div class="shop-pdf-label-address">'.nl2br(encode($eSale->getDeliveryAddress())).'</div>',
+										\shop\Point::PLACE => encode($eSale['shopPoint']['name'])
+									};
+								$entry .= '</div>';
 							$entry .= '</div>';
-						$entry .= '</div>';
+						}
 
 					} else {
 
