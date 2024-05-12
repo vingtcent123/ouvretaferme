@@ -57,7 +57,7 @@
 			$data->e['cProduct'] = \shop\ProductLib::getByDate($data->e, onlyActive: FALSE);
 		}
 
-		$data->cSale = \selling\SaleLib::getByDate($data->e, select: \selling\Sale::getSelection() + [
+		$data->cSale = \selling\SaleLib::getByDate($data->e, NULL, select: \selling\Sale::getSelection() + [
 			'shopPoint' => \shop\PointElement::getSelection()
 		]);
 

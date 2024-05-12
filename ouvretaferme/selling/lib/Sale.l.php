@@ -646,7 +646,8 @@ class SaleLib extends SaleCrud {
 		$e->expects([
 			'id',
 			'shopDate',
-			'preparationStatus', 'marketParent'
+			'preparationStatus',
+			'market', 'marketParent'
 		]);
 
 		Sale::model()->beginTransaction();
@@ -663,9 +664,7 @@ class SaleLib extends SaleCrud {
 				->delete();
 
 			if($e['marketParent']->notEmpty()) {
-
 				MarketLib::updateSaleMarket($e['marketParent']);
-
 			}
 
 		}

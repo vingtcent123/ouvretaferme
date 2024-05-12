@@ -387,19 +387,24 @@ class SaleUi {
 
 						if(in_array('point', $show)) {
 
-							$eSale['shopPoint']->expects(['type', 'name']);
-
 							$h .= '<td class="sale-item-point">';
-								$h .= [
-									\shop\Point::HOME => s("Domicile"),
-									\shop\Point::PLACE => s("Point de retrait")
-								][$eSale['shopPoint']['type']];
-								$h .= '<div class="util-annotation">';
-									$h .= match($eSale['shopPoint']['type']) {
-										\shop\Point::HOME => '<a href="'.$eSale->getDeliveryAddressLink().'" target="_blank" class="color-muted">'.nl2br(encode($eSale->getDeliveryAddress())).'</a>',
-										\shop\Point::PLACE => encode($eSale['shopPoint']['name'])
-									};
-								$h .= '</div>';
+
+								if($eSale['shopPoint']->notEmpty()) {
+
+									$eSale['shopPoint']->expects(['type', 'name']);
+
+									$h .= [
+										\shop\Point::HOME => s("Domicile"),
+										\shop\Point::PLACE => s("Point de retrait")
+									][$eSale['shopPoint']['type']];
+									$h .= '<div class="util-annotation">';
+										$h .= match($eSale['shopPoint']['type']) {
+											\shop\Point::HOME => '<a href="'.$eSale->getDeliveryAddressLink().'" target="_blank" class="color-muted">'.nl2br(encode($eSale->getDeliveryAddress())).'</a>',
+											\shop\Point::PLACE => encode($eSale['shopPoint']['name'])
+										};
+									$h .= '</div>';
+
+								}
 							$h .= '</td>';
 
 						}
