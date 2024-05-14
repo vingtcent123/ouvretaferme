@@ -61,7 +61,10 @@ class PdfLib extends PdfCrud {
 		]);
 
 		$eSale->expects([
-			'customer' => ['email']
+			'customer' => [
+				'email',
+				'user'
+			]
 		]);
 
 		$eCustomer = $eSale['customer'];
@@ -70,7 +73,9 @@ class PdfLib extends PdfCrud {
 			throw new \Exception('Invalid type');
 		}
 
-		if($eCustomer['email'] === NULL) {
+		$customerEmail = $eCustomer['email'] ?? $eCustomer['user']['email'] ?? NULL;
+
+		if($customerEmail === NULL) {
 			Pdf::fail('noCustomerEmail');
 			return;
 		}
@@ -131,7 +136,7 @@ class PdfLib extends PdfCrud {
 
 		$libMail
 			->setFromName($eFarm['name'])
-			->addTo($eCustomer['email'])
+			->addTo($customerEmail)
 			->setReplyTo($eFarm['selling']['legalEmail'])
 			->setContent(...$content)
 			->addAttachment($ePdf['content']['binary'], $eSale->getDeliveryNote().'.pdf', 'application/pdf')

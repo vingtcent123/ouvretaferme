@@ -159,6 +159,10 @@
 
 		$fw = new FailWatch();
 
+		if($data->e['customer']['user']->notEmpty()) {
+			$data->e['customer']['user'] = \user\UserLib::getById($data->e['customer']['user']);
+		}
+
 		\selling\PdfLib::sendBySale($eFarm, $data->e, $data->type);
 
 		$fw->validate();
