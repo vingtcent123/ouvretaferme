@@ -157,7 +157,11 @@
 
 		$data->type = POST('type', [\selling\Pdf::ORDER_FORM, \selling\Pdf::DELIVERY_NOTE], fn($value) => throw new NotExpectedAction('Invalid type \''.$value.'\''));
 
+		$fw = new FailWatch();
+
 		\selling\PdfLib::sendBySale($eFarm, $data->e, $data->type);
+
+		$fw->validate();
 
 		throw new ReloadAction('selling', match($data->type) {
 			\selling\Pdf::ORDER_FORM =>'Pdf::orderFormSent',
