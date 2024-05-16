@@ -682,7 +682,9 @@ class DateUi {
 				$h .= '<a class="tab-item" data-tab="sales" onclick="Lime.Tab.select(this)">';
 					$h .= s("Commandes");
 					if($cSale->notEmpty()) {
-						$h .= ' ('.$cSale->count().')';
+						$h .= ' ('.$cSale
+								->find(fn($eSale) => in_array($eSale['preparationStatus'], [\selling\Sale::CONFIRMED, \selling\Sale::PREPARED, \selling\Sale::DELIVERED]))
+								->count().')';
 					}
 				$h .= '</a>';
 				$h .= '<a class="tab-item" data-tab="points" onclick="Lime.Tab.select(this)">';
