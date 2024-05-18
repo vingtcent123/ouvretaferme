@@ -368,13 +368,17 @@ class Sale extends SaleElement {
 
 	}
 
-	public function canSetShop(): bool {
+	public function canAssociateShop(): bool {
 		return (
 			$this['type'] === Sale::PRIVATE and
 			$this['market'] === FALSE and
 			$this['marketParent']->empty() and
 			$this['shop']->empty()
 		);
+	}
+
+	public function canDissociateShop(): bool {
+		return $this['shop']->notEmpty();
 	}
 
 	public function canCustomerCancel(): bool {

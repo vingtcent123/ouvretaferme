@@ -47,6 +47,7 @@ class AlertUi {
 			'Sale::canNotSell' => s("L'interface de vente n'est plus accessible pour ce marché !"),
 			'Sale::orderFormValidUntil.check' => s("La date d'échéance doit être au plus tôt la date d'aujourd'hui."),
 			'Sale::sales.check' => s("Merci de sélectionner au moins une vente"),
+			'Sale::from.check' => s("Vous n'avez pas indiqué l'origine de la vente"),
 
 
 			'Sale::generateDeliveryNote' => s("Vous ne pouvez générer de bon de livraison que pour les ventes livrées !"),

@@ -190,12 +190,19 @@
 
 		throw new ViewAction($data);
 
-	}, validate: ['canWrite', 'canSetShop'])
+	}, validate: ['canWrite', 'canAssociateShop'])
 	->write('doUpdateShop', function($data) {
 		
 		$fw = new FailWatch();
 
-		$data->e['from'] = \selling\Sale::SHOP;
+		$from = POST('from', [\selling\Sale::SHOP, \selling\Sale::USER], fn() => throw new FailAction('selling\Sale::from.check'));
+
+		$data->e['from'] = $from;
+
+		match($from) {
+			\selling\Sale::USER => $data->e->validate('canDissociateShop'),
+			\selling\Sale::SHOP => $data->e->validate('canAssociateShop')
+		};
 
 		$data->e->build(['shopDate'], $_POST, for: 'update');
 
@@ -205,7 +212,7 @@
 
 		throw new ReloadAction('selling', 'Sale::updated');
 
-	}, validate: ['canWrite', 'canSetShop'])
+	}, validate: ['canWrite'])
 	->read('updateCustomer', function($data) {
 
 		throw new ViewAction($data);

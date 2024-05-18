@@ -1216,8 +1216,12 @@ class SaleUi {
 			$primaryList .= '<a href="/selling/sale:update?id='.$eSale['id'].'" class="dropdown-item">'.s("Modifier la vente").'</a>';
 		}
 
-		if($eSale->canSetShop()) {
-			$primaryList .= '<a href="/selling/sale:updateShop?id='.$eSale['id'].'" class="dropdown-item">'.s("Transformer en vente en ligne").'</a>';
+		if($eSale->canAssociateShop()) {
+			$primaryList .= '<a href="/selling/sale:updateShop?id='.$eSale['id'].'" class="dropdown-item">'.s("Associer la vente à une boutique").'</a>';
+		}
+
+		if($eSale->canDissociateShop()) {
+			$primaryList .= '<a data-ajax="/selling/sale:doUpdateShop" post-id="'.$eSale['id'].'" post-from="'.Sale::USER.'" class="dropdown-item">'.s("Dissocier la vente de la boutique").'</a>';
 		}
 
 		if(
@@ -1523,6 +1527,12 @@ class SaleUi {
 		$h .= $form->openAjax('/selling/sale:doUpdateShop');
 
 			$h .= $form->hidden('id', $eSale['id']);
+			$h .= $form->hidden('from', Sale::SHOP);
+
+			$h .= $form->group(
+				s("Vente"),
+				SaleUi::link($eSale, newTab: TRUE)
+			);
 
 			$h .= $form->dynamicGroup($eSale, 'shopDate');
 
@@ -1533,7 +1543,7 @@ class SaleUi {
 		$h .= $form->close();
 
 		return new \Panel(
-			title: s("Transformer en vente en ligne"),
+			title: s("Associer une vente à une boutique"),
 			body: $h
 		);
 
@@ -1605,7 +1615,7 @@ class SaleUi {
 			'shipping' => self::getShippingName(),
 			'shippingVatRate' => s("Taux de TVA sur les frais de livraison"),
 			'shop' => s("Boutique"),
-			'shopDate' => s("Date"),
+			'shopDate' => s("Associer à"),
 			'comment' => s("Observations internes"),
 		]);
 
@@ -1640,6 +1650,8 @@ class SaleUi {
 							'callbackRadioContent' => fn($eDate) => s("Vente du {value}", \util\DateUi::numeric($eDate['deliveryDate'])),
 							'mandatory' => TRUE,
 						]);
+
+						$h .= '<br/>';
 
 					}
 
