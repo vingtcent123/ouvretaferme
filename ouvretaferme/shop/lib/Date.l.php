@@ -40,6 +40,9 @@ class DateLib extends DateCrud {
 				'sales' => self::countSales()
 					->group('shopDate')
 					->delegateArray('shopDate', callback: fn($value) => $value ?? ['count' => 0, 'countValid' => 0, 'amount' => 0.0]),
+				'products' => Product::model()
+					->group('date')
+					->delegateProperty('date', new \Sql('COUNT(*)', 'int'), fn($value) => $value ?? 0)
 
 			])
 			->whereShop($eShop)

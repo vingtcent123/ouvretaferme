@@ -536,7 +536,8 @@ class DateUi {
 					$h .= '<tr>';
 						$h .= '<th class="text-center">'.s("Date de vente").'</th>';
 						$h .= '<th>'.s("Ouverture des ventes").'</th>';
-						$h .= '<th class="text-center" colspan="2">'.s("Commandes").'</th>';
+						$h .= '<th class="text-end">'.s("Produits").'</th>';
+						$h .= '<th class="text-end" colspan="2">'.s("Commandes").'</th>';
 						$h .= '<th class="text-end">';
 							$h .= s("Montant");
 							if($eFarm['selling']['hasVat']) {
@@ -565,9 +566,13 @@ class DateUi {
 							$h .= '</td>';
 
 							$h .= '<td class="text-end td-min-content">';
-								$h .= '<a href="'.ShopUi::adminDateUrl($eFarm, $eShop, $eDate).'?tab=sales">'.$eDate['sales']['countValid'].'</a>';
-
+								$h .= '<a href="'.ShopUi::adminDateUrl($eFarm, $eShop, $eDate).'?tab=products">'.$eDate['products'].'</a>';
 							$h .= '</td>';
+
+							$h .= '<td class="text-end">';
+								$h .= '<a href="'.ShopUi::adminDateUrl($eFarm, $eShop, $eDate).'?tab=sales">'.$eDate['sales']['countValid'].'</a>';
+							$h .= '</td>';
+
 							$h .= '<td class="td-min-content">';
 
 								if($eDate['sales']['countValid'] > 0) {
