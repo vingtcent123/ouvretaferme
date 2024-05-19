@@ -1052,12 +1052,15 @@ class PdfUi {
 							$entry .= '<div class="pdf-sales-label-detail-title">'.s("Montant").'</div>';
 							$entry .= '<div class="pdf-sales-label-detail-value">'.\util\TextUi::money($eSale['priceIncludingVat']).'</div>';
 						$entry .= '</div>';
-						$entry .= '<div class="pdf-sales-label-detail">';
-							$entry .= '<div class="pdf-sales-label-detail-title">'.s("Moyen de paiement").'</div>';
-							$entry .= '<div class="pdf-sales-label-detail-value">';
-								$entry .= $eSale['paymentMethod'] ? \selling\SaleUi::p('paymentMethod')->values[$eSale['paymentMethod']] : '?';
+
+						if($eSale['paymentMethod']) {
+							$entry .= '<div class="pdf-sales-label-detail">';
+								$entry .= '<div class="pdf-sales-label-detail-title">'.s("Moyen de paiement").'</div>';
+								$entry .= '<div class="pdf-sales-label-detail-value">';
+									$entry .= \selling\SaleUi::p('paymentMethod')->values[$eSale['paymentMethod']];
+								$entry .= '</div>';
 							$entry .= '</div>';
-						$entry .= '</div>';
+						}
 
 						if($eSale->isPaymentOnline()) {
 							$entry .= '<div class="pdf-sales-label-detail">';
