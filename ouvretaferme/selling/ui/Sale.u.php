@@ -918,7 +918,7 @@ class SaleUi {
 
 					$h .= '<label class="selling-label-item util-block">';
 						$h .= '<div class="selling-label-title">';
-							$h .= '<a href="'.SaleUi::url($eSale).'" class="btn btn-outline-primary">'.$eSale['id'].'</a>';
+							$h .= SaleUi::link($eSale);
 							$h .= '<h4>'.CustomerUi::getColorCircle($eSale['customer']).' '.CustomerUi::link($eSale['customer']).'</h4>';
 							$h .= $form->inputCheckbox('sales[]', $eSale['id']);
 						$h .= '</div>';
