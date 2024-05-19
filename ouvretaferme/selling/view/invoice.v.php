@@ -33,4 +33,14 @@ new AdaptativeView('update', function($data, PanelTemplate $t) {
 	return (new \selling\InvoiceUi())->update($data->e);
 });
 
+new AdaptativeView('createCollection', function($data, PanelTemplate $t) {
+
+	if($data->month === NULL) {
+		return (new \selling\InvoiceUi())->selectMonthForCreateCollection($data->eFarm);
+	} else {
+		return (new \selling\InvoiceUi())->createCollection($data->eFarm, $data->month, $data->type, $data->e, $data->cSale);
+	}
+
+});
+
 ?>

@@ -28,11 +28,19 @@ class Invoice extends InvoiceElement {
 		return $this->canRead() or GET('key') === \Setting::get('selling\remoteKey');
 	}
 
-	public function canSend(): bool {
+	public function acceptSend(): bool {
 
-		$this->expects(['emailedAt', 'createdAt']);
-		return ($this['emailedAt'] === NULL);
+		$this->expects(['emailedAt', 'createdAt', 'generation']);
 
+		return (
+			$this['generation'] === Invoice::SUCCESS and
+			$this['emailedAt'] === NULL
+		);
+
+	}
+
+	public function acceptRegenerate(): bool {
+		return in_array($this['generation'], [Invoice::FAIL, Invoice::SUCCESS]);
 	}
 
 	public function isCreditNote(): bool {

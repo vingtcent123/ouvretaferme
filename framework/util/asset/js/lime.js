@@ -1081,12 +1081,13 @@ Lime.Panel = class {
 	static paint(panel, data) {
 
 		const title = data.title || '';
+		const back = data.back || null;
 		const subTitle = data.subTitle || '';
 		const body = data.body || '';
 		const header = data.header || '';
 		const footer = data.footer || '';
 
-		Lime.Panel.header(panel, title, subTitle, header);
+		Lime.Panel.header(panel, back, title, subTitle, header);
 		Lime.Panel.body(panel, body);
 		Lime.Panel.footer(panel, footer);
 
@@ -1236,17 +1237,22 @@ Lime.Panel = class {
 			
 	};
 
-	static header(panel, title, subTitle, header) {
+	static header(panel, back, title, subTitle, header) {
 
 		let h = '';
 		h += '<div class="panel-header-content">';
 			if(header) {
 				h += header;
 			} else {
-				if(title || subTitle) {
-					h += '<h2 class="panel-title">';
-						h += title;
-					h += '</h2>';
+				if(back || title || subTitle) {
+					if(back) {
+						h += '<div class="panel-back-wrapper">';
+							h += '<a href="'+ back +'" class="panel-back">'+ Lime.Asset.icon('arrow-left-short') +'</a>';
+							h += '<h2 class="panel-title">'+ title +'</h2>';
+						h += '</div>';
+					} else {
+						h += '<h2 class="panel-title">'+ title +'</h2>';
+					}
 					if(subTitle) {
 						h += subTitle;
 					}

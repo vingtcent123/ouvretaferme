@@ -11,7 +11,7 @@ class Sale extends SaleElement {
 			'shopDate' => ['status', 'deliveryDate', 'orderStartAt', 'orderEndAt'],
 			'shopPoint' => ['type', 'name'],
 			'farm' => ['name', 'url', 'vignette', 'banner', 'featureDocument'],
-			'invoice' => ['emailedAt', 'createdAt', 'paymentStatus', 'priceExcludingVat'],
+			'invoice' => ['emailedAt', 'createdAt', 'paymentStatus', 'priceExcludingVat', 'generation'],
 			'marketParent' => [
 				'customer' => ['name']
 			],

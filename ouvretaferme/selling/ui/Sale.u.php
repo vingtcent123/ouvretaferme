@@ -80,7 +80,7 @@ class SaleUi {
 
 	public function getSearch(\Search $search): string {
 
-		$h = '<div id="sale-search" class="util-block-search '.($search->empty() ? 'hide' : '').'">';
+		$h = '<div id="sale-search" class="util-block-search '.($search->empty(['ids']) ? 'hide' : '').'">';
 
 			$form = new \util\FormUi();
 			$url = LIME_REQUEST_PATH;
@@ -540,7 +540,7 @@ class SaleUi {
 
 				$canSend = match($type) {
 					Pdf::DELIVERY_NOTE, Pdf::ORDER_FORM => $ePdf->empty() ? FALSE : $ePdf->canSend(),
-					Pdf::INVOICE => $eSale['invoice']->empty() ? FALSE : $eSale['invoice']->canSend()
+					Pdf::INVOICE => $eSale['invoice']->empty() ? FALSE : $eSale['invoice']->acceptSend()
 				};
 
 				$label = PdfUi::getName($type, $eSale);

@@ -31,8 +31,8 @@ abstract class SaleElement extends \Element {
 	const FAILED = 'failed';
 
 	const ONLINE_CARD = 'online-card';
-	const TRANSFER = 'transfer';
 	const OFFLINE = 'offline';
+	const TRANSFER = 'transfer';
 	const CASH = 'cash';
 	const CARD = 'card';
 	const CHECK = 'check';
@@ -88,7 +88,7 @@ class SaleModel extends \ModuleModel {
 			'shippingExcludingVat' => ['decimal', 'digits' => 8, 'decimal' => 2, 'null' => TRUE, 'cast' => 'float'],
 			'preparationStatus' => ['enum', [\selling\Sale::DRAFT, \selling\Sale::BASKET, \selling\Sale::CONFIRMED, \selling\Sale::SELLING, \selling\Sale::PREPARED, \selling\Sale::DELIVERED, \selling\Sale::CANCELED], 'cast' => 'enum'],
 			'paymentStatus' => ['enum', [\selling\Sale::UNDEFINED, \selling\Sale::WAITING, \selling\Sale::PROCESSING, \selling\Sale::PAID, \selling\Sale::FAILED], 'cast' => 'enum'],
-			'paymentMethod' => ['enum', [\selling\Sale::ONLINE_CARD, \selling\Sale::TRANSFER, \selling\Sale::OFFLINE, \selling\Sale::CASH, \selling\Sale::CARD, \selling\Sale::CHECK], 'null' => TRUE, 'cast' => 'enum'],
+			'paymentMethod' => ['enum', [\selling\Sale::ONLINE_CARD, \selling\Sale::OFFLINE, \selling\Sale::TRANSFER, \selling\Sale::CASH, \selling\Sale::CARD, \selling\Sale::CHECK], 'null' => TRUE, 'cast' => 'enum'],
 			'market' => ['bool', 'cast' => 'bool'],
 			'marketSales' => ['int32', 'min' => 0, 'max' => NULL, 'null' => TRUE, 'cast' => 'int'],
 			'marketParent' => ['element32', 'selling\Sale', 'null' => TRUE, 'cast' => 'element'],

@@ -42,6 +42,10 @@ class WidgetLib {
 
 		$eShop = \shop\ShopLib::getById($id);
 
+		if($eShop->empty()) {
+			return 'NULL';
+		}
+
 		// Pas les accès en écriture sur la boutique
 		if($eShop['farm']['id'] !== $eFarm['id']) {
 			return 'NULL';

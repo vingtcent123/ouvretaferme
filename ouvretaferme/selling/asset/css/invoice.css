@@ -1,0 +1,64 @@
+.invoice-item-select {
+	padding: 0;
+	background-color: rgba(0, 0, 0, 0.05);
+}
+
+.invoice-item-select label {
+	width: 2.25rem;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	padding: 0.5rem;
+	height: 100%;
+}
+
+th.invoice-item-select label {
+	height: 2.5rem;
+}
+
+td.invoice-item-select label {
+	height: 3rem;
+}
+
+td.invoice-item-date {
+	text-transform: uppercase;
+	background-color: var(--background);
+	border-bottom: 1px dashed var(--border);
+	font-weight: bold;
+}
+
+
+tr.invoice-item-waiting td {
+	background-color: #ebe6;
+}
+
+tr.invoice-item-paid td {
+	background-color: #beb6;
+}
+
+.invoice-item-description {
+	margin-top: 0.5rem;
+	margin-bottom: 0;
+}
+
+@media (min-width: 768px) {
+
+	td.invoice-item-customer {
+		min-width: 10rem;
+	}
+
+}
+
+td.invoice-item-amount {
+	white-space: nowrap;
+}
+
+.invoice-item-generation {
+	font-weight: bold;
+	text-transform: uppercase;
+	margin-right: 1rem;
+}
+
+td.invoice-item-list {
+	max-width: 25rem;
+}

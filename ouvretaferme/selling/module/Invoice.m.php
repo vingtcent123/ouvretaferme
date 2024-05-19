@@ -13,6 +13,11 @@ abstract class InvoiceElement extends \Element {
 	const PAID = 'paid';
 	const NOT_PAID = 'not-paid';
 
+	const WAITING = 'waiting';
+	const PROCESSING = 'processing';
+	const FAIL = 'fail';
+	const SUCCESS = 'success';
+
 	public static function getSelection(): array {
 		return Invoice::model()->getProperties();
 	}
@@ -60,12 +65,13 @@ class InvoiceModel extends \ModuleModel {
 			'date' => ['date', 'cast' => 'string'],
 			'paymentStatus' => ['enum', [\selling\Invoice::PAID, \selling\Invoice::NOT_PAID], 'cast' => 'enum'],
 			'paymentCondition' => ['editor16', 'min' => 1, 'max' => 400, 'null' => TRUE, 'cast' => 'string'],
+			'generation' => ['enum', [\selling\Invoice::WAITING, \selling\Invoice::PROCESSING, \selling\Invoice::FAIL, \selling\Invoice::SUCCESS], 'cast' => 'enum'],
 			'emailedAt' => ['datetime', 'null' => TRUE, 'cast' => 'string'],
 			'createdAt' => ['datetime', 'cast' => 'string'],
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'document', 'customer', 'sales', 'taxes', 'organic', 'conversion', 'description', 'content', 'farm', 'hasVat', 'vatByRate', 'vat', 'priceExcludingVat', 'priceIncludingVat', 'date', 'paymentStatus', 'paymentCondition', 'emailedAt', 'createdAt'
+			'id', 'document', 'customer', 'sales', 'taxes', 'organic', 'conversion', 'description', 'content', 'farm', 'hasVat', 'vatByRate', 'vat', 'priceExcludingVat', 'priceIncludingVat', 'date', 'paymentStatus', 'paymentCondition', 'generation', 'emailedAt', 'createdAt'
 		]);
 
 		$this->propertiesToModule += [
@@ -115,6 +121,9 @@ class InvoiceModel extends \ModuleModel {
 				return $value === NULL ? NULL : json_encode($value, JSON_UNESCAPED_UNICODE);
 
 			case 'paymentStatus' :
+				return ($value === NULL) ? NULL : (string)$value;
+
+			case 'generation' :
 				return ($value === NULL) ? NULL : (string)$value;
 
 			default :
@@ -219,6 +228,10 @@ class InvoiceModel extends \ModuleModel {
 
 	public function wherePaymentCondition(...$data): InvoiceModel {
 		return $this->where('paymentCondition', ...$data);
+	}
+
+	public function whereGeneration(...$data): InvoiceModel {
+		return $this->where('generation', ...$data);
 	}
 
 	public function whereEmailedAt(...$data): InvoiceModel {

@@ -366,31 +366,6 @@ a.sale-document-new .sale-document-status {
 	opacity: 0.7;
 }
 
-tbody.sale-invoice-paid td {
-	background-color: #beb6;
-}
-
-td.sale-invoice-description {
-	padding-top: 0;
-	color: var(--muted);
-}
-
-@media (min-width: 768px) {
-
-	td.sale-invoice-customer {
-		min-width: 10rem;
-	}
-
-}
-
-td.sale-invoice-amount {
-	white-space: nowrap;
-}
-
-td.sale-invoice-list {
-	max-width: 25rem;
-}
-
 .sale-display-address {
 	color: var(--muted);
 	font-size: 0.9rem;

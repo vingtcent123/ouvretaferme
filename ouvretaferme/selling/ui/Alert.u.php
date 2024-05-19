@@ -84,7 +84,6 @@ class AlertUi {
 			'Customer::deleted' => s("Le client a bien été supprimé."),
 			'Customer::optInUpdated' => s("Vos préférences de communication par e-mail ont bien été mises à jour."),
 
-
 			'Market::pricesUpdated' => s("Les nouveaux prix des produits proposés à la vente ont bien été enregistrés."),
 			'Market::closed' => s("Le marché a bien été clôturé !"),
 
@@ -106,6 +105,7 @@ class AlertUi {
 			'Pdf::deleted' => s("Le document a bien été supprimé."),
 
 			'Invoice::created' => s("La facture a bien été générée !").($options['actions'] ?? ''),
+			'Invoice::createdCollection' => s("Les factures ont bien été créées et sont en cours de génération !").($options['actions'] ?? ''),
 			'Invoice::sent' => s("La facture a bien été envoyée par e-mail au client."),
 			'Invoice::regenerated' => s("La facture a bien été regénérée !").($options['actions'] ?? ''),
 			'Invoice::updated' => s("La facture a bien été mise à jour."),

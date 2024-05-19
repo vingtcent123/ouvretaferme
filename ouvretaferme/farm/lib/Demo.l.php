@@ -18,6 +18,7 @@ class DemoLib {
 		'farm\Invite',
 		'selling\Grid',
 		'selling\History',
+		'selling\Invoice',
 		'selling\Pdf',
 		'selling\Payment',
 		'series\Comment',
@@ -28,7 +29,8 @@ class DemoLib {
 
 	const COPY_PROPERTY_EXCLUDE = [
 		'user\User' => ['birthdate', 'phone', 'vignette'],
-		'series\Series' => ['comment']
+		'series\Series' => ['comment'],
+		'selling\Sale' => ['invoice']
 	];
 
 	private static array $ms = [];

@@ -195,6 +195,7 @@ class SaleLib extends SaleCrud {
 			->option('count')
 			->whereId('NOT IN', $search->get('notId'), if: $search->get('notId')?->notEmpty())
 			->whereDocument($search->get('document'), if: $search->get('document'))
+			->whereId('IN', fn() => explode(',', $search->get('ids')), if: $search->get('ids'))
 			->whereFarm($eFarm)
 			->whereCustomer($search->get('customer'), if: $search->get('customer'))
 			->whereDeliveredAt('LIKE', '%'.$search->get('deliveredAt').'%', if: $search->get('deliveredAt'))
@@ -354,6 +355,31 @@ class SaleLib extends SaleCrud {
 		self::fillItems($cSale);
 
 		return $cSale;
+
+	}
+
+	public static function getForMonthlyInvoice(\farm\Farm $eFarm, string $month, ?string $type): \Collection {
+
+		return Sale::model()
+			->select([
+				'customer' => ['name'],
+				'hasVat', 'taxes',
+				'priceExcludingVat' => new \Sql('SUM(priceExcludingVat)', 'float'),
+				'priceIncludingVat' => new \Sql('SUM(priceIncludingVat)', 'float'),
+				'number' => new \Sql('COUNT(*)'),
+				'list' => new \Sql('GROUP_CONCAT(id ORDER BY id SEPARATOR ",")')
+			])
+			->whereFarm($eFarm)
+			->whereType($type, if: in_array($type, [Customer::PRIVATE, Customer::PRO]))
+			->wherePaymentMethod(Sale::TRANSFER, if: $type === Sale::TRANSFER)
+			->whereDeliveredAt('LIKE', $month.'%')
+			->whereInvoice(NULL)
+			->whereMarket(FALSE)
+			->whereMarketParent(NULL)
+			->wherePreparationStatus(Sale::DELIVERED)
+			->group(['customer', 'taxes', 'hasVat'])
+			->getCollection()
+			->sort(['customer' => ['name']]);
 
 	}
 

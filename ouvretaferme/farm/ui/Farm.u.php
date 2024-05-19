@@ -891,7 +891,7 @@ class FarmUi {
 						$h .= '<div class="dropdown-list">';
 							$h .= '<div class="dropdown-title">'.s("Facturer les ventes").'</div> ';
 							$h .= '<a href="/selling/invoice:create?farm='.$eFarm['id'].'" class="dropdown-item">'.s("D'un seul client").'</a> ';
-						//	$h .= '<a href="/selling/invoice:createCollection?farm='.$eFarm['id'].'" class="dropdown-item">'.s("De plusieurs clients sur un mois donné").'</a> ';
+							$h .= '<a href="/selling/invoice:createCollection?farm='.$eFarm['id'].'" class="dropdown-item">'.s("De plusieurs clients sur un mois donné").'</a> ';
 						$h .= '</div>';
 					$h .= '</div>';
 					break;

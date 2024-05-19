@@ -111,6 +111,7 @@
 
 		$data->search = new Search([
 			'document' => GET('document', '?int'),
+			'ids' => GET('ids'),
 			'customerName' => GET('customerName'),
 			'deliveredAt' => GET('deliveredAt'),
 			'preparationStatus' => GET('preparationStatus'),
@@ -216,6 +217,9 @@
 		], GET('sort'));
 
 		[$data->cInvoice, $data->nInvoice] = \selling\InvoiceLib::getByFarm($data->eFarm, selectSales: TRUE, page: $data->page, search: $data->search);
+
+		$data->transferMonth = date('Y-m', strtotime("last month"));
+		$data->transfer = \selling\InvoiceLib::getPendingTransfer($data->eFarm, $data->transferMonth);
 
 		throw new ViewAction($data);
 

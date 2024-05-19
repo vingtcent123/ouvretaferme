@@ -20,7 +20,8 @@
 
 		return new \selling\Invoice([
 			'customer' => $eCustomer,
-			'farm' => $eFarm
+			'farm' => $eFarm,
+			'generation' => \selling\Invoice::PROCESSING
 		]);
 
 	})
@@ -71,7 +72,7 @@
 
 		throw new ViewAction($data);
 
-	}, validate: ['canWrite'])
+	}, validate: ['canWrite', 'acceptRegenerate'])
 	->write('doSend', function($data) {
 
 		$eFarm = \farm\FarmLib::getById($data->e['farm']);
@@ -81,7 +82,7 @@
 
 		throw new ReloadAction('selling', 'Invoice::sent');
 
-	})
+	}, validate: ['canWrite', 'acceptSend'])
 	->doUpdate(function($data) {
 
 		$data->e['cSale'] = \selling\SaleLib::getForInvoice($data->e['customer'], $data->e['sales'], checkInvoice: FALSE);
@@ -90,11 +91,11 @@
 			throw new FailAction('selling\Invoice::inconsistencySales');
 		}
 
-		\selling\InvoiceLib::generate($data->e);
+		\selling\InvoiceLib::regenerate($data->e);
 
 		throw new ViewAction($data);
 
-	}, propertiesUpdate: ['date', 'paymentCondition'], page: 'doRegenerate')
+	}, propertiesUpdate: ['date', 'paymentCondition'], page: 'doRegenerate', validate: ['canWrite', 'acceptRegenerate'])
 	->read('/facture/{id}', function($data) {
 
 		$data->e->validate('canRead');
@@ -109,4 +110,48 @@
 	->quick(['paymentStatus', 'description'])
 	->doUpdate(fn() => throw new ReloadAction('selling', 'Invoice::updated'))
 	->doDelete(fn() => throw new ReloadAction('selling', 'Invoice::deleted'));
+
+(new Page(function($data) {
+
+	$data->eFarm = \farm\FarmLib::getById(INPUT('farm'))->validate('canManage');
+	$data->eFarm['selling'] = \selling\ConfigurationLib::getByFarm($data->eFarm);
+	$data->eFarm['selling']->isComplete() ?: throw new FailAction('selling\Configuration::notComplete', ['farm' => $data->eFarm]);
+
+	}))
+	->get('createCollection', function($data) {
+
+		$data->month = GET('month', '?string');
+		$data->type = GET('type', '?string');
+
+		if($data->month !== NULL) {
+
+			$data->cSale = \selling\SaleLib::getForMonthlyInvoice($data->eFarm, $data->month, $data->type);
+
+		}
+
+		$data->e = new \selling\Invoice([
+			'farm' => $data->eFarm,
+			'paymentCondition' => $data->eFarm['selling']['invoicePaymentCondition']
+		]);
+
+		throw new ViewAction($data);
+
+	})
+	->post('doCreateCollection', function($data) {
+
+		$eInvoice = new \selling\Invoice();
+
+		$fw = new FailWatch();
+
+		$eInvoice->build(['date', 'paymentCondition'], $_POST);
+
+		$fw->validate();
+
+		$cInvoice = \selling\InvoiceLib::buildCollectionForInvoice($data->eFarm, $eInvoice, POST('sales', 'array', []));
+
+		\selling\InvoiceLib::createCollection($cInvoice);
+
+		throw new RedirectAction(\farm\FarmUi::urlSellingSalesInvoice($data->eFarm).'?success=selling:Invoice::createdCollection');
+
+	});
 ?>

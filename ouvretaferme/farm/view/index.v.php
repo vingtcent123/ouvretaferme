@@ -559,6 +559,15 @@ new AdaptativeView('/ferme/{id}/factures', function($data, FarmTemplate $t) {
 
 	echo (new \selling\InvoiceUi())->getSearch($data->search);
 
+	if($data->transfer > 0) {
+
+		echo '<div class="util-block-help">';
+			echo '<p>'.s("Vous pouvez maintenant générer les factures des ventes qui ont été réglées par virement bancaire dans vos boutiques en ligne au moins de {value}.", '<b>'.\util\DateUi::textual($data->transferMonth, \util\DateUi::MONTH_YEAR).'</b>').'</p>';
+			echo '<a href="/selling/invoice:createCollection?farm='.$data->eFarm['id'].'&month='.$data->transferMonth.'&type='.\selling\Sale::TRANSFER.'" class="btn btn-secondary">'.s("Générer les factures").'</a>';
+		echo '</div>';
+
+	}
+
 	if(
 		$data->cInvoice->empty() and
 		$data->search->empty()
@@ -571,7 +580,6 @@ new AdaptativeView('/ferme/{id}/factures', function($data, FarmTemplate $t) {
 		echo '</div>';
 
 	} else {
-
 
 		echo (new \selling\InvoiceUi())->getList($data->cInvoice, $data->nInvoice, page: $data->page);
 

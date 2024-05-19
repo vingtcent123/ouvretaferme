@@ -10,6 +10,7 @@ class Panel implements Instruction {
 
 	public function __construct(
 		public ?string $id = NULL,
+		public ?string $back = NULL,
 		public ?string $title = NULL,
 		public ?string $documentTitle = NULL,
 		public ?string $subTitle = NULL,
@@ -39,6 +40,10 @@ class Panel implements Instruction {
 		$output = [
 			'id' => $this->id ?? uniqid('panel-')
 		];
+
+		if($this->back !== NULL) {
+			$output['back'] = $this->back;
+		}
 
 		if($this->title !== NULL) {
 			$output['title'] = $this->title;

@@ -75,13 +75,36 @@ class InvoiceLib extends InvoiceCrud {
 
 	}
 
+	public static function getPendingTransfer(\farm\Farm $eFarm, string $month): int {
+
+		return Sale::model()
+			->whereFarm($eFarm)
+			->whereShop('!=', NULL)
+			->wherePaymentMethod(Sale::TRANSFER)
+			->wherePreparationStatus(Sale::DELIVERED)
+			->whereDeliveredAt('LIKE', $month.'%')
+			->whereInvoice(NULL)
+			->getValue(new \Sql('COUNT(*)'));
+
+	}
+
+	public static function createCollection(\Collection $c): void {
+
+		foreach($c as $e) {
+			$e['generation'] = Invoice::WAITING;
+			self::create($e);
+		}
+
+	}
+
 	public static function create(Invoice $e): void {
 
 		$e->expects([
 			'farm',
 			'customer',
 			'date', 'paymentCondition',
-			'cSale'
+			'cSale', 'sales',
+			'generation'
 		]);
 
 		Invoice::model()->beginTransaction();
@@ -163,7 +186,39 @@ class InvoiceLib extends InvoiceCrud {
 
 		Invoice::model()->commit();
 
-		self::generate($e);
+		if($e['generation'] === Invoice::PROCESSING) {
+			self::generate($e);
+		}
+
+	}
+
+	public static function regenerate(Invoice $e): void {
+
+		$affected = Invoice::model()
+			->whereGeneration('IN', [Invoice::FAIL, Invoice::SUCCESS])
+			->update($e, [
+				'generation' => Invoice::WAITING
+			]);
+
+		if($affected) {
+			self::generate($e);
+		}
+
+	}
+	public static function generateWaiting() {
+
+		$cInvoice = Invoice::model()
+			->select(Invoice::getSelection())
+			->whereGeneration(Invoice::WAITING)
+			->getCollection();
+
+		foreach($cInvoice as $eInvoice) {
+
+			$eInvoice['cSale'] = SaleLib::getByIds($eInvoice['sales']);
+
+			self::generate($eInvoice);
+
+		}
 
 	}
 
@@ -177,6 +232,14 @@ class InvoiceLib extends InvoiceCrud {
 			'createdAt' => Invoice::model()->now(),
 			'emailedAt' => NULL
 		]);
+
+		if(Invoice::model()
+			->whereGeneration(Invoice::WAITING)
+			->update($e, [
+				'generation' => Invoice::PROCESSING
+			]) === 0) {
+			return;
+		}
 
 		if($e['cSale']->count() === 1) {
 
@@ -192,9 +255,46 @@ class InvoiceLib extends InvoiceCrud {
 
 		}
 
+		$e['generation'] = Invoice::SUCCESS;
+
 		Invoice::model()
-			->select('content', 'createdAt', 'emailedAt')
+			->select('content', 'createdAt', 'emailedAt', 'generation')
 			->update($e);
+
+	}
+
+	public static function buildCollectionForInvoice(\farm\Farm $eFarm, Invoice $eInvoiceBase, array $sales): \Collection {
+
+		$cInvoice = new \Collection();
+
+		foreach($sales as $list) {
+
+			$ids = explode(',', $list);
+
+			// Get customer based on the first ID
+			$eCustomer = Sale::model()
+				->whereId(first($ids))
+				->whereFarm($eFarm)
+				->getValue('customer');
+
+			$cSale = SaleLib::getForInvoice($eCustomer, $ids);
+
+			if($cSale->count() !== count($ids)) {
+				Invoice::fail('sales.check');
+				return new \Collection();
+			}
+
+			$eInvoice = (clone $eInvoiceBase);
+			$eInvoice['customer'] = $eCustomer;
+			$eInvoice['farm'] = $eFarm;
+			$eInvoice['cSale'] = $cSale;
+			$eInvoice['sales'] = $cSale->getIds();
+
+			$cInvoice[] = $eInvoice;
+
+		}
+
+		return $cInvoice;
 
 	}
 
