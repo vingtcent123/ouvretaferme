@@ -769,6 +769,7 @@ class Task {
 			default :
 				one.hide();
 				menu.removeHide();
+				menu.style.zIndex = Lime.getZIndex();
 				return this.updateBatchMenu(selection);
 
 		}

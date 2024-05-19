@@ -25,6 +25,7 @@ class Invoice {
 			menu.hide();
 		} else {
 			menu.removeHide();
+			menu.style.zIndex = Lime.getZIndex();
 			this.updateBatchMenu(selection);
 		}
 
