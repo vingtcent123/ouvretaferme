@@ -295,6 +295,10 @@ class PdfLib extends PdfCrud {
 
 	public static function build($url): string {
 
+		if(OTF_DEMO) {
+			return '';
+		}
+
 		return \Cache::redis()->lock('pdf-'.$url, function() use ($url) {
 
 			$file = tempnam('/tmp', 'pdf-').'.pdf';

@@ -83,9 +83,9 @@ class InvoiceUi {
 			$h .= '<table class="tr-bordered tr-even">';
 
 				$h .= '<thead>';
-					$h .= '<tr>';
+					$h .= '<tr>';/*
 						$h .= '<th class="td-min-content">';
-						$h .= '</th>';
+						$h .= '</th>';*/
 						$h .= '<th class="text-center">#</th>';
 						if(in_array('customer', $hide) === FALSE) {
 							$columns++;
@@ -114,12 +114,12 @@ class InvoiceUi {
 							$h .= '<tbody>';
 						}
 
-						$h .= '<tr>';
+						$h .= '<tr>';/*
 							$h .= '<th class="td-min-content invoice-item-select">';
 								$h .= '<label title="'.s("Cocher ces factures / Décocher ces factures").'">';
 									$h .= '<input type="checkbox" class="batch-all" onclick="Invoice.toggleDaySelection(this)"/>';
 								$h .= '</label>';
-							$h .= '</th>';
+							$h .= '</th>';*/
 							$h .= '<td colspan="'.$columns.'" class="invoice-item-date">';
 								$h .= match($currentSubtitle) {
 									currentDate() => s("Aujourd'hui"),
@@ -141,13 +141,13 @@ class InvoiceUi {
 					}
 
 					$h .= '<tr class="'.$class.'">';
-
+/*
 						$h .= '<td class="td-min-content sale-item-select">';
 							$h .= '<label>';
 								$h .= '<input type="checkbox" name="batch[]" value="'.$eInvoice['id'].'" oninput="Sale.changeSelection()" data-batch="'.implode(' ', $batch).'"/>';
 							$h .= '</label>';
 						$h .= '</td>';
-
+*/
 						$h .= '<td class="text-center td-min-content">';
 							if($eInvoice['content']->empty()) {
 								$h .= '<span class="btn disabled">'.$eInvoice->getInvoice().'</span>';
