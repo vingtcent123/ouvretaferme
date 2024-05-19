@@ -2492,7 +2492,7 @@ div.util-buttons > .util-button h4 {
 	bottom: 0;
 	left: 0;
 	right: 0;
-	z-index: 10000;
+	z-index: 20;
 	border-top: 1px solid var(--background);
 	background-color: var(--secondary);
 	padding: 0.75rem 0.75rem 0;
