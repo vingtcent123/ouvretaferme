@@ -281,10 +281,6 @@ class SaleUi {
 						$batch[] = 'not-delivered';
 					}
 
-					if($eSale->canExport() === FALSE) {
-						$batch[] = 'not-export';
-					}
-
 					if($eSale->canDeleteSale() === FALSE) {
 						$batch[] = 'not-delete';
 					}
@@ -486,10 +482,6 @@ class SaleUi {
 			$h .= '<div class="batch-menu">';
 				$h .= '<div class="util-bar-menu">';
 
-					$h .= '<p class="batch-menu-empty">';
-						$h .= s("Il n'y a aucune action en commun possible pour cette sélection.");
-					$h .= '</p>';
-
 					$h .= '<a data-ajax-submit="/selling/sale:doUpdateConfirmedCollection" data-confirm="'.s("Marquer ces ventes comme confirmées ?").'" class="batch-menu-confirmed util-bar-menu-item">';
 						$h .= '<span class="sale-preparation-status-label sale-preparation-status-batch sale-preparation-status-confirmed">'.self::p('preparationStatus')->shortValues[Sale::CONFIRMED].'</span>';
 						$h .= '<span>'.s("Confirmé").'</span>';
@@ -505,7 +497,7 @@ class SaleUi {
 						$h .= '<span>'.s("Annuler").'</span>';
 					$h .= '</a>';
 
-					$h .= '<a data-ajax-submit="/selling/sale:doExportCollection" data-ajax-navigation="never" class="batch-menu-export util-bar-menu-item">';
+					$h .= '<a data-ajax-submit="/selling/sale:doExportCollection" data-ajax-navigation="never" class="util-bar-menu-item">';
 						$h .= \Asset::icon('filetype-pdf');
 						$h .= '<span>'.s("Exporter").'</span>';
 					$h .= '</a>';

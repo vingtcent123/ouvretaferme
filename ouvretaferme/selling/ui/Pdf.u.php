@@ -1040,6 +1040,20 @@ class PdfUi {
 							$entry .= '<div class="pdf-sales-label-detail-title">'.s("Commande").'</div>';
 							$entry .= '<div class="pdf-sales-label-detail-value">'.$eSale['id'].'</div>';
 						$entry .= '</div>';
+
+						if(in_array($eSale['preparationStatus'], [Sale::DRAFT, Sale::CANCELED, Sale::BASKET])) {
+
+							\Asset::css('selling', 'sale.css');
+
+							$entry .= '<div class="pdf-sales-label-detail">';
+								$entry .= '<div class="pdf-sales-label-detail-title">'.s("État").'</div>';
+								$entry .= '<div class="pdf-sales-label-detail-value">';
+									$entry .= '<span class="sale-preparation-status-label sale-preparation-status-'.$eSale['preparationStatus'].'">'.SaleUi::p('preparationStatus')->values[$eSale['preparationStatus']].'</span>';
+								$entry .= '</div>';
+							$entry .= '</div>';
+
+						}
+
 						$entry .= '<div class="pdf-sales-label-detail">';
 							$entry .= '<div class="pdf-sales-label-detail-title">'.s("Date de retrait").'</div>';
 							$entry .= '<div class="pdf-sales-label-detail-value">'.\util\DateUi::numeric($eSale['deliveredAt']).'</div>';

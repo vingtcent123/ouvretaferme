@@ -510,12 +510,6 @@ class Sale extends SaleElement {
 
 	}
 
-	public function canExport(): bool {
-
-		return in_array($this['preparationStatus'], [Sale::DRAFT, Sale::CANCELED, Sale::BASKET]) === FALSE;
-
-	}
-
 	public function canStatusDelivered(): bool {
 
 		return in_array($this['preparationStatus'], $this['marketParent']->notEmpty() ? [Sale::DRAFT] : [Sale::CONFIRMED, Sale::PREPARED]);

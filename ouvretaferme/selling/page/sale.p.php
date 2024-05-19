@@ -291,7 +291,7 @@
 	}))
 	->post('doExportCollection', function($data) {
 
-		$data->c->validate('canRead', 'canExport');
+		$data->c->validate('canRead');
 
 		$content = \selling\PdfLib::build('/selling/sale:getExport?ids[]='.implode('&ids[]=', $data->c->getIds()));
 		$filename = 'sales.pdf';
