@@ -89,7 +89,7 @@ document.delegateEventListener('click', '[data-ajax-submit]', function(e) {
 		form.setAttribute('action', url);
 		form.submit();
 	} else {
-		form.removeAttribute('action');
+		form.setAttribute('action', 'javascript:;');
 		form.setAttribute('data-ajax-form', url);
 		form.dispatchEvent(new CustomEvent("submit"));
 	}
