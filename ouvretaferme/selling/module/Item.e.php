@@ -9,7 +9,7 @@ class Item extends ItemElement {
 			'sale' => ['farm', 'hasVat', 'taxes', 'shippingVatRate', 'shippingVatFixed', 'document', 'preparationStatus', 'market', 'marketParent', 'shipping'],
 			'customer' => ['name', 'type'],
 			'product' => [
-				'name', 'variety', 'description', 'vignette', 'size', 'unit',
+				'name', 'variety', 'description', 'vignette', 'size', 'unit', 'plant',
 				'privatePrice',
 				'quality' => ['name', 'logo']
 			],

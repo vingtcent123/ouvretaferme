@@ -61,10 +61,6 @@ document.delegateEventListener('click', '[data-ajax-submit]', function(e) {
 	const url = this.getAttribute('data-ajax-submit');
 	const form = this.hasAttribute('data-ajax-target') ? qs(this.getAttribute('data-ajax-target')) : this.firstParent('form');
 
-	if(this.hasAttribute('data-ajax-method')) {
-		form.setAttribute('method', this.getAttribute('data-ajax-method'));
-	}
-
 	if(form === null) {
 		throw "No form found for data-ajax-submit";
 	}
@@ -85,9 +81,19 @@ document.delegateEventListener('click', '[data-ajax-submit]', function(e) {
 
 	}
 
-	form.setAttribute('data-ajax-form', url);
+	if(this.hasAttribute('data-ajax-method')) {
+		form.setAttribute('method', this.getAttribute('data-ajax-method'));
+	}
 
-	form.dispatchEvent(new CustomEvent("submit"));
+	if(this.dataset.ajaxNavigation === 'never') {
+		form.setAttribute('action', url);
+		form.submit();
+	} else {
+		form.removeAttribute('action');
+		form.setAttribute('data-ajax-form', url);
+		form.dispatchEvent(new CustomEvent("submit"));
+	}
+
 
 });
 

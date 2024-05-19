@@ -120,6 +120,16 @@ class Sale {
 		);
 
 		qsa(
+			'.batch-menu-export',
+			selection.filter('[data-batch~="not-export"]').length > 0 ?
+				node => node.hide() :
+				node => {
+					node.removeHide();
+					actions++;
+				}
+		);
+
+		qsa(
 			'.batch-menu-empty',
 			(actions > 0) ?
 				node => node.hide() :

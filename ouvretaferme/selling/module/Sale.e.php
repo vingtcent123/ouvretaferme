@@ -9,6 +9,7 @@ class Sale extends SaleElement {
 			'customer' => ['name', 'email', 'color', 'user', 'type', 'destination', 'discount', 'legalName', 'invoiceStreet1', 'invoiceStreet2', 'invoicePostcode', 'invoiceCity'],
 			'shop' => ['fqn', 'name', 'email', 'paymentOfflineHow', 'paymentTransferHow', 'shipping', 'shippingUntil', 'orderMin'],
 			'shopDate' => ['status', 'deliveryDate', 'orderStartAt', 'orderEndAt'],
+			'shopPoint' => ['type', 'name'],
 			'farm' => ['name', 'url', 'vignette', 'banner', 'featureDocument'],
 			'invoice' => ['emailedAt', 'createdAt', 'paymentStatus', 'priceExcludingVat'],
 			'marketParent' => [
@@ -506,6 +507,12 @@ class Sale extends SaleElement {
 		} else {
 			return '';
 		}
+
+	}
+
+	public function canExport(): bool {
+
+		return in_array($this['preparationStatus'], [Sale::DRAFT, Sale::CANCELED, Sale::BASKET]) === FALSE;
 
 	}
 

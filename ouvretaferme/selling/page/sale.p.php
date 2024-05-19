@@ -212,7 +212,7 @@
 
 		throw new ReloadAction('selling', 'Sale::updated');
 
-	}, validate: ['canWrite'])
+	})
 	->read('updateCustomer', function($data) {
 
 		throw new ViewAction($data);
@@ -289,6 +289,25 @@
 		$data->eFarm = $data->c->first()['farm'];
 
 	}))
+	->post('doExportCollection', function($data) {
+
+		$data->c->validate('canRead', 'canExport');
+
+		$content = \selling\PdfLib::build('/selling/sale:getExport?ids[]='.implode('&ids[]=', $data->c->getIds()));
+		$filename = 'sales.pdf';
+
+		throw new PdfAction($content, $filename);
+
+	})
+	->get('getExport', function($data) {
+
+		\selling\SaleLib::fillItems($data->c);
+
+		$data->cItem = \selling\ItemLib::getSummaryBySales($data->c);
+
+		throw new ViewAction($data);
+
+	})
 	->post('doUpdateCancelCollection', function($data) {
 
 		$data->c->validate('canWrite', 'canStatusCancel');

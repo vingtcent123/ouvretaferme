@@ -281,6 +281,10 @@ class SaleUi {
 						$batch[] = 'not-delivered';
 					}
 
+					if($eSale->canExport() === FALSE) {
+						$batch[] = 'not-export';
+					}
+
 					if($eSale->canDeleteSale() === FALSE) {
 						$batch[] = 'not-delete';
 					}
@@ -499,6 +503,11 @@ class SaleUi {
 					$h .= '<a data-ajax-submit="/selling/sale:doUpdateCancelCollection" data-confirm="'.s("Annuler ces ventes ?").'" class="batch-menu-cancel util-bar-menu-item">';
 						$h .= '<span class="sale-preparation-status-label sale-preparation-status-batch sale-preparation-status-draft">'.self::p('preparationStatus')->shortValues[Sale::CANCELED].'</span>';
 						$h .= '<span>'.s("Annuler").'</span>';
+					$h .= '</a>';
+
+					$h .= '<a data-ajax-submit="/selling/sale:doExportCollection" data-ajax-navigation="never" class="batch-menu-export util-bar-menu-item">';
+						$h .= \Asset::icon('filetype-pdf');
+						$h .= '<span>'.s("Exporter").'</span>';
 					$h .= '</a>';
 
 					$h .= '<a data-ajax-submit="/selling/sale:doDeleteCollection" data-confirm="'.s("Confirmer la suppression de ces ventes ?").'" class="batch-menu-delete util-bar-menu-item">';

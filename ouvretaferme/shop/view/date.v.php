@@ -51,7 +51,7 @@ new AdaptativeView('/ferme/{farm}/boutique/{shop}/date/{id}', function($data, Fa
 
 new HtmlView('getSales', function($data, PdfTemplate $t) {
 
-	echo (new \shop\PdfUi())->getSales($data->e, $data->cSale, $data->cItem);
+	echo (new \selling\PdfUi())->getSalesByDate($data->e, $data->cSale, $data->cItem);
 
 });
 

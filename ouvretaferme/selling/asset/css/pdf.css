@@ -277,6 +277,7 @@ div.pdf-document-vat-rates > *:nth-child(3n + 3) {
 
 .pdf-label-wrapper {
 	display: grid;
+	width: 19.5cm;
 	height: 28.2cm;
 	grid-template-columns: 1fr 1fr;
 	grid-template-rows: repeat(6, auto);
@@ -392,4 +393,146 @@ div.pdf-document-vat-rates > *:nth-child(3n + 3) {
 
 .pdf-label-content > *:nth-child(even) {
 	font-weight: bold;
+}
+
+@media print{
+	@page {
+		size: landscape
+	}
+}
+
+.pdf-sales-summary-wrapper {
+	page-break-after: always;
+}
+
+.pdf-sales-summary-wrapper h1,
+.pdf-sales-summary-wrapper h2 {
+	text-align: center;
+}
+
+table.pdf-sales-summary {
+	margin-top: 0.5cm;
+}
+
+.pdf-sales-summary td {
+	padding-top: 0.1cm;
+	padding-bottom: 0.1cm;
+}
+
+.pdf-sales-summary-comment {
+	width: 15cm;
+}
+
+.pdf-sales-summary-quantity {
+	font-size: 1.3rem;
+	font-weight: lighter;
+	padding-right: 0;
+}
+
+.pdf-sales-label-wrapper {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	grid-template-rows: 1fr 1fr;
+	height: 19.9cm;
+	grid-gap: 0.5cm;
+	page-break-after: always;
+}
+
+.pdf-sales-label-item {
+	position: relative;
+	border: 2px solid var(--text);
+	background-color: white;
+	line-height: 1.2;
+	display: grid;
+	grid-template-columns: 9fr 20fr;
+	grid-template-rows: min-content auto;
+}
+
+.pdf-sales-label-address {
+	font-size: 1rem;
+}
+
+.pdf-sales-label-details {
+	border-right: 2px solid var(--text);
+	display: grid;
+	grid-template-columns: 1fr;
+	padding: 0.15cm;
+}
+
+.pdf-sales-label-details-next {
+	background-color: var(--background);
+}
+
+.pdf-sales-label-customer {
+	grid-column: span 2;
+	height: 1cm;
+	display: inline-flex;
+	width: 100%;
+	align-items: center;
+	justify-content: space-between;
+	text-align: center;
+	font-size: 1.3rem;
+	border-bottom: 2px solid var(--text);
+	padding: 0 1rem;
+}
+
+.pdf-sales-label-page {
+	margin-left: 0.5rem;
+	padding: 0.25rem 0.5rem;
+	border-radius: var(--radius);
+	background-color: black;
+	color: white;
+	font-size: 80%;
+}
+
+.pdf-sales-label-detail {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+}
+
+.pdf-sales-label-detail:not(:last-child) {
+	border-bottom: 1px dashed var(--border);
+}
+
+.pdf-sales-label-detail-title {
+	color: var(--muted);
+	text-align: center;
+	margin-bottom: 0.25rem;
+	font-size: 0.9rem;
+}
+
+.pdf-sales-label-detail-value {
+	font-weight: bold;
+	text-align: center;
+}
+
+.pdf-sales-label-content {
+	align-self: start;
+	display: grid;
+	grid-template-columns: auto auto max-content;
+	grid-template-rows: auto;
+	grid-row-gap: 0.15cm;
+	align-items: stretch;
+	width: 100%;
+	font-size: 0.8rem;
+	padding: 0.25cm;
+}
+
+.pdf-sales-label-content > * {
+	border-bottom: 1px solid var(--border);
+	padding-bottom: 0.05cm;
+}
+
+.pdf-sales-label-content-shrink {
+	letter-spacing: -0.2px;
+}
+
+.pdf-sales-label-content-shrink-strong {
+	letter-spacing: -0.3px;
+}
+
+.pdf-sales-label-content > *:nth-child(3n + 2) {
+	font-weight: bold;
+	padding-left: 0.5cm;
 }

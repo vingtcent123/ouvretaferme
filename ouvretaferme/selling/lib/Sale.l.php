@@ -126,22 +126,23 @@ class SaleLib extends SaleCrud {
 
 	}
 
-	private static function getForLabels(\farm\Farm $eFarm, bool $selectItems = FALSE, bool $selectPoint = FALSE): \Collection {
+	public static function fillItems(\Collection $cSale): void {
 
-		if($selectItems) {
-			Sale::model()->select([
+		Sale::model()
+			->select([
 				'cItem' => Item::model()
 					->select(Item::getSelection())
-					->select([
-						'product' => ['plant']
-					])
 					->sort([
 						'name' => SORT_ASC,
 						'id' => SORT_ASC
 					])
 					->delegateCollection('sale')
-			]);
-		}
+			])
+			->get($cSale);
+
+	}
+
+	private static function getForLabels(\farm\Farm $eFarm, bool $selectItems = FALSE, bool $selectPoint = FALSE): \Collection {
 
 		if($selectPoint) {
 			Sale::model()->select([
@@ -149,10 +150,17 @@ class SaleLib extends SaleCrud {
 			]);
 		}
 
-		return Sale::model()
+		$cSale = Sale::model()
 			->select(Sale::getSelection())
 			->whereFarm($eFarm)
 			->getCollection();
+
+		if($selectItems) {
+			self::fillItems($cSale);
+		}
+
+		return $cSale;
+
 	}
 
 	public static function getByFarm(\farm\Farm $eFarm, ?string $type = NULL, ?int $position = NULL, ?int $number = NULL, \Search $search = new \Search()): array {
@@ -325,21 +333,9 @@ class SaleLib extends SaleCrud {
 
 	}
 
-	public static function getForInvoice(Customer $eCustomer, array $ids, bool $checkInvoice = TRUE, bool $selectItems = TRUE): Sale|\Collection {
+	public static function getForInvoice(Customer $eCustomer, array $ids, bool $checkInvoice = TRUE): Sale|\Collection {
 
-		if($selectItems) {
-			Sale::model()->select([
-				'cItem' => Item::model()
-					->select(Item::getSelection())
-					->sort([
-						'name' => SORT_ASC,
-						'id' => SORT_ASC
-					])
-					->delegateCollection('sale')
-			]);
-		}
-
-		return Sale::model()
+		$cSale = Sale::model()
 			->select(SaleElement::getSelection())
 			->select([
 				'cPdf' => Pdf::model()
@@ -354,6 +350,10 @@ class SaleLib extends SaleCrud {
 			->wherePreparationStatus(Sale::DELIVERED)
 			->sort(['id' => SORT_ASC])
 			->getCollection();
+
+		self::fillItems($cSale);
+
+		return $cSale;
 
 	}
 

@@ -113,7 +113,7 @@
 			throw new NotExpectedAction('No sale');
 		}
 
-		$content = \shop\PdfLib::buildSales($data->e);
+		$content = \selling\PdfLib::build('/shop/date:getSales?id='.$data->e['id']);
 		$filename = 'sales-'.$data->e['id'].'.pdf';
 
 		throw new PdfAction($content, $filename);
@@ -128,7 +128,7 @@
 		$data->e['shop'] = \shop\ShopLib::getById($data->e['shop']);
 
 		$data->cSale = \selling\SaleLib::getForLabelsByDate($data->e, selectItems: TRUE, selectPoint: TRUE);
-		$data->cItem = \selling\ItemLib::getSummaryForLabels($data->e);
+		$data->cItem = \selling\ItemLib::getSummaryByDate($data->e);
 
 		throw new ViewAction($data);
 

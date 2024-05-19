@@ -56,4 +56,10 @@ new AdaptativeView('updateShop', function($data, PanelTemplate $t) {
 new AdaptativeView('updateCustomer', function($data, PanelTemplate $t) {
 	return (new \selling\SaleUi())->updateCustomer($data->e);
 });
+
+new HtmlView('getExport', function($data, PdfTemplate $t) {
+
+	echo (new \selling\PdfUi())->getSales($data->c, $data->cItem);
+
+});
 ?>
