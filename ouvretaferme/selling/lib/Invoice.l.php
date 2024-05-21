@@ -186,7 +186,7 @@ class InvoiceLib extends InvoiceCrud {
 
 		Invoice::model()->commit();
 
-		if($e['generation'] === Invoice::PROCESSING) {
+		if($e['generation'] === Invoice::NOW) {
 			self::generate($e);
 		}
 
@@ -197,7 +197,7 @@ class InvoiceLib extends InvoiceCrud {
 		$affected = Invoice::model()
 			->whereGeneration('IN', [Invoice::FAIL, Invoice::SUCCESS])
 			->update($e, [
-				'generation' => Invoice::WAITING
+				'generation' => Invoice::NOW
 			]);
 
 		if($affected) {
@@ -234,7 +234,7 @@ class InvoiceLib extends InvoiceCrud {
 		]);
 
 		if(Invoice::model()
-			->whereGeneration(Invoice::WAITING)
+			->whereGeneration('IN', [Invoice::NOW, Invoice::WAITING])
 			->update($e, [
 				'generation' => Invoice::PROCESSING
 			]) === 0) {

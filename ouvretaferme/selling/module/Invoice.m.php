@@ -14,6 +14,7 @@ abstract class InvoiceElement extends \Element {
 	const NOT_PAID = 'not-paid';
 
 	const WAITING = 'waiting';
+	const NOW = 'now';
 	const PROCESSING = 'processing';
 	const FAIL = 'fail';
 	const SUCCESS = 'success';
@@ -65,7 +66,7 @@ class InvoiceModel extends \ModuleModel {
 			'date' => ['date', 'cast' => 'string'],
 			'paymentStatus' => ['enum', [\selling\Invoice::PAID, \selling\Invoice::NOT_PAID], 'cast' => 'enum'],
 			'paymentCondition' => ['editor16', 'min' => 1, 'max' => 400, 'null' => TRUE, 'cast' => 'string'],
-			'generation' => ['enum', [\selling\Invoice::WAITING, \selling\Invoice::PROCESSING, \selling\Invoice::FAIL, \selling\Invoice::SUCCESS], 'cast' => 'enum'],
+			'generation' => ['enum', [\selling\Invoice::WAITING, \selling\Invoice::NOW, \selling\Invoice::PROCESSING, \selling\Invoice::FAIL, \selling\Invoice::SUCCESS], 'cast' => 'enum'],
 			'emailedAt' => ['datetime', 'null' => TRUE, 'cast' => 'string'],
 			'createdAt' => ['datetime', 'cast' => 'string'],
 		]);

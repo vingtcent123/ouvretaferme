@@ -21,7 +21,7 @@
 		return new \selling\Invoice([
 			'customer' => $eCustomer,
 			'farm' => $eFarm,
-			'generation' => \selling\Invoice::PROCESSING
+			'generation' => \selling\Invoice::NOW
 		]);
 
 	})
@@ -99,6 +99,10 @@
 	->read('/facture/{id}', function($data) {
 
 		$data->e->validate('canRead');
+
+		if($data->e['content']->empty()) {
+			throw new NotExistsAction();
+		}
 
 		$content = \selling\PdfLib::getContentByInvoice($data->e);
 		$filename = $data->e->getInvoice().'-'.str_replace('-', '', $data->e['date']).'-'.$data->e['customer']['name'].'.pdf';

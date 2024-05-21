@@ -113,7 +113,7 @@ Invoice:
   date: date
   paymentStatus: enum(PAID, NOT_PAID) = NOT_PAID
   paymentCondition: ?editor16(1, 400)
-  generation : enum(WAITING, PROCESSING, FAIL, SUCCESS)
+  generation : enum(WAITING, NOW, PROCESSING, FAIL, SUCCESS)
   emailedAt: ?datetime
   createdAt: datetime = SPECIAL(now)
   INDEX: [
