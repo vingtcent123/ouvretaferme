@@ -181,7 +181,7 @@ class PdfLib extends PdfCrud {
 			return;
 		}
 
-		if($eInvoice->canSend() === FALSE) {
+		if($eInvoice->acceptSend() === FALSE) {
 			Invoice::fail('fileTooOld');
 			return;
 		}
