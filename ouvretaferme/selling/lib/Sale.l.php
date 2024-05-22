@@ -689,6 +689,17 @@ class SaleLib extends SaleCrud {
 				->whereSale($e)
 				->delete();
 
+			if($e['market']) {
+
+				Sale::model()
+					->whereFarm($e['farm'])
+					->whereMarketParent($e)
+					->update([
+						'marketParent' => NULL
+					]);
+
+			}
+
 			if($e['marketParent']->notEmpty()) {
 				MarketLib::updateSaleMarket($e['marketParent']);
 			}

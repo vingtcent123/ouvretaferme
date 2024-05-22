@@ -21,7 +21,11 @@ class MarketUi {
 				$h .= $this->getCircle($eSale);
 
 				$h .= '<div>';
-					$h .= s("Anonyme à {time}", ['time' => \util\DateUi::numeric($eSale['createdAt'], \util\DateUi::TIME)]);
+					if($eSale['customer']->empty()) {
+						$h .= s("Anonyme à {time}", ['time' => \util\DateUi::numeric($eSale['createdAt'], \util\DateUi::TIME)]);
+					} else {
+						$h .= s("{user} à {time}", ['user' => encode($eSale['customer']['name']), 'time' => \util\DateUi::numeric($eSale['createdAt'], \util\DateUi::TIME)]);
+					}
 					$h .= '<br/><small id="market-sale-'.$eSale['id'].'-price">'.\util\TextUi::money($eSale['priceIncludingVat'] ?? 0).'</small>';
 				$h .= '</div>';
 				$h .= '<div class="market-sales-owner" title="'.s("Vente créée par {value}", \user\UserUi::name($eSale['createdBy'])).'">';

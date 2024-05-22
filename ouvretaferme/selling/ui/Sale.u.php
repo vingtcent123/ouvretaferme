@@ -1255,7 +1255,7 @@ class SaleUi {
 			$secondaryList .= '<a data-ajax="/selling/sale:doDelete" post-id="'.$eSale['id'].'" class="dropdown-item" data-confirm="'.s("Confirmer la suppression de la vente ?").'">'.s("Supprimer la vente").'</a>';
 		}
 
-		if($eSale['from'] === Sale::USER) {
+		if($eSale->canDuplicate()) {
 			$primaryList .= '<a href="/selling/sale:duplicate?id='.$eSale['id'].'" class="dropdown-item">'.s("Copier la vente").'</a>';
 		}
 
