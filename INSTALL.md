@@ -9,13 +9,13 @@ INSTALLER OUVRETAFERME
 
 **Installation**
 
-Un docker est disponible ici pour l'installer l'environnement de développement :
+Un docker est disponible ici pour installer l'environnement de développement :
 
 https://github.com/emilieguth/otf-docker
 
 Vous devez ensuite :
-* Télécharger le code source
-* Créer un fichier secret.c.php copié à partir de secret-example.c.php à la racine du code source et le personnaliser le cas échéant (seule la configuration MySQL est indispensable pour démarrer)
+* Télécharger le code source de OTF avec _git clone git@github.com:vingtcent123/ouvretaferme.git_
+* Créer un fichier secret.c.php copié à partir de _secret-example.c.php_ à la racine du code source et le personnaliser le cas échéant (seule la configuration MySQL est indispensable pour démarrer)
 * Importer une base de données 
 
 **Base de données de démarrage**
@@ -24,7 +24,7 @@ La base de données du site de démo à importer dans une base _dev_ouvretaferme
 
 https://media.ouvretaferme.org/demo.sql
 
-Elle est mise à jour automatiquement toutes les nuits.
+Elle est mise à jour automatiquement toutes les nuits et correspond à la dernière version du code source.
 Le mot de passe de tous les utilisateurs de la base de démo est 123456.
 Connectez-vous avec l'utilisateur 1@ouvretaferme.org pour accéder à la ferme de démo en tant que producteur.
 
