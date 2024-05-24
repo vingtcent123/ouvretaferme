@@ -20,6 +20,7 @@ class DemoLib {
 		'selling\History',
 		'selling\Invoice',
 		'selling\Pdf',
+		'selling\PdfContent',
 		'selling\Payment',
 		'series\Comment',
 		'user\Log',
@@ -29,6 +30,7 @@ class DemoLib {
 
 	const COPY_PROPERTY_EXCLUDE = [
 		'user\User' => ['birthdate', 'phone', 'vignette', 'street1', 'street2', 'postcode', 'city'],
+		'series\Repeat' => ['description'],
 		'series\Series' => ['comment'],
 		'selling\Sale' => ['invoice']
 	];
@@ -312,11 +314,20 @@ class DemoLib {
 
 			$eUser['firstName'] = self::getFirstName($position);
 			$eUser['lastName'] = self::getLastName();
-			$eUser['email'] = $eUser['firstName'].'.'.$eUser['id'].'@'.\Lime::getDomain();
+			$eUser['email'] = $eUser['id'].'@'.\Lime::getDomain();
 
 			(new \user\UserModel())
 				->select('firstName', 'lastName', 'email')
 				->update($eUser);
+
+			$eUserAuth = new \user\UserAuth([
+				'user' => $eUser,
+				'type' => \user\UserAuth::BASIC,
+				'login' => $eUser['email'],
+				'password' => password_hash('123456', PASSWORD_DEFAULT),
+			]);
+
+			UserAuth::model()->insert($eUserAuth);
 
 			$position++;
 
