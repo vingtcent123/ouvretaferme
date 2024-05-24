@@ -442,7 +442,7 @@ class FarmUi {
 
 			$h .= '<a href="/series/analyze:exportTasks?id='.$eFarm['id'].'&year='.$year.'" class="bg-secondary util-button" data-ajax-navigation="never">';
 				$h .= '<div>';
-					$h .= '<h4>'.s("Exporter le planning").'</h4>';
+					$h .= '<h4>'.s("Exporter les interventions").'</h4>';
 				$h .= '</div>';
 				$h .= \Asset::icon('calendar3');
 			$h .= '</a>';
