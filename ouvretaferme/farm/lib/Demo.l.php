@@ -327,7 +327,7 @@ class DemoLib {
 				'password' => password_hash('123456', PASSWORD_DEFAULT),
 			]);
 
-			UserAuth::model()->insert($eUserAuth);
+			\user\UserAuth::model()->insert($eUserAuth);
 
 			$position++;
 
