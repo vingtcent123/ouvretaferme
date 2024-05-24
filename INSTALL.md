@@ -1,18 +1,62 @@
-LICENCE D'UTILISATION DU CODE SOURCE DE OUVRETAFERME
+INSTALLER OUVRETAFERME
 
-Un programme informatique qui utilise tout ou partie du code source de Ouvretaferme doit, qu'il soit installé sur un serveur privé ou public :
-- être en lien avec la production agricole,
-- être utilisé exclusivement par des exploitations agricoles converties intégralement à l'agriculture biologique selon le règlement européen 2018/848,
-- être proposé gratuitement,
-- ne pas inclure d'outil de mesure d'audience,
-- ne pas inclure de publicité,
-- ne pas faire commerce des données récoltées auprès des utilisateurs,
-- être distribué sous la présente licence.
+**Stack**
 
-Toute modification effectuée sur le code source de Ouvretaferme, même si elle est réalisée dans un cadre privé, doit être partagée publiquement par son auteur sur le dépôt officiel du code source.
-L'intégralité du code source de tout programme informatique qui utilise tout ou partie du code source de Ouvretaferme doit être publié publiquement sous la présente licence, y compris les parties du code source qui ne proviennent pas de Ouvretaferme.
+- Nginx
+- PHP 8.3+ (extensions requises : mysqli pdo pdo_mysql && docker-php-ext-enable pdo_mysql, bcmath, curl, intl, mbstring, xml, imap)
+- MySQL 8+
+- Redis
 
-L'adresse du dépôt officiel du code source est indiquée dans les conditions générales d'utilisation de www.ouvretaferme.org.
+**Installation**
 
-SI CETTE LICENCE NE VOUS CONVIENT PAS, N'UTILISEZ PAS LE CODE SOURCE DE OUVRETAFERME.
-LE CODE SOURCE DE OUVRETAFERME EST PROTÉGÉ PAR DES DROITS D'AUTEUR, ET L'AUTEUR EXIGE QUE CE CODE SOURCE SOIT EXCLUSIVEMENT UTILISÉ DANS LE CADRE D'UNE PRODUCTION AGRICOLE BIOLOGIQUE.
+Un docker est disponible ici pour l'installer l'environnement de développement :
+
+https://github.com/emilieguth/otf-docker
+
+Vous devez ensuite :
+* Télécharger le code source
+* Créer un fichier secret.c.php copié à partir de secret-example.c.php à la racine du code source et le personnaliser le cas échéant (seule la configuration MySQL est indispensable pour démarrer)
+* Importer une base de données 
+
+**Base de données de démarrage**
+
+La base de données du site de démo à importer dans une base _dev_ouvretaferme_ est disponible ici :
+
+https://media.ouvretaferme.org/demo.sql
+
+Elle est mise à jour automatiquement toutes les nuits.
+Le mot de passe de tous les utilisateurs de la base de démo est 123456.
+Connectez-vous avec l'utilisateur 1@ouvretaferme.org pour accéder à la ferme de démo en tant que producteur.
+
+**Arborescence du code source**
+
+Chaque dossier dans le code correspond à un package :
+
+- framework : le framework Lime (maison) utilisé par OTF
+  - core : les fichiers de base du framework
+  - editor : l'éditeur WYSIWYG utilisé un peu partout sur OTF
+  - storage : le stockage des fichiers des utilisateurs (Image, Pdf...)
+  - user : la gestion des utilisateurs
+- ouvretaferme : le code relatif à OTF
+  - analyze : les statistiques
+  - farm : la ferme
+  - gallery : la gestion des photos des utilisateurs
+  - hr : la gestion RH
+  - mail : l'envoi des e-mails
+  - map : la cartographie des parcelles
+  - media : le téléversement des fichiers des utilisateurs (Image, Pdf...)
+  - payment : le paiement sur les boutiques en ligne
+  - plant : les espèces et les variétés de plantes
+  - production : les itinéraires techniques
+  - selling : la commercialisation
+  - series : les séries culturales
+  - shop : les boutiques en ligne
+  - website : le site Internet pour les fermes
+
+Chaque package est décomposé en plusieurs dossiers :
+- asset : les fichiers CSS, JS et les images
+- lib : les traitements métiers
+- module : les représentations de la base de données
+- page : les routes (exemple : https://www.ouvretaferme.org/plant/plant:create appelle le fichier /ouvretaferme/plant/plant.p.php)
+- ui : les traitements liés à l'affichage
+- view : les vues
