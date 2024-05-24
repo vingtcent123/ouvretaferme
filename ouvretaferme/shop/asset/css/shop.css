@@ -313,13 +313,20 @@ div.shop-widget-order {
 .shop-list {
 	display: grid;
 	grid-gap: 1rem;
-	grid-template-columns: 1fr 1fr;
+	grid-template-columns: 1fr 1fr 1fr;
+}
+
+@media (max-width: 1199px) {
+
+	.shop-list {
+		grid-template-columns: 1fr 1fr;
+	}
+
 }
 
 @media (max-width: 767px) {
 
 	.shop-list {
-		display: grid;
 		grid-template-columns: 1fr;
 	}
 
@@ -330,14 +337,12 @@ div.shop-widget-order {
 	display: grid;
 	grid-template-columns: min-content 1fr;
 	grid-gap: 1rem;
-	color: white;
-	background-color: var(--primary);
+	color: var(--text);
 }
 
 .shop-list-item-content {
-	align-self: center;
 	grid-column: span 2;
-	border-top: 1px solid #fff8;
+	border-top: 1px solid var(--border);
 	padding-top: 1rem;
 	margin-left: -1rem;
 	margin-right: -1rem;
@@ -351,10 +356,15 @@ div.shop-widget-order {
 
 .shop-list-item:hover {
 	text-decoration: none;
-	color: white;
 }
 
 .shop-list-item h2 {
 	align-self: center;
+	color: var(--secondary);
 	margin-bottom: 0;
+	font-size: 1.6rem;
+}
+
+.shop-list-item:not(.shop-list-item-date) {
+	align-self: start;
 }

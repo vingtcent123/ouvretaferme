@@ -103,18 +103,20 @@ class ShopManageUi {
 
 			foreach($cShop as $eShop) {
 
-				$h .= '<a href="'.ShopUi::adminUrl($eFarm, $eShop).'" class="shop-list-item util-block">';
+				$hasDate = (
+					$eShop['status'] !== Shop::CLOSED and
+					$eShop['eDate']->notEmpty() and
+					$eShop['eDate']['status'] !== Date::CLOSED
+				);
 
-					$h .= ShopUi::getLogo($eShop, '5rem');
+				$h .= '<a href="'.ShopUi::adminUrl($eFarm, $eShop).'" class="shop-list-item '.($hasDate ? 'shop-list-item-date' : '').' util-block">';
+
+					$h .= ShopUi::getLogo($eShop, '3rem');
 					$h .= '<h2>';
 						$h .= encode($eShop['name']);
 					$h .= '</h2>';
 
-					if(
-						$eShop['status'] !== Shop::CLOSED and
-						$eShop['eDate']->notEmpty() and
-						$eShop['eDate']['status'] !== Date::CLOSED
-					) {
+					if($hasDate) {
 
 						$h .= '<div class="shop-list-item-content">';
 
