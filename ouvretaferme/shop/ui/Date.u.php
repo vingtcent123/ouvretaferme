@@ -645,7 +645,7 @@ class DateUi {
 
 	}
 
-	public function getStatus(Shop $eShop, Date $eDate): string {
+	public function getStatus(Shop $eShop, Date $eDate, bool $withColor = TRUE): string {
 
 		$h = '';
 		$now = currentDatetime();
@@ -668,7 +668,7 @@ class DateUi {
 
 		}
 
-		return $h;
+		return $withColor ? $h : strip_tags($h);
 
 	}
 	

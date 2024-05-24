@@ -172,15 +172,13 @@
 		\farm\FarmerLib::setView('viewSelling', $data->eFarm, \farm\Farmer::SHOP);
 
 		// Liste des boutiques
-		$data->cShop = \shop\ShopLib::getByFarm($data->eFarm);
+		$data->cShop = \shop\ShopLib::getForList($data->eFarm);
 
 		// Boutique sélectionnée
 		if(get_exists('shop')) {
 			$eShop = GET('shop', 'shop\Shop');
 			$data->eShop = $data->cShop[$eShop['id']] ?? ($data->cShop->empty() ? new \shop\Shop() : $data->cShop->first());
-		} else if(!Setting::get('main\viewShop')->empty()) {
-			$data->eShop = $data->cShop[Setting::get('main\viewShop')['id']] ?? ($data->cShop->empty() ? new \shop\Shop() : $data->cShop->first());
-		} else if($data->cShop->notEmpty()) {
+		} else if($data->cShop->count() === 1) {
 			$data->eShop = $data->cShop->first();
 		} else {
 			$data->eShop = new \shop\Shop();

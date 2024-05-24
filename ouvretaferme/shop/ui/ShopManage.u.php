@@ -92,6 +92,65 @@ class ShopManageUi {
 		
 	}
 
+	public function getList(\farm\Farm $eFarm, \Collection $cShop): string {
+
+		$h = '<div class="util-action">';
+			$h .= '<h1>'.s("Boutiques en ligne").'</h1>';
+			$h .= '<a href="/shop/:create?farm='.$eFarm['id'].'" class="btn btn-secondary">'.\Asset::icon('plus-circle').' '.s("Nouvelle boutique").'</a>';
+		$h .= '</div>';
+
+		$h .= '<div class="shop-list">';
+
+			foreach($cShop as $eShop) {
+
+				$h .= '<a href="'.ShopUi::adminUrl($eFarm, $eShop).'" class="shop-list-item util-block">';
+
+					$h .= ShopUi::getLogo($eShop, '5rem');
+					$h .= '<h2>';
+						$h .= encode($eShop['name']);
+					$h .= '</h2>';
+
+					if(
+						$eShop['status'] !== Shop::CLOSED and
+						$eShop['eDate']->notEmpty() and
+						$eShop['eDate']['status'] !== Date::CLOSED
+					) {
+
+						$h .= '<div class="shop-list-item-content">';
+
+							$eDate = $eShop['eDate'];
+
+							$h .= '<h4>'.(new DateUi())->getStatus($eShop, $eDate, withColor: FALSE).'</h4>';
+
+							$h .= '<dl class="util-presentation util-presentation-2">';
+
+								$h .= '<dt>'.s("Date").'</dt>';
+								$h .= '<dd>';
+									$h .= \util\DateUi::textual($eDate['deliveryDate']);
+								$h .= '</dd>';
+
+								$h .= '<dt>'.s("Ventes").'</dt>';
+								$h .= '<dd>'.$eDate['sales']['countValid'].'</dd>';
+
+								if($eDate['sales']['countValid'] > 0) {
+									$h .= '<dt>'.s("Montant").'</dt>';
+									$h .= '<dd>'.($eDate['sales']['amountValidIncludingVat'] ? \util\TextUi::money($eDate['sales']['amountValidIncludingVat']) : '-').'</dd>';
+								}
+
+							$h .= '</dl>';
+						$h .= '</div>';
+
+					}
+
+				$h .= '</a>';
+
+			}
+		$h .= '</div>';
+
+		return $h;
+
+	}
+
 	public function getTabsContent(\farm\Farm $eFarm, Shop $eShop): string {
 
 		$h = '<div class="tabs-h" id="shop-tabs" onrender="'.encode('Lime.Tab.restore(this, "dates"'.(get_exists('tab') ? ', "'.GET('tab', ['dates', 'points'], 'dates').'"' : '').')').'">';

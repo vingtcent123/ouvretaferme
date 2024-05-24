@@ -21,6 +21,18 @@ class ShopLib extends ShopCrud {
 
 	}
 
+	public static function getForList(\farm\Farm $eFarm): \Collection {
+
+		return Shop::model()
+			->select(Shop::getSelection() + [
+				'eDate' => fn(\shop\Shop $eShop) => \shop\DateLib::getMostRelevantByShop($eShop, one: TRUE, withSales: TRUE)
+			])
+			->whereFarm($eFarm)
+			->sort(['name' => SORT_ASC])
+			->getCollection(NULL, NULL, 'id');
+
+	}
+
 	public static function getByCustomers(\Collection $cCustomer, string $last = '1 YEAR'): \Collection {
 
 		return \selling\Sale::model()

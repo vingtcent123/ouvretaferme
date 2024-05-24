@@ -216,10 +216,20 @@ class DateLib extends DateCrud {
 
 	}
 
-	public static function getMostRelevantByShop(Shop $eShop, bool $one = FALSE): Date|\Collection {
+	public static function getMostRelevantByShop(Shop $eShop, bool $one = FALSE, bool $withSales = FALSE): Date|\Collection {
+
+		$select = Date::getSelection();
+
+		if($withSales) {
+
+			$select['sales'] = self::countSales()
+				->group('shopDate')
+				->delegateArray('shopDate', callback: fn($value) => $value ?? ['count' => 0, 'countValid' => 0, 'amount' => 0.0]);
+
+		}
 
 		$cDate = Date::model()
-			->select(Date::getSelection())
+			->select($select)
 			->whereShop($eShop)
 			->whereStatus(Date::ACTIVE)
 			->whereDeliveryDate('>',  new \Sql('NOW()'))
@@ -235,7 +245,7 @@ class DateLib extends DateCrud {
 		if($cDate->empty()) {
 
 			$eDateRelevant = Date::model()
-				->select(Date::getSelection())
+				->select($select)
 				->whereShop($eShop)
 				->whereDeliveryDate('<',  new \Sql('NOW()'))
 				->sort(['deliveryDate' => SORT_DESC])

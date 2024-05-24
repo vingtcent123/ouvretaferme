@@ -309,3 +309,52 @@ div.shop-widget .shop-header-date {
 div.shop-widget-order {
 	margin-top: 1rem;
 }
+
+.shop-list {
+	display: grid;
+	grid-gap: 1rem;
+	grid-template-columns: 1fr 1fr;
+}
+
+@media (max-width: 767px) {
+
+	.shop-list {
+		display: grid;
+		grid-template-columns: 1fr;
+	}
+
+}
+
+.shop-list-item {
+	margin-bottom: 0;
+	display: grid;
+	grid-template-columns: min-content 1fr;
+	grid-gap: 1rem;
+	color: white;
+	background-color: var(--primary);
+}
+
+.shop-list-item-content {
+	align-self: center;
+	grid-column: span 2;
+	border-top: 1px solid #fff8;
+	padding-top: 1rem;
+	margin-left: -1rem;
+	margin-right: -1rem;
+	padding-left: 1rem;
+	padding-right: 1rem;
+}
+
+.shop-list-item-content dd span {
+	color: white !important;
+}
+
+.shop-list-item:hover {
+	text-decoration: none;
+	color: white;
+}
+
+.shop-list-item h2 {
+	align-self: center;
+	margin-bottom: 0;
+}

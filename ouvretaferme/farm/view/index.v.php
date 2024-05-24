@@ -526,6 +526,13 @@ new AdaptativeView('/ferme/{id}/boutiques', function($data, FarmTemplate $t) {
 
 		echo $uiShopManage->getIntroCreate($data->eFarm);
 
+	} else if(
+		$data->cShop->count() > 1 and
+		$data->eShop->empty()
+	) {
+
+		echo $uiShopManage->getList($data->eFarm, $data->cShop);
+
 	} else {
 
 		echo $uiShopManage->getHeader($data->eFarm, $data->eShop, $data->cShop);
