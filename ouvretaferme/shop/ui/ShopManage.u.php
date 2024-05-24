@@ -99,47 +99,61 @@ class ShopManageUi {
 			$h .= '<a href="/shop/:create?farm='.$eFarm['id'].'" class="btn btn-secondary">'.\Asset::icon('plus-circle').' '.s("Nouvelle boutique").'</a>';
 		$h .= '</div>';
 
+		$cShop->setColumn('hasDate', fn($eShop) => (
+			$eShop['status'] !== Shop::CLOSED and
+			$eShop['eDate']->notEmpty()
+		));
+
+		$hasDate = $cShop->match(fn($eShop) => $eShop['hasDate']);
+
 		$h .= '<div class="shop-list">';
 
 			foreach($cShop as $eShop) {
 
-				$hasDate = (
-					$eShop['status'] !== Shop::CLOSED and
-					$eShop['eDate']->notEmpty() and
-					$eShop['eDate']['status'] !== Date::CLOSED
-				);
+				$h .= '<a href="'.ShopUi::adminUrl($eFarm, $eShop).'" class="shop-list-item util-block">';
 
-				$h .= '<a href="'.ShopUi::adminUrl($eFarm, $eShop).'" class="shop-list-item '.($hasDate ? 'shop-list-item-date' : '').' util-block">';
-
-					$h .= ShopUi::getLogo($eShop, '3rem');
-					$h .= '<h2>';
-						$h .= encode($eShop['name']);
-					$h .= '</h2>';
+					$h .= '<div class="shop-list-item-header">';
+						$h .= ShopUi::getLogo($eShop, '3rem');
+						$h .= '<h2>';
+							$h .= encode($eShop['name']);
+						$h .= '</h2>';
+					$h .= '</div>';
 
 					if($hasDate) {
 
 						$h .= '<div class="shop-list-item-content">';
 
-							$eDate = $eShop['eDate'];
+						if($eShop['hasDate']) {
 
-							$h .= '<h4>'.(new DateUi())->getStatus($eShop, $eDate, withColor: FALSE).'</h4>';
+								$eDate = $eShop['eDate'];
 
-							$h .= '<dl class="util-presentation util-presentation-2">';
+								$h .= '<h4>'.(new DateUi())->getStatus($eShop, $eDate, withColor: FALSE).'</h4>';
 
-								$h .= '<dt>'.s("Date").'</dt>';
-								$h .= '<dd>';
-									$h .= \util\DateUi::textual($eDate['deliveryDate']);
-								$h .= '</dd>';
+								$h .= '<dl class="util-presentation util-presentation-2">';
 
-								$h .= '<dt>'.s("Ventes").'</dt>';
-								$h .= '<dd>'.$eDate['sales']['countValid'].'</dd>';
+									$h .= '<dt>'.s("Date").'</dt>';
+									$h .= '<dd>';
+										$h .= \util\DateUi::textual($eDate['deliveryDate']);
+									$h .= '</dd>';
 
-								if($eDate['sales']['countValid'] > 0) {
-									$h .= '<dt>'.s("Montant").'</dt>';
-									$h .= '<dd>'.($eDate['sales']['amountValidIncludingVat'] ? \util\TextUi::money($eDate['sales']['amountValidIncludingVat']) : '-').'</dd>';
-								}
+									$h .= '<dt>'.s("Ventes").'</dt>';
+									$h .= '<dd>'.$eDate['sales']['countValid'].'</dd>';
 
-							$h .= '</dl>';
+									if($eDate['sales']['countValid'] > 0) {
+										$h .= '<dt>'.s("Montant").'</dt>';
+										$h .= '<dd>'.($eDate['sales']['amountValidIncludingVat'] ? \util\TextUi::money($eDate['sales']['amountValidIncludingVat']) : '-').'</dd>';
+									}
+
+								$h .= '</dl>';
+
+						} else {
+							if($eShop['status'] === Shop::CLOSED) {
+								$h .= '<h4 class="color-muted">'.s("Boutique fermée").'</h4>';
+							} else {
+								$h .= '<h4 class="color-muted">'.s("Aucune vente").'</h4>';
+							}
+						}
+
 						$h .= '</div>';
 
 					}
