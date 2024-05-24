@@ -2,7 +2,7 @@
 Database::addServer([
 	'type' => 'MySQL',
 	'host' => 'mysql-otf',
-	'port' => 3307,
+	'port' => 3306,
 	'login' => 'root',
 	'password' => '',
 	'bases' => ['dev_ouvretaferme', 'demo_ouvretaferme']
