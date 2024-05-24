@@ -9,14 +9,18 @@ INSTALLER OUVRETAFERME
 
 **Installation**
 
-Un docker est disponible ici pour installer l'environnement de développement :
+Une configuration docker est disponible ici pour installer l'environnement de développement :
 
 https://github.com/emilieguth/otf-docker
 
-Vous devez ensuite :
-* Télécharger le code source de OTF avec _git clone git@github.com:vingtcent123/ouvretaferme.git_
-* Créer un fichier secret.c.php copié à partir de _secret-example.c.php_ à la racine du code source et le personnaliser le cas échéant (seule la configuration MySQL est indispensable pour démarrer)
-* Importer une base de données 
+Vous devez exécuter les commandes suivantes :
+* `mkdir otf` (`otf` sera votre dossier root)
+* `cd otf`
+* `git clone git@github.com:emilieguth/otf-docker.git .`
+* `git submodule update --init`
+* `cp src/ouvretaferme/secret-example.c.php src/ouvretaferme/secret.c.php`
+* `docker-compose up --build`
+* Pour importer une base de données : copier le fichier SQL dans `otf/docker/mysql/tmp/demo.sql` puis connectez-vous à votre conteneur MySQL, puis à votre serveur SQL et créez la base de données `dev_ouvretaferme`. Ensuite, injectez en ligne de commande le fichier `demo.sql` dans cette nouvelle base.
 
 **Base de données de démarrage**
 
