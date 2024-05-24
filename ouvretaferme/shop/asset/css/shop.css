@@ -358,6 +358,10 @@ div.shop-widget-order {
 	text-decoration: none;
 }
 
+.shop-list-item .shop-logo-view {
+	align-self: center;
+}
+
 .shop-list-item h2 {
 	align-self: center;
 	color: var(--secondary);

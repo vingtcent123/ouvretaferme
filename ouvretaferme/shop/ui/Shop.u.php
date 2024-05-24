@@ -396,7 +396,7 @@ class ShopUi {
 
 		$ui = new \media\ShopLogoUi();
 
-		$class = 'farm-logo-view media-rectangle-view'.' ';
+		$class = 'shop-logo-view media-rectangle-view'.' ';
 
 		$format = $ui->convertToFormat($size);
 
