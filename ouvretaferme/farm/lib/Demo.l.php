@@ -283,15 +283,19 @@ class DemoLib {
 
 	public static function anonymizeUsers(): void {
 
-		$cUserFarm = (new FarmerModel())
-			->getColumn('user');
+		$farmUsers = array_merge(
+			(new FarmerModel())->getColumn('user')->getIds(),
+			(new \series\TimesheetModel())
+				->whereFarm(Farm::DEMO)
+				->getColumn(new \Sql('DISTINCT(user)', 'int'))
+		);
 
 		$cUserCustomer = (new \selling\CustomerModel())
 			->whereUser('!=', NULL)
 			->getColumn('user');
 
 		(new \user\UserModel())
-			->whereId('NOT IN', $cUserFarm)
+			->whereId('NOT IN', $farmUsers)
 			->whereId('NOT IN', $cUserCustomer)
 			->delete();
 
@@ -313,7 +317,7 @@ class DemoLib {
         ->select('id')
         ->getCollection() as $eUser) {
 
-			$eUser['firstName'] = self::getFirstName($position);
+			$eUser['firstName'] = self::getFirstName($eUser['id']);
 			$eUser['lastName'] = self::getLastName();
 			$eUser['email'] = $eUser['id'].'@'.\Lime::getDomain();
 
@@ -360,7 +364,7 @@ class DemoLib {
         ->select('id')
         ->getCollection() as $eCustomer) {
 
-			$eCustomer['name'] = self::getFirstName($position).' '.self::getLastName();
+			$eCustomer['name'] = self::getFirstName($eCustomer['user']['id'] ?? $eCustomer['id']).' '.self::getLastName();
 			$eCustomer['email'] = NULL;
 			$eCustomer['phone'] = NULL;
 			$eCustomer['legalName'] = NULL;
@@ -376,8 +380,6 @@ class DemoLib {
 			(new \selling\CustomerModel())
 				->select('name', 'phone', 'email', 'legalName', 'invoiceStreet1', 'invoiceStreet2', 'invoicePostcode', 'invoiceCity', 'deliveryStreet1', 'deliveryStreet2', 'deliveryPostcode', 'deliveryCity')
 				->update($eCustomer);
-
-			$position++;
 
 		}
 
@@ -420,7 +422,7 @@ class DemoLib {
 		return substr('ABCDEFGHIJKLMNOPQRSTUVWXYZ', mt_rand(0, 25), 1).'.';
 	}
 
-	public static function getFirstName(?int $position = NULL): string {
+	public static function getFirstName(int $position): string {
 
 		if(self::$names === NULL) {
 
@@ -433,11 +435,7 @@ class DemoLib {
 
 		}
 
-		if($position === NULL) {
-			return self::$names[mt_rand(0, count(self::$names) - 1)];
-		} else {
-			return self::$names[$position % count(self::$names)];
-		}
+		return self::$names[$position % count(self::$names)];
 
 	}
 
