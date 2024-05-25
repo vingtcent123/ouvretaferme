@@ -343,6 +343,12 @@ class SaleUi {
 										$h .= '<a href="'.\shop\ShopUi::adminDateUrl($eSale['farm'], $eSale['shop'], $eSale['shopDate']).'">'.encode($eSale['shop']['name']).'</a>';
 									} else if($eSale['marketParent']->notEmpty()) {
 										$h .= '<a href="'.SaleUi::url($eSale['marketParent']).'">'.encode($eSale['marketParent']['customer']['name']).'</a>';;
+									} else if($eSale['market']) {
+										if($eSale['marketSales'] > 0) {
+											$h .= p("Marché à {value} vente", "Marché à {value} ventes", $eSale['marketSales']);
+										} else {
+											$h .= s("Marché");
+										}
 									}
 								$h .= '</div>';
 							$h .= '</td>';
