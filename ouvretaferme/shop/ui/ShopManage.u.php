@@ -136,7 +136,7 @@ class ShopManageUi {
 										$h .= \util\DateUi::textual($eDate['deliveryDate']);
 									$h .= '</dd>';
 
-									$h .= '<dt>'.s("Ventes").'</dt>';
+									$h .= '<dt>'.s("Commandes").'</dt>';
 									$h .= '<dd>'.$eDate['sales']['countValid'].'</dd>';
 
 									if($eDate['sales']['countValid'] > 0) {
