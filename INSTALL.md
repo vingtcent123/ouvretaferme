@@ -3,7 +3,7 @@ INSTALLER OUVRETAFERME
 **Stack**
 
 - Nginx
-- PHP 8.3+ (extensions requises : mysqli pdo pdo_mysql && docker-php-ext-enable pdo_mysql, bcmath, curl, intl, mbstring, xml, imap)
+- PHP 8.3+ (extensions requises : pdo, bcmath, curl, intl, mbstring, xml, imap, yaml)
 - MySQL 8+
 - Redis
 

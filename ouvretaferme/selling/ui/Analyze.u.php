@@ -827,6 +827,16 @@ class AnalyzeUi {
 
 	}
 
+	public function getEmptyShop(): string {
+
+		$h = '<div class="util-info">';
+			$h .= s("Vous n'avez pas ouvert de boutique en ligne sur {siteName}.");
+		$h .= '</div>';
+
+		return $h;
+
+	}
+
 	public function getShop(\farm\Farm $eFarm, \Collection $cShop, \shop\Shop $eShopSelected, \Collection $cSaleTurnover, \Collection $cItemProduct, \Collection $cItemProductMonthly, \Collection $cPlant, \Collection $cccItemPlantMonthly, \Collection $ccItemCustomer, int $year, ?string $monthly): string {
 
 		$h = '<h2>';

@@ -793,30 +793,34 @@
 
 					$data->cShop = \shop\ShopLib::getByFarm($data->eFarm);
 
-					if(get_exists('shop')) {
-						$selectedshop = GET('shop', 'int');
-						$data->eShop = $data->cShop[$selectedshop] ?? $data->cShop->first();
-					} else {
-						$data->eShop = $data->cShop->first();
+					if($data->cShop->notEmpty()) {
+
+						if(get_exists('shop')) {
+							$selectedshop = GET('shop', 'int');
+							$data->eShop = $data->cShop[$selectedshop] ?? $data->cShop->first();
+						} else {
+							$data->eShop = $data->cShop->first();
+						}
+
+
+						$data->cSaleTurnover = \selling\AnalyzeLib::getShopTurnover($data->eShop, $years, $data->month, $data->week);
+						$data->cItemProduct = \selling\AnalyzeLib::getShopProducts($data->eShop, $data->year, $data->month, $data->week);
+						$data->cPlant = \selling\AnalyzeLib::getShopPlants($data->eShop, $data->year, $data->month, $data->week);
+						$data->ccItemCustomer = \selling\AnalyzeLib::getShopCustomers($data->eShop, $data->year, $data->month, $data->week);
+
+						$data->monthly = GET('monthly', ['turnover', 'quantity', 'average'], NULL);
+
+						if($data->monthly) {
+							$data->cItemProductMonthly = \selling\AnalyzeLib::getMonthlyShopProducts($data->eShop, $data->year)  ;
+							$data->cccItemPlantMonthly = \selling\AnalyzeLib::getMonthlyShopPlants($data->eShop, $data->year);
+						} else {
+							$data->cItemProductMonthly = new Collection();
+							$data->cccItemPlantMonthly = new Collection();
+						}
+
+						\selling\AnalyzeLib::addShipping($data->cSaleTurnover, $data->cItemProduct, $data->year);
+
 					}
-
-
-					$data->cSaleTurnover = \selling\AnalyzeLib::getShopTurnover($data->eShop, $years, $data->month, $data->week);
-					$data->cItemProduct = \selling\AnalyzeLib::getShopProducts($data->eShop, $data->year, $data->month, $data->week);
-					$data->cPlant = \selling\AnalyzeLib::getShopPlants($data->eShop, $data->year, $data->month, $data->week);
-					$data->ccItemCustomer = \selling\AnalyzeLib::getShopCustomers($data->eShop, $data->year, $data->month, $data->week);
-
-					$data->monthly = GET('monthly', ['turnover', 'quantity', 'average'], NULL);
-
-					if($data->monthly) {
-						$data->cItemProductMonthly = \selling\AnalyzeLib::getMonthlyShopProducts($data->eShop, $data->year)  ;
-						$data->cccItemPlantMonthly = \selling\AnalyzeLib::getMonthlyShopPlants($data->eShop, $data->year);
-					} else {
-						$data->cItemProductMonthly = new Collection();
-						$data->cccItemPlantMonthly = new Collection();
-					}
-
-					\selling\AnalyzeLib::addShipping($data->cSaleTurnover, $data->cItemProduct, $data->year);
 
 					break;
 
