@@ -556,6 +556,18 @@ class SaleLib extends SaleCrud {
 
 		}
 
+		if(
+			in_array('shopDate', $properties) and
+			$e['shopDate']->notEmpty()
+		) {
+
+			$e['shopDate']->expects('deliveryDate');
+
+			$properties[] = 'deliveredAt';
+			$e['deliveredAt'] = $e['shopDate']['deliveryDate'];
+
+		}
+
 		parent::update($e, $properties);
 
 		$newItems = [];
@@ -578,13 +590,13 @@ class SaleLib extends SaleCrud {
 
 		}
 
-		if(in_array('deliveredAt', $properties)) {
-			$newItems['deliveredAt'] = $e['deliveredAt'];
-		}
-
 		if(in_array('shopDate', $properties)) {
 			$newItems['shop'] = $e['shop'];
 			$newItems['shopDate'] = $e['shopDate'];
+		}
+
+		if(in_array('deliveredAt', $properties)) {
+			$newItems['deliveredAt'] = $e['deliveredAt'];
 		}
 
 		if(in_array('type', $properties)) {
