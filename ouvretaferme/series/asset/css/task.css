@@ -1338,15 +1338,15 @@ a.tabs-category {
 
 }
 
-body[data-template~="farm-planning-daily"] .util-bar-inline,
-body[data-template~="farm-planning-weekly"] .util-bar-inline {
+body[data-template~="farm-planning-daily"] .batch-one,
+body[data-template~="farm-planning-weekly"] .batch-one {
 	left: 2.5rem;
 }
 
 @media (max-width: 575px) {
 
-	body[data-template~="farm-planning-daily"] .util-bar-inline,
-	body[data-template~="farm-planning-weekly"] .util-bar-inline {
+	body[data-template~="farm-planning-daily"] .batch-one,
+	body[data-template~="farm-planning-weekly"] .batch-one {
 		left: 2.75rem;
 	}
 
@@ -1354,27 +1354,27 @@ body[data-template~="farm-planning-weekly"] .util-bar-inline {
 
 @media (min-width: 768px) and (max-width: 991px) {
 
-	body[data-template~="farm-planning-weekly"] .util-bar-inline {
+	body[data-template~="farm-planning-weekly"] .batch-one {
 		top: calc(50% - 1.25rem);
 	}
 
-	body[data-template~="farm-planning-weekly"] .util-bar-inline-item {
+	body[data-template~="farm-planning-weekly"] .batch-one-item {
 		width: 3rem;
 	}
 
-	body[data-template~="farm-planning-weekly"] .util-bar-inline-item span {
+	body[data-template~="farm-planning-weekly"] .batch-one-item span {
 		display: none;
 	}
 
 }
 
-body[data-template~="farm-planning-daily"] .util-bar-inline-item span {
+body[data-template~="farm-planning-daily"] .batch-one-item span {
 	font-size: 0.75rem;
 }
 
 @media (max-width: 1399px) {
 
-	body[data-template~="farm-planning-weekly"] .util-bar-inline-item span {
+	body[data-template~="farm-planning-weekly"] .batch-one-item span {
 		font-size: 0.75rem;
 	}
 

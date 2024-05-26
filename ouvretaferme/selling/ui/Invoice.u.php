@@ -296,9 +296,9 @@ class InvoiceUi {
 
 		$form = new \util\FormUi();
 
-		$h = '<div id="batch-several" class="util-bar hide">';
+		$h = '<div id="batch-group" class="hide">';
 
-			$h .= $form->open('batch-several-form');
+			$h .= $form->open('batch-group-form');
 
 			$h .= '<div class="batch-ids hide"></div>';
 
@@ -308,19 +308,19 @@ class InvoiceUi {
 			$h .= '</div>';
 
 			$h .= '<div class="batch-menu">';
-				$h .= '<div class="util-bar-menu">';
+				$h .= '<div class="batch-menu-main">';
 
-					$h .= '<a data-ajax-submit="/selling/invoice:doSendCollection" data-confirm="'.s("Confirmer l'envoi des factures par e-mail aux clients ?").'" class="batch-menu-send util-bar-menu-item">';
+					$h .= '<a data-ajax-submit="/selling/invoice:doSendCollection" data-confirm="'.s("Confirmer l'envoi des factures par e-mail aux clients ?").'" class="batch-menu-send batch-menu-item">';
 						$h .= \Asset::icon('envelope');
 						$h .= '<span>'.s("Envoyer par e-mail").'</span>';
 					$h .= '</a>';
 
-					$h .= '<a data-ajax-submit="/selling/invoice:doDeleteCollection" data-confirm="'.s("Confirmer la suppression définitive de ces factures ?").'" class="util-bar-menu-item">';
-						$h .= \Asset::icon('trash');
-						$h .= '<span>'.s("Supprimer").'</span>';
-					$h .= '</a>';
-
 				$h .= '</div>';
+
+				$h .= '<a data-ajax-submit="/selling/invoice:doDeleteCollection" data-confirm="'.s("Confirmer la suppression définitive de ces factures ?").'" class="batch-menu-item batch-menu-item-danger">';
+					$h .= \Asset::icon('trash');
+					$h .= '<span>'.s("Supprimer").'</span>';
+				$h .= '</a>';
 			$h .= '</div>';
 
 			$h .= $form->close();

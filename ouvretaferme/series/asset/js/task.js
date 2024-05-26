@@ -719,7 +719,7 @@ class Task {
 
 	static hidePlanningSelection() {
 
-		qs('#batch-several').hide();
+		qs('#batch-group').hide();
 
 		qsa('[name="batch[]"]:checked', (field) => field.checked = false);
 		qsa('[name="batchAction[]"]:checked', (field) => field.checked = false);
@@ -749,7 +749,7 @@ class Task {
 
 	static changePlanningSelection() {
 
-		const menu = qs('#batch-several');
+		const menu = qs('#batch-group');
 		const one = qs('#batch-one');
 		const selection = qsa('[name="batch[]"]:checked');
 
@@ -886,6 +886,12 @@ class Task {
 			qsa('.batch-menu-done', button => button.hide());
 		} else {
 			qsa('.batch-menu-done', button => button.removeHide());
+		}
+
+		const list = qsa('.batch-menu-main .batch-menu-item:not(.hide)', node => node.classList.remove('batch-menu-item-last'));
+
+		if(list.length > 0) {
+			list[list.length - 1].classList.add('batch-menu-item-last');
 		}
 
 	}

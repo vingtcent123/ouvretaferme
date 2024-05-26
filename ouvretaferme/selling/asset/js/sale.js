@@ -48,7 +48,7 @@ class Sale {
 
 	static changeSelection() {
 
-		const menu = qs('#batch-several');
+		const menu = qs('#batch-group');
 		const selection = qsa('[name="batch[]"]:checked');
 
 		if(selection.length === 0)  {
@@ -63,7 +63,7 @@ class Sale {
 
 	static hideSelection() {
 
-		qs('#batch-several').hide();
+		qs('#batch-group').hide();
 
 		qsa('[name="batch[]"]:checked, .batch-all', (field) => field.checked = false);
 
@@ -119,6 +119,12 @@ class Sale {
 					actions++;
 				}
 		);
+
+		const list = qsa('.batch-menu-main .batch-menu-item:not(.hide)', node => node.classList.remove('batch-menu-item-last'));
+
+		if(list.length > 0) {
+			list[list.length - 1].classList.add('batch-menu-item-last');
+		}
 
 	}
 

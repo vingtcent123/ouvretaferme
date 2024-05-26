@@ -455,13 +455,13 @@ label.flow-timeline-select input {
 	height: 1.1rem;
 }
 
-div.flow-timeline .util-bar-inline {
+div.flow-timeline .batch-one {
 	left: 2.25rem;
 }
 
 @media (max-width: 449px) {
 
-	div.flow-timeline .util-bar-inline-item span {
+	div.flow-timeline .batch-one-item span {
 		font-size: 0.7rem;
 	}
 

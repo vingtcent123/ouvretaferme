@@ -474,9 +474,9 @@ class SaleUi {
 
 		$form = new \util\FormUi();
 
-		$h = '<div id="batch-several" class="util-bar hide">';
+		$h = '<div id="batch-group" class="hide">';
 
-			$h .= $form->open('batch-several-form');
+			$h .= $form->open('batch-group-form');
 
 			$h .= '<div class="batch-ids hide"></div>';
 
@@ -486,34 +486,33 @@ class SaleUi {
 			$h .= '</div>';
 
 			$h .= '<div class="batch-menu">';
-				$h .= '<div class="util-bar-menu">';
+				$h .= '<div class="batch-menu-main">';
 
-					$h .= '<a data-ajax-submit="/selling/sale:doUpdateConfirmedCollection" data-confirm="'.s("Marquer ces ventes comme confirmées ?").'" class="batch-menu-confirmed util-bar-menu-item">';
+					$h .= '<a data-ajax-submit="/selling/sale:doUpdateConfirmedCollection" data-confirm="'.s("Marquer ces ventes comme confirmées ?").'" class="batch-menu-confirmed batch-menu-item">';
 						$h .= '<span class="sale-preparation-status-label sale-preparation-status-batch sale-preparation-status-confirmed">'.self::p('preparationStatus')->shortValues[Sale::CONFIRMED].'</span>';
 						$h .= '<span>'.s("Confirmé").'</span>';
 					$h .= '</a>';
 
-					$h .= '<a data-ajax-submit="/selling/sale:doUpdateDeliveredCollection" data-confirm="'.s("Marquer ces ventes comme livrées ?").'" class="batch-menu-delivered util-bar-menu-item">';
+					$h .= '<a data-ajax-submit="/selling/sale:doUpdateDeliveredCollection" data-confirm="'.s("Marquer ces ventes comme livrées ?").'" class="batch-menu-delivered batch-menu-item">';
 						$h .= '<span class="sale-preparation-status-label sale-preparation-status-batch sale-preparation-status-delivered">'.self::p('preparationStatus')->shortValues[Sale::DELIVERED].'</span>';
 						$h .= '<span>'.s("Livré").'</span>';
 					$h .= '</a>';
 
-					$h .= '<a data-ajax-submit="/selling/sale:doUpdateCancelCollection" data-confirm="'.s("Annuler ces ventes ?").'" class="batch-menu-cancel util-bar-menu-item">';
+					$h .= '<a data-ajax-submit="/selling/sale:doUpdateCancelCollection" data-confirm="'.s("Annuler ces ventes ?").'" class="batch-menu-cancel batch-menu-item">';
 						$h .= '<span class="sale-preparation-status-label sale-preparation-status-batch sale-preparation-status-draft">'.self::p('preparationStatus')->shortValues[Sale::CANCELED].'</span>';
 						$h .= '<span>'.s("Annuler").'</span>';
 					$h .= '</a>';
 
-					$h .= '<a data-ajax-submit="/selling/sale:doExportCollection" data-ajax-navigation="never" class="util-bar-menu-item">';
+					$h .= '<a data-ajax-submit="/selling/sale:doExportCollection" data-ajax-navigation="never" class="batch-menu-item">';
 						$h .= \Asset::icon('filetype-pdf');
 						$h .= '<span>'.s("Exporter").'</span>';
 					$h .= '</a>';
 
-					$h .= '<a data-ajax-submit="/selling/sale:doDeleteCollection" data-confirm="'.s("Confirmer la suppression de ces ventes ?").'" class="batch-menu-delete util-bar-menu-item">';
-						$h .= \Asset::icon('trash');
-						$h .= '<span>'.s("Supprimer").'</span>';
-					$h .= '</a>';
-
 				$h .= '</div>';
+				$h .= '<a data-ajax-submit="/selling/sale:doDeleteCollection" data-confirm="'.s("Confirmer la suppression de ces ventes ?").'" class="batch-menu-delete batch-menu-item batch-menu-item-danger">';
+					$h .= \Asset::icon('trash');
+					$h .= '<span>'.s("Supprimer").'</span>';
+				$h .= '</a>';
 			$h .= '</div>';
 
 			$h .= $form->close();
