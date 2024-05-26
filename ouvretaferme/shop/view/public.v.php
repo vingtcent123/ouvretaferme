@@ -49,7 +49,7 @@ new AdaptativeView('shop', function($data, ShopTemplate $t) {
 				echo '<div class="util-block bg-success color-white">';
 					echo '<p>';
 						echo s("Merci, vous commande pour le {value} est enregistrée !", \util\DateUi::textual($data->eDateSelected['deliveryDate'], \util\DateUi::DATE_HOUR_MINUTE));
-						if($data->eSaleExisting->canCustomerCancel()) {
+						if($data->eSaleExisting->acceptCustomerCancel()) {
 							echo '<br/>'.s("Cette commande est modifiable et annulable jusqu'au {value}.", \util\DateUi::textual($data->eDateSelected['orderEndAt'], \util\DateUi::DATE_HOUR_MINUTE));
 						}
 					echo '</p>';

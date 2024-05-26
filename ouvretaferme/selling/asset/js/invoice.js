@@ -48,54 +48,14 @@ class Invoice {
 
 		qsa('.batch-ids', node => node.innerHTML = newIds);
 
-		let actions = 0;
-
 		qsa(
-			'.batch-menu-cancel',
-			selection.filter('[data-batch~="not-canceled"]').length > 0 ?
+			'.batch-menu-send',
+			selection.filter('[data-batch~="not-sent"]').length > 0 ?
 				node => node.hide() :
 				node => {
 					node.removeHide();
-					actions++;
 				}
 		);
-
-		qsa(
-			'.batch-menu-confirmed',
-			selection.filter('[data-batch~="not-confirmed"]').length > 0 ?
-				node => node.hide() :
-				node => {
-					node.removeHide();
-					actions++;
-				}
-		);
-
-		qsa(
-			'.batch-menu-delivered',
-			selection.filter('[data-batch~="not-delivered"]').length > 0 ?
-				node => node.hide() :
-				node => {
-					node.removeHide();
-					actions++;
-				}
-		);
-
-		qsa(
-			'.batch-menu-delete',
-			selection.filter('[data-batch~="not-delete"]').length > 0 ?
-				node => node.hide() :
-				node => {
-					node.removeHide();
-					actions++;
-				}
-		);
-
-		qsa(
-			'.batch-menu-empty',
-			(actions > 0) ?
-				node => node.hide() :
-				node => node.removeHide()
-		)
 
 	}
 

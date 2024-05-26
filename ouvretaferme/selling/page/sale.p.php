@@ -55,7 +55,7 @@
 	})
 	->read('/vente/{id}/devis', function($data) {
 
-		$data->e->validate('canOrderForm');
+		$data->e->validate('acceptOrderForm');
 
 		$content = \selling\PdfLib::getContentBySale($data->e, \selling\Pdf::ORDER_FORM);
 
@@ -71,7 +71,7 @@
 	}, validate: ['canAccess'])
 	->read('/vente/{id}/bon-livraison', function($data) {
 
-		$data->e->validate('canDeliveryNote');
+		$data->e->validate('acceptDeliveryNote');
 
 		$content = \selling\PdfLib::getContentBySale($data->e, \selling\Pdf::DELIVERY_NOTE);
 
@@ -88,7 +88,7 @@
 	->read('generateOrderForm', function($data) {
 
 		$data->e->validate('canManage');
-		$data->e->canGenerateOrderForm() ?: throw new FailAction('selling\Sale::generateOrderForm');
+		$data->e->acceptGenerateOrderForm() ?: throw new FailAction('selling\Sale::generateOrderForm');
 
 		$data->eFarm = $data->e['farm'];
 		$data->eFarm->hasFeatureDocument($data->e['type']) ?: throw new FailAction('farm\Farm::disabled');
@@ -126,13 +126,13 @@
 
 			case \selling\Pdf::DELIVERY_NOTE:
 
-				$data->e->canGenerateDeliveryNote() ?: throw new FailAction('selling\Sale::generateDeliveryNote');
+				$data->e->acceptGenerateDeliveryNote() ?: throw new FailAction('selling\Sale::generateDeliveryNote');
 
 				break;
 
 			case \selling\Pdf::ORDER_FORM :
 
-				$data->e->canGenerateOrderForm() ?: throw new FailAction('selling\Sale::generateOrderForm');
+				$data->e->acceptGenerateOrderForm() ?: throw new FailAction('selling\Sale::generateOrderForm');
 
 				$data->e->build(['orderFormValidUntil', 'orderFormPaymentCondition'], $_POST);
 
@@ -190,7 +190,7 @@
 
 		throw new ViewAction($data);
 
-	}, validate: ['canWrite', 'canAssociateShop'])
+	}, validate: ['canWrite', 'acceptAssociateShop'])
 	->write('doUpdateShop', function($data) {
 		
 		$fw = new FailWatch();
@@ -200,8 +200,8 @@
 		$data->e['from'] = $from;
 
 		match($from) {
-			\selling\Sale::USER => $data->e->validate('canDissociateShop'),
-			\selling\Sale::SHOP => $data->e->validate('canAssociateShop')
+			\selling\Sale::USER => $data->e->validate('acceptDissociateShop'),
+			\selling\Sale::SHOP => $data->e->validate('acceptAssociateShop')
 		};
 
 		$data->e->build(['shopDate'], $_POST, for: 'update');
@@ -263,13 +263,13 @@
 		$fw = new \FailWatch();
 
 		if(
-			$data->e->canDeleteStatus() === FALSE or
-			$data->e->canDeletePaymentStatus() === FALSE
+			$data->e->acceptDeleteStatus() === FALSE or
+			$data->e->acceptDeletePaymentStatus() === FALSE
 		) {
 			Sale::fail('deletedNotDraft');
-		} else if($data->e->canDeleteMarket() === FALSE) {
+		} else if($data->e->acceptDeleteMarket() === FALSE) {
 			Sale::fail('deletedMarket');
-		} else if($data->e->canDeleteMarketSale() === FALSE) {
+		} else if($data->e->acceptDeleteMarketSale() === FALSE) {
 			Sale::fail('deletedMarketSale');
 		}
 
@@ -310,7 +310,7 @@
 	})
 	->post('doUpdateCancelCollection', function($data) {
 
-		$data->c->validate('canWrite', 'canStatusCancel');
+		$data->c->validate('canWrite', 'acceptStatusCancel');
 
 		\selling\SaleLib::updatePreparationStatusCollection($data->c, \selling\Sale::CANCELED);
 
@@ -319,7 +319,7 @@
 	})
 	->post('doUpdateDeliveredCollection', function($data) {
 
-		$data->c->validate('canWrite', 'canStatusDelivered');
+		$data->c->validate('canWrite', 'acceptStatusDelivered');
 
 		\selling\SaleLib::updatePreparationStatusCollection($data->c, \selling\Sale::DELIVERED);
 
@@ -328,7 +328,7 @@
 	})
 	->post('doUpdateConfirmedCollection', function($data) {
 
-		$data->c->validate('canWrite', 'canStatusConfirmed');
+		$data->c->validate('canWrite', 'acceptStatusConfirmed');
 
 		\selling\SaleLib::updatePreparationStatusCollection($data->c, \selling\Sale::CONFIRMED);
 
@@ -337,7 +337,7 @@
 	})
 	->post('doDeleteCollection', function($data) {
 
-		$data->c->validate('canDelete', 'canDeleteSale');
+		$data->c->validate('canDelete', 'acceptDelete');
 
 		\selling\SaleLib::deleteCollection($data->c);
 

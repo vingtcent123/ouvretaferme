@@ -2,7 +2,7 @@
 (new \selling\SalePage())
 	->applyElement(function($data, \selling\Sale $eSale) {
 
-		$eSale->validate('canWriteItems');
+		$eSale->validate('acceptWriteItems');
 
 	})
 	->read('add', fn($data) => throw new ViewAction($data))

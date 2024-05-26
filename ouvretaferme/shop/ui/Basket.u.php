@@ -532,7 +532,7 @@ class BasketUi {
 
 		$h .= '</div>';
 
-		if($eSale->canCustomerCancel()) {
+		if($eSale->acceptCustomerCancel()) {
 			$h .= '<br/>';
 			$h .= '<br/>';
 			$h .= '<div class="util-block-gradient">';
@@ -681,7 +681,7 @@ class BasketUi {
 
 			$h .= '<br/>';
 
-			if($eSale->canCustomerCancel()) {
+			if($eSale->acceptCustomerCancel()) {
 				$h .= '<div>';
 					$h .= '<a '.attr('onclick', 'BasketManage.modify('.$eDate['id'].', '.$this->getJsonBasket($eSale).', \'home\')').' class="btn btn-outline-primary" title="'.s("Cette commande est modifiable jusqu'au {value}.", ['value' => \util\DateUi::textual($eDate['orderEndAt'], \util\DateUi::DATE_HOUR_MINUTE)]).'">'.s("Modifier ma commande").'</a>';
 					$h .= '&nbsp;';

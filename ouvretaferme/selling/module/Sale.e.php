@@ -182,7 +182,7 @@ class Sale extends SaleElement {
 		return $this->isClosed() === FALSE;
 	}
 
-	public function canWriteItems(): bool {
+	public function acceptWriteItems(): bool {
 
 		$this->expects(['preparationStatus']);
 
@@ -193,7 +193,7 @@ class Sale extends SaleElement {
 
 	}
 
-	public function canWritePaymentMethod(): bool {
+	public function acceptWritePaymentMethod(): bool {
 
 		return (
 			$this['marketParent']->notEmpty() and
@@ -202,7 +202,7 @@ class Sale extends SaleElement {
 
 	}
 
-	public function canWriteDeliveredAt(): bool {
+	public function acceptWriteDeliveredAt(): bool {
 
 		$this->expects(['preparationStatus', 'from', 'marketParent']);
 
@@ -267,7 +267,7 @@ class Sale extends SaleElement {
 
 	}
 
-	public function canCancelDelivered(): bool {
+	public function acceptCancelDelivered(): bool {
 
 		$this->expects(['deliveredAt', 'invoice']);
 
@@ -278,12 +278,12 @@ class Sale extends SaleElement {
 
 	}
 
-	public function canAnyDocument(): bool {
+	public function acceptAnyDocument(): bool {
 
 		return (
-			$this->canDeliveryNote() or
-			$this->canOrderForm() or
-			$this->canInvoice()
+			$this->acceptDeliveryNote() or
+			$this->acceptOrderForm() or
+			$this->acceptInvoice()
 		);
 
 	}
@@ -291,36 +291,36 @@ class Sale extends SaleElement {
 	public function canDocument(string $type): bool {
 
 		return match($type) {
-			Pdf::DELIVERY_NOTE => $this->canDeliveryNote(),
-			Pdf::ORDER_FORM => $this->canOrderForm(),
-			Pdf::INVOICE => $this->canInvoice(),
+			Pdf::DELIVERY_NOTE => $this->acceptDeliveryNote(),
+			Pdf::ORDER_FORM => $this->acceptOrderForm(),
+			Pdf::INVOICE => $this->acceptInvoice(),
 		};
 
 	}
 
-	public function canGenerateDocument(string $type): bool {
+	public function acceptGenerateDocument(string $type): bool {
 
 		return match($type) {
-			Pdf::DELIVERY_NOTE => $this->canGenerateDeliveryNote(),
-			Pdf::ORDER_FORM => $this->canGenerateOrderForm(),
-			Pdf::INVOICE => $this->canGenerateInvoice()
+			Pdf::DELIVERY_NOTE => $this->acceptGenerateDeliveryNote(),
+			Pdf::ORDER_FORM => $this->acceptGenerateOrderForm(),
+			Pdf::INVOICE => $this->acceptGenerateInvoice()
 		};
 
 	}
 
-	public function canRegenerateDocument(string $type): bool {
+	public function acceptRegenerateDocument(string $type): bool {
 
 		$this->expects(['invoice']);
 
 		return match($type) {
-			Pdf::DELIVERY_NOTE => $this->canGenerateDocument($type),
-			Pdf::ORDER_FORM => $this->canGenerateDocument($type),
+			Pdf::DELIVERY_NOTE => $this->acceptGenerateDocument($type),
+			Pdf::ORDER_FORM => $this->acceptGenerateDocument($type),
 			Pdf::INVOICE => $this['invoice']->notEmpty()
 		};
 
 	}
 
-	public function canOrderForm(): bool {
+	public function acceptOrderForm(): bool {
 
 		return (
 			$this['customer']->notEmpty() and
@@ -333,13 +333,13 @@ class Sale extends SaleElement {
 
 	}
 
-	public function canGenerateOrderForm(): bool {
+	public function acceptGenerateOrderForm(): bool {
 
-		return $this->canOrderForm() and in_array($this['preparationStatus'], [Sale::DRAFT, Sale::CONFIRMED]);
+		return $this->acceptOrderForm() and in_array($this['preparationStatus'], [Sale::DRAFT, Sale::CONFIRMED]);
 
 	}
 
-	public function canInvoice(): bool {
+	public function acceptInvoice(): bool {
 
 		return (
 			$this['customer']->notEmpty() and
@@ -350,26 +350,26 @@ class Sale extends SaleElement {
 
 	}
 
-	public function canGenerateInvoice(): bool {
-		return $this->canInvoice() and (
+	public function acceptGenerateInvoice(): bool {
+		return $this->acceptInvoice() and (
 			$this['invoice']->empty() and
 			$this['preparationStatus'] === Sale::DELIVERED
 		);
 	}
 
-	public function canDeliveryNote(): bool {
+	public function acceptDeliveryNote(): bool {
 
-		return $this->canOrderForm();
-
-	}
-
-	public function canGenerateDeliveryNote(): bool {
-
-		return $this->canDeliveryNote() and ($this['preparationStatus'] === Sale::DELIVERED);
+		return $this->acceptOrderForm();
 
 	}
 
-	public function canAssociateShop(): bool {
+	public function acceptGenerateDeliveryNote(): bool {
+
+		return $this->acceptDeliveryNote() and ($this['preparationStatus'] === Sale::DELIVERED);
+
+	}
+
+	public function acceptAssociateShop(): bool {
 		return (
 			$this['type'] === Sale::PRIVATE and
 			$this['market'] === FALSE and
@@ -378,11 +378,11 @@ class Sale extends SaleElement {
 		);
 	}
 
-	public function canDissociateShop(): bool {
+	public function acceptDissociateShop(): bool {
 		return $this['shop']->notEmpty();
 	}
 
-	public function canCustomerCancel(): bool {
+	public function acceptCustomerCancel(): bool {
 
 		return (
 			// Seulement certains types de paiement
@@ -424,17 +424,17 @@ class Sale extends SaleElement {
 		return 'BL'.$this['document'];
 	}
 
-	public function canDeleteSale(): bool {
+	public function acceptDelete(): bool {
 
 		return (
-			$this->canDeleteStatus() and
-			$this->canDeletePaymentStatus() and
-			$this->canDeleteMarket()
+			$this->acceptDeleteStatus() and
+			$this->acceptDeletePaymentStatus() and
+			$this->acceptDeleteMarket()
 		);
 
 	}
 
-	public function canDeleteMarket(): bool {
+	public function acceptDeleteMarket(): bool {
 
 		$this->expects(['market', 'marketSales']);
 
@@ -442,7 +442,7 @@ class Sale extends SaleElement {
 
 	}
 
-	public function canDeleteMarketSale(): bool {
+	public function acceptDeleteMarketSale(): bool {
 
 		$this->expects(['marketParent']);
 
@@ -459,7 +459,7 @@ class Sale extends SaleElement {
 
 	}
 
-	public function canDeleteStatus(): bool {
+	public function acceptDeleteStatus(): bool {
 
 		$this->expects(['preparationStatus', 'marketParent']);
 
@@ -474,7 +474,7 @@ class Sale extends SaleElement {
 		return [Sale::DRAFT, Sale::BASKET, Sale::CONFIRMED, Sale::CANCELED];
 	}
 
-	public function canDeletePaymentStatus() {
+	public function acceptDeletePaymentStatus() {
 		$this->expects(['paymentStatus']);
 		return in_array($this['paymentStatus'], $this->getDeletePaymentStatuses());
 	}
@@ -510,13 +510,13 @@ class Sale extends SaleElement {
 
 	}
 
-	public function canStatusDelivered(): bool {
+	public function acceptStatusDelivered(): bool {
 
 		return in_array($this['preparationStatus'], $this['marketParent']->notEmpty() ? [Sale::DRAFT] : [Sale::CONFIRMED, Sale::PREPARED]);
 
 	}
 
-	public function canStatusConfirmed(): bool {
+	public function acceptStatusConfirmed(): bool {
 
 		if(in_array($this['preparationStatus'], $this['marketParent']->notEmpty() ? [] : [Sale::BASKET, Sale::DRAFT, Sale::PREPARED, Sale::DELIVERED, Sale::SELLING, Sale::CANCELED]) === FALSE) {
 			return FALSE;
@@ -537,7 +537,7 @@ class Sale extends SaleElement {
 
 	}
 
-	public function canStatusCancel(): bool {
+	public function acceptStatusCancel(): bool {
 
 		if(in_array($this['preparationStatus'], $this['marketParent']->notEmpty() ? [Sale::DRAFT, Sale::DELIVERED] : [Sale::BASKET, Sale::CONFIRMED, Sale::PREPARED, Sale::DELIVERED, Sale::SELLING]) === FALSE) {
 			return FALSE;
@@ -603,7 +603,7 @@ class Sale extends SaleElement {
 
 			'paymentMethod.check' => function(?string $paymentMethod): bool {
 
-				if($this->canWritePaymentMethod() === FALSE) {
+				if($this->acceptWritePaymentMethod() === FALSE) {
 					return FALSE;
 				}
 
@@ -626,11 +626,11 @@ class Sale extends SaleElement {
 
 				return match($preparationStatus) {
 					Sale::DRAFT => in_array($this['oldStatus'], $this['marketParent']->notEmpty() ? [Sale::CANCELED, Sale::DELIVERED] : [Sale::CONFIRMED, Sale::PREPARED, Sale::SELLING]),
-					Sale::CONFIRMED => $this->canStatusConfirmed(),
+					Sale::CONFIRMED => $this->acceptStatusConfirmed(),
 					Sale::SELLING => in_array($this['oldStatus'], $this['market'] ? [Sale::CONFIRMED, Sale::DELIVERED] : []),
 					Sale::PREPARED => in_array($this['oldStatus'], $this['marketParent']->notEmpty() ? [] : [Sale::CONFIRMED]),
-					Sale::CANCELED => $this->canStatusCancel(),
-					Sale::DELIVERED => $this->canStatusDelivered(),
+					Sale::CANCELED => $this->acceptStatusCancel(),
+					Sale::DELIVERED => $this->acceptStatusDelivered(),
 				};
 
 				if($test === FALSE) {
@@ -689,7 +689,7 @@ class Sale extends SaleElement {
 				} else {
 					if(
 						($for === 'create') or
-						($for === 'update' and $this->canWriteDeliveredAt())
+						($for === 'update' and $this->acceptWriteDeliveredAt())
 					) {
 						return \Filter::check('date', $date);
 					} else {

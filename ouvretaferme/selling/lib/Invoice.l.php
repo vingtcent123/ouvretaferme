@@ -331,5 +331,13 @@ class InvoiceLib extends InvoiceCrud {
 
 	}
 
+	public static function deleteCollection(\Collection $cInvoice): void {
+
+		foreach($cInvoice as $eInvoice) {
+			self::delete($eInvoice);
+		}
+
+	}
+
 }
 ?>

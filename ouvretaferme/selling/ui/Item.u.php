@@ -42,7 +42,7 @@ class ItemUi {
 
 				}
 
-				if($eSale->canWriteItems()) {
+				if($eSale->acceptWriteItems()) {
 					$h .= '<div class="mb-1">';
 						$h .= '<a href="/selling/item:add?id='.$eSale['id'].'" class="btn btn-outline-primary">'.\Asset::icon('plus-circle').' '.s("Ajouter un premier article").'</a>';
 					$h .= '</div>';
@@ -61,7 +61,7 @@ class ItemUi {
 				}
 
 				if(
-					$eSale->canWriteItems() and
+					$eSale->acceptWriteItems() and
 					$eSale['items'] > 0
 				) {
 					$h .= '<a href="/selling/item:add?id='.$eSale['id'].'" class="btn btn-outline-primary">'.\Asset::icon('plus-circle').' '.s("Ajouter d'autres articles").'</a>';

@@ -43,6 +43,25 @@ class Invoice extends InvoiceElement {
 		return in_array($this['generation'], [Invoice::FAIL, Invoice::SUCCESS]);
 	}
 
+	public static function validateBatch(\Collection $cInvoice): void {
+
+		if($cInvoice->empty()) {
+			throw new \FailAction('selling\Invoice::invoices.check');
+		} else {
+
+			$eFarm = $cInvoice->first()['farm'];
+
+			foreach($cInvoice as $eInvoice) {
+
+				if($eInvoice['farm']['id'] !== $eFarm['id']) {
+					throw new \NotExpectedAction('Different farms');
+				}
+
+			}
+		}
+
+	}
+
 	public function isCreditNote(): bool {
 		return ($this['priceExcludingVat'] < 0.0);
 	}

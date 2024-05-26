@@ -358,7 +358,7 @@ class SaleLib {
 
 	public static function cancel(\selling\Sale $eSale) {
 
-		if($eSale->canCustomerCancel() === FALSE) {
+		if($eSale->acceptCustomerCancel() === FALSE) {
 			throw new \NotExpectedAction('Cannot cancel sale #'.$eSale['id']);
 		}
 

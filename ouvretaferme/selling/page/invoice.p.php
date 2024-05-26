@@ -158,4 +158,36 @@
 		throw new RedirectAction(\farm\FarmUi::urlSellingSalesInvoice($data->eFarm).'?success=selling:Invoice::createdCollection');
 
 	});
+
+(new Page(function($data) {
+
+		$data->c = \selling\InvoiceLib::getByIds(REQUEST('ids', 'array'));
+
+		\selling\Invoice::validateBatch($data->c);
+
+
+	}))
+	->post('doSendCollection', function($data) {
+
+		$data->c->validate('canWrite', 'acceptSend');
+
+		$data->eFarm = \farm\FarmLib::getById($data->c->first()['farm']);
+		$data->eFarm['selling'] = \selling\ConfigurationLib::getByFarm($data->eFarm);
+
+		foreach($data->c as $e) {
+			\selling\PdfLib::sendByInvoice($data->eFarm, $e);
+		}
+
+		throw new ReloadAction('selling', 'Invoice::sentCollection');
+
+	})
+	->post('doDeleteCollection', function($data) {
+
+		$data->c->validate('canDelete');
+
+		\selling\InvoiceLib::deleteCollection($data->c);
+
+		throw new ReloadAction('selling', 'Invoice::deletedCollection');
+
+	});
 ?>

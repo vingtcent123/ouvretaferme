@@ -269,19 +269,19 @@ class SaleUi {
 
 					$batch = [];
 
-					if($eSale->canStatusConfirmed() === FALSE) {
+					if($eSale->acceptStatusConfirmed() === FALSE) {
 						$batch[] = 'not-confirmed';
 					}
 
-					if($eSale->canStatusCancel() === FALSE) {
+					if($eSale->acceptStatusCancel() === FALSE) {
 						$batch[] = 'not-canceled';
 					}
 
-					if($eSale->canStatusDelivered() === FALSE) {
+					if($eSale->acceptStatusDelivered() === FALSE) {
 						$batch[] = 'not-delivered';
 					}
 
-					if($eSale->canDeleteSale() === FALSE) {
+					if($eSale->acceptDelete() === FALSE) {
 						$batch[] = 'not-delete';
 					}
 
@@ -328,7 +328,7 @@ class SaleUi {
 
 							$h .= '<td class="sale-item-delivery">';
 								$h .= '<div>';
-									if($eSale->canWriteDeliveredAt() === FALSE) {
+									if($eSale->acceptWriteDeliveredAt() === FALSE) {
 										$h .= $eSale['deliveredAt'] ? \util\DateUi::numeric($eSale['deliveredAt']) : s("Non planifiée");
 									} else {
 										if($eSale['deliveredAt'] !== NULL) {
@@ -553,8 +553,8 @@ class SaleUi {
 				$shortLabel = PdfUi::getName($type, $eSale, TRUE);
 				$texts = PdfUi::getTexts($type);
 
-				$canGenerate = $eSale->canGenerateDocument($type);
-				$canRegenerate = $eSale->canRegenerateDocument($type);
+				$acceptGenerate = $eSale->acceptGenerateDocument($type);
+				$acceptRegenerate = $eSale->acceptRegenerateDocument($type);
 
 				$urlGenerate = match($type) {
 					Pdf::DELIVERY_NOTE => 'data-ajax="/selling/sale:doGenerateDocument" post-id="'.$eSale['id'].'" post-type="'.$type.'"',
@@ -562,7 +562,7 @@ class SaleUi {
 					Pdf::INVOICE => 'href="/selling/invoice:create?customer='.$eSale['customer']['id'].'&sales[]='.$eSale['id'].'&origin=sales"',
 				};
 
-				if($canRegenerate) {
+				if($acceptRegenerate) {
 
 					$urlRegenerate = match($type) {
 						Pdf::DELIVERY_NOTE => 'data-ajax="/selling/sale:doGenerateDocument" post-id="'.$eSale['id'].'" post-type="'.$type.'"',
@@ -577,7 +577,7 @@ class SaleUi {
 				if($ePdf->empty()) {
 
 					if(
-						$canGenerate and
+						$acceptGenerate and
 						$eSale->canManage()
 					) {
 
@@ -652,7 +652,7 @@ class SaleUi {
 
 							if($texts['generateNew'] !== NULL) {
 
-								if($canRegenerate) {
+								if($acceptRegenerate) {
 									$class = '';
 								} else {
 									$class = 'sale-document-forbidden';
@@ -1082,7 +1082,7 @@ class SaleUi {
 				$h .= '<dt>'.s("Date de vente").'</dt>';
 				$h .= '<dd>';
 
-				$update = fn($content) => $eSale->canWriteDeliveredAt() ? $eSale->quick('deliveredAt', $content) : $content;
+				$update = fn($content) => $eSale->acceptWriteDeliveredAt() ? $eSale->quick('deliveredAt', $content) : $content;
 
 				$h .= $eSale['preparationStatus'] === Sale::DELIVERED ?
 					$update(\util\DateUi::numeric($eSale['deliveredAt'], \util\DateUi::DATE)) :
@@ -1094,7 +1094,7 @@ class SaleUi {
 					$h .= '<dd>'.($eSale['discount'] > 0 ? s("{value} %", $eSale['discount']) : '').'</dd>';
 				}
 
-				if($eSale->canAnyDocument()) {
+				if($eSale->acceptAnyDocument()) {
 
 					$h .= '<dt>'.s("Documents").'</dt>';
 					$h .= '<dd>';
@@ -1223,11 +1223,11 @@ class SaleUi {
 			$primaryList .= '<a href="/selling/sale:update?id='.$eSale['id'].'" class="dropdown-item">'.s("Modifier la vente").'</a>';
 		}
 
-		if($eSale->canAssociateShop()) {
+		if($eSale->acceptAssociateShop()) {
 			$primaryList .= '<a href="/selling/sale:updateShop?id='.$eSale['id'].'" class="dropdown-item">'.s("Associer la vente à une boutique").'</a>';
 		}
 
-		if($eSale->canDissociateShop()) {
+		if($eSale->acceptDissociateShop()) {
 			$primaryList .= '<a data-ajax="/selling/sale:doUpdateShop" post-id="'.$eSale['id'].'" post-from="'.Sale::USER.'" class="dropdown-item">'.s("Dissocier la vente de la boutique").'</a>';
 		}
 
@@ -1242,12 +1242,12 @@ class SaleUi {
 
 				Sale::CONFIRMED => $draft,
 				Sale::PREPARED, Sale::SELLING => '<a data-ajax="/selling/sale:doUpdatePreparationStatus" post-id="'.$eSale['id'].'" post-preparation-status="'.Sale::CONFIRMED.'" class="dropdown-item">'.s("Remettre à préparer").'</a>'.$draft,
-				Sale::DELIVERED => $eSale->canCancelDelivered() ? '<a data-ajax="/selling/sale:doUpdatePreparationStatus" post-id="'.$eSale['id'].'" post-preparation-status="'.Sale::CONFIRMED.'" class="dropdown-item">'.s("Annuler la livraison").'</a>' : '',
+				Sale::DELIVERED => $eSale->acceptCancelDelivered() ? '<a data-ajax="/selling/sale:doUpdatePreparationStatus" post-id="'.$eSale['id'].'" post-preparation-status="'.Sale::CONFIRMED.'" class="dropdown-item">'.s("Annuler la livraison").'</a>' : '',
 				Sale::CANCELED => '<a data-ajax="/selling/sale:doUpdatePreparationStatus" post-id="'.$eSale['id'].'" post-preparation-status="'.Sale::CONFIRMED.'" class="dropdown-item">'.s("Revalider la vente").'</a>',
 				default => ''
 			};
 
-			if($eSale->canStatusCancel()) {
+			if($eSale->acceptStatusCancel()) {
 				$statusList .= '<a data-ajax="/selling/sale:doUpdatePreparationStatus" post-id="'.$eSale['id'].'" post-preparation-status="'.Sale::CANCELED.'" class="dropdown-item">'.s("Annuler la vente").'</a>';
 			}
 
@@ -1257,7 +1257,7 @@ class SaleUi {
 
 		$secondaryList = '';
 
-		if($eSale->canDeleteSale()) {
+		if($eSale->acceptDelete()) {
 			$secondaryList .= '<a data-ajax="/selling/sale:doDelete" post-id="'.$eSale['id'].'" class="dropdown-item" data-confirm="'.s("Confirmer la suppression de la vente ?").'">'.s("Supprimer la vente").'</a>';
 		}
 

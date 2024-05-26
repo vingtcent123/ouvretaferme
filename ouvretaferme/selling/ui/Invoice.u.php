@@ -83,9 +83,9 @@ class InvoiceUi {
 			$h .= '<table class="tr-bordered tr-even">';
 
 				$h .= '<thead>';
-					$h .= '<tr>';/*
+					$h .= '<tr>';
 						$h .= '<th class="td-min-content">';
-						$h .= '</th>';*/
+						$h .= '</th>';
 						$h .= '<th class="text-center">#</th>';
 						if(in_array('customer', $hide) === FALSE) {
 							$columns++;
@@ -114,12 +114,12 @@ class InvoiceUi {
 							$h .= '<tbody>';
 						}
 
-						$h .= '<tr>';/*
+						$h .= '<tr>';
 							$h .= '<th class="td-min-content invoice-item-select">';
 								$h .= '<label title="'.s("Cocher ces factures / Décocher ces factures").'">';
 									$h .= '<input type="checkbox" class="batch-all" onclick="Invoice.toggleDaySelection(this)"/>';
 								$h .= '</label>';
-							$h .= '</th>';*/
+							$h .= '</th>';
 							$h .= '<td colspan="'.$columns.'" class="invoice-item-date">';
 								$h .= match($currentSubtitle) {
 									currentDate() => s("Aujourd'hui"),
@@ -134,6 +134,10 @@ class InvoiceUi {
 
 					$batch = [];
 
+					if($eInvoice->acceptSend() === FALSE) {
+						$batch[] = 'not-sent';
+					}
+
 					if(in_array($eInvoice['generation'], [Invoice::PROCESSING, Invoice::WAITING])) {
 						$class = 'invoice-item-waiting';
 					} else {
@@ -141,13 +145,11 @@ class InvoiceUi {
 					}
 
 					$h .= '<tr class="'.$class.'">';
-/*
 						$h .= '<td class="td-min-content sale-item-select">';
 							$h .= '<label>';
-								$h .= '<input type="checkbox" name="batch[]" value="'.$eInvoice['id'].'" oninput="Sale.changeSelection()" data-batch="'.implode(' ', $batch).'"/>';
+								$h .= '<input type="checkbox" name="batch[]" value="'.$eInvoice['id'].'" oninput="Invoice.changeSelection()" data-batch="'.implode(' ', $batch).'"/>';
 							$h .= '</label>';
 						$h .= '</td>';
-*/
 						$h .= '<td class="text-center td-min-content">';
 							if($eInvoice['content']->empty()) {
 								$h .= '<span class="btn disabled">'.$eInvoice->getInvoice().'</span>';
@@ -283,6 +285,47 @@ class InvoiceUi {
 		if($nInvoice !== NULL and $page !== NULL) {
 			$h .= \util\TextUi::pagination($page, $nInvoice / 100);
 		}
+
+		$h .= $this->getBatch();
+
+		return $h;
+
+	}
+
+	public function getBatch(): string {
+
+		$form = new \util\FormUi();
+
+		$h = '<div id="batch-several" class="util-bar hide">';
+
+			$h .= $form->open('batch-several-form');
+
+			$h .= '<div class="batch-ids hide"></div>';
+
+			$h .= '<div class="batch-title">';
+				$h .= '<h4>'.s("Pour la sélection").' (<span id="batch-menu-count"></span>)</h4>';
+				$h .= '<a onclick="Invoice.hideSelection()" class="btn btn-transparent">'.s("Annuler").'</a>';
+			$h .= '</div>';
+
+			$h .= '<div class="batch-menu">';
+				$h .= '<div class="util-bar-menu">';
+
+					$h .= '<a data-ajax-submit="/selling/invoice:doSendCollection" data-confirm="'.s("Confirmer l'envoi des factures par e-mail aux clients ?").'" class="batch-menu-send util-bar-menu-item">';
+						$h .= \Asset::icon('envelope');
+						$h .= '<span>'.s("Envoyer par e-mail").'</span>';
+					$h .= '</a>';
+
+					$h .= '<a data-ajax-submit="/selling/invoice:doDeleteCollection" data-confirm="'.s("Confirmer la suppression définitive de ces factures ?").'" class="util-bar-menu-item">';
+						$h .= \Asset::icon('trash');
+						$h .= '<span>'.s("Supprimer").'</span>';
+					$h .= '</a>';
+
+				$h .= '</div>';
+			$h .= '</div>';
+
+			$h .= $form->close();
+
+		$h .= '</div>';
 
 		return $h;
 
