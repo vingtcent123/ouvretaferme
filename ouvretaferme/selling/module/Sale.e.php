@@ -547,10 +547,6 @@ class Sale extends SaleElement {
 			return FALSE;
 		}
 
-		if($this['preparationStatus'] === Sale::BASKET) {
-			return FALSE;
-		}
-
 		return TRUE;
 
 	}
