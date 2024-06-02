@@ -119,14 +119,23 @@ class TaskLib extends TaskCrud {
 		}
 
 		if($search->get('user')) {
+
 			Task::model()
 				->where('m1.farm', $eFarm)
 				->where('m2.user', $search->get('user'))
+				->where('m1.time > 0', if: $search->get('time'))
 				->join(Timesheet::model(), 'm2.task = m1.id');
+
 			$index = ['id'];
+
 		} else {
-			Task::model()->whereFarm($eFarm);
+
+			Task::model()
+				->whereFarm($eFarm)
+				->where('time > 0', if: $search->get('time'));
+
 			$index = NULL;
+
 		}
 
 		if($page === NULL) {
@@ -152,7 +161,6 @@ class TaskLib extends TaskCrud {
 			->whereAction($search->get('action'), if: $search->get('action'))
 			->whereCategory($search->get('category'), if: $search->get('category'))
 			->whereStatus($search->get('status'), if: $search->get('status'))
-			->where('time > 0', if: $search->get('time'))
 			->option('count')
 			->sort(new \Sql('IF(status = "'.Task::TODO.'", IF(plannedWeek IS NOT NULL, plannedWeek, "0000-00-00"), NULL) DESC, IF(timesheetStop IS NOT NULL, timesheetStop, updatedAt) DESC'))
 			->getCollection($position, $limit, $index);
