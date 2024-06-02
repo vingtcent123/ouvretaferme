@@ -535,6 +535,8 @@ class SeriesLib extends SeriesCrud {
 			TaskLib::recalculateHarvest($eSeriesNew['farm'], $eCultivation, $eCultivation['plant']);
 		}
 
+		SeriesLib::recalculate($eSeriesNew['farm'], $eSeriesNew);
+
 		Series::model()->commit();
 
 		return $eSeriesNew;
