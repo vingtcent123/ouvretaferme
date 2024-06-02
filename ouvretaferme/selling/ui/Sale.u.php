@@ -497,7 +497,7 @@ class SaleUi {
 			$danger .= '<span>'.s("Supprimer").'</span>';
 		$danger .= '</a>';
 
-		return \util\BatchUi::group('Sale.hideSelection()', $menu, $danger);
+		return \util\BatchUi::group($menu, $danger);
 
 	}
 

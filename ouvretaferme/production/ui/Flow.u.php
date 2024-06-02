@@ -358,7 +358,7 @@ class FlowUi {
 			$danger .= '<span>'.s("Supprimer").'</span>';
 		$danger .= '</a>';
 
-		$h .= \util\BatchUi::group('Flow.hideSelection()', $menu, $danger);
+		$h .= \util\BatchUi::group($menu, $danger);
 
 		return $h;
 
@@ -387,7 +387,7 @@ class FlowUi {
 			$h .= '<div class="flow-timeline-update">';
 				if($write) {
 					$h .= '<label class="flow-timeline-select" title="'.s("Tout cocher / Tout décocher").'">';
-						$h .= $form->inputCheckbox(attributes: ['onclick' => 'Flow.changeAllSelection(this)', 'id' => 'batch-all']);
+						$h .= $form->inputCheckbox(attributes: ['onclick' => 'Flow.changeAllSelection(this)', 'class' => 'batch-all']);
 					$h .= '</label>';
 				}
 			$h .= '</div>';

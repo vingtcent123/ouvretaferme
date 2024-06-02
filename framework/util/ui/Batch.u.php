@@ -5,6 +5,9 @@ class BatchUi {
 
 	public static function one(string $menu) {
 
+		\Asset::css('util', 'batch.css');
+		\Asset::js('util', 'batch.js');
+
 		$form = new \util\FormUi();
 
 		$h = '<div id="batch-one" class="batch-one hide">';
@@ -24,9 +27,10 @@ class BatchUi {
 
 	}
 
-	public static function group(string $hide, string $menu, string $danger = NULL) {
+	public static function group(string $menu, string $danger = NULL, string $hide = 'Batch.hideSelection()') {
 
 		\Asset::css('util', 'batch.css');
+		\Asset::js('util', 'batch.js');
 
 		$form = new \util\FormUi();
 
@@ -37,7 +41,7 @@ class BatchUi {
 			$h .= '<div class="batch-ids hide"></div>';
 
 			$h .= '<div class="batch-title">';
-				$h .= '<h4>'.s("Pour la sélection").' (<span id="batch-menu-count"></span>)</h4>';
+				$h .= '<h4>'.s("Pour la sélection").' (<span id="batch-group-count"></span>)</h4>';
 				$h .= '<a onclick="'.$hide.'" class="btn btn-transparent">'.s("Annuler").'</a>';
 			$h .= '</div>';
 

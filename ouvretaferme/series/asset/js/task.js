@@ -749,150 +749,112 @@ class Task {
 
 	static changePlanningSelection() {
 
-		const menu = qs('#batch-group');
-		const one = qs('#batch-one');
-		const selection = qsa('[name="batch[]"]:checked');
+		return Batch.changeSelection(function(selection) {
 
-		switch(selection.length) {
+			if(selection.filter(':not([data-batch~="harvest"])').length > 0) {
+				qsa(".batch-menu-harvest", button => button.hide());
+			} else {
 
-			case 0 :
-				one.hide();
-				menu.hide();
-				break;
+				// Récolte = même plante, même variété
+				let plantVariety = null;
+				let hide = false;
 
-			case 1 :
-				one.removeHide();
-				selection[0].firstParent('.batch-item').insertAdjacentElement('afterbegin', one);
-				menu.hide();
-				return this.updateBatchMenu(selection);
+				selection.forEach((field) => {
 
-			default :
-				one.hide();
-				menu.removeHide();
-				menu.style.zIndex = Lime.getZIndex();
-				return this.updateBatchMenu(selection);
+					const task = field.firstParent('.batch-item');
+					const taskPlantVariety = task.dataset.filterPlant +'-'+ task.dataset.filterVariety +'-'+ task.dataset.filterHarvestUnit +'-'+ task.dataset.filterHarvestQuality;
 
-		}
+					if(plantVariety === null) {
+						plantVariety = taskPlantVariety;
+					} else if(plantVariety !== taskPlantVariety) {
+						hide = true;
+					}
 
-	}
 
-	static updateBatchMenu(selection) {
+				});
 
-		qs('#batch-menu-count').innerHTML = selection.length;
+				if(hide) {
+					qsa(".batch-menu-harvest", button => button.hide());
+				} else {
+					qsa(".batch-menu-harvest", button => button.removeHide());
+				}
 
-		let newIds = '';
-		selection.forEach((field) => newIds += '<input type="checkbox" name="ids[]" value="'+ field.value +'" checked/>');
+			}
 
-		qsa('.batch-ids', node => node.innerHTML = newIds);
-
-		if(selection.filter(':not([data-batch~="harvest"])').length > 0) {
-			qsa(".batch-menu-harvest", button => button.hide());
-		} else {
-
-			// Récolte = même plante, même variété
-			let plantVariety = null;
-			let hide = false;
+			// Temps de travail = même action
+			let action = null;
+			let sameAction = true;
 
 			selection.forEach((field) => {
 
 				const task = field.firstParent('.batch-item');
-				const taskPlantVariety = task.dataset.filterPlant +'-'+ task.dataset.filterVariety +'-'+ task.dataset.filterHarvestUnit +'-'+ task.dataset.filterHarvestQuality;
+				const taskAction = task.dataset.filterAction;
 
-				if(plantVariety === null) {
-					plantVariety = taskPlantVariety;
-				} else if(plantVariety !== taskPlantVariety) {
-					hide = true;
+				if(action === null) {
+					action = taskAction;
+				} else if(action !== taskAction) {
+					sameAction = false;
 				}
 
 
 			});
 
-			if(hide) {
-				qsa(".batch-menu-harvest", button => button.hide());
+			if(sameAction === false) {
+				qsa('.batch-menu-timesheet', button => button.hide());
 			} else {
-				qsa(".batch-menu-harvest", button => button.removeHide());
+				qsa('.batch-menu-timesheet', button => button.removeHide());
 			}
 
-		}
-
-		// Temps de travail = même action
-		let action = null;
-		let sameAction = true;
-
-		selection.forEach((field) => {
-
-			const task = field.firstParent('.batch-item');
-			const taskAction = task.dataset.filterAction;
-
-			if(action === null) {
-				action = taskAction;
-			} else if(action !== taskAction) {
-				sameAction = false;
+			if(selection.length > 1) {
+				qs('.batch-menu-update', button => button.hide());
+			} else {
+				qs('.batch-menu-update', button => {
+						 button.setAttribute('href', '/series/task:update?id='+ selection[0].value);
+						 button.removeHide();
+				});
 			}
 
+			if(selection.filter('[data-batch~="done"]').length > 0) {
+				qsa('.batch-menu-planned', button => button.hide());
+				qsa('.batch-menu-users', button => button.hide());
+			} else {
+				qsa('.batch-menu-planned', button => button.removeHide());
+
+				if(selection.filter('[data-batch~="not-postpone"]').length > 0) {
+					qsa('.batch-menu-planned .batch-menu-postpone', link => link.hide());
+				} else {
+					qsa('.batch-menu-planned .batch-menu-postpone', link => link.removeHide());
+				}
+
+				qsa('.batch-menu-users', button => button.removeHide());
+
+				qsa('.batch-menu-users .batch-planned-user', node => {
+
+					if(selection.filter('[data-batch~="user-'+ node.getAttribute('post-user') +'"]').length !== selection.length) {
+						node.setAttribute('post-action', 'add');
+						node.classList.remove('selected');
+					} else {
+						node.setAttribute('post-action', 'delete');
+						node.classList.add('selected');
+					}
+
+				});
+
+			}
+
+			if(selection.filter('[data-batch~="todo"]').length > 0) {
+				qsa('.batch-menu-todo', button => button.hide());
+			} else {
+				qsa('.batch-menu-todo', button => button.removeHide());
+			}
+
+			if(sameAction === false || selection.filter('[data-batch~="done"]').length > 0) {
+				qsa('.batch-menu-done', button => button.hide());
+			} else {
+				qsa('.batch-menu-done', button => button.removeHide());
+			}
 
 		});
-
-		if(sameAction === false) {
-			qsa('.batch-menu-timesheet', button => button.hide());
-		} else {
-			qsa('.batch-menu-timesheet', button => button.removeHide());
-		}
-
-		if(selection.length > 1) {
-			qs('.batch-menu-update', button => button.hide());
-		} else {
-			qs('.batch-menu-update', button => {
-					 button.setAttribute('href', '/series/task:update?id='+ selection[0].value);
-					 button.removeHide();
-			});
-		}
-
-		if(selection.filter('[data-batch~="done"]').length > 0) {
-			qsa('.batch-menu-planned', button => button.hide());
-			qsa('.batch-menu-users', button => button.hide());
-		} else {
-			qsa('.batch-menu-planned', button => button.removeHide());
-
-			if(selection.filter('[data-batch~="not-postpone"]').length > 0) {
-				qsa('.batch-menu-planned .batch-menu-postpone', link => link.hide());
-			} else {
-				qsa('.batch-menu-planned .batch-menu-postpone', link => link.removeHide());
-			}
-
-			qsa('.batch-menu-users', button => button.removeHide());
-
-			qsa('.batch-menu-users .batch-planned-user', node => {
-
-				if(selection.filter('[data-batch~="user-'+ node.getAttribute('post-user') +'"]').length !== selection.length) {
-					node.setAttribute('post-action', 'add');
-					node.classList.remove('selected');
-				} else {
-					node.setAttribute('post-action', 'delete');
-					node.classList.add('selected');
-				}
-
-			});
-
-		}
-
-		if(selection.filter('[data-batch~="todo"]').length > 0) {
-			qsa('.batch-menu-todo', button => button.hide());
-		} else {
-			qsa('.batch-menu-todo', button => button.removeHide());
-		}
-
-		if(sameAction === false || selection.filter('[data-batch~="done"]').length > 0) {
-			qsa('.batch-menu-done', button => button.hide());
-		} else {
-			qsa('.batch-menu-done', button => button.removeHide());
-		}
-
-		const list = qsa('.batch-menu-main .batch-menu-item:not(.hide)', node => node.classList.remove('batch-menu-item-last'));
-
-		if(list.length > 0) {
-			list[list.length - 1].classList.add('batch-menu-item-last');
-		}
 
 	}
 

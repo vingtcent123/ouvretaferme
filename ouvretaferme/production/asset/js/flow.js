@@ -125,41 +125,7 @@ class Flow {
 
 	static changeSelection() {
 
-		const menu = qs('#batch-group');
-		const one = qs('#batch-one');
-		const selection = qsa('[name="batch[]"]:checked');
-
-		switch(selection.length) {
-
-			case 0 :
-				one.hide();
-				menu.hide();
-				break;
-
-			case 1 :
-				one.removeHide();
-				selection[0].firstParent('.batch-item').insertAdjacentElement('afterbegin', one);
-				menu.hide();
-				return this.updateBatchMenu(selection);
-
-			default :
-				one.hide();
-				menu.removeHide();
-				menu.style.zIndex = Lime.getZIndex();
-				return this.updateBatchMenu(selection);
-
-		}
-
-	}
-
-	static updateBatchMenu(selection) {
-
-		qs('#batch-menu-count').innerHTML = selection.length;
-
-		let newIds = '';
-		selection.forEach((field) => newIds += '<input type="checkbox" name="ids[]" value="'+ field.value +'" checked/>');
-
-		qsa('.batch-ids', node => node.innerHTML = newIds);
+		return Batch.changeSelection(function(selection) {
 
 		if(selection.length > 1) {
 			qsa('.batch-menu-update', node => node.hide());
@@ -170,20 +136,9 @@ class Flow {
 			});
 		}
 
-		const list = qsa('.batch-menu-main .batch-menu-item:not(.hide)', node => node.classList.remove('batch-menu-item-last'));
-
-		if(list.length > 0) {
-			list[list.length - 1].classList.add('batch-menu-item-last');
-		}
+		});
 
 	}
 
-	static hideSelection() {
-
-		qs('#batch-group').hide();
-
-		qsa('[name="batch[]"]:checked, #batch-all', (field) => field.checked = false);
-
-	}
 
 }

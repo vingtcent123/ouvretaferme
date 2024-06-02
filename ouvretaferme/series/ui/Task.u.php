@@ -497,7 +497,7 @@ class TaskUi {
 			$danger = NULL;
 		}
 		
-		$h .= \util\BatchUi::group('Task.hidePlanningSelection()', $menu, $danger);
+		$h .= \util\BatchUi::group($menu, $danger, 'Task.hidePlanningSelection()');
 
 		return $h;
 
@@ -1504,7 +1504,7 @@ class TaskUi {
 					$h .= '<div>';
 					$h .= '</div>';
 					$h .= '<div class="flow-timeline-update" title="'.s("Tout cocher / Tout décocher").'">';
-						$h .= $form->inputCheckbox(attributes: ['onclick' => 'Task.checkPlanningSeries(this)', 'id' => 'batch-all']);
+						$h .= $form->inputCheckbox(attributes: ['onclick' => 'Task.checkPlanningSeries(this)', 'class' => 'batch-all']);
 					$h .= '</div>';
 					$h .= '<div class="util-grid-header">';
 						$h .= s("Intervention");

@@ -304,7 +304,7 @@ class InvoiceUi {
 			$danger .= '<span>'.s("Supprimer").'</span>';
 		$danger .= '</a>';
 
-		return \util\BatchUi::group('Invoice.hideSelection()', $menu, $danger);
+		return \util\BatchUi::group($menu, $danger);
 
 	}
 
