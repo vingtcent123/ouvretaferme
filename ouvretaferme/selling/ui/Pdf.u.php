@@ -969,7 +969,11 @@ class PdfUi {
 						$h .= '</th>';
 						$h .= '<td class="pdf-sales-summary-quantity text-end">'.round($eItem['quantity'], 2).'</td>';
 						$h .= '<td class="td-min-content">'.\main\UnitUi::getSingular($eItem['unit'], short: TRUE).'</td>';
-						$h .= '<td class="text-end">'.\util\TextUi::money($eItem['price']).'</td>';
+						$h .= '<td class="text-end">';
+							if($eItem['price'] !== NULL) {
+								$h .= \util\TextUi::money($eItem['price']);
+							}
+						$h.= '</td>';
 						$h .= '<td></td>';
 					$h .= '</tr>';
 				}
@@ -1007,7 +1011,9 @@ class PdfUi {
 				$item .= \main\UnitUi::getValue($quantity, $eItem['unit'], short: TRUE);
 			$item .= '</div>';
 			$item .= '<div>';
-				$item .= \util\TextUi::money($eItem['price']);
+				if($eItem['price'] !== NULL) {
+					$item .= \util\TextUi::money($eItem['price']);
+				}
 			$item .= '</div>';
 
 			$itemsList[] = $item;
