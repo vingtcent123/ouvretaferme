@@ -483,6 +483,29 @@ class AnalyzeLib {
 
 	}
 
+	public static function filterItemMarketStats(bool $join = FALSE, ?ItemModel $mItem = NULL) {
+
+		$mItem ??= Item::model();
+
+		if($join) {
+
+			$mItem
+				->where('m1.status', Sale::DELIVERED)
+				->where('m1.parent', '!=', NULL)
+				->where('m1.priceExcludingVat', '!=', NULL);
+
+		} else {
+
+			$mItem
+				->whereStatus(Sale::DELIVERED)
+				->whereParent('!=', NULL)
+				->wherePriceExcludingVat('!=', NULL);
+
+		}
+
+
+	}
+
 	public static function filterSaleStats(?SaleModel $mSale = NULL) {
 
 		$mSale ??= Sale::model();
@@ -677,9 +700,25 @@ class AnalyzeLib {
 
 	}
 
-	public static function getExport(\farm\Farm $eFarm, int $year): array {
+	public static function hasExportMarket(\farm\Farm $eFarm, int $year): bool {
 
-		self::filterItemStats();
+		self::filterItemMarketStats();
+
+		return Item::model()
+			->whereFarm($eFarm)
+			->where('number != 0')
+			->where('EXTRACT(YEAR FROM deliveredAt) = '.$year)
+			->exists();
+
+	}
+
+	public static function getExport(\farm\Farm $eFarm, int $year, bool $market): array {
+
+		if($market) {
+			self::filterItemMarketStats();
+		} else {
+			self::filterItemStats();
+		}
 
 		// Ajout des articles
 		$data = Item::model()
@@ -703,7 +742,7 @@ class AnalyzeLib {
 					$eItem['name'],
 					$eItem['product']->empty() ? '' : $eItem['product']->getName(),
 					$eItem['sale']['document'],
-					$eItem['customer']['name'],
+					$eItem['customer']->notEmpty() ? $eItem['customer']['name'] : CustomerUi::name($eItem['customer']),
 					CustomerUi::getType($eItem['sale']),
 					\util\DateUi::numeric($eItem['deliveredAt']),
 					\util\TextUi::csvNumber($eItem['quantity']),

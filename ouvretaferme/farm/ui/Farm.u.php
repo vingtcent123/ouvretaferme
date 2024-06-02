@@ -423,7 +423,7 @@ class FarmUi {
 
 	}
 
-	public function export(Farm $eFarm, int $year): string {
+	public function export(Farm $eFarm, int $year, bool $hasMarket): string {
 
 		$form = new \util\FormUi();
 
@@ -460,6 +460,17 @@ class FarmUi {
 				$h .= '</div>';
 				$h .= \Asset::icon('piggy-bank');
 			$h .= '</a>';
+
+			if($hasMarket) {
+
+				$h .= '<a href="/selling/analyze:export?id='.$eFarm['id'].'&year='.$year.'&market=1" class="bg-secondary util-button" data-ajax-navigation="never">';
+					$h .= '<div>';
+						$h .= '<h4>'.s("Exporter les ventes des marchés").'</h4>';
+					$h .= '</div>';
+					$h .= \Asset::icon('shop-window');
+				$h .= '</a>';
+
+			}
 
 		$h .= '</div>';
 

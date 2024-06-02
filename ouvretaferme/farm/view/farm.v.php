@@ -36,7 +36,7 @@ new AdaptativeView('export', function($data, FarmTemplate $t) {
 	$t->subNav = (new \farm\FarmUi())->getSettingsSubNav($data->e);
 
 	echo '<h1>'.s("Exporter les données").'</h1>';
-	echo (new \farm\FarmUi())->export($data->e, $data->year);
+	echo (new \farm\FarmUi())->export($data->e, $data->year, $data->hasMarket);
 
 });
 ?>

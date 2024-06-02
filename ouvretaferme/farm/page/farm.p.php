@@ -70,6 +70,8 @@
 
 		\farm\FarmerLib::register($data->e);
 
+		$data->hasMarket = \selling\AnalyzeLib::hasExportMarket($data->eFarm, $data->year);
+
 		throw new \ViewAction($data);
 
 	}, validate: ['canPersonalData']);
