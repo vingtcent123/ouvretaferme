@@ -376,154 +376,128 @@ class TaskUi {
 
 	public function getBatch(\farm\Farm $eFarm, ?string $week = NULL, \Collection $cUser = new \Collection()): string {
 
-		$form = new \util\FormUi();
+		$menu = '';
 
-		$h = '<div id="batch-one" class="batch-one hide">';
+		if($eFarm->canTask()) {
+			$menu .= '<a data-ajax-submit="/series/task:updateHarvestCollection" data-ajax-method="get" class="batch-one-item batch-menu-harvest" title="'.s("Compléter la récolte").'">'.\Asset::icon('basket2').'<span>'.s("Récolte").'</span></a>';
+		}
+		if($eFarm->canTask()) {
+			$menu .= '<a data-ajax-submit="/series/task:doUpdateTodoCollection" class="batch-one-item batch-menu-todo" data-confirm="'.s("Annuler la réalisation de cette intervention ?").'">'.\Asset::icon('arrow-up-left').'<span>'.s("À faire").'</span></a>';
+		}
+		if($eFarm->canTask()) {
 
-			$h .= $form->open('batch-one-form');
+			$menu .= '<div class="batch-menu-planned">';
+				$menu .= '<a data-dropdown="top-start" class="batch-one-item">';
+					$menu .= \Asset::icon('watch');
+					$menu .= '<span>'.s("Planifier").'</span>';
+				$menu .= '</a>';
+				$menu .= $this->getBatchPlanned('batch-one-form', $week);
+			$menu .= '</div>';
 
-				$h .= '<div class="batch-ids hide"></div>';
-				$h .= '<div class="batch-one-menu">';
-
-					if($eFarm->canTask()) {
-						$h .= '<a data-ajax-submit="/series/task:updateHarvestCollection" data-ajax-method="get" class="batch-one-item batch-menu-harvest" title="'.s("Compléter la récolte").'">'.\Asset::icon('basket2').'<span>'.s("Récolte").'</span></a>';
-					}
-					if($eFarm->canTask()) {
-						$h .= '<a data-ajax-submit="/series/task:doUpdateTodoCollection" class="batch-one-item batch-menu-todo" data-confirm="'.s("Annuler la réalisation de cette intervention ?").'">'.\Asset::icon('arrow-up-left').'<span>'.s("À faire").'</span></a>';
-					}
-					if($eFarm->canTask()) {
-
-						$h .= '<div class="batch-menu-planned">';
-							$h .= '<a data-dropdown="top-start" class="batch-one-item">';
-								$h .= \Asset::icon('watch');
-								$h .= '<span>'.s("Planifier").'</span>';
-							$h .= '</a>';
-							$h .= $this->getBatchPlanned('batch-one-form', $week);
-						$h .= '</div>';
-
-						if($cUser->count() > 1) {
-							$h .= '<div class="batch-menu-users">';
-								$h .= '<a data-dropdown="top-start" class="batch-one-item">';
-									$h .= \Asset::icon('people-fill');
-									$h .= '<span>'.s("Affecter").'</span>';
-								$h .= '</a>';
-								$h .= $this->getBatchUsers('batch-one-form', $cUser);
-							$h .= '</div>';
-						}
+			if($cUser->count() > 1) {
+				$menu .= '<div class="batch-menu-users">';
+					$menu .= '<a data-dropdown="top-start" class="batch-one-item">';
+						$menu .= \Asset::icon('people-fill');
+						$menu .= '<span>'.s("Affecter").'</span>';
+					$menu .= '</a>';
+					$menu .= $this->getBatchUsers('batch-one-form', $cUser);
+				$menu .= '</div>';
+			}
 
 
-					}
-					if($eFarm->canWork()) {
-						$h .= '<a data-ajax-submit="/series/comment:createCollection" data-ajax-method="get" class="batch-one-item">'.\Asset::icon('chat-dots-fill').'<span>'.s("Commenter").'</span></a>';
-					}
-					if($eFarm->canTask()) {
-						$h .= '<a class="batch-one-item batch-menu-update">'.\Asset::icon('gear-fill').'<span>'.s("Modifier").'</span></a>';
-					}
-					if($eFarm->canTask()) {
-						$h .= '<a data-ajax-submit="/series/task:doDeleteCollection" class="batch-one-item" data-confirm="'.s("Confirmer la suppression de cette intervention ?").'">'.\Asset::icon('trash').'<span>'.s("Supprimer").'</span></a>';
-					}
+		}
+		if($eFarm->canWork()) {
+			$menu .= '<a data-ajax-submit="/series/comment:createCollection" data-ajax-method="get" class="batch-one-item">'.\Asset::icon('chat-dots-fill').'<span>'.s("Commenter").'</span></a>';
+		}
+		if($eFarm->canTask()) {
+			$menu .= '<a class="batch-one-item batch-menu-update">'.\Asset::icon('gear-fill').'<span>'.s("Modifier").'</span></a>';
+		}
+		if($eFarm->canTask()) {
+			$menu .= '<a data-ajax-submit="/series/task:doDeleteCollection" class="batch-one-item" data-confirm="'.s("Confirmer la suppression de cette intervention ?").'">'.\Asset::icon('trash').'<span>'.s("Supprimer").'</span></a>';
+		}
 
-				$h .= '</div>';
+		$h = \util\BatchUi::one($menu);
 
-			$h .= $form->close();
+		$menu = '';
+		
+		if(
+			$eFarm->hasFeatureTime() and
+			$eFarm->canWork()
+		) {
 
-		$h .= '</div>';
+			$menu .= '<a data-ajax-submit="/series/timesheet" data-ajax-method="get" class="batch-menu-item batch-menu-timesheet">';
+				$menu .= \Asset::icon('clock');
+				$menu .= '<span>'.s("Temps de travail").'</span>';
+			$menu .= '</a>';
 
-		$h .= '<div id="batch-group" class="hide">';
+		}
 
-			$h .= $form->open('batch-group-form');
+		if($eFarm->canTask()) {
 
-			$h .= '<div class="batch-ids hide"></div>';
+			$menu .= '<a data-ajax-submit="/series/task:updateHarvestCollection" data-ajax-method="get" class="batch-menu-item batch-menu-harvest">';
+				$menu .= \Asset::icon('basket2');
+				$menu .= '<span>'.s("Récolte").'</span>';
+			$menu .= '</a>';
 
-			$h .= '<div class="batch-title">';
-				$h .= '<h4>'.s("Pour la sélection").' (<span id="batch-menu-count"></span>)</h4>';
-				$h .= '<a onclick="Task.hidePlanningSelection()" class="btn btn-transparent">'.s("Annuler").'</a>';
-			$h .= '</div>';
+		}
 
-			$h .= '<div class="batch-menu">';
-				$h .= '<div class="batch-menu-main">';
+		if($eFarm->canTask()) {
 
-					if(
-						$eFarm->hasFeatureTime() and
-						$eFarm->canWork()
-					) {
+			$menu .= '<a data-ajax-submit="/series/task:doUpdateDoneCollection" post-done-week="'.$week.'" class="batch-menu-item batch-menu-done">';
+				$menu .= \Asset::icon('check-lg');
+				$menu .= '<span>'.s("Fait !").'</span>';
+			$menu .= '</a>';
 
-						$h .= '<a data-ajax-submit="/series/timesheet" data-ajax-method="get" class="batch-menu-item batch-menu-timesheet">';
-							$h .= \Asset::icon('clock');
-							$h .= '<span>'.s("Temps de travail").'</span>';
-						$h .= '</a>';
+			$menu .= '<a data-ajax-submit="/series/task:doUpdateTodoCollection" data-confirm="'.s("Annuler la réalisation des interventions ?").'" class="batch-menu-item batch-menu-todo">';
+				$menu .= \Asset::icon('arrow-up-left');
+				$menu .= '<span>'.s("À faire").'</span>';
+			$menu .= '</a>';
 
-					}
+		}
 
-					if($eFarm->canTask()) {
+		if($eFarm->canTask()) {
 
-						$h .= '<a data-ajax-submit="/series/task:updateHarvestCollection" data-ajax-method="get" class="batch-menu-item batch-menu-harvest">';
-							$h .= \Asset::icon('basket2');
-							$h .= '<span>'.s("Récolte").'</span>';
-						$h .= '</a>';
+			$menu .= '<div class="batch-menu-planned">';
+				$menu .= '<a data-dropdown="top-start" class="batch-menu-item">';
+					$menu .= \Asset::icon('watch');
+					$menu .= '<span>'.s("Planifier").'</span>';
+				$menu .= '</a>';
+				$menu .= $this->getBatchPlanned('batch-group-form', $week);
+			$menu .= '</div>';
 
-					}
+			if($cUser->count() > 1) {
+				$menu .= '<div class="batch-menu-users">';
+					$menu .= '<a data-dropdown="top-start" class="batch-menu-item">';
+						$menu .= \Asset::icon('people-fill');
+						$menu .= '<span>'.s("Affecter").'</span>';
+					$menu .= '</a>';
+					$menu .= $this->getBatchUsers('batch-group-form', $cUser);
+				$menu .= '</div>';
+			}
 
-					if($eFarm->canTask()) {
+		}
 
-						$h .= '<a data-ajax-submit="/series/task:doUpdateDoneCollection" post-done-week="'.$week.'" class="batch-menu-item batch-menu-done">';
-							$h .= \Asset::icon('check-lg');
-							$h .= '<span>'.s("Fait !").'</span>';
-						$h .= '</a>';
+		if($eFarm->canWork()) {
 
-						$h .= '<a data-ajax-submit="/series/task:doUpdateTodoCollection" data-confirm="'.s("Annuler la réalisation des interventions ?").'" class="batch-menu-item batch-menu-todo">';
-							$h .= \Asset::icon('arrow-up-left');
-							$h .= '<span>'.s("À faire").'</span>';
-						$h .= '</a>';
+			$menu .= '<a data-ajax-submit="/series/comment:createCollection" data-ajax-method="get" class="batch-menu-item">';
+				$menu .= \Asset::icon('chat-dots-fill');
+				$menu .= '<span>'.s("Commenter").'</span>';
+			$menu .= '</a>';
 
-					}
+		}
 
-					if($eFarm->canTask()) {
+		if($eFarm->canTask()) {
 
-						$h .= '<div class="batch-menu-planned">';
-							$h .= '<a data-dropdown="top-start" class="batch-menu-item">';
-								$h .= \Asset::icon('watch');
-								$h .= '<span>'.s("Planifier").'</span>';
-							$h .= '</a>';
-							$h .= $this->getBatchPlanned('batch-group-form', $week);
-						$h .= '</div>';
+			$danger = '<a data-ajax-submit="/series/task:doDeleteCollection" data-confirm="'.s("Confirmer la suppression de ces interventions ?").'" class="batch-menu-item batch-menu-item-danger">';
+				$danger .= \Asset::icon('trash');
+				$danger .= '<span>'.s("Supprimer").'</span>';
+			$danger .= '</a>';
 
-						if($cUser->count() > 1) {
-							$h .= '<div class="batch-menu-users">';
-								$h .= '<a data-dropdown="top-start" class="batch-menu-item">';
-									$h .= \Asset::icon('people-fill');
-									$h .= '<span>'.s("Affecter").'</span>';
-								$h .= '</a>';
-								$h .= $this->getBatchUsers('batch-group-form', $cUser);
-							$h .= '</div>';
-						}
-
-					}
-
-					if($eFarm->canWork()) {
-
-						$h .= '<a data-ajax-submit="/series/comment:createCollection" data-ajax-method="get" class="batch-menu-item">';
-							$h .= \Asset::icon('chat-dots-fill');
-							$h .= '<span>'.s("Commenter").'</span>';
-						$h .= '</a>';
-
-					}
-
-				$h .= '</div>';
-
-				if($eFarm->canTask()) {
-
-					$h .= '<a data-ajax-submit="/series/task:doDeleteCollection" data-confirm="'.s("Confirmer la suppression de ces interventions ?").'" class="batch-menu-item batch-menu-item-danger">';
-						$h .= \Asset::icon('trash');
-						$h .= '<span>'.s("Supprimer").'</span>';
-					$h .= '</a>';
-
-				}
-			$h .= '</div>';
-
-			$h .= $form->close();
-
-		$h .= '</div>';
+		} else {
+			$danger = NULL;
+		}
+		
+		$h .= \util\BatchUi::group('Task.hidePlanningSelection()', $menu, $danger);
 
 		return $h;
 

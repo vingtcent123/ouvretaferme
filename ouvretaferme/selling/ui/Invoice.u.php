@@ -294,40 +294,17 @@ class InvoiceUi {
 
 	public function getBatch(): string {
 
-		$form = new \util\FormUi();
+		$menu = '<a data-ajax-submit="/selling/invoice:doSendCollection" data-confirm="'.s("Confirmer l'envoi des factures par e-mail aux clients ?").'" class="batch-menu-send batch-menu-item">';
+			$menu .= \Asset::icon('envelope');
+			$menu .= '<span>'.s("Envoyer par e-mail").'</span>';
+		$menu .= '</a>';
 
-		$h = '<div id="batch-group" class="hide">';
+		$danger = '<a data-ajax-submit="/selling/invoice:doDeleteCollection" data-confirm="'.s("Confirmer la suppression définitive de ces factures ?").'" class="batch-menu-item batch-menu-item-danger">';
+			$danger .= \Asset::icon('trash');
+			$danger .= '<span>'.s("Supprimer").'</span>';
+		$danger .= '</a>';
 
-			$h .= $form->open('batch-group-form');
-
-			$h .= '<div class="batch-ids hide"></div>';
-
-			$h .= '<div class="batch-title">';
-				$h .= '<h4>'.s("Pour la sélection").' (<span id="batch-menu-count"></span>)</h4>';
-				$h .= '<a onclick="Invoice.hideSelection()" class="btn btn-transparent">'.s("Annuler").'</a>';
-			$h .= '</div>';
-
-			$h .= '<div class="batch-menu">';
-				$h .= '<div class="batch-menu-main">';
-
-					$h .= '<a data-ajax-submit="/selling/invoice:doSendCollection" data-confirm="'.s("Confirmer l'envoi des factures par e-mail aux clients ?").'" class="batch-menu-send batch-menu-item">';
-						$h .= \Asset::icon('envelope');
-						$h .= '<span>'.s("Envoyer par e-mail").'</span>';
-					$h .= '</a>';
-
-				$h .= '</div>';
-
-				$h .= '<a data-ajax-submit="/selling/invoice:doDeleteCollection" data-confirm="'.s("Confirmer la suppression définitive de ces factures ?").'" class="batch-menu-item batch-menu-item-danger">';
-					$h .= \Asset::icon('trash');
-					$h .= '<span>'.s("Supprimer").'</span>';
-				$h .= '</a>';
-			$h .= '</div>';
-
-			$h .= $form->close();
-
-		$h .= '</div>';
-
-		return $h;
+		return \util\BatchUi::group('Invoice.hideSelection()', $menu, $danger);
 
 	}
 

@@ -333,64 +333,32 @@ class FlowUi {
 
 	public function getBatch(): string {
 
-		$form = new \util\FormUi();
+		$menu = '<div class="batch-menu-planned">';
+			$menu .= '<a data-dropdown="top-start" class="batch-one-item">';
+				$menu .= \Asset::icon('watch');
+				$menu .= '<span>'.s("Planifier").'</span>';
+			$menu .= '</a>';
+			$menu .= $this->getBatchPlanned('batch-one-form');
+		$menu .= '</div>';
 
-		$h = '<div id="batch-one" class="batch-one hide">';
+		$menu .= '<a class="batch-one-item batch-menu-update">'.\Asset::icon('gear-fill').'<span>'.s("Modifier").'</span></a>';
 
-			$h .= $form->open('batch-one-form');
+		$menu .= '<a data-ajax-submit="/production/flow:doDeleteCollection" class="batch-one-item" data-confirm="'.s("Confirmer la suppression de cette intervention ?").'">'.\Asset::icon('trash').'<span>'.s("Supprimer").'</span></a>';
 
-				$h .= '<div class="batch-ids hide"></div>';
-				$h .= '<div class="batch-one-menu">';
+		$h = \util\BatchUi::one($menu);
 
-					$h .= '<div class="batch-menu-planned">';
-						$h .= '<a data-dropdown="top-start" class="batch-one-item">';
-							$h .= \Asset::icon('watch');
-							$h .= '<span>'.s("Planifier").'</span>';
-						$h .= '</a>';
-						$h .= $this->getBatchPlanned('batch-one-form');
-					$h .= '</div>';
+		$menu = '<a data-dropdown="top-start" class="batch-menu-item">';
+			$menu .= \Asset::icon('watch');
+			$menu .= '<span>'.s("Planifier").'</span>';
+		$menu .= '</a>';
+		$menu .= $this->getBatchPlanned('batch-group-form');
 
-					$h .= '<a class="batch-one-item batch-menu-update">'.\Asset::icon('gear-fill').'<span>'.s("Modifier").'</span></a>';
+		$danger = '<a data-ajax-submit="/production/flow:doDeleteCollection" data-confirm="'.s("Confirmer la suppression de ces interventions ?").'" class="batch-menu-item batch-menu-item-danger">';
+			$danger .= \Asset::icon('trash');
+			$danger .= '<span>'.s("Supprimer").'</span>';
+		$danger .= '</a>';
 
-					$h .= '<a data-ajax-submit="/production/flow:doDeleteCollection" class="batch-one-item" data-confirm="'.s("Confirmer la suppression de cette intervention ?").'">'.\Asset::icon('trash').'<span>'.s("Supprimer").'</span></a>';
-
-				$h .= '</div>';
-
-			$h .= $form->close();
-
-		$h .= '</div>';
-
-		$h .= '<div id="batch-group" class="hide">';
-
-			$h .= $form->open('batch-group-form');
-
-			$h .= '<div class="batch-ids hide"></div>';
-
-			$h .= '<div class="batch-title">';
-				$h .= '<h4>'.s("Pour la sélection").' (<span id="batch-menu-count"></span>)</h4>';
-				$h .= '<a onclick="Flow.hideSelection()" class="btn btn-transparent">'.s("Annuler").'</a>';
-			$h .= '</div>';
-
-			$h .= '<div class="batch-menu">';
-				$h .= '<div class="batch-menu-main">';
-
-					$h .= '<a data-dropdown="top-start" class="batch-menu-item">';
-						$h .= \Asset::icon('watch');
-						$h .= '<span>'.s("Planifier").'</span>';
-					$h .= '</a>';
-					$h .= $this->getBatchPlanned('batch-group-form');
-
-				$h .= '</div>';
-
-				$h .= '<a data-ajax-submit="/production/flow:doDeleteCollection" data-confirm="'.s("Confirmer la suppression de ces interventions ?").'" class="batch-menu-item batch-menu-item-danger">';
-					$h .= \Asset::icon('trash');
-					$h .= '<span>'.s("Supprimer").'</span>';
-				$h .= '</a>';
-			$h .= '</div>';
-
-			$h .= $form->close();
-
-		$h .= '</div>';
+		$h .= \util\BatchUi::group('Flow.hideSelection()', $menu, $danger);
 
 		return $h;
 
