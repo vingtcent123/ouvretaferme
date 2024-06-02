@@ -2437,6 +2437,7 @@ class TaskUi {
 						$h .= '<a href="'.TaskUi::url($eTask).'">';
 							$h .= $this->getTaskPlace($eTask);
 							$h .= $this->getTaskDescription($eTask, showAction: FALSE);
+							$h .= $this->getComments($eTask);
 						$h .= '</a>';
 					$h .= '</td>';
 
