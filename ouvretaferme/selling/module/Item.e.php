@@ -62,6 +62,17 @@ class Item extends ItemElement {
 
 			},
 
+			'price.locked' => function(?float $price): bool {
+
+				$this->expects(['locked']);
+
+				return (
+					$price !== NULL or
+					$this['locked'] === 'price'
+				);
+
+			},
+
 		]);
 
 	}
