@@ -7,6 +7,9 @@ abstract class ShopElement extends \Element {
 
 	private static ?ShopModel $model = NULL;
 
+	const PRO = 'pro';
+	const PRIVATE = 'private';
+
 	const WEEKLY = 'weekly';
 	const BIMONTHLY = 'bimonthly';
 	const MONTHLY = 'monthly';
@@ -50,6 +53,7 @@ class ShopModel extends \ModuleModel {
 			'logo' => ['textFixed', 'min' => 30, 'max' => 30, 'charset' => 'ascii', 'null' => TRUE, 'cast' => 'string'],
 			'name' => ['text8', 'min' => 1, 'max' => NULL, 'collate' => 'general', 'cast' => 'string'],
 			'email' => ['email', 'cast' => 'string'],
+			'type' => ['enum', [\shop\Shop::PRO, \shop\Shop::PRIVATE], 'cast' => 'enum'],
 			'frequency' => ['enum', [\shop\Shop::WEEKLY, \shop\Shop::BIMONTHLY, \shop\Shop::MONTHLY, \shop\Shop::OTHER], 'cast' => 'enum'],
 			'paymentCard' => ['bool', 'cast' => 'bool'],
 			'paymentTransfer' => ['bool', 'cast' => 'bool'],
@@ -68,7 +72,7 @@ class ShopModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'fqn', 'farm', 'logo', 'name', 'email', 'frequency', 'paymentCard', 'paymentTransfer', 'paymentTransferHow', 'paymentOffline', 'paymentOfflineHow', 'description', 'terms', 'termsField', 'orderMin', 'shipping', 'shippingUntil', 'status', 'createdAt', 'createdBy'
+			'id', 'fqn', 'farm', 'logo', 'name', 'email', 'type', 'frequency', 'paymentCard', 'paymentTransfer', 'paymentTransferHow', 'paymentOffline', 'paymentOfflineHow', 'description', 'terms', 'termsField', 'orderMin', 'shipping', 'shippingUntil', 'status', 'createdAt', 'createdBy'
 		]);
 
 		$this->propertiesToModule += [
@@ -86,6 +90,9 @@ class ShopModel extends \ModuleModel {
 	public function getDefaultValue(string $property) {
 
 		switch($property) {
+
+			case 'type' :
+				return Shop::PRIVATE;
 
 			case 'frequency' :
 				return Shop::WEEKLY;
@@ -121,6 +128,9 @@ class ShopModel extends \ModuleModel {
 	public function encode(string $property, $value) {
 
 		switch($property) {
+
+			case 'type' :
+				return ($value === NULL) ? NULL : (string)$value;
 
 			case 'frequency' :
 				return ($value === NULL) ? NULL : (string)$value;
@@ -165,6 +175,10 @@ class ShopModel extends \ModuleModel {
 
 	public function whereEmail(...$data): ShopModel {
 		return $this->where('email', ...$data);
+	}
+
+	public function whereType(...$data): ShopModel {
+		return $this->where('type', ...$data);
 	}
 
 	public function whereFrequency(...$data): ShopModel {

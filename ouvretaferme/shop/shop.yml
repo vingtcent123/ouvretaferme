@@ -41,6 +41,7 @@ Shop:
   logo: ?textFixed(30, 30) @charset(ascii)
   name: text8(1, null) @collate(general)
   email: email
+  type: enum(PRO, PRIVATE) = PRIVATE
   frequency: enum(WEEKLY, BIMONTHLY, MONTHLY, OTHER) = WEEKLY
   paymentCard: bool = FALSE
   paymentTransfer: bool = FALSE
