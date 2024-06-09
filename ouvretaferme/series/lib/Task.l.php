@@ -339,7 +339,9 @@ class TaskLib extends TaskCrud {
 
 						});
 
-						if($in or $eTaskNew['times']) {
+						$isAffected = in_array($eUser['id'], $eTask['plannedUsers']);
+
+						if($isAffected or $eTaskNew['times']) {
 
 							$cccTaskByDate[$date][$action] ??= new \Collection();
 							$cccTaskByDate[$date][$action][] = $eTaskNew;
