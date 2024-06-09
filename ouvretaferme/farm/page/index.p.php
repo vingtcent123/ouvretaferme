@@ -311,11 +311,17 @@
 
 				\series\RepeatLib::createForWeek($data->eFarm, $data->week);
 
-				if(get_exists('user')) {
-					$data->eUserSelected = GET('user', 'user\User');
-					\farm\FarmerLib::setView('viewPlanningUser', $data->eFarm, $data->eUserSelected);
+				if($data->eFarm->canManage()) {
+
+					if(get_exists('user')) {
+						$data->eUserSelected = GET('user', 'user\User');
+						\farm\FarmerLib::setView('viewPlanningUser', $data->eFarm, $data->eUserSelected);
+					} else {
+						$data->eUserSelected = Setting::get('main\viewPlanningUser') ?? new \user\User();
+					}
+
 				} else {
-					$data->eUserSelected = Setting::get('main\viewPlanningUser') ?? new \user\User();
+					$data->eUserSelected = $data->eUserOnline;
 				}
 
 				$data->seasonsWithSeries = \series\SeriesLib::getSeasonsAround($data->eFarm, week_year($data->week));

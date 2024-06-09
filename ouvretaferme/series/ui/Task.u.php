@@ -568,11 +568,13 @@ class TaskUi {
 			$h = '<div class="tabs-item">';
 
 				if($team and $cUserPresent->count() >= 2) {
+
 					$h .= '<div '.$link(new \user\User()).' class="tab-item '.($eUser->empty() ? 'selected' : '').' tasks-time-all '.($cUserPresent->count() >= 10 ? 'tasks-time-all-condensed' : '').'" title="'.s("Toute l'équipe").'">';
 						foreach($cUserPresent as $eUserPresent) {
 							$h .= \user\UserUi::getVignette($eUserPresent, '2rem');
 						}
 					$h .= '</div>';
+
 				}
 
 				foreach($cUserPresent as $eUserPresent) {
