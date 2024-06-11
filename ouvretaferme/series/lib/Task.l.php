@@ -339,7 +339,10 @@ class TaskLib extends TaskCrud {
 
 						});
 
-						$isAffected = in_array($eUser['id'], $eTask['plannedUsers']);
+						$isAffected = (
+							$eUser->empty() or
+							in_array($eUser['id'], $eTask['plannedUsers'])
+						);
 
 						if($isAffected or $eTaskNew['times']) {
 
