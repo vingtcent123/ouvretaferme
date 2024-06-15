@@ -11,7 +11,7 @@
 
 		$data->cCustomize = \mail\CustomizeLib::getByFarm($data->eFarm, $data->e);
 		$data->eSaleExample = \selling\SaleLib::getExample($data->eFarm, \selling\Customer::PRIVATE, $data->e);
-		$data->eSaleExample['paymentMethod'] = \selling\Sale::GET('paymentMethod', 'paymentMethod', \selling\Sale::OFFLINE);
+		$data->eSaleExample['paymentMethod'] = $data->e['hasPayment'] ? \selling\Sale::GET('paymentMethod', 'paymentMethod', \selling\Sale::OFFLINE) : NULL;
 
 		throw new ViewAction($data);
 

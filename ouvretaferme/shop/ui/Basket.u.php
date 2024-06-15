@@ -186,7 +186,7 @@ class BasketUi {
 						'title' => s("Supprimer cet article"),
 					];
 
-					$unitPrice = \util\TextUi::money($eProduct['price']).'&nbsp;/&nbsp;'.\main\UnitUi::getSingular($eProductSelling['unit'], short: TRUE, by: TRUE);
+					$unitPrice = \util\TextUi::money($eProduct['price']).' '.ProductUi::getTaxes($eDate).' / '.\main\UnitUi::getSingular($eProductSelling['unit'], short: TRUE, by: TRUE);
 
 					$h .= '<tr>';
 						$h .= '<td class="td-min-content">';
@@ -197,14 +197,14 @@ class BasketUi {
 						$h .= '<td class="basket-summary-product">';
 
 							$h .= encode($eProductSelling->getName());
-							$h .= '<div class="hide-sm-up"><small>'.$unitPrice.'</small></div>';
+							$h .= '<div class="hide-sm-up"><small style="white-space: nowrap">'.$unitPrice.'</small></div>';
 
 						$h .= '</td>';
 						$h .= '<td class="text-center">';
 							$h .= ProductUi::quantityOrder($eDate, $eProductSelling, $cProduct->offsetGet($productId), $product['quantity']);
 						$h .= '</td>';
 						$h .= '<td class="text-end hide-xs-down">'.$unitPrice.'</td>';
-						$h .= '<td class="text-end">'.\util\TextUi::money($eProduct['price'] * $product['quantity']).'</td>';
+						$h .= '<td class="text-end">'.\util\TextUi::money($eProduct['price'] * $product['quantity']).' '.ProductUi::getTaxes($eDate).'</td>';
 						$h .= '<td class="hide-xs-down text-center">';
 							$h .= '<a '.attrs($deleteAttributes).'>'.\Asset::icon('trash').'</a>';
 						$h .= '</td>';
@@ -222,7 +222,7 @@ class BasketUi {
 					$h .= '<tr '.($updateBasket ? 'onrender="BasketManage.updateBasketFromSummary('.$eDate['id'].');"' : 'onrender="BasketManage.showWarnings('.$eDate['id'].');"').'>';
 						$h .= '<td class="hide-xs-down"></td>';
 						$h .= '<td class="text-end" colspan="3"><b>'.s("Total du panier").'</b></td>';
-						$h .= '<td class="text-end"><b>'.\util\TextUi::money($total).'</b></td>';
+						$h .= '<td class="text-end"><b>'.\util\TextUi::money($total).' '.ProductUi::getTaxes($eDate).'</b></td>';
 						$h .= '<td class="hide-xs-down"></td>';
 					$h .= '</tr>';
 				$h .= '</tfoot>';
@@ -259,7 +259,7 @@ class BasketUi {
 
 	}
 
-	public function getOrder(\selling\Sale $eSale): string {
+	public function getOrder(Date $eDate, \selling\Sale $eSale): string {
 
 		$h = '<div class="util-action">';
 			$h .= '<h2>'.s("Ma commande").'</h2>';
@@ -270,7 +270,13 @@ class BasketUi {
 				$h .= '<dt>'.s("Nom").'</dt>';
 				$h .= '<dd>'.encode($eSale['customer']['name']).'</dd>';
 				$h .= '<dt>'.s("Montant").'</dt>';
-				$h .= '<dd>'.\util\TextUi::money($eSale['priceIncludingVat']).'</dd>';
+				$h .= '<dd>';
+					if($eSale['hasVat'] and $eSale['type'] === \selling\Sale::PRO) {
+						$h .= \util\TextUi::money($eSale['priceExcludingVat']).' '.\selling\SaleUi::getTaxes($eSale['taxes']);
+					} else {
+						$h .= \util\TextUi::money($eSale['priceIncludingVat']);
+					}
+				$h .= '</dd>';
 			$h .= '</dl>';
 		$h .= '</div>';
 
@@ -313,7 +319,7 @@ class BasketUi {
 
 		$h = '<div id="shop-basket-submit" class="'.$class.'" onrender="BasketManage.checkBasketButtons('.$eDate['id'].');">';
 
-			$h .= '<h2>'.s("Valider ma commande de <span>{value}</span>", ['span' => '<span id="shop-basket-price">']).'</h2>';
+			$h .= '<h2>'.s("Valider ma commande de <span>{value}</span> {taxes}", ['span' => '<span id="shop-basket-price">', 'taxes' => ProductUi::getTaxes($eDate)]).'</h2>';
 
 			$h .= '<div class="shop-basket-submit-order-error color-danger hide">'.s("Vous n'avez pas atteint le minimum de commande pour ce mode de livraison, nous vous remercions de bien vouloir compléter vos achats !").'</div>';
 			$h .= '<div class="shop-basket-submit-order-valid">';
@@ -671,7 +677,13 @@ class BasketUi {
 
 			$h .= '<dl class="util-presentation util-presentation-2">';
 				$h .= '<dt>'.s("Montant").'</dt>';
-				$h .= '<dd>'.\util\TextUi::money($eSale['priceIncludingVat']).'</dd>';
+				$h .= '<dd>';
+					if($eSale['hasVat'] and $eSale['type'] === \selling\Sale::PRO) {
+						$h .= \util\TextUi::money($eSale['priceExcludingVat']).' '.\selling\SaleUi::getTaxes($eSale['taxes']);
+					} else {
+						$h .= \util\TextUi::money($eSale['priceIncludingVat']);
+					}
+				$h .= '</dd>';
 				$h .= '<dt>'.s("État de la commande").'</dt>';
 				$h .= '<dd>'.\selling\SaleUi::getPreparationStatusForCustomer($eSale).'</dd>';
 

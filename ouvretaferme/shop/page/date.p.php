@@ -54,7 +54,11 @@
 		\shop\DateLib::applySales($data->e);
 
 		$data->eFarm = $data->eShop['farm'];
+		$data->eFarm['selling'] = \selling\ConfigurationLib::getByFarm($data->eFarm);
+
 		\farm\FarmerLib::register($data->eFarm);
+
+		$data->e['farm'] = $data->eFarm;
 
 		if($data->e->notEmpty()) {
 			$data->e['cProduct'] = \shop\ProductLib::getByDate($data->e, onlyActive: FALSE);

@@ -88,7 +88,8 @@ class SaleLib extends SaleCrud {
 
 			$eSale['shop'] = $eShop;
 			$eSale['shopDate'] = new \shop\Shop([
-				'deliveryDate' => currentDate()
+				'deliveryDate' => currentDate(),
+				'type' => $eShop['type']
 			]);
 			$eSale['shopPoints'] = [
 				\shop\Point::PLACE => new \shop\Point([

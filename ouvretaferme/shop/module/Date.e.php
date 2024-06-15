@@ -13,12 +13,6 @@ class Date extends DateElement {
 
 	public function getTaxes(): string {
 
-		$this->expects([
-			'farm' => [
-				'selling' => ['hasVat']
-			]
-		]);
-
 		return match($this['type']) {
 			Date::PRIVATE => s("TTC"),
 			Date::PRO => s("HT"),

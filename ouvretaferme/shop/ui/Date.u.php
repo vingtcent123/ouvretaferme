@@ -285,8 +285,13 @@ class DateUi {
 				$form->fake(ShopUi::p('type')->values[$e['shop']['type']])
 			);
 
+			$grid = match($e['shop']['type']) {
+				Shop::PRO => s("Uniquement les produits vendus aux professionnels"),
+				Shop::PRIVATE => s("Uniquement les produits vendus aux particuliers")
+			};
+
 			$h .= $form->group(
-				p("Produit proposé à la vente", "Produits proposés à la vente", $cProduct->count()).$form->asterisk(),
+				p("Produit proposé à la vente", "Produits proposés à la vente", $cProduct->count()).$form->asterisk().\util\FormUi::info($grid),
 				$form->dynamicField($e, 'products'),
 				['wrapper' => 'products']
 			);
@@ -560,12 +565,7 @@ class DateUi {
 						$h .= '<th>'.s("Ouverture des ventes").'</th>';
 						$h .= '<th class="text-end">'.s("Produits").'</th>';
 						$h .= '<th class="text-end" colspan="2">'.s("Commandes").'</th>';
-						$h .= '<th class="text-end">';
-							$h .= s("Montant");
-							if($eFarm->hasVat()) {
-								$h .= ' '.\selling\CustomerUi::getTaxes(\selling\Customer::PRIVATE);
-							}
-						$h .= '</th>';
+						$h .= '<th class="text-end">'.s("Montant").'</th>';
 						$h .= '<th></th>';
 					$h .= '</tr>';
 
@@ -607,7 +607,17 @@ class DateUi {
 
 							$h .= '<td class="text-end">';
 								if($eDate['sales']['countValid'] > 0) {
-									$h .= $eDate['sales']['amountValidIncludingVat'] ? \util\TextUi::money($eDate['sales']['amountValidIncludingVat']) : '-';
+
+									if($eFarm->hasVat()) {
+										$h .= match($eDate['type']) {
+											Date::PRIVATE => $eDate['sales']['amountValidIncludingVat'] ? \util\TextUi::money($eDate['sales']['amountValidIncludingVat']).' TTC' : '-',
+											Date::PRO => $eDate['sales']['amountValidExcludingVat'] ? \util\TextUi::money($eDate['sales']['amountValidExcludingVat']).' HT' : '-'
+										};
+
+									} else {
+										$h .= $eDate['sales']['amountValidExcludingVat'] ? \util\TextUi::money($eDate['sales']['amountValidExcludingVat']) : '-';
+									}
+
 								}
 							$h .= '</td>';
 

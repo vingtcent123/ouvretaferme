@@ -58,6 +58,7 @@ class ProductUi {
 			$h .= '<div>';
 				$h .= '<div class="shop-product-ordered-icon">'.\Asset::icon('currency-euro').'</div>';
 				$h .= '<span id="shop-basket-price"></span>';
+				$h .= ' '.$this->getTaxes($eDate);
 			$h .= '</div>';
 			$h .= '<div style="display: flex;">';
 				$h .= '<a href="'.ShopUi::url($eShop).'/'.$eDate['id'].'/panier'.($isModifying ? '?modify=1' : '').'" class="btn btn-secondary" id="shop-basket-next">';
@@ -124,7 +125,8 @@ class ProductUi {
 				$h .= '<div class="shop-product-buy">';
 
 					$h .= '<div class="shop-product-buy-price">';
-						$h .= \util\TextUi::money($eProduct['price']).'&nbsp;/&nbsp;'.\main\UnitUi::getSingular($eProductSelling['unit'], by: TRUE);
+
+						$h .= '<span style="white-space: nowrap">'.\util\TextUi::money($eProduct['price']).' '.$this->getTaxes($eDate).' / '.\main\UnitUi::getSingular($eProductSelling['unit'], by: TRUE).'</span>';
 						if($eProduct['stock'] !== NULL) {
 							$h.= '<br>';
 							if($eProduct->isInStock() === FALSE) {
@@ -145,6 +147,19 @@ class ProductUi {
 		$h .= '</div>';
 
 		return $h;
+
+	}
+
+	public static function getTaxes(Date $eDate): string {
+
+		if(
+			$eDate['type'] === Shop::PRO and
+			$eDate['farm']->hasVat()
+		) {
+			return $eDate->getTaxes();
+		} else {
+			return '';
+		}
 
 	}
 
@@ -224,8 +239,9 @@ class ProductUi {
 			$h .= '<td>';
 				$h .= $uiProductSelling->getInfos($eProductSelling);
 			$h .= '</td>';
-			$h .= '<td class="text-end">';
-				$h .= $eProduct->quick('price', \util\TextUi::money($eProduct['price']).'&nbsp;/&nbsp;'.\main\UnitUi::getSingular($eProductSelling['unit'], short: TRUE, by: TRUE, noWrap: TRUE));
+			$h .= '<td class="text-end" style="white-space: nowrap">';
+				$taxes = $eDate['farm']->hasVat() ? $eDate->getTaxes() : '';
+				$h .= $eProduct->quick('price', \util\TextUi::money($eProduct['price']).' '.$taxes.' / '.\main\UnitUi::getSingular($eProductSelling['unit'], short: TRUE, by: TRUE));
 			$h .= '</td>';
 			$h .= '<td class="text-end">';
 				if($eProduct['stock'] === NULL) {
@@ -325,7 +341,7 @@ class ProductUi {
 						]
 					]);
 
-					return $form->addon(s('€ {taxes} / {unit}', [
+					return $form->addon(s('€ {taxes} / {unit}', [
 						'taxes' => $e['date']['farm']->hasVat() ? $e['date']->getTaxes() : '',
 						'unit' => \main\UnitUi::getSingular($e['product']['unit'], short: TRUE)
 					]));

@@ -100,7 +100,6 @@ class ProductLib extends ProductCrud {
 
 			$eProduct = new Product([
 				'date' => $eDate,
-				'type' => $eDate['type'],
 				'shop' => $eDate['shop'],
 				'product' => $cProductSelling->offsetGet($product)
 			]);

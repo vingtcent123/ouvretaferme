@@ -154,7 +154,7 @@ new AdaptativeView('/shop/public/{fqn}/{date}/paiement', function($data, ShopTem
 	$t->title = encode($data->eShop['name']);
 	$t->header = (new \shop\BasketUi())->getHeader($data->eShop, $data->eDate, currentStep: \shop\BasketUi::STEP_PAYMENT);
 
-	echo (new \shop\BasketUi())->getOrder($data->eSaleExisting);
+	echo (new \shop\BasketUi())->getOrder($data->eDate, $data->eSaleExisting);
 	echo (new \shop\BasketUi())->getPayment($data->eShop, $data->eDate, $data->eCustomer, $data->eSaleExisting, $data->eStripeFarm);
 
 });

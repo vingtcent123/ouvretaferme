@@ -76,6 +76,7 @@ class DateLib extends DateCrud {
 					'countValid' => new \Sql('SUM(preparationStatus != \''.\selling\Sale::BASKET.'\')', 'int'),
 					'amountIncludingVat' => new \Sql('SUM(priceIncludingVat)'),
 					'amountValidIncludingVat' => new \Sql('SUM(IF(preparationStatus != \''.\selling\Sale::BASKET.'\', priceIncludingVat, 0))'),
+					'amountValidExcludingVat' => new \Sql('SUM(IF(preparationStatus != \''.\selling\Sale::BASKET.'\', priceExcludingVat, 0))'),
 				])
 				->whereFrom(\selling\Sale::SHOP)
 				->wherePreparationStatus('in', [\selling\Sale::BASKET, \selling\Sale::CONFIRMED, \selling\Sale::PREPARED, \selling\Sale::DELIVERED]);
@@ -139,7 +140,6 @@ class DateLib extends DateCrud {
 
 		foreach($e['cProduct'] as $eProduct) {
 			$eProduct['date'] = $e;
-			$eProduct['type'] = $e['type'];
 		}
 
 		Product::model()->insert($e['cProduct']);

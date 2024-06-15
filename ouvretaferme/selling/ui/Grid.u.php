@@ -211,7 +211,7 @@ class GridUi {
 
 		$h = $form->hidden('id', $eCustomer['id']);
 
-		$h .= '<p class="util-info">'.s("Les prix et conditionnements définis ici ne s'appliquent qu'à {value} et ont la priorité sur les valeurs de base.", encode($eCustomer['name'])).'</p>';
+		$h .= '<div class="util-block-help">'.s("Vous pouvez personnaliser ici les prix et les conditionnements pour votre client {value}. Les informations personnalisées ont la priorité sur les valeurs de base, mais ne s'appliquent pas dans les boutiques en ligne.", encode($eCustomer['name'])).'</div>';
 
 		$h .= '<table class="tr-bordered stick-xs">';
 

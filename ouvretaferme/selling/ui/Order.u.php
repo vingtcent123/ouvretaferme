@@ -423,15 +423,9 @@ class OrderUi {
 					$h .= '<th class="text-end">'.s("Quantité").'</th>';
 					$h .= '<th class="text-end">';
 						$h .= ItemUi::p('unitPrice')->label;
-						if($eSale['hasVat'] and $eSale['type'] === Customer::PRO) {
-							$h .= '<br/>('.SaleUi::getTaxes($eSale['taxes']).')';
-						}
 					$h .= '</th>';
 					$h .= '<th class="text-end">';
 						$h .= ItemUi::p('price')->label;
-						if($eSale['hasVat'] and $eSale['type'] === Customer::PRO) {
-							$h .= '<br/>('.SaleUi::getTaxes($eSale['taxes']).')';
-						}
 					$h .= '</th>';
 					if($eSale['hasVat'] and $eSale['type'] === Customer::PRO) {
 						$h .= '<th class="item-item-vat text-center">'.s("TVA").'</th>';
@@ -477,11 +471,18 @@ class OrderUi {
 							} else {
 								$unit = '';
 							}
-							$h .= \util\TextUi::money($eItem['unitPrice']).' '.$unit;
+							$h .= \util\TextUi::money($eItem['unitPrice']);
+							if($eSale['hasVat'] and $eSale['type'] === Customer::PRO) {
+								$h .= ' '.SaleUi::getTaxes($eSale['taxes']);
+							}
+							$h .= ' '.$unit;
 						$h .= '</td>';
 
 						$h .= '<td class="item-item-price text-end">';
 							$h .= \util\TextUi::money($eItem['price']);
+							if($eSale['hasVat'] and $eSale['type'] === Customer::PRO) {
+								$h .= ' '.SaleUi::getTaxes($eSale['taxes']);
+							}
 						$h .= '</td>';
 
 						if($eSale['hasVat'] and $eSale['type'] === Customer::PRO) {

@@ -7,9 +7,6 @@ abstract class ProductElement extends \Element {
 
 	private static ?ProductModel $model = NULL;
 
-	const PRIVATE = 'private';
-	const PRO = 'pro';
-
 	const ACTIVE = 'active';
 	const INACTIVE = 'inactive';
 
@@ -45,7 +42,6 @@ class ProductModel extends \ModuleModel {
 			'id' => ['serial32', 'cast' => 'int'],
 			'shop' => ['element32', 'shop\Shop', 'cast' => 'element'],
 			'date' => ['element32', 'shop\Date', 'cast' => 'element'],
-			'type' => ['enum', [\shop\Product::PRIVATE, \shop\Product::PRO], 'cast' => 'enum'],
 			'product' => ['element32', 'selling\Product', 'cast' => 'element'],
 			'price' => ['decimal', 'digits' => 8, 'decimal' => 2, 'min' => 0.0, 'max' => NULL, 'cast' => 'float'],
 			'stock' => ['float32', 'min' => 0.0, 'max' => NULL, 'null' => TRUE, 'cast' => 'float'],
@@ -53,7 +49,7 @@ class ProductModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'shop', 'date', 'type', 'product', 'price', 'stock', 'status'
+			'id', 'shop', 'date', 'product', 'price', 'stock', 'status'
 		]);
 
 		$this->propertiesToModule += [
@@ -90,9 +86,6 @@ class ProductModel extends \ModuleModel {
 
 		switch($property) {
 
-			case 'type' :
-				return ($value === NULL) ? NULL : (string)$value;
-
 			case 'status' :
 				return ($value === NULL) ? NULL : (string)$value;
 
@@ -121,10 +114,6 @@ class ProductModel extends \ModuleModel {
 
 	public function whereDate(...$data): ProductModel {
 		return $this->where('date', ...$data);
-	}
-
-	public function whereType(...$data): ProductModel {
-		return $this->where('type', ...$data);
 	}
 
 	public function whereProduct(...$data): ProductModel {

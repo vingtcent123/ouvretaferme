@@ -252,19 +252,26 @@ class ShopUi {
 
 		$h .= '<div class="util-block-help">';
 			$h .= '<h4>'.s("Personnalisation des e-mails").'</h4>';
-			$h .= '<p>'.s("Vous pouvez personnaliser le contenu des e-mails envoyés à vos clients lorsqu'ils commandent dans votre boutique. Le contenu des e-mails envoyés dépend aussi du moyen de paiement sélectionné par le client, si vous avez activé différentes moyens de paiement sur votre boutique.").'</p>';
-			$h .= $form->open(attributes: ['action' => '/shop/configuration:update', 'method' => 'get']);
-				$h .= $form->hidden('id', $eShop['id']);
-				$h .= $form->inputGroup(
-					$form->addon(s("Moyen de paiement")).
-					$form->select('paymentMethod', [
-						\selling\Sale::OFFLINE => s("Direct avec le producteur"),
-						\selling\Sale::ONLINE_CARD => s("Carte bancaire"),
-						\selling\Sale::TRANSFER => s("Virement bancaire")
-					], $eSaleExample['paymentMethod'], attributes: ['mandatory' => TRUE]).
-					$form->submit(s("Afficher"))
-				);
-			$h .= $form->close();
+			$h .= '<p>';
+				$h .= s("Vous pouvez personnaliser le contenu des e-mails envoyés à vos clients lorsqu'ils commandent dans votre boutique.");
+				if($eShop['hasPayment']) {
+					$h .= s("Le contenu des e-mails envoyés dépend aussi du moyen de paiement sélectionné par le client, si vous avez activé différentes moyens de paiement sur votre boutique.");
+				}
+			'</p>';
+			if($eShop['hasPayment']) {
+				$h .= $form->open(attributes: ['action' => '/shop/configuration:update', 'method' => 'get']);
+					$h .= $form->hidden('id', $eShop['id']);
+					$h .= $form->inputGroup(
+						$form->addon(s("Moyen de paiement")).
+						$form->select('paymentMethod', [
+							\selling\Sale::OFFLINE => s("Direct avec le producteur"),
+							\selling\Sale::ONLINE_CARD => s("Carte bancaire"),
+							\selling\Sale::TRANSFER => s("Virement bancaire")
+						], $eSaleExample['paymentMethod'], attributes: ['mandatory' => TRUE]).
+						$form->submit(s("Afficher"))
+					);
+				$h .= $form->close();
+			}
 		$h .= '</div>';
 
 		$h .= '<br/>';

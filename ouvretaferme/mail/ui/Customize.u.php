@@ -49,8 +49,8 @@ class CustomizeUi {
 
 			if(in_array($e['type'], [Customize::SHOP_CONFIRMED_HOME, Customize::SHOP_CONFIRMED_PLACE])) {
 
-				$h .= '<div class="util-info">';
-					$h .= \Asset::icon('exclamation-triangle-fill').' '.s("L'e-mail de confirmation de commande est le même pour toutes les commandes, quelque soit le moyen de paiement utilisé. Vous devez en tenir compte lorsque vous le rédigez. Pensez à utiliser la variable <i>@payment</i> pour rappeler à votre client le moyen de paiement qu'il a sélectionné.");
+				$h .= '<div class="util-block-help">';
+					$h .= s("L'e-mail de confirmation de commande est le même pour toutes les commandes, quel que soit le moyen de paiement utilisé. Vous devez en tenir compte lorsque vous le rédigez. Pensez à utiliser la variable <i>@payment</i> pour rappeler à votre client le moyen de paiement qu'il a sélectionné. Notez que dans le cas où vous désactivez le choix du moyen de paiement, la variable <i>@payment</i> sera vide.");
 				$h .= '</div>';
 
 			}
@@ -140,13 +140,19 @@ class CustomizeUi {
 			case Customize::SHOP_CONFIRMED_HOME :
 			case Customize::SHOP_CONFIRMED_PLACE :
 
-				$eSaleExample['paymentMethod'] = \selling\Sale::OFFLINE;
+				$eSaleExample['paymentMethod'] = $eSaleExample['shop']['hasPayment'] ? \selling\Sale::OFFLINE : NULL;
 				$eSaleExample['shopPoint'] = $eSaleExample['shopPoints'][match($type) {
 					Customize::SHOP_CONFIRMED_HOME => \shop\Point::HOME,
 					Customize::SHOP_CONFIRMED_PLACE => \shop\Point::PLACE
 				}];
 
-				return self::getShopVariables($type, $eSaleExample, $eSaleExample['cItem']);
+				$variables = self::getShopVariables($type, $eSaleExample, $eSaleExample['cItem']);
+
+				if($eSaleExample['shop']['hasPayment'] === FALSE) {
+					$variables['payment'] = '<i>'.s("Vide car le choix du moyen de paiement est désactivé sur la boutique").'</i>';
+				}
+
+				return $variables;
 
 		};
 
@@ -238,10 +244,7 @@ class CustomizeUi {
 						break;
 
 					case NULL :
-						$payment = s("Cette commande sera à régler en direct avec votre producteur.");
-						if($eSale['shop']['paymentOfflineHow']) {
-							$payment .= "\n".encode($eSale['shop']['paymentOfflineHow']);
-						}
+						$payment = '';
 						break;
 
 					default :
@@ -278,10 +281,16 @@ class CustomizeUi {
 
 				$address .= '</div>';
 
+				if($eSale['hasVat'] and $eSale['type'] === \selling\Sale::PRO) {
+					$amount = \util\TextUi::money($eSale['priceExcludingVat']).' '.\selling\SaleUi::getTaxes($eSale['taxes']);
+				} else {
+					$amount = \util\TextUi::money($eSale['priceIncludingVat']);
+				}
+
 				return [
 					'number' => $eSale['document'],
 					'farm' => encode($eSale['farm']['name']),
-					'amount' => \util\TextUi::money($eSale['priceIncludingVat']),
+					'amount' => $amount,
 					'products' => $products,
 					'payment' => $payment,
 					'delivery' => \util\DateUi::numeric($eSale['shopDate']['deliveryDate']),

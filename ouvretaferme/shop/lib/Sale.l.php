@@ -104,6 +104,7 @@ class SaleLib {
 		]);
 
 		$eCustomer = self::getShopCustomer($eSale['shop'], $eUser);
+		$eDate = $eSale['shopDate'];
 
 		$eSale->merge([
 			'farm' => $eSale['shop']['farm'],
@@ -111,7 +112,7 @@ class SaleLib {
 			'discount' => $eCustomer['discount'],
 			'from' => \selling\Sale::SHOP,
 			'market' => FALSE,
-			'type' => \selling\Sale::PRIVATE,
+			'type' => $eDate['type'],
 			'preparationStatus' => \selling\Sale::BASKET,
 			'deliveredAt' => $eSale['shopDate']['deliveryDate'],
 		]);

@@ -39,7 +39,6 @@ Product:
   id: serial32
   shop: shop\Shop
   date: shop\Date
-  type: enum(PRIVATE, PRO)
   product: selling\Product
   price: decimal(8, 2, 0.0, null)
   stock: ?float32(0.0, null)
