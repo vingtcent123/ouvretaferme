@@ -115,7 +115,7 @@ class ProductUi {
 					$h .= '<th rowspan="2" colspan="2">'.$search->linkSort('name', s("Nom")).'</th>';
 					$h .= '<th colspan="2" class="text-center">'.s("Ventes").'</th>';
 					$h .= '<th colspan="2" class="text-center">'.s("Prix de base").'</th>';
-					if($eFarm['selling']['hasVat']) {
+					if($eFarm->hasVat()) {
 						$h .= '<th rowspan="2" class="text-center product-item-vat">'.s("TVA").'</th>';
 					}
 					$h .= '<th rowspan="2" class="product-item-plant">'.self::p('plant')->label.'</th>';
@@ -175,13 +175,13 @@ class ProductUi {
 							$h .= '<span class="color-muted">'.s("non vendu").'</span>';
 						} else {
 
-							$taxes = $eFarm['selling']['hasVat'] ? CustomerUi::getTaxes(Customer::PRIVATE) : '';
+							$taxes = $eFarm->hasVat() ? CustomerUi::getTaxes(Customer::PRIVATE) : '';
 
 							if($eProduct['privatePrice']) {
 								$value = \util\TextUi::money($eProduct['privatePrice']).$taxes;
 							} else if($eProduct['proPrice']) {
-								$value = '<span class="color-muted" title="'.s("Prix calculé à partir du prix pour les pros augmenté de la TVA.").'">'.\Asset::icon('magic').' ';
-									$value .= \util\TextUi::money($eProduct['proPrice'] + $eProduct->calcProVat()).$taxes;
+								$value = '<span class="color-muted" title="'.s("Prix calculé à partir du prix pour les professionnels augmenté de la TVA.").'">'.\Asset::icon('magic').' ';
+									$value .= \util\TextUi::money($eProduct->calcPrivateMagicPrice($eFarm->hasVat())).$taxes;
 								$value .= '</span>';
 							} else {
 								$value = '-';
@@ -197,13 +197,13 @@ class ProductUi {
 							$h .= '<span class="color-muted">'.s("non vendu").'</span>';
 						} else {
 
-							$taxes = $eFarm['selling']['hasVat'] ? CustomerUi::getTaxes(Customer::PRO) : '';
+							$taxes = $eFarm->hasVat() ? CustomerUi::getTaxes(Customer::PRO) : '';
 
 							if($eProduct['proPrice']) {
 								$value = \util\TextUi::money($eProduct['proPrice']).$taxes;
 							} else if($eProduct['privatePrice']) {
 								$value = '<span class="color-muted" title="'.s("Prix calculé à partir du prix pour les particuliers diminué de la TVA.").'">'.\Asset::icon('magic').' ';
-									$value .= \util\TextUi::money($eProduct['privatePrice'] - $eProduct->calcPrivateVat()).$taxes;
+									$value .= \util\TextUi::money($eProduct->calcProMagicPrice($eFarm->hasVat())).$taxes;
 								$value .= '</span>';
 							} else {
 								$value = '-';
@@ -214,7 +214,7 @@ class ProductUi {
 						}
 					$h .= '</td>';
 
-					if($eFarm['selling']['hasVat']) {
+					if($eFarm->hasVat()) {
 
 						$h .= '<td class="text-center product-item-vat">';
 							$h .= s("{value} %", \Setting::get('selling\vatRates')[$eProduct['vat']]);
@@ -340,7 +340,7 @@ class ProductUi {
 				$h .= '<dd>'.($eProduct['size'] ? encode($eProduct['size']) : '').'</dd>';
 				$h .= '<dt>'.self::p('unit')->label.'</dt>';
 				$h .= '<dd>'.($eProduct['unit'] ? self::p('unit')->values[$eProduct['unit']] : \Asset::icon('slash')).'</dd>';
-				if($eProduct['farm']['selling']['hasVat']) {
+				if($eProduct['farm']->hasVat()) {
 					$h .= '<dt>'.self::p('vat')->label.'</dt>';
 					$h .= '<dd>'.s("{value} %", \Setting::get('selling\vatRates')[$eProduct['vat']]).'</dd>';
 				}
@@ -396,7 +396,7 @@ class ProductUi {
 
 				if($eProduct['private']) {
 
-					$taxes = $eProduct['farm']['selling']['hasVat'] ? CustomerUi::getTaxes(Customer::PRIVATE) : '';
+					$taxes = $eProduct['farm']->hasVat() ? CustomerUi::getTaxes(Customer::PRIVATE) : '';
 
 					$h .= '<dt>'.s("Prix de base").'</dt>';
 					$h .= '<dd>';
@@ -404,8 +404,8 @@ class ProductUi {
 							$value = \util\TextUi::money($eProduct['privatePrice']);
 							$value .= ' '.$taxes.' / '.\main\UnitUi::getSingular($eProduct['unit'], by: TRUE);
 						} else if($eProduct['proPrice']) {
-							$value = '<span class="color-muted" title="'.s("Prix calculé à partir du prix pour les pros augmenté de la TVA, cliquez pour le personnaliser.").'">'.\Asset::icon('magic').' ';
-								$value .= \util\TextUi::money($eProduct['proPrice'] + $eProduct->calcProVat());
+							$value = '<span class="color-muted" title="'.s("Prix calculé à partir du prix pour les professionnels augmenté de la TVA, cliquez pour le personnaliser.").'">'.\Asset::icon('magic').' ';
+								$value .= \util\TextUi::money($eProduct->calcPrivateMagicPrice($eProduct['farm']->hasVat()));
 								$value .= ' '.$taxes.' / '.\main\UnitUi::getSingular($eProduct['unit'], by: TRUE);
 							$value .= '</span>';
 						} else {
@@ -439,7 +439,7 @@ class ProductUi {
 
 				if($eProduct['pro']) {
 
-					$taxes = $eProduct['farm']['selling']['hasVat'] ? CustomerUi::getTaxes(Customer::PRO) : '';
+					$taxes = $eProduct['farm']->hasVat() ? CustomerUi::getTaxes(Customer::PRO) : '';
 
 					$h .= '<dt>'.s("Prix de base").'</dt>';
 					$h .= '<dd>';
@@ -448,7 +448,7 @@ class ProductUi {
 							$value .= ' '.$taxes.' / '.\main\UnitUi::getSingular($eProduct['unit'], by: TRUE);
 						} else if($eProduct['privatePrice']) {
 							$value = '<span class="color-muted" title="'.s("Prix calculé à partir du prix pour les particuliers diminué de la TVA, cliquez pour le personnaliser.").'">'.\Asset::icon('magic').' ';
-								$value .= \util\TextUi::money($eProduct['privatePrice'] - $eProduct->calcPrivateVat());
+								$value .= \util\TextUi::money($eProduct->calcProMagicPrice($eProduct['farm']->hasVat()));
 								$value .= ' '.$taxes.' / '.\main\UnitUi::getSingular($eProduct['unit'], by: TRUE);
 							$value .= '</span>';
 						} else {
@@ -468,7 +468,7 @@ class ProductUi {
 
 				} else {
 
-					$h .= '<div class="color-muted">'.s("Pas de vente aux pros").'</div>';
+					$h .= '<div class="color-muted">'.s("Pas de vente aux professionnels").'</div>';
 
 				}
 
@@ -583,7 +583,7 @@ class ProductUi {
 			$h .= $form->dynamicGroups($eProduct, ['name']);
 			$h .= $form->group(
 				self::p('unit')->label,
-				'<div class="form-control disabled">'.mb_ucfirst($eProduct['unit'] ? \main\UnitUi::getSingular($eProduct['unit']) : self::p('unit')->placeholder).'</div>'
+				$form->fake(mb_ucfirst($eProduct['unit'] ? \main\UnitUi::getSingular($eProduct['unit']) : self::p('unit')->placeholder))
 			);
 			$h .= $form->dynamicGroups($eProduct, ['variety', 'size', 'description', 'quality', 'vat']);
 
@@ -610,7 +610,7 @@ class ProductUi {
 		]);
 
 		$h = '<h3>'.s("Clientèle").'</h3>';
-		$h .= '<div class="util-info">'.s("Pour une vente aux particuliers et si aucun prix de vente n'a été saisi, le prix de vente pro augmenté de la TVA sera utilisé dans ce cas, et vice-versa pour une vente aux pros. Ces données de base pourront toujours être personnalisées pour chaque client et vente.").'</div>';
+		$h .= '<div class="util-info">'.s("Pour une vente aux particuliers et si aucun prix de vente n'a été saisi, le prix de vente pro augmenté de la TVA sera utilisé dans ce cas, et vice-versa pour une vente aux professionnels. Ces données de base pourront toujours être personnalisées pour chaque client et vente.").'</div>';
 
 		$h .= self::getFieldPrivate($form, $eProduct);
 		$h .= '<br/>';
@@ -630,7 +630,7 @@ class ProductUi {
 				$form->dynamicField($eProduct, 'pro')
 			);
 
-			$taxes = $eProduct['farm']['selling']['hasVat'] ? '/ '.CustomerUi::getTaxes(Customer::PRO) : '';
+			$taxes = $eProduct['farm']->hasVat() ? '/ '.CustomerUi::getTaxes(Customer::PRO) : '';
 			$unit = ($eProduct['unit'] ? self::p('unit')->values[$eProduct['unit']] : self::p('unit')->placeholder);
 
 			$h .= $form->group(
@@ -665,7 +665,7 @@ class ProductUi {
 				$form->dynamicField($eProduct, 'private')
 			);
 
-			$taxes = $eProduct['farm']['selling']['hasVat'] ? '/ '.CustomerUi::getTaxes(Customer::PRIVATE) : '';
+			$taxes = $eProduct['farm']->hasVat() ? '/ '.CustomerUi::getTaxes(Customer::PRIVATE) : '';
 			$unit = ($eProduct['unit'] ? self::p('unit')->values[$eProduct['unit']] : self::p('unit')->placeholder);
 
 			$h .= $form->group(
@@ -724,8 +724,8 @@ class ProductUi {
 			'private' => s("Vente aux clients particuliers"),
 			'privatePrice' => s("Prix particulier"),
 			'privateStep' => s("Multiple de vente"),
-			'pro' => s("Vente aux clients pros"),
-			'proPrice' => s("Prix pro"),
+			'pro' => s("Vente aux clients professionnels"),
+			'proPrice' => s("Prix professionnel"),
 			'proPackaging' => s("Colis de base"),
 			'vat' => s("Taux de TVA"),
 			'statut' => s("Statut"),

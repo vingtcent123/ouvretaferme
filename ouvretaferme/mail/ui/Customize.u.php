@@ -237,6 +237,13 @@ class CustomizeUi {
 						}
 						break;
 
+					case NULL :
+						$payment = s("Cette commande sera à régler en direct avec votre producteur.");
+						if($eSale['shop']['paymentOfflineHow']) {
+							$payment .= "\n".encode($eSale['shop']['paymentOfflineHow']);
+						}
+						break;
+
 					default :
 						throw new \Exception('Not compatible');
 

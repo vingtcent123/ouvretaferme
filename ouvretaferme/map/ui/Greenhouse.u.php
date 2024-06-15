@@ -63,14 +63,14 @@ class GreenhouseUi {
 
 				$h .= $form->group(
 					s("Parcelle"),
-					'<div class="form-control disabled">'.encode($eGreenhouse['zone']['name']).'</div>'
+					$form->fake($eGreenhouse['zone']['name'])
 				);
 
 			} else {
 
 				$h .= $form->group(
 					s("Bloc"),
-					'<div class="form-control disabled">'.encode($eGreenhouse['plot']['name']).'</div>'
+					$form->fake($eGreenhouse['plot']['name'])
 				);
 
 			}

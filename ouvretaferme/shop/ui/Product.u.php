@@ -25,10 +25,10 @@ class ProductUi {
 		$eDate->expects(['cProduct']);
 
 		$h = '<div class="shop-product-wrapper">';
-			$h .= $eDate['cProduct']->makeString(fn($eProduct) => $this->getProduct($eDate, $eProduct, $eSale->canBasket() or $isModifying));
+			$h .= $eDate['cProduct']->makeString(fn($eProduct) => $this->getProduct($eDate, $eProduct, $eSale->canBasket($eShop) or $isModifying));
 		$h .= '</div>';
 
-		if($eDate['isOrderable'] and ($eSale->canBasket() or $isModifying)) {
+		if($eDate['isOrderable'] and ($eSale->canBasket($eShop) or $isModifying)) {
 			$h .= $this->getOrderedProducts($eShop, $eDate, $eSale, $isModifying);
 		}
 
@@ -317,7 +317,20 @@ class ProductUi {
 				break;
 
 			case 'price' :
-				$d->append = fn(\util\FormUi $form, Product $e) => $form->addon('€ / '.\main\UnitUi::getSingular($e['product']['unit'], short: TRUE));
+				$d->append = function(\util\FormUi $form, Product $e) {
+
+					$e->expects([
+						'date' => [
+							'farm' => ['selling']
+						]
+					]);
+
+					return $form->addon(s('€ {taxes} / {unit}', [
+						'taxes' => $e['date']['farm']->hasVat() ? $e['date']->getTaxes() : '',
+						'unit' => \main\UnitUi::getSingular($e['product']['unit'], short: TRUE)
+					]));
+
+				};
 				break;
 
 

@@ -102,7 +102,7 @@ class AnalyzeUi {
 						if($e === NULL) {
 							$h .= '<th class="text-end color-private">'.s("Dont<br/>particuliers").'</th>';
 							$h .= '<th></th>';
-							$h .= '<th class="color-pro">'.s("Dont<br/>pros").'</th>';
+							$h .= '<th class="color-pro">'.s("Dont<br/>professionnels").'</th>';
 						}
 
 						if($e instanceof Product) {
@@ -685,7 +685,7 @@ class AnalyzeUi {
 								$h .= '<td>';
 									$h .= match($eItem['type']) {
 										Customer::PRIVATE => s("Clients particuliers"),
-										Customer::PRO => s("Clients pros")
+										Customer::PRO => s("Clients professionnels")
 									};
 								$h .= '</td>';
 								$h .= $line($eItem, $eItemBefore);
@@ -789,7 +789,7 @@ class AnalyzeUi {
 								$h .= '<td>';
 									$h .= match($eItem['type']) {
 										Customer::PRIVATE => s("Clients particuliers"),
-										Customer::PRO => s("Clients pros")
+										Customer::PRO => s("Clients professionnels")
 									};
 								$h .= '</td>';
 								$h .= $line($eItem, $eItemBefore);
@@ -1623,7 +1623,7 @@ class AnalyzeUi {
 			if($search->isFiltered('type')) {
 				$h .= match($search->get('type')) {
 					Customer::PRIVATE => '<h3>'.s("Clients particuliers").'</h3>',
-					Customer::PRO => '<h3>'.s("Clients pros").'</h3>'
+					Customer::PRO => '<h3>'.s("Clients professionnels").'</h3>'
 				};
 			}
 
@@ -1716,7 +1716,7 @@ class AnalyzeUi {
 			if($search->isFiltered('type')) {
 				$h .= match($search->get('type')) {
 					Customer::PRIVATE => '<h3>'.s("Clients particuliers").'</h3>',
-					Customer::PRO => '<h3>'.s("Clients pros").'</h3>'
+					Customer::PRO => '<h3>'.s("Clients professionnels").'</h3>'
 				};
 			}
 
@@ -1819,8 +1819,8 @@ class AnalyzeUi {
 
 					$h .= $form->select('type', [
 							Customer::PRIVATE => s("Clients particuliers"),
-							Customer::PRO => s("Clients pros"),
-						], $search->get('type'), ['placeholder' => s("Clients particuliers et pros")]);
+							Customer::PRO => s("Clients professionnels"),
+						], $search->get('type'), ['placeholder' => s("Clients particuliers et professionnels")]);
 					$h .= $form->submit(s("Chercher"), ['class' => 'btn btn-secondary']);
 					$h .= '<a href="'.$url.'" class="btn btn-secondary">'.\Asset::icon('x-lg').'</a>';
 
@@ -1886,7 +1886,7 @@ class AnalyzeUi {
 			s("Livraison"),
 			s("Quantité"),
 			s("Unité"),
-			$eFarm['selling']['hasVat'] ? s("Montant (HT)") : s("Montant")
+			$eFarm->hasVat() ? s("Montant (HT)") : s("Montant")
 		];
 
 	}

@@ -11,6 +11,21 @@ class Date extends DateElement {
 		];
 	}
 
+	public function getTaxes(): string {
+
+		$this->expects([
+			'farm' => [
+				'selling' => ['hasVat']
+			]
+		]);
+
+		return match($this['type']) {
+			Date::PRIVATE => s("TTC"),
+			Date::PRO => s("HT"),
+		};
+
+	}
+
 	public function canRead(): bool {
 
 		$this->expects(['farm']);
@@ -111,12 +126,14 @@ class Date extends DateElement {
 
 			'products.check' => function(mixed $products) use ($input) {
 
-				$this->expects(['shop']);
+				$this->expects([
+					'shop' => ['type']
+				]);
 
 				$cProductSelling = \selling\Product::model()
 					->select(\selling\Product::getSelection())
 					->whereId('IN', $products)
-					->wherePrivate(TRUE)
+					->where($this['shop']['type'], TRUE)
 					->whereStatus(\selling\Product::ACTIVE)
 					->getCollection();
 

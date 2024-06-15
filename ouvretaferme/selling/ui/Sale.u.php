@@ -434,6 +434,8 @@ class SaleUi {
 									$h .= '<div>'.SaleUi::getPaymentStatus($eSale).'</span></div>';
 								} else if(in_array($eSale['paymentMethod'], [Sale::CASH, Sale::CHECK, Sale::CARD])) {
 									$h .= self::p('paymentMethod')->values[$eSale['paymentMethod']];
+								} else if($eSale['paymentMethod'] === Sale::OFFLINE) {
+									$h .= s("En direct");
 								} else {
 									$h .= '/';
 								}

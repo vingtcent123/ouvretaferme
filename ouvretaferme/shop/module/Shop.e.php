@@ -6,7 +6,7 @@ class Shop extends ShopElement {
 	public static function getSelection(): array {
 
 		return parent::getSelection() + [
-			'farm' => ['name', 'vignette', 'url', 'status']
+			'farm' => ['name', 'vignette', 'banner', 'url', 'status']
 		];
 
 	}

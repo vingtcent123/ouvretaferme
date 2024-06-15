@@ -2,6 +2,7 @@ Date:
   id: serial32
   createdAt: datetime = SPECIAL(now)
   shop: shop\Shop
+  type: enum(PRIVATE, PRO)
   farm: farm\Farm
   status: enum(ACTIVE, CLOSED) = ACTIVE
   orderStartAt: datetime
@@ -34,38 +35,11 @@ Point:
     ["shop", "name"]
   ]
 
-Shop:
-  id: serial32
-  fqn: fqn
-  farm: farm\Farm
-  logo: ?textFixed(30, 30) @charset(ascii)
-  name: text8(1, null) @collate(general)
-  email: email
-  type: enum(PRO, PRIVATE) = PRIVATE
-  frequency: enum(WEEKLY, BIMONTHLY, MONTHLY, OTHER) = WEEKLY
-  paymentCard: bool = FALSE
-  paymentTransfer: bool = FALSE
-  paymentTransferHow: ?text8(1, null)
-  paymentOffline: bool = TRUE
-  paymentOfflineHow: ?text8(1, null)
-  description: ?editor24
-  terms: ?editor24
-  termsField: bool = FALSE
-  orderMin: ?int(0, NULL)
-  shipping: ?decimal(8, 2, 0.01, null)
-  shippingUntil: ?int(0, NULL)
-  status: enum(OPEN, CLOSED) = OPEN
-  createdAt: datetime = SPECIAL(now)
-  createdBy: user\User = SPECIAL(user)
-  UNIQUE: [
-    ["fqn"],
-    ["farm", "name"]
-  ]
-
 Product:
   id: serial32
   shop: shop\Shop
   date: shop\Date
+  type: enum(PRIVATE, PRO)
   product: selling\Product
   price: decimal(8, 2, 0.0, null)
   stock: ?float32(0.0, null)
@@ -83,4 +57,34 @@ Redirect:
   createdAt: datetime = SPECIAL(now)
   UNIQUE: [
     ["fqn", "shop"]
+  ]
+
+Shop:
+  id: serial32
+  fqn: fqn
+  farm: farm\Farm
+  logo: ?textFixed(30, 30) @charset(ascii)
+  name: text8(1, null) @collate(general)
+  email: email
+  type: enum(PRIVATE, PRO)
+  frequency: enum(WEEKLY, BIMONTHLY, MONTHLY, OTHER) = WEEKLY
+  hasPoint: bool = TRUE
+  hasPayment: bool = TRUE
+  paymentCard: bool = FALSE
+  paymentTransfer: bool = FALSE
+  paymentTransferHow: ?text8(1, null)
+  paymentOffline: bool = TRUE
+  paymentOfflineHow: ?text8(1, null)
+  description: ?editor24
+  terms: ?editor24
+  termsField: bool = FALSE
+  orderMin: ?int(0, NULL)
+  shipping: ?decimal(8, 2, 0.01, null)
+  shippingUntil: ?int(0, NULL)
+  status: enum(OPEN, CLOSED) = OPEN
+  createdAt: datetime = SPECIAL(now)
+  createdBy: user\User = SPECIAL(user)
+  UNIQUE: [
+    ["fqn"],
+    ["farm", "name"]
   ]

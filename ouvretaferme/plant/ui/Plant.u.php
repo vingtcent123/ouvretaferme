@@ -190,8 +190,8 @@ class PlantUi {
 				$h .= '<br/>';
 
 				$h .= '<div class="tabs-item">';
-					$h .= '<a href="'.\farm\FarmUi::urlCultivationPlants($eFarm).'" class="tab-item '.($search->get('status') === Plant::ACTIVE ? 'selected' : '').'"><span>'.s("Espèces actives").' <small>('.$plants[Plant::ACTIVE].')</small></span></a>';
-					$h .= '<a href="'.\farm\FarmUi::urlCultivationPlants($eFarm).'/'.Plant::INACTIVE.'" class="tab-item '.($search->get('status') === Plant::INACTIVE ? 'selected' : '').'"><span>'.s("Espèces désactivées").' <small>('.$plants[Plant::INACTIVE].')</small></span></a>';
+					$h .= '<a href="'.\farm\FarmUi::urlCultivationPlants($eFarm).'" class="tab-item '.($search->get('status') === Plant::ACTIVE ? 'selected' : '').'"><span>'.s("Espèces actives").' <span class="tab-item-count">'.$plants[Plant::ACTIVE].'</span></span></a>';
+					$h .= '<a href="'.\farm\FarmUi::urlCultivationPlants($eFarm).'/'.Plant::INACTIVE.'" class="tab-item '.($search->get('status') === Plant::INACTIVE ? 'selected' : '').'"><span>'.s("Espèces désactivées").' <small class="tab-item-count">'.$plants[Plant::INACTIVE].'</small></span></a>';
 				$h .= '</div>';
 
 			}

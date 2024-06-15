@@ -156,6 +156,14 @@ class Farm extends FarmElement {
 
 	}
 
+	public function hasVat(): bool {
+
+		$this->expects(['selling' => ['hasVat']]);
+
+		return $this['selling']['hasVat'];
+
+	}
+
 	public function hasFeatureTime(): bool {
 
 		$this->expects(['featureTime']);

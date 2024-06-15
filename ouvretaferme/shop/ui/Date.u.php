@@ -247,8 +247,13 @@ class DateUi {
 			foreach($eDateBase['cProduct'] as $eProduct) {
 
 				if($cProduct->offsetExists($eProduct['product']['id'])) {
+
 					$cProduct[$eProduct['product']['id']]['checked'] = TRUE;
-					$cProduct[$eProduct['product']['id']]['privatePrice'] = $eProduct['price'];
+
+					if($eProduct['price'] !== NULL) {
+						$cProduct[$eProduct['product']['id']]['privatePrice'] = $eProduct['price'];
+					}
+
 				}
 
 			}
@@ -274,6 +279,11 @@ class DateUi {
 			$h .= $form->dynamicGroups($e, ['status', 'points*']);
 			$h .= $this->getOrderField('create', $form, $e);
 			$h .= $form->dynamicGroup($e, 'deliveryDate*');
+
+			$h .= $form->group(
+				s("Grille tarifaire"),
+				$form->fake(ShopUi::p('type')->values[$e['shop']['type']])
+			);
 
 			$h .= $form->group(
 				p("Produit proposé à la vente", "Produits proposés à la vente", $cProduct->count()).$form->asterisk(),
@@ -393,9 +403,22 @@ class DateUi {
 						$attributes['checked'] = $checked;
 					}
 
+					switch($eDate['type']) {
+
+						case Date::PRIVATE :
+							$price = $eProduct['privatePrice'] ?? $eProduct->calcPrivateMagicPrice($eFarm->hasVat());
+							break;
+
+						case Date::PRO :
+							$price = $eProduct['proPrice'] ?? $eProduct->calcProMagicPrice($eFarm->hasVat());
+							break;
+
+					}
+
 					$eShopProduct = new Product([
+						'date' => $eDate,
 						'product' => $eProduct,
-						'price' => $eProduct['privatePrice'],
+						'price' => $price,
 						'stock' => NULL,
 					]);
 
@@ -413,8 +436,7 @@ class DateUi {
 							$h .= \main\UnitUi::getValue($step, $eProduct['unit']);
 						$h .= '</label>';
 						$h .= '<div data-wrapper="price['.$eProduct['id'].']" class="date-products-item-price '.($checked ? '' : 'hidden').'">';
-							$h .= $form->dynamicField($eShopProduct, 'price['.$eProduct['id'].']', function($d) use ($eProduct) {
-							});
+							$h .= $form->dynamicField($eShopProduct, 'price['.$eProduct['id'].']');
 						$h .= '</div>';
 						$h .= '<div data-wrapper="stock['.$eProduct['id'].']" class="date-products-item-stock '.($checked ? '' : 'hidden').'">';
 							$h .= $form->dynamicField($eShopProduct, 'stock', function($d) use ($eProduct) {
@@ -540,7 +562,7 @@ class DateUi {
 						$h .= '<th class="text-end" colspan="2">'.s("Commandes").'</th>';
 						$h .= '<th class="text-end">';
 							$h .= s("Montant");
-							if($eFarm['selling']['hasVat']) {
+							if($eFarm->hasVat()) {
 								$h .= ' '.\selling\CustomerUi::getTaxes(\selling\Customer::PRIVATE);
 							}
 						$h .= '</th>';
@@ -681,19 +703,19 @@ class DateUi {
 				$h .= '<a class="tab-item" data-tab="products" onclick="Lime.Tab.select(this)">';
 					$h .= s("Produits");
 					if($cProduct->notEmpty()) {
-						$h .= ' ('.$cProduct->count().')';
+						$h .= '<span class="tab-item-count">'.$cProduct->count().'</span>';
 					}
 				$h .= '</a>';
 				$h .= '<a class="tab-item" data-tab="sales" onclick="Lime.Tab.select(this)">';
 					$h .= s("Commandes");
 					if($cSale->notEmpty()) {
-						$h .= ' ('.$cSale
+						$h .= '<span class="tab-item-count">'.$cSale
 								->find(fn($eSale) => in_array($eSale['preparationStatus'], [\selling\Sale::CONFIRMED, \selling\Sale::PREPARED, \selling\Sale::DELIVERED]))
-								->count().')';
+								->count().'</span>';
 					}
 				$h .= '</a>';
 				$h .= '<a class="tab-item" data-tab="points" onclick="Lime.Tab.select(this)">';
-					$h .= s("Modes de livraison").' ('.(($eDate['ccPoint'][Point::HOME] ?? new \Collection())->count() + ($eDate['ccPoint'][Point::PLACE] ?? new \Collection())->count()).')';
+					$h .= s("Modes de livraison").'<span class="tab-item-count">'.(($eDate['ccPoint'][Point::HOME] ?? new \Collection())->count() + ($eDate['ccPoint'][Point::PLACE] ?? new \Collection())->count()).'</span>';
 				$h .= '</a>';
 			$h .= '</div>';
 
@@ -731,7 +753,13 @@ class DateUi {
 				if($cSale->empty()) {
 					$h .= '<div class="util-info">'.s("Aucune commande n'a encore été enregistrée pour cette vente !").'</div>';
 				} else {
-					$h .= (new \selling\SaleUi())->getList($eFarm, $cSale, hide: ['deliveredAt', 'documents', 'items'], show: ['point'], dynamicHide: ['paymentMethod' => '']);
+					$h .= (new \selling\SaleUi())->getList(
+						$eFarm,
+						$cSale,
+						hide: array_merge(['deliveredAt', 'documents', 'items'], $cSale->match(fn($eSale) => $eSale['paymentMethod'] !== NULL) ? [] : ['paymentMethod']),
+						show: ['point'],
+						dynamicHide: ['paymentMethod' => '']
+					);
 				}
 			$h .= '</div>';
 
@@ -756,10 +784,17 @@ class DateUi {
 					$h .= $this->toggle($eDate);
 				$h .= '</dd>';
 
-				$h .= '<dt style="grid-row: span 2">';
+				$h .= '<dt>';
+					$h .= s("Grille tarifaire");
+				$h .= '</dt>';
+				$h .= '<dd>';
+					$h .= ShopUi::p('type')->values[$eDate['type']];
+				$h .= '</dd>';
+
+				$h .= '<dt>';
 					$h .= s("Prise des commandes");
 				$h .= '</dt>';
-				$h .= '<dd style="grid-row: span 2">';
+				$h .= '<dd>';
 					$h .= $this->getOrderHours($eDate);
 				$h .= '</dd>';
 

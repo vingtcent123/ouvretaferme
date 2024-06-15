@@ -42,7 +42,7 @@ new AdaptativeView('shop', function($data, ShopTemplate $t) {
 			echo '</div>';
 
 			if(
-				$data->eSaleExisting->canBasket() === FALSE and
+				$data->eSaleExisting->canBasket($data->eShop) === FALSE and
 				$data->isModifying === FALSE
 			) {
 

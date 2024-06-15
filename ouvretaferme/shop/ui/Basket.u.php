@@ -618,7 +618,7 @@ class BasketUi {
 
 					case \selling\Sale::PAID :
 						$content .= '<h2>'.\Asset::icon('check').' '.s("Merci, votre commande est confirmée et payée !").'</h2>';
-						$content .= '<p>'.s("Vous allez bientôt recevoir un e-mail de confirmation.").'</p>';
+						$content .= '<p>'.s("Vous avez reçu un e-mail de confirmation.").'</p>';
 						break;
 
 					case \selling\Sale::FAILED :
@@ -633,18 +633,23 @@ class BasketUi {
 			case \selling\Sale::TRANSFER :
 
 				$content .= '<h2>'.\Asset::icon('check').' '.s("Merci, votre commande est confirmée !").'</h2>';
-				$content .= '<p>'.s("Vous allez bientôt recevoir un e-mail de confirmation.").'</p>';
+				$content .= '<p>'.s("Vous avez reçu un e-mail de confirmation.").'</p>';
 				$content .= '<p>';
 					$content .= s("Vous avez choisi de régler cette commande par virement bancaire.<br/>Vous recevrez ultérieurement une facture de votre producteur afin de procéder au règlement.");
 				$content .= '</p>';
 				break;
 
 			case \selling\Sale::OFFLINE :
+			case NULL :
 
 				$content .= '<h2>'.\Asset::icon('check').' '.s("Merci, votre commande est confirmée !").'</h2>';
-				$content .= '<p>'.s("Vous allez bientôt recevoir un e-mail de confirmation.").'</p>';
+				$content .= '<p>'.s("Vous avez reçu un e-mail de confirmation.").'</p>';
 				$content .= '<p>';
-					$content .= s("Vous avez choisi de régler cette commande en direct avec votre producteur.");
+					if($eSale['paymentMethod'] === \selling\Sale::OFFLINE) {
+						$content .= s("Vous avez choisi de régler cette commande en direct avec votre producteur.");
+					} else {
+						$content .= s("Cette commande sera à régler en direct avec votre producteur.");
+					}
 				$content .= '</p>';
 				break;
 
@@ -669,10 +674,16 @@ class BasketUi {
 				$h .= '<dd>'.\util\TextUi::money($eSale['priceIncludingVat']).'</dd>';
 				$h .= '<dt>'.s("État de la commande").'</dt>';
 				$h .= '<dd>'.\selling\SaleUi::getPreparationStatusForCustomer($eSale).'</dd>';
+
 				$h .= '<dt>'.s("Paiement").'</dt>';
 				$h .= '<dd>';
-					$h .= \selling\SaleUi::p('paymentMethod')->values[$eSale['paymentMethod']];
+					if($eSale['paymentMethod'] !== NULL) {
+						$h .= \selling\SaleUi::p('paymentMethod')->values[$eSale['paymentMethod']];
+					} else {
+						$h .= \selling\SaleUi::p('paymentMethod')->values[\selling\Sale::OFFLINE];
+					}
 				$h .= '</dd>';
+
 				if($eSale->isPaymentOnline()) {
 					$h .= '<dt>'.s("État du paiement").'</dt>';
 					$h .= '<dd>'.\selling\SaleUi::getPaymentStatusForCustomer($eSale).'</dd>';

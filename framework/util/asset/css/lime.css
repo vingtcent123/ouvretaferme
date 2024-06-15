@@ -2378,6 +2378,20 @@ label.tab-item input {
 	display: none;
 }
 
+.tab-item-count {
+	margin-left: 0.5rem;
+	font-size: 0.9rem;
+	background-color: #000B;
+	border-radius: calc(var(--radius) / 2);
+	padding: 0.2rem 0.4rem;
+	color: white;
+	line-height: 1;
+}
+
+.tab-item-count:empty {
+	display: none;
+}
+
 a.tab-item {
 	color: var(--text);
 	text-decoration: none;

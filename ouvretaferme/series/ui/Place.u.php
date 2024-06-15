@@ -239,9 +239,9 @@ class PlaceUi {
 
 					$h .= '<a class="tab-item" data-tab="'.$eZone['id'].'" onclick="Lime.Tab.select(this)">';
 						$h .= encode($eZone['name']);
-						$h .= '<span class="place-tab-beds">';
+						$h .= '<span class="tab-item-count">';
 							if($beds > 0) {
-								$h .= '('.$beds.')';
+								$h .= $beds;
 							}
 						$h .= '</span>';
 					$h .= '</a>';

@@ -137,8 +137,9 @@ class DateLib extends DateCrud {
 
 		Date::model()->insert($e);
 
-		foreach($e['cProduct'] as &$eProduct) {
+		foreach($e['cProduct'] as $eProduct) {
 			$eProduct['date'] = $e;
+			$eProduct['type'] = $e['type'];
 		}
 
 		Product::model()->insert($e['cProduct']);

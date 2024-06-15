@@ -384,7 +384,7 @@ class PointUi {
 
 			$h .= $form->group(
 				s("Boutique"),
-				'<div class="form-control disabled">'.encode($e['shop']['name']).'</div>'
+				$form->fake($e['shop']['name'])
 			);
 
 			$h .= match($e['type']) {
@@ -410,6 +410,10 @@ class PointUi {
 
 	public function update(Point $e): \Panel {
 
+		$e->expects([
+			'shop' => ['hasPayment']
+		]);
+
 		$form = new \util\FormUi();
 
 		$h = '';
@@ -431,10 +435,16 @@ class PointUi {
 				};
 
 				$h .= $form->group(content: '<h3>'.$title.'</h3>');
-				$h .= $form->dynamicGroups($e, ['paymentOffline', 'paymentTransfer']);
-				if($e['shop']['stripe']->notEmpty()) {
-					$h .= $form->dynamicGroups($e, ['paymentCard']);
+
+				if($e['shop']['hasPayment']) {
+
+					$h .= $form->dynamicGroups($e, ['paymentOffline', 'paymentTransfer']);
+					if($e['shop']['stripe']->notEmpty()) {
+						$h .= $form->dynamicGroups($e, ['paymentCard']);
+					}
+
 				}
+
 				$h .= $form->dynamicGroups($e, ['orderMin', 'shipping', 'shippingUntil']);
 			$h .= '</div>';
 
@@ -478,9 +488,9 @@ class PointUi {
 			'orderMin' => s("Montant minimal de commande"),
 			'shipping' => s("Frais de livraison par commande"),
 			'shippingUntil' => s("Montant minimal de commande au delà duquel les frais de livraison sont offerts"),
-			'paymentOffline' => s("Activer le paiement en direct"),
-			'paymentTransfer' => s("Activer le paiement par virement bancaire"),
-			'paymentCard' => s("Activer le paiement en ligne par carte bancaire"),
+			'paymentOffline' => s("Activer le choix du paiement en direct"),
+			'paymentTransfer' => s("Activer le choix du paiement par virement bancaire"),
+			'paymentCard' => s("Activer le choix du paiement en ligne par carte bancaire"),
 		]);
 
 		switch($property) {

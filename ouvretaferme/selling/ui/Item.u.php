@@ -289,7 +289,7 @@ class ItemUi {
 					$h .= '<td class="text-end">';
 						if($eItem['price'] !== NULL) {
 							$h .= \util\TextUi::money($eItem['price']);
-							$h .= $eFarm['selling']['hasVat'] ?' '.$eItem['sale']->getTaxes() : '';
+							$h .= $eFarm->hasVat() ?' '.$eItem['sale']->getTaxes() : '';
 						}
 					$h .= '</td>';
 
@@ -578,7 +578,6 @@ class ItemUi {
 		$eItem->expects(['farm', 'product', 'sale']);
 
 		$eProduct = $eItem['product'];
-		$eCustomer = $eItem['customer'];
 
 		$form = new \util\FormUi();
 
@@ -615,8 +614,8 @@ class ItemUi {
 
 				$eItem['unitPrice'] ??= $eProduct[$eItem['sale']['type'].'Price'];
 				$eItem['unitPrice'] ??= match($eItem['sale']['type']) {
-					Customer::PRO => $eProduct['privatePrice'] ? $eProduct['privatePrice'] - $eProduct->calcPrivateVat() : NULL,
-					Customer::PRIVATE => $eProduct['proPrice'] ? $eProduct['proPrice'] + $eProduct->calcProVat() : NULL,
+					Customer::PRO => $eProduct->calcProMagicPrice($eItem['sale']['hasVat']),
+					Customer::PRIVATE => $eProduct->calcPrivateMagicPrice($eItem['sale']['hasVat']),
 				};
 
 				// La réduction s'applique uniquement pour les produits qui disposent d'un prix pour ce type de client (particulier / professionnel)
@@ -642,7 +641,10 @@ class ItemUi {
 
 					if($eItem['sale']['hasVat']) {
 						$h .= $form->hidden('vatRate[]', \Setting::get('selling\vatRates')[$eProduct['vat']]);
-						$h .= $form->group(s("Taux de TVA"), '<div class="form-control disabled">'.s("{value} %", \Setting::get('selling\vatRates')[$eProduct['vat']]).'</div>');
+						$h .= $form->group(
+							s("Taux de TVA"),
+							$form->fake(s("{value} %", \Setting::get('selling\vatRates')[$eProduct['vat']]))
+						);
 					}
 
 					if($eItem['sale']['type'] === Customer::PRO) {

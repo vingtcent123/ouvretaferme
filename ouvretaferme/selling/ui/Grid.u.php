@@ -16,7 +16,7 @@ class GridUi {
 		}
 
 		$h = '<div class="h-line">';
-			$h .= '<h3>'.s("Grille tarifaire personnalisée pour les pros").'</h3>';
+			$h .= '<h3>'.s("Grille tarifaire personnalisée pour les professionnels").'</h3>';
 			$h .= '<div>';
 				$h .= '<a data-dropdown="bottom-end" class="dropdown-toggle btn btn-outline-primary">'.\Asset::icon('gear-fill').'</a>';
 				$h .= '<div class="dropdown-list">';
@@ -59,7 +59,7 @@ class GridUi {
 
 				$eCustomer = $eGrid['customer'];
 
-				$taxes = $eProduct['farm']['selling']['hasVat'] ? CustomerUi::getTaxes($eCustomer['type']) : '';
+				$taxes = $eProduct['farm']->hasVat() ? CustomerUi::getTaxes($eCustomer['type']) : '';
 				$unit = ProductUi::p('unit')->values[$eProduct['unit']];
 
 				$h .= '<tr>';
@@ -148,7 +148,7 @@ class GridUi {
 
 				$eProduct = $eGrid['product'];
 
-				$taxes = $eCustomer['farm']['selling']['hasVat'] ? CustomerUi::getTaxes($eCustomer['type']) : '';
+				$taxes = $eCustomer['farm']->hasVat() ? CustomerUi::getTaxes($eCustomer['type']) : '';
 
 				$unit = ProductUi::p('unit')->values[$eProduct['unit']];
 
@@ -229,7 +229,7 @@ class GridUi {
 			$eGrid = $eProduct['eGrid'];
 
 			$unit = ProductUi::p('unit')->values[$eProduct['unit']];
-			$taxes = $eCustomer['farm']['selling']['hasVat'] ? CustomerUi::getTaxes($eCustomer['type']) : '';
+			$taxes = $eCustomer['farm']->hasVat() ? CustomerUi::getTaxes($eCustomer['type']) : '';
 
 			$h .= '<tr>';
 
@@ -315,7 +315,7 @@ class GridUi {
 			$eGrid = $eCustomer['eGrid'];
 
 			$unit = ProductUi::p('unit')->values[$eProduct['unit']];
-			$taxes = $eProduct['farm']['selling']['hasVat'] ? CustomerUi::getTaxes($eCustomer['type']) : '';
+			$taxes = $eProduct['farm']->hasVat() ? CustomerUi::getTaxes($eCustomer['type']) : '';
 
 			$h .= '<tr>';
 

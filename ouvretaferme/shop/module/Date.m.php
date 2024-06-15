@@ -7,6 +7,9 @@ abstract class DateElement extends \Element {
 
 	private static ?DateModel $model = NULL;
 
+	const PRIVATE = 'private';
+	const PRO = 'pro';
+
 	const ACTIVE = 'active';
 	const CLOSED = 'closed';
 
@@ -42,6 +45,7 @@ class DateModel extends \ModuleModel {
 			'id' => ['serial32', 'cast' => 'int'],
 			'createdAt' => ['datetime', 'cast' => 'string'],
 			'shop' => ['element32', 'shop\Shop', 'cast' => 'element'],
+			'type' => ['enum', [\shop\Date::PRIVATE, \shop\Date::PRO], 'cast' => 'enum'],
 			'farm' => ['element32', 'farm\Farm', 'cast' => 'element'],
 			'status' => ['enum', [\shop\Date::ACTIVE, \shop\Date::CLOSED], 'cast' => 'enum'],
 			'orderStartAt' => ['datetime', 'cast' => 'string'],
@@ -51,7 +55,7 @@ class DateModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'createdAt', 'shop', 'farm', 'status', 'orderStartAt', 'orderEndAt', 'points', 'deliveryDate'
+			'id', 'createdAt', 'shop', 'type', 'farm', 'status', 'orderStartAt', 'orderEndAt', 'points', 'deliveryDate'
 		]);
 
 		$this->propertiesToModule += [
@@ -88,6 +92,9 @@ class DateModel extends \ModuleModel {
 	public function encode(string $property, $value) {
 
 		switch($property) {
+
+			case 'type' :
+				return ($value === NULL) ? NULL : (string)$value;
 
 			case 'status' :
 				return ($value === NULL) ? NULL : (string)$value;
@@ -134,6 +141,10 @@ class DateModel extends \ModuleModel {
 
 	public function whereShop(...$data): DateModel {
 		return $this->where('shop', ...$data);
+	}
+
+	public function whereType(...$data): DateModel {
+		return $this->where('type', ...$data);
 	}
 
 	public function whereFarm(...$data): DateModel {

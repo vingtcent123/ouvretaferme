@@ -1671,6 +1671,13 @@ class FormUi {
 	/**
 	 * Display text field
 	 */
+	public function fake(string $value): string {
+		return '<div class="form-control disabled">'.encode($value).'</div>';
+	}
+
+	/**
+	 * Display text field
+	 */
 	public function text(?string $name = NULL, $value = NULL, array $attributes = []): string {
 
 		$attributes['class'] = 'form-control '.($attributes['class'] ?? '');

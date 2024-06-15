@@ -13,11 +13,13 @@
 	})
 	->create(function($data) {
 
+		$data->eFarm['selling'] = \selling\ConfigurationLib::getByFarm($data->eFarm);
+
 		\farm\FarmerLib::register($data->eFarm);
 
 		$data->eDate = \shop\DateLib::getById(GET('date'));
 
-		$cProductSelling = \selling\ProductLib::getForShop($data->eFarm);
+		$cProductSelling = \selling\ProductLib::getForDate($data->eDate);
 		$cProduct = \shop\ProductLib::getByDate($data->eDate, onlyActive: FALSE);
 
 		foreach($cProduct as $eProduct) {

@@ -7,7 +7,7 @@ class Sale extends SaleElement {
 
 		return parent::getSelection() + [
 			'customer' => ['name', 'email', 'color', 'user', 'type', 'destination', 'discount', 'legalName', 'invoiceStreet1', 'invoiceStreet2', 'invoicePostcode', 'invoiceCity'],
-			'shop' => ['fqn', 'name', 'email', 'paymentOfflineHow', 'paymentTransferHow', 'shipping', 'shippingUntil', 'orderMin'],
+			'shop' => ['fqn', 'name', 'email', 'hasPayment', 'paymentOfflineHow', 'paymentTransferHow', 'shipping', 'shippingUntil', 'orderMin'],
 			'shopDate' => ['status', 'deliveryDate', 'orderStartAt', 'orderEndAt'],
 			'shopPoint' => ['type', 'name'],
 			'farm' => ['name', 'url', 'vignette', 'banner', 'featureDocument'],
@@ -100,12 +100,13 @@ class Sale extends SaleElement {
 
 	}
 
-	public function canBasket(): bool {
+	public function canBasket(\shop\Shop $eShop): bool {
 
 		return (
 			$this->empty() or (
 				$this['shop']->notEmpty() and
-				$this['paymentMethod'] === NULL
+				$this['shop']['id'] === $eShop['id'] and
+				$this['preparationStatus'] === Sale::BASKET
 			)
 		);
 

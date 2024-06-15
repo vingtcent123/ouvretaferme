@@ -409,6 +409,18 @@ abstract class ModuleModel {
 	}
 
 	public function getDefaultValue(string $property) {
+
+		$module = $this->getPropertyToModule($property);
+
+		if(
+			$module and
+			$this->isPropertyNull($property)
+		) {
+			return new $module();
+		} else {
+			return NULL;
+		}
+
 	}
 
 	/**

@@ -9,7 +9,13 @@
 		]);
 
 	})
-	->create()
+	->create(function($data) {
+
+		$data->eFarm['selling'] = \selling\ConfigurationLib::getByFarm($data->eFarm);
+
+		throw new ViewAction($data);
+
+	})
 	->doCreate(function($data) {
 		throw new ReloadAction('shop', 'Shop::created');
 	})
@@ -32,6 +38,9 @@
 	}, validate: ['canWrite'])
 	->doUpdateProperties('doUpdateStatus', ['status'], function($data) {
 		throw new ReloadAction('shop', $data->e['status'] === \shop\Shop::OPEN ? 'Shop::opened' : 'Shop::closed');
+	})
+	->doUpdateProperties('doUpdatePayment', ['hasPayment'], function($data) {
+		throw new ReloadAction('shop', $data->e['hasPayment'] === \shop\Shop::OPEN ? 'Shop::paymentOn' : 'Shop::paymentOff');
 	})
 	->doDelete(function() {
 		throw new ReloadAction('shop', 'Shop::deleted');

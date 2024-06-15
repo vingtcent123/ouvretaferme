@@ -3,24 +3,27 @@
 	->getCreateElement(function($data) {
 
 		$data->eFarm = \farm\FarmLib::getById(INPUT('farm'));
+		$data->eFarm['selling'] = \selling\ConfigurationLib::getByFarm($data->eFarm);
+
 		$data->eShop = \shop\ShopLib::getById(INPUT('shop'))->validateProperty('farm', $data->eFarm);
 
 		return new \shop\Date([
 			'farm' => $data->eFarm,
-			'shop' => $data->eShop
+			'shop' => $data->eShop,
+			'type' => $data->eShop['type']
 		]);
 
 	})
 	->create(function($data) {
 
-		$data->cProduct = \selling\ProductLib::getForShop($data->eFarm);
+		$data->cProduct = \selling\ProductLib::getForDate($data->e);
 
 		// Si c'est une copie : récupérer également la liste des produits de la date en question
 		$data->eDateBase = \shop\DateLib::getById(GET('date'));
 
 		if($data->eDateBase->notEmpty()) {
 			$data->eDateBase->validate('canRead');
-			$data->eDateBase['cProduct'] = \shop\ProductLib::getByDate($data->eDateBase, onlyActive: FALSE);
+			$data->eDateBase['cProduct'] = \shop\ProductLib::copyByDate($data->eShop, $data->eDateBase);
 		}
 
 		$data->e['ccPoint'] = \shop\PointLib::getByShop($data->e['shop']);
@@ -79,7 +82,7 @@
 
 		$products = POST('products', 'array', []);
 
-		$cProductSelling = \selling\ProductLib::getForShop($data->eFarm);
+		$cProductSelling = \selling\ProductLib::getForDate($data->e);
 		$data->cProduct = \shop\ProductLib::prepareSeveral($data->e, $cProductSelling, $products, $_POST);
 
 		$fw->validate();

@@ -28,7 +28,9 @@ class ShopUi {
 
 			$h .= $form->hidden('farm', $eFarm['id']);
 
-			$h .= $form->dynamicGroups($eShop, ['name*', 'fqn', 'email*', 'frequency', 'description']);
+			$h .= $form->dynamicGroups($eShop, ['name*', 'type*', 'fqn', 'email*', 'frequency', 'description'], [
+				'type*' => self::getTypeDescriber($eFarm, 'create')
+			]);
 
 		$h .= $form->group(
 				content: $form->submit(s("Créer la boutique"))
@@ -43,7 +45,7 @@ class ShopUi {
 
 	}
 
-	public function update(Shop $eShop, \Collection $cCustomize, \selling\Sale $eSaleExample): string {
+	public function update(Shop $eShop, \farm\Farm $eFarm, \Collection $cCustomize, \selling\Sale $eSaleExample): string {
 
 		$h = '<div class="tabs-h" id="selling-configure" onrender="'.encode('Lime.Tab.restore(this, "settings")').'">';
 
@@ -55,7 +57,7 @@ class ShopUi {
 			$h .= '</div>';
 
 			$h .= '<div class="tab-panel selected" data-tab="settings">';
-				$h .= $this->updateGeneral($eShop);
+				$h .= $this->updateGeneral($eShop, $eFarm);
 			$h .= '</div>';
 
 			$h .= '<div class="tab-panel" data-tab="payment">';
@@ -76,7 +78,7 @@ class ShopUi {
 
 	}
 
-	protected function updateGeneral(Shop $eShop): string {
+	protected function updateGeneral(Shop $eShop, \farm\Farm $eFarm): string {
 
 		$form = new \util\FormUi();
 
@@ -85,8 +87,9 @@ class ShopUi {
 		$h .= $form->openAjax('/shop/configuration:doUpdate');
 
 		$h .= $form->hidden('id', $eShop['id']);
-
-		$h .= $form->dynamicGroups($eShop, ['name', 'fqn', 'email', 'frequency', 'orderMin', 'shipping', 'shippingUntil', 'description']);
+		$h .= $form->dynamicGroups($eShop, ['name', 'type', 'fqn', 'email', 'frequency', 'orderMin', 'shipping', 'shippingUntil', 'description'], [
+				'type' => self::getTypeDescriber($eFarm, 'update')
+		]);
 
 		$h .= $form->group(
 			self::p('logo')->label,
@@ -107,6 +110,16 @@ class ShopUi {
 
 	protected function updatePayment(Shop $eShop): string {
 
+		if($eShop['hasPayment']) {
+			return $this->updateActivePayment($eShop);
+		} else {
+			return $this->updateInactivePayment($eShop);
+		}
+
+	}
+
+	protected function updateActivePayment(Shop $eShop): string {
+
 		$form = new \util\FormUi();
 
 		$h = '';
@@ -114,6 +127,13 @@ class ShopUi {
 		$h .= $form->openAjax('/shop/configuration:doUpdatePayment');
 
 		$h .= $form->hidden('id', $eShop['id']);
+
+		$hasPayment = '<div class="util-block-help">';
+			$hasPayment .= '<h4>'.s("Le choix du moyen de paiement").'</h4>';
+			$hasPayment .= '<p>'.s("Vos clients doivent actuellement choisir explicitement un moyen de paiement sur votre boutique, parmi ceux que vous avez activés. Vous pouvez <link>désactiver la page de choix du moyen de paiement</link> si vous n'acceptez que le paiement en direct et que vous souhaitez simplifier l'interface pour vos clients.", ['link' => '<a data-ajax="/shop/:doUpdatePayment" post-id="'.$eShop['id'].'" post-has-payment="0" data-confirm="'.s("Souhaitez-vous réellement désactiver la page de choix du moyen de paiement sur votre boutique ?").'">']).'</p>';
+		$hasPayment .= '</div>';
+
+		$h .= $form->group(content: $hasPayment);
 
 		$h .= $form->group(content: '<h3>'.s("Paiement en direct avec le producteur").'</h3>');
 
@@ -163,6 +183,22 @@ class ShopUi {
 		);
 
 		$h .= $form->close();
+
+		return $h;
+
+	}
+
+	protected function updateInactivePayment(Shop $eShop): string {
+
+		$form = new \util\FormUi();
+
+		$h = '';
+
+		$h = '<div class="util-block-help">';
+			$h .= '<h4>'.s("Le choix du moyen de paiement est désactivé sur votre boutique").'</h4>';
+			$h .= '<p>'.s("Vos clients n'ont actuellement pas besoin de choisir de moyen de paiement lorsqu'ils commandent sur la boutique, c'est à vous de les informer de la façon dont ils peuvent régler leurs commandes.").'</p>';
+			$h .= '<a data-ajax="/shop/:doUpdatePayment" post-id="'.$eShop['id'].'" post-has-payment="1" data-confirm="'.s("Souhaitez-vous réellement réactiver la page de choix du moyen de paiement sur votre boutique ?").'" class="btn btn-secondary">'.s("Réactiver le choix du moyen de paiement").'</a>';
+		$h .= '</div>';
 
 		return $h;
 
@@ -275,6 +311,28 @@ class ShopUi {
 		}
 
 		return $h;
+
+	}
+
+	protected function getTypeDescriber(\farm\Farm $eFarm, string $for) {
+
+		return function(\PropertyDescriber $d) use ($eFarm, $for) {
+
+			$d->values = $eFarm->hasVat() ?
+				[
+					Shop::PRIVATE => s("Prix particuliers").' <span class="util-annotation">'.s("affichés TTC sur la boutique").'</span>',
+					Shop::PRO => s("Prix professionnels").' <span class="util-annotation">'.s("affichés HT sur la boutique").'</span>',
+				] :
+				[
+					Shop::PRIVATE => s("Prix particuliers"),
+					Shop::PRO => s("Prix professionnels"),
+				];
+
+			if($for === 'update') {
+				$d->after = \util\FormUi::info(s("Le changement de grille tarifaire sera prix en compte pour les prochaines ventes que vous créerez"));
+			}
+
+		};
 
 	}
 
@@ -541,6 +599,13 @@ class ShopUi {
 				$h .= '</dd>';
 
 				$h .= '<dt>';
+					$h .= s("Grille tarifaire");
+				$h .= '</dt>';
+				$h .= '<dd>';
+					$h .= ShopUi::p('type')->values[$eShop['type']];
+				$h .= '</dd>';
+
+				$h .= '<dt>';
 					$h .= s("Fréquence des ventes");
 				$h .= '</dt>';
 				$h .= '<dd>';
@@ -552,21 +617,26 @@ class ShopUi {
 				$h .= '</dt>';
 				$h .= '<dd>';
 
-					$modes = [];
+					if($eShop['hasPayment']) {
 
-					if($eShop['paymentOffline']) {
-						$modes[] = s("En direct");
+						$modes = [];
+
+						if($eShop['paymentOffline']) {
+							$modes[] = s("En direct");
+						}
+
+						if($eShop['paymentTransfer']) {
+							$modes[] = s("Virement bancaire");
+						}
+
+						if($eShop['paymentCard']) {
+							$modes[] = s("Carte bancaire");
+						}
+
+						$h .= implode(' / ', $modes);
+
 					}
 
-					if($eShop['paymentTransfer']) {
-						$modes[] = s("Virement bancaire");
-					}
-
-					if($eShop['paymentCard']) {
-						$modes[] = s("Carte bancaire");
-					}
-
-					$h .= implode(' / ', $modes);
 				$h .= '</dd>';
 
 			$h .= '</dl>';
@@ -580,14 +650,15 @@ class ShopUi {
 		$d = Shop::model()->describer($property, [
 			'email' => s("Adresse e-mail de contact pour les clients"),
 			'description' => s("Description de la boutique"),
+			'type' => s("Grille tarifaire"),
 			'fqn' => s('Adresse internet'),
 			'frequency' => s("Fréquence d'ouverture des ventes"),
 			'name' => s("Nom de la boutique"),
 			'logo' => s("Image de présentation"),
-			'paymentCard' => s("Activer le paiement en ligne par carte bancaire"),
-			'paymentOffline' => s("Activer le paiement en direct"),
+			'paymentCard' => s("Activer le choix du paiement en ligne par carte bancaire"),
+			'paymentOffline' => s("Activer le choix du paiement en direct"),
 			'paymentOfflineHow' => s("Modalités du paiement en direct"),
-			'paymentTransfer' => s("Activer le paiement par virement bancaire"),
+			'paymentTransfer' => s("Activer le choix du paiement par virement bancaire"),
 			'paymentTransferHow' => s("Modalités du paiement par virement bancaire"),
 			'orderMin' => s("Montant minimal de commande"),
 			'shipping' => s("Frais de livraison par commande"),
@@ -637,6 +708,24 @@ class ShopUi {
 				$label .= '<p>'.s("Veuillez noter que seul le premier paragraphe sera visible immédiatement sur les petits écrans de smartphone.").'</p>';
 
 				$d->label .= \util\FormUi::info($label);
+				break;
+
+			case 'hasPayment' :
+				$d->field = 'switch';
+				$d->attributes += [
+					'onchange' => 'Product.changeType(input, "'.$property.'")'
+				];
+				$d->attributes = [
+					'labelOn' => s("Activé"),
+					'labelOff' => s("Désactivé"),
+				];
+				break;
+
+			case 'type' :
+				$d->values = [
+					Shop::PRO => s("Professionnels"),
+					Shop::PRIVATE => s("Particuliers")
+				];
 				break;
 
 			case 'email' :

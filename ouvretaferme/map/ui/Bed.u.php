@@ -806,14 +806,14 @@ class BedUi {
 
 			$h .= $form->group(
 				s("Parcelle"),
-				'<div class="form-control disabled">'.encode($ePlot['zone']['name']).'</div>'
+				$form->fake($ePlot['zone']['name'])
 			);
 
 		} else {
 
 			$h .= $form->group(
 				s("Bloc"),
-				'<div class="form-control disabled">'.encode($ePlot['name']).'</div>'
+				$form->fake($ePlot['name'])
 			);
 
 		}

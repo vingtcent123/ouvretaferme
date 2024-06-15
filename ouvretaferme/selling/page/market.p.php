@@ -73,8 +73,12 @@
 
 		$data->eSale = \selling\SaleLib::getById(POST('subId'));
 
+		if($data->eSale->empty()) {
+			throw new \FailAction('selling\Sale::market.notExists');
+		}
+
 		if($data->eSale['preparationStatus'] !== \selling\Sale::DRAFT) {
-			throw new NotExpectedAction('Invalid sale status');
+			throw new \FailAction('selling\Sale::market.status');
 		}
 
 		$cItemSale = \selling\MarketLib::checkNewItems($data->e, $data->eSale, $_POST);

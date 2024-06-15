@@ -60,7 +60,7 @@
 
 			$data->eDateSelected = $data->cDate[GET('date', 'int')] ?? $data->cDate->first();
 			$data->eSaleExisting = \shop\SaleLib::getSaleForDate($data->eDateSelected, $data->eCustomer);
-			$data->discount = \shop\SaleLib::getDiscount($data->eSaleExisting, $data->eCustomer);
+			$data->discount = \shop\SaleLib::getDiscount($data->eDateSelected, $data->eSaleExisting, $data->eCustomer);
 
 			$cProduct = \shop\ProductLib::getByDate($data->eDateSelected, eSaleExclude: $data->isModifying ? $data->eSaleExisting : new \selling\Sale());
 			\shop\ProductLib::applyDiscount($cProduct, $data->discount);
@@ -84,7 +84,7 @@
 		$data->eCustomer = \shop\SaleLib::getShopCustomer($data->eShop, $data->eUserOnline);
 		$data->eSaleExisting = \shop\SaleLib::getSaleForDate($data->eDate, $data->eCustomer);
 
-		$data->discount = \shop\SaleLib::getDiscount($data->eSaleExisting, $data->eCustomer);
+		$data->discount = \shop\SaleLib::getDiscount($data->eDate, $data->eSaleExisting, $data->eCustomer);
 
 		$data->eDate['shop'] = $data->eShop;
 
@@ -120,7 +120,10 @@
 
 		$data->validateSale = function() use ($data) {
 
-			if($data->eSaleExisting->empty()) {
+			if(
+				$data->eSaleExisting->empty() or
+				$data->eSaleExisting['shop']['id'] !== $data->eShop['id']
+			) {
 				throw new RedirectAction(\shop\ShopUi::url($data->eShop));
 			}
 
@@ -128,7 +131,10 @@
 
 		$data->validatePayment = function() use ($data) {
 
-			if($data->eSaleExisting['paymentMethod'] === NULL) {
+			if(
+				$data->eSaleExisting['preparationStatus'] === \selling\Sale::BASKET and
+				$data->eSaleExisting['paymentMethod'] === NULL
+			) {
 				throw new RedirectAction(\shop\ShopUi::dateUrl($data->eShop, $data->eDate, 'paiement'));
 			}
 
@@ -141,7 +147,7 @@
 		($data->validateLogged)();
 
 		if(
-			$data->eSaleExisting->canBasket() === FALSE and
+			$data->eSaleExisting->canBasket($data->eShop) === FALSE and
 			$data->isModifying === FALSE
 		) {
 			throw new RedirectAction(\shop\ShopUi::dateUrl($data->eShop, $data->eDate, 'confirmation'));
@@ -160,6 +166,11 @@
 		// Si la vente est déjà payée, on ne peut pas changer de moyen de paiement
 		if($data->eSaleExisting['paymentStatus'] === \selling\Sale::PAID) {
 			throw new RedirectAction(\shop\ShopUi::dateUrl($data->eShop, $data->eDate, 'confirmation'));
+		}
+
+		// Si le paiement est désactivé, on retourne sur le panier
+		if($data->eShop['hasPayment'] === FALSE) {
+			throw new RedirectAction(\shop\ShopUi::dateUrl($data->eShop, $data->eDate, 'panier'));
 		}
 
 		$eFarm = $data->eShop['farm'];
@@ -215,7 +226,7 @@
 		($data->validateOrder)();
 
 		if(
-			$data->eSaleExisting->canBasket() === FALSE and
+			$data->eSaleExisting->canBasket($data->eShop) === FALSE and
 			$data->isModifying === FALSE
 		) {
 			throw new RedirectAction(\shop\ShopUi::url($data->eShop));
@@ -272,13 +283,15 @@
 
 			$fw->validate();
 
-			$data->eSaleExisting = \shop\SaleLib::createForShop($eSale, $data->eUserOnline);
+			$url = \shop\SaleLib::createForShop($eSale, $data->eUserOnline);
 
 			$fw->validate();
 
+		} else {
+			$url = \shop\ShopUi::dateUrl($data->eShop, $data->eDate, 'paiement');
 		}
 
-		throw new RedirectAction(\shop\ShopUi::dateUrl($data->eShop, $data->eDate, 'paiement'));
+		throw new RedirectAction($url);
 
 	})
 	->post('/shop/public/{fqn}/{date}/:doUpdateBasket', function($data) {
@@ -300,6 +313,7 @@
 			throw new FailAction('shop\Sale::terms');
 		}
 
+		$data->eSaleExisting['shop'] = $data->eShop;
 		$data->eSaleExisting['shopDate'] = $data->eDate;
 		$data->eSaleExisting->build(['products', 'shopPoint'], $_POST);
 
@@ -314,11 +328,11 @@
 
 		$fw->validate();
 
-		\shop\SaleLib::updateForShop($data->eSaleExisting, $data->eUserOnline);
+		$url = \shop\SaleLib::updateForShop($data->eSaleExisting, $data->eUserOnline);
 
 		$fw->validate();
 
-		throw new RedirectAction(\shop\ShopUi::dateUrl($data->eShop, $data->eDate, 'paiement'));
+		throw new RedirectAction($url);
 
 	})
 	->post('/shop/public/{fqn}/{date}/:doCancelSale', function($data) {

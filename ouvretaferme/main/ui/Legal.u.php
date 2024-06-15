@@ -62,7 +62,7 @@ class LegalUi {
 
 		$h .= '<div class="home-category">';
 
-			$h .= '<p>'.s("La plateforme ouvretaferme.org est née du constat qu'il n'existait pas de solution libre et simple d'utilisation pour permettre aux producteurs d'organiser le travail dans leur ferme, de la planification des cultures jusqu'à la vente. Le développement du site a commencé en 2019 sur cette base, avec comme point de départ le besoin exprimé par une petite ferme maraîchère située dans le Puy-de-Dôme.").'</p>';
+			$h .= '<p>'.s("La plateforme ouvretaferme.org est née du constat qu'il n'existait pas de solution libre et simple d'utilisation pour permettre aux producteurs maraîchers d'organiser le travail dans leur ferme, de la planification des cultures jusqu'à la vente. Le développement du site a commencé en 2019 sur cette base, avec comme point de départ le besoin exprimé par une petite ferme maraîchère située dans le Puy-de-Dôme.").'</p>';
 
 			$h .= '<p>'.s("Depuis 2022, la plateforme est diffusée plus largement et a été adaptée pour répondre aux besoins du plus grand nombre de fermes possible.").'</p>';
 

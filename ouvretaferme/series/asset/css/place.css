@@ -416,7 +416,3 @@ div.place-update-submit {
 	margin-bottom: 0;
 	border-bottom: 0;
 }
-
-.place-tab-beds:not(:empty) {
-	margin-left: 0.5rem;
-}

@@ -3,6 +3,35 @@ namespace shop;
 
 class ProductLib extends ProductCrud {
 
+	public static function copyByDate(Shop $eShop, Date $eDate,): \Collection {
+
+		$eShop->expects(['type']);
+
+		if($eShop['type'] !== $eDate['type']) {
+
+			$cProductSelling = Product::model()
+				->whereDate($eDate)
+				->getColumn('product');
+
+			$cProductShop = new \Collection();
+
+			foreach($cProductSelling as $eProductSelling) {
+
+				$cProductShop[] = new Product([
+					'product' => $eProductSelling,
+					'price' => NULL
+				]);
+
+			}
+
+			return $cProductShop;
+
+		} else {
+			return self::getByDate($eDate, FALSE);
+		}
+
+	}
+
 	public static function getByDate(Date $eDate, bool $onlyActive = TRUE, \selling\Sale $eSaleExclude = new \selling\Sale()): \Collection {
 
 		$cProduct = Product::model()
@@ -54,7 +83,10 @@ class ProductLib extends ProductCrud {
 
 	public static function prepareSeveral(Date $eDate, \Collection $cProductSelling, array $products, array $input): \Collection {
 
-		$eDate->expects(['shop']);
+		$eDate->expects([
+			'shop',
+			'type'
+		]);
 
 		$cProduct = new \Collection();
 
@@ -68,6 +100,7 @@ class ProductLib extends ProductCrud {
 
 			$eProduct = new Product([
 				'date' => $eDate,
+				'type' => $eDate['type'],
 				'shop' => $eDate['shop'],
 				'product' => $cProductSelling->offsetGet($product)
 			]);

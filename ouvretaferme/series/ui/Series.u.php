@@ -948,7 +948,7 @@ class SeriesUi {
 		$h = $form->hidden('season', $eSeries['season']);
 		$h .= $form->group(
 			self::p('season')->label,
-			'<div class="form-control disabled">'.$eSeries['season'].'</div>'
+			$form->fake($eSeries['season'])
 		);
 
 		return $h;

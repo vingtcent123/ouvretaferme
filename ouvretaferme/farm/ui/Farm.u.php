@@ -1521,7 +1521,7 @@ class FarmUi {
 				$d->values = [
 					Farm::ALL => s("Pour tous les clients"),
 					Farm::PRIVATE => s("Pour les clients particuliers"),
-					Farm::PRO => s("Pour les clients pros"),
+					Farm::PRO => s("Pour les clients professionnels"),
 					Farm::DISABLED => s("Désactiver cette fonctionnalité"),
 				];
 

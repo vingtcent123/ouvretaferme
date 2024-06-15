@@ -4,11 +4,11 @@ namespace shop;
 class ShopLib extends ShopCrud {
 
 	public static function getPropertiesCreate(): array {
-		return ['fqn', 'name', 'email', 'description', 'frequency'];
+		return ['fqn', 'name', 'type', 'email', 'description', 'frequency'];
 	}
 
 	public static function getPropertiesUpdate(): array {
-		return ['fqn', 'name', 'email', 'description', 'frequency', 'orderMin', 'shipping', 'shippingUntil'];
+		return ['fqn', 'name', 'type', 'email', 'description', 'frequency', 'orderMin', 'shipping', 'shippingUntil'];
 	}
 
 	public static function getByFarm(\farm\Farm $eFarm): \Collection {

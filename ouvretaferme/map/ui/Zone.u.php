@@ -73,7 +73,7 @@ class ZoneUi {
 								$eZone['cPlot']->reduce(fn($ePlot, $v) => $ePlot['cBed']->count() + $v, 0);
 
 							if($beds > 0) {
-								$h .= ' ('.$beds.')';
+								$h .= '<span class="tab-item-count">'.$beds.'</span>';
 							}
 
 						}

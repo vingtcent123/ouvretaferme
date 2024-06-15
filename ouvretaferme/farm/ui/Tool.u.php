@@ -185,8 +185,8 @@ class ToolUi {
 				$h .= '<br/>';
 
 				$h .= '<div class="tabs-item">';
-					$h .= '<a href="'.self::manageUrl($eFarm, $routineName).$search->toQuery(['status'], '&').'" class="tab-item '.($search->get('status') === Tool::ACTIVE ? 'selected' : '').'"><span>'.($routineName ? RoutineUi::getProperty($routineName, 'tabActive') : s("Matériel activé")).' <small>('.$tools[Tool::ACTIVE].')</small></span></a>';
-					$h .= '<a href="'.self::manageUrl($eFarm, $routineName).$search->toQuery(['status'], '&').'&status='.Tool::INACTIVE.'" class="tab-item '.($search->get('status') === Tool::INACTIVE ? 'selected' : '').'"><span>'.($routineName ? RoutineUi::getProperty($routineName, 'tabInactive') : s("Matériel désactivé")).' <small>('.$tools[Tool::INACTIVE].')</small></span></a>';
+					$h .= '<a href="'.self::manageUrl($eFarm, $routineName).$search->toQuery(['status'], '&').'" class="tab-item '.($search->get('status') === Tool::ACTIVE ? 'selected' : '').'"><span>'.($routineName ? RoutineUi::getProperty($routineName, 'tabActive') : s("Matériel activé")).' <span class="tab-item-count">'.$tools[Tool::ACTIVE].'</span></span></a>';
+					$h .= '<a href="'.self::manageUrl($eFarm, $routineName).$search->toQuery(['status'], '&').'&status='.Tool::INACTIVE.'" class="tab-item '.($search->get('status') === Tool::INACTIVE ? 'selected' : '').'"><span>'.($routineName ? RoutineUi::getProperty($routineName, 'tabInactive') : s("Matériel désactivé")).' <span class="tab-item-count">'.$tools[Tool::INACTIVE].'</span></span></a>';
 				$h .= '</div>';
 
 			}

@@ -103,7 +103,7 @@ class QualityUi {
 
 			$h .= $form->group(
 				s("Espèce"),
-				PlantUi::link($ePlant)
+				$form->fake($ePlant['name'])
 			);
 			$h .= $form->dynamicGroups(new Quality(), ['name', 'yield', 'comment'], [
 				'yield' => function(\PropertyDescriber $d) {
@@ -130,7 +130,7 @@ class QualityUi {
 
 			$h .= $form->group(
 				s("Espèce"),
-				PlantUi::link($eQuality['plant'])
+				$form->fake($eQuality['plant']['name'])
 			);
 
 			$h .= $form->dynamicGroups($eQuality, ['name', 'yield', 'comment']);

@@ -536,8 +536,8 @@ class CustomerUi {
 
 			$h .= $form->dynamicGroup($eCustomer, 'category*', function(\PropertyDescriber $d) use ($eFarm) {
 
-				if($eFarm['selling']['hasVat']) {
-					$d->after = \util\FormUi::info(s("Veuillez noter que les prix sur les documents de vente sont affichés en TTC pour les clients particuliers et en HT pour les clients pros."));
+				if($eFarm->hasVat()) {
+					$d->after = \util\FormUi::info(s("Veuillez noter que les prix sur les documents de vente sont affichés en TTC pour les clients particuliers et en HT pour les clients professionnels."));
 				}
 
 			});

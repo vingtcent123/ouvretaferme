@@ -20,10 +20,21 @@ class PointLib extends PointCrud {
 
 		return function(Point $e) {
 
-			$options = ['orderMin', 'shipping', 'shippingUntil', 'paymentOffline', 'paymentTransfer'];
+			$e->expects([
+				'shop' => ['hasPayment']
+			]);
 
-			if($e['shop']['stripe']->notEmpty()) {
-				$options[] = 'paymentCard';
+			$options = ['orderMin', 'shipping', 'shippingUntil'];
+
+			if($e['shop']['hasPayment']) {
+
+				$options[] = 'paymentOffline';
+				$options[] = 'paymentTransfer';
+
+				if($e['shop']['stripe']->notEmpty()) {
+					$options[] = 'paymentCard';
+				}
+
 			}
 
 			return array_merge($options, match($e['type']) {

@@ -51,6 +51,31 @@ class Product extends ProductElement {
 
 	}
 
+	public function calcProMagicPrice(bool $hasVat): float {
+
+		$this->expects(['vat', 'proPrice']);
+
+		if($hasVat) {
+			return $this['privatePrice'] - $this->calcPrivateVat();
+		} else {
+			return $this['privatePrice'];
+		}
+
+	}
+
+	public function calcPrivateMagicPrice(bool $hasVat): float {
+
+		$this->expects(['vat', 'proPrice']);
+
+		if($hasVat) {
+			return $this['proPrice'] + $this->calcProVat();
+		} else {
+			return $this['proPrice'];
+		}
+
+
+	}
+
 	public function calcProVat(): float {
 
 		$this->expects(['vat', 'proPrice']);

@@ -39,7 +39,11 @@ class SaleLib {
 
 	}
 
-	public static function getDiscount(\selling\Sale $eSale, \selling\Customer $eCustomer): int {
+	public static function getDiscount(Date $eDate, \selling\Sale $eSale, \selling\Customer $eCustomer): int {
+
+		if($eDate['type'] === Date::PRO) {
+			return 0;
+		}
 
 		$discount = 0;
 
@@ -91,10 +95,11 @@ class SaleLib {
 
 	}
 
-	public static function createForShop(\selling\Sale $eSale, \user\User $eUser): \selling\Sale {
+	public static function createForShop(\selling\Sale $eSale, \user\User $eUser): string {
 
 		$eSale->expects([
-			'shopDate', 'shop', 'shopPoint',
+			'shop' => ['farm', 'hasPayment'],
+			'shopDate', 'shopPoint',
 			'basket'
 		]);
 
@@ -165,7 +170,12 @@ class SaleLib {
 
 		$eSale['cItem'] = $cItem;
 
-		return $eSale;
+		if($eSale['shop']['hasPayment'] === FALSE) {
+			return self::createDirectPayment(NULL, $eSale);
+		} else {
+			return \shop\ShopUi::dateUrl($eSale['shop'], $eSale['shopDate'], 'paiement');
+		}
+
 
 	}
 
@@ -208,7 +218,7 @@ class SaleLib {
 
 	}
 
-	public static function updateForShop(\selling\Sale $eSale, \user\User $eUser): void {
+	public static function updateForShop(\selling\Sale $eSale, \user\User $eUser): ?string {
 
 		$eSale->expects(['basket', 'paymentMethod']);
 
@@ -253,7 +263,7 @@ class SaleLib {
 		}
 
 		if(self::applyShopOrderMin($eSale, $total) === FALSE) {
-			return;
+			return NULL;
 		}
 
 		self::applyShopShipping($eSale, $total);
@@ -271,19 +281,25 @@ class SaleLib {
 
 		\selling\Sale::model()->commit();
 
+		if($eSale['shop']['hasPayment'] === FALSE) {
+			return self::createDirectPayment(NULL, $eSale);
+		} else {
+			return \shop\ShopUi::dateUrl($eSale['shop'], $eSale['shopDate'], 'paiement');
+		}
+
 	}
 
 	public static function createPayment(string $payment, Date $eDate, \selling\Sale $eSale): string {
 
 		return match($payment) {
-			'onlineCard' => self::createCardPayment($eDate, $eSale),
-			'offline' => self::createDirectPayment(\selling\Sale::OFFLINE, $eDate, $eSale),
-			'transfer' => self::createDirectPayment(\selling\Sale::TRANSFER, $eDate, $eSale)
+			'onlineCard' => self::createCardPayment($eSale),
+			'offline' => self::createDirectPayment(\selling\Sale::OFFLINE, $eSale),
+			'transfer' => self::createDirectPayment(\selling\Sale::TRANSFER, $eSale)
 		};
 
 	}
 
-	public static function createCardPayment(Date $eDate, \selling\Sale $eSale): string {
+	public static function createCardPayment(\selling\Sale $eSale): string {
 
 		$eSale->expects(['farm', 'shopDate', 'customer', 'cItem']);
 
@@ -338,7 +354,7 @@ class SaleLib {
 
 	}
 
-	public static function createDirectPayment(string $method, Date $eDate, \selling\Sale $eSale): string {
+	public static function createDirectPayment(?string $method, \selling\Sale $eSale): string {
 
 		$eSale->expects(['farm', 'shopDate', 'shop', 'customer']);
 

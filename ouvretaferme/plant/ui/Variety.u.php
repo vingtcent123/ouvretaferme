@@ -151,7 +151,7 @@ class VarietyUi {
 
 			$h .= $form->group(
 				s("Espèce"),
-				PlantUi::link($ePlant)
+				$form->fake($ePlant['name'])
 			);
 			$h .= $form->dynamicGroups($eVariety, ['name']);
 			$h .= self::getSuppliers($form, $eVariety);
@@ -177,7 +177,7 @@ class VarietyUi {
 
 			$h .= $form->group(
 				s("Espèce"),
-				PlantUi::link($eVariety['plant'])
+				$form->fake($eVariety['plant']['name'])
 			);
 
 			$h .= $form->dynamicGroups($eVariety, ['name']);

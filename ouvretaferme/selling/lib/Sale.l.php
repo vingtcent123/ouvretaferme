@@ -51,7 +51,7 @@ class SaleLib extends SaleCrud {
 		$eSale = \selling\SaleLib::getById($id);
 		$eSale['document'] = '123';
 		$eSale['farm'] = $eFarm;
-		$eSale['hasVat'] = $eFarm['selling']['hasVat'];
+		$eSale['hasVat'] = $eFarm->hasVat();
 		$eSale['customer']['legalName'] = match($type) {
 			Customer::PRO => 'Magasin ABC',
 			Customer::PRIVATE => 'A. Bécé'
@@ -68,7 +68,7 @@ class SaleLib extends SaleCrud {
 		$eSale['orderFormValidUntil'] = currentDate();
 		$eSale['orderFormPaymentCondition'] = $eFarm['selling']['orderFormPaymentCondition'];
 		$eSale['invoice']['taxes'] = \selling\Invoice::INCLUDING;
-		$eSale['invoice']['hasVat'] = $eFarm['selling']['hasVat'];
+		$eSale['invoice']['hasVat'] = $eFarm->hasVat();
 		$eSale['invoice']['document'] = '123';
 		$eSale['invoice']['priceExcludingVat'] = $eSale['priceExcludingVat'];
 		$eSale['invoice']['priceIncludingVat'] = $eSale['priceIncludingVat'];
@@ -84,7 +84,7 @@ class SaleLib extends SaleCrud {
 
 		if($eShop->notEmpty()) {
 
-			$eShop->expects(['paymentOfflineHow', 'paymentTransferHow']);
+			$eShop->expects(['hasPayment', 'paymentOfflineHow', 'paymentTransferHow']);
 
 			$eSale['shop'] = $eShop;
 			$eSale['shopDate'] = new \shop\Shop([
@@ -545,7 +545,7 @@ class SaleLib extends SaleCrud {
 
 		$updatePreparationStatus = (
 			in_array('preparationStatus', $properties) and
-			$e->expects(['oldStatus']) and
+			$e->expects(['oldStatus', 'marketParent']) and
 			($e['oldStatus'] !== $e['preparationStatus'])
 		);
 

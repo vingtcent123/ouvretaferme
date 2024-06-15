@@ -98,8 +98,8 @@ class SequenceUi {
 			$h .= '<br/>';
 
 			$h .= '<div class="tabs-item">';
-				$h .= '<a href="'.\farm\FarmUi::urlCultivationSequences($eFarm).'" class="tab-item '.($search->get('status') === Sequence::ACTIVE ? 'selected' : '').'"><span>'.s("Itinéraires actifs").' <small>('.$sequences[Sequence::ACTIVE].')</small></span></a>';
-				$h .= '<a href="'.\farm\FarmUi::urlCultivationSequences($eFarm).'/'.Sequence::CLOSED.'" class="tab-item '.($search->get('status') === Sequence::CLOSED ? 'selected' : '').'"><span>'.s("Itinéraires archivés").' <small>('.$sequences[Sequence::CLOSED].')</small></span></a>';
+				$h .= '<a href="'.\farm\FarmUi::urlCultivationSequences($eFarm).'" class="tab-item '.($search->get('status') === Sequence::ACTIVE ? 'selected' : '').'"><span>'.s("Itinéraires actifs").' <span class="tab-item-count">'.$sequences[Sequence::ACTIVE].'</span></span></a>';
+				$h .= '<a href="'.\farm\FarmUi::urlCultivationSequences($eFarm).'/'.Sequence::CLOSED.'" class="tab-item '.($search->get('status') === Sequence::CLOSED ? 'selected' : '').'"><span>'.s("Itinéraires archivés").' <span class="tab-item-count">'.$sequences[Sequence::CLOSED].'</span></span></a>';
 			$h .= '</div>';
 
 		}

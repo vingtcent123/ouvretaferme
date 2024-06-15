@@ -112,12 +112,14 @@ class ProductLib extends ProductCrud {
 
 	}
 
-	public static function getForShop(\farm\Farm $eFarm): \Collection {
+	public static function getForDate(\shop\Date $eDate): \Collection {
+
+		$eDate->expects(['farm', 'type']);
 
 		return Product::model()
 			->select(Product::getSelection())
-			->whereFarm($eFarm)
-			->wherePrivate(TRUE)
+			->whereFarm($eDate['farm'])
+			->where($eDate['type'], TRUE)
 			->whereStatus(Product::ACTIVE)
 			->sort(['name' => SORT_ASC])
 			->getCollection(NULL, NULL, 'id');

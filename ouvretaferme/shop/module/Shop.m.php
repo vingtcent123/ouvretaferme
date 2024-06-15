@@ -7,8 +7,8 @@ abstract class ShopElement extends \Element {
 
 	private static ?ShopModel $model = NULL;
 
-	const PRO = 'pro';
 	const PRIVATE = 'private';
+	const PRO = 'pro';
 
 	const WEEKLY = 'weekly';
 	const BIMONTHLY = 'bimonthly';
@@ -53,8 +53,10 @@ class ShopModel extends \ModuleModel {
 			'logo' => ['textFixed', 'min' => 30, 'max' => 30, 'charset' => 'ascii', 'null' => TRUE, 'cast' => 'string'],
 			'name' => ['text8', 'min' => 1, 'max' => NULL, 'collate' => 'general', 'cast' => 'string'],
 			'email' => ['email', 'cast' => 'string'],
-			'type' => ['enum', [\shop\Shop::PRO, \shop\Shop::PRIVATE], 'cast' => 'enum'],
+			'type' => ['enum', [\shop\Shop::PRIVATE, \shop\Shop::PRO], 'cast' => 'enum'],
 			'frequency' => ['enum', [\shop\Shop::WEEKLY, \shop\Shop::BIMONTHLY, \shop\Shop::MONTHLY, \shop\Shop::OTHER], 'cast' => 'enum'],
+			'hasPoint' => ['bool', 'cast' => 'bool'],
+			'hasPayment' => ['bool', 'cast' => 'bool'],
 			'paymentCard' => ['bool', 'cast' => 'bool'],
 			'paymentTransfer' => ['bool', 'cast' => 'bool'],
 			'paymentTransferHow' => ['text8', 'min' => 1, 'max' => NULL, 'null' => TRUE, 'cast' => 'string'],
@@ -72,7 +74,7 @@ class ShopModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'fqn', 'farm', 'logo', 'name', 'email', 'type', 'frequency', 'paymentCard', 'paymentTransfer', 'paymentTransferHow', 'paymentOffline', 'paymentOfflineHow', 'description', 'terms', 'termsField', 'orderMin', 'shipping', 'shippingUntil', 'status', 'createdAt', 'createdBy'
+			'id', 'fqn', 'farm', 'logo', 'name', 'email', 'type', 'frequency', 'hasPoint', 'hasPayment', 'paymentCard', 'paymentTransfer', 'paymentTransferHow', 'paymentOffline', 'paymentOfflineHow', 'description', 'terms', 'termsField', 'orderMin', 'shipping', 'shippingUntil', 'status', 'createdAt', 'createdBy'
 		]);
 
 		$this->propertiesToModule += [
@@ -91,11 +93,14 @@ class ShopModel extends \ModuleModel {
 
 		switch($property) {
 
-			case 'type' :
-				return Shop::PRIVATE;
-
 			case 'frequency' :
 				return Shop::WEEKLY;
+
+			case 'hasPoint' :
+				return TRUE;
+
+			case 'hasPayment' :
+				return TRUE;
 
 			case 'paymentCard' :
 				return FALSE;
@@ -183,6 +188,14 @@ class ShopModel extends \ModuleModel {
 
 	public function whereFrequency(...$data): ShopModel {
 		return $this->where('frequency', ...$data);
+	}
+
+	public function whereHasPoint(...$data): ShopModel {
+		return $this->where('hasPoint', ...$data);
+	}
+
+	public function whereHasPayment(...$data): ShopModel {
+		return $this->where('hasPayment', ...$data);
 	}
 
 	public function wherePaymentCard(...$data): ShopModel {

@@ -1,8 +1,8 @@
 <?php
 new AdaptativeView('anonymous', function($data, MainTemplate $t) {
 
-	$t->title = s("{siteName} - Une plateforme pour les maraîchers");
-	$t->metaDescription = s("Plateforme numérique dédiée aux producteurs maraîchers en agriculture biologique pour organiser le travail à la ferme, de la planification des cultures jusqu'à la vente.");
+	$t->title = s("Plateforme de planification et vente pour le maraichage");
+	$t->metaDescription = s("Logiciel dédié aux maraîchers en agriculture biologique pour organiser le travail à la ferme, de la planification des cultures jusqu'à la vente.");
 	$t->template = 'home-main';
 
 	Asset::css('main', 'font-itim.css');
@@ -17,7 +17,7 @@ new AdaptativeView('anonymous', function($data, MainTemplate $t) {
 			echo '<h2>'.Asset::icon('arrow-right').''.s("Pour les producteurs").'</h2>';
 			echo '<ul>';
 				echo '<li>'.s("Construisez facilement vos plans de culture et d'assolement").'</li>';
-				echo '<li>'.s("Suivez votre planning de travail semaine par semaine").'</li>';
+				echo '<li>'.s("Suivez votre planning de maraîchage semaine par semaine").'</li>';
 				echo '<li>'.s("Vendez en ligne votre production sans commission sur les ventes").'</li>';
 				echo '<li>'.s("Utilisez les données récoltées pour améliorer vos pratiques année après année").'</li>';
 				echo '<li>'.s("Gratuit pour les producteurs en agriculture biologique !").'</li>';
@@ -44,7 +44,7 @@ new AdaptativeView('anonymous', function($data, MainTemplate $t) {
 	echo '<h2>'.s("La philosophie du projet 👩‍🌾").'</h2>';
 
 	echo '<div class="home-story">';
-		echo s("La plateforme {siteName} est née du constat qu'il n'existe pas de solution libre et simple d'utilisation pour permettre aux producteurs d'organiser le travail dans leur ferme. En proposant un logiciel complet de la planification jusqu'à la vente, nous avons pour objectif de donner les moyens aux producteurs en agriculture biologique de réaliser les finalités de leur ferme.");
+		echo s("La plateforme {siteName} est née du constat qu'il n'existe pas de solution libre et simple d'utilisation pour permettre aux producteurs maraîchers d'organiser le travail dans leur ferme. En proposant un logiciel complet de la planification jusqu'à la vente, nous avons pour objectif de donner les moyens aux producteurs en agriculture biologique de réaliser les finalités de leur ferme.");
 	echo '</div>';
 
 	echo (new \main\HomeUi())->getPoints();

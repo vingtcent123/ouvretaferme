@@ -7,7 +7,7 @@ class MailUi {
 
 		$eSale->expects([
 			'shopPoint' => ['type'],
-			'shop' => ['paymentOfflineHow', 'paymentTransferHow']
+			'shop' => ['hasPayment', 'paymentOfflineHow', 'paymentTransferHow']
 		]);
 
 		return match($eSale['shopPoint']['type']) {
@@ -21,7 +21,7 @@ class MailUi {
 
 		$eSale->expects([
 			'shopPoint' => ['type'],
-			'shop' => ['paymentOfflineHow', 'paymentTransferHow']
+			'shop' => ['hasPayment', 'paymentOfflineHow', 'paymentTransferHow']
 		]);
 
 		return match($eSale['shopPoint']['type']) {

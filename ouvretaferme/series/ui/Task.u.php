@@ -4513,7 +4513,7 @@ class TaskUi {
 						$h .= '</div>';
 
 						$h .= '<div class="task-write-planned-field task-write-planned-unplanned">';
-							$h .= '<div class="form-control disabled">'.s("Non planifié").'</div>';
+							$h .= $form->fake(s("Non planifié"));
 						$h .= '</div>';
 
 						$labelWeek = match($property) {
