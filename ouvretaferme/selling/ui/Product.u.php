@@ -691,24 +691,6 @@ class ProductUi {
 
 	}
 
-	public static function getStep(Product $eProduct): float {
-
-		return $eProduct['privateStep'] ?? self::getDefaultStep($eProduct);
-
-	}
-
-	public static function getDefaultStep(Product $eProduct): float {
-
-		return match($eProduct['unit']) {
-
-			Product::GRAM => 100,
-			Product::KG => 0.5,
-			default => 1,
-
-		};
-
-	}
-
 	public static function p(string $property): \PropertyDescriber {
 
 		$d = Product::model()->describer($property, [

@@ -176,15 +176,17 @@ class BasketManage {
 
 	static calculateTotal(dateId) {
 
+		qsa('.shop-product', product => product.dataset.has = 0);
+
 		let basket = this.getBasket(dateId);
 		let amount = 0;
 		let articles = 0;
 
 		Object.entries(basket.products).forEach(([productId, {quantity}]) => {
 
-			if(quantity > 0) {
+			const product = qs('.shop-product[data-id="'+ productId +'"]');
 
-				const product = qs('.shop-product[data-id="'+ productId +'"]');
+			if(quantity > 0) {
 
 				if(product.length === 0) {
 					return;
@@ -195,6 +197,12 @@ class BasketManage {
 				articles++;
 				amount += quantity * price;
 
+				product.qs('.shop-product-quantity-decrease').classList.remove('shop-product-quantity-decrease-disabled');
+
+				product.dataset.has = 1;
+
+			} else {
+				product.qs('.shop-product-quantity-decrease').classList.add('shop-product-quantity-decrease-disabled');
 			}
 
 		});

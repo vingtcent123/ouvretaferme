@@ -49,14 +49,14 @@ class UnitUi {
 
 	}
 
-	public static function getNeutral(?string $unit, bool $short = FALSE): string {
+	public static function getNeutral(?string $unit, bool $short = FALSE, bool $by = FALSE): string {
 
 		return match($unit) {
 			'kg' => s("kg"),
 			'gram' => s("g"),
-			'gram-100' => s("100 g"),
-			'gram-250' => s("250 g"),
-			'gram-500' => s("500 g"),
+			'gram-100' => $by ? s("100 g") : s("x 100 g"),
+			'gram-250' => $by ? s("250 g") : s("x 250 g"),
+			'gram-500' => $by ? s("500 g") : s("x 500 g"),
 			'bunch' => $short ? s("bte(s)") : s("botte(s)"),
 			'unit' => $short ? s("p.") : s("pièce(s)"),
 			'plant' => $short ? s("p.") : s("plant(s)"),

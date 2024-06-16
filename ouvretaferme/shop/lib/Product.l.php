@@ -98,10 +98,13 @@ class ProductLib extends ProductCrud {
 				continue;
 			}
 
+			$eProductSelling = $cProductSelling->offsetGet($product);
+
 			$eProduct = new Product([
 				'date' => $eDate,
 				'shop' => $eDate['shop'],
-				'product' => $cProductSelling->offsetGet($product)
+				'product' => $eProductSelling,
+				'packaging' => ($eDate['type'] === Date::PRO) ? $eProductSelling['proPackaging'] : NULL,
 			]);
 
 			$eProduct->buildIndex(['stock', 'price'], $input, $index);

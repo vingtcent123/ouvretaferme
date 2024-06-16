@@ -138,6 +138,8 @@ class Date extends DateElement {
 					$eProduct = new Product([
 						'product' => $eProductSelling,
 						'shop' => $this['shop'],
+						'date' => $this,
+						'packaging' => ($this['type'] === Date::PRO) ? $eProductSelling['proPackaging'] : NULL,
 					]);
 
 					$eProduct->buildIndex(['stock', 'price'], $input, $eProductSelling['id']);

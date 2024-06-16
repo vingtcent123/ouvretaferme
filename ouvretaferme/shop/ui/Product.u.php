@@ -81,7 +81,13 @@ class ProductUi {
 
 		$eProductSelling = $eProduct['product'];
 
-		$h = '<div class="shop-product" data-id="'.$eProductSelling['id'].'" data-price="'.$eProduct['price'].'">';
+		if($eProduct['packaging'] === NULL) {
+			$price = $eProduct['price'];
+		} else {
+			$price = $eProduct['price'] * $eProduct['packaging'];
+		}
+
+		$h = '<div class="shop-product" data-id="'.$eProductSelling['id'].'" data-price="'.$price.'" data-has="0">';
 
 			if($eProductSelling['vignette'] !== NULL) {
 				$url = (new \media\ProductVignetteUi())->getUrlByElement($eProductSelling, 'l');
@@ -127,14 +133,26 @@ class ProductUi {
 					$h .= '<div class="shop-product-buy-price">';
 
 						$h .= '<span style="white-space: nowrap">'.\util\TextUi::money($eProduct['price']).' '.$this->getTaxes($eDate).' / '.\main\UnitUi::getSingular($eProductSelling['unit'], by: TRUE).'</span>';
-						if($eProduct['stock'] !== NULL) {
-							$h.= '<br>';
-							if($eProduct->isInStock() === FALSE) {
-								$h .= s("Rupture de stock");
-							} else {
-								$h .= s("En stock : {value}", $eProduct->getRemainingStock());
+
+						$h .= '<div class="shop-product-buy-infos">';
+
+							if($eProduct['packaging'] !== NULL) {
+								$h.= '<div class="shop-product-buy-info">';
+									$h .= s("Colis de {value}", \main\UnitUi::getValue($eProduct['packaging'], $eProductSelling['unit'], TRUE));
+								$h .= '</div>';
 							}
-						}
+
+							if($eProduct['stock'] !== NULL) {
+								$h.= '<div class="shop-product-buy-info">';
+								if($eProduct->isInStock() === FALSE) {
+									$h .= s("Rupture de stock");
+								} else {
+									$h .= s("Stock : {value}", $eProduct->getRemainingStock());
+								}
+								$h .= '</div>';
+							}
+
+						$h .= '</div>';
 					$h .= '</div>';
 
 					if($canOrder and $eProduct->isInStock()) {
@@ -169,19 +187,52 @@ class ProductUi {
 			return '';
 		}
 
-		$attributesDecrease = 'BasketManage.update('.$eDate['id'].', '.$eProductSelling['id'].', -'.\selling\ProductUi::getStep($eProductSelling).', '.($eProduct['stock'] !== NULL ? $eProduct->getRemainingStock() : -1).')';
-		$attributesIncrease = 'BasketManage.update('.$eDate['id'].', '.$eProductSelling['id'].', '.\selling\ProductUi::getStep($eProductSelling).', '.($eProduct['stock'] !== NULL ? $eProduct->getRemainingStock() : -1).')';
+		$attributesDecrease = 'BasketManage.update('.$eDate['id'].', '.$eProductSelling['id'].', -'.self::getStep($eDate, $eProductSelling).', '.($eProduct['stock'] !== NULL ? $eProduct->getRemainingStock() : -1).')';
+		$attributesIncrease = 'BasketManage.update('.$eDate['id'].', '.$eProductSelling['id'].', '.self::getStep($eDate, $eProductSelling).', '.($eProduct['stock'] !== NULL ? $eProduct->getRemainingStock() : -1).')';
+
+		if($eProduct['packaging'] === NULL) {
+			$price = $eProduct['price'];
+		} else {
+			$price = $eProduct['price'] * $eProduct['packaging'];
+		}
 
 		$h = '<div class="shop-product-quantity">';
-			$h .= '<a class="btn btn-outline-primary btn-sm" onclick="'.$attributesDecrease.'">-</a>';
-			$h .= '<span class="shop-product-quantity-value" data-price="'.$eProduct['price'].'" data-remaining-stock="'.$eProduct->getRemainingStock().'" data-product="'.$eProductSelling['id'].'" data-field="quantity">';
-				$h .= '<span>'.$quantity.'</span>&nbsp;';
-				$h .= \main\UnitUi::getSingular($eProductSelling['unit'], TRUE);
+			$h .= '<a class="btn btn-outline-primary btn-sm shop-product-quantity-decrease" onclick="'.$attributesDecrease.'">-</a>';
+			$h .= '<span class="shop-product-quantity-value" data-price="'.$price.'" data-remaining-stock="'.$eProduct->getRemainingStock().'" data-product="'.$eProductSelling['id'].'" data-field="quantity">';
+				$h .= '<span>'.$quantity.'</span> ';
+
+				if($eProduct['packaging'] === NULL) {
+					$h .= \main\UnitUi::getNeutral($eProductSelling['unit']);
+				} else {
+					$h .= s("colis");
+				}
+
 			$h .= '</span>';
-			$h .= '<a class="btn btn-outline-primary btn-sm" onclick="'.$attributesIncrease.'">+</a>';
+			$h .= '<a class="btn btn-outline-primary btn-sm shop-product-quantity-increase" onclick="'.$attributesIncrease.'">+</a>';
 		$h .= '</div>';
 
 		return $h;
+
+	}
+
+	public static function getStep(\shop\Date $eDate, \selling\Product $eProduct): float {
+
+		return match($eDate['type']) {
+			Date::PRIVATE => $eProduct['privateStep'] ?? self::getDefaultPrivateStep($eProduct),
+			Date::PRO => 1,
+		};
+
+	}
+
+	public static function getDefaultPrivateStep(\selling\Product $eProduct): float {
+
+		return match($eProduct['unit']) {
+
+			\selling\Product::GRAM => 100,
+			\selling\Product::KG => 0.5,
+			default => 1,
+
+		};
 
 	}
 
@@ -315,6 +366,15 @@ class ProductUi {
 			case 'stock' :
 				$d->field = function(\util\FormUi $form, Product $e) use($d) {
 
+					$e->expects([
+						'date' => ['type']
+					]);
+
+					$step = (
+						$e['date']['type'] === Date::PRO or
+						in_array($e['product']['unit'], [\selling\Product::UNIT, \selling\Product::BUNCH])
+					) ? 1 : 0.1;
+
 					$h = '<div class="input-group" data-product="'.$e['product']['id'].'" data-element="input-group-stock">';
 						$h .= $form->number($d->name, $e['stock'] ?? NULL, [
 							'data-product' => $e['product']['id'],
@@ -322,10 +382,21 @@ class ProductUi {
 							'onfocusout' => 'DateManage.checkStockFocusOut(this)',
 							'placeholder' => s("Illimité"),
 							'data-placeholder' => s("Illimité"),
-							'min' => in_array($e['product']['unit'], [\selling\Product::UNIT, \selling\Product::BUNCH]) ? 1 : 0.1,
-							'step' => in_array($e['product']['unit'], [\selling\Product::UNIT, \selling\Product::BUNCH]) ? 1 : 0.1,
+							'min' => $step,
+							'step' => $step,
 						]);
-						$h .= $form->addon(\main\UnitUi::getNeutral($e['product']['unit'], TRUE));
+
+						if(
+							$e['date']['type'] === Date::PRIVATE or
+							$e['product']['proPackaging'] === NULL
+						) {
+							$unit = \main\UnitUi::getNeutral($e['product']['unit'], TRUE);
+						} else {
+							$unit = s("colis");
+						}
+
+						$h .= $form->addon($unit);
+
 					$h .= '</div>';
 
 					return $h;

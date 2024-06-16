@@ -387,7 +387,11 @@ class DateUi {
 				$h .= '<div>';
 					$h .= s("Produit");
 				$h .= '</div>';
-				$h .= '<div class="date-products-item-unit text-end">'.s("Multiple de vente").'</div>';
+				$h .= '<div class="date-products-item-unit text-end">';
+					if($eDate['type'] === Date::PRIVATE) {
+						$h .= s("Multiple de vente");
+					}
+				$h .= '</div>';
 				$h .= '<div class="date-products-item-price text-end">'.s("Prix").'</div>';
 				$h .= '<div>'.s("Stock").'</div>';
 
@@ -396,7 +400,6 @@ class DateUi {
 			$h .= '<div class="date-products-body">';
 				foreach($cProduct as $eProduct) {
 
-					$step = \selling\ProductUi::getStep($eProduct);
 					$checked = $eProduct['checked'] ?? FALSE;
 
 					$attributes = [
@@ -438,13 +441,28 @@ class DateUi {
 							$h .= \selling\ProductUi::link($eProduct, TRUE);
 						$h .= '</label>';
 						$h .= '<label class="date-products-item-unit text-end" for="'.$attributes['id'].'">';
-							$h .= \main\UnitUi::getValue($step, $eProduct['unit']);
+
+							switch($eDate['type']) {
+
+								case Date::PRIVATE :
+									$step = ProductUi::getStep($eDate, $eProduct);
+									$h .= \main\UnitUi::getValue($step, $eProduct['unit']);
+									break;
+
+								case Date::PRO :
+									if($eProduct['proPackaging'] !== NULL) {
+										$h .= s("Colis de {value}", \main\UnitUi::getValue($eProduct['proPackaging'], $eProduct['unit'], TRUE));
+									}
+									break;
+
+							}
+
 						$h .= '</label>';
 						$h .= '<div data-wrapper="price['.$eProduct['id'].']" class="date-products-item-price '.($checked ? '' : 'hidden').'">';
 							$h .= $form->dynamicField($eShopProduct, 'price['.$eProduct['id'].']');
 						$h .= '</div>';
 						$h .= '<div data-wrapper="stock['.$eProduct['id'].']" class="date-products-item-stock '.($checked ? '' : 'hidden').'">';
-							$h .= $form->dynamicField($eShopProduct, 'stock', function($d) use ($eProduct) {
+							$h .= $form->dynamicField($eShopProduct, 'stock', function($d) use ($eDate, $eProduct) {
 								$d->name = 'stock['.$eProduct['id'].']';
 							});
 						$h .= '</div>';
