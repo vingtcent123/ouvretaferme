@@ -71,7 +71,7 @@ Grid:
   farm: farm\Farm
   product: selling\Product
   price: ?decimal(8, 2, 0.0, null)
-  packaging: ?float32(0.01, null)
+  packaging: ?decimal(6, 2, 0.01, null)
   createdAt: datetime = SPECIAL(now)
   updatedAt: datetime = SPECIAL(now)
   INDEX: [
@@ -136,7 +136,7 @@ Item:
   quality: ?enum(ORGANIC, NATURE_PROGRES, CONVERSION)
   parent: ?selling\Item
   description: ?text8(1, null)
-  packaging: ?float32(0.01, null)
+  packaging: ?decimal(6, 2, 0.01, null)
   unit: ?enum(KG, GRAM, GRAM_100, GRAM_250, GRAM_500, UNIT, BUNCH, PLANT)
   unitPrice: decimal(8, 2)
   discount: int8(0, 100) = 0

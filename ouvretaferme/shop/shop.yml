@@ -40,6 +40,7 @@ Product:
   shop: shop\Shop
   date: shop\Date
   product: selling\Product
+  packaging: ?decimal(6, 2, 0.01, null)
   price: decimal(8, 2, 0.0, null)
   stock: ?float32(0.0, null)
   status: enum(ACTIVE, INACTIVE) = ACTIVE

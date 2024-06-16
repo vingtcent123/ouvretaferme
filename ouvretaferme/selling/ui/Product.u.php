@@ -172,10 +172,10 @@ class ProductUi {
 
 					$h .= '<td class="product-item-price text-end">';
 						if($eProduct['private'] === FALSE) {
-							$h .= '<span class="color-muted">'.s("non vendu").'</span>';
+							$h .= '-';
 						} else {
 
-							$taxes = $eFarm->hasVat() ? CustomerUi::getTaxes(Customer::PRIVATE) : '';
+							$taxes = $eFarm->hasVat() ? ' <span class="util-annotation">'.CustomerUi::getTaxes(Customer::PRIVATE).'</span>' : '';
 
 							if($eProduct['privatePrice']) {
 								$value = \util\TextUi::money($eProduct['privatePrice']).$taxes;
@@ -194,10 +194,10 @@ class ProductUi {
 
 					$h .= '<td class="product-item-price text-end">';
 						if($eProduct['pro'] === FALSE) {
-							$h .= '<span class="color-muted">'.s("non vendu").'</span>';
+							$h .= '-';
 						} else {
 
-							$taxes = $eFarm->hasVat() ? CustomerUi::getTaxes(Customer::PRO) : '';
+							$taxes = $eFarm->hasVat() ? ' <span class="util-annotation">'.CustomerUi::getTaxes(Customer::PRO).'</span>' : '';
 
 							if($eProduct['proPrice']) {
 								$value = \util\TextUi::money($eProduct['proPrice']).$taxes;
