@@ -360,7 +360,7 @@ class ProductUi {
 
 	}
 
-	public function getTabs(Product $eProduct, \farm\Farm $eFarm, \Collection $cGrid, \Collection $cItemLast): string {
+	public function getTabs(Product $eProduct, \Collection $cGrid, \Collection $cItemLast): string {
 
 		$h = '<div class="tabs-h" id="product-tabs" onrender="'.encode('Lime.Tab.restore(this, "product-grid")').'">';
 
@@ -375,7 +375,7 @@ class ProductUi {
 			$h .= '</div>';
 
 			$h .= '<div class="tab-panel" data-tab="product-sales">';
-				$h .= (new \selling\ItemUi())->getByProduct($eFarm, $cItemLast);
+				$h .= (new \selling\ItemUi())->getByProduct($cItemLast);
 			$h .= '</div>';
 
 		$h .= '</div>';

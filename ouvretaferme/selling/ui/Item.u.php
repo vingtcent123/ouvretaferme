@@ -234,7 +234,7 @@ class ItemUi {
 
 	}
 
-	public function getByProduct(\farm\Farm $eFarm, \Collection $cItem) {
+	public function getByProduct(\Collection $cItem) {
 
 		if($cItem->empty()) {
 
@@ -289,7 +289,7 @@ class ItemUi {
 					$h .= '<td class="text-end">';
 						if($eItem['price'] !== NULL) {
 							$h .= \util\TextUi::money($eItem['price']);
-							$h .= $eFarm->hasVat() ?' '.$eItem['sale']->getTaxes() : '';
+							$h .= $eItem['sale']['hasVat'] ? ' <span class="util-annotation">'.$eItem['sale']->getTaxes().'</span>' : '';
 						}
 					$h .= '</td>';
 

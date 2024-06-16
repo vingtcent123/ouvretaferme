@@ -7,7 +7,7 @@ new AdaptativeView('/produit/{id}', function($data, FarmTemplate $t) {
 	$t->subNav = (new \farm\FarmUi())->getSellingSubNav($data->eFarm);
 
 	echo (new \selling\ProductUi())->display($data->e, $data->cItemTurnover);
-	echo (new \selling\ProductUi())->getTabs($data->e, $data->eFarm, $data->cGrid, $data->cItemLast);
+	echo (new \selling\ProductUi())->getTabs($data->e, $data->cGrid, $data->cItemLast);
 
 });
 
