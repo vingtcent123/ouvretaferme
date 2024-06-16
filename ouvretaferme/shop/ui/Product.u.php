@@ -192,12 +192,14 @@ class ProductUi {
 			return '<div class="util-info">'.s("Vous ne vendez encore aucun produit à cette date !").'</div>';
 		}
 
+		$taxes = $eDate['farm']->hasVat() ? '<span class="util-annotation">'.$eDate->getTaxes().'</span>' : '';
+
 		$h = '<div class="util-overflow-xs stick-xs">';
 			$h .= '<table class="tr-even">';
 				$h .= '<thead>';
 					$h .= '<tr>';
 						$h .= '<th colspan="2">'.s("Produit").'</th>';
-						$h .= '<th class="text-end">'.s("Prix").'</th>';
+						$h .= '<th class="text-end">'.s("Prix").' '.$taxes.'</th>';
 						$h .= '<th class="text-end">'.s("Stock").'</th>';
 						$h .= '<th class="text-end">'.s("Vendu").'</th>';
 						$h .= '<th class="text-end">';
@@ -240,8 +242,7 @@ class ProductUi {
 				$h .= $uiProductSelling->getInfos($eProductSelling);
 			$h .= '</td>';
 			$h .= '<td class="text-end" style="white-space: nowrap">';
-				$taxes = $eDate['farm']->hasVat() ? $eDate->getTaxes() : '';
-				$h .= $eProduct->quick('price', \util\TextUi::money($eProduct['price']).' '.$taxes.' / '.\main\UnitUi::getSingular($eProductSelling['unit'], short: TRUE, by: TRUE));
+				$h .= $eProduct->quick('price', \util\TextUi::money($eProduct['price']).' / '.\main\UnitUi::getSingular($eProductSelling['unit'], short: TRUE, by: TRUE));
 			$h .= '</td>';
 			$h .= '<td class="text-end">';
 				if($eProduct['stock'] === NULL) {

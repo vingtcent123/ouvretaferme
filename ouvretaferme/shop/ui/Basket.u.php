@@ -22,9 +22,13 @@ class BasketUi {
 
 		$h = '<div class="util-vignette util-vignette-xs mb-0">';
 
-			$h .= '<div class="hide-xs-down">';
-				$h .= '<a href="'.ShopUi::url($eShop).'">'.ShopUi::getLogo($eShop, '10rem').'</a>';
-			$h .= '</div>';
+			if($eShop['logo']) {
+
+				$h .= '<div class="hide-xs-down">';
+					$h .= '<a href="'.ShopUi::url($eShop).'">'.ShopUi::getLogo($eShop, '10rem').'</a>';
+				$h .= '</div>';
+
+			}
 
 			$h .= '<div>';
 				$h .= '<div class="util-action">';
@@ -650,13 +654,11 @@ class BasketUi {
 
 				$content .= '<h2>'.\Asset::icon('check').' '.s("Merci, votre commande est confirmée !").'</h2>';
 				$content .= '<p>'.s("Vous avez reçu un e-mail de confirmation.").'</p>';
-				$content .= '<p>';
-					if($eSale['paymentMethod'] === \selling\Sale::OFFLINE) {
+				if($eSale['paymentMethod'] === \selling\Sale::OFFLINE) {
+					$content .= '<p>';
 						$content .= s("Vous avez choisi de régler cette commande en direct avec votre producteur.");
-					} else {
-						$content .= s("Cette commande sera à régler en direct avec votre producteur.");
-					}
-				$content .= '</p>';
+					$content .= '</p>';
+				}
 				break;
 
 		}

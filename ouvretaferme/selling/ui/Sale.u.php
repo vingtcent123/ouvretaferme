@@ -60,9 +60,9 @@ class SaleUi {
 	public static function getTotal(Sale|Invoice $eSale, bool $displayIncludingTaxes = TRUE): string {
 
 		if($eSale['taxes'] === Sale::INCLUDING) {
-			$taxes = $displayIncludingTaxes ? ' '.$eSale->getTaxes() : '';
+			$taxes = $displayIncludingTaxes ? ' <span class="util-annotation">'.$eSale->getTaxes().'</span>' : '';
 		} else {
-			$taxes = ' '.$eSale->getTaxes();
+			$taxes = ' <span class="util-annotation">'.$eSale->getTaxes().'</span>';
 		}
 
 		return match($eSale['taxes']) {
@@ -285,9 +285,9 @@ class SaleUi {
 						$batch[] = 'not-delete';
 					}
 
-					$h .= '<tr class="';
+					$h .= '<tr';
 						if($eSale['preparationStatus'] === Sale::CANCELED) {
-							$h .= 'color-muted ';
+							$h .= ' style="opacity: 0.5"';
 						}
 					$h .= '">';
 

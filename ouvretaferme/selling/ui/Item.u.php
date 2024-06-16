@@ -84,7 +84,7 @@ class ItemUi {
 						$h .= '<th class="text-end">';
 							$h .= ItemUi::p('unitPrice')->label;
 							if($eSale['hasVat']) {
-								$h .= '<br/>('.SaleUi::getTaxes($eSale['taxes']).')';
+									$h .= ' <span class="util-annotation">'.SaleUi::getTaxes($eSale['taxes']).'</span>';
 							}
 						$h .= '</th>';
 						if(
@@ -94,7 +94,7 @@ class ItemUi {
 							$h .= '<th class="text-end">';
 								$h .= ItemUi::p('price')->label;
 								if($eSale['hasVat']) {
-									$h .= '<br/>('.SaleUi::getTaxes($eSale['taxes']).')';
+									$h .= ' <span class="util-annotation">'.SaleUi::getTaxes($eSale['taxes']).'</span>';
 								}
 							$h .= '</th>';
 						}

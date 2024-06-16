@@ -610,8 +610,8 @@ class DateUi {
 
 									if($eFarm->hasVat()) {
 										$h .= match($eDate['type']) {
-											Date::PRIVATE => $eDate['sales']['amountValidIncludingVat'] ? \util\TextUi::money($eDate['sales']['amountValidIncludingVat']).' TTC' : '-',
-											Date::PRO => $eDate['sales']['amountValidExcludingVat'] ? \util\TextUi::money($eDate['sales']['amountValidExcludingVat']).' HT' : '-'
+											Date::PRIVATE => $eDate['sales']['amountValidIncludingVat'] ? \util\TextUi::money($eDate['sales']['amountValidIncludingVat']).' <span class="util-annotation">'.$eDate->getTaxes().'</span>' : '-',
+											Date::PRO => $eDate['sales']['amountValidExcludingVat'] ? \util\TextUi::money($eDate['sales']['amountValidExcludingVat']).' <span class="util-annotation">'.$eDate->getTaxes().'</span>' : '-'
 										};
 
 									} else {
