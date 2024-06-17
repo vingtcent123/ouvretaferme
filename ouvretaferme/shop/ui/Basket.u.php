@@ -169,6 +169,9 @@ class BasketUi {
 			$h .= '<thead>';
 				$h .= '<tr>';
 					$h .= '<th colspan="2">'.s("Produit").'</th>';
+					if($eDate['type'] === Date::PRO) {
+						$h .= '<th class="hide-sm-down"></th>';
+					}
 					$h .= '<th class="text-center">'.s("Quantité").'</th>';
 					$h .= '<th class="text-end hide-xs-down">'.s("Prix unitaire").'</th>';
 					$h .= '<th class="text-end">'.s("Total").'</th>';
@@ -191,6 +194,7 @@ class BasketUi {
 					];
 
 					$unitPrice = \util\TextUi::money($eProduct['price']).' '.ProductUi::getTaxes($eDate).' / '.\main\UnitUi::getSingular($eProductSelling['unit'], short: TRUE, by: TRUE);
+					$price = $eProduct['price'] * $product['quantity'] * ($eProduct['packaging'] ?? 1);
 
 					$h .= '<tr>';
 						$h .= '<td class="td-min-content">';
@@ -204,11 +208,23 @@ class BasketUi {
 							$h .= '<div class="hide-sm-up"><small style="white-space: nowrap">'.$unitPrice.'</small></div>';
 
 						$h .= '</td>';
+						if($eDate['type'] === Date::PRO) {
+							$h .= '<td class="hide-sm-down">';
+								if($eProduct['packaging'] !== NULL) {
+									$h .= s("Colis de {value}", \main\UnitUi::getValue($eProduct['packaging'], $eProductSelling['unit'], TRUE));
+								}
+							$h .= '</td>';
+						}
 						$h .= '<td class="text-center">';
 							$h .= ProductUi::quantityOrder($eDate, $eProductSelling, $cProduct->offsetGet($productId), $product['quantity']);
 						$h .= '</td>';
-						$h .= '<td class="text-end hide-xs-down">'.$unitPrice.'</td>';
-						$h .= '<td class="text-end">'.\util\TextUi::money($eProduct['price'] * $product['quantity']).' '.ProductUi::getTaxes($eDate).'</td>';
+						$h .= '<td class="text-end hide-xs-down">';
+							$h .= $unitPrice;
+							if($eProduct['packaging'] !== NULL) {
+								$h .= '<div class="hide-md-up">'.s("Colis de {value}", \main\UnitUi::getValue($eProduct['packaging'], $eProductSelling['unit'], TRUE)).'</div>';
+							}
+						$h .= '</td>';
+						$h .= '<td class="text-end">'.\util\TextUi::money($price).' '.ProductUi::getTaxes($eDate).'</td>';
 						$h .= '<td class="hide-xs-down text-center">';
 							$h .= '<a '.attrs($deleteAttributes).'>'.\Asset::icon('trash').'</a>';
 						$h .= '</td>';
@@ -218,13 +234,16 @@ class BasketUi {
 						$updateBasket = TRUE;
 					}
 
-					$total += $eProduct['price'] * $product['quantity'];
+					$total += $price;
 
 				}
 
 				$h .= '<tfoot>';
 					$h .= '<tr '.($updateBasket ? 'onrender="BasketManage.updateBasketFromSummary('.$eDate['id'].');"' : 'onrender="BasketManage.showWarnings('.$eDate['id'].');"').'>';
 						$h .= '<td class="hide-xs-down"></td>';
+						if($eDate['type'] === Date::PRO) {
+							$h .= '<td class="hide-sm-down"></td>';
+						}
 						$h .= '<td class="text-end" colspan="3"><b>'.s("Total du panier").'</b></td>';
 						$h .= '<td class="text-end"><b>'.\util\TextUi::money($total).' '.ProductUi::getTaxes($eDate).'</b></td>';
 						$h .= '<td class="hide-xs-down"></td>';

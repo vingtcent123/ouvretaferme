@@ -25,6 +25,7 @@ class BasketLib {
 			$product = [
 				'price' => $eProduct['price'],
 				'product' => $eProductSelling,
+				'packaging' => $eProduct['packaging']
 			];
 
 			$quantityOrder = (float)$products[$eProductSelling['id']]['quantity'] ?? 0.0;
