@@ -170,7 +170,7 @@ new AdaptativeView('/presentation/producteur', function($data, MainTemplate $t) 
 				echo '<li>'.s("<b>Vous gérez vos ventes pour les professionnels et les particuliers.</b> <small>Créez des ventes à partir de vos produits, gérez votre clientèle, choisissez vos prix. Imprimez des étiquettes de colisage si vous livrez aux professionnels. Exporter les ventes du jour au format PDF pour préparer vos livraisons.</small>").'</li>';
 				echo '<li>'.s("<b>Vous avez un mode de vente <i>Marché</i>.</b> <small>Utilisez le mode <i>Marché</i> avec une tablette ou un téléphone pour préparer vos marchés et saisir vos ventes directement pendant le marché. Pour chaque vente, visualisez ce que le client a acheté et le montant qu'il doit vous régler. Simple et efficace.</small>").'</li>';
 				echo '<li>'.s("<b>Vous pouvez vendre votre production en ligne.</b> <small>Permettez à vos clients de passer commande en ligne et de récupérer leur colis à la date et l'endroit convenus, ou bien livrez-les à domicile selon vos préférences. Activez si vous le souhaitez le paiement par carte bancaire.</small>").'</li>';
-				echo '<li>'.s("<b>Vous éditez vos documents de vente au format PDF.</b> <small>Créez facilement les devis, bons de livraisons et factures de vos ventes. Envoyez-les en un clic par e-mail à vos clients.</small>").'</li>';
+				echo '<li>'.s("<b>Vous éditez vos documents de vente au format PDF.</b> <small>Créez facilement les devis, bons de livraisons et factures de vos ventes. Créez toutes les factures du mois en une seule fois. Envoyez-les en un clic par e-mail à vos clients.</small>").'</li>';
 			echo '</ul>';
 		echo '</div>';
 
