@@ -202,7 +202,7 @@ class ProductUi {
 				$h .= '<span>'.$quantity.'</span> ';
 
 				if($eProduct['packaging'] === NULL) {
-					$h .= \main\UnitUi::getNeutral($eProductSelling['unit']);
+					$h .= \main\UnitUi::getSingular($eProductSelling['unit'], short: TRUE);
 				} else {
 					$h .= s("colis");
 				}
@@ -245,14 +245,17 @@ class ProductUi {
 
 		$taxes = $eDate['farm']->hasVat() ? '<span class="util-annotation">'.$eDate->getTaxes().'</span>' : '';
 
-		$h = '<div class="util-overflow-xs stick-xs">';
+		$h = '<div class="'.($eDate['type'] === Date::PRIVATE ? 'util-overflow-xs' : 'util-overflow-sm').' stick-xs">';
 			$h .= '<table class="tr-even">';
 				$h .= '<thead>';
 					$h .= '<tr>';
 						$h .= '<th colspan="2">'.s("Produit").'</th>';
-						$h .= '<th class="text-end">'.s("Prix").' '.$taxes.'</th>';
+						if($eDate['type'] === Date::PRO) {
+							$h .= '<td></td>';
+						}
+						$h .= '<th class="text-end highlight">'.s("Prix").' '.$taxes.'</th>';
 						$h .= '<th class="text-end">'.s("Stock").'</th>';
-						$h .= '<th class="text-end">'.s("Vendu").'</th>';
+						$h .= '<th class="text-end highlight">'.s("Vendu").'</th>';
 						$h .= '<th class="text-end">';
 							$h .= '<span class="hide-md-down">'.s("Vente en cours").'</span>';
 							$h .= '<span class="hide-lg-up">'.s("Vente").'</span>';
@@ -292,7 +295,16 @@ class ProductUi {
 			$h .= '<td>';
 				$h .= $uiProductSelling->getInfos($eProductSelling);
 			$h .= '</td>';
-			$h .= '<td class="text-end" style="white-space: nowrap">';
+
+			if($eDate['type'] === Date::PRO) {
+				$h .= '<td class="td-min-content">';
+					if($eProduct['packaging'] !== NULL) {
+						$h .= s("Colis de {value}", \main\UnitUi::getValue($eProduct['packaging'], $eProductSelling['unit'], TRUE));
+					}
+				$h .= '</td>';
+			}
+
+			$h .= '<td class="text-end highlight" style="white-space: nowrap">';
 				$h .= $eProduct->quick('price', \util\TextUi::money($eProduct['price']).' / '.\main\UnitUi::getSingular($eProductSelling['unit'], short: TRUE, by: TRUE));
 			$h .= '</td>';
 			$h .= '<td class="text-end">';
@@ -303,7 +315,7 @@ class ProductUi {
 				}
 				$h .= $eProduct->quick('stock', $stock);
 			$h .= '</td>';
-			$h .= '<td class="text-end">';
+			$h .= '<td class="text-end highlight">';
 				$h .= $eProduct['sold'] ?? 0;
 			$h .= '</td>';
 			$h .= '<td class="text-end">';

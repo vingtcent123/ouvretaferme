@@ -128,11 +128,15 @@ class BasketUi {
 			ShopUi::dateUrl($eShop, $eDate, 'panier')
 		];
 
-		$steps[] = [
-			self::STEP_PAYMENT,
-			s("Paiement"),
-			ShopUi::dateUrl($eShop, $eDate, 'paiement')
-		];
+		if($eShop['hasPayment']) {
+
+			$steps[] = [
+				self::STEP_PAYMENT,
+				s("Paiement"),
+				ShopUi::dateUrl($eShop, $eDate, 'paiement')
+			];
+
+		}
 
 		$steps[] = [
 			self::STEP_CONFIRMATION,

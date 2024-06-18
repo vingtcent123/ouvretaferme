@@ -125,7 +125,7 @@ class SaleLib {
 		$cItem = new \Collection();
 		$total = 0.0;
 
-		foreach($eSale['basket'] as ['price' => $price, 'product' => $eProduct, 'quantity' => $quantity]) {
+		foreach($eSale['basket'] as ['price' => $price, 'packaging' => $packaging, 'product' => $eProduct, 'quantity' => $quantity]) {
 
 			$eItem = new \selling\Item([
 				'sale' => $eSale,
@@ -134,7 +134,7 @@ class SaleLib {
 				'product' => $eProduct,
 				'name' => $eProduct->getName(),
 				'quality' => $eProduct['quality'],
-				'packaging' => NULL,
+				'packaging' => $packaging,
 				'locked' => \selling\Item::PRICE,
 				'unit' => $eProduct['unit'],
 				'unitPrice' => $price,
@@ -240,7 +240,7 @@ class SaleLib {
 		$cItem = new \Collection();
 		$total = 0.0;
 
-		foreach($eSale['basket'] as ['price' => $price, 'product' => $eProduct, 'quantity' => $quantity]) {
+		foreach($eSale['basket'] as ['price' => $price, 'packaging' => $packaging, 'product' => $eProduct, 'quantity' => $quantity]) {
 
 			$eItem = new \selling\Item([
 				'sale' => $eSale,
@@ -249,7 +249,7 @@ class SaleLib {
 				'product' => $eProduct,
 				'name' => $eProduct->getName(),
 				'quality' => $eProduct['quality'],
-				'packaging' => NULL,
+				'packaging' => $packaging,
 				'unit' => $eProduct['unit'],
 				'unitPrice' => $price,
 				'number' => $quantity,

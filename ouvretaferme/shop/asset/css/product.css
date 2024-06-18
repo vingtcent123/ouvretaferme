@@ -253,7 +253,7 @@
 }
 
 .shop-product[data-has="0"] .shop-product-quantity-value {
-	visibility: hidden;
+	opacity: 0.5;
 }
 
 .shop-product-ordered {

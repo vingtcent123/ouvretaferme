@@ -255,7 +255,15 @@ class CustomizeUi {
 				$products = '';
 
 				foreach($cItem as $eItem) {
-					$products .= '- '.encode($eItem['name']).' : '.\main\UnitUi::getValue($eItem['number'], $eItem['unit'], noWrap: FALSE)."\n";
+
+					if($eItem['packaging'] === NULL) {
+						$number = \main\UnitUi::getValue($eItem['number'], $eItem['unit'], noWrap: FALSE);
+					} else {
+						$number = p("{value} colis de {quantity}", "{value} colis de {quantity}", $eItem['number'], ['quantity' => \main\UnitUi::getValue($eItem['packaging'], $eItem['unit'], noWrap: FALSE)]);
+					}
+
+					$products .= '- '.s("{name} : {number}", ['name' => encode($eItem['name']), 'number' => $number])."\n";
+
 				}
 
 				$products = rtrim($products);
