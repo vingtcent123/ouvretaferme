@@ -111,6 +111,8 @@
 	.shop-product .shop-product-quantity .btn {
 		border-color: white;
 		color: white;
+		background: #0008;
+		border-width: 2px;
 	}
 
 }
