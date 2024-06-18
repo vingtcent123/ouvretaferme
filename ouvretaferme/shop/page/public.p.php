@@ -18,18 +18,32 @@
 (new Page(function($data) {
 
 		// On vérifie les redirections
-		$eRedirect = \shop\Redirect::model()
-			->select([
-				'shop' => ['fqn']
-			])
-			->where(new Sql('CONVERT(fqn USING utf8)'), GET('id'))
-			->get();
+		try {
+
+			$eRedirect = \shop\Redirect::model()
+				->select([
+					'shop' => ['fqn']
+				])
+				->where(GET('id'))
+				->get();
+
+		}
+		// Impossible de gérer les problèmes utf8 avec CONVERT() pour une raison inconnue
+		catch(Exception) {
+			$eRedirect = new \shop\Redirect();
+		}
 
 		if($eRedirect->notEmpty()) {
 			throw new PermanentRedirectAction(\shop\ShopUi::url($eRedirect['shop']));
 		}
 
-		$data->eShop = \shop\ShopLib::getByFqn(GET('id'));
+		try {
+			$data->eShop = \shop\ShopLib::getByFqn(GET('id'));
+		}
+		// Impossible de gérer les problèmes utf8 avec CONVERT() pour une raison inconnue
+		catch(Exception) {
+			$data->eShop = new \shop\Shop();
+		}
 
 		if($data->eShop->empty()) {
 			$action = new ViewAction($data, '/error:404');
