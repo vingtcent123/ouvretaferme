@@ -113,8 +113,8 @@ class ProductUi {
 				$h .= '<tr>';
 					$h .= '<th rowspan="2" class="product-item-vignette"></th>';
 					$h .= '<th rowspan="2" colspan="2">'.$search->linkSort('name', s("Nom")).'</th>';
-					$h .= '<th colspan="2" class="text-center">'.s("Ventes").'</th>';
-					$h .= '<th colspan="2" class="text-center">'.s("Prix de base").'</th>';
+					$h .= '<th colspan="2" class="text-center highlight hide-xs-down">'.s("Ventes").'</th>';
+					$h .= '<th colspan="2" class="text-center highlight">'.s("Prix de base").'</th>';
 					if($eFarm->hasVat()) {
 						$h .= '<th rowspan="2" class="text-center product-item-vat">'.s("TVA").'</th>';
 					}
@@ -124,10 +124,10 @@ class ProductUi {
 				$h .= '</tr>';
 
 				$h .= '<tr>';
-					$h .= '<th class="text-end">'.$year.'</th>';
-					$h .= '<th class="text-end product-item-year-before">'.$yearBefore.'</th>';
-					$h .= '<th class="text-end">'.s("particulier").'</th>';
-					$h .= '<th class="text-end">'.s("pro").'</th>';
+					$h .= '<th class="text-end highlight-stick-right hide-xs-down">'.$year.'</th>';
+					$h .= '<th class="text-end highlight-stick-left product-item-year-before hide-xs-down">'.$yearBefore.'</th>';
+					$h .= '<th class="text-end highlight-stick-right">'.s("particulier").'</th>';
+					$h .= '<th class="text-end highlight-stick-left">'.s("pro").'</th>';
 				$h .= '</tr>';
 
 			$h .= '</thead>';
@@ -152,7 +152,7 @@ class ProductUi {
 						$h .= \main\UnitUi::getSingular($eProduct['unit']);
 					$h .= '</td>';
 
-					$h .= '<td class="text-end">';
+					$h .= '<td class="text-end highlight-stick-right hide-xs-down">';
 						if($eItemTotal->notEmpty() and $eItemTotal['year']) {
 							$amount = \util\TextUi::money($eItemTotal['year'], precision: 0);
 							$h .= $eFarm->canAnalyze() ? '<a href="/selling/product:analyze?id='.$eProduct['id'].'&year='.$year.'">'.$amount.'</a>' : $amount;
@@ -161,7 +161,7 @@ class ProductUi {
 						}
 					$h .= '</td>';
 
-					$h .= '<td class="text-end customer-item-year-before">';
+					$h .= '<td class="text-end highlight-stick-left hide-xs-down customer-item-year-before">';
 						if($eItemTotal->notEmpty() and $eItemTotal['yearBefore']) {
 							$amount = \util\TextUi::money($eItemTotal['yearBefore'], precision: 0);
 							$h .= $eFarm->canAnalyze() ? '<a href="/selling/product:analyze?id='.$eProduct['id'].'&year='.$yearBefore.'">'.$amount.'</a>' : $amount;
@@ -170,7 +170,7 @@ class ProductUi {
 						}
 					$h .= '</td>';
 
-					$h .= '<td class="product-item-price text-end">';
+					$h .= '<td class="product-item-price highlight-stick-right text-end">';
 						if($eProduct['private'] === FALSE) {
 							$h .= '-';
 						} else {
@@ -192,7 +192,7 @@ class ProductUi {
 						}
 					$h .= '</td>';
 
-					$h .= '<td class="product-item-price text-end">';
+					$h .= '<td class="product-item-price highlight-stick-left text-end">';
 						if($eProduct['pro'] === FALSE) {
 							$h .= '-';
 						} else {

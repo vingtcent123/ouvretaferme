@@ -174,15 +174,15 @@ class CustomerUi {
 				$h .= '<tr>';
 					$h .= '<th rowspan="2">'.$search->linkSort('name', s("Nom")).'</th>';
 					$h .= '<th rowspan="2" class="text-center">'.s("Compte client").'</th>';
-					$h .= '<th colspan="2" class="text-center">'.s("Ventes").'</th>';
+					$h .= '<th colspan="2" class="text-center highlight">'.s("Ventes").'</th>';
 					$h .= '<th rowspan="2" class="customer-item-grid">'.s("Grille tarifaire").'</th>';
 					$h .= '<th rowspan="2" class="customer-item-contact">'.s("Contact").'</th>';
 					$h .= '<th rowspan="2" class="text-center">'.s("Activé").'</th>';
 					$h .= '<th rowspan="2"></th>';
 				$h .= '</tr>';
 				$h .= '<tr>';
-					$h .= '<th class="text-end">'.$year.'</th>';
-					$h .= '<th class="text-end customer-item-year-before">'.$yearBefore.'</th>';
+					$h .= '<th class="text-end highlight-stick-right">'.$year.'</th>';
+					$h .= '<th class="text-end customer-item-year-before highlight-stick-left">'.$yearBefore.'</th>';
 				$h .= '</tr>';
 			$h .= '</thead>';
 			$h .= '<tbody>';
@@ -213,7 +213,7 @@ class CustomerUi {
 							}
 						$h .= '</td>';
 
-						$h .= '<td class="text-end">';
+						$h .= '<td class="text-end highlight-stick-right">';
 							if($eSaleTotal->notEmpty() and $eSaleTotal['year']) {
 								$amount = \util\TextUi::money($eSaleTotal['year'], precision: 0);
 								$h .= $eFarm->canAnalyze() ? '<a href="/selling/customer:analyze?id='.$eCustomer['id'].'&year='.$year.'">'.$amount.'</a>' : $amount;
@@ -222,7 +222,7 @@ class CustomerUi {
 							}
 						$h .= '</td>';
 
-						$h .= '<td class="text-end customer-item-year-before">';
+						$h .= '<td class="text-end customer-item-year-before highlight-stick-left">';
 							if($eSaleTotal->notEmpty() and $eSaleTotal['yearBefore']) {
 								$amount = \util\TextUi::money($eSaleTotal['yearBefore'], precision: 0);
 								$h .= $eFarm->canAnalyze() ? '<a href="/selling/customer:analyze?id='.$eCustomer['id'].'&year='.$yearBefore.'">'.$amount.'</a>' : $amount;

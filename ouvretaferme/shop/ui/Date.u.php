@@ -581,9 +581,9 @@ class DateUi {
 					$h .= '<tr>';
 						$h .= '<th class="text-center">'.s("Date de vente").'</th>';
 						$h .= '<th>'.s("Ouverture des ventes").'</th>';
-						$h .= '<th class="text-end">'.s("Produits").'</th>';
+						$h .= '<th class="text-end highlight">'.s("Produits").'</th>';
 						$h .= '<th class="text-end" colspan="2">'.s("Commandes").'</th>';
-						$h .= '<th class="text-end">'.s("Montant").'</th>';
+						$h .= '<th class="text-end highlight">'.s("Montant").'</th>';
 						$h .= '<th></th>';
 					$h .= '</tr>';
 
@@ -605,7 +605,7 @@ class DateUi {
 								$h .= $this->getStatus($eShop, $eDate);
 							$h .= '</td>';
 
-							$h .= '<td class="text-end td-min-content">';
+							$h .= '<td class="text-end highlight">';
 								$h .= '<a href="'.ShopUi::adminDateUrl($eFarm, $eShop, $eDate).'?tab=products">'.$eDate['products'].'</a>';
 							$h .= '</td>';
 
@@ -623,7 +623,7 @@ class DateUi {
 
 							$h .= '</td>';
 
-							$h .= '<td class="text-end">';
+							$h .= '<td class="text-end highlight">';
 								if($eDate['sales']['countValid'] > 0) {
 
 									if($eFarm->hasVat()) {
