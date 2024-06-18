@@ -22,7 +22,7 @@
 			->select([
 				'shop' => ['fqn']
 			])
-			->whereFqn(GET('id'))
+			->where(new Sql('CONVERT(fqn USING utf8)'), GET('id'))
 			->get();
 
 		if($eRedirect->notEmpty()) {

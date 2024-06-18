@@ -1174,7 +1174,7 @@ abstract class ModuleModel {
 
 	}
 
-	protected function whereBuild(string|Sql $property, string $operator, $value): ?string {
+	protected function whereBuild(string|Sql $property, string $operator, mixed $value): ?string {
 
 		if($property instanceof Sql) {
 			$field = $property->__toString();
