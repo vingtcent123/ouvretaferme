@@ -336,7 +336,7 @@ class ShopUi {
 				];
 
 			if($for === 'update') {
-				$d->after = \util\FormUi::info(s("Le changement de grille tarifaire sera prix en compte pour les prochaines ventes que vous créerez"));
+				$d->after = \util\FormUi::info(s("Le changement de grille tarifaire sera pris en compte pour les prochaines ventes que vous créerez"));
 			}
 
 		};
