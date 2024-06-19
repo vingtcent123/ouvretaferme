@@ -40,7 +40,10 @@
 		throw new ReloadAction('shop', $data->e['status'] === \shop\Shop::OPEN ? 'Shop::opened' : 'Shop::closed');
 	})
 	->doUpdateProperties('doUpdatePayment', ['hasPayment'], function($data) {
-		throw new ReloadAction('shop', $data->e['hasPayment'] === \shop\Shop::OPEN ? 'Shop::paymentOn' : 'Shop::paymentOff');
+		throw new ReloadAction('shop', $data->e['hasPayment'] ? 'Shop::paymentOn' : 'Shop::paymentOff');
+	})
+	->doUpdateProperties('doUpdatePoint', ['hasPoint'], function($data) {
+		throw new ReloadAction('shop', $data->e['hasPoint'] ? 'Shop::pointOn' : 'Shop::pointOff');
 	})
 	->doDelete(function() {
 		throw new ReloadAction('shop', 'Shop::deleted');

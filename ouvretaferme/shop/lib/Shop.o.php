@@ -73,10 +73,10 @@ class ShopObserverLib {
 
 	private static function getTemplate(\selling\Sale $eSale): ?string {
 
-		return \mail\CustomizeLib::getTemplate($eSale['farm'], match($eSale['shopPoint']['type']) {
+		return \mail\CustomizeLib::getTemplate($eSale['farm'], $eSale['shopPoint']->notEmpty() ? match($eSale['shopPoint']['type']) {
 			Point::PLACE => \mail\Customize::SHOP_CONFIRMED_PLACE,
 			Point::HOME => \mail\Customize::SHOP_CONFIRMED_HOME,
-		}, $eSale['shop']);
+		} : \mail\Customize::SHOP_CONFIRMED_PLACE, $eSale['shop']);
 
 	}
 

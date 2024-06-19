@@ -181,12 +181,37 @@ class ShopManageUi {
 			$h .= '</div>';
 
 			$h .= '<div class="tab-panel selected" data-tab="points">';
-				$h .= (new PointUi())->getList($eShop, $eShop['ccPoint'], TRUE);
+
+				if($eShop['hasPoint']) {
+
+					$h .= (new PointUi())->getList($eShop, $eShop['ccPoint'], TRUE);
+
+					$h .= '<div class="util-block">';
+						$h .= '<h4>'.s("Le choix du mode de livraison").'</h4>';
+						$h .= '<p>'.s("Vos clients doivent choisir explicitement un mode de livraison sur votre boutique, parmi ceux que vous avez activés. Vous pouvez <link>désactiver le choix du moyen de livraison</link> si vous communiquez l'information directement à vos clients et que vous souhaitez leur simplifier l'interface de commande en ligne.", ['link' => '<a data-ajax="/shop/:doUpdatePoint" post-id="'.$eShop['id'].'" post-has-point="0" data-confirm="'.s("Souhaitez-vous réellement désactiver le choix du mode de livraison sur votre boutique ?").'">']).'</p>';
+					$h .= '</div>';
+
+				} else {
+					$h .= $this->updateInactivePoint($eShop);
+				}
+				
 			$h .= '</div>';
 
 		$h .= '</div>';
 
 		return $h;
+	}
+
+	public function updateInactivePoint(Shop $eShop): string {
+
+		$h = '<div class="util-block-help">';
+			$h .= '<h4>'.s("Le choix du mode de livraison est désactivé sur votre boutique").'</h4>';
+			$h .= '<p>'.s("Vos clients n'ont actuellement pas besoin de choisir de mode de livraison lorsqu'ils commandent sur la boutique, c'est à vous de les informer de la façon dont ils peuvent retirer leurs commandes.").'</p>';
+			$h .= '<a data-ajax="/shop/:doUpdatePoint" post-id="'.$eShop['id'].'" post-has-point="1" data-confirm="'.s("Souhaitez-vous réellement réactiver le choix du mode de livraison sur votre boutique ?").'" class="btn btn-secondary">'.s("Réactiver le choix du mode de livraison").'</a>';
+		$h .= '</div>';
+
+		return $h;
+
 	}
 
 	public function getInlineContent(\farm\Farm $eFarm, Shop $eShop): string {

@@ -932,7 +932,6 @@ div.util-action-subtitle:not(:last-child) {
 .util-block,
 .util-block-flat,
 .util-block-help,
-.util-block-info,
 .util-card {
 	border-radius: var(--radius);
 	margin-bottom: 1rem;
@@ -974,8 +973,7 @@ table.util-block tbody:last-child tr:last-child td:last-child {
 	border-radius: var(--radius);
 }
 
-.util-block-help,
-.util-block-info {
+.util-block-help {
 	padding: 1rem;
 	background-color: var(--info);
 	line-height: 1.5;
@@ -986,18 +984,10 @@ table.util-block tbody:last-child tr:last-child td:last-child {
 	padding-left: 4.5rem;
 }
 
-.util-block-info {
-	display: grid;
-	grid-template-columns: auto 1fr;
-	grid-column-gap: 1rem;
+.util-block h4 {
+	font-weight: bold;
 }
 
-.util-block-info svg {
-	font-size: 3rem;
-	color: var(--secondary);
-}
-
-.util-block-info h4,
 .util-block-help h4 {
 	font-weight: bold;
 	height: 2.5rem;
@@ -1006,7 +996,6 @@ table.util-block tbody:last-child tr:last-child td:last-child {
 	align-items: center;
 }
 
-.util-block-info a,
 .util-block-help a {
 	text-decoration: underline;
 }
@@ -1017,7 +1006,6 @@ table.util-block tbody:last-child tr:last-child td:last-child {
 	font-style: italic;
 	float: left;
 	color: white;
-	background-color: var(--secondary);
 	top: 1rem;
 	left: 1rem;
 	width: 2.5rem;
@@ -1029,6 +1017,11 @@ table.util-block tbody:last-child tr:last-child td:last-child {
 	line-height: 1;
 	border-radius: 50%;
 	font-family: Serif;
+}
+
+.util-block-help:before {
+	background-color: var(--secondary);
+	content: 'i';
 }
 
 .util-block-dark {

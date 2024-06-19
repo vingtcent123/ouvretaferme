@@ -43,23 +43,39 @@ class Shop extends ShopElement {
 
 		$payments = [];
 
-		if(
-			$ePoint['paymentCard'] or
-			($ePoint['paymentCard'] === NULL and $this['paymentCard'])
-		) {
-			$payments[] = 'onlineCard';
-		}
-		if(
-			$ePoint['paymentTransfer'] or
-			($ePoint['paymentTransfer'] === NULL and $this['paymentTransfer'])
-		) {
-			$payments[] = 'transfer';
-		}
-		if(
-			$ePoint['paymentOffline'] or
-			($ePoint['paymentOffline'] === NULL and $this['paymentOffline'])
-		) {
-			$payments[] = 'offline';
+		if($ePoint->empty()) {
+
+			if($this['paymentCard']) {
+				$payments[] = 'onlineCard';
+			}
+			if($this['paymentTransfer']) {
+				$payments[] = 'transfer';
+			}
+			if($this['paymentOffline']) {
+				$payments[] = 'offline';
+			}
+
+		} else {
+
+			if(
+				$ePoint['paymentCard'] or
+				($ePoint['paymentCard'] === NULL and $this['paymentCard'])
+			) {
+				$payments[] = 'onlineCard';
+			}
+			if(
+				$ePoint['paymentTransfer'] or
+				($ePoint['paymentTransfer'] === NULL and $this['paymentTransfer'])
+			) {
+				$payments[] = 'transfer';
+			}
+			if(
+				$ePoint['paymentOffline'] or
+				($ePoint['paymentOffline'] === NULL and $this['paymentOffline'])
+			) {
+				$payments[] = 'offline';
+			}
+
 		}
 
 		return $payments;

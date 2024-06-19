@@ -128,13 +128,6 @@ class ShopUi {
 
 		$h .= $form->hidden('id', $eShop['id']);
 
-		$hasPayment = '<div class="util-block-help">';
-			$hasPayment .= '<h4>'.s("Le choix du moyen de paiement").'</h4>';
-			$hasPayment .= '<p>'.s("Vos clients doivent actuellement choisir explicitement un moyen de paiement sur votre boutique, parmi ceux que vous avez activés. Vous pouvez <link>désactiver la page de choix du moyen de paiement</link> si vous n'acceptez que le paiement en direct et que vous souhaitez simplifier l'interface pour vos clients.", ['link' => '<a data-ajax="/shop/:doUpdatePayment" post-id="'.$eShop['id'].'" post-has-payment="0" data-confirm="'.s("Souhaitez-vous réellement désactiver la page de choix du moyen de paiement sur votre boutique ?").'">']).'</p>';
-		$hasPayment .= '</div>';
-
-		$h .= $form->group(content: $hasPayment);
-
 		$h .= $form->group(content: '<h3>'.s("Paiement en direct avec le producteur").'</h3>');
 
 		$h .= $form->dynamicGroup($eShop, 'paymentOffline');
@@ -182,6 +175,13 @@ class ShopUi {
 			content: $form->submit(s("Mettre à jour le paiement"))
 		);
 
+		$hasPayment = '<div class="util-block mt-2">';
+			$hasPayment .= '<h4>'.s("Le choix du moyen de paiement").'</h4>';
+			$hasPayment .= '<p>'.s("Vos clients doivent choisir explicitement un moyen de paiement sur votre boutique, parmi ceux que vous avez activés. Vous pouvez <link>désactiver la page de choix du moyen de paiement</link> si vous n'acceptez que le paiement en direct et que vous souhaitez simplifier l'interface de commande en ligne pour vos clients.", ['link' => '<a data-ajax="/shop/:doUpdatePayment" post-id="'.$eShop['id'].'" post-has-payment="0" data-confirm="'.s("Souhaitez-vous réellement désactiver la page de choix du moyen de paiement sur votre boutique ?").'">']).'</p>';
+		$hasPayment .= '</div>';
+
+		$h .= $form->group(content: $hasPayment);
+
 		$h .= $form->close();
 
 		return $h;
@@ -189,10 +189,6 @@ class ShopUi {
 	}
 
 	protected function updateInactivePayment(Shop $eShop): string {
-
-		$form = new \util\FormUi();
-
-		$h = '';
 
 		$h = '<div class="util-block-help">';
 			$h .= '<h4>'.s("Le choix du moyen de paiement est désactivé sur votre boutique").'</h4>';
@@ -327,12 +323,12 @@ class ShopUi {
 
 			$d->values = $eFarm->hasVat() ?
 				[
-					Shop::PRIVATE => s("Prix particuliers").' <span class="util-annotation">'.s("affichés TTC sur la boutique").'</span>',
-					Shop::PRO => s("Prix professionnels").' <span class="util-annotation">'.s("affichés HT sur la boutique").'</span>',
+					Shop::PRIVATE => s("Utiliser les prix particuliers").' <span class="util-annotation">'.s("affichés TTC sur la boutique").'</span>',
+					Shop::PRO => s("Utiliser les prix professionnels").' <span class="util-annotation">'.s("affichés HT sur la boutique").'</span>',
 				] :
 				[
-					Shop::PRIVATE => s("Prix particuliers"),
-					Shop::PRO => s("Prix professionnels"),
+					Shop::PRIVATE => s("Utiliser les prix particuliers"),
+					Shop::PRO => s("Utiliser les prix professionnels"),
 				];
 
 			if($for === 'update') {

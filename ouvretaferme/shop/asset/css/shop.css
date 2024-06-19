@@ -367,6 +367,10 @@ div.shop-widget-order {
 	padding-right: 1rem;
 }
 
+.shop-list-item-content h4 {
+	font-weight: normal;
+}
+
 .shop-list-item-content dd span {
 	color: white !important;
 }

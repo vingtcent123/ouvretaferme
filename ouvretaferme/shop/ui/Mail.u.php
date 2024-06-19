@@ -6,11 +6,11 @@ class MailUi {
 	public static function getSaleUpdated(\selling\Sale $eSale, \Collection $cItem, ?string $template = NULL): array {
 
 		$eSale->expects([
-			'shopPoint' => ['type'],
+			'shopPoint',
 			'shop' => ['hasPayment', 'paymentOfflineHow', 'paymentTransferHow']
 		]);
 
-		return match($eSale['shopPoint']['type']) {
+		return match($eSale['shopPoint']->notEmpty() ? $eSale['shopPoint']['type'] : Point::PLACE) {
 			Point::HOME => self::getSaleHome('updated', $eSale, $cItem, $template),
 			Point::PLACE => self::getSalePlace('updated', $eSale, $cItem, $template)
 		};
@@ -20,11 +20,11 @@ class MailUi {
 	public static function getSaleConfirmed(\selling\Sale $eSale, \Collection $cItem, ?string $template = NULL): array {
 
 		$eSale->expects([
-			'shopPoint' => ['type'],
+			'shopPoint',
 			'shop' => ['hasPayment', 'paymentOfflineHow', 'paymentTransferHow']
 		]);
 
-		return match($eSale['shopPoint']['type']) {
+		return match($eSale['shopPoint']->notEmpty() ? $eSale['shopPoint']['type'] : Point::PLACE) {
 			Point::HOME => self::getSaleHome('confirmed', $eSale, $cItem, $template),
 			Point::PLACE => self::getSalePlace('confirmed', $eSale, $cItem, $template)
 		};

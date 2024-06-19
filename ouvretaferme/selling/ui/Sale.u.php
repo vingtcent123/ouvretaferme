@@ -217,7 +217,7 @@ class SaleUi {
 						$columns++;
 					}
 					if(in_array('point', $show)) {
-						$h .= '<th>'.s("Livraison").'</th>';
+						$h .= '<th>'.s("Mode de livraison").'</th>';
 						$columns++;
 					}
 					if(in_array('paymentMethod', $hide) === FALSE) {
@@ -1043,7 +1043,7 @@ class SaleUi {
 						}
 					$h .= '</dd>';
 
-					$h .= '<dt>'.s("Livraison").'</dt>';
+					$h .= '<dt>'.s("Mode de livraison").'</dt>';
 					$h .= '<dd>';
 						if($eSale['shopPoint']->notEmpty()) {
 							$h .= \shop\PointUi::p('type')->values[$eSale['shopPoint']['type']];

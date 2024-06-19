@@ -335,9 +335,9 @@ class BasketUi {
 
 	}
 
-	public function getSubmitBasket(Shop $eShop, Date $eDate, \user\User $eUserOnline, Point $ePointSelected): string {
+	public function getSubmitBasket(Shop $eShop, Date $eDate, \user\User $eUserOnline, bool $hasPoint, Point $ePointSelected): string {
 
-		$class = (
+		$class = $hasPoint === FALSE or (
 			$ePointSelected->notEmpty() and (
 				($ePointSelected['type'] === Point::HOME and $eUserOnline->hasAddress()) or
 				($ePointSelected['type'] === Point::PLACE)
@@ -416,6 +416,10 @@ class BasketUi {
 	}
 
 	public function getDeliveryForm(Shop $eShop, Date $eDate, \Collection $ccPoint, \user\User $eUser, Point $ePointSelected): string {
+
+		if($ccPoint->empty()) {
+			return '';
+		}
 
 		$h = '<div id="shop-basket-point">';
 			$h .= (new PointUi())->getField($eShop, $ccPoint, $ePointSelected);
@@ -511,9 +515,10 @@ class BasketUi {
 
 		\Asset::js('shop', 'basket.js');
 
-		$ePoint = $eShop['ccPoint']->find(fn($ePoint) => $ePoint['id'] === $eSale['shopPoint']['id'], depth: 2, limit: 1);
+		$ePoint = $eShop['ccPoint']->find(fn($ePoint) => $eSale['shopPoint']->notEmpty() and $ePoint['id'] === $eSale['shopPoint']['id'], depth: 2, limit: 1, default: new Point());
 
 		$payments = $eShop->getPayments($ePoint);
+
 		foreach($payments as $key => $payment) {
 
 			if(
@@ -738,8 +743,11 @@ class BasketUi {
 				$h .= '<br/>';
 			}
 
-			$h .= '<h3>'.s("Mode de livraison").'</h3>';
-			$h .= (new \selling\OrderUi())->getPointBySale($eSale);
+			if($eSale['shopPoint']->notEmpty()) {
+				$h .= '<h3>'.s("Mode de livraison").'</h3>';
+				$h .= (new \selling\OrderUi())->getPointBySale($eSale);
+			}
+
 
 			$h .= (new \selling\OrderUi())->getItemsBySale($eSale, $eSale['cItem']);
 

@@ -743,7 +743,10 @@ class DateUi {
 					}
 				$h .= '</a>';
 				$h .= '<a class="tab-item" data-tab="points" onclick="Lime.Tab.select(this)">';
-					$h .= s("Modes de livraison").'<span class="tab-item-count">'.(($eDate['ccPoint'][Point::HOME] ?? new \Collection())->count() + ($eDate['ccPoint'][Point::PLACE] ?? new \Collection())->count()).'</span>';
+					$h .= s("Modes de livraison");
+					if($eShop['hasPoint']) {
+						$h .= '<span class="tab-item-count">'.(($eDate['ccPoint'][Point::HOME] ?? new \Collection())->count() + ($eDate['ccPoint'][Point::PLACE] ?? new \Collection())->count()).'</span>';
+					}
 				$h .= '</a>';
 			$h .= '</div>';
 
@@ -792,7 +795,11 @@ class DateUi {
 			$h .= '</div>';
 
 			$h .= '<div class="tab-panel" data-tab="points">';
-				$h .= (new PointUi())->getByDate($eShop, $eDate, $eDate['ccPoint']);
+				if($eShop['hasPoint']) {
+					$h .= (new PointUi())->getByDate($eShop, $eDate, $eDate['ccPoint']);
+				} else {
+					$h .= (new ShopManageUi())->updateInactivePoint($eShop);
+				}
 			$h .= '</div>';
 
 		$h .= '</div>';

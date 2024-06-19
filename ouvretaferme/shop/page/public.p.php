@@ -170,6 +170,10 @@
 			throw new RedirectAction(\shop\ShopUi::dateUrl($data->eShop, $data->eDate, 'confirmation'));
 		}
 
+		$data->hasPoint = (
+			$data->eShop['hasPoint'] and
+			$data->eDate['ccPoint']->notEmpty()
+		);
 		$data->ePointSelected = \shop\PointLib::getSelected($data->eShop, $data->eDate['ccPoint'], $data->eCustomer, $data->eSaleExisting);
 
 		throw new ViewAction($data);
@@ -220,7 +224,7 @@
 			throw new RedirectAction(\shop\ShopUi::dateUrl($data->eShop, $data->eDate, 'confirmation'));
 		}
 
-		$data->eSaleExisting['shopPoint'] = $data->eShop['ccPoint']->find(fn($ePoint) => $ePoint['id'] === $data->eSaleExisting['shopPoint']['id'], depth: 2, limit: 1);
+		$data->eSaleExisting['shopPoint'] = $data->eShop['ccPoint']->find(fn($ePoint) => $ePoint['id'] === $data->eSaleExisting['shopPoint']['id'], depth: 2, limit: 1, default: new \shop\Point());
 
 		$payment = POST('payment');
 
@@ -292,6 +296,7 @@
 			$fw->validate();
 
 			if(
+				$eSale['shopPoint']->notEmpty() and
 				$eSale['shopPoint']['type'] === \shop\Point::HOME and
 				$data->eUserOnline->hasAddress() === FALSE
 			) {
@@ -337,6 +342,7 @@
 		$fw->validate();
 
 		if(
+			$data->eSaleExisting['shopPoint']->notEmpty() and
 			$data->eSaleExisting['shopPoint']['type'] === \shop\Point::HOME and
 			$data->eUserOnline->hasAddress() === FALSE
 		) {

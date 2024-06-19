@@ -50,6 +50,8 @@ class AlertUi {
 			'Shop::closed' => s("Votre boutique a bien été fermée !"),
 			'Shop::paymentOn' => s("La page de choix des moyens de paiement a bien été activée pour vos clients !"),
 			'Shop::paymentOff' => s("La page de choix des moyens de paiement a bien été désactivée pour vos clients !"),
+			'Shop::pointOn' => s("Le choix du mode de livraison a bien été activé pour vos clients !"),
+			'Shop::pointOff' => s("Le choix du mode de livraison a bien été désactivé pour vos clients !"),
 			'Shop::created' => s("Votre boutique a bien été créée. Vous pouvez maintenant paramétrer votre première vente !"),
 			'Shop::updated' => s("Votre boutique a bien été mise à jour."),
 			'Shop::collected' => s("La collecte des fonds a bien été lancée."),

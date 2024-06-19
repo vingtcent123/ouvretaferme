@@ -52,7 +52,7 @@ class PointLib extends PointCrud {
 		$cPointHome = ($ccPoint[Point::HOME] ?? new \Collection());
 
 		if($eSale->notEmpty()) {
-			return $ccPoint->find(fn($ePoint) => $ePoint['id'] === $eSale['shopPoint']['id'], depth: 2, limit: 1, default: new Point());
+			return $ccPoint->find(fn($ePoint) => $eSale['shopPoint']->notEmpty() and $ePoint['id'] === $eSale['shopPoint']['id'], depth: 2, limit: 1, default: new Point());
 		} else {
 
 			// On tente de sélectionner le point choisi lors de la précédente commande sur la même boutique

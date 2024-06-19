@@ -117,7 +117,10 @@ class SaleLib {
 			'deliveredAt' => $eSale['shopDate']['deliveryDate'],
 		]);
 
-		if($eSale['shopPoint']['type'] === Point::HOME) {
+		if(
+			$eSale['shopPoint']->notEmpty() and
+			$eSale['shopPoint']['type'] === Point::HOME
+		) {
 			$eSale->copyAddressFromUser($eUser);
 		}
 
@@ -232,7 +235,10 @@ class SaleLib {
 		$eSale['oldStatus'] = $eSale['preparationStatus'];
 		$eSale['preparationStatus'] = \selling\Sale::BASKET;
 
-		if($eSale['shopPoint']['type'] === Point::HOME) {
+		if(
+			$eSale['shopPoint']->notEmpty() and
+			$eSale['shopPoint']['type'] === Point::HOME
+		) {
 			$eSale->copyAddressFromUser($eUser);
 		}
 

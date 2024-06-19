@@ -213,7 +213,7 @@ class CustomizeUi {
 
 	}
 
-	public static function getShopVariables(string $type, \selling\Sale $eSale, \Collection $cItem): array {
+	public static function  getShopVariables(string $type, \selling\Sale $eSale, \Collection $cItem): array {
 
 		switch($type) {
 
@@ -268,26 +268,32 @@ class CustomizeUi {
 
 				$products = rtrim($products);
 
-				$address = '<div style="padding-left: 1rem; border-left: 3px solid #888888">';
+				if($ePoint->notEmpty()) {
 
-				switch($ePoint['type']) {
+					$address = '<div style="padding-left: 1rem; border-left: 3px solid #888888">';
 
-					case \shop\Point::HOME :
-						$address .= encode($eSale->getDeliveryAddress());
-						break;
+					switch($ePoint['type']) {
 
-					case \shop\Point::PLACE :
-						$address .= encode($ePoint['name'])."\n";
-						if($ePoint['description']) {
-							$address .= encode($ePoint['description'])."\n\n";
-						}
-						$address .= encode($ePoint['address'])."\n";
-						$address .= encode($ePoint['place']);
-						break;
+						case \shop\Point::HOME :
+							$address .= encode($eSale->getDeliveryAddress());
+							break;
 
-				};
+						case \shop\Point::PLACE :
+							$address .= encode($ePoint['name'])."\n";
+							if($ePoint['description']) {
+								$address .= encode($ePoint['description'])."\n\n";
+							}
+							$address .= encode($ePoint['address'])."\n";
+							$address .= encode($ePoint['place']);
+							break;
 
-				$address .= '</div>';
+					};
+
+					$address .= '</div>';
+
+				} else {
+					$address = '';
+				}
 
 				if($eSale['hasVat'] and $eSale['type'] === \selling\Sale::PRO) {
 					$amount = \util\TextUi::money($eSale['priceExcludingVat']).' '.\selling\SaleUi::getTaxes($eSale['taxes']);

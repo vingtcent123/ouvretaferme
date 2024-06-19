@@ -725,9 +725,20 @@ class Sale extends SaleElement {
 
 			},
 
-			'shopPoint.check' => function(\shop\Point $ePoint): bool {
+			'shopPoint.check' => function(\shop\Point &$ePoint): bool {
 
-				$this->expects(['shopDate']);
+				$this->expects([
+					'shop' => ['hasPoint'],
+					'shopDate'
+				]);
+
+				if(
+					$this['shop']['hasPoint'] === FALSE or
+					$this['shopDate']['ccPoint']->empty()
+				) {
+					$ePoint = new \shop\Point();
+					return TRUE;
+				}
 
 				$eDate = $this['shopDate'];
 

@@ -117,8 +117,10 @@ new AdaptativeView('/shop/public/{fqn}/{date}/panier', function($data, ShopTempl
 	}
 
 	echo '<div id="shop-basket-delivery" class="'.($data->eUserOnline['phone'] === NULL ? 'hide' : '').' mb-2">';
-		echo $uiBasket->getDeliveryForm($data->eShop, $data->eDate, $data->eDate['ccPoint'], $data->eUserOnline, $data->ePointSelected);
-		echo $uiBasket->getSubmitBasket($data->eShop, $data->eDate, $data->eUserOnline, $data->ePointSelected);
+		if($data->hasPoint) {
+			echo $uiBasket->getDeliveryForm($data->eShop, $data->eDate, $data->eDate['ccPoint'], $data->eUserOnline, $data->ePointSelected);
+		}
+		echo $uiBasket->getSubmitBasket($data->eShop, $data->eDate, $data->eUserOnline, $data->hasPoint, $data->ePointSelected);
 	echo '</div>';
 
 
