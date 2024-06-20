@@ -623,7 +623,7 @@ class DateUi {
 
 							$h .= '</td>';
 
-							$h .= '<td class="text-end highlight">';
+							$h .= '<td class="text-end highlight" style="white-space: nowrap">';
 								if($eDate['sales']['countValid'] > 0) {
 
 									if($eFarm->hasVat()) {
