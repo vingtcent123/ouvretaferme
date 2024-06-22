@@ -379,6 +379,7 @@ class ProductUi {
 				$d->field = function(\util\FormUi $form, Product $e) use($d) {
 
 					$e->expects([
+						'packaging',
 						'date' => ['type']
 					]);
 
@@ -400,7 +401,7 @@ class ProductUi {
 
 						if(
 							$e['date']['type'] === Date::PRIVATE or
-							$e['product']['proPackaging'] === NULL
+							$e['packaging'] === NULL
 						) {
 							$unit = \main\UnitUi::getNeutral($e['product']['unit'], TRUE);
 						} else {

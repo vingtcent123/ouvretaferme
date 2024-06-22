@@ -415,10 +415,12 @@ class DateUi {
 
 						case Date::PRIVATE :
 							$price = $eProduct['privatePrice'] ?? $eProduct->calcPrivateMagicPrice($eFarm->hasVat());
+							$packaging = NULL;
 							break;
 
 						case Date::PRO :
 							$price = $eProduct['proPrice'] ?? $eProduct->calcProMagicPrice($eFarm->hasVat());
+							$packaging = $eProduct['proPackaging'];
 							break;
 
 					}
@@ -427,6 +429,7 @@ class DateUi {
 						'date' => $eDate,
 						'product' => $eProduct,
 						'price' => $price,
+						'packaging' => $packaging,
 						'stock' => NULL,
 					]);
 

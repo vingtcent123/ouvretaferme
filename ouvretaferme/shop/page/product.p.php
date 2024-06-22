@@ -37,5 +37,9 @@
 		throw new ReloadAction('shop', 'Product::deleted');
 	})
 	->doUpdateProperties('doUpdateStatus', ['status'], fn($data) => throw new ViewAction($data))
-	->quick(['stock', 'price']);
+	->quick(['stock', 'price'], [
+		'price' => function($data) {
+			$data->e['date']['farm']['selling'] = \selling\ConfigurationLib::getByFarm($data->e['date']['farm']);
+		}
+	]);
 ?>

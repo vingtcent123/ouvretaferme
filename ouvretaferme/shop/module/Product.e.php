@@ -7,13 +7,13 @@ class Product extends ProductElement {
 
 		return parent::getSelection() + [
 			'product' => \selling\Product::getSelection(),
-			'date' => ['type']
+			'date' => ['type', 'farm']
 		];
 
 	}
 	public function canWrite(): bool {
 
-		return DateLib::getShopById($this['date']['id'])->canWrite();
+		return $this['date']->canWrite();
 
 	}
 
