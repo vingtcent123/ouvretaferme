@@ -116,10 +116,10 @@ class BasketManage {
 
 		if(basket.sale !== null) {
 			ref('basket-update', node => node.removeHide());
-			qs('#shop-basket-submit input[name="terms"]').checked = true;
+			qs('#shop-basket-submit input[name="terms"]', node => node.checked = true);
 		} else {
 			ref('basket-create', node => node.removeHide());
-			qs('#shop-basket-submit input[name="terms"]').checked = false;
+			qs('#shop-basket-submit input[name="terms"]', node => node.checked = false);
 		}
 
 	}

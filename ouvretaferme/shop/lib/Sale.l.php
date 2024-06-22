@@ -282,6 +282,9 @@ class SaleLib {
 			\selling\ItemLib::delete($eItem);
 		}
 
+		// Nouveaux items pour les mails de confirmation
+		$eSale['cItem'] = $cItem;
+
 		\selling\ItemLib::createCollection($cItem);
 
 		\selling\SaleLib::update($eSale, ['preparationStatus', 'shopPoint', 'shopUpdated', 'shipping']);

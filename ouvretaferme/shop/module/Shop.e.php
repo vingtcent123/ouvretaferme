@@ -39,6 +39,22 @@ class Shop extends ShopElement {
 
 	}
 
+	public function countPayments(): int {
+
+		if($this['hasPayment']) {
+
+			return (
+				(int)$this['paymentCard'] +
+				(int)$this['paymentTransfer'] +
+				(int)$this['paymentOffline']
+			);
+
+		} else {
+			return 0;
+		}
+
+	}
+
 	public function getPayments(Point $ePoint): array {
 
 		$payments = [];

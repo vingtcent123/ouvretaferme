@@ -225,7 +225,7 @@ class ShopManageUi {
 
 		$h = '<div class="util-action">';
 
-			$h .= '<h2>'.s("Prochaines ventes").'</h2>';
+			$h .= '<h2>'.s("Dernières ventes").'</h2>';
 
 			$h .= '<div>';
 				if($eShop->canWrite()) {

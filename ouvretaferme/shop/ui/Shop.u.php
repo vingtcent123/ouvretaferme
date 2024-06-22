@@ -47,12 +47,18 @@ class ShopUi {
 
 	public function update(Shop $eShop, \farm\Farm $eFarm, \Collection $cCustomize, \selling\Sale $eSaleExample): string {
 
+		if($eShop['hasPoint']) {
+			$points = $eShop['ccPoint']->reduce(fn($c, $n) => $n + $c->find(fn($e) => $e['status'] === Point::ACTIVE)->count(), 0);
+		} else {
+			$points = 0;
+		}
+
 		$h = '<div class="tabs-h" id="selling-configure" onrender="'.encode('Lime.Tab.restore(this, "settings", '.(get_exists('tab') ? '"'.GET('tab', ['settings', 'payment', 'points'], 'settings').'"' : 'null').')').'">';
 
 			$h .= '<div class="tabs-item">';
 				$h .= '<a class="tab-item selected" data-tab="settings" onclick="Lime.Tab.select(this)">'.s("Général").'</a>';
-				$h .= '<a class="tab-item" data-tab="payment" onclick="Lime.Tab.select(this)">'.s("Moyens de paiement").'</a>';
-				$h .= '<a class="tab-item" data-tab="points" onclick="Lime.Tab.select(this)">'.s("Modes de livraison").'</a>';
+				$h .= '<a class="tab-item" data-tab="payment" onclick="Lime.Tab.select(this)">'.s("Moyens de paiement").' <span class="tab-item-count">'.$eShop->countPayments().'</span></a>';
+				$h .= '<a class="tab-item" data-tab="points" onclick="Lime.Tab.select(this)">'.s("Modes de livraison").' <span class="tab-item-count">'.$points.'</span></a>';
 				$h .= '<a class="tab-item" data-tab="terms" onclick="Lime.Tab.select(this)">'.s("Conditions de vente").'</a>';
 				$h .= '<a class="tab-item" data-tab="mail" onclick="Lime.Tab.select(this)">'.s("E-mails").'</a>';
 			$h .= '</div>';
@@ -559,11 +565,13 @@ class ShopUi {
 
 	public function getHeader(Shop $eShop, \Collection $cDate, Date $eDateSelected): string {
 
-		$h = '<div class="shop-header">';
+		$h = '<div class="shop-header shop-header-'.($eShop['logo'] ? 'with' : 'without').'-logo">';
 
-			$h .= '<div class="shop-header-image">';
-				$h .= self::getLogo($eShop, '10rem');
-			$h .= '</div>';
+			if($eShop['logo']) {
+				$h .= '<div class="shop-header-image">';
+					$h .= self::getLogo($eShop, '10rem');
+				$h .= '</div>';
+			}
 
 			$h .= '<div class="shop-header-content">';
 
@@ -582,32 +590,31 @@ class ShopUi {
 					$h .= '</div>';
 				}
 
-			$h .= '</div>';
+				if($cDate->notEmpty()) {
 
+					if($cDate->count() > 1) {
+						$h .= '<div class="shop-header-flow">';
+							$h .= (new \shop\DateUi())->getDeliveryPeriods($eShop, $cDate, $eDateSelected);
+						$h .= '</div>';
+					}
 
-			if($cDate->notEmpty()) {
+				} else {
 
-				if($cDate->count() > 1) {
 					$h .= '<div class="shop-header-flow">';
-						$h .= (new \shop\DateUi())->getDeliveryPeriods($eShop, $cDate, $eDateSelected);
+
+						if($eShop->canWrite()) {
+							$h .= '<div class="util-block-help">';
+								$h .= '<p>'.s("Pour activer votre boutique, vous devez créer une première date avec les produits que vous souhaitez vendre !").'</p>';
+								$h .= '<a href="'.\Lime::getUrl().''.ShopUi::adminUrl($eShop['farm'], $eShop).'" class="btn btn-secondary">'.s("Configurer ma boutique").'</a>';
+							$h .= '</div>';
+						} else {
+							$h .= '<div class="util-info">'.s("Cette boutique n'est pas encore ouverte, revenez un peu plus tard !").'</div>';
+						}
 					$h .= '</div>';
+
 				}
 
-			} else {
-
-				$h .= '<div class="shop-header-flow">';
-
-					if($eShop->canWrite()) {
-						$h .= '<div class="util-block-help">';
-							$h .= '<p>'.s("Pour activer votre boutique, vous devez créer une première date avec les produits que vous souhaitez vendre !").'</p>';
-							$h .= '<a href="'.\Lime::getUrl().''.ShopUi::adminUrl($eShop['farm'], $eShop).'" class="btn btn-secondary">'.s("Configurer ma boutique").'</a>';
-						$h .= '</div>';
-					} else {
-						$h .= '<div class="util-info">'.s("Cette boutique n'est pas encore ouverte, revenez un peu plus tard !").'</div>';
-					}
-				$h .= '</div>';
-
-			}
+			$h .= '</div>';
 
 
 		$h .= '</div>';

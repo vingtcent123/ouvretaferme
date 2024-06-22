@@ -590,8 +590,8 @@ class DateUi {
 				$h .= '<thead>';
 
 					$h .= '<tr>';
-						$h .= '<th class="text-center">'.s("Date de vente").'</th>';
-						$h .= '<th>'.s("Ouverture des ventes").'</th>';
+						$h .= '<th></th>';
+						$h .= '<th></th>';
 						$h .= '<th class="text-end highlight">'.s("Produits").'</th>';
 						$h .= '<th class="text-end" colspan="2">'.s("Commandes").'</th>';
 						$h .= '<th class="text-end highlight">'.s("Montant").'</th>';
