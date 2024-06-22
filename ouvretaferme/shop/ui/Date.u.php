@@ -276,7 +276,12 @@ class DateUi {
 			$h .= $form->hidden('farm', $e['farm']);
 			$h .= $form->hidden('copied', $eDateBase->notEmpty());
 
-			$h .= $form->dynamicGroups($e, ['status', 'points*']);
+			$h .= $form->dynamicGroup($e, 'status');
+
+			if($e['shop']['hasPoint']) {
+				$h .= $form->dynamicGroup($e, 'points*');
+			}
+
 			$h .= $this->getOrderField('create', $form, $e);
 			$h .= $form->dynamicGroup($e, 'deliveryDate*');
 
@@ -337,7 +342,10 @@ class DateUi {
 
 		$h .= $form->hidden('id', $eDate['id']);
 
-		if($eDate->isExpired() === FALSE) {
+		if(
+			$eDate['shop']['hasPoint'] and
+			$eDate->isExpired() === FALSE
+		) {
 			$h .= $form->dynamicGroup($eDate, 'points');
 		}
 
@@ -801,7 +809,7 @@ class DateUi {
 				if($eShop['hasPoint']) {
 					$h .= (new PointUi())->getByDate($eShop, $eDate, $eDate['ccPoint']);
 				} else {
-					$h .= (new ShopManageUi())->updateInactivePoint($eShop);
+					$h .= (new ShopUi())->updateInactivePoint($eShop);
 				}
 			$h .= '</div>';
 

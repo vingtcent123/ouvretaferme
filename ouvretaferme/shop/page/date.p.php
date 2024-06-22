@@ -32,15 +32,7 @@
 
 	})
 	->doCreate(fn($data) => throw new RedirectAction(\shop\ShopUi::adminDateUrl($data->e['farm'], $data->e['shop'], $data->e).'?success=shop:'.(GET('copied', 'bool') ? 'Date::created' : 'Date::copied')))
-	->update(function($data) {
-
-		$data->e['ccPoint'] = \shop\PointLib::getByShop($data->e['shop']);
-
-		throw new \ViewAction($data);
-
-	})
 	->doUpdateProperties('doUpdateStatus', ['status'], fn($data) => throw new ViewAction($data))
-	->doUpdate(fn() => throw new ReloadAction('shop', 'Date::updated'))
 	->read('/ferme/{farm}/boutique/{shop}/date/{id}', function($data) {
 
 		$data->eShop = \shop\ShopLib::getById(GET('shop'))->validate('canRead');
@@ -127,6 +119,21 @@
 
 	})
 	->doDelete(fn($data) => throw new RedirectAction(\shop\ShopUi::adminUrl($data->e['farm'], $data->e['shop']).'&success=shop:Date::deleted'));
+
+(new \shop\DatePage())
+	->applyElement(function($data, \shop\Date $eDate) {
+
+		$eDate['shop'] = \shop\ShopLib::getById($eDate['shop']);
+
+	})
+	->update(function($data) {
+
+		$data->e['ccPoint'] = \shop\PointLib::getByShop($data->e['shop']);
+
+		throw new \ViewAction($data);
+
+	})
+	->doUpdate(fn() => throw new ReloadAction('shop', 'Date::updated'));
 
 (new Page())
 	->get('getSales', function($data) {

@@ -543,7 +543,7 @@ new AdaptativeView('/ferme/{id}/boutiques', function($data, FarmTemplate $t) {
 			$data->eShop['ccPoint']->notEmpty() and
 			$data->eShop['cDate']->notEmpty()
 		) {
-			echo $uiShopManage->getTabsContent($data->eFarm, $data->eShop);
+			echo $uiShopManage->getDateList($data->eFarm, $data->eShop);
 		} else {
 			echo $uiShopManage->getInlineContent($data->eFarm, $data->eShop);
 		}

@@ -47,11 +47,12 @@ class ShopUi {
 
 	public function update(Shop $eShop, \farm\Farm $eFarm, \Collection $cCustomize, \selling\Sale $eSaleExample): string {
 
-		$h = '<div class="tabs-h" id="selling-configure" onrender="'.encode('Lime.Tab.restore(this, "settings")').'">';
+		$h = '<div class="tabs-h" id="selling-configure" onrender="'.encode('Lime.Tab.restore(this, "settings", '.(get_exists('tab') ? '"'.GET('tab', ['settings', 'payment', 'points'], 'settings').'"' : 'null').')').'">';
 
 			$h .= '<div class="tabs-item">';
 				$h .= '<a class="tab-item selected" data-tab="settings" onclick="Lime.Tab.select(this)">'.s("Général").'</a>';
-				$h .= '<a class="tab-item" data-tab="payment" onclick="Lime.Tab.select(this)">'.s("Paiement").'</a>';
+				$h .= '<a class="tab-item" data-tab="payment" onclick="Lime.Tab.select(this)">'.s("Moyens de paiement").'</a>';
+				$h .= '<a class="tab-item" data-tab="points" onclick="Lime.Tab.select(this)">'.s("Modes de livraison").'</a>';
 				$h .= '<a class="tab-item" data-tab="terms" onclick="Lime.Tab.select(this)">'.s("Conditions de vente").'</a>';
 				$h .= '<a class="tab-item" data-tab="mail" onclick="Lime.Tab.select(this)">'.s("E-mails").'</a>';
 			$h .= '</div>';
@@ -62,6 +63,10 @@ class ShopUi {
 
 			$h .= '<div class="tab-panel" data-tab="payment">';
 				$h .= $this->updatePayment($eShop);
+			$h .= '</div>';
+
+			$h .= '<div class="tab-panel" data-tab="points">';
+				$h .= $this->updatePoint($eShop);
 			$h .= '</div>';
 
 			$h .= '<div class="tab-panel" data-tab="terms">';
@@ -103,6 +108,39 @@ class ShopUi {
 		);
 
 		$h .= $form->close();
+
+		return $h;
+
+	}
+
+	protected function updatePoint(Shop $eShop): string {
+
+		$h = '';
+
+		if($eShop['hasPoint']) {
+
+			$h .= (new PointUi())->getList($eShop, $eShop['ccPoint']);
+
+			$h .= '<div class="util-block">';
+				$h .= '<h4>'.s("Désactiver le choix du mode de livraison").'</h4>';
+				$h .= '<p>'.s("Vos clients doivent choisir explicitement un mode de livraison sur votre boutique, parmi ceux que vous avez activés. Vous pouvez <link>désactiver le choix du moyen de livraison</link> si vous communiquez l'information directement à vos clients et que vous souhaitez leur simplifier l'interface de commande en ligne.", ['link' => '<a data-ajax="/shop/:doUpdatePoint" post-id="'.$eShop['id'].'" post-has-point="0" data-confirm="'.s("Souhaitez-vous réellement désactiver le choix du mode de livraison sur votre boutique ?").'">']).'</p>';
+			$h .= '</div>';
+
+		} else {
+			$h .= $this->updateInactivePoint($eShop);
+		}
+
+		return $h;
+
+	}
+
+	public function updateInactivePoint(Shop $eShop): string {
+
+		$h = '<div class="util-block-help">';
+			$h .= '<h4>'.s("Le choix du mode de livraison est désactivé sur votre boutique").'</h4>';
+			$h .= '<p>'.s("Vos clients n'ont actuellement pas besoin de choisir de mode de livraison lorsqu'ils commandent sur la boutique, c'est à vous de les informer de la façon dont ils peuvent retirer leurs commandes.").'</p>';
+			$h .= '<a data-ajax="/shop/:doUpdatePoint" post-id="'.$eShop['id'].'" post-has-point="1" data-confirm="'.s("Souhaitez-vous réellement réactiver le choix du mode de livraison sur votre boutique ?").'" class="btn btn-secondary">'.s("Réactiver le choix du mode de livraison").'</a>';
+		$h .= '</div>';
 
 		return $h;
 
@@ -176,7 +214,7 @@ class ShopUi {
 		);
 
 		$hasPayment = '<div class="util-block mt-2">';
-			$hasPayment .= '<h4>'.s("Le choix du moyen de paiement").'</h4>';
+			$hasPayment .= '<h4>'.s("Désactiver le choix du moyen de paiement").'</h4>';
 			$hasPayment .= '<p>'.s("Vos clients doivent choisir explicitement un moyen de paiement sur votre boutique, parmi ceux que vous avez activés. Vous pouvez <link>désactiver la page de choix du moyen de paiement</link> si vous n'acceptez que le paiement en direct et que vous souhaitez simplifier l'interface de commande en ligne pour vos clients.", ['link' => '<a data-ajax="/shop/:doUpdatePayment" post-id="'.$eShop['id'].'" post-has-payment="0" data-confirm="'.s("Souhaitez-vous réellement désactiver la page de choix du moyen de paiement sur votre boutique ?").'">']).'</p>';
 		$hasPayment .= '</div>';
 
@@ -298,7 +336,7 @@ class ShopUi {
 		$h .= '<div style="'.($eShop['hasPoint'] ? 'opacity: 0.33' : '').'">';
 
 			$h .= '<div class="util-action">';
-				$h .= '<h3>'.s("Confirmation de commande livrée lorsque le choix du mode de retrait est désactivé").'</h3>';
+				$h .= '<h3>'.s("Confirmation de commande livrée lorsque le choix du mode de livraison est désactivé").'</h3>';
 				$h .= '<a href="/mail/customize:create?farm='.$eShop['farm']['id'].'&type='.\mail\Customize::SHOP_CONFIRMED_NONE.'&shop='.$eShop['id'].'" class="btn btn-outline-primary">'.s("Personnaliser l'e-mail").'</a>';
 			$h .= '</div>';
 

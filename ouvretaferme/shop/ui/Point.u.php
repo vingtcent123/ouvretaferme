@@ -21,31 +21,32 @@ class PointUi {
 
 	}
 
-	public function createFirst(): string {
+	public function createFirst(Shop $eShop): string {
 
 		$h = '<div class="util-block-help">';
 			$h .= '<h4>'.s("Bienvenue sur la nouvelle boutique de votre ferme !").'</h4>';
-			$h .= '<p>'.s("Vous avez configuré avec succès votre boutique. Il s'agit maintenant pour vous de définir la façon dont vous souhaitez livrer vos clients. Vous pouvez définir un ou plusieurs points de retrait collectifs et des lieux pour lesquels vous voulez autoriser la livraison à domicile.").'</p>';
+			$h .= '<p>'.s("Vous avez créé avec succès votre boutique.").'</p>';
+			$h .= '<p>'.s("Avant de créer votre première vente, choisissez la façon dont vous souhaitez livrer vos clients :").'</p>';
+			$h .= '<ul>';
+				$h .= '<li>'.s("En point de retrait").'</li>';
+				$h .= '<li>'.s("À domicile").'</li>';
+				$h .= '<li>'.s("Pas de mode de livraison").'</li>';
+			$h .= '</ul>';
+			$h .= '<a href="/shop/configuration:update?id='.$eShop['id'].'&tab=points" class="btn btn-secondary">'.s("Configurer les modes de livraison").'</a>';
 		$h .= '</div>';
 
 		return $h;
 
 	}
 
-	public function getList(Shop $eShop, \Collection $cc, bool $inTabs): string {
-
-		$header = $inTabs ? 'h2' : 'h3';
+	public function getList(Shop $eShop, \Collection $cc): string {
 
 		$h = '';
-
-		if($inTabs === FALSE) {
-			$h .= '<h2>'.s("Modes de livraison").'</h2>';
-		}
 
 		$h .= '<div class="point-wrapper">';
 
 			$h .= '<div>';
-				$h .= '<'.$header.'>'.s("Livraison en point de retrait").'</'.$header.'>';
+				$h .= '<h3>'.s("Livraison en point de retrait").'</h3>';
 				$h .= '<div class="util-block">';
 
 					if($cc->offsetExists(Point::PLACE)) {
@@ -69,7 +70,7 @@ class PointUi {
 				$h .= '</div>';
 			$h .= '</div>';
 			$h .= '<div>';
-				$h .= '<'.$header.'>'.s("Livraison à domicile").'</'.$header.'>';
+				$h .= '<h3>'.s("Livraison à domicile").'</h3>';
 				$h .= '<div class="util-block">';
 
 					if($cc->offsetExists(Point::HOME)) {

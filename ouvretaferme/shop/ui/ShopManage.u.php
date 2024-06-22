@@ -167,75 +167,30 @@ class ShopManageUi {
 
 	}
 
-	public function getTabsContent(\farm\Farm $eFarm, Shop $eShop): string {
-
-		$h = '<div class="tabs-h" id="shop-tabs" onrender="'.encode('Lime.Tab.restore(this, "dates"'.(get_exists('tab') ? ', "'.GET('tab', ['dates', 'points'], 'dates').'"' : '').')').'">';
-
-			$h .= '<div class="tabs-item">';
-				$h .= '<a class="tab-item selected" data-tab="dates" onclick="Lime.Tab.select(this)">'.s("Dernières ventes").'</a>';
-				$h .= '<a class="tab-item" data-tab="points" onclick="Lime.Tab.select(this)">'.s("Tous les modes de livraison").'</a>';
-			$h .= '</div>';
-
-			$h .= '<div class="tab-panel selected" data-tab="dates">';
-				$h .= self::getDateList($eFarm, $eShop, TRUE);
-			$h .= '</div>';
-
-			$h .= '<div class="tab-panel selected" data-tab="points">';
-
-				if($eShop['hasPoint']) {
-
-					$h .= (new PointUi())->getList($eShop, $eShop['ccPoint'], TRUE);
-
-					$h .= '<div class="util-block">';
-						$h .= '<h4>'.s("Le choix du mode de livraison").'</h4>';
-						$h .= '<p>'.s("Vos clients doivent choisir explicitement un mode de livraison sur votre boutique, parmi ceux que vous avez activés. Vous pouvez <link>désactiver le choix du moyen de livraison</link> si vous communiquez l'information directement à vos clients et que vous souhaitez leur simplifier l'interface de commande en ligne.", ['link' => '<a data-ajax="/shop/:doUpdatePoint" post-id="'.$eShop['id'].'" post-has-point="0" data-confirm="'.s("Souhaitez-vous réellement désactiver le choix du mode de livraison sur votre boutique ?").'">']).'</p>';
-					$h .= '</div>';
-
-				} else {
-					$h .= $this->updateInactivePoint($eShop);
-				}
-				
-			$h .= '</div>';
-
-		$h .= '</div>';
-
-		return $h;
-	}
-
-	public function updateInactivePoint(Shop $eShop): string {
-
-		$h = '<div class="util-block-help">';
-			$h .= '<h4>'.s("Le choix du mode de livraison est désactivé sur votre boutique").'</h4>';
-			$h .= '<p>'.s("Vos clients n'ont actuellement pas besoin de choisir de mode de livraison lorsqu'ils commandent sur la boutique, c'est à vous de les informer de la façon dont ils peuvent retirer leurs commandes.").'</p>';
-			$h .= '<a data-ajax="/shop/:doUpdatePoint" post-id="'.$eShop['id'].'" post-has-point="1" data-confirm="'.s("Souhaitez-vous réellement réactiver le choix du mode de livraison sur votre boutique ?").'" class="btn btn-secondary">'.s("Réactiver le choix du mode de livraison").'</a>';
-		$h .= '</div>';
-
-		return $h;
-
-	}
-
 	public function getInlineContent(\farm\Farm $eFarm, Shop $eShop): string {
 
 		$h = '';
 
 		if(
+			$eShop['hasPoint'] and
 			$eShop['ccPoint']->empty() and
 			$eShop['cDate']->empty() and
 			$eShop->canWrite()
 		) {
-			$h .= (new PointUi())->createFirst();
+			$h .= (new PointUi())->createFirst($eShop);
 		}
-
-		$h .= (new PointUi())->getList($eShop, $eShop['ccPoint'], FALSE);
 
 		if($eShop['cDate']->empty()) {
 
-			if($eShop['ccPoint']->notEmpty()) {
+			if(
+				$eShop['hasPoint'] === FALSE or
+				$eShop['ccPoint']->notEmpty()
+			) {
 				$h .= $this->createFirstDate($eFarm, $eShop);
 			}
 
 		} else {
-			$h .= self::getDateList($eFarm, $eShop, FALSE);
+			$h .= self::getDateList($eFarm, $eShop);
 		}
 
 		return $h;
@@ -249,7 +204,7 @@ class ShopManageUi {
 
 		$h = '<div class="util-block-help mb-2">';
 			$h .= '<p>'.s("La configuration initiale de votre boutique est terminée. Si vous le souhaitez, vous pouvez continuer à personnaliser l'expérience de vos clients en activant par exemple le paiement en ligne ou en personnalisant les e-mails envoyés automatiquement à vos clients lors de leurs commandes.").'</p>';
-			$h .= '<a href="/shop/:update?id='.$eShop['id'].'" class="btn btn-secondary">'.s("Continuer à personnaliser la boutique").'</a>';
+			$h .= '<a href="/shop/configuration:update?id='.$eShop['id'].'" class="btn btn-secondary">'.s("Continuer à personnaliser la boutique").'</a>';
 		$h .= '</div>';
 
 		$h .= '<h2>'.s("Vendre pour la première fois").'</h2>';
@@ -264,17 +219,13 @@ class ShopManageUi {
 		
 	}
 	
-	public function getDateList(\farm\Farm $eFarm, Shop $eShop, bool $inTabs): string {
+	public function getDateList(\farm\Farm $eFarm, Shop $eShop): string {
 
 		$cDate = $eShop['cDate'];
 
 		$h = '<div class="util-action">';
 
-			if($inTabs) {
-				$h .= '<div></div>';
-			} else {
-				$h .= '<h2>'.s("Prochaines ventes").'</h2>';
-			}
+			$h .= '<h2>'.s("Prochaines ventes").'</h2>';
 
 			$h .= '<div>';
 				if($eShop->canWrite()) {

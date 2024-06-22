@@ -3,26 +3,48 @@ namespace shop;
 
 class DateLib extends DateCrud {
 
-	public static function getPropertiesCreate(): array {
-		return [
-			'status',
-			'points',
-			'orderStartAt', 'orderEndAt',
-			'deliveryDate',
-			'products',
-		];
+	public static function getPropertiesCreate(): \Closure {
+
+		return function(Date $eDate) {
+
+			$eDate->expects([
+				'shop' => ['hasPoint']
+			]);
+
+			$properties = [
+				'status',
+				'orderStartAt', 'orderEndAt',
+				'deliveryDate',
+				'products',
+			];
+
+			if($eDate['shop']['hasPoint']) {
+				$properties[] = 'points';
+			}
+
+			return $properties;
+
+		};
+
 	}
 
 	public static function getPropertiesUpdate(): \Closure {
 
 		return function(Date $eDate) {
 
+			$eDate->expects([
+				'shop' => ['hasPoint']
+			]);
+
 			$properties = [
 				'orderStartAt', 'orderEndAt',
 				'deliveryDate',
 			];
 
-			if($eDate->isExpired() === FALSE) {
+			if(
+				$eDate['shop']['hasPoint'] and
+				$eDate->isExpired() === FALSE
+			) {
 				$properties[] = 'points';
 			}
 
