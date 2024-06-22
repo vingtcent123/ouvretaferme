@@ -79,6 +79,7 @@ class CustomizeUi {
 			Customize::SALE_ORDER_FORM => s("Personnaliser l'e-mail pour les devis"),
 			Customize::SALE_DELIVERY_NOTE => s("Personnaliser l'e-mail pour les bons de livraison"),
 			Customize::SALE_INVOICE => s("Personnaliser l'e-mail pour les factures"),
+			Customize::SHOP_CONFIRMED_NONE => s("Personnaliser l'e-mail de confirmation de commande"),
 			Customize::SHOP_CONFIRMED_PLACE => s("Personnaliser l'e-mail de confirmation de commande pour les livraisons en point de retrait"),
 			Customize::SHOP_CONFIRMED_HOME => s("Personnaliser l'e-mail de confirmation de commande pour les livraisons à domicile"),
 
@@ -113,15 +114,16 @@ class CustomizeUi {
 				'sales' => s("Ventes facturées")
 			],
 
-			Customize::SHOP_CONFIRMED_PLACE, Customize::SHOP_CONFIRMED_HOME => [
+			Customize::SHOP_CONFIRMED_NONE, Customize::SHOP_CONFIRMED_PLACE, Customize::SHOP_CONFIRMED_HOME => [
 				'number' => s("Numéro de vente"),
 				'farm' => s("Nom de votre ferme"),
 				'amount' => s("Montant de la vente"),
 				'products' => s("Liste des produits commandés"),
 				'payment' => s("Moyen de paiement utilisé"),
-				'delivery' => s("Date de livraison"),
+				'delivery' => s("Date de livraison")
+			] + (($e['type'] === Customize::SHOP_CONFIRMED_NONE) ? [] : [
 				'address' => s("Adresse de livraison")
-			],
+			]),
 
 		};
 
@@ -137,14 +139,22 @@ class CustomizeUi {
 			case Customize::SALE_INVOICE :
 				return self::getSaleVariables($type, $eFarm, $eSaleExample['invoice'], new \Collection([$eSaleExample]));
 
+			case Customize::SHOP_CONFIRMED_NONE :
 			case Customize::SHOP_CONFIRMED_HOME :
 			case Customize::SHOP_CONFIRMED_PLACE :
 
 				$eSaleExample['paymentMethod'] = $eSaleExample['shop']['hasPayment'] ? \selling\Sale::OFFLINE : NULL;
-				$eSaleExample['shopPoint'] = $eSaleExample['shopPoints'][match($type) {
-					Customize::SHOP_CONFIRMED_HOME => \shop\Point::HOME,
-					Customize::SHOP_CONFIRMED_PLACE => \shop\Point::PLACE
-				}];
+
+				if($type !== Customize::SHOP_CONFIRMED_NONE) {
+
+					$eSaleExample['shopPoint'] = $eSaleExample['shopPoints'][match($type) {
+						Customize::SHOP_CONFIRMED_HOME => \shop\Point::HOME,
+						Customize::SHOP_CONFIRMED_PLACE => \shop\Point::PLACE
+					}];
+
+				} else {
+					$eSaleExample['shopPoint'] = new \shop\Point();
+				}
 
 				$variables = self::getShopVariables($type, $eSaleExample, $eSaleExample['cItem']);
 
@@ -213,12 +223,13 @@ class CustomizeUi {
 
 	}
 
-	public static function  getShopVariables(string $type, \selling\Sale $eSale, \Collection $cItem): array {
+	public static function getShopVariables(string $type, \selling\Sale $eSale, \Collection $cItem): array {
 
 		switch($type) {
 
 			case Customize::SHOP_CONFIRMED_HOME :
 			case Customize::SHOP_CONFIRMED_PLACE :
+			case Customize::SHOP_CONFIRMED_NONE :
 
 				$ePoint = $eSale['shopPoint'];
 
@@ -268,48 +279,55 @@ class CustomizeUi {
 
 				$products = rtrim($products);
 
-				if($ePoint->notEmpty()) {
-
-					$address = '<div style="padding-left: 1rem; border-left: 3px solid #888888">';
-
-					switch($ePoint['type']) {
-
-						case \shop\Point::HOME :
-							$address .= encode($eSale->getDeliveryAddress());
-							break;
-
-						case \shop\Point::PLACE :
-							$address .= encode($ePoint['name'])."\n";
-							if($ePoint['description']) {
-								$address .= encode($ePoint['description'])."\n\n";
-							}
-							$address .= encode($ePoint['address'])."\n";
-							$address .= encode($ePoint['place']);
-							break;
-
-					};
-
-					$address .= '</div>';
-
-				} else {
-					$address = '';
-				}
-
 				if($eSale['hasVat'] and $eSale['type'] === \selling\Sale::PRO) {
 					$amount = \util\TextUi::money($eSale['priceExcludingVat']).' '.\selling\SaleUi::getTaxes($eSale['taxes']);
 				} else {
 					$amount = \util\TextUi::money($eSale['priceIncludingVat']);
 				}
 
-				return [
+				$variables = [
 					'number' => $eSale['document'],
 					'farm' => encode($eSale['farm']['name']),
 					'amount' => $amount,
 					'products' => $products,
 					'payment' => $payment,
 					'delivery' => \util\DateUi::numeric($eSale['shopDate']['deliveryDate']),
-					'address' => $address,
 				];
+
+				if($type !== Customize::SHOP_CONFIRMED_NONE) {
+
+					if($ePoint->notEmpty()) {
+
+						$address = '<div style="padding-left: 1rem; border-left: 3px solid #888888">';
+
+						switch($ePoint['type']) {
+
+							case \shop\Point::HOME :
+								$address .= encode($eSale->getDeliveryAddress());
+								break;
+
+							case \shop\Point::PLACE :
+								$address .= encode($ePoint['name'])."\n";
+								if($ePoint['description']) {
+									$address .= encode($ePoint['description'])."\n\n";
+								}
+								$address .= encode($ePoint['address'])."\n";
+								$address .= encode($ePoint['place']);
+								break;
+
+						};
+
+						$address .= '</div>';
+
+					} else {
+						$address = '';
+					}
+
+					$variables['address'] = $address;
+
+				}
+
+				return $variables;
 
 		}
 
@@ -354,6 +372,19 @@ Vous trouverez en pièce jointe notre facture d'un montant de @amount.
 @sales
 
 Cordialement,
+@farm");
+
+			case Customize::SHOP_CONFIRMED_NONE :
+				return s("Bonjour,
+
+Votre commande n°@number d'un montant de @amount pour le @delivery a bien été enregistrée.
+
+Vous avez commandé :
+@products
+
+@payment
+
+Merci et à bientôt,
 @farm");
 
 			case Customize::SHOP_CONFIRMED_PLACE :

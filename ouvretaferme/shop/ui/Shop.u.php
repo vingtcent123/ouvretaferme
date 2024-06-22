@@ -249,9 +249,9 @@ class ShopUi {
 		$h .= '<div class="util-block-help">';
 			$h .= '<h4>'.s("Personnalisation des e-mails").'</h4>';
 			$h .= '<p>';
-				$h .= s("Vous pouvez personnaliser le contenu des e-mails envoyés à vos clients lorsqu'ils commandent dans votre boutique.");
+				$h .= s("Vous pouvez personnaliser le contenu des e-mails envoyés à vos clients lorsqu'ils commandent dans votre boutique, en fonction du mode de livraison choisi.");
 				if($eShop['hasPayment']) {
-					$h .= s("Le contenu des e-mails envoyés dépend aussi du moyen de paiement sélectionné par le client, si vous avez activé différentes moyens de paiement sur votre boutique.");
+					$h .= ' '.s("Le contenu des e-mails envoyés dépend aussi du moyen de paiement sélectionné par le client, si vous avez activé différentes moyens de paiement sur votre boutique.");
 				}
 			'</p>';
 			if($eShop['hasPayment']) {
@@ -272,25 +272,42 @@ class ShopUi {
 
 		$h .= '<br/>';
 
-		$h .= '<div class="util-action">';
-			$h .= '<h3>'.s("Confirmation de commande livrée en point retrait").'</h3>';
-			$h .= '<a href="/mail/customize:create?farm='.$eShop['farm']['id'].'&type='.\mail\Customize::SHOP_CONFIRMED_PLACE.'&shop='.$eShop['id'].'" class="btn btn-outline-primary">'.s("Personnaliser l'e-mail").'</a>';
+		$h .= '<div style="'.($eShop['hasPoint'] ? '' : 'opacity: 0.33').'">';
+
+			$h .= '<div class="util-action">';
+				$h .= '<h3>'.s("Confirmation de commande livrée en point retrait").'</h3>';
+				$h .= '<a href="/mail/customize:create?farm='.$eShop['farm']['id'].'&type='.\mail\Customize::SHOP_CONFIRMED_PLACE.'&shop='.$eShop['id'].'" class="btn btn-outline-primary">'.s("Personnaliser l'e-mail").'</a>';
+			$h .= '</div>';
+
+			$eSaleExample['shopPoint'] = $eSaleExample['shopPoints'][Point::PLACE];
+
+			[$title, , $html] = (new MailUi())->getSaleConfirmed($eSaleExample, $eSaleExample['cItem'], $cCustomize[\mail\Customize::SHOP_CONFIRMED_PLACE]['template'] ?? NULL);
+			$h .= (new \mail\CustomizeUi())->getMailExample($title, $html);
+
+			$h .= '<div class="util-action">';
+				$h .= '<h3>'.s("Confirmation de commande livrée à domicile").'</h3>';
+				$h .= '<a href="/mail/customize:create?farm='.$eShop['farm']['id'].'&type='.\mail\Customize::SHOP_CONFIRMED_HOME.'&shop='.$eShop['id'].'" class="btn btn-outline-primary">'.s("Personnaliser l'e-mail").'</a>';
+			$h .= '</div>';
+
+			$eSaleExample['shopPoint'] = $eSaleExample['shopPoints'][Point::HOME];
+
+			[$title, , $html] = (new MailUi())->getSaleConfirmed($eSaleExample, $eSaleExample['cItem'], $cCustomize[\mail\Customize::SHOP_CONFIRMED_HOME]['template'] ?? NULL);
+			$h .= (new \mail\CustomizeUi())->getMailExample($title, $html);
+
 		$h .= '</div>';
+		$h .= '<div style="'.($eShop['hasPoint'] ? 'opacity: 0.33' : '').'">';
 
-		$eSaleExample['shopPoint'] = $eSaleExample['shopPoints'][Point::PLACE];
+			$h .= '<div class="util-action">';
+				$h .= '<h3>'.s("Confirmation de commande livrée lorsque le choix du mode de retrait est désactivé").'</h3>';
+				$h .= '<a href="/mail/customize:create?farm='.$eShop['farm']['id'].'&type='.\mail\Customize::SHOP_CONFIRMED_NONE.'&shop='.$eShop['id'].'" class="btn btn-outline-primary">'.s("Personnaliser l'e-mail").'</a>';
+			$h .= '</div>';
 
-		[$title, , $html] = (new MailUi())->getSaleConfirmed($eSaleExample, $eSaleExample['cItem'], $cCustomize[\mail\Customize::SHOP_CONFIRMED_PLACE]['template'] ?? NULL);
-		$h .= (new \mail\CustomizeUi())->getMailExample($title, $html);
+			$eSaleExample['shopPoint'] = new Point();
 
-		$h .= '<div class="util-action">';
-			$h .= '<h3>'.s("Confirmation de commande livrée à domicile").'</h3>';
-			$h .= '<a href="/mail/customize:create?farm='.$eShop['farm']['id'].'&type='.\mail\Customize::SHOP_CONFIRMED_HOME.'&shop='.$eShop['id'].'" class="btn btn-outline-primary">'.s("Personnaliser l'e-mail").'</a>';
+			[$title, , $html] = (new MailUi())->getSaleConfirmed($eSaleExample, $eSaleExample['cItem'], $cCustomize[\mail\Customize::SHOP_CONFIRMED_NONE]['template'] ?? NULL);
+			$h .= (new \mail\CustomizeUi())->getMailExample($title, $html);
+
 		$h .= '</div>';
-
-		$eSaleExample['shopPoint'] = $eSaleExample['shopPoints'][Point::HOME];
-
-		[$title, , $html] = (new MailUi())->getSaleConfirmed($eSaleExample, $eSaleExample['cItem'], $cCustomize[\mail\Customize::SHOP_CONFIRMED_HOME]['template'] ?? NULL);
-		$h .= (new \mail\CustomizeUi())->getMailExample($title, $html);
 
 
 		$h .= '<div class="util-action">';

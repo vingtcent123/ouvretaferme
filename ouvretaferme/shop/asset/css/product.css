@@ -214,7 +214,6 @@
 	display: grid;
 	align-items: center;
 	grid-template-columns: 25% 1fr 25%;
-	font-weight: bold;
 }
 
 .shop-product-quantity .btn {
@@ -250,8 +249,15 @@
 	content: ' *';
 }
 
+.shop-product[data-has="1"] .shop-product-quantity-value {
+	font-size: 1.2rem;
+	font-weight: bold;
+}
+
 .shop-product[data-has="0"] .shop-product-quantity-decrease {
 	opacity: 0.5;
+	border-width: 1px;
+	pointer-events: none;
 }
 
 .shop-product[data-has="0"] .shop-product-quantity-value {

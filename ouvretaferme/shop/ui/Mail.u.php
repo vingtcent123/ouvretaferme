@@ -10,7 +10,11 @@ class MailUi {
 			'shop' => ['hasPayment', 'paymentOfflineHow', 'paymentTransferHow']
 		]);
 
-		return match($eSale['shopPoint']->notEmpty() ? $eSale['shopPoint']['type'] : Point::PLACE) {
+		if($eSale['shopPoint']->empty()) {
+			return self::getSaleNone('updated', $eSale, $cItem, $template);
+		}
+
+		return match($eSale['shopPoint']['type']) {
 			Point::HOME => self::getSaleHome('updated', $eSale, $cItem, $template),
 			Point::PLACE => self::getSalePlace('updated', $eSale, $cItem, $template)
 		};
@@ -24,10 +28,29 @@ class MailUi {
 			'shop' => ['hasPayment', 'paymentOfflineHow', 'paymentTransferHow']
 		]);
 
-		return match($eSale['shopPoint']->notEmpty() ? $eSale['shopPoint']['type'] : Point::PLACE) {
+		if($eSale['shopPoint']->empty()) {
+			return self::getSaleNone('confirmed', $eSale, $cItem, $template);
+		}
+
+		return match($eSale['shopPoint']['type']) {
 			Point::HOME => self::getSaleHome('confirmed', $eSale, $cItem, $template),
 			Point::PLACE => self::getSalePlace('confirmed', $eSale, $cItem, $template)
 		};
+
+	}
+
+	protected static function getSaleNone(string $type, \selling\Sale $eSale, \Collection $cItem, ?string $template = NULL): array {
+
+		$template ??= \mail\CustomizeUi::getDefaultTemplate(\mail\Customize::SHOP_CONFIRMED_NONE);
+		$variables = \mail\CustomizeUi::getShopVariables(\mail\Customize::SHOP_CONFIRMED_NONE, $eSale, $cItem);
+
+		$title = match($type) {
+			'confirmed' => s("Commande n°{id} validée pour le {date}", ['id' => $eSale['document'], 'date' => \util\DateUi::numeric($eSale['shopDate']['deliveryDate'])]),
+			'updated' => s("Commande n°{id} modifiée pour le {date}", ['id' => $eSale['document'], 'date' => \util\DateUi::numeric($eSale['shopDate']['deliveryDate'])]),
+		};
+		$content = \mail\CustomizeUi::convertTemplate($template, $variables);
+
+		return \mail\DesignUi::format($eSale['farm'], $title, $content);
 
 	}
 
