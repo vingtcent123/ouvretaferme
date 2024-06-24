@@ -127,8 +127,7 @@ class StripeFarmUi {
 						$h .= '<h4>'.s("Obtenir la clé API").'</h4>';
 						$h .= '<p>'.s("La clé API limitée peut être récupérée dans la section <i>Développeurs</i> de {icon} Stripe. Le mode opératoire pour créer une clé API limitée :", ['icon' => \Asset::icon('stripe')]).'</p>';
 						$h .= '<ul>';
-							$h .= '<li>'.s("Allez dans la section <i>Développeurs</i>").'</li>';
-							$h .= '<li>'.s("Allez sur l'onglet <i>Clés API</i>").'</li>';
+							$h .= '<li>'.s("Allez dans la section développeurs de {icon} Stripe, puis sur l'onglet <i>Clés API</i>").'  '.\Asset::icon('arrow-right').'  <a href="https://dashboard.stripe.com/apikeys" class="btn btn-secondary btn-sm" target="_blank">'.\Asset::icon('link').' '.s("Lien direct").'</a></li>';
 							$h .= '<li>'.s("Cliquez sur <i>Créer une clé limitée</i>").'</li>';
 							$h .= '<li>'.s("Choisissez l'option <i>Fournir cette clé à un autre site Web</i>").'</li>';
 							$h .= '<li>'.s("Renseignez les informations liées à Ouvretaferme et créez la clé API !").'</li>';
@@ -155,14 +154,13 @@ class StripeFarmUi {
 						$h .= '<h4>'.s("Configurer le Webhook").'</h4>';
 						$h .= '<p>'.s("Le webhook se configure dans la section <i>Développeurs</i> de {icon} Stripe. Le mode opératoire pour configurer le Webhook :", ['icon' => \Asset::icon('stripe')]).'</p>';
 						$h .= '<ul>';
-							$h .= '<li>'.s("Allez dans la section <i>Développeurs</i>").'</li>';
-							$h .= '<li>'.s("Allez sur l'onglet <i>Webhooks</i>").'</li>';
+							$h .= '<li>'.s("Allez dans la Section développeurs de {icon} Stripe puis sur l'onglet <i>Webhooks</i>", ['icon' => \Asset::icon('stripe')]).'  '.\Asset::icon('arrow-right').'  <a href="https://dashboard.stripe.com/webhooks" class="btn btn-secondary btn-sm" target="_blank">'.\Asset::icon('link').' '.s("Lien direct").'</a></li>';
 							$h .= '<li>'.s("Cliquez sur <i>Ajouter un endpoint</i>").'</li>';
 							$h .= '<li>';
 								$h .= s("Renseignez les informations suivantes :");
 								$h .= '<ul>';
 									$h .= '<li>'.s("URL d'endpoint :").' <u>'.\Lime::getUrl().'/payment/stripe:webhook?farm='.$eStripeFarm['farm']['id'].'</u></li>';
-									$h .= '<li>'.s("Événements à sélectionner :").' '.s("<b>Tous</b> les événements <i>Checkout</i> ET <b>tous</b> les événements <i>Payment Intent</i>").'</li>';
+									$h .= '<li>'.s("Événements à sélectionner :").' '.s("<b>tous</b> les événements <i>Checkout</i> ET <b>tous</b> les événements <i>Payment Intent</i>").'</li>';
 								$h .= '</ul>';
 							$h .= '</li>';
 						$h .= '</ul>';
