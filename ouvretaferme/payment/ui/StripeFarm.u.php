@@ -130,7 +130,14 @@ class StripeFarmUi {
 							$h .= '<li>'.s("Allez dans la section développeurs de {icon} Stripe, puis sur l'onglet <i>Clés API</i>").'  '.\Asset::icon('arrow-right').'  <a href="https://dashboard.stripe.com/apikeys" class="btn btn-secondary btn-sm" target="_blank">'.\Asset::icon('link').' '.s("Lien direct").'</a></li>';
 							$h .= '<li>'.s("Cliquez sur <i>Créer une clé limitée</i>").'</li>';
 							$h .= '<li>'.s("Choisissez l'option <i>Fournir cette clé à un autre site Web</i>").'</li>';
-							$h .= '<li>'.s("Renseignez les informations liées à Ouvretaferme et créez la clé API !").'</li>';
+							$h .= '<li>';
+								$h .= s("Renseignez les informations demandées :");
+							$h .= '<ul>';
+								$h .= '<li>'.s("Nom : <i>Ouvretaferme</i>").'</li>';
+								$h .= '<li>'.s("URL : <i>{value}</i>", \Lime::getUrl()).'</li>';
+							$h .= '</ul>';
+							$h .= '</li>';
+							$h .= '<li>'.s("Créez la clé API !").'</li>';
 						$h .= '</ul>';
 						$h .= '<p>'.s("Une fois que vous avez créé votre clé API, copiez-là ci-dessous.").'</p>';
 					$h .= '<p>'.s("Il est possible que {icon} Stripe fasse évoluer son interface et que le mode opératoire ci-dessus ne soit plus tout à fait exact. Dans ce cas, vous pouvez nous en informer en cliquant sur <i>Signaler un problème</i> en bas de cette page.", ['icon' => \Asset::icon('stripe')]).'</p>';
