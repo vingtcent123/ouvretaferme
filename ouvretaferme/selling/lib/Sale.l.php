@@ -540,6 +540,35 @@ class SaleLib extends SaleCrud {
 
 	}
 
+	public static function associateShop(Sale $e, array $input): void {
+
+		$fw = new \FailWatch();
+
+		$e->build(['shopDate'], $input, for: 'update');
+
+		$fw->validate();
+
+		if($e['shopDate']->empty()) {
+			return;
+		}
+
+		self::update($e, ['from', 'shop', 'shopDate']);
+
+	}
+
+	public static function dissociateShop(Sale $e): void {
+
+		$e->build(['shopDate'], [], for: 'update');
+
+		if($e['preparationStatus'] === Sale::BASKET) {
+			$e['oldStatus'] = Sale::BASKET;
+			$e['preparationStatus'] = Sale::DRAFT;
+		}
+
+		self::update($e, ['from', 'shop', 'shopDate', 'preparationStatus']);
+
+	}
+
 	public static function update(Sale $e, array $properties): void {
 
 		Sale::model()->beginTransaction();

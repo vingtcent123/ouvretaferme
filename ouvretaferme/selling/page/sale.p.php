@@ -193,22 +193,22 @@
 	}, validate: ['canWrite', 'acceptAssociateShop'])
 	->write('doUpdateShop', function($data) {
 		
-		$fw = new FailWatch();
-
 		$from = POST('from', [\selling\Sale::SHOP, \selling\Sale::USER], fn() => throw new FailAction('selling\Sale::from.check'));
 
 		$data->e['from'] = $from;
 
-		match($from) {
-			\selling\Sale::USER => $data->e->validate('acceptDissociateShop'),
-			\selling\Sale::SHOP => $data->e->validate('acceptAssociateShop')
+		switch($from) {
+
+			case \selling\Sale::USER :
+				$data->e->validate('acceptDissociateShop');
+				\selling\SaleLib::dissociateShop($data->e);
+				break;
+
+			case \selling\Sale::SHOP :
+				$data->e->validate('acceptAssociateShop');
+				\selling\SaleLib::associateShop($data->e, $_POST);
+				break;
 		};
-
-		$data->e->build(['shopDate'], $_POST, for: 'update');
-
-		$fw->validate();
-
-		\selling\SaleLib::update($data->e, ['from', 'shop', 'shopDate']);
 
 		throw new ReloadAction('selling', 'Sale::updated');
 
