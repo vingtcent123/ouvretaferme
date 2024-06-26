@@ -104,8 +104,6 @@ class PdfUi {
 
 	public function getLabel(\farm\Farm $eFarm, Customer $eCustomer, ?string $name = NULL, string $quality = NULL, ?string $size = NULL, ?float $quantity = NULL, ?string $unit = NULL): string {
 
-		$eFarm->expects(['selling']);
-
 		$logo = (new \media\FarmLogoUi())->getUrlByElement($eFarm, 'm');
 		$colorCustomer = ($eCustomer->notEmpty() and $eCustomer['color']);
 
@@ -124,15 +122,15 @@ class PdfUi {
 					$h .= '<div class="pdf-label-logo" style="background-image: url('.$logo.')"></div>';
 				}
 				$h .= '<div class="pdf-label-address">';
-					$h .= encode($eFarm['selling']['legalName']).'<br/>';
-					$h .= nl2br(encode($eFarm['selling']->getInvoiceAddress()));
+					$h .= encode($eFarm->getSelling('legalName')).'<br/>';
+					$h .= nl2br(encode($eFarm->selling()->getInvoiceAddress()));
 				$h .= '</div>';
 				$h .= '<div class="pdf-label-quality">';
 					if($quality) {
 						$h .= \Asset::image('main', $quality.'.png', ['style' => 'height: 0.75cm']);
 					}
-					if($quality === \farm\Farm::ORGANIC and $eFarm['selling']['organicCertifier']) {
-						$h .= '<span>'.s("Certifié par").'<br/>'.$eFarm['selling']['organicCertifier'].'</span>';
+					if($quality === \farm\Farm::ORGANIC and $eFarm->getSelling('organicCertifier')) {
+						$h .= '<span>'.s("Certifié par").'<br/>'.$eFarm->getSelling('organicCertifier').'</span>';
 					}
 				$h .= '</div>';
 			$h .= '</div>';
@@ -201,7 +199,7 @@ class PdfUi {
 			}
 
 			$dateDelivered = NULL;
-			if($type === Pdf::ORDER_FORM and $eFarm['selling']['orderFormDelivery']) {
+			if($type === Pdf::ORDER_FORM and $eFarm->getSelling('orderFormDelivery')) {
 				$dateDelivered = '<div class="pdf-document-delivery">'.s("Commande livrable le {value}", \util\DateUi::numeric($eSale['deliveredAt'])).'</div>';
 			}
 
@@ -463,21 +461,21 @@ class PdfUi {
 
 					$h .= '<div class="pdf-document-quality">';
 						$h .= \Asset::image('main', 'organic.png', ['style' => 'width: 5rem; margin-right: 1rem']);
-						$h .= '<div>'.s("Produits issus de l’agriculture biologique ou en conversion vers l'agriculture biologique certifiés par {value}", '<span style="white-space: nowrap">'.$eFarm['selling']['organicCertifier'].'</span>').'</div>';
+						$h .= '<div>'.s("Produits issus de l’agriculture biologique ou en conversion vers l'agriculture biologique certifiés par {value}", '<span style="white-space: nowrap">'.$eFarm->getSelling('organicCertifier').'</span>').'</div>';
 					$h .= '</div>';
 
 				} else if($e['organic']) {
 
 					$h .= '<div class="pdf-document-quality">';
 						$h .= \Asset::image('main', 'organic.png', ['style' => 'width: 5rem; margin-right: 1rem']);
-						$h .= '<div>'.s("Produits issus de l’agriculture biologique certifiés par {value}", '<span style="white-space: nowrap">'.$eFarm['selling']['organicCertifier'].'</span>').'</div>';
+						$h .= '<div>'.s("Produits issus de l’agriculture biologique certifiés par {value}", '<span style="white-space: nowrap">'.$eFarm->getSelling('organicCertifier').'</span>').'</div>';
 					$h .= '</div>';
 
 				} else if($e['conversion']) {
 
 					$h .= '<div class="pdf-document-quality">';
 						$h .= \Asset::image('main', 'organic.png', ['style' => 'width: 5rem; margin-right: 1rem']);
-						$h .= '<div>'.s("Produits en conversion vers l’agriculture biologique certifiés par {value}", '<span style="white-space: nowrap">'.$eFarm['selling']['organicCertifier'].'</span>').'</div>';
+						$h .= '<div>'.s("Produits en conversion vers l’agriculture biologique certifiés par {value}", '<span style="white-space: nowrap">'.$eFarm->getSelling('organicCertifier').'</span>').'</div>';
 					$h .= '</div>';
 
 				}
@@ -563,19 +561,19 @@ class PdfUi {
 					$h .= '<div class="pdf-document-vendor-logo" style="background-image: url('.$logo.')"></div>';
 				}
 				$h .= '<div class="pdf-document-vendor-name">';
-					$h .= encode($eFarm['selling']['legalName']).'<br/>';
+					$h .= encode($eFarm->getSelling('legalName')).'<br/>';
 				$h .= '</div>';
 				$h .= '<div class="pdf-document-vendor-address">';
-					$h .= nl2br(encode($eFarm['selling']->getInvoiceAddress()));
+					$h .= nl2br(encode($eFarm->selling()->getInvoiceAddress()));
 				$h .= '</div>';
-				if($eFarm['selling']['invoiceRegistration']) {
+				if($eFarm->getSelling('invoiceRegistration')) {
 					$h .= '<div class="pdf-document-vendor-registration">';
-						$h .= s("SIRET <u>{value}</u>", encode($eFarm['selling']['invoiceRegistration']));
+						$h .= s("SIRET <u>{value}</u>", encode($eFarm->getSelling('invoiceRegistration')));
 					$h .= '</div>';
 				}
-				if($e['hasVat'] and $eFarm['selling']['invoiceVat']) {
+				if($e['hasVat'] and $eFarm->getSelling('invoiceVat')) {
 					$h .= '<div class="pdf-document-vendor-registration">';
-						$h .= s("TVA intracommunautaire<br/><u>{value}</u>", encode($eFarm['selling']['invoiceVat']));
+						$h .= s("TVA intracommunautaire<br/><u>{value}</u>", encode($eFarm->getSelling('invoiceVat')));
 					$h .= '</div>';
 				}
 			$h .= '</div>';
@@ -620,12 +618,12 @@ class PdfUi {
 
 		$h .= $dateDelivered;
 
-		if($type === Pdf::ORDER_FORM and $eFarm['selling']['orderFormHeader']) {
-			$h .= '<div class="pdf-document-custom-top">'. (new \editor\EditorUi())->value($eFarm['selling']['orderFormHeader']).'</div>';
+		if($type === Pdf::ORDER_FORM and $eFarm->getSelling('orderFormHeader')) {
+			$h .= '<div class="pdf-document-custom-top">'. (new \editor\EditorUi())->value($eFarm->getSelling('orderFormHeader')).'</div>';
 		}
 
-		if($type === Pdf::INVOICE and $eFarm['selling']['invoiceHeader']) {
-			$h .= '<div class="pdf-document-custom-top">'. (new \editor\EditorUi())->value($eFarm['selling']['invoiceHeader']).'</div>';
+		if($type === Pdf::INVOICE and $eFarm->getSelling('invoiceHeader')) {
+			$h .= '<div class="pdf-document-custom-top">'. (new \editor\EditorUi())->value($eFarm->getSelling('invoiceHeader')).'</div>';
 		}
 
 		return $h;
@@ -636,12 +634,12 @@ class PdfUi {
 
 		$h = '';
 
-		if($type === Pdf::ORDER_FORM and $eFarm['selling']['orderFormFooter']) {
-			$h .= '<div class="pdf-document-custom-bottom">'.(new \editor\EditorUi())->value($eFarm['selling']['orderFormFooter']).'</div>';
+		if($type === Pdf::ORDER_FORM and $eFarm->getSelling('orderFormFooter')) {
+			$h .= '<div class="pdf-document-custom-bottom">'.(new \editor\EditorUi())->value($eFarm->getSelling('orderFormFooter')).'</div>';
 		}
 
-		if($type === Pdf::INVOICE and $eFarm['selling']['invoiceFooter']) {
-			$h .= '<div class="pdf-document-custom-bottom">'.(new \editor\EditorUi())->value($eFarm['selling']['invoiceFooter']).'</div>';
+		if($type === Pdf::INVOICE and $eFarm->getSelling('invoiceFooter')) {
+			$h .= '<div class="pdf-document-custom-bottom">'.(new \editor\EditorUi())->value($eFarm->getSelling('invoiceFooter')).'</div>';
 		}
 
 		if($paymentCondition) {
@@ -654,8 +652,8 @@ class PdfUi {
 		}
 
 		$paymentMode = match($type) {
-			Pdf::ORDER_FORM => $eFarm['selling']['paymentMode'],
-			Pdf::INVOICE => $eFarm['selling']['paymentMode'],
+			Pdf::ORDER_FORM => $eFarm->getSelling('paymentMode'),
+			Pdf::INVOICE => $eFarm->getSelling('paymentMode'),
 			Pdf::DELIVERY_NOTE => NULL
 		};
 

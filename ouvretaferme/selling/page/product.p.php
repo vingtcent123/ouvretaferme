@@ -3,7 +3,6 @@
 	->getCreateElement(function($data) {
 
 		$data->eFarm = \farm\FarmLib::getById(INPUT('farm'));
-		$data->eFarm['selling'] = \selling\ConfigurationLib::getByFarm($data->eFarm);
 
 		return new \selling\Product([
 			'farm' => $data->eFarm
@@ -19,7 +18,6 @@
 	->read('/produit/{id}', function($data) {
 
 		$data->eFarm = $data->e['farm'];
-		$data->eFarm['selling'] = \selling\ConfigurationLib::getByFarm($data->eFarm);
 
 		\farm\FarmerLib::register($data->eFarm);
 
@@ -55,8 +53,6 @@
 	})
 	->read('updateGrid', function($data) {
 
-		$data->e['farm']['selling'] = \selling\ConfigurationLib::getByFarm($data->e['farm']);
-
 		$data->cCustomer = \selling\CustomerLib::getForGrid($data->e);
 
 		throw new ViewAction($data);
@@ -79,13 +75,7 @@
 
 	})
 	->quick(['privatePrice', 'privateStep', 'proPrice', 'proPackaging'])
-	->update(function($data) {
-
-		$data->e['farm']['selling'] = \selling\ConfigurationLib::getByFarm($data->e['farm']);
-
-		throw new ViewAction($data);
-
-	})
+	->update()
 	->doUpdate(fn() => throw new ReloadAction('selling', 'Product::updated'))
 	->doUpdateProperties('doUpdateStatus', ['status'], fn($data) => throw new ViewAction($data))
 	->doDelete(fn() => throw new ReloadAction('selling', 'Product::deleted'));

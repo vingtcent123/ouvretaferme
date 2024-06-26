@@ -51,7 +51,6 @@
 			throw $action;
 		}
 
-		$data->eShop['farm']['selling'] = \selling\ConfigurationLib::getByFarm($data->eShop['farm']);
 		$data->eShop['ccPoint'] = \shop\PointLib::getByShop($data->eShop);
 
 	}))
@@ -103,7 +102,6 @@
 		$data->discount = \shop\SaleLib::getDiscount($data->eDate, $data->eSaleExisting, $data->eCustomer);
 
 		$data->eDate['shop'] = $data->eShop;
-		$data->eDate['farm']['selling'] = \selling\ConfigurationLib::getByFarm($data->eDate['farm']);
 
 		$data->eDate['cProduct'] = \shop\ProductLib::getByDate($data->eDate, eSaleExclude: $data->eSaleExisting);
 		\shop\ProductLib::applyDiscount($data->eDate['cProduct'], $data->discount);

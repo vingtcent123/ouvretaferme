@@ -9,13 +9,7 @@
 		]);
 
 	})
-	->create(function($data) {
-
-		$data->eFarm['selling'] = \selling\ConfigurationLib::getByFarm($data->eFarm);
-
-		throw new ViewAction($data);
-
-	})
+	->create()
 	->doCreate(function($data) {
 		throw new ReloadAction('shop', 'Shop::created');
 	})

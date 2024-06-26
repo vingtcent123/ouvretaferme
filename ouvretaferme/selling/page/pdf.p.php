@@ -12,8 +12,6 @@
 			$data->cSale = new Collection();
 		}
 
-		$data->eFarm['selling'] = \selling\ConfigurationLib::getByFarm($data->eFarm);
-
 		throw new ViewAction($data);
 
 	})
@@ -32,7 +30,7 @@
 		}
 
 		$data->eFarm = \farm\FarmLib::getById($data->e['farm']);
-		$data->eFarm['selling'] = \selling\ConfigurationLib::getByFarm($data->eFarm)->validate('isComplete');
+		$data->eFarm->validateSellingComplete();
 
 		$data->cItem = \selling\SaleLib::getItems($data->e);
 
@@ -44,7 +42,6 @@
 	->read('getDocumentInvoice', function($data) {
 
 		$data->eFarm = \farm\FarmLib::getById($data->e['farm']);
-		$data->eFarm['selling'] = \selling\ConfigurationLib::getByFarm($data->eFarm)->validate('isComplete');
 
 		$data->e['customer']['user'] = \user\UserLib::getById($data->e['customer']['user']); // Récupération de l'e-mail
 

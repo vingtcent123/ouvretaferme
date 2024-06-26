@@ -41,8 +41,6 @@ class SaleLib extends SaleCrud {
 
 	public static function getExample(\farm\Farm $eFarm, string $type, \shop\Shop $eShop = new \shop\Shop()): Sale {
 
-		$eFarm->expects(['selling']);
-
 		$id = match($type) {
 			Customer::PRO => \Setting::get('selling\exampleSalePro'),
 			Customer::PRIVATE => \Setting::get('selling\exampleSalePrivate')
@@ -51,7 +49,7 @@ class SaleLib extends SaleCrud {
 		$eSale = \selling\SaleLib::getById($id);
 		$eSale['document'] = '123';
 		$eSale['farm'] = $eFarm;
-		$eSale['hasVat'] = $eFarm->hasVat();
+		$eSale['hasVat'] = $eFarm->getSelling('hasVat');
 		$eSale['customer']['legalName'] = match($type) {
 			Customer::PRO => 'Magasin ABC',
 			Customer::PRIVATE => 'A. Bécé'
@@ -66,14 +64,14 @@ class SaleLib extends SaleCrud {
 		$eSale['deliveryCity'] = $eSale['customer']['invoiceCity'];
 		$eSale['customer']['email'] = 'client@email.com';
 		$eSale['orderFormValidUntil'] = currentDate();
-		$eSale['orderFormPaymentCondition'] = $eFarm['selling']['orderFormPaymentCondition'];
+		$eSale['orderFormPaymentCondition'] = $eFarm->getSelling('orderFormPaymentCondition');
 		$eSale['invoice']['taxes'] = \selling\Invoice::INCLUDING;
-		$eSale['invoice']['hasVat'] = $eFarm->hasVat();
+		$eSale['invoice']['hasVat'] = $eFarm->getSelling('hasVat');
 		$eSale['invoice']['document'] = '123';
 		$eSale['invoice']['priceExcludingVat'] = $eSale['priceExcludingVat'];
 		$eSale['invoice']['priceIncludingVat'] = $eSale['priceIncludingVat'];
 		$eSale['invoice']['date'] = currentDate();
-		$eSale['invoice']['paymentCondition'] = $eFarm['selling']['invoicePaymentCondition'];
+		$eSale['invoice']['paymentCondition'] = $eFarm->getSelling('invoicePaymentCondition');
 		$eSale['invoice']['customer'] = $eSale['customer'];
 		$eSale['cItem'] = self::getItems($eSale);
 

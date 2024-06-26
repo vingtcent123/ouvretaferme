@@ -92,14 +92,12 @@
 
 		$data->eFarm = $data->e['farm'];
 		$data->eFarm->hasFeatureDocument($data->e['type']) ?: throw new FailAction('farm\Farm::disabled');
-
-		$data->eFarm['selling'] = \selling\ConfigurationLib::getByFarm($data->eFarm);
-		$data->eFarm['selling']->isComplete() ?: throw new FailAction('selling\Configuration::notComplete', ['farm' => $data->eFarm]);
+		$data->eFarm->validateSellingComplete();
 
 		$data->ePdf = \selling\PdfLib::getOne($data->e, \selling\Pdf::ORDER_FORM);
 
 		if($data->e['orderFormPaymentCondition'] === NULL) {
-			$data->e['orderFormPaymentCondition'] = $data->eFarm['selling']['orderFormPaymentCondition'];
+			$data->e['orderFormPaymentCondition'] = $data->eFarm->getSelling('orderFormPaymentCondition');
 		}
 
 		throw new ViewAction($data);
@@ -114,9 +112,7 @@
 		}
 
 		$data->e['farm']->hasFeatureDocument($data->e['type']) ?: throw new FailAction('farm\Farm::disabled');
-
-		$data->e['farm']['selling'] = \selling\ConfigurationLib::getByFarm($data->e['farm']);
-		$data->e['farm']['selling']->isComplete() ?: throw new FailAction('selling\Configuration::notComplete', ['farm' => $data->e['farm']]);
+		$data->e['farm']->validateSellingComplete();
 
 		$type = POST('type', [\selling\Pdf::DELIVERY_NOTE, \selling\Pdf::ORDER_FORM], fn() => throw new NotExpectedAction());
 
@@ -153,7 +149,6 @@
 	->write('doSendDocument', function($data) {
 
 		$eFarm = \farm\FarmLib::getById($data->e['farm']);
-		$eFarm['selling'] = \selling\ConfigurationLib::getByFarm($eFarm);
 
 		$data->type = POST('type', [\selling\Pdf::ORDER_FORM, \selling\Pdf::DELIVERY_NOTE], fn($value) => throw new NotExpectedAction('Invalid type \''.$value.'\''));
 
@@ -175,7 +170,6 @@
 	->quick(['deliveredAt', 'shipping'], validate: ['canUpdate', 'isOpen'])
 	->update(function($data) {
 
-		$data->e['farm']['selling'] = \selling\ConfigurationLib::getByFarm($data->e['farm']);
 		$data->e['cShop'] = \shop\ShopLib::getAroundByFarm($data->e['farm']);
 
 		throw new ViewAction($data);

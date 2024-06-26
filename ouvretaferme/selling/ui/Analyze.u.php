@@ -1886,7 +1886,7 @@ class AnalyzeUi {
 			s("Livraison"),
 			s("Quantité"),
 			s("Unité"),
-			$eFarm->hasVat() ? s("Montant (HT)") : s("Montant")
+			$eFarm->getSelling('hasVat') ? s("Montant (HT)") : s("Montant")
 		];
 
 	}

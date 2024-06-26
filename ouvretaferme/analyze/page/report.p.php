@@ -77,8 +77,6 @@
 		$data->e['from'] = $eReportFrom;
 		$data->e['cPlant'] = \series\CultivationLib::getPlantsBySeason($data->eFarm, $data->season);
 
-		$data->e['farm']['selling'] = \selling\ConfigurationLib::getByFarm($data->e['farm']);
-
 		throw new ViewAction($data);
 
 	})

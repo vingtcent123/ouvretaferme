@@ -9,13 +9,7 @@
 		]);
 
 	})
-	->create(function($data) {
-
-		$data->eFarm['selling'] = \selling\ConfigurationLib::getByFarm($data->eFarm);
-
-		throw new ViewAction($data);
-
-	})
+	->create()
 	->doCreate(function($data) {
 		throw new RedirectAction(\selling\CustomerUi::url($data->e));
 	});
@@ -24,7 +18,6 @@
 	->read('/client/{id}', function($data) {
 
 		$data->eFarm = $data->e['farm'];
-		$data->eFarm['selling'] = \selling\ConfigurationLib::getByFarm($data->eFarm);
 
 		\farm\FarmerLib::register($data->eFarm);
 
@@ -59,8 +52,6 @@
 		if($data->e['type'] === \selling\Customer::PRIVATE) {
 			throw new NotExpectedAction('Invalid customer type');
 		}
-
-		$data->e['farm']['selling'] = \selling\ConfigurationLib::getByFarm($data->e['farm']);
 
 		$data->cProduct = \selling\ProductLib::getByCustomer($data->e);
 

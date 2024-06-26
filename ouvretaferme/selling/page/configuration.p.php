@@ -2,8 +2,6 @@
 (new \farm\FarmPage())
 	->update(function($data) {
 
-		$data->e['selling'] = \selling\ConfigurationLib::getByFarm($data->e);
-
 		\farm\FarmerLib::register($data->e);
 
 		$data->eSaleExample = \selling\SaleLib::getExample($data->e, \selling\Customer::PRO);

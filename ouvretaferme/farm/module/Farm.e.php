@@ -5,6 +5,8 @@ class Farm extends FarmElement {
 
 	const DEMO = 1;
 
+	protected static array $selling = [];
+
 	public static function getSelection(): array {
 
 		return parent::getSelection() + [
@@ -148,19 +150,33 @@ class Farm extends FarmElement {
 
 	}
 
+	public function selling(): \selling\Configuration {
+
+		if(array_key_exists($this['id'], self::$selling) === FALSE) {
+			self::$selling[$this['id']] = \selling\ConfigurationLib::getByFarm($this);
+		}
+
+		return self::$selling[$this['id']];
+
+	}
+
+	public function getSelling(string $name) {
+
+		return $this->selling()[$name];
+
+	}
+
+	public function validateSellingComplete() {
+
+		$this->selling()->isComplete() ?: throw new FailAction('selling\Configuration::notComplete', ['farm' => $this]);
+
+	}
+
 	public function saveFeaturesAsSettings() {
 
 		foreach(['featureTime', 'featureDocument'] as $feature) {
 			\Setting::set('farm\\'.$feature, $this[$feature]);
 		}
-
-	}
-
-	public function hasVat(): bool {
-
-		$this->expects(['selling' => ['hasVat']]);
-
-		return $this['selling']['hasVat'];
 
 	}
 

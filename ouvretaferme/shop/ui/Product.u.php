@@ -172,7 +172,7 @@ class ProductUi {
 
 		if(
 			$eDate['type'] === Shop::PRO and
-			$eDate['farm']->hasVat()
+			$eDate['farm']->getSelling('hasVat')
 		) {
 			return $eDate->getTaxes();
 		} else {
@@ -243,7 +243,7 @@ class ProductUi {
 			return '<div class="util-info">'.s("Vous ne vendez encore aucun produit à cette date !").'</div>';
 		}
 
-		$taxes = $eDate['farm']->hasVat() ? '<span class="util-annotation">'.$eDate->getTaxes().'</span>' : '';
+		$taxes = $eDate['farm']->getSelling('hasVat') ? '<span class="util-annotation">'.$eDate->getTaxes().'</span>' : '';
 
 		$h = '<div class="'.($eDate['type'] === Date::PRIVATE ? 'util-overflow-xs' : 'util-overflow-sm').' stick-xs">';
 			$h .= '<table class="tr-even">';
@@ -420,14 +420,8 @@ class ProductUi {
 			case 'price' :
 				$d->append = function(\util\FormUi $form, Product $e) {
 
-					$e->expects([
-						'date' => [
-							'farm' => ['selling']
-						]
-					]);
-
 					return $form->addon(s('€ {taxes} / {unit}', [
-						'taxes' => $e['date']['farm']->hasVat() ? $e['date']->getTaxes() : '',
+						'taxes' => $e['date']['farm']->getSelling('hasVat') ? $e['date']->getTaxes() : '',
 						'unit' => \main\UnitUi::getSingular($e['product']['unit'], short: TRUE)
 					]));
 

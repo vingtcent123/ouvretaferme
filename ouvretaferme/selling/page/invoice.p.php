@@ -15,8 +15,7 @@
 		$eCustomer->validate('canManage');
 
 		$eFarm = $eCustomer['farm'];
-		$eFarm['selling'] = \selling\ConfigurationLib::getByFarm($eFarm);
-		$eFarm['selling']->isComplete() ?: throw new FailAction('selling\Configuration::notComplete', ['farm' => $eFarm]);
+		$eFarm->validateSellingComplete();
 
 		return new \selling\Invoice([
 			'customer' => $eCustomer,
@@ -48,7 +47,7 @@
 			$data->cSaleMore = new Collection();
 		}
 
-		$data->e['paymentCondition'] = $data->e['farm']['selling']['invoicePaymentCondition'];
+		$data->e['paymentCondition'] = $data->e['farm']->getSelling('invoicePaymentCondition');
 
 		throw new ViewAction($data);
 
@@ -76,7 +75,6 @@
 	->write('doSend', function($data) {
 
 		$eFarm = \farm\FarmLib::getById($data->e['farm']);
-		$eFarm['selling'] = \selling\ConfigurationLib::getByFarm($eFarm);
 
 		\selling\PdfLib::sendByInvoice($eFarm, $data->e);
 
@@ -118,8 +116,7 @@
 (new Page(function($data) {
 
 	$data->eFarm = \farm\FarmLib::getById(INPUT('farm'))->validate('canManage');
-	$data->eFarm['selling'] = \selling\ConfigurationLib::getByFarm($data->eFarm);
-	$data->eFarm['selling']->isComplete() ?: throw new FailAction('selling\Configuration::notComplete', ['farm' => $data->eFarm]);
+	$data->eFarm->validateSellingComplete();
 
 	}))
 	->get('createCollection', function($data) {
@@ -135,7 +132,7 @@
 
 		$data->e = new \selling\Invoice([
 			'farm' => $data->eFarm,
-			'paymentCondition' => $data->eFarm['selling']['invoicePaymentCondition']
+			'paymentCondition' => $data->eFarm->getSelling('invoicePaymentCondition')
 		]);
 
 		throw new ViewAction($data);
@@ -172,7 +169,6 @@
 		$data->c->validate('canWrite', 'acceptSend');
 
 		$data->eFarm = \farm\FarmLib::getById($data->c->first()['farm']);
-		$data->eFarm['selling'] = \selling\ConfigurationLib::getByFarm($data->eFarm);
 
 		foreach($data->c as $e) {
 			\selling\PdfLib::sendByInvoice($data->eFarm, $e);

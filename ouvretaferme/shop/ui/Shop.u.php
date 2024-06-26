@@ -382,7 +382,7 @@ class ShopUi {
 
 		return function(\PropertyDescriber $d) use ($eFarm, $for) {
 
-			$d->values = $eFarm->hasVat() ?
+			$d->values = $eFarm->getSelling('hasVat') ?
 				[
 					Shop::PRIVATE => s("Utiliser les prix particuliers").' <span class="util-annotation">'.s("affichés TTC sur la boutique").'</span>',
 					Shop::PRO => s("Utiliser les prix professionnels").' <span class="util-annotation">'.s("affichés HT sur la boutique").'</span>',

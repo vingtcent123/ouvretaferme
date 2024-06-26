@@ -1705,12 +1705,6 @@ class SaleUi {
 			case 'shippingVatRate' :
 				$d->field = function(\util\FormUi $form, Sale $e) {
 
-					$e->expects([
-						'farm' => [
-							'selling' => ['defaultVatShipping']
-						]
-					]);
-
 					$values = [];
 
 					foreach(SaleUi::getVat($e['farm']) as $position => $text) {
@@ -1718,7 +1712,7 @@ class SaleUi {
 						$values[(string)$rate] = s("Personnalisé - {value}", $text);
 					}
 
-					$defaultVatRate = $e['farm']['selling']['defaultVatShipping'] ? \Setting::get('selling\vatRates')[$e['farm']['selling']['defaultVatShipping']] : NULL;
+					$defaultVatRate = $e['farm']->getSelling('defaultVatShipping') ? \Setting::get('selling\vatRates')[$e['farm']->getSelling('defaultVatShipping')] : NULL;
 					$calculatedVatRate = ($e['shippingVatFixed'] ? NULL : $e['shippingVatRate']) ?? $defaultVatRate;
 
 					return $form->select('shippingVatRate', $values, $e['shippingVatFixed'] ? $e['shippingVatRate'] : NULL, [

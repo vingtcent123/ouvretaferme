@@ -10,7 +10,7 @@ class ConfigurationUi {
 
 	}
 
-	public function update(\farm\Farm $eFarm, Configuration $eConfiguration, \Collection $cCustomize, Sale $eSaleExample): string {
+	public function update(\farm\Farm $eFarm, \Collection $cCustomize, Sale $eSaleExample): string {
 
 		$h = '<div class="tabs-h" id="selling-configure" onrender="'.encode('Lime.Tab.restore(this, "settings")').'">';
 
@@ -23,23 +23,23 @@ class ConfigurationUi {
 			$h .= '</div>';
 
 			$h .= '<div class="tab-panel selected" data-tab="settings">';
-				$h .= $this->updateSettings($eConfiguration, $eFarm);
+				$h .= $this->updateSettings($eFarm);
 			$h .= '</div>';
 
 			$h .= '<div class="tab-panel" data-tab="orderForm">';
-				$h .= $this->updateOrderForm($eConfiguration, $eFarm, $eSaleExample);
+				$h .= $this->updateOrderForm($eFarm, $eSaleExample);
 			$h .= '</div>';
 
 			$h .= '<div class="tab-panel" data-tab="deliveryNote">';
-				$h .= $this->updateDeliveryNote($eConfiguration, $eFarm, $eSaleExample);
+				$h .= $this->updateDeliveryNote($eFarm, $eSaleExample);
 			$h .= '</div>';
 
 			$h .= '<div class="tab-panel" data-tab="invoice">';
-				$h .= $this->updateInvoice($eConfiguration, $eFarm, $eSaleExample);
+				$h .= $this->updateInvoice($eFarm, $eSaleExample);
 			$h .= '</div>';
 
 			$h .= '<div class="tab-panel" data-tab="mail">';
-				$h .= $this->updateMail($eConfiguration, $cCustomize, $eFarm, $eSaleExample);
+				$h .= $this->updateMail($cCustomize, $eFarm, $eSaleExample);
 			$h .= '</div>';
 
 		$h .= '</div>';
@@ -48,13 +48,15 @@ class ConfigurationUi {
 
 	}
 
-	public function updateSettings(Configuration $eConfiguration, \farm\Farm $eFarm): string {
+	public function updateSettings(\farm\Farm $eFarm): string {
+
+		$eConfiguration = $eFarm->selling();
 
 		$form = new \util\FormUi();
 
 		$h = '';
 
-		if($eConfiguration->isComplete() === FALSE) {
+		if($eFarm->selling()->isComplete() === FALSE) {
 
 			$h .= '<div class="util-block-help">';
 				$h .= '<p>'.s("Pour générer des devis, bons de livraison et factures sur <i>{siteName}</i>, veuillez renseigner à minima les informations suivantes :").'</p>';
@@ -118,7 +120,9 @@ class ConfigurationUi {
 
 	}
 
-	public function updateOrderForm(Configuration $eConfiguration, \farm\Farm $eFarm, Sale $eSaleExample): string {
+	public function updateOrderForm(\farm\Farm $eFarm, Sale $eSaleExample): string {
+
+		$eConfiguration = $eFarm->selling();
 
 		$form = new \util\FormUi();
 
@@ -160,7 +164,9 @@ class ConfigurationUi {
 
 	}
 
-	public function updateInvoice(Configuration $eConfiguration, \farm\Farm $eFarm, Sale $eSaleExample): string {
+	public function updateInvoice(\farm\Farm $eFarm, Sale $eSaleExample): string {
+
+		$eConfiguration = $eFarm->selling();
 
 		$form = new \util\FormUi();
 
@@ -202,7 +208,9 @@ class ConfigurationUi {
 
 	}
 
-	public function updateDeliveryNote(Configuration $eConfiguration, \farm\Farm $eFarm, Sale $eSaleExample): string {
+	public function updateDeliveryNote(\farm\Farm $eFarm, Sale $eSaleExample): string {
+
+		$eConfiguration = $eFarm->selling();
 
 		$h = '';
 
@@ -228,7 +236,9 @@ class ConfigurationUi {
 
 	}
 
-	public function updateMail(Configuration $eConfiguration, \Collection $cCustomize, \farm\Farm $eFarm, Sale $eSaleExample): string {
+	public function updateMail(\Collection $cCustomize, \farm\Farm $eFarm, Sale $eSaleExample): string {
+
+		$eConfiguration = $eFarm->selling();
 
 		$h = '';
 

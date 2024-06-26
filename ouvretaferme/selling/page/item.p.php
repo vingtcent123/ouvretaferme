@@ -18,13 +18,11 @@
 
 		}
 
-		$data->e['farm']['selling'] = \selling\ConfigurationLib::getByFarm($data->e['farm']);
-
 		$data->eItem = new \selling\Item([
 			'farm' => $data->e['farm'],
 			'sale' => $data->e,
 			'product' => $data->eProduct,
-			'vatRate' => Setting::get('selling\vatRates')[$data->e['farm']['selling']['defaultVat']],
+			'vatRate' => Setting::get('selling\vatRates')[$data->e['farm']->getSelling('defaultVat')],
 			'quality' => $data->eProduct->empty() ? new \plant\Quality() : $data->eProduct['quality'],
 			'customer' => $data->e['customer'],
 			'locked' => \selling\Item::PRICE,

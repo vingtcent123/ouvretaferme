@@ -422,12 +422,12 @@ class DateUi {
 					switch($eDate['type']) {
 
 						case Date::PRIVATE :
-							$price = $eProduct['privatePrice'] ?? $eProduct->calcPrivateMagicPrice($eFarm->hasVat());
+							$price = $eProduct['privatePrice'] ?? $eProduct->calcPrivateMagicPrice($eFarm->getSelling('hasVat'));
 							$packaging = NULL;
 							break;
 
 						case Date::PRO :
-							$price = $eProduct['proPrice'] ?? $eProduct->calcProMagicPrice($eFarm->hasVat());
+							$price = $eProduct['proPrice'] ?? $eProduct->calcProMagicPrice($eFarm->getSelling('hasVat'));
 							$packaging = $eProduct['proPackaging'];
 							break;
 
@@ -637,7 +637,7 @@ class DateUi {
 							$h .= '<td class="text-end highlight" style="white-space: nowrap">';
 								if($eDate['sales']['countValid'] > 0) {
 
-									if($eFarm->hasVat()) {
+									if($eFarm->getSelling('hasVat')) {
 										$h .= match($eDate['type']) {
 											Date::PRIVATE => $eDate['sales']['amountValidIncludingVat'] ? \util\TextUi::money($eDate['sales']['amountValidIncludingVat']).' <span class="util-annotation">'.$eDate->getTaxes().'</span>' : '-',
 											Date::PRO => $eDate['sales']['amountValidExcludingVat'] ? \util\TextUi::money($eDate['sales']['amountValidExcludingVat']).' <span class="util-annotation">'.$eDate->getTaxes().'</span>' : '-'

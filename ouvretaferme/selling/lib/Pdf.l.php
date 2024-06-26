@@ -57,7 +57,6 @@ class PdfLib extends PdfCrud {
 
 		$eFarm->expects([
 			'name',
-			'selling' => ['legalEmail']
 		]);
 
 		$eSale->expects([
@@ -80,7 +79,7 @@ class PdfLib extends PdfCrud {
 			return;
 		}
 
-		if($eFarm['selling']['legalEmail'] === NULL) {
+		if($eFarm->getSelling('legalEmail') === NULL) {
 			Pdf::fail('noFarmEmail');
 			return;
 		}
@@ -130,14 +129,14 @@ class PdfLib extends PdfCrud {
 
 		$libMail = (new \mail\MailLib());
 
-		if($eFarm['selling']['documentCopy']) {
-			$libMail->addBcc($eFarm['selling']['legalEmail']);
+		if($eFarm->getSelling('documentCopy')) {
+			$libMail->addBcc($eFarm->getSelling('legalEmail'));
 		}
 
 		$libMail
 			->setFromName($eFarm['name'])
 			->addTo($customerEmail)
-			->setReplyTo($eFarm['selling']['legalEmail'])
+			->setReplyTo($eFarm->getSelling('legalEmail'))
 			->setContent(...$content)
 			->addAttachment($ePdf['content']['binary'], $eSale->getDeliveryNote().'.pdf', 'application/pdf')
 			->send('document');
@@ -148,7 +147,6 @@ class PdfLib extends PdfCrud {
 
 		$eFarm->expects([
 			'name',
-			'selling' => ['legalEmail']
 		]);
 
 		$eInvoice->expects([
@@ -162,7 +160,7 @@ class PdfLib extends PdfCrud {
 			return;
 		}
 
-		if($eFarm['selling']['legalEmail'] === NULL) {
+		if($eFarm->getSelling('legalEmail') === NULL) {
 			Pdf::fail('noFarmEmail');
 			return;
 		}
@@ -198,14 +196,14 @@ class PdfLib extends PdfCrud {
 
 		$libMail = (new \mail\MailLib());
 
-		if($eFarm['selling']['documentCopy']) {
-			$libMail->addBcc($eFarm['selling']['legalEmail']);
+		if($eFarm->getSelling('documentCopy')) {
+			$libMail->addBcc($eFarm->getSelling('legalEmail'));
 		}
 
 		$libMail
 			->setFromName($eFarm['name'])
 			->addTo($eCustomer['email'])
-			->setReplyTo($eFarm['selling']['legalEmail'])
+			->setReplyTo($eFarm->getSelling('legalEmail'))
 			->setContent(...$content)
 			->addAttachment($ePdfContent['binary'], $eInvoice->getInvoice().'.pdf', 'application/pdf')
 			->send('document');

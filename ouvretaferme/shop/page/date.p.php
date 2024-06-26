@@ -3,8 +3,6 @@
 	->getCreateElement(function($data) {
 
 		$data->eFarm = \farm\FarmLib::getById(INPUT('farm'));
-		$data->eFarm['selling'] = \selling\ConfigurationLib::getByFarm($data->eFarm);
-
 		$data->eShop = \shop\ShopLib::getById(INPUT('shop'))->validateProperty('farm', $data->eFarm);
 
 		return new \shop\Date([
@@ -46,7 +44,6 @@
 		\shop\DateLib::applySales($data->e);
 
 		$data->eFarm = $data->eShop['farm'];
-		$data->eFarm['selling'] = \selling\ConfigurationLib::getByFarm($data->eFarm);
 
 		\farm\FarmerLib::register($data->eFarm);
 

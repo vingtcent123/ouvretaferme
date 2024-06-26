@@ -13,8 +13,6 @@
 	})
 	->create(function($data) {
 
-		$data->eFarm['selling'] = \selling\ConfigurationLib::getByFarm($data->eFarm);
-
 		\farm\FarmerLib::register($data->eFarm);
 
 		$data->eDate = \shop\DateLib::getById(GET('date'));
@@ -37,9 +35,5 @@
 		throw new ReloadAction('shop', 'Product::deleted');
 	})
 	->doUpdateProperties('doUpdateStatus', ['status'], fn($data) => throw new ViewAction($data))
-	->quick(['stock', 'price'], [
-		'price' => function($data) {
-			$data->e['date']['farm']['selling'] = \selling\ConfigurationLib::getByFarm($data->e['date']['farm']);
-		}
-	]);
+	->quick(['stock', 'price']);
 ?>

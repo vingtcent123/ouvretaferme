@@ -120,15 +120,12 @@
 
 		[$data->cSale, $data->nSale] = \selling\SaleLib::getByFarm($data->eFarm, $data->type, $data->page * 100, 100, $data->search);
 
-		$data->eFarm['selling'] = \selling\ConfigurationLib::getByFarm($data->eFarm);
-
 		throw new ViewAction($data, ':sellingSales');
 
 	})
 	->get('/ferme/{id}/clients', function($data) {
 
 		$data->eFarm->validate('canSelling');
-		$data->eFarm['selling'] = \selling\ConfigurationLib::getByFarm($data->eFarm);
 
 		\farm\FarmerLib::setView('viewSelling', $data->eFarm, \farm\Farmer::CUSTOMER);
 
@@ -158,16 +155,12 @@
 
 		$data->cProduct = \selling\ProductLib::getByFarm($data->eFarm, selectSales: TRUE, search: $data->search);
 
-		$data->eFarm['selling'] = \selling\ConfigurationLib::getByFarm($data->eFarm);
-
 		throw new ViewAction($data);
 
 	})
 	->get('/ferme/{id}/boutiques', function($data) {
 
 		$data->eFarm->validate('canSelling');
-
-		$data->eFarm['selling'] = \selling\ConfigurationLib::getByFarm($data->eFarm);
 
 		\farm\FarmerLib::setView('viewSelling', $data->eFarm, \farm\Farmer::SHOP);
 
@@ -230,8 +223,6 @@
 		\farm\FarmerLib::setView('viewSellingSales', $data->eFarm, \farm\Farmer::LABEL);
 
 		$data->cSale = \selling\SaleLib::getByFarmForLabel($data->eFarm);
-
-		$data->eFarm['selling'] = \selling\ConfigurationLib::getByFarm($data->eFarm);
 
 		throw new ViewAction($data);
 

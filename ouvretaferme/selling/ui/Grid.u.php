@@ -59,7 +59,7 @@ class GridUi {
 
 				$eCustomer = $eGrid['customer'];
 
-				$taxes = $eProduct['farm']->hasVat() ? CustomerUi::getTaxes($eCustomer['type']) : '';
+				$taxes = $eProduct['farm']->getSelling('hasVat') ? CustomerUi::getTaxes($eCustomer['type']) : '';
 				$unit = ProductUi::p('unit')->values[$eProduct['unit']];
 
 				$h .= '<tr>';
@@ -148,7 +148,7 @@ class GridUi {
 
 				$eProduct = $eGrid['product'];
 
-				$taxes = $eCustomer['farm']->hasVat() ? CustomerUi::getTaxes($eCustomer['type']) : '';
+				$taxes = $eCustomer['farm']->getSelling('hasVat') ? CustomerUi::getTaxes($eCustomer['type']) : '';
 
 				$unit = ProductUi::p('unit')->values[$eProduct['unit']];
 
@@ -229,7 +229,7 @@ class GridUi {
 			$eGrid = $eProduct['eGrid'];
 
 			$unit = ProductUi::p('unit')->values[$eProduct['unit']];
-			$taxes = $eCustomer['farm']->hasVat() ? CustomerUi::getTaxes($eCustomer['type']) : '';
+			$taxes = $eCustomer['farm']->getSelling('hasVat') ? CustomerUi::getTaxes($eCustomer['type']) : '';
 
 			$h .= '<tr>';
 
@@ -315,7 +315,7 @@ class GridUi {
 			$eGrid = $eCustomer['eGrid'];
 
 			$unit = ProductUi::p('unit')->values[$eProduct['unit']];
-			$taxes = $eProduct['farm']->hasVat() ? CustomerUi::getTaxes($eCustomer['type']) : '';
+			$taxes = $eProduct['farm']->getSelling('hasVat') ? CustomerUi::getTaxes($eCustomer['type']) : '';
 
 			$h .= '<tr>';
 
