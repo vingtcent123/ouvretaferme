@@ -47,7 +47,11 @@
 			$data->cSaleMore = new Collection();
 		}
 
-		$data->e['paymentCondition'] = $data->e['farm']->getSelling('invoicePaymentCondition');
+		$data->e->merge([
+			'paymentCondition' => $data->e['farm']->getSelling('invoicePaymentCondition'),
+			'header' => $data->e['farm']->getSelling('invoiceHeader'),
+			'footer' => $data->e['farm']->getSelling('invoiceFooter')
+		]);
 
 		throw new ViewAction($data);
 
@@ -93,7 +97,7 @@
 
 		throw new ViewAction($data);
 
-	}, propertiesUpdate: ['date', 'paymentCondition'], page: 'doRegenerate', validate: ['canWrite', 'acceptRegenerate'])
+	}, propertiesUpdate: ['date', 'paymentCondition', 'header', 'footer'], page: 'doRegenerate', validate: ['canWrite', 'acceptRegenerate'])
 	->read('/facture/{id}', function($data) {
 
 		$data->e->validate('canRead');
@@ -132,7 +136,9 @@
 
 		$data->e = new \selling\Invoice([
 			'farm' => $data->eFarm,
-			'paymentCondition' => $data->eFarm->getSelling('invoicePaymentCondition')
+			'paymentCondition' => $data->eFarm->getSelling('invoicePaymentCondition'),
+			'header' => $data->eFarm->getSelling('invoiceHeader'),
+			'footer' => $data->eFarm->getSelling('invoiceFooter')
 		]);
 
 		throw new ViewAction($data);
@@ -144,7 +150,7 @@
 
 		$fw = new FailWatch();
 
-		$eInvoice->build(['date', 'paymentCondition'], $_POST);
+		$eInvoice->build(['date', 'paymentCondition', 'header', 'footer'], $_POST);
 
 		$fw->validate();
 

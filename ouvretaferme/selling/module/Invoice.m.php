@@ -66,13 +66,15 @@ class InvoiceModel extends \ModuleModel {
 			'date' => ['date', 'cast' => 'string'],
 			'paymentStatus' => ['enum', [\selling\Invoice::PAID, \selling\Invoice::NOT_PAID], 'cast' => 'enum'],
 			'paymentCondition' => ['editor16', 'min' => 1, 'max' => 400, 'null' => TRUE, 'cast' => 'string'],
+			'header' => ['editor16', 'min' => 1, 'max' => 400, 'null' => TRUE, 'cast' => 'string'],
+			'footer' => ['editor16', 'min' => 1, 'max' => 400, 'null' => TRUE, 'cast' => 'string'],
 			'generation' => ['enum', [\selling\Invoice::WAITING, \selling\Invoice::NOW, \selling\Invoice::PROCESSING, \selling\Invoice::FAIL, \selling\Invoice::SUCCESS], 'cast' => 'enum'],
 			'emailedAt' => ['datetime', 'null' => TRUE, 'cast' => 'string'],
 			'createdAt' => ['datetime', 'cast' => 'string'],
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'document', 'customer', 'sales', 'taxes', 'organic', 'conversion', 'description', 'content', 'farm', 'hasVat', 'vatByRate', 'vat', 'priceExcludingVat', 'priceIncludingVat', 'date', 'paymentStatus', 'paymentCondition', 'generation', 'emailedAt', 'createdAt'
+			'id', 'document', 'customer', 'sales', 'taxes', 'organic', 'conversion', 'description', 'content', 'farm', 'hasVat', 'vatByRate', 'vat', 'priceExcludingVat', 'priceIncludingVat', 'date', 'paymentStatus', 'paymentCondition', 'header', 'footer', 'generation', 'emailedAt', 'createdAt'
 		]);
 
 		$this->propertiesToModule += [
@@ -229,6 +231,14 @@ class InvoiceModel extends \ModuleModel {
 
 	public function wherePaymentCondition(...$data): InvoiceModel {
 		return $this->where('paymentCondition', ...$data);
+	}
+
+	public function whereHeader(...$data): InvoiceModel {
+		return $this->where('header', ...$data);
+	}
+
+	public function whereFooter(...$data): InvoiceModel {
+		return $this->where('footer', ...$data);
 	}
 
 	public function whereGeneration(...$data): InvoiceModel {

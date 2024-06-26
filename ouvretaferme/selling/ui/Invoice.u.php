@@ -454,10 +454,15 @@ class InvoiceUi {
 					self::getCustomers($form, $eFarm, $cSale)
 				);
 
-				$h .= $form->dynamicGroups($e, ['date', 'paymentCondition']);
+				$h .= $form->dynamicGroup($e, 'date');
+
+				$h .= '<div id="invoice-customize" class="hide">';
+					$h .= $form->dynamicGroups($e, ['paymentCondition', 'header', 'footer']);
+				$h .= '</div>';
+
 
 				$h .= $form->group(
-					content: $form->submit(s("Générer les factures"))
+					content: '<div style="display: flex; justify-content: space-between">'.$form->submit(s("Générer les factures")).'<a onclick="Invoice.customize(this)" class="btn btn-outline-secondary">'.s("Personnaliser avant de générer").'</a></div>'
 				);
 
 			} else {
@@ -584,11 +589,15 @@ class InvoiceUi {
 				$sales
 			);
 
-			$h .= $form->dynamicGroups($eInvoice, ['date', 'paymentCondition']);
+			$h .= $form->dynamicGroup($eInvoice, 'date');
+
+			$h .= '<div id="invoice-customize" class="hide">';
+				$h .= $form->dynamicGroups($eInvoice, ['paymentCondition', 'header', 'footer']);
+			$h .= '</div>';
 
 
 			$h .= $form->group(
-				content: $form->submit(s("Générer la facture"))
+				content: '<div style="display: flex; justify-content: space-between">'.$form->submit(s("Générer la facture")).'<a onclick="Invoice.customize(this)" class="btn btn-outline-secondary">'.s("Personnaliser avant de générer").'</a></div>'
 			);
 
 		$h .= $form->close();
@@ -697,6 +706,8 @@ class InvoiceUi {
 		$d = Invoice::model()->describer($property, [
 			'date' => s("Date de facturation"),
 			'paymentCondition' => s("Conditions de paiement"),
+			'header' => s("Texte personnalisé affiché en haut de facture"),
+			'footer' => s("Texte personnalisé affiché en bas de facture"),
 			'paymentStatus' => s("Facturée réglée ?"),
 			'description' => s("Observations internes"),
 		]);

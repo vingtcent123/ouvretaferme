@@ -1,5 +1,12 @@
 class Invoice {
 
+	static customize(target) {
+
+		target.classList.add('hide');
+		qs('#invoice-customize').classList.remove('hide');
+
+	}
+
 	static toggleSelection(target) {
 
 		CheckboxField.all(target, '[name^="batch[]"]', undefined, 'table');

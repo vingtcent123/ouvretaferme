@@ -113,6 +113,8 @@ Invoice:
   date: date
   paymentStatus: enum(PAID, NOT_PAID) = NOT_PAID
   paymentCondition: ?editor16(1, 400)
+  header: ?editor16(1, 400)
+  footer: ?editor16(1, 400)
   generation : enum(WAITING, NOW, PROCESSING, FAIL, SUCCESS)
   emailedAt: ?datetime
   createdAt: datetime = SPECIAL(now)

@@ -207,7 +207,13 @@ class PdfUi {
 				$dateDelivered = '<div class="pdf-document-delivery">'.s("Commande livrée le {value}", \util\DateUi::numeric($eSale['deliveredAt'])).'</div>';
 			}
 
-			$h .= $this->getDocumentTop($type, $eSale, $eFarm, $number, $dateDocument, $dateDelivered);
+			$top = match($type) {
+				Pdf::ORDER_FORM => $eFarm->getSelling('orderFormHeader'),
+				Pdf::INVOICE => $eSale['invoice']['header'],
+				Pdf::DELIVERY_NOTE => NULL,
+			};
+
+			$h .= $this->getDocumentTop($type, $eSale, $eFarm, $number, $dateDocument, $dateDelivered, $top);
 
 			$withPackaging = $cItem->reduce(fn($eItem, $n) => $n + (int)($eItem['packaging'] !== NULL), 0);
 
@@ -271,7 +277,13 @@ class PdfUi {
 					Pdf::DELIVERY_NOTE => NULL
 				};
 
-				$h .= $this->getDocumentBottom($type, $eFarm, $paymentCondition);
+				$footer = match($type) {
+					Pdf::ORDER_FORM => $eFarm->getSelling('orderFormFooter'),
+					Pdf::INVOICE => $eSale['invoice']['footer'],
+					Pdf::DELIVERY_NOTE => NULL
+				};
+
+				$h .= $this->getDocumentBottom($type, $eFarm, $paymentCondition, $footer);
 
 			$h .= '</div>';
 
@@ -292,7 +304,7 @@ class PdfUi {
 			$dateDocument = '<div class="pdf-document-detail-label">'.s("Date").'</div>';
 			$dateDocument .= '<div>'.\util\DateUi::numeric($eInvoice['date']).'</div>';
 
-			$h .= $this->getDocumentTop(Pdf::INVOICE, $eInvoice, $eFarm, $number, $dateDocument);
+			$h .= $this->getDocumentTop(Pdf::INVOICE, $eInvoice, $eFarm, $number, $dateDocument, NULL, $eInvoice['header']);
 
 			$h .= '<div class="pdf-document-body">';
 
@@ -399,7 +411,7 @@ class PdfUi {
 
 				$h .= '</table>';
 
-				$h .= $this->getDocumentBottom(Pdf::INVOICE, $eFarm, $eInvoice['paymentCondition']);
+				$h .= $this->getDocumentBottom(Pdf::INVOICE, $eFarm, $eInvoice['paymentCondition'], $eInvoice['footer']);
 
 			$h .= '</div>';
 
@@ -549,7 +561,7 @@ class PdfUi {
 		
 	}
 
-	protected function getDocumentTop(string $type, Sale|Invoice $e, \farm\Farm $eFarm, string $number, string $dateDocument, ?string $dateDelivered = NULL): string {
+	protected function getDocumentTop(string $type, Sale|Invoice $e, \farm\Farm $eFarm, string $number, string $dateDocument, ?string $dateDelivered, ?string $top): string {
 
 		$eCustomer = $e['customer'];
 		$logo = (new \media\FarmLogoUi())->getUrlByElement($eFarm, 'm');
@@ -618,28 +630,20 @@ class PdfUi {
 
 		$h .= $dateDelivered;
 
-		if($type === Pdf::ORDER_FORM and $eFarm->getSelling('orderFormHeader')) {
-			$h .= '<div class="pdf-document-custom-top">'. (new \editor\EditorUi())->value($eFarm->getSelling('orderFormHeader')).'</div>';
-		}
-
-		if($type === Pdf::INVOICE and $eFarm->getSelling('invoiceHeader')) {
-			$h .= '<div class="pdf-document-custom-top">'. (new \editor\EditorUi())->value($eFarm->getSelling('invoiceHeader')).'</div>';
+		if($top !== NULL) {
+			$h .= '<div class="pdf-document-custom-top">'. (new \editor\EditorUi())->value($top).'</div>';
 		}
 
 		return $h;
 
 	}
 
-	protected function getDocumentBottom(string $type, \farm\Farm $eFarm, ?string $paymentCondition): string {
+	protected function getDocumentBottom(string $type, \farm\Farm $eFarm, ?string $paymentCondition, ?string $footer): string {
 
 		$h = '';
 
-		if($type === Pdf::ORDER_FORM and $eFarm->getSelling('orderFormFooter')) {
-			$h .= '<div class="pdf-document-custom-bottom">'.(new \editor\EditorUi())->value($eFarm->getSelling('orderFormFooter')).'</div>';
-		}
-
-		if($type === Pdf::INVOICE and $eFarm->getSelling('invoiceFooter')) {
-			$h .= '<div class="pdf-document-custom-bottom">'.(new \editor\EditorUi())->value($eFarm->getSelling('invoiceFooter')).'</div>';
+		if($footer !== NULL) {
+			$h .= '<div class="pdf-document-custom-bottom">'.(new \editor\EditorUi())->value($footer).'</div>';
 		}
 
 		if($paymentCondition) {

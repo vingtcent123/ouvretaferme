@@ -72,6 +72,8 @@ class SaleLib extends SaleCrud {
 		$eSale['invoice']['priceIncludingVat'] = $eSale['priceIncludingVat'];
 		$eSale['invoice']['date'] = currentDate();
 		$eSale['invoice']['paymentCondition'] = $eFarm->getSelling('invoicePaymentCondition');
+		$eSale['invoice']['header'] = $eFarm->getSelling('invoiceHeader');
+		$eSale['invoice']['footer'] = $eFarm->getSelling('invoiceFooter');
 		$eSale['invoice']['customer'] = $eSale['customer'];
 		$eSale['cItem'] = self::getItems($eSale);
 
