@@ -19,6 +19,7 @@ abstract class ItemElement extends \Element {
 	const GRAM_100 = 'gram-100';
 	const GRAM_250 = 'gram-250';
 	const GRAM_500 = 'gram-500';
+	const BOX = 'box';
 	const UNIT = 'unit';
 	const BUNCH = 'bunch';
 	const PLANT = 'plant';
@@ -69,7 +70,7 @@ class ItemModel extends \ModuleModel {
 			'parent' => ['element32', 'selling\Item', 'null' => TRUE, 'cast' => 'element'],
 			'description' => ['text8', 'min' => 1, 'max' => NULL, 'null' => TRUE, 'cast' => 'string'],
 			'packaging' => ['decimal', 'digits' => 6, 'decimal' => 2, 'min' => 0.01, 'max' => NULL, 'null' => TRUE, 'cast' => 'float'],
-			'unit' => ['enum', [\selling\Item::KG, \selling\Item::GRAM, \selling\Item::GRAM_100, \selling\Item::GRAM_250, \selling\Item::GRAM_500, \selling\Item::UNIT, \selling\Item::BUNCH, \selling\Item::PLANT], 'null' => TRUE, 'cast' => 'enum'],
+			'unit' => ['enum', [\selling\Item::KG, \selling\Item::GRAM, \selling\Item::GRAM_100, \selling\Item::GRAM_250, \selling\Item::GRAM_500, \selling\Item::BOX, \selling\Item::UNIT, \selling\Item::BUNCH, \selling\Item::PLANT], 'null' => TRUE, 'cast' => 'enum'],
 			'unitPrice' => ['decimal', 'digits' => 8, 'decimal' => 2, 'cast' => 'float'],
 			'discount' => ['int8', 'min' => 0, 'max' => 100, 'cast' => 'int'],
 			'number' => ['float32', 'min' => 0.0, 'max' => NULL, 'cast' => 'float'],

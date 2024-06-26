@@ -27,6 +27,10 @@ class UnitUi {
 				$text = s("{value} x 500 g", $value);
 				break;
 
+			case 'box' :
+				$text = $short ? s("{value} bte", $value) : p("{value} boite", "{value} boites", $value, ['value' => $value]);
+				break;
+
 			case 'bunch' :
 				$text = $short ? s("{value} bte", $value) : p("{value} botte", "{value} bottes", $value, ['value' => $value]);
 				break;
@@ -57,6 +61,7 @@ class UnitUi {
 			'gram-100' => $by ? s("100 g") : s("x 100 g"),
 			'gram-250' => $by ? s("250 g") : s("x 250 g"),
 			'gram-500' => $by ? s("500 g") : s("x 500 g"),
+			'box' => $short ? s("bte(s)") : s("boite(s)"),
 			'bunch' => $short ? s("bte(s)") : s("botte(s)"),
 			'unit' => $short ? s("p.") : s("pièce(s)"),
 			'plant' => $short ? s("p.") : s("plant(s)"),
@@ -73,6 +78,7 @@ class UnitUi {
 			'gram-100' => $by ? s("100 g") : s("x 100 g"),
 			'gram-250' => $by ? s("250 g") : s("x 250 g"),
 			'gram-500' => $by ? s("500 g") : s("x 500 g"),
+			'box' => $short ? s("bte") : s("boite"),
 			'bunch' => $short ? s("bte") : s("botte"),
 			'unit' => $short ? s("p.") : s("pièce"),
 			'plant' => $short ? s("p.") : s("plant"),
@@ -91,6 +97,7 @@ class UnitUi {
 			'gram-100' => self::getSingular('gram-100', noWrap: $noWrap),
 			'gram-250' => self::getSingular('gram-250', noWrap: $noWrap),
 			'gram-500' => self::getSingular('gram-500', noWrap: $noWrap),
+			'box' => self::getSingular('box', noWrap: $noWrap),
 			'bunch' => self::getSingular('bunch', noWrap: $noWrap),
 			'unit' => self::getSingular('unit', noWrap: $noWrap),
 			'plant' => self::getSingular('plant', noWrap: $noWrap),

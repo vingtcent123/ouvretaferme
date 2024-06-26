@@ -40,7 +40,7 @@ class Item extends ItemElement {
 	}
 
 	public function isIntegerUnit(): bool {
-		return in_array($this['unit'], [NULL, Item::UNIT, Item::BUNCH, Item::PLANT, Item::GRAM_250, Item::GRAM_500]);
+		return in_array($this['unit'], [NULL, Item::UNIT, Item::BUNCH, Item::BOX, Item::PLANT, Item::GRAM_250, Item::GRAM_500]);
 	}
 
 	public function build(array $properties, array $input, array $callbacks = [], ?string $for = NULL): array {

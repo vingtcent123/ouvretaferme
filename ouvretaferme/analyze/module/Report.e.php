@@ -152,7 +152,7 @@ class Report extends ReportElement {
 						'farm' => $this['farm'],
 						'unit' => match($eProductSeries['unit']) {
 							\selling\Product::GRAM, \selling\Product::GRAM_100, \selling\Product::GRAM_250, \selling\Product::GRAM_500, \selling\Product::KG => Product::KG,
-							\selling\Product::UNIT, \selling\Product::PLANT => Product::UNIT,
+							\selling\Product::UNIT, \selling\Product::BOX, \selling\Product::PLANT => Product::UNIT,
 							\selling\Product::BUNCH => Product::BUNCH
 						}
 					]);

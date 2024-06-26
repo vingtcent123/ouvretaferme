@@ -12,6 +12,7 @@ abstract class ProductElement extends \Element {
 	const GRAM_100 = 'gram-100';
 	const GRAM_250 = 'gram-250';
 	const GRAM_500 = 'gram-500';
+	const BOX = 'box';
 	const UNIT = 'unit';
 	const BUNCH = 'bunch';
 	const PLANT = 'plant';
@@ -60,7 +61,7 @@ class ProductModel extends \ModuleModel {
 			'variety' => ['text8', 'min' => 1, 'max' => NULL, 'null' => TRUE, 'cast' => 'string'],
 			'size' => ['text8', 'min' => 1, 'max' => NULL, 'null' => TRUE, 'cast' => 'string'],
 			'farm' => ['element32', 'farm\Farm', 'cast' => 'element'],
-			'unit' => ['enum', [\selling\Product::KG, \selling\Product::GRAM, \selling\Product::GRAM_100, \selling\Product::GRAM_250, \selling\Product::GRAM_500, \selling\Product::UNIT, \selling\Product::BUNCH, \selling\Product::PLANT], 'cast' => 'enum'],
+			'unit' => ['enum', [\selling\Product::KG, \selling\Product::GRAM, \selling\Product::GRAM_100, \selling\Product::GRAM_250, \selling\Product::GRAM_500, \selling\Product::BOX, \selling\Product::UNIT, \selling\Product::BUNCH, \selling\Product::PLANT], 'cast' => 'enum'],
 			'private' => ['bool', 'cast' => 'bool'],
 			'privatePrice' => ['decimal', 'digits' => 8, 'decimal' => 2, 'null' => TRUE, 'cast' => 'float'],
 			'privateStep' => ['float32', 'min' => 0.01, 'max' => NULL, 'null' => TRUE, 'cast' => 'float'],
