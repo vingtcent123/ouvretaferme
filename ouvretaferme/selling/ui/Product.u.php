@@ -413,15 +413,14 @@ class ProductUi {
 						}
 						$h .= $eProduct->quick('privatePrice', $value);
 					$h .= '</dd>';
-					$h .= '<dt>'.self::p('privateStep')->label.'</dt>';
-					$h .= '<dd>';
-						if($eProduct['privateStep']) {
+
+					if($eProduct['privateStep']) {
+						$h .= '<dt>'.self::p('privateStep')->label.'</dt>';
+						$h .= '<dd>';
 							$value = \main\UnitUi::getValue($eProduct['privateStep'], $eProduct['unit']);
-						} else {
-							$value = '/';
-						}
-						$h .= $eProduct->quick('privateStep', $value);
-					$h .= '</dd>';
+							$h .= $eProduct->quick('privateStep', $value);
+						$h .= '</dd>';
+					}
 
 				} else {
 					$h .= '<div class="color-muted">'.s("Pas de vente aux particuliers").'</div>';
@@ -456,15 +455,22 @@ class ProductUi {
 						}
 						$h .= $eProduct->quick('proPrice', $value);
 					$h .= '</dd>';
-					$h .= '<dt>'.self::p('proPackaging')->label.'</dt>';
-					$h .= '<dd>';
-						if($eProduct['proPackaging']) {
+
+					if($eProduct['proPackaging']) {
+						$h .= '<dt>'.self::p('proPackaging')->label.'</dt>';
+						$h .= '<dd>';
 							$value = \main\UnitUi::getValue($eProduct['proPackaging'], $eProduct['unit']);
-						} else {
-							$value = '/';
-						}
-						$h .= $eProduct->quick('proPackaging', $value);
-					$h .= '</dd>';
+							$h .= $eProduct->quick('proPackaging', $value);
+						$h .= '</dd>';
+					}
+
+					if($eProduct['proStep']) {
+						$h .= '<dt>'.self::p('proStep')->label.'</dt>';
+						$h .= '<dd>';
+							$value = \main\UnitUi::getValue($eProduct['proStep'], $eProduct['unit']);
+							$h .= $eProduct->quick('proStep', $value);
+						$h .= '</dd>';
+					}
 
 				} else {
 
@@ -543,7 +549,7 @@ class ProductUi {
 			]);
 
 			$h .= '<br/>';
-			$h .= self::getFieldPrices($form, $eProduct);
+			$h .= self::getFieldPrices($form, $eProduct, 'create');
 
 			$h .= $form->group(
 				content: $form->submit(s("Créer le produit"))
@@ -588,7 +594,7 @@ class ProductUi {
 			$h .= $form->dynamicGroups($eProduct, ['variety', 'size', 'description', 'quality', 'vat']);
 
 			$h .= '<br/>';
-			$h .= self::getFieldPrices($form, $eProduct);
+			$h .= self::getFieldPrices($form, $eProduct, 'update');
 
 			$h .= $form->group(
 				content: $form->submit(s("Modifier"))
@@ -603,21 +609,21 @@ class ProductUi {
 
 	}
 
-	private static function getFieldPrices(\util\FormUi $form, Product $eProduct): string {
+	private static function getFieldPrices(\util\FormUi $form, Product $eProduct, string $for): string {
 
 		$h = '<h3>'.s("Clientèle").'</h3>';
 		$h .= '<div class="util-info">'.s("Pour une vente aux particuliers et si aucun prix de vente n'a été saisi, le prix de vente pro augmenté de la TVA sera utilisé dans ce cas, et vice-versa pour une vente aux professionnels. Ces données de base pourront toujours être personnalisées pour chaque client et vente.").'</div>';
 
-		$h .= self::getFieldPrivate($form, $eProduct);
+		$h .= self::getFieldPrivate($form, $eProduct, $for);
 		$h .= '<br/>';
-		$h .= self::getFieldPro($form, $eProduct);
+		$h .= self::getFieldPro($form, $eProduct, $for);
 		$h .= '<br/>';
 
 		return $h;
 
 	}
 
-	private static function getFieldPro(\util\FormUi $form, Product $eProduct): string {
+	private static function getFieldPro(\util\FormUi $form, Product $eProduct, string $for): string {
 
 		$h = '<div class="util-block-dark" data-wrapper="'.Customer::PRO.'-block">';
 
@@ -646,13 +652,27 @@ class ProductUi {
 				)
 			);
 
+			if($for === 'update') {
+
+				$h .= $form->group(
+					self::p('proStep')->label,
+					$form->inputGroup(
+						$form->dynamicField($eProduct, 'proStep', function($d) {
+							$d->placeholder = 1;
+						}).
+						'<div class="input-group-addon" data-ref="product-unit">'.$unit.'</div>'
+					).$form->info(s("Les quantités achetées par les clients dans les boutiques en ligne seront un multiple de cette valeur si vous n'avez pas défini de colis de base."))
+				);
+
+			}
+
 		$h .= '</div>';
 
 		return $h;
 
 	}
 
-	private static function getFieldPrivate(\util\FormUi $form, Product $eProduct): string {
+	private static function getFieldPrivate(\util\FormUi $form, Product $eProduct, string $for): string {
 
 		$h = '<div class="util-block-dark" data-wrapper="'.Customer::PRIVATE.'-block">';
 
@@ -673,13 +693,21 @@ class ProductUi {
 				['wrapper' => 'privatePrice']
 			);
 
-			$h .= $form->group(
-				self::p('privateStep')->label,
-				$form->inputGroup(
-					$form->dynamicField($eProduct, 'privateStep').
-					'<div class="input-group-addon" data-ref="product-unit">'.$unit.'</div>'
-				).$form->info(s("Les quantités achetées par les clients dans les <i>Boutiques en ligne</i> seront toujours un multiple de cette valeur. Laissez ce champ vide si vous souhaitez conserver les valeurs par défaut"))
-			);
+			if($for === 'update') {
+
+				$h .= $form->group(
+					self::p('privateStep')->label,
+					$form->inputGroup(
+						$form->dynamicField($eProduct, 'privateStep', function($d) use ($eProduct) {
+							if($eProduct->offsetExists('id')) {
+								$d->placeholder = \shop\ProductUi::getDefaultPrivateStep($eProduct);
+							}
+						}).
+						'<div class="input-group-addon" data-ref="product-unit">'.$unit.'</div>'
+					).$form->info(s("Les quantités achetées par les clients dans les boutiques en ligne seront un multiple de cette valeur."))
+				);
+
+			}
 
 		$h .= '</div>';
 
@@ -705,6 +733,7 @@ class ProductUi {
 			'pro' => s("Vente aux clients professionnels"),
 			'proPrice' => s("Prix professionnel"),
 			'proPackaging' => s("Colis de base"),
+			'proStep' => s("Multiple de vente"),
 			'vat' => s("Taux de TVA"),
 			'statut' => s("Statut"),
 		]);
@@ -758,6 +787,7 @@ class ProductUi {
 
 			case 'proPrice' :
 			case 'proPackaging' :
+			case 'proStep' :
 				$d->attributes += [
 					'disabled' => function(\util\FormUi $form, Product $e) {
 						return $e['pro'] ? NULL : 'disabled';

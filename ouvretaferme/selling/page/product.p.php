@@ -74,7 +74,7 @@
 		throw new ReloadLayerAction();
 
 	})
-	->quick(['privatePrice', 'privateStep', 'proPrice', 'proPackaging'])
+	->quick(['privatePrice', 'privateStep', 'proPrice', 'proPackaging', 'proStep'])
 	->update()
 	->doUpdate(fn() => throw new ReloadAction('selling', 'Product::updated'))
 	->doUpdateProperties('doUpdateStatus', ['status'], fn($data) => throw new ViewAction($data))

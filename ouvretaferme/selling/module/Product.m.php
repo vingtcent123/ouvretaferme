@@ -64,10 +64,11 @@ class ProductModel extends \ModuleModel {
 			'unit' => ['enum', [\selling\Product::KG, \selling\Product::GRAM, \selling\Product::GRAM_100, \selling\Product::GRAM_250, \selling\Product::GRAM_500, \selling\Product::BOX, \selling\Product::UNIT, \selling\Product::BUNCH, \selling\Product::PLANT], 'cast' => 'enum'],
 			'private' => ['bool', 'cast' => 'bool'],
 			'privatePrice' => ['decimal', 'digits' => 8, 'decimal' => 2, 'null' => TRUE, 'cast' => 'float'],
-			'privateStep' => ['float32', 'min' => 0.01, 'max' => NULL, 'null' => TRUE, 'cast' => 'float'],
+			'privateStep' => ['decimal', 'digits' => 6, 'decimal' => 2, 'min' => 0.01, 'max' => NULL, 'null' => TRUE, 'cast' => 'float'],
 			'pro' => ['bool', 'cast' => 'bool'],
 			'proPrice' => ['decimal', 'digits' => 8, 'decimal' => 2, 'null' => TRUE, 'cast' => 'float'],
 			'proPackaging' => ['float32', 'min' => 0.01, 'max' => NULL, 'null' => TRUE, 'cast' => 'float'],
+			'proStep' => ['decimal', 'digits' => 6, 'decimal' => 2, 'min' => 0.01, 'max' => NULL, 'null' => TRUE, 'cast' => 'float'],
 			'vat' => ['int8', 'min' => 1, 'max' => NULL, 'cast' => 'int'],
 			'quality' => ['enum', [\selling\Product::ORGANIC, \selling\Product::NATURE_PROGRES, \selling\Product::CONVERSION], 'null' => TRUE, 'cast' => 'enum'],
 			'createdAt' => ['datetime', 'cast' => 'string'],
@@ -75,7 +76,7 @@ class ProductModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'name', 'description', 'vignette', 'plant', 'variety', 'size', 'farm', 'unit', 'private', 'privatePrice', 'privateStep', 'pro', 'proPrice', 'proPackaging', 'vat', 'quality', 'createdAt', 'status'
+			'id', 'name', 'description', 'vignette', 'plant', 'variety', 'size', 'farm', 'unit', 'private', 'privatePrice', 'privateStep', 'pro', 'proPrice', 'proPackaging', 'proStep', 'vat', 'quality', 'createdAt', 'status'
 		]);
 
 		$this->propertiesToModule += [
@@ -201,6 +202,10 @@ class ProductModel extends \ModuleModel {
 
 	public function whereProPackaging(...$data): ProductModel {
 		return $this->where('proPackaging', ...$data);
+	}
+
+	public function whereProStep(...$data): ProductModel {
+		return $this->where('proStep', ...$data);
 	}
 
 	public function whereVat(...$data): ProductModel {

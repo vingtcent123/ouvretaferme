@@ -8,11 +8,11 @@ class ProductLib extends ProductCrud {
 	}
 
 	public static function getPropertiesUpdate(): array {
-		return self::getPropertiesWrite();
+		return array_merge(self::getPropertiesWrite(), ['privateStep', 'proStep']);
 	}
 
 	public static function getPropertiesWrite(): array {
-		return ['name', 'variety', 'size', 'description', 'quality', 'plant', 'pro', 'proPrice', 'proPackaging', 'private', 'privatePrice', 'privateStep', 'vat'];
+		return ['name', 'variety', 'size', 'description', 'quality', 'plant', 'pro', 'proPrice', 'proPackaging', 'private', 'privatePrice', 'vat'];
 	}
 
 	public static function getFromQuery(string $query, \farm\Farm $eFarm, ?string $type, ?array $properties = []): \Collection {
@@ -134,7 +134,7 @@ class ProductLib extends ProductCrud {
 			->select([
 				'id', 'name', 'variety', 'vignette', 'size', 'unit',
 				'privatePrice', 'privateStep',
-				'proPrice', 'proPackaging',
+				'proPrice', 'proPackaging', 'proStep',
 				'vat',
 				'eGrid' => Grid::model()
 					->select(['id', 'price', 'packaging'])

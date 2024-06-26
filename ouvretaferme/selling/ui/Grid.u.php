@@ -37,10 +37,6 @@ class GridUi {
 
 		} else {
 
-			$h .= '<div class="util-info">';
-				$h .= s("Uniquement les prix personnalisés pour ce produit et en cours de validité.");
-			$h .= '</div>';
-
 			$h .= '<table class="customer-price tr-even">';
 
 			$h .= '<tr>';

@@ -207,10 +207,11 @@ Product:
   unit: enum(KG, GRAM, GRAM_100, GRAM_250, GRAM_500, BOX, UNIT, BUNCH, PLANT) = KG
   private: bool = TRUE
   privatePrice: ?decimal(8, 2)
-  privateStep: ?float32(0.01, null)
+  privateStep: ?decimal(6, 2, 0.01, null)
   pro: bool = TRUE
   proPrice: ?decimal(8, 2)
   proPackaging: ?float32(0.01, null)
+  proStep: ?decimal(6, 2, 0.01, null)
   vat: int8(1, null)
   quality: ?enum(ORGANIC, NATURE_PROGRES, CONVERSION)
   createdAt: datetime = SPECIAL(now)

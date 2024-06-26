@@ -219,7 +219,7 @@ class ProductUi {
 
 		return match($eDate['type']) {
 			Date::PRIVATE => $eProduct['privateStep'] ?? self::getDefaultPrivateStep($eProduct),
-			Date::PRO => 1,
+			Date::PRO => $eProduct['proStep'] ?? 1,
 		};
 
 	}
