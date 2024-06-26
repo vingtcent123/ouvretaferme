@@ -48,6 +48,7 @@
 
 		$data->cActionTimesheet = \farm\AnalyzeLib::getActionTimesheet($data->e, $data->eCategory, $data->year);
 		[$data->cTimesheetMonth, $data->cTimesheetUser] = \farm\AnalyzeLib::getActionMonths($data->e, $data->eCategory, $data->year);
+		[$data->cTimesheetMonthBefore] = \farm\AnalyzeLib::getActionMonths($data->e, $data->eCategory, $data->year - 1);
 
 		throw new ViewAction($data);
 

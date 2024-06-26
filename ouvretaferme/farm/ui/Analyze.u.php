@@ -10,7 +10,7 @@ class AnalyzeUi {
 
 	}
 
-	public function getActionTime(\farm\Action $eAction, Category $eCategory, int $year, \Collection $cActionTimesheet, \Collection $cTimesheetMonth, \Collection $cTimesheetUser): \Panel {
+	public function getActionTime(\farm\Action $eAction, Category $eCategory, int $year, \Collection $cActionTimesheet, \Collection $cTimesheetMonth, \Collection $cTimesheetMonthBefore, \Collection $cTimesheetUser): \Panel {
 
 		$h = '';
 
@@ -25,7 +25,7 @@ class AnalyzeUi {
 				$h .= '<h3>'.s("Temps de travail mensuel").'</h3>';
 				$h .= '<div class="analyze-chart-table">';
 					$h .= (new \series\AnalyzeUi())->getPeriodMonthTable($cTimesheetMonth, $eAction['farm']->canPersonalData() ? $cTimesheetUser : new \Collection());
-					$h .= (new \series\AnalyzeUi())->getPeriodMonthChart($cTimesheetMonth);
+					$h .= (new \series\AnalyzeUi())->getPeriodMonthChart($cTimesheetMonth, $year, $cTimesheetMonthBefore, $year - 1);
 				$h .= '</div>';
 
 			} else {

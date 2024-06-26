@@ -646,6 +646,7 @@
 
 				case \farm\Farmer::PERIOD :
 					$data->cWorkingTimeMonth = \series\AnalyzeLib::getFarmMonths($data->eFarm, $data->year);
+					$data->cWorkingTimeMonthBefore = \series\AnalyzeLib::getFarmMonths($data->eFarm, $data->year - 1);
 					break;
 
 				default :

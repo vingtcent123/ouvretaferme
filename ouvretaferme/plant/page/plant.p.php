@@ -66,6 +66,7 @@
 		[$data->cTimesheetByAction, $data->cTimesheetByUser] = \series\AnalyzeLib::getActionTimesheetByPlant($data->e, $data->year);
 
 		$data->cPlantMonth = \series\AnalyzeLib::getPlantMonths($data->e, $data->year);
+		$data->cPlantMonthBefore = \series\AnalyzeLib::getPlantMonths($data->e, $data->year - 1);
 
 		throw new ViewAction($data);
 

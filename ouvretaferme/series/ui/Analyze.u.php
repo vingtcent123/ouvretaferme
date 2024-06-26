@@ -13,7 +13,7 @@ class AnalyzeUi {
 
 	}
 
-	public function getPeriod(\Collection $cWorkingTimeMonth): string {
+	public function getPeriod(int $year, \Collection $cWorkingTimeMonth, \Collection $cWorkingTimeMonthBefore): string {
 
 		if($cWorkingTimeMonth->empty()) {
 			$h = '<div class="util-info">';
@@ -23,7 +23,7 @@ class AnalyzeUi {
 		}
 
 		$h = '<h2>'.s("Temps de travail mensuel").'</h2>';
-		$h .= $this->getPeriodMonthChart($cWorkingTimeMonth);
+		$h .= $this->getPeriodMonthChart($cWorkingTimeMonth, $year, $cWorkingTimeMonthBefore, $year - 1);
 
 		return $h;
 
@@ -177,9 +177,22 @@ class AnalyzeUi {
 
 	}
 
-	public function getPeriodMonthChart(\Collection $cWorkingTimeMonth): string {
+	public function getPeriodMonthChart(\Collection $cWorkingTimeMonth, int $yearNow, \Collection $cWorkingTimeMonthBefore, int $yearBefore): string {
 
 		\Asset::jsUrl('https://cdn.jsdelivr.net/npm/chart.js');
+
+		[$timesNow, $labelsNow] = $this->extractMonthChartValues($cWorkingTimeMonth);
+		[$timesBefore] = $this->extractMonthChartValues($cWorkingTimeMonthBefore);
+
+		$h = '<div class="analyze-bar">';
+			$h .= '<canvas '.attr('onrender', 'Analyze.createDoubleBar(this, "'.s("Temps de travail {value}", $yearNow).'", '.json_encode($timesNow).', "'.s("Temps de travail {value}", $yearBefore).'", '.json_encode($timesBefore).', '.json_encode($labelsNow).', undefined, "h")').'</canvas>';
+		$h .= '</div>';
+
+		return $h;
+
+	}
+
+	protected function extractMonthChartValues(\Collection $cWorkingTimeMonth): array {
 
 		$times = [];
 		$labels = [];
@@ -200,11 +213,7 @@ class AnalyzeUi {
 
 		}
 
-		$h = '<div class="analyze-bar">';
-			$h .= '<canvas '.attr('onrender', 'Analyze.createBar(this, "'.s("Temps de travail").'", '.json_encode($times).', '.json_encode($labels).', undefined, "h")').'</canvas>';
-		$h .= '</div>';
-
-		return $h;
+		return [$times, $labels];
 
 	}
 
@@ -514,7 +523,7 @@ class AnalyzeUi {
 
 	}
 
-	public function getPlantTime(\plant\Plant $ePlant, int $year, \Collection $cPlantTimesheet, \Collection $cTimesheetByAction, \Collection $cTimesheetByUser, \Collection $cPlantMonth): \Panel {
+	public function getPlantTime(\plant\Plant $ePlant, int $year, \Collection $cPlantTimesheet, \Collection $cTimesheetByAction, \Collection $cTimesheetByUser, \Collection $cPlantMonth, \Collection $cPlantMonthBefore): \Panel {
 
 		$h = '';
 
@@ -535,7 +544,7 @@ class AnalyzeUi {
 				$h .= '<h3>'.s("Temps de travail mensuel").'</h3>';
 				$h .= '<div class="analyze-chart-table">';
 					$h .= $this->getPeriodMonthTable($cPlantMonth);
-					$h .= $this->getPeriodMonthChart($cPlantMonth);
+					$h .= $this->getPeriodMonthChart($cPlantMonth, $year, $cPlantMonthBefore, $year - 1);
 				$h .= '</div>';
 
 			} else {
