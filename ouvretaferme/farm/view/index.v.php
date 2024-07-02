@@ -487,7 +487,7 @@ new AdaptativeView('/ferme/{id}/produits', function($data, FarmTemplate $t) {
 
 		echo '<h3>'.s("Ajouter un premier produit").'</h3>';
 
-		echo (new \selling\ProductUi())->create($data->eFarm)->body;
+		echo (new \selling\ProductUi())->create($data->eFarm, new Collection())->body;
 
 	} else {
 
