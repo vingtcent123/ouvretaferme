@@ -1913,7 +1913,14 @@ a.panel-back {
 	width: 3rem;
 	height: 3rem;
 	line-height: 1;
+	transition: background-color 0.5s;
 }
+
+a.panel-back:hover {
+	color: white;
+	background-color: var(--primary);
+}
+
 .panel-title {
 	margin: 0;
 	font-size: 1.75rem;
@@ -2204,6 +2211,26 @@ body[data-touch="yes"] .dropdown-list.dropdown-list-open {
 	content: "";
 	margin-left: 0.5em;
 	vertical-align: middle;
+}
+
+a.h-back {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	background-color: var(--secondary);
+	color: white;
+	border-radius: 50%;
+	font-size: 0.66em;
+	width: 1.5em;
+	height: 1.5em;
+	line-height: 1;
+	margin-right: .5em;
+	transition: background-color 0.5s;
+}
+
+a.h-back:hover {
+	color: white;
+	background-color: var(--primary);
 }
 
 h1 .dropdown-toggle:after {

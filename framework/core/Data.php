@@ -926,6 +926,16 @@ class Collection extends ArrayIterator {
 
 	}
 
+	public function validateProperty(string $property, mixed $value): Collection {
+
+		foreach($this as $e) {
+			$e->validateProperty($property, $value);
+		}
+
+		return $this;
+
+	}
+
 	/**
 	 * Same as array + operator
 	 * @return Collection the union of the current Collection with the Collection sent as parameter

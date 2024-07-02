@@ -465,7 +465,6 @@ class SaleUi {
 			$h .= \util\TextUi::pagination($page, $nSale / 100);
 		}
 
-
 		$h .= $this->getBatch();
 
 		return $h;

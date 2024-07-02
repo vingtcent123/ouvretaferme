@@ -148,12 +148,35 @@
 
 		\farm\FarmerLib::setView('viewSelling', $data->eFarm, \farm\Farmer::PRODUCT);
 
+		$data->cCategory = \selling\CategoryLib::getByFarm($data->eFarm, index: 'id');
+
+		if(get_exists('category')) {
+
+			$data->eCategory = \selling\Product::GET('category', 'category', new \selling\Category());
+
+			if($data->eCategory->notEmpty()) {
+
+				if($data->cCategory->offsetExists($data->eCategory['id']) === FALSE){
+					throw new NotExpectedAction('Invalid category');
+				} else {
+					\farm\FarmerLib::setView('viewSellingProductCategory', $data->eFarm, $data->eCategory);
+				}
+
+			}
+
+		} else {
+			$data->eCategory = Setting::get('main\viewSellingProductCategory');
+		}
+
 		$data->search = new Search([
+			'category' => $data->eCategory,
 			'name' => GET('name'),
 			'plant' => GET('plant')
 		], GET('sort', default: 'name'));
 
-		$data->cProduct = \selling\ProductLib::getByFarm($data->eFarm, selectSales: TRUE, search: $data->search);
+
+		$data->products = \selling\ProductLib::countByFarm($data->eFarm, $data->search);
+		$data->cProduct = \selling\ProductLib::getByFarm($data->eFarm, $data->eCategory, selectSales: TRUE, search: $data->search);
 
 		throw new ViewAction($data);
 

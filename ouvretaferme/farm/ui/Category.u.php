@@ -101,7 +101,10 @@ class CategoryUi {
 
 		$h = '<div class="util-action">';
 
-			$h .= '<h1>'.s("Les catégories").'</h1>';
+			$h .= '<h1>';
+				$h .= '<a href="/farm/action:manage?farm='.$eFarm['id'].'"   class="h-back">'.\Asset::icon('arrow-left').'</a>';
+				$h .= s("Les catégories");
+			$h .= '</h1>';
 
 			if($cCategory->count() < \Setting::get('farm\categoriesLimit')) {
 
@@ -115,10 +118,6 @@ class CategoryUi {
 
 		$h .= '<p class="util-info">';
 			$h .= p("Vous avez actuellement configuré {value} catégorie sur {max} possibles.", "Vous avez actuellement configuré {value} catégories sur {max} possibles.", $cCategory->count(), ['max' => \Setting::get('farm\categoriesLimit')]);
-		$h .= '</p>';
-
-		$h .= '<p>';
-			$h .= '<a href="/farm/action:manage?farm='.$eFarm['id'].'" class="btn btn-outline-secondary">'.\Asset::icon('chevron-left').' '.s("Revenir sur les interventions").'</a>';
 		$h .= '</p>';
 
 		$h .= '<br/>';

@@ -491,19 +491,29 @@ new AdaptativeView('/ferme/{id}/produits', function($data, FarmTemplate $t) {
 
 	} else {
 
-
 		echo '<div class="util-action">';
 			echo '<h1>'.s("Produits").'</h1>';
 			echo '<div>';
 				echo '<a '.attr('onclick', 'Lime.Search.toggle("#product-search")').' class="btn btn-primary">'.\Asset::icon('search').'</a> ';
 				if($data->eFarm->canManage()) {
-					echo '<a href="/selling/product:create?farm='.$data->eFarm['id'].'" class="btn btn-primary">'.\Asset::icon('plus-circle').'<span class="hide-xs-down"> '.s("Nouveau produit").'</span></a>';
+
+					if(array_sum($data->products) > 5) {
+						echo '<a data-dropdown="bottom-end" class="btn btn-primary dropdown-toggle">'.\Asset::icon('gear-fill').'</a>';
+						echo '<div class="dropdown-list">';
+							echo '<div class="dropdown-title">'.s("Produits").'</div>';
+							echo '<a href="/selling/product:create?farm='.$data->eFarm['id'].'" class="dropdown-item">'.s("Ajouter un produit").'</a>';
+							echo '<a href="/selling/category:manage?farm='.$data->eFarm['id'].'" class="dropdown-item">'.s("Personnaliser des catégories").'</a>';
+						echo '</div>';
+					} else {
+						echo '<a href="/selling/product:create?farm='.$data->eFarm['id'].'" class="btn btn-primary">'.\Asset::icon('plus-circle').'<span class="hide-xs-down"> '.s("Nouveau produit").'</span></a>';
+					}
+
 				}
 			echo '</div>';
 		echo '</div>';
 
 		echo (new \selling\ProductUi())->getSearch($data->eFarm, $data->search);
-		echo (new \selling\ProductUi())->getList($data->eFarm, $data->cProduct, $data->search);
+		echo (new \selling\ProductUi())->getList($data->eFarm, $data->cProduct, $data->products, $data->cCategory, $data->search);
 
 	}
 

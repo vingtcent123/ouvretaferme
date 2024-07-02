@@ -119,6 +119,7 @@ class FarmerModel extends \ModuleModel {
 			'viewSelling' => ['enum', [\farm\Farmer::SALE, \farm\Farmer::PRODUCT, \farm\Farmer::CUSTOMER, \farm\Farmer::SHOP], 'cast' => 'enum'],
 			'viewSellingSales' => ['enum', [\farm\Farmer::ALL, \farm\Farmer::PRIVATE, \farm\Farmer::PRO, \farm\Farmer::INVOICE, \farm\Farmer::LABEL], 'cast' => 'enum'],
 			'viewSellingCategory' => ['enum', [\farm\Farmer::ITEM, \farm\Farmer::CUSTOMER, \farm\Farmer::SHOP, \farm\Farmer::PERIOD], 'cast' => 'enum'],
+			'viewSellingProductCategory' => ['element32', 'selling\Category', 'null' => TRUE, 'cast' => 'element'],
 			'viewMap' => ['enum', [\farm\Farmer::CARTOGRAPHY, \farm\Farmer::SOIL, \farm\Farmer::HISTORY], 'cast' => 'enum'],
 			'viewAnalyze' => ['enum', [\farm\Farmer::WORKING_TIME, \farm\Farmer::REPORT, \farm\Farmer::SALES, \farm\Farmer::CULTIVATION], 'cast' => 'enum'],
 			'viewAnalyzeYear' => ['int16', 'min' => 0, 'max' => NULL, 'null' => TRUE, 'cast' => 'int'],
@@ -129,13 +130,14 @@ class FarmerModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'user', 'farm', 'farmGhost', 'farmStatus', 'status', 'role', 'viewPlanning', 'viewPlanningYear', 'viewPlanningCategory', 'viewPlanningHarvestExpected', 'viewPlanningField', 'viewPlanningSearch', 'viewPlanningUser', 'viewCultivation', 'viewCultivationCategory', 'viewSeries', 'viewSelling', 'viewSellingSales', 'viewSellingCategory', 'viewMap', 'viewAnalyze', 'viewAnalyzeYear', 'viewSettings', 'viewSeason', 'viewShop', 'createdAt'
+			'id', 'user', 'farm', 'farmGhost', 'farmStatus', 'status', 'role', 'viewPlanning', 'viewPlanningYear', 'viewPlanningCategory', 'viewPlanningHarvestExpected', 'viewPlanningField', 'viewPlanningSearch', 'viewPlanningUser', 'viewCultivation', 'viewCultivationCategory', 'viewSeries', 'viewSelling', 'viewSellingSales', 'viewSellingCategory', 'viewSellingProductCategory', 'viewMap', 'viewAnalyze', 'viewAnalyzeYear', 'viewSettings', 'viewSeason', 'viewShop', 'createdAt'
 		]);
 
 		$this->propertiesToModule += [
 			'user' => 'user\User',
 			'farm' => 'farm\Farm',
 			'viewPlanningUser' => 'user\User',
+			'viewSellingProductCategory' => 'selling\Category',
 			'viewShop' => 'shop\Shop',
 		];
 
@@ -369,6 +371,10 @@ class FarmerModel extends \ModuleModel {
 
 	public function whereViewSellingCategory(...$data): FarmerModel {
 		return $this->where('viewSellingCategory', ...$data);
+	}
+
+	public function whereViewSellingProductCategory(...$data): FarmerModel {
+		return $this->where('viewSellingProductCategory', ...$data);
 	}
 
 	public function whereViewMap(...$data): FarmerModel {

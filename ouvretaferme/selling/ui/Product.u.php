@@ -78,9 +78,10 @@ class ProductUi {
 
 		$form = new \util\FormUi();
 
-		$h = '<div id="product-search" class="util-block-search '.($search->empty() ? 'hide' : '').'">';
+		$h = '<div id="product-search" class="util-block-search '.($search->empty(['category']) ? 'hide' : '').'">';
 
 			$h .= $form->openAjax(\farm\FarmUi::urlSellingProduct($eFarm), ['method' => 'get', 'id' => 'form-search']);
+				$h .= $form->hidden('category', $search->get('category'));
 				$h .= '<div>';
 					$h .= $form->text('name', $search->get('name'), ['placeholder' => s("Nom du produit")]);
 					$h .= $form->text('plant', $search->get('plant'), ['placeholder' => s("Espèce")]);
@@ -95,22 +96,54 @@ class ProductUi {
 
 	}
 
-	public function getList(\farm\Farm $eFarm, \Collection $cProduct, \Search $search) {
+	public function getList(\farm\Farm $eFarm, \Collection $cProduct, array $products, \Collection $cCategory, \Search $search) {
+
+		$h = '';
+
+		if($cCategory->notEmpty()) {
+
+			$eCategorySelected = $search->get('category');
+
+			$h .= '<div class="tabs-item">';
+
+				foreach($cCategory as $eCategory) {
+
+					$url = \util\HttpUi::setArgument(LIME_REQUEST, 'category', $eCategory['id'], FALSE);
+
+					$h .= '<a href="'.$url.'" class="tab-item '.(($eCategorySelected->notEmpty() and $eCategorySelected['id'] === $eCategory['id']) ? 'selected' : '').'">'.encode($eCategory['name']).' <small class="tab-item-count">'.($products[$eCategory['id']] ?? 0).'</small></a>';
+
+				}
+
+				$url = \util\HttpUi::setArgument(LIME_REQUEST, 'category', '', FALSE);
+
+				$h .= '<a href="'.$url.'" class="tab-item '.($eCategorySelected->empty() ? 'selected' : '').'">'.s("Non catégorisé").' <small class="tab-item-count">'.($products[NULL] ?? 0).'</small></a>';
+
+			$h .= '</div>';
+
+		}
 
 		if($cProduct->empty()) {
-			return '<div class="util-info">'.s("Il n'y a aucun produit à afficher.").'</div>';
+			$h .= '<div class="util-info">'.s("Il n'y a aucun produit à afficher.").'</div>';
+			return $h;
 		}
 
 		$year = date('Y');
 		$yearBefore = $year - 1;
 
-		$h = '<div class="product-item-wrapper stick-xs">';
+		$h .= '<div class="product-item-wrapper stick-xs">';
 
 		$h .= '<table class="product-item-table tr-bordered tr-even">';
 
 			$h .= '<thead>';
 
 				$h .= '<tr>';
+
+					$h .= '<th rowspan="2" class="td-min-content">';
+						$h .= '<label title="'.s("Tout cocher / Tout décocher").'">';
+							$h .= '<input type="checkbox" class="batch-all" onclick="Product.toggleSelection(this)"/>';
+						$h .= '</label>';
+					$h .= '</th>';
+
 					$h .= '<th rowspan="2" class="product-item-vignette"></th>';
 					$h .= '<th rowspan="2" colspan="2">'.$search->linkSort('name', s("Nom")).'</th>';
 					$h .= '<th colspan="2" class="text-center highlight hide-xs-down">'.s("Ventes").'</th>';
@@ -139,6 +172,12 @@ class ProductUi {
 				$eItemTotal = $eProduct['eItemTotal'];
 
 				$h .= '<tr>';
+
+					$h .= '<td class="td-min-content sale-item-select">';
+						$h .= '<label>';
+							$h .= '<input type="checkbox" name="batch[]" value="'.$eProduct['id'].'" oninput="Product.changeSelection()"/>';
+						$h .= '</label>';
+					$h .= '</td>';
 				
 					$h .= '<td class="product-item-vignette">';
 						$h .= (new \media\ProductVignetteUi())->getCamera($eProduct, size: '4rem');
@@ -246,7 +285,44 @@ class ProductUi {
 
 		$h .= '</div>';
 
+		$h .= $this->getBatch($cCategory);
+
 		return $h;
+
+	}
+
+	public function getBatch(\Collection $cCategory): string {
+
+		$menu = '';
+
+		if($cCategory->count() > 0) {
+
+			$menu .= '<a data-dropdown="top-start" class="batch-menu-category batch-menu-item">';
+				$menu .= \Asset::icon('tag');
+				$menu .= '<span>'.s("Catégorie").'</span>';
+			$menu .= '</a>';
+
+			$menu .= '<div class="dropdown-list bg-secondary">';
+				$menu .= '<div class="dropdown-title">'.s("Changer de catégorie").'</div>';
+				foreach($cCategory as $eCategory) {
+					$menu .= '<a data-ajax-submit="/selling/product:doUpdateCategoryCollection" data-ajax-target="#batch-group-form" post-category="'.$eCategory['id'].'" class="dropdown-item">'.encode($eCategory['name']).'</a>';
+				}
+				$menu .= '<a data-ajax-submit="/selling/product:doUpdateCategoryCollection" data-ajax-target="#batch-group-form" post-category="" class="dropdown-item"><i>'.s("Non catégorisé").'</i></a>';
+			$menu .= '</div>';
+
+		}
+
+		$menu .= '<a data-ajax-submit="/selling/product:doUpdateStatusCollection" post-status="'.Product::ACTIVE.'" data-confirm="'.s("Activer ces produits ?").'" class="batch-menu-active batch-menu-item">';
+			$menu .= \Asset::icon('toggle-on');
+			$menu .= '<span>'.s("Activer").'</span>';
+		$menu .= '</a>';
+
+		$menu .= '<a data-ajax-submit="/selling/product:doUpdateStatusCollection" post-status="'.Product::INACTIVE.'" data-confirm="'.s("Désactiver ces produits ?").'" class="batch-menu-inactive batch-menu-item">';
+			$menu .= \Asset::icon('toggle-off');
+			$menu .= '<span>'.s("Désactiver").'</span>';
+		$menu .= '</a>';
+
+		return \util\BatchUi::group($menu);
 
 	}
 
@@ -505,12 +581,13 @@ class ProductUi {
 
 	}
 
-	public function create(\farm\Farm $eFarm): \Panel {
+	public function create(\farm\Farm $eFarm, \Collection $cCategory): \Panel {
 
 		$form = new \util\FormUi();
 
 		$eProduct = new Product([
 			'farm' => $eFarm,
+			'cCategory' => $cCategory,
 			'quality' => $eFarm['quality'],
 			'vat' => $eFarm->getSelling('defaultVat'),
 			'private' => TRUE,
@@ -538,7 +615,13 @@ class ProductUi {
 				})
 			);
 
-			$h .= $form->dynamicGroups($eProduct, ['name*', 'unit', 'variety', 'size', 'description', 'quality', 'vat'], [
+			$h .= $form->dynamicGroup($eProduct, 'name*');
+
+			if($eProduct['cCategory']->notEmpty()) {
+				$h .= $form->dynamicGroup($eProduct, 'category');
+			}
+
+			$h .= $form->dynamicGroups($eProduct, ['unit', 'variety', 'size', 'description', 'quality', 'vat'], [
 				'unit' => function(\PropertyDescriber $d) {
 					$d->attributes += [
 						'callbackRadioAttributes' => function() {
@@ -586,7 +669,12 @@ class ProductUi {
 				})
 			);
 
-			$h .= $form->dynamicGroups($eProduct, ['name']);
+			$h .= $form->dynamicGroup($eProduct, 'name');
+
+			if($eProduct['cCategory']->notEmpty()) {
+				$h .= $form->dynamicGroup($eProduct, 'category');
+			}
+
 			$h .= $form->group(
 				self::p('unit')->label,
 				$form->fake(mb_ucfirst($eProduct['unit'] ? \main\UnitUi::getSingular($eProduct['unit']) : self::p('unit')->placeholder))
@@ -718,6 +806,7 @@ class ProductUi {
 	public static function p(string $property): \PropertyDescriber {
 
 		$d = Product::model()->describer($property, [
+			'category' => s("Catégorie"),
 			'plant' => s("Espèce"),
 			'vignette' => s("Vignette"),
 			'name' => s("Nom du produit"),
@@ -742,6 +831,15 @@ class ProductUi {
 
 			case 'name' :
 				$d->placeholder = s("Ex. : Pomme de terre");
+				break;
+
+			case 'category' :
+				$d->placeholder = s("Non catégorisé");
+				$d->field = 'radio';
+				$d->values = fn(Product $e) => $e['cCategory'] ?? $e->expects(['cCategory']);
+				$d->attributes = [
+					'columns' => 2,
+				];
 				break;
 
 			case 'plant' :

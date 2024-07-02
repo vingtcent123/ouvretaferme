@@ -90,9 +90,14 @@ class AlertUi {
 			'Market::pricesUpdated' => s("Les nouveaux prix des produits proposés à la vente ont bien été enregistrés."),
 			'Market::closed' => s("Le marché a bien été clôturé !"),
 
+			'Category::created' => s("La catégorie a bien été créée."),
+			'Category::updated' => s("La catégorie a bien été mise à jour."),
+			'Category::deleted' => s("La catégorie a bien été supprimée."),
+
 			'Product::created' => s("Le produit a bien été ajouté."),
 			'Product::updated' => s("Le produit a bien été mis à jour."),
 			'Product::deleted' => s("Le produit a bien été supprimé."),
+			'Product::categoryUpdated' => s("La catégorie a bien été modifiée."),
 
 			'Sale::created' => s("La vente a bien été créée."),
 			'Sale::updated' => s("La vente a bien été mise à jour."),

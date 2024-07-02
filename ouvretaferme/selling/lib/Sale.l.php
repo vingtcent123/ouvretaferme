@@ -560,12 +560,18 @@ class SaleLib extends SaleCrud {
 
 		$e->build(['shopDate'], [], for: 'update');
 
+		$properties = ['from', 'shop', 'shopDate'];
+
 		if($e['preparationStatus'] === Sale::BASKET) {
+
 			$e['oldStatus'] = Sale::BASKET;
 			$e['preparationStatus'] = Sale::DRAFT;
+
+			$properties[] = 'preparationStatus';
+
 		}
 
-		self::update($e, ['from', 'shop', 'shopDate', 'preparationStatus']);
+		self::update($e, $properties);
 
 	}
 
@@ -677,7 +683,6 @@ class SaleLib extends SaleCrud {
 		Sale::model()->commit();
 
 	}
-
 
 	public static function updateCustomer(Sale $e, Customer $eCustomer): void {
 

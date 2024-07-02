@@ -32,4 +32,18 @@ class Product {
 
 	}
 
+	static toggleSelection(target) {
+
+		CheckboxField.all(target, '[name^="batch[]"]', undefined, 'table');
+
+		this.changeSelection(target);
+
+	}
+
+	static changeSelection() {
+
+		return Batch.changeSelection(() => {});
+
+	}
+
 }

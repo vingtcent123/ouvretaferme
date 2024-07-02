@@ -104,6 +104,21 @@ class Product extends ProductElement {
 
 		return parent::build($properties, $input, $callbacks + [
 
+			'category.check' => function(Category $eCategory): bool {
+
+				$this->expects(['farm']);
+
+				return (
+					$eCategory->empty() or (
+						Category::model()
+							->select('farm')
+							->get($eCategory) and
+						$eCategory->canRead()
+					)
+				);
+
+			},
+
 			'plant.check' => function(\plant\Plant $ePlant): bool {
 
 				return (

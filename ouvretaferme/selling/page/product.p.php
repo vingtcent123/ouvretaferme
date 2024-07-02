@@ -9,9 +9,16 @@
 		]);
 
 	})
-	->create()
+	->create(function($data) {
+
+		$data->cCategory = \selling\CategoryLib::getByFarm($data->e['farm']);
+
+		throw new ViewAction($data);
+
+	})
 	->doCreate(function($data) {
-		throw new ReloadAction('selling', 'Product::created');
+		$category = $data->e['category']->empty() ? '' : $data->e['category']['id'];
+		throw new RedirectAction(\farm\FarmUi::urlSellingProduct($data->e['farm']).'?category='.$category.'&success=selling:Product::created');
 	});
 
 (new \selling\ProductPage())
@@ -75,10 +82,26 @@
 
 	})
 	->quick(['privatePrice', 'privateStep', 'proPrice', 'proPackaging', 'proStep'])
-	->update()
+	->update(function($data) {
+
+		$data->e['cCategory'] = \selling\CategoryLib::getByFarm($data->e['farm']);
+
+		throw new ViewAction($data);
+
+	})
 	->doUpdate(fn() => throw new ReloadAction('selling', 'Product::updated'))
 	->doUpdateProperties('doUpdateStatus', ['status'], fn($data) => throw new ViewAction($data))
 	->doDelete(fn() => throw new ReloadAction('selling', 'Product::deleted'));
+
+(new \selling\ProductPage())
+	->applyElement(function($data, \selling\Product $e) {
+		$e['farm'] = $data->c->first()['farm'];
+	})
+	->applyCollection(function($data, Collection $c) {
+		$c->validateProperty('farm', $c->first()['farm']);
+	})
+	->doUpdateCollectionProperties('doUpdateStatusCollection', ['status'], fn($data) => throw new ReloadAction())
+	->doUpdateCollectionProperties('doUpdateCategoryCollection', ['category'], fn($data) => throw new ReloadAction('selling', 'Product::categoryUpdated'));
 
 (new Page())
 	->post('query', function($data) {

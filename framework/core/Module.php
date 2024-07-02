@@ -5114,9 +5114,11 @@ abstract class ModulePage extends Page {
 
 	protected string $module;
 
+	protected Closure $collection;
 	protected Closure $element;
 	protected Closure $createElement;
 	protected Closure $applyElement;
+	protected Closure $applyCollection;
 
 	public function __construct(
 		?Closure $start,
@@ -5131,7 +5133,13 @@ abstract class ModulePage extends Page {
 		$this->element = function($data) {
 		};
 
+		$this->collection = function($data) {
+		};
+
 		$this->applyElement = function($data, Element $e) {
+		};
+
+		$this->applyCollection = function($data, Element $e) {
 		};
 
 		parent::__construct($start);
@@ -5150,6 +5158,11 @@ abstract class ModulePage extends Page {
 
 	public function applyElement(Closure $callback): ModulePage {
 		$this->applyElement = $callback;
+		return $this;
+	}
+
+	public function applyCollection(Closure $callback): ModulePage {
+		$this->applyCollection = $callback;
 		return $this;
 	}
 
@@ -5413,6 +5426,52 @@ abstract class ModulePage extends Page {
 			$fw->validate();
 
 			$data->e = $e;
+			$action->call($this, $data);
+
+		});
+
+		return $this;
+
+	}
+
+	public function doUpdateCollectionProperties(string $page, array|Closure $properties, \Closure $action, array $validate = ['canUpdate']): ModulePage {
+
+		$this->post($page, function($data) use ($properties, $action, $validate) {
+
+			$e = $this->collection->call($this, $data);
+
+			if($e === NULL) {
+
+				$ids = POST('ids', 'array');
+				$c = ($this->module.'Lib')::getByIds($ids);
+
+				if($c->empty()) {
+					throw new \NotExistsAction($this->module);
+				}
+
+			}
+
+			$c->validate(...$validate);
+
+			$this->applyCollection->call($this, $data, $c);
+			$data->c = $c;
+
+			$fw = new \FailWatch();
+
+			if($properties instanceof Closure) {
+				$properties = $properties->call($this, $c);
+			}
+
+			$e = new $this->module;
+			$this->applyElement->call($this, $data, $e);
+			$e->build($properties, $_POST, for: 'update');
+
+			$fw->validate();
+
+			($this->module.'Lib')::updateCollection($c, $e, $properties);
+
+			$fw->validate();
+
 			$action->call($this, $data);
 
 		});

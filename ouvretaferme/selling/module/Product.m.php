@@ -57,6 +57,7 @@ class ProductModel extends \ModuleModel {
 			'name' => ['text8', 'min' => 1, 'max' => NULL, 'collate' => 'general', 'cast' => 'string'],
 			'description' => ['editor24', 'null' => TRUE, 'cast' => 'string'],
 			'vignette' => ['textFixed', 'min' => 30, 'max' => 30, 'charset' => 'ascii', 'null' => TRUE, 'cast' => 'string'],
+			'category' => ['element32', 'selling\Category', 'null' => TRUE, 'cast' => 'element'],
 			'plant' => ['element32', 'plant\Plant', 'null' => TRUE, 'cast' => 'element'],
 			'variety' => ['text8', 'min' => 1, 'max' => NULL, 'null' => TRUE, 'cast' => 'string'],
 			'size' => ['text8', 'min' => 1, 'max' => NULL, 'null' => TRUE, 'cast' => 'string'],
@@ -76,10 +77,11 @@ class ProductModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'name', 'description', 'vignette', 'plant', 'variety', 'size', 'farm', 'unit', 'private', 'privatePrice', 'privateStep', 'pro', 'proPrice', 'proPackaging', 'proStep', 'vat', 'quality', 'createdAt', 'status'
+			'id', 'name', 'description', 'vignette', 'category', 'plant', 'variety', 'size', 'farm', 'unit', 'private', 'privatePrice', 'privateStep', 'pro', 'proPrice', 'proPackaging', 'proStep', 'vat', 'quality', 'createdAt', 'status'
 		]);
 
 		$this->propertiesToModule += [
+			'category' => 'selling\Category',
 			'plant' => 'plant\Plant',
 			'farm' => 'farm\Farm',
 		];
@@ -158,6 +160,10 @@ class ProductModel extends \ModuleModel {
 
 	public function whereVignette(...$data): ProductModel {
 		return $this->where('vignette', ...$data);
+	}
+
+	public function whereCategory(...$data): ProductModel {
+		return $this->where('category', ...$data);
 	}
 
 	public function wherePlant(...$data): ProductModel {

@@ -12,7 +12,7 @@ class ProductLib extends ProductCrud {
 	}
 
 	public static function getPropertiesWrite(): array {
-		return ['name', 'variety', 'size', 'description', 'quality', 'plant', 'pro', 'proPrice', 'proPackaging', 'private', 'privatePrice', 'vat'];
+		return ['name', 'category', 'variety', 'size', 'description', 'quality', 'plant', 'pro', 'proPrice', 'proPackaging', 'private', 'privatePrice', 'vat'];
 	}
 
 	public static function getFromQuery(string $query, \farm\Farm $eFarm, ?string $type, ?array $properties = []): \Collection {
@@ -71,7 +71,23 @@ class ProductLib extends ProductCrud {
 
 	}
 
-	public static function getByFarm(\farm\Farm $eFarm, bool $selectSales = FALSE, \Search $search = new \Search()): \Collection {
+	public static function countByFarm(\farm\Farm $eFarm, \Search $search = new \Search()): array {
+
+		self::applySearch($eFarm, $search);
+
+		return Product::model()
+			->select([
+				'category',
+				'count' => new \Sql('COUNT(*)', 'int')
+			])
+			->whereFarm($eFarm)
+			->group('category')
+			->getCollection()
+			->toArray(fn($eProduct) => [$eProduct['category']->empty() ? NULL : $eProduct['category']['id'], $eProduct['count']], TRUE);
+
+	}
+
+	public static function getByFarm(\farm\Farm $eFarm, Category $eCategory, bool $selectSales = FALSE, \Search $search = new \Search()): \Collection {
 
 		if($selectSales) {
 
@@ -93,6 +109,21 @@ class ProductLib extends ProductCrud {
 
 		}
 
+		self::applySearch($eFarm, $search);
+
+		$search->validateSort(['name', 'id']);
+
+		return Product::model()
+			->select(Product::getSelection())
+			->whereCategory($eCategory)
+			->whereFarm($eFarm)
+			->sort($search->buildSort())
+			->getCollection();
+
+	}
+
+	public static function applySearch(\farm\Farm $eFarm, \Search $search): void {
+
 		if($search->get('name')) {
 			Product::model()->whereName('LIKE', '%'.$search->get('name').'%');
 		}
@@ -101,14 +132,6 @@ class ProductLib extends ProductCrud {
 			$cPlant = \plant\PlantLib::getFromQuery($search->get('plant'), $eFarm);
 			Product::model()->wherePlant('IN', $cPlant);
 		}
-
-		$search->validateSort(['name', 'id']);
-
-		return Product::model()
-			->select(Product::getSelection())
-			->whereFarm($eFarm)
-			->sort($search->buildSort())
-			->getCollection();
 
 	}
 

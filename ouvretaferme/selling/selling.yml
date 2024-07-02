@@ -1,3 +1,12 @@
+Category:
+  id: serial32
+  name: text8(1, null) @collate(general)
+  farm: ?farm\Farm
+  position: int8(0, null)
+  INDEX: [
+    ["farm"]
+  ]
+  
 Configuration:
   id: serial32
   farm: farm\Farm
@@ -202,6 +211,7 @@ Product:
   name: text8(1, null) @collate(general)
   description: ?editor24
   vignette: ?textFixed(30, 30) @charset(ascii)
+  category: ?selling\Category
   plant: ?plant\Plant
   variety: ?text8(1, null)
   size: ?text8(1, null)
