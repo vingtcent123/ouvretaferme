@@ -158,11 +158,11 @@
 
 				if($data->cCategory->offsetExists($data->eCategory['id']) === FALSE){
 					throw new NotExpectedAction('Invalid category');
-				} else {
-					\farm\FarmerLib::setView('viewSellingProductCategory', $data->eFarm, $data->eCategory);
 				}
 
 			}
+
+			\farm\FarmerLib::setView('viewSellingProductCategory', $data->eFarm, $data->eCategory);
 
 		} else {
 			$data->eCategory = Setting::get('main\viewSellingProductCategory');
