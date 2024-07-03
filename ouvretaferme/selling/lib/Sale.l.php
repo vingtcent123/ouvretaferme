@@ -489,7 +489,10 @@ class SaleLib extends SaleCrud {
 
 		$properties = array_diff(
 			Sale::model()->getProperties(),
-			['id', 'createdAt', 'createdBy']
+			[
+				'id', 'createdAt', 'createdBy',
+				'invoice', 'orderFormValidUntil', 'orderFormPaymentCondition'
+			]
 		);
 		
 		$eSale->expects($properties);
