@@ -427,8 +427,7 @@ class CheckboxField {
 
 	static all(target, selector, callback, parent = 'form') {
 
-		const form = target.firstParent(parent);
-		form.qsa(selector, field => {
+		target.firstParent(parent).qsa(selector, field => {
 
 			if(field.disabled === true) {
 				return;

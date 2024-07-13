@@ -448,14 +448,12 @@ class DateUi {
 
 		$eFarm = $eDate['farm'];
 
-		$h = '<div class="stick-xs">';
+		$h = '<div class="date-products-list stick-xs">';
 
 			$h .= '<div class="date-products-item util-grid-header">';
 
-				$h .= '<div class="shop-select">';
-					if($cProduct->count() > 2) {
-						$h .= '<input type="checkbox" '.attr('onclick', 'CheckboxField.all(this, \'[name^="products[]"]\', node => DateManage.selectProduct(node))').'"  title="'.s("Tout cocher / Tout décocher").'"/>';
-					}
+				$h .= '<div class="shop-select '.($cProduct->count() < 2 ? 'shop-select-hide' : '').'">';
+					$h .= '<input type="checkbox" '.attr('onclick', 'CheckboxField.all(this, \'[name^="products["]\', node => DateManage.selectProduct(node), \'.date-products-list\')').'"  title="'.s("Tout cocher / Tout décocher").'"/>';
 				$h .= '</div>';
 				$h .= '<div>';
 					$h .= s("Produit");

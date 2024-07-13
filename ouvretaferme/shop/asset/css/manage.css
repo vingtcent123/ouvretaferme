@@ -84,6 +84,10 @@ div.shop-write-fqn label {
 	background-color: var(--background);
 }
 
+.shop-select-hide > * {
+	visibility: hidden;
+}
+
 @media (max-width: 991px) {
 
 	.date-products-item {
