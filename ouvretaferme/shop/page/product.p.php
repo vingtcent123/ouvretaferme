@@ -16,6 +16,9 @@
 		\farm\FarmerLib::register($data->eFarm);
 
 		$data->eDate = \shop\DateLib::getById(GET('date'));
+		$data->eDate['cCategory'] = \selling\CategoryLib::getByFarm($data->eFarm, index: 'id');
+
+		$data->cCategory = \selling\CategoryLib::getByFarm($data->eFarm);
 
 		$cProductSelling = \selling\ProductLib::getForDate($data->eDate);
 		$cProduct = \shop\ProductLib::getByDate($data->eDate, onlyActive: FALSE);

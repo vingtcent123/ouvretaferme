@@ -306,6 +306,59 @@ class Collection extends ArrayIterator {
 	}
 
 	/*
+	 * Reindex a collection
+	 *
+	 * @return array
+	 */
+	public function reindex(mixed $index): Collection {
+
+		$index = (array)$index;
+
+		if($this->depth > 1) {
+			throw new Exception('Can not reindex collection with depth > 1');
+		}
+
+		$lastProperty = last($index);
+
+		$c = new Collection();
+		$c->setDepth(count($index));
+
+		foreach($this as $e) {
+
+			$current = $c;
+
+			foreach($index as $property) {
+
+				if($e->offsetExists($property) === FALSE) {
+					throw new Exception('Invalid property');
+				}
+
+				if($e[$property] instanceof Element) {
+					$key = $e[$property]['id'] ?? NULL;
+				} else {
+					$key = $e[$property];
+				}
+
+				if($key === NULL) {
+					$key = '';
+				}
+
+				if($property === $lastProperty) {
+					$current[$key] = $e;
+				} else {
+					$current[$key] ??= new Collection();
+					$current = $current[$key];
+				}
+
+			}
+
+		}
+
+		return $c;
+
+	}
+
+	/*
 	 * Get values of a property in the element group
 	 * Option can be a boolean (returns references) or an int (array level)
 	 *

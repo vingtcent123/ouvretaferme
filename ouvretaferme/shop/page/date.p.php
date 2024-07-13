@@ -24,6 +24,7 @@
 			$data->eDateBase['cProduct'] = \shop\ProductLib::copyByDate($data->eShop, $data->eDateBase);
 		}
 
+		$data->e['cCategory'] = \selling\CategoryLib::getByFarm($data->eFarm, index: 'id');
 		$data->e['ccPoint'] = \shop\PointLib::getByShop($data->e['shop']);
 
 		throw new \ViewAction($data);

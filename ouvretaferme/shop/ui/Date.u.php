@@ -370,18 +370,69 @@ class DateUi {
 		\Asset::css('shop', 'manage.css');
 		\Asset::js('shop', 'manage.js');
 
-		$eDate->expects(['farm', 'cProduct']);
+		$eDate->expects(['farm', 'cProduct', 'cCategory']);
 
 		$eFarm = $eDate['farm'];
-		$cProduct = $eDate['cProduct'];
 
-		if($cProduct->empty()) {
+		if($eDate['cProduct']->empty()) {
 			$h = '<div class="util-block-requirement">';
 				$h .= '<p>'.s("Avant d'enregistrer une nouvelle date, vous devez renseigner les produits que vous souhaitez proposer à la vente dans votre ferme !").'</p>';
 				$h .= '<a href="'.\farm\FarmUi::urlSellingProduct($eFarm).'" class="btn btn-secondary">'.s("Renseigner mes produits").'</a>';
 			$h .= '</div>';
 			return $h;
 		}
+
+		$ccProduct = $eDate['cProduct']->reindex(['category', 'id']);
+
+		$h = '<div class="tabs-h" id="date-products-tabs" onrender="'.encode('Lime.Tab.restore(this)').'">';
+
+			$h .= '<div class="tabs-item">';
+
+				foreach($eDate['cCategory'] as $eCategory) {
+
+					if($ccProduct->offsetExists($eCategory['id']) === FALSE) {
+						continue;
+					}
+
+					$h .= '<a class="tab-item " data-tab="'.$eCategory['id'].'" onclick="Lime.Tab.select(this)">';
+						$h .= encode($eCategory['name']);
+/*
+						if($beds > 0) {
+							$h .= '<span class="tab-item-count">'.$beds.'</span>';
+						}
+*/
+					$h .= '</a>';
+
+				}
+
+				if($ccProduct->offsetExists('')) {
+					$h .= '<a class="tab-item " data-tab="" onclick="Lime.Tab.select(this)">';
+						$h .= s("Non catégorisé");
+					$h .= '</a>';
+				}
+
+			$h .= '</div>';
+
+			$h .= '<div class="tabs-panel">';
+
+				foreach($ccProduct as $category => $cProduct) {
+
+					$h .= '<div class="tab-panel" data-tab="'.$category.'">';
+						$h .= self::getProductsByCategory($form, $eDate, $cProduct);
+					$h .= '</div>';
+
+				}
+
+			$h .= '</div>';
+		$h .= '</div>';
+
+		return $h;
+
+	}
+
+	public static function getProductsByCategory(\util\FormUi $form, Date $eDate, \Collection $cProduct): string {
+
+		$eFarm = $eDate['farm'];
 
 		$h = '<div class="stick-xs">';
 

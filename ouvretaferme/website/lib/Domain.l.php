@@ -148,7 +148,15 @@ class DomainLib {
 
 			$domain = self::getDomain($eWebsite);
 
-			$ping = @file_get_contents('http://'.$domain.'/:test');
+			\dev\ErrorPhpLib::createExceptionFromError(TRUE);
+
+			try {
+				$ping = file_get_contents('http://'.$domain.'/:test');
+			} catch(\Exception) {
+				$ping = NULL;
+			}
+
+			\dev\ErrorPhpLib::createExceptionFromError(FALSE);
 
 			if(str_starts_with($ping, 'OK')) {
 
@@ -215,7 +223,15 @@ class DomainLib {
 
 			$domain = self::getDomain($eWebsite);
 
-			$ping = @file_get_contents('https://'.$domain.'/:test');
+			\dev\ErrorPhpLib::createExceptionFromError(TRUE);
+
+			try {
+				$ping = file_get_contents('https://'.$domain.'/:test');
+			} catch(\Exception) {
+				$ping = NULL;
+			}
+
+			\dev\ErrorPhpLib::createExceptionFromError(FALSE);
 
 			if(str_starts_with($ping, 'OK')) {
 
