@@ -64,7 +64,11 @@ class Item extends ItemElement {
 
 			'price.locked' => function(?float $price): bool {
 
-				$this->expects(['locked']);
+				try {
+					$this->expects(['locked']);
+				} catch(\Exception) {
+					return FALSE;
+				}
 
 				return (
 					$price !== NULL or
