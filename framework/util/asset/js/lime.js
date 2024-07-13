@@ -1323,7 +1323,7 @@ Lime.Tab = class {
 		} else {
 			tabName = forceTab || defaultTab;
 		}
-
+		
 		wrapper.qs(
 			'.tab-item[data-tab="'+ tabName +'"]',
 			node => this.select(node),

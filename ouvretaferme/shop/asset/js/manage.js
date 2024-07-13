@@ -61,17 +61,27 @@ class DateManage {
 
 	}
 
-	static selectProduct(input) {
+	static selectProduct(target) {
 
-		const parent = input.firstParent('.date-products-item');
+		const parent = target.firstParent('.date-products-item');
 		const fields = parent.qsa('.date-products-item-stock, .date-products-item-price');
 
-		if(input.checked === false) {
+		if(target.checked === false) {
 			fields.forEach(field => field.classList.add('hidden'));
 			parent.classList.remove('selected');
 		} else {
 			fields.forEach(field => field.classList.remove('hidden'));
 			parent.classList.add('selected');
+		}
+
+		// Présence d'onglets
+		if(qs('#date-products-tabs')) {
+
+			const panel = target.firstParent('.tab-panel');
+			const products = panel.qsa('[name^="products["]:checked').length;
+
+			qs('#date-products-tabs [data-tab="'+ panel.dataset.tab +'"] .tab-item-count').innerHTML = (products > 0) ? products : '';
+
 		}
 
 	}

@@ -382,6 +382,10 @@ class DateUi {
 			return $h;
 		}
 
+		if($eDate['cCategory']->empty()) {
+			return self::getProductsByCategory($form, $eDate, $eDate['cProduct']);
+		}
+
 		$ccProduct = $eDate['cProduct']->reindex(['category', 'id']);
 
 		$h = '<div class="tabs-h" id="date-products-tabs" onrender="'.encode('Lime.Tab.restore(this)').'">';
@@ -394,20 +398,30 @@ class DateUi {
 						continue;
 					}
 
+					$products = $ccProduct[$eCategory['id']]->find(fn($eProduct) => $eProduct['checked'] ?? FALSE)->count();
+
 					$h .= '<a class="tab-item " data-tab="'.$eCategory['id'].'" onclick="Lime.Tab.select(this)">';
 						$h .= encode($eCategory['name']);
-/*
-						if($beds > 0) {
-							$h .= '<span class="tab-item-count">'.$beds.'</span>';
-						}
-*/
+						$h .= '<span class="tab-item-count">';
+							if($products > 0) {
+								$h .= $products;
+							}
+						$h .= '</span>';
 					$h .= '</a>';
 
 				}
 
 				if($ccProduct->offsetExists('')) {
-					$h .= '<a class="tab-item " data-tab="" onclick="Lime.Tab.select(this)">';
+
+					$products = $ccProduct['']->find(fn($eProduct) => $eProduct['checked'] ?? FALSE)->count();
+
+					$h .= '<a class="tab-item " data-tab="empty" onclick="Lime.Tab.select(this)">';
 						$h .= s("Non catégorisé");
+						$h .= '<span class="tab-item-count">';
+							if($products > 0) {
+								$h .= $products;
+							}
+						$h .= '</span>';
 					$h .= '</a>';
 				}
 
@@ -417,7 +431,7 @@ class DateUi {
 
 				foreach($ccProduct as $category => $cProduct) {
 
-					$h .= '<div class="tab-panel" data-tab="'.$category.'">';
+					$h .= '<div class="tab-panel" data-tab="'.($category ?: 'empty').'">';
 						$h .= self::getProductsByCategory($form, $eDate, $cProduct);
 					$h .= '</div>';
 

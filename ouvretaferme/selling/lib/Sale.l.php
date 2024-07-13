@@ -232,16 +232,13 @@ class SaleLib extends SaleCrud {
 
 	public static function getNextByFarm(\farm\Farm $eFarm, ?string $type = NULL): array {
 
-		if($type !== NULL) {
-			Sale::model()->whereType($type);
-		}
-
 		$getSales = fn(string $sign, int $sort, int $number) => Sale::model()
 			->select([
 				'deliveredAt',
 				'turnover' => new \Sql('SUM(priceExcludingVat)', 'float')
 			])
 			->whereFarm($eFarm)
+			->whereType($type, if: $type !== NULL)
 			->wherePreparationStatus('IN', [Sale::CONFIRMED, Sale::PREPARED, Sale::SELLING, Sale::DELIVERED])
 			->whereDeliveredAt($sign, currentDate())
 			->whereMarketParent(NULL)

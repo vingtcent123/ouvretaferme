@@ -45,9 +45,8 @@ class Place {
 
 			const panel = target.firstParent('.tab-panel');
 			const beds = panel.qsa('[name="beds[]"]:checked').length;
-			const zone = panel.dataset.tab;
 
-			qs('#place-grid-wrapper [data-tab="'+ zone +'"] .tab-item-count').innerHTML = (beds > 0) ? '('+ beds +')' : '';
+			qs('#place-grid-wrapper [data-tab="'+ panel.dataset.tab +'"] .tab-item-count').innerHTML = (beds > 0) ? beds : '';
 
 		}
 
