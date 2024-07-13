@@ -153,7 +153,7 @@ class DomainLib {
 			try {
 				$ping = file_get_contents('http://'.$domain.'/:test');
 			} catch(\Exception) {
-				$ping = NULL;
+				$ping = '';
 			}
 
 			\dev\ErrorPhpLib::createExceptionFromError(FALSE);
@@ -228,7 +228,7 @@ class DomainLib {
 			try {
 				$ping = file_get_contents('https://'.$domain.'/:test');
 			} catch(\Exception) {
-				$ping = NULL;
+				$ping = '';
 			}
 
 			\dev\ErrorPhpLib::createExceptionFromError(FALSE);
