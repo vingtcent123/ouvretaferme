@@ -180,10 +180,6 @@ class SaleLib extends SaleCrud {
 
 		$search->validateSort(['id', 'customer', 'deliveredAt', 'items', 'priceExcludingVat', 'preparationStatus'], 'preparationStatus-');
 
-		if($type !== NULL) {
-			Sale::model()->whereType($type);
-		}
-
 		$sort = 'FIELD(preparationStatus, "'.Sale::SELLING.'", "'.Sale::DRAFT.'", "'.Sale::CONFIRMED.'", "'.Sale::PREPARED.'", "'.Sale::DELIVERED.'", "'.Sale::CANCELED.'")';
 
 		$cSale = Sale::model()
@@ -198,6 +194,7 @@ class SaleLib extends SaleCrud {
 			->whereDocument($search->get('document'), if: $search->get('document'))
 			->whereId('IN', fn() => explode(',', $search->get('ids')), if: $search->get('ids'))
 			->whereFarm($eFarm)
+			->whereType($type, if: $type !== NULL)
 			->whereCustomer($search->get('customer'), if: $search->get('customer'))
 			->whereDeliveredAt('LIKE', '%'.$search->get('deliveredAt').'%', if: $search->get('deliveredAt'))
 			->whereDeliveredAt('>', new \Sql('CURDATE() - INTERVAL '.Sale::model()->format($search->get('delivered')).' DAY'), if: $search->get('delivered'))

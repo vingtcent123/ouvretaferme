@@ -267,7 +267,7 @@ class MailLib {
 
 		\mail\Email::model()
 			->whereStatus(\mail\Email::SUCCESS)
-			->where('sentAt < NOW() - INTERVAL 1 MONTH')
+			->where('sentAt < NOW() - INTERVAL 1 WEEK')
 			->delete();
 
 	}
