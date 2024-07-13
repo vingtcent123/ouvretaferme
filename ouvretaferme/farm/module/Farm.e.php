@@ -168,7 +168,7 @@ class Farm extends FarmElement {
 
 	public function validateSellingComplete() {
 
-		$this->selling()->isComplete() ?: throw new FailAction('selling\Configuration::notComplete', ['farm' => $this]);
+		$this->selling()->isComplete() ?: throw new \FailAction('selling\Configuration::notComplete', ['farm' => $this]);
 
 	}
 
