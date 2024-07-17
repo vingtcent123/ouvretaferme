@@ -11,26 +11,6 @@ class CategoryLib extends CategoryCrud {
 		return ['name'];
 	}
 
-	public static function duplicateForFarm(\farm\Farm $eFarm): \Collection {
-
-		$cCategory = Category::model()
-			->select(Category::getSelection())
-			->whereFarm(NULL)
-			->getCollection(index: 'id');
-
-		$cCategory->map(function(Category $eCategory) use ($eFarm) {
-			$eCategory['id'] = NULL;
-			$eCategory['farm'] = $eFarm;
-		});
-
-		foreach($cCategory as $eCategory) {
-			Category::model()->insert($eCategory);
-		}
-
-		return $cCategory;
-
-	}
-
 	public static function getByFarm(\farm\Farm $eFarm, mixed $id = NULL, string $index = NULL): \Collection|Category {
 
 		$expects = 'collection';
@@ -147,7 +127,25 @@ class CategoryLib extends CategoryCrud {
 
 		parent::delete($e);
 
+		self::reorder($e['farm']);
+
 		Category::model()->commit();
+
+	}
+
+	public static function reorder(\farm\Farm $eFarm): void {
+
+		$cCategory = self::getByFarm($eFarm);
+
+		$position = 1;
+
+		foreach($cCategory as $eCategory) {
+
+			Category::model()->update($eCategory, [
+				'position' => $position++
+			]);
+
+		}
 
 	}
 

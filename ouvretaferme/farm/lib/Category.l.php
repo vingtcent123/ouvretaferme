@@ -165,7 +165,29 @@ class CategoryLib extends CategoryCrud {
 			return;
 		}
 
+		Category::model()->beginTransaction();
+
 		parent::delete($e);
+
+		self::reorder($e['farm']);
+
+		Category::model()->commit();
+
+	}
+
+	public static function reorder(\farm\Farm $eFarm): void {
+
+		$cCategory = self::getByFarm($eFarm);
+
+		$position = 1;
+
+		foreach($cCategory as $eCategory) {
+
+			Category::model()->update($eCategory, [
+				'position' => $position++
+			]);
+
+		}
 
 	}
 
