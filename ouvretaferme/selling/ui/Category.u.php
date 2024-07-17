@@ -80,8 +80,8 @@ class CategoryUi {
 		if($cCategory->empty()) {
 
 			$h .= '<div class="util-block-help">';
-				$h .= '<p>'.s("Vous pouvez créer des catégories de produits pour afficher vos produits de manière groupée sur la page d'administration et sur les boutiques en ligne. À vous de définir les catégories les plus adaptées pour votre production !").'</p>';
-				$h .= '<p>'.s("Par exemple, si vous cultivez des légumes et vendez des plants potagers, vous pouvez créer une categorie <i>Légumes</i> et une catégorie <i>Plants potagers</i>.").'</p>';
+				$h .= '<p>'.s("Vous pouvez créer des catégories de produits pour afficher vos produits de manière groupée sur votre page d'administration et sur les boutiques en ligne. À vous de définir les catégories les plus adaptées pour votre production !").'</p>';
+				$h .= '<p>'.s("Par exemple, si vous cultivez des légumes et vendez des plants potagers, vous pouvez créer une catégorie <i>Légumes</i> et une catégorie <i>Plants potagers</i>.").'</p>';
 				$h .= '<a href="/selling/category:create?farm='.$eFarm['id'].'" class="btn btn-secondary">'.s("Créer une première categorie").'</a>';
 			$h .= '</div>';
 
