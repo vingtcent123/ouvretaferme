@@ -20,13 +20,36 @@ class ProductUi {
 
 	}
 
-	public function getList(Shop $eShop, Date $eDate, \selling\Sale $eSale, bool $isModifying): string {
+	public function getList(Shop $eShop, Date $eDate, \selling\Sale $eSale, \Collection $cCategory, bool $isModifying): string {
 
 		$eDate->expects(['cProduct']);
 
-		$h = '<div class="shop-product-wrapper">';
-			$h .= $eDate['cProduct']->makeString(fn($eProduct) => $this->getProduct($eDate, $eProduct, $eSale->canBasket($eShop) or $isModifying));
-		$h .= '</div>';
+		$h = '';
+
+		$ccProduct = $eDate['cProduct']->reindex(['product', 'category']);
+
+		if($ccProduct->count() === 1) {
+			$h .= $this->getProducts($eShop, $eDate, $eSale, $isModifying, $ccProduct->first());
+		} else {
+
+			if($ccProduct->offsetExists('')) {
+				$h .= $this->getProducts($eShop, $eDate, $eSale, $isModifying, $ccProduct['']);
+			}
+
+			foreach($cCategory as $eCategory) {
+
+				if($ccProduct->offsetExists($eCategory['id']) === FALSE) {
+					continue;
+				}
+
+				$h .= '<h3>'.encode($eCategory['name']).'</h3>';
+				$h .= $this->getProducts($eShop, $eDate, $eSale, $isModifying, $ccProduct[$eCategory['id']]);
+
+			}
+
+		}
+
+		$h .= '<br/><br/><br/><br/>';
 
 		if($eDate['isOrderable'] and ($eSale->canBasket($eShop) or $isModifying)) {
 			$h .= $this->getOrderedProducts($eShop, $eDate, $eSale, $isModifying);
@@ -71,6 +94,16 @@ class ProductUi {
 					$h .= '<span class="hide-xs-down">'.$labelEmpty.'</span>';
 				$h .= '</a>';
 			$h .= '</div>';
+		$h .= '</div>';
+
+		return $h;
+
+	}
+
+	public function getProducts(Shop $eShop, Date $eDate, \selling\Sale $eSale, bool $isModifying, \Collection $cProduct): string {
+
+		$h = '<div class="shop-product-wrapper">';
+			$h .= $cProduct->makeString(fn($eProduct) => $this->getProduct($eDate, $eProduct, $eSale->canBasket($eShop) or $isModifying));
 		$h .= '</div>';
 
 		return $h;
@@ -237,11 +270,42 @@ class ProductUi {
 	}
 
 	// Modifier (quick) le stock
-	public function getUpdateList(Date $eDate, \Collection $cProduct): string {
+	public function getUpdateList(Date $eDate, \Collection $cProduct, \Collection $cCategory): string {
 
 		if($cProduct->empty()) {
 			return '<div class="util-info">'.s("Vous ne vendez encore aucun produit à cette date !").'</div>';
 		}
+
+		$ccProduct = $cProduct->reindex(['product', 'category']);
+
+		if($ccProduct->count() === 1) {
+			return $this->getUpdateProducts($eDate, $ccProduct->first());
+		} else {
+
+			$h = '';
+
+			if($ccProduct->offsetExists('')) {
+				$h .= $this->getUpdateProducts($eDate, $ccProduct['']);
+			}
+
+			foreach($cCategory as $eCategory) {
+
+				if($ccProduct->offsetExists($eCategory['id']) === FALSE) {
+					continue;
+				}
+
+				$h .= '<h3>'.encode($eCategory['name']).'</h3>';
+				$h .= $this->getUpdateProducts($eDate, $ccProduct[$eCategory['id']]);
+
+			}
+
+			return $h;
+
+		}
+
+	}
+
+	public function getUpdateProducts(Date $eDate, \Collection $cProduct): string {
 
 		$taxes = $eDate['farm']->getSelling('hasVat') ? '<span class="util-annotation">'.$eDate->getTaxes().'</span>' : '';
 

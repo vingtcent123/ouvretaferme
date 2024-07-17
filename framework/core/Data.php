@@ -321,33 +321,33 @@ class Collection extends ArrayIterator {
 		$lastProperty = last($index);
 
 		$c = new Collection();
-		$c->setDepth(count($index));
+		$c->setDepth(2);
 
 		foreach($this as $e) {
 
-			$current = $c;
+			$currentElement = $e;
 
 			foreach($index as $property) {
 
-				if($e->offsetExists($property) === FALSE) {
+				if($currentElement->offsetExists($property) === FALSE) {
 					throw new Exception('Invalid property');
 				}
 
-				if($e[$property] instanceof Element) {
-					$key = $e[$property]['id'] ?? NULL;
+				if($currentElement[$property] instanceof Element) {
+					$key = $currentElement[$property]['id'] ?? NULL;
 				} else {
-					$key = $e[$property];
+					$key = $currentElement[$property];
 				}
 
 				if($key === NULL) {
 					$key = '';
 				}
 
+				$currentElement = $currentElement[$property];
+
 				if($property === $lastProperty) {
-					$current[$key] = $e;
-				} else {
-					$current[$key] ??= new Collection();
-					$current = $current[$key];
+					$c[$key] ??= new Collection();
+					$c[$key][] = $e;
 				}
 
 			}

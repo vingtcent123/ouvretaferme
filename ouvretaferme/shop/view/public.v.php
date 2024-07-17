@@ -86,7 +86,7 @@ new AdaptativeView('shop', function($data, ShopTemplate $t) {
 			echo '</div>';
 		}
 
-		echo (new \shop\ProductUi())->getList($data->eShop, $data->eDateSelected, $data->eSaleExisting, $data->isModifying);
+		echo (new \shop\ProductUi())->getList($data->eShop, $data->eDateSelected, $data->eSaleExisting, $data->cCategory, $data->isModifying);
 
 	}
 

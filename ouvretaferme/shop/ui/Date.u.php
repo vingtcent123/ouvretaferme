@@ -386,7 +386,7 @@ class DateUi {
 			return self::getProductsByCategory($form, $eDate, $eDate['cProduct']);
 		}
 
-		$ccProduct = $eDate['cProduct']->reindex(['category', 'id']);
+		$ccProduct = $eDate['cProduct']->reindex(['category']);
 
 		$h = '<div class="tabs-h" id="date-products-tabs" onrender="'.encode('Lime.Tab.restore(this)').'">';
 
@@ -841,7 +841,7 @@ class DateUi {
 
 				$h .= '</div>';
 
-				$h .= (new \shop\ProductUi())->getUpdateList($eDate, $cProduct);
+				$h .= (new \shop\ProductUi())->getUpdateList($eDate, $cProduct, $eDate['cCategory']);
 				$h .= '<br />';
 			$h .= '</div>';
 

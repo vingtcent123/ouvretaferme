@@ -58,6 +58,7 @@
 			'shopPoint' => \shop\PointElement::getSelection()
 		]);
 
+		$data->e['cCategory'] = \selling\CategoryLib::getByFarm($data->eFarm);
 		$data->e['ccPoint'] = \shop\PointLib::getByDate($data->e);
 
 		throw new \ViewAction($data);

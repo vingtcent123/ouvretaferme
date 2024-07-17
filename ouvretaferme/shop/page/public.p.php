@@ -86,6 +86,8 @@
 			$data->eDateSelected = new \shop\Date();
 		}
 
+		$data->cCategory = \selling\CategoryLib::getByFarm($data->eShop['farm']);
+
 		throw new ViewAction($data, path: ':shop');
 
 	});
