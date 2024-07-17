@@ -114,17 +114,33 @@ class ProductUi {
 
 				}
 
-				$url = \util\HttpUi::setArgument(LIME_REQUEST, 'category', '', FALSE);
+				$uncategorized = ($products[NULL] ?? 0);
 
-				$h .= '<a href="'.$url.'" class="tab-item '.($eCategorySelected->empty() ? 'selected' : '').'">'.s("Non catégorisé").' <small class="tab-item-count">'.($products[NULL] ?? 0).'</small></a>';
+				if($uncategorized > 0) {
+
+					$url = \util\HttpUi::setArgument(LIME_REQUEST, 'category', '', FALSE);
+
+					$h .= '<a href="'.$url.'" class="tab-item '.($eCategorySelected->empty() ? 'selected' : '').'">'.s("Non catégorisé").' <small class="tab-item-count">'.$uncategorized.'</small></a>';
+
+				}
 
 			$h .= '</div>';
 
 		}
 
 		if($cProduct->empty()) {
-			$h .= '<div class="util-info">'.s("Il n'y a aucun produit à afficher.").'</div>';
+
+			if(
+				$search->get('category')->empty() and
+				$cCategory->notEmpty()
+			) {
+				$h .= '<div class="util-info">'.s("Sélectionnez une catégorie pour voir les produits associés !").'</div>';
+			} else {
+				$h .= '<div class="util-info">'.s("Il n'y a aucun produit à afficher.").'</div>';
+			}
+
 			return $h;
+
 		}
 
 		$year = date('Y');

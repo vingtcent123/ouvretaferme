@@ -473,7 +473,7 @@ new AdaptativeView('/ferme/{id}/produits', function($data, FarmTemplate $t) {
 	$t->package('main')->updateNavSelling($t->canonical);
 
 	if(
-		$data->cProduct->empty() and
+		array_sum($data->products) === 0 and
 		$data->search->empty()
 	) {
 
