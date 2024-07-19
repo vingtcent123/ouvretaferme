@@ -157,7 +157,7 @@ class GridUi {
 					$h .= '<td>';
 						$h .= '<a href="/produit/'.$eProduct['id'].'">'.encode($eProduct->getName()).'</a>';
 						if($eProduct['size']) {
-							$h .= '<div><small>'.s("Calibre {value}", '<u>'.encode($eProduct['size']).'</u>').'</small></div>';
+							$h .= '<div><small><u>'.encode($eProduct['size']).'</u></div>';
 						}
 					$h .= '</td>';
 
@@ -236,7 +236,7 @@ class GridUi {
 				$h .= '<td>';
 					$h .= '<a href="/produit/'.$eProduct['id'].'">'.encode($eProduct->getName()).'</a>';
 					if($eProduct['size']) {
-						$h .= '<div><small>'.s("Calibre {value}", '<u>'.encode($eProduct['size']).'</u>').'</small></div>';
+						$h .= '<div><small><u>'.encode($eProduct['size']).'</u></small></div>';
 					}
 				$h .= '</td>';
 

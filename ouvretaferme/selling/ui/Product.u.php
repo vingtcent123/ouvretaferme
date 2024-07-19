@@ -348,7 +348,7 @@ class ProductUi {
 		$more = [];
 
 		if($eProduct['size']) {
-			$more[] = '<span>'.s("Calibre {value}", '<u>'.encode($eProduct['size']).'</u>').'</span>';
+			$more[] = '<span><u>'.encode($eProduct['size']).'</u></span>';
 		}
 
 		if($eProduct['quality'] !== NULL) {

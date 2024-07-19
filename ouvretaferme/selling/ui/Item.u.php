@@ -99,7 +99,7 @@ class ItemUi {
 							$h .= '</th>';
 						}
 						if($eSale['hasVat']) {
-							$h .= '<th class="item-item-vat text-center">'.s("TVA").'</th>';
+							$h .= '<th class="item-item-vat text-center hide-sm-down">'.s("TVA").'</th>';
 						}
 						if($cItem->first()->canWrite()) {
 							$h .= '<th class="item-item-actions"></th>';
@@ -126,6 +126,9 @@ class ItemUi {
 									$h .= '<a data-dropdown="bottom-end" data-dropdown-id="item-update-'.$eItem['id'].'" class="dropdown-toggle item-item-name-action hide-sm-up">';
 										$h .= '<span>'.encode($eItem['name']).'</span>';
 									$h .= '</a>';
+									if($eSale['type'] === Customer::PRO and $eItem['product']['size']) {
+										$h .= ' <small class="color-muted"><u>'.encode($eItem['product']['size']).'</u></small>';
+									}
 								} else {
 									$h .= encode($eItem['name']);
 								}
@@ -208,7 +211,7 @@ class ItemUi {
 
 							if($eSale['hasVat']) {
 
-								$h .= '<td class="item-item-vat text-center">';
+								$h .= '<td class="item-item-vat text-center hide-sm-down">';
 									$h .= $eItem->quick('vatRate', s('{value} %', $eItem['vatRate']));
 								$h .= '</td>';
 
@@ -374,7 +377,7 @@ class ItemUi {
 						$h .= '<td class="item-day-product-name">';
 							$h .= encode($eProduct->getName());
 							if($eProduct['size']) {
-								$h .= ' <br class="hide-lg-up"/><small class="color-muted">'.s("Calibre {value}", '<u>'.encode($eProduct['size']).'</u>').'</small>';
+								$h .= ' <br class="hide-lg-up"/><small class="color-muted"><u>'.encode($eProduct['size']).'</u></small>';
 							}
 						$h .= '</td>';
 						$h .= '<td class="text-end" style="padding-right: 1rem">';
@@ -411,7 +414,7 @@ class ItemUi {
 					$h .= encode($eProduct->getName());
 					$h .= '&nbsp;<span class="annotation" style="color: var(--order)">'.\main\UnitUi::getValue(round($total, 2), $cItem->first()['unit'], TRUE).'</span>';
 					if($eProduct['size']) {
-						$h .= '<div><small class="color-muted">'.s("Calibre {value}", '<u>'.encode($eProduct['size']).'</u>').'</small></div>';
+						$h .= '<div><small class="color-muted"><u>'.encode($eProduct['size']).'</u></small></div>';
 					}
 				$h .= '</div>';
 			$h .= '</div>';

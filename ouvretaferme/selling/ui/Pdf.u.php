@@ -713,7 +713,7 @@ class PdfUi {
 		$last = ($isLast ? 'pdf-document-item-last' : '');
 
 		$details = [];
-		if($eItem['product']->notEmpty() and $eItem['product']['size']) {
+		if($eSale['type'] === Customer::PRO and $eItem['product']->notEmpty() and $eItem['product']['size']) {
 			$details[] = s("Calibre {value}", encode($eItem['product']['size']));
 		}
 		if($eItem['packaging']) {
