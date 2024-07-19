@@ -147,7 +147,7 @@ class ProductUi {
 						$h .= $eProductSelling->getName('html');
 					$h .= '</h4>';
 
-					if($eProductSelling['size'] !== NULL) {
+					if($eDate['type'] === Date::PRO and $eProductSelling['size'] !== NULL) {
 						$h .= '<div class="shop-product-size">';
 							$h .= encode($eProductSelling['size']);
 						$h .= '</div>';

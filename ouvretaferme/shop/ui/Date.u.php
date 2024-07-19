@@ -513,6 +513,9 @@ class DateUi {
 							$h .= \selling\ProductUi::getVignette($eProduct, '2rem');
 							$h .= '&nbsp;&nbsp;';
 							$h .= \selling\ProductUi::link($eProduct, TRUE);
+							if($eProduct['size']) {
+								$h .= ' <small class="color-muted"><u>'.encode($eProduct['size']).'</u></small>';
+							}
 						$h .= '</label>';
 						$h .= '<label class="date-products-item-unit text-end" for="'.$attributes['id'].'">';
 
