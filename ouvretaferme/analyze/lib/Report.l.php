@@ -17,7 +17,7 @@ class ReportLib extends ReportCrud {
 			Report::model()->whereName('LIKE', '%'.$search->get('name').'%');
 		}
 
-		$search->validateSort(['name', 'area', 'workingTime', 'turnover', 'turnoverByArea', 'costs', 'grossMargin', 'grossMarginByArea', 'grossMarginByWorkingTime']);
+		$search->validateSort(['name', 'createdAt', 'area', 'workingTime', 'turnover', 'turnoverByArea', 'costs', 'grossMargin', 'grossMarginByArea', 'grossMarginByWorkingTime']);
 
 		$sort = $search->buildSort();
 

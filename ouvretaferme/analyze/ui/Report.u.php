@@ -335,7 +335,12 @@ class ReportUi {
 
 				$h .= '<thead>';
 					$h .= '<tr>';
-						$h .= '<th colspan="3">'.$search->linkSort('name', s("Rapport")).'</th>';
+						$h .= '<th colspan="3">';
+							$h .= '<div style="display: flex; justify-content: space-between">';
+								$h .= $search->linkSort('name', s("Rapport"));
+								$h .= $search->linkSort('createdAt', s("Créé"), SORT_DESC);
+							$h .= '</div>';
+						$h .= '</th>';
 						$h .= '<th class="text-end">'.$search->linkSort('area', s("Surface"), SORT_DESC).'</th>';
 						$h .= '<th class="text-end">'.$search->linkSort('workingTime', s("Heures travaillées"), SORT_DESC).'</th>';
 						$h .= '<th class="text-end">'.$search->linkSort('turnover', s("Ventes"), SORT_DESC).'</th>';
