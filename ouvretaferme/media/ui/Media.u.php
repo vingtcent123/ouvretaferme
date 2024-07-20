@@ -173,19 +173,25 @@ class MediaUi {
 
 	public function getBasenameByHash(string $hash, $size = NULL) {
 
-		$formats = $this->settings['imageFormat'];
-
 		if(strlen($hash) > 20) {
 			$hash = substr($hash, 0, 20);
 		}
 
-		if($size !== NULL) {
-			if(array_key_exists($size, $formats)) {
-				$format = $formats[$size];
-				return $this->type.'/'.(is_int($format) ? $format : implode('x', $format)).'/'.$hash.'.'.self::getExtension($hash);
+		if(isset($this->settings['imageFormat'])) {
+
+			$formats = $this->settings['imageFormat'];
+
+			if($size !== NULL) {
+				if(array_key_exists($size, $formats)) {
+					$format = $formats[$size];
+					return $this->type.'/'.(is_int($format) ? $format : implode('x', $format)).'/'.$hash.'.'.self::getExtension($hash);
+				} else {
+					return NULL;
+				}
 			} else {
-				return NULL;
+				return $this->type.'/'.$hash.'.'.self::getExtension($hash);
 			}
+
 		} else {
 			return $this->type.'/'.$hash.'.'.self::getExtension($hash);
 		}

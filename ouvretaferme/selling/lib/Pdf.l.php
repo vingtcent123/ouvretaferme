@@ -26,7 +26,7 @@ class PdfLib extends PdfCrud {
 
 		$ePdf = Pdf::model()
 			->select([
-				'content' => ['binary']
+				'content' => ['hash']
 			])
 			->whereSale($eSale)
 			->whereType($type)
@@ -34,9 +34,11 @@ class PdfLib extends PdfCrud {
 
 		if(
 			$ePdf->notEmpty() and
-			$ePdf['content']->notEmpty()
+			$ePdf['content']->notEmpty() and
+			$ePdf['content']['hash']
 		) {
-			return $ePdf['content']['binary'];
+			$path = \storage\ImageLib::getBasePath().'/'.(new \media\PdfContentUi())->getBasenameByHash($ePdf['content']['hash']);
+			return file_get_contents($path);
 		} else {
 			return NULL;
 		}
@@ -224,6 +226,9 @@ class PdfLib extends PdfCrud {
 
 		PdfContent::model()->insert($ePdfContent);
 
+		$hash = NULL;
+		(new \media\PdfContentLib())->send($ePdfContent, $hash, $content, 'pdf');
+
 		$ePdf = new Pdf([
 			'type' => $type,
 			'sale' => $eSale,
@@ -235,9 +240,6 @@ class PdfLib extends PdfCrud {
 		Pdf::model()
 			->option('add-replace')
 			->insert($ePdf);
-
-		$hash = NULL;
-		(new \media\PdfContentLib())->send($ePdfContent, $hash, $content, 'pdf');
 
 		Pdf::model()->commit();
 
@@ -258,6 +260,9 @@ class PdfLib extends PdfCrud {
 		]);
 
 		PdfContent::model()->insert($ePdfContent);
+
+		$hash = NULL;
+		(new \media\PdfContentLib())->send($ePdfContent, $hash, $content, 'pdf');
 
 		$cPdf = new \Collection();
 
