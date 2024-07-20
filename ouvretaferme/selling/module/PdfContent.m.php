@@ -38,11 +38,12 @@ class PdfContentModel extends \ModuleModel {
 		$this->properties = array_merge($this->properties, [
 			'id' => ['serial32', 'cast' => 'int'],
 			'binary' => ['binary32', 'cast' => 'binary'],
+			'hash' => ['textFixed', 'min' => 20, 'max' => 20, 'charset' => 'ascii', 'null' => TRUE, 'cast' => 'string'],
 			'createdAt' => ['datetime', 'cast' => 'string'],
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'binary', 'createdAt'
+			'id', 'binary', 'hash', 'createdAt'
 		]);
 
 	}
@@ -75,6 +76,10 @@ class PdfContentModel extends \ModuleModel {
 
 	public function whereBinary(...$data): PdfContentModel {
 		return $this->where('binary', ...$data);
+	}
+
+	public function whereHash(...$data): PdfContentModel {
+		return $this->where('hash', ...$data);
 	}
 
 	public function whereCreatedAt(...$data): PdfContentModel {

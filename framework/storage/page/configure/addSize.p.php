@@ -53,7 +53,7 @@
 
 			\storage\ImageLib::resize($sizeInt, $resource, \Setting::get('storage\\'.$type)['imageFormatConstraint'] ?? NULL);
 
-			\storage\ServerLib::build($type, $sizeString, $resource, $pathDestination, $typeSource);
+			\storage\ServerLib::buildImage($type, $sizeString, $resource, $pathDestination, $typeSource);
 
 			/*
 

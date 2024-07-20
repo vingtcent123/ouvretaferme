@@ -16,8 +16,14 @@ class LimeObserverLib {
 		$data .= '	static imagesRequiredSize = {'."\n";
 		foreach(\Setting::get('media\images') as $type) {
 
-			$size = \Setting::get($type)['imageRequiredSize'];
-			$formats = \Setting::get($type)['imageFormat'];
+			$settings = \Setting::get($type);
+
+			if(empty($settings['imageFormat'])) {
+				continue;
+			}
+
+			$size = $settings['imageRequiredSize'];
+			$formats = $settings['imageFormat'];
 
 			if(is_int($size)) {
 

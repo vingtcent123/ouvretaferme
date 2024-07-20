@@ -236,6 +236,9 @@ class PdfLib extends PdfCrud {
 			->option('add-replace')
 			->insert($ePdf);
 
+		$hash = NULL;
+		(new \media\PdfContentLib())->send($ePdfContent, $hash, $content, 'pdf');
+
 		Pdf::model()->commit();
 
 		return $ePdf;

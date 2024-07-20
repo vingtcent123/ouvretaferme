@@ -82,7 +82,7 @@ Setting::register('media', [
 	// Max size of an image in Mo (change also rewrite.cfg if needed : client_max_body_size 20m;)
 	'maxImageSize' => 20,
 
-	'images' => ['user-vignette', 'editor', 'plant-vignette', 'gallery', 'farm-vignette', 'farm-logo', 'farm-banner', 'product-vignette', 'tool-vignette', 'website-logo', 'website-favicon', 'shop-logo'],
+	'images' => ['user-vignette', 'editor', 'plant-vignette', 'gallery', 'farm-vignette', 'farm-logo', 'farm-banner', 'product-vignette', 'tool-vignette', 'website-logo', 'website-favicon', 'shop-logo', 'pdf-content'],
 
 	'user-vignette' => [
 		'class' => 'UserVignette',
@@ -95,6 +95,12 @@ Setting::register('media', [
 		'element' => 'shop\Shop',
 		'field' => 'logo'
 	] + getMediaLogo(),
+
+	'pdf-content' => [
+		'class' => 'PdfContent',
+		'element' => 'selling\PdfContent',
+		'field' => 'hash'
+	],
 
 	'editor' => [
 		'class' => 'Editor',

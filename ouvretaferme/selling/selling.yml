@@ -203,6 +203,7 @@ Pdf:
 PdfContent:
   id: serial32
   binary: binary32
+  hash: ?textFixed(20, 20) @charset(ascii)
   createdAt: datetime = SPECIAL(now)
   
 

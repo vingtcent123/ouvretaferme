@@ -45,7 +45,7 @@ class ServerLib {
 		$metadata = \Setting::get('media\mediaDriver')->getMetadata($basename);
 
 		// Save original file
-		self::build($type, NULL, $resource, $basename, self::getTypeFromResource($resource));
+		self::buildImage($type, NULL, $resource, $basename, self::getTypeFromResource($resource));
 
 		return self::buildFormats($type, $basename, $metadata, $resource, $callback);
 
@@ -68,7 +68,7 @@ class ServerLib {
 		$metadata = \Setting::get('media\mediaDriver')->getMetadata($basename);
 		$metadata['crop'] = ['top' => 0, 'left' => 0, 'width' => 100, 'height' => 100];
 
-		self::build($type, NULL, $resource, $basename, $typeSource);
+		self::buildImage($type, NULL, $resource, $basename, $typeSource);
 
 		return self::buildFormats($type, $basename, $metadata, $resource);
 
@@ -102,11 +102,11 @@ class ServerLib {
 	 * @param Imagick $resource
 	 * @param callable $callback
 	 */
-	public static function put(string $type, string $basename, \Imagick $resource, callable $callback = NULL): array {
+	public static function putImage(string $type, string $basename, \Imagick $resource, callable $callback = NULL): array {
 
 		$typeSource = self::getTypeFromResource($resource);
+		$typeDestination = \Setting::get($type)['imageOutputType'] ?? NULL;
 
-		$typeDestination = \Setting::get($type)['imageOutputType'];
 		if(is_array($typeDestination)) {
 			if(in_array($typeSource, $typeDestination)) {
 				$typeDestination = $typeSource;
@@ -145,7 +145,7 @@ class ServerLib {
 		$metadata = self::extractMetadata($resource);
 
 		// Save original file
-		self::build($type, NULL, $resource, $basename, $typeDestination);
+		self::buildImage($type, NULL, $resource, $basename, $typeDestination);
 
 		return self::buildFormats($type, $basename, $metadata, $resource, $callback);
 
@@ -221,7 +221,7 @@ class ServerLib {
 
 			$typeSource = self::getTypeFromResource($resource);
 
-			self::build($elementsTo['type'], NULL, $resource, $basenameTo, $typeSource);
+			self::buildImage($elementsTo['type'], NULL, $resource, $basenameTo, $typeSource);
 			self::buildFormats($elementsTo['type'], $basenameTo, $metadata, $resource);
 
 		}
@@ -282,7 +282,7 @@ class ServerLib {
 					ImageLib::resize($format, $resourceDestination, \Setting::get($type)['imageFormatConstraint'] ?? NULL);
 				}
 
-				self::build($type, $name, $resourceDestination, $fileDestination, $typeDestination);
+				self::buildImage($type, $name, $resourceDestination, $fileDestination, $typeDestination);
 
 				if(in_array($name, $resizeReference)) {
 
@@ -335,7 +335,7 @@ class ServerLib {
 	/**
 	 * Build an image
 	 */
-	public static function build(string $type, ?string $format, \Imagick $resource, string $filePath, int $fileType) {
+	public static function buildImage(string $type, ?string $format, \Imagick $resource, string $filePath, int $fileType) {
 
 		if($fileType !== IMAGETYPE_GIF or $format === NULL) {
 

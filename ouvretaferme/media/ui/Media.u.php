@@ -54,6 +54,16 @@ class MediaUi {
 		return $this->field;
 	}
 
+	public static function isImage($hash): bool {
+
+		return (
+			$hash[19] === 'p' or
+			$hash[19] === 'j' or
+			$hash[19] === 'g'
+		);
+
+	}
+
 	public static function getExtension($hash): string {
 
 		$letter = substr($hash, 19, 1);

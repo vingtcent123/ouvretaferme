@@ -130,11 +130,11 @@ abstract class MediaLib {
 
 			};
 
-			$result = \storage\ServerLib::put($this->type, $toBasename, $resource, $apply);
+			$result = \storage\ServerLib::putImage($this->type, $toBasename, $resource, $apply);
 
 		} else {
 
-			$result = \storage\ServerLib::put($this->type, $toBasename, $resource);
+			$result = \storage\ServerLib::putImage($this->type, $toBasename, $resource);
 
 		}
 
@@ -244,19 +244,23 @@ abstract class MediaLib {
 	 * Send a media
 	 *
 	 */
-	public function send(\Element $eElement, &$hash, string $sourceFile, int $fileType = NULL): bool {
+	public function send(\Element $eElement, &$hash, string $binary, int|string|null $fileType = NULL): bool {
 
 		$this->addMedia($eElement, $hash, $fileType);
 
 		$path = $this->type.'/'.$hash.'.'.MediaUi::getExtension($hash);
 
-		if(MediaUi::getExtension($hash) === 'pdf' or \storage\ImageLib::isImage($sourceFile) === FALSE) {
+		if(MediaUi::isImage($hash) === FALSE) {
 
-			 \Setting::get('media\mediaDriver')->sendBinary(file_get_contents($sourceFile), $path);
+			\Setting::get('media\mediaDriver')->sendBinary($binary, $path);
 
 		} else {
 
-			$resource = new \Imagick($sourceFile);
+			$binaryFile = tmpfile();
+			fwrite($binaryFile, $binary);
+			fclose($binaryFile);
+
+			$resource = new \Imagick($binaryFile);
 
 			\Setting::get('media\mediaDriver')->sendResource($resource, $path);
 
@@ -353,20 +357,24 @@ abstract class MediaLib {
 
 	}
 
-	protected function addMedia(\Element $eElement, ?string &$hash, int $fileType = NULL) {
+	protected function addMedia(\Element $eElement, ?string &$hash, int|string|null $fileType = NULL) {
 
 		if($eElement->notEmpty()) {
 			$eElement->expects(['id', $this->field]);
 		}
 
 		// Check the fileType if authorized or not
-		$types = (array)$this->settings['imageOutputType'];
+		if(isset($this->settings['imageFormat'])) {
 
-		if(
-			$fileType === NULL or
-			in_array($fileType, $types) === FALSE
-		) {
-			$fileType = first($types);
+			$types = (array)$this->settings['imageOutputType'];
+
+			if(
+				$fileType === NULL or
+				in_array($fileType, $types) === FALSE
+			) {
+				$fileType = first($types);
+			}
+
 		}
 
 		if($fileType === IMAGETYPE_JPEG) {
@@ -375,7 +383,7 @@ abstract class MediaLib {
 			$letter = 'p';
 		} elseif($fileType === IMAGETYPE_GIF) {
 			$letter = 'g';
-		} elseif($fileType === IMAGETYPE_PDF) {
+		} elseif($fileType === 'pdf') {
 			$letter = 'f';
 		} else {
 			throw new \Exception('Bad file type ('.$fileType.')');
@@ -418,8 +426,12 @@ abstract class MediaLib {
 
 			if($eElement->notEmpty()) {
 
-				$color = $this->getColor() ?? '#000000';
-				$eElement[$this->field] = $hash.$color.'001';
+				if(MediaUi::isImage($hash)) {
+					$color = $this->getColor() ?? '#000000';
+					$eElement[$this->field] = $hash.$color.'001';
+				} else {
+					$eElement[$this->field] = $hash;
+				}
 
 			}
 
