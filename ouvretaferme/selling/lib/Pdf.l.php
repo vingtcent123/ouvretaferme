@@ -37,8 +37,7 @@ class PdfLib extends PdfCrud {
 			$ePdf['content']->notEmpty() and
 			$ePdf['content']['hash']
 		) {
-			$path = \storage\ImageLib::getBasePath().'/'.(new \media\PdfContentUi())->getBasenameByHash($ePdf['content']['hash']);
-			return file_get_contents($path);
+			return self::getContentByPdf($ePdf['content']);
 		} else {
 			return NULL;
 		}
@@ -48,10 +47,17 @@ class PdfLib extends PdfCrud {
 	public static function getContentByInvoice(Invoice $eInvoice): ?string {
 
 		PdfContent::model()
-			->select('binary')
+			->select('hash')
 			->get($eInvoice['content']);
 
-		return $eInvoice['content']['binary'];
+		return self::getContentByPdf($eInvoice['content']);
+
+	}
+
+	public static function getContentByPdf(PdfContent $ePdfContent): ?string {
+
+		$path = \storage\ImageLib::getBasePath().'/'.(new \media\PdfContentUi())->getBasenameByHash($ePdfContent['hash']);
+		return file_get_contents($path);
 
 	}
 
@@ -89,7 +95,7 @@ class PdfLib extends PdfCrud {
 		$ePdf = Pdf::model()
 			->select(Pdf::getSelection())
 			->select([
-				'content' => ['binary']
+				'content' => ['hash']
 			])
 			->whereSale($eSale)
 			->whereType($type)
@@ -135,12 +141,14 @@ class PdfLib extends PdfCrud {
 			$libMail->addBcc($eFarm->getSelling('legalEmail'));
 		}
 
+		$pdf = self::getContentByPdf($ePdf['content']);
+
 		$libMail
 			->setFromName($eFarm['name'])
 			->addTo($customerEmail)
 			->setReplyTo($eFarm->getSelling('legalEmail'))
 			->setContent(...$content)
-			->addAttachment($ePdf['content']['binary'], $eSale->getDeliveryNote().'.pdf', 'application/pdf')
+			->addAttachment($pdf, $eSale->getDeliveryNote().'.pdf', 'application/pdf')
 			->send('document');
 
 	}
@@ -170,7 +178,7 @@ class PdfLib extends PdfCrud {
 		$ePdfContent = $eInvoice['content'];
 
 		if(PdfContent::model()
-			->select('binary')
+			->select('hash')
 			->get($ePdfContent) === FALSE) {
 			Invoice::fail('fileEmpty');
 			return;
@@ -202,12 +210,14 @@ class PdfLib extends PdfCrud {
 			$libMail->addBcc($eFarm->getSelling('legalEmail'));
 		}
 
+		$pdf = self::getContentByPdf($ePdfContent);
+
 		$libMail
 			->setFromName($eFarm['name'])
 			->addTo($eCustomer['email'])
 			->setReplyTo($eFarm->getSelling('legalEmail'))
 			->setContent(...$content)
-			->addAttachment($ePdfContent['binary'], $eInvoice->getInvoice().'.pdf', 'application/pdf')
+			->addAttachment($pdf, $eInvoice->getInvoice().'.pdf', 'application/pdf')
 			->send('document');
 
 	}
@@ -220,10 +230,7 @@ class PdfLib extends PdfCrud {
 
 		Pdf::model()->beginTransaction();
 
-		$ePdfContent = new PdfContent([
-			'binary' => $content
-		]);
-
+		$ePdfContent = new PdfContent();
 		PdfContent::model()->insert($ePdfContent);
 
 		$hash = NULL;
@@ -255,10 +262,7 @@ class PdfLib extends PdfCrud {
 
 		Pdf::model()->beginTransaction();
 
-		$ePdfContent = new PdfContent([
-			'binary' => $content
-		]);
-
+		$ePdfContent = new PdfContent();
 		PdfContent::model()->insert($ePdfContent);
 
 		$hash = NULL;
