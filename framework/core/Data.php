@@ -193,6 +193,27 @@ class Collection extends ArrayIterator {
 	}
 
 	/**
+	 * Remove one depth
+	 *
+	 * @return array
+	 */
+	public function linearize(): Collection {
+
+		if($this->depth === 1) {
+			throw new Exception('Invalid depth');
+		}
+
+		$c = new Collection();
+
+		foreach($this as $subC) {
+			$c->mergeCollection($subC, TRUE);
+		}
+
+		return $c;
+
+	}
+
+	/**
 	 * Format a Collection as a array using the given rules
 	 * $rules is an associative array. Each value can be either:
 	 * - 'propertyName' (put as is in the returned array)
@@ -997,6 +1018,21 @@ class Collection extends ArrayIterator {
 
 		foreach($cElement as $key => $eElement) {
 			if($this->offsetExists($key) === FALSE) {
+				$this[$key] = $eElement;
+			}
+		}
+
+		return $this;
+
+	}
+
+	public function mergeCollection(Collection $cElement, bool $reindex = FALSE): Collection {
+
+		foreach($cElement as $key => $eElement) {
+
+			if($reindex) {
+				$this[] = $eElement;
+			} else {
 				$this[$key] = $eElement;
 			}
 		}

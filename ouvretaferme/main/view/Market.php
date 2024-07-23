@@ -144,15 +144,6 @@ class MarketTemplate extends BaseTemplate {
 			$h .= '<div>'.$eSale['marketSales'].'</div>';
 		$h .= '</a>';
 
-		if($eSale['priceIncludingVat'] !== NULL) {
-
-			$h .= '<div class="market-top-stat">';
-				$h .= '<h4>'.s("Montant").' '.$eSale->getTaxes().'</h4>';
-				$h .= '<div>'.\util\TextUi::money($eSale['priceIncludingVat']).'</div>';
-			$h .= '</div>';
-
-		}
-
 		if($this->data->e['preparationStatus'] === \selling\Sale::DELIVERED) {
 
 			$h .= '<span class="market-top-close market-top-close-disabled" title="'.s("Ce marché est clôturé").'">';

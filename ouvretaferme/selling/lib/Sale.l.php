@@ -394,7 +394,7 @@ class SaleLib extends SaleCrud {
 
 	}
 
-	public static function getByParent(Sale $eSale): \Collection {
+	public static function getByParent(Sale $eSale, bool $indexByStatus = TRUE): \Collection {
 
 		$ccSale = Sale::model()
 			->select(Sale::getSelection() + [
@@ -403,15 +403,18 @@ class SaleLib extends SaleCrud {
 			->whereFarm($eSale['farm']['id'])
 			->whereMarketParent($eSale)
 			->sort(new \Sql('FIELD(preparationStatus, "'.Sale::DRAFT.'", "'.Sale::CONFIRMED.'", "'.Sale::CANCELED.'") ASC, createdAt DESC'))
-			->getCollection(NULL, NULL, ['preparationStatus', NULL]);
+			->getCollection(NULL, NULL, $indexByStatus ? ['preparationStatus', NULL] : NULL);
 
 		if($ccSale->empty()) {
 			return $ccSale;
 		}
 
-		$ccSale[Sale::DRAFT] ??= new \Collection();
-		$ccSale[Sale::DELIVERED] ??= new \Collection();
-		$ccSale[Sale::CANCELED] ??= new \Collection();
+		if($indexByStatus) {
+			$ccSale[Sale::DRAFT] ??= new \Collection();
+			$ccSale[Sale::DELIVERED] ??= new \Collection();
+			$ccSale[Sale::CANCELED] ??= new \Collection();
+		}
+
 
 		return $ccSale;
 

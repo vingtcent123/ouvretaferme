@@ -95,6 +95,7 @@ div.market-top-title h2 {
 
 div.market-top-title div.market-top-title-date {
 	color: var(--border);
+	font-size: 1.2rem;
 }
 
 .market-top-stat {

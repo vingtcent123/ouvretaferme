@@ -1215,6 +1215,7 @@ ul.util-summarize li > div:not(:last-child) {
 ul.util-summarize li .util-summarize-muted {
 	font-size: 0.9rem;
 	color: var(--muted);
+	margin-top: 0.5rem;
 }
 
 ul.util-summarize li.selected .util-summarize-muted,

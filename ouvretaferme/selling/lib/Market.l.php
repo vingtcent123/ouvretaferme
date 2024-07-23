@@ -3,6 +3,67 @@ namespace selling;
 
 class MarketLib {
 
+	public static function getLast(Sale $eSale): \Collection {
+
+		$eSale->expects(['farm', 'customer']);
+
+		return Sale::model()
+			->select(Sale::getSelection())
+			->wherePriceIncludingVat('!=', NULL)
+			->wherePreparationStatus('IN', [Sale::DELIVERED, Sale::SELLING])
+			->whereDeliveredAt('<', $eSale['deliveredAt'])
+			->whereFarm($eSale['farm'])
+			->whereCustomer($eSale['customer'])
+			->sort(['deliveredAt' => SORT_DESC])
+			->getCollection(0, 4);
+
+	}
+
+	public static function getByHour(Sale $eSale): array {
+
+		$eSale->expects(['farm', 'customer']);
+
+		$cSale = Sale::model()
+			->select([
+				'hour' => new \Sql('SUBSTRING(createdAt, 1, 13)'),
+				'sales' => new \Sql('COUNT(*)', 'int'),
+				'turnover' => new \Sql('SUM(priceIncludingVat)', 'float')
+			])
+			->whereMarketParent($eSale)
+			->wherePreparationStatus('IN', [Sale::DELIVERED, Sale::DRAFT])
+			->group('hour')
+			->sort(['hour' => SORT_ASC])
+			->getCollection(index: 'hour');
+
+		if($cSale->empty()) {
+			return [];
+		}
+
+		$firstHour = $cSale->first()['hour'];
+		$lastHour = $cSale->last()['hour'];
+
+		$values = [];
+
+		for($hour = $firstHour; $hour <= $lastHour; $hour = date('Y-m-d H', strtotime($hour.':00:00 + 1 HOUR'))) {
+
+			$hourDigit = substr($hour, 11, 2);
+
+			$values[$hour] = $cSale->offsetExists($hour) ? [
+				'hour' => $hourDigit,
+				'sales' => $cSale[$hour]['sales'],
+				'turnover' => $cSale[$hour]['turnover']
+			] : [
+				'hour' => $hourDigit,
+				'sales' => 0,
+				'turnover' => 0
+			];
+
+		}
+
+		return $values;
+
+	}
+
 	public static function checkNewPrices(Sale $eSale, array $post): \Collection {
 
 		if($eSale['market'] === FALSE) {

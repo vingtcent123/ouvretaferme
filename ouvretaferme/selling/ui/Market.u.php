@@ -10,6 +10,109 @@ class MarketUi {
 
 	}
 
+	public function getStats(Sale $eSaleCurrent, \Collection $cSaleLast): string {
+
+		if($cSaleLast->empty() and $eSaleCurrent['priceIncludingVat'] === NULL) {
+			return '';
+		}
+
+		$h = '<h2>'.s("Chiffre d'affaires").'</h2>';
+
+		$h .= '<ul class="util-summarize util-summarize-overflow">';
+
+		if($eSaleCurrent['priceIncludingVat'] !== NULL) {
+
+			if($eSaleCurrent->getTaxes()) {
+				$taxes = '<small> '.$eSaleCurrent->getTaxes().'</small>';
+			} else {
+				$taxes = '';
+			}
+
+			$h .= '<li class="selected">';
+				$h .= '<a href="'.\selling\SaleUi::urlMarket($eSaleCurrent).'/ventes">';
+					$h .= '<h5>'.\util\DateUi::numeric($eSaleCurrent['deliveredAt']).'</h5>';
+					$h .= '<div>'.\util\TextUi::money($eSaleCurrent['priceIncludingVat']).$taxes.'</div>';
+					$h .= '<div class="util-summarize-muted">'.p("{value} vente", "{value} ventes", $eSaleCurrent['marketSales']).'</div>';
+				$h .= '</a>';
+			$h .= '</li>';
+
+		}
+
+		foreach($cSaleLast as $eSale) {
+
+				if($eSale->getTaxes()) {
+					$taxes = '<small class="color-muted"> '.$eSale->getTaxes().'</small>';
+				} else {
+					$taxes = '';
+				}
+
+			if($eSale['priceIncludingVat'] !== NULL) {
+
+				$h .= '<li>';
+					$h .= '<a href="'.\selling\SaleUi::urlMarket($eSale).'/ventes">';
+						$h .= '<h5>'.\util\DateUi::numeric($eSale['deliveredAt']).'</h5>';
+						$h .= '<div>'.\util\TextUi::money($eSale['priceIncludingVat']).$taxes.'</div>';
+						$h .= '<div class="util-summarize-muted">'.p("{value} vente", "{value} ventes", $eSale['marketSales']).'</div>';
+					$h .= '</a>';
+				$h .= '</li>';
+			}
+
+		}
+
+		$h .= '</ul>';
+
+		$h .= '<br/>';
+
+		return $h;
+
+	}
+
+	public function getHours(array $hours): string {
+
+		if($hours === []) {
+			return '';
+		}
+
+		$h = '<h2>'.s("Répartition des ventes").'</h2>';
+
+		\Asset::jsUrl('https://cdn.jsdelivr.net/npm/chart.js');
+
+		$turnovers = array_column($hours, 'turnover');
+		$sales = array_column($hours, 'sales');
+
+		$labels = [];
+		foreach($hours as $hour) {
+			$labels[] = $hour['hour'].':00';
+		}
+
+		$h .= '<div style="width: '.(100 + count($labels) * 50).'px; height: 250px">';
+			$h .= '<canvas '.attr('onrender', 'Analyze.createBarLine(this, "'.s("Ventes").'", '.json_encode($turnovers).', "'.s("Clients").'", '.json_encode($sales).', '.json_encode($labels).')').'</canvas>';
+		$h .= '</div>';
+
+		$h .= '<br/>';
+
+		return $h;
+
+	}
+
+	public function getBestProducts(\Collection $cItemProduct): string {
+
+		if($cItemProduct->empty()) {
+			return '';
+		}
+
+		$h = '<h2>'.s("Meilleures ventes").'</h2>';
+
+		$h .= '<div class="analyze-chart-table">';
+			$h .= (new AnalyzeUi())->getBestProductsPie($cItemProduct);
+			$h .= (new AnalyzeUi())->getBestProductsTable($cItemProduct, zoom: FALSE, expand: FALSE);
+		$h .= '</div>';
+		$h .= '<br/>';
+
+		return $h;
+
+	}
+
 	public function getList(Sale $eSaleParent, \Collection $cSale, ?Sale $eSaleSelected = NULL): string {
 
 		$h = '';
@@ -184,7 +287,7 @@ class MarketUi {
 							$h .= '<a href="/selling/sale:updateCustomer?id='.$eSale['id'].'">'.CustomerUi::name($eSale['customer']).'</a>';
 						} else {
 							$h .= '<a data-dropdown="bottom-end" class="dropdown-toggle">'.CustomerUi::name($eSale['customer']).'</a>';
-							$h .= '<div class="dropdown-list">';
+							$h .= '<div class="dropdown-list bg-secondary">';
 								$h .= '<a href="'.CustomerUi::url($eSale['customer']).'" class="dropdown-item">'.s("Voir le client").'</a>';
 								$h .= '<a href="/selling/sale:updateCustomer?id='.$eSale['id'].'" class="dropdown-item">'.s("Changer de client").'</a>';
 							$h .= '</div>';

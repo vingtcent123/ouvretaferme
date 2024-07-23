@@ -100,7 +100,16 @@
 
 		$data->e->checkMarketSelling();
 
+		$data->cSaleLast = \selling\MarketLib::getLast($data->e);
+
+		$data->hours = \selling\MarketLib::getByHour($data->e);
+
 		$data->ccSale = \selling\SaleLib::getByParent($data->e);
+		$data->cSale = $data->ccSale
+			->linearize()
+			->sort(['id' => SORT_DESC]);
+
+		$data->cItem = \selling\AnalyzeLib::getSaleProducts($data->e, FALSE);
 
 		throw new ViewAction($data);
 

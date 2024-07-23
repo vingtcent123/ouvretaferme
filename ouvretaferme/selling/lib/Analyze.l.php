@@ -385,9 +385,19 @@ class AnalyzeLib {
 
 	}
 
+	public static function getSaleProducts(Sale $eSale, bool $displayExcludingVat = TRUE): \Collection {
+
+		Item::model()->where('m1.sale', $eSale);
+
+		return self::getProducts(field: $displayExcludingVat ? 'priceExcludingVat' : 'price');
+
+	}
+
 	public static function getFarmProducts(\farm\Farm $eFarm, int $year, ?int $month, ?string $week, \Search $search): \Collection {
 
 		Item::model()->where('m1.farm', $eFarm);
+
+		self::filterItemStats(TRUE);
 
 		return self::getProducts($year, $month, $week, $search);
 
@@ -397,6 +407,8 @@ class AnalyzeLib {
 
 		Item::model()->whereShop($eShop);
 
+		self::filterItemStats(TRUE);
+
 		return self::getProducts($year, $month, $week);
 
 	}
@@ -404,6 +416,8 @@ class AnalyzeLib {
 	public static function getCustomerProducts(Customer $eCustomer, int $year, ?int $month = NULL, ?string $week = NULL): \Collection {
 
 		Item::model()->whereCustomer($eCustomer);
+
+		self::filterItemStats(TRUE);
 
 		return self::getProducts($year, $month, $week);
 
@@ -432,24 +446,22 @@ class AnalyzeLib {
 
 	}
 
-	private static function getProducts(int $year, ?int $month, ?string $week, \Search $search = new \Search()): \Collection {
+	private static function getProducts(?int $year = NULL, ?int $month = NULL, ?string $week = NULL, \Search $search = new \Search(), string $field = 'priceExcludingVat'): \Collection {
 
 		if($search->get('type')) {
 			Item::model()->where('m2.type', $search->get('type'));
 		}
-
-		self::filterItemStats(TRUE);
 
 		return Item::model()
 			->select([
 				'product' => ['vignette', 'name', 'variety'],
 				'quantity' => new \Sql('SUM(IF(packaging IS NULL, 1, packaging) * number)', 'float'),
 				'unit',
-				'turnover' => new \Sql('SUM(priceExcludingVat)', 'float'),
-				'average' => new \Sql('SUM(priceExcludingVat) / SUM(IF(packaging IS NULL, 1, packaging) * number)', 'float')
+				'turnover' => new \Sql('SUM('.$field.')', 'float'),
+				'average' => new \Sql('SUM('.$field.') / SUM(IF(packaging IS NULL, 1, packaging) * number)', 'float')
 			])
 			->join(Customer::model(), 'm1.customer = m2.id')
-			->where(new \Sql('EXTRACT(YEAR FROM deliveredAt)'), $year)
+			->where(new \Sql('EXTRACT(YEAR FROM deliveredAt)'), $year, if: $year)
 			->where('number != 0')
 			->where($month ? 'EXTRACT(MONTH FROM deliveredAt) = '.$month : NULL)
 			->where($week ? 'WEEK(deliveredAt, 1) = '.week_number($week) : NULL)

@@ -50,7 +50,7 @@ new AdaptativeView('/vente/{id}/marche/ventes', function($data, MarketTemplate $
 
 	$t->selected = 'sales';
 
-	if($data->ccSale->empty()) {
+	if($data->cSale->empty()) {
 
 		echo '<div class="util-info">';
 			echo s("Vous n'avez encore saisi aucune vente pour ce marché !");
@@ -58,22 +58,13 @@ new AdaptativeView('/vente/{id}/marche/ventes', function($data, MarketTemplate $
 
 	} else {
 
-		foreach($data->ccSale as $cSale) {
+		echo (new \selling\MarketUi())->getStats($data->e, $data->cSaleLast);
+		echo (new \selling\MarketUi())->getHours($data->hours);
+		echo (new \selling\MarketUi())->getBestProducts($data->cItem);
 
-			if($cSale->empty()) {
-				continue;
-			}
+		echo '<h2>'.s("Liste des ventes").'</h2>';
 
-			echo '<h2>';
-				echo match($cSale->first()['preparationStatus']) {
-					\selling\Sale::DELIVERED => s("Ventes terminées"),
-					\selling\Sale::DRAFT => s("Ventes en cours"),
-					\selling\Sale::CANCELED => s("Ventes annulés")
-				};
-			echo '</h2>';
-			echo (new \selling\SaleUi())->getList($data->e['farm'], $cSale, hide: ['deliveredAt', 'actions', 'documents'], show: ['createdAt'], link: fn($eSale) => \selling\SaleUi::urlMarket($data->e).'/vente/'.$eSale['id']);
-
-		}
+		echo (new \selling\SaleUi())->getList($data->e['farm'], $data->cSale, hide: ['deliveredAt', 'actions', 'documents'], show: ['createdAt'], link: fn($eSale) => \selling\SaleUi::urlMarket($data->e).'/vente/'.$eSale['id']);
 
 	}
 

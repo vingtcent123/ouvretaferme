@@ -1024,7 +1024,7 @@ class AnalyzeUi {
 
 	}
 
-	protected function getBestProductsTable(\Collection $cItemProduct, int $year, \Collection $cItemProductMonthly = new \Collection(), ?string $monthly = NULL, \Collection $cItemProductCompare = new \Collection(), ?int $yearCompare = NULL, ?int $limit = NULL, ?\Search $search = NULL, bool $zoom = TRUE): string {
+	public function getBestProductsTable(\Collection $cItemProduct, ?int $year = NULL, \Collection $cItemProductMonthly = new \Collection(), ?string $monthly = NULL, \Collection $cItemProductCompare = new \Collection(), ?int $yearCompare = NULL, ?int $limit = NULL, ?\Search $search = NULL, bool $zoom = TRUE, bool $expand = TRUE): string {
 
 		$search ??= (new \Search())->sort(GET('sort'));
 		$search->validateSort(['product', 'average', 'turnover', 'quantity'], 'turnover-');
@@ -1060,7 +1060,9 @@ class AnalyzeUi {
 								$h .= '<th class="text-center" colspan="2">';
 									$h .= '<div class="analyze-month-th">';
 										$h .= $search->linkSort('turnover', s("Ventes"), SORT_DESC);
-										$h .= $this->getMonthlyLink($monthly, 'turnover');
+										if($expand) {
+											$h .= $this->getMonthlyLink($monthly, 'turnover');
+										}
 									$h .= '</div>';
 								$h .= '</th>';
 							}
@@ -1069,7 +1071,9 @@ class AnalyzeUi {
 								$h .= '<th class="text-center" colspan="2">';
 									$h .= '<div class="analyze-month-th">';
 										$h .= $search->linkSort('quantity', s("Volume"), SORT_DESC);
-										$h .= $this->getMonthlyLink($monthly, 'quantity');
+										if($expand) {
+											$h .= $this->getMonthlyLink($monthly, 'quantity');
+										}
 									$h .= '</div>';
 								$h .= '</th>';
 							}
@@ -1078,7 +1082,9 @@ class AnalyzeUi {
 								$h .= '<th class="text-end">';
 									$h .= '<div class="analyze-month-th">';
 										$h .= $search->linkSort('average', s("Prix"), SORT_DESC);
-										$h .= $this->getMonthlyLink($monthly, 'average');
+										if($expand) {
+											$h .= $this->getMonthlyLink($monthly, 'average');
+										}
 									$h .= '</div>';
 								$h .= '</th>';
 							}

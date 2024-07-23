@@ -126,11 +126,12 @@ class ItemUi {
 									$h .= '<a data-dropdown="bottom-end" data-dropdown-id="item-update-'.$eItem['id'].'" class="dropdown-toggle item-item-name-action hide-sm-up">';
 										$h .= '<span>'.encode($eItem['name']).'</span>';
 									$h .= '</a>';
-									if($eSale['type'] === Customer::PRO and $eItem['product']['size']) {
-										$h .= ' <small class="color-muted"><u>'.encode($eItem['product']['size']).'</u></small>';
-									}
 								} else {
 									$h .= encode($eItem['name']);
+								}
+
+								if($eSale['type'] === Customer::PRO and $eItem['product']['size']) {
+									$h .= ' <small class="color-muted"><u>'.encode($eItem['product']['size']).'</u></small>';
 								}
 
 								if($eItem['description']) {
