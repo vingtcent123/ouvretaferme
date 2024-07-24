@@ -140,6 +140,16 @@ class ManageUi {
 								Website::PINGED_UNSECURED => \Asset::icon('chevron-right').' <b>'.s("Non actif - Domaine vérifié et en attente de sécurisation").'</b>',
 								Website::PINGED_SECURED => '',
 							};
+							if(in_array($eWebsite['domainStatus'], [Website::FAILURE_UNSECURED, Website::FAILURE_SECURED])) {
+
+								if($eWebsite['domainTry'] >= \Setting::get('domainMaxTry')) {
+									$h .= ' '.s("(nombre maximal de tentatives atteint)");
+									$h .= ' <a data-ajax="/website/manage:doUpdateDomainTry" post-id="'.$eWebsite['id'].'" post-domain-try="0" class="btn btn-primary">'.s("Réessayer").'</a>';
+								} else {
+									$h .= ' '.s("(essai {current} / {max})", ['current' => $eWebsite['domainTry'], 'max' => \Setting::get('domainMaxTry')]);
+								}
+
+							}
 						}
 					$h .= '</dd>';
 					$h .= '<dt>'.s("Nom du site").'</dt>';

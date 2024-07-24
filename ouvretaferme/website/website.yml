@@ -71,6 +71,7 @@ Website:
   internalDomain: text8(1, null)
   domain: ?text8(1, null)
   domainStatus: ?enum(PENDING, CONFIGURED_UNSECURED, PINGED_UNSECURED, FAILURE_UNSECURED, CERTIFICATE_CREATED, FAILURE_CERTIFICATE_CREATED, CONFIGURED_SECURED, PINGED_SECURED, FAILURE_SECURED)
+  domainTry: int16(0, null) = 0
   logo: ?textFixed(30, 30) @charset(ascii)
   favicon: ?textFixed(30, 30)
   name: text8(1, 40)

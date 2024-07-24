@@ -54,6 +54,7 @@ class WebsiteModel extends \ModuleModel {
 			'internalDomain' => ['text8', 'min' => 1, 'max' => NULL, 'unique' => TRUE, 'cast' => 'string'],
 			'domain' => ['text8', 'min' => 1, 'max' => NULL, 'null' => TRUE, 'unique' => TRUE, 'cast' => 'string'],
 			'domainStatus' => ['enum', [\website\Website::PENDING, \website\Website::CONFIGURED_UNSECURED, \website\Website::PINGED_UNSECURED, \website\Website::FAILURE_UNSECURED, \website\Website::CERTIFICATE_CREATED, \website\Website::FAILURE_CERTIFICATE_CREATED, \website\Website::CONFIGURED_SECURED, \website\Website::PINGED_SECURED, \website\Website::FAILURE_SECURED], 'null' => TRUE, 'cast' => 'enum'],
+			'domainTry' => ['int16', 'min' => 0, 'max' => NULL, 'cast' => 'int'],
 			'logo' => ['textFixed', 'min' => 30, 'max' => 30, 'charset' => 'ascii', 'null' => TRUE, 'cast' => 'string'],
 			'favicon' => ['textFixed', 'min' => 30, 'max' => 30, 'null' => TRUE, 'cast' => 'string'],
 			'name' => ['text8', 'min' => 1, 'max' => 40, 'cast' => 'string'],
@@ -68,7 +69,7 @@ class WebsiteModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'farm', 'internalDomain', 'domain', 'domainStatus', 'logo', 'favicon', 'name', 'description', 'customDesign', 'customColor', 'customDisabledFooter', 'customTitleFont', 'customFont', 'createdAt', 'status'
+			'id', 'farm', 'internalDomain', 'domain', 'domainStatus', 'domainTry', 'logo', 'favicon', 'name', 'description', 'customDesign', 'customColor', 'customDisabledFooter', 'customTitleFont', 'customFont', 'createdAt', 'status'
 		]);
 
 		$this->propertiesToModule += [
@@ -87,6 +88,9 @@ class WebsiteModel extends \ModuleModel {
 	public function getDefaultValue(string $property) {
 
 		switch($property) {
+
+			case 'domainTry' :
+				return 0;
 
 			case 'customDesign' :
 				return \Setting::get('website\designDefaultId');
@@ -159,6 +163,10 @@ class WebsiteModel extends \ModuleModel {
 
 	public function whereDomainStatus(...$data): WebsiteModel {
 		return $this->where('domainStatus', ...$data);
+	}
+
+	public function whereDomainTry(...$data): WebsiteModel {
+		return $this->where('domainTry', ...$data);
 	}
 
 	public function whereLogo(...$data): WebsiteModel {

@@ -1306,7 +1306,7 @@ dl.util-presentation dd {
 	padding: 0;
 	margin: 0;
 }
-dl.util-presentation dd a {
+dl.util-presentation dd a:not(.btn) {
 	color: inherit;
 }
 

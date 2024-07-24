@@ -136,8 +136,9 @@ class DomainLib {
 	public static function buildPingUnsecure(): void {
 
 		$cWebsite = Website::model()
-			->select('id', 'domain')
+			->select('id', 'domain', 'domainTry')
 			->whereDomainStatus('IN', [Website::CONFIGURED_UNSECURED, Website::FAILURE_UNSECURED])
+			->whereDomainTry('<', \Setting::get('domainMaxTry'))
 			->getCollection();
 
 		if($cWebsite->notEmpty()) {
@@ -161,12 +162,14 @@ class DomainLib {
 			if(str_starts_with($ping, 'OK')) {
 
 				Website::model()->update($eWebsite, [
+					'domainTry' => 0,
 					'domainStatus' => Website::PINGED_UNSECURED
 				]);
 
 			} else {
 
 				Website::model()->update($eWebsite, [
+					'domainTry' => $eWebsite['domainTry'] + 1,
 					'domainStatus' => Website::FAILURE_UNSECURED
 				]);
 
@@ -215,8 +218,9 @@ class DomainLib {
 	public static function buildPingSecure(): void {
 
 		$cWebsite = Website::model()
-			->select('id', 'domain')
+			->select('id', 'domain', 'domainTry')
 			->whereDomainStatus('IN', [Website::CONFIGURED_SECURED, Website::FAILURE_SECURED])
+			->whereDomainTry('<', \Setting::get('domainMaxTry'))
 			->getCollection();
 
 		foreach($cWebsite as $eWebsite) {
@@ -236,12 +240,14 @@ class DomainLib {
 			if(str_starts_with($ping, 'OK')) {
 
 				Website::model()->update($eWebsite, [
+					'domainTry' => 0,
 					'domainStatus' => Website::PINGED_SECURED
 				]);
 
 			} else {
 
 				Website::model()->update($eWebsite, [
+					'domainTry' => $eWebsite['domainTry'] + 1,
 					'domainStatus' => Website::FAILURE_SECURED
 				]);
 

@@ -7,6 +7,7 @@ Setting::register('website', [
 
 	'dnsIP' => '51.83.98.183',
 	'domain' => 'site.'.Lime::getDomain(),
+	'domainMaxTry' => 3,
 	'blogFarm' => 98,
 	'designDefaultId' => 1,
 	'customFonts' => [

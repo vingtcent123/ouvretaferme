@@ -30,6 +30,7 @@ class AlertUi {
 			'Website::updated' => s("Le site internet a bien été mis à jour."),
 			'Website::deleted' => s("Le site internet a bien été supprimé et n'est plus accessible."),
 			'Website::customized' => s("Le style de votre site a bien été enregistré."),
+			'Website::domainRetry' => s("{siteName} réessaiera de se connecter à votre nom de domaine dans quelques minutes !"),
 
 			'Webpage::created' => s("La page a bien été créée et peut désormais être enrichie en textes et images !"),
 			'Webpage::updated' => s("La page a bien été mise à jour."),
