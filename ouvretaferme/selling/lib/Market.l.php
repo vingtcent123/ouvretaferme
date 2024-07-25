@@ -30,7 +30,7 @@ class MarketLib {
 				'turnover' => new \Sql('SUM(priceIncludingVat)', 'float')
 			])
 			->whereMarketParent($eSale)
-			->wherePreparationStatus('IN', [Sale::DELIVERED, Sale::DRAFT])
+			->wherePreparationStatus(Sale::DELIVERED)
 			->group('hour')
 			->sort(['hour' => SORT_ASC])
 			->getCollection(index: 'hour');
