@@ -84,6 +84,26 @@ class Collection extends ArrayIterator {
 
 	}
 
+	public function reverse(bool $preserveKeys = FALSE) {
+
+		$c = new Collection();
+
+		for($position = $this->count() - 1; $position >= 0; $position--) {
+
+			$this->seek($position);
+
+			if($preserveKeys) {
+				$c[$this->key()] = $this->current();
+			} else {
+				$c[] = $this->current();
+			}
+
+		}
+
+		return $c;
+
+	}
+
 	public function __toString(): string {
 		return $this->toString(4);
 	}

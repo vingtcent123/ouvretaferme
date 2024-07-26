@@ -100,7 +100,7 @@
 
 		$data->e->checkMarketSelling();
 
-		$data->cSaleLast = \selling\MarketLib::getLast($data->e);
+		$data->ccSaleLast = \selling\MarketLib::getLast($data->e);
 
 		$data->hours = \selling\MarketLib::getByHour($data->e);
 

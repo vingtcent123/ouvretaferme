@@ -3,19 +3,34 @@ namespace selling;
 
 class MarketLib {
 
-	public static function getLast(Sale $eSale): \Collection {
+	public static function getLast(Sale $eSale): array {
 
 		$eSale->expects(['farm', 'customer']);
 
-		return Sale::model()
-			->select(Sale::getSelection())
+		$query = fn($comparator, $sort, $number): \Collection => Sale::model()
+			->select([
+				'id',
+				'priceIncludingVat',
+				'marketSales',
+				'hasVat', 'taxes',
+				'deliveredAt'
+			])
+			->whereMarket(TRUE)
 			->wherePriceIncludingVat('!=', NULL)
 			->wherePreparationStatus('IN', [Sale::DELIVERED, Sale::SELLING])
-			->whereDeliveredAt('<', $eSale['deliveredAt'])
+			->whereDeliveredAt($comparator, $eSale['deliveredAt'])
 			->whereFarm($eSale['farm'])
 			->whereCustomer($eSale['customer'])
-			->sort(['deliveredAt' => SORT_DESC])
-			->getCollection(0, 4);
+			->sort(['deliveredAt' => $sort])
+			->getCollection(0, $number);
+
+		$cSaleAfter = $query('>', SORT_ASC, 2);
+		$cSaleBefore = $query('<', SORT_DESC, 4 - $cSaleAfter->count());
+
+		return [
+			$cSaleAfter->reverse(),
+			$cSaleBefore,
+		];
 
 	}
 

@@ -10,9 +10,15 @@ class MarketUi {
 
 	}
 
-	public function getStats(Sale $eSaleCurrent, \Collection $cSaleLast): string {
+	public function getStats(Sale $eSaleCurrent, array $cSaleLast): string {
 
-		if($cSaleLast->empty() and $eSaleCurrent['priceIncludingVat'] === NULL) {
+		[$cSaleAfter, $cSaleBefore] = $cSaleLast;
+
+		if(
+			$cSaleAfter->empty() and
+			$cSaleBefore->empty() and
+			$eSaleCurrent['priceIncludingVat'] === NULL
+		) {
 			return '';
 		}
 
@@ -20,48 +26,41 @@ class MarketUi {
 
 		$h .= '<ul class="util-summarize util-summarize-overflow">';
 
-		if($eSaleCurrent['priceIncludingVat'] !== NULL) {
-
-			if($eSaleCurrent->getTaxes()) {
-				$taxes = '<small> '.$eSaleCurrent->getTaxes().'</small>';
-			} else {
-				$taxes = '';
-			}
-
-			$h .= '<li class="selected">';
-				$h .= '<a href="'.\selling\SaleUi::urlMarket($eSaleCurrent).'/ventes">';
-					$h .= '<h5>'.\util\DateUi::numeric($eSaleCurrent['deliveredAt']).'</h5>';
-					$h .= '<div>'.\util\TextUi::money($eSaleCurrent['priceIncludingVat']).$taxes.'</div>';
-					$h .= '<div class="util-summarize-muted">'.p("{value} vente", "{value} ventes", $eSaleCurrent['marketSales']).'</div>';
-				$h .= '</a>';
-			$h .= '</li>';
-
+		foreach($cSaleAfter as $eSale) {
+			$h .= $this->getStatsSale($eSale, FALSE);
 		}
 
-		foreach($cSaleLast as $eSale) {
+		if($eSaleCurrent['priceIncludingVat'] !== NULL) {
+			$h .= $this->getStatsSale($eSaleCurrent, TRUE);
+		}
 
-				if($eSale->getTaxes()) {
-					$taxes = '<small class="color-muted"> '.$eSale->getTaxes().'</small>';
-				} else {
-					$taxes = '';
-				}
-
-			if($eSale['priceIncludingVat'] !== NULL) {
-
-				$h .= '<li>';
-					$h .= '<a href="'.\selling\SaleUi::urlMarket($eSale).'/ventes">';
-						$h .= '<h5>'.\util\DateUi::numeric($eSale['deliveredAt']).'</h5>';
-						$h .= '<div>'.\util\TextUi::money($eSale['priceIncludingVat']).$taxes.'</div>';
-						$h .= '<div class="util-summarize-muted">'.p("{value} vente", "{value} ventes", $eSale['marketSales']).'</div>';
-					$h .= '</a>';
-				$h .= '</li>';
-			}
-
+		foreach($cSaleBefore as $eSale) {
+			$h .= $this->getStatsSale($eSale, FALSE);
 		}
 
 		$h .= '</ul>';
 
 		$h .= '<br/>';
+
+		return $h;
+
+	}
+
+	protected function getStatsSale(Sale $eSale, bool $selected): string {
+
+		if($eSale->getTaxes()) {
+			$taxes = '<small class="color-muted"> '.$eSale->getTaxes().'</small>';
+		} else {
+			$taxes = '';
+		}
+
+		$h = '<li '.($selected ? 'class="selected"' : '').'>';
+			$h .= '<a href="'.\selling\SaleUi::urlMarket($eSale).'/ventes">';
+				$h .= '<h5>'.\util\DateUi::numeric($eSale['deliveredAt']).'</h5>';
+				$h .= '<div>'.\util\TextUi::money($eSale['priceIncludingVat']).$taxes.'</div>';
+				$h .= '<div class="util-summarize-muted">'.p("{value} vente", "{value} ventes", $eSale['marketSales']).'</div>';
+			$h .= '</a>';
+		$h .= '</li>';
 
 		return $h;
 

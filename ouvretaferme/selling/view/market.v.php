@@ -58,7 +58,7 @@ new AdaptativeView('/vente/{id}/marche/ventes', function($data, MarketTemplate $
 
 	} else {
 
-		echo (new \selling\MarketUi())->getStats($data->e, $data->cSaleLast);
+		echo (new \selling\MarketUi())->getStats($data->e, $data->ccSaleLast);
 		echo (new \selling\MarketUi())->getHours($data->hours);
 		echo (new \selling\MarketUi())->getBestProducts($data->cItem);
 
