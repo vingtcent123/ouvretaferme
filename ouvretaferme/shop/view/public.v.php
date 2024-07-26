@@ -58,7 +58,10 @@ new AdaptativeView('shop', function($data, ShopTemplate $t) {
 
 			}
 
-		} else if($data->eDateSelected['isDeliverable']) {
+		} else if(
+			$data->eDateSelected['isDeliverable'] and
+			$data->eSaleExisting->notEmpty()
+		) {
 
 			echo '<div class="util-block">';
 				echo Asset::icon('lock-fill').' ';
