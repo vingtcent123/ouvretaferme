@@ -130,7 +130,11 @@ class ItemUi {
 									$h .= encode($eItem['name']);
 								}
 
-								if($eSale['type'] === Customer::PRO and $eItem['product']['size']) {
+								if(
+									$eSale['type'] === Customer::PRO and
+									$eItem['product']->notEmpty() and
+									$eItem['product']['size']
+								) {
 									$h .= ' <small class="color-muted"><u>'.encode($eItem['product']['size']).'</u></small>';
 								}
 
