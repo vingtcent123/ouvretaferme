@@ -34,6 +34,20 @@ class MarketLib {
 
 	}
 
+	public static function getItemStats(\Collection $cSale): \Collection {
+
+		return Item::model()
+			->select([
+				'product',
+				'sales' => new \Sql('COUNT(DISTINCT sale)', 'int'),
+				'last' => new \Sql('MAX(createdAt)')
+			])
+			->whereSale('IN', $cSale)
+			->group('product')
+			->getCollection(index: 'product');
+
+	}
+
 	public static function getByHour(Sale $eSale): array {
 
 		$eSale->expects(['farm', 'customer']);

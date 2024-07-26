@@ -110,6 +110,7 @@
 			->sort(['id' => SORT_DESC]);
 
 		$data->cItem = \selling\AnalyzeLib::getSaleProducts($data->e, FALSE);
+		$data->cItemStats = \selling\MarketLib::getItemStats($data->cSale);
 
 		throw new ViewAction($data);
 

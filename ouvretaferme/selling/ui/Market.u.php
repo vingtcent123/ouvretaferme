@@ -94,17 +94,40 @@ class MarketUi {
 
 	}
 
-	public function getBestProducts(\Collection $cItemProduct): string {
+	public function getBestProducts(\Collection $cSale, \Collection $cItemProduct, \Collection $cItemStats): string {
 
 		if($cItemProduct->empty()) {
 			return '';
 		}
 
+		$sales = $cSale->count();
+
 		$h = '<h2>'.s("Meilleures ventes").'</h2>';
 
 		$h .= '<div class="analyze-chart-table">';
 			$h .= (new AnalyzeUi())->getBestProductsPie($cItemProduct);
-			$h .= (new AnalyzeUi())->getBestProductsTable($cItemProduct, zoom: FALSE, expand: FALSE);
+			$h .= (new AnalyzeUi())->getBestProductsTable(
+				$cItemProduct,
+				zoom: FALSE, expand: FALSE, hide: ['average'],
+				moreTh: '<th class="text-end hide-sm-down">'.s("Fréquence<br/>de vente").'</th><th class="text-end hide-sm-down">'.s("Dernière<br/>vente").'</th>',
+				moreTd: function(Item $eItemProduct) use ($cItemStats, $sales) {
+
+					if($cItemStats->offsetExists($eItemProduct['product']['id']) === FALSE) {
+						return str_repeat('<td class="text-end color-muted">-</td>', 2);
+					} else {
+
+						$eItemStats = $cItemStats[$eItemProduct['product']['id']];
+
+						$h = '<td class="text-end">'.s("{value} %", round($eItemStats['sales'] / $sales * 100)).'</td>';
+						$h .= '<td class="text-end">'.substr($eItemStats['last'], 11, 5).'</td>';
+
+						return $h;
+
+					}
+
+
+				}
+			);
 		$h .= '</div>';
 		$h .= '<br/>';
 

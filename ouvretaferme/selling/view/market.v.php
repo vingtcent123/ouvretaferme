@@ -60,7 +60,7 @@ new AdaptativeView('/vente/{id}/marche/ventes', function($data, MarketTemplate $
 
 		echo (new \selling\MarketUi())->getStats($data->e, $data->ccSaleLast);
 		echo (new \selling\MarketUi())->getHours($data->hours);
-		echo (new \selling\MarketUi())->getBestProducts($data->cItem);
+		echo (new \selling\MarketUi())->getBestProducts($data->cSale, $data->cItem, $data->cItemStats);
 
 		echo '<h2>'.s("Liste des ventes").'</h2>';
 

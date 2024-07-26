@@ -1024,7 +1024,7 @@ class AnalyzeUi {
 
 	}
 
-	public function getBestProductsTable(\Collection $cItemProduct, ?int $year = NULL, \Collection $cItemProductMonthly = new \Collection(), ?string $monthly = NULL, \Collection $cItemProductCompare = new \Collection(), ?int $yearCompare = NULL, ?int $limit = NULL, ?\Search $search = NULL, bool $zoom = TRUE, bool $expand = TRUE): string {
+	public function getBestProductsTable(\Collection $cItemProduct, ?int $year = NULL, \Collection $cItemProductMonthly = new \Collection(), ?string $monthly = NULL, \Collection $cItemProductCompare = new \Collection(), ?int $yearCompare = NULL, ?int $limit = NULL, ?\Search $search = NULL, bool $zoom = TRUE, bool $expand = TRUE, array $hide = [], ?string $moreTh = NULL, ?\Closure $moreTd = NULL): string {
 
 		$search ??= (new \Search())->sort(GET('sort'));
 		$search->validateSort(['product', 'average', 'turnover', 'quantity'], 'turnover-');
@@ -1078,7 +1078,10 @@ class AnalyzeUi {
 								$h .= '</th>';
 							}
 
-							if($monthly === NULL or $monthly === 'average') {
+							if(
+								in_array('average', $hide) === FALSE and
+								($monthly === NULL or $monthly === 'average')
+							) {
 								$h .= '<th class="text-end">';
 									$h .= '<div class="analyze-month-th">';
 										$h .= $search->linkSort('average', s("Prix"), SORT_DESC);
@@ -1095,7 +1098,13 @@ class AnalyzeUi {
 								}
 							}
 
-							$h .= '<th></th>';
+							if($moreTh !== NULL) {
+								$h .= $moreTh;
+							}
+
+							if($compare or $zoom) {
+								$h .= '<th></th>';
+							}
 
 						$h .= '</tr>';
 
@@ -1122,7 +1131,7 @@ class AnalyzeUi {
 
 				$again = $limit;
 
-				$displayItem = function(Item $eItem, string $class = '') use ($compare, $totalTurnover, $cItemProductMonthly, $monthly) {
+				$displayItem = function(Item $eItem, string $class = '') use ($compare, $totalTurnover, $cItemProductMonthly, $monthly, $hide) {
 
 					if($eItem->empty()) {
 						$h = '<td class="text-end '.$class.'">/</td>';
@@ -1160,7 +1169,10 @@ class AnalyzeUi {
 						$h .= '</td>';
 					}
 
-					if($monthly === NULL or $monthly === 'average') {
+					if(
+						in_array('average', $hide) === FALSE and
+						($monthly === NULL or $monthly === 'average')
+					) {
 						$h .= '<td class="text-end '.$class.'">';
 							$h .= $average($eItem);
 							if($monthly and $eItem['unit'] !== NULL) {
@@ -1219,11 +1231,15 @@ class AnalyzeUi {
 
 							$h .= $displayItem($eItem);
 
+							if($moreTd !== NULL) {
+								$h .= $moreTd($eItem);
+							}
+
 							if($compare) {
 								$h .= $displayItem($cItemProductCompare[$key] ?? new Item(), 'color-muted');
-							} else {
+							} else if($zoom) {
 								$h .= '<td class="td-min-content">';
-									if($zoom and $eItem['product']['id'] !== NULL) {
+									if($eItem['product']['id'] !== NULL) {
 										$h .= '<a href="/selling/product:analyze?id='.$eItem['product']['id'].'&year='.$year.'&type='.$search->get('type').'" class="btn btn-outline-secondary">';
 											$h .= \Asset::icon('search');
 										$h .= '</a>';
