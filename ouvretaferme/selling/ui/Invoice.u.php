@@ -144,7 +144,7 @@ class InvoiceUi {
 						$class = 'invoice-item-'.$eInvoice['paymentStatus'];
 					}
 
-					$h .= '<tr class="'.$class.'">';
+					$h .= '<tr id="invoice-list-'.$eInvoice['id'].'" class="'.$class.'">';
 						$h .= '<td class="td-min-content sale-item-select">';
 							$h .= '<label>';
 								$h .= '<input type="checkbox" name="batch[]" value="'.$eInvoice['id'].'" oninput="Invoice.changeSelection()" data-batch="'.implode(' ', $batch).'"/>';
@@ -199,11 +199,12 @@ class InvoiceUi {
 
 								$h .= '<td>';
 									if($eInvoice->isCreditNote() === FALSE) {
-										if($eInvoice->canWrite()) {
-											$h .= $eInvoice->quick('paymentStatus', $this->getIconPaid($eInvoice));
-										} else {
-											$h .= $this->getIconPaid($eInvoice);
-										}
+										$h .= \util\TextUi::switch([
+											'id' => 'invoice-switch-'.$eInvoice['id'],
+											'data-ajax' => $eInvoice->canWrite() ? '/selling/invoice:doUpdatePaymentStatus' : NULL,
+											'post-id' => $eInvoice['id'],
+											'post-payment-status' => ($eInvoice['paymentStatus'] === Invoice::PAID) ? Invoice::NOT_PAID : Invoice::PAID
+										], $eInvoice['paymentStatus'] === Invoice::PAID);
 									}
 								$h .= '</td>';
 

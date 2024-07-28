@@ -113,7 +113,8 @@
 
 	})
 	->update()
-	->quick(['paymentStatus', 'description'])
+	->doUpdateProperties('doUpdatePaymentStatus', ['paymentStatus'], fn($data) => throw new ViewAction($data))
+	->quick(['description'])
 	->doUpdate(fn() => throw new ReloadAction('selling', 'Invoice::updated'))
 	->doDelete(fn() => throw new ReloadAction('selling', 'Invoice::deleted'));
 

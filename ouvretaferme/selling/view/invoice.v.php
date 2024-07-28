@@ -33,6 +33,28 @@ new AdaptativeView('update', function($data, PanelTemplate $t) {
 	return (new \selling\InvoiceUi())->update($data->e);
 });
 
+new JsonView('doUpdatePaymentStatus', function($data, AjaxTemplate $t) {
+
+	$t->qs('#invoice-switch-'.$data->e['id'])->toggleSwitch();
+
+	switch($data->e['paymentStatus']) {
+
+		case \selling\Invoice::PAID :
+			$t->qs('#invoice-list-'.$data->e['id'])->addClass('invoice-item-paid');
+			$t->qs('#invoice-list-'.$data->e['id'])->removeClass('invoice-item-not-paid');
+			$t->qs('#invoice-switch-'.$data->e['id'])->setAttribute('post-payment-status', \selling\Invoice::NOT_PAID);
+			break;
+
+		case \selling\Invoice::NOT_PAID :
+			$t->qs('#invoice-list-'.$data->e['id'])->removeClass('invoice-item-paid');
+			$t->qs('#invoice-list-'.$data->e['id'])->addClass('invoice-item-not-paid');
+			$t->qs('#invoice-switch-'.$data->e['id'])->setAttribute('post-payment-status', \selling\Invoice::PAID);
+			break;
+
+	}
+
+});
+
 new AdaptativeView('createCollection', function($data, PanelTemplate $t) {
 
 	if($data->month === NULL) {
