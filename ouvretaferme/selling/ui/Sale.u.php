@@ -1125,7 +1125,7 @@ class SaleUi {
 			($eSale['market'] === TRUE and $eSale->isMarketPreparing() === FALSE) or
 			($eSale['market'] === FALSE and $eSale['items'] > 0)
 		) {
-			$h .= self::getSummary($eSale);
+			$h .= $this->getSummary($eSale);
 		}
 
 
@@ -1133,7 +1133,7 @@ class SaleUi {
 
 	}
 
-	public static function getSummary(Sale $eSale, bool $onlyIncludingVat = FALSE): string {
+	public function getSummary(Sale $eSale, bool $onlyIncludingVat = FALSE, bool $includeMoney = FALSE): string {
 
 			$h = '<ul class="util-summarize">';
 				$h .= '<li>';
@@ -1172,7 +1172,60 @@ class SaleUi {
 					$h .= '</li>';
 				}
 
+				if($includeMoney) {
+
+					$h .= '<li style="align-self: end">';
+						$h .= '<a '.attr('onclick', 'Sale.toggleMoney('.$eSale['id'].')').' class="btn btn-outline-primary">'.s("Rendu de monnaie").'</a>';
+					$h .= '</li>';
+
+				}
+
 			$h .= '</ul>';
+
+			if($includeMoney) {
+
+				$values = [];
+
+				foreach([5, 10, 20, 50] as $value) {
+					if($eSale['priceIncludingVat'] < $value) {
+						$values[] = $value;
+					}
+				}
+
+				$values[] = floor($eSale['priceIncludingVat'] / 5) * 5 + 5;
+				$values[] = floor($eSale['priceIncludingVat'] / 10) * 10 + 10;
+				$values[] = floor($eSale['priceIncludingVat'] / 20) * 20 + 20;
+
+				$values = array_unique($values);
+				sort($values);
+
+				$form = new \util\FormUi();
+
+				$h .= '<div id="sale-money-'.$eSale['id'].'" class="hide util-overflow-sm">';
+					$h .= '<table class="tr-bordered">';
+						$h .= '<tr>';
+							$h .= '<td><h3 class="mb-0">'.s("Donné").'</h3></td>';
+							foreach($values as $value) {
+								$h .= '<td style="font-size: 1.2rem">'.\util\TextUi::money($value, precision: 0).'<td>';
+							}
+							$h .= '<td>';
+								$h .= $form->inputGroup(
+									$form->number(attributes: ['placeholder' => s("Autre"), 'id' => 'sale-money-'.$eSale['id'].'-field', 'oninput' => 'Sale.updateCustomerMoney('.$eSale['id'].', '.$eSale['priceIncludingVat'].', this)']).
+									$form->addon('€')
+								);
+							$h .= '<td>';
+						$h .= '</tr>';
+						$h .= '<tr>';
+							$h .= '<td><h3 class="mb-0">'.s("Rendu").'</h3></td>';
+							foreach($values as $value) {
+								$h .= '<td style="font-size: 1.2rem">'.\util\TextUi::money($value - $eSale['priceIncludingVat']).'<td>';
+							}
+							$h .= '<td style="font-size: 1.2rem" id="sale-money-'.$eSale['id'].'-custom"><td>';
+						$h .= '</tr>';
+					$h .= '</table>';
+				$h .= '</div>';
+
+			}
 
 			return $h;
 

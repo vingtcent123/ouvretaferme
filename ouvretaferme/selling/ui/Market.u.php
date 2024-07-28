@@ -280,17 +280,13 @@ class MarketUi {
 									$h .= '<a data-ajax="/selling/market:doDelete" post-id="'.$eSale['id'].'" class="btn btn-danger" data-confirm="'.s("Voulez-vous réellement supprimer cette vente ?").'">'.s("Supprimer la vente").'</a>';
 								$h .= '</div>';
 							} else {
-								$h .= '<div>';
-									$h .= '<a data-ajax="/selling/sale:doUpdatePreparationStatus" post-id="'.$eSale['id'].'" post-preparation-status="'.Sale::DELIVERED.'" post-id="'.$eSale['id'].'" class="btn btn-success" data-confirm="'.s("Voulez-vous réellement terminer cette vente ?").'">'.s("Terminer la vente").'</a> ';
-									$h .= '<a data-ajax="/selling/sale:doUpdatePreparationStatus" post-id="'.$eSale['id'].'" post-preparation-status="'.Sale::CANCELED.'" class="btn btn-muted" data-confirm="'.s("Voulez-vous réellement annuler cette vente ?").'">'.s("Annuler la vente").'</a>';
-								$h .= '</div>';
+								$h .= '<a data-ajax="/selling/sale:doUpdatePreparationStatus" post-id="'.$eSale['id'].'" post-preparation-status="'.Sale::CANCELED.'" class="btn btn-muted" data-confirm="'.s("Voulez-vous réellement annuler cette vente ?").'">'.s("Annuler la vente").'</a>';
 							}
 
 							break;
 
 						case Sale::CANCELED :
 						case Sale::DELIVERED :
-
 							$h .= '<a data-ajax="/selling/sale:doUpdatePreparationStatus" post-id="'.$eSale['id'].'" post-preparation-status="'.Sale::DRAFT.'" post-id="'.$eSale['id'].'" class="btn btn-outline-primary" data-confirm="'.s("Voulez-vous réellement remettre cette vente en cours ?").'">'.s("Repasser en cours").'</a> ';
 
 							break;
@@ -341,7 +337,14 @@ class MarketUi {
 		$h .= '</div>';
 
 		if($eSale['items'] > 0) {
-			$h .= SaleUi::getSummary($eSale, onlyIncludingVat: TRUE);
+
+			$money = (
+				$eSale['preparationStatus'] === Sale::DELIVERED and
+				($eSale['paymentMethod'] === NULL or $eSale['paymentMethod'] === Sale::CASH)
+			);
+
+			$h .= (new SaleUi())->getSummary($eSale, onlyIncludingVat: TRUE, includeMoney: $money);
+
 		}
 
 		$h .= $this->displaySaleItems($eSale, $cItemSale, $eSaleMarket, $cItemMarket);

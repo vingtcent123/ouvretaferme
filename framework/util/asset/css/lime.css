@@ -1162,6 +1162,10 @@ ul.util-summarize-overflow {
 	flex-wrap: nowrap;
 }
 
+ul.util-summarize-last {
+	align-self: end;
+}
+
 ul.util-summarize:not(:last-child) {
 	margin-bottom: 1rem;
 }
@@ -1179,14 +1183,14 @@ ul.util-summarize li.selected {
 	background-color: var(--background);
 }
 
-ul.util-summarize li > a {
+ul.util-summarize li > a:not(.btn) {
 	display: block;
 	margin: -1rem -1rem;
 	padding: 1rem 1rem;
 	border-radius: var(--radius);
 }
 
-ul.util-summarize li.selected > a,
+ul.util-summarize li.selected > a:not(.btn),
 ul.util-summarize li > a:hover {
 	text-decoration: none;
 	background-color: var(--secondary);
@@ -1203,7 +1207,7 @@ ul.util-summarize li h5 {
 }
 
 ul.util-summarize li.selected > a h5,
-ul.util-summarize li > a:hover h5 {
+ul.util-summarize li > a:not(.btn):hover h5 {
 	color: white;
 	border-bottom: 1px solid #fff8;
 }
@@ -1219,7 +1223,7 @@ ul.util-summarize li .util-summarize-muted {
 }
 
 ul.util-summarize li.selected .util-summarize-muted,
-ul.util-summarize li > a:hover .util-summarize-muted {
+ul.util-summarize li > a:not(.btn):hover .util-summarize-muted {
 	color: #fffd;
 }
 
@@ -1234,7 +1238,7 @@ ul.util-summarize li > a:hover .util-summarize-muted {
 		font-size: 1rem;
 	}
 
-	ul.util-summarize li > a {
+	ul.util-summarize li > a:not(.btn) {
 		padding: 0.75rem;
 		margin: -0.5rem;
 	}
