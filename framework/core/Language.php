@@ -82,13 +82,15 @@ class L {
 		self::$defaultLang = $lang;
 	}
 
-	public static function getCollator(): Collator {
+	public static function getCollator(bool $natural = FALSE): Collator {
 
 		$lang = self::getLang();
 
 		if(isset(self::$collator[$lang]) === FALSE) {
 			self::$collator[$lang] = new Collator($lang);
 		}
+
+		self::$collator[$lang]->setAttribute(Collator::NUMERIC_COLLATION, $natural ? Collator::ON : Collator::OFF);
 
 		return self::$collator[$lang];
 

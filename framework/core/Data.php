@@ -950,11 +950,11 @@ class Collection extends ArrayIterator {
 					$compare = fn($value1, $value2) => strcmp($value1, $value2);
 				}
 			} else {
-				$collator = get_collator();
 				if($natural) {
-					$collator->setAttribute(Collator::NUMERIC_COLLATION, Collator::ON);
+					$compare = fn($value1, $value2) => L::getCollator(TRUE)->compare($value1, $value2);
+				} else {
+					$compare = fn($value1, $value2) => strcmp($value1, $value2);
 				}
-				$compare = fn($value1, $value2) => $collator->compare($value1, $value2);
 			}
 
 			$callback = function($eElement1, $eElement2) use ($order, $compare) {

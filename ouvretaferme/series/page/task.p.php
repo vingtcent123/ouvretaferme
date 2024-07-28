@@ -145,6 +145,8 @@
 
 				});
 
+			} else {
+				$data->cSeries->sort(['name' => SORT_ASC], natural: TRUE);
 			}
 
 			if($data->cSeries->notEmpty()) {

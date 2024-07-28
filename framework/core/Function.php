@@ -212,15 +212,6 @@ function array_delete(&$array, $key): bool {
 
 }
 
-function get_collator(): Collator {
-
-	$collator = new Collator('UTF-8');
-	$collator->setAttribute(Collator::FRENCH_COLLATION, Collator::ON);
-
-	return $collator;
-
-}
-
 /**
  * Checks if a string is one of the keys
  */
