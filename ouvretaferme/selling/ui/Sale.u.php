@@ -1216,7 +1216,7 @@ class SaleUi {
 							$h .= '<td>';
 						$h .= '</tr>';
 						$h .= '<tr>';
-							$h .= '<td><h3 class="mb-0">'.s("Rendu").'</h3></td>';
+							$h .= '<td><h3 class="mb-0">'.s("À rendre").'</h3></td>';
 							foreach($values as $value) {
 								$h .= '<td style="font-size: 1.2rem">'.\util\TextUi::money($value - $eSale['priceIncludingVat']).'<td>';
 							}
