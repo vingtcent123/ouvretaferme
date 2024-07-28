@@ -1220,7 +1220,7 @@ class FarmUi {
 
 	public function getSettings(Farm $eFarm, \website\News $eNews): string {
 
-		$h = '<h2>'.s("Le matériel").'</h2>';
+		$h = '<h2>'.s("La production").'</h2>';
 
 		$h .= '<div class="util-buttons">';
 
@@ -1236,7 +1236,7 @@ class FarmUi {
 
 		$h .= '</div>';
 
-		$h .= '<h2>'.s("Paramétrer la ferme").'</h2>';
+		$h .= '<h2>'.s("La ferme").'</h2>';
 
 		$h .= '<div class="util-buttons">';
 
@@ -1290,7 +1290,7 @@ class FarmUi {
 
 		$h .= '</div>';
 
-		$h .= '<h2>'.s("Ressources").'</h2>';
+		$h .= '<h2>'.s("Les ressources").'</h2>';
 
 		$h .= '<div class="util-buttons">';
 

@@ -604,6 +604,13 @@ class SaleLib extends SaleCrud {
 
 		}
 
+		if($updatePreparationStatus) {
+
+			$properties[] = 'statusDeliveredAt';
+			$e['statusDeliveredAt'] = ($e['preparationStatus'] === Sale::DELIVERED) ? new \Sql('NOW()') : NULL;
+
+		}
+
 		parent::update($e, $properties);
 
 		$newItems = [];

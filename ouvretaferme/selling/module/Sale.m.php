@@ -108,10 +108,11 @@ class SaleModel extends \ModuleModel {
 			'createdAt' => ['datetime', 'cast' => 'string'],
 			'createdBy' => ['element32', 'user\User', 'null' => TRUE, 'cast' => 'element'],
 			'deliveredAt' => ['date', 'null' => TRUE, 'cast' => 'string'],
+			'statusDeliveredAt' => ['datetime', 'null' => TRUE, 'cast' => 'string'],
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'document', 'farm', 'customer', 'from', 'taxes', 'organic', 'conversion', 'type', 'discount', 'items', 'hasVat', 'vat', 'vatByRate', 'priceExcludingVat', 'priceIncludingVat', 'shippingVatRate', 'shippingVatFixed', 'shipping', 'shippingExcludingVat', 'preparationStatus', 'paymentStatus', 'paymentMethod', 'market', 'marketSales', 'marketParent', 'orderFormValidUntil', 'orderFormPaymentCondition', 'invoice', 'shop', 'shopDate', 'shopUpdated', 'shopPoint', 'deliveryStreet1', 'deliveryStreet2', 'deliveryPostcode', 'deliveryCity', 'comment', 'stats', 'createdAt', 'createdBy', 'deliveredAt'
+			'id', 'document', 'farm', 'customer', 'from', 'taxes', 'organic', 'conversion', 'type', 'discount', 'items', 'hasVat', 'vat', 'vatByRate', 'priceExcludingVat', 'priceIncludingVat', 'shippingVatRate', 'shippingVatFixed', 'shipping', 'shippingExcludingVat', 'preparationStatus', 'paymentStatus', 'paymentMethod', 'market', 'marketSales', 'marketParent', 'orderFormValidUntil', 'orderFormPaymentCondition', 'invoice', 'shop', 'shopDate', 'shopUpdated', 'shopPoint', 'deliveryStreet1', 'deliveryStreet2', 'deliveryPostcode', 'deliveryCity', 'comment', 'stats', 'createdAt', 'createdBy', 'deliveredAt', 'statusDeliveredAt'
 		]);
 
 		$this->propertiesToModule += [
@@ -404,6 +405,10 @@ class SaleModel extends \ModuleModel {
 
 	public function whereDeliveredAt(...$data): SaleModel {
 		return $this->where('deliveredAt', ...$data);
+	}
+
+	public function whereStatusDeliveredAt(...$data): SaleModel {
+		return $this->where('statusDeliveredAt', ...$data);
 	}
 
 
