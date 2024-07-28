@@ -64,7 +64,7 @@ class TaskLib extends TaskCrud {
 
 		$e->expects(['status', 'series', 'category']);
 
-		$properties = ['action', 'description', 'harvestQuality', 'fertilizer', 'toolsList'];
+		$properties = ['action', 'description', 'harvestSize', 'fertilizer', 'toolsList'];
 
 		switch($e['status']) {
 
@@ -184,7 +184,7 @@ class TaskLib extends TaskCrud {
 					])
 					->delegateCollection('task'),
 				'description', 'fertilizer', 'time', 'harvest', 'harvestUnit',
-				'harvestQuality' => ['name'],
+				'harvestSize' => ['name'],
 				'action' => ['fqn', 'name', 'color'],
 				'plant',
 				'variety' => ['name'],
@@ -531,12 +531,12 @@ class TaskLib extends TaskCrud {
 				'variety' => ['name'],
 				'totalHarvest' => new \Sql('SUM(harvest)', 'float'),
 				'harvestUnit',
-				'harvestQuality' => ['name', 'yield']
+				'harvestSize' => ['name', 'yield']
 			])
-			->group(['variety', 'harvestQuality', 'harvestUnit'])
+			->group(['variety', 'harvestSize', 'harvestUnit'])
 			->whereAction($eAction)
 			->whereCultivation($eCultivation)
-			->sort(['variety' => SORT_ASC, 'harvestQuality' => SORT_ASC, 'harvestUnit' => SORT_ASC])
+			->sort(['variety' => SORT_ASC, 'harvestSize' => SORT_ASC, 'harvestUnit' => SORT_ASC])
 			->having('totalHarvest > 0')
 			->getCollection();
 
@@ -566,7 +566,7 @@ class TaskLib extends TaskCrud {
 			], if: $timesheetWeek !== NULL or $timesheetDate !== NULL)
 			->whereFarm($eFarm)
 			->sort([
-				'harvestQuality' => SORT_ASC,
+				'harvestSize' => SORT_ASC,
 				'plant' => SORT_ASC,
 				'variety' => SORT_ASC,
 				'id' => SORT_ASC
@@ -682,7 +682,7 @@ class TaskLib extends TaskCrud {
 				'totalHarvested' => new \Sql('SUM(harvest)', 'float'),
 				'totalTime' => new \Sql('SUM(time)', 'float')
 			])
-			->join(\plant\Quality::model(), 'm2.id = m1.harvestQuality', type: 'LEFT')
+			->join(\plant\Size::model(), 'm2.id = m1.harvestSize', type: 'LEFT')
 			->whereSeries($eSeries)
 			->whereAction($eAction)
 			->or(
@@ -709,7 +709,7 @@ class TaskLib extends TaskCrud {
 				'totalHarvested' => new \Sql('SUM(harvest)', 'float'),
 				'totalTime' => new \Sql('SUM(time)', 'float')
 			])
-			->join(\plant\Quality::model(), 'm2.id = m1.harvestQuality', type: 'LEFT')
+			->join(\plant\Size::model(), 'm2.id = m1.harvestSize', type: 'LEFT')
 			->whereSeries('IN', $cSeries)
 			->whereAction($eAction)
 			->or(
@@ -1797,16 +1797,16 @@ class TaskLib extends TaskCrud {
 		$eAction = \farm\ActionLib::getByFarm($eFarm, fqn: ACTION_RECOLTE);
 
 		// Total récolté
-		$cQuality = \plant\QualityLib::getForYield($eFarm, $ePlant);
+		$cSize = \plant\SizeLib::getForYield($eFarm, $ePlant);
 
-		if($cQuality->notEmpty()) {
-			Task::model()->where('harvestQuality IS NULL OR harvestQuality IN ('.implode(', ', $cQuality->getIds()).')');
+		if($cSize->notEmpty()) {
+			Task::model()->where('harvestSize IS NULL OR harvestSize IN ('.implode(', ', $cSize->getIds()).')');
 		} else {
-			Task::model()->whereHarvestQuality(NULL);
+			Task::model()->whereHarvestSize(NULL);
 		}
 
 		$cTask = Task::model()
-			->select('harvest', 'harvestUnit', 'harvestQuality', 'doneWeek', 'doneDate')
+			->select('harvest', 'harvestUnit', 'harvestSize', 'doneWeek', 'doneDate')
 			->whereAction($eAction)
 			->where('harvest < 0 OR harvest > 0')
 			->whereCultivation($eCultivation)

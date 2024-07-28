@@ -192,9 +192,9 @@ document.delegateEventListener('click', 'input[data-action="task-write-action-ch
 	const form = this.firstParent('form');
 
 	if(this.dataset.fqn === 'recolte') {
-		form.qs('[data-wrapper="harvestQuality"]', node => node.classList.remove('hide'))
+		form.qs('[data-wrapper="harvestSize"]', node => node.classList.remove('hide'))
 	} else {
-		form.qs('[data-wrapper="harvestQuality"]', node => node.classList.add('hide'))
+		form.qs('[data-wrapper="harvestSize"]', node => node.classList.add('hide'))
 	}
 
 	if(this.dataset.fqn === 'fertilisation') {
@@ -341,13 +341,13 @@ class Task {
 					if(actionRadioRecolte) {
 
 						if(actionRadioRecolte.matches(':checked')) {
-							form.qs('[data-wrapper="harvestQuality"]', node => node.classList.remove('hide'))
+							form.qs('[data-wrapper="harvestSize"]', node => node.classList.remove('hide'))
 						} else {
-							form.qs('[data-wrapper="harvestQuality"]', node => node.classList.add('hide'))
+							form.qs('[data-wrapper="harvestSize"]', node => node.classList.add('hide'))
 						}
 
 					} else if(actionHiddenRecolte) {
-						form.qs('[data-wrapper="harvestQuality"]', node => node.classList.remove('hide'))
+						form.qs('[data-wrapper="harvestSize"]', node => node.classList.remove('hide'))
 					}
 
 				});
@@ -363,7 +363,7 @@ class Task {
 
 			if(actionRadioRecolte) {
 
-				qs('#task-create-quality', node => node.renderInner(''));
+				qs('#task-create-size', node => node.renderInner(''));
 
 				actionRadioRecolte.disabled = true;
 				actionRadioRecolte.checked = false;
@@ -372,7 +372,7 @@ class Task {
 
 			if(actionHiddenRecolte) {
 
-				qs('#task-create-quality', node => node.renderInner(''));
+				qs('#task-create-size', node => node.renderInner(''));
 
 			}
 		}
@@ -762,7 +762,7 @@ class Task {
 				selection.forEach((field) => {
 
 					const task = field.firstParent('.batch-item');
-					const taskPlantVariety = task.dataset.filterPlant +'-'+ task.dataset.filterVariety +'-'+ task.dataset.filterHarvestUnit +'-'+ task.dataset.filterHarvestQuality;
+					const taskPlantVariety = task.dataset.filterPlant +'-'+ task.dataset.filterVariety +'-'+ task.dataset.filterHarvestUnit +'-'+ task.dataset.filterHarvestSize;
 
 					if(plantVariety === null) {
 						plantVariety = taskPlantVariety;

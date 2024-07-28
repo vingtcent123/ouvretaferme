@@ -209,7 +209,7 @@ Task:
   timeExpected: ?float32(0.0, null)
   harvest: ?float32(0.0, null)
   harvestUnit: ?enum(KG, UNIT, BUNCH)
-  harvestQuality: ?plant\Quality
+  harvestSize: ?plant\Size
   fertilizer: ?json
   plannedWeek: ?week(PHP(toWeek('NOW - 2 YEAR')), PHP(toWeek('NOW + 10 YEAR')))
   plannedDate: ?date

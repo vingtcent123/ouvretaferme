@@ -23,7 +23,7 @@
 			'sale' => $data->e,
 			'product' => $data->eProduct,
 			'vatRate' => Setting::get('selling\vatRates')[$data->e['farm']->getSelling('defaultVat')],
-			'quality' => $data->eProduct->empty() ? new \plant\Quality() : $data->eProduct['quality'],
+			'quality' => $data->eProduct->empty() ? new \plant\Size() : $data->eProduct['quality'],
 			'customer' => $data->e['customer'],
 			'locked' => \selling\Item::PRICE,
 		]);

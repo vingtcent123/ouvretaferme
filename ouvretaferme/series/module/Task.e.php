@@ -25,7 +25,7 @@ class Task extends TaskElement {
 				);
 
 			},
-			'harvestQuality' => ['name'],
+			'harvestSize' => ['name'],
 			'createdBy' => ['firstName', 'lastName', 'visibility'],
 		];
 
@@ -297,7 +297,7 @@ class Task extends TaskElement {
 
 			},
 
-			'harvestQuality.check' => function(\plant\Quality &$eQuality) use ($fw): bool {
+			'harvestSize.check' => function(\plant\Size &$eSize) use ($fw): bool {
 
 				if($fw->has('Task::action.check')) { // L'action génère déjà une erreur
 					return TRUE;
@@ -309,13 +309,13 @@ class Task extends TaskElement {
 				]);
 
 				if($this['action']['fqn'] !== ACTION_RECOLTE) {
-					$eQuality = new \plant\Quality();
+					$eSize = new \plant\Size();
 					return TRUE;
 				}
 
 				return (
-					$eQuality->empty() or
-					\plant\Quality::model()->exists($eQuality)
+					$eSize->empty() or
+					\plant\Size::model()->exists($eSize)
 				);
 
 			},
@@ -453,13 +453,13 @@ class Task extends TaskElement {
 
 			},
 
-			'quality.check' => function(\plant\Quality $eQuality): bool {
+			'size.check' => function(\plant\Size $eSize): bool {
 
 				$this->expects(['plant']);
 
-				return $eQuality->empty() or \plant\Quality::model()
+				return $eSize->empty() or \plant\Size::model()
 					->wherePlant($this['plant'])
-					->exists($eQuality);
+					->exists($eSize);
 
 			},
 

@@ -1469,7 +1469,7 @@ class CultivationUi {
 						if($varieties) {
 							$h .= '<td>'.($eTask['variety']->empty() ? '<i>'.s("Non spécifiée").'</u>' : encode($eTask['variety']['name'])).'</td>';
 						}
-						$h .= '<td>'.($eTask['harvestQuality']->empty() ? '-' : encode($eTask['harvestQuality']['name'])).'</td>';
+						$h .= '<td>'.($eTask['harvestSize']->empty() ? '-' : encode($eTask['harvestSize']['name'])).'</td>';
 						$h .= '<td class="text-end">'.\main\UnitUi::getValue(sprintf('%.1f', $eTask['totalHarvest']), $eTask['harvestUnit'], TRUE).'</td>';
 						$h .= '<td class="text-end">';
 							if($area > 0) {

@@ -1173,7 +1173,7 @@ class TaskUi {
 			'data-filter-action' => $eTask['action']['id'],
 			'data-filter-plant' => ($eTask['plant']->empty() ? '' : $eTask['plant']['id']),
 			'data-filter-variety' => ($eTask['variety']->empty() ? '' : $eTask['variety']['id']),
-			'data-filter-harvest-quality' => ($eTask['harvestQuality']->empty() ? '' : $eTask['harvestQuality']['id']),
+			'data-filter-harvest-size' => ($eTask['harvestSize']->empty() ? '' : $eTask['harvestSize']['id']),
 			'data-filter-harvest-unit' => $eTask['harvestUnit'] ?? '',
 			'data-filter-user' => implode(' ', $users)
 		];
@@ -1428,10 +1428,10 @@ class TaskUi {
 
 		if($eTask['action']['fqn'] === ACTION_RECOLTE) {
 
-			$eTask->expects(['harvestQuality', 'variety']);
+			$eTask->expects(['harvestSize', 'variety']);
 
-			if($eTask['harvestQuality']->notEmpty()) {
-				$h .= ' <span class="action-quality-name">'.encode($eTask['harvestQuality']['name']).'</span> ';
+			if($eTask['harvestSize']->notEmpty()) {
+				$h .= ' <span class="action-size-name">'.encode($eTask['harvestSize']['name']).'</span> ';
 			}
 
 		}
@@ -1561,7 +1561,7 @@ class TaskUi {
 							'data-filter-action' => $eTask['action']['id'],
 							'data-filter-plant' => ($eTask['plant']->empty() ? '' : $eTask['plant']['id']),
 							'data-filter-variety' => ($eTask['variety']->empty() ? '' : $eTask['variety']['id']),
-							'data-filter-harvest-quality' => ($eTask['harvestQuality']->empty() ? '' : $eTask['harvestQuality']['id']),
+							'data-filter-harvest-size' => ($eTask['harvestSize']->empty() ? '' : $eTask['harvestSize']['id']),
 							'data-filter-harvest-unit' => $eTask['harvestUnit'] ?? ''
 						];
 
@@ -3529,9 +3529,9 @@ class TaskUi {
 				$h .= $this->getVarietyGroup($form, $eTask, $eTask['cVariety'], $eTask['varietiesIntersect']);
 			$h .= '</div>';
 
-			$h .= '<div id="task-create-quality">';
-				if($eTask['cQuality']->notEmpty()) {
-					$h .= $this->getHarvestQualityField($form, $eTask);
+			$h .= '<div id="task-create-size">';
+				if($eTask['cSize']->notEmpty()) {
+					$h .= $this->getHarvestSizeField($form, $eTask);
 				}
 			$h .= '</div>';
 
@@ -3681,8 +3681,8 @@ class TaskUi {
 
 			}
 
-			if($eTask['cQuality']->notEmpty()) {
-				$h .= $this->getHarvestQualityField($form, $eTask);
+			if($eTask['cSize']->notEmpty()) {
+				$h .= $this->getHarvestSizeField($form, $eTask);
 			}
 
 			if($eTask['category']['fqn'] === CATEGORIE_CULTURE) {
@@ -3871,8 +3871,8 @@ class TaskUi {
 				}
 			$h .= '</div>';
 
-			if($eTask['action']['fqn'] === ACTION_RECOLTE and $eTask['cQuality']->notEmpty()) {
-				$h .= $this->getHarvestQualityField($form, $eTask);
+			if($eTask['action']['fqn'] === ACTION_RECOLTE and $eTask['cSize']->notEmpty()) {
+				$h .= $this->getHarvestSizeField($form, $eTask);
 			}
 
 			if($eTask['category']['fqn'] === CATEGORIE_CULTURE) {
@@ -4268,13 +4268,13 @@ class TaskUi {
 
 	}
 
-	public function getHarvestQualityField(\util\FormUi $form, Task $eTask): string {
+	public function getHarvestSizeField(\util\FormUi $form, Task $eTask): string {
 
-		$eTask->expects(['action', 'cQuality']);
+		$eTask->expects(['action', 'cSize']);
 
 		return $form->group(
-			self::p('harvestQuality')->label,
-			$form->dynamicField($eTask, 'harvestQuality'),
+			self::p('harvestSize')->label,
+			$form->dynamicField($eTask, 'harvestSize'),
 			['class' => ($eTask['action']->notEmpty() and $eTask['action']['fqn'] === ACTION_RECOLTE) ? '' : 'hide']
 		);
 
@@ -4456,7 +4456,7 @@ class TaskUi {
 			'timeExpected' => s("Temps de travail estimé"),
 			'description' => s("Observations"),
 			'fertilizer' => s("Apports"),
-			'harvestQuality' => s("Critère de qualité"),
+			'harvestSize' => s("Critère de qualité"),
 			'harvestMore' => s("Quantité récoltée"),
 			'harvestDate' => s("Jour de récolte"),
 			'toolsList' => s("Matériel nécessaire")
@@ -4637,9 +4637,9 @@ class TaskUi {
 				$d->group = ['wrapper' => 'harvestDates'];
 				break;
 
-			case 'harvestQuality' :
+			case 'harvestSize' :
 				$d->attributes = ['placeholder' => s("Aucun")];
-				$d->values = fn(Task $e) => $e['cQuality'] ?? $e->expects(['cQuality']);
+				$d->values = fn(Task $e) => $e['cSize'] ?? $e->expects(['cSize']);
 				break;
 
 			case 'status' :

@@ -49,10 +49,10 @@
 
 			$ePlant->validateProperty('farm', $data->eFarm);
 
-			$data->e['cQuality'] = \plant\QualityLib::getByFarmAndPlant($data->e['farm'], $ePlant);
+			$data->e['cSize'] = \plant\SizeLib::getByFarmAndPlant($data->e['farm'], $ePlant);
 
 		} else {
-			$data->e['cQuality'] = new Collection();
+			$data->e['cSize'] = new Collection();
 			$data->cAction->map(fn($eAction) => $eAction['disabled'] = ($eAction['fqn'] === ACTION_RECOLTE));
 		}
 
@@ -183,9 +183,9 @@
 		}
 
 		if($ePlant->empty()) {
-			$data->e['cQuality'] = new Collection();
+			$data->e['cSize'] = new Collection();
 		} else {
-			$data->e['cQuality'] = \plant\QualityLib::getByFarmAndPlant($data->eFarm, $ePlant);
+			$data->e['cSize'] = \plant\SizeLib::getByFarmAndPlant($data->eFarm, $ePlant);
 		}
 
 		$data->cToolAvailable = \farm\ToolLib::getForWork($data->eFarm, $data->e['action']);
@@ -289,9 +289,9 @@
 		}
 
 		if($ePlant->empty()) {
-			$data->eTask['cQuality'] = new Collection();
+			$data->eTask['cSize'] = new Collection();
 		} else {
-			$data->eTask['cQuality'] = \plant\QualityLib::getByFarmAndPlant($data->eFarm, $ePlant);
+			$data->eTask['cSize'] = \plant\SizeLib::getByFarmAndPlant($data->eFarm, $ePlant);
 		}
 
 		throw new ViewAction($data);
@@ -385,9 +385,9 @@
 		}
 
 		if($data->e['plant']->empty()) {
-			$data->e['cQuality'] = new Collection();
+			$data->e['cSize'] = new Collection();
 		} else {
-			$data->e['cQuality'] = \plant\QualityLib::getByFarmAndPlant($data->e['farm'], $data->e['plant']);
+			$data->e['cSize'] = \plant\SizeLib::getByFarmAndPlant($data->e['farm'], $data->e['plant']);
 		}
 
 		$data->e['cTool'] = \series\TaskLib::getTools($data->e);

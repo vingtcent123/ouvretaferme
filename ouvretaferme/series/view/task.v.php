@@ -198,7 +198,7 @@ new JsonView('getCreateCollectionFields', function($data, AjaxTemplate $t) {
 		$data->varietiesIntersect
 	));
 
-	$t->qs('#task-create-quality')->innerHtml($data->eTask['cQuality']->notEmpty() ? (new \series\TaskUi())->getHarvestQualityField(
+	$t->qs('#task-create-size')->innerHtml($data->eTask['cSize']->notEmpty() ? (new \series\TaskUi())->getHarvestSizeField(
 		new \util\FormUi(),
 		$data->eTask
 	) : '');

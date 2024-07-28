@@ -20,8 +20,8 @@ class AlertUi {
 			'Variety::name.duplicate' => s("Vous avez déjà créé une variété de ce nom pour cette espèce."),
 			'Variety::deleteUsed'=> s("Vous ne pouvez pas supprimer cette variété car elle est utilisée dans une série ou un itinéraire technique."),
 
-			'Quality::name.duplicate' => s("Vous avez déjà créé un critère de qualité de ce nom pour cette espèce."),
-			'Quality::deleteUsed'=> s("Vous ne pouvez pas supprimer ce critère de qualité car il est utilisé dans une série."),
+			'Size::name.duplicate' => s("Vous avez déjà créé un calibre de ce nom pour cette espèce."),
+			'Size::deleteUsed'=> s("Vous ne pouvez pas supprimer ce calibre car il est utilisé dans une série."),
 
 			'Plant::deleteUsed'=> s("Vous ne pouvez pas supprimer cette espèce car elle est encore utilisée dans une série, un itinéraire technique ou pour une variété."),
 			'Plant::name.duplicate' => s("Vous avez déjà créé une espèce de ce nom."),
@@ -54,9 +54,9 @@ class AlertUi {
 			'Variety::updated' => s("La variété a bien été mise à jour."),
 			'Variety::deleted' => s("La variété a bien été supprimée."),
 			
-			'Quality::created' => s("Le critère de qualité a bien été ajoutée !"),
-			'Quality::updated' => s("Le critère de qualité a bien été mis à jour."),
-			'Quality::deleted' => s("Le critère de qualité a bien été supprimé."),
+			'Size::created' => s("Le calibre a bien été ajouté !"),
+			'Size::updated' => s("Le calibre a bien été mis à jour."),
+			'Size::deleted' => s("Le calibre a bien été supprimé."),
 			
 			default => null
 

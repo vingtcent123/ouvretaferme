@@ -57,7 +57,7 @@ class TaskModel extends \ModuleModel {
 			'timeExpected' => ['float32', 'min' => 0.0, 'max' => NULL, 'null' => TRUE, 'cast' => 'float'],
 			'harvest' => ['float32', 'min' => 0.0, 'max' => NULL, 'null' => TRUE, 'cast' => 'float'],
 			'harvestUnit' => ['enum', [\series\Task::KG, \series\Task::UNIT, \series\Task::BUNCH], 'null' => TRUE, 'cast' => 'enum'],
-			'harvestQuality' => ['element32', 'plant\Quality', 'null' => TRUE, 'cast' => 'element'],
+			'harvestSize' => ['element32', 'plant\Size', 'null' => TRUE, 'cast' => 'element'],
 			'fertilizer' => ['json', 'null' => TRUE, 'cast' => 'array'],
 			'plannedWeek' => ['week', 'min' => toWeek('NOW - 2 YEAR'), 'max' => toWeek('NOW + 10 YEAR'), 'null' => TRUE, 'cast' => 'string'],
 			'plannedDate' => ['date', 'null' => TRUE, 'cast' => 'string'],
@@ -76,7 +76,7 @@ class TaskModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'farm', 'season', 'cultivation', 'series', 'plant', 'variety', 'action', 'category', 'description', 'time', 'timeExpected', 'harvest', 'harvestUnit', 'harvestQuality', 'fertilizer', 'plannedWeek', 'plannedDate', 'plannedUsers', 'doneWeek', 'doneDate', 'timelineStart', 'timelineStop', 'timesheetStart', 'timesheetStop', 'repeat', 'createdAt', 'createdBy', 'updatedAt', 'status'
+			'id', 'farm', 'season', 'cultivation', 'series', 'plant', 'variety', 'action', 'category', 'description', 'time', 'timeExpected', 'harvest', 'harvestUnit', 'harvestSize', 'fertilizer', 'plannedWeek', 'plannedDate', 'plannedUsers', 'doneWeek', 'doneDate', 'timelineStart', 'timelineStop', 'timesheetStart', 'timesheetStop', 'repeat', 'createdAt', 'createdBy', 'updatedAt', 'status'
 		]);
 
 		$this->propertiesToModule += [
@@ -87,7 +87,7 @@ class TaskModel extends \ModuleModel {
 			'variety' => 'plant\Variety',
 			'action' => 'farm\Action',
 			'category' => 'farm\Category',
-			'harvestQuality' => 'plant\Quality',
+			'harvestSize' => 'plant\Size',
 			'repeat' => 'series\Repeat',
 			'createdBy' => 'user\User',
 		];
@@ -225,8 +225,8 @@ class TaskModel extends \ModuleModel {
 		return $this->where('harvestUnit', ...$data);
 	}
 
-	public function whereHarvestQuality(...$data): TaskModel {
-		return $this->where('harvestQuality', ...$data);
+	public function whereHarvestSize(...$data): TaskModel {
+		return $this->where('harvestSize', ...$data);
 	}
 
 	public function whereFertilizer(...$data): TaskModel {

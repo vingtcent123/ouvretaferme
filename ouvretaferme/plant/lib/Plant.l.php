@@ -124,7 +124,7 @@ class PlantLib extends PlantCrud {
 						->whereFarm($eFarm)
 						->group('plant')
 						->delegateProperty('plant', new \Sql('COUNT(*)', 'int')),
-					'qualities' => Quality::model()
+					'sizes' => Size::model()
 						->whereFarm($eFarm)
 						->group('plant')
 						->delegateProperty('plant', new \Sql('COUNT(*)', 'int'))

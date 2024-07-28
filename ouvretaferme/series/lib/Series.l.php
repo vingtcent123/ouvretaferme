@@ -730,7 +730,7 @@ class SeriesLib extends SeriesCrud {
 				if($eTask['harvest'] !== NULL) {
 					$eTask['harvest'] = NULL;
 					$eTask['harvestUnit'] = NULL;
-					$eTask['harvestQuality'] = NULL;
+					$eTask['harvestSize'] = NULL;
 				}
 
 			}

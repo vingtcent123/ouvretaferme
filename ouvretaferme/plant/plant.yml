@@ -44,7 +44,7 @@ Plant:
     ["farm", "name"]
   ]
 
-Quality:
+Size:
   id: serial32
   name: text8(1, 50) @collate(general)
   comment: ?editor16(1, null)

@@ -516,7 +516,7 @@ class AnalyzeLib {
 					'harvestUser' => new \Sql('IF(harvest IS NOT NULL, IF(m2.time > 0, FLOOR(harvest * m1.time / m2.time * 100) / 100, 0), NULL)', 'float'),
 					'harvest',
 					'harvestUnit',
-					'harvestQuality' => ['name']
+					'harvestSize' => ['name']
 				]), 'm2.id = m1.task')
 			->where('m1.farm', $eFarm)
 			->where('EXTRACT(YEAR FROM date) = '.$year)
@@ -553,7 +553,7 @@ class AnalyzeLib {
 					$eTimesheet['variety']->empty() ? '' : $eTimesheet['variety']['name'],
 					$eTimesheet['harvestUser'] ? \util\TextUi::csvNumber($eTimesheet['harvestUser']) : '',
 					($eTimesheet['harvestUser'] and $eTimesheet['harvestUnit']) ? \main\UnitUi::getSingular($eTimesheet['harvestUnit']) : '',
-					$eTimesheet['harvestQuality']->empty() ? '' : $eTimesheet['harvestQuality']['name'],
+					$eTimesheet['harvestSize']->empty() ? '' : $eTimesheet['harvestSize']['name'],
 					$eTimesheet['description'] ?? ''
 				];
 
@@ -574,7 +574,7 @@ class AnalyzeLib {
 					'series' => ['name'],
 					'plant' => ['name'],
 					'variety' => ['name'],
-					'harvestQuality' => ['name'],
+					'harvestSize' => ['name'],
 				],
 				'quantity' => new \Sql('SUM(quantity)', 'float'),
 				'unit'
@@ -604,7 +604,7 @@ class AnalyzeLib {
 				$eTask['variety']->empty() ? '' : $eTask['variety']['name'],
 				\util\TextUi::csvNumber($eHarvest['quantity']),
 				\main\UnitUi::getSingular($eHarvest['unit']),
-				$eTask['harvestQuality']->empty() ? '' : $eTask['harvestQuality']['name']
+				$eTask['harvestSize']->empty() ? '' : $eTask['harvestSize']['name']
 			];
 
 		}

@@ -236,7 +236,7 @@ class PlantUi {
 					$h .= '<th></th>';
 					$h .= '<th>'.s("Nom").'</th>';
 					$h .= '<th class="text-center">'.s("Variétés").'</th>';
-					$h .= '<th class="text-center">'.s("Critères<br/>de&nbsp;qualité").'</th>';
+					$h .= '<th class="text-center">'.s("Calibres").'</th>';
 					$h .= '<th>'.s("Famille").'</th>';
 					$h .= '<th>'.s("Activé").'</th>';
 					$h .= '<th></th>';
@@ -267,7 +267,7 @@ class PlantUi {
 						$h .= '<a href="/plant/variety?id='.$eFarm['id'].'&plant='.$ePlant['id'].'" class="btn btn-outline-primary opacity-'.($ePlant['varieties'] ? '100' : '25').'">'.($ePlant['varieties'] ?? '0').'</a>';
 					$h .= '</td>';
 					$h .= '<td class="text-center">';
-						$h .= '<a href="/plant/quality?id='.$eFarm['id'].'&plant='.$ePlant['id'].'" class="btn btn-outline-primary opacity-'.($ePlant['qualities'] ? '100' : '25').'">'.($ePlant['qualities'] ?? '0').'</a>';
+						$h .= '<a href="/plant/size?id='.$eFarm['id'].'&plant='.$ePlant['id'].'" class="btn btn-outline-primary opacity-'.($ePlant['sizes'] ? '100' : '25').'">'.($ePlant['sizes'] ?? '0').'</a>';
 					$h .= '</td>';
 					$h .= '<td>';
 						if($ePlant['family']->empty()) {
@@ -293,7 +293,7 @@ class PlantUi {
 								$h .= '<div class="dropdown-title">'.encode($ePlant['name']).'</div>';
 
 									$h .= '<a href="/plant/variety?id='.$eFarm['id'].'&plant='.$ePlant['id'].'" class="dropdown-item">'.s("Gérer les variétés").'</a>';
-									$h .= '<a href="/plant/quality?id='.$eFarm['id'].'&plant='.$ePlant['id'].'" class="dropdown-item">'.s("Gérer les critères de qualité").'</a>';
+									$h .= '<a href="/plant/size?id='.$eFarm['id'].'&plant='.$ePlant['id'].'" class="dropdown-item">'.s("Gérer les calibres").'</a>';
 
 									if($ePlant->isOwner()) {
 
