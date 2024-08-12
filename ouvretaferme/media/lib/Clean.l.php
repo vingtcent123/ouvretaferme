@@ -117,17 +117,22 @@ class CleanLib {
 		foreach($cMedia as $eMedia) {
 
 			$url = $eMedia['type'].'/'.$eMedia['hash'].'.'.MediaUi::getExtension($eMedia['hash']);
+			$settings = \Setting::get($eMedia['type']);
 
-			$formats = \Setting::get($eMedia['type'])['imageFormat'];
+			if(isset($settings['imageFormat'])) {
 
-			foreach($formats as $format) {
-				if(is_int($format)) {
-					$formatString = $format;
-				} else {
-					$formatString = implode('x', $format);
+				$formats = $settings['imageFormat'];
+
+				foreach($formats as $format) {
+					if(is_int($format)) {
+						$formatString = $format;
+					} else {
+						$formatString = implode('x', $format);
+					}
+					$pathFormat = $eMedia['type'].'/'.$formatString.'/'.$eMedia['hash'].'.'.MediaUi::getExtension($eMedia['hash']);
+					\Setting::get('media\mediaDriver')->delete($pathFormat);
 				}
-				$pathFormat = $eMedia['type'].'/'.$formatString.'/'.$eMedia['hash'].'.'.MediaUi::getExtension($eMedia['hash']);
-				\Setting::get('media\mediaDriver')->delete($pathFormat);
+
 			}
 
 			\Setting::get('media\mediaDriver')->delete($url);

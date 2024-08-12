@@ -23,6 +23,14 @@ td.product-item-unit {
 	width: 3rem;
 	font-weight: bold;
 }
+td.product-item-stock-updated {
+}
+
+td.product-item-stock {
+	font-size: 1.2rem;
+	line-height: 1;
+	padding-top: 0.2rem;
+}
 
 td.product-item-year-before {
 	font-size: 0.8rem;

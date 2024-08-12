@@ -43,6 +43,7 @@ Farm:
   calendarMonthStart: ?int8(7, 12) = 10
   calendarMonthStop: ?int8(1, 6) = 3
   featureTime: bool = TRUE
+  featureStock: bool = FALSE
   featureDocument: enum(ALL, PRIVATE, PRO, DISABLED) = PRO
   startedAt: int16(PHP(date('Y') - 100), PHP(date('Y') + 10))
   createdAt: datetime = SPECIAL(now)
@@ -66,7 +67,7 @@ Farmer:
   viewCultivation: enum(SERIES, SEQUENCE, PLANT) = SERIES
   viewCultivationCategory: enum(AREA, PLANT, FAMILY, ROTATION) = AREA
   viewSeries: enum(AREA, FORECAST, SEEDLING, HARVESTING, WORKING_TIME, TOOL) = AREA
-  viewSelling: enum(SALE, PRODUCT, CUSTOMER, SHOP) = SALE
+  viewSelling: enum(SALE, PRODUCT, CUSTOMER, SHOP, STOCK) = SALE
   viewSellingSales: enum(ALL, PRIVATE, PRO, INVOICE, LABEL) = ALL
   viewSellingCategory: enum(ITEM, CUSTOMER, SHOP, PERIOD) = ITEM
   viewSellingProductCategory: ?selling\Category

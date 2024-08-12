@@ -27,6 +27,18 @@ class Product extends ProductElement {
 
 	}
 
+	public function acceptEnableStock(): bool {
+
+		return ($this['stock'] === NULL);
+
+	}
+
+	public function acceptDisableStock(): bool {
+
+		return ($this['stock'] !== NULL);
+
+	}
+
 	public function getName(string $mode = 'text'): string {
 
 		$this->expects(['name', 'variety']);

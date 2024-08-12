@@ -87,7 +87,7 @@ class ProductLib extends ProductCrud {
 
 	}
 
-	public static function getByFarm(\farm\Farm $eFarm, Category $eCategory, bool $selectSales = FALSE, \Search $search = new \Search()): \Collection {
+	public static function getByFarm(\farm\Farm $eFarm, ?Category $eCategory = NULL, bool $selectSales = FALSE, \Search $search = new \Search()): \Collection {
 
 		if($selectSales) {
 
@@ -111,11 +111,11 @@ class ProductLib extends ProductCrud {
 
 		self::applySearch($eFarm, $search);
 
-		$search->validateSort(['name', 'id']);
+		$search->validateSort(['name', 'id', 'stockUpdatedAt']);
 
 		return Product::model()
 			->select(Product::getSelection())
-			->whereCategory($eCategory)
+			->whereCategory($eCategory, if: $eCategory !== NULL)
 			->whereFarm($eFarm)
 			->sort($search->buildSort())
 			->getCollection();
@@ -126,6 +126,10 @@ class ProductLib extends ProductCrud {
 
 		if($search->get('name')) {
 			Product::model()->whereName('LIKE', '%'.$search->get('name').'%');
+		}
+
+		if($search->get('stock')) {
+			Product::model()->whereStock('!=', NULL);
 		}
 
 		if($search->get('plant')) {
@@ -195,6 +199,28 @@ class ProductLib extends ProductCrud {
 			->wherePlant($ePlant)
 			->sort('name')
 			->getCollection();
+
+	}
+
+	public static function update(Product $e, array $properties): void {
+
+		Product::model()->beginTransaction();
+
+		parent::update($e, $properties);
+
+		// Mise à jour des propriétés doublonnées dans le stock
+		$propertiesStock = array_intersect($properties, ['plant', 'variety', 'size', 'unit']);
+
+		if($propertiesStock) {
+
+			Stock::model()
+				->select($propertiesStock)
+				->whereProduct($e)
+				->update($e->extracts($propertiesStock));
+
+		}
+
+		Product::model()->commit();
 
 	}
 

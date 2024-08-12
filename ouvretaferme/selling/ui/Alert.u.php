@@ -98,6 +98,8 @@ class AlertUi {
 			'Product::updated' => s("Le produit a bien été mis à jour."),
 			'Product::deleted' => s("Le produit a bien été supprimé."),
 			'Product::categoryUpdated' => s("La catégorie a bien été modifiée."),
+			'Product::stockEnabled' => s("Le suivi du stock a bien été activé pour ce produit."),
+			'Product::stockDisabled' => s("Le suivi du stock a bien été désactivé pour ce produit."),
 
 			'Sale::created' => s("La vente a bien été créée."),
 			'Sale::updated' => s("La vente a bien été mise à jour."),

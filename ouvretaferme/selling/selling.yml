@@ -204,7 +204,6 @@ PdfContent:
   id: serial32
   hash: ?textFixed(20, 20) @charset(ascii)
   createdAt: datetime = SPECIAL(now)
-  
 
 Product:
   id: serial32
@@ -226,6 +225,8 @@ Product:
   proStep: ?decimal(6, 2, 0.01, null)
   vat: int8(1, null)
   quality: ?enum(ORGANIC, NATURE_PROGRES, CONVERSION)
+  stock: ?decimal(8, 2, 0.0, null)
+  stockUpdatedAt: ?datetime
   createdAt: datetime = SPECIAL(now)
   status: enum(ACTIVE, INACTIVE) = ACTIVE
   INDEX: [
@@ -285,3 +286,15 @@ Sale:
     ["farm", "document"],
   ]
 
+Stock:
+  id: serial32
+  product: selling\Product
+  farm: farm\Farm
+  oldValue: decimal(8, 2, 0.0, null)
+  newValue: decimal(8, 2, 0.0, null)
+  comment: ?text16
+  date: datetime = SPECIAL(now)
+  user: ?user\User = SPECIAL(user)
+  INDEX: [
+    ["product"]
+  ]

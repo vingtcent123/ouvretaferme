@@ -81,7 +81,6 @@ div.farmer-farms-item-infos {
 @media (max-width: 575px) {
 	.farm-tabs {
 		align-items: stretch;
-		padding-top: 0.5rem;
 	}
 }
 
@@ -297,8 +296,9 @@ body[data-touch="no"] div.farm-subnav-wrapper > a.farm-subnav-tree-menu {
 div.farm-subnav-wrapper > a.selected {
 	border-top-left-radius: var(--radius);
 	border-top-right-radius: var(--radius);
-	font-size: 1.1rem;
-	line-height: 1.1;
+	background: var(--background-dark);
+	padding-left: 0.75rem;
+	padding-right: 0.75rem;
 	font-weight: bold;
 	color: var(--text);
 }

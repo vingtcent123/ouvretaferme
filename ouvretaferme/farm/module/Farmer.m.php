@@ -51,6 +51,7 @@ abstract class FarmerElement extends \Element {
 	const PRODUCT = 'product';
 	const CUSTOMER = 'customer';
 	const SHOP = 'shop';
+	const STOCK = 'stock';
 
 	const ALL = 'all';
 	const PRIVATE = 'private';
@@ -116,7 +117,7 @@ class FarmerModel extends \ModuleModel {
 			'viewCultivation' => ['enum', [\farm\Farmer::SERIES, \farm\Farmer::SEQUENCE, \farm\Farmer::PLANT], 'cast' => 'enum'],
 			'viewCultivationCategory' => ['enum', [\farm\Farmer::AREA, \farm\Farmer::PLANT, \farm\Farmer::FAMILY, \farm\Farmer::ROTATION], 'cast' => 'enum'],
 			'viewSeries' => ['enum', [\farm\Farmer::AREA, \farm\Farmer::FORECAST, \farm\Farmer::SEEDLING, \farm\Farmer::HARVESTING, \farm\Farmer::WORKING_TIME, \farm\Farmer::TOOL], 'cast' => 'enum'],
-			'viewSelling' => ['enum', [\farm\Farmer::SALE, \farm\Farmer::PRODUCT, \farm\Farmer::CUSTOMER, \farm\Farmer::SHOP], 'cast' => 'enum'],
+			'viewSelling' => ['enum', [\farm\Farmer::SALE, \farm\Farmer::PRODUCT, \farm\Farmer::CUSTOMER, \farm\Farmer::SHOP, \farm\Farmer::STOCK], 'cast' => 'enum'],
 			'viewSellingSales' => ['enum', [\farm\Farmer::ALL, \farm\Farmer::PRIVATE, \farm\Farmer::PRO, \farm\Farmer::INVOICE, \farm\Farmer::LABEL], 'cast' => 'enum'],
 			'viewSellingCategory' => ['enum', [\farm\Farmer::ITEM, \farm\Farmer::CUSTOMER, \farm\Farmer::SHOP, \farm\Farmer::PERIOD], 'cast' => 'enum'],
 			'viewSellingProductCategory' => ['element32', 'selling\Category', 'null' => TRUE, 'cast' => 'element'],

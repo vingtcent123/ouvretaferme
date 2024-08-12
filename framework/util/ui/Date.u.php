@@ -2523,7 +2523,7 @@ class DateUi {
 
 	private static function addTime(string &$text, int $format, string $date) {
 
-		if(!($format & self::TIME or $format & self::TIME_HOUR_MINUTE or $format & self::DATE_TIME)) {
+		if(!($format & self::TIME or $format & self::TIME_HOUR_MINUTE or $format & self::DATE_TIME or $format & self::DATE_HOUR_MINUTE)) {
 			return;
 		}
 

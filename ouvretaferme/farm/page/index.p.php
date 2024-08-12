@@ -181,6 +181,19 @@
 		throw new ViewAction($data);
 
 	})
+	->get('/ferme/{id}/stocks', function($data) {
+
+		$data->eFarm->validate('canSelling');
+
+		\farm\FarmerLib::setView('viewSelling', $data->eFarm, \farm\Farmer::STOCK);
+
+		$data->search = new Search(sort: GET('sort', default: 'name'));
+
+		$data->cProduct = \selling\StockLib::getProductsByFarm($data->eFarm, $data->search);
+
+		throw new ViewAction($data);
+
+	})
 	->get('/ferme/{id}/boutiques', function($data) {
 
 		$data->eFarm->validate('canSelling');

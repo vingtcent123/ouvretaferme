@@ -167,6 +167,7 @@ class FarmUi {
 		return match($view) {
 			Farmer::SALE => self::urlSellingSales($eFarm),
 			Farmer::PRODUCT => self::urlSellingProduct($eFarm),
+			Farmer::STOCK => self::urlSellingStock($eFarm),
 			Farmer::CUSTOMER => self::urlSellingCustomer($eFarm),
 			Farmer::SHOP => self::urlSellingShop($eFarm)
 		};
@@ -179,6 +180,10 @@ class FarmUi {
 
 	public static function urlSellingProduct(Farm $eFarm): string {
 		return self::url($eFarm).'/produits';
+	}
+
+	public static function urlSellingStock(Farm $eFarm): string {
+		return self::url($eFarm).'/stocks';
 	}
 
 	public static function urlSellingShop(Farm $eFarm): string {
@@ -837,7 +842,7 @@ class FarmUi {
 		$h = '<nav id="farm-subnav">';
 			$h .= '<div class="container farm-subnav-menu farm-subnav-wrapper">';
 
-				foreach($this->getSellingCategories() as $key => $value) {
+				foreach($this->getSellingCategories($eFarm) as $key => $value) {
 
 					$h .= '<a href="'.FarmUi::urlSelling($eFarm, $key).'" class="farm-subnav-tree-menu '.($key === $selectedView ? 'selected' : '').'">';
 						$h .= $value;
@@ -852,13 +857,27 @@ class FarmUi {
 
 	}
 
-	protected function getSellingCategories(): array {
-		return [
+	protected function getSellingCategories(Farm $eFarm): array {
+
+		$categories = [
 			Farmer::SALE => s("Ventes"),
 			Farmer::CUSTOMER => s("Clients"),
-			Farmer::PRODUCT => s("Produits"),
-			Farmer::SHOP => s("Boutiques en ligne"),
+			Farmer::PRODUCT => s("Produits")
 		];
+
+		if($eFarm['featureStock']) {
+			$categories += [
+				Farmer::STOCK => s("Stocks"),
+				Farmer::SHOP => s("Boutiques")
+			];
+		} else {
+			$categories += [
+				Farmer::SHOP => s("Boutiques en ligne")
+			];
+		}
+
+		return $categories;
+
 	}
 
 	public function getSellingSalesTitle(Farm $eFarm, string $selectedView): string {

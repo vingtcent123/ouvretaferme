@@ -218,6 +218,11 @@ Route::register([
 			'priority' => 5,
 			'route' => ['ferme', '{id}', 'series', '{season}'],
 		],
+		'/ferme/{id}/stocks' => [
+			'request' => 'farm/index',
+			'priority' => 5,
+			'route' => ['ferme', '{id}', 'stocks'],
+		],
 		'/ferme/{id}/taches/{week}/{action}' => [
 			'request' => 'farm/index',
 			'priority' => 5,

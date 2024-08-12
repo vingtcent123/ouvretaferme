@@ -146,6 +146,8 @@ class ProductUi {
 		$year = date('Y');
 		$yearBefore = $year - 1;
 
+		$displayStock = $cProduct->match(fn($eProduct) => $eProduct['stock'] !== NULL);
+
 		$h .= '<div class="product-item-wrapper stick-xs">';
 
 		$h .= '<table class="product-item-table tr-bordered tr-even">';
@@ -161,7 +163,11 @@ class ProductUi {
 					$h .= '</th>';
 
 					$h .= '<th rowspan="2" class="product-item-vignette"></th>';
-					$h .= '<th rowspan="2" colspan="2">'.$search->linkSort('name', s("Nom")).'</th>';
+					$h .= '<th rowspan="2">'.$search->linkSort('name', s("Nom")).'</th>';
+					if($displayStock) {
+						$h .= '<th rowspan="2" class="text-end">'.s("Stock").'</th>';
+					}
+					$h .= '<th rowspan="2">'.s("Unité").'</th>';
 					$h .= '<th colspan="2" class="text-center highlight hide-xs-down">'.s("Ventes").'</th>';
 					$h .= '<th colspan="2" class="text-center highlight">'.s("Prix de base").'</th>';
 					if($eFarm->getSelling('hasVat')) {
@@ -200,8 +206,16 @@ class ProductUi {
 					$h .= '</td>';
 
 					$h .= '<td class="product-item-name">';
-						$h .= $this->getInfos($eProduct);
+						$h .= self::getInfos($eProduct);
 					$h .= '</td>';
+
+					if($displayStock) {
+						$h .= '<td class="product-item-stock text-end">';
+							if($eProduct['stock'] !== NULL) {
+								$h .= $eProduct['stock'];
+							}
+						$h .= '</td>';
+					}
 
 					$h .= '<td class="product-item-unit">';
 						$h .= \main\UnitUi::getSingular($eProduct['unit']);
@@ -342,7 +356,7 @@ class ProductUi {
 
 	}
 
-	public function getInfos(Product $eProduct): string {
+	public static function getInfos(Product $eProduct): string {
 
 		$h = '<a href="/produit/'.$eProduct['id'].'">'.encode($eProduct->getName()).'</a>';
 		$more = [];
@@ -591,6 +605,15 @@ class ProductUi {
 			$h .= '<div class="dropdown-title">'.encode($eProduct->getName()).'</div>';
 			$h .= '<a href="/selling/product:update?id='.$eProduct['id'].'" class="dropdown-item">'.s("Modifier le produit").'</a>';
 			$h .= '<a data-ajax="/selling/product:doDelete" post-id="'.$eProduct['id'].'" class="dropdown-item" data-confirm="'.s("Confirmer la suppression du produit ?").'">'.s("Supprimer le produit").'</a>';
+			if($eProduct->acceptEnableStock() or $eProduct->acceptDisableStock()) {
+				$h .= '<div class="dropdown-divider"></div>';
+				if($eProduct->acceptEnableStock() and LIME_ENV === 'dev') {
+					$h .= '<a data-ajax="/selling/product:doEnableStock" post-id='.$eProduct['id'].'" class="dropdown-item">'.\Asset::icon('box').'  '.s("Activer le suivi du stock").'</a>';
+				}
+				if($eProduct->acceptDisableStock()) {
+					$h .= '<a data-ajax="selling/product:doDisableStock" post-id="'.$eProduct['id'].'" class="dropdown-item">'.\Asset::icon('box').'  '.s("Désactiver le suivi du stock").'</a>';
+				}
+			}
 		$h .= '</div>';
 
 		return $h;

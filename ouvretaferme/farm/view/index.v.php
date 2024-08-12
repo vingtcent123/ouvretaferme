@@ -520,6 +520,35 @@ new AdaptativeView('/ferme/{id}/produits', function($data, FarmTemplate $t) {
 
 });
 
+new AdaptativeView('/ferme/{id}/stocks', function($data, FarmTemplate $t) {
+
+	$t->tab = 'selling';
+	$t->subNav = (new \farm\FarmUi())->getSellingSubNav($data->eFarm);
+
+	$t->title = s("Stocks de {value}", $data->eFarm['name']);
+	$t->canonical = \farm\FarmUi::urlSellingStock($data->eFarm);
+
+	$t->package('main')->updateNavSelling($t->canonical);
+
+	echo '<h1>'.s("Stocks").'</h1>';
+
+	if($data->cProduct->empty()) {
+
+		echo '<div class="util-block-help">';
+			echo '<p>'.s("Le suivi des stocks permet de connaître le stock de vos différents produits en collectant les informations liées aux entrées et sorties. Cette fonctionnalité est partiellement automatisée, elle est reliée à vos saisies de récoltes pour les entrées de stock, et à vos ventes pour les sorties de stocks !").'</p>';
+			echo '<p>'.s("Cette page sera disponible lorsque vous aurez activé le suivi des stocks sur au moins un produit de votre gamme !").'</p>';
+			echo '<a href="'.\farm\FarmUi::urlSellingProduct($data->eFarm).'" class="btn btn-secondary">'.s("Voir mes produits").'</a>';
+		echo '</div>';
+
+	} else {
+
+		echo (new \selling\StockUi())->getList($data->cProduct, $data->search);
+
+	}
+
+
+});
+
 new AdaptativeView('/ferme/{id}/boutiques', function($data, FarmTemplate $t) {
 
 	$t->tab = 'selling';

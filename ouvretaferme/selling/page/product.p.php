@@ -81,6 +81,24 @@
 		throw new ReloadLayerAction();
 
 	})
+	->write('doEnableStock', function($data) {
+
+		$data->e->validate('acceptEnableStock');
+
+		\selling\StockLib::enable($data->e);
+
+		throw new ReloadAction('selling', 'Product::stockEnabled');
+
+	})
+	->write('doDisableStock', function($data) {
+
+		$data->e->validate('acceptDisableStock');
+
+		\selling\StockLib::disable($data->e);
+
+		throw new ReloadAction('selling', 'Product::stockDisabled');
+
+	})
 	->quick(['privatePrice', 'privateStep', 'proPrice', 'proPackaging', 'proStep'])
 	->update(function($data) {
 

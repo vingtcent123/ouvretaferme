@@ -68,6 +68,7 @@ class FarmModel extends \ModuleModel {
 			'calendarMonthStart' => ['int8', 'min' => 7, 'max' => 12, 'null' => TRUE, 'cast' => 'int'],
 			'calendarMonthStop' => ['int8', 'min' => 1, 'max' => 6, 'null' => TRUE, 'cast' => 'int'],
 			'featureTime' => ['bool', 'cast' => 'bool'],
+			'featureStock' => ['bool', 'cast' => 'bool'],
 			'featureDocument' => ['enum', [\farm\Farm::ALL, \farm\Farm::PRIVATE, \farm\Farm::PRO, \farm\Farm::DISABLED], 'cast' => 'enum'],
 			'startedAt' => ['int16', 'min' => date('Y') - 100, 'max' => date('Y') + 10, 'cast' => 'int'],
 			'createdAt' => ['datetime', 'cast' => 'string'],
@@ -75,7 +76,7 @@ class FarmModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'name', 'vignette', 'place', 'placeLngLat', 'url', 'description', 'logo', 'banner', 'seasonFirst', 'seasonLast', 'rotationYears', 'rotationExclude', 'quality', 'defaultBedLength', 'defaultBedWidth', 'defaultAlleyWidth', 'calendarMonthStart', 'calendarMonthStop', 'featureTime', 'featureDocument', 'startedAt', 'createdAt', 'status'
+			'id', 'name', 'vignette', 'place', 'placeLngLat', 'url', 'description', 'logo', 'banner', 'seasonFirst', 'seasonLast', 'rotationYears', 'rotationExclude', 'quality', 'defaultBedLength', 'defaultBedWidth', 'defaultAlleyWidth', 'calendarMonthStart', 'calendarMonthStop', 'featureTime', 'featureStock', 'featureDocument', 'startedAt', 'createdAt', 'status'
 		]);
 
 	}
@@ -101,6 +102,9 @@ class FarmModel extends \ModuleModel {
 
 			case 'featureTime' :
 				return TRUE;
+
+			case 'featureStock' :
+				return FALSE;
 
 			case 'featureDocument' :
 				return Farm::PRO;
@@ -247,6 +251,10 @@ class FarmModel extends \ModuleModel {
 
 	public function whereFeatureTime(...$data): FarmModel {
 		return $this->where('featureTime', ...$data);
+	}
+
+	public function whereFeatureStock(...$data): FarmModel {
+		return $this->where('featureStock', ...$data);
 	}
 
 	public function whereFeatureDocument(...$data): FarmModel {

@@ -31,6 +31,7 @@ new JsonView('doUpdateGrid', function($data, AjaxTemplate $t) {
 	$t->js()->moveHistory(-1);
 });
 
+
 new JsonView('doUpdateStatus', function($data, AjaxTemplate $t) {
 	$t->qs('#product-switch-'.$data->e['id'])->toggleSwitch();
 });
