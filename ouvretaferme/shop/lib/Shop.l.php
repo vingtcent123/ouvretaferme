@@ -38,7 +38,8 @@ class ShopLib extends ShopCrud {
 		return \selling\Sale::model()
 			->select([
 				'shop' => Shop::getSelection() + [
-					'eDate' => fn(Shop $eShop) => \shop\DateLib::getMostRelevantByShop($eShop, one: TRUE)
+					'eDate' => fn(Shop $eShop) => \shop\DateLib::getMostRelevantByShop($eShop, one: TRUE),
+					'farm' => ['name', 'vignette', 'url']
 				]
 			])
 			->whereCustomer('IN', $cCustomer)
