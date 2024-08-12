@@ -213,7 +213,7 @@ body[data-template~="default"] header {
 body[data-template~="farm"] header {
 	position: sticky;
 	z-index: 500;
-	box-shadow: 0 0 1rem #8883;
+	box-shadow: 0 0 1rem #8888882D;
 }
 
 @media (min-height: 768px) and (min-width: 768px) {
