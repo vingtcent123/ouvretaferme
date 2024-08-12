@@ -28,7 +28,7 @@
 (new \selling\SalePage())
 	->read('/vente/{id}', function($data) {
 
-		$data->eFarm = $data->e['farm'];
+		$data->eFarm = \farm\FarmLib::getById($data->e['farm']);
 
 		if($data->e['marketParent']->notEmpty()) {
 			throw new NotExpectedAction('Market sale');

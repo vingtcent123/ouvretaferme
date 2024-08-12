@@ -11,7 +11,7 @@
 	})
 	->create()
 	->doCreate(function($data) {
-		throw new ReloadAction('shop', 'Shop::created');
+		throw new RedirectAction(\shop\ShopUi::adminUrl($data->eFarm, $data->e));
 	})
 	->read('website', function($data) {
 
@@ -25,6 +25,7 @@
 	}, validate: ['canWrite'])
 	->read('emails', function($data) {
 
+		$data->eFarm = \farm\FarmLib::getById($data->e['farm']);
 		$data->emails = \shop\ShopLib::getEmails($data->e);
 
 		throw new \ViewAction($data);

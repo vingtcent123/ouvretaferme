@@ -444,9 +444,9 @@ class ShopUi {
 		);
 
 	}
-	public function displayEmails(Shop $eShop, array $emails): \Panel {
+	public function displayEmails(\farm\Farm $eFarm, array $emails): \Panel {
 
-		$eShop->expects(['farm' => ['name', 'url']]);
+		$eFarm->expects(['name', 'url']);
 
 		$h = '<p class="util-info">'.s("Cette page vous permet de récupérer les adresses e-mail des clients de votre boutique. Les clients qui ont supprimé leur compte ou qui ont refusé vos communications ne sont pas présents dans cette liste. En envoyant des e-mails non sollicités ou en refusant de désabonner les clients qui le souhaitent, vous engagez votre propre responsabilité.").'</p>';
 
@@ -462,7 +462,7 @@ class ShopUi {
 		$h .= '<br/>';
 
 		$h .= '<h3>'.s("Lien à donner à vos clients pour se désabonner de vos communications").'</h3>';
-		$h .= '<code>'.\Lime::getUrl().\farm\FarmUi::url($eShop['farm']).'/optIn</code>';
+		$h .= '<code>'.\Lime::getUrl().\farm\FarmUi::url($eFarm).'/optIn</code>';
 
 
 		return new \Panel(

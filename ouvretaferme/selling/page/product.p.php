@@ -24,7 +24,7 @@
 (new \selling\ProductPage())
 	->read('/produit/{id}', function($data) {
 
-		$data->eFarm = $data->e['farm'];
+		$data->eFarm = \farm\FarmLib::getById($data->e['farm']);
 
 		\farm\FarmerLib::register($data->eFarm);
 

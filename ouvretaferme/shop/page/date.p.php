@@ -44,7 +44,7 @@
 
 		\shop\DateLib::applySales($data->e);
 
-		$data->eFarm = $data->eShop['farm'];
+		$data->eFarm = \farm\FarmLib::getById($data->eShop['farm']);
 
 		\farm\FarmerLib::register($data->eFarm);
 

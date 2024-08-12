@@ -8,6 +8,6 @@ new AdaptativeView('website', function($data, PanelTemplate $t) {
 });
 
 new AdaptativeView('emails', function($data, PanelTemplate $t) {
-	return (new \shop\ShopUi())->displayEmails($data->e, $data->emails);
+	return (new \shop\ShopUi())->displayEmails($data->eFarm, $data->emails);
 });
 ?>
