@@ -98,7 +98,10 @@ class SaleLib {
 	public static function createForShop(\selling\Sale $eSale, \user\User $eUser): string {
 
 		$eSale->expects([
-			'shop' => ['farm', 'hasPayment'],
+			'shop' => [
+				'farm' => ['name'],
+				'hasPayment'
+			],
 			'shopDate', 'shopPoint',
 			'basket'
 		]);
