@@ -202,28 +202,6 @@ class ProductLib extends ProductCrud {
 
 	}
 
-	public static function update(Product $e, array $properties): void {
-
-		Product::model()->beginTransaction();
-
-		parent::update($e, $properties);
-
-		// Mise à jour des propriétés doublonnées dans le stock
-		$propertiesStock = array_intersect($properties, ['plant', 'variety', 'size', 'unit']);
-
-		if($propertiesStock) {
-
-			Stock::model()
-				->select($propertiesStock)
-				->whereProduct($e)
-				->update($e->extracts($propertiesStock));
-
-		}
-
-		Product::model()->commit();
-
-	}
-
 	public static function delete(Product $e): void {
 
 		$e->expects(['id']);
