@@ -720,7 +720,7 @@ class FlowUi {
 
 		return new \Panel(
 			title: s("Modifier une intervention"),
-			subTitle: $this->getWriteHeader($eSequence),
+			subTitle: SequenceUi::getPanelHeader($eSequence),
 			body: $h,
 		);
 
