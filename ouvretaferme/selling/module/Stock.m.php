@@ -39,15 +39,14 @@ class StockModel extends \ModuleModel {
 			'id' => ['serial32', 'cast' => 'int'],
 			'product' => ['element32', 'selling\Product', 'cast' => 'element'],
 			'farm' => ['element32', 'farm\Farm', 'cast' => 'element'],
-			'oldValue' => ['decimal', 'digits' => 8, 'decimal' => 2, 'min' => 0.0, 'max' => NULL, 'cast' => 'float'],
 			'newValue' => ['decimal', 'digits' => 8, 'decimal' => 2, 'min' => 0.0, 'max' => NULL, 'cast' => 'float'],
-			'comment' => ['text16', 'null' => TRUE, 'cast' => 'string'],
+			'comment' => ['text8', 'min' => 1, 'max' => 50, 'null' => TRUE, 'cast' => 'string'],
 			'date' => ['datetime', 'cast' => 'string'],
 			'user' => ['element32', 'user\User', 'null' => TRUE, 'cast' => 'element'],
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'product', 'farm', 'oldValue', 'newValue', 'comment', 'date', 'user'
+			'id', 'product', 'farm', 'newValue', 'comment', 'date', 'user'
 		]);
 
 		$this->propertiesToModule += [
@@ -97,10 +96,6 @@ class StockModel extends \ModuleModel {
 
 	public function whereFarm(...$data): StockModel {
 		return $this->where('farm', ...$data);
-	}
-
-	public function whereOldValue(...$data): StockModel {
-		return $this->where('oldValue', ...$data);
 	}
 
 	public function whereNewValue(...$data): StockModel {

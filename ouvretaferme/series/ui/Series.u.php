@@ -50,7 +50,12 @@ class SeriesUi {
 
 		$eSeries->expects(['name', 'season']);
 
-		return '<span class="hide-xs-down">'.s("Saison {season}", ['season' => $eSeries['season']]).' '.\Asset::icon('chevron-right').'</span> '.s("Série {name}", ['name' => self::link($eSeries)]);
+		$h = '<div class="panel-header-subtitle">';
+			$h .= '<span class="hide-xs-down">'.s("Saison {season}", ['season' => $eSeries['season']]).' '.\Asset::icon('chevron-right').'</span> ';
+			$h .= s("Série {name}", ['name' => self::link($eSeries)]);
+		$h .= '</div>';
+
+		return $h;
 
 	}
 

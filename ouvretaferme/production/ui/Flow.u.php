@@ -672,7 +672,7 @@ class FlowUi {
 
 		return new \Panel(
 			title: s("Ajouter une intervention"),
-			subTitle: $this->getWriteHeader($eSequence),
+			subTitle: SequenceUi::getPanelHeader($eSequence),
 			body: $h
 		);
 
@@ -808,10 +808,6 @@ class FlowUi {
 
 		return $h;
 
-	}
-
-	protected function getWriteHeader(Sequence $eSequence): string {
-		return s("Itinéraire technique {value}",  SequenceUi::link($eSequence));
 	}
 
 	public function getFertilizerField(\util\FormUi $form, Flow $eFlow): string {

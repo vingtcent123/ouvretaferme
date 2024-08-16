@@ -253,7 +253,12 @@ class SequenceUi {
 
 		$eSequence->expects(['name']);
 
-		return s("Itinéraire technique {name}", ['name' => self::link($eSequence)]);
+		$h = '<div class="panel-header-subtitle">';
+			$h .= '<span class="hide-xs-down">'.s("Itinéraire technique").'</span> ';
+			$h .= self::link($eSequence).'</div>';
+		$h .= '</div>';
+
+		return $h;
 
 	}
 

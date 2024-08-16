@@ -2052,6 +2052,11 @@ body[data-touch="no"] .panel-header {
 	display: none;
 }
 
+.panel-header-subtitle {
+	font-size: 1.2rem;
+	margin-top: 0.25rem;
+}
+
 .panel-header-content {
 	grid-area: content;
 }

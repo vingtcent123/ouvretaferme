@@ -25,7 +25,7 @@ class TaskUi {
 			'action' => ['name']
 		]);
 
-		return encode($eTask['action']['name']);
+		return '<div class="panel-header-subtitle">'.encode($eTask['action']['name']).'</div>';
 
 	}
 

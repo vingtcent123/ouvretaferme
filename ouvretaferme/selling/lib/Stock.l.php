@@ -7,7 +7,51 @@ class StockLib extends StockCrud {
 
 		$search->set('stock', TRUE);
 
+		Product::model()->select([
+			'stockExpired' => new \Sql('stockUpdatedAt < NOW() - INTERVAL 7 DAY', 'bool')
+		]);
+
 		return \selling\ProductLib::getByFarm($eFarm, search: $search);
+
+	}
+
+	public static function increment(Product $eProduct, float $value, ?string $comment = NULL) {
+		return self::write($eProduct, new \Sql('stock + '.$value), $comment);
+	}
+
+	public static function decrement(Product $eProduct, float $value, ?string $comment = NULL) {
+		return self::write($eProduct, new \Sql('stock - '.$value), $comment);
+	}
+
+	public static function set(Product $eProduct, float $value, ?string $comment = NULL) {
+		return self::write($eProduct, $value, $comment);
+	}
+
+	public static function write(Product $eProduct, mixed $sql, ?string $comment) {
+
+		$eProduct->expects(['farm']);
+
+		Product::model()->beginTransaction();
+
+		Product::model()->update($eProduct, [
+			'stock' => $sql,
+			'stockUpdatedAt' => new \Sql('NOW()')
+		]);
+
+		$newValue = Product::model()
+			->whereId($eProduct)
+			->getValue('stock');
+
+		$eStock = new Stock([
+			'product' => $eProduct,
+			'farm' => $eProduct['farm'],
+			'newValue' => $newValue,
+			'comment' => $comment
+		]);
+
+		Stock::model()->insert($eStock);
+
+		Product::model()->commit();
 
 	}
 
