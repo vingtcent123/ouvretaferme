@@ -56,6 +56,8 @@ class AlertUi {
 			'Sale::generateDeliveryNote' => s("Vous ne pouvez générer de bon de livraison que pour les ventes livrées !"),
 			'Sale::generateOrderForm' => s("Vous ne pouvez générer de bon de commande que pour les ventes à l'état de brouillon ou confirmées !"),
 
+			'Stock::newValue.check' => s("Merci d'indiquer un nombre supérieur à zéro"),
+
 			'Pdf::noCustomerEmail' => s("Vous n'avez pas renseigné d'adresse e-mail pour ce client"),
 			'Pdf::noFarmEmail' => s("Vous n'avez pas renseigné d'adresse e-mail de facturation pour votre ferme"),
 			'Pdf::emptySale' => s("Vous pourrez générer ce document dès que vous aurez ajouté au moins un article à la vente !"),
@@ -109,6 +111,8 @@ class AlertUi {
 				Pdf::DELIVERY_NOTE => s("Le bon de livraison a été généré au format PDF !"),
 			][$options['type']].$options['actions'],
 			'Sale::customerUpdated' => s("La vente a bien été transférée à un nouveau client."),
+
+			'Stock::updated' => s("Le stock a bien été mis à jour pour ce produit."),
 
 			'Pdf::orderFormSent' => s("Le devis a bien été envoyé par e-mail au client."),
 			'Pdf::deliveryNoteSent' => s("Le bon de livraison a bien été envoyé par e-mail au client."),

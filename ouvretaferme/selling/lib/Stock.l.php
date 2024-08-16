@@ -3,7 +3,7 @@ namespace selling;
 
 class StockLib extends StockCrud {
 
-	public static function getProductsByFarm(\farm\Farm $eFarm, \Search $search = new \Search()) {
+	public static function getProductsByFarm(\farm\Farm $eFarm, \Search $search = new \Search()): \Collection {
 
 		$search->set('stock', TRUE);
 
@@ -15,19 +15,30 @@ class StockLib extends StockCrud {
 
 	}
 
-	public static function increment(Product $eProduct, float $value, ?string $comment = NULL) {
-		return self::write($eProduct, new \Sql('stock + '.$value), $comment);
+	public static function increment(Product $eProduct, float $value, ?string $comment = NULL): void {
+
+		if($value === 0.0) {
+			return;
+		}
+
+		self::write($eProduct, new \Sql('stock + '.$value), $comment);
+
 	}
 
-	public static function decrement(Product $eProduct, float $value, ?string $comment = NULL) {
-		return self::write($eProduct, new \Sql('stock - '.$value), $comment);
+	public static function decrement(Product $eProduct, float $value, ?string $comment = NULL): void {
+
+		if($value === 0.0) {
+			return;
+		}
+
+		self::write($eProduct, new \Sql('stock - '.$value), $comment);
 	}
 
-	public static function set(Product $eProduct, float $value, ?string $comment = NULL) {
-		return self::write($eProduct, $value, $comment);
+	public static function set(Product $eProduct, float $value, ?string $comment = NULL): void {
+		self::write($eProduct, $value, $comment);
 	}
 
-	public static function write(Product $eProduct, mixed $sql, ?string $comment) {
+	public static function write(Product $eProduct, mixed $sql, ?string $comment): void {
 
 		$eProduct->expects(['farm']);
 

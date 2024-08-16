@@ -48,7 +48,7 @@ class StockUi {
 					$h .= '</td>';
 
 					$h .= '<td class="td-min-content">';
-						$h .= '<a href="" class="product-item-stock-button">-</a>';
+						$h .= '<a href="/selling/stock:decrement?id='.$eProduct['id'].'" class="product-item-stock-button">-</a>';
 					$h .= '</td>';
 
 					$h .= '<td class="td-min-content text-end">';
@@ -100,28 +100,69 @@ class StockUi {
 
 	public function increment(Product $eProduct): \Panel {
 
+		return self::crement(
+			$eProduct,
+			'+',
+			s("Ajouter au stock"),
+			s("Augmenter le stock")
+		);
+
+	}
+
+	public function decrement(Product $eProduct): \Panel {
+
+		return self::crement(
+			$eProduct,
+			'-',
+			s("Retirer du stock"),
+			s("Diminuer le stock")
+		);
+
+	}
+
+	public function crement(Product $eProduct, string $sign, string $label, string $header): \Panel {
+
 		$form = new \util\FormUi();
 
-		$h = $form->openAjax('/selling/product:doUpdateGrid');
+		$h = $form->openAjax('/selling/stock:doCrement');
 
 			$h .= $form->hidden('id', $eProduct['id']);
+			$h .= $form->hidden('sign', $sign);
 
 			$h .= $form->group(
-				s("Produit"),
-				encode($eProduct['name'])
+				$label,
+				$form->inputGroup(
+					'<div class="input-group-addon">'.$sign.'</div>'.
+					$form->dynamicField(new Stock(), 'newValue', function(\PropertyDescriber $d) {
+						$d->attributes['onrender'] = 'this.focus();';
+					}).
+					'<div class="input-group-addon">'.\main\UnitUi::getNeutral($eProduct['unit']).'</div>'
+				)
 			);
 
 			$h .= $form->group(
-				content: $form->submit(s("Enregistrer"))
+				content: $form->submit(s("Valider"))
 			);
 
 		$h .= $form->close();
 
 		return new \Panel(
-			title: s("Augmenter le stock"),
+			title: $header,
 			body: $h,
 			subTitle: (new ProductUi())->getPanelHeader($eProduct)
 		);
+
+	}
+
+	public static function p(string $property): \PropertyDescriber {
+
+		$d = Stock::model()->describer($property);
+
+		switch($property) {
+
+		}
+
+		return $d;
 
 	}
 
