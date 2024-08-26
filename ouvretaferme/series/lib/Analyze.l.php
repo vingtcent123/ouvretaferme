@@ -98,7 +98,7 @@ class AnalyzeLib {
 			$distribution[$user] = \hr\WorkingTime::model()
 				->select([
 					'user',
-					'week' => new \Sql('EXTRACT(week FROM date)', 'int'),
+					'week' => new \Sql('WEEK(date, 1)', 'int'),
 					'time' => new \Sql('IF(SUM(time) < 11, 10, IF(SUM(time) < 40, 40, IF(SUM(time) < 50, 50, 51)))', 'int')
 				])
 				->whereFarm($eFarm)

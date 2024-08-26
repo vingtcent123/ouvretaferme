@@ -143,7 +143,7 @@ class AnalyzeLib {
 
 		return Item::model()
 			->select([
-				'week' => new \Sql('EXTRACT(week FROM deliveredAt)', 'int'),
+				'week' => new \Sql('WEEK(deliveredAt, 1)', 'int'),
 				'turnover' => new \Sql('SUM(priceExcludingVat)', 'float')
 			])
 			->where(new \Sql('EXTRACT(YEAR FROM deliveredAt)'), $year)
