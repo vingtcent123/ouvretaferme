@@ -111,7 +111,7 @@ class ProductLib extends ProductCrud {
 
 		self::applySearch($eFarm, $search);
 
-		$search->validateSort(['name', 'id', 'stockUpdatedAt']);
+		$search->validateSort(['name', 'id', 'stock', 'stockUpdatedAt']);
 
 		return Product::model()
 			->select(Product::getSelection())

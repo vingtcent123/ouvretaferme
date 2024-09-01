@@ -15,6 +15,10 @@ class StockLib extends StockCrud {
 
 	}
 
+	public static function set(Product $eProduct, float $value, ?string $comment = NULL): void {
+		self::write($eProduct, $value, $comment);
+	}
+
 	public static function increment(Product $eProduct, float $value, ?string $comment = NULL): void {
 
 		if($value === 0.0) {
@@ -32,10 +36,6 @@ class StockLib extends StockCrud {
 		}
 
 		self::write($eProduct, new \Sql('stock - '.$value), $comment);
-	}
-
-	public static function set(Product $eProduct, float $value, ?string $comment = NULL): void {
-		self::write($eProduct, $value, $comment);
 	}
 
 	public static function write(Product $eProduct, mixed $sql, ?string $comment): void {

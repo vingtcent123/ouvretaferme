@@ -5,8 +5,7 @@ class StockUi {
 
 	public function __construct() {
 
-		\Asset::css('selling', 'product.css');
-		\Asset::js('selling', 'product.js');
+		\Asset::css('selling', 'stock.css');
 
 	}
 
@@ -14,20 +13,21 @@ class StockUi {
 
 		$h = '';
 
-		$h .= '<div class="product-item-wrapper stick-xs">';
+		$h .= '<div class="stock-item-wrapper stick-xs">';
 
-		$h .= '<table class="product-item-table tr-bordered tr-even">';
+		$h .= '<table class="stock-item-table tr-bordered tr-even">';
 
 			$h .= '<thead>';
 
 				$h .= '<tr>';
 
-					$h .= '<th class="product-item-vignette"></th>';
+					$h .= '<th class="stock-item-vignette"></th>';
 					$h .= '<th>'.$search->linkSort('name', s("Produit")).'</th>';
 					$h .= '<th></th>';
 					$h .= '<th class="text-center" colspan="2">'.s("Stock").'</th>';
 					$h .= '<th></th>';
 					$h .= '<th>'.$search->linkSort('stockUpdatedAt', s("Mis à jour"), SORT_DESC).'</th>';
+					$h .= '<th></th>';
 					$h .= '<th></th>';
 				$h .= '</tr>';
 
@@ -39,31 +39,31 @@ class StockUi {
 
 				$h .= '<tr>';
 				
-					$h .= '<td class="product-item-vignette">';
+					$h .= '<td class="stock-item-vignette">';
 						$h .= (new \media\ProductVignetteUi())->getCamera($eProduct, size: '4rem');
 					$h .= '</td>';
 
-					$h .= '<td class="product-item-name">';
+					$h .= '<td class="stock-item-name">';
 						$h .= ProductUi::getInfos($eProduct);
 					$h .= '</td>';
 
 					$h .= '<td class="td-min-content">';
-						$h .= '<a href="/selling/stock:decrement?id='.$eProduct['id'].'" class="product-item-stock-button">-</a>';
+						$h .= '<a href="/selling/stock:decrement?id='.$eProduct['id'].'" class="stock-item-button">-</a>';
 					$h .= '</td>';
 
-					$h .= '<td class="td-min-content text-end">';
+					$h .= '<td class="td-min-content stock-item-value">';
 						$h .= $eProduct['stock'];
 					$h .= '</td>';
 
-					$h .= '<td class="product-item-unit">';
+					$h .= '<td class="td-min-content stock-item-unit">';
 						$h .= \main\UnitUi::getSingular($eProduct['unit']);
 					$h .= '</td>';
 
 					$h .= '<td class="td-min-content">';
-						$h .= '<a href="/selling/stock:increment?id='.$eProduct['id'].'" class="product-item-stock-button">+</a>';
+						$h .= '<a href="/selling/stock:increment?id='.$eProduct['id'].'" class="stock-item-button">+</a>';
 					$h .= '</td>';
 
-					$h .= '<td class="product-item-stock-updated">';
+					$h .= '<td class="stock-item-stock-updated">';
 
 						$h .= match(substr($eProduct['stockUpdatedAt'], 0, 10)) {
 							currentDate() => s("Aujourd'hui"),
@@ -84,6 +84,22 @@ class StockUi {
 						$h .= 'derniers mouvements ?';
 					$h .= '</td>';
 
+					$h .= '<td class="stock-item-actions">';
+
+						if($eProduct->canWrite()) {
+
+							$h .= '<a data-dropdown="bottom-end" class="dropdown-toggle btn btn-outline-secondary">'.\Asset::icon('gear-fill').'</a>';
+							$h .= '<div class="dropdown-list">';
+								$h .= '<div class="dropdown-title">'.encode($eProduct->getName()).'</div>';
+								$h .= '<a href="/selling/stock:update?id='.$eProduct['id'].'" class="dropdown-item">'.s("Corriger le stock").'</a>';
+								$h .= '<div class="dropdown-divider"></div>';
+								$h .= '<a data-ajax="selling/product:doDisableStock" post-id="'.$eProduct['id'].'" class="dropdown-item">'.\Asset::icon('box').'  '.s("Désactiver le suivi du stock").'</a>';
+							$h .= '</div>';
+
+						}
+
+					$h .= '</td>';
+
 				$h .= '</tr>';
 
 			}
@@ -95,6 +111,17 @@ class StockUi {
 		$h .= '</div>';
 
 		return $h;
+
+	}
+
+	public function update(Product $eProduct): \Panel {
+
+		return self::crement(
+			$eProduct,
+			NULL,
+			s("Nouvelle valeur"),
+			s("Modifier le stock")
+		);
 
 	}
 
@@ -120,21 +147,27 @@ class StockUi {
 
 	}
 
-	public function crement(Product $eProduct, string $sign, string $label, string $header): \Panel {
+	public function crement(Product $eProduct, ?string $sign, string $label, string $header): \Panel {
 
 		$form = new \util\FormUi();
 
-		$h = $form->openAjax('/selling/stock:doCrement');
+		$h = $form->openAjax('/selling/stock:doUpdate');
 
 			$h .= $form->hidden('id', $eProduct['id']);
-			$h .= $form->hidden('sign', $sign);
+
+			if($sign !== NULL) {
+				$h .= $form->hidden('sign', $sign);
+			}
 
 			$h .= $form->group(
 				$label,
 				$form->inputGroup(
-					'<div class="input-group-addon">'.$sign.'</div>'.
-					$form->dynamicField(new Stock(), 'newValue', function(\PropertyDescriber $d) {
+					($sign ? '<div class="input-group-addon">'.$sign.'</div>' : '').
+					$form->dynamicField(new Stock(), 'newValue', function(\PropertyDescriber $d) use ($eProduct, $sign) {
 						$d->attributes['onrender'] = 'this.focus();';
+						if($sign === NULL) {
+							$d->placeholder = $eProduct['stock'];
+						}
 					}).
 					'<div class="input-group-addon">'.\main\UnitUi::getNeutral($eProduct['unit']).'</div>'
 				)

@@ -24,25 +24,6 @@ td.product-item-unit {
 	font-weight: bold;
 }
 
-a.product-item-stock-button {
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	width: 2rem;
-	height: 2rem;
-	border-radius: 50%;
-	background-color: var(--secondary);
-	color: white;
-	line-height: 1;
-	font-weight: bold;
-	font-size: 1.2rem;
-	line-height: 0.83333;
-}
-
-a.product-item-stock-button:hover {
-	color: white;
-	text-decoration: none;
-}
 
 td.product-item-year-before {
 	font-size: 0.8rem;

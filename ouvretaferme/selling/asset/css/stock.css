@@ -1,0 +1,44 @@
+
+div.stock-item-wrapper {
+	overflow-x: auto;
+}
+
+table.stock-item-table {
+	min-width: calc(599px);
+}
+td.stock-item-actions {
+	text-align: right;
+}
+
+td.stock-item-value {
+	font-weight: bold;
+	text-align: right;
+	font-size: 1.2rem;
+	padding-left: 1rem;
+}
+
+td.stock-item-unit {
+	padding-left: 0;
+	padding-right: 1rem;
+	font-size: 1.2rem;
+	line-height: 1;
+}
+
+a.stock-item-button {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 2rem;
+	height: 2rem;
+	border-radius: 50%;
+	background-color: var(--secondary);
+	color: white;
+	line-height: 1;
+	font-weight: bold;
+	font-size: 1.2rem;
+}
+
+a.stock-item-button:hover {
+	color: white;
+	text-decoration: none;
+}

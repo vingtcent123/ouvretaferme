@@ -165,7 +165,7 @@ class ProductUi {
 					$h .= '<th rowspan="2" class="product-item-vignette"></th>';
 					$h .= '<th rowspan="2">'.$search->linkSort('name', s("Nom")).'</th>';
 					if($displayStock) {
-						$h .= '<th rowspan="2" class="text-end">'.s("Stock").'</th>';
+						$h .= '<th rowspan="2" class="text-end">'.$search->linkSort('stock', s("Stock"), SORT_DESC).'</th>';
 					}
 					$h .= '<th rowspan="2">'.s("Unité").'</th>';
 					$h .= '<th colspan="2" class="text-center highlight hide-xs-down">'.s("Ventes").'</th>';

@@ -1,10 +1,11 @@
 <?php
 (new \selling\ProductPage())
+	->read('update', fn($data) => throw new ViewAction($data), validate: ['canWrite', 'acceptStock'])
 	->read('increment', fn($data) => throw new ViewAction($data), validate: ['canWrite', 'acceptStock'])
 	->read('decrement', fn($data) => throw new ViewAction($data), validate: ['canWrite', 'acceptStock'])
-	->write('doCrement', function($data) {
+	->write('doUpdate', function($data) {
 
-		$sign = POST('sign', ['+', '-'], fn() => throw new NotExpectedAction('Bad sign'));
+		$sign = post_exists('sign') ? POST('sign', ['+', '-'], fn() => throw new NotExpectedAction('Bad sign')) : NULL;
 
 		$fw = new FailWatch();
 
@@ -15,7 +16,8 @@
 
 		match($sign) {
 			'+' => \selling\StockLib::increment($data->e, $eStock['newValue']),
-			'-' => \selling\StockLib::decrement($data->e, $eStock['newValue'])
+			'-' => \selling\StockLib::decrement($data->e, $eStock['newValue']),
+			NULL => \selling\StockLib::set($data->e, $eStock['newValue'])
 		};
 
 		throw new ReloadAction('selling', 'Stock::updated');
