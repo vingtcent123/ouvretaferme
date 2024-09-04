@@ -65,23 +65,30 @@ class StockUi {
 
 					$h .= '<td class="stock-item-stock-updated">';
 
-						$h .= match(substr($eProduct['stockUpdatedAt'], 0, 10)) {
+						$date = match(substr($eProduct['stockUpdatedAt'], 0, 10)) {
 							currentDate() => s("Aujourd'hui"),
 							date('Y-m-d', strtotime('-1 DAY')) => s("Hier"),
 							default => \util\DateUi::numeric($eProduct['stockUpdatedAt'], \util\DateUi::DATE)
 						};
 
-						$h .= s(", {value}", \util\DateUi::numeric($eProduct['stockUpdatedAt'], \util\DateUi::TIME_HOUR_MINUTE));
+						$h .= '<a href="/selling/stock:history?id='.$eProduct['id'].'" class="color-text">';
+
+						$h .= s("{date} à {time}", ['date' => $date, 'time' => \util\DateUi::numeric($eProduct['stockUpdatedAt'], \util\DateUi::TIME_HOUR_MINUTE)]);
+
+						if($eProduct['stockDelta'] !== 0.0) {
+							$h .= ', <b>'.($eProduct['stockDelta'] > 0 ? '+' : '').$eProduct['stockDelta'].'</b>';
+						}
+
+						$h .= '</a>';
 
 						if($eProduct['stockExpired']) {
-							$h .= '<div class="color-warning" style="font-size: 0.9rem">'.\Asset::icon('exclamation-triangle-fill').' '.s("Mis à jour il y a plus d'une semaine").'</div>';
+							$h .= '<div class="color-warning" style="font-size: 0.9rem">'.\Asset::icon('exclamation-triangle-fill').' '.s("Il y a plus d'une semaine").'</div>';
 						}
 
 					$h .= '</td>';
 
 					$h .= '<td>';
 						$h .= 'mouvements à intégrer ?<br/>';
-						$h .= 'derniers mouvements ?';
 					$h .= '</td>';
 
 					$h .= '<td class="stock-item-actions">';
@@ -92,6 +99,7 @@ class StockUi {
 							$h .= '<div class="dropdown-list">';
 								$h .= '<div class="dropdown-title">'.encode($eProduct->getName()).'</div>';
 								$h .= '<a href="/selling/stock:update?id='.$eProduct['id'].'" class="dropdown-item">'.s("Corriger le stock").'</a>';
+								$h .= '<a href="/selling/stock:history?id='.$eProduct['id'].'" class="dropdown-item">'.s("Voir l'historique du stock").'</a>';
 								$h .= '<div class="dropdown-divider"></div>';
 								$h .= '<a data-ajax="selling/product:doDisableStock" post-id="'.$eProduct['id'].'" class="dropdown-item">'.\Asset::icon('box').'  '.s("Désactiver le suivi du stock").'</a>';
 							$h .= '</div>';
@@ -173,6 +181,8 @@ class StockUi {
 				)
 			);
 
+			$h .= $form->dynamicGroup(new Stock(), 'comment');
+
 			$h .= $form->group(
 				content: $form->submit(s("Valider"))
 			);
@@ -189,9 +199,15 @@ class StockUi {
 
 	public static function p(string $property): \PropertyDescriber {
 
-		$d = Stock::model()->describer($property);
+		$d = Stock::model()->describer($property, [
+			'comment' => s("Commentaire")
+		]);
 
 		switch($property) {
+
+			case 'comment' :
+				$d->placeholder = s("Tapez ici un commentaire facultatif sur l'évolution du stock");
+				break;
 
 		}
 

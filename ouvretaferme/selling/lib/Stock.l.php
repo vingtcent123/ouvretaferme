@@ -15,37 +15,38 @@ class StockLib extends StockCrud {
 
 	}
 
-	public static function set(Product $eProduct, float $value, ?string $comment = NULL): void {
-		self::write($eProduct, $value, $comment);
+	public static function set(Product $eProduct, Stock $eStock): void {
+		self::write($eProduct, $eStock['newValue'], new \Sql($eStock['newValue'].' - stock'), $eStock['comment']);
 	}
 
-	public static function increment(Product $eProduct, float $value, ?string $comment = NULL): void {
+	public static function increment(Product $eProduct, Stock $eStock): void {
+
+		if($eStock['newValue'] === 0.0) {
+			return;
+		}
+
+		self::write($eProduct, new \Sql('stock + '.$eStock['newValue']), $eStock['newValue'], $eStock['comment']);
+
+	}
+
+	public static function decrement(Product $eProduct, Stock $eStock): void {
 
 		if($value === 0.0) {
 			return;
 		}
 
-		self::write($eProduct, new \Sql('stock + '.$value), $comment);
-
+		self::write($eProduct, new \Sql('stock - '.$eStock['newValue']), -1 * $eStock['newValue'], $eStock['comment']);
 	}
 
-	public static function decrement(Product $eProduct, float $value, ?string $comment = NULL): void {
-
-		if($value === 0.0) {
-			return;
-		}
-
-		self::write($eProduct, new \Sql('stock - '.$value), $comment);
-	}
-
-	public static function write(Product $eProduct, mixed $sql, ?string $comment): void {
+	protected static function write(Product $eProduct, mixed $sqlValue, mixed $sqlDelta, ?string $comment): void {
 
 		$eProduct->expects(['farm']);
 
 		Product::model()->beginTransaction();
 
 		Product::model()->update($eProduct, [
-			'stock' => $sql,
+			'stockDelta' => $sqlDelta,
+			'stock' => $sqlValue,
 			'stockUpdatedAt' => new \Sql('NOW()')
 		]);
 

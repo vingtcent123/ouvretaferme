@@ -339,14 +339,14 @@ new AdaptativeView('plant', function($data, FarmTemplate $t) {
 	$t->tab = 'cultivation';
 	$t->subNav = (new \farm\FarmUi())->getCultivationSubNav($data->eFarm);
 
-	$t->title = s("Espèces cultivées de {value}", $data->eFarm['name']);
+	$t->title = s("Espèces de {value}", $data->eFarm['name']);
 	$t->canonical = \farm\FarmUi::urlCultivationPlants($data->eFarm);
 
 	$t->package('main')->updateNavCultivation($t->canonical);
 
 	echo '<div class="util-action">';
 		echo '<h1>';
-			echo s("Espèces cultivées");
+			echo s("Espèces");
 		echo '</h1>';
 		if($data->eFarm->canManage()) {
 			echo  '<div>';

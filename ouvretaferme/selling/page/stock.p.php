@@ -10,14 +10,14 @@
 		$fw = new FailWatch();
 
 		$eStock = new \selling\Stock();
-		$eStock->build(['newValue'], $_POST);
+		$eStock->build(['newValue', 'comment'], $_POST);
 
 		$fw->validate();
 
 		match($sign) {
-			'+' => \selling\StockLib::increment($data->e, $eStock['newValue']),
-			'-' => \selling\StockLib::decrement($data->e, $eStock['newValue']),
-			NULL => \selling\StockLib::set($data->e, $eStock['newValue'])
+			'+' => \selling\StockLib::increment($data->e, $eStock),
+			'-' => \selling\StockLib::decrement($data->e, $eStock),
+			NULL => \selling\StockLib::set($data->e, $eStock)
 		};
 
 		throw new ReloadAction('selling', 'Stock::updated');

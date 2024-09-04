@@ -498,7 +498,7 @@ class FarmUi {
 
 				$h .= '<a href="'.FarmUi::urlCultivation($eFarm).'" data-tab="cultivation" class="farm-tab '.($tab === 'cultivation' ? 'selected' : '').'">';
 					$h .= \Asset::icon('journals');
-					$h .= '<span>'.s("Cultures").'</span>';
+					$h .= '<span>'.s("Production").'</span>';
 				$h .= '</a>';
 				$h .= '<a href="'.FarmUi::urlMap($eFarm).'" data-tab="map" class="farm-tab '.($tab === 'map' ? 'selected' : '').'">';
 					$h .= '<span class="farm-tab-off">'.\Asset::icon('geo').'</span>';
@@ -735,7 +735,7 @@ class FarmUi {
 		return [
 			Farmer::SERIES => s("Séries"),
 			Farmer::SEQUENCE => s("Itinéraires techniques"),
-			Farmer::PLANT => s("Espèces cultivées"),
+			Farmer::PLANT => s("Espèces"),
 		];
 	}
 
