@@ -132,6 +132,7 @@ class ItemLib extends ItemCrud {
 				'product' => ['vignette']
 			])
 			->whereFarm($eDate['farm'])
+			->whereStatus('IN', [Sale::CONFIRMED, Sale::PREPARED, Sale::DELIVERED])
 			->whereShopDate($eDate)
 			->group(['product', 'name', 'unit', 'quality'])
 			->sort('name')

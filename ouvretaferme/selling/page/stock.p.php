@@ -1,5 +1,12 @@
 <?php
 (new \selling\ProductPage())
+	->read('history', function($data) {
+
+		$data->cStock = \selling\StockLib::getByProduct($data->e);
+
+		throw new ViewAction($data);
+
+	})
 	->read('update', fn($data) => throw new ViewAction($data), validate: ['canWrite', 'acceptStock'])
 	->read('increment', fn($data) => throw new ViewAction($data), validate: ['canWrite', 'acceptStock'])
 	->read('decrement', fn($data) => throw new ViewAction($data), validate: ['canWrite', 'acceptStock'])

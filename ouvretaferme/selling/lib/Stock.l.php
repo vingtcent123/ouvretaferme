@@ -3,6 +3,18 @@ namespace selling;
 
 class StockLib extends StockCrud {
 
+	public static function getByProduct(Product $eProduct): \Collection {
+
+		return Stock::model()
+			->select(Stock::getSelection())
+			->whereProduct($eProduct)
+			->sort([
+				'id' => 'DESC'
+			])
+			->getCollection(0, 20);
+
+	}
+
 	public static function getProductsByFarm(\farm\Farm $eFarm, \Search $search = new \Search()): \Collection {
 
 		$search->set('stock', TRUE);
@@ -31,7 +43,7 @@ class StockLib extends StockCrud {
 
 	public static function decrement(Product $eProduct, Stock $eStock): void {
 
-		if($value === 0.0) {
+		if($eStock['newValue'] === 0.0) {
 			return;
 		}
 
