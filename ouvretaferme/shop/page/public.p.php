@@ -79,6 +79,7 @@
 			if(
 				$data->isModifying === FALSE and
 				$data->eDateSelected['isOrderable'] and
+				$data->eSaleExisting->notEmpty() and
 				$data->eSaleExisting['preparationStatus'] === \selling\Sale::BASKET
 			) {
 				throw new RedirectAction(\shop\ShopUi::dateUrl($data->eShop, $data->eDateSelected, 'confirmation'));
