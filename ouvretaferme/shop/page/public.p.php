@@ -74,6 +74,16 @@
 
 			$data->eDateSelected = $data->cDate[GET('date', 'int')] ?? $data->cDate->first();
 			$data->eSaleExisting = \shop\SaleLib::getSaleForDate($data->eDateSelected, $data->eCustomer);
+
+			// Cas où le client n'a pas finalisé la commande et retourne sur la boutique
+			if(
+				$data->isModifying === FALSE and
+				$data->eDateSelected['isOrderable'] and
+				$data->eSaleExisting['preparationStatus'] === \selling\Sale::BASKET
+			) {
+				throw new RedirectAction(\shop\ShopUi::dateUrl($data->eShop, $data->eDateSelected, 'confirmation'));
+			}
+
 			$data->discount = \shop\SaleLib::getDiscount($data->eDateSelected, $data->eSaleExisting, $data->eCustomer);
 
 			$cProduct = \shop\ProductLib::getByDate($data->eDateSelected, eSaleExclude: $data->isModifying ? $data->eSaleExisting : new \selling\Sale());
