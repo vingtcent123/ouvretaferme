@@ -147,6 +147,8 @@
 	line-height: 1.2;
 	color: white;
 	margin-bottom: 0.25rem;
+	max-height: 5rem;
+	overflow-y: auto;
 }
 
 @media (max-width: 576px) {
@@ -155,6 +157,7 @@
 	.shop-product-content .shop-product-description,
 	.shop-product-content .shop-product-manage-description {
 		color: var(--muted);
+		max-height: 10rem;
 	}
 
 }
