@@ -1,6 +1,6 @@
 <?php
 new AdaptativeView('history', function($data, PanelTemplate $t) {
-	return (new \selling\StockUi())->getHistory($data->e);
+	return (new \selling\StockUi())->getHistory($data->e, $data->cStock);
 });
 
 new AdaptativeView('update', function($data, PanelTemplate $t) {

@@ -292,10 +292,11 @@ Stock:
   product: selling\Product
   farm: farm\Farm
   newValue: decimal(8, 2, 0.0, null)
+  delta: decimal(8, 2, 0.0, null)
   reason: ?enum(HARVEST, SALE)
   comment: ?text8(1, null)
-  date: datetime = SPECIAL(now)
-  user: ?user\User = SPECIAL(user)
+  createdAt: datetime = SPECIAL(now)
+  createdBy: ?user\User = SPECIAL(user)
   INDEX: [
     ["product"]
   ]

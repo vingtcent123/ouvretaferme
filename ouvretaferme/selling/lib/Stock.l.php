@@ -6,10 +6,14 @@ class StockLib extends StockCrud {
 	public static function getByProduct(Product $eProduct): \Collection {
 
 		return Stock::model()
-			->select(Stock::getSelection())
+			->select(Stock::getSelection() + [
+				'createdBy' => [
+					'firstName', 'lastName', 'vignette'
+				],
+			])
 			->whereProduct($eProduct)
 			->sort([
-				'id' => 'DESC'
+				'id' => SORT_DESC
 			])
 			->getCollection(0, 20);
 
@@ -62,14 +66,15 @@ class StockLib extends StockCrud {
 			'stockUpdatedAt' => new \Sql('NOW()')
 		]);
 
-		$newValue = Product::model()
-			->whereId($eProduct)
-			->getValue('stock');
+		Product::model()
+			->select('stock', 'stockDelta')
+			->get($eProduct);
 
 		$eStock = new Stock([
 			'product' => $eProduct,
 			'farm' => $eProduct['farm'],
-			'newValue' => $newValue,
+			'newValue' => $eProduct['stock'],
+			'delta' => $eProduct['stockDelta'],
 			'comment' => $comment
 		]);
 

@@ -24,6 +24,11 @@ td.stock-item-unit {
 	line-height: 1;
 }
 
+td.stock-item-comment {
+	font-size: 0.9rem;
+	color: var(--muted);
+}
+
 a.stock-item-button {
 	display: flex;
 	align-items: center;

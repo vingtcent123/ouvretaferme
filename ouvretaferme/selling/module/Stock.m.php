@@ -43,20 +43,21 @@ class StockModel extends \ModuleModel {
 			'product' => ['element32', 'selling\Product', 'cast' => 'element'],
 			'farm' => ['element32', 'farm\Farm', 'cast' => 'element'],
 			'newValue' => ['decimal', 'digits' => 8, 'decimal' => 2, 'min' => 0.0, 'max' => NULL, 'cast' => 'float'],
+			'delta' => ['decimal', 'digits' => 8, 'decimal' => 2, 'min' => 0.0, 'max' => NULL, 'cast' => 'float'],
 			'reason' => ['enum', [\selling\Stock::HARVEST, \selling\Stock::SALE], 'null' => TRUE, 'cast' => 'enum'],
 			'comment' => ['text8', 'min' => 1, 'max' => NULL, 'null' => TRUE, 'cast' => 'string'],
-			'date' => ['datetime', 'cast' => 'string'],
-			'user' => ['element32', 'user\User', 'null' => TRUE, 'cast' => 'element'],
+			'createdAt' => ['datetime', 'cast' => 'string'],
+			'createdBy' => ['element32', 'user\User', 'null' => TRUE, 'cast' => 'element'],
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'product', 'farm', 'newValue', 'reason', 'comment', 'date', 'user'
+			'id', 'product', 'farm', 'newValue', 'delta', 'reason', 'comment', 'createdAt', 'createdBy'
 		]);
 
 		$this->propertiesToModule += [
 			'product' => 'selling\Product',
 			'farm' => 'farm\Farm',
-			'user' => 'user\User',
+			'createdBy' => 'user\User',
 		];
 
 		$this->indexConstraints = array_merge($this->indexConstraints, [
@@ -69,10 +70,10 @@ class StockModel extends \ModuleModel {
 
 		switch($property) {
 
-			case 'date' :
+			case 'createdAt' :
 				return new \Sql('NOW()');
 
-			case 'user' :
+			case 'createdBy' :
 				return \user\ConnectionLib::getOnline();
 
 			default :
@@ -120,6 +121,10 @@ class StockModel extends \ModuleModel {
 		return $this->where('newValue', ...$data);
 	}
 
+	public function whereDelta(...$data): StockModel {
+		return $this->where('delta', ...$data);
+	}
+
 	public function whereReason(...$data): StockModel {
 		return $this->where('reason', ...$data);
 	}
@@ -128,12 +133,12 @@ class StockModel extends \ModuleModel {
 		return $this->where('comment', ...$data);
 	}
 
-	public function whereDate(...$data): StockModel {
-		return $this->where('date', ...$data);
+	public function whereCreatedAt(...$data): StockModel {
+		return $this->where('createdAt', ...$data);
 	}
 
-	public function whereUser(...$data): StockModel {
-		return $this->where('user', ...$data);
+	public function whereCreatedBy(...$data): StockModel {
+		return $this->where('createdBy', ...$data);
 	}
 
 
