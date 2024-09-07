@@ -9,7 +9,10 @@ class StockUi {
 
 	}
 
-	public function getList(\Collection $cProduct, \Search $search) {
+	public function getList(\Collection $cProduct, \Collection $ccItemPast, \Collection $cItemFuture, \Search $search) {
+
+		$today = currentDate();
+		$yesterday = date('Y-m-d', strtotime('yesterday'));
 
 		$h = '';
 
@@ -26,8 +29,14 @@ class StockUi {
 					$h .= '<th></th>';
 					$h .= '<th class="text-center" colspan="2">'.s("Stock").'</th>';
 					$h .= '<th></th>';
-					$h .= '<th>'.$search->linkSort('stockUpdatedAt', s("Mis à jour"), SORT_DESC).'</th>';
-					$h .= '<th></th>';
+					$h .= '<th colspan="2">'.$search->linkSort('stockUpdatedAt', s("Mis à jour"), SORT_DESC).'</th>';
+					if($ccItemPast->notEmpty()) {
+						$h .= '<th class="text-center">'.s("Vendu aujourd'hui").'</th>';
+						$h .= '<th class="text-center hide-sm-down">'.s("Vendu hier").'</th>';
+					}
+					if($cItemFuture->notEmpty()) {
+						$h .= '<th class="text-center highlight hide-sm-down">'.s("Ventes à venir").'</th>';
+					}
 					$h .= '<th></th>';
 				$h .= '</tr>';
 
@@ -36,6 +45,8 @@ class StockUi {
 			$h .= '<tbody>';
 
 			foreach($cProduct as $eProduct) {
+
+				$cItemPast = $ccItemPast[$eProduct['id']] ?? new \Collection();
 
 				$h .= '<tr>';
 
@@ -54,7 +65,7 @@ class StockUi {
 					$h .= '</td>';
 
 					$h .= '<td class="td-min-content stock-item-value">';
-						$h .= '<a href="/selling/stock:update?id='.$eProduct['id'].'" title="'.s("Corriger le stock").'">'.$eProduct['stock'].'</a>';
+						$h .= '<a href="/selling/stock:update?id='.$eProduct['id'].'" title="'.s("Corriger le stock").'">'.round($eProduct['stock']).'</a>';
 					$h .= '</td>';
 
 					$h .= '<td class="td-min-content stock-item-unit">';
@@ -65,13 +76,14 @@ class StockUi {
 						$h .= '<a href="/selling/stock:increment?id='.$eProduct['id'].'" class="stock-item-button" title="'.s("Augmenter le stock").'">+</a>';
 					$h .= '</td>';
 
-					$h .= '<td class="stock-item-stock-updated">';
+					if($eProduct['stockLast']->notEmpty()) {
 
-						if($eProduct['stockLast']->notEmpty()) {
+						$eStock = $eProduct['stockLast'];
 
-							$eStock = $eProduct['stockLast'];
-
-							$h .= \user\UserUi::getVignette($eStock['createdBy'], '2rem').'  ';
+						$h .= '<td class="td-min-content">';
+							$h .= \user\UserUi::getVignette($eStock['createdBy'], '2rem');
+						$h .= '</td>';
+						$h .= '<td class="stock-item-stock-updated">';
 
 							$h .= '<a href="/selling/stock:history?id='.$eProduct['id'].'" class="color-text">';
 
@@ -84,18 +96,64 @@ class StockUi {
 							$h .= '</a>';
 
 							if($eProduct['stockExpired']) {
-								$h .= '<div class="color-muted" style="font-size: 0.9rem">'.\Asset::icon('alarm').' '.s("Il y a plus d'une semaine").'</div>';
+								$h .= '<div class="stock-item-stock-updated-comment">'.\Asset::icon('alarm').' '.s("Il y a plus d'une semaine").'</div>';
+							} else {
+
+								if($eStock['comment']) {
+									$h .= '<div class="stock-item-stock-updated-comment">'.encode($eStock['comment']).'</div>';
+								}
+
 							}
 
-						} else {
+						$h .= '</td>';
+
+					} else {
+						$h .= '<td colspan="2">';
 							$h .= '/';
-						}
+						$h .= '</td>';
+					}
 
-					$h .= '</td>';
+					if($ccItemPast->notEmpty()) {
 
-					$h .= '<td>';
-						$h .= 'mouvements à intégrer ?<br/>';
-					$h .= '</td>';
+						$h .= '<td class="text-center">';
+
+							if($cItemPast->offsetExists($today)) {
+
+								$hide = $eProduct['last']->empty() ? FALSE : ($eProduct['last']['minus'] !== NULL and $eProduct['last']['minus'] >= $today);
+
+								$value = round($cItemPast[$today]['quantity'], 2);
+								$h .= '<a data-ajax="/selling/stock:doUpdate" post-id="'.$eProduct['id'].'" post-sign="-" post-new-value="'.$value.'" post-comment="'.s("Ventes").'" class="btn btn-sm btn-outline-primary" '.($hide ? 'data-confirm="'.s("Votre stock est peut-être déjà à jour, voulez-vous toujours retrancher les quantités livrées aujourd'hui du stock ?").'"' : '').' title="'.s("Retrancher du stock").'">- '.\main\UnitUi::getValue($value, $eProduct['unit'], short: TRUE).'</a>';
+
+							}
+
+						$h .= '</td>';
+
+						$h .= '<td class="text-center hide-sm-down">';
+
+							if($cItemPast->offsetExists($yesterday)) {
+
+								$hide = $eProduct['last']->empty() ? FALSE : ($eProduct['last']['minus'] !== NULL and $eProduct['last']['minus'] >= $yesterday);
+
+								$value = round($cItemPast[$yesterday]['quantity'], 2);
+								$h .= '<a data-ajax="/selling/stock:doUpdate" post-id="'.$eProduct['id'].'" post-sign="-" post-new-value="'.$value.'" post-comment="'.s("Ventes").'" class="btn btn-sm btn-outline-primary" '.($hide ? 'data-confirm="'.s("Votre stock est peut-être déjà à jour, voulez-vous toujours retrancher les quantités livrées hier du stock ?").'"' : '').' title="'.s("Retrancher du stock").'">- '.\main\UnitUi::getValue($value, $eProduct['unit'], short: TRUE).'</a>';
+
+							}
+
+						$h .= '</td>';
+
+					}
+
+					if($cItemFuture->notEmpty()) {
+
+						$h .= '<td class="highlight text-center hide-sm-down">';
+
+							if($cItemFuture->offsetExists($eProduct['id'])) {
+								$h .= '- '.\main\UnitUi::getValue(round($cItemFuture[$eProduct['id']]['quantity'], 2), $eProduct['unit'], short: TRUE);
+							}
+
+						$h .= '</td>';
+
+					}
 
 					$h .= '<td class="stock-item-actions">';
 
@@ -207,6 +265,16 @@ class StockUi {
 			body: $h,
 			subTitle: (new ProductUi())->getPanelHeader($eProduct)
 		);
+	}
+
+	public static function getExpired(Product $eProduct): string {
+
+		if($eProduct['stockExpired']) {
+			return '<span class="product-item-stock-expired" title="'.s("Mis à jour il y a plus d'une semaine").'">'.\Asset::icon('alarm').'</span>';
+		} else {
+			return '';
+		}
+
 	}
 
 	public static function getDate(string $value): string {

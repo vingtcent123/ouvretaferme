@@ -26,13 +26,20 @@ class StockLib extends StockCrud {
 
 		Product::model()
 			->select([
-				'stockExpired' => new \Sql('stockUpdatedAt < NOW() - INTERVAL 7 DAY', 'bool'),
+				'stockExpired' => new \Sql('stockUpdatedAt IS NOT NULL AND stockUpdatedAt < NOW() - INTERVAL 7 DAY', 'bool'),
 				'stockLast' => [
-					'delta',
+					'delta', 'comment',
 					'createdAt',
 					'createdBy' => ['firstName', 'lastName', 'vignette']
-				]
-			]);
+				],
+				'last' => Stock::model()
+					->select([
+						'minus' => new \Sql('MAX(IF(delta < 0, DATE(createdAt), null))'),
+						'plus' => new \Sql('MAX(IF(delta > 0, DATE(createdAt), null))')
+					])
+					->group('product')
+					->delegateElement('product')
+		]);
 
 
 		return \selling\ProductLib::getByFarm($eFarm, search: $search);
@@ -78,6 +85,7 @@ class StockLib extends StockCrud {
 
 		if($eProductCalculated['newStock'] < 0) {
 			Stock::fail('newValue.negative');
+			return;
 		}
 
 		$eStock = new Stock([

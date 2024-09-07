@@ -212,9 +212,7 @@ class ProductUi {
 					if($displayStock) {
 						$h .= '<td class="product-item-stock text-end">';
 							if($eProduct['stock'] !== NULL) {
-								if($eProduct['stockExpired']) {
-									$h .= '<span class="product-item-stock-expired" title="'.s("Mis à jour il y a plus d'une semaine").'">'.\Asset::icon('alarm').'</span>';
-								}
+								$h .= StockUi::getExpired($eProduct);
 								$h .= '<a href="'.\farm\FarmUi::urlSellingStock($eFarm).'" title="'.StockUi::getDate($eProduct['stockUpdatedAt']).'">'.$eProduct['stock'].'</a>';
 							}
 						$h .= '</td>';
@@ -359,7 +357,7 @@ class ProductUi {
 
 	}
 
-	public static function getInfos(Product $eProduct): string {
+	public static function getInfos(Product $eProduct, bool $includeStock = FALSE): string {
 
 		$h = '<a href="/produit/'.$eProduct['id'].'">'.encode($eProduct->getName()).'</a>';
 		$more = [];
@@ -370,6 +368,14 @@ class ProductUi {
 
 		if($eProduct['quality'] !== NULL) {
 			$more[] = \farm\FarmUi::getQualityLogo($eProduct['quality'], '1.5rem');
+		}
+
+		if($includeStock) {
+
+			if($eProduct['stock'] !== NULL) {
+				$more[] .= '<span title="'.\selling\StockUi::getDate($eProduct['stockUpdatedAt']).'"><u>'.s("{value} en stock", \selling\StockUi::getExpired($eProduct).' '.\main\UnitUi::getValue(round($eProduct['stock']), $eProduct['unit'], short: TRUE)).'</u></span>';
+			}
+
 		}
 
 		if($more) {

@@ -448,9 +448,11 @@ class DateUi {
 
 		$eFarm = $eDate['farm'];
 
-		$h = '<div class="date-products-list stick-xs">';
+		$displayStock = $cProduct->match(fn($eProduct) => $eProduct['stock'] !== NULL);
 
-			$h .= '<div class="date-products-item util-grid-header">';
+		$h = '<div class="date-products-list util-overflow-xs stick-xs">';
+
+			$h .= '<div class="date-products-item '.($displayStock ? 'date-products-item-with-stock' : '').' util-grid-header">';
 
 				$h .= '<div class="shop-select '.($cProduct->count() < 2 ? 'shop-select-hide' : '').'">';
 					$h .= '<input type="checkbox" '.attr('onclick', 'CheckboxField.all(this, \'[name^="products["]\', node => DateManage.selectProduct(node), \'.date-products-list\')').'"  title="'.s("Tout cocher / Tout décocher").'"/>';
@@ -463,8 +465,13 @@ class DateUi {
 						$h .= s("Multiple de vente");
 					}
 				$h .= '</div>';
-				$h .= '<div class="date-products-item-price text-end">'.s("Prix").'</div>';
-				$h .= '<div>'.s("Stock").'</div>';
+				$h .= '<div class="date-products-item-price">'.s("Prix").'</div>';
+				$h .= '<div>'.s("Limiter les ventes").'</div>';
+				if($displayStock) {
+					$h .= '<div class="text-end">';
+						$h .= s("Stock");
+					$h .= '</div>';
+				}
 
 			$h .= '</div>';
 
@@ -504,7 +511,7 @@ class DateUi {
 						'stock' => NULL,
 					]);
 
-					$h .= '<div class="date-products-item '.($checked ? 'selected' : '').'">';
+					$h .= '<div class="date-products-item '.($displayStock ? 'date-products-item-with-stock' : '').' '.($checked ? 'selected' : '').'">';
 
 						$h .= '<label class="shop-select">';
 							$h .= $form->inputCheckbox('products['.$eProduct['id'].']', $eProduct['id'], $attributes);
@@ -543,6 +550,14 @@ class DateUi {
 								$d->name = 'stock['.$eProduct['id'].']';
 							});
 						$h .= '</div>';
+						if($displayStock) {
+							$h .= '<label class="date-products-item-product-stock '.($checked ? '' : 'hidden').'" for="'.$attributes['id'].'">';
+								if($eProduct['stock'] !== NULL) {
+									$h .= \selling\StockUi::getExpired($eProduct);
+									$h .= '<span title="'.\selling\StockUi::getDate($eProduct['stockUpdatedAt']).'">'.\main\UnitUi::getValue($eProduct['stock'], $eProduct['unit'], short: TRUE).'</span>';
+								}
+							$h .= '</label>';
+						}
 
 					$h .= '</div>';
 

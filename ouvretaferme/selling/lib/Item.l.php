@@ -155,6 +155,38 @@ class ItemLib extends ItemCrud {
 			->getCollection();
 	}
 
+	public static function getForPastStock(\farm\Farm $eFarm): \Collection {
+
+		return Item::model()
+			->select([
+				'quantity' => new \Sql('SUM(IF(packaging IS NULL, number, number * packaging))', 'float'),
+				'product',
+				'deliveredAt'
+			])
+			->whereFarm($eFarm)
+			->whereStatus('IN', [Sale::CONFIRMED, Sale::PREPARED, Sale::DELIVERED])
+			->whereDeliveredAt('IN', [currentDate(), date('Y-m-d', strtotime('yesterday'))])
+			->group(['deliveredAt', 'product'])
+			->getCollection(index: ['product', 'deliveredAt']);
+
+	}
+
+	public static function getForFutureStock(\farm\Farm $eFarm): \Collection {
+
+		return Item::model()
+			->select([
+				'quantity' => new \Sql('SUM(IF(packaging IS NULL, number, number * packaging))', 'float'),
+				'product'
+			])
+			->whereFarm($eFarm)
+			->whereStatus('IN', [Sale::CONFIRMED, Sale::PREPARED, Sale::DELIVERED])
+			->whereDeliveredAt('>', currentDate())
+			->group('product')
+			->getCollection(index: 'product');
+
+	}
+
+
 	public static function createCollection(\Collection $c): void {
 
 		if($c->empty()) {

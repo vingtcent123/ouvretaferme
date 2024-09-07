@@ -34,6 +34,22 @@ td.stock-item-comment {
 	color: var(--muted);
 }
 
+@media (max-width: 767px) {
+
+	td.stock-item-stock-updated {
+		padding-left: 0;
+		line-height: 1.4;
+		font-size: 0.9rem;
+	}
+
+}
+
+.stock-item-stock-updated-comment {
+	font-size: 0.8rem;
+	line-height: 1.2;
+	color: var(--muted);
+}
+
 a.stock-item-button {
 	display: flex;
 	align-items: center;

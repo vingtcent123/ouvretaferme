@@ -318,7 +318,7 @@ class ProductUi {
 							$h .= '<td></td>';
 						}
 						$h .= '<th class="text-end highlight">'.s("Prix").' '.$taxes.'</th>';
-						$h .= '<th class="text-end">'.s("Stock").'</th>';
+						$h .= '<th class="text-end">'.s("Limite").'</th>';
 						$h .= '<th class="text-end highlight">'.s("Vendu").'</th>';
 						$h .= '<th class="text-end">';
 							$h .= '<span class="hide-md-down">'.s("Vente en cours").'</span>';
@@ -357,7 +357,7 @@ class ProductUi {
 			$h .= '</td>';
 
 			$h .= '<td>';
-				$h .= $uiProductSelling->getInfos($eProductSelling);
+				$h .= $uiProductSelling->getInfos($eProductSelling, includeStock: TRUE);
 			$h .= '</td>';
 
 			if($eDate['type'] === Date::PRO) {
@@ -432,7 +432,7 @@ class ProductUi {
 
 		$d = Product::model()->describer($property, [
 			'product' => s("Produit"),
-			'stock' => s("Stock"),
+			'stock' => s("Limite"),
 			'price' => s("Prix unitaire"),
 			'date' => s("Vente"),
 		]);

@@ -191,6 +191,9 @@
 
 		$data->cProduct = \selling\StockLib::getProductsByFarm($data->eFarm, $data->search);
 
+		$data->ccItemPast = \selling\ItemLib::getForPastStock($data->eFarm);
+		$data->cItemFuture = \selling\ItemLib::getForFutureStock($data->eFarm);
+
 		throw new ViewAction($data);
 
 	})

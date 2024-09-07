@@ -9,7 +9,7 @@ class Product extends ProductElement {
 			'farm' => ['name', 'vignette'],
 			'plant' => ['name', 'latinName', 'fqn', 'vignette'],
 			'quality' => ['name', 'shortName', 'logo'],
-			'stockExpired' => new \Sql('stockUpdatedAt < NOW() - INTERVAL 7 DAY', 'bool')
+			'stockExpired' => new \Sql('stockUpdatedAt IS NOT NULL AND stockUpdatedAt < NOW() - INTERVAL 7 DAY', 'bool')
 		];
 
 	}

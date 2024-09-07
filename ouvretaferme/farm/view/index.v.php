@@ -542,7 +542,7 @@ new AdaptativeView('/ferme/{id}/stocks', function($data, FarmTemplate $t) {
 
 	} else {
 
-		echo (new \selling\StockUi())->getList($data->cProduct, $data->search);
+		echo (new \selling\StockUi())->getList($data->cProduct, $data->ccItemPast, $data->cItemFuture, $data->search);
 
 	}
 
