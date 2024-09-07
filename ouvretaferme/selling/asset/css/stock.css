@@ -1,13 +1,9 @@
-
-div.stock-item-wrapper {
-	overflow-x: auto;
-}
-
-table.stock-item-table {
-	min-width: calc(599px);
-}
 td.stock-item-actions {
 	text-align: right;
+}
+
+td.stock-item-name {
+	line-height: 1.3;
 }
 
 td.stock-item-value {
@@ -22,6 +18,15 @@ td.stock-item-unit {
 	padding-right: 1rem;
 	font-size: 1.2rem;
 	line-height: 1;
+}
+
+td.stock-item-unit a,
+td.stock-item-value a {
+	color: var(--text);
+	display: block;
+	margin: -1rem -0.5rem;
+	padding: 1rem 0.5rem;
+	text-decoration: none;
 }
 
 td.stock-item-comment {

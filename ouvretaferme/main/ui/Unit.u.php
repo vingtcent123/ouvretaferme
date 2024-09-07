@@ -3,44 +3,46 @@ namespace main;
 
 class UnitUi {
 
-	public static function getValue(string $value, ?string $unit, bool $short = FALSE, bool $noWrap = TRUE): string {
+	public static function getValue(string $value, ?string $unit, bool $short = FALSE, bool $noWrap = TRUE, ?\Closure $callback = NULL): string {
+
+		$callback ??= fn($value, $unit) => $value.' '.$unit;
 
 		switch($unit) {
 
 			case 'kg' :
-				$text = s("{value} kg", $value);
+				$text = $callback($value, s('kg'));
 				break;
 
 			case 'gram' :
-				$text = s("{value} g", $value);
+				$text = $callback($value, s('g'));
 				break;
 
 			case 'gram-100' :
-				$text = s("{value} x 100 g", $value);
+				$text = $callback($value, s('x 100 g'));
 				break;
 
 			case 'gram-250' :
-				$text = s("{value} x 250 g", $value);
+				$text = $callback($value, s('x 250 g'));
 				break;
 
 			case 'gram-500' :
-				$text = s("{value} x 500 g", $value);
+				$text = $callback($value, s('x 500 g'));
 				break;
 
 			case 'box' :
-				$text = $short ? s("{value} bte", $value) : p("{value} boite", "{value} boites", $value, ['value' => $value]);
+				$text = $short ? $callback($value, s("bte")) : p("{value} boite", "{value} boites", $value, ['value' => $value]);
 				break;
 
 			case 'bunch' :
-				$text = $short ? s("{value} bte", $value) : p("{value} botte", "{value} bottes", $value, ['value' => $value]);
+				$text = $short ? $callback($value, s("bte")) : p("{value} botte", "{value} bottes", $value, ['value' => $value]);
 				break;
 
 			case 'unit' :
-				$text = $short ? s("{value} p.", $value) : p("{value} pièce", "{value} pièces", $value, ['value' => $value]);
+				$text = $short ? $callback($value, s("p.")) : ($value < 2 ? $callback($value, s("pièce")) : $callback($value, s("pièces")));
 				break;
 
 			case 'plant' :
-				$text = $short ? s("{value} p.", $value) : p("{value} plant", "{value} plants", $value, ['value' => $value]);
+				$text = $short ? $callback($value, s("p.")) : p("{value} plant", "{value} plants", $value, ['value' => $value]);
 				break;
 
 			default :

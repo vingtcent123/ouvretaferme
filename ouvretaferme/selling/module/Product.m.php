@@ -73,20 +73,21 @@ class ProductModel extends \ModuleModel {
 			'vat' => ['int8', 'min' => 1, 'max' => NULL, 'cast' => 'int'],
 			'quality' => ['enum', [\selling\Product::ORGANIC, \selling\Product::NATURE_PROGRES, \selling\Product::CONVERSION], 'null' => TRUE, 'cast' => 'enum'],
 			'stock' => ['decimal', 'digits' => 8, 'decimal' => 2, 'min' => 0.0, 'max' => NULL, 'null' => TRUE, 'cast' => 'float'],
-			'stockDelta' => ['decimal', 'digits' => 8, 'decimal' => 2, 'min' => 0.0, 'max' => NULL, 'null' => TRUE, 'cast' => 'float'],
+			'stockLast' => ['element32', 'selling\Stock', 'null' => TRUE, 'cast' => 'element'],
 			'stockUpdatedAt' => ['datetime', 'null' => TRUE, 'cast' => 'string'],
 			'createdAt' => ['datetime', 'cast' => 'string'],
 			'status' => ['enum', [\selling\Product::ACTIVE, \selling\Product::INACTIVE], 'cast' => 'enum'],
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'name', 'description', 'vignette', 'category', 'plant', 'variety', 'size', 'farm', 'unit', 'private', 'privatePrice', 'privateStep', 'pro', 'proPrice', 'proPackaging', 'proStep', 'vat', 'quality', 'stock', 'stockDelta', 'stockUpdatedAt', 'createdAt', 'status'
+			'id', 'name', 'description', 'vignette', 'category', 'plant', 'variety', 'size', 'farm', 'unit', 'private', 'privatePrice', 'privateStep', 'pro', 'proPrice', 'proPackaging', 'proStep', 'vat', 'quality', 'stock', 'stockLast', 'stockUpdatedAt', 'createdAt', 'status'
 		]);
 
 		$this->propertiesToModule += [
 			'category' => 'selling\Category',
 			'plant' => 'plant\Plant',
 			'farm' => 'farm\Farm',
+			'stockLast' => 'selling\Stock',
 		];
 
 		$this->indexConstraints = array_merge($this->indexConstraints, [
@@ -229,8 +230,8 @@ class ProductModel extends \ModuleModel {
 		return $this->where('stock', ...$data);
 	}
 
-	public function whereStockDelta(...$data): ProductModel {
-		return $this->where('stockDelta', ...$data);
+	public function whereStockLast(...$data): ProductModel {
+		return $this->where('stockLast', ...$data);
 	}
 
 	public function whereStockUpdatedAt(...$data): ProductModel {

@@ -57,6 +57,7 @@ class AlertUi {
 			'Sale::generateOrderForm' => s("Vous ne pouvez générer de bon de commande que pour les ventes à l'état de brouillon ou confirmées !"),
 
 			'Stock::newValue.check' => s("Merci d'indiquer une valeur supérieure ou égale à zéro"),
+			'Stock::newValue.negative' => s("Le stock ne peut pas être négatif"),
 
 			'Pdf::noCustomerEmail' => s("Vous n'avez pas renseigné d'adresse e-mail pour ce client"),
 			'Pdf::noFarmEmail' => s("Vous n'avez pas renseigné d'adresse e-mail de facturation pour votre ferme"),

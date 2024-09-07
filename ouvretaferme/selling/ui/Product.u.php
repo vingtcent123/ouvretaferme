@@ -212,7 +212,10 @@ class ProductUi {
 					if($displayStock) {
 						$h .= '<td class="product-item-stock text-end">';
 							if($eProduct['stock'] !== NULL) {
-								$h .= $eProduct['stock'];
+								if($eProduct['stockExpired']) {
+									$h .= '<span class="product-item-stock-expired" title="'.s("Mis à jour il y a plus d'une semaine").'">'.\Asset::icon('alarm').'</span>';
+								}
+								$h .= '<a href="'.\farm\FarmUi::urlSellingStock($eFarm).'" title="'.StockUi::getDate($eProduct['stockUpdatedAt']).'">'.$eProduct['stock'].'</a>';
 							}
 						$h .= '</td>';
 					}

@@ -226,7 +226,7 @@ Product:
   vat: int8(1, null)
   quality: ?enum(ORGANIC, NATURE_PROGRES, CONVERSION)
   stock: ?decimal(8, 2, 0.0, null)
-  stockDelta: ?decimal(8, 2, 0.0, null)
+  stockLast: ?selling\Stock
   stockUpdatedAt: ?datetime
   createdAt: datetime = SPECIAL(now)
   status: enum(ACTIVE, INACTIVE) = ACTIVE

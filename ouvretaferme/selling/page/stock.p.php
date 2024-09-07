@@ -27,6 +27,8 @@
 			NULL => \selling\StockLib::set($data->e, $eStock)
 		};
 
+		$fw->validate();
+
 		throw new ReloadAction('selling', 'Stock::updated');
 
 	}, validate: ['canWrite', 'acceptStock']);

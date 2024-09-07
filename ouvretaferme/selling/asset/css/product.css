@@ -53,10 +53,19 @@ td.product-item-year-before {
 
 }
 
-div.product-item-name a {
+td.product-item-stock {
 	font-size: 1.1rem;
-	font-weight: bold;
+	padding-top: 0.2rem;
+}
+
+td.product-item-stock a {
 	color: var(--text);
+}
+
+.product-item-stock-expired {
+	color: var(--muted);
+	font-size: 0.9rem;
+	margin-right: 0.5rem;
 }
 
 div.product-item-infos {

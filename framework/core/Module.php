@@ -1359,7 +1359,9 @@ abstract class ModuleModel {
 	 *
 	 */
 	public function sort(Sql|string|array|null $sort): ModuleModel {
-		$this->sort = $sort;
+		if($sort !== NULL) {
+			$this->sort = $sort;
+		}
 		return $this;
 	}
 

@@ -187,7 +187,7 @@
 
 		\farm\FarmerLib::setView('viewSelling', $data->eFarm, \farm\Farmer::STOCK);
 
-		$data->search = new Search(sort: GET('sort', default: 'name'));
+		$data->search = new Search(sort: GET('sort'));
 
 		$data->cProduct = \selling\StockLib::getProductsByFarm($data->eFarm, $data->search);
 

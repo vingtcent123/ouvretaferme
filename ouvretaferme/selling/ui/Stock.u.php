@@ -13,7 +13,7 @@ class StockUi {
 
 		$h = '';
 
-		$h .= '<div class="stock-item-wrapper stick-xs">';
+		$h .= '<div class="util-overflow-md stick-xs">';
 
 		$h .= '<table class="stock-item-table tr-bordered tr-even">';
 
@@ -21,7 +21,7 @@ class StockUi {
 
 				$h .= '<tr>';
 
-					$h .= '<th class="stock-item-vignette"></th>';
+					$h .= '<th></th>';
 					$h .= '<th>'.$search->linkSort('name', s("Produit")).'</th>';
 					$h .= '<th></th>';
 					$h .= '<th class="text-center" colspan="2">'.s("Stock").'</th>';
@@ -39,8 +39,8 @@ class StockUi {
 
 				$h .= '<tr>';
 
-					$h .= '<td class="stock-item-vignette td-min-content">';
-						$h .= (new \media\ProductVignetteUi())->getCamera($eProduct, size: '4rem');
+					$h .= '<td class="td-min-content">';
+						$h .= (new \media\ProductVignetteUi())->getCamera($eProduct, size: '3rem');
 					$h .= '</td>';
 
 					$h .= '<td class="stock-item-name">';
@@ -48,35 +48,47 @@ class StockUi {
 					$h .= '</td>';
 
 					$h .= '<td class="td-min-content">';
-						$h .= '<a href="/selling/stock:decrement?id='.$eProduct['id'].'" class="stock-item-button">-</a>';
+						if($eProduct['stock'] > 0.0) {
+							$h .= '<a href="/selling/stock:decrement?id='.$eProduct['id'].'" class="stock-item-button" title="'.s("Diminuer le stock").'">-</a>';
+						}
 					$h .= '</td>';
 
 					$h .= '<td class="td-min-content stock-item-value">';
-						$h .= $eProduct['stock'];
+						$h .= '<a href="/selling/stock:update?id='.$eProduct['id'].'" title="'.s("Corriger le stock").'">'.$eProduct['stock'].'</a>';
 					$h .= '</td>';
 
 					$h .= '<td class="td-min-content stock-item-unit">';
-						$h .= \main\UnitUi::getSingular($eProduct['unit']);
+						$h .= '<a href="/selling/stock:update?id='.$eProduct['id'].'" title="'.s("Corriger le stock").'">'.\main\UnitUi::getSingular($eProduct['unit'], short: TRUE).'</a>';
 					$h .= '</td>';
 
 					$h .= '<td class="td-min-content">';
-						$h .= '<a href="/selling/stock:increment?id='.$eProduct['id'].'" class="stock-item-button">+</a>';
+						$h .= '<a href="/selling/stock:increment?id='.$eProduct['id'].'" class="stock-item-button" title="'.s("Augmenter le stock").'">+</a>';
 					$h .= '</td>';
 
 					$h .= '<td class="stock-item-stock-updated">';
 
-						$h .= '<a href="/selling/stock:history?id='.$eProduct['id'].'" class="color-text">';
+						if($eProduct['stockLast']->notEmpty()) {
 
-						$h .= $this->getDate($eProduct['stockUpdatedAt']);
+							$eStock = $eProduct['stockLast'];
 
-						if($eProduct['stockDelta'] !== 0.0) {
-							$h .= ', <b>'.($eProduct['stockDelta'] > 0 ? '+' : '').$eProduct['stockDelta'].'</b>';
-						}
+							$h .= \user\UserUi::getVignette($eStock['createdBy'], '2rem').'  ';
 
-						$h .= '</a>';
+							$h .= '<a href="/selling/stock:history?id='.$eProduct['id'].'" class="color-text">';
 
-						if($eProduct['stockExpired']) {
-							$h .= '<div class="color-warning" style="font-size: 0.9rem">'.\Asset::icon('exclamation-triangle-fill').' '.s("Il y a plus d'une semaine").'</div>';
+								$h .= $this->getDate($eStock['createdAt']);
+
+								if($eStock['delta'] !== 0.0 and $eStock['delta'] !== NULL) {
+									$h .= ', <b>'.($eStock['delta'] > 0 ? '+' : '').$eStock['delta'].'</b>';
+								}
+
+							$h .= '</a>';
+
+							if($eProduct['stockExpired']) {
+								$h .= '<div class="color-muted" style="font-size: 0.9rem">'.\Asset::icon('alarm').' '.s("Il y a plus d'une semaine").'</div>';
+							}
+
+						} else {
+							$h .= '/';
 						}
 
 					$h .= '</td>';
@@ -156,7 +168,7 @@ class StockUi {
 						$h .= '</td>';
 
 						$h .= '<td class="td-min-content stock-item-unit">';
-							$h .= \main\UnitUi::getSingular($eProduct['unit']);
+							$h .= \main\UnitUi::getSingular($eProduct['unit'], short: TRUE);
 						$h .= '</td>';
 
 						$h .= '<td class="stock-item-stock-updated color-muted">';
@@ -197,7 +209,7 @@ class StockUi {
 		);
 	}
 
-	protected function getDate(string $value): string {
+	public static function getDate(string $value): string {
 
 		$date = match(substr($value, 0, 10)) {
 			currentDate() => s("Aujourd'hui"),

@@ -1885,10 +1885,11 @@ class Sql {
 class Search {
 
 	private bool $sortStatus = TRUE;
+	private null|string|Sql $defaultSort = NULL;
 
 	public function __construct(
 		public array $properties = [],
-		public ?string $sort = NULL
+		public null|string|Sql $sort = NULL
 	) {
 
 	}
@@ -1900,10 +1901,17 @@ class Search {
 
 	}
 
+	public function defaultSort(null|string|Sql $defaultSort): self {
+
+		$this->defaultSort = $defaultSort;
+		return $this;
+
+	}
+
 	public function validateSort(array $possibleProperties, ?string $default = NULL): self {
 
 		if(empty($this->sort)) {
-			$this->sort = $default ?? first($possibleProperties);
+			$this->sort = $default ?? $this->defaultSort ?? first($possibleProperties);
 		} else if($this->sort instanceof Sql) {
 		} else {
 
@@ -1919,10 +1927,10 @@ class Search {
 
 	}
 
-	public function buildSort(array $override = []): array|Sql {
+	public function buildSort(array $override = []): array|Sql|null {
 
 		if($this->sort === NULL) {
-			return [];
+			return NULL;
 		} else if($this->sort instanceof Sql) {
 			return $this->sort;
 		} else {

@@ -22,17 +22,25 @@ class StockLib extends StockCrud {
 	public static function getProductsByFarm(\farm\Farm $eFarm, \Search $search = new \Search()): \Collection {
 
 		$search->set('stock', TRUE);
+		$search->defaultSort(new \Sql('stock = 0.0, name ASC'));
 
-		Product::model()->select([
-			'stockExpired' => new \Sql('stockUpdatedAt < NOW() - INTERVAL 7 DAY', 'bool')
-		]);
+		Product::model()
+			->select([
+				'stockExpired' => new \Sql('stockUpdatedAt < NOW() - INTERVAL 7 DAY', 'bool'),
+				'stockLast' => [
+					'delta',
+					'createdAt',
+					'createdBy' => ['firstName', 'lastName', 'vignette']
+				]
+			]);
+
 
 		return \selling\ProductLib::getByFarm($eFarm, search: $search);
 
 	}
 
 	public static function set(Product $eProduct, Stock $eStock): void {
-		self::write($eProduct, $eStock['newValue'], new \Sql($eStock['newValue'].' - stock'), $eStock['comment']);
+		self::write($eProduct, new \Sql($eStock['newValue']), $eStock['comment']);
 	}
 
 	public static function increment(Product $eProduct, Stock $eStock): void {
@@ -41,7 +49,7 @@ class StockLib extends StockCrud {
 			return;
 		}
 
-		self::write($eProduct, new \Sql('stock + '.$eStock['newValue']), $eStock['newValue'], $eStock['comment']);
+		self::write($eProduct, new \Sql('stock + '.$eStock['newValue']), $eStock['comment']);
 
 	}
 
@@ -51,34 +59,42 @@ class StockLib extends StockCrud {
 			return;
 		}
 
-		self::write($eProduct, new \Sql('stock - '.$eStock['newValue']), -1 * $eStock['newValue'], $eStock['comment']);
+		self::write($eProduct, new \Sql('stock - '.$eStock['newValue']), $eStock['comment']);
 	}
 
-	protected static function write(Product $eProduct, mixed $sqlValue, mixed $sqlDelta, ?string $comment): void {
+	protected static function write(Product $eProduct, mixed $sqlValue, ?string $comment): void {
 
 		$eProduct->expects(['farm']);
 
 		Product::model()->beginTransaction();
 
-		Product::model()->update($eProduct, [
-			'stockDelta' => $sqlDelta,
-			'stock' => $sqlValue,
-			'stockUpdatedAt' => new \Sql('NOW()')
-		]);
+		$eProductCalculated = Product::model()
+			->select([
+				'stock',
+				'newStock' => $sqlValue
+			])
+			->whereId($eProduct)
+			->get();
 
-		Product::model()
-			->select('stock', 'stockDelta')
-			->get($eProduct);
+		if($eProductCalculated['newStock'] < 0) {
+			Stock::fail('newValue.negative');
+		}
 
 		$eStock = new Stock([
 			'product' => $eProduct,
 			'farm' => $eProduct['farm'],
-			'newValue' => $eProduct['stock'],
-			'delta' => $eProduct['stockDelta'],
+			'newValue' => $eProductCalculated['newStock'],
+			'delta' => $eProductCalculated['newStock'] - $eProductCalculated['stock'],
 			'comment' => $comment
 		]);
 
 		Stock::model()->insert($eStock);
+
+		Product::model()->update($eProduct, [
+			'stockLast' => $eStock,
+			'stock' => $eProductCalculated['newStock'],
+			'stockUpdatedAt' => new \Sql('NOW()')
+		]);
 
 		Product::model()->commit();
 
@@ -109,6 +125,7 @@ class StockLib extends StockCrud {
 
 		Product::model()->update($eProduct, [
 			'stock' => NULL,
+			'stockLast' => NULL,
 			'stockUpdatedAt' => NULL
 		]);
 
