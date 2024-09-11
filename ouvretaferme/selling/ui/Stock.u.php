@@ -122,8 +122,15 @@ class StockUi {
 								$hide = $eProduct['last']->empty() ? FALSE : ($eProduct['last']['minus'] !== NULL and $eProduct['last']['minus'] >= $today);
 
 								$value = round($cItemPast[$today]['quantity'], 2);
-								$h .= '<a data-ajax="/selling/stock:doUpdate" post-id="'.$eProduct['id'].'" post-sign="-" post-new-value="'.$value.'" post-comment="'.s("Ventes").'" class="btn btn-sm btn-outline-primary" '.($hide ? 'data-confirm="'.s("Votre stock est peut-être déjà à jour, voulez-vous toujours retrancher les quantités livrées aujourd'hui du stock ?").'"' : '').' title="'.s("Retrancher du stock").'">- '.\main\UnitUi::getValue($value, $eProduct['unit'], short: TRUE).'</a>';
 
+								$h .= '<div class="stock-item-main">';
+									$h .= '<a data-ajax="/selling/stock:doUpdate" post-id="'.$eProduct['id'].'" post-sign="-" post-new-value="'.$value.'" post-comment="'.s("Ventes").'" class="btn btn-sm btn-outline-primary" '.($hide ? 'data-confirm="'.s("Votre stock est peut-être déjà à jour, voulez-vous toujours retrancher les quantités livrées aujourd'hui du stock ?").'"' : '').' title="'.s("Retrancher du stock").'">- '.\main\UnitUi::getValue($value, $eProduct['unit'], short: TRUE).'</a>';
+								$h .= '</div>';
+
+							}
+
+							foreach($eProduct['cProductSiblings'] as $eProductSibling) {
+								$h .= $this->getProductQuantity($ccItemPast[$eProductSibling['id']][$today] ?? new Item(), $eProductSibling);
 							}
 
 						$h .= '</td>';
@@ -135,8 +142,15 @@ class StockUi {
 								$hide = $eProduct['last']->empty() ? FALSE : ($eProduct['last']['minus'] !== NULL and $eProduct['last']['minus'] >= $yesterday);
 
 								$value = round($cItemPast[$yesterday]['quantity'], 2);
-								$h .= '<a data-ajax="/selling/stock:doUpdate" post-id="'.$eProduct['id'].'" post-sign="-" post-new-value="'.$value.'" post-comment="'.s("Ventes").'" class="btn btn-sm btn-outline-primary" '.($hide ? 'data-confirm="'.s("Votre stock est peut-être déjà à jour, voulez-vous toujours retrancher les quantités livrées hier du stock ?").'"' : '').' title="'.s("Retrancher du stock").'">- '.\main\UnitUi::getValue($value, $eProduct['unit'], short: TRUE).'</a>';
 
+								$h .= '<div class="stock-item-main">';
+									$h .= '<a data-ajax="/selling/stock:doUpdate" post-id="'.$eProduct['id'].'" post-sign="-" post-new-value="'.$value.'" post-comment="'.s("Ventes").'" class="btn btn-sm btn-outline-primary" '.($hide ? 'data-confirm="'.s("Votre stock est peut-être déjà à jour, voulez-vous toujours retrancher les quantités livrées hier du stock ?").'"' : '').' title="'.s("Retrancher du stock").'">- '.\main\UnitUi::getValue($value, $eProduct['unit'], short: TRUE).'</a>';
+								$h .= '</div>';
+
+							}
+
+							foreach($eProduct['cProductSiblings'] as $eProductSibling) {
+								$h .= $this->getProductQuantity($ccItemPast[$eProductSibling['id']][$yesterday] ?? new Item(), $eProductSibling);
 							}
 
 						$h .= '</td>';
@@ -147,8 +161,10 @@ class StockUi {
 
 						$h .= '<td class="highlight text-center hide-sm-down">';
 
-							if($cItemFuture->offsetExists($eProduct['id'])) {
-								$h .= '- '.\main\UnitUi::getValue(round($cItemFuture[$eProduct['id']]['quantity'], 2), $eProduct['unit'], short: TRUE);
+							$h .= $this->getProductQuantity($cItemFuture[$eProduct['id']] ?? new Item(), $eProduct);
+
+							foreach($eProduct['cProductSiblings'] as $eProductSibling) {
+								$h .= $this->getProductQuantity($cItemFuture[$eProductSibling['id']] ?? new Item(), $eProductSibling);
 							}
 
 						$h .= '</td>';
@@ -183,6 +199,16 @@ class StockUi {
 		$h .= '</div>';
 
 		return $h;
+
+	}
+
+	protected function getProductQuantity(Item $eItem, Product $eProduct): string {
+
+		if($eItem->empty()) {
+			return '';
+		}
+
+		return '<div class="stock-item-sibling">- '.\main\UnitUi::getValue(round($eItem['quantity'], 2), $eProduct['unit'], short: TRUE).'</div>';
 
 	}
 

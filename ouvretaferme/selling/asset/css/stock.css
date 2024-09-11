@@ -50,6 +50,15 @@ td.stock-item-comment {
 	color: var(--muted);
 }
 
+.stock-item-main:not(:last-child) {
+	margin-bottom: 0.25rem;
+}
+
+.stock-item-sibling {
+	color: var(--muted);
+	font-size: .9rem;
+}
+
 a.stock-item-button {
 	display: flex;
 	align-items: center;

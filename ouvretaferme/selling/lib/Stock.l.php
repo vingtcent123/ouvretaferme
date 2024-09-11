@@ -42,7 +42,23 @@ class StockLib extends StockCrud {
 		]);
 
 
-		return \selling\ProductLib::getByFarm($eFarm, search: $search);
+		$cProduct = \selling\ProductLib::getByFarm($eFarm, search: $search);
+
+		// Association des produits avec même nom, variété, calibre mais avec unité différente
+		$cccccProduct = Product::model()
+			->select([
+				'id',
+				'plant', 'name', 'variety', 'size', 'unit'
+			])
+			->whereFarm($eFarm)
+			->whereId('NOT IN', $cProduct)
+			->getCollection(index: ['plant', 'name', 'variety', 'size', NULL]);
+
+		foreach($cProduct as $eProduct) {
+			$eProduct['cProductSiblings'] = $cccccProduct[$eProduct['plant']['id']][$eProduct['name']][$eProduct['variety']][$eProduct['size']] ?? new \Collection();
+		}
+
+		return $cProduct;
 
 	}
 
