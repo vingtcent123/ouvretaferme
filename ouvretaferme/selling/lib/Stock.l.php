@@ -52,6 +52,7 @@ class StockLib extends StockCrud {
 			])
 			->whereFarm($eFarm)
 			->whereId('NOT IN', $cProduct)
+			->whereStock(NULL)
 			->getCollection(index: ['plant', 'name', 'variety', 'size', NULL]);
 
 		foreach($cProduct as $eProduct) {
