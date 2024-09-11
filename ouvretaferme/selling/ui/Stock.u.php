@@ -130,7 +130,7 @@ class StockUi {
 							}
 
 							foreach($eProduct['cProductSiblings'] as $eProductSibling) {
-								$h .= $this->getProductQuantity($ccItemPast[$eProductSibling['id']][$today] ?? new Item(), $eProductSibling);
+								$h .= $this->getProductQuantity($ccItemPast[$eProductSibling['id']][$today] ?? new Item(), $eProductSibling, 'sibling');
 							}
 
 						$h .= '</td>';
@@ -150,7 +150,7 @@ class StockUi {
 							}
 
 							foreach($eProduct['cProductSiblings'] as $eProductSibling) {
-								$h .= $this->getProductQuantity($ccItemPast[$eProductSibling['id']][$yesterday] ?? new Item(), $eProductSibling);
+								$h .= $this->getProductQuantity($ccItemPast[$eProductSibling['id']][$yesterday] ?? new Item(), $eProductSibling, 'sibling');
 							}
 
 						$h .= '</td>';
@@ -161,10 +161,10 @@ class StockUi {
 
 						$h .= '<td class="highlight text-center hide-sm-down">';
 
-							$h .= $this->getProductQuantity($cItemFuture[$eProduct['id']] ?? new Item(), $eProduct);
+							$h .= $this->getProductQuantity($cItemFuture[$eProduct['id']] ?? new Item(), $eProduct, 'main');
 
 							foreach($eProduct['cProductSiblings'] as $eProductSibling) {
-								$h .= $this->getProductQuantity($cItemFuture[$eProductSibling['id']] ?? new Item(), $eProductSibling);
+								$h .= $this->getProductQuantity($cItemFuture[$eProductSibling['id']] ?? new Item(), $eProductSibling, 'sibling');
 							}
 
 						$h .= '</td>';
@@ -202,13 +202,13 @@ class StockUi {
 
 	}
 
-	protected function getProductQuantity(Item $eItem, Product $eProduct): string {
+	protected function getProductQuantity(Item $eItem, Product $eProduct, string $class): string {
 
 		if($eItem->empty()) {
 			return '';
 		}
 
-		return '<div class="stock-item-sibling">- '.\main\UnitUi::getValue(round($eItem['quantity'], 2), $eProduct['unit'], short: TRUE).'</div>';
+		return '<div class="stock-item-'.$class.'">- '.\main\UnitUi::getValue(round($eItem['quantity'], 2), $eProduct['unit'], short: TRUE).'</div>';
 
 	}
 
