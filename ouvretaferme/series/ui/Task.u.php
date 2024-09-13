@@ -3440,16 +3440,25 @@ class TaskUi {
 
 						$h .= '</td>';
 						$h .= '<td>';
-							$h .= '<div class="series-field-link">';
-								if($association === FALSE) {
-									$h .= \plant\PlantUi::getVignette($cCultivation->first()['plant'], '1.5rem').' ';
-								}
+
+							if($association === FALSE) {
+
+								$h .= '<div class="task-field-vignette">';
+
+									$h .= '<div>';
+										$h .= \plant\PlantUi::getVignette($cCultivation->first()['plant'], '2rem');
+									$h .= '</div>';
+									$h .= '<div>';
+
+							}
+
+							$h .= '<div class="task-field-link">';
 								$h .= SeriesUi::link($eSeries, newTab: TRUE);
 								if($association === FALSE) {
 									$h .= ' '.\production\CropUi::start($cCultivation->first(), \Setting::get('farm\mainActions'));
 								}
 							$h .= '</div>';
-							$h .= '<div class="series-field-place">';
+							$h .= '<div class="task-field-place">';
 								if($places) {
 									$h .= $places;
 								} else {
@@ -3457,8 +3466,15 @@ class TaskUi {
 								}
 							$h .= '</div>';
 
+							if($association === FALSE) {
+
+									$h .= '</div>';
+								$h .= '</div>';
+
+							}
+
 						$h .= '</td>';
-						$h .= '<td class="series-field-area">';
+						$h .= '<td class="task-field-area">';
 							if($eSeries['area']) {
 								$h .= s("{value} m²", $eSeries['area']);
 							} else {
@@ -3481,7 +3497,7 @@ class TaskUi {
 
 								foreach($eSeries['cCultivation'] as $eCultivation) {
 
-									$label = \plant\PlantUi::getVignette($eCultivation['plant'], '1.5rem').' '.encode($eCultivation['plant']['name']);
+									$label = \plant\PlantUi::getVignette($eCultivation['plant'], '2rem').' '.encode($eCultivation['plant']['name']);
 									$label .= ' '.\production\CropUi::start($eCultivation, \Setting::get('farm\mainActions'));
 
 									$h .= '<label class="series-field-cultivation">';
@@ -3950,8 +3966,6 @@ class TaskUi {
 
 		$h .= $form->openAjax('/series/task:doUpdateHarvestCollection', ['autocomplete' => 'off']);
 
-			$h .= $this->getTasksField($form, $cTask, class: 'util-overflow-xs', displayPlace: TRUE, displayArea: TRUE, displayDensity: TRUE);
-
 			if($eTask['harvestUnit'] === NULL) {
 
 				$h .= $form->group(
@@ -3971,6 +3985,8 @@ class TaskUi {
 			}
 
 			$h .= $form->dynamicGroup($eTask, 'harvestDate');
+
+			$h .= $this->getPlantsByTasksField($form, $cTask);
 
 			if($cTask->count() > 1) {
 				$h .= $form->group(
@@ -4117,6 +4133,50 @@ class TaskUi {
 		
 		return $h;
 		
+	}
+
+	public function getPlantsByTasksField(\util\FormUi $form, \Collection $cTask, string $class = ''): string {
+
+		$h = '<table class="tr-bordered">';
+
+			$h .= '<tbody>';
+
+				foreach($cTask as $eTask) {
+					$h .= '<tr>';
+						$h .= '<td>';
+							$h .= $form->hidden('ids[]', $eTask['id']);
+							$h .= '<div class="task-field-vignette">';
+								$h .= '<div>';
+									$h .= \plant\PlantUi::getVignette($eTask['plant'], '2rem');
+								$h .= '</div>';
+								$h .= '<div>';
+									$h .= '<div class="task-field-link">';
+										$h .= encode($eTask['plant']['name']);
+									$h .= '</div>';
+									$h .= '<div class="task-field-place">';
+										if($eTask['series']->notEmpty()) {
+											$h .= s("Série {value}", SeriesUi::link($eTask['series'], newTab: TRUE));
+										} else {
+											$h .= s("Hors série");
+										}
+									$h .= '</div>';
+								$h .= '</div>';
+							$h .= '</div>';
+						$h .= '</td>';
+						$h .= '<td>';
+						$h .= '</td>';
+					$h .= '</tr>';
+				}
+
+			$h .= '</body>';
+
+		$h .= '</table>';
+
+		return $form->group(
+			s("Récolte"),
+			$h
+		);
+
 	}
 
 	public function updateCultivation(Task $eTask, \Collection $cCultivation): \Panel {

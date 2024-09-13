@@ -1170,36 +1170,6 @@ div.series-comment-title {
 	grid-template-columns: 1fr auto;
 }
 
-.series-field-search {
-	display: grid;
-	grid-template-columns: 1fr 1fr;
-	grid-column-gap: 0.5rem;
-	align-items: center;
-}
-
-.series-field-link {
-	line-height: 1.2;
-	margin-bottom: 0.2rem;
-}
-
-.series-field-place {
-	font-size: 0.8rem;
-	line-height: 1.2;
-	color: var(--muted);
-}
-
-.series-field-area {
-	text-align: right;
-}
-
-@media (max-width: 575px) {
-
-	.series-field-area {
-		display: none;
-	}
-
-}
-
 td.series-field-cultivations {
 	background: linear-gradient(150deg, rgba(0, 0, 0, 0.03) 0, rgba(255, 255, 255, 0) 75%, rgba(255, 255, 255, 0) 100%);
 	line-height: 1.3;
@@ -1212,6 +1182,7 @@ td.series-field-cultivations {
 	font-size: 0.9rem;
 	padding-top: 0.5rem;
 	padding-bottom: 0.5rem;
+	margin-right: .5rem;
 }
 
 .series-field-cultivation:not(:last-child) {

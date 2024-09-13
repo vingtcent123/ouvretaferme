@@ -1245,6 +1245,41 @@ div.task-create-from > *:nth-child(2) {
 	margin-right: 0.1rem;
 }
 
+.task-field-vignette {
+	display: grid;
+	grid-template-columns: auto 1fr;
+	grid-column-gap: .5rem;
+	align-items: center;
+}
+
+.task-field-link {
+	line-height: 1.2;
+}
+
+.task-field-place {
+	margin-top: 0.2rem;
+	font-size: 0.8rem;
+	line-height: 1.2;
+	color: var(--muted);
+}
+
+.task-field-place a {
+	color: var(--muted);
+}
+
+.task-field-area {
+	text-align: right;
+}
+
+@media (max-width: 575px) {
+
+	.task-field-area {
+		display: none;
+	}
+
+}
+
+
 /* Tabs */
 .tabs-categories {
 	display: flex;

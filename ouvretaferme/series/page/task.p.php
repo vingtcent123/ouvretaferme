@@ -452,6 +452,8 @@
 
 		\series\TaskLib::fillDistribution($data->c);
 
+		\farm\ActionLib::getMainByFarm($data->eFarm);
+
 		throw new ViewAction($data);
 
 	})
