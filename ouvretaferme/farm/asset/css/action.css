@@ -4,17 +4,6 @@ span.action-name {
 	font-size: 90%;
 }
 
-span.action-variety-name {
-	font-weight: normal;
-	font-size: 90%;
-}
-
-span.action-size-name {
-	font-size: 90%;
-	font-weight: bold;
-	font-style: italic;
-}
-
 div.action-color-circle {
 	display: inline-block;
 	width: 1rem;

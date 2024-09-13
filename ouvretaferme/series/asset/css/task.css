@@ -1279,6 +1279,15 @@ div.task-create-from > *:nth-child(2) {
 
 }
 
+span.task-variety-name {
+	font-size: 90%;
+}
+
+span.task-size-name {
+	font-size: 90%;
+	font-weight: bold;
+	font-style: italic;
+}
 
 /* Tabs */
 .tabs-categories {

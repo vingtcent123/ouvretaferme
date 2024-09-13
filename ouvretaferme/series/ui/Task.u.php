@@ -1422,7 +1422,7 @@ class TaskUi {
 		return $h;
 	}
 
-	public function getMore(Task $eTask): string {
+	public function getTaskComplement(Task $eTask) {
 
 		$h = '';
 
@@ -1431,15 +1431,22 @@ class TaskUi {
 			$eTask->expects(['harvestSize', 'variety']);
 
 			if($eTask['harvestSize']->notEmpty()) {
-				$h .= ' <span class="action-size-name">'.encode($eTask['harvestSize']['name']).'</span> ';
+				$h .= ' <span class="task-size-name">'.encode($eTask['harvestSize']['name']).'</span> ';
 			}
 
 		}
 
 		if($eTask['variety']->notEmpty()) {
-			$h .= ' <span class="action-variety-name">'.encode($eTask['variety']['name']).'</span> ';
+			$h .= ' <span class="task-variety-name">'.encode($eTask['variety']['name']).'</span> ';
 		}
 
+		return $h;
+
+	}
+
+	public function getMore(Task $eTask): string {
+
+		$h = $this->getTaskComplement($eTask);
 		$h .= (new \production\FlowUi())->getMore($eTask);
 
 		return $h;
@@ -2323,6 +2330,8 @@ class TaskUi {
 		} else {
 			$title = encode($eTask['action']['name']);
 		}
+
+		$title .= $this->getTaskComplement($eTask);
 
 		return new \Panel(
 			id: 'panel-task',
@@ -3990,7 +3999,7 @@ class TaskUi {
 
 			if($cTask->count() > 1) {
 				$h .= $form->group(
-					s("Répartition de la récolte sur les interventions"),
+					s("Répartition de la récolte sur les productions"),
 					self::getDistributionField($form, $cTask, 'plant', withHarvest: FALSE)
 				);
 			}
@@ -4135,7 +4144,7 @@ class TaskUi {
 		
 	}
 
-	public function getPlantsByTasksField(\util\FormUi $form, \Collection $cTask, string $class = ''): string {
+	public function getPlantsByTasksField(\util\FormUi $form, \Collection $cTask): string {
 
 		$h = '<table class="tr-bordered">';
 
@@ -4152,6 +4161,7 @@ class TaskUi {
 								$h .= '<div>';
 									$h .= '<div class="task-field-link">';
 										$h .= encode($eTask['plant']['name']);
+										$h .= $this->getTaskComplement($eTask);
 									$h .= '</div>';
 									$h .= '<div class="task-field-place">';
 										if($eTask['series']->notEmpty()) {
@@ -4173,7 +4183,7 @@ class TaskUi {
 		$h .= '</table>';
 
 		return $form->group(
-			s("Récolte"),
+			p("Production", "Productions", $cTask->count()),
 			$h
 		);
 
