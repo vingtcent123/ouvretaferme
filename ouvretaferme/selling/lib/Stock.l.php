@@ -109,26 +109,26 @@ class StockLib extends StockCrud {
 		self::write($eProduct, new \Sql($eStock['newValue']), $eStock['comment']);
 	}
 
-	public static function increment(Product $eProduct, Stock $eStock): void {
+	public static function increment(Product $eProduct, Stock $eStock, bool $zeroIfNegative = FALSE): void {
 
 		if($eStock['newValue'] === 0.0) {
 			return;
 		}
 
-		self::write($eProduct, new \Sql('stock + '.$eStock['newValue']), $eStock['comment']);
+		self::write($eProduct, new \Sql('stock + '.$eStock['newValue']), $eStock['comment'], $zeroIfNegative);
 
 	}
 
-	public static function decrement(Product $eProduct, Stock $eStock): void {
+	public static function decrement(Product $eProduct, Stock $eStock, bool $zeroIfNegative = FALSE): void {
 
 		if($eStock['newValue'] === 0.0) {
 			return;
 		}
 
-		self::write($eProduct, new \Sql('stock - '.$eStock['newValue']), $eStock['comment']);
+		self::write($eProduct, new \Sql('stock - '.$eStock['newValue']), $eStock['comment'], $zeroIfNegative);
 	}
 
-	protected static function write(Product $eProduct, mixed $sqlValue, ?string $comment): void {
+	protected static function write(Product $eProduct, mixed $sqlValue, ?string $comment, bool $zeroIfNegative = FALSE): void {
 
 		$eProduct->expects(['farm']);
 
@@ -143,8 +143,14 @@ class StockLib extends StockCrud {
 			->get();
 
 		if($eProductCalculated['newStock'] < 0) {
-			Stock::fail('newValue.negative');
-			return;
+
+			if($zeroIfNegative) {
+				$eProductCalculated['newStock'] = 0;
+			} else {
+				Stock::fail('newValue.negative');
+				return;
+			}
+
 		}
 
 		$eStock = new Stock([

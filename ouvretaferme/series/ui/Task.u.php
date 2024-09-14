@@ -4271,7 +4271,10 @@ class TaskUi {
 							'data-confirm' => s("Affecter automatiquement les récoltes de XXX au stock XX dans le futur ?")
 						]).\Asset::icon('star', ['class' => 'task-field-bookmark-no']).\Asset::icon('star-fill', ['class' => 'task-field-bookmark-yes']).'</label>'
 					),
-					attributes: ['for' => FALSE]
+					attributes: [
+						'wrapper' => 'stock',
+						'for' => FALSE
+					]
 				);
 
 			}

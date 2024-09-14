@@ -1360,17 +1360,32 @@ class Element extends ArrayObject {
 	 */
 	public function validate(...$tests): Element {
 
+		if(array_key_exists('onFail', $tests)) {
+
+			$onFail = $tests['onFail'];
+			unset($tests['onFail']);
+
+		} else {
+			$onFail = NULL;
+		}
+
 		if($this->empty()) {
 
-			if($this->ghost !== NULL) {
-				throw new NotExistsAction($this->getModule().' #'.$this->ghost);
+			if($onFail === NULL) {
+
+				if($this->ghost !== NULL) {
+					throw new NotExistsAction($this->getModule().' #'.$this->ghost);
+				} else {
+					throw new NotExistsAction($this->getModule());
+				}
+
 			} else {
-				throw new NotExistsAction($this->getModule());
+				$onFail(NULL);
 			}
 
 		}
 
-		$onFail = function(?string $test) {
+		$onFail ??= function(?string $test) {
 
 			if($test !== NULL and str_starts_with($test, 'can')) {
 				throw new NotAllowedAction($this, error: 'can not validate '.$test);

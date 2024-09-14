@@ -469,28 +469,56 @@
 
 		$data->c->validate('canWrite');
 
-		\series\Task::validateSameAction($data->c, \farm\ActionLib::getByFarm($data->eFarm, fqn: ACTION_RECOLTE));
+		$eAction = \farm\ActionLib::getByFarm($data->eFarm, fqn: ACTION_RECOLTE);
+
+		\series\Task::validateSameAction($data->c, $eAction);
 		\series\Task::validateSameHarvest($data->c);
 
 		\series\TaskLib::fillHarvestDates($data->c);
 		\series\TaskLib::fillDistribution($data->c);
 
-		$fw = new FailWatch();
-
 		$data->harvestDate = POST('harvestDate');
+		$data->harvestMore = POST('harvestMore', 'float', 0.0);
+
+		if($data->harvestMore === 0.0) {
+			throw new ViewAction($data);
+		}
+
+		$fw = new FailWatch();
 
 		\series\TaskLib::buildHarvests(
 			$data->c,
-			POST('harvestMore', 'float', 0.0),
+			$data->harvestMore,
 			$data->harvestDate,
 			POST('harvestUnit'),
 			POST('distribution', ['area', 'plant', 'fair'], 'fair')
 		);
 
+		$productStock = POST('stock', '?int');
+
+		if($productStock !== NULL) {
+
+			$eProductStock = \selling\ProductLib::getById($productStock)
+				->validate('acceptStock', onFail: fn() => \series\Task::fail('stock.check'))
+				->validateProperty('farm', $data->eFarm);
+
+		} else {
+			$eProductStock = new \selling\Product();
+		}
+
 		$fw->validate();
 
 		foreach($data->c as $e) {
 			\series\TaskLib::update($e, ['harvest', 'harvestUnit']);
+		}
+
+		if($eProductStock->notEmpty()) {
+
+			\selling\StockLib::increment($eProductStock, new \selling\Stock([
+				'newValue' => $data->harvestMore,
+				'comment' => $eAction['name']
+			]), zeroIfNegative: TRUE);
+
 		}
 
 		throw new ViewAction($data);

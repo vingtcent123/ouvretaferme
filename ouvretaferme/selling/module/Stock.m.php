@@ -7,9 +7,6 @@ abstract class StockElement extends \Element {
 
 	private static ?StockModel $model = NULL;
 
-	const HARVEST = 'harvest';
-	const SALE = 'sale';
-
 	public static function getSelection(): array {
 		return Stock::model()->getProperties();
 	}
@@ -44,14 +41,13 @@ class StockModel extends \ModuleModel {
 			'farm' => ['element32', 'farm\Farm', 'cast' => 'element'],
 			'newValue' => ['decimal', 'digits' => 8, 'decimal' => 2, 'min' => 0.0, 'max' => NULL, 'cast' => 'float'],
 			'delta' => ['decimal', 'digits' => 8, 'decimal' => 2, 'min' => 0.0, 'max' => NULL, 'cast' => 'float'],
-			'reason' => ['enum', [\selling\Stock::HARVEST, \selling\Stock::SALE], 'null' => TRUE, 'cast' => 'enum'],
 			'comment' => ['text8', 'min' => 1, 'max' => NULL, 'null' => TRUE, 'cast' => 'string'],
 			'createdAt' => ['datetime', 'cast' => 'string'],
 			'createdBy' => ['element32', 'user\User', 'null' => TRUE, 'cast' => 'element'],
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'product', 'farm', 'newValue', 'delta', 'reason', 'comment', 'createdAt', 'createdBy'
+			'id', 'product', 'farm', 'newValue', 'delta', 'comment', 'createdAt', 'createdBy'
 		]);
 
 		$this->propertiesToModule += [
@@ -83,20 +79,6 @@ class StockModel extends \ModuleModel {
 
 	}
 
-	public function encode(string $property, $value) {
-
-		switch($property) {
-
-			case 'reason' :
-				return ($value === NULL) ? NULL : (string)$value;
-
-			default :
-				return parent::encode($property, $value);
-
-		}
-
-	}
-
 	public function select(...$fields): StockModel {
 		return parent::select(...$fields);
 	}
@@ -123,10 +105,6 @@ class StockModel extends \ModuleModel {
 
 	public function whereDelta(...$data): StockModel {
 		return $this->where('delta', ...$data);
-	}
-
-	public function whereReason(...$data): StockModel {
-		return $this->where('reason', ...$data);
 	}
 
 	public function whereComment(...$data): StockModel {
