@@ -165,6 +165,7 @@ class ItemLib extends ItemCrud {
 			])
 			->whereFarm($eFarm)
 			->whereStatus('IN', [Sale::CONFIRMED, Sale::PREPARED, Sale::DELIVERED])
+			->whereStats(TRUE)
 			->whereDeliveredAt('IN', [currentDate(), date('Y-m-d', strtotime('yesterday'))])
 			->group(['deliveredAt', 'product'])
 			->getCollection(index: ['product', 'deliveredAt']);
@@ -180,6 +181,7 @@ class ItemLib extends ItemCrud {
 			])
 			->whereFarm($eFarm)
 			->whereStatus('IN', [Sale::CONFIRMED, Sale::PREPARED, Sale::DELIVERED])
+			->whereStats(TRUE)
 			->whereDeliveredAt('>', currentDate())
 			->group('product')
 			->getCollection(index: 'product');
