@@ -458,6 +458,8 @@
 
 		\series\TaskLib::fillDistribution($data->c);
 
+		$data->cProductStock = \selling\StockLib::getCompatibleProducts($data->c->first());
+
 		\farm\ActionLib::getMainByFarm($data->eFarm);
 
 		throw new ViewAction($data);
@@ -599,4 +601,15 @@
 		throw new ReloadAction();
 
 	});
+
+(new \series\TaskPage())
+	->read('getStockField', function($data) {
+
+		$data->e['harvestUnit'] = \series\Task::POST('harvestUnit', 'harvestUnit', fn() => throw new NotExpectedAction('Invalid unit'));
+
+		$data->cProductStock = \selling\StockLib::getCompatibleProducts($data->e);
+
+		throw new \ViewAction($data);
+
+	}, method: 'post', validate: ['canWrite'])
 ?>

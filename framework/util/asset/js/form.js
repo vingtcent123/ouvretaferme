@@ -103,37 +103,6 @@ document.delegateEventListener('click', '[data-ajax-submit]', function(e) {
 
 });
 
-/**
- * Alternative for multi-select field
- */
-
-document.delegateEventListener('click', 'a[data-action="form-selects-delete"]', function() {
-
-	const item = this.parentElement;
-	const root = item.parentElement;
-
-	if(root.childNodes.filter('.form-selects-item').length > 1) {
-		item.remove();
-	} else {
-		item.childNodes.filter('select').forEach(node => {
-			node.value = ''
-		});
-	}
-
-});
-
-
-document.delegateEventListener('click', 'a[data-action="form-selects-add"]', function() {
-
-	const root = this.parentElement.parentElement;
-
-	let newItem = root.childNodes.filter('.form-selects-item')[0].cloneNode(true);
-	newItem.qsa('option', node => node.removeAttribute('selected'));
-
-	root.insertAdjacentElement('beforeend', newItem);
-
-});
-
 document.delegateEventListener('input', 'input[data-type="fqn"]', function(e) {
 
 	if(this.value.match(/^[a-z0-9\-]*$/) === null) {
@@ -481,6 +450,23 @@ class ColorField {
 		wrapper.qs('input[type="color"]').value = emptyColor;
 		hiddenField.value = (field.checked ? '' : emptyColor);
 		hiddenField.dispatchEvent(new CustomEvent("input"));
+
+	}
+
+}
+
+class SelectDropdownField {
+
+	static select(target) {
+
+		const head = target.firstParent('.form-dropdown-list').previousSibling.qs('.form-dropdown-head');
+
+		const selectedItem = target.firstParent('.dropdown-item');
+		head.innerHTML = selectedItem.qs('.form-dropdown-content').innerHTML;
+
+		const items = target.firstParent('.dropdown-list');
+		items.qs('.dropdown-item.selected', item => item.classList.remove('selected'));
+		selectedItem.classList.add('selected');
 
 	}
 

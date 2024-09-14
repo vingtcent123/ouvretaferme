@@ -141,7 +141,7 @@ new AdaptativeView('update', function($data, PanelTemplate $t) {
 });
 
 new AdaptativeView('updateHarvestCollection', function($data, PanelTemplate $t) {
-	return (new \series\TaskUi())->updateHarvestCollection($data->c);
+	return (new \series\TaskUi())->updateHarvestCollection($data->c, $data->cProductStock);
 });
 
 new AdaptativeView('updatePlannedCollection', function($data, PanelTemplate $t) {
@@ -202,6 +202,15 @@ new JsonView('getCreateCollectionFields', function($data, AjaxTemplate $t) {
 		new \util\FormUi(),
 		$data->eTask
 	) : '');
+
+});
+
+new JsonView('getStockField', function($data, AjaxTemplate $t) {
+
+	$t->qs('#task-harvest-stock')->outerHtml((new \series\TaskUi())->getStockField(
+		new \util\FormUi(),
+		$data->cProductStock
+	));
 
 });
 

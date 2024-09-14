@@ -4007,7 +4007,7 @@ class TaskUi {
 
 	}
 
-	public function updateHarvestCollection(\Collection $cTask): \Panel {
+	public function updateHarvestCollection(\Collection $cTask, \Collection $cProductStock): \Panel {
 
 		$form = new \util\FormUi();
 
@@ -4038,20 +4038,8 @@ class TaskUi {
 			$h .= $form->dynamicGroup($eTask, 'harvestDate');
 
 			$h .= $this->getPlantsByTasksField($form, $cTask);
-			/*
-			$h .= $form->group(
-				s("Ajouter au stock"),
-				$form->inputGroup(
-					$form->select('stock['.$eTask['id'].']', [
-						12 => s("Betterave / Chioggia calibre 14 - 21 cm")
-					]).
-					'<label class="task-field-bookmark input-group-addon" title="'.s("Mémoriser ce choix pour les futures récoltes").'">'.$form->inputCheckbox('stockRemember['.$eTask['id'].']', attributes: [
-						'data-confirm' => s("Affecter automatiquement les récoltes de XXX au stock XX dans le futur ?")
-					]).\Asset::icon('bookmark-plus', ['class' => 'task-field-bookmark-no']).\Asset::icon('bookmark-check-fill', ['class' => 'task-field-bookmark-yes']).'</label>'
-				),
-				['']
-			);
-*/
+			$h .= $this->getStockField($form, $cProductStock);
+
 			if($cTask->count() > 1) {
 				$h .= $form->group(
 					s("Répartition de la récolte sur les productions"),
@@ -4201,16 +4189,21 @@ class TaskUi {
 
 	public function getPlantsByTasksField(\util\FormUi $form, \Collection $cTask): string {
 
-		$h = '<table class="tr-bordered stick-xs">';
+		$h = '<table class="tr-bordered stick-xs mb-0">';
 
 			$h .= '<tbody>';
 
 				foreach($cTask as $eTask) {
 					$h .= '<tr>';
-						$h .= '<td class="td-checkbox">';
-							$h .= $form->checkbox('ids[]', $eTask['id'], ['checked' => TRUE]);
-						$h .= '</td>';
+						if($cTask->count() > 1) {
+							$h .= '<td class="td-checkbox">';
+								$h .= $form->checkbox('ids[]', $eTask['id'], ['checked' => TRUE]);
+							$h .= '</td>';
+						}
 						$h .= '<td>';
+							if($cTask->count() === 1) {
+								$h .= $form->hidden('ids[]', $eTask['id']);
+							}
 							$h .= '<div class="task-field-vignette">';
 								$h .= '<div>';
 									$h .= \plant\PlantUi::getVignette($eTask['plant'], '2rem');
@@ -4242,6 +4235,50 @@ class TaskUi {
 			$h,
 			attributes: ['for' => FALSE]
 		);
+
+	}
+
+	public function getStockField(\util\FormUi $form, \Collection $cProductStock): string {
+
+		$h = '<div id="task-harvest-stock">';
+
+			if($cProductStock->notEmpty()) {
+
+				$values = [];
+
+				foreach($cProductStock as $eProductStock) {
+
+					$name = \selling\ProductUi::getVignette($eProductStock, '2rem').'  ';
+					$name .= encode($eProductStock['name']).' ('.\main\UnitUi::getSingular($eProductStock['unit']).')';
+
+					if($eProductStock['variety'] !== NULL) {
+						$name .= ' / '.encode($eProductStock['variety']);
+					}
+
+					if($eProductStock['size'] !== NULL) {
+						$name .= ' '.s("calibre {value}", encode($eProductStock['size']));
+					}
+
+					$values[$eProductStock['id']] = $name;
+
+				}
+
+				$h .= $form->group(
+					s("Ajouter au stock"),
+					$form->inputGroup(
+						$form->selectDropdown('stock', $values, attributes: ['placeholder' => s("Pas de mise en stock"), 'class' => 'form-control-lg']).
+						'<label class="task-field-bookmark input-group-addon" title="'.s("Mémoriser ce choix pour les futures récoltes").'">'.$form->inputCheckbox('stockRemember', attributes: [
+							'data-confirm' => s("Affecter automatiquement les récoltes de XXX au stock XX dans le futur ?")
+						]).\Asset::icon('star', ['class' => 'task-field-bookmark-no']).\Asset::icon('star-fill', ['class' => 'task-field-bookmark-yes']).'</label>'
+					),
+					attributes: ['for' => FALSE]
+				);
+
+			}
+
+			$h .= '</div>';
+
+			return $h;
 
 	}
 
@@ -4737,7 +4774,10 @@ class TaskUi {
 
 			case 'harvestUnit' :
 				$d->field = 'select';
-				$d->attributes = ['mandatory' => TRUE];
+				$d->attributes = [
+					'mandatory' => TRUE,
+					'onchange' => fn(\util\FormUi $form, Task $e) => 'Task.changeHarvestUnit('.$e['id'].', this)'
+				];
 				$d->values = \main\UnitUi::getBasicList(noWrap: FALSE);
 				$d->default = function(Task $e) {
 					if($e['cultivation']->notEmpty()) {

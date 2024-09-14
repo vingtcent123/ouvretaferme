@@ -12,13 +12,6 @@ class FormUi {
 	protected ?string $formId = NULL;
 	protected ?bool $formDraft = NULL;
 
-	/**
-	 * Fields and button size
-	 *
-	 * @var string Can be 'sm', 'lg', ...
-	 */
-	protected ?string $size = NULL;
-
 	protected array $options = [];
 
 	protected ?string $id = NULL;
@@ -132,29 +125,6 @@ class FormUi {
 
 		return $h;
 
-	}
-
-	/**
-	 * Change fields size in the form
-	 *
-	 * @param string $size
-	 */
-	public function setSize(string $size): string {
-		$this->size = $size;
-	}
-
-	/**
-	 * Get size class for a field
-	 *
-	 * @param string $field 'btn' or 'input'
-	 * @return string
-	 */
-	protected function getSize(string $field): string {
-		if($this->size) {
-			return $field.'-'.$this->size;
-		} else {
-			return '';
-		}
 	}
 
 	/**
@@ -830,7 +800,10 @@ class FormUi {
 					$label = $optionContent;
 				}
 
-				$checked = in_array($optionValue, $formatSelectedValues, TRUE);
+				$checked = (
+					$formatSelectedValues !== NULL and
+					in_array($optionValue, $formatSelectedValues, TRUE)
+				);
 
 				$h .= '<label>'.$this->inputCheckbox($name, $optionValue, ['checked' => $checked] + call_user_func($callbackCheckboxAttributes, $option, $key)).' '.$label.'</label>';
 
@@ -1479,12 +1452,6 @@ class FormUi {
 
 		$attributes['class'] = 'form-control '.($attributes['class'] ?? '');
 
-		$size = $this->getSize('form-control');
-
-		if($size) {
-			$attributes['class'] .= ' '.$size;
-		}
-
 		$this->setDefaultAttributes($attributes, $name);
 
 		$select = "";
@@ -1493,7 +1460,7 @@ class FormUi {
 
 			$select .= "<option value=''";
 
-			if(in_array(NULL, $selection, TRUE)) {
+			if($selection === NULL) {
 				$select .= " selected='selected'";
 			}
 
@@ -1514,7 +1481,10 @@ class FormUi {
 
 			$select .= "<option value=\"".encode($optionValue)."\"";
 
-			if(isset($optionAttributes['disabled']) === FALSE) {
+			if(
+				isset($optionAttributes['disabled']) === FALSE and
+				$selection !== NULL
+			) {
 
 				foreach($selection as $valueCheck) {
 					if((string)$valueCheck === (string)$optionValue) {
@@ -1540,54 +1510,105 @@ class FormUi {
 	}
 
 	/**
-	 * Display a list of selects field for multiple choice
-	 * This is a user-friendly alternative to <select multiple="multiple">
+	 * Display a select field for elements
 	 *
 	 * @param string $name
 	 * @param array $values Possible values
 	 * @param mixed $selection Default selection
 	 * @param array $attributes Additional attributes ('multiple' for multiple select, with callback for content, default encode)
 	 */
-	public function selects(string $name, $values, mixed $selection = NULL, array $attributes = []): string {
+	public function selectDropdown(?string $name, array $values, mixed $selection = NULL, array $attributes = []): string {
 
-		$selection = $this->getSelectedValue($selection, TRUE);
+		if(count($values) === 0) {
+			throw new \Exception('Missing values');
+		}
 
-		$h = '<div class="form-selects">';
+		$mandatory = !empty($attributes['mandatory']);
+		unset($attributes['mandatory']);
 
-			if($selection) {
+		if($selection === NULL) {
 
-				foreach($selection as $value) {
-					$h .= '<div class="form-selects-item input-group">';
-						$h .= $this->select($name, $values, $value, $attributes);
-						$h .= '<a data-action="form-selects-delete" class="input-group-addon">';
-							$h .= \Asset::icon('trash-fill');
-						$h .= '</a>';
-					$h .= '</div>';
+			if($mandatory) {
+				$selection = array_key_first($values);
+			}
+
+		} else {
+			// Selection can be an element
+			$selection = $this->getInputValue($selection);
+		}
+
+		$attributes['class'] = 'form-control form-dropdown-toggle '.($attributes['class'] ?? '');
+
+		$this->setDefaultAttributes($attributes, $name);
+
+		$placeholder = $attributes['placeholder'] ?? s("< Choisir >");
+
+		unset($attributes['mandatory']);
+
+		$select = '<a data-dropdown="bottom-start" '.attrs($attributes).'>';
+			$select .= '<div class="form-dropdown-title">';
+				$select .= '<div class="form-dropdown-head">';
+					if($selection === NULL) {
+						$select .= $placeholder;
+					} else {
+						$select .= $values[$selection];
+					}
+				$select .= '</div>';
+				$select .= \Asset::icon('chevron-down');
+			$select .= '</div>';
+		$select .= '</a>';
+		$select .= '<div class="dropdown-list form-dropdown-list">';
+
+		if($mandatory === FALSE) {
+
+			$selected = ($selection === NULL);
+
+			$select .= '<label class="dropdown-item form-dropdown-placeholder '.($selected ? 'selected' : '').'">';
+				$select .= $this->inputRadio('stock', '', selectedValue: $selected ? '' : NULL, attributes: ['onclick' => 'SelectDropdownField.select(this);']);
+				$select .= '<div class="form-dropdown-content">'.$placeholder.'</div>';
+			$select .= '</label>';
+
+		}
+
+		foreach($values as $key => $value) {
+
+			[$optionValue, $optionContent, $optionAttributes] = $this->getOptionValue($key, $value);
+
+			$class = 'dropdown-item';
+			$selected = FALSE;
+
+			if(isset($optionAttributes['disabled']) === FALSE) {
+
+				if(
+					$selection !== NULL and
+					(string)$selection === (string)$optionValue
+				) {
+					$class .= ' selected';
+					$selected = TRUE;
 				}
 
 			} else {
-
-				$h .= '<div class="form-selects-item input-group">';
-					$h .= $this->select($name, $values, NULL, $attributes);
-					$h .= '<a data-action="form-selects-delete" class="input-group-addon">';
-						$h .= \Asset::icon('trash-fill');
-					$h .= '</a>';
-				$h .= '</div>';
-
+				$class .= ' disabled';
 			}
 
-			$h .= '<div class="form-selects-add">';
-				$h .= \Asset::icon('plus-circle').' ';
-				$h .= '<a data-action="form-selects-add">'.($attributes['labelAdd'] ?? s("Ajouter")).'</a>';
-			$h .= '</div>';
+			$select .= '<label class="'.$class.'" '.attrs($optionAttributes).'>';
+				$select .= $this->inputRadio('stock', $optionValue, selectedValue: $selected ? $optionValue : NULL, attributes: ['onclick' => 'SelectDropdownField.select(this);']);
+				$select .= '<div class="form-dropdown-content">'.$optionContent.'</div>';
+			$select .= '</label>';
 
-		$h .= '</div>';
+		}
 
-		return $h;
+		$select .= "</div>";
+
+		return $select;
 
 	}
 
-	private function getSelectedValue($selection, bool $multiple): array {
+	private function getSelectedValue(mixed $selection, bool $multiple): ?array {
+
+		if($selection === NULL) {
+			return NULL;
+		}
 
 		if($selection instanceof \Collection) {
 			if($multiple) {
@@ -1899,7 +1920,7 @@ class FormUi {
 	 */
 	public function button($value = NULL, array $attributes = []): string {
 
-		$attributes['class'] = ($attributes['class'] ?? 'btn '.$this->getSize('btn').' btn-primary');
+		$attributes['class'] = ($attributes['class'] ?? 'btn btn-primary');
 		$attributes['type'] = ($attributes['type'] ?? 'button');
 
 		$this->setDefaultAttributes($attributes);
@@ -1977,12 +1998,6 @@ class FormUi {
 
 		$attributes['type'] = $type;
 		$attributes['value'] = $this->getInputValue($value);
-
-		$size = $this->getSize('form-control');
-
-		if($size) {
-			$attributes['class'] = ($attributes['class'] ?? NULL).' '.$size;
-		}
 
 		$inputAttributes = $attributes;
 

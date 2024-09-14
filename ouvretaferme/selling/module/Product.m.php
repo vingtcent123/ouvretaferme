@@ -91,7 +91,8 @@ class ProductModel extends \ModuleModel {
 		];
 
 		$this->indexConstraints = array_merge($this->indexConstraints, [
-			['farm']
+			['farm'],
+			['plant']
 		]);
 
 	}

@@ -297,6 +297,18 @@ document.delegateEventListener('autocompleteSelect', '#task-create-plant', funct
 
 class Task {
 
+	static changeHarvestUnit(task, target) {
+
+		new Ajax.Query(target)
+			.body({
+				id: task,
+				harvestUnit: target.value
+			})
+			.url('/series/task:getStockField')
+			.fetch();
+
+	}
+
 	static updateCultivationCheckbox(target) {
 
 		const form = target.firstParent('form');

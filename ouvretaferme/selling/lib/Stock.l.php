@@ -63,6 +63,48 @@ class StockLib extends StockCrud {
 
 	}
 
+	public static function getCompatibleProducts(\series\Task $eTask): \Collection {
+
+		$eTask->expects([
+			'cultivation' => ['mainUnit'],
+			'plant', 'variety', 'harvestUnit', 'harvestSize'
+		]);
+
+		$unit = $eTask['harvestUnit'] ?? $eTask['cultivation']['mainUnit'];
+
+		if(
+			$eTask['plant']->empty() or
+			$unit === NULL
+		) {
+			return new \Collection();
+		}
+
+		if($eTask['variety']->notEmpty()) {
+			$eTask['variety']->expects(['name']);
+		}
+
+		if($eTask['harvestSize']->notEmpty()) {
+			$eTask['harvestSize']->expects(['name']);
+		}
+
+		return Product::model()
+			->select([
+				'id', 'name', 'unit', 'variety', 'size',
+				'vignette'
+			])
+			->wherePlant($eTask['plant'])
+			->whereUnit($unit)
+			->whereStock('!=', NULL)
+			->sort(new \Sql('
+				'.($eTask['variety']->notEmpty() ? 'IF(variety = "'.Product::model()->format($eTask['variety']['name']).'", 1, 0)' : '0').'
+					+ '.($eTask['harvestSize']->notEmpty() ? 'IF(size = "'.Product::model()->format($eTask['harvestSize']['name']).'", 1, 0)' : '0   ').'
+					DESC,
+				name ASC
+			'))
+			->getCollection();
+
+	}
+
 	public static function set(Product $eProduct, Stock $eStock): void {
 		self::write($eProduct, new \Sql($eStock['newValue']), $eStock['comment']);
 	}

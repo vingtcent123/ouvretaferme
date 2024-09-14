@@ -385,6 +385,14 @@ input[type=checkbox], input[type=radio] {
 	transition: border-color 0.25s, box-shadow 0.25s;
 }
 
+.form-control-xl {
+	line-height: 2.5;
+}
+
+.form-control-lg {
+	line-height: 2;
+}
+
 .form-control-block {
 	padding: 1rem;
 }
@@ -432,6 +440,10 @@ div.input-group {
 	flex-wrap: wrap;
 	align-items: stretch;
 	width: 100%;
+}
+
+div.input-group-lg .form-control {
+	line-height: 2;
 }
 
 div.form-control-field div.input-group {
@@ -2218,7 +2230,7 @@ body[data-touch="no"] .dropdown-list {
 }
 
 body[data-touch="no"] .dropdown-list.dropdown-list-open {
-   box-shadow: 0 0 2rem rgb(0 0 0 / 20%);
+   box-shadow: 0 0 1rem rgb(0 0 0 / 20%);
 }
 
 body[data-touch="yes"] .dropdown-list.dropdown-list-open {

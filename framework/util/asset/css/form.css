@@ -197,6 +197,50 @@ div.form-postcode-city {
 	column-gap: 1rem;
 }
 
+.form-dropdown-toggle:hover {
+	text-decoration: none;
+}
+
+.form-dropdown-title {
+	display: flex;
+	column-gap: 0.5rem;
+	justify-content: space-between;
+	align-items: center;
+}
+
+.form-dropdown-list {
+	background: white !important;
+	border: 1px solid #0002;
+	border-radius: var(--radius);
+}
+
+.form-dropdown-list input {
+	display: none;
+}
+
+.form-dropdown-list .dropdown-item {
+	color: var(--text);
+}
+
+.form-dropdown-list .dropdown-item.selected {
+	background-color: var(--background) !important;
+}
+
+.form-dropdown-list .dropdown-item:hover {
+	background-color: var(--secondary) !important;
+	color: white;
+	cursor: pointer;
+}
+
+.form-dropdown-list .dropdown-item.disabled {
+	pointer-events: none;
+	opacity: 0.5;
+}
+
+.form-dropdown-placeholder {
+	color: var(--border);
+}
+
 div.form-asterisk {
 	display: inline-block;
 	font-size: 0.8em;
@@ -293,10 +337,6 @@ div.form-group.form-group-nested > .form-control-label {
 		font-weight: bold;
 	}
 
-}
-
-.form-selects-item {
-	margin-bottom: 0.5rem;
 }
 
 .form-buttons {

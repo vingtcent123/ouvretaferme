@@ -231,7 +231,8 @@ Product:
   createdAt: datetime = SPECIAL(now)
   status: enum(ACTIVE, INACTIVE) = ACTIVE
   INDEX: [
-    ["farm"]
+    ["farm"],
+    ["plant"]
   ]
 
 Sale:
