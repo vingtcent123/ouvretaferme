@@ -4259,6 +4259,10 @@ class TaskUi {
 						$name .= ' '.s("calibre {value}", encode($eProductStock['size']));
 					}
 
+					if($eProductStock['stock'] > 0) {
+						$name .= ' <small class="color-muted">'.s("(actuellement {value})", \main\UnitUi::getValue($eProductStock['stock'], $eProductStock['unit'], short: TRUE)).'</small>';
+					}
+
 					$values[$eProductStock['id']] = $name;
 
 				}

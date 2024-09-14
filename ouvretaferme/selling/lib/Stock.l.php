@@ -90,7 +90,7 @@ class StockLib extends StockCrud {
 		return Product::model()
 			->select([
 				'id', 'name', 'unit', 'variety', 'size',
-				'vignette'
+				'vignette', 'stock'
 			])
 			->wherePlant($eTask['plant'])
 			->whereUnit($unit)
