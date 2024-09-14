@@ -1172,9 +1172,7 @@ class TaskUi {
 		$filters = [
 			'data-filter-action' => $eTask['action']['id'],
 			'data-filter-plant' => ($eTask['plant']->empty() ? '' : $eTask['plant']['id']),
-			'data-filter-variety' => ($eTask['variety']->empty() ? '' : $eTask['variety']['id']),
-			'data-filter-harvest-size' => ($eTask['harvestSize']->empty() ? '' : $eTask['harvestSize']['id']),
-			'data-filter-harvest-unit' => $eTask['harvestUnit'] ?? '',
+			'data-filter-harvest' => $this->getBatchHarvestString($eTask),
 			'data-filter-user' => implode(' ', $users)
 		];
 
@@ -1261,6 +1259,18 @@ class TaskUi {
 		$h .= '</div>';
 
 		return $h;
+
+	}
+
+	protected function getBatchHarvestString(Task $eTask): string {
+
+		$eTask->expects(['plant', 'variety', 'harvestSize', 'harvestUnit']);
+
+		return
+			($eTask['plant']->empty() ? '' : $eTask['plant']['id'])
+			.'-'.($eTask['variety']->empty() ? '' : $eTask['variety']['id'])
+			.'-'.($eTask['harvestSize']->empty() ? '' : $eTask['harvestSize']['id'])
+			.'-'.($eTask['harvestUnit'] ?? '');
 
 	}
 
@@ -1567,9 +1577,7 @@ class TaskUi {
 						$filters = [
 							'data-filter-action' => $eTask['action']['id'],
 							'data-filter-plant' => ($eTask['plant']->empty() ? '' : $eTask['plant']['id']),
-							'data-filter-variety' => ($eTask['variety']->empty() ? '' : $eTask['variety']['id']),
-							'data-filter-harvest-size' => ($eTask['harvestSize']->empty() ? '' : $eTask['harvestSize']['id']),
-							'data-filter-harvest-unit' => $eTask['harvestUnit'] ?? ''
+							'data-filter-harvest' => $this->getBatchHarvestString($eTask)
 						];
 
 						$h = '<label class="flow-timeline-select batch-item" '.attrs($filters).'>';
@@ -3330,7 +3338,7 @@ class TaskUi {
 
 	public function createFromOneSeries(Task $eTask, Series $eSeries, \Collection $cToolAvailable): \Panel {
 
-		$panel = $this->createFromSeries($eTask, $cToolAvailable, function(\util\FormUi $form) use ($eTask, $eSeries) {
+		$panel = $this->createFromSeries($eTask, $cToolAvailable, FALSE, function(\util\FormUi $form) use ($eTask, $eSeries) {
 			return $form->hidden('series[]', $eSeries['id']);
 		});
 
@@ -3342,13 +3350,16 @@ class TaskUi {
 
 	public function createFromAllSeries(Task $eTask, \Collection $cSeries, \Collection $cToolAvailable): \Panel {
 
-		return $this->createFromSeries($eTask, $cToolAvailable, function(\util\FormUi $form) use ($eTask, $cSeries) {
+		return $this->createFromSeries($eTask, $cToolAvailable, TRUE, function(\util\FormUi $form) use ($eTask, $cSeries) {
 
 			$series = '<div id="task-create-plant">';
 				$series .= $form->dynamicField($eTask, 'plantsFilter');
 			$series .= '</div>';
 
-			$series .= $this->getSeriesListField($form, $eTask, $cSeries);
+			// Dans le cas des récoltes, on affiche les séries uniquement si on a filtré sur une espèce
+			if($this->canDisplayMultipleSeries($eTask)) {
+				$series .= $this->getSeriesListField($form, $eTask, $cSeries);
+			}
 
 			return $this->getCreateSeasonGroup($form, $eTask).$form->group(
 				p("Série", "Séries", $cSeries->count()),
@@ -3357,6 +3368,17 @@ class TaskUi {
 			);
 
 		});
+
+	}
+
+	protected function canDisplayMultipleSeries(Task $eTask): bool {
+
+		// Dans le cas des récoltes, on affiche les séries uniquement si on a filtré sur une espèce
+		return (
+			$eTask['action']->empty() or
+			$eTask['action']['fqn'] !== ACTION_RECOLTE or
+			$eTask['plant']->notEmpty()
+		);
 
 	}
 
@@ -3435,7 +3457,7 @@ class TaskUi {
 
 							$h .= '<label>';
 								$h .= $form->inputCheckbox('series[]', $eSeries['id'], [
-									'data-cultivations' => $cCultivation->count(),
+									'data-filter-cultivations' => $cCultivation->count(),
 									'oninput' => 'Task.selectSeriesCheckbox(this)',
 									'onrender' => $checked ? 'Task.selectSeriesCheckbox(this)' : NULL,
 									 $checked ? 'checked' : NULL,
@@ -3444,7 +3466,9 @@ class TaskUi {
 							$h .= '</label>';
 
 							if($association === FALSE) {
-								$h .= $form->hidden('cultivation['.$eSeries['id'].']', $eSeries['cCultivation']->first()['id']);
+								$h .= $form->hidden('cultivation['.$eSeries['id'].']', $eSeries['cCultivation']->first()['id'], [
+									'data-plant' => $cCultivation->first()['plant']['id']
+								]);
 							}
 
 						$h .= '</td>';
@@ -3533,7 +3557,7 @@ class TaskUi {
 
 	}
 
-	public function createFromSeries(Task $eTask, \Collection $cToolAvailable, \Closure $series): \Panel {
+	public function createFromSeries(Task $eTask, \Collection $cToolAvailable, bool $multipleSeries, \Closure $series): \Panel {
 
 		$eTask->expects(['farm', 'action', 'plannedWeek', 'doneWeek', 'status']);
 
@@ -3548,29 +3572,36 @@ class TaskUi {
 
 			$h .= $series->call($this, $form);
 
-			$h .= $this->getCreateActionGroup($form, $eTask);
+			if(
+				$multipleSeries === FALSE or
+				$this->canDisplayMultipleSeries($eTask)
+			) {
 
-			$h .= '<div id="task-create-variety">';
-				$h .= $this->getVarietyGroup($form, $eTask, $eTask['cVariety'], $eTask['varietiesIntersect']);
-			$h .= '</div>';
+				$h .= $this->getCreateActionGroup($form, $eTask);
 
-			$h .= '<div id="task-create-size">';
-				if($eTask['cSize']->notEmpty()) {
-					$h .= $this->getHarvestSizeField($form, $eTask);
-				}
-			$h .= '</div>';
+				$h .= '<div id="task-create-variety">';
+					$h .= $this->getVarietyGroup($form, $eTask, $eTask['cVariety'], $eTask['varietiesIntersect']);
+				$h .= '</div>';
 
-			$h .= '<div id="task-create-fertilizer">';
-				$h .= $this->getFertilizerField($form, $eTask);
-			$h .= '</div>';
+				$h .= '<div id="task-create-size">';
+					if($eTask['cSize']->notEmpty()) {
+						$h .= $this->getHarvestSizeField($form, $eTask);
+					}
+				$h .= '</div>';
 
-			$h .= $this->getTimeGroup($form, $eTask);
-			$h .= $form->dynamicGroup($eTask, 'description');
-			$h .= $this->getToolsGroup($form, $eTask, $cToolAvailable);
+				$h .= '<div id="task-create-fertilizer">';
+					$h .= $this->getFertilizerField($form, $eTask);
+				$h .= '</div>';
 
-			$h .= $form->group(
-				content: $form->submit(s("Ajouter l'intervention"))
-			);
+				$h .= $this->getTimeGroup($form, $eTask);
+				$h .= $form->dynamicGroup($eTask, 'description');
+				$h .= $this->getToolsGroup($form, $eTask, $cToolAvailable);
+
+				$h .= $form->group(
+					content: $form->submit(s("Ajouter l'intervention"))
+				);
+
+			}
 
 		$h .= $form->close();
 
@@ -3793,14 +3824,25 @@ class TaskUi {
 	}
 
 	protected function getCreateTitle(Task $eTask): string {
+		
+		$eTask->expects(['action']);
+		
+		if(
+			$eTask['action']->empty() or
+			$eTask['action']['fqn'] !== ACTION_RECOLTE
+		) {
 
-		switch($eTask['status']) {
+			return match($eTask['status']) {
+				Task::TODO => s("Planifier une future intervention"),
+				Task::DONE => s("Consigner une intervention")
+			};
+			
+		} else {
 
-			case Task::TODO :
-				return s("Planifier une future intervention");
-
-			case Task::DONE :
-				return s("Consigner une intervention");
+			return match($eTask['status']) {
+				Task::TODO => s("Planifier une future récolte"),
+				Task::DONE => s("Consigner une récolte")
+			};
 
 		}
 
@@ -4681,7 +4723,7 @@ class TaskUi {
 				};
 				$d->autocompleteDefault = fn(Task $e) => $e['plant'] ?? $e->expects(['plant']);
 				$d->autocompleteDispatch = '#task-create-plant';
-				$d->placeholder = s("Filtrer les séries sur une espèce cultivée...");
+				$d->placeholder = s("Filtrer sur une espèce cultivée...");
 				$d->prepend ??= \Asset::icon('search');
 
 				(new \plant\PlantUi())->query($d);

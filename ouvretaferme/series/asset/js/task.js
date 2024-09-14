@@ -303,18 +303,29 @@ class Task {
 
 		const body = new URLSearchParams();
 
-		let sharedSeriesChecked = false;
+		let harvestDisable = false;
+		let harvestString = null;
 
 		const seriesChecked = form.qsa('input[name="series[]"]:checked', (seriesInput) => {
 
 			const series = seriesInput.value;
 
 			form.qs('input[type="radio"][name="cultivation['+ series +']"]:checked, input[type="hidden"][name="cultivation['+ series +']"]', cultivationInput => {
-				if(cultivationInput.value) {
-					body.append('cultivations[]', cultivationInput.value)
+
+				if(cultivationInput.dataset.plant === undefined) {
+					harvestDisable = true;
 				} else {
-					sharedSeriesChecked = true;
+
+					if(harvestString === null) {
+						harvestString = cultivationInput.dataset.plant;
+					} else if(harvestString !== cultivationInput.dataset.plant) {
+						harvestDisable = true;
+					}
+
+					body.append('cultivations[]', cultivationInput.value);
+
 				}
+
 			});
 
 		});
@@ -354,7 +365,7 @@ class Task {
 
 			if(actionRadioRecolte) {
 				// Pas de récolte possible si intervention partagée sélectionnée
-				actionRadioRecolte.disabled = sharedSeriesChecked;
+				actionRadioRecolte.disabled = harvestDisable;
 			}
 
 		} else {
@@ -422,7 +433,7 @@ class Task {
 
 				fieldSeries.checked = false;
 
-				if(fieldSeries.dataset.cultivations > 1) {
+				if(fieldSeries.dataset.filterCultivations > 1) {
 
 					fieldSeries.disabled = true;
 
@@ -443,7 +454,7 @@ class Task {
 
 			table.qsa('[name^="series"]', fieldSeries => {
 
-				if(fieldSeries.dataset.cultivations > 1) {
+				if(fieldSeries.dataset.filterCultivations > 1) {
 
 					table.qs(
 						'input[type="radio"][name="cultivation['+ fieldSeries.value +']"]'+ (plant ? '[data-plant="'+ plant +'"]' : ':not([data-plant])'),
@@ -756,24 +767,23 @@ class Task {
 			} else {
 
 				// Récolte = même plante, même variété
-				let plantVariety = null;
-				let hide = false;
+				let harvestString = null;
+				let harvestHide = false;
 
 				selection.forEach((field) => {
 
 					const task = field.firstParent('.batch-item');
-					const taskPlantVariety = task.dataset.filterPlant +'-'+ task.dataset.filterVariety +'-'+ task.dataset.filterHarvestUnit +'-'+ task.dataset.filterHarvestSize;
 
-					if(plantVariety === null) {
-						plantVariety = taskPlantVariety;
-					} else if(plantVariety !== taskPlantVariety) {
-						hide = true;
+					if(harvestString === null) {
+						harvestString = task.dataset.filterHarvest;
+					} else if(harvestString !== task.dataset.filterHarvest) {
+						harvestHide = true;
 					}
 
 
 				});
 
-				if(hide) {
+				if(harvestHide) {
 					qsa(".batch-menu-harvest", button => button.hide());
 				} else {
 					qsa(".batch-menu-harvest", button => button.removeHide());

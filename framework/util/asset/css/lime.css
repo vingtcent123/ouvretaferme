@@ -741,8 +741,12 @@ table th,
 }
 
 thead .td-checkbox {
-	padding-bottom: 0.5rem;
 	background-color: transparent;
+}
+
+thead .td-checkbox > label {
+	padding-top: 0.5rem;
+	padding-bottom: 0.5rem;
 }
 
 tbody .td-checkbox > label {
