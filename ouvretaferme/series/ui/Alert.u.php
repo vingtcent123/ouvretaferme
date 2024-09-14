@@ -31,10 +31,12 @@ class AlertUi {
 			'Repeat::stop.future' => s("La fin de répétition de l'intervention doit être dans le futur"),
 			'Repeat::stop.series' => s("Vous devez indiquer une fin de répétition qui corresponde à l'année de la saison de la série, l'année précédente ou l'année suivante"),
 
+			'Task::actions.check' => s("Merci de sélectionner des interventions identiques"),
 			'Task::cultivation.check' => s("Vous n'avez pas saisi de production pour cette intervention"),
 			'Task::plannedWeek.check' => s("Merci d'indiquer une semaine cohérente"),
 			'Task::harvest.check' => s("La récolte ne peut pas être négative"),
 			'Task::harvestMore.negative' => s("La récolte totale ne peut pas être négative sur une intervention"),
+			'Task::harvestConsistency.check' => s("Vous ne pouvez saisir de récoltes partagées que pour des productions identiques"),
 			'Task::harvestDates.check' => s("Merci de saisir une date de récolte valable"),
 			'Task::harvestDates.negative' => s("La récolte ne peut pas être négative sur une date donnée"),
 			'Task::tasks.check' => s("Merci de sélectionner au moins une intervention"),

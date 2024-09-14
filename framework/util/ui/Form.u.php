@@ -1465,7 +1465,7 @@ class FormUi {
 	 * @param mixed $selection Default selection
 	 * @param array $attributes Additional attributes ('multiple' for multiple select, with callback for content, default encode)
 	 */
-	public function select(?string $name, $values, mixed $selection = NULL, array $attributes = []): string {
+	public function select(?string $name, mixed $values, mixed $selection = NULL, array $attributes = []): string {
 
 		// Selection can be an element
 		$selection = $this->getSelectedValue($selection, !empty($attributes['multiple']));

@@ -726,7 +726,7 @@ table th,
 }
 
 .td-checkbox {
-	background-color: rgba(0, 0, 0, 0.03);
+	background-color: rgba(0, 0, 0, 0.04);
 	text-align: center;
 	padding: 0;
 	width: 3rem;
@@ -736,10 +736,17 @@ table th,
 	display: flex;
 	align-items: center;
 	justify-content: center;
+	padding-left: 0.5rem;
+	padding-right: 0.5rem;
+}
+
+thead .td-checkbox {
+	padding-bottom: 0.5rem;
+	background-color: transparent;
 }
 
 tbody .td-checkbox > label {
-	height: 3rem;
+	min-height: 2.75rem;
 }
 
 .util-grid-icon {

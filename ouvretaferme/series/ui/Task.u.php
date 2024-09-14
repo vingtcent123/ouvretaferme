@@ -3996,7 +3996,20 @@ class TaskUi {
 			$h .= $form->dynamicGroup($eTask, 'harvestDate');
 
 			$h .= $this->getPlantsByTasksField($form, $cTask);
-
+			/*
+			$h .= $form->group(
+				s("Ajouter au stock"),
+				$form->inputGroup(
+					$form->select('stock['.$eTask['id'].']', [
+						12 => s("Betterave / Chioggia calibre 14 - 21 cm")
+					]).
+					'<label class="task-field-bookmark input-group-addon" title="'.s("Mémoriser ce choix pour les futures récoltes").'">'.$form->inputCheckbox('stockRemember['.$eTask['id'].']', attributes: [
+						'data-confirm' => s("Affecter automatiquement les récoltes de XXX au stock XX dans le futur ?")
+					]).\Asset::icon('bookmark-plus', ['class' => 'task-field-bookmark-no']).\Asset::icon('bookmark-check-fill', ['class' => 'task-field-bookmark-yes']).'</label>'
+				),
+				['']
+			);
+*/
 			if($cTask->count() > 1) {
 				$h .= $form->group(
 					s("Répartition de la récolte sur les productions"),
@@ -4146,14 +4159,16 @@ class TaskUi {
 
 	public function getPlantsByTasksField(\util\FormUi $form, \Collection $cTask): string {
 
-		$h = '<table class="tr-bordered">';
+		$h = '<table class="tr-bordered stick-xs">';
 
 			$h .= '<tbody>';
 
 				foreach($cTask as $eTask) {
 					$h .= '<tr>';
+						$h .= '<td class="td-checkbox">';
+							$h .= $form->checkbox('ids[]', $eTask['id'], ['checked' => TRUE]);
+						$h .= '</td>';
 						$h .= '<td>';
-							$h .= $form->hidden('ids[]', $eTask['id']);
 							$h .= '<div class="task-field-vignette">';
 								$h .= '<div>';
 									$h .= \plant\PlantUi::getVignette($eTask['plant'], '2rem');
@@ -4173,8 +4188,6 @@ class TaskUi {
 								$h .= '</div>';
 							$h .= '</div>';
 						$h .= '</td>';
-						$h .= '<td>';
-						$h .= '</td>';
 					$h .= '</tr>';
 				}
 
@@ -4184,7 +4197,8 @@ class TaskUi {
 
 		return $form->group(
 			p("Production", "Productions", $cTask->count()),
-			$h
+			$h,
+			attributes: ['for' => FALSE]
 		);
 
 	}

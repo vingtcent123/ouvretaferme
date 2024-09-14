@@ -252,6 +252,11 @@
 
 		$fw->validate();
 
+		// Vérification des contraintes de cohérence (espèce, variété, unité, calibre) pour les récoltes
+		if($data->c->first()['action']['fqn'] === ACTION_RECOLTE) {
+			\series\Task::validateSameHarvest($data->c);
+		}
+
 		\series\TaskLib::createCollection($data->c);
 
 		$fw->validate();
@@ -449,6 +454,7 @@
 		$data->c->setColumn('harvestDate', GET('date', default: currentDate()));
 
 		\series\Task::validateSameAction($data->c, \farm\ActionLib::getByFarm($data->eFarm, fqn: ACTION_RECOLTE));
+		\series\Task::validateSameHarvest($data->c);
 
 		\series\TaskLib::fillDistribution($data->c);
 
@@ -462,13 +468,14 @@
 		$data->c->validate('canWrite');
 
 		\series\Task::validateSameAction($data->c, \farm\ActionLib::getByFarm($data->eFarm, fqn: ACTION_RECOLTE));
+		\series\Task::validateSameHarvest($data->c);
 
 		\series\TaskLib::fillHarvestDates($data->c);
 		\series\TaskLib::fillDistribution($data->c);
 
-		$data->harvestDate = POST('harvestDate');
-
 		$fw = new FailWatch();
+
+		$data->harvestDate = POST('harvestDate');
 
 		\series\TaskLib::buildHarvests(
 			$data->c,

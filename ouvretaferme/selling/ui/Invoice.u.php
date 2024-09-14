@@ -115,7 +115,7 @@ class InvoiceUi {
 						}
 
 						$h .= '<tr>';
-							$h .= '<th class="td-min-content invoice-item-select">';
+							$h .= '<th class="td-checkbox">';
 								$h .= '<label title="'.s("Cocher ces factures / Décocher ces factures").'">';
 									$h .= '<input type="checkbox" class="batch-all" onclick="Invoice.toggleDaySelection(this)"/>';
 								$h .= '</label>';
@@ -145,7 +145,7 @@ class InvoiceUi {
 					}
 
 					$h .= '<tr id="invoice-list-'.$eInvoice['id'].'" class="'.$class.'">';
-						$h .= '<td class="td-min-content sale-item-select">';
+						$h .= '<td class="td-checkbox">';
 							$h .= '<label>';
 								$h .= '<input type="checkbox" name="batch[]" value="'.$eInvoice['id'].'" oninput="Invoice.changeSelection()" data-batch="'.implode(' ', $batch).'"/>';
 							$h .= '</label>';

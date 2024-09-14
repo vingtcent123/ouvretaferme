@@ -156,7 +156,7 @@ class ProductUi {
 
 				$h .= '<tr>';
 
-					$h .= '<th rowspan="2" class="td-min-content">';
+					$h .= '<th rowspan="2" class="td-checkbox">';
 						$h .= '<label title="'.s("Tout cocher / Tout décocher").'">';
 							$h .= '<input type="checkbox" class="batch-all" onclick="Product.toggleSelection(this)"/>';
 						$h .= '</label>';
@@ -195,7 +195,7 @@ class ProductUi {
 
 				$h .= '<tr>';
 
-					$h .= '<td class="td-min-content sale-item-select">';
+					$h .= '<td class="td-checkbox">';
 						$h .= '<label>';
 							$h .= '<input type="checkbox" name="batch[]" value="'.$eProduct['id'].'" oninput="Product.changeSelection()"/>';
 						$h .= '</label>';

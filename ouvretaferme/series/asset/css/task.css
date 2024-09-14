@@ -1289,6 +1289,33 @@ span.task-size-name {
 	font-style: italic;
 }
 
+.task-field-stock-remember {
+	font-size: 0.8rem;
+	color: var(--muted);
+	margin-top: 0.25rem;
+}
+
+.task-field-bookmark {
+	cursor: pointer;
+}
+
+.task-field-bookmark input {
+	display: none;
+}
+
+.task-field-bookmark svg {
+	font-size: 1.2rem;
+	line-height: 1;
+}
+
+.task-field-bookmark input:checked + .task-field-bookmark-no {
+	display: none;
+}
+
+.task-field-bookmark input:not(:checked) + .task-field-bookmark-no + .task-field-bookmark-yes {
+	display: none;
+}
+
 /* Tabs */
 .tabs-categories {
 	display: flex;

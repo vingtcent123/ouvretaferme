@@ -246,7 +246,7 @@ class SaleUi {
 							}
 
 							$h .= '<tr>';
-								$h .= '<th class="td-min-content sale-item-select">';
+								$h .= '<th class="td-checkbox">';
 									$h .= '<label title="'.s("Cocher ces ventes / Décocher ces ventes").'">';
 										$h .= '<input type="checkbox" class="batch-all" onclick="Sale.toggleDaySelection(this)"/>';
 									$h .= '</label>';
@@ -291,7 +291,7 @@ class SaleUi {
 						}
 					$h .= '">';
 
-						$h .= '<td class="td-min-content sale-item-select">';
+						$h .= '<td class="td-checkbox">';
 							$h .= '<label>';
 								$h .= '<input type="checkbox" name="batch[]" value="'.$eSale['id'].'" oninput="Sale.changeSelection()" data-batch="'.implode(' ', $batch).'"/>';
 							$h .= '</label>';

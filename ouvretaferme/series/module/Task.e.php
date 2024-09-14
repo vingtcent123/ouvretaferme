@@ -61,7 +61,30 @@ class Task extends TaskElement {
 		foreach($cTask as $eTask) {
 
 			if($eTask['action']['id'] !== $eAction['id']) {
-				throw new \NotExpectedAction($eAction ? 'Unexpected actions' : 'Different actions');
+				throw new \FailAction('series\Task::actions.check');
+			}
+
+		}
+
+	}
+
+	public static function validateSameHarvest(\Collection $cTask): void {
+
+		if($cTask->empty()) {
+			return;
+		}
+
+		$eTaskReference = $cTask->first();
+
+		foreach($cTask as $eTask) {
+
+			if(
+				$eTask['plant']['id'] !== $eTaskReference['plant']['id'] or
+				$eTask['variety']->is($eTaskReference['variety']) === FALSE or
+				$eTask['harvestUnit'] !== $eTaskReference['harvestUnit'] or
+				$eTask['harvestSize']->is($eTaskReference['harvestSize']) === FALSE
+			) {
+				throw new \FailAction('series\Task::harvestConsistency.check');
 			}
 
 		}
