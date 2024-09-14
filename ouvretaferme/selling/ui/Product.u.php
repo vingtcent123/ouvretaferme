@@ -616,7 +616,7 @@ class ProductUi {
 			$h .= '<a data-ajax="/selling/product:doDelete" post-id="'.$eProduct['id'].'" class="dropdown-item" data-confirm="'.s("Confirmer la suppression du produit ?").'">'.s("Supprimer le produit").'</a>';
 			if($eProduct->acceptEnableStock() or $eProduct->acceptDisableStock()) {
 				$h .= '<div class="dropdown-divider"></div>';
-				if($eProduct->acceptEnableStock() and LIME_ENV === 'dev') {
+				if($eProduct->acceptEnableStock()) {
 					$h .= '<a data-ajax="/selling/product:doEnableStock" post-id='.$eProduct['id'].'" class="dropdown-item">'.\Asset::icon('box').'  '.s("Activer le suivi du stock").'</a>';
 				}
 				if($eProduct->acceptDisableStock()) {
