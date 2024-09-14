@@ -223,5 +223,59 @@ class StockLib extends StockCrud {
 
 	}
 
+	public static function getBookmark(\series\Task $eTask): Product {
+
+		$eStockBookmark = StockBookmark::model()
+			->select('product')
+			->wherePlant($eTask['plant'])
+			->whereUnit($eTask['harvestUnit'])
+			->whereVariety($eTask['variety'])
+			->whereSize($eTask['harvestSize'])
+			->get();
+
+		if($eStockBookmark->empty()) {
+			return new Product();
+		} else {
+			return $eStockBookmark['product'];
+		}
+
+	}
+
+	public static function remember(\series\Task $eTask, Product $eProduct): void {
+
+		$eTask->expects(['farm', 'plant', 'harvestUnit', 'variety', 'harvestSize']);
+
+		StockBookmark::model()->beginTransaction();
+
+			self::forget($eTask);
+
+			$eStockBookmark = new StockBookmark([
+				'farm' => $eTask['farm'],
+				'plant' => $eTask['plant'],
+				'unit' => $eTask['harvestUnit'],
+				'variety' => $eTask['variety'],
+				'size' => $eTask['harvestSize'],
+				'product' => $eProduct,
+			]);
+
+			StockBookmark::model()->insert($eStockBookmark);
+
+		StockBookmark::model()->commit();
+
+	}
+
+	public static function forget(\series\Task $eTask): void {
+
+		$eTask->expects(['plant', 'harvestUnit', 'variety', 'harvestSize']);
+
+		StockBookmark::model()
+			->wherePlant($eTask['plant'])
+			->whereUnit($eTask['harvestUnit'])
+			->whereVariety($eTask['variety'])
+			->whereSize($eTask['harvestSize'])
+			->delete();
+
+	}
+
 }
 ?>

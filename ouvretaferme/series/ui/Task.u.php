@@ -4007,7 +4007,7 @@ class TaskUi {
 
 	}
 
-	public function updateHarvestCollection(\Collection $cTask, \Collection $cProductStock): \Panel {
+	public function updateHarvestCollection(\Collection $cTask, \Collection $cProductStock, \selling\Product $eProductBookmark): \Panel {
 
 		$form = new \util\FormUi();
 
@@ -4038,7 +4038,7 @@ class TaskUi {
 			$h .= $form->dynamicGroup($eTask, 'harvestDate');
 
 			$h .= $this->getPlantsByTasksField($form, $cTask);
-			$h .= $this->getStockField($form, $cProductStock);
+			$h .= $this->getStockField($form, $eTask, $cProductStock, $eProductBookmark);
 
 			if($cTask->count() > 1) {
 				$h .= $form->group(
@@ -4238,7 +4238,7 @@ class TaskUi {
 
 	}
 
-	public function getStockField(\util\FormUi $form, \Collection $cProductStock): string {
+	public function getStockField(\util\FormUi $form, Task $eTask, \Collection $cProductStock, \selling\Product $eProductBookmark): string {
 
 		$h = '<div id="task-harvest-stock">';
 
@@ -4249,30 +4249,28 @@ class TaskUi {
 				foreach($cProductStock as $eProductStock) {
 
 					$name = \selling\ProductUi::getVignette($eProductStock, '2rem').'  ';
-					$name .= encode($eProductStock['name']).' ('.\main\UnitUi::getSingular($eProductStock['unit']).')';
-
-					if($eProductStock['variety'] !== NULL) {
-						$name .= ' / '.encode($eProductStock['variety']);
-					}
-
-					if($eProductStock['size'] !== NULL) {
-						$name .= ' '.s("calibre {value}", encode($eProductStock['size']));
-					}
-
-					if($eProductStock['stock'] > 0) {
-						$name .= ' <small class="color-muted">'.s("(actuellement {value})", \main\UnitUi::getValue($eProductStock['stock'], $eProductStock['unit'], short: TRUE)).'</small>';
-					}
+					$name .= encode($this->getStockText($eProductStock));
 
 					$values[$eProductStock['id']] = $name;
 
 				}
 
+				$confirmText = s("Ajouter automatiquement les quantités récoltées de {value} à ce stock dans le futur ?", $this->getStockText(new \selling\Product([
+					'name' => $eTask['plant']['name'],
+					'variety' => $eTask['variety']->notEmpty() ? $eTask['variety']['name'] : NULL,
+					'size' => $eTask['harvestSize']->notEmpty() ? $eTask['harvestSize']['name'] : NULL,
+					'unit' => $eTask['harvestUnit']
+				])));
+
 				$h .= $form->group(
-					s("Ajouter au stock"),
+					s("Ajouter à un stock"),
 					$form->inputGroup(
-						$form->selectDropdown('stock', $values, attributes: ['placeholder' => s("Pas de mise en stock"), 'class' => 'form-control-lg']).
-						'<label class="task-field-bookmark input-group-addon" title="'.s("Mémoriser ce choix pour les futures récoltes").'">'.$form->inputCheckbox('stockRemember', attributes: [
-							'data-confirm' => s("Affecter automatiquement les récoltes de XXX au stock XX dans le futur ?")
+						$form->selectDropdown('stock', $values, $eProductBookmark, attributes: ['placeholder' => s("Pas de mise en stock"), 'class' => 'form-control-lg']).
+						'<label id="task-field-bookmark" class="input-group-addon" title="'.s("Mémoriser ce choix pour les futures récoltes").'">'.$form->inputCheckbox('stockRemember', attributes: [
+							'checked' => $eProductBookmark->notEmpty(),
+							'data-confirm' => $eProductBookmark->notEmpty() ? NULL : $confirmText,
+							'data-confirm-text' => $confirmText,
+							'onclick' => 'Task.changeBookmark(this)'
 						]).\Asset::icon('star', ['class' => 'task-field-bookmark-no']).\Asset::icon('star-fill', ['class' => 'task-field-bookmark-yes']).'</label>'
 					),
 					attributes: [
@@ -4286,6 +4284,22 @@ class TaskUi {
 			$h .= '</div>';
 
 			return $h;
+
+	}
+
+	protected function getStockText(\selling\Product $eProduct): string {
+		
+		$text = $eProduct['name'].' ('.\main\UnitUi::getSingular($eProduct['unit']).')';
+
+		if($eProduct['variety'] !== NULL) {
+			$text .= ' / '.$eProduct['variety'];
+		}
+
+		if($eProduct['size'] !== NULL) {
+			$text .= ' '.s("calibre {value}", $eProduct['size']);
+		}
+		
+		return $text;
 
 	}
 

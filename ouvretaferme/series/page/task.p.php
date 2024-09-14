@@ -459,6 +459,7 @@
 		\series\TaskLib::fillDistribution($data->c);
 
 		$data->cProductStock = \selling\StockLib::getCompatibleProducts($data->c->first());
+		$data->eProductBookmark = \selling\StockLib::getBookmark($data->c->first());
 
 		\farm\ActionLib::getMainByFarm($data->eFarm);
 
@@ -480,10 +481,6 @@
 		$data->harvestDate = POST('harvestDate');
 		$data->harvestMore = POST('harvestMore', 'float', 0.0);
 
-		if($data->harvestMore === 0.0) {
-			throw new ViewAction($data);
-		}
-
 		$fw = new FailWatch();
 
 		\series\TaskLib::buildHarvests(
@@ -494,30 +491,48 @@
 			POST('distribution', ['area', 'plant', 'fair'], 'fair')
 		);
 
-		$productStock = POST('stock', '?int');
-
-		if($productStock !== NULL) {
-
-			$eProductStock = \selling\ProductLib::getById($productStock)
-				->validate('acceptStock', onFail: fn() => \series\Task::fail('stock.check'))
-				->validateProperty('farm', $data->eFarm);
-
-		} else {
-			$eProductStock = new \selling\Product();
-		}
-
-		$fw->validate();
-
 		foreach($data->c as $e) {
 			\series\TaskLib::update($e, ['harvest', 'harvestUnit']);
 		}
 
-		if($eProductStock->notEmpty()) {
+		if(post_exists('stock')) {
 
-			\selling\StockLib::increment($eProductStock, new \selling\Stock([
-				'newValue' => $data->harvestMore,
-				'comment' => $eAction['name']
-			]), zeroIfNegative: TRUE);
+			$productStock = POST('stock', '?int');
+
+			if($productStock !== NULL) {
+
+				$eProductStock = \selling\ProductLib::getById($productStock)
+					->validate('acceptStock', onFail: fn() => \series\Task::fail('stock.check'))
+					->validateProperty('farm', $data->eFarm);
+
+			} else {
+				$eProductStock = new \selling\Product();
+			}
+
+			$fw->validate();
+
+			// Mise à jour du stock
+			if($data->harvestMore !== 0.0) {
+
+				if($eProductStock->notEmpty()) {
+
+					\selling\StockLib::increment($eProductStock, new \selling\Stock([
+						'newValue' => $data->harvestMore,
+						'comment' => $eAction['name']
+					]), zeroIfNegative: TRUE);
+
+				}
+
+			}
+
+			// Mise à jour du marquage ou non en favori du stock
+			if(POST('stockRemember', 'bool')) {
+
+				\selling\StockLib::remember($data->c->first(), $eProductStock);
+
+			} else {
+				\selling\StockLib::forget($data->c->first());
+			}
 
 		}
 

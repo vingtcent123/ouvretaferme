@@ -300,3 +300,17 @@ Stock:
   INDEX: [
     ["product"]
   ]
+
+StockBookmark:
+  farm: farm\Farm
+  product: selling\Product
+  plant: plant\Plant
+  unit: enum(KG, UNIT, BUNCH)
+  size: ?plant\Size
+  variety: ?plant\Variety
+  createdAt: datetime = SPECIAL(now)
+  createdBy: ?user\User = SPECIAL(user)
+  INDEX: [
+    ["farm"],
+    ["plant", "unit", "size", "variety"]
+  ]

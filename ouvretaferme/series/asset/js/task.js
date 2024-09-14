@@ -297,6 +297,16 @@ document.delegateEventListener('autocompleteSelect', '#task-create-plant', funct
 
 class Task {
 
+	static changeBookmark(target) {
+
+		if(target.checked) {
+			delete target.dataset.confirm;
+		} else {
+			target.dataset.confirm = target.dataset.confirmText;
+		}
+
+	}
+
 	static changeHarvestUnit(task, target) {
 
 		new Ajax.Query(target)

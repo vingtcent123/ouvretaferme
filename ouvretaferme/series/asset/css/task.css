@@ -1295,24 +1295,24 @@ span.task-size-name {
 	margin-top: 0.25rem;
 }
 
-.task-field-bookmark {
+#task-field-bookmark {
 	cursor: pointer;
 }
 
-.task-field-bookmark input {
+#task-field-bookmark input {
 	display: none;
 }
 
-.task-field-bookmark svg {
+#task-field-bookmark svg {
 	font-size: 1.2rem;
 	line-height: 1;
 }
 
-.task-field-bookmark input:checked + .task-field-bookmark-no {
+#task-field-bookmark input:checked + .task-field-bookmark-no {
 	display: none;
 }
 
-.task-field-bookmark input:not(:checked) + .task-field-bookmark-no + .task-field-bookmark-yes {
+#task-field-bookmark input:not(:checked) + .task-field-bookmark-no + .task-field-bookmark-yes {
 	display: none;
 }
 
