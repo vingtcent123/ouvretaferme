@@ -407,7 +407,7 @@ class CultivationUi {
 					$help .= '<li>'.s("Vous pouvez aussi utiliser le prévisionnel en amont de votre planification en ajoutant les espèces cultivées que vous souhaitez cultiver au prévisionnel. Une fois que vous êtes satisfait de votre prévisionnel, vous pouvez ainsi commencer votre planification !").'</li>';
 				$help .= '</ol>';
 				if($ccForecast->empty()) {
-					$help .= '<a href="/plant/forecast:create?farm='.$eFarm['id'].'&season='.$season.'" class="btn btn-secondary">'.s("Ajouter une espèce cultivée au prévisionnel").'</a>';
+					$help .= '<a href="/plant/forecast:create?farm='.$eFarm['id'].'&season='.$season.'" class="btn btn-secondary">'.s("Ajouter une espèce au prévisionnel").'</a>';
 				} else {
 					$help .= '<a href="'.\farm\FarmUi::urlCultivationSeries($eFarm, \farm\Farmer::FORECAST, $season).'&help" class="btn btn-secondary">'.\Asset::icon('x-lg').' '.s("Ok, cacher ce message").'</a>';
 				}

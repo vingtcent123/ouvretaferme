@@ -113,7 +113,7 @@ class ForecastUi {
 			'harvestObjective' => s("Objectif de volume"),
 			'privatePrice' => s("Prix moyen pour les particuliers"),
 			'proPrice' => s("Prix moyen pour les professionnels"),
-			'plant' => s("Espèce cultivée"),
+			'plant' => s("Espèce"),
 			'unit' => s("Unité de vente"),
 		]);
 

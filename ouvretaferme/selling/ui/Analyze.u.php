@@ -894,7 +894,7 @@ class AnalyzeUi {
 				$h .= '<div class="tab-panel '.($monthly ? '' : 'analyze-chart-table').'" data-tab="analyze-plant">';
 					if($cPlant->empty()) {
 						$h = '<div class="util-info">';
-							$h .= s("Aucune vente sur une espèce cultivée n'a été enregistrée pour cette année.");
+							$h .= s("Aucune vente sur une espèce n'a été enregistrée pour cette année.");
 						$h .= '</div>';
 					} else {
 						if($monthly === NULL) {
@@ -982,7 +982,7 @@ class AnalyzeUi {
 					$h .= '<div class="tab-panel '.($monthly ? '' : 'analyze-chart-table').'" data-tab="analyze-plant">';
 						if($cPlant->empty()) {
 							$h = '<div class="util-info">';
-								$h .= s("Aucune vente sur une espèce cultivée n'a été enregistrée pour cette année.");
+								$h .= s("Aucune vente sur une espèce n'a été enregistrée pour cette année.");
 							$h .= '</div>';
 						} else {
 							if($monthly === NULL) {
@@ -1007,7 +1007,7 @@ class AnalyzeUi {
 					$h .= '<div class="tab-panel selected" data-tab="analyze-plant">';
 						if($cPlant->empty()) {
 							$h = '<div class="util-info">';
-								$h .= s("Aucune vente sur une espèce cultivée n'a été enregistrée pour cette année.");
+								$h .= s("Aucune vente sur une espèce n'a été enregistrée pour cette année.");
 							$h .= '</div>';
 						} else {
 							$h .= $this->getBestPlantsTable($cPlant, $year, cPlantCompare: $cPlantCompare, yearCompare: $yearCompare);

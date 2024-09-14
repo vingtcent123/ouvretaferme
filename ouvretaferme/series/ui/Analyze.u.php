@@ -364,7 +364,7 @@ class AnalyzeUi {
 			$h .= '<div class="series-item-header series-item-header-not-sticky series-item-working-time" style="grid-template-columns: 2rem 10rem 6rem 6rem '.str_repeat('8rem ', $cAction->count()).';">';
 
 				$h .= '<div class="util-grid-header" style="grid-column: span 2">';
-					$h .= s("Espèce cultivée");
+					$h .= s("Espèce");
 				$h .= '</div>';
 				$h .= '<div class="util-grid-header text-end">';
 					$h .= s("Surface");
@@ -982,7 +982,7 @@ class AnalyzeUi {
 		$timesheetGlobalTime = (float)$cTimesheet->sum('time');
 
 		if($timesheetGlobalTime === 0.0) {
-			return '<div class="util-info">'.s("Vous n'avez travaillé sur aucune espèce cultivée sur la période !").'</div>';
+			return '<div class="util-info">'.s("Vous n'avez travaillé sur aucune espèce sur la période !").'</div>';
 		}
 
 		$search = (new \Search())

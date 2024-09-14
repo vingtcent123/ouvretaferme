@@ -4723,7 +4723,7 @@ class TaskUi {
 				};
 				$d->autocompleteDefault = fn(Task $e) => $e['plant'] ?? $e->expects(['plant']);
 				$d->autocompleteDispatch = '#task-create-plant';
-				$d->placeholder = s("Filtrer sur une espèce cultivée...");
+				$d->placeholder = s("Filtrer sur une espèce...");
 				$d->prepend ??= \Asset::icon('search');
 
 				(new \plant\PlantUi())->query($d);
