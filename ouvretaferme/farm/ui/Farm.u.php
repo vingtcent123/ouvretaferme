@@ -358,6 +358,30 @@ class FarmUi {
 
 	}
 
+	public function updateStockNotes(Farm $eFarm): \Panel {
+
+		$form = new \util\FormUi();
+
+		$h = '';
+
+		$h .= $form->openAjax('/selling/stock:doUpdateNote', ['id' => 'farm-update', 'autocomplete' => 'off']);
+
+			$h .= $form->hidden('id', $eFarm['id']);
+
+			$h .= $form->dynamicField($eFarm, 'stockNotes');
+			$h .= '<br/>';
+			$h .= $form->submit(s("Modifier"));
+
+		$h .= $form->close();
+
+		return new \Panel(
+			id: 'panel-farm-update-stock-notes',
+			title: s("Modifier les notes de stock"),
+			body: $h
+		);
+
+	}
+
 	public function updateSeries(Farm $eFarm): \Panel {
 
 		$form = new \util\FormUi();
@@ -1570,6 +1594,12 @@ class FarmUi {
 				$d->values = self::getQualities();
 				$d->placeholder = s("Aucun");
 				$d->after = \util\FormUi::info(s("Pour rappel, {siteName} ne peut être utilisé que par les fermes sous l'un de ces signes de qualité."));
+				break;
+
+			case 'stockNotes' :
+				$d->attributes = [
+					'onrender' => 'this.focus();'
+				];
 				break;
 
 		}

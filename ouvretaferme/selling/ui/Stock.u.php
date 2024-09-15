@@ -9,7 +9,38 @@ class StockUi {
 
 	}
 
-	public function getList(\Collection $cProduct, \Collection $ccItemPast, \Collection $cItemFuture, \Search $search) {
+	public function getNotes(\farm\Farm $eFarm): string {
+
+		if($eFarm['stockNotes'] === NULL) {
+			return '';
+		}
+
+		$h = '<div class="stock-description '.($eFarm['stockNotes'] === '' ? 'stock-description-empty' : '').' util-block">';
+
+			$h .= '<span class="stock-description-icon">'.\Asset::icon('chat-right-text').'</span>';
+			$h .= '<div>';
+				$h .= '<div class="util-action">';
+					if($eFarm['stockNotes'] !== '') {
+						$h .= '<h4>'.\user\UserUi::getVignette($eFarm['stockNotesUpdatedBy'], '1.75rem').'  '.self::getDate($eFarm['stockNotesUpdatedAt']).'</h4>';
+						$h .= '<a href="/selling/stock:updateNote?id='.$eFarm['id'].'" class="btn btn-secondary">'.s("Modifier").'</a>';
+					} else {
+						$h .= '<div class="color-muted">'.s("Pas de notes de stock en ce moment").'</div>';
+						$h .= '<a href="/selling/stock:updateNote?id='.$eFarm['id'].'" class="btn btn-secondary">'.s("Ajouter").'</a>';
+					}
+				$h .= '</div>';
+
+				if($eFarm['stockNotes'] !== '') {
+					$h .= nl2br(encode($eFarm['stockNotes']));
+				}
+
+			$h .= '</div>';
+		$h .= '</div>';
+
+		return $h;
+
+	}
+
+	public function getList(\Collection $cProduct, \Collection $ccItemPast, \Collection $cItemFuture, \Search $search): string {
 
 		$today = currentDate();
 		$yesterday = date('Y-m-d', strtotime('yesterday'));
@@ -397,6 +428,19 @@ class StockUi {
 		]);
 
 		switch($property) {
+
+			case 'product' :
+				$d->autocompleteBody = function(\util\FormUi $form, Stock $e) {
+
+					e->expects(['farm']);
+
+					return [
+						'farm' => $e['farm']['id']
+					];
+
+				};
+				(new ProductUi())->query($d);
+				break;
 
 			case 'comment' :
 				$d->placeholder = s("Tapez ici un commentaire facultatif sur l'évolution du stock");

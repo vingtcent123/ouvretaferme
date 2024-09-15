@@ -114,3 +114,30 @@ a.stock-item-button:hover {
 	color: white;
 	text-decoration: none;
 }
+
+
+div.stock-description {
+	display: grid;
+	grid-template-columns: auto 1fr;
+	grid-column-gap: 1.5rem;
+	grid-auto-flow: column;
+	margin-top: 1rem;
+}
+
+div.stock-description.stock-description-empty {
+	align-items: center;
+}
+
+div.stock-description .util-action {
+	margin-bottom: 0.5rem;
+}
+
+div.stock-description.stock-description-empty .util-action {
+	margin-bottom: 0;
+}
+
+span.stock-description-icon {
+	font-size: 2rem;
+	color: var(--primary);
+	line-height: 1.2;
+}

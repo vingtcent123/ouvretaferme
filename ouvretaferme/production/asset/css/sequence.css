@@ -45,9 +45,9 @@ div.sequence-header-description {
 }
 
 span.sequence-header-description-icon {
-	font-size: 3rem;
+	font-size: 2rem;
 	color: var(--primary);
-	line-height: 1;
+	line-height: 1.2;
 }
 
 /* Items */

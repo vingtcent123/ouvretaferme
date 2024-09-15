@@ -126,6 +126,21 @@ class FarmLib extends FarmCrud {
 
 		Farm::model()->beginTransaction();
 
+		// Les notes de stocks laissées vide reste à '' pour éviter de les désactiver
+		if(in_array('stockNotes', $properties)) {
+
+			if($e['stockNotes'] === NULL) {
+				$e['stockNotes'] = '';
+			}
+
+			$e['stockNotesUpdatedAt'] = new \Sql('NOW()');
+			$e['stockNotesUpdatedBy'] = \user\ConnectionLib::getOnline();
+
+			$properties[] = 'stockNotesUpdatedAt';
+			$properties[] = 'stockNotesUpdatedBy';
+
+		}
+
 		parent::update($e, $properties);
 
 		if(in_array('status', $properties)) {
@@ -168,6 +183,17 @@ class FarmLib extends FarmCrud {
 			->where('seasonLast + '.$increment.' BETWEEN seasonFirst AND '.(date('Y') + 10).'')
 			->update($e, [
 				'seasonLast' => new \Sql('seasonLast + '.$increment)
+			]);
+
+	}
+
+	public static function updateStockNotesStatus(Farm $e, bool $enable): void {
+
+		Farm::model()
+			->update($e, [
+				'stockNotes' => $enable ? '' : NULL,
+				'stockNotesUpdatedAt' => NULL,
+				'stockNotesUpdatedBy' => new \user\User()
 			]);
 
 	}

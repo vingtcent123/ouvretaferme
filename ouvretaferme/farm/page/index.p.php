@@ -184,6 +184,7 @@
 	->get('/ferme/{id}/stocks', function($data) {
 
 		$data->eFarm->validate('canSelling');
+		$data->eFarm['stockNotesUpdatedBy'] = \user\UserLib::getById($data->eFarm['stockNotesUpdatedBy']);
 
 		\farm\FarmerLib::setView('viewSelling', $data->eFarm, \farm\Farmer::STOCK);
 

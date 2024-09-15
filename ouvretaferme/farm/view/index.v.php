@@ -530,7 +530,21 @@ new AdaptativeView('/ferme/{id}/stocks', function($data, FarmTemplate $t) {
 
 	$t->package('main')->updateNavSelling($t->canonical);
 
-	echo '<h1>'.s("Stocks").'</h1>';
+	echo '<div class="util-action">';
+		echo '<h1>'.s("Stocks").'</h1>';
+		echo '<div>';
+			echo '<a data-dropdown="bottom-end" class="btn btn-primary dropdown-toggle">'.\Asset::icon('gear-fill').'</a>';
+			echo '<div class="dropdown-list">';
+				echo '<div class="dropdown-title">'.s("Stocks").'</div>';
+				echo '<a href="/selling/stock:create?farm='.$data->eFarm['id'].'" class="dropdown-item">'.s("Activer le suivi du stock pour un produit").'</a>';
+				if($data->eFarm['stockNotes'] === NULL) {
+					echo '<a data-ajax="/selling/stock:doNoteStatus" post-id="'.$data->eFarm['id'].'" post-enable="1" class="dropdown-item">'.s("Ajouter des notes à cette page").'</a>';
+				} else {
+					echo '<a data-ajax="/selling/stock:doNoteStatus" post-id="'.$data->eFarm['id'].'" post-enable="0" class="dropdown-item">'.s("Désactiver les notes de stock").'</a>';
+				}
+			echo '</div>';
+		echo '</div>';
+	echo '</div>';
 
 	if($data->cProduct->empty()) {
 
@@ -542,6 +556,7 @@ new AdaptativeView('/ferme/{id}/stocks', function($data, FarmTemplate $t) {
 
 	} else {
 
+		echo (new \selling\StockUi())->getNotes($data->eFarm);
 		echo (new \selling\StockUi())->getList($data->cProduct, $data->ccItemPast, $data->cItemFuture, $data->search);
 
 	}

@@ -70,14 +70,21 @@ class FarmModel extends \ModuleModel {
 			'featureTime' => ['bool', 'cast' => 'bool'],
 			'featureStock' => ['bool', 'cast' => 'bool'],
 			'featureDocument' => ['enum', [\farm\Farm::ALL, \farm\Farm::PRIVATE, \farm\Farm::PRO, \farm\Farm::DISABLED], 'cast' => 'enum'],
+			'stockNotes' => ['text16', 'null' => TRUE, 'cast' => 'string'],
+			'stockNotesUpdatedAt' => ['datetime', 'null' => TRUE, 'cast' => 'string'],
+			'stockNotesUpdatedBy' => ['element32', 'user\User', 'null' => TRUE, 'cast' => 'element'],
 			'startedAt' => ['int16', 'min' => date('Y') - 100, 'max' => date('Y') + 10, 'cast' => 'int'],
 			'createdAt' => ['datetime', 'cast' => 'string'],
 			'status' => ['enum', [\farm\Farm::ACTIVE, \farm\Farm::CLOSED], 'cast' => 'enum'],
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'name', 'vignette', 'place', 'placeLngLat', 'url', 'description', 'logo', 'banner', 'seasonFirst', 'seasonLast', 'rotationYears', 'rotationExclude', 'quality', 'defaultBedLength', 'defaultBedWidth', 'defaultAlleyWidth', 'calendarMonthStart', 'calendarMonthStop', 'featureTime', 'featureStock', 'featureDocument', 'startedAt', 'createdAt', 'status'
+			'id', 'name', 'vignette', 'place', 'placeLngLat', 'url', 'description', 'logo', 'banner', 'seasonFirst', 'seasonLast', 'rotationYears', 'rotationExclude', 'quality', 'defaultBedLength', 'defaultBedWidth', 'defaultAlleyWidth', 'calendarMonthStart', 'calendarMonthStop', 'featureTime', 'featureStock', 'featureDocument', 'stockNotes', 'stockNotesUpdatedAt', 'stockNotesUpdatedBy', 'startedAt', 'createdAt', 'status'
 		]);
+
+		$this->propertiesToModule += [
+			'stockNotesUpdatedBy' => 'user\User',
+		];
 
 	}
 
@@ -259,6 +266,18 @@ class FarmModel extends \ModuleModel {
 
 	public function whereFeatureDocument(...$data): FarmModel {
 		return $this->where('featureDocument', ...$data);
+	}
+
+	public function whereStockNotes(...$data): FarmModel {
+		return $this->where('stockNotes', ...$data);
+	}
+
+	public function whereStockNotesUpdatedAt(...$data): FarmModel {
+		return $this->where('stockNotesUpdatedAt', ...$data);
+	}
+
+	public function whereStockNotesUpdatedBy(...$data): FarmModel {
+		return $this->where('stockNotesUpdatedBy', ...$data);
 	}
 
 	public function whereStartedAt(...$data): FarmModel {

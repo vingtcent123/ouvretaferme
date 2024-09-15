@@ -1,4 +1,28 @@
 <?php
+(new Page())
+	->get('add', function($data) {
+
+		$data->eFarm = \farm\FarmLib::getById(INPUT('farm'))->validate('canWrite');
+
+		throw new ViewAction($data);
+
+	});
+
+(new \farm\FarmPage())
+	->update(page: 'updateNote')
+	->doUpdateProperties('doUpdateNote', ['stockNotes'], function($data) {
+
+		throw new ReloadAction();
+
+	})
+	->write('doNoteStatus', function($data) {
+
+		\farm\FarmLib::updateStockNotesStatus($data->e, POST('enable', 'bool'));
+
+		throw new ReloadAction();
+
+	});
+
 (new \selling\ProductPage())
 	->read('history', function($data) {
 
