@@ -66,11 +66,11 @@ class StockLib extends StockCrud {
 	public static function getCompatibleProducts(\series\Task $eTask): \Collection {
 
 		$eTask->expects([
-			'cultivation' => ['mainUnit'],
+			'cultivation',
 			'plant', 'variety', 'harvestUnit', 'harvestSize'
 		]);
 
-		$unit = $eTask['harvestUnit'] ?? $eTask['cultivation']['mainUnit'];
+		$unit = $eTask['harvestUnit'] ?? ($eTask['cultivation']->notEmpty() ? $eTask['cultivation']['mainUnit'] : NULL);
 
 		if(
 			$eTask['plant']->empty() or
