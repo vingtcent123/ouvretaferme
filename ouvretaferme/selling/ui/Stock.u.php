@@ -16,7 +16,7 @@ class StockUi {
 
 		$h = '';
 
-		$h .= '<div class="util-overflow-md stick-xs">';
+		$h .= '<div class="util-overflow-sm stick-xs">';
 
 		$h .= '<table class="stock-item-table tr-bordered tr-even">';
 
@@ -51,11 +51,11 @@ class StockUi {
 				$h .= '<tr>';
 
 					$h .= '<td class="td-min-content">';
-						$h .= (new \media\ProductVignetteUi())->getCamera($eProduct, size: '3rem');
+						$h .= (new \media\ProductVignetteUi())->getCamera($eProduct, size: '2.5rem');
 					$h .= '</td>';
 
 					$h .= '<td class="stock-item-name">';
-						$h .= ProductUi::getInfos($eProduct);
+						$h .= ProductUi::getInfos($eProduct, includeQuality: FALSE);
 					$h .= '</td>';
 
 					$h .= '<td class="td-min-content">';
@@ -81,7 +81,7 @@ class StockUi {
 						$eStock = $eProduct['stockLast'];
 
 						$h .= '<td class="td-min-content">';
-							$h .= \user\UserUi::getVignette($eStock['createdBy'], '2rem');
+							$h .= \user\UserUi::getVignette($eStock['createdBy'], '1.5rem');
 						$h .= '</td>';
 						$h .= '<td class="stock-item-stock-updated">';
 

@@ -6,6 +6,14 @@ td.stock-item-name {
 	line-height: 1.3;
 }
 
+@media (max-width: 767px) {
+
+	td.stock-item-name {
+		max-width: 8rem;
+	}
+
+}
+
 td.stock-item-value {
 	font-weight: bold;
 	text-align: right;
@@ -18,6 +26,18 @@ td.stock-item-unit {
 	padding-right: 1rem;
 	font-size: 1.2rem;
 	line-height: 1;
+}
+
+@media (max-width: 767px) {
+
+	td.stock-item-value {
+		padding-left: 0.25rem;
+	}
+
+	td.stock-item-unit {
+		padding-right: 0.25rem;
+	}
+
 }
 
 td.stock-item-unit a,
@@ -71,6 +91,15 @@ a.stock-item-button {
 	line-height: 1;
 	font-weight: bold;
 	font-size: 1.2rem;
+}
+
+@media (max-width: 767px) {
+
+	a.stock-item-button {
+		width: 1.75rem;
+		height: 1.75rem;
+	}
+
 }
 
 a.stock-item-button:hover {

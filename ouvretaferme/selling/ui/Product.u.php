@@ -357,7 +357,7 @@ class ProductUi {
 
 	}
 
-	public static function getInfos(Product $eProduct, bool $includeStock = FALSE): string {
+	public static function getInfos(Product $eProduct, bool $includeStock = FALSE, bool $includeQuality = TRUE): string {
 
 		$h = '<a href="/produit/'.$eProduct['id'].'">'.encode($eProduct->getName()).'</a>';
 		$more = [];
@@ -366,8 +366,12 @@ class ProductUi {
 			$more[] = '<span><u>'.encode($eProduct['size']).'</u></span>';
 		}
 
-		if($eProduct['quality'] !== NULL) {
-			$more[] = \farm\FarmUi::getQualityLogo($eProduct['quality'], '1.5rem');
+		if($includeQuality) {
+
+			if($eProduct['quality'] !== NULL) {
+				$more[] = \farm\FarmUi::getQualityLogo($eProduct['quality'], '1.5rem');
+			}
+
 		}
 
 		if($includeStock) {
