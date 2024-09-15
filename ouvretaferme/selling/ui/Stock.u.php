@@ -58,7 +58,7 @@ class StockUi {
 						$h .= ProductUi::getInfos($eProduct, includeQuality: FALSE);
 					$h .= '</td>';
 
-					$h .= '<td class="td-min-content">';
+					$h .= '<td class="td-min-content stock-item-decrement">';
 						if($eProduct['stock'] > 0.0) {
 							$h .= '<a href="/selling/stock:decrement?id='.$eProduct['id'].'" class="stock-item-button" title="'.s("Diminuer le stock").'">-</a>';
 						}
@@ -72,7 +72,7 @@ class StockUi {
 						$h .= '<a href="/selling/stock:update?id='.$eProduct['id'].'" title="'.s("Corriger le stock").'">'.\main\UnitUi::getSingular($eProduct['unit'], short: TRUE).'</a>';
 					$h .= '</td>';
 
-					$h .= '<td class="td-min-content">';
+					$h .= '<td class="td-min-content stock-item-increment">';
 						$h .= '<a href="/selling/stock:increment?id='.$eProduct['id'].'" class="stock-item-button" title="'.s("Augmenter le stock").'">+</a>';
 					$h .= '</td>';
 

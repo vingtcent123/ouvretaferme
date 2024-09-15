@@ -40,6 +40,14 @@ td.stock-item-unit {
 
 }
 
+@media (min-width: 992px) {
+
+	td.stock-item-increment {
+		padding-right: 1.5rem;
+	}
+
+}
+
 td.stock-item-unit a,
 td.stock-item-value a {
 	color: var(--text);

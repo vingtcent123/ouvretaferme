@@ -175,6 +175,7 @@ class SaleLib extends SaleCrud {
 			Sale::model()
 				->whereInvoice(NULL)
 				->whereMarket(FALSE)
+				->whereItems('>', 0)
 				->wherePreparationStatus(Sale::DELIVERED);
 		}
 
@@ -340,6 +341,7 @@ class SaleLib extends SaleCrud {
 			])
 			->whereCustomer($eCustomer)
 			->whereId('IN', $ids)
+			->whereItems('>', 0)
 			->whereInvoice(NULL, if: $checkInvoice)
 			->whereMarket(FALSE)
 			->whereMarketParent(NULL)
@@ -796,6 +798,24 @@ class SaleLib extends SaleCrud {
 			->select(['price', 'vatRate', 'quality'])
 			->whereSale($e)
 			->getCollection();
+
+		// Plus rien dans la vente
+		if($cItem->empty()) {
+
+			$newValues = [
+				'items' => 0,
+				'vat' => NULL,
+				'vatByRate' => NULL,
+				'organic' => FALSE,
+				'priceIncludingVat' => NULL,
+				'priceExcludingVat' => NULL,
+			];
+
+			Sale::model()->update($e, $newValues);
+
+			return;
+
+		}
 
 		$vatList = [];
 
