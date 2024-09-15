@@ -15,7 +15,7 @@ class ProductLib extends ProductCrud {
 		return ['name', 'category', 'variety', 'size', 'description', 'quality', 'plant', 'pro', 'proPrice', 'proPackaging', 'private', 'privatePrice', 'vat'];
 	}
 
-	public static function getFromQuery(string $query, \farm\Farm $eFarm, ?string $type, ?array $properties = []): \Collection {
+	public static function getFromQuery(string $query, \farm\Farm $eFarm, ?string $type, ?string $stock, ?array $properties = []): \Collection {
 
 		if(strpos($query, '#') === 0 and ctype_digit(substr($query, 1))) {
 
@@ -57,6 +57,7 @@ class ProductLib extends ProductCrud {
 			->select($properties ?: Product::getSelection())
 			->whereFarm($eFarm)
 			->whereStatus(Product::ACTIVE)
+			->whereStock(NULL, if: $stock === 'enable')
 			->getCollection();
 
 	}

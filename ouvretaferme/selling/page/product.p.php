@@ -126,8 +126,9 @@
 
 		$eFarm = \farm\FarmLib::getById(POST('farm', '?int'))->validate('canWrite');;
 		$type = POST('type', '?string');
+		$stock = POST('stock', '?string');
 
-		$data->cProduct = \selling\ProductLib::getFromQuery(POST('query'), $eFarm, $type);
+		$data->cProduct = \selling\ProductLib::getFromQuery(POST('query'), $eFarm, $type, $stock);
 
 		throw new \ViewAction($data);
 

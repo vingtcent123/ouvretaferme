@@ -881,6 +881,10 @@ class ProductUi {
 
 		switch($property) {
 
+			case 'id' :
+				(new ProductUi())->query($d);
+				break;
+
 			case 'name' :
 				$d->placeholder = s("Ex. : Pomme de terre");
 				break;

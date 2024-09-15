@@ -536,7 +536,7 @@ new AdaptativeView('/ferme/{id}/stocks', function($data, FarmTemplate $t) {
 			echo '<a data-dropdown="bottom-end" class="btn btn-primary dropdown-toggle">'.\Asset::icon('gear-fill').'</a>';
 			echo '<div class="dropdown-list">';
 				echo '<div class="dropdown-title">'.s("Stocks").'</div>';
-				echo '<a href="/selling/stock:create?farm='.$data->eFarm['id'].'" class="dropdown-item">'.s("Activer le suivi du stock pour un produit").'</a>';
+				echo '<a href="/selling/stock:add?farm='.$data->eFarm['id'].'" class="dropdown-item">'.s("Activer le suivi du stock pour un produit").'</a>';
 				if($data->eFarm['stockNotes'] === NULL) {
 					echo '<a data-ajax="/selling/stock:doNoteStatus" post-id="'.$data->eFarm['id'].'" post-enable="1" class="dropdown-item">'.s("Ajouter des notes à cette page").'</a>';
 				} else {

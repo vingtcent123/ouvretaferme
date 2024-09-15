@@ -324,6 +324,48 @@ class StockUi {
 		);
 	}
 
+	public function add(\farm\Farm $eFarm): \Panel {
+
+		$eProduct = new Product([
+			'farm' => $eFarm
+		]);
+
+		$form = new \util\FormUi();
+
+		$h = '';
+
+		$h .= $form->openAjax('/selling/product:doEnableStock', ['autocomplete' => 'off']);
+
+			$h .= $form->group(
+				s("Produit"),
+				$form->dynamicField($eProduct, 'id', function($d) use ($eFarm) {
+					$d->autocompleteBody = function(\util\FormUi $form, Product $e) {
+
+						$e->expects(['farm']);
+
+						return [
+							'farm' => $e['farm']['id'],
+							'stock' => 'enable'
+						];
+
+					};
+				})
+			);
+
+			$h .= $form->group(
+				content: $form->submit(s("Activer le suivi du stock"))
+			);
+
+		$h .= $form->close();
+
+		return new \Panel(
+			id: 'panel-stock-add',
+			title: s("Activer le suivi du stock pour un produit"),
+			body: $h
+		);
+
+	}
+
 	public static function getExpired(Product $eProduct): string {
 
 		if($eProduct['stockExpired']) {
@@ -428,19 +470,6 @@ class StockUi {
 		]);
 
 		switch($property) {
-
-			case 'product' :
-				$d->autocompleteBody = function(\util\FormUi $form, Stock $e) {
-
-					e->expects(['farm']);
-
-					return [
-						'farm' => $e['farm']['id']
-					];
-
-				};
-				(new ProductUi())->query($d);
-				break;
 
 			case 'comment' :
 				$d->placeholder = s("Tapez ici un commentaire facultatif sur l'évolution du stock");
