@@ -363,6 +363,7 @@ class OrderUi {
 
 		if(
 			$eSale['from'] === Sale::SHOP and
+			$eSale['shopPoint']->notEmpty() and
 			$eSale->isClosed() === FALSE
 		) {
 			$h .= '<h3>'.encode($eSale['shop']['name']).'</h3>';
