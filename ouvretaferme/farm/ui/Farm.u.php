@@ -364,11 +364,13 @@ class FarmUi {
 
 		$h = '';
 
-		$h .= $form->openAjax('/selling/stock:doUpdateNote', ['id' => 'farm-update', 'autocomplete' => 'off']);
+		$h .= $form->openAjax('/selling/stock:doUpdateNote', ['autocomplete' => 'off']);
 
 			$h .= $form->hidden('id', $eFarm['id']);
 
-			$h .= $form->dynamicField($eFarm, 'stockNotes');
+			$h .= $form->dynamicField($eFarm, 'stockNotes', function($d) {
+				$d->attributes['style'] = 'height: 20rem';
+			});
 			$h .= '<br/>';
 			$h .= $form->submit(s("Modifier"));
 

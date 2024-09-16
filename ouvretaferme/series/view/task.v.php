@@ -210,7 +210,8 @@ new JsonView('getStockField', function($data, AjaxTemplate $t) {
 	$t->qs('#task-harvest-stock')->outerHtml((new \series\TaskUi())->getStockField(
 		new \util\FormUi(),
 		$data->e,
-		$data->cProductStock
+		$data->cProductStock,
+		$data->eProductBookmark
 	));
 
 });

@@ -459,6 +459,7 @@
 		\series\TaskLib::fillDistribution($data->c);
 
 		$data->cProductStock = \selling\StockLib::getCompatibleProducts($data->c->first());
+
 		$data->eProductBookmark = \selling\StockLib::getBookmark($data->c->first());
 
 		\farm\ActionLib::getMainByFarm($data->eFarm);
@@ -650,7 +651,8 @@
 
 		$data->e['harvestUnit'] = \series\Task::POST('harvestUnit', 'harvestUnit', fn() => throw new NotExpectedAction('Invalid unit'));
 
-		$data->cProductStock = \selling\StockLib::getCompatibleProducts($data->e);
+			$data->cProductStock = \selling\StockLib::getCompatibleProducts($data->e);
+			$data->eProductBookmark = \selling\StockLib::getBookmark($data->e);
 
 		throw new \ViewAction($data);
 

@@ -225,10 +225,18 @@ class StockLib extends StockCrud {
 
 	public static function getBookmark(\series\Task $eTask): Product {
 
+		$eTask->expects(['farm', 'plant', 'harvestUnit', 'variety', 'harvestSize', 'cultivation']);
+
+		if($eTask['harvestUnit'] === NULL and $eTask['cultivation']->notEmpty()) {
+			$unit = $eTask['cultivation']['mainUnit'];
+		} else {
+			$unit = $eTask['harvestUnit'];
+		}
+
 		$eStockBookmark = StockBookmark::model()
 			->select('product')
 			->wherePlant($eTask['plant'])
-			->whereUnit($eTask['harvestUnit'])
+			->whereUnit($unit)
 			->whereVariety($eTask['variety'])
 			->whereSize($eTask['harvestSize'])
 			->get();
