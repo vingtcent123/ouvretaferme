@@ -195,6 +195,8 @@
 		$data->ccItemPast = \selling\ItemLib::getForPastStock($data->eFarm);
 		$data->cItemFuture = \selling\ItemLib::getForFutureStock($data->eFarm);
 
+		$data->cStockBookmark = \selling\StockLib::getBookmarksByFarm($data->eFarm);
+
 		throw new ViewAction($data);
 
 	})

@@ -40,7 +40,7 @@ class StockUi {
 
 	}
 
-	public function getList(\Collection $cProduct, \Collection $ccItemPast, \Collection $cItemFuture, \Search $search): string {
+	public function getList(\Collection $cProduct, \Collection $cStockBookmark, \Collection $ccItemPast, \Collection $cItemFuture, \Search $search): string {
 
 		$today = currentDate();
 		$yesterday = date('Y-m-d', strtotime('yesterday'));
@@ -67,6 +67,9 @@ class StockUi {
 					}
 					if($cItemFuture->notEmpty()) {
 						$h .= '<th class="text-center highlight hide-sm-down">'.s("Ventes à venir").'</th>';
+					}
+					if($cStockBookmark->notEmpty()) {
+						$h .= '<th class="text-center"></th>';
 					}
 					$h .= '<th></th>';
 				$h .= '</tr>';
@@ -202,6 +205,24 @@ class StockUi {
 
 					}
 
+					$bookmarks = $cStockBookmark->offsetExists($eProduct['id']) ? $cStockBookmark[$eProduct['id']]['number'] : 0;
+
+					if($cStockBookmark->notEmpty()) {
+
+						$h .= '<td class="text-center hide-sm-down"';
+							if($bookmarks) {
+								$h .= ' title="'.p("{value} ajout de stock en mémoire lors des récoltes", "{value} ajouts stock en mémoire lors des récoltes", $bookmarks).'"';
+							}
+						$h .= '>';
+
+							if($bookmarks) {
+								$h .= $bookmarks.' '.\Asset::icon('star-fill');
+							}
+
+						$h .= '</td>';
+
+					}
+
 					$h .= '<td class="stock-item-actions">';
 
 						if($eProduct->canWrite()) {
@@ -211,6 +232,9 @@ class StockUi {
 								$h .= '<div class="dropdown-title">'.encode($eProduct->getName()).'</div>';
 								$h .= '<a href="/selling/stock:update?id='.$eProduct['id'].'" class="dropdown-item">'.s("Corriger le stock").'</a>';
 								$h .= '<a href="/selling/stock:history?id='.$eProduct['id'].'" class="dropdown-item">'.s("Voir l'historique du stock").'</a>';
+								if($bookmarks) {
+									$h .= '<a data-ajax="/selling/stock:doDeleteBookmark" post-id="'.$eProduct['id'].'" class="dropdown-item" data-confirm="'.s("Vous préférence à la récolte pour ce stock seront effacées. Voulez-vous continuer ?").'">'.p("Supprimer l'ajout de stock<br/>en mémoire lors des récoltes", "Supprimer les ajouts de stock<br/>en mémoire lors des récoltes", $bookmarks).'</a>';
+								}
 								$h .= '<div class="dropdown-divider"></div>';
 								$h .= '<a data-ajax="selling/product:doDisableStock" post-id="'.$eProduct['id'].'" class="dropdown-item">'.\Asset::icon('box').'  '.s("Désactiver le suivi du stock").'</a>';
 							$h .= '</div>';

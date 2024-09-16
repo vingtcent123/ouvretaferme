@@ -223,6 +223,26 @@ class StockLib extends StockCrud {
 
 	}
 
+	public static function getBookmarksByFarm(\farm\Farm $eFarm): \Collection {
+
+		return StockBookmark::model()
+			->select([
+				'product',
+				'number' => new \Sql('COUNT(*)', 'int')
+			])
+			->group('product')
+			->getCollection(index: 'product');
+
+	}
+
+	public static function deleteBookmarksByProduct(Product $eProduct): void {
+
+		StockBookmark::model()
+			->whereProduct($eProduct)
+			->delete();
+
+	}
+
 	public static function getBookmark(\series\Task $eTask): Product {
 
 		$eTask->expects(['farm', 'plant', 'harvestUnit', 'variety', 'harvestSize', 'cultivation']);

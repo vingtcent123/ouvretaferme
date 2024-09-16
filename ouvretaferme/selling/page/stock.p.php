@@ -55,5 +55,12 @@
 
 		throw new ReloadAction('selling', 'Stock::updated');
 
-	}, validate: ['canWrite', 'acceptStock']);
+	}, validate: ['canWrite', 'acceptStock'])
+	->write('doDeleteBookmark', function($data) {
+
+		\selling\StockLib::deleteBookmarksByProduct($data->e);
+
+		throw new ReloadAction();
+
+	});
 ?>
