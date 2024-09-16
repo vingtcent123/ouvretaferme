@@ -104,6 +104,7 @@ class StockUi {
 
 					$h .= '<td class="td-min-content stock-item-unit">';
 						$h .= '<a href="/selling/stock:update?id='.$eProduct['id'].'" title="'.s("Corriger le stock").'">'.\main\UnitUi::getSingular($eProduct['unit'], short: TRUE).'</a>';
+						$h .= '<div class="stock-item-pencil">'.\Asset::icon('pencil-fill').'</div>';
 					$h .= '</td>';
 
 					$h .= '<td class="td-min-content stock-item-increment">';

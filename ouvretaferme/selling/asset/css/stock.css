@@ -21,11 +21,23 @@ td.stock-item-value {
 	padding-left: 1rem;
 }
 
+td.stock-item-value:hover + td.stock-item-unit a {
+	display: none;
+}
+
+td.stock-item-value:hover + td.stock-item-unit div.stock-item-pencil {
+	display: inline-block;
+}
+
 td.stock-item-unit {
 	padding-left: 0;
 	padding-right: 1rem;
 	font-size: 1.2rem;
 	line-height: 1;
+}
+
+td.stock-item-unit div.stock-item-pencil {
+	display: none;
 }
 
 @media (max-width: 767px) {
