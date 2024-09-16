@@ -5,7 +5,7 @@ Privilege::register('production', [
 
 Setting::register('production', [
 
-	'minWeekN-1' => 52-13,
+	'minWeekN-1' => 26,
 	'maxWeekN+1' => 26,
 
 	'maxSeasonStop' => 100
