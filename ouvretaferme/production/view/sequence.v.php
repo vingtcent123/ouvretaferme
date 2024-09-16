@@ -6,7 +6,7 @@ new AdaptativeView('display', function($data, FarmTemplate $t) {
 
 	$t->subNav = (new \farm\FarmUi())->getCultivationSubNav($data->eFarm);
 
-	echo (new \production\SequenceUi())->getHeader($data->e);
+	echo (new \production\SequenceUi())->getHeader($data->eFarm, $data->e, $data->cFlow);
 
 	echo (new \production\CropUi())->displayBySequence($data->e, $data->harvests, $data->cActionMain);
 

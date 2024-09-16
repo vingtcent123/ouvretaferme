@@ -169,38 +169,7 @@ class SequenceUi {
 				if($search?->get('status') === Sequence::ACTIVE) {
 
 					$h .= '<td class="text-end">';
-
-						if($eFarm->canManage()) {
-
-							$seasons = $eFarm->getSeasons();
-
-							if(count($seasons) === 1) {
-
-								$season = first($seasons);
-
-								$h .= '<a href="/series/series:createFromSequence?farm='.$eFarm['id'].'&season='.$season.'&sequence='.$eSequence['id'].'" class="btn btn-sm btn-outline-secondary">';
-									$h .= s("Créer une série");
-								$h .= '</a>';
-
-
-							} else {
-
-								$h .= '<a class="dropdown-toggle btn btn-sm btn-outline-secondary" data-dropdown="bottom-start">'.s("Créer une série").'</a>';
-								$h .= '<div class="dropdown-list">';
-
-									foreach($eFarm->getSeasons() as $season) {
-
-										$h .= '<a href="/series/series:createFromSequence?farm='.$eFarm['id'].'&season='.$season.'&sequence='.$eSequence['id'].'" class="dropdown-item">';
-											$h .= s("Saison {value}", $season);
-										$h .= '</a>';
-
-									}
-
-								$h .= '</div>';
-
-							}
-						}
-
+						$h .= $this->createSeries($eFarm, $eSequence, 'btn-sm btn-outline-secondary');
 					$h .= '</td>';
 
 				}
@@ -244,6 +213,45 @@ class SequenceUi {
 			$h .= '</table>';
 
 		$h .= '</div>';
+
+		return $h;
+
+	}
+
+	protected function createSeries(\farm\Farm $eFarm, Sequence $eSequence, string $btn): string {
+
+		$h = '';
+
+		if($eFarm->canManage()) {
+
+			$seasons = $eFarm->getSeasons();
+
+			if(count($seasons) === 1) {
+
+				$season = first($seasons);
+
+				$h .= '<a href="/series/series:createFromSequence?farm='.$eFarm['id'].'&season='.$season.'&sequence='.$eSequence['id'].'" class="btn '.$btn.'">';
+					$h .= s("Créer une série");
+				$h .= '</a>';
+
+
+			} else {
+
+				$h .= '<a class="dropdown-toggle btn '.$btn.'" data-dropdown="bottom-start">'.s("Créer une série").'</a>';
+				$h .= '<div class="dropdown-list">';
+
+					foreach($eFarm->getSeasons() as $season) {
+
+						$h .= '<a href="/series/series:createFromSequence?farm='.$eFarm['id'].'&season='.$season.'&sequence='.$eSequence['id'].'" class="dropdown-item">';
+							$h .= s("Saison {value}", $season);
+						$h .= '</a>';
+
+					}
+
+				$h .= '</div>';
+
+			}
+		}
 
 		return $h;
 
@@ -416,7 +424,7 @@ class SequenceUi {
 
 	}
 
-	public function getHeader(Sequence $eSequence): string {
+	public function getHeader(\farm\Farm $eFarm, Sequence $eSequence, \Collection $cFlow): string {
 
 		$h = '<div class="sequence-header">';
 
@@ -425,7 +433,10 @@ class SequenceUi {
 					$h .= $eSequence->quick('name', SequenceUi::name($eSequence));
 				$h .= '</h1>';
 				if($eSequence->canWrite()) {
-					$h .= '<div>';
+					$h .= '<div style="display: flex; flex-wrap: wrap; gap: 0.5rem">';
+						if($cFlow->count() > 0) {
+							$h .= $this->createSeries($eFarm, $eSequence, 'btn-primary');
+						}
 						$h .= '<a data-dropdown="bottom-end" class="btn btn-primary dropdown-toggle">'.\Asset::icon('gear-fill').'</a>';
 						$h .= '<div class="dropdown-list">';
 							$h .= '<div class="dropdown-title">'.encode($eSequence['name']).'</div>';
