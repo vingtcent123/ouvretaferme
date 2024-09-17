@@ -528,9 +528,7 @@
 
 			// Mise à jour du marquage ou non en favori du stock
 			if(POST('stockRemember', 'bool')) {
-
 				\selling\StockLib::remember($data->c->first(), $eProductStock);
-
 			} else {
 				\selling\StockLib::forget($data->c->first());
 			}

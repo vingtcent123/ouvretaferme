@@ -277,16 +277,20 @@ class StockLib extends StockCrud {
 
 			self::forget($eTask);
 
-			$eStockBookmark = new StockBookmark([
-				'farm' => $eTask['farm'],
-				'plant' => $eTask['plant'],
-				'unit' => $eTask['harvestUnit'],
-				'variety' => $eTask['variety'],
-				'size' => $eTask['harvestSize'],
-				'product' => $eProduct,
-			]);
+			if($eProduct->notEmpty()) {
 
-			StockBookmark::model()->insert($eStockBookmark);
+				$eStockBookmark = new StockBookmark([
+					'farm' => $eTask['farm'],
+					'plant' => $eTask['plant'],
+					'unit' => $eTask['harvestUnit'],
+					'variety' => $eTask['variety'],
+					'size' => $eTask['harvestSize'],
+					'product' => $eProduct,
+				]);
+
+				StockBookmark::model()->insert($eStockBookmark);
+
+			}
 
 		StockBookmark::model()->commit();
 
