@@ -51,6 +51,8 @@ Customer:
   invoiceStreet2: ?text8
   invoicePostcode: ?text8
   invoiceCity: ?text8
+  invoiceRegistration: ?text8
+  invoiceVat: ?text8
   deliveryStreet1: ?text8
   deliveryStreet2: ?text8
   deliveryPostcode: ?text8

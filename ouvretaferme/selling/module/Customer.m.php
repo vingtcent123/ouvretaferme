@@ -58,6 +58,8 @@ class CustomerModel extends \ModuleModel {
 			'invoiceStreet2' => ['text8', 'null' => TRUE, 'cast' => 'string'],
 			'invoicePostcode' => ['text8', 'null' => TRUE, 'cast' => 'string'],
 			'invoiceCity' => ['text8', 'null' => TRUE, 'cast' => 'string'],
+			'invoiceRegistration' => ['text8', 'null' => TRUE, 'cast' => 'string'],
+			'invoiceVat' => ['text8', 'null' => TRUE, 'cast' => 'string'],
 			'deliveryStreet1' => ['text8', 'null' => TRUE, 'cast' => 'string'],
 			'deliveryStreet2' => ['text8', 'null' => TRUE, 'cast' => 'string'],
 			'deliveryPostcode' => ['text8', 'null' => TRUE, 'cast' => 'string'],
@@ -71,7 +73,7 @@ class CustomerModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'name', 'legalName', 'email', 'farm', 'user', 'type', 'destination', 'discount', 'invoiceStreet1', 'invoiceStreet2', 'invoicePostcode', 'invoiceCity', 'deliveryStreet1', 'deliveryStreet2', 'deliveryPostcode', 'deliveryCity', 'phone', 'color', 'emailOptIn', 'emailOptOut', 'createdAt', 'status'
+			'id', 'name', 'legalName', 'email', 'farm', 'user', 'type', 'destination', 'discount', 'invoiceStreet1', 'invoiceStreet2', 'invoicePostcode', 'invoiceCity', 'invoiceRegistration', 'invoiceVat', 'deliveryStreet1', 'deliveryStreet2', 'deliveryPostcode', 'deliveryCity', 'phone', 'color', 'emailOptIn', 'emailOptOut', 'createdAt', 'status'
 		]);
 
 		$this->propertiesToModule += [
@@ -186,6 +188,14 @@ class CustomerModel extends \ModuleModel {
 
 	public function whereInvoiceCity(...$data): CustomerModel {
 		return $this->where('invoiceCity', ...$data);
+	}
+
+	public function whereInvoiceRegistration(...$data): CustomerModel {
+		return $this->where('invoiceRegistration', ...$data);
+	}
+
+	public function whereInvoiceVat(...$data): CustomerModel {
+		return $this->where('invoiceVat', ...$data);
 	}
 
 	public function whereDeliveryStreet1(...$data): CustomerModel {
