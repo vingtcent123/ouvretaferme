@@ -619,7 +619,7 @@ class FarmUi {
 
 	}
 
-	public function getCultivationSeriesTitle(\farm\Farm $eFarm, int $selectedSeason, string $selectedView, int $nSeries): string {
+	public function getCultivationSeriesTitle(\farm\Farm $eFarm, int $selectedSeason, string $selectedView, int $nSeries, bool $firstSeries): string {
 
 		$uiFarm = (new FarmUi());
 
@@ -637,48 +637,42 @@ class FarmUi {
 				$h .= $uiFarm->getSeasonsTabs($eFarm, fn($season) => \farm\FarmUi::urlCultivationSeries($eFarm, season: $season), $selectedSeason);
 			$h .= '</h1>';
 
-			if($nSeries > 0) {
+			switch($selectedView) {
 
-				switch($selectedView) {
+				case \farm\Farmer::AREA :
+					$h .=  '<div>';
+						if(
+							$eFarm->canManage() and
+							$firstSeries === FALSE
+						) {
+							$h .=  '<a data-get="/series/series:createFrom?farm='.$eFarm['id'].'&season='.$selectedSeason.'" class="btn btn-primary" data-ajax-class="Ajax.Query">'.\Asset::icon('plus-circle').'<span class="hide-xs-down"> '.s("Nouvelle série").'</span></a>';
+						}
+						if($nSeries >= 5) {
+							$h .= ' <a class="btn btn-primary" '.attr('onclick', 'Lime.Search.toggle("#series-search")').'>';
+								$h .= \Asset::icon('search');
+							$h .= '</a>';
+						}
+					$h .=  '</div>';
+					break;
 
-					case \farm\Farmer::AREA :
-						$h .=  '<div>';
-							if($eFarm->canManage()) {
-								$h .=  '<a data-get="/series/series:createFrom?farm='.$eFarm['id'].'&season='.$selectedSeason.'" class="btn btn-primary" data-ajax-class="Ajax.Query">'.\Asset::icon('plus-circle').'<span class="hide-xs-down"> '.s("Nouvelle série").'</span></a>';
-							}
-							if($nSeries >= 5) {
-								$h .= ' <a data-dropdown="bottom-end" onrender="Farm.renderSeriesDropdown(this)" class="btn btn-primary">'.\Asset::icon('list').'</a>';
-								$h .= '<div class="dropdown-list">';
-									$h .= '<div class="dropdown-title">'.s("Productions").'</div>';
-									$h .= '<div id="farm-subnav-plants"></div>';
-								$h .= '</div>';
-								$h .= ' <a class="btn btn-primary" '.attr('onclick', 'Lime.Search.toggle("#series-search")').'>';
-									$h .= \Asset::icon('search');
-								$h .= '</a>';
-							}
-						$h .=  '</div>';
-						break;
+				case \farm\Farmer::FORECAST:
+					$h .=  '<div>';
+						$h .=  '<a href="/plant/forecast:create?farm='.$eFarm['id'].'&season='.$selectedSeason.'" class="btn btn-primary">'.\Asset::icon('plus-circle').'<span class="hide-xs-down"> '.s("Ajouter une espèce").'</span></a>';
+					$h .=  '</div>';
+					break;
 
-					case \farm\Farmer::FORECAST:
-						$h .=  '<div>';
-							$h .=  '<a href="/plant/forecast:create?farm='.$eFarm['id'].'&season='.$selectedSeason.'" class="btn btn-primary">'.\Asset::icon('plus-circle').'<span class="hide-xs-down"> '.s("Ajouter une espèce").'</span></a>';
-						$h .=  '</div>';
-						break;
-
-					case \farm\Farmer::TOOL :
-					case \farm\Farmer::SEEDLING :
-					case \farm\Farmer::HARVESTING :
-					case \farm\Farmer::WORKING_TIME :
-						$h .=  '<div>';
-							if($nSeries >= 5) {
-								$h .= ' <a class="btn btn-primary" '.attr('onclick', 'Lime.Search.toggle("#series-search")').'>';
-									$h .= \Asset::icon('search');
-								$h .= '</a>';
-							}
-						$h .=  '</div>';
-						break;
-
-				}
+				case \farm\Farmer::TOOL :
+				case \farm\Farmer::SEEDLING :
+				case \farm\Farmer::HARVESTING :
+				case \farm\Farmer::WORKING_TIME :
+					$h .=  '<div>';
+						if($nSeries >= 5) {
+							$h .= ' <a class="btn btn-primary" '.attr('onclick', 'Lime.Search.toggle("#series-search")').'>';
+								$h .= \Asset::icon('search');
+							$h .= '</a>';
+						}
+					$h .=  '</div>';
+					break;
 
 			}
 

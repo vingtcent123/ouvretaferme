@@ -475,6 +475,7 @@ class SeriesLib extends SeriesCrud {
 		// Créer une nouvelle série
 		$eSeriesNew = new Series($eSeries->extracts($properties));
 		$eSeriesNew['name'] = (new SeriesUi())->getDuplicateName($eSeriesNew);
+		$eSeriesNew['duplicateOf'] = $eSeries;
 
 		Series::model()->insert($eSeriesNew);
 

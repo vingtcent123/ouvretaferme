@@ -464,7 +464,7 @@
 			\farm\FarmerLib::setView('viewPlanningField', $data->eFarm, GET('field', [\farm\Farmer::VARIETY, \farm\Farmer::SOIL], \farm\Farmer::SOIL));
 		}
 
-		$data->cSeriesImport = \series\SeriesLib::getImportPerennial($data->eFarm, $data->season);
+		$data->cSeriesImportPerennial = \series\SeriesLib::getImportPerennial($data->eFarm, $data->season);
 
 		$data->search = new Search([
 			'supplier' => GET('supplier', 'farm\Supplier'),

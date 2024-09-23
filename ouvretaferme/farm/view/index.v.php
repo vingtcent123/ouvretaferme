@@ -150,48 +150,11 @@ new AdaptativeView('series', function($data, FarmTemplate $t) {
 		echo '</div>';
 	}
 
-	echo $uiSeries->displayImport($data->cSeriesImport);
+	echo $uiFarm->getCultivationSeriesTitle($data->eFarm, $data->season, $view, $data->nSeries, $data->firstSeries);
 
-	echo $uiFarm->getCultivationSeriesTitle($data->eFarm, $data->season, $view, $data->nSeries);
+	echo $uiSeries->displayImport($data->eFarm, $data->nSeries, $data->cSeriesImportPerennial, $data->firstSeries, $data->season);
 
-	if($data->nSeries === 0 and $view !== \farm\Farmer::FORECAST) {
-
-		if($data->firstSeries) {
-
-			echo '<p class="util-block-help">';
-				echo s("Vous êtes sur la page qui permet de créer des séries pour votre plan de culture. Vous êtes sur le point de créer une première série pour la saison {value}. Si vous souhaitez créer une série pour une autre année, utilisez le menu déroulant ci-dessus pour changer de saison.", $data->season);
-			echo '</p>';
-
-		} else {
-
-			echo '<p class="util-block-help">';
-				echo s("Votre plan de culture pour la saison {value} est encore vide. À vous de jouer et de créer une première série pour cette saison !", $data->season);
-			echo '</p>';
-
-		}
-
-		echo '<div class="util-block-gradient">';
-
-			echo '<h4>'.s("Ajouter une première série dans le plan de culture").'</h4>';
-
-			$season = $data->season;
-
-			$currentYear = (int)date('Y');
-			$currentMonth = (int)date('m');
-
-			$nextYear = $currentYear + 1;
-
-			if($currentYear >= $data->eFarm['seasonFirst'] and $currentYear <= $data->eFarm['seasonLast']) {
-				$season = $currentYear;
-			}
-
-			if($currentMonth >= Setting::get('farm\newSeason') and $nextYear >= $data->eFarm['seasonFirst'] and $nextYear <= $data->eFarm['seasonLast']) {
-				$season = $nextYear;
-			}
-
-			echo $uiSeries->createFrom($data->eFarm, $season)->body;
-
-		echo '</div>';
+	if($data->nSeries === 0) {
 
 		echo $uiSeries->deleteSeason($data->eFarm, $data->season);
 

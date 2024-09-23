@@ -312,28 +312,6 @@ div.farm-subnav-wrapper > a.selected {
 
 }
 
-
-#farm-subnav-plants {
-	display: grid;
-	grid-template-columns: repeat(3, 1fr);
-	color: white;
-	align-items: center;
-}
-
-@media (max-width: 575px) {
-
-	#farm-subnav-plants {
-		grid-template-columns: 1fr 1fr;
-	}
-
-
-}
-
-#farm-subnav-plants > a {
-	padding: 0.375rem 1rem;
-	color: white;
-}
-
 /* Farm update */
 #farm-update .media-image-upload[data-type="farm-vignette"] {
 	border-radius: var(--radius);

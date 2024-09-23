@@ -79,19 +79,21 @@ class SeriesModel extends \ModuleModel {
 			'perennialSeason' => ['int8', 'min' => 1, 'max' => NULL, 'null' => TRUE, 'cast' => 'int'],
 			'perennialFirst' => ['element32', 'series\Series', 'null' => TRUE, 'cast' => 'element'],
 			'perennialStatus' => ['enum', [\series\Series::GROWING, \series\Series::CONTINUED, \series\Series::FINISHED], 'null' => TRUE, 'cast' => 'enum'],
+			'duplicateOf' => ['element32', 'series\Series', 'null' => TRUE, 'cast' => 'element'],
 			'createdAt' => ['datetime', 'cast' => 'string'],
 			'createdBy' => ['element32', 'user\User', 'cast' => 'element'],
 			'status' => ['enum', [\series\Series::OPEN, \series\Series::CLOSED], 'cast' => 'enum'],
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'name', 'farm', 'season', 'use', 'mode', 'plants', 'area', 'areaPermanent', 'areaTarget', 'length', 'lengthPermanent', 'lengthTarget', 'bedWidth', 'bedStartCalculated', 'bedStartUser', 'bedStopCalculated', 'bedStopUser', 'alleyWidth', 'comment', 'sequence', 'cycle', 'perennialLifetime', 'perennialSeason', 'perennialFirst', 'perennialStatus', 'createdAt', 'createdBy', 'status'
+			'id', 'name', 'farm', 'season', 'use', 'mode', 'plants', 'area', 'areaPermanent', 'areaTarget', 'length', 'lengthPermanent', 'lengthTarget', 'bedWidth', 'bedStartCalculated', 'bedStartUser', 'bedStopCalculated', 'bedStopUser', 'alleyWidth', 'comment', 'sequence', 'cycle', 'perennialLifetime', 'perennialSeason', 'perennialFirst', 'perennialStatus', 'duplicateOf', 'createdAt', 'createdBy', 'status'
 		]);
 
 		$this->propertiesToModule += [
 			'farm' => 'farm\Farm',
 			'sequence' => 'production\Sequence',
 			'perennialFirst' => 'series\Series',
+			'duplicateOf' => 'series\Series',
 			'createdBy' => 'user\User',
 		];
 
@@ -261,6 +263,10 @@ class SeriesModel extends \ModuleModel {
 
 	public function wherePerennialStatus(...$data): SeriesModel {
 		return $this->where('perennialStatus', ...$data);
+	}
+
+	public function whereDuplicateOf(...$data): SeriesModel {
+		return $this->where('duplicateOf', ...$data);
 	}
 
 	public function whereCreatedAt(...$data): SeriesModel {

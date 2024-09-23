@@ -154,7 +154,7 @@ new AdaptativeView('/presentation/producteur', function($data, MainTemplate $t) 
 	echo '<div class="home-presentation">';
 
 		echo '<div>';
-			echo '<h2>'.Asset::icon('arrow-right').''.s("Un outil de planification").'</h2>';
+			echo '<h2>'.Asset::icon('arrow-right').''.s("Un outil pour produire").'</h2>';
 			echo '<ul>';
 				echo '<li>'.s("<b>Vous planifiez votre saison en concevant vos plans de culture et d'assolement en ligne.</b> <small>Variétés, longueurs de planche ou surfaces, densités, objectifs de récolte, associations de culture... Enregistrez et retrouvez facilement toutes les informations sur chacune de vos séries. Un prévisionnel financier permet d'estimer vos ventes en fonction de votre plan de culture et de vos prévisions !</small>").'</li>';
 				echo '<li>'.s("<b>Vous maîtrisez votre temps de travail.</b> <small>Que ce soit à la ferme avec votre téléphone ou le soir sur l'ordinateur, un planning hebdomadaire ou quotidien vous permet de faire le suivi des interventions planifiées et réalisées sur la semaine. Renseignez facilement votre temps de travail pour comprendre là où passe votre temps.</small>").'</li>';
@@ -180,7 +180,7 @@ new AdaptativeView('/presentation/producteur', function($data, MainTemplate $t) 
 	echo '<div class="home-presentation">';
 
 		echo '<div>';
-			echo '<h2>'.Asset::icon('arrow-right').''.s("Un outil de communication").'</h2>';
+			echo '<h2>'.Asset::icon('arrow-right').''.s("Un outil pour communiquer").'</h2>';
 			echo '<ul>';
 				echo '<li>'.s("<b>Vous pouvez créer le site internet de votre ferme.</b> <small>Créez autant de pages que vous voulez sur votre nouveau site et personnalisez le thème graphique. Vous pouvez même avoir un nom de domaine si vous le souhaitez.</small>").'</li>';
 				echo '<li>'.s("<b>Aucune connaissance technique n'est nécessaire.</b> <small>Toutes les étapes de création de votre site internet se font depuis votre téléphone ou votre ordinateur.</small>").'</li>';

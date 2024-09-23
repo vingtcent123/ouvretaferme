@@ -172,6 +172,7 @@ Series:
   perennialSeason: ?int8(1, null)
   perennialFirst: ?series\Series
   perennialStatus: ?enum(GROWING, CONTINUED, FINISHED)
+  duplicateOf: ?series\Series
   createdAt: datetime = SPECIAL(now)
   createdBy: user\User = SPECIAL(user)
   status: enum(OPEN, CLOSED) = OPEN

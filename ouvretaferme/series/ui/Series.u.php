@@ -185,57 +185,133 @@ class SeriesUi {
 
 	}
 
-	public function displayImport(\Collection $cSeries): string {
+	public function displayImport(\farm\Farm $eFarm, int $nSeries, \Collection $cSeriesPerennial, bool $firstSeries, int $currentSeason): string {
 
-		if($cSeries->empty()) {
+		if($eFarm->canManage() === FALSE) {
 			return '';
 		}
 
-		$h = '<div class="series-import-grid-wrapper util-block">';
+		$previousSeason = $currentSeason - 1;
 
-			$h .= '<h4>'.s("Que faire des séries de plantations pérennes de la saison précédente ?").'</h4>';
+		$h = '';
 
-			$h .= '<div class="series-import-grid">';
+		if($nSeries === 0) {
 
-				$h .= '<div class="util-grid-header" style="grid-column: span 2">'.s("Série").'</div>';
-				$h .= '<div class="util-grid-header">'.s("Itinéraire technique").'</div>';
-				$h .= '<div class="util-grid-header">'.s("Démarrée").'</div>';
-				$h .= '<div class="util-grid-header" style="grid-column: span 2">'.s("Actions").'</div>';
+			if($firstSeries) {
 
-				foreach($cSeries as $eSeries) {
+				$h .= '<br/>';
+				$h .= '<h2>'.s("Ajouter une première série dans le plan de culture").'</h2>';
 
-					$h .= SeriesUi::link($eSeries);
-					$h .= '<div class="series-import-grid-cultivation">';
+				$h .= '<p class="util-block-help">';
+					$h .= s("Vous êtes sur la page qui permet de créer des séries pour votre plan de culture. Vous êtes sur le point de créer une première série pour la saison {value}. Si vous souhaitez créer une série pour une autre année, utilisez le menu déroulant ci-dessus pour changer de saison.", $currentSeason);
+				$h .= '</p>';
 
-						foreach($eSeries['cCultivation'] as $eCultivation) {
+				$h .= '<div class="util-block-gradient">';
 
-							$h .= '<div>';
-								$h .= \plant\PlantUi::getVignette($eCultivation['plant'], '2rem').' '.encode($eCultivation['plant']['name']);
-							$h .= '</div>';
+					$season = $currentSeason;
 
-						}
+					$currentYear = (int)date('Y');
+					$currentMonth = (int)date('m');
 
-					$h .= '</div>';
+					$nextYear = $currentYear + 1;
 
-					if($eSeries['sequence']->notEmpty()) {
-						$h .= \production\SequenceUi::link($eSeries['sequence']);
-					} else {
-						$h .= '<div>-</div>';
+					if($currentYear >= $eFarm['seasonFirst'] and $currentYear <= $eFarm['seasonLast']) {
+						$season = $currentYear;
 					}
 
-					$h .= '<div>';
-						$h .= s("Saison {value}", $eSeries['season'] - $eSeries['perennialSeason'] + 1);
-						$h .= ' &bull; ';
-						$h .= s("{value} saison", \util\TextUi::th($eSeries['perennialSeason'] + 1));
+					if($currentMonth >= \Setting::get('farm\newSeason') and $nextYear >= $eFarm['seasonFirst'] and $nextYear <= $eFarm['seasonLast']) {
+						$season = $nextYear;
+					}
+
+					$h .= $this->createFrom($eFarm, $season)->body;
+
+				$h .= '</div>';
+
+			} else if($eFarm['seasonFirst'] < $currentSeason) {
+
+				$h .= '<div class="util-block-help">';
+					$h .= '<h4>'.s("Préparez votre saison plus rapidement", ['previous' => $previousSeason, 'current' => $currentSeason]).'</h4>';
+					$h .= '<p>'.s("Créez plus facilement votre plan de culture pour cette nouvelle saison en dupliquant les séries de productions annuelles qui ont bien fonctionné lors des saisons précédentes. Pour cela, retournez simplement sur la planification de la saison de votre choix, puis cochez vos séries préférées et enfin dupliquez-les !").'</p>';
+					if($previousSeason === $eFarm['seasonFirst']) {
+						$h .= '<a href="'.\farm\FarmUi::urlCultivationSeries($eFarm, \farm\Farmer::SERIES, season: $previousSeason).'" class="btn btn-secondary">'.s("Revenir sur la planification {previous}",  ['previous' => $previousSeason]).'</a>';
+					} else {
+						$h .= '<a data-dropdown="bottom-start" class="dropdown-toggle btn btn-secondary">'.s("Revenir sur la planification de la saison ...").'</a>';
+						$h .= '<div class="dropdown-list">';
+							for($season = $currentSeason - 1, $count = 1; $season >= $eFarm['seasonFirst'], $count <= 3; $season--, $count++) {
+								$h .= '<a href="'.\farm\FarmUi::urlCultivationSeries($eFarm, \farm\Farmer::SERIES, season: $season).'" class="btn btn-secondary">'.s("Saison {value}", $season).'</a>';
+							}
+						$h .= '</div>';
+					}
+				$h .= '</div>';
+
+			}
+
+		}
+
+		if($cSeriesPerennial->notEmpty()) {
+
+			$h .= '<div class="util-block">';
+
+				$h .= '<h3>'.s("Que voulez-vous faire des productions pérennes de la saison {previous} ?", ['previous' => $previousSeason]).'</h3>';
+
+				if($cSeriesPerennial->notEmpty()) {
+
+					$h .= '<div class="util-overflow-md">';
+						$h .= '<table class="tr-even">';
+
+							$h .= '<thead>';
+								$h .= '<tr>';
+									$h .= '<th colspan="2">'.s("Série").'</th>';
+									$h .= '<th>'.s("Démarrée").'</th>';
+									$h .= '<th colspan="2">'.s("Actions").'</th>';
+								$h .= '</tr>';
+							$h .= '</thead>';
+							$h .= '<tbody>';
+
+								foreach($cSeriesPerennial as $eSeries) {
+
+									$h .= '<tr>';
+
+										$h .= '<td>'.SeriesUi::link($eSeries).'</td>';
+										$h .= '<td>';
+											$h .= '<div class="series-import-cultivation">';
+
+												foreach($eSeries['cCultivation'] as $eCultivation) {
+
+													$h .= '<div>';
+														$h .= \plant\PlantUi::getVignette($eCultivation['plant'], '2rem').' '.encode($eCultivation['plant']['name']);
+													$h .= '</div>';
+
+												}
+
+											$h .= '</div>';
+										$h .= '</td>';
+										$h .= '<td>';
+											$h .= s("Saison {value}", $eSeries['season'] - $eSeries['perennialSeason'] + 1);
+											$h .= ' &bull; ';
+											$h .= s("{value} saison", \util\TextUi::th($eSeries['perennialSeason'] + 1));
+										$h .= '</td>';
+										$h .= '<td class="td-min-content">';
+											$h .= '<a data-ajax="/series/series:perennialContinued" post-id="'.$eSeries['id'].'" class="btn btn-success">'.s("Continuer cette saison").'</a>';
+										$h .= '</td>';
+										$h .= '<td>';
+											$h .= '<a data-ajax="/series/series:perennialFinished" post-id="'.$eSeries['id'].'" class="btn btn-danger" data-confirm="'.s("Confirmez-vous que cette série ne sera pas cultivée pour la saison {value} ?", $eSeries['season'] + 1).'">'.s("Arrêter").'</a>';
+										$h .= '</td>';
+
+									$h .= '</tr>';
+
+								}
+
+							$h .= '</tbody>';
+
+						$h .= '</table>';
 					$h .= '</div>';
-					$h .= '<a data-ajax="/series/series:perennialContinued" post-id="'.$eSeries['id'].'" class="btn btn-success">'.s("Continuer cette saison").'</a>';
-					$h .= '<a data-ajax="/series/series:perennialFinished" post-id="'.$eSeries['id'].'" class="btn btn-danger" data-confirm="'.s("Confirmez-vous que cette série ne sera pas cultivée pour la saison {value} ?", $eSeries['season'] + 1).'">'.s("Arrêter").'</a>';
 
 				}
 
 			$h .= '</div>';
 
-		$h .= '</div>';
+		}
 
 		return $h;
 
@@ -1006,10 +1082,14 @@ class SeriesUi {
 			return '';
 		}
 
-		$h = '<br/>';
+		$h = '<div class="util-block">';
 
-		$h .= '<p class="util-danger">'.s("Vous n'avez pas encore ajouté de séries sur cette saison. Il est toujours possible de supprimer cette saison {value} si vous ne comptez pas travailler dessus pour le moment et de la recréer plus tard !", $season).'</p>';
-		$h .= '<a '.$link.' class="btn btn-danger">'.s("Supprimer la saison {value}", $season).'</a>';
+			$h .= '<h4>'.s("Supprimer cette saison").'</h4>';
+
+			$h .= '<p>'.s("Vous n'avez pas encore ajouté de série sur cette saison. Il est toujours possible de supprimer cette saison {value} si vous ne comptez pas travailler dessus pour le moment et de la recréer plus tard !", $season).'</p>';
+			$h .= '<a '.$link.' class="btn btn-danger">'.s("Supprimer la saison {value}", $season).'</a>';
+
+		$h .= '</div>';
 
 		return $h;
 

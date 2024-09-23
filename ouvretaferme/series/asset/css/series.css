@@ -998,20 +998,7 @@ div.series-submit {
 }
 
 /* Affichage des pérennes pour import sur une saison donnée */
-div.series-import-grid-wrapper {
-	overflow-x: auto;
-}
-
-div.series-import-grid {
-	display: grid;
-	min-width:calc(767px - 2 * var(--container-md-padding));
-	grid-template-columns: auto 1fr auto auto auto auto;
-	grid-column-gap: 1rem;
-	grid-row-gap: 0.5rem;
-	align-items: baseline;
-}
-
-div.series-import-grid-cultivation {
+div.series-import-cultivation {
 	display: grid;
 	grid-auto-flow: row;
 	grid-row-gap: 0.25rem;
@@ -1019,7 +1006,7 @@ div.series-import-grid-cultivation {
 
 @media (max-width: 991px) {
 
-	div.series-import-grid-cultivation > * {
+	div.series-import-cultivation > * {
 		display: none;
 	}
 
