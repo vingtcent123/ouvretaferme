@@ -453,12 +453,16 @@ class ProductUi {
 			$h .= '<dl class="util-presentation util-presentation-2">';
 				$h .= '<dt>'.self::p('plant')->label.'</dt>';
 				$h .= '<dd>'.($eProduct['plant']->empty() ? '' : \plant\PlantUi::link($eProduct['plant'])).'</dd>';
-				$h .= '<dt>'.self::p('quality')->label.'</dt>';
-				$h .= '<dd>'.($eProduct['quality'] ? \farm\FarmUi::getQualityLogo($eProduct['quality'], '1.5rem').' '.self::p('quality')->values[$eProduct['quality']] : '').'</dd>';
-				$h .= '<dt>'.self::p('size')->label.'</dt>';
-				$h .= '<dd>'.($eProduct['size'] ? encode($eProduct['size']) : '').'</dd>';
 				$h .= '<dt>'.self::p('unit')->label.'</dt>';
 				$h .= '<dd>'.($eProduct['unit'] ? self::p('unit')->values[$eProduct['unit']] : \Asset::icon('slash')).'</dd>';
+				$h .= '<dt>'.self::p('size')->label.'</dt>';
+				$h .= '<dd>'.($eProduct['size'] ? encode($eProduct['size']) : '').'</dd>';
+				$h .= '<dt>'.self::p('quality')->label.'</dt>';
+				$h .= '<dd>'.($eProduct['quality'] ? \farm\FarmUi::getQualityLogo($eProduct['quality'], '1.5rem').' '.self::p('quality')->values[$eProduct['quality']] : '').'</dd>';
+				if($eProduct['category']->notEmpty()) {
+					$h .= '<dt>'.self::p('category')->label.'</dt>';
+					$h .= '<dd>'.encode($eProduct['category']['name']).'</dd>';
+				}
 				if($eProduct['farm']->getSelling('hasVat')) {
 					$h .= '<dt>'.self::p('vat')->label.'</dt>';
 					$h .= '<dd>'.s("{value} %", \Setting::get('selling\vatRates')[$eProduct['vat']]).'</dd>';
@@ -533,13 +537,11 @@ class ProductUi {
 						$h .= $eProduct->quick('privatePrice', $value);
 					$h .= '</dd>';
 
-					if($eProduct['privateStep']) {
-						$h .= '<dt>'.self::p('privateStep')->label.'</dt>';
-						$h .= '<dd>';
-							$value = \main\UnitUi::getValue($eProduct['privateStep'], $eProduct['unit']);
-							$h .= $eProduct->quick('privateStep', $value);
-						$h .= '</dd>';
-					}
+					$h .= '<dt>'.self::p('privateStep')->label.'</dt>';
+					$h .= '<dd>';
+						$value = \main\UnitUi::getValue($eProduct['privateStep'] ?? \shop\ProductUi::getDefaultPrivateStep($eProduct), $eProduct['unit']);
+						$h .= $eProduct->quick('privateStep', $value);
+					$h .= '</dd>';
 
 				} else {
 					$h .= '<div class="color-muted">'.s("Pas de vente aux particuliers").'</div>';
@@ -583,13 +585,11 @@ class ProductUi {
 						$h .= '</dd>';
 					}
 
-					if($eProduct['proStep']) {
-						$h .= '<dt>'.self::p('proStep')->label.'</dt>';
-						$h .= '<dd>';
-							$value = \main\UnitUi::getValue($eProduct['proStep'], $eProduct['unit']);
-							$h .= $eProduct->quick('proStep', $value);
-						$h .= '</dd>';
-					}
+					$h .= '<dt>'.self::p('proStep')->label.'</dt>';
+					$h .= '<dd>';
+						$value = \main\UnitUi::getValue($eProduct['proStep'] ?? \shop\ProductUi::getDefaultProStep($eProduct), $eProduct['unit']);
+						$h .= $eProduct->quick('proStep', $value);
+					$h .= '</dd>';
 
 				} else {
 

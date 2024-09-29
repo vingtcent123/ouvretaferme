@@ -261,7 +261,7 @@ class ProductUi {
 
 		return match($eDate['type']) {
 			Date::PRIVATE => $eProduct['privateStep'] ?? self::getDefaultPrivateStep($eProduct),
-			Date::PRO => $eProduct['proStep'] ?? 1,
+			Date::PRO => $eProduct['proStep'] ?? self::getDefaultProStep($eProduct),
 		};
 
 	}
@@ -275,6 +275,12 @@ class ProductUi {
 			default => 1,
 
 		};
+
+	}
+
+	public static function getDefaultProStep(\selling\Product $eProduct): float {
+
+		return 1;
 
 	}
 

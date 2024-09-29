@@ -18,11 +18,15 @@
 	})
 	->doCreate(function($data) {
 		$category = $data->e['category']->empty() ? '' : $data->e['category']['id'];
-		throw new RedirectAction(\farm\FarmUi::urlSellingProduct($data->e['farm']).'?category='.$category.'&success=selling:Product::created');
+		throw new RedirectAction(\selling\ProductUi::url($data->e).'?category='.$category.'&success=selling:Product::created');
 	});
 
 (new \selling\ProductPage())
 	->read('/produit/{id}', function($data) {
+
+		if($data->e['category']->notEmpty()) {
+			$data->e['category'] = \selling\CategoryLib::getById($data->e['category']);
+		}
 
 		$data->eFarm = \farm\FarmLib::getById($data->e['farm']);
 
