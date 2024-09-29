@@ -983,7 +983,7 @@ class SeriesUi {
 
 				$h .= $form->group(
 					s("Choix des interventions à dupliquer"),
-					$form->checkboxes('copyActions[]', $cAction, $cAction, [
+					$form->checkboxes('copyActions[]', $cAction, attributes: [
 						'callbackCheckboxAttributes' => fn($eAction) => [
 							'data-fqn' => $eAction['fqn']
 						],

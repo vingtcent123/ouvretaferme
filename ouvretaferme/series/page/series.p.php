@@ -293,8 +293,7 @@ use series\Series;
 			$cAction = \farm\ActionLib::getByFarm($data->eFarm, id: POST('copyActions', 'array'));
 
 			if($cAction->empty()) {
-				\series\Series::fail('copyActions.check');
-				return;
+				throw new FailAction('series\copyActions.check');
 			}
 
 		} else {

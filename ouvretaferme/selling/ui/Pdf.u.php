@@ -629,7 +629,7 @@ class PdfUi {
 
 					if($eCustomer['invoiceRegistration'] !== NULL) {
 						$h .= '<div class="pdf-document-customer-registration">';
-							$h .= s("SIRET <u>{value}</u>", encode($eCustomer['invoiceRegistration'] !== NULL));
+							$h .= s("SIRET <u>{value}</u>", encode($eCustomer['invoiceRegistration']));
 						$h .= '</div>';
 					}
 					if($eCustomer['invoiceVat'] !== NULL) {
