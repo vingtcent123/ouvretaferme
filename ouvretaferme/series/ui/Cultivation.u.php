@@ -162,6 +162,7 @@ class CultivationUi {
 					$ePlant = $cCultivation->first()['plant'];
 
 					$cultivations = '';
+					$hasAnnual = FALSE;
 
 					$totalHarvestExpected = [];
 
@@ -171,7 +172,7 @@ class CultivationUi {
 
 						$eCultivation->expects(['cTask']);
 
-						$cultivations .= '<div class="series-item series-item-planning series-item-status-'.$eSeries['status'].'" id="series-item-'.$eCultivation['id'].'">';
+						$cultivations .= '<div class="series-item series-item-planning series-item-planning-'.$eSeries['cycle'].' series-item-status-'.$eSeries['status'].'" id="series-item-'.$eCultivation['id'].'">';
 
 							$batch = [];
 
@@ -187,9 +188,12 @@ class CultivationUi {
 								$batch[] = 'not-duplicate';
 							}
 
-							$cultivations .= '<label class="util-checkbox">';
-								$cultivations .= '<input type="checkbox" class="series-item-planning-checkbox" name="batch[]" value="'.$eSeries['id'].'" oninput="Series.changeSelection()" data-plant="'.$ePlant['id'].'" data-batch="'.implode(' ', $batch).'"/>';
-							$cultivations .= '</label>';
+							if($eSeries['cycle'] === Series::ANNUAL) {
+								$cultivations .= '<label class="util-checkbox">';
+									$cultivations .= '<input type="checkbox" class="series-item-planning-checkbox" name="batch[]" value="'.$eSeries['id'].'" oninput="Series.changeSelection()" data-plant="'.$ePlant['id'].'" data-batch="'.implode(' ', $batch).'"/>';
+									$hasAnnual = TRUE;
+								$cultivations .= '</label>';
+							}
 							$cultivations .= '<a href="/serie/'.$eSeries['id'].'" class="series-item-planning-details '.($field === \farm\Farmer::VARIETY ? 'series-item-planning-details-with-variety' : '').'">';
 								$cultivations .= $this->getSeriesForDisplay($eSeries, $eCultivation, tag: 'span');
 								if($field === \farm\Farmer::VARIETY) {
@@ -317,12 +321,14 @@ class CultivationUi {
 
 					}
 
-					$h .= '<div class="series-item series-item-planning series-item-title">';
-						$h .= '<div class="util-checkbox">';
-							$h .= '<label>';
-								$h .= '<input type="checkbox" class="series-item-planning-checkbox" oninput="Series.changePlantSelection(this, '.$ePlant['id'].')"/>';
-							$h .= '</label>';
-						$h .= '</div>';
+					$h .= '<div class="series-item series-item-planning series-item-planning-'.($hasAnnual ? Series::ANNUAL : Series::PERENNIAL).' series-item-title">';
+						if($hasAnnual) {
+							$h .= '<div class="util-checkbox">';
+								$h .= '<label>';
+									$h .= '<input type="checkbox" class="series-item-planning-checkbox" oninput="Series.changePlantSelection(this, '.$ePlant['id'].')"/>';
+								$h .= '</label>';
+							$h .= '</div>';
+						}
 						$h .= '<div class="series-item-title-plant">';
 							$h .= \plant\PlantUi::getVignette($ePlant, '2.4rem');
 							$h .= encode($ePlant['name']);
@@ -373,13 +379,13 @@ class CultivationUi {
 			$h .= $this->getWarningTargeted();
 		}
 
-		$h .= $this->getBatch();
+		$h .= $this->getBatch($season);
 
 		return $h;
 
 	}
 
-	public function getBatch(): string {
+	public function getBatch(int $season): string {
 
 		$menu = '<a data-ajax-submit="/series/series:doUpdateStatusCollection" post-status="'.Series::OPEN.'" class="batch-menu-open batch-menu-item">';
 			$menu .= \Asset::icon('unlock');
@@ -391,7 +397,12 @@ class CultivationUi {
 			$menu .= '<span>'.s("Clôturer").'</span>';
 		$menu .= '</a>';
 
-		$danger = '<a data-ajax-submit="/series/series:doDeleteCollection" data-confirm="'.s("Vous vous apprêtez à supprimer définitivement des séries. Voulez-vous continuer ?").'" class="batch-menu-item batch-menu-item-danger">';
+		$menu .= '<a data-ajax-submit="/series/series:duplicate" data-ajax-method="get" class="batch-menu-duplicate batch-menu-item">';
+			$menu .= \Asset::icon('copy');
+			$menu .= '<span>'.s("Dupliquer").'</span>';
+		$menu .= '</a>';
+
+		$danger = '<a data-ajax-submit="/series/series:doDeleteCollection" data-confirm="'.s("Vous vous apprêtez à supprimer définitivement des séries de la saison {value}. Voulez-vous continuer ?", $season).'" class="batch-menu-item batch-menu-item-danger">';
 			$danger .= \Asset::icon('trash');
 			$danger .= '<span>'.s("Supprimer").'</span>';
 		$danger .= '</a>';
@@ -1835,7 +1846,7 @@ class CultivationUi {
 							$h .= '<a data-ajax="/series/series:doUpdateStatus" post-id="'.$eSeries['id'].'" post-status="'.Series::CLOSED.'" class="dropdown-item" data-confirm="'.s("Une série clôturée est une série pour laquelle vous avez terminé toutes les interventions culturales. Confirmer ?").'">'.s("Clôturer la série").'</a>';
 						}
 						if($eSeries->acceptDuplicate()) {
-							$h .= '<a href="/series/series:duplicate?id='.$eSeries['id'].'" class="dropdown-item">'.s("Dupliquer la série").'</a>';
+							$h .= '<a href="/series/series:duplicate?ids[]='.$eSeries['id'].'" class="dropdown-item">'.s("Dupliquer la série").'</a>';
 							$h .= '<div class="dropdown-divider"></div>';
 						}
 						$h .= '<a data-ajax="/series/series:doDelete" post-id="'.$eSeries['id'].'" data-confirm="'.s("Souhaitez-vous réellement supprimer cette série de votre plan de culture ?").'" class="dropdown-item">'.s("Supprimer la série").'</a>';

@@ -386,19 +386,30 @@ div.form-group.form-group-nested > .form-control-label {
 	padding: 0.5rem;
 	cursor: pointer;
 	transition: background-color 0.5s;
-	border-radius: calc(var(--radius) / 2);
+}
+
+.field-radio-group.field-radio-group-1 > label:not(:last-child) {
+	border-bottom: 1px dashed var(--border);
 }
 
 .field-radio-group > label:hover {
-	background-color: var(--background);
+	background-color: #ccc2;
 }
 
-.field-radio-group > label > input:checked + span {
+.field-radio-group > label {
+	display: grid;
+	grid-template-columns: auto 1fr;
+	grid-column-gap: 0.5rem;
+	align-items: center;
+}
+
+.field-radio-group > label > input[type="radio"]:checked:not(:disabled) + span {
 	font-weight: bold;
 }
 
+.field-radio-group > label > input:disabled,
 .field-radio-group > label > input:disabled + span {
-	color: var(--muted);
+	opacity: 0.5;
 }
 
 .field-radio-group-action {

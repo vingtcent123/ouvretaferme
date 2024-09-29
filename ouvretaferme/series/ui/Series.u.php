@@ -939,53 +939,82 @@ class SeriesUi {
 
 	}
 
-	public function duplicate(Series $eSeries, \Collection $cTask, \Collection $cPlace): \Panel {
+	public function duplicate(\farm\Farm $eFarm, \Collection $cSeries, \Collection $cTaskMetadata, bool $hasPlaces): \Panel {
 
 		$form = new \util\FormUi();
+
+		$eSeriesFirst = $cSeries->first();
+		$eSeriesFirst['farm'] = $eFarm; // Pour avoir la première et la dernière saison de la ferme
 
 		$h = '';
 
 		$h .= $form->openAjax('/series/series:doDuplicate', ['id' => 'series-duplicate']);
 
-			$h .= $form->hidden('id', $eSeries['id']);
+			if($cSeries->count() === 1) {
 
-			$h .= $form->group(
-				s("Nom"),
-				SeriesUi::link($eSeries)
-			);
+				$h .= $form->hidden('ids[]', $eSeriesFirst['id']);
 
-			$h .= $form->dynamicGroup($eSeries, 'season', function(\PropertyDescriber $d) use ($eSeries) {
+				$h .= $form->group(
+					s("Nom"),
+					SeriesUi::link($eSeriesFirst)
+				);
+
+			} else {
+
+				$h .= $form->group(
+					s("Séries"),
+					$form->checkboxes('ids[]', $cSeries, $cSeries, [
+						'all' => FALSE,
+						'callbackCheckboxContent' => function($eSeries) {
+							return SeriesUi::name($eSeries);
+						}
+					])
+				);
+
+			}
+
+			$h .= $form->dynamicGroup($eSeriesFirst, 'season', function(\PropertyDescriber $d) use ($eSeriesFirst) {
 				$d->label = s("Dupliquer pour la saison");
-				$d->attributes['onclick'] = 'Series.changeDuplicateSeason(this, '.$eSeries['season'].')';
+				$d->attributes['onclick'] = 'Series.changeDuplicateSeason(this, '.$eSeriesFirst['season'].')';
 				$d->after = \util\FormUi::info(s("Lorsque vous copiez une série sur une saison différente, les interventions sont replacées en <i>À faire</i> et les récoltes sont remises à zéro."), class: 'series-duplicate-season hide');
 			});
 
-			if($cTask->notEmpty() and $cPlace->notEmpty()) {
+			if($cTaskMetadata->notEmpty() and $hasPlaces) {
 				$h .= $form->group(content: '<h3>'.s("Que souhaitez-vous dupliquer de la série ?").'</h3>');
 			}
 
-			if($cTask->notEmpty()) {
+			if($cTaskMetadata->notEmpty()) {
 
 				$h .= $form->group(
 					s("Dupliquer les interventions"),
 					$form->yesNo('copyTasks', TRUE, attributes: [
-						'callbackRadioAttributes' => fn() => ['onchange' => 'Series.changeDuplicateTasks(this)']
+						'callbackRadioAttributes' => fn() => [
+							'onchange' => 'Series.changeDuplicateTasks(this)'
+						]
 					])
 				);
 
-				$cAction = $cTask
-					->reduce(function($eTask, $cAction) {
-						$cAction[$eTask['action']['id']] ??= new \farm\Action($eTask['action']->extracts(['id', 'name']));
-						return $cAction;
-					}, new \Collection())
+				$cAction = $cTaskMetadata
+					->getColumnCollection('action')
 					->sort('name');
 
 				$h .= $form->group(
 					s("Choix des interventions à dupliquer"),
-					$form->checkboxes('copyActions[]', $cAction, $cAction)
+					$form->checkboxes('copyActions[]', $cAction, $cAction, [
+						'callbackCheckboxAttributes' => fn($eAction) => [
+							'data-fqn' => $eAction['fqn']
+						],
+						'callbackCheckboxContent' => function($eAction) {
+							$action = encode($eAction['name']);
+							if($eAction['fqn'] === ACTION_RECOLTE) {
+								$action .= '<br/><span class="color-muted">'.s("Les quantités récoltées seront également dupliquées").'</span>';
+							}
+							return $action;
+						}
+					])
 				);
 
-				if($cTask
+				if($cTaskMetadata
 					->filter(fn($eTask) => $eTask['time'] > 0)
 					->notEmpty()) {
 
@@ -1003,7 +1032,7 @@ class SeriesUi {
 				$h .= $form->hidden('copyTasks', FALSE);
 			}
 
-			if($cPlace->notEmpty()) {
+			if($hasPlaces) {
 
 				$h .= $form->group(
 					s("Dupliquer l'assolement"),
@@ -1022,7 +1051,7 @@ class SeriesUi {
 
 		return new \Panel(
 			id: 'panel-series-duplicate',
-			title: s("Dupliquer une série"),
+			title: $cSeries->count() === 1 ? s("Dupliquer une série") : s("Dupliquer des séries"),
 			body: $h,
 		);
 

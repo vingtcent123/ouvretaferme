@@ -3,6 +3,14 @@ namespace series;
 
 class PlaceLib extends PlaceCrud {
 
+	public static function existsBySeries(\Collection $c): bool {
+
+		return Place::model()
+			->whereSeries('IN', $c)
+			->count() > 0;
+
+	}
+
 	public static function getByElement(Series|Task $e): \Collection {
 
 		$cPlace = Place::model()

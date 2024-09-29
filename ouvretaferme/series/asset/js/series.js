@@ -133,6 +133,12 @@ class Series {
 				qsa('.batch-menu-close', button => button.removeHide());
 			}
 
+			if(selection.filter('[data-batch~="not-duplicate"]').length > 0) {
+				qsa('.batch-menu-duplicate', button => button.hide());
+			} else {
+				qsa('.batch-menu-duplicate', button => button.removeHide());
+			}
+
 		});
 
 	}
@@ -219,13 +225,15 @@ class Series {
 
 		if(toSeason !== fromSeason) {
 			seasonInfo.classList.remove('hide');
-			timesheetInfo.classList.remove('hide');
-			timesheetField.classList.add('disabled');
-			timesheetField.qs('input[value="0"]').checked = true;
+			timesheetInfo?.classList.remove('hide');
+			timesheetField?.classList.add('disabled');
+			if(timesheetField) {
+				timesheetField.qs('input[value="0"]').checked = true;
+			}
 		} else {
 			seasonInfo.classList.add('hide');
-			timesheetInfo.classList.add('hide');
-			timesheetField.classList.remove('disabled');
+			timesheetInfo?.classList.add('hide');
+			timesheetField?.classList.remove('disabled');
 		}
 
 	}
@@ -239,11 +247,11 @@ class Series {
 		const actionsWrapper = form.qs('[data-wrapper="copyActions"]');
 
 		if(hasTasks) {
-			timesheetWrapper.classList.remove('hide');
-			actionsWrapper.classList.remove('hide');
+			timesheetWrapper?.classList.remove('hide');
+			actionsWrapper?.classList.remove('hide');
 		} else {
-			timesheetWrapper.classList.add('hide');
-			actionsWrapper.classList.add('hide');
+			timesheetWrapper?.classList.add('hide');
+			actionsWrapper?.classList.add('hide');
 		}
 
 	}

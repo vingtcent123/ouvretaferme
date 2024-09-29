@@ -1,4 +1,7 @@
 <?php
+
+use series\Series;
+
 (new \series\CultivationPage(function($data) {
 
 		\user\ConnectionLib::checkLogged();
@@ -247,15 +250,41 @@
 
 	})
 	->doUpdate(fn() => throw new ReloadAction())
-	->read('duplicate', function($data) {
+	->doDelete(function($data) {
+		throw new RedirectAction(\farm\FarmUi::urlCultivationSeries($data->eFarm, \farm\Farmer::SERIES, season: $data->season).'?success=series:Series::deleted');
+	});
 
-		$data->cTask = \series\TaskLib::getBySeries($data->e);
-		$data->cPlace = \series\PlaceLib::getByElement($data->e);
+
+(new \series\SeriesPage())
+	->applyCollection(function($data, Collection $c) {
+		$c->validateProperty('farm', $c->first()['farm']);
+	})
+	->doUpdateCollectionProperties('doUpdateStatusCollection', ['status'], fn($data) => throw new ReloadAction());
+
+
+(new Page(function($data) {
+
+		$data->c = \series\SeriesLib::getByIds(REQUEST('ids', 'array'), sort: ['name' => SORT_ASC]);
+
+		\series\Series::validateBatch($data->c);
+
+		$data->eFarm = \farm\FarmLib::getById($data->c->first()['farm']);
+
+
+	}))
+	->get('duplicate', function($data) {
+
+		$data->c->validate('canRead', 'acceptDuplicate');
+
+		$data->cTaskMetadata = \series\TaskLib::getMetadataForDuplicate($data->c);
+		$data->hasPlaces = \series\PlaceLib::existsBySeries($data->c);
 
 		throw new ViewAction($data);
 
-	}, validate: ['canRead', 'acceptDuplicate'])
-	->write('doDuplicate', function($data) {
+	})
+	->post('doDuplicate', function($data) {
+
+		$data->c->validate('canRead', 'acceptDuplicate');
 
 		$copyTasks = POST('copyTasks', 'bool');
 
@@ -274,41 +303,37 @@
 
 		$fw = new FailWatch();
 
-		$data->e['oldSeason'] = $data->e['season'];
-		$data->e->build(['season'], $_POST);
-
 		$fw->validate();
 
-		$data->eSeriesNew = \series\SeriesLib::duplicate(
-			$data->e,
-			$copyTasks,
-			$cAction,
-			POST('copyTimesheet', 'bool'),
-			POST('copyPlaces', 'bool')
-		);
+		\series\Series::model()->beginTransaction();
 
-		throw new RedirectAction(\series\SeriesUi::url($data->eSeriesNew).'?success=series:Series::duplicated');
-	}, validate: ['canWrite', 'acceptDuplicate'])
-	->doDelete(function($data) {
-		throw new RedirectAction(\farm\FarmUi::urlCultivationSeries($data->eFarm, \farm\Farmer::SERIES, season: $data->season).'?success=series:Series::deleted');
-	});
+		foreach($data->c as $e) {
 
+			$e['oldSeason'] = $e['season'];
+			$e['farm'] = $data->eFarm;
+			$e->build(['season'], $_POST);
 
-(new \series\SeriesPage())
-	->applyCollection(function($data, Collection $c) {
-		$c->validateProperty('farm', $c->first()['farm']);
+			$fw->validate();
+
+			$data->eSeriesNew = \series\SeriesLib::duplicate(
+				$e,
+				$copyTasks,
+				$cAction,
+				POST('copyTimesheet', 'bool'),
+				POST('copyPlaces', 'bool')
+			);
+
+		};
+
+		Series::model()->commit();
+
+		if($data->c->count() === 1) {
+			throw new RedirectAction(\series\SeriesUi::url($data->eSeriesNew).'?success=series:Series::duplicated');
+		} else {
+			throw new RedirectAction(\farm\FarmUi::urlCultivationSeries($data->eFarm, \farm\Farmer::SERIES, season: $data->eSeriesNew['season']).'&success=series:Series::duplicatedCollection');
+		}
+
 	})
-	->doUpdateCollectionProperties('doUpdateStatusCollection', ['status'], fn($data) => throw new ReloadAction());
-
-
-(new Page(function($data) {
-
-		$data->c = \series\SeriesLib::getByIds(REQUEST('ids', 'array'));
-
-		\series\Series::validateBatch($data->c);
-
-
-	}))
 	->post('doDeleteCollection', function($data) {
 
 		$data->c->validate('canDelete');

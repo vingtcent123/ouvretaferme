@@ -304,7 +304,7 @@ div.series-item-body {
 
 /* Affichage de la planification */
 
-div.series-item-planning:hover {
+div.series-item-planning:not(.series-item-header):hover {
 	background-color: #7771;
 }
 
@@ -319,6 +319,12 @@ div.series-item-planning:hover {
 
 .series-item-planning-details {
 	line-height: 1.2;
+}
+
+.series-item-planning-perennial .series-item-planning-details,
+.series-item-planning-perennial .series-item-title-plant {
+	grid-column: span 2;
+	padding-left: 1rem;
 }
 
 div.series-item-planning-details {

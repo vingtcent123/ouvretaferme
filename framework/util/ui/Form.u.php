@@ -805,7 +805,9 @@ class FormUi {
 					in_array($optionValue, $formatSelectedValues, TRUE)
 				);
 
-				$h .= '<label>'.$this->inputCheckbox($name, $optionValue, ['checked' => $checked] + call_user_func($callbackCheckboxAttributes, $option, $key)).' '.$label.'</label>';
+				$h .= '<label>';
+					$h .= $this->inputCheckbox($name, $optionValue, ['checked' => $checked] + call_user_func($callbackCheckboxAttributes, $option, $key)).' <span>'.$label.'</span>';
+				$h .= '</label>';
 
 			}
 

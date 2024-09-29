@@ -1894,7 +1894,7 @@ Lime.Asset = class {
 	static icon(name) {
 
 		return '<svg class="asset-icon asset-icon-'+ name +'" fill="currentColor">'+
-			'<use xlink:href="/asset/framework/util/lib/bootstrap-icons-1.10.2/bootstrap-icons.svg?2#'+ name +'"/>'+
+			'<use xlink:href="/asset/framework/util/lib/bootstrap-icons-1.11.3.svg#'+ name +'"/>'+
 			'</svg>';
 
 	}

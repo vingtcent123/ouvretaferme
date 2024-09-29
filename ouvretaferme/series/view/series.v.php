@@ -17,7 +17,7 @@ new AdaptativeView('/serie/{id}', function($data, FarmTemplate $t) {
 });
 
 new AdaptativeView('duplicate', function($data, PanelTemplate $t) {
-	return (new \series\SeriesUi())->duplicate($data->e, $data->cTask, $data->cPlace);
+	return (new \series\SeriesUi())->duplicate($data->eFarm, $data->c, $data->cTaskMetadata, $data->hasPlaces);
 });
 
 new AdaptativeView('update', function($data, PanelTemplate $t) {

@@ -407,7 +407,7 @@ class Asset {
 		}
 
 		$icon = '<svg class="'.$class.'" fill="currentColor" '.attrs($attributes).'>';
-		  $icon .= '<use xlink:href="'.self::directory('util').'/lib/bootstrap-icons-1.10.2/bootstrap-icons.svg?2#'.$name.'"/>';
+		  $icon .= '<use xlink:href="'.self::directory('util').'/lib/bootstrap-icons-1.11.3.svg#'.$name.'"/>';
 		$icon .= '</svg>';
 
 		return $icon;

@@ -169,6 +169,19 @@ class TaskLib extends TaskCrud {
 
 	}
 
+	public static function getMetadataForDuplicate(\Collection $cSeries): \Collection {
+
+		return Task::model()
+			->select([
+				'action' => ['name', 'fqn'],
+				'time' => new \Sql('SUM(time)', 'float'),
+			])
+			->whereSeries('IN', $cSeries)
+			->group('action')
+			->getCollection();
+
+	}
+
 	public static function getBySeries(Series $eSeries) {
 
 		return Task::model()
@@ -194,7 +207,7 @@ class TaskLib extends TaskCrud {
 			])
 			->whereSeries($eSeries)
 			->sort(new \Sql('display ASC'))
-			->getCollection(NULL, NULL);
+			->getCollection();
 
 	}
 
