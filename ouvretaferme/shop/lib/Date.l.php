@@ -300,10 +300,14 @@ class DateLib extends DateCrud {
 
 		}
 
-		if($cDateRelevant->empty()) {
-			return $one ? new Date() : new \Collection();
+		if($one) {
+			return $cDateRelevant->empty() ? new Date() : $cDateRelevant->first();
 		} else {
-			return $one ? $cDateRelevant->first() : $cDateRelevant;
+			if($cDateRelevant->empty()) {
+				return new \Collection();
+			} else {
+				return $cDateRelevant->count() > 8 ? $cDateRelevant->slice(0, 8) : $cDateRelevant;
+			}
 		}
 
 	}

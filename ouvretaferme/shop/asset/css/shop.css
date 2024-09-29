@@ -85,7 +85,6 @@
 }
 
 .shop-header-flow {
-	overflow-x: auto;
 	margin-top: 1rem;
 }
 
@@ -188,14 +187,6 @@
 
 }
 
-h2.shop-date a {
-	color: var(--text);
-}
-
-/********** SHOP ADMIN **********/
-span.shop-active {
-
-}
 span.shop-closed {
 	color: var(--danger);
 }

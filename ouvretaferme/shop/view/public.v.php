@@ -29,9 +29,9 @@ new AdaptativeView('shop', function($data, ShopTemplate $t) {
 
 	if($data->eDateSelected->notEmpty()) {
 
-		echo '<h2 class="shop-date">';
+		echo '<h3>';
 			echo \shop\DateUi::name($data->eDateSelected);
-		echo '</h2>';
+		echo '</h3>';
 
 		if($data->eDateSelected['isOrderable']) {
 

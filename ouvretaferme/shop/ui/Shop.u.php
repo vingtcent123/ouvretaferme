@@ -590,15 +590,7 @@ class ShopUi {
 					$h .= '</div>';
 				}
 
-				if($cDate->notEmpty()) {
-
-					if($cDate->count() > 1) {
-						$h .= '<div class="shop-header-flow">';
-							$h .= (new \shop\DateUi())->getDeliveryPeriods($eShop, $cDate, $eDateSelected);
-						$h .= '</div>';
-					}
-
-				} else {
+				if($cDate->empty()) {
 
 					$h .= '<div class="shop-header-flow">';
 
@@ -618,6 +610,12 @@ class ShopUi {
 
 
 		$h .= '</div>';
+
+		if($cDate->count() > 1) {
+			$h .= '<div class="shop-header-flow">';
+				$h .= (new \shop\DateUi())->getDeliveryPeriods($eShop, $cDate, $eDateSelected);
+			$h .= '</div>';
+		}
 
 		return $h;
 

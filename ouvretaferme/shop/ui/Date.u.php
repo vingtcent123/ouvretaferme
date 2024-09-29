@@ -108,15 +108,17 @@ class DateUi {
 		if($cDate->notEmpty()) {
 
 			$h .= '<h3>'.\Asset::icon('calendar3').'&nbsp;&nbsp;'.s("Prochaines ventes").'</h3>';
-			$h .= '<div class="shop-header-date-days">';
-				foreach($cDate as $eDate) {
+			$h .= '<div class="util-overflow-xs">';
+				$h .= '<div class="shop-header-date-days">';
+					foreach($cDate as $eDate) {
 
-					$h .= '<a href="'.ShopUi::dateUrl($eShop, $eDate).'" class="'.($eDate['id'] === $eDateSelected['id'] ? 'selected' : '').'">';
-						$h .= '<div class="shop-header-date-day-name">'.\util\DateUi::getDayName(date('N', strtotime($eDate['deliveryDate']))).'</div>';
-						$h .= '<div class="shop-header-date-day-value">'.\util\DateUi::textual($eDate['deliveryDate'], \util\DateUi::DAY_MONTH).'</div>';
-					$h .= '</a>';
+						$h .= '<a href="'.ShopUi::dateUrl($eShop, $eDate).'" class="'.($eDate['id'] === $eDateSelected['id'] ? 'selected' : '').'">';
+							$h .= '<div class="shop-header-date-day-name">'.\util\DateUi::getDayName(date('N', strtotime($eDate['deliveryDate']))).'</div>';
+							$h .= '<div class="shop-header-date-day-value">'.\util\DateUi::textual($eDate['deliveryDate'], \util\DateUi::DAY_MONTH).'</div>';
+						$h .= '</a>';
 
-				}
+					}
+				$h .= '</div>';
 			$h .= '</div>';
 
 		} else {
