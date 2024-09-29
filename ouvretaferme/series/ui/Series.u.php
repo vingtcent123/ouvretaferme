@@ -207,24 +207,7 @@ class SeriesUi {
 				$h .= '</p>';
 
 				$h .= '<div class="util-block-gradient">';
-
-					$season = $currentSeason;
-
-					$currentYear = (int)date('Y');
-					$currentMonth = (int)date('m');
-
-					$nextYear = $currentYear + 1;
-
-					if($currentYear >= $eFarm['seasonFirst'] and $currentYear <= $eFarm['seasonLast']) {
-						$season = $currentYear;
-					}
-
-					if($currentMonth >= \Setting::get('farm\newSeason') and $nextYear >= $eFarm['seasonFirst'] and $nextYear <= $eFarm['seasonLast']) {
-						$season = $nextYear;
-					}
-
-					$h .= $this->createFrom($eFarm, $season)->body;
-
+					$h .= $this->createFrom($eFarm, $currentSeason)->body;
 				$h .= '</div>';
 
 			} else {
@@ -1377,7 +1360,7 @@ class SeriesUi {
 				break;
 
 			case 'alleyWidth' :
-				$d->after = \util\FormUi::info(s("Les rendements sont calculés en intégrant la largeur du passe-pied.").'</small>');
+				$d->after = \util\FormUi::info(s("Les rendements et la fertilisation sont calculés en intégrant la largeur du passe-pied.").'</small>');
 				$d->append = s("cm");
 				break;
 

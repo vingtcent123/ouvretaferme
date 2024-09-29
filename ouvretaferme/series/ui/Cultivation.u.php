@@ -101,9 +101,11 @@ class CultivationUi {
 			$h .= '<div class="series-item-header series-item-planning">';
 
 				$h .= '<div class="util-grid-header util-checkbox">';
-					$h .= '<label>';
-						$h .= '<input type="checkbox" class="series-item-planning-checkbox" oninput="Series.changeAllSelection(this)"/>';
-					$h .= '</label>';
+					if($ccCultivation->count() > 1) {
+						$h .= '<label>';
+							$h .= '<input type="checkbox" class="series-item-planning-checkbox" oninput="Series.changeAllSelection(this)"/>';
+						$h .= '</label>';
+					}
 				$h .= '</div>';
 				$h .= '<div class="util-grid-header">';
 					$h .= s("Série");
@@ -324,9 +326,11 @@ class CultivationUi {
 					$h .= '<div class="series-item series-item-planning series-item-planning-'.($hasAnnual ? Series::ANNUAL : Series::PERENNIAL).' series-item-title">';
 						if($hasAnnual) {
 							$h .= '<div class="util-checkbox">';
-								$h .= '<label>';
-									$h .= '<input type="checkbox" class="series-item-planning-checkbox" oninput="Series.changePlantSelection(this, '.$ePlant['id'].')"/>';
-								$h .= '</label>';
+								if($cCultivation->count() > 1) {
+									$h .= '<label>';
+										$h .= '<input type="checkbox" class="series-item-planning-checkbox" oninput="Series.changePlantSelection(this, '.$ePlant['id'].')"/>';
+									$h .= '</label>';
+								}
 							$h .= '</div>';
 						}
 						$h .= '<div class="series-item-title-plant">';

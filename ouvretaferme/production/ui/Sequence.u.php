@@ -892,7 +892,7 @@ class SequenceUi {
 
 			case 'alleyWidth' :
 				$d->append = s("cm");
-				$d->after = \util\FormUi::info(s("Les rendements sont calculés en intégrant la largeur du passe-pied."));
+				$d->after = \util\FormUi::info(s("Les rendements et la fertilisation sont calculés en intégrant la largeur du passe-pied."));
 				$d->group = function(Sequence $e) {
 
 					$use = $e['use'] ?? NULL;
