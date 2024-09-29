@@ -341,7 +341,10 @@ class MarketUi {
 
 		if($eSale['items'] > 0) {
 
-			$money = ($eSale['paymentMethod'] === NULL or $eSale['paymentMethod'] === Sale::CASH);
+			$money = (
+				$eSale['preparationStatus'] !== Sale::CANCELED and
+				($eSale['paymentMethod'] === NULL or $eSale['paymentMethod'] === Sale::CASH)
+			);
 
 			$h .= (new SaleUi())->getSummary($eSale, onlyIncludingVat: TRUE, includeMoney: $money);
 
