@@ -112,9 +112,6 @@
 	->doDelete(fn() => throw new ReloadAction('selling', 'Product::deleted'));
 
 (new \selling\ProductPage())
-	->applyElement(function($data, \selling\Product $e) {
-		$e['farm'] = $data->c->first()['farm'];
-	})
 	->applyCollection(function($data, Collection $c) {
 		$c->validateProperty('farm', $c->first()['farm']);
 	})

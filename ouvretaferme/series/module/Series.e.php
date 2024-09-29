@@ -61,21 +61,49 @@ class Series extends SeriesElement {
 
 	}
 
-	public static function validateBatch(\Collection $cSeries, \farm\Farm $eFarm): void {
+	public function acceptStatus(): bool {
+
+		return $this->isAnnual();
+
+	}
+
+	public function acceptOpen(): bool {
+
+		return $this->isClosed();
+
+	}
+
+	public function acceptClose(): bool {
+
+		return (
+			$this->acceptStatus() and
+			$this->isOpen()
+		);
+
+	}
+
+	public function acceptDuplicate(): bool {
+
+		return $this->isAnnual();
+
+	}
+
+	public static function validateBatch(\Collection $cSeries, \farm\Farm $eFarm = new \farm\Farm()): void {
 
 		if($cSeries->empty()) {
 			throw new \FailAction('series\Series::series.check');
 		} else {
+
+			if($eFarm->empty()) {
+				$eFarm = $cSeries->first()['farm'];
+			}
 
 			$season = $cSeries->first()['season'];
 
 			foreach($cSeries as $eSeries) {
 
 				$eSeries->validateProperty('farm', $eFarm);
-
-				if($eSeries['season'] !== $season) {
-					throw new \NotExpectedAction('Different seasons');
-				}
+				$eSeries->validateProperty('season', $season);
 
 			}
 		}
@@ -98,6 +126,12 @@ class Series extends SeriesElement {
 			'season.check' => function(int $season): bool {
 				$this->expects(['farm']);
 				return $this['farm']->checkSeason($season);
+			},
+
+			'status.check' => function(): bool {
+
+				return $this->acceptStatus();
+
 			},
 
 			'use.prepare' => function() use ($for): bool {

@@ -353,7 +353,7 @@ class ProductUi {
 			$menu .= '<span>'.s("Désactiver").'</span>';
 		$menu .= '</a>';
 
-		return \util\BatchUi::group($menu);
+		return \util\BatchUi::group($menu, title: s("Pour les produits sélectionnés"));
 
 	}
 

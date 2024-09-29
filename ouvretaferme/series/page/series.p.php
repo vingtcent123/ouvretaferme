@@ -249,21 +249,13 @@
 	->doUpdate(fn() => throw new ReloadAction())
 	->read('duplicate', function($data) {
 
-		if($data->e['cycle'] !== \series\Series::ANNUAL) {
-			throw new NotExpectedAction('Can duplicate only annual series');
-		}
-
 		$data->cTask = \series\TaskLib::getBySeries($data->e);
 		$data->cPlace = \series\PlaceLib::getByElement($data->e);
 
 		throw new ViewAction($data);
 
-	})
+	}, validate: ['canRead', 'acceptDuplicate'])
 	->write('doDuplicate', function($data) {
-
-		if($data->e['cycle'] !== \series\Series::ANNUAL) {
-			throw new NotExpectedAction('Can duplicate only annual series');
-		}
 
 		$copyTasks = POST('copyTasks', 'bool');
 
@@ -296,8 +288,34 @@
 		);
 
 		throw new RedirectAction(\series\SeriesUi::url($data->eSeriesNew).'?success=series:Series::duplicated');
-	})
+	}, validate: ['canWrite', 'acceptDuplicate'])
 	->doDelete(function($data) {
 		throw new RedirectAction(\farm\FarmUi::urlCultivationSeries($data->eFarm, \farm\Farmer::SERIES, season: $data->season).'?success=series:Series::deleted');
+	});
+
+
+(new \series\SeriesPage())
+	->applyCollection(function($data, Collection $c) {
+		$c->validateProperty('farm', $c->first()['farm']);
+	})
+	->doUpdateCollectionProperties('doUpdateStatusCollection', ['status'], fn($data) => throw new ReloadAction());
+
+
+(new Page(function($data) {
+
+		$data->c = \series\SeriesLib::getByIds(REQUEST('ids', 'array'));
+
+		\series\Series::validateBatch($data->c);
+
+
+	}))
+	->post('doDeleteCollection', function($data) {
+
+		$data->c->validate('canDelete');
+
+		\series\SeriesLib::deleteCollection($data->c);
+
+		throw new ReloadAction('series', 'Series::deletedCollection');
+
 	});
 ?>

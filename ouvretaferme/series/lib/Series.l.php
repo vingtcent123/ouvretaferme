@@ -1042,6 +1042,14 @@ class SeriesLib extends SeriesCrud {
 
 	}
 
+	public static function deleteCollection(\Collection $cSeries): void {
+
+		foreach($cSeries as $eSeries) {
+			self::delete($eSeries);
+		}
+
+	}
+
 	public static function recalculate(\farm\Farm $eFarm, Series $e, \farm\Action $eAction = new \farm\Action()): void {
 
 		if($e->empty()) {

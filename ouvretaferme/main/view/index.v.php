@@ -1,7 +1,7 @@
 <?php
 new AdaptativeView('anonymous', function($data, MainTemplate $t) {
 
-	$t->title = s("Plateforme de planification et vente pour le maraichage");
+	$t->title = s("Plateforme de planification et vente pour le maraichage biologique");
 	$t->metaDescription = s("Logiciel dédié aux maraîchers en agriculture biologique pour organiser le travail à la ferme, de la planification des cultures jusqu'à la vente.");
 	$t->template = 'home-main';
 

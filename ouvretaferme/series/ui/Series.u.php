@@ -227,20 +227,24 @@ class SeriesUi {
 
 				$h .= '</div>';
 
-			} else if($eFarm['seasonFirst'] < $currentSeason) {
+			} else {
 
 				$h .= '<div class="util-block-help">';
-					$h .= '<h4>'.s("Préparez votre saison plus rapidement", ['previous' => $previousSeason, 'current' => $currentSeason]).'</h4>';
-					$h .= '<p>'.s("Créez plus facilement votre plan de culture pour cette nouvelle saison en dupliquant les séries de productions annuelles qui ont bien fonctionné lors des saisons précédentes. Pour cela, retournez simplement sur la planification de la saison de votre choix, puis cochez vos séries préférées et enfin dupliquez-les !").'</p>';
-					if($previousSeason === $eFarm['seasonFirst']) {
-						$h .= '<a href="'.\farm\FarmUi::urlCultivationSeries($eFarm, \farm\Farmer::SERIES, season: $previousSeason).'" class="btn btn-secondary">'.s("Revenir sur la planification {previous}",  ['previous' => $previousSeason]).'</a>';
-					} else {
-						$h .= '<a data-dropdown="bottom-start" class="dropdown-toggle btn btn-secondary">'.s("Revenir sur la planification de la saison ...").'</a>';
-						$h .= '<div class="dropdown-list">';
-							for($season = $currentSeason - 1, $count = 1; $season >= $eFarm['seasonFirst'], $count <= 3; $season--, $count++) {
-								$h .= '<a href="'.\farm\FarmUi::urlCultivationSeries($eFarm, \farm\Farmer::SERIES, season: $season).'" class="btn btn-secondary">'.s("Saison {value}", $season).'</a>';
-							}
-						$h .= '</div>';
+					$h .= '<h4>'.s("Vous n'avez pas encore créé de série sur la saison {current} !", ['current' => $currentSeason]).'</h4>';
+					$h .= '<p>'.s("Pour démarrer, vous pouvez <link>créer une nouvelle série</link> dès maintenant pour cette saison.", ['link' => '<a data-get="/series/series:createFrom?farm='.$eFarm['id'].'&season='.$currentSeason.'" data-ajax-class="Ajax.Query">']).'</p>';
+
+					if($eFarm['seasonFirst'] < $currentSeason) {
+						$h .= '<p>'.s("Vous pouvez également créer facilement votre plan de culture {current} en dupliquant les séries de productions annuelles qui ont bien fonctionné lors des saisons précédentes. Pour cela, retournez simplement sur la planification de la saison de votre choix, puis cochez vos séries préférées et enfin dupliquez-les !", ['current' => $currentSeason]).'</p>';
+						if($previousSeason === $eFarm['seasonFirst']) {
+							$h .= '<a href="'.\farm\FarmUi::urlCultivationSeries($eFarm, \farm\Farmer::SERIES, season: $previousSeason).'" class="btn btn-secondary">'.s("Revenir sur la planification {previous}",  ['previous' => $previousSeason]).'</a>';
+						} else {
+							$h .= '<a data-dropdown="bottom-start" class="dropdown-toggle btn btn-secondary">'.s("Revenir sur la planification d'une autre saison").'</a>';
+							$h .= '<div class="dropdown-list">';
+								for($season = $currentSeason - 1, $count = 1; $season >= $eFarm['seasonFirst'], $count <= 3; $season--, $count++) {
+									$h .= '<a href="'.\farm\FarmUi::urlCultivationSeries($eFarm, \farm\Farmer::SERIES, season: $season).'" class="btn btn-secondary">'.s("Saison {value}", $season).'</a>';
+								}
+							$h .= '</div>';
+						}
 					}
 				$h .= '</div>';
 

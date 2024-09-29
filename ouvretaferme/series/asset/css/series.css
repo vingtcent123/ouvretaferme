@@ -118,10 +118,6 @@ div.series-item-header {
 	padding-right: 1rem;
 }
 
-div.series-item-header.series-item-planning {
-	padding-right: 0;
-}
-
 @media (min-width: 768px) {
 
 	div.series-item-header:not(.series-item-forecast):not(.series-item-header-not-sticky) {
@@ -193,10 +189,6 @@ div.series-item-body {
 	padding-bottom: 0.25rem;
 }
 
-.series-item.series-item-planning {
-	padding-right: 0;
-}
-
 .series-item.series-item-compare {
 	opacity: 0.5;
 }
@@ -225,6 +217,16 @@ div.series-item-body {
 	position: relative;
 	transition: background-color 0.5s;
 	text-decoration: none;
+	padding-left: 0;
+}
+
+.series-item-planning.series-item {
+	padding-right: 0;
+}
+
+.series-item-planning.series-item-header {
+	padding-left: 0;
+	padding-right: 0;
 }
 
 .series-item-planning-wrapper div.series-grid {
@@ -234,43 +236,39 @@ div.series-item-body {
 @media (min-width: 1200px) {
 
 	.series-item-planning {
-		grid-template-columns: 23rem 15rem 7rem 1fr;
+		grid-template-columns: 3rem 23rem 15rem 7rem 1fr;
 	}
 
 	.series-item-planning-wrapper div.series-grid {
-		left: calc(23rem + 15rem + 7rem);
+		left: calc(3rem + 23rem + 15rem + 7rem);
 	}
 
 	.series-item-planning-harvest .series-item-planning {
-		grid-template-columns: 23rem 10rem 7rem 7rem 1fr;
+		grid-template-columns: 3rem 23rem 10rem 7rem 7rem 1fr;
 	}
 
 	.series-item-planning-wrapper.series-item-planning-harvest div.series-grid {
-		left: calc(1rem + 23rem + 10rem + 7rem + 7rem);
+		left: calc(1rem + 3rem + 23rem + 10rem + 7rem + 7rem);
 	}
 
-}
-
-a.series-item-planning {
-	text-decoration: none;
 }
 
 @media (min-width: 992px) and (max-width: 1199px) {
 
 	.series-item-planning {
-		grid-template-columns: 20rem 7rem 1fr;
+		grid-template-columns: 3rem 20rem 7rem 1fr;
 	}
 
 	.series-item-planning-wrapper div.series-grid {
-		left: calc(20rem + 7rem);
+		left: calc(3rem + 20rem + 7rem);
 	}
 
 	.series-item-planning-harvest .series-item-planning {
-		grid-template-columns: 20rem 7rem 7rem 1fr;
+		grid-template-columns: 3rem 20rem 7rem 7rem 1fr;
 	}
 
 	.series-item-planning-wrapper.series-item-planning-harvest div.series-grid {
-		left: calc(1rem + 20rem + 7rem + 7rem);
+		left: calc(1rem + 3rem + 20rem + 7rem + 7rem);
 	}
 
 	.series-item-planning-place {
@@ -282,19 +280,19 @@ a.series-item-planning {
 @media (max-width: 991px) {
 
 	.series-item-planning {
-		grid-template-columns: 20rem 7rem 1fr;
+		grid-template-columns: 3rem 20rem 7rem 1fr;
 	}
 
 	.series-item-planning-wrapper div.series-grid {
-		left: calc(20rem + 7rem);
+		left: calc(3rem + 20rem + 7rem);
 	}
 
 	.series-item-planning-harvest .series-item-planning {
-		grid-template-columns: 17rem 6rem 6rem 1fr;
+		grid-template-columns: 3rem 17rem 6rem 6rem 1fr;
 	}
 
 	.series-item-planning-wrapper.series-item-planning-harvest div.series-grid {
-		left: calc(1rem + 17rem + 6rem + 6rem);
+		left: calc(1rem + 3rem + 17rem + 6rem + 6rem);
 	}
 
 	.series-item-planning-place {
@@ -306,12 +304,8 @@ a.series-item-planning {
 
 /* Affichage de la planification */
 
-a.series-item-planning:hover {
+div.series-item-planning:hover {
 	background-color: #7771;
-}
-
-a.series-item-planning:hover span.series-item-planning-details-name {
-	text-decoration: underline;
 }
 
 .series-item-status-closed {
@@ -325,6 +319,14 @@ a.series-item-planning:hover span.series-item-planning-details-name {
 
 .series-item-planning-details {
 	line-height: 1.2;
+}
+
+div.series-item-planning-details {
+	text-decoration: none;
+}
+
+div.series-item-planning-details:hover span.series-item-planning-details-name {
+	text-decoration: underline;
 }
 
 @media (min-width: 1200px) {
@@ -413,7 +415,7 @@ div.series-item-timeline-event-max div.series-item-timeline-event:not(.series-it
 	border-right: 0;
 }
 
-a.series-item:not(.series-item-header) div.series-item-planning-place {
+div.series-item:not(.series-item-header) div.series-item-planning-place {
 	position: relative;
 	font-size: 0.9rem;
 	line-height: 1.2;
@@ -422,7 +424,7 @@ a.series-item:not(.series-item-header) div.series-item-planning-place {
 	white-space: nowrap;
 }
 
-a.series-item:not(.series-item-header) div.series-item-planning-area {
+div.series-item:not(.series-item-header) div.series-item-planning-area {
 	color: var(--text);
 	text-align: right;
 	font-size: 0.9rem;
@@ -432,7 +434,7 @@ div.series-item-planning-timeline {
 	margin-left: 1rem;
 }
 
-a.series-item:not(.series-item-header) div.series-item-planning-timeline {
+div.series-item:not(.series-item-header) div.series-item-planning-timeline {
 	height: 100%;
 }
 
@@ -441,7 +443,7 @@ div.series-item-planning-harvest-objective {
 	font-size: 0.9rem;
 }
 
-a.series-item:not(.series-item-header) div.series-item-planning-harvest-objective {
+div.series-item:not(.series-item-header) div.series-item-planning-harvest-objective {
 	color: var(--text);
 }
 

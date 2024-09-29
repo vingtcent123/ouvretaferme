@@ -5460,19 +5460,27 @@ abstract class ModulePage extends Page {
 
 			$fw = new \FailWatch();
 
-			if($properties instanceof Closure) {
-				$properties = $properties->call($this, $c);
+			foreach($c as $e) {
+
+				if($properties instanceof Closure) {
+					$properties = $properties->call($this, $e);
+				}
+
+				$e->build($properties, $_POST, for: 'update');
+
 			}
 
-			$e = new $this->module;
-			$this->applyElement->call($this, $data, $e);
-			$e->build($properties, $_POST, for: 'update');
+			$fw->validate();
+
+			($this->module)::model()->beginTransaction();
+
+			foreach($c as $e) {
+				($this->module.'Lib')::update($e, $properties);
+			}
 
 			$fw->validate();
 
-			($this->module.'Lib')::updateCollection($c, $e, $properties);
-
-			$fw->validate();
+			($this->module)::model()->commit();
 
 			$action->call($this, $data);
 

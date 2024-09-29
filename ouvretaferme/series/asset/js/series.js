@@ -101,6 +101,42 @@ document.delegateEventListener('change', '#series-create-plant input[name="use"]
 
 class Series {
 
+	static changeAllSelection(target) {
+
+		qsa('#series-wrapper .series-item-planning-checkbox', node => node.checked = target.checked);
+
+		this.changeSelection();
+
+	}
+
+	static changePlantSelection(target, plantId) {
+
+		qsa('#series-wrapper [data-plant="'+ plantId +'"][name="batch[]"]', node => node.checked = target.checked);
+
+		this.changeSelection();
+
+	}
+
+	static changeSelection() {
+
+		return Batch.changeSelection(function(selection) {
+
+			if(selection.filter('[data-batch~="not-open"]').length > 0) {
+				qsa('.batch-menu-open', button => button.hide());
+			} else {
+				qsa('.batch-menu-open', button => button.removeHide());
+			}
+
+			if(selection.filter('[data-batch~="not-close"]').length > 0) {
+				qsa('.batch-menu-close', button => button.hide());
+			} else {
+				qsa('.batch-menu-close', button => button.removeHide());
+			}
+
+		});
+
+	}
+
 	static selectCreateSeason(target) {
 		qsa('#series-create-from input[name="season"]', node => node.value = target.value);
 	}

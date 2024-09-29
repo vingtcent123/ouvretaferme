@@ -100,6 +100,11 @@ class CultivationUi {
 
 			$h .= '<div class="series-item-header series-item-planning">';
 
+				$h .= '<div class="util-grid-header util-checkbox">';
+					$h .= '<label>';
+						$h .= '<input type="checkbox" class="series-item-planning-checkbox" oninput="Series.changeAllSelection(this)"/>';
+					$h .= '</label>';
+				$h .= '</div>';
 				$h .= '<div class="util-grid-header">';
 					$h .= s("Série");
 				$h .= '</div>';
@@ -166,14 +171,31 @@ class CultivationUi {
 
 						$eCultivation->expects(['cTask']);
 
-						$cultivations .= '<a href="/serie/'.$eSeries['id'].'" class="series-item series-item-planning series-item-status-'.$eSeries['status'].'" id="series-item-'.$eCultivation['id'].'">';
+						$cultivations .= '<div class="series-item series-item-planning series-item-status-'.$eSeries['status'].'" id="series-item-'.$eCultivation['id'].'">';
 
-							$cultivations .= '<div class="series-item-planning-details '.($field === \farm\Farmer::VARIETY ? 'series-item-planning-details-with-variety' : '').'">';
+							$batch = [];
+
+							if($eSeries->acceptOpen() === FALSE) {
+								$batch[] = 'not-open';
+							}
+
+							if($eSeries->acceptClose() === FALSE) {
+								$batch[] = 'not-close';
+							}
+
+							if($eSeries->acceptDuplicate() === FALSE) {
+								$batch[] = 'not-duplicate';
+							}
+
+							$cultivations .= '<label class="util-checkbox">';
+								$cultivations .= '<input type="checkbox" class="series-item-planning-checkbox" name="batch[]" value="'.$eSeries['id'].'" oninput="Series.changeSelection()" data-plant="'.$ePlant['id'].'" data-batch="'.implode(' ', $batch).'"/>';
+							$cultivations .= '</label>';
+							$cultivations .= '<a href="/serie/'.$eSeries['id'].'" class="series-item-planning-details '.($field === \farm\Farmer::VARIETY ? 'series-item-planning-details-with-variety' : '').'">';
 								$cultivations .= $this->getSeriesForDisplay($eSeries, $eCultivation, tag: 'span');
 								if($field === \farm\Farmer::VARIETY) {
 									$cultivations .= '<span class="series-item-planning-details-variety">'.(new \production\SliceUi())->getLine($eCultivation['cSlice']).'</span>';
 								}
-							$cultivations .= '</div>';
+							$cultivations .= '</a>';
 
 							if($field === \farm\Farmer::SOIL) {
 								$cultivations .= '<div class="series-item-planning-place">';
@@ -291,11 +313,16 @@ class CultivationUi {
 								$cultivations .= $this->getTimeline($eFarm, $season, $eSeries, $eCultivation, $eCultivation['cTask']);
 							$cultivations .= '</div>';
 
-						$cultivations .= '</a>';
+						$cultivations .= '</div>';
 
 					}
 
-					$h .= '<div class="series-item series-item-planning series-item-title" data-ref="plant-'.$ePlant['id'].'">';
+					$h .= '<div class="series-item series-item-planning series-item-title">';
+						$h .= '<div class="util-checkbox">';
+							$h .= '<label>';
+								$h .= '<input type="checkbox" class="series-item-planning-checkbox" oninput="Series.changePlantSelection(this, '.$ePlant['id'].')"/>';
+							$h .= '</label>';
+						$h .= '</div>';
 						$h .= '<div class="series-item-title-plant">';
 							$h .= \plant\PlantUi::getVignette($ePlant, '2.4rem');
 							$h .= encode($ePlant['name']);
@@ -346,7 +373,30 @@ class CultivationUi {
 			$h .= $this->getWarningTargeted();
 		}
 
+		$h .= $this->getBatch();
+
 		return $h;
+
+	}
+
+	public function getBatch(): string {
+
+		$menu = '<a data-ajax-submit="/series/series:doUpdateStatusCollection" post-status="'.Series::OPEN.'" class="batch-menu-open batch-menu-item">';
+			$menu .= \Asset::icon('unlock');
+			$menu .= '<span>'.s("Réouvrir").'</span>';
+		$menu .= '</a>';
+
+		$menu .= '<a data-ajax-submit="/series/series:doUpdateStatusCollection" post-status="'.Series::CLOSED.'" class="batch-menu-close batch-menu-item" data-confirm="'.s("Des séries clôturées sont des séries pour lesquelles vous avez terminé toutes les interventions culturales. Confirmer ?").'">';
+			$menu .= \Asset::icon('lock');
+			$menu .= '<span>'.s("Clôturer").'</span>';
+		$menu .= '</a>';
+
+		$danger = '<a data-ajax-submit="/series/series:doDeleteCollection" data-confirm="'.s("Vous vous apprêtez à supprimer définitivement des séries. Voulez-vous continuer ?").'" class="batch-menu-item batch-menu-item-danger">';
+			$danger .= \Asset::icon('trash');
+			$danger .= '<span>'.s("Supprimer").'</span>';
+		$danger .= '</a>';
+
+		return \util\BatchUi::group($menu, $danger, title: s("Pour les séries sélectionnées"));
 
 	}
 
@@ -1776,13 +1826,15 @@ class CultivationUi {
 							$h .= '<a href="/series/cultivation:create?series='.$eSeries['id'].'" class="dropdown-item">'.s("Ajouter une autre production").'</a>';
 							$h .= '<div class="dropdown-divider"></div>';
 						}
-						if($eSeries['cycle'] === Series::ANNUAL) {
 
-							$h .= match($eSeries['status']) {
-								Series::OPEN => '<a data-ajax="/series/series:doUpdateStatus" post-id="'.$eSeries['id'].'" post-status="'.Series::CLOSED.'" class="dropdown-item" data-confirm="'.s("Une série clôturée est une série pour laquelle vous avez terminé toutes les interventions culturales. Confirmer ?").'">'.s("Clôturer la série").'</a>',
-								Series::CLOSED => '<a data-ajax="/series/series:doUpdateStatus" post-id="'.$eSeries['id'].'" post-status="'.Series::OPEN.'" class="dropdown-item">'.s("Réouvrir la série").'</a>'
-							};
+						if($eSeries->acceptOpen()) {
+							$h .= '<a data-ajax="/series/series:doUpdateStatus" post-id="'.$eSeries['id'].'" post-status="'.Series::OPEN.'" class="dropdown-item">'.s("Réouvrir la série").'</a>';
+						}
 
+						if($eSeries->acceptClose()) {
+							$h .= '<a data-ajax="/series/series:doUpdateStatus" post-id="'.$eSeries['id'].'" post-status="'.Series::CLOSED.'" class="dropdown-item" data-confirm="'.s("Une série clôturée est une série pour laquelle vous avez terminé toutes les interventions culturales. Confirmer ?").'">'.s("Clôturer la série").'</a>';
+						}
+						if($eSeries->acceptDuplicate()) {
 							$h .= '<a href="/series/series:duplicate?id='.$eSeries['id'].'" class="dropdown-item">'.s("Dupliquer la série").'</a>';
 							$h .= '<div class="dropdown-divider"></div>';
 						}

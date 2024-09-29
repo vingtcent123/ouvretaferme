@@ -358,7 +358,7 @@ class FlowUi {
 			$danger .= '<span>'.s("Supprimer").'</span>';
 		$danger .= '</a>';
 
-		$h .= \util\BatchUi::group($menu, $danger);
+		$h .= \util\BatchUi::group($menu, $danger, title: s("Pour les interventions sélectionnées"));
 
 		return $h;
 

@@ -497,7 +497,7 @@ class TaskUi {
 			$danger = NULL;
 		}
 		
-		$h .= \util\BatchUi::group($menu, $danger, 'Task.hidePlanningSelection()');
+		$h .= \util\BatchUi::group($menu, $danger, title: s("Pour les interventions sélectionnées"), hide: 'Task.hidePlanningSelection()');
 
 		return $h;
 

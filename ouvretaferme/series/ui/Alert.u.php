@@ -69,6 +69,7 @@ class AlertUi {
 			'Series::created' => s("La série a bien été créée !"),
 			'Series::duplicated' => s("La série a bien été dupliquée ici !"),
 			'Series::deleted' => s("La série a bien été supprimée."),
+			'Series::deletedCollection' => s("Les séries ont bien été supprimées."),
 
 			default => NULL
 

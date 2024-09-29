@@ -888,6 +888,12 @@ tbody .td-checkbox > label {
 .util-overflow > * {
 }
 
+.util-checkbox {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
 .util-action {
 	display: flex;
 	flex-wrap: wrap;
@@ -2601,4 +2607,15 @@ div.util-buttons > .util-button div.util-button-text {
 div.util-buttons > .util-button h4 {
 	margin-bottom: 0.5rem;
 	color: white;
+}
+
+@media print {
+
+	header,
+	footer,
+	.btn,
+	.dropdown-list-open {
+		display: none !important;
+	}
+
 }
