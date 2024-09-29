@@ -130,11 +130,20 @@ class ProductUi {
 				$url = NULL;
 			}
 
-			$h .= '<div class="shop-product-image" ';
+			$h .= '<div ';
 			if($url !== NULL) {
-				$h .= 'style="background-image: url('.$url.')"';
+				$h .= 'class="shop-product-image" style="background-image: url('.$url.')"';
+			} else {
+				$h .= 'class="shop-product-image shop-product-image-empty"';
 			}
 			$h .= '>';
+				if($url === NULL) {
+					if($eProductSelling['plant']->notEmpty()) {
+						$h .= \plant\PlantUi::getVignette($eProductSelling['plant'], '8rem');
+					} else {
+						$h .= \Asset::icon('camera', ['class' => 'shop-product-image-placeholder']);
+					}
+				}
 				if($eProductSelling['quality']) {
 					$h .= '<div class="shop-header-image-quality">'.\farm\FarmUi::getQualityLogo($eProductSelling['quality'], '2.5rem').'</div>';
 				}

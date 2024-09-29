@@ -710,7 +710,7 @@ class CustomerUi {
 					$values[Customer::PRIVATE] = s("Client particulier");
 
 					if($e['type'] === NULL) {
-						$values[Customer::COLLECTIVE] = s("Point de vente pour les particuliers").'<br/><small style="color: var(--muted); margin-left: 2rem">'.\Asset::icon('arrow-return-right').' '.s("Marché / Vente à la ferme / AMAP").'</small>';
+						$values[Customer::COLLECTIVE] = s("Point de vente pour les particuliers").'<br/><small style="color: var(--muted) ">'.\Asset::icon('arrow-return-right').' '.s("Marché / Vente à la ferme / AMAP").'</small>';
 					}
 
 					$values[Customer::PRO] = s("Client professionnel");
