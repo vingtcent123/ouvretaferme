@@ -885,7 +885,7 @@ class DateUi {
 						show: ['point'],
 						dynamicHide: ['paymentMethod' => ''],
 						hasSubtitles: FALSE,
-						segment: 'point'
+						segment: ($eDate['ccPoint']->reduce(fn($c, $n) => $n + $c->count(), 0) > 1) ? 'point' : NULL
 					);
 				}
 			$h .= '</div>';
