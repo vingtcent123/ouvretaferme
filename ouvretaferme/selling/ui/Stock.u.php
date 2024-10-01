@@ -262,7 +262,7 @@ class StockUi {
 
 			$h = '';
 
-			$h .= '<div class="stock-item-wrapper stick-xs">';
+			$h .= '<div class="stick-xs">';
 
 			$h .= '<table class="stock-item-table tr-bordered tr-even">';
 
@@ -343,7 +343,7 @@ class StockUi {
 
 			$h = '<p class="util-info">'.s("Les récoltes réalisés sur les espèces suivantes augmentent automatiquement le stock du produit {value}.", '<u>'.encode($eProduct['name']).'</u>').'</p>';
 
-			$h .= '<div class="stock-item-wrapper stick-xs">';
+			$h .= '<div class="util-overflow-xs stick-xs">';
 
 			$h .= '<table class="stock-item-table tr-bordered tr-even">';
 
