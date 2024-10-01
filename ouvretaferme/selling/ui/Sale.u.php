@@ -144,7 +144,7 @@ class SaleUi {
 
 	}
 
-	public function getList(\farm\Farm $eFarm, \Collection $cSale, ?int $nSale = NULL, ?\Search $search = NULL, array $hide = [], array $dynamicHide = [], array $show = [], ?int $page = NULL, ?\Closure $link = NULL): string {
+	public function getList(\farm\Farm $eFarm, \Collection $cSale, ?int $nSale = NULL, ?\Search $search = NULL, array $hide = [], array $dynamicHide = [], array $show = [], ?int $page = NULL, ?\Closure $link = NULL, bool $hasSubtitles = NULL, ?string $segment = NULL): string {
 
 		if($cSale->empty()) {
 
@@ -162,10 +162,13 @@ class SaleUi {
 
 		$columns = 5;
 
-		$hasSubtitles = (
-			$cSale->count() > 10 and
-			($search !== NULL and str_starts_with($search->getSort(), 'preparationStatus'))
-		);
+		if($hasSubtitles === NULL) {
+			$hasSubtitles = (
+				$cSale->count() > 10 and
+				($search !== NULL and str_starts_with($search->getSort(), 'preparationStatus'))
+			);
+		}
+
 		$previousSubtitle = NULL;
 
 		$h .= '<table class="sale-item-table tr-bordered tr-even">';
@@ -232,6 +235,10 @@ class SaleUi {
 			$h .= '</thead>';
 			$h .= '<tbody>';
 
+				if($segment === 'point') {
+					$previousSegment = new \shop\Point();
+				}
+
 				foreach($cSale as $eSale) {
 
 					if($hasSubtitles) {
@@ -264,6 +271,34 @@ class SaleUi {
 
 
 						}
+
+					}
+
+					switch($segment) {
+
+						case 'point' :
+
+							$currentSegment = $eSale['shopPoint'];
+
+							if($currentSegment->is($previousSegment) === FALSE) {
+
+								$h .= '<tr>';
+									$h .= '<td colspan="'.($columns + 1).'" class="sale-item-date">';
+										if($eSale['shopPoint']->empty()) {
+											$h .= s("Aucun mode de livraison");
+										} else if($eSale['shopPoint']['type'] === \shop\Point::HOME) {
+											$h .= s("Livraison à domicile");
+										} else if($eSale['shopPoint']['type'] === \shop\Point::PLACE) {
+											$h .= encode($eSale['shopPoint']['name']);
+										}
+									$h .= '</td>';
+								$h .= '</tr>';
+
+							}
+
+							$previousSegment = $currentSegment;
+
+							break;
 
 					}
 

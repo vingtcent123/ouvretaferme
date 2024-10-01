@@ -883,7 +883,9 @@ class DateUi {
 						$cSale,
 						hide: array_merge(['deliveredAt', 'documents', 'items'], $cSale->match(fn($eSale) => $eSale['paymentMethod'] !== NULL) ? [] : ['paymentMethod']),
 						show: ['point'],
-						dynamicHide: ['paymentMethod' => '']
+						dynamicHide: ['paymentMethod' => ''],
+						hasSubtitles: FALSE,
+						segment: 'point'
 					);
 				}
 			$h .= '</div>';

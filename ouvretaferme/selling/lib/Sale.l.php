@@ -293,14 +293,15 @@ class SaleLib extends SaleCrud {
 	public static function getByDate(
 		\shop\Date $eDate,
 		?array $preparationStatus = [Sale::CONFIRMED, Sale::PREPARED, Sale::DELIVERED],
-		?array $select = NULL
+		?array $select = NULL,
+		mixed $sort = 'id'
 	): \Collection {
 
 		return Sale::model()
 			->select($select ?? Sale::getSelection())
 			->whereShopDate($eDate)
 			->wherePreparationStatus('IN', $preparationStatus, if: empty($preparationStatus) === FALSE)
-			->sort('id')
+			->sort($sort)
 			->getCollection(NULL, NULL, 'id');
 
 	}

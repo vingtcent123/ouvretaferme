@@ -56,7 +56,7 @@
 
 		$data->cSale = \selling\SaleLib::getByDate($data->e, NULL, select: \selling\Sale::getSelection() + [
 			'shopPoint' => \shop\PointElement::getSelection()
-		]);
+		], sort: 'shopPoint');
 
 		$data->e['cCategory'] = \selling\CategoryLib::getByFarm($data->eFarm);
 		$data->e['ccPoint'] = \shop\PointLib::getByDate($data->e);

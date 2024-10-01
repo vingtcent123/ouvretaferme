@@ -1290,7 +1290,7 @@ class Element extends ArrayObject {
 
 		return (
 			$e instanceof $this and (
-				$e->empty() === $this->empty() or
+				($e->empty() and $this->empty()) or
 				($this['id'] ?? NULL) === ($e['id'] ?? NULL)
 			)
 		);
