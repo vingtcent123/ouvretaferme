@@ -141,6 +141,8 @@
 		$data->e['shop'] = \shop\ShopLib::getById($data->e['shop']);
 
 		$data->cSale = \selling\SaleLib::getForLabelsByDate($data->e, selectItems: TRUE, selectPoint: TRUE);
+		$data->cSale->sort('shopPoint');
+
 		$data->cItem = \selling\ItemLib::getSummaryByDate($data->e);
 
 		throw new ViewAction($data);
