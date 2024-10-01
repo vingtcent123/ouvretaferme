@@ -91,7 +91,7 @@ class StockUi {
 						$h .= ProductUi::getInfos($eProduct, includeQuality: FALSE);
 
 						if($bookmarks > 0) {
-							$h .= ' <a href="/selling/stock:bookmarks?id='.$eProduct['id'].'" class="color-primary" title="'.p("{value} récolte en mémoire pour ce stock", "{value} récoltes en mémoire pour ce stock", $bookmarks).'">'.\Asset::icon('star-fill').'</a>';
+							$h .= '  <a href="/selling/stock:bookmarks?id='.$eProduct['id'].'" style="opacity: 0.33" title="'.p("{value} récolte en mémoire pour ce stock", "{value} récoltes en mémoire pour ce stock", $bookmarks).'">'.\Asset::icon('star-fill').'</a>';
 						}
 
 					$h .= '</td>';
