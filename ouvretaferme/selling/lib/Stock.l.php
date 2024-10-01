@@ -56,7 +56,8 @@ class StockLib extends StockCrud {
 			->getCollection(index: ['plant', 'name', 'variety', 'size', NULL]);
 
 		foreach($cProduct as $eProduct) {
-			$eProduct['cProductSiblings'] = $cccccProduct[$eProduct['plant']['id']][$eProduct['name']][$eProduct['variety']][$eProduct['size']] ?? new \Collection();
+			$plant = $eProduct['plant']->empty() ? NULL : $eProduct['plant']['id'];
+			$eProduct['cProductSiblings'] = $cccccProduct[$plant][$eProduct['name']][$eProduct['variety']][$eProduct['size']] ?? new \Collection();
 		}
 
 		return $cProduct;

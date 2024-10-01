@@ -62,13 +62,13 @@ class ProductLib extends ProductCrud {
 
 	}
 
-	public static function getByPlant(\plant\Plant $ePlant): \Collection {
+	public static function getByPlant(\plant\Plant $ePlant, mixed $index = NULL): \Collection {
 
 		return Product::model()
 			->select(Product::getSelection())
 			->wherePlant($ePlant)
 			->sort('name')
-			->getCollection();
+			->getCollection(index: $index);
 
 	}
 

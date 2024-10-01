@@ -6,13 +6,13 @@ new AdaptativeView('/produit/{id}', function($data, FarmTemplate $t) {
 	$t->tab = 'selling';
 	$t->subNav = (new \farm\FarmUi())->getSellingSubNav($data->eFarm);
 
-	echo (new \selling\ProductUi())->display($data->e, $data->cItemTurnover);
+	echo (new \selling\ProductUi())->display($data->e, $data->cItemYear);
 	echo (new \selling\ProductUi())->getTabs($data->e, $data->cGrid, $data->cItemLast);
 
 });
 
 new AdaptativeView('analyze', function($data, PanelTemplate $t) {
-	return (new \selling\AnalyzeUi())->getProduct($data->e, $data->year, $data->cItemTurnover, $data->cItemCustomer, $data->cItemType, $data->cItemMonth, $data->cItemMonthBefore, $data->cItemWeek, $data->cItemWeekBefore, $data->search);
+	return (new \selling\AnalyzeUi())->getProduct($data->e, $data->year, $data->cItemYear, $data->cItemCustomer, $data->cItemType, $data->cItemMonth, $data->cItemMonthBefore, $data->cItemWeek, $data->cItemWeekBefore, $data->search);
 });
 
 new AdaptativeView('create', function($data, PanelTemplate $t) {

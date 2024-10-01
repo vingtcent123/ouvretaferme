@@ -348,13 +348,13 @@ class AnalyzeLib {
 
 	}
 
-	public static function getProductTurnover(Product $eProduct, ?int $year = NULL, \Search $search = new \Search()): \Collection {
+	public static function getProductYear(Product $eProduct, ?int $year = NULL, \Search $search = new \Search()): \Collection {
 
-		return self::getProductsTurnover(new \Collection([$eProduct]), $year, $search);
+		return self::getProductsYear(new \Collection([$eProduct]), $year, $search);
 
 	}
 
-	public static function getProductsTurnover(\Collection $cProduct, ?int $year = NULL, \Search $search = new \Search()): \Collection {
+	public static function getProductsYear(\Collection $cProduct, ?int $year = NULL, \Search $search = new \Search()): \Collection {
 
 		if($year !== NULL and currentYear() - $year > 2) {
 			$min = $year - 2;
@@ -382,6 +382,27 @@ class AnalyzeLib {
 			->group(new \Sql('year'))
 			->sort(new \Sql('year DESC'))
 			->getCollection(0, 5);
+
+	}
+
+	public static function getProductsTurnover(\Collection $cProduct, int $year, \Search $search = new \Search()): \Collection {
+
+		$search->filter('type', fn($type) => Item::model()->whereType($type));
+
+		self::filterItemStats();
+		self::filterSaleStats();
+
+		return Item::model()
+			->select([
+				'turnover' => new \Sql('SUM(priceExcludingVat)', 'float'),
+				'quantity' => new \Sql('SUM(IF(packaging IS NULL, 1, packaging) * number)', 'float'),
+				'product'
+			])
+			->whereProduct('IN', $cProduct)
+			->where(new \Sql('EXTRACT(YEAR FROM deliveredAt)'), $year)
+			->group('product')
+			->sort(['turnover' => SORT_DESC])
+			->getCollection(index: 'product');
 
 	}
 

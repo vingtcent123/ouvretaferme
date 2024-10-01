@@ -429,7 +429,7 @@ class ProductUi {
 
 	}
 
-	public function display(Product $eProduct, \Collection $cItemTurnover): string {
+	public function display(Product $eProduct, \Collection $cItemYear): string {
 
 		$h = '<div class="util-vignette">';
 
@@ -472,10 +472,10 @@ class ProductUi {
 
 		if(
 			$eProduct['farm']->canAnalyze() and
-			$cItemTurnover->notEmpty()
+			$cItemYear->notEmpty()
 		) {
 
-			$h .= (new AnalyzeUi())->getProductTurnover($cItemTurnover, NULL, $eProduct);
+			$h .= (new AnalyzeUi())->getProductYear($cItemYear, NULL, $eProduct);
 
 		}
 

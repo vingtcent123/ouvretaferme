@@ -17,7 +17,7 @@
 
 		$data->cProduct = \selling\ProductLib::getByPlant($data->e);
 
-		$data->cItemTurnover = \selling\AnalyzeLib::getProductsTurnover($data->cProduct);
+		$data->cItemYear = \selling\AnalyzeLib::getProductsYear($data->cProduct);
 
 		\farm\FarmerLib::register($data->eFarm);
 
@@ -34,7 +34,7 @@
 
 		$data->year = GET('year', 'int', date('Y'));
 
-		$data->cProduct = \selling\ProductLib::getByPlant($data->e);
+		$data->cProduct = \selling\ProductLib::getByPlant($data->e, index: 'id');
 
 		$cItem = \selling\AnalyzeLib::getPlants($data->year, search: new Search([
 			'plant' => $data->e
@@ -45,6 +45,9 @@
 		}
 
 		$data->cItemTurnover = \selling\AnalyzeLib::getProductsTurnover($data->cProduct, $data->year, $data->search);
+		$data->cItemTurnover->setColumn('product', fn($eItem) => $data->cProduct[$eItem['product']['id']]);
+
+		$data->cItemYear = \selling\AnalyzeLib::getProductsYear($data->cProduct, $data->year, $data->search);
 
 		$data->cItemCustomer = \selling\AnalyzeLib::getProductsCustomers($data->cProduct, $data->year, $data->search);
 		$data->cItemType = \selling\AnalyzeLib::getProductsTypes($data->cProduct, $data->year, $data->search);

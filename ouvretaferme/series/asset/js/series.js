@@ -143,6 +143,14 @@ class Series {
 
 	}
 
+	static hideSelection() {
+
+		qs('#batch-group').hide();
+
+		qsa('#series-wrapper .series-item-planning-checkbox:checked', (field) => field.checked = false);
+
+	}
+
 	static selectCreateSeason(target) {
 		qsa('#series-create-from input[name="season"]', node => node.value = target.value);
 	}

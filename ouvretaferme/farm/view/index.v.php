@@ -586,7 +586,7 @@ new AdaptativeView('/ferme/{id}/factures', function($data, FarmTemplate $t) {
 	if($data->transfer > 0) {
 
 		echo '<div class="util-block-help">';
-			echo '<p>'.s("Vous pouvez maintenant générer les factures des ventes qui ont été réglées par virement bancaire dans vos boutiques en ligne au moins de {value}.", '<b>'.\util\DateUi::textual($data->transferMonth, \util\DateUi::MONTH_YEAR).'</b>').'</p>';
+			echo '<p>'.s("Vous pouvez maintenant générer les factures des ventes qui ont été réglées par virement bancaire dans vos boutiques en ligne au mois de {value}.", '<b>'.\util\DateUi::textual($data->transferMonth, \util\DateUi::MONTH_YEAR).'</b>').'</p>';
 			echo '<a href="/selling/invoice:createCollection?farm='.$data->eFarm['id'].'&month='.$data->transferMonth.'&type='.\selling\Sale::TRANSFER.'" class="btn btn-secondary">'.s("Générer les factures").'</a>';
 		echo '</div>';
 

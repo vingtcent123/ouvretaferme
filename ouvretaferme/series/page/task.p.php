@@ -2,7 +2,7 @@
 (new \series\TaskPage())
 	->getCreateElement(function($data) {
 
-		$data->eFarm = \farm\FarmLib::getById(INPUT('farm'));
+		$data->eFarm = \farm\FarmLib::getById(INPUT('farm'))->validate();
 		$data->eFarm->saveFeaturesAsSettings();
 
 		return new \series\Task([

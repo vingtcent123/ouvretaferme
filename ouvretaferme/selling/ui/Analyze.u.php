@@ -814,12 +814,65 @@ class AnalyzeUi {
 
 	}
 
+	protected function getBestProductsByPlantTable(\plant\Plant $ePlant, \Collection $cItemTurnover, int $year): string {
+
+		$turnover = $cItemTurnover->sum('turnover');
+
+		$h = '<div class="util-overflow-xs stick-xs">';
+
+			$h .= '<table class="tr-even analyze-values">';
+
+				$h .= '<thead>';
+
+					$h .= '<tr>';
+						$h .= '<th rowspan="2">'.s("Produit").'</th>';
+						$h .= '<th class="text-end">'.s("Volume").'</th>';
+						$h .= '<th class="text-end">'.s("Ventes").'</th>';
+						$h .= '<th></th>';
+						$h .= '<th class="text-end">'.s("Prix").'</th>';
+					$h .= '</tr>';
+
+				$h .= '</thead>';
+				$h .= '<tbody>';
+
+					foreach($cItemTurnover as $eItem) {
+
+						$h .= '<tr>';
+							$h .= '<td>';
+								$h .= ProductUi::getVignette($eItem['product'], '2rem').'  ';
+								$h .= ProductUi::link($eItem['product']);
+							$h .= '</td>';
+							$h .= '<td class="text-end">';
+								$h .= \main\UnitUi::getValue(round($eItem['quantity']), $eItem['product']['unit'], short: TRUE);
+							$h .= '</td>';
+							$h .= '<td class="text-end">';
+								$h .= \util\TextUi::money($eItem['turnover'], precision: 0);
+							$h .= '</td>';
+							$h .= '<td class="util-annotation">';
+								$h .= ($turnover > 0 ? \util\TextUi::pc($eItem['turnover'] / $turnover * 100) : '-');
+							$h .= '</td>';
+							$h .= '<td class="text-end">';
+								$h .= \util\TextUi::money($eItem['turnover'] / $eItem['quantity']);
+							$h .= '</td>';
+						$h .= '</tr>';
+
+					}
+
+				$h .= '</tbody>';
+			$h .= '</table>';
+
+		$h .= '</div>';
+
+		return $h;
+
+	}
+
 	public function getBestCustomersPie(\Collection $ccItemCustomer, int $year): string {
 
 		$cItemCustomer = $ccItemCustomer[$year];
 
 		return (new \analyze\ChartUi())->buildPie(
-			s("Répartition des ventes en {value}", $year),
+			s("Répartition des ventes par client en {value}", $year),
 			$cItemCustomer,
 			'turnover',
 			fn($eTimesheet) => $eTimesheet['customer']['name']
@@ -1343,7 +1396,7 @@ class AnalyzeUi {
 	public function getBestProductsPie(\Collection $cItemProduct): string {
 
 		return (new \analyze\ChartUi())->buildPie(
-			s("Répartition des ventes en valeur"),
+			s("Répartition des ventes par produit"),
 			$cItemProduct,
 			'turnover',
 			fn($eTimesheet) => $eTimesheet['product']->getName()
@@ -1567,7 +1620,7 @@ class AnalyzeUi {
 	public function getBestPlantsPie(\Collection $cPlant): string {
 
 		return (new \analyze\ChartUi())->buildPie(
-			s("Répartition des ventes en valeur"),
+			s("Répartition des ventes"),
 			$cPlant,
 			'turnover',
 			fn($ePlant) => $ePlant['name']
@@ -1636,11 +1689,11 @@ class AnalyzeUi {
 
 	}
 
-	public function getPlantSales(\plant\Plant $e, int $year, \Collection $cItemTurnover, \Collection $cItemCustomer, \Collection $cItemType, \Collection $cItemMonth, \Collection $cItemMonthBefore, \Collection $cItemWeek, $cItemWeekBefore, \Search $search): \Panel {
+	public function getPlantSales(\plant\Plant $e, int $year, \Collection $cItemTurnover, \Collection $cItemYear, \Collection $cItemCustomer, \Collection $cItemType, \Collection $cItemMonth, \Collection $cItemMonthBefore, \Collection $cItemWeek, $cItemWeekBefore, \Search $search): \Panel {
 
 		$h = '';
 
-		if($cItemTurnover->notEmpty()) {
+		if($cItemYear->notEmpty()) {
 
 			if($search->isFiltered('type')) {
 				$h .= match($search->get('type')) {
@@ -1649,7 +1702,7 @@ class AnalyzeUi {
 				};
 			}
 
-			$h .= $this->getPlantTurnover($cItemTurnover, $year, $e);
+			$h .= $this->getPlantTurnover($cItemYear, $year, $e);
 
 			if($cItemCustomer->offsetExists($year)) {
 
@@ -1659,6 +1712,18 @@ class AnalyzeUi {
 					$h .= '<div class="analyze-chart-table">';
 						$h .= $this->getBestCustomersPie($cItemCustomer, $year);
 						$h .= $this->getBestCustomersByPlantTable($e, $cItemCustomer, $search->isFiltered('type') ? new \Collection() : $cItemType, $year, 10);
+					$h .= '</div>';
+
+					$h .= '<br/>';
+
+				}
+
+				if($cItemTurnover->count() > 1) {
+
+					$h .= '<h3>'.s("Ventes par produit").'</h3>';
+					$h .= '<div class="analyze-chart-table">';
+						$h .= $this->getBestProductsPie($cItemTurnover);
+						$h .= $this->getBestProductsByPlantTable($e, $cItemTurnover, $year);
 					$h .= '</div>';
 
 					$h .= '<br/>';
@@ -1709,16 +1774,16 @@ class AnalyzeUi {
 
 	}
 
-	public function getPlantTurnover(\Collection $cItemTurnover, ?int $year, ?\plant\Plant $ePlantLink): string {
+	public function getPlantTurnover(\Collection $cItemYear, ?int $year, ?\plant\Plant $ePlantLink): string {
 
 		$h = '<ul class="util-summarize">';
 
-			foreach($cItemTurnover as $eItemTurnover) {
-				$h .= '<li '.($eItemTurnover['year'] === $year ? 'class="selected"' : '').'>';
-					$h .= '<a data-ajax="/plant/plant:analyzeSales?id='.$ePlantLink['id'].'&year='.$eItemTurnover['year'].'" data-ajax-method="get">';
-						$h .= '<h5>'.$eItemTurnover['year'].'</h5>';
-						$h .= '<div>'.\util\TextUi::money($eItemTurnover['turnover'], precision: 0).'</div>';
-						$h .= '<div class="util-summarize-muted">('.\util\TextUi::pc($eItemTurnover['turnover'] / $eItemTurnover['turnoverGlobal'] * 100, 0).')</div>';
+			foreach($cItemYear as $eItemYear) {
+				$h .= '<li '.($eItemYear['year'] === $year ? 'class="selected"' : '').'>';
+					$h .= '<a data-ajax="/plant/plant:analyzeSales?id='.$ePlantLink['id'].'&year='.$eItemYear['year'].'" data-ajax-method="get">';
+						$h .= '<h5>'.$eItemYear['year'].'</h5>';
+						$h .= '<div>'.\util\TextUi::money($eItemYear['turnover'], precision: 0).'</div>';
+						$h .= '<div class="util-summarize-muted">('.\util\TextUi::pc($eItemYear['turnover'] / $eItemYear['turnoverGlobal'] * 100, 0).')</div>';
 					$h .= '</a>';
 				$h .= '</li>';
 			}
@@ -1729,11 +1794,11 @@ class AnalyzeUi {
 
 	}
 
-	public function getProduct(Product $e, int $year, \Collection $cItemTurnover, \Collection $cItemCustomer, \Collection $cItemType, \Collection $cItemMonth, \Collection $cItemMonthBefore, \Collection $cItemWeek, \Collection $cItemWeekBefore, \Search $search = new \Search()): \Panel {
+	public function getProduct(Product $e, int $year, \Collection $cItemYear, \Collection $cItemCustomer, \Collection $cItemType, \Collection $cItemMonth, \Collection $cItemMonthBefore, \Collection $cItemWeek, \Collection $cItemWeekBefore, \Search $search = new \Search()): \Panel {
 
 		$h = '';
 
-		if($cItemTurnover->notEmpty()) {
+		if($cItemYear->notEmpty()) {
 
 			if($search->isFiltered('type')) {
 				$h .= match($search->get('type')) {
@@ -1742,7 +1807,7 @@ class AnalyzeUi {
 				};
 			}
 
-			$h .= $this->getProductTurnover($cItemTurnover, $year, $e);
+			$h .= $this->getProductYear($cItemYear, $year, $e);
 
 			if($cItemCustomer->offsetExists($year)) {
 
@@ -1800,16 +1865,16 @@ class AnalyzeUi {
 
 	}
 
-	public function getProductTurnover(\Collection $cItemTurnover, ?int $year, ?Product $eProductLink): string {
+	public function getProductYear(\Collection $cItemYear, ?int $year, ?Product $eProductLink): string {
 
 		$h = '<ul class="util-summarize">';
 
-			foreach($cItemTurnover as $eItemTurnover) {
-				$h .= '<li '.($eItemTurnover['year'] === $year ? 'class="selected"' : '').'>';
-					$h .= '<a data-ajax="/selling/product:analyze?id='.$eProductLink['id'].'&year='.$eItemTurnover['year'].'" data-ajax-method="get">';
-						$h .= '<h5>'.$eItemTurnover['year'].'</h5>';
-						$h .= '<div>'.\util\TextUi::money($eItemTurnover['turnover'], precision: 0).'</div>';
-						$h .= '<div class="util-summarize-muted">('.\util\TextUi::pc($eItemTurnover['turnover'] / $eItemTurnover['turnoverGlobal'] * 100, 0).')</div>';
+			foreach($cItemYear as $eItemYear) {
+				$h .= '<li '.($eItemYear['year'] === $year ? 'class="selected"' : '').'>';
+					$h .= '<a data-ajax="/selling/product:analyze?id='.$eProductLink['id'].'&year='.$eItemYear['year'].'" data-ajax-method="get">';
+						$h .= '<h5>'.$eItemYear['year'].'</h5>';
+						$h .= '<div>'.\util\TextUi::money($eItemYear['turnover'], precision: 0).'</div>';
+						$h .= '<div class="util-summarize-muted">('.\util\TextUi::pc($eItemYear['turnover'] / $eItemYear['turnoverGlobal'] * 100, 0).')</div>';
 					$h .= '</a>';
 				$h .= '</li>';
 			}

@@ -15,7 +15,7 @@ class Farm extends FarmElement {
 
 	}
 
-	public function validateSeason(int $season): self {
+	public function validateSeason(mixed $season): self {
 
 		if($this->checkSeason($season) === FALSE) {
 			throw new \NotExpectedAction($this);
@@ -46,7 +46,7 @@ class Farm extends FarmElement {
 
 	}
 
-	public function checkSeason(int $season): bool {
+	public function checkSeason(mixed $season): bool {
 		return ($season >= $this['seasonFirst'] and $season <= $this['seasonLast']);
 	}
 

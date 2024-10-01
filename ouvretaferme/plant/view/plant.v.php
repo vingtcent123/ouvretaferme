@@ -5,7 +5,7 @@ new AdaptativeView('/espece/{id@int}', function($data, FarmTemplate $t) {
 	$t->tab = 'plant';
 	$t->subNav = (new \farm\FarmUi())->getCultivationSubNav($data->e['farm']);
 
-	echo (new \plant\PlantUi())->display($data->e, $data->cItemTurnover);
+	echo (new \plant\PlantUi())->display($data->e, $data->cItemYear);
 	
 	if($data->cCrop->notEmpty()) {
 		echo '<h3>'.s("Itinéraires techniques").'</h3>';
@@ -15,7 +15,7 @@ new AdaptativeView('/espece/{id@int}', function($data, FarmTemplate $t) {
 });
 
 new AdaptativeView('analyzeSales', function($data, PanelTemplate $t) {
-	return (new \selling\AnalyzeUi())->getPlantSales($data->e, $data->year, $data->cItemTurnover, $data->cItemCustomer, $data->cItemType, $data->cItemMonth, $data->cItemMonthBefore, $data->cItemWeek, $data->cItemWeekBefore, $data->search);
+	return (new \selling\AnalyzeUi())->getPlantSales($data->e, $data->year, $data->cItemTurnover, $data->cItemYear, $data->cItemCustomer, $data->cItemType, $data->cItemMonth, $data->cItemMonthBefore, $data->cItemWeek, $data->cItemWeekBefore, $data->search);
 });
 
 new AdaptativeView('analyzeTime', function($data, PanelTemplate $t) {

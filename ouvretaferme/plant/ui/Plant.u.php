@@ -133,7 +133,7 @@ class PlantUi {
 
 	}
 
-	public function display(Plant $ePlant, \Collection $cItemTurnover): string {
+	public function display(Plant $ePlant, \Collection $cItemYear): string {
 
 		$h = '<div class="util-vignette">';
 
@@ -167,9 +167,9 @@ class PlantUi {
 
 		$h .= '</div>';
 
-		if($cItemTurnover->notEmpty()) {
+		if($cItemYear->notEmpty()) {
 
-			$h .= (new \selling\AnalyzeUi())->getPlantTurnover($cItemTurnover, NULL, $ePlant);
+			$h .= (new \selling\AnalyzeUi())->getPlantTurnover($cItemYear, NULL, $ePlant);
 
 		}
 

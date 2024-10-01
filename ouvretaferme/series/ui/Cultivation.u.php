@@ -411,7 +411,7 @@ class CultivationUi {
 			$danger .= '<span>'.s("Supprimer").'</span>';
 		$danger .= '</a>';
 
-		return \util\BatchUi::group($menu, $danger, title: s("Pour les séries sélectionnées"));
+		return \util\BatchUi::group($menu, $danger, title: s("Pour les séries sélectionnées"), hide: 'Series.hideSelection()');
 
 	}
 

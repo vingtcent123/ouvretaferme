@@ -35,7 +35,7 @@
 		$data->cGrid = \selling\GridLib::getByProduct($data->e);
 
 		$data->cItemLast = \selling\ItemLib::getByProduct($data->e);
-		$data->cItemTurnover = \selling\AnalyzeLib::getProductTurnover($data->e);
+		$data->cItemYear = \selling\AnalyzeLib::getProductYear($data->e);
 
 		throw new ViewAction($data);
 
@@ -50,7 +50,7 @@
 
 		$data->year = GET('year', 'int', date('Y'));
 
-		$data->cItemTurnover = \selling\AnalyzeLib::getProductTurnover($data->e, $data->year, $data->search);
+		$data->cItemYear = \selling\AnalyzeLib::getProductYear($data->e, $data->year, $data->search);
 
 		$data->cItemCustomer = \selling\AnalyzeLib::getProductCustomers($data->e, $data->year, $data->search);
 		$data->cItemType = \selling\AnalyzeLib::getProductTypes($data->e, $data->year, $data->search);
