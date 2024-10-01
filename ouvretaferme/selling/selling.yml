@@ -304,6 +304,7 @@ Stock:
   ]
 
 StockBookmark:
+  id: serial32
   farm: farm\Farm
   product: selling\Product
   plant: plant\Plant
@@ -313,6 +314,6 @@ StockBookmark:
   createdAt: datetime = SPECIAL(now)
   createdBy: ?user\User = SPECIAL(user)
   INDEX: [
-    ["farm"],
+    ["farm", "product"],
     ["plant", "unit", "size", "variety"]
   ]

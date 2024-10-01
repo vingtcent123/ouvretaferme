@@ -40,6 +40,7 @@ class StockBookmarkModel extends \ModuleModel {
 		parent::__construct();
 
 		$this->properties = array_merge($this->properties, [
+			'id' => ['serial32', 'cast' => 'int'],
 			'farm' => ['element32', 'farm\Farm', 'cast' => 'element'],
 			'product' => ['element32', 'selling\Product', 'cast' => 'element'],
 			'plant' => ['element32', 'plant\Plant', 'cast' => 'element'],
@@ -51,7 +52,7 @@ class StockBookmarkModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'farm', 'product', 'plant', 'unit', 'size', 'variety', 'createdAt', 'createdBy'
+			'id', 'farm', 'product', 'plant', 'unit', 'size', 'variety', 'createdAt', 'createdBy'
 		]);
 
 		$this->propertiesToModule += [
@@ -64,7 +65,7 @@ class StockBookmarkModel extends \ModuleModel {
 		];
 
 		$this->indexConstraints = array_merge($this->indexConstraints, [
-			['farm'],
+			['farm', 'product'],
 			['plant', 'unit', 'size', 'variety']
 		]);
 
@@ -107,6 +108,10 @@ class StockBookmarkModel extends \ModuleModel {
 
 	public function where(...$data): StockBookmarkModel {
 		return parent::where(...$data);
+	}
+
+	public function whereId(...$data): StockBookmarkModel {
+		return $this->where('id', ...$data);
 	}
 
 	public function whereFarm(...$data): StockBookmarkModel {

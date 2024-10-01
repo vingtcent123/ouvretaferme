@@ -68,9 +68,6 @@ class StockUi {
 					if($cItemFuture->notEmpty()) {
 						$h .= '<th class="text-center highlight hide-sm-down">'.s("Ventes à venir").'</th>';
 					}
-					if($cStockBookmark->notEmpty()) {
-						$h .= '<th class="text-center"></th>';
-					}
 					$h .= '<th></th>';
 				$h .= '</tr>';
 
@@ -82,6 +79,8 @@ class StockUi {
 
 				$cItemPast = $ccItemPast[$eProduct['id']] ?? new \Collection();
 
+				$bookmarks = $cStockBookmark->offsetExists($eProduct['id']) ? $cStockBookmark[$eProduct['id']]['number'] : 0;
+
 				$h .= '<tr>';
 
 					$h .= '<td class="td-min-content">';
@@ -90,6 +89,11 @@ class StockUi {
 
 					$h .= '<td class="stock-item-name">';
 						$h .= ProductUi::getInfos($eProduct, includeQuality: FALSE);
+
+						if($bookmarks > 0) {
+							$h .= ' <a href="/selling/stock:bookmarks?id='.$eProduct['id'].'" class="color-primary" title="'.p("{value} récolte en mémoire pour ce stock", "{value} récoltes en mémoire pour ce stock", $bookmarks).'">'.\Asset::icon('star-fill').'</a>';
+						}
+
 					$h .= '</td>';
 
 					$h .= '<td class="td-min-content stock-item-decrement">';
@@ -206,24 +210,6 @@ class StockUi {
 
 					}
 
-					$bookmarks = $cStockBookmark->offsetExists($eProduct['id']) ? $cStockBookmark[$eProduct['id']]['number'] : 0;
-
-					if($cStockBookmark->notEmpty()) {
-
-						$h .= '<td class="text-center hide-sm-down"';
-							if($bookmarks) {
-								$h .= ' title="'.p("{value} ajout de stock en mémoire lors des récoltes", "{value} ajouts stock en mémoire lors des récoltes", $bookmarks).'"';
-							}
-						$h .= '>';
-
-							if($bookmarks) {
-								$h .= $bookmarks.' '.\Asset::icon('star-fill');
-							}
-
-						$h .= '</td>';
-
-					}
-
 					$h .= '<td class="stock-item-actions">';
 
 						if($eProduct->canWrite()) {
@@ -234,7 +220,7 @@ class StockUi {
 								$h .= '<a href="/selling/stock:update?id='.$eProduct['id'].'" class="dropdown-item">'.s("Corriger le stock").'</a>';
 								$h .= '<a href="/selling/stock:history?id='.$eProduct['id'].'" class="dropdown-item">'.s("Voir l'historique du stock").'</a>';
 								if($bookmarks) {
-									$h .= '<a data-ajax="/selling/stock:doDeleteBookmark" post-id="'.$eProduct['id'].'" class="dropdown-item" data-confirm="'.s("Vous préférence à la récolte pour ce stock seront effacées. Voulez-vous continuer ?").'">'.p("Supprimer l'ajout de stock<br/>en mémoire lors des récoltes", "Supprimer les ajouts de stock<br/>en mémoire lors des récoltes", $bookmarks).'</a>';
+									$h .= '<a href="/selling/stock:bookmarks?id='.$eProduct['id'].'" class="dropdown-item">'.s("Voir les récoltes en mémoire").'</a>';
 								}
 								$h .= '<div class="dropdown-divider"></div>';
 								$h .= '<a data-ajax="selling/product:doDisableStock" post-id="'.$eProduct['id'].'" class="dropdown-item">'.\Asset::icon('box').'  '.s("Désactiver le suivi du stock").'</a>';
@@ -346,6 +332,92 @@ class StockUi {
 			title: s("Historique du stock"),
 			body: $h,
 			subTitle: (new ProductUi())->getPanelHeader($eProduct)
+		);
+	}
+
+	public function getBookmarks(Product $eProduct, \Collection $cBookmark): \Panel {
+
+		if($cBookmark->empty()) {
+			$h = '<div class="util-info">'.s("Il n'y a aucune récolte en mémoire pour le stock de ce produit.").'</div>';
+		} else {
+
+			$h = '<p class="util-info">'.s("Les récoltes réalisés sur les espèces suivantes augmentent automatiquement le stock du produit {value}.", '<u>'.encode($eProduct['name']).'</u>').'</p>';
+
+			$h .= '<div class="stock-item-wrapper stick-xs">';
+
+			$h .= '<table class="stock-item-table tr-bordered tr-even">';
+
+				$h .= '<thead>';
+
+					$h .= '<tr>';
+						$h .= '<th>'.s("Espèce").'</th>';
+						$h .= '<th>'.s("Variété").'</th>';
+						$h .= '<th>'.s("Unité").'</th>';
+						$h .= '<th>'.s("Calibre").'</th>';
+						$h .= '<th>'.s("Par").'</th>';
+						$h .= '<th></th>';
+					$h .= '</tr>';
+
+				$h .= '</thead>';
+
+				$h .= '<tbody>';
+
+				foreach($cBookmark as $eBookmark) {
+
+					$h .= '<tr>';
+
+						$h .= '<td>';
+							$h .= \plant\PlantUi::getVignette($eBookmark['plant'], '2rem').'  ';
+							$h .= encode($eBookmark['plant']['name']);
+						$h .= '</td>';
+
+						$h .= '<td>';
+							if($eBookmark['variety']->notEmpty()) {
+								$h .= encode($eBookmark['variety']['name']);
+							} else {
+								$h .= '<span class="color-muted">/</span>';
+							}
+						$h .= '</td>';
+
+						$h .= '<td class="product-item-unit">';
+							$h .= \main\UnitUi::getSingular($eBookmark['unit'], short: TRUE);
+						$h .= '</td>';
+
+						$h .= '<td>';
+							if($eBookmark['size']->notEmpty()) {
+								$h .= encode($eBookmark['size']['name']);
+							} else {
+								$h .= '<span class="color-muted">/</span>';
+							}
+						$h .= '</td>';
+
+						$h .= '<td class="bookmark-item-name">';
+							$h .= \user\UserUi::getVignette($eBookmark['createdBy'], '2rem').' ';
+							$h .= \user\UserUi::name($eBookmark['createdBy']);
+						$h .= '</td>';
+
+						$h .= '<td class="text-end">';
+							$h .= '<a data-ajax="/selling/stock:doDeleteBookmark" post-id="'.$eBookmark['id'].'" data-confirm="'.s("Ne plus garder en mémoire ?").'" class="btn btn-danger">'.\Asset::icon('trash').'</a>';
+						$h .= '</td>';
+
+					$h .= '</tr>';
+
+				}
+
+				$h .= '</tbody>';
+
+			$h .= '</table>';
+
+			$h .= '</div>';
+
+		}
+
+		return new \Panel(
+			id: 'panel-stock-bookmark',
+			title: s("Récoltes en mémoire"),
+			body: $h,
+			subTitle: (new ProductUi())->getPanelHeader($eProduct),
+			footer: '<div class="text-end"><a data-ajax="/selling/stock:doDeleteBookmarks" post-id="'.$eProduct['id'].'" class="btn btn-danger" data-confirm="'.s("Vous préférence à la récolte pour ce stock seront effacées. Voulez-vous continuer ?").'">'.s("Tout supprimer").'</a></div>'
 		);
 	}
 

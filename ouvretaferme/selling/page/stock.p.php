@@ -56,11 +56,21 @@
 		throw new ReloadAction('selling', 'Stock::updated');
 
 	}, validate: ['canWrite', 'acceptStock'])
-	->write('doDeleteBookmark', function($data) {
+	->read('bookmarks', function($data) {
+
+		$data->cBookmark = \selling\StockLib::getBookmarksByProduct($data->e);
+
+		throw new ViewAction($data);
+
+	})
+	->write('doDeleteBookmarks', function($data) {
 
 		\selling\StockLib::deleteBookmarksByProduct($data->e);
 
 		throw new ReloadAction();
 
 	});
+
+(new \selling\StockBookmarkPage())
+	->doDelete(fn() => throw new ReloadLayerAction(), page: 'doDeleteBookmark');
 ?>

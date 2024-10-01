@@ -231,8 +231,24 @@ class StockLib extends StockCrud {
 				'product',
 				'number' => new \Sql('COUNT(*)', 'int')
 			])
+			->whereFarm($eFarm)
 			->group('product')
 			->getCollection(index: 'product');
+
+	}
+
+	public static function getBookmarksByProduct(Product $eProduct): \Collection {
+
+		return StockBookmark::model()
+			->select(StockBookmark::getSelection() + [
+				'plant' => ['name', 'fqn', 'vignette'],
+				'variety' => ['name'],
+				'size' => ['name'],
+				'createdBy' => ['vignette', 'firstName', 'lastName']
+			])
+			->whereProduct($eProduct)
+			->sort('id')
+			->getCollection();
 
 	}
 

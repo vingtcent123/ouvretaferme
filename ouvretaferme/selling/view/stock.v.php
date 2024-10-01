@@ -11,6 +11,10 @@ new AdaptativeView('history', function($data, PanelTemplate $t) {
 	return (new \selling\StockUi())->getHistory($data->e, $data->cStock);
 });
 
+new AdaptativeView('bookmarks', function($data, PanelTemplate $t) {
+	return (new \selling\StockUi())->getBookmarks($data->e, $data->cBookmark);
+});
+
 new AdaptativeView('update', function($data, PanelTemplate $t) {
 	return (new \selling\StockUi())->update($data->e);
 });
