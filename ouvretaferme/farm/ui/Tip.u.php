@@ -99,7 +99,7 @@ class TipUi {
 
 			case 'plant-customize' :
 
-				$link = FarmUi::urlCultivationPlants($eFarm);
+				$link = FarmUi::urlSettingsPlants($eFarm);
 
 				$h = '<p>'.s("Si les espèces cultivées créées par défaut avec votre ferme ne sont pas suffisantes pour votre plan de culture, vous pouvez ajouter vos propres espèces !").'</p>';
 				$h .= '<div class="tip-list">';
@@ -237,7 +237,7 @@ class TipUi {
 
 			case 'selling-shop' :
 
-				$link = FarmUi::urlSellingShop($eFarm);
+				$link = FarmUi::urlShopList($eFarm);
 
 				$h = '<p>'.s("Créez une boutique en permettant à vos clients de faire leurs commandes en ligne et de venir retirer leur panier à la date et au lieu de votre choix. Pas de commission sur les ventes et facile à installer !").'</p>';
 

@@ -1,4 +1,29 @@
 <?php
+
+new AdaptativeView('plant', function($data, FarmTemplate $t) {
+
+	$t->tab = 'settings';
+	$t->subNav = (new \farm\FarmUi())->getSettingsSubNav($data->eFarm);
+
+	$t->title = s("Espèces de {value}", $data->eFarm['name']);
+	$t->canonical = \farm\FarmUi::urlSettingsPlants($data->eFarm);
+
+	echo '<div class="util-action">';
+		echo '<h1>';
+			echo s("Espèces");
+		echo '</h1>';
+		if($data->eFarm->canManage()) {
+			echo  '<div>';
+				echo ' <a href="/plant/plant:create?farm='.$data->eFarm['id'].'" class="btn btn-primary">'.\Asset::icon('plus-circle').'<span class="hide-xs-down"> '.s("Nouvelle espèce").'</span></a>';
+			echo  '</div>';
+		}
+	echo  '</div>';
+
+	echo (new \plant\PlantUi())->manage($data->eFarm, $data->plants, $data->cPlant, $data->search);
+
+
+});
+
 new AdaptativeView('/espece/{id@int}', function($data, FarmTemplate $t) {
 
 	$t->title = $data->e['name'];

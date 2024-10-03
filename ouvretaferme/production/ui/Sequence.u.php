@@ -394,7 +394,7 @@ class SequenceUi {
 			$item .= '<div>'.encode($ePlant['name']).'</div>';
 
 			$results[] = [
-				'value' => NULL,
+				'type' => 'title',
 				'itemHtml' => $item
 			];
 
@@ -428,8 +428,16 @@ class SequenceUi {
 
 		$h = '<div class="sequence-header">';
 
+			$h .= '<div class="util-badge bg-secondary">'.s("Itinéraire technique").'</div>';
 			$h .= '<div class="sequence-header-title">';
 				$h .= '<h1>';
+
+					$urlSequence = match($eSequence['status']) {
+						Sequence::ACTIVE => \farm\FarmUi::urlCultivationSequences($eFarm),
+						Sequence::CLOSED => \farm\FarmUi::urlCultivationSequences($eFarm).'/'.Sequence::CLOSED,
+					};
+
+					$h .= '<a href="'.$urlSequence.'" class="h-back">'.\Asset::icon('arrow-left').'</a>';
 					$h .= $eSequence->quick('name', SequenceUi::name($eSequence));
 				$h .= '</h1>';
 				if($eSequence->canWrite()) {
@@ -479,7 +487,11 @@ class SequenceUi {
 					break;
 
 				case Sequence::BED :
-					$infos[] = $eSequence->quick('bedWidth', s("Culture sur planche de {value} cm", ['value' => $eSequence['bedWidth']]));
+					if($eSequence['alleyWidth'] !== NULL) {
+						$infos[] = $eSequence->quick('bedWidth', s("Culture sur planche de {bed} cm et passe-pieds de {alley} cm", ['bed' => $eSequence['bedWidth'], 'alley' => $eSequence['alleyWidth']]));
+					} else {
+						$infos[] = $eSequence->quick('bedWidth', s("Culture sur planche de {bed} cm", ['bed' => $eSequence['bedWidth']]));
+					}
 					break;
 
 			}

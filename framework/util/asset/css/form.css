@@ -775,17 +775,27 @@ ul.autocomplete-list li a {
 	color: white;
 }
 
-ul.autocomplete-list li.not-selectable {
+ul.autocomplete-list li.autocomplete-not-selectable {
 	background-color: #444;
 	cursor: auto;
 }
-ul.autocomplete-list li:not(.not-selectable).selected,
-ul.autocomplete-list li:not(.not-selectable):hover {
+ul.autocomplete-list li:not(.autocomplete-not-selectable).selected,
+ul.autocomplete-list li:not(.autocomplete-not-selectable):hover {
 	background-color: #555;
 }
 
-ul.autocomplete-list li > *:not(:last-child) {
-	margin-right: 0.5rem;
+ul.autocomplete-list li.autocomplete-link {
+	background-color: #444;
+	cursor: pointer;
+}
+
+ul.autocomplete-list li.autocomplete-link svg {
+	font-size: 1.5rem;
+	margin: 0.5rem;
+}
+
+ul.autocomplete-list li > *:not(:first-child) {
+	margin-left: 0.5rem;
 }
 
 ul.autocomplete-list li.autocomplete-list-empty {

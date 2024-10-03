@@ -121,9 +121,10 @@ class FarmUi {
 		$view ??= \Setting::get('main\viewCultivation');
 
 		return match($view) {
-			Farmer::SEQUENCE => self::urlCultivationSequences($eFarm),
-			Farmer::PLANT => self::urlCultivationPlants($eFarm),
-			Farmer::SERIES => self::urlCultivationSeries($eFarm, $subView, $season)
+			Farmer::SERIES => self::urlCultivationSeries($eFarm, $subView, $season),
+			Farmer::CARTOGRAPHY => self::urlCartography($eFarm),
+			Farmer::SOIL => self::urlSoil($eFarm),
+			Farmer::HISTORY => self::urlHistory($eFarm)
 		};
 
 	}
@@ -132,20 +133,15 @@ class FarmUi {
 
 		$view ??= \Setting::get('main\viewSeries');
 
-		return self::url($eFarm).'/series'.($season ? '/'.$season : '').'?view='.$view;
+		return match($view) {
+			Farmer::SEQUENCE => self::urlCultivationSequences($eFarm),
+			default => self::url($eFarm).'/series'.($season ? '/'.$season : '').'?view='.$view
+		};
 
 	}
 
-	public static function urlMap(Farm $eFarm, ?string $view = NULL): string {
-
-		$view ??= \Setting::get('main\viewMap');
-
-		return match($view) {
-			Farmer::CARTOGRAPHY => self::urlCartography($eFarm),
-			Farmer::SOIL => self::urlSoil($eFarm),
-			Farmer::HISTORY => self::urlHistory($eFarm)
-		};
-
+	public static function urlCultivationSequences(Farm $eFarm): string {
+		return self::url($eFarm).'/itineraires';
 	}
 
 	public static function urlCartography(Farm $eFarm, int $season = NULL): string {
@@ -169,7 +165,7 @@ class FarmUi {
 			Farmer::PRODUCT => self::urlSellingProduct($eFarm),
 			Farmer::STOCK => self::urlSellingStock($eFarm),
 			Farmer::CUSTOMER => self::urlSellingCustomer($eFarm),
-			Farmer::SHOP => self::urlSellingShop($eFarm)
+			Farmer::INVOICE => self::urlSellingInvoice($eFarm)
 		};
 
 	}
@@ -186,8 +182,8 @@ class FarmUi {
 		return self::url($eFarm).'/stocks';
 	}
 
-	public static function urlSellingShop(Farm $eFarm): string {
-		return self::url($eFarm).'/boutiques';
+	public static function urlSellingInvoice(Farm $eFarm): string {
+		return self::url($eFarm).'/factures';
 	}
 
 	public static function urlSellingSales(Farm $eFarm, ?string $view = NULL): string {
@@ -224,12 +220,20 @@ class FarmUi {
 		return self::url($eFarm).'/etiquettes';
 	}
 
-	public static function urlCultivationSequences(Farm $eFarm): string {
-		return self::url($eFarm).'/itineraires';
+	public static function urlShop(Farm $eFarm, ?string $view = NULL): string {
+
+		$view ??= \Setting::get('main\viewShop');
+
+		return match($view) {
+			Farmer::SHOP => self::urlShopList($eFarm),
+			Farmer::CATALOG => '',
+			Farmer::POINT => ''
+		};
+
 	}
 
-	public static function urlCultivationPlants(Farm $eFarm): string {
-		return self::url($eFarm).'/especes';
+	public static function urlShopList(Farm $eFarm): string {
+		return self::url($eFarm).'/boutiques';
 	}
 
 	public static function urlAnalyzeReport(Farm $eFarm, int $season = NULL): string {
@@ -261,6 +265,9 @@ class FarmUi {
 		return self::url($eFarm).'/configuration';
 	}
 
+	public static function urlSettingsPlants(Farm $eFarm): string {
+		return self::url($eFarm).'/especes';
+	}
 
 	/**
 	 * Display a field to search farms
@@ -526,16 +533,16 @@ class FarmUi {
 					$h .= \Asset::icon('journals');
 					$h .= '<span>'.s("Production").'</span>';
 				$h .= '</a>';
-				$h .= '<a href="'.FarmUi::urlMap($eFarm).'" data-tab="map" class="farm-tab '.($tab === 'map' ? 'selected' : '').'">';
-					$h .= '<span class="farm-tab-off">'.\Asset::icon('geo').'</span>';
-					$h .= '<span class="farm-tab-on">'.\Asset::icon('geo-fill').'</span>';
-					$h .= '<span>'.s("Parcellaire").'</span>';
-				$h .= '</a>';
 
 				if($eFarm->canSelling()) {
 					$h .= '<a href="'.FarmUi::urlSelling($eFarm).'" data-tab="selling" class="farm-tab '.($tab === 'selling' ? 'selected' : '').'">';
 						$h .= \Asset::icon('piggy-bank');
 						$h .= '<span>'.s("Commercialisation").'</span>';
+					$h .= '</a>';
+					$h .= '<a href="'.FarmUi::urlShop($eFarm).'" data-tab="shop" class="farm-tab '.($tab === 'map' ? 'selected' : '').'">';
+						$h .= '<span class="farm-tab-off">'.\Asset::icon('cart').'</span>';
+						$h .= '<span class="farm-tab-on">'.\Asset::icon('cart-fill').'</span>';
+						$h .= '<span>'.s("Vente en ligne").'</span>';
 					$h .= '</a>';
 				}
 
@@ -619,22 +626,22 @@ class FarmUi {
 
 	}
 
-	public function getCultivationSeriesTitle(\farm\Farm $eFarm, int $selectedSeason, string $selectedView, int $nSeries, bool $firstSeries): string {
-
-		$uiFarm = (new FarmUi());
+	public function getCultivationSeriesTitle(\farm\Farm $eFarm, ?int $selectedSeason, string $selectedView, ?int $nSeries = NULL, ?bool $firstSeries = NULL): string {
 
 		$h = '<div class="util-action">';
 			$h .= '<h1>';
 				$h .= '<a class="util-action-navigation" data-dropdown="bottom-start" data-dropdown-hover="true">';
-					$h .= $uiFarm->getSeriesCategories($eFarm)[$selectedView].' '.self::getNavigation();
+					$h .= $this->getSeriesCategories($eFarm)[$selectedView].' '.self::getNavigation();
 				$h .= '</a>';
 				$h .= '<div class="dropdown-list bg-secondary">';
-					$h .= '<div class="dropdown-title">'.s("Séries").'</div>';
+					$h .= '<div class="dropdown-title">'.s("Cultures").'</div>';
 					foreach($this->getSeriesCategories($eFarm) as $key => $value) {
 						$h .= '<a href="'.FarmUi::urlCultivationSeries($eFarm, $key).'" class="dropdown-item '.($key === $selectedView ? 'selected' : '').'">'.$value.'</a> ';
 					}
 				$h .= '</div>';
-				$h .= $uiFarm->getSeasonsTabs($eFarm, fn($season) => \farm\FarmUi::urlCultivationSeries($eFarm, season: $season), $selectedSeason);
+				if($selectedSeason !== NULL) {
+					$h .= $this->getSeasonsTabs($eFarm, fn($season) => \farm\FarmUi::urlCultivationSeries($eFarm, season: $season), $selectedSeason);
+				}
 			$h .= '</h1>';
 
 			switch($selectedView) {
@@ -661,7 +668,6 @@ class FarmUi {
 					$h .=  '</div>';
 					break;
 
-				case \farm\Farmer::TOOL :
 				case \farm\Farmer::SEEDLING :
 				case \farm\Farmer::HARVESTING :
 				case \farm\Farmer::WORKING_TIME :
@@ -670,6 +676,15 @@ class FarmUi {
 							$h .= ' <a class="btn btn-primary" '.attr('onclick', 'Lime.Search.toggle("#series-search")').'>';
 								$h .= \Asset::icon('search');
 							$h .= '</a>';
+						}
+					$h .=  '</div>';
+					break;
+
+				case \farm\Farmer::SEQUENCE :
+					$h .=  '<div>';
+						$h .= '<a '.attr('onclick', 'Lime.Search.toggle("#sequence-search")').' class="btn btn-primary">'.\Asset::icon('search').'</a>';
+						if($eFarm->canManage()) {
+							$h .= ' <a href="/production/sequence:create?farm='.$eFarm['id'].'" class="btn btn-primary">'.\Asset::icon('plus-circle').'<span class="hide-xs-down"> '.s("Nouvel itinéraire").'</span></a>';
 						}
 					$h .=  '</div>';
 					break;
@@ -699,7 +714,7 @@ class FarmUi {
 
 					$h .= $form->inputGroup($form->addon(s('Largeur travaillée de planche')).$form->number('bedWidth', $search->get('bedWidth')).$form->addon(s('cm')));
 
-					if(\Setting::get('main\viewSeries') === Farmer::TOOL) {
+					if(\Setting::get('main\viewSeries') === Farmer::AREA) {
 
 						$h .= $form->dynamicField(new Tool(['farm' => $eFarm]), 'id', function($d) use ($search) {
 
@@ -753,9 +768,10 @@ class FarmUi {
 
 	public function getCultivationCategories(): array {
 		return [
-			Farmer::SERIES => s("Séries"),
-			Farmer::SEQUENCE => s("Itinéraires techniques"),
-			Farmer::PLANT => s("Espèces"),
+			Farmer::SERIES => s("Cultures"),
+			Farmer::CARTOGRAPHY => s("Cartographie"),
+			Farmer::SOIL => s("Assolement"),
+			Farmer::HISTORY => s("Rotations"),
 		];
 	}
 
@@ -764,10 +780,10 @@ class FarmUi {
 		$categories = [
 			Farmer::AREA => s("Planification"),
 			Farmer::SEEDLING => s("Semences et plants"),
-			Farmer::FORECAST => s("Prévisionnel<span> financier</span>", ['span' => '<span class="hide-xs-down">']),
+			Farmer::FORECAST => s("Prévisionnel financier"),
 			Farmer::HARVESTING => s("Récoltes"),
 			Farmer::WORKING_TIME => s("Temps de travail"),
-			Farmer::TOOL => s("Matériel utilisé"),
+			Farmer::SEQUENCE => s("Itinéraires techniques"),
 		];
 
 		if($eFarm->hasFeatureTime() === FALSE) {
@@ -784,16 +800,23 @@ class FarmUi {
 
 	public function getRotationSearch(\Search $search, array $seasons): string {
 
-		$seen = [
-			0 => s("jamais entre {start} et {stop}", ['start' => last($seasons), 'stop' => first($seasons)]),
-			1 => s("au moins 1 fois entre {start} et {stop}", ['start' => last($seasons), 'stop' => first($seasons)]),
-		];
+		$seen = [];
+		$firstSeason = first($seasons);
+		$lastSeason = last($seasons);
 
 		foreach($seasons as $season) {
-			$seen[$season] = s("la dernière fois en {value}", $season);
+
+			if($season !== $firstSeason) {
+				$seen[$season] = s("jamais entre {start} et {stop}", ['start' => $season, 'stop' => $firstSeason]);
+			} else {
+				$seen[$season] = s("jamais en {value}", $season);
+			}
+
 		}
 
-		for($i = 2; $i <= count($seasons); $i++) {
+		$seen[1] = s("au moins 1 fois entre {start} et {stop}", ['start' => last($seasons), 'stop' => first($seasons)]);
+
+		for($i = 1; $i <= count($seasons); $i++) {
 			$seen[$i] = p("exactement {value} fois entre {start} et {stop}", "exactement {value} fois entre {start} et {stop}", $i, ['start' => last($seasons), 'stop' => first($seasons)]);
 		}
 
@@ -808,7 +831,7 @@ class FarmUi {
 					$h .= $form->select('family', $search->get('cFamily'), $search->get('family'), ['placeholder' => s("Famille..."), 'onchange' => 'Farm.changeSearchFamily(this)']);
 					$h .= $form->inputGroup(
 						$form->addon(s("Cultivée")).
-						$form->select('seen', $seen, $search->get('seen'), ['mandatory' => TRUE]),
+						$form->select('seen', $seen, $search->get('seen', $lastSeason), ['mandatory' => TRUE]),
 						['class' => 'bed-rotation-search-seen '.($search->get('family')->notEmpty() ? NULL : 'hide')]
 					);
 					$h .= '<label><input type="checkbox" name="bed" value="1" '.($search->get('bed') ? 'checked="checked"' : '').'/> '.s("Uniquement les planches permanentes").'</label>';
@@ -820,38 +843,6 @@ class FarmUi {
 		$h .= '</div>';
 
 		return $h;
-
-	}
-
-	public function getMapSubNav(Farm $eFarm): string {
-
-		$selectedView = \Setting::get('main\viewMap');
-
-		$h = '<nav id="farm-subnav">';
-			$h .= '<div class="container farm-subnav-menu farm-subnav-wrapper">';
-
-				foreach($this->getMapCategories() as $key => $value) {
-
-					$h .= '<a href="'.FarmUi::urlMap($eFarm, $key).'" class="farm-subnav-tree-menu '.($key === $selectedView ? 'selected' : '').'">';
-						$h .= $value;
-					$h .= '</a>';
-
-				}
-
-			$h .= '</div>';
-		$h .= '</nav>';
-
-		return $h;
-
-	}
-
-	public function getMapCategories(): array {
-
-		return [
-			Farmer::CARTOGRAPHY => s("Cartographie"),
-			Farmer::SOIL => s("Assolement"),
-			Farmer::HISTORY => s("Rotations"),
-		];
 
 	}
 
@@ -882,17 +873,13 @@ class FarmUi {
 		$categories = [
 			Farmer::SALE => s("Ventes"),
 			Farmer::CUSTOMER => s("Clients"),
-			Farmer::PRODUCT => s("Produits")
+			Farmer::PRODUCT => s("Produits"),
+			Farmer::INVOICE => s("Factures")
 		];
 
 		if($eFarm['featureStock']) {
 			$categories += [
-				Farmer::STOCK => s("Stocks"),
-				Farmer::SHOP => s("Boutiques")
-			];
-		} else {
-			$categories += [
-				Farmer::SHOP => s("Boutiques en ligne")
+				Farmer::STOCK => s("Stocks")
 			];
 		}
 
@@ -934,18 +921,6 @@ class FarmUi {
 					$h .= '</div>';
 					break;
 
-				case Farmer::INVOICE :
-					$h .= '<div>';
-						$h .= '<a '.attr('onclick', 'Lime.Search.toggle("#sale-search")').' class="btn btn-primary">'.\Asset::icon('search').'</a> ';
-						$h .= '<a class="btn btn-primary" data-dropdown="bottom-end">'.\Asset::icon('plus-circle').'<span class="hide-xs-down"> '.s("Nouvelle facture").'</span></a> ';
-						$h .= '<div class="dropdown-list">';
-							$h .= '<div class="dropdown-title">'.s("Facturer les ventes").'</div> ';
-							$h .= '<a href="/selling/invoice:create?farm='.$eFarm['id'].'" class="dropdown-item">'.s("D'un seul client").'</a> ';
-							$h .= '<a href="/selling/invoice:createCollection?farm='.$eFarm['id'].'" class="dropdown-item">'.s("De plusieurs clients sur un mois donné").'</a> ';
-						$h .= '</div>';
-					$h .= '</div>';
-					break;
-
 			}
 
 		$h .= '</div>';
@@ -960,10 +935,40 @@ class FarmUi {
 			Farmer::PRO => s("Ventes aux professionnels"),
 			Farmer::PRIVATE => s("Ventes aux particuliers"),
 			NULL,
-			Farmer::INVOICE => s("Factures"),
-			NULL,
 			Farmer::LABEL => s("Étiquettes de colisage"),
 		];
+	}
+
+	public function getShopSubNav(Farm $eFarm): string {
+
+		$selectedView = \Setting::get('main\viewShop');
+
+		$h = '<nav id="farm-subnav">';
+			$h .= '<div class="container farm-subnav-menu farm-subnav-wrapper">';
+
+				foreach($this->getShopCategories() as $key => $value) {
+
+					$h .= '<a href="'.FarmUi::urlShop($eFarm, $key).'" class="farm-subnav-tree-menu '.($key === $selectedView ? 'selected' : '').'">';
+						$h .= $value;
+					$h .= '</a>';
+
+				}
+
+			$h .= '</div>';
+		$h .= '</nav>';
+
+		return $h;
+
+	}
+
+	public function getShopCategories(): array {
+
+		return [
+			Farmer::SHOP => s("Boutiques")/*,
+			Farmer::CATALOG => s("Catalogues"),
+			Farmer::POINT => s("Points de vente"),*/
+		];
+
 	}
 
 	public function getAnalyzeSubNav(Farm $eFarm): string {
@@ -1262,6 +1267,11 @@ class FarmUi {
 		$h = '<h2>'.s("La production").'</h2>';
 
 		$h .= '<div class="util-buttons">';
+
+			$h .= '<a href="'.FarmUi::urlSettingsPlants($eFarm).'" class="bg-secondary util-button">';
+				$h .= '<h4>'.s("Les espèces").'</h4>';
+				$h .= \Asset::icon('flower3');
+			$h .= '</a>';
 
 			$h .= '<a href="/farm/tool:manage?farm='.$eFarm['id'].'" class="bg-secondary util-button">';
 				$h .= '<h4>'.s("Le petit matériel").'</h4>';

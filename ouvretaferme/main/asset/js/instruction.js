@@ -28,8 +28,8 @@ new Lime.Instruction('main')
 	.register('updateNavCultivation', function(url) {
 		qs('#farm-nav [data-tab="cultivation"]', node => node.setAttribute('href', url));
 	})
-	.register('updateNavMap', function(url) {
-		qs('#farm-nav [data-tab="map"]', node => node.setAttribute('href', url));
+	.register('updateNavShop', function(url) {
+		qs('#farm-nav [data-tab="shop"]', node => node.setAttribute('href', url));
 	})
 	.register('updateNavSelling', function(url) {
 		qs('#farm-nav [data-tab="selling"]', node => node.setAttribute('href', url));

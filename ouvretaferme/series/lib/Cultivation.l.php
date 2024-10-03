@@ -112,12 +112,25 @@ class CultivationLib extends CultivationCrud {
 
 	public static function getForArea(\farm\Farm $eFarm, int $season, \Search $search): \Collection {
 
+		$series = [
+			'cccPlace' => PlaceLib::delegateBySeries()
+		];
+
+		if($search->get('tool')->notEmpty()) {
+
+			$series['ccRequirement'] = Requirement::model()
+				->select([
+					'series',
+					'tool'
+				])
+				->delegateCollection('series');
+
+		}
+
 		$ccCultivation = Cultivation::model()
 			->select(Cultivation::getSelection())
 			->select([
-				'series' => [
-					'cccPlace' => PlaceLib::delegateBySeries()
-				],
+				'series' => $series,
 				'cTask' => Task::model()
 					->select([
 						'cultivation',
@@ -150,6 +163,15 @@ class CultivationLib extends CultivationCrud {
 
 		if($search->get('bedWidth')) {
 			$ccCultivation->filter(fn($eCultivation) => ($eCultivation['series']['bedWidth'] === $search->get('bedWidth')), depth: 2);
+		}
+
+		if($search->get('tool')->notEmpty()) {
+
+			$ccCultivation->filter(fn($eCultivation) => $eCultivation['series']['ccRequirement']
+				->getColumnCollection('tool')
+				->filter(fn($eTool) => $eTool['id'] === $search->get('tool')['id'])
+				->notEmpty(), depth: 2);
+
 		}
 
 		self::orderByPlant($ccCultivation);
@@ -744,63 +766,6 @@ class CultivationLib extends CultivationCrud {
 		}
 
 		return $ccCultivation;
-
-	}
-
-	public static function getToolByFarm(\farm\Farm $eFarm, int $season, \Search $search): \Collection {
-
-		$cSeries = Series::model()
-			->select(Series::getSelection() + [
-				'ccRequirement' => Requirement::model()
-					->select([
-						'farm',
-						'cultivation' => [
-							'harvestWeeks', 'harvestWeeksExpected',
-							'startWeek', 'startAction',
-							'plant' => [
-								'name', 'vignette', 'fqn'
-							],
-							'cTask' => Task::model()
-								->select([
-									'cultivation',
-									'action' => ['fqn', 'name', 'short', 'color'],
-									'plannedWeek', 'doneWeek',
-									'status'
-								])
-								->whereAction('IN', \farm\ActionLib::getByFarm($eFarm, fqn: [ACTION_SEMIS_DIRECT, ACTION_SEMIS_PEPINIERE, ACTION_PLANTATION]))
-								->sort(new \Sql('IF(status="'.\series\Task::TODO.'", plannedWeek, doneWeek)'))
-								->delegateCollection('cultivation')
-						],
-						'tool' => ['name', 'vignette']
-					])
-					->delegateCollection('series', ['cultivation', NULL], callback: function($cRequirement) {
-
-						$cRequirement->ksort();
-
-						return $cRequirement;
-
-					})
-			])
-			->whereFarm($eFarm)
-			->whereSeason($season)
-			->getCollection()
-			->filter(fn($eSeries) => $eSeries['ccRequirement']->notEmpty())
-			->sort('name', natural: TRUE);
-
-		if($search->get('bedWidth')) {
-			$cSeries->filter(fn($eSeries) => $eSeries['bedWidth'] === $search->get('bedWidth'));
-		}
-
-		if($search->get('tool')->notEmpty()) {
-
-			$cSeries->filter(fn($eSeries) => $eSeries['ccRequirement']
-				->getColumnCollection('tool')
-				->filter(fn($eTool) => $eTool['id'] === $search->get('tool')['id'])
-				->notEmpty());
-
-		}
-
-		return $cSeries;
 
 	}
 

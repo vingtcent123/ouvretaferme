@@ -455,7 +455,7 @@ class PlaceLib extends PlaceCrud {
 						if($seasons === []) {
 
 							// Famille recherchée, on la supprime
-							if($seenSearch > 0 or $seasonSearch > 0) {
+							if($seenSearch > 0) {
 								$delete[] = $bed;
 							}
 
@@ -472,7 +472,7 @@ class PlaceLib extends PlaceCrud {
 								$delete[] = $bed;
 							}
 							// Famille cherchée en saison N et pas trouvée
-							else if($seasonSearch !== NULL and last($seasons) !== $seasonSearch) {
+							else if($seasonSearch !== NULL and max($seasons) >= $seasonSearch) {
 								$delete[] = $bed;
 							}
 

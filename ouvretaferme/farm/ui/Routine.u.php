@@ -27,7 +27,7 @@ class RoutineUi {
 				},
 				'nameField' => s("Nom de l'intrant"),
 				'pageTitle' => fn(Farm $eFarm) => s("Les intrants de {value}", $eFarm['name']),
-				'title' => s("Intrant"),
+				'title' => s("Intrants"),
 				'nothing' => s("Vous n'avez pas encore ajouté d'intrant à votre ferme. Ajouter votre gamme d'intrants peut être très utile pour que {siteName} puisse vous indiquer les quantités à épandre sur vos planches !"),
 				'createButton' => s("Nouvel intrant"),
 				'createTitle' => s("Ajouter un nouvel intrant"),

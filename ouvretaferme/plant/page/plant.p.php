@@ -1,4 +1,41 @@
 <?php
+(new \farm\FarmPage())
+	->read(['/ferme/{id}/especes', '/ferme/{id}/especes/{status}'], function($data) {
+
+		\farm\FarmerLib::register($data->e);
+
+		\farm\FarmerLib::setView('viewCultivation', $data->e, \farm\Farmer::PLANT);
+
+		$data->plants = \plant\PlantLib::countByFarm($data->e);
+
+		if(
+			get_exists('status') and
+			$data->plants[\plant\Plant::INACTIVE] === 0
+		) {
+			throw new RedirectAction(\farm\FarmUi::urlSettingsPlants($data->e));
+		}
+
+		$data->search = new Search([
+			'id' => GET('plantId', '?int'),
+			'status' => GET('status', default: \plant\Plant::ACTIVE),
+		]);
+
+		$data->cPlant = \plant\PlantLib::getByFarm($data->e, selectMetadata: TRUE, search: $data->search);
+
+		if(
+			$data->search->get('id') and
+			$data->cPlant->notEmpty()
+		) {
+			$data->search->set('id', $data->cPlant->first());
+		}
+
+		// Pour le template Farm
+		$data->eFarm = $data->e;
+
+		throw new ViewAction($data, ':plant');
+
+	}, validate: ['canWrite']);
+
 (new \plant\PlantPage())
 	->applyElement(function($data, \plant\Plant $e) {
 

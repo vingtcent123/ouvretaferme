@@ -836,17 +836,19 @@ class AutocompleteField {
 		let html = '<ul class="autocomplete-list">';
 
 		if(values.length === 0) {
-			html += '<li class="not-selectable autocomplete-list-empty">'+ input.dataset.autocompleteEmpty +'</li>';
+			html += '<li class="autocomplete-not-selectable autocomplete-list-empty">'+ input.dataset.autocompleteEmpty +'</li>';
 		} else {
 
 			values.forEach((value, key) => {
 
-				if(value['separator'] !== undefined) {
-					html += '<li class="not-selectable">';
-						html += value['separator'];
+				const type = value.type || 'value';
+
+				if(type === 'title') {
+					html += '<li class="autocomplete-not-selectable">';
+						html += value['itemHtml'];
 					html += '</li>';
-				} else if(value['value'] === null) {
-					html += '<li class="not-selectable">';
+				} else if(type === 'link') {
+					html += '<li data-ajax="'+ value.link +'" data-ajax-method="get" class="autocomplete-link">';
 						html += value['itemHtml'];
 					html += '</li>';
 				} else {
@@ -901,7 +903,7 @@ class AutocompleteField {
 
 		const input = target.previousSibling;
 
-		// On applique et appelle les callbacks
+		// On applique et on appelle les callbacks
 		if(input.value) {
 
 			this.apply(input, {

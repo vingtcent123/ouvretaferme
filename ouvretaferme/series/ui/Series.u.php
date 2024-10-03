@@ -119,9 +119,13 @@ class SeriesUi {
 					$h .= s("Assolement");
 					$h .= ' <small>';
 					$h .= [
-						Series::BED => s("Planches de {value} cm", $eSeries['bedWidth']),
+						Series::BED => s("Planches {value} cm", $eSeries['bedWidth']),
 						Series::BLOCK => s("Surface libre"),
 					][$eSeries['use']];
+
+					if($eSeries['alleyWidth'] !== NULL) {
+						$h .= ' / '.s("Passe-pieds {value} cm", $eSeries['alleyWidth']);
+					}
 
 					switch($eSeries['use']) {
 

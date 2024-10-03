@@ -144,12 +144,12 @@ Route::register([
 			'route' => ['ferme', '{id}', 'configuration'],
 		],
 		'/ferme/{id}/especes' => [
-			'request' => 'farm/index',
+			'request' => 'plant/plant',
 			'priority' => 5,
 			'route' => ['ferme', '{id}', 'especes'],
 		],
 		'/ferme/{id}/especes/{status}' => [
-			'request' => 'farm/index',
+			'request' => 'plant/plant',
 			'priority' => 5,
 			'route' => ['ferme', '{id}', 'especes', '{status}'],
 		],

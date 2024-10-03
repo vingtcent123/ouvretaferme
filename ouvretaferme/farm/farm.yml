@@ -67,19 +67,19 @@ Farmer:
   viewPlanningField: enum(VARIETY, SOIL) = SOIL
   viewPlanningSearch: ?json
   viewPlanningUser: ?user\User
-  viewCultivation: enum(SERIES, SEQUENCE, PLANT) = SERIES
+  viewCultivation: enum(SERIES, CARTOGRAPHY, SOIL, HISTORY) = SERIES
   viewCultivationCategory: enum(AREA, PLANT, FAMILY, ROTATION) = AREA
-  viewSeries: enum(AREA, FORECAST, SEEDLING, HARVESTING, WORKING_TIME, TOOL) = AREA
-  viewSelling: enum(SALE, PRODUCT, CUSTOMER, SHOP, STOCK) = SALE
-  viewSellingSales: enum(ALL, PRIVATE, PRO, INVOICE, LABEL) = ALL
+  viewSeries: enum(AREA, FORECAST, SEEDLING, HARVESTING, WORKING_TIME, SEQUENCE) = AREA
+  viewSelling: enum(SALE, PRODUCT, CUSTOMER, INVOICE, STOCK) = SALE
+  viewSellingSales: enum(ALL, PRIVATE, PRO, LABEL) = ALL
   viewSellingCategory: enum(ITEM, CUSTOMER, SHOP, PERIOD) = ITEM
   viewSellingProductCategory: ?selling\Category
-  viewMap: enum(CARTOGRAPHY, SOIL, HISTORY) = CARTOGRAPHY
+  viewShop: enum(SHOP, CATALOG, POINT) = SHOP
   viewAnalyze: enum(WORKING_TIME, REPORT, SALES, CULTIVATION) = WORKING_TIME
   viewAnalyzeYear: ?int16(0, null)
   viewSettings: enum(SETTINGS, WEBSITE) = SETTINGS
   viewSeason: ?int16(0, null)
-  viewShop: ?shop\Shop
+  viewShopCurrent: ?shop\Shop
   createdAt: datetime = SPECIAL(now)
   UNIQUE: [
     ["user", "farm"]

@@ -15,7 +15,8 @@
 	}))
 	->get(['/ferme/{id}/itineraires', '/ferme/{id}/itineraires/{status}'], function($data) {
 
-		\farm\FarmerLib::setView('viewCultivation', $data->eFarm, \farm\Farmer::SEQUENCE);
+		\farm\FarmerLib::setView('viewCultivation', $data->eFarm, \farm\Farmer::SERIES);
+		\farm\FarmerLib::setView('viewSeries', $data->eFarm, \farm\Farmer::SEQUENCE);
 
 		$data->sequences = \production\SequenceLib::countByFarm($data->eFarm);
 
@@ -40,36 +41,6 @@
 		$data->ccCrop = \production\CropLib::getByFarm($data->eFarm, $data->cActionMain, TRUE, search: $data->search);
 
 		throw new ViewAction($data, ':sequence');
-
-	})
-	->get(['/ferme/{id}/especes', '/ferme/{id}/especes/{status}'], function($data) {
-
-		\farm\FarmerLib::setView('viewCultivation', $data->eFarm, \farm\Farmer::PLANT);
-
-		$data->plants = \plant\PlantLib::countByFarm($data->eFarm);
-
-		if(
-			get_exists('status') and
-			$data->plants[\plant\Plant::INACTIVE] === 0
-		) {
-			throw new RedirectAction(\farm\FarmUi::urlCultivationPlants($data->eFarm));
-		}
-
-		$data->search = new Search([
-			'id' => GET('plantId', '?int'),
-			'status' => GET('status', default: \plant\Plant::ACTIVE),
-		]);
-
-		$data->cPlant = \plant\PlantLib::getByFarm($data->eFarm, selectMetadata: TRUE, search: $data->search);
-
-		if(
-			$data->search->get('id') and
-			$data->cPlant->notEmpty()
-		) {
-			$data->search->set('id', $data->cPlant->first());
-		}
-
-		throw new ViewAction($data, ':plant');
 
 	})
 	->get([
@@ -221,7 +192,7 @@
 
 		if($data->eShop->notEmpty()) {
 
-			\farm\FarmerLib::setView('viewShop', $data->eFarm, $data->eShop);
+			\farm\FarmerLib::setView('viewShopCurrent', $data->eFarm, $data->eShop);
 
 			$data->eShop['ccPoint'] = \shop\PointLib::getByShop($data->eShop, onlyActive: FALSE);
 
@@ -237,8 +208,7 @@
 
 		$data->eFarm->validate('canSelling');
 
-		\farm\FarmerLib::setView('viewSelling', $data->eFarm, \farm\Farmer::SALE);
-		\farm\FarmerLib::setView('viewSellingSales', $data->eFarm, \farm\Farmer::INVOICE);
+		\farm\FarmerLib::setView('viewSelling', $data->eFarm, \farm\Farmer::INVOICE);
 
 		$data->page = GET('page', 'int');
 
@@ -486,6 +456,7 @@
 		switch(Setting::get('main\viewSeries')) {
 
 			case \farm\Farmer::AREA :
+				$data->search->set('tool', get_exists('tool') ? \farm\ToolLib::getOneByFarm($data->eFarm, GET('tool')) : new \farm\Tool());
 				$data->ccCultivation = \series\CultivationLib::getForArea($data->eFarm, $data->season, $data->search);
 				$data->ccForecast = \plant\ForecastLib::getReadOnlyByFarm($data->eFarm, $data->season);
 				break;
@@ -511,11 +482,6 @@
 				$data->ccCultivation = \series\CultivationLib::getWorkingTimeByFarm($data->eFarm, $data->season, $data->search);
 				break;
 
-			case \farm\Farmer::TOOL :
-				$data->search->set('tool', \farm\ToolLib::getOneByFarm($data->eFarm, GET('tool')));
-				$data->cSeries = \series\CultivationLib::getToolByFarm($data->eFarm, $data->season, $data->search);
-				break;
-
 		}
 
 		throw new ViewAction($data, ':series');
@@ -526,7 +492,7 @@
 		$data->season = \farm\FarmerLib::getDynamicSeason($data->eFarm, GET('season', 'int'));
 		\map\SeasonLib::setOnline($data->season);
 
-		\farm\FarmerLib::setView('viewMap', $data->eFarm, \farm\Farmer::CARTOGRAPHY);
+		\farm\FarmerLib::setView('viewCultivation', $data->eFarm, \farm\Farmer::CARTOGRAPHY);
 
 		$data->cZone = \map\ZoneLib::getByFarm($data->eFarm, season: $data->season);
 
@@ -557,7 +523,7 @@
 		$data->season = \farm\FarmerLib::getDynamicSeason($data->eFarm, GET('season', 'int'));
 		\map\SeasonLib::setOnline($data->season);
 
-		\farm\FarmerLib::setView('viewMap', $data->eFarm, \farm\Farmer::SOIL);
+		\farm\FarmerLib::setView('viewCultivation', $data->eFarm, \farm\Farmer::SOIL);
 
 		$data->cZone = \map\ZoneLib::getByFarm($data->eFarm, season: $data->season);
 
@@ -582,7 +548,7 @@
 
 		$data->selectedSeasons = $data->eFarm->getRotationSeasons($data->season);
 
-		\farm\FarmerLib::setView('viewMap', $data->eFarm, \farm\Farmer::HISTORY);
+		\farm\FarmerLib::setView('viewCultivation', $data->eFarm, \farm\Farmer::HISTORY);
 
 		$data->cZone = \map\ZoneLib::getByFarm($data->eFarm, season: $data->season);
 

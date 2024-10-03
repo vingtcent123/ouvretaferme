@@ -10,7 +10,7 @@
 			$type === \shop\Point::HOME and
 			\shop\PointLib::hasType($data->eShop, $type)
 		) {
-			throw new RedirectAction(\farm\FarmUi::urlSellingShop($data->eShop['farm']));
+			throw new RedirectAction(\farm\FarmUi::urlShopList($data->eShop['farm']));
 		}
 
 		return new \shop\Point([

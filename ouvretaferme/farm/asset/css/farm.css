@@ -102,21 +102,11 @@ div.farmer-farms-item-infos {
 @media (max-width: 575px) {
 
 	.farm-tabs {
-		grid-column-gap: 0.125rem;
+		grid-template-columns: repeat(5, max-content) min-content;
+		justify-content: space-between;
+		grid-column-gap: 0;
 	}
 
-}
-
-@media (max-width: 449px) {
-	.farm-tabs {
-		grid-template-columns: repeat(5, 1fr) min-content;
-	}
-}
-
-@media (min-width: 450px) and (max-width: 575px) {
-	.farm-tabs {
-		grid-template-columns: repeat(6, 1fr);
-	}
 }
 
 @media (min-width: 576px) {
@@ -197,7 +187,7 @@ a.farm-tab.selected .farm-tab-off {
 
 	a.farm-tab,
 	a.farm-tab.selected {
-		padding: 0.75rem 0.5rem;
+		padding: 0.625rem 0.5rem;
 	}
 
 }
@@ -213,12 +203,13 @@ a.farm-tab.selected .farm-tab-off {
 	}
 
 	a.farm-tab span {
-		font-size: 0.8rem;
-		letter-spacing: 0;
+		font-size: 0.75rem;
+		line-height: 1.2;
 	}
 
-	a.farm-tab[data-tab="selling"] span {
-		letter-spacing: -0.2px;
+	a.farm-tab[data-tab="selling"] span,
+	a.farm-tab[data-tab="shop"] span {
+		letter-spacing: -0.1px;
 	}
 
 }

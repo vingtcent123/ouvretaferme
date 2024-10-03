@@ -56,6 +56,19 @@ class PlantUi {
 
 	}
 
+	public static function getAutocompleteCreate(\farm\Farm $eFarm): array {
+
+		$item = \Asset::icon('plus-circle');
+		$item .= '<div>'.s("Ajouter une espèce manquante").'</div>';
+
+		return [
+			'type' => 'link',
+			'link' => '/plant/plant:create?farm='.$eFarm['id'],
+			'itemHtml' => $item
+		];
+
+	}
+
 	public static function getVignette(Plant $ePlant, string $size): string {
 
 		\Asset::css('plant', 'plant.css');
@@ -190,8 +203,8 @@ class PlantUi {
 				$h .= '<br/>';
 
 				$h .= '<div class="tabs-item">';
-					$h .= '<a href="'.\farm\FarmUi::urlCultivationPlants($eFarm).'" class="tab-item '.($search->get('status') === Plant::ACTIVE ? 'selected' : '').'"><span>'.s("Espèces actives").' <span class="tab-item-count">'.$plants[Plant::ACTIVE].'</span></span></a>';
-					$h .= '<a href="'.\farm\FarmUi::urlCultivationPlants($eFarm).'/'.Plant::INACTIVE.'" class="tab-item '.($search->get('status') === Plant::INACTIVE ? 'selected' : '').'"><span>'.s("Espèces désactivées").' <small class="tab-item-count">'.$plants[Plant::INACTIVE].'</small></span></a>';
+					$h .= '<a href="'.\farm\FarmUi::urlSettingsPlants($eFarm).'" class="tab-item '.($search->get('status') === Plant::ACTIVE ? 'selected' : '').'"><span>'.s("Espèces actives").' <span class="tab-item-count">'.$plants[Plant::ACTIVE].'</span></span></a>';
+					$h .= '<a href="'.\farm\FarmUi::urlSettingsPlants($eFarm).'/'.Plant::INACTIVE.'" class="tab-item '.($search->get('status') === Plant::INACTIVE ? 'selected' : '').'"><span>'.s("Espèces désactivées").' <small class="tab-item-count">'.$plants[Plant::INACTIVE].'</small></span></a>';
 				$h .= '</div>';
 
 			}
@@ -208,7 +221,7 @@ class PlantUi {
 
 		$form = new \util\FormUi();
 
-		$h = $form->openAjax(\farm\FarmUi::urlCultivationPlants($eFarm), ['id' => 'plant-manage-search', 'method' => 'get']);
+		$h = $form->openAjax(\farm\FarmUi::urlSettingsPlants($eFarm), ['id' => 'plant-manage-search', 'method' => 'get']);
 			$h .= '<div>';
 				$h .= $form->dynamicField(new Plant([
 					'farm' => $eFarm
@@ -220,7 +233,7 @@ class PlantUi {
 				});
 			$h .= '</div>';
 			if($search->get('id') !== NULL) {
-				$h .= '<a href="'.\farm\FarmUi::urlCultivationPlants($eFarm).'" class="btn btn-secondary">'.\Asset::icon('x-lg').'</a>';
+				$h .= '<a href="'.\farm\FarmUi::urlSettingsPlants($eFarm).'" class="btn btn-secondary">'.\Asset::icon('x-lg').'</a>';
 			}
 		$h .= $form->close();
 
