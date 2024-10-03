@@ -155,19 +155,19 @@ class ToolUi {
 			$tools[Tool::INACTIVE] === 0
 		) {
 
-			$h = '<h1>'.($routineName ? RoutineUi::getProperty($routineName, 'title') : s("Petit matériel")).'</h1>';
+			$h = '<h1>'.($routineName ? RoutineUi::getProperty($routineName, 'title') : s("Matériel")).'</h1>';
 			$h .= '<div class="util-block-help">';
-				$h .= ($routineName ? RoutineUi::getProperty($routineName, 'nothing') : s("Vous n'avez pas encore ajouté de petit matériel à votre ferme. Ajouter du petit matériel peut être très utile pour suivre les stocks et indiquer le matériel à utiliser pour les interventions !"));
+				$h .= ($routineName ? RoutineUi::getProperty($routineName, 'nothing') : s("Vous n'avez pas encore ajouté de matériel à votre ferme. Ajouter du matériel peut être très utile pour suivre les stocks et indiquer le matériel à utiliser pour les interventions !"));
 			$h .= '</div>';
 
-			$h .= '<h4>'.($routineName ? RoutineUi::getProperty($routineName, 'createTitle') : s("Ajouter un petit matériel")).'</h4>';
+			$h .= '<h4>'.($routineName ? RoutineUi::getProperty($routineName, 'createTitle') : s("Ajouter un matériel")).'</h4>';
 
 			$h .= $this->createForm($eToolNew, 'inline');
 
 		} else {
 
 			$h = '<div class="util-action">';
-				$h .= '<h1>'.($routineName ? RoutineUi::getProperty($routineName, 'title') : s("Petit matériel")).'</h1>';
+				$h .= '<h1>'.($routineName ? RoutineUi::getProperty($routineName, 'title') : s("Matériel")).'</h1>';
 				$h .= '<div>';
 					if($routineName === NULL) {
 						$h .= '<a '.attr('onclick', 'Lime.Search.toggle("#tool-search")').' class="btn btn-primary">'.\Asset::icon('search').'</a> ';

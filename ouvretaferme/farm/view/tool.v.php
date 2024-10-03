@@ -12,9 +12,9 @@ new JsonView('query', function($data, AjaxTemplate $t) {
 
 new AdaptativeView('manage', function($data, FarmTemplate $t) {
 
-	$t->title = ($data->routineName ? \farm\RoutineUi::getProperty($data->routineName, 'pageTitle')($data->eFarm) : s("Le petit matériel de {value}", $data->eFarm['name']));
+	$t->title = ($data->routineName ? \farm\RoutineUi::getProperty($data->routineName, 'pageTitle')($data->eFarm) : s("Le matériel de {value}", $data->eFarm['name']));
 	$t->tab = 'settings';
-	$t->subNav = (new \farm\FarmUi())->getSettingsSubNav($data->eFarm, ($data->routineName ? \farm\RoutineUi::getProperty($data->routineName, 'title') : s("Petit matériel")));
+	$t->subNav = (new \farm\FarmUi())->getSettingsSubNav($data->eFarm, ($data->routineName ? \farm\RoutineUi::getProperty($data->routineName, 'title') : s("Matériel")));
 
 	echo (new \farm\ToolUi())->manage($data->eFarm, $data->routineName, $data->tools, $data->cTool, $data->eToolNew, $data->cActionUsed, $data->search);
 

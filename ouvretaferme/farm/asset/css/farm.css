@@ -307,3 +307,8 @@ div.farm-subnav-wrapper > a.selected {
 #farm-update .media-image-upload[data-type="farm-vignette"] {
 	border-radius: var(--radius);
 }
+
+.farm-settings-subtitle {
+	line-height: 1.7;
+	opacity: 0.7;
+}

@@ -575,7 +575,7 @@ new AdaptativeView('/ferme/{id}/factures', function($data, FarmTemplate $t) {
 		echo '<div class="util-block-help">';
 			echo '<p>'.s("Vous n'avez pas encore généré de facture à partir de vos ventes !").'</p>';
 			echo '<p>'.s("Avec {siteName}, il est possible d'éditer des factures à partir de n'importe laquelle de vos ventes à l'état livré. Vous pouvez également éditer des factures à partir de plusieurs ventes d'un même client ! L'utilisation du module de facturation demande un peu de paramétrage avant d'être utilisé, n'hésitez pas à l'anticiper dès maintenant.").'</p>';
-			echo '<a href="/selling/configuration:update?id='.$data->eFarm['id'].'" class="btn btn-secondary">'.s("Configurer la commercialisation").'</a>';
+			echo '<a href="/selling/configuration:update?id='.$data->eFarm['id'].'" class="btn btn-secondary">'.s("Paramétrer la commercialisation").'</a>';
 		echo '</div>';
 
 	} else {

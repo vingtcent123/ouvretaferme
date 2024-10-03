@@ -5,7 +5,7 @@ new AdaptativeView('update', function($data, FarmTemplate $t) {
 	$t->tab = 'settings';
 	$t->subNav = (new \farm\FarmUi())->getSettingsSubNav($data->e);
 
-	echo '<h1>'.s("Configurer la commercialisation").'</h1>';
+	echo '<h1>'.s("Paramétrer la commercialisation").'</h1>';
 	echo '<br/>';
 	echo (new \selling\ConfigurationUi())->update($data->e, $data->cCustomize, $data->eSaleExample);
 

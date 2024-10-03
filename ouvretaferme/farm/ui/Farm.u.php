@@ -359,7 +359,7 @@ class FarmUi {
 
 		return new \Panel(
 			id: 'panel-farm-update',
-			title: s("Configurer la ferme"),
+			title: s("Paramétrer la ferme"),
 			body: $h
 		);
 
@@ -427,7 +427,7 @@ class FarmUi {
 
 		return new \Panel(
 			id: 'panel-farm-update-series',
-			title: s("Configurer les cultures"),
+			title: s("Paramétrer la production"),
 			body: $h
 		);
 
@@ -1264,18 +1264,28 @@ class FarmUi {
 
 	public function getSettings(Farm $eFarm, \website\News $eNews): string {
 
-		$h = '<h2>'.s("La production").'</h2>';
+		$h = '<h2>'.s("Configurer la production").'</h2>';
 
 		$h .= '<div class="util-buttons">';
+
+			$h .= '<a href="/farm/farm:updateSeries?id='.$eFarm['id'].'" class="bg-secondary util-button">';
+				$h .= '<h4>'.s("Les réglages de base").'<br><span class="farm-settings-subtitle">'.s("pour produire").'</span></h4>';
+				$h .= \Asset::icon('gear-fill');
+			$h .= '</a>';
 
 			$h .= '<a href="'.FarmUi::urlSettingsPlants($eFarm).'" class="bg-secondary util-button">';
 				$h .= '<h4>'.s("Les espèces").'</h4>';
 				$h .= \Asset::icon('flower3');
 			$h .= '</a>';
 
+			$h .= '<a href="/farm/action:manage?farm='.$eFarm['id'].'" class="bg-secondary util-button">';
+				$h .= '<h4>'.s("Les interventions").'</h4>';
+				$h .= \Asset::icon('list-task');
+			$h .= '</a>';
+
 			$h .= '<a href="/farm/tool:manage?farm='.$eFarm['id'].'" class="bg-secondary util-button">';
-				$h .= '<h4>'.s("Le petit matériel").'</h4>';
-				$h .= \Asset::icon('tools');
+				$h .= '<h4>'.s("Le matériel").'</h4>';
+				$h .= \Asset::icon('hammer');
 			$h .= '</a>';
 
 			$h .= '<a href="/farm/tool:manage?farm='.$eFarm['id'].'&routineName=fertilizer" class="bg-secondary util-button">';
@@ -1283,50 +1293,46 @@ class FarmUi {
 				$h .= \Asset::icon('stars');
 			$h .= '</a>';
 
+			$h .= '<a href="/farm/supplier:manage?farm='.$eFarm['id'].'" class="bg-secondary util-button">';
+				$h .= '<h4>'.s("Les fournisseurs de semences et plants").'</h4>';
+				$h .= \Asset::icon('buildings');
+			$h .= '</a>';
+
 		$h .= '</div>';
 
-		$h .= '<h2>'.s("La ferme").'</h2>';
+		$h .= '<h2>'.s("Configurer la commercialisation").'</h2>';
+
+		$h .= '<div class="util-buttons">';
+
+			$h .= '<a href="/selling/configuration:update?id='.$eFarm['id'].'" class="bg-secondary util-button">';
+				$h .= '<h4>'.s("Les réglages de base").'<br><span class="farm-settings-subtitle">'.s("pour vendre").'</span></h4>';
+				$h .= \Asset::icon('gear-fill');
+			$h .= '</a>';
+
+			if($eFarm->canManage()) {
+
+				$h .= '<a href="/payment/stripe:manage?farm='.$eFarm['id'].'" class="bg-secondary util-button">';
+					$h .= '<h4>'.s("Le paiement en ligne").'</h4>';
+					$h .= \Asset::icon('stripe');
+				$h .= '</a>';
+
+			}
+
+		$h .= '</div>';
+
+		$h .= '<h2>'.s("Configurer la ferme").'</h2>';
 
 		$h .= '<div class="util-buttons">';
 
 			$h .= '<a href="/farm/farm:update?id='.$eFarm['id'].'" class="bg-secondary util-button">';
-				$h .= '<h4>'.s("Configurer la ferme").'</h4>';
-				$h .= \Asset::icon('pencil');
-			$h .= '</a>';
-
-			$h .= '<a href="/farm/farm:updateSeries?id='.$eFarm['id'].'" class="bg-secondary util-button">';
-				$h .= '<h4>'.s("Configurer les cultures").'</h4>';
-				$h .= \Asset::icon('journals');
-			$h .= '</a>';
-
-			$h .= '<a href="/selling/configuration:update?id='.$eFarm['id'].'" class="bg-secondary util-button">';
-				$h .= '<h4>'.s("Configurer la commercialisation").'</h4>';
-				$h .= \Asset::icon('piggy-bank');
+				$h .= '<h4>'.s("Les réglages de base").'<br><span class="farm-settings-subtitle">'.s("de la ferme").'</span></h4>';
+				$h .= \Asset::icon('gear-fill');
 			$h .= '</a>';
 
 			$h .= '<a href="/farm/farm:updateFeature?id='.$eFarm['id'].'" class="bg-secondary util-button">';
 				$h .= '<h4>'.s("Activer ou désactiver des fonctionnalités").'</h4>';
 				$h .= \Asset::icon('toggle2-on');
 			$h .= '</a>';
-
-			$h .= '<a href="/farm/action:manage?farm='.$eFarm['id'].'" class="bg-secondary util-button">';
-				$h .= '<h4>'.s("Personnaliser les interventions").'</h4>';
-				$h .= \Asset::icon('list-task');
-			$h .= '</a>';
-
-			$h .= '<a href="/farm/supplier:manage?farm='.$eFarm['id'].'" class="bg-secondary util-button">';
-				$h .= '<h4>'.s("Gérer les fournisseurs de semences et plants").'</h4>';
-				$h .= \Asset::icon('buildings');
-			$h .= '</a>';
-
-			if($eFarm->canManage()) {
-
-				$h .= '<a href="/payment/stripe:manage?farm='.$eFarm['id'].'" class="bg-secondary util-button">';
-					$h .= '<h4>'.s("Configurer le paiement en ligne").'</h4>';
-					$h .= \Asset::icon('stripe');
-				$h .= '</a>';
-
-			}
 
 			if($eFarm->canPersonalData()) {
 
