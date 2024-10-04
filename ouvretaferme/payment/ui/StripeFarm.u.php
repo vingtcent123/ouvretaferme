@@ -16,11 +16,17 @@ class StripeFarmUi {
 
 	public function display(\farm\Farm $eFarm, StripeFarm $eStripeFarm): string {
 
+		$h = '<h1>';
+			$h .= s("Paiement en ligne");
+		$h .= '</h1>';
+
 		if($eStripeFarm->empty()) {
-			return $this->getCreate($eFarm);
+			$h .= $this->getCreate($eFarm);
 		} else {
-			return $this->getConfigured($eStripeFarm);
+			$h .= $this->getConfigured($eStripeFarm);
 		}
+
+		return $h;
 
 	}
 
@@ -28,9 +34,9 @@ class StripeFarmUi {
 
 		$h = '';
 
-		$h .= '<h1>';
+		$h .= '<h3>';
 			$h .= s("Votre compte Stripe a bien été configuré !");
-		$h .= '</h1>';
+		$h .= '</h3>';
 		$h .= '<div class="util-block-help">';
 			$h .= '<p>'.s("Le paiement en ligne est désormais activable sur l'ensemble de vos boutiques en ligne, et le produit de vos ventes sera versé directement sur votre compte Stripe.").'</p>';
 			$h .= self::getWarning();
