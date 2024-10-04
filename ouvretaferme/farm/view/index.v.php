@@ -94,8 +94,15 @@ new AdaptativeView('sequence', function($data, FarmTemplate $t) {
 
 	$t->package('main')->updateNavCultivation($t->canonical);
 
-	$uiFarm = new \farm\FarmUi();
-	echo $uiFarm->getCultivationSeriesTitle($data->eFarm, NULL, \farm\Farmer::SEQUENCE);
+	echo '<div class="util-action">';
+		echo '<h1>'.s("Itinéraires techniques").'</h1>';
+		echo  '<div>';
+			echo '<a '.attr('onclick', 'Lime.Search.toggle("#sequence-search")').' class="btn btn-primary">'.\Asset::icon('search').'</a>';
+			if($data->eFarm->canManage()) {
+				echo ' <a href="/production/sequence:create?farm='.$data->eFarm['id'].'" class="btn btn-primary">'.\Asset::icon('plus-circle').'<span class="hide-xs-down"> '.s("Nouvel itinéraire").'</span></a>';
+			}
+		echo  '</div>';
+	echo  '</div>';
 
 	if($data->ccCrop->notEmpty() or $data->emptySearch === FALSE) {
 
@@ -105,14 +112,13 @@ new AdaptativeView('sequence', function($data, FarmTemplate $t) {
 
 	} else {
 		echo '<div class="util-block-help">';
-			echo '<p>'.s("Il n'y a pas encore d'itinéraire technique sur votre ferme !").'</p>';
+			echo '<h4>'.s("Vous êtes sur la page pour créer des itinéraires techniques").'</h4>';
 			echo '<p>'.s("Un itinéraire technique contient la liste des interventions à réaliser pour une culture donnée. L'utilisation de cette fonctionnalité est facultative, mais elle permet de créer plus facilement vos séries d'une saison sur l'autre sans avoir à resaisir l'ensemble des interventions !").'</p>';
-		echo '</div>';
-		if($data->eFarm->canManage()) {
-			echo '<div>';
+			echo '<p><b>'.s("Si vous débutez avec {siteName}, il est recommandé de ne pas utiliser cette fonctionnalité immédiatement pour vous laisser le temps de bien prendre en main le reste du site. Vous pourrez y revenir ultérieurement !").'</b></p>';
+			if($data->eFarm->canManage()) {
 				echo '<a href="/production/sequence:create?farm='.$data->eFarm['id'].'" class="btn btn-secondary">'.s("Créer un premier itinéraire technique").'</a>';
-			echo '</div>';
-		}
+			}
+		echo '</div>';
 	}
 
 });

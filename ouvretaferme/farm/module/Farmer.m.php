@@ -35,6 +35,7 @@ abstract class FarmerElement extends \Element {
 
 	const SERIES = 'series';
 	const HISTORY = 'history';
+	const SEQUENCE = 'sequence';
 
 	const AREA = 'area';
 	const PLANT = 'plant';
@@ -45,7 +46,6 @@ abstract class FarmerElement extends \Element {
 	const SEEDLING = 'seedling';
 	const HARVESTING = 'harvesting';
 	const WORKING_TIME = 'working-time';
-	const SEQUENCE = 'sequence';
 
 	const SALE = 'sale';
 	const PRODUCT = 'product';
@@ -114,9 +114,9 @@ class FarmerModel extends \ModuleModel {
 			'viewPlanningField' => ['enum', [\farm\Farmer::VARIETY, \farm\Farmer::SOIL], 'cast' => 'enum'],
 			'viewPlanningSearch' => ['json', 'null' => TRUE, 'cast' => 'array'],
 			'viewPlanningUser' => ['element32', 'user\User', 'null' => TRUE, 'cast' => 'element'],
-			'viewCultivation' => ['enum', [\farm\Farmer::SERIES, \farm\Farmer::SOIL, \farm\Farmer::HISTORY], 'cast' => 'enum'],
+			'viewCultivation' => ['enum', [\farm\Farmer::SERIES, \farm\Farmer::SOIL, \farm\Farmer::HISTORY, \farm\Farmer::SEQUENCE], 'cast' => 'enum'],
 			'viewCultivationCategory' => ['enum', [\farm\Farmer::AREA, \farm\Farmer::PLANT, \farm\Farmer::FAMILY, \farm\Farmer::ROTATION], 'cast' => 'enum'],
-			'viewSeries' => ['enum', [\farm\Farmer::AREA, \farm\Farmer::FORECAST, \farm\Farmer::SEEDLING, \farm\Farmer::HARVESTING, \farm\Farmer::WORKING_TIME, \farm\Farmer::SEQUENCE], 'cast' => 'enum'],
+			'viewSeries' => ['enum', [\farm\Farmer::AREA, \farm\Farmer::FORECAST, \farm\Farmer::SEEDLING, \farm\Farmer::HARVESTING, \farm\Farmer::WORKING_TIME], 'cast' => 'enum'],
 			'viewSelling' => ['enum', [\farm\Farmer::SALE, \farm\Farmer::PRODUCT, \farm\Farmer::CUSTOMER, \farm\Farmer::INVOICE, \farm\Farmer::STOCK], 'cast' => 'enum'],
 			'viewSellingSales' => ['enum', [\farm\Farmer::ALL, \farm\Farmer::PRIVATE, \farm\Farmer::PRO, \farm\Farmer::LABEL], 'cast' => 'enum'],
 			'viewSellingCategory' => ['enum', [\farm\Farmer::ITEM, \farm\Farmer::CUSTOMER, \farm\Farmer::SHOP, \farm\Farmer::PERIOD], 'cast' => 'enum'],

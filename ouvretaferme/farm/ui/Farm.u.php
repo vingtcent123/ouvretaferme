@@ -123,7 +123,8 @@ class FarmUi {
 		return match($view) {
 			Farmer::SERIES => self::urlCultivationSeries($eFarm, $subView, $season),
 			Farmer::SOIL => self::urlSoil($eFarm),
-			Farmer::HISTORY => self::urlHistory($eFarm)
+			Farmer::HISTORY => self::urlHistory($eFarm),
+			Farmer::SEQUENCE => self::urlCultivationSequences($eFarm)
 		};
 
 	}
@@ -666,15 +667,6 @@ class FarmUi {
 					$h .=  '</div>';
 					break;
 
-				case \farm\Farmer::SEQUENCE :
-					$h .=  '<div>';
-						$h .= '<a '.attr('onclick', 'Lime.Search.toggle("#sequence-search")').' class="btn btn-primary">'.\Asset::icon('search').'</a>';
-						if($eFarm->canManage()) {
-							$h .= ' <a href="/production/sequence:create?farm='.$eFarm['id'].'" class="btn btn-primary">'.\Asset::icon('plus-circle').'<span class="hide-xs-down"> '.s("Nouvel itinéraire").'</span></a>';
-						}
-					$h .=  '</div>';
-					break;
-
 			}
 
 		$h .=  '</div>';
@@ -757,6 +749,7 @@ class FarmUi {
 			Farmer::SERIES => s("Cultures"),
 			Farmer::SOIL => s("Assolement"),
 			Farmer::HISTORY => s("Rotations"),
+			Farmer::SEQUENCE => s("Itinéraires<hide> techniques</hide>", ['hide' => '<span class="hide-xs-down">']),
 		];
 	}
 
@@ -768,7 +761,6 @@ class FarmUi {
 			Farmer::FORECAST => s("Prévisionnel financier"),
 			Farmer::HARVESTING => s("Récoltes"),
 			Farmer::WORKING_TIME => s("Temps de travail"),
-			Farmer::SEQUENCE => s("Itinéraires techniques"),
 		];
 
 		if($eFarm->hasFeatureTime() === FALSE) {

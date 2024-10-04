@@ -15,8 +15,7 @@
 	}))
 	->get(['/ferme/{id}/itineraires', '/ferme/{id}/itineraires/{status}'], function($data) {
 
-		\farm\FarmerLib::setView('viewCultivation', $data->eFarm, \farm\Farmer::SERIES);
-		\farm\FarmerLib::setView('viewSeries', $data->eFarm, \farm\Farmer::SEQUENCE);
+		\farm\FarmerLib::setView('viewCultivation', $data->eFarm, \farm\Farmer::SEQUENCE);
 
 		$data->sequences = \production\SequenceLib::countByFarm($data->eFarm);
 
