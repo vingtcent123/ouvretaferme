@@ -2795,7 +2795,7 @@ abstract class ModuleModel {
 			$subOptions['union'] = $options['union'];
 		}
 
-		$sql = $this->buildSelect([new Sql('1')], NULL, NULL, $subOptions);
+		$sql = $this->buildSelect([new Sql('1')], 0, 1, $subOptions);
 
 		$this->cacheOption = $options['cache'] ?? $this->getCache();
 

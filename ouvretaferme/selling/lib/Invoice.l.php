@@ -88,6 +88,17 @@ class InvoiceLib extends InvoiceCrud {
 
 	}
 
+	public static function existsQualifiedSales(\farm\Farm $eFarm): bool {
+
+		return Sale::model()
+			->whereFarm($eFarm)
+			->wherePreparationStatus(Sale::DELIVERED)
+			->whereMarket(FALSE)
+			->whereMarketParent(NULL)
+			->exists();
+
+	}
+
 	public static function createCollection(\Collection $c): void {
 
 		foreach($c as $e) {

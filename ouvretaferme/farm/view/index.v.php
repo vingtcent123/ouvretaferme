@@ -306,7 +306,14 @@ new AdaptativeView('sellingSales', function($data, FarmTemplate $t) {
 		echo '<h1>'.s("Ventes de la ferme").'</h1>';
 
 		echo '<div class="util-block-help">';
-			echo '<p>'.s("{siteName} propose de très nombreuses fonctionnalités pour gérer vos ventes. Gérez vos marchés, ouvrez une boutique en ligne avec en option le paiement par carte bancaire, éditez vos bons de livraisons et factures à destinations des professionnels... Et analysez ensuite vos ventes avec des graphiques et statistiques !").'</p>';
+			echo '<p>'.s("Avec {siteName}, vous allez gérer plus facilement la commercialisation dans votre ferme, en réduisant le temps que vous y passez et en limitant le risque d'erreurs.").'</p>';
+			echo '<ul>';
+				echo '<li>'.s("Référencez <link>votre gamme de produits</link>", ['link' => '<a href="'.\farm\FarmUi::urlSellingProduct($data->eFarm).'">']).'</li>';
+				echo '<li>'.s("Créez les ventes de vos <link>clients particuliers et professionnels</link>", ['link' => '<a href="'.\farm\FarmUi::urlSellingCustomer($data->eFarm).'">']).'</li>';
+				echo '<li>'.s("Éditez vos devis, bons de livraisons et factures au format PDF").'</li>';
+				echo '<li>'.s("Ouvrez <link>des boutiques en ligne</link> avec en option le paiement par carte bancaire", ['link' => '<a href="'.\farm\FarmUi::urlShopList($data->eFarm).'">']).'</li>';
+				echo '<li>'.s("Analysez vos ventes avec graphiques et statistiques").'</li>';
+			echo '</ul>';
 			echo '<p>'.s("Avant de créer votre première vente, regardez au préalable comment <customer>créer des clients</customer> et <items>référencer vos produits</items>. Une fois que c'est fait, c'est parti !", ['customer' => '<a href="'.\farm\FarmUi::urlSellingCustomer($data->eFarm).'">', 'items' => '<a href="'.\farm\FarmUi::urlSellingProduct($data->eFarm).'">']).'</p>';
 			echo '<a href="/presentation/producteur" class="btn btn-secondary">'.s("En savoir plus").'</a>';
 		echo '</div>';
@@ -546,13 +553,17 @@ new AdaptativeView('/ferme/{id}/factures', function($data, FarmTemplate $t) {
 	echo '<div class="util-action">';
 		echo '<h1>'.s("Factures").'</h1>';
 		echo '<div>';
-			echo '<a '.attr('onclick', 'Lime.Search.toggle("#sale-search")').' class="btn btn-primary">'.\Asset::icon('search').'</a> ';
-			echo '<a class="btn btn-primary" data-dropdown="bottom-end">'.\Asset::icon('plus-circle').'<span class="hide-xs-down"> '.s("Nouvelle facture").'</span></a> ';
-			echo '<div class="dropdown-list">';
-				echo '<div class="dropdown-title">'.s("Facturer les ventes").'</div> ';
-				echo '<a href="/selling/invoice:create?farm='.$data->eFarm['id'].'" class="dropdown-item">'.s("D'un seul client").'</a> ';
-				echo '<a href="/selling/invoice:createCollection?farm='.$data->eFarm['id'].'" class="dropdown-item">'.s("De plusieurs clients sur un mois donné").'</a> ';
-			echo '</div>';
+			if($data->hasInvoices) {
+				echo '<a '.attr('onclick', 'Lime.Search.toggle("#sale-search")').' class="btn btn-primary">'.\Asset::icon('search').'</a> ';
+			}
+			if($data->hasSales) {
+				echo '<a class="btn btn-primary" data-dropdown="bottom-end">'.\Asset::icon('plus-circle').'<span class="hide-xs-down"> '.s("Nouvelle facture").'</span></a> ';
+				echo '<div class="dropdown-list">';
+					echo '<div class="dropdown-title">'.s("Facturer les ventes").'</div> ';
+					echo '<a href="/selling/invoice:create?farm='.$data->eFarm['id'].'" class="dropdown-item">'.s("D'un seul client").'</a> ';
+					echo '<a href="/selling/invoice:createCollection?farm='.$data->eFarm['id'].'" class="dropdown-item">'.s("De plusieurs clients sur un mois donné").'</a> ';
+				echo '</div>';
+			}
 		echo '</div>';
 	echo '</div>';
 
@@ -567,14 +578,23 @@ new AdaptativeView('/ferme/{id}/factures', function($data, FarmTemplate $t) {
 
 	}
 
-	if(
-		$data->cInvoice->empty() and
-		$data->search->empty()
-	) {
+	if($data->hasInvoices === FALSE) {
 
 		echo '<div class="util-block-help">';
-			echo '<p>'.s("Vous n'avez pas encore généré de facture à partir de vos ventes !").'</p>';
-			echo '<p>'.s("Avec {siteName}, il est possible d'éditer des factures à partir de n'importe laquelle de vos ventes à l'état livré. Vous pouvez également éditer des factures à partir de plusieurs ventes d'un même client ! L'utilisation du module de facturation demande un peu de paramétrage avant d'être utilisé, n'hésitez pas à l'anticiper dès maintenant.").'</p>';
+			echo '<p>'.s("Vous êtes sur la page qui permet de générer les factures de vos ventes :").'</p>';
+			echo '<ul>';
+				echo '<li>'.s("Éditez vos factures à partir de n'importe laquelle de vos ventes déjà livrée ou à partir de plusieurs ventes d'un même client").'</li>';
+				echo '<li>'.s("Envoyez automatiquement les factures par e-mail à vos clients").'</li>';
+			echo '</ul>';
+			if($data->hasSales) {
+				echo '<a href="/selling/invoice:create?farm='.$data->eFarm['id'].'" class="btn btn-secondary">'.s("Créer une première facture").'</a> ';
+			} else {
+				echo '<p>'.s("Vous ne pouvez pas encore générer de facture car vous n'avez encore livré aucune vente !").'</p>';
+				echo '<a href="'.\farm\FarmUi::urlSellingSalesAll($data->eFarm).'" class="btn btn-secondary">'.s("Retourner sur les ventes").'</a>';
+			}
+		echo '</div>';
+		echo '<div class="util-block-help">';
+			echo '<p>'.s("L'utilisation du module de facturation demande un peu de paramétrage avant d'être utilisé, notamment pour renseigner les informations légales à afficher sur vos factures. N'hésitez pas à l'anticiper dès maintenant.").'</p>';
 			echo '<a href="/selling/configuration:update?id='.$data->eFarm['id'].'" class="btn btn-secondary">'.s("Paramétrer la commercialisation").'</a>';
 		echo '</div>';
 

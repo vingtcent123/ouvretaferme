@@ -221,6 +221,15 @@
 
 		[$data->cInvoice, $data->nInvoice] = \selling\InvoiceLib::getByFarm($data->eFarm, selectSales: TRUE, page: $data->page, search: $data->search);
 
+		$data->hasInvoices = (
+			$data->cInvoice->notEmpty() or
+			$data->search->notEmpty()
+		);
+		$data->hasSales = (
+			$data->cInvoice->notEmpty() or
+			\selling\InvoiceLib::existsQualifiedSales($data->eFarm)
+		);
+
 		$data->transferMonth = date('Y-m', strtotime("last month"));
 		$data->transfer = \selling\InvoiceLib::getPendingTransfer($data->eFarm, $data->transferMonth);
 
