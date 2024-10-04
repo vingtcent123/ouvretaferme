@@ -122,7 +122,6 @@ class FarmUi {
 
 		return match($view) {
 			Farmer::SERIES => self::urlCultivationSeries($eFarm, $subView, $season),
-			Farmer::CARTOGRAPHY => self::urlCartography($eFarm),
 			Farmer::SOIL => self::urlSoil($eFarm),
 			Farmer::HISTORY => self::urlHistory($eFarm)
 		};
@@ -566,19 +565,6 @@ class FarmUi {
 
 	}
 
-	public function getSubNav(string $tab, Farm $eFarm): string {
-
-		return match($tab) {
-			'home' => $this->getPlanningSubNav($eFarm),
-			'cultivation' => $this->getCultivationSubNav($eFarm),
-			'map' => $this->getMapSubNav($eFarm),
-			'selling' => $this->getSellingSubNav($eFarm),
-			'analyze' => $this->getAnalyzeSubNav($eFarm),
-			'settings' => $this->getSettingsSubNav($eFarm)
-		};
-
-	}
-
 	public function getPlanningSubNav(Farm $eFarm, ?string $week = NULL): string {
 
 		$selectedView = \Setting::get('main\viewPlanning');
@@ -769,7 +755,6 @@ class FarmUi {
 	public function getCultivationCategories(): array {
 		return [
 			Farmer::SERIES => s("Cultures"),
-			Farmer::CARTOGRAPHY => s("Cartographie"),
 			Farmer::SOIL => s("Assolement"),
 			Farmer::HISTORY => s("Rotations"),
 		];
@@ -1271,6 +1256,11 @@ class FarmUi {
 			$h .= '<a href="/farm/farm:updateSeries?id='.$eFarm['id'].'" class="bg-secondary util-button">';
 				$h .= '<h4>'.s("Les réglages de base").'<br><span class="farm-settings-subtitle">'.s("pour produire").'</span></h4>';
 				$h .= \Asset::icon('gear-fill');
+			$h .= '</a>';
+
+			$h .= '<a href="'.FarmUi::urlCartography($eFarm).'" class="bg-secondary util-button">';
+				$h .= '<h4>'.s("Le plan de la ferme").'</h4>';
+				$h .= \Asset::icon('geo-alt-fill');
 			$h .= '</a>';
 
 			$h .= '<a href="'.FarmUi::urlSettingsPlants($eFarm).'" class="bg-secondary util-button">';

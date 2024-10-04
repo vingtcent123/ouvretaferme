@@ -170,19 +170,19 @@ new AdaptativeView('series', function($data, FarmTemplate $t) {
 
 new AdaptativeView('mapEmpty', function($data, FarmTemplate $t) {
 
-	$t->title = s("Cartographier {value}", $data->eFarm['name']);
-	$t->tab = 'cultivation';
+	$t->title = s("Plan de {value}", $data->eFarm['name']);
 
-	$t->subNav = (new \farm\FarmUi())->getMapSubNav($data->eFarm);
+	$t->tab = 'settings';
+	$t->subNav = (new \farm\FarmUi())->getSettingsSubNav($data->eFarm);
 
 	echo '<h1>';
-		echo s("Cartographie");
+		echo s("Plan de la ferme");
 		echo (new \farm\FarmUi())->getSeasonsTabs($data->eFarm, fn($season) => \farm\FarmUi::urlSoil($data->eFarm, $season), $data->season);
 	echo '</h1>';
 
 	echo '<div class="util-block-help">';
 		echo '<h4>'.s("Vous venez de créer votre ferme !").'</h4>';
-		echo '<p>'.s("Pour travailler avec {siteName}, vous devez maintenant cartographier votre ferme, c'est-à-dire paramétrer les emplacements de vos cultures. Cette première étape vous permettra ensuite d'accéder à l'ensemble des fonctionnalités du site.").'</p>';
+		echo '<p>'.s("Pour travailler avec {siteName}, vous devez maintenant créer le plan de votre ferme, c'est-à-dire paramétrer les emplacements de vos cultures. Cette première étape vous permettra ensuite d'accéder à l'ensemble des fonctionnalités du site.").'</p>';
 		echo '<p>'.s("Vous pouvez paramétrer les emplacements de vos cultures sur trois échelles différentes :").'</p>';
 		echo '<ul>';
 			echo '<li>'.s("les parcelles, qui sont l'échelle la plus large").'</li>';
@@ -199,22 +199,20 @@ new AdaptativeView('mapEmpty', function($data, FarmTemplate $t) {
 
 new AdaptativeView('cartography', function($data, FarmTemplate $t) {
 
+	$t->tab = 'settings';
+	$t->subNav = (new \farm\FarmUi())->getSettingsSubNav($data->eFarm);
+
 	$t->canonical = \farm\FarmUi::urlCartography($data->eFarm, $data->season);
-	$t->title = s("Assolement de {value}", $data->eFarm['name']);
-	$t->tab = 'cultivation';
-
-	$t->subNav = (new \farm\FarmUi())->getCultivationSubNav($data->eFarm);
-
-	$t->package('main')->updateNavCultivation($t->canonical);
+	$t->title = s("Plan de {value}", $data->eFarm['name']);
 
 	echo '<div class="util-action">';
 		echo '<h1>';
-			echo s("Cartographie");
+			echo s("Plan de la ferme");
 			echo (new \farm\FarmUi())->getSeasonsTabs($data->eFarm, fn($season) => \farm\FarmUi::urlCartography($data->eFarm, $season), $data->season);
 		echo '</h1>';
 		if($data->eFarm->canManage()) {
 			echo  '<div>';
-				echo  '<a href="/map/zone:create?farm='.$data->eFarm['id'].'&season='.$data->season.'" class="btn btn-outline-primary">'.\Asset::icon('plus-circle').' '.s("Nouvelle parcelle").'</a>';
+				echo  '<a href="/map/zone:create?farm='.$data->eFarm['id'].'&season='.$data->season.'" class="btn btn-primary">'.\Asset::icon('plus-circle').' '.s("Nouvelle parcelle").'</a>';
 			echo  '</div>';
 		}
 	echo  '</div>';
@@ -249,12 +247,32 @@ new AdaptativeView('soil', function($data, FarmTemplate $t) {
 	$t->js()->replaceHistory($t->canonical);
 	$t->package('main')->updateNavCultivation($t->canonical);
 
-	echo '<h1>';
-		echo s("Assolement");
-		echo (new \farm\FarmUi())->getSeasonsTabs($data->eFarm, fn($season) => \farm\FarmUi::urlSoil($data->eFarm, $season), $data->season);
-	echo '</h1>';
+	echo '<div class="util-action">';
+		echo '<h1>';
+			echo s("Assolement");
+			echo (new \farm\FarmUi())->getSeasonsTabs($data->eFarm, fn($season) => \farm\FarmUi::urlSoil($data->eFarm, $season), $data->season);
+		echo '</h1>';
+		echo '<div>';
+			if(
+				$data->cZone->notEmpty() and
+				$data->eFarm->canManage()
+			) {
+				echo '<a href="'.\farm\FarmUi::urlCartography($data->eFarm, $data->season).'" class="btn btn-primary">'.\Asset::icon('geo-alt-fill').' '.s("Modifier le plan de la ferme").'</a>';
+			}
+		echo '</div>';
+	echo '</div>';
 
-	echo (new \map\ZoneUi())->getList($data->eFarm, $data->cZone, $data->season);
+	if($data->cZone->notEmpty()) {
+		echo (new \map\ZoneUi())->getList($data->eFarm, $data->cZone, $data->season);
+	} else {
+
+		echo '<div class="util-block-help">';
+			echo '<h4>'.s("Vous êtes sur votre futur plan d'assolement").'</h4>';
+			echo '<p>'.s("Vous pourrez consulter votre plan d'assolement dès lors que vous aurez configuré les parcelles et les planches de culture de votre ferme et créé vos premières séries.").'</p>';
+			echo '<a href="'.\farm\FarmUi::urlCartography($data->eFarm, $data->season).'" class="btn btn-secondary">'.s("Créer le plan de ma ferme").'</a>';
+		echo '</div>';
+
+	}
 
 
 });
@@ -274,15 +292,27 @@ new AdaptativeView('history', function($data, FarmTemplate $t) {
 			echo (new \farm\FarmUi())->getSeasonsTabs($data->eFarm, fn($season) => \farm\FarmUi::urlHistory($data->eFarm, $season), $data->season);
 		echo '</h1>';
 		echo '<div>';
-			echo '<a '.attr('onclick', 'Lime.Search.toggle("#bed-rotation-search")').' class="btn btn-primary">'.\Asset::icon('search').'</a> ';
-			if($data->eFarm->canManage()) {
-				echo '<a href="/farm/farm:updateSeries?id='.$data->eFarm['id'].'" class="btn btn-primary">'.\Asset::icon('gear-fill').' '.s("Configurer").'</a>';
+			if($data->cZone->notEmpty()) {
+				echo '<a '.attr('onclick', 'Lime.Search.toggle("#bed-rotation-search")').' class="btn btn-primary">'.\Asset::icon('search').'</a> ';
+				if($data->eFarm->canManage()) {
+					echo '<a href="/farm/farm:updateSeries?id='.$data->eFarm['id'].'" class="btn btn-primary">'.\Asset::icon('gear-fill').' '.s("Configurer").'</a>';
+				}
 			}
 		echo '</div>';
 	echo '</div>';
 
-	echo (new \farm\FarmUi())->getRotationSearch($data->search, $data->selectedSeasons);
-	echo (new \map\ZoneUi())->getList($data->eFarm, $data->cZone, $data->season, $data->search);
+	if($data->cZone->notEmpty()) {
+		echo (new \farm\FarmUi())->getRotationSearch($data->search, $data->selectedSeasons);
+		echo (new \map\ZoneUi())->getList($data->eFarm, $data->cZone, $data->season, $data->search);
+	} else {
+
+		echo '<div class="util-block-help">';
+			echo '<h4>'.s("Vous êtes sur la page pour suivre vos rotations").'</h4>';
+			echo '<p>'.s("C'est ici que vous pourrez consulter l'historique de chacune de vos parcelles après quelques années d'utilisation de {siteName}. Mais d'ici là, cette page sera accessible lorsque vous aurez créé le plan de votre ferme et vos premières séries !").'</p>';
+			echo '<a href="'.\farm\FarmUi::urlCartography($data->eFarm, $data->season).'" class="btn btn-secondary">'.s("Créer le plan de ma ferme").'</a>';
+		echo '</div>';
+
+	}
 
 
 });
@@ -306,6 +336,7 @@ new AdaptativeView('sellingSales', function($data, FarmTemplate $t) {
 		echo '<h1>'.s("Ventes de la ferme").'</h1>';
 
 		echo '<div class="util-block-help">';
+			echo '<h4>'.s("Vous êtes sur la page pour gérer vos ventes").'</h4>';
 			echo '<p>'.s("Avec {siteName}, vous allez gérer plus facilement la commercialisation dans votre ferme, en réduisant le temps que vous y passez et en limitant le risque d'erreurs.").'</p>';
 			echo '<ul>';
 				echo '<li>'.s("Référencez <link>votre gamme de produits</link>", ['link' => '<a href="'.\farm\FarmUi::urlSellingProduct($data->eFarm).'">']).'</li>';
@@ -365,9 +396,10 @@ new AdaptativeView('/ferme/{id}/clients', function($data, FarmTemplate $t) {
 
 		echo '<h1>'.s("Clients de la ferme").'</h1>';
 
-		echo '<p class="util-block-help">';
-			echo s("Pour vendre, vous devez avoir des clients et c'est ici que ça se passe pour créer un premier client. Deux champs du formulaire sont obligatoires, le nom du client et la catégorie. Les clients professionnels sont facturés HT et les clients particuliers TTC si vous êtes assujetti à la TVA.");
-		echo '</p>';
+		echo '<div class="util-block-help">';
+			echo '<h4>'.s("Vous êtes sur la page pour gérer votre clientèle").'</h4>';
+			echo '<p>'.s("Pour vendre, vous devez avoir des clients et c'est ici que ça se passe pour créer un premier client. Deux champs du formulaire sont obligatoires, le nom du client et la catégorie. Les clients professionnels sont facturés HT et les clients particuliers TTC si vous êtes assujetti à la TVA.").'</p>';
+		echo '</div>';
 
 		echo '<br/>';
 
@@ -413,9 +445,10 @@ new AdaptativeView('/ferme/{id}/produits', function($data, FarmTemplate $t) {
 
 		echo '<h1>'.s("Produits de la ferme").'</h1>';
 
-		echo '<p class="util-block-help">';
-			echo s("Pour vendre, vous devez définir vos produits et c'est ici que ça se passe pour créer un premier produit. Tous les champs du formulaire sont facultatifs à l'exception bien sûr du nom du produit.");
-		echo '</p>';
+		echo '<div class="util-block-help">';
+			echo '<h4>'.s("Vous êtes sur la page pour gérer votre gamme de produits").'</h4>';
+			echo '<p>'.s("Pour vendre, vous devez définir vos produits et c'est ici que ça se passe pour créer un premier produit. Tous les champs du formulaire sont facultatifs à l'exception bien sûr du nom du produit.").'</p>';
+		echo '</div>';
 
 		echo '<br/>';
 
@@ -581,7 +614,7 @@ new AdaptativeView('/ferme/{id}/factures', function($data, FarmTemplate $t) {
 	if($data->hasInvoices === FALSE) {
 
 		echo '<div class="util-block-help">';
-			echo '<p>'.s("Vous êtes sur la page qui permet de générer les factures de vos ventes :").'</p>';
+			echo '<h4>'.s("Vous êtes sur la page qui permet de générer les factures de vos ventes").'</h4>';
 			echo '<ul>';
 				echo '<li>'.s("Éditez vos factures à partir de n'importe laquelle de vos ventes déjà livrée ou à partir de plusieurs ventes d'un même client").'</li>';
 				echo '<li>'.s("Envoyez automatiquement les factures par e-mail à vos clients").'</li>';

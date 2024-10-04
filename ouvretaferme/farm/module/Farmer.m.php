@@ -34,7 +34,6 @@ abstract class FarmerElement extends \Element {
 	const SOIL = 'soil';
 
 	const SERIES = 'series';
-	const CARTOGRAPHY = 'cartography';
 	const HISTORY = 'history';
 
 	const AREA = 'area';
@@ -115,7 +114,7 @@ class FarmerModel extends \ModuleModel {
 			'viewPlanningField' => ['enum', [\farm\Farmer::VARIETY, \farm\Farmer::SOIL], 'cast' => 'enum'],
 			'viewPlanningSearch' => ['json', 'null' => TRUE, 'cast' => 'array'],
 			'viewPlanningUser' => ['element32', 'user\User', 'null' => TRUE, 'cast' => 'element'],
-			'viewCultivation' => ['enum', [\farm\Farmer::SERIES, \farm\Farmer::CARTOGRAPHY, \farm\Farmer::SOIL, \farm\Farmer::HISTORY], 'cast' => 'enum'],
+			'viewCultivation' => ['enum', [\farm\Farmer::SERIES, \farm\Farmer::SOIL, \farm\Farmer::HISTORY], 'cast' => 'enum'],
 			'viewCultivationCategory' => ['enum', [\farm\Farmer::AREA, \farm\Farmer::PLANT, \farm\Farmer::FAMILY, \farm\Farmer::ROTATION], 'cast' => 'enum'],
 			'viewSeries' => ['enum', [\farm\Farmer::AREA, \farm\Farmer::FORECAST, \farm\Farmer::SEEDLING, \farm\Farmer::HARVESTING, \farm\Farmer::WORKING_TIME, \farm\Farmer::SEQUENCE], 'cast' => 'enum'],
 			'viewSelling' => ['enum', [\farm\Farmer::SALE, \farm\Farmer::PRODUCT, \farm\Farmer::CUSTOMER, \farm\Farmer::INVOICE, \farm\Farmer::STOCK], 'cast' => 'enum'],

@@ -67,7 +67,7 @@ Farmer:
   viewPlanningField: enum(VARIETY, SOIL) = SOIL
   viewPlanningSearch: ?json
   viewPlanningUser: ?user\User
-  viewCultivation: enum(SERIES, CARTOGRAPHY, SOIL, HISTORY) = SERIES
+  viewCultivation: enum(SERIES, SOIL, HISTORY) = SERIES
   viewCultivationCategory: enum(AREA, PLANT, FAMILY, ROTATION) = AREA
   viewSeries: enum(AREA, FORECAST, SEEDLING, HARVESTING, WORKING_TIME, SEQUENCE) = AREA
   viewSelling: enum(SALE, PRODUCT, CUSTOMER, INVOICE, STOCK) = SALE

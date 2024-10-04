@@ -501,8 +501,6 @@
 		$data->season = \farm\FarmerLib::getDynamicSeason($data->eFarm, GET('season', 'int'));
 		\map\SeasonLib::setOnline($data->season);
 
-		\farm\FarmerLib::setView('viewCultivation', $data->eFarm, \farm\Farmer::CARTOGRAPHY);
-
 		$data->cZone = \map\ZoneLib::getByFarm($data->eFarm, season: $data->season);
 
 		if($data->cZone->empty()) {
@@ -536,10 +534,6 @@
 
 		$data->cZone = \map\ZoneLib::getByFarm($data->eFarm, season: $data->season);
 
-		if($data->cZone->empty()) {
-			throw new ViewAction($data, ':mapEmpty');
-		}
-
 		\map\GreenhouseLib::putFromZone($data->cZone);
 
 		$seasonsSeries = [$data->season + 1, $data->season, $data->season - 1];
@@ -560,10 +554,6 @@
 		\farm\FarmerLib::setView('viewCultivation', $data->eFarm, \farm\Farmer::HISTORY);
 
 		$data->cZone = \map\ZoneLib::getByFarm($data->eFarm, season: $data->season);
-
-		if($data->cZone->empty()) {
-			throw new ViewAction($data, ':mapEmpty');
-		}
 
 		\map\GreenhouseLib::putFromZone($data->cZone);
 

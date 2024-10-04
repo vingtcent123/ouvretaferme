@@ -4,8 +4,6 @@
 
 		\farm\FarmerLib::register($data->e);
 
-		\farm\FarmerLib::setView('viewCultivation', $data->e, \farm\Farmer::PLANT);
-
 		$data->plants = \plant\PlantLib::countByFarm($data->e);
 
 		if(

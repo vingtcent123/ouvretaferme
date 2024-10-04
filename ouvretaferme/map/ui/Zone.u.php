@@ -107,9 +107,14 @@ class ZoneUi {
 
 		$h = '<div class="zone-item" id="zone-item-'.$eZone['id'].'" data-ref="zone" data-name="'.encode($eZone['name']).'">';
 
-			$h .= '<h2>';
-				$h .= s("Parcelle {value}", encode($eZone['name']));
-			$h .= '</h2>';
+			$h .= '<div class="util-action">';
+				$h .= '<h2>';
+					$h .= s("Parcelle {value}", encode($eZone['name']));
+				$h .= '</h2>';
+				if($eFarm->canManage()) {
+					$h .= '<a href="'.\farm\FarmUi::urlCartography($eFarm, $season).'?zone='.$eZone['id'].'" class="btn btn-transparent">'.\Asset::icon('geo-alt-fill').' '.s("Modifier le plan").'</a>';
+				}
+			$h .= '</div>';
 			$h .= '<div>';
 				$h .= $this->getZoneUse($eZone);
 			$h .= '</div>';
