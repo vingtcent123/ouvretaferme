@@ -131,7 +131,10 @@ class MainTemplate extends BaseTemplate {
 
 		}
 
-		if(currentDate() <= '2024-10-10') {
+		if(
+			Lime::getHost() === LIME_HOST and // Uniquement sur www
+			currentDate() <= '2024-10-10'
+		) {
 			$h .= '<a href="https://blog.ouvretaferme.org/" class="nav-news" target="_blank">';
 				$h .= '<div class="nav-news-title">'.Asset::icon('cursor-fill').' '.s("Nouveautés").'</div>';
 				$h .= '<div class="nav-news-name">'.s("5 octobre 2024").'</div>';
