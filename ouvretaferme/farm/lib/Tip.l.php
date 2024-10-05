@@ -139,6 +139,10 @@ class TipLib extends TipCrud {
 
 	public static function pickRandom(\user\User $eUser, Farm $eFarm): ?string {
 
+		if(OTF_DEMO) {
+			return NULL;
+		}
+
 		if($eUser['id'] !== 1) {
 
 			if(
