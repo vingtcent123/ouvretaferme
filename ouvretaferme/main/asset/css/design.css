@@ -374,6 +374,7 @@ body > nav .nav-news-name {
 	color: #fffa;
 	font-size: 0.8rem;
 	letter-spacing: -0.1px;
+	text-align: right;
 }
 
 body > nav ul.nav-actions {
