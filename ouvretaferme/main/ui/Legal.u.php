@@ -18,14 +18,14 @@ class LegalUi {
 
 		$h .= '<br/>';
 		$h .= '<h2>'.s("Fonctionnalités").'</h2>';
-		$h .= '<p>'.s("Le site {siteName} est en perpétuelle amélioration. De nouvelles fonctionnalités sont développées très régulièrement, et peuvent parfois modifier les habitudes des utilisateurs. Tenez-en compte dans votre utilisation du site. L'intégrité de vos données est préservée lors des mises à jour du site, dans la limite des garanties exprimées plus haut.").'</p>';
+		$h .= '<p>'.s("Le site {siteName} est en perpétuelle amélioration. De nouvelles fonctionnalités sont développées très régulièrement, notamment pour répondre au mieux aux besoins des producteurs en maraichage, arboriculture ou semences. Ces nouveautés peuvent parfois modifier les habitudes des utilisateurs. Tenez-en compte dans votre utilisation du site. L'intégrité de vos données est préservée lors des mises à jour du site, dans la limite des garanties exprimées plus haut.").'</p>';
 
 		$h .= '<br/>';
 		$h .= '<h2>'.s("Licence d'utilisation du code source").'</h2>';
 		$h .= '<p>'.s("Un programme informatique qui utilise tout ou partie du code source de Ouvretaferme doit, qu'il soit installé sur un serveur privé ou public :").'</p>';
 
 		$h .= '<ul>';
-			$h .= '<li>'.s("être en lien avec la production agricole,").'</li>';
+			$h .= '<li>'.s("être en lien avec la production agricole comme le maraichage,").'</li>';
 			$h .= '<li>'.s("être utilisé exclusivement par des exploitations agricoles converties intégralement à l'agriculture biologique selon le règlement européen 2018/848,").'</li>';
 			$h .= '<li>'.s("être proposé gratuitement,").'</li>';
 			$h .= '<li>'.s("ne pas inclure d'outil de mesure d'audience,").'</li>';
@@ -62,7 +62,7 @@ class LegalUi {
 
 		$h .= '<div class="home-category">';
 
-			$h .= '<p>'.s("La plateforme ouvretaferme.org est née du constat qu'il n'existait pas de solution libre et simple d'utilisation pour permettre aux producteurs maraîchers d'organiser le travail dans leur ferme, de la planification des cultures jusqu'à la vente. Le développement du site a commencé en 2019 sur cette base, avec comme point de départ le besoin exprimé par une petite ferme maraîchère située dans le Puy-de-Dôme.").'</p>';
+			$h .= '<p>'.s("La plateforme ouvretaferme.org est née du constat qu'il n'existait pas de solution libre et simple d'utilisation pour permettre aux producteurs maraîchers d'organiser le travail dans leur ferme, de la planification des cultures jusqu'à la vente. Le développement du site a commencé en 2019 sur cette base, avec comme point de départ le besoin exprimé par une petite ferme en maraichage diversifié située dans le Puy-de-Dôme.").'</p>';
 
 			$h .= '<p>'.s("Depuis 2022, la plateforme est diffusée plus largement et a été adaptée pour répondre aux besoins du plus grand nombre de fermes possible.").'</p>';
 

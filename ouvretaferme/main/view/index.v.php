@@ -8,8 +8,8 @@ new AdaptativeView('anonymous', function($data, MainTemplate $t) {
 	Asset::css('main', 'font-itim.css');
 	Asset::css('main', 'home.css');
 
-	$t->header .= '<h1>'.s("Organisez le travail à la ferme de la planification à la vente").'</h1>';
-	$t->header .= '<h4 class="home-domain">'.s("Le site dédié aux maraîchers en agriculture biologique !").'</h4>';
+	$t->header .= '<h1>'.s("Organisez le travail à la ferme de la planification des cultures à la vente").'</h1>';
+	$t->header .= '<h4 class="home-domain">'.s("Le logiciel pour le maraîchage en agriculture biologique").'</h4>';
 
 	echo '<div class="home-presentation">';
 
@@ -44,7 +44,7 @@ new AdaptativeView('anonymous', function($data, MainTemplate $t) {
 	echo '<h2>'.s("La philosophie du projet 👩‍🌾").'</h2>';
 
 	echo '<div class="home-story">';
-		echo s("La plateforme {siteName} est née du constat qu'il n'existe pas de solution libre et simple d'utilisation pour permettre aux producteurs maraîchers d'organiser le travail dans leur ferme. En proposant un logiciel complet de la planification jusqu'à la vente, nous avons pour objectif de donner les moyens aux producteurs en agriculture biologique de réaliser les finalités de leur ferme.");
+		echo s("La plateforme {siteName} est née du constat qu'il n'existe pas de solution libre et simple d'utilisation pour permettre aux producteurs maraîchers d'organiser le travail dans leur ferme. En proposant un logiciel complet de la planification des cultures jusqu'à la vente, nous avons pour objectif de donner les moyens aux producteurs en agriculture biologique de réaliser les finalités de leur ferme en maraichage.");
 	echo '</div>';
 
 	echo (new \main\HomeUi())->getPoints();
@@ -149,7 +149,9 @@ new AdaptativeView('/presentation/producteur', function($data, MainTemplate $t) 
 	Asset::css('main', 'home.css');
 
 	$t->header = '<h4 class="home-domain">'.Lime::getDomain().'</h4>';
-	$t->header .= '<h1>'.s("Pour les producteurs !").'</h1>';
+	$t->header .= '<h1>'.s("Pour les producteurs").'</h1>';
+	$t->header .= '<h4 class="home-domain">'.s("Maraichage / Arboriculture / Semences").'</h4>';
+
 
 	echo '<div class="home-presentation">';
 
@@ -160,6 +162,7 @@ new AdaptativeView('/presentation/producteur', function($data, MainTemplate $t) 
 				echo '<li>'.s("<b>Vous maîtrisez votre temps de travail.</b> <small>Que ce soit à la ferme avec votre téléphone ou le soir sur l'ordinateur, un planning hebdomadaire ou quotidien vous permet de faire le suivi des interventions planifiées et réalisées sur la semaine. Renseignez facilement votre temps de travail pour comprendre là où passe votre temps.</small>").'</li>';
 				echo '<li>'.s("<b>Vous suivez précisément vos rotations sur votre parcellaire.</b> <small>Choisissez vos critères pour les rotations et vérifiez en un coup d'oeil les planches qui correspondent à ces critères. Pratique pour éviter de mettre vos cultures aux mêmes emplacements trop souvent !</small>").'</li>';
 				echo '<li>'.s("<b>Vous collaborez avec votre équipe.</b> <small>Invitez votre équipe sur l'espace de votre ferme et gérez les droits de chaque personne.</small>").'</li>';
+				echo '<li>'.s("<b>C'est adapté à toutes les productions.</b> <small>{siteName} vous accompagne en maraichage, floriculture, arboriculture ou même en production de semences.</small>").'</li>';
 				echo '<li>'.s("<b>Et aussi...</b> <small>Consultez les quantités de semences et plants à produire ou commander. Créez des itinéraires techniques réutilisables saison après saison. Ajoutez des photos pour vous souvenir de vos cultures. Enregistrez le matériel disponible à la ferme pour l'utiliser dans vos interventions...</small>").'</li>';
 			echo '</ul>';
 		echo '</div>';
