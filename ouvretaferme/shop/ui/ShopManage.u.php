@@ -12,7 +12,7 @@ class ShopManageUi {
 		$h = '<h1>'.s("Une boutique pour votre ferme").'</h1>';
 
 		$h .= '<div class="util-block-help">';
-			$h .= '<h4>'.s("Vendre ma production").'</h4>';
+			$h .= '<h4>'.s("Vendre ma production en ligne").'</h4>';
 			$h .= '<p>'.s("Avec {siteName}, il est très facile de vendre votre production en ligne !").'</p>';
 			$h .= '<ol>';
 				$h .= '<li>'.s("Créez une boutique").'</li>';

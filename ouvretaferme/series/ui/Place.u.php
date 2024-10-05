@@ -77,6 +77,7 @@ class PlaceUi {
 				}
 
 				$h .= '<div class="place-update-filter">';
+					$h .= '<a href="'.\farm\FarmUi::urlCartography($e['farm'], $e['season']).'" class="btn btn-primary">'.\Asset::icon('geo-alt-fill').' '.s("Modifier le plan de la ferme").'</a> ';
 					$h .= ' <a '.attr('onclick', 'Lime.Search.toggle("#place-search")').' class="btn btn-primary">';
 						$h .= \Asset::icon('search').' '.s("Filtrer les planches");
 					$h .= '</a>';
@@ -140,7 +141,7 @@ class PlaceUi {
 
 		$form = new \util\FormUi();
 
-		$h = '<div id="place-search" class="util-block-search stick-xs '.($search->empty(['canAll']) ? 'hide' : '').'">';
+		$h = '<div id="place-search" class="util-block-search stick-xs '.($search->empty(['canWidth']) ? 'hide' : '').'">';
 
 			$h .= $form->openAjax(LIME_REQUEST_PATH, ['method' => 'get', 'id' => 'form-search']);
 				$h .= $form->hidden('search', 1);
@@ -151,7 +152,7 @@ class PlaceUi {
 					if($search->get('canWidth')) {
 
 						$h .= $form->inputGroup(
-							$form->addon('Largeur travaillée').
+							$form->addon('Largeur de planche').
 							$form->select('width', [
 								0 => s("Toutes"),
 								1 => s("Seulement {value} cm", $eSeries['bedWidth']),
@@ -427,7 +428,15 @@ class PlaceUi {
 				if($eBed['plotFill'] or $eBed['zoneFill']) {
 					$h .= s("{area} m²", $eBed);
 				} else {
-					$h .= s("{length} mL x {width} cm", $eBed);
+					$size = s("{length} mL x {width} cm", $eBed);
+					if(
+						$e['use'] === Series::BED and
+						$e['bedWidth'] !== $eBed['width']
+					) {
+						$h .= s("{length} mL x <danger>{width} cm</danger>", $eBed->extracts(['length', 'width']) + ['danger' => '<span class="color-danger" style="font-weight: bold">'.\Asset::icon('exclamation-circle').' ']);
+					} else {
+						$h .= s("{length} mL x {width} cm", $eBed);
+					}
 				}
 			$h .= '</div>';
 

@@ -195,7 +195,7 @@ div.place-grid div.place-grid-area {
 	color: var(--muted);
 	letter-spacing: -0.2px;
 	text-align: right;
-	padding: 0 1rem;
+	padding: 0 .5rem;
 }
 
 @media (max-width: 767px) {

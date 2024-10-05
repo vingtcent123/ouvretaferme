@@ -25,6 +25,7 @@ class FarmerUi {
 
 		$h = '<h2>'.s("Ma ferme").'</h2>';
 		$h .= '<div class="util-block-help">';
+			$h .= '<h4>'.s("Bienvenue sur {siteName} !").'</h4>';
 			$h .= '<p>'.s("Vous êtes producteur et vous venez de vous inscrire sur {siteName}. Pour commencer à utiliser tous les outils numériques développés pour vous sur la plateforme, configurez maintenant votre ferme en renseignant quelques informations de base !").'</p>';
 		$h .= '</div>';
 		$h .= '<div class="util-buttons">';
