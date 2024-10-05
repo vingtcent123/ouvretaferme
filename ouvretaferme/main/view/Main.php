@@ -131,6 +131,13 @@ class MainTemplate extends BaseTemplate {
 
 		}
 
+		if(currentDate() <= '2024-10-10') {
+			$h .= '<a href="https://blog.ouvretaferme.org/" class="nav-news" target="_blank">';
+				$h .= '<div class="nav-news-title">'.Asset::icon('cursor-fill').' '.s("Nouveautés").'</div>';
+				$h .= '<div class="nav-news-name">'.\L::getVariable('siteName').'</div>';
+			$h .= '</a>';
+		}
+
 		$h .= '<ul class="nav-actions">';
 
 		if($this->data->userDeletedAt) {

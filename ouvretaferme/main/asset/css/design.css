@@ -340,10 +340,32 @@ div.nav-wrapper {
 	justify-content: space-between;
 	align-items: stretch;
 	height: var(--mainNav);
+	column-gap: 0.5rem;
 }
 
 body > nav ul > li > form > button {
 	color: black;
+}
+
+body > nav a.nav-news {
+	display: flex;
+	justify-content: center;
+	flex-direction: column;
+	margin: 0;
+	padding: 0 .5rem;
+	background-color: #fff4;
+	line-height: 1.3;
+}
+
+body > nav .nav-news-title {
+	font-size: 0.9rem;
+	letter-spacing: 0.2px;
+}
+
+body > nav .nav-news-name {
+	color: #fffa;
+	font-size: 0.8rem;
+	letter-spacing: -0.1px;
 }
 
 body > nav ul.nav-actions {
@@ -431,7 +453,8 @@ body > nav a:hover:not(.dropdown-item) {
 .nav-title {
 	display: flex;
 	align-items: center;
-	line-height: 1.4;
+	line-height: 1.2;
+	flex: 1;
 }
 
 body > nav .nav-user {
