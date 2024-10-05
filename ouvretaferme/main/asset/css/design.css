@@ -357,6 +357,14 @@ body > nav a.nav-news {
 	line-height: 1.3;
 }
 
+@media (min-width: 576px) {
+
+	body > nav a.nav-news {
+		padding: 0 1rem;
+	}
+
+}
+
 body > nav .nav-news-title {
 	font-size: 0.9rem;
 	letter-spacing: 0.2px;
