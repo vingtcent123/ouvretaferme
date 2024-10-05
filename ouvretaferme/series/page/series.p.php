@@ -174,6 +174,9 @@ use series\Series;
 		$data->eFarm = \farm\FarmLib::getById($data->e['farm']);
 		$data->eFarm->saveFeaturesAsSettings();
 
+		\farm\FarmerLib::register($data->eFarm);
+		\farm\FarmerLib::setView('viewCultivation', $data->eFarm, \farm\Farmer::SERIES);
+
 		$data->season = $data->e['season'];
 
 		$data->cSeriesPerennial = \series\SeriesLib::getByPerennialFirst($data->e['perennialFirst']);
@@ -189,7 +192,6 @@ use series\Series;
 
 		$data->cActionMain = \farm\ActionLib::getMainByFarm($data->eFarm);
 
-		\farm\FarmerLib::register($data->eFarm);
 
 		throw new ViewAction($data);
 

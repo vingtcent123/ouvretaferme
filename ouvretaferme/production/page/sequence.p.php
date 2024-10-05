@@ -9,6 +9,7 @@
 		$data->eFarm = \farm\FarmLib::getById($data->e['farm'])->validate('active');
 
 		\farm\FarmerLib::register($data->eFarm);
+		\farm\FarmerLib::setView('viewCultivation', $data->eFarm, \farm\Farmer::SEQUENCE);
 
 		$data->cFlow = \production\FlowLib::getBySequence($data->e);
 
