@@ -1399,7 +1399,7 @@ class AnalyzeUi {
 			s("Répartition des ventes par produit"),
 			$cItemProduct,
 			'turnover',
-			fn($eTimesheet) => $eTimesheet['product']->getName()
+			fn($eItemProduct) => $eItemProduct['product']->getName()
 		);
 
 	}

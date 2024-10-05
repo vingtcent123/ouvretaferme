@@ -453,7 +453,8 @@ class AnalyzeLib {
 			$cItemProduct[] = new \selling\Item([
 				'product' => new \selling\Product([
 					'id' => NULL,
-					'name' => \selling\SaleUi::getShippingName()
+					'name' => \selling\SaleUi::getShippingName(),
+					'variety' => NULL
 				]),
 				'turnover' => $cSaleTurnover[$year]['shipping'],
 				'unit' => NULL,
