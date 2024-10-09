@@ -20,6 +20,8 @@
 
 		$data->cPlant = \plant\PlantLib::getFromQuery(POST('query'), $data->eFarm, $search);
 
+		$data->hasNew = post_exists('new');
+
 		throw new \ViewAction($data);
 
 	});

@@ -2520,7 +2520,8 @@ class CultivationUi {
 				$d->autocompleteBody = function(\util\FormUi $form, Cultivation $e) {
 					$e->expects(['farm']);
 					return [
-						'farm' => $e['farm']['id']
+						'farm' => $e['farm']['id'],
+						'new' => TRUE
 					];
 				};
 				(new \plant\PlantUi())->query($d);

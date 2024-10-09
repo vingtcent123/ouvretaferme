@@ -817,7 +817,7 @@ class SequenceUi {
 
 		$d = Sequence::model()->describer($property, [
 			'name' => s("Nom de l'itinéraire"),
-			'description' => s("Description complète"),
+			'description' => s("Description de l'itinéraire"),
 			'author' => s("Auteur"),
 			'farm' => s("Ferme"),
 			'plantsList' => s("Espèces"),
