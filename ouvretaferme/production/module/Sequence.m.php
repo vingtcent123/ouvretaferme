@@ -54,7 +54,6 @@ class SequenceModel extends \ModuleModel {
 		$this->properties = array_merge($this->properties, [
 			'id' => ['serial32', 'cast' => 'int'],
 			'name' => ['text8', 'min' => 1, 'max' => NULL, 'collate' => 'general', 'cast' => 'string'],
-			'summary' => ['text8', 'min' => 1, 'max' => 100, 'null' => TRUE, 'cast' => 'string'],
 			'description' => ['editor16', 'null' => TRUE, 'cast' => 'string'],
 			'cycle' => ['enum', [\production\Sequence::ANNUAL, \production\Sequence::PERENNIAL], 'cast' => 'enum'],
 			'perennialLifetime' => ['int8', 'min' => 2, 'max' => NULL, 'null' => TRUE, 'cast' => 'int'],
@@ -73,7 +72,7 @@ class SequenceModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'name', 'summary', 'description', 'cycle', 'perennialLifetime', 'farm', 'author', 'duplicateOf', 'plants', 'use', 'bedWidth', 'alleyWidth', 'mode', 'comment', 'visibility', 'createdAt', 'status'
+			'id', 'name', 'description', 'cycle', 'perennialLifetime', 'farm', 'author', 'duplicateOf', 'plants', 'use', 'bedWidth', 'alleyWidth', 'mode', 'comment', 'visibility', 'createdAt', 'status'
 		]);
 
 		$this->propertiesToModule += [
@@ -154,10 +153,6 @@ class SequenceModel extends \ModuleModel {
 
 	public function whereName(...$data): SequenceModel {
 		return $this->where('name', ...$data);
-	}
-
-	public function whereSummary(...$data): SequenceModel {
-		return $this->where('summary', ...$data);
 	}
 
 	public function whereDescription(...$data): SequenceModel {

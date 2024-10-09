@@ -4,11 +4,11 @@ namespace production;
 class SequenceLib extends SequenceCrud {
 
 	public static function getPropertiesCreate(): array {
-		return ['name', 'cycle', 'perennialLifetime', 'summary', 'description', 'use', 'bedWidth', 'alleyWidth', 'plantsList'];
+		return ['name', 'cycle', 'perennialLifetime', 'description', 'use', 'bedWidth', 'alleyWidth', 'plantsList'];
 	}
 
 	public static function getPropertiesUpdate(): array {
-		return ['name', 'summary', 'description', 'use', 'bedWidth', 'alleyWidth', 'perennialLifetime', 'mode', 'visibility'];
+		return ['name', 'description', 'use', 'bedWidth', 'alleyWidth', 'perennialLifetime', 'mode', 'visibility'];
 	}
 
 	public static function countByFarm(\farm\Farm $eFarm): array {
@@ -84,7 +84,7 @@ class SequenceLib extends SequenceCrud {
 	 */
 	public static function duplicate(Sequence $eSequence): Sequence {
 
-		$properties = ['name', 'summary', 'description', 'cycle', 'perennialLifetime', 'farm', 'plants', 'use', 'bedWidth', 'alleyWidth', 'mode', 'comment'];
+		$properties = ['name', 'description', 'cycle', 'perennialLifetime', 'farm', 'plants', 'use', 'bedWidth', 'alleyWidth', 'mode', 'comment'];
 		$eSequence->expects($properties);
 
 		Sequence::model()->beginTransaction();

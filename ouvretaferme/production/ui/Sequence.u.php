@@ -746,7 +746,7 @@ class SequenceUi {
 
 			$h .= $form->dynamicGroup($eSequence, 'name*');
 
-			$h .= $form->dynamicGroups($eSequence, ['plantsList*', 'cycle', 'perennialLifetime', 'summary', 'description', 'use*', 'bedWidth*', 'alleyWidth']);
+			$h .= $form->dynamicGroups($eSequence, ['plantsList*', 'cycle', 'perennialLifetime', 'description', 'use*', 'bedWidth*', 'alleyWidth']);
 
 			$h .= $form->group(
 				content: $form->submit(s("Créer l'itinéraire technique"))
@@ -782,7 +782,7 @@ class SequenceUi {
 				$h .= $form->dynamicGroup($eSequence, 'perennialLifetime');
 			}
 
-			$h .= $form->dynamicGroups($eSequence, ['summary', 'description', 'use', 'bedWidth', 'alleyWidth']);
+			$h .= $form->dynamicGroups($eSequence, ['description', 'use', 'bedWidth', 'alleyWidth']);
 
 			$h .= $form->group(
 				'',
@@ -817,7 +817,6 @@ class SequenceUi {
 
 		$d = Sequence::model()->describer($property, [
 			'name' => s("Nom de l'itinéraire"),
-			'summary' => s("Courte description"),
 			'description' => s("Description complète"),
 			'author' => s("Auteur"),
 			'farm' => s("Ferme"),
@@ -867,13 +866,6 @@ class SequenceUi {
 					];
 
 				};
-				break;
-
-			case 'summary' :
-				$d->attributes = [
-					'placeholder' => s("Ex. : Culture sur bâche tissée avec production de plants"),
-					'data-limit' => Sequence::model()->getPropertyRange('summary')[1]
-				];
 				break;
 
 			case 'use' :
