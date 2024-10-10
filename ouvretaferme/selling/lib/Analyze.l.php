@@ -337,6 +337,7 @@ class AnalyzeLib {
 					->select([
 						'year' => new \Sql('EXTRACT(YEAR FROM deliveredAt)', 'int')
 					])
+					->whereFarm($eCustomer['farm'])
 					->group(new \Sql('year'))
 					->delegateProperty('year', new \Sql('SUM(priceExcludingVat)', 'float'), propertyParent: 'year'),
 				'year' => new \Sql('EXTRACT(YEAR FROM deliveredAt)', 'int'),
@@ -374,6 +375,7 @@ class AnalyzeLib {
 					->select([
 						'year' => new \Sql('EXTRACT(YEAR FROM deliveredAt)', 'float')
 					])
+					->whereFarm($cProduct->first()['farm'])
 					->group(new \Sql('year'))
 					->delegateProperty('year', new \Sql('SUM(priceExcludingVat)', 'float'), propertyParent: 'year'),
 				'year' => new \Sql('EXTRACT(YEAR FROM deliveredAt)', 'int'),
