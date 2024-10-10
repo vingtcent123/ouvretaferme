@@ -367,6 +367,8 @@ class SeriesLib extends SeriesCrud {
 
 		self::recalculate($e['farm'], $e);
 
+		CultivationLib::updateDensityBySeries($e);
+
 		if($fw->ok()) {
 			Series::model()->commit();
 		} else {
@@ -443,7 +445,7 @@ class SeriesLib extends SeriesCrud {
 		}
 
 		if($e['use'] === Series::BED and $e['lengthTarget'] !== NULL) {
-			$e['areaTarget'] = round($e['lengthTarget'] * $e['bedWidth'] / 100);
+			$e['areaTarget'] = round($e['lengthTarget'] * ($e['bedWidth'] + $e['alleyWidth'] ?? 0) / 100);
 		}
 
 		parent::create($e);
