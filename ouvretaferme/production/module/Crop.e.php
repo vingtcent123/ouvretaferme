@@ -6,7 +6,7 @@ class Crop extends CropElement {
 	public static function getSelection(): array {
 
 		return parent::getSelection() + [
-			'plant' => ['name', 'latinName', 'fqn', 'vignette'],
+			'plant' => ['name', 'fqn', 'vignette'],
 			'cSlice' => SliceLib::delegateByCrop(),
 		];
 
@@ -58,7 +58,7 @@ class Crop extends CropElement {
 				return (
 					$ePlant->empty() === FALSE and
 					\plant\Plant::model()
-						->select('farm', 'latinName')
+						->select('farm')
 						->get($ePlant) and
 					$ePlant->canRead()
 				);

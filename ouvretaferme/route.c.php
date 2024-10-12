@@ -38,11 +38,6 @@ Route::register([
 			'priority' => 5,
 			'route' => ['facture', '{id}'],
 		],
-		'/famille/{fqn@fqn}' => [
-			'request' => 'plant/family',
-			'priority' => 5,
-			'route' => ['famille', '{fqn@fqn}'],
-		],
 		'/ferme/{farm}/boutique/{shop}/date/{date}/product:create' => [
 			'request' => 'shop/product',
 			'priority' => 5,
@@ -52,11 +47,6 @@ Route::register([
 			'request' => 'shop/date',
 			'priority' => 5,
 			'route' => ['ferme', '{farm}', 'boutique', '{shop}', 'date', '{id}'],
-		],
-		'/ferme/{farm}/famille/{family}' => [
-			'request' => 'plant/family',
-			'priority' => 5,
-			'route' => ['ferme', '{farm}', 'famille', '{family}'],
 		],
 		'/ferme/{id}/analyses/cultures' => [
 			'request' => 'farm/index',

@@ -7,13 +7,13 @@ namespace plant;
 class PlantLib extends PlantCrud {
 
 	public static function getPropertiesCreate(): array {
-		return ['name', 'latinName', 'family', 'cycle'];
+		return ['name', 'family', 'cycle'];
 	}
 
 	public static function getPropertiesUpdate(): \Closure {
 		return function(Plant $e) {
 			if($e->isOwner()) {
-				return ['name', 'latinName', 'family', 'cycle'];
+				return ['name', 'family', 'cycle'];
 			} else {
 				return [];
 			}
@@ -51,18 +51,17 @@ class PlantLib extends PlantCrud {
 		Plant::model()
 			->where('
 					aliases LIKE '.\farm\Farm::model()->format('%'.$query.'%').' OR
-					latinName LIKE '.\farm\Farm::model()->format('%'.$query.'%').' OR
 					name LIKE '.\farm\Farm::model()->format('%'.$query.'%').'
 				')
 			->sort([
 				new \Sql('
 						IF(
 							name LIKE '.\farm\Farm::model()->format($query.'%').',
-							5,
+							3,
 							IF(
 								name LIKE '.\farm\Farm::model()->format('%'.$query.'%').',
-								4,
-								IF(aliases LIKE '.\farm\Farm::model()->format('%'.$query.'%').', 1, 0) + IF(latinName LIKE '.\farm\Farm::model()->format('%'.$query.'%').', 1, 0)
+								2,
+								IF(aliases LIKE '.\farm\Farm::model()->format('%'.$query.'%').', 1, 0)
 							)
 						) DESC'),
 				'name' => SORT_ASC
@@ -99,15 +98,7 @@ class PlantLib extends PlantCrud {
 
 	}
 
-	public static function getByFarm(\farm\Farm $eFarm, ?Plant $sameAs = NULL, mixed $id = NULL, bool $selectMetadata = FALSE, ?array $properties = NULL, \Search $search = new \Search()): \Collection|\Element {
-
-		if($sameAs !== NULL) {
-
-			Plant::model()
-				->whereId('!=', $sameAs)
-				->whereLatinName($sameAs['latinName']);
-
-		}
+	public static function getByFarm(\farm\Farm $eFarm, mixed $id = NULL, bool $selectMetadata = FALSE, ?array $properties = NULL, \Search $search = new \Search()): \Collection|\Element {
 
 		$expects = 'collection';
 
@@ -168,17 +159,6 @@ class PlantLib extends PlantCrud {
 		return Plant::model()
 			->select($properties ?? Plant::getSelection())
 			->whereFarm(NULL)
-			->sort('name')
-			->getCollection(NULL, NULL, 'id');
-
-	}
-
-	public static function getByFamily(Family $eFamily, \farm\Farm $eFarm): \Collection {
-
-		return Plant::model()
-			->select(Plant::getSelection())
-			->whereFamily($eFamily)
-			->whereFarm($eFarm)
 			->sort('name')
 			->getCollection(NULL, NULL, 'id');
 

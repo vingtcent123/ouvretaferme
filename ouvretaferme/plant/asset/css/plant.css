@@ -56,12 +56,6 @@ div.plant-item-image {
 	background-position: center center;
 }
 
-div.plant-item-latin {
-	color: #bbb;
-	font-size: 0.9rem;
-	line-height: 1;
-}
-
 #plant-flow {
 	grid-area: flow;
 	padding: 1rem;

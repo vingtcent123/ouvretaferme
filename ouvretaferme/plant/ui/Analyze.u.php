@@ -755,7 +755,7 @@ class AnalyzeUi {
 								if($eCultivationFamily['family']->empty()) {
 									$h .= '<i>'.s("Non renseignée").'</i>';
 								} else {
-									$h .= FamilyUi::link($eCultivationFamily['family'], $eFarm);
+									$h .= encode($eCultivationFamily['family']['name']);
 								}
 							$h .= '</td>';
 							$h .= '<td class="text-end">';

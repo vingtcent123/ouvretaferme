@@ -136,7 +136,6 @@ class PlantUi {
 							$h .= '<small> '.s("ou {aliases}", ['aliases' => encode($ePlant['aliases'])]).'</small>';
 						}
 					$h .= '</div>';
-					$h .= '<div class="plant-item-latin">'.$ePlant['latinName'].'</div>';
 				$h .= '</div>';
 			$h .= '</a>';
 
@@ -163,14 +162,9 @@ class PlantUi {
 						$h .= '<dd>'.encode($ePlant['aliases']).'</dd>';
 					}
 
-					if($ePlant['latinName']) {
-						$h .= '<dt>'.s("Nom latin").'</dt>';
-						$h .= '<dd>'.encode($ePlant['latinName']).'</dd>';
-					}
-
 					if($ePlant['family']->notEmpty()) {
 						$h .= '<dt>'.s("Famille").'</dt>';
-						$h .= '<dd><a href="'.FamilyUi::url($ePlant['family'], $ePlant['farm']).'">'.$ePlant['family']['name'].'</a></dd>';
+						$h .= '<dd>'.$ePlant['family']['name'].'</dd>';
 					}
 
 				$h .= '</dl>';
@@ -273,8 +267,6 @@ class PlantUi {
 						if($ePlant->isOwner() === FALSE) {
 							$h .= ' <span class="plant-manage-locked">'.\Asset::icon('lock-fill').'</span>';
 						}
-						$h .= '<br />';
-						$h .= '<small>'.encode($ePlant['latinName']).'</small>';
 					$h .= '</td>';
 					$h .= '<td class="text-center">';
 						$h .= '<a href="/plant/variety?id='.$eFarm['id'].'&plant='.$ePlant['id'].'" class="btn btn-outline-primary opacity-'.($ePlant['varieties'] ? '100' : '25').'">'.($ePlant['varieties'] ?? '0').'</a>';
@@ -286,7 +278,7 @@ class PlantUi {
 						if($ePlant['family']->empty()) {
 							$h .= '-';
 						} else {
-							$h .= FamilyUi::link($ePlant['family'], $eFarm);
+							$h .= encode($ePlant['family']['name']);
 						}
 					$h .= '</td>';
 					$h .= '<td class="text-center td-min-content">';
@@ -360,7 +352,7 @@ class PlantUi {
 
 			$h .= $form->hidden('farm', $eFarm['id']);
 
-			$h .= $form->dynamicGroups($ePlant, ['name*', 'latinName*', 'family', 'cycle*']);
+			$h .= $form->dynamicGroups($ePlant, ['name*', 'family', 'cycle*']);
 			$h .= $form->group(
 				content: $form->submit(s("Ajouter"))
 			);
@@ -380,7 +372,7 @@ class PlantUi {
 			$h .= $form->hidden('id', $ePlant['id']);
 
 			if($ePlant->isOwner()) {
-				$h .= $form->dynamicGroups($ePlant, ['name', 'latinName', 'family', 'cycle']);
+				$h .= $form->dynamicGroups($ePlant, ['name', 'family', 'cycle']);
 			}
 
 			$h .= $form->group(
@@ -403,7 +395,6 @@ class PlantUi {
 			'fqn' => s("Nom qualifié"),
 			'name' => s("Nom"),
 			'aliases' => s("Autres noms"),
-			'latinName' => s("Nom latin"),
 			'family' => s("Famille"),
 			'cycle' => s("Cycle de culture"),
 		]);

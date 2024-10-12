@@ -46,7 +46,6 @@ class PlantModel extends \ModuleModel {
 			'name' => ['text8', 'min' => 1, 'max' => NULL, 'collate' => 'general', 'cast' => 'string'],
 			'fqn' => ['text8', 'null' => TRUE, 'cast' => 'string'],
 			'aliases' => ['text8', 'min' => 0, 'max' => NULL, 'null' => TRUE, 'cast' => 'string'],
-			'latinName' => ['text8', 'min' => 1, 'max' => NULL, 'collate' => 'general', 'cast' => 'string'],
 			'farm' => ['element32', 'farm\Farm', 'null' => TRUE, 'cast' => 'element'],
 			'family' => ['element32', 'plant\Family', 'null' => TRUE, 'cast' => 'element'],
 			'vignette' => ['text8', 'min' => 30, 'max' => 30, 'null' => TRUE, 'cast' => 'string'],
@@ -56,7 +55,7 @@ class PlantModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'name', 'fqn', 'aliases', 'latinName', 'farm', 'family', 'vignette', 'cycle', 'status', 'createdAt'
+			'id', 'name', 'fqn', 'aliases', 'farm', 'family', 'vignette', 'cycle', 'status', 'createdAt'
 		]);
 
 		$this->propertiesToModule += [
@@ -130,10 +129,6 @@ class PlantModel extends \ModuleModel {
 
 	public function whereAliases(...$data): PlantModel {
 		return $this->where('aliases', ...$data);
-	}
-
-	public function whereLatinName(...$data): PlantModel {
-		return $this->where('latinName', ...$data);
 	}
 
 	public function whereFarm(...$data): PlantModel {

@@ -10,7 +10,7 @@ class Cultivation extends CultivationElement {
 				'name', 'area', 'areaTarget', 'bedWidth', 'alleyWidth', 'length', 'lengthTarget', 'season', 'cycle', 'use', 'mode', 'plants', 'perennialSeason', 'status'
 			],
 			'farm' => ['name'],
-			'plant' => ['name', 'latinName', 'fqn', 'vignette'],
+			'plant' => ['name', 'fqn', 'vignette'],
 			'cSlice' => SliceLib::delegateByCultivation(),
 			'sequence' => ['name', 'mode'],
 			'harvestedByUnit' => function(Cultivation $e): ?array {
@@ -280,7 +280,7 @@ class Cultivation extends CultivationElement {
 				if(
 					$ePlant->empty() === FALSE and
 					\plant\Plant::model()
-						->select('farm', 'name', 'latinName', 'cycle')
+						->select('farm', 'name', 'cycle')
 						->get($ePlant) and
 					$ePlant->canRead()
 				) {

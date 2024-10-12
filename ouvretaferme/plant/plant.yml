@@ -30,7 +30,6 @@ Plant:
   name: text8(1, null) @collate(general)
   fqn: ?text8
   aliases: ?text8(0, null)
-  latinName: text8(1, null) @collate(general)
   farm: ?farm\Farm
   family: ?plant\Family
   vignette: ?text8(30, 30)

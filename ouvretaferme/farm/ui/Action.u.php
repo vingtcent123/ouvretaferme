@@ -129,7 +129,7 @@ class ActionUi {
 				$h .= '<a href="/farm/category:manage?farm='.$eFarm['id'].'" class="btn btn-outline-secondary">'.s("Personnaliser les catégories ").'</a>';
 		$h .= '</div>';
 
-		$h .= '<table class="tr-bordered">';
+		$h .= '<table class="tr-even">';
 			$h .= '<thead>';
 				$h .= '<tr>';
 					$h .= '<th>'.self::p('name')->label.'</th>';

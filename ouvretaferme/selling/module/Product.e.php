@@ -7,7 +7,7 @@ class Product extends ProductElement {
 
 		return parent::getSelection() + [
 			'farm' => ['name', 'vignette'],
-			'plant' => ['name', 'latinName', 'fqn', 'vignette'],
+			'plant' => ['name', 'fqn', 'vignette'],
 			'quality' => ['name', 'shortName', 'logo'],
 			'stockExpired' => new \Sql('stockUpdatedAt IS NOT NULL AND stockUpdatedAt < NOW() - INTERVAL 7 DAY', 'bool')
 		];
