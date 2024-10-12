@@ -110,6 +110,10 @@ class SequenceUi {
 
 	public function getListByPlants(\farm\Farm $eFarm, \Collection $ccCrop, \Collection $cActionMain, \Search $search = NULL) {
 
+		if($ccCrop->empty()) {
+			return '<div class="util-info">'.s("Il n'y a aucun itinéraire technique à afficher...").'</div>';
+		}
+
 		return $this->getList($eFarm, $ccCrop, $cActionMain, $search, function(\Collection $ccCrop, \Closure $display) use ($search) {
 
 			$h = '';
