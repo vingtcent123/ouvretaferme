@@ -138,7 +138,7 @@ class CustomerUi {
 
 	public function getSearch(\farm\Farm $eFarm, \Search $search): string {
 
-		$h = '<div id="customer-search" class="util-block-search '.($search->empty() ? 'hide' : '').'">';
+		$h = '<div id="customer-search" class="util-block-search stick-xs '.($search->empty() ? 'hide' : '').'">';
 
 			$form = new \util\FormUi();
 			$url = \farm\FarmUi::urlSellingCustomer($eFarm);

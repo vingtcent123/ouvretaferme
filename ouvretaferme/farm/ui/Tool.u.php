@@ -298,7 +298,7 @@ class ToolUi {
 
 	public function getSearch(\farm\Farm $eFarm, \Collection $cActionUsed, \Search $search): string {
 
-		$h = '<div id="tool-search" class="util-block-search '.($search->empty(['status']) ? 'hide' : '').'">';
+		$h = '<div id="tool-search" class="util-block-search stick-xs '.($search->empty(['status']) ? 'hide' : '').'">';
 
 			$form = new \util\FormUi();
 

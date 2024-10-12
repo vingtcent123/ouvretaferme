@@ -25,6 +25,10 @@ class PlantUi {
 
 	}
 
+	public static function urlManage(\farm\Farm $eFarm): string {
+		return \farm\FarmUi::url($eFarm).'/especes';
+	}
+
 	public function query(\PropertyDescriber $d, bool $multiple = FALSE) {
 
 		$d->prepend ??= \Asset::icon('flower2');
@@ -117,6 +121,43 @@ class PlantUi {
 		return '<div class="soil-icon" style="width: '.$size.'; height: '.$size.'"></div>';
 	}
 
+	public function getSearch(\farm\Farm $eFarm, \Search $search): string {
+
+		$h = '<div id="plant-search" class="util-block-search stick-xs '.($search->empty(['status', 'cFamily']) ? 'hide' : '').'">';
+
+			$form = new \util\FormUi();
+
+			$h .= $form->openAjax(self::urlManage($eFarm), ['method' => 'get', 'id' => 'form-search']);
+
+				$h .= '<div>';
+
+					$h .= $form->hidden('farm', $eFarm['id']);
+
+					$h .= $form->dynamicField(new Plant([
+						'farm' => $eFarm
+					]), 'id', function($d) use ($search) {
+						$d->name = 'plantId';
+						$d->autocompleteDefault = $search->get('id');
+						$d->attributes = [
+							'data-autocomplete-select' => 'submit'
+						];
+					});
+
+					$h .= $form->select('family', $search->get('cFamily'), $search->get('family'), ['placeholder' => s("Famille...")]);
+
+					$h .= $form->submit(s("Chercher"), ['class' => 'btn btn-secondary']);
+					$h .= '<a href="'.self::urlManage($eFarm).'" class="btn btn-secondary">'.\Asset::icon('x-lg').'</a>';
+
+				$h .= '</div>';
+
+			$h .= $form->close();
+
+		$h .= '</div>';
+
+		return $h;
+
+	}
+
 	public function getList(\Collection $cPlant) {
 
 		\Asset::css('plant', 'plant.css');
@@ -190,15 +231,13 @@ class PlantUi {
 
 		$h = '<div id="plant-manage">';
 
-			$h .= $this->searchByFarm($eFarm, $search);
-
 			if($plants[Plant::INACTIVE] > 0) {
 
 				$h .= '<br/>';
 
 				$h .= '<div class="tabs-item">';
-					$h .= '<a href="'.\farm\FarmUi::urlSettingsPlants($eFarm).'" class="tab-item '.($search->get('status') === Plant::ACTIVE ? 'selected' : '').'"><span>'.s("Espèces actives").' <span class="tab-item-count">'.$plants[Plant::ACTIVE].'</span></span></a>';
-					$h .= '<a href="'.\farm\FarmUi::urlSettingsPlants($eFarm).'/'.Plant::INACTIVE.'" class="tab-item '.($search->get('status') === Plant::INACTIVE ? 'selected' : '').'"><span>'.s("Espèces désactivées").' <small class="tab-item-count">'.$plants[Plant::INACTIVE].'</small></span></a>';
+					$h .= '<a href="'.self::urlManage($eFarm).'" class="tab-item '.($search->get('status') === Plant::ACTIVE ? 'selected' : '').'"><span>'.s("Espèces actives").' <span class="tab-item-count">'.$plants[Plant::ACTIVE].'</span></span></a>';
+					$h .= '<a href="'.self::urlManage($eFarm).'/'.Plant::INACTIVE.'" class="tab-item '.($search->get('status') === Plant::INACTIVE ? 'selected' : '').'"><span>'.s("Espèces désactivées").' <small class="tab-item-count">'.$plants[Plant::INACTIVE].'</small></span></a>';
 				$h .= '</div>';
 
 			}
@@ -206,30 +245,6 @@ class PlantUi {
 			$h .= $this->getFarmPlants($eFarm, $cPlant);
 
 		$h .= '</div>';
-
-		return $h;
-
-	}
-
-	protected function searchByFarm(\farm\Farm $eFarm, \Search $search): string {
-
-		$form = new \util\FormUi();
-
-		$h = $form->openAjax(\farm\FarmUi::urlSettingsPlants($eFarm), ['id' => 'plant-manage-search', 'method' => 'get']);
-			$h .= '<div>';
-				$h .= $form->dynamicField(new Plant([
-					'farm' => $eFarm
-				]), 'id', function($d) use ($search) {
-					$d->name = 'plantId';
-					$d->attributes = [
-						'data-autocomplete-select' => 'submit'
-					];
-				});
-			$h .= '</div>';
-			if($search->get('id') !== NULL) {
-				$h .= '<a href="'.\farm\FarmUi::urlSettingsPlants($eFarm).'" class="btn btn-secondary">'.\Asset::icon('x-lg').'</a>';
-			}
-		$h .= $form->close();
 
 		return $h;
 
@@ -297,16 +312,15 @@ class PlantUi {
 							$h .= '<div class="dropdown-list">';
 								$h .= '<div class="dropdown-title">'.encode($ePlant['name']).'</div>';
 
+									$h .= '<a href="/plant/plant:update?id='.$ePlant['id'].'" class="dropdown-item">';
+										$h .= s("Modifier l'espèce");
+									$h .= '</a>';
 									$h .= '<a href="/plant/variety?id='.$eFarm['id'].'&plant='.$ePlant['id'].'" class="dropdown-item">'.s("Gérer les variétés").'</a>';
 									$h .= '<a href="/plant/size?id='.$eFarm['id'].'&plant='.$ePlant['id'].'" class="dropdown-item">'.s("Gérer les calibres").'</a>';
 
 									if($ePlant->isOwner()) {
 
 										$h .= '<div class="dropdown-divider"></div>';
-
-										$h .= '<a href="/plant/plant:update?id='.$ePlant['id'].'" class="dropdown-item">';
-											$h .= s("Modifier l'espèce");
-										$h .= '</a> ';
 
 										$h .= '<a data-ajax="/plant/plant:doDelete" data-confirm="'.s("Supprimer cette espèce ?").'" post-id="'.$ePlant['id'].'" class="dropdown-item">';
 											$h .= s("Supprimer l'espèce");

@@ -99,7 +99,7 @@ class TipUi {
 
 			case 'plant-customize' :
 
-				$link = FarmUi::urlSettingsPlants($eFarm);
+				$link = \plant\PlantUi::urlManage($eFarm);
 
 				$h = '<p>'.s("Si les espèces cultivées créées par défaut avec votre ferme ne sont pas suffisantes pour votre plan de culture, vous pouvez ajouter vos propres espèces !").'</p>';
 				$h .= '<div class="tip-list">';

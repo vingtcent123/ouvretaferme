@@ -530,7 +530,7 @@ class AnalyzeUi {
 
 	public function getSearch(\Search $search, string $id): string {
 
-		$h = '<div id="'.$id.'" class="util-block-search '.($search->empty() ? 'hide' : '').' mt-1">';
+		$h = '<div id="'.$id.'" class="util-block-search stick-xs '.($search->empty() ? 'hide' : '').' mt-1">';
 
 			$form = new \util\FormUi();
 			$url = LIME_REQUEST_PATH;

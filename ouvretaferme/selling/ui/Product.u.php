@@ -78,7 +78,7 @@ class ProductUi {
 
 		$form = new \util\FormUi();
 
-		$h = '<div id="product-search" class="util-block-search '.($search->empty(['category']) ? 'hide' : '').'">';
+		$h = '<div id="product-search" class="util-block-search stick-xs '.($search->empty(['category']) ? 'hide' : '').'">';
 
 			$h .= $form->openAjax(\farm\FarmUi::urlSellingProduct($eFarm), ['method' => 'get', 'id' => 'form-search']);
 				$h .= $form->hidden('category', $search->get('category'));

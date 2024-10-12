@@ -123,14 +123,6 @@ class PlantLib extends PlantCrud {
 
 		}
 
-		if($search->get('id')) {
-			Plant::model()->whereId($search->get('id'));
-		}
-
-		if($search->get('ids')) {
-			Plant::model()->whereId('IN', $search->get('ids'));
-		}
-
 		if($search->get('name')) {
 			self::applyWhereName($search->get('name'));
 		}
@@ -143,7 +135,10 @@ class PlantLib extends PlantCrud {
 
 		Plant::model()
 			->select($properties ?? Plant::getSelection())
+			->whereId($search->get('id'), if: $search->get('id'))
+			->whereId('IN', $search->get('ids'), if: $search->get('ids'))
 			->whereFarm($eFarm)
+			->whereFamily($search->get('family'), if: $search->get('family')->notEmpty())
 			->sort('name');
 
 		if($expects === 'element') {

@@ -45,7 +45,7 @@ class SequenceUi {
 
 	public function getSearch(\farm\Farm $eFarm, \Search $search, bool $emptySearch): string {
 
-		$h = '<div id="sequence-search" class="util-block-search '.($emptySearch ? 'hide' : '').'">';
+		$h = '<div id="sequence-search" class="util-block-search stick-xs '.($emptySearch ? 'hide' : '').'">';
 
 			$form = new \util\FormUi();
 			$url = \farm\FarmUi::urlCultivationSequences($eFarm);

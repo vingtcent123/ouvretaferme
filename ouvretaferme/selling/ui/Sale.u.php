@@ -80,7 +80,7 @@ class SaleUi {
 
 	public function getSearch(\Search $search): string {
 
-		$h = '<div id="sale-search" class="util-block-search '.($search->empty(['ids']) ? 'hide' : '').'">';
+		$h = '<div id="sale-search" class="util-block-search stick-xs '.($search->empty(['ids']) ? 'hide' : '').'">';
 
 			$form = new \util\FormUi();
 			$url = LIME_REQUEST_PATH;

@@ -10,11 +10,13 @@
 			get_exists('status') and
 			$data->plants[\plant\Plant::INACTIVE] === 0
 		) {
-			throw new RedirectAction(\farm\FarmUi::urlSettingsPlants($data->e));
+			throw new RedirectAction(\plant\PlantUi::urlManage($data->e));
 		}
 
 		$data->search = new Search([
+			'cFamily' => \plant\FamilyLib::getList(),
 			'id' => GET('plantId', '?int'),
+			'family' => GET('family', 'plant\Family'),
 			'status' => GET('status', default: \plant\Plant::ACTIVE),
 		]);
 
