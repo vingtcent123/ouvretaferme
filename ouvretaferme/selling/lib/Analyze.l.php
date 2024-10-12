@@ -34,6 +34,10 @@ class AnalyzeLib {
 
 	public static function getProductsMonths(\Collection $cProduct, int $year, \Search $search = new \Search()): \Collection {
 
+		if($cProduct->empty()) {
+			return new \Collection();
+		}
+
 		if($search->get('type')) {
 			Item::model()->where('m2.type', $search->get('type'));
 		}
@@ -356,6 +360,10 @@ class AnalyzeLib {
 	}
 
 	public static function getProductsYear(\Collection $cProduct, ?int $year = NULL, \Search $search = new \Search()): \Collection {
+
+		if($cProduct->empty()) {
+			return new \Collection();
+		}
 
 		if($year !== NULL and currentYear() - $year > 2) {
 			$min = $year - 2;
