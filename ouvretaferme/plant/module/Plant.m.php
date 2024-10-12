@@ -49,13 +49,15 @@ class PlantModel extends \ModuleModel {
 			'farm' => ['element32', 'farm\Farm', 'null' => TRUE, 'cast' => 'element'],
 			'family' => ['element32', 'plant\Family', 'null' => TRUE, 'cast' => 'element'],
 			'vignette' => ['text8', 'min' => 30, 'max' => 30, 'null' => TRUE, 'cast' => 'string'],
+			'plantsSafetyMargin' => ['int8', 'min' => 0, 'max' => 100, 'null' => TRUE, 'cast' => 'int'],
+			'seedsSafetyMargin' => ['int8', 'min' => 0, 'max' => 100, 'null' => TRUE, 'cast' => 'int'],
 			'cycle' => ['enum', [\plant\Plant::ANNUAL, \plant\Plant::PERENNIAL], 'cast' => 'enum'],
 			'status' => ['enum', [\plant\Plant::ACTIVE, \plant\Plant::INACTIVE], 'cast' => 'enum'],
 			'createdAt' => ['date', 'cast' => 'string'],
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'name', 'fqn', 'aliases', 'farm', 'family', 'vignette', 'cycle', 'status', 'createdAt'
+			'id', 'name', 'fqn', 'aliases', 'farm', 'family', 'vignette', 'plantsSafetyMargin', 'seedsSafetyMargin', 'cycle', 'status', 'createdAt'
 		]);
 
 		$this->propertiesToModule += [
@@ -141,6 +143,14 @@ class PlantModel extends \ModuleModel {
 
 	public function whereVignette(...$data): PlantModel {
 		return $this->where('vignette', ...$data);
+	}
+
+	public function wherePlantsSafetyMargin(...$data): PlantModel {
+		return $this->where('plantsSafetyMargin', ...$data);
+	}
+
+	public function whereSeedsSafetyMargin(...$data): PlantModel {
+		return $this->where('seedsSafetyMargin', ...$data);
 	}
 
 	public function whereCycle(...$data): PlantModel {

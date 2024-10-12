@@ -2652,7 +2652,7 @@ class TaskUi {
 					}
 					if($eAction['fqn'] !== ACTION_PLANTATION) {
 						$h .= '<th class="text-end">';
-							$h .= s("Graines");
+							$h .= s("Semences");
 						$h .= '</th>';
 					}
 				$h .= '</tr>';
@@ -2818,7 +2818,7 @@ class TaskUi {
 					}
 					if($eAction['fqn'] === ACTION_SEMIS_PEPINIERE or $eAction['fqn'] === ACTION_SEMIS_DIRECT) {
 						$h .= '<th class="text-end">';
-							$h .= s("Graines");
+							$h .= s("Semences");
 						$h .= '</th>';
 					}
 				$h .= '</tr>';
@@ -3261,7 +3261,7 @@ class TaskUi {
 
 	protected function getPresentationSeeds(Task $eTask): string {
 
-		$h = '<dt>'.s("Graines").'</dt>';
+		$h = '<dt>'.s("Semences").'</dt>';
 		$h .= '<dd>'.$this->getPresentationSeedlingList($eTask, 'seeds').'</dd>';
 
 		return $h;

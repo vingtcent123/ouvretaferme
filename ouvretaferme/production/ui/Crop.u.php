@@ -197,7 +197,7 @@ class CropUi {
 	public function getPresentationSeedlingSeeds(\Element $eSequence, \Element $eCrop): string {
 
 		if($eCrop['seedling'] === Crop::YOUNG_PLANT) {
-			return '<dt>'.s("Graines").'</dt><dd>'.s("{value} / plant", $eCrop->quick('seedlingSeeds', $eCrop['seedlingSeeds'])).'</dd>';
+			return '<dt>'.s("Semences").'</dt><dd>'.s("{value} / plant", $eCrop->quick('seedlingSeeds', $eCrop['seedlingSeeds'])).'</dd>';
 		} else {
 			return '<dt></dt><dd></dd>';
 		}

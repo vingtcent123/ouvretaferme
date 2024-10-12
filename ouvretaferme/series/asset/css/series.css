@@ -474,7 +474,7 @@ div.series-item-seeds {
 
 }
 
-@media (max-width: 991px) {
+@media (max-width: 1199px) {
 
 	div.series-item-seeds {
 		grid-template-columns: minmax(10rem, 20%) 7rem 7rem 7rem 1fr 9rem;
@@ -483,18 +483,6 @@ div.series-item-seeds {
 	div.series-item-seeds div.series-item-seeds-density,
 	div.series-item-seeds div.series-item-seeds-area {
 		display: none;
-	}
-
-}
-
-div.series-item-header div.series-item-seeds-series {
-	grid-column: span 4;
-}
-
-@media (max-width: 991px) {
-
-	div.series-item-header div.series-item-seeds-series {
-		grid-column: span 2;
 	}
 
 }

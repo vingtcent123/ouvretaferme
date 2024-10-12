@@ -33,6 +33,8 @@ Plant:
   farm: ?farm\Farm
   family: ?plant\Family
   vignette: ?text8(30, 30)
+  plantsSafetyMargin: ?int8(1, 100)
+  seedsSafetyMargin: ?int8(1, 100)
   cycle: enum(ANNUAL, PERENNIAL)
   status: enum(ACTIVE, INACTIVE) = ACTIVE
   createdAt: date = SPECIAL(now)

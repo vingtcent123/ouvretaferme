@@ -256,91 +256,125 @@ class PlantUi {
 
 	protected function getFarmPlants(\farm\Farm $eFarm, \Collection $cPlant): string {
 
-		$h = '<table class="plant-manage-list tr-even">';
-			$h .= '<thead>';
-				$h .= '<tr>';
-					$h .= '<th></th>';
-					$h .= '<th>'.s("Nom").'</th>';
-					$h .= '<th class="text-center">'.s("Variétés").'</th>';
-					$h .= '<th class="text-center">'.s("Calibres").'</th>';
-					$h .= '<th>'.s("Famille").'</th>';
-					$h .= '<th>'.s("Activé").'</th>';
-					$h .= '<th></th>';
-				$h .= '</tr>';
-			$h .= '</thead>';
+		$hasSafety = $cPlant->match(fn($ePlant) => $ePlant['plantsSafetyMargin'] !== NULL or $ePlant['seedsSafetyMargin'] !== NULL);
 
-			$h .= '<tbody>';
+		$h = '<div class="util-overflow-xs stick-xs">';
 
-			foreach($cPlant as $ePlant) {
-
-				$h .= '<tr>';
-					$h .= '<td class="util-manage-vignette">';
-						if($ePlant['fqn'] === NULL) {
-							$h .= (new \media\PlantVignetteUi())->getCamera($ePlant, size: '3rem');
-						} else {
-							$h .= PlantUi::getVignette($ePlant, size: '3rem');
+			$h .= '<table class="tr-even">';
+				$h .= '<thead>';
+					$h .= '<tr>';
+						$h .= '<th></th>';
+						$h .= '<th>'.s("Nom").'</th>';
+						$h .= '<th class="text-center">'.s("Variétés").'</th>';
+						$h .= '<th class="text-center">'.s("Calibres").'</th>';
+						if($hasSafety) {
+							$h .= '<th>'.s("Marges de sécurité").'</th>';
 						}
-					$h .= '</td>';
-					$h .= '<td>';
-						$h .= self::link($ePlant);
-						if($ePlant->isOwner() === FALSE) {
-							$h .= ' <span class="plant-manage-locked">'.\Asset::icon('lock-fill').'</span>';
+						$h .= '<th class="hide-xs-down">'.s("Famille").'</th>';
+						$h .= '<th>'.s("Activé").'</th>';
+						$h .= '<th></th>';
+					$h .= '</tr>';
+				$h .= '</thead>';
+
+				$h .= '<tbody>';
+
+				foreach($cPlant as $ePlant) {
+
+					$h .= '<tr>';
+						$h .= '<td class="util-manage-vignette">';
+							if($ePlant['fqn'] === NULL) {
+								$h .= (new \media\PlantVignetteUi())->getCamera($ePlant, size: '3rem');
+							} else {
+								$h .= PlantUi::getVignette($ePlant, size: '3rem');
+							}
+						$h .= '</td>';
+						$h .= '<td>';
+							$h .= self::link($ePlant);
+							if($ePlant->isOwner() === FALSE) {
+								$h .= ' <span class="plant-manage-locked">'.\Asset::icon('lock-fill').'</span>';
+							}
+						$h .= '</td>';
+						$h .= '<td class="text-center">';
+							$h .= '<a href="/plant/variety?id='.$eFarm['id'].'&plant='.$ePlant['id'].'" class="btn btn-outline-primary opacity-'.($ePlant['varieties'] ? '100' : '25').'">'.($ePlant['varieties'] ?? '0').'</a>';
+						$h .= '</td>';
+						$h .= '<td class="text-center">';
+							$h .= '<a href="/plant/size?id='.$eFarm['id'].'&plant='.$ePlant['id'].'" class="btn btn-outline-primary opacity-'.($ePlant['sizes'] ? '100' : '25').'">'.($ePlant['sizes'] ?? '0').'</a>';
+						$h .= '</td>';
+
+						if($hasSafety) {
+
+							$h .= '<td>';
+
+								$list = [];
+
+								if($ePlant['plantsSafetyMargin'] !== NULL) {
+									$list[] = '<div>'.s("Plants <muted>{value} %</muted>", ['value' => $ePlant['plantsSafetyMargin'], 'muted' => '<span class="color-muted">']).'</div>';
+								}
+
+								if($ePlant['seedsSafetyMargin'] !== NULL) {
+									$list[] = '<div>'.s("Semences <muted>{value} %</muted>", ['value' => $ePlant['seedsSafetyMargin'], 'muted' => '<span class="color-muted">']).'</div>';
+								}
+
+								if($list) {
+									$h .= implode('', $list);
+								} else {
+									$h .= '-';
+								}
+
+							$h .= '</td>';
+
 						}
-					$h .= '</td>';
-					$h .= '<td class="text-center">';
-						$h .= '<a href="/plant/variety?id='.$eFarm['id'].'&plant='.$ePlant['id'].'" class="btn btn-outline-primary opacity-'.($ePlant['varieties'] ? '100' : '25').'">'.($ePlant['varieties'] ?? '0').'</a>';
-					$h .= '</td>';
-					$h .= '<td class="text-center">';
-						$h .= '<a href="/plant/size?id='.$eFarm['id'].'&plant='.$ePlant['id'].'" class="btn btn-outline-primary opacity-'.($ePlant['sizes'] ? '100' : '25').'">'.($ePlant['sizes'] ?? '0').'</a>';
-					$h .= '</td>';
-					$h .= '<td>';
-						if($ePlant['family']->empty()) {
-							$h .= '-';
-						} else {
-							$h .= encode($ePlant['family']['name']);
-						}
-					$h .= '</td>';
-					$h .= '<td class="text-center td-min-content">';
-						$h .= \util\TextUi::switch([
-							'id' => 'plant-switch-'.$ePlant['id'],
-							'data-ajax' => '/plant/plant:doUpdateStatus',
-							'post-id' => $ePlant['id'],
-							'post-status' => ($ePlant['status'] === Plant::ACTIVE) ? Plant::INACTIVE : Plant::ACTIVE
-						], $ePlant['status'] === Plant::ACTIVE);
-					$h .= '</td>';
-					$h .= '<td class="text-end">';
 
-						if($eFarm->canManage()) {
+						$h .= '<td class="hide-xs-down">';
+							if($ePlant['family']->empty()) {
+								$h .= '-';
+							} else {
+								$h .= encode($ePlant['family']['name']);
+							}
+						$h .= '</td>';
+						$h .= '<td class="text-center td-min-content">';
+							$h .= \util\TextUi::switch([
+								'id' => 'plant-switch-'.$ePlant['id'],
+								'data-ajax' => '/plant/plant:doUpdateStatus',
+								'post-id' => $ePlant['id'],
+								'post-status' => ($ePlant['status'] === Plant::ACTIVE) ? Plant::INACTIVE : Plant::ACTIVE
+							], $ePlant['status'] === Plant::ACTIVE);
+						$h .= '</td>';
+						$h .= '<td class="text-end">';
 
-							$h .= '<a class="btn btn-outline-secondary dropdown-toggle" data-dropdown="bottom-end">'.\Asset::icon('gear-fill').'</a>';
-							$h .= '<div class="dropdown-list">';
-								$h .= '<div class="dropdown-title">'.encode($ePlant['name']).'</div>';
+							if($eFarm->canManage()) {
 
-									$h .= '<a href="/plant/plant:update?id='.$ePlant['id'].'" class="dropdown-item">';
-										$h .= s("Modifier l'espèce");
-									$h .= '</a>';
-									$h .= '<a href="/plant/variety?id='.$eFarm['id'].'&plant='.$ePlant['id'].'" class="dropdown-item">'.s("Gérer les variétés").'</a>';
-									$h .= '<a href="/plant/size?id='.$eFarm['id'].'&plant='.$ePlant['id'].'" class="dropdown-item">'.s("Gérer les calibres").'</a>';
+								$h .= '<a class="btn btn-outline-secondary dropdown-toggle" data-dropdown="bottom-end">'.\Asset::icon('gear-fill').'</a>';
+								$h .= '<div class="dropdown-list">';
+									$h .= '<div class="dropdown-title">'.encode($ePlant['name']).'</div>';
 
-									if($ePlant->isOwner()) {
-
-										$h .= '<div class="dropdown-divider"></div>';
-
-										$h .= '<a data-ajax="/plant/plant:doDelete" data-confirm="'.s("Supprimer cette espèce ?").'" post-id="'.$ePlant['id'].'" class="dropdown-item">';
-											$h .= s("Supprimer l'espèce");
+										$h .= '<a href="/plant/plant:update?id='.$ePlant['id'].'" class="dropdown-item">';
+											$h .= s("Modifier l'espèce");
 										$h .= '</a>';
+										$h .= '<a href="/plant/variety?id='.$eFarm['id'].'&plant='.$ePlant['id'].'" class="dropdown-item">'.s("Gérer les variétés").'</a>';
+										$h .= '<a href="/plant/size?id='.$eFarm['id'].'&plant='.$ePlant['id'].'" class="dropdown-item">'.s("Gérer les calibres").'</a>';
 
-									}
+										if($ePlant->isOwner()) {
 
-							$h .= '</div>';
+											$h .= '<div class="dropdown-divider"></div>';
 
-						}
+											$h .= '<a data-ajax="/plant/plant:doDelete" data-confirm="'.s("Supprimer cette espèce ?").'" post-id="'.$ePlant['id'].'" class="dropdown-item">';
+												$h .= s("Supprimer l'espèce");
+											$h .= '</a>';
 
-					$h .= '</td>';
-				$h .= '</tr>';
-			}
-			$h .= '</tbody>';
-		$h .= '</table>';
+										}
+
+								$h .= '</div>';
+
+							}
+
+						$h .= '</td>';
+					$h .= '</tr>';
+				}
+				$h .= '</tbody>';
+			$h .= '</table>';
+
+		$h .= '</div>';
 
 		return $h;
 
@@ -371,6 +405,10 @@ class PlantUi {
 			$h .= $form->hidden('farm', $eFarm['id']);
 
 			$h .= $form->dynamicGroups($ePlant, ['name*', 'family', 'cycle*']);
+
+			$h .= $form->group(content: '<h3>'.s("Marges de sécurité").'</h3>');
+			$h .= $form->dynamicGroups($ePlant, ['plantsSafetyMargin', 'seedsSafetyMargin']);
+
 			$h .= $form->group(
 				content: $form->submit(s("Ajouter"))
 			);
@@ -393,6 +431,9 @@ class PlantUi {
 				$h .= $form->dynamicGroups($ePlant, ['name', 'family', 'cycle']);
 			}
 
+			$h .= $form->group(content: '<h3>'.s("Marges de sécurité").'</h3>');
+			$h .= $form->dynamicGroups($ePlant, ['plantsSafetyMargin', 'seedsSafetyMargin']);
+
 			$h .= $form->group(
 				content: $form->submit(s("Modifier"))
 			);
@@ -400,10 +441,17 @@ class PlantUi {
 		$h .= $form->close();
 
 		return new \Panel(
-			title: s("Modifier une espèce de la ferme"),
+			title: s("Modifier une espèce"),
+			subTitle: self::getPanelHeader($ePlant),
 			body: $h,
 			close: 'reload'
 		);
+
+	}
+
+	public static function getPanelHeader(Plant $ePlant): string {
+
+		return '<div class="panel-header-subtitle">'.self::getVignette($ePlant, '2rem').'  '.encode($ePlant['name']).'</div>';
 
 	}
 
@@ -413,6 +461,8 @@ class PlantUi {
 			'fqn' => s("Nom qualifié"),
 			'name' => s("Nom"),
 			'aliases' => s("Autres noms"),
+			'plantsSafetyMargin' => s("Pour le calcul des plants à produire"),
+			'seedsSafetyMargin' => s("Pour le calcul des semences à acheter"),
 			'family' => s("Famille"),
 			'cycle' => s("Cycle de culture"),
 		]);
@@ -431,6 +481,16 @@ class PlantUi {
 
 			case 'aliases' :
 				$d->append = '<small>'.s("(séparés par des virgules)").'</small>';
+				break;
+
+			case 'plantsSafetyMargin' :
+				$d->append = '%';
+				$d->after = \util\FormUi::info(s("Cette marge de sécurité sera intégrée dans le calcul du nombre de plants nécessaires pour les cultures sur lesquelles vous autoproduisez vos plants."));
+				break;
+
+			case 'seedsSafetyMargin' :
+				$d->append = '%';
+				$d->after = \util\FormUi::info(s("Cette marge de sécurité sera intégrée dans le calcul de la quantité de semences à acheter pour vos cultures que vous implantez en semis direct."));
 				break;
 
 			case 'family' :

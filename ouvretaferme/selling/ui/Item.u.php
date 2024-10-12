@@ -571,7 +571,7 @@ class ItemUi {
 
 		return new \Panel(
 			title: s("Ajouter des articles"),
-			subTitle: (new SaleUi())->getPanelHeader($eSale),
+			subTitle: SaleUi::getPanelHeader($eSale),
 			dialogOpen: $form->openAjax('/selling/item:doAdd', ['class' => 'panel-dialog container', 'id' => 'item-add']),
 			dialogClose: $form->close(),
 			body: $h,

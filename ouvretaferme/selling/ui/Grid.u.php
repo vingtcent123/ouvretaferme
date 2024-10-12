@@ -285,7 +285,7 @@ class GridUi {
 			dialogOpen: $form->openAjax('/selling/customer:doUpdateGrid', ['class' => 'panel-dialog container']),
 			dialogClose: $form->close(),
 			body: $h,
-			subTitle: (new CustomerUi())->getPanelHeader($eCustomer),
+			subTitle: CustomerUi::getPanelHeader($eCustomer),
 			footer: $form->submit(s("Enregistrer")),
 			close: 'reload'
 		);
@@ -350,7 +350,7 @@ class GridUi {
 			dialogOpen: $form->openAjax('/selling/product:doUpdateGrid', ['class' => 'panel-dialog container']),
 			dialogClose: $form->close(),
 			body: $h,
-			subTitle: (new ProductUi())->getPanelHeader($eProduct),
+			subTitle: ProductUi::getPanelHeader($eProduct),
 			footer: $form->submit(s("Enregistrer")),
 			close: 'reload'
 		);

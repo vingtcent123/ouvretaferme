@@ -33,14 +33,7 @@ class VarietyUi {
 
 	public function displayByPlant(\farm\Farm $eFarm, Plant $ePlant, \Collection $cVariety, \Collection $cSupplier): \Panel {
 
-		$h = '<div class="util-action">';
-			$h .= '<h3>'.encode($ePlant['name']).'</h3>';
-			if($eFarm->canManage()) {
-				$h .= '<div>';
-					$h .= '<a href="/plant/variety:create?farm='.$eFarm['id'].'&plant='.$ePlant['id'].'" class="btn btn-primary">'.\Asset::icon('plus-circle').' '.s("Nouvelle variété").'</a>';
-				$h .= '</div>';
-			}
-		$h .= '</div>';
+		$h = '';
 
 		if($cVariety->empty()) {
 			$h .= '<div class="util-info">';
@@ -52,6 +45,12 @@ class VarietyUi {
 			}
 		} else {
 
+			if($eFarm->canManage()) {
+				$h .= '<div class="text-end">';
+					$h .= '<a href="/plant/variety:create?farm='.$eFarm['id'].'&plant='.$ePlant['id'].'" class="btn btn-primary">'.\Asset::icon('plus-circle').' '.s("Nouvelle variété").'</a>';
+				$h .= '</div>';
+			}
+
 			$h .= '<div class="util-overflow-sm stick-xs">';
 
 				$h .= '<table class="tr-bordered">';
@@ -60,7 +59,7 @@ class VarietyUi {
 							$h .= '<th>'.s("Nom").'</th>';
 							$h .= '<th>'.s("Fournisseur<br/>de semences").'</th>';
 							$h .= '<th>'.s("Fournisseur<br/>de plants").'</th>';
-							$h .= '<th>'.s("Graines<br/>Poids pour 1000").'</th>';
+							$h .= '<th>'.s("Semences<br/>Poids pour 1000").'</th>';
 							$h .= '<th>'.s("Plants<br/>Nombre pour 1 kg").'</th>';
 							$h .= '<th></th>';
 						$h .= '</tr>';
@@ -119,6 +118,7 @@ class VarietyUi {
 		return new \Panel(
 			id: 'panel-variety-list',
 			title: s("Les variétés"),
+			subTitle: PlantUi::getPanelHeader($ePlant),
 			body: $h,
 			close: 'reload'
 		);

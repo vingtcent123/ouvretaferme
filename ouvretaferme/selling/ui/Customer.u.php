@@ -130,7 +130,7 @@ class CustomerUi {
 
 	}
 
-	public function getPanelHeader(Customer $eCustomer): string {
+	public static function getPanelHeader(Customer $eCustomer): string {
 
 		return '<div class="panel-header-subtitle">'.encode($eCustomer['name']).'</div>';
 

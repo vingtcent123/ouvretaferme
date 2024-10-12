@@ -331,7 +331,7 @@ class StockUi {
 		return new \Panel(
 			title: s("Historique du stock"),
 			body: $h,
-			subTitle: (new ProductUi())->getPanelHeader($eProduct)
+			subTitle: ProductUi::getPanelHeader($eProduct)
 		);
 	}
 
@@ -416,7 +416,7 @@ class StockUi {
 			id: 'panel-stock-bookmark',
 			title: s("Récoltes en mémoire"),
 			body: $h,
-			subTitle: (new ProductUi())->getPanelHeader($eProduct),
+			subTitle: ProductUi::getPanelHeader($eProduct),
 			footer: '<div class="text-end"><a data-ajax="/selling/stock:doDeleteBookmarks" post-id="'.$eProduct['id'].'" class="btn btn-danger" data-confirm="'.s("Vous préférence à la récolte pour ce stock seront effacées. Voulez-vous continuer ?").'">'.s("Tout supprimer").'</a></div>'
 		);
 	}
@@ -555,7 +555,7 @@ class StockUi {
 		return new \Panel(
 			title: $header,
 			body: $h,
-			subTitle: (new ProductUi())->getPanelHeader($eProduct)
+			subTitle: ProductUi::getPanelHeader($eProduct)
 		);
 
 	}

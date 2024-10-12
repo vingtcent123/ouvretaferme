@@ -760,7 +760,7 @@ class CultivationUi {
 					$h .= s("Variété");
 				$h .= '</div>';
 				$h .= '<div class="util-grid-header text-end">';
-					$h .= s("Graines<br/>à acheter");
+					$h .= s("Semences<br/>à acheter");
 				$h .= '</div>';
 				$h .= '<div class="util-grid-header text-end">';
 					$h .= s("Plants<br/>à produire");
@@ -770,6 +770,15 @@ class CultivationUi {
 				$h .= '</div>';
 				$h .= '<div class="util-grid-header series-item-seeds-series">';
 					$h .= s("Séries");
+				$h .= '</div>';
+				$h .= '<div class="util-grid-header">';
+					$h .= s("Implantation");
+				$h .= '</div>';
+				$h .= '<div class="util-grid-header series-item-seeds-density">';
+					$h .= s("Densité");
+				$h .= '</div>';
+				$h .= '<div class="util-grid-header series-item-seeds-area">';
+					$h .= s("Assolement");
 				$h .= '</div>';
 
 			$h .= '</div>';

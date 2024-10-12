@@ -5,14 +5,7 @@ class SizeUi {
 
 	public function displayByPlant(\farm\Farm $eFarm, Plant $ePlant, \Collection $cSize): \Panel {
 
-		$h = '<div class="util-action">';
-			$h .= '<h3>'.encode($ePlant['name']).'</h3>';
-			if($eFarm->canManage()) {
-				$h .= '<div>';
-					$h .= '<a href="/plant/size:create?farm='.$eFarm['id'].'&plant='.$ePlant['id'].'" class="btn btn-primary">'.\Asset::icon('plus-circle').' '.s("Nouveau calibre").'</a>';
-				$h .= '</div>';
-			}
-		$h .= '</div>';
+		$h = '';
 
 		if($cSize->empty()) {
 			$h .= '<div class="util-info">';
@@ -23,6 +16,12 @@ class SizeUi {
 				$h .= $this->createForm($eFarm, $ePlant, 'inline');
 			}
 		} else {
+
+			if($eFarm->canManage()) {
+				$h .= '<div class="text-end">';
+					$h .= '<a href="/plant/size:create?farm='.$eFarm['id'].'&plant='.$ePlant['id'].'" class="btn btn-primary">'.\Asset::icon('plus-circle').' '.s("Nouveau calibre").'</a>';
+				$h .= '</div>';
+			}
 
 			$h .= '<table class="tr-bordered">';
 				$h .= '<thead>';
@@ -72,6 +71,7 @@ class SizeUi {
 		return new \Panel(
 			id: 'panel-size-list',
 			title: s("Les calibres"),
+			subTitle: PlantUi::getPanelHeader($ePlant),
 			body: $h,
 			close: 'reload'
 		);

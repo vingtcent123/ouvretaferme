@@ -72,7 +72,7 @@ class SaleUi {
 
 	}
 
-	public function getPanelHeader(Sale $eSale): string {
+	public static function getPanelHeader(Sale $eSale): string {
 
 		return '<div class="panel-header-subtitle">'.self::getName($eSale).'</div>';
 

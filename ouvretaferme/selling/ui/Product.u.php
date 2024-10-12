@@ -68,9 +68,9 @@ class ProductUi {
 
 	}
 
-	public function getPanelHeader(Product $eProduct): string {
+	public static function getPanelHeader(Product $eProduct): string {
 
-		return '<div class="panel-header-subtitle">'.self::getVignette($eProduct, '2rem').' '.encode($eProduct->getName()).'</div>';
+		return '<div class="panel-header-subtitle">'.self::getVignette($eProduct, '2rem').'  '.encode($eProduct->getName()).'</div>';
 
 	}
 

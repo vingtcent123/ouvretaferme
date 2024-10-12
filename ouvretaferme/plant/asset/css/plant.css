@@ -102,14 +102,6 @@ div.plant-block-submit {
 	justify-content: space-between;
 }
 
-#plant-manage {
-	overflow-y: auto;
-}
-
-#plant-manage table.plant-manage-list {
-	min-width: 600px;
-}
-
 #plant-manage .plant-manage-locked {
 	font-size: 0.8rem;
 	color: var(--muted);
@@ -117,6 +109,7 @@ div.plant-block-submit {
 
 .plant-vignette {
 	display: inline-block;
+	vertical-align: middle;
 }
 
 .plant-vignette img {

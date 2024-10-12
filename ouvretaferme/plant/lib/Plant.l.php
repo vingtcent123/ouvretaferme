@@ -7,15 +7,15 @@ namespace plant;
 class PlantLib extends PlantCrud {
 
 	public static function getPropertiesCreate(): array {
-		return ['name', 'family', 'cycle'];
+		return ['name', 'family', 'cycle', 'plantsSafetyMargin', 'seedsSafetyMargin'];
 	}
 
 	public static function getPropertiesUpdate(): \Closure {
 		return function(Plant $e) {
 			if($e->isOwner()) {
-				return ['name', 'family', 'cycle'];
+				return ['name', 'family', 'cycle', 'plantsSafetyMargin', 'seedsSafetyMargin'];
 			} else {
-				return [];
+				return ['plantsSafetyMargin', 'seedsSafetyMargin'];
 			}
 		};
 	}
