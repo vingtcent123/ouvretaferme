@@ -138,7 +138,7 @@ class PlantLib extends PlantCrud {
 			->whereId($search->get('id'), if: $search->get('id'))
 			->whereId('IN', $search->get('ids'), if: $search->get('ids'))
 			->whereFarm($eFarm)
-			->whereFamily($search->get('family'), if: $search->get('family')->notEmpty())
+			->whereFamily($search->get('family'), if: $search->get('family')?->notEmpty())
 			->sort('name');
 
 		if($expects === 'element') {
