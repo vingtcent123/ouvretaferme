@@ -393,7 +393,9 @@
 		$data->eFarm->validate('canPlanning');
 
 		$data->week = \series\Task::GET('week', 'plannedWeek', currentWeek());
+
 		$data->eAction = \farm\ActionLib::getById(GET('action'))->validate('canRead');
+		$data->eAction->validateProperty('farm', $data->eFarm);
 
 		\farm\ActionLib::getMainByFarm($data->eFarm);
 
@@ -402,10 +404,16 @@
 		$data->cTask = \series\TaskLib::getByWeekAndAction($data->eFarm, $data->week, $data->eAction);
 
 		foreach($data->cTask as $eTask) {
+
 			if($eTask['cultivation']->notEmpty()) {
+
 				$eTask['cultivation']['series'] = $eTask['series'];
+				$eTask['cultivation']['plant'] = $eTask['plant'];
+
 				\series\CultivationLib::populateSliceStats($eTask['cultivation']);
+
 			}
+
 		}
 
 		throw new ViewAction($data);

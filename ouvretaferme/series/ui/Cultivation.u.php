@@ -335,7 +335,7 @@ class CultivationUi {
 						}
 						$h .= '<div class="series-item-title-plant">';
 							$h .= \plant\PlantUi::getVignette($ePlant, '2.4rem');
-							$h .= encode($ePlant['name']);
+							$h .= '<span class="series-item-title-plant-name">'.encode($ePlant['name']).'</span>';
 						$h .= '</div>';
 						if($harvestExpected) {
 
@@ -525,7 +525,7 @@ class CultivationUi {
 					$h .= '<div class="series-item series-item-forecast series-item-title">';
 						$h .= '<div class="series-item-title-plant">';
 							$h .= \plant\PlantUi::getVignette($ePlant, '2.4rem');
-							$h .= encode($ePlant['name']);
+							$h .= '<span class="series-item-title-plant-name">'.encode($ePlant['name']).'</span>';
 						$h .= '</div>';
 						$h .= '<div style="grid-column: span 2"></div>';
 						$h .= '<div class="series-item-forecast-objective series-item-forecast-objective-first series-item-forecast-objective-last" style="grid-column: span 3"></div>';
@@ -789,10 +789,17 @@ class CultivationUi {
 
 				foreach($items as ['plant' => $ePlant, 'seeds' => $seeds]) {
 
-					$h .= '<div class="series-item series-item-title"  data-ref="plant-'.$ePlant['id'].'">';
+					$h .= '<div class="series-item series-item-seeds series-item-title"  data-ref="plant-'.$ePlant['id'].'">';
 						$h .= '<div class="series-item-title-plant">';
 							$h .= \plant\PlantUi::getVignette($ePlant, '2.4rem');
-							$h .= encode($ePlant['name']);
+							$h .= '<span class="series-item-title-plant-name">'.encode($ePlant['name']).'</span>';
+							if($ePlant['seedsSafetyMargin'] !== NULL and $ePlant['plantsSafetyMargin'] !== NULL) {
+								$h .= '<a href="/plant/plant:update?id='.$ePlant['id'].'" class="series-item-title-plant-safety">'.\Asset::icon('arrow-right').' '.s("marge de sécurité de {seedsSafetyMargin} % sur semis directs et de {plantsSafetyMargin} % sur plants autoproduits", $ePlant).'</a>';
+							} else if($ePlant['seedsSafetyMargin'] !== NULL) {
+								$h .= '<a href="/plant/plant:update?id='.$ePlant['id'].'" class="series-item-title-plant-safety">'.\Asset::icon('arrow-right').' '.s("marge de sécurité de {seedsSafetyMargin} % sur semis directs", $ePlant).'</a>';
+							} else if($ePlant['plantsSafetyMargin'] !== NULL) {
+								$h .= '<a href="/plant/plant:update?id='.$ePlant['id'].'" class="series-item-title-plant-safety">'.\Asset::icon('arrow-right').' '.s("marge de sécurité de {plantsSafetyMargin} % sur plants autoproduits", $ePlant).'</a>';
+							}
 						$h .= '</div>';
 					$h .= '</div>';
 
@@ -1116,7 +1123,7 @@ class CultivationUi {
 					$hPlant = '<div class="series-item series-item-title" id="series-item-'.$eCultivation['id'].'" data-ref="plant-'.$ePlant['id'].'">';
 						$hPlant .= '<div class="series-item-title-plant">';
 							$hPlant .= \plant\PlantUi::getVignette($ePlant, '2.4rem');
-							$hPlant .= encode($ePlant['name']);
+							$hPlant .= '<span class="series-item-title-plant-name">'.encode($ePlant['name']).'</span>';
 						$hPlant .= '</div>';
 					$hPlant .= '</div>';
 

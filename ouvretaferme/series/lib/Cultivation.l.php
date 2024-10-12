@@ -291,6 +291,10 @@ class CultivationLib extends CultivationCrud {
 
 	protected static function calculateSeeds(Series $eSeries, Cultivation $eCultivation, Slice $eSlice, array &$seedsVariety, bool $removeIfEmpty) {
 
+		$eCultivation->expects([
+			'plant' => ['plantsSafetyMargin', 'seedsSafetyMargin']
+		]);
+
 		$eVariety = $eSlice['variety'];
 		$varietyId = $eVariety->empty() ? '' : $eVariety['id'];
 
@@ -302,12 +306,13 @@ class CultivationLib extends CultivationCrud {
 		switch($eCultivation['seedling']) {
 
 			case Cultivation::SOWING :
-				$seeds = self::getSeeds($eSeries, $eCultivation, $eSlice, $targeted);
+				$seeds = self::getSeeds($eSeries, $eCultivation, $eSlice, $targeted, $eCultivation['plant']['seedsSafetyMargin']);
 				break;
 
 			case Cultivation::YOUNG_PLANT :
-				$seeds = self::getSeeds($eSeries, $eCultivation, $eSlice, $targeted);
-				$youngPlantsProduced = self::getYoungPlants($eSeries, $eCultivation, $eSlice, $targeted);
+
+				$seeds = self::getSeeds($eSeries, $eCultivation, $eSlice, $targeted, $eCultivation['plant']['plantsSafetyMargin']);
+				$youngPlantsProduced = self::getYoungPlants($eSeries, $eCultivation, $eSlice, $targeted, $eCultivation['plant']['plantsSafetyMargin']);
 				break;
 
 			case Cultivation::YOUNG_PLANT_BOUGHT :
@@ -395,7 +400,11 @@ class CultivationLib extends CultivationCrud {
 			return;
 		}
 
-		$eCultivation->expects(['series', 'cSlice']);
+		$eCultivation->expects([
+			'series',
+			'cSlice',
+			'plant' => ['seedsSafetyMargin', 'plantsSafetyMargin']
+		]);
 
 		if($eCultivation['cSlice']->empty()) {
 
@@ -411,8 +420,18 @@ class CultivationLib extends CultivationCrud {
 		foreach($eCultivation['cSlice'] as $eSlice) {
 
 			$eSlice['targeted'] = $eCultivation['series']->isTargeted();
-			$eSlice['youngPlants'] = self::getYoungPlants($eCultivation['series'], $eCultivation, $eSlice);
-			$eSlice['seeds'] = self::getSeeds($eCultivation['series'], $eCultivation, $eSlice);
+
+			$eSlice['youngPlants'] = self::getYoungPlants($eCultivation['series'], $eCultivation, $eSlice, safetyMargin: match($eCultivation['seedling']) {
+				Cultivation::YOUNG_PLANT => $eCultivation['plant']['plantsSafetyMargin'],
+				default => 1
+			});
+
+			$eSlice['seeds'] = self::getSeeds($eCultivation['series'], $eCultivation, $eSlice, safetyMargin: match($eCultivation['seedling']) {
+				Cultivation::SOWING => $eCultivation['plant']['seedsSafetyMargin'],
+				Cultivation::YOUNG_PLANT => $eCultivation['plant']['plantsSafetyMargin'],
+				default => 1
+			});
+
 			$eSlice['area'] = self::getArea($eCultivation['series'], $eCultivation, $eSlice);
 
 		}
@@ -447,7 +466,9 @@ class CultivationLib extends CultivationCrud {
 
 	}
 
-	public static function getYoungPlants(Series $eSeries, Cultivation $eCultivation, Slice $eSlice, bool &$targeted = NULL): ?int {
+	public static function getYoungPlants(Series $eSeries, Cultivation $eCultivation, Slice $eSlice, bool &$targeted = NULL, ?int $safetyMargin = NULL): ?int {
+
+		$safetyMarginMultiplier = (1 + ($safetyMargin ?? 0) / 100);
 
 		switch($eSeries['use']) {
 
@@ -491,8 +512,8 @@ class CultivationLib extends CultivationCrud {
 				}
 
 				return match($eCultivation['sliceUnit']) {
-					Cultivation::PERCENT => round($length * $densityLinear * $eSlice['partPercent'] / 100),
-					Cultivation::LENGTH => round($eSlice['partLength'] * $densityLinear),
+					Cultivation::PERCENT => round($length * $densityLinear * $eSlice['partPercent'] / 100 * $safetyMarginMultiplier),
+					Cultivation::LENGTH => round($eSlice['partLength'] * $densityLinear * $safetyMarginMultiplier),
 				};
 
 			case Series::BLOCK :
@@ -510,8 +531,8 @@ class CultivationLib extends CultivationCrud {
 				if($eCultivation['density'] !== NULL) {
 
 					return match($eCultivation['sliceUnit']) {
-						Cultivation::PERCENT => round($area * $eCultivation['density'] * $eSlice['partPercent'] / 100),
-						Cultivation::AREA => round($eSlice['partArea'] * $eCultivation['density']),
+						Cultivation::PERCENT => round($area * $eCultivation['density'] * $eSlice['partPercent'] / 100 * $safetyMarginMultiplier),
+						Cultivation::AREA => round($eSlice['partArea'] * $eCultivation['density'] * $safetyMarginMultiplier),
 					};
 
 				} else {
@@ -522,9 +543,9 @@ class CultivationLib extends CultivationCrud {
 
 	}
 
-	public static function getSeeds(Series $eSeries, Cultivation $eCultivation, Slice $eSlice, bool &$targeted = NULL): ?int {
+	public static function getSeeds(Series $eSeries, Cultivation $eCultivation, Slice $eSlice, bool &$targeted = NULL, ?int $safetyMargin = NULL): ?int {
 
-		$youngPlants = self::getYoungPlants($eSeries, $eCultivation, $eSlice, $targeted);
+		$youngPlants = self::getYoungPlants($eSeries, $eCultivation, $eSlice, $targeted, $safetyMargin);
 
 		if($youngPlants !== NULL) {
 

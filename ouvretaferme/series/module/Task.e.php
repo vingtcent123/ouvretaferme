@@ -6,7 +6,7 @@ class Task extends TaskElement {
 	public static function getSelection(): array {
 
 		return parent::getSelection() + [
-			'plant' => ['name', 'fqn', 'vignette'],
+			'plant' => ['name', 'fqn', 'vignette', 'seedsSafetyMargin', 'plantsSafetyMargin'],
 			'farm' => ['name', 'vignette', 'featureTime'],
 			'cultivation' => ['startWeek', 'startAction', 'mainUnit', 'density', 'bunchWeight', 'unitWeight'],
 			'variety' => ['name'],

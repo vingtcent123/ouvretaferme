@@ -484,11 +484,13 @@ class PlantUi {
 				break;
 
 			case 'plantsSafetyMargin' :
+				$d->prepend = \Asset::icon('plus');
 				$d->append = '%';
 				$d->after = \util\FormUi::info(s("Cette marge de sécurité sera intégrée dans le calcul du nombre de plants nécessaires pour les cultures sur lesquelles vous autoproduisez vos plants."));
 				break;
 
 			case 'seedsSafetyMargin' :
+				$d->prepend = \Asset::icon('plus');
 				$d->append = '%';
 				$d->after = \util\FormUi::info(s("Cette marge de sécurité sera intégrée dans le calcul de la quantité de semences à acheter pour vos cultures que vous implantez en semis direct."));
 				break;

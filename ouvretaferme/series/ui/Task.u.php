@@ -2901,6 +2901,37 @@ class TaskUi {
 
 		$h = '<h3>'.encode($eTask['action']['name']).'</h3>';
 
+		if($eTask['cultivation']->notEmpty()) {
+
+			$ePlant = $eTask['plant'];
+
+			$info = [
+				'link' => '<a href="/plant/plant:update?id='.$ePlant['id'].'">',
+				'plant' => \plant\PlantUi::getVignette($ePlant, '1.5rem').' '.encode($ePlant['name'])
+			];
+
+			switch($eTask['cultivation']['seedling']) {
+
+				case Cultivation::SOWING :
+					if($ePlant['seedsSafetyMargin'] !== NULL) {
+						$h .= '<div class="util-info">';
+							$h .= s("Les quantités indiquées tiennent compte de la <link>marge de sécurité de {value} %</link> sur vos semis directs de {plant}.", ['value' => $ePlant['seedsSafetyMargin']] + $info);
+						$h .= '</div>';
+					}
+					break;
+
+				case Cultivation::YOUNG_PLANT :
+					if($ePlant['plantsSafetyMargin'] !== NULL) {
+						$h .= '<div class="util-info">';
+							$h .= s("Les quantités indiquées tiennent compte de la <link>marge de sécurité de {value} %</link> sur vos plants de {plant} autoproduits.", ['value' => $ePlant['plantsSafetyMargin']] + $info);
+						$h .= '</div>';
+					}
+					break;
+
+			}
+
+		}
+
 		$h .= '<div class="task-item-action">';
 			$h .= $content;
 		$h .= '</div>';
