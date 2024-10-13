@@ -327,7 +327,11 @@ class TextUi {
 
 	}
 
-	public static function number(int|float $number, ?int $precision = NULL): string {
+	public static function number(int|float|null $number, ?int $precision = NULL): ?string {
+
+		if($number === NULL) {
+			return NULL;
+		}
 
 		$precision ??= is_int($number) ? 0 : 2;
 
@@ -338,7 +342,11 @@ class TextUi {
 
 	}
 
-	public static function csvNumber(int|float $number, ?int $precision = NULL): string {
+	public static function csvNumber(int|float|null $number, ?int $precision = NULL): ?string {
+
+		if($number === NULL) {
+			return NULL;
+		}
 
 		$precision ??= is_int($number) ? 0 : 2;
 

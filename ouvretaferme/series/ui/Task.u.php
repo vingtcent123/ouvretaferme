@@ -4671,7 +4671,7 @@ class TaskUi {
 			'timeExpected' => s("Temps de travail estimé"),
 			'description' => s("Observations"),
 			'fertilizer' => s("Apports"),
-			'harvestSize' => s("Critère de qualité"),
+			'harvestSize' => s("Calibre récolté"),
 			'harvestMore' => s("Quantité récoltée"),
 			'harvestDate' => s("Jour de récolte"),
 			'toolsList' => s("Matériel nécessaire")

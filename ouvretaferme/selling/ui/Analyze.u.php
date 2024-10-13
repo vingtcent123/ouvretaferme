@@ -1965,15 +1965,15 @@ class AnalyzeUi {
 	public function getExportHeader(\farm\Farm $eFarm): array {
 
 		return [
-			s("Désignation"),
-			s("Produit"),
-			s("Vente"),
-			s("Client"),
-			s("Type"),
-			s("Livraison"),
-			s("Quantité"),
-			s("Unité"),
-			$eFarm->getSelling('hasVat') ? s("Montant (HT)") : s("Montant")
+			'item',
+			'product',
+			'sale',
+			'customer',
+			'type',
+			'delivery',
+			'quantity',
+			'unit',
+			$eFarm->getSelling('hasVat') ? 'amount_excluding_vat' : 'amount'
 		];
 
 	}

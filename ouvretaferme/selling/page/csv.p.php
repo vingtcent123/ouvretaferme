@@ -10,7 +10,7 @@
 		$export = \selling\AnalyzeLib::getExport($data->e, $year, $market);
 		array_unshift($export, (new \selling\AnalyzeUi())->getExportHeader($data->e));
 
-		throw new CsvAction($export, 'sales-'.$year.'.csv');
+		throw new CsvAction($export, 'ventes-'.$year.'.csv');
 
 	});
 ?>

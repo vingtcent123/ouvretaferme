@@ -474,21 +474,28 @@ class FarmUi {
 
 		$h .= '<div class="util-buttons">';
 
-			$h .= '<a href="/series/analyze:exportTasks?id='.$eFarm['id'].'&year='.$year.'" class="bg-secondary util-button" data-ajax-navigation="never">';
+			$h .= '<a href="/series/csv:exportCultivations?id='.$eFarm['id'].'&year='.$year.'" class="bg-secondary util-button" data-ajax-navigation="never">';
+				$h .= '<div>';
+					$h .= '<h4>'.s("Exporter le plan de culture").'</h4>';
+				$h .= '</div>';
+				$h .= \Asset::icon('journals');
+			$h .= '</a>';
+
+			$h .= '<a href="/series/csv:exportTasks?id='.$eFarm['id'].'&year='.$year.'" class="bg-secondary util-button" data-ajax-navigation="never">';
 				$h .= '<div>';
 					$h .= '<h4>'.s("Exporter les interventions").'</h4>';
 				$h .= '</div>';
 				$h .= \Asset::icon('calendar3');
 			$h .= '</a>';
 
-			$h .= '<a href="/series/analyze:exportHarvests?id='.$eFarm['id'].'&year='.$year.'" class="bg-secondary util-button" data-ajax-navigation="never">';
+			$h .= '<a href="/series/csv:exportHarvests?id='.$eFarm['id'].'&year='.$year.'" class="bg-secondary util-button" data-ajax-navigation="never">';
 				$h .= '<div>';
 					$h .= '<h4>'.s("Exporter les récoltes").'</h4>';
 				$h .= '</div>';
 				$h .= \Asset::icon('basket2-fill');
 			$h .= '</a>';
 
-			$h .= '<a href="/selling/analyze:export?id='.$eFarm['id'].'&year='.$year.'" class="bg-secondary util-button" data-ajax-navigation="never">';
+			$h .= '<a href="/selling/csv:export?id='.$eFarm['id'].'&year='.$year.'" class="bg-secondary util-button" data-ajax-navigation="never">';
 				$h .= '<div>';
 					$h .= '<h4>'.s("Exporter les ventes").'</h4>';
 				$h .= '</div>';
@@ -497,7 +504,7 @@ class FarmUi {
 
 			if($hasMarket) {
 
-				$h .= '<a href="/selling/analyze:export?id='.$eFarm['id'].'&year='.$year.'&market=1" class="bg-secondary util-button" data-ajax-navigation="never">';
+				$h .= '<a href="/selling/csv:export?id='.$eFarm['id'].'&year='.$year.'&market=1" class="bg-secondary util-button" data-ajax-navigation="never">';
 					$h .= '<div>';
 						$h .= '<h4>'.s("Exporter les ventes des marchés").'</h4>';
 					$h .= '</div>';
@@ -1316,7 +1323,7 @@ class FarmUi {
 
 				$h .= '<a href="/farm/farm:export?id='.$eFarm['id'].'" class="bg-secondary util-button">';
 					$h .= '<h4>'.s("Exporter les données de la ferme").'</h4>';
-					$h .= \Asset::icon('database');
+					$h .= \Asset::icon('download');
 				$h .= '</a>';
 
 			}
@@ -1353,6 +1360,15 @@ class FarmUi {
 				$h .= \Asset::icon('lightbulb');
 
 			$h .= '</a>';
+/*
+			if($eFarm->canManage()) {
+
+				$h .= '<a href="/series/csv:import?id='.$eFarm['id'].'" class="bg-secondary util-button">';
+					$h .= '<h4>'.s("Exporter ou importer un plan de culture").' <span class="farm-settings-subtitle">'.s("pour Qrop / Brinjel").'</span></h4>';
+					$h .= \Asset::icon('database');
+				$h .= '</a>';
+
+			}*/
 
 		$h .= '</div>';
 

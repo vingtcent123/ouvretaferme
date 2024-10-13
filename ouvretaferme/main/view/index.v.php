@@ -1,14 +1,14 @@
 <?php
 new AdaptativeView('anonymous', function($data, MainTemplate $t) {
 
-	$t->title = s("Plateforme de planification et vente pour le maraichage biologique");
-	$t->metaDescription = s("Logiciel dédié aux maraîchers en agriculture biologique pour organiser le travail à la ferme, de la planification des cultures jusqu'à la vente.");
+	$t->title = s("Du plan de culture à la vente pour le maraichage biologique");
+	$t->metaDescription = s("Logiciel gratuit et en ligne dédié aux maraîchers en agriculture biologique pour organiser le travail à la ferme, du plan de culture jusqu'à la vente.");
 	$t->template = 'home-main';
 
 	Asset::css('main', 'font-itim.css');
 	Asset::css('main', 'home.css');
 
-	$t->header .= '<h1>'.s("Organisez le travail à la ferme de la planification des cultures à la vente").'</h1>';
+	$t->header .= '<h1>'.s("Organisez le travail à la ferme du plan de culture à la vente").'</h1>';
 	$t->header .= '<h4 class="home-domain">'.s("Le logiciel pour le maraîchage en agriculture biologique").'</h4>';
 
 	echo '<div class="home-presentation">';
@@ -16,11 +16,11 @@ new AdaptativeView('anonymous', function($data, MainTemplate $t) {
 		echo '<div class="home-presentation-dark bg-secondary">';
 			echo '<h2>'.Asset::icon('arrow-right').''.s("Pour les producteurs").'</h2>';
 			echo '<ul>';
-				echo '<li>'.s("Construisez facilement vos plans de culture et d'assolement").'</li>';
+				echo '<li>'.s("Construisez facilement vos plan de culture et plan d'assolement").'</li>';
 				echo '<li>'.s("Suivez votre planning de maraîchage semaine par semaine").'</li>';
 				echo '<li>'.s("Vendez en ligne votre production sans commission sur les ventes").'</li>';
 				echo '<li>'.s("Utilisez les données récoltées pour améliorer vos pratiques année après année").'</li>';
-				echo '<li>'.s("Gratuit pour les producteurs en agriculture biologique !").'</li>';
+				echo '<li>'.s("Logiciel gratuit pour les producteurs en agriculture biologique !").'</li>';
 			echo '</ul>';
 			echo '<div class="mt-1">';
 				echo '<a href="/presentation/producteur" class="btn btn-lg btn-transparent">'.s("En savoir plus").'</a> ';
@@ -44,7 +44,7 @@ new AdaptativeView('anonymous', function($data, MainTemplate $t) {
 	echo '<h2>'.s("La philosophie du projet 👩‍🌾").'</h2>';
 
 	echo '<div class="home-story">';
-		echo s("La plateforme {siteName} est née du constat qu'il n'existe pas de solution libre et simple d'utilisation pour permettre aux producteurs maraîchers d'organiser le travail dans leur ferme. En proposant un logiciel complet de la planification des cultures jusqu'à la vente, nous avons pour objectif de donner les moyens aux producteurs en agriculture biologique de réaliser les finalités de leur ferme en maraichage.");
+		echo s("La plateforme {siteName} est née du constat qu'il n'existe pas de logiciel libre et simple d'utilisation pour permettre aux producteurs maraîchers d'organiser le travail dans leur ferme. En proposant un logiciel complet du plan de culture jusqu'à la vente, nous avons pour objectif de donner les moyens aux producteurs en agriculture biologique de réaliser les finalités de leur ferme en maraichage.");
 	echo '</div>';
 
 	echo (new \main\HomeUi())->getPoints();
@@ -156,9 +156,9 @@ new AdaptativeView('/presentation/producteur', function($data, MainTemplate $t) 
 	echo '<div class="home-presentation">';
 
 		echo '<div>';
-			echo '<h2>'.Asset::icon('arrow-right').''.s("Un outil pour produire").'</h2>';
+			echo '<h2>'.Asset::icon('arrow-right').''.s("Un logiciel pour produire").'</h2>';
 			echo '<ul>';
-				echo '<li>'.s("<b>Vous planifiez votre saison en concevant vos plans de culture et d'assolement en ligne.</b> <small>Variétés, longueurs de planche ou surfaces, densités, objectifs de récolte, associations de culture... Enregistrez et retrouvez facilement toutes les informations sur chacune de vos séries. Un prévisionnel financier permet d'estimer vos ventes en fonction de votre plan de culture et de vos prévisions !</small>").'</li>';
+				echo '<li>'.s("<b>Vous planifiez votre saison en concevant vos plan de culture et plan d'assolement en ligne.</b> <small>Variétés, longueurs de planche ou surfaces, densités, objectifs de récolte, associations de culture... Enregistrez et retrouvez facilement toutes les informations sur chacune de vos séries. Un prévisionnel financier permet d'estimer vos ventes en fonction de votre plan de culture et de vos prévisions !</small>").'</li>';
 				echo '<li>'.s("<b>Vous maîtrisez votre temps de travail.</b> <small>Que ce soit à la ferme avec votre téléphone ou le soir sur l'ordinateur, un planning hebdomadaire ou quotidien vous permet de faire le suivi des interventions planifiées et réalisées sur la semaine. Renseignez facilement votre temps de travail pour comprendre là où passe votre temps.</small>").'</li>';
 				echo '<li>'.s("<b>Vous suivez précisément vos rotations sur votre parcellaire.</b> <small>Choisissez vos critères pour les rotations et vérifiez en un coup d'oeil les planches qui correspondent à ces critères. Pratique pour éviter de mettre vos cultures aux mêmes emplacements trop souvent !</small>").'</li>';
 				echo '<li>'.s("<b>Vous collaborez avec votre équipe.</b> <small>Invitez votre équipe sur l'espace de votre ferme et gérez les droits de chaque personne.</small>").'</li>';
@@ -168,7 +168,7 @@ new AdaptativeView('/presentation/producteur', function($data, MainTemplate $t) 
 		echo '</div>';
 
 		echo '<div>';
-			echo '<h2>'.Asset::icon('arrow-right').''.s("Un outil pour vendre").'</h2>';
+			echo '<h2>'.Asset::icon('arrow-right').''.s("Un logiciel pour vendre").'</h2>';
 			echo '<ul>';
 				echo '<li>'.s("<b>Vous gérez vos ventes pour les professionnels et les particuliers.</b> <small>Créez des ventes à partir de vos produits, gérez votre clientèle, choisissez vos prix. Imprimez des étiquettes de colisage si vous livrez aux professionnels. Exporter les ventes du jour au format PDF pour préparer vos livraisons.</small>").'</li>';
 				echo '<li>'.s("<b>Vous avez un mode de vente <i>Marché</i>.</b> <small>Utilisez le mode <i>Marché</i> avec une tablette ou un téléphone pour préparer vos marchés et saisir vos ventes directement pendant le marché. Pour chaque vente, visualisez ce que le client a acheté et le montant qu'il doit vous régler. Simple et efficace.</small>").'</li>';
@@ -183,7 +183,7 @@ new AdaptativeView('/presentation/producteur', function($data, MainTemplate $t) 
 	echo '<div class="home-presentation">';
 
 		echo '<div>';
-			echo '<h2>'.Asset::icon('arrow-right').''.s("Un outil pour communiquer").'</h2>';
+			echo '<h2>'.Asset::icon('arrow-right').''.s("Un logiciel pour communiquer").'</h2>';
 			echo '<ul>';
 				echo '<li>'.s("<b>Vous pouvez créer le site internet de votre ferme.</b> <small>Créez autant de pages que vous voulez sur votre nouveau site et personnalisez le thème graphique. Vous pouvez même avoir un nom de domaine si vous le souhaitez.</small>").'</li>';
 				echo '<li>'.s("<b>Aucune connaissance technique n'est nécessaire.</b> <small>Toutes les étapes de création de votre site internet se font depuis votre téléphone ou votre ordinateur.</small>").'</li>';
@@ -192,9 +192,9 @@ new AdaptativeView('/presentation/producteur', function($data, MainTemplate $t) 
 		echo '</div>';
 
 		echo '<div>';
-			echo '<h2>'.Asset::icon('arrow-right').''.s("Un outil pour améliorer vos pratiques").'</h2>';
+			echo '<h2>'.Asset::icon('arrow-right').''.s("Un logiciel pour améliorer vos pratiques").'</h2>';
 			echo '<ul>';
-				echo '<li>'.s("<b>Vous avez accès à de nombreux graphiques et statistiques.</b> <small>Visualisez les résultats de vos cultures, votre temps de travail et vos ventes. Retournez dans le passé pour mesurer vos progrès. Comprenez ce qui vous prend du temps pour améliorer vos pratiques.</small>").'</li>';
+				echo '<li>'.s("<b>Vous avez accès à de nombreux graphiques et statistiques.</b> <small>Visualisez les résultats de votre plan de culture, votre temps de travail et vos ventes. Retournez dans le passé pour mesurer vos progrès. Comprenez ce qui vous prend du temps pour améliorer vos pratiques.</small>").'</li>';
 				echo '<li>'.s("<b>Vous connaissez votre prix de revient pour chaque culture.</b> <small>Avec le temps de travail et les ventes que vous avez saisis, calculez vos prix de revient pour mieux définir vos prix de vente.</small>").'</li>';
 				echo '<li>'.s("<b>Vous pouvez exporter vos données au format CSV.</b> <small>Manipulez vos chiffres de vente ou de temps de travail dans un tableur pour tirer partie de vos données !</small>").'</li>';
 			echo '</ul>';

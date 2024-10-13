@@ -1443,40 +1443,5 @@ class AnalyzeUi {
 
 	}
 
-	public function getExportTasksHeader(): array {
-
-		return [
-			s("Date"),
-			s("Utilisateur"),
-			s("Catégorie"),
-			s("Intervention"),
-			s("Temps de travail"),
-			s("Numéro de série"),
-			s("Nom de série"),
-			s("Espèce"),
-			s("Variété"),
-			s("Quantité récoltée"),
-			s("Unité de récolte"),
-			s("Critère de qualité de récolte"),
-			s("Description")
-		];
-
-	}
-
-	public function getExportHarvestsHeader(): array {
-
-		return [
-			s("Date"),
-			s("Numéro de série"),
-			s("Nom de série"),
-			s("Espèce"),
-			s("Variété"),
-			s("Quantité"),
-			s("Unité"),
-			s("Critère de qualité")
-		];
-
-	}
-
 }
 ?>
