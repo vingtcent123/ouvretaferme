@@ -278,7 +278,7 @@ class CropLib extends CropCrud {
 
 		return match($eSequence['use']) {
 			Sequence::BLOCK => ($eCrop['rowSpacing'] !== NULL and $eCrop['plantSpacing'] !== NULL) ? (100 / $eCrop['rowSpacing'] * 100 / $eCrop['plantSpacing']) : NULL,
-			Sequence::BED => ($eCrop['rows'] !== NULL and $eCrop['plantSpacing'] !== NULL) ? ($eCrop['rows'] / ($eSequence['bedWidth'] / 100) * 100 / $eCrop['plantSpacing']) : NULL
+			Sequence::BED => ($eCrop['rows'] !== NULL and $eCrop['plantSpacing'] !== NULL) ? ($eCrop['rows'] / (($eSequence['bedWidth'] + $eSequence['alleyWidth']) / 100) * 100 / $eCrop['plantSpacing']) : NULL
 		};
 
 	}

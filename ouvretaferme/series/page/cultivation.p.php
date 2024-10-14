@@ -35,7 +35,7 @@
 		$e->validate('canWrite');
 
 	})
-	->quick(['yieldExpected'])
+	->quick(['yieldExpected', 'seedlingSeeds'])
 	->read('harvest', function($data) {
 
 		$data->cTask = \series\TaskLib::getHarvestedByCultivation($data->e);
