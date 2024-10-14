@@ -40,8 +40,10 @@ class CsvUi {
 	public function getExportCultivationsHeader($maxVarieties): array {
 
 		$columns = [
+			'season',
 			'series_id',
 			'series_name',
+			'place',
 			'species',
 			'planting_type',
 			'young_plants_seeds',
@@ -50,6 +52,7 @@ class CsvUi {
 			'planting_date',
 			'first_harvest_date',
 			'last_harvest_date',
+			'use',
 			'block_area',
 			'block_density',
 			'block_spacing_rows',
@@ -101,6 +104,22 @@ class CsvUi {
 			'container_name',
 			'container_size'
 		];
+
+	}
+
+	public function getImportCultivations(\farm\Farm $eFarm): string {
+
+		$form = new \util\FormUi();
+
+		$h = $form->openUrl('/series/csv:doImportCultivations', ['binary' => TRUE, 'method' => 'post']);
+			$h .= $form->hidden('id', $eFarm['id']);
+			$h .= '<label class="btn btn-primary">';
+				$h .= $form->file('csv', ['onchange' => 'this.form.submit()']);
+				$h .= s("Importer un fichier CSV depuis mon ordinateur");
+			$h .= '</label>';
+		$h .= $form->close();
+
+		return $h;
 
 	}
 

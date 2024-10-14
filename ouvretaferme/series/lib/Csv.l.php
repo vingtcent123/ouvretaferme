@@ -198,8 +198,10 @@ class CsvLib {
 			$maxHarvestDate = $harvestDates ? week_date_ends(max($harvestDates)) : NULL;
 
 			$line = [
+				$eSeries['season'],
 				$eSeries['id'],
 				$eSeries['name'],
+				$eSeries['place'],
 				$eCultivation['plant']['name'],
 				($eCultivation['seedling'] !== NULL) ? str_replace('-', '_', $eCultivation['seedling']) : NULL,
 				($eCultivation['seedling'] === Cultivation::YOUNG_PLANT) ? $eCultivation['seedlingSeeds'] : NULL,
@@ -208,6 +210,7 @@ class CsvLib {
 				$plantingDate,
 				$minHarvestDate,
 				$maxHarvestDate,
+				$eSeries['use'],
 				($eSeries['use'] === Series::BLOCK) ? $eSeries['area'] ?? $eSeries['areaTarget'] ?? NULL : NULL,
 				($eSeries['use'] === Series::BLOCK and $eCultivation['distance'] === Cultivation::DENSITY) ? $eCultivation['density'] : NULL,
 				($eSeries['use'] === Series::BLOCK and $eCultivation['distance'] === Cultivation::SPACING) ? $eCultivation['rowSpacing'] : NULL,
@@ -247,6 +250,41 @@ class CsvLib {
 
 	}
 
+	public static function saveCultivations(\farm\Farm $eFarm): bool {
+
+		if(isset($_FILES['csv']) === FALSE) {
+			return FALSE;
+		}
+
+		$file = $_FILES['csv']['tmp_name'];
+
+		// Vérification de la taille (max 1 Mo)
+		if(filesize($file) > 1024 * 1024) {
+			\Fail::log('csvSize');
+			return FALSE;
+		}
+
+		$csv = \util\CsvLib::parseCsv($file, ',');
+
+		$header = $csv[0];
+
+		if(count(array_intersect($header, ['series_name', 'season', 'place', 'species', 'use'])) === 5) {
+			$source = 'ouvretaferme';
+		} else if(count(array_intersect($header, ['family', 'crop', 'in_greenhouse'])) === 3) {
+			$source = 'brinjel';
+		} else {
+			\Fail::log('csvSource');
+			return FALSE;
+		}
+
+		\Cache::redis()->set('import-cultivations-'.$eFarm['id'], [
+			'source' => $source,
+			'data' => $csv
+		]);
+
+		return TRUE;
+
+	}
 
 }
 ?>

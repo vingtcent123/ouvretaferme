@@ -39,9 +39,27 @@
 
 
 	})
-	->get('import', function($data) {
+	->read('importCultivations', function($data) {
 
+		$data->eFarm = $data->e;
+
+		\farm\FarmerLib::register($data->eFarm);
+//d(\Cache::redis()->exists('import-cultivations-'.$data->e['id']));
 		throw new ViewAction($data);
+
+	})
+	->write('doImportCultivations', function($data) {
+
+		$fw = new FailWatch();
+
+		\series\CsvLib::saveCultivations($data->e);
+
+		if($fw->ok()) {
+			throw new RedirectAction('/series/csv:importCultivations?id='.$data->e['id']);
+		} else {
+			throw new RedirectAction('/series/csv:importCultivations?id='.$data->e['id'].'&error='.$fw->getLast());
+		}
+
 
 	});
 ?>

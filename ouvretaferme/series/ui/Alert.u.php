@@ -11,6 +11,9 @@ class AlertUi {
 
 		return match($fqn) {
 
+			'csvSize' => s("Votre plan de culture ne peut pas excéder 1 Mo, merci de réduire la taille de votre fichier."),
+			'csvSource' => s("Le fichier que vous avez envoyé n'est pas reconnu, vérifiez qu'il respecte bien le format demandé."),
+
 			'Series::plantsCheck' => s("Veuillez sélectionner au moins une espèce !"),
 			'Series::perennialLifetime.consistency' => s("La durée de vie de la culture ne peut pas être réduite autant car elle a été mise en place depuis plus longtemps"),
 			'Series::copyActions.check' => s("Merci de sélectionner au moins une intervention !"),

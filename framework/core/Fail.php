@@ -319,6 +319,25 @@ class FailWatch {
 
 
 	/**
+	 * Get fails
+	 *
+	 * @return array
+	 */
+	public function getLast(): ?string {
+
+		 $list = Fail::get($this->watcherId);
+
+		 if($list === []) {
+			 return NULL;
+		 } else {
+			 $last = last($list);
+			 return $last[0].':'.$last[1];
+		 }
+
+	}
+
+
+	/**
 	 * CHeck for a specifid error
 	 *
 	 * @return array

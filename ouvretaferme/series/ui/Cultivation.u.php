@@ -1357,7 +1357,7 @@ class CultivationUi {
 					$hPlant = '<div class="series-item-harvesting series-item series-item-title" id="series-item-'.$eCultivation['id'].'" data-ref="plant-'.$ePlant['id'].'">';
 						$hPlant .= '<div class="series-item-title-plant" style="grid-column: span 2">';
 							$hPlant .= \plant\PlantUi::getVignette($ePlant, '2.25rem');
-							$hPlant .= encode($ePlant['name']);
+							$hPlant .= '<span class="series-item-title-plant-name">'.encode($ePlant['name']).'</span>';
 						$hPlant .= '</div>';
 						if($cCultivation->count() > 1) {
 							$hPlant .= '<div class="series-item-harvesting-yield text-end">';
