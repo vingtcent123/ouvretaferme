@@ -11,6 +11,7 @@
 			$data->e = \series\TaskLib::getById(INPUT('task'))->validate('canWrite', 'canSoil');
 			$data->e['season'] = 2024;
 			$data->e['use'] = \series\Series::BED;
+			$data->e['bedWidth'] = NULL;
 
 			$data->source = 'task';
 

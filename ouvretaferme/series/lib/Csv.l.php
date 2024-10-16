@@ -201,7 +201,10 @@ class CsvLib {
 				$eSeries['season'],
 				$eSeries['id'],
 				$eSeries['name'],
-				$eSeries['place'],
+				match($eSeries['mode']) {
+					Series::OUTDOOR => 'open-field',
+					default => $eSeries['mode']
+				},
 				$eCultivation['plant']['name'],
 				($eCultivation['seedling'] !== NULL) ? str_replace('-', '_', $eCultivation['seedling']) : NULL,
 				($eCultivation['seedling'] === Cultivation::YOUNG_PLANT) ? $eCultivation['seedlingSeeds'] : NULL,

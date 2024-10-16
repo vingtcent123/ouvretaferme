@@ -428,9 +428,9 @@ class PlaceUi {
 				if($eBed['plotFill'] or $eBed['zoneFill']) {
 					$h .= s("{area} m²", $eBed);
 				} else {
-					$size = s("{length} mL x {width} cm", $eBed);
 					if(
 						$e['use'] === Series::BED and
+						$e['bedWidth'] !== NULL and
 						$e['bedWidth'] !== $eBed['width']
 					) {
 						$h .= s("{length} mL x <danger>{width} cm</danger>", $eBed->extracts(['length', 'width']) + ['danger' => '<span class="color-danger" style="font-weight: bold">'.\Asset::icon('exclamation-circle').' ']);
