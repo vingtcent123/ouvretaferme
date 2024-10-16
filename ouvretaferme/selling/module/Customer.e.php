@@ -118,6 +118,15 @@ class Customer extends CustomerElement {
 
 			},
 
+			'phone.check' => function(?string $phone): bool {
+
+				return (
+					$phone === NULL or
+					preg_match('/^[0-9 \+]+$/si', $phone) > 0
+				);
+
+			},
+
 			'category.set' => function(?string $category) use ($for): bool {
 
 				switch($category) {

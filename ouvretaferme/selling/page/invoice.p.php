@@ -80,7 +80,11 @@
 
 		$eFarm = \farm\FarmLib::getById($data->e['farm']);
 
+		$fw = new FailWatch();
+
 		\selling\PdfLib::sendByInvoice($eFarm, $data->e);
+
+		$fw->validate();
 
 		throw new ReloadAction('selling', 'Invoice::sent');
 
