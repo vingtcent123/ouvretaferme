@@ -4,7 +4,7 @@ namespace analyze;
 class ReportLib extends ReportCrud {
 
 	public static function getPropertiesCreate(): array {
-		return ['farm', 'plant', 'name', 'description', 'cultivations', 'products', 'firstSaleAt', 'lastSaleAt', 'from'];
+		return ['farm', 'plant', 'name', 'description', 'workingTimeAdditional', 'cultivations', 'products', 'firstSaleAt', 'lastSaleAt', 'from'];
 	}
 
 	public static function getPropertiesUpdate(): array {
@@ -152,7 +152,7 @@ class ReportLib extends ReportCrud {
 			'cProduct' => $cProduct,
 		] = $e;
 
-		// Chiffre d'affaire total par unité
+		// Chiffre d'affaires total par unité
 		$turnoverByUnit = $cProduct->reduce(function($eProduct, $v) {
 			$v[$eProduct['unit']] += $eProduct['turnover'];
 			return $v;

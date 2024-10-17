@@ -6,7 +6,8 @@ Report:
   season: int16(0, null)
   plant: plant\Plant
   area: int(0, null)
-  workingTime: float(0.0, null)
+  workingTime: decimal(8, 2, 0.0, null)
+  workingTimeAdditional: decimal(8, 2, 0.0, null) = 0
   costs: int(0, null)
   turnover: int(0, null)
   testArea: ?int24

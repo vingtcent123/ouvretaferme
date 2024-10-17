@@ -12,7 +12,8 @@
 
 		return new \analyze\Report([
 			'farm' => $data->eFarm,
-			'season' => $data->season
+			'season' => $data->season,
+			'workingTimeAdditional' => NULL
 		]);
 
 
@@ -37,6 +38,7 @@
 
 			$data->e['name'] = $eReportFrom['name'];
 			$data->e['description'] = $eReportFrom['description'];
+			$data->e['workingTimeAdditional'] = $eReportFrom['workingTimeAdditional'];
 
 		} else {
 			$plant = GET('plant');

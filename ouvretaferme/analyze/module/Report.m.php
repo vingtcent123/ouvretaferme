@@ -46,7 +46,8 @@ class ReportModel extends \ModuleModel {
 			'season' => ['int16', 'min' => 0, 'max' => NULL, 'cast' => 'int'],
 			'plant' => ['element32', 'plant\Plant', 'cast' => 'element'],
 			'area' => ['int32', 'min' => 0, 'max' => NULL, 'cast' => 'int'],
-			'workingTime' => ['float32', 'min' => 0.0, 'max' => NULL, 'cast' => 'float'],
+			'workingTime' => ['decimal', 'digits' => 8, 'decimal' => 2, 'min' => 0.0, 'max' => NULL, 'cast' => 'float'],
+			'workingTimeAdditional' => ['decimal', 'digits' => 8, 'decimal' => 2, 'min' => 0.0, 'max' => NULL, 'cast' => 'float'],
 			'costs' => ['int32', 'min' => 0, 'max' => NULL, 'cast' => 'int'],
 			'turnover' => ['int32', 'min' => 0, 'max' => NULL, 'cast' => 'int'],
 			'testArea' => ['int24', 'null' => TRUE, 'cast' => 'int'],
@@ -63,7 +64,7 @@ class ReportModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'name', 'description', 'farm', 'season', 'plant', 'area', 'workingTime', 'costs', 'turnover', 'testArea', 'testAreaOperator', 'testWorkingTime', 'testWorkingTimeOperator', 'testCosts', 'testCostsOperator', 'testTurnover', 'testTurnoverOperator', 'firstSaleAt', 'lastSaleAt', 'createdAt'
+			'id', 'name', 'description', 'farm', 'season', 'plant', 'area', 'workingTime', 'workingTimeAdditional', 'costs', 'turnover', 'testArea', 'testAreaOperator', 'testWorkingTime', 'testWorkingTimeOperator', 'testCosts', 'testCostsOperator', 'testTurnover', 'testTurnoverOperator', 'firstSaleAt', 'lastSaleAt', 'createdAt'
 		]);
 
 		$this->propertiesToModule += [
@@ -84,6 +85,9 @@ class ReportModel extends \ModuleModel {
 	public function getDefaultValue(string $property) {
 
 		switch($property) {
+
+			case 'workingTimeAdditional' :
+				return 0;
 
 			case 'createdAt' :
 				return new \Sql('NOW()');
@@ -156,6 +160,10 @@ class ReportModel extends \ModuleModel {
 
 	public function whereWorkingTime(...$data): ReportModel {
 		return $this->where('workingTime', ...$data);
+	}
+
+	public function whereWorkingTimeAdditional(...$data): ReportModel {
+		return $this->where('workingTimeAdditional', ...$data);
 	}
 
 	public function whereCosts(...$data): ReportModel {

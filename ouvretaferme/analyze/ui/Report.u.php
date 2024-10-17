@@ -685,7 +685,7 @@ class ReportUi {
 
 					if($workingTimeNoSeries > 0) {
 						$h .= $form->group(
-							content: '<p class="text-end">'.\Asset::icon('info-circle').' '.s("Il y a aussi eu {time} de travail hors-série sur cette plante en {year} (<link>voir le détail</link>)", ['time' => \series\TaskUi::convertTime($workingTimeNoSeries), 'year' => $e['season'], 'link' => '<a href="/series/analyze:tasks?id='.$e['farm']['id'].'&status='.\series\Task::DONE.'&plant='.$e['plant']['id'].'&year='.$e['season'].'&noSeries" target="_blank">']).'</p>'
+							content: '<p class="text-end"><label>'.$form->inputCheckbox('workingTimeAdditional', round($workingTimeNoSeries, 4), ['checked' => $e['workingTimeAdditional'] !== 0.0]).' '.s("Inclure au rapport {time} de travail hors-série sur cette plante en {year} (<link>voir le détail</link>)", ['time' => \series\TaskUi::convertTime($workingTimeNoSeries), 'year' => $e['season'], 'link' => '<a href="/series/analyze:tasks?id='.$e['farm']['id'].'&status='.\series\Task::DONE.'&plant='.$e['plant']['id'].'&year='.$e['season'].'&noSeries" target="_blank">']).'</label></p>'
 						);
 					}
 

@@ -71,7 +71,7 @@ class Report extends ReportElement {
 
 			'cultivations.check' => function(mixed $ids): bool {
 
-				$this->expects(['farm']);
+				$this->expects(['farm', 'workingTimeAdditional']);
 
 				\series\Cultivation::model()->select([
 					'firstTaskWeek' => \series\CultivationLib::delegateFirstTaskWeek($this['farm'])
@@ -101,6 +101,17 @@ class Report extends ReportElement {
 					$eCultivationAnalyze->buildIndex($properties, $_POST, $eCultivationSeries['id']);
 
 					$cCultivationAnalyze[] = $eCultivationAnalyze;
+
+				}
+
+				if($this['workingTimeAdditional'] > 0) {
+
+					$totalTime = $cCultivationAnalyze->sum('workingTime');
+					$timeFactor = ($totalTime + $this['workingTimeAdditional']) / $totalTime;
+
+					foreach($cCultivationAnalyze as $eCultivationAnalyze) {
+						$eCultivationAnalyze['workingTime'] = $eCultivationAnalyze['workingTime'] * $timeFactor;
+					}
 
 				}
 
