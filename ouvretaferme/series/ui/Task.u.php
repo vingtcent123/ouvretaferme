@@ -998,10 +998,6 @@ class TaskUi {
 
 					$postSeason = $post;
 
-					if($season !== (int)date('Y')) { // Si ce n'est pas l'année en cours, pas de valeur par défaut
-						unset($postSeason['plannedWeek'], $postSeason['doneWeek']);
-					}
-
 					$h .= '<a href="/series/task:createFromSeries?season='.$season.'&'.http_build_query($postSeason).'" class="dropdown-item">';
 						$h .= '&nbsp;&nbsp;'.\Asset::icon('chevron-right').'&nbsp;&nbsp;'.s("Saison {value}", $season);
 					$h .= '</a>';
