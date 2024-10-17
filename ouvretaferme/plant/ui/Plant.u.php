@@ -110,7 +110,7 @@ class PlantUi {
 
 			}
 
-			return '<div class="'.$class.'" style="'.$ui->getSquareCss($size).'; '.$style.'">'.$content.'</div>';
+			return '<div class="'.$class.'" style="'.$ui->getSquareCss($size).'; '.$style.'">'.encode($content).'</div>';
 
 		}
 
@@ -186,7 +186,7 @@ class PlantUi {
 
 	}
 
-	public function display(Plant $ePlant, \Collection $cItemYear): string {
+	public function display(Plant $ePlant, \farm\Farm $eFarm, \Collection $cItemYear, \Collection $cCrop, \Collection $cActionMain): \Panel {
 
 		$h = '<div class="util-vignette">';
 
@@ -221,7 +221,16 @@ class PlantUi {
 
 		}
 
-		return $h;
+		if($cCrop->notEmpty()) {
+			$h .= '<h3>'.s("Itinéraires techniques").'</h3>';
+			$h .= (new \production\SequenceUi())->getList($eFarm, $cCrop, $cActionMain);
+		}
+
+		return new \Panel(
+			id: 'panel-plant-display',
+			title: s("Espèce"),
+			body: $h
+		);
 
 	}
 

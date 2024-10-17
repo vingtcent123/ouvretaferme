@@ -26,18 +26,9 @@ new AdaptativeView('plant', function($data, FarmTemplate $t) {
 
 });
 
-new AdaptativeView('/espece/{id@int}', function($data, FarmTemplate $t) {
+new AdaptativeView('/espece/{id@int}', function($data, PanelTemplate $t) {
 
-	$t->title = $data->e['name'];
-	$t->tab = 'plant';
-	$t->subNav = (new \farm\FarmUi())->getCultivationSubNav($data->e['farm']);
-
-	echo (new \plant\PlantUi())->display($data->e, $data->cItemYear);
-	
-	if($data->cCrop->notEmpty()) {
-		echo '<h3>'.s("Itinéraires techniques").'</h3>';
-		echo (new \production\SequenceUi())->getList($data->eFarm, $data->cCrop, $data->cActionMain);
-	}
+	return (new \plant\PlantUi())->display($data->e, $data->eFarm, $data->cItemYear, $data->cCrop, $data->cActionMain);
 
 });
 

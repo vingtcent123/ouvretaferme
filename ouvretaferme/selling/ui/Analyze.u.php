@@ -1780,7 +1780,7 @@ class AnalyzeUi {
 
 			foreach($cItemYear as $eItemYear) {
 				$h .= '<li '.($eItemYear['year'] === $year ? 'class="selected"' : '').'>';
-					$h .= '<a data-ajax="/plant/plant:analyzeSales?id='.$ePlantLink['id'].'&year='.$eItemYear['year'].'" data-ajax-method="get">';
+					$h .= '<a href="/plant/plant:analyzeSales?id='.$ePlantLink['id'].'&year='.$eItemYear['year'].'" data-ajax-method="get">';
 						$h .= '<h5>'.$eItemYear['year'].'</h5>';
 						$h .= '<div>'.\util\TextUi::money($eItemYear['turnover'], precision: 0).'</div>';
 						$h .= '<div class="util-summarize-muted">('.\util\TextUi::pc($eItemYear['turnover'] / $eItemYear['turnoverGlobal'] * 100, 0).')</div>';

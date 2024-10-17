@@ -414,7 +414,7 @@ class ProductUi {
 
 		}
 
-		return '<div class="'.$class.'" style="'.$ui->getSquareCss($size).'; '.$style.'">'.$content.'</div>';
+		return '<div class="'.$class.'" style="'.$ui->getSquareCss($size).'; '.$style.'">'.encode($content).'</div>';
 
 	}
 
