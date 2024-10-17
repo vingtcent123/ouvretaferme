@@ -7,7 +7,7 @@ Report:
   plant: plant\Plant
   area: int(0, null)
   workingTime: decimal(8, 2, 0.0, null)
-  workingTimeAdditional: decimal(8, 2, 0.0, null) = 0
+  workingTimeAdditional: decimal(8, 2, 0.0, null)
   costs: int(0, null)
   turnover: int(0, null)
   testArea: ?int24

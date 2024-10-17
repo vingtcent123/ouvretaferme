@@ -86,9 +86,6 @@ class ReportModel extends \ModuleModel {
 
 		switch($property) {
 
-			case 'workingTimeAdditional' :
-				return 0;
-
 			case 'createdAt' :
 				return new \Sql('NOW()');
 
