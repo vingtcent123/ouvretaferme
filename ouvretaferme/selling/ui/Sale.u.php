@@ -545,7 +545,7 @@ class SaleUi {
 
 			foreach([Pdf::ORDER_FORM, Pdf::DELIVERY_NOTE, Pdf::INVOICE] as $type) {
 
-				if($eSale->canDocument($type) === FALSE) {
+				if($eSale->acceptDocument($type) === FALSE) {
 					$list[] = NULL;
 					continue;
 				}
@@ -591,7 +591,7 @@ class SaleUi {
 
 					if(
 						$acceptGenerate and
-						$eSale->canManage()
+						$eSale->canDocument($type)
 					) {
 
 						$document = '<a '.$urlGenerate.' class="btn sale-document sale-document-new" title="'.$texts['generate'].'" '.attr('data-confirm', $texts['generateConfirm']).'>';
@@ -661,7 +661,7 @@ class SaleUi {
 							$document .= '</span>';
 						}
 
-						if($eSale->canManage()) {
+						if($eSale->canDocument($type)) {
 
 							if($texts['generateNew'] !== NULL) {
 
@@ -704,7 +704,9 @@ class SaleUi {
 								Pdf::INVOICE => 'data-ajax="/selling/invoice:doDelete" post-id="'.$eSale['invoice']['id'].'"',
 							};
 
-							$document .= ' <a '.$urlDelete.' data-confirm="'.$texts['deleteConfirm'].'" class="dropdown-item">'.s("Supprimer le document").'</a>';
+							if($eSale->canManage()) {
+								$document .= ' <a '.$urlDelete.' data-confirm="'.$texts['deleteConfirm'].'" class="dropdown-item">'.s("Supprimer le document").'</a>';
+							}
 
 							if($ePdf['expiresAt'] !== NULL) {
 								$document .= '<span class="dropdown-item sale-document-expires">'.s("Le fichier PDF de ce document<br/>expirera automatiquement le {value}.", \util\DateUi::numeric($ePdf['expiresAt'], \util\DateUi::DATE)).'</span>';

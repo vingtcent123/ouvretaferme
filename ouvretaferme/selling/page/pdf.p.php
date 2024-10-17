@@ -18,7 +18,7 @@
 	->get('getDocument', function($data) {
 
 		$data->type = GET('type', [\selling\Pdf::DELIVERY_NOTE, \selling\Pdf::ORDER_FORM, \selling\Pdf::INVOICE], fn() => throw new NotExpectedAction());
-		$data->e = \selling\SaleLib::getById(GET('id'))->validate('canRemote', fn($e) => $e->canDocument($data->type));
+		$data->e = \selling\SaleLib::getById(GET('id'))->validate('canRemote', fn($e) => $e->acceptDocument($data->type));
 
 		$data->e['customer']['user'] = \user\UserLib::getById($data->e['customer']['user']); // Récupération de l'e-mail
 

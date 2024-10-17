@@ -93,6 +93,17 @@ class Sale extends SaleElement {
 
 	}
 
+	public function canDocument(string $type): bool {
+
+		$this->expects(['farm']);
+
+		return match($type) {
+			Pdf::DELIVERY_NOTE => $this['farm']->canSelling(),
+			default => $this['farm']->canManage()
+		};
+
+	}
+
 	public function canManage(): bool {
 
 		$this->expects(['farm']);
@@ -289,7 +300,7 @@ class Sale extends SaleElement {
 
 	}
 
-	public function canDocument(string $type): bool {
+	public function acceptDocument(string $type): bool {
 
 		return match($type) {
 			Pdf::DELIVERY_NOTE => $this->acceptDeliveryNote(),

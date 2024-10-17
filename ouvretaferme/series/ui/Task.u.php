@@ -1277,7 +1277,7 @@ class TaskUi {
 		if($eTask['action']['fqn'] === ACTION_RECOLTE) {
 			$batch[] = 'harvest';
 		}
-		if($eTask->canPostpone() === FALSE) {
+		if($eTask->acceptPostpone() === FALSE) {
 			$batch[] = 'not-postpone';
 		}
 		if($eTask->isDone()) {
@@ -2273,7 +2273,7 @@ class TaskUi {
 
 			}
 
-		} else if($eTask->canSoil()) {
+		} else if($eTask->acceptSoil()) {
 
 			$h .= '<div class="util-action">';
 				$h .= '<h3>'.s("Assolement").'</h3>';

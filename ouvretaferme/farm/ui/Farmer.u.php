@@ -441,7 +441,7 @@ class FarmerUi {
 		$h = '<ul>';
 			$h .= '<li>'.s("<b>Exploitant</b> : accès aux mêmes fonctionnalités que vous").'</li>';
 			$h .= '<li>'.s("<b>Saisonnier</b> : peut saisir son propre temps de travail, commenter les interventions et consulter sans modifier les pages sur le planning, les cultures et le parcellaire").'</li>';
-			$h .= '<li>'.s("<b>Permanent</b> : comme le saisonnier et peut également saisir de nouvelles interventions, modifier les interventions déjà créées, consulter les pages sur la commercialisation et modifier les ventes et les clients").'</li>';
+			$h .= '<li>'.s("<b>Permanent</b> : comme le saisonnier et peut également saisir de nouvelles interventions, modifier les interventions déjà créées, consulter les pages sur la commercialisation, manipuler les bons de livraison et modifier les ventes et les clients").'</li>';
 			$h .= '<li>'.s("<b>Observateur</b> : peut consulter sans modifier les pages sur les cultures, le parcellaire et l'analyse, sans jamais avoir accès au détail de vos ventes et de vos clients").'</li>';
 		$h .= '</ul>';
 

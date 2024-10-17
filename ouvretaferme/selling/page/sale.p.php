@@ -105,8 +105,6 @@
 	})
 	->write('doGenerateDocument', function($data) {
 
-		$data->e->validate('canManage');
-
 		if($data->e['items'] === 0) {
 			throw new FailAction('selling\Pdf::emptySale');
 		}
@@ -115,6 +113,10 @@
 		$data->e['farm']->validateSellingComplete();
 
 		$type = POST('type', [\selling\Pdf::DELIVERY_NOTE, \selling\Pdf::ORDER_FORM], fn() => throw new NotExpectedAction());
+
+		if($data->e->canDocument($type) === FALSE) {
+			throw new NotAllowedAction();
+		}
 
 		$fw = new FailWatch();
 
@@ -151,6 +153,10 @@
 		$eFarm = \farm\FarmLib::getById($data->e['farm']);
 
 		$data->type = POST('type', [\selling\Pdf::ORDER_FORM, \selling\Pdf::DELIVERY_NOTE], fn($value) => throw new NotExpectedAction('Invalid type \''.$value.'\''));
+
+		if($data->e->canDocument($data->type) === FALSE) {
+			throw new NotAllowedAction();
+		}
 
 		$fw = new FailWatch();
 

@@ -121,11 +121,11 @@ class Task extends TaskElement {
 		return ($this['status'] === Task::DONE);
 	}
 
-	public function canPostpone(): bool {
+	public function acceptPostpone(): bool {
 		return ($this->isTodo() and $this['plannedWeek'] !== NULL);
 	}
 
-	public function canSoil(): bool {
+	public function acceptSoil(): bool {
 
 		$this->expects([
 			'series',

@@ -603,14 +603,14 @@
 	})
 	->get('incrementPlannedCollection', function($data) {
 
-		$data->c->validate('canPostpone', 'canWrite');
+		$data->c->validate('acceptPostpone', 'canWrite');
 
 		throw new ViewAction($data);
 
 	})
 	->post('doIncrementPlannedCollection', function($data) {
 
-		$data->c->validate('canPostpone', 'canWrite');
+		$data->c->validate('acceptPostpone', 'canWrite');
 
 		\series\TaskLib::incrementPlannedCollection($data->c, POST('increment', 'int'));
 

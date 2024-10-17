@@ -8,7 +8,7 @@
 
 		} else if(input_exists('task')) {
 
-			$data->e = \series\TaskLib::getById(INPUT('task'))->validate('canWrite', 'canSoil');
+			$data->e = \series\TaskLib::getById(INPUT('task'))->validate('canWrite', 'acceptSoil');
 			$data->e['season'] = 2024;
 			$data->e['use'] = \series\Series::BED;
 			$data->e['bedWidth'] = NULL;
