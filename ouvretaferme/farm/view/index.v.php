@@ -259,11 +259,15 @@ new AdaptativeView('soil', function($data, FarmTemplate $t) {
 			echo (new \farm\FarmUi())->getSeasonsTabs($data->eFarm, fn($season) => \farm\FarmUi::urlSoil($data->eFarm, $season), $data->season);
 		echo '</h1>';
 		echo '<div>';
-			if(
-				$data->cZone->notEmpty() and
-				$data->eFarm->canManage()
-			) {
-				echo '<a href="'.\farm\FarmUi::urlCartography($data->eFarm, $data->season).'" class="btn btn-primary">'.\Asset::icon('geo-alt-fill').' '.s("Modifier le plan de la ferme").'</a>';
+			if($data->cZone->notEmpty()) {
+				echo '<a href="'.\farm\FarmUi::urlCartography($data->eFarm, $data->season).'" class="btn btn-primary">';
+					echo \Asset::icon('geo-alt-fill').' ';
+					if($data->eFarm->canManage()) {
+						echo s("Modifier le plan de la ferme");
+					} else {
+						echo s("Plan de la ferme");
+					}
+				echo '</a>';
 			}
 		echo '</div>';
 	echo '</div>';
