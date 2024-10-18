@@ -1329,18 +1329,10 @@ class CultivationUi {
 								$cultivations .= '<div class="series-item-harvesting-weeks">';
 
 									if($eCultivation['harvesting']['firstHarvest'] !== NULL) {
-
+										$cultivations .= self::getHarvestInterval($eCultivation['harvesting']['firstHarvest'], $eCultivation['harvesting']['lastHarvest']);
 										if($eCultivation['harvesting']['firstHarvest'] !== $eCultivation['harvesting']['lastHarvest']) {
-
-											$cultivations .= s("Semaines {from} à {to}", ['from' => date('W', $eCultivation['harvesting']['firstHarvest']), 'to' => date('W', $eCultivation['harvesting']['lastHarvest'])]).' <span class="series-item-harvesting-weeks-year">'.date('Y', $eCultivation['harvesting']['lastHarvest']).'</span>';
-
 											$cultivations .= '<div class="series-item-harvesting-evolution color-muted">'.p("{value} semaine", "{value} semaines", $eCultivation['harvesting']['nHarvest']).'</div>';
-
-										} else {
-											$cultivations .= s("Semaine {value}", date('W', $eCultivation['harvesting']['firstHarvest'])).' <span class="series-item-harvesting-weeks-year">'.date('Y', $eCultivation['harvesting']['firstHarvest']).'</span>';
 										}
-
-
 									} else {
 										$cultivations .= '-';
 									}
@@ -1387,6 +1379,16 @@ class CultivationUi {
 		}
 
 		return $h;
+
+	}
+
+	public static function getHarvestInterval(string $first, string $last): string {
+
+		if($first !== $last) {
+			return s("Semaines {from} à {to}", ['from' => date('W', $first), 'to' => date('W', $last)]).', '.date('Y', $last);
+		} else {
+			return s("Semaine {value}", date('W', $first)).' '.date('Y', $first);
+		}
 
 	}
 

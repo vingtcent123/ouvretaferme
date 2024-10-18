@@ -44,4 +44,15 @@ new AdaptativeView('importCultivations', function($data, FarmTemplate $t) {
 	echo (new \series\CsvUi())->getImportCultivations($data->eFarm);
 
 });
+
+new AdaptativeView('importFile', function($data, FarmTemplate $t) {
+
+	$t->title = s("Importer un plan de culture");
+	$t->tab = 'settings';
+	$t->subNav = (new \farm\FarmUi())->getSettingsSubNav($data->eFarm);
+
+	echo '<h1>'.s("Importer un plan de culture").'</h1>';
+	echo (new \series\CsvUi())->getImportFile($data->cultivation, $data->cAction);
+
+});
 ?>

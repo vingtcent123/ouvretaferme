@@ -44,8 +44,11 @@
 		$data->eFarm = $data->e;
 
 		\farm\FarmerLib::register($data->eFarm);
-//d(\Cache::redis()->exists('import-cultivations-'.$data->e['id']));
-		throw new ViewAction($data);
+
+		$data->cAction = \farm\ActionLib::getByFarm($data->eFarm, fqn: [ACTION_SEMIS_DIRECT, ACTION_PLANTATION, ACTION_RECOLTE], index: 'fqn');
+		$data->cultivation = \series\CsvLib::importCultivations($data->eFarm);
+
+		throw new ViewAction($data, $data->cultivation ? ':importFile' : NULL);
 
 	})
 	->write('doImportCultivations', function($data) {

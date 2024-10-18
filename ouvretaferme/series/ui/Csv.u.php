@@ -3,6 +3,12 @@ namespace series;
 
 class CsvUi {
 
+	public function __construct() {
+
+		\Asset::css('series', 'csv.css');
+
+	}
+
 	public function getExportTasksHeader(): array {
 
 		return [
@@ -59,7 +65,7 @@ class CsvUi {
 			'block_spacing_plants',
 			'bed_length',
 			'bed_density',
-			'bed_number_rows',
+			'bed_rows',
 			'bed_spacing_plants',
 			'finished',
 			'harvest_unit',
@@ -76,37 +82,6 @@ class CsvUi {
 
 	}
 
-	public function getExportBrinjelHeader(): array {
-
-		return [
-			'family',
-			'crop',
-			'sowing_date',
-			'planting_date',
-			'first_harvest_date',
-			'last_harvest_date',
-			'length',
-			'rows',
-			'planting_type',
-			'variety',
-			'provider',
-			'finished',
-			'in_greenhouse',
-			'price_per_unit',
-			'spacing_plants',
-			'unit',
-			'yield_per_bed_meter',
-			'estimated_greenhouse_loss',
-			'seeds_per_gram',
-			'seeds_per_hole_seedling',
-			'seeds_per_hole_direct',
-			'seeds_extra_percentage',
-			'container_name',
-			'container_size'
-		];
-
-	}
-
 	public function getImportCultivations(\farm\Farm $eFarm): string {
 
 		$form = new \util\FormUi();
@@ -118,6 +93,105 @@ class CsvUi {
 				$h .= s("Importer un fichier CSV depuis mon ordinateur");
 			$h .= '</label>';
 		$h .= $form->close();
+
+		return $h;
+
+	}
+
+	public function getImportFile(array $cultivations, \Collection $cAction): string {
+
+		$h = '';
+
+		$h .= '<table class="tr-even tr-bordered">';
+
+			$h .= '<thead>';
+				$h .= '<tr>';
+					$h .= '<th colspan="2">'.s("Espèce").'</th>';
+					$h .= '<th></th>';
+					$h .= '<th>'.s("Saison").'</th>';
+					$h .= '<th>'.s("Implantation").'</th>';
+					$h .= '<th>'.s("Récolte").'</th>';
+				$h .= '</tr>';
+			$h .= '</thead>';
+			$h .= '<tbody>';
+
+				foreach($cultivations as $cultivation) {
+
+					$cPlant = $cultivation['cPlant'];
+					$hasError = FALSE;
+
+					$line = '<td class="td-min-content text-center">';
+						if($cPlant->count() === 1) {
+							$line .= \plant\PlantUi::getVignette($cPlant->first(), '1.5rem');
+						} else {
+							$hasError = TRUE;
+							$line .= '<span class="color-danger">'.\Asset::icon('exclamation-triangle').'</span>';
+						}
+					$line.= '</td>';
+					$line .= '<td>';
+						if($cPlant->empty()) {
+							$line .= $cultivation['species'];
+						} else if($cPlant->count() === 1) {
+							$ePlant = $cPlant->first();
+							$line .= encode($ePlant['name']);
+						}
+						$line .= 'UP';
+					$line.= '</td>';
+					$line .= '<td>';
+						$line .= match($cultivation['place']) {
+							Series::GREENHOUSE => \Asset::icon('greenhouse'),
+							Series::MIX => \Asset::icon('mix'),
+							default => ''
+						};
+					$line.= '</td>';
+					$line .= '<td>';
+						$line .= $cultivation['season'].'UP';
+					$line.= '</td>';
+					$line .= '<td>';
+
+						switch($cultivation['planting_type']) {
+
+							case Cultivation::SOWING :
+								$eAction = $cAction[ACTION_SEMIS_DIRECT];
+								$line .= '<span style="color: '.$eAction['color'].'" title="'.encode($eAction['name']).'">'.\util\DateUi::numeric($cultivation['sowing_date']).'</span>';
+								break;
+
+							case Cultivation::YOUNG_PLANT_BOUGHT :
+							case Cultivation::YOUNG_PLANT :
+								$eAction = $cAction[ACTION_PLANTATION];
+								$line .= '<span style="color: '.$eAction['color'].'" title="'.encode($eAction['name']).'">'.\util\DateUi::numeric($cultivation['planting_date']).'</span>';
+								break;
+
+						}
+
+					$line.= '</td>';
+					$line .= '<td>';
+
+						if($cultivation['first_harvest_date']) {
+
+							$eAction = $cAction[ACTION_RECOLTE];
+
+							$line .= '<span style="color: '.$eAction['color'].'">';
+								if($cultivation['first_harvest_date'] === $cultivation['last_harvest_date']) {
+									$line .= \util\DateUi::numeric($cultivation['first_harvest_date']);
+								} else {
+									$line .= s("{first} → {last}", ['first' => \util\DateUi::numeric($cultivation['first_harvest_date']), 'last' => \util\DateUi::numeric($cultivation['last_harvest_date'])]);
+								}
+							$line .= '</span>';
+
+						}
+
+					$line.= '</td>';
+
+					$h .= '<tr class="'.($hasError ? 'csv-error' : '').'">';
+						$h .= $line;
+					$h .= '</tr>';
+
+				}
+
+			$h .= '</tbody>';
+
+		$h .= '</table>';
 
 		return $h;
 

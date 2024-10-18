@@ -750,8 +750,7 @@ span.series-item-planning-details-variety {
 	margin-left: 0.5rem;
 }
 
-span.series-item-planning-details-variety,
-span.series-item-harvesting-weeks-year {
+span.series-item-planning-details-variety {
 	color: var(--muted);
 	line-height: 1.2;
 	font-size: 0.9rem;

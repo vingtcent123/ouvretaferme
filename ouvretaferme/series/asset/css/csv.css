@@ -1,0 +1,4 @@
+tr.csv-error {
+	color: var(--danger);
+	font-weight: bold;
+}

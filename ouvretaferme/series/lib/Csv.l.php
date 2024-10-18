@@ -271,21 +271,185 @@ class CsvLib {
 
 		$header = $csv[0];
 
-		if(count(array_intersect($header, ['series_name', 'season', 'place', 'species', 'use'])) === 5) {
-			$source = 'ouvretaferme';
-		} else if(count(array_intersect($header, ['family', 'crop', 'in_greenhouse'])) === 3) {
-			$source = 'brinjel';
-		} else {
+		if(count(array_intersect($header, ['crop', 'in_greenhouse'])) === 2) {
+			$csv = self::convertFromBrinjel($eFarm, $csv);
+		} else if(count(array_intersect($header, ['series_name', 'season', 'place', 'species', 'use'])) !== 5) {
+			dd('faire un tableau associatif');
 			\Fail::log('csvSource');
 			return FALSE;
 		}
 
-		\Cache::redis()->set('import-cultivations-'.$eFarm['id'], [
-			'source' => $source,
-			'data' => $csv
-		]);
+		\Cache::redis()->set('import-cultivations-'.$eFarm['id'], $csv);
 
 		return TRUE;
+
+	}
+
+	public static function convertFromBrinjel(\farm\Farm $eFarm, array $cultivations): array {
+
+		$import = [];
+
+		$head = array_shift($cultivations);
+
+		foreach($cultivations as $cultivation) {
+
+			$line = array_combine($head, $cultivation);
+
+			$sowing = $line['sowing_date'] ?? NULL;
+			$planting = $line['planting_date'] ?? NULL;
+
+			// planting_type
+			$plantingType = match($line['planting_type'] ?? NULL) {
+				'direct_seeded' => Cultivation::SOWING,
+				'transplant_raised' => Cultivation::YOUNG_PLANT,
+				'transplant_bought' => Cultivation::YOUNG_PLANT_BOUGHT,
+				default => NULL
+			};
+
+			if($plantingType === NULL) {
+
+				if($sowing !== NULL and $planting === NULL) {
+					$plantingType = Cultivation::SOWING;
+				} else if($sowing !== NULL and $planting !== NULL) {
+					$plantingType = Cultivation::YOUNG_PLANT_BOUGHT;
+				} else if($sowing === NULL and $planting !== NULL) {
+					$plantingType = Cultivation::YOUNG_PLANT;
+				}
+
+			}
+
+			// first_harvest_date et last_harvest_date
+			$firstHarvestDate = $line['first_harvest_date'] ?? NULL;
+			$lastHarvestDate = $line['last_harvest_date'] ?? NULL;
+
+			if(
+				$firstHarvestDate === NULL or
+				$lastHarvestDate === NULL
+			) {
+				$firstHarvestDate = NULL;
+				$lastHarvestDate = NULL;
+			}
+
+			$season = (int)substr($firstHarvestDate ?? $planting ?? $sowing ?? currentDate(), 0, 4);
+
+			$import[] = [
+				'season' => $season,
+				'series_id' => NULL,
+				'series_name' => NULL,
+				'place' => ($cultivation['in_greenhouse'] ?? FALSE) ? Series::GREENHOUSE : Series::OUTDOOR,
+				'species' => $line['crop'] ?? NULL,
+				'planting_type' => $plantingType,
+				'young_plants_seeds' => $line['seeds_per_hole_seedling'] ?? $line['seeds_per_hole_direct'] ?? NULL,
+				'young_plants_tray' => $line['container_name'] ?? NULL,
+				'young_plants_tray_size' => $line['container_size'] ?? NULL,
+				'sowing_date' => $sowing,
+				'planting_date' => $planting,
+				'first_harvest_date' => $firstHarvestDate,
+				'last_harvest_date' => $lastHarvestDate,
+				'use' => Series::BED,
+				'blockArea' => NULL,
+				'blockDensity' => NULL,
+				'blockSpacingRows' => NULL,
+				'blockSpacingPlants' => NULL,
+				'bedLength' => $line['length'] ?? NULL,
+				'bedDensity' => NULL,
+				'bedRows' => $line['rows'] ?? NULL,
+				'bedSpacingPlants' => $line['spacing_plants'] ?? NULL,
+				'finished' => ($line['finished'] ?? FALSE) === TRUE,
+				'harvest_unit' => $line['unit'] ?? NULL,
+				'yield_expected_area' => NULL,
+				'yield_expected_length' => $line['yield_per_bed_meter'] ?? NULL,
+				'yield_got' => NULL,
+				'varieties' => isset($line['variety']) ? [$line['variety'] => 100] : []
+			];
+
+		}
+
+		return $import;
+
+	}
+
+	public static function importCultivations(\farm\Farm $eFarm): ?array {
+
+		$cultivations = \Cache::redis()->get('import-cultivations-'.$eFarm['id']);
+
+		if($cultivations === FALSE) {
+			return NULL;
+		}
+
+		$cachePlants = [];
+
+		foreach($cultivations as $key => $cultivation) {
+
+			$errors = [];
+			$warnings = [];
+
+			if($cultivation['species'] === NULL) {
+				// Erreur à gérer
+				continue;
+			}
+
+			$plant = $cultivation['species'];
+			$plantFqn = toFqn($plant);
+
+			if(empty($cachePlants[$plant])) {
+
+				// crop
+				$cPlant = \plant\PlantLib::getFromQuery($plant, $eFarm, properties: ['id', 'vignette', 'fqn', 'name']);
+
+				if($cPlant->count() > 1) {
+
+					$ePlantSelected = $cPlant->find(fn($ePlant) => $ePlant['fqn'] === toFqn($plantFqn), limit: 1);
+
+					if($ePlantSelected->notEmpty()) {
+						$cPlant = new \Collection([$ePlantSelected]);
+					}
+
+				}
+
+				$cachePlants[$plant] = $cPlant;
+
+			}
+
+			$cultivations[$key]['cPlant'] = $cachePlants[$plant];
+/*
+			// sowing_date
+			$sowing = self::getDateField('sowingDate', $cultivation, $headSowingDate, $warnings);
+
+			// planting_date
+			$planting = self::getDateField('plantingDate', $cultivation, $headPlantingDate, $warnings);
+
+			// first_harvest_date et last_harvest_date
+			$firstHarvestDate = self::getDateField('firstHarvestDate', $cultivation, $headFirstHarvestDate, $warnings);
+			$lastHarvestDate = self::getDateField('lastHarvestDate', $cultivation, $headLastHarvestDate, $warnings);
+
+			if(
+				$firstHarvestDate === NULL or
+				$lastHarvestDate === NULL or
+				$firstHarvestDate > $lastHarvestDate
+			) {
+				$firstHarvestDate = NULL;
+				$lastHarvestDate = NULL;
+			}
+*/
+		}
+
+		return $cultivations;
+
+	}
+
+	private static function getDateField(string $variable, array $cultivation, ?int $key, array &$issues) {
+
+		if($key !== NULL) {
+			if(\Filter::check('date', $cultivation[$key])) {
+				return $cultivation[$key];
+			} else {
+				$issues[] = $variable;
+				return NULL;
+			}
+		} else {
+			return NULL;
+		}
 
 	}
 
