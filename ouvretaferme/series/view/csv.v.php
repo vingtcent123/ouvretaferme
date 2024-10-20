@@ -37,6 +37,7 @@ new AdaptativeView('importCultivations', function($data, FarmTemplate $t) {
 			echo '<li>'.s("Dans la section <b>Données de la ferme</b>, téléchargez le <b>Plan de culture seul</b>").'</li>';
 		echo '</ul>';
 		echo '<p>'.s("Pour importer vos données depuis Qrop, vous devez d'abord importer vos données de Qrop vers Brinjel, puis ensuite utiliser le mode opératoire ci-dessus pour importer vos données de Brinjel vers {siteName}.").'</p>';
+		echo '<p>'.s("Notez que vous aurez probablement des corrections à faire dans le fichier CSV issu de Brinjel, notamment au niveau des unités de récolte ou des espèces. {siteName} vous fera un rapport des modifications à effectuer après chargement de votre fichier.").'</p>';
 		echo '<p>';
 			echo '<a href="https://app.brinjel.com/" class="btn btn-secondary" target="_blank">'.s("Aller sur Brinjel").'</a> ';
 		echo '</p>';
@@ -52,7 +53,7 @@ new AdaptativeView('importFile', function($data, FarmTemplate $t) {
 	$t->subNav = (new \farm\FarmUi())->getSettingsSubNav($data->eFarm);
 
 	echo '<h1>'.s("Importer un plan de culture").'</h1>';
-	echo (new \series\CsvUi())->getImportFile($data->cultivation, $data->cAction);
+	echo (new \series\CsvUi())->getImportFile($data->eFarm, $data->data, $data->cAction);
 
 });
 ?>

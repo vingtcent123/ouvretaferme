@@ -45,17 +45,21 @@
 
 		\farm\FarmerLib::register($data->eFarm);
 
-		$data->cAction = \farm\ActionLib::getByFarm($data->eFarm, fqn: [ACTION_SEMIS_DIRECT, ACTION_PLANTATION, ACTION_RECOLTE], index: 'fqn');
-		$data->cultivation = \series\CsvLib::importCultivations($data->eFarm);
+		if(get_exists('reset')) {
+			\series\CsvLib::reset($data->eFarm);
+		}
 
-		throw new ViewAction($data, $data->cultivation ? ':importFile' : NULL);
+		$data->cAction = \farm\ActionLib::getByFarm($data->eFarm, fqn: [ACTION_SEMIS_DIRECT, ACTION_SEMIS_PEPINIERE, ACTION_PLANTATION, ACTION_RECOLTE], index: 'fqn');
+		$data->data = \series\CsvLib::import($data->eFarm);
+
+		throw new ViewAction($data, $data->data ? ':importFile' : NULL);
 
 	})
 	->write('doImportCultivations', function($data) {
 
 		$fw = new FailWatch();
 
-		\series\CsvLib::saveCultivations($data->e);
+		\series\CsvLib::uploadCultivations($data->e);
 
 		if($fw->ok()) {
 			throw new RedirectAction('/series/csv:importCultivations?id='.$data->e['id']);

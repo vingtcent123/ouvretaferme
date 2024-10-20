@@ -833,11 +833,6 @@ tbody .td-checkbox > label {
 	text-decoration: underline;
 }
 
-.util-danger a:not(.btn) {
-	color: white;
-	text-decoration: underline;
-}
-
 @media (max-width: 449px) {
 
 	.util-overflow-xs {
@@ -1411,11 +1406,23 @@ td.util-manage-vignette {
 .color-success {
 	color: var(--success) !important;
 }
+.color-success a {
+	color: var(--success) !important;
+	text-decoration: underline;
+}
 .color-danger {
 	color: var(--danger) !important;
 }
+.color-danger a {
+	color: var(--danger) !important;
+	text-decoration: underline;
+}
 .color-warning {
 	color: var(--warning) !important;
+}
+.color-warning a {
+	color: var(--warning) !important;
+	text-decoration: underline;
 }
 .color-muted {
 	color: var(--muted) !important;

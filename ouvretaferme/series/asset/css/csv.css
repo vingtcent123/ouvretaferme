@@ -1,4 +1,11 @@
 tr.csv-error {
-	color: var(--danger);
-	font-weight: bold;
+	border-top: 2px solid var(--danger);
+	border-left: 2px solid var(--danger);
+	border-right: 2px solid var(--danger);
+}
+
+tr.csv-error + tr {
+	border-bottom: 2px solid var(--danger);
+	border-left: 2px solid var(--danger);
+	border-right: 2px solid var(--danger);
 }
