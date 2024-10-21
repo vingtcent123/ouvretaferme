@@ -78,7 +78,7 @@ Sequence:
   use: enum(BED, BLOCK)
   bedWidth: ?int16(1, null)
   alleyWidth: ?int16(1, null)
-  mode: enum(GREENHOUSE, OUTDOOR, MIX) = OUTDOOR
+  mode: enum(GREENHOUSE, OPEN_FIELD, MIX) = OPEN_FIELD
   comment: ?editor16
   visibility: enum(PRIVATE, PUBLIC) = PRIVATE
   createdAt: datetime = SPECIAL(now)

@@ -11,7 +11,7 @@ abstract class SeriesElement extends \Element {
 	const BLOCK = 'block';
 
 	const GREENHOUSE = 'greenhouse';
-	const OUTDOOR = 'outdoor';
+	const OPEN_FIELD = 'open-field';
 	const MIX = 'mix';
 
 	const ANNUAL = 'annual';
@@ -58,7 +58,7 @@ class SeriesModel extends \ModuleModel {
 			'farm' => ['element32', 'farm\Farm', 'cast' => 'element'],
 			'season' => ['int16', 'min' => 0, 'max' => NULL, 'cast' => 'int'],
 			'use' => ['enum', [\series\Series::BED, \series\Series::BLOCK], 'cast' => 'enum'],
-			'mode' => ['enum', [\series\Series::GREENHOUSE, \series\Series::OUTDOOR, \series\Series::MIX], 'cast' => 'enum'],
+			'mode' => ['enum', [\series\Series::GREENHOUSE, \series\Series::OPEN_FIELD, \series\Series::MIX], 'cast' => 'enum'],
 			'plants' => ['int8', 'min' => 1, 'max' => NULL, 'cast' => 'int'],
 			'area' => ['int24', 'min' => 1, 'max' => NULL, 'null' => TRUE, 'cast' => 'int'],
 			'areaPermanent' => ['int24', 'min' => 1, 'max' => NULL, 'null' => TRUE, 'cast' => 'int'],
@@ -109,7 +109,7 @@ class SeriesModel extends \ModuleModel {
 		switch($property) {
 
 			case 'mode' :
-				return Series::OUTDOOR;
+				return Series::OPEN_FIELD;
 
 			case 'createdAt' :
 				return new \Sql('NOW()');

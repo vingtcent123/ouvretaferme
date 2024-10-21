@@ -14,7 +14,7 @@ abstract class SequenceElement extends \Element {
 	const BLOCK = 'block';
 
 	const GREENHOUSE = 'greenhouse';
-	const OUTDOOR = 'outdoor';
+	const OPEN_FIELD = 'open-field';
 	const MIX = 'mix';
 
 	const PRIVATE = 'private';
@@ -64,7 +64,7 @@ class SequenceModel extends \ModuleModel {
 			'use' => ['enum', [\production\Sequence::BED, \production\Sequence::BLOCK], 'cast' => 'enum'],
 			'bedWidth' => ['int16', 'min' => 1, 'max' => NULL, 'null' => TRUE, 'cast' => 'int'],
 			'alleyWidth' => ['int16', 'min' => 1, 'max' => NULL, 'null' => TRUE, 'cast' => 'int'],
-			'mode' => ['enum', [\production\Sequence::GREENHOUSE, \production\Sequence::OUTDOOR, \production\Sequence::MIX], 'cast' => 'enum'],
+			'mode' => ['enum', [\production\Sequence::GREENHOUSE, \production\Sequence::OPEN_FIELD, \production\Sequence::MIX], 'cast' => 'enum'],
 			'comment' => ['editor16', 'null' => TRUE, 'cast' => 'string'],
 			'visibility' => ['enum', [\production\Sequence::PRIVATE, \production\Sequence::PUBLIC], 'cast' => 'enum'],
 			'createdAt' => ['datetime', 'cast' => 'string'],
@@ -95,7 +95,7 @@ class SequenceModel extends \ModuleModel {
 				return \user\ConnectionLib::getOnline();
 
 			case 'mode' :
-				return Sequence::OUTDOOR;
+				return Sequence::OPEN_FIELD;
 
 			case 'visibility' :
 				return Sequence::PRIVATE;

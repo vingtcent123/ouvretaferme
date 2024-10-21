@@ -150,7 +150,7 @@ class GreenhouseLib extends GreenhouseCrud {
 			if($e['plot']['zoneFill'] === FALSE) {
 
 				Plot::model()->update($e['plot'], [
-					'mode' => Plot::OUTDOOR
+					'mode' => Plot::OPEN_FIELD
 				]);
 
 			}

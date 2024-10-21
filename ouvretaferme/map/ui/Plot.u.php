@@ -94,7 +94,7 @@ class PlotUi {
 									$h .= ' <a data-dropdown="bottom-end" class="dropdown-toggle btn btn-primary">'.\Asset::icon('gear-fill').'</a>';
 									$h .= '<div class="dropdown-list bg-primary">';
 										$h .= '<div class="dropdown-title">'.encode($ePlot['name']).'</div>';
-										if($ePlot['mode'] === Plot::OUTDOOR) {
+										if($ePlot['mode'] === Plot::OPEN_FIELD) {
 											$h .= '<a href="/map/greenhouse:create?farm='.$eZone['farm']['id'].'&plot='.$ePlot['id'].'" class="dropdown-item">'.s("Couvrir le bloc avec un abri").'</a>';
 											$h .= '<div class="dropdown-divider"></div>';
 										}
@@ -174,7 +174,7 @@ class PlotUi {
 		$ePlot = new Plot([
 			'zone' => $eZone,
 			'farm' => $eZone['farm'],
-			'mode' => Plot::OUTDOOR
+			'mode' => Plot::OPEN_FIELD
 		]);
 
 		$h = '';
@@ -269,7 +269,7 @@ class PlotUi {
 
 		$h = $form->dynamicGroup($ePlot, 'mode');
 
-		$h .= '<div id="plot-mode-greenhouse" class="util-block-gradient '.($ePlot['mode'] === Plot::OUTDOOR ? 'hide' : '').'">';
+		$h .= '<div id="plot-mode-greenhouse" class="util-block-gradient '.($ePlot['mode'] === Plot::OPEN_FIELD ? 'hide' : '').'">';
 			$h .= $form->group(content: '<p class="util-info">'.s("L'abri couvrira automatiquement toutes les planches que vous ajouterez ultérieurement à ce bloc. Indiquez ci-dessous ses dimensions.").'</p>');
 			$h .= $form->dynamicGroups($eGreenhouse, ['length', 'width']);
 		$h .= '</div>';
@@ -366,7 +366,7 @@ class PlotUi {
 			case 'mode' :
 				$d->values = [
 					Plot::GREENHOUSE => s("Oui"),
-					Plot::OUTDOOR => s("Non"),
+					Plot::OPEN_FIELD => s("Non"),
 				];
 				$d->attributes = [
 					'data-action' => 'plot-mode-change',

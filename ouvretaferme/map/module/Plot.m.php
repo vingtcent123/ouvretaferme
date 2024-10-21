@@ -8,7 +8,7 @@ abstract class PlotElement extends \Element {
 	private static ?PlotModel $model = NULL;
 
 	const GREENHOUSE = 'greenhouse';
-	const OUTDOOR = 'outdoor';
+	const OPEN_FIELD = 'open-field';
 
 	public static function getSelection(): array {
 		return Plot::model()->getProperties();
@@ -44,7 +44,7 @@ class PlotModel extends \ModuleModel {
 			'farm' => ['element32', 'farm\Farm', 'cast' => 'element'],
 			'zone' => ['element32', 'map\Zone', 'cast' => 'element'],
 			'zoneFill' => ['bool', 'cast' => 'bool'],
-			'mode' => ['enum', [\map\Plot::GREENHOUSE, \map\Plot::OUTDOOR], 'cast' => 'enum'],
+			'mode' => ['enum', [\map\Plot::GREENHOUSE, \map\Plot::OPEN_FIELD], 'cast' => 'enum'],
 			'area' => ['int32', 'min' => 1, 'max' => NULL, 'cast' => 'int'],
 			'coordinates' => ['polygon', 'null' => TRUE, 'cast' => 'json'],
 			'seasonFirst' => ['int16', 'min' => 0, 'max' => NULL, 'null' => TRUE, 'cast' => 'int'],
@@ -79,7 +79,7 @@ class PlotModel extends \ModuleModel {
 				return FALSE;
 
 			case 'mode' :
-				return Plot::OUTDOOR;
+				return Plot::OPEN_FIELD;
 
 			case 'createdAt' :
 				return new \Sql('NOW()');

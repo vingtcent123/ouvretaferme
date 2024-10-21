@@ -55,7 +55,7 @@ class Plot extends PlotElement {
 
 				$this->expects(['mode']);
 
-				if($this['mode'] === Plot::OUTDOOR) {
+				if($this['mode'] === Plot::OPEN_FIELD) {
 					return TRUE;
 				}
 

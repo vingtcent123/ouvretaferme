@@ -63,7 +63,7 @@ Plot:
   farm: farm\Farm
   zone: map\Zone
   zoneFill: bool = FALSE
-  mode: enum(GREENHOUSE, OUTDOOR) = OUTDOOR
+  mode: enum(GREENHOUSE, OPEN_FIELD) = OPEN_FIELD
   area: int32(1, null)
   coordinates: ?polygon
   seasonFirst: ?int16(0, null)

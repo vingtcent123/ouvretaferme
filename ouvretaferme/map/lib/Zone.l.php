@@ -107,7 +107,7 @@ class ZoneLib extends ZoneCrud {
 
 					if(
 						($filterMode === Plot::GREENHOUSE and $eBed['greenhouse']->empty()) or
-						($filterMode === Plot::OUTDOOR and $eBed['greenhouse']->notEmpty())
+						($filterMode === Plot::OPEN_FIELD and $eBed['greenhouse']->notEmpty())
 					) {
 
 						$cBed[$key]['ignore'] = TRUE;

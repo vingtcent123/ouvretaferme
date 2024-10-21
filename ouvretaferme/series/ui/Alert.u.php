@@ -13,6 +13,7 @@ class AlertUi {
 
 			'csvSize' => s("Votre plan de culture ne peut pas excéder 1 Mo, merci de réduire la taille de votre fichier."),
 			'csvSource' => s("Le fichier que vous avez envoyé n'est pas reconnu, vérifiez qu'il respecte bien le format demandé."),
+			'csvVariety' => s("Dans votre fichier CSV, chaque colonne <i>variety_name</i> doit être suivie par une colonne <i>variety_part</i>."),
 
 			'Series::plantsCheck' => s("Veuillez sélectionner au moins une espèce !"),
 			'Series::perennialLifetime.consistency' => s("La durée de vie de la culture ne peut pas être réduite autant car elle a été mise en place depuis plus longtemps"),

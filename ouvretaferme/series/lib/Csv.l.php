@@ -201,19 +201,16 @@ class CsvLib {
 				$eSeries['season'],
 				$eSeries['id'],
 				$eSeries['name'],
-				match($eSeries['mode']) {
-					Series::OUTDOOR => 'open-field',
-					default => $eSeries['mode']
-				},
+				$eSeries['mode'],
+				$eSeries['use'],
 				$eCultivation['plant']['name'],
-				($eCultivation['seedling'] !== NULL) ? str_replace('-', '_', $eCultivation['seedling']) : NULL,
+				($eCultivation['seedling'] !== NULL) ? $eCultivation['seedling'] : NULL,
 				($eCultivation['seedling'] === Cultivation::YOUNG_PLANT) ? $eCultivation['seedlingSeeds'] : NULL,
 				$youngPlantTray,
 				$sowingDate,
 				$plantingDate,
 				$minHarvestDate,
 				$maxHarvestDate,
-				$eSeries['use'],
 				($eSeries['use'] === Series::BLOCK) ? $eSeries['area'] ?? $eSeries['areaTarget'] ?? NULL : NULL,
 				($eSeries['use'] === Series::BLOCK and $eCultivation['distance'] === Cultivation::DENSITY) ? $eCultivation['density'] : NULL,
 				($eSeries['use'] === Series::BLOCK and $eCultivation['distance'] === Cultivation::SPACING) ? $eCultivation['rowSpacing'] : NULL,
@@ -271,10 +268,14 @@ class CsvLib {
 
 		$header = $csv[0];
 
-		if(count(array_intersect($header, ['crop', 'in_greenhouse'])) === 2) {
-			$csv = self::convertFromBrinjel($eFarm, $csv);
-		} else if(count(array_intersect($header, ['series_name', 'season', 'place', 'species', 'use'])) !== 5) {
-			dd('faire un tableau associatif');
+		if(count(array_intersect($header, ['crop', 'in_greenhouse', 'planting_type', 'unit'])) === 4) {
+			$csv = self::convertFromBrinjel($csv);
+		} else if(count(array_intersect($header, ['series_name', 'season', 'place', 'species', 'use', 'planting_type', 'harvest_unit'])) === 7) {
+			$csv = self::convertFromOtf($csv);
+			if($csv === NULL) {
+				return FALSE;
+			}
+		} else {
 			\Fail::log('csvSource');
 			return FALSE;
 		}
@@ -285,7 +286,7 @@ class CsvLib {
 
 	}
 
-	public static function convertFromBrinjel(\farm\Farm $eFarm, array $cultivations): array {
+	public static function convertFromBrinjel(array $cultivations): array {
 
 		$import = [];
 
@@ -293,7 +294,37 @@ class CsvLib {
 
 		foreach($cultivations as $cultivation) {
 
-			$line = array_combine($head, $cultivation);
+			if(count($cultivation) < count($head)) {
+				$cultivation = array_merge($cultivation, array_fill(0, count($head) - count($cultivation), ''));
+			} else if(count($head) < count($cultivation)) {
+				$cultivation = array_slice(0, count($head));
+			}
+
+			$line = array_combine($head, $cultivation) + [
+				'crop' => '',
+				'sowing_date' => '',
+				'planting_date' => '',
+				'first_harvest_date' => '',
+				'last_harvest_date' => '',
+				'length' => '',
+				'rows' => '',
+				'planting_type' => '',
+				'variety' => '',
+				'provider' => '',
+				'finished' => '',
+				'in_greenhouse' => '',
+				'price_per_unit' => '',
+				'spacing_plants' => '',
+				'unit' => '',
+				'yield_per_bed_meter' => '',
+				'estimated_greenhouse_loss' => '',
+				'seeds_per_gram' => '',
+				'seeds_per_hole_seedling' => '',
+				'seeds_per_hole_direct' => '',
+				'seeds_extra_percentage' => '',
+				'container_name' => '',
+				'container_size' => ''
+			];
 
 			$sowing = $line['sowing_date'] ?: NULL;
 			$planting = $line['planting_date'] ?: NULL;
@@ -318,38 +349,26 @@ class CsvLib {
 
 			}
 
-			// first_harvest_date et last_harvest_date
-			$firstHarvestDate = $line['first_harvest_date'] ?: NULL;
-			$lastHarvestDate = $line['last_harvest_date'] ?: NULL;
-
-			if(
-				$firstHarvestDate === NULL or
-				$lastHarvestDate === NULL
-			) {
-				$firstHarvestDate = NULL;
-				$lastHarvestDate = NULL;
-			}
-
 			$season = (int)substr($firstHarvestDate ?? $planting ?? $sowing ?? currentDate(), 0, 4);
 
 			$import[] = [
 				'series' => [
-					'name' => NULL
+					'season' => $season,
+					'name' => NULL,
+					'place' => (($line['in_greenhouse'] ?? 'false') === 'true') ? Series::GREENHOUSE : Series::OPEN_FIELD,
+					'use' => Series::BED,
 				],
 				'cultivations' => [
 					[
-						'season' => $season,
-						'place' => (($line['in_greenhouse'] ?? 'false') === 'true') ? Series::GREENHOUSE : Series::OUTDOOR,
 						'species' => $line['crop'] ?? NULL,
 						'planting_type' => $plantingType,
-						'young_plants_seeds' => $line['seeds_per_hole_seedling'] ?? $line['seeds_per_hole_direct'] ?? NULL,
-						'young_plants_tray' => $line['container_name'] ?? NULL,
-						'young_plants_tray_size' => $line['container_size'] ?? NULL,
+						'young_plants_seeds' => $line['seeds_per_hole_seedling'] ? (int)$line['seeds_per_hole_seedling'] : NULL,
+						'young_plants_tray' => $line['container_name'] ?: NULL,
+						'young_plants_tray_size' => $line['container_size'] ?: NULL,
 						'sowing_date' => $sowing,
 						'planting_date' => $planting,
-						'first_harvest_date' => $firstHarvestDate,
-						'last_harvest_date' => $lastHarvestDate,
-						'use' => Series::BED,
+						'first_harvest_date' => $line['first_harvest_date'] ?: NULL,
+						'last_harvest_date' => $line['last_harvest_date'] ?: NULL,
 						'block_area' => NULL,
 						'block_density' => NULL,
 						'block_spacing_rows' => NULL,
@@ -361,10 +380,159 @@ class CsvLib {
 						'finished' => (($line['finished'] ?? 'false') === 'true'),
 						'harvest_unit' => $line['unit'] ?: NULL,
 						'yield_expected_area' => NULL,
-						'yield_expected_length' => $line['yield_per_bed_meter'] ?? NULL,
-						'varieties' => isset($line['variety']) ? [['variety' => $line['variety'], 'part' => 100]] : []
+						'yield_expected_length' => $line['yield_per_bed_meter'] ? (float)$line['yield_per_bed_meter'] : NULL,
+						'varieties' => $line['variety'] ? [['variety' => $line['variety'], 'part' => 100]] : []
 					]
 				]
+			];
+
+		}
+
+		return $import;
+
+	}
+
+	public static function convertFromOtf(array $cultivations): ?array {
+
+		$import = [];
+
+		$head = array_shift($cultivations);
+
+		// Recherche des colonnes liées aux variétés
+		$varietiesIndex = [];
+
+		foreach($head as $index => $column) {
+
+			if($column !== 'variety_name') {
+				continue;
+			}
+
+			if(
+				array_key_exists($index + 1, $head) === FALSE or
+				$head[$index + 1] !== 'variety_part'
+			) {
+				\Fail::log('csvVariety');
+				return NULL;
+			}
+
+			$varietiesIndex[] = $index;
+
+		}
+
+		$seriesIndex = [];
+
+		foreach($cultivations as $cultivation) {
+
+			if(count($cultivation) < count($head)) {
+				$cultivation = array_merge($cultivation, array_fill(0, count($head) - count($cultivation), ''));
+			} else if(count($head) < count($cultivation)) {
+				$cultivation = array_slice(0, count($head));
+			}
+
+			$line = array_combine($head, $cultivation) + [
+				'season' => '',
+				'series_name' => '',
+				'place' => '',
+				'use' => '',
+				'species' => '',
+				'planting_type' => '',
+				'young_plants_seeds' => '',
+				'young_plants_tray' => '',
+				'sowing_date' => '',
+				'planting_date' => '',
+				'first_harvest_date' => '',
+				'last_harvest_date' => '',
+				'block_area' => '',
+				'block_density' => '',
+				'block_spacing_rows' => '',
+				'block_spacing_plants' => '',
+				'bed_length' => '',
+				'bed_density' => '',
+				'bed_rows' => '',
+				'bed_spacing_plants' => '',
+				'finished' => '',
+				'harvest_unit' => '',
+				'yield_expected_area' => '',
+			];
+
+			$varieties = [];
+
+			foreach($varietiesIndex as $varietyIndex) {
+
+				if($cultivation[$varietyIndex]) {
+
+					$varieties[] = [
+						'variety' => $cultivation[$varietyIndex],
+						'part' => $cultivation[$varietyIndex + 1],
+					];
+
+				}
+
+			}
+
+			$season = (int)($line['season'] ?: date('Y'));
+			$seriesName = $line['series_name'] ?: NULL;
+
+			if($seriesName) {
+
+				if(array_key_exists($seriesName, $seriesIndex)) {
+					$index = $seriesIndex[$seriesName];
+				} else {
+
+					$index = count($import);
+					$seriesIndex[$seriesName] = $index;
+
+					$import[$index] = [
+						'series' => [
+							'season' => $season,
+							'name' => $seriesName,
+							'place' => $line['place'] ?: NULL,
+							'use' => $line['use'] ?: NULL,
+						],
+						'cultivations' => []
+					];
+
+				}
+
+			} else {
+
+				$index = count($import);
+
+				$import[$index] = [
+					'series' => [
+						'season' => $season,
+						'name' => NULL,
+						'place' => $line['place'] ?: NULL,
+						'use' => $line['use'] ?: NULL,
+					],
+					'cultivations' => []
+				];
+
+			}
+
+			$import[$index]['cultivations'][] = [
+				'species' => $line['species'] ?? NULL,
+				'planting_type' => $line['planting_type'] ?: NULL,
+				'young_plants_seeds' => $line['young_plants_seeds'] ?: NULL,
+				'young_plants_tray' => $line['young_plants_tray'] ?: NULL,
+				'young_plants_tray_size' => NULL,
+				'sowing_date' => $line['sowing_date'] ?: NULL,
+				'planting_date' => $line['planting_date'] ?: NULL,
+				'first_harvest_date' => $line['first_harvest_date'] ?: NULL,
+				'last_harvest_date' => $line['last_harvest_date'] ?: NULL,
+				'block_area' => $line['block_area'] ? (int)$line['block_area'] : NULL,
+				'block_density' => $line['block_density'] ? (float)$line['block_density'] : NULL,
+				'block_spacing_rows' => $line['block_spacing_rows'] ? (int)$line['block_spacing_rows'] : NULL,
+				'block_spacing_plants' => $line['block_spacing_plants'] ? (int)$line['block_spacing_plants'] : NULL,
+				'bed_length' => $line['bed_length'] ? (int)$line['bed_length'] : NULL,
+				'bed_density' => $line['bed_density'] ? (float)$line['bed_density'] : NULL,
+				'bed_rows' => $line['bed_rows'] ? (int)$line['bed_rows'] : NULL,
+				'bed_spacing_plants' => $line['bed_spacing_plants'] ? (int)$line['bed_spacing_plants'] : NULL,
+				'finished' => (($line['finished'] ?? 'false') === 'true'),
+				'harvest_unit' => $line['harvest_unit'] ?: NULL,
+				'yield_expected_area' => $line['yield_expected_area'] ? (float)$line['yield_expected_area'] : NULL,
+				'yield_expected_length' => NULL,
+				'varieties' => $varieties
 			];
 
 		}
@@ -399,12 +567,23 @@ class CsvLib {
 
 		$cachePlants = [];
 		$cacheVarieties = [];
+		$cacheTools = [];
 
 		foreach($import as $key1 => ['series' => $series, 'cultivations' => $cultivations]) {
 
+			$errorsCommon = [];
+
+			if(in_array($series['place'], Series::model()->getPropertyEnum('mode')) === FALSE) {
+				$errorsCommon[] = 'placeInvalid';
+			}
+
+			if(in_array($series['use'], Series::model()->getPropertyEnum('use')) === FALSE) {
+				$errorsCommon[] = 'useInvalid';
+			}
+
 			foreach($cultivations as $key2 => $cultivation) {
 
-				$errors = [];
+				$errors = $errorsCommon;
 
 				if($cultivation['species'] === NULL) {
 					$errors[] = 'speciesEmpty';
@@ -412,14 +591,14 @@ class CsvLib {
 				}
 
 				// crop
-				$plantFqn = toFqn($cultivation['species']);
+				$plantFqn = toFqn($cultivation['species'], ' ');
 
 				if(empty($cachePlants[$plantFqn])) {
 
 					$cachePlants[$plantFqn] = \plant\Plant::model()
 						->select(['id', 'vignette', 'fqn', 'name'])
 						->whereFarm($eFarm)
-						->where('REGEXP_REPLACE(REPLACE(name, "-", " "), " +", " ") = '.\plant\Plant::model()->format(str_replace('-', ' ', $plantFqn)))
+						->where('REGEXP_REPLACE(REPLACE(name, "-", " "), " +", " ") = '.\plant\Plant::model()->format($plantFqn))
 						->get();
 
 				}
@@ -433,13 +612,12 @@ class CsvLib {
 				}
 
 				// varieties
-				foreach($cultivation['varieties'] as $key => ['variety' => $variety, 'part' => $part]) {
+				foreach($cultivation['varieties'] as $key3 => ['variety' => $variety, 'part' => $part]) {
 
-					$varietyFqn = toFqn($variety);
+					$varietyFqn = toFqn($variety, ' ');
+					$eVariety = new \plant\Variety();
 
-					if($ePlant->empty()) {
-						$eVariety = new \plant\Variety();
-					} else {
+					if($ePlant->notEmpty()) {
 
 						$cacheKey = $ePlant['id'].'-'.$varietyFqn;
 
@@ -449,7 +627,7 @@ class CsvLib {
 								->select(['id', 'name'])
 								->whereFarm($eFarm)
 								->wherePlant($ePlant)
-								->where('REGEXP_REPLACE(REPLACE(name, "-", " "), " +", " ") = '.\plant\Plant::model()->format(str_replace('-', ' ', $varietyFqn)))
+								->where('REGEXP_REPLACE(REPLACE(name, "-", " "), " +", " ") = '.\plant\Plant::model()->format($varietyFqn))
 								->get();
 
 							$eVariety = $cacheVarieties[$cacheKey];
@@ -458,12 +636,43 @@ class CsvLib {
 
 					}
 
-					$import[$key1]['cultivations'][$key2]['varieties'][$key2]['eVariety'] = $eVariety;
+					$import[$key1]['cultivations'][$key2]['varieties'][$key3]['eVariety'] = $eVariety;
 
-					if($cachePlants[$plantFqn]->empty()) {
-						$infoGlobal['varieties'][] = $cultivation['species'];
+					if($eVariety->empty()) {
+						$infoGlobal['varieties'][] = $variety;
 					}
 
+				}
+
+				// trays
+				if($cultivation['young_plants_tray']) {
+	
+					$toolFqn = toFqn($cultivation['young_plants_tray'], ' ');
+	
+					if(empty($cacheTools[$toolFqn])) {
+
+						$cacheTools[$toolFqn] = \farm\Tool::model()
+							->select(['id', 'name'])
+							->whereFarm($eFarm)
+							->where('REGEXP_REPLACE(REPLACE(name, "-", " "), " +", " ") = '.\farm\Tool::model()->format($toolFqn))
+							->get();
+	
+					}
+	
+					$eTool = $cacheTools[$toolFqn];
+
+					if($eTool->empty()) {
+						$infoGlobal['tools'][] = $cultivation['young_plants_tray'];
+					}
+					
+				} else {
+					$eTool = new \farm\Tool();
+				}
+
+				$import[$key1]['cultivations'][$key2]['eTool'] = $eTool;
+
+				if($cultivation['planting_type'] !== NULL and in_array($cultivation['planting_type'], Cultivation::model()->getPropertyEnum('seedling')) === FALSE) {
+					$errors[] = 'seedlingInvalid';
 				}
 
 				$errors[] = self::checkDateField($cultivation['sowing_date'], 'sowingDateFormat');
@@ -472,20 +681,24 @@ class CsvLib {
 				$errors[] = self::checkDateField($cultivation['last_harvest_date'], 'lastHarvestDateFormat');
 
 				if(
+					$cultivation['first_harvest_date'] === NULL xor
+					$cultivation['last_harvest_date'] === NULL
+				) {
+					$errors[] = 'harvestDateNull';
+				} else if(
 					$cultivation['first_harvest_date'] !== NULL and
 					$cultivation['first_harvest_date'] > $cultivation['last_harvest_date']
 				) {
 					$errors[] = 'harvestDateConsistency';
 				}
 
-				if(
-					$cultivation['harvest_unit'] !== NULL and
-					in_array($cultivation['harvest_unit'], Cultivation::model()->getPropertyEnum('mainUnit')) === FALSE
-				) {
+				if($cultivation['harvest_unit'] === NULL) {
+					$errors[] = 'harvestUnitEmpty';
+				} else if(in_array($cultivation['harvest_unit'], Cultivation::model()->getPropertyEnum('mainUnit')) === FALSE) {
 					$errorsGlobal['harvestUnit'][] = $cultivation['harvest_unit'];
 				}
 
-				switch($cultivation['use']) {
+				switch($series['use']) {
 
 					case Series::BED :
 						if(
@@ -522,6 +735,7 @@ class CsvLib {
 		$errorsGlobal['species'] = array_unique($errorsGlobal['species']);
 
 		$infoGlobal['varieties'] = array_unique($infoGlobal['varieties']);
+		$infoGlobal['tools'] = array_unique($infoGlobal['tools']);
 
 		return [
 			'import' => $import,

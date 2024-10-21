@@ -1317,7 +1317,7 @@ class SeriesUi {
 			case 'mode' :
 				$d->values = [
 					Series::GREENHOUSE => s("Sous abri"),
-					Series::OUTDOOR => s("Plein champ"),
+					Series::OPEN_FIELD => s("Plein champ"),
 					Series::MIX => s("Mixte"),
 				];
 				$d->attributes = [

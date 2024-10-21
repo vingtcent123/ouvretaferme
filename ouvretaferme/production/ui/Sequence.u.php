@@ -915,7 +915,7 @@ class SequenceUi {
 			case 'mode' :
 				$d->values = [
 					Sequence::GREENHOUSE => s("Sous abri"),
-					Sequence::OUTDOOR => s("Plein champ"),
+					Sequence::OPEN_FIELD => s("Plein champ"),
 					Sequence::MIX => s("Mixte"),
 				];
 				$d->attributes = [

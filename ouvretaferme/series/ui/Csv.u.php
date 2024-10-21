@@ -50,6 +50,7 @@ class CsvUi {
 			'series_id',
 			'series_name',
 			'place',
+			'use',
 			'species',
 			'planting_type',
 			'young_plants_seeds',
@@ -58,7 +59,6 @@ class CsvUi {
 			'planting_date',
 			'first_harvest_date',
 			'last_harvest_date',
-			'use',
 			'block_area',
 			'block_density',
 			'block_spacing_rows',
@@ -69,8 +69,8 @@ class CsvUi {
 			'bed_spacing_plants',
 			'finished',
 			'harvest_unit',
-			'yield_expected',
-			'yield_got'
+			'yield_expected_area',
+			'yield_got_area'
 		];
 
 		for($i = 0; $i < $maxVarieties; $i++) {
@@ -100,7 +100,7 @@ class CsvUi {
 
 	public function getImportFile(\farm\Farm $eFarm, array $data, \Collection $cAction): string {
 
-		['import' => $import, 'errorsCount' => $errorsCount, 'errorsGlobal' => $errorsGlobal] = $data;
+		['import' => $import, 'errorsCount' => $errorsCount, 'errorsGlobal' => $errorsGlobal, 'infoGlobal' => $infoGlobal] = $data;
 
 		$h = '';
 
@@ -110,8 +110,8 @@ class CsvUi {
 		$h .= '</div>';
 
 		if($errorsCount > 0) {
-			$h .= '<div class="util-danger">';
-				$h .= '<p>'.p("{value} problème a été trouvé dans le fichier CSV.", "{value} problèmes ont été trouvés dans le fichier CSV.", $errorsCount).'</p>';
+			$h .= '<div class="util-block">';
+				$h .= '<h4 class="color-danger">'.p("{value} problème a été trouvé dans le fichier CSV", "{value} problèmes ont été trouvés dans le fichier CSV", $errorsCount).'</h4>';
 				$h .= '<p>'.s("Vous pouvez parcourir le tableau ci-dessous pour identifier ces problèmes et les corriger. Pour que {siteName} puisse importer vos données sans erreur, il est indispensable que le format CSV soit strictement respecté. Si vous n'êtes pas à l'aise avec cela, nous vous recommandons de ne pas utiliser cette fonctionnalité.").'</p>';
 			$h .= '</div>';
 		}
@@ -125,26 +125,47 @@ class CsvUi {
 			switch($type) {
 
 				case 'harvestUnit' :
-					$h .= '<div class="util-danger">';
-						$h .= '<h4>'.s("Problème avec des unités de récolte").'</h4>';
-						$h .= s("Les unités de récolte peuvent être <i>kg</i>, <i>bunch</i> (pour botte) ou <i>unit</i> (pour unité ou pièce). <br/>Certaines unités de récolte ne correspondent pas et doivent être corrigées dans votre fichier CSV :");
-						$h .= '<ul>';
-							foreach($values as $value) {
-								$h .= '<li>'.$value.'</li>';
-							}
-						$h .= '</ul>';
+					$h .= '<div class="util-block">';
+						$h .= '<h4 class="color-danger">'.s("Problème avec des unités de récolte").'</h4>';
+						$h .= '<p>'.s("Les unités de récolte peuvent être <i>kg</i>, <i>bunch</i> (pour botte) ou <i>unit</i> (pour unité ou pièce). <br/>Certaines unités de récolte ne correspondent pas et doivent être corrigées dans votre fichier CSV :").'</p>';
+						$h .= '<p style="font-style: italic">'.encode(implode(', ', $values)).'</p>';
 					$h .= '</div>';
 					break;
 
 				case 'species' :
-					$h .= '<div class="util-danger">';
-						$h .= '<h4>'.s("Problème avec des espèces").'</h4>';
-						$h .= s("Les espèces suivantes n'existent pas sur {siteName}, corrigez votre fichier CSV <link>pour les faire correspondre à une espèce existante</link> ou <link>ajoutez-les à votre ferme</link> :", ['link' => '<a href="'.\plant\PlantUi::urlManage($eFarm).'" target="_blank">']);
-						$h .= '<ul>';
-							foreach($values as $value) {
-								$h .= '<li>'.$value.'</li>';
-							}
-						$h .= '</ul>';
+					$h .= '<div class="util-block">';
+						$h .= '<h4 class="color-danger">'.s("Problème avec des espèces").'</h4>';
+						$h .= '<p>'.s("Les espèces suivantes n'existent pas sur {siteName}, corrigez votre fichier CSV pour les faire correspondre à une espèce existante ou ajoutez-les à votre ferme :", ['link' => '<a href="'.\plant\PlantUi::urlManage($eFarm).'" target="_blank">']).'</p>';
+						$h .= '<p style="font-style: italic">'.encode(implode(', ', $values)).'</p>';
+						$h .= '<a href="'.\plant\PlantUi::urlManage($eFarm).'" target="_blank" class="btn btn-danger">'.s("Ajouter des espèces").'</a>';
+					$h .= '</div>';
+					break;
+
+			}
+
+		}
+
+		foreach($infoGlobal as $type => $values) {
+
+			if(empty($values)) {
+				continue;
+			}
+
+			switch($type) {
+
+				case 'varieties' :
+					$h .= '<div class="util-block">';
+						$h .= '<h4>'.s("Information sur de nouvelles variétés").'</h4>';
+						$h .= '<p>'.s("Les variétés suivantes sont utilisées dans le fichier CSV et seront ajoutées à votre ferme :").'</p>';
+						$h .= '<p style="font-style: italic">'.encode(implode(', ', $values)).'</p>';
+					$h .= '</div>';
+					break;
+
+				case 'tools' :
+					$h .= '<div class="util-block">';
+						$h .= '<h4>'.s("Information sur de nouveaux plateaux de semis").'</h4>';
+						$h .= '<p>'.s("Les plateaux de semis suivants sont utilisés dans le fichier CSV et seront ajoutés à votre ferme :").'</p>';
+						$h .= '<p style="font-style: italic">'.encode(implode(', ', $values)).'</p>';
 					$h .= '</div>';
 					break;
 
@@ -194,7 +215,7 @@ class CsvUi {
 									$h .= '<span class="color-danger">'.\Asset::icon('exclamation-triangle').'</span>';
 								}
 							$h .= '</td>';
-							$h .= '<td class="td-min-content">';
+							$h .= '<td style="max-width: 15rem">';
 								if($cultivation['ePlant']->notEmpty()) {
 									$h .= encode($cultivation['ePlant']['name']);
 								} else {
@@ -204,7 +225,7 @@ class CsvUi {
 									$h .= \Asset::icon('lock-fill');
 								}
 
-								switch($cultivation['use']) {
+								switch($series['use']) {
 
 									case Series::BED :
 										if($cultivation['bed_length']) {
@@ -221,19 +242,33 @@ class CsvUi {
 								}
 
 								if($cultivation['varieties']) {
-									$h .= '<br/><small class="color-muted">'.implode(' / ', array_keys($cultivation['varieties'])).'</small>';
+
+									$varieties = [];
+
+									foreach($cultivation['varieties'] as ['variety' => $variety, 'eVariety' => $eVariety]) {
+
+										if($eVariety->empty()) {
+											$varieties[] = \Asset::icon('exclamation-triangle').' '.encode($variety);
+										} else {
+											$varieties[] = encode($eVariety['name']);
+										}
+
+									}
+
+									$h .= '<br/><small class="color-muted">'.implode(' / ', $varieties).'</small>';
+
 								}
 
 							$h .= '</td>';
 							$h .= '<td>';
-								$h .= match($cultivation['place']) {
+								$h .= match($series['place']) {
 									Series::GREENHOUSE => \Asset::icon('greenhouse'),
 									Series::MIX => \Asset::icon('mix'),
 									default => ''
 								};
 							$h .= '</td>';
 							$h .= '<td>';
-								$h .= $cultivation['season'];
+								$h .= $series['season'];
 							$h .= '</td>';
 							$h .= '<td>';
 							$h .= match($cultivation['planting_type']) {
@@ -249,12 +284,12 @@ class CsvUi {
 
 								case Cultivation::SOWING :
 									$eAction = $cAction[ACTION_SEMIS_DIRECT];
-									$h .= '<span style="color: '.$eAction['color'].'" title="'.encode($eAction['name']).'">'.\util\DateUi::numeric($cultivation['sowing_date']).'</span>';
+									$h .= '<span style="color: '.$eAction['color'].'" title="'.encode($eAction['name']).'">'.($cultivation['sowing_date'] ? \util\DateUi::numeric($cultivation['sowing_date']) : '?').'</span>';
 									break;
 
 								case Cultivation::YOUNG_PLANT :
 									$eAction = $cAction[ACTION_SEMIS_PEPINIERE];
-									$h .= '<span style="color: '.$eAction['color'].'" title="'.encode($eAction['name']).'">'.\util\DateUi::numeric($cultivation['sowing_date']).'</span>';
+									$h .= '<span style="color: '.$eAction['color'].'" title="'.encode($eAction['name']).'">'.($cultivation['sowing_date'] ? \util\DateUi::numeric($cultivation['sowing_date']) : '?').'</span>';
 									break;
 
 							}
@@ -267,7 +302,7 @@ class CsvUi {
 								case Cultivation::YOUNG_PLANT_BOUGHT :
 								case Cultivation::YOUNG_PLANT :
 									$eAction = $cAction[ACTION_PLANTATION];
-									$h .= '<span style="color: '.$eAction['color'].'" title="'.encode($eAction['name']).'">'.\util\DateUi::numeric($cultivation['planting_date']).'</span>';
+									$h .= '<span style="color: '.$eAction['color'].'" title="'.encode($eAction['name']).'">'.($cultivation['planting_date'] ? \util\DateUi::numeric($cultivation['planting_date']) : '?').'</span>';
 									break;
 
 							}
@@ -275,42 +310,51 @@ class CsvUi {
 							$h .= '</td>';
 							$h .= '<td>';
 
-							$harvests = [];
-
-							if($cultivation['first_harvest_date']) {
+							if($cultivation['first_harvest_date'] or $cultivation['last_harvest_date']) {
 
 								$eAction = $cAction[ACTION_RECOLTE];
 
-								$date = '<span style="color: '.$eAction['color'].'">';
+								$h .= '<span style="color: '.$eAction['color'].'">';
 								if($cultivation['first_harvest_date'] === $cultivation['last_harvest_date']) {
-									$date .= \util\DateUi::numeric($cultivation['first_harvest_date']);
+									$h .= \util\DateUi::numeric($cultivation['first_harvest_date']);
 								} else {
-									$date .= s("{first} → {last}", ['first' => \util\DateUi::numeric($cultivation['first_harvest_date']), 'last' => \util\DateUi::numeric($cultivation['last_harvest_date'])]);
+									$h .= s("{first} → {last}", [
+										'first' => $cultivation['first_harvest_date'] ? \util\DateUi::numeric($cultivation['first_harvest_date']) : '?',
+										'last' => $cultivation['last_harvest_date'] ? \util\DateUi::numeric($cultivation['last_harvest_date']) : '?'
+									]);
 								}
-								$date .= '</span>';
-
-								$harvests[] = $date;
+								$h .= '</span>';
 
 							}
 
-							if($cultivation['harvest_unit']) {
-
-								if(in_array($cultivation['harvest_unit'], Cultivation::model()->getPropertyEnum('mainUnit'))) {
-									$harvests[] = CultivationUi::p('mainUnit')->values[$cultivation['harvest_unit']];
-								} else {
-									$harvests[] = '<span class="color-danger">'.\Asset::icon('exclamation-triangle').' '.encode($cultivation['harvest_unit']).'</span>';
-								}
-
+							if(in_array($cultivation['harvest_unit'], Cultivation::model()->getPropertyEnum('mainUnit'))) {
+								$unit = CultivationUi::p('mainUnit')->values[$cultivation['harvest_unit']];
+							} else {
+								$unit = '<span class="color-danger">'.\Asset::icon('exclamation-triangle').' '.encode($cultivation['harvest_unit']).'</span>';
 							}
 
-							$h .= implode(' / ', $harvests);
+							$harvests = NULL;
+
+							if($series['use'] === Series::BED and $cultivation['yield_expected_length']) {
+								$harvests = s("Attendu {value} {unit} / mL", ['value' => $cultivation['yield_expected_length'], 'unit' => $unit]);
+							} else if($cultivation['yield_expected_area']) {
+								$harvests = s("Attendu {value} {unit} / m²", ['value' => $cultivation['yield_expected_area'], 'unit' => $unit]);
+							} else if($cultivation['harvest_unit']) {
+								$harvests = s("Unité de récolte {value}", '<u>'.$unit.'</u>');
+							}
+
+							if($harvests) {
+
+								$h .= '<br/><small>'.$harvests.'</small>';
+
+							}
 
 							$h .= '</td>';
 							$h .= '<td style="font-size: 0.8rem">';
 
 								$list = [];
 
-								switch($cultivation['use']) {
+								switch($series['use']) {
 
 									case Series::BED :
 										if($cultivation['bed_density']) {
@@ -325,14 +369,14 @@ class CsvUi {
 										break;
 
 									case Series::BLOCK :
-										if($cultivation['area_density']) {
-											$list[] = s("{value} / m²", $cultivation['area_density']);
+										if($cultivation['block_density']) {
+											$list[] = s("{value} / m²", $cultivation['block_density']);
 										}
-										if($cultivation['bed_spacing_rows']) {
-											$list[] = s("{value} cm entre rangs", $cultivation['bed_spacing_rows']);
+										if($cultivation['block_spacing_rows']) {
+											$list[] = s("{value} cm entre rangs", $cultivation['block_spacing_rows']);
 										}
-										if($cultivation['bed_spacing_plants']) {
-											$list[] = s("{value} cm sur le rang", $cultivation['bed_spacing_plants']);
+										if($cultivation['block_spacing_plants']) {
+											$list[] = s("{value} cm sur le rang", $cultivation['block_spacing_plants']);
 										}
 										break;
 
@@ -346,25 +390,22 @@ class CsvUi {
 
 								}
 
+								if($cultivation['young_plants_tray']) {
+
+									if($cultivation['eTool']->notEmpty()) {
+										$list[] = encode($cultivation['eTool']['name']);
+									} else {
+										$list[] = \Asset::icon('exclamation-triangle').' '.encode($cultivation['young_plants_tray']).' '.($cultivation['young_plants_tray_size'] ? '('.p("{value} trou", "{value} trous", $cultivation['young_plants_tray_size']).')' : '');
+									}
+
+								}
+
 								if(count($list) > 1) {
 									$h .= '<ul class="mb-0">';
 										$h .= '<li>'.implode('</li><li>', $list).'</li>';
 									$h .= '</ul>';
 								} else if(count($list) === 1) {
-									$h .= $list;
-								}
-
-							$h .= '</td>';
-							$h .= '<td>';
-
-								switch($cultivation['use']) {
-
-									case Series::BED :
-										break;
-
-									case Series::BLOCK :
-										break;
-
+									$h .= $list[0];
 								}
 
 							$h .= '</td>';
@@ -375,17 +416,22 @@ class CsvUi {
 
 							$errors = [
 								'speciesEmpty' => s("L'espèce n'est pas indiquée dans le fichier CSV"),
+								'placeInvalid' => s("Le mode de culture est incorrect dans le fichier CSV ({value})", implode(', ', Series::model()->getPropertyEnum('mode'))),
+								'useInvalid' => s("L'utilisation du sol peut être <i>bed</i> pour des planches ou <i>block</i> en surface libre"),
+								'seedlingInvalid' => s("Le mode d'implantation est incorrect dans le fichier CSV"),
 								'sowingDateFormat' => s("Le format de la date de semis est invalide dans le fichier CSV"),
 								'plantingDateFormat' => s("Le format de la date de plantation est invalide dans le fichier CSV"),
 								'firstHarvestDateFormat' => s("Le format de la date de début de récolte est invalide dans le fichier CSV"),
 								'lastHarvestDateFormat' => s("Le format de la date de fin de récolte est invalide dans le fichier CSV"),
 								'harvestDateConsistency' => s("La date de début de récolte ne peut pas être supérieure à la date de fin de récolte dans le fichier CSV"),
+								'harvestDateNull' => s("La date de début ou de fin de récolte est manquante"),
+								'harvestUnitEmpty' => s("Il manque l'unité de récolte dans le fichier CSV ({value})", implode(', ', Cultivation::model()->getPropertyEnum('mainUnit'))),
 								'bedSpacing' => s("Vous ne pouvez pas à la fois indiqué une densité et un nombre de rangs ou un espacement sur le rang"),
 								'blockSpacing' => s("Vous ne pouvez pas à la fois indiquer une densité et des espacements sur le rang ou entre rangs"),
 							];
 
 							$h .= '<tr>';
-								$h .= '<td colspan="8">';
+								$h .= '<td colspan="9">';
 									$h .= '<ul class="mb-0 color-danger">';
 										foreach($cultivation['errors'] as $error) {
 											$h .= '<li>'.$errors[$error].'</li>';

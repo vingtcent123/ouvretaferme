@@ -151,7 +151,7 @@ Series:
   farm: farm\Farm
   season: int16(0, null)
   use: enum(BED, BLOCK)
-  mode: enum(GREENHOUSE, OUTDOOR, MIX) = OUTDOOR
+  mode: enum(GREENHOUSE, OPEN_FIELD, MIX) = OPEN_FIELD
   plants: int8(1, null)
   area: ?int24(1, null)
   areaPermanent: ?int24(1, null)

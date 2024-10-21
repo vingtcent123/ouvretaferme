@@ -49,7 +49,7 @@ class PlotLib extends PlotCrud {
 		$e = new Plot([
 			'zone' => $eZone,
 			'zoneFill' => TRUE,
-			'mode' => Plot::OUTDOOR,
+			'mode' => Plot::OPEN_FIELD,
 			'area' => $eZone['area']
 		]);
 

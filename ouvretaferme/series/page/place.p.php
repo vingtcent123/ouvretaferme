@@ -43,7 +43,7 @@
 				$data->search = new Search([
 					'canWidth' => $hasAlternativeBedWidth,
 					'width' => GET('width', 'bool', FALSE),
-					'mode' => GET('mode', [NULL, \map\Plot::GREENHOUSE, \map\Plot::OUTDOOR], NULL),
+					'mode' => GET('mode', [NULL, \map\Plot::GREENHOUSE, \map\Plot::OPEN_FIELD], NULL),
 					'available' => GET('available', 'int', 0),
 					'rotation' => GET('rotation', 'int', 0)
 				]);

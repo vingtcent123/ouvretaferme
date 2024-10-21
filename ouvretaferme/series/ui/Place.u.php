@@ -165,7 +165,7 @@ class PlaceUi {
 						$form->addon('Mode de culture').
 						$form->select('mode', [
 							NULL => s("Tous"),
-							\map\Plot::OUTDOOR => s("Plein champ"),
+							\map\Plot::OPEN_FIELD => s("Plein champ"),
 							\map\Plot::GREENHOUSE => s("Tunnel"),
 						], $search->get('mode'), ['mandatory' => TRUE])
 					);
