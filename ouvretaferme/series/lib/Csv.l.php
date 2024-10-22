@@ -431,6 +431,7 @@ class CsvLib {
 
 			$line = array_combine($head, $cultivation) + [
 				'season' => '',
+				'series_id' => '',
 				'series_name' => '',
 				'place' => '',
 				'use' => '',
@@ -472,15 +473,16 @@ class CsvLib {
 
 			$season = (int)($line['season'] ?: date('Y'));
 			$seriesName = $line['series_name'] ?: NULL;
+			$seriesId = $line['series_id'] ?: $line['series_name'];
 
-			if($seriesName) {
+			if($seriesId) {
 
-				if(array_key_exists($seriesName, $seriesIndex)) {
-					$index = $seriesIndex[$seriesName];
+				if(array_key_exists($seriesId, $seriesIndex)) {
+					$index = $seriesIndex[$seriesId];
 				} else {
 
 					$index = count($import);
-					$seriesIndex[$seriesName] = $index;
+					$seriesIndex[$seriesId] = $index;
 
 					$import[$index] = [
 						'series' => [
@@ -557,12 +559,12 @@ class CsvLib {
 
 		$errorsCount = 0;
 		$errorsGlobal = [
+			'harvestUnit' => [],
 			'species' => [],
-			'harvestUnit' => []
+			'tools' => []
 		];
 		$infoGlobal = [
 			'varieties' => [],
-			'tools' => []
 		];
 
 		$cachePlants = [];
@@ -598,7 +600,10 @@ class CsvLib {
 					$cachePlants[$plantFqn] = \plant\Plant::model()
 						->select(['id', 'vignette', 'fqn', 'name'])
 						->whereFarm($eFarm)
-						->where('REGEXP_REPLACE(REPLACE(name, "-", " "), " +", " ") = '.\plant\Plant::model()->format($plantFqn))
+						->or(
+		                fn() => $this->whereName($cultivation['species']),
+		                fn() => $this->where('REGEXP_REPLACE(REPLACE(name, "-", " "), " +", " ") = '.\plant\Plant::model()->format($plantFqn))
+						)
 						->get();
 
 				}
@@ -627,12 +632,15 @@ class CsvLib {
 								->select(['id', 'name'])
 								->whereFarm($eFarm)
 								->wherePlant($ePlant)
-								->where('REGEXP_REPLACE(REPLACE(name, "-", " "), " +", " ") = '.\plant\Plant::model()->format($varietyFqn))
+								->or(
+				                fn() => $this->whereName($variety),
+				                fn() => $this->where('REGEXP_REPLACE(REPLACE(name, "-", " "), " +", " ") = '.\plant\Variety::model()->format($varietyFqn))
+								)
 								->get();
 
-							$eVariety = $cacheVarieties[$cacheKey];
-
 						}
+
+						$eVariety = $cacheVarieties[$cacheKey];
 
 					}
 
@@ -654,7 +662,10 @@ class CsvLib {
 						$cacheTools[$toolFqn] = \farm\Tool::model()
 							->select(['id', 'name'])
 							->whereFarm($eFarm)
-							->where('REGEXP_REPLACE(REPLACE(name, "-", " "), " +", " ") = '.\farm\Tool::model()->format($toolFqn))
+							->or(
+			                fn() => $this->whereName($variety),
+			                fn() => $this->where('REGEXP_REPLACE(REPLACE(name, "-", " "), " +", " ") = '.\farm\Tool::model()->format($toolFqn))
+							)
 							->get();
 	
 					}
@@ -662,7 +673,7 @@ class CsvLib {
 					$eTool = $cacheTools[$toolFqn];
 
 					if($eTool->empty()) {
-						$infoGlobal['tools'][] = $cultivation['young_plants_tray'];
+						$errorsGlobal['tools'][] = $cultivation['young_plants_tray'];
 					}
 					
 				} else {
@@ -733,9 +744,9 @@ class CsvLib {
 
 		$errorsGlobal['harvestUnit'] = array_unique($errorsGlobal['harvestUnit']);
 		$errorsGlobal['species'] = array_unique($errorsGlobal['species']);
+		$errorsGlobal['tools'] = array_unique($errorsGlobal['tools']);
 
 		$infoGlobal['varieties'] = array_unique($infoGlobal['varieties']);
-		$infoGlobal['tools'] = array_unique($infoGlobal['tools']);
 
 		return [
 			'import' => $import,

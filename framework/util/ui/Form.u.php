@@ -680,7 +680,10 @@ class FormUi {
 	 * Create an asterisk
 	 *
 	 */
-	public function asterisk(): string {
+	public static function asterisk(): string {
+
+		\Asset::css('util', 'form.css');
+
 		return '<div class="form-asterisk" title="'.s("Champ obligatoire").'">'.\Asset::icon('asterisk').'</div>';
 	}
 
@@ -688,7 +691,9 @@ class FormUi {
 	 * Create an asterisk
 	 *
 	 */
-	public function asteriskInfo(?int $maxSeniority = 10): string {
+	public static function asteriskInfo(?int $maxSeniority = 10): string {
+
+		\Asset::css('util', 'form.css');
 
 		if($maxSeniority !== NULL) {
 
@@ -710,7 +715,7 @@ class FormUi {
 		}
 
 		$h = '<div class="form-asterisk-info">';
-			$h .= s("Les champs marqués {value} sont obligatoires", $this->asterisk());
+			$h .= s("Les champs marqués {value} sont obligatoires", self::asterisk());
 		$h .= '</div>';
 
 		return $h;

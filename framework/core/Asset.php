@@ -360,7 +360,7 @@ class Asset {
 			$source = $package;
 			$version = '';
 		} else {
-			$source = self::path($package, $file);
+			$source = self::path($package, $file, 'image');
 			$version = self::getVersion();
 		}
 
@@ -377,9 +377,9 @@ class Asset {
 	 *
 	 * @return string
 	 */
-	public static function path(string $package, string $file, string $type = 'image'): string {
+	public static function path(string $package, string $file, ?string $type = NULL): string {
 
-		$path = self::directory($package).'/'.$type.'/'.$file."?".self::getVersion();
+		$path = self::directory($package).($type !== NULL ? '/'.$type : '').'/'.$file."?".self::getVersion();
 
 		return $path;
 

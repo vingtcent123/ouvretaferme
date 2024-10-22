@@ -84,7 +84,7 @@ class PlantUi {
 		if($ePlant['fqn'] !== NULL) {
 
 			$h = '<div class="plant-vignette" style="'.$ui->getSquareCss($size).'">';
-				$h .= '<svg width="'.$size.'" height="'.$size.'"><use xlink:href="'.\Asset::path('plant', 'plants.svg').'#'.strtolower($ePlant['fqn']).'"/></svg>';
+				$h .= '<svg width="'.$size.'" height="'.$size.'"><use xlink:href="'.\Asset::path('plant', 'plants.svg', 'image').'#'.strtolower($ePlant['fqn']).'"/></svg>';
 			$h .= '</div>';
 
 			return $h;

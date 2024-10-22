@@ -126,7 +126,7 @@ class CsvUi {
 
 				case 'harvestUnit' :
 					$h .= '<div class="util-block">';
-						$h .= '<h4 class="color-danger">'.s("Problème avec des unités de récolte").'</h4>';
+						$h .= '<h4 class="color-danger">'.s("Unités de récolte").'</h4>';
 						$h .= '<p>'.s("Les unités de récolte peuvent être <i>kg</i>, <i>bunch</i> (pour botte) ou <i>unit</i> (pour unité ou pièce). <br/>Certaines unités de récolte ne correspondent pas et doivent être corrigées dans votre fichier CSV :").'</p>';
 						$h .= '<p style="font-style: italic">'.encode(implode(', ', $values)).'</p>';
 					$h .= '</div>';
@@ -134,10 +134,19 @@ class CsvUi {
 
 				case 'species' :
 					$h .= '<div class="util-block">';
-						$h .= '<h4 class="color-danger">'.s("Problème avec des espèces").'</h4>';
-						$h .= '<p>'.s("Les espèces suivantes n'existent pas sur {siteName}, corrigez votre fichier CSV pour les faire correspondre à une espèce existante ou ajoutez-les à votre ferme :", ['link' => '<a href="'.\plant\PlantUi::urlManage($eFarm).'" target="_blank">']).'</p>';
+						$h .= '<h4 class="color-danger">'.s("Espèces manquantes").'</h4>';
+						$h .= '<p>'.s("Les espèces suivantes n'existent pas sur votre ferme, corrigez votre fichier CSV pour les faire correspondre à une espèce existante ou ajoutez-les à votre ferme :", ['link' => '<a href="'.\plant\PlantUi::urlManage($eFarm).'" target="_blank">']).'</p>';
 						$h .= '<p style="font-style: italic">'.encode(implode(', ', $values)).'</p>';
 						$h .= '<a href="'.\plant\PlantUi::urlManage($eFarm).'" target="_blank" class="btn btn-danger">'.s("Ajouter des espèces").'</a>';
+					$h .= '</div>';
+					break;
+
+				case 'tools' :
+					$h .= '<div class="util-block">';
+						$h .= '<h4 class="color-danger">'.s("Plateaux de semis manquants").'</h4>';
+						$h .= '<p>'.s("Les plateaux de semis suivants sont utilisés dans le fichier CSV et n'existent pas sur votre ferme :").'</p>';
+						$h .= '<p style="font-style: italic">'.encode(implode(', ', $values)).'</p>';
+						$h .= '<a href="'.\farm\ToolUi::urlManage($eFarm).'" target="_blank" class="btn btn-danger">'.s("Ajouter des plateaux de semis").'</a>';
 					$h .= '</div>';
 					break;
 
@@ -157,14 +166,6 @@ class CsvUi {
 					$h .= '<div class="util-block">';
 						$h .= '<h4>'.s("Information sur de nouvelles variétés").'</h4>';
 						$h .= '<p>'.s("Les variétés suivantes sont utilisées dans le fichier CSV et seront ajoutées à votre ferme :").'</p>';
-						$h .= '<p style="font-style: italic">'.encode(implode(', ', $values)).'</p>';
-					$h .= '</div>';
-					break;
-
-				case 'tools' :
-					$h .= '<div class="util-block">';
-						$h .= '<h4>'.s("Information sur de nouveaux plateaux de semis").'</h4>';
-						$h .= '<p>'.s("Les plateaux de semis suivants sont utilisés dans le fichier CSV et seront ajoutés à votre ferme :").'</p>';
 						$h .= '<p style="font-style: italic">'.encode(implode(', ', $values)).'</p>';
 					$h .= '</div>';
 					break;
@@ -194,15 +195,11 @@ class CsvUi {
 
 					$h .= '<tbody>';
 
-					if(count($cultivations) > 1) {
-
 						$h .= '<tr>';
-							$h .= '<td colspan="8">';
-								$h .= 'XXX';
-							$h .= '</td>';
+							$h .= '<th colspan="9">';
+								$h .= '<b>'.s("Série {value}", encode($series['name'])).'</b>';
+							$h .= '</th>';
 						$h .= '</tr>';
-
-					}
 
 					foreach($cultivations as $cultivation) {
 

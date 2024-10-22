@@ -25,7 +25,7 @@ class ToolUi {
 
 	}
 
-	public static function manageUrl(Farm $eFarm, ?string $routineName = NULL): string {
+	public static function urlManage(Farm $eFarm, ?string $routineName = NULL): string {
 
 		return '/farm/tool:manage?farm='.$eFarm['id'].''.($routineName ? '&routineName='.$routineName : '');
 
@@ -185,8 +185,8 @@ class ToolUi {
 				$h .= '<br/>';
 
 				$h .= '<div class="tabs-item">';
-					$h .= '<a href="'.self::manageUrl($eFarm, $routineName).$search->toQuery(['status'], '&').'" class="tab-item '.($search->get('status') === Tool::ACTIVE ? 'selected' : '').'"><span>'.($routineName ? RoutineUi::getProperty($routineName, 'tabActive') : s("Matériel activé")).' <span class="tab-item-count">'.$tools[Tool::ACTIVE].'</span></span></a>';
-					$h .= '<a href="'.self::manageUrl($eFarm, $routineName).$search->toQuery(['status'], '&').'&status='.Tool::INACTIVE.'" class="tab-item '.($search->get('status') === Tool::INACTIVE ? 'selected' : '').'"><span>'.($routineName ? RoutineUi::getProperty($routineName, 'tabInactive') : s("Matériel désactivé")).' <span class="tab-item-count">'.$tools[Tool::INACTIVE].'</span></span></a>';
+					$h .= '<a href="'.self::urlManage($eFarm, $routineName).$search->toQuery(['status'], '&').'" class="tab-item '.($search->get('status') === Tool::ACTIVE ? 'selected' : '').'"><span>'.($routineName ? RoutineUi::getProperty($routineName, 'tabActive') : s("Matériel activé")).' <span class="tab-item-count">'.$tools[Tool::ACTIVE].'</span></span></a>';
+					$h .= '<a href="'.self::urlManage($eFarm, $routineName).$search->toQuery(['status'], '&').'&status='.Tool::INACTIVE.'" class="tab-item '.($search->get('status') === Tool::INACTIVE ? 'selected' : '').'"><span>'.($routineName ? RoutineUi::getProperty($routineName, 'tabInactive') : s("Matériel désactivé")).' <span class="tab-item-count">'.$tools[Tool::INACTIVE].'</span></span></a>';
 				$h .= '</div>';
 
 			}
@@ -311,7 +311,7 @@ class ToolUi {
 					$h .= $form->select('action', $cActionUsed, $search->get('action'), ['placeholder' => s("Intervention")]);
 
 					$h .= $form->submit(s("Chercher"), ['class' => 'btn btn-secondary']);
-					$h .= '<a href="'.self::manageUrl($eFarm).'" class="btn btn-secondary">'.\Asset::icon('x-lg').'</a>';
+					$h .= '<a href="'.self::urlManage($eFarm).'" class="btn btn-secondary">'.\Asset::icon('x-lg').'</a>';
 
 				$h .= '</div>';
 

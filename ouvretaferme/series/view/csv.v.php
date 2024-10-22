@@ -21,8 +21,8 @@ new AdaptativeView('importCultivations', function($data, FarmTemplate $t) {
 	echo '<div class="util-block-help">';
 		echo '<p>'.s("Soyez attentifs au fait que les fichiers CSV au format {siteName} doivent respecter une nomenclature très précise pour que vos séries soient correctement importées. Si vous ne respectez pas le format, vous obtiendrez un résultat qui ne sera pas satisfaisant. <b>Nous vous conseillons de ne pas utiliser cette fonctionnalité si vous n'êtes pas à l'aise avec les tableurs.</b>").'</p>';
 		echo '<p>';
-			echo '<a href="" class="btn btn-secondary">'.s("Voir la documentation du format CSV").'</a> ';
-			echo '<a href="" class="btn btn-secondary">'.s("Télécharger un exemple CSV").'</a>';
+			echo '<a href="/doc/import" class="btn btn-secondary">'.s("Voir la documentation du format CSV").'</a> ';
+			echo '<a href="'.Asset::path('series', 'plan.csv').'" data-ajax-navigation="never" class="btn btn-secondary">'.s("Télécharger un exemple CSV").'</a>';
 		echo '</p>';
 	echo '</div>';
 	echo (new \series\CsvUi())->getImportCultivations($data->eFarm);

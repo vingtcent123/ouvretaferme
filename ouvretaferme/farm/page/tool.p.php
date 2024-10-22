@@ -117,7 +117,7 @@
 			get_exists('status') and
 			$data->tools[\plant\Plant::INACTIVE] === 0
 		) {
-			throw new RedirectAction(\farm\ToolUi::manageUrl($data->eFarm, $data->routineName));
+			throw new RedirectAction(\farm\ToolUi::urlManage($data->eFarm, $data->routineName));
 		}
 
 		$data->eToolNew = \farm\ToolLib::getNewTool($data->eFarm, $data->routineName);
