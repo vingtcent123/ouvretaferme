@@ -671,7 +671,7 @@ class CsvLib {
 				// variety
 				foreach($cultivation['varieties'] as ['variety' => $variety, 'eVariety' => $eVariety, 'part' => $part]) {
 
-					$input['variety'][$position]['variety'][] = $eVariety->empty() ? NULL : $eVariety['id'];
+					$input['variety'][$position]['variety'][] = $eVariety->empty() ? 'new' : $eVariety['id'];
 					$input['variety'][$position]['varietyCreate'][] = $eVariety->empty() ? $variety : NULL;
 					$input['variety'][$position]['varietyPartPercent'][] = $part;
 
@@ -742,7 +742,8 @@ class CsvLib {
 		$errorsGlobal = [
 			'harvestUnit' => [],
 			'species' => [],
-			'tools' => []
+			'tools' => [],
+			'seasons' => []
 		];
 		$infoGlobal = [
 			'varieties' => [],
@@ -762,6 +763,13 @@ class CsvLib {
 
 			if(in_array($series['use'], Series::model()->getPropertyEnum('use')) === FALSE) {
 				$errorsCommon[] = 'useInvalid';
+			}
+
+			if(
+				$series['season'] < $eFarm['seasonFirst'] or
+				$series['season'] > $eFarm['seasonLast']
+			) {
+				$errorsGlobal['seasons'][] = $series['season'];
 			}
 
 			foreach($cultivations as $key2 => $cultivation) {
@@ -896,6 +904,12 @@ class CsvLib {
 					$errorsGlobal['harvestUnit'][] = $cultivation['harvest_unit'];
 				}
 
+				if($cultivation['harvest_unit'] === NULL) {
+					$errors[] = 'harvestUnitEmpty';
+				} else if(in_array($cultivation['harvest_unit'], Cultivation::model()->getPropertyEnum('mainUnit')) === FALSE) {
+					$errorsGlobal['harvestUnit'][] = $cultivation['harvest_unit'];
+				}
+
 				if(
 					$cultivation['varieties'] and
 					$varietyTotal !== 100
@@ -939,12 +953,13 @@ class CsvLib {
 		$errorsGlobal['harvestUnit'] = array_unique($errorsGlobal['harvestUnit']);
 		$errorsGlobal['species'] = array_unique($errorsGlobal['species']);
 		$errorsGlobal['tools'] = array_unique($errorsGlobal['tools']);
+		$errorsGlobal['seasons'] = array_unique($errorsGlobal['seasons']);
 
 		$infoGlobal['varieties'] = array_unique($infoGlobal['varieties']);
 
 		return [
 			'import' => $import,
-			'errorsCount' => $errorsCount + count($errorsGlobal['harvestUnit']) + count($errorsGlobal['species']),
+			'errorsCount' => $errorsCount + count($errorsGlobal['harvestUnit']) + count($errorsGlobal['species']) + count($errorsGlobal['seasons']),
 			'errorsGlobal' => $errorsGlobal,
 			'infoGlobal' => $infoGlobal
 		];

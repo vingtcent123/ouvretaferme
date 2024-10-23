@@ -160,6 +160,16 @@ class CsvUi {
 					$h .= '</div>';
 					break;
 
+				case 'seasons' :
+					$h .= '<div class="util-block">';
+						$h .= '<h4 class="color-danger">'.s("Saisons inconnues").'</h4>';
+						$h .= '<p>'.s("Vous utilisez dans le fichier CSV des saisons de culture qui n'ont pas été définies à l'échelle de la ferme :").'</p>';
+						$h .= '<p style="font-style: italic">'.encode(implode(', ', $values)).'</p>';
+						$h .= '<p>'.s("Les saisons s'ajoutent depuis la page de planification par l'intermédiaire du menu déroulant qui permet de modifier l'affichage de la saison en cours.").'</p>';
+						$h .= '<a href="'.\farm\FarmUi::urlCultivation($eFarm, \farm\Farmer::SERIES).'" target="_blank" class="btn btn-danger">'.s("Ajouter des saisons").'</a>';
+					$h .= '</div>';
+					break;
+
 			}
 
 		}
