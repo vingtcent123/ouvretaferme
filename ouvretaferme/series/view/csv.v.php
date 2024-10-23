@@ -7,7 +7,7 @@ new AdaptativeView('importCultivations', function($data, FarmTemplate $t) {
 
 	echo '<h1>'.s("Importer un plan de culture").'</h1>';
 	echo '<div class="util-block-help">';
-		echo '<p>'.s("Vous pouvez importer sur {siteName} un plan de culture en CSV de l'un des deux formats suivants :").'</p>';
+		echo '<p>'.s("Vous pouvez importer sur {siteName} un plan de culture en CSV en choisissant l'un des deux formats suivants :").'</p>';
 		echo '<ul>';
 			echo '<li>'.s("le format {siteName}").'</li>';
 			echo '<li>'.s("le format Brinjel, qui permet d'importer vos séries depuis ce logiciel ou depuis Qrop").'</li>';
@@ -25,7 +25,10 @@ new AdaptativeView('importFile', function($data, FarmTemplate $t) {
 	$t->tab = 'settings';
 	$t->subNav = (new \farm\FarmUi())->getSettingsSubNav($data->eFarm);
 
-	echo '<h1>'.s("Importer un plan de culture").'</h1>';
+	echo '<div class="util-action">';
+		echo '<h1>'.p("Votre fichier CSV contient {value} série", "Votre fichier CSV contient {value} séries", count($data->data['import'])).'</h1>';
+		echo '<a href="/series/csv:importCultivations?id='.$data->eFarm['id'].'&reset" class="btn btn-primary">'.s("Téléverser un autre fichier").'</a>';
+	echo '</div>';
 	echo (new \series\CsvUi())->getImportFile($data->eFarm, $data->data, $data->cAction);
 
 });

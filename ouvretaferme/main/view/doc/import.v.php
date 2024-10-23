@@ -9,7 +9,7 @@ new AdaptativeView('index', function($data, DocTemplate $t) {
 	Asset::css('main', 'doc.css');
 
 	$t->title = s("Importer un plan de culture");
-	$t->subTitle = s("Vous pouvez importer un plan de culture au format CSV sur votre ferme. C'est une fonctionnalité bien pratique si vous préférez concevoir votre plan de culture avec un tableur et le visualisez ensuite sur {siteName} !");
+	$t->subTitle = s("Vous pouvez importer un plan de culture au format CSV sur votre ferme. C'est une fonctionnalité bien pratique si vous préférez concevoir votre plan de culture avec un tableur et le visualiser ensuite sur {siteName} !");
 
 	echo '<div class="util-block">';
 
