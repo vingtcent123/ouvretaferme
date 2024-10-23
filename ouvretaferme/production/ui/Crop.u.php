@@ -626,7 +626,7 @@ class CropUi {
 		$d = Crop::model()->describer($property, [
 			'sequence' => s("Itinéraire technique"),
 			'plant' => s("Espèce"),
-			'density' => s("Densité de la culture"),
+			'density' => s("Densité d'implantation"),
 			'rows' => s("Nombre de rangs par planche"),
 			'rowSpacing' => s("Espace inter-rangs"),
 			'plantSpacing' => s("Espace sur le rang"),

@@ -9,24 +9,22 @@ new AdaptativeView('index', function($data, DocTemplate $t) {
 	Asset::css('main', 'doc.css');
 
 	$t->title = s("Importer un plan de culture");
+	$t->subTitle = s("Vous pouvez importer un plan de culture au format CSV sur votre ferme. C'est une fonctionnalité bien pratique si vous préférez concevoir votre plan de culture avec un tableur et le visualisez ensuite sur {siteName} !");
 
 	echo '<div class="util-block">';
 
-		echo '<h2>'.s("XX").'</h2>';
-		echo '<p>';
-			echo s("XXX.");
-		echo '</p>';
+		echo '<h2>'.s("Comment importer un plan de culture ?").'</h2>';
+		echo '<p>'.s("Importer un plan de culture revient à importer sur {siteName} un fichier CSV qui contient des listes de séries que vous souhaitez ajouter à votre plan de culture. Deux formats sont utilisables pour importer des séries :").'</p>';
 		echo '<ul>';
-			echo '<li>'.s("XXX").'</li>';
-			echo '<li>'.s("XXX").'</li>';
+			echo '<li>'.s("le format <b>{siteName}</b>").'</li>';
+			echo '<li>'.s("le format <b>Brinjel</b>, qui permet d'importer vos séries depuis ce logiciel ou depuis Qrop").'</li>';
 		echo '</ul>';
-		echo '<b>'.s("XXX").'</b>';
 
 	echo '</div>';
 
 	echo '<div class="util-block">';
 
-		echo '<h2>'.s("Format du fichier CSV").'</h2>';
+		echo '<h2>'.s("Importer un fichier CSV au format {siteName}").'</h2>';
 		echo '<p>';
 			echo s("Le fichier CSV que vous importez doit comporter une ligne par culture, et les colonnes de ce fichier doivent correspondre à la liste des données à fournir décrite plus bas. Si vous ne respectez pas ce format, vous obtiendrez un résultat qui ne sera pas satisfaisant.");
 		echo '</p>';
@@ -35,6 +33,10 @@ new AdaptativeView('index', function($data, DocTemplate $t) {
 			echo '<li>'.s("Le séparateur des colonnes dans le fichier est la virgule (,)").'</li>';
 			echo '<li>'.s("Le séparateur des nombres décimaux est le point (.) et non la virgule (,)").'</li>';
 		echo '</ul>';
+		echo '<p>';
+			echo '<a href="'.Asset::path('series', 'plan.csv').'" data-ajax-navigation="never" class="btn btn-outline-secondary">'.s("Télécharger un exemple CSV").'</a>';
+		echo '</p>';
+		echo '<br/>';
 		echo '<h3>'.s("Liste des données à fournir").'</h3>';
 
 		$data = [
@@ -80,7 +82,7 @@ new AdaptativeView('index', function($data, DocTemplate $t) {
 			[
 				s("Espèce").' '.\util\FormUi::asterisk(),
 				'species',
-				s("Le nom de l'espèce doit correspondre à une espèce existante de votre ferme"),
+				s("Le nom de l'espèce doit correspondre à <link>une espèce existante de votre ferme</link>", ['link' => $data->eFarm->empty() ? NULL : '<a href="'.\plant\PlantUi::urlManage($data->eFarm).'">']),
 				s("Carotte")
 			],
 			[
@@ -97,18 +99,112 @@ new AdaptativeView('index', function($data, DocTemplate $t) {
 			[
 				s("Nombre de graines par plant"),
 				'young_plants_seeds',
-				s("Pris en compte uniquement dans le cas de plants autoproduits"),
+				s("Pris en compte uniquement dans le cas d'implantation par plant autoproduit"),
 				3
 			],
 			[
 				s("Plateau de semis"),
 				'young_plants_tray',
-				s("Pris en compte uniquement dans le cas de plants autoproduits et le plateau de semis doit avoir été préalablement créé dans la liste de votre matériel"),
+				s("Pris en compte uniquement dans le cas d'implantation par plant autoproduit et le plateau de semis doit avoir été préalablement créé dans la <link>liste du matériel de votre ferme<link>", ['link' => $data->eFarm->empty() ? NULL : '<a href="/farm/tool:manage?farm='.$data->eFarm['id'].'">']),
 				s("Plaque de 150")
-			]
+			],
+			[
+				s("Date de semis"),
+				'sowing_date',
+				s("Pris en compte uniquement dans le cas d'implantation par semis direct et des plant autoproduit (format AAAA-MM-JJ)"),
+				'2024-01-25'
+			],
+			[
+				s("Date de plantation"),
+				'planting_date',
+				s("Pris en compte uniquement dans le cas d'implantation par plant autoproduit ou acheté (format AAAA-MM-JJ)"),
+				'2024-03-05'
+			],
+			[
+				s("Début de récolte"),
+				'first_harvest_date',
+				s("Format AAAA-MM-JJ"),
+				'2024-05-15'
+			],
+			[
+				s("Fin de récolte"),
+				'last_harvest_date',
+				s("Format AAAA-MM-JJ"),
+				'2024-06-15'
+			],
+			[
+				s("Objectif de surface en m²"),
+				'block_area',
+				s("Pris en compte uniquement dans le cas de culture sur surface libre"),
+				'100'
+			],
+			[
+				s("Densité d'implantation par m²"),
+				'block_density',
+				s("Pris en compte uniquement dans le cas de culture sur surface libre, ne pas être utilisé simultanément avec <pre>block_spacing_rows</pre> et <pre>block_spacing_plants</pre>"),
+				'500'
+			],
+			[
+				s("Espacement entre les rangs en cm"),
+				'block_spacing_rows',
+				s("Pris en compte uniquement dans le cas de culture sur surface libre, ne pas être utilisé simultanément avec <pre>block_density</pre>"),
+				'40'
+			],
+			[
+				s("Espacement sur le rang en cm"),
+				'block_spacing_plants',
+				s("Pris en compte uniquement dans le cas de culture sur surface libre, ne pas être utilisé simultanément avec <pre>block_density</pre>"),
+				'15'
+			],
+			[
+				s("Objectif de longueur de planches en mL"),
+				'bed_area',
+				s("Pris en compte uniquement dans le cas de culture sur planches"),
+				'100'
+			],
+			[
+				s("Densité d'implantation par m²"),
+				'bed_density',
+				s("Pris en compte uniquement dans le cas de culture sur planches, ne pas être utilisé simultanément avec <pre>bed_rows</pre> et <pre>bed_spacing_plants</pre>"),
+				'500'
+			],
+			[
+				s("Nombre de rangs par planche"),
+				'bed_rows',
+				s("Pris en compte uniquement dans le cas de culture sur planches, ne pas être utilisé simultanément avec <pre>bed_density</pre>"),
+				'3'
+			],
+			[
+				s("Espacement sur le rang en cm"),
+				'bed_spacing_plants',
+				s("Pris en compte uniquement dans le cas de culture sur planches, ne pas être utilisé simultanément avec <pre>bed_density</pre>"),
+				'15'
+			],
+			[
+				s("Série clôturée"),
+				'finished',
+				s("<example>true</example> si la série est clôturée, <example>false</example> sinon", ['example' => '<div class="doc-example">']),
+				'false'
+			],
+			[
+				s("Unité de récolte"),
+				'harvest_unit',
+				s("Les valeurs possibles :").
+				'<ul>'.
+					'<li>'.s("{value} → au kg", '<div class="doc-example">'.\series\Cultivation::KG.'</div>').'</li>'.
+					'<li>'.s("{value} → à la pièce", '<div class="doc-example">'.\series\Cultivation::UNIT.'</div>').'</li>'.
+					'<li>'.s("{value} → à la botte", '<div class="doc-example">'.\series\Cultivation::BUNCH.'</div>').'</li>'.
+				'</ul>',
+				'bunch'
+			],
+			[
+				s("Objectif de rendement par m²"),
+				'yield_expected_area',
+				s("Le rendement attendu pour cette culture en fonction de l'unité de récolte choisie"),
+				'3.5'
+			],
 		];
-/*		} else if(count(array_intersect($header, ['series_name', 'season', 'place', 'species', 'use', 'planting_type', 'harvest_unit'])) === 7) {
-*/
+
 		echo '<table class="tr-bordered">';
 			echo '<thead>';
 				echo '<tr>';
@@ -131,6 +227,23 @@ new AdaptativeView('index', function($data, DocTemplate $t) {
 		echo '</table>';
 
 		echo \util\FormUi::asteriskInfo(NULL);
+
+	echo '</div>';
+
+	echo '<div class="util-block">';
+
+		echo '<h2>'.s("Importer un fichier CSV depuis Qrop / Brinjel").'</h2>';
+
+		echo '<p>'.s("Pour récupérer le fichier CSV de Brinjel à importer sur {siteName} :").'</p>';
+		echo '<ul>';
+			echo '<li>'.s("Allez dans <b>Paramètres</b>").'</li>';
+			echo '<li>'.s("Dans la section <b>Données de la ferme</b>, téléchargez le <b>Plan de culture seul</b>").'</li>';
+		echo '</ul>';
+		echo '<p>'.s("Pour importer vos données depuis Qrop, vous devez d'abord importer vos données de Qrop vers Brinjel, puis ensuite utiliser le mode opératoire ci-dessus pour importer vos données de Brinjel vers {siteName}.").'</p>';
+		echo '<p>'.s("Notez que vous aurez probablement des corrections à faire dans le fichier CSV issu de Brinjel, notamment au niveau des unités de récolte ou des espèces. {siteName} vous fera un rapport des modifications à effectuer après chargement de votre fichier.").'</p>';
+		echo '<p>';
+			echo '<a href="https://app.brinjel.com/" class="btn btn-outline-secondary" target="_blank">'.s("Aller sur Brinjel").'</a> ';
+		echo '</p>';
 
 	echo '</div>';
 
