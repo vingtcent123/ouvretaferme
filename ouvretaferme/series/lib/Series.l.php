@@ -318,7 +318,7 @@ class SeriesLib extends SeriesCrud {
 
 	}
 
-	public static function createWithCultivations(Series $e, \Collection $cCultivation, \Collection $cFlow, ?int $referenceYear): void {
+	public static function createWithCultivations(Series $e, \Collection $cCultivation, \Collection $cFlow = new \Collection(), ?int $referenceYear = NULL): void {
 
 		$cCultivation->expects([
 			'plant' => ['name']

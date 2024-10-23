@@ -222,7 +222,7 @@ class CultivationLib extends CultivationCrud {
 
 				$eSeries = $eCultivation['series'];
 
-				return (
+					return (
 					$eSeries['cycle'] === Series::ANNUAL or
 					$eSeries['perennialSeason'] === 1
 				);

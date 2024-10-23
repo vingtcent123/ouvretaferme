@@ -9,3 +9,7 @@ tr.csv-error + tr {
 	border-left: 2px solid var(--danger);
 	border-right: 2px solid var(--danger);
 }
+
+.csv-import-button:not(.hide) + .csv-import-waiter {
+	display: none;
+}

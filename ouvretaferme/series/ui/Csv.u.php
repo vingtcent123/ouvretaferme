@@ -6,6 +6,7 @@ class CsvUi {
 	public function __construct() {
 
 		\Asset::css('series', 'csv.css');
+		\Asset::js('series', 'csv.js');
 
 	}
 
@@ -49,7 +50,7 @@ class CsvUi {
 			'season',
 			'series_id',
 			'series_name',
-			'place',
+			'mode',
 			'use',
 			'species',
 			'planting_type',
@@ -120,7 +121,8 @@ class CsvUi {
 					$h .= '<li>'.s("Il est encore temps de faire des modifications dans votre fichier CSV si vous n'êtes pas totalement satisfait de la version actuelle").'</li>';
 					$h .= '<li>'.s("Si vous changez d'avis, vous pourrez toujours supprimer ultérieurement les séries que vous importez maintenant").'</li>';
 				$h .= '</ul>';
-				$h .= '<a data-ajax="/series/csv:doCreateCultivations" post-farm="'.$eFarm['id'].'" class="btn btn-secondary" data-confirm="'.p("Importer maintenant {value} série ?", "Importer maintenant {value} séries ?", count($data['import'])).'">'.s("Importer maintenant").'</a>';
+				$h .= '<a post-id="'.$eFarm['id'].'" class="csv-import-button btn btn-secondary" data-confirm-text="'.p("Importer maintenant {value} série ?", "Importer maintenant {value} séries ?", count($data['import'])).'" onclick="Csv.import(this)">'.s("Importer maintenant").'</a>';
+				$h .= '<a class="btn btn-disabled csv-import-waiter">'.s("Importation en cours, merci de patienter...").'</a>';
 			$h .= '</div>';
 		}
 
@@ -143,7 +145,7 @@ class CsvUi {
 				case 'species' :
 					$h .= '<div class="util-block">';
 						$h .= '<h4 class="color-danger">'.s("Espèces manquantes").'</h4>';
-						$h .= '<p>'.s("Les espèces suivantes n'existent pas sur votre ferme, corrigez votre fichier CSV pour les faire correspondre à une espèce existante ou ajoutez-les à votre ferme :", ['link' => '<a href="'.\plant\PlantUi::urlManage($eFarm).'" target="_blank">']).'</p>';
+						$h .= '<p>'.s("Les espèces suivantes n'existent pas ou ne sont pas des espèces annuelles sur votre ferme, corrigez votre fichier CSV pour les faire correspondre à une espèce existante ou ajoutez-les à votre ferme :", ['link' => '<a href="'.\plant\PlantUi::urlManage($eFarm).'" target="_blank">']).'</p>';
 						$h .= '<p style="font-style: italic">'.encode(implode(', ', $values)).'</p>';
 						$h .= '<a href="'.\plant\PlantUi::urlManage($eFarm).'" target="_blank" class="btn btn-danger">'.s("Ajouter des espèces").'</a>';
 					$h .= '</div>';
@@ -206,6 +208,25 @@ class CsvUi {
 						$h .= '<tr>';
 							$h .= '<th colspan="9">';
 								$h .= '<b>'.s("Série {value}", encode($series['name'])).'</b>';
+								if($series['finished']) {
+									$h .= ' '.\Asset::icon('lock-fill');
+								}
+
+								switch($series['use']) {
+
+									case Series::BED :
+										if($series['bed_length']) {
+											$h .= '<span class="color-muted"> / '.s("{value} mL", $series['bed_length']).'</span>';
+										}
+										break;
+
+									case Series::BLOCK :
+										if($series['block_area']) {
+											$h .= '<span class="color-muted"> / '.s("{value} m²", $series['block_area']).'</span>';
+										}
+										break;
+
+								}
 							$h .= '</th>';
 						$h .= '</tr>';
 
@@ -225,25 +246,6 @@ class CsvUi {
 									$h .= encode($cultivation['ePlant']['name']);
 								} else {
 									$h .= '<span class="color-danger">'.encode($cultivation['species']).'</span>';
-								}
-								if($cultivation['finished']) {
-									$h .= \Asset::icon('lock-fill');
-								}
-
-								switch($series['use']) {
-
-									case Series::BED :
-										if($cultivation['bed_length']) {
-											$h .= '<span class="color-muted"> / '.s("{value} mL", $cultivation['bed_length']).'</span>';
-										}
-										break;
-
-									case Series::BLOCK :
-										if($cultivation['block_area']) {
-											$h .= '<span class="color-muted"> / '.s("{value} m²", $cultivation['block_area']).'</span>';
-										}
-										break;
-
 								}
 
 								if($cultivation['varieties']) {
@@ -266,7 +268,7 @@ class CsvUi {
 
 							$h .= '</td>';
 							$h .= '<td>';
-								$h .= match($series['place']) {
+								$h .= match($series['mode']) {
 									Series::GREENHOUSE => \Asset::icon('greenhouse'),
 									Series::MIX => \Asset::icon('mix'),
 									default => ''
@@ -421,7 +423,7 @@ class CsvUi {
 
 							$errors = [
 								'speciesEmpty' => s("L'espèce n'est pas indiquée dans le fichier CSV"),
-								'placeInvalid' => s("Le mode de culture est incorrect dans le fichier CSV ({value})", implode(', ', Series::model()->getPropertyEnum('mode'))),
+								'modeInvalid' => s("Le mode de culture est incorrect dans le fichier CSV ({value})", implode(', ', Series::model()->getPropertyEnum('mode'))),
 								'useInvalid' => s("L'utilisation du sol peut être <i>bed</i> pour des planches ou <i>block</i> en surface libre"),
 								'seedlingInvalid' => s("Le mode d'implantation est incorrect dans le fichier CSV"),
 								'sowingDateFormat' => s("Le format de la date de semis est invalide dans le fichier CSV"),
@@ -431,6 +433,7 @@ class CsvUi {
 								'harvestDateConsistency' => s("La date de début de récolte ne peut pas être supérieure à la date de fin de récolte dans le fichier CSV"),
 								'harvestDateNull' => s("La date de début ou de fin de récolte est manquante"),
 								'harvestUnitEmpty' => s("Il manque l'unité de récolte dans le fichier CSV ({value})", implode(', ', Cultivation::model()->getPropertyEnum('mainUnit'))),
+								'varietyParts' => s("Le total des variétés doit faire 100 %"),
 								'bedSpacing' => s("Vous ne pouvez pas à la fois indiqué une densité et un nombre de rangs ou un espacement sur le rang"),
 								'blockSpacing' => s("Vous ne pouvez pas à la fois indiquer une densité et des espacements sur le rang ou entre rangs"),
 							];

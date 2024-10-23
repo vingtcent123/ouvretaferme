@@ -82,7 +82,7 @@ new AdaptativeView('index', function($data, DocTemplate $t) {
 			[
 				s("Espèce").' '.\util\FormUi::asterisk(),
 				'species',
-				s("Le nom de l'espèce doit correspondre à <link>une espèce existante de votre ferme</link>", ['link' => $data->eFarm->empty() ? NULL : '<a href="'.\plant\PlantUi::urlManage($data->eFarm).'">']),
+				s("Le nom de l'espèce doit correspondre à <link>une espèce existante de votre ferme</link>, seules les espèces annuelles sont acceptées.", ['link' => $data->eFarm->empty() ? NULL : '<a href="'.\plant\PlantUi::urlManage($data->eFarm).'">']),
 				s("Carotte")
 			],
 			[

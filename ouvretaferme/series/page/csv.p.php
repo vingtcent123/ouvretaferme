@@ -50,7 +50,7 @@
 		}
 
 		$data->cAction = \farm\ActionLib::getByFarm($data->eFarm, fqn: [ACTION_SEMIS_DIRECT, ACTION_SEMIS_PEPINIERE, ACTION_PLANTATION, ACTION_RECOLTE], index: 'fqn');
-		$data->data = \series\CsvLib::import($data->eFarm);
+		$data->data = \series\CsvLib::getCultivations($data->eFarm);
 
 		throw new ViewAction($data, $data->data ? ':importFile' : NULL);
 
@@ -67,6 +67,26 @@
 			throw new RedirectAction('/series/csv:importCultivations?id='.$data->e['id'].'&error='.$fw->getLast());
 		}
 
+
+	})
+	->write('doCreateCultivations', function($data) {
+
+		$data->data = \series\CsvLib::getCultivations($data->e);
+
+		if(
+			$data->data === NULL or
+			$data->data['errorsCount'] > 0
+		) {
+			throw new RedirectAction('/series/csv:importCultivations?id='.$data->e['id']);
+		}
+
+		$fw = new FailWatch();
+
+		\series\CsvLib::importCultivations($data->e, $data->data['import']);
+
+		$fw->validate();
+
+		throw new RedirectAction('/series/csv:importCultivations?id='.$data->e['id'].'&created');
 
 	});
 ?>

@@ -5,6 +5,15 @@ new AdaptativeView('importCultivations', function($data, FarmTemplate $t) {
 	$t->tab = 'settings';
 	$t->subNav = (new \farm\FarmUi())->getSettingsSubNav($data->eFarm);
 
+	if(get_exists('created')) {
+
+		echo '<div class="util-success">';
+			echo '<p>'.s("Les séries contenues dans votre fichier CSV ont bien été ajoutées à votre planification !").'</p>';
+			echo '<a href="'.\farm\FarmUi::urlCultivation($data->eFarm, \farm\Farmer::SERIES).'" class="btn btn-success">'.s("Voir ma planification").'</a>';
+		echo '</div>';
+
+	}
+
 	echo '<h1>'.s("Importer un plan de culture").'</h1>';
 	echo '<div class="util-block-help">';
 		echo '<p>'.s("Vous pouvez importer sur {siteName} un plan de culture en CSV en choisissant l'un des deux formats suivants :").'</p>';
