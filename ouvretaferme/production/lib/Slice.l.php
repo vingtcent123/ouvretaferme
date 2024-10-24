@@ -53,8 +53,22 @@ class SliceLib extends SliceCrud {
 
 			$eVariety = $eSlice['variety'];
 
-			if($eVariety->notEmpty() and $eVariety->offsetExists('id') === FALSE) {
-				\plant\VarietyLib::create($eSlice['variety']);
+			if(
+				$eVariety->notEmpty() and
+				$eVariety->offsetExists('id') === FALSE
+			) {
+
+				try {
+					\plant\Variety::model()->insert($eVariety);
+				}
+					// Variété déjà créée en amont, peuplement de l'ID nécessaire pour continuer les traitements et pas d'erreur de duplicate
+				catch(\DuplicateException) {
+
+					\plant\Variety::model()
+						->select(\plant\Variety::getSelection())
+						->get($eVariety);
+
+				}
 			}
 
 		}

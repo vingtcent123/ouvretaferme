@@ -118,6 +118,23 @@ class CsvUi {
 					if($infoGlobal['varieties']) {
 						$h .= '<li>'.s("Les variétés manquantes seront automatiquement créées").'</li>';
 					}
+					if(
+						$infoGlobal['beds'] and
+						$eFarm['defaultBedWidth']
+					) {
+
+						$params = [
+							'defaultAlleyWidth' => $eFarm['defaultAlleyWidth'],
+							'defaultBedWidth' => $eFarm['defaultBedWidth'],
+							'link' => '<a href="/farm/farm:update?id='.$eFarm['id'].'">'
+						];
+
+						if($eFarm['defaultAlleyWidth']) {
+							$h .= '<li>'.s("Les séries seront créées pour une largeur de planche de {defaultBedWidth} cm et des allées de {defaultAlleyWidth} cm correspondant aux valeurs par défaut de votre ferme (<link>modifier</link>)", $params).'</li>';
+						} else {
+							$h .= '<li>'.s("Les séries seront créées pour une largeur de planche de {defaultBedWidth} cm correspondant à la largeur des planches par défaut de votre ferme (<link>modifier</link>)", $eFarm).'</li>';
+						}
+					}
 					$h .= '<li>'.s("Il est encore temps de faire des modifications dans votre fichier CSV si vous n'êtes pas totalement satisfait de la version actuelle").'</li>';
 					$h .= '<li>'.s("Si vous changez d'avis, vous pourrez toujours supprimer ultérieurement les séries que vous importez maintenant").'</li>';
 				$h .= '</ul>';
@@ -133,6 +150,14 @@ class CsvUi {
 			}
 
 			switch($type) {
+
+				case 'beds' :
+					$h .= '<div class="util-block">';
+						$h .= '<h4 class="color-danger">'.s("Largeur des planches").'</h4>';
+						$h .= '<p>'.s("Veuillez renseigner la largeur des planches par défaut sur votre ferme pour que {siteName} puisse importer vos données.").'</p>';
+						$h .= '<a href="/farm/farm:update?id='.$eFarm['id'].'" class="btn btn-danger">'.s("Configurer les planches").'</a>';
+					$h .= '</div>';
+					break;
 
 				case 'harvestUnit' :
 					$h .= '<div class="util-block">';

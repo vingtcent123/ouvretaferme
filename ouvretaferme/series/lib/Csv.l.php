@@ -740,6 +740,7 @@ class CsvLib {
 
 		$errorsCount = 0;
 		$errorsGlobal = [
+			'beds' => FALSE,
 			'harvestUnit' => [],
 			'species' => [],
 			'tools' => [],
@@ -747,6 +748,7 @@ class CsvLib {
 		];
 		$infoGlobal = [
 			'varieties' => [],
+			'beds' => FALSE,
 		];
 
 		$cachePlants = [];
@@ -763,6 +765,13 @@ class CsvLib {
 
 			if(in_array($series['use'], Series::model()->getPropertyEnum('use')) === FALSE) {
 				$errorsCommon[] = 'useInvalid';
+			}
+
+			if($series['use'] === Series::BED) {
+				$infoGlobal['beds'] = TRUE;
+				if($eFarm['defaultBedWidth'] === NULL) {
+					$errorsGlobal['beds'] = TRUE;
+				}
 			}
 
 			if(
@@ -959,7 +968,7 @@ class CsvLib {
 
 		return [
 			'import' => $import,
-			'errorsCount' => $errorsCount + count($errorsGlobal['harvestUnit']) + count($errorsGlobal['species']) + count($errorsGlobal['seasons']),
+			'errorsCount' => $errorsCount + (int)$errorsGlobal['beds'] + count($errorsGlobal['harvestUnit']) + count($errorsGlobal['species']) + count($errorsGlobal['seasons']),
 			'errorsGlobal' => $errorsGlobal,
 			'infoGlobal' => $infoGlobal
 		];
