@@ -1361,7 +1361,7 @@ class FarmUi {
 
 			$h .= '</a>';
 
-			if($eFarm->canManage() and LIME_ENV === 'dev') {
+			if($eFarm->canManage()) {
 
 				$h .= '<a href="/series/csv:importCultivations?id='.$eFarm['id'].'" class="bg-secondary util-button">';
 					$h .= '<h4>'.s("Importer un plan de culture").'<br><span class="farm-settings-subtitle">'.s("compatible Qrop / Brinjel").'</span></h4>';
