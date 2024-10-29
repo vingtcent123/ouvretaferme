@@ -204,6 +204,7 @@ Task:
   plant: ?plant\Plant
   variety: ?plant\Variety
   action: farm\Action
+  method: ?farm\Method
   category: farm\Category
   description: ?text16(1, null)
   time: ?float32(0.0, null)
@@ -228,6 +229,7 @@ Task:
   status: enum(TODO, DONE)
   INDEX: [
     ["farm", "status", "doneWeek"],
+    ["farm", "action"],
     ["repeat"],
     ["series"],
     ["cultivation"]

@@ -427,6 +427,16 @@ Route::register([
 			'priority' => 5,
 			'route' => ['@module', 'analyze', 'Cultivation', 'quick'],
 		],
+		'/@module/farm/Method/doQuick' => [
+			'request' => 'farm/method',
+			'priority' => 5,
+			'route' => ['@module', 'farm', 'Method', 'doQuick'],
+		],
+		'/@module/farm/Method/quick' => [
+			'request' => 'farm/method',
+			'priority' => 5,
+			'route' => ['@module', 'farm', 'Method', 'quick'],
+		],
 		'/@module/farm/Supplier/doQuick' => [
 			'request' => 'farm/supplier',
 			'priority' => 5,

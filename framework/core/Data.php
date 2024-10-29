@@ -662,6 +662,10 @@ class Collection extends ArrayIterator {
 
 	}
 
+	public function contains(?Closure $filter = NULL, int $depth = 1): bool {
+		return $this->find($filter, limit: 1, depth: $depth)->notEmpty();
+	}
+
 	/**
 	 * Find from collection with filter
 	 *
@@ -1315,9 +1319,6 @@ class Element extends ArrayObject {
 			}
 		}
 
-		Asset::js('util', 'form.js');
-		Asset::css('util', 'form.css');
-
 		$h = '<div class="'.$class.'" '.$this->getQuickAttributes($property).'">';
 			$h .= $html;
 		$h .= '</div>';
@@ -1327,6 +1328,9 @@ class Element extends ArrayObject {
 	}
 
 	public function getQuickAttributes(string $property): string {
+
+		Asset::js('util', 'form.js');
+		Asset::css('util', 'form.css');
 
 		return attrs([
 			'onclick' => 'Lime.Quick.start("'.str_replace('\\', '/', $this->getModule()).'", this)',

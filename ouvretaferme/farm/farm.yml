@@ -101,6 +101,16 @@ Invite:
     ["key"]
   ]
 
+Method:
+  id: serial32
+  name: text8(1, null) @collate(general)
+  action: farm\Action
+  farm: farm\Farm
+  INDEX: [
+    ["farm", "action"],
+    ["action"]
+  ]
+
 Supplier:
   id: serial32
   name: text8(1, 50) @collate(general)

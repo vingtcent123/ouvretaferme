@@ -11,15 +11,9 @@ class ActionUi {
 
 		$eAction->expects(['color']);
 
+		\Asset::css('farm', 'action.css');
+
 		return '<div class="action-color-circle" style="background-color: '.$eAction['color'].'"></div>';
-
-	}
-
-	public static function getIcon(Action $eAction): string {
-
-		$eAction->expects(['color']);
-
-		return '<div class="action-icon" style="background-color: '.$eAction['color'].'">'.self::getShort($eAction).'</div>';
 
 	}
 
@@ -28,6 +22,12 @@ class ActionUi {
 		$eAction->expects(['short', 'name']);
 
 		return encode($eAction['short'] ?? strtoupper(mb_substr($eAction['name'], 0, 1)));
+
+	}
+
+	public static function getPanelHeader(Action $eAction): string {
+
+		return '<div class="panel-header-subtitle">'.self::getColorCircle($eAction, '2rem').'  '.encode($eAction['name']).'</div>';
 
 	}
 
@@ -129,60 +129,95 @@ class ActionUi {
 				$h .= '<a href="/farm/category:manage?farm='.$eFarm['id'].'" class="btn btn-outline-secondary">'.s("Personnaliser les catégories ").'</a>';
 		$h .= '</div>';
 
-		$h .= '<table class="tr-even">';
+		$methodHelp = $cAction->contains(fn($eAction) => $eAction['cMethod']->notEmpty()) ? '' : '&help';
+
+		$h .= '<div class="stick-xs">';
+
+		$h .= '<table class="tbody-even tbody-bordered">';
 			$h .= '<thead>';
 				$h .= '<tr>';
-					$h .= '<th>'.self::p('name')->label.'</th>';
-					$h .= '<th>'.s("Catégories").'</th>';
+					$h .= '<th>'.s("Nom").'</th>';
+					$h .= '<th class="hide-xs-down">'.s("Catégories").'</th>';
+					$h .= '<th>'.s("Méthodes de travail").'</th>';
 					$h .= '<th class="text-center hide-xs-down">'.s("Interventions").'</th>';
 					$h .= '<th></th>';
 				$h .= '</tr>';
 			$h .= '</thead>';
 
-			$h .= '<tbody>';
-
 			foreach($cAction as $eAction) {
 
 				$categories = array_map(function($category) use ($cCategory) {
-					return $cCategory[$category]['name'];
+					return encode($cCategory[$category]['name']);
 				}, $eAction['categories']);
 
-				$h .= '<tr>';
-					$h .= '<td>';
-						$h .= \farm\ActionUi::getColorCircle($eAction);
-						$h .= encode($eAction['name']);
-					$h .= '</td>';
-					$h .= '<td>';
-						$h .= implode('<br/>', $categories);
-					$h .= '</td>';
-					$h .= '<td class="text-center hide-xs-down">';
-						if($eAction['tasks'] !== NULL) {
-							$h .= '<a href="/series/analyze:tasks?id='.$eFarm['id'].'&action='.$eAction['id'].'">'.$eAction['tasks'].'</a>';
-						} else {
-							$h .= '/';
-						}
-					$h .= '</td>';
-					$h .= '<td class="text-end" style="white-space: nowrap">';
+				$h .= '<tbody>';
 
-						$h .= '<a href="/farm/action:update?id='.$eAction['id'].'" class="btn btn-outline-secondary">';
-							$h .= \Asset::icon('gear-fill');
-						$h .= '</a> ';
+					$h .= '<tr>';
+						$h .= '<td>';
+							$h .= \farm\ActionUi::getColorCircle($eAction);
+							$h .= encode($eAction['name']);
+							$h .= '<div class="action-manage-categories hide-sm-up">'.implode(' / ', $categories).'</div>';
+						$h .= '</td>';
+						$h .= '<td class="hide-xs-down">';
+							$h .= implode('<br/>', $categories);
+						$h .= '</td>';
+						$h .= '<td>';
+							$h .= '<div class="action-manage-methods">';
+								foreach($eAction['cMethod'] as $eMethod) {
+									$h .= '<a data-dropdown="bottom-start" class="dropdown-toggle btn btn-sm btn-primary">'.encode($eMethod['name']).'</a> ';
+									$h .= '<div class="dropdown-list">';
+										$h .= '<div class="dropdown-title">'.encode($eMethod['name']).'</div>';
 
-						if($eAction['fqn'] === NULL) {
-							$h .= '<a data-ajax="/farm/action:doDelete" data-confirm="'.s("Supprimer cette intervention ?").'" post-id="'.$eAction['id'].'" class="btn btn-outline-secondary">';
-								$h .= \Asset::icon('trash-fill');
-							$h .= '</a>';
-						} else {
-							$h .= '<div class="btn btn-outline-secondary" title="'.s("Action indispensable au bon fonctionnement de {siteName}").'" disabled>';
-								$h .= \Asset::icon('trash-fill');
+											$h .= '<a class="dropdown-item" '.$eMethod->getQuickAttributes('name').'>'.s("Renommer la méthode").'</a>';
+
+											$h .= '<div class="dropdown-divider"></div>';
+
+											$h .= '<a data-ajax="/farm/method:doDelete" data-confirm="'.s("Supprimer définitivement cette méthode ?").'" post-id="'.$eMethod['id'].'" class="dropdown-item">'.s("Supprimer la méthode").'</a>';
+
+									$h .= '</div>';
+								}
+								$h .= '<a href="/farm/method:create?action='.$eAction['id'].$methodHelp.'" class="btn btn-sm btn-outline-primary">'.\Asset::icon('plus').'</a>';
 							$h .= '</div>';
-						}
+						$h .= '</td>';
+						$h .= '<td class="text-center hide-xs-down">';
+							if($eAction['tasks'] !== NULL) {
+								$h .= '<a href="/series/analyze:tasks?id='.$eFarm['id'].'&action='.$eAction['id'].'">'.$eAction['tasks'].'</a>';
+							} else {
+								$h .= '/';
+							}
+						$h .= '</td>';
+						$h .= '<td class="text-end" style="white-space: nowrap">';
 
-					$h .= '</td>';
-				$h .= '</tr>';
+							$h .= '<a class="btn btn-outline-secondary dropdown-toggle" data-dropdown="bottom-end">'.\Asset::icon('gear-fill').'</a>';
+							$h .= '<div class="dropdown-list">';
+								$h .= '<div class="dropdown-title">'.encode($eAction['name']).'</div>';
+
+									$h .= '<a href="/farm/action:update?id='.$eAction['id'].'" class="dropdown-item">'.s("Modifier l'intervention").'</a>';
+									$h .= '<a href="/farm/method:create?action='.$eAction['id'].$methodHelp.'" class="dropdown-item">'.s("Ajouter une méthode de travail").'</a>';
+
+									$h .= '<div class="dropdown-divider"></div>';
+
+									if($eAction['fqn'] === NULL) {
+										$h .= '<a data-ajax="/farm/action:doDelete" data-confirm="'.s("Supprimer cette intervention ?").'" post-id="'.$eAction['id'].'" class="dropdown-item">';
+											$h .= s("Supprimer l'intervention");
+										$h .= '</a>';
+									} else {
+										$h .= '<div class="dropdown-item disabled" title="'.s("Action indispensable au bon fonctionnement de {siteName}").'">';
+											$h .= s("Supprimer l'intervention");
+										$h .= '</div>';
+									}
+
+							$h .= '</div>';
+
+						$h .= '</td>';
+					$h .= '</tr>';
+				$h .= '</tbody>';
+
 			}
-			$h .= '</tbody>';
+
 		$h .= '</table>';
+
+		$h .= '</div>';
 
 		return $h;
 

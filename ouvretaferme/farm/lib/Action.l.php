@@ -114,6 +114,9 @@ class ActionLib extends ActionCrud {
 
 		Action::model()
 			->select([
+				'cMethod' => Method::model()
+					->select(['id', 'name'])
+					->delegateCollection('action'),
 				'tasks' => \series\Task::model()
 					->group('action')
 					->delegateProperty('action', new \Sql('COUNT(*)', 'int'))

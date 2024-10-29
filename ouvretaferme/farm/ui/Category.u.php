@@ -11,14 +11,6 @@ class CategoryUi {
 
 	}
 
-	public static function getIcon(Category $eCategory): string {
-
-		$eCategory->expects(['color']);
-
-		return '<div class="category-icon" style="background-color: '.$eCategory['color'].'">'.self::getShort($eCategory).'</div>';
-
-	}
-
 	public static function getShort(Category $eCategory): string {
 
 		$eCategory->expects(['short', 'name']);

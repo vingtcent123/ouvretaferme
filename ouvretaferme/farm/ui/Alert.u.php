@@ -54,6 +54,9 @@ class AlertUi {
 			'Action::updated' => s("L'intervention a bien été mise à jour."),
 			'Action::deleted' => s("L'intervention a bien été supprimée."),
 
+			'Method::created' => s("La méthode a bien été créée."),
+			'Method::deleted' => s("La méthode a bien été supprimée."),
+
 			'Category::created' => s("La catégorie a bien été créée."),
 			'Category::updated' => s("La catégorie a bien été mise à jour."),
 			'Category::deleted' => s("La catégorie a bien été supprimée."),

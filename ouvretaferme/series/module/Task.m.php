@@ -51,6 +51,7 @@ class TaskModel extends \ModuleModel {
 			'plant' => ['element32', 'plant\Plant', 'null' => TRUE, 'cast' => 'element'],
 			'variety' => ['element32', 'plant\Variety', 'null' => TRUE, 'cast' => 'element'],
 			'action' => ['element32', 'farm\Action', 'cast' => 'element'],
+			'method' => ['element32', 'farm\Method', 'null' => TRUE, 'cast' => 'element'],
 			'category' => ['element32', 'farm\Category', 'cast' => 'element'],
 			'description' => ['text16', 'min' => 1, 'max' => NULL, 'null' => TRUE, 'cast' => 'string'],
 			'time' => ['float32', 'min' => 0.0, 'max' => NULL, 'null' => TRUE, 'cast' => 'float'],
@@ -76,7 +77,7 @@ class TaskModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'farm', 'season', 'cultivation', 'series', 'plant', 'variety', 'action', 'category', 'description', 'time', 'timeExpected', 'harvest', 'harvestUnit', 'harvestSize', 'fertilizer', 'plannedWeek', 'plannedDate', 'plannedUsers', 'doneWeek', 'doneDate', 'timelineStart', 'timelineStop', 'timesheetStart', 'timesheetStop', 'repeat', 'createdAt', 'createdBy', 'updatedAt', 'status'
+			'id', 'farm', 'season', 'cultivation', 'series', 'plant', 'variety', 'action', 'method', 'category', 'description', 'time', 'timeExpected', 'harvest', 'harvestUnit', 'harvestSize', 'fertilizer', 'plannedWeek', 'plannedDate', 'plannedUsers', 'doneWeek', 'doneDate', 'timelineStart', 'timelineStop', 'timesheetStart', 'timesheetStop', 'repeat', 'createdAt', 'createdBy', 'updatedAt', 'status'
 		]);
 
 		$this->propertiesToModule += [
@@ -86,6 +87,7 @@ class TaskModel extends \ModuleModel {
 			'plant' => 'plant\Plant',
 			'variety' => 'plant\Variety',
 			'action' => 'farm\Action',
+			'method' => 'farm\Method',
 			'category' => 'farm\Category',
 			'harvestSize' => 'plant\Size',
 			'repeat' => 'series\Repeat',
@@ -94,6 +96,7 @@ class TaskModel extends \ModuleModel {
 
 		$this->indexConstraints = array_merge($this->indexConstraints, [
 			['farm', 'status', 'doneWeek'],
+			['farm', 'action'],
 			['repeat'],
 			['series'],
 			['cultivation']
@@ -199,6 +202,10 @@ class TaskModel extends \ModuleModel {
 
 	public function whereAction(...$data): TaskModel {
 		return $this->where('action', ...$data);
+	}
+
+	public function whereMethod(...$data): TaskModel {
+		return $this->where('method', ...$data);
 	}
 
 	public function whereCategory(...$data): TaskModel {

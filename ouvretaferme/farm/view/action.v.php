@@ -18,7 +18,7 @@ new AdaptativeView('create', function($data, PanelTemplate $t) {
 new JsonView('doCreate', function($data, AjaxTemplate $t) {
 
 	$t->js()->moveHistory(-1);
-	$t->js()->success('farm', 'action::created');
+	$t->js()->success('farm', 'Action::created');
 
 });
 

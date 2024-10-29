@@ -34,7 +34,5 @@
 	->doUpdate(function($data) {
 		throw new BackAction('hr', 'Presence::updated');
 	})
-	->doDelete(function($data) {
-		throw new ReloadLayerAction('hr', 'Presence::deleted');
-	});
+	->doDelete(fn() => throw new ReloadLayerAction('hr', 'Presence::deleted'));
 ?>
