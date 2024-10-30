@@ -264,7 +264,7 @@ div.form-asterisk-info {
 
 /* Form group */
 div.form-group {
-	margin-bottom: 0.75rem;
+	padding: 0.5rem 0;
 }
 
 .form-columns div.form-group:not(.form-group-nested) {

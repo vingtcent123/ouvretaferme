@@ -15,19 +15,11 @@ div.flow-timeline {
 	transition: background-color 0.5s;
 }
 
-div.flow-timeline-readonly div.flow-timeline {
-	grid-template-columns: 5rem 6rem 1fr;
-}
-
 @media (max-width: 767px) {
 
 	div.flow-timeline {
 		grid-template-columns: 4rem 4rem 2rem 1fr;
 		grid-column-gap: 0.5rem;
-	}
-
-	div.flow-timeline-readonly div.flow-timeline {
-		grid-template-columns: 4rem 4rem 1fr;
 	}
 
 }
@@ -37,10 +29,6 @@ div.flow-timeline-readonly div.flow-timeline {
 	div.flow-timeline {
 		grid-template-columns: 2.5rem 3rem 2rem 1fr;
 		grid-column-gap: 0.25rem;
-	}
-
-	div.flow-timeline-readonly div.flow-timeline {
-		grid-template-columns: 3rem 3rem 1fr;
 	}
 
 }

@@ -11,6 +11,23 @@ class MethodLib extends MethodCrud {
 		return ['name'];
 	}
 
+	public static function getForWork(\farm\Farm $eFarm, Action $eAction): \Collection {
+
+		if($eAction->empty()) {
+			return new \Collection();
+		}
+
+		return Method::model()
+			->select([
+				'id', 'name'
+			])
+			->whereFarm($eFarm)
+			->whereAction($eAction)
+			->getCollection()
+			->sort('name', natural: TRUE);
+
+	}
+
 	public static function delete(Method $e): void {
 
 		$e->expects(['id', 'farm', 'action']);

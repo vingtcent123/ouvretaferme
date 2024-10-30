@@ -13,12 +13,18 @@ new AdaptativeView('doCheck', function($data, AjaxTemplate $t) {
 
 });
 
-new AdaptativeView('getToolsField', function($data, AjaxTemplate $t) {
+new AdaptativeView('getFields', function($data, AjaxTemplate $t) {
 
-	if($data->cToolAvailable->empty()) {
-		$t->push('field', '');
+	if($data->eTask['hasTools']->empty()) {
+		$t->push('tools', '');
 	} else {
-		$t->push('field', (new \util\FormUi())->dynamicGroup($data->eTask, 'toolsList'));
+		$t->push('tools', (new \util\FormUi())->dynamicGroup($data->eTask, 'toolsList'));
+	}
+
+	if($data->eTask['cMethod']->empty()) {
+		$t->push('methods', '');
+	} else {
+		$t->push('methods', (new \util\FormUi())->dynamicGroup($data->eTask, 'method'));
 	}
 
 
@@ -43,16 +49,16 @@ new AdaptativeView('createFromSeries', function($data, PanelTemplate $t) {
 	$t->js()->replaceHistory(LIME_URL);
 
 	if($data->eSeries->notEmpty()) {
-		return (new \series\TaskUi())->createFromOneSeries($data->e, $data->eSeries, $data->cToolAvailable);
+		return (new \series\TaskUi())->createFromOneSeries($data->e, $data->eSeries);
 	} else {
-		return (new \series\TaskUi())->createFromAllSeries($data->e, $data->cSeries, $data->cToolAvailable);
+		return (new \series\TaskUi())->createFromAllSeries($data->e, $data->cSeries);
 	}
 
 });
 
 new AdaptativeView('createFromScratch', function($data, PanelTemplate $t) {
 	$t->js()->replaceHistory(LIME_URL);
-	return (new \series\TaskUi())->createFromScratch($data->e, $data->cAction, $data->cCategory, $data->cZone, $data->cToolAvailable);
+	return (new \series\TaskUi())->createFromScratch($data->e, $data->cAction, $data->cCategory);
 });
 
 new JsonView('doCreateFromSeriesCollection', function($data, AjaxTemplate $t) {
@@ -137,7 +143,7 @@ new JsonView('doCreate', function($data, AjaxTemplate $t) {
 });
 
 new AdaptativeView('update', function($data, PanelTemplate $t) {
-	return (new \series\TaskUi())->update($data->e, $data->cAction, $data->cZone, $data->cToolAvailable);
+	return (new \series\TaskUi())->update($data->e, $data->cAction);
 });
 
 new AdaptativeView('updateHarvestCollection', function($data, PanelTemplate $t) {

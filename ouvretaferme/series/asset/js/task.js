@@ -203,22 +203,21 @@ document.delegateEventListener('click', 'input[data-action="task-write-action-ch
 		form.qs('[data-wrapper="fertilizer"]', node => node.classList.add('hide'))
 	}
 
-	form.ref('tools', wrapper => {
+	new Ajax.Query(this)
+		.url('/series/task:getFields')
+		.body({
+			farm: e.target.dataset.farm,
+			action: this.value
+		})
+		.fetch()
+		.then((json) => {
 
-		new Ajax.Query(this)
-			.url('/series/task:getToolsField')
-			.body({
-				farm: wrapper.dataset.farm,
-				action: this.value
-			})
-			.fetch()
-			.then((json) => {
+			form.ref('tools', wrapper => wrapper.renderInner(json.tools));
 
-				wrapper.renderInner(json.field);
+			form.ref('methods', wrapper => wrapper.renderInner(json.methods));
 
-			});
+		});
 
-	});
 
 });
 

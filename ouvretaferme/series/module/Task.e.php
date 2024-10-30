@@ -9,6 +9,7 @@ class Task extends TaskElement {
 			'plant' => ['name', 'fqn', 'vignette', 'seedsSafetyMargin', 'plantsSafetyMargin'],
 			'farm' => ['name', 'vignette', 'featureTime'],
 			'cultivation' => ['startWeek', 'startAction', 'mainUnit', 'density', 'bunchWeight', 'unitWeight'],
+			'method' => ['name'],
 			'variety' => ['name'],
 			'category' => ['fqn', 'name'],
 			'series' => ['name', 'cycle', 'mode', 'season', 'area', 'areaTarget', 'length', 'lengthTarget', 'bedWidth', 'use'],
@@ -483,6 +484,16 @@ class Task extends TaskElement {
 				return $eSize->empty() or \plant\Size::model()
 					->wherePlant($this['plant'])
 					->exists($eSize);
+
+			},
+
+			'method.check' => function(\farm\Method $eMethod): bool {
+
+				$this->expects(['action']);
+
+				return $eMethod->empty() or \farm\Method::model()
+					->whereAction($this['action'])
+					->exists($eMethod);
 
 			},
 

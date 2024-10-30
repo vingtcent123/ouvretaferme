@@ -64,7 +64,7 @@ class TaskLib extends TaskCrud {
 
 		$e->expects(['status', 'series', 'category']);
 
-		$properties = ['action', 'description', 'harvestSize', 'fertilizer', 'toolsList'];
+		$properties = ['action', 'method', 'description', 'harvestSize', 'fertilizer', 'toolsList'];
 
 		switch($e['status']) {
 
@@ -199,6 +199,7 @@ class TaskLib extends TaskCrud {
 				'description', 'fertilizer', 'time', 'harvest', 'harvestUnit',
 				'harvestSize' => ['name'],
 				'action' => ['fqn', 'name', 'color'],
+				'method' => ['name'],
 				'plant',
 				'variety' => ['name'],
 				'createdAt', 'doneDate',

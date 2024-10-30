@@ -37,9 +37,6 @@
 
 		$data->e['cTool'] = \series\TaskLib::getTools($data->e);
 
-		$data->cZone = \map\ZoneLib::getByFarm($data->eFarm);
-		\map\PlotLib::putFromZone($data->cZone);
-
 		$data->cAction = \farm\ActionLib::getByFarm($data->eFarm, category: $data->e['category']);
 		$data->cCategory = \farm\CategoryLib::getByFarm($data->eFarm);
 
@@ -58,10 +55,11 @@
 
 		$data->e->add([
 			'cultivation' => new \series\Cultivation(),
-			'plant' => $ePlant
+			'plant' => $ePlant,
+			'cTool' => new Collection(),
+			'hasTools' => \farm\ToolLib::getForWork($data->e['farm'], $data->e['action']),
+			'cMethod' => \farm\MethodLib::getForWork($data->e['farm'], $data->e['action'])
 		]);
-
-		$data->cToolAvailable = \farm\ToolLib::getForWork($data->e['farm'], $data->e['action']);
 
 		throw new ViewAction($data);
 
@@ -163,6 +161,8 @@
 
 		}
 
+		$eAction = GET('action') ? ($cAction[GET('action')] ?? throw new NotExpectedAction('Action mismatch')) : new \farm\Action();
+
 		// Initialisation de l'objet de la tâche
 		$data->e->merge([
 			'season' => $data->season,
@@ -172,9 +172,11 @@
 			'plannedDate' => ($data->e['status'] === \series\Task::TODO) ? \series\Task::GET('plannedDate', 'plannedDate') : NULL,
 			'doneWeek' => ($data->e['status'] === \series\Task::DONE) ? \series\Task::GET('doneWeek', 'doneWeek', currentWeek()) : NULL,
 			'doneDate' => ($data->e['status'] === \series\Task::DONE) ? \series\Task::GET('doneDate', 'doneDate') : NULL,
-			'action' => GET('action') ? ($cAction[GET('action')] ?? throw new NotExpectedAction('Action mismatch')) : new \farm\Action(),
+			'action' => $eAction,
 			'plant' => $ePlant,
 			'cTool' => new Collection(),
+			'hasTools' => \farm\ToolLib::getForWork($data->eFarm, $eAction),
+			'cMethod' => \farm\MethodLib::getForWork($data->eFarm, $eAction),
 			'cAction' => $cAction,
 			'cVariety' => new Collection(),
 			'varietiesIntersect' => []
@@ -189,8 +191,6 @@
 		} else {
 			$data->e['cSize'] = \plant\SizeLib::getByFarmAndPlant($data->eFarm, $ePlant);
 		}
-
-		$data->cToolAvailable = \farm\ToolLib::getForWork($data->eFarm, $data->e['action']);
 
 		throw new ViewAction($data);
 
@@ -304,20 +304,22 @@
 		throw new ViewAction($data);
 
 	})
-	->post('getToolsField', function($data) {
+	->post('getFields', function($data) {
 
 		$eFarm = \farm\FarmLib::getById(POST('farm'));
 		$eAction = \farm\ActionLib::getById(POST('action'))->validateProperty('farm', $eFarm);
 
 		$data->eTask = new \series\Task([
 			'farm' => $eFarm,
-			'action' => $eAction,
-			'cTool' => new Collection()
+			'action' => $eAction
 		]);
 
 		$data->eTask->validate('canWrite');
 
-		$data->cToolAvailable = \farm\ToolLib::getForWork($eFarm, $eAction);
+		$data->eTask['hasTools'] = \farm\ToolLib::getForWork($eFarm, $eAction);
+
+		$data->eTask['cTool'] = new Collection();
+		$data->eTask['cMethod'] = \farm\MethodLib::getForWork($eFarm, $eAction);
 
 		throw new \ViewAction($data);
 
@@ -398,11 +400,11 @@
 		}
 
 		$data->e['cTool'] = \series\TaskLib::getTools($data->e);
+		$data->e['cMethod'] = \farm\MethodLib::getForWork($data->e['farm'], $data->e['action']);
+		$data->e['hasTools'] = \farm\ToolLib::getForWork($data->e['farm'], $data->e['action']);
 
 		$data->cAction = \farm\ActionLib::getByFarm($data->e['farm'], category: $data->e['category']);
 		$data->cAction->filter(fn($eAction) => $eAction['fqn'] !== ACTION_RECOLTE); // On ne peut pas changer l'action pour une récolte
-
-		$data->cToolAvailable = \farm\ToolLib::getForWork($data->e['farm'], $data->e['action']);
 
 		throw new ViewAction($data);
 

@@ -1446,6 +1446,10 @@ class TaskUi {
 			$h .= ' <span class="task-variety-name">'.encode($eTask['variety']['name']).'</span> ';
 		}
 
+		if($eTask['method']->notEmpty()) {
+			$h .= ' <span class="task-method-name">'.encode($eTask['method']['name']).'</span> ';
+		}
+
 		return $h;
 
 	}
@@ -1862,64 +1866,6 @@ class TaskUi {
 		$minutes = round(($time - $hours) * 60);
 
 		return $hours.' h '.sprintf('%02d', $minutes);
-
-	}
-
-	public function getSummary(\Collection $cTask): string {
-
-		\Asset::css('production', 'flow.css');
-
-		$h = '<div class="flow-timeline-wrapper flow-timeline-readonly stick-xs">';
-
-			$h .= '<div class="flow-timeline flow-timeline-header">';
-
-				$h .= '<div class="util-grid-header util-grid-icon text-center">';
-					$h .= \Asset::icon('calendar-week');
-				$h .= '</div>';
-				$h .= '<div></div>';
-				$h .= '<div class="util-grid-header">';
-					$h .= s("Intervention");
-				$h .= '</div>';
-
-			$h .= '</div>';
-
-			$h .= $this->getTimelineBody($cTask, [
-				'item' => function(Task $eTask, bool $newWeek) {
-
-					$h = '';
-
-					if($newWeek) {
-						$h .= '<div class="flow-timeline-circle" data-dropdown="bottom-start">'.s("s{value}", week_number($eTask['plannedWeek'])).'</div>';
-					}
-
-					return $h;
-
-				},
-				'content' => function(Task $eTask) {
-
-					$h = '<div style="margin-left: 1rem">';
-
-						$h .= '<span>';
-							$h .= $this->getAction($eTask);
-						$h .= '</span>';
-
-						if($eTask['description']) {
-							$h .= '<div class="flow-timeline-description">'.nl2br(encode($eTask['description'])).'</div>';
-						}
-
-						$h .= (new \production\FlowUi())->getTools($eTask);
-
-					$h .= '</div>';
-
-					return $h;
-
-				}
-
-			], FALSE);
-
-		$h .= '</div>';
-
-		return $h;
 
 	}
 
@@ -3363,9 +3309,9 @@ class TaskUi {
 
 	}
 
-	public function createFromOneSeries(Task $eTask, Series $eSeries, \Collection $cToolAvailable): \Panel {
+	public function createFromOneSeries(Task $eTask, Series $eSeries): \Panel {
 
-		$panel = $this->createFromSeries($eTask, $cToolAvailable, FALSE, function(\util\FormUi $form) use ($eTask, $eSeries) {
+		$panel = $this->createFromSeries($eTask, FALSE, function(\util\FormUi $form) use ($eTask, $eSeries) {
 			return $form->hidden('series[]', $eSeries['id']);
 		});
 
@@ -3375,9 +3321,9 @@ class TaskUi {
 
 	}
 
-	public function createFromAllSeries(Task $eTask, \Collection $cSeries, \Collection $cToolAvailable): \Panel {
+	public function createFromAllSeries(Task $eTask, \Collection $cSeries): \Panel {
 
-		return $this->createFromSeries($eTask, $cToolAvailable, TRUE, function(\util\FormUi $form) use ($eTask, $cSeries) {
+		return $this->createFromSeries($eTask, TRUE, function(\util\FormUi $form) use ($eTask, $cSeries) {
 
 			$series = '<div id="task-create-plant">';
 				$series .= $form->dynamicField($eTask, 'plantsFilter');
@@ -3584,7 +3530,7 @@ class TaskUi {
 
 	}
 
-	public function createFromSeries(Task $eTask, \Collection $cToolAvailable, bool $multipleSeries, \Closure $series): \Panel {
+	public function createFromSeries(Task $eTask, bool $multipleSeries, \Closure $series): \Panel {
 
 		$eTask->expects(['farm', 'action', 'plannedWeek', 'doneWeek', 'status']);
 
@@ -3621,8 +3567,9 @@ class TaskUi {
 				$h .= '</div>';
 
 				$h .= $this->getTimeGroup($form, $eTask);
+				$h .= $this->getMethodsGroup($form, $eTask);
+				$h .= $this->getToolsGroup($form, $eTask);
 				$h .= $form->dynamicGroup($eTask, 'description');
-				$h .= $this->getToolsGroup($form, $eTask, $cToolAvailable);
 
 				$h .= $form->group(
 					content: $form->submit(s("Ajouter l'intervention"))
@@ -3723,7 +3670,7 @@ class TaskUi {
 
 	}
 
-	public function createFromScratch(Task $eTask, \Collection $cAction, \Collection $cCategory, \Collection $cZone, \Collection $cToolAvailable): \Panel {
+	public function createFromScratch(Task $eTask, \Collection $cAction, \Collection $cCategory): \Panel {
 
 		$eTask->expects(['farm', 'series', 'action', 'cultivation', 'category', 'status']);
 
@@ -3759,7 +3706,7 @@ class TaskUi {
 
 				$h .= $form->group(
 					s("Intervention"),
-					'<b><u>'.encode($eTask['action']['name']).'</u></b>'
+					'<h3>'.encode($eTask['action']['name']).'</h3>'
 				);
 
 			}
@@ -3776,8 +3723,9 @@ class TaskUi {
 
 			$h .= $this->getTimeGroup($form, $eTask);
 
+			$h .= $this->getMethodsGroup($form, $eTask);
+			$h .= $this->getToolsGroup($form, $eTask);
 			$h .= $form->dynamicGroup($eTask, 'description');
-			$h .= $this->getToolsGroup($form, $eTask, $cToolAvailable);
 
 			$h .= $form->group(
 				content: $form->submit(s("Ajouter l'opération"))
@@ -3875,7 +3823,7 @@ class TaskUi {
 
 	}
 
-	public function update(Task $eTask, \Collection $cAction, \Collection $cZone, \Collection $cToolAvailable): \Panel {
+	public function update(Task $eTask, \Collection $cAction): \Panel {
 
 		$form = new \util\FormUi();
 
@@ -3975,8 +3923,9 @@ class TaskUi {
 
 			$h .= $this->getTimeGroup($form, $eTask);
 
+			$h .= $this->getMethodsGroup($form, $eTask);
+			$h .= $this->getToolsGroup($form, $eTask);
 			$h .= $form->dynamicGroup($eTask, 'description');
-			$h .= $this->getToolsGroup($form, $eTask, $cToolAvailable);
 
 			$h .= $form->group(
 				content: $form->submit(s("Modifier"))
@@ -4467,11 +4416,23 @@ class TaskUi {
 
 	}
 
-	public function getToolsGroup(\util\FormUi $form, Task $eTask, \Collection $cToolAvailable): string {
+	public function getToolsGroup(\util\FormUi $form, Task $eTask): string {
 
 		$h = '<div data-ref="tools" data-farm="'.$eTask['farm']['id'].'">';
-			if($cToolAvailable->notEmpty()) {
+			if($eTask['hasTools']->notEmpty()) {
 				$h .= $form->dynamicGroup($eTask, 'toolsList');
+			}
+		$h .= '</div>';
+
+		return $h;
+
+	}
+
+	public function getMethodsGroup(\util\FormUi $form, Task $eTask): string {
+
+		$h = '<div data-ref="methods" data-farm="'.$eTask['farm']['id'].'">';
+			if($eTask['cMethod']->notEmpty()) {
+				$h .= $form->dynamicGroup($eTask, 'method');
 			}
 		$h .= '</div>';
 
@@ -4665,6 +4626,7 @@ class TaskUi {
 			'done' => s("Réalisé"),
 			'time' => s("Temps de travail effectué"),
 			'timeExpected' => s("Temps de travail estimé"),
+			'method' => s("Méthode de travail"),
 			'description' => s("Observations"),
 			'fertilizer' => s("Apports"),
 			'harvestSize' => s("Calibre récolté"),
@@ -4686,6 +4648,7 @@ class TaskUi {
 							'disabled' => ($eAction['disabled'] ?? FALSE) ? 'disabled' : NULL,
 							'data-action' => 'task-write-action-change',
 							'data-fqn' => $eAction['fqn'],
+							'data-farm' => $eAction['farm']['id']
 						];
 					}
 				];
@@ -4874,6 +4837,11 @@ class TaskUi {
 				};
 				(new \farm\ToolUi())->query($d, TRUE);
 				$d->group = ['wrapper' => 'toolsList'];
+				break;
+
+			case 'method' :
+				$d->placeholder = s("Aucune");
+				$d->values = fn(Task $e) => $e['cMethod'] ?? $e->expects(['cMethod']);
 				break;
 
 		}

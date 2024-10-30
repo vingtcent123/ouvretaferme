@@ -1279,6 +1279,14 @@ div.task-create-from > *:nth-child(2) {
 
 }
 
+span.task-method-name {
+	display: inline-block;
+	font-size: 80%;
+	padding: 0.125rem 0.5rem;
+	border: 2px solid var(--border);
+	border-radius: var(--radius);
+}
+
 span.task-variety-name {
 	font-size: 90%;
 }
