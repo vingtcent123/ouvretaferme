@@ -9,6 +9,7 @@
 0 * * * * php /var/www/otf/framework/lime.php -e prod -a ouvretaferme selling/cron/invoice
 0 * * * * php /var/www/otf/framework/lime.php -e prod -a ouvretaferme storage/cron/buffer
 0 0 * * * php /var/www/otf/framework/lime.php -e prod -a ouvretaferme user/cron/seniority
+0 0 1 10 * php /var/www/otf/framework/lime.php -e prod -a ouvretaferme farm/cron/newSeason
 0 12 * * * php /var/www/otf/framework/lime.php -e prod -a ouvretaferme mail/cron/clean
 0 2 * * * php /var/www/otf/framework/lime.php -e prod -a ouvretaferme media/cron/clean
 0 3 * * * php /var/www/otf/framework/lime.php -e prod -a ouvretaferme hr/cron/calculate

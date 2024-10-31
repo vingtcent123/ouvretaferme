@@ -204,4 +204,16 @@ class FarmLib extends FarmCrud {
 
 	}
 
+	public static function createNextSeason(): void {
+
+		$newSeason = date('Y') + 1;
+
+		Farm::model()
+			->where('seasonLast < '.$newSeason)
+			->update([
+				'seasonLast' => $newSeason
+			]);
+
+	}
+
 }
