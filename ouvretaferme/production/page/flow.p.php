@@ -42,11 +42,11 @@ $do = function($data) {
 	})
 	->update(function($data) {
 
+		$data->e['cMethod'] = \farm\MethodLib::getForWork($data->e['sequence']['farm'], $data->e['action']);
 		$data->e['cTool'] = \production\FlowLib::getTools($data->e);
+		$data->e['hasTools'] = \farm\ToolLib::getForWork($data->e['sequence']['farm'], $data->e['action']);
 
 		$data->cAction = \farm\ActionLib::getByFarm($data->e['sequence']['farm'], category: CATEGORIE_CULTURE);
-
-		$data->cToolAvailable = \farm\ToolLib::getForWork($data->e['sequence']['farm'], $data->e['action']);
 
 		throw new ViewAction($data);
 
@@ -72,7 +72,7 @@ $do = function($data) {
 	->doDelete($do);
 
 (new Page())
-	->post('getToolsField', function($data) {
+	->post('getFields', function($data) {
 
 		$eFarm = \farm\FarmLib::getById(POST('farm'))->validate('canWrite');
 		$eAction = \farm\ActionLib::getById(POST('action'))->validate('canRead');
@@ -82,10 +82,10 @@ $do = function($data) {
 				'farm' => $eFarm
 			]),
 			'action' => $eAction,
-			'cTool' => new Collection()
+			'cTool' => new Collection(),
+			'hasTools' => \farm\ToolLib::getForWork($eFarm, $eAction),
+			'cMethod' => \farm\MethodLib::getForWork($eFarm, $eAction)
 		]);
-
-		$data->cToolAvailable = \farm\ToolLib::getForWork($eFarm, $eAction);
 
 		throw new \ViewAction($data);
 

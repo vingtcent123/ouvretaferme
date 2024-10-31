@@ -1,16 +1,22 @@
 <?php
 new AdaptativeView('create', function($data, PanelTemplate $t) {
 
-	return (new \production\FlowUi())->create($data->eSequence, $data->cAction);
+	return (new \production\FlowUi())->create($data->e, $data->cAction);
 
 });
 
-new AdaptativeView('getToolsField', function($data, AjaxTemplate $t) {
+new AdaptativeView('getFields', function($data, AjaxTemplate $t) {
 
-	if($data->cToolAvailable->empty()) {
-		$t->push('field', '');
+	if($data->eFlow['hasTools']->empty()) {
+		$t->push('tools', '');
 	} else {
-		$t->push('field', (new \production\FlowUi())->getToolsField(new \util\FormUi(), $data->eFlow));
+		$t->push('tools', (new \util\FormUi())->dynamicGroup($data->eFlow, 'toolsList'));
+	}
+
+	if($data->eFlow['cMethod']->empty()) {
+		$t->push('methods', '');
+	} else {
+		$t->push('methods', (new \util\FormUi())->dynamicGroup($data->eFlow, 'method'));
 	}
 
 
@@ -18,7 +24,7 @@ new AdaptativeView('getToolsField', function($data, AjaxTemplate $t) {
 
 new AdaptativeView('update', function($data, PanelTemplate $t) {
 
-	return (new \production\FlowUi())->update($data->eSequence, $data->e, $data->cAction, $data->cToolAvailable);
+	return (new \production\FlowUi())->update($data->eSequence, $data->e, $data->cAction);
 
 });
 

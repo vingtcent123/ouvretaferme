@@ -48,6 +48,7 @@ class FlowModel extends \ModuleModel {
 			'sequence' => ['element32', 'production\Sequence', 'cast' => 'element'],
 			'farm' => ['element32', 'farm\Farm', 'cast' => 'element'],
 			'action' => ['element32', 'farm\Action', 'cast' => 'element'],
+			'method' => ['element32', 'farm\Method', 'null' => TRUE, 'cast' => 'element'],
 			'description' => ['text16', 'min' => 1, 'max' => NULL, 'null' => TRUE, 'cast' => 'string'],
 			'fertilizer' => ['json', 'null' => TRUE, 'cast' => 'array'],
 			'weekOnly' => ['int8', 'min' => 1, 'max' => 52, 'null' => TRUE, 'cast' => 'int'],
@@ -66,7 +67,7 @@ class FlowModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'crop', 'plant', 'sequence', 'farm', 'action', 'description', 'fertilizer', 'weekOnly', 'weekStart', 'weekStop', 'yearOnly', 'yearStart', 'yearStop', 'seasonOnly', 'seasonStart', 'seasonStop', 'positionOnly', 'positionStart', 'positionStop', 'frequency'
+			'id', 'crop', 'plant', 'sequence', 'farm', 'action', 'method', 'description', 'fertilizer', 'weekOnly', 'weekStart', 'weekStop', 'yearOnly', 'yearStart', 'yearStop', 'seasonOnly', 'seasonStart', 'seasonStop', 'positionOnly', 'positionStart', 'positionStop', 'frequency'
 		]);
 
 		$this->propertiesToModule += [
@@ -75,6 +76,7 @@ class FlowModel extends \ModuleModel {
 			'sequence' => 'production\Sequence',
 			'farm' => 'farm\Farm',
 			'action' => 'farm\Action',
+			'method' => 'farm\Method',
 		];
 
 		$this->indexConstraints = array_merge($this->indexConstraints, [
@@ -146,6 +148,10 @@ class FlowModel extends \ModuleModel {
 
 	public function whereAction(...$data): FlowModel {
 		return $this->where('action', ...$data);
+	}
+
+	public function whereMethod(...$data): FlowModel {
+		return $this->where('method', ...$data);
 	}
 
 	public function whereDescription(...$data): FlowModel {

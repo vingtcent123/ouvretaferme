@@ -7,6 +7,7 @@ class Flow extends FlowElement {
 
 		return [
 			'action' => ['fqn', 'name', 'color', 'series'],
+			'method' => ['name']
 		] + parent::getSelection();
 
 	}
@@ -167,6 +168,16 @@ class Flow extends FlowElement {
 			'seasonOnly.prepare' => $prepareSeason,
 			'seasonStart.prepare' => $prepareSeason,
 			'seasonStop.prepare' => $prepareSeason,
+
+			'method.check' => function(\farm\Method $eMethod): bool {
+
+				$this->expects(['action']);
+
+				return $eMethod->empty() or \farm\Method::model()
+					->whereAction($this['action'])
+					->exists($eMethod);
+
+			},
 
 			'toolsList.check' => function(mixed $tools): bool {
 

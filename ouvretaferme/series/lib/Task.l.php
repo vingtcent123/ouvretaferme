@@ -1139,6 +1139,7 @@ class TaskLib extends TaskCrud {
 				'series' => $eSeries,
 				'plant' => $eFlow['plant'],
 				'action' => $eAction,
+				'method' => $eFlow['method'],
 				'category' => $eCategory,
 				'description' => $eFlow['description'],
 				'fertilizer' => $eFlow['fertilizer'],

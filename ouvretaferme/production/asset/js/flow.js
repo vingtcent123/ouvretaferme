@@ -80,22 +80,19 @@ document.delegateEventListener('click', 'input[data-action="flow-write-action-ch
 		form.qs('[data-wrapper="fertilizer"]', node => node.classList.add('hide'))
 	}
 
-	this.firstParent('form').ref('tools', wrapper => {
+	new Ajax.Query(this)
+		.url('/production/flow:getFields')
+		.body({
+			farm: e.target.dataset.farm,
+			action: this.value
+		})
+		.fetch()
+		.then((json) => {
 
-		new Ajax.Query(this)
-			.url('/production/flow:getToolsField')
-			.body({
-				farm: wrapper.dataset.farm,
-				action: this.value
-			})
-			.fetch()
-			.then((json) => {
+			form.ref('tools', wrapper => wrapper.renderInner(json.tools));
+			form.ref('methods', wrapper => wrapper.renderInner(json.methods));
 
-				wrapper.renderInner(json.field);
-
-			});
-
-	});
+		});
 
 });
 

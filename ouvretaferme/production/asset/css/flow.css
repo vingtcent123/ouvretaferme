@@ -455,6 +455,14 @@ div.flow-timeline .batch-one {
 
 }
 
+span.flow-method-name {
+	display: inline-block;
+	font-size: 80%;
+	padding: 0.125rem 0.5rem;
+	border: 2px solid var(--border);
+	border-radius: var(--radius);
+}
+
 .flow-harvest-out-period {
 	font-size: 80%;
 	opacity: 0.5;

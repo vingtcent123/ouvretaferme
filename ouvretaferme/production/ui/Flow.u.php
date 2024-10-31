@@ -230,6 +230,7 @@ class FlowUi {
 												$h .= '<a href="/production/flow:update?id='.$eFlow['id'].'" class="flow-timeline-text">';
 
 													$h .= \farm\ActionUi::text($eFlow).' ';
+													$h .= self::getFlowComplement($eFlow);
 													$h .= (new \production\FlowUi())->getMore($eFlow);
 
 													if($eFlow['frequency'] !== NULL) {
@@ -318,6 +319,18 @@ class FlowUi {
 			}
 
 		$h .= '</div>';
+
+		return $h;
+
+	}
+
+	public function getFlowComplement(Flow $eFlow) {
+
+		$h = '';
+
+		if($eFlow['method']->notEmpty()) {
+			$h .= ' <span class="flow-method-name">'.encode($eFlow['method']['name']).'</span> ';
+		}
 
 		return $h;
 
@@ -616,19 +629,23 @@ class FlowUi {
 
 	}
 
-	public function create(Sequence $eSequence, \Collection $cAction): \Panel {
+	public function create(Flow $eFlow, \Collection $cAction): \Panel {
 
 		$form = new \util\FormUi();
 
-		$eFlow = new Flow([
-			'sequence' => $eSequence,
+		$eFlow->merge([
 			'crop' => new Crop(),
 			'yearOnly' => 0,
 			'yearStart' => 0,
 			'yearStop' => 0,
 			'frequency' => Flow::W1,
-			'action' => new \farm\Action()
+			'action' => new \farm\Action(),
+			'cTool' => new \Collection(),
+			'hasTools' => new \Collection(),
+			'cMethod' => new \Collection()
 		]);
+
+		$eSequence = $eFlow['sequence'];
 
 		if($eSequence['cCrop']->count() > 1) {
 			$cAction->map(fn($eAction) => $eAction['disabled'] = ($eAction['fqn'] === ACTION_RECOLTE));
@@ -662,7 +679,8 @@ class FlowUi {
 
 			$h .= $form->dynamicGroup($eFlow, 'description');
 
-			$h .= '<div data-ref="tools" data-farm="'.$eFlow['sequence']['farm']['id'].'"></div>';
+			$h .= $this->getMethodsGroup($form, $eFlow);
+			$h .= $this->getToolsGroup($form, $eFlow);
 
 			$h .= $form->group(
 				content: $form->submit(s("Ajouter l'intervention"))
@@ -678,7 +696,7 @@ class FlowUi {
 
 	}
 
-	public function update(Sequence $eSequence, Flow $eFlow, \Collection $cAction, \Collection $cToolAvailable): \Panel {
+	public function update(Sequence $eSequence, Flow $eFlow, \Collection $cAction): \Panel {
 
 		$form = new \util\FormUi();
 
@@ -706,11 +724,8 @@ class FlowUi {
 
 			$h .= $form->dynamicGroup($eFlow, 'description');
 
-			$h .= '<div data-ref="tools" data-farm="'.$eFlow['sequence']['farm']['id'].'">';
-				if($cToolAvailable->notEmpty()) {
-					$h .= $this->getToolsField($form, $eFlow);
-				}
-			$h .= '</div>';
+			$h .= $this->getMethodsGroup($form, $eFlow);
+			$h .= $this->getToolsGroup($form, $eFlow);
 
 			$h .= $form->group(
 				content: $form->submit(s("Modifier"))
@@ -723,6 +738,30 @@ class FlowUi {
 			subTitle: SequenceUi::getPanelHeader($eSequence),
 			body: $h,
 		);
+
+	}
+
+	public function getMethodsGroup(\util\FormUi $form, Flow $eFlow): string {
+
+		$h = '<div data-ref="methods" data-farm="'.$eFlow['sequence']['farm']['id'].'">';
+			if($eFlow['cMethod']->notEmpty()) {
+				$h .= $form->dynamicGroup($eFlow, 'method');
+			}
+		$h .= '</div>';
+
+		return $h;
+
+	}
+
+	public function getToolsGroup(\util\FormUi $form, Flow $eFlow): string {
+
+		$h = '<div data-ref="tools" data-farm="'.$eFlow['sequence']['farm']['id'].'">';
+			if($eFlow['hasTools']->notEmpty()) {
+				$h .= $form->dynamicGroup($eFlow, 'toolsList');
+			}
+		$h .= '</div>';
+
+		return $h;
 
 	}
 
@@ -854,12 +893,6 @@ class FlowUi {
 
 	}
 
-	public function getToolsField(\util\FormUi $form, Flow $eFlow): string {
-
-		return $form->dynamicGroup($eFlow, 'toolsList');
-
-	}
-
 	protected function getPeriodField(\util\FormUi $form, Flow $eFlow): string {
 
 		if(($eFlow['weekStart'] ?? NULL) === NULL) {
@@ -979,6 +1012,7 @@ class FlowUi {
 		$d = Flow::model()->describer($property, [
 			'crop' => s("Production"),
 			'action' => s("Intervention"),
+			'method' => s("Méthode de travail"),
 			'fertilizer' => s("Apports"),
 			'description' => s("Observation sur l'intervention"),
 			'seasonOnly' => s("Quelle saison pour cette intervention ?"),
@@ -1006,7 +1040,8 @@ class FlowUi {
 						return [
 							'disabled' => ($eAction['disabled'] ?? FALSE) ? 'disabled' : NULL,
 							'data-action' => 'flow-write-action-change',
-							'data-fqn' => $eAction['fqn']
+							'data-fqn' => $eAction['fqn'],
+							'data-farm' => $eAction['farm']['id'],
 						];
 					}
 				];
@@ -1045,6 +1080,11 @@ class FlowUi {
 					Flow::M1 => s("1 fois par mois"),
 				];
 				$d->field = 'select';
+				break;
+
+			case 'method' :
+				$d->placeholder = s("Aucune");
+				$d->values = fn(Flow $e) => $e['cMethod'] ?? $e->expects(['cMethod']);
 				break;
 
 			case 'toolsList' :
