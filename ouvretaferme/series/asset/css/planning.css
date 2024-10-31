@@ -386,3 +386,17 @@ div.planning-week-title {
 
 }
 
+div.planning-week-title-container {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+}
+
+div.planning-week-title-action a {
+	text-transform: none;
+	letter-spacing: 0;
+	font-weight: normal;
+	color: white;
+	font-size: 0.9rem;
+	color: #fffa;
+}

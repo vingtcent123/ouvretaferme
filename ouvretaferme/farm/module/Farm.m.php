@@ -67,6 +67,7 @@ class FarmModel extends \ModuleModel {
 			'defaultAlleyWidth' => ['int16', 'min' => 1, 'max' => NULL, 'null' => TRUE, 'cast' => 'int'],
 			'calendarMonthStart' => ['int8', 'min' => 7, 'max' => 12, 'null' => TRUE, 'cast' => 'int'],
 			'calendarMonthStop' => ['int8', 'min' => 1, 'max' => 6, 'null' => TRUE, 'cast' => 'int'],
+			'planningDelayedMax' => ['int8', 'min' => 1, 'max' => 6, 'null' => TRUE, 'cast' => 'int'],
 			'featureTime' => ['bool', 'cast' => 'bool'],
 			'featureStock' => ['bool', 'cast' => 'bool'],
 			'featureDocument' => ['enum', [\farm\Farm::ALL, \farm\Farm::PRIVATE, \farm\Farm::PRO, \farm\Farm::DISABLED], 'cast' => 'enum'],
@@ -79,7 +80,7 @@ class FarmModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'name', 'vignette', 'place', 'placeLngLat', 'url', 'description', 'logo', 'banner', 'seasonFirst', 'seasonLast', 'rotationYears', 'rotationExclude', 'quality', 'defaultBedLength', 'defaultBedWidth', 'defaultAlleyWidth', 'calendarMonthStart', 'calendarMonthStop', 'featureTime', 'featureStock', 'featureDocument', 'stockNotes', 'stockNotesUpdatedAt', 'stockNotesUpdatedBy', 'startedAt', 'createdAt', 'status'
+			'id', 'name', 'vignette', 'place', 'placeLngLat', 'url', 'description', 'logo', 'banner', 'seasonFirst', 'seasonLast', 'rotationYears', 'rotationExclude', 'quality', 'defaultBedLength', 'defaultBedWidth', 'defaultAlleyWidth', 'calendarMonthStart', 'calendarMonthStop', 'planningDelayedMax', 'featureTime', 'featureStock', 'featureDocument', 'stockNotes', 'stockNotesUpdatedAt', 'stockNotesUpdatedBy', 'startedAt', 'createdAt', 'status'
 		]);
 
 		$this->propertiesToModule += [
@@ -106,6 +107,9 @@ class FarmModel extends \ModuleModel {
 
 			case 'calendarMonthStop' :
 				return 3;
+
+			case 'planningDelayedMax' :
+				return 2;
 
 			case 'featureTime' :
 				return TRUE;
@@ -254,6 +258,10 @@ class FarmModel extends \ModuleModel {
 
 	public function whereCalendarMonthStop(...$data): FarmModel {
 		return $this->where('calendarMonthStop', ...$data);
+	}
+
+	public function wherePlanningDelayedMax(...$data): FarmModel {
+		return $this->where('planningDelayedMax', ...$data);
 	}
 
 	public function whereFeatureTime(...$data): FarmModel {

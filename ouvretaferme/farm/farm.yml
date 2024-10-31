@@ -42,6 +42,7 @@ Farm:
   defaultAlleyWidth: ?int16(1, null)
   calendarMonthStart: ?int8(7, 12) = 10
   calendarMonthStop: ?int8(1, 6) = 3
+  planningDelayedMax: ?int8(1, 6) = 2
   featureTime: bool = TRUE
   featureStock: bool = FALSE
   featureDocument: enum(ALL, PRIVATE, PRO, DISABLED) = PRO

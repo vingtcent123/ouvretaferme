@@ -338,8 +338,17 @@ class TaskUi {
 
 			$h .= '<div class="'.$class.'">';
 
-				$h .= '<div class="planning-week-title">';
-					$h .= s("Retardé");
+				$h .= '<div class="planning-week-title planning-week-title-container">';
+					$h .= '<div>'.s("Retardé").'</div>';
+					$h .= '<div class="planning-week-title-action">';
+						$h .= '<a data-dropdown="bottom-end" class="dropdown-toggle">'.p("depuis moins de {value} mois", "depuis moins de {value} mois", $eFarm['planningDelayedMax']).'</a>';
+						$h .= '<div class="dropdown-list bg-todo">';
+							$h .= '<div class="dropdown-title">'.s("N'afficher que les interventions retardées").'</div>';
+							$h .= '<a data-ajax="/farm/farm:doUpdatePlanningDelayedMax" post-id="'.$eFarm['id'].'" post-planning-delayed-max="1" class="dropdown-item">'.s("depuis moins de 1 mois").'</a>';
+							$h .= '<a data-ajax="/farm/farm:doUpdatePlanningDelayedMax" post-id="'.$eFarm['id'].'" post-planning-delayed-max="3" class="dropdown-item">'.s("depuis moins de 3 mois").'</a>';
+							$h .= '<a data-ajax="/farm/farm:doUpdatePlanningDelayedMax" post-id="'.$eFarm['id'].'" post-planning-delayed-max="6" class="dropdown-item">'.s("depuis moins de 6 mois").'</a>';
+						$h .= '</div>';
+					$h .= '</div>';
 				$h .= '</div>';
 
 				$cTaskFirst = $cccTask['delayed']->first();
