@@ -11,6 +11,7 @@ Setting::register('selling', [
 	'vatRates' => [
 
 		// France
+		0 => 0,
 		1 => 2.1,
 		2 => 5.5,
 		3 => 10,

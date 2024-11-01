@@ -1654,6 +1654,7 @@ class SaleUi {
 		/* La ferme permettra ultérieurement de personnaliser la TVA en fonction du pays */
 
 		return [
+			0 => $short ? s("0 %") : s("0 % - Pas de TVA"),
 			1 => $short ? s("2.1 %") : s("2.1 % - Taux particulier"),
 			2 => $short ? s("5.5 %") : s("5.5 % - Taux réduit"),
 			3 => $short ? s("10 %") : s("10 % - Taux intermédiaire"),
