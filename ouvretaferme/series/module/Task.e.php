@@ -487,7 +487,11 @@ class Task extends TaskElement {
 
 			},
 
-			'method.check' => function(\farm\Method $eMethod): bool {
+			'method.check' => function(\farm\Method $eMethod) use ($fw): bool {
+
+				if($fw->has('Task::action.check')) { // L'action génère déjà une erreur
+					return TRUE;
+				}
 
 				$this->expects(['action']);
 
