@@ -950,7 +950,7 @@ class FarmUi {
 		return [
 			Farmer::SHOP => s("Boutiques"),
 			//Farmer::CATALOG => s("Catalogues"),
-			Farmer::POINT => s("Modes de livraison"),
+			Farmer::POINT => s("Livraisons"),
 		];
 
 	}
