@@ -99,7 +99,7 @@ class PointLib extends PointCrud {
 			->whereStatus('!=', Point::DELETED, if: $onlyActive === FALSE)
 			->whereFarm($eFarm)
 			->sort([
-				'status' => SORT_DESC,
+				'status' => SORT_ASC,
 				'zone' => SORT_ASC,
 				'name' => SORT_ASC,
 				'type' => SORT_ASC,
