@@ -97,7 +97,16 @@ div.point-name h4 {
 div.point-name > div:last-child {
 	display: flex;
 	align-items: center;
-	column-gap: 0.5rem;
+	gap: 0.5rem;
+}
+
+@media (max-width: 575px) {
+
+	div.point-name > div:last-child {
+		align-items: end;
+		flex-direction: column-reverse;
+	}
+
 }
 
 div.point-name-used {
@@ -115,13 +124,8 @@ div.point-name-used {
 	display: block;
 	font-weight: normal;
 	line-height: 1;
-	margin-top: 1rem;
-	margin-left: 2.25rem;
+	margin-top: .5rem;
 	color: var(--muted);
-}
-
-label.point-element .point-address {
-	margin-left: 3.25rem;
 }
 
 .point-badge {

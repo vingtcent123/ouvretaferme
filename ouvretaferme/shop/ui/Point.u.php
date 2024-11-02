@@ -287,6 +287,15 @@ class PointUi {
 							$h .= '<div class="mt-1">'.nl2br(encode($e['zone'])).'</div>';
 						}
 					}
+
+					if($e['type'] === Point::PLACE) {
+						$h .= '<div class="point-address">';
+							if($e['address']) {
+								$h .= nl2br(encode($e['address'])).'<br/>';
+							}
+							$h .= encode($e['place']);
+						$h .= '</div>';
+					}
 				$h .= '</div>';
 
 				if($mode === 'write' and $e->canWrite()) {
@@ -316,15 +325,6 @@ class PointUi {
 				}
 
 			$h .= '</div>';
-
-			if($e['type'] === Point::PLACE) {
-				$h .= '<div class="point-address">';
-					if($e['address']) {
-						$h .= nl2br(encode($e['address'])).'<br/>';
-					}
-					$h .= encode($e['place']);
-				$h .= '</div>';
-			}
 
 			if($mode === 'update' or $mode === 'write') {
 

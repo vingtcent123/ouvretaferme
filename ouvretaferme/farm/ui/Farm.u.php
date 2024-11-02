@@ -546,7 +546,7 @@ class FarmUi {
 						$h .= \Asset::icon('piggy-bank');
 						$h .= '<span>'.s("Commercialisation").'</span>';
 					$h .= '</a>';
-					$h .= '<a href="'.FarmUi::urlShop($eFarm).'" data-tab="shop" class="farm-tab '.($tab === 'map' ? 'selected' : '').'">';
+					$h .= '<a href="'.FarmUi::urlShop($eFarm).'" data-tab="shop" class="farm-tab '.($tab === 'shop' ? 'selected' : '').'">';
 						$h .= '<span class="farm-tab-off">'.\Asset::icon('cart').'</span>';
 						$h .= '<span class="farm-tab-on">'.\Asset::icon('cart-fill').'</span>';
 						$h .= '<span>'.s("Vente en ligne").'</span>';
