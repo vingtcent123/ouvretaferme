@@ -210,6 +210,7 @@
 		\farm\FarmerLib::setView('viewShop', $data->eFarm, \farm\Farmer::POINT);
 
 		$data->ccPoint = \shop\PointLib::getByFarm($data->eFarm);
+		$data->pointsUsed = \shop\PointLib::getUsedByFarm($data->eFarm);
 
 		throw new ViewAction($data);
 

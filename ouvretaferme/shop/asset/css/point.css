@@ -76,6 +76,14 @@ div.point-name {
 	column-gap: 0.75rem;
 }
 
+@media (max-width: 575px) {
+
+	div.point-name {
+		column-gap: 0.5rem;
+	}
+
+}
+
 div.point-name svg.point-icon {
 	font-size: 1.25rem;
 	margin-right: 0.25rem;
@@ -90,6 +98,13 @@ div.point-name > div:last-child {
 	display: flex;
 	align-items: center;
 	column-gap: 0.5rem;
+}
+
+div.point-name-used {
+	color: var(--success);
+	font-size: 0.8rem;
+	text-align: right;
+	line-height: 1.2;
 }
 
 .point-description  {

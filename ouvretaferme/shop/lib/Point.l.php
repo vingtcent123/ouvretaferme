@@ -108,6 +108,33 @@ class PointLib extends PointCrud {
 
 	}
 
+	public static function getUsedByFarm(\farm\Farm $eFarm): array {
+
+		$cDate = Date::model()
+			->select(['shop', 'points'])
+			->whereFarm($eFarm)
+			->whereDeliveryDate('>', new \Sql('NOW() - INTERVAL 1 MONTH'))
+			->getCollection();
+
+		$points = [];
+
+		foreach($cDate as $eDate) {
+
+			$eShop = $eDate['shop'];
+
+			foreach($eDate['points'] as $point) {
+				$points[$point] ??= [];
+				$points[$point][] = $eShop['id'];
+			}
+
+		}
+
+		array_walk($points, fn(&$value) => $value = array_unique($value));
+
+		return $points;
+
+	}
+
 	public static function create(Point $e): void {
 
 		$e->expects(['farm', 'type']);

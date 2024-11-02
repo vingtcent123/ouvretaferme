@@ -22,7 +22,7 @@ class PointUi {
 
 	}
 
-	public function getList(\farm\Farm $eFarm, \Collection $cc): string {
+	public function getList(\farm\Farm $eFarm, \Collection $cc, array $pointsUsed = []): string {
 
 		$h = '';
 
@@ -30,10 +30,10 @@ class PointUi {
 
 			$h .= '<div>';
 				$h .= '<h3>'.s("Livraison en point de retrait").'</h3>';
-				$h .= '<div class="util-block">';
+				$h .= '<div class="util-block stick-xs">';
 
 					if($cc->offsetExists(Point::PLACE)) {
-						$h .= $this->getPoints('write', new Shop(), $cc[Point::PLACE]);
+						$h .= $this->getPoints('write', new Shop(), $cc[Point::PLACE], pointsUsed: $pointsUsed);
 					} else {
 
 						if($eFarm->canManage()) {
@@ -54,10 +54,10 @@ class PointUi {
 			$h .= '</div>';
 			$h .= '<div>';
 				$h .= '<h3>'.s("Livraison à domicile").'</h3>';
-				$h .= '<div class="util-block">';
+				$h .= '<div class="util-block stick-xs">';
 
 					if($cc->offsetExists(Point::HOME)) {
-						$h .= $this->getPoints('write', new Shop(), $cc[Point::HOME]);
+						$h .= $this->getPoints('write', new Shop(), $cc[Point::HOME], pointsUsed: $pointsUsed);
 					} else {
 
 						if($eFarm->canManage()) {
@@ -182,7 +182,7 @@ class PointUi {
 
 			$h .= '<div>';
 				$h .= '<h2>'.s("Livraison en point de retrait").'</h2>';
-				$h .= '<div class="util-block">';
+				$h .= '<div class="util-block stick-xs">';
 
 					if($eShop['ccPoint']->offsetExists(Point::PLACE)) {
 						$h .= $this->getPoints('date', $eShop, $eShop['ccPoint'][Point::PLACE], cPointSelected: $cc[Point::PLACE] ?? new \Collection(), eDate: $eDate);
@@ -196,7 +196,7 @@ class PointUi {
 			$h .= '</div>';
 			$h .= '<div>';
 				$h .= '<h2>'.s("Livraison à domicile").'</h2>';
-				$h .= '<div class="util-block">';
+				$h .= '<div class="util-block stick-xs">';
 
 					if($eShop['ccPoint']->offsetExists(Point::HOME)) {
 						$h .= $this->getPoints('date', $eShop, $eShop['ccPoint'][Point::HOME], cPointSelected: $cc[Point::HOME] ?? new \Collection(), eDate: $eDate);
@@ -218,7 +218,7 @@ class PointUi {
 
 	}
 
-	public function getPoints(string $mode, Shop $eShop, \Collection $c, Point $ePointSelected = new Point(), \Collection $cPointSelected = new \Collection(), Date $eDate = new Date()): string {
+	public function getPoints(string $mode, Shop $eShop, \Collection $c, Point $ePointSelected = new Point(), \Collection $cPointSelected = new \Collection(), Date $eDate = new Date(), array $pointsUsed = []): string {
 
 		if($ePointSelected->notEmpty()) {
 			$cPointSelected[] = $ePointSelected;
@@ -227,7 +227,7 @@ class PointUi {
 		$h = '<div class="point-list">';
 
 			foreach($c as $e) {
-				$h .= $this->getPoint($mode, $eShop, $e, $cPointSelected, $eDate);
+				$h .= $this->getPoint($mode, $eShop, $e, $cPointSelected, $eDate, $pointsUsed);
 			}
 
 		$h .= '</div>';
@@ -236,7 +236,7 @@ class PointUi {
 
 	}
 
-	public function getPoint(string $mode, Shop $eShop, Point $e, \Collection $cPointSelected = new \Collection(), Date $eDate = new Date()): string {
+	public function getPoint(string $mode, Shop $eShop, Point $e, \Collection $cPointSelected = new \Collection(), Date $eDate = new Date(), array $pointsUsed = []): string {
 
 		$tag = ($mode === 'update') ? 'label' : 'div';
 
@@ -292,6 +292,9 @@ class PointUi {
 				if($mode === 'write' and $e->canWrite()) {
 
 					$h .= '<div>';
+						if(array_key_exists($e['id'], $pointsUsed)) {
+							$h .= '<div class="point-name-used" title="'.s("Sur le dernier mois").'">'.\Asset::icon('check', ['class' => 'hide-md-down']).' '.p("Activé récemment<br/>sur {value} boutique", "Activé récemment<br/>sur {value} boutiques", count($pointsUsed[$e['id']])).'</div>';
+						}
 						$h .= '<a data-dropdown="bottom-start" class="dropdown-toggle btn btn-outline-primary">'.\Asset::icon('gear-fill').'</a>';
 						$h .= '<div class="dropdown-list">';
 							$h .= '<div class="dropdown-title">'.encode($e['name']).'</div>';

@@ -594,7 +594,7 @@ new AdaptativeView('/ferme/{id}/livraison', function($data, FarmTemplate $t) {
 	$t->package('main')->updateNavShop($t->canonical);
 
 	echo '<h1>'.s("Modes de livraison").'</h1>';
-	echo (new \shop\PointUi())->getList($data->eFarm, $data->ccPoint);
+	echo (new \shop\PointUi())->getList($data->eFarm, $data->ccPoint, $data->pointsUsed);
 
 });
 
