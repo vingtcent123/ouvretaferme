@@ -174,7 +174,7 @@
 
 		$data->eFarm->validate('canSelling');
 
-		\farm\FarmerLib::setView('viewSelling', $data->eFarm, \farm\Farmer::SHOP);
+		\farm\FarmerLib::setView('viewShop', $data->eFarm, \farm\Farmer::SHOP);
 
 		// Liste des boutiques
 		$data->cShop = \shop\ShopLib::getForList($data->eFarm);
@@ -193,12 +193,23 @@
 
 			\farm\FarmerLib::setView('viewShopCurrent', $data->eFarm, $data->eShop);
 
-			$data->eShop['ccPoint'] = \shop\PointLib::getByShop($data->eShop, onlyActive: FALSE);
+			$data->eShop['ccPoint'] = \shop\PointLib::getByFarm($data->eFarm, onlyActive: FALSE);
 
 			// Liste des dates de la boutique sélectionnée
 			$data->eShop['cDate'] = \shop\DateLib::getByShop($data->eShop);
 
 		}
+
+		throw new ViewAction($data);
+
+	})
+	->get('/ferme/{id}/livraison', function($data) {
+
+		$data->eFarm->validate('canSelling');
+
+		\farm\FarmerLib::setView('viewShop', $data->eFarm, \farm\Farmer::POINT);
+
+		$data->ccPoint = \shop\PointLib::getByFarm($data->eFarm, onlyActive: FALSE);
 
 		throw new ViewAction($data);
 

@@ -11,7 +11,7 @@ class ProductUi {
 	}
 
 	public static function link(Product $eProduct, bool $newTab = FALSE): string {
-		return '<a href="'.self::url($eProduct).'" '.($newTab ? 'target="_blank"' : '').'>'.$eProduct->getName().'</a>';
+		return '<a href="'.self::url($eProduct).'" '.($newTab ? 'target="_blank"' : '').'>'.encode($eProduct->getName()).'</a>';
 	}
 
 	public static function url(Product $eProduct): string {

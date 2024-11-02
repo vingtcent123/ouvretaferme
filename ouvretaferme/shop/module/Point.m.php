@@ -12,6 +12,7 @@ abstract class PointElement extends \Element {
 
 	const ACTIVE = 'active';
 	const INACTIVE = 'inactive';
+	const DELETED = 'deleted';
 
 	public static function getSelection(): array {
 		return Point::model()->getProperties();
@@ -43,11 +44,10 @@ class PointModel extends \ModuleModel {
 
 		$this->properties = array_merge($this->properties, [
 			'id' => ['serial32', 'cast' => 'int'],
-			'shop' => ['element32', 'shop\Shop', 'cast' => 'element'],
 			'farm' => ['element32', 'farm\Farm', 'cast' => 'element'],
 			'type' => ['enum', [\shop\Point::HOME, \shop\Point::PLACE], 'cast' => 'enum'],
 			'zone' => ['text16', 'min' => 1, 'max' => NULL, 'null' => TRUE, 'cast' => 'string'],
-			'name' => ['text8', 'min' => 1, 'max' => NULL, 'null' => TRUE, 'cast' => 'string'],
+			'name' => ['text8', 'min' => 1, 'max' => NULL, 'cast' => 'string'],
 			'description' => ['text8', 'min' => 1, 'max' => NULL, 'null' => TRUE, 'cast' => 'string'],
 			'place' => ['text8', 'min' => 1, 'max' => NULL, 'null' => TRUE, 'cast' => 'string'],
 			'address' => ['text16', 'null' => TRUE, 'cast' => 'string'],
@@ -57,21 +57,20 @@ class PointModel extends \ModuleModel {
 			'orderMin' => ['int32', 'min' => 0, 'max' => NULL, 'null' => TRUE, 'cast' => 'int'],
 			'shipping' => ['decimal', 'digits' => 8, 'decimal' => 2, 'min' => 0.0, 'max' => NULL, 'null' => TRUE, 'cast' => 'float'],
 			'shippingUntil' => ['int32', 'min' => 0, 'max' => NULL, 'null' => TRUE, 'cast' => 'int'],
-			'status' => ['enum', [\shop\Point::ACTIVE, \shop\Point::INACTIVE], 'cast' => 'enum'],
+			'status' => ['enum', [\shop\Point::ACTIVE, \shop\Point::INACTIVE, \shop\Point::DELETED], 'cast' => 'enum'],
 			'createdAt' => ['datetime', 'cast' => 'string'],
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'shop', 'farm', 'type', 'zone', 'name', 'description', 'place', 'address', 'paymentCard', 'paymentTransfer', 'paymentOffline', 'orderMin', 'shipping', 'shippingUntil', 'status', 'createdAt'
+			'id', 'farm', 'type', 'zone', 'name', 'description', 'place', 'address', 'paymentCard', 'paymentTransfer', 'paymentOffline', 'orderMin', 'shipping', 'shippingUntil', 'status', 'createdAt'
 		]);
 
 		$this->propertiesToModule += [
-			'shop' => 'shop\Shop',
 			'farm' => 'farm\Farm',
 		];
 
 		$this->uniqueConstraints = array_merge($this->uniqueConstraints, [
-			['shop', 'name']
+			['farm', 'name']
 		]);
 
 	}
@@ -120,10 +119,6 @@ class PointModel extends \ModuleModel {
 
 	public function whereId(...$data): PointModel {
 		return $this->where('id', ...$data);
-	}
-
-	public function whereShop(...$data): PointModel {
-		return $this->where('shop', ...$data);
 	}
 
 	public function whereFarm(...$data): PointModel {

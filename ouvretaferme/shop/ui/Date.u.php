@@ -950,7 +950,7 @@ class DateUi {
 			'orderEndAt' => s("Fin des commandes"),
 			'deliveryDate' => s("Date de livraison des commandes"),
 			'status' => s("Statut"),
-			'points' => s("Modes de livraison pour cette date"),
+			'points' => s("Modes de livraison pour cette vente"),
 		]);
 
 		switch($property) {

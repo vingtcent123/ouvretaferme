@@ -25,21 +25,16 @@ class PointUi {
 
 		$h = '<div class="util-block-help">';
 			$h .= '<h4>'.s("Bienvenue sur la nouvelle boutique de votre ferme !").'</h4>';
-			$h .= '<p>'.s("Vous avez créé avec succès votre boutique.").'</p>';
-			$h .= '<p>'.s("Avant de créer votre première vente, choisissez la façon dont vous souhaitez livrer vos clients :").'</p>';
-			$h .= '<ul>';
-				$h .= '<li>'.s("En point de retrait").'</li>';
-				$h .= '<li>'.s("À domicile").'</li>';
-				$h .= '<li>'.s("Pas de mode de livraison").'</li>';
-			$h .= '</ul>';
-			$h .= '<a href="/shop/configuration:update?id='.$eShop['id'].'&tab=points" class="btn btn-secondary">'.s("Configurer les modes de livraison").'</a>';
+			$h .= '<p>'.s("Vous avez créé avec succès la boutique qui vous permettra de vendre votre production en ligne.").'<br/>'.s("Avant de créer votre première vente, choisissez la façon dont vous souhaitez livrer vos clients, à domicile ou en point de retrait.").'</p>';
+			$h .= '<p class="mb-2"><a href="'.\farm\FarmUi::urlShopPoint($eShop['farm']).'" class="btn btn-secondary">'.s("Configurer les modes de livraison").'</a></p>';
+			$h .= '<p>'.s("Vous pouvez également <link>désactiver le choix du mode de livraison</link> pour vos clients lorsqu'ils commandent sur la boutique, ce sera à vous de les informer de la façon dont ils peuvent retirer leurs commandes.", ['link' => '<a data-ajax="/shop/:doUpdatePoint" post-id="'.$eShop['id'].'" post-has-point="0" data-confirm="'.s("Souhaitez-vous réellement réactiver le choix du mode de livraison sur votre boutique ?").'">']).'</p>';
 		$h .= '</div>';
 
 		return $h;
 
 	}
 
-	public function getList(Shop $eShop, \Collection $cc): string {
+	public function getList(\farm\Farm $eFarm, \Collection $cc): string {
 
 		$h = '';
 
@@ -50,21 +45,21 @@ class PointUi {
 				$h .= '<div class="util-block">';
 
 					if($cc->offsetExists(Point::PLACE)) {
-						$h .= $this->getPoints('write', $eShop, $cc[Point::PLACE]);
+						$h .= $this->getPoints('write', new Shop(), $cc[Point::PLACE]);
 					} else {
 
-						if($eShop->canWrite()) {
+						if($eFarm->canManage()) {
 							$h .= '<div class="util-info">';
-								$h .= s("La livraison en point de retrait collectif n'est pas activée sur votre boutique. Pour l'activer, ajoutez un premier point de retrait !");
+								$h .= s("La livraison en point de retrait collectif n'est pas activée sur votre ferme. Pour l'activer, ajoutez un premier point de retrait !");
 							$h .= '</div>';
 						} else {
-							$h .= s("La livraison en point de retrait collectif n'est pas activée sur la boutique.");
+							$h .= s("La livraison en point de retrait collectif n'est pas activée sur la ferme.");
 						}
 
 					}
 
-					if($eShop->canWrite()) {
-						$h .= '<a href="/shop/point:create?shop='.$eShop['id'].'&type='.Point::PLACE.'" class="btn btn-outline-primary">'.\Asset::icon('plus-circle').' '.s("Ajouter un point de retrait").'</a>';
+					if($eFarm->canManage()) {
+						$h .= '<a href="/shop/point:create?farm='.$eFarm['id'].'&type='.Point::PLACE.'" class="btn btn-outline-primary">'.\Asset::icon('plus-circle').' '.s("Ajouter un point de retrait").'</a>';
 					}
 
 				$h .= '</div>';
@@ -74,21 +69,21 @@ class PointUi {
 				$h .= '<div class="util-block">';
 
 					if($cc->offsetExists(Point::HOME)) {
-						$h .= $this->getPoints('write', $eShop, $cc[Point::HOME]);
+						$h .= $this->getPoints('write', new Shop(), $cc[Point::HOME]);
 					} else {
 
-						if($eShop->canWrite()) {
+						if($eFarm->canManage()) {
 							$h .= '<div class="util-info">';
-								$h .= s("La livraison à domicile n'est pas activée sur votre boutique. Pour l'activer, indiquez les zones géographiques dans lesquelles vous acceptez de livrer vos clients !");
+								$h .= s("La livraison à domicile n'est pas activée sur votre ferme. Pour l'activer, créez une première tournée avec les zones géographiques dans lesquelles vous acceptez de livrer vos clients !");
 							$h .= '</div>';
 						} else {
-							$h .= s("La livraison à domicile n'est pas activée sur la boutique.");
+							$h .= s("La livraison à domicile n'est pas activée sur la ferme   .");
 						}
 
-						if($eShop->canWrite()) {
-							$h .= '<a href="/shop/point:create?shop='.$eShop['id'].'&type='.Point::HOME.'" class="btn btn-outline-primary">'.\Asset::icon('plus-circle').' '.s("Activer la livraison à domicile ").'</a>';
-						}
+					}
 
+					if($eFarm->canManage()) {
+						$h .= '<a href="/shop/point:create?farm='.$eFarm['id'].'&type='.Point::HOME.'" class="btn btn-outline-primary">'.\Asset::icon('plus-circle').' '.s("Ajouter une tournée ").'</a>';
 					}
 
 				$h .= '</div>';
@@ -279,23 +274,30 @@ class PointUi {
 
 		}
 
-		$title = match($e['type']) {
-			Point::PLACE => encode($e['name']),
-			Point::HOME => nl2br(encode($e['zone'])),
-		};
-
-		$orderMin = $e['orderMin'] ?? $eShop['orderMin'];
-		$shipping = $e['shipping'] ?? $eShop['shipping'];
-		$shippingUntil = $e['shippingUntil'] ?? $eShop['shippingUntil'];
+		$orderMin = $e['orderMin'] ?? ($eShop->empty() ? NULL : $eShop['orderMin']);
+		$shipping = $e['shipping'] ?? ($eShop->empty() ? NULL : $eShop['shipping']);
+		$shippingUntil = $e['shippingUntil'] ?? ($eShop->empty() ? NULL : $eShop['shippingUntil']);
 
 		$h = '<'.$tag.' class="point-element" data-order-min="'.$orderMin.'" data-shipping="'.$shipping.'" data-shipping-until="'.$shippingUntil.'">';
 
 			$h .= '<div class="point-name">';
 				$h .= $icon;
 				$h .= '<div>';
-					$h .= '<h4>'.$title.'</h4>';
+					if(
+						$mode !== 'update' or
+						($mode === 'update' and $e['type'] === Point::PLACE)
+					) {
+						$h .= '<h4>'.encode($e['name']).'</h4>';
+					}
 					if($e['description'] !== NULL) {
 						$h .= '<span>'.encode($e['description']).'</span>';
+					}
+					if($e['type'] === Point::HOME) {
+						if($mode === 'update') {
+							$h .= '<h4>'.nl2br(encode($e['zone'])).'</h4>';
+						} else {
+							$h .= '<div class="mt-1">'.nl2br(encode($e['zone'])).'</div>';
+						}
 					}
 				$h .= '</div>';
 
@@ -303,7 +305,14 @@ class PointUi {
 
 					$h .= '<div>';
 						$h .= $this->toggle($e);
-						$h .= '<a href="/shop/point:update?id='.$e['id'].'" class="btn btn-outline-primary">'.\Asset::icon('gear-fill').'</a>';
+						$h .= '<a data-dropdown="bottom-start" class="dropdown-toggle btn btn-outline-primary">'.\Asset::icon('gear-fill').'</a>';
+						$h .= '<div class="dropdown-list">';
+							$h .= '<div class="dropdown-title">'.encode($e['name']).'</div>';
+							$h .= '<a href="/shop/point:update?id='.$e['id'].'" class="dropdown-item">'.s("Modifier").'</a>';
+							$h .= '<div class="dropdown-divider"></div>';
+							$h .= '<a data-ajax="/shop/point:doDelete" post-id="'.$e['id'].'" data-confirm="'.s("Souhaitez-vous réellement supprimer définitivement ce mode de livraison pour les ventes à venir ?").'" class="dropdown-item">'.s("Supprimer").'</a>';
+						$h .= '</div>';
+
 					$h .= '</div>';
 
 				} else if($mode === 'date') {
@@ -361,7 +370,7 @@ class PointUi {
 	public function create(Point $e): \Panel {
 
 		$e->expects([
-			'shop' => ['name'],
+			'farm',
 			'type'
 		]);
 
@@ -380,17 +389,12 @@ class PointUi {
 
 		$h .= $form->openAjax('/shop/point:doCreate');
 
-			$h .= $form->hidden('shop', $e['shop']['id']);
+			$h .= $form->hidden('farm', $e['farm']['id']);
 			$h .= $form->hidden('type', $e['type']);
-
-			$h .= $form->group(
-				s("Boutique"),
-				$form->fake($e['shop']['name'])
-			);
 
 			$h .= match($e['type']) {
 				Point::PLACE => $form->dynamicGroups($e, ['name', 'description', 'place', 'address']),
-				Point::HOME => $form->dynamicGroups($e, ['zone'])
+				Point::HOME => $form->dynamicGroups($e, ['name', 'zone'])
 			};
 
 			$h .= $form->group(
@@ -402,7 +406,7 @@ class PointUi {
 		return new \Panel(
 			title: match($e['type']) {
 				Point::PLACE => s("Ajouter un point de retrait"),
-				Point::HOME => s("Activer la livraison à domicile"),
+				Point::HOME => s("Ajouter une tournée de livraison à domicile"),
 			},
 			body: $h
 		);
@@ -410,10 +414,6 @@ class PointUi {
 	}
 
 	public function update(Point $e): \Panel {
-
-		$e->expects([
-			'shop' => ['hasPayment']
-		]);
 
 		$form = new \util\FormUi();
 
@@ -425,25 +425,21 @@ class PointUi {
 
 			$h .= match($e['type']) {
 				Point::PLACE => $form->dynamicGroups($e, ['name', 'description', 'place', 'address']),
-				Point::HOME => $form->dynamicGroups($e, ['zone'])
+				Point::HOME => $form->dynamicGroups($e, ['name', 'zone'])
 			};
 
 			$h .= '<div class="util-block-gradient">';
 
 				$title = match($e['type']) {
 					Point::PLACE => s("Personnalisation du point de retrait"),
-					Point::HOME => s("Personnalisation de la livraison à domicile")
+					Point::HOME => s("Personnalisation de la tournée")
 				};
 
 				$h .= $form->group(content: '<h3>'.$title.'</h3>');
 
-				if($e['shop']['hasPayment']) {
-
-					$h .= $form->dynamicGroups($e, ['paymentOffline', 'paymentTransfer']);
-					if($e['shop']['stripe']->notEmpty()) {
-						$h .= $form->dynamicGroups($e, ['paymentCard']);
-					}
-
+				$h .= $form->dynamicGroups($e, ['paymentOffline', 'paymentTransfer']);
+				if($e['stripe']->notEmpty()) {
+					$h .= $form->dynamicGroups($e, ['paymentCard']);
 				}
 
 				$h .= $form->dynamicGroups($e, ['orderMin', 'shipping', 'shippingUntil']);
@@ -455,24 +451,12 @@ class PointUi {
 
 		$h .= $form->close();
 
-
-		if($e['type'] === Point::PLACE) {
-
-			$footer = '<div class="text-end">';
-				$footer .= '<a data-ajax="/shop/point:doDelete" post-id="'.$e['id'].'" class="btn btn-danger" data-confirm="'.s("Voulez-vous vraiment supprimer définitivement ce point de retrait ?").'">'.s("Supprimer le point de retrait").'</a>';
-			$footer .= '</div>';
-
-		} else {
-			$footer = '';
-		}
-
 		return new \Panel(
 			title: match($e['type']) {
 				Point::PLACE => s("Modifier un point de retrait"),
-				Point::HOME => s("Modifier les zones de livraison à domicile"),
+				Point::HOME => s("Modifier une tournée de livraison à domicile"),
 			},
-			body: $h,
-			footer: $footer
+			body: $h
 		);
 
 	}
@@ -482,7 +466,7 @@ class PointUi {
 
 		$d = Point::model()->describer($property, [
 			'zone' => s("Zones de livraison"),
-			'name' => s("Nom du point de retrait"),
+			'name' => s("Nom"),
 			'description' => s("Informations sur le point de retrait"),
 			'place' => s("Ville du point de retrait"),
 			'address' => s("Adresse du point de retrait"),
@@ -504,7 +488,14 @@ class PointUi {
 				break;
 
 			case 'name' :
-				$d->placeholder = s("Exemple : Maison des Citoyens, À la ferme, ...");
+				$d->label = fn($e) => match($e['type']) {
+					Point::HOME => ("Nom de la tournée"),
+					Point::PLACE => ("Nom du point de retrait")
+				};
+				$d->placeholder = fn($e) => match($e['type']) {
+					Point::HOME => ("Exemple : Tournée du mardi"),
+					Point::PLACE => ("Exemple : Maison des Citoyens, À la ferme, ...")
+				};
 				break;
 
 			case 'description' :
@@ -533,29 +524,22 @@ class PointUi {
 					1 => s("oui"),
 					0 => s("non"),
 				];
-				$d->placeholder = fn(Point $e) => s("la valeur choisie pour la boutique ({value})", $e['shop'][$property] ? s("oui") : s("non"));
+				$d->placeholder = s("la valeur choisie pour la boutique");
 				break;
 
 			case 'orderMin' :
 				$d->append = '€ '.\selling\CustomerUi::getTaxes(\selling\Customer::PRIVATE);
-				$d->after = fn(\util\FormUi $form, Point $e) => \util\FormUi::info($e['shop']['orderMin'] !== NULL ?
-					s("Si ce champ est laissé vide, le montant minimal de commande choisi pour la boutique ({value}) s'applique.", \util\TextUi::money($e['shop']['orderMin'], precision: 0)) :
-					s("Si ce champ est laissé vide, le montant minimal de commande choisi pour la boutique s'applique."));
+				$d->after = \util\FormUi::info(s("Si ce champ est laissé vide, le montant minimal de commande choisi pour la boutique s'applique."));
 				break;
 
 			case 'shipping' :
 				$d->append = '€ '.\selling\CustomerUi::getTaxes(\selling\Customer::PRIVATE);
-				$d->after = fn(\util\FormUi $form, Point $e) => \util\FormUi::info($e['shop']['shipping'] !== NULL ?
-					s("Si ce champ est laissé vide, les frais de livraison choisis pour la boutique ({value}) s'appliquent.", \util\TextUi::money($e['shop']['shipping'], precision: 0)) :
-					s("Si ce champ est laissé vide, les frais de livraison choisis pour la boutique s'appliquent."));
+				$d->after = \util\FormUi::info(s("Si ce champ est laissé vide, les frais de livraison choisis pour la boutique s'appliquent."));
 				break;
 
 			case 'shippingUntil' :
 				$d->append = '€ '.\selling\CustomerUi::getTaxes(\selling\Customer::PRIVATE);
-				$d->after = \util\FormUi::info(s("Les frais de livraison ne sont pas facturés si la commande des clients excède ce montant."));
-				$d->after = fn(\util\FormUi $form, Point $e) => \util\FormUi::info($e['shop']['shippingUntil'] !== NULL ?
-					s("Si ce champ est laissé vide, le montant minimal choisi pour la boutique ({value}) s'applique.", \util\TextUi::money($e['shop']['shippingUntil'], precision: 0)) :
-					s("Si ce champ est laissé vide, le montant minimal choisi pour la boutique s'applique."));
+				$d->after = \util\FormUi::info(s("Les frais de livraison ne sont pas facturés si la commande des clients excède ce montant. Si ce champ est laissé vide, le montant minimal choisi pour la boutique s'applique."));
 				break;
 
 		}

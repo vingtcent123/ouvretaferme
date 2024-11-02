@@ -2121,7 +2121,7 @@ class PropertyDescriber {
 	/**
 	 * Property label
 	 */
-	public ?string $label = NULL;
+	public string|Closure|null $label = NULL;
 
 	/**
 	 * Property type

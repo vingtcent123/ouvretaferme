@@ -4274,7 +4274,7 @@ class TaskUi {
 
 	protected function getStockText(\selling\Product $eProduct): string {
 		
-		$text = $eProduct['name'].' ('.\main\UnitUi::getSingular($eProduct['unit']).')';
+		$text = encode($eProduct['name']).' ('.\main\UnitUi::getSingular($eProduct['unit']).')';
 
 		if($eProduct['variety'] !== NULL) {
 			$text .= ' / '.$eProduct['variety'];

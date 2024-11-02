@@ -583,6 +583,21 @@ new AdaptativeView('/ferme/{id}/boutiques', function($data, FarmTemplate $t) {
 
 });
 
+new AdaptativeView('/ferme/{id}/livraison', function($data, FarmTemplate $t) {
+
+	$t->tab = 'shop';
+	$t->subNav = (new \farm\FarmUi())->getShopSubNav($data->eFarm);
+
+	$t->title = s("Modes de livraison de {value}", $data->eFarm['name']);
+	$t->canonical = \farm\FarmUi::urlShopPoint($data->eFarm);
+
+	$t->package('main')->updateNavShop($t->canonical);
+
+	echo '<h1>'.s("Modes de livraison").'</h1>';
+	echo (new \shop\PointUi())->getList($data->eFarm, $data->ccPoint);
+
+});
+
 new AdaptativeView('/ferme/{id}/factures', function($data, FarmTemplate $t) {
 
 	$t->tab = 'selling';

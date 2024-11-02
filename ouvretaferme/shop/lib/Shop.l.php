@@ -8,7 +8,7 @@ class ShopLib extends ShopCrud {
 	}
 
 	public static function getPropertiesUpdate(): array {
-		return ['fqn', 'name', 'type', 'email', 'description', 'frequency', 'orderMin', 'shipping', 'shippingUntil'];
+		return ['fqn', 'name', 'type', 'email', 'description', 'frequency', 'orderMin', 'shipping', 'shippingUntil', 'hasPoint'];
 	}
 
 	public static function getByFarm(\farm\Farm $eFarm): \Collection {
@@ -208,8 +208,6 @@ class ShopLib extends ShopCrud {
 		}
 
 		Shop::model()->beginTransaction();
-
-			PointLib::deleteByShop($e);
 
 			Redirect::model()
 				->whereShop($e)

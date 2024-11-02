@@ -2,20 +2,12 @@
 (new shop\PointPage())
 	->getCreateElement(function($data) {
 
-		$data->eShop = \shop\ShopLib::getById(INPUT('shop'));
+		$data->eFarm = \farm\FarmLib::getById(INPUT('farm'));
 
 		$type = \shop\Point::INPUT('type', 'type', fn() => throw new NotExpectedAction());
 
-		if(
-			$type === \shop\Point::HOME and
-			\shop\PointLib::hasType($data->eShop, $type)
-		) {
-			throw new RedirectAction(\farm\FarmUi::urlShopList($data->eShop['farm']));
-		}
-
 		return new \shop\Point([
-			'shop' => $data->eShop,
-			'farm' => $data->eShop['farm'],
+			'farm' => $data->eFarm,
 			'type' => $type
 		]);
 
@@ -27,8 +19,7 @@
 
 (new shop\PointPage())
 	->applyElement(function($data, \shop\Point $e) {
-		$e['shop'] = \shop\ShopLib::getById($e['shop']);
-		$e['shop']['stripe'] = \payment\StripeLib::getByFarm($e['farm']);
+		$e['stripe'] = \payment\StripeLib::getByFarm($e['farm']);
 	})
 	->update()
 	->doUpdate(function($data) {

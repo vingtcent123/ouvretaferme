@@ -121,7 +121,7 @@ class ActionUi {
 			$h .= '<p>';
 				$h .= s("Plusieurs interventions sont activées par défaut et ne peuvent pas être modifiées ou supprimées, mais vous pouvez en ajouter d'autres afin de refléter fidèlement votre contexte de production.").' ';
 				if($cCategory->count() === 1) {
-					$h .= s("Vous avez classé toutes les interventions dans une seule catégorie, nommée {value}.", '<u>'.$cCategory->first()['name'].'</u>');
+					$h .= s("Vous avez classé toutes les interventions dans une seule catégorie, nommée {value}.", '<u>'.encode($cCategory->first()['name']).'</u>');
 				} else {
 					$h .= s("Les interventions sont classées en plusieurs catégories distinctes : {list}.", ['list' => implode(', ', array_map(fn($value) => '<u>'.encode($value).'</u>', $cCategory->getColumn('name')))]);
 				}

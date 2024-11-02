@@ -15,11 +15,10 @@ Date:
   
 Point:
   id: serial32
-  shop: shop\Shop
   farm: farm\Farm
   type: enum(HOME, PLACE)
   zone: ?text16(1, null)
-  name: ?text8(1, null)
+  name: text8(1, null)
   description: ?text8(1, null)
   place: ?text8(1, null)
   address: ?text16
@@ -29,10 +28,10 @@ Point:
   orderMin: ?int(0, NULL)
   shipping: ?decimal(8, 2, 0.0, null)
   shippingUntil: ?int(0, NULL)
-  status: enum(ACTIVE, INACTIVE) = ACTIVE
+  status: enum(ACTIVE, INACTIVE, DELETED) = ACTIVE
   createdAt: datetime = SPECIAL(now)
   UNIQUE: [
-    ["shop", "name"]
+    ["farm", "name"]
   ]
 
 Product:

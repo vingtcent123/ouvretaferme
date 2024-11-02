@@ -227,13 +227,17 @@ class FarmUi {
 		return match($view) {
 			Farmer::SHOP => self::urlShopList($eFarm),
 			Farmer::CATALOG => '',
-			Farmer::POINT => ''
+			Farmer::POINT => self::urlShopPoint($eFarm)
 		};
 
 	}
 
 	public static function urlShopList(Farm $eFarm): string {
 		return self::url($eFarm).'/boutiques';
+	}
+
+	public static function urlShopPoint(Farm $eFarm): string {
+		return self::url($eFarm).'/livraison';
 	}
 
 	public static function urlAnalyzeReport(Farm $eFarm, int $season = NULL): string {
@@ -944,9 +948,9 @@ class FarmUi {
 	public function getShopCategories(): array {
 
 		return [
-			Farmer::SHOP => s("Boutiques")/*,
-			Farmer::CATALOG => s("Catalogues"),
-			Farmer::POINT => s("Points de vente"),*/
+			Farmer::SHOP => s("Boutiques"),
+			//Farmer::CATALOG => s("Catalogues"),
+			Farmer::POINT => s("Modes de livraison"),
 		];
 
 	}

@@ -25,7 +25,7 @@
 		}
 
 		$data->e['cCategory'] = \selling\CategoryLib::getByFarm($data->eFarm, index: 'id');
-		$data->e['ccPoint'] = \shop\PointLib::getByShop($data->e['shop']);
+		$data->e['ccPoint'] = \shop\PointLib::getByFarm($data->eFarm);
 
 		throw new \ViewAction($data);
 
@@ -40,7 +40,7 @@
 			throw new NotExpectedAction('Inconsistency');
 		}
 
-		$data->eShop['ccPoint'] = \shop\PointLib::getByShop($data->eShop);
+		$data->eShop['ccPoint'] = \shop\PointLib::getByFarm($data->eShop['farm']);
 
 		\shop\DateLib::applySales($data->e);
 
@@ -92,7 +92,7 @@
 
 		$data->ePoint = \shop\PointLib::getById(POST('point'))
 			->validate('isActive')
-			->validateProperty('shop', $data->e['shop']);
+			->validateProperty('farm', $data->e['farm']);
 
 		$fw = new FailWatch();
 
@@ -127,7 +127,7 @@
 	})
 	->update(function($data) {
 
-		$data->e['ccPoint'] = \shop\PointLib::getByShop($data->e['shop']);
+		$data->e['ccPoint'] = \shop\PointLib::getByFarm($data->e['farm']);
 
 		throw new \ViewAction($data);
 

@@ -47,18 +47,11 @@ class ShopUi {
 
 	public function update(Shop $eShop, \farm\Farm $eFarm, \Collection $cCustomize, \selling\Sale $eSaleExample): string {
 
-		if($eShop['hasPoint']) {
-			$points = $eShop['ccPoint']->reduce(fn($c, $n) => $n + $c->find(fn($e) => $e['status'] === Point::ACTIVE)->count(), 0);
-		} else {
-			$points = 0;
-		}
-
 		$h = '<div class="tabs-h" id="selling-configure" onrender="'.encode('Lime.Tab.restore(this, "settings", '.(get_exists('tab') ? '"'.GET('tab', ['settings', 'payment', 'points'], 'settings').'"' : 'null').')').'">';
 
 			$h .= '<div class="tabs-item">';
 				$h .= '<a class="tab-item selected" data-tab="settings" onclick="Lime.Tab.select(this)">'.s("Général").'</a>';
 				$h .= '<a class="tab-item" data-tab="payment" onclick="Lime.Tab.select(this)">'.s("Moyens de paiement").' <span class="tab-item-count">'.$eShop->countPayments().'</span></a>';
-				$h .= '<a class="tab-item" data-tab="points" onclick="Lime.Tab.select(this)">'.s("Modes de livraison").' <span class="tab-item-count">'.$points.'</span></a>';
 				$h .= '<a class="tab-item" data-tab="terms" onclick="Lime.Tab.select(this)">'.s("Conditions de vente").'</a>';
 				$h .= '<a class="tab-item" data-tab="mail" onclick="Lime.Tab.select(this)">'.s("E-mails").'</a>';
 			$h .= '</div>';
@@ -69,10 +62,6 @@ class ShopUi {
 
 			$h .= '<div class="tab-panel" data-tab="payment">';
 				$h .= $this->updatePayment($eShop);
-			$h .= '</div>';
-
-			$h .= '<div class="tab-panel" data-tab="points">';
-				$h .= $this->updatePoint($eShop);
 			$h .= '</div>';
 
 			$h .= '<div class="tab-panel" data-tab="terms">';
@@ -98,7 +87,7 @@ class ShopUi {
 		$h .= $form->openAjax('/shop/configuration:doUpdate');
 
 		$h .= $form->hidden('id', $eShop['id']);
-		$h .= $form->dynamicGroups($eShop, ['name', 'type', 'fqn', 'email', 'frequency', 'orderMin', 'shipping', 'shippingUntil', 'description'], [
+		$h .= $form->dynamicGroups($eShop, ['name', 'type', 'fqn', 'email', 'frequency', 'orderMin', 'shipping', 'shippingUntil', 'hasPoint', 'description'], [
 				'type' => self::getTypeDescriber($eFarm, 'update')
 		]);
 
@@ -114,27 +103,6 @@ class ShopUi {
 		);
 
 		$h .= $form->close();
-
-		return $h;
-
-	}
-
-	protected function updatePoint(Shop $eShop): string {
-
-		$h = '';
-
-		if($eShop['hasPoint']) {
-
-			$h .= (new PointUi())->getList($eShop, $eShop['ccPoint']);
-
-			$h .= '<div class="util-block">';
-				$h .= '<h4>'.s("Désactiver le choix du mode de livraison").'</h4>';
-				$h .= '<p>'.s("Vos clients doivent choisir explicitement un mode de livraison sur votre boutique, parmi ceux que vous avez activés. Vous pouvez <link>désactiver le choix du moyen de livraison</link> si vous communiquez l'information directement à vos clients et que vous souhaitez leur simplifier l'interface de commande en ligne.", ['link' => '<a data-ajax="/shop/:doUpdatePoint" post-id="'.$eShop['id'].'" post-has-point="0" data-confirm="'.s("Souhaitez-vous réellement désactiver le choix du mode de livraison sur votre boutique ?").'">']).'</p>';
-			$h .= '</div>';
-
-		} else {
-			$h .= $this->updateInactivePoint($eShop);
-		}
 
 		return $h;
 
@@ -384,8 +352,8 @@ class ShopUi {
 
 			$d->values = $eFarm->getSelling('hasVat') ?
 				[
-					Shop::PRIVATE => s("Utiliser les prix particuliers").' <span class="util-annotation">'.s("affichés TTC sur la boutique").'</span>',
-					Shop::PRO => s("Utiliser les prix professionnels").' <span class="util-annotation">'.s("affichés HT sur la boutique").'</span>',
+					Shop::PRIVATE => s("Utiliser les prix particuliers").' <span class="util-annotation">'.s("affichage TTC sur la boutique").'</span>',
+					Shop::PRO => s("Utiliser les prix professionnels").' <span class="util-annotation">'.s("affichage HT sur la boutique").'</span>',
 				] :
 				[
 					Shop::PRIVATE => s("Utiliser les prix particuliers"),
@@ -712,6 +680,7 @@ class ShopUi {
 
 		$d = Shop::model()->describer($property, [
 			'email' => s("Adresse e-mail de contact pour les clients"),
+			'hasPoint' => s("Activer le choix du mode de livraison"),
 			'description' => s("Description de la boutique"),
 			'type' => s("Grille tarifaire"),
 			'fqn' => s('Adresse internet'),
@@ -758,6 +727,14 @@ class ShopUi {
 				};
 				$d->after = \util\FormUi::info(s("Uniquement des chiffres, des lettres ou des tirets"));
 				$d->labelAfter = \util\FormUi::info(s("Nous vous recommandons de ne pas modifier l'adresse internet de votre boutique dès lors que vous l'avez communiquée publiquement afin d'éviter de perturber votre clientèle."));
+				break;
+
+			case 'hasPoint' :
+				$d->field = 'yesNo';
+
+				$label = s("Choisissez si vos clients doivent choisir explicitement un mode de livraison sur votre boutique, parmi ceux que vous avez définis. Si vous désactivez ce choix, vous simplifiez l'interface de commande en ligne mais vous devez communiquer l'information directement à vos clients.");
+
+				$d->label .= \util\FormUi::info($label);
 				break;
 
 			case 'description' :

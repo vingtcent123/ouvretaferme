@@ -156,12 +156,12 @@ class Date extends DateElement {
 
 			'points.check' => function(mixed &$points) {
 
-				$this->expects(['shop']);
+				$this->expects(['farm']);
 
 				$points = Point::model()
 					->whereId('IN', $points)
 					->whereStatus(Point::ACTIVE)
-					->whereShop($this['shop'])
+					->whereFarm($this['farm'])
 					->getColumn('id');
 
 				return ($points !== []);

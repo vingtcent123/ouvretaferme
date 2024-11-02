@@ -259,7 +259,7 @@ class FormUi {
 					$label = '';
 				} else {
 					$label = $d->labelBefore;
-					$label .= $d->label ?? '<i>'.$property.'</i>';
+					$label .= is_closure($d->label) ? call_user_func($d->label, $e) : ($d->label ?? '<i>'.$property.'</i>');
 					if($asterisk or $d->asterisk) {
 						$label .= $this->asterisk();
 					}

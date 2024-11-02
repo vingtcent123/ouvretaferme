@@ -895,7 +895,7 @@ class PdfUi {
 
 		$h .= '<div class="pdf-sales-summary-wrapper">';
 
-			$h .= '<h1>'.$eDate['shop']['name'].'</h1>';
+			$h .= '<h1>'.encode($eDate['shop']['name']).'</h1>';
 			$h .= '<h2>'.s("Vente du {value}", \util\DateUi::numeric($eDate['deliveryDate'])).' | '.p("{value} commande", "{value} commandes", $cSale->count()).'</h2>';
 
 			$h .= $this->getSalesSummary($cItem);
@@ -978,7 +978,7 @@ class PdfUi {
 			$h .= '<tbody>';
 				foreach($cItem as $eItem) {
 					$h .= '<tr>';
-						$h .= '<td>'.$eItem['name'].'</th>';
+						$h .= '<td>'.encode($eItem['name']).'</th>';
 						$h .= '<td>';
 							if($eItem['quality']) {
 								$h .= \Asset::image('main', $eItem['quality'].'.png', ['style' => 'height: 0.4cm']);

@@ -163,6 +163,11 @@ Route::register([
 			'priority' => 5,
 			'route' => ['ferme', '{id}', 'itineraires', '{status}'],
 		],
+		'/ferme/{id}/livraison' => [
+			'request' => 'farm/index',
+			'priority' => 5,
+			'route' => ['ferme', '{id}', 'livraison'],
+		],
 		'/ferme/{id}/optIn' => [
 			'request' => 'selling/customer',
 			'priority' => 5,

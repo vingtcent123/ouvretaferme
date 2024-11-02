@@ -51,7 +51,7 @@
 			throw $action;
 		}
 
-		$data->eShop['ccPoint'] = \shop\PointLib::getByShop($data->eShop);
+		$data->eShop['ccPoint'] = \shop\PointLib::getByFarm($data->eShop['farm']);
 
 	}))
 	->get('/shop/public/{id}:conditions', function($data) {
@@ -107,7 +107,7 @@
 
 		$data->eShop = \shop\ShopLib::getByFqn(GET('fqn'))->validate('isOpen');
 		$data->eShop['farm'] = \farm\FarmLib::getById($data->eShop['farm']);
-		$data->eShop['ccPoint'] = \shop\PointLib::getByShop($data->eShop);
+		$data->eShop['ccPoint'] = \shop\PointLib::getByFarm($data->eShop['farm']);
 
 		$data->eDate = \shop\DateLib::getById(GET('date'))->validateProperty('shop', $data->eShop);
 		$data->eCustomer = \shop\SaleLib::getShopCustomer($data->eShop, $data->eUserOnline);

@@ -4,8 +4,6 @@
 
 		$data->e['stripe'] = \payment\StripeLib::getByFarm($data->e['farm']);
 
-		$data->e['ccPoint'] = \shop\PointLib::getByShop($data->e, onlyActive: FALSE);
-
 		$data->eFarm = \farm\FarmLib::getById($data->e['farm']);
 
 		\farm\FarmerLib::register($data->eFarm);
