@@ -27,6 +27,5 @@
 	})
 	->doDelete(function($data) {
 		throw new ReloadAction('shop', 'Point::'.$data->e['type'].'.deleted');
-	})
-	->doUpdateProperties('doUpdateStatus', ['status'], fn($data) => throw new ViewAction($data));
+	});
 ?>

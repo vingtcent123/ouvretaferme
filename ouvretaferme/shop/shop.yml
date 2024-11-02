@@ -28,7 +28,7 @@ Point:
   orderMin: ?int(0, NULL)
   shipping: ?decimal(8, 2, 0.0, null)
   shippingUntil: ?int(0, NULL)
-  status: enum(ACTIVE, INACTIVE, DELETED) = ACTIVE
+  status: enum(ACTIVE, DELETED) = ACTIVE
   createdAt: datetime = SPECIAL(now)
   UNIQUE: [
     ["farm", "name"]

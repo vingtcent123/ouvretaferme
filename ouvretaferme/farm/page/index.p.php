@@ -193,7 +193,7 @@
 
 			\farm\FarmerLib::setView('viewShopCurrent', $data->eFarm, $data->eShop);
 
-			$data->eShop['ccPoint'] = \shop\PointLib::getByFarm($data->eFarm, onlyActive: FALSE);
+			$data->eShop['ccPoint'] = \shop\PointLib::getByFarm($data->eFarm);
 
 			// Liste des dates de la boutique sélectionnée
 			$data->eShop['cDate'] = \shop\DateLib::getByShop($data->eShop);
@@ -209,7 +209,7 @@
 
 		\farm\FarmerLib::setView('viewShop', $data->eFarm, \farm\Farmer::POINT);
 
-		$data->ccPoint = \shop\PointLib::getByFarm($data->eFarm, onlyActive: FALSE);
+		$data->ccPoint = \shop\PointLib::getByFarm($data->eFarm);
 
 		throw new ViewAction($data);
 

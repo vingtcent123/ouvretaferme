@@ -91,12 +91,11 @@ class PointLib extends PointCrud {
 
 	}
 
-	public static function getByFarm(\farm\Farm $eFarm, bool $onlyActive = TRUE): \Collection {
+	public static function getByFarm(\farm\Farm $eFarm): \Collection {
 
 		return Point::model()
 			->select(Point::getSelection())
-			->whereStatus(Point::ACTIVE, if: $onlyActive === TRUE)
-			->whereStatus('!=', Point::DELETED, if: $onlyActive === FALSE)
+			->whereStatus(Point::ACTIVE)
 			->whereFarm($eFarm)
 			->sort([
 				'status' => SORT_ASC,

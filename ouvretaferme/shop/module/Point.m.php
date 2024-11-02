@@ -11,7 +11,6 @@ abstract class PointElement extends \Element {
 	const PLACE = 'place';
 
 	const ACTIVE = 'active';
-	const INACTIVE = 'inactive';
 	const DELETED = 'deleted';
 
 	public static function getSelection(): array {
@@ -57,7 +56,7 @@ class PointModel extends \ModuleModel {
 			'orderMin' => ['int32', 'min' => 0, 'max' => NULL, 'null' => TRUE, 'cast' => 'int'],
 			'shipping' => ['decimal', 'digits' => 8, 'decimal' => 2, 'min' => 0.0, 'max' => NULL, 'null' => TRUE, 'cast' => 'float'],
 			'shippingUntil' => ['int32', 'min' => 0, 'max' => NULL, 'null' => TRUE, 'cast' => 'int'],
-			'status' => ['enum', [\shop\Point::ACTIVE, \shop\Point::INACTIVE, \shop\Point::DELETED], 'cast' => 'enum'],
+			'status' => ['enum', [\shop\Point::ACTIVE, \shop\Point::DELETED], 'cast' => 'enum'],
 			'createdAt' => ['datetime', 'cast' => 'string'],
 		]);
 

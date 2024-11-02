@@ -9,18 +9,6 @@ class PointUi {
 
 	}
 
-	public function toggle(Point $ePoint) {
-
-		return \util\TextUi::switch([
-			'id' => 'point-switch-'.$ePoint['id'],
-			'data-ajax' => $ePoint->canWrite() ? '/shop/point:doUpdateStatus' : NULL,
-			'post-id' => $ePoint['id'],
-			'post-status' => $ePoint->isActive() ? Point::INACTIVE : Point::ACTIVE,
-			'data-confirm' => s("Cette modification prendra effet pour les prochaines ventes. Les modes de livraison disponibles pour les ventes en cours ne seront pas modifiés.")
-		], $ePoint->isActive(), s("Actif"), s("Désactivé"));
-
-	}
-
 	public function createFirst(Shop $eShop): string {
 
 		$h = '<div class="util-block-help">';
@@ -304,7 +292,6 @@ class PointUi {
 				if($mode === 'write' and $e->canWrite()) {
 
 					$h .= '<div>';
-						$h .= $this->toggle($e);
 						$h .= '<a data-dropdown="bottom-start" class="dropdown-toggle btn btn-outline-primary">'.\Asset::icon('gear-fill').'</a>';
 						$h .= '<div class="dropdown-list">';
 							$h .= '<div class="dropdown-title">'.encode($e['name']).'</div>';
