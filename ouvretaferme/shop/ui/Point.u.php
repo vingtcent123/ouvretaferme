@@ -17,7 +17,7 @@ class PointUi {
 			'post-id' => $ePoint['id'],
 			'post-status' => $ePoint->isActive() ? Point::INACTIVE : Point::ACTIVE,
 			'data-confirm' => s("Cette modification prendra effet pour les prochaines ventes. Les modes de livraison disponibles pour les ventes en cours ne seront pas modifiés.")
-		], $ePoint->isActive(), s("Disponible"), s("Désactivé"));
+		], $ePoint->isActive(), s("Actif"), s("Désactivé"));
 
 	}
 
