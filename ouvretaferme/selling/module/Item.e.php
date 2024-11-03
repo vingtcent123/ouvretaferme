@@ -62,6 +62,20 @@ class Item extends ItemElement {
 
 			},
 
+			'number.empty' => function(?float $number): bool {
+
+				$this->expects([
+					'sale' => ['market']
+				]);
+
+				if($this['sale']['market']) {
+					return TRUE;
+				} else {
+					return ($number !== NULL);
+				}
+
+			},
+
 			'price.locked' => function(?float $price): bool {
 
 				try {

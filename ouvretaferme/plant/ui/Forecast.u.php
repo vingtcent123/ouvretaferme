@@ -71,7 +71,7 @@ class ForecastUi {
 			if($eForecast['nCultivation'] === 0) {
 				$footer .= '<a data-ajax="/plant/forecast:doDelete" post-id="'.$eForecast['id'].'" class="btn btn-danger" data-confirm="'.s("Voulez-vous vraiment supprimer cette espèce du prévisionnel ?").'">'.s("Supprimer du prévisionnel").'</a>';
 			} else {
-				$footer .= '<a class="btn btn-danger" disabled title="'.AlertUi::getError('Forecast::deleteUsed').'">'.s("Supprimer du prévisionnel").'</a>';
+				$footer .= '<span title="'.AlertUi::getError('Forecast::deleteUsed').'"><a class="btn btn-danger btn-disabled">'.s("Supprimer du prévisionnel").'</a></span>';
 			}
 		$footer .= '</div>';
 

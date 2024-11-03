@@ -459,3 +459,8 @@ a.sale-relative-after:hover .sale-relative-customer {
 	padding-left: 1rem;
 	line-height: 1.3;
 }
+
+.sale-create-market .field-radio-group {
+	background-color: #fff4;
+	color: white;
+}

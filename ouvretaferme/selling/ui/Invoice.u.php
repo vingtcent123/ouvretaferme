@@ -152,7 +152,7 @@ class InvoiceUi {
 						$h .= '</td>';
 						$h .= '<td class="text-center td-min-content">';
 							if($eInvoice['content']->empty()) {
-								$h .= '<span class="btn disabled">'.$eInvoice->getInvoice().'</span>';
+								$h .= '<span class="btn btn-disabled">'.$eInvoice->getInvoice().'</span>';
 							} else {
 								$h .= InvoiceUi::link($eInvoice);
 							}

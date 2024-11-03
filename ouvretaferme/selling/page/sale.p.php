@@ -232,7 +232,7 @@
 
 	}, validate: ['canUpdateCustomer'])
 	->doUpdateProperties('doUpdatePaymentMethod', ['paymentMethod'], fn() => throw new ReloadAction(), validate: ['canWrite'])
-	->doUpdateProperties('doUpdatePreparationStatus', ['preparationStatus'], fn() => throw new ReloadAction(), validate: ['canWritePreparationStatus'])
+	->doUpdateProperties('doUpdatePreparationStatus', ['preparationStatus'], fn($data) => throw new ViewAction($data), validate: ['canWritePreparationStatus'])
 	->read('duplicate', function($data) {
 
 		if($data->e->canDuplicate() === FALSE) {

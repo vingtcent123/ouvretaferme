@@ -537,7 +537,7 @@ class CustomerUi {
 			$h .= $form->dynamicGroup($eCustomer, 'category*', function(\PropertyDescriber $d) use ($eFarm) {
 
 				if($eFarm->getSelling('hasVat')) {
-					$d->after = \util\FormUi::info(s("Veuillez noter que les prix sur les documents de vente sont affichés en TTC pour les clients particuliers et en HT pour les clients professionnels."));
+					$d->after = \util\FormUi::info(s("Veuillez noter que les prix sur les documents de vente sont affichés en TTC pour les clients particuliers et en HT pour les clients professionnels. Seuls les points de vente aux particuliers sont compatibles avec le logiciel de caisse."));
 				}
 
 			});

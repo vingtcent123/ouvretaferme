@@ -796,7 +796,7 @@ class SaleUi {
 
 				case Sale::SELLING :
 					$h .= $wrapper(
-						' <a href="'.SaleUi::urlMarket($eSale).'" class="sale-preparation-status-action btn-outline-selling">'.\Asset::icon('shop-window').'  '.s("Console de vente").'</a>'
+						' <a href="'.SaleUi::urlMarket($eSale).'" class="sale-preparation-status-action btn-outline-selling">'.\Asset::icon('cart4').'  '.s("Caisse virtuelle").'</a>'
 					);
 					break;
 
@@ -1150,12 +1150,19 @@ class SaleUi {
 
 		if(
 			$eSale->isMarket() and
-			$eSale->isMarketPreparing() === FALSE and
 			$eSale->canWrite()
 		) {
-			$h .= '<div class="mb-1">';
-				$h .= '<a href="'.SaleUi::urlMarket($eSale).'" class="btn btn-xl btn-selling" style="width: 100%">'.\Asset::icon('shop-window').'  '.s("Ouvrir la console de vente").'</a>';
-			$h .= '</div>';
+			if($eSale['preparationStatus'] === Sale::CONFIRMED) {
+
+				$h .= '<div class="util-block">';
+					$h .= '<h4>'.s("Votre marché est prêt à commencer ?").'</h4>';
+					$h .= '<p>'.s("Commencez la vente pour enregistrer les commandes de vos clients avec la caisse virtuelle. Les quantités des produits que vous avez saisis pour préparer ce marché seront remises à zéro.").'</p>';
+					$h .= '<a data-ajax="/selling/sale:doUpdatePreparationStatus" post-id="'.$eSale['id'].'" post-preparation-status="'.Sale::SELLING.'" class="btn btn-selling" data-confirm="'.s("C'est parti ?").'">'.s("Commencer la vente").'</a>';
+				$h .= '</div>';
+
+			} else if($eSale['preparationStatus'] === Sale::SELLING) {
+				$h .= '<a href="'.SaleUi::urlMarket($eSale).'" class="btn btn-xl btn-selling" style="width: 100%">'.\Asset::icon('cart4').'  '.s("Ouvrir la caisse virtuelle").'</a>';
+			}
 		}
 
 		if(
@@ -1278,7 +1285,7 @@ class SaleUi {
 		) {
 
 			if($eSale->isMarketPreparing() === FALSE) {
-				$primaryList .= ' <a href="'.SaleUi::urlMarket($eSale).'" class="dropdown-item">'.s("Ouvrir la console de vente").'</a>';
+				$primaryList .= ' <a href="'.SaleUi::urlMarket($eSale).'" class="dropdown-item">'.s("Ouvrir le logiciel de caisse").'</a>';
 			}
 
 			if($eSale->isMarketClosed()) {
@@ -1474,7 +1481,9 @@ class SaleUi {
 			if($eSale['customer']->notEmpty()) {
 
 				if($eSale['customer']['destination'] === Customer::COLLECTIVE) {
-					$h .= $form->dynamicGroup($eSale, 'market');
+					$h .= '<div class="util-block util-block-dark sale-create-market bg-selling">';
+						$h .= $form->dynamicGroup($eSale, 'market');
+					$h .= '</div>';
 				}
 
 				$h .= $form->dynamicGroups($eSale, ['deliveredAt', 'comment']);
@@ -1682,7 +1691,7 @@ class SaleUi {
 			'customer' => s("Client"),
 			'deliveredAt' => s("Date de vente"),
 			'from' => s("Origine de la vente"),
-			'market' => s("Activer le mode <i>Marché</i>"),
+			'market' => s("Utiliser le logiciel de caisse<br/>pour cette vente"),
 			'preparationStatus' => s("Statut de préparation"),
 			'paymentStatus' => s("État du paiement"),
 			'orderFormValidUntil' => s("Date d'échéance du devis"),

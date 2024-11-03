@@ -55,7 +55,7 @@ class ItemUi {
 			$h .= '<div class="h-line">';
 
 				if($eSale->isMarketPreparing()) {
-					$h .= '<h3>'.s("Préparation du marché").'</h3>';
+					$h .= '<h3>'.s("Préparation de la vente").'</h3>';
 				} else {
 					$h .= '<h3>'.s("Articles").'</h3>';
 				}
@@ -236,6 +236,13 @@ class ItemUi {
 
 			$h .= '</table>';
 
+			if($eSale['market'] and $eSale['preparationStatus'] === Sale::DRAFT) {
+				$h .= '<div class="util-block">';
+					$h .= '<h4>'.s("Votre préparation de marché est complète ?").'</h4>';
+					$h .= '<a data-ajax="/selling/sale:doUpdatePreparationStatus" post-id="'.$eSale['id'].'" post-preparation-status="'.Sale::CONFIRMED.'" class="btn btn-order">'.s("Confirmer la vente").'</a>';
+				$h .= '</div>';
+			}
+
 		}
 
 		return $h;
@@ -375,7 +382,7 @@ class ItemUi {
 				foreach($ccItemChunk as $cItem) {
 
 					$eProduct = $cItem->first()['product'];
-					$total = $cItem->reduce(fn($eItem, $v) => $v + ($eItem['packaging'] ?? 1) * $eItem['number'], 0);
+					$total = $cItem->reduce(fn($eItem, $v) => ($eItem['number'] !== NULL) ? (($v ?? 0) + ($eItem['packaging'] ?? 1) * $eItem['number']) : $v, NULL);
 
 					$h .= '<tr>';
 						$h .= '<td class="td-min-content">'.ProductUi::getVignette($eProduct, '2.5rem').'</td>';
@@ -386,7 +393,7 @@ class ItemUi {
 							}
 						$h .= '</td>';
 						$h .= '<td class="text-end" style="padding-right: 1rem">';
-							$h .= '&nbsp;<span class="annotation" style="color: var(--order)">'.\main\UnitUi::getValue(round($total, 2), $cItem->first()['unit'], TRUE).'</span>';
+							$h .= '&nbsp;<span class="annotation" style="color: var(--order)">'.\main\UnitUi::getValue($total, $cItem->first()['unit'], TRUE).'</span>';
 						$h .= '</td>';
 					$h .= '</tr>';
 
@@ -411,13 +418,13 @@ class ItemUi {
 		foreach($ccItem as $cItem) {
 
 			$eProduct = $cItem->first()['product'];
-			$total = $cItem->reduce(fn($eItem, $v) => $v + ($eItem['packaging'] ?? 1) * $eItem['number'], 0);
+			$total = $cItem->reduce(fn($eItem, $v) => $eItem['number'] !== NULL ? (($v ?? 0) + ($eItem['packaging'] ?? 1) * $eItem['number']) : $v, NULL);
 
 			$h .= '<div class="item-day-product">';
 				$h .= ProductUi::getVignette($eProduct, '2.5rem');
 				$h .= '<div class="item-day-product-name">';
 					$h .= encode($eProduct->getName());
-					$h .= '&nbsp;<span class="annotation" style="color: var(--order)">'.\main\UnitUi::getValue(round($total, 2), $cItem->first()['unit'], TRUE).'</span>';
+					$h .= '&nbsp;<span class="annotation" style="color: var(--order)">'.\main\UnitUi::getValue($total, $cItem->first()['unit'], TRUE).'</span>';
 					if($eProduct['size']) {
 						$h .= '<div><small class="color-muted"><u>'.encode($eProduct['size']).'</u></small></div>';
 					}
@@ -636,7 +643,7 @@ class ItemUi {
 
 					$h .= $form->group(
 						s("Produit"),
-						ProductUi::link($eProduct, TRUE)
+						ProductUi::getVignette($eProduct, '2rem').'  '.ProductUi::link($eProduct, TRUE)
 					);
 
 					$h .= $form->dynamicGroup($eItem, 'quality[]');
@@ -662,8 +669,8 @@ class ItemUi {
 					}
 
 					$h .= $form->dynamicGroups($eItem, $eItem['sale']['market'] ?
-						($eItem['sale']['preparationStatus'] !== Sale::SELLING ? ['unitPrice[]', 'number[]'] : ['unitPrice[]']) :
-						['unitPrice[]', 'number[]', 'price[]'], [
+						($eItem['sale']['preparationStatus'] !== Sale::SELLING ? ['unitPrice[]*', 'number[]'] : ['unitPrice[]*']) :
+						['unitPrice[]*', 'number[]*', 'price[]*'], [
 							'unitPrice[]' => function(\PropertyDescriber $d) use ($eItem) {
 								if($eItem['sale']['discount'] > 0 and $eItem['unitPrice'] !== NULL) {
 									$d->after = \util\FormUi::info(s("Prix de base : {value}", \util\TextUi::money($eItem['baseUnitPrice'])));
@@ -690,7 +697,7 @@ class ItemUi {
 
 					$h .= $form->hidden('product[]', '');
 					$h .= $form->hidden('locked[]', Item::PRICE);
-					$h .= $form->dynamicGroup($eItem, 'name[]');
+					$h .= $form->dynamicGroup($eItem, 'name[]*');
 
 					if($eItem['sale']['type'] === Customer::PRO) {
 						$eItem['unit'] = NULL;
@@ -700,8 +707,8 @@ class ItemUi {
 					}
 
 					$h .= $form->dynamicGroups($eItem, $eItem['sale']['market'] ?
-						($eItem['sale']['preparationStatus'] !== Sale::SELLING ? ['unit[]', 'unitPrice[]', 'number[]'] : ['unit[]', 'unitPrice[]']) :
-						['unit[]', 'unitPrice[]', 'number[]', 'price[]']);
+						($eItem['sale']['preparationStatus'] !== Sale::SELLING ? ['unit[]', 'unitPrice[]*', 'number[]'] : ['unit[]', 'unitPrice[]*']) :
+						['unit[]', 'unitPrice[]*', 'number[]*', 'price[]*']);
 
 					if($eItem['sale']['hasVat']) {
 						$h .= $form->group(

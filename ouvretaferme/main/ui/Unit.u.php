@@ -3,7 +3,13 @@ namespace main;
 
 class UnitUi {
 
-	public static function getValue(string $value, ?string $unit, bool $short = FALSE, bool $noWrap = TRUE, ?\Closure $callback = NULL): string {
+	public static function getValue(?float $value, ?string $unit, bool $short = FALSE, bool $noWrap = TRUE, ?\Closure $callback = NULL): string {
+
+		if($value === NULL) {
+			$value = '?';
+		} else {
+			$value = round($value, 2);
+		}
 
 		$callback ??= fn($value, $unit) => $value.' '.$unit;
 

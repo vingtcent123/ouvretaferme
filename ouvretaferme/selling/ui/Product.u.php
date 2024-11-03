@@ -765,7 +765,7 @@ class ProductUi {
 
 	private static function getFieldPro(\util\FormUi $form, Product $eProduct, string $for): string {
 
-		$h = '<div class="util-block-dark" data-wrapper="'.Customer::PRO.'-block">';
+		$h = '<div class="util-block bg-background-light" data-wrapper="'.Customer::PRO.'-block">';
 
 			$h .= $form->group(
 				'<h4>'.self::p('pro')->label.'</h4>',
@@ -814,7 +814,7 @@ class ProductUi {
 
 	private static function getFieldPrivate(\util\FormUi $form, Product $eProduct, string $for): string {
 
-		$h = '<div class="util-block-dark" data-wrapper="'.Customer::PRIVATE.'-block">';
+		$h = '<div class="util-block bg-background-light" data-wrapper="'.Customer::PRIVATE.'-block">';
 
 			$h .= $form->group(
 				'<h4>'.self::p('private')->label.'</h4>',

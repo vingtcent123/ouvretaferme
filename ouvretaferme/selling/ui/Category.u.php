@@ -114,13 +114,13 @@ class CategoryUi {
 								if($eCategory['position'] > 1) {
 									$h .= '<a data-ajax="/selling/category:doIncrementPosition" post-id='.$eCategory['id'].'" post-increment="-1" class="btn btn-sm btn-secondary">'.\Asset::icon('arrow-up').'</a> ';
 								} else {
-									$h .= '<a class="btn btn-sm disabled">'.\Asset::icon('arrow-up').'</a> ';
+									$h .= '<a class="btn btn-sm btn-disabled">'.\Asset::icon('arrow-up').'</a> ';
 								}
 
 								if($eCategory['position'] !== $cCategory->count()) {
 									$h .= '<a data-ajax="/selling/category:doIncrementPosition" post-id='.$eCategory['id'].'" post-increment="1" class="btn btn-sm btn-secondary">'.\Asset::icon('arrow-down').'</a> ';
 								} else {
-									$h .= '<a class="btn btn-sm disabled">'.\Asset::icon('arrow-down').'</a> ';
+									$h .= '<a class="btn btn-sm btn-disabled">'.\Asset::icon('arrow-down').'</a> ';
 								}
 							$h .= '</td>';
 

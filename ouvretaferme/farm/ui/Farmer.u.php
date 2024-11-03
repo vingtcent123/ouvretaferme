@@ -312,7 +312,7 @@ class FarmerUi {
 
 								$h .= match($eFarmer['status']) {
 									Farmer::OUT => '<a data-ajax="/farm/farmer:doDeleteUser" post-farm="'.$eFarm['id'].'" post-user="'.$eFarmer['user']['id'].'" class="btn btn-danger" data-confirm="'.s("Cette action est irréversible, voulez-vous réellement supprimer cet utilisateur fantôme ?").'">'.\Asset::icon('trash').'</a>',
-									Farmer::IN => '<span class="btn btn-danger" title="'.s("Vous ne pouvez pas supprimer un utilisateur fantôme actuellement intégré à l'équipe !").'" disabled>'.\Asset::icon('trash').'</span>',
+									Farmer::IN => '<span class="btn btn-danger btn-disabled" title="'.s("Vous ne pouvez pas supprimer un utilisateur fantôme actuellement intégré à l'équipe !").'">'.\Asset::icon('trash').'</span>',
 									default => ''
 								};
 

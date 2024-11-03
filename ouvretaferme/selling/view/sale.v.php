@@ -57,6 +57,16 @@ new AdaptativeView('updateCustomer', function($data, PanelTemplate $t) {
 	return (new \selling\SaleUi())->updateCustomer($data->e);
 });
 
+new JsonView('doUpdatePreparationStatus', function($data, AjaxTemplate $t) {
+
+	if($data->e['preparationStatus'] === \selling\Sale::SELLING) {
+		throw new RedirectAction(\selling\SaleUi::urlMarket($data->e));
+	} else {
+		$t->ajaxReload();
+	}
+
+});
+
 new HtmlView('getExport', function($data, PdfTemplate $t) {
 
 	echo (new \selling\PdfUi())->getSales($data->c, $data->cItem);

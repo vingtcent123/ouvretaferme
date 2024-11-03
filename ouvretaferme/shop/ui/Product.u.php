@@ -405,7 +405,7 @@ class ProductUi {
 				if($eProduct['sold'] === 0.0) {
 					$h .= '<a data-ajax="/shop/product:doDelete" class="btn btn-danger" data-confirm="'.s("Voulez-vous vraiment supprimer ce produit de cette vente ?").'" post-id="'.$eProduct['id'].'">'.\Asset::icon('trash-fill').'</a>';
 				} else {
-					$h .= '<a class="btn btn-readonly btn-secondary disabled" disabled title="'.s("Vous ne pouvez pas supprimer ce produit car des ventes ont déjà été réalisées.").'">'.\Asset::icon('trash-fill').'</a>';
+					$h .= '<a class="btn btn-secondary btn-disabled" title="'.s("Vous ne pouvez pas supprimer ce produit car des ventes ont déjà été réalisées.").'">'.\Asset::icon('trash-fill').'</a>';
 
 				}
 

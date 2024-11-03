@@ -363,10 +363,10 @@ class ManageUi {
 							);
 							$h .= '<a data-ajax="/website/menu:doUpdatePositions" post-id='.$eWebsite['id'].'" post-positions="'.implode(',', $newPositions).'" class="btn btn-outline-secondary">'.\Asset::icon('arrow-up').'</a> ';
 						} else {
-							$h .= '<a class="btn disabled">'.\Asset::icon('arrow-up').'</a> ';
+							$h .= '<a class="btn btn-disabled">'.\Asset::icon('arrow-up').'</a> ';
 						}
 						if($position === $cMenu->count() - 1) {
-							$h .= '<a class="btn disabled">'.\Asset::icon('arrow-down').'</a> ';
+							$h .= '<a class="btn btn-disabled">'.\Asset::icon('arrow-down').'</a> ';
 						} else {
 							$newPositions = array_merge(
 								array_slice($positions, 0, $position),
