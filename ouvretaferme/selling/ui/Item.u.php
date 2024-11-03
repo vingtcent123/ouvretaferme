@@ -55,7 +55,7 @@ class ItemUi {
 			$h .= '<div class="h-line">';
 
 				if($eSale->isMarketPreparing()) {
-					$h .= '<h3>'.s("Préparation de la vente").'</h3>';
+					$h .= '<h3>'.s("Préparation du marché").'</h3>';
 				} else {
 					$h .= '<h3>'.s("Articles").'</h3>';
 				}
