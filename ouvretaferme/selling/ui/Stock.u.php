@@ -250,7 +250,7 @@ class StockUi {
 			return '';
 		}
 
-		return '<div class="stock-item-'.$class.'">- '.\main\UnitUi::getValue(round($eItem['quantity'], 2), $eProduct['unit'], short: TRUE).'</div>';
+		return '<div class="stock-item-'.$class.'">- '.\main\UnitUi::getValue($eItem['quantity'], $eProduct['unit'], short: TRUE).'</div>';
 
 	}
 
