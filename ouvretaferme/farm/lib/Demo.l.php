@@ -364,7 +364,9 @@ class DemoLib {
         ->select('id')
         ->getCollection() as $eCustomer) {
 
-			$eCustomer['name'] = self::getFirstName($eCustomer['user']['id'] ?? $eCustomer['id']).' '.self::getLastName();
+			$eCustomer['firstName'] = self::getFirstName($eCustomer['user']['id'] ?? $eCustomer['id']);
+			$eCustomer['lastName'] = self::getLastName();
+			$eCustomer['name'] = $eCustomer['firstName'].' '.$eCustomer['lastName'];
 			$eCustomer['email'] = NULL;
 			$eCustomer['phone'] = NULL;
 			$eCustomer['legalName'] = NULL;
@@ -378,7 +380,7 @@ class DemoLib {
 			$eCustomer['deliveryCity'] = NULL;
 
 			(new \selling\CustomerModel())
-				->select('name', 'phone', 'email', 'legalName', 'invoiceStreet1', 'invoiceStreet2', 'invoicePostcode', 'invoiceCity', 'deliveryStreet1', 'deliveryStreet2', 'deliveryPostcode', 'deliveryCity')
+				->select('firstName', 'lastName', 'name', 'phone', 'email', 'legalName', 'invoiceStreet1', 'invoiceStreet2', 'invoicePostcode', 'invoiceCity', 'deliveryStreet1', 'deliveryStreet2', 'deliveryPostcode', 'deliveryCity')
 				->update($eCustomer);
 
 		}

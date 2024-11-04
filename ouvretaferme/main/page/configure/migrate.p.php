@@ -1,32 +1,58 @@
 <?php
+
+use selling\Customer;
+
 (new Page())
 	->cli('index', function($data) {
 
-		$cCultivation = \series\Cultivation::model()
-			->select(\series\Cultivation::getSelection())
-			->whereDistance(\series\Cultivation::SPACING)
+		$cCustomer = \selling\Customer::model()
+			->select(['id', 'type', 'destination', 'name'])
+			->whereType(\selling\Customer::PRIVATE)
+			->whereDestination(\selling\Customer::INDIVIDUAL)
+			->whereFirstName(NULL)
+			->whereLastName(NULL)
 			->getCollection();
 
-		foreach($cCultivation as $eCultivation) {
+		foreach($cCustomer as $eCustomer) {
 
-			\series\Cultivation::model()->update($eCultivation, [
-				'density' => \production\CropLib::calculateDensity($eCultivation, $eCultivation['series'])
-			]);
+			$parts = preg_split('/\s+/si', $eCustomer['name']);
 
-		}
+			// Vérification des majuscules
+			$lastName = [];
+			$firstName = [];
 
-		$cCrop = \production\Crop::model()
-			->select(\production\Crop::getSelection() + [
-				'sequence' => \production\SequenceElement::getSelection()
-			])
-			->whereDistance(\production\Crop::SPACING)
-			->getCollection();
+			foreach($parts as $part) {
 
-		foreach($cCrop as $eCrop) {
+				if(mb_strtoupper($part) === $part) {
+					$lastName[] = $part;
+				} else {
+					$firstName[] = $part;
+				}
 
-			\production\Crop::model()->update($eCrop, [
-				'density' => \production\CropLib::calculateDensity($eCrop, $eCrop['sequence'])
-			]);
+			}
+
+			if(count($lastName) > 0 and count($firstName) > 0) {
+				$eCustomer['lastName'] = implode(' ', $lastName);
+				$eCustomer['firstName'] = implode(' ', $firstName);
+			} else {
+
+				if(count($parts) === 1) {
+					$eCustomer['firstName'] = NULL;
+					$eCustomer['lastName'] = $eCustomer['name'];
+				} else {
+
+					$eCustomer['firstName'] = $parts[0];
+					$eCustomer['lastName'] = implode(' ', array_slice($parts, 1));
+
+				}
+
+			}
+
+			echo $eCustomer['id'].' : '.$eCustomer['firstName'].' -> '.$eCustomer['lastName']."\n";
+
+			Customer::model()
+				->select('firstName', 'lastName')
+				->update($eCustomer);
 
 		}
 

@@ -12,6 +12,20 @@ class Customer extends CustomerElement {
 
 	}
 
+	public function getLegalName(): string {
+		return ($this['legalName'] ?? $this['name']);
+	}
+
+	public function getName(): ?string {
+
+		if($this->empty()) {
+			return s("Client anonyme");
+		} else {
+			return $this['name'];
+		}
+
+	}
+
 	public function getCategory(): string {
 
 		$this->expects(['type', 'destination']);
@@ -67,6 +81,16 @@ class Customer extends CustomerElement {
 		return $this['type'] === Customer::PRIVATE;
 	}
 
+	public function isIndividual(): bool {
+		$this->expects(['destination']);
+		return $this['destination'] === Customer::INDIVIDUAL;
+	}
+
+	public function isCollective(): bool {
+		$this->expects(['destination']);
+		return $this['destination'] === Customer::COLLECTIVE;
+	}
+
 	public function getInvoiceAddress(): ?string {
 
 		if($this->hasInvoiceAddress() === FALSE) {
@@ -109,6 +133,86 @@ class Customer extends CustomerElement {
 
 		return parent::build($properties, $input, $callbacks + [
 
+			'firstName.empty' => function(?string &$firstName): bool {
+
+				$this->expects(['category', 'user']);
+
+				if($this['category'] !== Customer::PRIVATE) {
+					$firstName = NULL;
+					return TRUE;
+				}
+
+				if($this['user']->notEmpty()) {
+					return ($firstName !== NULL);
+				} else {
+					return TRUE;
+				}
+
+
+			},
+
+			'lastName.empty' => function(?string &$lastName, array $newProperties, array $validProperties): bool {
+
+				$this->expects(['category', 'user']);
+
+				if($this['category'] !== Customer::PRIVATE) {
+					$lastName = NULL;
+					return TRUE;
+				}
+
+				if($this['user']->notEmpty()) {
+					return ($lastName !== NULL);
+				} else {
+
+					if(in_array('firstName', $validProperties) === FALSE) {
+						return TRUE;
+					} else {
+						return ($lastName !== NULL or $this['firstName'] !== NULL);
+					}
+
+				}
+
+			},
+
+			'name.empty' => function(?string &$name): bool {
+
+				$this->expects(['category', 'user']);
+
+				if($this['category'] === Customer::PRIVATE) {
+					$name = NULL;
+					return TRUE;
+				}
+
+				return ($name !== NULL);
+
+			},
+
+			'name.set' => function(?string $name, array $newProperties, array $validProperties): bool {
+
+				if($this->getCategory() === Customer::PRIVATE) {
+
+					if(count(array_intersect(['firstName', 'lastName'], $validProperties)) === 2) {
+
+						if($this['firstName'] !== NULL and $this['lastName'] !== NULL) {
+							$this['name'] = $this['firstName'].' '.mb_strtoupper($this['lastName']);
+						} else if($this['lastName'] !== NULL) {
+							$this['name'] = mb_strtoupper($this['lastName']);
+						} else {
+							$this['name'] = $this['firstName'];
+						}
+
+					} else {
+						return FALSE;
+					}
+
+				} else {
+					$this['name'] = $name;
+				}
+
+				return TRUE;
+
+			},
+
 			'category.user' => function(?string $category) use ($for): bool {
 
 				return match($for) {
@@ -128,6 +232,8 @@ class Customer extends CustomerElement {
 			},
 
 			'category.set' => function(?string $category) use ($for): bool {
+
+				$this['category'] = $category;
 
 				switch($category) {
 

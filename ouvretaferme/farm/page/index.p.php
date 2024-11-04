@@ -105,7 +105,7 @@
 			'name' => GET('name'),
 			'email' => GET('email'),
 			'category' => GET('category')
-		], GET('sort', default: 'name'));
+		], GET('sort', default: 'lastName'));
 
 		[$data->cCustomer, $data->nCustomer] = \selling\CustomerLib::getByFarm($data->eFarm, selectPrices: TRUE, selectSales: TRUE, selectInvite: TRUE, page: $data->page, search: $data->search);
 

@@ -109,7 +109,7 @@ class DateLib extends DateCrud {
 
 		$cSale = \selling\SaleLib::getByDate($e, select: [
 			'id', 'document',
-			'customer' => ['name']
+			'customer' => ['type', 'name']
 		]);
 
 		$eSaleBefore = new \selling\Sale();

@@ -111,7 +111,7 @@ class GridUi {
 			$h .= '<div>';
 				$h .= '<a data-dropdown="bottom-end" class="dropdown-toggle btn btn-outline-secondary">'.\Asset::icon('gear-fill').'</a>';
 				$h .= '<div class="dropdown-list bg-secondary">';
-					$h .= '<div class="dropdown-title">'.encode($eCustomer['name']).'</div>';
+					$h .= '<div class="dropdown-title">'.encode($eCustomer->getName()).'</div>';
 					if($cGrid->notEmpty()) {
 						$h .= '<a href="/selling/customer:updateGrid?id='.$eCustomer['id'].'" class="dropdown-item">'.s("Modifier la grille").'</a>';
 						$h .= '<a data-ajax="/selling/customer:doDeleteGrid" post-id="'.$eCustomer['id'].'" class="dropdown-item" data-confirm="'.s("Confirmer la suppression de l'ensemble de la grille personnalisée pour ce client ?").'">'.s("Supprimer toute la grille personnalisée").'</a>';
@@ -207,7 +207,7 @@ class GridUi {
 
 		$h = $form->hidden('id', $eCustomer['id']);
 
-		$h .= '<div class="util-block-help">'.s("Vous pouvez personnaliser ici les prix et les conditionnements pour votre client {value}. Les informations personnalisées ont la priorité sur les valeurs de base, mais ne s'appliquent pas dans les boutiques en ligne.", encode($eCustomer['name'])).'</div>';
+		$h .= '<div class="util-block-help">'.s("Vous pouvez personnaliser ici les prix et les conditionnements pour votre client {value}. Les informations personnalisées ont la priorité sur les valeurs de base, mais ne s'appliquent pas dans les boutiques en ligne.", encode($eCustomer->getName())).'</div>';
 
 		$h .= '<table class="tr-bordered stick-xs">';
 

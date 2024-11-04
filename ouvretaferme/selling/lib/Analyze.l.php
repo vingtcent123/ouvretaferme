@@ -200,7 +200,7 @@ class AnalyzeLib {
 		return Item::model()
 			->select([
 				'year' => new \Sql('EXTRACT(YEAR FROM deliveredAt)', 'int'),
-				'customer' => ['name'],
+				'customer' => ['type', 'name'],
 				'turnover' => new \Sql('SUM(priceExcludingVat)', 'float')
 			])
 			->join(Customer::model(), 'm1.customer = m2.id')
@@ -770,7 +770,7 @@ class AnalyzeLib {
 				'name',
 				'product' => ['name', 'variety'],
 				'sale' => ['document',  'type'],
-				'customer' => ['name'],
+				'customer' => ['type', 'name'],
 				'quantity' => new \Sql('IF(packaging IS NULL, 1, packaging) * number', 'float'),
 				'priceExcludingVat',
 				'unit',
@@ -786,7 +786,7 @@ class AnalyzeLib {
 					$eItem['name'],
 					$eItem['product']->empty() ? '' : $eItem['product']->getName(),
 					$eItem['sale']['document'],
-					$eItem['customer']->notEmpty() ? $eItem['customer']['name'] : CustomerUi::name($eItem['customer']),
+					$eItem['customer']->notEmpty() ? $eItem['customer']->getName() : '',
 					CustomerUi::getType($eItem['sale']),
 					\util\DateUi::numeric($eItem['deliveredAt']),
 					\util\TextUi::csvNumber($eItem['quantity']),
@@ -801,7 +801,7 @@ class AnalyzeLib {
 		foreach(Sale::model()
 			->select([
 				'document', 'type',
-				'customer' => ['name'],
+				'customer' => ['type', 'name'],
 				'shippingExcludingVat',
 				'deliveredAt'
 			])
@@ -814,7 +814,7 @@ class AnalyzeLib {
 				SaleUi::getShippingName(),
 				'',
 				$eSale['document'],
-				$eSale['customer']['name'],
+				$eSale['customer']->getName(),
 				CustomerUi::getType($eSale),
 				\util\DateUi::numeric($eSale['deliveredAt']),
 				'',

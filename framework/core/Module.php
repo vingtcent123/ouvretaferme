@@ -4278,11 +4278,7 @@ abstract class ModuleModel {
 
 		$join = $this->buildJoin();
 
-		$table = $this->field($this->getDb()).'.'.$this->field($this->getTable($suffix));
-		if($join) {
-			$table .= " AS ".$this->field('m1');
-		}
-
+		$table = $this->field($this->getDb()).'.'.$this->field($this->getTable($suffix))." AS ".$this->field('m1');
 		$table .= $this->index($options, $suffix);
 		$table .= $join;
 

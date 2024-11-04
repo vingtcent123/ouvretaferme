@@ -14,17 +14,9 @@ class CustomerUi {
 
 	public static function link(Customer $eCustomer, bool $newTab = FALSE): string {
 		if($eCustomer->empty()) {
-			return self::name($eCustomer);
+			return encode($eCustomer->getName());
 		} else {
-			return '<a href="'.self::url($eCustomer).'" '.($newTab ? 'target="_blank"' : '').'>'.self::name($eCustomer).'</a>';
-		}
-	}
-
-	public static function name(Customer $eCustomer): string {
-		if($eCustomer->empty()) {
-			return s("Client anonyme");
-		} else {
-			return encode($eCustomer['name']);
+			return '<a href="'.self::url($eCustomer).'" '.($newTab ? 'target="_blank"' : '').'>'.encode($eCustomer->getName()).'</a>';
 		}
 	}
 
@@ -118,7 +110,7 @@ class CustomerUi {
 
 		\Asset::css('media', 'media.css');
 
-		$item = '<div>'.encode($eCustomer['name']).'<br/><small class="color-muted">'.self::getCategory($eCustomer).'</small></div>';
+		$item = '<div>'.encode($eCustomer->getName()).'<br/><small class="color-muted">'.self::getCategory($eCustomer).'</small></div>';
 
 		return [
 			'value' => $eCustomer['id'],
@@ -132,7 +124,7 @@ class CustomerUi {
 
 	public static function getPanelHeader(Customer $eCustomer): string {
 
-		return '<div class="panel-header-subtitle">'.encode($eCustomer['name']).'</div>';
+		return '<div class="panel-header-subtitle">'.encode($eCustomer->getName()).'</div>';
 
 	}
 
@@ -172,7 +164,12 @@ class CustomerUi {
 
 			$h .= '<thead>';
 				$h .= '<tr>';
-					$h .= '<th rowspan="2">'.$search->linkSort('name', s("Nom")).'</th>';
+					$h .= '<th rowspan="2">';
+						$label = s("Prénom");
+						$h .= ($search ? $search->linkSort('firstName', $label) : $label).' / ';
+						$label = s("Nom");
+						$h .= ($search ? $search->linkSort('lastName', $label) : $label);
+					$h .= '</th>';
 					$h .= '<th rowspan="2" class="text-center">'.s("Compte client").'</th>';
 					$h .= '<th colspan="2" class="text-center highlight">'.s("Ventes").'</th>';
 					$h .= '<th rowspan="2" class="customer-item-grid">'.s("Grille tarifaire").'</th>';
@@ -194,7 +191,7 @@ class CustomerUi {
 					$h .= '<tr>';
 
 						$h .= '<td class="customer-item-name">';
-							$h .= '<a href="/client/'.$eCustomer['id'].'">'.encode($eCustomer['name']).'</a>';
+							$h .= '<a href="/client/'.$eCustomer['id'].'">'.encode($eCustomer->getName()).'</a>';
 							$h .= '<div class="util-annotation">';
 								$h .= self::getCategory($eCustomer);
 								if($eCustomer['color']) {
@@ -294,7 +291,7 @@ class CustomerUi {
 				if($eCustomer['color']) {
 					$h .= CustomerUi::getColorCircle($eCustomer).' ';
 				}
-				$h .= encode($eCustomer['name']);
+				$h .= $eCustomer->getName();
 			$h .= '</h1>';
 
 			$h .= '<div>';
@@ -340,7 +337,7 @@ class CustomerUi {
 
 							if($eCustomer->hasInvoiceAddress()) {
 								$h .= '<address>';
-									$h .= encode($eCustomer['legalName'] ?? $eCustomer['name']).'<br/>';
+									$h .= encode($eCustomer->getLegalName()).'<br/>';
 									$h .= nl2br(encode($eCustomer->getInvoiceAddress()));
 								$h .= '</address>';
 							}
@@ -423,7 +420,7 @@ class CustomerUi {
 
 		$h = '<a data-dropdown="bottom-end" class="dropdown-toggle btn '.$btn.'">'.\Asset::icon('gear-fill').'</a>';
 		$h .= '<div class="dropdown-list">';
-			$h .= '<div class="dropdown-title">'.encode($eCustomer['name']).'</div>';
+			$h .= '<div class="dropdown-title">'.encode($eCustomer->getName()).'</div>';
 			$h .= '<a href="/selling/sale:create?farm='.$eCustomer['farm']['id'].'&customer='.$eCustomer['id'].'" class="dropdown-item">'.s("Créer une vente").'</a>';
 			$h .= '<a href="/selling/customer:update?id='.$eCustomer['id'].'" class="dropdown-item">'.s("Modifier le client").'</a>';
 
@@ -605,6 +602,8 @@ class CustomerUi {
 
 	protected function write(string $action, \util\FormUi $form, Customer $eCustomer) {
 
+		$eCustomer->expects(['user']);
+
 		$h = '<div class="util-block-flat bg-background-light customer-form-type">';
 			$h .= '<div class="customer-form-category customer-form-pro">';
 				$h .= $form->group(content: '<h4>'.s("Client professionnel").'</h4>');
@@ -615,10 +614,18 @@ class CustomerUi {
 			$h .= '<div class="customer-form-category customer-form-collective">';
 				$h .= $form->group(content: '<h4>'.s("Point de vente pour les particuliers").'</h4>');
 			$h .= '</div>';
-			$h .= $form->dynamicGroup($eCustomer, match($action) {
-				'create' => 'name*',
-				'update' => 'name'
-			});
+			$h .= '<div class="customer-form-category customer-form-pro customer-form-collective">';
+				$h .= $form->dynamicGroup($eCustomer, match($action) {
+					'create' => 'name*',
+					'update' => 'name*'
+				});
+			$h .= '</div>';
+			$h .= '<div class="customer-form-category customer-form-private">';
+				$h .= $form->dynamicGroups($eCustomer, match($action) {
+					'create' => ['firstName*', 'lastName'],
+					'update' => ['firstName*', 'lastName']
+				});
+			$h .= '</div>';
 			$h .= '<div class="customer-form-category customer-form-pro">';
 				$h .= $form->dynamicGroups($eCustomer, ['legalName']);
 			$h .= '</div>';
@@ -686,6 +693,8 @@ class CustomerUi {
 
 		$d = Customer::model()->describer($property, [
 			'name' => s("Nom"),
+			'firstName' => s("Prénom"),
+			'lastName' => s("Nom"),
 			'email' => s("Adresse e-mail"),
 			'category' => s("Catégorie"),
 			'market' => s("Marché"),
@@ -728,7 +737,18 @@ class CustomerUi {
 				];
 				break;
 
-			case 'name' :
+			case 'firstName' :
+				$d->after = function(\util\FormUi $form, Customer $e) {
+					$e->expects(['user']);
+					if($e['user']->notEmpty()) {
+						return '<div class="customer-form-itself-private">'.\util\FormUi::info(s("Le client a aussi la main sur son prénom et est susceptible de le modifier de lui-même."), 'person-circle').'</div>';
+					} else {
+						return NULL;
+					}
+				};
+				break;
+
+			case 'lastName' :
 				$d->after = function(\util\FormUi $form, Customer $e) {
 					$e->expects(['user']);
 					if($e['user']->notEmpty()) {

@@ -13,7 +13,7 @@ class Sale extends SaleElement {
 			'farm' => ['name', 'url', 'vignette', 'banner', 'featureDocument'],
 			'invoice' => ['emailedAt', 'createdAt', 'paymentStatus', 'priceExcludingVat', 'generation'],
 			'marketParent' => [
-				'customer' => ['name']
+				'customer' => ['type', 'name']
 			],
 		];
 

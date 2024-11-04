@@ -39,7 +39,9 @@ Configuration:
   
 Customer:
   id: serial32
-  name: text8(1, null) @collate(general)
+  name: ?text8(1, 50) @collate(general)
+  firstName: ?text8(1, 30) @collate(general)
+  lastName: ?text8(1, 30) @collate(general)
   legalName: ?text8
   email: ?text8
   farm: farm\Farm

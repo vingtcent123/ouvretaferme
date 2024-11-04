@@ -1577,6 +1577,7 @@ class Element extends ArrayObject {
 
 		$callbackWrapper = $callbacks['wrapper'] ?? fn($property) => $property;
 		$newProperties = [];
+		$validProperties = [];
 
 		foreach($properties as $key => $property) {
 
@@ -1601,14 +1602,14 @@ class Element extends ArrayObject {
 
 			if($model->hasProperty($property)) {
 
-				$callbackCast = $callbacksProperty[$property.'.cast'] ?? function(&$value, $newProperties) use ($model, $property): bool {
+				$callbackCast = $callbacksProperty[$property.'.cast'] ?? function(&$value, $newProperties, $validProperties) use ($model, $property): bool {
 
 					$model->cast($property, $value);
 					return TRUE;
 
 				};
 
-				$callbackPrepare = $callbacksProperty[$property.'.prepare'] ?? function(&$value, $newProperties) use ($model, $property): bool {
+				$callbackPrepare = $callbacksProperty[$property.'.prepare'] ?? function(&$value, $newProperties, $validProperties) use ($model, $property): bool {
 
 					if(strpos($model->getPropertyType($property), 'editor') === 0) {
 						$value = (new \editor\XmlLib())->fromHtml($value);
@@ -1618,7 +1619,7 @@ class Element extends ArrayObject {
 
 				};
 
-				$callbackCheck = $callbacksProperty[$property.'.check'] ?? function(&$value, $newProperties) use ($model, $property): bool {
+				$callbackCheck = $callbacksProperty[$property.'.check'] ?? function(&$value, $newProperties, $validProperties) use ($model, $property): bool {
 
 					if(
 						$model->isPropertyNull($property) and
@@ -1631,7 +1632,7 @@ class Element extends ArrayObject {
 
 				};
 
-				$callbackSet = $callbacksProperty[$property.'.set'] ?? function($value, $newProperties) use ($property) {
+				$callbackSet = $callbacksProperty[$property.'.set'] ?? function($value, $newProperties, $validProperties) use ($property) {
 					$this[$property] = $value;
 				};
 
@@ -1667,7 +1668,7 @@ class Element extends ArrayObject {
 
 				try {
 
-					if($callback($value, $newProperties) === FALSE) {
+					if($callback($value, $newProperties, $validProperties) === FALSE) {
 						throw new BuildPropertyError();
 					}
 
@@ -1688,7 +1689,12 @@ class Element extends ArrayObject {
 
 			}
 
+			if($success) {
+				$validProperties[] = $property;
+			}
+
 		}
+
 
 		return $newProperties;
 

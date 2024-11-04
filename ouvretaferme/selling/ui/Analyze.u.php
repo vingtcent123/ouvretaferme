@@ -875,7 +875,7 @@ class AnalyzeUi {
 			s("Répartition des ventes par client en {value}", $year),
 			$cItemCustomer,
 			'turnover',
-			fn($eTimesheet) => $eTimesheet['customer']['name']
+			fn($eTimesheet) => $eTimesheet['customer']->getName()
 		);
 
 	}

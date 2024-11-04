@@ -149,7 +149,7 @@ class MarketUi {
 					if($eSale['customer']->empty()) {
 						$h .= s("Anonyme à {time}", ['time' => \util\DateUi::numeric($eSale['createdAt'], \util\DateUi::TIME)]);
 					} else {
-						$h .= s("{user} à {time}", ['user' => encode($eSale['customer']['name']), 'time' => \util\DateUi::numeric($eSale['createdAt'], \util\DateUi::TIME)]);
+						$h .= s("{user} à {time}", ['user' => encode($eSale['customer']->getName()), 'time' => \util\DateUi::numeric($eSale['createdAt'], \util\DateUi::TIME)]);
 					}
 					$h .= '<br/><small id="market-sale-'.$eSale['id'].'-price">'.\util\TextUi::money($eSale['priceIncludingVat'] ?? 0).'</small>';
 				$h .= '</div>';
@@ -305,9 +305,9 @@ class MarketUi {
 					$h .= '<dt>'.s("Client").'</dt>';
 					$h .= '<dd>';
 						if($eSale['customer']->empty()) {
-							$h .= '<a href="/selling/sale:updateCustomer?id='.$eSale['id'].'">'.CustomerUi::name($eSale['customer']).'</a>';
+							$h .= '<a href="/selling/sale:updateCustomer?id='.$eSale['id'].'">'.encode($eSale['customer']->getName()).'</a>';
 						} else {
-							$h .= '<a data-dropdown="bottom-end" class="dropdown-toggle">'.CustomerUi::name($eSale['customer']).'</a>';
+							$h .= '<a data-dropdown="bottom-end" class="dropdown-toggle">'.encode($eSale['customer']->getName()).'</a>';
 							$h .= '<div class="dropdown-list bg-secondary">';
 								$h .= '<a href="'.CustomerUi::url($eSale['customer']).'" class="dropdown-item">'.s("Voir le client").'</a>';
 								$h .= '<a href="/selling/sale:updateCustomer?id='.$eSale['id'].'" class="dropdown-item">'.s("Changer de client").'</a>';

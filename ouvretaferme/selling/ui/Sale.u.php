@@ -189,8 +189,12 @@ class SaleUi {
 					$h .= '<th class="text-center td-min-content">'.($search ? $search->linkSort('id', $label, SORT_DESC) : $label).'</th>';
 
 					if(in_array('customer', $hide) === FALSE) {
-						$label = s("Client");
-						$h .= '<th>'.($search ? $search->linkSort('customer', $label) : $label).'</th>';
+						$h .= '<th>';
+							$label = s("Prénom");
+							$h .= ($search ? $search->linkSort('firstName', $label) : $label).' / ';
+							$label = s("Nom");
+							$h .= ($search ? $search->linkSort('lastName', $label) : $label);
+						$h .= '</th>';
 						$columns++;
 					}
 					if(in_array('preparationStatus', $hide) === FALSE) {
@@ -377,7 +381,7 @@ class SaleUi {
 									if($eSale['shop']->notEmpty()) {
 										$h .= '<a href="'.\shop\ShopUi::adminDateUrl($eSale['farm'], $eSale['shop'], $eSale['shopDate']).'">'.encode($eSale['shop']['name']).'</a>';
 									} else if($eSale['marketParent']->notEmpty()) {
-										$h .= '<a href="'.SaleUi::url($eSale['marketParent']).'">'.encode($eSale['marketParent']['customer']['name']).'</a>';;
+										$h .= '<a href="'.SaleUi::url($eSale['marketParent']).'">'.encode($eSale['marketParent']['customer']->getName()).'</a>';;
 									} else if($eSale['market']) {
 										if($eSale['marketSales'] > 0) {
 											$h .= p("Marché à {value} vente", "Marché à {value} ventes", $eSale['marketSales']);
@@ -1017,7 +1021,7 @@ class SaleUi {
 
 			if($eSaleBefore->notEmpty()) {
 				$h .= '<a href="'.SaleUi::url($eSaleBefore).'" class="sale-relative-before">';
-					$h .= '<div class="sale-relative-customer">'.encode($eSaleBefore['customer']['name']).'</div>';
+					$h .= '<div class="sale-relative-customer">'.encode($eSaleBefore['customer']->getName()).'</div>';
 					$h .= '<div class="sale-relative-arrow">';
 						$h .= \Asset::icon('chevron-left');
 					$h .= '</div>';
@@ -1039,7 +1043,7 @@ class SaleUi {
 					$h .= '<div class="sale-relative-arrow">';
 						$h .= \Asset::icon('chevron-right');
 					$h .= '</div>';
-					$h .= '<div class="sale-relative-customer">'.encode($eSaleAfter['customer']['name']).'</div>';
+					$h .= '<div class="sale-relative-customer">'.encode($eSaleAfter['customer']->getName()).'</div>';
 				$h .= '</a>';
 			} else {
 				$h .= '<div class="sale-relative-after"></div>';

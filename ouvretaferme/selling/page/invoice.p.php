@@ -111,7 +111,7 @@
 		}
 
 		$content = \selling\PdfLib::getContentByInvoice($data->e);
-		$filename = $data->e->getInvoice().'-'.str_replace('-', '', $data->e['date']).'-'.$data->e['customer']['name'].'.pdf';
+		$filename = $data->e->getInvoice().'-'.str_replace('-', '', $data->e['date']).'-'.$data->e['customer']->getName().'.pdf';
 
 		throw new PdfAction($content, $filename);
 

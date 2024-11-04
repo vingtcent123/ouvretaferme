@@ -130,7 +130,7 @@ class MarketTemplate extends BaseTemplate {
 		$h .= '</a>';
 
 		$h .= '<div class="market-top-title">';
-			$h .= '<h2>'.encode($eSale['customer']['name']).'</h2>';
+			$h .= '<h2>'.encode($eSale['customer']->getName()).'</h2>';
 			$h .= '<div class="market-top-title-date">'.\util\DateUi::textual($eSale['deliveredAt']).'</div>';
 		$h .= '</div>';
 

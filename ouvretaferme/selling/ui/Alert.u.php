@@ -9,10 +9,12 @@ class AlertUi {
 
 			'Configuration::notComplete' => '<p>'.s("Nous avons besoin de quelques informations administratives de base à propos de votre ferme (adresse e-mail de facturation, objet social...) pour générer des documents !").'</p><a href="/selling/configuration:update?id='.$options['farm']['id'].'" class="btn btn-transparent">'.s("Compléter mes informations").'</a>',
 
-			'Customer::name.check' => s("Un nom de client valide est obligatoire."),
+			'Customer::name.empty' => s("Un nom de client valide est obligatoire."),
 			'Customer::phone.check' => s("Le numéro de téléphone est invalide."),
 			'Customer::category.user' => s("Un client ne peut pas être transformé en point de vente."),
 			'Customer::deletedUsed' => s("Ce client ne peut pas être supprimé car il a déjà été utilisé pour une vente."),
+			'Customer::firstName.empty' => s("Veuillez indiquer le prénom de votre client."),
+			'Customer::lastName.empty' => s("Veuillez indiquer le nom de votre client."),
 
 			'Product::deletedSaleUsed' => s("Ce produit ne peut pas être supprimé car il a déjà été utilisé pour une vente."),
 			'Product::deletedShopUsed' => s("Ce produit ne peut pas être supprimé car il a déjà été utilisé dans la boutique."),

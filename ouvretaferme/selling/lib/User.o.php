@@ -24,6 +24,8 @@ class UserObserverLib {
 
 			$eUser->expects(['firstName', 'lastName']);
 
+			$values['firstName'] = $eUser['firstName'];
+			$values['lastName'] = $eUser['lastName'];
 			$values['name'] = CustomerLib::getNameFromUser($eUser);
 
 		}

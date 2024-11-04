@@ -5,7 +5,8 @@
 		$data->eFarm = \farm\FarmLib::getById(INPUT('farm'));
 
 		return new \selling\Customer([
-			'farm' => $data->eFarm
+			'farm' => $data->eFarm,
+			'user' => new \user\User()
 		]);
 
 	})

@@ -606,7 +606,7 @@ class PdfUi {
 				$h .= '<div class="pdf-document-customer">';
 
 					$h .= '<div class="pdf-document-customer-name">';
-						$h .= encode($eCustomer['legalName'] ?? $eCustomer['name']).'<br/>';
+						$h .= encode($eCustomer->getLegalName()).'<br/>';
 					$h .= '</div>';
 
 					if($eCustomer->hasInvoiceAddress()) {
@@ -845,7 +845,7 @@ class PdfUi {
 
 		$eCustomer = $eInvoice['customer'];
 
-		$title = s("Facture {value}", $eInvoice->getInvoice().' - '.($eCustomer['legalName'] ?? $eCustomer['name']));
+		$title = s("Facture {value}", $eInvoice->getInvoice().' - '.($eCustomer->getLegalName()));
 		$content = \mail\CustomizeUi::convertTemplate($template, $variables);
 
 		return \mail\DesignUi::format($eFarm, $title, $content);

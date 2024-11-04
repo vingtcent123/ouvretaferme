@@ -571,7 +571,7 @@ class InvoiceUi {
 
 			$h .= $form->group(
 				s("Client"),
-				'<div class="input-group">'.$form->text(value: $eInvoice['customer']['name'], attributes: ['disabled']).'<a href="/selling/invoice:create?farm='.$eInvoice['farm']['id'].'" class="btn btn-secondary">'.s("Changer").'</a></div>'
+				'<div class="input-group">'.$form->text(value: $eInvoice['customer']->getName(), attributes: ['disabled']).'<a href="/selling/invoice:create?farm='.$eInvoice['farm']['id'].'" class="btn btn-secondary">'.s("Changer").'</a></div>'
 			);
 
 			$sales = '';

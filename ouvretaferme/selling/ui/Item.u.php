@@ -442,7 +442,7 @@ class ItemUi {
 					};
 
 					$customer = '<a href="'.SaleUi::url($eItem['sale']).'" class="btn btn-xs btn-outline-'.$color.'">'.$eItem['sale']['id'].'</a> ';
-					$customer .= '<a href="'.SaleUi::url($eItem['sale']).'">'.CustomerUi::name($eItem['customer']).'</a>';
+					$customer .= '<a href="'.SaleUi::url($eItem['sale']).'">'.encode($eItem['customer']->getName()).'</a>';
 
 					$h .= '<li>';
 

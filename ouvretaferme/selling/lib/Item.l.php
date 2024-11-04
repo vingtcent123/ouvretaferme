@@ -48,7 +48,7 @@ class ItemLib extends ItemCrud {
 			->select([
 				'sale',
 				'product' => ['name', 'variety', 'vignette', 'size'],
-				'customer' => ['name'],
+				'customer' => ['type', 'name'],
 				'packaging', 'number',
 				'unit'
 			])
@@ -83,7 +83,7 @@ class ItemLib extends ItemCrud {
 
 		$ccItem = Item::model()
 			->select(Item::getSelection() + [
-				'customer' => ['name']
+				'customer' => ['type', 'name']
 			])
 			->where('sale', 'IN', $cSale)
 			->sort('sale')
@@ -91,8 +91,8 @@ class ItemLib extends ItemCrud {
 
 		$ccItem->sort(function(\Collection $c1, \Collection $c2) {
 			return \L::getCollator()->compare(
-				$c1->first()['customer']->empty() ? '' : $c1->first()['customer']['name'],
-				$c2->first()['customer']->empty() ? '' : $c2->first()['customer']['name']
+				$c1->first()['customer']->empty() ? '' : $c1->first()['customer']->getName(),
+				$c2->first()['customer']->empty() ? '' : $c2->first()['customer']->getName()
 			);
 		});
 
@@ -107,7 +107,7 @@ class ItemLib extends ItemCrud {
 		return Item::model()
 			->select([
 				'sale' => ['farm', 'hasVat', 'taxes', 'shippingVatRate', 'shippingVatFixed', 'document'],
-				'customer' => ['name'],
+				'customer' => ['type', 'name'],
 				'quantity' => new \Sql('IF(packaging IS NULL, 1, packaging) * number', 'float'),
 				'unit', 'unitPrice',
 				'price',

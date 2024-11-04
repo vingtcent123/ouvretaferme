@@ -63,7 +63,7 @@
 			throw new NotExistsAction();
 		}
 
-		$filename = $data->e->getOrderForm().'-'.str_replace('-', '', $data->e['deliveredAt']).'-'.$data->e['customer']['name'].'.pdf';
+		$filename = $data->e->getOrderForm().'-'.str_replace('-', '', $data->e['deliveredAt']).'-'.$data->e['customer']->getName().'.pdf';
 
 		throw new PdfAction($content, $filename);
 
@@ -79,7 +79,7 @@
 			throw new NotExistsAction();
 		}
 
-		$filename = $data->e->getDeliveryNote().'-'.str_replace('-', '', $data->e['deliveredAt']).'-'.$data->e['customer']['name'].'.pdf';
+		$filename = $data->e->getDeliveryNote().'-'.str_replace('-', '', $data->e['deliveredAt']).'-'.$data->e['customer']->getName().'.pdf';
 
 		throw new PdfAction($content, $filename);
 

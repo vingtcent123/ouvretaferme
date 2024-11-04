@@ -295,7 +295,7 @@ class BasketUi {
 		$h .= '<div class="util-block mb-2">';
 			$h .= '<dl class="util-presentation util-presentation-2">';
 				$h .= '<dt>'.s("Nom").'</dt>';
-				$h .= '<dd>'.encode($eSale['customer']['name']).'</dd>';
+				$h .= '<dd>'.encode($eSale['customer']->getName()).'</dd>';
 				$h .= '<dt>'.s("Montant").'</dt>';
 				$h .= '<dd>';
 					if($eSale['hasVat'] and $eSale['type'] === \selling\Sale::PRO) {

@@ -179,9 +179,13 @@ class SaleLib extends SaleCrud {
 				->wherePreparationStatus(Sale::DELIVERED);
 		}
 
-		$search->validateSort(['id', 'customer', 'deliveredAt', 'items', 'priceExcludingVat', 'preparationStatus'], 'preparationStatus-');
+		$search->validateSort(['id', 'firstName', 'lastName', 'deliveredAt', 'items', 'priceExcludingVat', 'preparationStatus'], 'preparationStatus-');
 
 		$sort = 'FIELD(preparationStatus, "'.Sale::SELLING.'", "'.Sale::DRAFT.'", "'.Sale::CONFIRMED.'", "'.Sale::PREPARED.'", "'.Sale::DELIVERED.'", "'.Sale::CANCELED.'")';
+
+		if(str_starts_with($search->getSort(), 'firstName') or str_starts_with($search->getSort(), 'lastName')) {
+			Sale::model()->join(Customer::model(), 'm1.customer = m2.id');
+		}
 
 		$cSale = Sale::model()
 			->select(Sale::getSelection())
@@ -191,10 +195,10 @@ class SaleLib extends SaleCrud {
 					->delegateCollection('sale', 'type')
 			])
 			->option('count')
-			->whereId('NOT IN', $search->get('notId'), if: $search->get('notId')?->notEmpty())
+			->where('m1.id', 'NOT IN', $search->get('notId'), if: $search->get('notId')?->notEmpty())
 			->whereDocument($search->get('document'), if: $search->get('document'))
-			->whereId('IN', fn() => explode(',', $search->get('ids')), if: $search->get('ids'))
-			->whereFarm($eFarm)
+			->where('m1.id', 'IN', fn() => explode(',', $search->get('ids')), if: $search->get('ids'))
+			->where('m1.farm', $eFarm)
 			->whereType($type, if: $type !== NULL)
 			->whereCustomer($search->get('customer'), if: $search->get('customer'))
 			->whereDeliveredAt('LIKE', '%'.$search->get('deliveredAt').'%', if: $search->get('deliveredAt'))
@@ -203,6 +207,14 @@ class SaleLib extends SaleCrud {
 			->wherePaymentMethod($search->get('paymentMethod'), if: $search->get('paymentMethod'))
 			->whereMarketParent(NULL)
 			->sort($search->buildSort([
+				'firstName' => fn($direction) => match($direction) {
+					SORT_ASC => new \Sql('IF(firstName IS NULL, name, firstName), lastName'),
+					SORT_DESC => new \Sql('IF(firstName IS NULL, name, firstName) DESC, lastName DESC')
+				},
+				'lastName' => fn($direction) => match($direction) {
+					SORT_ASC => new \Sql('IF(lastName IS NULL, name, lastName), firstName'),
+					SORT_DESC => new \Sql('IF(lastName IS NULL, name, lastName) DESC, firstName DESC')
+				},
 				'preparationStatus' => fn($direction) => match($direction) {
 					SORT_ASC => new \Sql('
 						(deliveredAt = CURDATE()) ASC,
@@ -210,7 +222,7 @@ class SaleLib extends SaleCrud {
 						(deliveredAt < CURDATE()) DESC,
 						IF(deliveredAt > CURDATE(), TO_DAYS(deliveredAt), TO_DAYS(deliveredAt) * -1) DESC,
 						'.$sort.' DESC,
-						id ASC
+						m1.id ASC
 					'),
 					SORT_DESC => new \Sql('
 						(deliveredAt = CURDATE()) DESC,
@@ -218,7 +230,7 @@ class SaleLib extends SaleCrud {
 						(deliveredAt < CURDATE()) ASC,
 						IF(deliveredAt > CURDATE(), TO_DAYS(deliveredAt), TO_DAYS(deliveredAt) * -1) ASC,
 						'.$sort.' ASC,
-						id DESC
+						m1.id DESC
 					')
 				}
 			]))
@@ -360,7 +372,7 @@ class SaleLib extends SaleCrud {
 
 		return Sale::model()
 			->select([
-				'customer' => ['name'],
+				'customer' => ['type', 'name'],
 				'hasVat', 'taxes',
 				'priceExcludingVat' => new \Sql('SUM(priceExcludingVat)', 'float'),
 				'priceIncludingVat' => new \Sql('SUM(priceIncludingVat)', 'float'),

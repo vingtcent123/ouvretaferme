@@ -27,13 +27,15 @@ class CustomerLib extends CustomerCrud {
 
 	public static function getPropertiesDefault(string $for, string $category): array {
 
+		// Conserver cet ordre est indispensable : 'firstName', 'lastName', 'name'
+
 		return match($category) {
 
-			Customer::PRO => ['name', 'category', 'legalName', 'invoiceStreet1', 'invoiceStreet2', 'invoicePostcode', 'invoiceCity', 'invoiceRegistration', 'invoiceVat', 'email', 'phone'],
-			Customer::PRIVATE => ['name', 'category', 'email', 'phone'],
+			Customer::PRO => ['category', 'firstName', 'lastName', 'name', 'legalName', 'invoiceStreet1', 'invoiceStreet2', 'invoicePostcode', 'invoiceCity', 'invoiceRegistration', 'invoiceVat', 'email', 'phone'],
+			Customer::PRIVATE => ['category', 'firstName', 'lastName', 'name', 'email', 'phone'],
 			Customer::COLLECTIVE => match($for) {
-				'create' => ['name', 'category'],
-				'update' => ['name']
+				'create' => ['category', 'firstName', 'lastName', 'name'],
+				'update' => ['firstName', 'lastName', 'name']
 			},
 			default => ['category']
 
@@ -120,7 +122,7 @@ class CustomerLib extends CustomerCrud {
 				]);
 		}
 
-		$search->validateSort(['name']);
+		$search->validateSort(['name', 'firstName', 'lastName']);
 
 		switch($search->get('category')) {
 
@@ -151,7 +153,16 @@ class CustomerLib extends CustomerCrud {
 			->whereFarm($eFarm)
 			->whereName('LIKE', '%'.$search->get('name').'%', if: $search->get('name'))
 			->whereEmail('LIKE', '%'.$search->get('email').'%', if: $search->get('email'))
-			->sort($search->buildSort())
+			->sort($search->buildSort([
+				'firstName' => fn($direction) => match($direction) {
+					SORT_ASC => new \Sql('IF(firstName IS NULL, name, firstName), lastName'),
+					SORT_DESC => new \Sql('IF(firstName IS NULL, name, firstName) DESC, lastName DESC')
+				},
+				'lastName' => fn($direction) => match($direction) {
+					SORT_ASC => new \Sql('IF(lastName IS NULL, name, lastName), firstName'),
+					SORT_DESC => new \Sql('IF(lastName IS NULL, name, lastName) DESC, firstName DESC')
+				}
+			]))
 			->getCollection($position, $number);
 
 		return [$cCustomer, Customer::model()->found()];
@@ -263,7 +274,7 @@ class CustomerLib extends CustomerCrud {
 		if($eUser['firstName'] === NULL) {
 			return $eUser['lastName'];
 		} else {
-			return $eUser['firstName'].' '.$eUser['lastName'];
+			return $eUser['firstName'].' '.mb_strtoupper($eUser['lastName']);
 		}
 
 	}

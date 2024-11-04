@@ -252,7 +252,7 @@ class InviteUi {
 			$description .= '</div>';
 
 			$h .= $form->group(content: $description);
-			$h .= $form->group(s("Nom du client"), '<b>'.encode($eCustomer['name']).'</b>');
+			$h .= $form->group(s("Nom du client"), '<b>'.encode($eCustomer->getName()).'</b>');
 			$h .= $form->dynamicGroup($eInvite, 'email');
 
 			$h .= $form->group(

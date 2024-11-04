@@ -25,7 +25,7 @@ class OrderUi {
 					$h .= '<dd>'.$eCustomer['id'].'</dd>';
 
 					$h .= '<dt>'.s("Compte client").'</dt>';
-					$h .= '<dd>'.encode($eCustomer['name']).'</dd>';
+					$h .= '<dd>'.encode($eCustomer->getName()).'</dd>';
 
 				$h .= '</dl>';
 				$h .= '<br/>';
@@ -51,7 +51,7 @@ class OrderUi {
 				$h .= '</div>';
 				$h .= '<div class="order-pro-item-content">';
 					$h .= '<h5>';
-						$h .= encode($eCustomer['name']);
+						$h .= encode($eCustomer->getName());
 					$h .= '</h5>';
 					$h .= '<h4>';
 						$h .= encode($eCustomer['farm']['name']);
@@ -218,7 +218,7 @@ class OrderUi {
 			$h .= '<dl class="util-presentation util-presentation-1">';
 
 				$h .= '<dt>'.s("Nom").'</dt>';
-				$h .= '<dd>'.encode($eCustomer['legalName'] ?? $eCustomer['name']).'</dd>';
+				$h .= '<dd>'.encode($eCustomer->getLegalName()).'</dd>';
 
 				$h .= '<dt>'.s("Adresse").'</dt>';
 				$h .= '<dd>'.nl2br(encode($eCustomer->getInvoiceAddress() ?? '/')).'</dd>';
