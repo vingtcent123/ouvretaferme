@@ -155,12 +155,12 @@ class CustomerLib extends CustomerCrud {
 			->whereEmail('LIKE', '%'.$search->get('email').'%', if: $search->get('email'))
 			->sort($search->buildSort([
 				'firstName' => fn($direction) => match($direction) {
-					SORT_ASC => new \Sql('IF(firstName IS NULL, name, firstName), lastName'),
-					SORT_DESC => new \Sql('IF(firstName IS NULL, name, firstName) DESC, lastName DESC')
+					SORT_ASC => new \Sql('IF(firstName IS NULL, name, firstName), lastName, id'),
+					SORT_DESC => new \Sql('IF(firstName IS NULL, name, firstName) DESC, lastName DESC, id DESC')
 				},
 				'lastName' => fn($direction) => match($direction) {
-					SORT_ASC => new \Sql('IF(lastName IS NULL, name, lastName), firstName'),
-					SORT_DESC => new \Sql('IF(lastName IS NULL, name, lastName) DESC, firstName DESC')
+					SORT_ASC => new \Sql('IF(lastName IS NULL, name, lastName), firstName, id'),
+					SORT_DESC => new \Sql('IF(lastName IS NULL, name, lastName) DESC, firstName DESC, id DESC')
 				}
 			]))
 			->getCollection($position, $number);

@@ -113,7 +113,7 @@ class SaleLib extends SaleCrud {
 
 		Sale::model()
 			->where('m1.id', 'IN', $ids)
-			->sort(new \Sql('IF(lastName IS NULL, name, lastName), firstName'));
+			->sort(new \Sql('IF(lastName IS NULL, name, lastName), firstName, m1.id'));
 
 		return self::getForLabels($eFarm, $selectItems);
 	}
@@ -123,7 +123,7 @@ class SaleLib extends SaleCrud {
 		Sale::model()
 			->whereShopDate($eDate)
 			->wherePreparationStatus('IN', [Sale::CONFIRMED, Sale::PREPARED, Sale::DELIVERED])
-			->sort(new \Sql('shopPoint, IF(lastName IS NULL, name, lastName), firstName'));
+			->sort(new \Sql('shopPoint, IF(lastName IS NULL, name, lastName), firstName, m1.id'));
 
 
 		return self::getForLabels($eDate['farm'], $selectItems, $selectPoint);
@@ -212,12 +212,12 @@ class SaleLib extends SaleCrud {
 			->whereMarketParent(NULL)
 			->sort($search->buildSort([
 				'firstName' => fn($direction) => match($direction) {
-					SORT_ASC => new \Sql('IF(firstName IS NULL, name, firstName), lastName'),
-					SORT_DESC => new \Sql('IF(firstName IS NULL, name, firstName) DESC, lastName DESC')
+					SORT_ASC => new \Sql('IF(firstName IS NULL, name, firstName), lastName, m1.id'),
+					SORT_DESC => new \Sql('IF(firstName IS NULL, name, firstName) DESC, lastName DESC, m1.id DESC')
 				},
 				'lastName' => fn($direction) => match($direction) {
-					SORT_ASC => new \Sql('IF(lastName IS NULL, name, lastName), firstName'),
-					SORT_DESC => new \Sql('IF(lastName IS NULL, name, lastName) DESC, firstName DESC')
+					SORT_ASC => new \Sql('IF(lastName IS NULL, name, lastName), firstName, m1.id'),
+					SORT_DESC => new \Sql('IF(lastName IS NULL, name, lastName) DESC, firstName DESC, m1.id DESC')
 				},
 				'preparationStatus' => fn($direction) => match($direction) {
 					SORT_ASC => new \Sql('
@@ -310,7 +310,7 @@ class SaleLib extends SaleCrud {
 		\shop\Date $eDate,
 		?array $preparationStatus = [Sale::CONFIRMED, Sale::PREPARED, Sale::DELIVERED],
 		?array $select = NULL,
-		mixed $sort = 'id'
+		mixed $sort = new \Sql('shopPoint ASC, IF(lastName IS NULL, name, lastName), firstName, m1.id')
 	): \Collection {
 
 		return Sale::model()
