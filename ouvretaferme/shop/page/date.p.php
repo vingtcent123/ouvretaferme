@@ -56,7 +56,7 @@
 
 		$data->cSale = \selling\SaleLib::getByDate($data->e, NULL, select: \selling\Sale::getSelection() + [
 			'shopPoint' => \shop\PointElement::getSelection()
-		], sort: 'shopPoint');
+		], sort: new Sql('shopPoint ASC, IF(lastName IS NULL, name, lastName), firstName'));
 
 		$data->e['cCategory'] = \selling\CategoryLib::getByFarm($data->eFarm);
 		$data->e['ccPoint'] = \shop\PointLib::getByDate($data->e);
@@ -141,8 +141,6 @@
 		$data->e['shop'] = \shop\ShopLib::getById($data->e['shop']);
 
 		$data->cSale = \selling\SaleLib::getForLabelsByDate($data->e, selectItems: TRUE, selectPoint: TRUE);
-		$data->cSale->sort('shopPoint');
-
 		$data->cItem = \selling\ItemLib::getSummaryByDate($data->e);
 
 		throw new ViewAction($data);

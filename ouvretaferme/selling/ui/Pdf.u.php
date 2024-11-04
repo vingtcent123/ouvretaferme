@@ -940,7 +940,22 @@ class PdfUi {
 
 		$itemsPerPage = 4;
 
-		$itemsChunk = array_chunk($items, $itemsPerPage);
+		for($i = count($items) % $itemsPerPage; $i < $itemsPerPage; $i++) {
+			$items[] = '<div></div>';
+		}
+
+		$pages = count($items) / $itemsPerPage;
+
+		$itemsOrdered = [];
+
+		foreach($items as $key => $item) {
+			$newKey = ($key % $pages) * $itemsPerPage + (int)($key / $pages);
+			$itemsOrdered[$newKey] = $item;
+		}
+
+		ksort($itemsOrdered);
+
+		$itemsChunk = array_chunk($itemsOrdered, $itemsPerPage);
 
 		if($itemsChunk === []) {
 			$itemsChunk[] = [];

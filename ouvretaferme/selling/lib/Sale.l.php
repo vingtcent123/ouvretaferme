@@ -111,7 +111,9 @@ class SaleLib extends SaleCrud {
 
 	public static function getForLabelsByIds(\farm\Farm $eFarm, array $ids, bool $selectItems = FALSE): \Collection {
 
-		Sale::model()->whereId('IN', $ids);
+		Sale::model()
+			->whereId('IN', $ids)
+			->sort(new \Sql('IF(lastName IS NULL, name, lastName), firstName'));
 
 		return self::getForLabels($eFarm, $selectItems);
 	}
@@ -120,7 +122,8 @@ class SaleLib extends SaleCrud {
 
 		Sale::model()
 			->whereShopDate($eDate)
-			->wherePreparationStatus('IN', [Sale::CONFIRMED, Sale::PREPARED, Sale::DELIVERED]);
+			->wherePreparationStatus('IN', [Sale::CONFIRMED, Sale::PREPARED, Sale::DELIVERED])
+			->sort(new \Sql('shopPoint, IF(lastName IS NULL, name, lastName), firstName'));
 
 
 		return self::getForLabels($eDate['farm'], $selectItems, $selectPoint);
@@ -152,8 +155,9 @@ class SaleLib extends SaleCrud {
 		}
 
 		$cSale = Sale::model()
+			->join(Customer::model(), 'm1.customer = m2.id')
 			->select(Sale::getSelection())
-			->whereFarm($eFarm)
+			->where('m1.farm', $eFarm)
 			->getCollection();
 
 		if($selectItems) {
@@ -310,6 +314,7 @@ class SaleLib extends SaleCrud {
 	): \Collection {
 
 		return Sale::model()
+			->join(Customer::model(), 'm1.customer = m2.id')
 			->select($select ?? Sale::getSelection())
 			->whereShopDate($eDate)
 			->wherePreparationStatus('IN', $preparationStatus, if: empty($preparationStatus) === FALSE)
