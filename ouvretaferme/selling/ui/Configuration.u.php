@@ -369,7 +369,7 @@ class ConfigurationUi {
 
 			case 'pdfNaturalOrder' :
 				$d->field = 'yesNo';
-				$d->labelAfter = \util\FormUi::info(s("Les étiquettes devront être coupées empilées après impression et déposées l'une sur l'autre du coin haut gauche au coin bas droite pour conserver le tri"));
+				$d->labelAfter = \util\FormUi::info(s("Les étiquettes devront être coupées empilées après impression et déposées l'une sur l'autre du coin haut gauche au coin bas droite des feuilles pour conserver le tri"));
 				break;
 
 			case 'orderFormPaymentCondition' :
