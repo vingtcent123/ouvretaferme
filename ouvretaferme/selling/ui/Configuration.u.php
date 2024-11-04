@@ -109,6 +109,8 @@ class ConfigurationUi {
 				});
 				$h .= $form->group(content: '<h3>'.s("Certification").'</h3>');
 				$h .= $form->dynamicGroups($eConfiguration, ['organicCertifier']);
+				$h .= $form->group(content: '<h3>'.s("Autres").'</h3>');
+				$h .= $form->dynamicGroups($eConfiguration, ['pdfNaturalOrder']);
 
 			$h .= $form->group(
 				content: $form->submit(s("Enregistrer"))
@@ -310,6 +312,7 @@ class ConfigurationUi {
 			'invoiceHeader' => s("Ajouter un texte personnalisé affiché en haut des factures"),
 			'invoiceFooter' => s("Ajouter un texte personnalisé affiché en bas des factures"),
 			'documentCopy' => s("Recevoir une copie sur l'adresse e-mail de la ferme des devis, bons de livraisons et factures que vous envoyez aux clients"),
+			'pdfNaturalOrder' => s("Trier les commandes et les étiquettes exportées en PDF pour faciliter la découpe"),
 		]);
 
 		switch($property) {
@@ -362,6 +365,11 @@ class ConfigurationUi {
 			case 'orderFormDelivery' :
 			case 'documentCopy' :
 				$d->field = 'yesNo';
+				break;
+
+			case 'pdfNaturalOrder' :
+				$d->field = 'yesNo';
+				$d->labelAfter = \util\FormUi::info(s("Les étiquettes devront être coupées empilées après impression et déposées l'une sur l'autre du coin haut gauche au coin bas droite pour conserver le tri"));
 				break;
 
 			case 'orderFormPaymentCondition' :

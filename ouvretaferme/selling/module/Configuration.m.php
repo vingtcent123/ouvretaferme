@@ -61,10 +61,11 @@ class ConfigurationModel extends \ModuleModel {
 			'invoicePaymentCondition' => ['editor16', 'min' => 1, 'max' => 400, 'null' => TRUE, 'cast' => 'string'],
 			'invoiceHeader' => ['editor16', 'min' => 1, 'max' => 400, 'null' => TRUE, 'cast' => 'string'],
 			'invoiceFooter' => ['editor16', 'min' => 1, 'max' => 400, 'null' => TRUE, 'cast' => 'string'],
+			'pdfNaturalOrder' => ['bool', 'cast' => 'bool'],
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'farm', 'documentSales', 'documentInvoices', 'hasVat', 'defaultVat', 'defaultVatShipping', 'legalEmail', 'legalName', 'invoiceStreet1', 'invoiceStreet2', 'invoicePostcode', 'invoiceCity', 'invoiceRegistration', 'invoiceVat', 'organicCertifier', 'paymentMode', 'documentCopy', 'orderFormDelivery', 'orderFormPaymentCondition', 'orderFormHeader', 'orderFormFooter', 'invoicePaymentCondition', 'invoiceHeader', 'invoiceFooter'
+			'id', 'farm', 'documentSales', 'documentInvoices', 'hasVat', 'defaultVat', 'defaultVatShipping', 'legalEmail', 'legalName', 'invoiceStreet1', 'invoiceStreet2', 'invoicePostcode', 'invoiceCity', 'invoiceRegistration', 'invoiceVat', 'organicCertifier', 'paymentMode', 'documentCopy', 'orderFormDelivery', 'orderFormPaymentCondition', 'orderFormHeader', 'orderFormFooter', 'invoicePaymentCondition', 'invoiceHeader', 'invoiceFooter', 'pdfNaturalOrder'
 		]);
 
 		$this->propertiesToModule += [
@@ -95,6 +96,9 @@ class ConfigurationModel extends \ModuleModel {
 
 			case 'orderFormDelivery' :
 				return TRUE;
+
+			case 'pdfNaturalOrder' :
+				return FALSE;
 
 			default :
 				return parent::getDefaultValue($property);
@@ -209,6 +213,10 @@ class ConfigurationModel extends \ModuleModel {
 
 	public function whereInvoiceFooter(...$data): ConfigurationModel {
 		return $this->where('invoiceFooter', ...$data);
+	}
+
+	public function wherePdfNaturalOrder(...$data): ConfigurationModel {
+		return $this->where('pdfNaturalOrder', ...$data);
 	}
 
 

@@ -112,7 +112,7 @@ class SaleLib extends SaleCrud {
 	public static function getForLabelsByIds(\farm\Farm $eFarm, array $ids, bool $selectItems = FALSE): \Collection {
 
 		Sale::model()
-			->whereId('IN', $ids)
+			->where('m1.id', 'IN', $ids)
 			->sort(new \Sql('IF(lastName IS NULL, name, lastName), firstName'));
 
 		return self::getForLabels($eFarm, $selectItems);

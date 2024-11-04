@@ -33,6 +33,7 @@ Configuration:
   invoicePaymentCondition: ?editor16(1, 400)
   invoiceHeader: ?editor16(1, 400)
   invoiceFooter: ?editor16(1, 400)
+  pdfNaturalOrder: bool = FALSE
   UNIQUE: [
     ["farm"]
   ]

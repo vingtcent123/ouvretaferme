@@ -24,6 +24,8 @@ class PdfUi {
 
 	public function getLabels(\farm\Farm $eFarm, \Collection $cSale): string {
 
+		$eConfiguration = $eFarm->selling();
+
 		$items = [];
 
 		foreach($cSale as $eSale) {
@@ -65,20 +67,26 @@ class PdfUi {
 
 		$itemsPerPage = 12;
 
-		for($i = count($items) % $itemsPerPage; $i < 12; $i++) {
-			$items[] = $this->getLabel($eFarm, new Customer(), quality: $eFarm['quality']);
+		if($eConfiguration['pdfNaturalOrder']) {
+
+			for($i = count($items) % $itemsPerPage; $i < $itemsPerPage; $i++) {
+				$items[] = $this->getLabel($eFarm, new Customer(), quality: $eFarm['quality']);
+			}
+
+			$pages = count($items) / $itemsPerPage;
+
+			$itemsOrdered = [];
+
+			foreach($items as $key => $item) {
+				$newKey = ($key % $pages) * $itemsPerPage + (int)($key / $pages);
+				$itemsOrdered[$newKey] = $item;
+			}
+
+			ksort($itemsOrdered);
+
+		} else {
+			$itemsOrdered = $items;
 		}
-
-		$pages = count($items) / $itemsPerPage;
-
-		$itemsOrdered = [];
-
-		foreach($items as $key => $item) {
-			$newKey = ($key % $pages) * $itemsPerPage + (int)($key / $pages);
-			$itemsOrdered[$newKey] = $item;
-		}
-
-		ksort($itemsOrdered);
 
 		$itemsChunk = array_chunk($itemsOrdered, $itemsPerPage);
 
@@ -902,13 +910,13 @@ class PdfUi {
 
 		$h .= '</div>';
 
-		$h .= $this->getSalesContent($cSale);
+		$h .= $this->getSalesContent($eDate['farm'], $cSale);
 
 		return $h;
 
 	}
 
-	public function getSales(\Collection $cSale, \Collection $cItem): string {
+	public function getSales(\farm\Farm $eFarm, \Collection $cSale, \Collection $cItem): string {
 
 		$h = '<style>@page {	size: A4 landscape; margin: 0.5cm; }</style>';
 
@@ -924,13 +932,15 @@ class PdfUi {
 
 		}
 
-		$h .= $this->getSalesContent($cSale);
+		$h .= $this->getSalesContent($eFarm, $cSale);
 
 		return $h;
 
 	}
 
-	protected function getSalesContent(\Collection $cSale): string {
+	protected function getSalesContent(\farm\Farm $eFarm, \Collection $cSale): string {
+
+		$eConfiguration = $eFarm->selling();
 
 		$items = [];
 
@@ -940,20 +950,26 @@ class PdfUi {
 
 		$itemsPerPage = 4;
 
-		for($i = count($items) % $itemsPerPage; $i < $itemsPerPage; $i++) {
-			$items[] = '<div></div>';
+		if($eConfiguration['pdfNaturalOrder']) {
+
+			for($i = count($items) % $itemsPerPage; $i < $itemsPerPage; $i++) {
+				$items[] = '<div></div>';
+			}
+
+			$pages = count($items) / $itemsPerPage;
+
+			$itemsOrdered = [];
+
+			foreach($items as $key => $item) {
+				$newKey = ($key % $pages) * $itemsPerPage + (int)($key / $pages);
+				$itemsOrdered[$newKey] = $item;
+			}
+
+			ksort($itemsOrdered);
+
+		} else {
+			$itemsOrdered = $items;
 		}
-
-		$pages = count($items) / $itemsPerPage;
-
-		$itemsOrdered = [];
-
-		foreach($items as $key => $item) {
-			$newKey = ($key % $pages) * $itemsPerPage + (int)($key / $pages);
-			$itemsOrdered[$newKey] = $item;
-		}
-
-		ksort($itemsOrdered);
 
 		$itemsChunk = array_chunk($itemsOrdered, $itemsPerPage);
 
@@ -966,9 +982,7 @@ class PdfUi {
 		foreach($itemsChunk as $itemsByN) {
 
 			$h .= '<div class="pdf-sales-label-wrapper">';
-
 				$h .= implode('', $itemsByN);
-
 			$h .= '</div>';
 
 		}

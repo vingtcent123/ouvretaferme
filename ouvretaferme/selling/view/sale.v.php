@@ -69,7 +69,7 @@ new JsonView('doUpdatePreparationStatus', function($data, AjaxTemplate $t) {
 
 new HtmlView('getExport', function($data, PdfTemplate $t) {
 
-	echo (new \selling\PdfUi())->getSales($data->c, $data->cItem);
+	echo (new \selling\PdfUi())->getSales($data->eFarm, $data->c, $data->cItem);
 
 });
 ?>
