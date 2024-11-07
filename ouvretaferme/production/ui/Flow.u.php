@@ -671,10 +671,6 @@ class FlowUi {
 				$h .= $this->getSeasonField($form, $eFlow);
 			}
 
-			if($eFlow['sequence']['cycle'] === Sequence::PERENNIAL) {
-				$h .= $this->getSeasonField($form, $eFlow);
-			}
-
 			$h .= $this->getPeriodField($form, $eFlow);
 
 			$h .= $form->dynamicGroup($eFlow, 'description');
@@ -689,6 +685,7 @@ class FlowUi {
 		$h .= $form->close();
 
 		return new \Panel(
+			id: 'panel-flow-create',
 			title: s("Ajouter une intervention"),
 			subTitle: SequenceUi::getPanelHeader($eSequence),
 			body: $h
@@ -734,6 +731,7 @@ class FlowUi {
 		$h .= $form->close();
 
 		return new \Panel(
+			id: 'panel-flow-update',
 			title: s("Modifier une intervention"),
 			subTitle: SequenceUi::getPanelHeader($eSequence),
 			body: $h,
