@@ -289,7 +289,7 @@ class ItemUi {
 					$h .= '</td>';
 
 					$h .= '<td class="text-end">';
-						$h .= \main\UnitUi::getValue(round($eItem['quantity'], 2), $eItem['unit'], TRUE);
+						$h .= \main\UnitUi::getValue($eItem['quantity'], $eItem['unit'], TRUE);
 					$h .= '</td>';
 
 					$h .= '<td class="text-end item-product-unit-price">';
