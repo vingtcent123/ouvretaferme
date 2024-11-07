@@ -212,22 +212,13 @@ class MarketLib {
 
 	public static function createItems(\Collection $cItem): void {
 
-		foreach($cItem as $eItem) {
+		$cItemFiltered = $cItem->find(fn($eItem) => (
+			($eItem['locked'] === Item::UNIT_PRICE and $eItem['number'] !== 0.0 and $eItem['price'] !== 0.0) or
+			($eItem['locked'] === Item::PRICE and $eItem['number'] !== 0.0 and $eItem['unitPrice'] !== 0.0) or
+			($eItem['locked'] === Item::NUMBER and $eItem['unitPrice'] !== 0.0 and $eItem['price'] !== 0.0)
+		));
 
-			if(
-				($eItem['locked'] === Item::UNIT_PRICE and $eItem['number'] !== 0.0 and $eItem['price'] !== 0.0) or
-				($eItem['locked'] === Item::PRICE and $eItem['number'] !== 0.0 and $eItem['unitPrice'] !== 0.0) or
-				($eItem['locked'] === Item::NUMBER and $eItem['unitPrice'] !== 0.0 and $eItem['price'] !== 0.0)
-			) {
-
-				ItemLib::prepareCreate($eItem);
-
-				Item::model()->insert($eItem);
-
-			}
-		}
-
-		SaleLib::recalculate($eItem['sale']);
+		ItemLib::createCollection($cItemFiltered);
 
 	}
 

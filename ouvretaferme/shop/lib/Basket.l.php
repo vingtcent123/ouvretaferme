@@ -6,11 +6,7 @@ namespace shop;
  */
 class BasketLib {
 
-	public static function checkProductsAndStock(array $products, Date $eDate): array {
-
-		$eDate->expects(['cProduct']);
-
-		$cProduct = $eDate['cProduct'];
+	public static function checkAvailableProducts(array $products, \Collection $cProduct, \selling\Sale $eSale): array {
 
 		$cleanBasket = [];
 
@@ -22,30 +18,27 @@ class BasketLib {
 				continue;
 			}
 
+			$available = ProductLib::getReallyAvailable($eProduct, $eProductSelling, $eSale);
+
 			$product = [
-				'price' => $eProduct['price'],
-				'product' => $eProductSelling,
-				'packaging' => $eProduct['packaging']
+				'product' => $eProduct,
 			];
 
-			$quantityOrder = (float)$products[$eProductSelling['id']]['quantity'] ?? 0.0;
-			$quantityRemaining = $eProduct['stock'] - $eProduct['sold'];
+			$numberOrdered = (float)($products[$eProductSelling['id']]['number'] ?? 0.0);
 
-			if($eProduct['stock'] === NULL or $quantityOrder <= $quantityRemaining) {
-				$product['quantity'] = $quantityOrder;
+			if($available === NULL or $numberOrdered <= $available) {
+				$product['number'] = $numberOrdered;
 			} else {
-				$product['quantity'] = $quantityRemaining;
+				$product['number'] = $available;
 			}
 
-			if((float)$product['quantity'] <= 0.0) {
+			if((float)$product['number'] <= 0.0) {
 				continue;
 			}
 
-			if($eProduct['stock'] !== NULL and $quantityOrder > $quantityRemaining) {
-				$product['warning'] = 'quantity';
+			if($available !== NULL and $numberOrdered > $available) {
+				$product['warning'] = 'number';
 			}
-
-			$product['maxQuantity'] = $quantityRemaining;
 
 			$cleanBasket[$eProductSelling['id']] = $product;
 

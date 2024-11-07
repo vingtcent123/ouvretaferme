@@ -45,6 +45,7 @@ class DateModel extends \ModuleModel {
 			'id' => ['serial32', 'cast' => 'int'],
 			'createdAt' => ['datetime', 'cast' => 'string'],
 			'shop' => ['element32', 'shop\Shop', 'cast' => 'element'],
+			'catalog' => ['element32', 'shop\Catalog', 'null' => TRUE, 'cast' => 'element'],
 			'type' => ['enum', [\shop\Date::PRIVATE, \shop\Date::PRO], 'cast' => 'enum'],
 			'farm' => ['element32', 'farm\Farm', 'cast' => 'element'],
 			'status' => ['enum', [\shop\Date::ACTIVE, \shop\Date::CLOSED], 'cast' => 'enum'],
@@ -55,11 +56,12 @@ class DateModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'createdAt', 'shop', 'type', 'farm', 'status', 'orderStartAt', 'orderEndAt', 'points', 'deliveryDate'
+			'id', 'createdAt', 'shop', 'catalog', 'type', 'farm', 'status', 'orderStartAt', 'orderEndAt', 'points', 'deliveryDate'
 		]);
 
 		$this->propertiesToModule += [
 			'shop' => 'shop\Shop',
+			'catalog' => 'shop\Catalog',
 			'farm' => 'farm\Farm',
 		];
 
@@ -141,6 +143,10 @@ class DateModel extends \ModuleModel {
 
 	public function whereShop(...$data): DateModel {
 		return $this->where('shop', ...$data);
+	}
+
+	public function whereCatalog(...$data): DateModel {
+		return $this->where('catalog', ...$data);
 	}
 
 	public function whereType(...$data): DateModel {

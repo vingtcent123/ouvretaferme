@@ -13,10 +13,11 @@ document.delegateEventListener('click', '#shop-basket-point div.point-place-wrap
 class BasketManage {
 
 	static prefix = 'basket-';
+	static version = 'v2';
 
 	/* Fonctions génériques pour la gestion du panier en localStorage */
 	static key(dateId) {
-		return this.prefix + dateId
+		return this.prefix + this.version +'-'+ dateId;
 	}
 
 	static getBasket(dateId, defaultJson = null) {
@@ -125,21 +126,21 @@ class BasketManage {
 	}
 
 	/* Fonctions de mise à jour du panier et de son affichage */
-	static update(dateId, productId, step, stock) {
+	static update(dateId, productId, step, available) {
 
-		let initialQuantity = parseFloat(qs('[data-product="' + productId + '"][data-field="quantity"] > span:first-child').innerHTML);
+		let initialNumber = parseFloat(qs('[data-product="' + productId + '"][data-field="number"] > span:first-child').innerHTML);
 
-		if(isNaN(initialQuantity)) {
-			initialQuantity = 0;
+		if(isNaN(initialNumber)) {
+			initialNumber = 0;
 		}
 
-		const newQuantity = Math.round((initialQuantity + step) * 100) / 100;
+		const newNumber = Math.round((initialNumber + step) * 100) / 100;
 
-		if(newQuantity < 0.0) {
+		if(newNumber < 0.0) {
 			return false;
 		}
 
-		if(stock > -1 && stock < newQuantity) {
+		if(available > -1 && available < newNumber) {
 			return false;
 		}
 
@@ -147,12 +148,12 @@ class BasketManage {
 
 		const isModifying = basket.sale !== null;
 
-		if(parseFloat(newQuantity) === 0.0) {
+		if(parseFloat(newNumber) === 0.0) {
 			delete basket.products[productId];
 		} else {
 			basket.products[productId] = {
-				quantity: newQuantity,
-				quantityOrdered: newQuantity
+				number: newNumber,
+				numberOrdered: newNumber
 			};
 		}
 
@@ -165,7 +166,7 @@ class BasketManage {
 
 		} else {
 
-			qs('[data-product="' + productId + '"][data-field="quantity"] > span:first-child').renderInner(newQuantity);
+			qs('[data-product="' + productId + '"][data-field="number"] > span:first-child').renderInner(newNumber);
 			this.updateDisplay(dateId);
 
 		}
@@ -182,11 +183,11 @@ class BasketManage {
 		let amount = 0;
 		let articles = 0;
 
-		Object.entries(basket.products).forEach(([productId, {quantity}]) => {
+		Object.entries(basket.products).forEach(([productId, {number}]) => {
 
 			const product = qs('.shop-product[data-id="'+ productId +'"]');
 
-			if(quantity > 0) {
+			if(number > 0) {
 
 				if(product.length === 0) {
 					return;
@@ -195,14 +196,14 @@ class BasketManage {
 				const price = parseFloat(product.dataset.price);
 
 				articles++;
-				amount += quantity * price;
+				amount += number * price;
 
-				product.qs('.shop-product-quantity-decrease').classList.remove('shop-product-quantity-decrease-disabled');
+				product.qs('.shop-product-number-decrease').classList.remove('shop-product-number-decrease-disabled');
 
 				product.dataset.has = 1;
 
 			} else {
-				product.qs('.shop-product-quantity-decrease').classList.add('shop-product-quantity-decrease-disabled');
+				product.qs('.shop-product-number-decrease').classList.add('shop-product-number-decrease-disabled');
 			}
 
 		});
@@ -225,11 +226,11 @@ class BasketManage {
 		this.setBasket(dateId, basket);
 
 		// Met à jour toutes les quantités.
-		Object.entries(basket.products).forEach(([productId, {quantity}]) => {
+		Object.entries(basket.products).forEach(([productId, {number}]) => {
 
 			qs(
-				'[data-product="' + productId + '"][data-field="quantity"] > span:first-child',
-				node => node.renderInner(quantity),
+				'[data-product="' + productId + '"][data-field="number"] > span:first-child',
+				node => node.renderInner(number),
 				() => this.deleteBasket(dateId, productId)
 			);
 
@@ -433,20 +434,20 @@ class BasketManage {
 		let basket = this.getBasket(dateId);
 		let products = {};
 
-		qsa('span.shop-product-quantity-value', span => {
+		qsa('span.shop-product-number-value', span => {
 
 			const productId = Number.parseInt(span.dataset.product);
-			const remainingStock = Number.parseFloat(span.dataset.remainingStock);
+			const available = Number.parseFloat(span.dataset.available);
 			const unitPrice = Number.parseFloat(span.dataset.price);
 
 			products[productId] = {
-				quantityOrdered: basket.products[productId]['quantityOrdered'],
-				quantity: remainingStock,
+				numberOrdered: basket.products[productId]['numberOrdered'],
+				number: available,
 				unitPrice: unitPrice
 			}
 
-			if(remainingStock < basket.products[productId]['quantityOrdered']) {
-				span.classList.add('shop-product-quantity-value-error');
+			if(available < basket.products[productId]['numberOrdered']) {
+				span.classList.add('shop-product-number-value-error');
 			}
 
 		});
@@ -464,9 +465,9 @@ class BasketManage {
 		const products = basket.products;
 
 		Object.entries(products).forEach(([id, product]) => {
-			if(product.quantityOrdered > product.quantity) {
-				qs('#quantity-warning').classList.remove('hide');
-				qs('span.shop-product-quantity-value[data-field="quantity"][data-product="' + id + '"]').classList.add('shop-product-quantity-value-error');
+			if(product.numberOrdered > product.number) {
+				qs('#number-warning').classList.remove('hide');
+				qs('span.shop-product-number-value[data-field="number"][data-product="' + id + '"]').classList.add('shop-product-number-value-error');
 			}
 		});
 

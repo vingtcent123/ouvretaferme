@@ -88,6 +88,11 @@
 			$data->discount = \shop\SaleLib::getDiscount($data->eDateSelected, $data->eSaleExisting, $data->eCustomer);
 
 			$cProduct = \shop\ProductLib::getByDate($data->eDateSelected, eSaleExclude: $data->isModifying ? $data->eSaleExisting : new \selling\Sale());
+
+			foreach($cProduct as $eProduct) {
+				$eProduct['reallyAvailable'] = $data->isModifying ? \shop\ProductLib::getReallyAvailable($eProduct, $eProduct['product'], $data->eSaleExisting) : $eProduct['available'];
+			}
+
 			\shop\ProductLib::applyDiscount($cProduct, $data->discount);
 
 			$data->eDateSelected['cProduct'] = $cProduct;
@@ -122,6 +127,10 @@
 
 		$data->eDate['ccPoint'] = $data->eShop['ccPoint'];
 		$data->eDate['ccPoint']->filter(fn($ePoint) => in_array($ePoint['id'], $data->eDate['points']), depth: 2);
+
+		if($data->eSaleExisting->notEmpty()) {
+			$data->eSaleExisting['shopDate'] = $data->eDate;
+		}
 
 		$data->isModifying = GET('modify', 'bool', FALSE);
 
@@ -265,14 +274,14 @@
 			throw new RedirectAction(\shop\ShopUi::url($data->eShop));
 		}
 
-		$data->basket = \shop\BasketLib::checkProductsAndStock(POST('products', 'array', []), $data->eDate);
+		$data->basket = \shop\BasketLib::checkAvailableProducts(POST('products', 'array', []), $data->eDate['cProduct'], $data->eSaleExisting);
 
 		if($data->basket === []) {
 			throw new RedirectAction(\shop\ShopUi::url($data->eShop));
 		}
 
 		$data->price = round(array_reduce($data->basket, function($total, $item) {
-			return $total + $item['price'] * $item['quantity'] * ($item['packaging'] ?? 1);
+			return $total + $item['product']['price'] * $item['number'] * ($item['product']['packaging'] ?? 1);
 		}, 0), 2);
 
 		throw new ViewAction($data);

@@ -38,5 +38,5 @@
 		throw new ReloadAction('shop', 'Product::deleted');
 	})
 	->doUpdateProperties('doUpdateStatus', ['status'], fn($data) => throw new ViewAction($data))
-	->quick(['stock', 'price']);
+	->quick(['available', 'price']);
 ?>

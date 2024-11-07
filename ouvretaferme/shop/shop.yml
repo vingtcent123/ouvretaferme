@@ -1,7 +1,16 @@
+Catalog:
+  id: serial32
+  farm: farm\Farm
+  name: text8(1, 50)
+  INDEX: [
+    ["farm"]
+  ]
+
 Date:
   id: serial32
   createdAt: datetime = SPECIAL(now)
   shop: shop\Shop
+  catalog: ?shop\Catalog
   type: enum(PRIVATE, PRO)
   farm: farm\Farm
   status: enum(ACTIVE, CLOSED) = ACTIVE
@@ -37,17 +46,25 @@ Point:
 Product:
   id: serial32
   shop: shop\Shop
-  date: shop\Date
+  date: ?shop\Date
+  catalog: ?shop\Catalog
   product: selling\Product
   packaging: ?decimal(6, 2, 0.01, null)
+  packagingCustom: bool = FALSE
   price: decimal(8, 2, 0.0, null)
+  priceCustom: bool = FALSE
+  saleStartAt: ?datetime
+  saleEndAt: ?datetime
   stock: ?float32(0.0, null)
+  available: ?float32(0.0, null)
   status: enum(ACTIVE, INACTIVE) = ACTIVE
   INDEX: [
-    ["product"]
+    ["product"],
+    ["catalog"]
   ]
   UNIQUE: [
-    ["date", "product"]
+    ["date", "product"],
+    ["catalog", "product"]
   ]
   
 Redirect:

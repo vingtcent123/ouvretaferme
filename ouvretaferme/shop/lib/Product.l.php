@@ -107,7 +107,7 @@ class ProductLib extends ProductCrud {
 				'packaging' => ($eDate['type'] === Date::PRO) ? $eProductSelling['proPackaging'] : NULL,
 			]);
 
-			$eProduct->buildIndex(['stock', 'price'], $input, $index);
+			$eProduct->buildIndex(['available', 'price'], $input, $index);
 
 			$cProduct->append($eProduct);
 
@@ -155,5 +155,59 @@ class ProductLib extends ProductCrud {
 		Product::model()->commit();
 
 	}
+
+	public static function getReallyAvailable(Product $eProduct, \selling\Product $eProductSelling, \selling\Sale $eSale): ?float {
+
+		if($eSale->exists()) {
+
+			$eSale->expects(['cItem']);
+
+			$eItem = $eSale['cItem']->find(fn($eItem) => $eItem['product']['id'] === $eProductSelling['id'], limit: 1);
+			$number = $eItem->empty() ? 0 : $eItem['number'];
+		} else {
+			$number = 0;
+		}
+
+		if($eProduct['available'] !== NULL) {
+			return $eProduct['available'] + $number;
+		}  else {
+			return NULL;
+		}
+
+	}
+
+	public static function addAvailable(\Collection $cItem): void {
+		self::setAvailable($cItem, '+');
+	}
+
+	public static function removeAvailable(\Collection $cItem): void {
+		self::setAvailable($cItem, '-');
+	}
+
+	private static function setAvailable(\Collection $cItem, string $sign): void {
+
+		$cItem->expects([
+			'shopProduct',
+			'number'
+		]);
+
+		foreach($cItem as $eItem) {
+
+			$eProduct = $eItem['shopProduct'];
+
+			if($eProduct->notEmpty()) {
+
+				Product::model()
+					->whereAvailable('!=', NULL)
+					->update($eProduct, [
+						'available' => new \Sql('available '.$sign.' '.$eItem['number'])
+					]);
+
+			}
+
+		}
+
+	}
+
 }
 ?>

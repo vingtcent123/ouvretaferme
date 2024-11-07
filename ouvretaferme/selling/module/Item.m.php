@@ -65,6 +65,7 @@ class ItemModel extends \ModuleModel {
 			'farm' => ['element32', 'farm\Farm', 'cast' => 'element'],
 			'shop' => ['element32', 'shop\Shop', 'null' => TRUE, 'cast' => 'element'],
 			'shopDate' => ['element32', 'shop\Date', 'null' => TRUE, 'cast' => 'element'],
+			'shopProduct' => ['element32', 'shop\Product', 'null' => TRUE, 'cast' => 'element'],
 			'product' => ['element32', 'selling\Product', 'null' => TRUE, 'cast' => 'element'],
 			'quality' => ['enum', [\selling\Item::ORGANIC, \selling\Item::NATURE_PROGRES, \selling\Item::CONVERSION], 'null' => TRUE, 'cast' => 'enum'],
 			'parent' => ['element32', 'selling\Item', 'null' => TRUE, 'cast' => 'element'],
@@ -85,7 +86,7 @@ class ItemModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'name', 'sale', 'customer', 'type', 'farm', 'shop', 'shopDate', 'product', 'quality', 'parent', 'description', 'packaging', 'unit', 'unitPrice', 'discount', 'number', 'price', 'priceExcludingVat', 'locked', 'vatRate', 'stats', 'status', 'createdAt', 'deliveredAt'
+			'id', 'name', 'sale', 'customer', 'type', 'farm', 'shop', 'shopDate', 'shopProduct', 'product', 'quality', 'parent', 'description', 'packaging', 'unit', 'unitPrice', 'discount', 'number', 'price', 'priceExcludingVat', 'locked', 'vatRate', 'stats', 'status', 'createdAt', 'deliveredAt'
 		]);
 
 		$this->propertiesToModule += [
@@ -94,6 +95,7 @@ class ItemModel extends \ModuleModel {
 			'farm' => 'farm\Farm',
 			'shop' => 'shop\Shop',
 			'shopDate' => 'shop\Date',
+			'shopProduct' => 'shop\Product',
 			'product' => 'selling\Product',
 			'parent' => 'selling\Item',
 		];
@@ -194,6 +196,10 @@ class ItemModel extends \ModuleModel {
 
 	public function whereShopDate(...$data): ItemModel {
 		return $this->where('shopDate', ...$data);
+	}
+
+	public function whereShopProduct(...$data): ItemModel {
+		return $this->where('shopProduct', ...$data);
 	}
 
 	public function whereProduct(...$data): ItemModel {

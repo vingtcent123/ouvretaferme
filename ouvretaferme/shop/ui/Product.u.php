@@ -103,14 +103,18 @@ class ProductUi {
 	public function getProducts(Shop $eShop, Date $eDate, \selling\Sale $eSale, bool $isModifying, \Collection $cProduct): string {
 
 		$h = '<div class="shop-product-wrapper">';
-			$h .= $cProduct->makeString(fn($eProduct) => $this->getProduct($eDate, $eProduct, $eSale->canBasket($eShop) or $isModifying));
+			$h .= $cProduct->makeString(fn($eProduct) => $this->getProduct($eShop, $eDate, $eProduct, $eSale, $isModifying));
 		$h .= '</div>';
 
 		return $h;
 
 	}
 
-	public function getProduct(Date $eDate, Product $eProduct, bool $canOrder): string {
+	public function getProduct(Shop $eShop, Date $eDate, Product $eProduct, \selling\Sale $eSale, bool $isModifying): string {
+
+		$eProduct->expects(['reallyAvailable']);
+
+		$canOrder = ($eSale->canBasket($eShop) or $isModifying);
 
 		$eProductSelling = $eProduct['product'];
 
@@ -184,12 +188,12 @@ class ProductUi {
 								$h .= '</div>';
 							}
 
-							if($eProduct['stock'] !== NULL) {
+							if($eProduct['reallyAvailable'] !== NULL) {
 								$h.= '<div class="shop-product-buy-info">';
-								if($eProduct->isInStock() === FALSE) {
-									$h .= s("Rupture de stock");
+								if($eProduct['reallyAvailable'] > 0) {
+									$h .= s("Stock : {value}", $eProduct['reallyAvailable']);
 								} else {
-									$h .= s("Stock : {value}", $eProduct->getRemainingStock());
+									$h .= s("Rupture de stock");
 								}
 								$h .= '</div>';
 							}
@@ -197,8 +201,11 @@ class ProductUi {
 						$h .= '</div>';
 					$h .= '</div>';
 
-					if($canOrder and $eProduct->isInStock()) {
-						$h .= self::quantityOrder($eDate, $eProductSelling, $eProduct);
+					if(
+						$canOrder and
+						($eProduct['reallyAvailable'] === NULL or $eProduct['reallyAvailable'] > 0.0)
+					) {
+						$h .= self::numberOrder($eDate, $eProductSelling, $eProduct, 0, $eProduct['reallyAvailable']);
 					}
 
 				$h .= '</div>';
@@ -223,14 +230,14 @@ class ProductUi {
 
 	}
 
-	public static function quantityOrder(Date $eDate, \selling\Product $eProductSelling, Product $eProduct, float $quantity = 0): string {
+	public static function numberOrder(Date $eDate, \selling\Product $eProductSelling, Product $eProduct, float $number, ?float $available): string {
 
 		if($eDate['isOrderable'] === FALSE) {
 			return '';
 		}
 
-		$attributesDecrease = 'BasketManage.update('.$eDate['id'].', '.$eProductSelling['id'].', -'.self::getStep($eDate, $eProductSelling).', '.($eProduct['stock'] !== NULL ? $eProduct->getRemainingStock() : -1).')';
-		$attributesIncrease = 'BasketManage.update('.$eDate['id'].', '.$eProductSelling['id'].', '.self::getStep($eDate, $eProductSelling).', '.($eProduct['stock'] !== NULL ? $eProduct->getRemainingStock() : -1).')';
+		$attributesDecrease = 'BasketManage.update('.$eDate['id'].', '.$eProductSelling['id'].', -'.self::getStep($eDate, $eProductSelling).', '.($available !== NULL ? $available : -1).')';
+		$attributesIncrease = 'BasketManage.update('.$eDate['id'].', '.$eProductSelling['id'].', '.self::getStep($eDate, $eProductSelling).', '.($available !== NULL ? $available : -1).')';
 
 		if($eProduct['packaging'] === NULL) {
 			$price = $eProduct['price'];
@@ -238,10 +245,10 @@ class ProductUi {
 			$price = $eProduct['price'] * $eProduct['packaging'];
 		}
 
-		$h = '<div class="shop-product-quantity">';
-			$h .= '<a class="btn btn-outline-primary btn-sm shop-product-quantity-decrease" onclick="'.$attributesDecrease.'">-</a>';
-			$h .= '<span class="shop-product-quantity-value" data-price="'.$price.'" data-remaining-stock="'.$eProduct->getRemainingStock().'" data-product="'.$eProductSelling['id'].'" data-field="quantity">';
-				$h .= '<span>'.$quantity.'</span> ';
+		$h = '<div class="shop-product-number">';
+			$h .= '<a class="btn btn-outline-primary btn-sm shop-product-number-decrease" onclick="'.$attributesDecrease.'">-</a>';
+			$h .= '<span class="shop-product-number-value" data-price="'.$price.'" data-available="'.$available.'" data-product="'.$eProductSelling['id'].'" data-field="number">';
+				$h .= '<span>'.$number.'</span> ';
 
 				if($eProduct['packaging'] === NULL) {
 					$h .= \main\UnitUi::getSingular($eProductSelling['unit'], short: TRUE);
@@ -250,7 +257,7 @@ class ProductUi {
 				}
 
 			$h .= '</span>';
-			$h .= '<a class="btn btn-outline-primary btn-sm shop-product-quantity-increase" onclick="'.$attributesIncrease.'">+</a>';
+			$h .= '<a class="btn btn-outline-primary btn-sm shop-product-number-increase" onclick="'.$attributesIncrease.'">+</a>';
 		$h .= '</div>';
 
 		return $h;
@@ -284,7 +291,7 @@ class ProductUi {
 
 	}
 
-	// Modifier (quick) le stock
+	// Modifier (quick) les disponibilités
 	public function getUpdateList(Date $eDate, \Collection $cProduct, \Collection $cCategory): string {
 
 		if($cProduct->empty()) {
@@ -333,7 +340,7 @@ class ProductUi {
 							$h .= '<td></td>';
 						}
 						$h .= '<th class="text-end highlight">'.s("Prix").' '.$taxes.'</th>';
-						$h .= '<th class="text-end">'.s("Limite").'</th>';
+						$h .= '<th class="text-end">'.s("Disponible").'</th>';
 						$h .= '<th class="text-end highlight">'.s("Vendu").'</th>';
 						$h .= '<th class="text-end">';
 							$h .= '<span class="hide-md-down">'.s("Vente en cours").'</span>';
@@ -387,12 +394,12 @@ class ProductUi {
 				$h .= $eProduct->quick('price', \util\TextUi::money($eProduct['price']).' / '.\main\UnitUi::getSingular($eProductSelling['unit'], short: TRUE, by: TRUE));
 			$h .= '</td>';
 			$h .= '<td class="text-end">';
-				if($eProduct['stock'] === NULL) {
-					$stock = s("illimité");
+				if($eProduct['available'] === NULL) {
+					$available = s("illimité");
 				} else {
-					$stock = $eProduct['stock'];
+					$available = $eProduct['available'];
 				}
-				$h .= $eProduct->quick('stock', $stock);
+				$h .= $eProduct->quick('available', $available);
 			$h .= '</td>';
 			$h .= '<td class="text-end highlight">';
 				$h .= $eProduct['sold'] ?? 0;
@@ -447,14 +454,14 @@ class ProductUi {
 
 		$d = Product::model()->describer($property, [
 			'product' => s("Produit"),
-			'stock' => s("Limite"),
+			'available' => s("Disponible"),
 			'price' => s("Prix unitaire"),
 			'date' => s("Vente"),
 		]);
 
 		switch($property) {
 
-			case 'stock' :
+			case 'available' :
 				$d->field = function(\util\FormUi $form, Product $e) use($d) {
 
 					$e->expects([
@@ -467,11 +474,11 @@ class ProductUi {
 						in_array($e['product']['unit'], [\selling\Product::UNIT, \selling\Product::BUNCH])
 					) ? 1 : 0.1;
 
-					$h = '<div class="input-group" data-product="'.$e['product']['id'].'" data-element="input-group-stock">';
-						$h .= $form->number($d->name, $e['stock'] ?? NULL, [
+					$h = '<div class="input-group" data-product="'.$e['product']['id'].'">';
+						$h .= $form->number($d->name, $e['available'] ?? NULL, [
 							'data-product' => $e['product']['id'],
-							'onfocusin' => 'DateManage.checkStockFocusIn(this)',
-							'onfocusout' => 'DateManage.checkStockFocusOut(this)',
+							'onfocusin' => 'DateManage.checkAvailableFocusIn(this)',
+							'onfocusout' => 'DateManage.checkAvailableFocusOut(this)',
 							'placeholder' => s("Illimité"),
 							'data-placeholder' => s("Illimité"),
 							'min' => $step,

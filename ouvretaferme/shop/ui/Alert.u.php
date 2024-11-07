@@ -18,7 +18,7 @@ class AlertUi {
 			'Point::deletedSaleUsed' => s("Ce mode de livraison ne peut pas être supprimé car il a déjà été utilisé pour une commande."),
 			'Point::deletedDateUsed' => s("Ce mode de livraison ne peut pas être supprimé car il a déjà été utilisé dans une vente."),
 
-			'Product::stock.check' => s("Vous devez indiquer un stock disponible positif ou laisser ce champ vide."),
+			'Product::available.check' => s("Vous devez indiquer des limites supérieures à zéro ou laisser ce champ vide."),
 			'Product::price.check' => s("Vous devez indiquer un prix valable."),
 
 			'Sale::update.payment' => s("Vous ne pouvez pas modifier votre panier alors qu'un paiement est en cours."),

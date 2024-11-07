@@ -148,6 +148,7 @@ Item:
   farm: farm\Farm
   shop: ?shop\Shop
   shopDate: ?shop\Date
+  shopProduct: ?shop\Product
   product: ?selling\Product
   quality: ?enum(ORGANIC, NATURE_PROGRES, CONVERSION)
   parent: ?selling\Item

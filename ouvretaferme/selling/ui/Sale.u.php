@@ -1164,7 +1164,7 @@ class SaleUi {
 					$h .= '<a data-ajax="/selling/sale:doUpdatePreparationStatus" post-id="'.$eSale['id'].'" post-preparation-status="'.Sale::SELLING.'" class="btn btn-selling" data-confirm="'.s("C'est parti ?").'">'.s("Commencer la vente").'</a>';
 				$h .= '</div>';
 
-			} else if($eSale['preparationStatus'] === Sale::SELLING) {
+			} else if($eSale['preparationStatus'] !== Sale::DRAFT) {
 				$h .= '<a href="'.SaleUi::urlMarket($eSale).'" class="btn btn-xl btn-selling" style="width: 100%">'.\Asset::icon('cart4').'  '.s("Ouvrir la caisse virtuelle").'</a>';
 			}
 		}

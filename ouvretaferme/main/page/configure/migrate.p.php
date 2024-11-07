@@ -1,58 +1,33 @@
 <?php
 
-use selling\Customer;
+use selling\Item;
 
 (new Page())
 	->cli('index', function($data) {
 
-		$cCustomer = \selling\Customer::model()
-			->select(['id', 'type', 'destination', 'name'])
-			->whereType(\selling\Customer::PRIVATE)
-			->whereDestination(\selling\Customer::INDIVIDUAL)
-			->whereFirstName(NULL)
-			->whereLastName(NULL)
+		$cProduct = \shop\Product::model()
+			->select(\shop\Product::getSelection())
+			->where(new Sql('stock is not null'))
 			->getCollection();
 
-		foreach($cCustomer as $eCustomer) {
+		foreach($cProduct as $eProduct) {
 
-			$parts = preg_split('/\s+/si', $eCustomer['name']);
+			$sold = Item::model()
+				->whereProduct($eProduct['product'])
+				->whereShopDate($eProduct['date'])
+				->whereStatus('!=', \selling\Sale::CANCELED)
+				->getValue(new Sql('SUM(number)', 'float'));
 
-			// Vérification des majuscules
-			$lastName = [];
-			$firstName = [];
+			if($sold !== NULL) {
 
-			foreach($parts as $part) {
+				$available = max(0, round($eProduct['stock'] - $sold, 2));
 
-				if(mb_strtoupper($part) === $part) {
-					$lastName[] = $part;
-				} else {
-					$firstName[] = $part;
-				}
-
-			}
-
-			if(count($lastName) > 0 and count($firstName) > 0) {
-				$eCustomer['lastName'] = implode(' ', $lastName);
-				$eCustomer['firstName'] = implode(' ', $firstName);
-			} else {
-
-				if(count($parts) === 1) {
-					$eCustomer['firstName'] = NULL;
-					$eCustomer['lastName'] = $eCustomer['name'];
-				} else {
-
-					$eCustomer['firstName'] = $parts[0];
-					$eCustomer['lastName'] = implode(' ', array_slice($parts, 1));
-
-				}
+				\shop\Product::model()->update($eProduct, [
+					'available' => $available,
+				]);
 
 			}
 
-			echo $eCustomer['id'].' : '.$eCustomer['firstName'].' -> '.$eCustomer['lastName']."\n";
-
-			Customer::model()
-				->select('firstName', 'lastName')
-				->update($eCustomer);
 
 		}
 

@@ -12,7 +12,7 @@ class SaleLib {
 	 * Récupère la liste des produits déjà réservés / vendus pour une date donnée.
 	 *
 	 * @param Date $eDate
-	 * @param Sale $eSaleExclude Exclure une vente du calcul des stocks
+	 * @param Sale $eSaleExclude Exclure une vente du calcul des disponibilités
 	 * @return \Collection Collection de produits / quantités vendues
 	 */
 	public static function getProductsByDate(Date $eDate, \selling\Sale $eSaleExclude = new \selling\Sale()): \Collection {
@@ -131,24 +131,27 @@ class SaleLib {
 		$cItem = new \Collection();
 		$total = 0.0;
 
-		foreach($eSale['basket'] as ['price' => $price, 'packaging' => $packaging, 'product' => $eProduct, 'quantity' => $quantity]) {
+		foreach($eSale['basket'] as ['product' => $eProduct, 'number' => $number]) {
+
+			$eProductSelling = $eProduct['product'];
 
 			$eItem = new \selling\Item([
 				'sale' => $eSale,
 				'farm' => $eSale['farm'],
 				'customer' => $eSale['customer'],
-				'product' => $eProduct,
-				'name' => $eProduct->getName(),
-				'quality' => $eProduct['quality'],
-				'packaging' => $packaging,
+				'shopProduct' => $eProduct,
+				'product' => $eProductSelling,
+				'name' => $eProductSelling->getName(),
+				'quality' => $eProductSelling['quality'],
+				'packaging' => $eProduct['packaging'],
 				'locked' => \selling\Item::PRICE,
-				'unit' => $eProduct['unit'],
-				'unitPrice' => $price,
-				'number' => $quantity,
-				'vatRate' => \Setting::get('selling\vatRates')[$eProduct['vat']],
+				'unit' => $eProductSelling['unit'],
+				'unitPrice' => $eProduct['price'],
+				'number' => $number,
+				'vatRate' => \Setting::get('selling\vatRates')[$eProductSelling['vat']],
 			]);
 
-			$total += $quantity * $price;
+			$total += $number * $eProduct['price'];
 
 			$cItem->append($eItem);
 
@@ -249,24 +252,27 @@ class SaleLib {
 		$cItem = new \Collection();
 		$total = 0.0;
 
-		foreach($eSale['basket'] as ['price' => $price, 'packaging' => $packaging, 'product' => $eProduct, 'quantity' => $quantity]) {
+		foreach($eSale['basket'] as ['product' => $eProduct, 'number' => $number]) {
+
+			$eProductSelling = $eProduct['product'];
 
 			$eItem = new \selling\Item([
 				'sale' => $eSale,
 				'farm' => $eSale['farm'],
 				'customer' => $eSale['customer'],
-				'product' => $eProduct,
-				'name' => $eProduct->getName(),
-				'quality' => $eProduct['quality'],
-				'packaging' => $packaging,
-				'unit' => $eProduct['unit'],
-				'unitPrice' => $price,
-				'number' => $quantity,
-				'vatRate' => \Setting::get('selling\vatRates')[$eProduct['vat']],
+				'shopProduct' => $eProduct,
+				'product' => $eProductSelling,
+				'name' => $eProductSelling->getName(),
+				'quality' => $eProductSelling['quality'],
+				'packaging' => $eProduct['packaging'],
+				'unit' => $eProductSelling['unit'],
+				'unitPrice' => $eProduct['price'],
+				'number' => $number,
+				'vatRate' => \Setting::get('selling\vatRates')[$eProductSelling['vat']],
 				'locked' => \selling\Item::PRICE
 			]);
 
-			$total += $quantity * $price;
+			$total += $number * $eProduct['price'];
 
 			$cItem->append($eItem);
 
@@ -280,17 +286,15 @@ class SaleLib {
 
 		\selling\Sale::model()->beginTransaction();
 
-		// Suppression des anciens items
-		foreach($eSale['cItem'] as $eItem) {
-			\selling\ItemLib::delete($eItem);
-		}
+			// Suppression des anciens items
+			\selling\ItemLib::deleteCollection($eSale['cItem']);
 
-		// Nouveaux items pour les mails de confirmation
-		$eSale['cItem'] = $cItem;
+			// Nouveaux items pour les mails de confirmation
+			$eSale['cItem'] = $cItem;
 
-		\selling\ItemLib::createCollection($cItem);
+			\selling\ItemLib::createCollection($cItem);
 
-		\selling\SaleLib::update($eSale, ['preparationStatus', 'shopPoint', 'shopUpdated', 'shipping']);
+			\selling\SaleLib::update($eSale, ['preparationStatus', 'shopPoint', 'shopUpdated', 'shipping']);
 
 		\selling\Sale::model()->commit();
 
@@ -393,14 +397,14 @@ class SaleLib {
 
 		\selling\Sale::model()->beginTransaction();
 
-		$eSale['oldStatus'] = $eSale['preparationStatus'];
-		$eSale['preparationStatus'] = \selling\Sale::CANCELED;
+			$eSale['oldStatus'] = $eSale['preparationStatus'];
+			$eSale['preparationStatus'] = \selling\Sale::CANCELED;
 
-		\selling\SaleLib::update($eSale, ['preparationStatus']);
+			\selling\SaleLib::update($eSale, ['preparationStatus']);
 
-		\selling\HistoryLib::createBySale($eSale, 'sale-canceled');
+			\selling\HistoryLib::createBySale($eSale, 'sale-canceled');
 
-		self::notify('saleCanceled', $eSale);
+			self::notify('saleCanceled', $eSale);
 
 		\selling\Sale::model()->commit();
 
@@ -410,8 +414,8 @@ class SaleLib {
 
 		return \selling\Sale::model()
 			->select(\selling\Sale::getSelection() + ['cItem' => \selling\Item::model()
-					->select(\selling\Item::getSelection())
-					->delegateCollection('sale')])
+				->select(\selling\Item::getSelection())
+				->delegateCollection('sale')])
 			->whereId($id)
 			->get();
 

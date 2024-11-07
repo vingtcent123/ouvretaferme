@@ -45,7 +45,7 @@ document.delegateEventListener('input', '#shop-create [name="name"]', () => {
 
 class DateManage {
 
-	static checkStockFocusIn(input) {
+	static checkAvailableFocusIn(input) {
 
 		if(input.value === '') {
 			input.removeAttribute('placeholder');
@@ -53,7 +53,7 @@ class DateManage {
 
 	}
 
-	static checkStockFocusOut(input) {
+	static checkAvailableFocusOut(input) {
 
 		if(input.value === '') {
 			input.setAttribute('placeholder', input.dataset.placeholder);
@@ -64,7 +64,7 @@ class DateManage {
 	static selectProduct(target) {
 
 		const parent = target.firstParent('.date-products-item');
-		const fields = parent.qsa('.date-products-item-stock, .date-products-item-price');
+		const fields = parent.qsa('.date-products-item-available, .date-products-item-price');
 
 		if(target.checked === false) {
 			fields.forEach(field => field.classList.add('hidden'));

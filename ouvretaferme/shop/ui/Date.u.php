@@ -510,7 +510,7 @@ class DateUi {
 						'product' => $eProduct,
 						'price' => $price,
 						'packaging' => $packaging,
-						'stock' => NULL,
+						'available' => NULL,
 					]);
 
 					$h .= '<div class="date-products-item '.($displayStock ? 'date-products-item-with-stock' : '').' '.($checked ? 'selected' : '').'">';
@@ -547,9 +547,9 @@ class DateUi {
 						$h .= '<div data-wrapper="price['.$eProduct['id'].']" class="date-products-item-price '.($checked ? '' : 'hidden').'">';
 							$h .= $form->dynamicField($eShopProduct, 'price['.$eProduct['id'].']');
 						$h .= '</div>';
-						$h .= '<div data-wrapper="stock['.$eProduct['id'].']" class="date-products-item-stock '.($checked ? '' : 'hidden').'">';
-							$h .= $form->dynamicField($eShopProduct, 'stock', function($d) use ($eDate, $eProduct) {
-								$d->name = 'stock['.$eProduct['id'].']';
+						$h .= '<div data-wrapper="available['.$eProduct['id'].']" class="date-products-item-available '.($checked ? '' : 'hidden').'">';
+							$h .= $form->dynamicField($eShopProduct, 'available', function($d) use ($eDate, $eProduct) {
+								$d->name = 'available['.$eProduct['id'].']';
 							});
 						$h .= '</div>';
 						if($displayStock) {

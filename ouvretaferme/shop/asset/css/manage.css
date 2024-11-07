@@ -119,6 +119,7 @@ div.shop-write-fqn label {
 }
 
 .date-products-item-price.hidden,
+.date-products-item-available.hidden,
 .date-products-item-stock.hidden {
 	opacity: 0.25;
 	pointer-events: none;

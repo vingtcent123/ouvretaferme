@@ -199,9 +199,11 @@ class ItemLib extends ItemCrud {
 
 		Item::model()->beginTransaction();
 
-		Item::model()->insert($c);
+			Item::model()->insert($c);
 
-		SaleLib::recalculate($c->first()['sale']);
+			SaleLib::recalculate($c->first()['sale']);
+
+			\shop\ProductLib::removeAvailable($c);
 
 		Item::model()->commit();
 
@@ -261,6 +263,26 @@ class ItemLib extends ItemCrud {
 
 	}
 
+	public static function deleteCollection(\Collection $c): void {
+
+		$c->expects(['sale']);
+
+		Item::model()->beginTransaction();
+
+			$eSale = $c->first()['sale'];
+
+			foreach($c as $e) {
+				parent::delete($e);
+			}
+
+			SaleLib::recalculate($eSale);
+
+			\shop\ProductLib::addAvailable($c);
+
+		Item::model()->commit();
+
+	}
+
 	public static function deleteBySale(Sale $e): void {
 
 		Item::model()->beginTransaction();
@@ -284,6 +306,7 @@ class ItemLib extends ItemCrud {
 		$e['deliveredAt'] = $e['sale']['deliveredAt'];
 		$e['shop'] = $e['sale']['shop'];
 		$e['shopDate'] = $e['sale']['shopDate'];
+		$e['shopProduct'] ??= new \shop\Product();
 		$e['type'] = $e['sale']['type'];
 		$e['stats'] = $e['sale']['stats'];
 		$e['status'] = $e['sale']['preparationStatus'];

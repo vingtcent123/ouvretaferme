@@ -128,6 +128,17 @@ class ShopObserverLib {
 			->setContent(...MailUi::getSaleCanceled($eSale))
 			->send('shop');
 
+		// On remet en circuit les produits en stock
+		$cItem = \selling\Item::model()
+			->select([
+				'shopProduct',
+				'number'
+			])
+			->whereSale($eSale)
+			->getCollection();
+
+		ProductLib::addAvailable($cItem);
+
 	}
 
 }

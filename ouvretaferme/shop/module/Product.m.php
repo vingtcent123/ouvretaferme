@@ -41,30 +41,39 @@ class ProductModel extends \ModuleModel {
 		$this->properties = array_merge($this->properties, [
 			'id' => ['serial32', 'cast' => 'int'],
 			'shop' => ['element32', 'shop\Shop', 'cast' => 'element'],
-			'date' => ['element32', 'shop\Date', 'cast' => 'element'],
+			'date' => ['element32', 'shop\Date', 'null' => TRUE, 'cast' => 'element'],
+			'catalog' => ['element32', 'shop\Catalog', 'null' => TRUE, 'cast' => 'element'],
 			'product' => ['element32', 'selling\Product', 'cast' => 'element'],
 			'packaging' => ['decimal', 'digits' => 6, 'decimal' => 2, 'min' => 0.01, 'max' => NULL, 'null' => TRUE, 'cast' => 'float'],
+			'packagingCustom' => ['bool', 'cast' => 'bool'],
 			'price' => ['decimal', 'digits' => 8, 'decimal' => 2, 'min' => 0.0, 'max' => NULL, 'cast' => 'float'],
+			'priceCustom' => ['bool', 'cast' => 'bool'],
+			'saleStartAt' => ['datetime', 'null' => TRUE, 'cast' => 'string'],
+			'saleEndAt' => ['datetime', 'null' => TRUE, 'cast' => 'string'],
 			'stock' => ['float32', 'min' => 0.0, 'max' => NULL, 'null' => TRUE, 'cast' => 'float'],
+			'available' => ['float32', 'min' => 0.0, 'max' => NULL, 'null' => TRUE, 'cast' => 'float'],
 			'status' => ['enum', [\shop\Product::ACTIVE, \shop\Product::INACTIVE], 'cast' => 'enum'],
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'shop', 'date', 'product', 'packaging', 'price', 'stock', 'status'
+			'id', 'shop', 'date', 'catalog', 'product', 'packaging', 'packagingCustom', 'price', 'priceCustom', 'saleStartAt', 'saleEndAt', 'stock', 'available', 'status'
 		]);
 
 		$this->propertiesToModule += [
 			'shop' => 'shop\Shop',
 			'date' => 'shop\Date',
+			'catalog' => 'shop\Catalog',
 			'product' => 'selling\Product',
 		];
 
 		$this->indexConstraints = array_merge($this->indexConstraints, [
-			['product']
+			['product'],
+			['catalog']
 		]);
 
 		$this->uniqueConstraints = array_merge($this->uniqueConstraints, [
-			['date', 'product']
+			['date', 'product'],
+			['catalog', 'product']
 		]);
 
 	}
@@ -72,6 +81,12 @@ class ProductModel extends \ModuleModel {
 	public function getDefaultValue(string $property) {
 
 		switch($property) {
+
+			case 'packagingCustom' :
+				return FALSE;
+
+			case 'priceCustom' :
+				return FALSE;
 
 			case 'status' :
 				return Product::ACTIVE;
@@ -117,6 +132,10 @@ class ProductModel extends \ModuleModel {
 		return $this->where('date', ...$data);
 	}
 
+	public function whereCatalog(...$data): ProductModel {
+		return $this->where('catalog', ...$data);
+	}
+
 	public function whereProduct(...$data): ProductModel {
 		return $this->where('product', ...$data);
 	}
@@ -125,12 +144,32 @@ class ProductModel extends \ModuleModel {
 		return $this->where('packaging', ...$data);
 	}
 
+	public function wherePackagingCustom(...$data): ProductModel {
+		return $this->where('packagingCustom', ...$data);
+	}
+
 	public function wherePrice(...$data): ProductModel {
 		return $this->where('price', ...$data);
 	}
 
+	public function wherePriceCustom(...$data): ProductModel {
+		return $this->where('priceCustom', ...$data);
+	}
+
+	public function whereSaleStartAt(...$data): ProductModel {
+		return $this->where('saleStartAt', ...$data);
+	}
+
+	public function whereSaleEndAt(...$data): ProductModel {
+		return $this->where('saleEndAt', ...$data);
+	}
+
 	public function whereStock(...$data): ProductModel {
 		return $this->where('stock', ...$data);
+	}
+
+	public function whereAvailable(...$data): ProductModel {
+		return $this->where('available', ...$data);
 	}
 
 	public function whereStatus(...$data): ProductModel {

@@ -154,8 +154,6 @@ class BasketUi {
 
 		$eDate->expects(['cProduct']);
 
-		$cProduct = $eDate['cProduct'];
-
 		$updateBasket = FALSE;
 
 		$h = '<div class="util-action">';
@@ -186,10 +184,12 @@ class BasketUi {
 			$total = 0;
 
 			$h .= '<tbody>';
-				foreach($basket as $productId => $product) {
+				foreach($basket as $product) {
 
-					$eProduct = $cProduct->offsetGet($productId);
+					$eProduct = $product['product'];
 					$eProductSelling = $eProduct['product'];
+
+					$available = ProductLib::getReallyAvailable($eProduct, $eProductSelling, $eSaleExisting);
 
 					$deleteAttributes = [
 						'data-confirm' => s("Souhaitez-vous réellement supprimer ce produit ?"),
@@ -198,7 +198,7 @@ class BasketUi {
 					];
 
 					$unitPrice = \util\TextUi::money($eProduct['price']).' '.ProductUi::getTaxes($eDate).' / '.\main\UnitUi::getSingular($eProductSelling['unit'], short: TRUE, by: TRUE);
-					$price = $eProduct['price'] * $product['quantity'] * ($eProduct['packaging'] ?? 1);
+					$price = $eProduct['price'] * $product['number'] * ($eProduct['packaging'] ?? 1);
 
 					$h .= '<tr>';
 						$h .= '<td class="td-min-content">';
@@ -207,10 +207,8 @@ class BasketUi {
 							}
 						$h .= '</td>';
 						$h .= '<td class="basket-summary-product">';
-
 							$h .= encode($eProductSelling->getName());
 							$h .= '<div class="hide-sm-up"><small style="white-space: nowrap">'.$unitPrice.'</small></div>';
-
 						$h .= '</td>';
 						if($eDate['type'] === Date::PRO) {
 							$h .= '<td class="hide-sm-down">';
@@ -220,7 +218,7 @@ class BasketUi {
 							$h .= '</td>';
 						}
 						$h .= '<td class="text-center">';
-							$h .= ProductUi::quantityOrder($eDate, $eProductSelling, $cProduct->offsetGet($productId), $product['quantity']);
+							$h .= ProductUi::numberOrder($eDate, $eProductSelling, $eProduct, $product['number'], $available);
 						$h .= '</td>';
 						$h .= '<td class="text-end hide-xs-down">';
 							$h .= $unitPrice;
@@ -234,7 +232,7 @@ class BasketUi {
 						$h .= '</td>';
 					$h .= '</tr>';
 
-					if(array_key_exists('warning', $product) and $product['warning'] === 'quantity') {
+					if(array_key_exists('warning', $product) and $product['warning'] === 'number') {
 						$updateBasket = TRUE;
 					}
 
@@ -257,7 +255,7 @@ class BasketUi {
 			$h .= '</tbody>';
 
 		$h .= '</table>';
-		$h .= '<p id="quantity-warning" class="util-warning hide">'.s("* Certains produits n'étant plus disponibles en quantité suffisante, la quantité de votre commande a été modifiée.").'</p>';
+		$h .= '<p id="number-warning" class="util-warning hide">'.s("* Certains produits n'étant plus disponibles en quantité suffisante, la quantité de votre commande a été modifiée.").'</p>';
 		$h .= '<br/>';
 
 		return $h;
@@ -769,7 +767,7 @@ class BasketUi {
 				$h .= 'sale: '.$eSale['id'].',';
 				$h .= 'products: {';
 					foreach ($eSale['cItem'] as $eItem) {
-						$h .= '"'.$eItem['product']['id'].'": {quantity: '.$eItem['number'].', quantityOrdered: '.$eItem['number'].', unitPrice: '.$eItem['unitPrice'].'},';
+						$h .= '"'.$eItem['product']['id'].'": {number: '.$eItem['number'].', numberOrdered: '.$eItem['number'].', unitPrice: '.$eItem['unitPrice'].'},';
 					}
 					$h = substr($h, 0, -1);
 				$h .= '}';

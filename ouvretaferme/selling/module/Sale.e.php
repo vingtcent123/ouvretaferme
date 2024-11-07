@@ -412,6 +412,7 @@ class Sale extends SaleElement {
 	public function canDuplicate(): bool {
 
 		return (
+			// Il n'est pas possible de dupliquer une vente d'une boutique pour éviter de créer des incohérence au seins des boutiques et des disponibilités
 			$this['from'] === self::USER and
 			$this['marketParent']->empty()
 		);
@@ -821,9 +822,11 @@ class Sale extends SaleElement {
 					return FALSE;
 				}
 
-				$this->expects(['shopDate']);
+				$this->expects([
+					'shopDate' => ['cProduct']
+				]);
 
-				$this['basket'] = \shop\BasketLib::checkProductsAndStock($products, $this['shopDate']);
+				$this['basket'] = \shop\BasketLib::checkAvailableProducts($products, $this['shopDate']['cProduct'], $this);
 
 				return ($this['basket'] !== []);
 
