@@ -85,8 +85,6 @@ class Flow extends FlowElement {
 
 		};
 
-		$fw = new \FailWatch();
-
 		$result = parent::build($properties, $input, $callbacks + [
 
 			'action.check' => function(\farm\Action $eAction): bool {
@@ -99,14 +97,14 @@ class Flow extends FlowElement {
 
 			},
 
-			'crop.check' => function(Crop $eCrop) use ($fw): bool {
+			'crop.check' => function(Crop $eCrop, array $newProperties, array $validProperties): bool {
 
 				$this->expects([
 					'sequence' => ['cCrop']
 				]);
 
 				// Action saisie, on vérifie qu'en cas de récolte on ait bien un crop
-				if($fw->has('Flow::action.check') === FALSE) {
+				if(in_array('action', $validProperties)) {
 
 					$this->expects([
 						'action' => ['fqn']
@@ -133,9 +131,9 @@ class Flow extends FlowElement {
 
 			},
 
-			'fertilizer.check' => function(?array &$fertilizer) use ($fw): bool {
+			'fertilizer.check' => function(?array &$fertilizer, array $newProperties, array $validProperties): bool {
 
-				if($fw->has('Flow::action.check')) { // L'action génère déjà une erreur
+				if(in_array('action', $validProperties) === FALSE) {
 					return TRUE;
 				}
 
@@ -169,9 +167,11 @@ class Flow extends FlowElement {
 			'seasonStart.prepare' => $prepareSeason,
 			'seasonStop.prepare' => $prepareSeason,
 
-			'method.check' => function(\farm\Method $eMethod): bool {
+			'method.check' => function(\farm\Method $eMethod, array $newProperties, array $validProperties): bool {
 
-				$this->expects(['action']);
+				if(in_array('action', $validProperties) === FALSE) {
+					return TRUE;
+				}
 
 				return $eMethod->empty() or \farm\Method::model()
 					->whereAction($this['action'])
