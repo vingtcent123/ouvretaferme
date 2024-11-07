@@ -50,13 +50,12 @@ class ProductModel extends \ModuleModel {
 			'priceCustom' => ['bool', 'cast' => 'bool'],
 			'saleStartAt' => ['datetime', 'null' => TRUE, 'cast' => 'string'],
 			'saleEndAt' => ['datetime', 'null' => TRUE, 'cast' => 'string'],
-			'stock' => ['float32', 'min' => 0.0, 'max' => NULL, 'null' => TRUE, 'cast' => 'float'],
 			'available' => ['float32', 'min' => 0.0, 'max' => NULL, 'null' => TRUE, 'cast' => 'float'],
 			'status' => ['enum', [\shop\Product::ACTIVE, \shop\Product::INACTIVE], 'cast' => 'enum'],
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'shop', 'date', 'catalog', 'product', 'packaging', 'packagingCustom', 'price', 'priceCustom', 'saleStartAt', 'saleEndAt', 'stock', 'available', 'status'
+			'id', 'shop', 'date', 'catalog', 'product', 'packaging', 'packagingCustom', 'price', 'priceCustom', 'saleStartAt', 'saleEndAt', 'available', 'status'
 		]);
 
 		$this->propertiesToModule += [
@@ -162,10 +161,6 @@ class ProductModel extends \ModuleModel {
 
 	public function whereSaleEndAt(...$data): ProductModel {
 		return $this->where('saleEndAt', ...$data);
-	}
-
-	public function whereStock(...$data): ProductModel {
-		return $this->where('stock', ...$data);
 	}
 
 	public function whereAvailable(...$data): ProductModel {

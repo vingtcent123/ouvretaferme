@@ -164,6 +164,7 @@ class ItemLib extends ItemCrud {
 				'deliveredAt'
 			])
 			->whereFarm($eFarm)
+			->whereNumber('!=', NULL)
 			->whereStatus('IN', [Sale::CONFIRMED, Sale::PREPARED, Sale::DELIVERED])
 			->whereStats(TRUE)
 			->whereDeliveredAt('IN', [currentDate(), date('Y-m-d', strtotime('yesterday'))])
