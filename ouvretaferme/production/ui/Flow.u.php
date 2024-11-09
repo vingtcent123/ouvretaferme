@@ -667,6 +667,8 @@ class FlowUi {
 				$h .= $this->getFertilizerField($form, $eFlow);
 			$h .= '</div>';
 
+			$h .= $this->getMethodsGroup($form, $eFlow);
+
 			if($eFlow['sequence']['cycle'] === Sequence::PERENNIAL) {
 				$h .= $this->getSeasonField($form, $eFlow);
 			}
@@ -675,7 +677,6 @@ class FlowUi {
 
 			$h .= $form->dynamicGroup($eFlow, 'description');
 
-			$h .= $this->getMethodsGroup($form, $eFlow);
 			$h .= $this->getToolsGroup($form, $eFlow);
 
 			$h .= $form->group(
@@ -713,6 +714,8 @@ class FlowUi {
 				$h .= $this->getFertilizerField($form, $eFlow);
 			}
 
+			$h .= $this->getMethodsGroup($form, $eFlow);
+
 			if($eFlow['sequence']['cycle'] === Sequence::PERENNIAL) {
 				$h .= $this->getSeasonField($form, $eFlow);
 			}
@@ -721,7 +724,6 @@ class FlowUi {
 
 			$h .= $form->dynamicGroup($eFlow, 'description');
 
-			$h .= $this->getMethodsGroup($form, $eFlow);
 			$h .= $this->getToolsGroup($form, $eFlow);
 
 			$h .= $form->group(
@@ -1026,7 +1028,7 @@ class FlowUi {
 		switch($property) {
 
 			case 'description' :
-				$d->after = '<small>'.s("Le commentaire est facultatif et permet d'apporter des précisions sur l'intervention à réaliser.").'</small>';
+				$d->after = \util\FormUi::info(s("Le commentaire est facultatif et permet d'apporter des précisions sur l'intervention à réaliser."));
 				break;
 
 			case 'action' :

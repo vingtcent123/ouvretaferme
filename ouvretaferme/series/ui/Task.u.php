@@ -3575,8 +3575,8 @@ class TaskUi {
 					$h .= $this->getFertilizerField($form, $eTask);
 				$h .= '</div>';
 
-				$h .= $this->getTimeGroup($form, $eTask);
 				$h .= $this->getMethodsGroup($form, $eTask);
+				$h .= $this->getTimeGroup($form, $eTask);
 				$h .= $this->getToolsGroup($form, $eTask);
 				$h .= $form->dynamicGroup($eTask, 'description');
 
@@ -3730,9 +3730,9 @@ class TaskUi {
 				$h .= '</div>';
 			}
 
+			$h .= $this->getMethodsGroup($form, $eTask);
 			$h .= $this->getTimeGroup($form, $eTask);
 
-			$h .= $this->getMethodsGroup($form, $eTask);
 			$h .= $this->getToolsGroup($form, $eTask);
 			$h .= $form->dynamicGroup($eTask, 'description');
 
@@ -3930,9 +3930,9 @@ class TaskUi {
 				$h .= $this->getFertilizerField($form, $eTask);
 			}
 
+			$h .= $this->getMethodsGroup($form, $eTask);
 			$h .= $this->getTimeGroup($form, $eTask);
 
-			$h .= $this->getMethodsGroup($form, $eTask);
 			$h .= $this->getToolsGroup($form, $eTask);
 			$h .= $form->dynamicGroup($eTask, 'description');
 
