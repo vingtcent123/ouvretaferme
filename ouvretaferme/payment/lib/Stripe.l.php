@@ -183,7 +183,7 @@ class StripeLib {
 		$curl = new \util\CurlLib();
 
 		$data = $curl->exec(self::API_URL.$endpoint, $arguments, $mode, $options);
-		$httpCode = $curl->getLastInfos();
+		$httpCode = $curl->getLastInfos()['httpCode'];
 
 		if($httpCode === 200) {
 			return json_decode($data, TRUE);
