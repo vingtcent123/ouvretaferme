@@ -52,6 +52,11 @@ class StripeLib {
 	public static function webhookPaymentIntent(StripeFarm $eStripeFarm, array $event): void {
 
 		$eSale = self::getSaleFromPaymentIntent($eStripeFarm, $event);
+
+		if($eSale->empty()) {
+			return;
+		}
+
 		$object = $event['data']['object'];
 
 		$error = FALSE;
@@ -98,7 +103,7 @@ class StripeLib {
 		$ePayment = \selling\PaymentLib::getByPaymentIntentId($eStripeFarm, $object['id']);
 
 		if($ePayment->empty()) {
-			throw new \Exception('Unknown payment intent '.$object['id']);
+			return new \selling\Sale();
 		}
 
 		$eSale = \selling\SaleLib::getById($ePayment['sale']);
