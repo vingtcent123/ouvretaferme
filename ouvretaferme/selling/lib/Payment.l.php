@@ -41,7 +41,11 @@ class PaymentLib extends PaymentCrud {
 			trigger_error("Stripe: ", $e->getMessage());
 			return;
 		}
-trigger_error(var_export($checkout['data'], true));
+
+		if($checkout['data'] === []) {
+			return;
+		}
+
 		Payment::model()
 			->whereCheckoutId($checkout['data'][0]['id'])
 			->update([
