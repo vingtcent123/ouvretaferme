@@ -157,7 +157,7 @@ class StripeLib {
 
 	}
 
-	private static function sendStripeRequest(StripeFarm $eStripeFarm, string $endpoint, array $arguments = [], string $mode = 'POST'): array {
+	private static function sendStripeRequest(StripeFarm $eStripeFarm, string $endpoint, array $arguments = [], string $mode = 'POST'): ?array {
 
 		$key = match(LIME_ENV) {
 			'dev' => $eStripeFarm['apiSecretKeyTest'],
@@ -180,7 +180,16 @@ class StripeLib {
 			CURLOPT_VERBOSE => TRUE,
 		];
 
-		return json_decode((new \util\CurlLib())->exec(self::API_URL.$endpoint, $arguments, $mode, $options), TRUE);
+		$curl = new \util\CurlLib();
+
+		$data = $curl->exec(self::API_URL.$endpoint, $arguments, $mode, $options);
+		$httpCode = $curl->getLastInfos();
+
+		if($httpCode === 200) {
+			return json_decode($data, TRUE);
+		} else {
+			throw new \Exception('Stripe error (HTTP code is '.$httpCode.')');
+		}
 
 	}
 

@@ -351,10 +351,6 @@ class SaleLib {
 
 		$stripeSession = \payment\StripeLib::createCheckoutSession($eStripeFarm, $arguments);
 
-		if(isset($stripeSession['error'])) {
-			throw new \Exception(var_export($stripeSession['error']['message'], TRUE));
-		}
-
 		\selling\Sale::model()->beginTransaction();
 
 		$eSale['paymentMethod'] = \selling\Sale::ONLINE_CARD;

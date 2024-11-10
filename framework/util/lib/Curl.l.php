@@ -24,9 +24,9 @@ class CurlLib {
 		$content = curl_exec($curl);
 
 		$this->infos = [
-			'httpinfo' => (int)curl_getinfo($curl, CURLINFO_HTTP_CODE),
-			'headersize' => curl_getinfo($curl, CURLINFO_HEADER_SIZE),
-			'headerout' => curl_getinfo($curl, CURLINFO_HEADER_OUT)
+			'httpCode' => (int)curl_getinfo($curl, CURLINFO_HTTP_CODE),
+			'headerSize' => curl_getinfo($curl, CURLINFO_HEADER_SIZE),
+			'headerOut' => curl_getinfo($curl, CURLINFO_HEADER_OUT)
 		];
 
 		$errno = curl_errno($curl);

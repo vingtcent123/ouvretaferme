@@ -34,10 +34,12 @@ class PaymentLib extends PaymentCrud {
 
 	public static function associatePaymentIntentId(\payment\StripeFarm $eStripeFarm, string $id): void {
 
-		$checkout = \payment\StripeLib::getStripeCheckoutSessionFromPaymentIntent($eStripeFarm, $id);
-
-		if(isset($checkout['error'])) {
-			throw new \Exception(var_export($checkout['error'], TRUE));
+		try {
+			$checkout = \payment\StripeLib::getStripeCheckoutSessionFromPaymentIntent($eStripeFarm, $id);
+		}
+		catch(\Exception $e) {
+			trigger_error("Stripe: ", $e->getMessage());
+			return;
 		}
 
 		Payment::model()
