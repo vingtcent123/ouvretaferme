@@ -251,6 +251,8 @@ class CustomerLib extends CustomerCrud {
 
 		$eCustomer = new Customer([
 			'name' => self::getNameFromUser($eUser),
+			'firstName' => $eUser['firstName'],
+			'lastName' => $eUser['lastName'],
 			'email' => $eUser['email'],
 			'type' => $type,
 			'destination' => match($type) {
