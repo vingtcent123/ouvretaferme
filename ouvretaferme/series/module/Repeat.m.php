@@ -53,6 +53,7 @@ class RepeatModel extends \ModuleModel {
 			'plant' => ['element32', 'plant\Plant', 'null' => TRUE, 'cast' => 'element'],
 			'variety' => ['element32', 'plant\Variety', 'null' => TRUE, 'cast' => 'element'],
 			'action' => ['element32', 'farm\Action', 'cast' => 'element'],
+			'method' => ['element32', 'farm\Method', 'null' => TRUE, 'cast' => 'element'],
 			'category' => ['element32', 'farm\Category', 'cast' => 'element'],
 			'description' => ['text16', 'min' => 1, 'max' => NULL, 'null' => TRUE, 'cast' => 'string'],
 			'timeExpected' => ['float32', 'min' => 0.0, 'max' => NULL, 'null' => TRUE, 'cast' => 'float'],
@@ -70,7 +71,7 @@ class RepeatModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'farm', 'season', 'cultivation', 'series', 'plant', 'variety', 'action', 'category', 'description', 'timeExpected', 'fertilizer', 'tools', 'status', 'frequency', 'start', 'current', 'discrete', 'stop', 'completed', 'createdBy', 'createdAt'
+			'id', 'farm', 'season', 'cultivation', 'series', 'plant', 'variety', 'action', 'method', 'category', 'description', 'timeExpected', 'fertilizer', 'tools', 'status', 'frequency', 'start', 'current', 'discrete', 'stop', 'completed', 'createdBy', 'createdAt'
 		]);
 
 		$this->propertiesToModule += [
@@ -80,6 +81,7 @@ class RepeatModel extends \ModuleModel {
 			'plant' => 'plant\Plant',
 			'variety' => 'plant\Variety',
 			'action' => 'farm\Action',
+			'method' => 'farm\Method',
 			'category' => 'farm\Category',
 			'createdBy' => 'user\User',
 		];
@@ -197,6 +199,10 @@ class RepeatModel extends \ModuleModel {
 
 	public function whereAction(...$data): RepeatModel {
 		return $this->where('action', ...$data);
+	}
+
+	public function whereMethod(...$data): RepeatModel {
+		return $this->where('method', ...$data);
 	}
 
 	public function whereCategory(...$data): RepeatModel {
