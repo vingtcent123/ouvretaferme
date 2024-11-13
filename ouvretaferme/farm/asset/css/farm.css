@@ -75,6 +75,7 @@ div.farmer-farms-item-infos {
 	display: flex;
 	align-items: center;
 	height: var(--farmNav);
+	min-height: var(--farmNav);
 }
 
 
@@ -239,6 +240,7 @@ a.farm-tab.selected .farm-tab-off {
 
 #farm-subnav {
 	height: var(--farmSubNav);
+	min-height: var(--farmSubNav);
 	border-bottom: 1px solid var(--background);
 }
 

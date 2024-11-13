@@ -340,6 +340,7 @@ div.nav-wrapper {
 	justify-content: space-between;
 	align-items: stretch;
 	height: var(--mainNav);
+	min-height: var(--mainNav);
 	column-gap: 0.5rem;
 }
 
