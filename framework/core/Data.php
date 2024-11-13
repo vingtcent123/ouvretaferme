@@ -1026,6 +1026,26 @@ class Collection extends ArrayIterator {
 
 	}
 
+	public function validateOffset(mixed $offset): Collection {
+
+		if($offset instanceof Element) {
+			if($offset->exists()) {
+				$value = $offset['id'];
+			} else {
+				$value = NULL;
+			}
+		} else {
+			$value = $offset;
+		}
+
+		if($this->offsetExists($value) === FALSE) {
+			throw new NotExistsAction('Offset does not exist');
+		}
+
+		return $this;
+
+	}
+
 	public function validateProperty(string $property, mixed $value): Collection {
 
 		foreach($this as $e) {

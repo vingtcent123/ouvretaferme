@@ -161,10 +161,6 @@ class CategoryUi {
 			$h .= $form->asteriskInfo();
 
 			$h .= $form->hidden('farm', $eFarm['id']);
-			$h .= $form->group(
-				s("Ferme"),
-				\farm\FarmUi::link($eFarm)
-			);
 			$h .= $form->dynamicGroups($eCategory, ['name*']);
 			$h .= $form->group(
 				content: $form->submit(s("Ajouter"))

@@ -583,6 +583,56 @@ new AdaptativeView('/ferme/{id}/boutiques', function($data, FarmTemplate $t) {
 
 });
 
+new AdaptativeView('/ferme/{id}/catalogues', function($data, FarmTemplate $t) {
+
+	$t->tab = 'shop';
+	$t->subNav = (new \farm\FarmUi())->getShopSubNav($data->eFarm);
+
+	$t->title = s("Catalogues de {value}", $data->eFarm['name']);
+	$t->canonical = \farm\FarmUi::urlShopCatalog($data->eFarm);
+
+	$t->package('main')->updateNavShop($t->canonical);
+
+	if($data->cCatalog->empty()) {
+
+		echo '<h1>'.s("Catalogues de vente").'</h1>';
+
+		echo '<div class="util-block-help">';
+			echo '<h4>'.s("Vous êtes sur la page pour gérer vos catalogues de vente").'</h4>';
+			echo '<p>'.s("Créez des catalogues de vente pour gérer facilement les disponibilités dans vos boutiques en ligne. Les catalogues sont particulièrement indiqués si vous voulez partager facilement la même gamme de produits entre plusieurs boutiques.").'</p>';
+		echo '</div>';
+
+		echo '<br/>';
+
+		echo '<h3>'.s("Créer un premier catalogue").'</h3>';
+
+		echo '<div class="util-help">';
+			echo Asset::icon('person-raised-hand');
+			echo '<p>'.s("Les catalogues ne sont pas indispensables au fonctionnement de vos boutiques en ligne, nous vous conseillons de les utiliser uniquement si vous êtes dans le cas mentionné ci-dessus et si vous êtes déjà bien à l'aise avec {siteName}.").'</p>';
+		echo '</div>';
+
+		echo (new \shop\CatalogUi())->create($data->eFarm)->body;
+
+	} else {
+
+		echo '<div class="util-action">';
+			echo '<h1>'.s("Catalogues").'</h1>';
+			echo '<div>';
+				if($data->eFarm->canManage()) {
+					echo '<a href="/shop/catalog:create?farm='.$data->eFarm['id'].'" class="btn btn-primary">'.\Asset::icon('plus-circle').'<span class="hide-xs-down"> '.s("Nouveau catalogue").'</span></a>';
+				}
+			echo '</div>';
+		echo '</div>';
+
+		echo '<br/>';
+
+		echo (new \shop\CatalogUi())->getList($data->eFarm, $data->cCatalog, $data->eCatalogSelected, $data->cProduct);
+
+	}
+
+
+});
+
 new AdaptativeView('/ferme/{id}/livraison', function($data, FarmTemplate $t) {
 
 	$t->tab = 'shop';

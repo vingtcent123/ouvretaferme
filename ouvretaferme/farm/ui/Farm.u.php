@@ -226,7 +226,7 @@ class FarmUi {
 
 		return match($view) {
 			Farmer::SHOP => self::urlShopList($eFarm),
-			Farmer::CATALOG => '',
+			Farmer::CATALOG => self::urlShopCatalog($eFarm),
 			Farmer::POINT => self::urlShopPoint($eFarm)
 		};
 
@@ -234,6 +234,10 @@ class FarmUi {
 
 	public static function urlShopList(Farm $eFarm): string {
 		return self::url($eFarm).'/boutiques';
+	}
+
+	public static function urlShopCatalog(Farm $eFarm): string {
+		return self::url($eFarm).'/catalogues';
 	}
 
 	public static function urlShopPoint(Farm $eFarm): string {

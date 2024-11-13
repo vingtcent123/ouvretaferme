@@ -80,11 +80,6 @@ class PresenceUi {
 
 			$h .= $form->hidden('farm', $eFarm['id']);
 
-			$h .= $form->group(
-				s("Ferme"),
-				\farm\FarmUi::link($eFarm, TRUE)
-			);
-
 			$h .= $form->dynamicGroups($ePresence, ['user', 'from', 'to']);
 
 			$h .= $form->group(
@@ -166,11 +161,6 @@ class PresenceUi {
 		$h .= $form->openAjax('/hr/presence:doUpdate');
 
 			$h .= $form->hidden('id', $ePresence['id']);
-
-			$h .= $form->group(
-				s("Ferme"),
-				\farm\FarmUi::link($ePresence['farm'], TRUE)
-			);
 
 			$h .= $form->group(
 				s("Utilisateur"),

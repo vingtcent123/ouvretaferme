@@ -96,11 +96,6 @@ class AbsenceUi {
 
 			$h .= $form->hidden('farm', $eFarm['id']);
 
-			$h .= $form->group(
-				s("Ferme"),
-				\farm\FarmUi::link($eFarm, TRUE)
-			);
-
 			$h .= $form->dynamicGroups($eAbsence, ['user', 'type', 'from', 'to', 'duration']);
 
 			$h .= $form->group(
@@ -126,11 +121,6 @@ class AbsenceUi {
 		$h .= $form->openAjax('/hr/absence:doUpdate');
 
 			$h .= $form->hidden('id', $eAbsence['id']);
-
-			$h .= $form->group(
-				s("Ferme"),
-				\farm\FarmUi::link($eAbsence['farm'], TRUE)
-			);
 
 			$h .= $form->group(
 				s("Utilisateur"),

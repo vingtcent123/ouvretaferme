@@ -74,8 +74,9 @@ Farmer:
   viewSelling: enum(SALE, PRODUCT, CUSTOMER, INVOICE, STOCK) = SALE
   viewSellingSales: enum(ALL, PRIVATE, PRO, LABEL) = ALL
   viewSellingCategory: enum(ITEM, CUSTOMER, SHOP, PERIOD) = ITEM
-  viewSellingProductCategory: ?selling\Category
+  viewSellingCategoryCurrent: ?selling\Category
   viewShop: enum(SHOP, CATALOG, POINT) = SHOP
+  viewShopCatalogCurrent: ?shop\Catalog
   viewAnalyze: enum(WORKING_TIME, REPORT, SALES, CULTIVATION) = WORKING_TIME
   viewAnalyzeYear: ?int16(0, null)
   viewSettings: enum(SETTINGS, WEBSITE) = SETTINGS

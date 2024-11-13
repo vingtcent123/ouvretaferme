@@ -1473,11 +1473,6 @@ class SaleUi {
 			$h .= $form->hidden('farm', $eSale['farm']['id']);
 			$h .= $form->hidden('market', $eSale['market']);
 
-			$h .= $form->group(
-				s("Ferme"),
-				\farm\FarmUi::link($eSale['farm'], TRUE)
-			);
-
 			$h .= $form->dynamicGroup($eSale, 'customer*', function($d) {
 					$d->autocompleteDispatch = '#sale-create';
 				});
@@ -1562,11 +1557,6 @@ class SaleUi {
 		$h .= $form->openAjax('/selling/sale:doUpdate');
 
 			$h .= $form->hidden('id', $eSale['id']);
-
-			$h .= $form->group(
-				s("Ferme"),
-				\farm\FarmUi::link($eSale['farm'], TRUE)
-			);
 
 			if($eSale->isClosed() === FALSE) {
 

@@ -638,11 +638,6 @@ class ReportUi {
 			$h .= $form->hidden('from', $e['from']);
 			$h .= $form->hidden('farm', $e['farm']['id']);
 
-			$h .= $form->group(
-				s("Ferme"),
-				\farm\FarmUi::link($e['farm'], TRUE)
-			);
-
 			if(count($e['farm']->getSeasons()) === 1) {
 
 				$h .= $form->hidden('season', $e['farm']['seasonFirst']);

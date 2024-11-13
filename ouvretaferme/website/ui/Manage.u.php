@@ -36,11 +36,6 @@ class ManageUi {
 
 			$h .= $form->hidden('farm', $eFarm['id']);
 
-			$h .= $form->group(
-				s("Ferme"),
-				\farm\FarmUi::link($eFarm, TRUE)
-			);
-
 			$h .= $form->dynamicGroups($eWebsite, ['internalDomain*', 'domain', 'name*', 'description']);
 
 			$h .= $form->group(

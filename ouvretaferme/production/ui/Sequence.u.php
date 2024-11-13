@@ -743,11 +743,6 @@ class SequenceUi {
 
 			$h .= $form->hidden('farm', $eSequence['farm']['id']);
 
-			$h .= $form->group(
-				s("Ferme"),
-				\farm\FarmUi::link($eSequence['farm'], TRUE)
-			);
-
 			$h .= $form->dynamicGroup($eSequence, 'name*');
 
 			$h .= $form->dynamicGroups($eSequence, ['plantsList*', 'cycle', 'perennialLifetime', 'description', 'use*', 'bedWidth*', 'alleyWidth']);

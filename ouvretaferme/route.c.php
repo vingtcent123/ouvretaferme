@@ -123,6 +123,11 @@ Route::register([
 			'priority' => 5,
 			'route' => ['ferme', '{id}', 'carte', '{season}'],
 		],
+		'/ferme/{id}/catalogues' => [
+			'request' => 'farm/index',
+			'priority' => 5,
+			'route' => ['ferme', '{id}', 'catalogues'],
+		],
 		'/ferme/{id}/clients' => [
 			'request' => 'farm/index',
 			'priority' => 5,

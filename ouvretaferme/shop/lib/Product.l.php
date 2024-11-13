@@ -64,6 +64,17 @@ class ProductLib extends ProductCrud {
 
 	}
 
+	public static function getByCatalog(Catalog $eCatalog, bool $onlyActive = TRUE): \Collection {
+
+		return Product::model()
+			->select(Product::getSelection())
+			->whereCatalog($eCatalog)
+			->whereStatus(Product::ACTIVE, if: $onlyActive)
+			->getCollection(NULL, NULL, 'product')
+			->sort(['product' => ['name']], natural: TRUE);
+
+	}
+
 	public static function applyDiscount(\Collection $cProduct, int $discount): void {
 
 		if($discount === 0) {

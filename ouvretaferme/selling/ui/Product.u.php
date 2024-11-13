@@ -98,35 +98,7 @@ class ProductUi {
 
 	public function getList(\farm\Farm $eFarm, \Collection $cProduct, array $products, \Collection $cCategory, \Search $search) {
 
-		$h = '';
-
-		if($cCategory->notEmpty()) {
-
-			$eCategorySelected = $search->get('category');
-
-			$h .= '<div class="tabs-item">';
-
-				foreach($cCategory as $eCategory) {
-
-					$url = \util\HttpUi::setArgument(LIME_REQUEST, 'category', $eCategory['id'], FALSE);
-
-					$h .= '<a href="'.$url.'" class="tab-item '.(($eCategorySelected->notEmpty() and $eCategorySelected['id'] === $eCategory['id']) ? 'selected' : '').'">'.encode($eCategory['name']).' <small class="tab-item-count">'.($products[$eCategory['id']] ?? 0).'</small></a>';
-
-				}
-
-				$uncategorized = ($products[NULL] ?? 0);
-
-				if($uncategorized > 0) {
-
-					$url = \util\HttpUi::setArgument(LIME_REQUEST, 'category', '', FALSE);
-
-					$h .= '<a href="'.$url.'" class="tab-item '.($eCategorySelected->empty() ? 'selected' : '').'">'.s("Non catégorisé").' <small class="tab-item-count">'.$uncategorized.'</small></a>';
-
-				}
-
-			$h .= '</div>';
-
-		}
+		$h = $this->getCategories($cCategory, $products, $search);
 
 		if($cProduct->empty()) {
 
@@ -317,6 +289,42 @@ class ProductUi {
 		$h .= '</div>';
 
 		$h .= $this->getBatch($cCategory);
+
+		return $h;
+
+	}
+
+	protected function getCategories(\Collection $cCategory, array $products, \Search $search): string {
+
+		$h = '';
+
+		if($cCategory->notEmpty()) {
+
+			$eCategorySelected = $search->get('category');
+
+			$h .= '<div class="tabs-item">';
+
+				foreach($cCategory as $eCategory) {
+
+					$url = \util\HttpUi::setArgument(LIME_REQUEST, 'category', $eCategory['id'], FALSE);
+
+					$h .= '<a href="'.$url.'" class="tab-item '.(($eCategorySelected->notEmpty() and $eCategorySelected['id'] === $eCategory['id']) ? 'selected' : '').'">'.encode($eCategory['name']).' <small class="tab-item-count">'.($products[$eCategory['id']] ?? 0).'</small></a>';
+
+				}
+
+				$uncategorized = ($products[NULL] ?? 0);
+
+				if($uncategorized > 0) {
+
+					$url = \util\HttpUi::setArgument(LIME_REQUEST, 'category', '', FALSE);
+
+					$h .= '<a href="'.$url.'" class="tab-item '.($eCategorySelected->empty() ? 'selected' : '').'">'.s("Non catégorisé").' <small class="tab-item-count">'.$uncategorized.'</small></a>';
+
+				}
+
+			$h .= '</div>';
+
+		}
 
 		return $h;
 
@@ -656,11 +664,6 @@ class ProductUi {
 			$h .= $form->hidden('farm', $eFarm['id']);
 
 			$h .= $form->group(
-				s("Ferme"),
-				\farm\FarmUi::link($eFarm, TRUE)
-			);
-
-			$h .= $form->group(
 				self::p('plant')->label,
 				$form->dynamicField($eProduct, 'plant', function($d) {
 					$d->autocompleteDispatch = '#product-create';
@@ -708,11 +711,6 @@ class ProductUi {
 		$h .= $form->openAjax('/selling/product:doUpdate', ['id' => 'product-update']);
 
 			$h .= $form->hidden('id', $eProduct['id']);
-
-			$h .= $form->group(
-				s("Ferme"),
-				\farm\FarmUi::link($eProduct['farm'], TRUE)
-			);
 
 			$h .= $form->group(
 				self::p('plant')->label,

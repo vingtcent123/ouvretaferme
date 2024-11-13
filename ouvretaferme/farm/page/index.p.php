@@ -125,17 +125,13 @@
 			$data->eCategory = \selling\Product::GET('category', 'category', new \selling\Category());
 
 			if($data->eCategory->notEmpty()) {
-
-				if($data->cCategory->offsetExists($data->eCategory['id']) === FALSE){
-					throw new NotExpectedAction('Invalid category');
-				}
-
+				$data->cCategory->validateOffset($data->eCategory);
 			}
 
-			\farm\FarmerLib::setView('viewSellingProductCategory', $data->eFarm, $data->eCategory);
+			\farm\FarmerLib::setView('viewSellingCategoryCurrent', $data->eFarm, $data->eCategory);
 
 		} else {
-			$data->eCategory = Setting::get('main\viewSellingProductCategory');
+			$data->eCategory = Setting::get('main\viewSellingCategoryCurrent');
 		}
 
 		$data->search = new Search([
@@ -199,6 +195,49 @@
 			$data->eShop['cDate'] = \shop\DateLib::getByShop($data->eShop);
 
 		}
+
+		throw new ViewAction($data);
+
+	})
+	->get('/ferme/{id}/catalogues', function($data) {
+
+		$data->eFarm->validate('canSelling');
+
+		\farm\FarmerLib::setView('viewShop', $data->eFarm, \farm\Farmer::CATALOG);
+
+		$data->cCatalog = \shop\CatalogLib::getByFarm($data->eFarm, index: 'id');
+		$data->eCatalogSelected = new \shop\Catalog();
+
+		if(get_exists('catalog')) {
+
+			$eCatalog = GET('catalog', 'shop\Catalog', fn() => new \shop\Catalog());
+
+			if($eCatalog->notEmpty()) {
+
+				$data->cCatalog->validateOffset($eCatalog);
+				$data->eCatalogSelected = $data->cCatalog[$eCatalog['id']];
+
+			}
+
+			\farm\FarmerLib::setView('viewShopCatalogCurrent', $data->eFarm, $eCatalog);
+
+		} else if(Setting::get('main\viewShopCatalogCurrent')->notEmpty()) {
+
+			$eCatalog = Setting::get('main\viewShopCatalogCurrent');
+
+			$data->eCatalogSelected = $data->cCatalog[$eCatalog['id']] ?? new \shop\Catalog();
+
+		} else {
+
+			$data->eCatalogSelected = $data->cCatalog->notEmpty() ?
+				$data->cCatalog->first() :
+				new \shop\Catalog();
+
+		}
+
+		$data->cProduct = $data->eCatalogSelected ?
+			new Collection() :
+			\shop\ProductLib::getByCatalog($data->eCatalogSelected);
 
 		throw new ViewAction($data);
 

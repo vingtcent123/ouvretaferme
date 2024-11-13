@@ -151,10 +151,6 @@ class SupplierUi {
 			$h .= $form->asteriskInfo();
 
 			$h .= $form->hidden('farm', $eSupplier['farm']['id']);
-			$h .= $form->group(
-				s("Ferme"),
-				\farm\FarmUi::link($eSupplier['farm'])
-			);
 			$h .= $form->dynamicGroups($eSupplier, ['name*']);
 			$h .= $form->group(
 				content: $form->submit(s("Ajouter"))

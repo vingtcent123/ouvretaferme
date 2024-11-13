@@ -347,11 +347,6 @@ class ToolUi {
 			$h .= $form->asteriskInfo();
 
 			$h .= $form->hidden('farm', $eTool['farm']['id']);
-			$h .= $form->group(
-				s("Ferme"),
-				\farm\FarmUi::link($eTool['farm'])
-			);
-
 			$h .= $form->dynamicGroup($eTool, 'name*', function(\PropertyDescriber $d) use ($eTool) {
 				$d->label = $eTool->getStandaloneRoutine('nameField') ?? $d->label;
 			});

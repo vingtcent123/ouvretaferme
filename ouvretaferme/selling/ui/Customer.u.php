@@ -526,11 +526,6 @@ class CustomerUi {
 
 			$h .= $form->hidden('farm', $eFarm['id']);
 
-			$h .= $form->group(
-				s("Ferme"),
-				\farm\FarmUi::link($eFarm, TRUE)
-			);
-
 			$h .= $form->dynamicGroup($eCustomer, 'category*', function(\PropertyDescriber $d) use ($eFarm) {
 
 				if($eFarm->getSelling('hasVat')) {
@@ -565,11 +560,6 @@ class CustomerUi {
 		$h .= $form->openAjax('/selling/customer:doUpdate', ['class' => $formClass]);
 
 			$h .= $form->hidden('id', $eCustomer['id']);
-
-			$h .= $form->group(
-				s("Ferme"),
-				\farm\FarmUi::link($eCustomer['farm'], TRUE)
-			);
 
 			if($eCustomer['destination'] !== Customer::COLLECTIVE) {
 				$h .= $form->dynamicGroup($eCustomer, 'category');
