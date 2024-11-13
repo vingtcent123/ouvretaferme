@@ -1622,6 +1622,11 @@ class TaskLib extends TaskCrud {
 
 					$e['cultivation']->expects(['series']);
 
+					// Requis pour recalculate()
+					Series::model()
+						->select('cycle')
+						->get($e['cultivation']['series']);
+
 					$e['series'] = $e['cultivation']['series'];
 					$e['plant'] = $e['cultivation']['plant'];
 
