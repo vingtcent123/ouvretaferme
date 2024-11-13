@@ -13,6 +13,9 @@ abstract class DateElement extends \Element {
 	const ACTIVE = 'active';
 	const CLOSED = 'closed';
 
+	const DIRECT = 'direct';
+	const CATALOG = 'catalog';
+
 	public static function getSelection(): array {
 		return Date::model()->getProperties();
 	}
@@ -45,23 +48,24 @@ class DateModel extends \ModuleModel {
 			'id' => ['serial32', 'cast' => 'int'],
 			'createdAt' => ['datetime', 'cast' => 'string'],
 			'shop' => ['element32', 'shop\Shop', 'cast' => 'element'],
-			'catalog' => ['element32', 'shop\Catalog', 'null' => TRUE, 'cast' => 'element'],
 			'type' => ['enum', [\shop\Date::PRIVATE, \shop\Date::PRO], 'cast' => 'enum'],
 			'farm' => ['element32', 'farm\Farm', 'cast' => 'element'],
 			'status' => ['enum', [\shop\Date::ACTIVE, \shop\Date::CLOSED], 'cast' => 'enum'],
+			'source' => ['enum', [\shop\Date::DIRECT, \shop\Date::CATALOG], 'cast' => 'enum'],
 			'orderStartAt' => ['datetime', 'cast' => 'string'],
 			'orderEndAt' => ['datetime', 'cast' => 'string'],
 			'points' => ['json', 'cast' => 'array'],
+			'catalogs' => ['json', 'cast' => 'array'],
+			'products' => ['int16', 'min' => 0, 'max' => NULL, 'cast' => 'int'],
 			'deliveryDate' => ['date', 'cast' => 'string'],
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'createdAt', 'shop', 'catalog', 'type', 'farm', 'status', 'orderStartAt', 'orderEndAt', 'points', 'deliveryDate'
+			'id', 'createdAt', 'shop', 'type', 'farm', 'status', 'source', 'orderStartAt', 'orderEndAt', 'points', 'catalogs', 'products', 'deliveryDate'
 		]);
 
 		$this->propertiesToModule += [
 			'shop' => 'shop\Shop',
-			'catalog' => 'shop\Catalog',
 			'farm' => 'farm\Farm',
 		];
 
@@ -81,8 +85,17 @@ class DateModel extends \ModuleModel {
 			case 'status' :
 				return Date::ACTIVE;
 
+			case 'source' :
+				return Date::DIRECT;
+
 			case 'points' :
 				return [];
+
+			case 'catalogs' :
+				return [];
+
+			case 'products' :
+				return 0;
 
 			default :
 				return parent::getDefaultValue($property);
@@ -101,7 +114,13 @@ class DateModel extends \ModuleModel {
 			case 'status' :
 				return ($value === NULL) ? NULL : (string)$value;
 
+			case 'source' :
+				return ($value === NULL) ? NULL : (string)$value;
+
 			case 'points' :
+				return $value === NULL ? NULL : json_encode($value, JSON_UNESCAPED_UNICODE);
+
+			case 'catalogs' :
 				return $value === NULL ? NULL : json_encode($value, JSON_UNESCAPED_UNICODE);
 
 			default :
@@ -116,6 +135,9 @@ class DateModel extends \ModuleModel {
 		switch($property) {
 
 			case 'points' :
+				return $value === NULL ? NULL : json_decode($value, TRUE);
+
+			case 'catalogs' :
 				return $value === NULL ? NULL : json_decode($value, TRUE);
 
 			default :
@@ -145,10 +167,6 @@ class DateModel extends \ModuleModel {
 		return $this->where('shop', ...$data);
 	}
 
-	public function whereCatalog(...$data): DateModel {
-		return $this->where('catalog', ...$data);
-	}
-
 	public function whereType(...$data): DateModel {
 		return $this->where('type', ...$data);
 	}
@@ -161,6 +179,10 @@ class DateModel extends \ModuleModel {
 		return $this->where('status', ...$data);
 	}
 
+	public function whereSource(...$data): DateModel {
+		return $this->where('source', ...$data);
+	}
+
 	public function whereOrderStartAt(...$data): DateModel {
 		return $this->where('orderStartAt', ...$data);
 	}
@@ -171,6 +193,14 @@ class DateModel extends \ModuleModel {
 
 	public function wherePoints(...$data): DateModel {
 		return $this->where('points', ...$data);
+	}
+
+	public function whereCatalogs(...$data): DateModel {
+		return $this->where('catalogs', ...$data);
+	}
+
+	public function whereProducts(...$data): DateModel {
+		return $this->where('products', ...$data);
 	}
 
 	public function whereDeliveryDate(...$data): DateModel {

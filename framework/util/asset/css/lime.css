@@ -2442,6 +2442,12 @@ div.tabs-panel {
 	grid-area: panel;
 }
 
+div.tabs-item + div.tabs-panel.util-block {
+	margin-top: -1.5rem;
+	border-top-left-radius: 0;
+	border-top-right-radius: 0;
+}
+
 :not(div.tabs-v) > div.tabs-item {
 	display: flex;
 	column-gap: 0.5rem;

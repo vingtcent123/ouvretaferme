@@ -236,7 +236,7 @@ class ShopManageUi {
 						$h .= '<div class="dropdown-list">';
 							$h .= '<a href="/shop/date:create?shop='.$eShop['id'].'&farm='.$eFarm['id'].'" class="dropdown-item">'.s("Créer une vente de zéro").'</a>';
 							$h .= '<div class="dropdown-divider"></div>';
-							$h .= '<div class="dropdown-item" style="font-style: italic">'.s("Créer à partir une autre vente :").'</div>';
+							$h .= '<div class="dropdown-subtitle">'.s("Créer à partir une autre vente").'</div>';
 							$count = 0;
 							foreach($cDate as $eDate) {
 								if($count++ >= 3) {

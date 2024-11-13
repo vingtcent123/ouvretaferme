@@ -465,6 +465,8 @@ class StockUi {
 
 	public static function getExpired(Product $eProduct): string {
 
+		\Asset::css('selling', 'product.css');
+
 		if($eProduct['stockExpired']) {
 			return '<span class="product-item-stock-expired" title="'.s("Mis à jour il y a plus d'une semaine").'">'.\Asset::icon('alarm').'</span>';
 		} else {

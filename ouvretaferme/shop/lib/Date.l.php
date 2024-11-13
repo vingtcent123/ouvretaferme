@@ -12,10 +12,9 @@ class DateLib extends DateCrud {
 			]);
 
 			$properties = [
-				'status',
 				'orderStartAt', 'orderEndAt',
 				'deliveryDate',
-				'products',
+				'productsList',
 			];
 
 			if($eDate['shop']['hasPoint']) {
@@ -61,10 +60,7 @@ class DateLib extends DateCrud {
 			->select([
 				'sales' => self::countSales()
 					->group('shopDate')
-					->delegateArray('shopDate', callback: fn($value) => $value ?? ['count' => 0, 'countValid' => 0, 'amount' => 0.0]),
-				'products' => Product::model()
-					->group('date')
-					->delegateProperty('date', new \Sql('COUNT(*)', 'int'), fn($value) => $value ?? 0)
+					->delegateArray('shopDate', callback: fn($value) => $value ?? ['count' => 0, 'countValid' => 0, 'amount' => 0.0])
 
 			])
 			->whereShop($eShop)
@@ -141,17 +137,6 @@ class DateLib extends DateCrud {
 
 	}
 
-	public static function getShopById(int $id): Shop {
-
-		$eDate = Date::model()
-			->select(['shop' => Shop::getSelection()])
-			->whereId($id)
-			->get();
-
-		return $eDate['shop'];
-
-	}
-
 	public static function create(Date $e): void {
 
 		$e->expects(['cProduct']);
@@ -164,7 +149,7 @@ class DateLib extends DateCrud {
 			$eProduct['date'] = $e;
 		}
 
-		Product::model()->insert($e['cProduct']);
+		ProductLib::createCollection($e['cProduct']);
 
 		Shop::model()->commit();
 
@@ -209,9 +194,13 @@ class DateLib extends DateCrud {
 
 		Date::model()->beginTransaction();
 
-		Product::model()
-			->whereDate($eDate)
-			->delete();
+		if($eDate->isDirect()) {
+
+			Product::model()
+				->whereDate($eDate)
+				->delete();
+
+		}
 
 		$cSale = \selling\SaleLib::getByDate($eDate, NULL);
 
@@ -256,59 +245,48 @@ class DateLib extends DateCrud {
 			->whereShop($eShop)
 			->whereStatus(Date::ACTIVE)
 			->whereDeliveryDate('>',  new \Sql('NOW()'))
+			->whereProducts('>', 0)
 			->sort([
 				'isOrderable' => SORT_DESC,
 				'deliveryDate' => SORT_ASC
 			])
 			->getCollection();
 
-		$cDateRelevant = new \Collection();
-
 		// Pas de date ouverte ou à venir : chercher la dernière
 		if($cDate->empty()) {
 
-			$eDateRelevant = Date::model()
+			$eDatePast = Date::model()
 				->select($select)
 				->whereShop($eShop)
 				->whereDeliveryDate('<',  new \Sql('NOW()'))
 				->sort(['deliveryDate' => SORT_DESC])
 				->get();
 
-			if($eDateRelevant->notEmpty()) {
-				$cDateRelevant[$eDateRelevant['id']] = $eDateRelevant;
-			}
-
-		} else {
-
-			// Vérifier qu'il y a au moins un produit pour les dates choisies
-			$cProduct = Product::model()
-				->select([
-					'date',
-					'count' => new \Sql('COUNT(*)')
-				])
-				->group('date')
-				->whereDate('in', $cDate)
-				->getCollection(NULL, NULL, 'date');
-
-			foreach($cDate as $eDate) {
-
-				if($cProduct->offsetExists($eDate['id'])) {
-					$cDateRelevant[$eDate['id']] = $eDate;
-				}
-
+			if($eDatePast->notEmpty()) {
+				$cDate[$eDatePast['id']] = $eDatePast;
 			}
 
 		}
 
 		if($one) {
-			return $cDateRelevant->empty() ? new Date() : $cDateRelevant->first();
+			return $cDate->empty() ? new Date() : $cDate->first();
 		} else {
-			if($cDateRelevant->empty()) {
+			if($cDate->empty()) {
 				return new \Collection();
 			} else {
-				return $cDateRelevant->count() > 8 ? $cDateRelevant->slice(0, 8) : $cDateRelevant;
+				return $cDate->count() > 8 ? $cDate->slice(0, 8) : $cDate;
 			}
 		}
+
+	}
+
+	public static function recalculate(Date $e): void {
+
+		$e['products'] = ProductLib::countByDate($e);
+
+		Date::model()
+			->select('products')
+			->update($e);
 
 	}
 

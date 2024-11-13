@@ -68,14 +68,26 @@ div.shop-write-fqn label {
 
 }
 
+@media (max-width: 575px) {
+
+	.date-products-item.date-products-item-with-stock {
+		grid-template-columns: auto 1fr 11rem 9rem;
+	}
+
+}
+
 .date-products-item-product-stock {
 	text-align: right;
 	color: var(--muted);
 }
 
 .date-points-title {
-	padding: 0.25rem 0;
+	padding: 0.5rem 0;
 	font-weight: lighter;
+}
+
+.date-points-title:not(:first-child) {
+	padding-top: 0.75rem;
 }
 
 .date-points-item {

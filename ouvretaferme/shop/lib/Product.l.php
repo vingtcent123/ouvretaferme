@@ -3,10 +3,15 @@ namespace shop;
 
 class ProductLib extends ProductCrud {
 
-	public static function copyByDate(Shop $eShop, Date $eDate,): \Collection {
+	public static function getForCopy(Shop $eShop, Date $eDate): \Collection {
 
 		$eShop->expects(['type']);
 
+		if($eDate->isDirect() === FALSE) {
+			return new \Collection();
+		}
+
+		// La boutique a changé de grille tarifaire par rapport à la date copiée
 		if($eShop['type'] !== $eDate['type']) {
 
 			$cProductSelling = Product::model()
@@ -32,11 +37,23 @@ class ProductLib extends ProductCrud {
 
 	}
 
+	public static function countByDate(Date $eDate): int {
+
+		$eDate->expects(['catalogs']);
+
+		return Product::model()
+			->whereCatalog('IN', $eDate['catalogs'], if: $eDate->isCatalog())
+			->whereDate($eDate, if: $eDate->isDirect())
+			->count();
+
+	}
+
 	public static function getByDate(Date $eDate, bool $onlyActive = TRUE, \selling\Sale $eSaleExclude = new \selling\Sale()): \Collection {
 
 		$cProduct = Product::model()
 			->select(Product::getSelection())
-			->whereDate($eDate)
+			->whereCatalog('IN', $eDate['catalogs'], if: $eDate->isCatalog())
+			->whereDate($eDate, if: $eDate->isDirect())
 			->whereStatus(Product::ACTIVE, if: $onlyActive)
 			->getCollection(NULL, NULL, 'product')
 			->sort(['product' => ['name']], natural: TRUE);
@@ -81,7 +98,11 @@ class ProductLib extends ProductCrud {
 
 	}
 
-	public static function prepareSeveral(Date $eDate, \Collection $cProductSelling, array $products, array $input): \Collection {
+	public static function prepareCollection(Date $eDate, \Collection $cProductSelling, array $products, array $input): \Collection {
+
+		if($eDate->isDirect() === FALSE) {
+			throw new \Exception('Invalid source');
+		}
 
 		$eDate->expects([
 			'shop',
@@ -117,17 +138,33 @@ class ProductLib extends ProductCrud {
 
 	}
 
-	public static function addSeveral(\Collection $cProduct): void {
+	public static function create(Product $e): void {
+		throw new \Exception('Not implemented');
+	}
 
-		Product::model()
-			->option('add-ignore')
-			->insert($cProduct);
+	public static function createCollection(\Collection $c): void {
+
+		if($c->empty()) {
+			return;
+		}
+
+		Product::model()->beginTransaction();
+
+			Product::model()
+				->option('add-ignore')
+				->insert($c);
+
+			$eDate = $c->first()['date'];
+
+			DateLib::recalculate($eDate);
+
+		Product::model()->commit();
 
 	}
 
 	public static function delete(Product $eProduct): void {
 
-		$eProduct->expects(['id', 'shop']);
+		$eProduct->expects(['id', 'date', 'shop']);
 
 		$cSale = \selling\Sale::model()
 			->select('id')
@@ -150,7 +187,9 @@ class ProductLib extends ProductCrud {
 
 		Product::model()->beginTransaction();
 
-		Product::model()->delete($eProduct);
+			Product::model()->delete($eProduct);
+
+			DateLib::recalculate($eProduct['date']);
 
 		Product::model()->commit();
 

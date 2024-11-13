@@ -7,6 +7,9 @@ abstract class CatalogElement extends \Element {
 
 	private static ?CatalogModel $model = NULL;
 
+	const ACTIVE = 'active';
+	const DELETED = 'deleted';
+
 	public static function getSelection(): array {
 		return Catalog::model()->getProperties();
 	}
@@ -38,11 +41,12 @@ class CatalogModel extends \ModuleModel {
 		$this->properties = array_merge($this->properties, [
 			'id' => ['serial32', 'cast' => 'int'],
 			'farm' => ['element32', 'farm\Farm', 'cast' => 'element'],
-			'name' => ['text8', 'min' => 1, 'max' => 50, 'cast' => 'string'],
+			'name' => ['text8', 'min' => 1, 'max' => 50, 'null' => TRUE, 'cast' => 'string'],
+			'status' => ['enum', [\shop\Catalog::ACTIVE, \shop\Catalog::DELETED], 'cast' => 'enum'],
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'farm', 'name'
+			'id', 'farm', 'name', 'status'
 		]);
 
 		$this->propertiesToModule += [
@@ -52,6 +56,34 @@ class CatalogModel extends \ModuleModel {
 		$this->indexConstraints = array_merge($this->indexConstraints, [
 			['farm']
 		]);
+
+	}
+
+	public function getDefaultValue(string $property) {
+
+		switch($property) {
+
+			case 'status' :
+				return Catalog::ACTIVE;
+
+			default :
+				return parent::getDefaultValue($property);
+
+		}
+
+	}
+
+	public function encode(string $property, $value) {
+
+		switch($property) {
+
+			case 'status' :
+				return ($value === NULL) ? NULL : (string)$value;
+
+			default :
+				return parent::encode($property, $value);
+
+		}
 
 	}
 
@@ -73,6 +105,10 @@ class CatalogModel extends \ModuleModel {
 
 	public function whereName(...$data): CatalogModel {
 		return $this->where('name', ...$data);
+	}
+
+	public function whereStatus(...$data): CatalogModel {
+		return $this->where('status', ...$data);
 	}
 
 

@@ -7,7 +7,8 @@ class Product extends ProductElement {
 
 		return parent::getSelection() + [
 			'product' => \selling\Product::getSelection(),
-			'date' => ['type', 'farm']
+			'date' => ['farm', 'source', 'catalogs'],
+			'catalog' => ['farm']
 		];
 
 	}

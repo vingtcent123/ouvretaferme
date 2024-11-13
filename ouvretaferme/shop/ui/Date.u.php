@@ -234,10 +234,11 @@ class DateUi {
 
 	}
 
-	public function create(Date $e, \Collection $cProduct, Date $eDateBase = new Date()): \Panel {
+	public function create(Date $e, \Collection $cProduct, Date $eDateBase = new Date()): string {
 
 		$form = new \util\FormUi([
-			'columnBreak' => 'sm'
+			'columnBreak' => 'md',
+			'firstColumnSize' => 25
 		]);
 
 		// $eDateBase est la date de référence sur laquelle baser la nouvelle date à créer.
@@ -278,19 +279,12 @@ class DateUi {
 			$h .= $form->hidden('farm', $e['farm']);
 			$h .= $form->hidden('copied', $eDateBase->notEmpty());
 
-			$h .= $form->dynamicGroup($e, 'status');
-
 			if($e['shop']['hasPoint']) {
 				$h .= $form->dynamicGroup($e, 'points*');
 			}
 
 			$h .= $this->getOrderField('create', $form, $e);
 			$h .= $form->dynamicGroup($e, 'deliveryDate*');
-
-			$h .= $form->group(
-				s("Grille tarifaire"),
-				$form->fake(ShopUi::p('type')->values[$e['shop']['type']])
-			);
 
 			$grid = match($e['shop']['type']) {
 				Shop::PRO => s("Uniquement les produits vendus aux professionnels"),
@@ -299,8 +293,8 @@ class DateUi {
 
 			$h .= $form->group(
 				p("Produit proposé à la vente", "Produits proposés à la vente", $cProduct->count()).$form->asterisk().\util\FormUi::info($grid),
-				$form->dynamicField($e, 'products'),
-				['wrapper' => 'products']
+				$form->dynamicField($e, 'productsList'),
+				['wrapper' => 'productsList']
 			);
 
 			$h .= '<br/>';
@@ -312,10 +306,7 @@ class DateUi {
 
 		$h .= $form->close();
 
-		return new \Panel(
-			title: s("Préparer une nouvelle de vente"),
-			body: $h
-		);
+		return $h;
 	}
 
 	protected function getOrderField(string $action, \util\FormUi $form, Date $eDate): string {
@@ -361,7 +352,7 @@ class DateUi {
 		$h .= $form->close();
 
 		return new \Panel(
-			title: s("Paramétrer une date"),
+			title: s("Paramétrer une vente"),
 			body: $h
 		);
 	}
@@ -429,7 +420,7 @@ class DateUi {
 
 			$h .= '</div>';
 
-			$h .= '<div class="tabs-panel">';
+			$h .= '<div class="tabs-panel '.($eDate->exists() ? '' : 'util-block').' stick-sm">';
 
 				foreach($ccProduct as $category => $cProduct) {
 
@@ -452,7 +443,7 @@ class DateUi {
 
 		$displayStock = $cProduct->match(fn($eProduct) => $eProduct['stock'] !== NULL);
 
-		$h = '<div class="date-products-list util-overflow-xs stick-xs">';
+		$h = '<div class="date-products-list util-overflow-xs">';
 
 			$h .= '<div class="date-products-item '.($displayStock ? 'date-products-item-with-stock' : '').' util-grid-header">';
 
@@ -470,7 +461,7 @@ class DateUi {
 				$h .= '<div class="date-products-item-price">'.s("Prix").'</div>';
 				$h .= '<div>'.s("Limiter les ventes").'</div>';
 				if($displayStock) {
-					$h .= '<div class="text-end">';
+					$h .= '<div class="text-end hide-xs-down">';
 						$h .= s("Stock");
 					$h .= '</div>';
 				}
@@ -516,7 +507,7 @@ class DateUi {
 					$h .= '<div class="date-products-item '.($displayStock ? 'date-products-item-with-stock' : '').' '.($checked ? 'selected' : '').'">';
 
 						$h .= '<label class="shop-select">';
-							$h .= $form->inputCheckbox('products['.$eProduct['id'].']', $eProduct['id'], $attributes);
+							$h .= $form->inputCheckbox('productsList['.$eProduct['id'].']', $eProduct['id'], $attributes);
 						$h .= '</label>';
 						$h .= '<label class="date-products-item-product" for="'.$attributes['id'].'">';
 							$h .= \selling\ProductUi::getVignette($eProduct, '2rem');
@@ -553,7 +544,7 @@ class DateUi {
 							});
 						$h .= '</div>';
 						if($displayStock) {
-							$h .= '<label class="date-products-item-product-stock '.($checked ? '' : 'hidden').'" for="'.$attributes['id'].'">';
+							$h .= '<label class="date-products-item-product-stock hide-xs-down '.($checked ? '' : 'hidden').'" for="'.$attributes['id'].'">';
 								if($eProduct['stock'] !== NULL) {
 									$h .= \selling\StockUi::getExpired($eProduct);
 									$h .= '<span title="'.\selling\StockUi::getDate($eProduct['stockUpdatedAt']).'">'.\main\UnitUi::getValue($eProduct['stock'], $eProduct['unit'], short: TRUE).'</span>';
@@ -773,6 +764,7 @@ class DateUi {
 				if($eDate->canWrite()) {
 
 					$h .= '<a href="/shop/date:update?id='.$eDate['id'].'" class="dropdown-item">'.s("Paramétrer la vente").'</a>';
+					$h .= '<a href="'.ShopUi::adminDateUrl($eDate['farm'], $eDate['shop'], $eDate).'/product:create" class="dropdown-item">'.s("Ajouter des produits à la vente").'</a>';
 					$h .= '<a href="/shop/date:create?shop='.$eShop['id'].'&farm='.$eDate['farm']['id'].'&date='.$eDate['id'].'" class="dropdown-item">'.s("Nouvelle vente à partir de celle-ci").'</a>';
 
 					if($sales === 0) {
@@ -824,8 +816,8 @@ class DateUi {
 			$h .= '<div class="tabs-item">';
 				$h .= '<a class="tab-item" data-tab="products" onclick="Lime.Tab.select(this)">';
 					$h .= s("Produits");
-					if($cProduct->notEmpty()) {
-						$h .= '<span class="tab-item-count">'.$cProduct->count().'</span>';
+					if($eDate['products'] > 0) {
+						$h .= '<span class="tab-item-count">'.$eDate['products'].'</span>';
 					}
 				$h .= '</a>';
 				$h .= '<a class="tab-item" data-tab="sales" onclick="Lime.Tab.select(this)">';
@@ -909,7 +901,7 @@ class DateUi {
 			$h .= '<dl class="util-presentation util-presentation-2">';
 
 				$h .= '<dt>';
-					$h .= s("Statut de la vente");
+					$h .= s("État de la vente");
 				$h .= '</dt>';
 				$h .= '<dd>';
 					$h .= $this->toggle($eDate);
@@ -965,10 +957,9 @@ class DateUi {
 
 			case 'deliveryDate' ;
 				$d->prepend = s("Le");
-				$d->labelAfter = \util\FormUi::info(s("Doit avoir lieu après la fin de la prise des commandes"));
 				break;
 
-			case 'products':
+			case 'productsList':
 				$d->field = function(\util\FormUi $form, Date $e) {
 					return (new DateUi())->getProducts($form, $e);
 				};

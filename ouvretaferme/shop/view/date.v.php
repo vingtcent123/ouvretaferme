@@ -1,7 +1,20 @@
 <?php
-new AdaptativeView('create', function($data, PanelTemplate $t) {
+new AdaptativeView('create', function($data, FarmTemplate $t) {
 
-	return (new \shop\DateUi())->create($data->e, $data->cProduct, $data->eDateBase);
+	$t->tab = 'selling';
+	$t->subNav = (new \farm\FarmUi())->getShopSubNav($data->eFarm);
+	$t->title = s("Créer une nouvelle vente");
+
+	\Asset::js('shop', 'manage.js');
+
+	echo '<div class="util-action">';
+		echo '<h1>';
+			echo '<a href="'.\shop\ShopUi::adminUrl($data->eFarm, $data->e['shop']).'" class="h-back">'.\Asset::icon('arrow-left').'</a>';
+			echo $t->title;
+		echo '</h1>';
+	echo '</div>';
+
+	echo (new \shop\DateUi())->create($data->e, $data->cProduct, $data->eDateBase);
 
 });
 
@@ -22,7 +35,7 @@ new JsonView('doUpdatePoint', function($data, AjaxTemplate $t) {
 new AdaptativeView('/ferme/{farm}/boutique/{shop}/date/{id}', function($data, FarmTemplate $t) {
 
 	$t->tab = 'selling';
-	$t->subNav = (new \farm\FarmUi())->getSellingSubNav($data->eFarm);
+	$t->subNav = (new \farm\FarmUi())->getShopSubNav($data->eFarm);
 	$t->title = \shop\DateUi::name($data->e);
 
 	\Asset::js('shop', 'manage.js');

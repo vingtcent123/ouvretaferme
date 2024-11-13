@@ -78,7 +78,7 @@ class DateManage {
 		if(qs('#date-products-tabs')) {
 
 			const panel = target.firstParent('.tab-panel');
-			const products = panel.qsa('[name^="products["]:checked').length;
+			const products = panel.qsa('[name^="productsList["]:checked').length;
 
 			qs('#date-products-tabs [data-tab="'+ panel.dataset.tab +'"] .tab-item-count').innerHTML = (products > 0) ? products : '';
 

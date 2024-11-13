@@ -313,6 +313,19 @@ div.form-group.form-group-nested > .form-control-label {
 	font-size: 0.9rem;
 }
 
+@media (max-width: 991px) {
+
+	.form-columns-md div.form-group:not(.form-group-nested) {
+		grid-template-columns: 1fr !important;
+	}
+
+	.form-columns-md div.form-group:not(.form-group-nested) > .form-control-label {
+		margin: 0.5rem 0;
+		font-weight: bold;
+	}
+
+}
+
 @media (max-width: 767px) {
 
 	.form-columns-sm div.form-group:not(.form-group-nested) {

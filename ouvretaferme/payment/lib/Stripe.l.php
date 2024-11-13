@@ -96,7 +96,7 @@ class StripeLib {
 
 	}
 
-	private static function getSaleFromPaymentIntent(StripeFarm $eStripeFarm, array $event) {
+	private static function getSaleFromPaymentIntent(StripeFarm $eStripeFarm, array $event): \selling\Sale {
 
 		$object = $event['data']['object'];
 

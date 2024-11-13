@@ -72,6 +72,14 @@ class Date extends DateElement {
 		return date('Y-m-d H:i:s') > $this['orderEndAt'];
 	}
 
+	public function isCatalog(): bool {
+		return $this['source'] === Date::CATALOG;
+	}
+
+	public function isDirect(): bool {
+		return $this['source'] === Date::DIRECT;
+	}
+
 	public function build(array $properties, array $input, array $callbacks = [], ?string $for = NULL): array {
 
 		$fw = new \FailWatch();
@@ -118,7 +126,7 @@ class Date extends DateElement {
 				return $deliveryDate >= substr($this['orderEndAt'], 0, 10);
 			},
 
-			'products.check' => function(mixed $products) use ($input) {
+			'productsList.check' => function(mixed $products) use ($input) {
 
 				$this->expects([
 					'shop' => ['type']

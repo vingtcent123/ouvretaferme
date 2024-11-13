@@ -67,7 +67,8 @@ class ProductModel extends \ModuleModel {
 
 		$this->indexConstraints = array_merge($this->indexConstraints, [
 			['product'],
-			['catalog']
+			['catalog'],
+			['date']
 		]);
 
 		$this->uniqueConstraints = array_merge($this->uniqueConstraints, [

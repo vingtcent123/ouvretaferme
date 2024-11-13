@@ -14,6 +14,8 @@
 	})
 	->create(function($data) {
 
+		\farm\FarmerLib::register($data->eFarm);
+
 		$data->cProduct = \selling\ProductLib::getForDate($data->e);
 
 		// Si c'est une copie : récupérer également la liste des produits de la date en question
@@ -21,7 +23,7 @@
 
 		if($data->eDateBase->notEmpty()) {
 			$data->eDateBase->validate('canRead');
-			$data->eDateBase['cProduct'] = \shop\ProductLib::copyByDate($data->eShop, $data->eDateBase);
+			$data->eDateBase['cProduct'] = \shop\ProductLib::getForCopy($data->eShop, $data->eDateBase);
 		}
 
 		$data->e['cCategory'] = \selling\CategoryLib::getByFarm($data->eFarm, index: 'id');
@@ -75,19 +77,18 @@
 
 		$fw = new FailWatch();
 
-		$products = POST('products', 'array', []);
+		$products = POST('productsList', 'array', []);
 
 		$cProductSelling = \selling\ProductLib::getForDate($data->e);
-		$data->cProduct = \shop\ProductLib::prepareSeveral($data->e, $cProductSelling, $products, $_POST);
+		$data->cProduct = \shop\ProductLib::prepareCollection($data->e, $cProductSelling, $products, $_POST);
 
 		$fw->validate();
 
-		\shop\ProductLib::addSeveral($data->cProduct);
-
+		\shop\ProductLib::createCollection($data->cProduct);
 
 		throw new ReloadAction('shop', 'Products::created');
 
-	})
+	}, validate: ['canWrite', 'isDirect'])
 	->write('doUpdatePoint', function($data) {
 
 		$data->ePoint = \shop\PointLib::getById(POST('point'))
