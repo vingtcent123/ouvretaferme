@@ -332,7 +332,8 @@ class CropLib extends CropCrud {
 				->whereSequence($e['sequence'])
 				->whereCrop(NULL)
 				->update([
-					'crop' => $eCropRemaining
+					'crop' => $eCropRemaining,
+					'plant' => $eCropRemaining['plant']
 				]);
 
 			Requirement::model()

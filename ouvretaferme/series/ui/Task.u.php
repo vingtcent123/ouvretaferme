@@ -2852,7 +2852,9 @@ class TaskUi {
 
 		$h = '<h3>'.encode($eTask['action']['name']).'</h3>';
 
-		if($eTask['cultivation']->notEmpty()) {
+		if(
+			$eTask['cultivation']->notEmpty()
+		) {
 
 			$ePlant = $eTask['plant'];
 
