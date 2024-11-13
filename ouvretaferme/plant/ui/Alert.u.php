@@ -23,7 +23,7 @@ class AlertUi {
 			'Size::name.duplicate' => s("Vous avez déjà créé un calibre de ce nom pour cette espèce."),
 			'Size::deleteUsed'=> s("Vous ne pouvez pas supprimer ce calibre car il est utilisé dans une série."),
 
-			'Plant::deleteUsed'=> s("Vous ne pouvez pas supprimer cette espèce car elle est encore utilisée dans une série, un itinéraire technique ou pour une variété."),
+			'Plant::deleteUsed'=> s("Vous ne pouvez pas supprimer cette espèce car elle est encore utilisée dans une série, un itinéraire technique, une intervention ou pour une variété."),
 			'Plant::name.duplicate' => s("Vous avez déjà créé une espèce de ce nom."),
 
 			default => null

@@ -197,16 +197,22 @@ class PlantLib extends PlantCrud {
 
 	public static function delete(Plant $e): void {
 
-		$e->expects(['id']);
+		$e->expects(['id', 'farm']);
 
 		if(
 			\production\Crop::model()
+				->whereFarm($e['farm'])
 				->wherePlant($e)
 				->exists() or
 			\series\Cultivation::model()
+				->whereFarm($e['farm'])
 				->wherePlant($e)
 				->exists() or
 			Variety::model()
+				->wherePlant($e)
+				->exists() or
+			\series\Task::model()
+				->whereFarm($e['farm'])
 				->wherePlant($e)
 				->exists() or
 			\analyze\Report::model()
