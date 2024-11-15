@@ -218,7 +218,9 @@ class MarketLib {
 			($eItem['locked'] === Item::NUMBER and $eItem['unitPrice'] !== 0.0 and $eItem['price'] !== 0.0)
 		));
 
-		ItemLib::createCollection($cItemFiltered);
+		if($cItemFiltered->notEmpty()) {
+			ItemLib::createCollection($cItemFiltered);
+		}
 
 	}
 
