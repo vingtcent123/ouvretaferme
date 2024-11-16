@@ -54,6 +54,8 @@ Product:
   id: serial32
   shop: shop\Shop
   date: ?shop\Date
+  type: enum(PRIVATE, PRO)
+  farm: farm\Farm
   catalog: ?shop\Catalog
   product: selling\Product
   packaging: ?decimal(6, 2, 0.01, null)

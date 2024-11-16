@@ -16,9 +16,10 @@ class CatalogUi {
 
 			$h .= '<div>';
 				if($cProduct->notEmpty()) {
-					$h .= '<div class="util-info">';
-						$h .= p("Ce catalogue de vente contient {value} produit.", "Ce catalogue de vente contient {value} produits.", $cProduct->count());
-					$h .= '</div>';
+					$h .= '<h2>';
+						$h .= p("{value} produit", "{value} produits", $cProduct->count());
+					$h .= '</h2>';
+				} else {
 				}
 			$h .= '</div>';
 			$h .= '<a data-dropdown="bottom-end" class="dropdown-toggle btn btn-primary">'.\Asset::icon('gear-fill').'</a>';
@@ -33,7 +34,7 @@ class CatalogUi {
 		if($cProduct->empty()) {
 
 			$h .= '<div class="util-block-help">';
-				$h .= '<h4>'.s("Votre catalogue est encore vide").'</h4>';
+				$h .= '<h4>'.s("Ce catalogue de vente est encore vide").'</h4>';
 				$h .= '<p>'.s("Ajoutez les produits qui sont actuellement disponibles à la vente dans votre ferme avant de déployer le catalogue sur vos boutiques en ligne.").'</p>';
 				$h .= '<a href="XXX" class="btn btn-secondary">'.s("Ajouter des produits").'</a>';
 			$h .= '</div>';

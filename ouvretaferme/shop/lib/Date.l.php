@@ -147,6 +147,8 @@ class DateLib extends DateCrud {
 
 		foreach($e['cProduct'] as $eProduct) {
 			$eProduct['date'] = $e;
+			$eProduct['type'] = $e['type'];
+			$eProduct['farm'] = $e['farm'];
 		}
 
 		ProductLib::createCollection($e['cProduct']);

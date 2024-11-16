@@ -7,6 +7,9 @@ abstract class ProductElement extends \Element {
 
 	private static ?ProductModel $model = NULL;
 
+	const PRIVATE = 'private';
+	const PRO = 'pro';
+
 	const ACTIVE = 'active';
 	const INACTIVE = 'inactive';
 
@@ -42,6 +45,8 @@ class ProductModel extends \ModuleModel {
 			'id' => ['serial32', 'cast' => 'int'],
 			'shop' => ['element32', 'shop\Shop', 'cast' => 'element'],
 			'date' => ['element32', 'shop\Date', 'null' => TRUE, 'cast' => 'element'],
+			'type' => ['enum', [\shop\Product::PRIVATE, \shop\Product::PRO], 'cast' => 'enum'],
+			'farm' => ['element32', 'farm\Farm', 'cast' => 'element'],
 			'catalog' => ['element32', 'shop\Catalog', 'null' => TRUE, 'cast' => 'element'],
 			'product' => ['element32', 'selling\Product', 'cast' => 'element'],
 			'packaging' => ['decimal', 'digits' => 6, 'decimal' => 2, 'min' => 0.01, 'max' => NULL, 'null' => TRUE, 'cast' => 'float'],
@@ -55,12 +60,13 @@ class ProductModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'shop', 'date', 'catalog', 'product', 'packaging', 'packagingCustom', 'price', 'priceCustom', 'saleStartAt', 'saleEndAt', 'available', 'status'
+			'id', 'shop', 'date', 'type', 'farm', 'catalog', 'product', 'packaging', 'packagingCustom', 'price', 'priceCustom', 'saleStartAt', 'saleEndAt', 'available', 'status'
 		]);
 
 		$this->propertiesToModule += [
 			'shop' => 'shop\Shop',
 			'date' => 'shop\Date',
+			'farm' => 'farm\Farm',
 			'catalog' => 'shop\Catalog',
 			'product' => 'selling\Product',
 		];
@@ -102,6 +108,9 @@ class ProductModel extends \ModuleModel {
 
 		switch($property) {
 
+			case 'type' :
+				return ($value === NULL) ? NULL : (string)$value;
+
 			case 'status' :
 				return ($value === NULL) ? NULL : (string)$value;
 
@@ -130,6 +139,14 @@ class ProductModel extends \ModuleModel {
 
 	public function whereDate(...$data): ProductModel {
 		return $this->where('date', ...$data);
+	}
+
+	public function whereType(...$data): ProductModel {
+		return $this->where('type', ...$data);
+	}
+
+	public function whereFarm(...$data): ProductModel {
+		return $this->where('farm', ...$data);
 	}
 
 	public function whereCatalog(...$data): ProductModel {

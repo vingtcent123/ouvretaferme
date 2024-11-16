@@ -76,6 +76,36 @@ class Item extends ItemElement {
 
 			},
 
+			'number.division' => function(?float $number): bool {
+
+				try {
+					$this->expects(['locked']);
+				} catch(\Exception) {
+					return FALSE;
+				}
+
+				return (
+					$this['locked'] !== Item::UNIT_PRICE or
+					$number !== 0.0
+				);
+
+			},
+
+			'unitPrice.division' => function(?float $unitPrice): bool {
+
+				try {
+					$this->expects(['locked']);
+				} catch(\Exception) {
+					return FALSE;
+				}
+
+				return (
+					$this['locked'] !== Item::NUMBER or
+					$unitPrice !== 0.0
+				);
+
+			},
+
 			'price.locked' => function(?float $price): bool {
 
 				try {

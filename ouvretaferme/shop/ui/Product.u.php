@@ -178,7 +178,7 @@ class ProductUi {
 
 					$h .= '<div class="shop-product-buy-price">';
 
-						$h .= '<span style="white-space: nowrap">'.\util\TextUi::money($eProduct['price']).' '.$this->getTaxes($eDate).' / '.\main\UnitUi::getSingular($eProductSelling['unit'], by: TRUE).'</span>';
+						$h .= '<span style="white-space: nowrap">'.\util\TextUi::money($eProduct['price']).' '.$this->getTaxes($eProduct).' / '.\main\UnitUi::getSingular($eProductSelling['unit'], by: TRUE).'</span>';
 
 						$h .= '<div class="shop-product-buy-infos">';
 
@@ -217,13 +217,213 @@ class ProductUi {
 
 	}
 
-	public static function getTaxes(Date $eDate): string {
+	public function getCreateList(\util\FormUi $form, \farm\Farm $eFarm, string $type, \Collection $cProduct, \Collection $cCategory, string $class = ''): string {
+
+		\Asset::css('shop', 'shop.css');
+		\Asset::css('shop', 'manage.css');
+		\Asset::js('shop', 'manage.js');
+
+		if($cProduct->empty()) {
+			$h = '<div class="util-block-requirement">';
+				$h .= '<p>'.s("Avant d'enregistrer une nouvelle date, vous devez renseigner les produits que vous souhaitez proposer à la vente dans votre ferme !").'</p>';
+				$h .= '<a href="'.\farm\FarmUi::urlSellingProduct($eFarm).'" class="btn btn-secondary">'.s("Renseigner mes produits").'</a>';
+			$h .= '</div>';
+			return $h;
+		}
+
+		if($cCategory->empty()) {
+			return self::getCreateByCategory($form, $eFarm, $type, $cProduct);
+		}
+
+		$ccProduct = $cProduct->reindex(['category']);
+
+		$h = '<div class="tabs-h" id="date-products-tabs" onrender="'.encode('Lime.Tab.restore(this)').'">';
+
+			$h .= '<div class="tabs-item">';
+
+				foreach($cCategory as $eCategory) {
+
+					if($ccProduct->offsetExists($eCategory['id']) === FALSE) {
+						continue;
+					}
+
+					$products = $ccProduct[$eCategory['id']]->find(fn($eProduct) => $eProduct['checked'] ?? FALSE)->count();
+
+					$h .= '<a class="tab-item " data-tab="'.$eCategory['id'].'" onclick="Lime.Tab.select(this)">';
+						$h .= encode($eCategory['name']);
+						$h .= '<span class="tab-item-count">';
+							if($products > 0) {
+								$h .= $products;
+							}
+						$h .= '</span>';
+					$h .= '</a>';
+
+				}
+
+				if($ccProduct->offsetExists('')) {
+
+					$products = $ccProduct['']->find(fn($eProduct) => $eProduct['checked'] ?? FALSE)->count();
+
+					$h .= '<a class="tab-item " data-tab="empty" onclick="Lime.Tab.select(this)">';
+						$h .= s("Non catégorisé");
+						$h .= '<span class="tab-item-count">';
+							if($products > 0) {
+								$h .= $products;
+							}
+						$h .= '</span>';
+					$h .= '</a>';
+				}
+
+			$h .= '</div>';
+
+			$h .= '<div class="tabs-panel '.$class.' stick-sm">';
+
+				foreach($ccProduct as $category => $cProduct) {
+
+					$h .= '<div class="tab-panel" data-tab="'.($category ?: 'empty').'">';
+						$h .= self::getCreateByCategory($form, $eFarm, $type, $cProduct);
+					$h .= '</div>';
+
+				}
+
+			$h .= '</div>';
+		$h .= '</div>';
+
+		return $h;
+
+	}
+
+	public static function getCreateByCategory(\util\FormUi $form, \farm\Farm $eFarm, string $type, \Collection $cProduct): string {
+
+		$displayStock = $cProduct->match(fn($eProduct) => $eProduct['stock'] !== NULL);
+
+		$h = '<div class="date-products-list util-overflow-xs">';
+
+			$h .= '<div class="date-products-item '.($displayStock ? 'date-products-item-with-stock' : '').' util-grid-header">';
+
+				$h .= '<div class="shop-select '.($cProduct->count() < 2 ? 'shop-select-hide' : '').'">';
+					$h .= '<input type="checkbox" '.attr('onclick', 'CheckboxField.all(this, \'[name^="products["]\', node => DateManage.selectProduct(node), \'.date-products-list\')').'"  title="'.s("Tout cocher / Tout décocher").'"/>';
+				$h .= '</div>';
+				$h .= '<div>';
+					$h .= s("Produit");
+				$h .= '</div>';
+				$h .= '<div class="date-products-item-unit text-end">';
+					if($type === Date::PRIVATE) {
+						$h .= s("Multiple de vente");
+					}
+				$h .= '</div>';
+				$h .= '<div class="date-products-item-price">'.s("Prix").'</div>';
+				$h .= '<div>'.s("Limiter les ventes").'</div>';
+				if($displayStock) {
+					$h .= '<div class="text-end hide-xs-down">';
+						$h .= s("Stock");
+					$h .= '</div>';
+				}
+
+			$h .= '</div>';
+
+			$h .= '<div class="date-products-body">';
+				foreach($cProduct as $eProduct) {
+
+					$checked = $eProduct['checked'] ?? FALSE;
+
+					$attributes = [
+						'id' => 'checkbox-'.$eProduct['id'],
+						'onclick' => 'DateManage.selectProduct(this)'
+					];
+
+					if($eProduct['checked'] ?? FALSE) {
+						$attributes['checked'] = $checked;
+					}
+
+					switch($type) {
+
+						case Date::PRIVATE :
+							$price = $eProduct['privatePrice'] ?? $eProduct->calcPrivateMagicPrice($eFarm->getSelling('hasVat'));
+							$packaging = NULL;
+							break;
+
+						case Date::PRO :
+							$price = $eProduct['proPrice'] ?? $eProduct->calcProMagicPrice($eFarm->getSelling('hasVat'));
+							$packaging = $eProduct['proPackaging'];
+							break;
+
+					}
+
+					$eShopProduct = new Product([
+						'farm' => $eFarm,
+						'type' => $type,
+						'product' => $eProduct,
+						'price' => $price,
+						'packaging' => $packaging,
+						'available' => NULL,
+					]);
+
+					$h .= '<div class="date-products-item '.($displayStock ? 'date-products-item-with-stock' : '').' '.($checked ? 'selected' : '').'">';
+
+						$h .= '<label class="shop-select">';
+							$h .= $form->inputCheckbox('productsList['.$eProduct['id'].']', $eProduct['id'], $attributes);
+						$h .= '</label>';
+						$h .= '<label class="date-products-item-product" for="'.$attributes['id'].'">';
+							$h .= \selling\ProductUi::getVignette($eProduct, '2rem');
+							$h .= '&nbsp;&nbsp;';
+							$h .= \selling\ProductUi::link($eProduct, TRUE);
+							if($eProduct['size']) {
+								$h .= ' <small class="color-muted"><u>'.encode($eProduct['size']).'</u></small>';
+							}
+						$h .= '</label>';
+						$h .= '<label class="date-products-item-unit text-end" for="'.$attributes['id'].'">';
+
+							switch($type) {
+
+								case Date::PRIVATE :
+									$step = ProductUi::getStep($type, $eProduct);
+									$h .= \main\UnitUi::getValue($step, $eProduct['unit']);
+									break;
+
+								case Date::PRO :
+									if($eProduct['proPackaging'] !== NULL) {
+										$h .= s("Colis de {value}", \main\UnitUi::getValue($eProduct['proPackaging'], $eProduct['unit'], TRUE));
+									}
+									break;
+
+							}
+
+						$h .= '</label>';
+						$h .= '<div data-wrapper="price['.$eProduct['id'].']" class="date-products-item-price '.($checked ? '' : 'hidden').'">';
+							$h .= $form->dynamicField($eShopProduct, 'price['.$eProduct['id'].']');
+						$h .= '</div>';
+						$h .= '<div data-wrapper="available['.$eProduct['id'].']" class="date-products-item-available '.($checked ? '' : 'hidden').'">';
+							$h .= $form->dynamicField($eShopProduct, 'available', function($d) use ($eProduct) {
+								$d->name = 'available['.$eProduct['id'].']';
+							});
+						$h .= '</div>';
+						if($displayStock) {
+							$h .= '<label class="date-products-item-product-stock hide-xs-down '.($checked ? '' : 'hidden').'" for="'.$attributes['id'].'">';
+								if($eProduct['stock'] !== NULL) {
+									$h .= \selling\StockUi::getExpired($eProduct);
+									$h .= '<span title="'.\selling\StockUi::getDate($eProduct['stockUpdatedAt']).'">'.\main\UnitUi::getValue($eProduct['stock'], $eProduct['unit'], short: TRUE).'</span>';
+								}
+							$h .= '</label>';
+						}
+
+					$h .= '</div>';
+
+				}
+			$h .= '</div>';
+		$h .= '</div>';
+
+		return $h;
+
+	}
+
+	public static function getTaxes(Product|Date $eProduct): string {
 
 		if(
-			$eDate['type'] === Shop::PRO and
-			$eDate['farm']->getSelling('hasVat')
+			$eProduct['type'] === Shop::PRO and
+			$eProduct['farm']->getSelling('hasVat')
 		) {
-			return $eDate->getTaxes();
+			return $eProduct->getTaxes();
 		} else {
 			return '';
 		}
@@ -236,8 +436,8 @@ class ProductUi {
 			return '';
 		}
 
-		$attributesDecrease = 'BasketManage.update('.$eDate['id'].', '.$eProductSelling['id'].', -'.self::getStep($eDate, $eProductSelling).', '.($available !== NULL ? $available : -1).')';
-		$attributesIncrease = 'BasketManage.update('.$eDate['id'].', '.$eProductSelling['id'].', '.self::getStep($eDate, $eProductSelling).', '.($available !== NULL ? $available : -1).')';
+		$attributesDecrease = 'BasketManage.update('.$eDate['id'].', '.$eProductSelling['id'].', -'.self::getStep($eDate['type'], $eProductSelling).', '.($available !== NULL ? $available : -1).')';
+		$attributesIncrease = 'BasketManage.update('.$eDate['id'].', '.$eProductSelling['id'].', '.self::getStep($eDate['type'], $eProductSelling).', '.($available !== NULL ? $available : -1).')';
 
 		if($eProduct['packaging'] === NULL) {
 			$price = $eProduct['price'];
@@ -264,9 +464,9 @@ class ProductUi {
 
 	}
 
-	public static function getStep(\shop\Date $eDate, \selling\Product $eProduct): float {
+	public static function getStep(string $type, \selling\Product $eProduct): float {
 
-		return match($eDate['type']) {
+		return match($type) {
 			Date::PRIVATE => $eProduct['privateStep'] ?? self::getDefaultPrivateStep($eProduct),
 			Date::PRO => $eProduct['proStep'] ?? self::getDefaultProStep($eProduct),
 		};
@@ -438,7 +638,7 @@ class ProductUi {
 			$h .= $form->hidden('id', $eDate['id']);
 			$h .= $form->hidden('farm', $eFarm['id']);
 
-			$h .= (new DateUi())->getProducts($form, $eDate);
+			$h .= $this->getCreateList($form, $eDate['farm'], $eDate['type'], $eDate['cProduct'], $eDate['cCategory'], 'util-block');
 			$h .= '<br/>';
 			$h .= $form->submit(s("Ajouter"), ['class' => 'btn btn-primary']);
 
@@ -466,11 +666,10 @@ class ProductUi {
 
 					$e->expects([
 						'packaging',
-						'date' => ['type']
 					]);
 
 					$step = (
-						$e['date']['type'] === Date::PRO or
+						$e['type'] === Product::PRO or
 						in_array($e['product']['unit'], [\selling\Product::UNIT, \selling\Product::BUNCH])
 					) ? 1 : 0.1;
 
@@ -486,7 +685,7 @@ class ProductUi {
 						]);
 
 						if(
-							$e['date']['type'] === Date::PRIVATE or
+							$e['type'] === Product::PRIVATE or
 							$e['packaging'] === NULL
 						) {
 							$unit = \main\UnitUi::getNeutral($e['product']['unit'], TRUE);
@@ -507,7 +706,7 @@ class ProductUi {
 				$d->append = function(\util\FormUi $form, Product $e) {
 
 					return $form->addon(s('€ {taxes} / {unit}', [
-						'taxes' => $e['date']['farm']->getSelling('hasVat') ? $e['date']->getTaxes() : '',
+						'taxes' => $e['farm']->getSelling('hasVat') ? $e->getTaxes() : '',
 						'unit' => \main\UnitUi::getSingular($e['product']['unit'], short: TRUE)
 					]));
 

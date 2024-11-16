@@ -135,7 +135,9 @@ class ProductLib extends ProductCrud {
 			$eProduct = new Product([
 				'date' => $eDate,
 				'shop' => $eDate['shop'],
+				'type' => $eDate['type'],
 				'product' => $eProductSelling,
+				'farm' => $eDate['farm'],
 				'packaging' => ($eDate['type'] === Date::PRO) ? $eProductSelling['proPackaging'] : NULL,
 			]);
 

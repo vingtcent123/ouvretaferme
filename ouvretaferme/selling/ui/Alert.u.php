@@ -71,6 +71,8 @@ class AlertUi {
 			'Pdf::fileLocked' => s("Ce fichier est déjà en cours de génération, réactualisez la page d'ici quelques instants !"),
 
 			'Item::vatRate.check' => s("Vous devez renseigner la TVA de tous les produits que vous vendez !"),
+			'Item::number.division' => s("Lorsque le prix unitaire est verrouillée, la quantité vendue ne peut pas être égale à zéro !"),
+			'Item::unitPrice.division' => s("Lorsque la quantité vendue est verrouillée, le prix unitaire ne peut pas être égal à zéro !"),
 			'Item::createEmpty' => s("Ajoutez au moins un article à la vente !"),
 			'Item::createDuplicateNameMarket' => fn($name) => s("Vous avez déjà ajouté un article sans référence de produit portant le nom {value} à votre marché !", $name),
 			'Item::createDuplicateProductMarket' => fn($name) => s("Vous avez déjà ajouté le produit {value} à votre marché !", $name),

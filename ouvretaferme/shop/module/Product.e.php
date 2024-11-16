@@ -12,6 +12,16 @@ class Product extends ProductElement {
 		];
 
 	}
+
+	public function getTaxes(): string {
+
+		return match($this['type']) {
+			Product::PRIVATE => s("TTC"),
+			Product::PRO => s("HT"),
+		};
+
+	}
+
 	public function canWrite(): bool {
 
 		return $this['date']->canWrite();

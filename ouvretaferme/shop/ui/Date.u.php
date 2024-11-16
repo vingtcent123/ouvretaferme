@@ -437,131 +437,6 @@ class DateUi {
 
 	}
 
-	public static function getProductsByCategory(\util\FormUi $form, Date $eDate, \Collection $cProduct): string {
-
-		$eFarm = $eDate['farm'];
-
-		$displayStock = $cProduct->match(fn($eProduct) => $eProduct['stock'] !== NULL);
-
-		$h = '<div class="date-products-list util-overflow-xs">';
-
-			$h .= '<div class="date-products-item '.($displayStock ? 'date-products-item-with-stock' : '').' util-grid-header">';
-
-				$h .= '<div class="shop-select '.($cProduct->count() < 2 ? 'shop-select-hide' : '').'">';
-					$h .= '<input type="checkbox" '.attr('onclick', 'CheckboxField.all(this, \'[name^="products["]\', node => DateManage.selectProduct(node), \'.date-products-list\')').'"  title="'.s("Tout cocher / Tout décocher").'"/>';
-				$h .= '</div>';
-				$h .= '<div>';
-					$h .= s("Produit");
-				$h .= '</div>';
-				$h .= '<div class="date-products-item-unit text-end">';
-					if($eDate['type'] === Date::PRIVATE) {
-						$h .= s("Multiple de vente");
-					}
-				$h .= '</div>';
-				$h .= '<div class="date-products-item-price">'.s("Prix").'</div>';
-				$h .= '<div>'.s("Limiter les ventes").'</div>';
-				if($displayStock) {
-					$h .= '<div class="text-end hide-xs-down">';
-						$h .= s("Stock");
-					$h .= '</div>';
-				}
-
-			$h .= '</div>';
-
-			$h .= '<div class="date-products-body">';
-				foreach($cProduct as $eProduct) {
-
-					$checked = $eProduct['checked'] ?? FALSE;
-
-					$attributes = [
-						'id' => 'checkbox-'.$eProduct['id'],
-						'onclick' => 'DateManage.selectProduct(this)'
-					];
-
-					if($eProduct['checked'] ?? FALSE) {
-						$attributes['checked'] = $checked;
-					}
-
-					switch($eDate['type']) {
-
-						case Date::PRIVATE :
-							$price = $eProduct['privatePrice'] ?? $eProduct->calcPrivateMagicPrice($eFarm->getSelling('hasVat'));
-							$packaging = NULL;
-							break;
-
-						case Date::PRO :
-							$price = $eProduct['proPrice'] ?? $eProduct->calcProMagicPrice($eFarm->getSelling('hasVat'));
-							$packaging = $eProduct['proPackaging'];
-							break;
-
-					}
-
-					$eShopProduct = new Product([
-						'date' => $eDate,
-						'product' => $eProduct,
-						'price' => $price,
-						'packaging' => $packaging,
-						'available' => NULL,
-					]);
-
-					$h .= '<div class="date-products-item '.($displayStock ? 'date-products-item-with-stock' : '').' '.($checked ? 'selected' : '').'">';
-
-						$h .= '<label class="shop-select">';
-							$h .= $form->inputCheckbox('productsList['.$eProduct['id'].']', $eProduct['id'], $attributes);
-						$h .= '</label>';
-						$h .= '<label class="date-products-item-product" for="'.$attributes['id'].'">';
-							$h .= \selling\ProductUi::getVignette($eProduct, '2rem');
-							$h .= '&nbsp;&nbsp;';
-							$h .= \selling\ProductUi::link($eProduct, TRUE);
-							if($eProduct['size']) {
-								$h .= ' <small class="color-muted"><u>'.encode($eProduct['size']).'</u></small>';
-							}
-						$h .= '</label>';
-						$h .= '<label class="date-products-item-unit text-end" for="'.$attributes['id'].'">';
-
-							switch($eDate['type']) {
-
-								case Date::PRIVATE :
-									$step = ProductUi::getStep($eDate, $eProduct);
-									$h .= \main\UnitUi::getValue($step, $eProduct['unit']);
-									break;
-
-								case Date::PRO :
-									if($eProduct['proPackaging'] !== NULL) {
-										$h .= s("Colis de {value}", \main\UnitUi::getValue($eProduct['proPackaging'], $eProduct['unit'], TRUE));
-									}
-									break;
-
-							}
-
-						$h .= '</label>';
-						$h .= '<div data-wrapper="price['.$eProduct['id'].']" class="date-products-item-price '.($checked ? '' : 'hidden').'">';
-							$h .= $form->dynamicField($eShopProduct, 'price['.$eProduct['id'].']');
-						$h .= '</div>';
-						$h .= '<div data-wrapper="available['.$eProduct['id'].']" class="date-products-item-available '.($checked ? '' : 'hidden').'">';
-							$h .= $form->dynamicField($eShopProduct, 'available', function($d) use ($eDate, $eProduct) {
-								$d->name = 'available['.$eProduct['id'].']';
-							});
-						$h .= '</div>';
-						if($displayStock) {
-							$h .= '<label class="date-products-item-product-stock hide-xs-down '.($checked ? '' : 'hidden').'" for="'.$attributes['id'].'">';
-								if($eProduct['stock'] !== NULL) {
-									$h .= \selling\StockUi::getExpired($eProduct);
-									$h .= '<span title="'.\selling\StockUi::getDate($eProduct['stockUpdatedAt']).'">'.\main\UnitUi::getValue($eProduct['stock'], $eProduct['unit'], short: TRUE).'</span>';
-								}
-							$h .= '</label>';
-						}
-
-					$h .= '</div>';
-
-				}
-			$h .= '</div>';
-		$h .= '</div>';
-
-		return $h;
-
-	}
-
 	public static function getPoints(\util\FormUi $form, Date $eDate): string {
 
 		\Asset::css('shop', 'shop.css');
@@ -961,7 +836,7 @@ class DateUi {
 
 			case 'productsList':
 				$d->field = function(\util\FormUi $form, Date $e) {
-					return (new DateUi())->getProducts($form, $e);
+					return (new ProductUi())->getCreateList($form, $e['farm'], $e['type'], $e['cProduct'], $e['cCategory'], $e->exists() ? '' : 'util-block');
 				};
 				break;
 

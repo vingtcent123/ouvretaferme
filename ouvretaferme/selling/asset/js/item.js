@@ -76,7 +76,7 @@ class Item {
 
 		const locked = wrapper.qs('[name^="locked"]').value;
 
-		const packaging = parseFloat(wrapper.qs('[name^="packaging"]').value || 1);
+		const packaging = parseFloat(wrapper.qs('[name^="packaging"]')?.value || 1);
 		const price = parseFloat(wrapper.qs('[name^="price"]').value || 0);
 		const unitPrice = parseFloat(wrapper.qs('[name^="unitPrice"]').value || 0);
 		const number = parseFloat(wrapper.qs('[name^="number"]').value || 0);
@@ -88,11 +88,11 @@ class Item {
 				break;
 
 			case 'unit-price' :
-				wrapper.qs('[name^="unitPrice"]').value = Math.round(100 * price / number / packaging) / 100;
+				wrapper.qs('[name^="unitPrice"]').value = (number > 0 && packaging > 0) ? Math.round(100 * price / number / packaging) / 100 : 0;
 				break;
 
 			case 'number' :
-				wrapper.qs('[name^="number"]').value = Math.round(100 * price / unitPrice / packaging) / 100;
+				wrapper.qs('[name^="number"]').value = (unitPrice > 0 && packaging > 0) ? Math.round(100 * price / unitPrice / packaging) / 100 : 0;
 				break;
 
 		}

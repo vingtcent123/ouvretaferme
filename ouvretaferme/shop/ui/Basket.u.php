@@ -197,7 +197,7 @@ class BasketUi {
 						'title' => s("Supprimer cet article"),
 					];
 
-					$unitPrice = \util\TextUi::money($eProduct['price']).' '.ProductUi::getTaxes($eDate).' / '.\main\UnitUi::getSingular($eProductSelling['unit'], short: TRUE, by: TRUE);
+					$unitPrice = \util\TextUi::money($eProduct['price']).' '.ProductUi::getTaxes($eProduct).' / '.\main\UnitUi::getSingular($eProductSelling['unit'], short: TRUE, by: TRUE);
 					$price = $eProduct['price'] * $product['number'] * ($eProduct['packaging'] ?? 1);
 
 					$h .= '<tr>';
@@ -226,7 +226,7 @@ class BasketUi {
 								$h .= '<div class="hide-md-up">'.s("Colis de {value}", \main\UnitUi::getValue($eProduct['packaging'], $eProductSelling['unit'], TRUE)).'</div>';
 							}
 						$h .= '</td>';
-						$h .= '<td class="text-end">'.\util\TextUi::money($price).' '.ProductUi::getTaxes($eDate).'</td>';
+						$h .= '<td class="text-end">'.\util\TextUi::money($price).' '.ProductUi::getTaxes($eProduct).'</td>';
 						$h .= '<td class="hide-xs-down text-center">';
 							$h .= '<a '.attrs($deleteAttributes).'>'.\Asset::icon('trash').'</a>';
 						$h .= '</td>';
