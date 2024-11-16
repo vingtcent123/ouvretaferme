@@ -638,7 +638,7 @@ class ProductUi {
 			$h .= $form->hidden('id', $eDate['id']);
 			$h .= $form->hidden('farm', $eFarm['id']);
 
-			$h .= $this->getCreateList($form, $eDate['farm'], $eDate['type'], $eDate['cProduct'], $eDate['cCategory'], 'util-block');
+			$h .= $form->dynamicField($eDate, 'productsList');
 			$h .= '<br/>';
 			$h .= $form->submit(s("Ajouter"), ['class' => 'btn btn-primary']);
 

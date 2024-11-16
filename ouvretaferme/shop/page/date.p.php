@@ -66,14 +66,31 @@
 		throw new \ViewAction($data);
 
 	})
+	->read('createProducts', function($data) {
+
+		$data->eFarm = $data->e['farm'];
+
+		\farm\FarmerLib::register($data->eFarm);
+
+		$data->e['cCategory'] = \selling\CategoryLib::getByFarm($data->eFarm, index: 'id');
+
+		$data->cCategory = \selling\CategoryLib::getByFarm($data->eFarm);
+
+		$cProductSelling = \selling\ProductLib::getForDate($data->e);
+		$cProduct = \shop\ProductLib::getByDate($data->e, onlyActive: FALSE);
+
+		foreach($cProduct as $eProduct) {
+			$cProductSelling->offsetUnset($eProduct['product']['id']);
+		}
+
+		$data->cProduct = $cProductSelling;
+
+		throw new \ViewAction($data);
+
+	}, validate: ['canWrite'])
 	->write('doCreateProducts', function($data) {
 
-		$data->eFarm = \farm\FarmLib::getById(POST('farm'))->validate('canManage');
-		$eShop = \shop\ShopLib::getById($data->e['shop']['id'] ?? NULL)->validate('canWrite');
-
-		if($data->e['shop']['id'] !== $eShop['id']) {
-			throw new NotExpectedAction();
-		}
+		$data->eFarm = $data->e['farm'];
 
 		$fw = new FailWatch();
 

@@ -18,6 +18,12 @@ new AdaptativeView('create', function($data, FarmTemplate $t) {
 
 });
 
+new AdaptativeView('createProducts', function($data, PanelTemplate $t) {
+
+	return (new \shop\ProductUi())->create($data->eFarm, $data->e, $data->cProduct);
+
+});
+
 new AdaptativeView('update', function($data, PanelTemplate $t) {
 
 	return (new \shop\DateUi())->update($data->e);
