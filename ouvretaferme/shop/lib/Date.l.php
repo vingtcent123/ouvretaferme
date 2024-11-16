@@ -151,7 +151,7 @@ class DateLib extends DateCrud {
 			$eProduct['farm'] = $e['farm'];
 		}
 
-		ProductLib::createCollection($e['cProduct']);
+		ProductLib::createCollection($e, $e['cProduct']);
 
 		Shop::model()->commit();
 

@@ -7,6 +7,9 @@ abstract class CatalogElement extends \Element {
 
 	private static ?CatalogModel $model = NULL;
 
+	const PRIVATE = 'private';
+	const PRO = 'pro';
+
 	const ACTIVE = 'active';
 	const DELETED = 'deleted';
 
@@ -41,12 +44,13 @@ class CatalogModel extends \ModuleModel {
 		$this->properties = array_merge($this->properties, [
 			'id' => ['serial32', 'cast' => 'int'],
 			'farm' => ['element32', 'farm\Farm', 'cast' => 'element'],
+			'type' => ['enum', [\shop\Catalog::PRIVATE, \shop\Catalog::PRO], 'cast' => 'enum'],
 			'name' => ['text8', 'min' => 1, 'max' => 50, 'null' => TRUE, 'cast' => 'string'],
 			'status' => ['enum', [\shop\Catalog::ACTIVE, \shop\Catalog::DELETED], 'cast' => 'enum'],
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'farm', 'name', 'status'
+			'id', 'farm', 'type', 'name', 'status'
 		]);
 
 		$this->propertiesToModule += [
@@ -77,6 +81,9 @@ class CatalogModel extends \ModuleModel {
 
 		switch($property) {
 
+			case 'type' :
+				return ($value === NULL) ? NULL : (string)$value;
+
 			case 'status' :
 				return ($value === NULL) ? NULL : (string)$value;
 
@@ -101,6 +108,10 @@ class CatalogModel extends \ModuleModel {
 
 	public function whereFarm(...$data): CatalogModel {
 		return $this->where('farm', ...$data);
+	}
+
+	public function whereType(...$data): CatalogModel {
+		return $this->where('type', ...$data);
 	}
 
 	public function whereName(...$data): CatalogModel {

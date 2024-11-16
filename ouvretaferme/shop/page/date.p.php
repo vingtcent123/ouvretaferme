@@ -16,7 +16,7 @@
 
 		\farm\FarmerLib::register($data->eFarm);
 
-		$data->cProduct = \selling\ProductLib::getForDate($data->e);
+		$data->cProduct = \selling\ProductLib::getForShop($data->e['farm'], $data->e['type']);
 
 		// Si c'est une copie : récupérer également la liste des produits de la date en question
 		$data->eDateBase = \shop\DateLib::getById(GET('date'));
@@ -66,46 +66,6 @@
 		throw new \ViewAction($data);
 
 	})
-	->read('createProducts', function($data) {
-
-		$data->eFarm = $data->e['farm'];
-
-		\farm\FarmerLib::register($data->eFarm);
-
-		$data->e['cCategory'] = \selling\CategoryLib::getByFarm($data->eFarm, index: 'id');
-
-		$data->cCategory = \selling\CategoryLib::getByFarm($data->eFarm);
-
-		$cProductSelling = \selling\ProductLib::getForDate($data->e);
-		$cProduct = \shop\ProductLib::getByDate($data->e, onlyActive: FALSE);
-
-		foreach($cProduct as $eProduct) {
-			$cProductSelling->offsetUnset($eProduct['product']['id']);
-		}
-
-		$data->cProduct = $cProductSelling;
-
-		throw new \ViewAction($data);
-
-	}, validate: ['canWrite'])
-	->write('doCreateProducts', function($data) {
-
-		$data->eFarm = $data->e['farm'];
-
-		$fw = new FailWatch();
-
-		$products = POST('productsList', 'array', []);
-
-		$cProductSelling = \selling\ProductLib::getForDate($data->e);
-		$data->cProduct = \shop\ProductLib::prepareCollection($data->e, $cProductSelling, $products, $_POST);
-
-		$fw->validate();
-
-		\shop\ProductLib::createCollection($data->cProduct);
-
-		throw new ReloadAction('shop', 'Products::created');
-
-	}, validate: ['canWrite', 'isDirect'])
 	->write('doUpdatePoint', function($data) {
 
 		$data->ePoint = \shop\PointLib::getById(POST('point'))

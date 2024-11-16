@@ -1,6 +1,7 @@
 Catalog:
   id: serial32
   farm: farm\Farm
+  type: enum(PRIVATE, PRO)
   name: ?text8(1, 50)
   status: enum(ACTIVE, DELETED) = ACTIVE
   INDEX: [

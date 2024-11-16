@@ -4,7 +4,7 @@ namespace shop;
 class CatalogLib extends CatalogCrud {
 
 	public static function getPropertiesCreate(): array {
-		return ['name'];
+		return ['name', 'type'];
 	}
 
 	public static function getPropertiesUpdate(): array {

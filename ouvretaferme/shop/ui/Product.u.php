@@ -624,28 +624,34 @@ class ProductUi {
 		return $h;
 	}
 
-	public function create(\farm\Farm $eFarm, Date $eDate, \Collection $cProduct): \Panel {
+	public function create(\farm\Farm $eFarm, Date|Catalog $e): \Panel {
 
-		$eDate['cProduct'] = $cProduct;
-		$eDate['farm'] = $eFarm;
+		$e->expects(['cProduct', 'cCategory']);
 
 		$form = new \util\FormUi([
 			'columnBreak' => 'sm'
 		]);
 
-		$h = $form->openAjax('/shop/date:doCreateProducts');
+		$h = $form->openAjax('/shop/product:doCreate');
 
-			$h .= $form->hidden('id', $eDate['id']);
+			if($e instanceof Date) {
+				$h .= $form->hidden('date', $e['id']);
+			} else {
+				$h .= $form->hidden('date', $e['id']);
+			}
+
 			$h .= $form->hidden('farm', $eFarm['id']);
 
-			$h .= $form->dynamicField($eDate, 'productsList');
+			$h .= $form->dynamicField($e, 'productsList');
 			$h .= '<br/>';
 			$h .= $form->submit(s("Ajouter"), ['class' => 'btn btn-primary']);
 
 		$h .= $form->close();
 
 		return new \Panel(
-			title: s("Ajouter des produits à la vente"),
+			title: ($e instanceof Date) ?
+				s("Ajouter des produits à la vente") :
+				s("Ajouter des produits au catalogue"),
 			body: $h
 		);
 	}

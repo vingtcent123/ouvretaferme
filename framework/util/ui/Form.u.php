@@ -8,6 +8,7 @@ class FormUi {
 
 	protected ?string $lastFieldId = NULL;
 	protected ?string $lastFieldName = NULL;
+	protected ?string $lastFieldType = NULL;
 	protected ?string $nextWrapper = NULL;
 	protected ?string $formId = NULL;
 	protected ?bool $formDraft = NULL;
@@ -152,7 +153,11 @@ class FormUi {
 
 		$h = '<div data-wrapper="'.$wrapper.'" class="form-group '.($nested ? 'form-group-nested' : '').' '.$class.'" '.attrs($attributes).'>';
 
-		if($attributes['for'] ?? TRUE) {
+		if(
+			str_starts_with($this->lastFieldType, 'radio') === FALSE and // No checkbox(es)
+			str_starts_with($this->lastFieldType, 'checkbox') === FALSE and // No radio(s)
+			$attributes['for'] ?? TRUE
+		) {
 			$for = 'for="'.$this->lastFieldId.'"';
 		} else {
 			$for = '';
@@ -781,7 +786,7 @@ class FormUi {
 		$callbackCheckboxAttributes = $attributes['callbackCheckboxAttributes'];
 		unset($attributes['callbackCheckboxAttributes']);
 
-		$this->setDefaultAttributes($attributes, $name);
+		$this->setDefaultAttributes('checkboxes', $attributes, $name);
 
 		$formatSelectedValues = $this->getSelectedValue($selectedValues, TRUE);
 
@@ -892,7 +897,7 @@ class FormUi {
 		$callbackRadioAttributes = $attributes['callbackRadioAttributes'];
 		unset($attributes['callbackRadioAttributes']);
 
-		$this->setDefaultAttributes($attributes);
+		$this->setDefaultAttributes('radios', $attributes);
 
 		$h = '<div class="form-control field-radio-group field-radio-group-'.$columns.'" '.attrs($attributes).' '.attr('data-field', $name).'>';
 
@@ -1459,7 +1464,7 @@ class FormUi {
 
 		$attributes['class'] = 'form-control '.($attributes['class'] ?? '');
 
-		$this->setDefaultAttributes($attributes, $name);
+		$this->setDefaultAttributes('select', $attributes, $name);
 
 		$select = "";
 
@@ -1546,7 +1551,7 @@ class FormUi {
 
 		$attributes['class'] = 'form-control form-dropdown-toggle '.($attributes['class'] ?? '');
 
-		$this->setDefaultAttributes($attributes, $name);
+		$this->setDefaultAttributes('select', $attributes, $name);
 
 		$placeholder = $attributes['placeholder'] ?? s("< Choisir >");
 
@@ -1826,7 +1831,7 @@ class FormUi {
 
 		$attributes['class'] = 'form-control '.($attributes['class'] ?? '');
 
-		$this->setDefaultAttributes($attributes, $name);
+		$this->setDefaultAttributes('textarea', $attributes, $name);
 
 		$textarea = "<textarea ".attrs($attributes).">".encode($value)."</textarea>";
 
@@ -1853,7 +1858,7 @@ class FormUi {
 			$convertedValue = '';
 		}
 
-		$this->setDefaultAttributes($attributes, $name);
+		$this->setDefaultAttributes('editor', $attributes, $name);
 
 		return (new \editor\EditorUi())->field($name, $values, $convertedValue, $attributes);
 
@@ -1930,7 +1935,7 @@ class FormUi {
 		$attributes['class'] = ($attributes['class'] ?? 'btn btn-primary');
 		$attributes['type'] = ($attributes['type'] ?? 'button');
 
-		$this->setDefaultAttributes($attributes);
+		$this->setDefaultAttributes('button', $attributes);
 
 		return "<button ".attrs($attributes).">".$value."</button>";
 
@@ -2001,7 +2006,7 @@ class FormUi {
 
 	protected function input(string $type, ?string $name, $value, array $attributes): string {
 
-		$this->setDefaultAttributes($attributes, $name);
+		$this->setDefaultAttributes($type, $attributes, $name);
 
 		$attributes['type'] = $type;
 		$attributes['value'] = $this->getInputValue($value);
@@ -2051,13 +2056,15 @@ class FormUi {
 		return '';
 	}
 
-	protected function setDefaultAttributes(array &$attributes, ?string $name = NULL) {
+	protected function setDefaultAttributes(string $type, array &$attributes, ?string $name = NULL) {
 
 		$attributes['id'] ??= uniqid('field-');
 		$attributes['name'] ??= $name;
 
 		$this->lastFieldId = $attributes['id'] ?? NULL;
 		$this->lastFieldName = $attributes['name'];
+		$this->lastFieldType = $type;
+
 		$this->nextWrapper = $attributes['name'];
 
 

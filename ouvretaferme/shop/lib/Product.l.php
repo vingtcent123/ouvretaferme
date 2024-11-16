@@ -48,6 +48,20 @@ class ProductLib extends ProductCrud {
 
 	}
 
+	public static function excludeExisting(Date|Catalog $e, \Collection $cProductSelling): void {
+
+		if($e instanceof Date) {
+			$cProduct = self::getByDate($e, onlyActive: FALSE);
+		} else {
+			$cProduct = self::getByCatalog($e, onlyActive: FALSE);
+		}
+
+		foreach($cProduct as $eProduct) {
+			$cProductSelling->offsetUnset($eProduct['product']['id']);
+		}
+
+	}
+
 	public static function getByDate(Date $eDate, bool $onlyActive = TRUE, \selling\Sale $eSaleExclude = new \selling\Sale()): \Collection {
 
 		$cProduct = Product::model()
@@ -109,16 +123,35 @@ class ProductLib extends ProductCrud {
 
 	}
 
-	public static function prepareCollection(Date $eDate, \Collection $cProductSelling, array $products, array $input): \Collection {
+	public static function prepareCollection(Date|Catalog $e, \Collection $cProductSelling, array $products, array $input): \Collection {
 
-		if($eDate->isDirect() === FALSE) {
-			throw new \Exception('Invalid source');
+		if($e instanceof Date) {
+
+			if($e->isDirect() === FALSE) {
+				throw new \Exception('Invalid source');
+			}
+
+			$e->expects([
+				'shop',
+				'type'
+			]);
+
+			$base = [
+				'date' => $e,
+				'shop' => $e['shop'],
+				'type' => $e['type'],
+				'farm' => $e['farm'],
+			];
+
+		} else {
+
+			$base = [
+				'catalog' => $e,
+				'type' => $e['type'],
+				'farm' => $e['farm'],
+			];
+
 		}
-
-		$eDate->expects([
-			'shop',
-			'type'
-		]);
 
 		$cProduct = new \Collection();
 
@@ -133,18 +166,18 @@ class ProductLib extends ProductCrud {
 			$eProductSelling = $cProductSelling->offsetGet($product);
 
 			$eProduct = new Product([
-				'date' => $eDate,
-				'shop' => $eDate['shop'],
-				'type' => $eDate['type'],
 				'product' => $eProductSelling,
-				'farm' => $eDate['farm'],
-				'packaging' => ($eDate['type'] === Date::PRO) ? $eProductSelling['proPackaging'] : NULL,
-			]);
+				'packaging' => ($base['type'] === Product::PRO) ? $eProductSelling['proPackaging'] : NULL,
+			] + $base);
 
 			$eProduct->buildIndex(['available', 'price'], $input, $index);
 
 			$cProduct->append($eProduct);
 
+		}
+
+		if($cProduct->empty()) {
+			Product::fail('empty');
 		}
 
 		return $cProduct;
@@ -155,7 +188,7 @@ class ProductLib extends ProductCrud {
 		throw new \Exception('Not implemented');
 	}
 
-	public static function createCollection(\Collection $c): void {
+	public static function createCollection(Date|Catalog $e, \Collection $c): void {
 
 		if($c->empty()) {
 			return;
@@ -167,9 +200,10 @@ class ProductLib extends ProductCrud {
 				->option('add-ignore')
 				->insert($c);
 
-			$eDate = $c->first()['date'];
+			if($e instanceof Date) {
+				DateLib::recalculate($e);
+			}
 
-			DateLib::recalculate($eDate);
 
 		Product::model()->commit();
 

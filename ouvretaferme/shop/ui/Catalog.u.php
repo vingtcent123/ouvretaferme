@@ -71,7 +71,9 @@ class CatalogUi {
 
 	public function create(\farm\Farm $eFarm): \Panel {
 
-		$eCatalog = new Catalog();
+		$eCatalog = new Catalog([
+			'farm' => $eFarm
+		]);
 
 		$form = new \util\FormUi();
 
@@ -80,7 +82,7 @@ class CatalogUi {
 			$h .= $form->asteriskInfo();
 
 			$h .= $form->hidden('farm', $eFarm['id']);
-			$h .= $form->dynamicGroups($eCatalog, ['name*']);
+			$h .= $form->dynamicGroups($eCatalog, ['name*', 'type*']);
 			$h .= $form->group(
 				content: $form->submit(s("Créer"))
 			);
@@ -117,13 +119,54 @@ class CatalogUi {
 
 	}
 
+	protected function getTypeDescriber(\farm\Farm $eFarm, string $for) {
+
+		return function(\PropertyDescriber $d) use ($eFarm, $for) {
+
+			$d->values = $eFarm->getSelling('hasVat') ?
+				[
+					Shop::PRIVATE => s("Utiliser les prix particuliers").' <span class="util-annotation">'.s("affichage TTC sur le catalogue").'</span>',
+					Shop::PRO => s("Utiliser les prix professionnels").' <span class="util-annotation">'.s("affichage HT sur le catalogue").'</span>',
+				] :
+				[
+					Shop::PRIVATE => s("Utiliser les prix particuliers"),
+					Shop::PRO => s("Utiliser les prix professionnels"),
+				];
+
+		};
+
+	}
+
 	public static function p(string $property): \PropertyDescriber {
 
 		$d = Catalog::model()->describer($property, [
+			'type' => s("Grille tarifaire"),
 			'name' => s("Nom du catalogue"),
 		]);
 
 		switch($property) {
+
+			case 'type' :
+				$d->values = function(Catalog $e) {
+
+					return $e['farm']->getSelling('hasVat') ?
+						[
+							Shop::PRIVATE => s("Utiliser les prix particuliers").' <span class="util-annotation">'.s("affichage TTC sur le catalogue").'</span>',
+							Shop::PRO => s("Utiliser les prix professionnels").' <span class="util-annotation">'.s("affichage HT sur le catalogue").'</span>',
+						] :
+						[
+							Shop::PRIVATE => s("Utiliser les prix particuliers"),
+							Shop::PRO => s("Utiliser les prix professionnels"),
+						];
+
+				};
+				break;
+
+			case 'productsList' :
+				$d->field = function(\util\FormUi $form, Catalog $e) {
+					return (new ProductUi())->getCreateList($form, $e['farm'], $e['type'], $e['cProduct'], $e['cCategory']);
+				};
+				break;
 
 		}
 
