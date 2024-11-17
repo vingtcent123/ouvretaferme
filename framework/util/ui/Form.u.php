@@ -1709,7 +1709,10 @@ class FormUi {
 	 * Display text field
 	 */
 	public function fake(string $value): string {
-		return '<div class="form-control disabled">'.encode($value).'</div>';
+		return $this->inputGroup(
+			$this->addon(\Asset::icon('lock-fill')).
+			'<div class="form-control form-control-fake">'.encode($value).'</div>'
+		);
 	}
 
 	/**

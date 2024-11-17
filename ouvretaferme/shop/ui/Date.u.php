@@ -287,14 +287,19 @@ class DateUi {
 			$h .= $form->dynamicGroup($e, 'deliveryDate*');
 
 			$grid = match($e['shop']['type']) {
-				Shop::PRO => s("Uniquement les produits vendus aux professionnels"),
-				Shop::PRIVATE => s("Uniquement les produits vendus aux particuliers")
+				Shop::PRO => s("Professionnels"),
+				Shop::PRIVATE => s("Particuliers")
 			};
 
 			$h .= $form->group(
-				p("Produit proposé à la vente", "Produits proposés à la vente", $cProduct->count()).$form->asterisk().\util\FormUi::info($grid),
+				s("Grille tarifaire"),
+				$form->fake($grid)
+			);
+
+			$h .= $form->group(
+				s("Gamme proposée à la vente").$form->asterisk(),
 				$form->dynamicField($e, 'productsList'),
-				['wrapper' => 'productsList']
+				['wrapper' => 'productsList', 'for' => FALSE]
 			);
 
 			$h .= '<br/>';

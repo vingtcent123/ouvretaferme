@@ -141,7 +141,7 @@ class ProductUi {
 					}
 					$h .= '<th rowspan="2">'.s("Unité").'</th>';
 					$h .= '<th colspan="2" class="text-center highlight hide-xs-down">'.s("Ventes").'</th>';
-					$h .= '<th colspan="2" class="text-center highlight">'.s("Prix de base").'</th>';
+					$h .= '<th colspan="2" class="text-center highlight">'.s("Grille tarifaire").'</th>';
 					if($eFarm->getSelling('hasVat')) {
 						$h .= '<th rowspan="2" class="text-center product-item-vat">'.s("TVA").'</th>';
 					}
@@ -214,19 +214,19 @@ class ProductUi {
 
 					$h .= '<td class="product-item-price highlight-stick-right text-end">';
 						if($eProduct['private'] === FALSE) {
-							$h .= '-';
+							$h .= \Asset::icon('x');
 						} else {
 
 							$taxes = $eFarm->getSelling('hasVat') ? ' <span class="util-annotation">'.CustomerUi::getTaxes(Customer::PRIVATE).'</span>' : '';
 
-							if($eProduct['privatePrice']) {
+							if($eProduct['privatePrice'] !== NULL) {
 								$value = \util\TextUi::money($eProduct['privatePrice']).$taxes;
-							} else if($eProduct['proPrice']) {
+							} else if($eProduct['proPrice'] !== NULL) {
 								$value = '<span class="color-muted" title="'.s("Prix calculé à partir du prix pour les professionnels augmenté de la TVA.").'">'.\Asset::icon('magic').' ';
 									$value .= \util\TextUi::money($eProduct->calcPrivateMagicPrice($eFarm->getSelling('hasVat'))).$taxes;
 								$value .= '</span>';
 							} else {
-								$value = '-';
+								$value = \Asset::icon('question');
 							}
 
 							$h .= $eProduct->quick('privatePrice', $value);
@@ -236,7 +236,7 @@ class ProductUi {
 
 					$h .= '<td class="product-item-price highlight-stick-left text-end">';
 						if($eProduct['pro'] === FALSE) {
-							$h .= '-';
+							$h .= \Asset::icon('x');
 						} else {
 
 							$taxes = $eFarm->getSelling('hasVat') ? ' <span class="util-annotation">'.CustomerUi::getTaxes(Customer::PRO).'</span>' : '';
@@ -248,7 +248,7 @@ class ProductUi {
 									$value .= \util\TextUi::money($eProduct->calcProMagicPrice($eFarm->getSelling('hasVat'))).$taxes;
 								$value .= '</span>';
 							} else {
-								$value = '-';
+								$value = \Asset::icon('question');
 							}
 
 							$h .= $eProduct->quick('proPrice', $value);
@@ -749,7 +749,7 @@ class ProductUi {
 
 	private static function getFieldPrices(\util\FormUi $form, Product $eProduct, string $for): string {
 
-		$h = '<h3>'.s("Clientèle").'</h3>';
+		$h = '<h3>'.s("Grille tarifaire").'</h3>';
 		$h .= '<div class="util-info">'.s("Pour une vente aux particuliers et si aucun prix de vente n'a été saisi, le prix de vente pro augmenté de la TVA sera utilisé dans ce cas, et vice-versa pour une vente aux professionnels. Ces données de base pourront toujours être personnalisées pour chaque client et vente.").'</div>';
 
 		$h .= self::getFieldPrivate($form, $eProduct, $for);

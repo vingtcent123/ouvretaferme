@@ -187,7 +187,7 @@ class PlotUi {
 
 			$h .= $form->group(
 				s("Parcelle"),
-				'<u>'.encode($eZone['name']).'</u>'
+				$form->fake($eZone['name'])
 			);
 
 			$h .= $this->write($form, $ePlot);
