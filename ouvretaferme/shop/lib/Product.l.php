@@ -37,7 +37,7 @@ class ProductLib extends ProductCrud {
 
 	}
 
-	public static function countByCatalog(\farm\Farm $eFarm): array {
+	public static function countCatalogsByFarm(\farm\Farm $eFarm): array {
 
 		return Product::model()
 			->select([
@@ -49,6 +49,14 @@ class ProductLib extends ProductCrud {
 			->group('catalog')
 			->getCollection()
 			->toArray(fn($eProduct) => [$eProduct['catalog']['id'], $eProduct['count']], TRUE);
+
+	}
+
+	public static function countByCatalog(Catalog $eCatalog): int {
+
+		return Product::model()
+			->whereCatalog($eCatalog)
+			->count();
 
 	}
 
@@ -221,6 +229,8 @@ class ProductLib extends ProductCrud {
 
 			if($e instanceof Date) {
 				DateLib::recalculate($e);
+			} else {
+				CatalogLib::recalculate($e);
 			}
 
 
@@ -259,7 +269,11 @@ class ProductLib extends ProductCrud {
 
 			Product::model()->delete($eProduct);
 
-			DateLib::recalculate($eProduct['date']);
+			if($eProduct['date']->notEmpty()) {
+				DateLib::recalculate($eProduct['date']);
+			} else {
+				CatalogLib::recalculate($eProduct['catalog']);
+			}
 
 		Product::model()->commit();
 

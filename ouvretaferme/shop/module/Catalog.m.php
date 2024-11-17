@@ -43,14 +43,15 @@ class CatalogModel extends \ModuleModel {
 
 		$this->properties = array_merge($this->properties, [
 			'id' => ['serial32', 'cast' => 'int'],
+			'name' => ['text8', 'min' => 1, 'max' => 50, 'null' => TRUE, 'cast' => 'string'],
 			'farm' => ['element32', 'farm\Farm', 'cast' => 'element'],
 			'type' => ['enum', [\shop\Catalog::PRIVATE, \shop\Catalog::PRO], 'cast' => 'enum'],
-			'name' => ['text8', 'min' => 1, 'max' => 50, 'null' => TRUE, 'cast' => 'string'],
+			'products' => ['int16', 'min' => 0, 'max' => NULL, 'cast' => 'int'],
 			'status' => ['enum', [\shop\Catalog::ACTIVE, \shop\Catalog::DELETED], 'cast' => 'enum'],
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'farm', 'type', 'name', 'status'
+			'id', 'name', 'farm', 'type', 'products', 'status'
 		]);
 
 		$this->propertiesToModule += [
@@ -66,6 +67,9 @@ class CatalogModel extends \ModuleModel {
 	public function getDefaultValue(string $property) {
 
 		switch($property) {
+
+			case 'products' :
+				return 0;
 
 			case 'status' :
 				return Catalog::ACTIVE;
@@ -106,6 +110,10 @@ class CatalogModel extends \ModuleModel {
 		return $this->where('id', ...$data);
 	}
 
+	public function whereName(...$data): CatalogModel {
+		return $this->where('name', ...$data);
+	}
+
 	public function whereFarm(...$data): CatalogModel {
 		return $this->where('farm', ...$data);
 	}
@@ -114,8 +122,8 @@ class CatalogModel extends \ModuleModel {
 		return $this->where('type', ...$data);
 	}
 
-	public function whereName(...$data): CatalogModel {
-		return $this->where('name', ...$data);
+	public function whereProducts(...$data): CatalogModel {
+		return $this->where('products', ...$data);
 	}
 
 	public function whereStatus(...$data): CatalogModel {

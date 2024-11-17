@@ -11,15 +11,29 @@ class CatalogLib extends CatalogCrud {
 		return ['name'];
 	}
 
-	public static function getByFarm(\farm\Farm $eFarm, mixed $index = NULL): \Collection {
+	public static function getByFarm(\farm\Farm $eFarm, ?string $type = NULL, mixed $index = NULL): \Collection {
 
 		return Catalog::model()
 			->select(Catalog::getSelection())
 			->whereFarm($eFarm)
+			->whereType($type, if: $type !== NULL)
+			->whereStatus(Catalog::ACTIVE)
 			->sort([
 				'name' => SORT_ASC
 			])
 			->getCollection(index: $index);
+
+	}
+
+	public static function getByDates(\Collection $cDate): \Collection {
+
+		$catalogs = $cDate->reduce(fn($e, $n) => array_merge($n, $e['catalogs'] ?? []), []);
+
+		return Catalog::model()
+			->select(Catalog::getSelection())
+			->whereId('IN', $catalogs)
+			->whereStatus(Catalog::ACTIVE)
+			->getCollection(index: 'id');
 
 	}
 
@@ -45,6 +59,16 @@ class CatalogLib extends CatalogCrud {
 		} else {
 			Catalog::model()->delete($e);
 		}
+
+	}
+
+	public static function recalculate(Catalog $e): void {
+
+		$e['products'] = ProductLib::countByCatalog($e);
+
+		Catalog::model()
+			->select('products')
+			->update($e);
 
 	}
 

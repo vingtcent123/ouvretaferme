@@ -193,6 +193,7 @@
 
 			// Liste des dates de la boutique sélectionnée
 			$data->eShop['cDate'] = \shop\DateLib::getByShop($data->eShop);
+			$data->eShop['cCatalog'] = \shop\CatalogLib::getByDates($data->eShop['cDate']);
 
 		}
 
@@ -205,7 +206,7 @@
 
 		\farm\FarmerLib::setView('viewShop', $data->eFarm, \farm\Farmer::CATALOG);
 
-		$data->products = \shop\ProductLib::countByCatalog($data->eFarm);
+		$data->products = \shop\ProductLib::countCatalogsByFarm($data->eFarm);
 		$data->cCatalog = \shop\CatalogLib::getByFarm($data->eFarm, index: 'id');
 		$data->eCatalogSelected = new \shop\Catalog();
 
@@ -214,10 +215,8 @@
 			$eCatalog = GET('catalog', 'shop\Catalog', fn() => new \shop\Catalog());
 
 			if($eCatalog->notEmpty()) {
-
 				$data->cCatalog->validateOffset($eCatalog);
 				$data->eCatalogSelected = $data->cCatalog[$eCatalog['id']];
-
 			}
 
 			\farm\FarmerLib::setView('viewShopCatalogCurrent', $data->eFarm, $eCatalog);
@@ -236,11 +235,8 @@
 
 		}
 
-		if($data->eCatalogSelected->empty()) {
-			$data->eCatalogSelected['cProduct'] = new Collection();
-			$data->eCatalogSelected['cCategory'] = new Collection();
-		} else {
-			$data->eCatalogSelected['cProduct'] = \shop\ProductLib::getByCatalog($data->eCatalogSelected);
+		if($data->eCatalogSelected->notEmpty()) {
+			$data->eCatalogSelected['cProduct'] = \shop\ProductLib::getByCatalog($data->eCatalogSelected, onlyActive: FALSE);
 			$data->eCatalogSelected['cCategory'] = \selling\CategoryLib::getByFarm($data->eFarm, index: 'id');
 		}
 

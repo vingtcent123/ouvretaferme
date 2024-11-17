@@ -61,6 +61,26 @@ class DateManage {
 
 	}
 
+	static changeSource(target) {
+
+		const source = target.value;
+
+		switch(source) {
+
+			case 'catalog' :
+				ref('date-direct', node => node.classList.add('hide'));
+				ref('date-catalog', node => node.classList.remove('hide'));
+				break;
+
+			case 'direct' :
+				ref('date-direct', node => node.classList.remove('hide'));
+				ref('date-catalog', node => node.classList.add('hide'));
+				break;
+
+		}
+
+	}
+
 	static selectProduct(target) {
 
 		const parent = target.firstParent('.date-products-item');

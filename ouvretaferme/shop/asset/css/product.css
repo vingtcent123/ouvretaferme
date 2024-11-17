@@ -343,3 +343,20 @@
 	grid-column-gap: 1rem;
 	padding-top: 0;
 }
+
+.shop-product-manage-catalog {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 2.5rem;
+	height: 2.5rem;
+	font-size: 1.25rem;
+	border-radius: 50%;
+	border: 1px solid var(--primary);
+	vertical-align: middle;
+	margin-right: .5rem;
+}
+
+.shop-product-manage-selling svg {
+	font-size: 1.5rem;
+}

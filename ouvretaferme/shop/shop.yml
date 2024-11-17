@@ -1,8 +1,9 @@
 Catalog:
   id: serial32
+  name: ?text8(1, 50)
   farm: farm\Farm
   type: enum(PRIVATE, PRO)
-  name: ?text8(1, 50)
+  products: int16(0, null) = 0
   status: enum(ACTIVE, DELETED) = ACTIVE
   INDEX: [
     ["farm"]
@@ -19,12 +20,12 @@ Date:
   type: enum(PRIVATE, PRO)
   farm: farm\Farm
   status: enum(ACTIVE, CLOSED) = ACTIVE
-  source: enum(DIRECT, CATALOG) = DIRECT
+  source: enum(DIRECT, CATALOG)
   orderStartAt: datetime
   orderEndAt: datetime
   points: json = PHP([])
-  catalogs: json = PHP([])
-  products: int16(0, null) = 0
+  catalogs: ?json = PHP([])
+  products: ?int16(0, null)
   deliveryDate: date
   INDEX: [
     ["status"]

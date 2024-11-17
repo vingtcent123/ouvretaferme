@@ -55,8 +55,8 @@ class DateModel extends \ModuleModel {
 			'orderStartAt' => ['datetime', 'cast' => 'string'],
 			'orderEndAt' => ['datetime', 'cast' => 'string'],
 			'points' => ['json', 'cast' => 'array'],
-			'catalogs' => ['json', 'cast' => 'array'],
-			'products' => ['int16', 'min' => 0, 'max' => NULL, 'cast' => 'int'],
+			'catalogs' => ['json', 'null' => TRUE, 'cast' => 'array'],
+			'products' => ['int16', 'min' => 0, 'max' => NULL, 'null' => TRUE, 'cast' => 'int'],
 			'deliveryDate' => ['date', 'cast' => 'string'],
 		]);
 
@@ -85,17 +85,11 @@ class DateModel extends \ModuleModel {
 			case 'status' :
 				return Date::ACTIVE;
 
-			case 'source' :
-				return Date::DIRECT;
-
 			case 'points' :
 				return [];
 
 			case 'catalogs' :
 				return [];
-
-			case 'products' :
-				return 0;
 
 			default :
 				return parent::getDefaultValue($property);

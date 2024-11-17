@@ -14,6 +14,8 @@ class DateLib extends DateCrud {
 			$properties = [
 				'orderStartAt', 'orderEndAt',
 				'deliveryDate',
+				'source',
+				'catalogs',
 				'productsList',
 			];
 
@@ -139,19 +141,34 @@ class DateLib extends DateCrud {
 
 	public static function create(Date $e): void {
 
-		$e->expects(['cProduct']);
+		switch($e['source']) {
+
+			case Date::DIRECT :
+
+				$e->expects(['cProduct']);
+
+				$e['catalogs'] = NULL;
+				$e['products'] = NULL;
+
+				break;
+
+		}
 
 		Date::model()->beginTransaction();
 
-		Date::model()->insert($e);
+			Date::model()->insert($e);
 
-		foreach($e['cProduct'] as $eProduct) {
-			$eProduct['date'] = $e;
-			$eProduct['type'] = $e['type'];
-			$eProduct['farm'] = $e['farm'];
-		}
+			if($e['source'] === Date::DIRECT) {
 
-		ProductLib::createCollection($e, $e['cProduct']);
+				foreach($e['cProduct'] as $eProduct) {
+					$eProduct['date'] = $e;
+					$eProduct['type'] = $e['type'];
+					$eProduct['farm'] = $e['farm'];
+				}
+
+				ProductLib::createCollection($e, $e['cProduct']);
+
+			}
 
 		Shop::model()->commit();
 
@@ -247,7 +264,12 @@ class DateLib extends DateCrud {
 			->whereShop($eShop)
 			->whereStatus(Date::ACTIVE)
 			->whereDeliveryDate('>',  new \Sql('NOW()'))
-			->whereProducts('>', 0)
+			->or(
+				fn() => $this
+					->whereSource(Date::DIRECT)
+					->whereProducts('>', 0),
+				fn() => $this->whereSource(Date::CATALOG)
+			)
 			->sort([
 				'isOrderable' => SORT_DESC,
 				'deliveryDate' => SORT_ASC

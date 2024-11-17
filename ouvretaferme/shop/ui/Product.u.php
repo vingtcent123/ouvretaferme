@@ -28,6 +28,14 @@ class ProductUi {
 
 		$ccProduct = $eDate['cProduct']->reindex(['product', 'category']);
 
+		if($ccProduct->empty()) {
+			$h .= '<div class="util-block-help">';
+				$h .= '<h4>'.s("Il n'y a pas encore de produit disponible à la vente !").'</h4>';
+				$h .= '<p>'.s("La vente du {value} est fermée pour le moment car votre producteur n'a pas encore indiqué les produits qu'il souhaite vous proposer.", \util\DateUi::textual($eDate['deliveryDate'])).'</p>';
+			$h .= '</div>';
+			return $h;
+		}
+
 		if($ccProduct->count() === 1) {
 			$h .= $this->getProducts($eShop, $eDate, $eSale, $isModifying, $ccProduct->first());
 		} else {
@@ -491,23 +499,22 @@ class ProductUi {
 
 	}
 
-	// Modifier (quick) les disponibilités
-	public function getUpdateList(\farm\Farm $eFarm, string $type, \Collection $cProduct, \Collection $cCategory): string {
+	public function getUpdateList(\farm\Farm $eFarm, Date|Catalog $e, \Collection $cProduct, \Collection $cCategory): string {
 
 		if($cProduct->empty()) {
-			return '<div class="util-info">'.s("Vous n'y a aucun produit disponible à la vente !").'</div>';
+			return '<div class="util-info">'.s("Il n'y a aucun produit disponible à la vente !").'</div>';
 		}
 
 		$ccProduct = $cProduct->reindex(['product', 'category']);
 
 		if($ccProduct->count() === 1) {
-			return $this->getUpdateProducts($eFarm, $type, $ccProduct->first());
+			return $this->getUpdateProducts($eFarm, $e, $ccProduct->first());
 		} else {
 
 			$h = '';
 
 			if($ccProduct->offsetExists('')) {
-				$h .= $this->getUpdateProducts($eFarm, $type, $ccProduct['']);
+				$h .= $this->getUpdateProducts($eFarm, $e, $ccProduct['']);
 			}
 
 			foreach($cCategory as $eCategory) {
@@ -517,7 +524,7 @@ class ProductUi {
 				}
 
 				$h .= '<h3>'.encode($eCategory['name']).'</h3>';
-				$h .= $this->getUpdateProducts($eFarm, $type, $ccProduct[$eCategory['id']]);
+				$h .= $this->getUpdateProducts($eFarm, $e, $ccProduct[$eCategory['id']]);
 
 			}
 
@@ -527,10 +534,16 @@ class ProductUi {
 
 	}
 
-	public function getUpdateProducts(\farm\Farm $eFarm, string $type, \Collection $cProduct): string {
+	public function getUpdateProducts(\farm\Farm $eFarm, Date|Catalog $e, \Collection $cProduct): string {
 
+		$type = $e['type'];
 		$taxes = $eFarm->getSelling('hasVat') ? '<span class="util-annotation">'.\selling\CustomerUi::getTaxes($type).'</span>' : '';
 		$hasSold = $cProduct->contains(fn($eProduct) => $eProduct['sold'] !== NULL);
+
+		$canUpdate = (
+			($e instanceof Date and $e['source'] === Date::DIRECT) or
+			($e instanceof Catalog)
+		);
 
 		$h = '<div class="'.($type === Date::PRIVATE ? 'util-overflow-xs' : 'util-overflow-sm').' stick-xs">';
 			$h .= '<table class="tr-even">';
@@ -545,11 +558,16 @@ class ProductUi {
 						if($hasSold) {
 							$h .= '<th class="text-end highlight">'.s("Vendu").'</th>';
 						}
-						$h .= '<th class="text-end">';
-							$h .= '<span class="hide-md-down">'.s("Vente en cours").'</span>';
-							$h .= '<span class="hide-lg-up">'.s("Vente").'</span>';
-						$h .= '</th>';
-						$h .= '<th></th>';
+						if($canUpdate) {
+							$h .= '<th class="text-center">';
+								$h .= s("En vente");
+							$h .= '</th>';
+							$h .= '<th></th>';
+						} else {
+							$h .= '<th class="td-min-content">';
+								$h .= s("État");
+							$h .= '</th>';
+						}
 					$h .= '</tr>';
 				$h .= '</theaf>';
 				$h .= '<tbody>';
@@ -582,7 +600,12 @@ class ProductUi {
 							}
 
 							$h .= '<td class="text-end highlight" style="white-space: nowrap">';
-								$h .= $eProduct->quick('price', \util\TextUi::money($eProduct['price']).' / '.\main\UnitUi::getSingular($eProductSelling['unit'], short: TRUE, by: TRUE));
+								$price = \util\TextUi::money($eProduct['price']).' / '.\main\UnitUi::getSingular($eProductSelling['unit'], short: TRUE, by: TRUE);
+								if($canUpdate) {
+									$h .= $eProduct->quick('price', $price);
+								} else {
+									$h .= $price;
+								}
 							$h .= '</td>';
 							$h .= '<td class="text-end">';
 								if($eProduct['available'] === NULL) {
@@ -590,27 +613,39 @@ class ProductUi {
 								} else {
 									$available = $eProduct['available'];
 								}
-								$h .= $eProduct->quick('available', $available);
+								if($canUpdate) {
+									$h .= $eProduct->quick('available', $available);
+								} else {
+									$h .= $available;
+								}
 							$h .= '</td>';
 							if($hasSold) {
 								$h .= '<td class="text-end highlight">';
 									$h .= $eProduct['sold'] ?? 0;
 								$h .= '</td>';
 							}
-							$h .= '<td class="text-end">';
-								$h .= $this->toggle($eProduct);
-							$h .= '</td>';
-							$h .= '<td class="td-min-content">';
 
-								if(empty($eProduct['sold'])) {
-									$h .= '<a data-ajax="/shop/product:doDelete" class="btn btn-danger" data-confirm="'.s("Voulez-vous vraiment supprimer ce produit de cette vente ?").'" post-id="'.$eProduct['id'].'">'.\Asset::icon('trash-fill').'</a>';
-								} else {
-									$h .= '<a class="btn btn-secondary btn-disabled" title="'.s("Vous ne pouvez pas supprimer ce produit car des ventes ont déjà été réalisées.").'">'.\Asset::icon('trash-fill').'</a>';
+							if($canUpdate) {
+								$h .= '<td class="text-center">';
+									$h .= $this->toggle($eProduct);
+								$h .= '</td>';
+								$h .= '<td class="td-min-content">';
 
-								}
+									if(empty($eProduct['sold'])) {
+										$h .= '<a data-ajax="/shop/product:doDelete" class="btn btn-danger" data-confirm="'.s("Voulez-vous vraiment supprimer ce produit de cette vente ?").'" post-id="'.$eProduct['id'].'">'.\Asset::icon('trash-fill').'</a>';
+									} else {
+										$h .= '<a class="btn btn-secondary btn-disabled" title="'.s("Vous ne pouvez pas supprimer ce produit car des ventes ont déjà été réalisées.").'">'.\Asset::icon('trash-fill').'</a>';
+									}
 
-							$h .= '</div>';
-							$h .= '</td>';
+								$h .= '</td>';
+							} else {
+								$h .= '<td class="td-min-content shop-product-manage-selling">';
+									$h .= match($eProduct['status']) {
+										Product::ACTIVE => '<span class="color-success">'.\Asset::icon('check-circle-fill').' '.s("En vente").'<span>',
+										Product::INACTIVE => '<span class="color-danger">'.\Asset::icon('x-circle-fill').' '.s("Désactivé").'<span>',
+									};
+								$h .= '</td>';
+							}
 
 						$h .= '</tr>';
 

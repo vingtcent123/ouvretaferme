@@ -121,7 +121,43 @@ class Date extends DateElement {
 				return $deliveryDate >= substr($this['orderEndAt'], 0, 10);
 			},
 
+			'catalogs.check' => function(?array &$catalogs) use ($input) {
+
+				$this->expects(['farm', 'type']);
+
+				if($this['source'] !== Date::CATALOG) {
+					return TRUE;
+				}
+
+				if(
+					$catalogs === NULL or
+					count($catalogs) === 0
+				) {
+					return FALSE;
+				}
+
+				$cCatalog = Catalog::model()
+					->select('id')
+					->whereId('IN', $catalogs)
+					->whereType($this['type'])
+					->whereFarm($this['farm'])
+					->whereStatus(Catalog::ACTIVE)
+					->getCollection();
+
+				if($cCatalog->count() !== count($catalogs)) {
+					return FALSE;
+				} else {
+					$catalogs = $cCatalog->getIds();
+					return TRUE;
+				}
+
+			},
+
 			'productsList.check' => function(mixed $products) use ($input) {
+
+				if($this['source'] !== Date::DIRECT) {
+					return TRUE;
+				}
 
 				$this->expects([
 					'shop' => ['type']

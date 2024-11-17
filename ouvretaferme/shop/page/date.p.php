@@ -26,6 +26,8 @@
 			$data->eDateBase['cProduct'] = \shop\ProductLib::getForCopy($data->eShop, $data->eDateBase);
 		}
 
+
+		$data->e['cCatalog'] = \shop\CatalogLib::getByFarm($data->eFarm, type: $data->e['type']);
 		$data->e['cCategory'] = \selling\CategoryLib::getByFarm($data->eFarm, index: 'id');
 		$data->e['ccPoint'] = \shop\PointLib::getByFarm($data->eFarm);
 
@@ -64,6 +66,12 @@
 
 		$data->e['cCategory'] = \selling\CategoryLib::getByFarm($data->eFarm);
 		$data->e['ccPoint'] = \shop\PointLib::getByDate($data->e);
+
+		if($data->e['catalogs']) {
+			$data->e['cCatalog'] = \shop\CatalogLib::getByIds($data->e['catalogs'], index: 'id');
+		} else {
+			$data->e['cCatalog'] = new Collection();
+		}
 
 		throw new \ViewAction($data);
 

@@ -7,6 +7,9 @@ class DateUi {
 
 		\Asset::css('shop', 'date.css');
 
+		\Asset::css('shop', 'manage.css');
+		\Asset::js('shop', 'manage.js');
+
 	}
 
 	public static function name(Date $e): string {
@@ -241,6 +244,12 @@ class DateUi {
 			'firstColumnSize' => 25
 		]);
 
+		if($e['cCatalog']->empty()) {
+			$e['source'] = Date::DIRECT;
+		} else {
+			$e['source'] = NULL;
+		}
+
 		// $eDateBase est la date de référence sur laquelle baser la nouvelle date à créer.
 		if($eDateBase->notEmpty()) {
 
@@ -262,9 +271,12 @@ class DateUi {
 			}
 
 			$e['points'] = $eDateBase['points'];
+			$e['catalogs'] = $eDateBase['catalogs'];
+			$e['source'] ??= $eDateBase['source'];
 
 		} else {
 			$e['points'] = [];
+			$e['catalogs'] = [];
 		}
 
 		$e['cProduct'] = $cProduct;
@@ -296,11 +308,18 @@ class DateUi {
 				$form->fake($grid)
 			);
 
-			$h .= $form->group(
-				s("Gamme proposée à la vente").$form->asterisk(),
-				$form->dynamicField($e, 'productsList'),
-				['wrapper' => 'productsList', 'for' => FALSE]
-			);
+			if($e['cCatalog']->notEmpty()) {
+				$h .= $form->dynamicGroup($e, 'source*');
+				$h .= '<div data-ref="date-catalog" class="'.($e['source'] === Date::CATALOG ? '' : 'hide').'">';
+					$h .= $form->dynamicGroup($e, 'catalogs*');
+				$h .= '</div>';
+			} else {
+				$h .= $form->hidden('source', Date::DIRECT);
+			}
+
+			$h .= '<div data-ref="date-direct" class="'.($e['source'] === Date::DIRECT ? '' : 'hide').'">';
+				$h .= $form->dynamicGroup($e, 'productsList*');
+			$h .= '</div>';
 
 			$h .= '<br/>';
 
@@ -362,91 +381,7 @@ class DateUi {
 		);
 	}
 
-	public static function getProducts(\util\FormUi $form, Date $eDate): string {
-
-		\Asset::css('shop', 'shop.css');
-		\Asset::css('shop', 'manage.css');
-		\Asset::js('shop', 'manage.js');
-
-		$eDate->expects(['farm', 'cProduct', 'cCategory']);
-
-		$eFarm = $eDate['farm'];
-
-		if($eDate['cProduct']->empty()) {
-			$h = '<div class="util-block-requirement">';
-				$h .= '<p>'.s("Avant d'enregistrer une nouvelle date, vous devez renseigner les produits que vous souhaitez proposer à la vente dans votre ferme !").'</p>';
-				$h .= '<a href="'.\farm\FarmUi::urlSellingProduct($eFarm).'" class="btn btn-secondary">'.s("Renseigner mes produits").'</a>';
-			$h .= '</div>';
-			return $h;
-		}
-
-		if($eDate['cCategory']->empty()) {
-			return self::getProductsByCategory($form, $eDate, $eDate['cProduct']);
-		}
-
-		$ccProduct = $eDate['cProduct']->reindex(['category']);
-
-		$h = '<div class="tabs-h" id="date-products-tabs" onrender="'.encode('Lime.Tab.restore(this)').'">';
-
-			$h .= '<div class="tabs-item">';
-
-				foreach($eDate['cCategory'] as $eCategory) {
-
-					if($ccProduct->offsetExists($eCategory['id']) === FALSE) {
-						continue;
-					}
-
-					$products = $ccProduct[$eCategory['id']]->find(fn($eProduct) => $eProduct['checked'] ?? FALSE)->count();
-
-					$h .= '<a class="tab-item " data-tab="'.$eCategory['id'].'" onclick="Lime.Tab.select(this)">';
-						$h .= encode($eCategory['name']);
-						$h .= '<span class="tab-item-count">';
-							if($products > 0) {
-								$h .= $products;
-							}
-						$h .= '</span>';
-					$h .= '</a>';
-
-				}
-
-				if($ccProduct->offsetExists('')) {
-
-					$products = $ccProduct['']->find(fn($eProduct) => $eProduct['checked'] ?? FALSE)->count();
-
-					$h .= '<a class="tab-item " data-tab="empty" onclick="Lime.Tab.select(this)">';
-						$h .= s("Non catégorisé");
-						$h .= '<span class="tab-item-count">';
-							if($products > 0) {
-								$h .= $products;
-							}
-						$h .= '</span>';
-					$h .= '</a>';
-				}
-
-			$h .= '</div>';
-
-			$h .= '<div class="tabs-panel '.($eDate->exists() ? '' : 'util-block').' stick-sm">';
-
-				foreach($ccProduct as $category => $cProduct) {
-
-					$h .= '<div class="tab-panel" data-tab="'.($category ?: 'empty').'">';
-						$h .= self::getProductsByCategory($form, $eDate, $cProduct);
-					$h .= '</div>';
-
-				}
-
-			$h .= '</div>';
-		$h .= '</div>';
-
-		return $h;
-
-	}
-
-	public static function getPoints(\util\FormUi $form, Date $eDate): string {
-
-		\Asset::css('shop', 'shop.css');
-		\Asset::css('shop', 'manage.css');
-		\Asset::js('shop', 'manage.js');
+	public function getPoints(\util\FormUi $form, Date $eDate): string {
 
 		$eDate->expects(['farm', 'ccPoint']);
 
@@ -537,6 +472,8 @@ class DateUi {
 			return '<div class="util-info">'.s("Il n'y a aucune vente à afficher.").'</div>';
 		}
 
+		$cCatalog = $eShop['cCatalog'];
+
 		$h = '<div class="dates-item-wrapper stick-sm util-overflow-sm">';
 
 			$h .= '<table class="sale-item-table tr-bordered tr-even">';
@@ -571,7 +508,12 @@ class DateUi {
 							$h .= '</td>';
 
 							$h .= '<td class="text-end highlight">';
-								$h .= '<a href="'.ShopUi::adminDateUrl($eFarm, $eShop, $eDate).'?tab=products">'.$eDate['products'].'</a>';
+								$h .= '<a href="'.ShopUi::adminDateUrl($eFarm, $eShop, $eDate).'?tab=products">';
+									$h .= match($eDate['source']) {
+										Date::DIRECT => $eDate['products'],
+										Date::CATALOG => $cCatalog[$eDate['catalogs'][0]]['products'] ?? 0
+									};
+								$h .= '</a>';
 							$h .= '</td>';
 
 							$h .= '<td class="text-end">';
@@ -690,7 +632,11 @@ class DateUi {
 	
 	public function getContent(\farm\Farm $eFarm, Shop $eShop, Date $eDate, \Collection $cSale): string {
 
-		$cProduct = $eDate['cProduct'];
+		[
+			'cProduct' => $cProduct,
+			'cCatalog' => $cCatalog
+		] = $eDate;
+
 		$h = '<div class="tabs-h" id="shop-date-tabs" onrender="'.encode('Lime.Tab.restore(this, "products"'.(get_exists('tab') ? ', "'.GET('tab', ['products', 'sales'], 'products').'"' : '').')').'">';
 
 			$h .= '<div class="tabs-item">';
@@ -720,20 +666,50 @@ class DateUi {
 
 				$h .= '<div class="util-action">';
 				
-					$h .= '<div></div>';
-				
-					$h .= '<a href="/shop/product:create?date='.$eDate['id'].'" class="btn btn-primary">';
-						$h .= \Asset::icon('plus-circle').' ';
-						if($cProduct->empty()) {
-							$h .= s("Ajouter des produits à la vente");
-						} else {
-							$h .= s("Ajouter d'autres produits à la vente");
+					$h .= '<div>';
+
+						if($eDate['source'] === Date::CATALOG) {
+
+							switch($cCatalog->count()) {
+
+								case 1 :
+									$h .= '<div>';
+										$h .= '<span class="shop-product-manage-catalog">'.\Asset::icon('lock-fill').'</span>'.s("Produits contrôlés par le catalogue {value}", '<span style="font-weight: bold; text-transform: uppercase">'.encode($cCatalog->first()['name']).'</span>');
+									$h .= '</div>';
+									break;
+
+								default :
+									throw new \Exception('Not handled');
+							}
+
 						}
-					$h .= '</a>';
+
+					$h .= '</div>';
+
+					switch($eDate['source']) {
+
+						case Date::CATALOG :
+							$h .= '<a href="'.\farm\FarmUi::urlShopCatalog($eFarm).'?catalog='.$cCatalog->first()['id'].'" class="btn btn-primary">';
+								$h .= s("Modifier le catalogue");
+							$h .= '</a>';
+							break;
+
+						case Date::DIRECT :
+							$h .= '<a href="/shop/product:create?date='.$eDate['id'].'" class="btn btn-primary">';
+								$h .= \Asset::icon('plus-circle').' ';
+								if($cProduct->empty()) {
+									$h .= s("Ajouter des produits à la vente");
+								} else {
+									$h .= s("Ajouter d'autres produits à la vente");
+								}
+							$h .= '</a>';
+							break;
+
+					}
 
 				$h .= '</div>';
 
-				$h .= (new \shop\ProductUi())->getUpdateList($eFarm, $eDate['type'], $cProduct, $eDate['cCategory']);
+				$h .= (new \shop\ProductUi())->getUpdateList($eFarm, $eDate, $cProduct, $eDate['cCategory']);
 				$h .= '<br />';
 			$h .= '</div>';
 
@@ -821,6 +797,9 @@ class DateUi {
 			'orderStartAt' => s("Ouverture des commandes"),
 			'orderEndAt' => s("Fin des commandes"),
 			'deliveryDate' => s("Date de livraison des commandes"),
+			'source' => s("Gamme de produits proposée à la vente"),
+			'catalogs' => s("Choisir un catalogue"),
+			'productsList' => s("Choisir les produits proposés à la vente"),
 			'status' => s("Statut"),
 			'points' => s("Modes de livraison pour cette vente"),
 		]);
@@ -835,14 +814,46 @@ class DateUi {
 				];
 				break;
 
+			case 'source' :
+				$d->values = [
+					Date::CATALOG => s("Passer par un catalogue"),
+					Date::DIRECT => s("Choisir mes produits"),
+				];
+				$d->attributes = [
+					'callbackRadioAttributes' => function() {
+						return [
+							'onchange' => 'DateManage.changeSource(this)',
+						];
+					}
+				];
+				break;
+
 			case 'deliveryDate' ;
 				$d->prepend = s("Le");
+				break;
+
+			case 'catalogs' :
+				$d->field = 'radio';
+				$d->default = fn(Date $e) => $e['catalogs'] ?
+					new Catalog(['id' => first($e['catalogs'])]) :
+					(($e['cCatalog']->count() === 1) ?
+						$e['cCatalog']->first() :
+						new Catalog());
+				$d->values = fn(Date $e) => $e['cCatalog']->toArray(fn($eCatalog) => [
+					'value' => $eCatalog['id'],
+					'label' => encode($eCatalog['name']).' <small>/ '.p("{value} produit", "{value} produits", $eCatalog['products']).'</small>'
+				]) ?? $e->expects(['cCatalog']);
+				$d->attributes['mandatory'] = TRUE;
 				break;
 
 			case 'productsList' :
 				$d->field = function(\util\FormUi $form, Date $e) {
 					return (new ProductUi())->getCreateList($form, $e['farm'], $e['type'], $e['cProduct'], $e['cCategory'], $e->exists() ? '' : 'util-block');
 				};
+				$d->group = [
+					'wrapper' => 'productsList',
+					'for' => FALSE
+				];
 				break;
 
 			case 'points':
