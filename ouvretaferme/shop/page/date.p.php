@@ -48,6 +48,8 @@
 
 		$data->eFarm = \farm\FarmLib::getById($data->eShop['farm']);
 
+		\farm\FarmerLib::setView('viewShop', $data->eFarm, \farm\Farmer::SHOP);
+
 		\farm\FarmerLib::register($data->eFarm);
 
 		$data->e['farm'] = $data->eFarm;

@@ -14,17 +14,18 @@ class Product extends ProductElement {
 	}
 
 	public function getTaxes(): string {
-
-		return match($this['type']) {
-			Product::PRIVATE => s("TTC"),
-			Product::PRO => s("HT"),
-		};
-
+		return \selling\CustomerUi::getTaxes($this['type']);
 	}
 
 	public function canWrite(): bool {
 
-		return $this['date']->canWrite();
+		if($this['date']->notEmpty()) {
+			return $this['date']->canWrite();
+		} else if($this['catalog']->notEmpty()) {
+			return $this['catalog']->canWrite();
+		} else {
+			throw new \Exception('No date, no catalog');
+		}
 
 	}
 

@@ -728,7 +728,7 @@ class DateUi {
 
 				$h .= '</div>';
 
-				$h .= (new \shop\ProductUi())->getUpdateList($eDate, $cProduct, $eDate['cCategory']);
+				$h .= (new \shop\ProductUi())->getUpdateList($eFarm, $eDate['type'], $cProduct, $eDate['cCategory']);
 				$h .= '<br />';
 			$h .= '</div>';
 

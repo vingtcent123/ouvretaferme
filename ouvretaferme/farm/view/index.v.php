@@ -626,7 +626,7 @@ new AdaptativeView('/ferme/{id}/catalogues', function($data, FarmTemplate $t) {
 
 		echo '<br/>';
 
-		echo (new \shop\CatalogUi())->getList($data->eFarm, $data->cCatalog, $data->eCatalogSelected);
+		echo (new \shop\CatalogUi())->getList($data->eFarm, $data->cCatalog, $data->products, $data->eCatalogSelected);
 
 	}
 

@@ -3,9 +3,9 @@ namespace shop;
 
 class CatalogUi {
 
-	public function getList(\farm\Farm $eFarm, \Collection $cCatalog, Catalog $eCatalogSelected) {
+	public function getList(\farm\Farm $eFarm, \Collection $cCatalog, array $products, Catalog $eCatalogSelected) {
 
-		$h = $this->getCatalogs($cCatalog, $eCatalogSelected);
+		$h = $this->getCatalogs($cCatalog, $products, $eCatalogSelected);
 
 		if($eCatalogSelected->empty()) {
 			$h .= '<div class="util-info">'.s("Sélectionnez un catalogue pour voir les produits associés !").'</div>';
@@ -22,19 +22,16 @@ class CatalogUi {
 		$h .= '<div class="util-action">';
 
 			$h .= '<div>';
-				if($cProduct->notEmpty()) {
-					$h .= '<h2>';
-						$h .= p("{value} produit", "{value} produits", $cProduct->count());
-					$h .= '</h2>';
-				} else {
-				}
 			$h .= '</div>';
-			$h .= '<a data-dropdown="bottom-end" class="dropdown-toggle btn btn-primary">'.\Asset::icon('gear-fill').'</a>';
-			$h .= '<div class="dropdown-list">';
-				$h .= '<div class="dropdown-title">'.encode($eCatalogSelected['name']).'</div>';
-				$h .= '<a href="/shop/catalog:update?id='.$eCatalogSelected['id'].'" class="dropdown-item">'.s("Modifier le catalogue").'</a>';
-				$h .= '<div class="dropdown-divider"></div>';
-				$h .= '<a data-ajax="/shop/catalog:doDelete" post-id="'.$eCatalogSelected['id'].'" data-confirm="'.s("Êtes-vous sûr de vouloir supprimer ce catalogue ? Vous ne pourrez plus y accéder mais il restera actif sur les ventes où il est actuellement configuré.").'" class="dropdown-item">'.s("Supprimer le catalogue").'</a>';
+			$h .= '<div>';
+				$h .= '<a href="/shop/product:create?catalog='.$eCatalogSelected['id'].'" class="btn btn-primary">'.\Asset::icon('plus-circle').' '.s("Ajouter des produits").'</a> ';
+				$h .= '<a data-dropdown="bottom-end" class="dropdown-toggle btn btn-primary">'.\Asset::icon('gear-fill').'</a>';
+				$h .= '<div class="dropdown-list">';
+					$h .= '<div class="dropdown-title">'.encode($eCatalogSelected['name']).'</div>';
+					$h .= '<a href="/shop/catalog:update?id='.$eCatalogSelected['id'].'" class="dropdown-item">'.s("Modifier le catalogue").'</a>';
+					$h .= '<div class="dropdown-divider"></div>';
+					$h .= '<a data-ajax="/shop/catalog:doDelete" post-id="'.$eCatalogSelected['id'].'" data-confirm="'.s("Êtes-vous sûr de vouloir supprimer ce catalogue ? Vous ne pourrez plus y accéder mais il restera actif sur les ventes où il est actuellement configuré.").'" class="dropdown-item">'.s("Supprimer le catalogue").'</a>';
+				$h .= '</div>';
 			$h .= '</div>';
 		$h .= '</div>';
 
@@ -47,14 +44,14 @@ class CatalogUi {
 			$h .= '</div>';
 
 		} else {
-			$h .= (new \shop\ProductUi())->getUpdateList($eCatalogSelected, $cProduct, $cCategory);
+			$h .= (new \shop\ProductUi())->getUpdateList($eFarm, $eCatalogSelected['type'], $cProduct, $cCategory);
 		}
 
 		return $h;
 
 	}
 
-	protected function getCatalogs(\Collection $cCatalog, Catalog $eCatalogSelected): string {
+	protected function getCatalogs(\Collection $cCatalog, array $products, Catalog $eCatalogSelected): string {
 
 		$h = '';
 
@@ -66,7 +63,7 @@ class CatalogUi {
 
 					$url = \util\HttpUi::setArgument(LIME_REQUEST, 'catalog', $eCatalog['id'], FALSE);
 
-					$h .= '<a href="'.$url.'" class="tab-item '.(($eCatalogSelected->notEmpty() and $eCatalogSelected['id'] === $eCatalog['id']) ? 'selected' : '').'">'.encode($eCatalog['name']).'</a>';
+					$h .= '<a href="'.$url.'" class="tab-item '.(($eCatalogSelected->notEmpty() and $eCatalogSelected['id'] === $eCatalog['id']) ? 'selected' : '').'">'.encode($eCatalog['name']).' <small class="tab-item-count">'.($products[$eCatalog['id']] ?? 0).'</small></a>';
 
 				}
 

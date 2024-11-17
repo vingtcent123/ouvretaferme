@@ -37,6 +37,21 @@ class ProductLib extends ProductCrud {
 
 	}
 
+	public static function countByCatalog(\farm\Farm $eFarm): array {
+
+		return Product::model()
+			->select([
+				'catalog',
+				'count' => new \Sql('COUNT(*)', 'int')
+			])
+			->whereFarm($eFarm)
+			->whereCatalog('!=', NULL)
+			->group('catalog')
+			->getCollection()
+			->toArray(fn($eProduct) => [$eProduct['catalog']['id'], $eProduct['count']], TRUE);
+
+	}
+
 	public static function countByDate(Date $eDate): int {
 
 		$eDate->expects(['catalogs']);
@@ -80,12 +95,16 @@ class ProductLib extends ProductCrud {
 
 	public static function getByCatalog(Catalog $eCatalog, bool $onlyActive = TRUE): \Collection {
 
-		return Product::model()
+		$cProduct = Product::model()
 			->select(Product::getSelection())
 			->whereCatalog($eCatalog)
 			->whereStatus(Product::ACTIVE, if: $onlyActive)
 			->getCollection(NULL, NULL, 'product')
 			->sort(['product' => ['name']], natural: TRUE);
+
+		$cProduct->setColumn('sold', NULL);
+
+		return $cProduct;
 
 	}
 
@@ -211,25 +230,29 @@ class ProductLib extends ProductCrud {
 
 	public static function delete(Product $eProduct): void {
 
-		$eProduct->expects(['id', 'date', 'shop']);
+		$eProduct->expects(['id', 'date', 'shop', 'catalog']);
 
-		$cSale = \selling\Sale::model()
-			->select('id')
-			->whereFrom(\selling\Sale::SHOP)
-			->whereShopDate($eProduct['date'])
-			->getCollection();
+		if($eProduct['date']->notEmpty()) {
 
-		if($cSale->notEmpty()) {
-			$hasItems = \selling\Item::model()
-				->whereProduct($eProduct['product'])
-				->whereSale('in', $cSale)
-				->count() > 0;
-		} else {
-			$hasItems = FALSE;
-		}
+			$cSale = \selling\Sale::model()
+				->select('id')
+				->whereFrom(\selling\Sale::SHOP)
+				->whereShopDate($eProduct['date'])
+				->getCollection();
 
-		if($hasItems) {
-			throw new \NotExpectedAction('This product has already been sold.');
+			if($cSale->notEmpty()) {
+				$hasItems = \selling\Item::model()
+					->whereProduct($eProduct['product'])
+					->whereSale('in', $cSale)
+					->exists();
+			} else {
+				$hasItems = FALSE;
+			}
+
+			if($hasItems) {
+				throw new \NotExpectedAction('This product has already been sold.');
+			}
+
 		}
 
 		Product::model()->beginTransaction();

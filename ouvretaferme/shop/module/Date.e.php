@@ -12,12 +12,7 @@ class Date extends DateElement {
 	}
 
 	public function getTaxes(): string {
-
-		return match($this['type']) {
-			Date::PRIVATE => s("TTC"),
-			Date::PRO => s("HT"),
-		};
-
+		return \selling\CustomerUi::getTaxes($this['type']);
 	}
 
 	public function canRead(): bool {

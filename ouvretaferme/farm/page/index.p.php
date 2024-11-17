@@ -205,6 +205,7 @@
 
 		\farm\FarmerLib::setView('viewShop', $data->eFarm, \farm\Farmer::CATALOG);
 
+		$data->products = \shop\ProductLib::countByCatalog($data->eFarm);
 		$data->cCatalog = \shop\CatalogLib::getByFarm($data->eFarm, index: 'id');
 		$data->eCatalogSelected = new \shop\Catalog();
 
