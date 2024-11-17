@@ -951,9 +951,16 @@ class FarmUi {
 
 	public function getShopCategories(): array {
 
+		if(LIME_ENV === 'dev') {
+			return [
+				Farmer::SHOP => s("Boutiques"),
+				Farmer::CATALOG => s("Catalogues"),
+				Farmer::POINT => s("Livraisons"),
+			];
+		}
+
 		return [
 			Farmer::SHOP => s("Boutiques"),
-			//Farmer::CATALOG => s("Catalogues"),
 			Farmer::POINT => s("Livraisons"),
 		];
 

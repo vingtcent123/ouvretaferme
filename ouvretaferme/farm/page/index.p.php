@@ -235,9 +235,13 @@
 
 		}
 
-		$data->cProduct = $data->eCatalogSelected ?
-			new Collection() :
-			\shop\ProductLib::getByCatalog($data->eCatalogSelected);
+		if($data->eCatalogSelected->empty()) {
+			$data->eCatalogSelected['cProduct'] = new Collection();
+			$data->eCatalogSelected['cCategory'] = new Collection();
+		} else {
+			$data->eCatalogSelected['cProduct'] = \shop\ProductLib::getByCatalog($data->eCatalogSelected);
+			$data->eCatalogSelected['cCategory'] = \selling\CategoryLib::getByFarm($data->eFarm, index: 'id');
+		}
 
 		throw new ViewAction($data);
 

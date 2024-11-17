@@ -43,16 +43,14 @@ class ProductModel extends \ModuleModel {
 
 		$this->properties = array_merge($this->properties, [
 			'id' => ['serial32', 'cast' => 'int'],
-			'shop' => ['element32', 'shop\Shop', 'cast' => 'element'],
+			'shop' => ['element32', 'shop\Shop', 'null' => TRUE, 'cast' => 'element'],
 			'date' => ['element32', 'shop\Date', 'null' => TRUE, 'cast' => 'element'],
 			'type' => ['enum', [\shop\Product::PRIVATE, \shop\Product::PRO], 'cast' => 'enum'],
 			'farm' => ['element32', 'farm\Farm', 'cast' => 'element'],
 			'catalog' => ['element32', 'shop\Catalog', 'null' => TRUE, 'cast' => 'element'],
 			'product' => ['element32', 'selling\Product', 'cast' => 'element'],
 			'packaging' => ['decimal', 'digits' => 6, 'decimal' => 2, 'min' => 0.01, 'max' => NULL, 'null' => TRUE, 'cast' => 'float'],
-			'packagingCustom' => ['bool', 'cast' => 'bool'],
 			'price' => ['decimal', 'digits' => 8, 'decimal' => 2, 'min' => 0.0, 'max' => NULL, 'cast' => 'float'],
-			'priceCustom' => ['bool', 'cast' => 'bool'],
 			'saleStartAt' => ['datetime', 'null' => TRUE, 'cast' => 'string'],
 			'saleEndAt' => ['datetime', 'null' => TRUE, 'cast' => 'string'],
 			'available' => ['float32', 'min' => 0.0, 'max' => NULL, 'null' => TRUE, 'cast' => 'float'],
@@ -60,7 +58,7 @@ class ProductModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'shop', 'date', 'type', 'farm', 'catalog', 'product', 'packaging', 'packagingCustom', 'price', 'priceCustom', 'saleStartAt', 'saleEndAt', 'available', 'status'
+			'id', 'shop', 'date', 'type', 'farm', 'catalog', 'product', 'packaging', 'price', 'saleStartAt', 'saleEndAt', 'available', 'status'
 		]);
 
 		$this->propertiesToModule += [
@@ -87,12 +85,6 @@ class ProductModel extends \ModuleModel {
 	public function getDefaultValue(string $property) {
 
 		switch($property) {
-
-			case 'packagingCustom' :
-				return FALSE;
-
-			case 'priceCustom' :
-				return FALSE;
 
 			case 'status' :
 				return Product::ACTIVE;
@@ -161,16 +153,8 @@ class ProductModel extends \ModuleModel {
 		return $this->where('packaging', ...$data);
 	}
 
-	public function wherePackagingCustom(...$data): ProductModel {
-		return $this->where('packagingCustom', ...$data);
-	}
-
 	public function wherePrice(...$data): ProductModel {
 		return $this->where('price', ...$data);
-	}
-
-	public function wherePriceCustom(...$data): ProductModel {
-		return $this->where('priceCustom', ...$data);
 	}
 
 	public function whereSaleStartAt(...$data): ProductModel {

@@ -3,7 +3,7 @@ namespace shop;
 
 class CatalogUi {
 
-	public function getList(\farm\Farm $eFarm, \Collection $cCatalog, Catalog $eCatalogSelected, \Collection $cProduct) {
+	public function getList(\farm\Farm $eFarm, \Collection $cCatalog, Catalog $eCatalogSelected) {
 
 		$h = $this->getCatalogs($cCatalog, $eCatalogSelected);
 
@@ -11,6 +11,13 @@ class CatalogUi {
 			$h .= '<div class="util-info">'.s("Sélectionnez un catalogue pour voir les produits associés !").'</div>';
 			return $h;
 		}
+
+		$eCatalogSelected->expects(['cProduct', 'cCategory']);
+
+		[
+			'cProduct' => $cProduct,
+			'cCategory' => $cCategory,
+		] = $eCatalogSelected;
 
 		$h .= '<div class="util-action">';
 
@@ -36,9 +43,11 @@ class CatalogUi {
 			$h .= '<div class="util-block-help">';
 				$h .= '<h4>'.s("Ce catalogue de vente est encore vide").'</h4>';
 				$h .= '<p>'.s("Ajoutez les produits qui sont actuellement disponibles à la vente dans votre ferme avant de déployer le catalogue sur vos boutiques en ligne.").'</p>';
-				$h .= '<a href="XXX" class="btn btn-secondary">'.s("Ajouter des produits").'</a>';
+				$h .= '<a href="/shop/product:create?catalog='.$eCatalogSelected['id'].'" class="btn btn-secondary">'.s("Ajouter des produits").'</a>';
 			$h .= '</div>';
 
+		} else {
+			$h .= (new \shop\ProductUi())->getUpdateList($eCatalogSelected, $cProduct, $cCategory);
 		}
 
 		return $h;

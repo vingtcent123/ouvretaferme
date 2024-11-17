@@ -53,16 +53,14 @@ Point:
 
 Product:
   id: serial32
-  shop: shop\Shop
+  shop: ?shop\Shop
   date: ?shop\Date
   type: enum(PRIVATE, PRO)
   farm: farm\Farm
   catalog: ?shop\Catalog
   product: selling\Product
   packaging: ?decimal(6, 2, 0.01, null)
-  packagingCustom: bool = FALSE
   price: decimal(8, 2, 0.0, null)
-  priceCustom: bool = FALSE
   saleStartAt: ?datetime
   saleEndAt: ?datetime
   available: ?float32(0.0, null)

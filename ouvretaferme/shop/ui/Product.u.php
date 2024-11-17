@@ -552,7 +552,7 @@ class ProductUi {
 				$h .= '<tbody>';
 
 					foreach($cProduct as $eProduct) {
-						$h .= $this->getUpdateProduct($eDate, $eProduct);
+						$h .= $this->getUpdateProduct($eDate['type'], $eProduct);
 					}
 
 				$h .= '</tbody>';
@@ -563,7 +563,7 @@ class ProductUi {
 
 	}
 
-	public function getUpdateProduct(Date $eDate, Product $eProduct): string {
+	public function getUpdateProduct(string $type, Product $eProduct): string {
 
 		$eProductSelling = $eProduct['product'];
 		$uiProductSelling = new \selling\ProductUi();
@@ -582,7 +582,7 @@ class ProductUi {
 				$h .= $uiProductSelling->getInfos($eProductSelling, includeStock: TRUE);
 			$h .= '</td>';
 
-			if($eDate['type'] === Date::PRO) {
+			if($type === Date::PRO) {
 				$h .= '<td class="td-min-content">';
 					if($eProduct['packaging'] !== NULL) {
 						$h .= s("Colis de {value}", \main\UnitUi::getValue($eProduct['packaging'], $eProductSelling['unit'], TRUE));
@@ -637,7 +637,7 @@ class ProductUi {
 			if($e instanceof Date) {
 				$h .= $form->hidden('date', $e['id']);
 			} else {
-				$h .= $form->hidden('date', $e['id']);
+				$h .= $form->hidden('catalog', $e['id']);
 			}
 
 			$h .= $form->hidden('farm', $eFarm['id']);

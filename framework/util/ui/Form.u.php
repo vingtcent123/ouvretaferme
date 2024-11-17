@@ -154,8 +154,12 @@ class FormUi {
 		$h = '<div data-wrapper="'.$wrapper.'" class="form-group '.($nested ? 'form-group-nested' : '').' '.$class.'" '.attrs($attributes).'>';
 
 		if(
-			str_starts_with($this->lastFieldType, 'radio') === FALSE and // No checkbox(es)
-			str_starts_with($this->lastFieldType, 'checkbox') === FALSE and // No radio(s)
+			(
+				$this->lastFieldType === NULL or (
+					str_starts_with($this->lastFieldType, 'radio') === FALSE and // No checkbox(es)
+					str_starts_with($this->lastFieldType, 'checkbox') === FALSE // No radio(s)
+				)
+			) and
 			$attributes['for'] ?? TRUE
 		) {
 			$for = 'for="'.$this->lastFieldId.'"';
