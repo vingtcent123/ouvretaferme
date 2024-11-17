@@ -151,7 +151,7 @@ class SaleLib {
 				'vatRate' => \Setting::get('selling\vatRates')[$eProductSelling['vat']],
 			]);
 
-			$total += $number * $eProduct['price'];
+			$total += $number * ($eProduct['packaging'] ?? 1) * $eProduct['price'];
 
 			$cItem->append($eItem);
 
@@ -272,7 +272,7 @@ class SaleLib {
 				'locked' => \selling\Item::PRICE
 			]);
 
-			$total += $number * $eProduct['price'];
+			$total += $number * ($eProduct['packaging'] ?? 1) * $eProduct['price'];
 
 			$cItem->append($eItem);
 
