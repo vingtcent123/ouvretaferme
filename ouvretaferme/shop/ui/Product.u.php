@@ -721,7 +721,7 @@ class ProductUi {
 							'onfocusout' => 'DateManage.checkAvailableFocusOut(this)',
 							'placeholder' => s("Illimité"),
 							'data-placeholder' => s("Illimité"),
-							'min' => $step,
+							'min' => 0,
 							'step' => $step,
 						]);
 
