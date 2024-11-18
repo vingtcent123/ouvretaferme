@@ -616,7 +616,7 @@ new AdaptativeView('/ferme/{id}/catalogues', function($data, FarmTemplate $t) {
 	} else {
 
 		echo '<div class="util-action">';
-			echo '<h1>'.s("Catalogues").'</h1>';
+			echo '<h1>'.s("Catalogues de vente").'</h1>';
 			echo '<div>';
 				if($data->eFarm->canManage()) {
 					echo '<a href="/shop/catalog:create?farm='.$data->eFarm['id'].'" class="btn btn-primary">'.\Asset::icon('plus-circle').'<span class="hide-xs-down"> '.s("Nouveau catalogue").'</span></a>';
