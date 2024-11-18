@@ -673,8 +673,16 @@ class DateUi {
 							switch($cCatalog->count()) {
 
 								case 1 :
+
+									$eCatalog = $cCatalog->first();
+									$catalogName = '<span style="text-transform: uppercase">'.encode($cCatalog->first()['name']).'</span>';
+
 									$h .= '<div class="color-secondary">';
-										$h .= '<span class="shop-product-manage-catalog">'.\Asset::icon('diagram-3-fill').'</span>'.s("Produits contrôlés par le catalogue {value}", '<span style="text-transform: uppercase">'.encode($cCatalog->first()['name']).'</span>');
+										$h .= '<span class="shop-product-manage-catalog">'.\Asset::icon('diagram-3-fill').'</span>';
+										$h .= match($eCatalog['status']) {
+											Catalog::ACTIVE => s("Produits contrôlés par le catalogue {value}", $catalogName),
+											Catalog::DELETED => s("Produits contrôlés par l'ancien catalogue {value} aujourd'hui supprimé", $catalogName)
+										};
 									$h .= '</div>';
 									break;
 
@@ -689,9 +697,17 @@ class DateUi {
 					switch($eDate['source']) {
 
 						case Date::CATALOG :
-							$h .= '<a href="'.\farm\FarmUi::urlShopCatalog($eFarm).'?catalog='.$cCatalog->first()['id'].'" class="btn btn-primary">';
-								$h .= s("Modifier le catalogue");
-							$h .= '</a>';
+
+							$eCatalog = $cCatalog->first();
+
+							if($eCatalog['status'] === Catalog::ACTIVE) {
+
+								$h .= '<a href="'.\farm\FarmUi::urlShopCatalog($eFarm).'?catalog='.$eCatalog['id'].'" class="btn btn-primary">';
+									$h .= s("Modifier le catalogue");
+								$h .= '</a>';
+
+							}
+
 							break;
 
 						case Date::DIRECT :
