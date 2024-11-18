@@ -612,6 +612,9 @@ class ProductUi {
 									$available = s("illimité");
 								} else {
 									$available = $eProduct['available'];
+									if($available === 0.0) {
+										$available = '<span class="color-danger">'.\Asset::icon('exclamation-triangle-fill').' '.$available.'</span>';
+									}
 								}
 								if($canUpdate) {
 									$h .= $eProduct->quick('available', $available);
@@ -639,18 +642,33 @@ class ProductUi {
 
 								$h .= '</td>';
 							} else {
+
 								$h .= '<td class="td-min-content shop-product-manage-selling">';
-									$h .= match($eProduct['status']) {
-										Product::ACTIVE => '<span class="color-success">'.\Asset::icon('check-circle-fill').' '.s("En vente").'<span>',
-										Product::INACTIVE => '<span class="color-danger">'.\Asset::icon('x-circle-fill').' '.s("Désactivé").'<span>',
+
+									switch($eProduct['status']) {
+
+										case Product::ACTIVE :
+											if($eProduct['available'] === 0.0) {
+												$h .= '<span class="color-danger">'.\Asset::icon('x-circle-fill').' '.s("Rupture de stock").'<span>';
+											} else {
+												$h .= '<span class="color-success">'.\Asset::icon('check-circle-fill').' '.s("En vente").'<span>';
+											}
+											break;
+
+										case Product::INACTIVE :
+											$h .= '<span class="color-danger">'.\Asset::icon('x-circle-fill').' '.s("Désactivé").'<span>';
+											break;
+
 									};
+
 								$h .= '</td>';
+
 							}
 
 						$h .= '</tr>';
 
 					}
-
+;
 				$h .= '</tbody>';
 			$h .= '</table>';
 		$h .= '</div>';
