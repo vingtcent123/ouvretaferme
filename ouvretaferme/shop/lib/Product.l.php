@@ -85,6 +85,42 @@ class ProductLib extends ProductCrud {
 
 	}
 
+	public static function aggregateBySales(\Collection $cSale, \Collection $cProductExclude = new \Collection()): \Collection {
+
+		$cItem = \selling\Item::model()
+			->select([
+				'product' => ['name', 'vignette', 'unit', 'category', 'variety', 'quality', 'size', 'stock'],
+				'packaging',
+				'price' => new \Sql('SUM(price) / SUM(IF(packaging IS NULL, 1, packaging) * number)', 'float'),
+				'sold' => new \Sql('SUM(number)', 'float'),
+			])
+			->where('sale', 'IN', $cSale)
+			->where('product', 'NOT IN', $cProductExclude)
+			->where('number > 0')
+			->group(['product', 'packaging'])
+			->getCollection();
+
+		$cProduct = new \Collection();
+
+		foreach($cItem as $eItem) {
+
+			$cProduct[] = new Product([
+				'product' => $eItem['product'],
+				'packaging' => $eItem['packaging'],
+				'price' => $eItem['price'],
+				'sold' => $eItem['sold'],
+				'saleStartAt' => NULL,
+				'saleEndAt' => NULL,
+				'available' => NULL,
+				'status' => Product::INACTIVE,
+			]);
+
+		}
+
+		return $cProduct;
+
+	}
+
 	public static function getByDate(Date $eDate, bool $onlyActive = TRUE, \selling\Sale $eSaleExclude = new \selling\Sale()): \Collection {
 
 		$cProduct = Product::model()

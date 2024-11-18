@@ -608,19 +608,27 @@ class ProductUi {
 								}
 							$h .= '</td>';
 							$h .= '<td class="text-end">';
-								if($eProduct['available'] === NULL) {
-									$available = s("illimité");
-								} else {
-									$available = $eProduct['available'];
-									if($available === 0.0) {
-										$available = '<span class="color-danger">'.\Asset::icon('exclamation-triangle-fill').' '.$available.'</span>';
+
+								if($eProduct->exists()) {
+
+									if($eProduct['available'] === NULL) {
+										$available = s("illimité");
+									} else {
+										$available = $eProduct['available'];
+										if($available === 0.0) {
+											$available = '<span class="color-danger">'.\Asset::icon('exclamation-triangle-fill').' '.$available.'</span>';
+										}
 									}
-								}
-								if($canUpdate) {
-									$h .= $eProduct->quick('available', $available);
+									if($canUpdate) {
+										$h .= $eProduct->quick('available', $available);
+									} else {
+										$h .= $available;
+									}
+
 								} else {
-									$h .= $available;
+									$h .= '-';
 								}
+
 							$h .= '</td>';
 							if($hasSold) {
 								$h .= '<td class="text-end highlight">';
@@ -656,7 +664,11 @@ class ProductUi {
 											break;
 
 										case Product::INACTIVE :
-											$h .= '<span class="color-danger">'.\Asset::icon('x-circle-fill').' '.s("Désactivé").'<span>';
+											if($eProduct->exists()) {
+												$h .= '<span class="color-danger">'.\Asset::icon('x-circle-fill').' '.s("Désactivé").'<span>';
+											} else {
+												$h .= '<span class="color-danger">'.\Asset::icon('x-circle-fill').' '.s("Hors catalogue").'<span>';
+											}
 											break;
 
 									};

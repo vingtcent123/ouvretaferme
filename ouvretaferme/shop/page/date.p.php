@@ -56,13 +56,14 @@
 
 		$data->e['farm'] = $data->eFarm;
 
-		if($data->e->notEmpty()) {
-			$data->e['cProduct'] = \shop\ProductLib::getByDate($data->e, onlyActive: FALSE);
-		}
+		$data->e['cProduct'] = \shop\ProductLib::getByDate($data->e, onlyActive: FALSE);
 
 		$data->cSale = \selling\SaleLib::getByDate($data->e, NULL, select: \selling\Sale::getSelection() + [
 			'shopPoint' => \shop\PointElement::getSelection()
 		]);
+
+		$data->e['cProduct']->mergeCollection(\shop\ProductLib::aggregateBySales($data->cSale, $data->e['cProduct']->getColumnCollection('product')));
+		$data->e['cProduct']->sort(['product' => ['name']], natural: TRUE);
 
 		$data->e['cCategory'] = \selling\CategoryLib::getByFarm($data->eFarm);
 		$data->e['ccPoint'] = \shop\PointLib::getByDate($data->e);

@@ -673,8 +673,8 @@ class DateUi {
 							switch($cCatalog->count()) {
 
 								case 1 :
-									$h .= '<div>';
-										$h .= '<span class="shop-product-manage-catalog">'.\Asset::icon('lock-fill').'</span>'.s("Produits contrôlés par le catalogue {value}", '<span style="font-weight: bold; text-transform: uppercase">'.encode($cCatalog->first()['name']).'</span>');
+									$h .= '<div class="color-secondary">';
+										$h .= '<span class="shop-product-manage-catalog">'.\Asset::icon('diagram-3-fill').'</span>'.s("Produits contrôlés par le catalogue {value}", '<span style="text-transform: uppercase">'.encode($cCatalog->first()['name']).'</span>');
 									$h .= '</div>';
 									break;
 
