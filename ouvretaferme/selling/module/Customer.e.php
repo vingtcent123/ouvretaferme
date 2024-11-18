@@ -135,9 +135,9 @@ class Customer extends CustomerElement {
 
 			'firstName.empty' => function(?string &$firstName): bool {
 
-				$this->expects(['category', 'user']);
+				$this->expects(['user']);
 
-				if($this['category'] !== Customer::PRIVATE) {
+				if($this->getCategory() !== Customer::PRIVATE) {
 					$firstName = NULL;
 					return TRUE;
 				}
@@ -153,9 +153,9 @@ class Customer extends CustomerElement {
 
 			'lastName.empty' => function(?string &$lastName, array $newProperties, array $validProperties): bool {
 
-				$this->expects(['category', 'user']);
+				$this->expects(['user']);
 
-				if($this['category'] !== Customer::PRIVATE) {
+				if($this->getCategory() !== Customer::PRIVATE) {
 					$lastName = NULL;
 					return TRUE;
 				}
@@ -176,9 +176,9 @@ class Customer extends CustomerElement {
 
 			'name.empty' => function(?string &$name): bool {
 
-				$this->expects(['category', 'user']);
+				$this->expects(['user']);
 
-				if($this['category'] === Customer::PRIVATE) {
+				if($this->getCategory() === Customer::PRIVATE) {
 					$name = NULL;
 					return TRUE;
 				}
