@@ -7,6 +7,8 @@ class AlertUi {
 
 		return match($fqn) {
 
+			'Cultivation::area.check' => s("Veuillez indiquer la surface consacrée à chaque série sélectionnée !"),
+
 			'Report::cultivations.check' => s("Veuillez sélectionner au moins une série pour construire le rapport !"),
 			'Report::products.check' => s("Veuillez sélectionner au moins un produit vendu pour construire le rapport !"),
 

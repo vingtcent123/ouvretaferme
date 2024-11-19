@@ -83,6 +83,8 @@ class Report extends ReportElement {
 					return FALSE;
 				}
 
+				$fw = new \FailWatch();
+
 				$cCultivationAnalyze = new \Collection();
 
 				$properties = POST('costsUser', 'bool') ? ['area', 'workingTime'] : ['area', 'workingTime', 'costs'];
@@ -115,7 +117,10 @@ class Report extends ReportElement {
 
 				}
 
-				if(POST('costsUser', 'bool')) {
+				if(
+					$fw->ok() and
+					POST('costsUser', 'bool')
+				) {
 
 					$costs = POST('costsTotal', 'int');
 					if($costs < 0) {
