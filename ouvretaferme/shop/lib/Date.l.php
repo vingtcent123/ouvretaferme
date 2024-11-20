@@ -274,7 +274,7 @@ class DateLib extends DateCrud {
 				'isOrderable' => SORT_DESC,
 				'deliveryDate' => SORT_ASC
 			])
-			->getCollection();
+			->getCollection(index: 'id');
 
 		// Pas de date ouverte ou à venir : chercher la dernière
 		if($cDate->empty()) {
