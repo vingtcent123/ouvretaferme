@@ -614,12 +614,10 @@ class DateUi {
 
 			if($eDate['status'] === Date::CLOSED) {
 				$h .= '<span class="color-danger">'.\Asset::icon('exclamation-triangle-fill').' '.s("Vente hors ligne").'</span>';
-			} else if($eDate['deliveryDate'] < $now) {
-				$h .= '<span class="color-success">'.s("Vente terminée").'</span>';
-			} else if($eDate['orderEndAt'] <= $now) {
-				$h .= '<span class="color-order">'.s("Ventes fermées").'</span>';
 			} else if($eDate['orderStartAt'] < $now and $eDate['orderEndAt'] > $now) {
 				$h .= '<span class="color-order">'.s("Ventes ouvertes encore {value}", \util\DateUi::secondToDuration(strtotime($eDate['orderEndAt']) - time(), \util\DateUi::AGO, maxNumber: 1)).'</span>';
+			} else if(currentDate() >= $eDate['deliveryDate']) {
+				$h .= '<span class="color-success">'.s("Vente terminée").'</span>';
 			} else if($eShop['status'] === Shop::OPEN) {
 				$h .= s("Ouverture des ventes dans {value}", \util\DateUi::secondToDuration(strtotime($eDate['orderStartAt']) - time(), \util\DateUi::AGO, maxNumber: 1));
 			}
