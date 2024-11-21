@@ -264,7 +264,8 @@ class DateLib extends DateCrud {
 			->whereShop($eShop)
 			->whereStatus(Date::ACTIVE)
 			->or(
-				fn() => $this->where(new \Sql('orderStartAt < NOW() and orderEndAt > NOW()')),
+				fn() => $this->where(new \Sql('NOW() BETWEEN orderStartAt AND orderEndAt')),
+				fn() => $this->where(new \Sql('NOW() < orderStartAt')),
 				fn() => $this->whereDeliveryDate(new \Sql('orderEndAt > NOW()'))
 			)
 			->or(
