@@ -39,6 +39,25 @@ class Item extends ItemElement {
 
 	}
 
+	public function canDelete(): bool {
+
+		$this->expects([
+			'sale' => ['marketParent']
+		]);
+
+		if($this['sale']['marketParent']->empty()) {
+			return $this->canWrite();
+		} else {
+
+			return (
+				$this->canRead() and
+				$this['sale']['preparationStatus'] === Sale::DRAFT
+			);
+
+		}
+
+	}
+
 	public function isIntegerUnit(): bool {
 		return in_array($this['unit'], [NULL, Item::UNIT, Item::BUNCH, Item::BOX, Item::PLANT, Item::GRAM_250, Item::GRAM_500]);
 	}

@@ -5550,9 +5550,9 @@ abstract class ModulePage extends Page {
 
 	}
 
-	public function doDelete(\Closure $action, string $page = 'doDelete'): ModulePage {
+	public function doDelete(\Closure $action, string $page = 'doDelete', ?Closure $onEmpty = NULL): ModulePage {
 
-		$this->post($page, function($data) use ($action) {
+		$this->post($page, function($data) use ($action, $onEmpty) {
 
 			$e = $this->element->call($this, $data);
 
@@ -5562,7 +5562,11 @@ abstract class ModulePage extends Page {
 				$e = ($this->module.'Lib')::getById($id);
 
 				if($e->empty()) {
-					throw new \NotExistsAction($this->module.' #'.$id);
+					if($onEmpty) {
+						$onEmpty($data);
+					} else {
+						throw new \NotExistsAction($this->module.' #'.$id);
+					}
 				}
 
 			}

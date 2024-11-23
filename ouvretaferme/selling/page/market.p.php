@@ -69,28 +69,31 @@
 	})
 	->write('doUpdateSale', function($data) {
 
-		$data->e->checkMarketSelling();
+		if($data->e['marketParent']->empty()) {
+			throw new NotExpectedAction('Not a market sale');
+		}
 
-		$data->eSale = \selling\SaleLib::getById(POST('subId'));
-
-		if($data->eSale->empty()) {
+		if($data->e->empty()) {
 			throw new \FailAction('selling\Sale::market.notExists');
 		}
 
-		if($data->eSale['preparationStatus'] !== \selling\Sale::DRAFT) {
+		if($data->e['preparationStatus'] !== \selling\Sale::DRAFT) {
 			throw new \FailAction('selling\Sale::market.status');
 		}
 
-		$cItemSale = \selling\MarketLib::checkNewItems($data->e, $data->eSale, $_POST);
+		$data->eSaleMarket = \selling\SaleLib::getById($data->e['marketParent']);
+		$data->eSaleMarket->checkMarketSelling();
 
-		\selling\MarketLib::updateSaleItems($data->eSale, $cItemSale);
+		$cItemSale = \selling\ItemLib::checkNewItems($data->e, $_POST);
 
-		$data->eSale = \selling\SaleLib::getById(POST('subId'), \selling\Sale::getSelection() + [
+		\selling\ItemLib::updateSaleCollection($data->e, $cItemSale);
+
+		$data->e = \selling\SaleLib::getById($data->e, \selling\Sale::getSelection() + [
 			'createdBy' => ['firstName', 'lastName', 'vignette']
 		]);
 
-		$data->cItemMarket = \selling\SaleLib::getItems($data->e);
-		$data->cItemSale = \selling\SaleLib::getItems($data->eSale, index: ['product']);
+		$data->cItemMarket = \selling\SaleLib::getItems($data->eSaleMarket);
+		$data->cItemSale = \selling\SaleLib::getItems($data->e, index: ['product']);
 
 		throw new ViewAction($data);
 

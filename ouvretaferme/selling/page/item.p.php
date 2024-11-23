@@ -52,19 +52,33 @@
 	});
 
 (new \selling\ItemPage())
-	->applyElement(function($data, \selling\Item $e) {
-
-		$e->validate('canWrite');
-
-	})
 	->quick(['packaging', 'number', 'unitPrice', 'vatRate', 'price', 'description'])
 	->update()
 	->doUpdate(function($data) {
 		throw new ReloadAction('selling', 'Item::updated');
 	})
 	->doDelete(function($data) {
-		throw new ReloadAction('selling', 'Item::deleted');
-	});
+
+		if($data->e['sale']['marketParent']->empty()) {
+			throw new ReloadLayerAction('selling', 'Item::deleted');
+		} else {
+
+			$data->e['sale'] = \selling\SaleLib::getById($data->e['sale'], \selling\Sale::getSelection() + [
+				'createdBy' => ['firstName', 'lastName', 'vignette']
+			]);
+
+			\selling\Sale::model()
+				->select('preparationStatus')
+				->get($data->e['sale']['marketParent']);
+
+			$data->cItemMarket = \selling\SaleLib::getItems($data->e['sale']['marketParent']);
+			$data->cItemSale = \selling\SaleLib::getItems($data->e['sale'], index: ['product']);
+
+			throw new ViewAction($data);
+
+		}
+
+	}, onEmpty: fn($data) => throw new ReloadLayerAction());
 
 (new Page())
 	->get('getDeliveredAt', function($data) {

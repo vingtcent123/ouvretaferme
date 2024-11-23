@@ -33,8 +33,8 @@ new AdaptativeView('/vente/{id}/marche/vente/{subId}', function($data, MarketTem
 
 new AdaptativeView('doUpdateSale', function($data, AjaxTemplate $t) {
 
-	$t->qs('.market-main')->innerHtml((new \selling\MarketUi())->displaySale($data->eSale, $data->cItemSale, $data->e, $data->cItemMarket));
-	$t->qs('#market-sale-'.$data->eSale['id'].'-price')->innerHtml(\util\TextUi::money($data->eSale['priceIncludingVat'] ?? 0));
+	$t->qs('.market-main')->innerHtml((new \selling\MarketUi())->displaySale($data->e, $data->cItemSale, $data->eSaleMarket, $data->cItemMarket));
+	$t->qs('#market-sale-'.$data->e['id'].'-price')->innerHtml(\util\TextUi::money($data->e['priceIncludingVat'] ?? 0));
 
 });
 

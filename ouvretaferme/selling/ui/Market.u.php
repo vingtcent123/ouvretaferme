@@ -264,6 +264,8 @@ class MarketUi {
 
 	public function displaySale(Sale $eSale, \Collection $cItemSale, Sale $eSaleMarket, \Collection $cItemMarket): string {
 
+		$eSaleMarket->expects(['preparationStatus']);
+
 		$h = '<div class="market-customer">';
 			$h .= '<div class="util-action">';
 
@@ -350,133 +352,13 @@ class MarketUi {
 
 		}
 
-		$h .= $this->displaySaleItems($eSale, $cItemSale, $eSaleMarket, $cItemMarket);
+		$h .= $this->displaySaleItems($eSale, $cItemSale, $cItemMarket);
 
 		return $h;
 
 	}
 
-	protected function getSaleEntry(Sale $eSaleMarket, Sale $eSale, Item $eItemMarket, Item $eItemSale) {
-
-		$extract = fn($property) => $eItemSale->empty() ? $eItemMarket[$property] : $eItemSale[$property];
-
-		$unitPrice = $extract('unitPrice');
-		$number = $eItemSale->empty() ? NULL : $eItemSale['number'];
-		$price = $eItemSale->empty() ? NULL : $eItemSale['price'];
-		$locked = $eItemSale->empty() ? '' : $eItemSale['locked'];
-
-		$actions = function() {
-
-			$h = '<div class="market-entry-lock hide">'.\Asset::icon('lock-fill').'</div>';
-				$h .= '<div class="market-entry-erase hide">';
-				$h .= '<a '.attr('onclick', "Market.itemErase(this)").' title="'.s("Revenir à zéro").'">'.\Asset::icon('eraser-fill', ['style' => 'transform: scaleX(-1);']).'</a>';
-			$h .= '</div>';
-
-			return $h;
-
-		};
-
-		$h = '<div id="market-entry-'.$eItemMarket['id'].'" class="market-entry hide" data-item="'.$eItemMarket['id'].'">';
-			$h .= '<div class="market-entry-background" onclick="Market.hideEntry(this)"></div>';
-			$h .= '<div class="market-entry-content">';
-
-
-				$form = new \util\FormUi();
-
-				$h .= '<div class="market-entry-item">';
-
-					$h .= $form->openAjax('/selling/market:doUpdateSale', ['id' => 'market-sale-form']);
-
-						$h .= $form->hidden('id', $eSaleMarket['id']);
-						$h .= $form->hidden('subId', $eSale['id']);
-						$h .= $form->hidden('locked['.$eItemMarket['id'].']', $locked);
-
-						$h .= '<div class="market-entry-title">';
-							$h .= '<h2>';
-								$h .= encode($eItemMarket['name']);
-							$h .= '</h2>';
-							$h .= '<a onclick="Market.hideEntry(this)" class="market-entry-close">'.\Asset::icon('x-lg').'</a>';
-						$h .= '</div>';
-
-						$h .= '<div class="market-entry-lines">';
-
-							$h .= '<div class="market-entry-label">'.s("Prix unitaire").'</div>';
-							$h .= '<div class="market-entry-actions" data-property="'.Item::UNIT_PRICE.'">';
-								$h .= $actions();
-							$h .= '</div>';
-							$h .= '<a onclick="Market.keyboardToggle(this)" data-property="'.Item::UNIT_PRICE.'" class="market-entry-field">';
-								$h .= $form->hidden('unitPrice['.$eItemMarket['id'].']', $unitPrice);
-								$h .= '<div class="market-entry-value" id="market-entry-'.$eItemMarket['id'].'-unit-price">'.\util\TextUi::number($unitPrice ?? 0.0, 2).'</div>';
-							$h .= '</a>';
-							$h .= '<div class="market-entry-unit">';
-								$h .= '€ &nbsp;/&nbsp;'.\main\UnitUi::getSingular($eItemMarket['unit'], short: TRUE, by: TRUE);
-							$h .= '</div>';
-
-							$h .= '<div class="market-entry-label">'.s("Vendu").'</div>';
-							$h .= '<div class="market-entry-actions" data-property="'.Item::NUMBER.'">';
-								$h .= $actions();
-							$h .= '</div>';
-							$h .= '<a onclick="Market.keyboardToggle(this)" data-property="'.Item::NUMBER.'" class="market-entry-field">';
-								$h .= $form->hidden('number['.$eItemMarket['id'].']', $number);
-								$h .= '<div class="market-entry-value" id="market-entry-'.$eItemMarket['id'].'-number" data-unit="'.$eItemMarket['unit'].'">';
-									$h .= \util\TextUi::number($number ?? 0.0, $eItemMarket->isIntegerUnit() ? 0 : 2);
-								$h .= '</div>';
-							$h .= '</a>';
-							$h .= '<div class="market-entry-unit">';
-								$h .= \main\UnitUi::getNeutral($eItemMarket['unit'], short: TRUE);
-							$h .= '</div>';
-
-							$h .= '<div class="market-entry-label">'.s("Montant").'</div>';
-							$h .= '<div class="market-entry-actions" data-property="'.Item::PRICE.'">';
-								$h .= $actions();
-							$h .= '</div>';
-							$h .= '<a onclick="Market.keyboardToggle(this)" data-property="'.Item::PRICE.'" class="market-entry-field">';
-								$h .= $form->hidden('price['.$eItemMarket['id'].']', $price);
-								$h .= '<div class="market-entry-value" id="market-entry-'.$eItemMarket['id'].'-price">'.\util\TextUi::number($price ?? 0.0, 2).'</div>';
-							$h .= '</a>';
-							$h .= '<div class="market-entry-unit">';
-								$h .= '€';
-							$h .= '</div>';
-
-							$h .= '<div></div>';
-							$h .= '<div></div>';
-							$h .= '<div class="market-entry-submit">';
-								$h .= $form->submit(s("Enregistrer"));
-							$h .= '</div>';
-
-						$h .= '</div>';
-
-						if(
-							$unitPrice and
-							$number and
-							$price
-						) {
-							$h .= '<a onclick="Market.deleteItem(this)" class="market-entry-delete" data-confirm="'.s("L'article sera retiré de cette vente. Continuer ?").'">'.s("Supprimer cet article").'</a>';
-						}
-
-					$h .= $form->close();
-
-				$h .= '</div>';
-				$h .= '<div class="market-entry-keyboard disabled">';
-					$h .= '<div class="market-entry-digits">';
-						for($digit = 1; $digit <= 9; $digit++) {
-							$h .= '<a onclick="Market.keyboardDigit('.$digit.')" class="market-entry-digit">'.$digit.'</a>';
-						}
-						$h .= '<a onclick="Market.keyboardDigit(0)" class="market-entry-digit">0</a>';
-						$h .= '<a onclick="Market.keyboardDigit(0); Market.keyboardDigit(0);" class="market-entry-digit">00</a>';
-						$h .= '<a onclick="Market.keyboardRemoveDigit();" class="market-entry-digit">'.\Asset::icon('backspace').'</a>';
-					$h .= '</div>';
-				$h .= '</div>';
-
-			$h .= '</div>';
-
-		$h .= '</div>';
-
-		return $h;
-
-	}
-
-	protected function displaySaleItems(Sale $eSale, \Collection $cItemSale, Sale $eSaleMarket, \Collection $cItemMarket): string {
+	protected function displaySaleItems(Sale $eSale, \Collection $cItemSale, \Collection $cItemMarket): string {
 
 		$h = '<div id="market-item-sale" class="market-item-wrapper market-item-'.$eSale['preparationStatus'].'">';
 
@@ -489,7 +371,7 @@ class MarketUi {
 				}
 
 				$h .= $this->getSaleItem($eSale, $eItemMarket, $eItemSale);
-				$h .= $this->getSaleEntry($eSaleMarket, $eSale, $eItemMarket, $eItemSale);
+				$h .= (new MerchantUi())->get($eSale, $eItemMarket, $eItemSale);
 
 			}
 
@@ -501,14 +383,15 @@ class MarketUi {
 
 	public function getSaleItem(Sale $eSale, Item $eItemMarket, Item $eItemSale): string {
 
+		$eItemReference = $eItemSale->empty() ? $eItemMarket : $eItemSale;
+
 		$locked = $eItemSale->empty() ? '' : $eItemSale['locked'];
 		$tag = ($eSale['preparationStatus'] === Sale::DRAFT) ? 'a' : 'div';
-		$onclick = ($eSale['preparationStatus'] === Sale::DRAFT) ? 'onclick="Market.showEntry(this)"' : 'div';
+		$onclick = ($eSale['preparationStatus'] === Sale::DRAFT) ? 'onclick="Merchant.showEntry(this)"' : 'div';
 
-		$h = '<'.$tag.' class="market-item '.($eItemSale->empty() ? '' : 'market-item-highlight').'" '.$onclick.' data-locked="'.$locked.'" data-item="'.$eItemMarket['id'].'">';
+		$h = '<'.$tag.' class="market-item '.($eItemSale->empty() ? '' : 'market-item-highlight').'" '.$onclick.' data-locked="'.$locked.'" data-item="'.$eItemReference['id'].'">';
 
-			$unitPrice = $eItemSale->empty() ? $eItemMarket['unitPrice'] : $eItemSale['unitPrice'];
-			$more = \util\TextUi::money($unitPrice).' <span class="util-annotation"> / '.\main\UnitUi::getSingular($eItemMarket['unit'], short: TRUE, by: TRUE).'</span>';
+			$more = \util\TextUi::money($eItemReference['unitPrice']).' <span class="util-annotation"> / '.\main\UnitUi::getSingular($eItemReference['unit'], short: TRUE, by: TRUE).'</span>';
 
 			$h .= $this->getItemProduct($eItemMarket, $more);
 
@@ -518,7 +401,7 @@ class MarketUi {
 					$h .= '<div>'.s("Vendu").'</div>';
 					$h .= '<div>';
 						if($eItemSale->notEmpty()) {
-							$h .= \main\UnitUi::getValue($eItemSale['number'], $eItemMarket['unit'], TRUE);
+							$h .= \main\UnitUi::getValue($eItemSale['number'], $eItemSale['unit'], TRUE);
 						} else {
 							$h .= '/';
 						}

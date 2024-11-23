@@ -189,6 +189,73 @@ class ItemLib extends ItemCrud {
 
 	}
 
+	public static function checkNewItems(Sale $eSale, array $post): \Collection {
+
+		array_expects($post, ['locked']);
+
+		$cItem = ItemLib::getByIds(array_keys($post['locked']), index: 'id');
+
+		$cItemNew = new \Collection();
+
+		foreach($post['locked'] as $key => $locked) {
+
+			if($cItem->offsetExists($key) === FALSE) {
+				continue;
+			}
+
+			$eItem = $cItem[$key];
+			$type = ($post['type'][$key] ?? NULL);
+
+			// Vérifications de sécurité
+			if($type === 'parent') {
+
+				if(
+					$eSale['marketParent']->empty() or
+					$eItem['sale']['id'] !== $eSale['marketParent']['id']
+				) {
+					continue;
+				}
+
+			} else if($type === 'standalone') {
+
+				if($eItem['sale']['id'] !== $eSale['id']) {
+					continue;
+				}
+
+			} else {
+				continue;
+			}
+
+			$unitPrice = (float)($post['unitPrice'][$key] ?? 0.0);
+			$number = (float)($post['number'][$key] ?? 0.0);
+			$price = (float)($post['price'][$key] ?? 0.0);
+			$locked = var_filter($post['locked'][$key] ?? NULL, Item::model()->getPropertyEnum('locked'));
+
+			$eItemNew = new Item([
+				'id' => ($type === 'parent') ? NULL : $eItem['id'],
+				'parent' => ($type === 'parent') ? $eItem : $eItem['parent'],
+				'sale' => $eSale,
+				'farm' => $eSale['farm'],
+				'customer' => $eSale['customer'],
+				'product' => $eItem['product'],
+				'name' => $eItem['name'],
+				'packaging' => NULL,
+				'locked' => \selling\Item::PRICE,
+				'unit' => $eItem['unit'],
+				'unitPrice' => $unitPrice,
+				'number' => $number,
+				'price' => $price,
+				'locked' => $locked,
+				'vatRate' => $eItem['vatRate'],
+			]);
+
+			$cItemNew[] = $eItemNew;
+
+		}
+
+		return $cItemNew;
+
+	}
 
 	public static function createCollection(\Collection $c): void {
 
@@ -224,6 +291,53 @@ class ItemLib extends ItemCrud {
 
 	}
 
+	public static function updateSaleCollection(Sale $eSale, \Collection $cItem): void {
+
+		if($eSale['shop']->notEmpty()) {
+			throw new \Exception('Not supported');
+		}
+
+		if($cItem->empty()) {
+			return;
+		}
+
+		// La même vente pour tout le monde
+		$eSale->expects(['marketParent']);
+		$cItem->validateProperty('sale', $eSale);
+
+		Item::model()->beginTransaction();
+
+			Item::model()
+				->whereSale($eSale)
+				->or(
+					fn() => $this->whereId('IN', $cItem->find(fn($eItem) => $eItem['id'] !== NULL)),
+					fn() => $this->whereParent('IN', $cItem->find(fn($eItem) => $eItem['parent']->notEmpty())->getColumnCollection('parent'))
+				)
+				->delete();
+
+			if($eSale['marketParent']->notEmpty()) {
+
+				// On n'enregistre pas les ventes à 0.0 sur le logiciel de caisse
+				$cItemFiltered = $cItem->find(fn($eItem) => (
+					($eItem['locked'] === Item::UNIT_PRICE and $eItem['number'] !== 0.0 and $eItem['price'] !== 0.0) or
+					($eItem['locked'] === Item::PRICE and $eItem['number'] !== 0.0 and $eItem['unitPrice'] !== 0.0) or
+					($eItem['locked'] === Item::NUMBER and $eItem['unitPrice'] !== 0.0 and $eItem['price'] !== 0.0)
+				));
+
+				if($cItemFiltered->notEmpty()) {
+					ItemLib::createCollection($cItemFiltered);
+				} else {
+					SaleLib::recalculate($eSale);
+				}
+
+			} else {
+				ItemLib::createCollection($cItem);
+			}
+
+		Item::model()->commit();
+
+	}
+
 	public static function update(Item $e, array $properties): void {
 
 		if($e->canUpdate() === FALSE) {
@@ -252,13 +366,15 @@ class ItemLib extends ItemCrud {
 
 	public static function delete(Item $e): void {
 
+		/* Cette méthode ne remet pas à jour le disponible sur les boutiques */
+
 		$e->expects(['sale']);
 
 		Item::model()->beginTransaction();
 
-		parent::delete($e);
+			parent::delete($e);
 
-		SaleLib::recalculate($e['sale']);
+			SaleLib::recalculate($e['sale']);
 
 		Item::model()->commit();
 
