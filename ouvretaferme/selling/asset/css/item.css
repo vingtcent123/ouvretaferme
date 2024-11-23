@@ -11,18 +11,55 @@ td.item-item-price {
 	font-weight: bold;
 }
 
-td.item-item-product a {
-	display: block;
+@media (max-width: 767px) {
+
+	tr.item-item-line-1 td {
+		padding-bottom: 0.25rem;
+	}
+
+	tr.item-item-line-2 td {
+		padding-top: 0.25rem;
+	}
+
+}
+
+@media (min-width: 576px) and (max-width: 767px) {
+
+	tr.item-item-line-1 td.item-item-vignette {
+		padding-right: 1rem;
+	}
+
+	tr.item-item-line-1 td.item-item-actions {
+		padding-left: 1rem;
+	}
+
+}
+
+.item-item-empty {
+	padding: 0;
+}
+
+.item-item-vignette {
+	width: 3rem;
+}
+
+.item-item-product {
+	display: flex;
+	gap: .5rem;
+	justify-content: space-between;
+	align-items: center;
+}
+
+.item-item-product-description {
+	display: inline-flex;
+	gap: 0.5rem;
+	align-items: center;
+	flex-direction: row-reverse;
 }
 
 td.item-item-number {
 	line-height: 1.2;
 	font-weight: bold;
-}
-
-a.item-item-name-action {
-	display: flex;
-	align-items: center;
 }
 
 td.item-item-price,
@@ -31,7 +68,7 @@ td.item-item-packaging {
 	white-space: nowrap;
 }
 
-td.item-item-packaging {
+span.item-item-packaging-size {
 	color: var(--muted);
 	font-size: 0.9rem;
 	padding-left: 0;
@@ -43,9 +80,6 @@ td.item-item-packaging {
 		display: none;
 	}
 
-	.item-item-actions {
-		display: none;
-	}
 }
 
 td.item-item-description:empty {

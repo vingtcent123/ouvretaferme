@@ -129,7 +129,7 @@ class ShopManageUi {
 
 								$h .= '<h4>'.(new DateUi())->getStatus($eShop, $eDate, withColor: FALSE).'</h4>';
 
-								$h .= '<dl class="util-presentation util-presentation-2">';
+								$h .= '<dl class="util-presentation util-presentation-max-content util-presentation-2">';
 
 									$h .= '<dt>'.s("Date").'</dt>';
 									$h .= '<dd>';

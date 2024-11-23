@@ -626,9 +626,25 @@ div.input-group > .field-checkbox {
 	padding-right: var(--container-padding);
 }
 
+@media (max-width: 449px) {
+
+	.hide-xxs-down {
+		display: none !important;
+	}
+
+}
+
 @media (max-width: 575px) {
 
 	.hide-xs-down {
+		display: none !important;
+	}
+
+}
+
+@media (min-width: 450px) {
+
+	.hide-xs-up {
 		display: none !important;
 	}
 
@@ -1089,7 +1105,7 @@ table.util-block tbody:last-child tr:last-child td:last-child {
 	color: var(--secondary);
 }
 
-@media (max-width: 576px) {
+@media (max-width: 575px) {
 
 	.util-block-gradient,
 	.util-block-search,
@@ -2237,7 +2253,7 @@ body[data-touch="no"] .dropdown-list {
 
 .dropdown-list.dropdown-list-open {
 	display: grid;
-	max-height: calc(100vh - 4 * var(--container-xs-padding));
+	max-height: calc(100vh - 3rem);
 	overflow-y: auto;
 }
 
@@ -2256,7 +2272,7 @@ body[data-touch="no"] .dropdown-list.dropdown-list-open {
 body[data-touch="yes"] .dropdown-list.dropdown-list-open {
 	font-size: 1.1rem;
 	min-width: 50%;
-	max-width: calc(100vw - 2 * var(--container-xs-padding));
+	max-width: calc(100vw - 1.5rem);
 }
 
 .dropdown-toggle:after {

@@ -237,7 +237,7 @@ div.tasks-calendar-navigation a:hover {
 @media (max-width: 767px) {
 
 	#tasks-time .tabs-item {
-		margin-left: var(--container-xs-padding);
+		margin-left: var(--responsive-padding);
 	}
 
 }

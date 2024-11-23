@@ -417,6 +417,7 @@ class OrderUi {
 
 			$h .= '<thead>';
 				$h .= '<tr>';
+					$h .= '<th></th>';
 					$h .= '<th>'.ItemUi::p('name')->label.'</th>';
 					if($withPackaging) {
 						$h .= '<th class="text-end">'.s("Colis").'</th>';
@@ -436,13 +437,25 @@ class OrderUi {
 
 			foreach($cItem as $eItem) {
 
+				$values = [];
+
+				if($eItem['packaging']) {
+					$values[] = s("Taille du colis : {value}", \main\UnitUi::getValue($eItem['packaging'], $eItem['unit'], TRUE));
+				}
+				if($eItem['description']) {
+					$values[] = s("Description : {value}", encode($eItem['description']));
+				}
+
 				$h .= '<tbody>';
 					$h .= '<tr>';
 
-						$h .= '<td class="item-item-name">';
+						$h .= '<td rowspan="'.($values ? 2 : 1).'" class="item-item-vignette">';
 							if($eItem['product']->notEmpty()) {
-								$h .= ProductUi::getVignette($eItem['product'], '2rem').'  ';
+								$h .= ProductUi::getVignette($eItem['product'], '2rem');
 							}
+						$h .= '</td>';
+
+						$h .= '<td>';
 							$h .= encode($eItem['name']);
 						$h .= '</td>';
 
@@ -496,15 +509,6 @@ class OrderUi {
 
 					$h .= '</tr>';
 
-					$values = [];
-
-					if($eItem['packaging']) {
-						$values[] = s("Taille du colis : {value}", \main\UnitUi::getValue($eItem['packaging'], $eItem['unit'], TRUE));
-					}
-					if($eItem['description']) {
-						$values[] = s("Description : {value}", encode($eItem['description']));
-					}
-
 					if($values) {
 
 						$colspan = 4;
@@ -540,7 +544,7 @@ class OrderUi {
 				$h .= '<tbody>';
 					$h .= '<tr>';
 
-						$h .= '<td class="item-item-name">';
+						$h .= '<td>';
 							$h .= SaleUi::getShippingName();
 						$h .= '</td>';
 

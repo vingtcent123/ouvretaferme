@@ -69,172 +69,185 @@ class ItemUi {
 			$h .= '</div>';
 
 			$withPackaging = $cItem->reduce(fn($eItem, $n) => $n + (int)($eItem['packaging'] !== NULL), 0);
+			$columns = 0;
 
-			$h .= '<table class="tbody-even stick-xs item-item-table '.($withPackaging ? 'item-item-table-with-packaging' : '').' mb-2">';
+			$h .= '<div class="stick-xs">';
 
-				$h .= '<thead>';
-					$h .= '<tr>';
-						$h .= '<th colspan="2">'.ItemUi::p('name')->label.'</th>';
-						$h .= '<th class="text-center"></th>';
-						if($withPackaging) {
-							$h .= '<th class="text-end" >'.s("Colis").'</th>';
-							$h .= '<th></th>';
-						}
-						$h .= '<th class="text-end">'.s("Quantité").'</th>';
-						$h .= '<th class="text-end">';
-							$h .= ItemUi::p('unitPrice')->label;
-							if($eSale['hasVat']) {
-									$h .= ' <span class="util-annotation">'.SaleUi::getTaxes($eSale['taxes']).'</span>';
-							}
-						$h .= '</th>';
-						if(
-							$eSale['market'] === FALSE or
-							$eSale->isMarketPreparing() === FALSE
-						) {
-							$h .= '<th class="text-end">';
-								$h .= ItemUi::p('price')->label;
-								if($eSale['hasVat']) {
-									$h .= ' <span class="util-annotation">'.SaleUi::getTaxes($eSale['taxes']).'</span>';
-								}
-							$h .= '</th>';
-						}
-						if($eSale['hasVat']) {
-							$h .= '<th class="item-item-vat text-center hide-sm-down">'.s("TVA").'</th>';
-						}
-						if($cItem->first()->canWrite()) {
-							$h .= '<th class="item-item-actions"></th>';
-						}
-					$h .= '</tr>';
-				$h .= '</thead>';
+				$h .= '<table class="tbody-even item-item-table '.($withPackaging ? 'item-item-table-with-packaging' : '').' mb-2">';
 
-				foreach($cItem as $eItem) {
-
-					$h .= '<tbody>';
+					$h .= '<thead>';
 						$h .= '<tr>';
+							$h .= '<th class="item-item-vignette"></th>';
 
-							$h .= '<td class="item-item-product td-min-content">';
+							$columns++;
+							$h .= '<th class="hide-sm-down">'.ItemUi::p('name')->label.'</th>';
 
-								if($eItem['product']->notEmpty()) {
-									$h .= '<a href="'.ProductUi::url($eItem['product']).'" title="'.s("Produit {value}", encode($eItem['product']->getName())).'">'.ProductUi::getVignette($eItem['product'], '2rem').'</a>';
-								}
-
-							$h .= '</td>';
-							$h .= '<td class="item-item-name">';
-
-								if($eItem->canWrite()) {
-									$h .= '<span class="hide-xs-down">'.encode($eItem['name']).'</span>';
-									$h .= '<a data-dropdown="bottom-end" data-dropdown-id="item-update-'.$eItem['id'].'" class="dropdown-toggle item-item-name-action hide-sm-up">';
-										$h .= '<span>'.encode($eItem['name']).'</span>';
-									$h .= '</a>';
-								} else {
-									$h .= encode($eItem['name']);
-								}
-
-								if(
-									$eSale['type'] === Customer::PRO and
-									$eItem['product']->notEmpty() and
-									$eItem['product']['size']
-								) {
-									$h .= ' <small class="color-muted"><u>'.encode($eItem['product']['size']).'</u></small>';
-								}
-
-								if($eItem['description']) {
-									$h .= '<div class="util-annotation">'.$eItem->quick('description', encode($eItem['description'])).'</div>';
-								}
-
-							$h .= '</td>';
-
-							$h .= '<td class="text-center">';
-
-								if($eItem['quality']) {
-									$h .= \farm\FarmUi::getQualityLogo($eItem['quality'], '2rem');
-								}
-
-							$h .= '</td>';
+							$columns++;
+							$h .= '<th class="hide-sm-down"></th>';
 
 							if($withPackaging) {
-
-								$h .= '<td class="text-end">';
-									if($eItem['packaging']) {
-										$h .= ($eItem['locked'] !== Item::NUMBER) ? '<b>'.$eItem->quick('number', $eItem['number']).'</b>' : '<span class="item-item-locked">'.\Asset::icon('lock-fill').'</span> <b>'.$eItem['number'].'</b>';
-									} else {
-										$h .= '-';
-									}
-								$h .= '</td>';
-								$h .= '<td class="item-item-packaging">';
-									if($eItem['packaging']) {
-										$h .= 'x '.$eItem->quick('packaging', \main\UnitUi::getValue($eItem['packaging'], $eItem['unit'], TRUE));
-									}
-								$h .= '</td>';
-
+								$columns++;
+								$h .= '<th>'.s("Colis").'</th>';
 							}
 
-							$h .= '<td class="item-item-number text-end">';
-								if($eItem['packaging']) {
-									$h .= \main\UnitUi::getValue($eItem['number'] * $eItem['packaging'], $eItem['unit'], TRUE);
-								} else {
-									$value = \main\UnitUi::getValue($eItem['number'], $eItem['unit'], TRUE);
-									$h .= ($eItem['locked'] !== Item::NUMBER) ? $eItem->quick('number', $value) : '<span class="item-item-locked">'.\Asset::icon('lock-fill').'</span> '.$value;
+							$columns++;
+							$h .= '<th class="text-end">'.s("Quantité").'</th>';
+
+							$columns++;
+							$h .= '<th class="text-end">';
+								$h .= ItemUi::p('unitPrice')->label;
+								if($eSale['hasVat']) {
+										$h .= ' <span class="util-annotation">'.SaleUi::getTaxes($eSale['taxes']).'</span>';
 								}
-							$h .= '</td>';
-
-							$h .= '<td class="item-item-unit-price text-end">';
-
-								if($eItem['unit']) {
-									$unit = '<span class="util-annotation"> / '.\main\UnitUi::getSingular($eItem['unit'], short: TRUE, by: TRUE).'</span>';
-								} else {
-									$unit = '';
-								}
-								$value = \util\TextUi::money($eItem['unitPrice']).' '.$unit;
-								$h .= ($eItem['locked'] !== Item::UNIT_PRICE) ? $eItem->quick('unitPrice', $value) : '<span class="item-item-locked">'.\Asset::icon('lock-fill').'</span> '.$value;
-
-								if(
-									$eSale['market'] and
-									$eItem['number'] and
-									$eItem['price']
-								) {
-
-									$realUnitPrice = round($eItem['price'] / $eItem['number'], 2);
-
-									if(abs($realUnitPrice - $eItem['unitPrice']) > 0.1) {
-										$h .= '<div class="color-muted text-sm">'.s("({value} en réel)", \util\TextUi::money($realUnitPrice).' '.$unit).'</div>';
-									}
-
-								}
-
-							$h .= '</td>';
+							$h .= '</th>';
 
 							if(
 								$eSale['market'] === FALSE or
 								$eSale->isMarketPreparing() === FALSE
 							) {
-								$h .= '<td class="item-item-price text-end">';
-									$value = \util\TextUi::money($eItem['price']);
-									$h .= ($eItem['locked'] !== Item::PRICE) ? $eItem->quick('price', $value) : '<span class="item-item-locked">'.\Asset::icon('lock-fill').'</span> '.$value;
-								$h .= '</td>';
+								$columns++;
+								$h .= '<th class="text-end">';
+									$h .= ItemUi::p('price')->label;
+									if($eSale['hasVat']) {
+										$h .= ' <span class="util-annotation">'.SaleUi::getTaxes($eSale['taxes']).'</span>';
+									}
+								$h .= '</th>';
 							}
-
 							if($eSale['hasVat']) {
-
-								$h .= '<td class="item-item-vat text-center hide-sm-down">';
-									$h .= $eItem->quick('vatRate', s('{value} %', $eItem['vatRate']));
-								$h .= '</td>';
-
+								$columns++;
+								$h .= '<th class="item-item-vat text-center hide-sm-down">'.s("TVA").'</th>';
 							}
-
-							if($eItem->canWrite()) {
-								$h .= '<td class="item-item-actions" rowspan="2">';
-									$h .= $this->getUpdate($eItem);
-								$h .= '</td>';
-							}
-
 						$h .= '</tr>';
+					$h .= '</thead>';
 
-					$h .= '</tbody>';
+					foreach($cItem as $eItem) {
 
-				}
+						if($eItem['product']->notEmpty()) {
+							$vignette = ProductUi::getVignette($eItem['product'], '2.5rem');
+						} else {
+							$vignette = '';
+						}
 
-			$h .= '</table>';
+						$description = [];
+
+						if($eItem['quality']) {
+							$description[] = \farm\FarmUi::getQualityLogo($eItem['quality'], '1.5rem');
+						}
+
+						if($eItem['description']) {
+							$description[] = '<span class="util-annotation">'.$eItem->quick('description', encode($eItem['description'])).'</span>';
+						}
+
+						$product = encode($eItem['name']);
+
+						if(
+							$eSale['type'] === Customer::PRO and
+							$eItem['product']->notEmpty() and
+							$eItem['product']['size']
+						) {
+							$product .= '  <small class="color-muted"><u>'.encode($eItem['product']['size']).'</u></small>';
+						}
+
+						$h .= '</div>';
+
+						$h .= '<tbody>';
+							$h .= '<tr class="item-item-line-1">';
+								$h .= '<td class="item-item-vignette" rowspan="2">'.$vignette.'</td>';
+								$h .= '<td class="hide-md-up" colspan="'.$columns.'" style="border-bottom: 1px dashed var(--border)">';
+									$h .= '<div class="item-item-product">';
+										$h .= '<div>'.$product.'</div>';
+										if($description) {
+											$h .= '<span class="item-item-product-description">'.implode('', $description).'</span>';
+										}
+									$h .= '</div>';
+								$h .= '</td>';
+								$h .= '<td class="item-item-empty hide-sm-down" colspan="'.$columns.'"></td>';
+								if($eItem->canWrite()) {
+									$h .= '<td class="item-item-actions td-min-content" rowspan="2">';
+										$h .= $this->getUpdate($eItem);
+									$h .= '</td>';
+								}
+							$h .= '</tr>';
+							$h .= '<tr class="item-item-line-2">';
+
+								$h .= '<td class="td-min-content hide-sm-down">'.$product.'</td>';
+								$h .= '<td class="hide-sm-down">'.implode('  ', $description).'</td>';
+
+								if($withPackaging) {
+
+									$h .= '<td class="item-item-packaging">';
+										if($eItem['packaging']) {
+											$h .= ($eItem['locked'] !== Item::NUMBER) ? '<b>'.$eItem->quick('number', $eItem['number']).'</b>' : '<span class="item-item-locked">'.\Asset::icon('lock-fill').'</span> <b>'.$eItem['number'].'</b>';
+											$h .= '<span class="item-item-packaging-size"> x '.$eItem->quick('packaging', \main\UnitUi::getValue($eItem['packaging'], $eItem['unit'], TRUE)).'</span>';
+										} else {
+											$h .= '-';
+										}
+									$h .= '</td>';
+
+								}
+
+								$h .= '<td class="item-item-number text-end">';
+									if($eItem['packaging']) {
+										$h .= \main\UnitUi::getValue($eItem['number'] * $eItem['packaging'], $eItem['unit'], TRUE);
+									} else {
+										$value = \main\UnitUi::getValue($eItem['number'], $eItem['unit'], TRUE);
+										$h .= ($eItem['locked'] !== Item::NUMBER) ? $eItem->quick('number', $value) : '<span class="item-item-locked">'.\Asset::icon('lock-fill').'</span> '.$value;
+									}
+								$h .= '</td>';
+
+								$h .= '<td class="item-item-unit-price text-end">';
+
+									if($eItem['unit']) {
+										$unit = '<span class="util-annotation"> / '.\main\UnitUi::getSingular($eItem['unit'], short: TRUE, by: TRUE).'</span>';
+									} else {
+										$unit = '';
+									}
+									$value = \util\TextUi::money($eItem['unitPrice']).' '.$unit;
+									$h .= ($eItem['locked'] !== Item::UNIT_PRICE) ? $eItem->quick('unitPrice', $value) : '<span class="item-item-locked">'.\Asset::icon('lock-fill').'</span> '.$value;
+
+									if(
+										$eSale['market'] and
+										$eItem['number'] and
+										$eItem['price']
+									) {
+
+										$realUnitPrice = round($eItem['price'] / $eItem['number'], 2);
+
+										if(abs($realUnitPrice - $eItem['unitPrice']) > 0.1) {
+											$h .= '<div class="color-muted text-sm">'.s("({value} en réel)", \util\TextUi::money($realUnitPrice).' '.$unit).'</div>';
+										}
+
+									}
+
+								$h .= '</td>';
+
+								if(
+									$eSale['market'] === FALSE or
+									$eSale->isMarketPreparing() === FALSE
+								) {
+									$h .= '<td class="item-item-price text-end">';
+										$value = \util\TextUi::money($eItem['price']);
+										$h .= ($eItem['locked'] !== Item::PRICE) ? $eItem->quick('price', $value) : '<span class="item-item-locked">'.\Asset::icon('lock-fill').'</span> '.$value;
+									$h .= '</td>';
+								}
+
+								if($eSale['hasVat']) {
+
+									$h .= '<td class="item-item-vat text-center hide-sm-down">';
+										$h .= $eItem->quick('vatRate', s('{value} %', $eItem['vatRate']));
+									$h .= '</td>';
+
+								}
+
+							$h .= '</tr>';
+
+						$h .= '</tbody>';
+
+					}
+
+				$h .= '</table>';
+
+			$h .= '</div>';
 
 			if($eSale['market'] and $eSale['preparationStatus'] === Sale::DRAFT) {
 				$h .= '<div class="util-block">';
@@ -522,7 +535,7 @@ class ItemUi {
 
 	protected function getUpdate(Item $eItem): string {
 
-		$h = '<a data-dropdown-id="item-update-'.$eItem['id'].'" data-dropdown="bottom-end" class="dropdown-toggle btn btn-outline-secondary">'.\Asset::icon('gear-fill').'</a>';
+		$h = '<a data-dropdown-id="item-update-'.$eItem['id'].'" data-dropdown="bottom-end" class="dropdown-toggle btn btn-sm btn-outline-secondary">'.\Asset::icon('gear-fill').'</a>';
 		$h .= '<div data-dropdown-id="item-update-'.$eItem['id'].'-list" class="dropdown-list">';
 			$h .= '<div class="dropdown-title">'.encode($eItem['name']).'</div>';
 			$h .= '<a href="/selling/item:update?id='.$eItem['id'].'" class="dropdown-item">'.s("Modifier l'article").'</a>';

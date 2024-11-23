@@ -191,6 +191,10 @@ a.farm-tab.selected .farm-tab-off {
 		padding: 0.625rem 0.5rem;
 	}
 
+	.farm-tab span {
+		font-size: 0.8rem;
+	}
+
 }
 
 @media (max-width: 449px) {
