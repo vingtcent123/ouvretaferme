@@ -575,6 +575,15 @@ a.market-sales-item > svg {
 	display: flex;
 	justify-content: center;
 	align-items: center;
+	padding: 1rem;
+}
+
+@media (max-width: 449px) {
+
+	.market-entry {
+		padding: 0;
+	}
+
 }
 
 .market-entry-background {
@@ -613,8 +622,6 @@ a.market-sales-item > svg {
 
 .market-entry-item {
 	background-color: white;
-	box-shadow: 0 0 20rem rgb(0 0 0 / 50%);
-	border-radius: var(--radius);
 	position: relative;
 	padding: 1rem;
 }
@@ -625,6 +632,32 @@ a.market-sales-item > svg {
 	grid-row-gap: 1rem;
 	align-items: center;
 	margin-right: -1rem;
+}
+
+@media (max-width: 449px) {
+
+	.market-entry-item {
+		padding: 0.75rem;
+		border-top-right-radius: var(--radius);
+		border-bottom-right-radius: var(--radius);
+	}
+
+	.market-entry-lines {
+		margin-right: -0.75rem;
+	}
+
+}
+
+@media (min-width: 450px) {
+
+	.market-entry-item {
+		border-radius: var(--radius);
+	}
+
+}
+
+.market-entry-label {
+	line-height: 1.2;
 }
 
 a.market-entry-field {
@@ -639,9 +672,18 @@ a.market-entry-field {
 	justify-content: end;
 	color: var(--text);
 	height: 3.5rem;
-	padding-right: 5rem;
+	padding-right: 4.75rem;
 	position: relative;
 	z-index: 1;
+}
+
+@media (max-width: 449px) {
+
+	a.market-entry-field {
+		font-size: 1.2rem;
+		padding-left: 1rem;
+	}
+
 }
 
 a.market-entry-field.disabled {
@@ -650,7 +692,7 @@ a.market-entry-field.disabled {
 
 a.market-entry-field.selected,
 a.market-entry-field:hover {
-	background: var(--primary);
+	background: var(--secondary);
 	color: white;
 	text-decoration: none;
 }
@@ -700,27 +742,39 @@ a.market-entry-delete {
 }
 
 .market-entry-keyboard {
-	background-color: var(--primary);
+	background-color: var(--secondary);
 	margin: 2rem 0;
 	box-shadow: 0 0 20rem rgb(0 0 0 / 50%);
-	border-top-right-radius: var(--radius);
-	border-bottom-right-radius: var(--radius);
-	border-right: 3px solid white;
-	border-top: 3px solid white;
-	border-bottom: 3px solid white;
+}
+
+@media (min-width: 450px) {
+
+	.market-entry-keyboard {
+		border-top-right-radius: var(--radius);
+		border-bottom-right-radius: var(--radius);
+	}
+
 }
 
 .market-entry-digits {
 	display: grid;
 	grid-template-columns: 1fr 1fr 1fr;
 	grid-template-rows: 1fr 1fr 1fr 1fr;
-	grid-gap: 1rem;
+	grid-gap: .5rem;
 	height: 100%;
-	padding: 1rem;
+	padding: 0.75rem;
+}
+
+@media (max-width: 449px) {
+
+	.market-entry-digits {
+		padding: 0.5rem;
+		grid-gap: 2px;
+	}
+
 }
 
 .market-entry-digit {
-	border-radius: var(--radius);
 	background-color: white;
 	color: var(--primary);
 	font-size: 2.5rem;
@@ -729,6 +783,34 @@ a.market-entry-delete {
 	display: flex;
 	align-items: center;
 	justify-content: center;
+}
+
+@media (min-width: 450px) {
+
+	.market-entry-digit {
+		border-radius: var(--radius);
+	}
+
+}
+
+@media (max-width: 450px) {
+
+	.market-entry-digit:nth-child(1) {
+		border-top-left-radius: calc(var(--radius) / 2);
+	}
+
+	.market-entry-digit:nth-child(3) {
+		border-top-right-radius: calc(var(--radius) / 2);
+	}
+
+	.market-entry-digit:nth-child(10) {
+		border-bottom-left-radius: calc(var(--radius) / 2);
+	}
+
+	.market-entry-digit:nth-child(12) {
+		border-bottom-right-radius: calc(var(--radius) / 2);
+	}
+
 }
 
 .market-entry-keyboard.disabled {

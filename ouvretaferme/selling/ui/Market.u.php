@@ -441,7 +441,7 @@ class MarketUi {
 							$h .= '<div></div>';
 							$h .= '<div></div>';
 							$h .= '<div class="market-entry-submit">';
-								$h .= $form->submit(s("Enregistrer"), ['class' => ' btn btn-secondary']);
+								$h .= $form->submit(s("Enregistrer"));
 							$h .= '</div>';
 
 						$h .= '</div>';
