@@ -14,11 +14,11 @@ td.item-item-price {
 @media (max-width: 767px) {
 
 	tr.item-item-line-1 td {
-		padding-bottom: 0.25rem;
+		padding-bottom: 0.125rem;
 	}
 
 	tr.item-item-line-2 td {
-		padding-top: 0.25rem;
+		padding-top: 0.125rem;
 	}
 
 }
