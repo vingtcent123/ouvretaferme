@@ -258,8 +258,10 @@ class Merchant {
 
 	static keyboardToggle(target) {
 
+		const input = target.qs('input');
+
 		// Déjà sélectionné
-		if(this.selectedField === target) {
+		if(this.selectedField === input) {
 			this.keyboardClose();
 		} else {
 			this.keyboardOpen(target);
@@ -292,7 +294,7 @@ class Merchant {
 					selectedNode = nodes[nodes.length - 1];
 				} else {
 					nodes.forEach((item, key) => {
-						if(item === this.selectedField) {
+						if(item.qs('input') === this.selectedField) {
 							selectedNode = nodes[(key - 1 + nodes.length) % nodes.length];
 						}
 					});
@@ -312,7 +314,7 @@ class Merchant {
 					selectedNode = nodes[0];
 				} else {
 					nodes.forEach((item, key) => {
-						if(item === this.selectedField) {
+						if(item.qs('input') === this.selectedField) {
 							selectedNode = nodes[(key + 1) % nodes.length];
 						}
 					});
@@ -356,8 +358,8 @@ class Merchant {
 	static keyboardOpen(target) {
 
 		this.selectedProperty = target.dataset.property;
-		this.selectedField = this.current.qs('.merchant-field[data-property="'+ this.selectedProperty +'"]');
-		this.selectedValue = 0;
+		this.selectedField = this.current.qs('.merchant-field[data-property="'+ this.selectedProperty +'"] input');
+		this.selectedValue = 0;//this.getRealValue(this.selectedField);
 
 		this.current.qs('.merchant-field.selected', field => field.classList.remove('selected'));
 		target.classList.add('selected');
@@ -387,7 +389,7 @@ class Merchant {
 
 		const value = this.selectedValue / (this.isPropertyInteger(this.selectedProperty) ? 1 : 100);
 		const isNull = (value === 0 && this.selectedProperty !== 'unit-price');
-		this.selectedField.qs('input').value = isNull ? '' : value;
+		this.selectedField.value = isNull ? '' : value;
 
 		if(digit !== '00') {
 
@@ -415,7 +417,7 @@ class Merchant {
 
 		const value = this.selectedValue / (this.isPropertyInteger(this.selectedProperty) ? 1 : 100);
 		const isNull = (value === 0 && this.selectedProperty !== 'unit-price');
-		this.selectedField.qs('input').value = isNull ? '' : value;
+		this.selectedField.value = isNull ? '' : value;
 
 		this.recalculate();
 		

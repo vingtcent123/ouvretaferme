@@ -226,9 +226,24 @@ class ItemLib extends ItemCrud {
 				continue;
 			}
 
-			$unitPrice = (float)($post['unitPrice'][$key] ?? 0.0);
-			$number = (float)($post['number'][$key] ?? 0.0);
-			$price = (float)($post['price'][$key] ?? 0.0);
+			$unitPrice = ($post['unitPrice'][$key] ?? NULL);
+
+			if($unitPrice !== NULL) {
+				$unitPrice = ($unitPrice === '') ? NULL : (float)$unitPrice;
+			}
+
+			$number = ($post['number'][$key] ?? NULL);
+
+			if($number !== NULL) {
+				$number = ($number === '') ? NULL : (float)$number;
+			}
+
+			$price = ($post['price'][$key] ?? NULL);
+
+			if($price !== NULL) {
+				$price = ($price === '') ? NULL : (float)$price;
+			}
+
 			$locked = var_filter($post['locked'][$key] ?? NULL, Item::model()->getPropertyEnum('locked'));
 
 			$eItemNew = new Item([
@@ -319,9 +334,9 @@ class ItemLib extends ItemCrud {
 
 				// On n'enregistre pas les ventes à 0.0 sur le logiciel de caisse
 				$cItemFiltered = $cItem->find(fn($eItem) => (
-					($eItem['locked'] === Item::UNIT_PRICE and $eItem['number'] !== 0.0 and $eItem['price'] !== 0.0) or
-					($eItem['locked'] === Item::PRICE and $eItem['number'] !== 0.0 and $eItem['unitPrice'] !== 0.0) or
-					($eItem['locked'] === Item::NUMBER and $eItem['unitPrice'] !== 0.0 and $eItem['price'] !== 0.0)
+					($eItem['locked'] === Item::UNIT_PRICE and $eItem['number'] !== NULL and $eItem['price'] !== NULL) or
+					($eItem['locked'] === Item::PRICE and $eItem['number'] !== NULL and $eItem['unitPrice'] !== NULL) or
+					($eItem['locked'] === Item::NUMBER and $eItem['unitPrice'] !== NULL and $eItem['price'] !== NULL)
 				));
 
 				if($cItemFiltered->notEmpty()) {
