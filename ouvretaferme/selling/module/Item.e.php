@@ -58,7 +58,7 @@ class Item extends ItemElement {
 
 	}
 
-	public function isIntegerUnit(): bool {
+	public function isUnitInteger(): bool {
 		return in_array($this['unit'], [NULL, Item::UNIT, Item::BUNCH, Item::BOX, Item::PLANT, Item::GRAM_250, Item::GRAM_500]);
 	}
 

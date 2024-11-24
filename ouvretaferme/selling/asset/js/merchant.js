@@ -44,9 +44,7 @@ class Merchant {
 			this.keyboardOpen(this.current.qs('.merchant-field[data-property="number"]'));
 		} else {
 
-			const unit = this.current.qs('.merchant-field[data-property="number"] .merchant-value').dataset.unit;
-
-			if(this.isInteger(unit)) {
+			if(this.isUnitInteger()) {
 				this.keyboardOpen(this.current.qs('.merchant-field[data-property="number"]'));
 			} else {
 				this.keyboardOpen(this.current.qs('.merchant-field[data-property="price"]'));
@@ -88,7 +86,7 @@ class Merchant {
 				this.checkPropertyDisabled(inputNumber) === false
 			) {
 
-				price = Math.round(unitPrice * number * 100) / 100;
+				price = unitPrice * number;
 				inputPrice.value = price;
 				this.setEntryValue(this.current.dataset.item, 'price', price);
 
@@ -107,6 +105,10 @@ class Merchant {
 				this.unlockProperty(inputNumber);
 				this.unlockProperty(inputPrice);
 
+			} else if(price !== null) {
+
+				this.unlockProperty(inputPrice);
+
 			}
 
 		};
@@ -121,7 +123,7 @@ class Merchant {
 				this.checkPropertyDisabled(inputPrice) === false
 			) {
 
-				number = Math.round(price / unitPrice * 100) / 100;
+				number = price / unitPrice;
 				inputNumber.value = number;
 				this.setEntryValue(this.current.dataset.item, 'number', number);
 
@@ -147,6 +149,10 @@ class Merchant {
 				this.unlockProperty(inputUnitPrice);
 				this.unlockProperty(inputNumber);
 				this.unlockProperty(inputPrice);
+			} else if(number !== null) {
+
+				this.unlockProperty(inputNumber);
+
 			}
 
 		};
@@ -161,7 +167,7 @@ class Merchant {
 				this.checkPropertyDisabled(inputPrice) === false
 			) {
 
-				unitPrice = Math.round(price / number * 100) / 100;
+				unitPrice = price / number;
 				inputUnitPrice.value = unitPrice;
 				this.setEntryValue(this.current.dataset.item, 'unit-price', unitPrice);
 
@@ -180,30 +186,46 @@ class Merchant {
 				this.unlockProperty(inputNumber);
 				this.unlockProperty(inputPrice);
 
+			} else if(unitPrice !== null) {
+
+				this.unlockProperty(inputUnitPrice);
+
 			}
 
 		};
 
-		switch(inputLocked.value) {
+		if(unitPrice === 0) {
 
-			case 'unit-price' :
-				checkUnitPrice();
-				checkPrice();
-				checkNumber();
-				break;
+			this.setEntryValue(this.current.dataset.item, 'price', 0);
 
-			case 'price' :
-				checkPrice();
-				checkUnitPrice();
-				checkNumber();
-				break;
+			this.unlockProperty(inputUnitPrice);
+			this.unlockProperty(inputNumber);
+			this.lockProperty(inputPrice);
 
-			case 'number' :
-			default :
-				checkNumber();
-				checkPrice();
-				checkUnitPrice();
-				break;
+		} else {
+
+			switch(inputLocked.value) {
+
+				case 'unit-price' :
+					checkUnitPrice();
+					checkPrice();
+					checkNumber();
+					break;
+
+				case 'price' :
+					checkPrice();
+					checkUnitPrice();
+					checkNumber();
+					break;
+
+				default :
+				case 'number' :
+					checkNumber();
+					checkPrice();
+					checkUnitPrice();
+					break;
+
+			}
 
 		}
 
@@ -222,8 +244,11 @@ class Merchant {
 
 		// On efface la valeur en cours
 		field.qs('input').value = '';
+		this.selectedValue = null;
+
 		field.qs('.merchant-value').innerHTML = this.getKeyboardEmpty();
-		erase.classList.remove('hide');
+
+		erase.classList.add('hide');
 
 		this.current.qs('input[name^="locked"]').value = '';
 
@@ -360,10 +385,9 @@ class Merchant {
 		this.selectedValue *= (digit === '00') ? 100 : 10;
 		this.selectedValue += (digit === '00') ? 0 : digit;
 
-		const unit = this.selectedField.qs('.merchant-value').dataset.unit;
-		const value = this.selectedValue / (this.isInteger(unit) ? 1 : 100);
-
-		this.selectedField.qs('input').value = value;
+		const value = this.selectedValue / (this.isPropertyInteger(this.selectedProperty) ? 1 : 100);
+		const isNull = (value === 0 && this.selectedProperty !== 'unit-price');
+		this.selectedField.qs('input').value = isNull ? '' : value;
 
 		if(digit !== '00') {
 
@@ -376,7 +400,7 @@ class Merchant {
 
 		this.recalculate();
 
-		this.setEntryValue(this.current.dataset.item, this.selectedProperty, value);
+		this.setEntryValue(this.current.dataset.item, this.selectedProperty, isNull ? null : value);
 
 	}
 
@@ -389,24 +413,29 @@ class Merchant {
 		this.selectedValue /= 10;
 		this.selectedValue = Math.floor(this.selectedValue);
 
-		const unit = this.selectedField.qs('.merchant-value').dataset.unit;
+		const value = this.selectedValue / (this.isPropertyInteger(this.selectedProperty) ? 1 : 100);
+		const isNull = (value === 0 && this.selectedProperty !== 'unit-price');
+		this.selectedField.qs('input').value = isNull ? '' : value;
 
-		const value = this.selectedValue / (this.isInteger(unit) ? 1 : 100);
-		this.selectedField.qs('input').value = value;
 		this.recalculate();
 		
-		this.setEntryValue(this.current.dataset.item, this.selectedProperty, value);
+		this.setEntryValue(this.current.dataset.item, this.selectedProperty, isNull ? null : value);
 
 	}
 
-	static setEntryValueFromKeyboard(value) {
-
-		this.setEntryValue(this.current.dataset.item, this.selectedProperty, value);
-
-	}
-
-	static isInteger(unit) {
-		return (unit === '' || unit === 'bunch' || unit === 'unit' || unit === 'box' || unit === 'gram-250' || unit === 'gram-500');
+	static isUnitInteger() {
+		
+		const unit = this.current.dataset.unit;
+		
+		return (
+			unit === '' ||
+			unit === 'bunch' ||
+			unit === 'unit' ||
+			unit === 'box' ||
+			unit === 'gram-250' ||
+			unit === 'gram-500'
+		);
+		
 	}
 
 	static setEntryValue(item, property, value) {
@@ -415,11 +444,11 @@ class Merchant {
 
 		const node = qs('#merchant-'+ item +'-'+ property);
 
-		if(value === null || value === 0) {
+		if(value === null) {
 			text = this.getKeyboardEmpty();
 		} else {
 
-			if(this.isInteger(node.dataset.unit)) {
+			if(this.isPropertyInteger(property)) {
 				text = value;
 			} else {
 				const textValue = Math.round(value * 100).toString().padStart(3, '0');
@@ -433,16 +462,23 @@ class Merchant {
 	}
 
 	static getKeyboardEmpty() {
-		return '-,--';
+		return this.isPropertyInteger() ? '-' : '-,--';
 	}
 
 	static checkPropertyDisabled(input) {
 		return input.parentElement.classList.contains('disabled');
 	}
 
+	static isPropertyInteger(property) {
+		return (this.isUnitInteger() && property === 'number');
+	}
+
 	static getRealValue(input) {
 
-		if(input.value === '') {
+		if(
+			input.value === '' ||
+			(input.parentElement.dataset.property !== 'unit-price' && input.value === '0')
+		) {
 			return null;
 		} else {
 			return parseFloat(input.value);

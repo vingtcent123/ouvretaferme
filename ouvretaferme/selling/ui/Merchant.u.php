@@ -31,9 +31,9 @@ class MerchantUi {
 
 		};
 
-		$format = fn($value, $precision = 2) => $value ?  \util\TextUi::number($value, $precision) : '-,--';
+		$format = fn($property, $value, $precision = 2) => ($value or $property === Item::UNIT_PRICE) ?  \util\TextUi::number($value ?: 0, $precision) : ($precision === 2 ? '-,--' : '-');
 
-		$h = '<div id="merchant-'.$eItemReference['id'].'" class="merchant hide" data-item="'.$eItemReference['id'].'">';
+		$h = '<div id="merchant-'.$eItemReference['id'].'" class="merchant hide"  data-unit="'.$eItemReference['unit'].'" data-item="'.$eItemReference['id'].'">';
 			$h .= '<div class="merchant-background" onclick="Merchant.hide()"></div>';
 			$h .= '<div class="merchant-content">';
 
@@ -63,7 +63,7 @@ class MerchantUi {
 							$h .= '</div>';
 							$h .= '<a onclick="Merchant.keyboardToggle(this)" data-property="'.Item::UNIT_PRICE.'" class="merchant-field">';
 								$h .= $form->hidden('unitPrice['.$eItemReference['id'].']', $unitPrice);
-								$h .= '<div class="merchant-value" id="merchant-'.$eItemReference['id'].'-unit-price">'.$format($unitPrice).'</div>';
+								$h .= '<div class="merchant-value" id="merchant-'.$eItemReference['id'].'-unit-price">'.$format(Item::UNIT_PRICE, $unitPrice).'</div>';
 							$h .= '</a>';
 							$h .= '<div class="merchant-unit">';
 								$h .= '€ &nbsp;/&nbsp;'.\main\UnitUi::getSingular($eItemReference['unit'], short: TRUE, by: TRUE);
@@ -75,8 +75,8 @@ class MerchantUi {
 							$h .= '</div>';
 							$h .= '<a onclick="Merchant.keyboardToggle(this)" data-property="'.Item::NUMBER.'" class="merchant-field">';
 								$h .= $form->hidden('number['.$eItemReference['id'].']', $number);
-								$h .= '<div class="merchant-value" id="merchant-'.$eItemReference['id'].'-number" data-unit="'.$eItemReference['unit'].'">';
-									$h .= $format($number, $eItemReference->isIntegerUnit() ? 0 : 2);
+								$h .= '<div class="merchant-value" id="merchant-'.$eItemReference['id'].'-number">';
+									$h .= $format(Item::NUMBER, $number, $eItemReference->isUnitInteger() ? 0 : 2);
 								$h .= '</div>';
 							$h .= '</a>';
 							$h .= '<div class="merchant-unit">';
@@ -89,7 +89,7 @@ class MerchantUi {
 							$h .= '</div>';
 							$h .= '<a onclick="Merchant.keyboardToggle(this)" data-property="'.Item::PRICE.'" class="merchant-field">';
 								$h .= $form->hidden('price['.$eItemReference['id'].']', $price);
-								$h .= '<div class="merchant-value" id="merchant-'.$eItemReference['id'].'-price">'.$format($price).'</div>';
+								$h .= '<div class="merchant-value" id="merchant-'.$eItemReference['id'].'-price">'.$format(Item::PRICE, $price).'</div>';
 							$h .= '</a>';
 							$h .= '<div class="merchant-unit">';
 								$h .= '€';
