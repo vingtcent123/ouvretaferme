@@ -638,14 +638,20 @@ class ProductUi {
 
 							if($canUpdate) {
 								$h .= '<td class="text-center">';
-									$h .= $this->toggle($eProduct);
+									if($eProduct->exists()) {
+										$h .= $this->toggle($eProduct);
+									}
 								$h .= '</td>';
 								$h .= '<td class="td-min-content">';
 
-									if(empty($eProduct['sold'])) {
-										$h .= '<a data-ajax="/shop/product:doDelete" class="btn btn-danger" data-confirm="'.s("Voulez-vous vraiment supprimer ce produit de cette vente ?").'" post-id="'.$eProduct['id'].'">'.\Asset::icon('trash-fill').'</a>';
-									} else {
-										$h .= '<a class="btn btn-secondary btn-disabled" title="'.s("Vous ne pouvez pas supprimer ce produit car des ventes ont déjà été réalisées.").'">'.\Asset::icon('trash-fill').'</a>';
+									if($eProduct->exists()) {
+
+										if(empty($eProduct['sold'])) {
+											$h .= '<a data-ajax="/shop/product:doDelete" class="btn btn-danger" data-confirm="'.s("Voulez-vous vraiment supprimer ce produit de cette vente ?").'" post-id="'.$eProduct['id'].'">'.\Asset::icon('trash-fill').'</a>';
+										} else {
+											$h .= '<a class="btn btn-secondary btn-disabled" title="'.s("Vous ne pouvez pas supprimer ce produit car des ventes ont déjà été réalisées.").'">'.\Asset::icon('trash-fill').'</a>';
+										}
+
 									}
 
 								$h .= '</td>';

@@ -24,7 +24,7 @@ class Product extends ProductElement {
 		} else if($this['catalog']->notEmpty()) {
 			return $this['catalog']->canWrite();
 		} else {
-			throw new \Exception('No date, no catalog');
+			return FALSE;
 		}
 
 	}

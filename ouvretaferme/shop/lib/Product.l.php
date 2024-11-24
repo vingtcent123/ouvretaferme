@@ -107,8 +107,10 @@ class ProductLib extends ProductCrud {
 			$cProduct[] = new Product([
 				'product' => $eItem['product'],
 				'packaging' => $eItem['packaging'],
-				'price' => $eItem['price'],
-				'sold' => $eItem['sold'],
+				'price' => round($eItem['price'], 2),
+				'sold' => round($eItem['sold'], 2),
+				'catalog' => new Catalog(),
+				'date' => new Date(),
 				'saleStartAt' => NULL,
 				'saleEndAt' => NULL,
 				'available' => NULL,
