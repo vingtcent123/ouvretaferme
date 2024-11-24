@@ -221,6 +221,15 @@ a.merchant-delete {
 	border-radius: var(--radius);
 }
 
+@keyframes digitHighlight {
+	 0% { background: var(--muted); }
+	 100% { background: white; }
+}
+
+.merchant-digit-animation {
+	animation: digitHighlight 0.1s linear;
+}
+
 .merchant-keyboard.disabled {
 	pointer-events: none;
 }
@@ -231,7 +240,6 @@ a.merchant-delete {
 
 .merchant-keyboard a.merchant-digit:hover {
 	text-decoration: none;
-	background-color: var(--background);
 }
 
 .merchant-erase a {

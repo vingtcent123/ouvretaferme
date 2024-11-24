@@ -387,7 +387,7 @@ class MarketUi {
 
 		$locked = $eItemSale->empty() ? '' : $eItemSale['locked'];
 		$tag = ($eSale['preparationStatus'] === Sale::DRAFT) ? 'a' : 'div';
-		$onclick = ($eSale['preparationStatus'] === Sale::DRAFT) ? 'onclick="Merchant.showEntry(this)"' : 'div';
+		$onclick = ($eSale['preparationStatus'] === Sale::DRAFT) ? 'onclick="Merchant.show(this)"' : 'div';
 
 		$h = '<'.$tag.' class="market-item '.($eItemSale->empty() ? '' : 'market-item-highlight').'" '.$onclick.' data-locked="'.$locked.'" data-item="'.$eItemReference['id'].'">';
 

@@ -1,83 +1,26 @@
-document.addEventListener('keyup', function(e) {
-
-	const market = qs('.merchant');
-
-	if(market === null) {
-		return;
-	}
-
-	d(e.key);
-
-});
+document.addEventListener('keydown', (e) => Merchant.pressKey(e));
 
 class Merchant {
 
-	static unlockProperty(input) {
+	static current = null;
 
-		const item = input.firstParent('.merchant');
-		const property = input.firstParent('.merchant-field').dataset.property;
+	static selectedField = null;
+	static selectedProperty = null;
+	static selectedValue = 0;
 
-		item.qs('.merchant-field[data-property="'+ property +'"].disabled', field => field.classList.remove('disabled'));
+	static show(item) {
 
-		const actions = item.qs('.merchant-actions[data-property="'+ property +'"]');
+		// On cache tout le monde
+		qsa('.merchant:not(.hide)', entry => entry.classList.add('hide'));
 
-		actions.qs('.merchant-lock', action => action.classList.add('hide'));
-		actions.qs('.merchant-erase', action => {
-			(input.value === '') ? action.classList.add('hide') : action.classList.remove('hide')
-		});
+		this.current = qs('#merchant-'+ item.dataset.item);
+		this.current.classList.remove('hide');
 
-	}
+		this.recalculate();
 
-	static lockProperty(input) {
-
-		const entry = input.firstParent('.merchant');
-		const field = input.firstParent('.merchant-field');
-		const property = field.dataset.property;
-
-		entry.qs('.merchant-field[data-property="'+ property +'"]').classList.add('disabled');
-
-		const actions = entry.qs('.merchant-actions[data-property="'+ property +'"]');
-		actions.qs('.merchant-lock', action => action.classList.remove('hide'));
-		actions.qs('.merchant-erase', action => action.classList.add('hide'));
-
-		entry.qs('input[name^="locked"]').value = property;
-
-	}
-
-	static itemErase(target) {
-
-		const property = target.firstParent('.merchant-actions').dataset.property;
-		const entry = target.firstParent('.merchant');
-		const field = entry.qs('.merchant-field[data-property="'+ property +'"]');
-
-		// On efface la valeur en cours
-		field.qs('input').value = '';
-		field.qs('.merchant-value').innerHTML = this.getKeyboardEmpty();
-
-		// On ferme le clavier
-		if(field.classList.contains('selected')) {
-			this.keyboardClose();
-		}
-
-		entry.qs('input[name^="locked"]').value = '';
-
-		this.itemSaleUpdate(entry);
-
-	}
-
-	static showEntry(item) {
-
-		qsa('#market-item-sale .merchant:not(.hide)', entry => entry.classList.add('hide'));
-
-		const entry = qs('#merchant-'+ item.dataset.item);
-
-		entry.classList.remove('hide');
-
-		this.itemSaleUpdate(entry);
-
-		const inputUnitPrice = entry.qs('input[name^="unitPrice"]');
-		const inputNumber = entry.qs('input[name^="number"]');
-		const inputPrice = entry.qs('input[name^="price"]');
+		const inputUnitPrice = this.current.qs('input[name^="unitPrice"]');
+		const inputNumber = this.current.qs('input[name^="number"]');
+		const inputPrice = this.current.qs('input[name^="price"]');
 
 		let unitPrice = this.getRealValue(inputUnitPrice);
 		let number = this.getRealValue(inputNumber);
@@ -93,44 +36,49 @@ class Merchant {
 			this.unlockProperty(inputPrice);
 		}
 
-		const locked = entry.qs('input[name^="locked"]').value;
+		const locked = this.current.qs('input[name^="locked"]').value;
 
 		if(locked === 'number') {
-			this.keyboardOpen(entry.qs('.merchant-field[data-property="price"]'));
+			this.keyboardOpen(this.current.qs('.merchant-field[data-property="price"]'));
 		} else if(locked === 'price') {
-			this.keyboardOpen(entry.qs('.merchant-field[data-property="number"]'));
+			this.keyboardOpen(this.current.qs('.merchant-field[data-property="number"]'));
 		} else {
 
-			const unit = entry.qs('.merchant-field[data-property="number"] .merchant-value').dataset.unit;
+			const unit = this.current.qs('.merchant-field[data-property="number"] .merchant-value').dataset.unit;
 
 			if(this.isInteger(unit)) {
-				this.keyboardOpen(entry.qs('.merchant-field[data-property="number"]'));
+				this.keyboardOpen(this.current.qs('.merchant-field[data-property="number"]'));
 			} else {
-				this.keyboardOpen(entry.qs('.merchant-field[data-property="price"]'));
+				this.keyboardOpen(this.current.qs('.merchant-field[data-property="price"]'));
 			}
 
 		}
 
 	}
 
-	static hideEntry(target) {
+	static hide() {
 
-		target.firstParent('.merchant').classList.add('hide');
+		if(Merchant.current === null) {
+			return;
+		}
+
+		Merchant.current.classList.add('hide');
+		Merchant.current = null;
 
 	}
 
-	static itemSaleUpdate(item) {
+	static recalculate() {
 
-		const inputUnitPrice = item.qs('input[name^="unitPrice"]');
-		const inputNumber = item.qs('input[name^="number"]');
-		const inputPrice = item.qs('input[name^="price"]');
-		const inputLocked = item.qs('input[name^="locked"]');
+		const inputUnitPrice = this.current.qs('input[name^="unitPrice"]');
+		const inputNumber = this.current.qs('input[name^="number"]');
+		const inputPrice = this.current.qs('input[name^="price"]');
+		const inputLocked = this.current.qs('input[name^="locked"]');
 
 		let unitPrice = this.getRealValue(inputUnitPrice);
 		let number = this.getRealValue(inputNumber);
 		let price = this.getRealValue(inputPrice);
 
-		// Prix unitaire + Quantité non verrouillé
+		// Prix unitaire + Quantité non verrouillée
 		const checkPrice = () => {
 
 			if(
@@ -142,7 +90,7 @@ class Merchant {
 
 				price = Math.round(unitPrice * number * 100) / 100;
 				inputPrice.value = price;
-				this.setEntryValue(item.dataset.item, 'price', price);
+				this.setEntryValue(this.current.dataset.item, 'price', price);
 
 				this.unlockProperty(inputUnitPrice);
 				this.unlockProperty(inputNumber);
@@ -153,7 +101,7 @@ class Merchant {
 				inputPrice.value = '';
 				price = null;
 
-				this.setEntryValue(item.dataset.item, 'price', null);
+				this.setEntryValue(this.current.dataset.item, 'price', null);
 
 				this.unlockProperty(inputUnitPrice);
 				this.unlockProperty(inputNumber);
@@ -175,7 +123,7 @@ class Merchant {
 
 				number = Math.round(price / unitPrice * 100) / 100;
 				inputNumber.value = number;
-				this.setEntryValue(item.dataset.item, 'number', number);
+				this.setEntryValue(this.current.dataset.item, 'number', number);
 
 				this.unlockProperty(inputUnitPrice);
 				this.lockProperty(inputNumber);
@@ -185,12 +133,20 @@ class Merchant {
 
 				number = null;
 				inputNumber.value = '';
-				this.setEntryValue(item.dataset.item, 'number', null);
+				this.setEntryValue(this.current.dataset.item, 'number', null);
 
 				this.unlockProperty(inputUnitPrice);
 				this.unlockProperty(inputNumber);
 				this.unlockProperty(inputPrice);
 
+			} else if(
+				unitPrice === null &&
+				price === null &&
+				number === null
+			) {
+				this.unlockProperty(inputUnitPrice);
+				this.unlockProperty(inputNumber);
+				this.unlockProperty(inputPrice);
 			}
 
 		};
@@ -207,7 +163,7 @@ class Merchant {
 
 				unitPrice = Math.round(price / number * 100) / 100;
 				inputUnitPrice.value = unitPrice;
-				this.setEntryValue(item.dataset.item, 'unit-price', unitPrice);
+				this.setEntryValue(this.current.dataset.item, 'unit-price', unitPrice);
 
 				this.lockProperty(inputUnitPrice);
 				this.unlockProperty(inputNumber);
@@ -218,7 +174,7 @@ class Merchant {
 				inputUnitPrice.value = '';
 				unitPrice = null;
 
-				this.setEntryValue(item.dataset.item, 'unit-price', null);
+				this.setEntryValue(this.current.dataset.item, 'unit-price', null);
 
 				this.unlockProperty(inputUnitPrice);
 				this.unlockProperty(inputNumber);
@@ -253,15 +209,32 @@ class Merchant {
 
 	}
 
-	static keyboardEntry = null;
-	static keyboardField = null;
-	static keyboardProperty = null;
-	static keyboardValue = 0;
+	static keyboardDelete(property) {
+
+		const field = this.current.qs('.merchant-field[data-property="'+ property +'"]');
+		const actions = this.current.qs('.merchant-actions[data-property="'+ property +'"]');
+		const erase = actions.qs('.merchant-erase');
+
+		// Pas la gomme
+		if(erase.classList.contains('hide')) {
+			return;
+		}
+
+		// On efface la valeur en cours
+		field.qs('input').value = '';
+		field.qs('.merchant-value').innerHTML = this.getKeyboardEmpty();
+		erase.classList.remove('hide');
+
+		this.current.qs('input[name^="locked"]').value = '';
+
+		this.recalculate();
+
+	}
 
 	static keyboardToggle(target) {
 
 		// Déjà sélectionné
-		if(this.keyboardField === target) {
+		if(this.selectedField === target) {
 			this.keyboardClose();
 		} else {
 			this.keyboardOpen(target);
@@ -269,69 +242,166 @@ class Merchant {
 
 	}
 
+	static pressKey(e) {
+
+		if(this.current === null) {
+			return true;
+		}
+
+		let nodes;
+		let selectedNode;
+
+		switch(e.key) {
+
+			case 'Enter' :
+				this.current.qs('form').dispatchEvent(new CustomEvent("submit"));
+				break;
+
+			case 'ArrowUp' :
+			case 'PageUp' :
+				e.preventDefault();
+
+				nodes = this.current.qsa('.merchant-field:not(.disabled)');
+
+				if(this.selectedField === null) {
+					selectedNode = nodes[nodes.length - 1];
+				} else {
+					nodes.forEach((item, key) => {
+						if(item === this.selectedField) {
+							selectedNode = nodes[(key - 1 + nodes.length) % nodes.length];
+						}
+					});
+				}
+
+				this.keyboardOpen(selectedNode);
+
+				break;
+
+			case 'ArrowDown' :
+			case 'PageDown' :
+				e.preventDefault();
+
+				nodes = this.current.qsa('.merchant-field:not(.disabled)');
+
+				if(this.selectedField === null) {
+					selectedNode = nodes[0];
+				} else {
+					nodes.forEach((item, key) => {
+						if(item === this.selectedField) {
+							selectedNode = nodes[(key + 1) % nodes.length];
+						}
+					});
+				}
+
+				this.keyboardOpen(selectedNode);
+
+				break;
+
+			case 'Escape' :
+				this.hide();
+				break;
+
+			case 'Backspace' :
+				this.pressBack();
+				break;
+
+			case '1' :
+			case '2' :
+			case '3' :
+			case '4' :
+			case '5' :
+			case '6' :
+			case '7' :
+			case '8' :
+			case '9' :
+			case '0' :
+				this.pressDigit(parseInt(e.key));
+				break;
+
+			case 'Delete' :
+				if(this.selectedProperty !== null) {
+					this.keyboardDelete(this.selectedProperty);
+				}
+				break;
+
+		}
+
+	}
+
 	static keyboardOpen(target) {
 
-		const entry = target.firstParent('.merchant');
+		this.selectedProperty = target.dataset.property;
+		this.selectedField = this.current.qs('.merchant-field[data-property="'+ this.selectedProperty +'"]');
+		this.selectedValue = 0;
 
-		this.keyboardEntry = entry;
-		this.keyboardProperty = target.dataset.property;
-		this.keyboardField = this.keyboardEntry.qs('.merchant-field[data-property="'+ this.keyboardProperty +'"]');
-		this.keyboardValue = 0;
-
-		entry.qs('.merchant-field.selected', field => field.classList.remove('selected'));
+		this.current.qs('.merchant-field.selected', field => field.classList.remove('selected'));
 		target.classList.add('selected');
-		entry.qs('.merchant-keyboard').classList.remove('disabled');
+		this.current.qs('.merchant-keyboard').classList.remove('disabled');
 
 	}
 
 	static keyboardClose() {
 
-		const entry = this.keyboardEntry;
+		this.current.qs('.merchant-field.selected', field => field.classList.remove('selected'));
+		this.current.qs('.merchant-keyboard').classList.add('disabled');
 
-		entry.qs('.merchant-field.selected', field => field.classList.remove('selected'));
-		entry.qs('.merchant-keyboard').classList.add('disabled');
-
-		this.keyboardEntry = null;
-		this.keyboardProperty = null;
-		this.keyboardField = null;
-		this.keyboardValue = null;
+		this.selectedProperty = null;
+		this.selectedField = null;
+		this.selectedValue = null;
 
 	}
 
-	static keyboardDigit(digit) {
+	static pressDigit(digit) {
 
-		this.keyboardValue *= 10;
-		this.keyboardValue += digit;
+		if(this.selectedField === null) {
+			return;
+		}
 
-		const unit = this.keyboardField.qs('.merchant-value').dataset.unit;
+		this.selectedValue *= (digit === '00') ? 100 : 10;
+		this.selectedValue += (digit === '00') ? 0 : digit;
 
-		const value = this.keyboardValue / (this.isInteger(unit) ? 1 : 100);
-		this.keyboardField.qs('input').value = value;
+		const unit = this.selectedField.qs('.merchant-value').dataset.unit;
+		const value = this.selectedValue / (this.isInteger(unit) ? 1 : 100);
 
-		this.itemSaleUpdate(this.keyboardEntry);
+		this.selectedField.qs('input').value = value;
 
-		this.setEntryValueFromKeyboard(value);
+		if(digit !== '00') {
+
+			const digitElement = this.current.qs('[data-digit="'+ digit +'"]');
+
+			digitElement.classList.add('merchant-digit-animation');
+			setTimeout(() => digitElement.classList.remove('merchant-digit-animation'), 100);
+
+		}
+
+		this.recalculate();
+
+		this.setEntryValue(this.current.dataset.item, this.selectedProperty, value);
 
 	}
 
-	static keyboardRemoveDigit() {
+	static pressBack() {
 
-		this.keyboardValue /= 10;
-		this.keyboardValue = Math.floor(this.keyboardValue);
+		if(this.selectedField === null) {
+			return;
+		}
 
-		const unit = this.keyboardField.qs('.merchant-value').dataset.unit;
+		this.selectedValue /= 10;
+		this.selectedValue = Math.floor(this.selectedValue);
 
-		const value = this.keyboardValue / (this.isInteger(unit) ? 1 : 100);
-		this.keyboardField.qs('input').value = value;
-		this.itemSaleUpdate(this.keyboardEntry);
+		const unit = this.selectedField.qs('.merchant-value').dataset.unit;
 
-		this.setEntryValueFromKeyboard(value);
+		const value = this.selectedValue / (this.isInteger(unit) ? 1 : 100);
+		this.selectedField.qs('input').value = value;
+		this.recalculate();
+		
+		this.setEntryValue(this.current.dataset.item, this.selectedProperty, value);
 
 	}
 
 	static setEntryValueFromKeyboard(value) {
 
-		this.setEntryValue(this.keyboardEntry.dataset.item, this.keyboardProperty, value);
+		this.setEntryValue(this.current.dataset.item, this.selectedProperty, value);
 
 	}
 
@@ -370,15 +440,6 @@ class Merchant {
 		return input.parentElement.classList.contains('disabled');
 	}
 
-	static deleteItem(target) {
-
-		const form = target.firstParent('form');
-
-		form.qsa('.merchant-lines input', input => input.value = '');
-		form.dispatchEvent(new CustomEvent("submit"));
-
-	}
-
 	static getRealValue(input) {
 
 		if(input.value === '') {
@@ -386,6 +447,38 @@ class Merchant {
 		} else {
 			return parseFloat(input.value);
 		}
+
+	}
+
+	static unlockProperty(input) {
+
+		const item = input.firstParent('.merchant');
+		const property = input.firstParent('.merchant-field').dataset.property;
+
+		item.qs('.merchant-field[data-property="'+ property +'"].disabled', field => field.classList.remove('disabled'));
+
+		const actions = item.qs('.merchant-actions[data-property="'+ property +'"]');
+
+		actions.qs('.merchant-lock', action => action.classList.add('hide'));
+		actions.qs('.merchant-erase', action => {
+			(input.value === '') ? action.classList.add('hide') : action.classList.remove('hide')
+		});
+
+	}
+
+	static lockProperty(input) {
+
+		const entry = input.firstParent('.merchant');
+		const field = input.firstParent('.merchant-field');
+		const property = field.dataset.property;
+
+		entry.qs('.merchant-field[data-property="'+ property +'"]').classList.add('disabled');
+
+		const actions = entry.qs('.merchant-actions[data-property="'+ property +'"]');
+		actions.qs('.merchant-lock', action => action.classList.remove('hide'));
+		actions.qs('.merchant-erase', action => action.classList.add('hide'));
+
+		entry.qs('input[name^="locked"]').value = property;
 
 	}
 
