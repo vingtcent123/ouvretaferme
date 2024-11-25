@@ -80,6 +80,13 @@ class Task extends TaskElement {
 		foreach($cTask as $eTask) {
 
 			if(
+				$eTask['plant']->empty() or
+				$eTaskReference['plant']->empty()
+			) {
+				throw new \FailAction('series\Task::harvestConsistency.plant');
+			}
+
+			if(
 				$eTask['plant']['id'] !== $eTaskReference['plant']['id'] or
 				$eTask['variety']->is($eTaskReference['variety']) === FALSE or
 				$eTask['harvestUnit'] !== $eTaskReference['harvestUnit'] or

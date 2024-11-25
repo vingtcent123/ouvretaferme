@@ -41,6 +41,7 @@ class AlertUi {
 			'Task::harvest.check' => s("La récolte ne peut pas être négative"),
 			'Task::harvestMore.negative' => s("La récolte totale ne peut pas être négative sur une intervention"),
 			'Task::stock.check' => s("Il n'est pas possible d'ajouter la récolte au stock que vous avez choisi"),
+			'Task::harvestConsistency.plant' => s("Vous devez choisir une espèce pour saisir une récolte"),
 			'Task::harvestConsistency.check' => s("Vous ne pouvez saisir de récoltes partagées que pour des productions identiques"),
 			'Task::harvestDates.check' => s("Merci de saisir une date de récolte valable"),
 			'Task::harvestDates.negative' => s("La récolte ne peut pas être négative sur une date donnée"),
