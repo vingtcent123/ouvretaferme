@@ -89,7 +89,10 @@ class ProductLib extends ProductCrud {
 
 		$cItem = \selling\Item::model()
 			->select([
-				'product' => ['name', 'vignette', 'unit', 'category', 'variety', 'quality', 'size', 'stock'],
+				'product' => [
+					'name', 'vignette', 'unit', 'category', 'variety', 'quality', 'size', 'stock',
+					'plant' => ['name', 'fqn', 'vignette']
+				],
 				'packaging',
 				'price' => new \Sql('SUM(price) / SUM(IF(packaging IS NULL, 1, packaging) * number)', 'float'),
 				'sold' => new \Sql('SUM(number)', 'float'),
