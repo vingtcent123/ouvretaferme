@@ -3,7 +3,7 @@ new AdaptativeView('manage', function($data, FarmTemplate $t) {
 
 	$t->title = s("Les interventions de {value}", $data->eFarm['name']);
 	$t->tab = 'settings';
-	$t->subNav = (new \farm\FarmUi())->getSettingsSubNav($data->eFarm, s("Interventions"));
+	$t->subNav = (new \farm\FarmUi())->getSettingsSubNav($data->eFarm);
 
 	echo (new \farm\ActionUi())->manage($data->eFarm, $data->cAction, $data->cCategory);
 

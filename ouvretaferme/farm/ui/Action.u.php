@@ -109,7 +109,10 @@ class ActionUi {
 
 		$h = '<div class="util-action">';
 
-			$h .= '<h1>'.s("Interventions").'</h1>';
+			$h .= '<h1>';
+				$h .= '<a href="'.FarmUi::urlSettings($eFarm).'"  class="h-back">'.\Asset::icon('arrow-left').'</a>';
+				$h .= s("Interventions");
+			$h .= '</h1>';
 
 			$h .= '<div>';
 				$h .= '<a href="/farm/action:create?farm='.$eFarm['id'].'" class="btn btn-primary">'.\Asset::icon('plus-circle').' '.s("Nouvelle action").'</a>';

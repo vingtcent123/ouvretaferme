@@ -38,10 +38,15 @@ class SupplierUi {
 	}
 
 	public function manage(\farm\Farm $eFarm, \Collection $cSupplier, \Search $search): string {
+		
+		$title = '<h1>';
+			$title .= '<a href="'.FarmUi::urlSettings($eFarm).'"  class="h-back">'.\Asset::icon('arrow-left').'</a>';
+			$title .= s("Fournisseurs de semences et plants");
+		$title .= '</h1>';
 
 		if($cSupplier->empty() and $search->empty()) {
 
-			$h = '<h1>'.s("Fournisseurs de semences et plants").'</h1>';
+			$h = $title;
 			$h .= '<div class="util-block-help">';
 				$h .= s("Vous n'avez pas encore ajouté de fournisseur de semences et plants à votre ferme. Ajouter des fournisseurs peut être très utile pour faciliter vos commandes !");
 			$h .= '</div>';
@@ -55,7 +60,7 @@ class SupplierUi {
 		} else {
 
 			$h = '<div class="util-action">';
-				$h .= '<h1>'.s("Fournisseurs de semences et plants").'</h1>';
+				$h .= $title;
 				$h .= '<div>';
 					$h .= '<a '.attr('onclick', 'Lime.Search.toggle("#supplier-search")').' class="btn btn-primary">'.\Asset::icon('search').'</a> ';
 					$h .= '<a href="/farm/supplier:create?farm='.$eFarm['id'].'" class="btn btn-primary">'.\Asset::icon('plus-circle').' '.s("Nouveau fournisseur").'</a>';

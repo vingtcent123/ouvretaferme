@@ -1421,10 +1421,16 @@ Lime.Dropdown = class {
 			return true;
 		} else {
 
+			const windowHeight = window.innerHeight;
+			const windowWidth = window.innerWidth;
+
+			if(innerWidth >= 1200) {
+				return false;
+			}
+
 			// Fullscreen if height is too high
 			const listBounding = list.getBoundingClientRect();
 			const listHeight = listBounding.height
-			const windowHeight = window.innerHeight;
 
 			return (
 				listHeight > windowHeight - 200 ||
@@ -1856,17 +1862,29 @@ Lime.Stick = class {
 
 		}
 
-		if(this.placement.endsWith('-start')) {
+		let placementX;
+
+		if(this.placement.endsWith('start')) {
+			placementX = 'start';
+		} else if(this.placement.endsWith('center')) {
+			placementX = 'center';
+		} else if(this.placement.endsWith('end')) {
+			placementX = 'end';
+		} else {
+			placementX = (elementBounds.left < window.innerWidth / 2) ? 'start' : 'end';
+		}
+
+		if(placementX === 'start') {
 			translateX += elementBounds.left - freeBounds.left;
-		} else if(this.placement.endsWith('-center')) {
+		} else if(placementX ==='center') {
 			translateX += (elementBounds.left + elementBounds.width / 2 - freeBounds.width / 2) - freeBounds.left;
-		} else if(this.placement.endsWith('-end')) {
+		} else if(placementX === 'end') {
 			translateX += (elementBounds.right - freeBounds.width) - freeBounds.left;
 		}
 
-		if(this.placement.startsWith('top-')) {
+		if(this.placement.startsWith('top')) {
 			translateY += (elementBounds.bottom - freeBounds.height - elementBounds.height) - freeBounds.top;
-		} else if(this.placement.startsWith('bottom-')) {
+		} else if(this.placement.startsWith('bottom')) {
 			translateY += elementBounds.bottom - freeBounds.top;
 		}
 

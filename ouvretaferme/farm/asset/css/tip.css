@@ -35,6 +35,14 @@
 		pointer-events: none;
 	}
 
+	@media (min-width: 1200px) and (min-height: 768px) {
+
+		#tip-wrapper:not(.tip-wrapper-inline) {
+			margin-top: 0;
+		}
+
+	}
+
 	#tip-wrapper.tip-wrapper-inline .tip-block {
 		margin: 1rem auto;
 	}

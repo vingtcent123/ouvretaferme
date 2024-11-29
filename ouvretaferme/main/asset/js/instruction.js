@@ -1,12 +1,19 @@
 new Lime.Instruction('main')
-	.register('updateHeader', function(tab, farmHtml, subNavHtml) {
+	.register('updateHeader', function(tab, subTab, farmHtml, subNavHtml) {
 
 		const farmNav = qs('#farm-nav');
 
 		if(farmNav) {
 
 			farmNav.qsa('[data-tab].selected', node => node.classList.remove('selected'));
+			farmNav.qsa('.farm-subnav-item.selected', node => node.classList.remove('selected'));
+
+			farmNav.qsa('[data-tab].selected', node => node.classList.remove('selected'));
 			farmNav.qs('[data-tab="'+ tab +'"]', node => node.classList.add('selected'));
+
+			if(subTab !== null) {
+				farmNav.qs('[data-sub-tab="'+ subTab +'"]', node => node.classList.add('selected'));
+			}
 
 			const seasonNav = qs('#farm-subnav');
 
@@ -42,7 +49,10 @@ new Lime.Instruction('main')
 	})
 	.register('keepScroll', function() {
 
-		if(document.body.getAttribute('data-touch') === 'yes') {
+		if(
+			document.body.getAttribute('data-touch') === 'yes' ||
+			window.innerHeight < 767
+		) {
 
 			const node = qs('body > nav');
 

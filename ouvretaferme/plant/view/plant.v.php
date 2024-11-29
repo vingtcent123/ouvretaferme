@@ -10,6 +10,7 @@ new AdaptativeView('plant', function($data, FarmTemplate $t) {
 
 	echo '<div class="util-action">';
 		echo '<h1>';
+			echo '<a href="'.\farm\FarmUi::urlSettings($data->eFarm).'"  class="h-back">'.\Asset::icon('arrow-left').'</a>';
 			echo s("Espèces");
 		echo '</h1>';
 		echo  '<div>';

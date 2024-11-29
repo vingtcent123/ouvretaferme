@@ -5,21 +5,33 @@ new AdaptativeView('create', function($data, PanelTemplate $t) {
 
 });
 
-new AdaptativeView('update', function($data, PanelTemplate $t) {
+new AdaptativeView('update', function($data, FarmTemplate $t) {
 
-	return (new \farm\FarmUi())->update($data->e);
+	$t->title = s("Réglages de base de {value}", $data->e['name']);
+	$t->tab = 'settings';
+	$t->subNav = (new \farm\FarmUi())->getSettingsSubNav($data->e);
 
-});
-
-new AdaptativeView('updateSeries', function($data, PanelTemplate $t) {
-
-	return (new \farm\FarmUi())->updateSeries($data->e);
+	echo (new \farm\FarmUi())->update($data->e);
 
 });
 
-new AdaptativeView('updateFeature', function($data, PanelTemplate $t) {
+new AdaptativeView('updateSeries', function($data, FarmTemplate $t) {
 
-	return (new \farm\FarmUi())->updateFeature($data->e);
+	$t->title = s("Réglages de base de {value}", $data->e['name']);
+	$t->tab = 'settings';
+	$t->subNav = (new \farm\FarmUi())->getSettingsSubNav($data->e);
+
+	echo (new \farm\FarmUi())->updateSeries($data->e);
+
+});
+
+new AdaptativeView('updateFeature', function($data, FarmTemplate $t) {
+
+	$t->title = s("Configurer les fonctionnalités de {value}", $data->e['name']);
+	$t->tab = 'settings';
+	$t->subNav = (new \farm\FarmUi())->getSettingsSubNav($data->e);
+
+	echo (new \farm\FarmUi())->updateFeature($data->e);
 
 });
 
@@ -35,7 +47,10 @@ new AdaptativeView('export', function($data, FarmTemplate $t) {
 	$t->tab = 'settings';
 	$t->subNav = (new \farm\FarmUi())->getSettingsSubNav($data->e);
 
-	echo '<h1>'.s("Exporter les données").'</h1>';
+	echo '<h1>';
+		echo '<a href="'.\farm\FarmUi::urlSettings($data->e).'"  class="h-back">'.\Asset::icon('arrow-left').'</a>';
+		echo s("Exporter les données");
+	echo '</h1>';
 	echo (new \farm\FarmUi())->export($data->e, $data->year, $data->hasMarket);
 
 });

@@ -100,7 +100,7 @@ class LegalUi {
 
 			$h .= '<h4>'.s("Pour le développement, {siteName} c'est :").'</h4>';
 			$h .= '<ul>';
-				$h .= '<li>'.s("300 € de charges par an pour le serveur, le nom de domaine et l'envoi des e-mails").'</li>';
+				$h .= '<li>'.s("200 € de charges par an pour le serveur, le nom de domaine et l'envoi des e-mails").'</li>';
 				$h .= '<li>'.s("1500 heures de travail par an pour le code informatique, soit l'équivalent de 60 000 € par an s'il fallait recruter un informaticien pour cela").'</li>';
 			$h .= '</ul>';
 
@@ -190,7 +190,7 @@ class LegalUi {
 
 		$h .= '<div class="home-category">';
 
-			$h .= '<p>'.s("Non, et cela signifie que vous ne pouvez pas utiliser {siteName} si vous pratiquez la bio rotationnelle. Vous pouvez par contre faire un choix d'avenir en convertissant votre ferme à l'agriculture biologique.").'</p>';
+			$h .= '<p>'.s("Non, et cela signifie que vous ne pouvez pas utiliser {siteName} si vous pratiquez la bio rotationnelle. Vous pouvez par contre faire un choix d'avenir en convertissant votre ferme intégralement à l'agriculture biologique.").'</p>';
 
 		$h .= '</div>';
 

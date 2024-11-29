@@ -149,13 +149,18 @@ class ToolUi {
 
 	public function manage(\farm\Farm $eFarm, ?string $routineName, array $tools, \Collection $cTool, Tool $eToolNew, \Collection $cActionUsed, \Search $search): string {
 
+		$title = '<h1>';
+			$title .= '<a href="'.FarmUi::urlSettings($eFarm).'"  class="h-back">'.\Asset::icon('arrow-left').'</a>';
+			$title .= ($routineName ? RoutineUi::getProperty($routineName, 'title') : s("Matériel"));
+		$title .= '</h1>';
+		
 		if(
 			$cTool->empty() and
 			$search->empty(['status']) and
 			$tools[Tool::INACTIVE] === 0
 		) {
 
-			$h = '<h1>'.($routineName ? RoutineUi::getProperty($routineName, 'title') : s("Matériel")).'</h1>';
+			$h = $title;
 			$h .= '<div class="util-block-help">';
 				$h .= ($routineName ? RoutineUi::getProperty($routineName, 'nothing') : s("Vous n'avez pas encore ajouté de matériel à votre ferme. Ajouter du matériel peut être très utile pour suivre les stocks et indiquer le matériel à utiliser pour les interventions !"));
 			$h .= '</div>';
@@ -167,7 +172,7 @@ class ToolUi {
 		} else {
 
 			$h = '<div class="util-action">';
-				$h .= '<h1>'.($routineName ? RoutineUi::getProperty($routineName, 'title') : s("Matériel")).'</h1>';
+				$h .= $title;
 				$h .= '<div>';
 					if($routineName === NULL) {
 						$h .= '<a '.attr('onclick', 'Lime.Search.toggle("#tool-search")').' class="btn btn-primary">'.\Asset::icon('search').'</a> ';

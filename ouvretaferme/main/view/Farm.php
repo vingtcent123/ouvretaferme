@@ -6,7 +6,16 @@ class FarmTemplate extends MainTemplate {
 
 	public string $template = 'farm ';
 	public string $subNav = '';
+
 	public string $tab;
+
+	public function __construct() {
+
+		parent::__construct();
+
+		\Asset::css('farm', 'design.css');
+
+	}
 
 	protected function buildAjaxScroll(AjaxTemplate $t): void {
 
@@ -18,8 +27,22 @@ class FarmTemplate extends MainTemplate {
 
 	protected function buildAjaxHeader(AjaxTemplate $t): void {
 
+		try {
+
+			$subTab = match($this->tab) {
+				'cultivation' => \Setting::get('main\viewCultivation'),
+				'selling' => \Setting::get('main\viewSelling'),
+				'shop' => \Setting::get('main\viewShop'),
+				default => NULL,
+			};
+
+		} catch(Exception) {
+			$subTab = NULL;
+		}
+
 		$t->package('main')->updateHeader(
 			$this->tab,
+			$subTab,
 			$this->getFarmNav(),
 			$this->getFarmSubNav(),
 		);
@@ -72,11 +95,14 @@ class FarmTemplate extends MainTemplate {
 
 				if($this->data->cFarmUser->count() > 1) {
 
-					$farm .= '<a data-dropdown="bottom-start" data-dropdown-hover="true">'.\farm\FarmUi::getVignette($this->data->eFarm, '1.75rem').'&nbsp;&nbsp;'.encode($this->data->eFarm['name']).''.Asset::icon('chevron-down', ['style' => 'margin-left: .5rem']).'</a>';
-					$farm .= '<div class="dropdown-list bg-primary">';
-						foreach($this->data->cFarmUser as $eFarm) {
-							$farm .= '<a href="'.$eFarm->getHomeUrl().'" data-ajax-navigation="never" class="dropdown-item">'.\farm\FarmUi::getVignette($eFarm, '1.75rem').'&nbsp;&nbsp;'.encode($eFarm['name']).'</a>';
-						}
+					$farm .= '<div class="nav-title-farm">';
+						$farm .= '<div>'.\farm\FarmUi::getVignette($this->data->eFarm, '4rem').'</div>';
+						$farm .= '<a data-dropdown="bottom-start" data-dropdown-hover="true">'.encode($this->data->eFarm['name']).''.Asset::icon('chevron-down', ['style' => 'margin-left: .5rem']).'</a>';
+						$farm .= '<div class="dropdown-list bg-primary">';
+							foreach($this->data->cFarmUser as $eFarm) {
+								$farm .= '<a href="'.$eFarm->getHomeUrl().'" data-ajax-navigation="never" class="dropdown-item">'.\farm\FarmUi::getVignette($eFarm, '1.75rem').'&nbsp;&nbsp;'.encode($eFarm['name']).'</a>';
+							}
+						$farm .= '</div>';
 					$farm .= '</div>';
 
 				} else {

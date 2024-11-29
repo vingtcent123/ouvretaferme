@@ -17,8 +17,10 @@ class StripeFarmUi {
 	public function display(\farm\Farm $eFarm, StripeFarm $eStripeFarm): string {
 
 		$h = '<h1>';
+			$h .= '<a href="'.\farm\FarmUi::urlSettings($eFarm).'"  class="h-back">'.\Asset::icon('arrow-left').'</a>';
 			$h .= s("Paiement en ligne");
 		$h .= '</h1>';
+		$h .= '<br/>';
 
 		if($eStripeFarm->empty()) {
 			$h .= $this->getCreate($eFarm);

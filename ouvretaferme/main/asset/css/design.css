@@ -14,6 +14,7 @@
 	--background-even: #f8f8fa;
 	--primary: #3d373d;
 	--secondary: #505075;
+	--secondary-dark: #3a3a55;
 	--training: #fdf7c9;
 	--shop: #006d6b;
 	--border: #d5d5d5;
@@ -27,7 +28,7 @@
   background: #e5e5f3;
 }
 
-@media (max-height: 767px) or (max-width: 767px) {
+@media (max-height: 991px) {
 
 	:root {
 		--farmNav: 5rem;
@@ -38,13 +39,26 @@
 
 }
 
-@media (min-height: 768px) and (min-width: 768px) {
+@media (min-height: 992px) {
 
-	:root {
-		--farmNav: 4rem;
-		--mainNav: 3rem;
-		--farmSubNav: 2.5rem;
-		--mainSticky: calc(var(--mainNav) + var(--farmNav) + var(--farmSubNav));
+	@media (min-width: 768px) {
+
+		:root {
+			--farmNav: 4rem;
+			--mainNav: 3rem;
+			--farmSubNav: 2.5rem;
+			--mainSticky: calc(var(--mainNav) + var(--farmNav) + var(--farmSubNav));
+		}
+
+	}
+
+	@media (min-width: 1200px) {
+
+		:root {
+			--mainNav: 3.5rem;
+			--mainSticky: 0rem;
+		}
+
 	}
 
 }
@@ -85,7 +99,15 @@ html {
 	font-size: 13px;
 }
 
-@media (min-width: 1200px) and (max-width: 1399px) {
+@media (min-width: 1400px) {
+
+	html {
+		font-size: 15px;
+	}
+
+}
+
+@media (min-width: 1350px) and (max-width: 1399px) {
 
 	html {
 		font-size: 14px;
@@ -93,10 +115,10 @@ html {
 
 }
 
-@media (min-width: 1400px) {
+@media (min-width: 1200px) and (max-width: 1349px) {
 
 	html {
-		font-size: 15px;
+		font-size: 13px;
 	}
 
 }
@@ -210,12 +232,6 @@ body[data-template~="default"] header {
 	background: linear-gradient(135deg, var(--background) 0%, transparent 100%);
 }
 
-body[data-template~="farm"] header {
-	position: sticky;
-	z-index: 500;
-	box-shadow: 0 0 1rem #8888882D;
-}
-
 @media (min-height: 768px) and (min-width: 768px) {
 
 	body[data-template~="farm"] header {
@@ -238,10 +254,6 @@ body[data-template~="farm"] header {
 
 }
 
-body[data-template~="farm"] header {
-	background: linear-gradient(to bottom, var(--background-light) 0, white 100%);
-}
-
 body[data-template~="farm"] main > div.container:not(:first-child) {
 	margin-top: 0;
 }
@@ -259,6 +271,7 @@ body > nav {
 	font-weight: normal;
 	color: white;
 	background-color: var(--primary);
+	box-shadow: 0 0 1rem #5b5b8388;
 }
 
 body[data-demo] > nav {
@@ -471,8 +484,8 @@ body > nav .nav-user {
 	line-height: 1.2;
 }
 
-body > nav .nav-user > *:not(:last-child) {
-	margin-right: .5rem;
+body > nav .nav-user > *:not(:first-child) {
+	margin-left: .5rem;
 }
 
 
@@ -529,8 +542,7 @@ footer:empty {
 }
 
 footer:not(:empty) {
-	margin-top: 3rem;
-	padding: 1rem 0;
+	padding: 4rem 0 1rem;
 	background: linear-gradient(to bottom, var(--background-light) 0, white 100%);
 }
 

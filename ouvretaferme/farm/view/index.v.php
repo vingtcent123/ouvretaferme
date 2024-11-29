@@ -213,6 +213,9 @@ new AdaptativeView('cartography', function($data, FarmTemplate $t) {
 
 	echo '<div class="util-action">';
 		echo '<h1>';
+			if($data->eFarm->canManage()) {
+				echo '<a href="'.\farm\FarmUi::urlSettings($data->eFarm).'"  class="h-back">'.\Asset::icon('arrow-left').'</a>';
+			}
 			echo s("Plan de la ferme");
 			echo (new \farm\FarmUi())->getSeasonsTabs($data->eFarm, fn($season) => \farm\FarmUi::urlCartography($data->eFarm, $season), $data->season);
 		echo '</h1>';

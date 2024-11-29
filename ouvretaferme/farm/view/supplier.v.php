@@ -10,7 +10,7 @@ new AdaptativeView('manage', function($data, FarmTemplate $t) {
 
 	$t->title = s("Les fournisseurs de {value}", $data->eFarm['name']);
 	$t->tab = 'settings';
-	$t->subNav = (new \farm\FarmUi())->getSettingsSubNav($data->eFarm, s("Fournisseurs de semences et plants"));
+	$t->subNav = (new \farm\FarmUi())->getSettingsSubNav($data->eFarm);
 
 	echo (new \farm\SupplierUi())->manage($data->eFarm, $data->cSupplier, $data->search);
 

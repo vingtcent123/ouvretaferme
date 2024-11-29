@@ -16,14 +16,34 @@
 	->applyElement(function($data, \farm\Farm $e) {
 		$e->validate('canManage');
 	})
-	->update()
+	->update(function($data) {
+
+		$data->eFarm = $data->e;
+		\farm\FarmerLib::register($data->e);
+
+		throw new ViewAction($data);
+
+	})
 	->doUpdate(fn() => throw new ReloadAction('farm', 'Farm.updated'))
 	->update(function($data) {
+
+		$data->eFarm = $data->e;
+		\farm\FarmerLib::register($data->e);
+
 		$data->e['cPlantRotationExclude'] = \plant\PlantLib::getByIds($data->e['rotationExclude'], sort: 'name');
+
 		throw new ViewAction($data);
+
 	}, page: 'updateSeries')
 	->doUpdateProperties('doUpdateSeries', ['calendarMonthStart', 'calendarMonthStop', 'rotationYears', 'rotationExclude'], fn() => throw new ReloadAction('farm', 'Farm.updatedRotation'))
-	->update(page: 'updateFeature')
+	->update(function($data) {
+
+		$data->eFarm = $data->e;
+		\farm\FarmerLib::register($data->e);
+
+		throw new ViewAction($data);
+
+	}, page: 'updateFeature')
 	->doUpdateProperties('doUpdateFeature', ['featureTime', 'featureDocument'], fn() => throw new ReloadAction('farm', 'Farm.updatedFeatures'))
 	->doUpdateProperties('doUpdatePlanningDelayedMax', ['planningDelayedMax'], fn() => throw new ReloadAction())
 	->read('calendarMonth', function($data) {

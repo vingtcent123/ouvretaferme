@@ -339,11 +339,15 @@ class FarmUi {
 
 	}
 
-	public function update(Farm $eFarm): \Panel {
+	public function update(Farm $eFarm): string {
 
 		$form = new \util\FormUi();
 
-		$h = '';
+		$h = '<h1>';
+			$h .= '<a href="'.FarmUi::urlSettings($eFarm).'"  class="h-back">'.\Asset::icon('arrow-left').'</a>';
+			$h .= s("Réglages de base de la ferme");
+		$h .= '</h1>';
+		$h .= '<br/>';
 
 		$h .= $form->openAjax('/farm/farm:doUpdate', ['id' => 'farm-update', 'autocomplete' => 'off']);
 
@@ -361,11 +365,7 @@ class FarmUi {
 
 		$h .= $form->close();
 
-		return new \Panel(
-			id: 'panel-farm-update',
-			title: s("Paramétrer la ferme"),
-			body: $h
-		);
+		return $h;
 
 	}
 
@@ -395,11 +395,15 @@ class FarmUi {
 
 	}
 
-	public function updateSeries(Farm $eFarm): \Panel {
+	public function updateSeries(Farm $eFarm): string {
 
 		$form = new \util\FormUi();
 
-		$h = '';
+		$h = '<h1>';
+			$h .= '<a href="'.FarmUi::urlSettings($eFarm).'"  class="h-back">'.\Asset::icon('arrow-left').'</a>';
+			$h .= s("Réglages de base pour produire");
+		$h .= '</h1>';
+		$h .= '<br/>';
 
 		$h .= $form->openAjax('/farm/farm:doUpdateSeries');
 
@@ -429,19 +433,21 @@ class FarmUi {
 
 		$h .= $form->close();
 
-		return new \Panel(
-			id: 'panel-farm-update-series',
-			title: s("Paramétrer la production"),
-			body: $h
-		);
+		return $h;
 
 	}
 
-	public function updateFeature(Farm $eFarm): \Panel {
+	public function updateFeature(Farm $eFarm): string {
 
 		$form = new \util\FormUi();
 
-		$h = '<div class="util-block-help">';
+		$h = '<h1>';
+			$h .= '<a href="'.FarmUi::urlSettings($eFarm).'"  class="h-back">'.\Asset::icon('arrow-left').'</a>';
+			$h .= s("Configurer les fonctionnalités");
+		$h .= '</h1>';
+		$h .= '<br/>';
+
+		$h .= '<div class="util-block-help">';
 			$h .= s("Pour que <i>{siteName}</i> corresponde le plus fidèlement possible aux besoins de votre ferme, vous pouvez choisir d'activer ou désactiver certaines fonctionnalités. Désactiver des fonctionnalités simplifie l'interface du site, tandis qu'en activer vous offre plus de possibilités.");
 		$h .= '</div>';
 
@@ -457,11 +463,7 @@ class FarmUi {
 
 		$h .= $form->close();
 
-		return new \Panel(
-			id: 'panel-farm-update',
-			title: s("Configurer les fonctionnalités"),
-			body: $h
-		);
+		return $h;
 
 	}
 
@@ -529,9 +531,11 @@ class FarmUi {
 
 	public function getMainTabs(Farm $eFarm, string $tab): string {
 
+		$prefix = '<span class="farm-subnav-prefix">'.\Asset::icon('chevron-right').' </span>';
+
 		$h = '<nav id="farm-nav">';
 
-			$h .= '<div class="container farm-tabs">';
+			$h .= '<div class="farm-tabs">';
 
 				if($eFarm->canPlanning()) {
 					$h .= '<a href="'.FarmUi::urlPlanning($eFarm).'" data-tab="home" class="farm-tab '.($tab === 'home' ? 'selected' : '').'">';
@@ -540,21 +544,30 @@ class FarmUi {
 					$h .= '</a>';
 				}
 
-				$h .= '<a href="'.FarmUi::urlCultivation($eFarm).'" data-tab="cultivation" class="farm-tab '.($tab === 'cultivation' ? 'selected' : '').'">';
+				$h .= '<a href="'.FarmUi::urlCultivation($eFarm).'" data-tab="cultivation" class="farm-tab farm-tab-subnav '.($tab === 'cultivation' ? 'selected' : '').'">';
 					$h .= \Asset::icon('journals');
 					$h .= '<span>'.s("Production").'</span>';
 				$h .= '</a>';
 
+				$h .= $this->getCultivationMenu($eFarm, prefix: $prefix, tab: $tab);
+
 				if($eFarm->canSelling()) {
-					$h .= '<a href="'.FarmUi::urlSelling($eFarm).'" data-tab="selling" class="farm-tab '.($tab === 'selling' ? 'selected' : '').'">';
+
+					$h .= '<a href="'.FarmUi::urlSelling($eFarm).'" data-tab="selling" class="farm-tab farm-tab-subnav '.($tab === 'selling' ? 'selected' : '').'">';
 						$h .= \Asset::icon('piggy-bank');
 						$h .= '<span>'.s("Commercialisation").'</span>';
 					$h .= '</a>';
-					$h .= '<a href="'.FarmUi::urlShop($eFarm).'" data-tab="shop" class="farm-tab '.($tab === 'shop' ? 'selected' : '').'">';
+
+					$h .= $this->getSellingMenu($eFarm, prefix: $prefix, tab: $tab);
+
+					$h .= '<a href="'.FarmUi::urlShop($eFarm).'" data-tab="shop" class="farm-tab farm-tab-subnav '.($tab === 'shop' ? 'selected' : '').'">';
 						$h .= '<span class="farm-tab-off">'.\Asset::icon('cart').'</span>';
 						$h .= '<span class="farm-tab-on">'.\Asset::icon('cart-fill').'</span>';
 						$h .= '<span>'.s("Vente en ligne").'</span>';
 					$h .= '</a>';
+
+					$h .= $this->getShopMenu($eFarm, prefix: $prefix, tab: $tab);
+
 				}
 
 				if($eFarm->canAnalyze()) {
@@ -566,7 +579,10 @@ class FarmUi {
 				}
 
 				if($eFarm->canManage()) {
-					$h .= '<a href="'.FarmUi::urlSettings($eFarm).'" class="farm-tab '.($tab === 'settings' ? 'selected' : '').'" data-tab="settings">'.\Asset::icon('gear-fill').'</a>';
+					$h .= '<a href="'.FarmUi::urlSettings($eFarm).'" class="farm-tab '.($tab === 'settings' ? 'selected' : '').'" data-tab="settings">';
+						$h .= '<span>'.\Asset::icon('gear-fill').'</span>';
+						$h .= '<span class="farm-tab-settings-title">'.s("Paramétrage").'</span>';
+					$h .= '</a>';
 				}
 
 			$h .= '</div>';
@@ -582,10 +598,10 @@ class FarmUi {
 		$selectedView = \Setting::get('main\viewPlanning');
 
 		$h = '<nav id="farm-subnav">';
-			$h .= '<div class="container farm-subnav-menu farm-subnav-wrapper">';
+			$h .= '<div class="farm-subnav-wrapper">';
 
 				foreach($this->getPlanningCategories($eFarm, $week) as $key => ['url' => $url, 'label' => $label]) {
-					$h .= '<a href="'.$url.'" id="farm-subnav-planning-'.$key.'" class="farm-subnav-tree-menu '.($key === $selectedView ? 'selected' : '').'">'.$label.'</a> ';
+					$h .= '<a href="'.$url.'" id="farm-subnav-planning-'.$key.'" class="farm-subnav-item '.($key === $selectedView ? 'selected' : '').'">'.$label.'</a> ';
 				}
 
 			$h .= '</div>';
@@ -735,21 +751,29 @@ class FarmUi {
 
 	public function getCultivationSubNav(Farm $eFarm, ?int $season = NULL): string {
 
-		$selectedView = \Setting::get('main\viewCultivation');
-
 		$h = '<nav id="farm-subnav">';
-			$h .= '<div class="container farm-subnav-menu farm-subnav-wrapper">';
-
-				foreach($this->getCultivationCategories() as $key => $value) {
-
-					$h .= '<a href="'.FarmUi::urlCultivation($eFarm, $key, season: $season).'" class="farm-subnav-tree-menu '.($key === $selectedView ? 'selected' : '').'">';
-						$h .= $value;
-					$h .= '</a>';
-
-				}
-
-			$h .= '</div>';
+			$h .= $this->getCultivationMenu($eFarm, $season, tab: 'cultivation');
 		$h .= '</nav>';
+
+		return $h;
+
+	}
+
+	public function getCultivationMenu(Farm $eFarm, ?int $season = NULL, string $prefix = '', ?string $tab = NULL): string {
+
+		$selectedView = ($tab === 'cultivation') ? \Setting::get('main\viewCultivation') : NULL;
+
+		$h = '<div class="farm-subnav-wrapper">';
+
+			foreach($this->getCultivationCategories() as $key => $value) {
+
+				$h .= '<a href="'.FarmUi::urlCultivation($eFarm, $key, season: $season).'" class="farm-subnav-item '.($key === $selectedView ? 'selected' : '').'" data-sub-tab="'.$key.'">';
+					$h .= $prefix.'<span>'.$value.'</span>';
+				$h .= '</a>';
+
+			}
+
+		$h .= '</div>';
 
 		return $h;
 
@@ -760,7 +784,7 @@ class FarmUi {
 			Farmer::SERIES => s("Cultures"),
 			Farmer::SOIL => s("Assolement"),
 			Farmer::HISTORY => s("Rotations"),
-			Farmer::SEQUENCE => s("Itinéraires<hide> techniques</hide>", ['hide' => '<span class="hide-xs-down">']),
+			Farmer::SEQUENCE => s("Itinéraires<hide> techniques</hide>", ['hide' => '<span class="farm-subnav-sequence hide-xs-down">']),
 		];
 	}
 
@@ -836,21 +860,29 @@ class FarmUi {
 
 	public function getSellingSubNav(Farm $eFarm): string {
 
-		$selectedView = \Setting::get('main\viewSelling');
-
 		$h = '<nav id="farm-subnav">';
-			$h .= '<div class="container farm-subnav-menu farm-subnav-wrapper">';
-
-				foreach($this->getSellingCategories($eFarm) as $key => $value) {
-
-					$h .= '<a href="'.FarmUi::urlSelling($eFarm, $key).'" class="farm-subnav-tree-menu '.($key === $selectedView ? 'selected' : '').'">';
-						$h .= $value;
-					$h .= '</a>';
-
-				}
-
-			$h .= '</div>';
+			$h .= $this->getSellingMenu($eFarm, tab: 'selling');
 		$h .= '</nav>';
+
+		return $h;
+
+	}
+
+	public function getSellingMenu(Farm $eFarm, ?int $season = NULL, string $prefix = '', ?string $tab = NULL): string {
+
+		$selectedView = ($tab === 'selling') ? \Setting::get('main\viewSelling') : NULL;
+
+		$h = '<div class="farm-subnav-wrapper">';
+
+			foreach($this->getSellingCategories($eFarm) as $key => $value) {
+
+				$h .= '<a href="'.FarmUi::urlSelling($eFarm, $key).'" class="farm-subnav-item '.($key === $selectedView ? 'selected' : '').'" data-sub-tab="'.$key.'">';
+					$h .= $prefix.'<span>'.$value.'</span>';
+				$h .= '</a>';
+
+			}
+
+		$h .= '</div>';
 
 		return $h;
 
@@ -932,18 +964,28 @@ class FarmUi {
 		$selectedView = \Setting::get('main\viewShop');
 
 		$h = '<nav id="farm-subnav">';
-			$h .= '<div class="container farm-subnav-menu farm-subnav-wrapper">';
-
-				foreach($this->getShopCategories() as $key => $value) {
-
-					$h .= '<a href="'.FarmUi::urlShop($eFarm, $key).'" class="farm-subnav-tree-menu '.($key === $selectedView ? 'selected' : '').'">';
-						$h .= $value;
-					$h .= '</a>';
-
-				}
-
-			$h .= '</div>';
+			$h .= $this->getShopMenu($eFarm, tab: 'shop');
 		$h .= '</nav>';
+
+		return $h;
+
+	}
+
+	public function getShopMenu(Farm $eFarm, string $prefix = '', ?string $tab = NULL): string {
+
+		$selectedView = ($tab === 'shop') ? \Setting::get('main\viewShop') : NULL;
+
+		$h = '<div class="farm-subnav-wrapper">';
+
+			foreach($this->getShopCategories() as $key => $value) {
+
+				$h .= '<a href="'.FarmUi::urlShop($eFarm, $key).'" class="farm-subnav-item '.($key === $selectedView ? 'selected' : '').'" data-sub-tab="'.$key.'">';
+					$h .= $prefix.'<span>'.$value.'</span>';
+				$h .= '</a>';
+
+			}
+
+		$h .= '</div>';
 
 		return $h;
 
@@ -964,11 +1006,11 @@ class FarmUi {
 		$selectedView = \Setting::get('main\viewAnalyze');
 
 		$h = '<nav id="farm-subnav">';
-			$h .= '<div class="container farm-subnav-menu farm-subnav-wrapper">';
+			$h .= '<div class="farm-subnav-wrapper">';
 
 				foreach($this->getAnalyzeCategories($eFarm) as $key => $value) {
 
-					$h .= '<a href="'.FarmUi::urlAnalyze($eFarm, $key).'" class="farm-subnav-tree-menu '.($key === $selectedView ? 'selected' : '').'">';
+					$h .= '<a href="'.FarmUi::urlAnalyze($eFarm, $key).'" class="farm-subnav-item '.($key === $selectedView ? 'selected' : '').'">';
 						$h .= $value;
 					$h .= '</a>';
 
@@ -1166,10 +1208,10 @@ class FarmUi {
 		$selectedView = \Setting::get('main\viewSettings');
 
 		$h = '<nav id="farm-subnav">';
-			$h .= '<div class="container farm-subnav-menu farm-subnav-wrapper">';
+			$h .= '<div class="farm-subnav-wrapper">';
 
 				foreach($this->getSettingsCategories($eFarm) as $key => ['url' => $url, 'label' => $label]) {
-					$h .= '<a href="'.$url.'" class="farm-subnav-tree-menu '.($key === $selectedView ? 'selected' : '').'">'.$label.'</a> ';
+					$h .= '<a href="'.$url.'" class="farm-subnav-item '.($key === $selectedView ? 'selected' : '').'">'.$label.'</a> ';
 				}
 
 			$h .= '</div>';
@@ -1199,12 +1241,12 @@ class FarmUi {
 	public function getWebsiteSubNav(Farm $eFarm, ?string $page = NULL): string {
 
 		$h = '<nav id="farm-subnav" class="farm-subnav-settings">';
-			$h .= '<div class="container farm-subnav-wrapper">';
-				$h .= '<a href="'.self::urlSettings($eFarm).'" class="farm-subnav-tree-link">'.s("Configuration").'</a>';
-				$h .= '<div class="farm-subnav-tree-separator">'.\Asset::icon('chevron-right').'</div>';
-				$h .= '<a href="/website/manage?id='.$eFarm['id'].'" class="farm-subnav-tree-link">'.s("Site internet").'</a>';
-				$h .= '<div class="farm-subnav-tree-separator">'.\Asset::icon('chevron-right').'</div>';
-				$h .= '<div class="farm-subnav-tree-text">'.encode($page).'</div>';
+			$h .= '<div class="farm-subnav-wrapper">';
+				$h .= '<a href="'.self::urlSettings($eFarm).'" class="farm-subnav-link">'.s("Configuration").'</a>';
+				$h .= '<div class="farm-subnav-separator">'.\Asset::icon('chevron-right').'</div>';
+				$h .= '<a href="/website/manage?id='.$eFarm['id'].'" class="farm-subnav-link">'.s("Site internet").'</a>';
+				$h .= '<div class="farm-subnav-separator">'.\Asset::icon('chevron-right').'</div>';
+				$h .= '<div class="farm-subnav-text">'.encode($page).'</div>';
 			$h .= '</div>';
 		$h .= '</nav>';
 
@@ -1252,7 +1294,7 @@ class FarmUi {
 
 	public function getSettings(Farm $eFarm, \website\News $eNews): string {
 
-		$h = '<h2>'.s("Configurer la production").'</h2>';
+		$h = '<h2>'.s("Paramétrer la production").'</h2>';
 
 		$h .= '<div class="util-buttons">';
 
@@ -1293,7 +1335,7 @@ class FarmUi {
 
 		$h .= '</div>';
 
-		$h .= '<h2>'.s("Configurer la commercialisation").'</h2>';
+		$h .= '<h2>'.s("Paramétrer la commercialisation").'</h2>';
 
 		$h .= '<div class="util-buttons">';
 
@@ -1313,7 +1355,7 @@ class FarmUi {
 
 		$h .= '</div>';
 
-		$h .= '<h2>'.s("Configurer la ferme").'</h2>';
+		$h .= '<h2>'.s("Paramétrer la ferme").'</h2>';
 
 		$h .= '<div class="util-buttons">';
 

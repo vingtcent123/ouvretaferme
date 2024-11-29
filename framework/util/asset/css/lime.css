@@ -555,9 +555,9 @@ div.input-group > .field-checkbox {
 
 	--container-xs-padding: 0.75rem;
 	--container-sm-padding: 1rem;
-	--container-md-padding: 1rem;
+	--container-md-padding: 1.5rem;
 	--container-lg-padding: 2rem;
-	--container-xl-padding: 3rem;
+	--container-xl-padding: 2rem;
 
 }
 
@@ -619,7 +619,7 @@ div.input-group > .field-checkbox {
 
 .container {
 	width: 100%;
-	max-width: 1400px;
+	max-width: 1600px;
 	margin-left: auto;
 	margin-right: auto;
 	padding-left: var(--container-padding);
