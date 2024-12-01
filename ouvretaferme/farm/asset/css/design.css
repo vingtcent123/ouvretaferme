@@ -95,7 +95,7 @@
 
 	body[data-template~="farm"] main .container.farm-template-main-title {
 		height: var(--nav-height);
-		background-color: var(--background);
+		background-color: var(--background-dark);
 		margin-bottom: 1rem;
 		display: flex;
 		flex-direction: column;

@@ -586,10 +586,11 @@
 	})
 	->get(['/ferme/{id}/assolement', '/ferme/{id}/assolement/{season}'], function($data) {
 
+		\farm\FarmerLib::setView('viewCultivation', $data->eFarm, \farm\Farmer::SOIL);
+		\farm\FarmerLib::setView('viewSoil', $data->eFarm, \farm\Farmer::PLAN);
+
 		$data->season = \farm\FarmerLib::getDynamicSeason($data->eFarm, GET('season', 'int'));
 		\map\SeasonLib::setOnline($data->season);
-
-		\farm\FarmerLib::setView('viewCultivation', $data->eFarm, \farm\Farmer::SOIL);
 
 		$data->cZone = \map\ZoneLib::getByFarm($data->eFarm, season: $data->season);
 
@@ -605,12 +606,14 @@
 	})
 	->get(['/ferme/{id}/rotation', '/ferme/{id}/rotation/{season}'], function($data) {
 
+		\farm\FarmerLib::setView('viewCultivation', $data->eFarm, \farm\Farmer::SOIL);
+		\farm\FarmerLib::setView('viewSoil', $data->eFarm, \farm\Farmer::ROTATION);
+
 		$data->season = \farm\FarmerLib::getDynamicSeason($data->eFarm, GET('season', 'int'));
 		\map\SeasonLib::setOnline($data->season);
 
 		$data->selectedSeasons = $data->eFarm->getRotationSeasons($data->season);
 
-		\farm\FarmerLib::setView('viewCultivation', $data->eFarm, \farm\Farmer::HISTORY);
 
 		$data->cZone = \map\ZoneLib::getByFarm($data->eFarm, season: $data->season);
 
@@ -627,7 +630,7 @@
 
 		\series\PlaceLib::filterRotationsByFamily($data->eFarm, $data->cZone, $data->search);
 
-		throw new ViewAction($data, ':history');
+		throw new ViewAction($data, ':soil');
 
 
 	})

@@ -122,8 +122,8 @@ class FarmUi {
 
 		return match($view) {
 			Farmer::SERIES => self::urlCultivationSeries($eFarm, $subView, $season),
-			Farmer::SOIL => self::urlSoil($eFarm),
-			Farmer::HISTORY => self::urlHistory($eFarm),
+			Farmer::SOIL => self::urlCultivationSoil($eFarm, $subView, $season),
+			Farmer::ROTATION => self::urlHistory($eFarm),
 			Farmer::SEQUENCE => self::urlCultivationSequences($eFarm)
 		};
 
@@ -136,6 +136,17 @@ class FarmUi {
 		return match($view) {
 			Farmer::SEQUENCE => self::urlCultivationSequences($eFarm),
 			default => self::url($eFarm).'/series'.($season ? '/'.$season : '').'?view='.$view
+		};
+
+	}
+
+	public static function urlCultivationSoil(Farm $eFarm, ?string $view = NULL, int $season = NULL): string {
+
+		$view ??= \Setting::get('main\viewSoil');
+
+		return match($view) {
+			Farmer::PLAN => self::urlSoil($eFarm, $season),
+			Farmer::ROTATION => self::urlHistory($eFarm, $season),
 		};
 
 	}
@@ -648,7 +659,7 @@ class FarmUi {
 							$eFarm->canManage() and
 							$firstSeries === FALSE
 						) {
-							$h .=  '<a data-get="/series/series:createFrom?farm='.$eFarm['id'].'&season='.$selectedSeason.'" class="btn btn-primary" data-ajax-class="Ajax.Query">'.\Asset::icon('plus-circle').'<span class="hide-xs-down"> '.s("Nouvelle série").'</span></a>';
+							$h .=  '<a data-get="/series/series:createFrom?farm='.$eFarm['id'].'&season='.$selectedSeason.'" class="btn btn-primary" data-ajax-class="Ajax.Query">'.\Asset::icon('plus-circle').' '.s("Nouvelle série").'</a>';
 						}
 						if($nSeries >= 5) {
 							$h .= ' <a class="btn btn-primary" '.attr('onclick', 'Lime.Search.toggle("#series-search")').'>';
@@ -731,6 +742,56 @@ class FarmUi {
 
 	}
 
+	public function getCultivationSoilTitle(\farm\Farm $eFarm, int $selectedSeason, string $selectedView, \Collection $cZone): string {
+
+		$h = '<div class="util-action">';
+			$h .= '<h1>';
+				$h .= '<a class="util-action-navigation" data-dropdown="bottom-start" data-dropdown-hover="true">';
+					$h .= $this->getSoilCategories($eFarm)[$selectedView].' '.self::getNavigation();
+				$h .= '</a>';
+				$h .= '<div class="dropdown-list bg-secondary">';
+					$h .= '<div class="dropdown-title">'.s("Assolement").'</div>';
+					foreach($this->getSoilCategories($eFarm) as $key => $value) {
+						$h .= '<a href="'.FarmUi::urlCultivationSoil($eFarm, $key).'" class="dropdown-item '.($key === $selectedView ? 'selected' : '').'">'.$value.'</a> ';
+					}
+				$h .= '</div>';
+				$h .= $this->getSeasonsTabs($eFarm, fn($season) => \farm\FarmUi::urlCultivationSoil($eFarm, season: $season), $selectedSeason);
+			$h .= '</h1>';
+			$h .= '<div>';
+
+			switch($selectedView) {
+
+				case \farm\Farmer::PLAN :
+					if($cZone->notEmpty()) {
+						$h .= '<a href="'.\farm\FarmUi::urlCartography($eFarm, $selectedSeason).'" class="btn btn-primary">';
+							$h .= \Asset::icon('geo-alt-fill').' ';
+							if($eFarm->canManage()) {
+								$h .= s("Modifier le plan de la ferme");
+							} else {
+								$h .= s("Plan de la ferme");
+							}
+						$h .= '</a>';
+					}
+					break;
+
+				case \farm\Farmer::ROTATION:
+					if($cZone->notEmpty()) {
+						$h .= '<a '.attr('onclick', 'Lime.Search.toggle("#bed-rotation-search")').' class="btn btn-primary">'.\Asset::icon('search').'</a> ';
+						if($eFarm->canManage()) {
+							$h .= '<a href="/farm/farm:updateSeries?id='.$eFarm['id'].'" class="btn btn-primary">'.\Asset::icon('gear-fill').' '.s("Configurer").'</a>';
+						}
+					}
+					break;
+
+			}
+
+			$h .= '</div>';
+		$h .= '</div>';
+
+		return $h;
+
+	}
+
 	public function getCultivationSubNav(Farm $eFarm, ?int $season = NULL): string {
 
 		$h = '<nav id="farm-subnav">';
@@ -765,7 +826,6 @@ class FarmUi {
 		return [
 			Farmer::SERIES => s("Cultures"),
 			Farmer::SOIL => s("Assolement"),
-			Farmer::HISTORY => s("Rotations"),
 			Farmer::SEQUENCE => s("Itinéraires<hide> techniques</hide>", ['hide' => '<span class="farm-subnav-sequence hide-xs-down">']),
 		];
 	}
@@ -773,7 +833,7 @@ class FarmUi {
 	public function getSeriesCategories(Farm $eFarm): array {
 
 		$categories = [
-			Farmer::AREA => s("Planification"),
+			Farmer::AREA => s("Plan de culture"),
 			Farmer::SEEDLING => s("Semences et plants"),
 			Farmer::FORECAST => s("Prévisionnel financier"),
 			Farmer::HARVESTING => s("Récoltes"),
@@ -789,6 +849,15 @@ class FarmUi {
 		}
 
 		return $categories;
+
+	}
+
+	public function getSoilCategories(Farm $eFarm): array {
+
+		return [
+			Farmer::PLAN => s("Plan d'assolement"),
+			Farmer::ROTATION => s("Rotations"),
+		];
 
 	}
 

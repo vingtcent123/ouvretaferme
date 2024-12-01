@@ -95,8 +95,6 @@ class SequenceUi {
 
 		if($sequences[Sequence::CLOSED] > 0) {
 
-			$h .= '<br/>';
-
 			$h .= '<div class="tabs-item">';
 				$h .= '<a href="'.\farm\FarmUi::urlCultivationSequences($eFarm).'" class="tab-item '.($search->get('status') === Sequence::ACTIVE ? 'selected' : '').'"><span>'.s("Itinéraires actifs").' <span class="tab-item-count">'.$sequences[Sequence::ACTIVE].'</span></span></a>';
 				$h .= '<a href="'.\farm\FarmUi::urlCultivationSequences($eFarm).'/'.Sequence::CLOSED.'" class="tab-item '.($search->get('status') === Sequence::CLOSED ? 'selected' : '').'"><span>'.s("Itinéraires archivés").' <span class="tab-item-count">'.$sequences[Sequence::CLOSED].'</span></span></a>';

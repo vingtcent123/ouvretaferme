@@ -54,7 +54,7 @@
 
 		throw new ViewAction($data, $data->data ? ':importFile' : NULL);
 
-	})
+	}, validate: ['canWrite'])
 	->write('doImportCultivations', function($data) {
 
 		$fw = new FailWatch();

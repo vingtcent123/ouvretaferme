@@ -32,22 +32,22 @@ div.bed-item-header {
    padding-top: 0.5rem;
 }
 
-div.bed-item-grid-soil:not(.bed-item-grid-header):nth-child(odd) {
+div.bed-item-grid-plan:not(.bed-item-grid-header):nth-child(odd) {
 	background-color: var(--background-light);
 }
 
-div.bed-item-grid-soil:not(.bed-item-grid-header):hover,
-div.bed-item-grid-history:not(.bed-item-grid-header):hover {
+div.bed-item-grid-plan:not(.bed-item-grid-header):hover,
+div.bed-item-grid-rotation:not(.bed-item-grid-header):hover {
 	background-color: rgba(125, 125, 150, 0.05);
 	transition: background-color 0.25s;
 }
 
-div.bed-item-grid-soil:not(.bed-item-grid-header),
-div.bed-item-grid-history:not(.bed-item-grid-header) {
+div.bed-item-grid-plan:not(.bed-item-grid-header),
+div.bed-item-grid-rotation:not(.bed-item-grid-header) {
 	border-top: 1px dashed var(--border);
 }
 
-div.bed-item-grid-soil {
+div.bed-item-grid-plan {
 	grid-template-columns: 14rem 8rem 4rem 1fr;
 	align-items: center;
 }
@@ -57,25 +57,25 @@ div.bed-item-wrapper div.series-grid {
 	margin-left: 1rem;
 }
 
-div.bed-item-grid-history-5 {
+div.bed-item-grid-rotation-5 {
 	grid-template-columns: 1fr 4rem repeat(5, 1fr);
 }
 
-div.bed-item-grid-history-4 {
+div.bed-item-grid-rotation-4 {
 	grid-template-columns: 1fr 4rem repeat(4, 1fr);
 }
 
-div.bed-item-grid-history-3 {
+div.bed-item-grid-rotation-3 {
 	grid-template-columns: 1fr 4rem repeat(3, 1fr);
 }
 
-div.bed-item-grid-history-2 {
+div.bed-item-grid-rotation-2 {
 	grid-template-columns: 1fr 4rem repeat(2, 1fr);
 }
 
 @media (max-width: 991px) {
 
-	div.bed-item-grid-soil {
+	div.bed-item-grid-plan {
 		grid-template-columns: 12rem 4rem 1fr;
 	}
 
@@ -92,7 +92,7 @@ div.bed-item-grid-history-2 {
 
 @media (max-width: 768px) {
 
-	div.bed-item-grid-soil {
+	div.bed-item-grid-plan {
 		grid-template-columns: 12rem 1fr;
 	}
 
@@ -100,19 +100,19 @@ div.bed-item-grid-history-2 {
 		left: 12rem;
 	}
 
-	div.bed-item-grid-history-5 {
+	div.bed-item-grid-rotation-5 {
 		grid-template-columns: 1fr repeat(5, 1fr);
 	}
 
-	div.bed-item-grid-history-4 {
+	div.bed-item-grid-rotation-4 {
 		grid-template-columns: 1fr repeat(4, 1fr);
 	}
 
-	div.bed-item-grid-history-3 {
+	div.bed-item-grid-rotation-3 {
 		grid-template-columns: 1fr repeat(3, 1fr);
 	}
 
-	div.bed-item-grid-history-2 {
+	div.bed-item-grid-rotation-2 {
 		grid-template-columns: 1fr repeat(2, 1fr);
 	}
 
@@ -141,7 +141,7 @@ div.bed-item-grid .bed-item-bed.bed-item-bed-fill {
 
 @media (min-width: 992px) {
 
-	div.bed-item-grid.bed-item-grid-soil .bed-item-bed.bed-item-bed-fill {
+	div.bed-item-grid.bed-item-grid-plan .bed-item-bed.bed-item-bed-fill {
 		grid-column: span 3;
 	}
 

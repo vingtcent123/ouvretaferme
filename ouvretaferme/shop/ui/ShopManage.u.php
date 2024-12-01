@@ -9,7 +9,7 @@ class ShopManageUi {
 	
 	public function getIntroCreate(\farm\Farm $eFarm): string {
 
-		$h .= '<div class="util-block-help">';
+		$h = '<div class="util-block-help">';
 			$h .= '<h4>'.s("Vendre ma production en ligne").'</h4>';
 			$h .= '<p>'.s("Avec {siteName}, il est très facile de vendre votre production en ligne !").'</p>';
 			$h .= '<ol>';

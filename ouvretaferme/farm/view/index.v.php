@@ -252,37 +252,35 @@ new AdaptativeView('cartography', function($data, FarmTemplate $t) {
 
 new AdaptativeView('soil', function($data, FarmTemplate $t) {
 
-	$t->canonical = \farm\FarmUi::urlSoil($data->eFarm, $data->season);
+	$t->canonical = \farm\FarmUi::urlCultivationSoil($data->eFarm, season: $data->season);
 	$t->title = s("Assolement de {value}", $data->eFarm['name']);
 	$t->tab = 'cultivation';
 	$t->subNav = (new \farm\FarmUi())->getCultivationSubNav($data->eFarm);
 
+	$view = Setting::get('main\viewSoil');
+
 	$t->js()->replaceHistory($t->canonical);
 	$t->package('main')->updateNavCultivation($t->canonical);
 
-	$h = '<div class="util-action">';
-		$h .= '<h1>';
-			$h .= s("Assolement");
-			$h .= (new \farm\FarmUi())->getSeasonsTabs($data->eFarm, fn($season) => \farm\FarmUi::urlSoil($data->eFarm, $season), $data->season);
-		$h .= '</h1>';
-		$h .= '<div>';
-			if($data->cZone->notEmpty()) {
-				$h .= '<a href="'.\farm\FarmUi::urlCartography($data->eFarm, $data->season).'" class="btn btn-primary">';
-					$h .= \Asset::icon('geo-alt-fill').' ';
-					if($data->eFarm->canManage()) {
-						$h .= s("Modifier le plan de la ferme");
-					} else {
-						$h .= s("Plan de la ferme");
-					}
-				$h .= '</a>';
-			}
-		$h .= '</div>';
-	$h .= '</div>';
+	$uiFarm = new \farm\FarmUi();
 
-	$t->mainTitle = $h;
+	$t->mainTitle = $uiFarm->getCultivationSoilTitle($data->eFarm, $data->season, $view, $data->cZone);
 
 	if($data->cZone->notEmpty()) {
-		echo (new \map\ZoneUi())->getList($data->eFarm, $data->cZone, $data->season);
+
+		switch($view) {
+
+			case \farm\Farmer::PLAN :
+				echo (new \map\ZoneUi())->getList($data->eFarm, $data->cZone, $data->season);
+				break;
+
+			case \farm\Farmer::ROTATION :
+				echo (new \farm\FarmUi())->getRotationSearch($data->search, $data->selectedSeasons);
+				echo (new \map\ZoneUi())->getList($data->eFarm, $data->cZone, $data->season, $data->search);
+				break;
+
+		}
+
 	} else {
 
 		echo '<div class="util-block-help">';

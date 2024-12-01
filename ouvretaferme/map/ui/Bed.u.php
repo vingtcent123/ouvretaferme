@@ -18,35 +18,35 @@ class BedUi {
 			return '';
 		}
 
-		$view = \Setting::get('main\viewCultivation');
+		$view = \Setting::get('main\viewSoil');
 
 		\Asset::css('series', 'series.css');
 
 		$class = 'bed-item-grid bed-item-grid-'.$view;
-		if($view === \farm\Farmer::HISTORY) {
-			$class .= ' bed-item-grid-history-'.$eFarm['rotationYears'];
+		if($view === \farm\Farmer::ROTATION) {
+			$class .= ' bed-item-grid-rotation-'.$eFarm['rotationYears'];
 		}
 
 		$h = '<div class="'.$class.' bed-item-grid-header">';
 
 			$h .= '<div class="util-grid-header bed-item-header">'.s("Emplacement").'</div>';
 
-			if($view === \farm\Farmer::SOIL) {
+			if($view === \farm\Farmer::PLAN) {
 				$h .= '<div class="util-grid-header bed-item-header bed-item-header-size"></div>';
 			}
 
 			$h .= '<div class="util-grid-header bed-item-header bed-item-area"></div>';
 
 			$h .= match($view) {
-				\farm\Farmer::SOIL => $this->displayHeaderBySeason($eFarm, $season),
-				\farm\Farmer::HISTORY => $this->displayHeaderByHistory($season, $eFarm['rotationYears'])
+				\farm\Farmer::PLAN => $this->displayHeaderBySeason($eFarm, $season),
+				\farm\Farmer::ROTATION => $this->displayHeaderByRotation($season, $eFarm['rotationYears'])
 			};
 
 		$h .= '</div>';
 
 		$h .= '<div class="bed-item-wrapper">';
 
-			if($view === \farm\Farmer::SOIL) {
+			if($view === \farm\Farmer::PLAN) {
 				$h .= (new \series\CultivationUi())->getListGrid($eFarm, $season);
 			}
 
@@ -60,7 +60,7 @@ class BedUi {
 
 	public function displayBedsFromPlot(\farm\Farm $eFarm, Plot $ePlot, int $season): string {
 
-		$view = \Setting::get('main\viewCultivation');
+		$view = \Setting::get('main\viewSoil');
 
 		$cBed = $ePlot['cBed'];
 
@@ -69,20 +69,20 @@ class BedUi {
 		foreach($cBed as $eBed) {
 
 			if(
-				($view === \farm\Farmer::HISTORY and $eBed['plotFill']) or
-				($view === \farm\Farmer::SOIL and $eBed['plotFill'] and $eBed['cPlace']->empty())
+				($view === \farm\Farmer::ROTATION and $eBed['plotFill']) or
+				($view === \farm\Farmer::PLAN and $eBed['plotFill'] and $eBed['cPlace']->empty())
 			) {
 				continue;
 			}
 
 			$place = match($view) {
-				\farm\Farmer::SOIL => $this->displayPlaceBySeason($eFarm, $eBed, $eBed['cPlace'], $season),
-				\farm\Farmer::HISTORY => $this->displayPlaceByHistory($eBed['cPlace'], $season, $eFarm)
+				\farm\Farmer::PLAN => $this->displayPlaceBySeason($eFarm, $eBed, $eBed['cPlace'], $season),
+				\farm\Farmer::ROTATION => $this->displayPlaceByHistory($eBed['cPlace'], $season, $eFarm)
 			};
 
 			$class = 'bed-item-grid bed-item-grid-'.$view;
-			if($view === \farm\Farmer::HISTORY) {
-				$class .= ' bed-item-grid-history-'.$eFarm['rotationYears'];
+			if($view === \farm\Farmer::ROTATION) {
+				$class .= ' bed-item-grid-rotation-'.$eFarm['rotationYears'];
 			}
 
 			$h .= '<div class="'.$class.'">';
@@ -114,7 +114,7 @@ class BedUi {
 
 					$h .= '</div>';
 
-					if($view === \farm\Farmer::SOIL) {
+					if($view === \farm\Farmer::PLAN) {
 						$h .= '<div class="bed-item-size">';
 							$h .= s("{length}&nbsp;mL x&nbsp;{width}&nbsp;cm", $eBed);
 						$h .= '</div>';
@@ -156,7 +156,7 @@ class BedUi {
 
 	}
 
-	protected function displayHeaderByHistory(int $season, int $number): string {
+	protected function displayHeaderByRotation(int $season, int $number): string {
 
 		$h = '';
 

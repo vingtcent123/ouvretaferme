@@ -49,6 +49,7 @@ Farm:
   stockNotes: ?text16
   stockNotesUpdatedAt: ?datetime
   stockNotesUpdatedBy: ?user\User
+  shops: int8(0, null) = 0
   startedAt: int16(PHP(date('Y') - 100), PHP(date('Y') + 10))
   createdAt: datetime = SPECIAL(now)
   status: enum(ACTIVE, CLOSED) = ACTIVE
@@ -68,9 +69,10 @@ Farmer:
   viewPlanningField: enum(VARIETY, SOIL) = SOIL
   viewPlanningSearch: ?json
   viewPlanningUser: ?user\User
-  viewCultivation: enum(SERIES, SOIL, HISTORY, SEQUENCE) = SERIES
+  viewCultivation: enum(SERIES, SOIL, SEQUENCE) = SERIES
   viewCultivationCategory: enum(AREA, PLANT, FAMILY, ROTATION) = AREA
   viewSeries: enum(AREA, FORECAST, SEEDLING, HARVESTING, WORKING_TIME) = AREA
+  viewSoil: enum(PLAN, ROTATION) = PLAN
   viewSelling: enum(SALE, PRODUCT, CUSTOMER, INVOICE, STOCK) = SALE
   viewSellingSales: enum(ALL, PRIVATE, PRO, LABEL) = ALL
   viewSellingCategory: enum(ITEM, CUSTOMER, SHOP, PERIOD) = ITEM
