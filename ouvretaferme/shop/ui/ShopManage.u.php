@@ -8,8 +8,6 @@ class ShopManageUi {
 	}
 	
 	public function getIntroCreate(\farm\Farm $eFarm): string {
-		
-		$h = '<h1>'.s("Une boutique pour votre ferme").'</h1>';
 
 		$h .= '<div class="util-block-help">';
 			$h .= '<h4>'.s("Vendre ma production en ligne").'</h4>';
@@ -94,11 +92,6 @@ class ShopManageUi {
 
 	public function getList(\farm\Farm $eFarm, \Collection $cShop): string {
 
-		$h = '<div class="util-action">';
-			$h .= '<h1>'.s("Boutiques en ligne").'</h1>';
-			$h .= '<a href="/shop/:create?farm='.$eFarm['id'].'" class="btn btn-secondary">'.\Asset::icon('plus-circle').' '.s("Nouvelle boutique").'</a>';
-		$h .= '</div>';
-
 		$cShop->setColumn('hasDate', fn($eShop) => (
 			$eShop['status'] !== Shop::CLOSED and
 			$eShop['eDate']->notEmpty()
@@ -106,7 +99,7 @@ class ShopManageUi {
 
 		$hasDate = $cShop->match(fn($eShop) => $eShop['hasDate']);
 
-		$h .= '<div class="shop-list">';
+		$h = '<div class="shop-list">';
 
 			foreach($cShop as $eShop) {
 

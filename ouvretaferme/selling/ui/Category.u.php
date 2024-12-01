@@ -56,7 +56,7 @@ class CategoryUi {
 
 	}
 
-	public function manage(\farm\Farm $eFarm, \Collection $cCategory): string {
+	public function getManage(\farm\Farm $eFarm, \Collection $cCategory): string {
 
 		$h = '<div class="util-action">';
 

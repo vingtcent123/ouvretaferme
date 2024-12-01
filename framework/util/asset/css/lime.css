@@ -661,7 +661,7 @@ div.input-group > .field-checkbox {
 @media (max-width: 767px) {
 
 	.hide-sm-down {
-		display: none;
+		display: none !important;
 	}
 
 }
@@ -698,9 +698,25 @@ div.input-group > .field-checkbox {
 
 }
 
+@media (max-width: 1199px) or (max-height: 767px) {
+
+	.hide-lateral-down {
+		display: none !important;
+	}
+
+}
+
 @media (min-width: 1200px) {
 
 	.hide-xl-up {
+		display: none !important;
+	}
+
+}
+
+@media (min-width: 1200px) and (min-height: 768px) {
+
+	.hide-lateral-up {
 		display: none !important;
 	}
 
@@ -929,7 +945,7 @@ tbody .td-checkbox > label {
 	flex-wrap: wrap;
 	align-items: center;
 	justify-content: space-between;
-	margin-bottom: 1rem;
+	margin-bottom: 1.5rem;
 	gap: 0.5rem;
 }
 
@@ -2295,6 +2311,14 @@ a.h-back {
 	line-height: 1;
 	margin-right: .5em;
 	transition: background-color 0.5s;
+}
+
+@media (max-width: 767px) {
+
+	a.h-back {
+		display: none;
+	}
+
 }
 
 a.h-back:hover {

@@ -234,7 +234,7 @@ class PlantUi {
 
 	}
 
-	public function manage(\farm\Farm $eFarm, array $plants, \Collection $cPlant, \Search $search): string {
+	public function getManage(\farm\Farm $eFarm, array $plants, \Collection $cPlant, \Search $search): string {
 
 		if($cPlant->empty()) {
 			return '<div class="util-info">'.s("Il n'y a aucune espèce à afficher...").'</div>';

@@ -14,11 +14,13 @@ new AdaptativeView('importCultivations', function($data, FarmTemplate $t) {
 
 	}
 
-	echo '<h1>';
-		echo '<a href="'.\farm\FarmUi::urlSettings($data->eFarm).'"  class="h-back">'.\Asset::icon('arrow-left').'</a>';
-		echo s("Importer un plan de culture");
-	echo '</h1>';
-	echo '<br/>';
+	$h = '<h1>';
+		$h .= '<a href="'.\farm\FarmUi::urlSettings($data->eFarm).'"  class="h-back">'.\Asset::icon('arrow-left').'</a>';
+		$h .= s("Importer un plan de culture");
+	$h .= '</h1>';
+	
+	$t->mainTitle = $h;
+	
 	echo '<div class="util-block-help">';
 		echo '<p>'.s("Vous pouvez importer sur {siteName} un plan de culture en CSV en choisissant l'un des deux formats suivants :").'</p>';
 		echo '<ul>';

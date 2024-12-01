@@ -987,17 +987,14 @@ class SaleUi {
 	public function getHeader(Sale $eSale): string {
 
 		$h = '<div class="util-action">';
-
-			$h .= '<h1>'.SaleUi::getName($eSale).'</h1>';
-
+			$h .= '<div>';
+				$h .= '<h1 style="margin-bottom: 0.25rem">'.SaleUi::getName($eSale).'</h1>';
+				$h .= $this->getPreparationStatusForUpdate($eSale, shortText: FALSE);
+			$h .= '</div>';
 			$h .= '<div>';
 				$h .= $this->getUpdate($eSale, 'btn-primary');
 			$h .= '</div>';
 
-		$h .= '</div>';
-
-		$h .= '<div class="util-action-subtitle">';
-			$h .= $this->getPreparationStatusForUpdate($eSale, shortText: FALSE);
 		$h .= '</div>';
 
 		return $h;

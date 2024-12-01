@@ -37,17 +37,36 @@ class SupplierUi {
 
 	}
 
-	public function manage(\farm\Farm $eFarm, \Collection $cSupplier, \Search $search): string {
+	public function getManageTitle(\farm\Farm $eFarm, \Collection $cSupplier, \Search $search): string {
 		
 		$title = '<h1>';
 			$title .= '<a href="'.FarmUi::urlSettings($eFarm).'"  class="h-back">'.\Asset::icon('arrow-left').'</a>';
 			$title .= s("Fournisseurs de semences et plants");
 		$title .= '</h1>';
 
-		if($cSupplier->empty() and $search->empty()) {
+		if($this->isEmpty($cSupplier, $search)) {
+			return $title;
+		} else {
 
-			$h = $title;
-			$h .= '<div class="util-block-help">';
+			$h = '<div class="util-action">';
+				$h .= $title;
+				$h .= '<div>';
+					$h .= '<a '.attr('onclick', 'Lime.Search.toggle("#supplier-search")').' class="btn btn-primary">'.\Asset::icon('search').'</a> ';
+					$h .= '<a href="/farm/supplier:create?farm='.$eFarm['id'].'" class="btn btn-primary">'.\Asset::icon('plus-circle').' '.s("Nouveau fournisseur").'</a>';
+				$h .= '</div>';
+			$h .= '</div>';
+
+			return $h;
+
+		}
+
+	}
+
+	public function getManage(\farm\Farm $eFarm, \Collection $cSupplier, \Search $search): string {
+
+		if($this->isEmpty($cSupplier, $search)) {
+
+			$h = '<div class="util-block-help">';
 				$h .= s("Vous n'avez pas encore ajouté de fournisseur de semences et plants à votre ferme. Ajouter des fournisseurs peut être très utile pour faciliter vos commandes !");
 			$h .= '</div>';
 
@@ -59,15 +78,7 @@ class SupplierUi {
 
 		} else {
 
-			$h = '<div class="util-action">';
-				$h .= $title;
-				$h .= '<div>';
-					$h .= '<a '.attr('onclick', 'Lime.Search.toggle("#supplier-search")').' class="btn btn-primary">'.\Asset::icon('search').'</a> ';
-					$h .= '<a href="/farm/supplier:create?farm='.$eFarm['id'].'" class="btn btn-primary">'.\Asset::icon('plus-circle').' '.s("Nouveau fournisseur").'</a>';
-				$h .= '</div>';
-			$h .= '</div>';
-
-			$h .= $this->getSearch($eFarm, $search);
+			$h = $this->getSearch($eFarm, $search);
 
 			$h .= '<div class="util-overflow-sm">';
 
@@ -108,6 +119,15 @@ class SupplierUi {
 		}
 
 		return $h;
+
+	}
+
+	protected function isEmpty(\Collection $cSupplier, \Search $search): bool {
+
+		return (
+			$cSupplier->empty() and
+			$search->empty()
+		);
 
 	}
 

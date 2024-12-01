@@ -6,11 +6,13 @@ new AdaptativeView('update', function($data, FarmTemplate $t) {
 	$t->subNav = (new \farm\FarmUi())->getSettingsSubNav($data->e);
 
 
-	echo '<h1>';
-		echo '<a href="'.\farm\FarmUi::urlSettings($data->e).'"  class="h-back">'.\Asset::icon('arrow-left').'</a>';
-		echo s("Réglages de base pour vendre");
-	echo '</h1>';
-	echo '<br/>';
+	$h = '<h1>';
+		$h .= '<a href="'.\farm\FarmUi::urlSettings($data->e).'"  class="h-back">'.\Asset::icon('arrow-left').'</a>';
+		$h .= s("Réglages de base pour vendre");
+	$h .= '</h1>';
+	
+	$t->mainTitle = $h;
+	
 	echo (new \selling\ConfigurationUi())->update($data->e, $data->cCustomize, $data->eSaleExample);
 
 });

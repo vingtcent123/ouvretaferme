@@ -281,18 +281,24 @@ class CustomerUi {
 
 	}
 
-	public function getOne(Customer $eCustomer, \Collection $cSaleTurnover, \Collection $cGrid, \Collection $cSale, \Collection $cInvoice): string {
-
-		$eCustomer->expects(['invite']);
+	public function displayTitle(Customer $eCustomer): string {
 
 		$h = '<div class="util-action">';
 
-			$h .= '<h1>';
-				if($eCustomer['color']) {
-					$h .= CustomerUi::getColorCircle($eCustomer).' ';
-				}
-				$h .= $eCustomer->getName();
-			$h .= '</h1>';
+			$h .= '<div>';
+
+				$h .= '<h1 style="margin-bottom:0.25rem;">';
+					if($eCustomer['color']) {
+						$h .= CustomerUi::getColorCircle($eCustomer).' ';
+					}
+					$h .= $eCustomer->getName();
+				$h .= '</h1>';
+
+				$h .= '<div>';
+					$h .= $this->toggle($eCustomer);
+				$h .= '</div>';
+
+			$h .= '</div>';
 
 			$h .= '<div>';
 				$h .= $this->getUpdate($eCustomer, 'btn-primary');
@@ -300,9 +306,15 @@ class CustomerUi {
 
 		$h .= '</div>';
 
-		$h .= '<div class="util-action-subtitle">';
-			$h .= $this->toggle($eCustomer);
-		$h .= '</div>';
+		return $h;
+
+	}
+
+	public function display(Customer $eCustomer, \Collection $cSaleTurnover, \Collection $cGrid, \Collection $cSale, \Collection $cInvoice): string {
+
+		$eCustomer->expects(['invite']);
+
+		$h = '';
 
 		if($eCustomer['invite']->isValid() and $eCustomer['invite']->canWrite()) {
 			$h .= '<div class="util-block-gradient color-secondary">';

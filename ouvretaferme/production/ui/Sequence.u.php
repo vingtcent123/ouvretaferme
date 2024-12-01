@@ -432,7 +432,6 @@ class SequenceUi {
 
 		$h = '<div class="sequence-header">';
 
-			$h .= '<div class="util-badge bg-secondary">'.s("Itinéraire technique").'</div>';
 			$h .= '<div class="sequence-header-title">';
 				$h .= '<h1>';
 
@@ -501,34 +500,43 @@ class SequenceUi {
 			}
 
 			$h .= '<div class="sequence-header-infos">';
+				$h .= '<div class="util-badge bg-secondary" style="margin-right: 0.5rem">'.s("Itinéraire technique").'</div>';
 				$h .= implode(' | ', $infos);
 			$h .= '</div>';
 
-			if($eSequence['status'] === Sequence::CLOSED) {
-
-				$h .= '<div class="util-block mt-1">';
-
-					$h .= \Asset::icon('lock-fill');
-					$h .= ' '.s("Cet itinéraire technique est archivé, il ne peut plus être utilisé sur de nouvelles séries.");
-
-				$h .= '</div>';
-
-			}
-
-			if($eSequence['description'] !== NULL) {
-
-				$h .= '<div class="sequence-header-description util-block">';
-
-					$description = (new \editor\EditorUi())->value($eSequence['description']);
-
-					$h .= '<span class="sequence-header-description-icon">'.\Asset::icon('chat-right-text').'</span>';
-					$h .= '<span>'.$description.'</span>';
-
-				$h .= '</div>';
-
-			}
-
 		$h .= '</div>';
+
+		return $h;
+
+	}
+
+	public function getDetails(Sequence $eSequence): string {
+
+		$h = '';
+
+		if($eSequence['status'] === Sequence::CLOSED) {
+
+			$h .= '<div class="util-block mt-1">';
+
+				$h .= \Asset::icon('lock-fill');
+				$h .= ' '.s("Cet itinéraire technique est archivé, il ne peut plus être utilisé sur de nouvelles séries.");
+
+			$h .= '</div>';
+
+		}
+
+		if($eSequence['description'] !== NULL) {
+
+			$h .= '<div class="sequence-header-description util-block">';
+
+				$description = (new \editor\EditorUi())->value($eSequence['description']);
+
+				$h .= '<span class="sequence-header-description-icon">'.\Asset::icon('chat-right-text').'</span>';
+				$h .= '<span>'.$description.'</span>';
+
+			$h .= '</div>';
+
+		}
 
 		return $h;
 

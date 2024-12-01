@@ -5,7 +5,7 @@ new AdaptativeView('manage', function($data, FarmTemplate $t) {
 	$t->tab = 'selling';
 	$t->subNav = (new \farm\FarmUi())->getSellingSubNav($data->eFarm);
 
-	echo (new \selling\CategoryUi())->manage($data->eFarm, $data->cCategory);
+	echo (new \selling\CategoryUi())->getManage($data->eFarm, $data->cCategory);
 
 });
 

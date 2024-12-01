@@ -12,7 +12,8 @@ new AdaptativeView('manage', function($data, FarmTemplate $t) {
 	$t->tab = 'settings';
 	$t->subNav = (new \farm\FarmUi())->getSettingsSubNav($data->eFarm);
 
-	echo (new \farm\SupplierUi())->manage($data->eFarm, $data->cSupplier, $data->search);
+	$t->mainTitle = (new \farm\SupplierUi())->getManageTitle($data->eFarm, $data->cSupplier, $data->search);
+	echo (new \farm\SupplierUi())->getManage($data->eFarm, $data->cSupplier, $data->search);
 
 });
 

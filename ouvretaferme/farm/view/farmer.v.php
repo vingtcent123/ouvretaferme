@@ -5,7 +5,7 @@ new AdaptativeView('manage', function($data, FarmTemplate $t) {
 	$t->tab = 'home';
 	$t->subNav = (new \farm\FarmUi())->getPlanningSubNav($data->eFarm);
 
-	echo (new \farm\FarmerUi())->manage($data->eFarm, $data->cFarmer, $data->cFarmerInvite, $data->cFarmerGhost);
+	echo (new \farm\FarmerUi())->getManage($data->eFarm, $data->cFarmer, $data->cFarmerInvite, $data->cFarmerGhost);
 
 });
 

@@ -5,6 +5,8 @@
 class FarmTemplate extends MainTemplate {
 
 	public string $template = 'farm ';
+	public ?string $mainTitle = NULL;
+	public ?string $mainTitleClass = '';
 	public string $subNav = '';
 
 	public string $tab;
@@ -69,17 +71,36 @@ class FarmTemplate extends MainTemplate {
 	protected function getMain(string $stream):string {
 
 		if($this->main) {
-			return $this->main;
+
+			$h = '';
+
+			$h .= $this->getMainTitle();
+			$h .= $this->main;
+
+			return $h;
+
 		} else {
 
 			$h = '';
 			if($this->data->tip) {
 				$h .= (new \farm\TipUi())->get($this->data->eFarm, $this->data->tip, $this->data->tipNavigation);
 			}
+
+			$h .= $this->getMainTitle();
 			$h .= parent::getMain($stream);
 
 			return $h;
 
+		}
+
+	}
+
+	protected function getMainTitle():string {
+
+		if($this->mainTitle) {
+			return '<div class="container farm-template-main-title '.$this->mainTitleClass.'"><div>'.$this->mainTitle.'</div></div>';
+		} else {
+			return '';
 		}
 
 	}

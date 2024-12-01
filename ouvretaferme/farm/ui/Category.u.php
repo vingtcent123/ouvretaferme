@@ -89,12 +89,12 @@ class CategoryUi {
 
 	}
 
-	public function manage(\farm\Farm $eFarm, \Collection $cCategory): string {
+	public function getManageTitle(\farm\Farm $eFarm, \Collection $cCategory): string {
 
 		$h = '<div class="util-action">';
 
 			$h .= '<h1>';
-				$h .= '<a href="/farm/action:manage?farm='.$eFarm['id'].'"   class="h-back">'.\Asset::icon('arrow-left').'</a>';
+				$h .= '<a href="/farm/action:manage?farm='.$eFarm['id'].'" class="h-back">'.\Asset::icon('arrow-left').'</a>';
 				$h .= s("Les catégories");
 			$h .= '</h1>';
 
@@ -108,7 +108,13 @@ class CategoryUi {
 
 		$h .= '</div>';
 
-		$h .= '<p class="util-info">';
+		return $h;
+
+	}
+
+	public function getManage(\farm\Farm $eFarm, \Collection $cCategory): string {
+
+		$h = '<p class="util-info">';
 			$h .= p("Vous avez actuellement configuré {value} catégorie sur {max} possibles.", "Vous avez actuellement configuré {value} catégories sur {max} possibles.", $cCategory->count(), ['max' => \Setting::get('farm\categoriesLimit')]);
 		$h .= '</p>';
 

@@ -6,7 +6,8 @@ new AdaptativeView('/vente/{id}', function($data, FarmTemplate $t) {
 	$t->tab = 'selling';
 	$t->subNav = (new \farm\FarmUi())->getSellingSubNav($data->eFarm);
 
-	echo (new \selling\SaleUi())->getHeader($data->e);
+	$t->mainTitle = (new \selling\SaleUi())->getHeader($data->e);
+
 	echo (new \selling\SaleUi())->getRelativeSales($data->e, $data->relativeSales);
 	echo (new \selling\SaleUi())->getContent($data->e, $data->cPdf);
 

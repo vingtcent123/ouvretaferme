@@ -1731,16 +1731,45 @@ class CultivationUi {
 
 	}
 
-	public function readCollection(Series $eSeries, \Collection $cSeriesPerennial, \Collection $cCultivation, \Collection $cPlace, \Collection $cActionMain): string {
+	public function getHeader(Series $eSeries): string {
 
 		$h = '<div class="util-action">';
 
-			$h .= '<h1 class="series-header-title">';
-				$h .= $eSeries->quick('name', SeriesUi::name($eSeries));
-				if($eSeries['status'] === Series::CLOSED) {
-					$h .= '<span title="'.s("Série clôturée").'">'.\Asset::icon('lock-fill').'</span>';
+			$h .= '<div>';
+
+				$h .= '<h1 style="margin-bottom: 0.25rem">';
+					$h .= '<a href="'.\farm\FarmUi::urlCultivationSeries($eSeries['farm']).'" class="h-back">'.\Asset::icon('arrow-left').'</a>';
+					$h .= $eSeries->quick('name', SeriesUi::name($eSeries));
+					if($eSeries['status'] === Series::CLOSED) {
+						$h .= '<span class="series-header-closed" title="'.s("Série clôturée").'">'.\Asset::icon('lock-fill').'</span>';
+					}
+				$h .= '</h1>';
+
+				$infos = [];
+
+				if($eSeries['cycle'] === Series::PERENNIAL) {
+					$start = $eSeries['season'] - $eSeries['perennialSeason'] + 1;
+					if($eSeries['perennialLifetime'] !== NULL) {
+						$perennial = p("Culture pérenne en place depuis la saison {start} pour {value} an", "Culture pérenne en place depuis la saison {start} pour {value} ans", $eSeries['perennialLifetime'], ['start' => $start]);
+					} else {
+						$perennial = s("Culture pérenne en place depuis la saison {start}", ['start' => $start]);
+					}
+				} else {
+					$perennial = s("Culture annuelle");
 				}
-			$h .= '</h1>';
+
+				$infos[] = $perennial;
+
+				if($eSeries['sequence']->notEmpty()) {
+					$infos[] = s("Itinéraire technique {value}", '<u>'.\production\SequenceUi::link($eSeries['sequence']).'</u>');
+				}
+
+				$h .= '<div>';
+					$h .= '<div class="util-badge bg-secondary" style="margin-right: 0.5rem">'.s("Saison {value}", $eSeries['season']).'</div>';
+					$h .= implode(' | ', $infos);
+				$h .= '</div>';
+
+			$h .= '</div>';
 
 			$h .= '<div>';
 
@@ -1776,30 +1805,13 @@ class CultivationUi {
 
 		$h .= '</div>';
 
-		$infos = [];
+		return $h;
 
-		$infos[] = s("Saison {value}", '<u>'.encode($eSeries['season']).'</u>');
+	}
 
-		if($eSeries['cycle'] === Series::PERENNIAL) {
-			$start = $eSeries['season'] - $eSeries['perennialSeason'] + 1;
-			if($eSeries['perennialLifetime'] !== NULL) {
-				$perennial = p("Culture pérenne en place depuis la saison {start} pour {value} an", "Culture pérenne en place depuis la saison {start} pour {value} ans", $eSeries['perennialLifetime'], ['start' => $start]);
-			} else {
-				$perennial = s("Culture pérenne en place depuis la saison {start}", ['start' => $start]);
-			}
-		} else {
-			$perennial = s("Culture annuelle");
-		}
+	public function readCollection(Series $eSeries, \Collection $cSeriesPerennial, \Collection $cCultivation, \Collection $cPlace, \Collection $cActionMain): string {
 
-		$infos[] = $perennial;
-
-		if($eSeries['sequence']->notEmpty()) {
-			$infos[] = s("Itinéraire technique {value}", '<u>'.\production\SequenceUi::link($eSeries['sequence']).'</u>');
-		}
-
-		$h .= '<div class="util-action-subtitle">';
-			$h .= implode(' | ', $infos);
-		$h .= '</div>';
+		$h = '';
 
 		if($eSeries['cycle'] === Series::PERENNIAL) {
 

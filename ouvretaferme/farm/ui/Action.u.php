@@ -105,7 +105,7 @@ class ActionUi {
 
 	}
 
-	public function manage(\farm\Farm $eFarm, \Collection $cAction, \Collection $cCategory): string {
+	public function getManageTitle(\farm\Farm $eFarm): string {
 
 		$h = '<div class="util-action">';
 
@@ -120,7 +120,13 @@ class ActionUi {
 
 		$h .= '</div>';
 
-		$h .= '<div class="util-block-gradient">';
+		return $h;
+
+	}
+
+	public function getManage(\farm\Farm $eFarm, \Collection $cAction, \Collection $cCategory): string {
+
+		$h = '<div class="util-block-gradient">';
 			$h .= '<p>';
 				$h .= s("Plusieurs interventions sont activées par défaut et ne peuvent pas être modifiées ou supprimées, mais vous pouvez en ajouter d'autres afin de refléter fidèlement votre contexte de production.").' ';
 				if($cCategory->count() === 1) {

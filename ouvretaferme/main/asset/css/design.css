@@ -28,7 +28,7 @@
   background: #e5e5f3;
 }
 
-@media (max-height: 991px) {
+@media (max-height: 767px) or (max-width: 767px) {
 
 	:root {
 		--farmNav: 5rem;
@@ -39,9 +39,9 @@
 
 }
 
-@media (min-height: 992px) {
+@media (min-height: 768px) {
 
-	@media (min-width: 768px) {
+	@media (min-width: 768px) and (max-width: 1199px) {
 
 		:root {
 			--farmNav: 4rem;
@@ -641,7 +641,6 @@ div.soil-icon {
 }
 
 div.util-vignette {
-	margin-bottom: 1.5rem;
 	display: grid;
 	grid-template-columns: auto 1fr;
 	gap: 1.5rem;

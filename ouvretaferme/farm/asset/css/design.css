@@ -36,7 +36,7 @@
 	@media (max-height: 991px) {
 
 		:root {
-			--nav-height: 7rem;
+			--nav-height: 7.5rem;
 		}
 
 		.nav-title .farm-vignette-view {
@@ -63,6 +63,14 @@
 			"header footer" auto / var(--nav-width) 1fr;
 	}
 
+	@media (min-width: 2000px) {
+
+		body[data-template~="farm"] {
+			padding: 0 calc((100vw - 1800px) / 2);
+		}
+
+	}
+
 	body[data-template~="farm"] header {
 		grid-area: header;
 		position: fixed;
@@ -83,6 +91,24 @@
 		margin-right: 0;
 		padding-left: 2rem;
 		padding-right: 2rem;
+	}
+
+	body[data-template~="farm"] main .container.farm-template-main-title {
+		height: var(--nav-height);
+		background-color: var(--background);
+		margin-bottom: 1rem;
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+		margin-top: 0;
+	}
+
+	body[data-template~="farm"] main .container.farm-template-main-title > div {
+		width: 100%;
+	}
+
+	body[data-template~="farm"] main .container.farm-template-main-title > div > *:last-child {
+		margin-bottom: 0;
 	}
 
 	body[data-template~="farm"] footer  {
@@ -238,6 +264,23 @@
 	body[data-template~="farm"] header {
 		position: sticky;
 		z-index: 500;
+	}
+
+	body[data-template~="farm"] main .container.farm-template-main-title {
+		background: linear-gradient(to bottom, var(--background) 0, var(--background) 50%, transparent 100%);
+		margin-top: 0;
+		padding-top: 1rem;
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+	}
+
+	body[data-template~="farm"] main .container.farm-template-main-title > div > *:last-child {
+		margin-bottom: 0;
+	}
+
+	body[data-template~="farm"] main .container.farm-template-main-title + .container {
+		margin-top: 1.5rem;
 	}
 
 	/* Farm nav */

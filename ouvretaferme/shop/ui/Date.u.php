@@ -586,7 +586,9 @@ class DateUi {
 				if($eDate->canWrite()) {
 
 					$h .= '<a href="/shop/date:update?id='.$eDate['id'].'" class="dropdown-item">'.s("Paramétrer la vente").'</a>';
-					$h .= '<a href="/shop/product:create?date='.$eDate['id'].'" class="dropdown-item">'.s("Ajouter des produits à la vente").'</a>';
+					if($eDate->isDirect()) {
+						$h .= '<a href="/shop/product:create?date='.$eDate['id'].'" class="dropdown-item">'.s("Ajouter des produits à la vente").'</a>';
+					}
 					$h .= '<a href="/shop/date:create?shop='.$eShop['id'].'&farm='.$eDate['farm']['id'].'&date='.$eDate['id'].'" class="dropdown-item">'.s("Nouvelle vente à partir de celle-ci").'</a>';
 
 					if($sales === 0) {

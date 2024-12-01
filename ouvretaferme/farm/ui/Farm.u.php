@@ -343,13 +343,7 @@ class FarmUi {
 
 		$form = new \util\FormUi();
 
-		$h = '<h1>';
-			$h .= '<a href="'.FarmUi::urlSettings($eFarm).'"  class="h-back">'.\Asset::icon('arrow-left').'</a>';
-			$h .= s("Réglages de base de la ferme");
-		$h .= '</h1>';
-		$h .= '<br/>';
-
-		$h .= $form->openAjax('/farm/farm:doUpdate', ['id' => 'farm-update', 'autocomplete' => 'off']);
+		$h = $form->openAjax('/farm/farm:doUpdate', ['id' => 'farm-update', 'autocomplete' => 'off']);
 
 			$h .= $form->hidden('id', $eFarm['id']);
 
@@ -399,13 +393,7 @@ class FarmUi {
 
 		$form = new \util\FormUi();
 
-		$h = '<h1>';
-			$h .= '<a href="'.FarmUi::urlSettings($eFarm).'"  class="h-back">'.\Asset::icon('arrow-left').'</a>';
-			$h .= s("Réglages de base pour produire");
-		$h .= '</h1>';
-		$h .= '<br/>';
-
-		$h .= $form->openAjax('/farm/farm:doUpdateSeries');
+		$h = $form->openAjax('/farm/farm:doUpdateSeries');
 
 			$h .= $form->hidden('id', $eFarm);
 
@@ -441,13 +429,7 @@ class FarmUi {
 
 		$form = new \util\FormUi();
 
-		$h = '<h1>';
-			$h .= '<a href="'.FarmUi::urlSettings($eFarm).'"  class="h-back">'.\Asset::icon('arrow-left').'</a>';
-			$h .= s("Configurer les fonctionnalités");
-		$h .= '</h1>';
-		$h .= '<br/>';
-
-		$h .= '<div class="util-block-help">';
+		$h = '<div class="util-block-help">';
 			$h .= s("Pour que <i>{siteName}</i> corresponde le plus fidèlement possible aux besoins de votre ferme, vous pouvez choisir d'activer ou désactiver certaines fonctionnalités. Désactiver des fonctionnalités simplifie l'interface du site, tandis qu'en activer vous offre plus de possibilités.");
 		$h .= '</div>';
 
@@ -1226,7 +1208,7 @@ class FarmUi {
 		$categories = [
 			Farmer::SETTINGS => [
 				'url' => FarmUi::urlSettings($eFarm),
-				'label' => s("Configuration")
+				'label' => s("Paramétrage")
 			],
 			Farmer::WEBSITE => [
 				'url' => '/website/manage?id='.$eFarm['id'],
@@ -1294,7 +1276,7 @@ class FarmUi {
 
 	public function getSettings(Farm $eFarm, \website\News $eNews): string {
 
-		$h = '<h2>'.s("Paramétrer la production").'</h2>';
+		$h = '<h2>'.s("Production").'</h2>';
 
 		$h .= '<div class="util-buttons">';
 
@@ -1335,7 +1317,7 @@ class FarmUi {
 
 		$h .= '</div>';
 
-		$h .= '<h2>'.s("Paramétrer la commercialisation").'</h2>';
+		$h .= '<h2>'.s("Commercialisation").'</h2>';
 
 		$h .= '<div class="util-buttons">';
 
@@ -1355,7 +1337,7 @@ class FarmUi {
 
 		$h .= '</div>';
 
-		$h .= '<h2>'.s("Paramétrer la ferme").'</h2>';
+		$h .= '<h2>'.s("Ferme").'</h2>';
 
 		$h .= '<div class="util-buttons">';
 
@@ -1380,7 +1362,7 @@ class FarmUi {
 
 		$h .= '</div>';
 
-		$h .= '<h2>'.s("Les ressources").'</h2>';
+		$h .= '<h2>'.s("Ressources").'</h2>';
 
 		$h .= '<div class="util-buttons">';
 

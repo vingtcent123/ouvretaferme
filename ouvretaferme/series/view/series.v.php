@@ -5,6 +5,8 @@ new AdaptativeView('/serie/{id}', function($data, FarmTemplate $t) {
 	$t->tab = 'cultivation';
 	$t->subNav = (new \farm\FarmUi())->getCultivationSubNav($data->eFarm, $data->e['season']);
 
+	$t->mainTitle =  (new \series\CultivationUi())->getHeader($data->e);
+
 	echo (new \series\CultivationUi())->readCollection($data->e, $data->cSeriesPerennial, $data->cCultivation, $data->cPlace, $data->cActionMain);
 	echo (new \series\TaskUi())->getTimeline($data->eFarm, $data->e, $data->cCultivation, $data->cTask);
 

@@ -6,7 +6,8 @@ new AdaptativeView('/client/{id}', function($data, FarmTemplate $t) {
 	$t->tab = 'selling';
 	$t->subNav = (new \farm\FarmUi())->getSellingSubNav($data->eFarm);
 
-	echo (new \selling\CustomerUi())->getOne($data->e, $data->cSaleTurnover, $data->cGrid, $data->cSale, $data->cInvoice);
+	$t->mainTitle = (new \selling\CustomerUi())->displayTitle($data->e);
+	echo (new \selling\CustomerUi())->display($data->e, $data->cSaleTurnover, $data->cGrid, $data->cSale, $data->cInvoice);
 
 });
 

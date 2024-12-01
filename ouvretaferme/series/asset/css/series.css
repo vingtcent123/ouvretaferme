@@ -1,5 +1,5 @@
 /* Header d'une série */
-h1.series-header-title svg {
+h1.series-header-closed svg {
 	font-size: 80%;
 	margin-left: 1rem !important;
 }

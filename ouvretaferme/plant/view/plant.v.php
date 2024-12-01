@@ -8,21 +8,23 @@ new AdaptativeView('plant', function($data, FarmTemplate $t) {
 	$t->title = s("Espèces de {value}", $data->eFarm['name']);
 	$t->canonical = \plant\PlantUi::urlManage($data->eFarm);
 
-	echo '<div class="util-action">';
-		echo '<h1>';
-			echo '<a href="'.\farm\FarmUi::urlSettings($data->eFarm).'"  class="h-back">'.\Asset::icon('arrow-left').'</a>';
-			echo s("Espèces");
-		echo '</h1>';
-		echo  '<div>';
-			echo '<a '.attr('onclick', 'Lime.Search.toggle("#plant-search")').' class="btn btn-primary">'.\Asset::icon('search').'</a> ';
+	$h = '<div class="util-action">';
+		$h .= '<h1>';
+			$h .= '<a href="'.\farm\FarmUi::urlSettings($data->eFarm).'"  class="h-back">'.\Asset::icon('arrow-left').'</a>';
+			$h .= s("Espèces");
+		$h .= '</h1>';
+		$h .=  '<div>';
+			$h .= '<a '.attr('onclick', 'Lime.Search.toggle("#plant-search")').' class="btn btn-primary">'.\Asset::icon('search').'</a> ';
 			if($data->eFarm->canManage()) {
-				echo ' <a href="/plant/plant:create?farm='.$data->eFarm['id'].'" class="btn btn-primary">'.\Asset::icon('plus-circle').'<span class="hide-xs-down"> '.s("Nouvelle espèce").'</span></a>';
+				$h .= ' <a href="/plant/plant:create?farm='.$data->eFarm['id'].'" class="btn btn-primary">'.\Asset::icon('plus-circle').'<span class="hide-xs-down"> '.s("Nouvelle espèce").'</span></a>';
 			}
-		echo  '</div>';
-	echo  '</div>';
+		$h .=  '</div>';
+	$h .=  '</div>';
+
+	$t->mainTitle = $h;
 
 	echo (new \plant\PlantUi())->getSearch($data->eFarm, $data->search);
-	echo (new \plant\PlantUi())->manage($data->eFarm, $data->plants, $data->cPlant, $data->search);
+	echo (new \plant\PlantUi())->getManage($data->eFarm, $data->plants, $data->cPlant, $data->search);
 
 
 });

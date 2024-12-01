@@ -437,27 +437,29 @@ class ProductUi {
 
 	}
 
-	public function display(Product $eProduct, \Collection $cItemYear): string {
+	public function displayTitle(Product $eProduct): string {
 
-		$h = '<div class="util-vignette">';
+		$h = '<div class="util-action">';
 
-			$h .= (new \media\ProductVignetteUi())->getCamera($eProduct, size: '6rem');
-
-			$h .= '<div>';
-				$h .= '<div class="util-action">';
-					$h .= '<h1>'.encode($eProduct->getName()).'</h1>';
-					$h .= '<div>';
-						$h .= $this->getUpdate($eProduct, 'btn-primary');
-					$h .= '</div>';
-				$h .= '</div>';
-				$h .= '<div class="util-action-subtitle">';
+			$h .= '<div class="util-vignette">';
+				$h .= (new \media\ProductVignetteUi())->getCamera($eProduct, size: '5rem');
+				$h .= '<div>';
+					$h .= '<h1 style="margin-bottom: 0.25rem">'.encode($eProduct->getName()).'</h1>';
 					$h .= $this->toggle($eProduct);
 				$h .= '</div>';
 			$h .= '</div>';
-
+			$h .= '<div>';
+				$h .= $this->getUpdate($eProduct, 'btn-primary');
+			$h .= '</div>';
 		$h .= '</div>';
 
-		$h .= '<div class="util-block stick-xs">';
+		return $h;
+
+	}
+
+	public function display(Product $eProduct, \Collection $cItemYear): string {
+
+		$h = '<div class="util-block stick-xs">';
 			$h .= '<dl class="util-presentation util-presentation-2">';
 				$h .= '<dt>'.self::p('plant')->label.'</dt>';
 				$h .= '<dd>'.($eProduct['plant']->empty() ? '' : \plant\PlantUi::link($eProduct['plant'])).'</dd>';

@@ -7,12 +7,14 @@ new AdaptativeView('create', function($data, FarmTemplate $t) {
 
 	\Asset::js('shop', 'manage.js');
 
-	echo '<div class="util-action">';
-		echo '<h1>';
-			echo '<a href="'.\shop\ShopUi::adminUrl($data->eFarm, $data->e['shop']).'" class="h-back">'.\Asset::icon('arrow-left').'</a>';
-			echo $t->title;
-		echo '</h1>';
-	echo '</div>';
+	$h = '<div class="util-action">';
+		$h .= '<h1>';
+			$h .= '<a href="'.\shop\ShopUi::adminUrl($data->eFarm, $data->e['shop']).'" class="h-back">'.\Asset::icon('arrow-left').'</a>';
+			$h .= $t->title;
+		$h .= '</h1>';
+	$h .= '</div>';
+	
+	$t->mainTitle = $h;
 
 	echo (new \shop\DateUi())->create($data->e, $data->cProduct, $data->eDateBase);
 
@@ -40,21 +42,23 @@ new AdaptativeView('/ferme/{farm}/boutique/{shop}/date/{id}', function($data, Fa
 
 	\Asset::js('shop', 'manage.js');
 
-	echo '<div class="util-action">';
-		echo '<h1>';
-			echo '<a href="'.\shop\ShopUi::adminUrl($data->eFarm, $data->e['shop']).'" class="h-back">'.\Asset::icon('arrow-left').'</a>';
-			echo $t->title;
-		echo '</h1>';
-		echo '<div>';
+	$h = '<div class="util-action">';
+		$h .= '<h1>';
+			$h .= '<a href="'.\shop\ShopUi::adminUrl($data->eFarm, $data->e['shop']).'" class="h-back">'.\Asset::icon('arrow-left').'</a>';
+			$h .= $t->title;
+		$h .= '</h1>';
+		$h .= '<div>';
 			if($data->e->canWrite()) {
-				echo (new \shop\DateUi())->getMenu($data->e['shop'], $data->e, $data->e['sales']['count'], 'btn-primary');
+				$h .= (new \shop\DateUi())->getMenu($data->e['shop'], $data->e, $data->e['sales']['count'], 'btn-primary');
 			}
-		echo '</div>';
-	echo '</div>';
-	echo '<div class="util-action-subtitle">';
+		$h .= '</div>';
+	$h .= '</div>';
+	$h .= '<div class="util-action-subtitle">';
 			$url = \shop\ShopUi::dateUrl($data->eShop, $data->e, showDomain: TRUE);
-			echo '<a href="'.$url.'">'.$url.'</a>';
-	echo '</div>';
+			$h .= '<a href="'.$url.'">'.$url.'</a>';
+	$h .= '</div>';
+	
+	$t->mainTitle = $h;
 
 	echo (new \shop\DateUi())->getDetails($data->eShop, $data->e);
 

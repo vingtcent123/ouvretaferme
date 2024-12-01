@@ -6,6 +6,7 @@ new AdaptativeView('/produit/{id}', function($data, FarmTemplate $t) {
 	$t->tab = 'selling';
 	$t->subNav = (new \farm\FarmUi())->getSellingSubNav($data->eFarm);
 
+	$t->mainTitle = (new \selling\ProductUi())->displayTitle($data->e);
 	echo (new \selling\ProductUi())->display($data->e, $data->cItemYear);
 	echo (new \selling\ProductUi())->getTabs($data->e, $data->cGrid, $data->cItemLast);
 

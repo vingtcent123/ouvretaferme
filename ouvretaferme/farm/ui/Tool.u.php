@@ -147,28 +147,15 @@ class ToolUi {
 
 	}
 
-	public function manage(\farm\Farm $eFarm, ?string $routineName, array $tools, \Collection $cTool, Tool $eToolNew, \Collection $cActionUsed, \Search $search): string {
+	public function getManageTitle(\farm\Farm $eFarm, ?string $routineName, array $tools, \Collection $cTool, \Search $search): string {
 
 		$title = '<h1>';
 			$title .= '<a href="'.FarmUi::urlSettings($eFarm).'"  class="h-back">'.\Asset::icon('arrow-left').'</a>';
 			$title .= ($routineName ? RoutineUi::getProperty($routineName, 'title') : s("Matériel"));
 		$title .= '</h1>';
-		
-		if(
-			$cTool->empty() and
-			$search->empty(['status']) and
-			$tools[Tool::INACTIVE] === 0
-		) {
 
-			$h = $title;
-			$h .= '<div class="util-block-help">';
-				$h .= ($routineName ? RoutineUi::getProperty($routineName, 'nothing') : s("Vous n'avez pas encore ajouté de matériel à votre ferme. Ajouter du matériel peut être très utile pour suivre les stocks et indiquer le matériel à utiliser pour les interventions !"));
-			$h .= '</div>';
-
-			$h .= '<h4>'.($routineName ? RoutineUi::getProperty($routineName, 'createTitle') : s("Ajouter un matériel")).'</h4>';
-
-			$h .= $this->createForm($eToolNew, 'inline');
-
+		if($this->isEmpty($tools, $cTool, $search)) {
+			return $title;
 		} else {
 
 			$h = '<div class="util-action">';
@@ -180,6 +167,28 @@ class ToolUi {
 					$h .= '<a href="/farm/tool:create?farm='.$eFarm['id'].''.($routineName ? '&routineName='.$routineName : '').'" class="btn btn-primary">'.\Asset::icon('plus-circle').' '.($routineName ? RoutineUi::getProperty($routineName, 'createButton') : s("Nouveau matériel")).'</a>';
 				$h .= '</div>';
 			$h .= '</div>';
+
+			return $h;
+
+		}
+
+	}
+
+	public function getManage(\farm\Farm $eFarm, ?string $routineName, array $tools, \Collection $cTool, Tool $eToolNew, \Collection $cActionUsed, \Search $search): string {
+
+		if($this->isEmpty($tools, $cTool, $search)) {
+
+			$h = '<div class="util-block-help">';
+				$h .= ($routineName ? RoutineUi::getProperty($routineName, 'nothing') : s("Vous n'avez pas encore ajouté de matériel à votre ferme. Ajouter du matériel peut être très utile pour suivre les stocks et indiquer le matériel à utiliser pour les interventions !"));
+			$h .= '</div>';
+
+			$h .= '<h4>'.($routineName ? RoutineUi::getProperty($routineName, 'createTitle') : s("Ajouter un matériel")).'</h4>';
+
+			$h .= $this->createForm($eToolNew, 'inline');
+
+		} else {
+
+			$h = '';
 
 			if($routineName === NULL) {
 				$h .= $this->getSearch($eFarm, $cActionUsed, $search);
@@ -298,6 +307,16 @@ class ToolUi {
 		}
 
 		return $h;
+
+	}
+
+	protected function isEmpty(array $tools, \Collection $cTool, \Search $search): string {
+
+		return (
+			$cTool->empty() and
+			$search->empty(['status']) and
+			$tools[Tool::INACTIVE] === 0
+		);
 
 	}
 

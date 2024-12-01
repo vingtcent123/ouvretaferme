@@ -112,7 +112,7 @@ class FarmerUi {
 
 	}
 
-	public function manage(Farm $eFarm, \Collection $cFarmer, \Collection $cFarmerInvite, \Collection $cFarmerGhost): string {
+	public function getManage(Farm $eFarm, \Collection $cFarmer, \Collection $cFarmerInvite, \Collection $cFarmerGhost): string {
 
 		if($cFarmer->empty()) {
 
