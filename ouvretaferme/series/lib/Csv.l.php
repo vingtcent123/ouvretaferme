@@ -289,7 +289,7 @@ class CsvLib {
 
 		if(count(array_intersect($header, ['crop', 'in_greenhouse', 'planting_type', 'unit'])) === 4) {
 			$csv = self::convertFromBrinjel($csv);
-		} else if(count(array_intersect($header, ['series_name', 'season', 'mode', 'species', 'use', 'planting_type', 'harvest_unit'])) === 7) {
+		} else if(count(array_intersect($header, ['series_name', 'season', 'place', 'species', 'use', 'planting_type', 'harvest_unit'])) === 7) {
 			$csv = self::convertFromOtf($csv);
 			if($csv === NULL) {
 				return FALSE;
@@ -452,7 +452,7 @@ class CsvLib {
 				'season' => '',
 				'series_id' => '',
 				'series_name' => '',
-				'mode' => '',
+				'place' => '',
 				'use' => '',
 				'species' => '',
 				'planting_type' => '',
@@ -507,7 +507,7 @@ class CsvLib {
 						'series' => [
 							'season' => $season,
 							'name' => $seriesName,
-							'mode' => $line['mode'] ?: NULL,
+							'mode' => $line['place'] ?: NULL,
 							'use' => $line['use'] ?: NULL,
 							'bed_length' => $line['bed_length'] ? (int)$line['bed_length'] : NULL,
 							'block_area' => $line['block_area'] ? (int)$line['block_area'] : NULL,
@@ -526,7 +526,7 @@ class CsvLib {
 					'series' => [
 						'season' => $season,
 						'name' => NULL,
-						'mode' => $line['mode'] ?: NULL,
+						'mode' => $line['place'] ?: NULL,
 						'use' => $line['use'] ?: NULL,
 						'bed_length' => $line['bed_length'] ? (int)$line['bed_length'] : NULL,
 						'block_area' => $line['block_area'] ? (int)$line['block_area'] : NULL,
