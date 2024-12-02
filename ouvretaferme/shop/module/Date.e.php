@@ -98,7 +98,11 @@ class Date extends DateElement {
 			},
 
 			// End of order must be after start of order.
-			'orderEndAt.consistency' => function($orderEndAt): bool {
+			'orderEndAt.consistency' => function($orderEndAt, array $newProperties, array $validProperties): bool {
+
+				if(in_array('orderEndAt', $validProperties) === FALSE) {
+					return FALSE;
+				}
 
 				$this->expects(['orderStartAt']);
 
@@ -121,7 +125,11 @@ class Date extends DateElement {
 				return $deliveryDate >= substr($this['orderEndAt'], 0, 10);
 			},
 
-			'catalogs.check' => function(?array &$catalogs) use ($input) {
+			'catalogs.check' => function(?array &$catalogs, array $newProperties, array $validProperties) use ($input) {
+
+				if(in_array('source', $validProperties) === FALSE) {
+					return;
+				}
 
 				$this->expects(['farm', 'type']);
 
@@ -153,7 +161,11 @@ class Date extends DateElement {
 
 			},
 
-			'productsList.check' => function(mixed $products) use ($input) {
+			'productsList.check' => function(mixed $products, array $newProperties, array $validProperties) use ($input) {
+
+				if(in_array('source', $validProperties) === FALSE) {
+					return;
+				}
 
 				if($this['source'] !== Date::DIRECT) {
 					return TRUE;

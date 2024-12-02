@@ -16,14 +16,13 @@ new AdaptativeView('planning', function($data, FarmTemplate $t) {
 			$t->footer = '';
 			$t->canonical = \farm\FarmUi::urlPlanningDaily($data->eFarm, $data->week);
 
-			echo '<div class="container">';
-				echo $uiTask->getWeekCalendar(
-					$data->eFarm,
-					$data->week,
-					fn($week) => \farm\FarmUi::urlPlanningDaily($data->eFarm, $week)
-				);
-				echo $uiTask->getCalendarSearch($data->eFarm, $data->search, $data->cAction, $data->cZone);
-			echo '</div>';
+			$t->mainTitle = $uiTask->getWeekCalendar(
+				\farm\Farmer::DAILY,
+				$data->eFarm,
+				$data->week,
+				fn($week) => \farm\FarmUi::urlPlanningDaily($data->eFarm, $week)
+			);
+			echo $uiTask->getWeekSearch($data->eFarm, $data->search, $data->cAction, $data->cZone);
 
 			echo $uiTask->getDayPlanning($data->eFarm, $data->week, $data->cccTask, $data->cccTaskAssign, $data->cUserFarm, $data->eUserSelected, $data->seasonsWithSeries, $data->cCategory);
 
@@ -34,7 +33,8 @@ new AdaptativeView('planning', function($data, FarmTemplate $t) {
 			$t->template = 'farm farm-planning-weekly';
 			$t->canonical = \farm\FarmUi::urlPlanningWeekly($data->eFarm, $data->week);
 
-			echo $uiTask->getWeekCalendar(
+			$t->mainTitle = $uiTask->getWeekCalendar(
+				\farm\Farmer::WEEKLY,
 				$data->eFarm,
 				$data->week,
 				fn($week) => \farm\FarmUi::urlPlanningWeekly($data->eFarm, $week),
@@ -43,7 +43,7 @@ new AdaptativeView('planning', function($data, FarmTemplate $t) {
 
 			echo (new \main\HomeUi())->getTraining(TRUE);
 
-			echo $uiTask->getCalendarSearch($data->eFarm, $data->search, $data->cAction, $data->cZone);
+			echo $uiTask->getWeekSearch($data->eFarm, $data->search, $data->cAction, $data->cZone);
 
 			echo $uiTask->getWeekPlanning($data->eFarm, $data->week, $data->cccTask, $data->cUserFarm, $data->eUserTime, $data->seasonsWithSeries, $data->cActionMain, $data->cCategory);
 
@@ -55,14 +55,19 @@ new AdaptativeView('planning', function($data, FarmTemplate $t) {
 
 			$t->canonical = \farm\FarmUi::urlPlanningYear($data->eFarm, $data->year, $data->month);
 
-			$t->main = $uiTask->getYearCalendar(
+			$t->mainTitle = $uiTask->getYearCalendar(
 				$data->eFarm,
 				$data->year,
-				fn() => $uiTask->getCalendarFilter(),
-				fn() => '<div class="container">'.$uiTask->getCalendarSearch($data->eFarm, $data->search, $data->cAction, $data->cZone).'</div>'
+				fn() => $uiTask->getCalendarFilter()
 			);
 
-			$t->main .= $uiTask->getYearPlanning($data->year, $data->month, $data->ccTask);
+			$t->main = $uiTask->getYearSearch(
+				$data->eFarm,
+				$data->year,
+				fn() => '<div class="container">'.$uiTask->getWeekSearch($data->eFarm, $data->search, $data->cAction, $data->cZone).'</div>'
+			);
+
+			$t->main .= $uiTask->getYearMonths($data->year, $data->month, $data->ccTask);
 
 			$t->footer = '';
 
@@ -81,6 +86,7 @@ new AdaptativeView('/ferme/{id}/taches/{week}/{action}', function($data, FarmTem
 	$t->tab = 'home';
 	$t->subNav = (new \farm\FarmUi())->getPlanningSubNav($data->eFarm);
 
+	$t->mainTitle = (new \series\TaskUi())->displayByActionTitle($data->eFarm, $data->week, $data->eAction);
 	echo (new \series\TaskUi())->displayByAction($data->eFarm, $data->week, $data->eAction, $data->cTask);
 
 });
@@ -764,7 +770,7 @@ new AdaptativeView('analyzeReport', function($data, FarmTemplate $t) {
 
 	$t->package('main')->updateNavAnalyze($t->canonical);
 
-	echo (new \farm\FarmUi())->getAnalyzeReportTitle($data->eFarm, $data->season);
+	$t->mainTitle = (new \farm\FarmUi())->getAnalyzeReportTitle($data->eFarm, $data->season);
 
 	echo (new \analyze\ReportUi())->getList($data->cReport, $data->search);
 
@@ -783,13 +789,15 @@ new AdaptativeView('analyzeWorkingTime', function($data, FarmTemplate $t) {
 
 	if($data->years === []) {
 
-		echo '<h1>'.s("Analyse du planning").'</h1>';
-		echo '<div class="util-info">'.s("L'analyse du planning sera disponible lorsque votre ferme aura démarré son activité !").'</div>';
+		$t->mainTitle = '<h1>'.s("Analyse du planning").'</h1>';
+		echo '<div class="util-block-help">';
+			echo '<h4>'.s("Vous n'avez pas encore renseigné de temps de travail").'</h4>';
+			echo '<p>'.s("L'analyse du planning sera disponible lorsque votre ferme aura démarré son activité !").'</p>';
+		echo '</div>';
 
 	} else {
 
-		echo (new \farm\FarmUi())->getAnalyzeWorkingTimeTitle($data->eFarm, $data->years, $data->year, $data->month, $data->week, $data->category);
-		echo '<br/>';
+		$t->mainTitle = (new \farm\FarmUi())->getAnalyzeWorkingTimeTitle($data->eFarm, $data->years, $data->year, $data->month, $data->week, $data->category);
 
 		$uiAnalyze = new \series\AnalyzeUi();
 
@@ -827,14 +835,17 @@ new AdaptativeView('analyzeSelling', function($data, FarmTemplate $t) {
 
 	if($data->years === []) {
 
-		echo '<h1>'.s("Analyse des ventes").'</h1>';
-		echo '<div class="util-info">'.s("L'analyse des ventes sera disponible lorsque vous aurez livré votre première commande !").'</div>';
+		$t->mainTitle = '<h1>'.s("Analyse des ventes").'</h1>';
+		echo '<div class="util-block-help">';
+			echo '<h4>'.s("Vous n'avez pas encore de livré de vente").'</h4>';
+			echo '<p>'.s("L'analyse des ventes sera disponible lorsque vous aurez livré votre première commande !").'</p>';
+		echo '</div>';
 
 	} else {
 
 		$uiAnalyze = new \selling\AnalyzeUi();
 
-		echo (new \farm\FarmUi())->getAnalyzeSellingTitle($data->eFarm, $data->years, $data->year, $data->month, $data->week, $data->category);
+		$t->mainTitle = (new \farm\FarmUi())->getAnalyzeSellingTitle($data->eFarm, $data->years, $data->year, $data->month, $data->week, $data->category);
 
 		echo match($data->category) {
 			\farm\Farmer::ITEM => $uiAnalyze->getTurnover($data->eFarm, $data->cSaleTurnover, $data->year, $data->month, $data->week),
@@ -876,7 +887,7 @@ new AdaptativeView('analyzeCultivation', function($data, FarmTemplate $t) {
 
 	$uiAnalyze = new \plant\AnalyzeUi();
 
-	echo (new \farm\FarmUi())->getAnalyzeCultivationTitle($data->eFarm, $data->seasons, $data->season, $data->category, $actions);
+	$t->mainTitle = (new \farm\FarmUi())->getAnalyzeCultivationTitle($data->eFarm, $data->seasons, $data->season, $data->category, $actions);
 
 	echo match($data->category) {
 		\farm\Farmer::AREA => $uiAnalyze->getArea($data->eFarm, $data->seasons, $data->season, $data->area),

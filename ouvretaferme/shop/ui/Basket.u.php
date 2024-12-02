@@ -20,7 +20,7 @@ class BasketUi {
 
 	public function getHeader(Shop $eShop, Date $eDate, ?string $currentContent = NULL, ?int $currentStep = NULL): string {
 
-		$h = '<div class="util-vignette util-vignette-xs mb-0">';
+		$h = '<div class="util-vignette mb-0">';
 
 			if($eShop['logo']) {
 

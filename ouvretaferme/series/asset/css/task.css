@@ -1,21 +1,3 @@
-@media (min-height: 768px) and (min-width: 768px) {
-
-	:root {
-		--calendarWeek: 6rem;
-		--calendarYear: 5rem;
-	}
-
-}
-
-@media (max-height: 767px) or (max-width: 767px) {
-
-	:root {
-		--calendarWeek: 6rem;
-		--calendarYear: 5rem;
-	}
-
-}
-
 div.task-select-start {
 	padding-top: 1rem;
 	position: relative;
@@ -34,7 +16,7 @@ div.tasks-calendar.tasks-calendar-with-filter > *:last-child {
 }
 
 div.tasks-calendar.tasks-calendar-with-filter {
-	grid-template-columns: 4rem 1fr max-content 1fr 4rem;
+	grid-template-columns: 1fr 4rem max-content 4rem 1fr;
 }
 
 @media (max-height: 767px) or (max-width: 767px) {
@@ -64,12 +46,9 @@ div.tasks-calendar.tasks-calendar-with-filter {
 
 }
 
-div.tasks-calendar-week {
-	height: var(--calendarWeek);
-}
-
+div.tasks-calendar-week,
 div.tasks-calendar-year {
-	height: var(--calendarYear);
+	padding: .75rem 0;
 }
 
 #tasks-calendar-months-wrapper {

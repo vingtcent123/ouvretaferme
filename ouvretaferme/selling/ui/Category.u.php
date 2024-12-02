@@ -56,7 +56,7 @@ class CategoryUi {
 
 	}
 
-	public function getManage(\farm\Farm $eFarm, \Collection $cCategory): string {
+	public function getManageTitle(\farm\Farm $eFarm, \Collection $cCategory): string {
 
 		$h = '<div class="util-action">';
 
@@ -75,7 +75,13 @@ class CategoryUi {
 
 		$h .= '</div>';
 
-		$h .= '<br/>';
+		return $h;
+
+	}
+
+	public function getManage(\farm\Farm $eFarm, \Collection $cCategory): string {
+
+		$h = '';
 
 		if($cCategory->empty()) {
 

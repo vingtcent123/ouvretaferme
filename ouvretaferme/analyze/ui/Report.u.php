@@ -34,13 +34,16 @@ class ReportUi {
 
 	}
 
-	public function getOne(Report $eReport, \Collection $cCultivation) {
+	public function getOneTitle(Report $eReport): string {
 
 		$h = '<div class="util-vignette">';
 			$h .= \plant\PlantUi::getVignette($eReport['plant'], size: '5rem');
 			$h .= '<div>';
 				$h .= '<div class="util-action">';
-					$h .= '<h1>'.\analyze\ReportUi::getName($eReport).'</h1>';
+					$h .= '<h1>';
+						$h .= '<a href="'.\farm\FarmUi::urlAnalyzeReport($eReport['farm']).'"  class="h-back">'.\Asset::icon('arrow-left').'</a>';
+						$h .= \analyze\ReportUi::getName($eReport);
+					$h .= '</h1>';
 					$h .= '<div>';
 						if($eReport->canWrite()) {
 							$h .= '<a data-dropdown="bottom-end" class="dropdown-toggle btn btn-primary">'.\Asset::icon('gear-fill').'</a>';
@@ -59,6 +62,14 @@ class ReportUi {
 				$h .= '</div>';
 			$h .= '</div>';
 		$h .= '</div>';
+
+		return $h;
+
+	}
+
+	public function getOne(Report $eReport, \Collection $cCultivation): string {
+
+		$h = '';
 
 		if($eReport['description'] !== NULL) {
 
@@ -163,7 +174,7 @@ class ReportUi {
 
 		$form = new \util\FormUi();
 
-		$h = '<h4>'.s("Tester une hypothèse alternative").'</h4>';
+		$h = '<h2>'.s("Tester une hypothèse alternative").'</h2>';
 		$h .= $form->openAjax('/analyze/report:doTest');
 
 			$h .= $form->hidden('id', $eReport['id']);
@@ -171,30 +182,30 @@ class ReportUi {
 			$h .= '<ul class="util-summarize report-test-form">';
 				if($eReport['area'] > 0) {
 					$h .= '<li>';
-						$h .= '<h5>'.s("Surface").'</h5>';
+						$h .= '<h4>'.s("Surface").'</h4>';
 						$h .= $this->getTestField($form, $eReport, 'area');
 					$h .= '</li>';
 				}
 				if($eReport['workingTime'] > 0) {
 					$h .= '<li>';
-						$h .= '<h5>'.s("Heures travaillées").'</h5>';
+						$h .= '<h4>'.s("Heures travaillées").'</h4>';
 						$h .= $this->getTestField($form, $eReport, 'workingTime');
 					$h .= '</li>';
 				}
 				if($eReport['turnover'] > 0) {
 					$h .= '<li>';
-						$h .= '<h5>'.s("Ventes").'</h5>';
+						$h .= '<h4>'.s("Ventes").'</h4>';
 						$h .= $this->getTestField($form, $eReport, 'turnover');
 					$h .= '</li>';
 				}
 				if($eReport['costs'] > 0) {
 					$h .= '<li>';
-						$h .= '<h5>'.s("Coûts directs").'</h5>';
+						$h .= '<h4>'.s("Coûts directs").'</h4>';
 						$h .= $this->getTestField($form, $eReport, 'costs');
 					$h .= '</li>';
 				}
 				$h .= '<li>';
-					$h .= '<h5>&nbsp;</h5>'; // Tricky
+					$h .= '<h4>&nbsp;</h4>'; // Tricky
 					$h .= '<div>';
 						$h .= $form->submit(s("Calculer")).' ';
 						if(

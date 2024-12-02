@@ -553,22 +553,27 @@ class FarmUi {
 
 					$h .= $this->getSellingMenu($eFarm, prefix: $prefix, tab: $tab);
 
-					$h .= '<a href="'.FarmUi::urlShop($eFarm).'" data-tab="shop" class="farm-tab farm-tab-subnav '.($tab === 'shop' ? 'selected' : '').'">';
+					$h .= '<a href="'.FarmUi::urlShop($eFarm, $eFarm['shops'] ? NULL : Farmer::SHOP).'" data-tab="shop" class="farm-tab '.($eFarm['shops'] ? 'farm-tab-subnav' : '').' '.($tab === 'shop' ? 'selected' : '').'">';
 						$h .= '<span class="farm-tab-off">'.\Asset::icon('cart').'</span>';
 						$h .= '<span class="farm-tab-on">'.\Asset::icon('cart-fill').'</span>';
 						$h .= '<span>'.s("Vente en ligne").'</span>';
 					$h .= '</a>';
 
-					$h .= $this->getShopMenu($eFarm, prefix: $prefix, tab: $tab);
+					if($eFarm['shops'] > 0) {
+						$h .= $this->getShopMenu($eFarm, prefix: $prefix, tab: $tab);
+					}
 
 				}
 
 				if($eFarm->canAnalyze()) {
+
 					$h .= '<a href="'.FarmUi::urlAnalyze($eFarm).'" data-tab="analyze" class="farm-tab '.($tab === 'analyze' ? 'selected' : '').'">';
 						$h .= '<span class="farm-tab-off">'.\Asset::icon('bar-chart').'</span>';
 						$h .= '<span class="farm-tab-on">'.\Asset::icon('bar-chart-fill').'</span>';
 						$h .= '<span>'.s("Analyse").'</span>';
 					$h .= '</a>';
+
+					$h .= $this->getAnalyzeMenu($eFarm, prefix: $prefix, tab: $tab);
 				}
 
 				if($eFarm->canManage()) {
@@ -1028,7 +1033,7 @@ class FarmUi {
 
 		$h = '<div class="farm-subnav-wrapper">';
 
-			foreach($this->getShopCategories() as $key => $value) {
+			foreach($this->getShopCategories($eFarm) as $key => $value) {
 
 				$h .= '<a href="'.FarmUi::urlShop($eFarm, $key).'" class="farm-subnav-item '.($key === $selectedView ? 'selected' : '').'" data-sub-tab="'.$key.'">';
 					$h .= $prefix.'<span>'.$value.'</span>';
@@ -1042,33 +1047,50 @@ class FarmUi {
 
 	}
 
-	public function getShopCategories(): array {
+	public function getShopCategories(Farm $eFarm): array {
 
-		return [
-			Farmer::SHOP => s("Boutiques"),
-			Farmer::CATALOG => s("Catalogues"),
-			Farmer::POINT => s("Livraisons"),
+		$categories = [
+			Farmer::SHOP => s("Boutiques")
 		];
+
+		if($eFarm['shops']) {
+
+			$categories += [
+				Farmer::CATALOG => s("Catalogues"),
+				Farmer::POINT => s("Livraisons"),
+			];
+
+		}
+
+		return $categories;
 
 	}
 
 	public function getAnalyzeSubNav(Farm $eFarm): string {
 
-		$selectedView = \Setting::get('main\viewAnalyze');
-
 		$h = '<nav id="farm-subnav">';
-			$h .= '<div class="farm-subnav-wrapper">';
-
-				foreach($this->getAnalyzeCategories($eFarm) as $key => $value) {
-
-					$h .= '<a href="'.FarmUi::urlAnalyze($eFarm, $key).'" class="farm-subnav-item '.($key === $selectedView ? 'selected' : '').'">';
-						$h .= $value;
-					$h .= '</a>';
-
-				}
-
-			$h .= '</div>';
+			$h .= $this->getAnalyzeMenu($eFarm);
 		$h .= '</nav>';
+
+		return $h;
+
+	}
+
+	public function getAnalyzeMenu(Farm $eFarm, string $prefix = '', ?string $tab = NULL): string {
+
+		$selectedView = ($tab === 'shop') ? \Setting::get('main\viewAnalyze') : NULL;
+
+		$h = '<div class="farm-subnav-wrapper">';
+
+			foreach($this->getAnalyzeCategories($eFarm) as $key => $value) {
+
+				$h .= '<a href="'.FarmUi::urlAnalyze($eFarm, $key).'" class="farm-subnav-item '.($key === $selectedView ? 'selected' : '').'" data-sub-tab="'.$key.'">';
+					$h .= $prefix.'<span>'.$value.'</span>';
+				$h .= '</a>';
+
+			}
+
+		$h .= '</div>';
 
 		return $h;
 
@@ -1097,9 +1119,7 @@ class FarmUi {
 
 		$h = '<div class="util-action">';
 			$h .= '<h1>';
-				$h .= '<a class="util-action-navigation" data-dropdown="bottom-start" data-dropdown-hover="true">';
-					$h .= s("Rapports de production").' '.self::getNavigation();
-				$h .= '</a>';
+				$h .= s("Rapports de production");
 				$h .= $uiFarm->getSeasonsTabs($eFarm, fn($season) => \farm\FarmUi::urlAnalyzeReport($eFarm, season: $season), $selectedSeason);
 			$h .= '</h1>';
 			$h .=  '<div>';

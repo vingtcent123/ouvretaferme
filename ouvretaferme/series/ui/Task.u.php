@@ -161,15 +161,36 @@ class TaskUi {
 
 	}
 
-	public function getWeekCalendar(\farm\Farm $eFarm, string $week, \Closure $link, \Closure $filter = NULL): string {
+	public function getTabCalendar(string $source, \farm\Farm $eFarm, ?string $week, ?int $year): string {
+
+		$h = '';
+
+		if($source !== NULL) {
+			$h .= '<div class="farm-template-main-nav">';
+				$h .= '<div class="input-group">';
+					$h .= '<a href="'.\farm\FarmUi::urlPlanningDaily($eFarm, $week).'" class="btn '.($source === \farm\Farmer::DAILY ? 'btn-secondary-dark' : 'btn-secondary').'">'.s("Quotidien").'</a>';
+					$h .= '<a href="'.\farm\FarmUi::urlPlanningWeekly($eFarm, $week).'" class="btn '.($source === \farm\Farmer::WEEKLY ? 'btn-secondary-dark' : 'btn-secondary').'">'.s("Hebdomadaire").'</a>';
+					$h .= '<a href="'.\farm\FarmUi::urlPlanningYear($eFarm, $year).'" class="btn '.($source === \farm\Farmer::YEARLY ? 'btn-secondary-dark' : 'btn-secondary').'">'.s("Annuel").'</a>';
+				$h .= '</div>';
+			$h .= '</div>';
+		}
+
+		return $h;
+
+	}
+
+	public function getWeekCalendar(string $source, \farm\Farm $eFarm, string $week, \Closure $link, \Closure $filter = NULL): string {
 
 		$weekBefore = date('o-\WW', strtotime($week.' - 1 WEEK'));
 		$weekAfter = date('o-\WW', strtotime($week.' + 1 WEEK'));
 
-		$h = '<div id="tasks-calendar-top" class="tasks-calendar tasks-calendar-week '.($filter ? 'tasks-calendar-with-filter' : '').'">';
+		$h = $this->getTabCalendar($source, $eFarm, $week, (int)substr($week, 0, 4));
+
+		$h .= '<div id="tasks-calendar-top" class="tasks-calendar tasks-calendar-week '.($filter ? 'tasks-calendar-with-filter' : '').'">';
 
 			if($filter !== NULL) {
-				$h .= '<div class="tasks-calendar-search"></div>';
+				$h .= '<div class="tasks-calendar-search">';
+				$h .= '</div>';
 			}
 
 			$h .= '<div class="tasks-calendar-navigation tasks-calendar-navigation-before">';
@@ -794,12 +815,14 @@ class TaskUi {
 
 	}
 
-	public function getYearCalendar(\farm\Farm $eFarm, int $year, \Closure $filter = NULL, \Closure $search = NULL): string {
+	public function getYearCalendar(\farm\Farm $eFarm, int $year, \Closure $filter = NULL): string {
 
 		$yearBefore = $year - 1;
 		$yearAfter = $year + 1;
 
-		$h = '<div id="tasks-calendar-top" class="container tasks-calendar '.($filter ? 'tasks-calendar-with-filter' : '').' tasks-calendar-year">';
+		$h = $this->getTabCalendar(\farm\Farmer::YEARLY, $eFarm, NULL, $year);
+
+		$h .= '<div id="tasks-calendar-top" class="container tasks-calendar '.($filter ? 'tasks-calendar-with-filter' : '').' tasks-calendar-year">';
 
 			if($filter !== NULL) {
 				$h .= '<div class="tasks-calendar-search"></div>';
@@ -830,6 +853,14 @@ class TaskUi {
 
 		$h .= '</div>';
 
+		return $h;
+
+	}
+
+	public function getYearSearch(\farm\Farm $eFarm, int $year, \Closure $search = NULL): string {
+
+		$h = '';
+
 		if($search !== NULL) {
 			$h .= $search();
 		}
@@ -855,7 +886,7 @@ class TaskUi {
 
 	}
 
-	public function getYearPlanning(int $year, int $month, \Collection $ccTask): string {
+	public function getYearMonths(int $year, int $month, \Collection $ccTask): string {
 
 		\Asset::css('series', 'planning.css');
 
@@ -918,7 +949,7 @@ class TaskUi {
 
 	}
 
-	public function getCalendarSearch(\farm\Farm $eFarm, \Search $search, \Collection $cAction, \Collection $cZone): string {
+	public function getWeekSearch(\farm\Farm $eFarm, \Search $search, \Collection $cAction, \Collection $cZone): string {
 
 		$form = new \util\FormUi();
 
@@ -2301,14 +2332,16 @@ class TaskUi {
 
 	}
 
+	public function displayByActionTitle(\farm\Farm $eFarm, string $week, \farm\Action $eAction): string {
+		return $this->getWeekCalendar(NULL, $eFarm, $week, fn($week) => \farm\FarmUi::urlPlanningAction($eFarm, $week, $eAction));
+	}
+
 	public function displayByAction(\farm\Farm $eFarm, string $week, \farm\Action $eAction, \Collection $cTask): string {
 
 		$hasPlant = in_array($eAction['fqn'], [ACTION_SEMIS_DIRECT, ACTION_SEMIS_PEPINIERE, ACTION_PLANTATION]);
 		$hasTools = $cTask->match(fn($eTask) => $eTask['cRequirement']->notEmpty());
 
-		$h = $this->getWeekCalendar($eFarm, $week, fn($week) => \farm\FarmUi::urlPlanningAction($eFarm, $week, $eAction));
-
-		$h .= '<h3>'.encode($eAction['name']).'</h3>';
+		$h = '<h3>'.encode($eAction['name']).'</h3>';
 
 		if($hasPlant or $hasTools) {
 		

@@ -15,11 +15,10 @@ class ShopManageUi {
 			$h .= '<ol>';
 				$h .= '<li>'.s("Créez une boutique").'</li>';
 				$h .= '<li>'.s("Ajoutez les produits que vous souhaitez vendre").'</li>';
-				$h .= '<li>'.s("Définissez les points de livraison ou livrez vos clients à domicile").'</li>';
-				$h .= '<li>'.s("Choisissez une première date de livraison").'</li>';
+				$h .= '<li>'.s("Définissez des points de livraison ou livrez vos clients à domicile").'</li>';
+				$h .= '<li>'.s("Créez une première vente avec vos produits").'</li>';
 				$h .= '<li>'.s("Communiquez l'adresse de la boutique en ligne à vos clients").'</li>';
-				$h .= '<li>'.s("Récupérez la liste des commandes et préparez les colis").'</li>';
-				$h .= '<li>'.s("Et enfin servez vos clients !").'</li>';
+				$h .= '<li>'.s("Et c'est parti !").'</li>';
 			$h .= '</ol>';
 		$h .= '</div>';
 

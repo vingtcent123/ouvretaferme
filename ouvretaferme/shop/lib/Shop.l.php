@@ -95,6 +95,8 @@ class ShopLib extends ShopCrud {
 
 			Shop::model()->insert($e);
 
+			self::updateCounter($e['farm']);
+
 			Shop::model()->commit();
 
 		} catch(\DuplicateException $e) {
@@ -215,7 +217,19 @@ class ShopLib extends ShopCrud {
 
 			Shop::model()->delete($e);
 
+			self::updateCounter($e['farm']);
+
 		Shop::model()->commit();
+
+	}
+
+	public static function updateCounter(\farm\Farm $eFarm): void {
+
+		\farm\Farm::model()->update($eFarm, [
+			'shops' => Shop::model()
+				->whereFarm($eFarm)
+				->count()
+		]);
 
 	}
 

@@ -99,10 +99,18 @@ html {
 	font-size: 13px;
 }
 
-@media (min-width: 1400px) {
+@media (min-width: 1400px) and (min-height: 992px) {
 
 	html {
 		font-size: 15px;
+	}
+
+}
+
+@media (min-width: 1400px) and (max-height: 992px) {
+
+	html {
+		font-size: 14px;
 	}
 
 }
@@ -653,8 +661,7 @@ div.util-vignette > *:first-child {
 
 @media (max-width: 575px) {
 
-	div.util-vignette.util-vignette-xs {
-		grid-template-columns: 1fr;
+	div.util-vignette {
 		gap: 1rem;
 	}
 

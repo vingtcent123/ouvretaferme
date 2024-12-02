@@ -1312,7 +1312,7 @@ class AnalyzeUi {
 
 		$uiTask = new TaskUi();
 
-		$h = '<h2>'.s("Liste des interventions").'</h2>';
+		$h = '';
 
 		$filters = [];
 

@@ -90,7 +90,7 @@ class ProductLib extends ProductCrud {
 		$cItem = \selling\Item::model()
 			->select([
 				'product' => [
-					'name', 'vignette', 'unit', 'category', 'variety', 'quality', 'size', 'stock',
+					'name', 'vignette', 'unit', 'category', 'variety', 'quality', 'size', 'stock', 'stockUpdatedAt',
 					'plant' => ['name', 'fqn', 'vignette']
 				],
 				'packaging',

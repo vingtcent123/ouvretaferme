@@ -5,10 +5,12 @@ new AdaptativeView('/rapport/{id}', function($data, FarmTemplate $t) {
 	$t->tab = 'analyze';
 	$t->subNav = (new \farm\FarmUi())->getAnalyzeSubNav($data->eFarm);
 
+	$t->mainTitle = (new \analyze\ReportUi())->getOneTitle($data->e);
+
 	echo (new \analyze\ReportUi())->getOne($data->e, $data->cCultivation);
-	echo (new \analyze\ReportUi())->getTest($data->e, $data->eTest);
 	echo (new \analyze\ReportUi())->getProducts($data->e, $data->ccProduct);
 	echo (new \analyze\ReportUi())->getHarvested($data->e, $data->cCultivation);
+	echo (new \analyze\ReportUi())->getTest($data->e, $data->eTest);
 	echo (new \analyze\ReportUi())->getSiblings($data->e, $data->cReportSiblings);
 
 });

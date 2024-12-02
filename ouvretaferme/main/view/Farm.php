@@ -127,7 +127,10 @@ class FarmTemplate extends MainTemplate {
 					$farm .= '</div>';
 
 				} else {
-					$farm .= '<a href="'.\farm\FarmUi::urlPlanning($this->data->eFarm).'">'.\farm\FarmUi::getVignette($this->data->eFarm, '1.75rem').'&nbsp;&nbsp;'.encode($this->data->eFarm['name']).'</a>';
+					$farm .= '<div class="nav-title-farm">';
+						$farm .= '<div>'.\farm\FarmUi::getVignette($this->data->eFarm, '1.75rem').'</div>';
+						$farm .= '<div>'.encode($this->data->eFarm['name']).'</div>';
+					$farm .= '</div>';
 				}
 
 			}

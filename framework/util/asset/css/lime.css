@@ -1513,6 +1513,9 @@ td.util-manage-vignette {
 .bg-background-dark {
 	background-color: var(--background-dark) !important;
 }
+.bg-white {
+	background-color: white !important;
+}
 
 /* Annotation */
 
@@ -1680,6 +1683,23 @@ label.btn input:checked + * {
 .btn-outline-secondary {
 	color: var(--secondary);
 	border-color: var(--secondary);
+}
+
+.btn-secondary-dark,
+.btn-outline-secondary-dark:not(.btn-readonly):hover {
+	color: white;
+	background-color: var(--secondary-dark);
+	border-color: var(--secondary-dark);
+}
+
+.btn-secondary-dark:not(.btn-readonly):hover {
+	color: white;
+	box-shadow: inset 0px 0px 0 100px rgba(0, 0, 0, .1);
+}
+
+.btn-outline-secondary-dark {
+	color: var(--secondary-dark);
+	border-color: var(--secondary-dark);
 }
 
 .btn-info,

@@ -52,6 +52,7 @@ body[data-template~="farm-planning-yearly"] main {
 	grid-template-columns: 1fr;
 	grid-template-rows: auto auto auto 1fr;
 	overflow: hidden;
+	height: 100vh;
 }
 
 body[data-template~="farm-planning-yearly"] main > div.container {
