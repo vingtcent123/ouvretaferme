@@ -13,6 +13,25 @@
 	gap: 0.5rem;
 }
 
+.nav-year {
+	display: inline-block;
+	font-size: 1.2rem;
+	text-align: left;
+	background-color: var(--primary);
+	color: white;
+	border-radius: calc(var(--radius) * 2);
+	width: max-content;
+	transition: color .5s;
+}
+
+a.nav-year {
+	text-decoration: none;
+}
+
+a.nav-year:hover {
+	color: white;
+}
+
 @media (min-width: 1200px) and (min-height: 768px) {
 
 	:root {
@@ -171,9 +190,6 @@
 		text-align: center;
 	}
 
-	body[data-template~="farm"] nav .nav-title-farm .asset-icon {
-		display: none;
-	}
 
 	#farm-nav {
 		overflow: auto;
@@ -305,6 +321,14 @@
 
 	body[data-template~="farm"] .farm-template-main-nav + div {
 		margin-top: 2rem;
+	}
+
+	.nav-year {
+		margin-top: 1.5rem;
+		margin-left: -2rem;
+		padding: 0.375rem 2rem;
+		border-top-left-radius: 0;
+		border-bottom-left-radius: 0;
 	}
 
 }
@@ -574,6 +598,12 @@
 
 	body[data-template~="farm"] .farm-template-main-nav {
 		display: none;
+	}
+
+	.nav-year {
+		font-size: 1.1rem;
+		padding: 0.25rem 0.75rem;
+		margin-bottom: .5rem;
 	}
 
 }

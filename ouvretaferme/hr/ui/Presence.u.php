@@ -5,7 +5,7 @@ class PresenceUi {
 
 	public function show(\farm\Farmer $eFarmer, \Collection $cPresence): string {
 
-		$h = '<div class="util-action">';
+		$h = '<div class="util-action mb-1">';
 
 			$h .= '<h2>'.s("Présence à la ferme").'</h2>';
 			$h .= '<a href="/hr/presence:create?farm='.$eFarmer['farm']['id'].'&user='.$eFarmer['user']['id'].'" class="btn btn-outline-primary">'.\Asset::icon('plus-circle').' '.s("Ajouter").'</a>';
@@ -16,7 +16,7 @@ class PresenceUi {
 			$h .= '<div class="util-block-help">'.s("Précisez la période de présence de cet utilisateur pour qu'il puisse participer aux interventions dans le planning au moment de son contrat !").'</div>';
 		} else {
 
-			$h .= '<table class="tr-bordered">';
+			$h .= '<table class="tr-bordered tr-even">';
 				$h .= '<thead>';
 					$h .= '<tr>';
 						$h .= '<th>'.s("Date d'arrivée").'</th>';

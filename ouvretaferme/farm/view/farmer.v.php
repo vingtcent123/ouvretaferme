@@ -2,8 +2,10 @@
 new AdaptativeView('manage', function($data, FarmTemplate $t) {
 
 	$t->title = s("L'équipe de {value}", $data->eFarm['name']);
-	$t->tab = 'home';
-	$t->subNav = (new \farm\FarmUi())->getPlanningSubNav($data->eFarm);
+	$t->tab = 'settings';
+	$t->subNav = (new \farm\FarmUi())->getSettingsSubNav($data->eFarm);
+
+	$t->mainTitle = (new \farm\FarmerUi())->getManageTitle($data->eFarm);
 
 	echo (new \farm\FarmerUi())->getManage($data->eFarm, $data->cFarmer, $data->cFarmerInvite, $data->cFarmerGhost);
 
@@ -12,10 +14,12 @@ new AdaptativeView('manage', function($data, FarmTemplate $t) {
 new AdaptativeView('show', function($data, FarmTemplate $t) {
 
 	$t->title = \user\UserUi::name($data->eFarmer['user']);
-	$t->tab = 'home';
-	$t->subNav = (new \farm\FarmUi())->getPlanningSubNav($data->eFarmer['farm']);
+	$t->tab = 'settings';
+	$t->subNav = (new \farm\FarmUi())->getSettingsSubNav($data->eFarmer['farm']);
 
-	echo (new \farm\FarmerUi())->showUser($data->eFarmer, $data->cPresence, $data->cAbsence);
+	$t->mainTitle = (new \farm\FarmerUi())->getUserTitle($data->eFarmer);
+
+	echo (new \farm\FarmerUi())->getUser($data->eFarmer, $data->cPresence, $data->cAbsence);
 
 });
 

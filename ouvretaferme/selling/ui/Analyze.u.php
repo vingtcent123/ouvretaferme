@@ -1923,16 +1923,13 @@ class AnalyzeUi {
 
 	public function getYears(\farm\Farm $eFarm, array $years, int $selectedYear, ?int $selectedMonth, ?string $selectedWeek, string $selectedView): string {
 
-		$h = ' '.\Asset::icon('chevron-right').' ';
-
 		if(count($years) === 1) {
-			$h .= $selectedYear;
-			return $h;
+			return '<div class="nav-year">'.$selectedYear.'</div>';
 		}
 
-		$h .= '<a class="util-action-navigation" data-dropdown="bottom-start" data-dropdown-hover="true">'.$selectedYear.' '.\farm\FarmUi::getNavigation().'</a>';
+		$h = '<a data-dropdown-offset-x="2" class="nav-year" data-dropdown="bottom-start" data-dropdown-hover="true">'.s("Année {value}", $selectedYear).'  '.\Asset::icon('chevron-down').'</a>';
 
-		$h .= '<div class="dropdown-list dropdown-list-3 bg-secondary">';
+		$h .= '<div class="dropdown-list bg-primary">';
 
 			$h .= '<div class="dropdown-title">'.s("Changer l'année").'</div>';
 
@@ -1940,7 +1937,7 @@ class AnalyzeUi {
 
 				$url = \farm\FarmUi::urlAnalyzeSelling($eFarm, $year, $selectedView);
 
-				$h .= '<a href="'.$url.'" class="dropdown-item dropdown-item-full '.(($selectedYear === $year and $selectedMonth === NULL) ? 'selected' : '').'">'.s("Année {year}", ['year' => $year]).'</a>';
+				$h .= '<a href="'.$url.'" class="dropdown-item dropdown-item-full '.(($selectedYear === $year and $selectedMonth === NULL) ? 'selected' : '').'">'.s("Année {value}", $year).'</a>';
 
 			}
 

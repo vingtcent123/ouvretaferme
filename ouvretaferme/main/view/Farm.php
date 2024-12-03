@@ -132,7 +132,7 @@ class FarmTemplate extends MainTemplate {
 
 					$farm .= '<div class="nav-title-farm">';
 						$farm .= '<div>'.\farm\FarmUi::getVignette($this->data->eFarm, '4rem').'</div>';
-						$farm .= '<a data-dropdown="bottom-start" data-dropdown-hover="true">'.encode($this->data->eFarm['name']).''.Asset::icon('chevron-down', ['style' => 'margin-left: .5rem']).'</a>';
+						$farm .= '<a data-dropdown="bottom-start" data-dropdown-hover="true">'.encode($this->data->eFarm['name']).'  '.Asset::icon('chevron-down').'</a>';
 						$farm .= '<div class="dropdown-list bg-primary">';
 							foreach($this->data->cFarmUser as $eFarm) {
 								$farm .= '<a href="'.$eFarm->getHomeUrl().'" data-ajax-navigation="never" class="dropdown-item">'.\farm\FarmUi::getVignette($eFarm, '1.75rem').'&nbsp;&nbsp;'.encode($eFarm['name']).'</a>';

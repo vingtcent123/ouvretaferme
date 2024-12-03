@@ -141,7 +141,7 @@
 	})
 	->doUpdateProperties('doUpdateStatus', ['status'], function($data) {
 		$eFarm = \farm\FarmLib::getById($data->e['farm']);
-		throw new RedirectAction(\farm\FarmUi::urlPlanningTeam($eFarm).'&success=farm:'.($data->e['status'] === \farm\Farmer::IN ? 'Farmer::created' : 'Farmer::deleted'));
+		throw new RedirectAction(\farm\FarmerUi::urlManage($eFarm).'&success=farm:'.($data->e['status'] === \farm\Farmer::IN ? 'Farmer::created' : 'Farmer::deleted'));
 	})
 	->update()
 	->doUpdate(fn($data) => throw new ViewAction($data))

@@ -40,7 +40,7 @@ class ZoneUi {
 					}
 				$h .= '</div>';
 			$h .= '</div>';
-			$h .= '<div class="util-action-subtitle">';
+			$h .= '<div class="util-action-subtitle mb-1">';
 				$h .= $this->getZoneUse($eZone);
 			$h .= '</div>';
 

@@ -807,6 +807,7 @@ new AdaptativeView('analyzeSelling', function($data, FarmTemplate $t) {
 
 		$uiAnalyze = new \selling\AnalyzeUi();
 
+		$t->mainYear = (new \selling\AnalyzeUi())->getYears($data->eFarm, $data->years, $data->year, $data->month, $data->week, $data->category);
 		$t->mainTitle = (new \farm\FarmUi())->getAnalyzeSellingTitle($data->eFarm, $data->years, $data->year, $data->month, $data->week, $data->category);
 
 		echo match($data->category) {
@@ -849,6 +850,7 @@ new AdaptativeView('analyzeCultivation', function($data, FarmTemplate $t) {
 
 	$uiAnalyze = new \plant\AnalyzeUi();
 
+	$t->mainYear = (new \plant\AnalyzeUi())->getSeasons($data->eFarm, $data->seasons, $data->season, $data->category);
 	$t->mainTitle = (new \farm\FarmUi())->getAnalyzeCultivationTitle($data->eFarm, $data->seasons, $data->season, $data->category, $actions);
 
 	echo match($data->category) {

@@ -2099,7 +2099,7 @@ class TaskUi {
 					) {
 
 						$h .= '<dt>'.s("Affectée").'</dt>';
-						$h .= '<dd class="util-action-subtitle">';
+						$h .= '<dd>';
 
 							foreach($eTask['plannedUsers'] as $user) {
 
@@ -2119,14 +2119,14 @@ class TaskUi {
 					if($eTask['repeat']->notEmpty()) {
 
 						$h .= '<dt>'.s("Répétée").'</dt>';
-						$h .= '<dd class="util-action-subtitle">';
+						$h .= '<dd>';
 							$h .= RepeatUi::getSequence($eTask['repeat']);
 						$h .= '</dd>';
 
 					}
 
 					$h .= '<dt>'.s("Créée").'</dt>';
-					$h .= '<dd class="util-action-subtitle" title="'.s("Plus précisément à {value}", \util\DateUi::numeric($eTask['createdAt'], \util\DateUi::TIME)).'">';
+					$h .= '<dd title="'.s("Plus précisément à {value}", \util\DateUi::numeric($eTask['createdAt'], \util\DateUi::TIME)).'">';
 						$h .= s("{date} par {user}", ['date' => \util\DateUi::numeric($eTask['createdAt'], \util\DateUi::DATE), 'user' => \user\UserUi::name($eTask['createdBy'])]);
 					$h .= '</dd>';
 

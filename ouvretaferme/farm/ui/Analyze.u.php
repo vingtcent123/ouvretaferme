@@ -76,16 +76,13 @@ class AnalyzeUi {
 
 	public function getYears(\farm\Farm $eFarm, array $years, int $selectedYear, ?int $selectedMonth, ?string $selectedWeek, string $selectedView): string {
 
-		$h = ' '.\Asset::icon('chevron-right').' ';
-
 		if(count($years) === 1) {
-			$h .= $selectedYear;
-			return $h;
+			return '<div class="nav-year">'.$selectedYear.'</div>';
 		}
 
-		$h = ' <a data-dropdown="bottom-start" data-dropdown-hover="true" data-dropdown-offset-x="2" class="farm-season">'.s("Année {value}", $selectedYear).'  '.\Asset::icon('chevron-down').'</a>';
+		$h = '<a data-dropdown="bottom-start" data-dropdown-hover="true" data-dropdown-offset-x="2" class="nav-year">'.s("Année {value}", $selectedYear).'  '.\Asset::icon('chevron-down').'</a>';
 
-		$h .= '<div class="dropdown-list dropdown-list-3 bg-primary">';
+		$h .= '<div class="dropdown-list bg-primary">';
 
 			$h .= '<div class="dropdown-title">'.s("Changer l'année").'</div>';
 

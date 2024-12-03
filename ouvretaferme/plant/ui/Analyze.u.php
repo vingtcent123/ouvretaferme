@@ -839,16 +839,13 @@ class AnalyzeUi {
 
 	public function getSeasons(\farm\Farm $eFarm, array $seasons, int $selectedSeason, string $selectedView): string {
 
-		$h = ' '.\Asset::icon('chevron-right').' ';
-
 		if(count($seasons) === 1) {
-			$h .= $selectedSeason;
-			return $h;
+			return '<div class="nav-year">'.$selectedSeason.'</div>';
 		}
 
-		$h .= '<a class="util-action-navigation" data-dropdown="bottom-start" data-dropdown-hover="true">'.$selectedSeason.' '.\farm\FarmUi::getNavigation().'</a>';
+		$h = '<a data-dropdown-offset-x="2" class="nav-year" data-dropdown="bottom-start" data-dropdown-hover="true">'.s("Saison {value}", $selectedSeason).'  '.\Asset::icon('chevron-down').'</a>';
 
-		$h .= '<div class="dropdown-list dropdown-list-3 bg-secondary">';
+		$h .= '<div class="dropdown-list bg-primary">';
 
 			$h .= '<div class="dropdown-title">'.s("Changer la saison").'</div>';
 
@@ -856,7 +853,7 @@ class AnalyzeUi {
 
 				$url = \farm\FarmUi::urlAnalyzeCultivation($eFarm, $season, $selectedView);
 
-				$h .= '<a href="'.$url.'" class="dropdown-item dropdown-item-full '.(($selectedSeason === $season) ? 'selected' : '').'">'. s("Saison {season}", ['season' => $season]) .'</a>';
+				$h .= '<a href="'.$url.'" class="dropdown-item dropdown-item-full '.(($selectedSeason === $season) ? 'selected' : '').'">'.s("Saison {value}", $season).'</a>';
 
 
 			}

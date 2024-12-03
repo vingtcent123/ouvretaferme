@@ -48,6 +48,9 @@ body[data-template^="home"] header h1 {
 	grid-template-columns: max-content 1fr;
 	grid-column-gap: 2rem;
 	align-items: stretch;
+}
+
+.home-blog:not(:last-child) {
 	margin-bottom: 2rem;
 }
 

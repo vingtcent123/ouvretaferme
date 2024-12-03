@@ -945,7 +945,6 @@ tbody .td-checkbox > label {
 	flex-wrap: wrap;
 	align-items: end;
 	justify-content: space-between;
-	margin-bottom: 1.5rem;
 	gap: 0.5rem;
 }
 
@@ -968,12 +967,8 @@ a.util-action-navigation:not(:hover):not([data-dropdown-display]) > svg:nth-of-t
 }
 
 div.util-action-subtitle {
-	margin-top: -0.75rem;
+	margin-top: 0.25rem;
 	font-size: 1.15rem;
-}
-
-div.util-action-subtitle:not(:last-child) {
-	margin-bottom: 1rem;
 }
 
 @media (max-width: 575px) {
@@ -2631,6 +2626,9 @@ div.util-buttons {
 	display: grid;
 	grid-gap: 1rem;
 	grid-template-columns: 1fr 1fr 1fr;
+}
+
+div.util-buttons:not(:last-child) {
 	margin-bottom: 2rem;
 }
 
@@ -2687,6 +2685,7 @@ div.util-buttons > .util-button div.util-button-text {
 div.util-buttons > .util-button h4 {
 	margin-bottom: 0.5rem;
 	color: white;
+	line-height: 1.3;
 }
 
 @media print {

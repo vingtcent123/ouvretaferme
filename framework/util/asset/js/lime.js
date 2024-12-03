@@ -1483,8 +1483,12 @@ Lime.Dropdown = class {
 
 		const isTop = position.startsWith('top');
 
-		const offsetX = (button.dataset.dropdownOffsetX === undefined) ? 0 : parseInt(button.dataset.dropdownOffsetX) * rem();
-		const offsetY = (button.dataset.dropdownOffsetY === undefined) ? 0 : parseInt(button.dataset.dropdownOffsetY) * rem();
+		let offsetX = (button.dataset.dropdownOffsetX === undefined) ? 0 : parseInt(button.dataset.dropdownOffsetX) * rem();
+		let offsetY = (button.dataset.dropdownOffsetY === undefined) ? 0 : parseInt(button.dataset.dropdownOffsetY) * rem();
+
+		if(offsetX === 0) {
+			offsetX = 5;
+		}
 
 		button.stick = new Lime.Stick(
 			button,
@@ -1497,7 +1501,7 @@ Lime.Dropdown = class {
 		);
 
 		list.style.zIndex = Lime.getZIndex();
-		list.classList.add(isTop ? 'dropdown-list-top' : 'dropdown-list-bottom')
+		list.classList.add(isTop ? 'dropdown-list-top' : 'dropdown-list-bottom');
 
 	};
 

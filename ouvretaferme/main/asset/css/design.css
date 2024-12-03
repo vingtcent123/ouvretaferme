@@ -462,6 +462,11 @@ body > nav ul.nav-actions li > a.nav-icon {
 
 }
 
+.nav-deleted {
+	background-color: var(--danger);
+	line-height: 1.2;
+}
+
 .nav-deleted,
 .nav-deleted a,
 .nav-deleted a:hover {

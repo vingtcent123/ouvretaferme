@@ -152,7 +152,7 @@ class TipUi {
 
 			case 'feature-team' :
 
-				$link = FarmUi::urlPlanningTeam($eFarm);
+				$link = FarmerUi::urlManage($eFarm);
 
 				$h = '<p>'.s("Ajoutez autant de personnes que vous voulez à l'équipe de votre ferme, en donnant à chaque membre de l'équipe soit accès complet, soit un accès limité à certaines fonctionnalités.").'</p>';
 

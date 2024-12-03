@@ -995,6 +995,8 @@
 
 		\farm\FarmerLib::setView('viewSettings', $data->eFarm, \farm\Farmer::SETTINGS);
 
+		$data->eFarm['website'] = \website\WebsiteLib::getByFarm($data->eFarm);
+
 		$data->eNews = \website\NewsLib::getLastForBlog();
 
 		throw new ViewAction($data);

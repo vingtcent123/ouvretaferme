@@ -22,9 +22,9 @@ abstract class FarmerElement extends \Element {
 	const DAILY = 'daily';
 	const WEEKLY = 'weekly';
 	const YEARLY = 'yearly';
-	const TEAM = 'team';
 
 	const TIME = 'time';
+	const TEAM = 'team';
 	const PACE = 'pace';
 	const PERIOD = 'period';
 
@@ -108,7 +108,7 @@ class FarmerModel extends \ModuleModel {
 			'farmStatus' => ['enum', [\farm\Farmer::ACTIVE, \farm\Farmer::CLOSED], 'cast' => 'enum'],
 			'status' => ['enum', [\farm\Farmer::INVITED, \farm\Farmer::IN, \farm\Farmer::OUT], 'cast' => 'enum'],
 			'role' => ['enum', [\farm\Farmer::SEASONAL, \farm\Farmer::PERMANENT, \farm\Farmer::OWNER, \farm\Farmer::OBSERVER], 'null' => TRUE, 'cast' => 'enum'],
-			'viewPlanning' => ['enum', [\farm\Farmer::DAILY, \farm\Farmer::WEEKLY, \farm\Farmer::YEARLY, \farm\Farmer::TEAM], 'cast' => 'enum'],
+			'viewPlanning' => ['enum', [\farm\Farmer::DAILY, \farm\Farmer::WEEKLY, \farm\Farmer::YEARLY], 'cast' => 'enum'],
 			'viewPlanningYear' => ['int16', 'min' => 0, 'max' => NULL, 'null' => TRUE, 'cast' => 'int'],
 			'viewPlanningCategory' => ['enum', [\farm\Farmer::TIME, \farm\Farmer::TEAM, \farm\Farmer::PACE, \farm\Farmer::PERIOD], 'cast' => 'enum'],
 			'viewPlanningHarvestExpected' => ['enum', [\farm\Farmer::TOTAL, \farm\Farmer::WEEKLY], 'cast' => 'enum'],

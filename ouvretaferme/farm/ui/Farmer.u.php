@@ -7,6 +7,10 @@ class FarmerUi {
 		\Asset::css('farm', 'farm.css');
 	}
 
+	public static function urlManage(Farm $eFarm): string {
+		return '/farm/farmer:manage?farm='.$eFarm['id'].'';
+	}
+
 	public function getMyFarms(\Collection $cFarm): string {
 
 		$h = '<div class="farmer-farms">';
@@ -112,32 +116,30 @@ class FarmerUi {
 
 	}
 
+	public function getManageTitle(Farm $eFarm): string {
+
+		$h = '<div class="util-action">';
+
+			$h .= '<h1>';
+				$h .= '<a href="'.\farm\FarmUi::urlSettings($eFarm).'"  class="h-back">'.\Asset::icon('arrow-left').'</a>';
+				$h .= s("L'équipe");
+			$h .= '</h1>';
+
+			$h .= '<div>';
+				$h .= '<a href="/farm/farmer:create?farm='.$eFarm['id'].'" class="btn btn-primary">'.\Asset::icon('plus-circle').' '.s("Inviter un utilisateur dans l'équipe").'</a>';
+			$h .= '</div>';
+
+		$h .= '</div>';
+
+		return $h;
+
+	}
+
 	public function getManage(Farm $eFarm, \Collection $cFarmer, \Collection $cFarmerInvite, \Collection $cFarmerGhost): string {
 
-		if($cFarmer->empty()) {
+		$h = '';
 
-			$h = '<h1>'.s("L'équipe").'</h1>';
-
-			$h .= '<div class="util-info">';
-				$h .= s("Il n'y a encore personne dans l'équipe de la ferme.");
-			$h .= '</div>';
-
-			$h .= '<h4>'.s("Ajouter un premier utilisateur dans l'équipe").'</h4>';
-			$h .= $this->createForm(new Farmer([
-				'farm' => $eFarm
-			]), 'inline');
-
-		} else {
-
-			$h = '<div class="util-action">';
-
-				$h .= '<h1>'.s("L'équipe").'</h1>';
-
-				$h .= '<div>';
-					$h .= '<a href="/farm/farmer:create?farm='.$eFarm['id'].'" class="btn btn-primary">'.\Asset::icon('plus-circle').' '.s("Inviter un utilisateur dans l'équipe").'</a>';
-				$h .= '</div>';
-
-			$h .= '</div>';
+		if($cFarmer->notEmpty()) {
 
 			$h .= '<div class="util-buttons">';
 
@@ -246,6 +248,7 @@ class FarmerUi {
 
 		}
 
+
 		$h .= '<div class="util-block">';
 
 		if($cFarmerGhost->empty()) {
@@ -332,12 +335,20 @@ class FarmerUi {
 
 	}
 
-	public function showUser(\farm\Farmer $eFarmer, \Collection $cPresence, \Collection $cAbsence): string {
+	public function getUserTitle(\farm\Farmer $eFarmer): string {
 
-		$h = '<h1>'.\user\UserUi::getVignette($eFarmer['user'], '3rem').' '.\user\UserUi::name($eFarmer['user']).'</h1>';
+		$h = '<h1>';
+			$h .= '<a href="'.FarmerUi::urlManage($eFarmer['farm']).'"  class="h-back">'.\Asset::icon('arrow-left').'</a>';
+			$h .= \user\UserUi::getVignette($eFarmer['user'], '3rem').' '.\user\UserUi::name($eFarmer['user']);
+		$h .= '</h1>';
 
-		$h .= '<dl class="util-presentation util-presentation-1">';
+		return $h;
 
+	}
+
+	public function getUser(\farm\Farmer $eFarmer, \Collection $cPresence, \Collection $cAbsence): string {
+
+		$h = '<dl class="util-presentation util-presentation-1">';
 
 			if($eFarmer['farmGhost']) {
 

@@ -143,29 +143,29 @@ class MainTemplate extends BaseTemplate {
 
 		$h .= '<ul class="nav-actions">';
 
-		if($this->data->userDeletedAt) {
-			$h .= '<li class="nav-deleted nav-action-optional">';
-				$h .= '<a href="/main/account" class="nav-item" title="'.(new user\DropUi())->getCloseMessage($this->data->userDeletedAt).'">'.\Asset::icon('exclamation-triangle-fill').'&nbsp;'.s("Compte en cours de fermeture").'&nbsp;'.\Asset::icon('exclamation-triangle-fill').'</a>';
-			$h .= '</li>';
-		}
-
-		if($this->data->isLogged) {
-
-			if($this->data->eUserOnline->notEmpty()) {
-				$h .= $this->getUserNavItem($this->data);
+			if($this->data->userDeletedAt) {
+				$h .= '<li class="nav-deleted nav-action-optional">';
+					$h .= '<a href="/main/account" class="nav-item" title="'.(new user\DropUi())->getCloseMessage($this->data->userDeletedAt).'"><span>'.\Asset::icon('exclamation-triangle-fill').'&nbsp;'.s("Compte en cours de fermeture").'&nbsp;'.\Asset::icon('exclamation-triangle-fill').'</span></a>';
+				$h .= '</li>';
 			}
 
-		} else {
+			if($this->data->isLogged) {
 
-			$h .= '<li id="signIn-item">
-					<a href="'.Lime::getUrl().'/user/signUp" class="nav-item">'.s("Inscription").'</a>
-				</li>';
+				if($this->data->eUserOnline->notEmpty()) {
+					$h .= $this->getUserNavItem($this->data);
+				}
 
-			$h .= '<li id="logIn-item">';
-				$h .= '<a href="/user/log:form" class="nav-item">'.s("Connexion").'</a>';
-			$h .= '</li>';
+			} else {
 
-		}
+				$h .= '<li id="signIn-item">';
+					$h .= '<a href="'.Lime::getUrl().'/user/signUp" class="nav-item">'.s("Inscription").'</a>';
+				$h .= '</li>';
+
+				$h .= '<li id="logIn-item">';
+					$h .= '<a href="/user/log:form" class="nav-item">'.s("Connexion").'</a>';
+				$h .= '</li>';
+
+			}
 
 		$h .= '</ul>';
 

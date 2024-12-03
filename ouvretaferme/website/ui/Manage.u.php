@@ -19,9 +19,7 @@ class ManageUi {
 			'name' => $eFarm['name']
 		]);
 
-		$h = '<h2>'.s("Créer le site internet de la ferme").'</h2>';
-
-		$h .= '<div class="util-block-help">';
+		$h = '<div class="util-block-help">';
 			$h .= '<p>'.s("{siteName} vous permet de créer très facilement un site internet pour votre ferme avec quelques fonctionnalité de base :").'</p>';
 			$h .= '<ul>';
 				$h .= '<li>'.s("Publication des actualités de votre ferme").'</li>';
@@ -74,13 +72,14 @@ class ManageUi {
 
 	}
 
-	public function display(Website $eWebsite): string {
-
-		\Asset::css('production', 'crop.css');
+	public function displayTitle(Website $eWebsite): string {
 
 		$h = '<div class="util-action">';
 
-			$h .= '<h1>'.s("Le site internet").'</h1>';
+			$h .= '<h1>';
+				$h .= '<a href="'.\farm\FarmUi::urlSettings($eWebsite['farm']).'"  class="h-back hide-lateral-down">'.\Asset::icon('arrow-left').'</a>';
+				$h .= s("Site internet");
+			$h .= '</h1>';
 
 			$h .= '<div>';
 				$h .= '<a data-dropdown="bottom-end" class="dropdown-toggle btn btn-primary">'.\Asset::icon('gear-fill').'</a>';
@@ -101,6 +100,16 @@ class ManageUi {
 		$h .= '<div class="util-action-subtitle">';
 			$h .= '<a href="'.WebsiteUi::url($eWebsite).'">'.WebsiteUi::url($eWebsite, showProtocol: FALSE).'</a>';
 		$h .= '</div>';
+
+		return $h;
+
+	}
+
+	public function display(Website $eWebsite): string {
+
+		\Asset::css('production', 'crop.css');
+
+		$h = '';
 
 		if($eWebsite['domain'] !== NULL and in_array($eWebsite['domainStatus'], [Website::CONFIGURED_UNSECURED, Website::FAILURE_UNSECURED])) {
 			$h .= '<p class="util-warning">';

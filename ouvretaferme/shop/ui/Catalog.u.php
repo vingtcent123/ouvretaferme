@@ -19,19 +19,14 @@ class CatalogUi {
 			'cCategory' => $cCategory,
 		] = $eCatalogSelected;
 
-		$h .= '<div class="util-action">';
-
-			$h .= '<div>';
-			$h .= '</div>';
-			$h .= '<div>';
-				$h .= '<a href="/shop/product:create?catalog='.$eCatalogSelected['id'].'" class="btn btn-primary">'.\Asset::icon('plus-circle').' '.s("Ajouter des produits").'</a> ';
-				$h .= '<a data-dropdown="bottom-end" class="dropdown-toggle btn btn-primary">'.\Asset::icon('gear-fill').'</a>';
-				$h .= '<div class="dropdown-list">';
-					$h .= '<div class="dropdown-title">'.encode($eCatalogSelected['name']).'</div>';
-					$h .= '<a href="/shop/catalog:update?id='.$eCatalogSelected['id'].'" class="dropdown-item">'.s("Modifier le catalogue").'</a>';
-					$h .= '<div class="dropdown-divider"></div>';
-					$h .= '<a data-ajax="/shop/catalog:doDelete" post-id="'.$eCatalogSelected['id'].'" data-confirm="'.s("Êtes-vous sûr de vouloir supprimer définitivement ce catalogue ? Vous ne pourrez plus y accéder mais il restera actif sur les ventes où il est actuellement configuré.").'" class="dropdown-item">'.s("Supprimer le catalogue").'</a>';
-				$h .= '</div>';
+		$h .= '<div class="mb-1 text-end">';
+			$h .= '<a href="/shop/product:create?catalog='.$eCatalogSelected['id'].'" class="btn btn-primary">'.\Asset::icon('plus-circle').' '.s("Ajouter des produits").'</a> ';
+			$h .= '<a data-dropdown="bottom-end" class="dropdown-toggle btn btn-primary">'.\Asset::icon('gear-fill').'</a>';
+			$h .= '<div class="dropdown-list">';
+				$h .= '<div class="dropdown-title">'.encode($eCatalogSelected['name']).'</div>';
+				$h .= '<a href="/shop/catalog:update?id='.$eCatalogSelected['id'].'" class="dropdown-item">'.s("Modifier le catalogue").'</a>';
+				$h .= '<div class="dropdown-divider"></div>';
+				$h .= '<a data-ajax="/shop/catalog:doDelete" post-id="'.$eCatalogSelected['id'].'" data-confirm="'.s("Êtes-vous sûr de vouloir supprimer définitivement ce catalogue ? Vous ne pourrez plus y accéder mais il restera actif sur les ventes où il est actuellement configuré.").'" class="dropdown-item">'.s("Supprimer le catalogue").'</a>';
 			$h .= '</div>';
 		$h .= '</div>';
 

@@ -114,7 +114,7 @@ class HomeUi {
 
 			$content = substr($content, $start, $length);
 
-			$h = '<h2>'.s("Du nouveau sur {siteName} !").'</h2>';
+			$h = '<h3>'.s("Du nouveau sur {siteName} !").'</h3>';
 
 			$h .= '<div class="home-blog bg-info util-block-flat">';
 				$h .= '<div>';
