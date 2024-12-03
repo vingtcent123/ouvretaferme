@@ -1483,11 +1483,17 @@ Lime.Dropdown = class {
 
 		const isTop = position.startsWith('top');
 
+		const offsetX = (button.dataset.dropdownOffsetX === undefined) ? 0 : parseInt(button.dataset.dropdownOffsetX) * rem();
+		const offsetY = (button.dataset.dropdownOffsetY === undefined) ? 0 : parseInt(button.dataset.dropdownOffsetY) * rem();
+
 		button.stick = new Lime.Stick(
 			button,
 			list,
 			position,
-			{x: 0, y: isTop ? -5 : 5}
+			{
+				x: offsetX,
+				y: (isTop ? -5 : 5) + offsetY
+			}
 		);
 
 		list.style.zIndex = Lime.getZIndex();

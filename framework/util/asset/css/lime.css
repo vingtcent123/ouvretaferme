@@ -9,7 +9,7 @@
 	--danger: #dc3545;
 	--text: #212529;
 	--success: #198754;
-	--radius: .66rem;
+	--radius: .5rem;
 	--gradient: linear-gradient(to top, transparent 0, #8882 100%);
 }
 
@@ -943,7 +943,7 @@ tbody .td-checkbox > label {
 .util-action {
 	display: flex;
 	flex-wrap: wrap;
-	align-items: center;
+	align-items: end;
 	justify-content: space-between;
 	margin-bottom: 1.5rem;
 	gap: 0.5rem;

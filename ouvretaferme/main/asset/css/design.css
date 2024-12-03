@@ -279,7 +279,7 @@ body > nav {
 	font-weight: normal;
 	color: white;
 	background-color: var(--primary);
-	box-shadow: 0 0 1rem #5b5b8388;
+	box-shadow: 0 0 1rem #0003;
 }
 
 body[data-demo] > nav {

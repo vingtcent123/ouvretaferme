@@ -567,7 +567,7 @@ class FarmUi {
 
 				if($eFarm->canAnalyze()) {
 
-					$h .= '<a href="'.FarmUi::urlAnalyze($eFarm).'" data-tab="analyze" class="farm-tab '.($tab === 'analyze' ? 'selected' : '').'">';
+					$h .= '<a href="'.FarmUi::urlAnalyze($eFarm).'" data-tab="analyze" class="farm-tab farm-tab-subnav '.($tab === 'analyze' ? 'selected' : '').'">';
 						$h .= '<span class="farm-tab-off">'.\Asset::icon('bar-chart').'</span>';
 						$h .= '<span class="farm-tab-on">'.\Asset::icon('bar-chart-fill').'</span>';
 						$h .= '<span>'.s("Analyse").'</span>';
@@ -651,9 +651,6 @@ class FarmUi {
 						$h .= '<a href="'.FarmUi::urlCultivationSeries($eFarm, $key).'" class="dropdown-item '.($key === $selectedView ? 'selected' : '').'">'.$value.'</a> ';
 					}
 				$h .= '</div>';
-				if($selectedSeason !== NULL) {
-					$h .= $this->getSeasonsTabs($eFarm, fn($season) => \farm\FarmUi::urlCultivationSeries($eFarm, season: $season), $selectedSeason);
-				}
 			$h .= '</h1>';
 
 			switch($selectedView) {
@@ -760,7 +757,6 @@ class FarmUi {
 						$h .= '<a href="'.FarmUi::urlCultivationSoil($eFarm, $key).'" class="dropdown-item '.($key === $selectedView ? 'selected' : '').'">'.$value.'</a> ';
 					}
 				$h .= '</div>';
-				$h .= $this->getSeasonsTabs($eFarm, fn($season) => \farm\FarmUi::urlCultivationSoil($eFarm, season: $season), $selectedSeason);
 			$h .= '</h1>';
 			$h .= '<div>';
 
@@ -1078,7 +1074,7 @@ class FarmUi {
 
 	public function getAnalyzeMenu(Farm $eFarm, string $prefix = '', ?string $tab = NULL): string {
 
-		$selectedView = ($tab === 'shop') ? \Setting::get('main\viewAnalyze') : NULL;
+		$selectedView = ($tab === 'analyze') ? \Setting::get('main\viewAnalyze') : NULL;
 
 		$h = '<div class="farm-subnav-wrapper">';
 
@@ -1115,12 +1111,9 @@ class FarmUi {
 
 	public function getAnalyzeReportTitle(\farm\Farm $eFarm, int $selectedSeason): string {
 
-		$uiFarm = (new FarmUi());
-
 		$h = '<div class="util-action">';
 			$h .= '<h1>';
 				$h .= s("Rapports de production");
-				$h .= $uiFarm->getSeasonsTabs($eFarm, fn($season) => \farm\FarmUi::urlAnalyzeReport($eFarm, season: $season), $selectedSeason);
 			$h .= '</h1>';
 			$h .=  '<div>';
 				if((new \analyze\Report(['farm' => $eFarm]))->canCreate()) {
@@ -1148,7 +1141,6 @@ class FarmUi {
 						$h .= '<a href="'.\farm\FarmUi::urlAnalyzeWorkingTime($eFarm, $selectedYear, $key).'" class="dropdown-item '.($key === $selectedView ? 'selected' : '').'">'.$value.'</a> ';
 					}
 				$h .= '</div>';
-				$h .= (new AnalyzeUi())->getYears($eFarm, $years, $selectedYear, $selectedMonth, $selectedWeek, $selectedView);
 			$h .= '</h1>';
 
 			if($selectedView === Farmer::TIME) {
@@ -1327,9 +1319,9 @@ class FarmUi {
 
 	public function getSeasonsTabs(Farm $eFarm, \Closure $url, int $selectedSeason): string {
 
-		$h = ' <a data-dropdown="bottom-start"  data-dropdown-hover="true" class="btn btn-secondary dropdown-toggle">'.s("Saison {year}", ['year' => $selectedSeason]).'</a>';
+		$h = ' <a data-dropdown="bottom-start" data-dropdown-hover="true" data-dropdown-offset-x="2" class="farm-season">'.s("Saison {year}", ['year' => $selectedSeason]).'  '.\Asset::icon('chevron-down').'</a>';
 
-		$h .= '<div class="dropdown-list bg-secondary">';
+		$h .= '<div class="dropdown-list bg-primary">';
 
 			$h .= '<div class="dropdown-title">'.s("Changer la saison").'</div>';
 

@@ -83,9 +83,9 @@ class AnalyzeUi {
 			return $h;
 		}
 
-		$h .= '<a data-dropdown="bottom-start" data-dropdown-hover="true" class="util-action-navigation">'.$selectedYear.' '.FarmUi::getNavigation().'</a>';
+		$h = ' <a data-dropdown="bottom-start" data-dropdown-hover="true" data-dropdown-offset-x="2" class="farm-season">'.s("Année {value}", $selectedYear).'  '.\Asset::icon('chevron-down').'</a>';
 
-		$h .= '<div class="dropdown-list dropdown-list-3 bg-secondary">';
+		$h .= '<div class="dropdown-list dropdown-list-3 bg-primary">';
 
 			$h .= '<div class="dropdown-title">'.s("Changer l'année").'</div>';
 
@@ -93,7 +93,7 @@ class AnalyzeUi {
 
 				$url = \farm\FarmUi::urlAnalyzeWorkingTime($eFarm, $year, $selectedView);
 
-				$h .= '<a href="'.$url.'" class="dropdown-item dropdown-item-full '.(($selectedYear === $year and $selectedMonth === NULL) ? 'selected' : '').'">'.s("Année {year}", ['year' => $year]).'</a>';
+				$h .= '<a href="'.$url.'" class="dropdown-item dropdown-item-full '.(($selectedYear === $year and $selectedMonth === NULL) ? 'selected' : '').'">'.s("Année {value}", $year).'</a>';
 
 			}
 

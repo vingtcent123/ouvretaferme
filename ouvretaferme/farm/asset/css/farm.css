@@ -79,3 +79,37 @@ div.farmer-farms-item-infos {
 	line-height: 1.7;
 	opacity: 0.7;
 }
+
+a.farm-season {
+	display: inline-block;
+	font-size: 1.2rem;
+	text-align: left;
+	background-color: var(--primary);
+	color: white;
+	border-radius: calc(var(--radius) * 2);
+	text-decoration: none;
+	width: max-content;
+	transition: color .5s;
+}
+
+@media (min-width: 1200px) and (min-height: 768px) {
+
+	a.farm-season {
+		margin-top: 1.5rem;
+		margin-left: -2rem;
+		padding: 0.25rem 2rem;
+		border-top-left-radius: 0;
+		border-bottom-left-radius: 0;
+	}
+
+}
+
+@media (max-width: 1199px) or (max-height: 767px) {
+
+	a.farm-season {
+		margin-top: .5rem;
+		padding: 0.25rem 0.75rem;
+		margin-bottom: 1rem;
+	}
+
+}

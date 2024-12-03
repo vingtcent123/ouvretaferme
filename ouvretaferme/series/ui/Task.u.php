@@ -161,7 +161,7 @@ class TaskUi {
 
 	}
 
-	public function getTabCalendar(string $source, \farm\Farm $eFarm, ?string $week, ?int $year): string {
+	public function getTabCalendar(?string $source, \farm\Farm $eFarm, ?string $week, ?int $year): string {
 
 		$h = '';
 

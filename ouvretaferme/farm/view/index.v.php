@@ -156,6 +156,7 @@ new AdaptativeView('series', function($data, FarmTemplate $t) {
 	}
 
 	$t->mainTitle = $uiFarm->getCultivationSeriesTitle($data->eFarm, $data->season, $view, $data->nSeries, $data->firstSeries);
+	$t->mainYear = $uiFarm->getSeasonsTabs($data->eFarm, fn($season) => \farm\FarmUi::urlCultivationSeries($data->eFarm, season: $season), $data->season);
 
 	echo $uiSeries->displayImport($data->eFarm, $data->nSeries, $data->cSeriesImportPerennial, $data->firstSeries, $data->season);
 
@@ -189,9 +190,9 @@ new AdaptativeView('mapEmpty', function($data, FarmTemplate $t) {
 	$t->tab = 'settings';
 	$t->subNav = (new \farm\FarmUi())->getSettingsSubNav($data->eFarm);
 
+	$t->mainYear .= (new \farm\FarmUi())->getSeasonsTabs($data->eFarm, fn($season) => \farm\FarmUi::urlSoil($data->eFarm, $season), $data->season);
 	$t->mainTitle = '<h1>';
 		$t->mainTitle .= s("Plan de la ferme");
-		$t->mainTitle .= (new \farm\FarmUi())->getSeasonsTabs($data->eFarm, fn($season) => \farm\FarmUi::urlSoil($data->eFarm, $season), $data->season);
 	$t->mainTitle .= '</h1>';
 
 	echo '<div class="util-block-help">';
@@ -225,7 +226,6 @@ new AdaptativeView('cartography', function($data, FarmTemplate $t) {
 				$h .= '<a href="'.\farm\FarmUi::urlSettings($data->eFarm).'"  class="h-back">'.\Asset::icon('arrow-left').'</a>';
 			}
 			$h .= s("Plan de la ferme");
-			$h .= (new \farm\FarmUi())->getSeasonsTabs($data->eFarm, fn($season) => \farm\FarmUi::urlCartography($data->eFarm, $season), $data->season);
 		$h .= '</h1>';
 		if($data->eFarm->canManage()) {
 			$h .=  '<div>';
@@ -233,8 +233,9 @@ new AdaptativeView('cartography', function($data, FarmTemplate $t) {
 			$h .=  '</div>';
 		}
 	$h .= '</div>';
-		
+
 	$t->mainTitle = $h;
+	$t->mainYear = (new \farm\FarmUi())->getSeasonsTabs($data->eFarm, fn($season) => \farm\FarmUi::urlCartography($data->eFarm, $season), $data->season);;
 
 	if(
 		$data->cZone->count() === 1 and // Une seule parcelle
@@ -270,6 +271,7 @@ new AdaptativeView('soil', function($data, FarmTemplate $t) {
 
 	$uiFarm = new \farm\FarmUi();
 
+	$t->mainYear = $uiFarm->getSeasonsTabs($data->eFarm, fn($season) => \farm\FarmUi::urlCultivationSoil($data->eFarm, season: $season), $data->season);
 	$t->mainTitle = $uiFarm->getCultivationSoilTitle($data->eFarm, $data->season, $view, $data->cZone);
 
 	if($data->cZone->notEmpty()) {
@@ -292,48 +294,6 @@ new AdaptativeView('soil', function($data, FarmTemplate $t) {
 		echo '<div class="util-block-help">';
 			echo '<h4>'.s("Vous êtes sur votre futur plan d'assolement").'</h4>';
 			echo '<p>'.s("Vous pourrez consulter votre plan d'assolement dès lors que vous aurez configuré les parcelles et les planches de culture de votre ferme et créé vos premières séries.").'</p>';
-			echo '<a href="'.\farm\FarmUi::urlCartography($data->eFarm, $data->season).'" class="btn btn-secondary">'.s("Créer le plan de ma ferme").'</a>';
-		echo '</div>';
-
-	}
-
-
-});
-
-new AdaptativeView('history', function($data, FarmTemplate $t) {
-
-	$t->canonical = \farm\FarmUi::urlHistory($data->eFarm, $data->season);
-	$t->title = s("Rotations de {value}", $data->eFarm['name']);
-	$t->tab = 'cultivation';
-	$t->subNav = (new \farm\FarmUi())->getCultivationSubNav($data->eFarm);
-
-	$t->package('main')->updateNavCultivation($t->canonical);
-
-	$h = '<div class="util-action">';
-		$h .= '<h1>';
-			$h .= s("Rotations");
-			$h .= (new \farm\FarmUi())->getSeasonsTabs($data->eFarm, fn($season) => \farm\FarmUi::urlHistory($data->eFarm, $season), $data->season);
-		$h .= '</h1>';
-		$h .= '<div>';
-			if($data->cZone->notEmpty()) {
-				$h .= '<a '.attr('onclick', 'Lime.Search.toggle("#bed-rotation-search")').' class="btn btn-primary">'.\Asset::icon('search').'</a> ';
-				if($data->eFarm->canManage()) {
-					$h .= '<a href="/farm/farm:updateSeries?id='.$data->eFarm['id'].'" class="btn btn-primary">'.\Asset::icon('gear-fill').' '.s("Configurer").'</a>';
-				}
-			}
-		$h .= '</div>';
-	$h .= '</div>';
-	
-	$t->mainTitle = $h;
-
-	if($data->cZone->notEmpty()) {
-		echo (new \farm\FarmUi())->getRotationSearch($data->search, $data->selectedSeasons);
-		echo (new \map\ZoneUi())->getList($data->eFarm, $data->cZone, $data->season, $data->search);
-	} else {
-
-		echo '<div class="util-block-help">';
-			echo '<h4>'.s("Vous êtes sur la page pour suivre vos rotations").'</h4>';
-			echo '<p>'.s("C'est ici que vous pourrez consulter l'historique de chacune de vos parcelles après quelques années d'utilisation de {siteName}. Mais d'ici là, cette page sera accessible lorsque vous aurez créé le plan de votre ferme et vos premières séries !").'</p>';
 			echo '<a href="'.\farm\FarmUi::urlCartography($data->eFarm, $data->season).'" class="btn btn-secondary">'.s("Créer le plan de ma ferme").'</a>';
 		echo '</div>';
 
@@ -754,7 +714,7 @@ new AdaptativeView('/ferme/{id}/etiquettes', function($data, FarmTemplate $t) {
 
 	$t->package('main')->updateNavSelling($t->canonical);
 
-	echo (new \farm\FarmUi())->getSellingSalesTitle($data->eFarm, \farm\Farmer::LABEL);
+	$t->mainTitle = (new \farm\FarmUi())->getSellingSalesTitle($data->eFarm, \farm\Farmer::LABEL);
 
 	echo (new \selling\SaleUi())->getLabels($data->eFarm, $data->cSale);
 
@@ -770,6 +730,7 @@ new AdaptativeView('analyzeReport', function($data, FarmTemplate $t) {
 
 	$t->package('main')->updateNavAnalyze($t->canonical);
 
+	$t->mainYear = (new \farm\FarmUi())->getSeasonsTabs($data->eFarm, fn($season) => \farm\FarmUi::urlAnalyzeReport($data->eFarm, season: $season), $data->season);;
 	$t->mainTitle = (new \farm\FarmUi())->getAnalyzeReportTitle($data->eFarm, $data->season);
 
 	echo (new \analyze\ReportUi())->getList($data->cReport, $data->search);
@@ -797,6 +758,7 @@ new AdaptativeView('analyzeWorkingTime', function($data, FarmTemplate $t) {
 
 	} else {
 
+		$t->mainYear = (new \farm\AnalyzeUi())->getYears($data->eFarm, $data->years, $data->year, $data->month, $data->week, $data->category);
 		$t->mainTitle = (new \farm\FarmUi())->getAnalyzeWorkingTimeTitle($data->eFarm, $data->years, $data->year, $data->month, $data->week, $data->category);
 
 		$uiAnalyze = new \series\AnalyzeUi();

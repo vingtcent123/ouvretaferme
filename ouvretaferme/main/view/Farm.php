@@ -5,8 +5,12 @@
 class FarmTemplate extends MainTemplate {
 
 	public string $template = 'farm ';
+
+	public ?string $mainYear = NULL;
+
 	public ?string $mainTitle = NULL;
 	public ?string $mainTitleClass = '';
+
 	public string $subNav = '';
 
 	public string $tab;
@@ -35,6 +39,7 @@ class FarmTemplate extends MainTemplate {
 				'cultivation' => \Setting::get('main\viewCultivation'),
 				'selling' => \Setting::get('main\viewSelling'),
 				'shop' => \Setting::get('main\viewShop'),
+				'analyze' => \Setting::get('main\viewAnalyze'),
 				default => NULL,
 			};
 
@@ -98,7 +103,16 @@ class FarmTemplate extends MainTemplate {
 	protected function getMainTitle():string {
 
 		if($this->mainTitle) {
-			return '<div class="container farm-template-main-title '.$this->mainTitleClass.'"><div>'.$this->mainTitle.'</div></div>';
+
+			$h = '<div class="container farm-template-main-title '.($this->mainYear ? 'farm-template-main-title-with-year' : '').' '.$this->mainTitleClass.'">';
+				if($this->mainYear !== NULL) {
+					$h .= '<div class="farm-template-main-year">'.$this->mainYear.'</div>';
+				}
+				$h .= '<div class="farm-template-main-content"><div>'.$this->mainTitle.'</div></div>';
+			$h .= '</div>';
+
+			return $h;
+
 		} else {
 			return '';
 		}

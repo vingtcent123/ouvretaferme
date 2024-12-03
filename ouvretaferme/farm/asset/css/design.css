@@ -15,6 +15,10 @@
 
 @media (min-width: 1200px) and (min-height: 768px) {
 
+	:root {
+		--nav-height: 9rem;
+	}
+
 	@media (min-width: 1600px) {
 
 		:root {
@@ -35,22 +39,10 @@
 
 	@media (max-height: 991px) {
 
-		:root {
-			--nav-height: 7.5rem;
-		}
-
 		.nav-title .farm-vignette-view {
 			width: 3rem !important;
 			height: 3rem !important;
 			min-width: 3rem !important;
-		}
-
-	}
-
-	@media (min-height: 992px) {
-
-		:root {
-			--nav-height: 9rem;
 		}
 
 	}
@@ -95,20 +87,34 @@
 
 	body[data-template~="farm"] main .container.farm-template-main-title {
 		height: var(--nav-height);
-		background-color: var(--background-dark);
+		background: linear-gradient(342deg, var(--background-dark) 0, var(--background-dark) 50%, #e4e4ea 100%);
 		margin-bottom: 1rem;
-		display: flex;
-		flex-direction: column;
-		justify-content: center;
 		margin-top: 0;
 		position: relative;
 	}
 
-	body[data-template~="farm"] main .container.farm-template-main-title > div {
+	body[data-template~="farm"] main .container.farm-template-main-title:not(.farm-template-main-title-with-year) {
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+	}
+
+	body[data-template~="farm"] main .container.farm-template-main-title.farm-template-main-title-with-year {
+		display: grid;
+		grid-template-columns: 1fr;
+		grid-template-rows: auto 1fr;
+	}
+
+	body[data-template~="farm"] main .container.farm-template-main-title > div.farm-template-main-content {
+		display: flex;
+		align-items: center;
+	}
+
+	body[data-template~="farm"] main .container.farm-template-main-title > div.farm-template-main-content > div {
 		width: 100%;
 	}
 
-	body[data-template~="farm"] main .container.farm-template-main-title > div > *:last-child {
+	body[data-template~="farm"] main .container.farm-template-main-title > div.farm-template-main-content > div > *:last-child {
 		margin-bottom: 0;
 	}
 
@@ -177,6 +183,14 @@
 
 	.farm-tabs {
 		margin-top: 0.5rem;
+	}
+
+	@media (min-height: 992px) {
+
+		.farm-tabs {
+			font-size: 1.1rem;
+		}
+
 	}
 
 	a.farm-tab {
