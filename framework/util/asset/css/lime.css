@@ -940,7 +940,25 @@ tbody .td-checkbox > label {
 	justify-content: center;
 }
 
+.util-title,
 .util-action {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: end;
+	justify-content: space-between;
+	gap: 0.25rem;
+}
+
+.util-title {
+	margin-bottom: 1rem;
+}
+
+.util-action > *,
+.util-title > * {
+	margin-bottom: 0;
+}
+
+.util-block {
 	display: flex;
 	flex-wrap: wrap;
 	align-items: end;
@@ -966,14 +984,14 @@ a.util-action-navigation:not(:hover):not([data-dropdown-display]) > svg:nth-of-t
 	display: none;
 }
 
-div.util-action-subtitle {
+div.util-subtitle {
 	margin-top: 0.25rem;
 	font-size: 1.15rem;
 }
 
 @media (max-width: 575px) {
 
-	div.util-action-subtitle {
+	div.util-subtitle {
 		font-size: 1rem;
 	}
 

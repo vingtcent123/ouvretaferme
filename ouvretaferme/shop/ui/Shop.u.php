@@ -286,7 +286,7 @@ class ShopUi {
 
 		$h .= '<div style="'.($eShop['hasPoint'] ? '' : 'opacity: 0.33').'">';
 
-			$h .= '<div class="util-action">';
+			$h .= '<div class="util-title">';
 				$h .= '<h3>'.s("Confirmation de commande livrée en point retrait").'</h3>';
 				$h .= '<a href="/mail/customize:create?farm='.$eShop['farm']['id'].'&type='.\mail\Customize::SHOP_CONFIRMED_PLACE.'&shop='.$eShop['id'].'" class="btn btn-outline-primary">'.s("Personnaliser l'e-mail").'</a>';
 			$h .= '</div>';
@@ -296,7 +296,7 @@ class ShopUi {
 			[$title, , $html] = (new MailUi())->getSaleConfirmed($eSaleExample, $eSaleExample['cItem'], $cCustomize[\mail\Customize::SHOP_CONFIRMED_PLACE]['template'] ?? NULL);
 			$h .= (new \mail\CustomizeUi())->getMailExample($title, $html);
 
-			$h .= '<div class="util-action">';
+			$h .= '<div class="util-title">';
 				$h .= '<h3>'.s("Confirmation de commande livrée à domicile").'</h3>';
 				$h .= '<a href="/mail/customize:create?farm='.$eShop['farm']['id'].'&type='.\mail\Customize::SHOP_CONFIRMED_HOME.'&shop='.$eShop['id'].'" class="btn btn-outline-primary">'.s("Personnaliser l'e-mail").'</a>';
 			$h .= '</div>';
@@ -309,7 +309,7 @@ class ShopUi {
 		$h .= '</div>';
 		$h .= '<div style="'.($eShop['hasPoint'] ? 'opacity: 0.33' : '').'">';
 
-			$h .= '<div class="util-action">';
+			$h .= '<div class="util-title">';
 				$h .= '<h3>'.s("Confirmation de commande livrée lorsque le choix du mode de livraison est désactivé").'</h3>';
 				$h .= '<a href="/mail/customize:create?farm='.$eShop['farm']['id'].'&type='.\mail\Customize::SHOP_CONFIRMED_NONE.'&shop='.$eShop['id'].'" class="btn btn-outline-primary">'.s("Personnaliser l'e-mail").'</a>';
 			$h .= '</div>';
@@ -322,7 +322,7 @@ class ShopUi {
 		$h .= '</div>';
 
 
-		$h .= '<div class="util-action">';
+		$h .= '<div class="util-title">';
 			$h .= '<h3>'.s("Commande annulée").'</h3>';
 			$h .= '<div class="btn btn-disabled">'.s("Non personnalisable").'</div>';
 		$h .= '</div>';
@@ -332,7 +332,7 @@ class ShopUi {
 
 		if($eSaleExample['paymentMethod'] === \selling\Sale::ONLINE_CARD) {
 
-			$h .= '<div class="util-action">';
+			$h .= '<div class="util-title">';
 				$h .= '<h3>'.s("Paiement par carte bancaire échoué").'</h3>';
 				$h .= '<div class="btn btn-disabled">'.s("Non personnalisable").'</div>';
 			$h .= '</div>';

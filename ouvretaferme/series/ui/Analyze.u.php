@@ -342,7 +342,7 @@ class AnalyzeUi {
 
 		}
 
-		$h .= '<div class="util-action">';
+		$h .= '<div class="util-title">';
 			$h .= '<h2>'.s("Par heure travaillée").'</h2>';
 			if(count($years) > 1) {
 				$h .= '<a data-dropdown="bottom-end" class="btn btn-outline-secondary dropdown-toggle">'.s("Comparer").'</a>';

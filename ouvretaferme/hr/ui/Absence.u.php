@@ -5,7 +5,7 @@ class AbsenceUi {
 
 	public function show(\farm\Farmer $eFarmer, \Collection $cAbsence): string {
 
-		$h = '<div class="util-action mb-1">';
+		$h = '<div class="util-title">';
 
 			$h .= '<h2>'.s("Absence à la ferme").'</h2>';
 			$h .= '<a href="/hr/absence:create?farm='.$eFarmer['farm']['id'].'&user='.$eFarmer['user']['id'].'" class="btn btn-outline-primary">'.\Asset::icon('plus-circle').' '.s("Ajouter").'</a>';

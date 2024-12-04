@@ -74,7 +74,7 @@ class PlotUi {
 
 					$h .= '<div data-ref="plot" id="plot-item-'.$ePlot['id'].'" class="plot-item" data-name="'.encode(\Asset::icon('chevron-right').' '.encode($ePlot['name'])).'">';
 
-						$h .= '<div class="util-action">';
+						$h .= '<div class="util-title">';
 							$h .= '<div>';
 								$h .= '<h4 class="plot-item-title">';
 									$h .= s("Bloc {value}", encode($ePlot['name']));

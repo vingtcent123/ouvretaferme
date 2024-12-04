@@ -436,7 +436,7 @@ class AnalyzeUi {
 			return $h;
 
 		}
-		$h = '<div class="util-action">';
+		$h = '<div class="util-title">';
 			$h .= '<h2>'.s("Meilleurs clients").'</h2>';
 			$h .= '<a '.attr('onclick', 'Lime.Search.toggle("#analyze-selling-search")').' class="btn btn-outline-primary">'.\Asset::icon('search').' '.s("Filtrer").'</a> ';
 		$h .= '</div>';
@@ -978,7 +978,7 @@ class AnalyzeUi {
 
 	public function getBestSeller(\farm\Farm $eFarm, \Collection $cItemProduct, \Collection $cItemProductMonthly, \Collection $cPlant, \Collection $cccItemPlantMonthly, int $year, \Collection $cItemProductCompare, \Collection $cPlantCompare, ?int $yearCompare, array $years, ?string $monthly, ?string $month, ?string $week, \Search $search): string {
 
-		$h = '<div class="util-action">';
+		$h = '<div class="util-title">';
 			$h .= '<h2>'.s("Meilleures ventes").'</h2>';
 			$h .= '<div>';
 				if(count($years) > 1) {

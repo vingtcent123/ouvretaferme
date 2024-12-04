@@ -1991,7 +1991,7 @@ class TaskUi {
 
 			$h .= '<div>';
 
-				$h .= '<div class="util-action">';
+				$h .= '<div class="util-title">';
 					$h .= '<h4>'.s("Intervention").'</h4>';
 					$h .= '<div>';
 
@@ -2116,7 +2116,7 @@ class TaskUi {
 
 				$h .= '<div>';
 
-					$h .= '<div class="util-action">';
+					$h .= '<div class="util-title">';
 						$h .= '<h4>'.s("Temps de travail").'</h4>';
 						$h .= '<a href="/series/timesheet?ids[]='.$eTask['id'].'&close=reloadIgnoreCascade" class="btn btn-secondary">'.\Asset::icon('clock').'</a>';
 					$h .= '</div>';
@@ -2140,7 +2140,7 @@ class TaskUi {
 
 				$h .= '<div>';
 
-					$h .= '<div class="util-action">';
+					$h .= '<div class="util-title">';
 						$h .= '<h4>'.s("Récolte").'</h4>';
 						$h .= '<a href="/series/task:updateHarvestCollection?ids[]='.$eTask['id'].'" class="btn btn-secondary btn">'.\Asset::icon('plus-circle').'</a>';
 					$h .= '</div>';
@@ -2203,7 +2203,7 @@ class TaskUi {
 
 		}
 
-		$h .= '<div class="util-action">';
+		$h .= '<div class="util-title">';
 			$h .= '<h3>'.s("Commentaires").'</h3>';
 			$h .= '<div>';
 				if((new \series\Comment(['farm' => $eTask['farm']]))->canCreate()) {
@@ -2239,7 +2239,7 @@ class TaskUi {
 
 		} else if($eTask->acceptSoil()) {
 
-			$h .= '<div class="util-action">';
+			$h .= '<div class="util-title">';
 				$h .= '<h3>'.s("Assolement").'</h3>';
 				if($eTask->canWrite()) {
 					$h .= '<a href="/series/place:update?task='.$eTask['id'].'&close=reloadIgnoreCascade" class="btn btn-outline-primary">';
@@ -2269,7 +2269,7 @@ class TaskUi {
 			$eTask->canWrite()
 		) {
 
-			$h .= '<div class="util-action">';
+			$h .= '<div class="util-title">';
 				$h .= '<h3 id="scroll-photos">'.s("Photos").'</h3>';
 
 				if($eTask->canWrite()) {

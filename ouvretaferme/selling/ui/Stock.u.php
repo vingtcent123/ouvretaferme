@@ -19,7 +19,7 @@ class StockUi {
 
 			$h .= '<span class="stock-description-icon">'.\Asset::icon('chat-right-text').'</span>';
 			$h .= '<div>';
-				$h .= '<div class="util-action">';
+				$h .= '<div class="util-title">';
 					if($eFarm['stockNotes'] !== '') {
 						$h .= '<h4>'.\user\UserUi::getVignette($eFarm['stockNotesUpdatedBy'], '1.75rem').'  '.self::getDate($eFarm['stockNotesUpdatedAt']).'</h4>';
 						$h .= '<a href="/selling/stock:updateNote?id='.$eFarm['id'].'" class="btn btn-secondary">'.s("Modifier").'</a>';

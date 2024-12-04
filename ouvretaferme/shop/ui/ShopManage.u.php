@@ -59,7 +59,7 @@ class ShopManageUi {
 							}
 						$h .= '</div>';
 					$h .= '</h1>';
-					$h .= '<div class="util-action-subtitle">';
+					$h .= '<div class="util-subtitle">';
 						$h .= '<a href="'.ShopUi::url($eShopCurrent).'">'.ShopUi::url($eShopCurrent, showProtocol: FALSE).'</a>';;
 					$h .= '</div>';
 				$h .= '</div>';

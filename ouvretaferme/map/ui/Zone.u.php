@@ -18,7 +18,7 @@ class ZoneUi {
 
 		$h = '<div class="zone-cartography" id="zone-item-'.$eZone['id'].'" data-ref="zone" data-name="'.encode($eZone['name']).'">';
 
-			$h .= '<div class="util-action">';
+			$h .= '<div class="util-title">';
 				$h .= '<h2>';
 					$h .= s("Parcelle {value}", encode($eZone['name']));
 					if($eZone['coordinates'] === NULL) {
@@ -40,7 +40,7 @@ class ZoneUi {
 					}
 				$h .= '</div>';
 			$h .= '</div>';
-			$h .= '<div class="util-action-subtitle mb-1">';
+			$h .= '<div class="util-subtitle">';
 				$h .= $this->getZoneUse($eZone);
 			$h .= '</div>';
 
@@ -107,7 +107,7 @@ class ZoneUi {
 
 		$h = '<div class="zone-item" id="zone-item-'.$eZone['id'].'" data-ref="zone" data-name="'.encode($eZone['name']).'">';
 
-			$h .= '<div class="util-action">';
+			$h .= '<div class="util-title">';
 				$h .= '<h2>';
 					$h .= s("Parcelle {value}", encode($eZone['name']));
 				$h .= '</h2>';

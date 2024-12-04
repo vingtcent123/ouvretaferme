@@ -53,7 +53,7 @@ new AdaptativeView('/ferme/{farm}/boutique/{shop}/date/{id}', function($data, Fa
 			}
 		$h .= '</div>';
 	$h .= '</div>';
-	$h .= '<div class="util-action-subtitle">';
+	$h .= '<div class="util-subtitle">';
 		$url = \shop\ShopUi::dateUrl($data->eShop, $data->e, showDomain: TRUE);
 		$h .= '<a href="'.$url.'">'.$url.'</a>';
 	$h .= '</div>';

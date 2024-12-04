@@ -662,7 +662,7 @@ class SeriesUi {
 
 			$h .= $form->hidden('plant'.$suffix, $ePlant['id']);
 
-			$h .= '<div class="util-action">';
+			$h .= '<div class="util-title">';
 
 				$h .= '<div class="series-create-plant-title" data-plant-name="'.encode($ePlant['name']).'">';
 					$h .= \plant\PlantUi::getVignette($ePlant, '3rem');
@@ -1253,7 +1253,7 @@ class SeriesUi {
 
 		$h = '';
 
-		$h .= '<div class="util-action">';
+		$h .= '<div class="util-title">';
 			$h .= '<h3 id="scroll-photos">'.s("Photos").'</h3>';
 			if($eSeries->canWrite()) {
 				$h .= '<div data-media="gallery" post-series="'.$eSeries['id'].'">';

@@ -57,7 +57,7 @@ class ReportUi {
 						}
 					$h .= '</div>';
 				$h .= '</div>';
-				$h .= '<div class="util-action-subtitle color-muted">';
+				$h .= '<div class="util-subtitle color-muted">';
 					$h .= s("Rapport créé le {value}", \util\DateUi::numeric($eReport['createdAt'], \util\DateUi::DATE));
 				$h .= '</div>';
 			$h .= '</div>';

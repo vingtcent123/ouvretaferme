@@ -97,7 +97,7 @@ class ManageUi {
 
 		$h .= '</div>';
 
-		$h .= '<div class="util-action-subtitle">';
+		$h .= '<div class="util-subtitle">';
 			$h .= '<a href="'.WebsiteUi::url($eWebsite).'">'.WebsiteUi::url($eWebsite, showProtocol: FALSE).'</a>';
 		$h .= '</div>';
 

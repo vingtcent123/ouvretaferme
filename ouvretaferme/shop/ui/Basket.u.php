@@ -31,13 +31,13 @@ class BasketUi {
 			}
 
 			$h .= '<div>';
-				$h .= '<div class="util-action">';
+				$h .= '<div class="util-title">';
 					$h .= '<h1>';
 						$h .= encode($eShop['name']);
+						$h .= '<div class="util-subtitle">';
+							$h .= s("Livraison du {value}", \util\DateUi::getDayName(date('N', strtotime($eDate['deliveryDate']))).' '.\util\DateUi::textual($eDate['deliveryDate']));
+						$h .= '</div>';
 					$h .= '</h1>';
-				$h .= '</div>';
-				$h .= '<div class="util-action-subtitle">';
-					$h .= s("Livraison du {value}", \util\DateUi::getDayName(date('N', strtotime($eDate['deliveryDate']))).' '.\util\DateUi::textual($eDate['deliveryDate']));
 				$h .= '</div>';
 
 				if($currentStep !== NULL) {
@@ -156,7 +156,7 @@ class BasketUi {
 
 		$updateBasket = FALSE;
 
-		$h = '<div class="util-action">';
+		$h = '<div class="util-title">';
 			$h .= '<h2>';
 				$h .= s("Mon panier").' (<span id="shop-basket-articles">'.count($basket).'</span>)';
 			$h .= '</h2>';
@@ -286,7 +286,7 @@ class BasketUi {
 
 	public function getOrder(Date $eDate, \selling\Sale $eSale): string {
 
-		$h = '<div class="util-action">';
+		$h = '<div class="util-title">';
 			$h .= '<h2>'.s("Ma commande").'</h2>';
 			$h .= '<a '.attr('onclick', 'BasketManage.modify('.$eSale['shopDate']['id'].', '.$this->getJsonBasket($eSale).', \'home\')').' class="btn btn-outline-primary">'.\Asset::icon('chevron-left').' '.s("Modifier la commande").'</a>';
 		$h .= '</div>';
@@ -311,7 +311,7 @@ class BasketUi {
 
 	public function getAccount(\user\User $eUser): string {
 
-		$h = '<div class="util-action">';
+		$h = '<div class="util-title">';
 			$h .= '<h2>'.s("Mon compte client").'</h2>';
 			$h .= '<a href="/user/settings:updateUser" class="btn btn-outline-primary">'.s("Mettre à jour").'</a>';
 		$h .= '</div>';
@@ -492,7 +492,7 @@ class BasketUi {
 
 		$h = '<div id="shop-basket-address-show" class="'.$class.'">';
 
-			$h .= '<div class="util-action">';
+			$h .= '<div class="util-title">';
 				$h .= '<h2>'.s("Mon adresse de livraison").'</h2>';
 				$h .= '<a href="/user/settings:updateUser" class="btn btn-outline-primary">'.s("Mettre à jour").'</a>';
 			$h .= '</div>';

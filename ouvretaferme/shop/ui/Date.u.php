@@ -664,7 +664,7 @@ class DateUi {
 
 			$h .= '<div class="tab-panel" data-tab="products">';
 
-				$h .= '<div class="util-action">';
+				$h .= '<div class="util-title">';
 				
 					$h .= '<div>';
 
@@ -724,14 +724,13 @@ class DateUi {
 					}
 
 				$h .= '</div>';
-
 				$h .= (new \shop\ProductUi())->getUpdateList($eFarm, $eDate, $cProduct, $eDate['cCategory']);
 				$h .= '<br />';
 			$h .= '</div>';
 
 			$h .= '<div class="tab-panel" data-tab="sales">';
 
-				$h .= '<div class="util-action">';
+				$h .= '<div class="util-title">';
 
 					$h .= '<div></div>';
 

@@ -173,7 +173,7 @@ class MarketUi {
 
 			$h .= $form->hidden('id', $eSale['id']);
 
-			$h .= '<div class="util-action">';
+			$h .= '<div class="util-title">';
 				$h .= '<h2>'.s("Articles proposés à la vente").'</h2>';
 				$h .= '<div>';
 					$h .= '<a href="/selling/item:add?id='.$eSale['id'].'" class="btn btn-outline-primary">'.\Asset::icon('plus-circle').' '.s("Ajouter des articles").'</a>';
@@ -267,7 +267,7 @@ class MarketUi {
 		$eSaleMarket->expects(['preparationStatus']);
 
 		$h = '<div class="market-customer">';
-			$h .= '<div class="util-action">';
+			$h .= '<div class="util-title">';
 
 				$h .= '<h2>'.s("Vente de {date}", ['date' => \util\DateUi::numeric($eSale['createdAt'], \util\DateUi::TIME)]).'</h2>';
 
