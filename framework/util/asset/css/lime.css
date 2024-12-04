@@ -2263,6 +2263,7 @@ body.dropdown-fullscreen-open[data-touch="no"] {
 
 body[data-touch="no"] .dropdown-list {
    border-radius: var(--radius);
+	border: 1px solid #fff;
 }
 
 .dropdown-list:not(.dropdown-list-minimalist) {
@@ -2304,6 +2305,7 @@ body[data-touch="yes"] .dropdown-list.dropdown-list-open {
 	font-size: 1.1rem;
 	min-width: 50%;
 	max-width: calc(100vw - 1.5rem);
+	border-radius: var(--radius);
 }
 
 .dropdown-toggle:after {
@@ -2385,6 +2387,7 @@ h6 .dropdown-toggle:after {
 
 .dropdown-item {
 	display: block;
+	cursor: pointer;
 	width: 100%;
 	padding: 0.625rem 1rem;
 	color: white;
@@ -2403,7 +2406,7 @@ body[data-touch="yes"] .dropdown-item {
 .dropdown-item:hover {
 	color: white;
 	text-decoration: none;
-	background-color: rgba(255, 255, 255, 0.2);
+	background-color: #fff2;
 }
 
 .dropdown-item-status {
@@ -2417,7 +2420,7 @@ body[data-touch="yes"] .dropdown-item {
 	font-weight: bold;
 	padding: 0.25rem 1rem 0.5rem 1rem;
 	white-space: nowrap;
-	border-bottom: 1px solid rgba(255, 255, 255, 0.33);
+	border-bottom: 1px solid white;
 }
 
 .dropdown-list-2 .dropdown-title,
@@ -2458,7 +2461,7 @@ body[data-touch="yes"] .dropdown-item {
 .dropdown-divider {
 	height: 0;
 	margin: 0.5rem 0;
-	border-top: 1px solid rgba(255, 255, 255, 0.33);
+	border-top: 1px solid white;
 }
 
 .dropdown-backdrop {

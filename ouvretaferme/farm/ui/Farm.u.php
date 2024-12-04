@@ -526,10 +526,22 @@ class FarmUi {
 			$h .= '<div class="farm-tabs">';
 
 				if($eFarm->canPlanning()) {
+
+					$categories = $this->getPlanningCategories($eFarm);
+					$selectedPeriod = \Setting::get('main\viewPlanning');
+
 					$h .= '<a href="'.FarmUi::urlPlanning($eFarm).'" data-tab="home" class="farm-tab '.($tab === 'home' ? 'selected' : '').'">';
 						$h .= \Asset::icon('calendar3');
 						$h .= '<span>'.s("Planning").'</span>';
+						$h .= '<div class="farm-tab-complement" data-dropdown="bottom-center" data-dropdown-id="farm-tab-planning" data-dropdown-hover="true">';
+							$h .= '<span id="farm-tab-planning-period">'.$categories[$selectedPeriod]['label'].'</span> '.\Asset::icon('chevron-down');
+						$h .= '</div>';
 					$h .= '</a>';
+					$h .= '<div data-dropdown-id="farm-tab-planning-list" class="dropdown-list bg-secondary">';
+						foreach([Farmer::DAILY, Farmer::WEEKLY, Farmer::YEARLY] as $period) {
+							$h .= '<a href="'.$categories[$period]['url'].'" id="farm-tab-planning-'.$period.'" class="dropdown-item '.($period === $selectedPeriod ? 'selected' : '').'">'.$categories[$period]['label'].'</a>';
+						}
+					$h .= '</div>';
 				}
 
 				$h .= '<a href="'.FarmUi::urlCultivation($eFarm).'" data-tab="cultivation" class="farm-tab farm-tab-subnav '.($tab === 'cultivation' ? 'selected' : '').'">';
@@ -646,7 +658,7 @@ class FarmUi {
 							$eFarm->canManage() and
 							$firstSeries === FALSE
 						) {
-							$h .=  '<a data-get="/series/series:createFrom?farm='.$eFarm['id'].'&season='.$selectedSeason.'" class="btn btn-primary" data-ajax-class="Ajax.Query">'.\Asset::icon('plus-circle').' '.s("Nouvelle série").'</a>';
+							$h .= '<a data-get="/series/series:createFrom?farm='.$eFarm['id'].'&season='.$selectedSeason.'" class="btn btn-primary" data-ajax-class="Ajax.Query">'.\Asset::icon('plus-circle').'<span class="hide-xs-down"> '.s("Nouvelle série").'</span></a>';
 						}
 						if($nSeries >= 5) {
 							$h .= ' <a class="btn btn-primary" '.attr('onclick', 'Lime.Search.toggle("#series-search")').'>';
@@ -658,7 +670,7 @@ class FarmUi {
 
 				case \farm\Farmer::FORECAST:
 					$h .=  '<div>';
-						$h .=  '<a href="/plant/forecast:create?farm='.$eFarm['id'].'&season='.$selectedSeason.'" class="btn btn-primary">'.\Asset::icon('plus-circle').'<span class="hide-xs-down"> '.s("Ajouter une espèce").'</span></a>';
+						$h .= '<a href="/plant/forecast:create?farm='.$eFarm['id'].'&season='.$selectedSeason.'" class="btn btn-primary">'.\Asset::icon('plus-circle').'<span class="hide-xs-down"> '.s("Ajouter une espèce").'</span></a>';
 					$h .=  '</div>';
 					break;
 
@@ -667,7 +679,7 @@ class FarmUi {
 				case \farm\Farmer::WORKING_TIME :
 					$h .=  '<div>';
 						if($nSeries >= 5) {
-							$h .= ' <a class="btn btn-primary" '.attr('onclick', 'Lime.Search.toggle("#series-search")').'>';
+							$h .= '<a class="btn btn-primary" '.attr('onclick', 'Lime.Search.toggle("#series-search")').'>';
 								$h .= \Asset::icon('search');
 							$h .= '</a>';
 						}

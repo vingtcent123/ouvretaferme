@@ -29,8 +29,14 @@ new Lime.Instruction('main')
 
 
 	})
-	.register('updateNavPlanning', function(url) {
+	.register('updateNavPlanning', function(url, period) {
+
 		qs('#farm-nav [data-tab="home"]', node => node.setAttribute('href', url));
+		qs('#farm-tab-planning-period').innerHTML = qs('#farm-tab-planning-'+ period).innerHTML;
+
+		qsa('[data-dropdown-id="farm-tab-planning-list"] .dropdown-item', item => item.classList.remove('selected'))
+		qs('#farm-tab-planning-'+ period).classList.add('selected');
+
 	})
 	.register('updateNavCultivation', function(url) {
 		qs('#farm-nav [data-tab="cultivation"]', node => node.setAttribute('href', url));

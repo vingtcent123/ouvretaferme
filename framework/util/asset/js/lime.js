@@ -1370,7 +1370,7 @@ Lime.Dropdown = class {
 
 		const list = Lime.Dropdown.getListFromButton(button);
 
-		this.closeAll();
+		this.purge();
 
 		list.classList.add('dropdown-list-open');
 
@@ -1575,7 +1575,7 @@ Lime.Dropdown = class {
 
 	};
 
-	static closeAll() {
+	static purge() {
 		qsa('[data-dropdown-display]', button => this.close(button));
 	};
 
@@ -2292,6 +2292,7 @@ Lime.Instruction = class {
 document.delegateEventListener('click', '[data-dropdown]', function(e) {
 
 	e.preventDefault();
+	e.stopImmediatePropagation();
 
 	if(
 		isTouch() ||

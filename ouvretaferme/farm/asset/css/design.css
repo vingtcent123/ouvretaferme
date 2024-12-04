@@ -50,7 +50,7 @@ a.nav-year:hover {
 	@media (max-width: 1599px) {
 
 		:root {
-			--nav-width: 18rem;
+			--nav-width: 19rem;
 			--nav-padding: 1rem;
 		}
 
@@ -221,7 +221,7 @@ a.nav-year:hover {
 	@media (min-height: 992px) {
 
 		a.farm-tab {
-			padding: 0.75rem var(--nav-padding);
+			padding: 0.75rem calc(var(--nav-padding) / 2) 0.75rem var(--nav-padding);
 		}
 
 	}
@@ -249,6 +249,22 @@ a.nav-year:hover {
 	.farm-tab svg {
 		font-size: 1.2rem;
 		margin-right: 0.5rem;
+	}
+
+	.farm-tab-complement {
+		display: inline-flex;
+		align-items: center;
+		line-height: 1;
+		border-radius: 1rem;
+		font-weight: normal;
+		margin-left: 0.5rem;
+		font-size: 0.9rem;
+		border: 1px solid white;
+		padding: 0.5rem 0rem 0.5rem 0.5rem;
+	}
+
+	.farm-tab-complement svg {
+		margin-bottom: -0.125rem;
 	}
 
 	#farm-subnav {
@@ -286,41 +302,6 @@ a.nav-year:hover {
 
 	a.farm-subnav-item:hover *:not(.farm-subnav-prefix) {
 		text-decoration: underline;
-	}
-
-	body[data-template~="farm"] .farm-template-main-nav {
-		display: flex;
-		justify-content: center;
-		position: absolute;
-		top: -1px;
-		left: 0;
-		right: 0;
-	}
-
-	body[data-template~="farm"] .farm-template-main-nav .input-group {
-		width: auto;
-	}
-
-	body[data-template~="farm"] .farm-template-main-nav .input-group > * {
-		padding-left: 1.25rem;
-		padding-right: 1.25rem;
-	}
-
-	body[data-template~="farm"] .farm-template-main-nav .input-group > .btn-secondary-dark {
-		font-weight: bold;
-		font-size: 1.1rem;
-	}
-
-	body[data-template~="farm"] .farm-template-main-nav .input-group > *:first-child {
-		border-top-left-radius: 0;
-	}
-
-	body[data-template~="farm"] .farm-template-main-nav .input-group > *:last-child {
-		border-top-right-radius: 0;
-	}
-
-	body[data-template~="farm"] .farm-template-main-nav + div {
-		margin-top: 2rem;
 	}
 
 	.nav-year {
@@ -529,6 +510,10 @@ a.nav-year:hover {
 		font-size: 1.2rem;
 	}
 
+	.farm-tab-complement {
+		display: none;
+	}
+
 	.farm-tab-settings-title {
 		display: none;
 	}
@@ -594,10 +579,6 @@ a.nav-year:hover {
 			letter-spacing: -0.1px;
 		}
 
-	}
-
-	body[data-template~="farm"] .farm-template-main-nav {
-		display: none;
 	}
 
 	.nav-year {

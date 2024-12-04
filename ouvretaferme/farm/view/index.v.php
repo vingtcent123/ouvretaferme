@@ -7,7 +7,9 @@ new AdaptativeView('planning', function($data, FarmTemplate $t) {
 
 	$uiTask = new \series\TaskUi();
 
-	switch(Setting::get('main\viewPlanning')) {
+	$period = Setting::get('main\viewPlanning');
+
+	switch($period) {
 
 		case \farm\Farmer::DAILY :
 
@@ -75,7 +77,7 @@ new AdaptativeView('planning', function($data, FarmTemplate $t) {
 
 	}
 
-	$t->package('main')->updateNavPlanning($t->canonical);
+	$t->package('main')->updateNavPlanning($t->canonical, $period);
 	$t->js()->replaceHistory($t->canonical);
 
 });

@@ -161,32 +161,12 @@ class TaskUi {
 
 	}
 
-	public function getTabCalendar(?string $source, \farm\Farm $eFarm, ?string $week, ?int $year): string {
-
-		$h = '';
-
-		if($source !== NULL) {
-			$h .= '<div class="farm-template-main-nav">';
-				$h .= '<div class="input-group">';
-					$h .= '<a href="'.\farm\FarmUi::urlPlanningDaily($eFarm, $week).'" class="btn '.($source === \farm\Farmer::DAILY ? 'btn-secondary-dark' : 'btn-secondary').'">'.s("Quotidien").'</a>';
-					$h .= '<a href="'.\farm\FarmUi::urlPlanningWeekly($eFarm, $week).'" class="btn '.($source === \farm\Farmer::WEEKLY ? 'btn-secondary-dark' : 'btn-secondary').'">'.s("Hebdomadaire").'</a>';
-					$h .= '<a href="'.\farm\FarmUi::urlPlanningYear($eFarm, $year).'" class="btn '.($source === \farm\Farmer::YEARLY ? 'btn-secondary-dark' : 'btn-secondary').'">'.s("Annuel").'</a>';
-				$h .= '</div>';
-			$h .= '</div>';
-		}
-
-		return $h;
-
-	}
-
 	public function getWeekCalendar(string $source, \farm\Farm $eFarm, string $week, \Closure $link, \Closure $filter = NULL): string {
 
 		$weekBefore = date('o-\WW', strtotime($week.' - 1 WEEK'));
 		$weekAfter = date('o-\WW', strtotime($week.' + 1 WEEK'));
 
-		$h = $this->getTabCalendar($source, $eFarm, $week, (int)substr($week, 0, 4));
-
-		$h .= '<div id="tasks-calendar-top" class="tasks-calendar tasks-calendar-week '.($filter ? 'tasks-calendar-with-filter' : '').'">';
+		$h = '<div id="tasks-calendar-top" class="tasks-calendar tasks-calendar-week '.($filter ? 'tasks-calendar-with-filter' : '').'">';
 
 			if($filter !== NULL) {
 				$h .= '<div class="tasks-calendar-search">';
@@ -820,9 +800,7 @@ class TaskUi {
 		$yearBefore = $year - 1;
 		$yearAfter = $year + 1;
 
-		$h = $this->getTabCalendar(\farm\Farmer::YEARLY, $eFarm, NULL, $year);
-
-		$h .= '<div id="tasks-calendar-top" class="container tasks-calendar '.($filter ? 'tasks-calendar-with-filter' : '').' tasks-calendar-year">';
+		$h = '<div id="tasks-calendar-top" class="container tasks-calendar '.($filter ? 'tasks-calendar-with-filter' : '').' tasks-calendar-year">';
 
 			if($filter !== NULL) {
 				$h .= '<div class="tasks-calendar-search"></div>';

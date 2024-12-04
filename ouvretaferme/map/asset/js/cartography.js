@@ -516,7 +516,7 @@ class Cartography {
 
 		if(polygonShapes) {
 			polygonShapes.classList.add('hide');
-			Lime.Dropdown.closeAll();
+			Lime.Dropdown.purge();
 		}
 
 	}

@@ -721,8 +721,15 @@ a.tasks-time-user {
 div.tasks-time-days {
 	display: grid;
 	grid-template-columns: repeat(7, 1fr) min-content 1fr;
-	grid-column-gap: 1rem;
 	justify-items: center;
+}
+
+@media (min-width: 1200px) and (max-width: 1399px) {
+
+	div.tasks-time-days {
+		grid-template-columns: repeat(7, auto) auto max-content;
+	}
+
 }
 
 @media (min-width: 576px) and (max-width: 767px) {
@@ -749,7 +756,7 @@ div.tasks-time-days {
 
 div.tasks-time-days > svg {
 	align-self: center;
-	margin-top: 1.5rem;
+	margin: 1.5rem 0.5rem 0 0.5rem;
 	font-size: 1.5rem;
 }
 
@@ -768,6 +775,14 @@ div.tasks-time-day > h5 {
 
 	div.tasks-time-day > h5 {
 		margin-bottom: .75rem;
+	}
+
+}
+
+@media (min-width: 1200px) and (max-width: 1399px) {
+
+	div.tasks-time-day > h5 {
+		letter-spacing: -0.3px;
 	}
 
 }

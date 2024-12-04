@@ -466,6 +466,7 @@ Ajax.Navigation = class extends Ajax.Query {
 			promise.then(() => {
 
 				Lime.Alert.hideStaticErrors();
+				Lime.Dropdown.purge();
 
 				if(json.__context === 'new') {
 					Lime.Panel.purge();
@@ -839,7 +840,7 @@ Ajax.Instruction = class {
 				return;
 
 			case 'closeDropdowns' :
-				Lime.Dropdown.closeAll();
+				Lime.Dropdown.purge();
 				return;
 
 			case 'pushHistory' :

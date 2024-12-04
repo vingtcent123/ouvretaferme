@@ -3202,7 +3202,7 @@ class EditorFigure {
 
 		figureSelector.qs('figcaption').style.display = (size === 'left' || size === 'right') ? 'none' : 'block';
 
-		Lime.Dropdown.closeAll();
+		Lime.Dropdown.purge();
 
 	};
 
