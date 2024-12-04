@@ -32,7 +32,7 @@ a.nav-year:hover {
 	color: white;
 }
 
-@media (min-width: 1200px) and (min-height: 700px) {
+@media (min-width: 1200px) and (min-height: 650px) {
 
 	:root {
 		--nav-height: 9rem;
@@ -218,6 +218,14 @@ a.nav-year:hover {
 		font-weight: bold;
 	}
 
+	@media (max-height: 699px) {
+
+		a.farm-tab {
+			padding: 0.6rem var(--nav-padding);
+		}
+
+	}
+
 	@media (min-height: 992px) {
 
 		a.farm-tab {
@@ -314,7 +322,7 @@ a.nav-year:hover {
 
 }
 
-@media (max-width: 1199px) or (max-height: 699px) {
+@media (max-width: 1199px) or (max-height: 649px) {
 
 	body[data-template~="farm"] header {
 		background: linear-gradient(to bottom, var(--background-light) 0, white 100%);
