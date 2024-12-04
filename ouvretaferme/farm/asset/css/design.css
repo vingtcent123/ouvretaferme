@@ -32,7 +32,7 @@ a.nav-year:hover {
 	color: white;
 }
 
-@media (min-width: 1200px) and (min-height: 768px) {
+@media (min-width: 1200px) and (min-height: 700px) {
 
 	:root {
 		--nav-height: 9rem;
@@ -314,7 +314,7 @@ a.nav-year:hover {
 
 }
 
-@media (max-width: 1199px) or (max-height: 767px) {
+@media (max-width: 1199px) or (max-height: 699px) {
 
 	body[data-template~="farm"] header {
 		background: linear-gradient(to bottom, var(--background-light) 0, white 100%);
