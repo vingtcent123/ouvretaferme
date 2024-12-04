@@ -49,7 +49,9 @@ Farm:
   stockNotes: ?text16
   stockNotesUpdatedAt: ?datetime
   stockNotesUpdatedBy: ?user\User
-  shops: int8(0, null) = 0
+  hasShops: bool = FALSE
+  hasSales: bool = FALSE
+  hasCultivations: bool = FALSE
   startedAt: int16(PHP(date('Y') - 100), PHP(date('Y') + 10))
   createdAt: datetime = SPECIAL(now)
   status: enum(ACTIVE, CLOSED) = ACTIVE

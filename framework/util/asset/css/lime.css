@@ -958,14 +958,6 @@ tbody .td-checkbox > label {
 	margin-bottom: 0;
 }
 
-.util-block {
-	display: flex;
-	flex-wrap: wrap;
-	align-items: end;
-	justify-content: space-between;
-	gap: 0.25rem;
-}
-
 .util-action > * {
 	margin-bottom: 0;
 }

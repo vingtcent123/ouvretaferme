@@ -74,14 +74,16 @@ class FarmModel extends \ModuleModel {
 			'stockNotes' => ['text16', 'null' => TRUE, 'cast' => 'string'],
 			'stockNotesUpdatedAt' => ['datetime', 'null' => TRUE, 'cast' => 'string'],
 			'stockNotesUpdatedBy' => ['element32', 'user\User', 'null' => TRUE, 'cast' => 'element'],
-			'shops' => ['int8', 'min' => 0, 'max' => NULL, 'cast' => 'int'],
+			'hasShops' => ['bool', 'cast' => 'bool'],
+			'hasSales' => ['bool', 'cast' => 'bool'],
+			'hasCultivations' => ['bool', 'cast' => 'bool'],
 			'startedAt' => ['int16', 'min' => date('Y') - 100, 'max' => date('Y') + 10, 'cast' => 'int'],
 			'createdAt' => ['datetime', 'cast' => 'string'],
 			'status' => ['enum', [\farm\Farm::ACTIVE, \farm\Farm::CLOSED], 'cast' => 'enum'],
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'name', 'vignette', 'place', 'placeLngLat', 'url', 'description', 'logo', 'banner', 'seasonFirst', 'seasonLast', 'rotationYears', 'rotationExclude', 'quality', 'defaultBedLength', 'defaultBedWidth', 'defaultAlleyWidth', 'calendarMonthStart', 'calendarMonthStop', 'planningDelayedMax', 'featureTime', 'featureStock', 'featureDocument', 'stockNotes', 'stockNotesUpdatedAt', 'stockNotesUpdatedBy', 'shops', 'startedAt', 'createdAt', 'status'
+			'id', 'name', 'vignette', 'place', 'placeLngLat', 'url', 'description', 'logo', 'banner', 'seasonFirst', 'seasonLast', 'rotationYears', 'rotationExclude', 'quality', 'defaultBedLength', 'defaultBedWidth', 'defaultAlleyWidth', 'calendarMonthStart', 'calendarMonthStop', 'planningDelayedMax', 'featureTime', 'featureStock', 'featureDocument', 'stockNotes', 'stockNotesUpdatedAt', 'stockNotesUpdatedBy', 'hasShops', 'hasSales', 'hasCultivations', 'startedAt', 'createdAt', 'status'
 		]);
 
 		$this->propertiesToModule += [
@@ -121,8 +123,14 @@ class FarmModel extends \ModuleModel {
 			case 'featureDocument' :
 				return Farm::PRO;
 
-			case 'shops' :
-				return 0;
+			case 'hasShops' :
+				return FALSE;
+
+			case 'hasSales' :
+				return FALSE;
+
+			case 'hasCultivations' :
+				return FALSE;
 
 			case 'createdAt' :
 				return new \Sql('NOW()');
@@ -292,8 +300,16 @@ class FarmModel extends \ModuleModel {
 		return $this->where('stockNotesUpdatedBy', ...$data);
 	}
 
-	public function whereShops(...$data): FarmModel {
-		return $this->where('shops', ...$data);
+	public function whereHasShops(...$data): FarmModel {
+		return $this->where('hasShops', ...$data);
+	}
+
+	public function whereHasSales(...$data): FarmModel {
+		return $this->where('hasSales', ...$data);
+	}
+
+	public function whereHasCultivations(...$data): FarmModel {
+		return $this->where('hasCultivations', ...$data);
 	}
 
 	public function whereStartedAt(...$data): FarmModel {

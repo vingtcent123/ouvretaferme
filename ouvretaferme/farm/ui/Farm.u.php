@@ -258,6 +258,12 @@ class FarmUi {
 
 		$view ??= \Setting::get('main\viewAnalyze');
 
+		$categories = self::getAnalyzeCategories($eFarm);
+
+		if(array_key_exists($view, $categories) === FALSE) {
+			$view = array_key_first($categories);
+		}
+
 		return match($view) {
 			Farmer::WORKING_TIME => self::urlAnalyzeWorkingTime($eFarm),
 			Farmer::REPORT => self::urlAnalyzeReport($eFarm),
@@ -533,7 +539,7 @@ class FarmUi {
 					$h .= '<a href="'.FarmUi::urlPlanning($eFarm).'" data-tab="home" class="farm-tab '.($tab === 'home' ? 'selected' : '').'">';
 						$h .= \Asset::icon('calendar3');
 						$h .= '<span>'.s("Planning").'</span>';
-						$h .= '<div class="farm-tab-complement" data-dropdown="bottom-center" data-dropdown-id="farm-tab-planning" data-dropdown-hover="true">';
+						$h .= '<div class="farm-tab-complement" data-dropdown="bottom-left" data-dropdown-id="farm-tab-planning" data-dropdown-hover="true">';
 							$h .= '<span id="farm-tab-planning-period">'.$categories[$selectedPeriod]['label'].'</span> '.\Asset::icon('chevron-down');
 						$h .= '</div>';
 					$h .= '</a>';
@@ -561,34 +567,44 @@ class FarmUi {
 
 					$h .= $this->getSellingMenu($eFarm, prefix: $prefix, tab: $tab);
 
-					$h .= '<a href="'.FarmUi::urlShop($eFarm, $eFarm['shops'] ? NULL : Farmer::SHOP).'" data-tab="shop" class="farm-tab '.($eFarm['shops'] ? 'farm-tab-subnav' : '').' '.($tab === 'shop' ? 'selected' : '').'">';
+					$h .= '<a href="'.FarmUi::urlShop($eFarm, $eFarm['hasShops'] ? NULL : Farmer::SHOP).'" data-tab="shop" class="farm-tab '.($eFarm['hasShops'] ? 'farm-tab-subnav' : '').' '.($tab === 'shop' ? 'selected' : '').'">';
 						$h .= \Asset::icon('cart');
 						$h .= '<span>'.s("Vente en ligne").'</span>';
 					$h .= '</a>';
 
-					if($eFarm['shops'] > 0) {
+					if($eFarm['hasShops']) {
 						$h .= $this->getShopMenu($eFarm, prefix: $prefix, tab: $tab);
 					}
 
 				}
 
-				if($eFarm->canAnalyze()) {
+				$categories = $this->getAnalyzeCategories($eFarm);
 
-					$categories = $this->getAnalyzeCategories($eFarm);
+				if($eFarm->canAnalyze() and $categories) {
+
 					$selectedCategory = \Setting::get('main\viewAnalyze');
+
+					if(array_key_exists($selectedCategory, $categories) === FALSE) {
+						$selectedCategory = array_key_first($categories);
+					}
 
 					$h .= '<a href="'.FarmUi::urlAnalyze($eFarm).'" data-tab="analyze" class="farm-tab '.($tab === 'analyze' ? 'selected' : '').'">';
 						$h .= \Asset::icon('bar-chart');
 						$h .= '<span>'.s("Analyse").'</span>';
-						$h .= '<div class="farm-tab-complement" data-dropdown="bottom-center" data-dropdown-id="farm-tab-analyze" data-dropdown-hover="true">';
-							$h .= '<span id="farm-tab-analyze-category">'.$categories[$selectedCategory].'</span> '.\Asset::icon('chevron-down');
-						$h .= '</div>';
-					$h .= '</a>';
-					$h .= '<div data-dropdown-id="farm-tab-analyze-list" class="dropdown-list bg-secondary">';
-						foreach($categories as $category => $label) {
-							$h .= '<a href="'.FarmUi::urlAnalyze($eFarm, $category).'" id="farm-tab-analyze-'.$category.'" class="dropdown-item '.($category === $selectedCategory ? 'selected' : '').'">'.$label.'</a>';
+						if(count($categories) > 1) {
+							$h .= '<div class="farm-tab-complement" data-dropdown="bottom-left" data-dropdown-id="farm-tab-analyze" data-dropdown-hover="true">';
+								$h .= '<span id="farm-tab-analyze-category">'.$categories[$selectedCategory].'</span>';
+								$h .= ' '.\Asset::icon('chevron-down');
+							$h .= '</div>';
 						}
-					$h .= '</div>';
+					$h .= '</a>';
+					if(count($categories) > 1) {
+						$h .= '<div data-dropdown-id="farm-tab-analyze-list" class="dropdown-list bg-secondary">';
+							foreach($categories as $category => $label) {
+								$h .= '<a href="'.FarmUi::urlAnalyze($eFarm, $category).'" id="farm-tab-analyze-'.$category.'" class="dropdown-item '.($category === $selectedCategory ? 'selected' : '').'">'.$label.'</a>';
+							}
+						$h .= '</div>';
+					}
 
 				}
 
@@ -625,7 +641,7 @@ class FarmUi {
 		return $h;
 	}
 
-	protected function getPlanningCategories(Farm $eFarm, ?string $week = NULL): array {
+	protected static function getPlanningCategories(Farm $eFarm, ?string $week = NULL): array {
 
 		$categories = [
 			Farmer::DAILY => [
@@ -829,7 +845,7 @@ class FarmUi {
 
 	}
 
-	public function getCultivationCategories(): array {
+	public static function getCultivationCategories(): array {
 		return [
 			Farmer::SERIES => s("Cultures"),
 			Farmer::SOIL => s("Assolement"),
@@ -837,7 +853,7 @@ class FarmUi {
 		];
 	}
 
-	public function getSeriesCategories(Farm $eFarm): array {
+	public static function getSeriesCategories(Farm $eFarm): array {
 
 		$categories = [
 			Farmer::AREA => s("Plan de culture"),
@@ -859,7 +875,7 @@ class FarmUi {
 
 	}
 
-	public function getSoilCategories(Farm $eFarm): array {
+	public static function getSoilCategories(Farm $eFarm): array {
 
 		return [
 			Farmer::PLAN => s("Plan d'assolement"),
@@ -946,14 +962,19 @@ class FarmUi {
 
 	}
 
-	protected function getSellingCategories(Farm $eFarm): array {
+	protected static function getSellingCategories(Farm $eFarm): array {
 
 		$categories = [
 			Farmer::SALE => s("Ventes"),
 			Farmer::CUSTOMER => s("Clients"),
 			Farmer::PRODUCT => s("Produits"),
-			Farmer::INVOICE => s("Factures")
 		];
+
+		if($eFarm['hasSales']) {
+			$categories += [
+				Farmer::INVOICE => s("Factures")
+			];
+		}
 
 		if($eFarm['featureStock']) {
 			$categories += [
@@ -1006,7 +1027,7 @@ class FarmUi {
 
 	}
 
-	protected function getSellingSalesCategories(): array {
+	protected static function getSellingSalesCategories(): array {
 		return [
 			Farmer::ALL => s("Toutes les ventes"),
 			Farmer::PRO => s("Ventes aux professionnels"),
@@ -1046,13 +1067,13 @@ class FarmUi {
 
 	}
 
-	public function getShopCategories(Farm $eFarm): array {
+	public static function getShopCategories(Farm $eFarm): array {
 
 		$categories = [
 			Farmer::SHOP => s("Boutiques")
 		];
 
-		if($eFarm['shops']) {
+		if($eFarm['hasShops']) {
 
 			$categories += [
 				Farmer::CATALOG => s("Catalogues"),
@@ -1095,17 +1116,27 @@ class FarmUi {
 
 	}
 
-	protected function getAnalyzeCategories(Farm $eFarm): array {
+	protected static function getAnalyzeCategories(Farm $eFarm): array {
 
-		$categories = [
-			Farmer::WORKING_TIME => s("Temps de travail"),
-			Farmer::SALES => s("Ventes"),
-			Farmer::CULTIVATION => s("Cultures"),
-			Farmer::REPORT => s("Rapports"),
-		];
+		$categories = [];
 
-		if($eFarm->hasFeatureTime() === FALSE) {
-			unset($categories[Farmer::WORKING_TIME]);
+		if(
+			$eFarm['hasCultivations'] and
+			$eFarm->hasFeatureTime()
+		) {
+			$categories[Farmer::WORKING_TIME] = s("Temps de travail");
+		}
+
+		if($eFarm['hasSales']) {
+			$categories[Farmer::SALES] = s("Ventes");
+		}
+
+		if($eFarm['hasCultivations']) {
+			$categories[Farmer::CULTIVATION] = s("Cultures");
+		}
+
+		if($eFarm['hasCultivations'] and $eFarm['hasSales']) {
+			$categories[Farmer::REPORT] = s("Rapports");
 		}
 
 		return $categories;
@@ -1167,7 +1198,7 @@ class FarmUi {
 
 	}
 
-	protected function getAnalyzeWorkingTimeCategories(): array {
+	protected static function getAnalyzeWorkingTimeCategories(): array {
 		return [
 			Farmer::TIME => s("Suivi du temps de travail"),
 			Farmer::PACE => s("Suivi de la productivité"),
@@ -1215,7 +1246,7 @@ class FarmUi {
 
 	}
 
-	protected function getAnalyzeSellingCategories(Farm $eFarm): array {
+	protected static function getAnalyzeSellingCategories(Farm $eFarm): array {
 
 		$categories = [
 			\farm\Farmer::ITEM => s("Ventes par culture"),
@@ -1255,7 +1286,7 @@ class FarmUi {
 
 	}
 
-	protected function getAnalyzeCultivationCategories(): array {
+	protected static function getAnalyzeCultivationCategories(): array {
 		return [
 			\farm\Farmer::AREA => s("Surfaces cultivées"),
 			\farm\Farmer::PLANT => s("Espèces cultivées"),
@@ -1282,7 +1313,7 @@ class FarmUi {
 
 	}
 
-	protected function getSettingsCategories(Farm $eFarm): array {
+	protected static function getSettingsCategories(Farm $eFarm): array {
 
 		$categories = [
 			Farmer::SETTINGS => [

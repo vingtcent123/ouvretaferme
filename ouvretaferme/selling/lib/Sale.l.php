@@ -443,7 +443,7 @@ class SaleLib extends SaleCrud {
 	public static function create(Sale $e): void {
 
 		$e->expects([
-			'farm',
+			'farm' => ['hasSales'],
 			'type',
 			'customer',
 		]);
@@ -469,6 +469,14 @@ class SaleLib extends SaleCrud {
 		parent::create($e);
 
 		HistoryLib::createBySale($e, 'sale-created');
+
+		if($e['farm']['hasSales'] === FALSE) {
+
+			\farm\Farm::model()->update($e['farm'], [
+				'hasSales' => TRUE
+			]);
+
+		}
 
 		Sale::model()->commit();
 

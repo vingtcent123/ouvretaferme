@@ -433,7 +433,10 @@ class SeriesLib extends SeriesCrud {
 
 	public static function create(Series $e): void {
 
-		$e->expects(['name', 'cycle']);
+		$e->expects([
+			'farm' => ['hasCultivations'],
+			'name', 'cycle'
+		]);
 
 		if($e['cycle'] === Series::PERENNIAL) {
 
@@ -454,6 +457,14 @@ class SeriesLib extends SeriesCrud {
 
 			Series::model()->update($e, [
 				'perennialFirst' => $e
+			]);
+
+		}
+
+		if($e['farm']['hasCultivations'] === FALSE) {
+
+			\farm\Farm::model()->update($e['farm'], [
+				'hasCultivations' => TRUE
 			]);
 
 		}

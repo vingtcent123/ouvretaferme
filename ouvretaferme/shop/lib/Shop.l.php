@@ -95,7 +95,13 @@ class ShopLib extends ShopCrud {
 
 			Shop::model()->insert($e);
 
-			self::updateCounter($e['farm']);
+			if($e['farm']['hasShops'] === FALSE) {
+
+				\farm\Farm::model()->update($e['farm'], [
+					'hasShops' => TRUE
+				]);
+
+			}
 
 			Shop::model()->commit();
 
@@ -217,19 +223,13 @@ class ShopLib extends ShopCrud {
 
 			Shop::model()->delete($e);
 
-			self::updateCounter($e['farm']);
+			\farm\Farm::model()->update($e['farm'], [
+				'hasShops' => Shop::model()
+					->whereFarm($e['farm'])
+					->exists()
+			]);
 
 		Shop::model()->commit();
-
-	}
-
-	public static function updateCounter(\farm\Farm $eFarm): void {
-
-		\farm\Farm::model()->update($eFarm, [
-			'shops' => Shop::model()
-				->whereFarm($eFarm)
-				->count()
-		]);
 
 	}
 
