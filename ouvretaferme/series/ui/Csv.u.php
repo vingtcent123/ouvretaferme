@@ -278,27 +278,29 @@ class CsvUi {
 							$h .= '</td>';
 							$h .= '<td style="max-width: 15rem">';
 								if($cultivation['ePlant']->notEmpty()) {
+
 									$h .= encode($cultivation['ePlant']['name']);
-								} else {
-									$h .= '<span class="color-danger">'.encode($cultivation['species']).'</span>';
-								}
 
-								if($cultivation['varieties']) {
+									if($cultivation['varieties']) {
 
-									$varieties = [];
+										$varieties = [];
 
-									foreach($cultivation['varieties'] as ['variety' => $variety, 'eVariety' => $eVariety]) {
+										foreach($cultivation['varieties'] as ['variety' => $variety, 'eVariety' => $eVariety]) {
 
-										if($eVariety->empty()) {
-											$varieties[] = \Asset::icon('exclamation-triangle').' '.encode($variety);
-										} else {
-											$varieties[] = encode($eVariety['name']);
+											if($eVariety->empty()) {
+												$varieties[] = \Asset::icon('exclamation-triangle').' '.encode($variety);
+											} else {
+												$varieties[] = encode($eVariety['name']);
+											}
+
 										}
+
+										$h .= '<br/><small class="color-muted">'.implode(' / ', $varieties).'</small>';
 
 									}
 
-									$h .= '<br/><small class="color-muted">'.implode(' / ', $varieties).'</small>';
-
+								} else {
+									$h .= '<span class="color-danger">'.encode($cultivation['species']).'</span>';
 								}
 
 							$h .= '</td>';
@@ -458,6 +460,7 @@ class CsvUi {
 
 							$errors = [
 								'speciesEmpty' => s("L'espèce n'est pas indiquée dans le fichier CSV"),
+								'speciesDuplicate' => s("Vous ne pouvez pas créer avoir deux lignes avec la même espèce au sein d'une même série"),
 								'modeInvalid' => s("Le mode de culture est incorrect dans le fichier CSV ({value})", implode(', ', Series::model()->getPropertyEnum('mode'))),
 								'useInvalid' => s("L'utilisation du sol peut être <i>bed</i> pour des planches ou <i>block</i> en surface libre"),
 								'seedlingInvalid' => s("Le mode d'implantation est incorrect dans le fichier CSV"),

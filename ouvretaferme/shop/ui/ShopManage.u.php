@@ -215,7 +215,7 @@ class ShopManageUi {
 
 		$cDate = $eShop['cDate'];
 
-		$h = '<div class="util-action">';
+		$h = '<div class="util-title">';
 
 			$h .= '<h2>'.s("Dernières ventes").'</h2>';
 

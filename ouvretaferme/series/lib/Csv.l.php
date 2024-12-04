@@ -781,172 +781,180 @@ class CsvLib {
 				$errorsGlobal['seasons'][] = $series['season'];
 			}
 
+			$species = array_count_values(array_column($cultivations, 'species'));
+
 			foreach($cultivations as $key2 => $cultivation) {
 
 				$errors = $errorsCommon;
 
 				if($cultivation['species'] === NULL) {
 					$errors[] = 'speciesEmpty';
-					continue;
-				}
+					$ePlant = new \plant\Plant();
+				} else {
 
-				// crop
-				$plantFqn = toFqn($cultivation['species'], ' ');
+					if($species[$cultivation['species']] >= 2) {
+						$errors[] = 'speciesDuplicate';
+					}
 
-				if(empty($cachePlants[$plantFqn])) {
+					// crop
+					$plantFqn = toFqn($cultivation['species'], ' ');
 
-					$cachePlants[$plantFqn] = \plant\Plant::model()
-						->select(['id', 'vignette', 'fqn', 'name'])
-						->whereFarm($eFarm)
-						->whereCycle(\plant\Plant::ANNUAL)
-						->whereStatus(\plant\Plant::ACTIVE)
-						->or(
-		                fn() => $this->whereName($cultivation['species']),
-		                fn() => $this->where('REGEXP_REPLACE(REPLACE(name, "-", " "), " +", " ") = '.\plant\Plant::model()->format($plantFqn))
-						)
-						->get();
+					if(empty($cachePlants[$plantFqn])) {
 
-				}
+						$cachePlants[$plantFqn] = \plant\Plant::model()
+							->select(['id', 'vignette', 'fqn', 'name'])
+							->whereFarm($eFarm)
+							->whereCycle(\plant\Plant::ANNUAL)
+							->whereStatus(\plant\Plant::ACTIVE)
+							->or(
+			                fn() => $this->whereName($cultivation['species']),
+			                fn() => $this->where('REGEXP_REPLACE(REPLACE(name, "-", " "), " +", " ") = '.\plant\Plant::model()->format($plantFqn))
+							)
+							->get();
 
-				$ePlant = $cachePlants[$plantFqn];
+					}
 
-				$import[$key1]['cultivations'][$key2]['ePlant'] = $ePlant;
+					$ePlant = $cachePlants[$plantFqn];
 
-				if($cachePlants[$plantFqn]->empty()) {
-					$errorsGlobal['species'][] = $cultivation['species'];
-				}
+					if($cachePlants[$plantFqn]->empty()) {
+						$errorsGlobal['species'][] = $cultivation['species'];
+					}
 
-				// varieties
-				$varietyTotal = 0;
+					// varieties
+					$varietyTotal = 0;
 
-				foreach($cultivation['varieties'] as $key3 => ['variety' => $variety, 'part' => $part]) {
+					foreach($cultivation['varieties'] as $key3 => ['variety' => $variety, 'part' => $part]) {
 
-					$varietyFqn = toFqn($variety, ' ');
-					$varietyTotal += (int)$part;
+						$varietyFqn = toFqn($variety, ' ');
+						$varietyTotal += (int)$part;
 
-					$eVariety = new \plant\Variety();
+						$eVariety = new \plant\Variety();
 
-					if($ePlant->notEmpty()) {
+						if($ePlant->notEmpty()) {
 
-						$cacheKey = $ePlant['id'].'-'.$varietyFqn;
+							$cacheKey = $ePlant['id'].'-'.$varietyFqn;
 
-						if(empty($cacheVarieties[$cacheKey])) {
+							if(empty($cacheVarieties[$cacheKey])) {
 
-							$cacheVarieties[$cacheKey] = \plant\Variety::model()
+								$cacheVarieties[$cacheKey] = \plant\Variety::model()
+									->select(['id', 'name'])
+									->whereFarm($eFarm)
+									->wherePlant($ePlant)
+									->or(
+					                fn() => $this->whereName($variety),
+					                fn() => $this->where('REGEXP_REPLACE(REPLACE(name, "-", " "), " +", " ") = '.\plant\Variety::model()->format($varietyFqn))
+									)
+									->get();
+
+							}
+
+							$eVariety = $cacheVarieties[$cacheKey];
+
+						}
+
+						$import[$key1]['cultivations'][$key2]['varieties'][$key3]['eVariety'] = $eVariety;
+
+						if($eVariety->empty()) {
+							$infoGlobal['varieties'][] = $variety;
+						}
+
+					}
+
+					// trays
+					if($cultivation['young_plants_tray']) {
+
+						$toolFqn = toFqn($cultivation['young_plants_tray'], ' ');
+
+						if(empty($cacheTools[$toolFqn])) {
+
+							$cacheTools[$toolFqn] = \farm\Tool::model()
 								->select(['id', 'name'])
 								->whereFarm($eFarm)
-								->wherePlant($ePlant)
 								->or(
 				                fn() => $this->whereName($variety),
-				                fn() => $this->where('REGEXP_REPLACE(REPLACE(name, "-", " "), " +", " ") = '.\plant\Variety::model()->format($varietyFqn))
+				                fn() => $this->where('REGEXP_REPLACE(REPLACE(name, "-", " "), " +", " ") = '.\farm\Tool::model()->format($toolFqn))
 								)
 								->get();
 
 						}
 
-						$eVariety = $cacheVarieties[$cacheKey];
+						$eTool = $cacheTools[$toolFqn];
 
-					}
-
-					$import[$key1]['cultivations'][$key2]['varieties'][$key3]['eVariety'] = $eVariety;
-
-					if($eVariety->empty()) {
-						$infoGlobal['varieties'][] = $variety;
-					}
-
-				}
-
-				// trays
-				if($cultivation['young_plants_tray']) {
-	
-					$toolFqn = toFqn($cultivation['young_plants_tray'], ' ');
-	
-					if(empty($cacheTools[$toolFqn])) {
-
-						$cacheTools[$toolFqn] = \farm\Tool::model()
-							->select(['id', 'name'])
-							->whereFarm($eFarm)
-							->or(
-			                fn() => $this->whereName($variety),
-			                fn() => $this->where('REGEXP_REPLACE(REPLACE(name, "-", " "), " +", " ") = '.\farm\Tool::model()->format($toolFqn))
-							)
-							->get();
-	
-					}
-	
-					$eTool = $cacheTools[$toolFqn];
-
-					if($eTool->empty()) {
-						$errorsGlobal['tools'][] = $cultivation['young_plants_tray'];
-					}
-					
-				} else {
-					$eTool = new \farm\Tool();
-				}
-
-				$import[$key1]['cultivations'][$key2]['eTool'] = $eTool;
-
-				if($cultivation['planting_type'] !== NULL and in_array($cultivation['planting_type'], Cultivation::model()->getPropertyEnum('seedling')) === FALSE) {
-					$errors[] = 'seedlingInvalid';
-				}
-
-				$errors[] = self::checkDateField($cultivation['sowing_date'], 'sowingDateFormat');
-				$errors[] = self::checkDateField($cultivation['planting_date'], 'plantingDateFormat');
-				$errors[] = self::checkDateField($cultivation['first_harvest_date'], 'firstHarvestDateFormat');
-				$errors[] = self::checkDateField($cultivation['last_harvest_date'], 'lastHarvestDateFormat');
-
-				if(
-					$cultivation['first_harvest_date'] === NULL xor
-					$cultivation['last_harvest_date'] === NULL
-				) {
-					$errors[] = 'harvestDateNull';
-				} else if(
-					$cultivation['first_harvest_date'] !== NULL and
-					$cultivation['first_harvest_date'] > $cultivation['last_harvest_date']
-				) {
-					$errors[] = 'harvestDateConsistency';
-				}
-
-				if($cultivation['harvest_unit'] === NULL) {
-					$errors[] = 'harvestUnitEmpty';
-				} else if(in_array($cultivation['harvest_unit'], Cultivation::model()->getPropertyEnum('mainUnit')) === FALSE) {
-					$errorsGlobal['harvestUnit'][] = $cultivation['harvest_unit'];
-				}
-
-				if($cultivation['harvest_unit'] === NULL) {
-					$errors[] = 'harvestUnitEmpty';
-				} else if(in_array($cultivation['harvest_unit'], Cultivation::model()->getPropertyEnum('mainUnit')) === FALSE) {
-					$errorsGlobal['harvestUnit'][] = $cultivation['harvest_unit'];
-				}
-
-				if(
-					$cultivation['varieties'] and
-					$varietyTotal !== 100
-				) {
-					$errors[] = 'varietyParts';
-				}
-
-				switch($series['use']) {
-
-					case Series::BED :
-						if(
-							$cultivation['bed_density'] !== NULL and
-							($cultivation['bed_rows'] !== NULL or $cultivation['bed_spacing_plants'] !== NULL)
-						) {
-							$errors[] = 'bedSpacing';
+						if($eTool->empty()) {
+							$errorsGlobal['tools'][] = $cultivation['young_plants_tray'];
 						}
-						break;
 
-					case Series::BLOCK :
-						if(
-							$cultivation['block_density'] !== NULL and
-							($cultivation['block_spacing_rows'] !== NULL or $cultivation['block_spacing_rows'] !== NULL)
-						) {
-							$errors[] = 'blockSpacing';
-						}
-						break;
+					} else {
+						$eTool = new \farm\Tool();
+					}
+
+					$import[$key1]['cultivations'][$key2]['eTool'] = $eTool;
+
+					if($cultivation['planting_type'] !== NULL and in_array($cultivation['planting_type'], Cultivation::model()->getPropertyEnum('seedling')) === FALSE) {
+						$errors[] = 'seedlingInvalid';
+					}
+
+					$errors[] = self::checkDateField($cultivation['sowing_date'], 'sowingDateFormat');
+					$errors[] = self::checkDateField($cultivation['planting_date'], 'plantingDateFormat');
+					$errors[] = self::checkDateField($cultivation['first_harvest_date'], 'firstHarvestDateFormat');
+					$errors[] = self::checkDateField($cultivation['last_harvest_date'], 'lastHarvestDateFormat');
+
+					if(
+						$cultivation['first_harvest_date'] === NULL xor
+						$cultivation['last_harvest_date'] === NULL
+					) {
+						$errors[] = 'harvestDateNull';
+					} else if(
+						$cultivation['first_harvest_date'] !== NULL and
+						$cultivation['first_harvest_date'] > $cultivation['last_harvest_date']
+					) {
+						$errors[] = 'harvestDateConsistency';
+					}
+
+					if($cultivation['harvest_unit'] === NULL) {
+						$errors[] = 'harvestUnitEmpty';
+					} else if(in_array($cultivation['harvest_unit'], Cultivation::model()->getPropertyEnum('mainUnit')) === FALSE) {
+						$errorsGlobal['harvestUnit'][] = $cultivation['harvest_unit'];
+					}
+
+					if($cultivation['harvest_unit'] === NULL) {
+						$errors[] = 'harvestUnitEmpty';
+					} else if(in_array($cultivation['harvest_unit'], Cultivation::model()->getPropertyEnum('mainUnit')) === FALSE) {
+						$errorsGlobal['harvestUnit'][] = $cultivation['harvest_unit'];
+					}
+
+					if(
+						$cultivation['varieties'] and
+						$varietyTotal !== 100
+					) {
+						$errors[] = 'varietyParts';
+					}
+
+					switch($series['use']) {
+
+						case Series::BED :
+							if(
+								$cultivation['bed_density'] !== NULL and
+								($cultivation['bed_rows'] !== NULL or $cultivation['bed_spacing_plants'] !== NULL)
+							) {
+								$errors[] = 'bedSpacing';
+							}
+							break;
+
+						case Series::BLOCK :
+							if(
+								$cultivation['block_density'] !== NULL and
+								($cultivation['block_spacing_rows'] !== NULL or $cultivation['block_spacing_rows'] !== NULL)
+							) {
+								$errors[] = 'blockSpacing';
+							}
+							break;
+
+					}
 
 				}
+
+				$import[$key1]['cultivations'][$key2]['ePlant'] = $ePlant;
 
 				$errors = array_filter($errors);
 				$errors = array_unique($errors);
