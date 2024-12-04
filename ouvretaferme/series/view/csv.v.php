@@ -15,7 +15,7 @@ new AdaptativeView('importCultivations', function($data, FarmTemplate $t) {
 	}
 
 	$h = '<h1>';
-		$h .= '<a href="'.\farm\FarmUi::urlSettings($data->eFarm).'"  class="h-button">'.\Asset::icon('arrow-left').'</a>';
+		$h .= '<a href="'.\farm\FarmUi::urlSettings($data->eFarm).'"  class="h-back">'.\Asset::icon('arrow-left').'</a>';
 		$h .= s("Importer un plan de culture");
 	$h .= '</h1>';
 	
@@ -42,7 +42,7 @@ new AdaptativeView('importFile', function($data, FarmTemplate $t) {
 
 	$h = '<div class="util-action">';
 		$h .= '<h1>';
-			$h .= '<a href="'.\farm\FarmUi::urlSettings($data->eFarm).'"  class="h-button">'.\Asset::icon('arrow-left').'</a>';
+			$h .= '<a href="'.\farm\FarmUi::urlSettings($data->eFarm).'"  class="h-back">'.\Asset::icon('arrow-left').'</a>';
 			$h .= p("Votre fichier CSV contient {value} série", "Votre fichier CSV contient {value} séries", count($data->data['import']));
 		$h .= '</h1>';
 		$h .= '<a href="/series/csv:importCultivations?id='.$data->eFarm['id'].'&reset" class="btn btn-primary">'.s("Téléverser un autre fichier").'</a>';

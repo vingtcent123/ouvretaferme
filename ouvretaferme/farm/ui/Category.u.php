@@ -94,7 +94,7 @@ class CategoryUi {
 		$h = '<div class="util-action">';
 
 			$h .= '<h1>';
-				$h .= '<a href="/farm/action:manage?farm='.$eFarm['id'].'" class="h-button">'.\Asset::icon('arrow-left').'</a>';
+				$h .= '<a href="/farm/action:manage?farm='.$eFarm['id'].'" class="h-back">'.\Asset::icon('arrow-left').'</a>';
 				$h .= s("Les catégories");
 			$h .= '</h1>';
 

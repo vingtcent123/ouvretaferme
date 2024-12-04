@@ -9,7 +9,7 @@ new AdaptativeView('create', function($data, FarmTemplate $t) {
 
 	$h = '<div class="util-action">';
 		$h .= '<h1>';
-			$h .= '<a href="'.\shop\ShopUi::adminUrl($data->eFarm, $data->e['shop']).'" class="h-button">'.\Asset::icon('arrow-left').'</a>';
+			$h .= '<a href="'.\shop\ShopUi::adminUrl($data->eFarm, $data->e['shop']).'" class="h-back">'.\Asset::icon('arrow-left').'</a>';
 			$h .= $t->title;
 		$h .= '</h1>';
 	$h .= '</div>';
@@ -44,7 +44,7 @@ new AdaptativeView('/ferme/{farm}/boutique/{shop}/date/{id}', function($data, Fa
 
 	$h = '<div class="util-action">';
 		$h .= '<h1>';
-			$h .= '<a href="'.\shop\ShopUi::adminUrl($data->eFarm, $data->e['shop']).'" class="h-button">'.\Asset::icon('arrow-left').'</a>';
+			$h .= '<a href="'.\shop\ShopUi::adminUrl($data->eFarm, $data->e['shop']).'" class="h-back">'.\Asset::icon('arrow-left').'</a>';
 			$h .= $t->title;
 		$h .= '</h1>';
 		$h .= '<div>';

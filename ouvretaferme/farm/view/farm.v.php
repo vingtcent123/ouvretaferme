@@ -12,7 +12,7 @@ new AdaptativeView('update', function($data, FarmTemplate $t) {
 	$t->subNav = (new \farm\FarmUi())->getSettingsSubNav($data->e);
 
 	$h = '<h1>';
-		$h .= '<a href="'.\farm\FarmUi::urlSettings($data->e).'"  class="h-button">'.\Asset::icon('arrow-left').'</a>';
+		$h .= '<a href="'.\farm\FarmUi::urlSettings($data->e).'"  class="h-back">'.\Asset::icon('arrow-left').'</a>';
 		$h .= s("Réglages de base de la ferme");
 	$h .= '</h1>';
 
@@ -29,7 +29,7 @@ new AdaptativeView('updateSeries', function($data, FarmTemplate $t) {
 	$t->subNav = (new \farm\FarmUi())->getSettingsSubNav($data->e);
 
 	$h = '<h1>';
-		$h .= '<a href="'.\farm\FarmUi::urlSettings($data->e).'"  class="h-button">'.\Asset::icon('arrow-left').'</a>';
+		$h .= '<a href="'.\farm\FarmUi::urlSettings($data->e).'"  class="h-back">'.\Asset::icon('arrow-left').'</a>';
 		$h .= s("Réglages de base pour produire");
 	$h .= '</h1>';
 
@@ -46,7 +46,7 @@ new AdaptativeView('updateFeature', function($data, FarmTemplate $t) {
 	$t->subNav = (new \farm\FarmUi())->getSettingsSubNav($data->e);
 
 	$h = '<h1>';
-		$h .= '<a href="'.\farm\FarmUi::urlSettings($data->e).'"  class="h-button">'.\Asset::icon('arrow-left').'</a>';
+		$h .= '<a href="'.\farm\FarmUi::urlSettings($data->e).'"  class="h-back">'.\Asset::icon('arrow-left').'</a>';
 		$h .= s("Configurer les fonctionnalités");
 	$h .= '</h1>';
 
@@ -70,7 +70,7 @@ new AdaptativeView('export', function($data, FarmTemplate $t) {
 	$t->subNav = (new \farm\FarmUi())->getSettingsSubNav($data->e);
 
 	$h = '<h1>';
-		$h .= '<a href="'.\farm\FarmUi::urlSettings($data->e).'"  class="h-button">'.\Asset::icon('arrow-left').'</a>';
+		$h .= '<a href="'.\farm\FarmUi::urlSettings($data->e).'"  class="h-back">'.\Asset::icon('arrow-left').'</a>';
 		$h .= s("Exporter les données");
 	$h .= '</h1>';
 	

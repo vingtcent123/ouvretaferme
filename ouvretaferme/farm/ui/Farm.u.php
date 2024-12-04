@@ -1632,7 +1632,7 @@ class FarmUi {
 	}
 
 	public static function getNavigation(): string {
-		return '<span class="h-button">'.\Asset::icon('chevron-down').'</span>';
+		return '<span class="h-menu">'.\Asset::icon('chevron-down').'</span>';
 	}
 
 	public static function p(string $property): \PropertyDescriber {

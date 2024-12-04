@@ -6,7 +6,7 @@ new AdaptativeView('update', function($data, FarmTemplate $t) {
 	$t->subNav = (new \farm\FarmUi())->getSellingSubNav($data->eFarm);
 
 	$h = '<h1>';
-		$h .= '<a href="'.\shop\ShopUi::adminUrl($data->eFarm, $data->e).'" class="h-button">'.\Asset::icon('arrow-left').'</a>';
+		$h .= '<a href="'.\shop\ShopUi::adminUrl($data->eFarm, $data->e).'" class="h-back">'.\Asset::icon('arrow-left').'</a>';
 		$h .= $t->title;
 	$h .= '</h1>';
 	

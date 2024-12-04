@@ -41,7 +41,7 @@ class ReportUi {
 			$h .= '<div>';
 				$h .= '<div class="util-action">';
 					$h .= '<h1>';
-						$h .= '<a href="'.\farm\FarmUi::urlAnalyzeReport($eReport['farm']).'"  class="h-button">'.\Asset::icon('arrow-left').'</a>';
+						$h .= '<a href="'.\farm\FarmUi::urlAnalyzeReport($eReport['farm']).'"  class="h-back">'.\Asset::icon('arrow-left').'</a>';
 						$h .= \analyze\ReportUi::getName($eReport);
 					$h .= '</h1>';
 					$h .= '<div>';

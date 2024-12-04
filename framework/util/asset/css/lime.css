@@ -945,7 +945,7 @@ tbody .td-checkbox > label {
 	flex-wrap: wrap;
 	align-items: end;
 	justify-content: space-between;
-	gap: 0.5rem;
+	gap: 0.25rem;
 }
 
 .util-action > * {
@@ -2313,7 +2313,8 @@ body[data-touch="yes"] .dropdown-list.dropdown-list-open {
 	vertical-align: middle;
 }
 
-.h-button {
+.h-menu,
+.h-back {
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
@@ -2328,21 +2329,26 @@ body[data-touch="yes"] .dropdown-list.dropdown-list-open {
 	transition: background-color 0.5s;
 }
 
-a.h-button {
+a.h-back {
 	text-decoration: none;
 }
 
 @media (max-width: 767px) {
 
-	.h-button {
+	.h-back {
 		display: none;
 	}
 
 }
 
-.h-button:hover {
+.h-menu:hover,
+.h-back:hover {
 	color: white;
 	background-color: var(--primary);
+}
+
+.h-menu svg {
+	margin-bottom: -0.25rem;
 }
 
 h1 .dropdown-toggle:after {

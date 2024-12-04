@@ -121,7 +121,7 @@ class FarmerUi {
 		$h = '<div class="util-action">';
 
 			$h .= '<h1>';
-				$h .= '<a href="'.\farm\FarmUi::urlSettings($eFarm).'"  class="h-button">'.\Asset::icon('arrow-left').'</a>';
+				$h .= '<a href="'.\farm\FarmUi::urlSettings($eFarm).'"  class="h-back">'.\Asset::icon('arrow-left').'</a>';
 				$h .= s("L'équipe");
 			$h .= '</h1>';
 
@@ -338,7 +338,7 @@ class FarmerUi {
 	public function getUserTitle(\farm\Farmer $eFarmer): string {
 
 		$h = '<h1>';
-			$h .= '<a href="'.FarmerUi::urlManage($eFarmer['farm']).'"  class="h-button">'.\Asset::icon('arrow-left').'</a>';
+			$h .= '<a href="'.FarmerUi::urlManage($eFarmer['farm']).'"  class="h-back">'.\Asset::icon('arrow-left').'</a>';
 			$h .= \user\UserUi::getVignette($eFarmer['user'], '3rem').' '.\user\UserUi::name($eFarmer['user']);
 		$h .= '</h1>';
 
