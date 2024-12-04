@@ -47,8 +47,14 @@ new Lime.Instruction('main')
 	.register('updateNavSelling', function(url) {
 		qs('#farm-nav [data-tab="selling"]', node => node.setAttribute('href', url));
 	})
-	.register('updateNavAnalyze', function(url) {
+	.register('updateNavAnalyze', function(url, category) {
+		
 		qs('#farm-nav [data-tab="analyze"]', node => node.setAttribute('href', url));
+		qs('#farm-tab-analyze-category').innerHTML = qs('#farm-tab-analyze-'+ category).innerHTML;
+
+		qsa('[data-dropdown-id="farm-tab-analyze-list"] .dropdown-item', item => item.classList.remove('selected'))
+		qs('#farm-tab-analyze-'+ category).classList.add('selected');
+		
 	})
 	.register('updateNavSettings', function(url) {
 		qs('#farm-nav [data-tab="settings"]', node => node.setAttribute('href', url));

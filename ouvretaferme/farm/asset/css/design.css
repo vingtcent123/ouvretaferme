@@ -51,7 +51,7 @@ a.nav-year:hover {
 
 		:root {
 			--nav-width: 19rem;
-			--nav-padding: 1rem;
+			--nav-padding: 1.25rem;
 		}
 
 	}
@@ -211,10 +211,10 @@ a.nav-year:hover {
 
 	a.farm-tab {
 		display: block;
-		padding: 0.625rem var(--nav-padding);
+		padding: 0.75rem var(--nav-padding);
 		text-decoration: none;
 		color: white;
-		letter-spacing: 0.3px;
+		letter-spacing: 0.1px;
 		font-weight: bold;
 	}
 
@@ -491,14 +491,6 @@ a.nav-year:hover {
 		padding-right: 1rem;
 		background: var(--secondary-dark);
 		color: white;
-	}
-
-	a.farm-tab:not(.selected) .farm-tab-on {
-		display: none;
-	}
-
-	a.farm-tab.selected .farm-tab-off {
-		display: none;
 	}
 
 	.farm-tab svg {

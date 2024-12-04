@@ -730,7 +730,7 @@ new AdaptativeView('analyzeReport', function($data, FarmTemplate $t) {
 	$t->title = s("Analyse des séries de {value}", $data->eFarm['name']);
 	$t->canonical = \farm\FarmUi::urlAnalyzeReport($data->eFarm, $data->season);
 
-	$t->package('main')->updateNavAnalyze($t->canonical);
+	$t->package('main')->updateNavAnalyze($t->canonical, \farm\Farmer::REPORT);
 
 	$t->mainYear = (new \farm\FarmUi())->getSeasonsTabs($data->eFarm, fn($season) => \farm\FarmUi::urlAnalyzeReport($data->eFarm, season: $season), $data->season);;
 	$t->mainTitle = (new \farm\FarmUi())->getAnalyzeReportTitle($data->eFarm, $data->season);
@@ -748,7 +748,7 @@ new AdaptativeView('analyzeWorkingTime', function($data, FarmTemplate $t) {
 	$t->title = s("Analyse du planning de {value}", $data->eFarm['name']);
 	$t->canonical = \farm\FarmUi::urlAnalyzeWorkingTime($data->eFarm, $data->year, $data->category);
 
-	$t->package('main')->updateNavAnalyze($t->canonical);
+	$t->package('main')->updateNavAnalyze($t->canonical, \farm\Farmer::WORKING_TIME);
 
 	if($data->years === []) {
 
@@ -795,7 +795,7 @@ new AdaptativeView('analyzeSelling', function($data, FarmTemplate $t) {
 
 	$t->js()->replaceHistory($t->canonical);
 
-	$t->package('main')->updateNavAnalyze($t->canonical);
+	$t->package('main')->updateNavAnalyze($t->canonical, \farm\Farmer::SALES);
 
 	if($data->years === []) {
 
@@ -841,7 +841,7 @@ new AdaptativeView('analyzeCultivation', function($data, FarmTemplate $t) {
 
 	$t->js()->replaceHistory($t->canonical);
 
-	$t->package('main')->updateNavAnalyze($t->canonical);
+	$t->package('main')->updateNavAnalyze($t->canonical, \farm\Farmer::CULTIVATION);
 
 	$actions = match($data->category) {
 		\farm\Farmer::PLANT => '<a '.attr('onclick', 'Lime.Search.toggle("#analyze-plant-search")').' class="btn btn-primary">'.\Asset::icon('search').' '.s("Filtrer").'</a>',
