@@ -327,7 +327,7 @@ class AnalyzeUi {
 
 		if($cPlant->empty()) {
 			$h = '<div class="util-info">';
-				$h .= s("Le suivi de la productivité sera disponible lorsque vous aurez travaillé cette année sur les interventions pour lesquelles elle est mesurée, à savoir {value}.", implode(', ', array_map('encode', $cAction->getColumn('name'))));
+				$h .= s("Le suivi de la productivité sera disponible lorsque vous aurez saisi du temps de travail cette année sur les interventions pour lesquelles elle est mesurée, à savoir {value}.", implode(', ', array_map('encode', $cAction->getColumn('name'))));
 			$h .= '</div>';
 			return $h;
 		}
@@ -741,7 +741,7 @@ class AnalyzeUi {
 			$cTimesheetAction->empty()
 		) {
 			$h = '<div class="util-info">';
-				$h .= s("L'analyse du temps de travail sera disponible lorsque vous aurez travaillé cette année.");
+				$h .= s("L'analyse du temps de travail sera disponible lorsque vous aurez saisi du temps de travail cette année.");
 			$h .= '</div>';
 			return $h;
 		}
