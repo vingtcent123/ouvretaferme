@@ -1301,7 +1301,7 @@ class FarmUi {
 
 		$h .= '<div class="dropdown-list bg-primary">';
 
-			$h .= '<div class="dropdown-title">'.s("Changer la saison").'</div>';
+			$h .= '<div class="dropdown-title">'.s("Changer de saison").'</div>';
 
 			for($season = $eFarm['seasonLast']; $season >= $eFarm['seasonFirst']; $season--) {
 				$h .= '<a href="'.$url($season).'" class="dropdown-item '.($season === $selectedSeason ? 'selected' : '').'">'.s("Saison {year}", ['year' => $season]).'</a>';

@@ -847,7 +847,7 @@ class AnalyzeUi {
 
 		$h .= '<div class="dropdown-list bg-primary">';
 
-			$h .= '<div class="dropdown-title">'.s("Changer la saison").'</div>';
+			$h .= '<div class="dropdown-title">'.s("Changer de saison").'</div>';
 
 			foreach($seasons as $season) {
 
