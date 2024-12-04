@@ -171,21 +171,32 @@ class HomeUi {
 		$h = '<h2>'.s("Principes de conception de {siteName}").'</h2>';
 		
 		$h .= '<div class="home-points">';
+			$h .= '<div class="home-point" style="grid-column: span 2">';
+				$h .= \Asset::icon('inboxes');
+				$h .= '<h4>'.s("Toutes les fonctionnalités sont indépendantes,<br/>vous utilisez seulement celles adaptées à votre ferme !").'</h4>';
+			$h .= '</div>';
+			$h .= '<div class="home-point" style="grid-column: span 2">';
+				$h .= \Asset::icon('columns-gap');
+				$h .= '<h4>'.s("Les interfaces sont simples et intuitives,<br/>elles s'adaptent à vos pratiques").'</h4>';
+			$h .= '</div>';
+		$h .= '</div>';
+		
+		$h .= '<div class="home-points">';
 			$h .= '<div class="home-point">';
 				$h .= \Asset::icon('lock');
 				$h .= '<h4>'.s("Vos données ne sont<br/>ni vendues, ni partagées").'</h4>';
 			$h .= '</div>';
 			$h .= '<div class="home-point">';
-				$h .= \Asset::icon('columns-gap');
-				$h .= '<h4>'.s("Facilite la vie<br/>sans décider à votre place").'</h4>';
+				$h .= \Asset::icon('cup-hot');
+				$h .= '<h4>'.s("Conçu pour réduire la charge mentale<br/>sans décider à votre place").'</h4>';
 			$h .= '</div>';
 			$h .= '<div class="home-point">';
 				$h .= \Asset::icon('people');
-				$h .= '<h4>'.s("Plateforme conçue<br/>par et pour des producteurs").'</h4>';
+				$h .= '<h4>'.s("Développé par et pour<br/>des producteurs").'</h4>';
 			$h .= '</div>';
 			$h .= '<div class="home-point">';
 				$h .= \Asset::icon('phone');
-				$h .= '<h4>'.s("Accessible<br/>sur ordinateur et téléphone").'</h4>';
+				$h .= '<h4>'.s("Accessible facilement<br/>sur ordinateur et téléphone").'</h4>';
 			$h .= '</div>';
 		$h .= '</div>';
 

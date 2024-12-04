@@ -149,8 +149,8 @@ new AdaptativeView('/presentation/producteur', function($data, MainTemplate $t) 
 	Asset::css('main', 'home.css');
 
 	$t->header = '<h4 class="home-domain">'.Lime::getDomain().'</h4>';
-	$t->header .= '<h1>'.s("Pour les producteurs").'</h1>';
-	$t->header .= '<h4 class="home-domain">'.s("Maraichage / Arboriculture / Semences").'</h4>';
+	$t->header .= '<h1>'.s("Du plan de culture à la vente").'</h1>';
+	$t->header .= '<h4 class="home-domain">'.s("Découvrez les principales fonctionnalités du logiciel !").'</h4>';
 
 
 	echo '<div class="home-presentation">';

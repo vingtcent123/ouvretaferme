@@ -165,7 +165,7 @@ ul.home-story {
    display: grid;
    grid-gap: 1rem;
    grid-template-columns: repeat(4, 1fr);
-   margin-bottom: 2rem;
+   margin-bottom: 1rem;
 }
 
 @media (max-width: 767px) {

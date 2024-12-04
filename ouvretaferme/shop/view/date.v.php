@@ -36,7 +36,7 @@ new JsonView('doUpdatePoint', function($data, AjaxTemplate $t) {
 
 new AdaptativeView('/ferme/{farm}/boutique/{shop}/date/{id}', function($data, FarmTemplate $t) {
 
-	$t->tab = 'selling';
+	$t->tab = 'shop';
 	$t->subNav = (new \farm\FarmUi())->getShopSubNav($data->eFarm);
 	$t->title = \shop\DateUi::name($data->e);
 
