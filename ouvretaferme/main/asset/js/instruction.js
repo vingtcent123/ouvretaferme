@@ -32,10 +32,12 @@ new Lime.Instruction('main')
 	.register('updateNavPlanning', function(url, period) {
 
 		qs('#farm-nav [data-tab="home"]', node => node.setAttribute('href', url));
-		qs('#farm-tab-planning-period').innerHTML = qs('#farm-tab-planning-'+ period).innerHTML;
 
-		qsa('[data-dropdown-id="farm-tab-planning-list"] .dropdown-item', item => item.classList.remove('selected'))
-		qs('#farm-tab-planning-'+ period).classList.add('selected');
+		if(qs('#farm-tab-planning-period')) {
+			qs('#farm-tab-planning-period').innerHTML = qs('#farm-tab-planning-'+ period).innerHTML;
+			qsa('[data-dropdown-id="farm-tab-planning-list"] .dropdown-item', item => item.classList.remove('selected'))
+			qs('#farm-tab-planning-'+ period).classList.add('selected');
+		}
 
 	})
 	.register('updateNavCultivation', function(url) {
@@ -50,10 +52,13 @@ new Lime.Instruction('main')
 	.register('updateNavAnalyze', function(url, category) {
 		
 		qs('#farm-nav [data-tab="analyze"]', node => node.setAttribute('href', url));
-		qs('#farm-tab-analyze-category').innerHTML = qs('#farm-tab-analyze-'+ category).innerHTML;
 
-		qsa('[data-dropdown-id="farm-tab-analyze-list"] .dropdown-item', item => item.classList.remove('selected'))
-		qs('#farm-tab-analyze-'+ category).classList.add('selected');
+		if(qs('#farm-tab-analyze-category')) {
+			qs('#farm-tab-analyze-category').innerHTML = qs('#farm-tab-analyze-'+ category).innerHTML;
+			qsa('[data-dropdown-id="farm-tab-analyze-list"] .dropdown-item', item => item.classList.remove('selected'))
+			qs('#farm-tab-analyze-'+ category).classList.add('selected');
+		}
+
 		
 	})
 	.register('updateNavSettings', function(url) {
