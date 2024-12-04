@@ -962,6 +962,10 @@ tbody .td-checkbox > label {
 	margin-bottom: 0;
 }
 
+.util-action h1 {
+	user-select: none;
+}
+
 a.util-action-navigation > svg {
 	font-size: 1.3rem;
 	vertical-align: baseline;
