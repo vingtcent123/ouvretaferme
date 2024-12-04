@@ -40,7 +40,7 @@ class SupplierUi {
 	public function getManageTitle(\farm\Farm $eFarm, \Collection $cSupplier, \Search $search): string {
 		
 		$title = '<h1>';
-			$title .= '<a href="'.FarmUi::urlSettings($eFarm).'"  class="h-back">'.\Asset::icon('arrow-left').'</a>';
+			$title .= '<a href="'.FarmUi::urlSettings($eFarm).'"  class="h-button">'.\Asset::icon('arrow-left').'</a>';
 			$title .= s("Fournisseurs de semences et plants");
 		$title .= '</h1>';
 

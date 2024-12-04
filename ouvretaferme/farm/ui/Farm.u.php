@@ -631,8 +631,7 @@ class FarmUi {
 				$h .= '<a class="util-action-navigation" data-dropdown="bottom-start" data-dropdown-hover="true">';
 					$h .= $this->getSeriesCategories($eFarm)[$selectedView].' '.self::getNavigation();
 				$h .= '</a>';
-				$h .= '<div class="dropdown-list bg-secondary">';
-					$h .= '<div class="dropdown-title">'.s("Cultures").'</div>';
+				$h .= '<div class="dropdown-list bg-primary">';
 					foreach($this->getSeriesCategories($eFarm) as $key => $value) {
 						$h .= '<a href="'.FarmUi::urlCultivationSeries($eFarm, $key).'" class="dropdown-item '.($key === $selectedView ? 'selected' : '').'">'.$value.'</a> ';
 					}
@@ -737,8 +736,7 @@ class FarmUi {
 				$h .= '<a class="util-action-navigation" data-dropdown="bottom-start" data-dropdown-hover="true">';
 					$h .= $this->getSoilCategories($eFarm)[$selectedView].' '.self::getNavigation();
 				$h .= '</a>';
-				$h .= '<div class="dropdown-list bg-secondary">';
-					$h .= '<div class="dropdown-title">'.s("Assolement").'</div>';
+				$h .= '<div class="dropdown-list bg-primary">';
 					foreach($this->getSoilCategories($eFarm) as $key => $value) {
 						$h .= '<a href="'.FarmUi::urlCultivationSoil($eFarm, $key).'" class="dropdown-item '.($key === $selectedView ? 'selected' : '').'">'.$value.'</a> ';
 					}
@@ -956,8 +954,7 @@ class FarmUi {
 				$h .= '<a class="util-action-navigation" data-dropdown="bottom-start" data-dropdown-hover="true">';
 					$h .= $title.' '.self::getNavigation();
 				$h .= '</a>';
-				$h .= '<div class="dropdown-list bg-secondary">';
-					$h .= '<div class="dropdown-title">'.s("Ventes").'</div>';
+				$h .= '<div class="dropdown-list bg-primary">';
 					foreach($categories as $key => $value) {
 						if($value === NULL) {
 							$h .= '<div class="dropdown-divider"></div>';
@@ -1121,8 +1118,7 @@ class FarmUi {
 				$h .= '<a class="util-action-navigation" data-dropdown="bottom-start" data-dropdown-hover="true">';
 					$h .= $categories[$selectedView].' '.self::getNavigation();
 				$h .= '</a>';
-				$h .= '<div class="dropdown-list bg-secondary">';
-					$h .= '<div class="dropdown-title">'.s("Temps de travail").'</div>';
+				$h .= '<div class="dropdown-list bg-primary">';
 					foreach($categories as $key => $value) {
 						$h .= '<a href="'.\farm\FarmUi::urlAnalyzeWorkingTime($eFarm, $selectedYear, $key).'" class="dropdown-item '.($key === $selectedView ? 'selected' : '').'">'.$value.'</a> ';
 					}
@@ -1169,8 +1165,7 @@ class FarmUi {
 				$h .= '<a class="util-action-navigation" data-dropdown="bottom-start" data-dropdown-hover="true">';
 					$h .= $categories[$selectedView].' '.self::getNavigation();
 				$h .= '</a>';
-				$h .= '<div class="dropdown-list bg-secondary">';
-					$h .= '<div class="dropdown-title">'.s("Ventes").'</div>';
+				$h .= '<div class="dropdown-list bg-primary">';
 					foreach($categories as $key => $value) {
 						$h .= '<a href="'.\farm\FarmUi::urlAnalyzeSelling($eFarm, $selectedYear, $key).'" class="dropdown-item '.($key === $selectedView ? 'selected' : '').'">'.$value.'</a> ';
 					}
@@ -1227,8 +1222,7 @@ class FarmUi {
 				$h .= '<a class="util-action-navigation" data-dropdown="bottom-start" data-dropdown-hover="true">';
 					$h .= $categories[$selectedView].' '.self::getNavigation();
 				$h .= '</a>';
-				$h .= '<div class="dropdown-list bg-secondary">';
-					$h .= '<div class="dropdown-title">'.s("Cultures").'</div>';
+				$h .= '<div class="dropdown-list bg-primary">';
 					foreach($categories as $key => $value) {
 						$h .= '<a href="'.\farm\FarmUi::urlAnalyzeCultivation($eFarm, $selectedSeason, $key).'" class="dropdown-item '.($key === $selectedView ? 'selected' : '').'">'.$value.'</a> ';
 					}
@@ -1638,7 +1632,7 @@ class FarmUi {
 	}
 
 	public static function getNavigation(): string {
-		return \Asset::icon('caret-down-fill').\Asset::icon('caret-down-square-fill');
+		return '<span class="h-button">'.\Asset::icon('chevron-down').'</span>';
 	}
 
 	public static function p(string $property): \PropertyDescriber {

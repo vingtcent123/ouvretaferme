@@ -2313,11 +2313,11 @@ body[data-touch="yes"] .dropdown-list.dropdown-list-open {
 	vertical-align: middle;
 }
 
-a.h-back {
+.h-button {
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
-	background-color: var(--secondary);
+	background-color: var(--primary);
 	color: white;
 	border-radius: 50%;
 	font-size: 0.66em;
@@ -2328,15 +2328,19 @@ a.h-back {
 	transition: background-color 0.5s;
 }
 
+a.h-button {
+	text-decoration: none;
+}
+
 @media (max-width: 767px) {
 
-	a.h-back {
+	.h-button {
 		display: none;
 	}
 
 }
 
-a.h-back:hover {
+.h-button:hover {
 	color: white;
 	background-color: var(--primary);
 }

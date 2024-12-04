@@ -6,7 +6,7 @@ new AdaptativeView('manage', function($data, FarmTemplate $t) {
 	$t->subNav = (new \farm\FarmUi())->getSettingsSubNav($data->eFarm);
 
 	$h = '<h1>';
-		$h .= '<a href="'.\farm\FarmUi::urlSettings($data->eFarm).'"  class="h-back">'.\Asset::icon('arrow-left').'</a>';
+		$h .= '<a href="'.\farm\FarmUi::urlSettings($data->eFarm).'"  class="h-button">'.\Asset::icon('arrow-left').'</a>';
 		$h .= s("Paiement en ligne");
 	$h .= '</h1>';
 

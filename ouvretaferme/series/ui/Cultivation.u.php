@@ -1738,7 +1738,7 @@ class CultivationUi {
 			$h .= '<div>';
 
 				$h .= '<h1 style="margin-bottom: 0.25rem">';
-					$h .= '<a href="'.\farm\FarmUi::urlCultivationSeries($eSeries['farm']).'" class="h-back">'.\Asset::icon('arrow-left').'</a>';
+					$h .= '<a href="'.\farm\FarmUi::urlCultivationSeries($eSeries['farm']).'" class="h-button">'.\Asset::icon('arrow-left').'</a>';
 					$h .= $eSeries->quick('name', SeriesUi::name($eSeries));
 					if($eSeries['status'] === Series::CLOSED) {
 						$h .= '<span class="series-header-closed" title="'.s("Série clôturée").'">'.\Asset::icon('lock-fill').'</span>';

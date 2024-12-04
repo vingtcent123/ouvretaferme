@@ -438,7 +438,7 @@ class SequenceUi {
 						Sequence::CLOSED => \farm\FarmUi::urlCultivationSequences($eFarm).'/'.Sequence::CLOSED,
 					};
 
-					$h .= '<a href="'.$urlSequence.'" class="h-back">'.\Asset::icon('arrow-left').'</a>';
+					$h .= '<a href="'.$urlSequence.'" class="h-button">'.\Asset::icon('arrow-left').'</a>';
 					$h .= $eSequence->quick('name', SequenceUi::name($eSequence));
 				$h .= '</h1>';
 				if($eSequence->canWrite()) {

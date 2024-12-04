@@ -7,7 +7,7 @@ new AdaptativeView('update', function($data, FarmTemplate $t) {
 
 
 	$h = '<h1>';
-		$h .= '<a href="'.\farm\FarmUi::urlSettings($data->e).'"  class="h-back">'.\Asset::icon('arrow-left').'</a>';
+		$h .= '<a href="'.\farm\FarmUi::urlSettings($data->e).'"  class="h-button">'.\Asset::icon('arrow-left').'</a>';
 		$h .= s("Réglages de base pour vendre");
 	$h .= '</h1>';
 	
