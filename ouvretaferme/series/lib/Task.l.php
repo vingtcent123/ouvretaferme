@@ -522,8 +522,10 @@ class TaskLib extends TaskCrud {
 			return new \Collection();
 		}
 
+		$minWeek = toWeek(strtotime('NOW - '.$eFarm['planningDelayedMax'].' MONTH'));
+
 		Task::model()
-			->wherePlannedWeek('>', new \Sql('NOW() - INTERVAL '.$eFarm['planningDelayedMax'].' MONTH'))
+			->wherePlannedWeek('>', $minWeek)
 			->wherePlannedWeek('<', $referenceWeek)
 			->whereStatus(Task::TODO)
 			->sort([
