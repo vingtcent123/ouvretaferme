@@ -100,7 +100,7 @@ class Date extends DateElement {
 			// End of order must be after start of order.
 			'orderEndAt.consistency' => function($orderEndAt, array $newProperties, array $validProperties): bool {
 
-				if(in_array('orderEndAt', $validProperties) === FALSE) {
+				if(in_array('orderStartAt', $validProperties) === FALSE) {
 					return FALSE;
 				}
 
