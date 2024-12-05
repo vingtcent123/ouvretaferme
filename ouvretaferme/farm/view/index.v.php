@@ -19,8 +19,6 @@ new AdaptativeView('planning', function($data, FarmTemplate $t) {
 			$t->canonical = \farm\FarmUi::urlPlanningDaily($data->eFarm, $data->week);
 
 			$t->mainTitle = $uiTask->getWeekCalendar(
-				\farm\Farmer::DAILY,
-				$data->eFarm,
 				$data->week,
 				fn($week) => \farm\FarmUi::urlPlanningDaily($data->eFarm, $week)
 			);
@@ -36,8 +34,6 @@ new AdaptativeView('planning', function($data, FarmTemplate $t) {
 			$t->canonical = \farm\FarmUi::urlPlanningWeekly($data->eFarm, $data->week);
 
 			$t->mainTitle = $uiTask->getWeekCalendar(
-				\farm\Farmer::WEEKLY,
-				$data->eFarm,
 				$data->week,
 				fn($week) => \farm\FarmUi::urlPlanningWeekly($data->eFarm, $week),
 				fn() => $uiTask->getCalendarFilter()

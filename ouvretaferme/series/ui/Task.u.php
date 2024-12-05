@@ -161,7 +161,7 @@ class TaskUi {
 
 	}
 
-	public function getWeekCalendar(string $source, \farm\Farm $eFarm, string $week, \Closure $link, \Closure $filter = NULL): string {
+	public function getWeekCalendar(string $week, \Closure $link, \Closure $filter = NULL): string {
 
 		$weekBefore = date('o-\WW', strtotime($week.' - 1 WEEK'));
 		$weekAfter = date('o-\WW', strtotime($week.' + 1 WEEK'));
@@ -2311,7 +2311,7 @@ class TaskUi {
 	}
 
 	public function displayByActionTitle(\farm\Farm $eFarm, string $week, \farm\Action $eAction): string {
-		return $this->getWeekCalendar(NULL, $eFarm, $week, fn($week) => \farm\FarmUi::urlPlanningAction($eFarm, $week, $eAction));
+		return $this->getWeekCalendar($week, fn($week) => \farm\FarmUi::urlPlanningAction($eFarm, $week, $eAction));
 	}
 
 	public function displayByAction(\farm\Farm $eFarm, string $week, \farm\Action $eAction, \Collection $cTask): string {
