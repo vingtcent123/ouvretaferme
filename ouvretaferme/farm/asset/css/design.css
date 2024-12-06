@@ -276,7 +276,7 @@ a.nav-year:hover {
 		margin-left: 0.5rem;
 		font-size: 0.9rem;
 		border: 1px solid white;
-		padding: 0.5rem 0rem 0.5rem 0.5rem;
+		padding: 0.5rem;
 	}
 
 	.farm-tab-complement svg {
@@ -416,8 +416,6 @@ a.nav-year:hover {
 
 		.farm-tabs {
 			width: 100%;
-			padding-left: 0.5rem;
-			padding-right: 0.5rem;
 		}
 
 	}
@@ -515,7 +513,7 @@ a.nav-year:hover {
 	}
 
 	a.farm-tab.selected {
-		color: white;
+		background: var(--secondary-dark);
 	}
 
 	.farm-tab-complement {
@@ -541,7 +539,6 @@ a.nav-year:hover {
 		}
 
 		.farm-tab.selected {
-			background: var(--secondary-dark);
 			padding-left: 1rem;
 			padding-right: 1rem;
 		}
@@ -564,7 +561,6 @@ a.nav-year:hover {
 			align-items: center;
 			justify-content: center;
 			border-radius: 1rem;
-			width: 4rem;
 			height: 2rem;
 			line-height: 1;
 		}
@@ -579,8 +575,9 @@ a.nav-year:hover {
 
 		}
 
-		.farm-tab.selected .farm-tab-icon {
-			background: var(--secondary-dark);
+		.farm-tab.selected {
+			padding-left: .5rem;
+			padding-right: .5rem;
 		}
 
 		.farm-tab-label {
@@ -602,7 +599,7 @@ a.nav-year:hover {
 	@media (max-width: 449px) {
 
 		.farm-tab-icon {
-			margin-bottom: 0.25rem;
+			margin-bottom: 0.125rem;
 		}
 
 		.farm-tab-icon svg {
