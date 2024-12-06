@@ -407,7 +407,7 @@ a.nav-year:hover {
 
 	@media (min-width: 450px) and (max-width: 575px) {
 		.farm-tabs {
-			grid-column-gap: 0.25rem;
+			grid-column-gap: 1rem;
 		}
 
 	}
@@ -441,6 +441,7 @@ a.nav-year:hover {
 		grid-column-gap: 1.25rem;
 		padding-left: var(--container-padding);
 		padding-right: var(--container-padding);
+		padding-top: 0.25rem;
 	}
 
 	div.farm-subnav-wrapper > * {
@@ -490,7 +491,7 @@ a.nav-year:hover {
 	@media (max-width: 575px) {
 
 		div.farm-subnav-wrapper > a.selected {
-			font-size: 1.2rem;
+			font-size: 1.1rem;
 			line-height: 1.2;
 		}
 
@@ -587,11 +588,10 @@ a.nav-year:hover {
 
 	}
 
-	@media (max-width: 575px) {
+	@media (max-width: 449px) {
 
 		.farm-tabs {
 			width: 100%;
-			max-width: 500px;
 		}
 
 	}
@@ -609,6 +609,18 @@ a.nav-year:hover {
 		a.farm-tab span {
 			line-height: 1.2;
 			letter-spacing: -0.2px;
+		}
+
+	}
+
+	@media (max-width: 359px) {
+
+		.farm-tab-label {
+			font-size: 0.8rem;
+		}
+
+		.farm-subnav-item {
+			font-size: 0.9rem;
 		}
 
 	}
