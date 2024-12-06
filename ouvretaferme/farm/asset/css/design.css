@@ -388,27 +388,23 @@ a.nav-year:hover {
 		padding-right: var(--container-padding);
 	}
 
-	@media (min-width: 576px) {
-
-		.farm-tabs {
-			grid-column-gap: 1.5rem;
-		}
-
-	}
-
 	@media (max-width: 575px) {
+
 		.farm-tabs {
 			align-items: stretch;
-			grid-template-columns: repeat(5, max-content) min-content;
-			justify-content: space-between;
+			grid-template-columns: repeat(5, auto) min-content;
 		}
+
 
 	}
 
 	@media (min-width: 450px) and (max-width: 575px) {
+
 		.farm-tabs {
-			grid-column-gap: 1rem;
+			width: 100%;
+			max-width: 450px;
 		}
+
 
 	}
 
@@ -422,7 +418,7 @@ a.nav-year:hover {
 
 	@media (min-width: 576px) {
 		.farm-tabs {
-			grid-template-columns: repeat(6, max-content);
+			grid-template-columns: repeat(6, auto);
 		}
 	}
 
@@ -533,24 +529,50 @@ a.nav-year:hover {
 
 		@media (max-width: 899px) {
 
+			.farm-tab {
+				padding-left: .75rem;
+				padding-right: .75rem;
+			}
+
 			.farm-tab-label {
 				letter-spacing: -0.1px;
 			}
 
 		}
 
-		.farm-tab.selected {
-			padding-left: 1rem;
-			padding-right: 1rem;
+		@media (min-width: 900px) {
+
+			.farm-tab {
+				padding-left: 1rem;
+				padding-right: 1rem;
+			}
+
 		}
 
 	}
 
 	@media (max-height: 767px) or (max-width: 767px) {
 
+		@media (min-width: 576px) {
+
+			.farm-tabs {
+				grid-column-gap: 0.25rem;
+			}
+
+		}
+
 		a.farm-tab {
 			flex-direction: column;
 			line-height: 1;
+		}
+
+		@media (min-width: 575px) {
+
+			a.farm-tab {
+				padding-left: 0.5rem;
+				padding-right: 0.5rem;
+			}
+
 		}
 
 		.farm-tab-icon svg {
@@ -574,11 +596,6 @@ a.nav-year:hover {
 				height: 2.5rem;
 			}
 
-		}
-
-		.farm-tab.selected {
-			padding-left: .5rem;
-			padding-right: .5rem;
 		}
 
 		.farm-tab-label {
