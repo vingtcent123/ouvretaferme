@@ -151,6 +151,7 @@ a.nav-year:hover {
 	body[data-template~="farm"] nav .nav-wrapper.container {
 		padding: 0 var(--nav-padding);
 		display: flex;
+		justify-content: center;
 		align-items: center;
 	}
 
