@@ -262,7 +262,7 @@ a.nav-year:hover {
 		display: none;
 	}
 
-	.farm-tab svg {
+	.farm-tab .farm-tab-icon svg {
 		font-size: 1.2rem;
 		margin-right: 0.5rem;
 	}
@@ -413,8 +413,11 @@ a.nav-year:hover {
 	}
 
 	@media (max-width: 449px) {
+
 		.farm-tabs {
 			width: 100%;
+			padding-left: 0.5rem;
+			padding-right: 0.5rem;
 		}
 
 	}
@@ -512,33 +515,35 @@ a.nav-year:hover {
 	}
 
 	a.farm-tab.selected {
-		padding-left: 1rem;
-		padding-right: 1rem;
-		background: var(--secondary-dark);
 		color: white;
-	}
-
-	.farm-tab svg {
-		font-size: 1.1rem;
-		width: 1.5rem;
-	}
-
-	.farm-tab.selected svg {
-		font-size: 1.2rem;
 	}
 
 	.farm-tab-complement {
 		display: none;
 	}
 
-	.farm-tab-settings-title {
-		display: none;
-	}
-
 	@media (min-height: 768px) and (min-width: 768px) {
 
-		.farm-tab:not([data-tab="settings"]) svg {
+		.farm-tab-icon svg {
+			font-size: 1.1rem;
+		}
+
+		.farm-tab-icon svg {
 			margin-right: 0.375rem;
+		}
+
+		@media (max-width: 899px) {
+
+			.farm-tab-label {
+				letter-spacing: -0.1px;
+			}
+
+		}
+
+		.farm-tab.selected {
+			background: var(--secondary-dark);
+			padding-left: 1rem;
+			padding-right: 1rem;
 		}
 
 	}
@@ -550,50 +555,63 @@ a.nav-year:hover {
 			line-height: 1;
 		}
 
-		.farm-tab:not([data-tab="settings"]) svg {
-			margin-bottom: 0.5rem;
+		.farm-tab-icon svg {
+			font-size: 1.2rem;
 		}
 
-		.farm-tab span {
+		.farm-tab-icon {
+			display: inline-flex;
+			align-items: center;
+			justify-content: center;
+			border-radius: 1rem;
+			width: 4rem;
+			height: 2rem;
+			line-height: 1;
+		}
+
+		@media (max-width: 575px) {
+
+			.farm-tab[data-tab="settings"] .farm-tab-icon {
+				margin-bottom: 0;
+				width: 2.5rem;
+				height: 2.5rem;
+			}
+
+		}
+
+		.farm-tab.selected .farm-tab-icon {
+			background: var(--secondary-dark);
+		}
+
+		.farm-tab-label {
 			font-size: 0.9rem;
+			letter-spacing: -0.1px;
 		}
 
 	}
 
 	@media (max-width: 575px) {
 
-		a.farm-tab {
-			padding: 0.625rem 0.375rem;
-		}
-
-		a.farm-tab.selected {
-			padding: 0.625rem 0.5rem;
-		}
-
-		a.farm-tab span {
-			font-size: 0.9rem;
+		.farm-tabs {
+			width: 100%;
+			max-width: 500px;
 		}
 
 	}
 
 	@media (max-width: 449px) {
 
-		.farm-tab svg {
-			font-size: 1.2rem;
+		.farm-tab-icon {
+			margin-bottom: 0.25rem;
 		}
 
-		.farm-tab.selected svg {
-			font-size: 1.3rem;
+		.farm-tab-icon svg {
+			font-size: 1.33rem;
 		}
 
 		a.farm-tab span {
-			font-size: 0.8rem;
 			line-height: 1.2;
-		}
-
-		a.farm-tab[data-tab="selling"] span,
-		a.farm-tab[data-tab="shop"] span {
-			letter-spacing: -0.1px;
+			letter-spacing: -0.2px;
 		}
 
 	}

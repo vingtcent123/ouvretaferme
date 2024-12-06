@@ -537,8 +537,8 @@ class FarmUi {
 					$selectedPeriod = \Setting::get('main\viewPlanning');
 
 					$h .= '<a href="'.FarmUi::urlPlanning($eFarm).'" data-tab="home" class="farm-tab '.($tab === 'home' ? 'selected' : '').'">';
-						$h .= \Asset::icon('calendar3');
-						$h .= '<span>'.s("Planning").'</span>';
+						$h .= '<span class="farm-tab-icon">'.\Asset::icon('calendar3').'</span>';
+						$h .= '<span class="farm-tab-label">'.s("Planning").'</span>';
 						$h .= '<div class="farm-tab-complement" data-dropdown="bottom-left" data-dropdown-id="farm-tab-planning" data-dropdown-hover="true">';
 							$h .= '<span id="farm-tab-planning-period">'.$categories[$selectedPeriod]['label'].'</span> '.\Asset::icon('chevron-down');
 						$h .= '</div>';
@@ -552,8 +552,8 @@ class FarmUi {
 				}
 
 				$h .= '<a href="'.FarmUi::urlCultivation($eFarm).'" data-tab="cultivation" class="farm-tab farm-tab-subnav '.($tab === 'cultivation' ? 'selected' : '').'">';
-					$h .= \Asset::icon('journals');
-					$h .= '<span>'.s("Production").'</span>';
+					$h .= '<span class="farm-tab-icon">'.\Asset::icon('journals').'</span>';
+					$h .= '<span class="farm-tab-label">'.s("Production").'</span>';
 				$h .= '</a>';
 
 				$h .= $this->getCultivationMenu($eFarm, prefix: $prefix, tab: $tab);
@@ -561,15 +561,18 @@ class FarmUi {
 				if($eFarm->canSelling()) {
 
 					$h .= '<a href="'.FarmUi::urlSelling($eFarm).'" data-tab="selling" class="farm-tab farm-tab-subnav '.($tab === 'selling' ? 'selected' : '').'">';
-						$h .= \Asset::icon('piggy-bank');
-						$h .= '<span>'.s("Commercialisation").'</span>';
+						$h .= '<span class="farm-tab-icon">'.\Asset::icon('piggy-bank').'</span>';
+						$h .= '<span class="farm-tab-label">';
+							$h .= '<span class="hide-sm-up">'.s("Commerce").'</span>';
+							$h .= '<span class="hide-xs-down">'.s("Commercialisation").'</span>';
+						$h .= '</span>';
 					$h .= '</a>';
 
 					$h .= $this->getSellingMenu($eFarm, prefix: $prefix, tab: $tab);
 
 					$h .= '<a href="'.FarmUi::urlShop($eFarm, $eFarm['hasShops'] ? NULL : Farmer::SHOP).'" data-tab="shop" class="farm-tab '.($eFarm['hasShops'] ? 'farm-tab-subnav' : '').' '.($tab === 'shop' ? 'selected' : '').'">';
-						$h .= \Asset::icon('cart');
-						$h .= '<span>'.s("Vente en ligne").'</span>';
+						$h .= '<span class="farm-tab-icon">'.\Asset::icon('cart').'</span>';
+						$h .= '<span class="farm-tab-label">'.s("Vente en ligne").'</span>';
 					$h .= '</a>';
 
 					if($eFarm['hasShops']) {
@@ -589,8 +592,8 @@ class FarmUi {
 					}
 
 					$h .= '<a href="'.FarmUi::urlAnalyze($eFarm).'" data-tab="analyze" class="farm-tab '.($tab === 'analyze' ? 'selected' : '').'">';
-						$h .= \Asset::icon('bar-chart');
-						$h .= '<span>'.s("Analyse").'</span>';
+						$h .= '<span class="farm-tab-icon">'.\Asset::icon('bar-chart').'</span>';
+						$h .= '<span class="farm-tab-label">'.s("Analyse").'</span>';
 						if(count($categories) > 1) {
 							$h .= '<div class="farm-tab-complement" data-dropdown="bottom-left" data-dropdown-id="farm-tab-analyze" data-dropdown-hover="true">';
 								$h .= '<span id="farm-tab-analyze-category">'.$categories[$selectedCategory].'</span>';
@@ -610,9 +613,11 @@ class FarmUi {
 
 				if($eFarm->canManage()) {
 					$h .= '<a href="'.FarmUi::urlSettings($eFarm).'" class="farm-tab '.($tab === 'settings' ? 'selected' : '').'" data-tab="settings">';
-						$h .= '<span class="hide-lateral-down">'.\Asset::icon('gear').'</span>';
-						$h .= '<span class="hide-lateral-up">'.\Asset::icon('gear-fill').'</span>';
-						$h .= '<span class="farm-tab-settings-title">'.s("Paramétrage").'</span>';
+						$h .= '<span class="hide-lateral-down farm-tab-icon">'.\Asset::icon('gear').'</span>';
+						$h .= '<span class="hide-lateral-up farm-tab-icon">'.\Asset::icon('gear-fill').'</span>';
+						$h .= '<span class="farm-tab-label hide-xs-down">';
+							$h .= s("Paramétrage");
+						$h .= '</span>';
 					$h .= '</a>';
 				}
 
