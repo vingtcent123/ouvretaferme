@@ -47,6 +47,7 @@ class LegalUi {
 			$h .= '<li><a href="/presentation/faq#why">'.s("Pourquoi {siteName} ?").'</a></li>';
 			$h .= '<li><a href="/presentation/faq#how">'.s("Comment accéder au service ?").'</a></li>';
 			$h .= '<li><a href="/presentation/faq#much">'.s("Combien ça coûte ?").'</a></li>';
+			$h .= '<li><a href="/presentation/faq#time">'.s("Quelle est la pérennité du service ?").'</a></li>';
 			$h .= '<li><a href="/presentation/faq#help">'.s("Comment obtenir de l'aide pour utiliser le site ?").'</a></li>';
 			$h .= '<li><a href="/presentation/faq#sales">'.s("Comment vendre ma production avec {siteName} ?").'</a></li>';
 			$h .= '<li><a href="/presentation/faq#online">'.s("Comment utiliser le paiement par carte bancaire sur la boutique en ligne ?").'</a></li>';
@@ -62,7 +63,7 @@ class LegalUi {
 
 		$h .= '<div class="home-category">';
 
-			$h .= '<p>'.s("La plateforme ouvretaferme.org est née du constat qu'il n'existait pas de solution libre et simple d'utilisation pour permettre aux producteurs maraîchers d'organiser le travail dans leur ferme, de la planification des cultures jusqu'à la vente. Le développement du site a commencé en 2019 sur cette base, avec comme point de départ le besoin exprimé par une petite ferme en maraichage diversifié située dans le Puy-de-Dôme.").'</p>';
+			$h .= '<p>'.s("La plateforme ouvretaferme.org est née du constat qu'il n'existait pas de logiciel libre et simple d'utilisation pour permettre aux producteurs maraîchers d'organiser le travail dans leur ferme, de la planification des cultures jusqu'à la vente. Le développement du site a commencé en 2019 sur cette base, avec comme point de départ le besoin exprimé par une petite ferme en maraichage diversifié située dans le Puy-de-Dôme.").'</p>';
 
 			$h .= '<p>'.s("Depuis 2022, la plateforme est diffusée plus largement et a été adaptée pour répondre aux besoins du plus grand nombre de fermes possible.").'</p>';
 
@@ -111,6 +112,28 @@ class LegalUi {
 			$h .= '</ul>';
 
 			$h .= '<p>'.s("Les coûts d'opérations sont supportables sans qu'il soit nécessaire de faire payer le service. Le temps de développement restera lui toujours bénévole. À l'avenir, si les coûts d'opérations deviennent trop importants, il pourra être envisageable de faire appel à des contributions sous la forme du volontariat, mais ce n'est pas à l'ordre du jour pour le moment.").'</p>';
+
+		$h .= '</div>';
+
+		$h .= '<div id="time"></div>';
+		$h .= '<br/>';
+		$h .= '<h2>'.s("Quelle est la pérennité du service ?").'</h2>';
+
+		$h .= '<div class="home-category">';
+
+			$h .= '<p>'.s("La pérennité de {siteName} est garantie pour de nombreuses années :").'</p>';
+			$h .= '<ul>';
+				$h .= '<li>'.s("le développement du logiciel a commencé en 2019, et n'a jamais été aussi actif que cette année,").'</li>';
+				$h .= '<li>'.s("le développeur principal en est devenu dépendant dans son exploitation maraichère et n'a donc pas d'autre choix que de le maintenir 😁,").'</li>';
+				$h .= '<li>'.s("les coûts de maintenance et d'exploitation sont très faibles.").'</li>';
+			$h .= '</ul>';
+
+			$h .= '<p>'.s("De plus, les logiciels libres sont en général plus durables que ceux créés avec un objectif commercial :").'</p>';
+			$h .= '<ul>';
+				$h .= '<li>'.s("soumis à des impératifs de rentabilité sous peine de disparaître, quand ce n'est pas l'entreprise qui disparait directement,").'</li>';
+				$h .= '<li>'.s("qui ne peuvent pas être repris par une communauté de développeurs si l'entreprise change de priorités,").'</li>';
+				$h .= '<li>'.s("dont la tarification peut évoluer sans préavis et piéger les utilisateurs.").'</li>';
+			$h .= '</ul>';
 
 		$h .= '</div>';
 
