@@ -340,7 +340,7 @@ a.nav-year:hover {
 
 }
 
-@media (max-width: 1199px) or (max-height: 599px) {
+@media (max-width: 1199px), (max-height: 599px) {
 
 	body[data-template~="farm"] header {
 		background: linear-gradient(to bottom, var(--background-light) 0, white 100%);

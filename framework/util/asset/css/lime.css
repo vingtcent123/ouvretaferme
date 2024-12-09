@@ -698,7 +698,7 @@ div.input-group > .field-checkbox {
 
 }
 
-@media (max-width: 1199px) or (max-height: 599px) {
+@media (max-width: 1199px), (max-height: 599px) {
 
 	.hide-lateral-down {
 		display: none !important;
