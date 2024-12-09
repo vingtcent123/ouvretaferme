@@ -19,7 +19,7 @@ div.tasks-calendar.tasks-calendar-with-filter {
 	grid-template-columns: 1fr 4rem max-content 4rem 1fr;
 }
 
-@media (max-height: 767px) or (max-width: 767px) {
+@media (max-height: 767px), (max-width: 767px) {
 
 	body[data-template~="farm-planning-daily"] div.tasks-calendar-search {
 		display: none;

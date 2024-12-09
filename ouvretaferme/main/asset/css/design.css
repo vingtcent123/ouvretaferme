@@ -28,7 +28,7 @@
   background: #e5e5f3;
 }
 
-@media (max-height: 767px) or (max-width: 767px) {
+@media (max-height: 767px), (max-width: 767px) {
 
 	:root {
 		--farmNav: 5rem;
@@ -201,7 +201,7 @@ body {
 	background: var(--background-light);
 }
 
-@media (max-height: 767px) or (max-width: 767px) {
+@media (max-height: 767px), (max-width: 767px) {
 
 	body {
 		min-height: 150vh;
@@ -254,7 +254,7 @@ body[data-template~="default"] header {
 }
 
 
-@media (max-height: 767px) or (max-width: 767px) {
+@media (max-height: 767px), (max-width: 767px) {
 
 	body[data-template~="farm"] header {
 		top: 0;

@@ -137,7 +137,7 @@ a.batch-menu-item:hover span:last-child {
 	white-space: nowrap;
 }
 
-@media (max-width: 767px) or (min-width: 1400px) {
+@media (max-width: 767px), (min-width: 1400px) {
 
 	.batch-one-item {
 		padding: 0.5rem 0.375rem;

@@ -552,7 +552,7 @@ a.nav-year:hover {
 
 	}
 
-	@media (max-height: 767px) or (max-width: 767px) {
+	@media (max-height: 767px), (max-width: 767px) {
 
 		@media (min-width: 576px) {
 
