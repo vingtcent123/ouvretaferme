@@ -9,7 +9,7 @@ new AdaptativeView('anonymous', function($data, MainTemplate $t) {
 	Asset::css('main', 'home.css');
 
 	$t->header .= '<h1>'.s("Organisez le travail à la ferme du plan de culture à la vente").'</h1>';
-	$t->header .= '<h4 class="home-domain">'.s("Le logiciel pour le maraîchage en agriculture biologique").'</h4>';
+	$t->header .= '<h4 class="home-domain">'.s("Le logiciel gratuit pour le maraîchage en agriculture biologique").'</h4>';
 
 	echo '<div class="home-presentation">';
 
@@ -44,7 +44,7 @@ new AdaptativeView('anonymous', function($data, MainTemplate $t) {
 	echo '<h2>'.s("La philosophie du projet 👩‍🌾").'</h2>';
 
 	echo '<div class="home-story">';
-		echo s("La plateforme {siteName} est née du constat qu'il n'existe pas de logiciel libre et simple d'utilisation pour permettre aux producteurs maraîchers d'organiser le travail dans leur ferme. En proposant un logiciel complet du plan de culture jusqu'à la vente, nous avons pour objectif de donner les moyens aux producteurs en agriculture biologique de réaliser les finalités de leur ferme en maraichage.");
+		echo s("La plateforme {siteName} est née du constat qu'il n'existe pas de logiciel libre, gratuit et simple d'utilisation pour permettre aux producteurs maraîchers d'organiser le travail dans leur ferme. En proposant un logiciel complet du plan de culture jusqu'à la vente, nous avons pour objectif de donner les moyens aux producteurs en agriculture biologique de réaliser les finalités de leur ferme en maraichage.");
 	echo '</div>';
 
 	echo (new \main\HomeUi())->getPoints();
