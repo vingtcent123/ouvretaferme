@@ -14,6 +14,13 @@ class Merchant {
 		qsa('.merchant:not(.hide)', entry => entry.classList.add('hide'));
 
 		this.current = qs('#merchant-'+ item.dataset.item);
+
+		const keyboard = this.current.qs('.merchant-keyboard');
+
+		if(keyboard.innerHTML === ''){
+			keyboard.innerHTML = this.createKeyboard();
+		}
+
 		this.current.classList.remove('hide');
 
 		this.recalculate();
@@ -229,6 +236,21 @@ class Merchant {
 
 		}
 
+	}
+
+	static createKeyboard(property) {
+		
+		let h = '<div class="merchant-digits">';
+			for(let digit = 1; digit <= 9; digit++) {
+				h += '<a onclick="Merchant.pressDigit('+ digit +')" data-digit="'+ digit +'" class="merchant-digit">'+ digit +'</a>';
+			}
+			h += '<a onclick="Merchant.pressDigit(0)" data-digit="0" class="merchant-digit">0</a>';
+			h += '<a onclick="Merchant.pressDigit(0); Merchant.pressDigit(0);" class="merchant-digit">00</a>';
+			h += '<a onclick="Merchant.pressBack();" class="merchant-digit">'+ Lime.Asset.icon('backspace') +'</a>';
+		h += '</div>';
+
+		return h;
+		
 	}
 
 	static keyboardDelete(property) {

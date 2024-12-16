@@ -11,14 +11,9 @@ class MerchantUi {
 	}
 
 
-	public function get(Sale $eSale, Item $eItemParent, Item $eItemSale) {
+	public function get(Sale $eSale, Item $eItem) {
 
-		$eItemReference = $eItemSale->empty() ? $eItemParent : $eItemSale;
-
-		$unitPrice = $eItemReference['unitPrice'];
-		$number = $eItemSale->empty() ? NULL : $eItemSale['number'];
-		$price = $eItemSale->empty() ? NULL : $eItemSale['price'];
-		$locked = $eItemSale->empty() ? '' : $eItemSale['locked'];
+		$eItem->expects(['id', 'name', 'unit', 'unitPrice', 'number', 'price', 'locked']);
 
 		$actions = function(string $type) {
 
@@ -33,7 +28,7 @@ class MerchantUi {
 
 		$format = fn($property, $value, $precision = 2) => ($value or $property === Item::UNIT_PRICE) ?  \util\TextUi::number($value ?: 0, $precision) : ($precision === 2 ? '-,--' : '-');
 
-		$h = '<div id="merchant-'.$eItemReference['id'].'" class="merchant hide"  data-unit="'.$eItemReference['unit'].'" data-item="'.$eItemReference['id'].'">';
+		$h = '<div id="merchant-'.$eItem['id'].'" class="merchant hide"  data-unit="'.$eItem['unit'].'" data-item="'.$eItem['id'].'">';
 			$h .= '<div class="merchant-background" onclick="Merchant.hide()"></div>';
 			$h .= '<div class="merchant-content">';
 
@@ -45,12 +40,12 @@ class MerchantUi {
 					$h .= $form->openAjax('/selling/market:doUpdateSale');
 
 						$h .= $form->hidden('id', $eSale['id']);
-						$h .= $form->hidden('type['.$eItemReference['id'].']', $eItemSale->empty() ? 'parent' : 'standalone');
-						$h .= $form->hidden('locked['.$eItemReference['id'].']', $locked);
+						$h .= $form->hidden('type['.$eItem['id'].']', ($eItem['number'] !== NULL) ? 'standalone' : 'parent');
+						$h .= $form->hidden('locked['.$eItem['id'].']', $eItem['locked']);
 
 						$h .= '<div class="merchant-title">';
 							$h .= '<h2>';
-								$h .= encode($eItemReference['name']);
+								$h .= encode($eItem['name']);
 							$h .= '</h2>';
 							$h .= '<a onclick="Merchant.hide()" class="merchant-close">'.\Asset::icon('x-lg').'</a>';
 						$h .= '</div>';
@@ -62,11 +57,11 @@ class MerchantUi {
 								$h .= $actions(Item::UNIT_PRICE);
 							$h .= '</div>';
 							$h .= '<a onclick="Merchant.keyboardToggle(this)" data-property="'.Item::UNIT_PRICE.'" class="merchant-field">';
-								$h .= $form->hidden('unitPrice['.$eItemReference['id'].']', $unitPrice);
-								$h .= '<div class="merchant-value" id="merchant-'.$eItemReference['id'].'-unit-price">'.$format(Item::UNIT_PRICE, $unitPrice).'</div>';
+								$h .= $form->hidden('unitPrice['.$eItem['id'].']', $eItem['unitPrice']);
+								$h .= '<div class="merchant-value" id="merchant-'.$eItem['id'].'-unit-price">'.$format(Item::UNIT_PRICE, $eItem['unitPrice']).'</div>';
 							$h .= '</a>';
 							$h .= '<div class="merchant-unit">';
-								$h .= '€ &nbsp;/&nbsp;'.\main\UnitUi::getSingular($eItemReference['unit'], short: TRUE, by: TRUE);
+								$h .= '€ &nbsp;/&nbsp;'.\main\UnitUi::getSingular($eItem['unit'], short: TRUE, by: TRUE);
 							$h .= '</div>';
 
 							$h .= '<div class="merchant-label">'.s("Vendu").'</div>';
@@ -74,13 +69,13 @@ class MerchantUi {
 								$h .= $actions(Item::NUMBER);
 							$h .= '</div>';
 							$h .= '<a onclick="Merchant.keyboardToggle(this)" data-property="'.Item::NUMBER.'" class="merchant-field">';
-								$h .= $form->hidden('number['.$eItemReference['id'].']', $number);
-								$h .= '<div class="merchant-value" id="merchant-'.$eItemReference['id'].'-number">';
-									$h .= $format(Item::NUMBER, $number, $eItemReference->isUnitInteger() ? 0 : 2);
+								$h .= $form->hidden('number['.$eItem['id'].']', $eItem['number']);
+								$h .= '<div class="merchant-value" id="merchant-'.$eItem['id'].'-number">';
+									$h .= $format(Item::NUMBER, $eItem['number'], $eItem->isUnitInteger() ? 0 : 2);
 								$h .= '</div>';
 							$h .= '</a>';
 							$h .= '<div class="merchant-unit">';
-								$h .= \main\UnitUi::getNeutral($eItemReference['unit'], short: TRUE);
+								$h .= \main\UnitUi::getNeutral($eItem['unit'], short: TRUE);
 							$h .= '</div>';
 
 							$h .= '<div class="merchant-label">'.s("Montant").'</div>';
@@ -88,8 +83,8 @@ class MerchantUi {
 								$h .= $actions(Item::PRICE);
 							$h .= '</div>';
 							$h .= '<a onclick="Merchant.keyboardToggle(this)" data-property="'.Item::PRICE.'" class="merchant-field">';
-								$h .= $form->hidden('price['.$eItemReference['id'].']', $price);
-								$h .= '<div class="merchant-value" id="merchant-'.$eItemReference['id'].'-price">'.$format(Item::PRICE, $price).'</div>';
+								$h .= $form->hidden('price['.$eItem['id'].']', $eItem['price']);
+								$h .= '<div class="merchant-value" id="merchant-'.$eItem['id'].'-price">'.$format(Item::PRICE, $eItem['price']).'</div>';
 							$h .= '</a>';
 							$h .= '<div class="merchant-unit">';
 								$h .= '€';
@@ -103,23 +98,14 @@ class MerchantUi {
 
 						$h .= '</div>';
 
-						if($eItemSale->notEmpty()) {
-							$h .= '<a data-ajax="/selling/item:doDelete" post-id="'.$eItemSale['id'].'" class="merchant-delete" data-confirm="'.s("L'article sera retiré de cette vente. Continuer ?").'">'.s("Supprimer cet article").'</a>';
+						if($eItem['number'] !== NULL) {
+							$h .= '<a data-ajax="/selling/item:doDelete" post-id="'.$eItem['id'].'" class="merchant-delete" data-confirm="'.s("L'article sera retiré de cette vente. Continuer ?").'">'.s("Supprimer cet article").'</a>';
 						}
 
 					$h .= $form->close();
 
 				$h .= '</div>';
-				$h .= '<div class="merchant-keyboard disabled">';
-					$h .= '<div class="merchant-digits">';
-						for($digit = 1; $digit <= 9; $digit++) {
-							$h .= '<a onclick="Merchant.pressDigit('.$digit.')" data-digit="'.$digit.'" class="merchant-digit">'.$digit.'</a>';
-						}
-						$h .= '<a onclick="Merchant.pressDigit(0)" data-digit="0" class="merchant-digit">0</a>';
-						$h .= '<a onclick="Merchant.pressDigit(0); Merchant.pressDigit(0);" class="merchant-digit">00</a>';
-						$h .= '<a onclick="Merchant.pressBack();" class="merchant-digit">'.\Asset::icon('backspace').'</a>';
-					$h .= '</div>';
-				$h .= '</div>';
+				$h .= '<div class="merchant-keyboard disabled"></div>';
 
 			$h .= '</div>';
 

@@ -121,18 +121,18 @@ class LegalUi {
 
 		$h .= '<div class="home-category">';
 
+			$h .= '<p>'.s("Les logiciels libres sont en général plus durables que ceux créés avec un objectif commercial :").'</p>';
+			$h .= '<ul>';
+				$h .= '<li>'.s("soumis à des impératifs de rentabilité sous peine de disparaître, quand ce n'est pas l'entreprise qui disparait directement,").'</li>';
+				$h .= '<li>'.s("ne pouvant pas être repris par une communauté de développeurs si l'entreprise change de priorités,").'</li>';
+				$h .= '<li>'.s("dont la tarification peut évoluer sans préavis et piéger les utilisateurs.").'</li>';
+			$h .= '</ul>';
+
 			$h .= '<p>'.s("La pérennité de {siteName} est garantie pour de nombreuses années :").'</p>';
 			$h .= '<ul>';
 				$h .= '<li>'.s("le développement du logiciel a commencé en 2019, et n'a jamais été aussi actif que cette année,").'</li>';
 				$h .= '<li>'.s("le développeur principal en est devenu dépendant dans son exploitation maraichère et n'a donc pas d'autre choix que de le maintenir 😁,").'</li>';
 				$h .= '<li>'.s("les coûts de maintenance et d'exploitation sont très faibles.").'</li>';
-			$h .= '</ul>';
-
-			$h .= '<p>'.s("De plus, les logiciels libres sont en général plus durables que ceux créés avec un objectif commercial :").'</p>';
-			$h .= '<ul>';
-				$h .= '<li>'.s("soumis à des impératifs de rentabilité sous peine de disparaître, quand ce n'est pas l'entreprise qui disparait directement,").'</li>';
-				$h .= '<li>'.s("qui ne peuvent pas être repris par une communauté de développeurs si l'entreprise change de priorités,").'</li>';
-				$h .= '<li>'.s("dont la tarification peut évoluer sans préavis et piéger les utilisateurs.").'</li>';
 			$h .= '</ul>';
 
 		$h .= '</div>';
