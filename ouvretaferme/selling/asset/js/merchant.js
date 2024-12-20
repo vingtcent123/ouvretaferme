@@ -558,7 +558,11 @@ class Merchant {
 		switch(property) {
 
 			case 'number' :
-				return (this.current.qs('.merchant-packaging input')?.value !== null || this.isUnitInteger());
+				const packagingInput = this.current.qs('.merchant-field[data-property="packaging"] input');
+				return (
+					(packagingInput !== null && packagingInput.value !== '') ||
+					this.isUnitInteger()
+				);
 
 			case 'packaging' :
 				return this.isUnitInteger();
