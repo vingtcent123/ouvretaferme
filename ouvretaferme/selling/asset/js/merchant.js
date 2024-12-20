@@ -1,6 +1,6 @@
 document.addEventListener('keydown', (e) => Merchant.pressKey(e));
 document.addEventListener('input', (e) => Merchant.changeInput(e));
-document.delegateEventListener('focusin', '.merchant-item input:not(.hide)', (e) => Merchant.changeFocus(e));
+document.delegateEventListener('focusin', '.merchant-item input:not(.hide):not(:focus)', (e) => Merchant.changeFocus(e));
 
 class Merchant {
 
@@ -307,7 +307,7 @@ class Merchant {
 		field.qs('.merchant-value').innerHTML = '';
 
 		if(field.classList.contains('hide') === false) {
-			this.keyboardToggle(field);
+			this.keyboardOpen(field);
 		}
 
 	}
@@ -337,7 +337,7 @@ class Merchant {
 
 	static changeFocus(e) {
 
-		this.keyboardToggle(e.target.firstParent('.merchant-field'));
+		this.keyboardOpen(e.target.firstParent('.merchant-field'));
 
 	}
 
