@@ -1,5 +1,5 @@
 .merchant {
-	position: absolute;
+	position: fixed;
 	z-index: 10000;
 	top: 0;
 	left: 0;
@@ -29,11 +29,18 @@
 }
 
 .merchant-content {
-	width: 40rem;
+	position: relative;
 	height: 20rem;
+}
+
+body[data-touch="yes"] .merchant-content {
+	width: 40rem;
 	display: grid;
 	grid-template-columns: 1fr 1fr;
-	position: relative;
+}
+
+body[data-touch="no"] .merchant-content {
+	width: 25rem;
 }
 
 .merchant-title {
@@ -65,7 +72,14 @@
 	grid-template-columns: 1fr max-content max-content max-content;
 	grid-row-gap: 1rem;
 	align-items: center;
-	margin-right: -1rem;
+}
+
+body[data-touch="yes"] {
+
+	.merchant-lines {
+		margin-right: -1rem;
+	}
+
 }
 
 @media (max-width: 449px) {
@@ -88,18 +102,25 @@ a.merchant-field {
 	font-size: 1.4rem;
 	text-align: right;
 	background: var(--background-light);
-	padding: 0.25rem 0.75rem 0.25rem 1.5rem;
-	border-top-left-radius: var(--radius);
-	border-bottom-left-radius: var(--radius);
+	padding: 0.25rem 4.75rem 0.25rem 1.5rem;
 	display: flex;
 	align-items: center;
 	justify-content: end;
 	color: var(--text);
 	height: 3.5rem;
-	padding-right: 4.75rem;
 	position: relative;
 	z-index: 1;
 }
+
+body[data-touch="yes"] a.merchant-field {
+	border-top-left-radius: var(--radius);
+	border-bottom-left-radius: var(--radius);
+}
+
+body[data-touch="no"] a.merchant-field {
+	border-radius: var(--radius);
+}
+
 
 @media (max-width: 449px) {
 
@@ -125,6 +146,24 @@ a.merchant-field.disabled {
 	color: var(--muted);
 }
 
+a.merchant-field input {
+	width: 6rem;
+	text-align: right;
+}
+
+a.merchant-field.disabled input {
+	background-color: transparent;
+}
+.merchant-placeholder {
+	grid-column: span 2;
+	background-color: var(--background-light);
+	height: 3.5rem;
+	border-radius: var(--radius);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
 .merchant-unit {
 	padding-right: 1rem;
 	height: 3.5rem;
@@ -139,6 +178,14 @@ a.merchant-field.disabled {
 a.merchant-field.selected + .merchant-unit,
 a.merchant-field:hover + .merchant-unit {
 	color: white;
+}
+
+body[data-touch="yes"] a.merchant-field input {
+	display: none;
+}
+
+body[data-touch="no"] a.merchant-field .merchant-value {
+	display: none;
 }
 
 .merchant-submit {
@@ -171,6 +218,10 @@ a.merchant-delete {
 	box-shadow: 0 0 20rem rgb(0 0 0 / 50%);
 	border-top-right-radius: var(--radius);
 	border-bottom-right-radius: var(--radius);
+}
+
+body[data-touch="no"] .merchant-keyboard {
+	display: none;
 }
 
 @media (max-width: 449px) {

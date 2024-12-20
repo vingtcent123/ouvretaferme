@@ -1940,7 +1940,7 @@ class TaskUi {
 
 				$h .= '<div class="flow-timeline-action">';
 
-					$color = $eTask->isDone() ? 'background-color: '.$eTask['action']['color'] : 'border: 3px dotted '.$eTask['action']['color'];
+					$color = $eTask->isDone() ? 'background-color: '.$eTask['action']['color'] : 'background: repeating-linear-gradient(to bottom, '.$eTask['action']['color'].' 0, '.$eTask['action']['color'].' 3px, transparent 2px, transparent 6px)';
 
 					$h .= '<div class="flow-timeline-lasting-only" style="'.$color.'"></div>';
 

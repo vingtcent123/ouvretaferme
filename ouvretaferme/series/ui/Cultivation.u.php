@@ -523,11 +523,10 @@ class CultivationUi {
 					$ePlant = $cForecast->first()['plant'];
 
 					$h .= '<div class="series-item series-item-forecast series-item-title">';
-						$h .= '<div class="series-item-title-plant">';
+						$h .= '<div class="series-item-title-plant" style="grid-column: span 3">';
 							$h .= \plant\PlantUi::getVignette($ePlant, '2.4rem');
 							$h .= '<span class="series-item-title-plant-name">'.encode($ePlant['name']).'</span>';
 						$h .= '</div>';
-						$h .= '<div style="grid-column: span 2"></div>';
 						$h .= '<div class="series-item-forecast-objective series-item-forecast-objective-first series-item-forecast-objective-last" style="grid-column: span 3"></div>';
 						$h .= '<div class="series-item-forecast-objective series-item-forecast-objective-first series-item-forecast-objective-last" style="grid-column: span 4"></div>';
 						$h .= '<div></div>';

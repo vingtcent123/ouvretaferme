@@ -11,14 +11,14 @@ class MerchantUi {
 	}
 
 
-	public function get(Sale $eSale, Item $eItem) {
+	public function get(string $url, Sale $eSale, Item $eItem, bool $showDelete = TRUE) {
 
 		$eItem->expects(['id', 'name', 'unit', 'unitPrice', 'number', 'price', 'locked']);
 
 		$actions = function(string $type) {
 
 			$h = '<div class="merchant-lock hide">'.\Asset::icon('lock-fill').'</div>';
-				$h .= '<div class="merchant-erase hide">';
+			$h .= '<div class="merchant-erase hide">';
 				$h .= '<a '.attr('onclick', "Merchant.keyboardDelete('".$type."')").' title="'.s("Revenir à zéro").'">'.\Asset::icon('eraser-fill', ['style' => 'transform: scaleX(-1);']).'</a>';
 			$h .= '</div>';
 
@@ -26,7 +26,10 @@ class MerchantUi {
 
 		};
 
-		$format = fn($property, $value, $precision = 2) => ($value or $property === Item::UNIT_PRICE) ?  \util\TextUi::number($value ?: 0, $precision) : ($precision === 2 ? '-,--' : '-');
+		$format = fn($property, $value, $defaultPrecision = 2) => match($defaultPrecision) {
+			0 => ($value or $property === Item::UNIT_PRICE) ? $value : '-',
+			2 => ($value or $property === Item::UNIT_PRICE) ? \util\TextUi::number($value ?: 0, 2) : '-,--'
+		};
 
 		$h = '<div id="merchant-'.$eItem['id'].'" class="merchant hide"  data-unit="'.$eItem['unit'].'" data-item="'.$eItem['id'].'">';
 			$h .= '<div class="merchant-background" onclick="Merchant.hide()"></div>';
@@ -37,7 +40,7 @@ class MerchantUi {
 
 				$h .= '<div class="merchant-item">';
 
-					$h .= $form->openAjax('/selling/market:doUpdateSale');
+					$h .= $form->openAjax($url);
 
 						$h .= $form->hidden('id', $eSale['id']);
 						$h .= $form->hidden('type['.$eItem['id'].']', ($eItem['number'] !== NULL) ? 'standalone' : 'parent');
@@ -52,38 +55,69 @@ class MerchantUi {
 
 						$h .= '<div class="merchant-lines">';
 
-							$h .= '<div class="merchant-label">'.s("Prix unitaire").'</div>';
+							$h .= '<div class="merchant-label" data-wrapper="number['.$eItem['id'].']">'.s("Vendu").'</div>';
+							$h .= '<div class="merchant-actions" data-property="'.Item::NUMBER.'">';
+								$h .= $actions(Item::NUMBER);
+							$h .= '</div>';
+							$h .= '<a onclick="Merchant.keyboardToggle(this)" data-property="'.Item::NUMBER.'" class="merchant-field">';
+								$h .= $form->text('number['.$eItem['id'].']', $eItem['number']);
+								$h .= '<div class="merchant-value" id="merchant-'.$eItem['id'].'-number">';
+									$h .= $format(Item::NUMBER, $eItem['number'], ($eItem['packaging'] !== NULL or $eItem->isUnitInteger()) ? 0 : 2);
+								$h .= '</div>';
+							$h .= '</a>';
+							$h .= '<div class="merchant-unit">';
+								$unit = \main\UnitUi::getNeutral($eItem['unit'], short: TRUE);
+								if($eSale->isPro()) {
+									$h .= '<span class="merchant-unit-packaging merchant-packaging '.($eItem['packaging'] !== NULL ? '' : 'hide').'">'.s("colis").'</span>';
+									$h .= '<span class="merchant-unit-default merchant-packaging '.($eItem['packaging'] !== NULL ? 'hide' : '').'">'.$unit.'</span>';
+								} else {
+									$h .= $unit;
+								}
+							$h .= '</div>';
+
+							if($eSale->isPro()) {
+
+								$h .= '<div class="merchant-label" data-wrapper="packaging['.$eItem['id'].']">'.s("Colisage").'</div>';
+								$h .= '<div class="merchant-actions">';
+									$h .= '<div class="merchant-lock merchant-packaging '.($eItem['packaging'] !== NULL ? 'hide' : '').'">';
+										$h .= '<a '.attr('onclick', "Merchant.packagingToggle()").' title="'.s("Définir un colisage").'">'.\Asset::icon('plus-circle').'</a>';
+									$h .= '</div>';
+									$h .= '<div class="merchant-erase merchant-packaging '.($eItem['packaging'] !== NULL ? '' : 'hide').'">';
+										$h .= '<a '.attr('onclick', "Merchant.packagingToggle()").' data-confirm="'.s("Supprimer les colisage et saisir directement une quantité ?").'" title="'.s("Supprimer le colisage").'">'.\Asset::icon('trash-fill').'</a>';
+									$h .= '</div>';
+								$h .= '</div>';
+								$h .= '<a onclick="Merchant.keyboardToggle(this)" data-property="packaging" class="merchant-field merchant-packaging '.($eItem['packaging'] !== NULL ? '' : 'hide').'">';
+									$h .= $form->text('packaging['.$eItem['id'].']', $eItem['packaging']);
+									$h .= '<div class="merchant-value" id="merchant-'.$eItem['id'].'-packaging">';
+										$h .= $format('packaging', $eItem['packaging'], $eItem->isUnitInteger() ? 0 : 2);
+									$h .= '</div>';
+								$h .= '</a>';
+								$h .= '<div class="merchant-unit merchant-packaging '.($eItem['packaging'] !== NULL ? '' : 'hide').'">';
+									$h .= \main\UnitUi::getNeutral($eItem['unit'], short: TRUE);
+								$h .= '</div>';
+								$h .= '<div class="merchant-placeholder merchant-packaging '.($eItem['packaging'] !== NULL ? 'hide' : '').'">';
+								$h .= '</div>';
+
+							}
+
+							$h .= '<div class="merchant-label" data-wrapper="unitPrice['.$eItem['id'].']">'.s("Prix unitaire").'</div>';
 							$h .= '<div class="merchant-actions" data-property="'.Item::UNIT_PRICE.'">';
 								$h .= $actions(Item::UNIT_PRICE);
 							$h .= '</div>';
 							$h .= '<a onclick="Merchant.keyboardToggle(this)" data-property="'.Item::UNIT_PRICE.'" class="merchant-field">';
-								$h .= $form->hidden('unitPrice['.$eItem['id'].']', $eItem['unitPrice']);
+								$h .= $form->text('unitPrice['.$eItem['id'].']', $eItem['unitPrice']);
 								$h .= '<div class="merchant-value" id="merchant-'.$eItem['id'].'-unit-price">'.$format(Item::UNIT_PRICE, $eItem['unitPrice']).'</div>';
 							$h .= '</a>';
 							$h .= '<div class="merchant-unit">';
 								$h .= '€ &nbsp;/&nbsp;'.\main\UnitUi::getSingular($eItem['unit'], short: TRUE, by: TRUE);
 							$h .= '</div>';
 
-							$h .= '<div class="merchant-label">'.s("Vendu").'</div>';
-							$h .= '<div class="merchant-actions" data-property="'.Item::NUMBER.'">';
-								$h .= $actions(Item::NUMBER);
-							$h .= '</div>';
-							$h .= '<a onclick="Merchant.keyboardToggle(this)" data-property="'.Item::NUMBER.'" class="merchant-field">';
-								$h .= $form->hidden('number['.$eItem['id'].']', $eItem['number']);
-								$h .= '<div class="merchant-value" id="merchant-'.$eItem['id'].'-number">';
-									$h .= $format(Item::NUMBER, $eItem['number'], $eItem->isUnitInteger() ? 0 : 2);
-								$h .= '</div>';
-							$h .= '</a>';
-							$h .= '<div class="merchant-unit">';
-								$h .= \main\UnitUi::getNeutral($eItem['unit'], short: TRUE);
-							$h .= '</div>';
-
-							$h .= '<div class="merchant-label">'.s("Montant").'</div>';
+							$h .= '<div class="merchant-label" data-wrapper="price['.$eItem['id'].']">'.s("Montant").'</div>';
 							$h .= '<div class="merchant-actions" data-property="'.Item::PRICE.'">';
 								$h .= $actions(Item::PRICE);
 							$h .= '</div>';
 							$h .= '<a onclick="Merchant.keyboardToggle(this)" data-property="'.Item::PRICE.'" class="merchant-field">';
-								$h .= $form->hidden('price['.$eItem['id'].']', $eItem['price']);
+								$h .= $form->text('price['.$eItem['id'].']', $eItem['price']);
 								$h .= '<div class="merchant-value" id="merchant-'.$eItem['id'].'-price">'.$format(Item::PRICE, $eItem['price']).'</div>';
 							$h .= '</a>';
 							$h .= '<div class="merchant-unit">';
@@ -98,7 +132,10 @@ class MerchantUi {
 
 						$h .= '</div>';
 
-						if($eItem['number'] !== NULL) {
+						if(
+							$showDelete and
+							$eItem['number'] !== NULL
+						) {
 							$h .= '<a data-ajax="/selling/item:doDelete" post-id="'.$eItem['id'].'" class="merchant-delete" data-confirm="'.s("L'article sera retiré de cette vente. Continuer ?").'">'.s("Supprimer cet article").'</a>';
 						}
 

@@ -226,26 +226,6 @@ class ItemLib extends ItemCrud {
 				continue;
 			}
 
-			$unitPrice = ($post['unitPrice'][$key] ?? NULL);
-
-			if($unitPrice !== NULL) {
-				$unitPrice = ($unitPrice === '') ? NULL : (float)$unitPrice;
-			}
-
-			$number = ($post['number'][$key] ?? NULL);
-
-			if($number !== NULL) {
-				$number = ($number === '') ? NULL : (float)$number;
-			}
-
-			$price = ($post['price'][$key] ?? NULL);
-
-			if($price !== NULL) {
-				$price = ($price === '') ? NULL : (float)$price;
-			}
-
-			$locked = var_filter($post['locked'][$key] ?? NULL, Item::model()->getPropertyEnum('locked'));
-
 			$eItemNew = new Item([
 				'id' => ($type === 'parent') ? NULL : $eItem['id'],
 				'parent' => ($type === 'parent') ? $eItem : $eItem['parent'],
@@ -254,15 +234,12 @@ class ItemLib extends ItemCrud {
 				'customer' => $eSale['customer'],
 				'product' => $eItem['product'],
 				'name' => $eItem['name'],
-				'packaging' => NULL,
-				'locked' => \selling\Item::PRICE,
+				'quality' => $eItem['quality'],
 				'unit' => $eItem['unit'],
-				'unitPrice' => $unitPrice,
-				'number' => $number,
-				'price' => $price,
-				'locked' => $locked,
 				'vatRate' => $eItem['vatRate'],
 			]);
+
+			$eItemNew->buildIndex(['locked', 'number', 'unitPrice', 'price', 'packaging'], $post, $key);
 
 			$cItemNew[] = $eItemNew;
 

@@ -297,7 +297,7 @@ a.nav-year:hover {
 	a.farm-subnav-item {
 		display: block;
 		color: white;
-		padding: 0.375rem 0.5rem 0.375rem calc(1.5rem + var(--nav-padding));
+		padding: 0.5rem 0.5rem 0.5rem calc(1.5rem + var(--nav-padding));
 	}
 
 	@media (max-height: 649px) {

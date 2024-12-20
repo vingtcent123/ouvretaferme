@@ -71,6 +71,10 @@ class ItemUi {
 			$withPackaging = $cItem->reduce(fn($eItem, $n) => $n + (int)($eItem['packaging'] !== NULL), 0);
 			$columns = 0;
 
+			foreach($cItem as $eItem) {
+				$h .= (new MerchantUi())->get('/selling/item:doUpdateMerchant', $eSale, $eItem, showDelete: FALSE);
+			}
+
 			$h .= '<div class="stick-xs">';
 
 				$h .= '<table class="tbody-even item-item-table '.($withPackaging ? 'item-item-table-with-packaging' : '').' mb-2">';
@@ -176,23 +180,44 @@ class ItemUi {
 								if($withPackaging) {
 
 									$h .= '<td class="item-item-packaging">';
+
 										if($eItem['packaging']) {
-											$h .= ($eItem['locked'] !== Item::NUMBER) ? '<b>'.$eItem->quick('number', $eItem['number']).'</b>' : '<span class="item-item-locked">'.\Asset::icon('lock-fill').'</span> <b>'.$eItem['number'].'</b>';
-											$h .= '<span class="item-item-packaging-size"> x '.$eItem->quick('packaging', \main\UnitUi::getValue($eItem['packaging'], $eItem['unit'], TRUE)).'</span>';
+
+											$value = '<b>'.$eItem['number'].'</b>';
+
+											if($eItem['locked'] === Item::NUMBER) {
+												$h .= '<span class="item-item-locked">'.\Asset::icon('lock-fill').'</span> '.$value;
+											} else {
+												$h .= '<a onclick="Merchant.show(this)" class="util-quick" data-item="'.$eItem['id'].'" data-property="'.Item::NUMBER.'">'.$value.'</a>';
+											}
+
+											$h .= '<span class="item-item-packaging-size"> x ';
+												$h .= '<a onclick="Merchant.show(this)" class="util-quick" data-item="'.$eItem['id'].'" data-property="packaging">'.\main\UnitUi::getValue($eItem['packaging'], $eItem['unit'], TRUE).'</a>';
+											$h .= '</span>';
 										} else {
 											$h .= '-';
 										}
+
 									$h .= '</td>';
 
 								}
 
 								$h .= '<td class="item-item-number text-end">';
 									if($eItem['packaging']) {
-										$h .= \main\UnitUi::getValue($eItem['number'] * $eItem['packaging'], $eItem['unit'], TRUE);
+										$h .= '<span class="item-item-locked">'.\Asset::icon('lock-fill').'</span> '.\main\UnitUi::getValue($eItem['number'] * $eItem['packaging'], $eItem['unit'], TRUE);
 									} else {
 										$value = \main\UnitUi::getValue($eItem['number'], $eItem['unit'], TRUE);
-										$h .= ($eItem['locked'] !== Item::NUMBER) ? $eItem->quick('number', $value) : '<span class="item-item-locked">'.\Asset::icon('lock-fill').'</span> '.$value;
+
+										if($eItem['locked'] === Item::NUMBER) {
+											$h .= '<span class="item-item-locked">'.\Asset::icon('lock-fill').'</span> '.$value;
+										} else if($eItem->canUpdate() === FALSE) {
+											$h .= $value;
+										} else {
+											$h .= '<a onclick="Merchant.show(this)" class="util-quick" data-item="'.$eItem['id'].'" data-property="number">'.$value.'</a>';
+										}
+
 									}
+
 								$h .= '</td>';
 
 								$h .= '<td class="item-item-unit-price text-end">';
@@ -203,7 +228,14 @@ class ItemUi {
 										$unit = '';
 									}
 									$value = \util\TextUi::money($eItem['unitPrice']).' '.$unit;
-									$h .= ($eItem['locked'] !== Item::UNIT_PRICE) ? $eItem->quick('unitPrice', $value) : '<span class="item-item-locked">'.\Asset::icon('lock-fill').'</span> '.$value;
+
+									if($eItem['locked'] === Item::UNIT_PRICE) {
+										$h .= '<span class="item-item-locked">'.\Asset::icon('lock-fill').'</span> '.$value;
+									} else if($eItem->canUpdate() === FALSE) {
+										$h .= $value;
+									} else {
+										$h .= '<a onclick="Merchant.show(this)" class="util-quick" data-item="'.$eItem['id'].'" data-property="unit-price">'.$value.'</a>';
+									}
 
 									if(
 										$eSale['market'] and
@@ -227,7 +259,15 @@ class ItemUi {
 								) {
 									$h .= '<td class="item-item-price text-end">';
 										$value = \util\TextUi::money($eItem['price']);
-										$h .= ($eItem['locked'] !== Item::PRICE) ? $eItem->quick('price', $value) : '<span class="item-item-locked">'.\Asset::icon('lock-fill').'</span> '.$value;
+
+										if($eItem['locked'] === Item::PRICE) {
+											$h .= '<span class="item-item-locked">'.\Asset::icon('lock-fill').'</span> '.$value;
+										} else if($eItem->canUpdate() === FALSE) {
+											$h .= $value;
+										} else {
+											$h .= '<a onclick="Merchant.show(this)" class="util-quick" data-item="'.$eItem['id'].'" data-property="price">'.$value.'</a>';
+										}
+
 									$h .= '</td>';
 								}
 
@@ -761,7 +801,7 @@ class ItemUi {
 
 			$h .= $form->dynamicGroups($eItem, ['name', 'quality', 'description']);
 
-			if($eItem['customer']->isPro()) {
+			if($eItem['sale']->isPro()) {
 				$h .= self::getPackagingField($form, 'packaging', $eItem);
 			}
 

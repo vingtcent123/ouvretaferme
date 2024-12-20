@@ -49,6 +49,20 @@
 
 		throw new BackAction('selling', 'Item::created');
 
+	})
+	->write('doUpdateMerchant', function($data) {
+
+		$fw = new FailWatch();
+
+		$cItemSale = \selling\ItemLib::checkNewItems($data->e, $_POST);
+
+		$fw->validate();
+
+		\selling\ItemLib::updateSaleCollection($data->e, $cItemSale);
+
+		throw new ReloadAction();
+
+
 	});
 
 (new \selling\ItemPage())

@@ -153,6 +153,16 @@ class Sale extends SaleElement {
 
 	}
 
+	public function isPro(): bool {
+		$this->expects(['type']);
+		return $this['type'] === Customer::PRO;
+	}
+
+	public function isPrivate(): bool {
+		$this->expects(['type']);
+		return $this['type'] === Customer::PRIVATE;
+	}
+
 	public function isMarketPreparing(): bool {
 
 		return (

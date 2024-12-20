@@ -371,13 +371,14 @@ class MarketUi {
 				}
 
 				$h .= $this->getSaleItem($eSale, $eItemMarket, $eItemSale);
-				$h .= (new MerchantUi())->get($eSale, $eItemSale->empty() ? new Item([
+				$h .= (new MerchantUi())->get('/selling/market:doUpdateSale', $eSale, $eItemSale->empty() ? new Item([
 					'id' => $eItemMarket['id'],
 					'name' => $eItemMarket['name'],
 					'unit' => $eItemMarket['unit'],
 					'unitPrice' => $eItemMarket['unitPrice'],
 					'number' => NULL,
 					'price' => NULL,
+					'packaging' => NULL,
 					'locked' => '',
 				]) : $eItemSale);
 

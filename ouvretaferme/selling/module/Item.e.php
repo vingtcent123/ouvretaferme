@@ -6,7 +6,7 @@ class Item extends ItemElement {
 	public static function getSelection(): array {
 
 		return parent::getSelection() + [
-			'sale' => ['farm', 'hasVat', 'taxes', 'shippingVatRate', 'shippingVatFixed', 'document', 'preparationStatus', 'market', 'marketParent', 'shipping'],
+			'sale' => ['farm', 'hasVat', 'type', 'taxes', 'shippingVatRate', 'shippingVatFixed', 'document', 'preparationStatus', 'market', 'marketParent', 'shipping'],
 			'customer' => ['name', 'type'],
 			'product' => [
 				'name', 'variety', 'description', 'vignette', 'size', 'unit', 'plant',
@@ -81,13 +81,17 @@ class Item extends ItemElement {
 
 			},
 
-			'number.empty' => function(?float $number): bool {
+			'number.empty' => function(?float $number, array $newProperties, array $validProperties): bool {
+
+				if(in_array('locked', $validProperties) === FALSE) {
+					return FALSE;
+				}
 
 				$this->expects([
-					'sale' => ['market']
+					'sale' => ['market'],
 				]);
 
-				if($this['sale']['market']) {
+				if($this['locked'] === Item::NUMBER or $this['sale']['market']) {
 					return TRUE;
 				} else {
 					return ($number !== NULL);
@@ -95,12 +99,10 @@ class Item extends ItemElement {
 
 			},
 
-			'number.division' => function(?float $number): bool {
+			'number.division' => function(?float $number, array $newProperties, array $validProperties): bool {
 
-				try {
-					$this->expects(['locked']);
-				} catch(\Exception) {
-					return FALSE;
+				if(in_array('locked', $validProperties) === FALSE) {
+					return TRUE;
 				}
 
 				return (
@@ -110,12 +112,10 @@ class Item extends ItemElement {
 
 			},
 
-			'unitPrice.division' => function(?float $unitPrice): bool {
+			'unitPrice.division' => function(?float $unitPrice, array $newProperties, array $validProperties): bool {
 
-				try {
-					$this->expects(['locked']);
-				} catch(\Exception) {
-					return FALSE;
+				if(in_array('locked', $validProperties) === FALSE) {
+					return TRUE;
 				}
 
 				return (
@@ -125,17 +125,15 @@ class Item extends ItemElement {
 
 			},
 
-			'price.locked' => function(?float $price): bool {
+			'price.locked' => function(?float $price, array $newProperties, array $validProperties): bool {
 
-				try {
-					$this->expects(['locked']);
-				} catch(\Exception) {
-					return FALSE;
+				if(in_array('locked', $validProperties) === FALSE) {
+					return TRUE;
 				}
 
 				return (
 					$price !== NULL or
-					$this['locked'] === 'price'
+					$this['locked'] === Item::PRICE
 				);
 
 			},

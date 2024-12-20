@@ -211,7 +211,7 @@ class FormUi {
 				$h .= '<div>';
 					$h .= $form->dynamicField($e, $property);
 				$h .= '</div>';
-				$h .= $form->submit(s("Enregistrer"));
+				$h .= $form->submit(s("Enregistrer"), ['class' => 'btn btn-outline-transparent']);
 			$h . '</div>';
 		$h .= $form->close();
 
