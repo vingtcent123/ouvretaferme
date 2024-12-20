@@ -34,9 +34,19 @@
 }
 
 body[data-touch="yes"] .merchant-content {
-	width: 40rem;
+	width: calc(100vw - 2rem);
+	max-width: 40rem;
 	display: grid;
 	grid-template-columns: 1fr 1fr;
+}
+
+@media (max-width: 399px) {
+
+	body[data-touch="yes"] .merchant-content {
+		width: calc(100vw - 1rem);
+		grid-template-columns: 17rem 1fr;
+	}
+
 }
 
 body[data-touch="no"] .merchant-content {
@@ -127,6 +137,14 @@ body[data-touch="no"] a.merchant-field {
 	a.merchant-field {
 		font-size: 1.2rem;
 		padding-left: 1rem;
+	}
+
+}
+
+@media (max-width: 399px) {
+
+	a.merchant-field {
+		font-size: 1rem;
 	}
 
 }
