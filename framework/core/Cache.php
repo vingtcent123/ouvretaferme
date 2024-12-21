@@ -739,7 +739,7 @@ class RedisCache extends Cache {
 
 		if($newTimeout === 0) {
 			return $this->getClient()->persist($key);
-		} else if($newTimeout < 60 * 60 * 24 * 30) {
+		} else if($newTimeout < 86400 * 365) {
 			return $this->getClient()->expire($key, $newTimeout);
 		} else {
 			return $this->getClient()->expireAt($key, $newTimeout);

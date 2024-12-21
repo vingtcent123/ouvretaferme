@@ -40,8 +40,8 @@ class HomeUi {
 
 			$eUser = \user\ConnectionLib::getOnline();
 
-			$key = 'training-202403-'.$eUser['id'];
-			$expires = (strtotime(\Setting::get('main\limitTraining')) + 86400 * 7 - time());
+			$key = 'pub-2025001-'.$eUser['id'];
+			$expires = strtotime(\Setting::get('main\limitTraining').' + 7 DAYS');
 
 			if(get_exists('training')) {
 				\Cache::redis()->set($key, 5);
@@ -56,23 +56,23 @@ class HomeUi {
 					return '';
 				}
 
-				\Cache::redis()->set($key, $newValue);
+				\Cache::redis()->set($key, $newValue, $expires);
 
 			}
 
 		}
 
-		$h = '<div class="home-blog bg-training util-block-flat">';
+		$h = '<div class="home-blog bg-training util-block-flat stick-xs">';
 			$h .= '<div>';
 				$h .= \Asset::image('main', 'favicon.png').'';
 			$h .= '</div>';
 			$h .= '<div>';
-				$h .= '<h4 class="mb-0 color-secondary">'.s("21, 22 ou 26 mars 2024 en Auvergne").'</h4>';
+				$h .= '<h4 class="mb-0 color-secondary">'.s("29 janvier 2025 dans le Puy-de-Dôme (63)").'</h4>';
 				$h .= '<h2 class="font-oswald">';
-					$h .= s("Formations sur {siteName} !");
+					$h .= s("Formation sur {siteName} !");
 				$h .= '</h2>';
 				$h .= '<div>';
-					$h .= '<p>'.s("Des formations à la journée finançables VIVEA sont organisées pour {siteName}. Une occasion idéale pour prendre en main ou se perfectionner sur {siteName}, discuter des évolutions possibles et échanger sur vos problématiques !").'</p>';
+					$h .= '<p>'.s("Une formation à la journée finançable VIVEA est organisée pour {siteName}. Une occasion idéale pour prendre en main ou se perfectionner sur {siteName}, discuter des évolutions possibles sur le logiciel et échanger sur vos problématiques !").'</p>';
 					$h .= '<a href="/presentation/formations" target="_blank" class="btn btn-secondary" style="margin-bottom: 0.25rem">'.\Asset::icon('chevron-right').' '.s("En savoir plus").'</a>';
 					if(\user\ConnectionLib::isLogged() and $hide) {
 						$h .= ' <a href="'.\util\HttpUi::setArgument(LIME_REQUEST, 'training', 1).'" class="btn btn-secondary" style="margin-bottom: 0.25rem">'.\Asset::icon('x-lg').' '.s("Ok, cacher ce message").'</a>';
