@@ -351,6 +351,10 @@
 	vertical-align: baseline;
 }
 
+.shop-product-available {
+	white-space: nowrap;
+}
+
 .shop-product-sold {
 	font-size: 1.2rem;
 	font-weight: bold;

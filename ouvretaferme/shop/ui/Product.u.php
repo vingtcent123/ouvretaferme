@@ -609,7 +609,7 @@ class ProductUi {
 
 							if($isExpired === FALSE) {
 
-								$h .= '<td '.($eProduct->exists() ? 'id="product-available-'.$eProduct['id'].'"' : '').'>';
+								$h .= '<td class="shop-product-available" '.($eProduct->exists() ? 'id="product-available-'.$eProduct['id'].'"' : '').'>';
 									$h .= $this->getStatus($eProduct, $canUpdate);
 								$h .= '</td>';
 
@@ -661,7 +661,7 @@ class ProductUi {
 
 		$taxes = $eFarm->getSelling('hasVat') ? '<span class="util-annotation">'.\selling\CustomerUi::getTaxes($e['type']).'</span>' : '';
 
-		$h = '<div class="'.($e['type'] === Date::PRIVATE ? 'util-overflow-xs' : 'util-overflow-sm').' stick-xs">';
+		$h = '<div class="util-overflow-sm stick-xs">';
 			$h .= '<table class="tr-even">';
 				$h .= '<thead>';
 					$h .= '<tr>';
@@ -711,7 +711,7 @@ class ProductUi {
 								$h .= $eProduct->quick('price', $price);
 							$h .= '</td>';
 
-							$h .= '<td id="product-available-'.$eProduct['id'].'">';
+							$h .= '<td class="shop-product-available" id="product-available-'.$eProduct['id'].'">';
 								$h .= $this->getStatus($eProduct, TRUE);
 							$h .= '</td>';
 
