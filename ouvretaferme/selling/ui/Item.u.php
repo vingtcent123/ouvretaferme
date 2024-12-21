@@ -37,7 +37,7 @@ class ItemUi {
 					$h .= '<h3>'.s("Préparation du marché").'</h3>';
 
 					$h .= '<div class="util-info">';
-						$h .= s("Ajoutez les articles à prendre pour préparer votre marché !");
+						$h .= s("Ajoutez les articles à vendre pendant votre marché !");
 					$h .= '</div>';
 
 				}
@@ -290,9 +290,9 @@ class ItemUi {
 			$h .= '</div>';
 
 			if($eSale['market'] and $eSale['preparationStatus'] === Sale::DRAFT) {
-				$h .= '<div class="util-block">';
-					$h .= '<h4>'.s("Votre préparation de marché est complète ?").'</h4>';
-					$h .= '<a data-ajax="/selling/sale:doUpdatePreparationStatus" post-id="'.$eSale['id'].'" post-preparation-status="'.Sale::CONFIRMED.'" class="btn btn-order">'.s("Confirmer la vente").'</a>';
+				$h .= '<div class="util-block bg-order color-white" style="display: flex; align-items: center; justify-content: space-between">';
+					$h .= '<h4 class="mb-0">'.s("Votre préparation de marché est complète ?").'</h4>';
+					$h .= '<a data-ajax="/selling/sale:doUpdatePreparationStatus" post-id="'.$eSale['id'].'" post-preparation-status="'.Sale::CONFIRMED.'" class="btn btn-transparent">'.s("Confirmer la vente").'</a>';
 				$h .= '</div>';
 			}
 

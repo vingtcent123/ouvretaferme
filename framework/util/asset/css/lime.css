@@ -1535,6 +1535,9 @@ td.util-manage-vignette {
 .bg-done {
 	background-color: var(--done) !important;
 }
+.bg-order {
+	background-color: var(--order) !important;
+}
 .bg-selling {
 	background-color: var(--selling) !important;
 }

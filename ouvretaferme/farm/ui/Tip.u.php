@@ -211,11 +211,11 @@ class TipUi {
 
 				$link = FarmUi::urlSellingSalesAll($eFarm);
 
-				$h = '<p>'.s("Au marché avec votre téléphone ou une tablette, saisissez vos ventes. Plus besoin d'une balance sophistiquée. À la fin du marché, vous savez exactement ce que vous avez vendu. Vous pouvez même saisir les commandes de vos clients à honorer ultérieurement directement en ligne.").'</p>';
+				$h = '<p>'.s("Au marché avec votre téléphone ou une tablette, saisissez vos ventes avec le logiciel de caisse intégré. Plus besoin d'une balance sophistiquée. À la fin du marché, vous savez exactement ce que vous avez vendu. Vous pouvez même saisir les commandes de vos clients à honorer ultérieurement directement en ligne.").'</p>';
 
 				return [
 					'icon' => \Asset::icon('cart2'),
-					'title' => s("Un mode marché"),
+					'title' => s("Un logiciel de caisse"),
 					'content' => $h,
 					'image' => TRUE,
 					'button' => [$link, s("Aller aux ventes")],
