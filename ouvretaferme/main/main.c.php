@@ -6,7 +6,7 @@ Setting::register('main', [
 
 	'robotsDisallow' => '',
 
-	'limitTraining' => '2025-01-15'
+	'limitTraining' => '2025-01-10'
 
 ]);
 ?>

@@ -621,6 +621,15 @@ class FarmUi {
 					$h .= '</a>';
 				}
 
+				if(currentDate() <= \Setting::get('main\limitTraining')) {
+					$h .= '<a href="/presentation/formations" class="farm-tab" class="hide-lateral-down">';
+						$h .= '<span class="farm-tab-icon">'.\Asset::icon('book').'</span>';
+						$h .= '<span class="farm-tab-label">';
+							$h .= s("Formation");
+						$h .= '</span>';
+					$h .= '</a>';
+				}
+
 			$h .= '</div>';
 
 		$h .= '</nav>';
