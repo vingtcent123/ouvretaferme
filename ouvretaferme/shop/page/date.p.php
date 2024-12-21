@@ -54,25 +54,30 @@
 
 		\farm\FarmerLib::register($data->eFarm);
 
-		$data->e['farm'] = $data->eFarm;
-
-		$data->e['cProduct'] = \shop\ProductLib::getByDate($data->e, onlyActive: FALSE);
-
 		$data->cSale = \selling\SaleLib::getByDate($data->e, NULL, select: \selling\Sale::getSelection() + [
 			'shopPoint' => \shop\PointElement::getSelection()
 		]);
 
-		$data->e['cProduct']->mergeCollection(\shop\ProductLib::aggregateBySales($data->cSale, $data->e['cProduct']->getColumnCollection('product')));
-		$data->e['cProduct']->sort(['product' => ['name']], natural: TRUE);
+		$data->e['farm'] = $data->eFarm;
+
+		$data->e['ccProduct'] = \shop\ProductLib::getByDate($data->e, onlyActive: FALSE);
+
+		// Uniquement les boutiques avec un seul producteur
+		$data->e['ccProductOut'] = \shop\ProductLib::aggregateBySales($data->cSale, $data->e['ccProduct']->getColumnCollection('product'));
 
 		$data->e['cCategory'] = \selling\CategoryLib::getByFarm($data->eFarm);
 		$data->e['ccPoint'] = \shop\PointLib::getByDate($data->e);
 
 		if($data->e['catalogs']) {
-			$data->e['cCatalog'] = \shop\CatalogLib::getByIds($data->e['catalogs'], index: 'id');
+			$data->e['cCatalog'] = \shop\CatalogLib::getByIds($data->e['catalogs'], index: 'farm');
+			$data->e['cFarm'] = $data->e['cCatalog']->getColumnCollection('farm');
 		} else {
 			$data->e['cCatalog'] = new Collection();
+			$data->e['cFarm'] = new Collection([
+				$data->eFarm
+			]);
 		}
+
 
 		throw new \ViewAction($data);
 

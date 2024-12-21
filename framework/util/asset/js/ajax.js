@@ -899,6 +899,34 @@ Ajax.Instruction = class {
 
 				case 'toggleSwitch' :
 					node.toggleSwitch();
+					let property, values;
+					[property, values] = data;
+					if(
+						property !== null &&
+						values.length === 2
+					) {
+
+						const test = (value) => {
+							if(value === true) {
+								return '1';
+							} else if(value === false) {
+								return '0';
+							} else {
+								return value;
+							}
+						};
+
+						node.setAttribute(property, node.getAttribute(property) === test(values[0]) ? test(values[1]) : test(values[0]));
+
+					}
+					break;
+
+				case 'switchOn' :
+					node.switchOn();
+					break;
+
+				case 'switchOff' :
+					node.switchOff();
 					break;
 
 				case 'outerHtml' :

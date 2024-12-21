@@ -32,7 +32,9 @@ class ProductLib extends ProductCrud {
 			return $cProductShop;
 
 		} else {
-			return self::getByDate($eDate, FALSE);
+			$ccProduct = self::getByDate($eDate, FALSE);
+			// Multi producteur pas géré
+			return $ccProduct->first();
 		}
 
 	}
@@ -60,27 +62,20 @@ class ProductLib extends ProductCrud {
 
 	}
 
-	public static function countByDate(Date $eDate): int {
-
-		$eDate->expects(['catalogs']);
-
-		return Product::model()
-			->whereCatalog('IN', $eDate['catalogs'], if: $eDate->isCatalog())
-			->whereDate($eDate, if: $eDate->isDirect())
-			->count();
-
-	}
-
 	public static function excludeExisting(Date|Catalog $e, \Collection $cProductSelling): void {
 
 		if($e instanceof Date) {
-			$cProduct = self::getByDate($e, onlyActive: FALSE);
+			$cProduct = self::getColumnByDate($e, 'product', onlyActive: FALSE);
 		} else {
-			$cProduct = self::getByCatalog($e, onlyActive: FALSE);
+			$cProduct = self::getColumnByCatalog($e, 'product', onlyActive: FALSE);
+		}
+
+		if($cProduct === []) {
+			return;
 		}
 
 		foreach($cProduct as $eProduct) {
-			$cProductSelling->offsetUnset($eProduct['product']['id']);
+			$cProductSelling->offsetUnset($eProduct['id']);
 		}
 
 	}
@@ -95,6 +90,7 @@ class ProductLib extends ProductCrud {
 					'stockExpired' => new \Sql('stockUpdatedAt IS NOT NULL AND stockUpdatedAt < NOW() - INTERVAL 7 DAY', 'bool'),
 					'plant' => ['name', 'fqn', 'vignette']
 				],
+				'farm',
 				'packaging',
 				'price' => new \Sql('SUM(price) / SUM(IF(packaging IS NULL, 1, packaging) * number)', 'float'),
 				'sold' => new \Sql('SUM(number)', 'float'),
@@ -102,14 +98,17 @@ class ProductLib extends ProductCrud {
 			->where('sale', 'IN', $cSale)
 			->where('product', 'NOT IN', $cProductExclude)
 			->where('number > 0')
-			->group(['product', 'packaging'])
+			->group(['farm', 'product', 'packaging'])
 			->getCollection();
 
-		$cProduct = new \Collection();
+		$ccProduct = new \Collection();
 
 		foreach($cItem as $eItem) {
 
-			$cProduct[] = new Product([
+			$ccProduct[$eItem['farm']['id']] ??= new \Collection();
+
+			$ccProduct[$eItem['farm']['id']][] = new Product([
+				'farm' => $eItem['farm'],
 				'product' => $eItem['product'],
 				'packaging' => $eItem['packaging'],
 				'price' => round($eItem['price'], 2),
@@ -124,23 +123,70 @@ class ProductLib extends ProductCrud {
 
 		}
 
-		return $cProduct;
+		return $ccProduct;
+
+	}
+
+	public static function getColumnByDate(Date $eDate, string $column, bool $onlyActive = TRUE): array|\Collection {
+
+		$data = Product::model()
+			->select($column)
+			->whereDate($eDate)
+			->whereStatus(Product::ACTIVE, if: $onlyActive)
+			->getColumn($column);
+
+		if($eDate->isCatalog()) {
+
+			$newData = Product::model()
+				->select(ProductElement::getSelection())
+				->whereCatalog('IN', $eDate['catalogs'])
+				->whereStatus(Product::ACTIVE, if: $onlyActive)
+				->getColumn($column);
+
+			if($newData instanceof \Collection) {
+				$data->mergeCollection($newData);
+			} else {
+				$data = array_merge($data, $newData);
+			}
+
+		}
+
+		return $data;
 
 	}
 
 	public static function getByDate(Date $eDate, bool $onlyActive = TRUE, \selling\Sale $eSaleExclude = new \selling\Sale()): \Collection {
 
-		$cProduct = Product::model()
+		$ids = self::getColumnByDate($eDate, 'id', $onlyActive);
+
+		if($ids === []) {
+			return new \Collection();
+		}
+
+		$ccProduct = Product::model()
 			->select(Product::getSelection())
-			->whereCatalog('IN', $eDate['catalogs'], if: $eDate->isCatalog())
-			->whereDate($eDate, if: $eDate->isDirect())
+			->whereId('IN', $ids)
+			->getCollection(NULL, NULL, ['farm', 'product']);
+
+		$ccProduct->map(function($cProduct) use ($eDate, $eSaleExclude) {
+
+			$cProduct->sort(['product' => ['name']], natural: TRUE);
+			self::putSold($eDate, $cProduct, $eSaleExclude);
+
+		});
+
+
+		return $ccProduct;
+
+	}
+
+	public static function getColumnByCatalog(Catalog $eCatalog, string $column, bool $onlyActive = TRUE): array|\Collection {
+
+		return Product::model()
+			->select($column)
+			->whereCatalog($eCatalog)
 			->whereStatus(Product::ACTIVE, if: $onlyActive)
-			->getCollection(NULL, NULL, 'product')
-			->sort(['product' => ['name']], natural: TRUE);
-
-		self::putSold($eDate, $cProduct, $eSaleExclude);
-
-		return $cProduct;
+			->getColumn($column);
 
 	}
 
@@ -196,10 +242,6 @@ class ProductLib extends ProductCrud {
 	public static function prepareCollection(Date|Catalog $e, \Collection $cProductSelling, array $products, array $input): \Collection {
 
 		if($e instanceof Date) {
-
-			if($e->isDirect() === FALSE) {
-				throw new \Exception('Invalid source');
-			}
 
 			$e->expects([
 				'shop',
@@ -270,9 +312,7 @@ class ProductLib extends ProductCrud {
 				->option('add-ignore')
 				->insert($c);
 
-			if($e instanceof Date) {
-				DateLib::recalculate($e);
-			} else {
+			if($e instanceof Catalog) {
 				CatalogLib::recalculate($e);
 			}
 
@@ -283,38 +323,13 @@ class ProductLib extends ProductCrud {
 
 	public static function delete(Product $eProduct): void {
 
-		$eProduct->expects(['id', 'date', 'shop', 'catalog']);
-
-		if($eProduct['date']->notEmpty()) {
-
-			$cSale = \selling\Sale::model()
-				->select('id')
-				->whereFrom(\selling\Sale::SHOP)
-				->whereShopDate($eProduct['date'])
-				->getCollection();
-
-			if($cSale->notEmpty()) {
-				$hasItems = \selling\Item::model()
-					->whereProduct($eProduct['product'])
-					->whereSale('in', $cSale)
-					->exists();
-			} else {
-				$hasItems = FALSE;
-			}
-
-			if($hasItems) {
-				throw new \NotExpectedAction('This product has already been sold.');
-			}
-
-		}
+		$eProduct->expects(['id', 'catalog']);
 
 		Product::model()->beginTransaction();
 
 			Product::model()->delete($eProduct);
 
-			if($eProduct['date']->notEmpty()) {
-				DateLib::recalculate($eProduct['date']);
-			} else {
+			if($eProduct['catalog']->notEmpty()) {
 				CatalogLib::recalculate($eProduct['catalog']);
 			}
 

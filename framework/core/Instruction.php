@@ -295,8 +295,24 @@ class QuerySelectorInstruction implements Instruction {
 	/**
 	 * Toggle switch element
 	 */
-	public function toggleSwitch(): self {
-		$this->instructions[] = ['toggleSwitch'];
+	public function toggleSwitch(string $property = NULL, array $values = []): self {
+		$this->instructions[] = ['toggleSwitch', [$property, $values]];
+		return $this;
+	}
+
+	/**
+	 * Switch on element
+	 */
+	public function switchOn(): self {
+		$this->instructions[] = ['switchOn'];
+		return $this;
+	}
+
+	/**
+	 * Switch off element
+	 */
+	public function switchOff(): self {
+		$this->instructions[] = ['switchOff'];
 		return $this;
 	}
 

@@ -222,9 +222,9 @@ class ShopManageUi {
 			$h .= '<div>';
 				if($eShop->canWrite()) {
 					if($cDate->empty()) {
-						$h .= '<a href="/shop/date:create?shop='.$eShop['id'].'&farm='.$eFarm['id'].'" class="btn btn-outline-primary">'.\Asset::icon('plus-circle').' '.s("Nouvelle vente").'</a>';
+						$h .= '<a href="/shop/date:create?shop='.$eShop['id'].'&farm='.$eFarm['id'].'" class="btn btn-primary">'.\Asset::icon('plus-circle').' '.s("Nouvelle vente").'</a>';
 					} else {
-						$h .= '<a data-dropdown="bottom-end" class="btn btn-outline-primary dropdown-toggle">'.\Asset::icon('plus-circle').' '.s("Nouvelle vente").'</a>';
+						$h .= '<a data-dropdown="bottom-end" class="btn btn-primary dropdown-toggle">'.\Asset::icon('plus-circle').' '.s("Nouvelle vente").'</a>';
 						$h .= '<div class="dropdown-list">';
 							$h .= '<a href="/shop/date:create?shop='.$eShop['id'].'&farm='.$eFarm['id'].'" class="dropdown-item">'.s("Créer une vente de zéro").'</a>';
 							$h .= '<div class="dropdown-divider"></div>';

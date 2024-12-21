@@ -226,7 +226,7 @@ class Collection extends ArrayIterator {
 		$c = new Collection();
 
 		foreach($this as $subC) {
-			$c->mergeCollection($subC, TRUE);
+			$c->mergeCollection($subC);
 		}
 
 		return $c;
@@ -1072,7 +1072,7 @@ class Collection extends ArrayIterator {
 
 	}
 
-	public function mergeCollection(Collection $cElement, bool $reindex = FALSE): Collection {
+	public function mergeCollection(Collection $cElement, bool $reindex = TRUE): Collection {
 
 		foreach($cElement as $key => $eElement) {
 

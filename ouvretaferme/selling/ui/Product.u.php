@@ -137,7 +137,7 @@ class ProductUi {
 					$h .= '<th rowspan="2" class="product-item-vignette"></th>';
 					$h .= '<th rowspan="2">'.$search->linkSort('name', s("Nom")).'</th>';
 					if($displayStock) {
-						$h .= '<th rowspan="2" class="text-end">'.$search->linkSort('stock', s("Stock"), SORT_DESC).'</th>';
+						$h .= '<th rowspan="2" class="text-end hide-xl-down">'.$search->linkSort('stock', s("Stock"), SORT_DESC).'</th>';
 					}
 					$h .= '<th rowspan="2">'.s("Unité").'</th>';
 					$h .= '<th colspan="2" class="text-center highlight hide-xs-down">'.s("Ventes").'</th>';
@@ -182,7 +182,7 @@ class ProductUi {
 					$h .= '</td>';
 
 					if($displayStock) {
-						$h .= '<td class="product-item-stock text-end">';
+						$h .= '<td class="product-item-stock text-end hide-xl-down">';
 							if($eProduct['stock'] !== NULL) {
 								$h .= StockUi::getExpired($eProduct);
 								$h .= '<a href="'.\farm\FarmUi::urlSellingStock($eFarm).'" title="'.StockUi::getDate($eProduct['stockUpdatedAt']).'">'.$eProduct['stock'].'</a>';
@@ -367,25 +367,30 @@ class ProductUi {
 
 	public static function getInfos(Product $eProduct, bool $includeStock = FALSE, bool $includeQuality = TRUE): string {
 
-		$h = '<a href="/produit/'.$eProduct['id'].'">'.encode($eProduct->getName()).'</a>';
+		$h = '<div class="product-item-label">';
+
+			$h .= '<a href="/produit/'.$eProduct['id'].'">'.encode($eProduct->getName()).'</a>';
+
+			if($includeQuality) {
+
+				if($eProduct['quality'] !== NULL) {
+					$h .= \farm\FarmUi::getQualityLogo($eProduct['quality'], '1.5rem');
+				}
+
+			}
+
+		$h .= '</div>';
+
 		$more = [];
 
 		if($eProduct['size']) {
 			$more[] = '<span><u>'.encode($eProduct['size']).'</u></span>';
 		}
 
-		if($includeQuality) {
-
-			if($eProduct['quality'] !== NULL) {
-				$more[] = \farm\FarmUi::getQualityLogo($eProduct['quality'], '1.5rem');
-			}
-
-		}
-
 		if($includeStock) {
 
 			if($eProduct['stock'] !== NULL) {
-				$more[] .= '<span title="'.\selling\StockUi::getDate($eProduct['stockUpdatedAt']).'"><u>'.s("{value} en stock", \selling\StockUi::getExpired($eProduct).' '.\main\UnitUi::getValue(round($eProduct['stock']), $eProduct['unit'], short: TRUE)).'</u></span>';
+				$more[] .= '<span title="'.\selling\StockUi::getDate($eProduct['stockUpdatedAt']).'">'.s("{value} en stock", \selling\StockUi::getExpired($eProduct).'<u>'.\main\UnitUi::getValue(round($eProduct['stock']), $eProduct['unit'], short: TRUE)).'</u></span>';
 			}
 
 		}
@@ -659,7 +664,7 @@ class ProductUi {
 
 		$h = '';
 
-		$h .= $form->openAjax('/selling/product:doCreate', ['id' => 'product-create']);
+		$h .= $form->openAjax('/selling/product:doCreateCollection', ['id' => 'product-create']);
 
 			$h .= $form->asteriskInfo();
 

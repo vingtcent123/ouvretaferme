@@ -148,7 +148,6 @@ class DateLib extends DateCrud {
 				$e->expects(['cProduct']);
 
 				$e['catalogs'] = NULL;
-				$e['products'] = NULL;
 
 				break;
 
@@ -268,12 +267,6 @@ class DateLib extends DateCrud {
 				fn() => $this->where(new \Sql('NOW() < orderStartAt')),
 				fn() => $this->whereDeliveryDate(new \Sql('orderEndAt > NOW()'))
 			)
-			->or(
-				fn() => $this
-					->whereSource(Date::DIRECT)
-					->whereProducts('>', 0),
-				fn() => $this->whereSource(Date::CATALOG)
-			)
 			->sort([
 				'isOrderable' => SORT_DESC,
 				'deliveryDate' => SORT_ASC
@@ -305,16 +298,6 @@ class DateLib extends DateCrud {
 				return $cDate->count() > 8 ? $cDate->slice(0, 8) : $cDate;
 			}
 		}
-
-	}
-
-	public static function recalculate(Date $e): void {
-
-		$e['products'] = ProductLib::countByDate($e);
-
-		Date::model()
-			->select('products')
-			->update($e);
 
 	}
 

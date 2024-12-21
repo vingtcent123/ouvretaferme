@@ -68,13 +68,26 @@ td.product-item-stock a {
 	margin-right: 0.5rem;
 }
 
+div.product-item-label {
+	display: flex;
+	justify-content: space-between;
+	column-gap: 0.25rem;
+}
+
+div.product-item-label > a {
+	line-height: 1.4;
+}
+
+@media (max-width: 575px) {
+	div.product-item-label > *:not(a) {
+		display: none;
+	}
+}
+
 div.product-item-infos {
 	font-size: 0.9rem;
 	line-height: 1.2;
 	color: var(--muted);
-	display: flex;
-	align-items: center;
-	flex-wrap: wrap;
 }
 
 @media (max-width: 575px) {

@@ -698,6 +698,14 @@ div.input-group > .field-checkbox {
 
 }
 
+@media (max-width: 1599px) {
+
+	.hide-xl-down {
+		display: none !important;
+	}
+
+}
+
 @media (max-width: 1199px), (max-height: 599px) {
 
 	.hide-lateral-down {
@@ -709,6 +717,13 @@ div.input-group > .field-checkbox {
 @media (min-width: 1200px) {
 
 	.hide-xl-up {
+		display: none !important;
+	}
+
+}
+@media (min-width: 1600px) {
+
+	.hide-xxl-up {
 		display: none !important;
 	}
 

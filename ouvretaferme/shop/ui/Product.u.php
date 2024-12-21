@@ -410,7 +410,7 @@ class ProductUi {
 							$h .= '<label class="date-products-item-product-stock hide-xs-down '.($checked ? '' : 'hidden').'" for="'.$attributes['id'].'">';
 								if($eProduct['stock'] !== NULL) {
 									$h .= \selling\StockUi::getExpired($eProduct);
-									$h .= '<span title="'.\selling\StockUi::getDate($eProduct['stockUpdatedAt']).'">'.\main\UnitUi::getValue($eProduct['stock'], $eProduct['unit'], short: TRUE).'</span>';
+									$h .= '<span title="'.\selling\StockUi::getDate($eProduct['stockUpdatedAt']).'">'.\main\UnitUi::getValue(round($eProduct['stock']), $eProduct['unit'], short: TRUE).'</span>';
 								}
 							$h .= '</label>';
 						}
@@ -499,22 +499,22 @@ class ProductUi {
 
 	}
 
-	public function getUpdateList(\farm\Farm $eFarm, Date|Catalog $e, \Collection $cProduct, \Collection $cCategory): string {
-
-		if($cProduct->empty()) {
-			return '<div class="util-info">'.s("Il n'y a aucun produit disponible à la vente !").'</div>';
-		}
+	public function getUpdateList(\farm\Farm $eFarm, Date|Catalog $e, \Collection $cProduct, \Collection $cCategory, bool $isExpired = FALSE): string {
 
 		$ccProduct = $cProduct->reindex(['product', 'category']);
 
+		$update = fn($cProduct) => ($e instanceof Date) ?
+			$this->getUpdateDate($eFarm, $e, $cProduct, $isExpired) :
+			$this->getUpdateCatalog($eFarm, $e, $cProduct);
+
 		if($ccProduct->count() === 1) {
-			return $this->getUpdateProducts($eFarm, $e, $ccProduct->first());
+			return $update($ccProduct->first());
 		} else {
 
 			$h = '';
 
 			if($ccProduct->offsetExists('')) {
-				$h .= $this->getUpdateProducts($eFarm, $e, $ccProduct['']);
+				$h .= $update($ccProduct['']);
 			}
 
 			foreach($cCategory as $eCategory) {
@@ -524,7 +524,7 @@ class ProductUi {
 				}
 
 				$h .= '<h3>'.encode($eCategory['name']).'</h3>';
-				$h .= $this->getUpdateProducts($eFarm, $e, $ccProduct[$eCategory['id']]);
+				$h .= $update($ccProduct[$eCategory['id']]);
 
 			}
 
@@ -534,16 +534,14 @@ class ProductUi {
 
 	}
 
-	public function getUpdateProducts(\farm\Farm $eFarm, Date|Catalog $e, \Collection $cProduct): string {
+	public function getUpdateDate(\farm\Farm $eFarm, Date $e, \Collection $cProduct, bool $isExpired = FALSE): string {
 
 		$type = $e['type'];
 		$taxes = $eFarm->getSelling('hasVat') ? '<span class="util-annotation">'.\selling\CustomerUi::getTaxes($type).'</span>' : '';
 		$hasSold = $cProduct->contains(fn($eProduct) => $eProduct['sold'] !== NULL);
 
-		$canUpdate = (
-			($e instanceof Date and $e['source'] === Date::DIRECT) or
-			($e instanceof Catalog)
-		);
+		$hasCatalog = $cProduct->contains(fn($eProduct) => $eProduct['catalog']->notEmpty());
+		$canAction = ($isExpired === FALSE and $cProduct->contains(fn($eProduct) => $eProduct->exists() and $eProduct['catalog']->empty()));
 
 		$h = '<div class="'.($type === Date::PRIVATE ? 'util-overflow-xs' : 'util-overflow-sm').' stick-xs">';
 			$h .= '<table class="tr-even">';
@@ -554,20 +552,129 @@ class ProductUi {
 							$h .= '<td></td>';
 						}
 						$h .= '<th class="text-end highlight">'.s("Prix").' '.$taxes.'</th>';
-						$h .= '<th class="text-end">'.s("Disponible").'</th>';
+						if($isExpired === FALSE) {
+							$h .= '<th>'.s("Disponible").'</th>';
+						}
 						if($hasSold) {
-							$h .= '<th class="text-end highlight">'.s("Vendu").'</th>';
+							$h .= '<th class="text-center">'.s("Vendu").'</th>';
 						}
-						if($canUpdate) {
-							$h .= '<th class="text-center">';
-								$h .= s("En vente");
-							$h .= '</th>';
+						if($canAction) {
 							$h .= '<th></th>';
-						} else {
-							$h .= '<th class="td-min-content">';
-								$h .= s("État");
-							$h .= '</th>';
 						}
+					$h .= '</tr>';
+				$h .= '</theaf>';
+				$h .= '<tbody>';
+
+					foreach($cProduct as $eProduct) {
+
+						$eProductSelling = $eProduct['product'];
+						$uiProductSelling = new \selling\ProductUi();
+
+						$canUpdate = ($isExpired === FALSE and $eProduct->exists() and $eProduct['catalog']->empty());
+
+						$h .= '<tr>';
+
+							$h .= '<td class="td-min-content">';
+								if($eProductSelling['vignette'] !== NULL) {
+									$h .= \selling\ProductUi::getVignette($eProductSelling, '3rem');
+								} else if($eProductSelling['plant']->notEmpty()) {
+									$h .= \plant\PlantUi::getVignette($eProductSelling['plant'], '3rem');
+								}
+							$h .= '</td>';
+
+							$h .= '<td class="'.(($isExpired or $eProduct->exists()) ? '' : 'shop-product-not-exist').'">';
+								$h .= $uiProductSelling->getInfos($eProductSelling, includeStock: $isExpired === FALSE);
+
+									if($hasCatalog and $canUpdate) {
+										$h .= '<span style="font-weight: bold; margin-left: 0.5rem">'.\Asset::icon('arrow-return-right').' '.s("Hors catalogue").'</span> ';
+									}
+							$h .= '</td>';
+
+							if($type === Date::PRO) {
+								$h .= '<td class="td-min-content '.(($isExpired or $eProduct->exists()) ? '' : 'shop-product-not-exist').'">';
+									if($eProduct['packaging'] !== NULL) {
+										$h .= s("Colis de {value}", \main\UnitUi::getValue($eProduct['packaging'], $eProductSelling['unit'], TRUE));
+									}
+								$h .= '</td>';
+							}
+
+							$h .= '<td class="text-end highlight '.(($isExpired or $eProduct->exists()) ? '' : 'shop-product-not-exist').'" style="white-space: nowrap">';
+								$price = \util\TextUi::money($eProduct['price']).' / '.\main\UnitUi::getSingular($eProductSelling['unit'], short: TRUE, by: TRUE);
+								if($canUpdate) {
+									$h .= $eProduct->quick('price', $price);
+								} else {
+									$h .= $price;
+								}
+							$h .= '</td>';
+
+							if($isExpired === FALSE) {
+
+								$h .= '<td '.($eProduct->exists() ? 'id="product-available-'.$eProduct['id'].'"' : '').'>';
+									$h .= $this->getStatus($eProduct, $canUpdate);
+								$h .= '</td>';
+
+							}
+
+							if($hasSold) {
+
+								$sold = $eProduct['sold'] ?? 0;
+
+								$h .= '<td class="text-center">';
+
+									if($sold > 0) {
+										$h .= '<span class="shop-product-sold">'.$sold.'</span>';
+									} else {
+										$h .= '-';
+									}
+
+								$h .= '</td>';
+
+							}
+
+							if($canAction) {
+
+								$h .= '<td class="td-min-content">';
+
+									if($canUpdate) {
+
+										$h .= '<a data-ajax="/shop/product:doDelete" class="btn btn-outline-secondary" data-confirm="'.s("Voulez-vous vraiment supprimer ce produit de la vente ?").'" post-id="'.$eProduct['id'].'">'.\Asset::icon('trash-fill').'</a>';
+
+									}
+
+								$h .= '</td>';
+
+							}
+
+						$h .= '</tr>';
+
+					}
+;
+				$h .= '</tbody>';
+			$h .= '</table>';
+		$h .= '</div>';
+
+		return $h;
+
+	}
+
+	public function getUpdateCatalog(\farm\Farm $eFarm, Catalog $e, \Collection $cProduct): string {
+
+		$taxes = $eFarm->getSelling('hasVat') ? '<span class="util-annotation">'.\selling\CustomerUi::getTaxes($e['type']).'</span>' : '';
+
+		$h = '<div class="'.($e['type'] === Date::PRIVATE ? 'util-overflow-xs' : 'util-overflow-sm').' stick-xs">';
+			$h .= '<table class="tr-even">';
+				$h .= '<thead>';
+					$h .= '<tr>';
+						$h .= '<th colspan="2">'.s("Produit").'</th>';
+						if($e['type'] === Date::PRO) {
+							$h .= '<td></td>';
+						}
+						$h .= '<th class="text-end highlight">'.s("Prix").' '.$taxes.'</th>';
+						$h .= '<th>'.s("Disponible").'</th>';
+						$h .= '<th class="text-center">';
+							$h .= s("En vente");
+						$h .= '</th>';
+						$h .= '<th></th>';
 					$h .= '</tr>';
 				$h .= '</theaf>';
 				$h .= '<tbody>';
@@ -591,7 +698,7 @@ class ProductUi {
 								$h .= $uiProductSelling->getInfos($eProductSelling, includeStock: TRUE);
 							$h .= '</td>';
 
-							if($type === Date::PRO) {
+							if($e['type'] === Date::PRO) {
 								$h .= '<td class="td-min-content">';
 									if($eProduct['packaging'] !== NULL) {
 										$h .= s("Colis de {value}", \main\UnitUi::getValue($eProduct['packaging'], $eProductSelling['unit'], TRUE));
@@ -601,87 +708,20 @@ class ProductUi {
 
 							$h .= '<td class="text-end highlight" style="white-space: nowrap">';
 								$price = \util\TextUi::money($eProduct['price']).' / '.\main\UnitUi::getSingular($eProductSelling['unit'], short: TRUE, by: TRUE);
-								if($canUpdate) {
-									$h .= $eProduct->quick('price', $price);
-								} else {
-									$h .= $price;
-								}
+								$h .= $eProduct->quick('price', $price);
 							$h .= '</td>';
-							$h .= '<td class="text-end">';
 
-								if($eProduct->exists()) {
-
-									if($eProduct['available'] === NULL) {
-										$available = s("illimité");
-									} else {
-										$available = $eProduct['available'];
-										if($available === 0.0) {
-											$available = '<span class="color-danger">'.\Asset::icon('exclamation-triangle-fill').' '.$available.'</span>';
-										}
-									}
-									if($canUpdate) {
-										$h .= $eProduct->quick('available', $available);
-									} else {
-										$h .= $available;
-									}
-
-								} else {
-									$h .= '-';
-								}
-
+							$h .= '<td id="product-available-'.$eProduct['id'].'">';
+								$h .= $this->getStatus($eProduct, TRUE);
 							$h .= '</td>';
-							if($hasSold) {
-								$h .= '<td class="text-end highlight">';
-									$h .= $eProduct['sold'] ?? 0;
-								$h .= '</td>';
-							}
 
-							if($canUpdate) {
-								$h .= '<td class="text-center">';
-									if($eProduct->exists()) {
-										$h .= $this->toggle($eProduct);
-									}
-								$h .= '</td>';
-								$h .= '<td class="td-min-content">';
+							$h .= '<td class="text-center">';
+								$h .= $this->toggle($eProduct);
+							$h .= '</td>';
 
-									if($eProduct->exists()) {
-
-										if(empty($eProduct['sold'])) {
-											$h .= '<a data-ajax="/shop/product:doDelete" class="btn btn-danger" data-confirm="'.s("Voulez-vous vraiment supprimer ce produit de cette vente ?").'" post-id="'.$eProduct['id'].'">'.\Asset::icon('trash-fill').'</a>';
-										} else {
-											$h .= '<a class="btn btn-secondary btn-disabled" title="'.s("Vous ne pouvez pas supprimer ce produit car des ventes ont déjà été réalisées.").'">'.\Asset::icon('trash-fill').'</a>';
-										}
-
-									}
-
-								$h .= '</td>';
-							} else {
-
-								$h .= '<td class="td-min-content shop-product-manage-selling">';
-
-									switch($eProduct['status']) {
-
-										case Product::ACTIVE :
-											if($eProduct['available'] === 0.0) {
-												$h .= '<span class="color-danger">'.\Asset::icon('x-circle-fill').' '.s("Rupture de stock").'<span>';
-											} else {
-												$h .= '<span class="color-success">'.\Asset::icon('check-circle-fill').' '.s("En vente").'<span>';
-											}
-											break;
-
-										case Product::INACTIVE :
-											if($eProduct->exists()) {
-												$h .= '<span class="color-danger">'.\Asset::icon('x-circle-fill').' '.s("Désactivé").'<span>';
-											} else {
-												$h .= '<span class="color-danger">'.\Asset::icon('x-circle-fill').' '.s("Hors catalogue").'<span>';
-											}
-											break;
-
-									};
-
-								$h .= '</td>';
-
-							}
+							$h .= '<td class="td-min-content">';
+								$h .= '<a data-ajax="/shop/product:doDelete" class="btn btn-outline-secondary" data-confirm="'.s("Voulez-vous vraiment supprimer ce produit de ce catalogue ?").'" post-id="'.$eProduct['id'].'">'.\Asset::icon('trash-fill').'</a>';
+							$h .= '</td>';
 
 						$h .= '</tr>';
 
@@ -695,6 +735,51 @@ class ProductUi {
 
 	}
 
+	public function getStatus(Product $eProduct, bool $canUpdate): string {
+
+		$h = '';
+
+		if($eProduct->exists()) {
+
+			switch($eProduct['status']) {
+
+				case Product::ACTIVE :
+
+					if($eProduct['available'] === NULL) {
+
+						$available = '<span class="color-success">'.\Asset::icon('check-circle-fill').' '.s("illimité").'<span>';
+
+					} else {
+
+						if($eProduct['available'] === 0.0) {
+							$available = '<span class="color-danger">'.\Asset::icon('x-circle-fill').' '.s("Rupture de stock").'</span>';
+						} else {
+							$available = '<span class="color-warning">'.\Asset::icon('check-circle-fill').' '.$eProduct['available'].'<span>';
+						}
+
+					}
+
+					if($canUpdate) {
+						$h .= $eProduct->quick('available', $available);
+					} else {
+						$h .= $available;
+					}
+					break;
+
+				case Product::INACTIVE :
+					$h .= '<span class="color-muted">'.\Asset::icon('x-circle-fill').' '.s("Pas en vente").'<span>';
+					break;
+
+			};
+
+		} else {
+			$h .= '<span class="color-danger">'.\Asset::icon('x-circle-fill').' '.s("Supprimé").'<span>';
+		}
+
+		return $h;
+
+	}
+
 	public function create(\farm\Farm $eFarm, Date|Catalog $e): \Panel {
 
 		$e->expects(['cProduct', 'cCategory']);
@@ -703,7 +788,7 @@ class ProductUi {
 			'columnBreak' => 'sm'
 		]);
 
-		$h = $form->openAjax('/shop/product:doCreate');
+		$h = $form->openAjax('/shop/product:doCreateCollection');
 
 			if($e instanceof Date) {
 				$h .= $form->hidden('date', $e['id']);

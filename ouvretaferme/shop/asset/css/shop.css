@@ -281,16 +281,8 @@ div.shop-widget-order {
 .shop-list {
 	display: grid;
 	grid-gap: 1rem;
-	grid-template-columns: 1fr 1fr 1fr;
+	grid-template-columns: 1fr 1fr;
 	grid-template-rows: auto auto;
-}
-
-@media (max-width: 1199px) {
-
-	.shop-list {
-		grid-template-columns: 1fr 1fr;
-	}
-
 }
 
 @media (max-width: 767px) {

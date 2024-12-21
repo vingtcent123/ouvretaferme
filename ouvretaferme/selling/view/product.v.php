@@ -34,7 +34,7 @@ new JsonView('doUpdateGrid', function($data, AjaxTemplate $t) {
 
 
 new JsonView('doUpdateStatus', function($data, AjaxTemplate $t) {
-	$t->qs('#product-switch-'.$data->e['id'])->toggleSwitch();
+	$t->qs('#product-switch-'.$data->e['id'])->toggleSwitch('post-status', [\selling\Product::ACTIVE, \selling\Product::INACTIVE]);
 });
 
 new JsonView('query', function($data, AjaxTemplate $t) {

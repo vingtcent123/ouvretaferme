@@ -316,9 +316,16 @@ class CustomerUi {
 
 		$h = '';
 
-		if($eCustomer['invite']->isValid() and $eCustomer['invite']->canWrite()) {
+		if($eCustomer['invite']->isPending() and $eCustomer['invite']->canWrite()) {
 			$h .= '<div class="util-block-gradient color-secondary">';
-				$h .= '<p>'.\Asset::icon('info-circle').' '.s("Vous avez invité ce client à créer son compte client avec l'adresse e-mail {email}. Le client n'a pas encore créé son compte client en suivant les instructions présentes dans le mail que nous lui avons envoyé. Il a jusqu'au {date} pour le faire, après quoi cette invitation sera effacée.", ['email' => '<u>'.encode($eCustomer['invite']['email']).'</u>', 'date' => \util\DateUi::numeric($eCustomer['invite']['expiresAt'])]).'</p>';
+				$h .= '<p>';
+					$h .= \Asset::icon('info-circle').' ';
+					if($eCustomer['invite']->isValid()) {
+						$h .= s("Vous avez invité ce client à créer son compte client avec l'adresse e-mail {email}. Le client n'a pas encore créé son compte client en suivant les instructions présentes dans le mail que nous lui avons envoyé. Il a jusqu'au {date} pour le faire, après quoi cette invitation sera effacée.", ['email' => '<u>'.encode($eCustomer['invite']['email']).'</u>', 'date' => \util\DateUi::numeric($eCustomer['invite']['expiresAt'])]);
+					} else {
+						$h .= s("Vous avez invité ce client à créer son compte client avec l'adresse e-mail {email} mais cette invitation a expiré le {date}.", ['email' => '<u>'.encode($eCustomer['invite']['email']).'</u>', 'date' => \util\DateUi::numeric($eCustomer['invite']['expiresAt'])]);
+					}
+				$h .= '</p>';
 				$h .= '<a data-ajax="/farm/invite:doDelete" post-id="'.$eCustomer['invite']['id'].'" class="btn btn-secondary">'.s("Annuler l'invitation").'</a>';
 			$h .= '</div>';
 		}

@@ -39,7 +39,7 @@ div.shop-write-fqn label {
 }
 
 .date-products-item.date-products-item-with-stock {
-	grid-template-columns: auto 1fr 10rem 12rem 10rem 4rem;
+	grid-template-columns: auto 1fr 10rem 12rem 10rem 5rem;
 }
 
 .date-products-item:not(.util-grid-header):hover {

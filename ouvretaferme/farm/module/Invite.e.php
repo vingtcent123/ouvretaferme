@@ -50,6 +50,18 @@ class Invite extends InviteElement {
 
 	}
 
+	public function isPending(): bool {
+
+		if($this->empty()) {
+			return FALSE;
+		}
+
+		return (
+			$this['status'] === Invite::PENDING
+		);
+
+	}
+
 	public function build(array $properties, array $input, array $callbacks = [], ?string $for = NULL): array {
 
 		return parent::build($properties, $input, $callbacks + [

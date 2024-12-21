@@ -10,7 +10,7 @@
 
 		if(request_exists('date')) {
 
-			$data->e = \shop\DateLib::getById(REQUEST('date'))->validate('canWrite', 'isDirect');
+			$data->e = \shop\DateLib::getById(REQUEST('date'))->validate('canWrite');
 
 		} else if(request_exists('catalog')) {
 
@@ -21,7 +21,7 @@
 		}
 
 	}))
-	->get('create', function($data) {
+	->get('createCollection', function($data) {
 
 		$data->e['cCategory'] = \selling\CategoryLib::getByFarm($data->e['farm'], index: 'id');
 
@@ -33,7 +33,7 @@
 		throw new \ViewAction($data);
 
 	})
-	->post('doCreate', function($data) {
+	->post('doCreateCollection', function($data) {
 
 		$fw = new FailWatch();
 

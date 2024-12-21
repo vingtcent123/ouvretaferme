@@ -32,7 +32,7 @@ new JsonView('doUpdateGrid', function($data, AjaxTemplate $t) {
 });
 
 new JsonView('doUpdateStatus', function($data, AjaxTemplate $t) {
-	$t->qs('#customer-switch-'.$data->e['id'])->toggleSwitch();
+	$t->qs('#customer-switch-'.$data->e['id'])->toggleSwitch('post-status', [\selling\Customer::ACTIVE, \selling\Customer::INACTIVE]);
 });
 
 new JsonView('query', function($data, AjaxTemplate $t) {

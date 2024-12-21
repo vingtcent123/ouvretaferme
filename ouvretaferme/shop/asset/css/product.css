@@ -351,6 +351,13 @@
 	vertical-align: baseline;
 }
 
-.shop-product-manage-selling svg {
-	font-size: 1.5rem;
+.shop-product-sold {
+	font-size: 1.2rem;
+	font-weight: bold;
+}
+
+.shop-product-not-exist,
+.shop-product-not-exist a {
+	color: var(--muted);
+	text-decoration: line-through;
 }

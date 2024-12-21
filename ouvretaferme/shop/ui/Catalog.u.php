@@ -20,7 +20,7 @@ class CatalogUi {
 		] = $eCatalogSelected;
 
 		$h .= '<div class="mb-1 text-end">';
-			$h .= '<a href="/shop/product:create?catalog='.$eCatalogSelected['id'].'" class="btn btn-primary">'.\Asset::icon('plus-circle').' '.s("Ajouter des produits").'</a> ';
+			$h .= '<a href="/shop/product:createCollection?catalog='.$eCatalogSelected['id'].'" class="btn btn-primary">'.\Asset::icon('plus-circle').' '.s("Ajouter des produits").'</a> ';
 			$h .= '<a data-dropdown="bottom-end" class="dropdown-toggle btn btn-primary">'.\Asset::icon('gear-fill').'</a>';
 			$h .= '<div class="dropdown-list">';
 				$h .= '<div class="dropdown-title">'.encode($eCatalogSelected['name']).'</div>';
@@ -35,7 +35,7 @@ class CatalogUi {
 			$h .= '<div class="util-block-help">';
 				$h .= '<h4>'.s("Ce catalogue de vente est encore vide").'</h4>';
 				$h .= '<p>'.s("Ajoutez les produits qui sont actuellement disponibles à la vente dans votre ferme avant de déployer le catalogue sur vos boutiques en ligne.").'</p>';
-				$h .= '<a href="/shop/product:create?catalog='.$eCatalogSelected['id'].'" class="btn btn-secondary">'.s("Ajouter des produits").'</a>';
+				$h .= '<a href="/shop/product:createCollection?catalog='.$eCatalogSelected['id'].'" class="btn btn-secondary">'.s("Ajouter des produits").'</a>';
 			$h .= '</div>';
 
 		} else {

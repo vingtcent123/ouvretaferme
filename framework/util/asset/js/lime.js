@@ -349,6 +349,16 @@ Element.prototype.toggleSwitch = function() {
 	this.classList.toggle('field-switch-on');
 }
 
+Element.prototype.switchOn = function() {
+	this.classList.remove('field-switch-off');
+	this.classList.add('field-switch-on');
+}
+
+Element.prototype.switchOff = function() {
+	this.classList.add('field-switch-off');
+	this.classList.remove('field-switch-on');
+}
+
 Element.prototype.slideUp = function(options = {}) {
 
 	const duration = options.duration || 0.5;

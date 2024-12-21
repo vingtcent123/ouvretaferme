@@ -472,7 +472,8 @@ class DateUi {
 			return '<div class="util-info">'.s("Il n'y a aucune vente à afficher.").'</div>';
 		}
 
-		$cCatalog = $eShop['cCatalog'];
+		$hasFarmTaxes = $eFarm->getSelling('hasVat');
+		$hasSameTaxes = ($hasFarmTaxes and count(array_count_values($cDate->getColumn('type'))) === 1);
 
 		$h = '<div class="dates-item-wrapper stick-sm util-overflow-sm">';
 
@@ -483,9 +484,9 @@ class DateUi {
 					$h .= '<tr>';
 						$h .= '<th></th>';
 						$h .= '<th></th>';
-						$h .= '<th class="text-end highlight">'.s("Produits").'</th>';
-						$h .= '<th class="text-end" colspan="2">'.s("Commandes").'</th>';
-						$h .= '<th class="text-end highlight">'.s("Montant").'</th>';
+						$h .= '<th class="text-end">'.s("Commandes").'</th>';
+						$h .= '<th class="text-end highlight">'.s("Montant").''.($hasSameTaxes ? ' <span class="util-annotation">'.$cDate->first()->getTaxes().'</span>' : '').'</th>';
+						$h .= '<th class="text-end hide-md-down">'.s("Panier moyen").''.($hasSameTaxes ? ' <span class="util-annotation">'.$cDate->first()->getTaxes().'</span>' : '').'</th>';
 						$h .= '<th></th>';
 					$h .= '</tr>';
 
@@ -494,6 +495,11 @@ class DateUi {
 				$h .= '<tbody>';
 
 					foreach($cDate as $eDate) {
+
+						if($hasFarmTaxes) {
+							$taxes = ($hasSameTaxes ? '' : ' <span class="util-annotation">'.$eDate->getTaxes().'</span>');
+						}
+
 						$h .= '<tr>';
 
 							$h .= '<td class="td-min-content">';
@@ -507,36 +513,18 @@ class DateUi {
 								$h .= $this->getStatus($eShop, $eDate);
 							$h .= '</td>';
 
-							$h .= '<td class="text-end highlight">';
-								$h .= '<a href="'.ShopUi::adminDateUrl($eFarm, $eShop, $eDate).'?tab=products">';
-									$h .= match($eDate['source']) {
-										Date::DIRECT => $eDate['products'],
-										Date::CATALOG => $cCatalog[$eDate['catalogs'][0]]['products'] ?? 0
-									};
-								$h .= '</a>';
-							$h .= '</td>';
-
 							$h .= '<td class="text-end">';
 								$h .= '<a href="'.ShopUi::adminDateUrl($eFarm, $eShop, $eDate).'?tab=sales">'.$eDate['sales']['countValid'].'</a>';
-							$h .= '</td>';
-
-							$h .= '<td class="td-min-content">';
-
-								if($eDate['sales']['countValid'] > 0) {
-
-									$h .= '<a href="/shop/date:downloadSales?id='.$eDate['id'].'&farm='.$eDate['farm']['id'].'" data-ajax-navigation="never" class="btn btn-outline-secondary" title="'.s("Exporter les commandes").'">'.\Asset::icon('filetype-pdf').'</a>';
-
-								}
-
 							$h .= '</td>';
 
 							$h .= '<td class="text-end highlight" style="white-space: nowrap">';
 								if($eDate['sales']['countValid'] > 0) {
 
-									if($eFarm->getSelling('hasVat')) {
+									if($hasFarmTaxes) {
+
 										$h .= match($eDate['type']) {
-											Date::PRIVATE => $eDate['sales']['amountValidIncludingVat'] ? \util\TextUi::money($eDate['sales']['amountValidIncludingVat']).' <span class="util-annotation">'.$eDate->getTaxes().'</span>' : '-',
-											Date::PRO => $eDate['sales']['amountValidExcludingVat'] ? \util\TextUi::money($eDate['sales']['amountValidExcludingVat']).' <span class="util-annotation">'.$eDate->getTaxes().'</span>' : '-'
+											Date::PRIVATE => $eDate['sales']['amountValidIncludingVat'] ? \util\TextUi::money($eDate['sales']['amountValidIncludingVat']).$taxes : '-',
+											Date::PRO => $eDate['sales']['amountValidExcludingVat'] ? \util\TextUi::money($eDate['sales']['amountValidExcludingVat']).$taxes : '-'
 										};
 
 									} else {
@@ -546,7 +534,33 @@ class DateUi {
 								}
 							$h .= '</td>';
 
-							$h .= '<td class="text-end">';
+							$h .= '<td class="text-end hide-md-down">';
+
+								if($eDate['sales']['countValid'] > 0) {
+
+									if($hasFarmTaxes) {
+
+										$h .= match($eDate['type']) {
+											Date::PRIVATE => $eDate['sales']['amountValidIncludingVat'] ? \util\TextUi::money($eDate['sales']['amountValidIncludingVat'] / $eDate['sales']['countValid'], precision: 0).$taxes : '-',
+											Date::PRO => $eDate['sales']['amountValidExcludingVat'] ? \util\TextUi::money($eDate['sales']['amountValidExcludingVat'] / $eDate['sales']['countValid'], precision: 0).$taxes : '-'
+										};
+
+									} else {
+										$h .= $eDate['sales']['amountValidExcludingVat'] ? \util\TextUi::money($eDate['sales']['amountValidExcludingVat'] / $eDate['sales']['countValid'], precision: 0) : '-';
+									}
+
+								}
+
+							$h .= '</td>';
+
+							$h .= '<td class="text-end" style="white-space: nowrap">';
+
+								if($eDate['sales']['countValid'] > 0) {
+
+									$h .= '<a href="/shop/date:downloadSales?id='.$eDate['id'].'&farm='.$eDate['farm']['id'].'" data-ajax-navigation="never" class="btn btn-outline-secondary" title="'.s("Exporter les commandes").'">'.\Asset::icon('download').'  '.s("PDF").'</a> ';
+
+								}
+
 
 								if(
 									$eDate->canWrite() or
@@ -577,8 +591,7 @@ class DateUi {
 
 		$eDate->expects(['farm']);
 
-		$h = '<div>';
-			$h .= '<a data-dropdown="bottom-end" class="dropdown-toggle btn '.$btn.'">'.\Asset::icon('gear-fill').'</a>';
+			$h = '<a data-dropdown="bottom-end" class="dropdown-toggle btn '.$btn.'">'.\Asset::icon('gear-fill').'</a>';
 			$h .= '<div class="dropdown-list">';
 
 				$h .= '<div class="dropdown-title">'.\util\DateUi::textual($eDate['deliveryDate']).'</div>';
@@ -587,7 +600,7 @@ class DateUi {
 
 					$h .= '<a href="/shop/date:update?id='.$eDate['id'].'" class="dropdown-item">'.s("Paramétrer la vente").'</a>';
 					if($eDate->isDirect()) {
-						$h .= '<a href="/shop/product:create?date='.$eDate['id'].'" class="dropdown-item">'.s("Ajouter des produits à la vente").'</a>';
+						$h .= '<a href="/shop/product:createCollection?date='.$eDate['id'].'" class="dropdown-item">'.s("Ajouter des produits à la vente").'</a>';
 					}
 					$h .= '<a href="/shop/date:create?shop='.$eShop['id'].'&farm='.$eDate['farm']['id'].'&date='.$eDate['id'].'" class="dropdown-item">'.s("Nouvelle vente à partir de celle-ci").'</a>';
 
@@ -599,7 +612,6 @@ class DateUi {
 				}
 
 			$h .= '</div>';
-		$h .= '</div>';
 
 		return $h;
 
@@ -617,9 +629,15 @@ class DateUi {
 			if($eDate['status'] === Date::CLOSED) {
 				$h .= '<span class="color-danger">'.\Asset::icon('exclamation-triangle-fill').' '.s("Vente hors ligne").'</span>';
 			} else if($eDate['orderStartAt'] < $now and $eDate['orderEndAt'] > $now) {
-				$h .= '<span class="color-order">'.s("Ventes ouvertes encore {value}", \util\DateUi::secondToDuration(strtotime($eDate['orderEndAt']) - time(), \util\DateUi::AGO, maxNumber: 1)).'</span>';
-			} else if(currentDate() >= $eDate['deliveryDate']) {
-				$h .= '<span class="color-success">'.s("Vente terminée").'</span>';
+				$h .= '<span class="color-order">'.s("Vente ouverte encore {value}", \util\DateUi::secondToDuration(strtotime($eDate['orderEndAt']) - time(), \util\DateUi::AGO, maxNumber: 1)).'</span>';
+			} else if($eDate['orderEndAt'] < $now) {
+				if(currentDate() === $eDate['deliveryDate']) {
+					$h .= s("Vente livrée aujourd'hui");
+				} else if(currentDate() < $eDate['deliveryDate']) {
+					$h .= s("Vente fermée en attente de livraison");
+				} else {
+					$h .= '<span class="color-success">'.s("Vente terminée   ").'</span>';
+				}
 			} else if($eShop['status'] === Shop::OPEN) {
 				$h .= s("Ouverture des ventes dans {value}", \util\DateUi::secondToDuration(strtotime($eDate['orderStartAt']) - time(), \util\DateUi::AGO, maxNumber: 1));
 			}
@@ -632,18 +650,15 @@ class DateUi {
 	
 	public function getContent(\farm\Farm $eFarm, Shop $eShop, Date $eDate, \Collection $cSale): string {
 
-		[
-			'cProduct' => $cProduct,
-			'cCatalog' => $cCatalog
-		] = $eDate;
+		$products = $eDate['ccProductOut']->reduce(fn($c, $n) => $c->count() + $n, 0) + $eDate['ccProduct']->reduce(fn($c, $n) => $c->count() + $n, 0);
 
 		$h = '<div class="tabs-h" id="shop-date-tabs" onrender="'.encode('Lime.Tab.restore(this, "products"'.(get_exists('tab') ? ', "'.GET('tab', ['products', 'sales'], 'products').'"' : '').')').'">';
 
 			$h .= '<div class="tabs-item">';
 				$h .= '<a class="tab-item" data-tab="products" onclick="Lime.Tab.select(this)">';
 					$h .= s("Produits");
-					if($eDate['products'] > 0) {
-						$h .= '<span class="tab-item-count">'.$eDate['products'].'</span>';
+					if($products > 0) {
+						$h .= '<span class="tab-item-count">'.$products.'</span>';
 					}
 				$h .= '</a>';
 				$h .= '<a class="tab-item" data-tab="sales" onclick="Lime.Tab.select(this)">';
@@ -663,69 +678,7 @@ class DateUi {
 			$h .= '</div>';
 
 			$h .= '<div class="tab-panel" data-tab="products">';
-
-				$h .= '<div class="util-title">';
-				
-					$h .= '<div>';
-
-						if($eDate['source'] === Date::CATALOG) {
-
-							switch($cCatalog->count()) {
-
-								case 1 :
-
-									$eCatalog = $cCatalog->first();
-									$catalogName = '<span style="text-transform: uppercase">'.encode($cCatalog->first()['name']).'</span>';
-
-									$h .= '<div class="color-secondary">';
-										$h .= '<span class="shop-product-manage-catalog">'.\Asset::icon('diagram-3-fill').'</span>';
-										$h .= match($eCatalog['status']) {
-											Catalog::ACTIVE => s("Produits contrôlés par le catalogue {value}", $catalogName),
-											Catalog::DELETED => s("Produits contrôlés par l'ancien catalogue {value} aujourd'hui supprimé", $catalogName)
-										};
-									$h .= '</div>';
-									break;
-
-								default :
-									throw new \Exception('Not handled');
-							}
-
-						}
-
-					$h .= '</div>';
-
-					switch($eDate['source']) {
-
-						case Date::CATALOG :
-
-							$eCatalog = $cCatalog->first();
-
-							if($eCatalog['status'] === Catalog::ACTIVE) {
-
-								$h .= '<a href="'.\farm\FarmUi::urlShopCatalog($eFarm).'?catalog='.$eCatalog['id'].'" class="btn btn-primary">';
-									$h .= s("Modifier le catalogue");
-								$h .= '</a>';
-
-							}
-
-							break;
-
-						case Date::DIRECT :
-							$h .= '<a href="/shop/product:create?date='.$eDate['id'].'" class="btn btn-primary">';
-								$h .= \Asset::icon('plus-circle').' ';
-								if($cProduct->empty()) {
-									$h .= s("Ajouter des produits à la vente");
-								} else {
-									$h .= s("Ajouter d'autres produits à la vente");
-								}
-							$h .= '</a>';
-							break;
-
-					}
-
-				$h .= '</div>';
-				$h .= (new \shop\ProductUi())->getUpdateList($eFarm, $eDate, $cProduct, $eDate['cCategory']);
-				$h .= '<br />';
+				$h .= $this->getProducts($eFarm, $eDate);
 			$h .= '</div>';
 
 			$h .= '<div class="tab-panel" data-tab="sales">';
@@ -734,7 +687,7 @@ class DateUi {
 
 					$h .= '<div></div>';
 
-					$h .= '<a href="/shop/date:downloadSales?id='.$eDate['id'].'&farm='.$eDate['farm']['id'].'" data-ajax-navigation="never" class="btn btn-primary">'.\Asset::icon('filetype-pdf').' '.s("Exporter les commandes").'</a>';
+					$h .= '<a href="/shop/date:downloadSales?id='.$eDate['id'].'&farm='.$eDate['farm']['id'].'" data-ajax-navigation="never" class="btn btn-primary">'.\Asset::icon('download').' '.s("Télécharger en PDF").'</a>';
 
 				$h .= '</div>';
 
@@ -766,6 +719,122 @@ class DateUi {
 		return $h;
 	}
 
+	public function getProducts(\farm\Farm $eFarm, Date $eDate): string {
+
+		if(currentDate() > $eDate['deliveryDate']) {
+			return $this->getExpiredProducts($eFarm, $eDate);
+		} else {
+			return $this->getSegmentedProducts($eFarm, $eDate);
+		}
+
+	}
+
+	public function getExpiredProducts(\farm\Farm $eFarm, Date $eDate): string {
+
+		[
+			'ccProduct' => $ccProduct,
+			'ccProductOut' => $ccProductOut,
+			'cCatalog' => $cCatalog
+		] = $eDate;
+
+		$h = '';
+
+		foreach($eDate['cFarm'] as $eFarmCurrent) {
+
+			$cProduct = ($ccProduct[$eFarmCurrent['id']] ?? new \Collection())->find(fn($eProduct) => $eProduct['sold'] > 0);
+			$cProduct->mergeCollection($ccProductOut[$eFarmCurrent['id']] ?? new \Collection());
+			$cProduct->sort(['product' => ['name']], natural: TRUE);
+
+			if($cProduct->empty()) {
+				$h .= '<div class="util-info">'.s("Cette vente est terminée et aucun produit n'a été vendu.").'</div>';
+			} else {
+				$h .= '<div class="util-info">'.s("Cette vente est terminée et seule la liste des produits qui ont été vendus est consultable.").'</div>';
+				$h .= (new \shop\ProductUi())->getUpdateList($eFarm, $eDate, $cProduct, $eDate['cCategory'], isExpired: TRUE);
+			}
+
+			$h .= '<br/>';
+
+		}
+
+		return $h;
+
+	}
+
+	public function getSegmentedProducts(\farm\Farm $eFarm, Date $eDate): string {
+
+		[
+			'ccProduct' => $ccProduct,
+			'ccProductOut' => $ccProductOut,
+			'cCatalog' => $cCatalog
+		] = $eDate;
+
+		$h = '';
+
+		foreach($eDate['cFarm'] as $eFarmCurrent) {
+
+			$eCatalog = $cCatalog[$eFarmCurrent['id']] ?? new Catalog();
+
+			$cProduct = ($ccProduct[$eFarmCurrent['id']] ?? new \Collection());
+			$cProduct->mergeCollection($ccProductOut[$eFarmCurrent['id']] ?? new \Collection());
+			$cProduct->sort(['product' => ['name']], natural: TRUE);
+
+			$h .= '<div class="util-title">';
+
+				if($eCatalog->notEmpty()) {
+
+					if($eCatalog['status'] === Catalog::DELETED) {
+						$h .= '<h2>'.s("Catalogue {value}", '<span class="btn btn-lg btn-primary disabled">'.encode($eCatalog['name']).'</span>').'</h2>';
+					} else {
+						$h .= '<h2>'.s("Catalogue {value}", '<a href="'.\farm\FarmUi::urlShopCatalog($eFarm).'?catalog='.$eCatalog['id'].'" class="btn btn-lg btn-primary">'.\Asset::icon('pencil-fill', ['class' => 'asset-icon-flip-h']).'  '.encode($eCatalog['name']).'</a>').'</h2>';
+					}
+
+				} else {
+					$h .= '<div></div>';
+				}
+
+				$h .= '<div>';
+
+					$h .= ' <a href="/shop/product:createCollection?date='.$eDate['id'].'" class="btn btn-primary">';
+						$h .= \Asset::icon('plus-circle').' ';
+						if($eCatalog->notEmpty()) {
+							$h .= s("Ajouter des produits hors catalogue");
+						} else if($cProduct->empty()) {
+							$h .= s("Ajouter des produits à la vente");
+						} else {
+							$h .= s("Ajouter des produits");
+						}
+					$h .= '</a>';
+
+				$h .= '</div>';
+			$h .= '</div>';
+
+			if(
+				$eCatalog->notEmpty() and
+				$eCatalog['status'] === Catalog::DELETED
+			) {
+				$h .= '<div class="util-danger">'.s("Ce catalogue a été supprimé.").'</div>';
+			}
+
+			if($cProduct->empty()) {
+
+				if($cCatalog->notEmpty()) {
+					$h .= '<div class="util-info">'.s("Il n'y a aucun produit dans le catalogue !").'</div>';
+				} else {
+					$h .= '<div class="util-info">'.s("Il n'y a aucun produit disponible à la vente !").'</div>';
+				}
+
+			} else {
+				$h .= (new \shop\ProductUi())->getUpdateList($eFarm, $eDate, $cProduct, $eDate['cCategory']);
+			}
+
+			$h .= '<br/>';
+
+		}
+
+		return $h;
+
+	}
+
 	public function getDetails(Shop $eShop, Date $eDate): string {
 		
 		$h = '<div class="util-block" style="margin-bottom: 2rem">';
@@ -793,7 +862,7 @@ class DateUi {
 				$h .= '</dd>';
 
 				$h .= '<dt>';
-					$h .= s("Ouverture des ventes");
+					$h .= s("Statut de la vente");
 				$h .= '</dt>';
 				$h .= '<dd>';
 					$h .= $this->getStatus($eShop, $eDate);

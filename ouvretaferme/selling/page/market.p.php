@@ -84,7 +84,11 @@
 		$data->eSaleMarket = \selling\SaleLib::getById($data->e['marketParent']);
 		$data->eSaleMarket->checkMarketSelling();
 
+		$fw = new FailWatch();
+
 		$cItemSale = \selling\ItemLib::checkNewItems($data->e, $_POST);
+
+		$fw->validate();
 
 		\selling\ItemLib::updateSaleCollection($data->e, $cItemSale);
 

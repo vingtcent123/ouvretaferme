@@ -69,7 +69,7 @@ new JsonView('doUpdate', function($data, AjaxTemplate $t) {
 
 new JsonView('doUpdateStatus', function($data, AjaxTemplate $t) {
 	$t->js()->success('plant', 'Plant::updated'.ucfirst($data->e['status']));
-	$t->qs('#plant-switch-'.$data->e['id'])->toggleSwitch();
+	$t->qs('#plant-switch-'.$data->e['id'])->toggleSwitch('post-status', [\plant\Plant::ACTIVE, \plant\Plant::INACTIVE]);
 });
 
 new JsonView('doDelete', function($data, AjaxTemplate $t) {

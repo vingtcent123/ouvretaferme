@@ -29,5 +29,21 @@ class Product extends ProductElement {
 
 	}
 
+	public function build(array $properties, array $input, array $callbacks = [], ?string $for = NULL): array {
+
+		return parent::build($properties, $input, $callbacks + [
+
+			'status.prepare' => function(): bool {
+
+				$this->expects(['catalog']);
+
+				return $this['catalog']->notEmpty();
+
+			}
+
+		]);
+
+	}
+
 }
 ?>

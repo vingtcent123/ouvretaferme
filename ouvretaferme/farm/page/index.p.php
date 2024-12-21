@@ -193,7 +193,6 @@
 
 			// Liste des dates de la boutique sélectionnée
 			$data->eShop['cDate'] = \shop\DateLib::getByShop($data->eShop);
-			$data->eShop['cCatalog'] = \shop\CatalogLib::getByDates($data->eShop['cDate']);
 
 		}
 

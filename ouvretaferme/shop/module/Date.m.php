@@ -56,12 +56,11 @@ class DateModel extends \ModuleModel {
 			'orderEndAt' => ['datetime', 'cast' => 'string'],
 			'points' => ['json', 'cast' => 'array'],
 			'catalogs' => ['json', 'null' => TRUE, 'cast' => 'array'],
-			'products' => ['int16', 'min' => 0, 'max' => NULL, 'null' => TRUE, 'cast' => 'int'],
 			'deliveryDate' => ['date', 'cast' => 'string'],
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'createdAt', 'shop', 'type', 'farm', 'status', 'source', 'orderStartAt', 'orderEndAt', 'points', 'catalogs', 'products', 'deliveryDate'
+			'id', 'createdAt', 'shop', 'type', 'farm', 'status', 'source', 'orderStartAt', 'orderEndAt', 'points', 'catalogs', 'deliveryDate'
 		]);
 
 		$this->propertiesToModule += [
@@ -191,10 +190,6 @@ class DateModel extends \ModuleModel {
 
 	public function whereCatalogs(...$data): DateModel {
 		return $this->where('catalogs', ...$data);
-	}
-
-	public function whereProducts(...$data): DateModel {
-		return $this->where('products', ...$data);
 	}
 
 	public function whereDeliveryDate(...$data): DateModel {

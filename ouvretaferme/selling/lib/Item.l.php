@@ -285,10 +285,6 @@ class ItemLib extends ItemCrud {
 
 	public static function updateSaleCollection(Sale $eSale, \Collection $cItem): void {
 
-		if($eSale['shop']->notEmpty()) {
-			throw new \Exception('Not supported');
-		}
-
 		if($cItem->empty()) {
 			return;
 		}

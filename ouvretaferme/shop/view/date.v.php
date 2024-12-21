@@ -27,11 +27,11 @@ new AdaptativeView('update', function($data, PanelTemplate $t) {
 });
 
 new JsonView('doUpdateStatus', function($data, AjaxTemplate $t) {
-	$t->qs('#date-switch-'.$data->e['id'])->toggleSwitch();
+	$t->qs('#date-switch-'.$data->e['id'])->toggleSwitch('post-status', [\shop\Date::ACTIVE, \shop\Date::CLOSED]);
 });
 
 new JsonView('doUpdatePoint', function($data, AjaxTemplate $t) {
-	$t->qs('#point-switch-'.$data->ePoint['id'])->toggleSwitch();
+	$t->qs('#point-switch-'.$data->ePoint['id'])->toggleSwitch('post-status', [TRUE, FALSE]);
 });
 
 new AdaptativeView('/ferme/{farm}/boutique/{shop}/date/{id}', function($data, FarmTemplate $t) {

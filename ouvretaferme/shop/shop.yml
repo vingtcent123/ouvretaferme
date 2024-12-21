@@ -25,7 +25,6 @@ Date:
   orderEndAt: datetime
   points: json = PHP([])
   catalogs: ?json = PHP([])
-  products: ?int16(0, null)
   deliveryDate: date
   INDEX: [
     ["status"]
