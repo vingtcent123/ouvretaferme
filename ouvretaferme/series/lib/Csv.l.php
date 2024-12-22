@@ -220,7 +220,7 @@ class CsvLib {
 				($eSeries['use'] === Series::BED and $eCultivation['distance'] === Cultivation::SPACING) ? $eCultivation['rows'] : NULL,
 				($eSeries['use'] === Series::BED and $eCultivation['distance'] === Cultivation::SPACING) ? $eCultivation['plantSpacing'] : NULL,
 				$eSeries['status'] === Series::CLOSED ? 'true' : 'false',
-				$eCultivation['mainUnit'],
+				\selling\UnitUi::getSingular($eCultivation['mainUnit']),
 				\util\TextUi::csvNumber($eCultivation['yieldExpected']),
 				\util\TextUi::csvNumber(($eCultivation['harvestedNormalized'] !== NULL and $eSeries['area'] !== NULL) ? round($eCultivation['harvestedNormalized'] / $eSeries['area'], 1) : NULL),
 			];
