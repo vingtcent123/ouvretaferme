@@ -974,7 +974,7 @@ class ProductUi {
 			'date' => s("Vente"),
 			'limitStartAt' => s("Proposer pour les commandes livrées à partir de"),
 			'limitEndAt' => s("Proposer pour les commandes livrées jusqu'au"),
-			'limitNumber' => s("Limiter les quantités disponibles par commande et par vente"),
+			'limitNumber' => s("Limiter les quantités disponibles par commande"),
 			'limitCustomers' => s("Limiter les commandes de ce produit à certains clients"),
 		]);
 
