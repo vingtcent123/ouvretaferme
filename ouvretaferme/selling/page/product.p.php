@@ -11,7 +11,8 @@
 	})
 	->create(function($data) {
 
-		$data->cCategory = \selling\CategoryLib::getByFarm($data->e['farm']);
+		$data->e['cCategory'] = \selling\CategoryLib::getByFarm($data->e['farm']);
+		$data->e['cUnit'] = \selling\UnitLib::getByFarm($data->e['farm']);
 
 		throw new ViewAction($data);
 

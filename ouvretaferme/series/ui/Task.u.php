@@ -2159,10 +2159,10 @@ class TaskUi {
 
 							$h .= '<dd';
 								if($workingTime > 0) {
-									$h .= ' title="'.s("{value} / h", \main\UnitUi::getValue(round($value / $workingTime, 1), $eTask['harvestUnit'])).'"';
+									$h .= ' title="'.s("{value} / h", \selling\UnitUi::getValue(round($value / $workingTime, 1), $eTask['harvestUnit'])).'"';
 								}
 							$h .= '>';
-								$h .= \main\UnitUi::getValue(round($value, 1), $eTask['harvestUnit']);
+								$h .= \selling\UnitUi::getValue(round($value, 1), $eTask['harvestUnit']);
 							$h .= '</dd>';
 
 						}
@@ -4027,7 +4027,7 @@ class TaskUi {
 
 				$h .= $form->group(
 					s("Quantité récoltée"),
-					'<div class="input-group">'.$form->dynamicField($eTask, 'harvestMore').'<div class="input-group-addon">'.\main\UnitUi::getNeutral($eTask['harvestUnit']).'</div></div>',
+					'<div class="input-group">'.$form->dynamicField($eTask, 'harvestMore').'<div class="input-group-addon">'.\selling\UnitUi::getSingular($eTask['harvestUnit']).'</div></div>',
 					['wrapper' => 'harvest']
 				);
 
@@ -4287,7 +4287,7 @@ class TaskUi {
 
 	protected function getStockText(\selling\Product $eProduct): string {
 		
-		$text = encode($eProduct['name']).' ('.\main\UnitUi::getSingular($eProduct['unit']).')';
+		$text = encode($eProduct['name']).' ('.\selling\UnitUi::getSingular($eProduct['unit']).')';
 
 		if($eProduct['variety'] !== NULL) {
 			$text .= ' / '.$eProduct['variety'];
@@ -4546,7 +4546,7 @@ class TaskUi {
 								$harvested .= (new TaskUi())->getPlace($eTask);
 							$harvested .= '</td>';
 							$harvested .= '<td>';
-								$harvested .= '<span class="annotation" style="color: '.$eTask['action']['color'].'">'.\main\UnitUi::getValue($value, $eTask['harvestUnit']).'</span>';
+								$harvested .= '<span class="annotation" style="color: '.$eTask['action']['color'].'">'.\selling\UnitUi::getValue($value, $eTask['harvestUnit']).'</span>';
 							$harvested .= '</td>';
 						$harvested .= '</tr>';
 					}
@@ -4811,7 +4811,7 @@ class TaskUi {
 					'mandatory' => TRUE,
 					'onchange' => fn(\util\FormUi $form, Task $e) => 'Task.changeHarvestUnit('.$e['id'].', this)'
 				];
-				$d->values = \main\UnitUi::getBasicList(noWrap: FALSE);
+				$d->values = \selling\UnitUi::getBasicList();
 				$d->default = function(Task $e) {
 					if($e['cultivation']->notEmpty()) {
 						return $e['cultivation']['mainUnit'];

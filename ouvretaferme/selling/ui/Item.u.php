@@ -192,7 +192,7 @@ class ItemUi {
 											}
 
 											$h .= '<span class="item-item-packaging-size"> x ';
-												$h .= '<a onclick="Merchant.show(this)" class="util-quick" data-item="'.$eItem['id'].'" data-property="packaging">'.\main\UnitUi::getValue($eItem['packaging'], $eItem['unit'], TRUE).'</a>';
+												$h .= '<a onclick="Merchant.show(this)" class="util-quick" data-item="'.$eItem['id'].'" data-property="packaging">'.\selling\UnitUi::getValue($eItem['packaging'], $eItem['unit'], TRUE).'</a>';
 											$h .= '</span>';
 										} else {
 											$h .= '-';
@@ -204,9 +204,9 @@ class ItemUi {
 
 								$h .= '<td class="item-item-number text-end">';
 									if($eItem['packaging']) {
-										$h .= '<span class="item-item-locked">'.\Asset::icon('lock-fill').'</span> '.\main\UnitUi::getValue($eItem['number'] * $eItem['packaging'], $eItem['unit'], TRUE);
+										$h .= '<span class="item-item-locked">'.\Asset::icon('lock-fill').'</span> '.\selling\UnitUi::getValue($eItem['number'] * $eItem['packaging'], $eItem['unit'], TRUE);
 									} else {
-										$value = \main\UnitUi::getValue($eItem['number'], $eItem['unit'], TRUE);
+										$value = \selling\UnitUi::getValue($eItem['number'], $eItem['unit'], TRUE);
 
 										if($eItem['locked'] === Item::NUMBER) {
 											$h .= '<span class="item-item-locked">'.\Asset::icon('lock-fill').'</span> '.$value;
@@ -223,7 +223,7 @@ class ItemUi {
 								$h .= '<td class="item-item-unit-price text-end">';
 
 									if($eItem['unit']) {
-										$unit = '<span class="util-annotation"> / '.\main\UnitUi::getSingular($eItem['unit'], short: TRUE, by: TRUE).'</span>';
+										$unit = '<span class="util-annotation">'.\selling\UnitUi::getBy($eItem['unit'], short: TRUE).'</span>';
 									} else {
 										$unit = '';
 									}
@@ -342,12 +342,12 @@ class ItemUi {
 					$h .= '</td>';
 
 					$h .= '<td class="text-end">';
-						$h .= \main\UnitUi::getValue($eItem['quantity'], $eItem['unit'], TRUE);
+						$h .= \selling\UnitUi::getValue($eItem['quantity'], $eItem['unit'], TRUE);
 					$h .= '</td>';
 
 					$h .= '<td class="text-end item-product-unit-price">';
 						if($eItem['unit']) {
-							$unit = '<span class="util-annotation"> / '.\main\UnitUi::getSingular($eItem['unit'], short: TRUE, by: TRUE).'</span>';
+							$unit = '<span class="util-annotation">'.\selling\UnitUi::getBy($eItem['unit'], short: TRUE).'</span>';
 						} else {
 							$unit = '';
 						}
@@ -446,7 +446,7 @@ class ItemUi {
 							}
 						$h .= '</td>';
 						$h .= '<td class="text-end" style="padding-right: 1rem">';
-							$h .= '&nbsp;<span class="annotation" style="color: var(--order)">'.\main\UnitUi::getValue($total, $cItem->first()['unit'], TRUE).'</span>';
+							$h .= '&nbsp;<span class="annotation" style="color: var(--order)">'.\selling\UnitUi::getValue($total, $cItem->first()['unit'], TRUE).'</span>';
 						$h .= '</td>';
 					$h .= '</tr>';
 
@@ -477,7 +477,7 @@ class ItemUi {
 				$h .= ProductUi::getVignette($eProduct, '2.5rem');
 				$h .= '<div class="item-day-product-name">';
 					$h .= encode($eProduct->getName());
-					$h .= '&nbsp;<span class="annotation" style="color: var(--order)">'.\main\UnitUi::getValue($total, $cItem->first()['unit'], TRUE).'</span>';
+					$h .= '&nbsp;<span class="annotation" style="color: var(--order)">'.\selling\UnitUi::getValue($total, $cItem->first()['unit'], TRUE).'</span>';
 					if($eProduct['size']) {
 						$h .= '<div><small class="color-muted"><u>'.encode($eProduct['size']).'</u></small></div>';
 					}
@@ -500,9 +500,9 @@ class ItemUi {
 					$h .= '<li>';
 
 					if($eItem['packaging']) {
-						$h .= p("<b>{number} colis</b> de {quantity} {arrow} {customer}", "<b>{number} colis</b> de {quantity} {arrow} {customer}", $eItem['number'], ['number' => $eItem['number'], 'arrow' => \Asset::icon('arrow-right'), 'quantity' => '<b>'.\main\UnitUi::getValue($eItem['packaging'], $eItem['unit'], TRUE).'</b>', 'customer' => $customer]);
+						$h .= p("<b>{number} colis</b> de {quantity} {arrow} {customer}", "<b>{number} colis</b> de {quantity} {arrow} {customer}", $eItem['number'], ['number' => $eItem['number'], 'arrow' => \Asset::icon('arrow-right'), 'quantity' => '<b>'.\selling\UnitUi::getValue($eItem['packaging'], $eItem['unit'], TRUE).'</b>', 'customer' => $customer]);
 					} else {
-						$h .= s("{quantity} {arrow} {customer}", ['quantity' => '<b>'.\main\UnitUi::getValue($eItem['number'], $eItem['unit'], TRUE).'</b>', 'customer' => $customer, 'arrow' => \Asset::icon('arrow-right')]);
+						$h .= s("{quantity} {arrow} {customer}", ['quantity' => '<b>'.\selling\UnitUi::getValue($eItem['number'], $eItem['unit'], TRUE).'</b>', 'customer' => $customer, 'arrow' => \Asset::icon('arrow-right')]);
 					}
 
 					$h .= '</li>';
@@ -546,9 +546,9 @@ class ItemUi {
 					$h .= '<li>';
 
 					if($eItem['packaging']) {
-						$h .= p("<b>{number} colis</b> de {quantity}", "<b>{number} colis</b> de {quantity}", $eItem['number'], ['number' => $eItem['number'], 'quantity' => '<b>'.\main\UnitUi::getValue($eItem['packaging'], $eItem['unit'], TRUE).'</b>']);
+						$h .= p("<b>{number} colis</b> de {quantity}", "<b>{number} colis</b> de {quantity}", $eItem['number'], ['number' => $eItem['number'], 'quantity' => '<b>'.\selling\UnitUi::getValue($eItem['packaging'], $eItem['unit'], TRUE).'</b>']);
 					} else {
-						$h .= '<b>'.\main\UnitUi::getValue($eItem['number'], $eItem['unit'], TRUE).'</b>';
+						$h .= '<b>'.\selling\UnitUi::getValue($eItem['number'], $eItem['unit'], TRUE).'</b>';
 					}
 
 					$h .= ' '.\Asset::icon('arrow-right').' ';
@@ -735,7 +735,7 @@ class ItemUi {
 
 			} else {
 
-				$eItem['unit'] = NULL;
+				$eItem['unit'] = new Unit();
 				$eItem['packaging'] = NULL;
 
 				$h .= '<div class="item-write">';
@@ -753,7 +753,7 @@ class ItemUi {
 					$h .= $form->dynamicGroup($eItem, 'name[]*');
 
 					if($eItem['sale']['type'] === Customer::PRO) {
-						$eItem['unit'] = NULL;
+						$eItem['unit'] = new Unit();
 						$h .= self::getPackagingField($form, 'packaging[]', $eItem);
 					} else {
 						$h .= $form->hidden('packaging[]', '');
@@ -834,7 +834,7 @@ class ItemUi {
 		$field = '<div class="item-write-packaging">';
 			$field .= $form->inputGroup(
 				$form->dynamicField($eItem, $name).
-				$form->addon($eItem['unit'] ? \main\UnitUi::getNeutral($eItem['unit']) : s("unité(s)"))
+				$form->addon($eItem['unit'] ? \selling\UnitUi::getSingular($eItem['unit']) : s("unité(s)"))
 			);
 			$field .= '<a onclick="Item.removePackaging(this)" title="'.s("Supprimer le colisage").'" class="btn btn-primary">'.\Asset::icon('trash').'</a>';
 		$field .= '</div>';
@@ -886,12 +886,6 @@ class ItemUi {
 				$d->placeholder = s("Aucun");
 				break;
 
-			case 'unit' :
-				$d->values = \main\UnitUi::getList(noWrap: FALSE);
-				$d->field = 'select';
-				$d->placeholder = s("&lt; Non applicable &gt;");
-				break;
-
 			case 'packaging' :
 				$d->attributes = function(\util\FormUi $form, Item $eItem) use($property) {
 
@@ -911,20 +905,22 @@ class ItemUi {
 
 				$d->append = function(\util\FormUi $form, Item $eItem) {
 					$h = '<span class="item-write-packaging-label '.($eItem['packaging'] ? '' : 'hide').'">'.s("colis").'</span>';
-					$h .= '<span class="item-write-unit-label '.($eItem['packaging'] ? 'hide' : '').'">'.\main\UnitUi::getNeutral($eItem['unit']).'</span>';
+					$h .= '<span class="item-write-unit-label '.($eItem['packaging'] ? 'hide' : '').'">'.\selling\UnitUi::getSingular($eItem['unit']).'</span>';
 					return $form->addon($h);
 				};
+				break;
+
+			case 'unit' :
+				$d->values = fn(Item $e) => $e['cUnit'] ?? $e->expects(['cUnit']);
+				$d->placeholder = s("&lt; Non applicable &gt;");
 				break;
 
 			case 'unitPrice' :
 				self::applyLocking($d, Item::UNIT_PRICE);
 
 				$d->append = function(\util\FormUi $form, Item $eItem) {
-					if($eItem['unit'] !== NULL) {
-						$h = s("€ {taxes} / {unit}", ['taxes' => $eItem['sale']->getTaxes(), 'unit' => \main\UnitUi::getSingular($eItem['unit'])]);
-					} else {
-						$h = s("€ {taxes}", ['taxes' => $eItem['sale']->getTaxes()]);
-					}
+					$h = s("€ {taxes}", ['taxes' => $eItem['sale']->getTaxes()]);
+					$h .= \selling\UnitUi::getBy($eItem['unit']);
 					return $form->addon($h);
 				};
 				break;

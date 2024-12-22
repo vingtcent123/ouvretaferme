@@ -66,7 +66,7 @@ class MerchantUi {
 								$h .= '</div>';
 							$h .= '</a>';
 							$h .= '<div class="merchant-unit">';
-								$unit = \main\UnitUi::getNeutral($eItem['unit'], short: TRUE);
+								$unit = \selling\UnitUi::getSingular($eItem['unit'], short: TRUE);
 								if($eSale->isPro()) {
 									$h .= '<span class="merchant-unit-packaging merchant-packaging '.($eItem['packaging'] !== NULL ? '' : 'hide').'">'.s("colis").'</span>';
 									$h .= '<span class="merchant-unit-default merchant-packaging '.($eItem['packaging'] !== NULL ? 'hide' : '').'">'.$unit.'</span>';
@@ -93,7 +93,7 @@ class MerchantUi {
 									$h .= '</div>';
 								$h .= '</a>';
 								$h .= '<div class="merchant-unit merchant-packaging '.($eItem['packaging'] !== NULL ? '' : 'hide').'">';
-									$h .= \main\UnitUi::getNeutral($eItem['unit'], short: TRUE);
+									$h .= \selling\UnitUi::getSingular($eItem['unit'], short: TRUE);
 								$h .= '</div>';
 								$h .= '<div class="merchant-placeholder merchant-packaging '.($eItem['packaging'] !== NULL ? 'hide' : '').'">';
 								$h .= '</div>';
@@ -109,7 +109,7 @@ class MerchantUi {
 								$h .= '<div class="merchant-value" id="merchant-'.$eItem['id'].'-unit-price">'.$format(Item::UNIT_PRICE, $eItem['unitPrice']).'</div>';
 							$h .= '</a>';
 							$h .= '<div class="merchant-unit">';
-								$h .= '€ &nbsp;/&nbsp;'.\main\UnitUi::getSingular($eItem['unit'], short: TRUE, by: TRUE);
+								$h .= '€ '.\selling\UnitUi::getBy($eItem['unit'], short: TRUE);
 							$h .= '</div>';
 
 							$h .= '<div class="merchant-label" data-wrapper="price['.$eItem['id'].']">'.s("Montant").'</div>';

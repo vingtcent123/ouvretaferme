@@ -186,13 +186,13 @@ class ProductUi {
 
 					$h .= '<div class="shop-product-buy-price">';
 
-						$h .= '<span style="white-space: nowrap">'.\util\TextUi::money($eProduct['price']).' '.$this->getTaxes($eProduct).' / '.\main\UnitUi::getSingular($eProductSelling['unit'], by: TRUE).'</span>';
+						$h .= '<span style="white-space: nowrap">'.\util\TextUi::money($eProduct['price']).' '.$this->getTaxes($eProduct).\selling\UnitUi::getBy($eProductSelling['unit']).'</span>';
 
 						$h .= '<div class="shop-product-buy-infos">';
 
 							if($eProduct['packaging'] !== NULL) {
 								$h.= '<div class="shop-product-buy-info">';
-									$h .= s("Colis de {value}", \main\UnitUi::getValue($eProduct['packaging'], $eProductSelling['unit'], TRUE));
+									$h .= s("Colis de {value}", \selling\UnitUi::getValue($eProduct['packaging'], $eProductSelling['unit'], TRUE));
 								$h .= '</div>';
 							}
 
@@ -391,12 +391,12 @@ class ProductUi {
 
 								case Date::PRIVATE :
 									$step = ProductUi::getStep($type, $eProduct);
-									$h .= \main\UnitUi::getValue($step, $eProduct['unit']);
+									$h .= \selling\UnitUi::getValue($step, $eProduct['unit']);
 									break;
 
 								case Date::PRO :
 									if($eProduct['proPackaging'] !== NULL) {
-										$h .= s("Colis de {value}", \main\UnitUi::getValue($eProduct['proPackaging'], $eProduct['unit'], TRUE));
+										$h .= s("Colis de {value}", \selling\UnitUi::getValue($eProduct['proPackaging'], $eProduct['unit'], TRUE));
 									}
 									break;
 
@@ -415,7 +415,7 @@ class ProductUi {
 							$h .= '<label class="date-products-item-product-stock hide-xs-down '.($checked ? '' : 'hidden').'" for="'.$attributes['id'].'">';
 								if($eProduct['stock'] !== NULL) {
 									$h .= \selling\StockUi::getExpired($eProduct);
-									$h .= '<span title="'.\selling\StockUi::getDate($eProduct['stockUpdatedAt']).'">'.\main\UnitUi::getValue(round($eProduct['stock']), $eProduct['unit'], short: TRUE).'</span>';
+									$h .= '<span title="'.\selling\StockUi::getDate($eProduct['stockUpdatedAt']).'">'.\selling\UnitUi::getValue(round($eProduct['stock']), $eProduct['unit'], short: TRUE).'</span>';
 								}
 							$h .= '</label>';
 						}
@@ -464,7 +464,7 @@ class ProductUi {
 				$h .= '<span>'.$number.'</span> ';
 
 				if($eProduct['packaging'] === NULL) {
-					$h .= \main\UnitUi::getSingular($eProductSelling['unit'], short: TRUE);
+					$h .= \selling\UnitUi::getSingular($eProductSelling['unit'], short: TRUE);
 				} else {
 					$h .= s("colis");
 				}
@@ -488,10 +488,14 @@ class ProductUi {
 
 	public static function getDefaultPrivateStep(\selling\Product $eProduct): float {
 
-		return match($eProduct['unit']) {
+		if($eProduct['unit']->empty()) {
+			return 1;
+		}
 
-			\selling\Product::GRAM => 100,
-			\selling\Product::KG => 0.5,
+		return match($eProduct['unit']['fqn']) {
+
+			'gram' => 100,
+			'kg' => 0.5,
 			default => 1,
 
 		};
@@ -604,13 +608,13 @@ class ProductUi {
 							if($type === Date::PRO) {
 								$h .= '<td class="td-min-content '.(($isExpired or $eProduct->exists()) ? '' : 'shop-product-not-exist').'">';
 									if($eProduct['packaging'] !== NULL) {
-										$h .= s("Colis de {value}", \main\UnitUi::getValue($eProduct['packaging'], $eProductSelling['unit'], TRUE));
+										$h .= s("Colis de {value}", \selling\UnitUi::getValue($eProduct['packaging'], $eProductSelling['unit'], TRUE));
 									}
 								$h .= '</td>';
 							}
 
 							$h .= '<td class="text-end '.(($isExpired or $eProduct->exists()) ? '' : 'shop-product-not-exist').'" style="white-space: nowrap">';
-								$price = \util\TextUi::money($eProduct['price']).' / '.\main\UnitUi::getSingular($eProductSelling['unit'], short: TRUE, by: TRUE);
+								$price = \util\TextUi::money($eProduct['price']).\selling\UnitUi::getBy($eProductSelling['unit'], short: TRUE);
 								if($canUpdate) {
 									$h .= $eProduct->quick('price', $price);
 								} else {
@@ -727,13 +731,13 @@ class ProductUi {
 							if($e['type'] === Date::PRO) {
 								$h .= '<td class="td-min-content">';
 									if($eProduct['packaging'] !== NULL) {
-										$h .= s("Colis de {value}", \main\UnitUi::getValue($eProduct['packaging'], $eProductSelling['unit'], TRUE));
+										$h .= s("Colis de {value}", \selling\UnitUi::getValue($eProduct['packaging'], $eProductSelling['unit'], TRUE));
 									}
 								$h .= '</td>';
 							}
 
 							$h .= '<td class="text-end" style="white-space: nowrap">';
-								$price = \util\TextUi::money($eProduct['price']).' / '.\main\UnitUi::getSingular($eProductSelling['unit'], short: TRUE, by: TRUE);
+								$price = \util\TextUi::money($eProduct['price']).\selling\UnitUi::getBy($eProductSelling['unit'], short: TRUE);
 								$h .= $eProduct->quick('price', $price);
 							$h .= '</td>';
 
@@ -782,7 +786,7 @@ class ProductUi {
 					if($eProduct['limitNumber']) {
 
 						if($eProduct['packaging'] === NULL) {
-							$value = \main\UnitUi::getValue($eProduct['limitNumber'], $eProduct['product']['unit']);
+							$value = \selling\UnitUi::getValue($eProduct['limitNumber'], $eProduct['product']['unit']);
 						} else {
 							$value = s("{value} colis", $eProduct['limitNumber']);
 						}
@@ -842,7 +846,7 @@ class ProductUi {
 
 					if($eProduct['available'] === NULL) {
 
-						$available = '<span class="color-success">'.\Asset::icon('check-circle-fill').' '.s("illimité").'<span>';
+						$available = '<span class="color-success">'.\Asset::icon('check-circle-fill').' '.s("Illimité").'<span>';
 
 					} else {
 
@@ -990,7 +994,7 @@ class ProductUi {
 
 			case 'limitNumber' :
 				$d->append = fn(\util\FormUi $form, Product $e) => $form->addon(($e['packaging'] === NULL) ?
-					\main\UnitUi::getNeutral($e['product']['unit'], short: TRUE) :
+					\selling\UnitUi::getSingular($e['product']['unit'], short: TRUE) :
 					s("colis"));
 				$d->placeholder = s("Illimité");
 				break;
@@ -1034,7 +1038,7 @@ class ProductUi {
 							$e['type'] === Product::PRIVATE or
 							$e['packaging'] === NULL
 						) {
-							$unit = \main\UnitUi::getNeutral($e['product']['unit'], TRUE);
+							$unit = \selling\UnitUi::getSingular($e['product']['unit'], TRUE);
 						} else {
 							$unit = s("colis");
 						}
@@ -1051,9 +1055,9 @@ class ProductUi {
 			case 'price' :
 				$d->append = function(\util\FormUi $form, Product $e) {
 
-					return $form->addon(s('€ {taxes} / {unit}', [
+					return $form->addon(s('€ {taxes}{unit}', [
 						'taxes' => $e['farm']->getSelling('hasVat') ? $e->getTaxes() : '',
-						'unit' => \main\UnitUi::getSingular($e['product']['unit'], short: TRUE)
+						'unit' => \selling\UnitUi::getBy($e['product']['unit'], short: TRUE)
 					]));
 
 				};

@@ -268,9 +268,9 @@ class CustomizeUi {
 				foreach($cItem as $eItem) {
 
 					if($eItem['packaging'] === NULL) {
-						$number = \main\UnitUi::getValue($eItem['number'], $eItem['unit'], noWrap: FALSE);
+						$number = \selling\UnitUi::getValue($eItem['number'], $eItem['unit']);
 					} else {
-						$number = p("{value} colis de {quantity}", "{value} colis de {quantity}", $eItem['number'], ['quantity' => \main\UnitUi::getValue($eItem['packaging'], $eItem['unit'], noWrap: FALSE)]);
+						$number = p("{value} colis de {quantity}", "{value} colis de {quantity}", $eItem['number'], ['quantity' => \selling\UnitUi::getValue($eItem['packaging'], $eItem['unit'])]);
 					}
 
 					$products .= '- '.s("{name} : {number}", ['name' => encode($eItem['name']), 'number' => $number])."\n";

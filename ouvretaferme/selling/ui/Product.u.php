@@ -51,9 +51,7 @@ class ProductUi {
 		$item = self::getVignette($eProduct, '2.5rem');
 		$item .= '<div>';
 			$item .= encode($eProduct->getName());
-			if($eProduct['unit']) {
-				$item .= ' / '.\main\UnitUi::getSingular($eProduct['unit']);
-			}
+			$item .= \selling\UnitUi::getBy($eProduct['unit']);
 			$item .= '<br/>';
 			if($infos) {
 				$item .= '<small class="color-muted">'.implode(' | ', $infos).'</small>';
@@ -191,7 +189,7 @@ class ProductUi {
 					}
 
 					$h .= '<td class="product-item-unit">';
-						$h .= \main\UnitUi::getSingular($eProduct['unit']);
+						$h .= \selling\UnitUi::getSingular($eProduct['unit']);
 					$h .= '</td>';
 
 					$h .= '<td class="text-end highlight-stick-right hide-md-down">';
@@ -390,7 +388,7 @@ class ProductUi {
 		if($includeStock) {
 
 			if($eProduct['stock'] !== NULL) {
-				$more[] .= '<span title="'.\selling\StockUi::getDate($eProduct['stockUpdatedAt']).'">'.s("{value} en stock", \selling\StockUi::getExpired($eProduct).'<u>'.\main\UnitUi::getValue(round($eProduct['stock']), $eProduct['unit'], short: TRUE)).'</u></span>';
+				$more[] .= '<span title="'.\selling\StockUi::getDate($eProduct['stockUpdatedAt']).'">'.s("{value} en stock", \selling\StockUi::getExpired($eProduct).'<u>'.\selling\UnitUi::getValue(round($eProduct['stock']), $eProduct['unit'], short: TRUE)).'</u></span>';
 			}
 
 		}
@@ -469,7 +467,7 @@ class ProductUi {
 				$h .= '<dt>'.self::p('plant')->label.'</dt>';
 				$h .= '<dd>'.($eProduct['plant']->empty() ? '' : \plant\PlantUi::link($eProduct['plant'])).'</dd>';
 				$h .= '<dt>'.self::p('unit')->label.'</dt>';
-				$h .= '<dd>'.($eProduct['unit'] ? self::p('unit')->values[$eProduct['unit']] : \Asset::icon('slash')).'</dd>';
+				$h .= '<dd>'.($eProduct['unit']->notEmpty() ? encode($eProduct['unit']['singular']) : '').'</dd>';
 				$h .= '<dt>'.self::p('size')->label.'</dt>';
 				$h .= '<dd>'.($eProduct['size'] ? encode($eProduct['size']) : '').'</dd>';
 				$h .= '<dt>'.self::p('quality')->label.'</dt>';
@@ -540,11 +538,11 @@ class ProductUi {
 					$h .= '<dd>';
 						if($eProduct['privatePrice']) {
 							$value = \util\TextUi::money($eProduct['privatePrice']);
-							$value .= ' '.$taxes.' / '.\main\UnitUi::getSingular($eProduct['unit'], by: TRUE);
+							$value .= ' '.$taxes.\selling\UnitUi::getBy($eProduct['unit']);
 						} else if($eProduct['proPrice']) {
 							$value = '<span class="color-muted" title="'.s("Prix calculé à partir du prix pour les professionnels augmenté de la TVA, cliquez pour le personnaliser.").'">'.\Asset::icon('magic').' ';
 								$value .= \util\TextUi::money($eProduct->calcPrivateMagicPrice($eProduct['farm']->getSelling('hasVat')));
-								$value .= ' '.$taxes.' / '.\main\UnitUi::getSingular($eProduct['unit'], by: TRUE);
+								$value .= ' '.$taxes.\selling\UnitUi::getBy($eProduct['unit']);
 							$value .= '</span>';
 						} else {
 							$value = '/';
@@ -554,7 +552,7 @@ class ProductUi {
 
 					$h .= '<dt>'.self::p('privateStep')->label.'</dt>';
 					$h .= '<dd>';
-						$value = \main\UnitUi::getValue($eProduct['privateStep'] ?? \shop\ProductUi::getDefaultPrivateStep($eProduct), $eProduct['unit']);
+						$value = \selling\UnitUi::getValue($eProduct['privateStep'] ?? \shop\ProductUi::getDefaultPrivateStep($eProduct), $eProduct['unit']);
 						$h .= $eProduct->quick('privateStep', $value);
 					$h .= '</dd>';
 
@@ -580,11 +578,11 @@ class ProductUi {
 					$h .= '<dd>';
 						if($eProduct['proPrice']) {
 							$value = \util\TextUi::money($eProduct['proPrice']);
-							$value .= ' '.$taxes.' / '.\main\UnitUi::getSingular($eProduct['unit'], by: TRUE);
+							$value .= ' '.$taxes.\selling\UnitUi::getBy($eProduct['unit']);
 						} else if($eProduct['privatePrice']) {
 							$value = '<span class="color-muted" title="'.s("Prix calculé à partir du prix pour les particuliers diminué de la TVA, cliquez pour le personnaliser.").'">'.\Asset::icon('magic').' ';
 								$value .= \util\TextUi::money($eProduct->calcProMagicPrice($eProduct['farm']->getSelling('hasVat')));
-								$value .= ' '.$taxes.' / '.\main\UnitUi::getSingular($eProduct['unit'], by: TRUE);
+								$value .= ' '.$taxes.\selling\UnitUi::getBy($eProduct['unit']);
 							$value .= '</span>';
 						} else {
 							$value = '/';
@@ -595,14 +593,14 @@ class ProductUi {
 					if($eProduct['proPackaging']) {
 						$h .= '<dt>'.self::p('proPackaging')->label.'</dt>';
 						$h .= '<dd>';
-							$value = \main\UnitUi::getValue($eProduct['proPackaging'], $eProduct['unit']);
+							$value = \selling\UnitUi::getValue($eProduct['proPackaging'], $eProduct['unit']);
 							$h .= $eProduct->quick('proPackaging', $value);
 						$h .= '</dd>';
 					}
 
 					$h .= '<dt>'.self::p('proStep')->label.'</dt>';
 					$h .= '<dd>';
-						$value = \main\UnitUi::getValue($eProduct['proStep'] ?? \shop\ProductUi::getDefaultProStep($eProduct), $eProduct['unit']);
+						$value = \selling\UnitUi::getValue($eProduct['proStep'] ?? \shop\ProductUi::getDefaultProStep($eProduct), $eProduct['unit']);
 						$h .= $eProduct->quick('proStep', $value);
 					$h .= '</dd>';
 
@@ -648,23 +646,25 @@ class ProductUi {
 
 	}
 
-	public function create(\farm\Farm $eFarm, \Collection $cCategory): \Panel {
+	public function create(Product $eProduct): \Panel {
+
+		$eProduct->expects(['cCategory', 'cUnit']);
+
+		$eFarm = $eProduct['farm'];
 
 		$form = new \util\FormUi();
 
-		$eProduct = new Product([
-			'farm' => $eFarm,
-			'cCategory' => $cCategory,
+		$eProduct->merge([
 			'quality' => $eFarm['quality'],
 			'vat' => $eFarm->getSelling('defaultVat'),
 			'private' => TRUE,
 			'pro' => TRUE,
-			'unit' => Product::model()->getDefaultValue('unit')
+			'unit' => $eProduct['cUnit']->first(),
 		]);
 
 		$h = '';
 
-		$h .= $form->openAjax('/selling/product:doCreateCollection', ['id' => 'product-create']);
+		$h .= $form->openAjax('/selling/product:doCreate', ['id' => 'product-create']);
 
 			$h .= $form->asteriskInfo();
 
@@ -686,9 +686,7 @@ class ProductUi {
 			$h .= $form->dynamicGroups($eProduct, ['unit', 'variety', 'size', 'description', 'quality', 'vat'], [
 				'unit' => function(\PropertyDescriber $d) {
 					$d->attributes += [
-						'callbackRadioAttributes' => function() {
-							return ['oninput' => 'Product.changeUnit(this, "product-unit")'];
-						}
+						'onchange' => 'Product.changeUnit(this, "product-unit")'
 					];
 				}
 			]);
@@ -734,7 +732,7 @@ class ProductUi {
 
 			$h .= $form->group(
 				self::p('unit')->label,
-				$form->fake(mb_ucfirst($eProduct['unit'] ? \main\UnitUi::getSingular($eProduct['unit']) : self::p('unit')->placeholder))
+				$form->fake(mb_ucfirst($eProduct['unit'] ? \selling\UnitUi::getSingular($eProduct['unit']) : self::p('unit')->placeholder))
 			);
 			$h .= $form->dynamicGroups($eProduct, ['variety', 'size', 'description', 'quality', 'vat']);
 
@@ -778,7 +776,7 @@ class ProductUi {
 			);
 
 			$taxes = $eProduct['farm']->getSelling('hasVat') ? '/ '.CustomerUi::getTaxes(Customer::PRO) : '';
-			$unit = ($eProduct['unit'] ? self::p('unit')->values[$eProduct['unit']] : self::p('unit')->placeholder);
+			$unit = ($eProduct['unit']->notEmpty() ? encode($eProduct['unit']['singular']) : self::p('unit')->placeholder);
 
 			$h .= $form->group(
 				s("Prix de base"),
@@ -827,7 +825,7 @@ class ProductUi {
 			);
 
 			$taxes = $eProduct['farm']->getSelling('hasVat') ? '/ '.CustomerUi::getTaxes(Customer::PRIVATE) : '';
-			$unit = ($eProduct['unit'] ? self::p('unit')->values[$eProduct['unit']] : self::p('unit')->placeholder);
+			$unit = ($eProduct['unit']->notEmpty() ? encode($eProduct['unit']['singular']) : self::p('unit')->placeholder);
 
 			$h .= $form->group(
 				s("Prix de base"),
@@ -915,10 +913,8 @@ class ProductUi {
 				break;
 
 			case 'unit' :
-				$d->values = \main\UnitUi::getList(noWrap: FALSE);
-				$d->attributes = [
-					'columns' => 3
-				];
+				$d->values = fn(Product $e) => $e['cUnit'] ?? $e->expects(['cUnit']);
+				$d->placeholder = s("&lt; Non applicable &gt;");
 				$d->after = \util\FormUi::info(s("L'unité de vente ne pourra pas être modifiée par la suite. Si vous choisissez de modifier le conditionnement, vous devrez créer un autre produit."));
 				break;
 

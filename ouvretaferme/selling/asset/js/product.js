@@ -10,7 +10,7 @@ class Product {
 
 	static changeUnit(target, change) {
 
-		ref(change, (node) => node.innerHTML = target.nextElementSibling.innerHTML);
+		ref(change, (node) => node.innerHTML = target.value === '' ? '' : target.qs('option[value="'+ target.value +'"]').innerHTML);
 
 	}
 

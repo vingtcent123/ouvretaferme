@@ -49,7 +49,7 @@ class AnalyzeLib {
 				'month' => new \Sql('EXTRACT(MONTH FROM deliveredAt)', 'int'),
 				'quantity' => new \Sql('SUM(IF(packaging IS NULL, 1, packaging) * number)', 'float'),
 				'turnover' => new \Sql('SUM(priceExcludingVat)', 'float'),
-				'unit',
+				'unit' => ['fqn', 'by', 'singular', 'plural', 'short', 'type'],
 				'average' => new \Sql('SUM(priceExcludingVat) / SUM(IF(packaging IS NULL, 1, packaging) * number)', 'float')
 			])
 			->join(Customer::model(), 'm1.customer = m2.id')
@@ -488,7 +488,7 @@ class AnalyzeLib {
 			->select([
 				'product' => ['vignette', 'name', 'variety'],
 				'quantity' => new \Sql('SUM(IF(packaging IS NULL, 1, packaging) * number)', 'float'),
-				'unit',
+				'unit' => ['fqn', 'by', 'singular', 'plural', 'short', 'type'],
 				'turnover' => new \Sql('SUM('.$field.')', 'float'),
 				'average' => new \Sql('SUM('.$field.') / SUM(IF(packaging IS NULL, 1, packaging) * number)', 'float')
 			])
@@ -773,7 +773,7 @@ class AnalyzeLib {
 				'customer' => ['type', 'name'],
 				'quantity' => new \Sql('IF(packaging IS NULL, 1, packaging) * number', 'float'),
 				'priceExcludingVat',
-				'unit',
+				'unit' => ['fqn', 'by', 'singular', 'plural', 'short', 'type'],
 				'deliveredAt'
 			])
 			->whereFarm($eFarm)
@@ -790,7 +790,7 @@ class AnalyzeLib {
 					CustomerUi::getType($eItem['sale']),
 					\util\DateUi::numeric($eItem['deliveredAt']),
 					\util\TextUi::csvNumber($eItem['quantity']),
-					\main\UnitUi::getSingular($eItem['unit'], noWrap: FALSE),
+					\selling\UnitUi::getSingular($eItem['unit'], noWrap: FALSE),
 					\util\TextUi::csvNumber($eItem['priceExcludingVat'])
 				];
 			});

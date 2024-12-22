@@ -7,16 +7,6 @@ abstract class ProductElement extends \Element {
 
 	private static ?ProductModel $model = NULL;
 
-	const KG = 'kg';
-	const GRAM = 'gram';
-	const GRAM_100 = 'gram-100';
-	const GRAM_250 = 'gram-250';
-	const GRAM_500 = 'gram-500';
-	const BOX = 'box';
-	const UNIT = 'unit';
-	const BUNCH = 'bunch';
-	const PLANT = 'plant';
-
 	const ORGANIC = 'organic';
 	const NATURE_PROGRES = 'nature-progres';
 	const CONVERSION = 'conversion';
@@ -62,7 +52,7 @@ class ProductModel extends \ModuleModel {
 			'variety' => ['text8', 'min' => 1, 'max' => NULL, 'null' => TRUE, 'cast' => 'string'],
 			'size' => ['text8', 'min' => 1, 'max' => NULL, 'null' => TRUE, 'cast' => 'string'],
 			'farm' => ['element32', 'farm\Farm', 'cast' => 'element'],
-			'unit' => ['enum', [\selling\Product::KG, \selling\Product::GRAM, \selling\Product::GRAM_100, \selling\Product::GRAM_250, \selling\Product::GRAM_500, \selling\Product::BOX, \selling\Product::UNIT, \selling\Product::BUNCH, \selling\Product::PLANT], 'cast' => 'enum'],
+			'unit' => ['element32', 'selling\Unit', 'null' => TRUE, 'cast' => 'element'],
 			'private' => ['bool', 'cast' => 'bool'],
 			'privatePrice' => ['decimal', 'digits' => 8, 'decimal' => 2, 'null' => TRUE, 'cast' => 'float'],
 			'privateStep' => ['decimal', 'digits' => 6, 'decimal' => 2, 'min' => 0.01, 'max' => NULL, 'null' => TRUE, 'cast' => 'float'],
@@ -87,6 +77,7 @@ class ProductModel extends \ModuleModel {
 			'category' => 'selling\Category',
 			'plant' => 'plant\Plant',
 			'farm' => 'farm\Farm',
+			'unit' => 'selling\Unit',
 			'stockLast' => 'selling\Stock',
 		];
 
@@ -100,9 +91,6 @@ class ProductModel extends \ModuleModel {
 	public function getDefaultValue(string $property) {
 
 		switch($property) {
-
-			case 'unit' :
-				return Product::KG;
 
 			case 'private' :
 				return TRUE;
@@ -126,9 +114,6 @@ class ProductModel extends \ModuleModel {
 	public function encode(string $property, $value) {
 
 		switch($property) {
-
-			case 'unit' :
-				return ($value === NULL) ? NULL : (string)$value;
 
 			case 'quality' :
 				return ($value === NULL) ? NULL : (string)$value;

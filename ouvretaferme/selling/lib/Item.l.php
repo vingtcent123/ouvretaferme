@@ -21,27 +21,6 @@ class ItemLib extends ItemCrud {
 		};
 	}
 
-	public static function getBySalesForPlanning(\Collection $cSale): \Collection {
-
-		$ccItem = Item::model()
-			->select([
-				'deliveredAt' => new \Sql('m1.deliveredAt'),
-				'product' => ['name', 'variety', 'vignette', 'size'],
-				'quantity' => new \Sql('SUM(IF(packaging IS NULL, number, number * packaging))', 'float'),
-				'unit'
-			])
-			->join(Product::model(), 'm2.id = m1.product')
-			->where('m1.sale', 'IN', $cSale)
-			->group(new \Sql('m1.deliveredAt, m1.product, m1.unit'))
-			->sort(new \Sql('deliveredAt DESC'))
-			->getCollection(NULL, NULL, ['deliveredAt', NULL]);
-
-		$ccItem->map(fn($cItem) => $cItem->sort(['product' => ['name']]));
-
-		return $ccItem;
-
-	}
-
 	public static function getProductsBySales(\Collection $cSale): \Collection {
 
 		$ccItem = Item::model()
@@ -109,7 +88,8 @@ class ItemLib extends ItemCrud {
 				'sale' => ['farm', 'hasVat', 'taxes', 'shippingVatRate', 'shippingVatFixed', 'document'],
 				'customer' => ['type', 'name'],
 				'quantity' => new \Sql('IF(packaging IS NULL, 1, packaging) * number', 'float'),
-				'unit', 'unitPrice',
+				'unit' => ['fqn', 'by', 'singular', 'plural', 'short', 'type'],
+				'unitPrice',
 				'price',
 				'deliveredAt'
 			])
@@ -126,7 +106,7 @@ class ItemLib extends ItemCrud {
 		return Item::model()
 			->select([
 				'name', 'quality',
-				'unit',
+				'unit' => ['fqn', 'by', 'singular', 'plural', 'short', 'type'],
 				'price' => new \Sql('SUM(price)', 'float'),
 				'quantity' => new \Sql('SUM(IF(packaging IS NULL, 1, packaging) * number)', 'float'),
 				'product' => ['vignette']
@@ -144,7 +124,7 @@ class ItemLib extends ItemCrud {
 		return Item::model()
 			->select([
 				'name', 'quality',
-				'unit',
+				'unit' => ['fqn', 'by', 'singular', 'plural', 'short', 'type'],
 				'price' => new \Sql('SUM(price)', 'float'),
 				'quantity' => new \Sql('SUM(IF(packaging IS NULL, 1, packaging) * number)', 'float'),
 				'product' => ['vignette']

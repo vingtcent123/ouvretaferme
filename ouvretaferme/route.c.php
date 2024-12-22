@@ -562,6 +562,16 @@ Route::register([
 			'priority' => 5,
 			'route' => ['@module', 'selling', 'Sale', 'quick'],
 		],
+		'/@module/selling/Unit/doQuick' => [
+			'request' => 'selling/unit',
+			'priority' => 5,
+			'route' => ['@module', 'selling', 'Unit', 'doQuick'],
+		],
+		'/@module/selling/Unit/quick' => [
+			'request' => 'selling/unit',
+			'priority' => 5,
+			'route' => ['@module', 'selling', 'Unit', 'quick'],
+		],
 		'/@module/series/Cultivation/doQuick' => [
 			'request' => 'series/cultivation',
 			'priority' => 5,

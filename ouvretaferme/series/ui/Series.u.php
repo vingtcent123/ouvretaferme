@@ -1230,7 +1230,7 @@ class SeriesUi {
 			case \farm\Action::BY_HARVEST :
 				foreach($cTaskHarvested as $eTaskHarvested) {
 					if($eTaskHarvested['totalTime'] > 0 and $eTaskHarvested['totalHarvested'] > 0) {
-						$pace .= s("{value} / h", \main\UnitUi::getValue(round($eTaskHarvested['totalHarvested'] / $eTaskHarvested['totalTime'], 1), $eTaskHarvested['harvestUnit'], short: TRUE)).'<br/>';
+						$pace .= s("{value} / h", \selling\UnitUi::getValue(round($eTaskHarvested['totalHarvested'] / $eTaskHarvested['totalTime'], 1), $eTaskHarvested['harvestUnit'], short: TRUE)).'<br/>';
 					}
 				}
 				break;

@@ -59,7 +59,7 @@ class CsvLib {
 					$eTimesheet['plant']->empty() ? '' : $eTimesheet['plant']['name'],
 					$eTimesheet['variety']->empty() ? '' : $eTimesheet['variety']['name'],
 					$eTimesheet['harvestUser'] ? \util\TextUi::csvNumber($eTimesheet['harvestUser']) : '',
-					($eTimesheet['harvestUser'] and $eTimesheet['harvestUnit']) ? \main\UnitUi::getSingular($eTimesheet['harvestUnit']) : '',
+					($eTimesheet['harvestUser'] and $eTimesheet['harvestUnit']) ? \selling\UnitUi::getSingular($eTimesheet['harvestUnit']) : '',
 					$eTimesheet['harvestSize']->empty() ? '' : $eTimesheet['harvestSize']['name'],
 				];
 
@@ -109,7 +109,7 @@ class CsvLib {
 				$eTask['plant']->empty() ? '' : $eTask['plant']['name'],
 				$eTask['variety']->empty() ? '' : $eTask['variety']['name'],
 				\util\TextUi::csvNumber($eHarvest['quantity']),
-				\main\UnitUi::getSingular($eHarvest['unit']),
+				\selling\UnitUi::getSingular($eHarvest['unit']),
 				$eTask['harvestSize']->empty() ? '' : $eTask['harvestSize']['name']
 			];
 

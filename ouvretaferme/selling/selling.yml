@@ -154,7 +154,7 @@ Item:
   parent: ?selling\Item
   description: ?text8(1, null)
   packaging: ?decimal(6, 2, 0.01, null)
-  unit: ?enum(KG, GRAM, GRAM_100, GRAM_250, GRAM_500, BOX, UNIT, BUNCH, PLANT)
+  unit: ?selling\Unit
   unitPrice: decimal(8, 2)
   discount: int8(0, 100) = 0
   number: ?decimal(8, 2, 0.0, null)
@@ -221,7 +221,7 @@ Product:
   variety: ?text8(1, null)
   size: ?text8(1, null)
   farm: farm\Farm
-  unit: enum(KG, GRAM, GRAM_100, GRAM_250, GRAM_500, BOX, UNIT, BUNCH, PLANT) = KG
+  unit: ?selling\Unit = PHP(1)
   private: bool = TRUE
   privatePrice: ?decimal(8, 2)
   privateStep: ?decimal(6, 2, 0.01, null)
@@ -320,4 +320,17 @@ StockBookmark:
   INDEX: [
     ["farm", "product"],
     ["plant", "unit", "size", "variety"]
+  ]
+  
+Unit:
+  id: serial32
+  singular: text8(1, 15) @collate(general)
+  plural: text8(1, 15) @collate(general)
+  short: text8(1, 3) @collate(general)
+  farm: ?farm\Farm
+  fqn: ?fqn
+  by: bool = false
+  type: enum(INTEGER, DECIMAL)
+  UNIQUE: [
+    ["farm", "singular"]
   ]

@@ -6,6 +6,13 @@ class Farm extends FarmElement {
 	const DEMO = 1;
 
 	protected static array $selling = [];
+	protected static array $farms = [];
+
+	public function __construct(array $array = []) {
+
+		parent::__construct($array);
+
+	}
 
 	public static function getSelection(): array {
 

@@ -107,7 +107,7 @@ class StockUi {
 					$h .= '</td>';
 
 					$h .= '<td class="td-min-content stock-item-unit">';
-						$h .= '<a href="/selling/stock:update?id='.$eProduct['id'].'" title="'.s("Corriger le stock").'">'.\main\UnitUi::getSingular($eProduct['unit'], short: TRUE).'</a>';
+						$h .= '<a href="/selling/stock:update?id='.$eProduct['id'].'" title="'.s("Corriger le stock").'">'.\selling\UnitUi::getSingular($eProduct['unit'], short: TRUE).'</a>';
 						$h .= '<div class="stock-item-pencil">'.\Asset::icon('pencil-fill').'</div>';
 					$h .= '</td>';
 
@@ -163,7 +163,7 @@ class StockUi {
 								$value = round($cItemPast[$today]['quantity'], 2);
 
 								$h .= '<div class="stock-item-main">';
-									$h .= '<a data-ajax="/selling/stock:doUpdate" post-id="'.$eProduct['id'].'" post-sign="-" post-new-value="'.$value.'" post-comment="'.s("Ventes").'" class="btn btn-sm btn-outline-primary" '.($hide ? 'data-confirm="'.s("Votre stock est peut-être déjà à jour, voulez-vous toujours retrancher les quantités livrées aujourd'hui du stock ?").'"' : '').' title="'.s("Retrancher du stock").'">- '.\main\UnitUi::getValue($value, $eProduct['unit'], short: TRUE).'</a>';
+									$h .= '<a data-ajax="/selling/stock:doUpdate" post-id="'.$eProduct['id'].'" post-sign="-" post-new-value="'.$value.'" post-comment="'.s("Ventes").'" class="btn btn-sm btn-outline-primary" '.($hide ? 'data-confirm="'.s("Votre stock est peut-être déjà à jour, voulez-vous toujours retrancher les quantités livrées aujourd'hui du stock ?").'"' : '').' title="'.s("Retrancher du stock").'">- '.\selling\UnitUi::getValue($value, $eProduct['unit'], short: TRUE).'</a>';
 								$h .= '</div>';
 
 							}
@@ -183,7 +183,7 @@ class StockUi {
 								$value = round($cItemPast[$yesterday]['quantity'], 2);
 
 								$h .= '<div class="stock-item-main">';
-									$h .= '<a data-ajax="/selling/stock:doUpdate" post-id="'.$eProduct['id'].'" post-sign="-" post-new-value="'.$value.'" post-comment="'.s("Ventes").'" class="btn btn-sm btn-outline-primary" '.($hide ? 'data-confirm="'.s("Votre stock est peut-être déjà à jour, voulez-vous toujours retrancher les quantités livrées hier du stock ?").'"' : '').' title="'.s("Retrancher du stock").'">- '.\main\UnitUi::getValue($value, $eProduct['unit'], short: TRUE).'</a>';
+									$h .= '<a data-ajax="/selling/stock:doUpdate" post-id="'.$eProduct['id'].'" post-sign="-" post-new-value="'.$value.'" post-comment="'.s("Ventes").'" class="btn btn-sm btn-outline-primary" '.($hide ? 'data-confirm="'.s("Votre stock est peut-être déjà à jour, voulez-vous toujours retrancher les quantités livrées hier du stock ?").'"' : '').' title="'.s("Retrancher du stock").'">- '.\selling\UnitUi::getValue($value, $eProduct['unit'], short: TRUE).'</a>';
 								$h .= '</div>';
 
 							}
@@ -250,7 +250,7 @@ class StockUi {
 			return '';
 		}
 
-		return '<div class="stock-item-'.$class.'">- '.\main\UnitUi::getValue($eItem['quantity'], $eProduct['unit'], short: TRUE).'</div>';
+		return '<div class="stock-item-'.$class.'">- '.\selling\UnitUi::getValue($eItem['quantity'], $eProduct['unit'], short: TRUE).'</div>';
 
 	}
 
@@ -294,7 +294,7 @@ class StockUi {
 						$h .= '</td>';
 
 						$h .= '<td class="td-min-content stock-item-unit">';
-							$h .= \main\UnitUi::getSingular($eProduct['unit'], short: TRUE);
+							$h .= \selling\UnitUi::getSingular($eProduct['unit'], short: TRUE);
 						$h .= '</td>';
 
 						$h .= '<td class="stock-item-stock-updated color-muted">';
@@ -380,7 +380,7 @@ class StockUi {
 						$h .= '</td>';
 
 						$h .= '<td class="product-item-unit">';
-							$h .= \main\UnitUi::getSingular($eBookmark['unit'], short: TRUE);
+							$h .= \selling\UnitUi::getSingular($eBookmark['unit'], short: TRUE);
 						$h .= '</td>';
 
 						$h .= '<td>';
@@ -542,7 +542,7 @@ class StockUi {
 							$d->placeholder = $eProduct['stock'];
 						}
 					}).
-					'<div class="input-group-addon">'.\main\UnitUi::getNeutral($eProduct['unit']).'</div>'
+					'<div class="input-group-addon">'.\selling\UnitUi::getSingular($eProduct['unit']).'</div>'
 				)
 			);
 

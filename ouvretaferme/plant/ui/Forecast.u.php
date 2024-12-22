@@ -17,9 +17,9 @@ class ForecastUi {
 		$eForecast['unit'] = Forecast::KG;
 
 		$attributes = [
-			'data-kg' => \main\UnitUi::getSingular(Forecast::KG, short: TRUE),
-			'data-bunch' => \main\UnitUi::getSingular(Forecast::BUNCH, short: TRUE),
-			'data-unit' => \main\UnitUi::getSingular(Forecast::UNIT, short: TRUE)
+			'data-kg' => \selling\UnitUi::getSingular(Forecast::KG, short: TRUE),
+			'data-bunch' => \selling\UnitUi::getSingular(Forecast::BUNCH, short: TRUE),
+			'data-unit' => \selling\UnitUi::getSingular(Forecast::UNIT, short: TRUE)
 		];
 
 		$h = $form->openAjax('/plant/forecast:doCreate', $attributes);
@@ -130,7 +130,7 @@ class ForecastUi {
 				break;
 
 			case 'harvestObjective' :
-				$d->append = fn(\util\FormUi $form, Forecast $e) => $form->addon('<span data-ref="forecast-unit">'.\main\UnitUi::getSingular($e['unit'], short: TRUE).'</span>');
+				$d->append = fn(\util\FormUi $form, Forecast $e) => $form->addon('<span data-ref="forecast-unit">'.\selling\UnitUi::getSingular($e['unit'], short: TRUE).'</span>');
 				break;
 
 
@@ -149,7 +149,7 @@ class ForecastUi {
 
 			case 'proPrice' :
 			case 'privatePrice' :
-				$d->append = fn(\util\FormUi $form, Forecast $e) => $form->addon(' € / <span data-ref="forecast-unit">'.\main\UnitUi::getSingular($e['unit'], short: TRUE).'</span>');
+				$d->append = fn(\util\FormUi $form, Forecast $e) => $form->addon(' € / <span data-ref="forecast-unit">'.\selling\UnitUi::getSingular($e['unit'], short: TRUE).'</span>');
 
 			case 'proPart' :
 			case 'privatePart' :

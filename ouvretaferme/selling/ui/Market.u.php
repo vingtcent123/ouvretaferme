@@ -218,14 +218,14 @@ class MarketUi {
 					$h .= '<div>';
 						$h .= $form->inputGroup(
 							$form->number('unitPrice['.$eItem['id'].']', attributes: ['placeholder' => $eItem['unitPrice'], 'step' => 0.01, 'class' => 'text-end']).
-							$form->addon('<small>€ &nbsp;/&nbsp;'.\main\UnitUi::getSingular($eItem['unit'], short: TRUE, by: TRUE).'</small>')
+							$form->addon('<small>€ '.\selling\UnitUi::getBy($eItem['unit'], short: TRUE).'</small>')
 						);
 				$h .= '</div>';
 
 				$h .= '<div class="market-item-fields">';
 						$h .= '<div>'.s("Vendu").'</div>';
 						$h .= '<div>';
-							$h .= \main\UnitUi::getValue($eItem['number'], $eItem['unit'], short: TRUE);
+							$h .= \selling\UnitUi::getValue($eItem['number'], $eItem['unit'], short: TRUE);
 						$h .= '</div>';
 						$h .= '<div>'.s("Montant").'</div>';
 						$h .= '<div>';
@@ -400,7 +400,7 @@ class MarketUi {
 
 		$h = '<'.$tag.' class="market-item '.($eItemSale->empty() ? '' : 'market-item-highlight').'" '.$onclick.' data-locked="'.$locked.'" data-item="'.$eItemReference['id'].'">';
 
-			$more = \util\TextUi::money($eItemReference['unitPrice']).' <span class="util-annotation"> / '.\main\UnitUi::getSingular($eItemReference['unit'], short: TRUE, by: TRUE).'</span>';
+			$more = \util\TextUi::money($eItemReference['unitPrice']).' <span class="util-annotation">'.\selling\UnitUi::getBy($eItemReference['unit'], short: TRUE).'</span>';
 
 			$h .= $this->getItemProduct($eItemMarket, $more);
 
@@ -410,7 +410,7 @@ class MarketUi {
 					$h .= '<div>'.s("Vendu").'</div>';
 					$h .= '<div>';
 						if($eItemSale->notEmpty()) {
-							$h .= \main\UnitUi::getValue($eItemSale['number'], $eItemSale['unit'], TRUE);
+							$h .= \selling\UnitUi::getValue($eItemSale['number'], $eItemSale['unit'], TRUE);
 						} else {
 							$h .= '/';
 						}

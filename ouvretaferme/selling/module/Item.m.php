@@ -14,16 +14,6 @@ abstract class ItemElement extends \Element {
 	const NATURE_PROGRES = 'nature-progres';
 	const CONVERSION = 'conversion';
 
-	const KG = 'kg';
-	const GRAM = 'gram';
-	const GRAM_100 = 'gram-100';
-	const GRAM_250 = 'gram-250';
-	const GRAM_500 = 'gram-500';
-	const BOX = 'box';
-	const UNIT = 'unit';
-	const BUNCH = 'bunch';
-	const PLANT = 'plant';
-
 	const UNIT_PRICE = 'unit-price';
 	const NUMBER = 'number';
 	const PRICE = 'price';
@@ -71,7 +61,7 @@ class ItemModel extends \ModuleModel {
 			'parent' => ['element32', 'selling\Item', 'null' => TRUE, 'cast' => 'element'],
 			'description' => ['text8', 'min' => 1, 'max' => NULL, 'null' => TRUE, 'cast' => 'string'],
 			'packaging' => ['decimal', 'digits' => 6, 'decimal' => 2, 'min' => 0.01, 'max' => NULL, 'null' => TRUE, 'cast' => 'float'],
-			'unit' => ['enum', [\selling\Item::KG, \selling\Item::GRAM, \selling\Item::GRAM_100, \selling\Item::GRAM_250, \selling\Item::GRAM_500, \selling\Item::BOX, \selling\Item::UNIT, \selling\Item::BUNCH, \selling\Item::PLANT], 'null' => TRUE, 'cast' => 'enum'],
+			'unit' => ['element32', 'selling\Unit', 'null' => TRUE, 'cast' => 'element'],
 			'unitPrice' => ['decimal', 'digits' => 8, 'decimal' => 2, 'cast' => 'float'],
 			'discount' => ['int8', 'min' => 0, 'max' => 100, 'cast' => 'int'],
 			'number' => ['decimal', 'digits' => 8, 'decimal' => 2, 'min' => 0.0, 'max' => NULL, 'null' => TRUE, 'cast' => 'float'],
@@ -98,6 +88,7 @@ class ItemModel extends \ModuleModel {
 			'shopProduct' => 'shop\Product',
 			'product' => 'selling\Product',
 			'parent' => 'selling\Item',
+			'unit' => 'selling\Unit',
 		];
 
 		$this->indexConstraints = array_merge($this->indexConstraints, [
@@ -140,9 +131,6 @@ class ItemModel extends \ModuleModel {
 				return ($value === NULL) ? NULL : (string)$value;
 
 			case 'quality' :
-				return ($value === NULL) ? NULL : (string)$value;
-
-			case 'unit' :
 				return ($value === NULL) ? NULL : (string)$value;
 
 			case 'locked' :

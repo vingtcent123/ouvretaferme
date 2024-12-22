@@ -8,6 +8,7 @@ class Product extends ProductElement {
 		return parent::getSelection() + [
 			'farm' => ['name', 'vignette'],
 			'plant' => ['name', 'fqn', 'vignette'],
+			'unit' => ['fqn', 'by', 'singular', 'plural', 'short', 'type'],
 			'quality' => ['name', 'shortName', 'logo'],
 			'stockExpired' => new \Sql('stockUpdatedAt IS NOT NULL AND stockUpdatedAt < NOW() - INTERVAL 7 DAY', 'bool')
 		];
@@ -146,6 +147,21 @@ class Product extends ProductElement {
 							->select('farm')
 							->get($ePlant) and
 						$ePlant->canRead()
+					)
+				);
+
+			},
+
+			'unit.check' => function(Unit $eUnit): bool {
+
+				$this->expects(['farm']);
+
+				return (
+					$eUnit->empty() or (
+						Unit::model()
+							->select('farm')
+							->get($eUnit) and
+						$eUnit->canRead()
 					)
 				);
 

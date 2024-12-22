@@ -293,7 +293,7 @@ class CultivationUi {
 
 										$cultivations .= '<div class="series-item-planning-harvest-objective">';
 											if($eCultivation['harvestWeeksExpected']) {
-												$cultivations .= \main\UnitUi::getValue(round($eCultivation['harvestExpected'] / count($eCultivation['harvestWeeksExpected'])), $eCultivation['mainUnit'], TRUE);
+												$cultivations .= \selling\UnitUi::getValue(round($eCultivation['harvestExpected'] / count($eCultivation['harvestWeeksExpected'])), $eCultivation['mainUnit'], TRUE);
 											}
 										$cultivations .= '</div>';
 
@@ -301,7 +301,7 @@ class CultivationUi {
 
 										$cultivations .= '<div class="series-item-planning-harvest-objective color-warning">';
 											if($eCultivation['harvestWeeksExpected']) {
-												$cultivations .= \main\UnitUi::getValue(round($eCultivation['harvestExpectedTarget'] / count($eCultivation['harvestWeeksExpected'])), $eCultivation['mainUnit'], TRUE).'&nbsp;*';
+												$cultivations .= \selling\UnitUi::getValue(round($eCultivation['harvestExpectedTarget'] / count($eCultivation['harvestWeeksExpected'])), $eCultivation['mainUnit'], TRUE).'&nbsp;*';
 											}
 										$cultivations .= '</div>';
 
@@ -362,7 +362,7 @@ class CultivationUi {
 										if($harvestObjective !== NULL) {
 											$h .= ' / '.$harvestObjective;
 										}
-										$h .= ' '.\main\UnitUi::getSingular($unit, short: TRUE);
+										$h .= ' '.\selling\UnitUi::getSingular($unit, short: TRUE);
 									$h .= '</div>';
 
 								}
@@ -594,7 +594,7 @@ class CultivationUi {
 									$h .= $eForecast->quick('harvestObjective', $eForecast['harvestObjective']);
 								$h .= '</div>';
 								$h .= '<div class="series-item-forecast-objective series-item-forecast-objective-unit">';
-									$h .= \main\UnitUi::getSingular($unit, short: TRUE);
+									$h .= \selling\UnitUi::getSingular($unit, short: TRUE);
 								$h .= '</div>';
 								$h .= '<div class="series-item-forecast-objective series-item-forecast-objective-last series-item-forecast-sales">';
 									if($salesForecast > 0) {
@@ -623,7 +623,7 @@ class CultivationUi {
 								$h .= '</div>';
 								$h .= '<div class="series-item-forecast-objective series-item-forecast-objective-unit">';
 									if($harvestExpected > 0) {
-										$h .= \main\UnitUi::getSingular($unit, short: TRUE);
+										$h .= \selling\UnitUi::getSingular($unit, short: TRUE);
 									}
 								$h .= '</div>';
 								$h .= '<div class="series-item-forecast-objective series-item-forecast-objective-last series-item-forecast-sales">';
@@ -676,7 +676,7 @@ class CultivationUi {
 								$h .= '</div>';
 								$h .= '<div class="series-item-forecast-objective series-item-forecast-objective-unit color-muted">';
 									if($harvestExpected > 0) {
-										$h .= \main\UnitUi::getSingular($unit, short: TRUE);
+										$h .= \selling\UnitUi::getSingular($unit, short: TRUE);
 									}
 								$h .= '</div>';
 								$h .= '<div class="series-item-forecast-objective series-item-forecast-objective-last series-item-forecast-sales color-muted">';
@@ -1254,7 +1254,7 @@ class CultivationUi {
 
 									if($harvested !== NULL) {
 
-										$cultivations .= '<a href="/series/cultivation:harvest?id='.$eCultivation['id'].'" style="color: inherit">'.\main\UnitUi::getValue($harvested, $unit, TRUE).'</a>';
+										$cultivations .= '<a href="/series/cultivation:harvest?id='.$eCultivation['id'].'" style="color: inherit">'.\selling\UnitUi::getValue($harvested, $unit, TRUE).'</a>';
 
 										$totalHarvest[$unit] ??= 0;
 										$totalHarvest[$unit] += $harvested;
@@ -1294,7 +1294,7 @@ class CultivationUi {
 									if($eCultivation['yieldByUnit'] !== NULL and $eCultivation['mainUnit'] === $unit and $eCultivation['series']['area'] > 0 and $eCultivation['yieldByUnit'][$eCultivation['mainUnit']] !== NULL) {
 
 										$yield = round($eCultivation['yieldByUnit'][$eCultivation['mainUnit']] / $eCultivation['series']['area'], 1);
-										$cultivations .= '<b>'.\main\UnitUi::getValue($yield, $unit, TRUE).'</b>';
+										$cultivations .= '<b>'.\selling\UnitUi::getValue($yield, $unit, TRUE).'</b>';
 
 										if($eCultivation['mainUnit'] === $unit and $eCultivation['harvestExpected'] !== NULL) {
 
@@ -1353,12 +1353,12 @@ class CultivationUi {
 						if($cCultivation->count() > 1) {
 							$hPlant .= '<div class="series-item-harvesting-yield text-end">';
 								foreach($totalHarvest as $unit => $value) {
-									$hPlant .= '<div>'.\main\UnitUi::getValue($value, $unit, TRUE).'</div>';
+									$hPlant .= '<div>'.\selling\UnitUi::getValue($value, $unit, TRUE).'</div>';
 								}
 							$hPlant .= '</div>';
 							$hPlant .= '<div class="series-item-harvesting-yield text-end">';
 								foreach($totalHarvestExpected as $unit => $value) {
-									$hPlant .= '<div>'.\main\UnitUi::getValue($value, $unit, TRUE).'</div>';
+									$hPlant .= '<div>'.\selling\UnitUi::getValue($value, $unit, TRUE).'</div>';
 								}
 							$hPlant .= '</div>';
 						}
@@ -1448,10 +1448,10 @@ class CultivationUi {
 							$h .= '<td>'.($eTask['variety']->empty() ? '<i>'.s("Non spécifiée").'</u>' : encode($eTask['variety']['name'])).'</td>';
 						}
 						$h .= '<td>'.($eTask['harvestSize']->empty() ? '-' : encode($eTask['harvestSize']['name'])).'</td>';
-						$h .= '<td class="text-end">'.\main\UnitUi::getValue(sprintf('%.1f', $eTask['totalHarvest']), $eTask['harvestUnit'], TRUE).'</td>';
+						$h .= '<td class="text-end">'.\selling\UnitUi::getValue(sprintf('%.1f', $eTask['totalHarvest']), $eTask['harvestUnit'], TRUE).'</td>';
 						$h .= '<td class="text-end">';
 							if($area > 0) {
-								$h .= s("{value} / m²", \main\UnitUi::getValue(sprintf('%.2f', $eTask['totalHarvest'] / $area), $eTask['harvestUnit'], TRUE));
+								$h .= s("{value} / m²", \selling\UnitUi::getValue(sprintf('%.2f', $eTask['totalHarvest'] / $area), $eTask['harvestUnit'], TRUE));
 							} else {
 								$h .= '-';
 							}
@@ -2009,7 +2009,7 @@ class CultivationUi {
 
 		foreach($eCultivation['harvestedByUnit'] as $unit => $value) {
 			if($value > 0) {
-				$harvested[] = \main\UnitUi::getValue($value, $unit, TRUE);
+				$harvested[] = \selling\UnitUi::getValue($value, $unit, TRUE);
 			}
 		}
 
@@ -2032,7 +2032,7 @@ class CultivationUi {
 
 		foreach($eCultivation['yieldByUnit'] as $unit => $value) {
 			if($eSeries['area'] > 0 and $value > 0) {
-				$values[] = s("{value} / m²", \main\UnitUi::getValue(round($value / $eSeries['area'], 1), $unit, TRUE));
+				$values[] = s("{value} / m²", \selling\UnitUi::getValue(round($value / $eSeries['area'], 1), $unit, TRUE));
 			}
 		}
 
@@ -2542,7 +2542,7 @@ class CultivationUi {
 				break;
 
 			case 'harvested' :
-				$d->values = \main\UnitUi::getBasicList(noWrap: FALSE);
+				$d->values = \selling\UnitUi::getBasicList();
 				break;
 
 			case 'plant' :
@@ -2588,7 +2588,7 @@ class CultivationUi {
 			case 'mainUnit' :
 				$d->field = 'select';
 				$d->attributes = ['mandatory' => TRUE];
-				$d->values = \main\UnitUi::getLightList();
+				$d->values = \selling\UnitUi::getBasicList();
 				break;
 
 			case 'unitWeight' :

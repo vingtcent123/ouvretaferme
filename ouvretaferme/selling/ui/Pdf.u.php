@@ -153,7 +153,7 @@ class PdfUi {
 				$h .= '<div class="pdf-label-content-last">'.s("Nombre<br/>ou masse nette").'</div>';
 				$h .= '<div class="pdf-label-content-last">';
 					if($quantity !== NULL and $unit !== NULL) {
-						$h .= \main\UnitUi::getValue($quantity, $unit);
+						$h .= \selling\UnitUi::getValue($quantity, $unit);
 					}
 				$h .= '</div>';
 			$h .= '</div>';
@@ -446,16 +446,14 @@ class PdfUi {
 			$h .= '</td>';
 			$h .= '<td class="pdf-document-number">';
 				if($eItem['number'] !== NULL) {
-					$h .= \main\UnitUi::getValue($eItem['number'] * ($eItem['packaging'] ?? 1), $eItem['unit'], TRUE);
+					$h .= \selling\UnitUi::getValue($eItem['number'] * ($eItem['packaging'] ?? 1), $eItem['unit'], TRUE);
 				}
 			$h .= '</td>';
 			$h .= '<td class="pdf-document-unit-price">';
 				if($eItem['unitPrice'] !== NULL) {
 					$h .= \util\TextUi::money($eItem['unitPrice']);
 				}
-				if($eItem['unit']) {
-					$h .= ' / '.\main\UnitUi::getSingular($eItem['unit'], TRUE);
-				}
+				$h .= \selling\UnitUi::getBy($eItem['unit'], short: TRUE);
 			$h .= '</td>';
 			if($eSale['hasVat'] and $eSale['taxes'] === Sale::INCLUDING) {
 				$h .= '<td colspan="2"></td>';
@@ -740,7 +738,7 @@ class PdfUi {
 			$details[] = s("Calibre {value}", encode($eItem['product']['size']));
 		}
 		if($eItem['packaging']) {
-			$details[] = s("Colis de {value}", \main\UnitUi::getValue($eItem['packaging'], $eItem['unit'], TRUE));
+			$details[] = s("Colis de {value}", \selling\UnitUi::getValue($eItem['packaging'], $eItem['unit'], TRUE));
 		}
 
 		$h = '<tr class="pdf-document-item '.$last.'">';
@@ -767,13 +765,11 @@ class PdfUi {
 				$h .= '</td>';
 			}
 			$h .= '<td class="pdf-document-number">';
-				$h .= \main\UnitUi::getValue($eItem['number'] * ($eItem['packaging'] ?? 1), $eItem['unit'], TRUE);
+				$h .= \selling\UnitUi::getValue($eItem['number'] * ($eItem['packaging'] ?? 1), $eItem['unit'], TRUE);
 			$h .= '</td>';
 			$h .= '<td class="pdf-document-unit-price">';
 				$h .= \util\TextUi::money($eItem['unitPrice']);
-				if($eItem['unit']) {
-					$h .= ' / '.\main\UnitUi::getSingular($eItem['unit'], TRUE);
-				}
+				$h .= \selling\UnitUi::getBy($eItem['unit'], short: TRUE);
 			$h .= '</td>';
 			$h .= '<td class="pdf-document-price">';
 				$h .= \util\TextUi::money($eItem['price']);
@@ -1014,7 +1010,7 @@ class PdfUi {
 							}
 						$h .= '</th>';
 						$h .= '<td class="pdf-sales-summary-quantity text-end">'.round($eItem['quantity'], 2).'</td>';
-						$h .= '<td class="td-min-content">'.\main\UnitUi::getSingular($eItem['unit'], short: TRUE).'</td>';
+						$h .= '<td class="td-min-content">'.\selling\UnitUi::getSingular($eItem['unit'], short: TRUE).'</td>';
 						$h .= '<td class="text-end">';
 							if($eItem['price'] !== NULL) {
 								$h .= \util\TextUi::money($eItem['price']);
@@ -1054,7 +1050,7 @@ class PdfUi {
 				}
 			$item .= '</div>';
 			$item .= '<div>';
-				$item .= \main\UnitUi::getValue($quantity, $eItem['unit'], short: TRUE);
+				$item .= \selling\UnitUi::getValue($quantity, $eItem['unit'], short: TRUE);
 			$item .= '</div>';
 			$item .= '<div>';
 				if($eItem['price'] !== NULL) {

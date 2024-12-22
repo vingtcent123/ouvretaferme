@@ -12,9 +12,9 @@ class VarietyUi {
 		$weight = ($seeds / 1000 * $e['weightSeed1000']);
 
 		if($weight > 1000) {
-			return \main\UnitUi::getValue(round($weight / 1000, 1), 'kg');
+			return \selling\UnitUi::getValue(round($weight / 1000, 1), 'kg');
 		} else {
-			return \main\UnitUi::getValue(round($weight), 'gram');
+			return \selling\UnitUi::getValue(round($weight), 'gram');
 		}
 
 	}
@@ -27,7 +27,7 @@ class VarietyUi {
 
 		$weight = ($plants / $e['numberPlantKilogram']);
 
-		return \main\UnitUi::getValue(ceil($weight * 10) / 10, 'kg');
+		return \selling\UnitUi::getValue(ceil($weight * 10) / 10, 'kg');
 
 	}
 
@@ -91,7 +91,7 @@ class VarietyUi {
 								}
 							$h .= '</td>';
 							$h .= '<td>';
-								$h .= $eVariety->quick('weightSeed1000', $eVariety['weightSeed1000'] ? \main\UnitUi::getValue($eVariety['weightSeed1000'], 'gram') : '-');
+								$h .= $eVariety->quick('weightSeed1000', $eVariety['weightSeed1000'] ? \selling\UnitUi::getValue($eVariety['weightSeed1000'], 'gram') : '-');
 							$h .= '</td>';
 							$h .= '<td>';
 								$h .= $eVariety->quick('numberPlantKilogram', $eVariety['numberPlantKilogram'] ? $eVariety['numberPlantKilogram'] : '-');

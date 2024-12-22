@@ -8,8 +8,10 @@ class Item extends ItemElement {
 		return parent::getSelection() + [
 			'sale' => ['farm', 'hasVat', 'type', 'taxes', 'shippingVatRate', 'shippingVatFixed', 'document', 'preparationStatus', 'market', 'marketParent', 'shipping'],
 			'customer' => ['name', 'type'],
+			'unit' => ['fqn', 'by', 'singular', 'plural', 'short', 'type'],
 			'product' => [
-				'name', 'variety', 'description', 'vignette', 'size', 'unit', 'plant',
+				'name', 'variety', 'description', 'vignette', 'size', 'plant',
+				'unit' => ['fqn', 'by', 'singular', 'plural', 'short', 'type'],
 				'privatePrice',
 				'quality' => ['name', 'logo']
 			],
@@ -59,7 +61,12 @@ class Item extends ItemElement {
 	}
 
 	public function isUnitInteger(): bool {
-		return in_array($this['unit'], [NULL, Item::UNIT, Item::BUNCH, Item::BOX, Item::PLANT, Item::GRAM_250, Item::GRAM_500]);
+
+		return (
+			$this['unit']->empty() or
+			$this['unit']['type'] === Unit::INTEGER
+		);
+
 	}
 
 	public function build(array $properties, array $input, array $callbacks = [], ?string $for = NULL): array {
@@ -110,6 +117,21 @@ class Item extends ItemElement {
 					$number !== 0.0
 				);
 
+			},
+
+			'unit.check' => function(Unit $eUnit): bool {
+
+				$this->expects(['farm']);
+
+				return (
+					$eUnit->empty() or (
+						Unit::model()
+							->select('farm')
+							->get($eUnit) and
+						$eUnit->canRead()
+					)
+				);
+				
 			},
 
 			'unitPrice.division' => function(?float $unitPrice, array $newProperties, array $validProperties): bool {

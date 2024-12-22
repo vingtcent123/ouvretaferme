@@ -56,7 +56,6 @@ class GridUi {
 				$eCustomer = $eGrid['customer'];
 
 				$taxes = $eProduct['farm']->getSelling('hasVat') ? CustomerUi::getTaxes($eCustomer['type']) : '';
-				$unit = ProductUi::p('unit')->values[$eProduct['unit']];
 
 				$h .= '<tr>';
 
@@ -66,11 +65,11 @@ class GridUi {
 					$h .= '</td>';
 
 					$h .= '<td>';
-						$h .= $eGrid->quick('price', $eGrid['price'] ? \util\TextUi::money($eGrid['price']).' '.$taxes.' / '.$unit : '-');
+						$h .= $eGrid->quick('price', $eGrid['price'] ? \util\TextUi::money($eGrid['price']).' '.$taxes.\selling\UnitUi::getBy($eProduct['unit']) : '-');
 					$h .= '</td>';
 
 					$h .= '<td>';
-						$h .= $eGrid->quick('packaging', $eGrid['packaging'] ? $eGrid['packaging'].' '.$unit : '-');
+						$h .= $eGrid->quick('packaging', $eGrid['packaging'] ? \selling\UnitUi::getValue($eGrid['packaging'], $eProduct['unit']) : '-');
 					$h .= '</td>';
 
 					$h .= '<td>';
@@ -146,8 +145,6 @@ class GridUi {
 
 				$taxes = $eCustomer['farm']->getSelling('hasVat') ? CustomerUi::getTaxes($eCustomer['type']) : '';
 
-				$unit = ProductUi::p('unit')->values[$eProduct['unit']];
-
 				$h .= '<tr>';
 
 					$h .= '<td class="customer-price-vignette">';
@@ -163,12 +160,12 @@ class GridUi {
 
 					$h .= '<td>';
 						$h .= '<div>';
-							$h .= $eGrid->quick('price', $eGrid['price'] ? \util\TextUi::money($eGrid['price']).' '.$taxes.' / '.$unit : '-');
+							$h .= $eGrid->quick('price', $eGrid['price'] ? \util\TextUi::money($eGrid['price']).' '.$taxes.\selling\UnitUi::getBy($eProduct['unit']) : '-');
 						$h .= '</div>';
 						$defaultPrice = $eProduct[$eCustomer['type'].'Price'];
 						if($defaultPrice !== NULL) {
 							$h .= '<small class="color-muted">';
-								$h .= s("Base : {value}", ['value' => \util\TextUi::money($defaultPrice)]);
+								$h .= s("Base : {value}", \util\TextUi::money($defaultPrice));
 							$h .= '</small>';
 						}
 					$h .= '</td>';
@@ -178,11 +175,11 @@ class GridUi {
 						$h .= '<td>';
 
 							$h .= '<div>';
-								$h .= $eGrid->quick('packaging', $eGrid['packaging'] ? $eGrid['packaging'].' '.$unit : '-');
+								$h .= $eGrid->quick('packaging', $eGrid['packaging'] ? \selling\UnitUi::getValue($eGrid['packaging'], $eProduct['unit']) : '-');
 							$h .= '</div>';
 							if($eProduct['proPackaging'] !== NULL) {
 								$h .= '<small class="color-muted">';
-									$h .= s("Base : {value} {unit}", ['value' => $eProduct['proPackaging'], 'unit' => $unit]);
+									$h .= s("Base : {value}", \selling\UnitUi::getValue($eProduct['proPackaging'], $eProduct['unit']));
 								$h .= '</small>';
 							}
 						$h .= '</td>';
@@ -224,7 +221,6 @@ class GridUi {
 
 			$eGrid = $eProduct['eGrid'];
 
-			$unit = ProductUi::p('unit')->values[$eProduct['unit']];
 			$taxes = $eCustomer['farm']->getSelling('hasVat') ? CustomerUi::getTaxes($eCustomer['type']) : '';
 
 			$h .= '<tr>';
@@ -246,12 +242,12 @@ class GridUi {
 					$h .= '<div>';
 						$h .= $form->inputGroup(
 							$form->number('price['.$eProduct['id'].']', $eGrid['price'] ?? '', ['step' => 0.01]).
-							$form->addon('€ '.$taxes.' / '.$unit)
+							$form->addon('€ '.$taxes.\selling\UnitUi::getBy($eProduct['unit']))
 						);
 					$h .= '</div>';
 					if($defaultPrice !== NULL) {
 						$h .= '<small class="color-muted">';
-							$h .= s("Base : {value}", ['value' => \util\TextUi::money($defaultPrice)]);
+							$h .= s("Base : {value}", \util\TextUi::money($defaultPrice));
 						$h .= '</small>';
 					}
 				$h .= '</td>';
@@ -262,12 +258,12 @@ class GridUi {
 						$h .= '<div>';
 							$h .= $form->inputGroup(
 								$form->number('packaging['.$eProduct['id'].']', $eGrid['packaging'] ?? '', ['step' => 0.01]).
-								$form->addon($unit)
+								($eProduct['unit']->notEmpty() ? $form->addon(\selling\UnitUi::getSingular($eProduct['unit'])) : '')
 							);
 						$h .= '</div>';
 						if($eProduct['proPackaging'] !== NULL) {
 							$h .= '<small class="color-muted">';
-								$h .= s("Base : {value} {unit}", ['value' => $eProduct['proPackaging'], 'unit' => $unit]);
+								$h .= s("Base : {value}", \selling\UnitUi::getValue($eProduct['proPackaging'], $eProduct['unit']));
 							$h .= '</small>';
 						}
 					$h .= '</td>';
@@ -282,10 +278,10 @@ class GridUi {
 
 		return new \Panel(
 			title: s("Personnaliser la grille tarifaire"),
+			subTitle: CustomerUi::getPanelHeader($eCustomer),
 			dialogOpen: $form->openAjax('/selling/customer:doUpdateGrid', ['class' => 'panel-dialog container']),
 			dialogClose: $form->close(),
 			body: $h,
-			subTitle: CustomerUi::getPanelHeader($eCustomer),
 			footer: $form->submit(s("Enregistrer")),
 			close: 'reload'
 		);
@@ -310,7 +306,6 @@ class GridUi {
 
 			$eGrid = $eCustomer['eGrid'];
 
-			$unit = ProductUi::p('unit')->values[$eProduct['unit']];
 			$taxes = $eProduct['farm']->getSelling('hasVat') ? CustomerUi::getTaxes($eCustomer['type']) : '';
 
 			$h .= '<tr>';
@@ -322,7 +317,7 @@ class GridUi {
 				$h .= '<td data-wrapper="price['.$eCustomer['id'].']">';
 					$h .= $form->inputGroup(
 						$form->number('price['.$eCustomer['id'].']', $eGrid['price'] ?? '', ['step' => 0.01]).
-						$form->addon('€ '.$taxes.' / '.$unit)
+						$form->addon('€ '.$taxes.\selling\UnitUi::getBy($eProduct['unit']))
 					);
 				$h .= '</td>';
 
@@ -331,7 +326,7 @@ class GridUi {
 					if($eCustomer['type'] === Customer::PRO) {
 						$h .= $form->inputGroup(
 							$form->number('packaging['.$eCustomer['id'].']', $eGrid['packaging'] ?? '', ['step' => 0.01]).
-							$form->addon($unit)
+							($eProduct['unit']->notEmpty() ? $form->addon(\selling\UnitUi::getSingular($eProduct['unit'])) : '')
 						);
 					} else {
 						$h .= '-';
@@ -347,10 +342,10 @@ class GridUi {
 
 		return new \Panel(
 			title: s("Personnaliser la grille tarifaire"),
+			subTitle: ProductUi::getPanelHeader($eProduct),
 			dialogOpen: $form->openAjax('/selling/product:doUpdateGrid', ['class' => 'panel-dialog container']),
 			dialogClose: $form->close(),
 			body: $h,
-			subTitle: ProductUi::getPanelHeader($eProduct),
 			footer: $form->submit(s("Enregistrer")),
 			close: 'reload'
 		);

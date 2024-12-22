@@ -202,7 +202,7 @@ class AnalyzeUi {
 								} else {
 
 									$h .= '<td class="text-end">';
-										$h .= \main\UnitUi::getValue(round($eItemMonth['quantity']), $e['unit'], short: TRUE);
+										$h .= \selling\UnitUi::getValue(round($eItemMonth['quantity']), $e['unit'], short: TRUE);
 									$h .= '</td>';
 									$h .= '<td class="text-end">';
 										$h .= \util\TextUi::money($turnover / $eItemMonth['quantity']);
@@ -285,7 +285,7 @@ class AnalyzeUi {
 							$totalQuantity = $cItemMonth->sum('quantity');
 
 							$h .= '<td class="text-end">';
-								$h .= \main\UnitUi::getValue(round($totalQuantity), $e['unit'], short: TRUE);
+								$h .= \selling\UnitUi::getValue(round($totalQuantity), $e['unit'], short: TRUE);
 							$h .= '</td>';
 							$h .= '<td class="text-end">';
 								$h .= \util\TextUi::money($totalTurnover / $totalQuantity);
@@ -621,7 +621,7 @@ class AnalyzeUi {
 			}
 
 			$h .= '<td class="text-end">';
-				$h .= \main\UnitUi::getValue(round($eItem['quantity']), $eProduct['unit'], short: TRUE);
+				$h .= \selling\UnitUi::getValue(round($eItem['quantity']), $eProduct['unit'], short: TRUE);
 			$h .= '</td>';
 
 			$h .= '<td class="text-end">';
@@ -843,7 +843,7 @@ class AnalyzeUi {
 								$h .= ProductUi::link($eItem['product']);
 							$h .= '</td>';
 							$h .= '<td class="text-end">';
-								$h .= \main\UnitUi::getValue(round($eItem['quantity']), $eItem['product']['unit'], short: TRUE);
+								$h .= \selling\UnitUi::getValue(round($eItem['quantity']), $eItem['product']['unit'], short: TRUE);
 							$h .= '</td>';
 							$h .= '<td class="text-end">';
 								$h .= \util\TextUi::money($eItem['turnover'], precision: 0);
@@ -1217,7 +1217,7 @@ class AnalyzeUi {
 						$h .= '</td>';
 						$h .= '<td class="'.$class.'" style="padding-left: 0">';
 							if($eItem['unit'] !== NULL) {
-								$h .= \main\UnitUi::getSingular($eItem['unit'], short: TRUE);
+								$h .= \selling\UnitUi::getSingular($eItem['unit'], short: TRUE);
 							}
 						$h .= '</td>';
 					}
@@ -1228,8 +1228,8 @@ class AnalyzeUi {
 					) {
 						$h .= '<td class="text-end '.$class.'">';
 							$h .= $average($eItem);
-							if($monthly and $eItem['unit'] !== NULL) {
-								$h .= ' / '.\main\UnitUi::getSingular($eItem['unit'], short: TRUE, by: TRUE);
+							if($monthly) {
+								$h .= \selling\UnitUi::getBy($eItem['unit'], short: TRUE);
 							}
 						$h .= '</td>';
 					}
@@ -1340,7 +1340,7 @@ class AnalyzeUi {
 			$position = 0;
 			foreach($cItem as $eItem) {
 				$h .= '<div style="'.(($position++ % 2) ? 'opacity: 0.66' : '').'">';
-					$h .= \main\UnitUi::getSingular($eItem['unit'], short: TRUE);
+					$h .= \selling\UnitUi::getSingular($eItem['unit'], short: TRUE);
 				$h .= '</div>';
 			}
 		$h .= '</td>';
@@ -1363,7 +1363,7 @@ class AnalyzeUi {
 				$h .= '<div style="'.(($position++ % 2) ? 'opacity: 0.66' : '').'">';
 					$h .= $average($eItem);
 					if($monthly) {
-						$h .= ' / '.\main\UnitUi::getSingular($eItem['unit'], short: TRUE, by: TRUE);
+						$h .= \selling\UnitUi::getBy($eItem['unit'], short: TRUE);
 					}
 				$h .= '</div>';
 			}
@@ -1554,8 +1554,8 @@ class AnalyzeUi {
 												$h .= '<div style="'.(($position++ % 2) ? 'opacity: 0.66' : '').'">';
 													if($eItemMonthly->notEmpty()) {
 														$h .= match($monthly) {
-															'quantity' => $quantity($eItemMonthly),//.' / '.\main\UnitUi::getSingular($eItem['unit'], short: TRUE),
-															'average' => $average($eItemMonthly)//.'<small class="color-muted"> / '.\main\UnitUi::getSingular($eItem['unit'], short: TRUE).'</small>',
+															'quantity' => $quantity($eItemMonthly),
+															'average' => $average($eItemMonthly)
 														};
 													} else {
 														$h .= '&nbsp;';

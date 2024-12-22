@@ -135,13 +135,13 @@ class ReportUi {
 
 							$h .= '<td class="text-end">';
 								foreach($totalHarvestedByUnit as $unit => $value) {
-									$h .= \main\UnitUi::getValue(round($value, 2), $unit).'<br/>';
+									$h .= \selling\UnitUi::getValue(round($value, 2), $unit).'<br/>';
 								}
 							$h .= '</td>';
 
 							$h .= '<td class="text-end report-item-ratio">';
 								foreach($totalHarvestedByUnit as $unit => $value) {
-									$h .= \main\UnitUi::getValue(round($value / $area, 1), $unit).'<br/>';
+									$h .= \selling\UnitUi::getValue(round($value / $area, 1), $unit).'<br/>';
 								}
 							$h .= '</td>';
 						$h .= '</tr>';
@@ -516,13 +516,13 @@ class ReportUi {
 
 				$h .= '<td class="text-end">';
 					foreach($harvestedByUnit as $unit => $value) {
-						$h .= \main\UnitUi::getValue(round($value, 2), $unit).'<br/>';
+						$h .= \selling\UnitUi::getValue(round($value, 2), $unit).'<br/>';
 					}
 				$h .= '</td>';
 
 				$h .= '<td class="text-end report-item-ratio">';
 					foreach($harvestedByUnit as $unit => $value) {
-						$h .= \main\UnitUi::getValue(round($value / $eCultivation['area'], 1), $unit).'<br/>';
+						$h .= \selling\UnitUi::getValue(round($value / $eCultivation['area'], 1), $unit).'<br/>';
 					}
 				$h .= '</td>';
 
@@ -561,7 +561,7 @@ class ReportUi {
 					$h .= '</h4>';
 					$h .= '<div>';
 						if($eProduct['quantity'] > 0) {
-							$h .= \main\UnitUi::getValue($eProduct['quantity'], $eProduct['unit']);
+							$h .= \selling\UnitUi::getValue($eProduct['quantity'], $eProduct['unit']);
 						} else {
 							$h .= match($eProduct['unit']) {
 								Product::UNIT => s("À la pièce"),
@@ -865,7 +865,7 @@ class ReportUi {
 
 			foreach($cProduct as $eProduct) {
 
-				$unit = \main\UnitUi::getSingular($eProduct['unit'], short: TRUE);
+				$unit = \selling\UnitUi::getSingular($eProduct['unit'], short: TRUE);
 
 				$quantity = round($eProduct['sales']['quantity'] ?? 0);
 				$turnover = round($eProduct['sales']['turnover'] ?? 0);

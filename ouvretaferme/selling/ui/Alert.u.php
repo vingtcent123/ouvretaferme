@@ -78,7 +78,7 @@ class AlertUi {
 			'Item::createDuplicateProductMarket' => fn($name) => s("Vous avez déjà ajouté le produit {value} à votre marché !", $name),
 			'Item::canNotDelete' => s("Impossible de supprimer cet article"),
 
-			'Event::deleteUsed' => s("Cet événement ne peut pas être supprimé car il est utilisé"),
+			'Unit::deleteUsed' => s("Cette unité ne peut pas être supprimée car elle est utilisée dans une vente ou pour un produit"),
 
 			default => NULL
 
@@ -137,9 +137,9 @@ class AlertUi {
 			'Item::updated' => s("L'article a bien été mis à jour."),
 			'Item::deleted' => s("L'article a bien été supprimé de la vente."),
 
-			'Event::created' => s("L'événement a bien été créé."),
-			'Event::updated' => s("L'événement a bien été mis à jour."),
-			'Event::deleted' => s("L'événement a bien été supprimé."),
+			'Unit::created' => s("L'unité a bien été créée."),
+			'Unit::updated' => s("L'unité a bien été mise à jour."),
+			'Unit::deleted' => s("L'unité a bien été supprimée."),
 
 			'Configuration::updated' => s("La configuration a bien été mis à jour."),
 

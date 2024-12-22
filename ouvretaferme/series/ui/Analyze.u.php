@@ -425,7 +425,7 @@ class AnalyzeUi {
 			$h .= '</div>';
 			$h .= '<div class="series-item-working-time-harvested text-end">';
 				foreach($cTaskHarvested as $eTaskHarvested) {
-					$h .= '<div>'.\main\UnitUi::getValue(round($eTaskHarvested['totalHarvested']), $eTaskHarvested['harvestUnit'], TRUE).'</div>';
+					$h .= '<div>'.\selling\UnitUi::getValue(round($eTaskHarvested['totalHarvested']), $eTaskHarvested['harvestUnit'], TRUE).'</div>';
 				}
 			$h .= '</div>';
 

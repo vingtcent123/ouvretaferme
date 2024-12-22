@@ -673,7 +673,7 @@ class AnalyzeUi {
 				foreach($eCultivation['harvested'] as $unit => $value) {
 
 						$h .= '<div style="'.(($position++ % 2) ? 'opacity: 0.66' : '').'">';
-							$h .= \main\UnitUi::getSingular($unit, short: TRUE);
+							$h .= \selling\UnitUi::getSingular($unit, short: TRUE);
 						$h .= '</div>';
 
 				}

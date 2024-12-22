@@ -440,7 +440,7 @@ class OrderUi {
 				$values = [];
 
 				if($eItem['packaging']) {
-					$values[] = s("Taille du colis : {value}", \main\UnitUi::getValue($eItem['packaging'], $eItem['unit'], TRUE));
+					$values[] = s("Taille du colis : {value}", \selling\UnitUi::getValue($eItem['packaging'], $eItem['unit'], TRUE));
 				}
 				if($eItem['description']) {
 					$values[] = s("Description : {value}", encode($eItem['description']));
@@ -473,15 +473,15 @@ class OrderUi {
 
 						$h .= '<td class="item-item-number text-end">';
 							if($eItem['packaging']) {
-								$h .= \main\UnitUi::getValue($eItem['number'] * $eItem['packaging'], $eItem['unit'], TRUE);
+								$h .= \selling\UnitUi::getValue($eItem['number'] * $eItem['packaging'], $eItem['unit'], TRUE);
 							} else {
-								$h .= \main\UnitUi::getValue($eItem['number'], $eItem['unit'], TRUE);
+								$h .= \selling\UnitUi::getValue($eItem['number'], $eItem['unit'], TRUE);
 							}
 						$h .= '</td>';
 
 						$h .= '<td class="item-item-unit-price text-end">';
 							if($eItem['unit']) {
-								$unit = '<span class="util-annotation"> / '.\main\UnitUi::getSingular($eItem['unit'], short: TRUE, by: TRUE).'</span>';
+								$unit = '<span class="util-annotation">'.\selling\UnitUi::getBy($eItem['unit'], short: TRUE).'</span>';
 							} else {
 								$unit = '';
 							}

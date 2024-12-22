@@ -197,7 +197,7 @@ class BasketUi {
 						'title' => s("Supprimer cet article"),
 					];
 
-					$unitPrice = \util\TextUi::money($eProduct['price']).' '.ProductUi::getTaxes($eProduct).' / '.\main\UnitUi::getSingular($eProductSelling['unit'], short: TRUE, by: TRUE);
+					$unitPrice = \util\TextUi::money($eProduct['price']).' '.ProductUi::getTaxes($eProduct).\selling\UnitUi::getBy($eProductSelling['unit'], short: TRUE);
 					$price = $eProduct['price'] * $product['number'] * ($eProduct['packaging'] ?? 1);
 
 					$h .= '<tr>';
@@ -213,7 +213,7 @@ class BasketUi {
 						if($eDate['type'] === Date::PRO) {
 							$h .= '<td class="hide-sm-down">';
 								if($eProduct['packaging'] !== NULL) {
-									$h .= s("Colis de {value}", \main\UnitUi::getValue($eProduct['packaging'], $eProductSelling['unit'], TRUE));
+									$h .= s("Colis de {value}", \selling\UnitUi::getValue($eProduct['packaging'], $eProductSelling['unit'], TRUE));
 								}
 							$h .= '</td>';
 						}
@@ -223,7 +223,7 @@ class BasketUi {
 						$h .= '<td class="text-end hide-xs-down">';
 							$h .= $unitPrice;
 							if($eProduct['packaging'] !== NULL) {
-								$h .= '<div class="hide-md-up">'.s("Colis de {value}", \main\UnitUi::getValue($eProduct['packaging'], $eProductSelling['unit'], TRUE)).'</div>';
+								$h .= '<div class="hide-md-up">'.s("Colis de {value}", \selling\UnitUi::getValue($eProduct['packaging'], $eProductSelling['unit'], TRUE)).'</div>';
 							}
 						$h .= '</td>';
 						$h .= '<td class="text-end">'.\util\TextUi::money($price).' '.ProductUi::getTaxes($eProduct).'</td>';

@@ -1494,14 +1494,15 @@ class FarmUi {
 					$h .= \Asset::icon('gear-fill');
 				$h .= '</a>';
 
-				if($eFarm->canManage()) {
+				$h .= '<a href="/selling/unit:manage?farm='.$eFarm['id'].'" class="bg-secondary util-button">';
+					$h .= '<h4>'.s("Les unités de vente").'</h4>';
+					$h .= \Asset::icon('receipt');
+				$h .= '</a>';
 
-					$h .= '<a href="/payment/stripe:manage?farm='.$eFarm['id'].'" class="bg-secondary util-button">';
-						$h .= '<h4>'.s("Le paiement en ligne").'</h4>';
-						$h .= \Asset::icon('stripe');
-					$h .= '</a>';
-
-				}
+				$h .= '<a href="/payment/stripe:manage?farm='.$eFarm['id'].'" class="bg-secondary util-button">';
+					$h .= '<h4>'.s("Le paiement en ligne").'</h4>';
+					$h .= \Asset::icon('stripe');
+				$h .= '</a>';
 
 			$h .= '</div>';
 

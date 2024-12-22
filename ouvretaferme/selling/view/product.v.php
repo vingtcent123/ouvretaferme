@@ -17,7 +17,7 @@ new AdaptativeView('analyze', function($data, PanelTemplate $t) {
 });
 
 new AdaptativeView('create', function($data, PanelTemplate $t) {
-	return (new \selling\ProductUi())->create($data->eFarm, $data->cCategory);
+	return (new \selling\ProductUi())->create($data->e);
 });
 
 new AdaptativeView('update', function($data, PanelTemplate $t) {

@@ -28,6 +28,10 @@
 			'locked' => \selling\Item::PRICE,
 		]);
 
+		if($data->eProduct->empty()) {
+			$data->eItem['cUnit'] = \selling\UnitLib::getByFarm($data->e['farm']);
+		}
+
 		if($data->eProduct->notEmpty() and $data->e['customer']->notEmpty()) {
 			$data->eGrid = \selling\GridLib::getOne($data->e['customer'], $data->eProduct);
 		} else {
