@@ -60,7 +60,8 @@
 
 		$data->e['farm'] = $data->eFarm;
 
-		$data->e['ccProduct'] = \shop\ProductLib::getByDate($data->e, onlyActive: FALSE);
+		$data->e['ccProduct'] = \shop\ProductLib::getByDate($data->e);
+		$data->e['cCustomer'] = \selling\CustomerLib::getLimitedByProducts($data->e['ccProduct']);
 
 		// Uniquement les boutiques avec un seul producteur
 		$data->e['ccProductOut'] = \shop\ProductLib::aggregateBySales($data->cSale, $data->e['ccProduct']->getColumnCollection('product'));

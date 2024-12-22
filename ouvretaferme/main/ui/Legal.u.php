@@ -121,11 +121,11 @@ class LegalUi {
 
 		$h .= '<div class="home-category">';
 
-			$h .= '<p>'.s("Les logiciels libres sont en général plus durables que ceux créés avec un objectif commercial :").'</p>';
+			$h .= '<p>'.s("Les logiciels commerciaux sont en général moins durables les logiciels libres comme {siteName} :").'</p>';
 			$h .= '<ul>';
-				$h .= '<li>'.s("soumis à des impératifs de rentabilité sous peine de disparaître, quand ce n'est pas l'entreprise qui disparait directement,").'</li>';
-				$h .= '<li>'.s("ne pouvant pas être repris par une communauté de développeurs si l'entreprise change de priorités,").'</li>';
-				$h .= '<li>'.s("dont la tarification peut évoluer sans préavis et piéger les utilisateurs.").'</li>';
+				$h .= '<li>'.s("ils sont soumis à des contraintes de rentabilité, sous peine de disparaître, voire de voir l'entreprise disparaître elle-même,").'</li>';
+				$h .= '<li>'.s("ils ne peuvent être repris par une communauté de développeurs si l'entreprise modifie ses priorités,").'</li>';
+				$h .= '<li>'.s("leur tarification peut changer sans préavis, piégeant ainsi les utilisateurs.").'</li>';
 			$h .= '</ul>';
 
 			$h .= '<p>'.s("La pérennité de {siteName} est garantie pour de nombreuses années :").'</p>';

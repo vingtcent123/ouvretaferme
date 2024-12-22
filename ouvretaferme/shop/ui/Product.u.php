@@ -196,14 +196,19 @@ class ProductUi {
 								$h .= '</div>';
 							}
 
-							if($eProduct['reallyAvailable'] !== NULL) {
+							if(
+								$canOrder and
+								$eProduct['reallyAvailable'] !== NULL
+							) {
+
 								$h.= '<div class="shop-product-buy-info">';
 								if($eProduct['reallyAvailable'] > 0) {
-									$h .= s("Stock : {value}", $eProduct['reallyAvailable']);
+									$h .= s("Disponible : {value}", $eProduct['reallyAvailable']);
 								} else {
 									$h .= s("Rupture de stock");
 								}
 								$h .= '</div>';
+
 							}
 
 						$h .= '</div>';
@@ -539,21 +544,23 @@ class ProductUi {
 		$type = $e['type'];
 		$taxes = $eFarm->getSelling('hasVat') ? '<span class="util-annotation">'.\selling\CustomerUi::getTaxes($type).'</span>' : '';
 		$hasSold = $cProduct->contains(fn($eProduct) => $eProduct['sold'] !== NULL);
+		$columns = 2;
 
 		$hasCatalog = $cProduct->contains(fn($eProduct) => $eProduct['catalog']->notEmpty());
 		$canAction = ($isExpired === FALSE and $cProduct->contains(fn($eProduct) => $eProduct->exists() and $eProduct['catalog']->empty()));
 
 		$h = '<div class="'.($type === Date::PRIVATE ? 'util-overflow-xs' : 'util-overflow-sm').' stick-xs">';
-			$h .= '<table class="tr-even">';
+			$h .= '<table class="tbody-even">';
 				$h .= '<thead>';
 					$h .= '<tr>';
 						$h .= '<th colspan="2">'.s("Produit").'</th>';
 						if($type === Date::PRO) {
+							$columns++;
 							$h .= '<td></td>';
 						}
-						$h .= '<th class="text-end highlight">'.s("Prix").' '.$taxes.'</th>';
+						$h .= '<th class="text-end">'.s("Prix").' '.$taxes.'</th>';
 						if($isExpired === FALSE) {
-							$h .= '<th>'.s("Disponible").'</th>';
+							$h .= '<th class="highlight">'.s("Disponible").'</th>';
 						}
 						if($hasSold) {
 							$h .= '<th class="text-center">'.s("Vendu").'</th>';
@@ -562,19 +569,27 @@ class ProductUi {
 							$h .= '<th></th>';
 						}
 					$h .= '</tr>';
-				$h .= '</theaf>';
-				$h .= '<tbody>';
+				$h .= '</thead>';
 
-					foreach($cProduct as $eProduct) {
+				foreach($cProduct as $eProduct) {
 
-						$eProductSelling = $eProduct['product'];
-						$uiProductSelling = new \selling\ProductUi();
+					$eProductSelling = $eProduct['product'];
+					$uiProductSelling = new \selling\ProductUi();
 
-						$canUpdate = ($isExpired === FALSE and $eProduct->exists() and $eProduct['catalog']->empty());
+					$canUpdate = ($isExpired === FALSE and $eProduct->exists() and $eProduct['catalog']->empty());
+					$outCatalog = ($hasCatalog and $canUpdate);
+
+					$hasLimits = (
+						$eProduct['limitCustomers'] or
+						$eProduct['limitNumber'] or
+						$outCatalog
+					);
+
+					$h .= '<tbody>';
 
 						$h .= '<tr>';
 
-							$h .= '<td class="td-min-content">';
+							$h .= '<td class="td-min-content" '.($hasLimits ? 'rowspan="2"' : '').'>';
 								if($eProductSelling['vignette'] !== NULL) {
 									$h .= \selling\ProductUi::getVignette($eProductSelling, '3rem');
 								} else if($eProductSelling['plant']->notEmpty()) {
@@ -584,10 +599,6 @@ class ProductUi {
 
 							$h .= '<td class="'.(($isExpired or $eProduct->exists()) ? '' : 'shop-product-not-exist').'">';
 								$h .= $uiProductSelling->getInfos($eProductSelling, includeStock: $isExpired === FALSE);
-
-									if($hasCatalog and $canUpdate) {
-										$h .= '<span style="font-weight: bold; margin-left: 0.5rem">'.\Asset::icon('arrow-return-right').' '.s("Hors catalogue").'</span> ';
-									}
 							$h .= '</td>';
 
 							if($type === Date::PRO) {
@@ -598,7 +609,7 @@ class ProductUi {
 								$h .= '</td>';
 							}
 
-							$h .= '<td class="text-end highlight '.(($isExpired or $eProduct->exists()) ? '' : 'shop-product-not-exist').'" style="white-space: nowrap">';
+							$h .= '<td class="text-end '.(($isExpired or $eProduct->exists()) ? '' : 'shop-product-not-exist').'" style="white-space: nowrap">';
 								$price = \util\TextUi::money($eProduct['price']).' / '.\main\UnitUi::getSingular($eProductSelling['unit'], short: TRUE, by: TRUE);
 								if($canUpdate) {
 									$h .= $eProduct->quick('price', $price);
@@ -609,7 +620,7 @@ class ProductUi {
 
 							if($isExpired === FALSE) {
 
-								$h .= '<td class="shop-product-available" '.($eProduct->exists() ? 'id="product-available-'.$eProduct['id'].'"' : '').'>';
+								$h .= '<td class="shop-product-available highlight" '.($eProduct->exists() ? 'id="product-available-'.$eProduct['id'].'"' : '').' '.($hasLimits ? 'rowspan="2"' : '').'>';
 									$h .= $this->getStatus($eProduct, $canUpdate);
 								$h .= '</td>';
 
@@ -619,7 +630,7 @@ class ProductUi {
 
 								$sold = $eProduct['sold'] ?? 0;
 
-								$h .= '<td class="text-center">';
+								$h .= '<td class="text-center" '.($hasLimits ? 'rowspan="2"' : '').'>';
 
 									if($sold > 0) {
 										$h .= '<span class="shop-product-sold">'.$sold.'</span>';
@@ -633,10 +644,11 @@ class ProductUi {
 
 							if($canAction) {
 
-								$h .= '<td class="td-min-content">';
+								$h .= '<td class="td-min-content" '.($hasLimits ? 'rowspan="2"' : '').' >';
 
 									if($canUpdate) {
 
+										$h .= '<a href="/shop/product:update?id='.$eProduct['id'].'" class="btn btn-outline-secondary">'.\Asset::icon('gear-fill').'</a> ';
 										$h .= '<a data-ajax="/shop/product:doDelete" class="btn btn-outline-secondary" data-confirm="'.s("Voulez-vous vraiment supprimer ce produit de la vente ?").'" post-id="'.$eProduct['id'].'">'.\Asset::icon('trash-fill').'</a>';
 
 									}
@@ -647,9 +659,14 @@ class ProductUi {
 
 						$h .= '</tr>';
 
-					}
+						if($hasLimits) {
+							$h .= $this->getLimits($columns, $eProduct, $e['cCustomer'], excludeAt: TRUE, outCatalog: $outCatalog);
+						}
+
+					$h .= '</tbody>';
+
+				}
 ;
-				$h .= '</tbody>';
 			$h .= '</table>';
 		$h .= '</div>';
 
@@ -660,33 +677,42 @@ class ProductUi {
 	public function getUpdateCatalog(\farm\Farm $eFarm, Catalog $e, \Collection $cProduct): string {
 
 		$taxes = $eFarm->getSelling('hasVat') ? '<span class="util-annotation">'.\selling\CustomerUi::getTaxes($e['type']).'</span>' : '';
+		$columns = 2;
 
 		$h = '<div class="util-overflow-sm stick-xs">';
-			$h .= '<table class="tr-even">';
+			$h .= '<table class="tbody-even tbody-bordered">';
 				$h .= '<thead>';
 					$h .= '<tr>';
 						$h .= '<th colspan="2">'.s("Produit").'</th>';
 						if($e['type'] === Date::PRO) {
+							$columns++;
 							$h .= '<td></td>';
 						}
-						$h .= '<th class="text-end highlight">'.s("Prix").' '.$taxes.'</th>';
-						$h .= '<th>'.s("Disponible").'</th>';
+						$h .= '<th class="text-end">'.s("Prix").' '.$taxes.'</th>';
+						$h .= '<th class="highlight">'.s("Disponible").'</th>';
 						$h .= '<th class="text-center">';
 							$h .= s("En vente");
 						$h .= '</th>';
 						$h .= '<th></th>';
 					$h .= '</tr>';
-				$h .= '</theaf>';
-				$h .= '<tbody>';
+				$h .= '</thead>';
 
-					foreach($cProduct as $eProduct) {
+				foreach($cProduct as $eProduct) {
 
-						$eProductSelling = $eProduct['product'];
-						$uiProductSelling = new \selling\ProductUi();
+					$eProductSelling = $eProduct['product'];
+					$uiProductSelling = new \selling\ProductUi();
 
+					$hasLimits = (
+						$eProduct['limitCustomers'] or
+						$eProduct['limitNumber'] or
+						$eProduct['limitStartAt'] or
+						$eProduct['limitEndAt']
+					);
+
+					$h .= '<tbody>';
 						$h .= '<tr>';
 
-							$h .= '<td class="td-min-content">';
+							$h .= '<td class="td-min-content" '.($hasLimits ? 'rowspan="2"' : '').'>';
 								if($eProductSelling['vignette'] !== NULL) {
 									$h .= \selling\ProductUi::getVignette($eProductSelling, '3rem');
 								} else if($eProductSelling['plant']->notEmpty()) {
@@ -706,30 +732,99 @@ class ProductUi {
 								$h .= '</td>';
 							}
 
-							$h .= '<td class="text-end highlight" style="white-space: nowrap">';
+							$h .= '<td class="text-end" style="white-space: nowrap">';
 								$price = \util\TextUi::money($eProduct['price']).' / '.\main\UnitUi::getSingular($eProductSelling['unit'], short: TRUE, by: TRUE);
 								$h .= $eProduct->quick('price', $price);
 							$h .= '</td>';
 
-							$h .= '<td class="shop-product-available" id="product-available-'.$eProduct['id'].'">';
+							$h .= '<td class="shop-product-available highlight" '.($hasLimits ? 'rowspan="2"' : '').' id="product-available-'.$eProduct['id'].'">';
 								$h .= $this->getStatus($eProduct, TRUE);
 							$h .= '</td>';
 
-							$h .= '<td class="text-center">';
+							$h .= '<td class="text-center" '.($hasLimits ? 'rowspan="2"' : '').'>';
 								$h .= $this->toggle($eProduct);
 							$h .= '</td>';
 
-							$h .= '<td class="td-min-content">';
+							$h .= '<td class="td-min-content" '.($hasLimits ? 'rowspan="2"' : '').'>';
+								$h .= '<a href="/shop/product:update?id='.$eProduct['id'].'" class="btn btn-outline-secondary">'.\Asset::icon('gear-fill').'</a> ';
 								$h .= '<a data-ajax="/shop/product:doDelete" class="btn btn-outline-secondary" data-confirm="'.s("Voulez-vous vraiment supprimer ce produit de ce catalogue ?").'" post-id="'.$eProduct['id'].'">'.\Asset::icon('trash-fill').'</a>';
 							$h .= '</td>';
 
 						$h .= '</tr>';
 
-					}
+						if($hasLimits) {
+							$h .= $this->getLimits($columns, $eProduct, $e['cCustomer']);
+						}
+
+					$h .= '</tbody>';
+
+				}
 ;
-				$h .= '</tbody>';
 			$h .= '</table>';
 		$h .= '</div>';
+
+		return $h;
+
+	}
+
+	protected function getLimits(int $columns, Product $eProduct, \Collection $cCustomer, bool $excludeAt = FALSE, bool $outCatalog = FALSE): string {
+
+		$h = '<tr>';
+
+			$h .= '<td colspan="'.$columns.'" style="padding-top: 0; padding-bottom: 0rem">';
+
+				$h .= '<div class="shop-product-limits">';
+
+					if($outCatalog) {
+						$h .= '<span>'.s("Hors catalogue").'</span>';
+					}
+
+					if($eProduct['limitNumber']) {
+
+						if($eProduct['packaging'] === NULL) {
+							$value = \main\UnitUi::getValue($eProduct['limitNumber'], $eProduct['product']['unit']);
+						} else {
+							$value = s("{value} colis", $eProduct['limitNumber']);
+						}
+
+						$h .= '<span>'.s("Limite par commande {value}", '<u>'.$value.'</u>').'</span>';
+					}
+
+					if($eProduct['limitCustomers']) {
+
+						$customers = [];
+
+						foreach($eProduct['limitCustomers'] as $customer) {
+
+							if($cCustomer->offsetExists($customer)) {
+								$customers[] = '<u>'.encode($cCustomer[$customer]->getName()).'</u>';
+							}
+
+						}
+
+						$h .= '<span>'.s("Uniquement pour {value}", implode(', ', $customers)).'</span>';
+					}
+
+					if($excludeAt === FALSE) {
+
+						if($eProduct['limitStartAt'] !== NULL and $eProduct['limitEndAt'] !== NULL) {
+							$h .= '<span>'.s("Pour les ventes livrées du {from} au {to}", [
+								'from' => '<u>'.\util\DateUi::numeric($eProduct['limitStartAt']).'</u>',
+								'to' => '<u>'.\util\DateUi::numeric($eProduct['limitEndAt']).'</u>',
+							]).'</span>';
+						} else if($eProduct['limitStartAt'] !== NULL) {
+							$h .= '<span>'.s("Pour les ventes livrées à partir du {value}", '<u>'.\util\DateUi::numeric($eProduct['limitStartAt']).'</u>').'</span>';
+						} else if($eProduct['limitEndAt'] !== NULL) {
+							$h .= '<span>'.s("Pour les ventes livrées jusqu'au {value}", '<u>'.\util\DateUi::numeric($eProduct['limitEndAt']).'</u>').'</span>';
+						}
+
+					}
+
+				$h .= '</div>';
+
+			$h .= '</td>';
+
+		$h .= '</tr>';
 
 		return $h;
 
@@ -812,6 +907,64 @@ class ProductUi {
 		);
 	}
 
+	public function update(Product $e): \Panel {
+
+		$form = new \util\FormUi();
+
+		$h = '';
+
+		$h .= $form->openAjax('/shop/product:doUpdate', ['id' => 'product-update']);
+
+			$h .= $form->hidden('id', $e['id']);
+
+			$h .= $form->dynamicGroups($e, ['price', 'available']);
+
+			$h .= '<br/>';
+			$h .= '<div class="util-block bg-background-light">';
+
+				$h .= $form->group(
+					'<h4>'.\Asset::icon('lock-fill').' '.s("Restrictions de commande").'</h4>'
+				);
+
+				if($e['catalog']->notEmpty()) {
+					$h .= $this->getLimitAtField($form, $e);
+				}
+
+				$h .= $form->dynamicGroups($e, ['limitNumber', 'limitCustomers']);
+
+			$h .= '</div>';
+
+			$h .= $form->group(
+				content: $form->submit(s("Modifier"))
+			);
+
+		$h .= $form->close();
+
+		return new \Panel(
+			title: s("Modifier un produit"),
+			subTitle: \selling\ProductUi::getPanelHeader($e['product']),
+			body: $h
+		);
+
+	}
+
+	protected function getLimitAtField(\util\FormUi $form, Product $e): string {
+
+		$h = '<div class="mb-1">';
+			$h .= $form->dynamicField($e, 'limitStartAt');
+		$h .= '</div>';
+		$h .= '<div>';
+			$h .= $form->dynamicField($e, 'limitEndAt');
+		$h .= '</div>';
+
+		return $form->group(
+			s("Limiter les commandes pour les ventes livrées"),
+			$h,
+			['wrapper' => 'limitStartAt limitStartEnd']
+		);
+
+	}
+
 	public static function p(string $property): \PropertyDescriber {
 
 		$d = Product::model()->describer($property, [
@@ -819,9 +972,40 @@ class ProductUi {
 			'available' => s("Disponible"),
 			'price' => s("Prix unitaire"),
 			'date' => s("Vente"),
+			'limitStartAt' => s("Proposer pour les commandes livrées à partir de"),
+			'limitEndAt' => s("Proposer pour les commandes livrées jusqu'au"),
+			'limitNumber' => s("Limiter les quantités disponibles par commande et par vente"),
+			'limitCustomers' => s("Limiter les commandes de ce produit à certains clients"),
 		]);
 
 		switch($property) {
+
+			case 'limitStartAt' :
+				$d->prepend = s("À partir du");
+				break;
+
+			case 'limitEndAt' :
+				$d->prepend = s("Jusqu'au");
+				break;
+
+			case 'limitNumber' :
+				$d->append = fn(\util\FormUi $form, Product $e) => $form->addon(($e['packaging'] === NULL) ?
+					\main\UnitUi::getNeutral($e['product']['unit'], short: TRUE) :
+					s("colis"));
+				$d->placeholder = s("Illimité");
+				break;
+
+			case 'limitCustomers' :
+				$d->after = \util\FormUi::info(s("Seuls les clients que vous aurez choisis pour acheter ce produit dans vos boutiques."));
+				$d->autocompleteDefault = fn(Product $e) => $e['cCustomer'] ?? $e->expects(['cCustomer']);
+				$d->autocompleteBody = function(\util\FormUi $form, Product $e) {
+					return [
+						'farm' => $e['farm']['id']
+					];
+				};
+				(new \selling\CustomerUi())->query($d, TRUE);
+				$d->group = ['wrapper' => 'limitCustomers'];
+				break;
 
 			case 'available' :
 				$d->field = function(\util\FormUi $form, Product $e) use($d) {

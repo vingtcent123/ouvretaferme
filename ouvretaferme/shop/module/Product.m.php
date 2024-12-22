@@ -51,14 +51,16 @@ class ProductModel extends \ModuleModel {
 			'product' => ['element32', 'selling\Product', 'cast' => 'element'],
 			'packaging' => ['decimal', 'digits' => 6, 'decimal' => 2, 'min' => 0.01, 'max' => NULL, 'null' => TRUE, 'cast' => 'float'],
 			'price' => ['decimal', 'digits' => 8, 'decimal' => 2, 'min' => 0.0, 'max' => NULL, 'cast' => 'float'],
-			'saleStartAt' => ['datetime', 'null' => TRUE, 'cast' => 'string'],
-			'saleEndAt' => ['datetime', 'null' => TRUE, 'cast' => 'string'],
+			'limitNumber' => ['decimal', 'digits' => 8, 'decimal' => 2, 'min' => 0.0, 'max' => NULL, 'null' => TRUE, 'cast' => 'float'],
+			'limitCustomers' => ['json', 'cast' => 'array'],
+			'limitStartAt' => ['date', 'null' => TRUE, 'cast' => 'string'],
+			'limitEndAt' => ['date', 'null' => TRUE, 'cast' => 'string'],
 			'available' => ['float32', 'min' => 0.0, 'max' => NULL, 'null' => TRUE, 'cast' => 'float'],
 			'status' => ['enum', [\shop\Product::ACTIVE, \shop\Product::INACTIVE], 'cast' => 'enum'],
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'shop', 'date', 'type', 'farm', 'catalog', 'product', 'packaging', 'price', 'saleStartAt', 'saleEndAt', 'available', 'status'
+			'id', 'shop', 'date', 'type', 'farm', 'catalog', 'product', 'packaging', 'price', 'limitNumber', 'limitCustomers', 'limitStartAt', 'limitEndAt', 'available', 'status'
 		]);
 
 		$this->propertiesToModule += [
@@ -86,6 +88,9 @@ class ProductModel extends \ModuleModel {
 
 		switch($property) {
 
+			case 'limitCustomers' :
+				return [];
+
 			case 'status' :
 				return Product::ACTIVE;
 
@@ -103,11 +108,28 @@ class ProductModel extends \ModuleModel {
 			case 'type' :
 				return ($value === NULL) ? NULL : (string)$value;
 
+			case 'limitCustomers' :
+				return $value === NULL ? NULL : json_encode($value, JSON_UNESCAPED_UNICODE);
+
 			case 'status' :
 				return ($value === NULL) ? NULL : (string)$value;
 
 			default :
 				return parent::encode($property, $value);
+
+		}
+
+	}
+
+	public function decode(string $property, $value) {
+
+		switch($property) {
+
+			case 'limitCustomers' :
+				return $value === NULL ? NULL : json_decode($value, TRUE);
+
+			default :
+				return parent::decode($property, $value);
 
 		}
 
@@ -157,12 +179,20 @@ class ProductModel extends \ModuleModel {
 		return $this->where('price', ...$data);
 	}
 
-	public function whereSaleStartAt(...$data): ProductModel {
-		return $this->where('saleStartAt', ...$data);
+	public function whereLimitNumber(...$data): ProductModel {
+		return $this->where('limitNumber', ...$data);
 	}
 
-	public function whereSaleEndAt(...$data): ProductModel {
-		return $this->where('saleEndAt', ...$data);
+	public function whereLimitCustomers(...$data): ProductModel {
+		return $this->where('limitCustomers', ...$data);
+	}
+
+	public function whereLimitStartAt(...$data): ProductModel {
+		return $this->where('limitStartAt', ...$data);
+	}
+
+	public function whereLimitEndAt(...$data): ProductModel {
+		return $this->where('limitEndAt', ...$data);
 	}
 
 	public function whereAvailable(...$data): ProductModel {

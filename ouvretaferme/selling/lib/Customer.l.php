@@ -169,6 +169,17 @@ class CustomerLib extends CustomerCrud {
 
 	}
 
+	public static function getLimitedByProducts(\Collection $cProduct): \Collection {
+
+		$customers = array_merge(...$cProduct->getColumn('limitCustomers'));
+
+		return Customer::model()
+			->select(Customer::getSelection())
+			->whereId('IN', $customers)
+			->getCollection(NULL, NULL, 'id');
+
+	}
+
 	public static function getPrivateByUser(\user\User $eUser): \Collection {
 
 		return Customer::model()

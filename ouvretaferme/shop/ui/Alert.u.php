@@ -20,6 +20,7 @@ class AlertUi {
 
 			'Product::available.check' => s("Vous devez indiquer des limites supérieures à zéro ou laisser ce champ vide."),
 			'Product::price.check' => s("Vous devez indiquer un prix valable."),
+			'Product::limitEndAt.consistency' => s("La fin de la prise des commandes doit avoir lieu après le début de prise des commandes."),
 			'Product::empty' => s("Vous n'avez sélectionné aucun produit."),
 
 			'Sale::update.payment' => s("Vous ne pouvez pas modifier votre panier alors qu'un paiement est en cours."),
@@ -67,6 +68,7 @@ class AlertUi {
 			'Point::place.deleted' => s("Le point de retrait a bien été supprimé."),
 
 			'Products::created' => s("Les produits ont bien été ajoutés."),
+			'Product::updated' => s("Le produit a bien été mis à jour."),
 			'Product::deleted' => s("Le produit a bien été supprimé."),
 
 			'Sale::phone' => s("Votre numéro de téléphone a bien été enregistré, vous pouvez maintenant valider votre mode de livraison !"),

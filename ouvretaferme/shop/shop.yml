@@ -61,8 +61,10 @@ Product:
   product: selling\Product
   packaging: ?decimal(6, 2, 0.01, null)
   price: decimal(8, 2, 0.0, null)
-  saleStartAt: ?datetime
-  saleEndAt: ?datetime
+  limitNumber: ?decimal(8, 2, 0.0, null)
+  limitCustomers: json = PHP([])
+  limitStartAt: ?date
+  limitEndAt: ?date
   available: ?float32(0.0, null)
   status: enum(ACTIVE, INACTIVE) = ACTIVE
   INDEX: [

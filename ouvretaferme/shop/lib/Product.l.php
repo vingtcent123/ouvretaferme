@@ -3,6 +3,23 @@ namespace shop;
 
 class ProductLib extends ProductCrud {
 
+	public static function getPropertiesUpdate(): \Closure {
+
+		return function(Product $eProduct) {
+
+			$properties = ['price', 'available', 'limitCustomers', 'limitNumber'];
+
+			if($eProduct['catalog']->notEmpty()) {
+				$properties[] = 'limitStartAt';
+				$properties[] = 'limitEndAt';
+			}
+
+			return $properties;
+
+		};
+
+	}
+
 	public static function getForCopy(Shop $eShop, Date $eDate): \Collection {
 
 		$eShop->expects(['type']);
@@ -32,9 +49,9 @@ class ProductLib extends ProductCrud {
 			return $cProductShop;
 
 		} else {
-			$ccProduct = self::getByDate($eDate, FALSE);
+			$ccProduct = self::getByDate($eDate);
 			// Multi producteur pas géré
-			return $ccProduct->first();
+			return $ccProduct->empty() ? new Collection() : $ccProduct->first();
 		}
 
 	}
@@ -65,9 +82,9 @@ class ProductLib extends ProductCrud {
 	public static function excludeExisting(Date|Catalog $e, \Collection $cProductSelling): void {
 
 		if($e instanceof Date) {
-			$cProduct = self::getColumnByDate($e, 'product', onlyActive: FALSE);
+			$cProduct = self::getColumnByDate($e, 'product');
 		} else {
-			$cProduct = self::getColumnByCatalog($e, 'product', onlyActive: FALSE);
+			$cProduct = self::getColumnByCatalog($e, 'product');
 		}
 
 		if($cProduct === []) {
@@ -115,8 +132,10 @@ class ProductLib extends ProductCrud {
 				'sold' => round($eItem['sold'], 2),
 				'catalog' => new Catalog(),
 				'date' => new Date(),
-				'saleStartAt' => NULL,
-				'saleEndAt' => NULL,
+				'limitNumber' => NULL,
+				'limitCustomers' => [],
+				'limitStartAt' => NULL,
+				'limitEndAt' => NULL,
 				'available' => NULL,
 				'status' => Product::INACTIVE,
 			]);
@@ -127,20 +146,26 @@ class ProductLib extends ProductCrud {
 
 	}
 
-	public static function getColumnByDate(Date $eDate, string $column, bool $onlyActive = TRUE): array|\Collection {
+	public static function getColumnByDate(Date $eDate, string $column, ?\Closure $apply = NULL): array|\Collection {
+
+		if($apply) {
+			$apply(Product::model());
+		}
 
 		$data = Product::model()
 			->select($column)
 			->whereDate($eDate)
-			->whereStatus(Product::ACTIVE, if: $onlyActive)
 			->getColumn($column);
 
 		if($eDate->isCatalog()) {
 
+			if($apply) {
+				$apply(Product::model());
+			}
+
 			$newData = Product::model()
 				->select(ProductElement::getSelection())
 				->whereCatalog('IN', $eDate['catalogs'])
-				->whereStatus(Product::ACTIVE, if: $onlyActive)
 				->getColumn($column);
 
 			if($newData instanceof \Collection) {
@@ -155,9 +180,17 @@ class ProductLib extends ProductCrud {
 
 	}
 
-	public static function getByDate(Date $eDate, bool $onlyActive = TRUE, \selling\Sale $eSaleExclude = new \selling\Sale()): \Collection {
+	public static function getByDate(Date $eDate, \selling\Customer $eCustomer = new \selling\Customer(), \selling\Sale $eSaleExclude = new \selling\Sale()): \Collection {
 
-		$ids = self::getColumnByDate($eDate, 'id', $onlyActive);
+		$ids = self::getColumnByDate($eDate, 'id', function(ProductModel $m) use ($eDate, $eCustomer) {
+
+			$m
+				->whereStatus(Product::ACTIVE, if: $eCustomer->notEmpty())
+				->where(fn() => 'JSON_LENGTH(limitCustomers) = 0 OR JSON_CONTAINS(limitCustomers, \''.$eCustomer['id'].'\')', if: $eCustomer->notEmpty())
+				->where('limitStartAt IS NULL OR '.$m->format($eDate['deliveryDate']).' >= limitStartAt')
+				->where('limitEndAt IS NULL OR '.$m->format($eDate['deliveryDate']).' <= limitEndAt');
+
+		});
 
 		if($ids === []) {
 			return new \Collection();
@@ -180,12 +213,11 @@ class ProductLib extends ProductCrud {
 
 	}
 
-	public static function getColumnByCatalog(Catalog $eCatalog, string $column, bool $onlyActive = TRUE): array|\Collection {
+	public static function getColumnByCatalog(Catalog $eCatalog, string $column): array|\Collection {
 
 		return Product::model()
 			->select($column)
 			->whereCatalog($eCatalog)
-			->whereStatus(Product::ACTIVE, if: $onlyActive)
 			->getColumn($column);
 
 	}
@@ -350,9 +382,19 @@ class ProductLib extends ProductCrud {
 		}
 
 		if($eProduct['available'] !== NULL) {
-			return $eProduct['available'] + $number;
+
+			$number += $eProduct['available'];
+
+			return ($eProduct['limitNumber'] === NULL) ?
+				$number :
+				min($eProduct['limitNumber'], $number);
+
 		}  else {
-			return NULL;
+
+			return ($eProduct['limitNumber'] === NULL) ?
+				NULL :
+				$eProduct['limitNumber'];
+
 		}
 
 	}

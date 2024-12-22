@@ -355,6 +355,19 @@
 	white-space: nowrap;
 }
 
+.shop-product-limits {
+	border-top: 1px dashed var(--border);
+	padding: 0.25rem 0;
+	font-size: 0.9rem;
+	display: flex;
+	flex-wrap: wrap;
+	color: var(--muted);
+}
+
+.shop-product-limits > span:not(:last-child) {
+	margin-right: 1rem;
+}
+
 .shop-product-sold {
 	font-size: 1.2rem;
 	font-weight: bold;

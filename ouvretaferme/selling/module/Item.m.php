@@ -74,7 +74,7 @@ class ItemModel extends \ModuleModel {
 			'unit' => ['enum', [\selling\Item::KG, \selling\Item::GRAM, \selling\Item::GRAM_100, \selling\Item::GRAM_250, \selling\Item::GRAM_500, \selling\Item::BOX, \selling\Item::UNIT, \selling\Item::BUNCH, \selling\Item::PLANT], 'null' => TRUE, 'cast' => 'enum'],
 			'unitPrice' => ['decimal', 'digits' => 8, 'decimal' => 2, 'cast' => 'float'],
 			'discount' => ['int8', 'min' => 0, 'max' => 100, 'cast' => 'int'],
-			'number' => ['float32', 'min' => 0.0, 'max' => NULL, 'null' => TRUE, 'cast' => 'float'],
+			'number' => ['decimal', 'digits' => 8, 'decimal' => 2, 'min' => 0.0, 'max' => NULL, 'null' => TRUE, 'cast' => 'float'],
 			'price' => ['decimal', 'digits' => 8, 'decimal' => 2, 'null' => TRUE, 'cast' => 'float'],
 			'priceExcludingVat' => ['decimal', 'digits' => 8, 'decimal' => 2, 'null' => TRUE, 'cast' => 'float'],
 			'locked' => ['enum', [\selling\Item::UNIT_PRICE, \selling\Item::NUMBER, \selling\Item::PRICE], 'cast' => 'enum'],

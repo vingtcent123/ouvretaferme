@@ -39,7 +39,42 @@ class Product extends ProductElement {
 
 				return $this['catalog']->notEmpty();
 
-			}
+			},
+
+			'limitCustomers.prepare' => function(mixed &$customers): bool {
+
+				$this->expects(['farm']);
+
+				$customers = (array)($customers ?? []);
+
+				$customers = \selling\Customer::model()
+					->select('id')
+					->whereId('IN', $customers)
+					->whereFarm($this['farm'])
+					->getColumn('id');
+
+				return TRUE;
+
+			},
+
+			'limitEndAt.consistency' => function($limitEndAt, array $newProperties, array $validProperties): bool {
+
+				if(in_array('limitStartAt', $validProperties) === FALSE) {
+					return FALSE;
+				}
+
+				$this->expects(['limitStartAt']);
+
+				if(
+					$this['limitStartAt'] === NULL or
+					$this['limitEndAt'] === NULL
+				) {
+					return TRUE;
+				}
+
+				return $limitEndAt > $this['limitStartAt'];
+
+			},
 
 		]);
 

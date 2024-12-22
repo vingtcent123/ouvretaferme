@@ -157,7 +157,7 @@ Item:
   unit: ?enum(KG, GRAM, GRAM_100, GRAM_250, GRAM_500, BOX, UNIT, BUNCH, PLANT)
   unitPrice: decimal(8, 2)
   discount: int8(0, 100) = 0
-  number: ?float32(0.0, null)
+  number: ?decimal(8, 2, 0.0, null)
   price: ?decimal(8, 2)
   priceExcludingVat: ?decimal(8, 2)
   locked: enum(UNIT_PRICE, NUMBER, PRICE) = PRICE
