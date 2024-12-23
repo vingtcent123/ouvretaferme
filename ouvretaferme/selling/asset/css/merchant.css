@@ -44,7 +44,7 @@ body[data-touch="yes"] .merchant-content {
 
 	body[data-touch="yes"] .merchant-content {
 		width: calc(100vw - 1rem);
-		grid-template-columns: 17rem 1fr;
+		grid-template-columns: 16rem 1fr;
 	}
 
 }
@@ -84,21 +84,25 @@ body[data-touch="no"] .merchant-content {
 	align-items: center;
 }
 
-body[data-touch="yes"] {
+@media (min-width: 450px) {
 
-	.merchant-lines {
-		margin-right: -1rem;
+	body[data-touch="yes"] {
+
+		.merchant-lines {
+			margin-right: -1rem;
+		}
+
 	}
 
 }
 
 @media (max-width: 449px) {
 
-	.merchant-item {
+	body[data-touch="yes"] .merchant-item {
 		padding: 0.75rem;
 	}
 
-	.merchant-lines {
+	body[data-touch="yes"] .merchant-lines {
 		margin-right: -0.75rem;
 	}
 
@@ -143,8 +147,9 @@ body[data-touch="no"] a.merchant-field {
 
 @media (max-width: 399px) {
 
-	a.merchant-field {
+	body[data-touch="yes"] a.merchant-field {
 		font-size: 1rem;
+		padding-right: 4.25rem;
 	}
 
 }
@@ -191,6 +196,15 @@ a.merchant-field.disabled input {
 	position: relative;
 	z-index: 2;
 	pointer-events: none;
+}
+
+@media (max-width: 399px) {
+
+	body[data-touch="yes"] .merchant-unit {
+		font-size: 0.9rem;
+		margin-left: -3rem;
+	}
+
 }
 
 a.merchant-field.selected + .merchant-unit,

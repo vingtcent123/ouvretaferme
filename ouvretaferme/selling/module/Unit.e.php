@@ -21,5 +21,14 @@ class Unit extends UnitElement {
 
 	}
 
+	public function isInteger(): bool {
+
+		return (
+			$this->empty() or
+			$this['type'] === Unit::INTEGER
+		);
+
+	}
+
 }
 ?>

@@ -31,7 +31,7 @@ class MerchantUi {
 			2 => ($value or $property === Item::UNIT_PRICE) ? \util\TextUi::number($value ?: 0, 2) : '-,--'
 		};
 
-		$h = '<div id="merchant-'.$eItem['id'].'" class="merchant hide"  data-unit="'.$eItem['unit'].'" data-item="'.$eItem['id'].'">';
+		$h = '<div id="merchant-'.$eItem['id'].'" class="merchant hide" data-unit-integer="'.($eItem['unit']->isInteger() ? '1' : '0').'" data-item="'.$eItem['id'].'">';
 			$h .= '<div class="merchant-background" onclick="Merchant.hide()"></div>';
 			$h .= '<div class="merchant-content">';
 
@@ -62,7 +62,7 @@ class MerchantUi {
 							$h .= '<a onclick="Merchant.keyboardToggle(this)" data-property="'.Item::NUMBER.'" class="merchant-field">';
 								$h .= $form->text('number['.$eItem['id'].']', $eItem['number']);
 								$h .= '<div class="merchant-value" id="merchant-'.$eItem['id'].'-number">';
-									$h .= $format(Item::NUMBER, $eItem['number'], ($eItem['packaging'] !== NULL or $eItem->isUnitInteger()) ? 0 : 2);
+									$h .= $format(Item::NUMBER, $eItem['number'], ($eItem['packaging'] !== NULL or $eItem['unit']->isInteger()) ? 0 : 2);
 								$h .= '</div>';
 							$h .= '</a>';
 							$h .= '<div class="merchant-unit">';
@@ -89,7 +89,7 @@ class MerchantUi {
 								$h .= '<a onclick="Merchant.keyboardToggle(this)" data-property="packaging" class="merchant-field merchant-packaging '.($eItem['packaging'] !== NULL ? '' : 'hide').'">';
 									$h .= $form->text('packaging['.$eItem['id'].']', $eItem['packaging']);
 									$h .= '<div class="merchant-value" id="merchant-'.$eItem['id'].'-packaging">';
-										$h .= $format('packaging', $eItem['packaging'], $eItem->isUnitInteger() ? 0 : 2);
+										$h .= $format('packaging', $eItem['packaging'], $eItem['unit']->isInteger() ? 0 : 2);
 									$h .= '</div>';
 								$h .= '</a>';
 								$h .= '<div class="merchant-unit merchant-packaging '.($eItem['packaging'] !== NULL ? '' : 'hide').'">';

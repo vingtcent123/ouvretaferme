@@ -60,15 +60,6 @@ class Item extends ItemElement {
 
 	}
 
-	public function isUnitInteger(): bool {
-
-		return (
-			$this['unit']->empty() or
-			$this['unit']['type'] === Unit::INTEGER
-		);
-
-	}
-
 	public function build(array $properties, array $input, array $callbacks = [], ?string $for = NULL): array {
 
 		$this->expects([

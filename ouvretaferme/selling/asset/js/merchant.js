@@ -506,18 +506,7 @@ class Merchant {
 	}
 
 	static isUnitInteger() {
-		
-		const unit = this.current.dataset.unit;
-		
-		return (
-			unit === '' ||
-			unit === 'bunch' ||
-			unit === 'unit' ||
-			unit === 'box' ||
-			unit === 'gram-250' ||
-			unit === 'gram-500'
-		);
-		
+		return (this.current.dataset.unitInteger === '1');
 	}
 
 	static setEntryValue(item, property, value) {
