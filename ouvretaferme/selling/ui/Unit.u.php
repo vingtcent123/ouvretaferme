@@ -250,13 +250,41 @@ class UnitUi {
 
 	}
 
+	public static function getField(\Collection $cUnit): array {
+
+		$cUnitWeight = new \Collection();
+		$cUnitOthers = new \Collection();
+
+		foreach($cUnit as $eUnit) {
+
+			if(in_array($eUnit['fqn'], [NULL, 'bunch', 'unit'])) {
+				$cUnitOthers[] = $eUnit;
+			} else {
+				$cUnitWeight[] = $eUnit;
+			}
+
+		}
+
+		return [
+			[
+				'label' => s("Vente au poids"),
+				'values' => $cUnitWeight
+			],
+			[
+				'label' => s("Vente à l'unité"),
+				'values' => $cUnitOthers
+			]
+		];
+
+	}
+
 	public static function p(string $property): \PropertyDescriber {
 
 		$d = Unit::model()->describer($property, [
 			'singular' => s("Nom de l'unité au singulier"),
 			'plural' => s("Nom de l'unité au pluriel"),
 			'short' => s("Version courte"),
-			'type' => s("Utilisation avec"),
+			'type' => s("Avec quelles quantités est utilisée l'unité ?"),
 		]);
 
 		switch($property) {
@@ -276,10 +304,10 @@ class UnitUi {
 
 			case 'type' :
 				$d->values = [
-					Unit::DECIMAL => s("Valeurs décimales (0.00)"),
-					Unit::INT => s("Valeurs entières (0)")
+					Unit::DECIMAL => s("Quantités décimales (0.00)").'  <span class="color-muted"><small>'.s("Exemple : 2.25 litres, 1.41 mètre...").'</small></span>',
+					Unit::INTEGER => s("Quantités entières (0)").'  <span class="color-muted"><small>'.s("Exemple : 5 pots, 2 bouquets...").'</small></span>'
 				];
-				$d->default = Unit::INT;
+				$d->default = Unit::INTEGER;
 				$d->after = \util\FormUi::info(s("Par exemple, l'unité <i>Pot</i> sera utilisée avec des valeurs entières uniquement, l'unité <i>Litre</i> sera sûrement utilisée avec des valeurs décimales."));
 				break;
 

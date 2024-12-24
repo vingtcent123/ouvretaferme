@@ -1466,36 +1466,69 @@ class FormUi {
 			$callback = 'encode';
 		}
 
+		if(isset($attributes['group'])) {
+			$hasGroup = (bool)$attributes['group'];
+			unset($attributes['group']);
+		} else {
+			$hasGroup = FALSE;
+		}
+
 		$attributes['class'] = 'form-control '.($attributes['class'] ?? '');
 
 		$this->setDefaultAttributes('select', $attributes, $name);
 
-		$select = "";
+		$select = '';
 
 		if(empty($attributes['mandatory']) and empty($attributes['multiple'])) {
 
-			$select .= "<option value=''";
+			$select .= '<option value=""';
 
 			if($selection === NULL) {
-				$select .= " selected='selected'";
+				$select .= ' selected="selected"';
 			}
 
 			$select .= ' class="field-radio-select">';
-			$select .= $attributes['placeholder'] ?? s("< Choisir >");
-			$select .= "</option>";
+				$select .= $attributes['placeholder'] ?? s("< Choisir >");
+			$select .= '</option>';
 
 			unset($attributes['placeholder']);
 
 		}
 		unset($attributes['mandatory']);
 
-		$select = "<select ".attrs($attributes).">".$select;
+		$select = '<select '.attrs($attributes).'>'.$select;
+
+			if($hasGroup) {
+
+				foreach($values as $group) {
+
+					array_expects($group, ['label', 'values']);
+
+					$select .= '<optgroup label="'.encode($group['label']).'">';
+						$select .= $this->getOptions($group['values'], $callback, $selection);
+					$select .= '</optgroup>';
+
+				}
+
+			} else {
+				$select .= $this->getOptions($values, $callback, $selection);
+			}
+
+		$select .= "</select>";
+
+		return $select;
+
+	}
+
+	protected function getOptions(mixed $values, mixed $callback, mixed $selection): string {
+
+		$h = '';
 
 		foreach($values as $key => $value) {
 
 			[$optionValue, $optionContent, $optionAttributes] = $this->getOptionValue($key, $value);
 
-			$select .= "<option value=\"".encode($optionValue)."\"";
+			$h .= '<option value="'.encode($optionValue).'"';
 
 			if(
 				isset($optionAttributes['disabled']) === FALSE and
@@ -1504,7 +1537,7 @@ class FormUi {
 
 				foreach($selection as $valueCheck) {
 					if((string)$valueCheck === (string)$optionValue) {
-						$select .= ' selected="selected"';
+						$h .= ' selected="selected"';
 						break;
 					}
 				}
@@ -1512,16 +1545,14 @@ class FormUi {
 			}
 
 			if($optionAttributes) {
-				$select .= ' '.attrs($optionAttributes);
+				$h .= ' '.attrs($optionAttributes);
 			}
 
-			$select .= ">".call_user_func($callback, $optionContent)."</option>";
+			$h .= '>'.call_user_func($callback, $optionContent).'</option>';
 
 		}
 
-		$select .= "</select>";
-
-		return $select;
+		return $h;
 
 	}
 

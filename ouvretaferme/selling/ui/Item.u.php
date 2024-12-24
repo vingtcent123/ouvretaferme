@@ -904,14 +904,18 @@ class ItemUi {
 				self::applyLocking($d, Item::NUMBER);
 
 				$d->append = function(\util\FormUi $form, Item $eItem) {
+
 					$h = '<span class="item-write-packaging-label '.($eItem['packaging'] ? '' : 'hide').'">'.s("colis").'</span>';
 					$h .= '<span class="item-write-unit-label '.($eItem['packaging'] ? 'hide' : '').'">'.\selling\UnitUi::getSingular($eItem['unit']).'</span>';
+
 					return $form->addon($h);
+
 				};
 				break;
 
 			case 'unit' :
-				$d->values = fn(Item $e) => $e['cUnit'] ?? $e->expects(['cUnit']);
+				$d->values = fn(Item $e) => isset($e['cUnit']) ? UnitUi::getField($e['cUnit']) : $e->expects(['cUnit']);
+				$d->attributes = ['group' => TRUE];
 				$d->placeholder = s("&lt; Non applicable &gt;");
 				break;
 

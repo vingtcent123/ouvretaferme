@@ -78,6 +78,7 @@ class AlertUi {
 			'Item::createDuplicateProductMarket' => fn($name) => s("Vous avez déjà ajouté le produit {value} à votre marché !", $name),
 			'Item::canNotDelete' => s("Impossible de supprimer cet article"),
 
+			'Unit::singular.duplicate' => s("Il y a déjà une unité avec le même nom"),
 			'Unit::deleteUsed' => s("Cette unité ne peut pas être supprimée car elle est utilisée dans une vente ou pour un produit"),
 
 			default => NULL

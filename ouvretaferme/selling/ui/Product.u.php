@@ -659,7 +659,7 @@ class ProductUi {
 			'vat' => $eFarm->getSelling('defaultVat'),
 			'private' => TRUE,
 			'pro' => TRUE,
-			'unit' => $eProduct['cUnit']->first(),
+			'unit' => $eProduct['cUnit']->find(fn($eUnit) => $eUnit['fqn'] === 'kg', limit: 1),
 		]);
 
 		$h = '';
@@ -913,7 +913,8 @@ class ProductUi {
 				break;
 
 			case 'unit' :
-				$d->values = fn(Product $e) => $e['cUnit'] ?? $e->expects(['cUnit']);
+				$d->values = fn(Product $e) => isset($e['cUnit']) ? UnitUi::getField($e['cUnit']) : $e->expects(['cUnit']);
+				$d->attributes = ['group' => TRUE];
 				$d->placeholder = s("&lt; Non applicable &gt;");
 				$d->after = \util\FormUi::info(s("L'unité de vente ne pourra pas être modifiée par la suite. Si vous choisissez de modifier le conditionnement, vous devrez créer un autre produit."));
 				break;

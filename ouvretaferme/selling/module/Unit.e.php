@@ -30,5 +30,21 @@ class Unit extends UnitElement {
 
 	}
 
+	public function build(array $properties, array $input, array $callbacks = [], ?string $for = NULL): array {
+
+		return parent::build($properties, $input, $callbacks + [
+
+			'singular.duplicate' => function(string $name): bool {
+
+				return Unit::model()
+					->whereFarm(NULL)
+					->whereSingular($name)
+					->exists() === FALSE;
+
+			}
+		]);
+
+	}
+
 }
 ?>

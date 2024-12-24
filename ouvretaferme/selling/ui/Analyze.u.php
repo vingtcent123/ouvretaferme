@@ -1216,7 +1216,7 @@ class AnalyzeUi {
 							$h .= $quantity($eItem);
 						$h .= '</td>';
 						$h .= '<td class="'.$class.'" style="padding-left: 0">';
-							if($eItem['unit'] !== NULL) {
+							if($eItem['unit']->notEmpty()) {
 								$h .= \selling\UnitUi::getSingular($eItem['unit'], short: TRUE);
 							}
 						$h .= '</td>';

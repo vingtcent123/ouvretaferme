@@ -11,7 +11,7 @@ class UnitLib extends UnitCrud {
 		return self::getPropertiesCreate();
 	}
 
-	public static function getByFarm(\farm\Farm $eFarm): \Collection {
+	public static function getByFarm(\farm\Farm $eFarm, string|\Sql|null $sort = 'singular'): \Collection {
 
 		return Unit::model()
 			->select(Unit::getSelection())
@@ -19,8 +19,28 @@ class UnitLib extends UnitCrud {
 				fn() => $this->whereFarm($eFarm),
 				fn() => $this->whereFarm(NULL)
 			)
-			->sort(new \Sql('fqn IS NULL, id ASC'))
+			->sort($sort)
 			->getCollection();
+
+	}
+
+	public static function create(Unit $e): void {
+
+		try {
+			parent::create($e);
+		} catch(\DuplicateException) {
+			Unit::fail('singular.duplicate');
+		}
+
+	}
+
+	public static function update(Unit $e, array $properties): void {
+
+		try {
+			parent::update($e, $properties);
+		} catch(\DuplicateException) {
+			Unit::fail('singular.duplicate');
+		}
 
 	}
 

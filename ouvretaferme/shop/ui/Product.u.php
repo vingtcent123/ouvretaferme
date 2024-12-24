@@ -1020,7 +1020,7 @@ class ProductUi {
 
 					$step = (
 						$e['type'] === Product::PRO or
-						in_array($e['product']['unit'], [\selling\Product::UNIT, \selling\Product::BUNCH])
+						$e['product']['unit']->isInteger()
 					) ? 1 : 0.1;
 
 					$h = '<div class="input-group" data-product="'.$e['product']['id'].'">';

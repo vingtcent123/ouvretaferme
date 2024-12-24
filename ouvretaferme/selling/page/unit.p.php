@@ -20,7 +20,7 @@
 	->get('manage', function($data) {
 
 		$data->eFarm = \farm\FarmLib::getById(GET('farm'))->validate('canManage');
-		$data->cUnit = \selling\UnitLib::getByFarm($data->eFarm);
+		$data->cUnit = \selling\UnitLib::getByFarm($data->eFarm, sort: new \Sql('fqn IS NULL, id ASC'));
 
 		\farm\FarmerLib::register($data->eFarm);
 

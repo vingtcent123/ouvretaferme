@@ -163,26 +163,28 @@ class Report extends ReportElement {
 
 				foreach($cProductSeries as $eProductSeries) {
 
+					$fqn = $eProductSeries['unit']->empty() ? NULL : $eProductSeries['unit']['fqn'];
+
 					$eProductAnalyze = new Product([
 						'product' => $eProductSeries['id'],
 						'farm' => $this['farm'],
-						'unit' => match($eProductSeries['unit']) {
-							\selling\Product::GRAM, \selling\Product::GRAM_100, \selling\Product::GRAM_250, \selling\Product::GRAM_500, \selling\Product::KG => Product::KG,
-							\selling\Product::UNIT, \selling\Product::BOX, \selling\Product::PLANT => Product::UNIT,
-							\selling\Product::BUNCH => Product::BUNCH
+						'unit' => match($fqn) {
+							'gram', 'gram-100', 'gram-250', 'gram-500', 'kg' => Product::KG,
+							'bunch' => Product::BUNCH,
+							default => Product::UNIT
 						}
 					]);
 					$eProductAnalyze->buildIndex(['turnover', 'quantity'], $_POST, $eProductSeries['id']);
 
-					if($eProductSeries['unit'] === \selling\Product::GRAM_100) {
+					if($fqn === 'gram-100') {
 						$eProductAnalyze['quantity'] /= 10;
 					}
 
-					if($eProductSeries['unit'] === \selling\Product::GRAM_250) {
+					if($fqn === 'gram-250') {
 						$eProductAnalyze['quantity'] /= 4;
 					}
 
-					if($eProductSeries['unit'] === \selling\Product::GRAM_500) {
+					if($fqn === 'gram-500') {
 						$eProductAnalyze['quantity'] /= 2;
 					}
 
