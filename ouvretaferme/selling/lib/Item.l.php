@@ -29,7 +29,7 @@ class ItemLib extends ItemCrud {
 				'product' => ['name', 'variety', 'vignette', 'size'],
 				'customer' => ['type', 'name'],
 				'packaging', 'number',
-				'unit'
+				'unit' => ['fqn', 'by', 'singular', 'plural', 'short', 'type'],
 			])
 			->join(Product::model(), 'm2.id = m1.product')
 			->where('sale', 'IN', $cSale)

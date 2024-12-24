@@ -639,7 +639,7 @@ class AnalyzeLib {
 			->join(Product::model()
 				->select([
 					'plant' => ['vignette', 'fqn', 'name'],
-					'unit'
+					'unit' => ['fqn', 'by', 'singular', 'plural', 'short', 'type'],
 				]), 'm1.product = m2.id')
 			->join(Customer::model(), 'm1.customer = m3.id')
 			->where('number != 0')
@@ -704,7 +704,7 @@ class AnalyzeLib {
 			->join(Product::model()
 				->select([
 					'plant',
-					'unit'
+					'unit' => ['fqn', 'by', 'singular', 'plural', 'short', 'type'],
 				]), 'm1.product = m2.id')
 			->join(Customer::model(), 'm1.customer = m3.id')
 			->where('number != 0')
