@@ -144,6 +144,10 @@
 		$data->products = \selling\ProductLib::countByFarm($data->eFarm, $data->search);
 		$data->cProduct = \selling\ProductLib::getByFarm($data->eFarm, $data->eCategory, selectSales: TRUE, search: $data->search);
 
+		if($data->cProduct->empty()) {
+			$data->cUnit = \selling\UnitLib::getByFarm($data->eFarm);
+		}
+
 		throw new ViewAction($data);
 
 	})

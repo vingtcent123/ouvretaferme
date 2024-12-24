@@ -114,7 +114,7 @@
 	})
 	->doUpdate(fn() => throw new ReloadAction('selling', 'Product::updated'))
 	->doUpdateProperties('doUpdateStatus', ['status'], fn($data) => throw new ViewAction($data))
-	->doDelete(fn() => throw new ReloadAction('selling', 'Product::deleted'));
+	->doDelete(fn($data) => throw new RedirectAction(\farm\FarmUi::urlSellingProduct($data->e['farm']).'?success=selling:Product::deleted'));
 
 (new \selling\ProductPage())
 	->applyCollection(function($data, Collection $c) {
