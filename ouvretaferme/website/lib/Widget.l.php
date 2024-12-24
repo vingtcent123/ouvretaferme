@@ -38,25 +38,25 @@ class WidgetLib {
 
 	}
 
-	public static function getShop(\farm\Farm $eFarm, int $id): ?string {
+	public static function getShop(\farm\Farm $eFarm, int $id): ?\Closure {
 
 		$eShop = \shop\ShopLib::getById($id);
 
 		if($eShop->empty()) {
-			return 'NULL';
+			return NULL;
 		}
 
 		// Pas les accès en écriture sur la boutique
 		if($eShop['farm']['id'] !== $eFarm['id']) {
-			return 'NULL';
+			return NULL;
 		}
 
 		$eDate = \shop\DateLib::getMostRelevantByShop($eShop, one: TRUE);
 
 		if($eDate->empty()) {
-			return '';
+			return fn() => '';
 		} else {
-			return (new WidgetUi())->getShop($eShop, $eDate);
+			return fn() => (new WidgetUi())->getShop($eShop, $eDate);
 		}
 
 

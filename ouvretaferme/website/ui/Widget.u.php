@@ -8,7 +8,9 @@ class WidgetUi {
 		$eWebpage->expects(['widgets']);
 
 		foreach($eWebpage['widgets'] as $original => $new) {
-			$content = str_ireplace($original, $new, $content);
+			if($new !== NULL) {
+				$content = str_ireplace($original, $new(), $content);
+			}
 		}
 
 		return $content;
