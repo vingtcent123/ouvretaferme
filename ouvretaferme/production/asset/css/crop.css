@@ -7,10 +7,11 @@ div.crop-items {
 	grid-row-gap: 1rem;
 }
 
-@media (max-width: 991px) {
+@media (max-width: 1499px) {
 
 	div.crop-items {
 		grid-template-columns: 1fr;
+		max-width: 50rem;
 	}
 
 	div.crop-item-ghost {
@@ -29,20 +30,21 @@ div.crop-item.crop-item-ghost {
 	visibility: hidden;
 }
 
+div.crop-item-header {
+	padding: 0.5rem 1rem 0.5rem 0.5rem;
+	border-top-left-radius: 0.5rem;
+	border-top-right-radius: 0.5rem;
+}
+
+div.crop-item-header:not(:last-child) {
+	border-bottom: 1px solid var(--border);
+}
+
 div.crop-item-title {
 	display: grid;
 	grid-template-columns: auto 1fr auto;
 	grid-column-gap: 0.5rem;
 	align-items: center;
-	padding: 0.5rem 1rem 0.5rem 0.5rem;
-	border-bottom: 1px solid var(--border);
-	border-top-left-radius: 0.5rem;
-	border-top-right-radius: 0.5rem;
-}
-
-div.crop-item-title small {
-	text-transform: uppercase;
-	font-size: 1rem;
 }
 
 div.crop-item-title h2 {
@@ -55,10 +57,47 @@ div.crop-item-title h2 a {
 	color: inherit;
 }
 
+div.crop-item-varieties {
+	width: 100%;
+	padding-left: 3.5rem;
+	display: grid;
+	grid-template-columns: auto auto;
+	align-items: baseline;
+	font-size: 0.9rem;
+	line-height: 1.4	;
+}
+
+div.crop-item-varieties.crop-item-varieties-1 {
+	grid-template-columns: 1fr;
+}
+
+@media (max-width: 575px) {
+
+	div.crop-item-varieties {
+		grid-template-columns: 1fr;
+	}
+
+}
+
+span.crop-item-varieties-label {
+	text-transform: uppercase;
+	padding-right: .5rem;
+}
+
+span.crop-item-varieties-part {
+	color: var(--muted);
+}
+
+div.crop-item-soil-infos {
+	padding-left: 3.5rem;
+	text-transform: uppercase;
+	font-size: 0.9rem;
+	line-height: 1.4;
+}
+
 div.crop-item-presentation {
 	padding: 0.5rem;
 }
-
 
 @media (min-width: 576px) {
 

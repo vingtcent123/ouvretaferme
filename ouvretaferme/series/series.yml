@@ -28,7 +28,8 @@ Cultivation:
   rowSpacing: ?int16(1, null)
   plantSpacing: ?int16(1, null)
   density: ?float32(0.01, null)
-  sliceUnit: enum(PERCENT, AREA, LENGTH) = PERCENT
+  sliceUnit: enum(PERCENT, AREA, LENGTH, PLANT, TRAY) = PERCENT
+  sliceTool: ?farm\Tool
   area: ?int24(0, null)
   areaPermanent: ?int24(1, null)
   length: ?int16(1, null)
@@ -192,6 +193,7 @@ Slice:
   partPercent: ?float32(0.0, 100.0)
   partArea: ?int32(0, null)
   partLength: ?int32(0, null)
+  partPlant: ?int32(0, null)
   UNIQUE: [
     ["cultivation", "variety"]
   ]

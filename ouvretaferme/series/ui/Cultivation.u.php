@@ -1876,38 +1876,43 @@ class CultivationUi {
 
 		$ePlant = $eCultivation['plant'];
 
-		$h = '<div class="crop-item-title">';
-			$h .= \plant\PlantUi::getVignette($ePlant, '3rem').' ';
-			$h .= '<h2>';
-				$h .= \plant\PlantUi::link($ePlant);
-				$h .= ' <small>'.(new \production\SliceUi())->getLine($eCultivation['cSlice']).'</small>';
-				$h .= \production\CropUi::start($eCultivation, $cActionMain, fontSize: '0.7em');
-			$h .= '</h2>';
+		$h = '<div class="crop-item-header">';
 
-			if(
-				$eSeries->canWrite() and
-				$eSeries['status'] === Series::OPEN
-			) {
+			$h .= '<div class="crop-item-title">';
+				$h .= \plant\PlantUi::getVignette($ePlant, '3rem').' ';
+				$h .= '<h2>';
+					$h .= \plant\PlantUi::link($ePlant);
+					$h .= \production\CropUi::start($eCultivation, $cActionMain, fontSize: '0.7em');
+				$h .= '</h2>';
 
-				$h .= '<div>';
-					$h .= '<a data-dropdown="bottom-end" class="btn btn-color-primary dropdown-toggle" title="'.s("Ajouter une intervention").'">'.\Asset::icon('calendar-plus').'</a>';
-					$h .= '<div class="dropdown-list">';
-						$h .= '<div class="dropdown-title">'.encode($ePlant['name']).'</div>';
-						$h .= '<a href="/series/task:createFromSeries?farm='.$eSeries['farm']['id'].'&series='.$eSeries['id'].'&cultivation='.$eCultivation['id'].'&status='.Task::TODO.'" class="dropdown-item">'.s("Planifier une future intervention").'</a>';
-						$h .= '<a href="/series/task:createFromSeries?farm='.$eSeries['farm']['id'].'&series='.$eSeries['id'].'&cultivation='.$eCultivation['id'].'&status='.Task::DONE.'" class="dropdown-item">'.s("Ajouter une intervention déjà réalisée").'</a>';
-						$h .= '<a href="/series/task:createFromSeries?farm='.$eSeries['farm']['id'].'&series='.$eSeries['id'].'&cultivation='.$eCultivation['id'].'&doneWeek='.currentWeek().'&action='.$cActionMain[ACTION_RECOLTE]['id'].'&status='.Task::DONE.'" class="dropdown-item">'.s("Saisir une récolte").'</a>';
+				if(
+					$eSeries->canWrite() and
+					$eSeries['status'] === Series::OPEN
+				) {
+
+					$h .= '<div>';
+						$h .= '<a data-dropdown="bottom-end" class="btn btn-color-primary dropdown-toggle" title="'.s("Ajouter une intervention").'">'.\Asset::icon('calendar-plus').'</a>';
+						$h .= '<div class="dropdown-list">';
+							$h .= '<div class="dropdown-title">'.encode($ePlant['name']).'</div>';
+							$h .= '<a href="/series/task:createFromSeries?farm='.$eSeries['farm']['id'].'&series='.$eSeries['id'].'&cultivation='.$eCultivation['id'].'&status='.Task::TODO.'" class="dropdown-item">'.s("Planifier une future intervention").'</a>';
+							$h .= '<a href="/series/task:createFromSeries?farm='.$eSeries['farm']['id'].'&series='.$eSeries['id'].'&cultivation='.$eCultivation['id'].'&status='.Task::DONE.'" class="dropdown-item">'.s("Ajouter une intervention déjà réalisée").'</a>';
+							$h .= '<a href="/series/task:createFromSeries?farm='.$eSeries['farm']['id'].'&series='.$eSeries['id'].'&cultivation='.$eCultivation['id'].'&doneWeek='.currentWeek().'&action='.$cActionMain[ACTION_RECOLTE]['id'].'&status='.Task::DONE.'" class="dropdown-item">'.s("Saisir une récolte").'</a>';
+						$h .= '</div>';
+						$h .= ' <a data-dropdown="bottom-end" class="btn btn-color-primary dropdown-toggle">'.\Asset::icon('gear-fill').'</a>';
+						$h .= '<div class="dropdown-list">';
+							$h .= '<div class="dropdown-title">'.encode($ePlant['name']).'</div>';
+							$h .= '<a href="/series/cultivation:update?id='.$eCultivation['id'].'" class="dropdown-item">'.s("Modifier la production").'</a>';
+							if($eSeries['plants'] > 1) {
+								$h .= '<div class="dropdown-divider"></div>';
+								$h .= '<a data-ajax="/series/cultivation:doDelete" post-id="'.$eCultivation['id'].'" class="dropdown-item" data-confirm="'.s("Confirmer la suppression de la production de la série ?").'">'.s("Supprimer la production").'</a>';
+							}
+						$h .= '</div>';
 					$h .= '</div>';
-					$h .= ' <a data-dropdown="bottom-end" class="btn btn-color-primary dropdown-toggle">'.\Asset::icon('gear-fill').'</a>';
-					$h .= '<div class="dropdown-list">';
-						$h .= '<div class="dropdown-title">'.encode($ePlant['name']).'</div>';
-						$h .= '<a href="/series/cultivation:update?id='.$eCultivation['id'].'" class="dropdown-item">'.s("Modifier la production").'</a>';
-						if($eSeries['plants'] > 1) {
-							$h .= '<div class="dropdown-divider"></div>';
-							$h .= '<a data-ajax="/series/cultivation:doDelete" post-id="'.$eCultivation['id'].'" class="dropdown-item" data-confirm="'.s("Confirmer la suppression de la production de la série ?").'">'.s("Supprimer la production").'</a>';
-						}
-					$h .= '</div>';
-				$h .= '</div>';
-			}
+				}
+
+			$h .= '</div>';
+
+			$h .= $this->getVarieties($eCultivation['cSlice']);
 
 		$h .= '</div>';
 
@@ -1936,6 +1941,25 @@ class CultivationUi {
 
 
 			}
+
+		$h .= '</div>';
+
+		return $h;
+
+	}
+
+	protected function getVarieties(\Collection $cSlice): string {
+
+		$h = '<div class="crop-item-varieties crop-item-varieties-'.$cSlice->count().'">';
+		
+		foreach($cSlice as $eSlice) {
+
+			$h .= '<div>';
+				$h .= '<span class="crop-item-varieties-label">'.encode($eSlice['variety']['name']).'</span>';
+				$h .= '<span class="crop-item-varieties-part">'.$eSlice->formatPart().'</span>';
+			$h .= '</div>';
+
+		}
 
 		$h .= '</div>';
 

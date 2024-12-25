@@ -308,7 +308,6 @@ class UnitUi {
 					Unit::INTEGER => s("Quantités entières (0)").'  <span class="color-muted"><small>'.s("Exemple : 5 pots, 2 bouquets...").'</small></span>'
 				];
 				$d->default = Unit::INTEGER;
-				$d->after = \util\FormUi::info(s("Par exemple, l'unité <i>Pot</i> sera utilisée avec des valeurs entières uniquement, l'unité <i>Litre</i> sera sûrement utilisée avec des valeurs décimales."));
 				break;
 
 		}

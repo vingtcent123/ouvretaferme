@@ -141,7 +141,9 @@ class RangeField {
 		// On va mettre à jour le range
 		target.firstParent('.form-range').qs('[type="range"]', rangeField => {
 
+			rangeField.dataset.internalInput = 'true';
 			rangeField.value = newValue;
+			rangeField.dispatchEvent(new Event("input"));
 
 		});
 
@@ -149,6 +151,10 @@ class RangeField {
 
 	static updateLabel(target) {
 
+		if(target.dataset.internalInput === 'true') {
+			target.dataset.internalInput = 'false';
+			return;
+		}
 		const label = target.firstParent('div.form-range').qs('[type="number"]');
 		label.value = target.value;
 

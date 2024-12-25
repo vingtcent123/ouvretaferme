@@ -1,6 +1,8 @@
 <?php
 namespace production;
 
+use series\Series;
+
 class SliceUi {
 
 	public function __construct() {
@@ -50,64 +52,129 @@ class SliceUi {
 					$h .= $cSlice->makeString(fn($eSlice) => $this->getField($form, $nameVariety, $eCrop, $ccVariety, $eSlice));
 				}
 
-				$h .= '<div>';
-					$h .= '<a data-action="slice-add" data-id="#'.$id.'" class="btn btn-sm btn-outline-primary">'.s("Ajouter une variété").'</a>';
-				$h .= '</div>';
+				$h .= '<div class="slice-item-new">';
+					$h .= '<div>';
+						$h .= '<a data-action="slice-add" data-id="#'.$id.'" class="btn btn-sm btn-primary">'.s("Ajouter une variété").'</a> ';
 
-			$h .= '</div>';
-			$h .= '<div class="slice-actions">';
+						if($onlyPercent === FALSE) {
 
-				if($onlyPercent) {
+							$labels = [
+								\series\Cultivation::LENGTH => s("Répartir au mL"),
+								\series\Cultivation::AREA => s("Répartir au m²"),
+								\series\Cultivation::PERCENT => s("Répartir en %"),
+								\series\Cultivation::PLANT => match($eCrop['seedling']) {
+									\series\Cultivation::SOWING => s("Répartir à la graine"),
+									default => s("Répartir au plant"),
+								},
+							];
 
-					$value = $cSlice->sum('partPercent');
+							$h .= '<a data-dropdown="bottom-start" class="btn btn-sm btn-outline-primary dropdown-toggle slice-several slice-unit-dropdown">'.$labels[$eCrop['sliceUnit']].'</a>';
+							$h .= '<div class="dropdown-list">';
+								$h .= '<div class="dropdown-title">'.s("Répartir les variétés").'</div>';
 
-					$h .= '<span class="slice-action-limit" data-unit="'.\series\Cultivation::PERCENT.'">'.s("{value} % sélectionnés", '<span class="slice-action-sum">'.$value.'</span>').'</span>';
+								$h .= '<a data-action="slice-unit" data-id="#'.$id.'" data-label="'.$labels[\series\Cultivation::PERCENT].'" data-unit="'.\series\Cultivation::PERCENT.'" class="dropdown-item '.($eCrop['sliceUnit'] === \series\Cultivation::PERCENT ? 'selected' : '').'">'.s("en %").'</a>';
 
-				} else {
+								if($eCrop['series']['use'] === \series\Series::BED) {
+									$h .= '<a data-action="slice-unit" data-id="#'.$id.'" data-label="'.$labels[\series\Cultivation::LENGTH].'" data-unit="'.\series\Cultivation::LENGTH.'" class="dropdown-item '.($eCrop['sliceUnit'] === \series\Cultivation::PERCENT ? '' : 'selected').'">'.s("au mL de planche").'</a>';
+								} else {
+									$h .= '<a data-action="slice-unit" data-id="#'.$id.'" data-label="'.$labels[\series\Cultivation::AREA].'" data-unit="'.\series\Cultivation::AREA.'" class="dropdown-item '.($eCrop['sliceUnit'] === \series\Cultivation::PERCENT ? '' : 'selected').'">'.s("au m²").'</a>';
+								}
 
-					if($eCrop['series']['use'] === \series\Series::BED) {
+								$h .= '<a data-action="slice-unit" data-id="#'.$id.'" data-label="'.$labels[\series\Cultivation::PLANT].'" data-unit="'.\series\Cultivation::PLANT.'" class="dropdown-item '.($eCrop['sliceUnit'] === \series\Cultivation::PLANT ? 'selected' : '').'">';
+									$h .= match($eCrop['seedling']) {
+										\series\Cultivation::SOWING => s("au nombre de graines"),
+										default => s("au nombre de plants"),
+									};
+								$h .= '</a>';
 
-						$value = $cSlice->sum('partLength');
-						$limit = $eCrop['series']['length'];
+							$h .= '</div>';
 
-						$h .= '<span class="slice-action-limit '.($value > $limit ? 'color-danger' : '').' '.($eCrop['sliceUnit'] !== \series\Cultivation::PERCENT ? '' : 'hide').'" data-unit="'.\series\Cultivation::LENGTH.'">'.s("{value} / {limit} mL", ['value' => '<span class="slice-action-sum">'.$value.'</span>', 'limit' => '<span class="slice-action-max">'.$limit.'</span>']).'</span>';
+							$h .= $form->hidden($nameUnit, $eCrop['sliceUnit']);
 
-					} else {
-
-						$value = $cSlice->sum('partArea');
-						$limit = $eCrop['series']['area'];
-
-						$h .= '<span class="slice-action-limit '.($eCrop['sliceUnit'] !== \series\Cultivation::PERCENT ? '' : 'hide').'" data-unit="'.\series\Cultivation::AREA.'">'.s("{value} / {limit} m²", ['value' => '<span class="slice-action-sum">'.$value.'</span>', 'limit' => '<span class="slice-action-max">'.$limit.'</span>']).'</span>';
-
-					}
-
-					$value = $cSlice->sum('partPercent');
-
-					$h .= '<span class="slice-action-limit '.($eCrop['sliceUnit'] === \series\Cultivation::PERCENT ? '' : 'hide').'" data-unit="'.\series\Cultivation::PERCENT.'">'.s("{value} % sélectionnés", '<span class="slice-action-sum">'.$value.'</span>').'</span>';
-
-					$h .= ' | ';
-
-					$h .= s("Répartir : ");
-
-					$h .= '<span class="slice-action-unit">';
-
-						if($eCrop['series']['use'] === \series\Series::BED) {
-							$h .= '<a data-action="slice-unit" data-id="#'.$id.'" data-unit="'.\series\Cultivation::LENGTH.'" class="'.($eCrop['sliceUnit'] === \series\Cultivation::PERCENT ? '' : 'hide').'">'.s("au mL de planche").'</a>';
-						} else {
-							$h .= '<a data-action="slice-unit" data-id="#'.$id.'" data-unit="'.\series\Cultivation::AREA.'" class="'.($eCrop['sliceUnit'] === \series\Cultivation::PERCENT ? '' : 'hide').'">'.s("au m²").'</a>';
 						}
 
-						$h .= '<a data-action="slice-unit" data-id="#'.$id.'" data-unit="'.\series\Cultivation::PERCENT.'" class="'.($eCrop['sliceUnit'] === \series\Cultivation::PERCENT ? 'hide' : '').'">'.s("en %").'</a>';
+					$h .= '</div>';
 
-					$h .= '</span>';
+					$h .= '<div>';
 
-					$h .= ' '.s("ou").' ';
+						$value = $cSlice->sum('partPercent');
 
-					$h .= '<a data-action="slice-fair" data-id="#'.$id.'">'.s("égalitairement").'</a>';
+						if($eCrop['sliceUnit'] === \series\Cultivation::PERCENT) {
 
-					$h .= $form->hidden($nameUnit, $eCrop['sliceUnit']);
+							if($value > 100) {
+								$color = 'color-danger';
+							} else if($value < 100) {
+								$color = 'color-warning';
+							} else {
+								$color = 'color-success';
+							}
 
-				}
+						} else {
+							$color = '';
+						}
+
+						$h .= '<span class="slice-item-limit slice-several '.($eCrop['sliceUnit'] === \series\Cultivation::PERCENT ? '' : 'hide').' '.$color.'" data-unit="'.\series\Cultivation::PERCENT.'">'.s(" {value} %", '<span class="slice-action-sum">'.$value.'</span>').'</span>';
+
+						if($onlyPercent === FALSE) {
+
+							$limit = match($eCrop['series']['use']) {
+								Series::BED => $eCrop['series']['length'] ?? $eCrop['series']['lengthTarget'],
+								Series::BLOCK => $eCrop['series']['area'] ?? $eCrop['series']['areaTarget'],
+							};
+
+							$value = match($eCrop['series']['use']) {
+								Series::BED => $cSlice->sum('partLength'),
+								Series::BLOCK => $cSlice->sum('partArea'),
+							};
+
+							if(in_array($eCrop['sliceUnit'], [\series\Series::BED, \series\Series::BLOCK])) {
+
+								if($value > $limit) {
+									$color = 'color-danger';
+								} else if($value < $limit) {
+									$color = 'color-warning';
+								} else {
+									$color = 'color-success';
+								}
+
+							} else {
+								$color = '';
+							}
+
+							if($eCrop['series']['use'] === \series\Series::BED) {
+
+								$h .= '<span class="slice-item-limit slice-several '.$color.' '.($eCrop['sliceUnit'] === \series\Cultivation::LENGTH ? '' : 'hide').'" data-unit="'.\series\Cultivation::LENGTH.'">';
+									$h .= s("{value} {limit} mL", ['value' => '<span class="slice-action-sum">'.$value.'</span>', 'limit' => ($limit > 0 ? '/ ' : '').'<span class="slice-action-max">'.$limit.'</span>']);
+								$h.= '</span>';
+
+							} else {
+
+								$h .= '<span class="slice-item-limit slice-several '.$color.' '.($eCrop['sliceUnit'] === \series\Cultivation::AREA ? '' : 'hide').'" data-unit="'.\series\Cultivation::AREA.'">';
+									$h .= s("{value} {limit} m²", ['value' => '<span class="slice-action-sum">'.$value.'</span>', 'limit' => ($limit > 0 ? '/ ' : '').'<span class="slice-action-max">'.$limit.'</span>']);
+								$h.= '</span>';
+
+							}
+
+							$value = $cSlice->sum('partPlant');
+
+							$limit = match($eCrop['seedling']) {
+								\series\Cultivation::SOWING => $eCrop->getSeeds($eCrop['series']),
+								default => $eCrop->getYoungPlants($eCrop['series']),
+							};
+
+							$arguments = ['value' => '<span class="slice-action-sum">'.$value.'</span>', 'limit' => ($limit > 0 ? '/ ' : '').'<span class="slice-action-max">'.$limit.'</span>'];
+
+							$h .= '<span class="slice-item-limit slice-several '.$color.' '.($eCrop['sliceUnit'] === \series\Cultivation::PLANT ? '' : 'hide').'" data-unit="'.\series\Cultivation::PLANT.'">';
+								$h .= match($eCrop['seedling']) {
+									\series\Cultivation::SOWING => s("{value} {limit} graines", $arguments),
+									default => s("{value} {limit} plants", $arguments),
+								};
+							$h.= '</span>';
+
+						}
+					$h .= '</div>';
+					$h .= '<a data-action="slice-fair" data-id="#'.$id.'" class="btn btn-outline-primary slice-several" title="'.s("Répartir égalitairement").'">'.\Asset::icon('justify').'</a>';
+				$h .= '</div>';
 
 			$h .= '</div>';
 			$h .= '<div class="slice-spare">';
@@ -157,6 +224,8 @@ class SliceUi {
 
 			$h .= '</div>';
 
+			$h .= '<div class="slice-item-arrow">'.\Asset::icon('arrow-right-short').'</div>';
+
 			$h .= '<div class="slice-item-parts">';
 				
 				if($onlyPercent === FALSE) {
@@ -164,40 +233,54 @@ class SliceUi {
 					$eSeries = $eCrop['series'];
 
 					$h .= '<div class="slice-item-part '.($eCrop['sliceUnit'] === \series\Cultivation::PERCENT ? '' : 'hide').'" data-unit="'.\series\Cultivation::PERCENT.'">';
-						$h .= $form->range($name.'[varietyPartPercent][]', 0,  100, 1, $eSlice['partPercent'] ?? 0, ['data-label' => '%']);
+						$h .= $form->inputGroup(
+							$form->number($name.'[varietyPartPercent][]', $eSlice['partPercent'] ?? 0, ['min' => 0, 'onclick' => 'this.select()']).
+							$form->addon(s("%")),
+						);
 					$h .= '</div>';
 
 					if($eSeries['use'] === \series\Series::BLOCK) {
 						$h .= '<div class="slice-item-part '.($eCrop['sliceUnit'] === \series\Cultivation::AREA ? '' : 'hide').'" data-unit="'.\series\Cultivation::AREA.'">';
-						if($eSeries['area'] > 0) {
-							$h .= $form->range($name.'[varietyPartArea][]', 0,  $eSeries['area'], 1, $eSlice['partArea'] ?? 0, ['data-label' => 'm²']);
-						} else {
-							$h .= '<div class="color-danger" style="line-height: 1;">'.s("Vous pourrez répartir les variétés au m² lorsque vous aurez fait l'assolement de cette culture !").'</div>';
-						}
+							$h .= $form->inputGroup(
+								$form->number($name.'[varietyPartArea][]', $eSlice['partArea'] ?? 0, ['min' => 0, 'onclick' => 'this.select()']).
+								$form->addon(s("m²"))
+							);
 						$h .= '</div>';
 					}
 	
 					if($eSeries['use'] === \series\Series::BED) {
 						$h .= '<div class="slice-item-part '.($eCrop['sliceUnit'] === \series\Cultivation::LENGTH ? '' : 'hide').'" data-unit="'.\series\Cultivation::LENGTH.'">';
-						if($eSeries['length'] > 0) {
-							$h .= $form->range($name.'[varietyPartLength][]', 0,  $eSeries['length'], 1, $eSlice['partLength'] ?? 0, ['data-label' => 'mL']);
-						} else {
-							$h .= '<div class="color-danger" style="line-height: 1;">'.s("Vous pourrez répartir les variétés au mètre linéaire lorsque vous aurez assolé cette culture !").'</div>';
-						}
+							$h .= $form->inputGroup(
+								$form->number($name.'[varietyPartLength][]', $eSlice['partLength'] ?? 0, ['min' => 0, 'onclick' => 'this.select()']).
+								$form->addon(s("mL"))
+							);
 						$h .= '</div>';
 					}
-					
+
+					$h .= '<div class="slice-item-part '.($eCrop['sliceUnit'] === \series\Cultivation::PLANT ? '' : 'hide').'" data-unit="'.\series\Cultivation::PLANT.'">';
+						$h .= $form->inputGroup(
+							$form->number($name.'[varietyPartPlant][]', $eSlice['partPlant'] ?? 0, ['min' => 0, 'onclick' => 'this.select()']).
+							$form->addon(match($eCrop['seedling']) {
+								\series\Cultivation::SOWING => s("graines"),
+								default => s("plants"),
+							})
+						);
+					$h .= '</div>';
+
 				} else {
 
 					$h .= '<div class="slice-item-part" data-unit="'.\series\Cultivation::PERCENT.'">';
-						$h .= $form->range($name.'[varietyPartPercent][]', 0,  100, 1, $eSlice['partPercent'] ?? 0, ['data-label' => '%']);
+						$h .= $form->inputGroup(
+							$form->number($name.'[varietyPartPercent][]', $eSlice['partPercent'] ?? 0, ['min' => 0, 'onclick' => 'this.select()']).
+							$form->addon(s("%"))
+						);
 					$h .= '</div>';
 
 				}
 
 			$h .= '</div>';
 
-			$h .= '<a class="slice-item-remove" data-action="slice-remove">'.\Asset::icon('trash').'</a>';
+			$h .= '<a class="btn slice-item-remove" data-action="slice-remove">'.\Asset::icon('trash').'</a>';
 
 		$h .= '</div>';
 

@@ -113,53 +113,55 @@ class SeriesUi {
 
 		$h = '<div class="crop-item" id="series-soil">';
 
-			$h .= '<div class="crop-item-title">';
-				$h .= \plant\PlantUi::getSoilVignette('3rem');
-				$h .= '<h2 class="series-soil-title">';
-					$h .= s("Assolement");
-					$h .= ' <small>';
-					$h .= [
-						Series::BED => s("Planches {value} cm", $eSeries['bedWidth']),
-						Series::BLOCK => s("Surface libre"),
-					][$eSeries['use']];
-
-					if($eSeries['alleyWidth'] !== NULL) {
-						$h .= ' / '.s("Passe-pieds {value} cm", $eSeries['alleyWidth']);
+			$h .= '<div class="crop-item-header">';
+				$h .= '<div class="crop-item-title">';
+					$h .= \plant\PlantUi::getSoilVignette('3rem');
+					$h .= '<h2 class="series-soil-title">';
+						$h .= s("Assolement");
+					$h .= '</h2>';
+					if(
+						$eSeries->canWrite() and
+						$eSeries['status'] === Series::OPEN and
+						$cPlace->notEmpty()
+					) {
+						$h .= '<div>';
+							$h .= '<a href="/series/place:update?series='.$eSeries['id'].($eSeries['mode'] === Series::GREENHOUSE ? '&mode='.Series::GREENHOUSE : '').'" class="btn btn-color-primary">'.\Asset::icon('gear-fill').'</a>';
+						$h .= '</div>';
 					}
+				$h .= '</div>';
+				$h .= '<div class="crop-item-soil-infos">';
+				$h .= [
+					Series::BED => s("Planches {value} cm", $eSeries['bedWidth']),
+					Series::BLOCK => s("Surface libre"),
+				][$eSeries['use']];
 
-					switch($eSeries['use']) {
-
-						case Series::BED;
-							if($eSeries['lengthTarget']) {
-								$h .= ' / '.$eSeries->quick('lengthTarget', s("Objectif de {lengthTarget} mL", $eSeries));
-							}
-							if($eSeries['length']) {
-								$h .= ' / '.s("Actuellement {length} mL", $eSeries);
-							}
-							break;
-
-						case Series::BLOCK;
-							if($eSeries['areaTarget']) {
-								$h .= ' / '.$eSeries->quick('areaTarget', s("Objectif de {areaTarget} m²", $eSeries));
-							}
-							if($eSeries['area']) {
-								$h .= ' / '.s("Actuellement {area} m²", $eSeries);
-							}
-							break;
-
-					}
-
-					$h .= '</small>';
-				$h .= '</h2>';
-				if(
-					$eSeries->canWrite() and
-					$eSeries['status'] === Series::OPEN and
-					$cPlace->notEmpty()
-				) {
-					$h .= '<div>';
-						$h .= '<a href="/series/place:update?series='.$eSeries['id'].($eSeries['mode'] === Series::GREENHOUSE ? '&mode='.Series::GREENHOUSE : '').'" class="btn btn-color-primary">'.\Asset::icon('gear-fill').'</a>';
-					$h .= '</div>';
+				if($eSeries['alleyWidth'] !== NULL) {
+					$h .= ' / '.s("Passe-pieds {value} cm", $eSeries['alleyWidth']);
 				}
+
+				switch($eSeries['use']) {
+
+					case Series::BED;
+						if($eSeries['lengthTarget']) {
+							$h .= ' / '.$eSeries->quick('lengthTarget', s("Objectif de {lengthTarget} mL", $eSeries));
+						}
+						if($eSeries['length']) {
+							$h .= ' / '.s("Actuellement {length} mL", $eSeries);
+						}
+						break;
+
+					case Series::BLOCK;
+						if($eSeries['areaTarget']) {
+							$h .= ' / '.$eSeries->quick('areaTarget', s("Objectif de {areaTarget} m²", $eSeries));
+						}
+						if($eSeries['area']) {
+							$h .= ' / '.s("Actuellement {area} m²", $eSeries);
+						}
+						break;
+
+				}
+
+				$h .= '</div>';
 			$h .= '</div>';
 
 			$h .= '<div class="crop-item-body">';

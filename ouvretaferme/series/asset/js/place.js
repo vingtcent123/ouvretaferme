@@ -61,7 +61,7 @@ class Place {
 		const area = qs('#place-update-area');
 		const length = qs('#place-update-length');
 
-		if(area === null || length === null) {
+		if(area === null && length === null) {
 			return;
 		}
 

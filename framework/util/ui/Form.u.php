@@ -1400,7 +1400,8 @@ class FormUi {
 				$h .= '<div class="form-range-label" title="'.s("Modifier la valeur").'">';
 					$h .= $this->inputGroup(
 						$this->number(value: $value, attributes: [
-							'oninput' => 'RangeField.setValue(this)'
+							'oninput' => 'RangeField.setValue(this)',
+							'onclick' => 'this.select()'
 						]).
 						$this->addon($attributes['data-label'])
 					);

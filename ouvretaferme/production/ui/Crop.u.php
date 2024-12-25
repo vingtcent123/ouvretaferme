@@ -123,28 +123,30 @@ class CropUi {
 			$harvest = $harvests[$eCrop['plant']['id']] ?? [];
 
 			$h .= '<div class="crop-item">';
-				$h .= '<div class="crop-item-title">';
-					$h .= \plant\PlantUi::getVignette($ePlant, '3rem');
-					$h .= '<h2>';
-						$h .= \plant\PlantUi::link($ePlant);
-						$h .= ' <small>'.(new \production\SliceUi())->getLine($eCrop['cSlice']).'</small>';
-						$h .= self::start($eCrop, $cActionMain, fontSize: '0.7em');
-					$h .= '</h2>';
+				$h .= '<div class="crop-item-header">';
+					$h .= '<div class="crop-item-title">';
+						$h .= \plant\PlantUi::getVignette($ePlant, '3rem');
+						$h .= '<h2>';
+							$h .= \plant\PlantUi::link($ePlant);
+							$h .= ' <small>'.(new \production\SliceUi())->getLine($eCrop['cSlice']).'</small>';
+							$h .= self::start($eCrop, $cActionMain, fontSize: '0.7em');
+						$h .= '</h2>';
 
-					if($eSequence->canWrite()) {
+						if($eSequence->canWrite()) {
 
-						$h .= '<div>';
-							$h .= '<a data-dropdown="bottom-end" class="btn btn-color-primary dropdown-toggle">'.\Asset::icon('gear-fill').'</a>';
-							$h .= '<div class="dropdown-list">';
-								$h .= '<div class="dropdown-title">'.encode($ePlant['name']).'</div>';
-								$h .= '<a href="/production/crop:update?id='.$eCrop['id'].'" class="dropdown-item">'.s("Modifier la production").'</a>';
-								$h .= '<div class="dropdown-divider"></div>';
-								$h .= '<a data-ajax="/production/crop:doDelete" post-id="'.$eCrop['id'].'" data-confirm="'.s("Souhaitez-vous réellement supprimer cette production de l'itinéraire technique ?").'" class="dropdown-item">'.s("Supprimer la production").'</a>';
+							$h .= '<div>';
+								$h .= '<a data-dropdown="bottom-end" class="btn btn-color-primary dropdown-toggle">'.\Asset::icon('gear-fill').'</a>';
+								$h .= '<div class="dropdown-list">';
+									$h .= '<div class="dropdown-title">'.encode($ePlant['name']).'</div>';
+									$h .= '<a href="/production/crop:update?id='.$eCrop['id'].'" class="dropdown-item">'.s("Modifier la production").'</a>';
+									$h .= '<div class="dropdown-divider"></div>';
+									$h .= '<a data-ajax="/production/crop:doDelete" post-id="'.$eCrop['id'].'" data-confirm="'.s("Souhaitez-vous réellement supprimer cette production de l'itinéraire technique ?").'" class="dropdown-item">'.s("Supprimer la production").'</a>';
+								$h .= '</div>';
 							$h .= '</div>';
-						$h .= '</div>';
 
-					}
+						}
 
+					$h .= '</div>';
 				$h .= '</div>';
 
 				$h .= '<div class="crop-item-presentation">';

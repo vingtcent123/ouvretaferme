@@ -2030,6 +2030,10 @@ body[data-touch="yes"] .panel.closing {
 	pointer-events: none;
 }
 
+.panel-dialog.container {
+	max-width: 1400px;
+}
+
 .panel-dialog > * {
 	pointer-events: auto;
 }

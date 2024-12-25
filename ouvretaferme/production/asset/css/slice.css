@@ -3,49 +3,65 @@ div.slice-items {
 	grid-row-gap: 0.5rem;
 }
 
-div.slice-actions {
-	text-align: right;
-	margin-top: 0.25rem;
+div.slice-spare {
 	display: none;
 }
 
-div.slice-actions span.slice-action-limit {
+div.slice-item-new {
+	display: grid;
+	grid-template-columns: 1fr max-content auto;
+	grid-column-gap: 0.5rem;
+	align-items: center;
+	padding-right: 0.5rem;
+}
+
+span.slice-item-limit {
 	font-weight: bold;
+	font-size: 1.2rem;
+	margin-right: 0.5rem;
 }
 
-div.slice-wrapper:not([data-n="1"]):not([data-n="0"]) div.slice-actions {
-	display: block;
-}
-
-div.slice-spare {
+div.slice-wrapper[data-n="0"] .slice-several,
+div.slice-wrapper[data-n="1"] .slice-several {
 	display: none;
 }
 
 div.slice-item {
 	display: grid;
-	grid-template: "variety parts remove" 1fr / 1fr 1fr auto;
+	grid-template: "variety arrow parts remove" 1fr / 1fr auto 10rem auto;
 	grid-column-gap: 0.5rem;
 	align-items: center;
-	padding: 0.5rem;
 	border-radius: var(--radius);
 	background-color: rgba(0, 0, 0, 0.05);
+	padding: 0.5rem;
 }
 
 div.slice-wrapper[data-n="1"] div.slice-item {
-	grid-template-columns: 1fr auto;
+	grid-template: "variety remove" auto / 1fr auto;
 }
 
 @media (max-width: 575px) {
 
-	div.slice-item {
-		grid-template:
-			"variety remove" auto
-			"parts parts" 1fr / 1fr auto;
-		grid-row-gap: 0.5rem;
-	}
-
 	div.slice-wrapper[data-n="1"] div.slice-item {
 		grid-template: "variety remove" auto / 1fr auto;
+	}
+
+	div.slice-wrapper:not([data-n="1"]) div.slice-item {
+		grid-template: "variety arrow parts remove" 1fr / 1fr auto auto auto;
+	}
+
+}
+
+div.slice-item-arrow {
+	grid-area: arrow;
+	display: none;
+	font-size: 1.4rem;
+}
+
+@media (min-width: 576px) {
+
+	div.slice-item-arrow {
+		padding: 0 .5rem;
 	}
 
 }
@@ -59,13 +75,17 @@ div.slice-item div.slice-item-parts {
 	display: none;
 }
 
+div.slice-item div.slice-item-parts input {
+	text-align: right;
+}
+
+div.slice-wrapper:not([data-n="1"]) div.slice-item div.slice-item-arrow,
 div.slice-wrapper:not([data-n="1"]) div.slice-item div.slice-item-parts {
 	display: block;
 }
 
 div.slice-item a.slice-item-remove {
 	grid-area: remove;
-	padding: 0 0.5rem;
 }
 
 div.slice-item-create {

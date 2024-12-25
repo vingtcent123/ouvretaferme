@@ -22,9 +22,6 @@ class AlertUi {
 			'Crop::variety.createEmpty' => s("Vous devez indiquer un nom pour une variété que vous souhaitez ajouter."),
 			'Crop::variety.notExists' => s("La variété n'existe pas."),
 			'Crop::variety.partZero' => s("Vous n'avez pas indiqué de répartition pour au moins une des variétés."),
-			'Crop::variety.partsPercent' => s("La répartition des variétés doit couvrir 100 % de l'espace disponible !"),
-			'Crop::variety.partsArea' => fn($area) => s("La répartition des variétés doit couvrir l'intégralité de la surface de culture de {area} m² !", ['area' => $area]),
-			'Crop::variety.partsLength' => fn($length) => s("La répartition des variétés doit couvrir l'intégralité de la longueur de planches de {area} mL !", ['area' => $length]),
 			'Crop::variety.duplicate' => s("Vous avez indiqué des variétés en doublon pour une culture."),
 
 			'Flow::seasonOnly.empty' => s("Merci de donner une saison !"),

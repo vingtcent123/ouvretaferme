@@ -163,19 +163,16 @@ class SliceLib extends SliceCrud {
 
 		}
 
-
 		// Une seule variété -> les parts sont automatiquement remplies
 		if($cSlice->count() === 1) {
 
-			$cSlice->first()['part'.ucfirst($unit)] = match($unit) {
-				\series\Cultivation::PERCENT => 100,
-				\series\Cultivation::LENGTH => $eCrop['length'],
-				\series\Cultivation::AREA => $eCrop['area']
-			};
+			$eSlice = $cSlice->first();
+
+			$eSlice['partPercent'] = 100;
+			$eSlice['partLength'] = 0;
+			$eSlice['partArea'] = 0;
 
 		} else if($cSlice->count() > 1) {
-
-			$sum = 0;
 
 			foreach($cSlice as $eSlice) {
 
@@ -184,31 +181,6 @@ class SliceLib extends SliceCrud {
 				if($part <= 0) {
 					throw new \FailException('production\Crop::variety.partZero');
 				}
-
-				$sum += $part;
-
-			}
-
-			// Contrôle de l'intégrité des données fournies
-			switch($unit) {
-
-				case \series\Cultivation::PERCENT :
-					if($sum !== 100) {
-						throw new \FailException('production\Crop::variety.partsPercent');
-					}
-					break;
-
-				case \series\Cultivation::AREA :
-					if($sum !== $eCrop['area']) {
-						throw new \FailException('production\Crop::variety.partsArea', ['area' => $eCrop['area']]);
-					}
-					break;
-
-				case \series\Cultivation::LENGTH :
-					if($sum !== $eCrop['length']) {
-						throw new \FailException('production\Crop::variety.partsLength', ['length' => $eCrop['length']]);
-					}
-					break;
 
 			}
 

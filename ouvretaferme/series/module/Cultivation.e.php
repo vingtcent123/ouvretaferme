@@ -77,6 +77,116 @@ class Cultivation extends CultivationElement {
 
 	}
 
+	public function getYoungPlants(Series $eSeries, Slice $eSlice = new Slice(), bool &$targeted = NULL, ?int $safetyMargin = NULL): ?int {
+
+		$safetyMarginMultiplier = (1 + ($safetyMargin ?? 0) / 100);
+
+		if($eSlice->empty()) {
+			$slicePercent = 100;
+			$sliceUnit = Cultivation::PERCENT;
+		} else {
+			$slicePercent = $eSlice['partPercent'];
+			$sliceUnit = $this['sliceUnit'];
+		}
+
+		switch($eSeries['use']) {
+
+			case Series::BED :
+
+				if($eSeries['length'] !== NULL) {
+					$length = $eSeries['length'];
+					$targeted = FALSE;
+				} else if($eSeries['lengthTarget'] !== NULL) {
+					$length = $eSeries['lengthTarget'];
+					$targeted = TRUE;
+				} else {
+					return NULL;
+				}
+
+
+				switch($this['distance']) {
+
+
+					case Cultivation::SPACING :
+
+						if($this['rows'] === NULL or $this['plantSpacing'] === NULL) {
+							return NULL;
+						}
+
+						$densityLinear = 1 / ($this['plantSpacing'] / 100) * $this['rows'];
+
+						break;
+
+
+					case Cultivation::DENSITY :
+
+						if($this['density'] === NULL) {
+							return NULL;
+						}
+
+						$densityLinear = ($this['density'] * $eSeries['bedWidth'] / 100);
+
+						break;
+
+				}
+
+				return match($sliceUnit) {
+					Cultivation::PERCENT => round($length * $densityLinear * $slicePercent / 100 * $safetyMarginMultiplier),
+					Cultivation::LENGTH => round($eSlice['partLength'] * $densityLinear * $safetyMarginMultiplier),
+				};
+
+			case Series::BLOCK :
+
+				if($eSeries['area'] !== NULL) {
+					$area = $eSeries['area'];
+					$targeted = FALSE;
+				} else if($eSeries['areaTarget'] !== NULL) {
+					$area = $eSeries['areaTarget'];
+					$targeted = TRUE;
+				} else {
+					return NULL;
+				}
+
+				if($this['density'] !== NULL) {
+
+					return match($sliceUnit) {
+						Cultivation::PERCENT => round($area * $this['density'] * $slicePercent / 100 * $safetyMarginMultiplier),
+						Cultivation::AREA => round($eSlice['partArea'] * $this['density'] * $safetyMarginMultiplier),
+					};
+
+				} else {
+					return NULL;
+				}
+
+		}
+
+	}
+
+	public function getSeeds(Series $eSeries, Slice $eSlice = new Slice(), bool &$targeted = NULL, ?int $safetyMargin = NULL): ?int {
+
+		$youngPlants = self::getYoungPlants($eSeries, $eSlice, $targeted, $safetyMargin);
+
+		if($youngPlants !== NULL) {
+
+			switch($this['seedling']) {
+
+				case Cultivation::SOWING :
+					return $youngPlants;
+
+				case Cultivation::YOUNG_PLANT :
+					return $youngPlants * $this['seedlingSeeds'];
+
+				case Cultivation::YOUNG_PLANT_BOUGHT :
+					return NULL;
+
+			}
+
+		}
+
+		return NULL;
+
+	}
+
 	public function calculateHarvestedNormalized() {
 
 		$this->expects(['mainUnit', 'harvestedByUnit', 'bunchWeight', 'unitWeight' ]);

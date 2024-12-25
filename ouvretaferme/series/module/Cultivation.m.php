@@ -16,6 +16,8 @@ abstract class CultivationElement extends \Element {
 	const PERCENT = 'percent';
 	const AREA = 'area';
 	const LENGTH = 'length';
+	const PLANT = 'plant';
+	const TRAY = 'tray';
 
 	const YOUNG_PLANT = 'young-plant';
 	const YOUNG_PLANT_BOUGHT = 'young-plant-bought';
@@ -70,7 +72,8 @@ class CultivationModel extends \ModuleModel {
 			'rowSpacing' => ['int16', 'min' => 1, 'max' => NULL, 'null' => TRUE, 'cast' => 'int'],
 			'plantSpacing' => ['int16', 'min' => 1, 'max' => NULL, 'null' => TRUE, 'cast' => 'int'],
 			'density' => ['float32', 'min' => 0.01, 'max' => NULL, 'null' => TRUE, 'cast' => 'float'],
-			'sliceUnit' => ['enum', [\series\Cultivation::PERCENT, \series\Cultivation::AREA, \series\Cultivation::LENGTH], 'cast' => 'enum'],
+			'sliceUnit' => ['enum', [\series\Cultivation::PERCENT, \series\Cultivation::AREA, \series\Cultivation::LENGTH, \series\Cultivation::PLANT, \series\Cultivation::TRAY], 'cast' => 'enum'],
+			'sliceTool' => ['element32', 'farm\Tool', 'null' => TRUE, 'cast' => 'element'],
 			'area' => ['int24', 'min' => 0, 'max' => NULL, 'null' => TRUE, 'cast' => 'int'],
 			'areaPermanent' => ['int24', 'min' => 1, 'max' => NULL, 'null' => TRUE, 'cast' => 'int'],
 			'length' => ['int16', 'min' => 1, 'max' => NULL, 'null' => TRUE, 'cast' => 'int'],
@@ -94,7 +97,7 @@ class CultivationModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'farm', 'season', 'series', 'sequence', 'crop', 'plant', 'startWeek', 'startAction', 'distance', 'rows', 'rowSpacing', 'plantSpacing', 'density', 'sliceUnit', 'area', 'areaPermanent', 'length', 'lengthPermanent', 'seedling', 'seedlingSeeds', 'harvested', 'harvestedNormalized', 'harvestedByUnit', 'mainUnit', 'unitWeight', 'bunchWeight', 'yieldExpected', 'harvestMonths', 'harvestWeeks', 'harvestPeriodExpected', 'harvestMonthsExpected', 'harvestWeeksExpected', 'createdAt', 'createdBy'
+			'id', 'farm', 'season', 'series', 'sequence', 'crop', 'plant', 'startWeek', 'startAction', 'distance', 'rows', 'rowSpacing', 'plantSpacing', 'density', 'sliceUnit', 'sliceTool', 'area', 'areaPermanent', 'length', 'lengthPermanent', 'seedling', 'seedlingSeeds', 'harvested', 'harvestedNormalized', 'harvestedByUnit', 'mainUnit', 'unitWeight', 'bunchWeight', 'yieldExpected', 'harvestMonths', 'harvestWeeks', 'harvestPeriodExpected', 'harvestMonthsExpected', 'harvestWeeksExpected', 'createdAt', 'createdBy'
 		]);
 
 		$this->propertiesToModule += [
@@ -103,6 +106,7 @@ class CultivationModel extends \ModuleModel {
 			'sequence' => 'production\Sequence',
 			'crop' => 'production\Crop',
 			'plant' => 'plant\Plant',
+			'sliceTool' => 'farm\Tool',
 			'createdBy' => 'user\User',
 		];
 
@@ -283,6 +287,10 @@ class CultivationModel extends \ModuleModel {
 
 	public function whereSliceUnit(...$data): CultivationModel {
 		return $this->where('sliceUnit', ...$data);
+	}
+
+	public function whereSliceTool(...$data): CultivationModel {
+		return $this->where('sliceTool', ...$data);
 	}
 
 	public function whereArea(...$data): CultivationModel {

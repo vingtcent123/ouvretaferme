@@ -92,6 +92,9 @@ class ProductModel extends \ModuleModel {
 
 		switch($property) {
 
+			case 'unit' :
+				return 1;
+
 			case 'private' :
 				return TRUE;
 
