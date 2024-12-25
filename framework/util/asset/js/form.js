@@ -142,7 +142,6 @@ class RangeField {
 		target.firstParent('.form-range').qs('[type="range"]', rangeField => {
 
 			rangeField.value = newValue;
-			rangeField.dispatchEvent(new Event("input"));
 
 		});
 
