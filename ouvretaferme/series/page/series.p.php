@@ -122,6 +122,7 @@ use series\Series;
 		$data->ePlant = \plant\PlantLib::getById(GET('plant'))->validate('notEmpty');
 		$data->ccVariety = \plant\VarietyLib::query($data->eFarm, $data->ePlant);
 		$data->cAction = \farm\ActionLib::getByFarm($data->eFarm, fqn: [ACTION_SEMIS_PEPINIERE, ACTION_SEMIS_DIRECT, ACTION_PLANTATION], index: 'fqn');
+		$data->cTray = \farm\ToolLib::getByFarm($data->eFarm, routineName: 'tray');
 
 		throw new ViewAction($data);
 
@@ -137,7 +138,10 @@ use series\Series;
 		}
 
 		$data->cFlow = \production\FlowLib::getBySequence($data->eSequence, $season, ['plant' => ['name']]);
-		$data->cCultivation = \series\CultivationLib::buildFromSequence($data->eSequence, $data->cFlow, $data->eFarm, $data->season);
+		$data->cCultivation = \series\CultivationLib::buildFromSequence($data->eSequence, $data->eFarm, $data->season);
+
+		$cTray = \farm\ToolLib::getByFarm($data->eFarm, routineName: 'tray');
+		$data->cCultivation->setColumn('cTray', $cTray);
 
 		$data->events = \production\FlowLib::reorder($data->eSequence, $data->cFlow);
 

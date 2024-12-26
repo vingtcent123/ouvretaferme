@@ -45,13 +45,13 @@ new AdaptativeView('createFrom', function($data, PanelTemplate $t) {
 });
 
 new AdaptativeView('createFromPlant', function($data, PanelTemplate $t) {
-	return (new \series\SeriesUi())->createFromPlant($data->eFarm, $data->season, $data->eFarmer, $data->ePlant, $data->ccVariety, $data->cAction);
+	return (new \series\SeriesUi())->createFromPlant($data->eFarm, $data->season, $data->eFarmer, $data->ePlant, $data->ccVariety, $data->cAction, $data->cTray);
 });
 
 new JsonView('addPlant', function($data, AjaxTemplate $t) {
 
 	$t->qs('#series-create-plant input[name="index"]')->value($data->nextIndex);
-	$t->qs('#series-create-plant-list')->insertAdjacentHtml('beforeend', (new \series\SeriesUi())->addFromPlant($data->eSeries, $data->ePlant, $data->nextIndex, $data->ccVariety, $data->cAction));
+	$t->qs('#series-create-plant-list')->insertAdjacentHtml('beforeend', (new \series\SeriesUi())->addFromPlant($data->eSeries, $data->ePlant, $data->nextIndex, $data->ccVariety, $data->cAction, $data->cTray));
 	$t->js()->eval('Series.showOrHideDeletePlant()');
 
 });

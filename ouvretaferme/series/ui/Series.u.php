@@ -530,7 +530,7 @@ class SeriesUi {
 
 	}
 
-	public function createFromPlant(\farm\Farm $eFarm, int $season, \farm\Farmer $eFarmer, \plant\Plant $ePlant, \Collection $ccVariety, \Collection $cAction): \Panel {
+	public function createFromPlant(\farm\Farm $eFarm, int $season, \farm\Farmer $eFarmer, \plant\Plant $ePlant, \Collection $ccVariety, \Collection $cAction, \Collection $cTray): \Panel {
 
 		$form = new \util\FormUi([
 			'firstColumnSize' => 40
@@ -578,7 +578,7 @@ class SeriesUi {
 		$h .= '</div>';
 
 		$h .= '<div id="series-create-plant-list">';
-			$h .= $this->addFromPlant($eSeries, $ePlant, $index, $ccVariety, $cAction, $form);
+			$h .= $this->addFromPlant($eSeries, $ePlant, $index, $ccVariety, $cAction, $cTray, $form);
 		$h .= '</div>';
 
 		$h .= $form->group(
@@ -632,7 +632,7 @@ class SeriesUi {
 
 	}
 
-	public function addFromPlant(Series $eSeries, \plant\Plant $ePlant, int $index, \Collection $ccVariety, \Collection $cAction, ?\util\FormUi $form = NULL): string {
+	public function addFromPlant(Series $eSeries, \plant\Plant $ePlant, int $index, \Collection $ccVariety, \Collection $cAction, \Collection $cTray, ?\util\FormUi $form = NULL): string {
 
 		$eSeries->expects(['use', 'cycle', 'season']);
 
@@ -646,6 +646,7 @@ class SeriesUi {
 
 		$eCultivation = new Cultivation([
 			'ccVariety' => $ccVariety,
+			'cTray' => $cTray,
 			'cSlice' => new \Collection(),
 			'series' => $eSeries,
 			'season' => $eSeries['season'],

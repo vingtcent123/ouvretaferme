@@ -41,36 +41,13 @@ document.delegateEventListener('click', 'a[data-action="slice-add"]', function(e
 
 document.delegateEventListener('click', 'a[data-action="slice-unit"]', function(e) {
 
-	const id = this.getAttribute('data-id');
-
-	const wrapper = qs(id);
-
-	const currentUnit = wrapper.qs('[name*="sliceUnit"]').value;
-	const newUnit = this.dataset.unit;
-
-	wrapper.qsa('.slice-item-part', node => node.classList.add('hide'));
-	wrapper.qsa('.slice-item-part[data-unit="'+ this.dataset.unit +'"]', node => node.classList.remove('hide'));
-
-	wrapper.qsa('.slice-item-limit', node => node.classList.add('hide'));
-	wrapper.qsa('.slice-item-limit[data-unit="'+ this.dataset.unit +'"]', node => node.classList.remove('hide'));
-
-	wrapper.qsa('[data-action="slice-unit"]', node => node.classList.remove('hide'));
-	wrapper.qsa('[data-action="slice-unit"][data-unit="'+ this.dataset.unit +'"]', node => node.classList.add('hide'));
-	wrapper.qs('[name*="sliceUnit"]').value = newUnit;
-
-	wrapper.qs('.slice-unit-dropdown').innerHTML = this.dataset.label;
-
-	Slice.convertSum(wrapper, currentUnit, newUnit);
-
-	this.parentElement.qs('.dropdown-item.selected', node => node.classList.remove('selected'));
-	this.classList.add('selected');
+	Slice.show(e.target);
 
 });
 
 document.delegateEventListener('click', 'a[data-action="slice-fair"]', function(e) {
 
-	const id = this.getAttribute('data-id');
-	const wrapper = qs(id);
+	const wrapper = qs(this.getAttribute('data-id'));
 
 	Slice.divide(wrapper);
 
@@ -98,28 +75,49 @@ document.delegateEventListener('input', '.slice-items input[name*=varietyPart]',
 
 class Slice {
 
+	static show(target) {
+	
+		const id = target.getAttribute('data-id');
+
+		const wrapper = qs(id);
+
+		const currentLimit = this.getLimit(wrapper);
+		const currentVarieties = this.getVarietiesParts(wrapper);
+
+		const newUnit = target.dataset.unit;
+		const newTool = (target.dataset.tool === undefined) ? '' : target.dataset.tool;
+
+		wrapper.qs('[name*="sliceUnit"]').value = newUnit;
+		wrapper.qs('[name*="sliceTool"]').value = newTool;
+
+		const newSelector = '[data-unit="'+ newUnit +'"]'+ (newTool !== '' ? '[data-tool="'+ newTool +'"]' : '');
+
+		wrapper.qsa('.slice-item-part', node => node.classList.add('hide'));
+		wrapper.qsa('.slice-item-part'+ newSelector, node => node.classList.remove('hide'));
+
+		wrapper.qsa('.slice-item-limit', node => node.classList.add('hide'));
+		wrapper.qsa('.slice-item-limit'+ newSelector, node => node.classList.remove('hide'));
+
+		wrapper.qs('.slice-unit-dropdown').innerHTML = target.dataset.label;
+
+		Slice.convertSum(
+			wrapper,
+			currentLimit,
+			currentVarieties,
+			this.getLimit(wrapper),
+			this.getVarietiesParts(wrapper)
+		);
+
+		target.parentElement.qs('.dropdown-item.selected', node => node.classList.remove('selected'));
+		target.classList.add('selected');
+
+	}
+
 	static divide(wrapper) {
 
-		let unit, cake;
+		const cake = this.getMax(wrapper);
 
-		wrapper.qs('[name*="sliceUnit"]', node => unit = node.value, () => unit = 'percent');
-
-		const limit = wrapper.qs('.slice-item-limit[data-unit="'+ unit +'"]');
-
-		switch(unit) {
-
-			case 'percent' :
-				cake = 100;
-				break;
-
-			case 'area' :
-			case 'length' :
-				cake = parseInt(limit.qs('.slice-action-max').innerHTML);
-				break;
-
-		}
-
-		const slices = wrapper.qsa('.slice-items .slice-item-part[data-unit="'+ unit +'"] input[name*=varietyPart]');
+		const slices = this.getVarietiesParts(wrapper);
 		const part = Math.floor(cake / slices.length);
 		let rest = cake - part * slices.length;
 
@@ -137,19 +135,10 @@ class Slice {
 
 	static updateSum(wrapper) {
 
-		let unit;
+		const unit = this.getUnit(wrapper);
+		const limit = this.getLimit(wrapper);
 
-		wrapper.qs('[name*="sliceUnit"]', node => unit = node.value, () => unit = 'percent');
-
-		const limit = wrapper.qs('.slice-item-limit[data-unit="'+ unit +'"]');
-
-		let sum = 0;
-		wrapper.qsa('.slice-items .slice-item-part[data-unit="'+ unit +'"] input[name*=varietyPart]', node => {
-			const value = parseInt(node.value);
-			if(isNaN(value) === false) {
-				sum += value;
-			}
-		});
+		const sum = this.calculateSum(wrapper);
 
 		limit.qs('.slice-action-sum').innerHTML = sum;
 
@@ -190,31 +179,83 @@ class Slice {
 
 	}
 
-	// Mise à jour des valeurs par défaut quand on passe d'une unité à une autre
-	static convertSum(wrapper, currentUnit, newUnit) {
+	static getUnit(wrapper) {
+		return wrapper.qs('[name*="sliceUnit"]').value;
+	}
 
-		const newSum = parseInt(wrapper.qs('.slice-item-limit[data-unit="'+ newUnit +'"] .slice-action-sum').innerHTML);
+	static getTool(wrapper) {
+		return wrapper.qs('[name*="sliceTool"]').value;
+	}
+
+	static getSum(wrapper) {
+		return this.getLimit(wrapper).qs('.slice-action-sum');
+	}
+
+	static getMax(wrapper) {
+
+		const unit = this.getUnit(wrapper);
+
+		if(unit === 'percent') {
+			return 100;
+		} else {
+
+			const max = this.getLimit(wrapper).qs('.slice-action-max');
+
+			return max.innerHTML !== '' ? parseInt(max.innerHTML) : 0;
+
+		}
+
+	}
+
+	static getLimit(wrapper) {
+		const unit = this.getUnit(wrapper);
+		const tool = this.getTool(wrapper);
+		return wrapper.qs('.slice-item-limit[data-unit="'+ unit +'"]'+ (tool !== '' ? '[data-tool="'+ tool +'"]' : ''));
+	}
+
+	static getVarietiesParts(wrapper) {
+		const unit = this.getUnit(wrapper);
+		const tool = this.getTool(wrapper);
+		return wrapper.qsa('.slice-items .slice-item-part[data-unit="'+ unit +'"]'+ (tool !== '' ? '[data-tool="'+ tool +'"]' : '') +' input[name*=varietyPart]');
+	}
+
+	static calculateSum(wrapper) {
+
+		let sum = 0;
+
+		this.getVarietiesParts(wrapper).forEach(node => {
+			const value = parseInt(node.value);
+			if(isNaN(value) === false) {
+				sum += value;
+			}
+		});
+
+		return sum;
+
+	}
+
+	// Mise à jour des valeurs par défaut quand on passe d'une unité à une autre
+	static convertSum(wrapper, currentLimit, currentVarieties, newLimit, newVarieties) {
+
+		const newSum = parseInt(newLimit.qs('.slice-action-sum').innerHTML);
 
 		if(newSum > 0) {
 			return;
 		}
 
-		const currentSum = parseInt(wrapper.qs('.slice-item-limit[data-unit="'+ currentUnit +'"] .slice-action-sum').innerHTML);
+		const currentSum = parseInt(currentLimit.qs('.slice-action-sum').innerHTML);
 
 		if(currentSum === 0) {
 			return;
 		}
 
-		const newMax = (newUnit === 'percent') ? 100 : parseInt(wrapper.qs('.slice-item-limit[data-unit="'+ newUnit +'"] .slice-action-max').innerHTML);
-
-		const currentList = wrapper.qsa('.slice-item-part[data-unit="'+ currentUnit +'"] [name*=varietyPart]');
-		const newList = wrapper.qsa('.slice-item-part[data-unit="'+ newUnit +'"] [name*=varietyPart]');
+		const newMax = this.getMax(wrapper);
 
 		let newCalculatedSum = 0;
 
-		currentList.forEach((currentRange, key) => {
+		currentVarieties.forEach((currentRange, key) => {
 
-			const newRange = newList.item(key);
+			const newRange = newVarieties.item(key);
 
 			const newValue = Math.floor((currentRange.value / currentSum) * newMax);
 
@@ -225,10 +266,10 @@ class Slice {
 
 		// Distribution des arrondis manquants
 		for(let key = 0; key < (newMax - newCalculatedSum); key++) {
-			newList.item(key).value = parseInt(newList.item(key).value) + 1;
+			newVarieties.item(key).value = parseInt(newVarieties.item(key).value) + 1;
 		}
 
-		newList.forEach(newRange => {
+		newVarieties.forEach(newRange => {
 			newRange.dispatchEvent(new Event("input"));
 		});
 

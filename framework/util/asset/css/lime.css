@@ -2492,7 +2492,7 @@ body[data-touch="yes"] .dropdown-item {
 	display: flex;
 	align-items: center;
 	color: #fff;
-	text-transform: uppercase;
+	font-weight: bold;
 	font-size: .9rem;
 	padding: 0.75rem 1rem;
 	white-space: nowrap;

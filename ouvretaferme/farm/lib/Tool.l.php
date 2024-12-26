@@ -182,7 +182,7 @@ class ToolLib extends ToolCrud {
 
 	public static function delete(Tool $e): void {
 
-		$e->expects(['id', 'farm']);
+		$e->expects(['id', 'farm', 'routineName']);
 
 		if(\series\Requirement::model()
 				->whereFarm($e['farm'])
@@ -192,6 +192,17 @@ class ToolLib extends ToolCrud {
 				->whereTool($e)
 				->exists()) {
 			Tool::fail('deleteUsed');
+			return;
+		}
+
+		if(
+			$e['routineName'] === 'tray' and
+			\series\Cultivation::model()
+				->whereFarm($e['farm'])
+				->whereSliceTool($e)
+				->exists()
+		) {
+			Tool::fail('deleteTrayUsed');
 			return;
 		}
 

@@ -194,6 +194,7 @@ Slice:
   partArea: ?int32(0, null)
   partLength: ?int32(0, null)
   partPlant: ?int32(0, null)
+  partTray: ?int32(0, null)
   UNIQUE: [
     ["cultivation", "variety"]
   ]

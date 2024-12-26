@@ -542,7 +542,7 @@ class CropUi {
 
 		return $form->group(
 			$this->p('variety')->label,
-			(new SliceUi())->select($form, 'variety'.$suffix, 'sliceUnit'.$suffix, $eCrop, $ccVariety, $cSlice),
+			(new SliceUi())->select($form, $suffix, $eCrop, $ccVariety, $cSlice),
 			['wrapper' => 'variety'.$suffix.' varietyCreate'.$suffix, 'data-ref' => 'crop-field-variety'.$suffix]
 		);
 

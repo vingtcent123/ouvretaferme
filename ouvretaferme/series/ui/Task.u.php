@@ -3298,7 +3298,7 @@ class TaskUi {
 				}
 			$list .= '</div>';
 			if($cSlice->count() > 1) {
-				$list .= '<div class="task-presentation-seedling-part">'.$eSlice->formatPart().'</div>';
+				$list .= '<div class="task-presentation-seedling-part">'.$eSlice->formatPart($eTask['cultivation']).'</div>';
 			}
 		}
 

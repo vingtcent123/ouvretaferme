@@ -46,10 +46,11 @@ class SliceModel extends \ModuleModel {
 			'partArea' => ['int32', 'min' => 0, 'max' => NULL, 'null' => TRUE, 'cast' => 'int'],
 			'partLength' => ['int32', 'min' => 0, 'max' => NULL, 'null' => TRUE, 'cast' => 'int'],
 			'partPlant' => ['int32', 'min' => 0, 'max' => NULL, 'null' => TRUE, 'cast' => 'int'],
+			'partTray' => ['int32', 'min' => 0, 'max' => NULL, 'null' => TRUE, 'cast' => 'int'],
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'farm', 'series', 'cultivation', 'plant', 'variety', 'partPercent', 'partArea', 'partLength', 'partPlant'
+			'id', 'farm', 'series', 'cultivation', 'plant', 'variety', 'partPercent', 'partArea', 'partLength', 'partPlant', 'partTray'
 		]);
 
 		$this->propertiesToModule += [
@@ -112,6 +113,10 @@ class SliceModel extends \ModuleModel {
 
 	public function wherePartPlant(...$data): SliceModel {
 		return $this->where('partPlant', ...$data);
+	}
+
+	public function wherePartTray(...$data): SliceModel {
+		return $this->where('partTray', ...$data);
 	}
 
 

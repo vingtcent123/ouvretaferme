@@ -8,7 +8,7 @@ class SliceLib extends SliceCrud {
 		return Slice::model()
 			->select([
 				'variety' => \plant\Variety::getSelection(),
-				'partPercent', 'partArea', 'partLength', 'partPlant'
+				'partPercent', 'partArea', 'partLength', 'partPlant', 'partTray'
 			])
 			->delegateCollection('cultivation', callback: fn($c) => $c->sort(['variety' => ['name']], natural: TRUE));
 
@@ -19,7 +19,7 @@ class SliceLib extends SliceCrud {
 		return Slice::model()
 			->select([
 				'variety' => ['name'],
-				'partPercent', 'partArea', 'partLength', 'partPlant'
+				'partPercent', 'partArea', 'partLength', 'partPlant', 'partTray'
 			])
 			->whereCultivation($eCultivation)
 			->getCollection();

@@ -11,6 +11,7 @@ class Cultivation extends CultivationElement {
 			],
 			'farm' => ['name'],
 			'plant' => ['name', 'fqn', 'vignette', 'seedsSafetyMargin', 'plantsSafetyMargin'],
+			'sliceTool' => ['name', 'routineValue'],
 			'cSlice' => SliceLib::delegateByCultivation(),
 			'sequence' => ['name', 'mode'],
 			'harvestedByUnit' => function(Cultivation $e): ?array {
@@ -77,7 +78,11 @@ class Cultivation extends CultivationElement {
 
 	}
 
-	public function getYoungPlants(Series $eSeries, Slice $eSlice = new Slice(), bool &$targeted = NULL, ?int $safetyMargin = NULL): ?int {
+	public function getYoungPlants(Slice $eSlice = new Slice(), bool &$targeted = NULL, ?int $safetyMargin = NULL): ?int {
+
+		$this->expects([
+			'series',
+		]);
 
 		$safetyMarginMultiplier = (1 + ($safetyMargin ?? 0) / 100);
 
@@ -85,24 +90,38 @@ class Cultivation extends CultivationElement {
 			$slicePercent = 100;
 			$sliceUnit = Cultivation::PERCENT;
 		} else {
+
+			switch($this['sliceUnit']) {
+
+				case Cultivation::PLANT :
+					return $eSlice['partPlant'];
+
+				case Cultivation::TRAY :
+					$this->expects([
+						'sliceTool' => ['routineValue']
+					]);
+					return $eSlice['partTray'] * $this['sliceTool']['routineValue']['value'];
+
+			}
+
 			$slicePercent = $eSlice['partPercent'];
 			$sliceUnit = $this['sliceUnit'];
+
 		}
 
-		switch($eSeries['use']) {
+		switch($this['series']['use']) {
 
 			case Series::BED :
 
-				if($eSeries['length'] !== NULL) {
-					$length = $eSeries['length'];
+				if($this['series']['length'] !== NULL) {
+					$length = $this['series']['length'];
 					$targeted = FALSE;
-				} else if($eSeries['lengthTarget'] !== NULL) {
-					$length = $eSeries['lengthTarget'];
+				} else if($this['series']['lengthTarget'] !== NULL) {
+					$length = $this['series']['lengthTarget'];
 					$targeted = TRUE;
 				} else {
 					return NULL;
 				}
-
 
 				switch($this['distance']) {
 
@@ -124,7 +143,7 @@ class Cultivation extends CultivationElement {
 							return NULL;
 						}
 
-						$densityLinear = ($this['density'] * $eSeries['bedWidth'] / 100);
+						$densityLinear = ($this['density'] * $this['series']['bedWidth'] / 100);
 
 						break;
 
@@ -137,11 +156,11 @@ class Cultivation extends CultivationElement {
 
 			case Series::BLOCK :
 
-				if($eSeries['area'] !== NULL) {
-					$area = $eSeries['area'];
+				if($this['series']['area'] !== NULL) {
+					$area = $this['series']['area'];
 					$targeted = FALSE;
-				} else if($eSeries['areaTarget'] !== NULL) {
-					$area = $eSeries['areaTarget'];
+				} else if($this['series']['areaTarget'] !== NULL) {
+					$area = $this['series']['areaTarget'];
 					$targeted = TRUE;
 				} else {
 					return NULL;
@@ -162,9 +181,9 @@ class Cultivation extends CultivationElement {
 
 	}
 
-	public function getSeeds(Series $eSeries, Slice $eSlice = new Slice(), bool &$targeted = NULL, ?int $safetyMargin = NULL): ?int {
+	public function getSeeds(Slice $eSlice = new Slice(), bool &$targeted = NULL, ?int $safetyMargin = NULL): ?int {
 
-		$youngPlants = self::getYoungPlants($eSeries, $eSlice, $targeted, $safetyMargin);
+		$youngPlants = self::getYoungPlants($eSlice, $targeted, $safetyMargin);
 
 		if($youngPlants !== NULL) {
 
@@ -423,7 +442,30 @@ class Cultivation extends CultivationElement {
 
 			},
 
-			'variety.check' => function(?array $varieties) {
+			'sliceTool.check' => function(\farm\Tool $eTool, array $newProperties, array $validProperties) {
+
+				if(in_array('sliceUnit', $validProperties) === FALSE) {
+					return FALSE;
+				}
+
+				if($this['sliceUnit'] === Cultivation::TRAY) {
+
+					return \farm\Tool::model()
+						->whereFarm($this['farm'])
+						->whereRoutineName('tray')
+						->exists($eTool);
+
+				} else {
+					return $eTool->empty();
+				}
+
+			},
+
+			'variety.check' => function(?array $varieties, array $newProperties, array $validProperties) {
+
+				if(array_intersect(['sliceUnit', 'sliceTray'], $validProperties) === []) {
+					return FALSE;
+				}
 
 				$this['cSlice'] = \production\SliceLib::prepare($this, $varieties);
 

@@ -455,6 +455,7 @@ class TaskLib extends TaskCrud {
 					->delegateCollection('task'),
 				'cultivation' => [
 					'cSlice' => SliceLib::delegateByCultivation(),
+					'sliceTool' => ['name', 'routineValue']
 				]
 			])
 			->whereAction($eAction)

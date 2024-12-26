@@ -144,7 +144,11 @@ class SliceLib extends SliceCrud {
 
 			}
 
-			$part = (int)($input['varietyPart'.ucfirst($unit)][$key] ?? 0);
+			if($unit === \series\Cultivation::TRAY) {
+				$part = (int)($input['varietyPartTray'][$eCrop['sliceTool']['id']][$key] ?? 0);
+			} else {
+				$part = (int)($input['varietyPart'.ucfirst($unit)][$key] ?? 0);
+			}
 
 			if($eCrop instanceof Crop) {
 				$eSlice = new Slice([
@@ -167,10 +171,7 @@ class SliceLib extends SliceCrud {
 		if($cSlice->count() === 1) {
 
 			$eSlice = $cSlice->first();
-
 			$eSlice['partPercent'] = 100;
-			$eSlice['partLength'] = 0;
-			$eSlice['partArea'] = 0;
 
 		} else if($cSlice->count() > 1) {
 

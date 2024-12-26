@@ -961,42 +961,28 @@ class CultivationUi {
 
 										case Series::BED :
 											if($eSeries['length'] !== NULL) {
-												$length = $eSeries['length'];
 												$incomplete = FALSE;
 												$targeted = FALSE;
 											} else if($eSeries['lengthTarget'] !== NULL) {
-												$length = $eSeries['lengthTarget'];
 												$incomplete = FALSE;
 												$targeted = TRUE;
 											} else {
-												$length = 0;
 												$incomplete = TRUE;
 											}
-											$value = match($eCultivation['sliceUnit']) {
-												Cultivation::PERCENT => $length ? (int)($length * $eSlice['partPercent'] / 100) : '?',
-												Cultivation::LENGTH => $eSlice['partLength']
-											};
-											$label = s("{value} mL", $value);
+											$label = s("{value} mL", $cultivation['area'] ?? '?');
 											break;
 
 										case Series::BLOCK :
 											if($eSeries['area'] !== NULL) {
-												$area = $eSeries['area'];
 												$incomplete = FALSE;
 												$targeted = FALSE;
 											} else if($eSeries['areaTarget'] !== NULL) {
-												$area = $eSeries['areaTarget'];
 												$incomplete = FALSE;
 												$targeted = TRUE;
 											} else {
-												$area = NULL;
 												$incomplete = TRUE;
 											}
-											$value  = match($eCultivation['sliceUnit']) {
-												Cultivation::PERCENT => $area ? (int)($area * $eSlice['partPercent'] / 100) : '?',
-												Cultivation::AREA => $eSlice['partArea']
-											};
-											$label = s("{value} m²", $value);
+											$label = s("{value} m²", $cultivation['area'] ?? '?');
 											break;
 
 									}
@@ -1912,7 +1898,7 @@ class CultivationUi {
 
 			$h .= '</div>';
 
-			$h .= $this->getVarieties($eCultivation['cSlice']);
+			$h .= $this->getVarieties($eCultivation, $eCultivation['cSlice']);
 
 		$h .= '</div>';
 
@@ -1948,7 +1934,7 @@ class CultivationUi {
 
 	}
 
-	protected function getVarieties(\Collection $cSlice): string {
+	protected function getVarieties(Cultivation $eCultivation, \Collection $cSlice): string {
 
 		$h = '<div class="crop-item-varieties crop-item-varieties-'.$cSlice->count().'">';
 		
@@ -1956,7 +1942,7 @@ class CultivationUi {
 
 			$h .= '<div>';
 				$h .= '<span class="crop-item-varieties-label">'.encode($eSlice['variety']['name']).'</span>';
-				$h .= '<span class="crop-item-varieties-part">'.$eSlice->formatPart().'</span>';
+				$h .= '<span class="crop-item-varieties-part">'.$eSlice->formatPart($eCultivation).'</span>';
 			$h .= '</div>';
 
 		}
