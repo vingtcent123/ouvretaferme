@@ -2976,9 +2976,13 @@ class TaskUi {
 
 	protected function displayYoungPlantTools(Task $eTask): string {
 
-		$h = '';
-
 		$youngPlants = $eTask['cultivation']['cSlice']->sum('youngPlants');
+
+		if($youngPlants === 0) {
+			return '';
+		}
+
+		$h = '';
 
 		foreach($eTask['cTool'] as $eTool) {
 

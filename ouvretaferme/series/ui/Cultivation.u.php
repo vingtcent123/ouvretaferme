@@ -900,7 +900,7 @@ class CultivationUi {
 								$h .= '<div class="series-item-seeds-seedling">';
 									if($eCultivation['seedling'] !== NULL) {
 										$h .= [
-											Cultivation::SOWING => s("direct"),
+											Cultivation::SOWING => s("semis direct"),
 											Cultivation::YOUNG_PLANT => s("plant autoproduit"),
 											Cultivation::YOUNG_PLANT_BOUGHT => s("plant acheté")
 										][$eCultivation['seedling']];
@@ -1972,7 +1972,7 @@ class CultivationUi {
 					$filled++;
 
 					$h .= [
-						\series\Cultivation::SOWING => s("direct"),
+						\series\Cultivation::SOWING => s("semis direct"),
 						\series\Cultivation::YOUNG_PLANT => '<span title="'.s("Autoproduction du plant").'">'.s("plant autoproduit").'</span>',
 						\series\Cultivation::YOUNG_PLANT_BOUGHT => '<span title="'.s("Achat du plant").'">'.s("plant acheté").'</span>'
 					][$eCultivation['seedling']];

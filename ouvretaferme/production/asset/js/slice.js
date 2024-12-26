@@ -98,6 +98,9 @@ class Slice {
 		wrapper.qsa('.slice-item-limit', node => node.classList.add('hide'));
 		wrapper.qsa('.slice-item-limit'+ newSelector, node => node.classList.remove('hide'));
 
+		wrapper.qsa('[data-action="slice-unit"]', node => node.classList.remove('selected'));
+		wrapper.qsa('[data-action="slice-unit"]'+ newSelector, node => node.classList.add('selected'));
+
 		wrapper.qs('.slice-unit-dropdown').innerHTML = target.dataset.label;
 
 		Slice.convertSum(

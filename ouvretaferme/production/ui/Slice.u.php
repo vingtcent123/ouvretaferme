@@ -83,9 +83,9 @@ class SliceUi {
 								$h .= '<a data-action="slice-unit" data-id="#'.$id.'" data-label="'.$labels[\series\Cultivation::PERCENT]().'" data-unit="'.\series\Cultivation::PERCENT.'" class="dropdown-item '.($sliceUnit === \series\Cultivation::PERCENT ? 'selected' : '').'">'.s("en %").'</a>';
 
 								if($eCrop['series']['use'] === \series\Series::BED) {
-									$h .= '<a data-action="slice-unit" data-id="#'.$id.'" data-label="'.$labels[\series\Cultivation::LENGTH]().'" data-unit="'.\series\Cultivation::LENGTH.'" class="dropdown-item '.($sliceUnit === \series\Cultivation::PERCENT ? '' : 'selected').'">'.s("au mL de planche").'</a>';
+									$h .= '<a data-action="slice-unit" data-id="#'.$id.'" data-label="'.$labels[\series\Cultivation::LENGTH]().'" data-unit="'.\series\Cultivation::LENGTH.'" class="dropdown-item '.($sliceUnit === \series\Cultivation::LENGTH ? 'selected' : '').'">'.s("au mL de planche").'</a>';
 								} else {
-									$h .= '<a data-action="slice-unit" data-id="#'.$id.'" data-label="'.$labels[\series\Cultivation::AREA]().'" data-unit="'.\series\Cultivation::AREA.'" class="dropdown-item '.($sliceUnit === \series\Cultivation::PERCENT ? '' : 'selected').'">'.s("au m²").'</a>';
+									$h .= '<a data-action="slice-unit" data-id="#'.$id.'" data-label="'.$labels[\series\Cultivation::AREA]().'" data-unit="'.\series\Cultivation::AREA.'" class="dropdown-item '.($sliceUnit === \series\Cultivation::AREA ? 'selected' : '').'">'.s("au m²").'</a>';
 								}
 
 								$h .= '<a data-action="slice-unit" data-id="#'.$id.'" data-label="'.$labels[\series\Cultivation::PLANT]().'" data-unit="'.\series\Cultivation::PLANT.'" class="dropdown-item '.($sliceUnit === \series\Cultivation::PLANT ? 'selected' : '').'">';
@@ -101,7 +101,9 @@ class SliceUi {
 
 									foreach($eCrop['cTray'] as $eTray) {
 
-										$h .= '<a data-action="slice-unit" data-id="#'.$id.'" data-label="'.s("Plateau de {value}", $eTray['routineValue']['value']).'" data-unit="'.\series\Cultivation::TRAY.'" data-tool="'.$eTray['id'].'" style="padding-left: 2rem" class="dropdown-item '.($sliceUnit === \series\Cultivation::PLANT ? 'selected' : '').'">'.encode($eTray['name']).'</a>';
+										$selected = ($sliceUnit === \series\Cultivation::TRAY and $eCrop['sliceTool']->is($eTray)) ? 'selected' : '';
+
+										$h .= '<a data-action="slice-unit" data-id="#'.$id.'" data-label="'.s("Plateau de {value}", $eTray['routineValue']['value']).'" data-unit="'.\series\Cultivation::TRAY.'" data-tool="'.$eTray['id'].'" style="padding-left: 2rem" class="dropdown-item '.$selected.'">'.encode($eTray['name']).'</a>';
 
 									}
 
