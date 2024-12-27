@@ -211,6 +211,18 @@ class Database extends PDO {
 	 *	]
 	 *
 	 */
+	public static function addPackages(array $packages): void {
+		self::$packages += $packages;
+	}
+
+	/**
+	 * Link packages to bases
+	 *
+	 * [
+	 *		'Cache' => 'cache',
+	 *	]
+	 *
+	 */
 	public static function setPackages(array $packages): void {
 		self::$packages = $packages;
 	}
