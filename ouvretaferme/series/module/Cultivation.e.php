@@ -109,75 +109,35 @@ class Cultivation extends CultivationElement {
 
 		}
 
-		switch($this['series']['use']) {
+		if($this['series']['area'] !== NULL) {
+			$area = $this['series']['area'];
+			$targeted = FALSE;
+		} else if($this['series']['areaTarget'] !== NULL) {
+			$area = $this['series']['areaTarget'];
+			$targeted = TRUE;
+		} else {
+			return NULL;
+		}
 
-			case Series::BED :
+		if($this['density'] === NULL) {
+			return NULL;
+		}
 
-				if($this['series']['length'] !== NULL) {
-					$length = $this['series']['length'];
-					$targeted = FALSE;
-				} else if($this['series']['lengthTarget'] !== NULL) {
-					$length = $this['series']['lengthTarget'];
-					$targeted = TRUE;
-				} else {
-					return NULL;
-				}
+		switch($sliceUnit) {
 
-				switch($this['distance']) {
+			case Cultivation::PERCENT :
+				return round($area * $this['density'] * $slicePercent / 100 * $safetyMarginMultiplier);
 
+			case Cultivation::LENGTH :
 
-					case Cultivation::SPACING :
-
-						if($this['rows'] === NULL or $this['plantSpacing'] === NULL) {
-							return NULL;
-						}
-
-						$densityLinear = 1 / ($this['plantSpacing'] / 100) * $this['rows'];
-
-						break;
-
-
-					case Cultivation::DENSITY :
-
-						if($this['density'] === NULL) {
-							return NULL;
-						}
-
-						$densityLinear = ($this['density'] * $this['series']['bedWidth'] / 100);
-
-						break;
-
-				}
-
-				return match($sliceUnit) {
-					Cultivation::PERCENT => round($length * $densityLinear * $slicePercent / 100 * $safetyMarginMultiplier),
-					Cultivation::LENGTH => round($eSlice['partLength'] * $densityLinear * $safetyMarginMultiplier),
+				$part = match($this['series']['use']) {
+					Series::BED => $eSlice['partLength'],
+					Series::BLOCK => $eSlice['partArea'],
 				};
 
-			case Series::BLOCK :
+				return round($part * $this['density'] * $safetyMarginMultiplier);
 
-				if($this['series']['area'] !== NULL) {
-					$area = $this['series']['area'];
-					$targeted = FALSE;
-				} else if($this['series']['areaTarget'] !== NULL) {
-					$area = $this['series']['areaTarget'];
-					$targeted = TRUE;
-				} else {
-					return NULL;
-				}
-
-				if($this['density'] !== NULL) {
-
-					return match($sliceUnit) {
-						Cultivation::PERCENT => round($area * $this['density'] * $slicePercent / 100 * $safetyMarginMultiplier),
-						Cultivation::AREA => round($eSlice['partArea'] * $this['density'] * $safetyMarginMultiplier),
-					};
-
-				} else {
-					return NULL;
-				}
-
-		}
+		};
 
 	}
 
@@ -461,13 +421,13 @@ class Cultivation extends CultivationElement {
 
 			},
 
-			'variety.check' => function(?array $varieties, array $newProperties, array $validProperties) {
+			'variety.check' => function(?array $varieties, array $newProperties, array $validProperties, string $wrapper) {
 
 				if(array_intersect(['sliceUnit', 'sliceTray'], $validProperties) === []) {
 					return FALSE;
 				}
 
-				$this['cSlice'] = \production\SliceLib::prepare($this, $varieties);
+				$this['cSlice'] = \production\SliceLib::prepare($this, $varieties, $wrapper);
 
 				return TRUE;
 

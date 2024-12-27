@@ -60,7 +60,7 @@ class SliceUi {
 				}
 
 				$h .= '<div class="slice-item-new">';
-					$h .= '<div>';
+					$h .= '<div class="slice-item-actions">';
 						$h .= '<a data-action="slice-add" data-id="#'.$id.'" class="btn btn-sm btn-primary">'.s("Ajouter une variété").'</a> ';
 
 						if($eCrop instanceof \series\Cultivation) {
@@ -82,11 +82,9 @@ class SliceUi {
 
 								$h .= '<a data-action="slice-unit" data-id="#'.$id.'" data-label="'.$labels[\series\Cultivation::PERCENT]().'" data-unit="'.\series\Cultivation::PERCENT.'" class="dropdown-item '.($sliceUnit === \series\Cultivation::PERCENT ? 'selected' : '').'">'.s("en %").'</a>';
 
-								if($eCrop['series']['use'] === \series\Series::BED) {
-									$h .= '<a data-action="slice-unit" data-id="#'.$id.'" data-label="'.$labels[\series\Cultivation::LENGTH]().'" data-unit="'.\series\Cultivation::LENGTH.'" class="dropdown-item '.($sliceUnit === \series\Cultivation::LENGTH ? 'selected' : '').'">'.s("au mL de planche").'</a>';
-								} else {
-									$h .= '<a data-action="slice-unit" data-id="#'.$id.'" data-label="'.$labels[\series\Cultivation::AREA]().'" data-unit="'.\series\Cultivation::AREA.'" class="dropdown-item '.($sliceUnit === \series\Cultivation::AREA ? 'selected' : '').'">'.s("au m²").'</a>';
-								}
+								$h .= '<a data-action="slice-unit" data-id="#'.$id.'" data-label="'.$labels[\series\Cultivation::LENGTH]().'" data-unit="'.\series\Cultivation::LENGTH.'" class="dropdown-item '.($sliceUnit === \series\Cultivation::LENGTH ? 'selected' : '').' '.($eCrop['series']['use'] === \series\Series::BED ? '' : 'hide').'">'.s("au mL de planche").'</a>';
+
+								$h .= '<a data-action="slice-unit" data-id="#'.$id.'" data-label="'.$labels[\series\Cultivation::AREA]().'" data-unit="'.\series\Cultivation::AREA.'" class="dropdown-item '.($sliceUnit === \series\Cultivation::AREA ? 'selected' : '').' '.($eCrop['series']['use'] === \series\Series::BLOCK ? '' : 'hide').'">'.s("au m²").'</a>';
 
 								$h .= '<a data-action="slice-unit" data-id="#'.$id.'" data-label="'.$labels[\series\Cultivation::PLANT]().'" data-unit="'.\series\Cultivation::PLANT.'" class="dropdown-item '.($sliceUnit === \series\Cultivation::PLANT ? 'selected' : '').'">';
 									$h .= match($eCrop['seedling']) {
@@ -131,46 +129,43 @@ class SliceUi {
 							$color = '';
 						}
 
-						$h .= '<span class="slice-item-limit slice-several '.($sliceUnit === \series\Cultivation::PERCENT ? '' : 'hide').' '.$color.'" data-unit="'.\series\Cultivation::PERCENT.'">'.s(" {value} %", '<span class="slice-action-sum">'.$value.'</span>').'</span>';
+						$h .= '<span class="slice-item-limit slice-several '.($sliceUnit === \series\Cultivation::PERCENT ? '' : 'hide').' '.$color.'" data-unit="'.\series\Cultivation::PERCENT.'">';
+							$h .= $this->getLimit($value, NULL, s("%"));
+						$h .= '</span>';
 
 						if($eCrop instanceof \series\Cultivation) {
 
-							$limit = match($eCrop['series']['use']) {
-								Series::BED => $eCrop['series']['length'] ?? $eCrop['series']['lengthTarget'],
-								Series::BLOCK => $eCrop['series']['area'] ?? $eCrop['series']['areaTarget'],
-							};
+							$limit = $eCrop['series']['length'] ?? $eCrop['series']['lengthTarget'];
 
-							if(in_array($sliceUnit, [\series\Cultivation::LENGTH, \series\Cultivation::AREA])) {
-
-								$value = match($eCrop['series']['use']) {
-									Series::BED => $cSlice->sum('partLength'),
-									Series::BLOCK => $cSlice->sum('partArea'),
-								};
+							if($sliceUnit === \series\Cultivation::LENGTH) {
+								$value = $cSlice->sum('partLength');
 								$color = $this->getColor($value, $limit);
-
 							} else {
 								$color = '';
 								$value = 0;
 							}
 
-							if($eCrop['series']['use'] === \series\Series::BED) {
+							$h .= '<span class="slice-item-limit slice-several '.$color.' '.($sliceUnit === \series\Cultivation::LENGTH ? '' : 'hide').'" data-unit="'.\series\Cultivation::LENGTH.'">';
+								$h .= $this->getLimit($value, $limit, s("mL"));
+							$h.= '</span>';
 
-								$h .= '<span class="slice-item-limit slice-several '.$color.' '.($sliceUnit === \series\Cultivation::LENGTH ? '' : 'hide').'" data-unit="'.\series\Cultivation::LENGTH.'">';
-									$h .= s("{value} {limit} mL", ['value' => '<span class="slice-action-sum">'.$value.'</span>', 'limit' => ($limit > 0 ? '/ ' : '').'<span class="slice-action-max">'.$limit.'</span>']);
-								$h.= '</span>';
+							$limit = $eCrop['series']['area'] ?? $eCrop['series']['areaTarget'];
 
+							if($sliceUnit === \series\Cultivation::AREA) {
+								$value = $cSlice->sum('partArea');
+								$color = $this->getColor($value, $limit);
 							} else {
-
-								$h .= '<span class="slice-item-limit slice-several '.$color.' '.($sliceUnit === \series\Cultivation::AREA ? '' : 'hide').'" data-unit="'.\series\Cultivation::AREA.'">';
-									$h .= s("{value} {limit} m²", ['value' => '<span class="slice-action-sum">'.$value.'</span>', 'limit' => ($limit > 0 ? '/ ' : '').'<span class="slice-action-max">'.$limit.'</span>']);
-								$h.= '</span>';
-
+								$color = '';
+								$value = 0;
 							}
 
+							$h .= '<span class="slice-item-limit slice-several '.$color.' '.($sliceUnit === \series\Cultivation::AREA ? '' : 'hide').'" data-unit="'.\series\Cultivation::AREA.'">';
+								$h .= $this->getLimit($value, $limit, s("m²"));
+							$h.= '</span>';
 
 							$plantLimit = match($eCrop['seedling']) {
-								\series\Cultivation::SOWING => $eCrop->getSeeds(),
-								default => $eCrop->getYoungPlants(),
+								\series\Cultivation::SOWING => $eCrop->getSeeds() ?: NULL,
+								default => $eCrop->getYoungPlants() ?: NULL,
 							};
 
 							if($sliceUnit === \series\Cultivation::PLANT) {
@@ -181,13 +176,11 @@ class SliceUi {
 								$color = '';
 							}
 
-							$arguments = ['value' => '<span class="slice-action-sum">'.$value.'</span>', 'limit' => ($plantLimit > 0 ? '/ ' : '').'<span class="slice-action-max">'.$plantLimit.'</span>'];
-
 							$h .= '<span class="slice-item-limit slice-several '.$color.' '.($sliceUnit === \series\Cultivation::PLANT ? '' : 'hide').'" data-unit="'.\series\Cultivation::PLANT.'">';
-								$h .= match($eCrop['seedling']) {
-									\series\Cultivation::SOWING => s("{value} {limit} g.", $arguments),
-									default => s("{value} {limit} p.", $arguments),
-								};
+								$h .= $this->getLimit($value, $plantLimit, match($eCrop['seedling']) {
+									\series\Cultivation::SOWING => s("graines"),
+									default => s("plants"),
+								});
 							$h.= '</span>';
 
 							if($eCrop['cTray']->notEmpty()) {
@@ -205,10 +198,8 @@ class SliceUi {
 									$trayLimit = $plantLimit ? ceil($plantLimit / $eTray['routineValue']['value']) : NULL;
 									$color = $this->getColor($value, $trayLimit);
 
-									$h .= '<span class="slice-item-limit slice-several '.$color.' '.($visible ? '' : 'hide').'" data-unit="'.\series\Cultivation::TRAY.'" data-tool="'.$eTray['id'].'">';
-										$h .= '<span class="slice-action-sum">'.$value.'</span>';
-										$h .= ($trayLimit > 0 ? ' / ' : '');
-										$h .= s("{value} p.", '<span class="slice-action-max">'.$trayLimit.'</span>');
+									$h .= '<span class="slice-item-limit slice-several '.$color.' '.($visible ? '' : 'hide').'" data-unit="'.\series\Cultivation::TRAY.'" data-tool="'.$eTray['id'].'" data-value="'.$eTray['routineValue']['value'].'">';
+										$h .= $this->getLimit($value, $trayLimit, s("plateaux"));
 									$h .= '</span>';
 
 								}
@@ -226,6 +217,19 @@ class SliceUi {
 			$h .= '</div>';
 
 		$h .= '</div>';
+
+		return $h;
+
+	}
+
+	protected function getLimit(int $value, ?int $limit, string $suffix): string {
+
+		$h = '<span class="slice-item-sum">'.$value.'</span>';
+		$h .= '<span class="slice-item-by">';
+			$h .= '<span class="slice-item-max">'.$limit.'</span>';
+			$h .= '<span class="slice-item-unit">'.$suffix.'</span>';
+			$h .= '<span class="slice-item-separator">/</span>';
+		$h .= '</span>';
 
 		return $h;
 
@@ -276,8 +280,6 @@ class SliceUi {
 				
 				if($eCrop instanceof \series\Cultivation) {
 					
-					$eSeries = $eCrop['series'];
-
 					$h .= '<div class="slice-item-part '.($eCrop['sliceUnit'] === \series\Cultivation::PERCENT ? '' : 'hide').'" data-unit="'.\series\Cultivation::PERCENT.'">';
 						$h .= $form->inputGroup(
 							$form->number($name.'[varietyPartPercent][]', $eSlice['partPercent'] ?? 0, ['min' => 0, 'onclick' => 'this.select()']).
@@ -285,23 +287,19 @@ class SliceUi {
 						);
 					$h .= '</div>';
 
-					if($eSeries['use'] === \series\Series::BLOCK) {
-						$h .= '<div class="slice-item-part '.($eCrop['sliceUnit'] === \series\Cultivation::AREA ? '' : 'hide').'" data-unit="'.\series\Cultivation::AREA.'">';
-							$h .= $form->inputGroup(
-								$form->number($name.'[varietyPartArea][]', $eSlice['partArea'] ?? 0, ['min' => 0, 'onclick' => 'this.select()']).
-								$form->addon(s("m²"))
-							);
-						$h .= '</div>';
-					}
-	
-					if($eSeries['use'] === \series\Series::BED) {
-						$h .= '<div class="slice-item-part '.($eCrop['sliceUnit'] === \series\Cultivation::LENGTH ? '' : 'hide').'" data-unit="'.\series\Cultivation::LENGTH.'">';
-							$h .= $form->inputGroup(
-								$form->number($name.'[varietyPartLength][]', $eSlice['partLength'] ?? 0, ['min' => 0, 'onclick' => 'this.select()']).
-								$form->addon(s("mL"))
-							);
-						$h .= '</div>';
-					}
+					$h .= '<div class="slice-item-part '.($eCrop['sliceUnit'] === \series\Cultivation::AREA ? '' : 'hide').'" data-unit="'.\series\Cultivation::AREA.'">';
+						$h .= $form->inputGroup(
+							$form->number($name.'[varietyPartArea][]', $eSlice['partArea'] ?? 0, ['min' => 0, 'onclick' => 'this.select()']).
+							$form->addon(s("m²"))
+						);
+					$h .= '</div>';
+
+					$h .= '<div class="slice-item-part '.($eCrop['sliceUnit'] === \series\Cultivation::LENGTH ? '' : 'hide').'" data-unit="'.\series\Cultivation::LENGTH.'">';
+						$h .= $form->inputGroup(
+							$form->number($name.'[varietyPartLength][]', $eSlice['partLength'] ?? 0, ['min' => 0, 'onclick' => 'this.select()']).
+							$form->addon(s("mL"))
+						);
+					$h .= '</div>';
 
 					$h .= '<div class="slice-item-part '.($eCrop['sliceUnit'] === \series\Cultivation::PLANT ? '' : 'hide').'" data-unit="'.\series\Cultivation::PLANT.'">';
 						$h .= $form->inputGroup(

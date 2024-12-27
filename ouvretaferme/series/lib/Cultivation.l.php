@@ -874,6 +874,7 @@ class CultivationLib extends CultivationCrud {
 				'crop' => $eCrop,
 				'plant' => $eCrop['plant'],
 				'sliceUnit' => Cultivation::PERCENT,
+				'sliceTool' => new \farm\Tool(),
 				'distance' => $eCrop['distance'],
 				'density' => $eCrop['density'],
 				'rows' => $eCrop['rows'],

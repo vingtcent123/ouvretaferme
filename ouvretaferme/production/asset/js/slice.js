@@ -75,6 +75,65 @@ document.delegateEventListener('input', '.slice-items input[name*=varietyPart]',
 
 class Slice {
 
+	static updateCultivation(wrapper, use, density) {
+
+		const area = parseInt(wrapper.dataset.area) || null;
+		const length = parseInt(wrapper.dataset.length) || null;
+		const sliceUnit = wrapper.qs('input[name^="sliceUnit"]').value;
+
+		switch(use) {
+
+			case 'block' :
+
+				wrapper.qs('[data-action="slice-unit"][data-unit="length"]').classList.add('hide');
+
+				wrapper.qs('[data-action="slice-unit"][data-unit="area"]', node => {
+
+					node.classList.remove('hide');
+
+					if(sliceUnit === 'length') {
+						Slice.show(node);
+					}
+
+				});
+				break;
+
+			case 'bed' :
+
+				wrapper.qs('[data-action="slice-unit"][data-unit="length"]', node => {
+
+					node.classList.remove('hide');
+
+					if(sliceUnit === 'area') {
+						Slice.show(node);
+					}
+
+				});
+
+				wrapper.qs('[data-action="slice-unit"][data-unit="area"]').classList.add('hide');
+				break;
+
+		}
+
+		wrapper.qs('.slice-item-limit[data-unit="length"] .slice-item-max').innerHTML = length;
+		wrapper.qs('.slice-item-limit[data-unit="area"] .slice-item-max').innerHTML = area;
+
+		const plants = (area !== null && density !== null) ? Math.round(area * density) : null;
+
+		wrapper.qs('.slice-item-limit[data-unit="plant"] .slice-item-max').innerHTML = plants;
+
+		wrapper.qsa('.slice-item-limit[data-unit="tray"]', node => {
+
+			const trays = (plants !== null) ? Math.ceil(plants / parseInt(node.dataset.value)) : null;
+
+			node.qs('.slice-item-max').innerHTML = trays;
+
+		});
+
+		Slice.updateSum(wrapper.qs('.slice-wrapper'));
+
+	}
+
 	static show(target) {
 	
 		const id = target.getAttribute('data-id');
@@ -103,13 +162,15 @@ class Slice {
 
 		wrapper.qs('.slice-unit-dropdown').innerHTML = target.dataset.label;
 
-		Slice.convertSum(
+		this.convertSum(
 			wrapper,
 			currentLimit,
 			currentVarieties,
 			this.getLimit(wrapper),
 			this.getVarietiesParts(wrapper)
 		);
+
+		this.updateSum(wrapper);
 
 		target.parentElement.qs('.dropdown-item.selected', node => node.classList.remove('selected'));
 		target.classList.add('selected');
@@ -143,7 +204,7 @@ class Slice {
 
 		const sum = this.calculateSum(wrapper);
 
-		limit.qs('.slice-action-sum').innerHTML = sum;
+		limit.qs('.slice-item-sum').innerHTML = sum;
 
 		// Excès de répartition
 		let newColor = null;
@@ -158,9 +219,9 @@ class Slice {
 				newColor = 'color-success';
 			}
 
-		} else if(limit.qs('.slice-action-max').innerHTML !== '') {
+		} else if(limit.qs('.slice-item-max').innerHTML !== '') {
 
-			const max = parseInt(limit.qs('.slice-action-max').innerHTML);
+			const max = parseInt(limit.qs('.slice-item-max').innerHTML);
 
 			if(sum > max) {
 				newColor = 'color-danger';
@@ -191,7 +252,7 @@ class Slice {
 	}
 
 	static getSum(wrapper) {
-		return this.getLimit(wrapper).qs('.slice-action-sum');
+		return this.getLimit(wrapper).qs('.slice-item-sum');
 	}
 
 	static getMax(wrapper) {
@@ -202,7 +263,7 @@ class Slice {
 			return 100;
 		} else {
 
-			const max = this.getLimit(wrapper).qs('.slice-action-max');
+			const max = this.getLimit(wrapper).qs('.slice-item-max');
 
 			return max.innerHTML !== '' ? parseInt(max.innerHTML) : 0;
 
@@ -240,13 +301,13 @@ class Slice {
 	// Mise à jour des valeurs par défaut quand on passe d'une unité à une autre
 	static convertSum(wrapper, currentLimit, currentVarieties, newLimit, newVarieties) {
 
-		const newSum = parseInt(newLimit.qs('.slice-action-sum').innerHTML);
+		const newSum = parseInt(newLimit.qs('.slice-item-sum').innerHTML);
 
 		if(newSum > 0) {
 			return;
 		}
 
-		const currentSum = parseInt(currentLimit.qs('.slice-action-sum').innerHTML);
+		const currentSum = parseInt(currentLimit.qs('.slice-item-sum').innerHTML);
 
 		if(currentSum === 0) {
 			return;

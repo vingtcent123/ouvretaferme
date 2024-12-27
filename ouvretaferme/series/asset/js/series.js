@@ -264,4 +264,46 @@ class Series {
 
 	}
 
+	static updateArea(target) {
+
+		const form = target.firstParent('form');
+
+		const use = form.qs('input[name="use"]:checked').value;
+		const bedWidth = parseInt(form.qs('input[name="bedWidth"]').value) || null;
+		const alleyWidth = parseInt(form.qs('input[name="alleyWidth"]').value) || 0;
+
+		let area, length;
+
+		switch(use) {
+
+			case 'block' :
+				area = parseInt(form.qs('input[name="areaTarget"]').value || null);
+				length = null;
+				break;
+
+			case 'bed' :
+
+				length = parseInt(form.qs('input[name="lengthTarget"]').value) || null;
+
+				if(length === null || bedWidth === null) {
+					area = null;
+				} else {
+					area = length * (bedWidth + alleyWidth) / 100;
+				}
+
+				break;
+
+		}
+
+		qsa('.cultivation-write', node => {
+
+			node.dataset.area = area;
+			node.dataset.length = length;
+
+			Cultivation.updateDensity(node);
+
+		})
+
+	}
+
 }

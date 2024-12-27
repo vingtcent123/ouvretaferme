@@ -75,7 +75,7 @@ class SliceLib extends SliceCrud {
 
 	}
 
-	public static function prepare(Crop|\series\Cultivation $eCrop, array $input): \Collection {
+	public static function prepare(Crop|\series\Cultivation $eCrop, array $input, string $wrapper): \Collection {
 
 		$eCrop ->expects(['plant', 'farm']);
 
@@ -91,7 +91,7 @@ class SliceLib extends SliceCrud {
 			array_key_exists('varietyCreate', $input) === FALSE or
 			array_key_exists('varietyPart'.ucfirst($unit), $input) === FALSE
 		) {
-			throw new \FailException('production\Crop::variety.check');
+			throw new \FailException('production\Crop::variety.check', wrapper: $wrapper);
 		}
 
 		$cSlice = new \Collection();
@@ -139,7 +139,7 @@ class SliceLib extends SliceCrud {
 						->where('plant IS NULL or plant = '.$eCrop['plant']['id'])
 						->where('farm IS NULL OR farm = '.$eCrop['farm']['id'])
 						->get($eVariety) === FALSE) {
-					throw new \FailException('production\Crop::variety.notExists');
+					throw new \FailException('production\Crop::variety.notExists', wrapper: $wrapper);
 				}
 
 			}
@@ -180,7 +180,7 @@ class SliceLib extends SliceCrud {
 				$part = $eSlice['part'.ucfirst($unit)];
 
 				if($part <= 0) {
-					throw new \FailException('production\Crop::variety.partZero');
+					throw new \FailException('production\Crop::variety.partZero', wrapper: $wrapper);
 				}
 
 			}

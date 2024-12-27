@@ -2357,26 +2357,28 @@ class CultivationUi {
 		$eCultivation['harvestedByUnit'] ??= [];
 		$eCultivation['mainUnit'] ??= Cultivation::model()->getDefaultValue('mainUnit');
 
-		$h = '';
+		$h = '<div class="cultivation-write">';
 
-		$h .= $form->hidden('sliceUnit'.$suffix, Cultivation::PERCENT);
+			$h .= $form->hidden('sliceUnit'.$suffix, Cultivation::PERCENT);
 
-		$h .= (new \production\CropUi())->getVarietyGroup($form, $eCultivation, $eCultivation['ccVariety'], $eCultivation['cSlice'], $suffix);
-		$h .= (new \production\CropUi())->getDistanceField($form, $eCultivation, $use, $suffix);
+			$h .= (new \production\CropUi())->getVarietyGroup($form, $eCultivation, $eCultivation['ccVariety'], $eCultivation['cSlice'], $suffix);
+			$h .= (new \production\CropUi())->getDistanceField($form, $eCultivation, $use, $suffix);
 
-		$h .= $form->dynamicGroup($eCultivation, 'seedling'.$suffix);
-		$h .= $form->dynamicGroup($eCultivation, 'seedlingSeeds'.$suffix);
+			$h .= $form->dynamicGroup($eCultivation, 'seedling'.$suffix);
+			$h .= $form->dynamicGroup($eCultivation, 'seedlingSeeds'.$suffix);
 
-		if($eCultivation['sequence']->empty()) {
-			$h .= self::getActionsField($form, $eCultivation, $cAction, $suffix);
-		}
+			if($eCultivation['sequence']->empty()) {
+				$h .= self::getActionsField($form, $eCultivation, $cAction, $suffix);
+			}
 
-		$h .= self::getMainUnitField($form, $eCultivation, $suffix);
-		$h .= self::getYieldExpectedField($form, $eCultivation, $suffix);
+			$h .= self::getMainUnitField($form, $eCultivation, $suffix);
+			$h .= self::getYieldExpectedField($form, $eCultivation, $suffix);
 
-		if($eCultivation['sequence']->empty()) {
-			$h .= self::getHarvestExpectedField($form, $eCultivation, $suffix);
-		}
+			if($eCultivation['sequence']->empty()) {
+				$h .= self::getHarvestExpectedField($form, $eCultivation, $suffix);
+			}
+
+		$h .= '</div>';
 
 		return $h;
 
@@ -2394,23 +2396,25 @@ class CultivationUi {
 		$h = $form->openAjax('/series/cultivation:doUpdate', ['id' => 'cultivation-update', 'class' => 'series-write-plant', 'autocomplete' => 'off']);
 
 			$h .= $form->hidden('id', $eCultivation['id']);
+			$h .= '<div class="cultivation-write" data-length="'.($eCultivation['series']['length'] ?? $eCultivation['series']['lengthTarget']).'" data-area="'.($eCultivation['series']['area'] ?? $eCultivation['series']['areaTarget']).'" data-use="'.$eCultivation['series']['use'].'" data-bed-width="'.$eCultivation['series']['bedWidth'].'" data-alley-width="'.$eCultivation['series']['alleyWidth'].'">';
 
-			$h .= $form->dynamicGroup($eCultivation, 'plant', function($d) use ($eCultivation) {
-				$d->autocompleteDispatch = '#cultivation-update';
-				$d->attributes = [
-					'post-id' => $eCultivation['id']
-				];
-			});
+				$h .= $form->dynamicGroup($eCultivation, 'plant', function($d) use ($eCultivation) {
+					$d->autocompleteDispatch = '#cultivation-update';
+					$d->attributes = [
+						'post-id' => $eCultivation['id']
+					];
+				});
 
-			$h .= (new \production\CropUi())->getVarietyGroup($form, $eCultivation, $eCultivation['ccVariety'], $eCultivation['cSlice']);
-			$h .= (new \production\CropUi())->getDistanceField($form, $eCultivation, $eCultivation['series']['use']);
+				$h .= (new \production\CropUi())->getVarietyGroup($form, $eCultivation, $eCultivation['ccVariety'], $eCultivation['cSlice']);
+				$h .= (new \production\CropUi())->getDistanceField($form, $eCultivation, $eCultivation['series']['use']);
 
-			$h .= $form->dynamicGroup($eCultivation, 'seedling');
-			$h .= $form->dynamicGroup($eCultivation, 'seedlingSeeds');
+				$h .= $form->dynamicGroup($eCultivation, 'seedling');
+				$h .= $form->dynamicGroup($eCultivation, 'seedlingSeeds');
 
-			$h .= self::getMainUnitField($form, $eCultivation);
-			$h .= self::getYieldExpectedField($form, $eCultivation);
-			$h .= self::getHarvestExpectedField($form, $eCultivation);
+				$h .= self::getMainUnitField($form, $eCultivation);
+				$h .= self::getYieldExpectedField($form, $eCultivation);
+				$h .= self::getHarvestExpectedField($form, $eCultivation);
+			$h .= '</div>';
 
 			$h .= $form->group(
 				content: $form->submit(s("Enregistrer"))
@@ -2537,18 +2541,22 @@ class CultivationUi {
 
 			case 'rowSpacing' :
 				$d->append = s("cm inter-rangs");
+				$d->attributes['oninput'] = 'Cultivation.updateDensity(this)';
 				break;
 
 			case 'plantSpacing' :
 				$d->append = s("cm sur le rang");
+				$d->attributes['oninput'] = 'Cultivation.updateDensity(this)';
 				break;
 
 			case 'rows' :
 				$d->append = s("rangs");
+				$d->attributes['oninput'] = 'Cultivation.updateDensity(this)';
 				break;
 
 			case 'density' :
 				$d->append = s("plantes / m²");
+				$d->attributes['oninput'] = 'Cultivation.updateDensity(this)';
 				break;
 
 			case 'harvested' :

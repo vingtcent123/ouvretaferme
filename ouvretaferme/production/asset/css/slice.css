@@ -15,10 +15,48 @@ div.slice-item-new {
 	padding-right: 0.5rem;
 }
 
+div.slice-item-actions {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.25rem;
+}
+
 span.slice-item-limit {
 	font-weight: bold;
 	font-size: 1.2rem;
 	margin-right: 0.5rem;
+}
+
+span.slice-item-by {
+	display: inline-grid;
+	align-items: baseline;
+	grid-template: "separator max unit" 1fr / 1fr auto auto auto;
+}
+
+span.slice-item-max {
+	grid-area: max;
+}
+
+span.slice-item-max:empty {
+	display: none;
+}
+
+span.slice-item-unit {
+	grid-area: unit;
+	margin-left: 0.375rem;
+}
+
+span.slice-item-unit:empty {
+	display: none;
+}
+
+span.slice-item-separator {
+	grid-area: separator;
+	margin: 0 0.375rem;
+}
+
+span.slice-item-max:empty + span.slice-item-unit + span.slice-item-separator {
+	display: none;
 }
 
 div.slice-wrapper[data-n="0"] .slice-several,

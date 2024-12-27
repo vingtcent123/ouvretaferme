@@ -1688,7 +1688,7 @@ class Element extends ArrayObject {
 
 				try {
 
-					if($callback($value, $newProperties, $validProperties) === FALSE) {
+					if($callback($value, $newProperties, $validProperties, $wrapper) === FALSE) {
 						throw new BuildPropertyError();
 					}
 

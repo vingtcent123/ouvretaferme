@@ -120,4 +120,45 @@ class Cultivation {
 
 	}
 
+	static updateDensity(target) {
+
+		const wrapper = target.matches('.cultivation-write') ? target : target.firstParent('.cultivation-write');
+		const form = wrapper.firstParent('form');
+
+		const use = wrapper.dataset.use || form.qs('input[name="use"]:checked').value;
+		const distance = wrapper.qs('input[name^="distance"]').value;
+
+		let density;
+
+		if(distance === 'spacing') {
+
+			const bedWidth = parseInt(wrapper.dataset.bedWidth) || parseInt(form.qs('input[name="bedWidth"]').value) || null;
+			const alleyWidth = parseInt(wrapper.dataset.alleyWidth) || parseInt(form.qs('input[name="alleyWidth"]').value) || 0;
+
+			const rowSpacing = parseInt(wrapper.qs('input[name^="rowSpacing"]').value) || null;
+			const plantSpacing = parseInt(wrapper.qs('input[name^="plantSpacing"]').value) || null;
+			const rows = parseInt(wrapper.qs('input[name^="rows"]').value) || null;
+
+			switch(use) {
+
+				case 'block' :
+					density = (rowSpacing !== null && plantSpacing !== null) ? (100 / rowSpacing * 100 / plantSpacing) : null;
+					break;
+
+				case 'bed' :
+					density = (rows !== null && plantSpacing !== null && bedWidth !== null) ? (rows / ((bedWidth + alleyWidth) / 100) * 100 / plantSpacing) : null;
+					break;
+
+			}
+
+			wrapper.qs('input[name^="density"]').value = density ? Math.round(density * 10) / 10 : '';
+
+		} else {
+			density = parseInt(wrapper.qs('input[name^="density"]').value) || null;
+		}
+
+		Slice.updateCultivation(wrapper, use, density);
+
+	}
+
 }

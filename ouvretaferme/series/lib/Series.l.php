@@ -279,13 +279,7 @@ class SeriesLib extends SeriesCrud {
 				$eCultivation['crop'] = new \production\Crop();
 			}
 
-			$eCultivation->buildIndex(['plant', 'sliceUnit'], $input, $index);
-
-			if($fw->ok()) {
-
-				$eCultivation->buildIndex(['variety'], $input, $index);
-
-			}
+			$eCultivation->buildIndex(['plant', 'sliceUnit', 'sliceTool', 'variety'], $input, $index);
 
 			$properties = ['distance', 'density', 'rows', 'plantSpacing', 'rowSpacing', 'seedling', 'seedlingSeeds', 'yieldExpected', 'mainUnit', 'actions'];
 

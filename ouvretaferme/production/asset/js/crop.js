@@ -65,6 +65,10 @@ class Crop {
 
 		}
 
+		if(target.firstParent('.cultivation-write') != null) {
+			Cultivation.updateDensity(target);
+		}
+
 	}
 
 	static changeUnit(target, change) {

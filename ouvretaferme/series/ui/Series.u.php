@@ -548,8 +548,10 @@ class SeriesUi {
 			'nameAuto' => TRUE,
 			'nameDefault' => $ePlant['name'],
 			'use' => Series::BED,
-			'area' => 0,
-			'length' => 0,
+			'area' => NULL,
+			'areaTarget' => NULL,
+			'length' => NULL,
+			'lengthTarget' => NULL,
 			'cycle' => $ePlant['cycle'],
 			'season' => $season,
 			'bedWidth' => $eFarm['defaultBedWidth'],
@@ -653,7 +655,12 @@ class SeriesUi {
 			'sequence' => new \production\Sequence(),
 			'seedling' => NULL,
 			'sliceUnit' => Cultivation::PERCENT,
+			'sliceTool' => new \farm\Tool(),
 			'distance' => Cultivation::SPACING,
+			'density' => NULL,
+			'rows' => NULL,
+			'rowSpacing' => NULL,
+			'plantSpacing' => NULL,
 			'area' => 0,
 			'length' => ($eSeries['use'] === Series::BED ? 0 : NULL),
 			'harvestPeriodExpected' => Cultivation::MONTH
@@ -1313,7 +1320,8 @@ class SeriesUi {
 				];
 				$d->attributes = [
 					'columns' => 2,
-					'mandatory' => TRUE
+					'mandatory' => TRUE,
+					'onchange' => 'Series.updateArea(this)'
 				];
 				break;
 
@@ -1360,19 +1368,23 @@ class SeriesUi {
 
 			case 'lengthTarget' :
 				$d->append = s("mL de planches");
+				$d->attributes['oninput'] = 'Series.updateArea(this)';
 				break;
 
 			case 'bedWidth' :
 				$d->append = s("cm");
+				$d->attributes['oninput'] = 'Series.updateArea(this)';
 				break;
 
 			case 'alleyWidth' :
 				$d->after = \util\FormUi::info(s("Les rendements et la fertilisation sont calculés en intégrant la largeur du passe-pied.").'</small>');
 				$d->append = s("cm");
+				$d->attributes['oninput'] = 'Series.updateArea(this)';
 				break;
 
 			case 'areaTarget' :
 				$d->append = s("m²");
+				$d->attributes['oninput'] = 'Series.updateArea(this)';
 				break;
 		}
 
