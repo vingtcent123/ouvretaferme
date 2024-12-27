@@ -24,6 +24,16 @@ abstract class DatabaseManager extends DatabaseObject {
 	const CHARSET_ASCII = 'ascii';
 
 	/**
+	 * Creates a database
+	 */
+	abstract public function createDatabase(string $base): bool;
+
+	/**
+	 * Drops a database
+	 */
+	abstract public function dropDatabase(string $base): bool;
+
+	/**
 	 * Create a table
 	 *
 	 * Example :

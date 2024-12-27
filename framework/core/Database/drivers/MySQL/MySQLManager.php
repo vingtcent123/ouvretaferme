@@ -42,6 +42,19 @@ class MySQLManager extends DatabaseManager {
 		'polygon' => "POLYGON"
 	];
 
+	public function createDatabase(string $base): bool {
+
+		return $this->db->exec("CREATE DATABASE ".$this->db->api->field($base));
+
+	}
+
+	public function dropDatabase(string $base): bool {
+
+		return $this->db->exec("DROP DATABASE ".$this->db->api->field($base));
+
+	}
+
+
 	public function createTable(string $base, string $table, array $fields, array $indexes, string $charset = self::CHARSET_UTF8, string $storage = NULL, ?int $autoIncrement = NULL): bool {
 
 		$column = [];
