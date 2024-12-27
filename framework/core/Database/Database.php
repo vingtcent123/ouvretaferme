@@ -185,14 +185,18 @@ class Database extends PDO {
 
 		array_expects($server, ['type', 'host', 'port', 'login', 'password', 'bases']);
 
-		$position = count(self::$servers);
+		$name = $server['name'] ?? NULL;
 
-		self::$servers[$position] = $server;
+		self::$servers[$name] = $server;
 
 		foreach($server['bases'] as $base) {
-			self::$bases[$base] = $position;
+			self::$bases[$base] = $name;
 		}
 
+	}
+
+	public static function addBase(string $base, string $server) {
+		self::$bases[$base] = $server;
 	}
 
 	/**
