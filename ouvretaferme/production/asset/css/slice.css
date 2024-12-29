@@ -59,11 +59,6 @@ span.slice-item-max:empty + span.slice-item-unit + span.slice-item-separator {
 	display: none;
 }
 
-div.slice-wrapper[data-n="0"] .slice-several,
-div.slice-wrapper[data-n="1"] .slice-several {
-	display: none;
-}
-
 div.slice-item {
 	display: grid;
 	grid-template: "variety arrow parts remove" 1fr / 1fr auto 10rem auto;
@@ -74,17 +69,9 @@ div.slice-item {
 	padding: 0.5rem;
 }
 
-div.slice-wrapper[data-n="1"] div.slice-item {
-	grid-template: "variety remove" auto / 1fr auto;
-}
-
 @media (max-width: 575px) {
 
-	div.slice-wrapper[data-n="1"] div.slice-item {
-		grid-template: "variety remove" auto / 1fr auto;
-	}
-
-	div.slice-wrapper:not([data-n="1"]) div.slice-item {
+	div.slice-wrapper div.slice-item {
 		grid-template: "variety arrow parts remove" 1fr / 1fr auto auto auto;
 	}
 
@@ -92,7 +79,6 @@ div.slice-wrapper[data-n="1"] div.slice-item {
 
 div.slice-item-arrow {
 	grid-area: arrow;
-	display: none;
 	font-size: 1.4rem;
 }
 
@@ -110,16 +96,10 @@ div.slice-item div.slice-item-variety {
 
 div.slice-item div.slice-item-parts {
 	grid-area: parts;
-	display: none;
 }
 
 div.slice-item div.slice-item-parts input {
 	text-align: right;
-}
-
-div.slice-wrapper:not([data-n="1"]) div.slice-item div.slice-item-arrow,
-div.slice-wrapper:not([data-n="1"]) div.slice-item div.slice-item-parts {
-	display: block;
 }
 
 div.slice-item a.slice-item-remove {

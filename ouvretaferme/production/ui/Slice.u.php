@@ -47,17 +47,19 @@ class SliceUi {
 
 		}
 
+		if($cSlice->empty()) {
+			$cSlice->append(new Slice([
+				'partPercent' => 100
+			]));
+		}
+
 		$id = uniqid('slice-select-');
 
-		$h = '<div class="slice-wrapper" id="'.$id.'" data-n="'.max(1, $cSlice->count()).'">';
+		$h = '<div class="slice-wrapper" id="'.$id.'">';
 
 			$h .= '<div class="slice-items">';
 
-				if($cSlice->empty()) {
-					$h .= $this->getField($form, $nameVariety, $eCrop, $ccVariety, new Slice());
-				} else {
-					$h .= $cSlice->makeString(fn($eSlice) => $this->getField($form, $nameVariety, $eCrop, $ccVariety, $eSlice));
-				}
+				$h .= $cSlice->makeString(fn($eSlice) => $this->getField($form, $nameVariety, $eCrop, $ccVariety, $eSlice));
 
 				$h .= '<div class="slice-item-new">';
 					$h .= '<div class="slice-item-actions">';
@@ -76,7 +78,7 @@ class SliceUi {
 								\series\Cultivation::TRAY => fn() => encode($eCrop['sliceTool']['name']),
 							];
 
-							$h .= '<a data-dropdown="bottom-start" class="btn btn-sm btn-outline-primary dropdown-toggle slice-several slice-unit-dropdown">'.$labels[$eCrop['sliceUnit']]().'</a>';
+							$h .= '<a data-dropdown="bottom-start" class="btn btn-sm btn-outline-primary dropdown-toggle slice-unit-dropdown">'.$labels[$eCrop['sliceUnit']]().'</a>';
 							$h .= '<div class="dropdown-list">';
 								$h .= '<div class="dropdown-title">'.s("Répartir les variétés").'</div>';
 
@@ -129,7 +131,7 @@ class SliceUi {
 							$color = '';
 						}
 
-						$h .= '<span class="slice-item-limit slice-several '.($sliceUnit === \series\Cultivation::PERCENT ? '' : 'hide').' '.$color.'" data-unit="'.\series\Cultivation::PERCENT.'">';
+						$h .= '<span class="slice-item-limit '.($sliceUnit === \series\Cultivation::PERCENT ? '' : 'hide').' '.$color.'" data-unit="'.\series\Cultivation::PERCENT.'">';
 							$h .= $this->getLimit($value, NULL, s("%"));
 						$h .= '</span>';
 
@@ -145,7 +147,7 @@ class SliceUi {
 								$value = 0;
 							}
 
-							$h .= '<span class="slice-item-limit slice-several '.$color.' '.($sliceUnit === \series\Cultivation::LENGTH ? '' : 'hide').'" data-unit="'.\series\Cultivation::LENGTH.'">';
+							$h .= '<span class="slice-item-limit '.$color.' '.($sliceUnit === \series\Cultivation::LENGTH ? '' : 'hide').'" data-unit="'.\series\Cultivation::LENGTH.'">';
 								$h .= $this->getLimit($value, $limit, s("mL"));
 							$h.= '</span>';
 
@@ -159,7 +161,7 @@ class SliceUi {
 								$value = 0;
 							}
 
-							$h .= '<span class="slice-item-limit slice-several '.$color.' '.($sliceUnit === \series\Cultivation::AREA ? '' : 'hide').'" data-unit="'.\series\Cultivation::AREA.'">';
+							$h .= '<span class="slice-item-limit '.$color.' '.($sliceUnit === \series\Cultivation::AREA ? '' : 'hide').'" data-unit="'.\series\Cultivation::AREA.'">';
 								$h .= $this->getLimit($value, $limit, s("m²"));
 							$h.= '</span>';
 
@@ -176,7 +178,7 @@ class SliceUi {
 								$color = '';
 							}
 
-							$h .= '<span class="slice-item-limit slice-several '.$color.' '.($sliceUnit === \series\Cultivation::PLANT ? '' : 'hide').'" data-unit="'.\series\Cultivation::PLANT.'">';
+							$h .= '<span class="slice-item-limit '.$color.' '.($sliceUnit === \series\Cultivation::PLANT ? '' : 'hide').'" data-unit="'.\series\Cultivation::PLANT.'">';
 								$h .= $this->getLimit($value, $plantLimit, match($eCrop['seedling']) {
 									\series\Cultivation::SOWING => s("graines"),
 									default => s("plants"),
@@ -198,7 +200,7 @@ class SliceUi {
 									$trayLimit = $plantLimit ? ceil($plantLimit / $eTray['routineValue']['value']) : NULL;
 									$color = $this->getColor($value, $trayLimit);
 
-									$h .= '<span class="slice-item-limit slice-several '.$color.' '.($visible ? '' : 'hide').'" data-unit="'.\series\Cultivation::TRAY.'" data-tool="'.$eTray['id'].'" data-value="'.$eTray['routineValue']['value'].'">';
+									$h .= '<span class="slice-item-limit '.$color.' '.($visible ? '' : 'hide').'" data-unit="'.\series\Cultivation::TRAY.'" data-tool="'.$eTray['id'].'" data-value="'.$eTray['routineValue']['value'].'">';
 										$h .= $this->getLimit($value, $trayLimit, s("plateaux"));
 									$h .= '</span>';
 
@@ -208,7 +210,7 @@ class SliceUi {
 
 						}
 					$h .= '</div>';
-					$h .= '<a data-action="slice-fair" data-id="#'.$id.'" class="btn btn-outline-primary slice-several" title="'.s("Répartir égalitairement").'">'.\Asset::icon('justify').'</a>';
+					$h .= '<a data-action="slice-fair" data-id="#'.$id.'" class="btn btn-outline-primary" title="'.s("Répartir égalitairement").'">'.\Asset::icon('justify').'</a>';
 				$h .= '</div>';
 
 			$h .= '</div>';
@@ -239,9 +241,7 @@ class SliceUi {
 
 		if($limit === NULL) {
 			return '';
-		} else if($value > $limit) {
-			return 'color-danger';
-		} else if($value < $limit) {
+		} else if($value < $limit or $value > $limit) {
 			return 'color-warning';
 		} else {
 			return 'color-success';
@@ -265,7 +265,7 @@ class SliceUi {
 					$d->attributes = [
 						'data-action' => 'slice-variety-change'
 					];
-					if($eSlice->notEmpty()) {
+					if($eSlice->exists()) {
 						$d->attributes['mandatory'] = TRUE;
 					}
 				});

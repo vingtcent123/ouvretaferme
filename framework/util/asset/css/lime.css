@@ -108,7 +108,7 @@ table.tbody-even tbody:nth-of-type(even) tr {
 }
 
 table.tbody-even tbody:nth-of-type(odd) tr {
-	background-color: var(--background-light);
+	background-color: var(--background-odd);
 }
 
 table.tr-even tbody tr:nth-of-type(even) {
@@ -116,27 +116,27 @@ table.tr-even tbody tr:nth-of-type(even) {
 }
 
 table.tr-even tbody tr:nth-of-type(odd) {
-    background-color: var(--background-light);
+    background-color: var(--background-odd);
 }
 
 table.tbody-even thead,
 table.tr-even thead,
 table.thead-bordered thead {
-	border-bottom: 1px dashed var(--border);
+	border-bottom: 1px solid var(--border);
 }
 
 table.tbody-bordered tr:last-of-type {
-	border-bottom: 1px dashed var(--border);
+	border-bottom: 1px solid var(--border);
 }
 
 tr.tr-bordered,
 table.tr-bordered tbody tr,
 table.tr-bordered thead tr {
-	border-bottom: 1px dashed var(--border);
+	border-bottom: 1px solid var(--border);
 }
 
 table.tr-bordered tbody:only-child tr:first-child {
-	border-top: 1px dashed var(--border);
+	border-top: 1px solid var(--border);
 }
 
 tr.tr-bordered:hover,
@@ -1083,10 +1083,11 @@ table.util-block tbody:last-child tr:last-child td:last-child {
 }
 
 .util-block-help {
-	padding: 1rem;
+	padding: 1.25rem 1rem  1rem;
 	background-color: var(--info);
 	line-height: 1.5;
 	position: relative;
+	min-height: 4rem;
 }
 
 .util-block-help {
@@ -1101,8 +1102,13 @@ table.util-block tbody:last-child tr:last-child td:last-child {
 	align-items: center;
 }
 
-.util-block-help a {
+.util-block-help h4:first-child {
+	margin-top: -0.5rem;
+}
+
+.util-block-help a:not(.btn) {
 	text-decoration: underline;
+	color: var(--text);
 }
 
 .util-block-help:before {
@@ -1111,7 +1117,7 @@ table.util-block tbody:last-child tr:last-child td:last-child {
 	font-style: italic;
 	float: left;
 	color: white;
-	top: 1rem;
+	top: .75rem;
 	left: 1rem;
 	width: 2.5rem;
 	height: 2.5rem;

@@ -35,7 +35,6 @@ document.delegateEventListener('click', 'a[data-action="slice-add"]', function(e
 	clone.qs('option[value=""]').remove();
 
 	wrapper.qs('.slice-items > *:last-child').insertAdjacentElement('beforebegin', clone);
-	wrapper.dataset.n = wrapper.qsa('.slice-items > .slice-item').length;
 
 });
 
@@ -58,8 +57,6 @@ document.delegateEventListener('click', 'a[data-action="slice-remove"]', functio
 	const wrapper = this.firstParent('.slice-wrapper');
 
 	this.parentElement.remove();
-
-	wrapper.dataset.n = wrapper.qsa('.slice-items > .slice-item').length;
 
 	Slice.updateSum(wrapper);
 
@@ -115,12 +112,12 @@ class Slice {
 
 		}
 
-		wrapper.qs('.slice-item-limit[data-unit="length"] .slice-item-max').innerHTML = length;
-		wrapper.qs('.slice-item-limit[data-unit="area"] .slice-item-max').innerHTML = area;
+		wrapper.qs('.slice-item-limit[data-unit="length"] .slice-item-max').innerHTML = length ?? '';
+		wrapper.qs('.slice-item-limit[data-unit="area"] .slice-item-max').innerHTML = area ?? '';
 
 		const plants = (area !== null && density !== null) ? Math.round(area * density) : null;
 
-		wrapper.qs('.slice-item-limit[data-unit="plant"] .slice-item-max').innerHTML = plants;
+		wrapper.qs('.slice-item-limit[data-unit="plant"] .slice-item-max').innerHTML = plants ?? '';
 
 		wrapper.qsa('.slice-item-limit[data-unit="tray"]', node => {
 

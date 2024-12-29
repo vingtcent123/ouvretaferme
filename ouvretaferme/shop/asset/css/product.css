@@ -356,7 +356,7 @@
 }
 
 .shop-product-limits {
-	border-top: 1px dashed var(--border);
+	border-top: 1px dotted var(--border);
 	padding: 0.25rem 0;
 	font-size: 0.9rem;
 	display: flex;

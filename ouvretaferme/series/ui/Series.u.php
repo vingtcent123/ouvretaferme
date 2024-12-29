@@ -1074,14 +1074,9 @@ class SeriesUi {
 			self::p('name')->label,
 			$form->inputGroup(
 				$form->dynamicField($eSeries, 'name', function($d) use ($eSeries) {
-					$d->attributes['data-default'] = $eSeries['nameDefault'];
-					$d->attributes['class'] = 'disabled';
-				}).
-				$form->checkbox('nameAuto', attributes: [
-					'checked' => $eSeries['nameAuto'],
-					'callbackLabel' => fn($input) => '<span title="Garder un nom choisi automatiquement en fonction des productions de la série ?">'.s("Automatique ?").'</span> '.$input,
-					'onclick' => 'Series.changeNameAuto(this)',
-				])
+					$d->attributes['data-auto'] = 'true';
+					$d->attributes['oninput'] = 'Series.changeNameAuto(this)';
+				})
 			),
 			['wrapper' => 'name']
 		);

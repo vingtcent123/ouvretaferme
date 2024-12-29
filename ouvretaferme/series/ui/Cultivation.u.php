@@ -1794,7 +1794,7 @@ class CultivationUi {
 
 	}
 
-	public function readCollection(Series $eSeries, \Collection $cSeriesPerennial, \Collection $cCultivation, \Collection $cPlace, \Collection $cActionMain): string {
+	public function getList(Series $eSeries, \Collection $cSeriesPerennial, \Collection $cCultivation, \Collection $cTask, \Collection $cPlace, \Collection $cActionMain): string {
 
 		$h = '';
 
@@ -1844,7 +1844,7 @@ class CultivationUi {
 		foreach($cCultivation as $eCultivation) {
 
 			$h .= '<div class="crop-item">';
-				$h .= $this->readElement($eSeries, $eCultivation, $cActionMain);
+				$h .= $this->getOne($eSeries, $eCultivation, $cTask, $cActionMain);
 			$h .= '</div>';
 
 		}
@@ -1858,7 +1858,7 @@ class CultivationUi {
 
 	}
 
-	public function readElement(Series $eSeries, Cultivation $eCultivation, \Collection $cActionMain): string {
+	public function getOne(Series $eSeries, Cultivation $eCultivation, \Collection $cTask, \Collection $cActionMain): string {
 
 		$ePlant = $eCultivation['plant'];
 
@@ -1915,22 +1915,155 @@ class CultivationUi {
 				$h .= '</div>';
 			}
 
-			// Incohérence entre l'assolement et la répartition des variétés
-			if($eCultivation['sliceUnit'] === Cultivation::LENGTH) {
-
-				$sliceLength = $eCultivation['cSlice']->sum('partLength');
-				$length = $eCultivation['series']['length'] ?? 0;
-
-				if($sliceLength !== $length) {
-					$h .= '<div class="crop-item-error">'.s("L'assolement de cette production couvre {total} mL, mais vous avez réparti les variétés sur {current} mL (<link>corriger cette anomalie</link>).", ['total' => $length, 'current' => $sliceLength, 'link' => '<a href="/series/cultivation:update?id='.$eCultivation['id'].'">']).'</div>';
-				}
-
-
-			}
-
 		$h .= '</div>';
 
+		$infos = $this->getVarietiesInfo($eCultivation, $cTask);
+
+		if($infos) {
+			$h .= '<div class="crop-item-info">';
+				foreach($infos as $info) {
+					$h .= '<div>'.\Asset::icon('exclamation-circle').'  '.$info.'</div>';
+				}
+			$h .= '</div>';
+		}
+
 		return $h;
+
+	}
+
+	protected function getVarietiesInfo(Cultivation $eCultivation, \Collection $cTask): array {
+
+		$infos = [];
+
+		switch($eCultivation['sliceUnit']) {
+
+			case Cultivation::PERCENT :
+
+				if($eCultivation['cSlice']->notEmpty()) {
+
+					$sum = $eCultivation['cSlice']->sum('partPercent');
+
+					if($sum < 100) {
+						$infos[] = s("Les variétés ont été réparties sur moins de 100 % de l'espace.");
+					} else if($sum > 100) {
+						$infos[] = s("Les variétés ont été réparties sur plus de 100 % de l'espace.");
+					}
+
+				}
+
+				break;
+
+			case Cultivation::LENGTH :
+
+				if($eCultivation['series']['use'] === Series::BLOCK) {
+					$infos[] = s("Les variétés ont été réparties au mL alors que la culture est sur surface au libre au m².");
+				} else {
+
+					$sum = $eCultivation['cSlice']->sum('partLength');
+					$limit = $eCultivation['series']['length'] ?? $eCultivation['series']['lengthTarget'];
+
+					if(
+						$limit !== NULL and
+						$sum !== $limit
+					) {
+						$infos[] = s("L'assolement couvre {limit} mL mais les variétés ont été réparties sur {value} mL.", ['limit' => $limit, 'value' => $sum]);
+					}
+
+				}
+
+				break;
+
+			case Cultivation::AREA :
+
+				if($eCultivation['series']['use'] === Series::BED) {
+					$infos[] = s("Les variétés ont été réparties au m³ alors que la culture est sur planches au mL.");
+				} else {
+
+					$sum = $eCultivation['cSlice']->sum('partArea');
+					$limit = $eCultivation['series']['area'] ?? $eCultivation['series']['areaTarget'];
+
+					if(
+						$limit !== NULL and
+						$sum !== $limit
+					) {
+						$infos[] = s("L'assolement couvre {limit} m² mais les variétés ont été réparties sur {value} m².", ['limit' => $limit, 'value' => $sum]);
+					}
+
+				}
+
+				break;
+
+			case Cultivation::PLANT :
+
+				$sum = $eCultivation['cSlice']->sum('partPlant');
+
+				if($eCultivation['seedling'] === Cultivation::SOWING) {
+
+					$limit = $eCultivation->getSeeds();
+
+					if(
+						$limit !== NULL and
+						$sum !== $limit
+					) {
+						$infos[] = s("La production demande {limit} graines mais vous avez réparti les variétés sur {value} graines.", ['limit' => $limit, 'value' => $sum]);
+					}
+
+				} else {
+
+					$limit = $eCultivation->getYoungPlants();
+
+					if(
+						$limit !== NULL and
+						$sum !== $limit
+					) {
+						$infos[] = s("La production demande {limit} plants mais vous avez réparti les variétés sur {value} plants.", ['limit' => $limit, 'value' => $sum]);
+					}
+
+				}
+
+				break;
+
+			case Cultivation::TRAY :
+
+				$sum = $eCultivation['cSlice']->sum('partTray');
+
+				if($eCultivation['seedling'] === Cultivation::SOWING) {
+					$infos[] = s("Vous avez réparti les variétés en nombre de plateaux de semis alors que la production est implantée en semis direct.");
+				} else {
+
+					$plants = $eCultivation->getYoungPlants();
+					$limit = $plants ? ceil($plants / $eCultivation['sliceTool']['routineValue']['value']) : NULL;
+
+					if(
+						$limit !== NULL and
+						$sum !== $limit
+					) {
+						$infos[] = s("La production demande {limit} plateaux de semis mais vous avez réparti les variétés sur {value} plateaux.", ['limit' => $limit, 'value' => $sum]);
+					}
+
+					$cTool = $cTask
+						->find(fn($eTask) => (
+							$eTask['action']['fqn'] === ACTION_SEMIS_PEPINIERE and
+							($eTask['cultivation']->empty() or $eTask['cultivation']->is($eCultivation))
+						))
+						->getColumnCollection('cRequirement')
+						->getColumnCollection(0)
+						->getColumnCollection('tool');
+
+					if(
+						$cTool->notEmpty() and
+						$cTool->contains(fn($eTool) => $eTool->is($eCultivation['sliceTool'])) === FALSE
+					) {
+						$infos[] = s("Vous avez réparti les variétés avec des plateaux de semis {value} alors que les interventions de semis en pépinière sur la série utilisent d'autres plateaux.", '<u>'.encode($eCultivation['sliceTool']['name']).'</u>');
+					}
+
+				}
+
+				break;
+
+		}
+
+		return $infos;
 
 	}
 
@@ -2358,8 +2491,6 @@ class CultivationUi {
 		$eCultivation['mainUnit'] ??= Cultivation::model()->getDefaultValue('mainUnit');
 
 		$h = '<div class="cultivation-write">';
-
-			$h .= $form->hidden('sliceUnit'.$suffix, Cultivation::PERCENT);
 
 			$h .= (new \production\CropUi())->getVarietyGroup($form, $eCultivation, $eCultivation['ccVariety'], $eCultivation['cSlice'], $suffix);
 			$h .= (new \production\CropUi())->getDistanceField($form, $eCultivation, $use, $suffix);

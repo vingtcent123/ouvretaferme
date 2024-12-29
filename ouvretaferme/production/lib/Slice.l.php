@@ -168,21 +168,12 @@ class SliceLib extends SliceCrud {
 		}
 
 		// Une seule variété -> les parts sont automatiquement remplies
-		if($cSlice->count() === 1) {
+		foreach($cSlice as $eSlice) {
 
-			$eSlice = $cSlice->first();
-			$eSlice['partPercent'] = 100;
+			$part = $eSlice['part'.ucfirst($unit)];
 
-		} else if($cSlice->count() > 1) {
-
-			foreach($cSlice as $eSlice) {
-
-				$part = $eSlice['part'.ucfirst($unit)];
-
-				if($part <= 0) {
-					throw new \FailException('production\Crop::variety.partZero', wrapper: $wrapper);
-				}
-
+			if($part <= 0) {
+				throw new \FailException('production\Crop::variety.partZero', wrapper: $wrapper);
 			}
 
 		}

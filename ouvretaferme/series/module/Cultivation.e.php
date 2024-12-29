@@ -94,13 +94,13 @@ class Cultivation extends CultivationElement {
 			switch($this['sliceUnit']) {
 
 				case Cultivation::PLANT :
-					return $eSlice['partPlant'];
+					return round($eSlice['partPlant'] * $safetyMarginMultiplier);
 
 				case Cultivation::TRAY :
 					$this->expects([
 						'sliceTool' => ['routineValue']
 					]);
-					return $eSlice['partTray'] * $this['sliceTool']['routineValue']['value'];
+					return round($eSlice['partTray'] * $this['sliceTool']['routineValue']['value'] * $safetyMarginMultiplier);
 
 			}
 
@@ -129,13 +129,10 @@ class Cultivation extends CultivationElement {
 				return round($area * $this['density'] * $slicePercent / 100 * $safetyMarginMultiplier);
 
 			case Cultivation::LENGTH :
+				return round($eSlice['partLength'] * $this['density'] * $safetyMarginMultiplier);
 
-				$part = match($this['series']['use']) {
-					Series::BED => $eSlice['partLength'],
-					Series::BLOCK => $eSlice['partArea'],
-				};
-
-				return round($part * $this['density'] * $safetyMarginMultiplier);
+			case Cultivation::AREA :
+				return round($eSlice['partArea'] * $this['density'] * $safetyMarginMultiplier);
 
 		};
 
@@ -428,6 +425,11 @@ class Cultivation extends CultivationElement {
 				}
 
 				$this['cSlice'] = \production\SliceLib::prepare($this, $varieties, $wrapper);
+
+				if($this['cSlice']->empty()) {
+					$this['sliceUnit'] = Cultivation::PERCENT;
+					$this['sliceTool'] = new \farm\Tool();
+				}
 
 				return TRUE;
 

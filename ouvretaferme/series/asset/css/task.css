@@ -907,27 +907,22 @@ div.tasks-time-day-timesheet.tasks-time-day-timesheet-alert {
 
 @media (max-width: 767px) {
 
-	.tasks-week-list-plant,
 	.tasks-week-list-tools {
 		display: none;
 	}
 
 }
 
-table.tasks-week-plant-list tbody:hover tr {
-	background-color: rgba(0, 0, 0, 0.03) !important;
+.tasks-week-plant-list tbody tr:not(:nth-child(1)):not(:nth-child(2)) td {
+	border-top: 1px dashed var(--border);
 }
 
-@media (max-width: 575px) {
+.tasks-week-plant-list tbody tr:not(:nth-child(1)) td:first-child {
+	padding-left: 3rem;
+}
 
-	.tasks-week-plant-list .media-circle-view {
-		display: none;
-	}
-
-	.tasks-week-tools .media-rectangle-view {
-		display: none;
-	}
-
+.tasks-week-plant-tray {
+	white-space: nowrap;
 }
 
 div.task-item-header {
@@ -1123,36 +1118,29 @@ div.task-item-action dd {
 }
 
 div.task-presentation-seedling {
-	display: inline-grid;
-	grid-template-columns: auto auto auto auto auto;
-	grid-column-gap: 0.5rem;
+	display: grid;
+	width: max-content;
+	grid-template-columns: auto auto auto;
+	grid-column-gap: 2rem;
 	align-items: center;
-}
-
-div.task-presentation-seedling-sum {
-	color: var(--secondary);
-}
-
-div.task-presentation-seedling-number {
-	text-align: right;
-}
-
-div.task-presentation-seedling-part {
 	font-weight: normal;
-	color: var(--muted);
-	font-size: 0.9rem;
-	margin-left: 0.5rem;
+}
+
+div.task-presentation-seedling > *:nth-child(3n + 2) {
+	font-weight: bold;
 }
 
 div.task-presentation-seedling-tools {
-	display: inline-grid;
-	grid-template-columns: auto auto auto;
-	grid-column-gap: 0.5rem;
+	display: grid;
+	width: max-content;
+	grid-template-columns: auto auto;
+	grid-column-gap: 2rem;
 	align-items: center;
+	font-weight: normal;
 }
 
-div.task-presentation-seedling-tools-number {
-	text-align: right;
+div.task-presentation-seedling-tools > *:nth-child(2n + 2) {
+	font-weight: bold;
 }
 
 #task-write-action a.nav-link {

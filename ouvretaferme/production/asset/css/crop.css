@@ -99,6 +99,15 @@ div.crop-item-presentation {
 	padding: 0.5rem;
 }
 
+div.crop-item-info {
+	padding: 0.5rem;
+	background-color: var(--info);
+	font-weight: bold;
+	border-bottom-right-radius: var(--radius);
+	border-bottom-left-radius: var(--radius);
+	line-height: 1.4;
+}
+
 @media (min-width: 576px) {
 
 	dt.crop-item-harvest-label {
@@ -124,16 +133,6 @@ div.crop-item-presentation {
 		grid-column: span 2;
 	}
 
-}
-
-div.crop-item-error {
-	grid-column: span 4;
-	font-weight: bold;
-	color: var(--danger);
-}
-
-div.crop-item-error a {
-	text-decoration: underline;
 }
 
 div.crop-write-spacing-values {

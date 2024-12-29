@@ -155,19 +155,6 @@ class Series {
 		qsa('#series-create-from input[name="season"]', node => node.value = target.value);
 	}
 
-	static changeNameAuto(fieldAuto) {
-
-		const fieldName = fieldAuto.firstParent('.input-group').qs('[name="name"]');
-
-		if(fieldAuto.checked) {
-			fieldName.classList.add('disabled');
-			fieldName.value = fieldName.getAttribute('data-default');
-		} else {
-			fieldName.classList.remove('disabled');
-		}
-
-	}
-
 	static refreshUpdateUse(target) {
 
 		const form = target.firstParent('form');
@@ -188,19 +175,24 @@ class Series {
 
 	}
 
+	static changeNameAuto(target) {
+
+		target.dataset.auto = 'false';
+
+	}
+
 	static updateName() {
 
 		const name = qs('#series-create-plant [name="name"]');
-		const nameAuto = qs('#series-create-plant [name="nameAuto"]');
+
+		if(name.dataset.auto === 'false') {
+			return;
+		}
 
 		let defaultName = '';
 		qsa('#series-create-plant [data-plant-name]', (plant) => defaultName += (defaultName === '' ? '' : ' + ') + plant.dataset.plantName);
 
-		name.dataset.default = defaultName;
-
-		if(nameAuto.checked) {
-			name.value = defaultName;
-		}
+		name.value = defaultName;
 
 	}
 

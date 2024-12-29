@@ -453,23 +453,11 @@ class CultivationLib extends CultivationCrud {
 
 		}
 
-		switch($eSeries['use']) {
-
-			case Series::BED :
-
-				return match($eCultivation['sliceUnit']) {
-					Cultivation::PERCENT => (int)($eSlice['partPercent'] / 100 * $area),
-					Cultivation::LENGTH => (int)($eSlice['partLength'] / ($eSeries['length'] ?? $eSeries['lengthTarget']) * $area),
-				};
-
-			case Series::BLOCK :
-
-				return match($eCultivation['sliceUnit']) {
-					Cultivation::PERCENT => (int)($eSlice['partPercent'] / 100 * $area),
-					Cultivation::AREA => (int)($eSlice['partArea']),
-				};
-
-		}
+		return match($eCultivation['sliceUnit']) {
+			Cultivation::PERCENT => (int)($eSlice['partPercent'] / 100 * $area),
+			Cultivation::LENGTH => ($eSeries['use'] === Cultivation::LENGTH) ? (int)($eSlice['partLength'] / ($eSeries['length'] ?? $eSeries['lengthTarget']) * $area) : NULL,
+			Cultivation::AREA => ($eSeries['use'] === Cultivation::AREA) ? (int)($eSlice['partArea']) : NULL,
+		};
 
 	}
 
@@ -819,13 +807,20 @@ class CultivationLib extends CultivationCrud {
 		$cAction = \farm\ActionLib::getByFarm($e['farm'], fqn: array_keys($e['actions']), index: 'fqn');
 		$eCategory = \farm\CategoryLib::getByFarm($e['farm'], fqn: CATEGORIE_CULTURE);
 
-		$cTask = new \Collection();
-
 		foreach($e['actions'] as $action => $week) {
 
 			$eAction = $cAction[$action];
 
-			$cTask[] = new \series\Task([
+			$cTool = new \Collection();
+
+			if(
+				$action === ACTION_SEMIS_PEPINIERE and
+				$e['sliceTool']->notEmpty()
+			) {
+				$cTool[] = $e['sliceTool'];
+			}
+
+			$eTask = new \series\Task([
 				'farm' => $e['farm'],
 				'action' => $eAction,
 				'category' => $eCategory,
@@ -835,12 +830,12 @@ class CultivationLib extends CultivationCrud {
 				'plannedWeek' => $week,
 				'status' => Task::TODO,
 				'repeatMaster' => new Repeat(),
-				'cTool' => new \Collection()
+				'cTool' => $cTool
 			]);
 
-		}
+			TaskLib::create($eTask);
 
-		TaskLib::createCollection($cTask);
+		}
 
 	}
 
@@ -962,6 +957,13 @@ class CultivationLib extends CultivationCrud {
 		if(in_array('plant', $properties)) {
 
 			Task::model()
+				->whereCultivation($e)
+				->update([
+					'plant' => $e['plant']
+				]);
+
+			Timesheet::model()
+				->whereSeries($e['series'])
 				->whereCultivation($e)
 				->update([
 					'plant' => $e['plant']

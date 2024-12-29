@@ -7,7 +7,7 @@ new AdaptativeView('/serie/{id}', function($data, FarmTemplate $t) {
 
 	$t->mainTitle =  (new \series\CultivationUi())->getHeader($data->e);
 
-	echo (new \series\CultivationUi())->readCollection($data->e, $data->cSeriesPerennial, $data->cCultivation, $data->cPlace, $data->cActionMain);
+	echo (new \series\CultivationUi())->getList($data->e, $data->cSeriesPerennial, $data->cCultivation, $data->cTask, $data->cPlace, $data->cActionMain);
 	echo (new \series\TaskUi())->getTimeline($data->eFarm, $data->e, $data->cCultivation, $data->cTask);
 
 	if($data->eFarm->hasFeatureTime()) {

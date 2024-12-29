@@ -132,9 +132,6 @@ class Cultivation {
 
 		if(distance === 'spacing') {
 
-			const bedWidth = parseInt(wrapper.dataset.bedWidth) || parseInt(form.qs('input[name="bedWidth"]').value) || null;
-			const alleyWidth = parseInt(wrapper.dataset.alleyWidth) || parseInt(form.qs('input[name="alleyWidth"]').value) || 0;
-
 			const rowSpacing = parseInt(wrapper.qs('input[name^="rowSpacing"]').value) || null;
 			const plantSpacing = parseInt(wrapper.qs('input[name^="plantSpacing"]').value) || null;
 			const rows = parseInt(wrapper.qs('input[name^="rows"]').value) || null;
@@ -146,6 +143,8 @@ class Cultivation {
 					break;
 
 				case 'bed' :
+					const bedWidth = parseInt(wrapper.dataset.bedWidth) || parseInt(form.qs('input[name="bedWidth"]').value) || null;
+					const alleyWidth = parseInt(wrapper.dataset.alleyWidth) || parseInt(form.qs('input[name="alleyWidth"]').value) || 0;
 					density = (rows !== null && plantSpacing !== null && bedWidth !== null) ? (rows / ((bedWidth + alleyWidth) / 100) * 100 / plantSpacing) : null;
 					break;
 

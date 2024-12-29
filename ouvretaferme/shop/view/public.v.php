@@ -85,7 +85,7 @@ new AdaptativeView('shop', function($data, ShopTemplate $t) {
 
 		if($data->discount > 0) {
 			echo '<div class="util-block">';
-				echo s("Les prix affichés tiennent compte de la remise commerciale de {value} % dont vous bénéficiez !", $data->discount);
+				echo s("Les prix affichés incluent la remise commerciale de {value} % dont vous bénéficiez !", $data->discount);
 			echo '</div>';
 		}
 

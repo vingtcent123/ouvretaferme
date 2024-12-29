@@ -2327,16 +2327,16 @@ class TaskUi {
 
 				$h .= '<div class="tabs-item">';
 					$h .= '<a class="tab-item selected" data-tab="list" onclick="Lime.Tab.select(this)">';
-						$h .= s("Synthèse");
+						$h .= s("Interventions");
 					$h .= '</a>';
 					if($hasPlant) {
 						$h .= '<a class="tab-item" data-tab="plant" onclick="Lime.Tab.select(this)">';
-							$h .= s("Détail par espèce");
+							$h .= s("Par espèce");
 						$h .= '</a>';
 					}
 					if($hasTools) {
 						$h .= '<a class="tab-item" data-tab="tool" onclick="Lime.Tab.select(this)">';
-							$h .= s("Détail par matériel");
+							$h .= s("Par matériel");
 						$h .= '</a>';
 					}
 				$h .= '</div>';
@@ -2373,30 +2373,24 @@ class TaskUi {
 			return '<div class="util-info">'.s("Aucune intervention de cette nature à afficher cette semaine.").'</div>';
 		}
 
-		$h = '<table class="tr-even tr-hover tasks-week-list stick-xs">';
+		$h = '<table class="tr-even tr-bordered tasks-week-list stick-xs">';
 			$h .= '<thead>';
 				$h .= '<tr>';
 					$h .= '<th class="tasks-week-list-name">';
 						$h .= s("Tâche");
 					$h .= '</th>';
-					if($hasPlant) {
-						$h .= '<th class="tasks-week-list-plant">';
-						$h .= '</th>';
-					}
 					if($hasTools) {
 						$h .= '<th class="tasks-week-list-tools">';
 							$h .= s("Matériel");
 						$h .= '</th>';
 					}
-					$h .= '<th>';
-					$h .= '</th>';
+					$h .= '<th></th>';
 					if($eFarm->hasFeatureTime()) {
 						$h .= '<th>';
 							$h .= '<span class="hide-xs-down">'.s("Temps de travail").'</span>';
 						$h .= '</th>';
 					}
-					$h .= '<th>';
-					$h .= '</th>';
+					$h .= '<th></th>';
 				$h .= '</tr>';
 		$h .= '</thead>';
 
@@ -2412,89 +2406,66 @@ class TaskUi {
 				) {
 					$targeted = TRUE;
 				}
-
-				$h .= '<tr>';
-					$h .= '<td class="tasks-week-list-name">';
-						$h .= '<a href="'.TaskUi::url($eTask).'">';
-							$h .= $this->getTaskPlace($eTask);
-							$h .= $this->getTaskDescription($eTask, showAction: FALSE);
-							$h .= $this->getComments($eTask);
-						$h .= '</a>';
-					$h .= '</td>';
-
-					if($hasPlant) {
-
-						$h .= '<td class="tasks-week-list-plant">';
-
-							if($eTask['cultivation']->notEmpty()) {
-
-								$h .= '<dl class="util-presentation util-presentation-2">';
-
-									$h .= match($eAction['fqn']) {
-										ACTION_SEMIS_DIRECT => $this->displaySowingPresentation($eTask),
-										ACTION_SEMIS_PEPINIERE => $this->displayYoungPlantPresentation($eTask),
-										ACTION_PLANTATION => $this->displayPlantingPresentation($eTask),
-										default => ''
-									};
-
-								$h .= '</dl>';
-
-							}
-
+					$h .= '<tr>';
+						$h .= '<td class="tasks-week-list-name">';
+							$h .= '<a href="'.TaskUi::url($eTask).'">';
+								$h .= $this->getTaskPlace($eTask);
+								$h .= $this->getTaskDescription($eTask, showAction: FALSE);
+								$h .= $this->getComments($eTask);
+							$h .= '</a>';
 						$h .= '</td>';
 
-					}
+						if($hasTools) {
 
-					if($hasTools) {
+							$h .= '<td class="tasks-week-list-tools">';
 
-						$h .= '<td class="tasks-week-list-tools">';
+								foreach($eTask['cRequirement'] as $eRequirement) {
 
-							foreach($eTask['cRequirement'] as $eRequirement) {
+									$eTool = $eRequirement['tool'];
 
-								$eTool = $eRequirement['tool'];
+									$h .= '<div>';
 
-								$h .= '<div>';
-									$h .= \farm\ToolUi::link($eTool);
-								$h .= '</div>';
+										$h .= \farm\ToolUi::link($eTool);
 
-								if($eTask['cultivation']->notEmpty()) {
+										if($eTask['cultivation']->notEmpty()) {
 
-									switch($eTool['routineName']) {
+											switch($eTool['routineName']) {
 
-										case 'tray' :
-											if($eTool['routineValue']['value']) {
+												case 'tray' :
+													if($eTool['routineValue']['value']) {
 
-												$youngPlants = $eTask['cultivation']['cSlice']->sum('youngPlants');
+														$youngPlants = $eTask['cultivation']['cSlice']->sum('youngPlants');
 
-												$h .= '<div class="color-muted">';
-												$h .= 'x '.(ceil($youngPlants / $eTool['routineValue']['value'] * 10) / 10);
-												$h .= '</div>';
+														$h .= ' x <b>'.(ceil($youngPlants / $eTool['routineValue']['value'] * 10) / 10).'</b>';
+
+													}
+													break;
 
 											}
-											break;
 
-									}
+										}
+
+									$h .= '</div>';
 
 								}
 
-							}
+							$h .= '</td>';
 
+						}
+						$h .= '<td class="text-center">';
+							$h .= $this->getDone($eTask, $week);
 						$h .= '</td>';
+						if($eFarm->hasFeatureTime()) {
+							$h .= '<td>';
+								$h .= $this->getTime($eTask);
+							$h .= '</td>';
+						}
+						$h .= '<td class="text-end">';
+							$h .= $this->getUpdate($eTask, 'btn-outline-secondary');
+						$h .= '</td>';
+					$h .= '</tr>';
 
-					}
-					$h .= '<td class="text-center">';
-						$h .= $this->getDone($eTask, $week);
-					$h .= '</td>';
-					if($eFarm->hasFeatureTime()) {
-						$h .= '<td>';
-							$h .= $this->getTime($eTask);
-						$h .= '</td>';
-					}
-					$h .= '<td class="text-end">';
-						$h .= $this->getUpdate($eTask, 'btn-outline-secondary');
-					$h .= '</td>';
-				$h .= '</tr>';
-			}
+				}
 
 			$h .= '</tbody>';
 
@@ -2561,10 +2532,26 @@ class TaskUi {
 						'seeds' => 0,
 						'area' => 0,
 						'targeted' => FALSE,
+						'tools' => []
 					]);
 
 					if($eSlice['youngPlants'] !== NULL) {
+
 						$ccVariety[$ePlant['id']][$id]['youngPlants'] += $eSlice['youngPlants'];
+
+						foreach($eTask['cRequirement']
+				        ->getColumnCollection('tool')
+				        ->find(fn($eTool) => $eTool['routineName'] === 'tray') as $eTool) {
+
+							$ccVariety[$ePlant['id']][$id]['tools'][$eTool['id']] ??= [
+								'youngPlants' => 0,
+								'tool' => $eTool
+							];
+
+							$ccVariety[$ePlant['id']][$id]['tools'][$eTool['id']]['youngPlants'] += $eSlice['youngPlants'];
+
+						}
+
 					}
 
 					if($eSlice['seeds'] !== NULL) {
@@ -2593,85 +2580,123 @@ class TaskUi {
 			);
 		});
 
-		$h = '';
+		$h = '<div class="util-overflow-sm stick-xs">';
 
-		$h .= '<table class="tbody-even tasks-week-plant-list table-minimalist stick-xs">';
-			$h .= '<thead>';
-				$h .= '<tr>';
-					$h .= '<th>';
-						$h .= s("Espèce");
-					$h .= '</th>';
-					$h .= '<th>';
-						$h .= s("Variété");
-					$h .= '</th>';
-					$h .= '<th class="text-end">';
-						$h .= s("Surface");
-					$h .= '</th>';
-					if($eAction['fqn'] !== ACTION_SEMIS_DIRECT) {
+			$columns = 2;
+
+			$h .= '<table class="tbody-even tbody-bordered tasks-week-plant-list">';
+				$h .= '<thead>';
+					$h .= '<tr>';
+						$h .= '<th></th>';
 						$h .= '<th class="text-end">';
-							$h .= s("Plants");
+							$h .= s("Surface");
 						$h .= '</th>';
-					}
-					if($eAction['fqn'] !== ACTION_PLANTATION) {
-						$h .= '<th class="text-end">';
-							$h .= s("Semences");
-						$h .= '</th>';
-					}
-				$h .= '</tr>';
-			$h .= '</thead>';
-
-		foreach($ccVariety as $cVariety) {
-
-			$first = TRUE;
-
-			$h .= '<tbody>';
-
-			foreach($cVariety as $eVariety) {
-
-				$h .= '<tr>';
-					if($first) {
-						$h .= '<td rowspan="'.$cVariety->count().'">';
-							$h .= \plant\PlantUi::getVignette($eVariety['plant'], '2rem').' '.encode($eVariety['plant']['name']);
-						$h .= '</td>';
-						$first = FALSE;
-					}
-					$h .= '<td>';
-						$h .= ($eVariety['id'] === NULL) ? '<i>'.s("Variété non renseignée").'</i>' : encode($eVariety['name']);
-					$h .= '</td>';
-					$h .= '<td class="text-end '.($eVariety['targeted'] ? 'color-warning' : '').'">';
-						if($eVariety['area'] > 0) {
-							$h .= s("{value} m²", $eVariety['area']).($eVariety['targeted'] ? '&nbsp;*' : '');
-						} else {
-							$h .= '?';
+						if($eAction['fqn'] !== ACTION_SEMIS_DIRECT) {
+							$columns++;
+							$h .= '<th class="text-end">';
+								$h .= s("Plants");
+							$h .= '</th>';
 						}
-					$h .= '</td>';
-					if($eAction['fqn'] !== ACTION_SEMIS_DIRECT) {
-						$h .= '<td class="text-end '.($eVariety['targeted'] ? 'color-warning' : '').'">';
-							if($eVariety['youngPlants'] > 0) {
-								$h .= $eVariety['youngPlants'].($eVariety['targeted'] ? '&nbsp;*' : '');
-							} else {
-								$h .= '?';
+						if($eAction['fqn'] === ACTION_SEMIS_PEPINIERE) {
+							$columns++;
+							$h .= '<th>';
+								$h .= s("Plateaux de semis");
+							$h .= '</th>';
+						}
+						if($eAction['fqn'] !== ACTION_PLANTATION) {
+							$columns++;
+							$h .= '<th class="text-end">';
+								$h .= s("Semences");
+							$h .= '</th>';
+						}
+					$h .= '</tr>';
+				$h .= '</thead>';
+
+			foreach($ccVariety as $cVariety) {
+
+				$eVariety = $cVariety->first();
+
+				$h .= '<tbody>';
+
+					$h .= '<tr>';
+						$h .= '<th colspan="'.$columns.'">';
+							$h .= \plant\PlantUi::getVignette($eVariety['plant'], '2rem').'<span style="font-weight: bold; margin-left: 0.5rem">'.encode($eVariety['plant']['name']).'</span>';
+						$h .= '</th>';
+					$h .= '</tr>';
+
+					foreach($cVariety as $eVariety) {
+
+						$h .= '<tr>';
+							$h .= '<td>';
+								$h .= ($eVariety['id'] === NULL) ? '<i>'.s("Variété non renseignée").'</i>' : encode($eVariety['name']);
+							$h .= '</td>';
+							$h .= '<td class="text-end '.($eVariety['targeted'] ? 'color-warning' : '').'">';
+								if($eVariety['area'] > 0) {
+									$h .= s("{value} m²", $eVariety['area']).($eVariety['targeted'] ? '&nbsp;*' : '');
+								} else {
+									$h .= '?';
+								}
+							$h .= '</td>';
+							if($eAction['fqn'] !== ACTION_SEMIS_DIRECT) {
+								$h .= '<td class="text-end '.($eVariety['targeted'] ? 'color-warning' : '').'">';
+									if($eVariety['youngPlants'] > 0) {
+										$h .= $eVariety['youngPlants'].($eVariety['targeted'] ? '&nbsp;*' : '');
+									} else {
+										$h .= '?';
+									}
+
+									$h .= '<div>';
+										if($eVariety['seeds'] > 0) {
+											$h .= ($eVariety['numberPlantKilogram'] !== NULL) ? '<small class="color-muted">('.\plant\VarietyUi::getPlantsWeight($eVariety, $eVariety['seeds']).')</small>' : '';
+										}
+									$h .= '</div>';
+								$h .= '</td>';
 							}
-						$h .= '</td>';
-					}
-					if($eAction['fqn'] !== ACTION_PLANTATION) {
-						$h .= '<td class="text-end '.($eVariety['targeted'] ? 'color-warning' : '').'">';
-							if($eVariety['seeds'] > 0) {
-								$h .= $eVariety['seeds'].($eVariety['targeted'] ? '&nbsp;*' : '');
-							} else {
-								$h .= '?';
+							if($eAction['fqn'] === ACTION_SEMIS_PEPINIERE) {
+
+								$h .= '<td class="tasks-week-plant-tray">';
+
+									foreach($eVariety['tools'] as ['youngPlants' => $youngPlants, 'tool' => $eTool]) {
+
+										$h .= '<div>';
+											$h .= '<b>'.(ceil($youngPlants / $eTool['routineValue']['value'] * 10) / 10).'</b> x ';
+											$h .= encode($eTool['name']);
+										$h .= '</div>';
+
+									}
+
+								$h .= '</td>';
+
 							}
-						$h .= '</td>';
+							if($eAction['fqn'] !== ACTION_PLANTATION) {
+
+								$h .= '<td class="text-end '.($eVariety['targeted'] ? 'color-warning' : '').'">';
+
+									if($eVariety['seeds'] > 0) {
+										$h .= $eVariety['seeds'].($eVariety['targeted'] ? '&nbsp;*' : '');
+									} else {
+										$h .= '?';
+									}
+
+									$h .= '<div>';
+										if($eVariety['seeds'] > 0) {
+											$h .= ($eVariety['weightSeed1000'] !== NULL) ? '<small class="color-muted">('.\plant\VarietyUi::getSeedsWeight1000($eVariety, $eVariety['seeds']).')</small>' : '';
+										}
+									$h .= '</div>';
+
+								$h .= '</td>';
+							}
+						$h .= '</tr>';
+
 					}
-				$h .= '</tr>';
+
+				$h .= '</tbody>';
 
 			}
 
-			$h .= '</tbody>';
+			$h .= '</table>';
 
-		}
-
-		$h .= '</table>';
+		$h .= '</div>';
 
 		if($targeted) {
 			$h .= (new CultivationUi())->getWarningTargeted();
@@ -2758,98 +2783,96 @@ class TaskUi {
 
 		$cTool->sort('name', natural: TRUE);
 
-		$h = '';
+		$h = '<div class="util-overflow-sm stick-xs">';
 
-		$h .= '<table class="tr-even tasks-week-tools table-minimalist stick-xs">';
-			$h .= '<thead>';
-				$h .= '<tr>';
-					$h .= '<th colspan="2">';
-						$h .= s("Matériel");
-					$h .= '</th>';
-					$h .= '<th class="text-end">';
-						$h .= s("Surface");
-					$h .= '</th>';
-					$h .= '<th class="text-end">';
-						$h .= '<span class="hide-xs-down">'.s("Longueur de planche").'</span>';
-						$h .= '<span class="hide-sm-up">'.s("Longueur").'</span>';
-					$h .= '</th>';
-					if($eAction['fqn'] === ACTION_SEMIS_PEPINIERE or $eAction['fqn'] === ACTION_PLANTATION) {
-						$h .= '<th class="text-end">';
-							$h .= s("Plants");
+			$h .= '<table class="tr-even tr-bordered">';
+				$h .= '<thead>';
+					$h .= '<tr>';
+						$h .= '<th colspan="2">';
+							$h .= s("Matériel");
 						$h .= '</th>';
-					}
-					if($eAction['fqn'] === ACTION_SEMIS_PEPINIERE or $eAction['fqn'] === ACTION_SEMIS_DIRECT) {
 						$h .= '<th class="text-end">';
-							$h .= s("Semences");
+							$h .= s("Surface");
 						$h .= '</th>';
-					}
-				$h .= '</tr>';
-			$h .= '</thead>';
+						$h .= '<th class="text-end">';
+							$h .= '<span class="hide-xs-down">'.s("Longueur de planche").'</span>';
+							$h .= '<span class="hide-sm-up">'.s("Longueur").'</span>';
+						$h .= '</th>';
+						if($eAction['fqn'] === ACTION_SEMIS_PEPINIERE or $eAction['fqn'] === ACTION_PLANTATION) {
+							$h .= '<th class="text-end">';
+								$h .= s("Plants");
+							$h .= '</th>';
+						}
+						if($eAction['fqn'] === ACTION_SEMIS_PEPINIERE or $eAction['fqn'] === ACTION_SEMIS_DIRECT) {
+							$h .= '<th class="text-end">';
+								$h .= s("Semences");
+							$h .= '</th>';
+						}
+					$h .= '</tr>';
+				$h .= '</thead>';
 
-			$h .= '<tbody>';
+				$h .= '<tbody>';
 
-			foreach($cTool as $eTool) {
+				foreach($cTool as $eTool) {
 
-				$h .= '<tr>';
-					$h .= '<td>';
-						$h .= \farm\ToolUi::getVignette($eTool, '4rem', '3rem').' '.\farm\ToolUi::link($eTool);
-					$h .= '</td>';
-					$h .= '<td class="text-end color-muted">';
+					$h .= '<tr>';
+						$h .= '<td>';
+							$h .= \farm\ToolUi::getVignette($eTool, '4rem', '3rem').' '.\farm\ToolUi::link($eTool);
+						$h .= '</td>';
+						$h .= '<td class="text-end">';
 
-						switch($eTool['routineName']) {
+							switch($eTool['routineName']) {
 
-							case 'tray' :
-								if($eTool['routineValue']['value']) {
+								case 'tray' :
+									if($eTool['routineValue']['value']) {
+										$h .= 'x <b>'.(ceil($eTool['youngPlants'] / $eTool['routineValue']['value'] * 10) / 10).'</b>';
+									}
+									break;
 
-									$h .= '<div class="color-muted">';
-										$h .= 'x '.(ceil($eTool['youngPlants'] / $eTool['routineValue']['value'] * 10) / 10);
-									$h .= '</div>';
+							}
 
+						$h .= '</td>';
+						$h .= '<td class="text-end '.($eTool['targeted'] ? 'color-warning' : '').'">';
+							if($eTool['area'] > 0) {
+								$h .= s("{value} m²", $eTool['area']).($eTool['targeted'] ? '&nbsp;*' : '');
+							} else {
+								$h .= '?';
+							}
+						$h .= '</td>';
+						$h .= '<td class="text-end '.($eTool['targeted'] ? 'color-warning' : '').'">';
+							if($eTool['length'] > 0) {
+								$h .= s("{value} mL", $eTool['length']).($eTool['targeted'] ? '&nbsp;*' : '');
+							} else {
+								$h .= '?';
+							}
+						$h .= '</td>';
+						if($eAction['fqn'] === ACTION_SEMIS_PEPINIERE or $eAction['fqn'] === ACTION_PLANTATION) {
+							$h .= '<td class="text-end '.($eTool['targeted'] ? 'color-warning' : '').'">';
+								if($eTool['youngPlants'] > 0) {
+									$h .= $eTool['youngPlants'].($eTool['targeted'] ? '&nbsp;*' : '');
+								} else {
+									$h .= '?';
 								}
-								break;
-
+							$h .= '</td>';
 						}
-
-					$h .= '</td>';
-					$h .= '<td class="text-end '.($eTool['targeted'] ? 'color-warning' : '').'">';
-						if($eTool['area'] > 0) {
-							$h .= s("{value} m²", $eTool['area']).($eTool['targeted'] ? '&nbsp;*' : '');
-						} else {
-							$h .= '?';
+						if($eAction['fqn'] === ACTION_SEMIS_PEPINIERE or $eAction['fqn'] === ACTION_SEMIS_DIRECT) {
+							$h .= '<td class="text-end '.($eTool['targeted'] ? 'color-warning' : '').'">';
+								if($eTool['seeds'] > 0) {
+									$h .= $eTool['seeds'].($eTool['targeted'] ? '&nbsp;*' : '');
+								} else {
+									$h .= '?';
+								}
+							$h .= '</td>';
 						}
-					$h .= '</td>';
-					$h .= '<td class="text-end '.($eTool['targeted'] ? 'color-warning' : '').'">';
-						if($eTool['length'] > 0) {
-							$h .= s("{value} mL", $eTool['length']).($eTool['targeted'] ? '&nbsp;*' : '');
-						} else {
-							$h .= '?';
-						}
-					$h .= '</td>';
-					if($eAction['fqn'] === ACTION_SEMIS_PEPINIERE or $eAction['fqn'] === ACTION_PLANTATION) {
-						$h .= '<td class="text-end '.($eTool['targeted'] ? 'color-warning' : '').'">';
-							if($eTool['youngPlants'] > 0) {
-								$h .= $eTool['youngPlants'].($eTool['targeted'] ? '&nbsp;*' : '');
-							} else {
-								$h .= '?';
-							}
-						$h .= '</td>';
-					}
-					if($eAction['fqn'] === ACTION_SEMIS_PEPINIERE or $eAction['fqn'] === ACTION_SEMIS_DIRECT) {
-						$h .= '<td class="text-end '.($eTool['targeted'] ? 'color-warning' : '').'">';
-							if($eTool['seeds'] > 0) {
-								$h .= $eTool['seeds'].($eTool['targeted'] ? '&nbsp;*' : '');
-							} else {
-								$h .= '?';
-							}
-						$h .= '</td>';
-					}
-				$h .= '</tr>';
+					$h .= '</tr>';
 
-			}
+				}
 
-			$h .= '</tbody>';
+				$h .= '</tbody>';
 
-		$h .= '</table>';
+			$h .= '</table>';
+
+		$h .= '</div>';
 
 		if($targeted) {
 			$h .= (new CultivationUi())->getWarningTargeted();
@@ -2870,24 +2893,23 @@ class TaskUi {
 			$ePlant = $eTask['plant'];
 
 			$info = [
-				'link' => '<a href="/plant/plant:update?id='.$ePlant['id'].'">',
-				'plant' => \plant\PlantUi::getVignette($ePlant, '1.5rem').' '.encode($ePlant['name'])
+				'plant' => \plant\PlantUi::getVignette($ePlant, '1.5rem').' <a href="/plant/plant:update?id='.$ePlant['id'].'">'.encode($ePlant['name']).'</a>'
 			];
 
 			switch($eTask['cultivation']['seedling']) {
 
 				case Cultivation::SOWING :
 					if($ePlant['seedsSafetyMargin'] !== NULL) {
-						$h .= '<div class="util-info">';
-							$h .= s("Les quantités indiquées tiennent compte de la <link>marge de sécurité de {value} %</link> sur vos semis directs de {plant}.", ['value' => $ePlant['seedsSafetyMargin']] + $info);
+						$h .= '<div class="util-block-help">';
+							$h .= s("Les quantités indiquées incluent la marge de sécurité de {value} % sur vos semis directs de {plant}.", ['value' => $ePlant['seedsSafetyMargin']] + $info);
 						$h .= '</div>';
 					}
 					break;
 
 				case Cultivation::YOUNG_PLANT :
 					if($ePlant['plantsSafetyMargin'] !== NULL) {
-						$h .= '<div class="util-info">';
-							$h .= s("Les quantités indiquées tiennent compte de la <link>marge de sécurité de {value} %</link> sur vos plants de {plant} autoproduits.", ['value' => $ePlant['plantsSafetyMargin']] + $info);
+						$h .= '<div class="util-block-help">';
+							$h .= s("Les quantités indiquées incluent la marge de sécurité de {value} % sur vos plants de {plant} autoproduits.", ['value' => $ePlant['plantsSafetyMargin']] + $info);
 						$h .= '</div>';
 					}
 					break;
@@ -2976,7 +2998,9 @@ class TaskUi {
 
 	protected function displayYoungPlantTools(Task $eTask): string {
 
-		$youngPlants = $eTask['cultivation']['cSlice']->sum('youngPlants');
+		$cSlice = $eTask['cultivation']['cSlice'];
+
+		$youngPlants = $cSlice->sum('youngPlants');
 
 		if($youngPlants === 0) {
 			return '';
@@ -2990,18 +3014,45 @@ class TaskUi {
 				$eTool['routineName'] === 'tray' and
 				$eTool['routineValue']['value']
 			) {
+
 				$h .= '<dt>'.s("Matériel").'</dt>';
 				$h .= '<dd>';
+					$h .= '<b>';
+						$h .= encode($eTool['name']);
+					$h .= '</b>';
+
 					$h .= '<div class="task-presentation-seedling-tools">';
-						$h .= '<div>';
-							$h .= encode($eTool['name']);
-						$h .= '</div>';
-						$h .= '<div>x</div>';
-						$h .= '<div class="task-presentation-seedling-tools-number">';
-							$h .= (ceil($youngPlants / $eTool['routineValue']['value'] * 10) / 10);
-						$h .= '</div>';
+
+						$sum = 0;
+
+						foreach($cSlice as $eSlice) {
+
+							$eVariety = $eSlice['variety'];
+							$trays = $eSlice['youngPlants'] ? (ceil($eSlice['youngPlants'] / $eTool['routineValue']['value'] * 10) / 10) : NULL;
+
+							$h .= '<div>';
+								$h .= $eVariety->empty() ? '<i>'.s("Variété non renseignée").'</i>' : encode($eVariety['name']);
+							$h .= '</div>';
+							$h .= '<div class="text-end '.($eTask['series']->isTargeted() ? 'color-warning' : '').'">';
+								if($trays !== NULL) {
+									$sum += $trays;
+									$h .= $trays.' '.($eTask['series']->isTargeted() ? '*' : '');
+								} else {
+									$h .= '?';
+								}
+							$h .= '</div>';
+						}
+
+						if($cSlice->count() >= 2 and $sum > 0) {
+							$h .= '<div><b>'.s("Total").'</b></div>';
+							$h .= '<div class="text-end '.($eTask['series']->isTargeted() ? 'color-warning' : '').'">';
+								$h .= $sum.' '.($eTask['series']->isTargeted() ? '*' : '');
+							$h .= '</div>';
+						}
+
 					$h .= '</div>';
 				$h .= '</dd>';
+
 			}
 		}
 
@@ -3272,7 +3323,7 @@ class TaskUi {
 		$cSlice = $eTask['cultivation']['cSlice'];
 		$sum = 0;
 
-		$list = '<div class="task-presentation-seedling '.($eTask['series']->isTargeted() ? 'color-warning' : '').'">';
+		$list = '<div class="task-presentation-seedling">';
 
 		foreach($cSlice as $eSlice) {
 
@@ -3281,8 +3332,7 @@ class TaskUi {
 			$list .= '<div>';
 				$list .= $eVariety->empty() ? '<i>'.s("Variété non renseignée").'</i>' : encode($eVariety['name']);
 			$list .= '</div>';
-			$list .= '<div>x</div>';
-			$list .= '<div class="task-presentation-seedling-number">';
+			$list .= '<div class="text-end '.($eTask['series']->isTargeted() ? 'color-warning' : '').'">';
 				if($eSlice[$property] !== NULL) {
 					$sum += $eSlice[$property];
 					$list .= $eSlice[$property].' '.($eTask['series']->isTargeted() ? '*' : '');
@@ -3296,25 +3346,18 @@ class TaskUi {
 					$eVariety->notEmpty()
 				) {
 					$list .= match($property) {
-						'seeds' => ($eVariety['weightSeed1000'] !== NULL) ? '<small class="color-muted"> / '.\plant\VarietyUi::getSeedsWeight1000($eVariety, $eSlice[$property]).'</small>' : '',
-						'youngPlants' => ($eVariety['numberPlantKilogram'] !== NULL) ? '<small class="color-muted"> / '.\plant\VarietyUi::getPlantsWeight($eVariety, $eSlice[$property]).'</small>' : ''
+						'seeds' => ($eVariety['weightSeed1000'] !== NULL) ? '<small class="color-muted">('.\plant\VarietyUi::getSeedsWeight1000($eVariety, $eSlice[$property]).')</small>' : '',
+						'youngPlants' => ($eVariety['numberPlantKilogram'] !== NULL) ? '<small class="color-muted">('.\plant\VarietyUi::getPlantsWeight($eVariety, $eSlice[$property]).')</small>' : ''
 					};
 				}
 			$list .= '</div>';
-			if($cSlice->count() > 1) {
-				$list .= '<div class="task-presentation-seedling-part">'.$eSlice->formatPart($eTask['cultivation']).'</div>';
-			}
 		}
 
 		if($cSlice->count() >= 2 and $sum > 0) {
-			$list .= '<div class="task-presentation-seedling-sum">'.s("Total").'</div>';
-			$list .= '<div class="task-presentation-seedling-sum">x</div>';
-			$list .= '<div class="task-presentation-seedling-sum task-presentation-seedling-number">';
+			$list .= '<div><b>'.s("Total").'</b></div>';
+			$list .= '<div class="text-end '.($eTask['series']->isTargeted() ? 'color-warning' : '').'">';
 				$list .= $sum.' '.($eTask['series']->isTargeted() ? '*' : '');
 			$list .= '</div>';
-			if($cSlice->count() > 1) {
-				$list .= '<div></div>';
-			}
 		}
 
 		$list .= '</div>';

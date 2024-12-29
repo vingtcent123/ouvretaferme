@@ -61,9 +61,15 @@
 				$data->cSlice = new Collection();
 			}
 
+			$data->e['cTray'] = \farm\ToolLib::getByFarm($data->e['farm'], routineName: 'tray');
+
 		} else {
+
 			$data->ccVariety = new Collection();
 			$data->cSlice = new Collection();
+
+			$data->e['cTray'] = new Collection();
+
 		}
 
 		throw new \ViewAction($data);

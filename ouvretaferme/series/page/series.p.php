@@ -99,6 +99,7 @@ use series\Series;
 
 		$data->ccVariety = \plant\VarietyLib::query($data->eFarm, $data->ePlant);
 		$data->cAction = \farm\ActionLib::getByFarm($data->eFarm, fqn: [ACTION_SEMIS_PEPINIERE, ACTION_SEMIS_DIRECT, ACTION_PLANTATION], index: 'fqn');
+		$data->cTray = \farm\ToolLib::getByFarm($data->eFarm, routineName: 'tray');
 
 		$data->nextIndex = POST('index', 'int', 0) + 1;
 
