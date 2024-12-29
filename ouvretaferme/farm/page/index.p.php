@@ -508,11 +508,6 @@
 
 		$data->cSeriesImportPerennial = \series\SeriesLib::getImportPerennial($data->eFarm, $data->season);
 
-		$data->search = new Search([
-			'supplier' => GET('supplier', 'farm\Supplier'),
-			'bedWidth' => GET('bedWidth', '?int')
-		]);
-
 		$data->nSeries = \series\SeriesLib::countByFarm($data->eFarm, $data->season);
 
 		if($data->nSeries === 0) {
@@ -522,18 +517,25 @@
 		}
 
 		$data->cSupplier = new Collection();
+		$data->cAction = new Collection();
 
 		\farm\ActionLib::getMainByFarm($data->eFarm);
 
 		switch(Setting::get('main\viewSeries')) {
 
 			case \farm\Farmer::AREA :
-				$data->search->set('tool', get_exists('tool') ? \farm\ToolLib::getOneByFarm($data->eFarm, GET('tool')) : new \farm\Tool());
+
+				$data->search = new Search([
+					'tool' => get_exists('tool') ? \farm\ToolLib::getOneByFarm($data->eFarm, GET('tool')) : new \farm\Tool(),
+					'bedWidth' => GET('bedWidth', '?int')
+				]);
+
 				$data->ccCultivation = \series\CultivationLib::getForArea($data->eFarm, $data->season, $data->search);
 				$data->ccForecast = \plant\ForecastLib::getReadOnlyByFarm($data->eFarm, $data->season);
 				break;
 
 			case \farm\Farmer::FORECAST :
+				$data->search = NULL;
 				if(get_exists('help')) {
 					\Cache::redis()->delete('help-forecast-'.$data->eFarm['id']);
 				}
@@ -542,15 +544,30 @@
 				break;
 
 			case \farm\Farmer::SEEDLING :
+
+				$data->search = new Search([
+					'supplier' => GET('supplier', 'farm\Supplier'),
+					'seedling' => \series\Cultivation::GET('seedling', 'seedling')
+				]);
+
 				$data->cSupplier = \farm\SupplierLib::getByFarm($data->eFarm);
-				$data->items = \series\CultivationLib::getForSeedling($data->eFarm, $data->season, $data->search);
+				$data->items = ($data->search->get('seedling') === \series\Cultivation::YOUNG_PLANT_BOUGHT) ?
+					\series\CultivationLib::getForSeedlingByStartWeek($data->eFarm, $data->season, $data->search) :
+					\series\CultivationLib::getForSeedling($data->eFarm, $data->season, $data->search);
 				break;
 
 			case \farm\Farmer::HARVESTING :
-				$data->ccCultivation = \series\CultivationLib::getForHarvesting($data->eFarm, $data->season, $data->search);
+				$data->search = NULL;
+				$data->ccCultivation = \series\CultivationLib::getForHarvesting($data->eFarm, $data->season);
 				break;
 
 			case \farm\Farmer::WORKING_TIME :
+
+				$data->search = new Search([
+					'action' => GET('action', 'farm\Action'),
+				]);
+
+				$data->cAction = \farm\ActionLib::getByFarm($data->eFarm, category: \farm\CategoryLib::getByFarm($data->eFarm, fqn: 'culture'));
 				$data->ccCultivation = \series\CultivationLib::getWorkingTimeByFarm($data->eFarm, $data->season, $data->search);
 				break;
 

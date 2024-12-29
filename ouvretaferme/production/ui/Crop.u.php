@@ -128,7 +128,6 @@ class CropUi {
 						$h .= \plant\PlantUi::getVignette($ePlant, '3rem');
 						$h .= '<h2>';
 							$h .= \plant\PlantUi::link($ePlant);
-							$h .= ' <small>'.(new \production\SliceUi())->getLine($eCrop['cSlice']).'</small>';
 							$h .= self::start($eCrop, $cActionMain, fontSize: '0.7em');
 						$h .= '</h2>';
 
@@ -147,6 +146,7 @@ class CropUi {
 						}
 
 					$h .= '</div>';
+					$h .= $this->getVarieties($eCrop, $eCrop['cSlice']);
 				$h .= '</div>';
 
 				$h .= '<div class="crop-item-presentation">';
@@ -163,6 +163,25 @@ class CropUi {
 					}
 
 				$h .= '</div>';
+			$h .= '</div>';
+
+		}
+
+		$h .= '</div>';
+
+		return $h;
+
+	}
+
+	public function getVarieties(\Element $eCrop, \Collection $cSlice): string {
+
+		$h = '<div class="crop-item-varieties crop-item-varieties-'.$cSlice->count().'">';
+
+		foreach($cSlice as $eSlice) {
+
+			$h .= '<div>';
+				$h .= '<span class="crop-item-varieties-label">'.encode($eSlice['variety']['name']).'</span>';
+				$h .= '<span class="crop-item-varieties-part">'.$eSlice->formatPart($eCrop).'</span>';
 			$h .= '</div>';
 
 		}

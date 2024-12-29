@@ -12,15 +12,13 @@ class SliceUi {
 
 	}
 
-	public function getLine(\Collection $cSlice): string {
+	public function getLine(Crop|\series\Cultivation $eCrop, \Collection $cSlice): string {
 
 		if($cSlice->empty()) {
 			return '';
 		}
 
-		return implode(' / ', $cSlice->makeArray(function($eSlice) {
-			return '<span title="'.$eSlice->formatPart().'">'.encode($eSlice['variety']['name']).'</span>';
-		}));
+		return implode(' / ', $cSlice->makeArray(fn($eSlice) => '<span title="'.$eSlice->formatPart($eCrop).'">'.encode($eSlice['variety']['name']).'</span>'));
 
 	}
 

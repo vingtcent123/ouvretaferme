@@ -470,9 +470,42 @@ div.series-item-title div.series-item-planning-harvest-objective {
 /* Affichage des semences et plants */
 div.series-item-seeds {
 	display: grid;
-	grid-template-columns: minmax(10rem, 20%) 7rem 7rem 7rem 1fr 12rem;
 	grid-gap: 0.25rem;
 	align-items: baseline;
+}
+
+div.series-item-seeds-all {
+	grid-template-columns: minmax(10rem, 20%) 7rem 7rem 7rem 1fr 12rem;
+}
+
+div.series-item-seeds-sowing {
+	grid-template-columns: minmax(15rem, 20%) 9rem 1fr 12rem;
+}
+
+div.series-item-seeds-sowing .series-item-young-plant,
+div.series-item-seeds-sowing .series-item-young-plant-bought {
+	display: none;
+}
+
+div.series-item-seeds-young-plant {
+	grid-template-columns: minmax(15rem, 20%) 9rem 9rem 1fr 12rem;
+}
+
+div.series-item-seeds-young-plant .series-item-young-plant-bought {
+	display: none;
+}
+
+div.series-item-seeds-young-plant-bought {
+	grid-template-columns: minmax(15rem, 20%) 9rem 1fr 12rem;
+}
+
+div.series-item-seeds-young-plant-bought .series-item-sowing,
+div.series-item-seeds-young-plant-bought .series-item-young-plant {
+	display: none;
+}
+
+div.series-item-seeds-young-plant-bought .util-grid-header br {
+	display: none;
 }
 
 div.series-item-seeds.series-item-title {
@@ -481,15 +514,27 @@ div.series-item-seeds.series-item-title {
 
 @media (min-width: 1600px) {
 
-	div.series-item-seeds {
+	div.series-item-seeds-all {
 		grid-template-columns: minmax(10rem, 20%) 9rem 9rem 9rem 1fr 12rem;
 	}
 
 }
 @media (max-width: 991px) {
 
-	div.series-item-seeds {
+	div.series-item-seeds-all {
 		grid-template-columns: minmax(10rem, 20%) 7rem 7rem 7rem 1fr 8rem;
+	}
+
+	div.series-item-seeds-sowing {
+		grid-template-columns: minmax(15rem, 20%) 7rem 1fr 8rem;
+	}
+
+	div.series-item-seeds-young-plant-bought {
+		grid-template-columns: minmax(15rem, 20%) 9rem 1fr 8rem;
+	}
+
+	div.series-item-seeds-young-plant {
+		grid-template-columns: minmax(15rem, 20%) 7rem 7rem 1fr 8rem;
 	}
 
 	div.series-item-seeds.series-item-title {

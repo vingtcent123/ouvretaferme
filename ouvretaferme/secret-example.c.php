@@ -1,5 +1,6 @@
 <?php
 Database::addServer([
+	'name' => 'ouvretaferme',
 	'type' => 'MySQL',
 	'host' => 'mysql-otf',
 	'port' => 3306,

@@ -164,14 +164,16 @@ new AdaptativeView('series', function($data, FarmTemplate $t) {
 
 	} else {
 
-		if($view !== \farm\Farmer::FORECAST) {
-			echo $uiFarm->getCultivationSeriesSearch($view, $data->eFarm, $data->season, $data->search, $data->cSupplier);
+		if($data->search !== NULL) {
+			echo $uiFarm->getCultivationSeriesSearch($view, $data->eFarm, $data->season, $data->search, $data->cSupplier, $data->cAction);
 		}
 
 		echo match($view)  {
 			\farm\Farmer::AREA => (new \series\CultivationUi())->displayByArea($data->season, $data->eFarm, $data->ccCultivation, $data->ccForecast),
 			\farm\Farmer::FORECAST => (new \series\CultivationUi())->displayByForecast($data->eFarm, $data->season, $data->ccForecast),
-			\farm\Farmer::SEEDLING => (new \series\CultivationUi())->displayBySeedling($data->season, $data->eFarm, $data->items, $data->cSupplier, $data->search->get('supplier')),
+			\farm\Farmer::SEEDLING => ($data->search->get('seedling') === \series\Cultivation::YOUNG_PLANT_BOUGHT) ?
+				(new \series\CultivationUi())->displayBySeedlingByStartWeek($data->eFarm, $data->season, $data->items, $data->cSupplier, $data->search) :
+				(new \series\CultivationUi())->displayBySeedling($data->eFarm, $data->items, $data->cSupplier, $data->search),
 			\farm\Farmer::HARVESTING => (new \series\CultivationUi())->displayByHarvesting($data->ccCultivation),
 			\farm\Farmer::WORKING_TIME => (new \series\CultivationUi())->displayByWorkingTime($data->eFarm, $data->ccCultivation)
 		};

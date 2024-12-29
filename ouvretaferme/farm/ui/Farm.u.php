@@ -700,7 +700,7 @@ class FarmUi {
 						) {
 							$h .= '<a data-get="/series/series:createFrom?farm='.$eFarm['id'].'&season='.$selectedSeason.'" class="btn btn-primary" data-ajax-class="Ajax.Query">'.\Asset::icon('plus-circle').'<span class="hide-xs-down"> '.s("Nouvelle série").'</span></a>';
 						}
-						if($nSeries >= 5) {
+						if($nSeries >= 2) {
 							$h .= ' <a class="btn btn-primary" '.attr('onclick', 'Lime.Search.toggle("#series-search")').'>';
 								$h .= \Asset::icon('search');
 							$h .= '</a>';
@@ -715,10 +715,9 @@ class FarmUi {
 					break;
 
 				case \farm\Farmer::SEEDLING :
-				case \farm\Farmer::HARVESTING :
 				case \farm\Farmer::WORKING_TIME :
 					$h .=  '<div>';
-						if($nSeries >= 5) {
+						if($nSeries >= 2) {
 							$h .= '<a class="btn btn-primary" '.attr('onclick', 'Lime.Search.toggle("#series-search")').'>';
 								$h .= \Asset::icon('search');
 							$h .= '</a>';
@@ -734,9 +733,9 @@ class FarmUi {
 
 	}
 
-	public function getCultivationSeriesSearch(string $view, \farm\Farm $eFarm, int $season, \Search $search, \Collection $cSupplier = new \Collection()): string {
+	public function getCultivationSeriesSearch(string $view, \farm\Farm $eFarm, int $season, \Search $search, \Collection $cSupplier, \Collection $cAction): string {
 
-		$h = '<div id="series-search" class="util-block-search stick-xs '.($search->empty() ? 'hide' : '').'">';
+		$h = '<div id="series-search" class="util-block-search stick-xs '.($search->empty(['cAction']) ? 'hide' : '').'">';
 
 			$form = new \util\FormUi();
 			$url = \farm\FarmUi::urlCultivationSeries($eFarm, season: $season);
@@ -746,12 +745,17 @@ class FarmUi {
 				$h .= '<div>';
 
 					if($view === Farmer::SEEDLING and $cSupplier->notEmpty()) {
+						$h .= $form->select('seedling', \series\CultivationUi::p('seedling')->values, $search->get('seedling'), ['placeholder' => s("Implantation")]);
 						$h .= $form->select('supplier', $cSupplier, $search->get('supplier'), ['placeholder' => s("Fournisseur")]);
 					}
 
-					$h .= $form->inputGroup($form->addon(s('Largeur travaillée de planche')).$form->number('bedWidth', $search->get('bedWidth')).$form->addon(s('cm')));
+					if($view === Farmer::WORKING_TIME) {
+						$h .= $form->select('action', $cAction, $search->get('action'), ['placeholder' => s("Intervention")]);
+					}
 
-					if(\Setting::get('main\viewSeries') === Farmer::AREA) {
+					if($view === Farmer::AREA) {
+
+						$h .= $form->inputGroup($form->addon(s('Largeur travaillée de planche')).$form->number('bedWidth', $search->get('bedWidth')).$form->addon(s('cm')));
 
 						$h .= $form->dynamicField(new Tool(['farm' => $eFarm]), 'id', function($d) use ($search) {
 

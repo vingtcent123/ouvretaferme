@@ -962,7 +962,7 @@ class ProductUi {
 		$h .= '</div>';
 
 		return $form->group(
-			s("Limiter les commandes pour les ventes livrées"),
+			s("Uniquement pour les ventes livrées"),
 			$h,
 			['wrapper' => 'limitStartAt limitStartEnd']
 		);

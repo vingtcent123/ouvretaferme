@@ -185,17 +185,43 @@ class CultivationLib extends CultivationCrud {
 
 	}
 
+	public static function getForSeedlingByStartWeek(\farm\Farm $eFarm, int $season, \Search $search): array {
+
+		$cccCultivation = Cultivation::model()
+			->select(Cultivation::getSelection())
+			->whereSeedling($search->get('seedling'), if: $search->get('seedling'))
+			->whereFarm($eFarm)
+			->whereSeason($season)
+			->sort(new \Sql('IF(startWeek IS NULL, 999, startWeek) DESC'))
+			->getCollection(NULL, NULL, ['startWeek', 'plant', NULL]);
+
+		$values = [];
+
+		foreach($cccCultivation as $key => $ccCultivation) {
+			$value = self::formatSeedling($ccCultivation, $search);
+			if($value) {
+				$values[$key] = $value;
+			}
+		}
+
+		return $values;
+
+	}
+
 	public static function getForSeedling(\farm\Farm $eFarm, int $season, \Search $search): array {
 
 		$ccCultivation = Cultivation::model()
 			->select(Cultivation::getSelection())
+			->whereSeedling($search->get('seedling'), if: $search->get('seedling'))
 			->whereFarm($eFarm)
 			->whereSeason($season)
 			->getCollection(NULL, NULL, ['plant', NULL]);
 
-		if($search->get('bedWidth')) {
-			$ccCultivation->filter(fn($eCultivation) => ($eCultivation['series']['bedWidth'] === $search->get('bedWidth')), depth: 2);
-		}
+		return self::formatSeedling($ccCultivation, $search);
+
+	}
+
+	protected static function formatSeedling(\Collection $ccCultivation, \Search $search): array {
 
 		self::orderByPlant($ccCultivation);
 
@@ -213,9 +239,9 @@ class CultivationLib extends CultivationCrud {
 				$eSeries = $eCultivation['series'];
 
 					return (
-					$eSeries['cycle'] === Series::ANNUAL or
-					$eSeries['perennialSeason'] === 1
-				);
+						$eSeries['cycle'] === Series::ANNUAL or
+						$eSeries['perennialSeason'] === 1
+					);
 
 			});
 
@@ -453,7 +479,7 @@ class CultivationLib extends CultivationCrud {
 
 	}
 
-	public static function getForHarvesting(\farm\Farm $eFarm, int $season, \Search $search): \Collection {
+	public static function getForHarvesting(\farm\Farm $eFarm, int $season): \Collection {
 
 		$eAction = \farm\ActionLib::getByFarm($eFarm, fqn: ACTION_RECOLTE);
 
@@ -477,10 +503,6 @@ class CultivationLib extends CultivationCrud {
 			->whereSeason($season)
 			->sort(['startWeek' => SORT_ASC, 'mainUnit' => SORT_ASC, 'id' => SORT_ASC])
 			->getCollection(NULL, NULL, ['plant', NULL]);
-
-		if($search->get('bedWidth')) {
-			$ccCultivation->filter(fn($eCultivation) => ($eCultivation['series']['bedWidth'] === $search->get('bedWidth')), depth: 2);
-		}
 
 		self::orderByPlant($ccCultivation);
 
@@ -606,16 +628,19 @@ class CultivationLib extends CultivationCrud {
 			->sort(['startWeek' => SORT_ASC, 'mainUnit' => SORT_ASC, 'id' => SORT_ASC])
 			->getCollection(NULL, NULL, ['plant', NULL]);
 
-		if($search->get('bedWidth')) {
-			$ccCultivation->filter(fn($eCultivation) => ($eCultivation['series']['bedWidth'] === $search->get('bedWidth')), depth: 2);
-		}
-
 		self::orderByPlant($ccCultivation);
 
 		$cSeries = $ccCultivation->getColumnCollection('series');
 
 		if($search->has('cAction')) {
 			Task::model()->whereAction('IN', $search->get('cAction'));
+		}
+
+		if(
+			$search->has('action') and
+			$search->get('action')->notEmpty()
+		) {
+			Task::model()->whereAction($search->get('action'));
 		}
 
 		$cccTask = Task::model()

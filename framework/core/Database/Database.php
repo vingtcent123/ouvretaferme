@@ -183,9 +183,9 @@ class Database extends PDO {
 	 */
 	public static function addServer(array $server) {
 
-		array_expects($server, ['type', 'host', 'port', 'login', 'password', 'bases']);
+		array_expects($server, ['name', 'type', 'host', 'port', 'login', 'password', 'bases']);
 
-		$name = $server['name'] ?? NULL;
+		$name = $server['name'];
 
 		self::$servers[$name] = $server;
 
