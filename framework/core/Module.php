@@ -1216,6 +1216,7 @@ abstract class ModuleModel {
 			case '<=' :
 			case '!=' :
 			case 'BETWEEN' :
+			case 'NOT BETWEEN' :
 			case 'LIKE' :
 			case 'NOT LIKE' :
 
