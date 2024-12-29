@@ -1625,7 +1625,7 @@ class TaskUi {
 				$h .= $this->planTask($eSeries);
 			$h .= '</div>';
 			$h .= '<p class="util-info">';
-				$h .= \Asset::icon('calendar-x').' '.s("Vous n'avez pas encore saisi d'intervention pour cette série.");
+				$h .= s("Vous n'avez pas encore saisi d'intervention pour cette série.");
 			$h .= '</p>';
 		$h .= '</div>';
 
@@ -2321,7 +2321,9 @@ class TaskUi {
 
 		$h = '<h3>'.encode($eAction['name']).'</h3>';
 
-		if($hasPlant or $hasTools) {
+		if($cTask->empty()) {
+			$h .= '<div class="util-block-info">'.s("Aucune intervention de cette nature à afficher cette semaine.").'</div>';
+		} else if($hasPlant or $hasTools) {
 		
 			$h .= '<div class="tabs-h" id="tasks-week-tabs" onrender="'.encode('Lime.Tab.restore(this, "list")').'">';
 
@@ -2368,10 +2370,6 @@ class TaskUi {
 	}
 
 	protected function getListByAction(\farm\Farm $eFarm, \farm\Action $eAction, string $week, \Collection $cTask, bool $hasPlant, bool $hasTools): string {
-
-		if($cTask->empty()) {
-			return '<div class="util-info">'.s("Aucune intervention de cette nature à afficher cette semaine.").'</div>';
-		}
 
 		$h = '<table class="tr-even tr-bordered tasks-week-list stick-xs">';
 			$h .= '<thead>';
@@ -2580,7 +2578,7 @@ class TaskUi {
 			);
 		});
 
-		$h = '<div class="util-overflow-sm stick-xs">';
+		$h = '<div class="'.($eAction['fqn'] === ACTION_SEMIS_PEPINIERE ? 'util-overflow-sm' : 'util-overflow-xs').' stick-xs">';
 
 			$columns = 2;
 
@@ -2886,9 +2884,7 @@ class TaskUi {
 
 		$h = '<h3>'.encode($eTask['action']['name']).'</h3>';
 
-		if(
-			$eTask['cultivation']->notEmpty()
-		) {
+		if($eTask['cultivation']->notEmpty()) {
 
 			$ePlant = $eTask['plant'];
 
@@ -2896,23 +2892,41 @@ class TaskUi {
 				'plant' => \plant\PlantUi::getVignette($ePlant, '1.5rem').' <a href="/plant/plant:update?id='.$ePlant['id'].'">'.encode($ePlant['name']).'</a>'
 			];
 
-			switch($eTask['cultivation']['seedling']) {
+			switch($eTask['cultivation']['sliceError']) {
 
-				case Cultivation::SOWING :
-					if($ePlant['seedsSafetyMargin'] !== NULL) {
-						$h .= '<div class="util-block-help">';
-							$h .= s("Les quantités indiquées incluent la marge de sécurité de {value} % sur vos semis directs de {plant}.", ['value' => $ePlant['seedsSafetyMargin']] + $info);
-						$h .= '</div>';
-					}
+				case 'density' :
+					$h .= '<div class="util-danger">'.\Asset::icon('exclamation-circle').' '.s("Il manque la densité d'implantation de la production pour afficher ces informations.").'</div>';
 					break;
 
-				case Cultivation::YOUNG_PLANT :
-					if($ePlant['plantsSafetyMargin'] !== NULL) {
-						$h .= '<div class="util-block-help">';
-							$h .= s("Les quantités indiquées incluent la marge de sécurité de {value} % sur vos plants de {plant} autoproduits.", ['value' => $ePlant['plantsSafetyMargin']] + $info);
-						$h .= '</div>';
-					}
+				case 'area' :
+					$h .= '<div class="util-danger">'.\Asset::icon('exclamation-circle').' '.s("Il manque la surface de cette série pour afficher ces informations.").'</div>';
 					break;
+
+				case 'seedling' :
+					$h .= '<div class="util-danger">'.\Asset::icon('exclamation-circle').' '.s("Il manque le choix d'implantation de la production pour afficher ces informations.").'</div>';
+					break;
+
+				default :
+
+					switch($eTask['cultivation']['seedling']) {
+
+						case Cultivation::SOWING :
+							if($ePlant['seedsSafetyMargin'] !== NULL) {
+								$h .= '<div class="util-block-help">';
+									$h .= s("Les quantités indiquées incluent la marge de sécurité de {value} % sur vos semis directs de {plant}.", ['value' => $ePlant['seedsSafetyMargin']] + $info);
+								$h .= '</div>';
+							}
+							break;
+
+						case Cultivation::YOUNG_PLANT :
+							if($ePlant['plantsSafetyMargin'] !== NULL) {
+								$h .= '<div class="util-block-help">';
+									$h .= s("Les quantités indiquées incluent la marge de sécurité de {value} % sur vos plants autoproduits de {plant}.", ['value' => $ePlant['plantsSafetyMargin']] + $info);
+								$h .= '</div>';
+							}
+							break;
+
+					}
 
 			}
 
@@ -2926,10 +2940,21 @@ class TaskUi {
 
 	}
 
+	protected function displayInvalidAction(Task $eTask, string $content): string {
+
+		$h = '<h3>'.encode($eTask['action']['name']).'</h3>';
+		$h .= '<div class="task-item-action">';
+			$h .= '<div class="util-danger">'.\Asset::icon('exclamation-circle').' '.$content.'</div>';
+		$h .= '</div>';
+
+		return $h;
+
+	}
+
 	protected function displaySowing(Task $eTask): string {
 
-		if($eTask['cultivation']['seedling'] !== Cultivation::SOWING) {
-			return $this->displayAction($eTask, '<div class="util-warning">'.s("Cette intervention de semis direct est incohérente avec les informations renseignées dans la série.").'</div>');
+		if($eTask['cultivation']['seedling'] === Cultivation::YOUNG_PLANT or $eTask['cultivation']['seedling'] === Cultivation::YOUNG_PLANT_BOUGHT) {
+			return $this->displayInvalidAction($eTask, s("Ce semis direct est incohérent avec l'implantation que vous avez choisie pour cette production."));
 		}
 
 		$h = '<dl class="util-presentation util-presentation-2">';
@@ -2961,8 +2986,8 @@ class TaskUi {
 
 	protected function displayYoungPlant(Task $eTask): string {
 
-		if($eTask['cultivation']['seedling'] !== Cultivation::YOUNG_PLANT) {
-			return $this->displayAction($eTask, '<div class="util-warning">'.s("Cette intervention de semis en pépinière est incohérente avec les informations renseignées dans la série.").'</div>');
+		if($eTask['cultivation']['seedling'] === Cultivation::SOWING or $eTask['cultivation']['seedling'] === Cultivation::YOUNG_PLANT_BOUGHT) {
+			return $this->displayInvalidAction($eTask, s("Ce semis en pépinière est incohérent avec l'implantation que vous avez choisie pour cette production."));
 		}
 
 		$h = '<dl class="util-presentation util-presentation-2">';
@@ -2970,7 +2995,11 @@ class TaskUi {
 			$h .= $this->displayYoungPlantTools($eTask);
 		$h .= '</dl>';
 
-		if($eTask['series']->isTargeted()) {
+		if(
+			$eTask['cultivation']['cSlice']->contains(fn($eSlice) => $eSlice['youngPlants'] !== NULL) and
+			$eTask['series']->isTargeted()
+		) {
+			$h .= '<br/>';
 			$h .= (new CultivationUi())->getWarningTargeted();
 		}
 
@@ -3062,15 +3091,8 @@ class TaskUi {
 
 	protected function displayPlanting(Task $eTask): string {
 
-		if($eTask['cultivation']['seedling'] === NULL) {
-			return $this->displayAction($eTask, '<div class="util-warning">'.s("Vous n'avez pas indiqué le mode de semis ou de plantation pour cette production de la série {value}.", encode($eTask['series']['name'])).'</div>');
-		}
-
-		if(
-			$eTask['cultivation']['seedling'] !== Cultivation::YOUNG_PLANT and
-			$eTask['cultivation']['seedling'] !== Cultivation::YOUNG_PLANT_BOUGHT
-		) {
-			return $this->displayAction($eTask, '<div class="util-warning">'.s("Cette intervention de plantation est incohérente avec les informations renseignées pour cette production de la série {value}.", encode($eTask['series']['name'])).'</div>');
+		if($eTask['cultivation']['seedling'] === Cultivation::SOWING) {
+			return $this->displayInvalidAction($eTask, s("Cette plantation est incohérente avec l'implantation en semis direct que vous avez choisie pour cette production."));
 		}
 
 		$h = '<dl class="util-presentation util-presentation-2">';
@@ -3332,10 +3354,10 @@ class TaskUi {
 			$list .= '<div>';
 				$list .= $eVariety->empty() ? '<i>'.s("Variété non renseignée").'</i>' : encode($eVariety['name']);
 			$list .= '</div>';
-			$list .= '<div class="text-end '.($eTask['series']->isTargeted() ? 'color-warning' : '').'">';
+			$list .= '<div class="text-end">';
 				if($eSlice[$property] !== NULL) {
 					$sum += $eSlice[$property];
-					$list .= $eSlice[$property].' '.($eTask['series']->isTargeted() ? '*' : '');
+					$list .= $eTask['series']->isTargeted() ? '<span class="color-warning">'.$eSlice[$property].' *</span>' : $eSlice[$property];
 				} else {
 					$list .= '?';
 				}

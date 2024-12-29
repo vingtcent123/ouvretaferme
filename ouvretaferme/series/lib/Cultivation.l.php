@@ -290,22 +290,26 @@ class CultivationLib extends CultivationCrud {
 		$youngPlantsProduced = NULL;
 		$youngPlantsBought = NULL;
 		$targeted = NULL;
+		$error = NULL;
 
 		switch($eCultivation['seedling']) {
 
 			case Cultivation::SOWING :
-				$seeds = $eCultivation->getSeeds($eSlice, $targeted, $eCultivation['plant']['seedsSafetyMargin']);
+				$seeds = $eCultivation->getSeeds($eSlice, $targeted, $eCultivation['plant']['seedsSafetyMargin'], error: $error);
 				break;
 
 			case Cultivation::YOUNG_PLANT :
 
 				$seeds = $eCultivation->getSeeds($eSlice, $targeted, $eCultivation['plant']['plantsSafetyMargin']);
-				$youngPlantsProduced = $eCultivation->getYoungPlants($eSlice, $targeted, $eCultivation['plant']['plantsSafetyMargin']);
+				$youngPlantsProduced = $eCultivation->getYoungPlants($eSlice, $targeted, $eCultivation['plant']['plantsSafetyMargin'], error: $error);
 				break;
 
 			case Cultivation::YOUNG_PLANT_BOUGHT :
-				$youngPlantsBought = $eCultivation->getYoungPlants($eSlice, $targeted);
+				$youngPlantsBought = $eCultivation->getYoungPlants($eSlice, $targeted, error: $error);
 				break;
+
+			default :
+				$error = 'seedling';
 
 		}
 
@@ -335,7 +339,7 @@ class CultivationLib extends CultivationCrud {
 
 			$seedsVariety[$varietyId] = [
 				'variety' => $eVariety,
-				'incomplete' => FALSE,
+				'error' => FALSE,
 				'targeted' => FALSE,
 				'seeds' => 0,
 				'youngPlantsProduced' => 0,
@@ -345,25 +349,8 @@ class CultivationLib extends CultivationCrud {
 
 		}
 
-		switch($eCultivation['seedling']) {
-
-			case Cultivation::SOWING :
-			case Cultivation::YOUNG_PLANT :
-				if($seeds === NULL) {
-					$seedsVariety[$varietyId]['incomplete'] = TRUE;
-				}
-				break;
-
-			case Cultivation::YOUNG_PLANT_BOUGHT :
-				if($youngPlantsBought === NULL) {
-					$seedsVariety[$varietyId]['incomplete'] = TRUE;
-				}
-				break;
-
-			default :
-				$seedsVariety[$varietyId]['incomplete'] = TRUE;
-				break;
-
+		if($error) {
+			$seedsVariety[$varietyId]['error'] = TRUE;
 		}
 
 		$seedsVariety[$varietyId]['cultivations'][] = [
@@ -371,9 +358,10 @@ class CultivationLib extends CultivationCrud {
 			'cultivation' => $eCultivation,
 			'slice' => $eSlice,
 			'seeds' => $seeds,
+			'error' => $error,
+			'targeted' => $targeted,
 			'youngPlantsProduced' => $youngPlantsProduced,
-			'youngPlantsBought' => $youngPlantsBought,
-			'area' => self::getArea($eCultivation['series'], $eCultivation, $eSlice)
+			'youngPlantsBought' => $youngPlantsBought
 		];
 
 		$seedsVariety[$varietyId]['seeds'] += $seeds;
@@ -406,6 +394,8 @@ class CultivationLib extends CultivationCrud {
 
 		}
 
+		$error = NULL;
+
 		foreach($eCultivation['cSlice'] as $eSlice) {
 
 			$eSlice['targeted'] = $eCultivation['series']->isTargeted();
@@ -413,7 +403,7 @@ class CultivationLib extends CultivationCrud {
 			$eSlice['youngPlants'] = $eCultivation->getYoungPlants($eSlice, safetyMargin: match($eCultivation['seedling']) {
 				Cultivation::YOUNG_PLANT => $eCultivation['plant']['plantsSafetyMargin'],
 				default => 1
-			});
+			}, error: $error);
 
 			$eSlice['seeds'] = $eCultivation->getSeeds($eSlice, safetyMargin: match($eCultivation['seedling']) {
 				Cultivation::SOWING => $eCultivation['plant']['seedsSafetyMargin'],
@@ -424,6 +414,8 @@ class CultivationLib extends CultivationCrud {
 			$eSlice['area'] = self::getArea($eCultivation['series'], $eCultivation, $eSlice);
 
 		}
+
+		$eCultivation['sliceError'] = $error;
 
 	}
 

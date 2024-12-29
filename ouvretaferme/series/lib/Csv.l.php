@@ -229,29 +229,39 @@ class CsvLib {
 
 				$slices = [];
 
+				$limit = match($eCultivation['sliceUnit']) {
+					Cultivation::PERCENT => 100,
+					Cultivation::LENGTH => ($eSeries['use'] === Series::BED) ? ($eSeries['length'] ?? $eSeries['lengthTarget']) : NULL,
+					Cultivation::AREA => ($eSeries['use'] === Series::BLOCK) ? ($eSeries['area'] ?? $eSeries['areaTarget']) : NULL,
+					Cultivation::PLANT => $eCultivation['cSlice']->sum('partPlant'),
+					Cultivation::TRAY => $eCultivation['cSlice']->sum('partTray'),
+				};
+
 				foreach($eCultivation['cSlice'] as $eSlice) {
 
-					$slice = [
-						'variety' => $eSlice['variety']['name']
+					$slices[] = [
+						'variety' => $eSlice['variety']['name'],
+						'part' => $limit ? (int)($eSlice['part'.ucfirst($eCultivation['sliceUnit'])] / $limit * 100) : NULL
 					];
-
-					if($eCultivation['sliceUnit'] === Cultivation::PERCENT) {
-						$slice['part'] = $eSlice['partPercent'];
-					} else {
-
-						$slice['part'] = match($eSeries['use']) {
-							Series::BED => (int)($eSlice['partLength'] / $eSeries['length'] * 100),
-							Series::BLOCK => (int)($eSlice['partArea'] / $eSeries['area'] * 100),
-						};
-
-					}
-
-					$slices[] = $slice;
 
 				}
 
-				for($i = 0; $i < 100 - array_sum(array_column($slices, 'part')); $i++) {
-					$slices[$i % count($slices)]['part']++;
+
+				if($eCultivation['sliceUnit'] !== Cultivation::PERCENT) {
+
+					$required = match($eCultivation['sliceUnit']) {
+						Cultivation::LENGTH => $limit ? (int)($eCultivation['cSlice']->sum('partLength') / $limit) : NULL,
+						Cultivation::AREA => $limit ? (int)($eCultivation['cSlice']->sum('partArea') / $limit) : NULL,
+						Cultivation::PLANT => 100,
+						Cultivation::TRAY => 100,
+					};
+
+					$rest = $required - array_sum(array_column($slices, 'part'));
+
+					for($i = 0; $i < $rest; $i++) {
+						$slices[$i % count($slices)]['part']++;
+					}
+
 				}
 
 				foreach($slices as $slice) {

@@ -215,7 +215,7 @@ class ToolUi {
 
 				$h .= '<div class="util-overflow-sm">';
 
-					$h .= '<table class="tr-even">';
+					$h .= '<table class="tr-even tr-bordered">';
 						$h .= '<thead>';
 							$h .= '<tr>';
 								$h .= '<th></th>';

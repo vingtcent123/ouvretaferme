@@ -554,7 +554,7 @@ class ProductUi {
 		$canAction = ($isExpired === FALSE and $cProduct->contains(fn($eProduct) => $eProduct->exists() and $eProduct['catalog']->empty()));
 
 		$h = '<div class="'.($type === Date::PRIVATE ? 'util-overflow-xs' : 'util-overflow-sm').' stick-xs">';
-			$h .= '<table class="tbody-even">';
+			$h .= '<table class="tbody-even tbody-bordered">';
 				$h .= '<thead>';
 					$h .= '<tr>';
 						$h .= '<th colspan="2">'.s("Produit").'</th>';

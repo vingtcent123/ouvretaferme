@@ -98,7 +98,7 @@ class ReportUi {
 
 		$h .= '<div class="util-overflow-xs stick-xs">';
 
-			$h .= '<table class="report-item-table report-harvested-table"">';
+			$h .= '<table class="report-item-table tr-bordered report-harvested-table"">';
 
 
 				$h .= '<thead>';
@@ -127,7 +127,7 @@ class ReportUi {
 
 					$h .= '<tbody>';
 						$h .= '<tr class="report-item-total">';
-							$h .= '<td class="util-grid-header"></td>';
+							$h .= '<td>'.s("Total").'</td>';
 
 							$h .= '<td class="text-end">';
 								$h .= ($area > 0) ? s("{value} m²", $area) : '-';
@@ -285,22 +285,20 @@ class ReportUi {
 
 		$h = '<div class="util-overflow-md stick-xs">';
 
-			$h .= '<table>';
+			$h .= '<table class="tr-bordered">';
 
 				$h .= $this->getOneHead($cCultivation->count() > 1 ? '<th colspan="3"></th>' : '<th colspan="3">'.s("Série").'</th>');
 
 				if($cCultivation->count() > 1) {
 					$h .= '<tbody>';
 						$h .= '<tr class="report-item-total">';
-							$h .= '<td colspan="3"></td>';
+							$h .= '<td colspan="3">'.s("Total").'</td>';
 							$h .= $this->getStats($eReport);
 						$h .= '</tr>';
 					$h .= '</tbody>';
 				}
 
-				$h .= '<tbody>';
-					$h .= $this->getOneByCultivation($eReport, $cCultivation);
-				$h .= '</tbody>';
+				$h .= $this->getOneByCultivation($eReport, $cCultivation);
 
 			$h .= '</table>';
 
@@ -398,11 +396,12 @@ class ReportUi {
 
 						$h .= '</tr>';
 
-						if($cCultivation->count() > 1) {
-							$h .= $this->getOneByCultivation($eReport, $cCultivation, hide: TRUE);
-						}
-
 					$h .= '</tbody>';
+
+					if($cCultivation->count() > 1) {
+						$h .= $this->getOneByCultivation($eReport, $cCultivation, hide: TRUE);
+					}
+
 
 				}
 
@@ -419,7 +418,7 @@ class ReportUi {
 		$h = '<h2>'.s("Comparer le rapport").'</h2>';
 
 		if($cReport->count() <= 1) {
-			$h .= '<p class="util-info">'.s("Il n'y a pas d'autre rapport avec le même nom et pour la plante {name} avec lequel faire une comparaison.", ['name' => encode($eReport['plant']['name'])]).'</p>';
+			$h .= '<p class="util-block-info">'.s("Il n'y a pas d'autre rapport avec le même nom et pour la plante {name} avec lequel faire une comparaison.", ['name' => encode($eReport['plant']['name'])]).'</p>';
 			return $h;
 		}
 
@@ -440,35 +439,23 @@ class ReportUi {
 
 		$h = '';
 
-		if($cCultivation->count() > 1) {
+		$h .= '<tbody>';
 
-			$h .= '<tr class="tr-bordered '.($hide ? 'hide' : '').'" data-ref="report-'.$eReport['id'].'">';
+			foreach($cCultivation as $eCultivation) {
 
-				$h .= '<th colspan="6">';
-					$h .= s("Par série");
-				$h .= '</th>';
+				$h .= '<tr class="'.($hide ? 'hide' : '').'" data-ref="report-'.$eReport['id'].'">';
 
-				$h .= '<td class="report-item-ratio"></td>';
-				$h .= '<td colspan="2"></td>';
-				$h .= '<td colspan="2" class="report-item-ratio"></td>';
+					$h .= '<td class="report-item-series" colspan="3">';
+						$h .= \series\SeriesUi::link($eCultivation['series']);
+					$h .= '</td>';
 
-			$h .= '</tr>';
+					$h .= $this->getStats($eCultivation, $hide === FALSE);
 
-		}
+				$h .= '</tr>';
 
-		foreach($cCultivation as $eCultivation) {
+			}
 
-			$h .= '<tr class="tr-bordered '.($hide ? 'hide' : '').'" data-ref="report-'.$eReport['id'].'">';
-
-				$h .= '<td class="report-item-series" colspan="3">';
-					$h .= \series\SeriesUi::link($eCultivation['series']);
-				$h .= '</td>';
-
-				$h .= $this->getStats($eCultivation, $hide === FALSE);
-
-			$h .= '</tr>';
-
-		}
+		$h .= '</tbody>';
 
 		return $h;
 
@@ -477,22 +464,6 @@ class ReportUi {
 	protected function getHarvestedByCultivation(\Collection $cCultivation) {
 
 		$h = '';
-
-		if($cCultivation->count() > 1) {
-
-			$h .= '<thead>';
-				$h .= '<tr class="tr-bordered">';
-
-					$h .= '<th colspan="3">';
-						$h .= s("Par série");
-					$h .= '</th>';
-
-					$h .= '<td class="report-item-ratio"></td>';
-
-				$h .= '</tr>';
-			$h .= '</thead>';
-
-		}
 
 		$h .= '<tbody>';
 
@@ -504,7 +475,7 @@ class ReportUi {
 				continue;
 			}
 
-			$h .= '<tr class="tr-bordered">';
+			$h .= '<tr>';
 
 				$h .= '<td class="report-item-series">';
 					$h .= \series\SeriesUi::link($eCultivation['series']);

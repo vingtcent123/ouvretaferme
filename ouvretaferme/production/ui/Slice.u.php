@@ -197,7 +197,7 @@ class SliceUi {
 										$value = 0;
 									}
 									
-									$trayLimit = $plantLimit ? ceil($plantLimit / $eTray['routineValue']['value']) : NULL;
+									$trayLimit = $plantLimit ? (int)ceil($plantLimit / $eTray['routineValue']['value']) : NULL;
 									$color = $this->getColor($value, $trayLimit);
 
 									$h .= '<span class="slice-item-limit '.$color.' '.($visible ? '' : 'hide').'" data-unit="'.\series\Cultivation::TRAY.'" data-tool="'.$eTray['id'].'" data-value="'.$eTray['routineValue']['value'].'">';

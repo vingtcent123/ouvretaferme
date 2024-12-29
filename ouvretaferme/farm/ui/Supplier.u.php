@@ -37,52 +37,35 @@ class SupplierUi {
 
 	}
 
-	public function getManageTitle(\farm\Farm $eFarm, \Collection $cSupplier, \Search $search): string {
-		
-		$title = '<h1>';
-			$title .= '<a href="'.FarmUi::urlSettings($eFarm).'"  class="h-back">'.\Asset::icon('arrow-left').'</a>';
-			$title .= s("Fournisseurs de semences et plants");
-		$title .= '</h1>';
+	public function getManageTitle(\farm\Farm $eFarm): string {
 
-		if($this->isEmpty($cSupplier, $search)) {
-			return $title;
-		} else {
-
-			$h = '<div class="util-action">';
-				$h .= $title;
-				$h .= '<div>';
-					$h .= '<a '.attr('onclick', 'Lime.Search.toggle("#supplier-search")').' class="btn btn-primary">'.\Asset::icon('search').'</a> ';
-					$h .= '<a href="/farm/supplier:create?farm='.$eFarm['id'].'" class="btn btn-primary">'.\Asset::icon('plus-circle').' '.s("Nouveau fournisseur").'</a>';
-				$h .= '</div>';
+		$h = '<div class="util-action">';
+			$h .= '<h1>';
+				$h .= '<a href="'.FarmUi::urlSettings($eFarm).'"  class="h-back">'.\Asset::icon('arrow-left').'</a>';
+				$h .= s("Fournisseurs de semences et plants");
+			$h .= '</h1>';
+			$h .= '<div>';
+				$h .= '<a href="/farm/supplier:create?farm='.$eFarm['id'].'" class="btn btn-primary">'.\Asset::icon('plus-circle').' '.s("Nouveau fournisseur").'</a>';
 			$h .= '</div>';
+		$h .= '</div>';
 
-			return $h;
-
-		}
+		return $h;
 
 	}
 
-	public function getManage(\farm\Farm $eFarm, \Collection $cSupplier, \Search $search): string {
+	public function getManage(\farm\Farm $eFarm, \Collection $cSupplier): string {
 
-		if($this->isEmpty($cSupplier, $search)) {
+		if($cSupplier->empty()) {
 
-			$h = '<div class="util-block-help">';
+			$h = '<div class="util-info">';
 				$h .= s("Vous n'avez pas encore ajouté de fournisseur de semences et plants à votre ferme. Ajouter des fournisseurs peut être très utile pour faciliter vos commandes !");
 			$h .= '</div>';
 
-			$h .= '<h4>'.s("Ajouter un fournisseur").'</h4>';
-
-			$h .= $this->createForm(new Supplier([
-				'farm' => $eFarm,
-			]), 'inline');
-
 		} else {
-
-			$h = $this->getSearch($eFarm, $search);
 
 			$h .= '<div class="util-overflow-sm">';
 
-				$h .= '<table class="tr-even">';
+				$h .= '<table class="tr-even tr-bordered">';
 					$h .= '<thead>';
 						$h .= '<tr>';
 							$h .= '<th>'.s("Nom").'</th>';
@@ -117,39 +100,6 @@ class SupplierUi {
 			$h .= '</div>';
 
 		}
-
-		return $h;
-
-	}
-
-	protected function isEmpty(\Collection $cSupplier, \Search $search): bool {
-
-		return (
-			$cSupplier->empty() and
-			$search->empty()
-		);
-
-	}
-
-	public function getSearch(\farm\Farm $eFarm, \Search $search): string {
-
-		$h = '<div id="supplier-search" class="util-block-search stick-xs '.($search->empty() ? 'hide' : '').'">';
-
-			$form = new \util\FormUi();
-
-			$h .= $form->openAjax('/farm/supplier:manage', ['method' => 'get', 'id' => 'form-search']);
-
-				$h .= '<div>';
-					$h .= $form->hidden('farm', $eFarm['id']);
-					$h .= $form->text('name', $search->get('name'), ['placeholder' => s("Nom")]);
-
-					$h .= $form->submit(s("Chercher"), ['class' => 'btn btn-secondary']);
-					$h .= '<a href="/farm/supplier:manage?farm='.$eFarm['id'].'" class="btn btn-secondary">'.\Asset::icon('x-lg').'</a>';
-				$h .= '</div>';
-
-			$h .= $form->close();
-
-		$h .= '</div>';
 
 		return $h;
 

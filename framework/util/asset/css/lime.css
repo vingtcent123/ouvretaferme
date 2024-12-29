@@ -125,14 +125,17 @@ table.thead-bordered thead {
 	border-bottom: 1px solid var(--border);
 }
 
-table.tbody-bordered tr:last-of-type {
-	border-bottom: 1px solid var(--border);
-}
-
+table.tbody-bordered tr:last-of-type,
 tr.tr-bordered,
 table.tr-bordered tbody tr,
 table.tr-bordered thead tr {
 	border-bottom: 1px solid var(--border);
+}
+
+table.tbody-bordered tbody tr,
+table.tr-bordered tbody tr {
+	border-left: 1px solid var(--border);
+	border-right: 1px solid var(--border);
 }
 
 table.tr-bordered tbody:only-child tr:first-child {
@@ -840,7 +843,7 @@ tbody .td-checkbox > label {
 .util-warning,
 .util-danger {
 	margin-bottom: 1.5rem;
-	padding: 0.25rem 0 0.25rem 1rem;
+	padding: 0.5rem 1rem 0.5rem;
 	line-height: 1.6;
 }
 
@@ -854,7 +857,8 @@ tbody .td-checkbox > label {
 
 .util-help,
 .util-info {
-	border-left: 0.25rem solid var(--secondary);
+	border: 1px solid var(--secondary);
+	border-radius: var(--radius);
 	color: var(--secondary);
 }
 
@@ -875,7 +879,8 @@ tbody .td-checkbox > label {
 }
 
 .util-warning {
-	border-left: 0.25rem solid var(--warning);
+	border: 1px solid var(--warning);
+	border-radius: var(--radius);
 	color: var(--warning);
 }
 
@@ -885,7 +890,8 @@ tbody .td-checkbox > label {
 }
 
 .util-success {
-	border-left: 0.25rem solid var(--success);
+	border: 1px solid var(--success);
+	border-radius: var(--radius);
 	color: var(--success);
 }
 
@@ -895,7 +901,8 @@ tbody .td-checkbox > label {
 }
 
 .util-danger {
-	border-left: 0.25rem solid var(--danger);
+	border: 1px solid var(--danger);
+	border-radius: var(--radius);
 	color: var(--danger);
 }
 
@@ -1149,6 +1156,7 @@ table.util-block tbody:last-child tr:last-child td:last-child {
 }
 
 .util-block-gradient,
+.util-block-info,
 .util-block-requirement {
 	background: var(--gradient);
 	padding: var(--container-sm-padding);
@@ -1164,11 +1172,16 @@ table.util-block tbody:last-child tr:last-child td:last-child {
 @media (max-width: 575px) {
 
 	.util-block-gradient,
+	.util-block-info,
 	.util-block-search,
 	.util-block-requirement {
 		padding: var(--container-xs-padding);
 	}
 
+}
+
+.util-block-info {
+	color: var(--secondary);
 }
 
 .util-block-title {

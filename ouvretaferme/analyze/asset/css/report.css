@@ -196,8 +196,8 @@ td.report-item-ratio {
 	border: 2px solid var(--border);
 }
 
-.report-selected td {
-	background-color: var(--background);
+.report-selected tr {
+	background-color: white !important;
 }
 
 

@@ -53,7 +53,7 @@ class VarietyUi {
 
 			$h .= '<div class="util-overflow-sm stick-xs">';
 
-				$h .= '<table class="tr-bordered">';
+				$h .= '<table class="tr-even tr-bordered">';
 					$h .= '<thead>';
 						$h .= '<tr>';
 							$h .= '<th>'.s("Nom").'</th>';

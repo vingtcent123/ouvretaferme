@@ -334,7 +334,7 @@ class CultivationUi {
 							$h .= '</div>';
 						}
 						$h .= '<div class="series-item-title-plant">';
-							$h .= \plant\PlantUi::getVignette($ePlant, '2.4rem');
+							$h .= \plant\PlantUi::getVignette($ePlant, '2.6rem');
 							$h .= '<span class="series-item-title-plant-name">'.encode($ePlant['name']).'</span>';
 						$h .= '</div>';
 						if($harvestExpected) {
@@ -524,7 +524,7 @@ class CultivationUi {
 
 					$h .= '<div class="series-item series-item-forecast series-item-title">';
 						$h .= '<div class="series-item-title-plant" style="grid-column: span 3">';
-							$h .= \plant\PlantUi::getVignette($ePlant, '2.4rem');
+							$h .= \plant\PlantUi::getVignette($ePlant, '2.6rem');
 							$h .= '<span class="series-item-title-plant-name">'.encode($ePlant['name']).'</span>';
 						$h .= '</div>';
 						$h .= '<div class="series-item-forecast-objective series-item-forecast-objective-first series-item-forecast-objective-last" style="grid-column: span 3"></div>';
@@ -770,15 +770,8 @@ class CultivationUi {
 				$h .= '<div class="util-grid-header series-item-seeds-series">';
 					$h .= s("Séries");
 				$h .= '</div>';
-				$h .= '<div class="util-grid-header">';
-					$h .= s("Implantation");
-				$h .= '</div>';
-				$h .= '<div class="util-grid-header series-item-seeds-density">';
-					$h .= s("Densité");
-				$h .= '</div>';
-				$h .= '<div class="util-grid-header series-item-seeds-area">';
-					$h .= s("Assolement");
-				$h .= '</div>';
+				$h .= '<div class="util-grid-header"></div>';
+				$h .= '<div class="util-grid-header"></div>';
 
 			$h .= '</div>';
 
@@ -790,7 +783,7 @@ class CultivationUi {
 
 					$h .= '<div class="series-item series-item-seeds series-item-title"  data-ref="plant-'.$ePlant['id'].'">';
 						$h .= '<div class="series-item-title-plant">';
-							$h .= \plant\PlantUi::getVignette($ePlant, '2.4rem');
+							$h .= \plant\PlantUi::getVignette($ePlant, '2.6rem');
 							$h .= '<span class="series-item-title-plant-name">'.encode($ePlant['name']).'</span>';
 							if($ePlant['seedsSafetyMargin'] !== NULL and $ePlant['plantsSafetyMargin'] !== NULL) {
 								$h .= '<a href="/plant/plant:update?id='.$ePlant['id'].'" class="series-item-title-plant-safety">'.\Asset::icon('arrow-right').' '.s("marge de sécurité de {seedsSafetyMargin} % sur semis directs et de {plantsSafetyMargin} % sur plants autoproduits", $ePlant).'</a>';
@@ -829,7 +822,7 @@ class CultivationUi {
 									$h .= '<i>'.s("Non renseignée").'</i>';
 								}
 							$h .= '</div>';
-							$h .= '<div style="grid-row: span '.$rows.'; '.($isSeedSupplier ? 'font-weight: bold;' : '').'" class="series-item-seeds-value '.($seedsVariety['incomplete'] ? 'color-danger' : ($seedsVariety['targeted'] ? 'color-warning' : '')).'">';
+							$h .= '<div style="grid-row: span '.$rows.'; '.($isSeedSupplier ? 'font-weight: bold;' : '').'" class="series-item-seeds-value '.($seedsVariety['error'] ? 'color-danger' : ($seedsVariety['targeted'] ? 'color-warning' : '')).'">';
 								if($seedsVariety['seeds'] === 0) {
 									$h .= '-';
 								} else {
@@ -843,16 +836,16 @@ class CultivationUi {
 									if($seedsVariety['targeted']) {
 										$h .= '&nbsp;*';
 									}
-									if($eVariety->notEmpty() and $eVariety['weightSeed1000'] !== NULL) {
-										$h .= '<small class="color-muted"> / '.\plant\VarietyUi::getSeedsWeight1000($eVariety, $seedsVariety['seeds']).'</small>';
-									}
 									if($eVariety->notEmpty() and $eVariety['supplierSeed']->notEmpty()) {
 										$h .= '<div class="series-item-seeds-supplier">'.encode($eVariety['supplierSeed']['name']).'</div>';
+									}
+									if($eVariety->notEmpty() and $eVariety['weightSeed1000'] !== NULL) {
+										$h .= '<small class="color-muted">('.\plant\VarietyUi::getSeedsWeight1000($eVariety, $seedsVariety['seeds']).')</small>';
 									}
 
 								}
 							$h .= '</div>';
-							$h .= '<div style="grid-row: span '.$rows.'" class="series-item-seeds-value '.($seedsVariety['incomplete'] ? 'color-danger' : ($seedsVariety['targeted'] ? 'color-warning' : '')).'">';
+							$h .= '<div style="grid-row: span '.$rows.'" class="series-item-seeds-value '.($seedsVariety['error'] ? 'color-danger' : ($seedsVariety['targeted'] ? 'color-warning' : '')).'">';
 								if($seedsVariety['youngPlantsProduced'] === 0) {
 									$h .= '-';
 								} else {
@@ -865,13 +858,13 @@ class CultivationUi {
 									}
 								}
 							$h .= '</div>';
-							$h .= '<div style="grid-row: span '.$rows.'; '.($isPlantSupplier ? 'font-weight: bold;' : '').'" class="series-item-seeds-value '.($seedsVariety['incomplete'] ? 'color-danger' : ($seedsVariety['targeted'] ? 'color-warning' : '')).'">';
+							$h .= '<div style="grid-row: span '.$rows.'; '.($isPlantSupplier ? 'font-weight: bold;' : '').'" class="series-item-seeds-value '.($seedsVariety['error'] ? 'color-danger' : ($seedsVariety['targeted'] ? 'color-warning' : '')).'">';
 								if($seedsVariety['youngPlantsBought'] === 0) {
 									$h .= '-';
 								} else {
 									$number = number_format($seedsVariety['youngPlantsBought'], 0, NULL, ' ');
 									if($eVariety->notEmpty() and $cSupplier->notEmpty()) {
-										$h .= $eVariety->quick('supplierPlant', '<span title="'.s("Modifir le fournisseur de plants").'">'.$number.'</span>');
+										$h .= $eVariety->quick('supplierPlant', '<span title="'.s("Modifier le fournisseur de plants").'">'.$number.'</span>');
 									} else {
 										$h .= $number;
 									}
@@ -891,113 +884,34 @@ class CultivationUi {
 
 								$eSeries = $cultivation['series'];
 								$eCultivation = $cultivation['cultivation'];
-								$eSlice = $cultivation['slice'];
 
 								$h .= '<div class="series-item-seeds-series">';
 									$h .= SeriesUi::link($eSeries);
 									$h .= \production\CropUi::start($eCultivation, \Setting::get('farm\mainActions'));
 								$h  .= '</div>';
-								$h .= '<div class="series-item-seeds-seedling">';
-									if($eCultivation['seedling'] !== NULL) {
-										$h .= [
-											Cultivation::SOWING => s("semis direct"),
-											Cultivation::YOUNG_PLANT => s("plant autoproduit"),
-											Cultivation::YOUNG_PLANT_BOUGHT => s("plant acheté")
-										][$eCultivation['seedling']];
-									} else {
-										$h .= '<a href="/series/cultivation:update?id='.$eCultivation['id'].'" class="color-danger">'.s("semis non défini").'</a>';
-									}
-								$h  .= '</div>';
-								$h .= '<div class="series-item-seeds-density">';
+								$h .= '<div>';
 
-									switch($eCultivation['distance']) {
+									if($cultivation['error'] !== NULL) {
 
-										case Cultivation::SPACING :
-											switch($eSeries['use']) {
+										[$short, $long] = match($cultivation['error']) {
+											'seedling' => [s("Implantation"), s("Implantation à définir")],
+											'area' => [s("Surface"), s("Surface à définir")],
+											'density' => [s("Densité"), s("Densité à définir")],
+										};
 
-												case Series::BED :
-													$incomplete = ($eCultivation['plantSpacing'] === NULL or $eCultivation['rows'] === NULL);
-													$label = p("{plantSpacing} cm x {rows} rang", "{plantSpacing} cm x {rows} rangs", $eCultivation['rows'] ?? 1, ['plantSpacing' => $eCultivation['plantSpacing'] ?? '?', 'rows' => $eCultivation['rows'] ?? '?']);
-													break;
-
-												case Series::BLOCK :
-													$incomplete = ($eCultivation['plantSpacing'] === NULL or $eCultivation['rowSpacing'] === NULL);
-													$label = s("{density} cm", ['density' => ($eCultivation['plantSpacing'] ?? '?').' x '.($eCultivation['rowSpacing'] ?? '?')]);
-													break;
-
-											}
-											break;
-
-										case Cultivation::DENSITY :
-											$incomplete = ($eCultivation['density'] === NULL);
-											$label = s("{value} / m²", $eCultivation['density'] ?? '?');
-											break;
-
-									}
-
-									$h .= '<div>';
-
-									if($incomplete) {
-										$h .= '<a href="/series/cultivation:update?id='.$eCultivation['id'].'" class="color-danger">';
-											$h .= $label;
-										$h .= '</a>';
-									} else {
-										$h .= $label;
-									}
-
-									$h .= '</div>';
-
-									if($eCultivation['seedlingSeeds'] !== NULL) {
-										$h .= '<div class="color-muted">';
-											$h .= '<small>'.p("{value} graine / plant", "{value} graines / plant", $eCultivation['seedlingSeeds']).'</small>';
-										$h .= '</div>';
-									}
-
-
-								$h  .= '</div>';
-								$h .= '<div class="series-item-seeds-area">';
-
-									switch($eSeries['use']) {
-
-										case Series::BED :
-											if($eSeries['length'] !== NULL) {
-												$incomplete = FALSE;
-												$targeted = FALSE;
-											} else if($eSeries['lengthTarget'] !== NULL) {
-												$incomplete = FALSE;
-												$targeted = TRUE;
-											} else {
-												$incomplete = TRUE;
-											}
-											$label = s("{value} mL", $cultivation['area'] ?? '?');
-											break;
-
-										case Series::BLOCK :
-											if($eSeries['area'] !== NULL) {
-												$incomplete = FALSE;
-												$targeted = FALSE;
-											} else if($eSeries['areaTarget'] !== NULL) {
-												$incomplete = FALSE;
-												$targeted = TRUE;
-											} else {
-												$incomplete = TRUE;
-											}
-											$label = s("{value} m²", $cultivation['area'] ?? '?');
-											break;
-
-									}
-
-									if($incomplete) {
-										$h .= '<a href="'.SeriesUi::url($eSeries).'" class="color-danger">';
-											$h .= $label;
-										$h .= '</a>';
-									} else if($targeted) {
-										$h .= '<span class="color-warning">';
-											$h .= $label.'&nbsp;*';
+										$h .= '<span class="color-danger">';
+											$h .= \Asset::icon('exclamation-circle').' ';
+											$h .= '<span class="hide-lg-up">'.$short.'</span>';
+											$h .= '<span class="hide-md-down">'.$long.'</span>';
 										$h .= '</span>';
-										$hasTargeted = TRUE;
-									} else {
-										$h .= $label;
+
+									} else if($cultivation['targeted']) {
+
+										$h .= '<span class="color-warning">';
+											$h .= \Asset::icon('exclamation-circle').' ';
+											$h .= '<span class="hide-lg-up">'.s("Assolement *").'</span>';
+											$h .= '<span class="hide-md-down">'.s("Assolement à définir *").'</span>';
+										$h .= '</span>';
 									}
 
 								$h  .= '</div>';
@@ -1005,6 +919,10 @@ class CultivationUi {
 
 						$h .= '</div>';
 
+					}
+					
+					if($seedsVariety['targeted']) {
+						$hasTargeted = TRUE;
 					}
 
 				}
@@ -1023,8 +941,8 @@ class CultivationUi {
 
 	public function getWarningTargeted(): string {
 
-		$h = '<p class="util-warning mt-1">';
-			$h .= s("* Valeur basée sur l'objectif de surface indiqué pour la série car l'assolement n'a pas encore été déclaré pour la série.");
+		$h = '<p class="util-warning">';
+			$h .= s("* Valeur basée sur l'objectif de surface car l'assolement n'a pas encore été défini.");
 		$h .= '</p>';
 
 		return $h;
@@ -1107,7 +1025,7 @@ class CultivationUi {
 
 					$hPlant = '<div class="series-item series-item-title" id="series-item-'.$eCultivation['id'].'" data-ref="plant-'.$ePlant['id'].'">';
 						$hPlant .= '<div class="series-item-title-plant">';
-							$hPlant .= \plant\PlantUi::getVignette($ePlant, '2.4rem');
+							$hPlant .= \plant\PlantUi::getVignette($ePlant, '2.6rem');
 							$hPlant .= '<span class="series-item-title-plant-name">'.encode($ePlant['name']).'</span>';
 						$hPlant .= '</div>';
 					$hPlant .= '</div>';
@@ -2032,7 +1950,7 @@ class CultivationUi {
 				} else {
 
 					$plants = $eCultivation->getYoungPlants();
-					$limit = $plants ? ceil($plants / $eCultivation['sliceTool']['routineValue']['value']) : NULL;
+					$limit = $plants ? (int)ceil($plants / $eCultivation['sliceTool']['routineValue']['value']) : NULL;
 
 					if(
 						$limit !== NULL and

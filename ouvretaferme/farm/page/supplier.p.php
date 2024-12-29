@@ -45,11 +45,7 @@
 
 		$data->eFarm = \farm\FarmLib::getById(GET('farm'))->validate('canManage');
 
-		$data->search = new Search([
-			'name' => GET('name')
-		]);
-
-		$data->cSupplier = \farm\SupplierLib::getByFarm($data->eFarm, $data->search);
+		$data->cSupplier = \farm\SupplierLib::getByFarm($data->eFarm);
 
 		\farm\FarmerLib::register($data->eFarm);
 

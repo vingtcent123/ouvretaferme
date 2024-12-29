@@ -78,7 +78,7 @@ class Cultivation extends CultivationElement {
 
 	}
 
-	public function getYoungPlants(Slice $eSlice = new Slice(), bool &$targeted = NULL, ?int $safetyMargin = NULL): ?int {
+	public function getYoungPlants(Slice $eSlice = new Slice(), bool &$targeted = NULL, ?int $safetyMargin = NULL, ?string &$error = NULL): ?int {
 
 		$this->expects([
 			'series',
@@ -116,10 +116,12 @@ class Cultivation extends CultivationElement {
 			$area = $this['series']['areaTarget'];
 			$targeted = TRUE;
 		} else {
+			$error = 'area';
 			return NULL;
 		}
 
 		if($this['density'] === NULL) {
+			$error = 'density';
 			return NULL;
 		}
 
@@ -138,9 +140,9 @@ class Cultivation extends CultivationElement {
 
 	}
 
-	public function getSeeds(Slice $eSlice = new Slice(), bool &$targeted = NULL, ?int $safetyMargin = NULL): ?int {
+	public function getSeeds(Slice $eSlice = new Slice(), bool &$targeted = NULL, ?int $safetyMargin = NULL, ?string &$error = NULL): ?int {
 
-		$youngPlants = self::getYoungPlants($eSlice, $targeted, $safetyMargin);
+		$youngPlants = self::getYoungPlants($eSlice, $targeted, $safetyMargin, $error);
 
 		if($youngPlants !== NULL) {
 

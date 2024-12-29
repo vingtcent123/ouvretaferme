@@ -168,7 +168,7 @@ div.series-item-body {
 	align-items: center;
 	font-size: 0.9rem;
 	line-height: 1;
-	padding: 0.25rem 0;
+	padding: 0.375rem 0;
 }
 
 .series-item-title-plant div.plant-vignette,
@@ -213,8 +213,8 @@ a.series-item-title-plant-safety {
 }
 
 .series-item.series-item-title div.plant-vignette {
-	margin-top: -0.5rem;
-	margin-bottom: -0.5rem;
+	margin-top: -0.6rem;
+	margin-bottom: -0.6rem;
 }
 
 .series-item-body .series-item:not(.series-item-title):not(.series-item-gap) + .series-item:not(.series-item-title):not(.series-item-group):not(.series-item-gap) {
@@ -470,37 +470,30 @@ div.series-item-title div.series-item-planning-harvest-objective {
 /* Affichage des semences et plants */
 div.series-item-seeds {
 	display: grid;
-	grid-template-columns: minmax(10rem, 20%) 7rem 7rem 7rem 1fr 10rem 8rem 5rem;
-	grid-column-gap: 0.5rem;
+	grid-template-columns: minmax(10rem, 20%) 7rem 7rem 7rem 1fr 12rem;
+	grid-gap: 0.25rem;
 	align-items: baseline;
-	min-width: calc(767px - 2 * var(--container-md-padding));
 }
 
 div.series-item-seeds.series-item-title {
 	grid-template-columns: 1fr;
 }
 
-@media (min-width: 1200px) {
+@media (min-width: 1600px) {
 
-	.series-item-seeds {
-		font-size: 0.9rem;
+	div.series-item-seeds {
+		grid-template-columns: minmax(10rem, 20%) 9rem 9rem 9rem 1fr 12rem;
 	}
 
 }
-
-@media (max-width: 1199px) {
+@media (max-width: 991px) {
 
 	div.series-item-seeds {
-		grid-template-columns: minmax(10rem, 20%) 7rem 7rem 7rem 1fr 9rem;
+		grid-template-columns: minmax(10rem, 20%) 7rem 7rem 7rem 1fr 8rem;
 	}
 
 	div.series-item-seeds.series-item-title {
 		grid-template-columns: 1fr;
-	}
-
-	div.series-item-seeds div.series-item-seeds-density,
-	div.series-item-seeds div.series-item-seeds-area {
-		display: none;
 	}
 
 }
@@ -515,20 +508,8 @@ div.series-item-seeds-supplier {
 	line-height: 1;
 }
 
-div.series-item-seeds-seedling {
-	text-transform: uppercase;
-	font-size: 0.8rem;
-}
-
 div.series-item-seeds-series {
 	margin-left: 1rem;
-}
-
-div.series-item-seeds-area {
-	text-align: right;
-}
-div.series-item-seeds-density {
-	line-height: 1.2;
 }
 
 /* Affichage du prévisionnel */
