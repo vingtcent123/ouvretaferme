@@ -183,7 +183,7 @@ class OrderUi {
 
 	public function getListForPro(Customer $eCustomer, \Collection $cSale): string {
 
-		$h = '<div class="tabs-h" id="tasks-week-tabs" onrender="'.encode('Lime.Tab.restore(this, "list")').'">';
+		$h = '<div class="tabs-h" id="order-pro" onrender="'.encode('Lime.Tab.restore(this, "list")').'">';
 
 			$h .= '<div class="tabs-item">';
 				$h .= '<a class="tab-item selected" data-tab="order" onclick="Lime.Tab.select(this)">';

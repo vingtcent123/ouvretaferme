@@ -2319,44 +2319,22 @@ class TaskUi {
 		$hasPlant = in_array($eAction['fqn'], [ACTION_SEMIS_DIRECT, ACTION_SEMIS_PEPINIERE, ACTION_PLANTATION]);
 		$hasTools = $cTask->match(fn($eTask) => $eTask['cRequirement']->notEmpty());
 
-		$h = '<h3>'.encode($eAction['name']).'</h3>';
+		$h = '<h2>'.encode($eAction['name']).'</h2>';
 
 		if($cTask->empty()) {
 			$h .= '<div class="util-block-info">'.s("Aucune intervention de cette nature à afficher cette semaine.").'</div>';
 		} else if($hasPlant or $hasTools) {
-		
-			$h .= '<div class="tabs-h" id="tasks-week-tabs" onrender="'.encode('Lime.Tab.restore(this, "list")').'">';
 
-				$h .= '<div class="tabs-item">';
-					$h .= '<a class="tab-item selected" data-tab="list" onclick="Lime.Tab.select(this)">';
-						$h .= s("Interventions");
-					$h .= '</a>';
-					if($hasPlant) {
-						$h .= '<a class="tab-item" data-tab="plant" onclick="Lime.Tab.select(this)">';
-							$h .= s("Par espèce");
-						$h .= '</a>';
-					}
-					if($hasTools) {
-						$h .= '<a class="tab-item" data-tab="tool" onclick="Lime.Tab.select(this)">';
-							$h .= s("Par matériel");
-						$h .= '</a>';
-					}
-				$h .= '</div>';
-
-				$h .= '<div class="tab-panel selected" data-tab="list">';
-					$h .= $this->getListByAction($eFarm, $eAction, $week, $cTask, $hasPlant, $hasTools);
-				$h .= '</div>';
+				$h .= $this->getListByAction($eFarm, $eAction, $week, $cTask, $hasPlant, $hasTools);
 
 				if($hasPlant) {
-					$h .= '<div class="tab-panel" data-tab="plant">';
-						$h .= $this->getListByPlant($eAction, $cTask);
-					$h .= '</div>';
+					$h .= '<br/><h3>'.s("Répartition par variété").'</h3>';
+					$h .= $this->getListByPlant($eAction, $cTask);
 				}
 
 				if($hasTools) {
-					$h .= '<div class="tab-panel" data-tab="tool">';
-						$h .= $this->getListByTool($eAction, $cTask);
-					$h .= '</div>';
+					$h .= '<br/><h3>'.s("Répartition par matériel").'</h3>';
+					$h .= $this->getListByTool($eAction, $cTask);
 				}
 
 			$h .= '</div>';
@@ -2749,7 +2727,7 @@ class TaskUi {
 
 		$cTool->sort('name', natural: TRUE);
 
-		$h = '<div class="util-overflow-sm stick-xs">';
+		$h = '<div class="stick-xs">';
 
 			$h .= '<table class="tr-even tr-bordered">';
 				$h .= '<thead>';
@@ -2765,12 +2743,12 @@ class TaskUi {
 							$h .= '<span class="hide-sm-up">'.s("Longueur").'</span>';
 						$h .= '</th>';
 						if($eAction['fqn'] === ACTION_SEMIS_PEPINIERE or $eAction['fqn'] === ACTION_PLANTATION) {
-							$h .= '<th class="text-end">';
+							$h .= '<th class="text-end hide-xxs-down">';
 								$h .= s("Plants");
 							$h .= '</th>';
 						}
 						if($eAction['fqn'] === ACTION_SEMIS_PEPINIERE or $eAction['fqn'] === ACTION_SEMIS_DIRECT) {
-							$h .= '<th class="text-end">';
+							$h .= '<th class="text-end hide-xxs-down">';
 								$h .= s("Semences");
 							$h .= '</th>';
 						}
@@ -2813,7 +2791,7 @@ class TaskUi {
 							}
 						$h .= '</td>';
 						if($eAction['fqn'] === ACTION_SEMIS_PEPINIERE or $eAction['fqn'] === ACTION_PLANTATION) {
-							$h .= '<td class="text-end '.($eTool['targeted'] ? 'color-warning' : '').'">';
+							$h .= '<td class="text-end hide-xxs-down '.($eTool['targeted'] ? 'color-warning' : '').'">';
 								if($eTool['youngPlants'] > 0) {
 									$h .= $eTool['youngPlants'].($eTool['targeted'] ? '&nbsp;*' : '');
 								} else {
@@ -2822,7 +2800,7 @@ class TaskUi {
 							$h .= '</td>';
 						}
 						if($eAction['fqn'] === ACTION_SEMIS_PEPINIERE or $eAction['fqn'] === ACTION_SEMIS_DIRECT) {
-							$h .= '<td class="text-end '.($eTool['targeted'] ? 'color-warning' : '').'">';
+							$h .= '<td class="text-end hide-xxs-down '.($eTool['targeted'] ? 'color-warning' : '').'">';
 								if($eTool['seeds'] > 0) {
 									$h .= $eTool['seeds'].($eTool['targeted'] ? '&nbsp;*' : '');
 								} else {
