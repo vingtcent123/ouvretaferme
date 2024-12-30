@@ -146,13 +146,7 @@ class RoutineUi {
 	}
 
 	public function getSummaryTray(Tool $eTool): string {
-
-		if($eTool['routineValue']['value']) {
-			return p("{value} motte par plateau", "{value} mottes par plateau", $eTool['routineValue']['value']);
-		} else {
-			return '';
-		}
-
+		return p("{value} motte par plateau", "{value} mottes par plateau", $eTool['routineValue']['value']);
 	}
 
 	public function getFieldTray(\util\FormUi $form, string $field, ?array $default): string {

@@ -917,8 +917,16 @@ div.tasks-time-day-timesheet.tasks-time-day-timesheet-alert {
 	border-top: 1px dashed var(--border);
 }
 
-.tasks-week-plant-list tbody tr:not(:nth-child(1)) td:first-child {
-	padding-left: 3rem;
+.tasks-week-plant-list tbody td {
+	vertical-align: baseline;
+}
+
+@media (min-width: 576px) {
+
+	.tasks-week-plant-list tbody tr:not(:nth-child(1)) td:first-child {
+		padding-left: 3rem;
+	}
+
 }
 
 .tasks-week-plant-tray {
