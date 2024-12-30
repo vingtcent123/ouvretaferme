@@ -127,7 +127,7 @@ class CsvLib {
 			->whereFqn('IN', [ACTION_SEMIS_PEPINIERE, ACTION_SEMIS_DIRECT, ACTION_PLANTATION])
 			->getCollection(index: 'fqn');
 
-		$cTool = \farm\ToolLib::getByFarm($eFarm, routineName: 'tray');
+		$cTool = \farm\ToolLib::getTraysByFarm($eFarm);
 
 		$eActionSemisDirect = $cAction[ACTION_SEMIS_DIRECT];
 		$eActionSemisPepiniere = $cAction[ACTION_SEMIS_PEPINIERE];

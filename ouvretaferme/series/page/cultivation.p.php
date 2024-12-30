@@ -11,7 +11,7 @@
 		$data->ePlant = \plant\PlantLib::getById(POST('plant'));
 		$data->ccVariety = \plant\VarietyLib::query($data->eSeries['farm'], $data->ePlant);
 		$data->cAction = \farm\ActionLib::getByFarm($data->eSeries['farm'], fqn: [ACTION_SEMIS_PEPINIERE, ACTION_SEMIS_DIRECT, ACTION_PLANTATION], index: 'fqn');
-		$data->cTray = \farm\ToolLib::getByFarm($data->eFarm, routineName: 'tray');
+		$data->cTray = \farm\ToolLib::getTraysByFarm($data->eFarm);
 
 		throw new \ViewAction($data);
 
@@ -61,7 +61,7 @@
 				$data->cSlice = new Collection();
 			}
 
-			$data->e['cTray'] = \farm\ToolLib::getByFarm($data->e['farm'], routineName: 'tray');
+			$data->e['cTray'] = \farm\ToolLib::getTraysByFarm($data->e['farm']);
 
 		} else {
 
@@ -78,7 +78,7 @@
 	->update(function($data) {
 
 		$data->e['ccVariety'] = \plant\VarietyLib::query($data->e['farm'], $data->e['plant']);
-		$data->e['cTray'] = \farm\ToolLib::getByFarm($data->e['farm'], routineName: 'tray');
+		$data->e['cTray'] = \farm\ToolLib::getTraysByFarm($data->e['farm']);
 
 		throw new ViewAction($data);
 

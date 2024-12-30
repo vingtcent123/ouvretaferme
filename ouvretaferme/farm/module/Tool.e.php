@@ -122,9 +122,11 @@ class Tool extends ToolElement {
 					return FALSE;
 				}
 
+				$fw = new \FailWatch();
+
 				$routineValue = RoutineLib::get($this['routineName'])['check']($routineValue);
 
-				return TRUE;
+				return $fw->ok();
 
 			},
 

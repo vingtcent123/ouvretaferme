@@ -73,9 +73,16 @@ class RoutineLib extends ToolCrud {
 		$mask = ['int', 'min' => 1, 'max' => NULL, 'null' => TRUE];
 		$value = $values['value'] ?? NULL;
 
-		return [
-			'value' => ($value and \Filter::check($mask, $value)) ? (int)$value : NULL,
-		];
+		if($value and \Filter::check($mask, $value)) {
+
+			return [
+				'value' => (int)$value,
+			];
+
+		} else {
+			\Fail::log('farm\Tool::routineValue.tray');
+			return [];
+		}
 
 	}
 

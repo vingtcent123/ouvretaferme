@@ -76,6 +76,12 @@ class ToolLib extends ToolCrud {
 
 	}
 
+	public static function getTraysByFarm(\farm\Farm $eFarm): \Collection|\Element {
+
+		return \farm\ToolLib::getByFarm($eFarm, routineName: 'tray');
+
+	}
+
 	public static function getByFarm(\farm\Farm $eFarm, mixed $id = NULL, ?string $routineName = NULL, \Search $search = new \Search()): \Collection|\Element {
 
 		$expects = 'collection';

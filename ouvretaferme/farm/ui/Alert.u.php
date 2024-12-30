@@ -35,6 +35,7 @@ class AlertUi {
 			'Supplier::deleteUsed' => s("Vous ne pouvez pas supprimer ce fournisseur de semences qui est actuellement utilisé sur un ou plusieurs variétés..."),
 
 			'Tool::name.duplicate' => s("Vous avez déjà créé un élément de même nom."),
+			'Tool::routineValue.tray' => s("Vous devez indiquer un nombre de mottes par plateau."),
 			'Tool::deleteUsed' => s("Vous ne pouvez pas supprimer un élément qui est déjà utilisé sur les itinéraires techniques ou les séries..."),
 			'Tool::deleteTrayUsed' => s("Vous ne pouvez pas supprimer ce plateau qui est utilisé pour répartir des variétés dans des séries..."),
 
