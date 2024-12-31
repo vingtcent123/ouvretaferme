@@ -139,6 +139,12 @@ class Series {
 				qsa('.batch-menu-duplicate', button => button.removeHide());
 			}
 
+			if(selection.filter('[data-batch~="not-season"]').length > 0) {
+				qsa('.batch-menu-season', button => button.hide());
+			} else {
+				qsa('.batch-menu-season', button => button.removeHide());
+			}
+
 		});
 
 	}

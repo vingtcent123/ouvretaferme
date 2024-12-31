@@ -14,7 +14,7 @@ class SeriesLib extends SeriesCrud {
 			$e->expects(['cycle', 'perennialStatus']);
 			$properties = ['name', 'use', 'mode', 'sequence', 'areaTarget', 'lengthTarget', 'bedWidth', 'alleyWidth'];
 
-			if($e['cycle'] === Series::ANNUAL) {
+			if($e->acceptSeason()) {
 				$properties[] = 'season';
 			}
 

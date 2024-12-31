@@ -54,7 +54,11 @@ class Farm extends FarmElement {
 	}
 
 	public function checkSeason(mixed $season): bool {
+
+		$this->expects(['seasonFirst', 'seasonLast']);
+
 		return ($season >= $this['seasonFirst'] and $season <= $this['seasonLast']);
+
 	}
 
 	public function active(): bool {

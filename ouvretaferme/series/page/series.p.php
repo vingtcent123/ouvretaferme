@@ -266,7 +266,10 @@ use series\Series;
 	->applyCollection(function($data, Collection $c) {
 		$c->validateProperty('farm', $c->first()['farm']);
 	})
-	->doUpdateCollectionProperties('doUpdateStatusCollection', ['status'], fn($data) => throw new ReloadAction());
+	->doUpdateCollectionProperties('doUpdateStatusCollection', ['status'], fn($data) => throw new ReloadAction())
+	->doUpdateCollectionProperties('doUpdateSeasonCollection', ['season'], fn($data) => throw new ReloadAction('series', $data->c->count() === 1  ? 'Series::updatedSeason' : 'Series::updatedSeasonCollection'),
+		validate: ['canUpdate', 'acceptSeason']
+	);
 
 
 (new Page(function($data) {
@@ -338,6 +341,13 @@ use series\Series;
 		} else {
 			throw new RedirectAction(\farm\FarmUi::urlCultivationSeries($data->eFarm, \farm\Farmer::SERIES, season: $data->eSeriesNew['season']).'&success=series:Series::duplicatedCollection');
 		}
+
+	})
+	->get('updateSeasonCollection', function($data) {
+
+		$data->c->validate('canRead', 'acceptSeason');
+
+		throw new ViewAction($data);
 
 	})
 	->post('doDeleteCollection', function($data) {

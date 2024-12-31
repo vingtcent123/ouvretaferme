@@ -83,9 +83,11 @@ class Series extends SeriesElement {
 	}
 
 	public function acceptDuplicate(): bool {
-
 		return $this->isAnnual();
+	}
 
+	public function acceptSeason(): bool {
+		return $this->isAnnual();
 	}
 
 	public static function validateBatch(\Collection $cSeries, \farm\Farm $eFarm = new \farm\Farm()): void {
@@ -124,8 +126,16 @@ class Series extends SeriesElement {
 			},
 
 			'season.check' => function(int $season): bool {
+
 				$this->expects(['farm']);
+
+				\farm\Farm::model()
+					->select('seasonFirst', 'seasonLast')
+					->get($this['farm']);
+
+
 				return $this['farm']->checkSeason($season);
+
 			},
 
 			'status.check' => function(): bool {

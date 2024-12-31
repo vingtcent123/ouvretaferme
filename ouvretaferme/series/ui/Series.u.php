@@ -930,6 +930,34 @@ class SeriesUi {
 
 	}
 
+	public function updateSeason(\farm\Farm $eFarm, \Collection $cSeries): \Panel {
+
+		$form = new \util\FormUi();
+
+		$eSeriesFirst = $cSeries->first();
+		$eSeriesFirst['farm'] = $eFarm; // Pour avoir la première et la dernière saison de la ferme
+
+		$h = '';
+
+		$h .= $form->openAjax('/series/series:doUpdateSeasonCollection');
+
+			$h .= $this->getSeriesField($form, $cSeries);
+			$h .= $form->dynamicGroup($eSeriesFirst, 'season');
+
+			$h .= $form->group(
+				content: $form->submit(s("Modifier la saison"))
+			);
+
+		$h .= $form->close();
+
+		return new \Panel(
+			id: 'panel-series-update',
+			title: s("Modifier la saison"),
+			body: $h,
+		);
+
+	}
+
 	public function duplicate(\farm\Farm $eFarm, \Collection $cSeries, \Collection $cTaskMetadata, bool $hasPlaces): \Panel {
 
 		$form = new \util\FormUi();
@@ -941,28 +969,7 @@ class SeriesUi {
 
 		$h .= $form->openAjax('/series/series:doDuplicate', ['id' => 'series-duplicate']);
 
-			if($cSeries->count() === 1) {
-
-				$h .= $form->hidden('ids[]', $eSeriesFirst['id']);
-
-				$h .= $form->group(
-					s("Nom"),
-					SeriesUi::link($eSeriesFirst)
-				);
-
-			} else {
-
-				$h .= $form->group(
-					s("Séries"),
-					$form->checkboxes('ids[]', $cSeries, $cSeries, [
-						'all' => FALSE,
-						'callbackCheckboxContent' => function($eSeries) {
-							return SeriesUi::name($eSeries);
-						}
-					])
-				);
-
-			}
+			$h .= $this->getSeriesField($form, $cSeries);
 
 			$h .= $form->dynamicGroup($eSeriesFirst, 'season', function(\PropertyDescriber $d) use ($eSeriesFirst) {
 				$d->label = s("Dupliquer pour la saison");
@@ -1045,6 +1052,39 @@ class SeriesUi {
 			title: $cSeries->count() === 1 ? s("Dupliquer une série") : s("Dupliquer des séries"),
 			body: $h,
 		);
+
+	}
+
+	protected function getSeriesField(\util\FormUi $form, \Collection $cSeries): string {
+
+		$h = '';
+
+		if($cSeries->count() === 1) {
+
+			$eSeries = $cSeries->first();
+
+			$h .= $form->hidden('ids[]', $eSeries['id']);
+
+			$h .= $form->group(
+				s("Nom"),
+				SeriesUi::link($eSeries)
+			);
+
+		} else {
+
+			$h .= $form->group(
+				s("Séries"),
+				$form->checkboxes('ids[]', $cSeries, $cSeries, [
+					'all' => FALSE,
+					'callbackCheckboxContent' => function($eSeries) {
+						return SeriesUi::name($eSeries);
+					}
+				])
+			);
+
+		}
+
+		return $h;
 
 	}
 

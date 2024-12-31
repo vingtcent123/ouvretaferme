@@ -190,6 +190,10 @@ class CultivationUi {
 								$batch[] = 'not-duplicate';
 							}
 
+							if($eSeries->acceptSeason() === FALSE) {
+								$batch[] = 'not-season';
+							}
+
 							if($eSeries['cycle'] === Series::ANNUAL) {
 								$cultivations .= '<label class="util-checkbox">';
 									$cultivations .= '<input type="checkbox" class="series-item-planning-checkbox" name="batch[]" value="'.$eSeries['id'].'" oninput="Series.changeSelection()" data-plant="'.$ePlant['id'].'" data-batch="'.implode(' ', $batch).'"/>';
@@ -404,6 +408,11 @@ class CultivationUi {
 		$menu .= '<a data-ajax-submit="/series/series:duplicate" data-ajax-method="get" class="batch-menu-duplicate batch-menu-item">';
 			$menu .= \Asset::icon('copy');
 			$menu .= '<span>'.s("Dupliquer").'</span>';
+		$menu .= '</a>';
+
+		$menu .= '<a data-ajax-submit="/series/series:updateSeasonCollection" data-ajax-method="get" class="batch-menu-season batch-menu-item">';
+			$menu .= \Asset::icon('calendar');
+			$menu .= '<span>'.s("Changer de saison").'</span>';
 		$menu .= '</a>';
 
 		$danger = '<a data-ajax-submit="/series/series:doDeleteCollection" data-confirm="'.s("Vous vous apprêtez à supprimer définitivement des séries de la saison {value}. Voulez-vous continuer ?", $season).'" class="batch-menu-item batch-menu-item-danger">';
