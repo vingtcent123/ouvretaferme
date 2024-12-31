@@ -568,14 +568,7 @@ class SeriesUi {
 			$h .= $this->getSeasonField($form, $eSeries);
 			$h .= $this->getNameField($form, $eSeries);
 
-			$h .= $form->group(
-				SeriesUi::p('cycle')->label,
-				'<u>'.SeriesUi::p('cycle')->values[$eSeries['cycle']].'</u>'
-			);
-
-			$h .= $form->dynamicGroup($eSeries, 'perennialLifetime');
-			$h .= $form->dynamicGroup($eSeries, 'mode');
-			$h .= $form->dynamicGroup($eSeries, 'use');
+			$h .= $form->dynamicGroups($eSeries, ['cycle', 'perennialLifetime', 'mode', 'use']);
 			$h .= $this->getBlockFields($form, $eSeries);
 		$h .= '</div>';
 
@@ -583,16 +576,17 @@ class SeriesUi {
 			$h .= $this->addFromPlant($eSeries, $ePlant, $index, $ccVariety, $cAction, $cTray, $form);
 		$h .= '</div>';
 
-		$h .= $form->group(
-			s("Ajouter une autre production").
-			'<div class="util-helper">'.s("Ajoutez une autre production à cette série si vous souhaitez associer plusieurs cultures ensemble.").'</div>',
-			$form->dynamicField($eCultivation, 'plant', function($d) {
-				$d->placeholder = s("Ajouter une autre plante");
-				$d->name = 'newPlant';
-				$d->autocompleteDispatch = '#series-create-add-plant';
-			}),
-			['id' => 'series-create-add-plant', 'class' => 'util-block-gradient']
-		);
+		$h .= '<div id="series-create-add-plant" class="util-block-gradient">';
+			$h .= $form->group(
+				s("Ajouter une autre production").
+				'<div class="util-helper">'.s("Ajoutez une autre production à cette série si vous souhaitez associer plusieurs cultures ensemble.").'</div>',
+				$form->dynamicField($eCultivation, 'plant', function($d) {
+					$d->placeholder = s("Ajouter une autre plante");
+					$d->name = 'newPlant';
+					$d->autocompleteDispatch = '#series-create-add-plant';
+				})
+			);
+		$h .= '</div>';
 
 		$h .= '<div class="series-submit">';
 
@@ -723,7 +717,7 @@ class SeriesUi {
 
 		$h .= $form->group(
 			SeriesUi::p('cycle')->label,
-			'<u>'.SeriesUi::p('cycle')->values[$eSequence['cycle']].'</u>'
+			$form->fake(SeriesUi::p('cycle')->values[$eSequence['cycle']])
 		);
 		$h .= $form->dynamicGroup($eSequence, 'perennialLifetime');
 		$h .= $form->dynamicGroup($eSequence, 'mode');

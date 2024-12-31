@@ -57,13 +57,9 @@ class Product extends ProductElement {
 
 			},
 
-			'limitEndAt.consistency' => function($limitEndAt, array $newProperties, array $validProperties): bool {
+			'limitEndAt.consistency' => function($limitEndAt, \BuildProperties $p): bool {
 
-				if(in_array('limitStartAt', $validProperties) === FALSE) {
-					return FALSE;
-				}
-
-				$this->expects(['limitStartAt']);
+				$p->expectsBuilt('limitStartAt');
 
 				if(
 					$this['limitStartAt'] === NULL or

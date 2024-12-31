@@ -780,7 +780,7 @@ class SequenceUi {
 
 			$h .= $form->group(
 				self::p('cycle')->label,
-				'<u>'.self::p('cycle')->values[$eSequence['cycle']].'</u>'
+				$form->fake(self::p('cycle')->values[$eSequence['cycle']])
 			);
 
 			if($eSequence['cycle'] === Sequence::PERENNIAL) {

@@ -1596,10 +1596,9 @@ class Element extends ArrayObject {
 		$model = $this->model();
 
 		$callbackWrapper = $callbacks['wrapper'] ?? fn($property) => $property;
-		$newProperties = [];
-		$validProperties = [];
+		$p = new BuildProperties();
 
-		foreach($properties as $key => $property) {
+		foreach($properties as $property) {
 
 			$callbacksProperty = [];
 
@@ -1618,18 +1617,18 @@ class Element extends ArrayObject {
 			}
 
 			$value = $input[$argument] ?? NULL;
-			$newProperties[] = $property;
+			$p->addNew($property);
 
 			if($model->hasProperty($property)) {
 
-				$callbackCast = $callbacksProperty[$property.'.cast'] ?? function(&$value, $newProperties, $validProperties) use ($model, $property): bool {
+				$callbackCast = $callbacksProperty[$property.'.cast'] ?? function(&$value) use ($model, $property): bool {
 
 					$model->cast($property, $value);
 					return TRUE;
 
 				};
 
-				$callbackPrepare = $callbacksProperty[$property.'.prepare'] ?? function(&$value, $newProperties, $validProperties) use ($model, $property): bool {
+				$callbackPrepare = $callbacksProperty[$property.'.prepare'] ?? function(&$value) use ($model, $property): bool {
 
 					if(strpos($model->getPropertyType($property), 'editor') === 0) {
 						$value = (new \editor\XmlLib())->fromHtml($value);
@@ -1639,7 +1638,7 @@ class Element extends ArrayObject {
 
 				};
 
-				$callbackCheck = $callbacksProperty[$property.'.check'] ?? function(&$value, $newProperties, $validProperties) use ($model, $property): bool {
+				$callbackCheck = $callbacksProperty[$property.'.check'] ?? function(&$value) use ($model, $property): bool {
 
 					if(
 						$model->isPropertyNull($property) and
@@ -1652,7 +1651,7 @@ class Element extends ArrayObject {
 
 				};
 
-				$callbackSet = $callbacksProperty[$property.'.set'] ?? function($value, $newProperties, $validProperties) use ($property) {
+				$callbackSet = $callbacksProperty[$property.'.set'] ?? function($value) use ($property) {
 					$this[$property] = $value;
 				};
 
@@ -1688,7 +1687,7 @@ class Element extends ArrayObject {
 
 				try {
 
-					if($callback($value, $newProperties, $validProperties, $wrapper) === FALSE) {
+					if($callback($value, $p, $wrapper) === FALSE) {
 						throw new BuildPropertyError();
 					}
 
@@ -1696,27 +1695,30 @@ class Element extends ArrayObject {
 					break;
 				} catch(BuildPropertySuccess) {
 				} catch(FailException $e) {
+					$p->addInvalid($property);
 					Fail::log($e, wrapper: $wrapper);
 					$success = FALSE;
 					break;
 				} catch(BuildPropertyError) {
+					$p->addInvalid($property);
 					$onError();
 					break;
 				} catch(BuildElementError) {
+					$p->addInvalid($property);
 					$onError();
-					return $newProperties;
+					return $p->getNew();
 				}
 
 			}
 
 			if($success) {
-				$validProperties[] = $property;
+				$p->addBuilt($property);
 			}
 
 		}
 
 
-		return $newProperties;
+		return $p->getNew();
 
 	}
 
@@ -1828,6 +1830,89 @@ class Element extends ArrayObject {
 		$output .= ')'."\n";
 
 		return $output;
+
+	}
+
+}
+
+class BuildProperties extends ArrayIterator {
+
+	private array $built = [];
+	private array $invalid = [];
+	private array $new = [];
+
+	public function addBuilt(string $property): void {
+		$this->built[] = $property;
+	}
+
+	public function getBuilt(): array {
+		return $this->built;
+	}
+
+	public function isBuilt(string|array $properties) {
+
+		$properties = (array)$properties;
+		return array_intersect($properties, $this->built) === $properties;
+
+	}
+
+	public function expectsBuilt(string|array $properties) {
+
+		$properties = (array)$properties;
+
+		if(array_intersect($properties, $this->built) === []) {
+			throw new BuildPropertyInvalid();
+		}
+
+	}
+
+	public function addInvalid(string $property): void {
+		$this->invalid[] = $property;
+	}
+
+	public function getInvalid(): array {
+		return $this->invalid;
+	}
+
+	public function isInvalid(string|array $properties) {
+
+		$properties = (array)$properties;
+		return array_intersect($properties, $this->invalid) === $properties;
+
+	}
+
+	public function expectsInvalid(string|array $properties) {
+
+		$properties = (array)$properties;
+
+		if(array_intersect($properties, $this->invalid) === []) {
+			throw new BuildPropertyInvalid();
+		}
+
+	}
+
+	public function addNew(string $property): void {
+		$this->new[] = $property;
+	}
+
+	public function getNew(): array {
+		return $this->new;
+	}
+
+	public function isNew(string|array $properties) {
+
+		$properties = (array)$properties;
+		return array_intersect($properties, $this->new) === $properties;
+
+	}
+
+	public function expectsNew(string|array $properties) {
+
+		$properties = (array)$properties;
+
+		if(array_intersect($properties, $this->new) === []) {
+			throw new BuildPropertyInvalid();
+		}
 
 	}
 

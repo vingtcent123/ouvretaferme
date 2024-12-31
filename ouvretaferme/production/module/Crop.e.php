@@ -125,7 +125,7 @@ class Crop extends CropElement {
 
 			},
 
-			'variety.check' => function(?array $varieties, array $newProperties, array $validProperties, string $wrapper) {
+			'variety.check' => function(?array $varieties, \BuildProperties $p, string $wrapper) {
 
 				$this['cSlice'] = SliceLib::prepare($this, $varieties, $wrapper);
 

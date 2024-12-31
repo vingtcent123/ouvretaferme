@@ -151,7 +151,7 @@ class Customer extends CustomerElement {
 
 			},
 
-			'lastName.empty' => function(?string &$lastName, array $newProperties, array $validProperties): bool {
+			'lastName.empty' => function(?string &$lastName, \BuildProperties $p): bool {
 
 				$this->expects(['user']);
 
@@ -164,7 +164,7 @@ class Customer extends CustomerElement {
 					return ($lastName !== NULL);
 				} else {
 
-					if(in_array('firstName', $validProperties) === FALSE) {
+					if($p->isBuilt('firstName')) {
 						return TRUE;
 					} else {
 						return ($lastName !== NULL or $this['firstName'] !== NULL);
@@ -187,11 +187,11 @@ class Customer extends CustomerElement {
 
 			},
 
-			'name.set' => function(?string $name, array $newProperties, array $validProperties): bool {
+			'name.set' => function(?string $name, \BuildProperties $p): bool {
 
 				if($this->getCategory() === Customer::PRIVATE) {
 
-					if(count(array_intersect(['firstName', 'lastName'], $validProperties)) === 2) {
+					if($p->isBuilt(['firstName', 'lastName'])) {
 
 						if($this['firstName'] !== NULL and $this['lastName'] !== NULL) {
 							$this['name'] = $this['firstName'].' '.mb_strtoupper($this['lastName']);

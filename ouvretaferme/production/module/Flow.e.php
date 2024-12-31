@@ -97,14 +97,14 @@ class Flow extends FlowElement {
 
 			},
 
-			'crop.check' => function(Crop $eCrop, array $newProperties, array $validProperties): bool {
+			'crop.check' => function(Crop $eCrop, \BuildProperties $p): bool {
 
 				$this->expects([
 					'sequence' => ['cCrop']
 				]);
 
 				// Action saisie, on vérifie qu'en cas de récolte on ait bien un crop
-				if(in_array('action', $validProperties)) {
+				if($p->isBuilt('action')) {
 
 					$this->expects([
 						'action' => ['fqn']
@@ -131,9 +131,9 @@ class Flow extends FlowElement {
 
 			},
 
-			'fertilizer.check' => function(?array &$fertilizer, array $newProperties, array $validProperties): bool {
+			'fertilizer.check' => function(?array &$fertilizer, \BuildProperties $p): bool {
 
-				if(in_array('action', $validProperties) === FALSE) {
+				if($p->isBuilt('action') === FALSE) {
 					return TRUE;
 				}
 
@@ -167,9 +167,9 @@ class Flow extends FlowElement {
 			'seasonStart.prepare' => $prepareSeason,
 			'seasonStop.prepare' => $prepareSeason,
 
-			'method.check' => function(\farm\Method $eMethod, array $newProperties, array $validProperties): bool {
+			'method.check' => function(\farm\Method $eMethod, \BuildProperties $p): bool {
 
-				if(in_array('action', $validProperties) === FALSE) {
+				if($p->isBuilt('action') === FALSE) {
 					return TRUE;
 				}
 

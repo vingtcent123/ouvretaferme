@@ -4,7 +4,7 @@ namespace series;
 class SeriesLib extends SeriesCrud {
 
 	public static function getPropertiesCreate(): array {
-		return ['name', 'use', 'mode', 'season', 'sequence', 'areaTarget', 'lengthTarget', 'bedWidth', 'alleyWidth'];
+		return ['sequence', 'name', 'cycle', 'use', 'mode', 'season', 'areaTarget', 'lengthTarget', 'bedWidth', 'alleyWidth'];
 	}
 
 	public static function getPropertiesUpdate(): \Closure {
@@ -237,12 +237,6 @@ class SeriesLib extends SeriesCrud {
 			return [];
 		}
 
-		if($eSeries['sequence']->empty()) {
-			$eSeries['cycle'] = NULL;
-		} else {
-			$eSeries['cycle'] = $eSeries['sequence']['cycle'];
-		}
-
 		foreach($plants as $index => $plant) {
 
 			$eCultivation = clone $eCultivationReference;
@@ -288,14 +282,6 @@ class SeriesLib extends SeriesCrud {
 			}
 
 			$eCultivation->buildIndex($properties, $input, $index);
-
-			if($fw->ok()) {
-
-				if($eSeries['cycle'] === NULL) { // La première culture définit le cycle de la série
-					$eSeries['cycle'] = $eCultivation['plant']['cycle'];
-				}
-
-			}
 
 		}
 

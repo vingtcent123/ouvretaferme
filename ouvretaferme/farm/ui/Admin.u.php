@@ -74,7 +74,7 @@ class AdminUi {
 
 		$h = '<div class="util-overflow-xs stick-sm">';
 
-			$h .= '<table class="tr-bordered farm-admin-table">';
+			$h .= '<table class="tr-bordered tr-even farm-admin-table">';
 				$h .= '<thead>';
 					$h .= '<tr>';
 						$h .= '<th class="text-center">'.$search->linkSort('id', '#', SORT_DESC).'</th>';

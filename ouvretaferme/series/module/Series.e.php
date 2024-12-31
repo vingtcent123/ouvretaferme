@@ -145,6 +145,18 @@ class Series extends SeriesElement {
 
 			},
 
+			'cycle.prepare' => function(?string &$cycle, \BuildProperties $p): bool {
+
+				$p->expectsBuilt('sequence');
+
+				if($this['sequence']->notEmpty()) {
+					$cycle = $this['sequence']['cycle'];
+				}
+
+				return TRUE;
+
+			},
+
 			'sequence.check' => function(\production\Sequence $eSequence): bool {
 
 				if($eSequence->empty()) {

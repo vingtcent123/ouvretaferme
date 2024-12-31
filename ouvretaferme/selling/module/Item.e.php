@@ -79,11 +79,9 @@ class Item extends ItemElement {
 
 			},
 
-			'number.empty' => function(?float $number, array $newProperties, array $validProperties): bool {
+			'number.empty' => function(?float $number, \BuildProperties $p): bool {
 
-				if(in_array('locked', $validProperties) === FALSE) {
-					return FALSE;
-				}
+				$p->expectsBuilt('locked');
 
 				$this->expects([
 					'sale' => ['market'],
@@ -97,9 +95,9 @@ class Item extends ItemElement {
 
 			},
 
-			'number.division' => function(?float $number, array $newProperties, array $validProperties): bool {
+			'number.division' => function(?float $number, \BuildProperties $p): bool {
 
-				if(in_array('locked', $validProperties) === FALSE) {
+				if($p->isBuilt('locked') === FALSE) {
 					return TRUE;
 				}
 
@@ -125,9 +123,9 @@ class Item extends ItemElement {
 				
 			},
 
-			'unitPrice.division' => function(?float $unitPrice, array $newProperties, array $validProperties): bool {
+			'unitPrice.division' => function(?float $unitPrice, \BuildProperties $p): bool {
 
-				if(in_array('locked', $validProperties) === FALSE) {
+				if($p->isBuilt('locked') === FALSE) {
 					return TRUE;
 				}
 
@@ -138,9 +136,9 @@ class Item extends ItemElement {
 
 			},
 
-			'price.locked' => function(?float $price, array $newProperties, array $validProperties): bool {
+			'price.locked' => function(?float $price, \BuildProperties $p): bool {
 
-				if(in_array('locked', $validProperties) === FALSE) {
+				if($p->isBuilt('locked') === FALSE) {
 					return TRUE;
 				}
 

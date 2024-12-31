@@ -401,11 +401,9 @@ class Cultivation extends CultivationElement {
 
 			},
 
-			'sliceTool.check' => function(\farm\Tool $eTool, array $newProperties, array $validProperties) {
+			'sliceTool.check' => function(\farm\Tool $eTool, \BuildProperties $p) {
 
-				if(in_array('sliceUnit', $validProperties) === FALSE) {
-					return FALSE;
-				}
+				$p->expectsBuilt('sliceUnit');
 
 				if($this['sliceUnit'] === Cultivation::TRAY) {
 
@@ -420,11 +418,9 @@ class Cultivation extends CultivationElement {
 
 			},
 
-			'variety.check' => function(?array $varieties, array $newProperties, array $validProperties, string $wrapper) {
+			'variety.check' => function(?array $varieties, \BuildProperties $p, string $wrapper) {
 
-				if(array_intersect(['sliceUnit', 'sliceTray'], $validProperties) === []) {
-					return FALSE;
-				}
+				$p->expectsBuilt(['sliceUnit', 'sliceTray']);
 
 				$this['cSlice'] = \production\SliceLib::prepare($this, $varieties, $wrapper);
 
