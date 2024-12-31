@@ -249,7 +249,7 @@ class ReportUi {
 
 		$h = '<div class="util-overflow-md stick-xs">';
 
-			$h .= '<table class="report-item-table"">';
+			$h .= '<table class="report-item-table">';
 
 				$h .= $this->getOneHead('<td></td>');
 
@@ -396,11 +396,11 @@ class ReportUi {
 
 						$h .= '</tr>';
 
-					$h .= '</tbody>';
+						if($cCultivation->count() > 1) {
+							$h .= $this->getOneByCultivation($eReport, $cCultivation, hide: TRUE);
+						}
 
-					if($cCultivation->count() > 1) {
-						$h .= $this->getOneByCultivation($eReport, $cCultivation, hide: TRUE);
-					}
+					$h .= '</tbody>';
 
 
 				}
@@ -439,23 +439,19 @@ class ReportUi {
 
 		$h = '';
 
-		$h .= '<tbody>';
+		foreach($cCultivation as $eCultivation) {
 
-			foreach($cCultivation as $eCultivation) {
+			$h .= '<tr class="'.($hide ? 'hide' : '').'" data-ref="report-'.$eReport['id'].'">';
 
-				$h .= '<tr class="'.($hide ? 'hide' : '').'" data-ref="report-'.$eReport['id'].'">';
+				$h .= '<td class="report-item-series" colspan="3">';
+					$h .= \series\SeriesUi::link($eCultivation['series']);
+				$h .= '</td>';
 
-					$h .= '<td class="report-item-series" colspan="3">';
-						$h .= \series\SeriesUi::link($eCultivation['series']);
-					$h .= '</td>';
+				$h .= $this->getStats($eCultivation, $hide === FALSE);
 
-					$h .= $this->getStats($eCultivation, $hide === FALSE);
+			$h .= '</tr>';
 
-				$h .= '</tr>';
-
-			}
-
-		$h .= '</tbody>';
+		}
 
 		return $h;
 

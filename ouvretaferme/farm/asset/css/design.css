@@ -526,7 +526,7 @@ a.nav-year:hover {
 		display: none;
 	}
 
-	@media (min-height: 768px) and (min-width: 768px) {
+	@media (min-width: 768px) {
 
 		.farm-tab-icon svg {
 			font-size: 1.1rem;
@@ -560,7 +560,7 @@ a.nav-year:hover {
 
 	}
 
-	@media (max-height: 767px), (max-width: 767px) {
+	@media (max-width: 767px) {
 
 		@media (min-width: 576px) {
 
