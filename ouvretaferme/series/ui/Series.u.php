@@ -977,69 +977,81 @@ class SeriesUi {
 				$d->after = \util\FormUi::info(s("Lorsque vous copiez une série sur une saison différente, les interventions sont replacées en <i>À faire</i> et les récoltes sont remises à zéro."), class: 'series-duplicate-season hide');
 			});
 
-			if($cTaskMetadata->notEmpty() and $hasPlaces) {
-				$h .= $form->group(content: '<h3>'.s("Que souhaitez-vous dupliquer de la série ?").'</h3>');
-			}
+			if($cTaskMetadata->notEmpty() or $hasPlaces) {
 
-			if($cTaskMetadata->notEmpty()) {
-
-				$h .= $form->group(
-					s("Dupliquer les interventions"),
-					$form->yesNo('copyTasks', TRUE, attributes: [
-						'callbackRadioAttributes' => fn() => [
-							'onchange' => 'Series.changeDuplicateTasks(this)'
-						]
-					])
-				);
-
-				$cAction = $cTaskMetadata
-					->getColumnCollection('action')
-					->sort('name');
-
-				$h .= $form->group(
-					s("Choix des interventions à dupliquer"),
-					$form->checkboxes('copyActions[]', $cAction, attributes: [
-						'callbackCheckboxAttributes' => fn($eAction) => [
-							'data-fqn' => $eAction['fqn']
-						],
-						'callbackCheckboxContent' => function($eAction) {
-							$action = encode($eAction['name']);
-							if($eAction['fqn'] === ACTION_RECOLTE) {
-								$action .= '<br/><span class="color-muted">'.s("Les quantités récoltées seront également dupliquées").'</span>';
-							}
-							return $action;
-						}
-					])
-				);
-
-				if($cTaskMetadata
-					->filter(fn($eTask) => $eTask['time'] > 0)
-					->notEmpty()) {
-
-					$timesheet = $form->yesNo('copyTimesheet', FALSE);
-					$timesheet .= \util\FormUi::info(s("Il n'est possible de dupliquer le temps de travail que lorsque la série est dupliquée sur la même saison."), class: 'series-duplicate-timesheet hide');
-
-					$h .= $form->group(
-						s("Dupliquer le temps de travail"),
-						$timesheet
-					);
-
+				if($cSeries->count() === 1) {
+					$title = s("Que souhaitez-vous conserver dans la série ?");
+				} else {
+					$title = s("Que souhaitez-vous conserver dans les séries ?");
 				}
 
-			} else {
-				$h .= $form->hidden('copyTasks', FALSE);
+				$h .= $form->group(content: '<h3>'.$title.'</h3>');
 			}
 
-			if($hasPlaces) {
+			$h .= '<div class="util-block bg-background-light">';
 
-				$h .= $form->group(
-					s("Dupliquer l'assolement"),
-					$form->yesNo('copyPlaces', FALSE)
-				);
+				if($cTaskMetadata->notEmpty()) {
 
-			} else {
-				$h .= $form->hidden('copyPlaces', FALSE);
-			}
+					$h .= $form->group(
+						s("Conserver les interventions"),
+						$form->yesNo('copyTasks', TRUE, attributes: [
+							'callbackRadioAttributes' => fn() => [
+								'onchange' => 'Series.changeDuplicateTasks(this)'
+							]
+						])
+					);
+
+					$cAction = $cTaskMetadata
+						->getColumnCollection('action')
+						->sort('name');
+
+					$h .= $form->group(
+						content :
+						'<h5>'.s("Choisir les interventions à conserver").'</h5>'.
+						$form->checkboxes('copyActions[]', $cAction, attributes: [
+							'callbackCheckboxAttributes' => fn($eAction) => [
+								'data-fqn' => $eAction['fqn']
+							],
+							'callbackCheckboxContent' => function($eAction) {
+								$action = encode($eAction['name']);
+								if($eAction['fqn'] === ACTION_RECOLTE) {
+									$action .= '<br/><span class="color-muted">'.s("Les quantités récoltées seront également dupliquées").'</span>';
+								}
+								return $action;
+							}
+						])
+					);
+
+					if($cTaskMetadata
+						->filter(fn($eTask) => $eTask['time'] > 0)
+						->notEmpty()) {
+
+						$timesheet = $form->yesNo('copyTimesheet', FALSE);
+						$timesheet .= \util\FormUi::info(s("Il n'est possible de dupliquer le temps de travail que lorsque la série est dupliquée sur la même saison."), class: 'series-duplicate-timesheet hide');
+
+						$h .= $form->group(
+							s("Conserver le temps de travail"),
+							$timesheet
+						);
+
+					}
+
+				} else {
+					$h .= $form->hidden('copyTasks', FALSE);
+				}
+
+				if($hasPlaces) {
+
+					$h .= $form->group(
+						s("Conserver l'assolement"),
+						$form->yesNo('copyPlaces', FALSE)
+					);
+
+				} else {
+					$h .= $form->hidden('copyPlaces', FALSE);
+				}
+
+			$h .= '</div>';
 
 			$h .= $form->group(
 				content: $form->submit(s("Dupliquer"))
