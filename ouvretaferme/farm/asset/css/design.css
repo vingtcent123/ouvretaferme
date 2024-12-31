@@ -51,7 +51,7 @@ a.nav-year:hover {
 
 		:root {
 			--nav-width: 19rem;
-			--nav-padding: 1.25rem;
+			--nav-padding: 1rem;
 		}
 
 	}
@@ -278,6 +278,14 @@ a.nav-year:hover {
 		font-size: 0.9rem;
 		border: 1px solid white;
 		padding: 0.5rem;
+	}
+
+	@media (max-width: 1599px) {
+
+		body[data-template~="farm"] nav .farm-tab-complement {
+			padding: 0.5rem 0.375rem;
+		}
+
 	}
 
 	.farm-tab-complement svg {
