@@ -88,6 +88,7 @@ use series\Series;
 		$use = \series\Series::POST('use', 'use', \series\Series::BED);
 
 		$data->eSeries = new \series\Series([
+			'farm' => $data->eFarm,
 			'season' => $data->season,
 			'cycle' => \series\Series::POST('cycle', 'cycle', function() {
 				throw new NotExpectedAction('Missing cycle');
@@ -97,9 +98,9 @@ use series\Series;
 			'length' => ($use === \series\Series::BED) ? 0 : NULL
 		]);
 
-		$data->ccVariety = \plant\VarietyLib::query($data->eFarm, $data->ePlant);
 		$data->cAction = \farm\ActionLib::getByFarm($data->eFarm, fqn: [ACTION_SEMIS_PEPINIERE, ACTION_SEMIS_DIRECT, ACTION_PLANTATION], index: 'fqn');
-		$data->cTray = \farm\ToolLib::getTraysByFarm($data->eFarm);
+
+		$data->eCultivation = \series\CultivationLib::getNew($data->eSeries, $data->ePlant);
 
 		$data->nextIndex = POST('index', 'int', 0) + 1;
 
@@ -121,9 +122,25 @@ use series\Series;
 
 		$data->eFarmer = \farm\FarmerLib::getOnlineByFarm($data->eFarm);
 		$data->ePlant = \plant\PlantLib::getById(GET('plant'))->validate('notEmpty');
-		$data->ccVariety = \plant\VarietyLib::query($data->eFarm, $data->ePlant);
 		$data->cAction = \farm\ActionLib::getByFarm($data->eFarm, fqn: [ACTION_SEMIS_PEPINIERE, ACTION_SEMIS_DIRECT, ACTION_PLANTATION], index: 'fqn');
-		$data->cTray = \farm\ToolLib::getTraysByFarm($data->eFarm);
+
+		$data->eSeries = new Series([
+			'farm' => $data->eFarm,
+			'name' => $data->ePlant['name'],
+			'nameAuto' => TRUE,
+			'nameDefault' => $data->ePlant['name'],
+			'use' => Series::BED,
+			'area' => NULL,
+			'areaTarget' => NULL,
+			'length' => NULL,
+			'lengthTarget' => NULL,
+			'cycle' => $data->ePlant['cycle'],
+			'season' => $data->season,
+			'bedWidth' => $data->eFarm['defaultBedWidth'],
+			'alleyWidth' => $data->eFarm['defaultAlleyWidth']
+		]);
+
+		$data->eCultivation = \series\CultivationLib::getNew($data->eSeries, $data->ePlant);
 
 		throw new ViewAction($data);
 

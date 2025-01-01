@@ -2393,24 +2393,10 @@ class CultivationUi {
 
 	}
 
-	public function createContent(Series $eSeries, \Collection $ccVariety, \Collection $cAction): string {
+	public function createContent(Series $eSeries, Cultivation $eCultivation, \Collection $cAction): string {
 
 		$form = new \util\FormUi([
 			'firstColumnSize' => 50
-		]);
-
-		$eCultivation = new Cultivation([
-			'ccVariety' => $ccVariety,
-			'cSlice' => new \Collection(),
-			'series' => $eSeries,
-			'season' => $eSeries['season'],
-			'sequence' => new \production\Sequence(),
-			'sliceUnit' => Cultivation::PERCENT,
-			'seedling' => NULL,
-			'distance' => Cultivation::SPACING,
-			'area' => $eSeries['area'],
-			'length' => $eSeries['length'],
-			'harvestPeriodExpected' => Cultivation::MONTH
 		]);
 
 		$h = '<div id="series-create-plant-list">';

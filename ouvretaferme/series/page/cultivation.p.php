@@ -9,9 +9,9 @@
 	->post('addPlant', function($data) {
 
 		$data->ePlant = \plant\PlantLib::getById(POST('plant'));
-		$data->ccVariety = \plant\VarietyLib::query($data->eSeries['farm'], $data->ePlant);
 		$data->cAction = \farm\ActionLib::getByFarm($data->eSeries['farm'], fqn: [ACTION_SEMIS_PEPINIERE, ACTION_SEMIS_DIRECT, ACTION_PLANTATION], index: 'fqn');
-		$data->cTray = \farm\ToolLib::getTraysByFarm($data->eSeries['farm']);
+
+		$data->eCultivation = \series\CultivationLib::getNew($data->eSeries, $data->ePlant);
 
 		throw new \ViewAction($data);
 

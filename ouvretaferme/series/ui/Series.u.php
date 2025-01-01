@@ -530,33 +530,13 @@ class SeriesUi {
 
 	}
 
-	public function createFromPlant(\farm\Farm $eFarm, int $season, \farm\Farmer $eFarmer, \plant\Plant $ePlant, \Collection $ccVariety, \Collection $cAction, \Collection $cTray): \Panel {
+	public function createFromPlant(\farm\Farm $eFarm, int $season, Series $eSeries, Cultivation $eCultivation, \plant\Plant $ePlant, \Collection $cAction): \Panel {
 
 		$form = new \util\FormUi([
 			'firstColumnSize' => 40
 		]);
 
 		$index = 0;
-
-		$eCultivation = new Cultivation([
-			'farm' => $eFarm
-		]);
-
-		$eSeries = new Series([
-			'farm' => $eFarm,
-			'name' => $ePlant['name'],
-			'nameAuto' => TRUE,
-			'nameDefault' => $ePlant['name'],
-			'use' => Series::BED,
-			'area' => NULL,
-			'areaTarget' => NULL,
-			'length' => NULL,
-			'lengthTarget' => NULL,
-			'cycle' => $ePlant['cycle'],
-			'season' => $season,
-			'bedWidth' => $eFarm['defaultBedWidth'],
-			'alleyWidth' => $eFarm['defaultAlleyWidth']
-		]);
 
 		$h = $form->openAjax('/series/series:doCreate?season='.$season.'&farm='.$eFarm['id'], ['id' => 'series-create-plant', 'data-cycle' => $eSeries['cycle']]);
 
@@ -573,7 +553,7 @@ class SeriesUi {
 		$h .= '</div>';
 
 		$h .= '<div id="series-create-plant-list">';
-			$h .= $this->addFromPlant($eSeries, $ePlant, $index, $ccVariety, $cAction, $cTray, $form);
+			$h .= $this->addFromPlant($eSeries, $eCultivation, $ePlant, $index, $cAction, $form);
 		$h .= '</div>';
 
 		$h .= '<div id="series-create-add-plant" class="util-block-gradient">';
@@ -628,7 +608,7 @@ class SeriesUi {
 
 	}
 
-	public function addFromPlant(Series $eSeries, \plant\Plant $ePlant, int $index, \Collection $ccVariety, \Collection $cAction, \Collection $cTray, ?\util\FormUi $form = NULL): string {
+	public function addFromPlant(Series $eSeries, Cultivation $eCultivation, \plant\Plant $ePlant, int $index, \Collection $cAction, ?\util\FormUi $form = NULL): string {
 
 		$eSeries->expects(['use', 'cycle', 'season']);
 
@@ -639,26 +619,6 @@ class SeriesUi {
 			]);
 
 		}
-
-		$eCultivation = new Cultivation([
-			'ccVariety' => $ccVariety,
-			'cTray' => $cTray,
-			'cSlice' => new \Collection(),
-			'series' => $eSeries,
-			'season' => $eSeries['season'],
-			'sequence' => new \production\Sequence(),
-			'seedling' => NULL,
-			'sliceUnit' => Cultivation::PERCENT,
-			'sliceTool' => new \farm\Tool(),
-			'distance' => Cultivation::SPACING,
-			'density' => NULL,
-			'rows' => NULL,
-			'rowSpacing' => NULL,
-			'plantSpacing' => NULL,
-			'area' => 0,
-			'length' => ($eSeries['use'] === Series::BED ? 0 : NULL),
-			'harvestPeriodExpected' => Cultivation::MONTH
-		]);
 
 		$suffix = '['.$index.']';
 

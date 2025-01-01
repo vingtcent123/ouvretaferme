@@ -11,6 +11,33 @@ class CultivationLib extends CultivationCrud {
 		return ['yieldExpected', 'mainUnit', 'unitWeight', 'bunchWeight', 'harvestPeriodExpected', 'harvestMonthsExpected', 'harvestWeeksExpected', 'plant', 'distance', 'density', 'rows', 'plantSpacing', 'rowSpacing', 'seedling', 'seedlingSeeds', 'sliceUnit', 'sliceTool', 'variety'];
 	}
 
+	public static function getNew(Series $eSeries, \plant\Plant $ePlant): Cultivation {
+
+		$eSeries->expects(['farm', 'season', 'area', 'length']);
+		
+		return new Cultivation([
+			'farm' => $eSeries['farm'],
+			'ccVariety' => \plant\VarietyLib::query($eSeries['farm'], $ePlant),
+			'cTray' => \farm\ToolLib::getTraysByFarm($eSeries['farm']),
+			'cSlice' => new \Collection(),
+			'series' => $eSeries,
+			'season' => $eSeries['season'],
+			'sequence' => new \production\Sequence(),
+			'sliceUnit' => Cultivation::PERCENT,
+			'sliceTool' => new \farm\Tool(),
+			'seedling' => NULL,
+			'distance' => Cultivation::SPACING,
+			'density' => NULL,
+			'rows' => NULL,
+			'rowSpacing' => NULL,
+			'plantSpacing' => NULL,
+			'area' => $eSeries['area'],
+			'length' => $eSeries['length'],
+			'harvestPeriodExpected' => Cultivation::MONTH
+		]);
+
+	}
+
 	public static function getBySeries(Series|\Collection $eSeries): \Collection {
 
 		return Cultivation::model()

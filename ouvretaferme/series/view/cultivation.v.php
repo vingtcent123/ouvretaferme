@@ -4,7 +4,7 @@ new AdaptativeView('create', function($data, PanelTemplate $t) {
 });
 
 new JsonView('addPlant', function($data, AjaxTemplate $t) {
-	$t->qs('#cultivation-create-content')->innerHtml((new \series\CultivationUi())->createContent($data->eSeries, $data->ccVariety, $data->cAction));
+	$t->qs('#cultivation-create-content')->innerHtml((new \series\CultivationUi())->createContent($data->eSeries, $data->eCultivation, $data->cAction));
 });
 
 new AdaptativeView('update', function($data, PanelTemplate $t) {
