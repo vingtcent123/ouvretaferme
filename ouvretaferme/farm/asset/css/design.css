@@ -368,6 +368,14 @@ a.nav-year:hover {
 		justify-content: center;
 	}
 
+	@media print {
+
+		body[data-template~="farm"] main .container.farm-template-main-title {
+			background: transparent;
+		}
+
+	}
+
 	body[data-template~="farm"] main .container.farm-template-main-title > div > *:last-child {
 		margin-bottom: 0;
 	}

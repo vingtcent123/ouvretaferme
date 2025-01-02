@@ -220,7 +220,7 @@ class TaskUi {
 
 		$h = '<div id="planning-week-tabs" class="tabs-h" data-farm="'.$eFarm['id'].'" data-week="'.$week.'" onrender="'.encode('Lime.Tab.restore(this, "todo")').'">';
 
-			$h .= '<div class="tabs-item">';
+			$h .= '<div class="tabs-item util-print-hide">';
 				$h .= '<a class="tab-item" onclick="Lime.Tab.select(this)" data-tab="todo">'.s("À faire").'</a>';
 				$h .= '<a class="tab-item" onclick="Lime.Tab.select(this)" data-tab="done">'.s("Fait").'</a>';
 				$h .= '<a class="tab-item" onclick="Lime.Tab.select(this)" data-tab="harvested">'.s("Récolté").'</a>';
@@ -238,15 +238,15 @@ class TaskUi {
 
 			$h .= '<div id="planning-wrapper-weekly">';
 
-				$h .= '<div id="tasks-time" class="tab-panel" data-tab="time">';
+				$h .= '<div id="tasks-time" class="tab-panel util-print-hide" data-tab="time">';
 					$h .= $this->getWeekTime($eFarm, $week, $cccTask, $eUserTime, $cUserFarm);
 				$h .= '</div>';
 
-				$h .= '<div id="tasks-todo" class="tab-panel planning-week" data-tab="todo">';
+				$h .= '<div id="tasks-todo" class="tab-panel planning-week util-print-block" data-tab="todo">';
 
 					$h .= '<div class="planning-week-header">';
 
-						$h .= '<h2 class="planning-week-title">'.s("À faire").'</h2>';
+						$h .= '<h2 class="planning-week-title util-print-block">'.s("À faire").'</h2>';
 						$h .= '<div class="tasks-action">';
 							if($canCreate) {
 								$h .= $this->getNewTask('weekly', 'todo', $eFarm, $seasonsWithSeries, $cCategory, week: $week);
@@ -259,11 +259,11 @@ class TaskUi {
 
 				$h .= '</div>';
 
-				$h .= '<div id="tasks-done" class="tab-panel planning-week" data-tab="done">';
+				$h .= '<div id="tasks-done" class="tab-panel planning-week util-print-block" data-tab="done">';
 
 					$h .= '<div class="planning-week-header">';
 
-						$h .= '<h2 class="planning-week-title">'.s("Fait").'</h2>';
+						$h .= '<h2 class="planning-week-title util-print-block">'.s("Fait").'</h2>';
 						$h .= '<div class="tasks-action">';
 							if($canCreate) {
 								$h .= $this->getNewTask('weekly', 'done', $eFarm, $seasonsWithSeries, $cCategory, week: $week);
@@ -285,11 +285,11 @@ class TaskUi {
 
 				$h .= '</div>';
 
-				$h .= '<div id="tasks-harvested" class="tab-panel planning-week" data-tab="harvested">';
+				$h .= '<div id="tasks-harvested" class="tab-panel planning-week util-print-block" data-tab="harvested">';
 
 					$h .= '<div class="planning-week-header">';
 
-						$h .= '<h2 class="planning-week-title">'.s("Récolté").'</h2>';
+						$h .= '<h2 class="planning-week-title util-print-block">'.s("Récolté").'</h2>';
 						$h .= '<div class="tasks-action">';
 							if($canCreate) {
 								$h .= $this->getNewHarvest($eFarm, $week, $seasonsWithSeries, $cActionMain[ACTION_RECOLTE]);

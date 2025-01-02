@@ -360,7 +360,7 @@ div.planning-week-header div.tasks-action:not(:empty) {
 @media (max-width: 767px) {
 
 	h2.planning-week-title {
-		display: none !important;
+		display: none;
 	}
 
 }

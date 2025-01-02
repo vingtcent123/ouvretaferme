@@ -32,18 +32,22 @@ class PlotUi {
 
 			} else {
 
-				$h .= '<div data-ref="plot" id="plot-item-'.$ePlot['id'].'" class="plot-item" data-name="'.encode(\Asset::icon('chevron-right').' '.encode($ePlot['name'])).'">';
+				$h .= '<div class="util-print-break-inside-avoid">';
 
-					$h .= '<h4 class="plot-item-title">';
-						$h .= s("Bloc {value}", encode($ePlot['name']));
-					$h .= '</h4>';
-					$h .= '<div>';
-						$h .= $this->getPlotUse($ePlot);
+					$h .= '<div data-ref="plot" id="plot-item-'.$ePlot['id'].'" class="plot-item" data-name="'.encode(\Asset::icon('chevron-right').' '.encode($ePlot['name'])).'">';
+
+						$h .= '<h4 class="plot-item-title">';
+							$h .= s("Bloc {value}", encode($ePlot['name']));
+						$h .= '</h4>';
+						$h .= '<div>';
+							$h .= $this->getPlotUse($ePlot);
+						$h .= '</div>';
+
 					$h .= '</div>';
 
-				$h .= '</div>';
+					$h .= (new BedUi())->displayFromPlot($eFarm, $ePlot, $season);
 
-				$h .= (new BedUi())->displayFromPlot($eFarm, $ePlot, $season);
+				$h .= '</div>';
 
 			}
 
