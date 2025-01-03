@@ -2590,8 +2590,8 @@ class TaskUi {
 									}
 
 									$h .= '<div>';
-										if($eVariety['seeds'] > 0) {
-											$h .= ($eVariety['numberPlantKilogram'] !== NULL) ? '<small class="color-muted">'.\plant\VarietyUi::getPlantsWeight($eVariety, $eVariety['seeds']).'</small>' : '';
+										if($eVariety->exists() and $eVariety['seeds'] > 0 and $eVariety['numberPlantKilogram'] !== NULL) {
+											$h .= '<small class="color-muted">'.\plant\VarietyUi::getPlantsWeight($eVariety, $eVariety['seeds']).'</small>';
 										}
 									$h .= '</div>';
 								$h .= '</td>';
@@ -2607,8 +2607,8 @@ class TaskUi {
 									}
 
 									$h .= '<div>';
-										if($eVariety['seeds'] > 0) {
-											$h .= ($eVariety['weightSeed1000'] !== NULL) ? '<small class="color-muted">'.\plant\VarietyUi::getSeedsWeight1000($eVariety, $eVariety['seeds']).'</small>' : '';
+										if($eVariety->exists() and $eVariety['seeds'] > 0 and $eVariety['weightSeed1000'] !== NULL) {
+											$h .= '<small class="color-muted">'.\plant\VarietyUi::getSeedsWeight1000($eVariety, $eVariety['seeds']).'</small>';
 										}
 									$h .= '</div>';
 
