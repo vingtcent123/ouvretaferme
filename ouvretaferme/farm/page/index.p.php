@@ -343,6 +343,7 @@
 
 		$search = array_filter([
 			'plant' => GET('plant', '?int'),
+			'farmer' => GET('farmer', '?int'),
 			'action' => GET('action', '?int'),
 			'plot' => GET('plot', '?int')
 		]) + $search;
@@ -353,6 +354,7 @@
 
 				$search[$key] = match($key) {
 					'plant' => $value ? \plant\PlantLib::getByFarm($data->eFarm, id: $value) : new \plant\Plant(),
+					'farmer' => $value ? new \user\User(['id' => $value]) : new \user\User(),
 					'action' => $data->cAction[$value] ?? new \farm\Action(),
 					'plot' => $value ? \map\PlotLib::getById($value)->validate('canRead') : new \map\Plot(),
 				};

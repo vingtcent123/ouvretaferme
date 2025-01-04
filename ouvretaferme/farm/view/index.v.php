@@ -22,7 +22,7 @@ new AdaptativeView('planning', function($data, FarmTemplate $t) {
 				$data->week,
 				fn($week) => \farm\FarmUi::urlPlanningDaily($data->eFarm, $week)
 			);
-			echo $uiTask->getWeekSearch($data->eFarm, $data->search, $data->cAction, $data->cZone);
+			echo $uiTask->getWeekSearch($data->eFarm, $data->search, $data->cAction, $data->cZone, new Collection());
 
 			echo $uiTask->getDayPlanning($data->eFarm, $data->week, $data->cccTask, $data->cccTaskAssign, $data->cUserFarm, $data->eUserSelected, $data->seasonsWithSeries, $data->cCategory);
 
@@ -41,7 +41,7 @@ new AdaptativeView('planning', function($data, FarmTemplate $t) {
 
 			echo (new \main\HomeUi())->getTraining(TRUE);
 
-			echo $uiTask->getWeekSearch($data->eFarm, $data->search, $data->cAction, $data->cZone);
+			echo $uiTask->getWeekSearch($data->eFarm, $data->search, $data->cAction, $data->cZone, $data->cUserFarm);
 
 			echo $uiTask->getWeekPlanning($data->eFarm, $data->week, $data->cccTask, $data->cUserFarm, $data->eUserTime, $data->seasonsWithSeries, $data->cActionMain, $data->cCategory);
 
@@ -62,7 +62,7 @@ new AdaptativeView('planning', function($data, FarmTemplate $t) {
 			$t->main = $uiTask->getYearSearch(
 				$data->eFarm,
 				$data->year,
-				fn() => '<div class="container">'.$uiTask->getWeekSearch($data->eFarm, $data->search, $data->cAction, $data->cZone).'</div>'
+				fn() => '<div class="container">'.$uiTask->getWeekSearch($data->eFarm, $data->search, $data->cAction, $data->cZone, $data->cUserFarm).'</div>'
 			);
 
 			$t->main .= $uiTask->getYearMonths($data->year, $data->month, $data->ccTask);

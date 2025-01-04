@@ -267,13 +267,10 @@ class TaskLib extends TaskCrud {
 
 	protected static function applySearch(\Search $search): void {
 
-		if($search->get('action') and $search->get('action')->notEmpty()) {
-			Task::model()->whereAction($search->get('action'));
-		}
-
-		if($search->get('plant') and $search->get('plant')->notEmpty()) {
-			Task::model()->wherePlant($search->get('plant'));
-		}
+		Task::model()
+			->whereAction($search->get('action'), if: $search->get('action') and $search->get('action')->notEmpty())
+			->wherePlant($search->get('plant'), if: $search->get('plant') and $search->get('plant')->notEmpty())
+			->where(fn() => 'JSON_CONTAINS(plannedUsers, \''.$search->get('farmer')['id'].'\')', if: $search->get('farmer') and $search->get('farmer')->notEmpty());
 
 	}
 
