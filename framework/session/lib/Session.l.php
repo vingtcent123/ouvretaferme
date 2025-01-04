@@ -105,9 +105,9 @@ class SessionLib {
 
 			session_name('session'.LIME_ENV);
 
-			\dev\ErrorPhpLib::createExceptionFromError(FALSE);
-				session_start();
 			\dev\ErrorPhpLib::createExceptionFromError(TRUE);
+				session_start();
+			\dev\ErrorPhpLib::createExceptionFromError(FALSE);
 
 		}
 
