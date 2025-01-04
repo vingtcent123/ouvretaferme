@@ -42,10 +42,6 @@ class SeriesUi {
 
 	}
 
-	public function getDuplicateName(Series $eSeries): string {
-		return $eSeries['name'].' '.s("(copie)");
-	}
-
 	public static function getPanelHeader(Series $eSeries): string {
 
 		$eSeries->expects(['name', 'season']);
@@ -902,7 +898,9 @@ class SeriesUi {
 		$h .= $form->openAjax('/series/series:doUpdateSeasonCollection');
 
 			$h .= $this->getSeriesField($form, $cSeries);
-			$h .= $form->dynamicGroup($eSeriesFirst, 'season');
+			$h .= $form->dynamicGroup($eSeriesFirst, 'season', function($d) {
+				$d->label = s("Nouvelle saison");
+			});
 
 			$h .= $form->group(
 				content: $form->submit(s("Modifier la saison"))
@@ -927,55 +925,73 @@ class SeriesUi {
 
 		$h = '';
 
-		$h .= $form->openAjax('/series/series:doDuplicate', ['id' => 'series-duplicate']);
+		$h .= $form->openAjax('/series/series:doDuplicate', ['id' => 'series-duplicate', 'data-season' => $eSeriesFirst['season']]);
 
-			$h .= $this->getSeriesField($form, $cSeries);
+			$input = '<div class="series-duplicate-copies" data-limit="'.\Setting::get('series\duplicateLimit').'">';
+				$input .= '<a onclick="Series.changeDuplicateCopies(this, -1)" class="series-duplicate-copies-minus series-duplicate-copies-disabled">'.\Asset::icon('dash-circle').'</a>';
+				$input .= '<span class="series-duplicate-copies-label">'.s("{value}", '<span class="series-duplicate-copies-value">1</span>').'</span>';
+				$input .= '<a onclick="Series.changeDuplicateCopies(this, 1)" class="series-duplicate-copies-plus">'.\Asset::icon('plus-circle').'</a>';
+				$input .= $form->hidden('copies', 1);
+			$input .= '</div>';
+
+			$h .= $form->group(
+				$cSeries->count() === 1 ? s("Nombre de copies") : s("Nombre de copies par série"),
+				$input
+			);
 
 			$h .= $form->dynamicGroup($eSeriesFirst, 'season', function(\PropertyDescriber $d) use ($eSeriesFirst) {
 				$d->label = s("Dupliquer pour la saison");
-				$d->attributes['onclick'] = 'Series.changeDuplicateSeason(this, '.$eSeriesFirst['season'].')';
-				$d->after = \util\FormUi::info(s("Lorsque vous copiez une série sur une saison différente, les interventions sont replacées en <i>À faire</i> et les récoltes sont remises à zéro."), class: 'series-duplicate-season hide');
+				$d->attributes['onclick'] = 'Series.changeDuplicateSeason(this)';
+				$d->after = \util\FormUi::info(s("Lorsque vous dupliquez une série sur une saison différente, les interventions <i>Fait</i> sont replacées en <i>À faire</i> et les récoltes sont remises à zéro."), class: 'series-duplicate-season hide');
 			});
 
-			if($cTaskMetadata->notEmpty() or $hasPlaces) {
+			$h .= '<br/>';
 
-				if($cSeries->count() === 1) {
-					$title = s("Que souhaitez-vous conserver dans la série ?");
-				} else {
-					$title = s("Que souhaitez-vous conserver dans les séries ?");
+			$h .= '<div class="series-duplicate-list" data-interval="0" data-copies="1">';
+
+				$title = '<div class="util-title">';
+					$title .= '<h3>'.($cSeries->count() === 1 ? s("Série") : s("Séries")).'</h3>';
+					$title .= '<a onclick="Series.toggleDuplicateInterval(this)" class="btn btn-outline-primary">'.\Asset::icon('chevron-expand').' '.s("Décaler les interventions").'</a>';
+				$title .= '</div>';
+
+				$h .= $form->group(content: $title);
+
+				foreach($cSeries as $eSeries) {
+
+					$name = str_contains($eSeries['name'], '@copy') ? $eSeries['name'] : s("{value} (@copy)", $eSeries['name']);
+
+					$h .= '<div class="series-duplicate-one util-block bg-background-light" data-name="'.encode($name).'" data-series="'.$eSeries['id'].'">';
+						$h .= $form->hidden('ids[]', $eSeries['id']);
+						$h .= $this->getCopyField($form, $eSeries);
+					$h .= '</div>';
+
 				}
 
-				$h .= $form->group(content: '<h3>'.$title.'</h3>');
+			$h .= '</div>';
+
+
+			if($cTaskMetadata->notEmpty() or $hasPlaces) {
+				$h .= $form->group(content: '<h3>'.s("Contenu").'</h3>');
 			}
 
 			$h .= '<div class="util-block bg-background-light">';
 
 				if($cTaskMetadata->notEmpty()) {
 
-					$h .= $form->group(
-						s("Conserver les interventions"),
-						$form->yesNo('copyTasks', TRUE, attributes: [
-							'callbackRadioAttributes' => fn() => [
-								'onchange' => 'Series.changeDuplicateTasks(this)'
-							]
-						])
-					);
-
 					$cAction = $cTaskMetadata
 						->getColumnCollection('action')
 						->sort('name');
 
 					$h .= $form->group(
-						content :
-						'<h5>'.s("Choisir les interventions à conserver").'</h5>'.
-						$form->checkboxes('copyActions[]', $cAction, attributes: [
+						s("Dupliquer les interventions"),
+						$form->checkboxes('copyActions[]', $cAction, $cAction->find(fn($eAction) => $eAction['fqn'] !== ACTION_RECOLTE), attributes: [
 							'callbackCheckboxAttributes' => fn($eAction) => [
-								'data-fqn' => $eAction['fqn']
+								'data-fqn' => $eAction['fqn'],
 							],
 							'callbackCheckboxContent' => function($eAction) {
 								$action = encode($eAction['name']);
 								if($eAction['fqn'] === ACTION_RECOLTE) {
-									$action .= '<br/><span class="color-muted">'.s("Les quantités récoltées seront également dupliquées").'</span>';
+									$action .= '<span class="color-secondary ml-1">'.\Asset::icon('exclamation-circle').' '.s("Les quantités récoltées seront également dupliquées").'</span>';
 								}
 								return $action;
 							}
@@ -986,24 +1002,19 @@ class SeriesUi {
 						->filter(fn($eTask) => $eTask['time'] > 0)
 						->notEmpty()) {
 
-						$timesheet = $form->yesNo('copyTimesheet', FALSE);
-						$timesheet .= \util\FormUi::info(s("Il n'est possible de dupliquer le temps de travail que lorsque la série est dupliquée sur la même saison."), class: 'series-duplicate-timesheet hide');
-
 						$h .= $form->group(
-							s("Conserver le temps de travail"),
-							$timesheet
+							s("Dupliquer le temps de travail"),
+							$form->yesNo('copyTimesheet', FALSE)
 						);
 
 					}
 
-				} else {
-					$h .= $form->hidden('copyTasks', FALSE);
 				}
 
 				if($hasPlaces) {
 
 					$h .= $form->group(
-						s("Conserver l'assolement"),
+						s("Dupliquer l'assolement"),
 						$form->yesNo('copyPlaces', FALSE)
 					);
 
@@ -1027,36 +1038,67 @@ class SeriesUi {
 
 	}
 
-	protected function getSeriesField(\util\FormUi $form, \Collection $cSeries): string {
+	protected function getCopyField(\util\FormUi $form, Series $eSeries, int $copy = 1): string {
 
-		$h = '';
+		$field = '<div data-wrapper="series-'.$eSeries['id'].'-'.$copy.'" class="series-duplicate-copy">';
+
+			$field .= '<h5>'.s("Copie n°{value}", '<span class="series-duplicate-copy-number">'.$copy.'</span>').'</h5>';
+
+			$field .= '<div>';
+				$field .= $form->inputGroup(
+					$form->addon(s("Nom de la copie")).
+					$form->text('name['.$eSeries['id'].']['.($copy - 1).']', str_replace('@copy', 1, $eSeries['name']), ['data-copy' => $copy])
+				);
+			$field .= '</div>';
+
+
+			$field .= '<div class="series-duplicate-interval">';
+				$field .= $form->inputGroup(
+					$form->addon(s("Décaler les interventions de")).
+					$form->number('taskInterval['.$eSeries['id'].']['.($copy - 1).']', attributes: \Setting::get('series\duplicateInterval')).
+					$form->addon(s("semaine(s)"))
+				);
+			$field .= '</div>';
+
+		$field .= '</div>';
+
+		return $form->group(
+			SeriesUi::link($eSeries),
+			$field
+		);
+
+	}
+
+	protected function getSeriesField(\util\FormUi $form, \Collection $cSeries): string {
 
 		if($cSeries->count() === 1) {
 
 			$eSeries = $cSeries->first();
 
-			$h .= $form->hidden('ids[]', $eSeries['id']);
-
-			$h .= $form->group(
-				s("Nom"),
-				SeriesUi::link($eSeries)
-			);
+			$group = $form->hidden('ids[]', $eSeries['id']);
+			$group .= SeriesUi::link($eSeries);
 
 		} else {
 
-			$h .= $form->group(
-				s("Séries"),
-				$form->checkboxes('ids[]', $cSeries, $cSeries, [
-					'all' => FALSE,
-					'callbackCheckboxContent' => function($eSeries) {
-						return SeriesUi::name($eSeries);
-					}
-				])
-			);
+			$group = '<ul>';
+
+			foreach($cSeries as $eSeries) {
+
+				$group .= '<li>';
+					$group .= $form->hidden('ids[]', $eSeries['id']);
+					$group .= SeriesUi::link($eSeries);
+				$group .= '</li>';
+
+			}
+
+			$group .= '</ul>';
 
 		}
 
-		return $h;
+		return $form->group(
+			$cSeries->count() === 1 ? s("Série") : s("Séries"),
+			$group
+		);
 
 	}
 

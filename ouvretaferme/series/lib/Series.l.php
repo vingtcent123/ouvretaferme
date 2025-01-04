@@ -451,54 +451,133 @@ class SeriesLib extends SeriesCrud {
 	}
 
 	/**
-	 * Dupliquer une série
+	 * Dupliquer plusieurs séries
 	 */
-	public static function duplicate(Series $eSeries, bool $copyTasks, \Collection $cAction, bool $copyTimesheet, bool $copyPlaces): Series {
+	public static function duplicateCollection(\Collection $cSeries, int $season, \Collection $cAction, int $copies, array $input, bool $copyTimesheet, bool $copyPlaces): \Collection {
 
 		$properties = ['name', 'farm', 'season', 'mode', 'use', 'plants', 'area', 'areaTarget', 'length', 'lengthTarget', 'bedWidth', 'alleyWidth', 'sequence', 'cycle'];
 
-		$eSeries->expects($properties);
+		$cSeriesNew = new \Collection();
 
-		if($eSeries['cycle'] !== \series\Series::ANNUAL) {
-			throw new \Exception('Can duplicate only annual series');
+		$fw = new \FailWatch();
+
+		foreach($cSeries as $eSeries) {
+
+			$eSeries->expects($properties);
+
+			if($eSeries['cycle'] !== \series\Series::ANNUAL) {
+				throw new \Exception('Can duplicate only annual series');
+			}
+
+			for($index = 0; $index < $copies; $index++) {
+
+				// Créer une nouvelle série
+				$eSeriesNew = new Series($eSeries->extracts($properties));
+				$eSeriesNew['duplicateOf'] = $eSeries;
+				$eSeriesNew['season'] = $season;
+				$eSeriesNew['base'] = $eSeries;
+
+				$newValues = [
+					'name' => $input['name'][$eSeries['id']][$index] ?? NULL,
+					'taskInterval' => cast($input['taskInterval'][$eSeries['id']][$index] ?? 0, 'int'),
+				];
+
+				$eSeriesNew->build(['name', 'taskInterval'], $newValues, ['wrapper' => fn(string $property) => 'series-'.$eSeries['id'].'-'.$index]);
+
+				$cSeriesNew[] = $eSeriesNew;
+
+			}
+
+		};
+
+		if($fw->ko()) {
+			return new \Collection();
 		}
 
 		Series::model()->beginTransaction();
 
-		// Créer une nouvelle série
-		$eSeriesNew = new Series($eSeries->extracts($properties));
-		if($eSeries['season'] === $eSeries['oldSeason']) {
-			$eSeriesNew['name'] = (new SeriesUi())->getDuplicateName($eSeriesNew);
-		}
-		$eSeriesNew['duplicateOf'] = $eSeries;
+		foreach($cSeriesNew as $eSeriesNew) {
 
+			\series\SeriesLib::duplicateOne(
+				$eSeriesNew['base'],
+				$eSeriesNew,
+				$cAction,
+				$copyTimesheet,
+				$copyPlaces
+			);
+
+		}
+
+		Series::model()->commit();
+
+		return $cSeriesNew;
+
+	}
+
+	/**
+	 * Dupliquer une série
+	 */
+	protected static function duplicateOne(Series $eSeriesBase, Series $eSeriesNew, \Collection $cAction, bool $copyTimesheet, bool $copyPlaces): Series {
+
+		$eSeriesNew->expects(['taskInterval']);
+
+		Series::model()->beginTransaction();
+
+		// Créer une nouvelle série
 		Series::model()->insert($eSeriesNew);
 
 		// Dupliquer les cultures et les variétés
-		$cCultivation = self::getDuplicateCultivations($eSeries);
+		$cCultivation = self::getDuplicateCultivations($eSeriesBase);
 
-		$seasonDifference = ($eSeriesNew['season'] - $eSeries['oldSeason']);
+		$taskInterval = $eSeriesNew['taskInterval'];
+		$seasonInterval = ($eSeriesNew['season'] - $eSeriesBase['season']);
 
 		foreach($cCultivation as $eCultivation) {
 
 			// Mise à jour de la série
 			$eCultivation['series'] = $eSeriesNew;
-			$eCultivation['season'] = $eSeries['season'];
+			$eCultivation['season'] = $eSeriesNew['season'];
 
-			if($seasonDifference !== 0) {
+			switch($eCultivation['harvestPeriodExpected']) {
 
-				if($eCultivation['harvestWeeksExpected']) {
-					foreach($eCultivation['harvestWeeksExpected'] as $key => $value) {
-						$eCultivation['harvestWeeksExpected'][$key] = (substr($value, 0, 4) + $seasonDifference).substr($value, 4);
+				case Cultivation::WEEK :
+
+					if(
+						($seasonInterval !== 0 or $taskInterval !== 0) and
+						$eCultivation['harvestWeeksExpected']
+					) {
+
+						foreach($eCultivation['harvestWeeksExpected'] as $key => $value) {
+							$week = toWeek(strtotime($value.' '.($seasonInterval < 0 ? '' : '+').$seasonInterval.' YEAR '.($taskInterval < 0 ? '' : '+').$taskInterval.' WEEK'));
+							$eCultivation['harvestWeeksExpected'][$key] = $week;
+						}
+
+						$eCultivation['harvestMonthsExpected'] = \util\DateLib::convertWeeksToMonths($eCultivation['harvestWeeksExpected']);
+
 					}
-				}
 
-				if($eCultivation['harvestMonthsExpected']) {
-					foreach($eCultivation['harvestMonthsExpected'] as $key => $value) {
-						$eCultivation['harvestMonthsExpected'][$key] = (substr($value, 0, 4) + $seasonDifference).substr($value, 4);
+					break;
+
+				case Cultivation::MONTH:
+
+					$monthTaskInterval = (int)round($taskInterval / 4.33) /* Semaines dans le mois */;
+
+					if(
+						($seasonInterval !== 0 or $monthTaskInterval !== 0) and
+						$eCultivation['harvestMonthsExpected']
+					) {
+
+						foreach($eCultivation['harvestMonthsExpected'] as $key => $value) {
+							$month = date('Y-m', strtotime($value.'-15 '.($seasonInterval < 0 ? '' : '+').$seasonInterval.' YEAR '.($monthTaskInterval < 0 ? '' : '+').$monthTaskInterval.' MONTH'));
+							$eCultivation['harvestMonthsExpected'][$key] = $month;
+						}
+
+						$eCultivation['harvestWeeksExpected'] = \util\DateLib::convertWeeksToMonths($eCultivation['harvestMonthsExpected']);
+
 					}
 
-				}
+					break;
+
 
 			}
 
@@ -507,13 +586,13 @@ class SeriesLib extends SeriesCrud {
 		self::createCultivations($cCultivation);
 
 		// Dupliquer les tâches
-		if($copyTasks) {
-			self::duplicateTasks($eSeries, $eSeriesNew, $cCultivation, $cAction, $copyTimesheet);
+		if($cAction->notEmpty()) {
+			self::duplicateTasks($eSeriesBase, $eSeriesNew, $cCultivation, $cAction, $copyTimesheet, $eSeriesNew['taskInterval']);
 		}
 
 		// Dupliquer les emplacements
 		if($copyPlaces) {
-			self::duplicatePlaces($eSeries, $eSeriesNew);
+			self::duplicatePlaces($eSeriesBase, $eSeriesNew);
 		} else {
 
 			$eSeriesNew['area'] = NULL;
@@ -657,7 +736,7 @@ class SeriesLib extends SeriesCrud {
 
 	}
 
-	private static function duplicateTasks(Series $eSeries, Series $eSeriesNew, \Collection $cCultivation, \Collection $cAction, bool $copyTimesheet): void {
+	private static function duplicateTasks(Series $eSeries, Series $eSeriesNew, \Collection $cCultivation, \Collection $cAction, bool $copyTimesheet, int $taskInterval): void {
 
 		$cTask = Task::model()
 			->select(Task::model()->getProperties() + [
@@ -690,7 +769,7 @@ class SeriesLib extends SeriesCrud {
 
 		}
 
-		$seasonDifference = ($eSeriesNew['season'] - $eSeries['oldSeason']);
+		$seasonInterval = ($eSeriesNew['season'] - $eSeries['season']);
 
 		// Copie des tâches
 		foreach($cTask as $eTask) {
@@ -709,14 +788,23 @@ class SeriesLib extends SeriesCrud {
 				$eTask['timesheetStop'] = NULL;
 			}
 
-			if($seasonDifference !== 0) {
+			if(
+				$seasonInterval !== 0 or
+				$taskInterval !== 0
+			) {
 
 				if($eTask['plannedWeek'] !== NULL) {
-					$eTask['plannedWeek'] = (substr($eTask['plannedWeek'], 0, 4) + $seasonDifference).substr($eTask['plannedWeek'], 4);
+
+					$week = toWeek(strtotime($eTask['plannedWeek'].' '.($seasonInterval < 0 ? '' : '+').$seasonInterval.' YEAR '.($taskInterval < 0 ? '' : '+').$taskInterval.' WEEK'));
+					$eTask['plannedWeek'] = $week;
+
 				}
 
 				if($eTask['plannedDate'] !== NULL) {
-					$eTask['plannedDate'] = (substr($eTask['plannedDate'], 0, 4) + $seasonDifference).substr($eTask['plannedDate'], 4);
+
+					$week = date('Y-m-d', strtotime($eTask['plannedDate'].' '.($seasonInterval < 0 ? '' : '+').$seasonInterval.' YEAR '.($taskInterval < 0 ? '' : '+').$taskInterval.' WEEK'));
+					$eTask['plannedDate'] = $week;
+
 				}
 
 				$eTask['doneWeek'] = NULL;
@@ -733,7 +821,7 @@ class SeriesLib extends SeriesCrud {
 
 			Task::model()->insert($eTask);
 
-			if($seasonDifference === 0) {
+			if($seasonInterval === 0) {
 
 				foreach($eTask['cHarvest'] as $eHarvest) {
 

@@ -1740,10 +1740,10 @@ class FormUi {
 	/**
 	 * Display text field
 	 */
-	public function fake(string $value): string {
+	public function fake(string $value, bool $encode = TRUE): string {
 		return $this->inputGroup(
 			$this->addon(\Asset::icon('lock-fill')).
-			'<div class="form-control form-control-fake">'.encode($value).'</div>'
+			'<div class="form-control form-control-fake">'.($encode ? encode($value) : $value).'</div>'
 		);
 	}
 

@@ -63,7 +63,7 @@ class SupplierUi {
 
 		} else {
 
-			$h .= '<div class="util-overflow-sm">';
+			$h = '<div class="util-overflow-sm">';
 
 				$h .= '<table class="tr-even tr-bordered">';
 					$h .= '<thead>';

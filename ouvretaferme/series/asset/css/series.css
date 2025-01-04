@@ -1150,3 +1150,45 @@ td.series-field-cultivations {
 .series-field-cultivation input:checked + * {
 	font-weight: bold;
 }
+
+.series-duplicate-copies {
+	line-height: 1;
+	display: flex;
+	column-gap: .75rem;
+	align-items: center;
+	user-select: none;
+}
+
+.series-duplicate-copies a {
+	font-size: 1.5rem;
+}
+
+.series-duplicate-copies-disabled {
+	pointer-events: none;
+	opacity: .25;
+}
+
+.series-duplicate-copies-label {
+	font-weight: bold;
+	font-size: 1.1rem;
+}
+
+.series-duplicate-list h5 {
+	margin-bottom: 0.5rem;
+}
+
+.series-duplicate-list[data-copies="1"] h5 {
+	display: none;
+}
+
+.series-duplicate-copy:not(:first-child) {
+	margin-top: 1rem;
+}
+
+.series-duplicate-interval {
+	margin-top: 0.25rem;
+}
+
+.series-duplicate-list[data-interval="0"] .series-duplicate-interval {
+	display: none;
+}

@@ -219,45 +219,124 @@ class Series {
 
 	}
 
-	static changeDuplicateSeason(target, fromSeason) {
-
-		const toSeason = parseInt(target.value);
+	static changeDuplicateCopies(target, increment) {
 
 		const form = target.firstParent('form');
+		const wrapper = target.firstParent('.series-duplicate-copies');
+		const input = wrapper.qs('input');
 
-		const timesheetField = form.qs('[data-field="copyTimesheet"]');
-		const timesheetInfo = form.qs('.series-duplicate-timesheet');
-		const seasonInfo = form.qs('.series-duplicate-season');
+		const value = parseInt(input.value) + increment;
+		const limit = parseInt(wrapper.dataset.limit);
 
-		if(toSeason !== fromSeason) {
-			seasonInfo.classList.remove('hide');
-			timesheetInfo?.classList.remove('hide');
-			timesheetField?.classList.add('disabled');
-			if(timesheetField) {
-				timesheetField.qs('input[value="0"]').checked = true;
-			}
+		if(value > 0 && value <= limit) {
+			input.value = value;
+			wrapper.qs('.series-duplicate-copies-value').innerHTML = value;
 		} else {
-			seasonInfo.classList.add('hide');
-			timesheetInfo?.classList.add('hide');
-			timesheetField?.classList.remove('disabled');
+			return;
+		}
+
+		wrapper.qsa('.series-duplicate-copies-disabled', node => node.classList.remove('series-duplicate-copies-disabled'));
+
+		if(value === 1) {
+			wrapper.qs('.series-duplicate-copies-minus').classList.add('series-duplicate-copies-disabled');
+		}
+
+		if(value >= limit) {
+			wrapper.qs('.series-duplicate-copies-plus').classList.add('series-duplicate-copies-disabled');
+		}
+
+		const list = form.qs('.series-duplicate-list');
+
+		list.dataset.copies = value;
+
+		if(increment === 1) {
+
+			list.qsa('.series-duplicate-one', node => {
+
+				const lastCopy = node.qs('.series-duplicate-copy:last-child');
+				const newContent = lastCopy.outerHTML;
+
+				lastCopy.insertAdjacentHTML('afterend', newContent);
+
+				const newLastCopy = node.qs('.series-duplicate-copy:last-child');
+
+				newLastCopy.dataset.wrapper = 'series-'+ node.dataset.series +'-'+ (value - 1);
+
+				newLastCopy.qs('input[name^="name"]').dataset.copy = value;
+				newLastCopy.qs('input[name^="name"]').name = 'name['+ node.dataset.series +']['+ (value - 1) +']';
+				newLastCopy.qs('input[name^="name"]').value = node.dataset.name.replace('@copy', value);
+
+				newLastCopy.qs('input[name^="taskInterval"]').name = 'taskInterval['+ node.dataset.series +']['+ (value - 1) +']';
+				newLastCopy.qs('input[name^="taskInterval"]').value = '';
+
+				newLastCopy.qs('.series-duplicate-copy-number').innerHTML = value;
+
+
+			});
+
+		} else if(increment === -1) {
+
+			list.qsa('.series-duplicate-one', node => node.qs('.series-duplicate-copy:last-child').remove());
+
 		}
 
 	}
 
-	static changeDuplicateTasks(target) {
+	static toggleDuplicateInterval(target) {
 
-		const hasTasks = !!parseInt(target.value);
-		const form = target.firstParent('form')
+		const list = target.firstParent('.series-duplicate-list');
 
-		const timesheetWrapper = form.qs('[data-wrapper="copyTimesheet"]');
-		const actionsWrapper = form.qs('[data-wrapper="copyActions"]');
+		if(list.dataset.interval === '0') {
 
-		if(hasTasks) {
-			timesheetWrapper?.classList.remove('hide');
-			actionsWrapper?.classList.remove('hide');
+			list.qsa('input[name^="interval"]', node => node.value = '');
+			list.dataset.interval = '1';
+
+			target.qs('svg').renderOuter(Lime.Asset.icon('chevron-contract'));
+
 		} else {
+
+			list.dataset.interval = '0';
+
+			target.qs('svg').renderOuter(Lime.Asset.icon('chevron-expand'));
+
+		}
+
+	}
+
+	static changeDuplicateSeason(target) {
+
+		const toSeason = parseInt(target.value);
+
+		const form = target.firstParent('form');
+		const fromSeason = parseInt(form.dataset.season);
+
+		const timesheetField = form.qs('[data-field="copyTimesheet"]');
+		const timesheetWrapper = form.qs('[data-wrapper="copyTimesheet"]');
+		const harvestField = form.qs('input[data-fqn="recolte"]');
+		const harvestWrapper = harvestField?.firstParent('label');
+		const seasonInfo = form.qs('.series-duplicate-season');
+
+		if(toSeason !== fromSeason) {
+
+			seasonInfo.classList.remove('hide');
+
 			timesheetWrapper?.classList.add('hide');
-			actionsWrapper?.classList.add('hide');
+			if(timesheetField) {
+				timesheetField.qs('input[value="0"]').checked = true;
+			}
+
+			harvestWrapper?.classList.add('hide');
+			if(harvestField) {
+				harvestField.checked = false;
+			}
+
+		} else {
+
+			seasonInfo.classList.add('hide');
+
+			timesheetWrapper?.classList.remove('hide');
+			harvestWrapper?.classList.remove('hide');
+
 		}
 
 	}

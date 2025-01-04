@@ -151,7 +151,7 @@ class ProductUi {
 			$h .= '>';
 				if($url === NULL) {
 					if($eProductSelling['plant']->notEmpty()) {
-						$h .= \plant\PlantUi::getVignette($eProductSelling['plant'], '8rem');
+						$h .= \plant\PlantUi::getVignette($eProductSelling['plant'], '7rem');
 					} else {
 						$h .= \Asset::icon('camera', ['class' => 'shop-product-image-placeholder']);
 					}

@@ -256,6 +256,21 @@ class Series extends SeriesElement {
 
 			},
 
+			'taskInterval.check' => function(mixed $value): bool {
+
+				$value = (int)$value;
+
+				['min' => $min, 'max' => $max] = \Setting::get('series\duplicateInterval');
+
+				if($value > $min and $value < $max) {
+					$this['taskInterval'] = $value;
+					return TRUE;
+				} else {
+					return FALSE;
+				}
+
+			},
+
 		]);
 
 	}

@@ -147,7 +147,7 @@ class ErrorPhpLib {
 		}
 
 		if(self::$createExceptionFromError) {
-			throw new \Exception($message.' in '.$file.' on line '.$line, $code);
+			throw new \Exception($message.' in '.$file.' on line '.$line);
 		}
 
 		$eError = new Error([

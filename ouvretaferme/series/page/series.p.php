@@ -313,50 +313,38 @@ use series\Series;
 
 		$data->c->validate('canRead', 'acceptDuplicate');
 
-		$copyTasks = POST('copyTasks', 'bool');
+		$cAction = \farm\ActionLib::getByFarm($data->eFarm, id: POST('copyActions', 'array'));
 
-		if($copyTasks) {
+		$season = POST('season');
+		$data->eFarm->validateSeason($season);
 
-			$cAction = \farm\ActionLib::getByFarm($data->eFarm, id: POST('copyActions', 'array'));
+		$copies = POST('copies', 'int');
 
-			if($cAction->empty()) {
-				throw new FailAction('series\copyActions.check');
-			}
-
-		} else {
-			$cAction = new Collection();
+		if($copies < 1 or $copies > Setting::get('series\duplicateLimit')) {
+			throw new NotExpectedAction('Invalid copies');
 		}
+
+		$copyTimesheet = POST('copyTimesheet', 'bool');
+		$copyPlaces = POST('copyPlaces', 'bool');
 
 		$fw = new FailWatch();
 
-		$fw->validate();
-
-		\series\Series::model()->beginTransaction();
-
-		foreach($data->c as $e) {
-
-			$e['oldSeason'] = $e['season'];
-			$e['farm'] = $data->eFarm;
-			$e->build(['season'], $_POST);
-
-			$fw->validate();
-
-			$data->eSeriesNew = \series\SeriesLib::duplicate(
-				$e,
-				$copyTasks,
+			$cSeriesNew = \series\SeriesLib::duplicateCollection(
+				$data->c,
+				$season,
 				$cAction,
-				POST('copyTimesheet', 'bool'),
-				POST('copyPlaces', 'bool')
+				$copies,
+				$_POST,
+				$copyTimesheet,
+				$copyPlaces
 			);
 
-		};
+		$fw->validate();
 
-		Series::model()->commit();
-
-		if($data->c->count() === 1) {
-			throw new RedirectAction(\series\SeriesUi::url($data->eSeriesNew).'?success=series:Series::duplicated');
+		if($cSeriesNew->count() === 1) {
+			throw new RedirectAction(\series\SeriesUi::url($cSeriesNew->first()).'?success=series:Series::duplicated');
 		} else {
-			throw new RedirectAction(\farm\FarmUi::urlCultivationSeries($data->eFarm, \farm\Farmer::SERIES, season: $data->eSeriesNew['season']).'&success=series:Series::duplicatedCollection');
+			throw new RedirectAction(\farm\FarmUi::urlCultivationSeries($data->eFarm, \farm\Farmer::SERIES, season: $season).'&success=series:Series::duplicatedCollection');
 		}
 
 	})

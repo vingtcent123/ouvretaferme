@@ -11,6 +11,8 @@ L::setVariables([
 	'siteName' => 'ouvretaferme.org',
 ]);
 
+Lime::setName('Ouvretaferme');
+
 require_once Lime::getPath().'/secret.c.php';
 
 switch(LIME_ENV) {

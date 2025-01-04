@@ -17,9 +17,10 @@ class AlertUi {
 
 			'Series::plantsCheck' => s("Veuillez sélectionner au moins une espèce !"),
 			'Series::perennialLifetime.consistency' => s("La durée de vie de la culture ne peut pas être réduite autant car elle a été mise en place depuis plus longtemps"),
-			'Series::copyActions.check' => s("Merci de sélectionner au moins une intervention !"),
 			'Series::duplicatePlaceConsistency' => s("Il n'est pas possible de continuer cette culture cette saison car un ou plusieurs emplacements qu'elle utilise (parcelle, bloc ou planche) ne sont pas utilisables cette année. Veuillez vérifier votre plan d'assolement !"),
 			'Series::series.check' => s("Merci de sélectionner au moins une série"),
+			'Series::name.check' => s("Merci d'indiquer un nom pour la série"),
+			'Series::taskInterval.check' => s("Les interventions ne doivent pas être décalées de plus d'un an"),
 
 			'Cultivation::plant.check' => s("Vous n'avez pas choisi d'espèce !"),
 			'Cultivation::plant.unused' => s("Vous ne pouvez pas choisir cette espèce car elle est déjà utilisée par ailleurs dans cette série !"),
