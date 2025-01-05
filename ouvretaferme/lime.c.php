@@ -48,6 +48,7 @@ switch(LIME_ENV) {
 
 	case 'dev' :
 
+		Setting::set('dev\minify', TRUE);
 		Database::setDebug(get_exists('sql'));
 
 		Database::setPackages([
