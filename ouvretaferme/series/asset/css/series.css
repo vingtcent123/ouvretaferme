@@ -371,6 +371,10 @@ div.series-item-planning-details:hover span.series-item-planning-details-name {
 		grid-column: span 2;
 	}
 
+	.series-item-planning-perennial .series-item-planning-details.series-item-planning-details-with-variety {
+		grid-column: span 3;
+	}
+
 }
 
 .series-item-planning-details .plant-start {
