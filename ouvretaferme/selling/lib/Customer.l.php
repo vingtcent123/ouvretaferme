@@ -265,6 +265,7 @@ class CustomerLib extends CustomerCrud {
 			'firstName' => $eUser['firstName'],
 			'lastName' => $eUser['lastName'],
 			'email' => $eUser['email'],
+			'phone' => $eUser['phone'],
 			'type' => $type,
 			'destination' => match($type) {
 				Customer::PRIVATE => Customer::INDIVIDUAL,
