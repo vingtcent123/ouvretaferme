@@ -69,6 +69,7 @@ Farmer:
   viewPlanningCategory: enum(TIME, TEAM, PACE, PERIOD) = TIME
   viewPlanningHarvestExpected: enum(TOTAL, WEEKLY) = TOTAL
   viewPlanningField: enum(VARIETY, SOIL) = SOIL
+  viewPlanningArea: enum(AREA, LENGTH) = LENGTH
   viewPlanningSearch: ?json
   viewPlanningUser: ?user\User
   viewCultivation: enum(SERIES, SOIL, SEQUENCE) = SERIES

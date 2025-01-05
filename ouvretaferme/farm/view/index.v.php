@@ -169,7 +169,7 @@ new AdaptativeView('series', function($data, FarmTemplate $t) {
 		}
 
 		echo match($view)  {
-			\farm\Farmer::AREA => (new \series\CultivationUi())->displayByArea($data->season, $data->eFarm, $data->ccCultivation, $data->ccForecast),
+			\farm\Farmer::AREA => (new \series\CultivationUi())->displayByArea($data->season, $data->eFarm, $data->ccCultivation),
 			\farm\Farmer::FORECAST => (new \series\CultivationUi())->displayByForecast($data->eFarm, $data->season, $data->ccForecast),
 			\farm\Farmer::SEEDLING => ($data->search->get('seedling') === \series\Cultivation::YOUNG_PLANT_BOUGHT) ?
 				(new \series\CultivationUi())->displayBySeedlingByStartWeek($data->eFarm, $data->season, $data->items, $data->cSupplier, $data->search) :

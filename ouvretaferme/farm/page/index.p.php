@@ -508,6 +508,10 @@
 			\farm\FarmerLib::setView('viewPlanningField', $data->eFarm, GET('field', [\farm\Farmer::VARIETY, \farm\Farmer::SOIL], \farm\Farmer::SOIL));
 		}
 
+		if(get_exists('area')) {
+			\farm\FarmerLib::setView('viewPlanningArea', $data->eFarm, GET('area', [\farm\Farmer::AREA, \farm\Farmer::LENGTH], \farm\Farmer::LENGTH));
+		}
+
 		$data->cSeriesImportPerennial = \series\SeriesLib::getImportPerennial($data->eFarm, $data->season);
 
 		$data->nSeries = \series\SeriesLib::countByFarm($data->eFarm, $data->season);
@@ -533,7 +537,6 @@
 				]);
 
 				$data->ccCultivation = \series\CultivationLib::getForArea($data->eFarm, $data->season, $data->search);
-				$data->ccForecast = \plant\ForecastLib::getReadOnlyByFarm($data->eFarm, $data->season);
 				break;
 
 			case \farm\Farmer::FORECAST :
