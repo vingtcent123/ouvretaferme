@@ -467,7 +467,7 @@ class AnalyzeLib {
 					'variety' => NULL
 				]),
 				'turnover' => $cSaleTurnover[$year]['shipping'],
-				'unit' => NULL,
+				'unit' => new Unit(),
 				'quantity' => NULL,
 				'average' => NULL,
 			]);
