@@ -96,8 +96,8 @@ class DomainLib {
 	'.$certificate.'
 
 	include /var/www/otf/framework/dev/conf/rewrite/bot.cfg;
+    include /var/www/otf/ouvretaferme/main/conf/rewrite/minify.cfg;
 	include /var/www/otf/framework/dev/conf/rewrite/asset.cfg;
-	include /var/www/otf/ouvretaferme/main/conf/rewrite/minify.cfg;
 
 	location @minify {
 		rewrite ^(.*)$ /_lime?$args&limeEnv=prod&limeApp=ouvretaferme&limeName=$1? last;
