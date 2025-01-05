@@ -48,7 +48,8 @@ switch(LIME_ENV) {
 
 	case 'dev' :
 
-		Setting::set('dev\minify', TRUE);
+		Setting::set('dev\minify', FALSE);
+		Asset::setVersion(hash_file('crc32', LIME_DIRECTORY.'/.git/FETCH_HEAD'));
 		Database::setDebug(get_exists('sql'));
 
 		Database::setPackages([
