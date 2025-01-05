@@ -37,21 +37,9 @@ class CategoryLib extends CategoryCrud {
 
 		Category::model()->beginTransaction();
 
-		$categories = Category::model()
+		$e['position'] = Category::model()
 			->whereFarm($e['farm'])
-			->count();
-
-		if($categories === \Setting::get('farm\categoriesLimit')) {
-
-			Category::fail('limitReached');
-
-			Category::model()->rollBack();
-
-			return;
-
-		}
-
-		$e['position'] = $categories + 1;
+			->count() + 1;
 
 		parent::create($e);
 
