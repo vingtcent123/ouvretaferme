@@ -4,6 +4,11 @@
 		user\ConnectionLib::checkLogged();
 
 		$data->eUserOnline = \user\UserLib::getById($data->eUserOnline['id']);
+
+		if(user\SignUpLib::canUpdate($data->eUserOnline)['drop'] === FALSE) {
+			throw new NotExpectedAction();
+		}
+
 		$data->can = \user\DropLib::canClose();
 
 	}))

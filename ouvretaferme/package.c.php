@@ -29,6 +29,7 @@ Package::setList([
 Package::setObservers([
 	'lib' => [
 		'user' => [
+			'canUpdate' => ['main'],
 			'sendVerifyEmail' => ['main'],
 			'signUpCreate' => ['main', 'selling'],
 			'close' => ['main'],
@@ -51,6 +52,7 @@ Package::setObservers([
 	],
 	'ui' => [
 		'user' => [
+			'signUpFormBottom' => ['main'],
 			'emailSignUp' => ['main'],
 		],
 	],

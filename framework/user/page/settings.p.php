@@ -20,8 +20,8 @@
 	})
 	->get('updatePassword', function($data) {
 
-		if(OTF_DEMO) {
-			throw new \FailAction('user\User::demo.write');
+		if($data->eUserOnline['canUpdate']['password'] === FALSE) {
+			throw new NotExpectedAction();
 		}
 
 		throw new ViewAction($data);
@@ -29,12 +29,8 @@
 	})
 	->get('dropAccount', function($data) {
 
-		if(OTF_DEMO) {
-			throw new \FailAction('user\User::demo.write');
-		}
-
 		if($data->eUserOnline['canUpdate']['drop'] === FALSE) {
-			throw new NotExpectedAction('Can\'t drop account');
+			throw new NotExpectedAction();
 		}
 
 		$data->canCloseDelay = \user\DropLib::canClose();

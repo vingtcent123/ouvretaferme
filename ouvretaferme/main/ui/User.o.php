@@ -3,6 +3,21 @@ namespace main;
 
 class UserObserverUi {
 
+	public static function signUpFormBottom(\util\FormUi $form, \user\Role $eRole) {
+
+		if($eRole['fqn'] === 'farmer') {
+
+			return $form->group(
+				s("J'accepte les <link>conditions d'utilisation du service</link>", ['link' => '<a href="/presentation/service" target="_blank">']),
+				$form->inputCheckbox('tos', 1, ['id' => 'tos'])
+			);
+
+		} else {
+			return $form->hidden('tos', 1);
+		}
+
+	}
+
 	public static function emailSignUp(\user\User $eUser) {
 
 		$title = s("Bienvenue sur {siteName} !");

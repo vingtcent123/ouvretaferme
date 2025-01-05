@@ -44,6 +44,14 @@ class MethodLib extends MethodCrud {
 					'method' => NULL
 				]);
 
+			\production\Flow::model()
+				->whereFarm($e['farm'])
+				->whereAction($e['action'])
+				->whereMethod($e)
+				->update([
+					'method' => NULL
+				]);
+
 		Method::model()->commit();
 
 	}

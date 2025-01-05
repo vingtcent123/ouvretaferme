@@ -641,13 +641,6 @@ class XmlLib {
 						'data-link-title' => 'link-title'
 					]);
 
-				case 'ouvretaferme':
-					return $this->createMediaNode($node, 'embed', [
-						'data-source' => 'source',
-						'data-url' => 'url',
-						'data-html' => 'html'
-					]);
-
 				default :
 					return $node->parentNode->removeChild($node);
 			}

@@ -1560,9 +1560,6 @@ td.util-manage-vignette {
 .bg-info {
 	background-color: var(--info) !important;
 }
-.bg-training {
-	background-color: var(--training) !important;
-}
 .bg-success {
 	background-color: var(--success) !important;
 }
@@ -1574,24 +1571,6 @@ td.util-manage-vignette {
 }
 .bg-muted {
 	background-color: var(--muted) !important;
-}
-.bg-harvest {
-	background-color: var(--harvest) !important;
-}
-.bg-demo {
-	background-color: var(--demo) !important;
-}
-.bg-todo {
-	background-color: var(--todo) !important;
-}
-.bg-done {
-	background-color: var(--done) !important;
-}
-.bg-order {
-	background-color: var(--order) !important;
-}
-.bg-selling {
-	background-color: var(--selling) !important;
 }
 .bg-background {
 	background-color: var(--background) !important;
@@ -1840,57 +1819,6 @@ label.btn input:checked + * {
 	border-color: var(--order);
 }
 
-.btn-selling,
-.btn-outline-selling:not(.btn-readonly):hover {
-	color: white;
-	background-color: var(--selling);
-	border-color: var(--selling);
-}
-
-.btn-selling:not(.btn-readonly):hover {
-	color: white;
-	box-shadow: inset 0px 0px 0 100px rgba(0, 0, 0, .1);
-}
-
-.btn-outline-selling {
-	color: var(--selling);
-	border-color: var(--selling);
-}
-
-.btn-done,
-.btn-outline-done:not(.btn-readonly):hover {
-	color: white;
-	background-color: var(--done);
-	border-color: var(--done);
-}
-
-.btn-done:not(.btn-readonly):hover {
-	color: white;
-	box-shadow: inset 0px 0px 0 100px rgba(0, 0, 0, .1);
-}
-
-.btn-outline-done {
-	color: var(--done);
-	border-color: var(--done);
-}
-
-.btn-todo,
-.btn-outline-todo:not(.btn-readonly):hover {
-	color: white;
-	background-color: var(--todo);
-	btodo-color: var(--todo);
-}
-
-.btn-todo:not(.btn-readonly):hover {
-	color: white;
-	box-shadow: inset 0px 0px 0 100px rgba(0, 0, 0, .1);
-}
-
-.btn-outline-todo {
-	color: var(--todo);
-	btodo-color: var(--todo);
-}
-
 .btn-success,
 .btn-outline-success:not(.btn-readonly):hover {
 	color: white;
@@ -1971,36 +1899,6 @@ label.btn input:checked + * {
 .btn-muted,
 .btn-outline-muted:hover {
 	background: var(--muted);
-	color: white;
-}
-
-.btn-harvest {
-	background: var(--harvest);
-	color: white;
-}
-
-.btn-harvest:hover {
-	color: white;
-	box-shadow: inset 0px 0px 0 100px rgba(0, 0, 0, .1);
-}
-
-.btn-outline-private {
-	color: var(--private);
-	border-color: var(--private);
-}
-
-.btn-outline-private:hover {
-	background: var(--private);
-	color: white;
-}
-
-.btn-outline-pro {
-	color: var(--pro);
-	border-color: var(--pro);
-}
-
-.btn-outline-pro:hover {
-	background: var(--pro);
 	color: white;
 }
 

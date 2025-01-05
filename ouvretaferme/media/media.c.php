@@ -1,5 +1,4 @@
 <?php
-
 function getMediaVignette() {
 
 	return [
@@ -32,50 +31,6 @@ function getMediaLogo() {
 	];
 
 }
-
-/*
-Type example:
-
-	// Images possible sizes
-	// They must be sorted from the smallest to the biggest
-	'imageFormat' => [
-		'xs' => [25, 25],
-		's' => [40, 40],
-	],
-
-	// Pour les formats définis avec seulement 1 valeur :
-	// Si non défini : contrainte sur le plus grand côté
-	// Si défini : contrainte sur width ou height selon ce qui est précisé
-	'imageFormatConstraint' => [
-	],
-
-	// Image override quality (default is 85)
-	'imageQuality' => [
-		'xs' => [
-			IMAGETYPE_JPEG => 100
-		],
-		's' => [
-			IMAGETYPE_JPEG => 75
-		]
-	],
-
-	// Reference size for image cropping
-	'imageCropReference' => 2000,
-
-	// Reference size for image resizing
-	'imageResizeReference' => ['l', 's'],
-
-	'imageOutputType' => [IMAGETYPE_JPEG, IMAGETYPE_PNG],
-
-	// Taille maximale du plus grand côté de l'image originale à enregistrer
-	// Mandatory value
-	'imageMaxLength' => 4000,
-
-	'imageMinPixels' => 10000000,
-
-	'imageRequiredSize' => 'l'|250,
-
-*/
 
 Setting::register('media', [
 

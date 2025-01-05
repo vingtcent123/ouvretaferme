@@ -76,8 +76,13 @@ switch(LIME_ENV) {
 
 }
 
+Package::setConfFile('storage', LIME_DIRECTORY.'/ouvretaferme/media/media.c.php');
+
 Feature::set('user\ban', TRUE);
-Setting::set('user\signUpRoles', ['customer', 'farmer']);
+
+Setting::set('user\checkTos', TRUE);
+Setting::set('user\signUpRoles', ['farmer', 'customer']);
+Setting::set('user\statsRoles', ['farmer', 'customer']);
 Setting::set('user\signUpView', 'main/index:signUp');
 
 Page::construct(function($data) {

@@ -15,7 +15,7 @@ class SignUpLib {
 
 		$tos = (bool)($input['tos'] ?? FALSE);
 
-		if($tos === FALSE) {
+		if(\Setting::get('user\checkTos') and $tos === FALSE) {
 			User::fail('tos.accepted');
 		}
 
@@ -242,6 +242,7 @@ class SignUpLib {
 			return [
 				'email' => FALSE,
 				'drop' => FALSE,
+				'password' => FALSE,
 				'hasPassword' => FALSE,
 				'cUserAuth' => new \Collection()
 			];
@@ -253,12 +254,17 @@ class SignUpLib {
 			->whereUser($eUser)
 			->getCollection(NULL, NULL, 'type');
 
-		return [
+		$values = [
 			'drop' => ($cUserAuth->offsetExists(UserAuth::IMAP) === FALSE or $cUserAuth->count() > 1),
 			'email' => ($cUserAuth->offsetExists(UserAuth::IMAP) === FALSE or $cUserAuth->count() > 1),
+			'password' => TRUE,
 			'hasPassword' => $cUserAuth->offsetExists(UserAuth::BASIC),
 			'cUserAuth' => $cUserAuth
 		];
+
+		self::notify('canUpdate', $eUser, $cUserAuth, $values);
+
+		return $values;
 
 	}
 

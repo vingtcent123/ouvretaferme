@@ -62,26 +62,30 @@ new AdaptativeView('index', function($data, MainTemplate $t) {
 
 		if(OTF_DEMO === FALSE) {
 
-			if($data->canUpdate['cUserAuth']->offsetExists(\user\UserAuth::BASIC)) {
-				$text = s("Changer mon mot de passe");
-				$span = NULL;
-			} else {
-				$social = $data->canUpdate['cUserAuth']->first()['type'];
-				$span = \Asset::icon('circle-fill').' '.s("Créez un mot de passe pour vous connecter à {siteName} sans passer par {social}", ['social' => ucfirst($social)]);
-				$text = s("Créer un mot de passe");
+			if($data->canUpdate['password']) {
+
+				if($data->canUpdate['cUserAuth']->offsetExists(\user\UserAuth::BASIC)) {
+					$text = s("Changer mon mot de passe");
+					$span = NULL;
+				} else {
+					$social = $data->canUpdate['cUserAuth']->first()['type'];
+					$span = \Asset::icon('circle-fill').' '.s("Créez un mot de passe pour vous connecter à {siteName} sans passer par {social}", ['social' => ucfirst($social)]);
+					$text = s("Créer un mot de passe");
+				}
+
+				$h .= '<a href="/user/settings:updatePassword" class="bg-secondary util-button">';
+
+					$h .= '<div>';
+						$h .= '<h4>'.$text.'</h4>';
+						if($span) {
+							$h .= '<span>'.$span.'</span>';
+						}
+					$h .= '</div>';
+					$h .= \Asset::icon('lock-fill');
+
+				$h .= '</a>';
+
 			}
-
-			$h .= '<a href="/user/settings:updatePassword" class="bg-secondary util-button">';
-
-				$h .= '<div>';
-					$h .= '<h4>'.$text.'</h4>';
-					if($span) {
-						$h .= '<span>'.$span.'</span>';
-					}
-				$h .= '</div>';
-				$h .= \Asset::icon('lock-fill');
-
-			$h .= '</a>';
 
 			if($data->canUpdate['drop']) {
 

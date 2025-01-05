@@ -565,12 +565,6 @@ document.delegateEventListener('keyup', '.editor', function(e) {
 
 		}
 
-		const node = EditorKeyboard.getTextNodeFromPreviousLine(range.commonAncestorContainer);
-
-		if(node !== null) {
-			EditorFormat.action('embed', instanceId, node);
-		}
-
 	}
 
 	EditorFormat.updateLine(instanceId, range);

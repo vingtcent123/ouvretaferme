@@ -81,6 +81,10 @@
 	 */
 	->post('doPassword', function($data) {
 
+		if(user\SignUpLib::canUpdate($data->eUserOnline)['password'] === FALSE) {
+			throw new NotExpectedAction('Can not update password for this user');
+		}
+
 		$fw = new FailWatch;
 
 		$eUser = \user\ConnectionLib::getOnline();

@@ -24,7 +24,14 @@ class Package {
 	 *
 	 * @var array
 	 */
-	private static $loadedPackages = [];
+	private static $confLoaded = [];
+
+	/**
+	 * Conf files
+	 *
+	 * @var array
+	 */
+	private static $confFiles = [];
 
 	/**
 	 * Save lists
@@ -92,24 +99,28 @@ class Package {
 		return self::$observers;
 	}
 
+	public static function setConfFile(string $package, string $file) {
+		self::$confFiles[$package] = $file;
+	}
+
 	/**
 	 * Load config.php file for the given package
 	 *
 	 * @param string $package
 	 */
-	public static function load(string $package) {
+	public static function loadConf(string $package) {
 
-		if(isset(self::$loadedPackages[$package])) {
+		if(isset(self::$confLoaded[$package])) {
 			return;
 		}
 
-		$path = self::getElement($package.'.c.php', $package);
+		$path = array_key_exists($package, self::$confFiles) ? self::$confFiles[$package] : self::getElement($package.'.c.php', $package);
 
 		if($path !== NULL) {
 			require_once $path;
 		}
 
-		self::$loadedPackages[$package] = TRUE;
+		self::$confLoaded[$package] = TRUE;
 
 	}
 
@@ -507,7 +518,7 @@ class Setting {
 			return FALSE;
 		}
 
-		Package::load($package);
+		Package::loadConf($package);
 
 		if(array_key_exists($name, self::$settings[$package]) === FALSE) {
 			throw new Exception('Setting '.$package.'\\'.$name.' does not exist');
@@ -573,7 +584,7 @@ class Privilege {
 			list($package, $name) = explode('\\', $privilege, 2);
 		}
 
-		Package::load($package);
+		Package::loadConf($package);
 
 		if(isset(self::$privileges[$package][$name]) === FALSE) {
 			throw new Exception('Privilege '.$package.'\\'.$name.' does not exist');
@@ -696,7 +707,7 @@ class Feature {
 			return FALSE;
 		}
 
-		Package::load($package);
+		Package::loadConf($package);
 
 		if(isset(self::$features[$package][$name]) === FALSE) {
 			throw new Exception('Feature '.$package.'\\'.$name.' does not exist');

@@ -113,11 +113,11 @@ class UserUi {
 
 		$h = $form->openAjax('/user/signUp:doCreate', ['autocomplete' => 'off']);
 
-			$h .= implode('', self::notify('signUpForm', $form));
-
 			$h .= $form->hidden('redirect', $redirect);
 
 			$h .= $form->hidden('role', $eRole['id']);
+
+			$h .= implode('', self::notify('signUpFormTop', $form, $eRole));
 
 			$h .= $form->dynamicGroups($e, ['firstName', 'lastName', 'email']);
 
@@ -131,16 +131,7 @@ class UserUi {
 				$form->password('passwordBis')
 			);
 
-			if($eRole['fqn'] === 'farmer') {
-
-				$h .= $form->group(
-					s("J'accepte les <link>conditions d'utilisation du service</link>", ['link' => '<a href="/presentation/service" target="_blank">']),
-					$form->inputCheckbox('tos', 1, ['id' => 'tos'])
-				);
-
-			} else {
-				$h .= $form->hidden('tos', 1);
-			}
+			$h .= implode('', self::notify('signUpFormBottom', $form, $eRole));
 
 			$h .= $form->group(
 				content: $form->submit(s("S'inscrire"))

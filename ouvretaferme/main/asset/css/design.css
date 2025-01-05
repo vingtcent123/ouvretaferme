@@ -79,12 +79,31 @@
 	color: var(--pro);
 }
 
-.bg-pro {
-	background-color: var(--pro);
-}
-
 .color-private {
 	color: var(--private);
+}
+
+.bg-harvest {
+	background-color: var(--harvest) !important;
+}
+.bg-demo {
+	background-color: var(--demo) !important;
+}
+.bg-todo {
+	background-color: var(--todo) !important;
+}
+.bg-done {
+	background-color: var(--done) !important;
+}
+.bg-order {
+	background-color: var(--order) !important;
+}
+.bg-selling {
+	background-color: var(--selling) !important;
+}
+
+.bg-pro {
+	background-color: var(--pro);
 }
 
 .bg-private {
@@ -709,4 +728,86 @@ address {
 	margin: 0.5rem 0 0.5rem 1rem;
 	border-left: 2px solid var(--border);
 	padding-left: 1rem;
+}
+
+
+.btn-selling,
+.btn-outline-selling:not(.btn-readonly):hover {
+	color: white;
+	background-color: var(--selling);
+	border-color: var(--selling);
+}
+
+.btn-selling:not(.btn-readonly):hover {
+	color: white;
+	box-shadow: inset 0px 0px 0 100px rgba(0, 0, 0, .1);
+}
+
+.btn-outline-selling {
+	color: var(--selling);
+	border-color: var(--selling);
+}
+
+.btn-done,
+.btn-outline-done:not(.btn-readonly):hover {
+	color: white;
+	background-color: var(--done);
+	border-color: var(--done);
+}
+
+.btn-done:not(.btn-readonly):hover {
+	color: white;
+	box-shadow: inset 0px 0px 0 100px rgba(0, 0, 0, .1);
+}
+
+.btn-outline-done {
+	color: var(--done);
+	border-color: var(--done);
+}
+
+.btn-todo,
+.btn-outline-todo:not(.btn-readonly):hover {
+	color: white;
+	background-color: var(--todo);
+	border-color: var(--todo);
+}
+
+.btn-todo:not(.btn-readonly):hover {
+	color: white;
+	box-shadow: inset 0px 0px 0 100px rgba(0, 0, 0, .1);
+}
+
+.btn-outline-todo {
+	color: var(--todo);
+	border-color: var(--todo);
+}
+
+.btn-harvest {
+	background: var(--harvest);
+	color: white;
+}
+
+.btn-harvest:hover {
+	color: white;
+	box-shadow: inset 0px 0px 0 100px rgba(0, 0, 0, .1);
+}
+
+.btn-outline-private {
+	color: var(--private);
+	border-color: var(--private);
+}
+
+.btn-outline-private:hover {
+	background: var(--private);
+	color: white;
+}
+
+.btn-outline-pro {
+	color: var(--pro);
+	border-color: var(--pro);
+}
+
+.btn-outline-pro:hover {
+	background: var(--pro);
+	color: white;
 }
