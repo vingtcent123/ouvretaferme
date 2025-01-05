@@ -202,8 +202,20 @@ class FormUi {
 		}
 
 		$h = $form->openAjax('/@module/'.str_replace('\\', '/', $e->getModule()).'/doQuick');
+
 			$h .= $form->hidden('id', $e['id']);
 			$h .= $form->hidden('property', $property);
+
+			if(post_exists('list')) {
+
+				foreach(explode(',', POST('list')) as $argument) {
+					if(post_exists($argument)) {
+						$h .= $form->hidden($argument, POST($argument));
+					}
+				}
+
+			}
+
 			$h .= '<div class="util-quick-form">';
 				if($label !== NULL) {
 					$h .= '<h4>'.$label.'</h4>';

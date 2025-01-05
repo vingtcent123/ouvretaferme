@@ -1285,6 +1285,7 @@ class Element extends ArrayObject {
 
 	private mixed $ghost = NULL;
 	private bool $quick = FALSE;
+	private static array $quickAttributes = [];
 
 	public function setGhost(mixed $value) {
 		$this->ghost = $value;
@@ -1347,16 +1348,32 @@ class Element extends ArrayObject {
 
 	}
 
+	public static function setQuickAttribute(string $argument, mixed $value): void {
+		self::$quickAttributes[$argument] = $value;
+	}
+
 	public function getQuickAttributes(string $property): string {
 
 		Asset::js('util', 'form.js');
 		Asset::css('util', 'form.css');
 
-		return attrs([
+		$attributes = [
 			'onclick' => 'Lime.Quick.start("'.str_replace('\\', '/', $this->getModule()).'", this)',
 			'post-id' => $this['id'],
 			'post-property' => $property
-		]);
+		];
+
+		if(self::$quickAttributes) {
+
+			foreach(self::$quickAttributes as $argument => $value) {
+				$attributes['post-'.$argument] = $value;
+			}
+
+			$attributes['post-list'] = implode(',', array_keys(self::$quickAttributes));
+
+		}
+
+		return attrs($attributes);
 
 	}
 
