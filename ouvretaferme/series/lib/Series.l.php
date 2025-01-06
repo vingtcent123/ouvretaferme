@@ -690,7 +690,7 @@ class SeriesLib extends SeriesCrud {
 				'cSlice' => SliceLib::delegateByCultivation(),
 				'plant',
 				'startWeek', 'startAction',
-				'distance', 'rows', 'rowSpacing', 'plantSpacing', 'density', 'sliceUnit',
+				'distance', 'rows', 'rowSpacing', 'plantSpacing', 'density', 'sliceUnit', 'sliceTool',
 				'area', 'areaPermanent', 'length', 'lengthPermanent', 'seedling', 'seedlingSeeds',
 				'mainUnit', 'yieldExpected', 'unitWeight', 'bunchWeight',
 				'harvestPeriodExpected', 'harvestMonthsExpected', 'harvestWeeksExpected'
