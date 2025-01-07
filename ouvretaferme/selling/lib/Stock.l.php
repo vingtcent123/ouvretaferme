@@ -205,9 +205,7 @@ class StockLib extends StockCrud {
 			'stockUpdatedAt' => NULL
 		]);
 
-		Stock::model()
-			->whereProduct($eProduct)
-			->delete();
+		self::deleteByProduct($eProduct);
 
 		if(
 			Product::model()
@@ -254,11 +252,20 @@ class StockLib extends StockCrud {
 
 	}
 
-	public static function deleteBookmarksByProduct(Product $eProduct): void {
+	public static function deleteByProduct(Product $eProduct): void {
 
-		StockBookmark::model()
-			->whereProduct($eProduct)
-			->delete();
+		$eProduct->expects(['farm']);
+
+		Stock::model()->beginTransaction();
+
+			StockBookmarkLib::deleteByProduct($eProduct);
+
+			Stock::model()
+				->whereFarm($eProduct['farm'])
+				->whereProduct($eProduct)
+				->delete();
+
+		Stock::model()->commit();
 
 	}
 

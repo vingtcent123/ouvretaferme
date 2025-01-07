@@ -65,7 +65,7 @@
 	})
 	->write('doDeleteBookmarks', function($data) {
 
-		\selling\StockLib::deleteBookmarksByProduct($data->e);
+		\selling\StockBookmarkLib::deleteByProduct($data->e);
 
 		throw new ReloadAction();
 

@@ -118,6 +118,7 @@ class ProductLib extends ProductCrud {
 			->select(Product::getSelection())
 			->whereCategory($eCategory, if: $eCategory !== NULL)
 			->whereFarm($eFarm)
+			->whereStatus('!=', Product::DELETED)
 			->sort($search->buildSort())
 			->getCollection();
 
@@ -206,27 +207,32 @@ class ProductLib extends ProductCrud {
 
 		$e->expects(['id']);
 
-		if(Item::model()
-			->whereProduct($e)
-			->exists()) {
-			Product::fail('deletedSaleUsed');
-			return;
-		}
-
-		if(\shop\Product::model()
-			->whereProduct($e)
-			->exists()) {
-			Product::fail('deletedShopUsed');
-			return;
-		}
-
 		Product::model()->beginTransaction();
 
-		Grid::model()
-			->whereProduct($e)
-			->delete();
+			Grid::model()
+				->whereProduct($e)
+				->delete();
 
-		Product::model()->delete($e);
+			StockLib::disable($e);
+
+			if(
+				Item::model()
+					->whereProduct($e)
+					->exists() or
+				\shop\Product::model()
+					->whereProduct($e)
+					->exists()
+			) {
+
+				Product::model()->update($e, [
+					'status' => Product::DELETED
+				]);
+
+			} else {
+
+				Product::model()->delete($e);
+
+			}
 
 		Product::model()->commit();
 

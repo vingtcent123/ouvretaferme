@@ -15,9 +15,6 @@ class AlertUi {
 			'Point::name.duplicate' => s("Une point de retrait existe déjà avec le même nom, merci de choisir un autre nom."),
 			'Point::payment.check' => s("Veuillez sélectionner au moins un moyen de paiement."),
 
-			'Point::deletedSaleUsed' => s("Ce mode de livraison ne peut pas être supprimé car il a déjà été utilisé pour une commande."),
-			'Point::deletedDateUsed' => s("Ce mode de livraison ne peut pas être supprimé car il a déjà été utilisé dans une vente."),
-
 			'Product::available.check' => s("Vous devez indiquer des limites supérieures à zéro ou laisser ce champ vide."),
 			'Product::price.check' => s("Vous devez indiquer un prix valable."),
 			'Product::limitEndAt.consistency' => s("La fin de la prise des commandes doit avoir lieu après le début de prise des commandes."),

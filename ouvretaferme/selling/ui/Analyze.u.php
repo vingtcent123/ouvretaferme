@@ -1798,6 +1798,10 @@ class AnalyzeUi {
 
 		$h = '';
 
+		if($e['status'] === Product::DELETED) {
+			$h .= '<div class="util-danger mb-1">'.s("Ce produit a été supprimé et les statistiques ne sont disponible qu'à titre historique.").'</div>';
+		}
+
 		if($cItemYear->notEmpty()) {
 
 			if($search->isFiltered('type')) {

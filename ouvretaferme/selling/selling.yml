@@ -235,7 +235,7 @@ Product:
   stockLast: ?selling\Stock
   stockUpdatedAt: ?datetime
   createdAt: datetime = SPECIAL(now)
-  status: enum(ACTIVE, INACTIVE) = ACTIVE
+  status: enum(ACTIVE, INACTIVE, DELETED) = ACTIVE
   INDEX: [
     ["farm"],
     ["plant"]

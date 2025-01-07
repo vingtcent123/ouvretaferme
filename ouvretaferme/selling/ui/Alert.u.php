@@ -16,9 +16,6 @@ class AlertUi {
 			'Customer::firstName.empty' => s("Veuillez indiquer le prénom de votre client."),
 			'Customer::lastName.empty' => s("Veuillez indiquer le nom de votre client."),
 
-			'Product::deletedSaleUsed' => s("Ce produit ne peut pas être supprimé car il a déjà été utilisé pour une vente."),
-			'Product::deletedShopUsed' => s("Ce produit ne peut pas être supprimé car il a déjà été utilisé dans la boutique."),
-
 			'Grid::packaging.check' => s("Merci d'indiquer un conditionnement valide."),
 			'Grid::price.check' => s("Merci d'indiquer un prix valide."),
 

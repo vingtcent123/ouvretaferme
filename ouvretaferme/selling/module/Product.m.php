@@ -13,6 +13,7 @@ abstract class ProductElement extends \Element {
 
 	const ACTIVE = 'active';
 	const INACTIVE = 'inactive';
+	const DELETED = 'deleted';
 
 	public static function getSelection(): array {
 		return Product::model()->getProperties();
@@ -66,7 +67,7 @@ class ProductModel extends \ModuleModel {
 			'stockLast' => ['element32', 'selling\Stock', 'null' => TRUE, 'cast' => 'element'],
 			'stockUpdatedAt' => ['datetime', 'null' => TRUE, 'cast' => 'string'],
 			'createdAt' => ['datetime', 'cast' => 'string'],
-			'status' => ['enum', [\selling\Product::ACTIVE, \selling\Product::INACTIVE], 'cast' => 'enum'],
+			'status' => ['enum', [\selling\Product::ACTIVE, \selling\Product::INACTIVE, \selling\Product::DELETED], 'cast' => 'enum'],
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [

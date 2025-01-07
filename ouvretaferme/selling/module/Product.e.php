@@ -24,8 +24,12 @@ class Product extends ProductElement {
 
 	public function canWrite(): bool {
 
-		$this->expects(['farm']);
-		return $this['farm']->canManage();
+		$this->expects(['farm', 'status']);
+
+		return (
+			$this['farm']->canManage() and
+			$this['status'] !== Product::DELETED
+		);
 
 	}
 
