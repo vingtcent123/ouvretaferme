@@ -373,14 +373,8 @@ class ErrorPhpLib {
 
 		if(\Route::getRequestedWith() === 'http') {
 
-			\Asset::js('util', 'lime.js');
-			\Asset::css('util', 'lime.css');
-			\Asset::js('util', 'ajax.js');
-
 			\Asset::css('dev', 'dev.css');
 			\Asset::js('dev', 'dev.js');
-
-			echo \Asset::importHtml();
 
 		}
 

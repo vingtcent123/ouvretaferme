@@ -36,7 +36,7 @@ class ToolUi {
 		$d->prepend = \Asset::icon('tools');
 		$d->field = 'autocomplete';
 
-		$d->placeholder ??= s("Tapez le nom du matériel...");
+		$d->placeholder ??= s("Ajoutez du matériel...");
 		$d->multiple = $multiple;
 		$d->group += ['wrapper' => 'tool'];
 
