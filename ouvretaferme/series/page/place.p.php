@@ -4,12 +4,15 @@
 		if(input_exists('series')) {
 
 			$data->e = \series\SeriesLib::getById(INPUT('series'))->validate('canWrite');
+			$data->e['farm'] = \farm\FarmLib::getById($data->e['farm']);
+
 			$data->source = 'series';
 
 		} else if(input_exists('task')) {
 
 			$data->e = \series\TaskLib::getById(INPUT('task'))->validate('canWrite', 'acceptSoil');
-			$data->e['season'] = 2024;
+			$data->e['farm'] = \farm\FarmLib::getById($data->e['farm']);
+			$data->e['season'] = $data->e['farm']['seasonLast'];
 			$data->e['use'] = \series\Series::BED;
 			$data->e['bedWidth'] = NULL;
 
