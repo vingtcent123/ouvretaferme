@@ -342,42 +342,47 @@ class InvoiceUi {
 		
 		$body = $this->getGenerateBody(
 			$eInvoice,
-			$cSale,
 			'/selling/invoice:doCreate',
 			function(\util\FormUi $form) use ($cSale, $cSaleMore, $search) {
+	
+				$sales = '';
 
-				$more = '';
+				if($cSale->count() > 0) {
+
+					$sales .= $this->getSales($form, $cSale, TRUE);
+
+				}
 
 				if($search->empty()) {
-					$more .= '<div class="mb-1">';
-						$more .= '<a href="'.LIME_REQUEST.'&more=1">'.s("Ajouter d'autres ventes de ce client à cette facture").'</a>';
-					$more .= '</div>';
+					$sales .= '<div class="mb-1">';
+						$sales .= '<a href="'.LIME_REQUEST.'&more=1">'.s("Ajouter d'autres ventes de ce client à cette facture").'</a>';
+					$sales .= '</div>';
 				} else {
 
 					if($cSale->notEmpty()) {
-						$more .= '<h3>'.s("Ajouter d'autres ventes à la facture").'</h3>';
+						$sales .= '<h3>'.s("Ajouter d'autres ventes à la facture").'</h3>';
 					}
 
-					$more .= '<div style="display: flex; column-gap: 1rem" class="mb-1">';
-						$more .= $form->inputGroup(
+					$sales .= '<div style="display: flex; column-gap: 1rem" class="mb-1">';
+						$sales .= $form->inputGroup(
 							$form->addon(s("Ventes de moins de")).
 							$form->number('delivered', $search->get('delivered'), ['onkeypress' => 'return event.keyCode != 13;']).
 							$form->addon(s("jours"))
 						);
-						$more .= $form->button(s("Filtrer"), ['onclick' => 'Sale.submitInvoiceSearch(this)']);
-					$more .= '</div>';
+						$sales .= $form->button(s("Filtrer"), ['onclick' => 'Sale.submitInvoiceSearch(this)']);
+					$sales .= '</div>';
 
 					if($cSaleMore->notEmpty()) {
 
-						$more .= $this->getSales($form, $cSaleMore, FALSE);
+						$sales .= $this->getSales($form, $cSaleMore, FALSE);
 
 					} else {
-						$more .= '<div class="util-info">'.s("Il n'y a aucune vente de moins de {value} jours à afficher pour ce client. Seules les ventes déjà livrées et pour lesquelles aucune facture n'a été éditée par ailleurs peuvent être facturées.", $search->get('delivered')).'</div>';
+						$sales .= '<div class="util-info">'.s("Il n'y a aucune vente de moins de {value} jours à afficher pour ce client. Seules les ventes déjà livrées et pour lesquelles aucune facture n'a été éditée par ailleurs peuvent être facturées.", $search->get('delivered')).'</div>';
 					}
 
 				}
 
-				return $more;
+				return $sales;
 
 			}
 		);
@@ -529,11 +534,10 @@ class InvoiceUi {
 
 	}
 
-	public function regenerate(Invoice $eInvoice, \Collection $cSale): \Panel {
+	public function regenerate(Invoice $eInvoice): \Panel {
 
 		$body = $this->getGenerateBody(
 			$eInvoice,
-			$cSale,
 			'/selling/invoice:doRegenerate'
 		);
 
@@ -545,7 +549,7 @@ class InvoiceUi {
 
 	}
 
-	public function getGenerateBody(Invoice $eInvoice, \Collection $cSale, string $page, ?\Closure $moreSales = NULL): string {
+	public function getGenerateBody(Invoice $eInvoice, string $page, ?\Closure $sales = NULL): string {
 
 		$eInvoice->expects(['customer', 'farm']);
 
@@ -574,21 +578,15 @@ class InvoiceUi {
 				'<div class="input-group">'.$form->text(value: $eInvoice['customer']->getName(), attributes: ['disabled']).'<a href="/selling/invoice:create?farm='.$eInvoice['farm']['id'].'" class="btn btn-secondary">'.s("Changer").'</a></div>'
 			);
 
-			$sales = '';
+			if($sales !== NULL) {
 
-			if($cSale->count() > 0) {
-
-				$sales .= $this->getSales($form, $cSale, TRUE);
+				$h .= $form->group(
+					s("Ventes à inclure dans la facture").
+					\util\FormUi::info(s("Notez qu'une facture d'avoir est générée lorsque le montant total à facturer est négatif.")),
+					$sales($form)
+				);
 
 			}
-
-			$sales .= $moreSales ? $moreSales($form) : '';
-
-			$h .= $form->group(
-				s("Ventes à inclure dans la facture").
-				\util\FormUi::info(s("Notez qu'une facture d'avoir est générée lorsque le montant total à facturer est négatif.")),
-				$sales
-			);
 
 			$h .= $form->dynamicGroup($eInvoice, 'date');
 

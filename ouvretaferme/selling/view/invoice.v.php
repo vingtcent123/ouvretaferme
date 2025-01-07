@@ -8,7 +8,7 @@ new AdaptativeView('create', function($data, PanelTemplate $t) {
 });
 
 new AdaptativeView('regenerate', function($data, PanelTemplate $t) {
-	return (new \selling\InvoiceUi())->regenerate($data->e, $data->cSale);
+	return (new \selling\InvoiceUi())->regenerate($data->e);
 });
 
 new AdaptativeView('doCreate', function($data, AjaxTemplate $t) {

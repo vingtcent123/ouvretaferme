@@ -67,12 +67,6 @@
 	})
 	->read('regenerate', function($data) {
 
-		$data->cSale = \selling\SaleLib::getForInvoice($data->e['customer'], $data->e['sales'], checkInvoice: FALSE);
-
-		if($data->cSale->count() !== count($data->e['sales'])) {
-			throw new FailAction('selling\Invoice::inconsistencySales');
-		}
-
 		throw new ViewAction($data);
 
 	}, validate: ['canWrite', 'acceptRegenerate'])
