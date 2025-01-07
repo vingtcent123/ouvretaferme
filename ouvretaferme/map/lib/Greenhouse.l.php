@@ -76,6 +76,7 @@ class GreenhouseLib extends GreenhouseCrud {
 			Bed::model()
 				->wherePlot($e['plot'])
 				->wherePlotFill(FALSE)
+				->whereStatus(Bed::ACTIVE)
 				->update([
 					'greenhouse' => $e
 				]);

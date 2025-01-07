@@ -326,7 +326,7 @@ class BedUi {
 				$h .= '<div class="bed-update-grid-actions">';
 					if($eZone['farm']->canManage()) {
 						$h .= '<a href="/map/bed:update?id='.$eBed['id'].'" class="btn btn-sm btn-outline-secondary">'.\Asset::icon('pencil-fill').'</a> ';
-						$h .= '<a data-ajax="/map/bed:doDelete" post-id="'.$eBed['id'].'" post-season="'.$season.'" data-confirm="'.s("Souhaitez-vous réellement supprimer cette planche ?").'" class="btn btn-sm btn-outline-secondary">'.\Asset::icon('trash').'</a>';
+						$h .= '<a data-ajax="/map/bed:doDelete" post-id="'.$eBed['id'].'" post-season="'.$season.'" data-confirm="'.s("Souhaitez-vous réellement supprimer cette planche ? Si vous souhaitez conserver un historique de votre plan de ferme, modifiez plutôt les saisons d'exploitation.").'" class="btn btn-sm btn-outline-secondary">'.\Asset::icon('trash').'</a>';
 					}
 				$h .= '</div>';
 
@@ -340,7 +340,7 @@ class BedUi {
 					$h .= '<div class="dropdown-list bg-secondary">';
 						$h .= '<a class="dropdown-item" data-ajax-target="#'.$formId.'" data-ajax-method="get" data-ajax-submit="/map/bed:updateSizeCollection">'.s("Modifier les dimensions").'</a>';
 						$h .= '<a class="dropdown-item" data-ajax-target="#'.$formId.'" data-ajax-method="get" data-ajax-submit="/map/bed:updateSeasonCollection">'.s("Modifier les saisons d'exploitation").'</a>';
-						$h .= '<a class="dropdown-item" data-ajax-target="#'.$formId.'" data-ajax-method="post" data-ajax-submit="/map/bed:doDeleteCollection" data-confirm="'.s("Êtes-vous sûr de vouloir supprimer définitivement les planches sélectionnées ?").'">'.s("Supprimer les planches").'</a>';
+						$h .= '<a class="dropdown-item" data-ajax-target="#'.$formId.'" data-ajax-method="post" data-ajax-submit="/map/bed:doDeleteCollection" data-confirm="'.s("Êtes-vous sûr de vouloir supprimer les planches sélectionnées ? Si vous souhaitez conserver un historique de votre plan de ferme, modifiez plutôt les saisons d'exploitation.").'">'.s("Supprimer les planches").'</a>';
 
 
 						$h .= '<div class="dropdown-title">'.s("Dessiner").'</div>';

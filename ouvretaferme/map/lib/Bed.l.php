@@ -45,6 +45,7 @@ class BedLib extends BedCrud {
 			$namesExisting = Bed::model()
 				->wherePlot($eBedSource['plot'])
 				->whereName('IN', $names)
+				->whereStatus(Bed::ACTIVE)
 				->getColumn('name');
 
 			if($namesExisting) {
@@ -93,6 +94,7 @@ class BedLib extends BedCrud {
 		// On vérifie que toutes les planches appartiennent bien au bloc
 		Bed::model()
 			->select(['plot', 'name', 'length', 'width'])
+			->whereStatus(Bed::ACTIVE)
 			->get($cBed);
 
 		if(Bed::model()->found() !== $cBed->count()) {
@@ -125,6 +127,7 @@ class BedLib extends BedCrud {
 			->where('plot', 'IN', $cPlot)
 			->where('plotFill', FALSE)
 			->where('zoneFill', FALSE)
+			->whereStatus(Bed::ACTIVE)
 			->getCollection(index: 'id')
 			->sort('name');
 
@@ -134,11 +137,7 @@ class BedLib extends BedCrud {
 
 		$c->map(fn($e) => self::prepareCreate($e));
 
-		try {
-			Bed::model()->insert($c);
-		} catch(\DuplicateException) {
-			Bed::fail('names.duplicateAnonymous');
-		}
+		Bed::model()->insert($c);
 
 	}
 
@@ -257,16 +256,9 @@ class BedLib extends BedCrud {
 
 	public static function deleteCollection(\Collection $c): void {
 
-		if(\series\Place::model()
-				->whereBed('IN', $c)
-				->exists()) {
-			Bed::fail('deleteUsed');
-			return;
+		foreach($c as $e) {
+			self::delete($e);
 		}
-
-		Bed::model()
-			->wherePlotFill(FALSE)
-			->delete($c);
 
 	}
 
@@ -277,13 +269,18 @@ class BedLib extends BedCrud {
 		if(\series\Place::model()
 				->whereBed($e)
 				->exists()) {
-			Bed::fail('deleteUsed');
-			return;
-		}
 
-		Bed::model()
-			->wherePlotFill(FALSE)
-			->delete($e);
+			Bed::model()->update($e, [
+				'status' => Bed::DELETED
+			]);
+
+		} else {
+
+			Bed::model()
+				->wherePlotFill(FALSE)
+				->delete($e);
+
+		}
 
 	}
 

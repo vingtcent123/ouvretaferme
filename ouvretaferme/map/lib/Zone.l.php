@@ -235,6 +235,7 @@ class ZoneLib extends ZoneCrud {
 				Bed::model()
 					->whereZone($e)
 					->where('seasonFirst <'.$e['seasonFirst'])
+					->whereStatus(Bed::ACTIVE)
 					->update([
 						'seasonFirst' => $e['seasonFirst']
 					]);
@@ -271,6 +272,7 @@ class ZoneLib extends ZoneCrud {
 				Bed::model()
 					->whereZone($e)
 					->where('seasonLast >'.$e['seasonLast'])
+					->whereStatus(Bed::ACTIVE)
 					->update([
 						'seasonLast' => $e['seasonLast']
 					]);

@@ -22,6 +22,7 @@ class PlaceLib extends PlaceCrud {
 					'name', 'length', 'area', 'width',
 					'plotFill',
 					'greenhouse' => ['name'],
+					'status'
 				],
 				'length', 'width', 'area'
 			])
@@ -79,6 +80,7 @@ class PlaceLib extends PlaceCrud {
 			])
 			->whereId('IN', $beds)
 			->whereFarm($e['farm'])
+			->whereStatus(\map\Bed::ACTIVE)
 			->getCollection();
 
 		if($cBed->count() !== count($beds)) {

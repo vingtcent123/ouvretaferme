@@ -7,6 +7,9 @@ abstract class BedElement extends \Element {
 
 	private static ?BedModel $model = NULL;
 
+	const ACTIVE = 'active';
+	const DELETED = 'deleted';
+
 	public static function getSelection(): array {
 		return Bed::model()->getProperties();
 	}
@@ -49,13 +52,14 @@ class BedModel extends \ModuleModel {
 			'greenhouse' => ['element32', 'map\Greenhouse', 'null' => TRUE, 'cast' => 'element'],
 			'seasonFirst' => ['int16', 'min' => 0, 'max' => NULL, 'null' => TRUE, 'cast' => 'int'],
 			'seasonLast' => ['int16', 'min' => 0, 'max' => NULL, 'null' => TRUE, 'cast' => 'int'],
+			'status' => ['enum', [\map\Bed::ACTIVE, \map\Bed::DELETED], 'cast' => 'enum'],
 			'createdAt' => ['datetime', 'cast' => 'string'],
 			'createdBy' => ['element32', 'user\User', 'cast' => 'element'],
 			'updatedAt' => ['datetime', 'null' => TRUE, 'cast' => 'string'],
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'name', 'farm', 'zone', 'zoneFill', 'plot', 'plotFill', 'length', 'width', 'area', 'greenhouse', 'seasonFirst', 'seasonLast', 'createdAt', 'createdBy', 'updatedAt'
+			'id', 'name', 'farm', 'zone', 'zoneFill', 'plot', 'plotFill', 'length', 'width', 'area', 'greenhouse', 'seasonFirst', 'seasonLast', 'status', 'createdAt', 'createdBy', 'updatedAt'
 		]);
 
 		$this->propertiesToModule += [
@@ -70,10 +74,6 @@ class BedModel extends \ModuleModel {
 			['zone'],
 			['plot'],
 			['greenhouse']
-		]);
-
-		$this->uniqueConstraints = array_merge($this->uniqueConstraints, [
-			['plot', 'name']
 		]);
 
 	}
@@ -91,6 +91,9 @@ class BedModel extends \ModuleModel {
 			case 'area' :
 				return new \Sql('length * width / 100');
 
+			case 'status' :
+				return Bed::ACTIVE;
+
 			case 'createdAt' :
 				return new \Sql('NOW()');
 
@@ -99,6 +102,20 @@ class BedModel extends \ModuleModel {
 
 			default :
 				return parent::getDefaultValue($property);
+
+		}
+
+	}
+
+	public function encode(string $property, $value) {
+
+		switch($property) {
+
+			case 'status' :
+				return ($value === NULL) ? NULL : (string)$value;
+
+			default :
+				return parent::encode($property, $value);
 
 		}
 
@@ -162,6 +179,10 @@ class BedModel extends \ModuleModel {
 
 	public function whereSeasonLast(...$data): BedModel {
 		return $this->where('seasonLast', ...$data);
+	}
+
+	public function whereStatus(...$data): BedModel {
+		return $this->where('status', ...$data);
 	}
 
 	public function whereCreatedAt(...$data): BedModel {

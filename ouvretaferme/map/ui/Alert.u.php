@@ -19,10 +19,8 @@ class AlertUi {
 			'Bed::names.check' => s("Vous devez donner un nom à chaque planche."),
 			'Bed::names.different' => s("Vous devez donner un nom différent à chaque planche."),
 			'Bed::names.duplicate' => fn($names) => p("Le nom {value} est déjà utilisé par une autre planche de votre ferme.", "Les noms {value} sont déjà utilisés par d'autres planches de votre ferme.", count($names), ['value' => implode(', ', $names)]),
-			'Bed::names.duplicateAnonymous' => s("Un nom que vous avez choisi est déjà utilisé par une autre planche de votre ferme."),
 			'Bed::ids.check' => s("Veuillez sélectionner au moins une planche."),
 			'Bed::seasonLast.consistency' => s("Merci d'être cohérent entre la saison de début et la saison de fin."),
-			'Bed::deleteUsed' => s("Vous ne pouvez pas supprimer une planche qui a déjà cultivé. Vous devez soit modifier les dates d'exploitation de la planche, soit supprimer préalablement les séries qui s'y trouvent."),
 			'Bed::canNotDraw' => s("Vous ne pouvez pas dessiner ces planches car le bloc ou la parcelle ne sont pas cartographiés."),
 
 			'Draw::coordinates.check' => s("Vous n'avez pas tracé de ligne de départ des planches."),

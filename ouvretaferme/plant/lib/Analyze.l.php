@@ -77,6 +77,7 @@ class AnalyzeLib {
 					->where('m1.farm', $eFarm)
 					->where('m1.zoneFill', FALSE)
 					->wherePlotFill(FALSE)
+					->whereStatus(\map\Bed::ACTIVE)
 					->get()
 					->getArrayCopy();
 
@@ -106,6 +107,7 @@ class AnalyzeLib {
 					->where('m1.season', $season)
 					->where('m4.plotFill', FALSE)
 					->where('m4.zoneFill', FALSE)
+					->where('m4.status', \map\Bed::ACTIVE)
 					->group('m2.cycle')
 					->getCollection() as $value) {
 

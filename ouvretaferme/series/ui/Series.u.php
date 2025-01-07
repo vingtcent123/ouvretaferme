@@ -333,7 +333,13 @@ class SeriesUi {
 					if($use === Series::BED) {
 
 						if($ePlace['bed']['name'] !== NULL) {
+
 							$h .= encode($ePlace['bed']['name']);
+
+							if($ePlace['bed']['status'] === \map\Bed::DELETED) {
+								$h .= '<span class="ml-1 color-danger">'.\Asset::icon('exclamation-triangle').' '.s("Planche supprimée").'</span>';
+							}
+
 						} else {
 							$h .= s("Temporaire");
 						}

@@ -12,6 +12,7 @@ Bed:
   greenhouse: ?map\Greenhouse
   seasonFirst: ?int16(0, null)
   seasonLast: ?int16(0, null)
+  status: enum(ACTIVE, DELETED) = ACTIVE
   createdAt: datetime = SPECIAL(now)
   createdBy: user\User = SPECIAL(user)
   updatedAt: ?datetime
@@ -19,9 +20,6 @@ Bed:
     ["zone"],
     ["plot"],
     ["greenhouse"]
-  ]
-  UNIQUE: [
-    ["plot", "name"]
   ]
   
 Draw:

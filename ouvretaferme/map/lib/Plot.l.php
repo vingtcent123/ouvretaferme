@@ -111,6 +111,7 @@ class PlotLib extends PlotCrud {
 			Bed::model()
 				->wherePlot($e)
 				->wherePlotFill(TRUE)
+				->whereStatus(Bed::ACTIVE)
 				->update([
 					'area' => $e['area']
 				]);
@@ -122,6 +123,7 @@ class PlotLib extends PlotCrud {
 			Bed::model()
 				->wherePlot($e)
 				->wherePlotFill(TRUE)
+				->whereStatus(Bed::ACTIVE)
 				->update([
 					'seasonFirst' => $e['seasonFirst']
 				]);
@@ -131,6 +133,7 @@ class PlotLib extends PlotCrud {
 				Bed::model()
 					->wherePlot($e)
 					->where('seasonFirst <'.$e['seasonFirst'])
+					->whereStatus(Bed::ACTIVE)
 					->update([
 						'seasonFirst' => $e['seasonFirst']
 					]);
@@ -144,6 +147,7 @@ class PlotLib extends PlotCrud {
 			Bed::model()
 				->wherePlot($e)
 				->wherePlotFill(TRUE)
+				->whereStatus(Bed::ACTIVE)
 				->update([
 					'seasonLast' => $e['seasonLast']
 				]);
@@ -153,6 +157,7 @@ class PlotLib extends PlotCrud {
 				Bed::model()
 					->wherePlot($e)
 					->where('seasonLast >'.$e['seasonLast'])
+					->whereStatus(Bed::ACTIVE)
 					->update([
 						'seasonLast' => $e['seasonLast']
 					]);
@@ -188,7 +193,7 @@ class PlotLib extends PlotCrud {
 					'seasonFirst', 'seasonLast',
 					'zoneFill', 'plotFill', 'length', 'width', 'area'
 				])
-				//->whereId('IN', [ 98])
+				->whereStatus(Bed::ACTIVE)
 				->sort(new \Sql('plotFill DESC, name ASC'))
 				->delegateCollection('plot', index: 'id', callback: fn(\Collection $cBed) => $cBed->sort('name', natural: TRUE));
 

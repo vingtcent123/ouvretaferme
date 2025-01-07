@@ -56,6 +56,7 @@ class Bed extends BedElement {
 				return Bed::model()
 					->wherePlot($this['plot'])
 					->whereName($name)
+					->whereStatus(Bed::ACTIVE)
 					->exists() === FALSE;
 
 			},
