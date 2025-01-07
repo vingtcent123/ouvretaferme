@@ -595,7 +595,7 @@ class FarmUi {
 						$h .= '<span class="farm-tab-icon">'.\Asset::icon('bar-chart').'</span>';
 						$h .= '<span class="farm-tab-label">'.s("Analyse").'</span>';
 						if(count($categories) > 1) {
-							$h .= '<div class="farm-tab-complement" data-dropdown="bottom-left" data-dropdown-id="farm-tab-analyze" data-dropdown-hover="true">';
+							$h .= '<div class="farm-tab-complement" data-dropdown="auto-left" data-dropdown-id="farm-tab-analyze" data-dropdown-hover="true">';
 								$h .= '<span id="farm-tab-analyze-category">'.$categories[$selectedCategory].'</span>';
 								$h .= ' '.\Asset::icon('chevron-down');
 							$h .= '</div>';

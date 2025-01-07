@@ -1866,7 +1866,7 @@ Lime.Stick = class {
 
 		const elementBounds = this.element.getBoundingClientRect();
 		const freeBounds = this.free.getBoundingClientRect();
-
+d(freeBounds);
 		let translateX = 0;
 		let translateY = 0;
 
@@ -1882,34 +1882,44 @@ Lime.Stick = class {
 
 		}
 
+		let placement = this.placement;
+
+		if(placement.startsWith('auto')) {
+
+			placement = (elementBounds.bottom + freeBounds.height > window.innerHeight) ?
+				'top' :
+				'bottom';
+
+		}
+
 		let placementX;
 
-		if(this.placement.endsWith('start')) {
+		if(placement.endsWith('start')) {
 			placementX = 'start';
-		} else if(this.placement.endsWith('center')) {
+		} else if(placement.endsWith('center')) {
 			placementX = 'center';
-		} else if(this.placement.endsWith('end')) {
+		} else if(placement.endsWith('end')) {
 			placementX = 'end';
 		} else {
 			placementX = (elementBounds.left < window.innerWidth / 2) ? 'start' : 'end';
 		}
 
 		if(placementX === 'start') {
-			translateX += elementBounds.left - freeBounds.left;
+			translateX += elementBounds.left;
 		} else if(placementX ==='center') {
-			translateX += (elementBounds.left + elementBounds.width / 2 - freeBounds.width / 2) - freeBounds.left;
+			translateX += (elementBounds.left + elementBounds.width / 2 - freeBounds.width / 2);
 		} else if(placementX === 'end') {
-			translateX += (elementBounds.right - freeBounds.width) - freeBounds.left;
+			translateX += (elementBounds.right - freeBounds.width);
 		}
 
-		if(this.placement.startsWith('top')) {
-			translateY += (elementBounds.bottom - freeBounds.height - elementBounds.height) - freeBounds.top;
-		} else if(this.placement.startsWith('bottom')) {
-			translateY += elementBounds.bottom - freeBounds.top;
+		if(placement.startsWith('top')) {
+			translateY += (elementBounds.top - freeBounds.height);
+		} else if(placement.startsWith('bottom')) {
+			translateY += elementBounds.bottom;
 		}
 
-		translateX += this.offset.x ?? 0;
-		translateY += this.offset.y ?? 0;
+		translateX += (this.offset.x ?? 0) - freeBounds.left;
+		translateY += (this.offset.y ?? 0) - freeBounds.top;
 
 		this.free.style.transform = 'translate('+ translateX +'px, '+ translateY +'px)';
 
