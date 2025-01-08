@@ -1197,7 +1197,7 @@ Lime.Panel = class {
 	};
 
 	static internalClose(panel, history = false) {
-
+d(panel.classList);
 		if(panel.classList.contains('closing')) {
 			return false;
 		}
@@ -1226,7 +1226,7 @@ Lime.Panel = class {
 			}
 
 		}
-
+d('in');
 		panel.classList.add('closing');
 
 		// No more panel open
@@ -2169,7 +2169,7 @@ Lime.History = class {
 
 	};
 
-	static popLayer(element, isOnPop = true) {
+	static popLayer(element) {
 
 		for(let i = this.layers.length - 1; i >= 0; i--) {
 
@@ -2178,10 +2178,10 @@ Lime.History = class {
 				if(this.layers[i].isPushHistory) {
 
 					this.ignoreNextPopstate++; // Simulate an history change
-					return this.go(-1).then(() => this.removeLayer(i, isOnPop));
+					return this.go(-1).then(() => this.removeLayer(i));
 
 				} else {
-					this.removeLayer(i, isOnPop);
+					this.removeLayer(i);
 				}
 
 			}
@@ -2192,13 +2192,11 @@ Lime.History = class {
 
 	};
 
-	static removeLayer(position, isOnPop) {
+	static removeLayer(position) {
 
 		const layer = this.layers[position];
-
-		if(isOnPop) {
-			layer.onPop.call(this, false);
-		}
+d(layer);
+		layer.onPop.call(this, false);
 
 		window.scrollTo(0, layer.scrollY);
 
