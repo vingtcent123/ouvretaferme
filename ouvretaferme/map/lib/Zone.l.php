@@ -76,6 +76,7 @@ class ZoneLib extends ZoneCrud {
 				$cSeriesForbidden = \series\Cultivation::model()
 					->select('series')
 					->join(\plant\Plant::model(), 'm1.plant = m2.id')
+					->where('m1.series', '!=', $eSeries)
 					->where('m1.farm', $eSeries['farm'])
 					->whereSeason('BETWEEN', new \Sql(($eSeries['season'] - $search->get('rotation')).' AND '.$eSeries['season']))
 					->where('m2.family', 'IN', $cFamily)
