@@ -1040,7 +1040,7 @@ class AutocompleteField {
 		if(dropdown !== null) {
 
 			if(this.isFullscreen()) {
-				Lime.History.removeLayer(dropdown);
+				Lime.History.popLayer(dropdown);
 			} else {
 				this.internalRemove(input);
 			}

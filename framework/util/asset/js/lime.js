@@ -1159,7 +1159,7 @@ Lime.Panel = class {
 				break;
 
 			case 'layer' :
-				Lime.History.removeLayer(panel);
+				Lime.History.popLayer(panel);
 				break;
 
 			default :
@@ -1594,7 +1594,7 @@ Lime.Dropdown = class {
 		switch(button.getAttribute('data-dropdown-display')) {
 
 			case 'fullscreen' :
-				Lime.History.removeLayer(button);
+				Lime.History.popLayer(button);
 				break;
 
 			case 'around' :
@@ -1866,7 +1866,7 @@ Lime.Stick = class {
 
 		const elementBounds = this.element.getBoundingClientRect();
 		const freeBounds = this.free.getBoundingClientRect();
-d(freeBounds);
+
 		let translateX = 0;
 		let translateY = 0;
 
@@ -2158,6 +2158,7 @@ Lime.History = class {
 			id: element.id,
 			element: element,
 			onPop: onPop,
+			isPushHistory: isPushHistory,
 			scrollY: window.scrollY,
 			backReload: backReload
 		});
@@ -2168,29 +2169,20 @@ Lime.History = class {
 
 	};
 
-	static removeLayer(element, isOnPop = true) {
+	static popLayer(element, isOnPop = true) {
 
 		for(let i = this.layers.length - 1; i >= 0; i--) {
 
 			if(this.layers[i].element === element) {
 
-				this.ignoreNextPopstate++; // Simulate an history change
+				if(this.layers[i].isPushHistory) {
 
-				return this.go(-1).then(() => {
+					this.ignoreNextPopstate++; // Simulate an history change
+					return this.go(-1).then(() => this.removeLayer(i, isOnPop));
 
-					const layer = this.layers[i];
-
-					if(isOnPop) {
-						layer.onPop.call(this, false);
-					}
-
-					window.scrollTo(0, layer.scrollY);
-
-					this.layers.splice(i, 1);
-
-					return true;
-
-				});
+				} else {
+					this.removeLayer(i, isOnPop);
+				}
 
 			}
 
@@ -2199,6 +2191,22 @@ Lime.History = class {
 		return false;
 
 	};
+
+	static removeLayer(position, isOnPop) {
+
+		const layer = this.layers[position];
+
+		if(isOnPop) {
+			layer.onPop.call(this, false);
+		}
+
+		window.scrollTo(0, layer.scrollY);
+
+		this.layers.splice(position, 1);
+
+		return true;
+
+	}
 
 	/*
 	 * Remove layer after history back

@@ -820,11 +820,12 @@ Ajax.Instruction = class {
 
 			case 'pushPanel' : {
 
-				const panel = Lime.Panel.render(data[0]);
-				if(data[0].layer) {
-					Lime.Panel.layer(panel, this.requestedWith);
+					const panel = Lime.Panel.render(data[0]);
+					if(data[0].layer) {
+						Lime.Panel.layer(panel, this.requestedWith);
+					}
+
 				}
-			}
 				return;
 
 			case 'showPanel' :
