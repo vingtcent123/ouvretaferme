@@ -5,7 +5,8 @@
 		$data->eFarm = \farm\FarmLib::getById(INPUT('farm'));
 
 		return new \selling\Product([
-			'farm' => $data->eFarm
+			'farm' => $data->eFarm,
+			'status' => \selling\Product::ACTIVE
 		]);
 
 	})
