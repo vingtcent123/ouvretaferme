@@ -1047,6 +1047,7 @@ Lime.Panel = class {
 			document.querySelector('body').insertAdjacentHTML('beforeend', h);
 
 			const node = document.getElementById(id);
+			node.dataset.url = options.url;
 
 			Object.entries(attributes).forEach(([name, value]) => node.setAttribute(name, value));
 
@@ -1115,7 +1116,7 @@ Lime.Panel = class {
 			case 'navigation' :
 
 				panel.dataset.context = 'layer';
-				Lime.History.pushLayer(panel, (history) => this.internalClose(panel, history), false /* No new entry in the history */, document.location.href);
+				Lime.History.pushLayer(panel, (history) => this.internalClose(panel, history), panel.dataset.url, document.location.href);
 
 				break;
 
@@ -1197,7 +1198,7 @@ Lime.Panel = class {
 	};
 
 	static internalClose(panel, history = false) {
-d(panel.classList);
+
 		if(panel.classList.contains('closing')) {
 			return false;
 		}
@@ -1226,7 +1227,7 @@ d(panel.classList);
 			}
 
 		}
-d('in');
+
 		panel.classList.add('closing');
 
 		// No more panel open
@@ -1453,7 +1454,7 @@ Lime.Dropdown = class {
 
 	static openFullscreen(button, list) {
 
-		Lime.History.pushLayer(button, () => this.internalClose(button), true, null);
+		Lime.History.pushLayer(button, () => this.internalClose(button), document.location.href, null);
 
 		document.body.classList.add('dropdown-fullscreen-open');
 
@@ -2136,7 +2137,7 @@ Lime.History = class {
 
 	}
 
-	static replaceState(url) {
+	static replaceState(url) {d(url);
 		history.replaceState(history.state, '', url);
 	}
 
@@ -2152,19 +2153,19 @@ Lime.History = class {
 		return this.layers.map(layer => layer.element);
 	}
 
-	static pushLayer(element, onPop, isPushHistory, backReload) {
+	static pushLayer(element, onPop, pushUrl, backReload) {
 
 		this.layers.push({
 			id: element.id,
 			element: element,
 			onPop: onPop,
-			isPushHistory: isPushHistory,
+			isPushHistory: (pushUrl !== null),
 			scrollY: window.scrollY,
 			backReload: backReload
 		});
 
-		if(isPushHistory) {
-			this.push(location.href);
+		if(pushUrl !== null) {
+			this.push(pushUrl);
 		}
 
 	};
@@ -2195,7 +2196,7 @@ Lime.History = class {
 	static removeLayer(position) {
 
 		const layer = this.layers[position];
-d(layer);
+
 		layer.onPop.call(this, false);
 
 		window.scrollTo(0, layer.scrollY);

@@ -550,6 +550,16 @@ class FormUi {
 
 		} else if($type === 'text8' or $type === 'textFixed') {
 
+			if($e->model()->hasProperty($property)) {
+
+				[, $max] = $e->model()->getPropertyRange($property);
+
+				$attributes += [
+					'maxlength' => $max
+				];
+
+			}
+
 			return $this->text($name, $default, $attributes);
 
 		} else if($type === 'fqn') {

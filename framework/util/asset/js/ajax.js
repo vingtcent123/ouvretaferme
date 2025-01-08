@@ -466,9 +466,9 @@ Ajax.Navigation = class extends Ajax.Query {
 			promise.then(() => {
 
 				Lime.Alert.hideStaticErrors();
-				Lime.Dropdown.purge();
 
 				if(json.__context === 'new') {
+					Lime.Dropdown.purge();
 					Lime.Panel.purge();
 				}
 
@@ -492,7 +492,7 @@ Ajax.Navigation = class extends Ajax.Query {
 						// Traité du coup comme une simple requête ajax
 						this.requestedWith = 'query';
 
-					} else {
+					} else if(json.__panel === undefined) {
 
 						Lime.History.push(url);
 

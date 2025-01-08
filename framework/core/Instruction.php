@@ -74,6 +74,7 @@ class Panel implements Instruction {
 		}
 
 		$output['layer'] = $this->layer;
+		$output['url'] = LIME_REQUEST;
 
 		$output['attributes'] = $this->attributes + [
 			'data-close' => $this->close

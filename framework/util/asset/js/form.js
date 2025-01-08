@@ -823,7 +823,7 @@ class AutocompleteField {
 			wrapper.insertAdjacentElement('beforeend', input);
 			wrapper.insertAdjacentElement('beforeend', dropdown);
 
-			Lime.History.pushLayer(dropdown, () => this.internalRemove(input), true, null);
+			Lime.History.pushLayer(dropdown, () => this.internalRemove(input), document.location.href, null);
 
 			document.body.classList.add('autocomplete-fullscreen-open');
 
