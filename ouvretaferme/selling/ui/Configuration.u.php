@@ -327,7 +327,7 @@ class ConfigurationUi {
 		$d = Configuration::model()->describer($property, [
 			'legalName' => s("Raison sociale de la ferme"),
 			'invoiceRegistration' => s("Numéro d'immatriculation SIRET"),
-			'documentInvoices' => s("Prochain numéro de facture"),
+			'documentInvoices' => s("Prochain numéro de facture ou d'avoir"),
 			'hasVat' => s("Assujettissement à la TVA"),
 			'invoiceVat' => s("Numéro de TVA intracommunautaire"),
 			'legalEmail' => s("Adresse e-mail utilisée pour la facturation de vos clients"),
