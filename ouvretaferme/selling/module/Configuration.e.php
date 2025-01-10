@@ -48,6 +48,62 @@ class Configuration extends ConfigurationElement {
 
 		return parent::build($properties, $input, $callbacks + [
 
+			'documentInvoices.prepare' => function(string &$value): bool {
+				$value--;
+				return TRUE;
+			},
+
+			'documentInvoices.consistency' => function(string &$value): bool {
+
+				$this->expects(['invoicePrefix']);
+
+				$max = Invoice::model()
+					->whereFarm($this['farm'])
+					->whereName('LIKE', $this['invoicePrefix'].'%')
+					->getValue(new \Sql('MAX(document)'));
+
+				$this['invoicePrefixMin'] = $max - 80;
+
+				return ($value > $this['invoicePrefixMin']);
+
+			},
+
+			'creditPrefix.prepare' => function(string &$prefix): bool {
+				$prefix = strtoupper($prefix);
+				return TRUE;
+			},
+
+			'creditPrefix.fqn' => function(string $prefix): bool {
+				return preg_match('/^[a-z0-9\-\_]*$/si', $prefix) > 0;
+			},
+
+			'invoicePrefix.prepare' => function(string &$prefix): bool {
+				$prefix = strtoupper($prefix);
+				return TRUE;
+			},
+
+			'invoicePrefix.fqn' => function(string $prefix): bool {
+				return preg_match('/^[a-z0-9\-\_]*$/si', $prefix) > 0;
+			},
+
+			'deliveryNotePrefix.prepare' => function(string &$prefix): bool {
+				$prefix = strtoupper($prefix);
+				return TRUE;
+			},
+
+			'deliveryNotePrefix.fqn' => function(string $prefix): bool {
+				return preg_match('/^[a-z0-9\-\_]*$/si', $prefix) > 0;
+			},
+
+			'orderFormPrefix.prepare' => function(string &$prefix): bool {
+				$prefix = strtoupper($prefix);
+				return TRUE;
+			},
+
+			'orderFormPrefix.fqn' => function(string $prefix): bool {
+				return preg_match('/^[a-z0-9\-\_]*$/si', $prefix) > 0;
+			},
+
 			'defaultVat.check' => function(int $vat): bool {
 				return array_key_exists($vat, SaleLib::getVatRates($this['farm']));
 			},

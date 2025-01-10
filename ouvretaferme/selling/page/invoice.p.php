@@ -105,7 +105,7 @@
 		}
 
 		$content = \selling\PdfLib::getContentByInvoice($data->e);
-		$filename = $data->e->getInvoice().'-'.str_replace('-', '', $data->e['date']).'-'.$data->e['customer']->getName().'.pdf';
+		$filename = $data->e['name'].'-'.str_replace('-', '', $data->e['date']).'-'.$data->e['customer']->getName().'.pdf';
 
 		throw new PdfAction($content, $filename);
 
@@ -128,9 +128,7 @@
 		$data->type = GET('type', '?string');
 
 		if($data->month !== NULL) {
-
 			$data->cSale = \selling\SaleLib::getForMonthlyInvoice($data->eFarm, $data->month, $data->type);
-
 		}
 
 		$data->e = new \selling\Invoice([

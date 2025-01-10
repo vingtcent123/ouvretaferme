@@ -67,7 +67,7 @@ class SaleLib extends SaleCrud {
 		$eSale['orderFormPaymentCondition'] = $eFarm->getSelling('orderFormPaymentCondition');
 		$eSale['invoice']['taxes'] = \selling\Invoice::INCLUDING;
 		$eSale['invoice']['hasVat'] = $eFarm->getSelling('hasVat');
-		$eSale['invoice']['document'] = '123';
+		$eSale['invoice']['name'] = $eFarm->getSelling('invoicePrefix').'123';
 		$eSale['invoice']['priceExcludingVat'] = $eSale['priceExcludingVat'];
 		$eSale['invoice']['priceIncludingVat'] = $eSale['priceIncludingVat'];
 		$eSale['invoice']['date'] = currentDate();
@@ -464,7 +464,7 @@ class SaleLib extends SaleCrud {
 
 		Sale::model()->beginTransaction();
 
-		$e['document'] = ConfigurationLib::getNextDocument($e['farm'], 'documentSales');
+		$e['document'] = ConfigurationLib::getNextDocumentSales($e['farm']);
 
 		parent::create($e);
 

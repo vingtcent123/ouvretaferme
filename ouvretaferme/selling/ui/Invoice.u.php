@@ -14,7 +14,7 @@ class InvoiceUi {
 	}
 
 	public static function link(Invoice $eInvoice, bool $newTab = FALSE): string {
-		return '<a href="'.self::url($eInvoice).'" data-ajax-navigation="never" class="btn btn-sm btn-outline-primary" '.($newTab ? 'target="_blank"' : '').'>'.$eInvoice->getInvoice().'</a>';
+		return '<a href="'.self::url($eInvoice).'" data-ajax-navigation="never" class="btn btn-sm btn-outline-primary" '.($newTab ? 'target="_blank"' : '').'>'.encode($eInvoice['name']).'</a>';
 	}
 
 	public static function url(Invoice $e): string {
@@ -152,7 +152,7 @@ class InvoiceUi {
 						$h .= '</td>';
 						$h .= '<td class="text-center td-min-content">';
 							if($eInvoice['content']->empty()) {
-								$h .= '<span class="btn btn-disabled">'.$eInvoice->getInvoice().'</span>';
+								$h .= '<span class="btn btn-disabled">'.encode($eInvoice['name']).'</span>';
 							} else {
 								$h .= InvoiceUi::link($eInvoice);
 							}
@@ -234,7 +234,7 @@ class InvoiceUi {
 
 								$h .= '<a data-dropdown="bottom-end" class="dropdown-toggle btn btn-outline-secondary">'.\Asset::icon('gear-fill').'</a>';
 								$h .= '<div class="dropdown-list">';
-									$h .= '<div class="dropdown-title">'.s("Facture {value}", $eInvoice->getInvoice()).'</div>';
+									$h .= '<div class="dropdown-title">'.s("Facture {value}", encode($eInvoice['name'])).'</div>';
 
 									$h .= '<a href="/selling/invoice:update?id='.$eInvoice['id'].'" class="dropdown-item">'.s("Modifier la facture").'</a>';
 

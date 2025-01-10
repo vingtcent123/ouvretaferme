@@ -38,8 +38,8 @@ class ConfigurationModel extends \ModuleModel {
 		$this->properties = array_merge($this->properties, [
 			'id' => ['serial32', 'cast' => 'int'],
 			'farm' => ['element32', 'farm\Farm', 'unique' => TRUE, 'cast' => 'element'],
-			'documentSales' => ['int32', 'min' => 1, 'max' => NULL, 'cast' => 'int'],
-			'documentInvoices' => ['int32', 'min' => 1, 'max' => NULL, 'cast' => 'int'],
+			'documentSales' => ['int32', 'min' => 0, 'max' => NULL, 'cast' => 'int'],
+			'documentInvoices' => ['int32', 'min' => 0, 'max' => NULL, 'cast' => 'int'],
 			'hasVat' => ['bool', 'cast' => 'bool'],
 			'defaultVat' => ['int8', 'min' => 0, 'max' => NULL, 'cast' => 'int'],
 			'defaultVatShipping' => ['int8', 'min' => 0, 'max' => NULL, 'null' => TRUE, 'cast' => 'int'],
@@ -54,10 +54,14 @@ class ConfigurationModel extends \ModuleModel {
 			'organicCertifier' => ['text8', 'null' => TRUE, 'cast' => 'string'],
 			'paymentMode' => ['editor16', 'min' => 1, 'max' => 400, 'null' => TRUE, 'cast' => 'string'],
 			'documentCopy' => ['bool', 'cast' => 'bool'],
+			'orderFormPrefix' => ['text8', 'min' => 1, 'max' => 15, 'cast' => 'string'],
 			'orderFormDelivery' => ['bool', 'cast' => 'bool'],
 			'orderFormPaymentCondition' => ['editor16', 'min' => 1, 'max' => 400, 'null' => TRUE, 'cast' => 'string'],
 			'orderFormHeader' => ['editor16', 'min' => 1, 'max' => 400, 'null' => TRUE, 'cast' => 'string'],
 			'orderFormFooter' => ['editor16', 'min' => 1, 'max' => 400, 'null' => TRUE, 'cast' => 'string'],
+			'deliveryNotePrefix' => ['text8', 'min' => 1, 'max' => 15, 'cast' => 'string'],
+			'creditPrefix' => ['text8', 'min' => 1, 'max' => 15, 'cast' => 'string'],
+			'invoicePrefix' => ['text8', 'min' => 1, 'max' => 15, 'cast' => 'string'],
 			'invoicePaymentCondition' => ['editor16', 'min' => 1, 'max' => 400, 'null' => TRUE, 'cast' => 'string'],
 			'invoiceHeader' => ['editor16', 'min' => 1, 'max' => 400, 'null' => TRUE, 'cast' => 'string'],
 			'invoiceFooter' => ['editor16', 'min' => 1, 'max' => 400, 'null' => TRUE, 'cast' => 'string'],
@@ -65,7 +69,7 @@ class ConfigurationModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'farm', 'documentSales', 'documentInvoices', 'hasVat', 'defaultVat', 'defaultVatShipping', 'legalEmail', 'legalName', 'invoiceStreet1', 'invoiceStreet2', 'invoicePostcode', 'invoiceCity', 'invoiceRegistration', 'invoiceVat', 'organicCertifier', 'paymentMode', 'documentCopy', 'orderFormDelivery', 'orderFormPaymentCondition', 'orderFormHeader', 'orderFormFooter', 'invoicePaymentCondition', 'invoiceHeader', 'invoiceFooter', 'pdfNaturalOrder'
+			'id', 'farm', 'documentSales', 'documentInvoices', 'hasVat', 'defaultVat', 'defaultVatShipping', 'legalEmail', 'legalName', 'invoiceStreet1', 'invoiceStreet2', 'invoicePostcode', 'invoiceCity', 'invoiceRegistration', 'invoiceVat', 'organicCertifier', 'paymentMode', 'documentCopy', 'orderFormPrefix', 'orderFormDelivery', 'orderFormPaymentCondition', 'orderFormHeader', 'orderFormFooter', 'deliveryNotePrefix', 'creditPrefix', 'invoicePrefix', 'invoicePaymentCondition', 'invoiceHeader', 'invoiceFooter', 'pdfNaturalOrder'
 		]);
 
 		$this->propertiesToModule += [
@@ -94,8 +98,20 @@ class ConfigurationModel extends \ModuleModel {
 			case 'documentCopy' :
 				return FALSE;
 
+			case 'orderFormPrefix' :
+				return \selling\ConfigurationUi::getDefaultOrderFormPrefix();
+
 			case 'orderFormDelivery' :
 				return TRUE;
+
+			case 'deliveryNotePrefix' :
+				return \selling\ConfigurationUi::getDefaultDeliveryNotePrefix();
+
+			case 'creditPrefix' :
+				return \selling\ConfigurationUi::getDefaultCreditPrefix();
+
+			case 'invoicePrefix' :
+				return \selling\ConfigurationUi::getDefaultInvoicePrefix();
 
 			case 'pdfNaturalOrder' :
 				return FALSE;
@@ -187,6 +203,10 @@ class ConfigurationModel extends \ModuleModel {
 		return $this->where('documentCopy', ...$data);
 	}
 
+	public function whereOrderFormPrefix(...$data): ConfigurationModel {
+		return $this->where('orderFormPrefix', ...$data);
+	}
+
 	public function whereOrderFormDelivery(...$data): ConfigurationModel {
 		return $this->where('orderFormDelivery', ...$data);
 	}
@@ -201,6 +221,18 @@ class ConfigurationModel extends \ModuleModel {
 
 	public function whereOrderFormFooter(...$data): ConfigurationModel {
 		return $this->where('orderFormFooter', ...$data);
+	}
+
+	public function whereDeliveryNotePrefix(...$data): ConfigurationModel {
+		return $this->where('deliveryNotePrefix', ...$data);
+	}
+
+	public function whereCreditPrefix(...$data): ConfigurationModel {
+		return $this->where('creditPrefix', ...$data);
+	}
+
+	public function whereInvoicePrefix(...$data): ConfigurationModel {
+		return $this->where('invoicePrefix', ...$data);
 	}
 
 	public function whereInvoicePaymentCondition(...$data): ConfigurationModel {

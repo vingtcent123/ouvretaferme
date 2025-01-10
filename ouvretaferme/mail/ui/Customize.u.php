@@ -177,7 +177,7 @@ class CustomizeUi {
 				[$eSale] = $more;
 
 				return [
-					'number' => $eSale->getOrderForm(),
+					'number' => $eSale->getOrderForm($eFarm),
 					'customer' => encode($eSale['customer']->getLegalName()),
 					'farm' => encode($eFarm['name']),
 					'valid' => $eSale['orderFormValidUntil'] ? \util\DateUi::numeric($eSale['orderFormValidUntil']) : s("limite de validité inconnue"),
@@ -188,7 +188,7 @@ class CustomizeUi {
 				[$eSale] = $more;
 
 				return [
-					'number' => $eSale->getDeliveryNote(),
+					'number' => $eSale->getDeliveryNote($eFarm),
 					'customer' => encode($eSale['customer']->getLegalName()),
 					'farm' => encode($eFarm['name']),
 					'delivered' => \util\DateUi::numeric($eSale['deliveredAt'], \util\DateUi::DATE),
@@ -211,7 +211,7 @@ class CustomizeUi {
 				}
 
 				return [
-					'number' => $eInvoice->getInvoice(),
+					'number' => encode($eInvoice['name']),
 					'customer' => encode($eInvoice['customer']->getLegalName()),
 					'farm' => encode($eFarm['name']),
 					'amount' => \util\TextUi::money($eInvoice['priceIncludingVat']).' '.($eInvoice['hasVat'] ? ' '.\selling\SaleUi::getTaxes(\selling\Sale::INCLUDING) : ''),

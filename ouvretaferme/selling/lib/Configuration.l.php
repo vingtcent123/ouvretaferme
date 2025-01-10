@@ -27,30 +27,78 @@ class ConfigurationLib extends ConfigurationCrud {
 
 	}
 
-	public static function getNextDocument(\farm\Farm $eFarm, string $property): int {
+	public static function getNextDocumentSales(\farm\Farm $eFarm): int {
+
+		Configuration::model()->beginTransaction();
 
 		for($i = 0; ; $i++) {
 
 			$currentValue = Configuration::model()
 				->whereFarm($eFarm)
-				->getValue($property);
+				->getValue('documentSales');
 
 			$newValue = $currentValue + 1;
 
 			if(
 				Configuration::model()
 					->whereFarm($eFarm)
-					->where($property, $currentValue)
+					->where('documentSales', $currentValue)
 					->update([
-						$property => $newValue
+						'documentSales' => $newValue
 					]) > 0
 			) {
+
+				Configuration::model()->commit();
+
 				return $newValue;
+
 			}
 
 			if($i === 100) {
 				throw new \Exception("Possible infinite loop");
 			}
+
+		}
+
+	}
+
+	public static function getNextDocumentInvoices(\farm\Farm $eFarm): int {
+
+		Configuration::model()->beginTransaction();
+
+		$eConfiguration = Configuration::model()
+			->select('documentInvoices', 'creditPrefix', 'invoicePrefix')
+			->whereFarm($eFarm)
+			->get();
+
+		$newValue = $eConfiguration['documentInvoices'];
+
+		for($i = 0; ; $i++) {
+
+			$newValue++;
+
+			if(Invoice::model()
+				->whereFarm($eFarm)
+				->whereName('IN', [$eConfiguration['creditPrefix'].$newValue, $eConfiguration['invoicePrefix'].$newValue])
+				->exists()) {
+
+				if($i === 100) {
+					throw new \Exception("Possible infinite loop");
+				}
+				
+				continue;
+
+			}
+
+			Configuration::model()
+				->whereFarm($eFarm)
+				->update([
+					'documentInvoices' => $newValue
+				]);
+
+			Configuration::model()->commit();
+
+			return $newValue;
 
 		}
 

@@ -1696,7 +1696,7 @@ class Element extends ArrayObject {
 					$class = $this->getModule($this);
 					$error = explode('.', $name)[1];
 
-					$class::fail($property.'.'.$error, wrapper: $wrapper);
+					$class::fail($property.'.'.$error, [$this], wrapper: $wrapper);
 
 					$success = FALSE;
 
@@ -1878,7 +1878,7 @@ class BuildProperties extends ArrayIterator {
 		$properties = (array)$properties;
 
 		if(array_intersect($properties, $this->built) === []) {
-			throw new BuildPropertyInvalid();
+			throw new BuildPropertyError();
 		}
 
 	}
@@ -1903,7 +1903,7 @@ class BuildProperties extends ArrayIterator {
 		$properties = (array)$properties;
 
 		if(array_intersect($properties, $this->invalid) === []) {
-			throw new BuildPropertyInvalid();
+			throw new BuildPropertyError();
 		}
 
 	}
@@ -1928,7 +1928,7 @@ class BuildProperties extends ArrayIterator {
 		$properties = (array)$properties;
 
 		if(array_intersect($properties, $this->new) === []) {
-			throw new BuildPropertyInvalid();
+			throw new BuildPropertyError();
 		}
 
 	}

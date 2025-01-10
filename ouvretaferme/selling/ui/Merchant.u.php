@@ -55,7 +55,7 @@ class MerchantUi {
 
 						$h .= '<div class="merchant-lines">';
 
-							$h .= '<div class="merchant-label" data-wrapper="number['.$eItem['id'].']">'.s("Vendu").'</div>';
+							$h .= '<div class="merchant-label form-control-label" data-wrapper="number['.$eItem['id'].']">'.s("Vendu").'</div>';
 							$h .= '<div class="merchant-actions" data-property="'.Item::NUMBER.'">';
 								$h .= $actions(Item::NUMBER);
 							$h .= '</div>';
@@ -77,7 +77,7 @@ class MerchantUi {
 
 							if($eSale->isPro()) {
 
-								$h .= '<div class="merchant-label" data-wrapper="packaging['.$eItem['id'].']">'.s("Colisage").'</div>';
+								$h .= '<div class="merchant-label form-control-label" data-wrapper="packaging['.$eItem['id'].']">'.s("Colisage").'</div>';
 								$h .= '<div class="merchant-actions">';
 									$h .= '<div class="merchant-lock merchant-packaging '.($eItem['packaging'] !== NULL ? 'hide' : '').'">';
 										$h .= '<a '.attr('onclick', "Merchant.packagingToggle()").' title="'.s("Définir un colisage").'">'.\Asset::icon('plus-circle').'</a>';
@@ -100,7 +100,7 @@ class MerchantUi {
 
 							}
 
-							$h .= '<div class="merchant-label" data-wrapper="unitPrice['.$eItem['id'].']">'.s("Prix unitaire").'</div>';
+							$h .= '<div class="merchant-label form-control-label" data-wrapper="unitPrice['.$eItem['id'].']">'.s("Prix unitaire").'</div>';
 							$h .= '<div class="merchant-actions" data-property="'.Item::UNIT_PRICE.'">';
 								$h .= $actions(Item::UNIT_PRICE);
 							$h .= '</div>';
@@ -112,7 +112,7 @@ class MerchantUi {
 								$h .= '€ '.\selling\UnitUi::getBy($eItem['unit'], short: TRUE);
 							$h .= '</div>';
 
-							$h .= '<div class="merchant-label" data-wrapper="price['.$eItem['id'].']">'.s("Montant").'</div>';
+							$h .= '<div class="merchant-label form-control-label" data-wrapper="price['.$eItem['id'].']">'.s("Montant").'</div>';
 							$h .= '<div class="merchant-actions" data-property="'.Item::PRICE.'">';
 								$h .= $actions(Item::PRICE);
 							$h .= '</div>';

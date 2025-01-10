@@ -74,7 +74,9 @@ class Panel implements Instruction {
 		}
 
 		$output['layer'] = $this->layer;
-		$output['url'] = LIME_REQUEST;
+
+		// Pas de changement d'URL si on skip l'historique
+		$output['url'] = (SERVER('HTTP_X_HISTORY') === 'skip') ? NULL : LIME_REQUEST;
 
 		$output['attributes'] = $this->attributes + [
 			'data-close' => $this->close

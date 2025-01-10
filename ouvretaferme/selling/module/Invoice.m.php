@@ -50,6 +50,7 @@ class InvoiceModel extends \ModuleModel {
 		$this->properties = array_merge($this->properties, [
 			'id' => ['serial32', 'cast' => 'int'],
 			'document' => ['int32', 'min' => 1, 'max' => NULL, 'cast' => 'int'],
+			'name' => ['text8', 'cast' => 'string'],
 			'customer' => ['element32', 'selling\Customer', 'cast' => 'element'],
 			'sales' => ['json', 'cast' => 'array'],
 			'taxes' => ['enum', [\selling\Invoice::INCLUDING, \selling\Invoice::EXCLUDING], 'cast' => 'enum'],
@@ -74,7 +75,7 @@ class InvoiceModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'document', 'customer', 'sales', 'taxes', 'organic', 'conversion', 'description', 'content', 'farm', 'hasVat', 'vatByRate', 'vat', 'priceExcludingVat', 'priceIncludingVat', 'date', 'paymentStatus', 'paymentCondition', 'header', 'footer', 'generation', 'emailedAt', 'createdAt'
+			'id', 'document', 'name', 'customer', 'sales', 'taxes', 'organic', 'conversion', 'description', 'content', 'farm', 'hasVat', 'vatByRate', 'vat', 'priceExcludingVat', 'priceIncludingVat', 'date', 'paymentStatus', 'paymentCondition', 'header', 'footer', 'generation', 'emailedAt', 'createdAt'
 		]);
 
 		$this->propertiesToModule += [
@@ -88,7 +89,7 @@ class InvoiceModel extends \ModuleModel {
 		]);
 
 		$this->uniqueConstraints = array_merge($this->uniqueConstraints, [
-			['farm', 'document']
+			['farm', 'name']
 		]);
 
 	}
@@ -167,6 +168,10 @@ class InvoiceModel extends \ModuleModel {
 
 	public function whereDocument(...$data): InvoiceModel {
 		return $this->where('document', ...$data);
+	}
+
+	public function whereName(...$data): InvoiceModel {
+		return $this->where('name', ...$data);
 	}
 
 	public function whereCustomer(...$data): InvoiceModel {

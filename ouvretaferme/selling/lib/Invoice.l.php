@@ -120,7 +120,7 @@ class InvoiceLib extends InvoiceCrud {
 
 		Invoice::model()->beginTransaction();
 
-			$e['document'] = ConfigurationLib::getNextDocument($e['farm'], 'documentInvoices');
+			$e['document'] = ConfigurationLib::getNextDocumentInvoices($e['farm'], 'documentInvoices');
 			$e['taxes'] = $e['cSale']->first()['taxes'];
 			$e['hasVat'] = $e['cSale']->first()['hasVat'];
 			$e['organic'] = FALSE;
@@ -186,6 +186,8 @@ class InvoiceLib extends InvoiceCrud {
 				'priceExcludingVat' => $priceExcludingVat,
 				'priceIncludingVat' => $priceIncludingVat,
 			]);
+
+			$e['name'] = $e->getInvoice($e['farm']);
 
 			parent::create($e);
 

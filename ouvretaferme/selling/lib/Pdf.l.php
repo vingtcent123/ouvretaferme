@@ -148,7 +148,7 @@ class PdfLib extends PdfCrud {
 			->addTo($customerEmail)
 			->setReplyTo($eFarm->getSelling('legalEmail'))
 			->setContent(...$content)
-			->addAttachment($pdf, $eSale->getDeliveryNote().'.pdf', 'application/pdf')
+			->addAttachment($pdf, $eSale->getDeliveryNote($eFarm).'.pdf', 'application/pdf')
 			->send('document');
 
 	}
@@ -217,7 +217,7 @@ class PdfLib extends PdfCrud {
 			->addTo($eCustomer['email'])
 			->setReplyTo($eFarm->getSelling('legalEmail'))
 			->setContent(...$content)
-			->addAttachment($pdf, $eInvoice->getInvoice().'.pdf', 'application/pdf')
+			->addAttachment($pdf, $eInvoice['name'].'.pdf', 'application/pdf')
 			->send('document');
 
 	}

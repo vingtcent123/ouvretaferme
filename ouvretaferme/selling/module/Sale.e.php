@@ -11,7 +11,7 @@ class Sale extends SaleElement {
 			'shopDate' => ['status', 'deliveryDate', 'orderStartAt', 'orderEndAt'],
 			'shopPoint' => ['type', 'name'],
 			'farm' => ['name', 'url', 'vignette', 'banner', 'featureDocument', 'hasSales'],
-			'invoice' => ['emailedAt', 'createdAt', 'paymentStatus', 'priceExcludingVat', 'generation'],
+			'invoice' => ['name', 'emailedAt', 'createdAt', 'paymentStatus', 'priceExcludingVat', 'generation'],
 			'marketParent' => [
 				'customer' => ['type', 'name']
 			],
@@ -437,14 +437,14 @@ class Sale extends SaleElement {
 		return $this['document'];
 	}
 
-	public function getOrderForm(): string {
+	public function getOrderForm(\farm\Farm $eFarm): string {
 		$this->expects(['document']);
-		return 'DE'.$this['document'];
+		return $eFarm->getSelling('orderFormPrefix').$this['document'];
 	}
 
-	public function getDeliveryNote(): string {
+	public function getDeliveryNote(\farm\Farm $eFarm): string {
 		$this->expects(['document']);
-		return 'BL'.$this['document'];
+		return $eFarm->getSelling('deliveryNotePrefix').$this['document'];
 	}
 
 	public function acceptDelete(): bool {

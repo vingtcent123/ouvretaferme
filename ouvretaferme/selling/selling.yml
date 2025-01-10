@@ -10,8 +10,8 @@ Category:
 Configuration:
   id: serial32
   farm: farm\Farm
-  documentSales: int32(1, null) = 0
-  documentInvoices: int32(1, null) = 0
+  documentSales: int32(0, null) = 0
+  documentInvoices: int32(0, null) = 0
   hasVat: bool = TRUE
   defaultVat: int8(0, null)
   defaultVatShipping: ?int8(0, null)
@@ -26,10 +26,14 @@ Configuration:
   organicCertifier: ?text8
   paymentMode: ?editor16(1, 400)
   documentCopy: bool = FALSE
+  orderFormPrefix: text8(1, 15) = PHP(\selling\ConfigurationUi::getDefaultOrderFormPrefix())
   orderFormDelivery: bool = TRUE
   orderFormPaymentCondition: ?editor16(1, 400)
   orderFormHeader: ?editor16(1, 400)
   orderFormFooter: ?editor16(1, 400)
+  deliveryNotePrefix: text8(1, 15) = PHP(\selling\ConfigurationUi::getDefaultDeliveryNotePrefix())
+  creditPrefix: text8(1, 15) = PHP(\selling\ConfigurationUi::getDefaultCreditPrefix())
+  invoicePrefix: text8(1, 15) = PHP(\selling\ConfigurationUi::getDefaultInvoicePrefix())
   invoicePaymentCondition: ?editor16(1, 400)
   invoiceHeader: ?editor16(1, 400)
   invoiceFooter: ?editor16(1, 400)
@@ -111,6 +115,7 @@ History:
 Invoice:
   id: serial32
   document: int32(1, null)
+  name: text8
   customer: selling\Customer
   sales: json
   taxes: enum(INCLUDING, EXCLUDING)
@@ -136,7 +141,7 @@ Invoice:
     ["farm", "customer"],
   ]
   UNIQUE: [
-    ["farm", "document"],
+    ["farm", "name"],
   ]
 
 Item:

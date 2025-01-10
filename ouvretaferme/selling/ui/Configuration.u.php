@@ -10,6 +10,22 @@ class ConfigurationUi {
 
 	}
 
+	public static function getDefaultInvoicePrefix(): string {
+		return s("FA");
+	}
+
+	public static function getDefaultDeliveryNotePrefix(): string {
+		return s("BL");
+	}
+
+	public static function getDefaultOrderFormPrefix(): string {
+		return s("DE");
+	}
+
+	public static function getDefaultCreditPrefix(): string {
+		return s("AV");
+	}
+
 	public function update(\farm\Farm $eFarm, \Collection $cCustomize, Sale $eSaleExample): string {
 
 		$h = '<div class="tabs-h" id="selling-configure" onrender="'.encode('Lime.Tab.restore(this, "settings")').'">';
@@ -144,7 +160,7 @@ class ConfigurationUi {
 
 			$h .= $form->hidden('id', $eConfiguration['id']);
 
-			$h .= $form->dynamicGroups($eConfiguration, ['orderFormDelivery', 'orderFormPaymentCondition', 'orderFormHeader', 'orderFormFooter']);
+			$h .= $form->dynamicGroups($eConfiguration, ['orderFormPrefix', 'orderFormDelivery', 'orderFormPaymentCondition', 'orderFormHeader', 'orderFormFooter']);
 
 			$h .= $form->group(
 				content: $form->submit(s("Enregistrer"))
@@ -188,7 +204,8 @@ class ConfigurationUi {
 
 			$h .= $form->hidden('id', $eConfiguration['id']);
 
-			$h .= $form->dynamicGroups($eConfiguration, ['invoicePaymentCondition', 'invoiceHeader', 'invoiceFooter']);
+			$eConfiguration['documentInvoices']++;
+			$h .= $form->dynamicGroups($eConfiguration, ['invoicePrefix', 'creditPrefix', 'documentInvoices', 'invoicePaymentCondition', 'invoiceHeader', 'invoiceFooter']);
 
 			$h .= $form->group(
 				content: $form->submit(s("Enregistrer"))
@@ -225,6 +242,22 @@ class ConfigurationUi {
 			return $h;
 
 		}
+
+		$form = new \util\FormUi();
+
+		$h .= $form->openAjax('/selling/configuration:doUpdateDeliveryNote', ['id' => 'farm-update', 'autocomplete' => 'off']);
+
+			$h .= $form->hidden('id', $eConfiguration['id']);
+
+			$h .= $form->dynamicGroups($eConfiguration, ['deliveryNotePrefix']);
+
+			$h .= $form->group(
+				content: $form->submit(s("Enregistrer"))
+			);
+
+		$h .= $form->close();
+
+		$h .= '<br/>';
 
 		$h .= '<h2>'.s("Exemple de bon de livraison").'</h2>';
 
@@ -294,6 +327,7 @@ class ConfigurationUi {
 		$d = Configuration::model()->describer($property, [
 			'legalName' => s("Raison sociale de la ferme"),
 			'invoiceRegistration' => s("Numéro d'immatriculation SIRET"),
+			'documentInvoices' => s("Prochain numéro de facture"),
 			'hasVat' => s("Assujettissement à la TVA"),
 			'invoiceVat' => s("Numéro de TVA intracommunautaire"),
 			'legalEmail' => s("Adresse e-mail utilisée pour la facturation de vos clients"),
@@ -301,10 +335,14 @@ class ConfigurationUi {
 			'defaultVatShipping' => s("Taux de TVA par défaut sur les frais de livraison"),
 			'organicCertifier' => s("Organisme de certification pour l'Agriculture Biologique"),
 			'paymentMode' => s("Moyens de paiement affichés sur les devis et les factures"),
+			'deliveryNotePrefix' => s("Préfixe pour la numérotation des bons de livraison"),
+			'orderFormPrefix' => s("Préfixe pour la numérotation des devis"),
 			'orderFormDelivery' => s("Afficher la date de livraison de la commande sur les devis"),
 			'orderFormPaymentCondition' => s("Conditions de paiement affichées sur les devis"),
 			'orderFormHeader' => s("Ajouter un texte personnalisé affiché en haut des devis"),
 			'orderFormFooter' => s("Ajouter un texte personnalisé affiché en bas des devis"),
+			'creditPrefix' => s("Préfixe pour la numérotation des avoirs"),
+			'invoicePrefix' => s("Préfixe pour la numérotation des factures"),
 			'invoicePaymentCondition' => s("Conditions de paiement affichées sur les factures"),
 			'invoiceHeader' => s("Ajouter un texte personnalisé affiché en haut des factures"),
 			'invoiceFooter' => s("Ajouter un texte personnalisé affiché en bas des factures"),
@@ -330,6 +368,10 @@ class ConfigurationUi {
 			case 'hasVat' :
 				$d->field = 'yesNo';
 				$d->after = \util\FormUi::info(s("Le changement d'assujettissement n'est pris en compte que pour les ventes créées ultérieurement."));
+				break;
+
+			case 'documentInvoices' :
+				$d->after = \util\FormUi::info(s("Si ce numéro est déjà utilisé, alors le système affectera le premier numéro suivant non utilisé."));
 				break;
 
 			case 'defaultVat' :
@@ -362,6 +404,14 @@ class ConfigurationUi {
 				$d->after = \util\FormUi::info(s("Indiquez ici les moyens de paiement autorisés pour régler vos devis et factures."));
 				break;
 
+			case 'deliveryNotePrefix' :
+				$d->placeholder = ConfigurationUi::getDefaultOrderFormPrefix();
+				break;
+
+			case 'orderFormPrefix' :
+				$d->placeholder = ConfigurationUi::getDefaultOrderFormPrefix();
+				break;
+
 			case 'orderFormDelivery' :
 			case 'documentCopy' :
 				$d->field = 'yesNo';
@@ -375,6 +425,14 @@ class ConfigurationUi {
 			case 'orderFormPaymentCondition' :
 				$d->placeholder = s("Exemple : Acompte de 20 % à la signature du devis, et solde à la livraison.");
 				$d->after = \util\FormUi::info(s("Indiquez ici les conditions de paiement données à vos clients après acceptation d'un devis."));
+				break;
+
+			case 'invoicePrefix' :
+				$d->placeholder = ConfigurationUi::getDefaultInvoicePrefix();
+				break;
+
+			case 'creditPrefix' :
+				$d->placeholder = ConfigurationUi::getDefaultCreditPrefix();
 				break;
 
 			case 'invoicePaymentCondition' :

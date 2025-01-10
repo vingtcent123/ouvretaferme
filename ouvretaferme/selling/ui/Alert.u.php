@@ -7,6 +7,11 @@ class AlertUi {
 
 		return match($fqn) {
 
+			'Configuration::creditPrefix.fqn' => s("Ne doit pas finir par un chiffre, et contenir uniquement des caractères alphanumériques ou un tiret"),
+			'Configuration::invoicePrefix.fqn' => s("Ne doit pas finir par un chiffre, et contenir uniquement des caractères alphanumériques ou un tiret"),
+			'Configuration::documentInvoices.consistency' => fn($e) => s("Par souci de cohérence avec les factures existantes, le numéro ne peut pas être inférieur à {value}", $e['invoicePrefixMin']),
+			'Configuration::orderFormPrefix.fqn' => s("Ne doit pas finir par un chiffre, et contenir uniquement des caractères alphanumériques ou un tiret"),
+			'Configuration::deliveryNotePrefix.fqn' => s("Ne doit pas finir par un chiffre, et contenir uniquement des caractères alphanumériques ou un tiret"),
 			'Configuration::notComplete' => '<p>'.s("Nous avons besoin de quelques informations administratives de base à propos de votre ferme (adresse e-mail de facturation, objet social...) pour générer des documents !").'</p><a href="/selling/configuration:update?id='.$options['farm']['id'].'" class="btn btn-transparent">'.s("Compléter mes informations").'</a>',
 
 			'Customer::name.empty' => s("Un nom de client valide est obligatoire."),

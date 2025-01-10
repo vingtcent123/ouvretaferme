@@ -219,6 +219,8 @@ class ItemLib extends ItemCrud {
 				'vatRate' => $eItem['vatRate'],
 			]);
 
+			$fw = new \FailWatch();
+
 			$eItemNew->buildIndex(['locked', 'number', 'unitPrice', 'price', 'packaging'], $post, $key);
 
 			$cItemNew[] = $eItemNew;

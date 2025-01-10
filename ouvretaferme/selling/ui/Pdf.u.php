@@ -171,9 +171,9 @@ class PdfUi {
 		$h .= '<div class="pdf-document-wrapper">';
 
 			$number = match($type) {
-				Pdf::DELIVERY_NOTE => $eSale->getDeliveryNote(),
-				Pdf::ORDER_FORM => $eSale->getOrderForm(),
-				Pdf::INVOICE => $eSale['invoice']->getInvoice()
+				Pdf::DELIVERY_NOTE => $eSale->getDeliveryNote($eFarm),
+				Pdf::ORDER_FORM => $eSale->getOrderForm($eFarm),
+				Pdf::INVOICE => $eSale['invoice']['name']
 			};
 
 			switch($type) {
@@ -307,12 +307,10 @@ class PdfUi {
 
 		$h .= '<div class="pdf-document-wrapper">';
 
-			$number = $eInvoice->getInvoice();
-
 			$dateDocument = '<div class="pdf-document-detail-label">'.s("Date").'</div>';
 			$dateDocument .= '<div>'.\util\DateUi::numeric($eInvoice['date']).'</div>';
 
-			$h .= $this->getDocumentTop(Pdf::INVOICE, $eInvoice, $eFarm, $number, $dateDocument, NULL, $eInvoice['header']);
+			$h .= $this->getDocumentTop(Pdf::INVOICE, $eInvoice, $eFarm, $eInvoice['name'], $dateDocument, NULL, $eInvoice['header']);
 
 			$h .= '<div class="pdf-document-body">';
 
@@ -354,7 +352,7 @@ class PdfUi {
 										$h .= s("Livraison du {value}", \util\DateUi::numeric($eSale['deliveredAt']));
 										if($eSale['cPdf']->offsetExists(Pdf::DELIVERY_NOTE)) {
 											$h .= '<div class="pdf-document-product-details">';
-												$h .= s("Bon de livraison {value}", $eSale->getDeliveryNote());
+												$h .= s("Bon de livraison {value}", $eSale->getDeliveryNote($eFarm));
 											$h .= '</div>';
 										}
 									$h .= '</td>';
@@ -849,7 +847,7 @@ class PdfUi {
 
 		$eCustomer = $eInvoice['customer'];
 
-		$title = s("Facture {value}", $eInvoice->getInvoice().' - '.($eCustomer->getLegalName()));
+		$title = s("Facture {value}", $eInvoice['name'].' - '.($eCustomer->getLegalName()));
 		$content = \mail\CustomizeUi::convertTemplate($template, $variables);
 
 		return \mail\DesignUi::format($eFarm, $title, $content);

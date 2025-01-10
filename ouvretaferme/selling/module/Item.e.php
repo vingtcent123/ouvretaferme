@@ -81,13 +81,11 @@ class Item extends ItemElement {
 
 			'number.empty' => function(?float $number, \BuildProperties $p): bool {
 
-				$p->expectsBuilt('locked');
-
 				$this->expects([
 					'sale' => ['market'],
 				]);
 
-				if($this['locked'] === Item::NUMBER or $this['sale']['market']) {
+				if(($p->isBuilt('locked') and $this['locked'] === Item::NUMBER) or $this['sale']['market']) {
 					return TRUE;
 				} else {
 					return ($number !== NULL);
@@ -97,12 +95,8 @@ class Item extends ItemElement {
 
 			'number.division' => function(?float $number, \BuildProperties $p): bool {
 
-				if($p->isBuilt('locked') === FALSE) {
-					return TRUE;
-				}
-
 				return (
-					$this['locked'] !== Item::UNIT_PRICE or
+					($p->isBuilt('locked') and $this['locked'] !== Item::UNIT_PRICE) or
 					$number !== 0.0
 				);
 
@@ -125,12 +119,8 @@ class Item extends ItemElement {
 
 			'unitPrice.division' => function(?float $unitPrice, \BuildProperties $p): bool {
 
-				if($p->isBuilt('locked') === FALSE) {
-					return TRUE;
-				}
-
 				return (
-					$this['locked'] !== Item::NUMBER or
+					($p->isBuilt('locked') and $this['locked'] !== Item::NUMBER) or
 					$unitPrice !== 0.0
 				);
 
@@ -138,13 +128,9 @@ class Item extends ItemElement {
 
 			'price.locked' => function(?float $price, \BuildProperties $p): bool {
 
-				if($p->isBuilt('locked') === FALSE) {
-					return TRUE;
-				}
-
 				return (
 					$price !== NULL or
-					$this['locked'] === Item::PRICE
+					($p->isBuilt('locked') and $this['locked'] === Item::PRICE)
 				);
 
 			},

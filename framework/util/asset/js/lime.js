@@ -1047,7 +1047,10 @@ Lime.Panel = class {
 			document.querySelector('body').insertAdjacentHTML('beforeend', h);
 
 			const node = document.getElementById(id);
-			node.dataset.url = options.url;
+
+			if(options.url) {
+				node.dataset.url = options.url;
+			}
 
 			Object.entries(attributes).forEach(([name, value]) => node.setAttribute(name, value));
 
@@ -2137,7 +2140,7 @@ Lime.History = class {
 
 	}
 
-	static replaceState(url) {d(url);
+	static replaceState(url) {
 		history.replaceState(history.state, '', url);
 	}
 
@@ -2159,12 +2162,12 @@ Lime.History = class {
 			id: element.id,
 			element: element,
 			onPop: onPop,
-			isPushHistory: (pushUrl !== null),
+			isPushHistory: (pushUrl !== undefined),
 			scrollY: window.scrollY,
 			backReload: backReload
 		});
 
-		if(pushUrl !== null) {
+		if(pushUrl !== undefined) {
 			this.push(pushUrl);
 		}
 
@@ -2178,7 +2181,7 @@ Lime.History = class {
 
 				if(this.layers[i].isPushHistory) {
 
-					this.ignoreNextPopstate++; // Simulate an history change
+					this.ignoreNextPopstate++; // Simulate a history change
 					return this.go(-1).then(() => this.removeLayer(i));
 
 				} else {

@@ -66,9 +66,16 @@ class Invoice extends InvoiceElement {
 		return ($this['priceExcludingVat'] < 0.0);
 	}
 
-	public function getInvoice(): string {
+	public function getInvoice(\farm\Farm $eFarm): string {
+
 		$this->expects(['document']);
-		return $this->isCreditNote() ? 'AV'.$this['document'] : 'FA'.$this['document'];
+
+		if($this->isCreditNote()) {
+			return $eFarm->getSelling('creditPrefix').$this['document'];
+		} else {
+			return $eFarm->getSelling('invoicePrefix').$this['document'];
+		}
+
 	}
 
 	public function getTaxes(): string {

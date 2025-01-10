@@ -480,19 +480,20 @@ Ajax.Navigation = class extends Ajax.Query {
 
 				if(this.isPushHistory) {
 
-					// Cas particulier : on recharge un panel précédemment chargé
-					// Dans ce cas, pas de push sur l'historique
-					if(
-						json.__panel !== undefined &&
-						qs('#'+ json.__panel +'.open') !== null
-					) {
+					if(json.__panel !== undefined) {
 
-						Lime.History.replaceState(url);
+						// Cas particulier : on recharge un panel précédemment chargé
+						// Dans ce cas, pas de push sur l'historique
+						if(qs('#'+ json.__panel +'.open') !== null) {
 
-						// Traité du coup comme une simple requête ajax
-						this.requestedWith = 'query';
+							Lime.History.replaceState(url);
 
-					} else if(json.__panel === undefined) {
+							// Traité du coup comme une simple requête ajax
+							this.requestedWith = 'query';
+
+						}
+
+					} else {
 
 						Lime.History.push(url);
 
@@ -536,6 +537,7 @@ Ajax.Navigation = class extends Ajax.Query {
 
 	skipHistory() {
 		this.isPushHistory = false;
+		this.headers.set('x-history', 'skip');
 		return this;
 	};
 

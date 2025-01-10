@@ -15,7 +15,8 @@
 	});
 
 (new \selling\ConfigurationPage())
-	->doUpdateProperties('doUpdateOrderForm', ['orderFormDelivery', 'orderFormPaymentCondition', 'orderFormHeader', 'orderFormFooter'], fn() => throw new ReloadAction('selling', 'Configuration::updated'))
-	->doUpdateProperties('doUpdateInvoice', ['invoicePaymentCondition', 'invoiceHeader', 'invoiceFooter'], fn() => throw new ReloadAction('selling', 'Configuration::updated'))
+	->doUpdateProperties('doUpdateDeliveryNote', ['deliveryNotePrefix'], fn() => throw new ReloadAction('selling', 'Configuration::updated'))
+	->doUpdateProperties('doUpdateOrderForm', ['orderFormPrefix', 'orderFormDelivery', 'orderFormPaymentCondition', 'orderFormHeader', 'orderFormFooter'], fn() => throw new ReloadAction('selling', 'Configuration::updated'))
+	->doUpdateProperties('doUpdateInvoice', ['invoicePrefix', 'documentInvoices', 'creditPrefix', 'invoicePaymentCondition', 'invoiceHeader', 'invoiceFooter'], fn() => throw new ReloadAction('selling', 'Configuration::updated'))
 	->doUpdate(fn() => throw new ReloadAction('selling', 'Configuration::updated'));
 ?>

@@ -212,38 +212,26 @@ class Merchant {
 
 		};
 
-		if(unitPrice === 0) {
+		switch(inputLocked.value) {
 
-			this.setEntryValue(this.current.dataset.item, 'price', 0);
+			case 'unit-price' :
+				checkUnitPrice();
+				checkPrice();
+				checkNumber();
+				break;
 
-			this.unlockProperty(inputUnitPrice);
-			this.unlockProperty(inputNumber);
-			this.lockProperty(inputPrice);
+			case 'price' :
+				checkPrice();
+				checkUnitPrice();
+				checkNumber();
+				break;
 
-		} else {
-
-			switch(inputLocked.value) {
-
-				case 'unit-price' :
-					checkUnitPrice();
-					checkPrice();
-					checkNumber();
-					break;
-
-				case 'price' :
-					checkPrice();
-					checkUnitPrice();
-					checkNumber();
-					break;
-
-				default :
-				case 'number' :
-					checkNumber();
-					checkPrice();
-					checkUnitPrice();
-					break;
-
-			}
+			default :
+			case 'number' :
+				checkNumber();
+				checkPrice();
+				checkUnitPrice();
+				break;
 
 		}
 
