@@ -74,7 +74,7 @@ class Configuration extends ConfigurationElement {
 			},
 
 			'creditPrefix.fqn' => function(string $prefix): bool {
-				return preg_match('/^[a-z0-9\-\_]*$/si', $prefix) > 0;
+				return preg_match('/^[a-z0-9\-\_]*[a-z\-\_]$/si', $prefix) > 0;
 			},
 
 			'invoicePrefix.prepare' => function(string &$prefix): bool {
@@ -83,7 +83,7 @@ class Configuration extends ConfigurationElement {
 			},
 
 			'invoicePrefix.fqn' => function(string $prefix): bool {
-				return preg_match('/^[a-z0-9\-\_]*$/si', $prefix) > 0;
+				return preg_match('/^[a-z0-9\-\_]*[a-z\-\_]$/si', $prefix) > 0;
 			},
 
 			'deliveryNotePrefix.prepare' => function(string &$prefix): bool {
@@ -92,7 +92,7 @@ class Configuration extends ConfigurationElement {
 			},
 
 			'deliveryNotePrefix.fqn' => function(string $prefix): bool {
-				return preg_match('/^[a-z0-9\-\_]*$/si', $prefix) > 0;
+				return preg_match('/^[a-z0-9\-\_]*[a-z\-\_]$/si', $prefix) > 0;
 			},
 
 			'orderFormPrefix.prepare' => function(string &$prefix): bool {
@@ -101,7 +101,7 @@ class Configuration extends ConfigurationElement {
 			},
 
 			'orderFormPrefix.fqn' => function(string $prefix): bool {
-				return preg_match('/^[a-z0-9\-\_]*$/si', $prefix) > 0;
+				return preg_match('/^[a-z0-9\-\_]*[a-z\-\_]$/si', $prefix) > 0;
 			},
 
 			'defaultVat.check' => function(int $vat): bool {
