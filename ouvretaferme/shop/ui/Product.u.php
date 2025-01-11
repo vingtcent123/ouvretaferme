@@ -585,7 +585,7 @@ class ProductUi {
 
 					$hasLimits = (
 						$eProduct['limitCustomers'] or
-						$eProduct['limitNumber'] or
+						$eProduct['limitMax'] or
 						$outCatalog
 					);
 
@@ -708,7 +708,7 @@ class ProductUi {
 
 					$hasLimits = (
 						$eProduct['limitCustomers'] or
-						$eProduct['limitNumber'] or
+						$eProduct['limitMax'] or
 						$eProduct['limitStartAt'] or
 						$eProduct['limitEndAt']
 					);
@@ -783,12 +783,12 @@ class ProductUi {
 						$h .= '<span>'.s("Hors catalogue").'</span>';
 					}
 
-					if($eProduct['limitNumber']) {
+					if($eProduct['limitMax']) {
 
 						if($eProduct['packaging'] === NULL) {
-							$value = \selling\UnitUi::getValue($eProduct['limitNumber'], $eProduct['product']['unit']);
+							$value = \selling\UnitUi::getValue($eProduct['limitMax'], $eProduct['product']['unit']);
 						} else {
-							$value = s("{value} colis", $eProduct['limitNumber']);
+							$value = s("{value} colis", $eProduct['limitMax']);
 						}
 
 						$h .= '<span>'.s("Limite par commande {value}", '<u>'.$value.'</u>').'</span>';
@@ -934,7 +934,7 @@ class ProductUi {
 					$h .= $this->getLimitAtField($form, $e);
 				}
 
-				$h .= $form->dynamicGroups($e, ['limitNumber', 'limitCustomers']);
+				$h .= $form->dynamicGroups($e, ['limitMax', 'limitCustomers']);
 
 			$h .= '</div>';
 
@@ -978,7 +978,7 @@ class ProductUi {
 			'date' => s("Vente"),
 			'limitStartAt' => s("Proposer pour les commandes livrées à partir de"),
 			'limitEndAt' => s("Proposer pour les commandes livrées jusqu'au"),
-			'limitNumber' => s("Limiter les quantités disponibles par commande"),
+			'limitMax' => s("Limiter les quantités disponibles par commande"),
 			'limitCustomers' => s("Limiter les commandes de ce produit à certains clients"),
 		]);
 
@@ -992,7 +992,7 @@ class ProductUi {
 				$d->prepend = s("Jusqu'au");
 				break;
 
-			case 'limitNumber' :
+			case 'limitMax' :
 				$d->append = fn(\util\FormUi $form, Product $e) => $form->addon(($e['packaging'] === NULL) ?
 					\selling\UnitUi::getSingular($e['product']['unit'], short: TRUE) :
 					s("colis"));

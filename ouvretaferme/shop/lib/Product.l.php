@@ -7,7 +7,7 @@ class ProductLib extends ProductCrud {
 
 		return function(Product $eProduct) {
 
-			$properties = ['price', 'available', 'limitCustomers', 'limitNumber'];
+			$properties = ['price', 'available', 'limitCustomers', 'limitMax'];
 
 			if($eProduct['catalog']->notEmpty()) {
 				$properties[] = 'limitStartAt';
@@ -133,7 +133,7 @@ class ProductLib extends ProductCrud {
 				'sold' => round($eItem['sold'], 2),
 				'catalog' => new Catalog(),
 				'date' => new Date(),
-				'limitNumber' => NULL,
+				'limitMax' => NULL,
 				'limitCustomers' => [],
 				'limitStartAt' => NULL,
 				'limitEndAt' => NULL,
@@ -386,15 +386,15 @@ class ProductLib extends ProductCrud {
 
 			$number += $eProduct['available'];
 
-			return ($eProduct['limitNumber'] === NULL) ?
+			return ($eProduct['limitMax'] === NULL) ?
 				$number :
-				min($eProduct['limitNumber'], $number);
+				min($eProduct['limitMax'], $number);
 
 		}  else {
 
-			return ($eProduct['limitNumber'] === NULL) ?
+			return ($eProduct['limitMax'] === NULL) ?
 				NULL :
-				$eProduct['limitNumber'];
+				$eProduct['limitMax'];
 
 		}
 
