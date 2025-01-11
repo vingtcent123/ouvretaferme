@@ -1134,6 +1134,8 @@ Lime.Panel = class {
 
 		panel.dispatchEvent(new CustomEvent('panelBeforeShow'));
 
+		Lime.Dropdown.purge('around');
+
 		if(document.body.classList.contains('panel-open') === false) {
 			document.body.classList.add('panel-open');
 		}
@@ -1589,8 +1591,15 @@ Lime.Dropdown = class {
 
 	};
 
-	static purge() {
-		qsa('[data-dropdown-display]', button => this.close(button));
+	static purge(type = null) {
+
+		qsa(
+			type === null ?
+				'[data-dropdown-display]' :
+				'[data-dropdown-display="'+ type +'"]',
+			button => this.close(button)
+		);
+
 	};
 
 	static close(button) {
@@ -1617,14 +1626,14 @@ Lime.Dropdown = class {
 
 		if(document.body.contains(button) === false) {
 
-			qs('[data-dropdown-id="'+ button.id +'-list"]', list => {
+			qs('[data-dropdown-id="'+ button.dataset.dropdownId +'-list"]', list => {
 
 				list.remove();
 				document.body.classList.remove('dropdown-fullscreen-open');
 
 			})
 
-			qs('[data-dropdown-id="'+ button.id +'-backdrop"]', backdrop => backdrop.remove())
+			qs('[data-dropdown-id="'+ button.dataset.dropdownId +'-backdrop"]', backdrop => backdrop.remove())
 
 		} else {
 
