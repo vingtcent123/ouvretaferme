@@ -46,8 +46,6 @@ new AdaptativeView('getVarietiesField', function($data, AjaxTemplate $t) {
 
 new AdaptativeView('createFromSeries', function($data, PanelTemplate $t) {
 
-	$t->js()->replaceHistory(LIME_URL);
-
 	if($data->eSeries->notEmpty()) {
 		return (new \series\TaskUi())->createFromOneSeries($data->e, $data->eSeries);
 	} else {
@@ -57,7 +55,6 @@ new AdaptativeView('createFromSeries', function($data, PanelTemplate $t) {
 });
 
 new AdaptativeView('createFromScratch', function($data, PanelTemplate $t) {
-	$t->js()->replaceHistory(LIME_URL);
 	return (new \series\TaskUi())->createFromScratch($data->e, $data->cAction, $data->cCategory);
 });
 
