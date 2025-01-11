@@ -301,6 +301,8 @@
 	})
 	->get('getExport', function($data) {
 
+		$data->c->validate('canRemote');
+
 		\selling\SaleLib::fillItems($data->c);
 
 		$data->cItem = \selling\ItemLib::getSummaryBySales($data->c);

@@ -1070,7 +1070,7 @@ class PdfUi {
 			$entry = '<div class="pdf-sales-label-item">';
 
 				$entry .= '<div class="pdf-sales-label-customer">';
-					$entry .= '<span>'.encode($eCustomer['name']).'</span>';
+					$entry .= '<span>'.encode($eCustomer->getName()).'</span>';
 
 					if(count($itemsChunck) > 1) {
 						$entry .= '<span class="pdf-sales-label-page">'.($position + 1).' / '.$pages.'</span>';
