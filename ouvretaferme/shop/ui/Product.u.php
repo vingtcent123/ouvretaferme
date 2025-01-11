@@ -196,18 +196,27 @@ class ProductUi {
 								$h .= '</div>';
 							}
 
-							if(
-								$canOrder and
-								$eProduct['reallyAvailable'] !== NULL
-							) {
+							if($canOrder) {
 
-								$h.= '<div class="shop-product-buy-info">';
-								if($eProduct['reallyAvailable'] > 0) {
-									$h .= s("Disponible : {value}", $eProduct['reallyAvailable']);
-								} else {
-									$h .= s("Rupture de stock");
+								if($eProduct['reallyAvailable'] !== NULL) {
+
+									$h.= '<div class="shop-product-buy-info">';
+									if($eProduct['reallyAvailable'] > 0) {
+										$h .= s("Disponible : {value}", $eProduct['reallyAvailable']);
+									} else {
+										$h .= s("Rupture de stock");
+									}
+									$h .= '</div>';
+
 								}
-								$h .= '</div>';
+
+								if($eProduct['limitMin'] !== NULL) {
+
+									$h.= '<div class="shop-product-buy-info">';
+										$h .= s("Minimum<br/>de commande : {value}", $eProduct['limitMin']);
+									$h .= '</div>';
+
+								}
 
 							}
 
@@ -449,8 +458,17 @@ class ProductUi {
 			return '';
 		}
 
-		$attributesDecrease = 'BasketManage.update('.$eDate['id'].', '.$eProductSelling['id'].', -'.self::getStep($eDate['type'], $eProductSelling).', '.($available !== NULL ? $available : -1).')';
-		$attributesIncrease = 'BasketManage.update('.$eDate['id'].', '.$eProductSelling['id'].', '.self::getStep($eDate['type'], $eProductSelling).', '.($available !== NULL ? $available : -1).')';
+		$step = self::getStep($eDate['type'], $eProductSelling);
+		$min = $eProduct['limitMin'] ?? 0;
+
+		$attributesDecrease = 'BasketManage.update('.$eDate['id'].', '.$eProductSelling['id'].', -'.$step.', '.$min.', '.($available !== NULL ? $available : -1).')';
+		$attributesIncrease = 'BasketManage.update('.$eDate['id'].', '.$eProductSelling['id'].', '.$step.', '.$min.', '.($available !== NULL ? $available : -1).')';
+
+		if($available !== NULL) {
+			$inconsistency = ($min > $available);
+		} else {
+			$inconsistency = FALSE;
+		}
 
 		if($eProduct['packaging'] === NULL) {
 			$price = $eProduct['price'];
@@ -458,7 +476,7 @@ class ProductUi {
 			$price = $eProduct['price'] * $eProduct['packaging'];
 		}
 
-		$h = '<div class="shop-product-number">';
+		$h = '<div class="shop-product-number" data-inconsistency="'.($inconsistency ? 1 : 0).'">';
 			$h .= '<a class="btn btn-outline-primary btn-sm shop-product-number-decrease" onclick="'.$attributesDecrease.'">-</a>';
 			$h .= '<span class="shop-product-number-value" data-price="'.$price.'" data-available="'.$available.'" data-product="'.$eProductSelling['id'].'" data-field="number">';
 				$h .= '<span>'.$number.'</span> ';
@@ -783,6 +801,17 @@ class ProductUi {
 						$h .= '<span>'.s("Hors catalogue").'</span>';
 					}
 
+					if($eProduct['limitMin']) {
+
+						if($eProduct['packaging'] === NULL) {
+							$value = \selling\UnitUi::getValue($eProduct['limitMin'], $eProduct['product']['unit']);
+						} else {
+							$value = s("{value} colis", $eProduct['limitMin']);
+						}
+
+						$h .= '<span>'.s("Minimum demandé par commande {value}", '<u>'.$value.'</u>').'</span>';
+					}
+
 					if($eProduct['limitMax']) {
 
 						if($eProduct['packaging'] === NULL) {
@@ -791,7 +820,7 @@ class ProductUi {
 							$value = s("{value} colis", $eProduct['limitMax']);
 						}
 
-						$h .= '<span>'.s("Limite par commande {value}", '<u>'.$value.'</u>').'</span>';
+						$h .= '<span>'.s("Maximum autorisé par commande {value}", '<u>'.$value.'</u>').'</span>';
 					}
 
 					if($eProduct['limitCustomers']) {
@@ -934,7 +963,7 @@ class ProductUi {
 					$h .= $this->getLimitAtField($form, $e);
 				}
 
-				$h .= $form->dynamicGroups($e, ['limitMax', 'limitCustomers']);
+				$h .= $form->dynamicGroups($e, ['limitMin', 'limitMax', 'limitCustomers']);
 
 			$h .= '</div>';
 
@@ -978,7 +1007,8 @@ class ProductUi {
 			'date' => s("Vente"),
 			'limitStartAt' => s("Proposer pour les commandes livrées à partir de"),
 			'limitEndAt' => s("Proposer pour les commandes livrées jusqu'au"),
-			'limitMax' => s("Limiter les quantités disponibles par commande"),
+			'limitMin' => s("Quantité minimale demandée en cas de commande"),
+			'limitMax' => s("Quantité maximale autorisée par commande"),
 			'limitCustomers' => s("Limiter les commandes de ce produit à certains clients"),
 		]);
 
@@ -990,6 +1020,13 @@ class ProductUi {
 
 			case 'limitEndAt' :
 				$d->prepend = s("Jusqu'au");
+				break;
+
+			case 'limitMin' :
+				$d->append = fn(\util\FormUi $form, Product $e) => $form->addon(($e['packaging'] === NULL) ?
+					\selling\UnitUi::getSingular($e['product']['unit'], short: TRUE) :
+					s("colis"));
+				$d->placeholder = s("Aucune");
 				break;
 
 			case 'limitMax' :

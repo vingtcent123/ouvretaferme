@@ -51,6 +51,7 @@ class ProductModel extends \ModuleModel {
 			'product' => ['element32', 'selling\Product', 'cast' => 'element'],
 			'packaging' => ['decimal', 'digits' => 6, 'decimal' => 2, 'min' => 0.01, 'max' => NULL, 'null' => TRUE, 'cast' => 'float'],
 			'price' => ['decimal', 'digits' => 8, 'decimal' => 2, 'min' => 0.0, 'max' => NULL, 'cast' => 'float'],
+			'limitMin' => ['decimal', 'digits' => 8, 'decimal' => 2, 'min' => 0.0, 'max' => NULL, 'null' => TRUE, 'cast' => 'float'],
 			'limitMax' => ['decimal', 'digits' => 8, 'decimal' => 2, 'min' => 0.0, 'max' => NULL, 'null' => TRUE, 'cast' => 'float'],
 			'limitCustomers' => ['json', 'cast' => 'array'],
 			'limitStartAt' => ['date', 'null' => TRUE, 'cast' => 'string'],
@@ -60,7 +61,7 @@ class ProductModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'shop', 'date', 'type', 'farm', 'catalog', 'product', 'packaging', 'price', 'limitMax', 'limitCustomers', 'limitStartAt', 'limitEndAt', 'available', 'status'
+			'id', 'shop', 'date', 'type', 'farm', 'catalog', 'product', 'packaging', 'price', 'limitMin', 'limitMax', 'limitCustomers', 'limitStartAt', 'limitEndAt', 'available', 'status'
 		]);
 
 		$this->propertiesToModule += [
@@ -177,6 +178,10 @@ class ProductModel extends \ModuleModel {
 
 	public function wherePrice(...$data): ProductModel {
 		return $this->where('price', ...$data);
+	}
+
+	public function whereLimitMin(...$data): ProductModel {
+		return $this->where('limitMin', ...$data);
 	}
 
 	public function whereLimitMax(...$data): ProductModel {

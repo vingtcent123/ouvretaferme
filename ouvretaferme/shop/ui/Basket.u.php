@@ -182,6 +182,7 @@ class BasketUi {
 			$h .= '</thead>';
 
 			$total = 0;
+			$hasWarning = FALSE;
 
 			$h .= '<tbody>';
 				foreach($basket as $product) {
@@ -209,6 +210,16 @@ class BasketUi {
 						$h .= '<td class="basket-summary-product">';
 							$h .= encode($eProductSelling->getName());
 							$h .= '<div class="hide-sm-up"><small style="white-space: nowrap">'.$unitPrice.'</small></div>';
+							if($product['warning'] !== NULL) {
+
+								$h .= '<div class="color-danger">';
+									$h .= match($product['warning']) {
+										'warning' => s("Ce produit n'étant plus disponible en quantité suffisante, la quantité de votre commande a été modifiée."),
+										'min' => s("La quantité de ce produit a été modifiée car vous avez commandé en dessous du minimum de commande."),
+									};
+								$h .= '</div>';
+
+							}
 						$h .= '</td>';
 						if($eDate['type'] === Date::PRO) {
 							$h .= '<td class="hide-sm-down">';
@@ -232,16 +243,12 @@ class BasketUi {
 						$h .= '</td>';
 					$h .= '</tr>';
 
-					if(array_key_exists('warning', $product) and $product['warning'] === 'number') {
-						$updateBasket = TRUE;
-					}
-
 					$total += $price;
 
 				}
 
 				$h .= '<tfoot>';
-					$h .= '<tr '.($updateBasket ? 'onrender="BasketManage.updateBasketFromSummary('.$eDate['id'].');"' : 'onrender="BasketManage.showWarnings('.$eDate['id'].');"').'>';
+					$h .= '<tr>';
 						$h .= '<td class="hide-xs-down"></td>';
 						if($eDate['type'] === Date::PRO) {
 							$h .= '<td class="hide-sm-down"></td>';
@@ -255,7 +262,6 @@ class BasketUi {
 			$h .= '</tbody>';
 
 		$h .= '</table>';
-		$h .= '<p id="number-warning" class="util-warning hide">'.s("* Certains produits n'étant plus disponibles en quantité suffisante, la quantité de votre commande a été modifiée.").'</p>';
 		$h .= '<br/>';
 
 		return $h;

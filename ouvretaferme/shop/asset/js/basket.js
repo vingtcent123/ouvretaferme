@@ -126,7 +126,7 @@ class BasketManage {
 	}
 
 	/* Fonctions de mise à jour du panier et de son affichage */
-	static update(dateId, productId, step, available) {
+	static update(dateId, productId, step, min, available) {
 
 		let initialNumber = parseFloat(qs('[data-product="' + productId + '"][data-field="number"] > span:first-child').innerHTML);
 
@@ -134,14 +134,39 @@ class BasketManage {
 			initialNumber = 0;
 		}
 
-		const newNumber = Math.round((initialNumber + step) * 100) / 100;
+		let newNumber;
 
-		if(newNumber < 0.0) {
-			return false;
-		}
+		if(
+			available !== -1 &&
+			min > available
+		) {
 
-		if(available > -1 && available < newNumber) {
-			return false;
+			newNumber = 0;
+
+		} else {
+
+			if(step < 0) {
+				initialNumber = Math.floor(initialNumber / step) * step;
+			} else if(step > 0) {
+				initialNumber = Math.ceil(initialNumber / step) * step;
+			}
+
+			newNumber = Math.round((initialNumber + step) * 100) / 100;
+
+			if(newNumber <= 0.0) {
+				newNumber = 0;
+			} else if(newNumber < min) {
+
+				if(step > 0) {
+					newNumber = min;
+				} else {
+					newNumber = 0;
+				}
+
+			} else if(available > -1 && available < newNumber) {
+				newNumber = available;
+			}
+
 		}
 
 		let basket = this.getBasket(dateId);
@@ -289,7 +314,6 @@ class BasketManage {
 
 				if(json.basketPrice > 0) {
 
-
 					qsa('.point-list .point-element', point => {
 
 						if(point.dataset.orderMin !== '') {
@@ -426,50 +450,6 @@ class BasketManage {
 		this.setBasket(dateId, basket);
 
 		return basket;
-
-	}
-
-	static updateBasketFromSummary(dateId) {
-
-		let basket = this.getBasket(dateId);
-		let products = {};
-
-		qsa('span.shop-product-number-value', span => {
-
-			const productId = Number.parseInt(span.dataset.product);
-			const available = Number.parseFloat(span.dataset.available);
-			const unitPrice = Number.parseFloat(span.dataset.price);
-
-			products[productId] = {
-				numberOrdered: basket.products[productId]['numberOrdered'],
-				number: available,
-				unitPrice: unitPrice
-			}
-
-			if(available < basket.products[productId]['numberOrdered']) {
-				span.classList.add('shop-product-number-value-error');
-			}
-
-		});
-
-		basket.products = products;
-		this.setBasket(dateId, basket);
-
-		this.loadSummary(dateId, basket.sale);
-
-	}
-
-	static showWarnings(dateId) {
-
-		let basket = this.getBasket(dateId);
-		const products = basket.products;
-
-		Object.entries(products).forEach(([id, product]) => {
-			if(product.numberOrdered > product.number) {
-				qs('#number-warning').classList.remove('hide');
-				qs('span.shop-product-number-value[data-field="number"][data-product="' + id + '"]').classList.add('shop-product-number-value-error');
-			}
-		});
 
 	}
 

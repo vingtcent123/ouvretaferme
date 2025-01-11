@@ -289,13 +289,16 @@
 	font-weight: bold;
 }
 
-.shop-product[data-has="0"] .shop-product-number-decrease {
+.shop-product[data-has="0"] .shop-product-number-decrease,
+.shop-product-number[data-inconsistency="1"] .shop-product-number-decrease,
+.shop-product-number[data-inconsistency="1"] .shop-product-number-increase {
 	opacity: 0.5;
 	border-width: 1px;
 	pointer-events: none;
 }
 
-.shop-product[data-has="0"] .shop-product-number-value {
+.shop-product[data-has="0"] .shop-product-number-value,
+.shop-product-number[data-inconsistency="1"] .shop-product-number-value {
 	opacity: 0.5;
 }
 

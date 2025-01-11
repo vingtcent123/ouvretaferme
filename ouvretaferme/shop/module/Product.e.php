@@ -57,6 +57,35 @@ class Product extends ProductElement {
 
 			},
 
+			'limitMax.consistency' => function(?int $limitMax, \BuildProperties $p): bool {
+
+				if($p->isBuilt('limitMin') === FALSE) {
+					return TRUE;
+				}
+
+				return (
+					$limitMax === NULL or
+					$limitMax >= $this['limitMin']
+				);
+
+			},
+
+			'limitCustomers.prepare' => function(mixed &$customers): bool {
+
+				$this->expects(['farm']);
+
+				$customers = (array)($customers ?? []);
+
+				$customers = \selling\Customer::model()
+					->select('id')
+					->whereId('IN', $customers)
+					->whereFarm($this['farm'])
+					->getColumn('id');
+
+				return TRUE;
+
+			},
+
 			'limitEndAt.consistency' => function($limitEndAt, \BuildProperties $p): bool {
 
 				$p->expectsBuilt('limitStartAt');

@@ -22,9 +22,10 @@ class BasketLib {
 
 			$product = [
 				'product' => $eProduct,
+				'warning' => NULL
 			];
 
-			$numberOrdered = (float)($products[$eProductSelling['id']]['number'] ?? 0.0);
+			$numberOrdered = round($products[$eProductSelling['id']]['number'] ?? 0.0, 2);
 
 			if($available === NULL or $numberOrdered <= $available) {
 				$product['number'] = $numberOrdered;
@@ -32,12 +33,24 @@ class BasketLib {
 				$product['number'] = $available;
 			}
 
-			if((float)$product['number'] <= 0.0) {
-				continue;
-			}
-
 			if($available !== NULL and $numberOrdered > $available) {
 				$product['warning'] = 'number';
+			}
+
+			if(
+				$eProduct['limitMin'] !== NULL and
+				$product['number'] < $eProduct['limitMin']
+			) {
+
+				if(
+					$product['warning'] === 'number' or
+					($available !== NULL and $eProduct['limitMin'] > $available)
+				) {
+					continue;
+				} else {
+					$product['number'] = $eProduct['limitMin'];
+					$product['warning'] = 'min';
+				}
 			}
 
 			$cleanBasket[$eProductSelling['id']] = $product;
