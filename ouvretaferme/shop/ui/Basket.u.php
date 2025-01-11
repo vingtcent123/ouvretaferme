@@ -214,7 +214,7 @@ class BasketUi {
 
 								$h .= '<div class="color-danger">';
 									$h .= match($product['warning']) {
-										'warning' => s("Ce produit n'étant plus disponible en quantité suffisante, la quantité de votre commande a été modifiée."),
+										'number' => s("Ce produit n'étant plus disponible en quantité suffisante, la quantité de votre commande a été modifiée."),
 										'min' => s("La quantité de ce produit a été modifiée car vous avez commandé en dessous du minimum de commande."),
 									};
 								$h .= '</div>';
