@@ -1410,7 +1410,7 @@ Lime.Dropdown = class {
 
 		}
 
-		list.insertAdjacentHTML('beforebegin', '<div data-dropdown-id="'+ button.id +'-placeholder" class="dropdown-placeholder"></div>');
+		list.insertAdjacentHTML('beforebegin', '<div data-dropdown-id="'+ button.dataset.dropdownId +'-placeholder" class="dropdown-placeholder"></div>');
 		document.body.insertAdjacentElement('beforeend', list);
 
 		button.dispatchEvent(new CustomEvent('dropdownBeforeShow', {
@@ -1482,7 +1482,7 @@ Lime.Dropdown = class {
 			const translateY = positionY - listBounding.top;
 
 			list.style.transform = 'translate('+ translateX +'px, '+ translateY +'px)';
-			list.insertAdjacentHTML('afterend', '<div data-dropdown-id="'+ button.id +'-backdrop" class="dropdown-backdrop" style="z-index: '+ Lime.getZIndex() +'"></div>');
+			list.insertAdjacentHTML('afterend', '<div data-dropdown-id="'+ button.dataset.dropdownId +'-backdrop" class="dropdown-backdrop" style="z-index: '+ Lime.getZIndex() +'"></div>');
 			list.style.zIndex = Lime.getZIndex();
 
 		}, 5)
@@ -1563,7 +1563,9 @@ Lime.Dropdown = class {
 				return;
 			}
 
-			if(window.matchMedia('(max-width: 575px)').matches) { // Mobile
+			const list = Lime.Dropdown.getListFromButton(button);
+
+			if(this.isFullscreen(list)) { // Mobile
 
 				Lime.History.getElementsOfLayers()
 					.filter(button => button.hasAttribute('data-dropdown-display'))
@@ -1624,6 +1626,12 @@ Lime.Dropdown = class {
 			return false;
 		}
 
+		this.mutationObserver[button.id].disconnect();
+		delete this.mutationObserver[button.id];
+
+		document.removeEventListener('click', this.clickListener[button.id], {once: true})
+		delete this.clickListener[button.id];
+
 		if(document.body.contains(button) === false) {
 
 			qs('[data-dropdown-id="'+ button.dataset.dropdownId +'-list"]', list => {
@@ -1633,7 +1641,7 @@ Lime.Dropdown = class {
 
 			})
 
-			qs('[data-dropdown-id="'+ button.dataset.dropdownId +'-backdrop"]', backdrop => backdrop.remove())
+			qs('[data-dropdown-id="'+ button.dataset.dropdownId +'-backdrop"]', backdrop => backdrop.remove());
 
 		} else {
 
@@ -1657,12 +1665,6 @@ Lime.Dropdown = class {
 
 		}
 
-		this.mutationObserver[button.id].disconnect();
-		delete this.mutationObserver[button.id];
-
-		document.removeEventListener('click', this.clickListener[button.id], {once: true})
-		delete this.clickListener[button.id];
-
 		return true;
 
 	};
@@ -1673,7 +1675,7 @@ Lime.Dropdown = class {
 		list.style.transform = '';
 
 		list.classList.add('fullscreen-closing');
-		qs('[data-dropdown-id="'+ button.id +'-backdrop"]', node => node.classList.add('fullscreen-closing'));
+		qs('[data-dropdown-id="'+ button.dataset.dropdownId +'-backdrop"]', node => node.classList.add('fullscreen-closing'));
 
 		setTimeout(() => {
 
@@ -1700,7 +1702,7 @@ Lime.Dropdown = class {
 
 	static closePlaceholder(button, list) {
 
-		qs('[data-dropdown-id="'+ button.id +'-placeholder"]', placeholder => {
+		qs('[data-dropdown-id="'+ button.dataset.dropdownId +'-placeholder"]', placeholder => {
 
 			placeholder.insertAdjacentElement('afterend', list);
 			placeholder.remove();
@@ -1709,7 +1711,7 @@ Lime.Dropdown = class {
 			list.remove();
 		});
 
-		qs('[data-dropdown-id="'+ button.id +'-backdrop"]', node => node.remove());
+		qs('[data-dropdown-id="'+ button.dataset.dropdownId +'-backdrop"]', node => node.remove());
 
 	}
 
@@ -2188,13 +2190,16 @@ Lime.History = class {
 
 			if(this.layers[i].element === element) {
 
-				if(this.layers[i].isPushHistory) {
+				const layer = this.layers[i];
+				this.layers.splice(i, 1);
+
+				if(layer.isPushHistory) {
 
 					this.ignoreNextPopstate++; // Simulate a history change
-					return this.go(-1).then(() => this.removeLayer(i));
+					return this.go(-1).then(() => this.removeLayer(layer));
 
 				} else {
-					this.removeLayer(i);
+					this.removeLayer(layer);
 				}
 
 			}
@@ -2205,15 +2210,10 @@ Lime.History = class {
 
 	};
 
-	static removeLayer(position) {
-
-		const layer = this.layers[position];
+	static removeLayer(layer) {
 
 		layer.onPop.call(this, false);
-
 		window.scrollTo(0, layer.scrollY);
-
-		this.layers.splice(position, 1);
 
 		return true;
 
