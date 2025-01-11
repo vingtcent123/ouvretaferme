@@ -71,10 +71,15 @@ class Invoice extends InvoiceElement {
 		$this->expects(['document']);
 
 		if($this->isCreditNote()) {
-			return $eFarm->getSelling('creditPrefix').$this['document'];
+			$code = $eFarm->getSelling('creditPrefix');
 		} else {
-			return $eFarm->getSelling('invoicePrefix').$this['document'];
+			$code = $eFarm->getSelling('invoicePrefix');
 		}
+
+		$prefix = rtrim($code, '#');
+		$zero = strlen($code) - strlen($prefix);
+
+		return $prefix.($zero > 1 ? sprintf('%0'.$zero.'d', $this['document']) : $this['document']);
 
 	}
 
