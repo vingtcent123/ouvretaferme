@@ -33,6 +33,12 @@ new AdaptativeView('shop', function($data, ShopTemplate $t) {
 			echo \shop\DateUi::name($data->eDateSelected);
 		echo '</h3>';
 
+		if($data->eDateSelected['description'] !== NULL) {
+			echo '<div class="util-block">';
+				echo (new \editor\EditorUi())->value($data->eDateSelected['description']);
+			echo '</div>';
+		}
+
 		if($data->eDateSelected['isOrderable']) {
 
 			echo '<div class="util-block">';
@@ -70,7 +76,7 @@ new AdaptativeView('shop', function($data, ShopTemplate $t) {
 
 		} else if($data->eDateSelected['isSoonOpen']) {
 
-			echo '<div class="util-block">';
+			echo '<div class="util-info">';
 				echo s("Les prises de commandes démarrent bientôt, revenez le {date} pour passer commande !",
 					['date' => \util\DateUi::textual($data->eDateSelected['orderStartAt'], \util\DateUi::DATE_HOUR_MINUTE)]);
 			echo '</div>';
@@ -78,6 +84,7 @@ new AdaptativeView('shop', function($data, ShopTemplate $t) {
 		} else {
 
 			echo '<div class="util-block">';
+				echo Asset::icon('lock-fill').' ';
 				echo s("Cette vente est désormais terminée !");
 			echo '</div>';
 

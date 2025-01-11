@@ -368,6 +368,7 @@ class DateUi {
 
 		$h .= $this->getOrderField('update', $form, $eDate);
 		$h .= $form->dynamicGroup($eDate, 'deliveryDate');
+		$h .= $form->dynamicGroup($eDate, 'description');
 
 		$h .= $form->group(
 			content: $form->submit(s("Modifier"))
@@ -871,6 +872,13 @@ class DateUi {
 			$h .= '</dl>';
 		$h .= '</div>';
 
+		if($eDate['description'] !== NULL) {
+			$h .= '<h4>'.s("Complément d'information pour cette vente").'</h4>';
+			$h .= '<div class="util-block" style="margin-bottom: 2rem">';
+				$h .= (new \editor\EditorUi())->value($eDate['description']);
+			$h .= '</div>';
+		}
+
 		return $h;
 
 	}
@@ -883,6 +891,7 @@ class DateUi {
 			'deliveryDate' => s("Date de livraison des commandes"),
 			'source' => s("Gamme de produits proposée à la vente"),
 			'catalogs' => s("Choisir un catalogue"),
+			'description' => s("Complément d'information"),
 			'productsList' => s("Choisir les produits proposés à la vente"),
 			'status' => s("Statut"),
 			'points' => s("Modes de livraison pour cette vente"),
@@ -910,6 +919,10 @@ class DateUi {
 						];
 					}
 				];
+				break;
+
+			case 'description' ;
+				$d->label .= \util\FormUi::info(s("Utilisez cet espace pour donner à vos clients des informations valables uniquement pour cette vente, comme par exemple <i>Dernière vente avant nos congés annuels !</i>"));
 				break;
 
 			case 'deliveryDate' ;

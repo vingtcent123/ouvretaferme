@@ -39,7 +39,7 @@ class DateLib extends DateCrud {
 
 			$properties = [
 				'orderStartAt', 'orderEndAt',
-				'deliveryDate',
+				'deliveryDate', 'description',
 			];
 
 			if(

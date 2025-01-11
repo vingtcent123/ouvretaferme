@@ -23,6 +23,7 @@ Date:
   source: enum(DIRECT, CATALOG)
   orderStartAt: datetime
   orderEndAt: datetime
+  description: ?editor24
   points: json = PHP([])
   catalogs: ?json = PHP([])
   deliveryDate: date
