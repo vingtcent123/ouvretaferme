@@ -429,22 +429,15 @@ class BasketUi {
 			$h .= (new PointUi())->getField($eShop, $ccPoint, $ePointSelected);
 		$h .= '</div>';
 
-		// Livraison à domicile activée
-		if($ccPoint->offsetExists(Point::HOME)) {
+		$h .= '<div id="shop-basket-address-wrapper" data-type="'.($ePointSelected->empty() ? '' : $ePointSelected['type']).'">';
 
-			$isSelected = ($ePointSelected->notEmpty() and $ePointSelected['type'] === Point::HOME);
+			$h .= $this->getAddress($eUser);
 
-			$h .= '<div id="shop-basket-address-wrapper">';
+			if($eUser->hasAddress() === FALSE) {
+				$h .= $this->getAddressForm($eShop, $eDate, $eUser);
+			}
 
-				if($eUser->hasAddress()) {
-					$h .= $this->getAddress($eUser, $isSelected ? '' : 'hide');
-				} else {
-					$h .= $this->getAddressForm($eShop, $eDate, $eUser, $isSelected ? '' : 'hide');
-				}
-
-			$h .= '</div>';
-
-		}
+		$h .= '</div>';
 
 		return $h;
 
@@ -470,9 +463,9 @@ class BasketUi {
 
 	}
 
-	public function getAddressForm(Shop $eShop, Date $eDate, \user\User $eUser, string $class = 'hide'): string {
+	public function getAddressForm(Shop $eShop, Date $eDate, \user\User $eUser): string {
 
-		$h = '<div id="shop-basket-address-form" class="'.$class.'">';
+		$h = '<div id="shop-basket-address-form">';
 
 			$h .= '<h2>'.s("Mon adresse de livraison").'</h2>';
 			$h .= '<p class="util-info">';
@@ -494,9 +487,9 @@ class BasketUi {
 
 	}
 
-	public function getAddress(\user\User $eUser, string $class = 'hide'): string {
+	public function getAddress(\user\User $eUser): string {
 
-		$h = '<div id="shop-basket-address-show" class="'.$class.'">';
+		$h = '<div id="shop-basket-address-show">';
 
 			$h .= '<div class="util-title">';
 				$h .= '<h2>'.s("Mes coordonnées").'</h2>';
@@ -506,10 +499,12 @@ class BasketUi {
 			$h .= '<dl class="util-presentation util-presentation-1">';
 				$h .= '<dt>'.s("Nom").'</dt>';
 				$h .= '<dd>'.$eUser->getName().'</dd>';
-				$h .= '<dt>'.s("Adresse").'</dt>';
-				$h .= '<dd style="line-height: 1.2">'.nl2br(encode($eUser->getAddress())).'</dd>';
+				if($eUser->hasAddress()) {
+					$h .= '<dt class="shop-basket-address-lines">'.s("Adresse").'</dt>';
+					$h .= '<dd class="shop-basket-address-lines" style="line-height: 1.2">'.nl2br(encode($eUser->getAddress())).'</dd>';
+				}
 				$h .= '<dt>'.s("Téléphone").'</dt>';
-				$h .= '<dd>'.nl2br($eUser['phone']).'</dd>';
+				$h .= '<dd id="shop-basket-address-phone">'.encode($eUser['phone']).'</dd>';
 			$h .= '</dl>';
 
 			$h .= '<br/><br/>';

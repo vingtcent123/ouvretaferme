@@ -204,6 +204,7 @@ new AdaptativeView('/shop/public/{fqn}/{date}/:doUpdatePhone', function($data, A
 		$t->js()->success('shop', 'Sale::phone');
 		$t->qs('#shop-basket-phone')->remove();
 		$t->qs('#shop-basket-delivery')->removeClass('hide');
+		$t->qs('#shop-basket-address-phone')->innerHtml(encode($data->e['phone']));
 
 	}
 
@@ -217,7 +218,7 @@ new AdaptativeView('/shop/public/{fqn}/{date}/:doUpdateAddress', function($data,
 		$t->js()->success('shop', 'Sale::address');
 		$t->qs('#shop-basket-address')->remove();
 		$t->qs('#shop-basket-submit')->removeClass('hide');
-		$t->qs('#shop-basket-address-wrapper')->innerHtml((new \shop\BasketUi())->getAddress($data->eUserOnline, class:  ''));
+		$t->qs('#shop-basket-address-wrapper')->innerHtml((new \shop\BasketUi())->getAddress($data->eUserOnline));
 
 	}
 

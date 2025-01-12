@@ -119,3 +119,12 @@
 	flex-wrap: wrap;
 	gap: 1rem
 }
+
+#shop-basket-address-wrapper[data-type=""] {
+	display: none;
+}
+
+#shop-basket-address-wrapper:not([data-type="home"]) #shop-basket-address-form,
+#shop-basket-address-wrapper:not([data-type="home"]) .shop-basket-address-lines {
+	display: none;
+}

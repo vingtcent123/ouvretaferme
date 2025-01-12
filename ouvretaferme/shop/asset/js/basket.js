@@ -496,15 +496,11 @@ class BasketManage {
 
 	static selectHome() {
 
-		qs('#shop-basket-address-wrapper', wrapper => wrapper.classList.remove('hide'));
+		qs('#shop-basket-address-wrapper', wrapper => wrapper.dataset.type = 'home');
 
 		if(qs('#shop-basket-address-form')) {
-			qs('#shop-basket-address-form').classList.remove('hide');
 			qs('#shop-basket-submit').classList.add('hide');
-		}
-
-		if(qs('#shop-basket-address-show')) {
-			qs('#shop-basket-address-show').classList.remove('hide');
+		} else if(qs('#shop-basket-address-show')) {
 			qs('#shop-basket-submit').classList.remove('hide');
 		}
 
@@ -514,7 +510,8 @@ class BasketManage {
 
 	static selectPlace() {
 
-		qs('#shop-basket-address-wrapper', wrapper => wrapper.classList.add('hide'));
+		qs('#shop-basket-address-wrapper', wrapper => wrapper.dataset.type = 'place');
+
 		qs('#shop-basket-submit').classList.remove('hide');
 
 		this.loadPrice();
