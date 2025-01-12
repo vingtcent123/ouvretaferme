@@ -8,7 +8,7 @@ class ShopLib extends ShopCrud {
 	}
 
 	public static function getPropertiesUpdate(): array {
-		return ['fqn', 'name', 'type', 'email', 'description', 'frequency', 'orderMin', 'shipping', 'shippingUntil', 'hasPoint'];
+		return ['fqn', 'name', 'type', 'email', 'description', 'frequency', 'orderMin', 'shipping', 'shippingUntil', 'limitCustomers', 'hasPoint'];
 	}
 
 	public static function getByFarm(\farm\Farm $eFarm): \Collection {

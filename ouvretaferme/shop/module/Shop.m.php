@@ -65,6 +65,7 @@ class ShopModel extends \ModuleModel {
 			'description' => ['editor24', 'null' => TRUE, 'cast' => 'string'],
 			'terms' => ['editor24', 'null' => TRUE, 'cast' => 'string'],
 			'termsField' => ['bool', 'cast' => 'bool'],
+			'limitCustomers' => ['json', 'cast' => 'array'],
 			'orderMin' => ['int32', 'min' => 0, 'max' => NULL, 'null' => TRUE, 'cast' => 'int'],
 			'shipping' => ['decimal', 'digits' => 8, 'decimal' => 2, 'min' => 0.01, 'max' => NULL, 'null' => TRUE, 'cast' => 'float'],
 			'shippingUntil' => ['int32', 'min' => 0, 'max' => NULL, 'null' => TRUE, 'cast' => 'int'],
@@ -74,7 +75,7 @@ class ShopModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'fqn', 'farm', 'logo', 'name', 'email', 'type', 'frequency', 'hasPoint', 'hasPayment', 'paymentCard', 'paymentTransfer', 'paymentTransferHow', 'paymentOffline', 'paymentOfflineHow', 'description', 'terms', 'termsField', 'orderMin', 'shipping', 'shippingUntil', 'status', 'createdAt', 'createdBy'
+			'id', 'fqn', 'farm', 'logo', 'name', 'email', 'type', 'frequency', 'hasPoint', 'hasPayment', 'paymentCard', 'paymentTransfer', 'paymentTransferHow', 'paymentOffline', 'paymentOfflineHow', 'description', 'terms', 'termsField', 'limitCustomers', 'orderMin', 'shipping', 'shippingUntil', 'status', 'createdAt', 'createdBy'
 		]);
 
 		$this->propertiesToModule += [
@@ -114,6 +115,9 @@ class ShopModel extends \ModuleModel {
 			case 'termsField' :
 				return FALSE;
 
+			case 'limitCustomers' :
+				return [];
+
 			case 'status' :
 				return Shop::OPEN;
 
@@ -140,11 +144,28 @@ class ShopModel extends \ModuleModel {
 			case 'frequency' :
 				return ($value === NULL) ? NULL : (string)$value;
 
+			case 'limitCustomers' :
+				return $value === NULL ? NULL : json_encode($value, JSON_UNESCAPED_UNICODE);
+
 			case 'status' :
 				return ($value === NULL) ? NULL : (string)$value;
 
 			default :
 				return parent::encode($property, $value);
+
+		}
+
+	}
+
+	public function decode(string $property, $value) {
+
+		switch($property) {
+
+			case 'limitCustomers' :
+				return $value === NULL ? NULL : json_decode($value, TRUE);
+
+			default :
+				return parent::decode($property, $value);
 
 		}
 
@@ -228,6 +249,10 @@ class ShopModel extends \ModuleModel {
 
 	public function whereTermsField(...$data): ShopModel {
 		return $this->where('termsField', ...$data);
+	}
+
+	public function whereLimitCustomers(...$data): ShopModel {
+		return $this->where('limitCustomers', ...$data);
 	}
 
 	public function whereOrderMin(...$data): ShopModel {

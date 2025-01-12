@@ -66,6 +66,10 @@
 
 		$data->eCustomer = \shop\SaleLib::getShopCustomer($data->eShop, $data->eUserOnline);
 
+		if($data->eShop->canAccess($data->eCustomer) === FALSE) {
+			throw new ViewAction($data, path: ':denied');
+		}
+
 		$data->isModifying = GET('modify', 'bool', FALSE);
 
 		$data->cDate = \shop\DateLib::getMostRelevantByShop($data->eShop);
@@ -122,6 +126,11 @@
 
 		$data->eDate = \shop\DateLib::getById(GET('date'))->validateProperty('shop', $data->eShop);
 		$data->eCustomer = \shop\SaleLib::getShopCustomer($data->eShop, $data->eUserOnline);
+
+		if($data->eShop->canAccess($data->eCustomer) === FALSE) {
+			throw new ViewAction($data, path: ':denied');
+		}
+
 		$data->eSaleExisting = \shop\SaleLib::getSaleForDate($data->eDate, $data->eCustomer);
 
 		$data->discount = \shop\SaleLib::getDiscount($data->eDate, $data->eSaleExisting, $data->eCustomer);

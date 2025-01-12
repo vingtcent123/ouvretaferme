@@ -70,22 +70,6 @@ class Product extends ProductElement {
 
 			},
 
-			'limitCustomers.prepare' => function(mixed &$customers): bool {
-
-				$this->expects(['farm']);
-
-				$customers = (array)($customers ?? []);
-
-				$customers = \selling\Customer::model()
-					->select('id')
-					->whereId('IN', $customers)
-					->whereFarm($this['farm'])
-					->getColumn('id');
-
-				return TRUE;
-
-			},
-
 			'limitEndAt.consistency' => function($limitEndAt, \BuildProperties $p): bool {
 
 				$p->expectsBuilt('limitStartAt');

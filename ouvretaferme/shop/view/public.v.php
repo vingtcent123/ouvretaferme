@@ -1,7 +1,16 @@
 <?php
+new AdaptativeView('denied', function($data, ShopTemplate $t) {
+
+	$t->title = s("Boutique en accès restreint");
+	$t->header = '<h1>'.Asset::icon('lock-fill').' '.$t->title.'</h1>';
+
+	echo '<div class="util-info">';
+		echo s("Vous n'avez pas accès à cette boutique en ligne, rapprochez-vous de la ferme pour corriger ce problème.");
+	echo '</div>';
+
+});
 new AdaptativeView('shop', function($data, ShopTemplate $t) {
 
-	$t->metaDescription = 'description';
 	$t->title = encode($data->eShop['name']);
 	$t->header = (new \shop\ShopUi())->getHeader($data->eShop, $data->cDate, $data->eDateSelected);
 
@@ -110,7 +119,6 @@ new AdaptativeView('/shop/public/{id}:conditions', function($data, PanelTemplate
 
 new AdaptativeView('/shop/public/{fqn}/{date}/panier', function($data, ShopTemplate $t) {
 
-	$t->metaDescription = 'description';
 	$t->title = encode($data->eShop['name']);
 	$t->header = (new \shop\BasketUi())->getHeader($data->eShop, $data->eDate, currentStep: \shop\BasketUi::STEP_SUMMARY);
 
@@ -153,7 +161,6 @@ new AdaptativeView('/shop/public/{fqn}/{date}/livraison', function($data, ShopTe
 
 new AdaptativeView('authenticate', function($data, ShopTemplate $t) {
 
-	$t->metaDescription = 'description';
 	$t->title = encode($data->eShop['name']);
 	$t->header = (new \shop\BasketUi())->getHeader($data->eShop, $data->eDate, currentStep: \shop\BasketUi::STEP_SUMMARY);
 

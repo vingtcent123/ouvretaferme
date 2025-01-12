@@ -1037,7 +1037,7 @@ class ProductUi {
 				break;
 
 			case 'limitCustomers' :
-				$d->after = \util\FormUi::info(s("Seuls les clients que vous aurez choisis pour acheter ce produit dans vos boutiques."));
+				$d->after = \util\FormUi::info(s("Seuls les clients que vous aurez choisis pourront acheter ce produit dans vos boutiques."));
 				$d->autocompleteDefault = fn(Product $e) => $e['cCustomer'] ?? $e->expects(['cCustomer']);
 				$d->autocompleteBody = function(\util\FormUi $form, Product $e) {
 					return [

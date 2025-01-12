@@ -193,6 +193,7 @@
 
 			\farm\FarmerLib::setView('viewShopCurrent', $data->eFarm, $data->eShop);
 
+			$data->eShop['cCustomer'] = \selling\CustomerLib::getByIds($data->eShop['limitCustomers'], sort: ['lastName' => SORT_ASC, 'firstName' => SORT_ASC]);
 			$data->eShop['ccPoint'] = \shop\PointLib::getByFarm($data->eFarm);
 
 			// Liste des dates de la boutique sélectionnée

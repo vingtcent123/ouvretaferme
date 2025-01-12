@@ -106,6 +106,7 @@ Shop:
   description: ?editor24
   terms: ?editor24
   termsField: bool = FALSE
+  limitCustomers: json = PHP([])
   orderMin: ?int(0, NULL)
   shipping: ?decimal(8, 2, 0.01, null)
   shippingUntil: ?int(0, NULL)

@@ -24,6 +24,18 @@ class Shop extends ShopElement {
 
 	}
 
+	public function canAccess(\selling\Customer $e): bool {
+
+		$this->expects(['limitCustomers']);
+
+		return (
+			$this['limitCustomers'] == [] or
+			$this->canRead() or
+			in_array($e['id'], $this['limitCustomers'])
+		);
+
+	}
+
 	public function canRead(): bool {
 
 		$this->expects(['farm']);
@@ -143,6 +155,22 @@ class Shop extends ShopElement {
 					$this['paymentOffline'] or
 					$this['paymentTransfer']
 				);
+
+			},
+
+			'limitCustomers.prepare' => function(mixed &$customers): bool {
+
+				$this->expects(['farm']);
+
+				$customers = (array)($customers ?? []);
+
+				$customers = \selling\Customer::model()
+					->select('id')
+					->whereId('IN', $customers)
+					->whereFarm($this['farm'])
+					->getColumn('id');
+
+				return TRUE;
 
 			}
 

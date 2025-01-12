@@ -87,7 +87,7 @@ class ShopUi {
 		$h .= $form->openAjax('/shop/configuration:doUpdate');
 
 		$h .= $form->hidden('id', $eShop['id']);
-		$h .= $form->dynamicGroups($eShop, ['name', 'type', 'fqn', 'email', 'frequency', 'orderMin', 'shipping', 'shippingUntil', 'hasPoint', 'description'], [
+		$h .= $form->dynamicGroups($eShop, ['name', 'type', 'fqn', 'email', 'frequency', 'orderMin', 'shipping', 'shippingUntil', 'limitCustomers', 'hasPoint', 'description'], [
 				'type' => self::getTypeDescriber($eFarm, 'update')
 		]);
 
@@ -670,6 +670,20 @@ class ShopUi {
 
 				$h .= '</dd>';
 
+				if($eShop['cCustomer']->notEmpty()) {
+
+					$h .= '<dt>';
+						$h .= s("Clients autorisés");
+					$h .= '</dt>';
+					$h .= '<dd>';
+
+						$customers = $eShop['cCustomer']->toArray(fn($eCustomer) => encode($eCustomer->getName()));
+						$h .= implode(' / ', $customers);
+
+					$h .= '</dd>';
+
+				}
+
 			$h .= '</dl>';
 		$h .= '</div>';
 
@@ -693,6 +707,7 @@ class ShopUi {
 			'paymentTransfer' => s("Activer le choix du paiement par virement bancaire"),
 			'paymentTransferHow' => s("Modalités du paiement par virement bancaire"),
 			'orderMin' => s("Montant minimal de commande"),
+			'limitCustomers' => s("Limiter l'accès à cette boutique à certains clients seulement"),
 			'shipping' => s("Frais de livraison par commande"),
 			'shippingUntil' => s("Montant minimal de commande au delà duquel les frais de livraison sont offerts"),
 			'terms' => s("Conditions générales de vente"),
@@ -832,6 +847,18 @@ class ShopUi {
 
 			case 'termsField' :
 				$d->field = 'yesNo';
+				break;
+
+			case 'limitCustomers' :
+				$d->after = \util\FormUi::info(s("Seuls les clients que vous aurez choisis pourront accéder à cette boutique."));
+				$d->autocompleteDefault = fn(Shop $e) => $e['cCustomer'] ?? $e->expects(['cCustomer']);
+				$d->autocompleteBody = function(\util\FormUi $form, Shop $e) {
+					return [
+						'farm' => $e['farm']['id'],
+					];
+				};
+				(new \selling\CustomerUi())->query($d, TRUE);
+				$d->group = ['wrapper' => 'limitCustomers'];
 				break;
 
 		}

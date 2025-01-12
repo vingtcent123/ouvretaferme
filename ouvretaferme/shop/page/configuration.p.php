@@ -3,6 +3,7 @@
 	->update(function($data) {
 
 		$data->e['stripe'] = \payment\StripeLib::getByFarm($data->e['farm']);
+		$data->e['cCustomer'] = \selling\CustomerLib::getByIds($data->e['limitCustomers'], sort: ['lastName' => SORT_ASC, 'firstName' => SORT_ASC]);
 
 		$data->eFarm = \farm\FarmLib::getById($data->e['farm']);
 
