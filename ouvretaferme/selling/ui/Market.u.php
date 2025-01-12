@@ -153,7 +153,7 @@ class MarketUi {
 					}
 					$h .= '<br/><small id="market-sale-'.$eSale['id'].'-price">'.\util\TextUi::money($eSale['priceIncludingVat'] ?? 0).'</small>';
 				$h .= '</div>';
-				$h .= '<div class="market-sales-owner" title="'.s("Vente créée par {value}", \user\UserUi::name($eSale['createdBy'])).'">';
+				$h .= '<div class="market-sales-owner" title="'.s("Vente créée par {value}", $eSale['createdBy']->getName()).'">';
 					$h .= \user\UserUi::getVignette($eSale['createdBy'], '1.5rem');
 				$h .= '</div>';
 
@@ -317,7 +317,7 @@ class MarketUi {
 						}
 					$h .= '</dd>';
 					$h .= '<dt>'.s("Créée par").'</dt>';
-					$h .= '<dd>'.\user\UserUi::getVignette($eSale['createdBy'], '1.5rem').' '.\user\UserUi::name($eSale['createdBy']).'</dd>';
+					$h .= '<dd>'.\user\UserUi::getVignette($eSale['createdBy'], '1.5rem').' '.$eSale['createdBy']->getName().'</dd>';
 					$h .= '<dt>'.s("État").'</dt>';
 					$h .= '<dd>'.$this->getCircle($eSale).' '.$this->getStatus($eSale).'</dd>';
 					$h .= '<dt>'.s("Moyen de paiement").'</dt>';

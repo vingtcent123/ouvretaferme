@@ -313,7 +313,7 @@ class StockUi {
 
 						$h .= '<td class="stock-item-name">';
 							$h .= \user\UserUi::getVignette($eStock['createdBy'], '2rem').' ';
-							$h .= \user\UserUi::name($eStock['createdBy']);
+							$h .= $eStock['createdBy']->getName();
 						$h .= '</td>';
 
 					$h .= '</tr>';
@@ -393,7 +393,7 @@ class StockUi {
 
 						$h .= '<td class="bookmark-item-name">';
 							$h .= \user\UserUi::getVignette($eBookmark['createdBy'], '2rem').' ';
-							$h .= \user\UserUi::name($eBookmark['createdBy']);
+							$h .= $eBookmark['createdBy']->getName();
 						$h .= '</td>';
 
 						$h .= '<td class="text-end">';

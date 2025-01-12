@@ -521,7 +521,7 @@ class TaskUi {
 				$h .= '<a data-ajax-submit="/series/task:doUpdateUserCollection" data-ajax-target="#'.$formId.'" post-user="'.$eUser['id'].'" post-reload="context" class="batch-planned-user dropdown-item">';
 					$h .= \Asset::icon('plus-lg');
 					$h .= \Asset::icon('x-lg');
-					$h .= '  '.\user\UserUi::getVignette($eUser, '1.5rem').'  '.\user\UserUi::name($eUser);
+					$h .= '  '.\user\UserUi::getVignette($eUser, '1.5rem').'  '.$eUser->getName();
 				$h .= '</a>';
 			}
 		$h .= '</div>';
@@ -589,7 +589,7 @@ class TaskUi {
 
 				foreach($cUserPresent as $eUserPresent) {
 
-					$h .= '<a '.$link($eUserPresent).' class="tab-item '.(($eUser->notEmpty() and $eUserPresent['id'] === $eUser['id']) ? 'selected' : '').'" title="'.\user\UserUi::name($eUserPresent).'">';
+					$h .= '<a '.$link($eUserPresent).' class="tab-item '.(($eUser->notEmpty() and $eUserPresent['id'] === $eUser['id']) ? 'selected' : '').'" title="'.$eUserPresent->getName().'">';
 						$h .= \user\UserUi::getVignette($eUserPresent, '2rem');
 					$h .= '</a>';
 
@@ -1239,7 +1239,7 @@ class TaskUi {
 											$url .= '&date='.$date;
 										}
 
-										$h .= '<a href="'.$url.'" class="tasks-planning-item-user" title="'.\user\UserUi::name($eUser).'">';
+										$h .= '<a href="'.$url.'" class="tasks-planning-item-user" title="'.$eUser->getName().'">';
 											$h .= \user\UserUi::getVignette($eUser, '1.25rem').' '.self::convertTimeText($time);
 										$h .= '</a>';
 
@@ -1820,7 +1820,7 @@ class TaskUi {
 
 	protected function getUser(\user\User $eUser, float $time, string $size = '2rem'): string {
 
-		$h = '<div title="'.\user\UserUi::name($eUser).' : '.self::convertTimeText($time).'">';
+		$h = '<div title="'.$eUser->getName().' : '.self::convertTimeText($time).'">';
 			$h .= \user\UserUi::getVignette($eUser, $size);
 		$h .= '</div>';
 
@@ -2019,7 +2019,7 @@ class TaskUi {
 
 									$h .= '<a data-ajax="/series/task:doUpdateUserCollection" post-ids="'.$eTask['id'].'" post-user="'.$eUser['id'].'" post-action="'.($has ? 'delete' : 'add').'" post-reload="layer" class="dropdown-item">';
 										$h .= $has ? \Asset::icon('x-lg') : \Asset::icon('plus-lg');
-										$h .= '  '.\user\UserUi::getVignette($eUser, '1.5rem').'  '.\user\UserUi::name($eUser);
+										$h .= '  '.\user\UserUi::getVignette($eUser, '1.5rem').'  '.$eUser->getName();
 									$h .= '</a>';
 
 								}
@@ -2109,7 +2109,7 @@ class TaskUi {
 
 					$h .= '<dt>'.s("Créée").'</dt>';
 					$h .= '<dd title="'.s("Plus précisément à {value}", \util\DateUi::numeric($eTask['createdAt'], \util\DateUi::TIME)).'">';
-						$h .= s("{date} par {user}", ['date' => \util\DateUi::numeric($eTask['createdAt'], \util\DateUi::DATE), 'user' => \user\UserUi::name($eTask['createdBy'])]);
+						$h .= s("{date} par {user}", ['date' => \util\DateUi::numeric($eTask['createdAt'], \util\DateUi::DATE), 'user' => $eTask['createdBy']->getName()]);
 					$h .= '</dd>';
 
 				$h .= '</dl>';

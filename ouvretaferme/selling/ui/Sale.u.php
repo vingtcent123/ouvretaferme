@@ -1438,7 +1438,7 @@ class SaleUi {
 						$h .= '</td>';
 
 						$h .= '<td>';
-							$h .= $eHistory['user']->empty() ? '-' : \user\UserUi::name($eHistory['user']);
+							$h .= $eHistory['user']->empty() ? '-' : $eHistory['user']->getName();
 						$h .= '</td>';
 
 					$h .= '</tr>';

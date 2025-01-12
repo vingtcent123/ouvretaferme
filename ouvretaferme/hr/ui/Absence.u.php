@@ -124,7 +124,7 @@ class AbsenceUi {
 
 			$h .= $form->group(
 				s("Utilisateur"),
-				\user\UserUi::name($eAbsence['user'])
+				$eAbsence['user']->getName()
 			);
 
 			$h .= $form->dynamicGroups($eAbsence, ['type', 'from', 'to', 'duration']);

@@ -189,7 +189,7 @@ class FarmerUi {
 								if($eFarmer['farmGhost']) {
 									$h .= \Asset::icon('snapchat').' ';
 								}
-								$h .= \user\UserUi::name($eFarmer['user']);
+								$h .= $eFarmer['user']->getName();
 							$h .= '</h4>';
 							$h .= '<div class="util-button-text">';
 								$h .= implode(' | ', $properties);
@@ -289,7 +289,7 @@ class FarmerUi {
 					foreach($cFarmerGhost as $eFarmer) {
 
 						$h .= '<tr>';
-							$h .= '<td>'.\Asset::icon('snapchat').' '.\user\UserUi::name($eFarmer['user']).'</td>';
+							$h .= '<td>'.\Asset::icon('snapchat').' '.$eFarmer['user']->getName().'</td>';
 							$h .= '<td>';
 								$h .= \util\DateUi::numeric($eFarmer['user']['createdAt'], \util\DateUi::DATE);
 							$h .= '</td>';
@@ -339,7 +339,7 @@ class FarmerUi {
 
 		$h = '<h1>';
 			$h .= '<a href="'.FarmerUi::urlManage($eFarmer['farm']).'"  class="h-back">'.\Asset::icon('arrow-left').'</a>';
-			$h .= \user\UserUi::getVignette($eFarmer['user'], '3rem').' '.\user\UserUi::name($eFarmer['user']);
+			$h .= \user\UserUi::getVignette($eFarmer['user'], '3rem').' '.$eFarmer['user']->getName();
 		$h .= '</h1>';
 
 		return $h;

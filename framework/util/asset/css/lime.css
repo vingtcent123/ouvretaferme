@@ -1397,7 +1397,7 @@ dl.util-presentation {
 	display: grid;
 	margin: 0;
 	padding: 0;
-	grid-column-gap: 0.75rem;
+	grid-column-gap: 1rem;
 	grid-row-gap: 0.125rem;
 	grid-auto-rows: min-content;
 	align-items: start;
@@ -1407,7 +1407,7 @@ dl.util-presentation-max-content {
 	display: grid;
 	margin: 0;
 	padding: 0;
-	grid-column-gap: 0.75rem;
+	grid-column-gap: 1rem;
 	grid-row-gap: 0.125rem;
 	grid-auto-rows: min-content;
 	align-items: start;

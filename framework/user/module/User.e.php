@@ -3,6 +3,18 @@ namespace user;
 
 class User extends UserElement {
 
+	public function getName(): string {
+
+		$this->expects(['firstName', 'lastName']);
+
+		if($this['firstName'] === NULL) {
+			return encode($this['lastName']);
+		} else {
+			return encode($this['firstName']).' '.encode($this['lastName']);
+		}
+
+	}
+
 	public function isOnline(): bool {
 
 		$eUserOnline = \user\ConnectionLib::getOnline();

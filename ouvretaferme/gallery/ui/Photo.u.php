@@ -122,7 +122,7 @@ class PhotoUi {
 				$h .= '</div>';
 				$h .= '<div>';
 					$h .= \Asset::icon('camera-fill').' ';
-					$h .= \user\UserUi::name($ePhoto['author']);
+					$h .= $ePhoto['author']->getName();
 				$h .= '</div>';
 				$h .= '<div>';
 					$h .= s("Téléversé le {value}", \util\DateUi::numeric($ePhoto['createdAt'], \util\DateUi::DATE));

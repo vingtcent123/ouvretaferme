@@ -186,7 +186,7 @@ class MainTemplate extends BaseTemplate {
 
 		$h .= '<div class="dropdown-list bg-primary">';
 
-		$h .= '<div class="dropdown-title">'.\user\UserUi::name($data->eUserOnline).'</div>';
+		$h .= '<div class="dropdown-title">'.$data->eUserOnline->getName().'</div>';
 
 		$h .= '<a href="'.Lime::getUrl().'" class="dropdown-item">'.s("Accueil").'</a>';
 

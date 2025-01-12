@@ -499,13 +499,18 @@ class BasketUi {
 		$h = '<div id="shop-basket-address-show" class="'.$class.'">';
 
 			$h .= '<div class="util-title">';
-				$h .= '<h2>'.s("Mon adresse de livraison").'</h2>';
+				$h .= '<h2>'.s("Mes coordonnées").'</h2>';
 				$h .= '<a href="/user/settings:updateUser" class="btn btn-outline-primary">'.s("Mettre à jour").'</a>';
 			$h .= '</div>';
 
-			$h .= '<address>';
-				$h .= nl2br(encode($eUser->getAddress()));
-			$h .= '</address>';
+			$h .= '<dl class="util-presentation util-presentation-1">';
+				$h .= '<dt>'.s("Nom").'</dt>';
+				$h .= '<dd>'.$eUser->getName().'</dd>';
+				$h .= '<dt>'.s("Adresse").'</dt>';
+				$h .= '<dd style="line-height: 1.2">'.nl2br(encode($eUser->getAddress())).'</dd>';
+				$h .= '<dt>'.s("Téléphone").'</dt>';
+				$h .= '<dd>'.nl2br($eUser['phone']).'</dd>';
+			$h .= '</dl>';
 
 			$h .= '<br/><br/>';
 
@@ -551,13 +556,13 @@ class BasketUi {
 				break;
 
 			default :
-				$h .= '<p class="util-info">';
+				$h .= '<h4>';
 					if(get_exists('modify')) {
 						$h .= s("Vous commande est toujours confirmée, mais vous pouvoir choisir un autre moyen de paiement :");
 					} else {
 						$h .= s("Votre commande n'est pas encore confirmée, veuillez choisir votre moyen de paiement :");
 					}
-				$h .= '</p>';
+				$h .= '</h4>';
 				break;
 
 		}

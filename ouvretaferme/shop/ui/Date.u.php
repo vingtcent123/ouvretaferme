@@ -193,20 +193,18 @@ class DateUi {
 
 	}
 
-	public function getOrderLimits(Shop $eShop): string {
+	public function getOrderLimits(Shop $eShop, \Collection $ccPoint): string {
 
-		$eShop->expects(['ccPoint']);
-
-		$points = $eShop['ccPoint']->reduce(fn($c, $n) => $n + $c->count(), 0);
+		$points = $ccPoint->reduce(fn($c, $n) => $n + $c->count(), 0);
 
 		$h = '';
 
-		$orderMin = $eShop['ccPoint']->getColumn('orderMin');
+		$orderMin = $ccPoint->getColumn('orderMin');
 		if(count($orderMin) !== $points) { // Pas de valeur pour tous les points, on ajoute la valeur par défaut
 			$orderMin[] = $eShop['orderMin'];
 		}
 
-		$orderMin = array_unique(array_merge([$eShop['orderMin']], $eShop['ccPoint']->getColumn('orderMin')));
+		$orderMin = array_unique(array_merge([$eShop['orderMin']], $ccPoint->getColumn('orderMin')));
 
 		if(count($orderMin) === 1) {
 

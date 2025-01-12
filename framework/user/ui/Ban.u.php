@@ -133,7 +133,7 @@ Attention : ce texte sera affiché à l'utilisateur.")])
 			<td class="ban-cell">'.$user.$ip.'</td>
 			<td class="ban-cell ban-date-cell">'.$since.'</td>
 			<td class="ban-cell ban-date-cell">'.$until.'</td>
-			<td class="ban-cell ban-long-text-cell">'.s("{email} : {reason}", ['email' => UserUi::name($eBan['admin']), 'reason' => encode($eBan['reason'])]).'</td>
+			<td class="ban-cell ban-long-text-cell">'.s("{email} : {reason}", ['email' => $eBan['admin']->getName(), 'reason' => encode($eBan['reason'])]).'</td>
 		</tr>';
 
 		// Actions for active bans

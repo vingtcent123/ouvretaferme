@@ -101,6 +101,9 @@
 			$data->eDateSelected['cProduct'] = $cProduct;
 			$data->eDateSelected['farm'] = $data->eShop['farm'];
 
+			$data->eDateSelected['ccPoint'] = $data->eShop['ccPoint'];
+			$data->eDateSelected['ccPoint']->filter(fn($ePoint) => in_array($ePoint['id'], $data->eDateSelected['points']), depth: 2);
+
 		} else {
 			$data->eDateSelected = new \shop\Date();
 		}

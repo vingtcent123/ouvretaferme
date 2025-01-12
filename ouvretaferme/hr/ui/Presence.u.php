@@ -164,7 +164,7 @@ class PresenceUi {
 
 			$h .= $form->group(
 				s("Utilisateur"),
-				\user\UserUi::name($ePresence['user'])
+				$ePresence['user']->getName()
 			);
 
 			$h .= $form->dynamicGroups($ePresence, ['from', 'to']);

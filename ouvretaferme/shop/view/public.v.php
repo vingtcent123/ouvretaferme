@@ -44,7 +44,7 @@ new AdaptativeView('shop', function($data, ShopTemplate $t) {
 			echo '<div class="util-block">';
 				echo (new \shop\DateUi())->getOrderPeriod($data->eDateSelected);
 				echo ' ';
-				echo (new \shop\DateUi())->getOrderLimits($data->eShop);
+				echo (new \shop\DateUi())->getOrderLimits($data->eShop, $data->eDateSelected['ccPoint']);
 			echo '</div>';
 
 			if(

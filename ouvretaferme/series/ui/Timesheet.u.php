@@ -189,7 +189,7 @@ class TimesheetUi {
 
 		}
 
-		$h .= '<h4>'.s("Compléter pour {value}", \user\UserUi::name($eUser)).'</h4>';
+		$h .= '<h4>'.s("Compléter pour {value}", $eUser->getName()).'</h4>';
 
 		$h .= $form->hidden('user', $eUser['id']);
 

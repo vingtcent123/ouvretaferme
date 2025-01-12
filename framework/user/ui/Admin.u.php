@@ -156,7 +156,7 @@ class AdminUi {
 					$h .= '<tr class="user-admin-status-'.$eUser['status'].'">';
 						$h .= '<td class="text-center">'.$eUser['id'].'</td>';
 						$h .= '<td>';
-							$h .= UserUi::name($eUser).'<br />';
+							$h .= $eUser->getName().'<br />';
 							$h .= '<small>'.encode($eUser['email']).'</small>';
 						$h .= '</td>';
 						$h .= '<td>';
@@ -228,7 +228,7 @@ class AdminUi {
 		$h .= $form->close();
 
 		return new \Panel(
-			title: UserUi::name($eUser),
+			title: $eUser->getName(),
 			body: $h,
 			close: 'reload'
 		);

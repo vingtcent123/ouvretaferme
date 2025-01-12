@@ -39,7 +39,7 @@ class UserUi {
 	public static function getAutocomplete(User $eUser): array {
 
 		$item = self::getVignette($eUser, '2.5rem');
-		$item .= '<span>'.\user\UserUi::name($eUser).'</span>';
+		$item .= '<span>'.$eUser->getName().'</span>';
 
 		return [
 			'value' => $eUser['id'],

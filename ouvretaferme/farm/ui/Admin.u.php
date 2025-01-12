@@ -110,7 +110,7 @@ class AdminUi {
 							} else {
 								$h .= '<small>'.implode('<br/>', $eFarm['cFarmer']->toArray(function($eFarmer) {
 
-									$h = \user\UserUi::name($eFarmer['user']);
+									$h = $eFarmer['user']->getName();
 									$h .= ' <span class="color-muted">';
 
 									if($eFarmer['farmGhost']) {

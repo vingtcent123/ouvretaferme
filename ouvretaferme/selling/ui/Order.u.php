@@ -384,9 +384,14 @@ class OrderUi {
 			case \shop\Point::HOME :
 				$h .= '<p>'.s("Vous avez choisi la livraison à domicile à l'adresse suivante :").'</p>';
 				$h .= '<div class="util-block" style="max-width: 30rem">';
-					$h .= '<address>';
-						$h .= nl2br(encode($eSale->getDeliveryAddress()));
-					$h .= '</address>';
+					$h .= '<dl class="util-presentation util-presentation-1">';
+						$h .= '<dt>'.s("Nom").'</dt>';
+						$h .= '<dd>'.$eSale['customer']->getName().'</dd>';
+						$h .= '<dt>'.s("Adresse").'</dt>';
+						$h .= '<dd style="line-height: 1.2">'.nl2br($eSale->getDeliveryAddress()).'</dd>';
+						$h .= '<dt>'.s("Téléphone").'</dt>';
+						$h .= '<dd>'.nl2br($eSale['customer']['phone']).'</dd>';
+					$h .= '</dl>';
 				$h .= '</div>';
 				break;
 

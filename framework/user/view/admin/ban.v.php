@@ -4,7 +4,7 @@ new AdaptativeView('index', function($data, MainTemplate $t) {
 
 	if($data->eUserSelected->empty() === FALSE) {
 
-		$t->header = '<h1>'.s("Bannissements de {email}", ['email' => \user\UserUi::name($data->eUserSelected)]).'</h1>';
+		$t->header = '<h1>'.s("Bannissements de {email}", ['email' => $data->eUserSelected->getName()]).'</h1>';
 		$t->header .= '<h3>'.encode($data->eUserSelected['email']).'</h3>';
 
 	} else {

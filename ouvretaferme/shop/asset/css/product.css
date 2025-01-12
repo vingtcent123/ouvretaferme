@@ -280,10 +280,6 @@
 	letter-spacing: 0;
 }
 
-.shop-product-number-value.shop-product-number-value-error:after {
-	content: ' *';
-}
-
 .shop-product[data-has="1"] .shop-product-number-value {
 	font-size: 1.2rem;
 	font-weight: bold;

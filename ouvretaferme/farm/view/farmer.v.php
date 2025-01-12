@@ -13,7 +13,7 @@ new AdaptativeView('manage', function($data, FarmTemplate $t) {
 
 new AdaptativeView('show', function($data, FarmTemplate $t) {
 
-	$t->title = \user\UserUi::name($data->eFarmer['user']);
+	$t->title = $data->eFarmer['user']->getName();
 	$t->tab = 'settings';
 	$t->subNav = (new \farm\FarmUi())->getSettingsSubNav($data->eFarmer['farm']);
 

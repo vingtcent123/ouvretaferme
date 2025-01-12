@@ -254,7 +254,7 @@ class AnalyzeUi {
 
 					$h .= '<div class="analyze-working-time-user">';
 
-						$h .= '<h4>'.\user\UserUi::getVignette($eUser, '2rem').' '.\user\UserUi::name($eUser).'</h4>';
+						$h .= '<h4>'.\user\UserUi::getVignette($eUser, '2rem').' '.$eUser->getName().'</h4>';
 
 						$h .= '<div class="analyze-working-time-value">'.\series\TaskUi::convertTime($globalTime).'</div>';
 
@@ -1349,7 +1349,7 @@ class AnalyzeUi {
 		}
 
 		if($search->get('user')) {
-			$filters[] = s("Utilisateur : {value}", '<b>'.\user\UserUi::name($search->get('user')).'</b>');
+			$filters[] = s("Utilisateur : {value}", '<b>'.$search->get('user'->getName()).'</b>');
 		}
 
 		$h .= '<div class="util-block" style="margin-bottom: 1rem">'.implode(' / ', $filters).'</div>';

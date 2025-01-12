@@ -163,7 +163,7 @@ class PointUi {
 		$h = '<h2>'.s("Retrait des commandes").'</h2>';
 
 		if($c->count() > 1) {
-			$h .= '<p class="util-info">'.s("Choisissez le point de livraison auquel vous souhaitez retirer votre commande").' '.\Asset::icon('arrow-return-left', ['class' => 'asset-icon-rotate--90']).'</p>';
+			$h .= '<h4>'.s("Choisissez un point de livraison pour retirer votre commande").'</h4>';
 		}
 
 		$h .= '<div class="util-block point-place-wrapper">';
