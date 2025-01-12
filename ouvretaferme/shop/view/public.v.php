@@ -4,9 +4,21 @@ new AdaptativeView('denied', function($data, ShopTemplate $t) {
 	$t->title = s("Boutique en accès restreint");
 	$t->header = '<h1>'.Asset::icon('lock-fill').' '.$t->title.'</h1>';
 
-	echo '<div class="util-info">';
-		echo s("Vous n'avez pas accès à cette boutique en ligne, rapprochez-vous de la ferme pour corriger ce problème.");
-	echo '</div>';
+	if(\user\ConnectionLib::getOnline()->empty()) {
+
+		echo '<div class="util-info">';
+			echo s("Veuillez vous connecter pour accéder à cette boutique en ligne.");
+		echo '</div>';
+
+		echo (new \user\UserUi())->logInBasic();
+
+	} else {
+
+		echo '<div class="util-info">';
+			echo s("Vous n'avez pas accès à cette boutique en ligne, rapprochez-vous de la ferme pour corriger ce problème.");
+		echo '</div>';
+
+	}
 
 });
 new AdaptativeView('shop', function($data, ShopTemplate $t) {

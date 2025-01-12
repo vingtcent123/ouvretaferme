@@ -31,7 +31,7 @@ class Shop extends ShopElement {
 		return (
 			$this['limitCustomers'] == [] or
 			$this->canRead() or
-			in_array($e['id'], $this['limitCustomers'])
+			($e->notEmpty() and in_array($e['id'], $this['limitCustomers']))
 		);
 
 	}
