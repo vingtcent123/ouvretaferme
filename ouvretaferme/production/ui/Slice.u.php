@@ -28,27 +28,34 @@ class SliceUi {
 		$nameUnit = 'sliceUnit'.$suffix;
 		$nameTool = 'sliceTool'.$suffix;
 
-		if($eCrop instanceof Crop) {
+		if($cSlice->empty()) {
+
+			$cSlice->append(new Slice([
+				'partPercent' => 100
+			]));
 
 			$sliceUnit = \series\Cultivation::PERCENT;
 			$sliceTool = new \farm\Tool();
 
 		} else {
 
-			$eCrop->expects([
-				'series' => ['use', 'area', 'length'],
-				'cTray'
-			]);
+			if($eCrop instanceof Crop) {
 
-			$sliceUnit = $eCrop['sliceUnit'];
-			$sliceTool = $eCrop['sliceTool'];
+				$sliceUnit = \series\Cultivation::PERCENT;
+				$sliceTool = new \farm\Tool();
 
-		}
+			} else {
 
-		if($cSlice->empty()) {
-			$cSlice->append(new Slice([
-				'partPercent' => 100
-			]));
+				$eCrop->expects([
+					'series' => ['use', 'area', 'length'],
+					'cTray'
+				]);
+
+				$sliceUnit = $eCrop['sliceUnit'];
+				$sliceTool = $eCrop['sliceTool'];
+
+			}
+
 		}
 
 		$id = uniqid('slice-select-');
