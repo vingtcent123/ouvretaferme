@@ -2,7 +2,8 @@
 .shop-product-wrapper {
 	display: grid;
 	grid-template-columns: repeat(5, 1fr);
-	grid-gap: 1.5rem;
+	grid-template-rows: auto auto auto;
+	grid-gap: 1.25rem;
 	margin-bottom: 3rem;
 }
 
@@ -47,21 +48,29 @@
 
 }
 
+@media (max-width: 359px) {
+
+	.shop-product-wrapper {
+		grid-template-columns: 1fr;
+	}
+
+}
+
 .shop-product {
 	background-color: white;
 	box-shadow: 1px 1px 1px var(--border);
 	border-radius: var(--radius);
 	position: relative;
 	display: grid;
-	grid-template-rows: auto 1fr;
+	grid-template-rows: 12rem 1fr auto;
 }
 
 .shop-product > * {
-	padding: 0.5rem;
+	padding: 0 0.5rem;
 }
 
 .shop-product-image {
-	min-height: 12rem;
+	height: 100%;
 	background-position: center center;
 	background-size: cover;
 	position: relative;
@@ -88,27 +97,33 @@
 	background-position: center bottom;
 }
 
-.shop-product-text {
+.shop-product-content {
 	display: flex;
 	flex-direction: column;
 	justify-content: space-between;
-	border-bottom-left-radius: var(--radius);
-	border-bottom-right-radius: var(--radius);
+}
+
+.shop-product-text {
+	display: flex;
+	justify-content: end;
+	flex-wrap: wrap;
+	gap: 0.25rem;
+}
+
+.shop-product-text:not(:empty) {
+	margin-bottom: 0.25rem;
 }
 
 /* Uniquement dans la boutique */
-.shop-product-image:not(.shop-product-image-empty) + .shop-product-text .shop-product-number .btn {
+.shop-product-number .btn {
 	border-color: var(--primary);
 	border-width: 2px;
 }
 
-.shop-product-content h4 {
-	margin-bottom: 0.25rem;
+.shop-product-title h4 {
+	margin: 0.5rem 0 0.25rem;
 }
 
-.shop-product-content h4 a {
-	color: white;
-}
 
 .shop-product-size {
 	text-decoration: underline;
@@ -123,8 +138,12 @@
 }
 
 .shop-product-description {
-	max-height: 5rem;
+	max-height: 4rem;
 	overflow-y: auto;
+}
+
+.shop-product-description:not(:empty) {
+	margin-bottom: 0.25rem;
 }
 
 .shop-product-buy {
@@ -132,6 +151,10 @@
 	grid-template-columns: 1fr;
 	grid-template-rows: 1fr auto;
 	grid-row-gap: 0.5rem;
+}
+
+.shop-product-buy:empty {
+	display: none;
 }
 
 @media (max-width: 449px) {
@@ -147,12 +170,12 @@
 	line-height: 1;
 }
 
-.shop-product-buy-subtitle {
+.shop-product-subtitle {
 	display: flex;
 	justify-content: space-between;
 	align-items: end;
 	column-gap: 0.5rem;
-	margin-bottom: 0.5rem;
+	margin-bottom: 0.25rem;
 }
 
 .shop-product-buy-price {
@@ -160,14 +183,8 @@
 	font-weight: bold;
 }
 
-.shop-product-buy-infos {
-	display: grid;
-	grid-row-gap: 0.25rem;
-}
-
 .shop-product-buy-info {
 	background-color: #bbb3;
-	margin-top: 0.25rem;
 	font-size: 0.9rem;
 	padding: 0.25rem 0.5rem;
 	line-height: 1;

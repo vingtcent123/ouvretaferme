@@ -160,9 +160,8 @@ class ProductUi {
 					$h .= '<div class="shop-header-image-quality">'.\farm\FarmUi::getQualityLogo($eProductSelling['quality'], '2.5rem').'</div>';
 				}
 			$h .= '</div>';
-
-			$h .= '<div class="shop-product-text">';
-				$h .= '<div class="shop-product-content">';
+			$h .= '<div class="shop-product-content">';
+				$h .= '<div class="shop-product-title">';
 
 					$h .= '<h4>';
 						$h .= $eProductSelling->getName('html');
@@ -174,63 +173,65 @@ class ProductUi {
 						}
 					$h .= '</h4>';
 
-					$h .= '<div class="shop-product-buy-subtitle">';
+					$h .= '<div class="shop-product-subtitle">';
 
 						$h .= '<span class="shop-product-buy-price">'.\util\TextUi::money($eProduct['price']).' '.$this->getTaxes($eProduct).\selling\UnitUi::getBy($eProductSelling['unit']).'</span>';
 
-						$h .= '<div class="shop-product-buy-infos">';
+						if($canOrder) {
 
-							if($eProduct['packaging'] !== NULL) {
+							if($eProduct['reallyAvailable'] !== NULL) {
+
 								$h.= '<div class="shop-product-buy-info">';
-									$h .= s("Colis de {value}", \selling\UnitUi::getValue($eProduct['packaging'], $eProductSelling['unit'], TRUE));
-								$h .= '</div>';
-							}
-
-							if($canOrder) {
-
-								if($eProduct['reallyAvailable'] !== NULL) {
-
-									$h.= '<div class="shop-product-buy-info">';
-									if($eProduct['reallyAvailable'] > 0) {
-										$h .= s("Disponible : {value}", $eProduct['reallyAvailable']);
-									} else {
-										$h .= s("Rupture de stock");
-									}
-									$h .= '</div>';
-
+								if($eProduct['reallyAvailable'] > 0) {
+									$value = ($eProduct['packaging'] === NULL) ? \selling\UnitUi::getValue($eProduct['reallyAvailable'], $eProductSelling['unit'], TRUE) : s("{value} colis", $eProduct['reallyAvailable']);
+									$h .= '<span class="hide-xs-down">'.s("Disponible : {value}", $value).'</span>';
+									$h .= '<span class="hide-sm-up">'.s("Dispo : {value}", $value).'</span>';
+								} else {
+									$h .= s("Rupture de stock");
 								}
+								$h .= '</div>';
 
 							}
 
-						$h .= '</div>';
+						}
+
+					$h .= '</div>';
+					$h .= '<div class="shop-product-text">';
+
+						if($eProduct['packaging'] !== NULL) {
+							$h.= '<div class="shop-product-buy-info">';
+								$h .= s("Colis : {value}", \selling\UnitUi::getValue($eProduct['packaging'], $eProductSelling['unit'], TRUE));
+							$h .= '</div>';
+						}
+
+						if($eProduct['limitMin'] !== NULL) {
+
+							$h.= '<div class="shop-product-buy-info">';
+								$h .= s("Minimum de commande : {value}", ($eProduct['packaging'] === NULL) ? \selling\UnitUi::getValue($eProduct['limitMin'], $eProductSelling['unit'], TRUE) : s("{value} colis", $eProduct['limitMin']));
+							$h .= '</div>';
+
+						}
 					$h .= '</div>';
 
 				$h .= '</div>';
 
-				$h .= '<div class="shop-product-buy">';
+				if($eProductSelling['description'] !== NULL) {
+					$h .= '<div class="shop-product-description">';
+						$h .= (new \editor\EditorUi())->value($eProductSelling['description']);
+					$h .= '</div>';
+				}
 
-					if($eProduct['limitMin'] !== NULL) {
+			$h .= '</div>';
 
-						$h.= '<div class="shop-product-buy-info">';
-							$h .= s("Minimum<br/>de commande : {value}", $eProduct['limitMin']);
-						$h .= '</div>';
+			$h .= '<div class="shop-product-buy">';
 
-					}
+				if(
+					$canOrder and
+					($eProduct['reallyAvailable'] === NULL or $eProduct['reallyAvailable'] > 0.0)
+				) {
+					$h .= self::numberOrder($eDate, $eProductSelling, $eProduct, 0, $eProduct['reallyAvailable']);
+				}
 
-					if($eProductSelling['description'] !== NULL) {
-						$h .= '<div class="shop-product-description">';
-							$h .= (new \editor\EditorUi())->value($eProductSelling['description']);
-						$h .= '</div>';
-					}
-
-					if(
-						$canOrder and
-						($eProduct['reallyAvailable'] === NULL or $eProduct['reallyAvailable'] > 0.0)
-					) {
-						$h .= self::numberOrder($eDate, $eProductSelling, $eProduct, 0, $eProduct['reallyAvailable']);
-					}
-
-				$h .= '</div>';
 			$h .= '</div>';
 
 		$h .= '</div>';
