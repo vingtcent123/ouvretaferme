@@ -151,7 +151,7 @@ class ProductUi {
 			$h .= '>';
 				if($url === NULL) {
 					if($eProductSelling['plant']->notEmpty()) {
-						$h .= \plant\PlantUi::getVignette($eProductSelling['plant'], '7rem');
+						$h .= \plant\PlantUi::getVignette($eProductSelling['plant'], '9rem');
 					} else {
 						$h .= \Asset::icon('camera', ['class' => 'shop-product-image-placeholder']);
 					}
@@ -166,27 +166,17 @@ class ProductUi {
 
 					$h .= '<h4>';
 						$h .= $eProductSelling->getName('html');
+
+						if($eProductSelling['size'] !== NULL) {
+							$h .= '<span class="shop-product-size">';
+								$h .= encode($eProductSelling['size']);
+							$h .= '</span>';
+						}
 					$h .= '</h4>';
 
-					if($eDate['type'] === Date::PRO and $eProductSelling['size'] !== NULL) {
-						$h .= '<div class="shop-product-size">';
-							$h .= encode($eProductSelling['size']);
-						$h .= '</div>';
-					}
+					$h .= '<div class="shop-product-buy-subtitle">';
 
-					if($eProductSelling['description'] !== NULL) {
-						$h .= '<div class="shop-product-description">';
-							$h .= (new \editor\EditorUi())->value($eProductSelling['description']);
-						$h .= '</div>';
-					}
-
-				$h .= '</div>';
-
-				$h .= '<div class="shop-product-buy">';
-
-					$h .= '<div class="shop-product-buy-price">';
-
-						$h .= '<span style="white-space: nowrap">'.\util\TextUi::money($eProduct['price']).' '.$this->getTaxes($eProduct).\selling\UnitUi::getBy($eProductSelling['unit']).'</span>';
+						$h .= '<span class="shop-product-buy-price">'.\util\TextUi::money($eProduct['price']).' '.$this->getTaxes($eProduct).\selling\UnitUi::getBy($eProductSelling['unit']).'</span>';
 
 						$h .= '<div class="shop-product-buy-infos">';
 
@@ -210,18 +200,28 @@ class ProductUi {
 
 								}
 
-								if($eProduct['limitMin'] !== NULL) {
-
-									$h.= '<div class="shop-product-buy-info">';
-										$h .= s("Minimum<br/>de commande : {value}", $eProduct['limitMin']);
-									$h .= '</div>';
-
-								}
-
 							}
 
 						$h .= '</div>';
 					$h .= '</div>';
+
+				$h .= '</div>';
+
+				$h .= '<div class="shop-product-buy">';
+
+					if($eProduct['limitMin'] !== NULL) {
+
+						$h.= '<div class="shop-product-buy-info">';
+							$h .= s("Minimum<br/>de commande : {value}", $eProduct['limitMin']);
+						$h .= '</div>';
+
+					}
+
+					if($eProductSelling['description'] !== NULL) {
+						$h .= '<div class="shop-product-description">';
+							$h .= (new \editor\EditorUi())->value($eProductSelling['description']);
+						$h .= '</div>';
+					}
 
 					if(
 						$canOrder and
