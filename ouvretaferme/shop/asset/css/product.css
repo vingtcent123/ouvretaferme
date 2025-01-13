@@ -26,7 +26,7 @@
 @media (max-width: 767px) {
 
 	.shop-product-wrapper {
-		grid-template-columns: repeat(2, 1fr);
+		grid-gap: .75rem;
 	}
 
 }
@@ -62,7 +62,7 @@
 	border-radius: var(--radius);
 	position: relative;
 	display: grid;
-	grid-template-rows: 12rem 1fr auto;
+	grid-template-rows: 14rem 1fr auto;
 }
 
 .shop-product > * {
@@ -185,7 +185,6 @@
 	padding: 0.25rem 0.5rem;
 	line-height: 1;
 	border-radius: var(--radius);
-	width: max-content;
 }
 
 @media (max-width: 399px) {

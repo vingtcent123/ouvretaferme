@@ -184,8 +184,8 @@ class ProductUi {
 								$h.= '<div class="shop-product-buy-info">';
 								if($eProduct['reallyAvailable'] > 0) {
 									$value = ($eProduct['packaging'] === NULL) ? \selling\UnitUi::getValue($eProduct['reallyAvailable'], $eProductSelling['unit'], TRUE) : s("{value} colis", $eProduct['reallyAvailable']);
-									$h .= '<span class="hide-xs-down">'.s("Disponible : {value}", $value).'</span>';
-									$h .= '<span class="hide-sm-up">'.s("Dispo : {value}", $value).'</span>';
+									$h .= '<span class="hide-sm-down">'.s("Disponible : {value}", $value).'</span>';
+									$h .= '<span class="hide-md-up">'.s("Dispo : {value}", $value).'</span>';
 								} else {
 									$h .= s("Rupture de stock");
 								}
