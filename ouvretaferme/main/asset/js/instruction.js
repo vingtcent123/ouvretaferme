@@ -68,7 +68,7 @@ new Lime.Instruction('main')
 
 		if(
 			document.body.getAttribute('data-touch') === 'yes' ||
-			window.innerHeight < 767
+			window.innerHeight < 600 /* Hauteur minimale pour la navigation de gauche */
 		) {
 
 			const node = qs('body > nav');
