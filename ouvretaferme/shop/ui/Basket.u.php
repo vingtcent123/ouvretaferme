@@ -53,7 +53,10 @@ class BasketUi {
 
 		$h .= '</div>';
 
-		if($currentStep !== \shop\BasketUi::STEP_CONFIRMATION and $eDate->isOrderSoonExpired()) {
+		if(
+			in_array($currentStep, [BasketUi::STEP_DELIVERY, BasketUi::STEP_PAYMENT, BasketUi::STEP_SUMMARY]) and
+			$eDate->isOrderSoonExpired()
+		) {
 			$h .= '<br/><span class="color-danger">'.\Asset::icon('exclamation-circle').' '.s("Attention, il ne vous reste plus que quelques minutes pour finaliser votre commande. Après {value}, votre panier sera supprimé et vous ne pourrez pas terminer votre achat.", \util\DateUi::numeric($eDate['orderEndAt'], \util\DateUi::TIME_HOUR_MINUTE)).'</span>';
 		}
 
