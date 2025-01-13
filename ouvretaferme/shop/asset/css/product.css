@@ -140,10 +140,7 @@
 .shop-product-description {
 	max-height: 4rem;
 	overflow-y: auto;
-}
-
-.shop-product-description:not(:empty) {
-	margin-bottom: 0.25rem;
+	margin-bottom: 0.5rem;
 }
 
 .shop-product-buy {
