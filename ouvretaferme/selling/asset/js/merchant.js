@@ -559,7 +559,7 @@ class Merchant {
 		) {
 			return null;
 		} else {
-			return parseFloat(input.value);
+			return isNaN(input.value) ? 0 : parseFloat(input.value);
 		}
 
 	}
