@@ -205,7 +205,7 @@ class AnalyzeUi {
 										$h .= \selling\UnitUi::getValue(round($eItemMonth['quantity']), $e['unit'], short: TRUE);
 									$h .= '</td>';
 									$h .= '<td class="text-end">';
-										$h .= \util\TextUi::money($turnover / $eItemMonth['quantity']);
+										$h .= ($eItemMonth['quantity'] > 0) ? \util\TextUi::money($turnover / $eItemMonth['quantity']) : '-';
 									$h .= '</td>';
 
 								}
@@ -288,7 +288,7 @@ class AnalyzeUi {
 								$h .= \selling\UnitUi::getValue(round($totalQuantity), $e['unit'], short: TRUE);
 							$h .= '</td>';
 							$h .= '<td class="text-end">';
-								$h .= \util\TextUi::money($totalTurnover / $totalQuantity);
+								$h .= ($totalQuantity > 0) ? \util\TextUi::money($totalTurnover / $totalQuantity) : '-';
 							$h .= '</td>';
 
 						} else if($e instanceof \plant\Plant) {
@@ -605,7 +605,7 @@ class AnalyzeUi {
 				$h .= \util\TextUi::money($eItem['turnover'], precision: 0);
 			$h .= '</td>';
 			$h .= '<td class="util-annotation">';
-				$h .= \util\TextUi::pc($eItem['turnover'] / $turnover * 100, 0);
+				$h .= ($turnover > 0) ? \util\TextUi::pc($eItem['turnover'] / $turnover * 100) : '-';
 			$h .= '</td>';
 
 			if($eItemBefore->notEmpty()) {
@@ -613,7 +613,7 @@ class AnalyzeUi {
 					$h .= \util\TextUi::money($eItemBefore['turnover'], precision: 0);
 				$h .= '</td>';
 				$h .= '<td class="util-annotation">';
-					$h .= \util\TextUi::pc($eItemBefore['turnover'] / $turnoverBefore * 100, 0);
+					$h .= ($turnoverBefore > 0) ? \util\TextUi::pc($eItemBefore['turnover'] / $turnoverBefore * 100, 0) : '-';
 				$h .= '</td>';
 			} else {
 				$h .= '<td class="text-end">-</td>';
@@ -852,7 +852,7 @@ class AnalyzeUi {
 								$h .= ($turnover > 0 ? \util\TextUi::pc($eItem['turnover'] / $turnover * 100) : '-');
 							$h .= '</td>';
 							$h .= '<td class="text-end">';
-								$h .= \util\TextUi::money($eItem['turnover'] / $eItem['quantity']);
+								$h .= ($eItem['quantity'] > 0) ? \util\TextUi::money($eItem['turnover'] / $eItem['quantity']) : '-';
 							$h .= '</td>';
 						$h .= '</tr>';
 
