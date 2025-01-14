@@ -94,7 +94,7 @@ a.nav-year:hover {
 
 	body[data-template~="farm"] main  {
 		grid-area: main;
-		background-color: var(--background-light);
+		background-color: var(--background);
 	}
 
 	body[data-template~="farm"] main .container {
@@ -106,7 +106,7 @@ a.nav-year:hover {
 
 	body[data-template~="farm"] main .container.farm-template-main-title {
 		height: var(--nav-height);
-		background: linear-gradient(342deg, var(--background-dark) 0, var(--background-dark) 50%, #e4e4ea 100%);
+		background: linear-gradient(342deg, var(--background-dark) 0, var(--background-dark) 50%, #e2e2e8 100%);
 		margin-bottom: 1rem;
 		margin-top: 0;
 		position: relative;
@@ -351,7 +351,7 @@ a.nav-year:hover {
 @media (max-width: 1199px), (max-height: 599px) {
 
 	body[data-template~="farm"] header {
-		background: linear-gradient(to bottom, var(--background-light) 0, white 100%);
+		background: linear-gradient(to bottom, var(--background) 0, white 100%);
 	}
 
 	body[data-template~="farm"] header {

@@ -162,7 +162,7 @@ Item:
   unit: ?selling\Unit
   unitPrice: decimal(8, 2)
   discount: int8(0, 100) = 0
-  number: ?decimal(8, 2, 0.0, null)
+  number: ?decimal(8, 2)
   price: ?decimal(8, 2)
   priceExcludingVat: ?decimal(8, 2)
   locked: enum(UNIT_PRICE, NUMBER, PRICE) = PRICE

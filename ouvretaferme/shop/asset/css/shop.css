@@ -1,3 +1,7 @@
+body[data-template~="shop"] {
+	background: var(--background);
+}
+
 .shop-title {
 	display: flex;
 	column-gap: 1rem;

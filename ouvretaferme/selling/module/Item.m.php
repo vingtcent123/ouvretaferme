@@ -64,7 +64,7 @@ class ItemModel extends \ModuleModel {
 			'unit' => ['element32', 'selling\Unit', 'null' => TRUE, 'cast' => 'element'],
 			'unitPrice' => ['decimal', 'digits' => 8, 'decimal' => 2, 'cast' => 'float'],
 			'discount' => ['int8', 'min' => 0, 'max' => 100, 'cast' => 'int'],
-			'number' => ['decimal', 'digits' => 8, 'decimal' => 2, 'min' => 0.0, 'max' => NULL, 'null' => TRUE, 'cast' => 'float'],
+			'number' => ['decimal', 'digits' => 8, 'decimal' => 2, 'null' => TRUE, 'cast' => 'float'],
 			'price' => ['decimal', 'digits' => 8, 'decimal' => 2, 'null' => TRUE, 'cast' => 'float'],
 			'priceExcludingVat' => ['decimal', 'digits' => 8, 'decimal' => 2, 'null' => TRUE, 'cast' => 'float'],
 			'locked' => ['enum', [\selling\Item::UNIT_PRICE, \selling\Item::NUMBER, \selling\Item::PRICE], 'cast' => 'enum'],

@@ -9,7 +9,7 @@
 	--selling: #722583;
 	--basket: #b17e2f;
 	--background: #ededf1;
-	--background-dark: #e9e9ec;
+	--background-dark: #e7e7ea;
 	--background-light: #f4f4f6;
 	--background-odd: #f8f8f9;
 	--primary: #3d373d;
@@ -217,7 +217,7 @@ h5 {
 body {
 	display: flex;
 	flex-direction: column;
-	background: var(--background-light);
+	background: var(--background);
 }
 
 @media print {
@@ -582,7 +582,7 @@ footer:empty {
 
 footer:not(:empty) {
 	padding: 4rem 0 1rem;
-	background: linear-gradient(to bottom, var(--background-light) 0, white 100%);
+	background: linear-gradient(to bottom, var(--background) 0, white 100%);
 }
 
 footer a {
