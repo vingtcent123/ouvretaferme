@@ -551,7 +551,7 @@ class Sale extends SaleElement {
 
 		if(
 			$this['preparationStatus'] === Sale::BASKET and
-			$this['shopDate']->canOrder() === FALSE
+			$this['shopDate']->canOrder() === TRUE
 		) {
 			return FALSE;
 		}
