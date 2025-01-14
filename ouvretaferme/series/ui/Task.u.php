@@ -3638,7 +3638,7 @@ class TaskUi {
 
 			$action = $e['action']->notEmpty() ? $e['action']['id'] : '';
 
-			$seasons .= '<a data-ajax="/series/task:createFromSeries?farm='.$e['farm']['id'].'&season='.$i.'&action='.$action.'&'.http_build_query($e->extracts(['doneWeek', 'plannedWeek', 'status'])).'" data-ajax-method="get" class="btn btn-form '.($i === $e['season'] ? 'btn-selected' : '').'">'.$i.'</a> ';
+			$seasons .= '<a href="/series/task:createFromSeries?farm='.$e['farm']['id'].'&season='.$i.'&action='.$action.'&'.http_build_query($e->extracts(['doneWeek', 'plannedWeek', 'status'])).'" class="btn btn-form '.($i === $e['season'] ? 'btn-selected' : '').'">'.$i.'</a> ';
 
 		}
 
