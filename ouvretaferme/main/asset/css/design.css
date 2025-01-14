@@ -118,7 +118,15 @@ html {
 	font-size: 13px;
 }
 
-@media (min-width: 1400px) and (min-height: 992px) {
+@media (min-width: 1600px) and (min-height: 992px) {
+
+	html {
+		font-size: 16px;
+	}
+
+}
+
+@media (min-width: 1400px) and (max-width: 1599px) and (min-height: 992px) {
 
 	html {
 		font-size: 15px;
@@ -134,7 +142,7 @@ html {
 
 }
 
-@media (min-width: 1350px) and (max-width: 1399px) {
+@media (min-width: 1300px) and (max-width: 1399px) {
 
 	html {
 		font-size: 14px;
@@ -142,7 +150,7 @@ html {
 
 }
 
-@media (min-width: 1200px) and (max-width: 1349px) {
+@media (min-width: 1200px) and (max-width: 1299px) {
 
 	html {
 		font-size: 13px;
