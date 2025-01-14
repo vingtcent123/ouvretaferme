@@ -69,8 +69,14 @@ class PdfUi {
 
 		if($eConfiguration['pdfNaturalOrder']) {
 
-			for($i = count($items) % $itemsPerPage; $i < $itemsPerPage; $i++) {
-				$items[] = $this->getLabel($eFarm, new Customer(), quality: $eFarm['quality']);
+			$modulo = count($items) % $itemsPerPage;
+
+			if($modulo > 0) {
+
+				for($i = $modulo; $i < $itemsPerPage; $i++) {
+					$items[] = $this->getLabel($eFarm, new Customer(), quality: $eFarm['quality']);
+				}
+
 			}
 
 			$pages = count($items) / $itemsPerPage;
