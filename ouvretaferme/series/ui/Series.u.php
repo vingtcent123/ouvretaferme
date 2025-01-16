@@ -463,28 +463,34 @@ class SeriesUi {
 					$d->label = s("Pour la saison");
 
 					if($season < date('Y')) {
-						$d->after = \util\FormUi::info(s("Vous vous apprêtez à créer une série pour une saison déjà passée. Vous pouvez corriger votre choix si vous le souhaitez."), class: 'color-danger');
-					}
 
-					if($season === (int)date('Y') and date('m') >= \Setting::get('farm\newSeason')) {
+						if(date('m') >= \Setting::get('farm\newSeason')) {
+							$nextSeason = s("{value1} ou {value2}", ['value1' => date('Y'), 'value2' => date('Y') + 1]);
+						} else {
+							$nextSeason = date('Y');
+						}
+
+						$d->after = '<div class="util-danger mt-1">'.s("Vous vous apprêtez à créer une série pour une saison déjà passée. Vous pouvez corriger votre choix si vous souhaitez créer une série pour la saison {value}.", $nextSeason).'</div>';
+
+					} else if($season === (int)date('Y') and date('m') >= \Setting::get('farm\newSeason')) {
 
 						$nextSeason = $season + 1;
 
-						$after = '<span class="color-warning">'.s("Vous vous apprêtez à créer une série pour la saison en cours alors que l'année est presque terminée.").'</span> ';
+						$after = s("Vous vous apprêtez à créer une série pour la saison en cours alors que l'année est presque terminée.").' ';
 
 						if($nextSeason > $eFarm['seasonLast']) {
 
-							$after .= '<span class="color-warning">'.s("Vous pouvez créer la saison {value} dès maintenant pour ajouter des séries sur la saison à venir.", $nextSeason).'</span>';
+							$after .= s("Vous pouvez créer la saison {value} dès maintenant pour ajouter des séries sur la saison à venir.", $nextSeason);
 
-							$after .= '<br/><a data-ajax="/farm/farm:doSeasonLast" post-id="'.$eFarm['id'].'" post-increment="1" class="btn btn-secondary">';
+							$after .= '<br/><a data-ajax="/farm/farm:doSeasonLast" post-id="'.$eFarm['id'].'" post-increment="1" class="btn btn-warning mt-1">';
 								$after .= s("Ajouter la saison {year}", ['year' => $nextSeason]);
 							$after .= '</a> ';
 
 						} else {
-							$after .= '<span class="color-warning">'.s("Vous pouvez corriger votre choix si vous le souhaitez.").'</span>';
+							$after .= s("Corrigez votre choix si vous souhaitez créer une série pour la saison {value}.", $nextSeason);
 						}
 
-						$d->after = \util\FormUi::info($after);
+						$d->after = '<div class="util-warning mt-1">'.$after.'</div>';
 
 					}
 
