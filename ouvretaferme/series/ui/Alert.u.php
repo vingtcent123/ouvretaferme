@@ -16,6 +16,7 @@ class AlertUi {
 			'csvVariety' => s("Dans votre fichier CSV, chaque colonne <i>variety_name</i> doit être suivie par une colonne <i>variety_part</i>."),
 
 			'Series::plantsCheck' => s("Veuillez sélectionner au moins une espèce !"),
+			'Series::plantsDuplicate' => s("Vous ne pouvez pas ajouter deux fois la même espèce à une série !"),
 			'Series::perennialLifetime.consistency' => s("La durée de vie de la culture ne peut pas être réduite autant car elle a été mise en place depuis plus longtemps"),
 			'Series::duplicatePlaceConsistency' => s("Il n'est pas possible de continuer cette culture cette saison car un ou plusieurs emplacements qu'elle utilise (parcelle, bloc ou planche) ne sont pas utilisables cette année. Veuillez vérifier votre plan d'assolement !"),
 			'Series::series.check' => s("Merci de sélectionner au moins une série"),

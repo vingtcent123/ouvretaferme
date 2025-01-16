@@ -2399,9 +2399,7 @@ class CultivationUi {
 			'series' => $eSeries
 		]);
 
-		$form = new \util\FormUi([
-			'firstColumnSize' => 50
-		]);
+		$form = new \util\FormUi();
 
 		$h = $form->openAjax('/series/cultivation:doCreate', ['id' => 'cultivation-create', 'autocomplete' => 'off']);
 

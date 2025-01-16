@@ -94,8 +94,10 @@ use series\Series;
 				throw new NotExpectedAction('Missing cycle');
 			}),
 			'use' => $use,
-			'area' => 0,
-			'length' => ($use === \series\Series::BED) ? 0 : NULL
+			'area' => NULL,
+			'areaTarget' => 0,
+			'length' => NULL,
+			'lengthTarget' => ($use === \series\Series::BED) ? 0 : NULL
 		]);
 
 		$data->cAction = \farm\ActionLib::getByFarm($data->eFarm, fqn: [ACTION_SEMIS_PEPINIERE, ACTION_SEMIS_DIRECT, ACTION_PLANTATION], index: 'fqn');

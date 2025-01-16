@@ -237,6 +237,11 @@ class SeriesLib extends SeriesCrud {
 			return [];
 		}
 
+		if(array_unique($plants) !== $plants) {
+			Series::fail('plantsDuplicate');
+			return [];
+		}
+
 		foreach($plants as $index => $plant) {
 
 			$eCultivation = clone $eCultivationReference;

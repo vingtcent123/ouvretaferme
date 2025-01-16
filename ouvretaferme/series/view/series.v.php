@@ -56,6 +56,7 @@ new JsonView('addPlant', function($data, AjaxTemplate $t) {
 
 	$t->qs('#series-create-plant input[name="index"]')->value($data->nextIndex);
 	$t->qs('#series-create-plant-list')->insertAdjacentHtml('beforeend', (new \series\SeriesUi())->addFromPlant($data->eSeries, $data->eCultivation, $data->ePlant, $data->nextIndex, $data->cAction));
+	$t->qs('#series-create-add-plant input')->value('');
 	$t->js()->eval('Series.showOrHideDeletePlant()');
 
 });
