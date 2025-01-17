@@ -273,7 +273,7 @@ class DateField {
 
 		}
 
-		Lime.Dropdown.open(wrapper.qs('[data-fallback="weekNumber"]'), "bottom-start");
+		Lime.Dropdown.open(wrapper.qs('[data-fallback="weekNumber"]'), "center-center");
 
 
 	}

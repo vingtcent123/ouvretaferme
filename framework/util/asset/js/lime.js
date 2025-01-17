@@ -1931,6 +1931,8 @@ Lime.Stick = class {
 			translateY += (elementBounds.top - freeBounds.height);
 		} else if(placement.startsWith('bottom')) {
 			translateY += elementBounds.bottom;
+		} else if(placement.startsWith('center')) {
+			translateY += (window.innerHeight - freeBounds.height) / 2;
 		}
 
 		translateX += (this.offset.x ?? 0) - freeBounds.left;
