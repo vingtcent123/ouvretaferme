@@ -170,7 +170,7 @@ class CsvUi {
 				case 'species' :
 					$h .= '<div class="util-block">';
 						$h .= '<h4 class="color-danger">'.s("Espèces manquantes").'</h4>';
-						$h .= '<p>'.s("Les espèces suivantes n'existent pas ou ne sont pas des espèces annuelles sur votre ferme, corrigez votre fichier CSV pour les faire correspondre à une espèce existante ou ajoutez-les à votre ferme :", ['link' => '<a href="'.\plant\PlantUi::urlManage($eFarm).'" target="_blank">']).'</p>';
+						$h .= '<p>'.s("Les espèces suivantes n'existent pas ou sont désactivées sur votre ferme, corrigez votre fichier CSV pour les faire correspondre à une espèce existante ou ajoutez-les à votre ferme :", ['link' => '<a href="'.\plant\PlantUi::urlManage($eFarm).'" target="_blank">']).'</p>';
 						$h .= '<p style="font-style: italic">'.encode(implode(', ', $values)).'</p>';
 						$h .= '<a href="'.\plant\PlantUi::urlManage($eFarm).'" target="_blank" class="btn btn-danger">'.s("Ajouter des espèces").'</a>';
 					$h .= '</div>';
@@ -206,6 +206,14 @@ class CsvUi {
 			}
 
 			switch($type) {
+
+				case 'speciesPerennial' :
+					$h .= '<div class="util-block">';
+						$h .= '<h4>'.s("Information sur les espèces pérennes").'</h4>';
+						$h .= '<p>'.s("L'import n'est pas supporté pour les espèces pérennes, les séries avec les plantes suivantes ne seront pas importées :").'</p>';
+						$h .= '<p style="font-style: italic">'.encode(implode(', ', $values)).'</p>';
+					$h .= '</div>';
+					break;
 
 				case 'varieties' :
 					$h .= '<div class="util-block">';
@@ -270,18 +278,24 @@ class CsvUi {
 						$h .= '<tr class="'.($cultivation['errors'] ? 'csv-error' : '').'">';
 
 							$h .= '<td class="td-min-content text-center">';
-								if($cultivation['ePlant']->notEmpty()) {
+								if(
+									$cultivation['ePlant']->notEmpty() and
+									$cultivation['ignore'] === FALSE
+								) {
 									$h .= \plant\PlantUi::getVignette($cultivation['ePlant'], '2rem');
 								} else {
 									$h .= '<span class="color-danger">'.\Asset::icon('exclamation-triangle').'</span>';
 								}
 							$h .= '</td>';
 							$h .= '<td style="max-width: 15rem">';
+
 								if($cultivation['ePlant']->notEmpty()) {
 
 									$h .= encode($cultivation['ePlant']['name']);
 
-									if($cultivation['varieties']) {
+									if($cultivation['ignore']) {
+										$h .= '<br/><span class="color-danger">'.s("Culture pérenne non importée").'</span>';
+									} else if($cultivation['varieties']) {
 
 										$varieties = [];
 

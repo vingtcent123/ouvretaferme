@@ -48,9 +48,7 @@ class CsvLib {
 		$lines = [];
 
 		while(($line = fgetcsv($stream, 0, $separator, '"')) !== FALSE) {
-
 			$lines[] = $line;
-
 		}
 
 		fclose($stream);

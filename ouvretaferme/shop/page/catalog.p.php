@@ -1,4 +1,3 @@
-
 <?php
 (new \shop\CatalogPage())
 	->getCreateElement(function($data) {

@@ -60,7 +60,7 @@ new AdaptativeView('index', function($data, DocTemplate $t) {
 			],
 			[
 				s("Mode de culture").' '.\util\FormUi::asterisk(),
-				'place',
+				'mode',
 				s("Les valeurs possibles :").
 				'<ul>'.
 					'<li>'.s("{value} → plein-champ", '<div class="doc-example">'.\series\Series::OPEN_FIELD.'</div>').'</li>'.
