@@ -15,7 +15,7 @@ class PlantLib extends PlantCrud {
 			if($e->isOwner()) {
 				return ['name', 'family', 'cycle', 'plantsSafetyMargin', 'seedsSafetyMargin'];
 			} else {
-				return ['plantsSafetyMargin', 'seedsSafetyMargin'];
+				return ['name', 'plantsSafetyMargin', 'seedsSafetyMargin'];
 			}
 		};
 	}

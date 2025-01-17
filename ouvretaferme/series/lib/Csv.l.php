@@ -293,7 +293,12 @@ class CsvLib {
 			return FALSE;
 		}
 
-		$csv = \util\CsvLib::parseCsv($file, ',');
+		$csv = \util\CsvLib::parseCsv($file, "\t");
+		foreach($csv as $k => $line) {
+			foreach($line as $l => $column) {
+				$csv[$k][$l] = trim($column);
+			}
+		}
 
 		$header = $csv[0];
 

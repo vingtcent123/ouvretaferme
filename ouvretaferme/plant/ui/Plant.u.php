@@ -435,9 +435,10 @@ class PlantUi {
 		$h = $form->openAjax('/plant/plant:doUpdate');
 
 			$h .= $form->hidden('id', $ePlant['id']);
+			$h .= $form->dynamicGroups($ePlant, ['name']);
 
 			if($ePlant->isOwner()) {
-				$h .= $form->dynamicGroups($ePlant, ['name', 'family', 'cycle']);
+				$h .= $form->dynamicGroups($ePlant, ['family', 'cycle']);
 			}
 
 			$h .= $form->group(content: '<h3>'.s("Marges de sécurité").'</h3>');
