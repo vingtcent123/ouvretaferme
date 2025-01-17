@@ -413,22 +413,7 @@ class CsvLib {
 
 			$season = (int)substr($firstHarvestDate ?? $planting ?? $sowing ?? currentDate(), 0, 4);
 
-			$harvestUnit = match($line['unit']) {
-				'kg' => 'kg',
-				'bunch' => 'bunch',
-				'bte' => 'bunch',
-				'botte' => 'bunch',
-				'b' => 'bunch',
-				'bqt' => 'bunch',
-				'unit' => 'unit',
-				'pc' => 'unit',
-				'pièce' => 'unit',
-				'u' => 'unit',
-				'p' => 'unit',
-				'bqte' => 'kg',
-				'' => 'kg',
-				default => $line['unit']
-			};
+			$harvestUnit = CsvUi::convertUnit($line['unit']);
 
 			$import[] = [
 				'series' => [

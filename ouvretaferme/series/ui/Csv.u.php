@@ -10,6 +10,27 @@ class CsvUi {
 
 	}
 
+	public static function convertUnit(string $unit): string {
+
+		return match($unit) {
+			'kg' => 'kg',
+			'bunch' => 'bunch',
+			'bte' => 'bunch',
+			'botte' => 'bunch',
+			'b' => 'bunch',
+			'bqt' => 'bunch',
+			'unit' => 'unit',
+			'pc' => 'unit',
+			'pièce' => 'unit',
+			'u' => 'unit',
+			'p' => 'unit',
+			'bqte' => 'kg',
+			'' => 'kg',
+			default => $unit
+		};
+
+	}
+
 	public function getExportTasksHeader(): array {
 
 		return [
