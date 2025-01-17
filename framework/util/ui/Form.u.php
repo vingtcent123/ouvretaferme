@@ -1306,8 +1306,10 @@ class FormUi {
 		$id = uniqid('field-week-selector-');
 
 		$h = '<div id="'.$id.'" class="field-week-selector">';
-			$h .= '<h4 class="field-week-selector-title">'.s("Calendrier").'</h4>';
-			
+			$h .= '<div class="field-week-selector-title">';
+				$h .= '<h4>'.s("Calendrier").'</h4>';
+			$h .= '</div>';
+
 			if($showYear) {
 
 				$params = [

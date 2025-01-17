@@ -1433,7 +1433,10 @@ Lime.Dropdown = class {
 
 	static isFullscreen(list) {
 
-		if(isTouch()) { // Mobile
+		if(
+			isTouch() || // Mobile
+			list.classList.contains('dropdown-list-minimalist')
+		) {
 			return true;
 		} else {
 
@@ -1448,10 +1451,7 @@ Lime.Dropdown = class {
 			const listBounding = list.getBoundingClientRect();
 			const listHeight = listBounding.height
 
-			return (
-				listHeight > windowHeight - 200 ||
-				list.classList.contains('dropdown-list-minimalist')
-			);
+			return (listHeight > windowHeight - 200);
 
 		}
 
