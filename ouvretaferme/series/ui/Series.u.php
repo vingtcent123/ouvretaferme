@@ -905,7 +905,12 @@ class SeriesUi {
 		$eSeriesFirst = $cSeries->first();
 		$eSeriesFirst['farm'] = $eFarm; // Pour avoir la première et la dernière saison de la ferme
 
-		$h = '';
+		$h = '<div class="util-info">';
+			$h .= s("Lorsque vous changez une série de saison, les dates des interventions de la série ne sont pas modifiées, c'est à vous de les décaler dans le temps si vous le souhaitez.");
+			if($cSeries->count() > 10) {
+				$h .= ' <b>'.s("Vous allez agir sur un grand nombre de séries simultanément, soyez vigilant avant de valider votre modification !").'</b>';
+			}
+		$h .= '</div>';
 
 		$h .= $form->openAjax('/series/series:doUpdateSeasonCollection');
 
@@ -915,7 +920,7 @@ class SeriesUi {
 			});
 
 			$h .= $form->group(
-				content: $form->submit(s("Modifier la saison"))
+				content: $form->submit(s("Modifier la saison"), ['data-submit-waiter', 'data-confirm' => p("Vous allez changer une série de saison, voulez-vous continuer ?", "Vous allez changer {value} séries de saison, voulez-vous continuer ?", $cSeries->count())])
 			);
 
 		$h .= $form->close();
@@ -936,6 +941,12 @@ class SeriesUi {
 		$eSeriesFirst['farm'] = $eFarm; // Pour avoir la première et la dernière saison de la ferme
 
 		$h = '';
+
+		if($cSeries->count() > 5) {
+			$h = '<div class="util-info">';
+				$h .= s("Vous allez agir sur un grand nombre de séries simultanément, soyez vigilant avant de valider votre modification !");
+			$h .= '</div>';
+		}
 
 		$h .= $form->openAjax('/series/series:doDuplicate', ['id' => 'series-duplicate', 'data-season' => $eSeriesFirst['season']]);
 
@@ -1037,7 +1048,7 @@ class SeriesUi {
 			$h .= '</div>';
 
 			$h .= $form->group(
-				content: $form->submit(s("Dupliquer"))
+				content: $form->submit(s("Dupliquer"), ['data-submit-waiter' => s("Duplication en cours..."), 'data-confirm' => p("Vous allez dupliquer une série, voulez-vous continuer ?", "Vous allez dupliquer {value} séries, assurez-vous d'avoir bien vérifié votre formulaire. En dupliquant un grand nombre de séries par erreur, vous risquez de perdre le fil de votre plan de culture. Lancer la duplication ?", $cSeries->count())])
 			);
 
 		$h .= $form->close();

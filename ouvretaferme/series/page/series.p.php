@@ -312,7 +312,7 @@ use series\Series;
 
 	})
 	->post('doDuplicate', function($data) {
-
+throw new NotExpectedAction();
 		$data->c->validate('canRead', 'acceptDuplicate');
 
 		$cAction = \farm\ActionLib::getByFarm($data->eFarm, id: POST('copyActions', 'array'));

@@ -21,6 +21,24 @@ function submitAjaxForm(form) {
 	const body = form.form();
 	let url = form.getAttribute('data-ajax-form');
 
+	const disable = form.qsa('button[data-submit-waiter]');
+
+	disable.forEach((button) => {
+		if(button.dataset.submitWaiter !== '') {
+			button.dataset.submitOriginal = button.innerHTML;
+			button.innerHTML = button.dataset.submitWaiter;
+		}
+		button.classList.add('disabled');
+	})
+
+	const enable = () => disable.forEach((button) => {
+		if(button.dataset.submitWaiter !== '') {
+			button.innerHTML = button.dataset.submitOriginal;
+			button.dataset.submitOriginal = null;
+		}
+		button.classList.remove('disabled');
+	});
+
 	switch(method) {
 
 		case 'GET' :
@@ -31,7 +49,8 @@ function submitAjaxForm(form) {
 			new object(form)
 				.method(method)
 				.url(url)
-				.fetch();
+				.fetch()
+				.then(() => enable(), () => enable());
 
 			break;
 
@@ -42,7 +61,8 @@ function submitAjaxForm(form) {
 				.url(url)
 				.skipHistory()
 				.body(body)
-				.fetch();
+				.fetch()
+				.then(() => enable(), () => enable());
 
 			break;
 

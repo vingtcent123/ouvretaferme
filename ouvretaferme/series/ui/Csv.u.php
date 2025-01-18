@@ -160,7 +160,7 @@ class CsvUi {
 					$h .= '<li>'.s("Si vous changez d'avis, vous pourrez toujours supprimer ultérieurement les séries que vous importez maintenant").'</li>';
 				$h .= '</ul>';
 				$h .= '<a post-id="'.$eFarm['id'].'" class="csv-import-button btn btn-secondary" data-confirm-text="'.p("Importer maintenant {value} série ?", "Importer maintenant {value} séries ?", count($data['import'])).'" onclick="Csv.import(this)">'.s("Importer maintenant").'</a>';
-				$h .= '<a class="btn btn-disabled csv-import-waiter">'.s("Importation en cours, merci de patienter...").'</a>';
+				$h .= '<a class="btn disabled csv-import-waiter">'.s("Importation en cours, merci de patienter...").'</a>';
 			$h .= '</div>';
 		}
 

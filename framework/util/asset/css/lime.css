@@ -1636,7 +1636,7 @@ td.util-manage-vignette {
 	cursor: default;
 }
 
-.btn.btn-disabled {
+.btn.disabled {
 	pointer-events: none;
 	opacity: 0.33;
 }

@@ -338,7 +338,7 @@ class SaleUi {
 
 						$h .= '<td class="td-min-content text-center">';
 							if($eSale['marketParent']->notEmpty()) {
-								$h .= '<span class="btn btn-sm btn-disabled">'.$eSale->getNumber().'</span>';
+								$h .= '<span class="btn btn-sm disabled">'.$eSale->getNumber().'</span>';
 							} else {
 								$h .= '<a href="'.$link($eSale).'" class="btn btn-sm '.($eSale['deliveredAt'] === currentDate() ? 'btn-primary' : 'btn-outline-primary').'">'.$eSale->getNumber().'</a>';
 							}

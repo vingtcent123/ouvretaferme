@@ -324,7 +324,7 @@ class ShopUi {
 
 		$h .= '<div class="util-title">';
 			$h .= '<h3>'.s("Commande annulée").'</h3>';
-			$h .= '<div class="btn btn-disabled">'.s("Non personnalisable").'</div>';
+			$h .= '<div class="btn disabled">'.s("Non personnalisable").'</div>';
 		$h .= '</div>';
 
 		[$title, , $html] = (new MailUi())->getSaleCanceled($eSaleExample);
@@ -334,7 +334,7 @@ class ShopUi {
 
 			$h .= '<div class="util-title">';
 				$h .= '<h3>'.s("Paiement par carte bancaire échoué").'</h3>';
-				$h .= '<div class="btn btn-disabled">'.s("Non personnalisable").'</div>';
+				$h .= '<div class="btn disabled">'.s("Non personnalisable").'</div>';
 			$h .= '</div>';
 
 			[$title, , $html] = (new MailUi())->getCardSaleFailed($eSaleExample, test: TRUE);

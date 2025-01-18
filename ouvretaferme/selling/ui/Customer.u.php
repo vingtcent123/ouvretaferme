@@ -631,8 +631,8 @@ class CustomerUi {
 			$h .= '</div>';
 			$h .= '<div class="customer-form-category customer-form-private">';
 				$h .= $form->dynamicGroups($eCustomer, match($action) {
-					'create' => ['firstName*', 'lastName'],
-					'update' => ['firstName*', 'lastName']
+					'create' => ['firstName', 'lastName*'],
+					'update' => ['firstName', 'lastName*']
 				});
 			$h .= '</div>';
 			$h .= '<div class="customer-form-category customer-form-pro">';

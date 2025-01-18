@@ -142,13 +142,13 @@ class CategoryUi {
 						if($eCategory['position'] > 1) {
 							$h .= '<a data-ajax="/farm/category:doIncrementPosition" post-id='.$eCategory['id'].'" post-increment="-1" class="btn btn-sm btn-secondary">'.\Asset::icon('arrow-up').'</a> ';
 						} else {
-							$h .= '<a class="btn btn-sm btn-disabled">'.\Asset::icon('arrow-up').'</a> ';
+							$h .= '<a class="btn btn-sm disabled">'.\Asset::icon('arrow-up').'</a> ';
 						}
 
 						if($eCategory['position'] !== $cCategory->count()) {
 							$h .= '<a data-ajax="/farm/category:doIncrementPosition" post-id='.$eCategory['id'].'" post-increment="1" class="btn btn-sm btn-secondary">'.\Asset::icon('arrow-down').'</a> ';
 						} else {
-							$h .= '<a class="btn btn-sm btn-disabled">'.\Asset::icon('arrow-down').'</a> ';
+							$h .= '<a class="btn btn-sm disabled">'.\Asset::icon('arrow-down').'</a> ';
 						}
 					$h .= '</td>';
 					$h .= '<td>';
@@ -165,7 +165,7 @@ class CategoryUi {
 								$h .= \Asset::icon('trash-fill');
 							$h .= '</a>';
 						} else {
-							$h .= '<div class="btn btn-outline-secondary btn-disabled" title="'.s("Catégorie indispensable au bon fonctionnement de {siteName}").'">';
+							$h .= '<div class="btn btn-outline-secondary disabled" title="'.s("Catégorie indispensable au bon fonctionnement de {siteName}").'">';
 								$h .= \Asset::icon('trash-fill');
 							$h .= '</div>';
 						}
