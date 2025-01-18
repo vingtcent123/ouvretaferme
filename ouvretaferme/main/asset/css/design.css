@@ -238,7 +238,7 @@ body {
 
 }
 
-@media (max-height: 767px), (max-width: 767px) {
+@media (max-width: 1199px), (max-height: 599px) {
 
 	body {
 		min-height: 150vh;
@@ -291,7 +291,7 @@ body[data-template~="default"] header {
 }
 
 
-@media (max-height: 767px), (max-width: 767px) {
+@media (max-width: 1199px), (max-height: 599px) {
 
 	body[data-template~="farm"] header {
 		top: 0;
