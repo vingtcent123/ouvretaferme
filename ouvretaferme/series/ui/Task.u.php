@@ -65,7 +65,7 @@ class TaskUi {
 
 					$h .= '</div>';
 
-					$h .= $this->getTodoPlanning($form, $eFarm, $week, $cccTaskAssign, 'planning-daily-highlight');
+					$h .= $this->getTodoPlanning($form, $eFarm, $week, $cccTaskAssign);
 
 				$h .= '</div>';
 
@@ -126,26 +126,24 @@ class TaskUi {
 						$h .= '<div></div>';
 					}
 
-					$h .= '<div class="planning-daily-highlight">';
-						$ccTask = $cccTask[$date];
+					$ccTask = $cccTask[$date];
 
-						if($ccTask->notEmpty()) {
+					if($ccTask->notEmpty()) {
 
-							$cTaskFirst = $ccTask->first();
-							$cTaskLast = $ccTask->last();
+						$cTaskFirst = $ccTask->first();
+						$cTaskLast = $ccTask->last();
 
-							foreach($ccTask as $cTask) {
-								$h .= $this->getPlanningTasks($form, $eFarm, $cTask, $cTask === $cTaskFirst, $cTask === $cTaskLast, $date, $week, TRUE);
-							}
-
-						} else {
-
-							$h .= '<div class="tasks-planning-items tasks-planning-items-first tasks-planning-items-last tasks-planning-items-empty">';
-								$h .= s("Aucune intervention ce jour.");
-							$h .= '</div>';
-
+						foreach($ccTask as $cTask) {
+							$h .= $this->getPlanningTasks($form, $eFarm, $cTask, $cTask === $cTaskFirst, $cTask === $cTaskLast, $date, $week, TRUE);
 						}
-					$h .= '</div>';
+
+					} else {
+
+						$h .= '<div class="tasks-planning-items tasks-planning-items-first tasks-planning-items-last util-info">';
+							$h .= s("Aucune intervention ce jour.");
+						$h .= '</div>';
+
+					}
 
 				$h .= '</div>';
 
@@ -317,13 +315,12 @@ class TaskUi {
 
 	}
 
-	protected function getTodoPlanning(\util\FormUi $form, \farm\Farm $eFarm, string $week, \Collection $cccTask, string $class = '') {
+	protected function getTodoPlanning(\util\FormUi $form, \farm\Farm $eFarm, string $week, \Collection $cccTask) {
 
 		$h = '';
 
 		if($cccTask['todo']->empty() === FALSE) {
 
-			$h .= '<div class="'.$class.'">';
 
 				$cTaskFirst = $cccTask['todo']->first();
 				$cTaskLast = $cccTask['todo']->last();
@@ -331,13 +328,9 @@ class TaskUi {
 					$h .= $this->getPlanningTasks($form, $eFarm, $cTask, $cTask === $cTaskFirst, $cTask === $cTaskLast, NULL, $week);
 				}
 
-			$h .= '</div>';
-
 		}
 
 		if($cccTask['delayed']->empty() === FALSE) {
-
-			$h .= '<div class="'.$class.'">';
 
 				$h .= '<div class="planning-week-title planning-week-title-container">';
 					$h .= '<div>'.s("Retardé").'</div>';
@@ -358,13 +351,9 @@ class TaskUi {
 					$h .= $this->getPlanningTasks($form, $eFarm, $cTask, $cTask === $cTaskFirst, $cTask === $cTaskLast, NULL, $week);
 				}
 
-			$h .= '</div>';
-
 		}
 
 		if($cccTask['unplanned']->empty() === FALSE) {
-
-			$h .= '<div class="'.$class.'">';
 
 				$h .= '<div class="planning-week-title">';
 					$h .= s("Non planifié");
@@ -375,8 +364,6 @@ class TaskUi {
 				foreach($cccTask['unplanned'] as $cTask) {
 					$h .= $this->getPlanningTasks($form, $eFarm, $cTask, $cTask === $cTaskFirst, $cTask === $cTaskLast, NULL, $week);
 				}
-
-			$h .= '</div>';
 
 		}
 

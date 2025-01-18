@@ -185,6 +185,10 @@ body[data-touch="yes"][data-template~="farm-planning-daily"] main {
 	padding: 0 1rem 2rem;
 }
 
+.planning-daily:not(:first-child) {
+	border-left: 1px solid white;
+}
+
 @media (min-width: 576px) {
 
 	.planning-daily {
@@ -201,31 +205,18 @@ body[data-touch="yes"][data-template~="farm-planning-daily"] main {
 	top: 0;
 	z-index: 800;
 	height: 5rem;
-	background-color: var(--background-light);
 	margin-left: -1rem;
 	margin-right: -1rem;
 	padding-left: 1rem;
 	padding-right: 1rem;
 }
 
-.planning-daily-header + div.planning-daily-highlight div.planning-week-title {
-	margin-top: 0rem;
-}
-
-
-.planning-daily:nth-child(2n+1),
-.planning-daily:nth-child(2n+1) .planning-daily-header {
-	background-color: var(--background-dark);
-}
-
-.planning-daily .planning-daily-highlight {
-	box-shadow: 0 0 1rem #8884;
-	border-radius: var(--radius);
-}
-
 .planning-daily-header h2 {
 	margin-bottom: 0;
 	font-size: 1.6rem;
+}
+.planning-daily-header + div.planning-week-title {
+	margin-top: 0rem;
 }
 
 .planning-daily-today .planning-daily-header h2 {

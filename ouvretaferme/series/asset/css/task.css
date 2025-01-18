@@ -366,11 +366,6 @@ a.tasks-planning-action-name {
 	color: var(--done);
 }
 
-div.tasks-planning-items-empty {
-	padding: 1rem;
-	color: var(--muted);
-}
-
 @media (min-width: 768px) {
 
 	#planning-wrapper-weekly div.tasks-planning-items {
