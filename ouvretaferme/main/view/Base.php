@@ -204,7 +204,7 @@ class BaseTemplate extends SmartTemplate {
 
 		$ogUrl = Lime::getUrl().LIME_REQUEST_PATH;
 		$ogSiteName = \Lime::getName();
-		$ogImg = $this->og['image'] ?? Lime::getUrl().'/'.\Asset::path('main', 'open-graph-default.jpg', 'image');
+		$ogImg = $this->og['image'] ?? NULL;
 
 		$ogType = $this->og['type'] ?? 'website';
 		$ogDescription = $this->og['description'] ?? $this->metaDescription;

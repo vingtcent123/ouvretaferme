@@ -26,6 +26,10 @@ new AdaptativeView('shop', function($data, ShopTemplate $t) {
 	$t->title = encode($data->eShop['name']);
 	$t->header = (new \shop\ShopUi())->getHeader($data->eShop, $data->cDate, $data->eDateSelected);
 
+	if($data->eShop['logo'] !== NULL) {
+		$t->og['image'] = (new \media\ShopLogoUi())->getUrlByElement($data->eShop);
+	}
+
 	Asset::js('shop', 'basket.js');
 
 	if($data->eShop['status'] === \shop\Shop::CLOSED) {
