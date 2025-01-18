@@ -45,7 +45,6 @@
 			--farmNav: 5rem;
 			--mainNav: 3rem;
 			--farmSubNav: 2.75rem;
-			--mainSticky: calc(var(--farmNav) + var(--farmSubNav));
 		}
 
 	}
@@ -56,9 +55,12 @@
 			--farmNav: 4rem;
 			--mainNav: 3rem;
 			--farmSubNav: 2.5rem;
-			--mainSticky: calc(var(--mainNav) + var(--farmNav) + var(--farmSubNav));
 		}
 
+	}
+
+	:root {
+		--mainSticky: calc(var(--farmNav) + var(--farmSubNav));
 	}
 
 }
