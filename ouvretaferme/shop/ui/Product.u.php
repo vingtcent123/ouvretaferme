@@ -163,7 +163,7 @@ class ProductUi {
 				if($url === NULL) {
 					if($eProductSelling['plant']->notEmpty()) {
 						$h .= \plant\PlantUi::getVignette($eProductSelling['plant'], match($eShop['type']) {
-							Shop::PRO => '6rem',
+							Shop::PRO => '4rem',
 							Shop::PRIVATE => '9rem'
 						});
 					} else {
@@ -192,17 +192,25 @@ class ProductUi {
 
 					$h .= '</h4>';
 
-					$h .= '<div class="shop-product-subtitle">';
+					$h .= '<div class="shop-product-buy-price">'.\util\TextUi::money($eProduct['price']).' '.$this->getTaxes($eProduct).\selling\UnitUi::getBy($eProductSelling['unit']).'</div>';
 
-						$h .= '<span class="shop-product-buy-price">'.\util\TextUi::money($eProduct['price']).' '.$this->getTaxes($eProduct).\selling\UnitUi::getBy($eProductSelling['unit']).'</span>';
+					if($canOrder) {
 
-						if($canOrder) {
+						$h .= '<div class="shop-product-buy-infos">';
 
-						if($eProduct['packaging'] !== NULL) {
-							$h.= '<div class="shop-product-buy-packaging">';
-								$h .= s("Colis : {value}", \selling\UnitUi::getValue($eProduct['packaging'], $eProductSelling['unit']));
-							$h .= '</div>';
-						}
+							if($eProduct['packaging'] !== NULL) {
+								$h.= '<div class="shop-product-buy-packaging">';
+									$h .= s("Colis : {value}", \selling\UnitUi::getValue($eProduct['packaging'], $eProductSelling['unit']));
+								$h .= '</div>';
+							}
+
+							if($eProduct['limitMin'] !== NULL) {
+
+								$h.= '<div class="shop-product-buy-info">';
+									$h .= s("Minimum de commande : {value}", ($eProduct['packaging'] === NULL) ? \selling\UnitUi::getValue($eProduct['limitMin'], $eProductSelling['unit'], TRUE) : s("{value} colis", $eProduct['limitMin']));
+								$h .= '</div>';
+
+							}
 
 							if($eProduct['reallyAvailable'] !== NULL) {
 
@@ -218,19 +226,9 @@ class ProductUi {
 
 							}
 
-						}
+						$h .= '</div>';
 
-					$h .= '</div>';
-					$h .= '<div class="shop-product-text">';
-
-						if($eProduct['limitMin'] !== NULL) {
-
-							$h.= '<div class="shop-product-buy-info">';
-								$h .= s("Minimum de commande : {value}", ($eProduct['packaging'] === NULL) ? \selling\UnitUi::getValue($eProduct['limitMin'], $eProductSelling['unit'], TRUE) : s("{value} colis", $eProduct['limitMin']));
-							$h .= '</div>';
-
-						}
-					$h .= '</div>';
+					}
 
 				$h .= '</div>';
 
