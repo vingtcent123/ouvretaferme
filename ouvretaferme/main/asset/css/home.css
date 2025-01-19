@@ -47,7 +47,7 @@ body[data-template^="home"] header h1 {
 	display: grid;
 	grid-template-columns: max-content 1fr;
 	grid-column-gap: 2rem;
-	align-items: stretch;
+	align-items: center;
 }
 
 .home-blog:not(:last-child) {

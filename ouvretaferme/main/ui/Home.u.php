@@ -107,13 +107,6 @@ class HomeUi {
 
 		} else {
 
-			$content = (new \editor\ReadorFormatterUi())->getFromXml($eNews['content']);
-
-			$start = strpos($content, '<p>') + 3;
-			$length = strpos($content, '</p>') - $start;
-
-			$content = substr($content, $start, $length);
-
 			$h = '<h3>'.s("Du nouveau sur {siteName} !").'</h3>';
 
 			$h .= '<div class="home-blog bg-info util-block-flat">';
@@ -126,8 +119,7 @@ class HomeUi {
 						$h .= encode($eNews['title']);
 					$h .= '</h2>';
 					$h .= '<div>';
-						$h .= '<p>'.$content.'</p>';
-						$h .= '<a href="https://blog.ouvretaferme.org/" target="_blank" class="btn btn-secondary">'.\Asset::icon('chevron-right').' '.s("Lire la suite").'</a>';
+						$h .= '<a href="https://blog.ouvretaferme.org/" target="_blank" class="btn btn-secondary">'.\Asset::icon('chevron-right').' '.s("En savoir plus").'</a>';
 					$h .= '</div>';
 				$h .= '</div>';
 			$h .= '</div>';
