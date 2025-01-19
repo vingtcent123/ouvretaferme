@@ -799,9 +799,11 @@ class XmlLib {
 					case 'b' :
 					case 'i' :
 					case 'u' :
+						$this->cleanStyleNode($node);
 						return $this->cleanNodeAttributes($node);
 
 					case 'a' :
+						$this->cleanStyleNode($node);
 						return $this->cleanLinkNode($node);
 
 					case 'span' :
@@ -882,9 +884,18 @@ class XmlLib {
 	 * @param \DOMNode $node
 	 */
 	protected function cleanSpanNode(\DOMNode $node) : int {
+		return $this->cleanStyleNode($node) ? 0 : \util\DomLib::removeNode($node);
+	}
+
+	/**
+	 * Clean a span node
+	 *
+	 * @param \DOMNode $node
+	 */
+	protected function cleanStyleNode(\DOMNode $node): bool {
 
 		if($node->hasAttribute('style') === FALSE) {
-			return \util\DomLib::removeNode($node);
+			return FALSE;
 		}
 
 		$style = $node->getAttribute('style');
@@ -893,19 +904,20 @@ class XmlLib {
 		if(preg_match('/(^|\s|\;)color\s*:\s*(rgb\([0-9]{1,3}\s*,\s*[0-9]{1,3}\s*,\s*[0-9]{1,3}\)|[a-z]+|\#[0-9a-f]{6})($|\s|\;)/si', $style, $matches) === 1) {
 
 			if($matches[2] === 'inherit') {
-				return \util\DomLib::removeNode($node);
+				$node->removeAttribute('style');
+				return FALSE;
 			} else {
 
 				$node->setAttribute('style', 'color: '.$matches[2].';');
 				$this->cleanNodeAttributes($node, ['style' => NULL]);
 
-				return 0;
+				return TRUE;
 
 			}
 
-		} else {
-			return \util\DomLib::removeNode($node);
 		}
+
+		return FALSE;
 
 	}
 
