@@ -36,28 +36,30 @@ class ProductUi {
 			return $h;
 		}
 
-		if($ccProduct->count() === 1) {
-			$h .= $this->getProducts($eShop, $eDate, $eSale, $isModifying, $ccProduct->first());
-		} else {
+		$h .= '<div class="shop-product-wrapper shop-product-'.$eShop['type'].'">';
 
-			if($ccProduct->offsetExists('')) {
-				$h .= $this->getProducts($eShop, $eDate, $eSale, $isModifying, $ccProduct['']);
-			}
+			if($ccProduct->count() === 1) {
+				$h .= $this->getProducts($eShop, $eDate, $eSale, $isModifying, $ccProduct->first());
+			} else {
 
-			foreach($cCategory as $eCategory) {
-
-				if($ccProduct->offsetExists($eCategory['id']) === FALSE) {
-					continue;
+				if($ccProduct->offsetExists('')) {
+					$h .= $this->getProducts($eShop, $eDate, $eSale, $isModifying, $ccProduct['']);
 				}
 
-				$h .= '<h3>'.encode($eCategory['name']).'</h3>';
-				$h .= $this->getProducts($eShop, $eDate, $eSale, $isModifying, $ccProduct[$eCategory['id']]);
+				foreach($cCategory as $eCategory) {
+
+					if($ccProduct->offsetExists($eCategory['id']) === FALSE) {
+						continue;
+					}
+
+					$h .= '<h3>'.encode($eCategory['name']).'</h3>';
+					$h .= $this->getProducts($eShop, $eDate, $eSale, $isModifying, $ccProduct[$eCategory['id']]);
+
+				}
 
 			}
 
-		}
-
-		$h .= '<br/><br/><br/><br/>';
+		$h .= '</div>';
 
 		if($eDate['isOrderable'] and ($eSale->canBasket($eShop) or $isModifying)) {
 			$h .= $this->getOrderedProducts($eShop, $eDate, $eSale, $isModifying);
@@ -110,7 +112,7 @@ class ProductUi {
 
 	public function getProducts(Shop $eShop, Date $eDate, \selling\Sale $eSale, bool $isModifying, \Collection $cProduct): string {
 
-		$h = '<div class="shop-product-wrapper">';
+		$h = '<div class="shop-product-group">';
 			$h .= $cProduct->makeString(fn($eProduct) => $this->getProduct($eShop, $eDate, $eProduct, $eSale, $isModifying));
 		$h .= '</div>';
 
@@ -132,6 +134,15 @@ class ProductUi {
 			$price = $eProduct['price'] * $eProduct['packaging'];
 		}
 
+		if($eProductSelling['quality']) {
+			$quality = '<div class="shop-header-image-quality">'.\farm\FarmUi::getQualityLogo($eProductSelling['quality'], match($eShop['type']) {
+				Shop::PRO => '1.75rem',
+				Shop::PRIVATE => '2.5rem'
+			}).'</div>';
+		} else {
+			$quality = '';
+		}
+
 		$h = '<div class="shop-product" data-id="'.$eProductSelling['id'].'" data-price="'.$price.'" data-has="0">';
 
 			if($eProductSelling['vignette'] !== NULL) {
@@ -151,13 +162,16 @@ class ProductUi {
 			$h .= '>';
 				if($url === NULL) {
 					if($eProductSelling['plant']->notEmpty()) {
-						$h .= \plant\PlantUi::getVignette($eProductSelling['plant'], '9rem');
+						$h .= \plant\PlantUi::getVignette($eProductSelling['plant'], match($eShop['type']) {
+							Shop::PRO => '6rem',
+							Shop::PRIVATE => '9rem'
+						});
 					} else {
 						$h .= \Asset::icon('camera', ['class' => 'shop-product-image-placeholder']);
 					}
 				}
-				if($eProductSelling['quality']) {
-					$h .= '<div class="shop-header-image-quality">'.\farm\FarmUi::getQualityLogo($eProductSelling['quality'], '2.5rem').'</div>';
+				if($eShop['type'] === Shop::PRIVATE) {
+					$h .= $quality;
 				}
 			$h .= '</div>';
 			$h .= '<div class="shop-product-content">';
@@ -171,6 +185,11 @@ class ProductUi {
 								$h .= encode($eProductSelling['size']);
 							$h .= '</span>';
 						}
+
+						if($eShop['type'] === Shop::PRO) {
+							$h .= $quality;
+						}
+
 					$h .= '</h4>';
 
 					$h .= '<div class="shop-product-subtitle">';
@@ -178,6 +197,12 @@ class ProductUi {
 						$h .= '<span class="shop-product-buy-price">'.\util\TextUi::money($eProduct['price']).' '.$this->getTaxes($eProduct).\selling\UnitUi::getBy($eProductSelling['unit']).'</span>';
 
 						if($canOrder) {
+
+						if($eProduct['packaging'] !== NULL) {
+							$h.= '<div class="shop-product-buy-packaging">';
+								$h .= s("Colis : {value}", \selling\UnitUi::getValue($eProduct['packaging'], $eProductSelling['unit']));
+							$h .= '</div>';
+						}
 
 							if($eProduct['reallyAvailable'] !== NULL) {
 
@@ -197,12 +222,6 @@ class ProductUi {
 
 					$h .= '</div>';
 					$h .= '<div class="shop-product-text">';
-
-						if($eProduct['packaging'] !== NULL) {
-							$h.= '<div class="shop-product-buy-info">';
-								$h .= s("Colis : {value}", \selling\UnitUi::getValue($eProduct['packaging'], $eProductSelling['unit'], TRUE));
-							$h .= '</div>';
-						}
 
 						if($eProduct['limitMin'] !== NULL) {
 

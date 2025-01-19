@@ -256,7 +256,7 @@ class BasketUi {
 						if($eDate['type'] === Date::PRO) {
 							$h .= '<td class="hide-sm-down"></td>';
 						}
-						$h .= '<td class="text-end" colspan="3"><b>'.s("Total du panier").'</b></td>';
+						$h .= '<td class="text-end" colspan="3"><b>'.s("Total").'</b></td>';
 						$h .= '<td class="text-end"><b>'.\util\TextUi::money($total).' '.ProductUi::getTaxes($eDate).'</b></td>';
 						$h .= '<td class="hide-xs-down"></td>';
 					$h .= '</tr>';
@@ -353,7 +353,12 @@ class BasketUi {
 
 		$h = '<div id="shop-basket-submit" class="'.$class.'" onrender="BasketManage.checkBasketButtons('.$eDate['id'].');">';
 
-			$h .= '<h2>'.s("Valider ma commande de <span>{value}</span> {taxes}", ['span' => '<span id="shop-basket-price">', 'taxes' => ProductUi::getTaxes($eDate)]).'</h2>';
+			$h .= '<h2>';
+				$h .= match($eShop['type']) {
+					Shop::PRO => s("Valider ma commande"),
+					Shop::PRIVATE => s("Valider ma commande de <span>{value}</span> {taxes}", ['span' => '<span id="shop-basket-price">', 'taxes' => ProductUi::getTaxes($eDate)])
+				};
+			$h .= '</h2>';
 
 			$h .= '<div class="shop-basket-submit-order-error color-danger hide">'.s("Vous n'avez pas atteint le minimum de commande pour ce mode de livraison, nous vous remercions de bien vouloir compléter vos achats !").'</div>';
 			$h .= '<div class="shop-basket-submit-order-valid">';
