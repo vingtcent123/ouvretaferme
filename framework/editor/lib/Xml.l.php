@@ -800,7 +800,7 @@ class XmlLib {
 					case 'i' :
 					case 'u' :
 						$this->cleanStyleNode($node);
-						return $this->cleanNodeAttributes($node);
+						return $this->cleanNodeAttributes($node, ['style?' => NULL]);
 
 					case 'a' :
 						$this->cleanStyleNode($node);
@@ -858,6 +858,7 @@ class XmlLib {
 
 		$attributesLink = [
 			'href' => 'url',
+			'?style' => NULL,
 		];
 
 		if(\Privilege::can('user\admin')) {
