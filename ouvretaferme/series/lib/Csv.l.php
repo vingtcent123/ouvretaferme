@@ -445,7 +445,7 @@ class CsvLib {
 						'harvest_unit' => $harvestUnit,
 						'yield_expected_area' => NULL,
 						'yield_expected_length' => (float)$line['yield_per_bed_meter'] ? round((float)$line['yield_per_bed_meter'], 2) : NULL,
-						'varieties' => $line['variety'] ? [['variety' => $line['variety'], 'part' => 100]] : []
+						'varieties' => $line['variety'] ? [['variety' => $line['variety'], 'eVariety' => new \plant\Variety(), 'part' => 100]] : []
 					]
 				]
 			];
@@ -529,6 +529,7 @@ class CsvLib {
 					$varieties[] = [
 						'variety' => $cultivation[$varietyIndex],
 						'part' => $cultivation[$varietyIndex + 1],
+						'eVariety' => new \plant\Variety()
 					];
 
 				}
@@ -863,11 +864,8 @@ class CsvLib {
 
 					$ePlant = $cachePlants[$plantFqn];
 
-					$checkVariety = TRUE;
-
 					if($cachePlants[$plantFqn]->empty()) {
 						$errorsGlobal['species'][] = $cultivation['species'];
-						$checkVariety = FALSE;
 					} else if($cachePlants[$plantFqn]['cycle'] === \plant\Plant::PERENNIAL) {
 						$infoGlobal['speciesPerennial'][] = $cultivation['species'];
 						$ignore = TRUE;
