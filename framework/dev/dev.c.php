@@ -42,7 +42,7 @@ Setting::register('dev', [
 
 	// Number of errors saved by page
 	'errorSaveMax' => 10,
-	'errorKeep' => 60,
+	'errorKeep' => 30,
 
 	// Nginx log
 	'errorNginxInterval' => 5, // check for nginx's logs (in minutes)
