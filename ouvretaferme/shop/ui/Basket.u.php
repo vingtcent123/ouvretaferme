@@ -232,7 +232,7 @@ class BasketUi {
 							$h .= '</td>';
 						}
 						$h .= '<td class="text-center">';
-							$h .= ProductUi::numberOrder($eDate, $eProductSelling, $eProduct, $product['number'], $available);
+							$h .= ProductUi::numberOrder($eShop, $eDate, $eProductSelling, $eProduct, $product['number'], $available);
 						$h .= '</td>';
 						$h .= '<td class="text-end hide-xs-down">';
 							$h .= $unitPrice;

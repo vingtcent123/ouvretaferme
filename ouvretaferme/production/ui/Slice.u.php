@@ -287,28 +287,28 @@ class SliceUi {
 					
 					$h .= '<div class="slice-item-part '.($eCrop['sliceUnit'] === \series\Cultivation::PERCENT ? '' : 'hide').'" data-unit="'.\series\Cultivation::PERCENT.'">';
 						$h .= $form->inputGroup(
-							$form->number($name.'[varietyPartPercent][]', $eSlice['partPercent'] ?? 0, ['min' => 0, 'onclick' => 'this.select()']).
+							$form->number($name.'[varietyPartPercent][]', $eSlice['partPercent'] ?? 0, ['min' => 0, 'onfocus' => 'this.select()']).
 							$form->addon(s("%")),
 						);
 					$h .= '</div>';
 
 					$h .= '<div class="slice-item-part '.($eCrop['sliceUnit'] === \series\Cultivation::AREA ? '' : 'hide').'" data-unit="'.\series\Cultivation::AREA.'">';
 						$h .= $form->inputGroup(
-							$form->number($name.'[varietyPartArea][]', $eSlice['partArea'] ?? 0, ['min' => 0, 'onclick' => 'this.select()']).
+							$form->number($name.'[varietyPartArea][]', $eSlice['partArea'] ?? 0, ['min' => 0, 'onfocus' => 'this.select()']).
 							$form->addon(s("m²"))
 						);
 					$h .= '</div>';
 
 					$h .= '<div class="slice-item-part '.($eCrop['sliceUnit'] === \series\Cultivation::LENGTH ? '' : 'hide').'" data-unit="'.\series\Cultivation::LENGTH.'">';
 						$h .= $form->inputGroup(
-							$form->number($name.'[varietyPartLength][]', $eSlice['partLength'] ?? 0, ['min' => 0, 'onclick' => 'this.select()']).
+							$form->number($name.'[varietyPartLength][]', $eSlice['partLength'] ?? 0, ['min' => 0, 'onfocus' => 'this.select()']).
 							$form->addon(s("mL"))
 						);
 					$h .= '</div>';
 
 					$h .= '<div class="slice-item-part '.($eCrop['sliceUnit'] === \series\Cultivation::PLANT ? '' : 'hide').'" data-unit="'.\series\Cultivation::PLANT.'">';
 						$h .= $form->inputGroup(
-							$form->number($name.'[varietyPartPlant][]', $eSlice['partPlant'] ?? 0, ['min' => 0, 'onclick' => 'this.select()']).
+							$form->number($name.'[varietyPartPlant][]', $eSlice['partPlant'] ?? 0, ['min' => 0, 'onfocus' => 'this.select()']).
 							$form->addon(match($eCrop['seedling']) {
 								\series\Cultivation::SOWING => s("graines"),
 								default => s("plants"),
@@ -324,7 +324,7 @@ class SliceUi {
 
 							$h .= '<div class="slice-item-part '.($visible ? '' : 'hide').'" data-unit="'.\series\Cultivation::TRAY.'" data-tool="'.$eTray['id'].'">';
 								$h .= $form->inputGroup(
-									$form->number($name.'[varietyPartTray]['.$eTray['id'].'][]', $eSlice['partTray'] ?? 0, ['min' => 0, 'onclick' => 'this.select()']).
+									$form->number($name.'[varietyPartTray]['.$eTray['id'].'][]', $eSlice['partTray'] ?? 0, ['min' => 0, 'onfocus' => 'this.select()']).
 									$form->addon(s("plateaux"))
 								);
 							$h .= '</div>';
@@ -337,7 +337,7 @@ class SliceUi {
 
 					$h .= '<div class="slice-item-part" data-unit="'.\series\Cultivation::PERCENT.'">';
 						$h .= $form->inputGroup(
-							$form->number($name.'[varietyPartPercent][]', $eSlice['partPercent'] ?? 0, ['min' => 0, 'onclick' => 'this.select()']).
+							$form->number($name.'[varietyPartPercent][]', $eSlice['partPercent'] ?? 0, ['min' => 0, 'onfocus' => 'this.select()']).
 							$form->addon(s("%"))
 						);
 					$h .= '</div>';

@@ -1425,7 +1425,7 @@ class FormUi {
 					$h .= $this->inputGroup(
 						$this->number(value: $value, attributes: [
 							'oninput' => 'RangeField.setValue(this)',
-							'onclick' => 'this.select()'
+							'onfocus' => 'this.select()'
 						]).
 						$this->addon($attributes['data-label'])
 					);

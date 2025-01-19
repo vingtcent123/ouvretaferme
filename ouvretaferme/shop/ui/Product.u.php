@@ -246,7 +246,7 @@ class ProductUi {
 					$canOrder and
 					($eProduct['reallyAvailable'] === NULL or $eProduct['reallyAvailable'] > 0.0)
 				) {
-					$h .= self::numberOrder($eDate, $eProductSelling, $eProduct, 0, $eProduct['reallyAvailable']);
+					$h .= self::numberOrder($eShop, $eDate, $eProductSelling, $eProduct, 0, $eProduct['reallyAvailable']);
 				}
 
 			$h .= '</div>';
@@ -470,7 +470,7 @@ class ProductUi {
 
 	}
 
-	public static function numberOrder(Date $eDate, \selling\Product $eProductSelling, Product $eProduct, float $number, ?float $available): string {
+	public static function numberOrder(Shop $eShop, Date $eDate, \selling\Product $eProductSelling, Product $eProduct, float $number, ?float $available): string {
 
 		if($eDate['isOrderable'] === FALSE) {
 			return '';
@@ -479,8 +479,8 @@ class ProductUi {
 		$step = self::getStep($eDate['type'], $eProductSelling);
 		$min = $eProduct['limitMin'] ?? 0;
 
-		$attributesDecrease = 'BasketManage.update('.$eDate['id'].', '.$eProductSelling['id'].', -'.$step.', '.$min.', '.($available !== NULL ? $available : -1).')';
-		$attributesIncrease = 'BasketManage.update('.$eDate['id'].', '.$eProductSelling['id'].', '.$step.', '.$min.', '.($available !== NULL ? $available : -1).')';
+		$attributesDecrease = 'BasketManage.update('.$eDate['id'].', '.$eProductSelling['id'].', -'.$step.', '.$step.', '.$min.', '.($available !== NULL ? $available : -1).')';
+		$attributesIncrease = 'BasketManage.update('.$eDate['id'].', '.$eProductSelling['id'].', '.$step.', '.$step.', '.$min.', '.($available !== NULL ? $available : -1).')';
 
 		if($available !== NULL) {
 			$inconsistency = ($min > $available);
@@ -494,16 +494,24 @@ class ProductUi {
 			$price = $eProduct['price'] * $eProduct['packaging'];
 		}
 
+		if($eProduct['packaging'] === NULL) {
+			$unit = \selling\UnitUi::getSingular($eProductSelling['unit'], short: TRUE);
+		} else {
+			$unit = s("colis");
+		}
+
+		$form = new \util\FormUi();
+
 		$h = '<div class="shop-product-number" data-inconsistency="'.($inconsistency ? 1 : 0).'">';
 			$h .= '<a class="btn btn-outline-primary btn-sm shop-product-number-decrease" onclick="'.$attributesDecrease.'">-</a>';
-			$h .= '<span class="shop-product-number-value" data-price="'.$price.'" data-available="'.$available.'" data-product="'.$eProductSelling['id'].'" data-field="number">';
-				$h .= '<span>'.$number.'</span> ';
-
-				if($eProduct['packaging'] === NULL) {
-					$h .= \selling\UnitUi::getSingular($eProductSelling['unit'], short: TRUE);
-				} else {
-					$h .= s("colis");
-				}
+			$h .= '<span class="shop-product-number-value" data-price="'.$price.'" data-step="'.$step.'" data-available="'.$available.'" data-number="'.$number.'" data-product="'.$eProductSelling['id'].'" data-field="number">';
+				$h .= match($eShop['type']) {
+					Shop::PRIVATE => '<span class="shop-product-number-display">'.$number.'</span> '.$unit,
+					Shop::PRO => $form->inputGroup(
+						$form->number('value', $number > 0 ? $number : '', ['min' => $min, 'class' => 'shop-product-number-display', 'onfocus' => 'this.select()', 'onchange' => 'BasketManage.update('.$eDate['id'].', '.$eProductSelling['id'].', this, '.$step.', '.$min.', '.($available !== NULL ? $available : -1).')']).
+						$form->addon($unit)
+					)
+				};
 
 			$h .= '</span>';
 			$h .= '<a class="btn btn-outline-primary btn-sm shop-product-number-increase" onclick="'.$attributesIncrease.'">+</a>';

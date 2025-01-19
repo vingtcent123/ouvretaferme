@@ -126,9 +126,11 @@ class BasketManage {
 	}
 
 	/* Fonctions de mise à jour du panier et de son affichage */
-	static update(dateId, productId, step, min, available) {
+	static update(dateId, productId, value, step, min, available) {
 
-		let initialNumber = parseFloat(qs('[data-product="' + productId + '"][data-field="number"] > span:first-child').innerHTML);
+		let initialNumber = parseFloat(
+			qs('[data-product="' + productId + '"][data-field="number"]').dataset.number
+		);
 
 		if(isNaN(initialNumber)) {
 			initialNumber = 0;
@@ -145,25 +147,47 @@ class BasketManage {
 
 		} else {
 
-			if(step < 0) {
-				initialNumber = Math.floor(initialNumber / step) * step;
-			} else if(step > 0) {
-				initialNumber = Math.ceil(initialNumber / step) * step;
+			switch(typeof value) {
+
+				case 'number' :
+
+					if(value < 0) {
+						initialNumber = Math.floor(initialNumber / value) * value;
+					} else if(value > 0) {
+						initialNumber = Math.ceil(initialNumber / value) * value;
+					}
+
+					newNumber = Math.round((initialNumber + value) * 100) / 100;
+
+					if(newNumber <= 0.0) {
+						newNumber = 0;
+					} else if(newNumber < min) {
+
+						if(value > 0) {
+							newNumber = min;
+						} else {
+							newNumber = 0;
+						}
+
+					}
+
+					break;
+
+				case 'object' :
+
+					newNumber = Math.round(parseFloat(value.value) * 100) / 100;
+
+					if(newNumber < min) {
+						newNumber = 0;
+					}
+
+					newNumber = Math.round(newNumber / step) * step;
+
+					break;
+
 			}
 
-			newNumber = Math.round((initialNumber + step) * 100) / 100;
-
-			if(newNumber <= 0.0) {
-				newNumber = 0;
-			} else if(newNumber < min) {
-
-				if(step > 0) {
-					newNumber = min;
-				} else {
-					newNumber = 0;
-				}
-
-			} else if(available > -1 && available < newNumber) {
+			if(available > -1 && available < newNumber) {
 				newNumber = available;
 			}
 
@@ -191,7 +215,9 @@ class BasketManage {
 
 		} else {
 
-			qs('[data-product="' + productId + '"][data-field="number"] > span:first-child').renderInner(newNumber);
+			const target = qs('[data-product="' + productId + '"][data-field="number"]');
+			this.updateNumber(target, newNumber);
+
 			this.updateDisplay(dateId);
 
 		}
@@ -253,16 +279,26 @@ class BasketManage {
 		// Met à jour toutes les quantités.
 		Object.entries(basket.products).forEach(([productId, {number}]) => {
 
-			qs(
-				'[data-product="' + productId + '"][data-field="number"] > span:first-child',
-				node => node.renderInner(number),
-				() => this.deleteBasket(dateId, productId)
-			);
+			const target = qs('[data-product="' + productId + '"][data-field="number"]');
+
+			if(target !== null) {
+				this.updateNumber(target, number);
+			} else {
+				this.deleteBasket(dateId, productId);
+			}
 
 		});
 
 		// Met à jour la barre du bas.
 		this.updateDisplay(dateId);
+	}
+
+	static updateNumber(target, number) {
+
+		target.dataset.number = number;
+		target.qs('input.shop-product-number-display', node => node.value = number > 0 ? number : '');
+		target.qs('span.shop-product-number-display', node => node.innerHTML = number);
+
 	}
 
 	static updateDisplay(dateId) {
@@ -271,7 +307,7 @@ class BasketManage {
 		[totalArticles, totalPrice] = this.calculateTotal(dateId);
 
 		qs('#shop-basket-articles').renderInner(totalArticles + (totalArticles > 1 ? ' articles' : ' article'));
-		qs('#shop-basket-price').renderInner(totalPrice);
+		qs('#shop-basket-price', node => node.renderInner(totalPrice));
 		qs('#shop-basket').removeHide();
 
 		if(totalArticles === 0) {
@@ -389,7 +425,7 @@ class BasketManage {
 
 		})
 
-		qs('#shop-basket-price').innerHTML = money(price);
+		qs('#shop-basket-price', node => node.innerHTML = money(price));
 
 	}
 
