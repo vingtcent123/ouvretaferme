@@ -170,7 +170,7 @@ class DomLib {
 
 			if(
 				$attributes === [] or
-				isset($attributes[$attribute->name]) === FALSE
+				array_key_exists($attribute->name, $attributes) === FALSE
 			) {
 
 				$node->removeAttribute($attribute->name);

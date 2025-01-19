@@ -1409,6 +1409,9 @@ class EditorFormat {
 					'<button class="editor-action" data-action="link-open" data-instance="'+ instanceId +'" title="'+ Editor.labels.link +'">'+ Lime.Asset.icon('link') +'</button>';
 
 			html += '<span class="separator">&nbsp;</span>';
+				html += '<button class="editor-action" data-action="foreColor" data-instance="'+ instanceId +'">'+ Lime.Asset.icon('palette-fill') +'</button>';
+				html += '<input type="color" class="editor-box-selection-color" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" '+ 'oninput'.attr('EditorFormat.action("foreColorNew", "'+ instanceId +'", this)') +'/>';
+			html += '<span class="separator">&nbsp;</span>';
 
 			html += '<button class="editor-action" data-action="align-left" data-instance="'+ instanceId +'">'+ Lime.Asset.icon('text-left') +'</button>';
 			html += '<button class="editor-action" data-action="align-center" data-instance="'+ instanceId +'">'+ Lime.Asset.icon('text-center') +'</button>';
@@ -1787,14 +1790,14 @@ class EditorFormat {
 
 	}
 
-	static actionStyle(instanceId, action) {
+	static actionStyle(instanceId, action, value = null, css = false) {
 
 		if(qs(instanceId +'-box-selection .editor-action[data-action="'+ action +'"]').classList.contains('disabled')) {
 			return;
 		}
 
-		document.execCommand('styleWithCSS', false, false);
-		document.execCommand(action, false, null);
+		document.execCommand('styleWithCSS', false, css);
+		document.execCommand(action, false, value);
 
 
 	}
@@ -2052,6 +2055,12 @@ class EditorFormat {
 
 			case 'header' :
 				return this.actionHeader(instanceId);
+
+			case 'foreColor' :
+				return this.actionStyle(instanceId, 'foreColor', 'inherit', true);
+
+			case 'foreColorNew' :
+				return this.actionStyle(instanceId, 'foreColor', selectedElement.value, true);
 
 			case 'bold' :
 			case 'italic' :
@@ -2349,14 +2358,108 @@ class EditorFormat {
 
 	};
 
+	static nodeColor = null;
+
+	static _displayColor(instanceId, node) {
+
+		EditorFormat.nodeColor = node;
+
+		qs(instanceId +'-box-selection .editor-box-selection-icons').style.display = 'none';
+		qs(instanceId +'-box-selection .editor-box-selection-color').style.display = 'block';
+		qs(instanceId +'-box-selection .editor-box-selection-color input').focus();
+
+		if(node !== null) {
+
+			qs(instanceId +'-box-selection [type="submit"]').innerHTML = Editor.labels.colorFilledSubmit;
+			qs(instanceId +'-box-selection [data-action="color-close"]').innerHTML = Editor.labels.colorFilledClose;
+
+			qs(instanceId +'-box-selection .editor-box-selection-color input').value = node.getAttribute('href');
+
+		} else {
+
+			qs(instanceId +'-box-selection [type="submit"]').innerHTML = Editor.labels.colorEmptySubmit;
+			qs(instanceId +'-box-selection [data-action="color-close"]').innerHTML = Editor.labels.colorEmptyClose;
+
+		}
+
+	};
+
+	static _closeColor(instanceId) {
+
+		if(EditorFormat.nodeColor !== null) {
+			if(confirm(Editor.labels.confirmRemoveColor)) {
+				EditorFormat._removeColor(EditorFormat.nodeColor);
+				EditorFormat._restyleIcons(instanceId);
+			}
+		}
+
+		EditorFormat._hideColor(instanceId);
+
+	};
+
+	static _hideColor(instanceId) {
+
+		qs(instanceId +'-box-selection .editor-box-selection-icons').style.display = 'block';
+		qs(instanceId +'-box-selection .editor-box-selection-color').style.display = 'none';
+		qs(instanceId +'-box-selection .editor-box-selection-color input').value = '';
+
+		EditorFormat.nodeColor = null;
+
+	};
+
+	static _createColor(instanceId) {
+
+		let color = qs(instanceId + '-box-selection .editor-box-selection-color input').value;
+
+		if(color.match(/^http[s]?\:\/\//) === null) {
+			color = 'http://'+ color;
+		}
+
+		if(EditorFormat.nodeColor === null) {
+
+			document.execCommand('styleWithCSS', false, false);
+			document.execCommand("createColor", false, color);
+
+		} else {
+			EditorFormat.nodeColor.setAttribute('href', color);
+		}
+
+	};
+
+	static _removeColor(node) {
+
+		const newElements = document.createDocumentFragment();
+
+		while(node.childNodes.length > 0) {
+			newElements.appendChild(node.childNodes[0]);
+		}
+
+
+		const updateStartContainer = (node === EditorRange.startContainer);
+		const updateEndContainer = (node === EditorRange.endContainer);
+
+		node.parentElement.replaceChild(newElements, node);
+
+		if(updateStartContainer) {
+			EditorRange.newStartContainer = newElements[0];
+		}
+
+		if(updateEndContainer) {
+			EditorRange.newEndContainer = newElements[0];
+		}
+
+	};
+
 	static _hasStyle(command, node) {
 
 		switch(command) {
 
 			case 'link-open' :
 
-				const nodes = EditorRange.browseTags('A');
-				return (nodes.length > 0);
+				return (EditorRange.browseTags('A').length > 0);
+
+			case 'foreColor' :
+				return (EditorRange.browseTags('SPAN').reduce((value, item) => value + item.getAttribute('style').includes('inherit') ? 0 : 1, 0) > 0);
 
 			case 'header' :
 
@@ -2420,6 +2523,8 @@ class EditorFormat {
 			EditorFormat._iconShow(instanceId, 'align-separator');
 
 		}
+
+		EditorFormat._iconStyle(instanceId, 'foreColor');
 
 		if(EditorFormat._iconStyle(instanceId, 'header')) {
 
@@ -4262,7 +4367,7 @@ class EditorMutation {
 			// Keep these <span> empty (can't remove them because it break Ctrl+Z)
 			// A better solution would be to use <span> for formatting (<b>, <i>, <u>, ...)
 			case 'SPAN' :
-				return EditorMutation._nodeAttributes(node);
+				return EditorMutation._nodeAttributes(node, [], ['style']);
 
 			default :
 				return EditorNode.remove(node);
