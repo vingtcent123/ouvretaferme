@@ -412,43 +412,64 @@ class CsvLib {
 			}
 
 			$season = (int)substr($firstHarvestDate ?? $planting ?? $sowing ?? currentDate(), 0, 4);
+			$mode = (($line['in_greenhouse'] ?? 'false') === 'true') ? Series::GREENHOUSE : Series::OPEN_FIELD;
 
 			$harvestUnit = CsvUi::convertUnit($line['unit']);
+			$crop = $line['crop'] ?? NULL;
 
-			$import[] = [
+			$rows = (int)$line['rows'] ?: NULL;
+			$spacingPlants = (int)$line['spacing_plants'] ?: NULL;
+
+			$firstHarvestDate = $line['first_harvest_date'] ?: NULL;
+			$lastHarvestDate = $line['last_harvest_date'] ?: NULL;
+
+			$hash = md5($season.'-'.$mode.'-'.$crop.'-'.$plantingType.'-'.$rows.'-'.$spacingPlants.'-'.$sowing.'-'.$planting.'-'.$harvestUnit.'-'.$firstHarvestDate.'-'.$lastHarvestDate);
+
+			$import[$hash] ??= [
 				'series' => [
 					'season' => $season,
-					'name' => $line['crop'] ?? NULL,
-					'mode' => (($line['in_greenhouse'] ?? 'false') === 'true') ? Series::GREENHOUSE : Series::OPEN_FIELD,
+					'name' => $crop,
+					'mode' => $mode,
 					'use' => Series::BED,
-					'bed_length' => $line['length'] ? (int)$line['length'] : NULL,
+					'bed_length' => 0,
 					'block_area' => NULL,
 					'finished' => (($line['finished'] ?? 'false') === 'true'),
 				],
 				'cultivations' => [
 					[
-						'species' => $line['crop'] ?? NULL,
+						'species' => $crop,
 						'planting_type' => $plantingType,
 						'young_plants_seeds' => $line['seeds_per_hole_seedling'] ? (int)$line['seeds_per_hole_seedling'] : NULL,
 						'young_plants_tray' => $line['container_name'] ?: NULL,
 						'young_plants_tray_size' => $line['container_size'] ?: NULL,
 						'sowing_date' => $sowing,
 						'planting_date' => $planting,
-						'first_harvest_date' => $line['first_harvest_date'] ?: NULL,
-						'last_harvest_date' => $line['last_harvest_date'] ?: NULL,
+						'first_harvest_date' => $firstHarvestDate,
+						'last_harvest_date' => $lastHarvestDate,
 						'block_density' => NULL,
 						'block_spacing_rows' => NULL,
 						'block_spacing_plants' => NULL,
 						'bed_density' => NULL,
-						'bed_rows' => (int)$line['rows'] ?: NULL,
-						'bed_spacing_plants' => (int)$line['spacing_plants'] ?: NULL,
+						'bed_rows' => $rows,
+						'bed_spacing_plants' => $spacingPlants,
 						'harvest_unit' => $harvestUnit,
 						'yield_expected_area' => NULL,
 						'yield_expected_length' => (float)$line['yield_per_bed_meter'] ? round((float)$line['yield_per_bed_meter'], 2) : NULL,
-						'varieties' => $line['variety'] ? [['variety' => $line['variety'], 'eVariety' => new \plant\Variety(), 'part' => 100]] : []
+						'varieties_unit' => Cultivation::LENGTH,
+						'varieties_list' => [],
+						'varieties' => []
 					]
 				]
 			];
+
+			$import[$hash]['series']['bed_length'] += $line['length'] ? (int)$line['length'] : NULL;
+
+			if(in_array($line['variety'], $import[$hash]['cultivations'][0]['varieties_list']) === FALSE) {
+
+				$import[$hash]['cultivations'][0]['varieties_list'][] = $line['variety'];
+				$import[$hash]['cultivations'][0]['varieties'][] = ['variety' => $line['variety'], 'eVariety' => new \plant\Variety(), 'part' => $line['length'] ? (int)$line['length'] : 1];
+
+			}
 
 		}
 
@@ -602,6 +623,7 @@ class CsvLib {
 				'harvest_unit' => $line['harvest_unit'] ?: NULL,
 				'yield_expected_area' => (float)$line['yield_expected_area'] ? round((float)$line['yield_expected_area'], 2) : NULL,
 				'yield_expected_length' => NULL,
+				'varieties_unit' => Cultivation::PERCENT,
 				'varieties' => $varieties
 			];
 
@@ -653,7 +675,7 @@ class CsvLib {
 			foreach($cultivations as $cultivation) {
 
 				$input['plant'][$position] = $cultivation['ePlant']['id'];
-				$input['sliceUnit'][$position] = Cultivation::PERCENT;
+				$input['sliceUnit'][$position] = $cultivation['varieties_unit'];
 				$input['seedling'][$position] = $cultivation['planting_type'];
 				$input['seedlingSeeds'][$position] = (int)($cultivation['young_plants_seeds'] ?: 1);
 				$input['mainUnit'][$position] = $cultivation['harvest_unit'];
@@ -720,7 +742,10 @@ class CsvLib {
 
 					$input['variety'][$position]['variety'][] = $eVariety->empty() ? 'new' : $eVariety['id'];
 					$input['variety'][$position]['varietyCreate'][] = $eVariety->empty() ? $variety : NULL;
-					$input['variety'][$position]['varietyPartPercent'][] = $part;
+					$input['variety'][$position][match($cultivation['varieties_unit']) {
+						Cultivation::LENGTH => 'varietyPartLength',
+						Cultivation::PERCENT => 'varietyPartPercent'
+					}][] = $part;
 
 				}
 
@@ -981,6 +1006,7 @@ class CsvLib {
 
 					if(
 						$cultivation['varieties'] and
+						$cultivation['varieties_unit'] === Cultivation::PERCENT and
 						$varietyTotal !== 100
 					) {
 						$errors[] = 'varietyParts';
