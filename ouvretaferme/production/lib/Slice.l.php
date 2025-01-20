@@ -66,6 +66,9 @@ class SliceLib extends SliceCrud {
 
 					\plant\Variety::model()
 						->select(\plant\Variety::getSelection())
+						->whereFarm($eVariety['farm'])
+						->wherePlant($eVariety['plant'])
+						->whereName($eVariety['name'])
 						->get($eVariety);
 
 				}
