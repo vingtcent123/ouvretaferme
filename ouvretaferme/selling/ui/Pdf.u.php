@@ -738,8 +738,11 @@ class PdfUi {
 		$last = ($isLast ? 'pdf-document-item-last' : '');
 
 		$details = [];
-		if($eSale['type'] === Customer::PRO and $eItem['product']->notEmpty() and $eItem['product']['size']) {
+		if($eItem['product']->notEmpty() and $eItem['product']['size']) {
 			$details[] = s("Calibre {value}", encode($eItem['product']['size']));
+		}
+		if($eItem['product']->notEmpty() and $eItem['product']['origin']) {
+			$details[] = s("Origine {value}", encode($eItem['product']['origin']));
 		}
 		if($eItem['packaging']) {
 			$details[] = s("Colis de {value}", \selling\UnitUi::getValue($eItem['packaging'], $eItem['unit'], TRUE));

@@ -59,7 +59,6 @@ class ItemModel extends \ModuleModel {
 			'product' => ['element32', 'selling\Product', 'null' => TRUE, 'cast' => 'element'],
 			'quality' => ['enum', [\selling\Item::ORGANIC, \selling\Item::NATURE_PROGRES, \selling\Item::CONVERSION], 'null' => TRUE, 'cast' => 'enum'],
 			'parent' => ['element32', 'selling\Item', 'null' => TRUE, 'cast' => 'element'],
-			'description' => ['text8', 'min' => 1, 'max' => NULL, 'null' => TRUE, 'cast' => 'string'],
 			'packaging' => ['decimal', 'digits' => 6, 'decimal' => 2, 'min' => 0.01, 'max' => NULL, 'null' => TRUE, 'cast' => 'float'],
 			'unit' => ['element32', 'selling\Unit', 'null' => TRUE, 'cast' => 'element'],
 			'unitPrice' => ['decimal', 'digits' => 8, 'decimal' => 2, 'cast' => 'float'],
@@ -76,7 +75,7 @@ class ItemModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'name', 'sale', 'customer', 'type', 'farm', 'shop', 'shopDate', 'shopProduct', 'product', 'quality', 'parent', 'description', 'packaging', 'unit', 'unitPrice', 'discount', 'number', 'price', 'priceExcludingVat', 'locked', 'vatRate', 'stats', 'status', 'createdAt', 'deliveredAt'
+			'id', 'name', 'sale', 'customer', 'type', 'farm', 'shop', 'shopDate', 'shopProduct', 'product', 'quality', 'parent', 'packaging', 'unit', 'unitPrice', 'discount', 'number', 'price', 'priceExcludingVat', 'locked', 'vatRate', 'stats', 'status', 'createdAt', 'deliveredAt'
 		]);
 
 		$this->propertiesToModule += [
@@ -200,10 +199,6 @@ class ItemModel extends \ModuleModel {
 
 	public function whereParent(...$data): ItemModel {
 		return $this->where('parent', ...$data);
-	}
-
-	public function whereDescription(...$data): ItemModel {
-		return $this->where('description', ...$data);
 	}
 
 	public function wherePackaging(...$data): ItemModel {

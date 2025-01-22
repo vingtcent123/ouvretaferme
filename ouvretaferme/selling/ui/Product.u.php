@@ -42,19 +42,15 @@ class ProductUi {
 
 		\Asset::css('media', 'media.css');
 
-		$infos = [];
-
-		if($eProduct['size']) {
-			$infos[] = encode($eProduct['size']);
-		}
+		$details = self::getDetails($eProduct);
 
 		$item = self::getVignette($eProduct, '2.5rem');
 		$item .= '<div>';
 			$item .= encode($eProduct->getName());
 			$item .= \selling\UnitUi::getBy($eProduct['unit']);
 			$item .= '<br/>';
-			if($infos) {
-				$item .= '<small class="color-muted">'.implode(' | ', $infos).'</small>';
+			if($details) {
+				$item .= '<small class="color-muted">'.implode(' | ', $details).'</small>';
 			}
 		$item .= '</div>';
 
@@ -365,6 +361,8 @@ class ProductUi {
 
 	public static function getInfos(Product $eProduct, bool $includeStock = FALSE, bool $includeQuality = TRUE): string {
 
+		\Asset::css('selling', 'product.css');
+
 		$h = '<div class="product-item-label">';
 
 			$h .= '<a href="/produit/'.$eProduct['id'].'">'.encode($eProduct->getName()).'</a>';
@@ -379,11 +377,7 @@ class ProductUi {
 
 		$h .= '</div>';
 
-		$more = [];
-
-		if($eProduct['size']) {
-			$more[] = '<span><u>'.encode($eProduct['size']).'</u></span>';
-		}
+		$more = self::getDetails($eProduct);
 
 		if($includeStock) {
 
@@ -399,6 +393,22 @@ class ProductUi {
 
 		return $h;
 
+
+	}
+
+	public static function getDetails(Product $eProduct): array {
+
+		$more = [];
+
+		if($eProduct['size']) {
+			$more[] = '<span><u>'.encode($eProduct['size']).'</u></span>';
+		}
+
+		if($eProduct['origin']) {
+			$more[] = '<span>'.s("Origine {value}", '<u>'.encode($eProduct['origin']).'</u>').'</span>';
+		}
+
+		return $more;
 
 	}
 
@@ -468,8 +478,14 @@ class ProductUi {
 				$h .= '<dd>'.($eProduct['plant']->empty() ? '' : \plant\PlantUi::link($eProduct['plant'])).'</dd>';
 				$h .= '<dt>'.self::p('unit')->label.'</dt>';
 				$h .= '<dd>'.($eProduct['unit']->notEmpty() ? encode($eProduct['unit']['singular']) : '').'</dd>';
-				$h .= '<dt>'.self::p('size')->label.'</dt>';
-				$h .= '<dd>'.($eProduct['size'] ? encode($eProduct['size']) : '').'</dd>';
+				if($eProduct['size'] !== NULL) {
+					$h .= '<dt>'.self::p('size')->label.'</dt>';
+					$h .= '<dd>'.($eProduct['size'] ? encode($eProduct['size']) : '').'</dd>';
+				}
+				if($eProduct['origin'] !== NULL) {
+					$h .= '<dt>'.self::p('origin')->label.'</dt>';
+					$h .= '<dd>'.($eProduct['origin'] ? encode($eProduct['origin']) : '').'</dd>';
+				}
 				$h .= '<dt>'.self::p('quality')->label.'</dt>';
 				$h .= '<dd>'.($eProduct['quality'] ? \farm\FarmUi::getQualityLogo($eProduct['quality'], '1.5rem').' '.self::p('quality')->values[$eProduct['quality']] : '').'</dd>';
 				if($eProduct['category']->notEmpty()) {
@@ -683,7 +699,7 @@ class ProductUi {
 				$h .= $form->dynamicGroup($eProduct, 'category');
 			}
 
-			$h .= $form->dynamicGroups($eProduct, ['unit', 'variety', 'size', 'description', 'quality', 'vat'], [
+			$h .= $form->dynamicGroups($eProduct, ['unit', 'variety', 'size', 'origin', 'description', 'quality', 'vat'], [
 				'unit' => function(\PropertyDescriber $d) {
 					$d->attributes += [
 						'onchange' => 'Product.changeUnit(this, "product-unit")'
@@ -734,7 +750,7 @@ class ProductUi {
 				self::p('unit')->label,
 				$form->fake(mb_ucfirst($eProduct['unit'] ? \selling\UnitUi::getSingular($eProduct['unit']) : self::p('unit')->placeholder))
 			);
-			$h .= $form->dynamicGroups($eProduct, ['variety', 'size', 'description', 'quality', 'vat']);
+			$h .= $form->dynamicGroups($eProduct, ['variety', 'size', 'origin', 'description', 'quality', 'vat']);
 
 			$h .= '<br/>';
 			$h .= self::getFieldPrices($form, $eProduct, 'update');
@@ -867,6 +883,7 @@ class ProductUi {
 			'name' => s("Nom du produit"),
 			'variety' => s("Variété"),
 			'size' => s("Calibre"),
+			'origin' => s("Origine"),
 			'description' => s("Description"),
 			'quality' => s("Signe de qualité"),
 			'farm' => s("Ferme"),
@@ -961,6 +978,13 @@ class ProductUi {
 				$d->attributes = [
 					'placeholder' => s("Ex. : 14-21 cm"),
 				];
+				break;
+
+			case 'origin' :
+				$d->attributes = [
+					'placeholder' => s("Ex. : Ferme d'à côté (63)"),
+				];
+				$d->after = \util\FormUi::info(s("Indiquez l'origine du produit s'il n'est pas issue de votre production."));
 				break;
 
 			case 'vat' :

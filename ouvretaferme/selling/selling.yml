@@ -157,7 +157,6 @@ Item:
   product: ?selling\Product
   quality: ?enum(ORGANIC, NATURE_PROGRES, CONVERSION)
   parent: ?selling\Item
-  description: ?text8(1, null)
   packaging: ?decimal(6, 2, 0.01, null)
   unit: ?selling\Unit
   unitPrice: decimal(8, 2)
@@ -225,6 +224,7 @@ Product:
   plant: ?plant\Plant
   variety: ?text8(1, null)
   size: ?text8(1, null)
+  origin: ?text8(1, null)
   farm: farm\Farm
   unit: ?selling\Unit = PHP(1)
   private: bool = TRUE

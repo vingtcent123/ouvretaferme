@@ -447,9 +447,6 @@ class OrderUi {
 				if($eItem['packaging']) {
 					$values[] = s("Taille du colis : {value}", \selling\UnitUi::getValue($eItem['packaging'], $eItem['unit'], TRUE));
 				}
-				if($eItem['description']) {
-					$values[] = s("Description : {value}", encode($eItem['description']));
-				}
 
 				$h .= '<tbody>';
 					$h .= '<tr>';

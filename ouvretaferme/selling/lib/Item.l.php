@@ -10,7 +10,7 @@ class ItemLib extends ItemCrud {
 				'sale' => ['hasVat']
 			]);
 
-			$properties = ['name', 'quality', 'description', 'locked', 'packaging', 'number', 'unitPrice', 'price'];
+			$properties = ['name', 'quality', 'locked', 'packaging', 'number', 'unitPrice', 'price'];
 
 			if($e['sale']['hasVat']) {
 				$properties[] = 'vatRate';

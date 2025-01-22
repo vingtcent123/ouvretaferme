@@ -12,7 +12,7 @@ class ProductLib extends ProductCrud {
 	}
 
 	public static function getPropertiesWrite(): array {
-		return ['name', 'category', 'variety', 'size', 'description', 'quality', 'plant', 'pro', 'proPrice', 'proPackaging', 'private', 'privatePrice', 'vat'];
+		return ['name', 'category', 'variety', 'size', 'origin', 'description', 'quality', 'plant', 'pro', 'proPrice', 'proPackaging', 'private', 'privatePrice', 'vat'];
 	}
 
 	public static function getFromQuery(string $query, \farm\Farm $eFarm, ?string $type, ?string $stock, ?array $properties = []): \Collection {

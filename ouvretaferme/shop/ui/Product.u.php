@@ -177,20 +177,25 @@ class ProductUi {
 			$h .= '<div class="shop-product-content">';
 				$h .= '<div class="shop-product-title">';
 
-					$h .= '<h4>';
-						$h .= $eProductSelling->getName('html');
-
-						if($eProductSelling['size'] !== NULL) {
-							$h .= '<span class="shop-product-size">';
-								$h .= encode($eProductSelling['size']);
-							$h .= '</span>';
-						}
-
+					$h .= '<div class="shop-product-name">';
+						$h .= '<h4>';
+							$h .= $eProductSelling->getName('html');
+						$h .= '</h4>';
 						if($eShop['type'] === Shop::PRO) {
 							$h .= $quality;
 						}
+						if($eProductSelling['size'] !== NULL) {
+							$h .= '<div class="shop-product-size">';
+								$h .= encode($eProductSelling['size']);
+							$h .= '</div>';
+						}
 
-					$h .= '</h4>';
+						if($eProductSelling['origin'] !== NULL) {
+							$h .= '<div class="shop-product-origin">';
+								$h .= s("Origine <u>{value}</u>", encode($eProductSelling['origin']));
+							$h .= '</div>';
+						}
+					$h .= '</div>';
 
 					$h .= '<div class="shop-product-buy-price">'.\util\TextUi::money($eProduct['price']).' '.$this->getTaxes($eProduct).\selling\UnitUi::getBy($eProductSelling['unit']).'</div>';
 
@@ -404,13 +409,11 @@ class ProductUi {
 						$h .= '<label class="shop-select">';
 							$h .= $form->inputCheckbox('productsList['.$eProduct['id'].']', $eProduct['id'], $attributes);
 						$h .= '</label>';
-						$h .= '<label class="date-products-item-product" for="'.$attributes['id'].'">';
+						$h .= '<label class="date-products-item-vignette" for="'.$attributes['id'].'">';
 							$h .= \selling\ProductUi::getVignette($eProduct, '2rem');
-							$h .= '&nbsp;&nbsp;';
-							$h .= \selling\ProductUi::link($eProduct, TRUE);
-							if($eProduct['size']) {
-								$h .= ' <small class="color-muted"><u>'.encode($eProduct['size']).'</u></small>';
-							}
+						$h .= '</label>';
+						$h .= '<label class="date-products-item-product" for="'.$attributes['id'].'">';
+							$h .= \selling\ProductUi::getInfos($eProduct, includeQuality: FALSE);
 						$h .= '</label>';
 						$h .= '<label class="date-products-item-unit text-end" for="'.$attributes['id'].'">';
 

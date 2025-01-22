@@ -138,18 +138,16 @@ class ItemUi {
 							$description[] = \farm\FarmUi::getQualityLogo($eItem['quality'], '1.5rem');
 						}
 
-						if($eItem['description']) {
-							$description[] = '<span class="util-annotation">'.$eItem->quick('description', encode($eItem['description'])).'</span>';
-						}
-
 						$product = encode($eItem['name']);
 
-						if(
-							$eSale['type'] === Customer::PRO and
-							$eItem['product']->notEmpty() and
-							$eItem['product']['size']
-						) {
-							$product .= '  <small class="color-muted"><u>'.encode($eItem['product']['size']).'</u></small>';
+						if($eItem['product']->notEmpty()) {
+
+							$details = ProductUi::getDetails($eItem['product']);
+
+							if($details) {
+								$product .= '<br/><small class="color-muted">'.implode(' | ', $details).'</small>';
+							}
+
 						}
 
 						$h .= '</div>';
@@ -174,7 +172,7 @@ class ItemUi {
 							$h .= '</tr>';
 							$h .= '<tr class="item-item-line-2">';
 
-								$h .= '<td class="td-min-content hide-sm-down">'.$product.'</td>';
+								$h .= '<td class="td-min-content hide-sm-down" style="line-height: 1.2">'.$product.'</td>';
 								$h .= '<td class="hide-sm-down">'.implode('  ', $description).'</td>';
 
 								if($withPackaging) {
@@ -799,7 +797,7 @@ class ItemUi {
 				);
 			}
 
-			$h .= $form->dynamicGroups($eItem, ['name', 'quality', 'description']);
+			$h .= $form->dynamicGroups($eItem, ['name', 'quality']);
 
 			if($eItem['sale']->isPro()) {
 				$h .= self::getPackagingField($form, 'packaging', $eItem);

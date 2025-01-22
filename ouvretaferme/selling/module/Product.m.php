@@ -52,6 +52,7 @@ class ProductModel extends \ModuleModel {
 			'plant' => ['element32', 'plant\Plant', 'null' => TRUE, 'cast' => 'element'],
 			'variety' => ['text8', 'min' => 1, 'max' => NULL, 'null' => TRUE, 'cast' => 'string'],
 			'size' => ['text8', 'min' => 1, 'max' => NULL, 'null' => TRUE, 'cast' => 'string'],
+			'origin' => ['text8', 'min' => 1, 'max' => NULL, 'null' => TRUE, 'cast' => 'string'],
 			'farm' => ['element32', 'farm\Farm', 'cast' => 'element'],
 			'unit' => ['element32', 'selling\Unit', 'null' => TRUE, 'cast' => 'element'],
 			'private' => ['bool', 'cast' => 'bool'],
@@ -71,7 +72,7 @@ class ProductModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'name', 'description', 'vignette', 'category', 'plant', 'variety', 'size', 'farm', 'unit', 'private', 'privatePrice', 'privateStep', 'pro', 'proPrice', 'proPackaging', 'proStep', 'vat', 'quality', 'stock', 'stockLast', 'stockUpdatedAt', 'createdAt', 'status'
+			'id', 'name', 'description', 'vignette', 'category', 'plant', 'variety', 'size', 'origin', 'farm', 'unit', 'private', 'privatePrice', 'privateStep', 'pro', 'proPrice', 'proPackaging', 'proStep', 'vat', 'quality', 'stock', 'stockLast', 'stockUpdatedAt', 'createdAt', 'status'
 		]);
 
 		$this->propertiesToModule += [
@@ -170,6 +171,10 @@ class ProductModel extends \ModuleModel {
 
 	public function whereSize(...$data): ProductModel {
 		return $this->where('size', ...$data);
+	}
+
+	public function whereOrigin(...$data): ProductModel {
+		return $this->where('origin', ...$data);
 	}
 
 	public function whereFarm(...$data): ProductModel {
