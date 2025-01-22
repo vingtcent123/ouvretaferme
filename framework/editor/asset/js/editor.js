@@ -2307,7 +2307,7 @@ class EditorFormat {
 
 	static _hideLink(instanceId) {
 
-		qs(instanceId +'-box-selection .editor-box-selection-icons').style.display = 'block';
+		qs(instanceId +'-box-selection .editor-box-selection-icons').style.display = 'flex';
 		qs(instanceId +'-box-selection .editor-box-selection-link').style.display = 'none';
 		qs(instanceId +'-box-selection .editor-box-selection-link input').value = '';
 
@@ -2399,7 +2399,7 @@ class EditorFormat {
 
 	static _hideColor(instanceId) {
 
-		qs(instanceId +'-box-selection .editor-box-selection-icons').style.display = 'block';
+		qs(instanceId +'-box-selection .editor-box-selection-icons').style.display = 'flex';
 		qs(instanceId +'-box-selection .editor-box-selection-color').style.display = 'none';
 		qs(instanceId +'-box-selection .editor-box-selection-color input').value = '';
 
