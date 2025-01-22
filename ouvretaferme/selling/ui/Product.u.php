@@ -998,7 +998,7 @@ class ProductUi {
 				$d->attributes = [
 					'placeholder' => s("Ex. : Ferme d'à côté (63)"),
 				];
-				$d->after = \util\FormUi::info(s("Indiquez l'origine du produit s'il n'est pas issue de votre production."));
+				$d->after = \util\FormUi::info(s("Indiquez l'origine du produit s'il n'est pas issu de votre production."));
 				break;
 
 			case 'vat' :
