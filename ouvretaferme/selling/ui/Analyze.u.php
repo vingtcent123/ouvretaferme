@@ -1996,5 +1996,28 @@ class AnalyzeUi {
 
 	}
 
+	public function getExportCustomersHeader(\farm\Farm $eFarm): array {
+
+		return [
+			'name',
+			'account',
+			'type',
+			'email',
+			'phone',
+			'pro_company',
+			'pro_siret',
+			'pro_vat',
+			'pro_invoice_street',
+			'pro_invoice_postcode',
+			'pro_invoice_city',
+			'delivery_street',
+			'delivery_postcode',
+			'delivery_city',
+			'opt_in',
+			'opt_out',
+		];
+
+	}
+
 }
 ?>

@@ -22,5 +22,15 @@
 
 		throw new CsvAction($export, 'produits.csv');
 
+	})
+	->read('exportCustomers', function($data) {
+
+		$data->e->validate('canAnalyze', 'canPersonalData');
+
+		$export = \selling\AnalyzeLib::getExportCustomers($data->e);
+		array_unshift($export, (new \selling\AnalyzeUi())->getExportCustomersHeader($data->e));
+
+		throw new CsvAction($export, 'clients.csv');
+
 	});
 ?>

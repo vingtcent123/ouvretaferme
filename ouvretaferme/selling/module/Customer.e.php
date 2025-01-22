@@ -91,19 +91,51 @@ class Customer extends CustomerElement {
 		return $this['destination'] === Customer::COLLECTIVE;
 	}
 
+	public function getDeliveryAddress(): ?string {
+
+		if($this->hasDeliveryAddress() === FALSE) {
+			return NULL;
+		}
+
+		$address = $this->getDeliveryStreet()."\n";
+		$address .= $this['deliveryPostcode'].' '.$this['deliveryCity'];
+
+		return $address;
+
+	}
+
+	public function getDeliveryStreet(): ?string {
+
+		$street = $this['deliveryStreet1'];
+		if($this['deliveryStreet2'] !== NULL) {
+			$street .= "\n".$this['deliveryStreet2'];
+		}
+
+		return $street;
+
+	}
+
 	public function getInvoiceAddress(): ?string {
 
 		if($this->hasInvoiceAddress() === FALSE) {
 			return NULL;
 		}
 
-		$address = $this['invoiceStreet1']."\n";
-		if($this['invoiceStreet2'] !== NULL) {
-			$address .= $this['invoiceStreet2']."\n";
-		}
+		$address = $this->getInvoiceStreet()."\n";
 		$address .= $this['invoicePostcode'].' '.$this['invoiceCity'];
 
 		return $address;
+
+	}
+
+	public function getInvoiceStreet(): ?string {
+
+		$street = $this['invoiceStreet1'];
+		if($this['invoiceStreet2'] !== NULL) {
+			$street .= "\n".$this['invoiceStreet2'];
+		}
+
+		return $street;
 
 	}
 

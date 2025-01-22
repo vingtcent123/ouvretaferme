@@ -465,7 +465,7 @@ class FarmUi {
 
 		$form = new \util\FormUi();
 
-		$h = '<h2>'.s("Les données annualisées").'</h2>';
+		$h = '<h2>'.s("Les données annuelles").'</h2>';
 
 		$h .= $form->open(attributes: ['action' => '/farm/farm:export', 'method' => 'get']);
 			$h .= '<div class="util-block-search stick-xs" style="display: flex; column-gap: 1rem">';
@@ -537,6 +537,13 @@ class FarmUi {
 					$h .= '<h4>'.s("Exporter les produits").'</h4>';
 				$h .= '</div>';
 				$h .= \Asset::icon('box');
+			$h .= '</a>';
+
+			$h .= '<a href="/selling/csv:exportCustomers?id='.$eFarm['id'].'" class="bg-secondary util-button" data-ajax-navigation="never">';
+				$h .= '<div>';
+					$h .= '<h4>'.s("Exporter les clients").'</h4>';
+				$h .= '</div>';
+				$h .= \Asset::icon('people-fill');
 			$h .= '</a>';
 
 		$h .= '</div>';

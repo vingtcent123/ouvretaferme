@@ -874,5 +874,38 @@ class AnalyzeLib {
 
 	}
 
+	public static function getExportCustomers(\farm\Farm $eFarm): array {
+
+		$data = Customer::model()
+			->select(Customer::getSelection())
+			->whereFarm($eFarm)
+			->whereStatus(Customer::ACTIVE)
+			->sort('name')
+			->getCollection()
+			->toArray(function($eCustomer) use ($eFarm) {
+				return [
+					$eCustomer->getName(),
+					$eCustomer['user']->empty() ? s("non") : s("oui"),
+					CustomerUi::getCategory($eCustomer),
+					$eCustomer['email'],
+					$eCustomer['phone'] ? '="'.$eCustomer['phone'].'"' : '',
+					$eCustomer['legalName'] ?? '',
+					$eCustomer['type'] === Customer::PRO ? ($eCustomer['proRegistration'] ?? '') : '',
+					$eCustomer['type'] === Customer::PRO ? ($eCustomer['proVat'] ?? '') : '',
+					$eCustomer['type'] === Customer::PRO ? $eCustomer->getInvoiceStreet() : '',
+					$eCustomer['type'] === Customer::PRO ? ($eCustomer['invoicePostcode'] ?? '') : '',
+					$eCustomer['type'] === Customer::PRO ? ($eCustomer['invoiceCity'] ?? '') : '',
+					$eCustomer->getDeliveryStreet(),
+					$eCustomer['deliveryPostcode'] ?? '',
+					$eCustomer['deliveryCity'] ?? '',
+					($eCustomer['emailOptIn'] === NULL) ? s("?") : ($eCustomer['emailOptIn'] ? s("oui") : s("non")),
+					$eCustomer['emailOptOut'] ? s("oui") : s("non"),
+				];
+			});
+
+		return $data;
+
+	}
+
 }
 ?>
