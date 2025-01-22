@@ -465,7 +465,9 @@ class FarmUi {
 
 		$form = new \util\FormUi();
 
-		$h = $form->open(attributes: ['action' => '/farm/farm:export', 'method' => 'get']);
+		$h = '<h2>'.s("Les données annualisées").'</h2>';
+
+		$h .= $form->open(attributes: ['action' => '/farm/farm:export', 'method' => 'get']);
 			$h .= '<div class="util-block-search stick-xs" style="display: flex; column-gap: 1rem">';
 				$h .= $form->hidden('id', $eFarm['id']);
 				$h .= $form->inputGroup(
@@ -499,7 +501,14 @@ class FarmUi {
 				$h .= \Asset::icon('basket2-fill');
 			$h .= '</a>';
 
-			$h .= '<a href="/selling/csv:export?id='.$eFarm['id'].'&year='.$year.'" class="bg-secondary util-button" data-ajax-navigation="never">';
+			$h .= '<a href="/selling/csv:exportProducts?id='.$eFarm['id'].'&year='.$year.'" class="bg-secondary util-button" data-ajax-navigation="never">';
+				$h .= '<div>';
+					$h .= '<h4>'.s("Exporter les produits").'</h4>';
+				$h .= '</div>';
+				$h .= \Asset::icon('box');
+			$h .= '</a>';
+
+			$h .= '<a href="/selling/csv:exportSales?id='.$eFarm['id'].'&year='.$year.'" class="bg-secondary util-button" data-ajax-navigation="never">';
 				$h .= '<div>';
 					$h .= '<h4>'.s("Exporter les ventes").'</h4>';
 				$h .= '</div>';
@@ -508,7 +517,7 @@ class FarmUi {
 
 			if($hasMarket) {
 
-				$h .= '<a href="/selling/csv:export?id='.$eFarm['id'].'&year='.$year.'&market=1" class="bg-secondary util-button" data-ajax-navigation="never">';
+				$h .= '<a href="/selling/csv:exportSales?id='.$eFarm['id'].'&year='.$year.'&market=1" class="bg-secondary util-button" data-ajax-navigation="never">';
 					$h .= '<div>';
 						$h .= '<h4>'.s("Exporter les ventes des marchés").'</h4>';
 					$h .= '</div>';
@@ -516,6 +525,19 @@ class FarmUi {
 				$h .= '</a>';
 
 			}
+
+		$h .= '</div>';
+
+		$h .= '<h2>'.s("Les données intégrales").'</h2>';
+
+		$h .= '<div class="util-buttons">';
+
+			$h .= '<a href="/selling/csv:exportProducts?id='.$eFarm['id'].'" class="bg-secondary util-button" data-ajax-navigation="never">';
+				$h .= '<div>';
+					$h .= '<h4>'.s("Exporter les produits").'</h4>';
+				$h .= '</div>';
+				$h .= \Asset::icon('box');
+			$h .= '</a>';
 
 		$h .= '</div>';
 

@@ -756,7 +756,7 @@ class AnalyzeLib {
 
 	}
 
-	public static function getExport(\farm\Farm $eFarm, int $year, bool $market): array {
+	public static function getExportSales(\farm\Farm $eFarm, int $year, bool $market): array {
 
 		if($market) {
 			self::filterItemMarketStats();
@@ -833,6 +833,42 @@ class AnalyzeLib {
 			return strcmp($a[0], $b[0]);
 
 		});
+
+		return $data;
+
+	}
+
+	public static function getExportProducts(\farm\Farm $eFarm): array {
+
+		$data = Product::model()
+			->select([
+				'name',
+				'plant' => ['name'],
+				'category' => ['name'],
+				'variety', 'size',
+				'unit' => ['fqn', 'by', 'singular', 'plural', 'short', 'type'],
+				'quality',
+				'privatePrice', 'proPrice',
+				'vat'
+			])
+			->whereFarm($eFarm)
+			->whereStatus(Product::ACTIVE)
+			->sort('name')
+			->getCollection()
+			->toArray(function($eProduct) use ($eFarm) {
+				return [
+					$eProduct['name'],
+					$eProduct['plant']->empty() ? '' : $eProduct['plant']['name'],
+					$eProduct['category']->empty() ? '' : $eProduct['category']['name'],
+					$eProduct['unit']->empty() ? '' : $eProduct['unit']['singular'],
+					$eProduct['variety'] ?? '',
+					$eProduct['size'] ?? '',
+					$eProduct['quality'] ? ProductUi::p('quality')->values[$eProduct['quality']] : '',
+					($eProduct['proPrice'] !== NULL) ? \util\TextUi::csvNumber($eProduct['proPrice']) : '',
+					($eProduct['privatePrice'] !== NULL) ? \util\TextUi::csvNumber($eProduct['privatePrice']) : '',
+					$eFarm->getSelling('hasVat') ? \util\TextUi::csvNumber(\Setting::get('selling\vatRates')[$eProduct['vat']]) : '',
+				];
+			});
 
 		return $data;
 

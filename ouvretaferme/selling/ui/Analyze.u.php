@@ -1963,7 +1963,7 @@ class AnalyzeUi {
 
 	}
 
-	public function getExportHeader(\farm\Farm $eFarm): array {
+	public function getExportSalesHeader(\farm\Farm $eFarm): array {
 
 		return [
 			'item',
@@ -1975,6 +1975,23 @@ class AnalyzeUi {
 			'quantity',
 			'unit',
 			$eFarm->getSelling('hasVat') ? 'amount_excluding_vat' : 'amount'
+		];
+
+	}
+
+	public function getExportProductsHeader(\farm\Farm $eFarm): array {
+
+		return [
+			'name',
+			'species',
+			'category',
+			'unit',
+			'variety',
+			'size',
+			'quality',
+			'price_pro',
+			'price_private',
+			'vat'
 		];
 
 	}
