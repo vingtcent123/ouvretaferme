@@ -699,13 +699,18 @@ class ProductUi {
 				$h .= $form->dynamicGroup($eProduct, 'category');
 			}
 
-			$h .= $form->dynamicGroups($eProduct, ['unit', 'variety', 'size', 'origin', 'description', 'quality', 'vat'], [
-				'unit' => function(\PropertyDescriber $d) {
-					$d->attributes += [
-						'onchange' => 'Product.changeUnit(this, "product-unit")'
-					];
-				}
-			]);
+			$h .= $form->dynamicGroup($eProduct, 'unit', function(\PropertyDescriber $d) {
+				$d->attributes += [
+					'onchange' => 'Product.changeUnit(this, "product-unit")'
+				];
+			});
+
+			$h .= '<br/>';
+			$h .= '<h3>'.s("Caractéristiques").'</h3>';
+
+			$h .= '<div class="util-block bg-background-light">';
+				$h .= $form->dynamicGroups($eProduct, ['variety', 'size', 'origin', 'description', 'quality']);
+			$h .= '</div>';
 
 			$h .= '<br/>';
 			$h .= self::getFieldPrices($form, $eProduct, 'create');
@@ -750,7 +755,13 @@ class ProductUi {
 				self::p('unit')->label,
 				$form->fake(mb_ucfirst($eProduct['unit'] ? \selling\UnitUi::getSingular($eProduct['unit']) : self::p('unit')->placeholder))
 			);
-			$h .= $form->dynamicGroups($eProduct, ['variety', 'size', 'origin', 'description', 'quality', 'vat']);
+
+			$h .= '<br/>';
+			$h .= '<h3>'.s("Caractéristiques").'</h3>';
+
+			$h .= '<div class="util-block bg-background-light">';
+				$h .= $form->dynamicGroups($eProduct, ['variety', 'size', 'origin', 'description', 'quality']);
+			$h .= '</div>';
 
 			$h .= '<br/>';
 			$h .= self::getFieldPrices($form, $eProduct, 'update');
@@ -772,6 +783,9 @@ class ProductUi {
 
 		$h = '<h3>'.s("Grille tarifaire").'</h3>';
 		$h .= '<div class="util-info">'.s("Pour une vente aux particuliers et si aucun prix de vente n'a été saisi, le prix de vente pro augmenté de la TVA sera utilisé dans ce cas, et vice-versa pour une vente aux professionnels. Ces données de base pourront toujours être personnalisées pour chaque client et vente.").'</div>';
+
+		$h .= $form->dynamicGroup($eProduct, 'vat');
+		$h .= '<br/>';
 
 		$h .= self::getFieldPrivate($form, $eProduct, $for);
 		$h .= '<br/>';
