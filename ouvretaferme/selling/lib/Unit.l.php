@@ -24,6 +24,17 @@ class UnitLib extends UnitCrud {
 
 	}
 
+	public static function getByFarmWithoutWeight(\farm\Farm $eFarm): \Collection {
+
+		Unit::model()->or(
+			fn() => $this->whereFqn(NULL),
+			fn() => $this->whereFqn('IN', ['bunch', 'unit']),
+		);
+
+		return self::getByFarm($eFarm);
+
+	}
+
 	public static function create(Unit $e): void {
 
 		try {

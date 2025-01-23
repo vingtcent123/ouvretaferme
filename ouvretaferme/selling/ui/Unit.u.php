@@ -259,24 +259,35 @@ class UnitUi {
 
 		foreach($cUnit as $eUnit) {
 
-			if(in_array($eUnit['fqn'], [NULL, 'bunch', 'unit'])) {
-				$cUnitOthers[] = $eUnit;
-			} else {
+			if($eUnit->isWeight()) {
 				$cUnitWeight[] = $eUnit;
+			} else {
+				$cUnitOthers[] = $eUnit;
 			}
 
 		}
 
-		return [
-			[
+		$values = [];
+
+		if($cUnitWeight->notEmpty()) {
+
+			$values[] = [
 				'label' => s("Vente au poids"),
 				'values' => $cUnitWeight
-			],
-			[
+			];
+
+		}
+
+		if($cUnitOthers->notEmpty()) {
+
+			$values[] = [
 				'label' => s("Vente à l'unité"),
 				'values' => $cUnitOthers
-			]
-		];
+			];
+
+		}
+
+		return $values;
 
 	}
 

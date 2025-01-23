@@ -24,6 +24,16 @@
 	});
 
 (new \selling\ProductPage())
+	->applyElement(function($data, \selling\Product $eProduct) {
+
+		$eProduct['cCategory'] = \selling\CategoryLib::getByFarm($eProduct['farm']);
+		$eProduct['cUnit'] = \selling\UnitLib::getByFarmWithoutWeight($eProduct['farm']);
+
+	})
+	->update(fn($data) => throw new ViewAction($data))
+	->doUpdate(fn() => throw new ReloadAction('selling', 'Product::updated'));
+
+(new \selling\ProductPage())
 	->read('/produit/{id}', function($data) {
 
 		if($data->e['category']->notEmpty()) {
@@ -106,14 +116,6 @@
 
 	})
 	->quick(['privatePrice', 'privateStep', 'proPrice', 'proPackaging', 'proStep'])
-	->update(function($data) {
-
-		$data->e['cCategory'] = \selling\CategoryLib::getByFarm($data->e['farm']);
-
-		throw new ViewAction($data);
-
-	})
-	->doUpdate(fn() => throw new ReloadAction('selling', 'Product::updated'))
 	->doUpdateProperties('doUpdateStatus', ['status'], fn($data) => throw new ViewAction($data))
 	->doDelete(fn($data) => throw new RedirectAction(\farm\FarmUi::urlSellingProduct($data->e['farm']).'?success=selling:Product::deleted'));
 

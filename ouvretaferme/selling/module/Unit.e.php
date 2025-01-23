@@ -17,7 +17,16 @@ class Unit extends UnitElement {
 	public function canWrite(): bool {
 
 		$this->expects(['farm']);
+
 		return $this['farm']->canManage();
+
+	}
+
+	public function isWeight(): bool {
+
+		$this->expects(['fqn']);
+
+		return in_array($this['fqn'], [NULL, 'bunch', 'unit']) === FALSE;
 
 	}
 

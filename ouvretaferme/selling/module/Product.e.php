@@ -156,18 +156,30 @@ class Product extends ProductElement {
 
 			},
 
-			'unit.check' => function(Unit $eUnit): bool {
+			'unit.check' => function(Unit $eUnit) use ($for): bool {
 
 				$this->expects(['farm']);
 
-				return (
-					$eUnit->empty() or (
-						Unit::model()
-							->select('farm')
-							->get($eUnit) and
-						$eUnit->canRead()
-					)
-				);
+				if($eUnit->empty()) {
+					return TRUE;
+				}
+
+				if(
+					Unit::model()
+						->select('farm', 'fqn')
+						->get($eUnit) and
+					$eUnit->canRead()
+				) {
+
+					if($for === 'create') {
+						return TRUE;
+					} else {
+						return $eUnit->isWeight() === FALSE;
+					}
+
+				} else {
+					return FALSE;
+				}
 
 			},
 

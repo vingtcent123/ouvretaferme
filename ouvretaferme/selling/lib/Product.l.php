@@ -7,8 +7,25 @@ class ProductLib extends ProductCrud {
 		return array_merge(['unit'], self::getPropertiesWrite());
 	}
 
-	public static function getPropertiesUpdate(): array {
-		return array_merge(self::getPropertiesWrite(), ['privateStep', 'proStep']);
+	public static function getPropertiesUpdate(): \Closure {
+
+		return function(Product $eProduct) {
+
+			$eProduct->expects(['cUnit']);
+
+			$properties = [];
+
+			if(
+				$eProduct['unit']->empty() or
+				$eProduct['unit']->isWeight() === FALSE
+			) {
+				$properties[] = 'unit';
+			}
+
+			return array_merge($properties, ProductLib::getPropertiesWrite(), ['privateStep', 'proStep']);
+
+		};
+
 	}
 
 	public static function getPropertiesWrite(): array {

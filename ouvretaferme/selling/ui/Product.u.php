@@ -753,7 +753,9 @@ class ProductUi {
 
 			$h .= $form->group(
 				self::p('unit')->label,
-				$form->fake(mb_ucfirst($eProduct['unit'] ? \selling\UnitUi::getSingular($eProduct['unit']) : self::p('unit')->placeholder))
+				($eProduct['unit']->empty() or $eProduct['unit']->isWeight() === FALSE) ?
+					$form->dynamicField($eProduct, 'unit') :
+					$form->fake(mb_ucfirst($eProduct['unit'] ? \selling\UnitUi::getSingular($eProduct['unit']) : self::p('unit')->placeholder))
 			);
 
 			$h .= '<br/>';
@@ -947,7 +949,9 @@ class ProductUi {
 				$d->values = fn(Product $e) => isset($e['cUnit']) ? UnitUi::getField($e['cUnit']) : $e->expects(['cUnit']);
 				$d->attributes = ['group' => TRUE];
 				$d->placeholder = s("&lt; Non applicable &gt;");
-				$d->after = \util\FormUi::info(s("L'unité de vente ne pourra pas être modifiée par la suite. Si vous choisissez de modifier le conditionnement, vous devrez créer un autre produit."));
+				$d->after = fn(\util\FormUi $form, Product $e) => $e->exists() ?
+					\util\FormUi::info(s("L'unité de vente ne peut être modifiée que pour une autre unité de vente à l'unité.")) :
+					\util\FormUi::info(s("Les unités de vente de poids ne peuvent pas être modifiées par la suite, vous devrez créer un autre produit si vous changez d'avis."));
 				break;
 
 			case 'variety' :
