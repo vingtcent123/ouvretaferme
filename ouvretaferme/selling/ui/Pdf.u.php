@@ -328,15 +328,10 @@ class PdfUi {
 							$h .= '<td class="pdf-document-item-header"></td>';
 							if($eInvoice['hasVat']) {
 								$h .= '<td class="pdf-document-item-header pdf-document-price">';
-									$h .= s("Montant");
-									$h .= '<br/>(HT)';
+									$h .= s("Montant {value}", $eInvoice->getTaxes());
 								$h .= '</td>';
 								$h .= '<td class="pdf-document-item-header pdf-document-vat">';
 									$h .= s("TVA");
-								$h .= '</td>';
-								$h .= '<td class="pdf-document-item-header pdf-document-price">';
-									$h .= s("Montant");
-									$h .= '<br/>(TTC)';
 								$h .= '</td>';
 							} else {
 								$h .= '<td class="pdf-document-item-header pdf-document-price">';
@@ -365,19 +360,10 @@ class PdfUi {
 									$h .= '<td></td>';
 									if($eInvoice['hasVat']) {
 										$h .= '<td class="pdf-document-price">';
-											$h .= \util\TextUi::money(match($eSale['taxes']) {
-												Sale::INCLUDING => $amount - $vat,
-												Sale::EXCLUDING => $amount
-											});
+											$h .= \util\TextUi::money($amount);
 										$h .= '</td>';
 										$h .= '<td class="pdf-document-vat">';
 											$h .= s('{value} %', $vatRate);
-										$h .= '</td>';
-										$h .= '<td class="pdf-document-price">';
-											$h .= \util\TextUi::money(match($eSale['taxes']) {
-												Sale::INCLUDING => $amount,
-												Sale::EXCLUDING => $amount + $vat,
-											});
 										$h .= '</td>';
 									} else {
 										$h .= '<td class="pdf-document-price">';
@@ -459,14 +445,13 @@ class PdfUi {
 				}
 				$h .= \selling\UnitUi::getBy($eItem['unit'], short: TRUE);
 			$h .= '</td>';
-			if($eSale['hasVat'] and $eSale['taxes'] === Sale::INCLUDING) {
-				$h .= '<td colspan="2"></td>';
-			}
+
 			$h .= '<td class="pdf-document-price">';
 				$h .= \util\TextUi::money($eItem['price']);
 			$h .= '</td>';
-			if($eSale['hasVat'] and $eSale['taxes'] === Sale::EXCLUDING) {
-				$h .= '<td colspan="2"></td>';
+
+			if($eSale['hasVat']) {
+				$h .= '<td></td>';
 			}
 		$h .= '</tr>';
 
@@ -507,7 +492,7 @@ class PdfUi {
 
 				if(
 					$e['hasVat'] and
-					$type === Pdf::INVOICE and
+					$type !== Pdf::DELIVERY_NOTE and
 					$e['vatByRate']
 				) {
 
@@ -531,24 +516,39 @@ class PdfUi {
 
 					if($e['hasVat']) {
 
-						$h .= '<div class="pdf-document-total-label">';
-							$h .= s("Total HT");
-						$h .= '</div>';
-						$h .= '<div class="pdf-document-total-value">';
-							$h .= \util\TextUi::money($e['priceExcludingVat']);
-						$h .= '</div>';
-						$h .= '<div class="pdf-document-total-label">';
-							$h .= s("Total TVA");
-						$h .= '</div>';
-						$h .= '<div class="pdf-document-total-value">';
-							$h .= \util\TextUi::money($e['vat']);
-						$h .= '</div>';
-						$h .= '<div class="pdf-document-total-label">';
-							$h .= s("Total TTC");
-						$h .= '</div>';
-						$h .= '<div class="pdf-document-total-value">';
-							$h .= \util\TextUi::money($e['priceIncludingVat']);
-						$h .= '</div>';
+						if($type !== Pdf::DELIVERY_NOTE) {
+
+							$h .= '<div class="pdf-document-total-label">';
+								$h .= s("Total HT");
+							$h .= '</div>';
+							$h .= '<div class="pdf-document-total-value">';
+								$h .= \util\TextUi::money($e['priceExcludingVat']);
+							$h .= '</div>';
+							$h .= '<div class="pdf-document-total-label">';
+								$h .= s("Total TVA");
+							$h .= '</div>';
+							$h .= '<div class="pdf-document-total-value">';
+								$h .= \util\TextUi::money($e['vat']);
+							$h .= '</div>';
+							$h .= '<div class="pdf-document-total-label">';
+								$h .= s("Total TTC");
+							$h .= '</div>';
+							$h .= '<div class="pdf-document-total-value">';
+								$h .= \util\TextUi::money($e['priceIncludingVat']);
+							$h .= '</div>';
+
+						} else {
+
+							$taxes = $e->getTaxes();
+
+							$h .= '<div class="pdf-document-total-label">';
+								$h .= s("Total {value}", $taxes);
+							$h .= '</div>';
+							$h .= '<div class="pdf-document-total-value">';
+								$h .= \util\TextUi::money($e['price']);
+							$h .= '</div>';
+
+						}
 
 					} else {
 						$h .= '<div class="pdf-document-total-label">';
@@ -722,7 +722,7 @@ class PdfUi {
 				$h .= s("Montant");
 				$h .= $taxes;
 			$h .= '</td>';
-			if($eSale['hasVat'] and $type === Pdf::INVOICE) {
+			if($eSale['hasVat'] and $type !== Pdf::DELIVERY_NOTE) {
 				$h .= '<td class="pdf-document-item-header pdf-document-vat">';
 					$h .= s("TVA");
 				$h .= '</td>';
@@ -781,7 +781,7 @@ class PdfUi {
 			$h .= '<td class="pdf-document-price">';
 				$h .= \util\TextUi::money($eItem['price']);
 			$h .= '</td>';
-			if($eSale['hasVat'] and $type === Pdf::INVOICE) {
+			if($eSale['hasVat'] and $type !== Pdf::DELIVERY_NOTE) {
 				$h .= '<td class="pdf-document-vat">';
 					$h .= s('{value} %', $eItem['vatRate']);
 				$h .= '</td>';

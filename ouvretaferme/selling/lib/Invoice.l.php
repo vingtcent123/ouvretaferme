@@ -127,7 +127,6 @@ class InvoiceLib extends InvoiceCrud {
 			$e['conversion'] = FALSE;
 			$e['createdAt'] = Invoice::model()->now(); // Besoin de la date pour pouvoir envoyer le PDF par e-mail dans la foulée
 
-			$totalVat = 0.0;
 			$vatByRate = [];
 			$rates = [];
 
@@ -135,8 +134,6 @@ class InvoiceLib extends InvoiceCrud {
 			$priceIncludingVat = 0.0;
 
 			foreach($e['cSale'] as $eSale) {
-
-				$totalVat += $eSale['vat'];
 
 				if($eSale['organic']) {
 					$e['organic'] = TRUE;
@@ -158,12 +155,10 @@ class InvoiceLib extends InvoiceCrud {
 						$key = $rates[(string)$vatRate];
 
 						$vatByRate[$key] ??= [
-							'vat' => 0.0,
 							'vatRate' => $vatRate,
 							'amount' => 0.0
 						];
 
-						$vatByRate[$key]['vat'] += $vat;
 						$vatByRate[$key]['amount'] += $amount;
 
 					}
@@ -175,10 +170,22 @@ class InvoiceLib extends InvoiceCrud {
 
 			}
 
-			array_walk($vatByRate, function(&$entry) {
-				$entry['vat'] = round($entry['vat'], 2);
+			$totalVat = 0.0;
+
+			array_walk($vatByRate, function(&$entry) use ($e, &$totalVat) {
+
 				$entry['amount'] = round($entry['amount'], 2);
+
+				$entry['vat'] = match($e['taxes']) {
+					Invoice::INCLUDING => round($entry['amount'] - $entry['amount'] / (1 + $entry['vatRate'] / 100), 2),
+					Invoice::EXCLUDING => round($entry['amount'] * $entry['vatRate'] / 100, 2),
+				};
+
+				$totalVat += $entry['vat'];
+
 			});
+
+		$totalVat = round($totalVat, 2);
 
 			$e->merge([
 				'vatByRate' => $vatByRate,

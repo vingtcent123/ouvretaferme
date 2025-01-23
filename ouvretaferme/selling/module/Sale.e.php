@@ -11,6 +11,7 @@ class Sale extends SaleElement {
 			'shopDate' => ['status', 'deliveryDate', 'orderStartAt', 'orderEndAt'],
 			'shopPoint' => ['type', 'name'],
 			'farm' => ['name', 'url', 'vignette', 'banner', 'featureDocument', 'hasSales'],
+			'price' => new \Sql('IF(type = "'.Sale::PRO.'", priceExcludingVat, priceIncludingVat)', 'float'),
 			'invoice' => ['name', 'emailedAt', 'createdAt', 'paymentStatus', 'priceExcludingVat', 'generation'],
 			'marketParent' => [
 				'customer' => ['type', 'name']
