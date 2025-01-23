@@ -41,7 +41,7 @@
 		throw new ViewAction($data);
 	})
 	->doUpdate(function($data) {
-		throw new BackAction('website', 'News::updated');
+		throw new ReloadAction('website', 'News::updated');
 	})
 	->doUpdateProperties('doUpdateStatus', ['status'], fn() => throw new ReloadAction())
 	->doDelete(function($data) {

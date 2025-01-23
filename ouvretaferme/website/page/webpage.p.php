@@ -13,7 +13,7 @@
 
 	})
 	->doCreate(function($data) {
-		throw new BackAction('website', 'Webpage::created');
+		throw new RedirectAction('/website/manage?id='.$data->eWebsite['farm']['id'].'&success=website:Webpage::created');
 	});
 
 (new \website\WebpagePage())
@@ -26,7 +26,7 @@
 	})
 	->update()
 	->doUpdate(function($data) {
-		throw new BackAction('website', 'Webpage::updated');
+		throw new ReloadAction('website', 'Webpage::updated');
 	})
 	->doUpdateProperties('doUpdateStatus', ['status'], fn() => throw new ReloadAction())
 	->read('updateContent', function($data) {
