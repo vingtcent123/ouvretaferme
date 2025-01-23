@@ -858,7 +858,7 @@ class XmlLib {
 
 		$attributesLink = [
 			'href' => 'url',
-			'?style' => NULL,
+			'style?' => NULL,
 		];
 
 		if(\Privilege::can('user\admin')) {
