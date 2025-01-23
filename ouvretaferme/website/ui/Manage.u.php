@@ -413,6 +413,7 @@ class ManageUi {
 
 				$h .= '<tr>';
 					$h .= '<th>'.s("Titre").'</th>';
+					$h .= '<th class="website-page-content">'.s("Contenu").'</th>';
 					$h .= '<th>'.s("Date de publication").'</th>';
 					$h .= '<th>'.s("Statut").'</th>';
 					$h .= '<th></th>';
@@ -424,6 +425,14 @@ class ManageUi {
 
 						$h .= '<td>';
 							$h .= $eNews->quick('title', encode($eNews['title']));
+						$h .= '</td>';
+
+						$h .= '<td class="website-page-content">';
+							if($eNews['content'] === NULL) {
+								$h .= '<a href="/website/news:update?id='.$eNews['id'].'" class="btn btn-primary">'.\Asset::icon('pencil-fill').' '.s("Rédiger").'</a>';
+							} else {
+								$h .= '<a href="/website/news:update?id='.$eNews['id'].'" class="btn btn-primary">'.\Asset::icon('pencil-fill').'&nbsp;&nbsp;<small>'.s("{value} Ko", round(strlen($eNews['content']) / 1024, 2)).'</small></a>';
+							}
 						$h .= '</td>';
 
 						$h .= '<td '.($eNews['isPublished'] ? '' : 'title="'.s("Pas encore publié").'"').'>';

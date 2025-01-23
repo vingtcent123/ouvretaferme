@@ -1,16 +1,26 @@
 <?php
 (new \website\NewsPage(function($data) {
+
 		$data->eWebsite = \website\WebsiteLib::getById(INPUT('website'));
+
 	}))
-	->create(fn($data) => throw new ViewAction($data))
+	->create(function($data) {
+
+		$data->eFarm = \farm\FarmLib::getById($data->eWebsite['farm']);
+
+		\farm\FarmerLib::register($data->eFarm);
+
+		throw new ViewAction($data);
+	})
 	->getCreateElement(function($data) {
 		return new \website\News([
 			'website' => $data->eWebsite,
-			'farm' => $data->eWebsite['farm']
+			'farm' => $data->eWebsite['farm'],
+			'publishedAt' => date('Y-m-d H:00:00')
 		]);
 	})
 	->doCreate(function($data) {
-		throw new BackAction('website', 'News::created');
+		throw new RedirectAction('/website/manage?id='.$data->eWebsite['farm']['id'].'&success=website:News::created');
 	});
 
 (new \website\NewsPage())
@@ -22,7 +32,14 @@
 
 	})
 	->quick(['title', 'publishedAt'])
-	->update()
+	->update(function($data) {
+
+		$data->eFarm = \farm\FarmLib::getById($data->e['farm']);
+
+		\farm\FarmerLib::register($data->eFarm);
+
+		throw new ViewAction($data);
+	})
 	->doUpdate(function($data) {
 		throw new BackAction('website', 'News::updated');
 	})

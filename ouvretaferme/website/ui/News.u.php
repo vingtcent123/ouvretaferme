@@ -62,61 +62,55 @@ class NewsUi {
 
 	}
 
-	public function create(Website $eWebsite): \Panel {
+	public function createTitle(News $eNews): string {
 
-		$form = new \util\FormUi();
+		$h = '<h1>';
+			$h .= '<a href="/website/manage?id='.$eNews['farm']['id'].'"  class="h-back hide-lateral-down">'.\Asset::icon('arrow-left').'</a>';
+			$h .= s("Ajouter une actualité");
+		$h .= '</h1>';
 
-		$eNews = new News([
-			'website' => $eWebsite
-		]);
-
-		$h = '';
-
-		$formOpen = $form->openAjax('/website/news:doCreate', ['class' => 'panel-dialog container']);
-
-			$h .= $form->hidden('website', $eWebsite['id']);
-
-			$h .= $form->dynamicGroups($eNews, ['title', 'publishedAt', 'content']);
-
-			$footer = $form->submit(s("Ajouter l'actualité"));
-
-		$formClose = $form->close();
-
-		return new \Panel(
-			title: s("Ajouter une nouvelle actualité"),
-			dialogOpen: $formOpen,
-			dialogClose: $formClose,
-			body: $h,
-			footer: $footer,
-			close: 'reload'
-		);
+		return $h;
 
 	}
 
-	public function update(News $eNews): \Panel {
+	public function create(News $eNews): string {
 
 		$form = new \util\FormUi();
 
-		$h = '';
+		$h = $form->openAjax('/website/news:doCreate', ['class' => 'panel-dialog container']);
 
-		$formOpen = $form->openAjax('/website/news:doUpdate', ['class' => 'panel-dialog container']);
-
-			$h .= $form->hidden('id', $eNews['id']);
-
+			$h .= $form->hidden('website', $eNews['website']);
 			$h .= $form->dynamicGroups($eNews, ['title', 'publishedAt', 'content']);
+			$h .= $form->group(content: $form->submit(s("Ajouter l'actualité")));
 
-			$footer = $form->submit(s("Modifier l'actualité"));
+		$h .= $form->close();
 
-		$formClose = $form->close();
+		return $h;
 
-		return new \Panel(
-			title: s("Modifier une actualité"),
-			dialogOpen: $formOpen,
-			dialogClose: $formClose,
-			body: $h,
-			footer: $footer,
-			close: 'reload'
-		);
+	}
+
+	public function updateTitle(News $eNews): string {
+
+		$h = '<h1>';
+			$h .= '<a href="/website/manage?id='.$eNews['farm']['id'].'"  class="h-back hide-lateral-down">'.\Asset::icon('arrow-left').'</a>';
+			$h .= s("Modifier une actualité");
+		$h .= '</h1>';
+
+		return $h;
+
+	}
+
+	public function update(News $eNews): string {
+
+		$form = new \util\FormUi();
+
+		$h = $form->openAjax('/website/news:doUpdate', ['class' => 'panel-dialog container']);
+			$h .= $form->hidden('id', $eNews['id']);
+			$h .= $form->dynamicGroups($eNews, ['title', 'publishedAt', 'content']);
+			$h .= $form->group(content: $form->submit(s("Modifier l'actualité")));
+		$h . $form->close();
+
+		return $h;
 
 	}
 

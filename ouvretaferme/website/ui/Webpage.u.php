@@ -38,6 +38,17 @@ class WebpageUi {
 
 	}
 
+	public function updateTitle(Webpage $eWebpage): string {
+
+		$h = '<h1>';
+			$h .= '<a href="/website/manage?id='.$eWebpage['farm']['id'].'"  class="h-back hide-lateral-down">'.\Asset::icon('arrow-left').'</a>';
+			$h .= s("Éditer le contenu d'une page");
+		$h .= '</h1>';
+
+		return $h;
+
+	}
+
 	public function update(Webpage $eWebpage): \Panel {
 
 		$eWebpage->expects([
@@ -110,8 +121,14 @@ class WebpageUi {
 
 		$form = new \util\FormUi();
 
-		$h = '<h2>'.encode($eWebpage['title']).'</h2>';
-		$h .= '<p class="util-info">'.s("L'éditeur de texte votre permet de rédiger le contenu de cette page en ajoutant des textes et des photos.").'</p>';
+		$h = '<div class="util-title mb-2">';
+			$h .= '<h2>'.encode($eWebpage['title']).'</h2>';
+			$h .= '<a href="'.WebsiteUi::url($eWebpage['website'], '/'.$eWebpage['url']).'" class="btn btn-secondary" target="_blank">'.s("Consulter la page").'</a>';
+		$h .= '</div>';
+
+		if($eWebpage['content'] === NULL) {
+			$h .= '<p class="util-info">'.s("L'éditeur de texte vous permet de rédiger le contenu de cette page en ajoutant des textes et des photos.").'</p>';
+		}
 
 		$h .= $form->openAjax('/website/webpage:doUpdateContent');
 

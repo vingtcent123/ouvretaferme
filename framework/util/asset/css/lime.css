@@ -1046,7 +1046,7 @@ a.util-action-navigation:not(:hover):not([data-dropdown-display]) > svg:nth-of-t
 }
 
 div.util-subtitle {
-	margin-top: 0.25rem;
+	margin-top: 0.5rem;
 	font-size: 1.15rem;
 }
 

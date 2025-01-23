@@ -1,9 +1,18 @@
 <?php
-new AdaptativeView('create', function($data, PanelTemplate $t) {
-	return (new \website\NewsUi())->create($data->eWebsite);
+new AdaptativeView('create', function($data, FarmTemplate $t) {
+
+	$t->tab = 'settings';
+	$t->mainTitle = (new \website\NewsUi())->createTitle($data->e);
+
+	echo (new \website\NewsUi())->create($data->e);
 });
 
-new AdaptativeView('update', function($data, PanelTemplate $t) {
-	return (new \website\NewsUi())->update($data->e);
+new AdaptativeView('update', function($data, FarmTemplate $t) {
+
+	$t->tab = 'settings';
+	$t->mainTitle = (new \website\NewsUi())->updateTitle($data->e);
+
+	echo (new \website\NewsUi())->update($data->e);
+
 });
 ?>
