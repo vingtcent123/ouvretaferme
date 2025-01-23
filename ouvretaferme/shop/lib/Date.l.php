@@ -295,7 +295,7 @@ class DateLib extends DateCrud {
 			if($cDate->empty()) {
 				return new \Collection();
 			} else {
-				return $cDate->count() > 8 ? $cDate->slice(0, 8) : $cDate;
+				return $cDate->count() > 8 ? $cDate->slice(0, 8, preserveKeys: TRUE) : $cDate;
 			}
 		}
 
