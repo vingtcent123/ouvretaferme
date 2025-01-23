@@ -138,11 +138,9 @@ class WebpageUi {
 				$d->attributes['style'] = 'max-width: '.$eWebpage['website']['customDesign']['maxWidth'];
 			});
 
-		$h .= '<div class="fixed-bottom">';
-			$h .= '<div class="container">';
-				$h .= $form->submit(s("Enregistrer le contenu"));
-			$h .= '</div>';
-		$h .= '</div>';
+			$h .= '<br/>';
+
+			$h .= $form->submit(s("Enregistrer le contenu"));
 
 		$h .= $form->close();
 

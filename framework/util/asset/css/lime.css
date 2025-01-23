@@ -210,17 +210,6 @@ div.div-even > *:nth-of-type(odd) {
 
 }
 
-.fixed-bottom {
-	position: fixed;
-	z-index: 900;
-	left: 0;
-	right: 0;
-	bottom: 0;
-	background-color: white;
-	padding: 1rem 0;
-	box-shadow: 0 0 0.5rem rgba(0, 0, 0, 0.1);
-}
-
 @media (max-width: 1399px) {
 
 	.stick-xl {
