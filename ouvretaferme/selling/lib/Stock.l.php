@@ -48,7 +48,7 @@ class StockLib extends StockCrud {
 		$cccccProduct = Product::model()
 			->select([
 				'id',
-				'plant', 'name', 'variety', 'size',
+				'plant', 'name', 'variety', 'size', 'origin',
 				'unit' => ['fqn', 'by', 'singular', 'plural', 'short', 'type'],
 			])
 			->whereFarm($eFarm)
@@ -91,7 +91,7 @@ class StockLib extends StockCrud {
 
 		return Product::model()
 			->select([
-				'id', 'name', 'variety', 'size',
+				'id', 'name', 'variety', 'size', 'origin',
 				'unit' => ['fqn', 'by', 'singular', 'plural', 'short', 'type'],
 				'vignette', 'stock'
 			])

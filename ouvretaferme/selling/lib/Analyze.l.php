@@ -845,7 +845,7 @@ class AnalyzeLib {
 				'name',
 				'plant' => ['name'],
 				'category' => ['name'],
-				'variety', 'size',
+				'variety', 'size', 'origin',
 				'unit' => ['fqn', 'by', 'singular', 'plural', 'short', 'type'],
 				'quality',
 				'privatePrice', 'proPrice',
