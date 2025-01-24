@@ -56,12 +56,11 @@ class Cultivation {
 		const wrapper = target.firstParent('.series-write-plant');
 
 		const seeds = wrapper.qs('[data-wrapper^="seedlingSeeds"]');
+		seeds.dataset.action = target.value;
 
-		if(target.value === 'young-plant') {
-			seeds.removeHide();
+		if(target.value !== 'young-plant-bought') {
 			seeds.qs('input').value = '1';
 		} else {
-			seeds.hide();
 			seeds.qs('input').value = '';
 		}
 

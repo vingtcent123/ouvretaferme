@@ -190,3 +190,15 @@ div.cultivation-week > label input:checked + div.cultivation-week-item {
 	border: 1px solid var(--harvest);
 	color: var(--harvest);
 }
+
+[data-wrapper^="seedlingSeeds"]:not([data-action="sowing"]):not([data-action="young-plant"]) {
+	display: none !important;
+}
+
+[data-wrapper^="seedlingSeeds"][data-action="sowing"] .cultivation-field-young-plant {
+	display: none;
+}
+
+[data-wrapper^="seedlingSeeds"][data-action="young-plant"] .cultivation-field-sowing {
+	display: none;
+}

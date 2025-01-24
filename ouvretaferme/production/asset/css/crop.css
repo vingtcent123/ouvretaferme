@@ -156,3 +156,11 @@ tr.crop-list-title-plant td {
 tr.crop-list-title-plant .plant-vignette {
 	margin-right: 0.75rem;
 }
+
+[data-wrapper^="seedlingSeeds"][data-action="sowing"] .crop-field-young-plant {
+	display: none;
+}
+
+[data-wrapper^="seedlingSeeds"][data-action="young-plant"] .crop-field-sowing {
+	display: none;
+}

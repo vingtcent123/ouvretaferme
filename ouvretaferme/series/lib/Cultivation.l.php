@@ -26,6 +26,7 @@ class CultivationLib extends CultivationCrud {
 			'sliceUnit' => Cultivation::PERCENT,
 			'sliceTool' => new \farm\Tool(),
 			'seedling' => NULL,
+			'seedlingSeeds' => NULL,
 			'distance' => Cultivation::SPACING,
 			'density' => NULL,
 			'rows' => NULL,

@@ -2916,6 +2916,7 @@ class TaskUi {
 		$h = $uiCrop->getPresentationDistance($eSeries, $eCultivation);
 		$h .= $this->getPresentationSize($eSeries);
 		$h .= $this->getPresentationSeeds($eTask);
+		$h .= $this->getPresentationSeedling($eTask);
 
 		return $h;
 
@@ -2952,11 +2953,7 @@ class TaskUi {
 
 		$h = $this->getPresentationYoungPlants($eTask);
 		$h .= $this->getPresentationSeeds($eTask);
-
-		if($eTask['cultivation']['seedling'] === Cultivation::YOUNG_PLANT) {
-			$h .= '<dt>'.s("Semis").'</dt>';
-			$h .= '<dd>'.p("{value} graine / plant", "{value} graines / plant", $eTask['cultivation']['seedlingSeeds']).'</dd>';
-		}
+		$h .= $this->getPresentationSeedling($eTask);
 
 		return $h;
 
@@ -3272,6 +3269,22 @@ class TaskUi {
 
 		$h = '<dt>'.s("Semences").'</dt>';
 		$h .= '<dd>'.$this->getPresentationSeedlingList($eTask, 'seeds').'</dd>';
+
+		return $h;
+
+	}
+
+	protected function getPresentationSeedling(Task $eTask): string {
+
+		$h = '';
+
+		if($eTask['cultivation']['seedling'] === Cultivation::YOUNG_PLANT) {
+			$h .= '<dt>'.s("Semis").'</dt>';
+			$h .= '<dd>'.p("{value} graine / plant", "{value} graines / plant", $eTask['cultivation']['seedlingSeeds']).'</dd>';
+		} else if($eTask['cultivation']['seedling'] === Cultivation::SOWING and $eTask['cultivation']['seedlingSeeds'] > 1) {
+			$h .= '<dt>'.s("Semis").'</dt>';
+			$h .= '<dd>'.p("{value} graine / trou", "{value} graines / trou", $eTask['cultivation']['seedlingSeeds']).'</dd>';
+		}
 
 		return $h;
 

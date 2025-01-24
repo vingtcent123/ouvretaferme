@@ -219,6 +219,8 @@ class CropUi {
 
 		if($eCrop['seedling'] === Crop::YOUNG_PLANT) {
 			return '<dt>'.s("Semences").'</dt><dd>'.s("{value} / plant", $eCrop->quick('seedlingSeeds', $eCrop['seedlingSeeds'])).'</dd>';
+		} else if($eCrop['seedling'] === Crop::SOWING and $eCrop['seedlingSeeds'] > 1) {
+			return '<dt>'.s("Semences").'</dt><dd>'.s("{value} / trou", $eCrop->quick('seedlingSeeds', $eCrop['seedlingSeeds'])).'</dd>';
 		} else {
 			return '<dt></dt><dd></dd>';
 		}
@@ -652,7 +654,7 @@ class CropUi {
 			'rowSpacing' => s("Espace inter-rangs"),
 			'plantSpacing' => s("Espace sur le rang"),
 			'seedling' => s("Implantation"),
-			'seedlingSeeds' => s("Nombre de graines par plant"),
+			'seedlingSeeds' => '<span class="crop-field-young-plant">'.s("Nombre de graines par plant").'</span><span class="crop-field-sowing">'.s("Nombre de graines par trou").'</span>',
 			'yieldExpected' => s("Objectif de rendement"),
 			'mainUnit' => s("Unité de récolte principale"),
 			'variety' => s("Variété"),
@@ -666,24 +668,20 @@ class CropUi {
 					Crop::YOUNG_PLANT => s("plant")
 				];
 				$d->attributes = [
-					'data-action' => 'crop-seedling-change',
 					'columns' => 2,
-					'mandatory' => TRUE
+					'mandatory' => TRUE,
+					'onchange' => 'Crop.changeSeedling(this)'
 				];
 				break;
 
 			case 'seedlingSeeds' :
-				$d->append = s("graine(s) / plant");
-				$d->group = function(Crop $e) {
-
-					$e->expects(['seedling']);
-
-					return [
-						'id' => 'crop-write-seedling-seeds',
-						'style' => ($e['seedling'] === Crop::YOUNG_PLANT) ? '' : 'display: none'
-					];
-
-				};
+				$d->append = '<span class="crop-field-young-plant">'.s("graine(s) / plant").'</span><span class="crop-field-sowing">'.s("graine(s) / trou").'</span>';
+				$d->group = fn($e) => [
+					'data-action' => $e['seedling'] ?? ''
+				];
+				$d->attributes = [
+					'onfocus' => 'this.select()'
+				];
 				break;
 
 			case 'rowSpacing' :

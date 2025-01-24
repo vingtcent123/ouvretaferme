@@ -69,7 +69,7 @@ class Crop extends CropElement {
 
 				$this->expects(['seedling']);
 
-				if($this['seedling'] !== Crop::YOUNG_PLANT) {
+				if(in_array($this['seedling'], [Crop::SOWING, Crop::YOUNG_PLANT]) === FALSE) {
 					$seeds = NULL;
 				} else {
 					$seeds = (int)$seeds;

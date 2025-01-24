@@ -149,8 +149,6 @@ class Cultivation extends CultivationElement {
 			switch($this['seedling']) {
 
 				case Cultivation::SOWING :
-					return $youngPlants;
-
 				case Cultivation::YOUNG_PLANT :
 					return $youngPlants * $this['seedlingSeeds'];
 
@@ -437,7 +435,7 @@ class Cultivation extends CultivationElement {
 
 				$this->expects(['seedling']);
 
-				if($this['seedling'] !== Cultivation::YOUNG_PLANT) {
+				if(in_array($this['seedling'], [Cultivation::SOWING, Cultivation::YOUNG_PLANT]) === FALSE) {
 					$seeds = NULL;
 				} else {
 					$seeds = (int)$seeds;

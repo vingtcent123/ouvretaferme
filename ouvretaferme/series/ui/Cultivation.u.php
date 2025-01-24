@@ -2615,7 +2615,7 @@ class CultivationUi {
 			'rowSpacing' => s("Espace inter-rangs"),
 			'plantSpacing' => s("Espace sur le rang"),
 			'seedling' => s("Implantation"),
-			'seedlingSeeds' => s("Nombre de graines par plant"),
+			'seedlingSeeds' => '<span class="cultivation-field-young-plant">'.s("Nombre de graines par plant").'</span><span class="cultivation-field-sowing">'.s("Nombre de graines par trou").'</span>',
 			'harvested' => s("Récolte"),
 			'yield' => s("Rendement obtenu"),
 			'yieldExpected' => s("Objectif de rendement"),
@@ -2677,22 +2677,19 @@ class CultivationUi {
 					Cultivation::YOUNG_PLANT => s("plant autoproduit"),
 					Cultivation::YOUNG_PLANT_BOUGHT => s("plant acheté")
 				];
-				$d->attributes = [
-					'onchange' => 'Cultivation.changeSeedling(this)',
+				$d->attributes = fn(\util\FormUi $form, $e) => [
+					'onchange' => 'Cultivation.changeSeedling(this)'
 				];
 				break;
 
 			case 'seedlingSeeds' :
-				$d->append = s("graine(s) / plant");
-				$d->group = function(Cultivation $e) {
-
-					$e->expects(['seedling']);
-
-					return [
-						'class' => ($e['seedling'] === Cultivation::YOUNG_PLANT) ? '' : 'hide'
-					];
-
-				};
+				$d->append = '<span class="cultivation-field-young-plant">'.s("graine(s) / plant").'</span><span class="cultivation-field-sowing">'.s("graine(s) / trou").'</span>';
+				$d->group = fn($e) => [
+					'data-action' => $e['seedling'] ?? ''
+				];
+				$d->attributes = [
+					'onfocus' => 'this.select()'
+				];
 				break;
 
 			case 'mainUnit' :

@@ -10,26 +10,6 @@ document.delegateEventListener('autocompleteSelect', '#crop-create', function(e)
 
 });
 
-document.delegateEventListener('change', '[data-action="crop-seedling-change"] input', function(e) {
-
-	const seeds = qs('#crop-write-seedling-seeds');
-
-	switch(this.value) {
-
-		case 'young-plant' :
-			seeds.style.display = '';
-			seeds.qs('input').value = '1';
-			break;
-
-		default :
-			seeds.style.display = 'none';
-			seeds.qs('input').value = '';
-			break;
-
-	}
-
-});
-
 document.delegateEventListener('autocompleteSelect', '#crop-update', function(e) {
 
 	Crop.changePlant(this, this.qs('[name="id"]').value, e.detail.value);
@@ -68,6 +48,15 @@ class Crop {
 		if(target.firstParent('.cultivation-write') != null) {
 			Cultivation.updateDensity(target);
 		}
+
+	}
+
+	static changeSeedling(target) {
+
+		const wrapper = target.firstParent('form');
+
+		const seeds = wrapper.qs('[data-wrapper^="seedlingSeeds"]');
+		seeds.dataset.action = target.qs('input:checked').value;
 
 	}
 
