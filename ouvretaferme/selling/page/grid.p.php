@@ -3,7 +3,7 @@
 	->applyElement(function($data, \selling\Grid $e) {
 
 		\selling\Product::model()
-			->select('farm')
+			->select('farm', 'status')
 			->get($e['product']);
 
 		$e['product']->validate('canWrite');
