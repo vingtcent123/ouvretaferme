@@ -482,6 +482,7 @@ class TaskLib extends TaskCrud {
 		$cTaskHarvest = HarvestLib::getTasksByWeek($eFarm, $week);
 
 		Task::model()
+			->option('index-force', ["farm", "status", "doneWeek"])
 			->or(
 				fn() => $this->whereId('IN', $cTaskTimesheet),
 				fn() => $this->whereId('IN', $cTaskHarvest),
