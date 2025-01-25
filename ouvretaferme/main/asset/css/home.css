@@ -135,7 +135,7 @@ body[data-template^="home"] main h2 {
 }
 
 .home-presentation > * ul {
-   font-size: 1.2rem;
+	font-size: 1.2rem;
 }
 
 .home-presentation > * ul:last-child {
