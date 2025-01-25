@@ -5,7 +5,7 @@ class RepeatLib extends RepeatCrud {
 
 	public static function getTaskProperties(): array {
 		return [
-			'farm', 'season', 'cultivation', 'series', 'plant', 'variety', 'action', 'methods', 'category', 'description', 'timeExpected', 'fertilizer',
+			'farm', 'season', 'cultivation', 'series', 'plant', 'variety', 'action', 'methods', 'tools', 'category', 'description', 'timeExpected', 'fertilizer',
 			'status'
 		];
 	}
@@ -229,8 +229,6 @@ class RepeatLib extends RepeatCrud {
 				'stop' => $eTask['repeatMaster']['stop']
 			])
 			->merge($eTask->extracts(self::getTaskProperties()));
-
-		$eRepeat['tools'] = $eTask['cTool']->getColumn('id');
 
 		self::calculateCompleted($eRepeat);
 

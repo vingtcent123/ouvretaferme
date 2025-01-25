@@ -101,13 +101,10 @@ class SequenceLib extends SequenceCrud {
 		$cCrop = self::duplicateCrops($eSequence, $eSequenceNew);
 
 		// Dupliquer les tâches
-		$cFlow = FlowLib::duplicateFromSequence($eSequence, $eSequenceNew, $cCrop);
+		FlowLib::duplicateFromSequence($eSequence, $eSequenceNew, $cCrop);
 
 		// Dupliquer les variétés
 		self::duplicateSlices($eSequence, $eSequenceNew, $cCrop);
-
-		// Dupliquer les outils
-		self::duplicateRequirements($eSequence, $eSequenceNew, $cCrop, $cFlow);
 
 		Sequence::model()->commit();
 
@@ -162,36 +159,6 @@ class SequenceLib extends SequenceCrud {
 		}
 
 		return $cSlice;
-
-	}
-
-	private static function duplicateRequirements(Sequence $eSequence, Sequence $eSequenceNew, \Collection $cCrop, \Collection $cFlow): \Collection {
-
-		$cRequirement = Requirement::model()
-			->select([
-				'id',
-				'farm', 'crop', 'flow', 'tool'
-			])
-			->whereSequence($eSequence)
-			->getCollection(NULL, NULL, 'id');
-
-		foreach($cRequirement as $eRequirement) {
-
-			// Mise à jour de l'outil
-			$eRequirement['id'] = NULL;
-			$eRequirement['sequence'] = $eSequenceNew;
-			$eRequirement['flow'] = $cFlow[$eRequirement['flow']['id']];
-
-			if($eRequirement['crop']->notEmpty()) {
-				$eRequirement['crop'] = $cCrop[$eRequirement['crop']['id']];
-			}
-
-			// La boucle permet de peupler l'ID
-			Requirement::model()->insert($eRequirement);
-
-		}
-
-		return $cRequirement;
 
 	}
 
@@ -262,10 +229,6 @@ class SequenceLib extends SequenceCrud {
 			->delete();
 
 		Flow::model()
-			->whereSequence($e)
-			->delete();
-
-		Requirement::model()
 			->whereSequence($e)
 			->delete();
 

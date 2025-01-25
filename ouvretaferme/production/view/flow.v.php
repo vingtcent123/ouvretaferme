@@ -10,7 +10,7 @@ new AdaptativeView('getFields', function($data, AjaxTemplate $t) {
 	if($data->eFlow['hasTools']->empty()) {
 		$t->push('tools', '');
 	} else {
-		$t->push('tools', (new \util\FormUi())->dynamicGroup($data->eFlow, 'toolsList'));
+		$t->push('tools', (new \util\FormUi())->dynamicGroup($data->eFlow, 'tools'));
 	}
 
 	if($data->eFlow['hasMethods']->empty()) {

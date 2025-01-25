@@ -2037,18 +2037,16 @@ class CultivationUi {
 						$infos[] = s("La production demande {limit} plateaux de semis mais vous avez réparti les variétés sur {value} plateaux.", ['limit' => $limit, 'value' => $sum]);
 					}
 
-					$cTool = $cTask
+					$tools = array_merge(...$cTask
 						->find(fn($eTask) => (
 							$eTask['action']['fqn'] === ACTION_SEMIS_PEPINIERE and
 							($eTask['cultivation']->empty() or $eTask['cultivation']->is($eCultivation))
 						))
-						->getColumnCollection('cRequirement')
-						->getColumnCollection(0)
-						->getColumnCollection('tool');
+						->getColumn('tools'));
 
 					if(
-						$cTool->notEmpty() and
-						$cTool->contains(fn($eTool) => $eTool->is($eCultivation['sliceTool'])) === FALSE
+						$tools !== [] and
+						in_array($eCultivation['sliceTool']['id'], $tools) === FALSE
 					) {
 						$infos[] = s("Vous avez réparti les variétés avec des plateaux de semis {value} alors que les interventions de semis en pépinière sur la série utilisent d'autres plateaux.", '<u>'.encode($eCultivation['sliceTool']['name']).'</u>');
 					}

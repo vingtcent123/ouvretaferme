@@ -49,6 +49,7 @@ class FlowModel extends \ModuleModel {
 			'farm' => ['element32', 'farm\Farm', 'cast' => 'element'],
 			'action' => ['element32', 'farm\Action', 'cast' => 'element'],
 			'methods' => ['json', 'cast' => 'array'],
+			'tools' => ['json', 'cast' => 'array'],
 			'description' => ['text16', 'min' => 1, 'max' => NULL, 'null' => TRUE, 'cast' => 'string'],
 			'fertilizer' => ['json', 'null' => TRUE, 'cast' => 'array'],
 			'weekOnly' => ['int8', 'min' => 1, 'max' => 52, 'null' => TRUE, 'cast' => 'int'],
@@ -67,7 +68,7 @@ class FlowModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'crop', 'plant', 'sequence', 'farm', 'action', 'methods', 'description', 'fertilizer', 'weekOnly', 'weekStart', 'weekStop', 'yearOnly', 'yearStart', 'yearStop', 'seasonOnly', 'seasonStart', 'seasonStop', 'positionOnly', 'positionStart', 'positionStop', 'frequency'
+			'id', 'crop', 'plant', 'sequence', 'farm', 'action', 'methods', 'tools', 'description', 'fertilizer', 'weekOnly', 'weekStart', 'weekStop', 'yearOnly', 'yearStart', 'yearStop', 'seasonOnly', 'seasonStart', 'seasonStop', 'positionOnly', 'positionStart', 'positionStop', 'frequency'
 		]);
 
 		$this->propertiesToModule += [
@@ -93,6 +94,9 @@ class FlowModel extends \ModuleModel {
 			case 'methods' :
 				return [];
 
+			case 'tools' :
+				return [];
+
 			default :
 				return parent::getDefaultValue($property);
 
@@ -105,6 +109,9 @@ class FlowModel extends \ModuleModel {
 		switch($property) {
 
 			case 'methods' :
+				return $value === NULL ? NULL : json_encode($value, JSON_UNESCAPED_UNICODE);
+
+			case 'tools' :
 				return $value === NULL ? NULL : json_encode($value, JSON_UNESCAPED_UNICODE);
 
 			case 'fertilizer' :
@@ -125,6 +132,9 @@ class FlowModel extends \ModuleModel {
 		switch($property) {
 
 			case 'methods' :
+				return $value === NULL ? NULL : json_decode($value, TRUE);
+
+			case 'tools' :
 				return $value === NULL ? NULL : json_decode($value, TRUE);
 
 			case 'fertilizer' :
@@ -171,6 +181,10 @@ class FlowModel extends \ModuleModel {
 
 	public function whereMethods(...$data): FlowModel {
 		return $this->where('methods', ...$data);
+	}
+
+	public function whereTools(...$data): FlowModel {
+		return $this->where('tools', ...$data);
 	}
 
 	public function whereDescription(...$data): FlowModel {

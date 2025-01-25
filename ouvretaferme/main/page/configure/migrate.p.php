@@ -2,16 +2,30 @@
 (new Page())
 	->cli('index', function($data) {
 
-		$cDate = \shop\Date::model()
-			->select(\shop\Date::getSelection())
-			->getCollection();
+		foreach(\production\Requirement::model()
+		        ->select([
+					  'flow',
+			        'tools' => new Sql('GROUP_CONCAT(tool ORDER BY tool SEPARATOR ",")')
+		        ])
+					->group('flow')
+		        ->getCollection( ) as $e) {
 
-		foreach($cDate as $eDate) {
+			\production\Flow::model()->update($e['flow'], [
+				'tools' => array_map(fn($v) => (int)$v, explode(',', $e['tools'])),
+			]);
 
-			\shop\Date::model()->update($eDate, [
-				'products' => \shop\Product::model()
-					->whereDate($eDate)
-					->count()
+		}
+
+		foreach(\series\Requirement::model()
+		        ->select([
+					  'task',
+			        'tools' => new Sql('GROUP_CONCAT(tool ORDER BY tool SEPARATOR ",")')
+		        ])
+					->group('task')
+		        ->getCollection( ) as $e) {
+
+			\series\Task::model()->update($e['task'], [
+				'tools' => array_map(fn($v) => (int)$v, explode(',', $e['tools'])),
 			]);
 
 		}

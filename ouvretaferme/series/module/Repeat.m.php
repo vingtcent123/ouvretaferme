@@ -54,11 +54,11 @@ class RepeatModel extends \ModuleModel {
 			'variety' => ['element32', 'plant\Variety', 'null' => TRUE, 'cast' => 'element'],
 			'action' => ['element32', 'farm\Action', 'cast' => 'element'],
 			'methods' => ['json', 'cast' => 'array'],
+			'tools' => ['json', 'cast' => 'array'],
 			'category' => ['element32', 'farm\Category', 'cast' => 'element'],
 			'description' => ['text16', 'min' => 1, 'max' => NULL, 'null' => TRUE, 'cast' => 'string'],
 			'timeExpected' => ['float32', 'min' => 0.0, 'max' => NULL, 'null' => TRUE, 'cast' => 'float'],
 			'fertilizer' => ['json', 'null' => TRUE, 'cast' => 'array'],
-			'tools' => ['json', 'cast' => 'array'],
 			'status' => ['enum', [\series\Repeat::TODO, \series\Repeat::DONE], 'cast' => 'enum'],
 			'frequency' => ['enum', [\series\Repeat::W1, \series\Repeat::W2, \series\Repeat::W3, \series\Repeat::W4, \series\Repeat::M1], 'cast' => 'enum'],
 			'start' => ['date', 'cast' => 'string'],
@@ -71,7 +71,7 @@ class RepeatModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'farm', 'season', 'cultivation', 'series', 'plant', 'variety', 'action', 'methods', 'category', 'description', 'timeExpected', 'fertilizer', 'tools', 'status', 'frequency', 'start', 'current', 'discrete', 'stop', 'completed', 'createdBy', 'createdAt'
+			'id', 'farm', 'season', 'cultivation', 'series', 'plant', 'variety', 'action', 'methods', 'tools', 'category', 'description', 'timeExpected', 'fertilizer', 'status', 'frequency', 'start', 'current', 'discrete', 'stop', 'completed', 'createdBy', 'createdAt'
 		]);
 
 		$this->propertiesToModule += [
@@ -96,6 +96,9 @@ class RepeatModel extends \ModuleModel {
 		switch($property) {
 
 			case 'methods' :
+				return [];
+
+			case 'tools' :
 				return [];
 
 			case 'discrete' :
@@ -124,10 +127,10 @@ class RepeatModel extends \ModuleModel {
 			case 'methods' :
 				return $value === NULL ? NULL : json_encode($value, JSON_UNESCAPED_UNICODE);
 
-			case 'fertilizer' :
+			case 'tools' :
 				return $value === NULL ? NULL : json_encode($value, JSON_UNESCAPED_UNICODE);
 
-			case 'tools' :
+			case 'fertilizer' :
 				return $value === NULL ? NULL : json_encode($value, JSON_UNESCAPED_UNICODE);
 
 			case 'status' :
@@ -153,10 +156,10 @@ class RepeatModel extends \ModuleModel {
 			case 'methods' :
 				return $value === NULL ? NULL : json_decode($value, TRUE);
 
-			case 'fertilizer' :
+			case 'tools' :
 				return $value === NULL ? NULL : json_decode($value, TRUE);
 
-			case 'tools' :
+			case 'fertilizer' :
 				return $value === NULL ? NULL : json_decode($value, TRUE);
 
 			case 'discrete' :
@@ -213,6 +216,10 @@ class RepeatModel extends \ModuleModel {
 		return $this->where('methods', ...$data);
 	}
 
+	public function whereTools(...$data): RepeatModel {
+		return $this->where('tools', ...$data);
+	}
+
 	public function whereCategory(...$data): RepeatModel {
 		return $this->where('category', ...$data);
 	}
@@ -227,10 +234,6 @@ class RepeatModel extends \ModuleModel {
 
 	public function whereFertilizer(...$data): RepeatModel {
 		return $this->where('fertilizer', ...$data);
-	}
-
-	public function whereTools(...$data): RepeatModel {
-		return $this->where('tools', ...$data);
 	}
 
 	public function whereStatus(...$data): RepeatModel {

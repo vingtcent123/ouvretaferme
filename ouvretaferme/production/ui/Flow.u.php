@@ -328,7 +328,7 @@ class FlowUi {
 
 		$h = '';
 
-		foreach($eFlow['cMethod']() as $eMethod) {
+		foreach($eFlow['cMethod?']() as $eMethod) {
 			$h .= ' <span class="flow-method-name">'.encode($eMethod['name']).'</span> ';
 		}
 
@@ -566,14 +566,16 @@ class FlowUi {
 
 	public function getTools(\series\Task|Flow $eFlow): string {
 
-		$eFlow->expects(['cRequirement']);
+		$eFlow->expects(['cTool?']);
+
+		$cTool = $eFlow['cTool?']();
 
 		$h = '';
 
-		if($eFlow['cRequirement']->notEmpty()) {
+		if($cTool->notEmpty()) {
 
 			$h = '<div class="flow-timeline-tools">';
-				$h .= (new \farm\ToolUi())->getList($eFlow['cRequirement']->getColumnCollection('tool'));
+				$h .= (new \farm\ToolUi())->getList($cTool);
 			$h .= '</div>';
 
 		}
@@ -640,9 +642,9 @@ class FlowUi {
 			'yearStop' => 0,
 			'frequency' => Flow::W1,
 			'action' => new \farm\Action(),
-			'cTool' => new \Collection(),
+			'cTool?' => fn() => new \Collection(),
 			'hasTools' => new \Collection(),
-			'cMethod' => new \Collection(),
+			'cMethod?' => fn() => new \Collection(),
 			'hasMethods' => new \Collection(),
 		]);
 
@@ -758,7 +760,7 @@ class FlowUi {
 
 		$h = '<div data-ref="tools" data-farm="'.$eFlow['sequence']['farm']['id'].'">';
 			if($eFlow['hasTools']->notEmpty()) {
-				$h .= $form->dynamicGroup($eFlow, 'toolsList');
+				$h .= $form->dynamicGroup($eFlow, 'tools');
 			}
 		$h .= '</div>';
 
@@ -1024,7 +1026,7 @@ class FlowUi {
 			'weekStop' => s("Fin de l'intervention"),
 			'frequency' => s("Fréquence de l'intervention"),
 			'methods' => s("Méthodes de travail"),
-			'toolsList' => s("Matériel nécessaire")
+			'tools' => s("Matériel nécessaire")
 		]);
 
 		switch($property) {
@@ -1085,7 +1087,7 @@ class FlowUi {
 				break;
 
 			case 'methods' :
-				$d->autocompleteDefault = fn(Flow $e) => $e['cMethod'] ?? $e->expects(['cMethod']);
+				$d->autocompleteDefault = fn(Flow $e) => ($e['cMethod?'] ?? $e->expects(['cMethod?']))();
 				$d->autocompleteBody = function(\util\FormUi $form, Flow $e) {
 					$e->expects([
 						'action',
@@ -1100,8 +1102,8 @@ class FlowUi {
 				$d->group = ['wrapper' => 'methods'];
 				break;
 
-			case 'toolsList' :
-				$d->autocompleteDefault = fn(Flow $e) => $e['cTool'] ?? $e->expects(['cTool']);
+			case 'tools' :
+				$d->autocompleteDefault = fn(Flow $e) => ($e['cTool?'] ?? $e->expects(['cTool?']))();
 				$d->autocompleteBody = function(\util\FormUi $form, Flow $e) {
 					$e->expects([
 						'action',
@@ -1113,7 +1115,7 @@ class FlowUi {
 					];
 				};
 				(new \farm\ToolUi())->query($d, TRUE);
-				$d->group = ['wrapper' => 'toolsList'];
+				$d->group = ['wrapper' => 'tools'];
 				break;
 
 		}

@@ -1319,7 +1319,7 @@ class TaskUi {
 			$eTask,
 			showPlant: ($eTask['category']['fqn'] !== CATEGORIE_CULTURE),
 			showAction: FALSE,
-			showRequirement: TRUE
+			showTools: TRUE
 		);
 
 		$more = '';
@@ -1394,7 +1394,7 @@ class TaskUi {
 
 	}
 
-	public function getTaskDescription(Task $eTask, bool $showPlant = TRUE, bool $showAction = TRUE, bool $showRequirement = FALSE): string {
+	public function getTaskDescription(Task $eTask, bool $showPlant = TRUE, bool $showAction = TRUE, bool $showTools = FALSE): string {
 
 		\Asset::css('farm', 'action.css');
 
@@ -1423,10 +1423,10 @@ class TaskUi {
 
 			$description .= $this->getMore($eTask);
 
-			if($showRequirement) {
+			if($showTools) {
 
-				foreach($eTask['cRequirement'] as $eRequirement) {
-					$description .= ' <span class="flow-tool-name">'.\farm\ToolUi::getVignette($eRequirement['tool'], '2rem', '1.5rem').' '.encode($eRequirement['tool']['name']).'</span> ';
+				foreach($eTask['cTool?']() as $eTool) {
+					$description .= ' <span class="flow-tool-name">'.\farm\ToolUi::getVignette($eTool, '2rem', '1.5rem').' '.encode($eTool['name']).'</span> ';
 				}
 
 			}
@@ -1464,7 +1464,7 @@ class TaskUi {
 			$h .= ' <span class="task-variety-name">'.encode($eTask['variety']['name']).'</span> ';
 		}
 
-		foreach($eTask['cMethod']() as $eMethod) {
+		foreach($eTask['cMethod?']() as $eMethod) {
 			$h .= ' <span class="flow-method-name">'.encode($eMethod['name']).'</span> ';
 		}
 
@@ -1967,6 +1967,8 @@ class TaskUi {
 			'cultivation'
 		]);
 
+		$cTool = $eTask['cTool?']();
+
 		$h = '<div class="task-item-header">';
 			if($eTask['description'] !== NULL) {
 				$h .= $this->getDescription($eTask);
@@ -1983,7 +1985,7 @@ class TaskUi {
 			$columns++;
 		}
 
-		if($eTask['cTool']->notEmpty()) {
+		if($cTool->notEmpty()) {
 			$columns++;
 		}
 
@@ -2127,11 +2129,11 @@ class TaskUi {
 
 			}
 
-			if($eTask['cTool']->notEmpty()) {
+			if($cTool->notEmpty()) {
 
 				$h .= '<div>';
 					$h .= '<h4>'.s("Matériel").'</h4>';
-					$h .= (new \farm\ToolUi())->getList($eTask['cTool']);
+					$h .= (new \farm\ToolUi())->getList($cTool);
 				$h .= '</div>';
 
 			}
@@ -2317,7 +2319,7 @@ class TaskUi {
 	public function displayByAction(\farm\Farm $eFarm, string $week, \farm\Action $eAction, \Collection $cTask): string {
 
 		$hasPlant = in_array($eAction['fqn'], [ACTION_SEMIS_DIRECT, ACTION_SEMIS_PEPINIERE, ACTION_PLANTATION]);
-		$hasTools = $cTask->match(fn($eTask) => $eTask['cRequirement']->notEmpty());
+		$hasTools = $cTask->contains(fn($eTask) => $eTask['tools']);
 
 		$h = '<h2>'.encode($eAction['name']).'</h2>';
 
@@ -2325,7 +2327,7 @@ class TaskUi {
 			$h .= '<div class="util-block-info">'.s("Aucune intervention de cette nature à afficher cette semaine.").'</div>';
 		} else if($hasPlant or $hasTools) {
 
-				$h .= $this->getListByAction($eFarm, $eAction, $week, $cTask, $hasPlant, $hasTools);
+				$h .= $this->getListByAction($eFarm, $week, $cTask, $hasTools);
 
 				if($hasPlant) {
 					$h .= '<br/><h3>'.s("Répartition par variété").'</h3>';
@@ -2340,14 +2342,14 @@ class TaskUi {
 			$h .= '</div>';
 
 		} else {
-			$h .= $this->getListByAction($eFarm, $eAction, $week, $cTask, FALSE, FALSE);
+			$h .= $this->getListByAction($eFarm, $week, $cTask, FALSE);
 		}
 
 		return $h;
 
 	}
 
-	protected function getListByAction(\farm\Farm $eFarm, \farm\Action $eAction, string $week, \Collection $cTask, bool $hasPlant, bool $hasTools): string {
+	protected function getListByAction(\farm\Farm $eFarm, string $week, \Collection $cTask, bool $hasTools): string {
 
 		$h = '<table class="tr-even tr-bordered tasks-week-list stick-xs">';
 			$h .= '<thead>';
@@ -2387,9 +2389,7 @@ class TaskUi {
 
 							$h .= '<td class="tasks-week-list-tools">';
 
-								foreach($eTask['cRequirement'] as $eRequirement) {
-
-									$eTool = $eRequirement['tool'];
+								foreach($eTask['cTool?']() as $eTool) {
 
 									$h .= '<div>';
 										$h .= \farm\ToolUi::link($eTool);
@@ -2483,9 +2483,7 @@ class TaskUi {
 
 						$ccVariety[$ePlant['id']][$id]['youngPlants'] += $eSlice['youngPlants'];
 
-						foreach($eTask['cRequirement']
-				        ->getColumnCollection('tool')
-				        ->find(fn($eTool) => $eTool['routineName'] === 'tray') as $eTool) {
+						foreach($eTask['cTool?']()->find(fn($eTool) => $eTool['routineName'] === 'tray') as $eTool) {
 
 							$ccVariety[$ePlant['id']][$id]['tools'][$eTool['id']] ??= [
 								'youngPlants' => 0,
@@ -2678,9 +2676,7 @@ class TaskUi {
 
 			$eSeries = $eTask['series'];
 
-			foreach($eTask['cRequirement'] as $eRequirement) {
-
-				$eTool = $eRequirement['tool'];
+			foreach($eTask['cTool?']() as $eTool) {
 
 				$cTool[$eTool['id']] ??= $eTool->merge([
 					'youngPlants' => 0,
@@ -2980,7 +2976,7 @@ class TaskUi {
 
 		$h = '';
 
-		foreach($eTask['cTool'] as $eTool) {
+		foreach($eTask['cTool?']() as $eTool) {
 
 			if(
 				$eTool['routineName'] === 'tray' and
@@ -3115,7 +3111,8 @@ class TaskUi {
 		}
 
 		$default = array_key_first($toolsValues);
-		foreach($eTask['cTool'] as $eTool) {
+
+		foreach($eTask['cTool?']() as $eTool) {
 			if($eTool['routineName'] === 'fertilizer') {
 				$default = $eTool['id'];
 				break;
@@ -4480,7 +4477,7 @@ class TaskUi {
 
 		$h = '<div data-ref="tools" data-farm="'.$eTask['farm']['id'].'">';
 			if($eTask['hasTools']->notEmpty()) {
-				$h .= $form->dynamicGroup($eTask, 'toolsList');
+				$h .= $form->dynamicGroup($eTask, 'tools');
 			}
 		$h .= '</div>';
 
@@ -4695,7 +4692,7 @@ class TaskUi {
 			'harvestMore' => s("Quantité récoltée"),
 			'harvestDate' => s("Jour de récolte"),
 			'methods' => s("Méthodes de travail"),
-			'toolsList' => s("Matériel nécessaire")
+			'tools' => s("Matériel nécessaire")
 		]);
 
 		switch($property) {
@@ -4890,7 +4887,7 @@ class TaskUi {
 				break;
 
 			case 'methods' :
-				$d->autocompleteDefault = fn(Task $e) => $e['cMethod'] ?? $e->expects(['cMethod']);
+				$d->autocompleteDefault = fn(Task $e) => ($e['cMethod?'] ?? $e->expects(['cMethod?']))();
 				$d->autocompleteBody = function(\util\FormUi $form, Task $e) {
 					$e->expects(['action', 'farm']);
 					return [
@@ -4902,8 +4899,8 @@ class TaskUi {
 				$d->group = ['wrapper' => 'methods'];
 				break;
 
-			case 'toolsList' :
-				$d->autocompleteDefault = fn(Task $e) => $e['cTool'] ?? $e->expects(['cTool']);
+			case 'tools' :
+				$d->autocompleteDefault = fn(Task $e) => ($e['cTool?'] ?? $e->expects(['cTool?']))();
 				$d->autocompleteBody = function(\util\FormUi $form, Task $e) {
 					$e->expects(['action', 'farm']);
 					return [
@@ -4912,12 +4909,7 @@ class TaskUi {
 					];
 				};
 				(new \farm\ToolUi())->query($d, TRUE);
-				$d->group = ['wrapper' => 'toolsList'];
-				break;
-
-			case 'method' :
-				$d->placeholder = s("Aucune");
-				$d->values = fn(Task $e) => $e['cMethod'] ?? $e->expects(['cMethod']);
+				$d->group = ['wrapper' => 'tools'];
 				break;
 
 		}

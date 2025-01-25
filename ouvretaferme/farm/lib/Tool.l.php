@@ -17,6 +17,20 @@ class ToolLib extends ToolCrud {
 		};
 	}
 
+	public static function askByFarm(\farm\Farm $eFarm, array $ids): \Collection {
+
+		$callback = fn() => Tool::model()
+			->select([
+				'id', 'name', 'vignette',
+				'routineName', 'routineValue'
+			])
+			->whereFarm($eFarm)
+			->getCollection(index: 'id');
+
+		return self::getCache($eFarm['id'], $callback)->findByKeys($ids);
+
+	}
+
 	public static function countByFarm(\farm\Farm $eFarm, ?string $routineName): array {
 
 		self::applyWhereRoutineName($routineName);
@@ -190,13 +204,16 @@ class ToolLib extends ToolCrud {
 
 		$e->expects(['id', 'farm', 'routineName']);
 
-		if(\series\Requirement::model()
+		if(
+			\series\Task::model()
 				->whereFarm($e['farm'])
-				->whereTool($e)
-				->exists() or \production\Requirement::model()
+				->where('JSON_CONTAINS(tools, \''.$e['id'].'\')')
+				->exists() or
+			\production\Flow::model()
 				->whereFarm($e['farm'])
-				->whereTool($e)
-				->exists()) {
+				->where('JSON_CONTAINS(tools, \''.$e['id'].'\')')
+				->exists()
+		) {
 			Tool::fail('deleteUsed');
 			return;
 		}

@@ -9,7 +9,8 @@ class Task extends TaskElement {
 			'plant' => ['name', 'fqn', 'vignette', 'seedsSafetyMargin', 'plantsSafetyMargin'],
 			'farm' => ['name', 'vignette', 'featureTime'],
 			'cultivation' => ['startWeek', 'startAction', 'mainUnit', 'density', 'bunchWeight', 'unitWeight'],
-			'cMethod' => fn($e) => fn() => \farm\MethodLib::askByFarm($e['farm'], $e['methods']),
+			'cTool?' => fn($e) => fn() => \farm\ToolLib::askByFarm($e['farm'], $e['tools']),
+			'cMethod?' => fn($e) => fn() => \farm\MethodLib::askByFarm($e['farm'], $e['methods']),
 			'variety' => ['name'],
 			'category' => ['fqn', 'name'],
 			'series' => ['name', 'cycle', 'mode', 'season', 'area', 'areaTarget', 'length', 'lengthTarget', 'bedWidth', 'use'],
@@ -516,25 +517,22 @@ class Task extends TaskElement {
 
 			},
 
-			'toolsList.check' => function(mixed $tools, \BuildProperties $p): bool {
+			'tools.check' => function(mixed &$tools, \BuildProperties $p): bool {
 
 				$p->expectsBuilt('action');
 
 				if($this['action']->empty()) {
-					$this['cTool'] = new \Collection();
-					return TRUE;
+					$tools = [];
+				} else {
+
+					$tools = \farm\Tool::model()
+						->whereId('IN', (array)($tools ?? []))
+						->whereFarm($this['farm'])
+						->where('action IS NULL or action = '.$this['action']['id'])
+						->getColumn('id');
+
 				}
 
-				$tools = (array)($tools ?? []);
-
-				$cTool = \farm\Tool::model()
-					->select('id', 'farm')
-					->whereId('IN', $tools)
-					->where('action IS NULL or action = '.$this['action']['id'])
-					->getCollection()
-					->filter(fn($eTool) => $eTool->canRead());
-
-				$this['cTool'] = $cTool;
 				return TRUE;
 
 			},

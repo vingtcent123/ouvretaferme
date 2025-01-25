@@ -4,23 +4,11 @@ namespace production;
 class FlowLib extends FlowCrud {
 
 	public static function getPropertiesCreate(): array {
-		return ['action', 'methods', 'crop', 'description', 'fertilizer', 'seasonOnly', 'seasonStart', 'seasonStop', 'weekOnly', 'yearOnly', 'weekStart', 'yearStart', 'weekStop', 'yearStop', 'frequency', 'toolsList'];
+		return ['action', 'methods', 'crop', 'description', 'fertilizer', 'seasonOnly', 'seasonStart', 'seasonStop', 'weekOnly', 'yearOnly', 'weekStart', 'yearStart', 'weekStop', 'yearStop', 'frequency', 'tools'];
 	}
 
 	public static function getPropertiesUpdate(): array {
 		return self::getPropertiesCreate();
-	}
-
-	public static function getTools(Flow $e): \Collection {
-
-		return Requirement::model()
-			->select([
-				'tool' => \farm\Tool::getSelection()
-			])
-			->whereFlow($e)
-			->getColumn('tool')
-			->sort('name', natural: TRUE);
-
 	}
 
 	public static function getBySequence(Sequence $eSequence, ?int $season = NULL, array $properties = []): \Collection {
@@ -36,13 +24,7 @@ class FlowLib extends FlowCrud {
 		}
 
 		return Flow::model()
-			->select(Flow::getSelection() + [
-				'cRequirement' => Requirement::model()
-					->select([
-						'tool' => ['name', 'vignette']
-					])
-					->delegateCollection('flow')
-			])
+			->select(Flow::getSelection())
 			->select($properties)
 			->sort([
 				new \Sql('IF(weekOnly IS NOT NULL, CAST(weekOnly AS SIGNED) + CAST(yearOnly AS SIGNED) * 100, CAST(weekStart AS SIGNED) + CAST(yearStart AS SIGNED) * 100)'),
@@ -66,13 +48,7 @@ class FlowLib extends FlowCrud {
 		}
 
 		return Flow::model()
-			->select(Flow::getSelection() + [
-				'cRequirement' => Requirement::model()
-					->select([
-						'farm', 'tool'
-					])
-					->delegateCollection('flow')
-			])
+			->select(Flow::getSelection())
 			->select($properties)
 			->whereCrop('IN', $cCrop)
 			->sort([
@@ -276,45 +252,15 @@ class FlowLib extends FlowCrud {
 
 		Flow::model()->insert($e);
 
-		self::updateTools($e);
-
 		SequenceLib::recalculate($e['farm'], $e['sequence']);
 
 		Flow::model()->commit();
 
 	}
 
-	public static function updateTools(Flow $e): void {
-
-		$e->expects(['crop', 'sequence', 'farm', 'cTool']);
-
-		Requirement::model()
-			->whereFlow($e)
-			->delete();
-
-		$cRequirement = new \Collection();
-
-		foreach($e['cTool'] as $eTool) {
-			$cRequirement[] = new Requirement([
-				'tool' => $eTool,
-				'flow' => $e,
-				'crop' => $e['crop'],
-				'sequence' => $e['sequence'],
-				'farm' => $e['farm'],
-			]);
-		}
-
-		Requirement::model()->insert($cRequirement);
-
-	}
-
 	public static function update(Flow $e, array $properties): void {
 
 		Flow::model()->beginTransaction();
-
-		if(array_delete($properties, 'toolsList')) {
-			self::updateTools($e);
-		}
 
 		if(in_array('crop', $properties)) {
 
@@ -463,13 +409,9 @@ class FlowLib extends FlowCrud {
 
 		Flow::model()->beginTransaction();
 
-		Requirement::model()
-			->whereFlow('IN', $c)
-			->delete();
+			Flow::model()->delete($c);
 
-		Flow::model()->delete($c);
-
-		SequenceLib::recalculate($c->first()['farm'], $c->first()['sequence']);
+			SequenceLib::recalculate($c->first()['farm'], $c->first()['sequence']);
 
 		Flow::model()->commit();
 
@@ -481,13 +423,9 @@ class FlowLib extends FlowCrud {
 
 		Flow::model()->beginTransaction();
 
-		Requirement::model()
-			->whereFlow($e)
-			->delete();
+			Flow::model()->delete($e);
 
-		Flow::model()->delete($e);
-
-		SequenceLib::recalculate($e['farm'], $e['sequence']);
+			SequenceLib::recalculate($e['farm'], $e['sequence']);
 
 		Flow::model()->commit();
 

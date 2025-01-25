@@ -35,8 +35,6 @@
 			throw new NotExpectedAction('Invalid value for \'category\'');
 		}
 
-		$data->e['cTool'] = \series\TaskLib::getTools($data->e);
-
 		$data->cAction = \farm\ActionLib::getByFarm($data->eFarm, category: $data->e['category']);
 		$data->cCategory = \farm\CategoryLib::getByFarm($data->eFarm);
 
@@ -56,9 +54,9 @@
 		$data->e->add([
 			'cultivation' => new \series\Cultivation(),
 			'plant' => $ePlant,
-			'cTool' => new Collection(),
+			'cTool?' => fn() => new Collection(),
 			'hasTools' => \farm\ToolLib::getForWork($data->e['farm'], $data->e['action']),
-			'cMethod' => new Collection(),
+			'cMethod?' => fn() => new Collection(),
 			'hasMethods' => \farm\MethodLib::getForWork($data->e['farm'], $data->e['action'])
 		]);
 
@@ -175,9 +173,9 @@
 			'doneDate' => ($data->e['status'] === \series\Task::DONE) ? \series\Task::GET('doneDate', 'doneDate') : NULL,
 			'action' => $eAction,
 			'plant' => $ePlant,
-			'cTool' => new Collection(),
+			'cTool?' => new Collection(),
 			'hasTools' => \farm\ToolLib::getForWork($data->eFarm, $eAction),
-			'cMethod' => new Collection(),
+			'cMethod?' => new Collection(),
 			'hasMethods' => \farm\MethodLib::getForWork($data->eFarm, $eAction),
 			'cAction' => $cAction,
 			'cVariety' => new Collection(),
@@ -321,8 +319,8 @@
 		$data->eTask['hasTools'] = \farm\ToolLib::getForWork($eFarm, $eAction);
 		$data->eTask['hasMethods'] = \farm\MethodLib::getForWork($eFarm, $eAction);
 
-		$data->eTask['cTool'] = new Collection();
-		$data->eTask['cMethod'] = new Collection();
+		$data->eTask['cTool?'] = fn() => new Collection();
+		$data->eTask['cMethod?'] = fn() => new Collection();
 
 		throw new \ViewAction($data);
 
@@ -345,8 +343,6 @@
 		} else {
 			$data->cPlace = \series\PlaceLib::getByElement($data->e['series']);
 		}
-
-		$data->e['cTool'] = \series\TaskLib::getTools($data->e);
 
 		switch($data->e['action']['fqn']) {
 
@@ -401,9 +397,6 @@
 		} else {
 			$data->e['cSize'] = \plant\SizeLib::getByFarmAndPlant($data->e['farm'], $data->e['plant']);
 		}
-
-		$data->e['cTool'] = \series\TaskLib::getTools($data->e);
-		$data->e['cMethod'] = \farm\MethodLib::getByIds($data->e['methods']);
 
 		$data->e['hasMethods'] = \farm\MethodLib::getForWork($data->e['farm'], $data->e['action']);
 		$data->e['hasTools'] = \farm\ToolLib::getForWork($data->e['farm'], $data->e['action']);

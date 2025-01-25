@@ -364,20 +364,7 @@ class SeriesLib extends SeriesCrud {
 
 	private static function createTasks(\Collection $cTask): void {
 
-		foreach($cTask as $eTask) {
-
-			Task::model()->insert($eTask);
-
-			foreach($eTask['cRequirement'] as $eRequirement) {
-				$eRequirement['farm'] = $eTask['farm'];
-				$eRequirement['series'] = $eTask['series'];
-				$eRequirement['cultivation'] = $eTask['cultivation'];
-				$eRequirement['task'] = $eTask;
-			}
-
-			Requirement::model()->insert($eTask['cRequirement']);
-
-		}
+		Task::model()->insert($cTask);
 
 	}
 
@@ -745,11 +732,6 @@ class SeriesLib extends SeriesCrud {
 
 		$cTask = Task::model()
 			->select(Task::model()->getProperties() + [
-				'cRequirement' => Requirement::model()
-					->select([
-						'farm', 'tool'
-					])
-					->delegateCollection('task'),
 				'cHarvest' => Harvest::model()
 					->select([
 						'farm', 'quantity', 'unit', 'date', 'week'
@@ -840,17 +822,6 @@ class SeriesLib extends SeriesCrud {
 				Harvest::model()->insert($eTask['cHarvest']);
 
 			}
-
-			foreach($eTask['cRequirement'] as $eRequirement) {
-
-				$eRequirement['id'] = NULL;
-				$eRequirement['series'] = $eTask['series'];
-				$eRequirement['cultivation'] = $eTask['cultivation'];
-				$eRequirement['task'] = $eTask;
-
-			}
-
-			Requirement::model()->insert($eTask['cRequirement']);
 
 		}
 
@@ -1099,10 +1070,6 @@ class SeriesLib extends SeriesCrud {
 			->delete();
 
 		Slice::model()
-			->whereSeries($e)
-			->delete();
-
-		Requirement::model()
 			->whereSeries($e)
 			->delete();
 

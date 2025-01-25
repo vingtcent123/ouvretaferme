@@ -112,11 +112,11 @@ Repeat:
   variety: ?plant\Variety
   action: farm\Action
   methods: json = PHP([])
+  tools: json = PHP([])
   category: farm\Category
   description: ?text16(1, null)
   timeExpected: ?float32(0.0, null)
   fertilizer: ?json
-  tools: json
   status: enum(TODO, DONE)
   frequency: enum(W1, W2, W3, W4, M1)
   start: date
@@ -128,23 +128,6 @@ Repeat:
   createdAt: datetime = SPECIAL(now)
   INDEX: [
     ["farm", "current"]
-  ]
-
-Requirement:
-  id: serial32
-  farm: farm\Farm
-  series: ?series\Series
-  cultivation: ?series\Cultivation
-  task: series\Task
-  tool: farm\Tool
-  createdAt: datetime = SPECIAL(now)
-  createdBy: user\User = SPECIAL(user)
-  INDEX: [
-    ["farm", "tool"],
-    ["series"]
-  ]
-  UNIQUE: [
-    ["task", "tool"]
   ]
 
 Series:
@@ -209,6 +192,7 @@ Task:
   variety: ?plant\Variety
   action: farm\Action
   methods: json = PHP([])
+  tools: json = PHP([])
   category: farm\Category
   description: ?text16(1, null)
   time: ?float32(0.0, null)

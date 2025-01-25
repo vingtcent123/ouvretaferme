@@ -7,7 +7,8 @@ class Flow extends FlowElement {
 
 		return [
 			'action' => ['fqn', 'name', 'color', 'series'],
-			'cMethod' => fn($e) => fn() => \farm\MethodLib::askByFarm($e['farm'], $e['methods']),
+			'cTool?' => fn($e) => fn() => \farm\ToolLib::askByFarm($e['farm'], $e['tools']),
+			'cMethod?' => fn($e) => fn() => \farm\MethodLib::askByFarm($e['farm'], $e['methods']),
 		] + parent::getSelection();
 
 	}
@@ -188,12 +189,10 @@ class Flow extends FlowElement {
 				} else {
 
 					$methods = \farm\Method::model()
-						->select('id', 'farm')
 						->whereId('IN', (array)($methods ?? []))
+						->whereFarm($this['farm'])
 						->whereAction($this['action'])
-						->getCollection()
-						->filter(fn($eMethod) => $eMethod->canRead())
-						->getIds();
+						->getColumn('id');
 
 				}
 
@@ -201,25 +200,21 @@ class Flow extends FlowElement {
 
 			},
 
-			'toolsList.check' => function(mixed $tools, \BuildProperties $p): bool {
+			'tools.check' => function(mixed &$tools, \BuildProperties $p): bool {
 
 				$p->expectsBuilt('action');
 
 				if($this['action']->empty()) {
-					$this['cTool'] = new \Collection();
-					return TRUE;
+					$tools = [];
+				} else {
+
+					$tools = \farm\Tool::model()
+						->whereId('IN', (array)($tools ?? []))
+						->whereFarm($this['farm'])
+						->where('action IS NULL or action = '.$this['action']['id'])
+						->getColumn('id');
+
 				}
-
-				$tools = (array)($tools ?? []);
-
-				$cTool = \farm\Tool::model()
-					->select('id', 'farm')
-					->whereId('IN', $tools)
-					->where('action IS NULL or action = '.$this['action']['id'])
-					->getCollection()
-					->filter(fn($eTool) => $eTool->canRead());
-
-				$this['cTool'] = $cTool;
 
 				return TRUE;
 

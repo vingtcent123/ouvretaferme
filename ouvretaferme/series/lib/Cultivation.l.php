@@ -130,28 +130,15 @@ class CultivationLib extends CultivationCrud {
 
 	public static function getForArea(\farm\Farm $eFarm, int $season, \Search $search): \Collection {
 
-		$series = [
-			'cccPlace' => PlaceLib::delegateBySeries()
-		];
-
-		if($search->get('tool')->notEmpty()) {
-
-			$series['ccRequirement'] = Requirement::model()
-				->select([
-					'series',
-					'tool'
-				])
-				->delegateCollection('series');
-
-		}
-
 		$ccCultivation = Cultivation::model()
 			->select(Cultivation::getSelection())
 			->select([
-				'series' => $series,
+				'series' => [
+					'cccPlace' => PlaceLib::delegateBySeries()
+				],
 				'cTask' => Task::model()
 					->select([
-						'cultivation',
+						'cultivation', 'tools',
 						'action' => \farm\Action::getSelection(),
 						'plannedWeek', 'doneWeek',
 						'status'
@@ -179,17 +166,21 @@ class CultivationLib extends CultivationCrud {
 			->sort(['startWeek' => SORT_ASC, 'mainUnit' => SORT_ASC, 'id' => SORT_ASC])
 			->getCollection(NULL, NULL, ['plant', NULL]);
 
-		if($search->get('bedWidth')) {
-			$ccCultivation->filter(fn($eCultivation) => ($eCultivation['series']['bedWidth'] === $search->get('bedWidth')), depth: 2);
+		if($search->has('tool') and $search->get('tool')->notEmpty()) {
+
+			$cultivationsTool = Task::model()
+				->whereFarm($eFarm)
+				->whereCultivation('IN', $ccCultivation)
+				->where('JSON_CONTAINS(tools, \''.$search->get('tool')['id'].'\')')
+				->getColumn('cultivation')
+				->getIds();
+
+			$ccCultivation->filter(fn($eCultivation) => in_array($eCultivation['id'], $cultivationsTool), depth: 2);
+
 		}
 
-		if($search->get('tool')->notEmpty()) {
-
-			$ccCultivation->filter(fn($eCultivation) => $eCultivation['series']['ccRequirement']
-				->getColumnCollection('tool')
-				->filter(fn($eTool) => $eTool['id'] === $search->get('tool')['id'])
-				->notEmpty(), depth: 2);
-
+		if($search->get('bedWidth')) {
+			$ccCultivation->filter(fn($eCultivation) => ($eCultivation['series']['bedWidth'] === $search->get('bedWidth')), depth: 2);
 		}
 
 		self::orderByPlant($ccCultivation);
@@ -856,13 +847,13 @@ class CultivationLib extends CultivationCrud {
 
 			$eAction = $cAction[$action];
 
-			$cTool = new \Collection();
+			$tools = [];
 
 			if(
 				$action === ACTION_SEMIS_PEPINIERE and
 				$e['sliceTool']->notEmpty()
 			) {
-				$cTool[] = $e['sliceTool'];
+				$tools[] = $e['sliceTool']['id'];
 			}
 
 			$eTask = new \series\Task([
@@ -875,7 +866,7 @@ class CultivationLib extends CultivationCrud {
 				'plannedWeek' => $week,
 				'status' => Task::TODO,
 				'repeatMaster' => new Repeat(),
-				'cTool' => $cTool
+				'tools' => $tools
 			]);
 
 			TaskLib::create($eTask);
@@ -1058,10 +1049,6 @@ class CultivationLib extends CultivationCrud {
 			->whereCultivation($e)
 			->delete();
 
-		Requirement::model()
-			->whereCultivation($e)
-			->delete();
-
 		// Supprime les rapports
 		\analyze\Cultivation::model()
 			->whereCultivation($e)
@@ -1101,13 +1088,6 @@ class CultivationLib extends CultivationCrud {
 				->update([
 					'cultivation' => $eCultivationRemaining,
 					'plant' => $eCultivationRemaining['plant']
-				]);
-
-			Requirement::model()
-				->whereSeries($e['series'])
-				->whereCultivation(NULL)
-				->update([
-					'cultivation' => $eCultivationRemaining
 				]);
 
 		}

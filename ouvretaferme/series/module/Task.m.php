@@ -52,6 +52,7 @@ class TaskModel extends \ModuleModel {
 			'variety' => ['element32', 'plant\Variety', 'null' => TRUE, 'cast' => 'element'],
 			'action' => ['element32', 'farm\Action', 'cast' => 'element'],
 			'methods' => ['json', 'cast' => 'array'],
+			'tools' => ['json', 'cast' => 'array'],
 			'category' => ['element32', 'farm\Category', 'cast' => 'element'],
 			'description' => ['text16', 'min' => 1, 'max' => NULL, 'null' => TRUE, 'cast' => 'string'],
 			'time' => ['float32', 'min' => 0.0, 'max' => NULL, 'null' => TRUE, 'cast' => 'float'],
@@ -77,7 +78,7 @@ class TaskModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'farm', 'season', 'cultivation', 'series', 'plant', 'variety', 'action', 'methods', 'category', 'description', 'time', 'timeExpected', 'harvest', 'harvestUnit', 'harvestSize', 'fertilizer', 'plannedWeek', 'plannedDate', 'plannedUsers', 'doneWeek', 'doneDate', 'timelineStart', 'timelineStop', 'timesheetStart', 'timesheetStop', 'repeat', 'createdAt', 'createdBy', 'updatedAt', 'status'
+			'id', 'farm', 'season', 'cultivation', 'series', 'plant', 'variety', 'action', 'methods', 'tools', 'category', 'description', 'time', 'timeExpected', 'harvest', 'harvestUnit', 'harvestSize', 'fertilizer', 'plannedWeek', 'plannedDate', 'plannedUsers', 'doneWeek', 'doneDate', 'timelineStart', 'timelineStop', 'timesheetStart', 'timesheetStop', 'repeat', 'createdAt', 'createdBy', 'updatedAt', 'status'
 		]);
 
 		$this->propertiesToModule += [
@@ -110,6 +111,9 @@ class TaskModel extends \ModuleModel {
 			case 'methods' :
 				return [];
 
+			case 'tools' :
+				return [];
+
 			case 'plannedUsers' :
 				return [];
 
@@ -131,6 +135,9 @@ class TaskModel extends \ModuleModel {
 		switch($property) {
 
 			case 'methods' :
+				return $value === NULL ? NULL : json_encode($value, JSON_UNESCAPED_UNICODE);
+
+			case 'tools' :
 				return $value === NULL ? NULL : json_encode($value, JSON_UNESCAPED_UNICODE);
 
 			case 'harvestUnit' :
@@ -157,6 +164,9 @@ class TaskModel extends \ModuleModel {
 		switch($property) {
 
 			case 'methods' :
+				return $value === NULL ? NULL : json_decode($value, TRUE);
+
+			case 'tools' :
 				return $value === NULL ? NULL : json_decode($value, TRUE);
 
 			case 'fertilizer' :
@@ -214,6 +224,10 @@ class TaskModel extends \ModuleModel {
 
 	public function whereMethods(...$data): TaskModel {
 		return $this->where('methods', ...$data);
+	}
+
+	public function whereTools(...$data): TaskModel {
+		return $this->where('tools', ...$data);
 	}
 
 	public function whereCategory(...$data): TaskModel {

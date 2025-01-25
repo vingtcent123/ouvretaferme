@@ -64,7 +64,7 @@ class TaskLib extends TaskCrud {
 
 		$e->expects(['status', 'series', 'category']);
 
-		$properties = ['action', 'methods', 'description', 'harvestSize', 'fertilizer', 'toolsList'];
+		$properties = ['action', 'methods', 'description', 'harvestSize', 'fertilizer', 'tools'];
 
 		switch($e['status']) {
 
@@ -80,18 +80,6 @@ class TaskLib extends TaskCrud {
 		}
 
 		return $properties;
-
-	}
-
-	public static function getTools(Task $e): \Collection {
-
-		return Requirement::model()
-			->select([
-				'tool' => \farm\Tool::getSelection()
-			])
-			->whereTask($e)
-			->getColumn('tool')
-			->sort('name', natural: TRUE);
 
 	}
 
@@ -191,16 +179,13 @@ class TaskLib extends TaskCrud {
 				'plannedWeek', 'doneWeek', 'plannedUsers',
 				'display' => new \Sql('IF(doneWeek IS NULL, plannedWeek, doneWeek)', 'string'),
 				'cComment' => CommentLib::delegateByTask(),
-				'cRequirement' => Requirement::model()
-					->select([
-						'tool' => ['name', 'vignette']
-					])
-					->delegateCollection('task'),
 				'description', 'fertilizer', 'time', 'harvest', 'harvestUnit',
 				'harvestSize' => ['name'],
 				'action' => ['fqn', 'name', 'color'],
+				'tools',
+				'cTool?' => fn($e) => fn() => \farm\ToolLib::askByFarm($e['farm'], $e['tools']),
 				'methods',
-				'cMethod' => fn($e) => fn() => \farm\MethodLib::askByFarm($e['farm'], $e['methods']),
+				'cMethod?' => fn($e) => fn() => \farm\MethodLib::askByFarm($e['farm'], $e['methods']),
 				'plant',
 				'variety' => ['name'],
 				'createdAt', 'doneDate',
@@ -565,12 +550,6 @@ class TaskLib extends TaskCrud {
 			->select(Task::getSelection())
 			->select([
 				'cccPlace' => PlaceLib::delegateByTask(),
-				'cRequirement' => Requirement::model()
-					->select([
-						'farm',
-						'tool' => \farm\ToolElement::getSelection()
-					])
-					->delegateCollection('task'),
 				'series' => [
 					'cccPlace' => PlaceLib::delegateBySeries()
 				],
@@ -1126,14 +1105,6 @@ class TaskLib extends TaskCrud {
 				continue;
 			}
 
-			$cRequirement = new \Collection();
-
-			foreach($eFlow['cRequirement'] as $eRequirement) {
-				$cRequirement[] = new Requirement([
-					'tool' => $eRequirement['tool']
-				]);
-			}
-
 			$e = ($eFlow['weekOnly'] === NULL) ? new Repeat() : new Task();
 
 			$e->merge([
@@ -1143,13 +1114,13 @@ class TaskLib extends TaskCrud {
 				'plant' => $eFlow['plant'],
 				'action' => $eAction,
 				'methods' => $eFlow['methods'],
+				'tools' => $eFlow['tools'],
 				'category' => $eCategory,
 				'description' => $eFlow['description'],
 				'fertilizer' => $eFlow['fertilizer'],
 				'crop' => $eFlow['crop'],
 				'variety' => new \plant\Variety(),
-				'status' => Task::TODO,
-				'cRequirement' => $cRequirement
+				'status' => Task::TODO
 			]);
 
 			if($eFlow['crop']->notEmpty()) {
@@ -1161,8 +1132,6 @@ class TaskLib extends TaskCrud {
 
 			if($eFlow['weekOnly'] !== NULL) {
 
-				$e['cRequirement'] = $cRequirement;
-
 				$plannedWeek = ($referenceYear + $eFlow['yearOnly']).'-W'.sprintf('%02d', $eFlow['weekOnly']);
 
 				$e['plannedWeek'] = $plannedWeek;
@@ -1172,12 +1141,6 @@ class TaskLib extends TaskCrud {
 				$cTask->append($e);
 
 			} else {
-
-				$e['tools'] = [];
-
-				foreach($e['cRequirement'] as $eRequirement) {
-					$e['tools'][] = $eRequirement['tool']['id'];
-				}
 
 				$weekStart = ($referenceYear + $eFlow['yearStart']).'-W'.sprintf('%02d', round($eFlow['weekStart']));
 				$weekStop = ($referenceYear + $eFlow['yearStop']).'-W'.sprintf('%02d', round($eFlow['weekStop']));
@@ -1228,8 +1191,7 @@ class TaskLib extends TaskCrud {
 			'farm',
 			'category',
 			'status',
-			'repeatMaster',
-			'cTool'
+			'repeatMaster'
 		]);
 
 		if($e['category']['fqn'] === CATEGORIE_CULTURE) {
@@ -1270,8 +1232,6 @@ class TaskLib extends TaskCrud {
 
 		parent::create($e);
 
-		self::updateTools($e);
-
 		SeriesLib::recalculate($e['farm'], $e['series'], $e['action']);
 
 		Task::model()->commit();
@@ -1297,17 +1257,9 @@ class TaskLib extends TaskCrud {
 
 		}
 
-		$eTask['cTool'] = new \Collection();
-
-		foreach($e['tools'] as $tool) {
-			$eTask['cTool'][] = new \farm\Tool(['id' => $tool]);
-		}
-
 		Task::model()->beginTransaction();
 
 			parent::create($eTask);
-
-			self::updateTools($eTask);
 
 			SeriesLib::recalculate($eTask['farm'], $eTask['series'], $eTask['action']);
 
@@ -1339,30 +1291,6 @@ class TaskLib extends TaskCrud {
 		Task::model()
 			->select('description')
 			->update($e);
-
-	}
-
-	public static function updateTools(Task $e): void {
-
-		$e->expects(['series', 'cultivation', 'farm', 'cTool']);
-
-		Requirement::model()
-			->whereTask($e)
-			->delete();
-
-		$cRequirement = new \Collection();
-
-		foreach($e['cTool'] as $eTool) {
-			$cRequirement[] = new Requirement([
-				'tool' => $eTool,
-				'series' => $e['series'],
-				'cultivation' => $e['cultivation'],
-				'task' => $e,
-				'farm' => $e['farm'],
-			]);
-		}
-
-		Requirement::model()->insert($cRequirement);
 
 	}
 
@@ -1532,10 +1460,6 @@ class TaskLib extends TaskCrud {
 
 		Task::model()->beginTransaction();
 
-		if(array_delete($properties, 'toolsList')) {
-			self::updateTools($e);
-		}
-
 		if(array_delete($properties, 'planned')) {
 			$properties[] = 'plannedWeek';
 			$properties[] = 'plannedDate';
@@ -1684,10 +1608,6 @@ class TaskLib extends TaskCrud {
 			->whereTask('IN', $c)
 			->delete();
 
-		Requirement::model()
-			->whereTask('IN', $c)
-			->delete();
-
 		Task::model()->delete($c);
 
 		if($recalculate) {
@@ -1756,10 +1676,6 @@ class TaskLib extends TaskCrud {
 			->delete();
 
 		Comment::model()
-			->whereTask($e)
-			->delete();
-
-		Requirement::model()
 			->whereTask($e)
 			->delete();
 

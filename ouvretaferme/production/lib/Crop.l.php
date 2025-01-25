@@ -44,13 +44,13 @@ class CropLib extends CropCrud {
 
 		if($search->has('tool') and $search->get('tool')->notEmpty()) {
 
-			$cSequenceRequirement = Requirement::model()
+			$cSequenceTool = Flow::model()
 				->whereFarm($eFarm)
-				->whereTool($search->get('tool'))
+				->where('JSON_CONTAINS(tools, \''.$search->get('tool')['id'].'\')')
 				->getColumn('sequence');
 
 		} else {
-			$cSequenceRequirement = new \Collection();
+			$cSequenceTool = new \Collection();
 		}
 
 		$cCrop = Crop::model()
@@ -67,7 +67,7 @@ class CropLib extends CropCrud {
 			->where('m1.sequence', 'IN', $search->get('sequences'), if: $search->get('sequences'))
 			->where('m1.plant', $search->get('plant'), if: $search->get('plant')?->notEmpty())
 			->where('m1.plant', 'IN', $search->get('plants'), if: $search->get('plants')?->notEmpty())
-			->where('m2.id', 'IN', $cSequenceRequirement, if: $cSequenceRequirement->notEmpty())
+			->where('m2.id', 'IN', $cSequenceTool, if: $cSequenceTool->notEmpty())
 			->where('m2.name', 'LIKE', '%'.$search->get('name').'%', if: $search->get('name'))
 			->where('m2.use', $search->get('use'), if: $search->get('use'))
 			->where('m2.status', $search->get('status', Sequence::ACTIVE))
@@ -301,11 +301,6 @@ class CropLib extends CropCrud {
 			->whereCrop($e)
 			->delete();
 
-		Requirement::model()
-			->whereSequence($e['sequence']) // Pour l'index
-			->whereCrop($e)
-			->delete();
-
 		\series\Cultivation::model()
 				->whereCrop($e)
 				->update([
@@ -334,13 +329,6 @@ class CropLib extends CropCrud {
 				->update([
 					'crop' => $eCropRemaining,
 					'plant' => $eCropRemaining['plant']
-				]);
-
-			Requirement::model()
-				->whereSequence($e['sequence'])
-				->whereCrop(NULL)
-				->update([
-					'crop' => $eCropRemaining
 				]);
 
 		}

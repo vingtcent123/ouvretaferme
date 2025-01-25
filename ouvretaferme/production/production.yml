@@ -30,6 +30,7 @@ Flow:
   farm: farm\Farm
   action: farm\Action
   methods: json = PHP([])
+  tools: json = PHP([])
   description: ?text16(1, null)
   fertilizer: ?json
   weekOnly: ?int8(1, 52)
@@ -48,22 +49,8 @@ Flow:
   INDEX: [
     ["plant"],
     ["crop"],
-    ["sequence"]
-  ]
-
-Requirement:
-  id: serial32
-  farm: farm\Farm
-  sequence: production\Sequence
-  crop: ?production\Crop
-  flow: production\Flow
-  tool: farm\Tool
-  INDEX: [
-    ["farm", "tool"],
-    ["sequence"]
-  ]
-  UNIQUE: [
-    ["flow", "tool"]
+    ["sequence"],
+    ["farm"]
   ]
 
 Sequence:

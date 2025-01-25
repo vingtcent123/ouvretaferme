@@ -140,13 +140,18 @@ class CsvLib {
 						'action',
 						'min' => new \Sql('MIN(IF(doneWeek IS NOT NULL, doneWeek, plannedWeek))'),
 						'max' => new \Sql('MAX(IF(doneWeek IS NOT NULL, doneWeek, plannedWeek))'),
-						'toolName' => Requirement::model()
-							->select([
-								'tool',
-								'toolName' => fn($e) => $cTool[$e['tool']['id']]['name']
-							])
-							->whereTool('IN', $cTool)
-							->delegateProperty('cultivation', 'toolName', propertyParent: 'cultivation')
+						'toolList' => new \Sql('CONCAT("{", GROUP_CONCAT(CONCAT("\\"", IF(doneWeek IS NOT NULL, doneWeek, plannedWeek), "\\":", tools) SEPARATOR ","), "}")'),
+						'toolName' => function($e) use ($cTool) {
+
+							$tools = json_decode($e['toolList'], TRUE);
+
+							if(empty($tools[$e['min']])) {
+								return '';
+							} else {
+								return $cTool[$tools[$e['min']][0]]['name'];
+							}
+
+						}
 					])
 					->whereAction('IN', $cAction)
 					->group(['cultivation', 'action'])
