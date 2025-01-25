@@ -87,6 +87,8 @@ class PdfContentModel extends \ModuleModel {
 
 abstract class PdfContentCrud extends \ModuleCrud {
 
+ private static array $cache = [];
+
 	public static function getById(mixed $id, array $properties = []): PdfContent {
 
 		$e = new PdfContent();
@@ -129,6 +131,13 @@ abstract class PdfContentCrud extends \ModuleCrud {
 			->select($properties)
 			->whereId('IN', $ids)
 			->getCollection(NULL, NULL, $index);
+
+	}
+
+	public static function getCache(mixed $key, \Closure $callback): mixed {
+
+		self::$cache[$key] ??= $callback();
+		return self::$cache[$key];
 
 	}
 

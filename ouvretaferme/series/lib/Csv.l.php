@@ -205,7 +205,7 @@ class CsvLib {
 				$eSeries['use'],
 				$eCultivation['plant']['name'],
 				($eCultivation['seedling'] !== NULL) ? $eCultivation['seedling'] : NULL,
-				($eCultivation['seedling'] === Cultivation::YOUNG_PLANT) ? $eCultivation['seedlingSeeds'] : NULL,
+				in_array($eCultivation['seedling'], [Cultivation::SOWING, Cultivation::YOUNG_PLANT]) ? $eCultivation['seedlingSeeds'] : NULL,
 				$youngPlantTray,
 				$sowingDate,
 				$plantingDate,
@@ -439,7 +439,7 @@ class CsvLib {
 					[
 						'species' => $crop,
 						'planting_type' => $plantingType,
-						'young_plants_seeds' => $line['seeds_per_hole_seedling'] ? (int)$line['seeds_per_hole_seedling'] : NULL,
+						'seeds_per_hole' => $line['seeds_per_hole_seedling'] ? (int)$line['seeds_per_hole_seedling'] : NULL,
 						'young_plants_tray' => $line['container_name'] ?: NULL,
 						'young_plants_tray_size' => $line['container_size'] ?: NULL,
 						'sowing_date' => $sowing,
@@ -522,7 +522,7 @@ class CsvLib {
 				'use' => '',
 				'species' => '',
 				'planting_type' => '',
-				'young_plants_seeds' => '',
+				'seeds_per_hole' => '',
 				'young_plants_tray' => '',
 				'sowing_date' => '',
 				'planting_date' => '',
@@ -607,7 +607,7 @@ class CsvLib {
 			$import[$index]['cultivations'][] = [
 				'species' => $line['species'] ?? NULL,
 				'planting_type' => $line['planting_type'] ?: NULL,
-				'young_plants_seeds' => $line['young_plants_seeds'] ?: NULL,
+				'seeds_per_hole' => $line['seeds_per_hole'] ?: NULL,
 				'young_plants_tray' => $line['young_plants_tray'] ?: NULL,
 				'young_plants_tray_size' => NULL,
 				'sowing_date' => $line['sowing_date'] ?: NULL,
@@ -677,7 +677,7 @@ class CsvLib {
 				$input['plant'][$position] = $cultivation['ePlant']['id'];
 				$input['sliceUnit'][$position] = $cultivation['varieties_unit'];
 				$input['seedling'][$position] = $cultivation['planting_type'];
-				$input['seedlingSeeds'][$position] = (int)($cultivation['young_plants_seeds'] ?: 1);
+				$input['seedlingSeeds'][$position] = (int)($cultivation['seeds_per_hole'] ?: 1);
 				$input['mainUnit'][$position] = $cultivation['harvest_unit'];
 				$input['variety'][$position] = [
 					'variety' => [],

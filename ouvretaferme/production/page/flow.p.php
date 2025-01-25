@@ -42,7 +42,8 @@ $do = function($data) {
 	})
 	->update(function($data) {
 
-		$data->e['cMethod'] = \farm\MethodLib::getForWork($data->e['sequence']['farm'], $data->e['action']);
+		$data->e['cMethod'] = \farm\MethodLib::getByIds($data->e['methods']);
+		$data->e['hasMethods'] = \farm\MethodLib::getForWork($data->e['sequence']['farm'], $data->e['action']);
 		$data->e['cTool'] = \production\FlowLib::getTools($data->e);
 		$data->e['hasTools'] = \farm\ToolLib::getForWork($data->e['sequence']['farm'], $data->e['action']);
 
@@ -84,7 +85,8 @@ $do = function($data) {
 			'action' => $eAction,
 			'cTool' => new Collection(),
 			'hasTools' => \farm\ToolLib::getForWork($eFarm, $eAction),
-			'cMethod' => \farm\MethodLib::getForWork($eFarm, $eAction)
+			'cMethod' => new Collection(),
+			'hasMethods' => \farm\MethodLib::getForWork($eFarm, $eAction)
 		]);
 
 		throw new \ViewAction($data);

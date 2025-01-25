@@ -4,7 +4,7 @@ namespace production;
 class FlowLib extends FlowCrud {
 
 	public static function getPropertiesCreate(): array {
-		return ['action', 'method', 'crop', 'description', 'fertilizer', 'seasonOnly', 'seasonStart', 'seasonStop', 'weekOnly', 'yearOnly', 'weekStart', 'yearStart', 'weekStop', 'yearStop', 'frequency', 'toolsList'];
+		return ['action', 'methods', 'crop', 'description', 'fertilizer', 'seasonOnly', 'seasonStart', 'seasonStop', 'weekOnly', 'yearOnly', 'weekStart', 'yearStart', 'weekStop', 'yearStop', 'frequency', 'toolsList'];
 	}
 
 	public static function getPropertiesUpdate(): array {

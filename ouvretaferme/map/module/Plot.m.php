@@ -191,6 +191,8 @@ class PlotModel extends \ModuleModel {
 
 abstract class PlotCrud extends \ModuleCrud {
 
+ private static array $cache = [];
+
 	public static function getById(mixed $id, array $properties = []): Plot {
 
 		$e = new Plot();
@@ -233,6 +235,13 @@ abstract class PlotCrud extends \ModuleCrud {
 			->select($properties)
 			->whereId('IN', $ids)
 			->getCollection(NULL, NULL, $index);
+
+	}
+
+	public static function getCache(mixed $key, \Closure $callback): mixed {
+
+		self::$cache[$key] ??= $callback();
+		return self::$cache[$key];
 
 	}
 

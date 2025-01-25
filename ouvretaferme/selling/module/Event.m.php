@@ -96,6 +96,8 @@ class EventModel extends \ModuleModel {
 
 abstract class EventCrud extends \ModuleCrud {
 
+ private static array $cache = [];
+
 	public static function getById(mixed $id, array $properties = []): Event {
 
 		$e = new Event();
@@ -180,6 +182,13 @@ abstract class EventCrud extends \ModuleCrud {
 			->select($properties)
 			->whereFqn('IN', $fqns)
 			->getCollection(NULL, NULL, 'fqn');
+
+	}
+
+	public static function getCache(mixed $key, \Closure $callback): mixed {
+
+		self::$cache[$key] ??= $callback();
+		return self::$cache[$key];
 
 	}
 

@@ -126,6 +126,8 @@ class TemplateModel extends \ModuleModel {
 
 abstract class TemplateCrud extends \ModuleCrud {
 
+ private static array $cache = [];
+
 	public static function getById(mixed $id, array $properties = []): Template {
 
 		$e = new Template();
@@ -210,6 +212,13 @@ abstract class TemplateCrud extends \ModuleCrud {
 			->select($properties)
 			->whereFqn('IN', $fqns)
 			->getCollection(NULL, NULL, 'fqn');
+
+	}
+
+	public static function getCache(mixed $key, \Closure $callback): mixed {
+
+		self::$cache[$key] ??= $callback();
+		return self::$cache[$key];
 
 	}
 

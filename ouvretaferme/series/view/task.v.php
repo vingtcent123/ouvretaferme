@@ -21,10 +21,10 @@ new AdaptativeView('getFields', function($data, AjaxTemplate $t) {
 		$t->push('tools', (new \util\FormUi())->dynamicGroup($data->eTask, 'toolsList'));
 	}
 
-	if($data->eTask['cMethod']->empty()) {
+	if($data->eTask['hasMethods']->empty()) {
 		$t->push('methods', '');
 	} else {
-		$t->push('methods', (new \util\FormUi())->dynamicGroup($data->eTask, 'method'));
+		$t->push('methods', (new \util\FormUi())->dynamicGroup($data->eTask, 'methods'));
 	}
 
 

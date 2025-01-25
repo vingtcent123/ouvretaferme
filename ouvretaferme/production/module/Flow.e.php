@@ -7,7 +7,7 @@ class Flow extends FlowElement {
 
 		return [
 			'action' => ['fqn', 'name', 'color', 'series'],
-			'method' => ['name']
+			'cMethod' => fn($e) => fn() => \farm\MethodLib::askByFarm($e['farm'], $e['methods']),
 		] + parent::getSelection();
 
 	}
@@ -179,13 +179,31 @@ class Flow extends FlowElement {
 
 			},
 
-			'toolsList.check' => function(mixed $tools): bool {
+			'methods.check' => function(mixed &$methods, \BuildProperties $p): bool {
 
-				try {
-					$this->expects(['action']);
-				} catch(\Exception) {
-					return FALSE;
+				$p->expectsBuilt('action');
+
+				if($this['action']->empty()) {
+					$methods = [];
+				} else {
+
+					$methods = \farm\Method::model()
+						->select('id', 'farm')
+						->whereId('IN', (array)($methods ?? []))
+						->whereAction($this['action'])
+						->getCollection()
+						->filter(fn($eMethod) => $eMethod->canRead())
+						->getIds();
+
 				}
+
+				return TRUE;
+
+			},
+
+			'toolsList.check' => function(mixed $tools, \BuildProperties $p): bool {
+
+				$p->expectsBuilt('action');
 
 				if($this['action']->empty()) {
 					$this['cTool'] = new \Collection();

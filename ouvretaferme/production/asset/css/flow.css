@@ -463,6 +463,12 @@ span.flow-method-name {
 	border-radius: var(--radius);
 }
 
+span.flow-tool-name {
+	display: inline-block;
+	font-size: 80%;
+	color: var(--muted);
+}
+
 .flow-harvest-out-period {
 	font-size: 80%;
 	opacity: 0.5;

@@ -124,6 +124,8 @@ class StripeFarmModel extends \ModuleModel {
 
 abstract class StripeFarmCrud extends \ModuleCrud {
 
+ private static array $cache = [];
+
 	public static function getById(mixed $id, array $properties = []): StripeFarm {
 
 		$e = new StripeFarm();
@@ -166,6 +168,13 @@ abstract class StripeFarmCrud extends \ModuleCrud {
 			->select($properties)
 			->whereId('IN', $ids)
 			->getCollection(NULL, NULL, $index);
+
+	}
+
+	public static function getCache(mixed $key, \Closure $callback): mixed {
+
+		self::$cache[$key] ??= $callback();
+		return self::$cache[$key];
 
 	}
 

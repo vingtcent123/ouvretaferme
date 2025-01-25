@@ -5,7 +5,7 @@ class RepeatLib extends RepeatCrud {
 
 	public static function getTaskProperties(): array {
 		return [
-			'farm', 'season', 'cultivation', 'series', 'plant', 'variety', 'action', 'method', 'category', 'description', 'timeExpected', 'fertilizer',
+			'farm', 'season', 'cultivation', 'series', 'plant', 'variety', 'action', 'methods', 'category', 'description', 'timeExpected', 'fertilizer',
 			'status'
 		];
 	}

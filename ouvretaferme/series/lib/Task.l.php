@@ -64,7 +64,7 @@ class TaskLib extends TaskCrud {
 
 		$e->expects(['status', 'series', 'category']);
 
-		$properties = ['action', 'method', 'description', 'harvestSize', 'fertilizer', 'toolsList'];
+		$properties = ['action', 'methods', 'description', 'harvestSize', 'fertilizer', 'toolsList'];
 
 		switch($e['status']) {
 
@@ -199,7 +199,8 @@ class TaskLib extends TaskCrud {
 				'description', 'fertilizer', 'time', 'harvest', 'harvestUnit',
 				'harvestSize' => ['name'],
 				'action' => ['fqn', 'name', 'color'],
-				'method' => ['name'],
+				'methods',
+				'cMethod' => fn($e) => fn() => \farm\MethodLib::askByFarm($e['farm'], $e['methods']),
 				'plant',
 				'variety' => ['name'],
 				'createdAt', 'doneDate',
@@ -569,6 +570,12 @@ class TaskLib extends TaskCrud {
 			->select(Task::getSelection())
 			->select([
 				'cccPlace' => PlaceLib::delegateByTask(),
+				'cRequirement' => Requirement::model()
+					->select([
+						'farm',
+						'tool' => ['name', 'vignette']
+					])
+					->delegateCollection('task'),
 				'series' => [
 					'cccPlace' => PlaceLib::delegateBySeries()
 				],
@@ -1140,7 +1147,7 @@ class TaskLib extends TaskCrud {
 				'series' => $eSeries,
 				'plant' => $eFlow['plant'],
 				'action' => $eAction,
-				'method' => $eFlow['method'],
+				'methods' => $eFlow['methods'],
 				'category' => $eCategory,
 				'description' => $eFlow['description'],
 				'fertilizer' => $eFlow['fertilizer'],

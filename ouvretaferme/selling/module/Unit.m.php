@@ -137,6 +137,8 @@ class UnitModel extends \ModuleModel {
 
 abstract class UnitCrud extends \ModuleCrud {
 
+ private static array $cache = [];
+
 	public static function getById(mixed $id, array $properties = []): Unit {
 
 		$e = new Unit();
@@ -221,6 +223,13 @@ abstract class UnitCrud extends \ModuleCrud {
 			->select($properties)
 			->whereFqn('IN', $fqns)
 			->getCollection(NULL, NULL, 'fqn');
+
+	}
+
+	public static function getCache(mixed $key, \Closure $callback): mixed {
+
+		self::$cache[$key] ??= $callback();
+		return self::$cache[$key];
 
 	}
 

@@ -1422,6 +1422,10 @@ class TaskUi {
 
 			$description .= $this->getMore($eTask);
 
+			foreach($eTask['cRequirement'] as $eRequirement) {
+				$description .= ' <span class="flow-tool-name">'.\farm\ToolUi::getVignette($eRequirement['tool'], '2rem', '1.5rem').' '.encode($eRequirement['tool']['name']).'</span> ';
+			}
+
 		}
 
 		$description .= $this->getDescription($eTask);
@@ -1455,8 +1459,8 @@ class TaskUi {
 			$h .= ' <span class="task-variety-name">'.encode($eTask['variety']['name']).'</span> ';
 		}
 
-		if($eTask['method']->notEmpty()) {
-			$h .= ' <span class="task-method-name">'.encode($eTask['method']['name']).'</span> ';
+		foreach($eTask['cMethod']() as $eMethod) {
+			$h .= ' <span class="flow-method-name">'.encode($eMethod['name']).'</span> ';
 		}
 
 		return $h;
@@ -3608,8 +3612,9 @@ class TaskUi {
 				$h .= '</div>';
 
 				$h .= $this->getMethodsGroup($form, $eTask);
-				$h .= $this->getTimeGroup($form, $eTask);
 				$h .= $this->getToolsGroup($form, $eTask);
+
+				$h .= $this->getTimeGroup($form, $eTask);
 				$h .= $form->dynamicGroup($eTask, 'description');
 
 				$h .= $form->group(
@@ -3763,9 +3768,10 @@ class TaskUi {
 			}
 
 			$h .= $this->getMethodsGroup($form, $eTask);
+			$h .= $this->getToolsGroup($form, $eTask);
+
 			$h .= $this->getTimeGroup($form, $eTask);
 
-			$h .= $this->getToolsGroup($form, $eTask);
 			$h .= $form->dynamicGroup($eTask, 'description');
 
 			$h .= $form->group(
@@ -3963,9 +3969,10 @@ class TaskUi {
 			}
 
 			$h .= $this->getMethodsGroup($form, $eTask);
+			$h .= $this->getToolsGroup($form, $eTask);
+
 			$h .= $this->getTimeGroup($form, $eTask);
 
-			$h .= $this->getToolsGroup($form, $eTask);
 			$h .= $form->dynamicGroup($eTask, 'description');
 
 			$h .= $form->group(
@@ -4472,8 +4479,8 @@ class TaskUi {
 	public function getMethodsGroup(\util\FormUi $form, Task $eTask): string {
 
 		$h = '<div data-ref="methods" data-farm="'.$eTask['farm']['id'].'">';
-			if($eTask['cMethod']->notEmpty()) {
-				$h .= $form->dynamicGroup($eTask, 'method');
+			if($eTask['hasMethods']->notEmpty()) {
+				$h .= $form->dynamicGroup($eTask, 'methods');
 			}
 		$h .= '</div>';
 
@@ -4675,6 +4682,7 @@ class TaskUi {
 			'harvestSize' => s("Calibre récolté"),
 			'harvestMore' => s("Quantité récoltée"),
 			'harvestDate' => s("Jour de récolte"),
+			'methods' => s("Méthodes de travail"),
 			'toolsList' => s("Matériel nécessaire")
 		]);
 
@@ -4867,6 +4875,19 @@ class TaskUi {
 					Task::TODO => s("À faire"),
 					Task::DONE => s("Fait"),
 				];
+				break;
+
+			case 'methods' :
+				$d->autocompleteDefault = fn(Task $e) => $e['cMethod'] ?? $e->expects(['cMethod']);
+				$d->autocompleteBody = function(\util\FormUi $form, Task $e) {
+					$e->expects(['action', 'farm']);
+					return [
+						'action' => $e['action']['id'],
+						'farm' => $e['farm']['id']
+					];
+				};
+				(new \farm\MethodUi())->query($d, TRUE);
+				$d->group = ['wrapper' => 'methods'];
 				break;
 
 			case 'toolsList' :

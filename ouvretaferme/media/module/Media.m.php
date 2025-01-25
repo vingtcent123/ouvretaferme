@@ -141,6 +141,8 @@ class MediaModel extends \ModuleModel {
 
 abstract class MediaCrud extends \ModuleCrud {
 
+ private static array $cache = [];
+
 	public static function getById(mixed $id, array $properties = []): Media {
 
 		$e = new Media();
@@ -183,6 +185,13 @@ abstract class MediaCrud extends \ModuleCrud {
 			->select($properties)
 			->whereId('IN', $ids)
 			->getCollection(NULL, NULL, $index);
+
+	}
+
+	public static function getCache(mixed $key, \Closure $callback): mixed {
+
+		self::$cache[$key] ??= $callback();
+		return self::$cache[$key];
 
 	}
 

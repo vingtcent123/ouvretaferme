@@ -3,6 +3,38 @@ namespace farm;
 
 class MethodUi {
 
+	public function query(\PropertyDescriber $d, bool $multiple = FALSE) {
+
+		$d->prepend = \Asset::icon('grid-3x3-gap-fill');
+		$d->field = 'autocomplete';
+
+		$d->placeholder ??= s("Ajoutez une méthode de travail");
+		$d->multiple = $multiple;
+		$d->group += ['wrapper' => 'method'];
+
+		$d->autocompleteUrl = '/farm/method:query';
+		$d->autocompleteResults = function(Method|\Collection $e) {
+			return self::getAutocomplete($e);
+		};
+
+		$d->attributes = [
+			'data-autocomplete-id' => 'method'
+		];
+
+	}
+
+	public static function getAutocomplete(Method $eMethod): array {
+
+		\Asset::css('media', 'media.css');
+
+		return [
+			'value' => $eMethod['id'],
+			'itemHtml' => '<span style="line-height: 2.5">'.encode($eMethod['name']).'</span>',
+			'itemText' => $eMethod['name']
+		];
+
+	}
+
 	public function create(\farm\Method $eMethod): \Panel {
 
 		$eAction = $eMethod['action'];

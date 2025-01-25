@@ -138,6 +138,8 @@ class VarietyModel extends \ModuleModel {
 
 abstract class VarietyCrud extends \ModuleCrud {
 
+ private static array $cache = [];
+
 	public static function getById(mixed $id, array $properties = []): Variety {
 
 		$e = new Variety();
@@ -222,6 +224,13 @@ abstract class VarietyCrud extends \ModuleCrud {
 			->select($properties)
 			->whereFqn('IN', $fqns)
 			->getCollection(NULL, NULL, 'fqn');
+
+	}
+
+	public static function getCache(mixed $key, \Closure $callback): mixed {
+
+		self::$cache[$key] ??= $callback();
+		return self::$cache[$key];
 
 	}
 

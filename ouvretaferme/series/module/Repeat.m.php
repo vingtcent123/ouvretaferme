@@ -53,7 +53,7 @@ class RepeatModel extends \ModuleModel {
 			'plant' => ['element32', 'plant\Plant', 'null' => TRUE, 'cast' => 'element'],
 			'variety' => ['element32', 'plant\Variety', 'null' => TRUE, 'cast' => 'element'],
 			'action' => ['element32', 'farm\Action', 'cast' => 'element'],
-			'method' => ['element32', 'farm\Method', 'null' => TRUE, 'cast' => 'element'],
+			'methods' => ['json', 'cast' => 'array'],
 			'category' => ['element32', 'farm\Category', 'cast' => 'element'],
 			'description' => ['text16', 'min' => 1, 'max' => NULL, 'null' => TRUE, 'cast' => 'string'],
 			'timeExpected' => ['float32', 'min' => 0.0, 'max' => NULL, 'null' => TRUE, 'cast' => 'float'],
@@ -71,7 +71,7 @@ class RepeatModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'farm', 'season', 'cultivation', 'series', 'plant', 'variety', 'action', 'method', 'category', 'description', 'timeExpected', 'fertilizer', 'tools', 'status', 'frequency', 'start', 'current', 'discrete', 'stop', 'completed', 'createdBy', 'createdAt'
+			'id', 'farm', 'season', 'cultivation', 'series', 'plant', 'variety', 'action', 'methods', 'category', 'description', 'timeExpected', 'fertilizer', 'tools', 'status', 'frequency', 'start', 'current', 'discrete', 'stop', 'completed', 'createdBy', 'createdAt'
 		]);
 
 		$this->propertiesToModule += [
@@ -81,7 +81,6 @@ class RepeatModel extends \ModuleModel {
 			'plant' => 'plant\Plant',
 			'variety' => 'plant\Variety',
 			'action' => 'farm\Action',
-			'method' => 'farm\Method',
 			'category' => 'farm\Category',
 			'createdBy' => 'user\User',
 		];
@@ -95,6 +94,9 @@ class RepeatModel extends \ModuleModel {
 	public function getDefaultValue(string $property) {
 
 		switch($property) {
+
+			case 'methods' :
+				return [];
 
 			case 'discrete' :
 				return [];
@@ -118,6 +120,9 @@ class RepeatModel extends \ModuleModel {
 	public function encode(string $property, $value) {
 
 		switch($property) {
+
+			case 'methods' :
+				return $value === NULL ? NULL : json_encode($value, JSON_UNESCAPED_UNICODE);
 
 			case 'fertilizer' :
 				return $value === NULL ? NULL : json_encode($value, JSON_UNESCAPED_UNICODE);
@@ -144,6 +149,9 @@ class RepeatModel extends \ModuleModel {
 	public function decode(string $property, $value) {
 
 		switch($property) {
+
+			case 'methods' :
+				return $value === NULL ? NULL : json_decode($value, TRUE);
 
 			case 'fertilizer' :
 				return $value === NULL ? NULL : json_decode($value, TRUE);
@@ -201,8 +209,8 @@ class RepeatModel extends \ModuleModel {
 		return $this->where('action', ...$data);
 	}
 
-	public function whereMethod(...$data): RepeatModel {
-		return $this->where('method', ...$data);
+	public function whereMethods(...$data): RepeatModel {
+		return $this->where('methods', ...$data);
 	}
 
 	public function whereCategory(...$data): RepeatModel {
@@ -267,6 +275,8 @@ class RepeatModel extends \ModuleModel {
 
 abstract class RepeatCrud extends \ModuleCrud {
 
+ private static array $cache = [];
+
 	public static function getById(mixed $id, array $properties = []): Repeat {
 
 		$e = new Repeat();
@@ -309,6 +319,13 @@ abstract class RepeatCrud extends \ModuleCrud {
 			->select($properties)
 			->whereId('IN', $ids)
 			->getCollection(NULL, NULL, $index);
+
+	}
+
+	public static function getCache(mixed $key, \Closure $callback): mixed {
+
+		self::$cache[$key] ??= $callback();
+		return self::$cache[$key];
 
 	}
 

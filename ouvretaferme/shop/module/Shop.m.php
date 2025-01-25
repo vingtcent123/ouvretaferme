@@ -285,6 +285,8 @@ class ShopModel extends \ModuleModel {
 
 abstract class ShopCrud extends \ModuleCrud {
 
+ private static array $cache = [];
+
 	public static function getById(mixed $id, array $properties = []): Shop {
 
 		$e = new Shop();
@@ -369,6 +371,13 @@ abstract class ShopCrud extends \ModuleCrud {
 			->select($properties)
 			->whereFqn('IN', $fqns)
 			->getCollection(NULL, NULL, 'fqn');
+
+	}
+
+	public static function getCache(mixed $key, \Closure $callback): mixed {
+
+		self::$cache[$key] ??= $callback();
+		return self::$cache[$key];
 
 	}
 

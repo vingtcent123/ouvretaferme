@@ -9,7 +9,7 @@ class Task extends TaskElement {
 			'plant' => ['name', 'fqn', 'vignette', 'seedsSafetyMargin', 'plantsSafetyMargin'],
 			'farm' => ['name', 'vignette', 'featureTime'],
 			'cultivation' => ['startWeek', 'startAction', 'mainUnit', 'density', 'bunchWeight', 'unitWeight'],
-			'method' => ['name'],
+			'cMethod' => fn($e) => fn() => \farm\MethodLib::askByFarm($e['farm'], $e['methods']),
 			'variety' => ['name'],
 			'category' => ['fqn', 'name'],
 			'series' => ['name', 'cycle', 'mode', 'season', 'area', 'areaTarget', 'length', 'lengthTarget', 'bedWidth', 'use'],
@@ -494,27 +494,31 @@ class Task extends TaskElement {
 
 			},
 
-			'method.check' => function(\farm\Method $eMethod) use ($fw): bool {
+			'methods.check' => function(mixed &$methods, \BuildProperties $p): bool {
 
-				if($fw->has('Task::action.check')) { // L'action génère déjà une erreur
-					return TRUE;
+				$p->expectsBuilt('action');
+
+				if($this['action']->empty()) {
+					$methods = [];
+				} else {
+
+					$methods = \farm\Method::model()
+						->select('id', 'farm')
+						->whereId('IN', (array)($methods ?? []))
+						->whereAction($this['action'])
+						->getCollection()
+						->filter(fn($eMethod) => $eMethod->canRead())
+						->getIds();
+
 				}
 
-				$this->expects(['action']);
-
-				return $eMethod->empty() or \farm\Method::model()
-					->whereAction($this['action'])
-					->exists($eMethod);
+				return TRUE;
 
 			},
 
-			'toolsList.check' => function(mixed $tools): bool {
+			'toolsList.check' => function(mixed $tools, \BuildProperties $p): bool {
 
-				try {
-					$this->expects(['action']);
-				} catch(\Exception) {
-					return FALSE;
-				}
+				$p->expectsBuilt('action');
 
 				if($this['action']->empty()) {
 					$this['cTool'] = new \Collection();

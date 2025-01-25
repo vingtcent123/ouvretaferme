@@ -2047,8 +2047,8 @@ class FormUi {
 			$defaultResults = '';
 			foreach($values as $value) {
 				$defaultResults .= '<div class="autocomplete-item" data-value="'.$value['value'].'">';
-					$defaultResults .= $value['itemHtml'].'&nbsp;<a onclick="AutocompleteField.removeItem(this)" class="btn btn-muted">'.\Asset::icon('trash-fill').'</a>';
 					$defaultResults .= $this->hidden($name, $value['value']);
+					$defaultResults .= $value['itemHtml'].'&nbsp;<a onclick="AutocompleteField.removeItem(this)" class="btn btn-sm btn-outline-primary">'.\Asset::icon('trash-fill').'</a>';
 				$defaultResults .= '</div>';
 			}
 		} else {

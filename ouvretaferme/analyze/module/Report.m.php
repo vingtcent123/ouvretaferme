@@ -221,6 +221,8 @@ class ReportModel extends \ModuleModel {
 
 abstract class ReportCrud extends \ModuleCrud {
 
+ private static array $cache = [];
+
 	public static function getById(mixed $id, array $properties = []): Report {
 
 		$e = new Report();
@@ -263,6 +265,13 @@ abstract class ReportCrud extends \ModuleCrud {
 			->select($properties)
 			->whereId('IN', $ids)
 			->getCollection(NULL, NULL, $index);
+
+	}
+
+	public static function getCache(mixed $key, \Closure $callback): mixed {
+
+		self::$cache[$key] ??= $callback();
+		return self::$cache[$key];
 
 	}
 

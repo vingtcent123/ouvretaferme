@@ -51,7 +51,7 @@ class TaskModel extends \ModuleModel {
 			'plant' => ['element32', 'plant\Plant', 'null' => TRUE, 'cast' => 'element'],
 			'variety' => ['element32', 'plant\Variety', 'null' => TRUE, 'cast' => 'element'],
 			'action' => ['element32', 'farm\Action', 'cast' => 'element'],
-			'method' => ['element32', 'farm\Method', 'null' => TRUE, 'cast' => 'element'],
+			'methods' => ['json', 'cast' => 'array'],
 			'category' => ['element32', 'farm\Category', 'cast' => 'element'],
 			'description' => ['text16', 'min' => 1, 'max' => NULL, 'null' => TRUE, 'cast' => 'string'],
 			'time' => ['float32', 'min' => 0.0, 'max' => NULL, 'null' => TRUE, 'cast' => 'float'],
@@ -77,7 +77,7 @@ class TaskModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'farm', 'season', 'cultivation', 'series', 'plant', 'variety', 'action', 'method', 'category', 'description', 'time', 'timeExpected', 'harvest', 'harvestUnit', 'harvestSize', 'fertilizer', 'plannedWeek', 'plannedDate', 'plannedUsers', 'doneWeek', 'doneDate', 'timelineStart', 'timelineStop', 'timesheetStart', 'timesheetStop', 'repeat', 'createdAt', 'createdBy', 'updatedAt', 'status'
+			'id', 'farm', 'season', 'cultivation', 'series', 'plant', 'variety', 'action', 'methods', 'category', 'description', 'time', 'timeExpected', 'harvest', 'harvestUnit', 'harvestSize', 'fertilizer', 'plannedWeek', 'plannedDate', 'plannedUsers', 'doneWeek', 'doneDate', 'timelineStart', 'timelineStop', 'timesheetStart', 'timesheetStop', 'repeat', 'createdAt', 'createdBy', 'updatedAt', 'status'
 		]);
 
 		$this->propertiesToModule += [
@@ -87,7 +87,6 @@ class TaskModel extends \ModuleModel {
 			'plant' => 'plant\Plant',
 			'variety' => 'plant\Variety',
 			'action' => 'farm\Action',
-			'method' => 'farm\Method',
 			'category' => 'farm\Category',
 			'harvestSize' => 'plant\Size',
 			'repeat' => 'series\Repeat',
@@ -108,6 +107,9 @@ class TaskModel extends \ModuleModel {
 
 		switch($property) {
 
+			case 'methods' :
+				return [];
+
 			case 'plannedUsers' :
 				return [];
 
@@ -127,6 +129,9 @@ class TaskModel extends \ModuleModel {
 	public function encode(string $property, $value) {
 
 		switch($property) {
+
+			case 'methods' :
+				return $value === NULL ? NULL : json_encode($value, JSON_UNESCAPED_UNICODE);
 
 			case 'harvestUnit' :
 				return ($value === NULL) ? NULL : (string)$value;
@@ -150,6 +155,9 @@ class TaskModel extends \ModuleModel {
 	public function decode(string $property, $value) {
 
 		switch($property) {
+
+			case 'methods' :
+				return $value === NULL ? NULL : json_decode($value, TRUE);
 
 			case 'fertilizer' :
 				return $value === NULL ? NULL : json_decode($value, TRUE);
@@ -204,8 +212,8 @@ class TaskModel extends \ModuleModel {
 		return $this->where('action', ...$data);
 	}
 
-	public function whereMethod(...$data): TaskModel {
-		return $this->where('method', ...$data);
+	public function whereMethods(...$data): TaskModel {
+		return $this->where('methods', ...$data);
 	}
 
 	public function whereCategory(...$data): TaskModel {
@@ -302,6 +310,8 @@ class TaskModel extends \ModuleModel {
 
 abstract class TaskCrud extends \ModuleCrud {
 
+ private static array $cache = [];
+
 	public static function getById(mixed $id, array $properties = []): Task {
 
 		$e = new Task();
@@ -344,6 +354,13 @@ abstract class TaskCrud extends \ModuleCrud {
 			->select($properties)
 			->whereId('IN', $ids)
 			->getCollection(NULL, NULL, $index);
+
+	}
+
+	public static function getCache(mixed $key, \Closure $callback): mixed {
+
+		self::$cache[$key] ??= $callback();
+		return self::$cache[$key];
 
 	}
 

@@ -13,10 +13,10 @@ new AdaptativeView('getFields', function($data, AjaxTemplate $t) {
 		$t->push('tools', (new \util\FormUi())->dynamicGroup($data->eFlow, 'toolsList'));
 	}
 
-	if($data->eFlow['cMethod']->empty()) {
+	if($data->eFlow['hasMethods']->empty()) {
 		$t->push('methods', '');
 	} else {
-		$t->push('methods', (new \util\FormUi())->dynamicGroup($data->eFlow, 'method'));
+		$t->push('methods', (new \util\FormUi())->dynamicGroup($data->eFlow, 'methods'));
 	}
 
 

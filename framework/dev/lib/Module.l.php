@@ -210,6 +210,8 @@ class ModuleLib {
 
 		$content[] = 'abstract class '.$element['name'].'Crud extends \ModuleCrud {';
 		$content[] = '';
+		$content[] = ' private static array $cache = [];';
+		$content[] = '';
 		$content[] = '	public static function getById(mixed $id, array $properties = []): '.$element['name'].' {';
 		$content[] = '';
 		$content[] = '		$e = new '.$element['name'].'();';
@@ -304,6 +306,14 @@ class ModuleLib {
 
 		}
 
+
+		$content[] = '	public static function getCache(mixed $key, \\Closure $callback): mixed {';
+		$content[] = '';
+		$content[] = '		self::$cache[$key] ??= $callback();';
+		$content[] = '		return self::$cache[$key];';
+		$content[] = '';
+		$content[] = '	}';
+		$content[] = '';
 		$content[] = '	public static function getCreateElement(): '.$element['name'].' {';
 		$content[] = '';
 		$content[] = '		return new '.$element['name'].'([\'id\' => NULL]);';

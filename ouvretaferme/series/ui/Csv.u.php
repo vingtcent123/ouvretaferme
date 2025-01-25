@@ -75,7 +75,7 @@ class CsvUi {
 			'use',
 			'species',
 			'planting_type',
-			'young_plants_seeds',
+			'seeds_per_hole',
 			'young_plants_tray',
 			'sowing_date',
 			'planting_date',
@@ -461,10 +461,13 @@ class CsvUi {
 
 								}
 
-								if($cultivation['planting_type'] === Cultivation::YOUNG_PLANT) {
+								if(in_array($cultivation['planting_type'], [Cultivation::SOWING, Cultivation::YOUNG_PLANT])) {
 
-									if($cultivation['young_plants_seeds']) {
-										$list[] = p("{value} graine / plant", "{value} graines / plant", $cultivation['young_plants_seeds']);
+									if($cultivation['seeds_per_hole']) {
+										$list[] = match($cultivation['planting_type']) {
+											Cultivation::SOWING => p("{value} graine / trou", "{value} graines / trou", $cultivation['seeds_per_hole']),
+											Cultivation::YOUNG_PLANT => p("{value} graine / plant", "{value} graines / plant", $cultivation['seeds_per_hole'])
+										};
 									}
 
 								}

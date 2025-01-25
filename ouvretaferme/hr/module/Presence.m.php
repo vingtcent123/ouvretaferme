@@ -92,6 +92,8 @@ class PresenceModel extends \ModuleModel {
 
 abstract class PresenceCrud extends \ModuleCrud {
 
+ private static array $cache = [];
+
 	public static function getById(mixed $id, array $properties = []): Presence {
 
 		$e = new Presence();
@@ -134,6 +136,13 @@ abstract class PresenceCrud extends \ModuleCrud {
 			->select($properties)
 			->whereId('IN', $ids)
 			->getCollection(NULL, NULL, $index);
+
+	}
+
+	public static function getCache(mixed $key, \Closure $callback): mixed {
+
+		self::$cache[$key] ??= $callback();
+		return self::$cache[$key];
 
 	}
 

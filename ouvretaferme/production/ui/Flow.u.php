@@ -324,12 +324,12 @@ class FlowUi {
 
 	}
 
-	public function getFlowComplement(Flow $eFlow) {
+	public function getFlowComplement(Flow $eFlow): string {
 
 		$h = '';
 
-		if($eFlow['method']->notEmpty()) {
-			$h .= ' <span class="flow-method-name">'.encode($eFlow['method']['name']).'</span> ';
+		foreach($eFlow['cMethod']() as $eMethod) {
+			$h .= ' <span class="flow-method-name">'.encode($eMethod['name']).'</span> ';
 		}
 
 		return $h;
@@ -642,7 +642,8 @@ class FlowUi {
 			'action' => new \farm\Action(),
 			'cTool' => new \Collection(),
 			'hasTools' => new \Collection(),
-			'cMethod' => new \Collection()
+			'cMethod' => new \Collection(),
+			'hasMethods' => new \Collection(),
 		]);
 
 		$eSequence = $eFlow['sequence'];
@@ -667,17 +668,17 @@ class FlowUi {
 				$h .= $this->getFertilizerField($form, $eFlow);
 			$h .= '</div>';
 
-			$h .= $this->getMethodsGroup($form, $eFlow);
-
 			if($eFlow['sequence']['cycle'] === Sequence::PERENNIAL) {
 				$h .= $this->getSeasonField($form, $eFlow);
 			}
 
 			$h .= $this->getPeriodField($form, $eFlow);
 
+			$h .= $this->getMethodsGroup($form, $eFlow);
+			$h .= $this->getToolsGroup($form, $eFlow);
+
 			$h .= $form->dynamicGroup($eFlow, 'description');
 
-			$h .= $this->getToolsGroup($form, $eFlow);
 
 			$h .= $form->group(
 				content: $form->submit(s("Ajouter l'intervention"))
@@ -714,17 +715,17 @@ class FlowUi {
 				$h .= $this->getFertilizerField($form, $eFlow);
 			}
 
-			$h .= $this->getMethodsGroup($form, $eFlow);
-
 			if($eFlow['sequence']['cycle'] === Sequence::PERENNIAL) {
 				$h .= $this->getSeasonField($form, $eFlow);
 			}
 
 			$h .= $this->getPeriodField($form, $eFlow);
 
+			$h .= $this->getMethodsGroup($form, $eFlow);
+			$h .= $this->getToolsGroup($form, $eFlow);
+
 			$h .= $form->dynamicGroup($eFlow, 'description');
 
-			$h .= $this->getToolsGroup($form, $eFlow);
 
 			$h .= $form->group(
 				content: $form->submit(s("Modifier"))
@@ -744,8 +745,8 @@ class FlowUi {
 	public function getMethodsGroup(\util\FormUi $form, Flow $eFlow): string {
 
 		$h = '<div data-ref="methods" data-farm="'.$eFlow['sequence']['farm']['id'].'">';
-			if($eFlow['cMethod']->notEmpty()) {
-				$h .= $form->dynamicGroup($eFlow, 'method');
+			if($eFlow['hasMethods']->notEmpty()) {
+				$h .= $form->dynamicGroup($eFlow, 'methods');
 			}
 		$h .= '</div>';
 
@@ -1022,6 +1023,7 @@ class FlowUi {
 			'weekStart' => s("Début de l'intervention"),
 			'weekStop' => s("Fin de l'intervention"),
 			'frequency' => s("Fréquence de l'intervention"),
+			'methods' => s("Méthodes de travail"),
 			'toolsList' => s("Matériel nécessaire")
 		]);
 
@@ -1082,9 +1084,20 @@ class FlowUi {
 				$d->field = 'select';
 				break;
 
-			case 'method' :
-				$d->placeholder = s("Aucune");
-				$d->values = fn(Flow $e) => $e['cMethod'] ?? $e->expects(['cMethod']);
+			case 'methods' :
+				$d->autocompleteDefault = fn(Flow $e) => $e['cMethod'] ?? $e->expects(['cMethod']);
+				$d->autocompleteBody = function(\util\FormUi $form, Flow $e) {
+					$e->expects([
+						'action',
+						'sequence' => ['farm']
+					]);
+					return [
+						'action' => $e['action']['id'],
+						'farm' => $e['sequence']['farm']['id']
+					];
+				};
+				(new \farm\MethodUi())->query($d, TRUE);
+				$d->group = ['wrapper' => 'methods'];
 				break;
 
 			case 'toolsList' :

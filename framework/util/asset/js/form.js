@@ -971,8 +971,8 @@ class AutocompleteField {
 					if(qsa(itemSelector +' > [data-value="'+ value.value +'"]').length === 0) {
 
 						let item = '<div class="autocomplete-item" data-value="'+ value.value +'">';
-							item += value.itemHtml +'&nbsp;<a onclick="AutocompleteField.removeItem(this)" class="btn btn-muted">'+ Lime.Asset.icon('trash-fill') +'</a>';
 							item += '<input type="hidden" name="'+ field +'" value="'+ value.value +'"/>';
+							item += value.itemHtml +'&nbsp;<a onclick="AutocompleteField.removeItem(this)" class="btn btn-sm btn-outline-primary">'+ Lime.Asset.icon('trash-fill') +'</a>';
 						item += '</div>';
 
 						qs(itemSelector).insertAdjacentHTML('beforeend', item);

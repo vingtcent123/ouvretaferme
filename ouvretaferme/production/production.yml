@@ -29,7 +29,7 @@ Flow:
   sequence: production\Sequence
   farm: farm\Farm
   action: farm\Action
-  method: ?farm\Method
+  methods: json = PHP([])
   description: ?text16(1, null)
   fertilizer: ?json
   weekOnly: ?int8(1, 52)

@@ -58,7 +58,8 @@
 			'plant' => $ePlant,
 			'cTool' => new Collection(),
 			'hasTools' => \farm\ToolLib::getForWork($data->e['farm'], $data->e['action']),
-			'cMethod' => \farm\MethodLib::getForWork($data->e['farm'], $data->e['action'])
+			'cMethod' => new Collection(),
+			'hasMethods' => \farm\MethodLib::getForWork($data->e['farm'], $data->e['action'])
 		]);
 
 		throw new ViewAction($data);
@@ -176,7 +177,8 @@
 			'plant' => $ePlant,
 			'cTool' => new Collection(),
 			'hasTools' => \farm\ToolLib::getForWork($data->eFarm, $eAction),
-			'cMethod' => \farm\MethodLib::getForWork($data->eFarm, $eAction),
+			'cMethod' => new Collection(),
+			'hasMethods' => \farm\MethodLib::getForWork($data->eFarm, $eAction),
 			'cAction' => $cAction,
 			'cVariety' => new Collection(),
 			'varietiesIntersect' => []
@@ -317,9 +319,10 @@
 		$data->eTask->validate('canWrite');
 
 		$data->eTask['hasTools'] = \farm\ToolLib::getForWork($eFarm, $eAction);
+		$data->eTask['hasMethods'] = \farm\MethodLib::getForWork($eFarm, $eAction);
 
 		$data->eTask['cTool'] = new Collection();
-		$data->eTask['cMethod'] = \farm\MethodLib::getForWork($eFarm, $eAction);
+		$data->eTask['cMethod'] = new Collection();
 
 		throw new \ViewAction($data);
 
@@ -400,7 +403,9 @@
 		}
 
 		$data->e['cTool'] = \series\TaskLib::getTools($data->e);
-		$data->e['cMethod'] = \farm\MethodLib::getForWork($data->e['farm'], $data->e['action']);
+		$data->e['cMethod'] = \farm\MethodLib::getByIds($data->e['methods']);
+
+		$data->e['hasMethods'] = \farm\MethodLib::getForWork($data->e['farm'], $data->e['action']);
 		$data->e['hasTools'] = \farm\ToolLib::getForWork($data->e['farm'], $data->e['action']);
 
 		$data->cAction = \farm\ActionLib::getByFarm($data->e['farm'], category: $data->e['category']);

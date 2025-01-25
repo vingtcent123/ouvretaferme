@@ -34,7 +34,7 @@ class PlantUi {
 		$d->prepend ??= \Asset::icon('flower2');
 		$d->field = 'autocomplete';
 
-		$d->placeholder ??= s("Tapez un nom d'espèce...");
+		$d->placeholder ??= s("Tapez un nom d'espèce");
 		$d->multiple = $multiple;
 		$d->group += ['wrapper' => 'plant'];
 

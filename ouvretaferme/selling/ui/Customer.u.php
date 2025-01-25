@@ -95,7 +95,7 @@ class CustomerUi {
 		$d->prepend = \Asset::icon('person-bounding-box');
 		$d->field = 'autocomplete';
 
-		$d->placeholder ??= s("Tapez un nom de client...");
+		$d->placeholder ??= s("Tapez un nom de client");
 		$d->multiple = $multiple;
 		$d->group += ['wrapper' => 'customer'];
 

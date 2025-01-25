@@ -8,7 +8,7 @@ class SupplierUi {
 		$d->prepend = \Asset::icon('buildings');
 		$d->field = 'autocomplete';
 
-		$d->placeholder ??= s("Tapez le nom du fournisseur...");
+		$d->placeholder ??= s("Tapez le nom du fournisseur");
 		$d->multiple = $multiple;
 		$d->group += ['wrapper' => 'supplier'];
 

@@ -97,9 +97,9 @@ new AdaptativeView('index', function($data, DocTemplate $t) {
 				'young-plant'
 			],
 			[
-				s("Nombre de graines par plant"),
-				'young_plants_seeds',
-				s("Pris en compte uniquement dans le cas d'implantation par plant autoproduit"),
+				s("Nombre de graines par trou"),
+				'seeds_per_hole',
+				s("Pris en compte dans le cas d'implantation par semis direct ou plant autoproduit"),
 				3
 			],
 			[

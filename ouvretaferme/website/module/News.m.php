@@ -141,6 +141,8 @@ class NewsModel extends \ModuleModel {
 
 abstract class NewsCrud extends \ModuleCrud {
 
+ private static array $cache = [];
+
 	public static function getById(mixed $id, array $properties = []): News {
 
 		$e = new News();
@@ -183,6 +185,13 @@ abstract class NewsCrud extends \ModuleCrud {
 			->select($properties)
 			->whereId('IN', $ids)
 			->getCollection(NULL, NULL, $index);
+
+	}
+
+	public static function getCache(mixed $key, \Closure $callback): mixed {
+
+		self::$cache[$key] ??= $callback();
+		return self::$cache[$key];
 
 	}
 

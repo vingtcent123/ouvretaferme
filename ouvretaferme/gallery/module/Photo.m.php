@@ -149,6 +149,8 @@ class PhotoModel extends \ModuleModel {
 
 abstract class PhotoCrud extends \ModuleCrud {
 
+ private static array $cache = [];
+
 	public static function getById(mixed $id, array $properties = []): Photo {
 
 		$e = new Photo();
@@ -191,6 +193,13 @@ abstract class PhotoCrud extends \ModuleCrud {
 			->select($properties)
 			->whereId('IN', $ids)
 			->getCollection(NULL, NULL, $index);
+
+	}
+
+	public static function getCache(mixed $key, \Closure $callback): mixed {
+
+		self::$cache[$key] ??= $callback();
+		return self::$cache[$key];
 
 	}
 

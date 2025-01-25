@@ -666,6 +666,28 @@ class Collection extends ArrayIterator {
 		return $this->find($filter, limit: 1, depth: $depth)->notEmpty();
 	}
 
+	public function findByKeys(array|Collection $keys, bool $preserveKeys = TRUE): Collection|Element {
+
+		if($keys instanceof Collection) {
+			$keys = $keys->getIds();
+		}
+
+		$c = new Collection();
+
+		foreach($keys as $key) {
+
+			if($preserveKeys) {
+				$c[$key] = $this[$key];
+			} else {
+				$c[] = $this[$key];
+			}
+
+		}
+
+		return $c;
+
+	}
+
 	/**
 	 * Find from collection with filter
 	 *

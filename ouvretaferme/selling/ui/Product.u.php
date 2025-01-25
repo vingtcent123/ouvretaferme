@@ -27,7 +27,7 @@ class ProductUi {
 		$d->prepend = \Asset::icon('box');
 		$d->field = 'autocomplete';
 
-		$d->placeholder ??= s("Tapez un nom de produit...");
+		$d->placeholder ??= s("Tapez un nom de produit");
 		$d->multiple = $multiple;
 		$d->group += ['wrapper' => 'product'];
 

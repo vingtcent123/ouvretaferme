@@ -73,6 +73,8 @@ class CatalogShareModel extends \ModuleModel {
 
 abstract class CatalogShareCrud extends \ModuleCrud {
 
+ private static array $cache = [];
+
 	public static function getById(mixed $id, array $properties = []): CatalogShare {
 
 		$e = new CatalogShare();
@@ -115,6 +117,13 @@ abstract class CatalogShareCrud extends \ModuleCrud {
 			->select($properties)
 			->whereId('IN', $ids)
 			->getCollection(NULL, NULL, $index);
+
+	}
+
+	public static function getCache(mixed $key, \Closure $callback): mixed {
+
+		self::$cache[$key] ??= $callback();
+		return self::$cache[$key];
 
 	}
 
