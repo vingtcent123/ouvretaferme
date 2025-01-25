@@ -71,7 +71,10 @@ class WebsiteTemplate extends BaseTemplate {
 		if($this->title !== NULL) {
 			$h .= '<h1>'.$this->title.'</h1>';
 
-			if($this->data->eWebsite->canWrite()) {
+			if(
+				$this->data->eWebsite->canWrite() and
+				$this->data->eWebpage->notEmpty()
+			) {
 
 				$h .= '<div class="website-admin">';
 
