@@ -345,14 +345,9 @@ class Sale extends SaleElement {
 
 	public function acceptOrderForm(): bool {
 
-		return (
-			$this['customer']->notEmpty() and
-			$this['customer']['destination'] !== Customer::COLLECTIVE and
-			$this['market'] === FALSE and
-			$this['marketParent']->empty() and
-			$this['shop']->empty() and
-			$this['farm']->hasFeatureDocument($this['type'])
-		);
+		return
+			$this->acceptDeliveryNote() and
+			$this['shop']->empty();
 
 	}
 
@@ -382,7 +377,13 @@ class Sale extends SaleElement {
 
 	public function acceptDeliveryNote(): bool {
 
-		return $this->acceptOrderForm();
+		return (
+			$this['customer']->notEmpty() and
+			$this['customer']['destination'] !== Customer::COLLECTIVE and
+			$this['market'] === FALSE and
+			$this['marketParent']->empty() and
+			$this['farm']->hasFeatureDocument($this['type'])
+		);
 
 	}
 
