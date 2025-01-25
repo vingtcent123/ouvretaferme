@@ -217,6 +217,7 @@ Task:
   status: enum(TODO, DONE)
   INDEX: [
     ["farm", "status", "doneWeek"],
+    ["farm", "status", "plannedWeek"],
     ["farm", "action"],
     ["repeat"],
     ["series"],

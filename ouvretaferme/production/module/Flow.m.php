@@ -82,7 +82,8 @@ class FlowModel extends \ModuleModel {
 		$this->indexConstraints = array_merge($this->indexConstraints, [
 			['plant'],
 			['crop'],
-			['sequence']
+			['sequence'],
+			['farm']
 		]);
 
 	}

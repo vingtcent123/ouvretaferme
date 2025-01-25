@@ -6,7 +6,6 @@ class Absence extends AbsenceElement {
 	public static function getSelection(): array {
 
 		return parent::getSelection() + [
-			'farm' => ['name'],
 			'user' => [
 				'firstName', 'lastName'
 			],

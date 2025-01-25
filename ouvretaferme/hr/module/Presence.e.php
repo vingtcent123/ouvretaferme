@@ -6,7 +6,6 @@ class Presence extends PresenceElement {
 	public static function getSelection(): array {
 
 		return parent::getSelection() + [
-			'farm' => ['name'],
 			'user' => [
 				'vignette',
 				'firstName', 'lastName',
