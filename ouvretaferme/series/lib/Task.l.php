@@ -446,11 +446,6 @@ class TaskLib extends TaskCrud {
 
 		Task::model()
 			->select([
-				'cRequirement' => Requirement::model()
-					->select([
-						'tool' => \farm\Tool::getSelection()
-					])
-					->delegateCollection('task'),
 				'cultivation' => [
 					'cSlice' => SliceLib::delegateByCultivation(),
 					'sliceTool' => ['name', 'routineValue']
@@ -573,7 +568,7 @@ class TaskLib extends TaskCrud {
 				'cRequirement' => Requirement::model()
 					->select([
 						'farm',
-						'tool' => ['name', 'vignette']
+						'tool' => \farm\ToolElement::getSelection()
 					])
 					->delegateCollection('task'),
 				'series' => [

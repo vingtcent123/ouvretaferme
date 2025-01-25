@@ -1318,7 +1318,8 @@ class TaskUi {
 		$h = $this->getTaskDescription(
 			$eTask,
 			showPlant: ($eTask['category']['fqn'] !== CATEGORIE_CULTURE),
-			showAction: FALSE
+			showAction: FALSE,
+			showRequirement: TRUE
 		);
 
 		$more = '';
@@ -1393,7 +1394,7 @@ class TaskUi {
 
 	}
 
-	public function getTaskDescription(Task $eTask, bool $showPlant = TRUE, bool $showAction = TRUE): string {
+	public function getTaskDescription(Task $eTask, bool $showPlant = TRUE, bool $showAction = TRUE, bool $showRequirement = FALSE): string {
 
 		\Asset::css('farm', 'action.css');
 
@@ -1422,8 +1423,12 @@ class TaskUi {
 
 			$description .= $this->getMore($eTask);
 
-			foreach($eTask['cRequirement'] as $eRequirement) {
-				$description .= ' <span class="flow-tool-name">'.\farm\ToolUi::getVignette($eRequirement['tool'], '2rem', '1.5rem').' '.encode($eRequirement['tool']['name']).'</span> ';
+			if($showRequirement) {
+
+				foreach($eTask['cRequirement'] as $eRequirement) {
+					$description .= ' <span class="flow-tool-name">'.\farm\ToolUi::getVignette($eRequirement['tool'], '2rem', '1.5rem').' '.encode($eRequirement['tool']['name']).'</span> ';
+				}
+
 			}
 
 		}
