@@ -3616,10 +3616,14 @@ class TaskUi {
 					$h .= $this->getFertilizerField($form, $eTask);
 				$h .= '</div>';
 
+				$h .= $this->getTimeGroup($form, $eTask);
 				$h .= $this->getMethodsGroup($form, $eTask);
 				$h .= $this->getToolsGroup($form, $eTask);
 
-				$h .= $this->getTimeGroup($form, $eTask);
+				if($eTask['farm']->hasFeatureTime()) {
+					$h .= $form->dynamicGroup($eTask, 'timeExpected');
+				}
+
 				$h .= $form->dynamicGroup($eTask, 'description');
 
 				$h .= $form->group(
@@ -3772,10 +3776,13 @@ class TaskUi {
 				$h .= '</div>';
 			}
 
+			$h .= $this->getTimeGroup($form, $eTask);
 			$h .= $this->getMethodsGroup($form, $eTask);
 			$h .= $this->getToolsGroup($form, $eTask);
 
-			$h .= $this->getTimeGroup($form, $eTask);
+			if($eTask['farm']->hasFeatureTime()) {
+				$h .= $form->dynamicGroup($eTask, 'timeExpected');
+			}
 
 			$h .= $form->dynamicGroup($eTask, 'description');
 
@@ -3973,10 +3980,13 @@ class TaskUi {
 				$h .= $this->getFertilizerField($form, $eTask);
 			}
 
+			$h .= $this->getTimeGroup($form, $eTask);
 			$h .= $this->getMethodsGroup($form, $eTask);
 			$h .= $this->getToolsGroup($form, $eTask);
 
-			$h .= $this->getTimeGroup($form, $eTask);
+			if($eTask['farm']->hasFeatureTime()) {
+				$h .= $form->dynamicGroup($eTask, 'timeExpected');
+			}
 
 			$h .= $form->dynamicGroup($eTask, 'description');
 
@@ -4394,9 +4404,6 @@ class TaskUi {
 
 			case Task::TODO :
 				$h .= $form->dynamicGroup($eTask, 'planned');
-				if($eTask['farm']->hasFeatureTime()) {
-					$h .= $form->dynamicGroup($eTask, 'timeExpected');
-				}
 				break;
 
 			case Task::DONE :
