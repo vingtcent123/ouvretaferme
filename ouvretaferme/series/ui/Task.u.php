@@ -3613,9 +3613,9 @@ class TaskUi {
 					$h .= $this->getFertilizerField($form, $eTask);
 				$h .= '</div>';
 
-				$h .= $this->getTimeGroup($form, $eTask);
 				$h .= $this->getMethodsGroup($form, $eTask);
 				$h .= $this->getToolsGroup($form, $eTask);
+				$h .= $this->getTimeGroup($form, $eTask);
 
 				if($eTask['farm']->hasFeatureTime()) {
 					$h .= $form->dynamicGroup($eTask, 'timeExpected');
@@ -3773,9 +3773,9 @@ class TaskUi {
 				$h .= '</div>';
 			}
 
-			$h .= $this->getTimeGroup($form, $eTask);
 			$h .= $this->getMethodsGroup($form, $eTask);
 			$h .= $this->getToolsGroup($form, $eTask);
+			$h .= $this->getTimeGroup($form, $eTask);
 
 			if($eTask['farm']->hasFeatureTime()) {
 				$h .= $form->dynamicGroup($eTask, 'timeExpected');
@@ -3977,9 +3977,9 @@ class TaskUi {
 				$h .= $this->getFertilizerField($form, $eTask);
 			}
 
-			$h .= $this->getTimeGroup($form, $eTask);
 			$h .= $this->getMethodsGroup($form, $eTask);
 			$h .= $this->getToolsGroup($form, $eTask);
+			$h .= $this->getTimeGroup($form, $eTask);
 
 			if($eTask['farm']->hasFeatureTime()) {
 				$h .= $form->dynamicGroup($eTask, 'timeExpected');
@@ -4395,7 +4395,7 @@ class TaskUi {
 
 		$eTask->expects(['status']);
 
-		$h = '';
+		$h = '<div class="util-block bg-background-light">';
 
 		switch($eTask['status']) {
 
@@ -4408,6 +4408,8 @@ class TaskUi {
 				break;
 
 		}
+
+		$h .= '</div>';
 
 		return $h;
 
