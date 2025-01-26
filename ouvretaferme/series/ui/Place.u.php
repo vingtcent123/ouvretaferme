@@ -828,7 +828,7 @@ class PlaceUi {
 
 		$id = uniqid('place-timeline-');
 
-		$h .= '<a href="'.SeriesUi::url($eSeries).'" id="'.$id.'" class="place-grid-series-timeline '.$class.' '.($ePlace['missing'] ? 'place-grid-series-timeline-alert' : '').' '.($details ? 'place-grid-series-timeline-with-details' : '').'" style="'.$style.'" data-dropdown="bottom-'.($minTs < $startTs ? 'end' : 'start').'" data-dropdown-hover="true" data-dropdown-offset-x="0" data-dropdown-hover-timeout="0" data-ajax-navigation="notouch" onclick="return Place.clickSeries(this)">';
+		$h .= '<a href="'.SeriesUi::url($eSeries).'" id="'.$id.'" class="place-grid-series-timeline '.$class.' '.($ePlace['missing'] ? 'place-grid-series-timeline-alert' : '').' '.($details ? 'place-grid-series-timeline-with-details' : '').'" style="'.$style.'" data-dropdown="bottom-'.($minTs < $startTs ? 'end' : 'start').'" data-dropdown-hover="true" data-dropdown-offset-x="0" data-dropdown-enter-timeout="0" data-ajax-navigation="notouch" onclick="return Place.clickSeries(this)">';
 
 			if($isPlaceholder) {
 

@@ -305,11 +305,6 @@ a.place-grid-series-timeline {
 	z-index: 3 !important;
 }
 
-.place-grid-series-timeline.selected,
-.place-grid-series-timeline:hover {
-	min-width: max-content;
-}
-
 div.place-grid-series-timeline-dropdown {
 	border-radius: calc(var(--radius) / 2);
 	background-color: var(--primary);

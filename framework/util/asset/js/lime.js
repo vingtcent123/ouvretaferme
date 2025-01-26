@@ -1783,7 +1783,7 @@ Lime.Dropdown = class {
 
 					};
 
-					this.hoverPending = setTimeout(this.hoverTrigger, parseInt(button.dataset.dropdownHoverTimeout || 500));
+					this.hoverPending = setTimeout(this.hoverTrigger, parseInt(button.dataset.dropdownLeaveTimeout || 500));
 
 				});
 
@@ -1804,7 +1804,7 @@ Lime.Dropdown = class {
 			this.hoverActive = button;
 			this.hoverActivating = null;
 
-		}, parseInt(button.dataset.dropdownHoverTimeout || 250));
+		}, parseInt(button.dataset.dropdownEnterTimeout || 250));
 
 	};
 
@@ -1830,7 +1830,7 @@ Lime.Dropdown = class {
 
 		};
 
-		this.hoverPending = setTimeout(this.hoverTrigger, parseInt(button.dataset.dropdownHoverTimeout || 500));
+		this.hoverPending = setTimeout(this.hoverTrigger, parseInt(button.dataset.dropdownLeaveTimeout || 500));
 
 	}
 
