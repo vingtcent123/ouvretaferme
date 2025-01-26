@@ -180,7 +180,7 @@ class MailLib {
 	 * Sends all waiting emails
 	 *
 	 */
-	public static function sendWaiting() {
+	public static function sendWaiting(): void {
 
 		$cEmail = \mail\Email::model()
 			->select('id', 'html', 'text', 'subject', 'server', 'fromEmail', 'fromName', 'to', 'cc', 'bcc', 'replyTo', 'attachments')
@@ -201,7 +201,7 @@ class MailLib {
 
 	}
 
-	private static function doSend(Email $eEmail) {
+	private static function doSend(Email $eEmail): void {
 
 		foreach($eEmail['to'] as $to) {
 
@@ -263,7 +263,7 @@ class MailLib {
 
 	}
 
-	public static function clean() {
+	public static function clean(): void {
 
 		\mail\Email::model()
 			->whereStatus(\mail\Email::SUCCESS)
