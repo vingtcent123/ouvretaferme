@@ -168,6 +168,14 @@ html {
 
 }
 
+@media print {
+
+	html {
+		font-size: 12px !important;
+	}
+
+}
+
 
 h1 {
 	font-weight: lighter;
