@@ -32,8 +32,12 @@ div.bed-item-header {
    padding-top: 0.5rem;
 }
 
+div.bed-item-grid-plan:not(.bed-item-grid-header):nth-child(even) {
+	background-color: white;
+}
+
 div.bed-item-grid-plan:not(.bed-item-grid-header):nth-child(odd) {
-	background-color: var(--background-light);
+	background-color: var(--background-odd);
 }
 
 div.bed-item-grid-plan:not(.bed-item-grid-header):hover,
@@ -44,7 +48,7 @@ div.bed-item-grid-rotation:not(.bed-item-grid-header):hover {
 
 div.bed-item-grid-plan:not(.bed-item-grid-header),
 div.bed-item-grid-rotation:not(.bed-item-grid-header) {
-	border-top: 1px dashed var(--border);
+	border-top: 1px solid var(--border);
 }
 
 div.bed-item-grid-plan {

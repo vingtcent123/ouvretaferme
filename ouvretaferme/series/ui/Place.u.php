@@ -585,12 +585,11 @@ class PlaceUi {
 		switch(count($lines)) {
 
 			case 0 :
-			case 1 :
-				$totalHeight = '3rem';
+				$totalHeight = '2.8rem';
 				break;
 
 			default :
-				$totalHeight = (count($lines) * 2.4 + (count($lines) - 1) * 0.1 + 0.6).'rem';
+				$totalHeight = (count($lines) * 2 + (count($lines) - 1) * 0.3 + 0.6).'rem';
 				break;
 
 		}
@@ -616,7 +615,7 @@ class PlaceUi {
 					$top = match($key) {
 
 						0 => '0.3rem',
-						default => '0.3rem + ('.$key.' * (2.4rem + 0.1rem))'
+						default => '0.3rem + ('.$key.' * (2rem + 0.3rem))'
 
 					};
 
@@ -637,12 +636,12 @@ class PlaceUi {
 							$positions = [$ePlace['positionStop']];
 						} else {
 							$positions[] = $ePlace['positionStop'];
-							$top .= ' + '.((count($positions) - 1) * 0.2).'rem';
+							$top .= ' + '.((count($positions) - 1) * 0.3).'rem';
 						}
 
 					}
 
-					$h .= $this->getSeriesTimeline($eFarm, $eBed, $season, $ePlace, $ePlace['series'], $ePlace['series']['cCultivation'], FALSE, 'height: 2.4rem; top: calc('.$top.')');
+					$h .= $this->getSeriesTimeline($eFarm, $eBed, $season, $ePlace, $ePlace['series'], $ePlace['series']['cCultivation'], FALSE, 'top: calc('.$top.')');
 
 				}
 
@@ -772,20 +771,10 @@ class PlaceUi {
 
 		$h = '';
 
-		if($ePlace['missing']) {
-			$title = s("Veuillez renseigner les dates de semis, plantation et récoltes attendus pour cette série afin qu'elle s'affiche correctement sur le diagramme !");
-		} else {
-			$title = encode($eSeries['name']);
-		}
-
 		if($isPlaceholder) {
 			$class = 'place-grid-series-timeline-light';
 		} else {
 			$class = ($season === $eSeries['season']) ? 'place-grid-series-timeline-season' : 'place-grid-series-timeline-not-season';
-		}
-
-		if($eSeries['status'] === Series::CLOSED) {
-			$class .= ' place-grid-series-timeline-closed';
 		}
 
 		$details = '';
@@ -835,9 +824,11 @@ class PlaceUi {
 
 		}
 
+		[$startTs, $stopTs] = $this->getPositionTimestamp($eFarm, $season);
+
 		$id = uniqid('place-timeline-');
 
-		$h .= '<a href="'.SeriesUi::url($eSeries).'" id="'.$id.'" class="place-grid-series-timeline '.$class.' '.($ePlace['missing'] ? 'place-grid-series-timeline-alert' : '').' '.($details ? 'place-grid-series-timeline-with-details' : '').'" title="'.$title.'" style="'.$style.'" data-ajax-navigation="notouch" onclick="return Place.clickSeries(this)">';
+		$h .= '<a href="'.SeriesUi::url($eSeries).'" id="'.$id.'" class="place-grid-series-timeline '.$class.' '.($ePlace['missing'] ? 'place-grid-series-timeline-alert' : '').' '.($details ? 'place-grid-series-timeline-with-details' : '').'" style="'.$style.'" data-dropdown="bottom-'.($minTs < $startTs ? 'end' : 'start').'" data-dropdown-hover="true" data-dropdown-offset-x="0" data-dropdown-hover-timeout="0" data-ajax-navigation="notouch" onclick="return Place.clickSeries(this)">';
 
 			if($isPlaceholder) {
 
@@ -851,7 +842,7 @@ class PlaceUi {
 
 					foreach($cCultivation as $eCultivation) {
 						$h .= '<div class="place-grid-series-timeline-plant">';
-							$h .= \plant\PlantUi::getVignette($eCultivation['plant'], '1.6rem');
+							$h .= \plant\PlantUi::getVignette($eCultivation['plant'], '1.4rem');
 						$h .= '</div>';
 					}
 					if($eSeries['status'] === Series::CLOSED) {
@@ -865,7 +856,7 @@ class PlaceUi {
 				$h .= '<div class="place-grid-series-timeline-name">';
 
 					if($ePlace['missing']) {
-						$h .= \Asset::icon('exclamation-triangle-fill', ['class' => 'color-white']).' ';
+						$h .= \Asset::icon('exclamation-circle-fill').' ';
 					}
 
 					$h .= encode($eSeries['name']);
@@ -888,19 +879,26 @@ class PlaceUi {
 
 			}
 
-			[$startTs, $stopTs] = $this->getPositionTimestamp($eFarm, $season);
-
 			$h .= '<style>';
 				$h .= $this->getPositionStyle($id, $startTs, $stopTs, $minTs, $maxTs);
 			$h .= '</style>';
 
-			if($details) {
+		$h .= '</a>';
+
+		if($details) {
+			$h .= '<div class="place-grid-series-timeline-dropdown dropdown-list dropdown-list-unstyled">';
+				$h .= '<div class="place-grid-series-timeline-title">'.encode($eSeries['name']).'</div>';
+				if($ePlace['missing']) {
+					$h .= '<div class="place-grid-series-timeline-alert-message">'.s("Veuillez renseigner les dates de semis, plantation et récoltes attendus pour cette série afin qu'elle s'affiche correctement sur le diagramme !").'</div>';
+				}
 				$h .= '<div class="place-grid-series-timeline-details">';
 					$h .= $details;
 				$h .= '</div>';
-			}
-
-		$h .= '</a>';
+				$h .= '<div class="place-grid-series-timeline-actions">';
+					$h .= '<a href="'.SeriesUi::url($eSeries).'" class="btn btn-transparent">'.s("Voir la série").'</a>';
+				$h .= '</div>';
+			$h .= '</div>';
+		}
 
 
 		return $h;
@@ -947,12 +945,6 @@ class PlaceUi {
 			$css .= '#'.$id.' { left: calc('.$left.'%'.($shiftLeft ? ' + '.$shiftLeft : '').'); width: '.($width ?: 'calc('.($right - $left).'% + 1px)').'; }';
 		} else {
 			$css .= '#'.$id.' { right: calc('.(100 - $right).'%'.($shiftRight ? ' + '.$shiftRight : '').'); width: '.($width ?: 'calc('.($right - $left).'% + 1px)').'; }';
-		}
-
-		if($left < 0) {
-			$css .= 'body[data-touch="no"] #'.$id.':hover { left: 0%; }';
-		} else if($right > 100) {
-			$css .= 'body[data-touch="no"] #'.$id.':hover { right: 0%; }';
 		}
 
 		return $css;

@@ -105,10 +105,12 @@ div.series-grid {
 	top: 0;
 	bottom: 0;
 	display: grid;
+	pointer-events: none;
 }
 
 div.series-grid > div.series-grid-month:not(:first-child) {
-	border-left: 1px dashed #ddd;
+	border-left: 1px dashed #ccc5;
+	z-index: 100;
 }
 
 div.series-item-header {

@@ -1499,12 +1499,8 @@ Lime.Dropdown = class {
 
 		const isTop = position.startsWith('top');
 
-		let offsetX = (button.dataset.dropdownOffsetX === undefined) ? 0 : parseInt(button.dataset.dropdownOffsetX) * rem();
-		let offsetY = (button.dataset.dropdownOffsetY === undefined) ? 0 : parseInt(button.dataset.dropdownOffsetY) * rem();
-
-		if(offsetX === 0) {
-			offsetX = 5;
-		}
+		let offsetX = (button.dataset.dropdownOffsetX === undefined) ? 5 : parseFloat(button.dataset.dropdownOffsetX) * rem();
+		let offsetY = (button.dataset.dropdownOffsetY === undefined) ? (isTop ? -5 : 5) : parseFloat(button.dataset.dropdownOffsetY) * rem();
 
 		button.stick = new Lime.Stick(
 			button,
@@ -1512,7 +1508,7 @@ Lime.Dropdown = class {
 			position,
 			{
 				x: offsetX,
-				y: (isTop ? -5 : 5) + offsetY
+				y: offsetY
 			}
 		);
 
@@ -1787,7 +1783,7 @@ Lime.Dropdown = class {
 
 					};
 
-					this.hoverPending = setTimeout(this.hoverTrigger, 500);
+					this.hoverPending = setTimeout(this.hoverTrigger, parseInt(button.dataset.dropdownHoverTimeout || 500));
 
 				});
 
@@ -1808,7 +1804,7 @@ Lime.Dropdown = class {
 			this.hoverActive = button;
 			this.hoverActivating = null;
 
-		}, 200);
+		}, parseInt(button.dataset.dropdownHoverTimeout || 250));
 
 	};
 
@@ -1834,7 +1830,7 @@ Lime.Dropdown = class {
 
 		};
 
-		this.hoverPending = setTimeout(this.hoverTrigger, 500);
+		this.hoverPending = setTimeout(this.hoverTrigger, parseInt(button.dataset.dropdownHoverTimeout || 500));
 
 	}
 

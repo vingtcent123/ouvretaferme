@@ -241,48 +241,41 @@ div.place-grid-series-timeline-lines {
 .place-grid-series-timeline {
 	overflow: hidden;
 	position: absolute;
-	transition: all 0.25s;
 }
 
 .place-grid-series-timeline.place-grid-series-timeline-season,
 .place-grid-series-timeline.place-grid-series-timeline-not-season {
-	height: 2.2rem;
+	height: 2rem;
 	display: grid;
 	grid-template-columns: max-content 1fr;
 	grid-column-gap: 0.5rem;
 	align-items: center;
 	line-height: 1.2;
 	padding: 0 0.375rem;
-	border: 1px solid white;
+	background-color: white;
+	border: 2px solid #aaa;
 	border-radius: calc(var(--radius) / 2);
 	font-size: 0.9rem;
 	letter-spacing: -0.2px;
 	z-index: 2;
-	color: white;
+	color: var(--text);
+}
+
+.place-grid-series-timeline.place-grid-series-timeline-not-season {
+	border: 2px solid var(--border);
+	z-index: 1;
 }
 
 a.place-grid-series-timeline {
 	text-decoration: none;
 }
 
-.place-grid-series-timeline.place-grid-series-timeline-season {
-	background-color: var(--primary);
+.place-grid-series-timeline.place-grid-series-timeline-season:hover,
+.place-grid-series-timeline.place-grid-series-timeline-not-season:hover {
+	border-color: var(--primary);
 }
 
-.place-grid-series-timeline.place-grid-series-timeline-season.place-grid-series-timeline-closed:not(:hover) {
-	background-color: #555;
-	z-index: 1;
-	color: #ddd;
-}
-
-.place-grid-series-timeline.place-grid-series-timeline-not-season:not(:hover) {
-	background-color: var(--background);
-	z-index: 1;
-	color: var(--muted);
-}
-
-.place-grid-series-timeline.place-grid-series-timeline-not-season:not(:hover) .place-grid-series-timeline-plant,
-.place-grid-series-timeline.place-grid-series-timeline-season.place-grid-series-timeline-closed:not(:hover) .place-grid-series-timeline-plant {
+.place-grid-series-timeline.place-grid-series-timeline-not-season > * {
 	opacity: 0.5;
 }
 
@@ -294,14 +287,13 @@ a.place-grid-series-timeline {
 	padding-left: 0.5rem;
 }
 
-.place-grid-series-timeline.place-grid-series-timeline-alert {
-	background-color: var(--warning);
+.place-grid-series-timeline.place-grid-series-timeline-alert svg {
+	font-size: 1.25rem;
 }
 
 .place-grid-series-timeline:not(.place-grid-series-timeline-light).selected,
 .place-grid-series-timeline:not(.place-grid-series-timeline-light):hover {
 	z-index: 3 !important;
-	background-color: var(--secondary) !important;
 }
 
 .place-grid-series-timeline.selected,
@@ -309,23 +301,41 @@ a.place-grid-series-timeline {
 	min-width: max-content;
 }
 
-div.place-grid-series-timeline-details {
-	display: none;
+div.place-grid-series-timeline-dropdown {
+	border-radius: calc(var(--radius) / 2);
+	background-color: var(--primary);
+	color: white;
+	padding: 0.5rem;
+	line-height: 1.4;
+	max-width: 30rem;
 }
 
-a.place-grid-series-timeline.place-grid-series-timeline-with-details:hover div.place-grid-series-timeline-images,
-a.place-grid-series-timeline.place-grid-series-timeline-with-details.selected div.place-grid-series-timeline-images,
-a.place-grid-series-timeline.place-grid-series-timeline-with-details:hover div.place-grid-series-timeline-name,
-a.place-grid-series-timeline.place-grid-series-timeline-with-details.selected div.place-grid-series-timeline-name {
-	display: none;
+div.place-grid-series-timeline-title {
+	margin-bottom: 0.25rem;
 }
-a.place-grid-series-timeline.place-grid-series-timeline-with-details:hover div.place-grid-series-timeline-details,
-a.place-grid-series-timeline.place-grid-series-timeline-with-details.selected div.place-grid-series-timeline-details {
-	display: flex;
-	align-items: center;
-	column-gap: 0.5rem;
-	line-height: 1.2;
+
+div.place-grid-series-timeline-alert-message {
 	font-size: 0.8rem;
+	color: var(--border);
+	margin-bottom: 0.25rem;
+}
+
+div.place-grid-series-timeline-details {
+	display: grid;
+	grid-template-columns: min-content auto min-content auto;
+	align-items: center;
+	gap: 0.5rem;
+	font-size: 0.9rem;
+}
+
+div.place-grid-series-timeline-actions {
+	border-top: 1px solid white;
+	padding: 0.5rem 0.5rem 0;
+	margin: 0.5rem -0.5rem 0;
+}
+
+[data-touch="no"] div.place-grid-series-timeline-actions {
+	display: none;
 }
 
 div.place-grid-series-timeline-images {
@@ -368,7 +378,7 @@ div.place-grid-series-timeline-name {
 }
 
 div.place-grid-series-timeline-more {
-	color: #bbb;
+	color: var(--muted);
 	font-size: 0.8rem;
 }
 
