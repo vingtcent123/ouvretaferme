@@ -339,7 +339,7 @@ class PlotLib extends PlotCrud {
 						'id',
 						'area', 'length', 'season',
 						'series' => [
-							'name', 'season', 'use', 'mode', 'cycle', 'perennialSeason', 'status',
+							'name', 'season', 'use', 'mode', 'cycle', 'perennialSeason', 'perennialLifetime', 'status',
 							'bedStartCalculated', 'bedStopCalculated',
 							'cCultivation' => \series\Cultivation::model()
 								->select([

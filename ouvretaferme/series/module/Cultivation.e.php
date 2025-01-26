@@ -7,7 +7,7 @@ class Cultivation extends CultivationElement {
 
 		return parent::getSelection() + [
 			'series' => [
-				'name', 'area', 'areaTarget', 'bedWidth', 'alleyWidth', 'length', 'lengthTarget', 'season', 'cycle', 'use', 'mode', 'plants', 'perennialSeason', 'status'
+				'name', 'area', 'areaTarget', 'bedWidth', 'alleyWidth', 'length', 'lengthTarget', 'season', 'cycle', 'use', 'mode', 'plants', 'perennialSeason', 'perennialLifetime', 'status'
 			],
 			'farm' => ['name'],
 			'plant' => ['name', 'fqn', 'vignette', 'seedsSafetyMargin', 'plantsSafetyMargin'],

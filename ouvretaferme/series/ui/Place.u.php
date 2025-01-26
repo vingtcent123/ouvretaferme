@@ -681,16 +681,29 @@ class PlaceUi {
 
 		$ePlace['missing'] = FALSE;
 
-		if($ePlace['series']['cycle'] === Series::PERENNIAL) {
+		if(
+			$ePlace['series']['cycle'] === Series::PERENNIAL and
+			$ePlace['series']['perennialSeason'] > 1
+		) {
 
 			$ePlace['positionStart'] = 1 + ($ePlace['series']['season'] - $season) * 100;
-			$ePlace['positionStop'] = 52 + ($ePlace['series']['season'] - $season) * 100;
 
 		} else {
 
 			$ePlace['positionStart'] = $ePlace['series']['bedStartCalculated'] !== NULL ?
 				($ePlace['series']['bedStartCalculated'] + ($ePlace['series']['season'] - $season) * 100) :
 				NULL;
+
+		}
+
+		if(
+			$ePlace['series']['cycle'] === Series::PERENNIAL and
+			($ePlace['series']['perennialLifetime'] === NULL or $ePlace['series']['perennialSeason'] < $ePlace['series']['perennialLifetime'])
+		) {
+
+			$ePlace['positionStop'] = 52 + ($ePlace['series']['season'] - $season) * 100;
+
+		} else {
 
 			$ePlace['positionStop'] = $ePlace['series']['bedStopCalculated'] !== NULL ?
 				($ePlace['series']['bedStopCalculated'] + ($ePlace['series']['season'] - $season) * 100) :
