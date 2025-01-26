@@ -32,7 +32,7 @@ class PlotUi {
 
 			} else {
 
-				$h .= '<div class="util-print-break-inside-avoid">';
+				$h .= '<div>';
 
 					$h .= '<div data-ref="plot" id="plot-item-'.$ePlot['id'].'" class="plot-item" data-name="'.encode(\Asset::icon('chevron-right').' '.encode($ePlot['name'])).'">';
 

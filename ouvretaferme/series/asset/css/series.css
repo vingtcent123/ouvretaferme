@@ -99,6 +99,14 @@ div.series-grid-now {
 	bottom: 0;
 }
 
+@media print {
+
+	div.series-grid-now {
+		display: none;
+	}
+
+}
+
 div.series-grid {
 	position: absolute;
 	right: 0;

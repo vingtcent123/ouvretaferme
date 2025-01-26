@@ -58,7 +58,7 @@ class ZoneUi {
 
 		$h = '<div class="tabs-h" id="zone-tabs" onrender="'.encode('Lime.Tab.restore(this, "map-soil")').'">';
 
-			$h .= '<div class="tabs-item">';
+			$h .= '<div class="tabs-item util-print-hide">';
 
 				foreach($cZone as $eZone) {
 
@@ -85,7 +85,7 @@ class ZoneUi {
 			$h .= '</div>';
 
 			foreach($cZone as $eZone) {
-				$h .= '<div class="tab-panel '.($eZone['id'] === $eZoneSelected['id'] ? 'selected' : '').'" data-tab="'.$eZone['id'].'">';
+				$h .= '<div class="tab-panel util-print-block '.($eZone['id'] === $eZoneSelected['id'] ? 'selected' : '').'" data-tab="'.$eZone['id'].'">';
 					$h .= '<div class="util-overflow-sm stick-sm">';
 						$h .= $this->getOne($eFarm, $eZone, $season);
 					$h .= '</div>';

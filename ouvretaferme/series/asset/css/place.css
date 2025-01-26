@@ -261,6 +261,15 @@ div.place-grid-series-timeline-lines {
 	color: var(--text);
 }
 
+@media print {
+
+	.place-grid-series-timeline.place-grid-series-timeline-season,
+	.place-grid-series-timeline.place-grid-series-timeline-not-season {
+		border: 1px solid #aaa;
+	}
+
+}
+
 .place-grid-series-timeline.place-grid-series-timeline-not-season {
 	border: 2px solid var(--border);
 	z-index: 1;

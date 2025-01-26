@@ -2328,6 +2328,15 @@ body[data-touch="yes"] .dropdown-list:not(.dropdown-list-minimalist).dropdown-li
 	transition: background-color 0.5s;
 }
 
+@media print {
+
+	.h-menu,
+	.h-back {
+		display: none;
+	}
+
+}
+
 a.h-back {
 	text-decoration: none;
 }

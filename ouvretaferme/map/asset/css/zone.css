@@ -3,6 +3,14 @@
    margin-bottom: 0;
 }
 
+@media print {
+
+	#zone-tabs .tab-panel {
+		margin-bottom: 2rem;
+	}
+
+}
+
 /* Cartographie */
 div.zone-cartography {
 	display: grid;
