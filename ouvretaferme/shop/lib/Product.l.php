@@ -51,7 +51,7 @@ class ProductLib extends ProductCrud {
 		} else {
 			$ccProduct = self::getByDate($eDate);
 			// Multi producteur pas géré
-			return $ccProduct->empty() ? new Collection() : $ccProduct->first();
+			return $ccProduct->empty() ? new \Collection() : $ccProduct->first();
 		}
 
 	}
