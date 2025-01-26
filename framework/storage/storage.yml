@@ -1,7 +1,0 @@
-Buffer:
-  type: textFixed(0, 20) @charset(ascii)
-  basename: textFixed(0, 100) @charset(ascii)
-  UNIQUE: [
-    ["type", "basename"]
-  ]
-
