@@ -2328,14 +2328,16 @@ Lime.Instruction = class {
 
 document.delegateEventListener('click', '[data-dropdown]', function(e) {
 
-	e.preventDefault();
-	e.stopImmediatePropagation();
-
 	if(
 		isTouch() ||
 		this.dataset.dropdownHover === undefined
 	) {
+
+		e.preventDefault();
+		e.stopImmediatePropagation();
+
 		Lime.Dropdown.toggle(this, this.dataset.dropdown);
+
 	}
 
 });
