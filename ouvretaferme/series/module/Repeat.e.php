@@ -30,42 +30,21 @@ class Repeat extends RepeatElement {
 
 			},
 
-			// On ne peut qu'avancer une date de fin de répétition
-			'stop.consistency' => function(?string $stop) use ($for): bool {
-
-				if($for !== 'update') {
-					return TRUE;
-				}
-
-				$this->expects(['stop']);
-
-				return (
-					$this['stop'] === NULL or
-					$stop < $this['stop']
-				);
-
-			},
-
-			'stop.series' => function(?string $stop) use ($for): bool {
-
-				if($for !== 'create') {
-					return TRUE;
-				}
+			'stop.season' => function(?string $stop): bool {
 
 				$this->expects([
-					'task' => ['series']
+					'task' => ['season']
 				]);
 
-				if($this['task']['series']->empty()) {
+				if($this['task']['season'] === NULL) {
 					return TRUE;
 				}
 
 				return (
 					$stop !== NULL and
-					$this['task']['series']->notEmpty() and
 					(
-						(int)substr($stop, 0, 4) >= $this['task']['series']['season'] - 1 and
-						(int)substr($stop, 0, 4) <= $this['task']['series']['season'] + 1
+						(int)substr($stop, 0, 4) >= $this['task']['season'] - 1 and
+						(int)substr($stop, 0, 4) <= $this['task']['season'] + 1
 					)
 				);
 

@@ -8,6 +8,7 @@
 		return new \series\Task([
 			'farm' => $data->eFarm,
 			'series' => new \series\Series(),
+			'season' => NULL,
 			'cultivation' => new \series\Series(),
 			'status' => \series\Task::INPUT('status', 'status', \series\Task::TODO),
 			'category' => \farm\CategoryLib::getByFarm($data->eFarm, id: INPUT('category')),
@@ -239,6 +240,7 @@
 				'farm' => $eSeries['farm'],
 				'category' => $eCategory,
 				'series' => $eSeries,
+				'season' => $eSeries['season'],
 				'cultivation' => $eCultivation,
 				'plant' => $ePlant,
 				'status' => $data->status

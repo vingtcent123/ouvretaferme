@@ -223,6 +223,38 @@ class Task extends TaskElement {
 
 			},
 
+			'planned.season' => function(): bool {
+
+				if($this['season'] === NULL) {
+					return TRUE;
+				}
+
+				return (
+					$this['plannedWeek'] === NULL or (
+						$this['plannedWeek'] > toDate(($this['season'] - 2).'-01-01') and
+						$this['plannedWeek'] < toDate(($this['season'] + 2).'-12-31')
+					)
+				);
+
+			},
+
+			'planned.interval' => function(): bool {
+
+				if($this['season'] !== NULL) {
+					return TRUE;
+				}
+
+				$interval = 86400 * 365 * 5;
+
+				return (
+					$this['plannedWeek'] === NULL or (
+						$this['plannedWeek'] > toDate(time() - $interval) and
+						$this['plannedWeek'] < toDate(time() + $interval)
+					)
+				);
+
+			},
+
 			'done.check' => function(array $done): bool {
 
 				$this->expects(['status']);
@@ -246,9 +278,39 @@ class Task extends TaskElement {
 					}
 
 
+				} else {
+					return FALSE;
 				}
 
 				return TRUE;
+
+			},
+
+			'done.series' => function(): bool {
+
+				if($this['season'] === NULL) {
+					return TRUE;
+				}
+
+				return (
+					$this['doneWeek'] > toDate(($this['season'] - 2).'-01-01') and
+					$this['doneWeek'] < toDate(($this['season'] + 2).'-12-31')
+				);
+
+			},
+
+			'done.interval' => function(): bool {
+
+				if($this['season'] !== NULL) {
+					return TRUE;
+				}
+
+				$interval = 86400 * 365 * 5;
+
+				return (
+					$this['doneWeek'] > toDate(time() - $interval) and
+					$this['doneWeek'] < toDate(time() + $interval)
+				);
 
 			},
 

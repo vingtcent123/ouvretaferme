@@ -201,7 +201,7 @@ Task:
   harvestUnit: ?enum(KG, UNIT, BUNCH)
   harvestSize: ?plant\Size
   fertilizer: ?json
-  plannedWeek: ?week(PHP(toWeek('NOW - 2 YEAR')), PHP(toWeek('NOW + 10 YEAR')))
+  plannedWeek: ?week
   plannedDate: ?date
   plannedUsers: json = PHP([])
   doneWeek: ?week

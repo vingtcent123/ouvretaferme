@@ -35,11 +35,15 @@ class AlertUi {
 			'Place::bedsSize' => s("Vous avez choisi une utilisation incorrecte sur certains emplacements !"),
 
 			'Repeat::stop.future' => s("La fin de répétition de l'intervention doit être dans le futur"),
-			'Repeat::stop.series' => s("Vous devez indiquer une fin de répétition qui corresponde à l'année de la saison de la série, l'année précédente ou l'année suivante"),
+			'Repeat::stop.season' => s("Vous devez indiquer une fin de répétition qui corresponde à l'année de la saison de la série, l'année précédente ou l'année suivante"),
 
 			'Task::actions.check' => s("Merci de sélectionner des interventions identiques"),
 			'Task::cultivation.check' => s("Vous n'avez pas saisi de production pour cette intervention"),
-			'Task::plannedWeek.check' => s("Merci d'indiquer une semaine cohérente"),
+			'Task::planned.season' => s("Vous ne pouvez pas saisir d'intervention aussi éloignée dans le temps"),
+			'Task::done.interval' => s("Vous ne pouvez pas saisir d'intervention plus de cinq ans dans le passé ou le futur"),
+			'Task::planned.season' => s("Vous ne pouvez pas planifier d'intervention aussi éloignée dans le temps"),
+			'Task::planned.interval' => s("Vous ne pouvez pas planifier d'intervention plus de cinq ans dans le passé ou le futur"),
+			'Task::planned.check' => s("Merci d'indiquer une date de planification cohérente"),
 			'Task::harvest.check' => s("La récolte ne peut pas être négative"),
 			'Task::harvestMore.negative' => s("La récolte totale ne peut pas être négative sur une intervention"),
 			'Task::stock.check' => s("Il n'est pas possible d'ajouter la récolte au stock que vous avez choisi"),
