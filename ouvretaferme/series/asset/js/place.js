@@ -9,19 +9,6 @@ document.delegateEventListener('input', '#place-update [name^="sizes"]', functio
 
 class Place {
 
-	static clickSeries(target) {
-
-		if(target.classList.contains('selected')) {
-			return true;
-		}
-
-		qsa('.place-grid-series-timeline.selected', node => node.classList.remove('selected'));
-		target.classList.add('selected');
-
-		return false;
-
-	}
-
 	static toggleSelection(target) {
 
 		CheckboxField.all(target, '[name^="beds[]"]', (bed) => this.selectBed(bed), '.place-grid-container');

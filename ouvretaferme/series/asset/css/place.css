@@ -300,7 +300,6 @@ a.place-grid-series-timeline {
 	font-size: 1.25rem;
 }
 
-.place-grid-series-timeline:not(.place-grid-series-timeline-light).selected,
 .place-grid-series-timeline:not(.place-grid-series-timeline-light):hover {
 	z-index: 3 !important;
 }
