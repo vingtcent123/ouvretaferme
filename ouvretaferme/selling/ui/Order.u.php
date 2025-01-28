@@ -389,8 +389,10 @@ class OrderUi {
 						$h .= '<dd>'.$eSale['customer']->getName().'</dd>';
 						$h .= '<dt>'.s("Adresse").'</dt>';
 						$h .= '<dd style="line-height: 1.2">'.nl2br($eSale->getDeliveryAddress()).'</dd>';
-						$h .= '<dt>'.s("Téléphone").'</dt>';
-						$h .= '<dd>'.nl2br($eSale['customer']['phone']).'</dd>';
+						if($eSale['customer']['phone'] !== NULL) {
+							$h .= '<dt>'.s("Téléphone").'</dt>';
+							$h .= '<dd>'.nl2br($eSale['customer']['phone']).'</dd>';
+						}
 					$h .= '</dl>';
 				$h .= '</div>';
 				break;
