@@ -391,7 +391,7 @@ class OrderUi {
 						$h .= '<dd style="line-height: 1.2">'.nl2br($eSale->getDeliveryAddress()).'</dd>';
 						if($eSale['customer']['phone'] !== NULL) {
 							$h .= '<dt>'.s("Téléphone").'</dt>';
-							$h .= '<dd>'.nl2br($eSale['customer']['phone']).'</dd>';
+							$h .= '<dd>'.encode($eSale['customer']['phone']).'</dd>';
 						}
 					$h .= '</dl>';
 				$h .= '</div>';
