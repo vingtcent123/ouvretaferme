@@ -1324,7 +1324,7 @@ class TaskUi {
 
 		$more = '';
 
-		if($eFarm->hasFeatureTime() and $eTask['status'] === Task::TODO and $eTask['timeExpected'] > 0) {
+		if($eFarm->hasFeatureTime() and $eTask['timeExpected'] > 0) {
 			$more .= '<span>'.s("Travail estimé à {value}", self::convertTime($eTask['timeExpected'])).'</span>';
 		}
 
@@ -3981,7 +3981,10 @@ class TaskUi {
 			$h .= $this->getToolsGroup($form, $eTask);
 			$h .= $this->getTimeGroup($form, $eTask);
 
-			if($eTask['farm']->hasFeatureTime()) {
+			if(
+				$eTask['farm']->hasFeatureTime() and
+				$eTask['status'] === Task::TODO
+			) {
 				$h .= $form->dynamicGroup($eTask, 'timeExpected');
 			}
 
