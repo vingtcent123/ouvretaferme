@@ -2,7 +2,9 @@ document.delegateEventListener('autocompleteSelect', '#product-create, #product-
 
 	const fieldName = this.qs('[name="name"]');
 
-	fieldName.value = e.detail.itemText;
+	if(fieldName.value === '') {
+		fieldName.value = e.detail.itemText;
+	}
 
 });
 
