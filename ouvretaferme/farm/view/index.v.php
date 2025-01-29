@@ -253,7 +253,7 @@ new AdaptativeView('cartography', function($data, FarmTemplate $t) {
 
 	echo (new \map\MapUi())->getFarm($data->eFarm, $data->season, $data->cZone, $data->eZone);
 
-	echo '<div id="cartography-zone" class="stick-xs"></div>';
+	echo '<div id="cartography-zone" data-season="'.$data->season.'" class="stick-xs"></div>';
 
 });
 

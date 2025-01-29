@@ -29,14 +29,14 @@ new AdaptativeView('updateSizeCollection', function($data, PanelTemplate $t) {
 
 new AdaptativeView('doUpdateSizeCollection', function($data, AjaxTemplate $t) {
 
-	$t->js()->eval('Cartography.get("cartography-farm", instance => instance.reload())');
+	$t->js()->eval('Cartography.queryZone('.$data->ePlot['zone']['id'].')');
 	$t->js()->closePanel('#panel-bed-size');
 
 });
 
 new AdaptativeView('doUpdateGreenhouseCollection', function($data, AjaxTemplate $t) {
 
-	$t->js()->eval('Cartography.get("cartography-farm", instance => instance.reload())');
+	$t->js()->eval('Cartography.queryZone('.$data->ePlot['zone']['id'].')');
 
 });
 
@@ -48,21 +48,29 @@ new AdaptativeView('updateSeasonCollection', function($data, PanelTemplate $t) {
 
 new AdaptativeView('doUpdateSeasonCollection', function($data, AjaxTemplate $t) {
 
-	$t->js()->eval('Cartography.get("cartography-farm", instance => instance.reload())');
+	$t->js()->eval('Cartography.queryZone('.$data->ePlot['zone']['id'].')');
 	$t->js()->closePanel('#panel-bed-season');
 
 });
 
 new AdaptativeView('doUpdate', function($data, AjaxTemplate $t) {
 
-	$t->js()->eval('Cartography.get("cartography-farm", instance => instance.reload())');
+	$t->js()->eval('Cartography.queryZone('.$data->e['zone']['id'].')');
 	$t->js()->closePanel('#panel-bed-update');
+
+});
+
+new AdaptativeView('doDeleteCollection', function($data, AjaxTemplate $t) {
+
+	$t->js()->eval('Cartography.queryZone('.$data->ePlot['zone']['id'].')');
+	$t->js()->success('map', 'Bed::deletedCollection');
 
 });
 
 new AdaptativeView('doDelete', function($data, AjaxTemplate $t) {
 
-	$t->js()->eval('Cartography.get("cartography-farm", instance => instance.reload())');
+	$t->js()->eval('Cartography.queryZone('.$data->e['zone']['id'].')');
+	$t->js()->success('map', 'Bed::deleted');
 
 });
 ?>

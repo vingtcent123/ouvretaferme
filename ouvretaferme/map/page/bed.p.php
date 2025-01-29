@@ -263,7 +263,7 @@ $updateCollection = function($data, ?Closure $callback = NULL) {
 
 		$fw->validate();
 
-		throw new ReloadAction();
+		throw new ViewAction($data);
 
 	});
 ?>

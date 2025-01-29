@@ -37,6 +37,8 @@ class AlertUi {
 
 			'Bed::created' => s("La planche a bien été ajoutée."),
 			'Bed::createdCollection' => s("Les planches ont bien été ajoutées."),
+			'Bed::deleted' => s("La planche a bien été supprimée."),
+			'Bed::deletedCollection' => s("Les planches ont bien été supprimées."),
 
 			'Draw::created' => s("La ligne de départ des planches a bien été enregistrée."),
 			'Draw::deleted' => s("Les planches que vous avez sélectionnées ne sont désormais plus affichées sur la carte."),

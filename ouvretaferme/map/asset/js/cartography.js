@@ -63,16 +63,6 @@ class Cartography {
 
 	}
 
-	reload() {
-
-		if(this.selectedPlot !== null) {
-			this.loadPlot(this.selectedPlot, this.selectedZone);
-		} else if(this.selectedZone !== null) {
-			this.loadZone(this.selectedZone);
-		}
-
-	}
-
 	addZone(zoneId, zoneName, coords, display = true) {
 
 		if(coords === null) {
@@ -176,12 +166,20 @@ class Cartography {
 			Lime.History.replaceState(tab.dataset.url);
 		});
 
-		new Ajax.Query()
-			.method('get')
-			.url('/map/zone:getCartography?id='+ zoneId +'&season='+ this.season)
-			.fetch();
+		Cartography.queryZone(zoneId);
 
 		return this;
+
+	}
+
+	static queryZone(zoneId) {
+
+		const season = qs('#cartography-zone').dataset.season;
+
+		new Ajax.Query()
+			.method('get')
+			.url('/map/zone:getCartography?id='+ zoneId +'&season='+ season)
+			.fetch();
 
 	}
 
