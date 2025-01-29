@@ -682,17 +682,18 @@ class DateUi {
 
 			$h .= '<div class="tab-panel" data-tab="sales">';
 
-				$h .= '<div class="util-title">';
-
-					$h .= '<div></div>';
-
-					$h .= '<a href="/shop/date:downloadSales?id='.$eDate['id'].'&farm='.$eDate['farm']['id'].'" data-ajax-navigation="never" class="btn btn-primary">'.\Asset::icon('download').' '.s("Télécharger en PDF").'</a>';
-
-				$h .= '</div>';
-
 				if($cSale->empty()) {
 					$h .= '<div class="util-info">'.s("Aucune commande n'a encore été enregistrée pour cette vente !").'</div>';
 				} else {
+
+					$h .= '<div class="util-title">';
+
+						$h .= '<div></div>';
+
+						$h .= '<a href="/shop/date:downloadSales?id='.$eDate['id'].'&farm='.$eDate['farm']['id'].'" data-ajax-navigation="never" class="btn btn-primary">'.\Asset::icon('download').' '.s("Télécharger en PDF").'</a>';
+
+					$h .= '</div>';
+
 					$h .= (new \selling\SaleUi())->getList(
 						$eFarm,
 						$cSale,
@@ -702,6 +703,7 @@ class DateUi {
 						hasSubtitles: FALSE,
 						segment: ($eDate['ccPoint']->reduce(fn($c, $n) => $n + $c->count(), 0) > 1) ? 'point' : NULL
 					);
+
 				}
 			$h .= '</div>';
 
