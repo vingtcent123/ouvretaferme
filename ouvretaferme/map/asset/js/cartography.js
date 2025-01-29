@@ -481,12 +481,22 @@ class Cartography {
 
 		}
 
-		this.mapbox.on('draw.create', (e) => {
+		this.mapbox.on('draw.create', (e) => {d('in');
 			drawEvent(e);
 			qs('#'+ this.container +'-actions').classList.remove('hide');
 		});
 		this.mapbox.on('draw.delete', drawEvent);
 		this.mapbox.on('draw.update', drawEvent);
+
+		/* Workaround pour double clic sur polygone */
+		this.mapbox.on('draw.modechange', () => {
+			if(
+				this.draw.getAll().features.length === 0 &&
+				this.draw.getMode() === 'simple_select'
+			) {
+				this.showDrawSelector();
+			}
+		});
 
 		return this;
 
