@@ -772,7 +772,7 @@ class AnalyzeLib {
 				'sale' => ['document',  'type'],
 				'customer' => ['type', 'name'],
 				'quantity' => new \Sql('IF(packaging IS NULL, 1, packaging) * number', 'float'),
-				'priceExcludingVat',
+				'type', 'price', 'priceExcludingVat', 'vatRate',
 				'unit' => ['fqn', 'by', 'singular', 'plural', 'short', 'type'],
 				'deliveredAt'
 			])
@@ -781,8 +781,9 @@ class AnalyzeLib {
 			->where('EXTRACT(YEAR FROM deliveredAt) = '.$year)
 			->sort('id')
 			->getCollection()
-			->toArray(function($eItem) {
-				return [
+			->toArray(function($eItem) use ($eFarm) {
+
+				$data = [
 					$eItem['name'],
 					$eItem['product']->empty() ? '' : $eItem['product']->getName(),
 					$eItem['sale']['document'],
@@ -791,8 +792,18 @@ class AnalyzeLib {
 					\util\DateUi::numeric($eItem['deliveredAt']),
 					\util\TextUi::csvNumber($eItem['quantity']),
 					\selling\UnitUi::getSingular($eItem['unit'], noWrap: FALSE),
-					\util\TextUi::csvNumber($eItem['priceExcludingVat'])
+					\util\TextUi::csvNumber($eItem['priceExcludingVat']),
 				];
+
+				if($eFarm->getSelling('hasVat')) {
+					$data[] = \util\TextUi::csvNumber($eItem['vatRate']);
+					$data[] = match($eItem['type']) {
+						Item::PRO => \util\TextUi::csvNumber($eItem['price'] * (1 + $eItem['vatRate'] / 100), 2),
+						Item::PRIVATE => \util\TextUi::csvNumber($eItem['price']),
+					};
+				}
+
+				return $data;
 			});
 
 		// Ajout des frais de livraison

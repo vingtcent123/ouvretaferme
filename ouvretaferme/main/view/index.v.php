@@ -44,7 +44,7 @@ new AdaptativeView('anonymous', function($data, MainTemplate $t) {
 	echo '<h2>'.s("La philosophie du projet 👩‍🌾").'</h2>';
 
 	echo '<div class="home-story">';
-		echo s("Le logiciel {siteName} a été créé pour combler l'absence d'un logiciel libre, gratuit et intuitif destiné aux producteurs maraîchers. Conçu pour simplifier l'organisation du travail en ferme, ce logiciel complet accompagne les producteurs agricoles, du plan de culture à la vente de leurs produits. Notre mission : fournir aux agriculteurs biologiques les outils nécessaires pour gérer efficacement leur exploitation maraîchère et atteindre les objectifs de leur ferme.");
+		echo s("Le logiciel {siteName} a été créé pour combler l'absence d'un logiciel libre, gratuit et intuitif destiné aux producteurs maraîchers. Conçu pour simplifier l'organisation du travail à la ferme, ce logiciel complet accompagne les producteurs agricoles, du plan de culture à la vente de leurs produits. Notre mission : fournir aux agriculteurs biologiques les outils nécessaires pour gérer efficacement leur exploitation maraîchère et atteindre les objectifs de leur ferme.");
 	echo '</div>';
 
 	echo (new \main\HomeUi())->getPoints();

@@ -1965,7 +1965,7 @@ class AnalyzeUi {
 
 	public function getExportSalesHeader(\farm\Farm $eFarm): array {
 
-		return [
+		$header = [
 			'item',
 			'product',
 			'sale',
@@ -1973,9 +1973,18 @@ class AnalyzeUi {
 			'type',
 			'delivery',
 			'quantity',
-			'unit',
-			$eFarm->getSelling('hasVat') ? 'amount_excluding_vat' : 'amount'
+			'unit'
 		];
+
+		if($eFarm->getSelling('hasVat')) {
+			$header[] = 'amount_excluding_vat';
+			$header[] = 'vat';
+			$header[] = 'amount_including_vat';
+		} else {
+			$header[] = 'amount';
+		}
+
+		return $header;
 
 	}
 
