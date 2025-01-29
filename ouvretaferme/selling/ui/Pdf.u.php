@@ -923,17 +923,13 @@ class PdfUi {
 
 		$h = '<style>@page {	size: A4 landscape; margin: 0.5cm; }</style>';
 
-		if($cSale->count() > 1) {
+		$h .= '<div class="pdf-sales-summary-wrapper">';
 
-			$h .= '<div class="pdf-sales-summary-wrapper">';
+			$h .= '<h1>'.p("{value} vente", "{value} ventes", $cSale->count()).'</h1>';
 
-				$h .= '<h1>'.p("{value} vente", "{value} ventes", $cSale->count()).'</h1>';
+			$h .= $this->getSalesSummary($cItem);
 
-				$h .= $this->getSalesSummary($cItem);
-
-			$h .= '</div>';
-
-		}
+		$h .= '</div>';
 
 		$h .= $this->getSalesContent($eFarm, $cSale);
 
