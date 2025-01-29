@@ -347,7 +347,7 @@ class ProductUi {
 			$h .= '<div class="date-products-item '.($displayStock ? 'date-products-item-with-stock' : '').' util-grid-header">';
 
 				$h .= '<div class="shop-select '.($cProduct->count() < 2 ? 'shop-select-hide' : '').'">';
-					$h .= '<input type="checkbox" '.attr('onclick', 'CheckboxField.all(this, \'[name^="products["]\', node => DateManage.selectProduct(node), \'.date-products-list\')').'"  title="'.s("Tout cocher / Tout décocher").'"/>';
+					$h .= '<input type="checkbox" '.attr('onclick', 'CheckboxField.all(this, \'[name^="productsList["]\', node => DateManage.selectProduct(node), \'.date-products-list\')').'"  title="'.s("Tout cocher / Tout décocher").'"/>';
 				$h .= '</div>';
 				$h .= '<div>';
 					$h .= s("Produit");
