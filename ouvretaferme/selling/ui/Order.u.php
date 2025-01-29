@@ -305,7 +305,13 @@ class OrderUi {
 
 	public function displaySale(Sale $eSale): string {
 
-		$h = '<h2>'.s("{order} du {date}", ['order' => OrderUi::getName($eSale), 'date' => \util\DateUi::numeric($eSale['createdAt'], \util\DateUi::DATE)]).'</h2>';
+		$h = '';
+		
+		if($eSale['shop']->notEmpty()) {
+			$h .= '<h4 style="margin-bottom: 0.5rem">'.\shop\ShopUi::link($eSale['shop']).'</h4>';
+		}
+
+		$h .= '<h2>'.s("{order} du {date}", ['order' => OrderUi::getName($eSale), 'date' => \util\DateUi::numeric($eSale['createdAt'], \util\DateUi::DATE)]).'</h2>';
 
 		$h .= '<div class="util-block stick-xs">';
 			$h .= '<dl class="util-presentation util-presentation-2">';

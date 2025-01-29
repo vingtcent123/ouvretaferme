@@ -9,7 +9,11 @@
 		$data->cCustomerPro = \selling\CustomerLib::getProByUser($data->eUserOnline);
 		$data->cCustomerPrivate = \selling\CustomerLib::getPrivateByUser($data->eUserOnline);
 
-		$data->cShop = \shop\ShopLib::getByCustomers($data->cCustomerPrivate);
+		$data->cShop = \shop\ShopLib::getByCustomers(
+			(new Collection())
+				->mergeCollection($data->cCustomerPrivate)
+				->mergeCollection($data->cCustomerPro)
+		);
 
 		if($data->cCustomerPrivate->notEmpty()) {
 			$data->cSale = \selling\SaleLib::getByCustomers($data->cCustomerPrivate, limit: 5);
