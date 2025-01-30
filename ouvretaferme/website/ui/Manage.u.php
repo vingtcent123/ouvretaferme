@@ -123,7 +123,7 @@ class ManageUi {
 
 		}
 
-		$h .= '<div class="util-block" style="margin-bottom: 2rem">';
+		$h .= '<div class="util-block stick-xs" style="margin-bottom: 2rem">';
 			$h .= '<dl class="util-presentation util-presentation-2">';
 				$h .= '<dt>'.s("Adresse du site").'</dt>';
 				$h .= '<dd class="util-presentation-fill">';
