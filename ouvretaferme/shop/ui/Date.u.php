@@ -841,7 +841,7 @@ class DateUi {
 		$h = '<div class="util-block" style="margin-bottom: 2rem">';
 			$h .= '<dl class="util-presentation util-presentation-2">';
 
-				$h .= '<dt>';
+				$h .= '<dt style="align-self: center">';
 					$h .= s("État de la vente");
 				$h .= '</dt>';
 				$h .= '<dd>';
