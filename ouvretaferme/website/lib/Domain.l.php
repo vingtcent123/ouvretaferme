@@ -111,6 +111,7 @@ class DomainLib {
 	include /var/www/otf/framework/dev/conf/rewrite/lime.cfg;
 	
 }
+
 ';
 
 		if($ssl) {
@@ -127,6 +128,32 @@ class DomainLib {
 }
 
 ';
+
+			if(str_starts_with($url, 'www.')) {
+
+				$rewrite .=
+
+'server {
+
+	listen 80;
+	server_name '.substr($url, 4).';
+
+	return 301 https://'.$url.'$request_uri;
+
+}
+
+server {
+
+	listen 443 ssl;
+	server_name '.substr($url, 4).';
+
+	return 301 https://'.$url.'$request_uri;
+
+}
+
+';
+
+			}
 
 		}
 
