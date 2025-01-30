@@ -45,7 +45,8 @@ class Website extends WebsiteElement {
 						preg_match('/^[a-z0-9\-\.]+$/s', $domain) > 0 and
 						str_starts_with($domain, '.') === FALSE and
 						str_ends_with($domain, '.') === FALSE and
-						str_contains($domain, '..') === FALSE
+						str_contains($domain, '..') === FALSE and
+						str_contains($domain, '.') === TRUE
 					)
 				);
 			},

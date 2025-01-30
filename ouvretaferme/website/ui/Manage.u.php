@@ -34,7 +34,7 @@ class ManageUi {
 
 			$h .= $form->hidden('farm', $eFarm['id']);
 
-			$h .= $form->dynamicGroups($eWebsite, ['internalDomain*', 'domain', 'name*', 'description']);
+			$h .= $form->dynamicGroups($eWebsite, ['internalDomain*', 'name*', 'description']);
 
 			$h .= $form->group(
 				content: $form->submit(s("Démarrer le site internet"))
@@ -97,10 +97,6 @@ class ManageUi {
 
 		$h .= '</div>';
 
-		$h .= '<div class="util-subtitle">';
-			$h .= '<a href="'.WebsiteUi::url($eWebsite).'">'.WebsiteUi::url($eWebsite, showProtocol: FALSE).'</a>';
-		$h .= '</div>';
-
 		return $h;
 
 	}
@@ -111,77 +107,88 @@ class ManageUi {
 
 		$h = '';
 
-		if($eWebsite['domain'] !== NULL and in_array($eWebsite['domainStatus'], [Website::CONFIGURED_UNSECURED, Website::FAILURE_UNSECURED])) {
-			$h .= '<p class="util-warning">';
-				$h .= s("Pour démarrer l'activation de votre nom de domaine, configurez les DNS de votre nom de domaine vers l'adresse IP suivante : <b>{value}</b>. Une fois les DNS modifiés et propagés, la configuration de votre nom de domaine se terminera automatiquement. Cette étape peut prendre plusieurs heures.", \Setting::get('website\dnsIP'));
-			$h .= '</p>';
+		if(
+			$eWebsite['domain'] !== NULL and
+			$eWebsite['domainStatus'] !== Website::PINGED_SECURED
+		) {
+
+			$h .= '<div class="util-block-help">';
+				$h .= '<h4>'.s("Configurer votre nom de domaine {value}", encode($eWebsite['domain'])).'</h4>';
+				$h .= '<p>'.s("Pour démarrer l'activation de votre nom de domaine, configurez les enregistrements DNS de votre nom de domaine pour qu'ils pointent vers :").'</p>';
+				$h .= '<pre class="mb-1">';
+					$h .= s("<b>www.{siteName}.</b> <-- Le point (.) final est important");
+				$h .= '</pre>';
+				$h .= '<p>'.s("Vous devez utiliser un type <b>CNAME</b> pour configurer un sous-domaine comme <b>www</b> et / ou un type <b>ALIAS</b> pour configurer le domaine principal. Si vous n'êtes pas à l'aise avec ces instructions, nous vous conseillons de vous faire aider. Une fois les DNS modifiés et propagés, la configuration de votre nom de domaine se terminera automatiquement. Cette étape peut prendre plusieurs heures.").'</p>';
+			$h .= '</div>';
+
 		}
 
 		$h .= '<div class="util-block" style="margin-bottom: 2rem">';
-			$h .= '<div class="website-info">';
-				$h .= '<dl class="util-presentation util-presentation-2">';
-					$h .= '<dt>'.s("Statut").'</dt>';
-					$h .= '<dd>';
-						$h .= match($eWebsite['status']) {
-							Website::ACTIVE => '<span class="color-success">'.\Asset::icon('check-lg').' '.s("Site en ligne").'</span>',
-							Website::INACTIVE => '<span class="color-danger">'.\Asset::icon('pause-fill').' '.s("Site hors ligne").'</span>'
+			$h .= '<dl class="util-presentation util-presentation-2">';
+				$h .= '<dt>'.s("Adresse du site").'</dt>';
+				$h .= '<dd class="util-presentation-fill">';
+					$h .= '<div class="input-group">';
+						$h .= '<a href="'.WebsiteUi::url($eWebsite).'" class="btn btn-outline-secondary" id="website-url">'.WebsiteUi::url($eWebsite).'</a>';
+						$h .= '<a onclick="doCopy(this)" data-selector="#website-url" data-message="'.s("Copié !").'" class="btn btn-secondary">'.\Asset::icon('clipboard').' '.s("Copier").'</a>';
+					$h .= '</div>';
+				$h .= '</dd>';
+				$h .= '<dt>'.s("Statut").'</dt>';
+				$h .= '<dd>';
+					$h .= match($eWebsite['status']) {
+						Website::ACTIVE => '<span class="color-success">'.\Asset::icon('check-lg').' '.s("Site en ligne").'</span>',
+						Website::INACTIVE => '<span class="color-danger">'.\Asset::icon('pause-fill').' '.s("Site hors ligne").'</span>'
+					};
+				$h .= '</dd>';
+				$h .= '<dt>'.s("Nom de domaine").'</dt>';
+				$h .= '<dd class="website-info-domain">';
+					if($eWebsite['domain'] === NULL) {
+						$h .= '<a href="/website/manage:update?id='.$eWebsite['id'].'">'.s("Configurer").'</a>';
+					} else {
+						$h .= encode($eWebsite['domain']).' ';
+						$h .= match($eWebsite['domainStatus']) {
+							Website::FAILURE_UNSECURED => \Asset::icon('chevron-right').' <b class="color-danger">'.s("Non actif - Impossible d'atteindre le nom de domaine").'</b>',
+							Website::FAILURE_SECURED => \Asset::icon('chevron-right').' <b class="color-danger">'.s("Non actif - Impossible de sécuriser le nom de domaine").'</b>',
+							Website::FAILURE_CERTIFICATE_CREATED => \Asset::icon('chevron-right').' <b class="color-danger">'.s("Non actif - Impossible de créer le certificat de sécurité").'</b>',
+							Website::PENDING => \Asset::icon('chevron-right').' <b>'.s("Non actif - En cours de configuration").'</b>',
+							Website::CONFIGURED_UNSECURED => \Asset::icon('chevron-right').' <b>'.s("Non actif - Vérification du domaine").'</b>',
+							Website::CONFIGURED_SECURED => \Asset::icon('chevron-right').' <b>'.s("Non actif - Vérification du domaine sécurisé").'</b>',
+							Website::CERTIFICATE_CREATED => \Asset::icon('chevron-right').' <b>'.s("Non actif - Sécurisation du domaine en cours").'</b>',
+							Website::PINGED_UNSECURED => \Asset::icon('chevron-right').' <b>'.s("Non actif - Domaine vérifié et en attente de sécurisation").'</b>',
+							Website::PINGED_SECURED => '',
 						};
-					$h .= '</dd>';
-					$h .= '<dt>'.s("Nom de domaine").'</dt>';
-					$h .= '<dd class="website-info-domain">';
-						if($eWebsite['domain'] === NULL) {
-							$h .= '-';
-						} else {
-							$h .= encode($eWebsite['domain']).' ';
-							$h .= match($eWebsite['domainStatus']) {
-								Website::FAILURE_UNSECURED => \Asset::icon('chevron-right').' <b class="color-danger">'.s("Non actif - Impossible d'atteindre le nom de domaine").'</b>',
-								Website::FAILURE_SECURED => \Asset::icon('chevron-right').' <b class="color-danger">'.s("Non actif - Impossible de sécuriser le nom de domaine").'</b>',
-								Website::FAILURE_CERTIFICATE_CREATED => \Asset::icon('chevron-right').' <b class="color-danger">'.s("Non actif - Impossible de créer le certificat de sécurité").'</b>',
-								Website::PENDING => \Asset::icon('chevron-right').' <b>'.s("Non actif - En cours de configuration").'</b>',
-								Website::CONFIGURED_UNSECURED => \Asset::icon('chevron-right').' <b>'.s("Non actif - Vérification du domaine").'</b>',
-								Website::CONFIGURED_SECURED => \Asset::icon('chevron-right').' <b>'.s("Non actif - Vérification du domaine sécurisé").'</b>',
-								Website::CERTIFICATE_CREATED => \Asset::icon('chevron-right').' <b>'.s("Non actif - Sécurisation du domaine en cours").'</b>',
-								Website::PINGED_UNSECURED => \Asset::icon('chevron-right').' <b>'.s("Non actif - Domaine vérifié et en attente de sécurisation").'</b>',
-								Website::PINGED_SECURED => '',
-							};
-							if(in_array($eWebsite['domainStatus'], [Website::FAILURE_UNSECURED, Website::FAILURE_SECURED])) {
+						if(in_array($eWebsite['domainStatus'], [Website::FAILURE_UNSECURED, Website::FAILURE_SECURED])) {
 
-								if($eWebsite['domainTry'] >= \Setting::get('domainMaxTry')) {
-									$h .= ' '.s("(nombre maximal de tentatives atteint)");
-									$h .= ' <a data-ajax="/website/manage:doUpdateDomainTry" post-id="'.$eWebsite['id'].'" post-domain-try="0" class="btn btn-primary">'.s("Réessayer").'</a>';
-								} else {
-									$h .= ' '.s("(essai {current} / {max})", ['current' => $eWebsite['domainTry'], 'max' => \Setting::get('domainMaxTry')]);
-								}
-
+							if($eWebsite['domainTry'] >= \Setting::get('domainMaxTry')) {
+								$h .= ' '.s("(nombre maximal de tentatives atteint)");
+								$h .= ' <a data-ajax="/website/manage:doUpdateDomainTry" post-id="'.$eWebsite['id'].'" post-domain-try="0" class="btn btn-danger">'.s("Réessayer").'</a>';
+							} else {
+								$h .= ' '.s("(essai {current} / {max})", ['current' => $eWebsite['domainTry'], 'max' => \Setting::get('domainMaxTry')]);
 							}
-						}
-					$h .= '</dd>';
-					$h .= '<dt>'.s("Nom du site").'</dt>';
-					$h .= '<dd>';
-						$h .= encode($eWebsite['name'] ?? '');
-					$h .= '</dd>';
-					$h .= '<dt>'.s("Icône").'</dt>';
-					$h .= '<dd>';
-						$h .= '<div>';
-							$h .= (new \media\WebsiteFaviconUi())->getCamera($eWebsite, size: '2rem');
-						$h .= '</div>';
-					$h .= '</dd>';
-					$h .= '<dt>'.s("Description").'</dt>';
-					$h .= '<dd>';
-						if($eWebsite['description']) {
-							$h .= '<span class="website-info-description">'.encode($eWebsite['description']).'</span>';
-						}
-					$h .= '</dd>';
-					$h .= '<dt>'.s("Logo").'</dt>';
-					$h .= '<dd>';
-						$h .= (new \media\WebsiteLogoUi())->getCamera($eWebsite, size: '6rem');
-					$h .= '</dd>';
-				$h .= '</dl>';
-				$h .= '<div class="website-info-link">';
-					$h .= '<a href="'.WebsiteUi::url($eWebsite).'" class="btn btn-outline-primary" target="_blank">'.s("Visiter le site").'</a>';
-				$h .= '</div>';
 
-			$h .= '</div>';
+						}
+					}
+				$h .= '</dd>';
+				$h .= '<dt>'.s("Titre du site").'</dt>';
+				$h .= '<dd>';
+					$h .= encode($eWebsite['name'] ?? '');
+				$h .= '</dd>';
+				$h .= '<dt>'.s("Icône").'</dt>';
+				$h .= '<dd>';
+					$h .= '<div>';
+						$h .= (new \media\WebsiteFaviconUi())->getCamera($eWebsite, size: '2rem');
+					$h .= '</div>';
+				$h .= '</dd>';
+				$h .= '<dt>'.s("Description").'</dt>';
+				$h .= '<dd>';
+					if($eWebsite['description']) {
+						$h .= '<span class="website-info-description">'.encode($eWebsite['description']).'</span>';
+					}
+				$h .= '</dd>';
+				$h .= '<dt>'.s("Logo").'</dt>';
+				$h .= '<dd>';
+					$h .= (new \media\WebsiteLogoUi())->getCamera($eWebsite, size: '6rem');
+				$h .= '</dd>';
+			$h .= '</dl>';
 		$h .= '</div>';
 
 		return $h;

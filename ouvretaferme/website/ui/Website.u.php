@@ -112,7 +112,7 @@ class WebsiteUi {
 			'internalDomain' => s("Adresse du site sur <u>{siteName}</u>"),
 			'domain' => s("Nom de domaine"),
 			'logo' => s("Logo"),
-			'name' => s("Nom du site"),
+			'name' => s("Titre du site"),
 			'description' => s("Description du site"),
 		]);
 

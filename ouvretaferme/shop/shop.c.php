@@ -5,7 +5,6 @@ Privilege::register('shop', [
 ]);
 
 Setting::register('shop', [
-	'dnsIP' => '51.83.98.183',
 	'domain' => 'boutique.'.Lime::getDomain(),
 ]);
 ?>

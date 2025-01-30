@@ -4,14 +4,10 @@ namespace website;
 class WebsiteLib extends WebsiteCrud {
 
 	public static function getPropertiesCreate(): array {
-		return self::getPropertiesWrite();
+		return ['internalDomain', 'name', 'description'];
 	}
 
 	public static function getPropertiesUpdate(): array {
-		return self::getPropertiesWrite();
-	}
-
-	public static function getPropertiesWrite(): array {
 		return ['internalDomain', 'domain', 'name', 'description'];
 	}
 
