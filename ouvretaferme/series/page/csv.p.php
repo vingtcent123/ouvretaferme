@@ -39,6 +39,21 @@
 
 
 	})
+	->read('exportSoil', function($data) {
+
+		$data->e->validate('canAnalyze', 'canPersonalData');
+
+		$year = GET('year', 'int');
+
+		$maxSpecies = NULL;
+		$export = \series\CsvLib::getExportSoil($data->e, $year, $maxSpecies);
+
+		array_unshift($export, (new \series\CsvUi())->getExportSoilHeader($maxSpecies));
+
+		throw new CsvAction($export, 'soil-'.$year.'.csv');
+
+
+	})
 	->read('importCultivations', function($data) {
 
 		$data->eFarm = $data->e;

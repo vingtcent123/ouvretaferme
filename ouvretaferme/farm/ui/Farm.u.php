@@ -487,6 +487,13 @@ class FarmUi {
 				$h .= \Asset::icon('journals');
 			$h .= '</a>';
 
+			$h .= '<a href="/series/csv:exportSoil?id='.$eFarm['id'].'&year='.$year.'" class="bg-secondary util-button" data-ajax-navigation="never">';
+				$h .= '<div>';
+					$h .= '<h4>'.s("Exporter le plan d'assolement").'</h4>';
+				$h .= '</div>';
+				$h .= \Asset::icon('map');
+			$h .= '</a>';
+
 			$h .= '<a href="/series/csv:exportTasks?id='.$eFarm['id'].'&year='.$year.'" class="bg-secondary util-button" data-ajax-navigation="never">';
 				$h .= '<div>';
 					$h .= '<h4>'.s("Exporter les interventions").'</h4>';

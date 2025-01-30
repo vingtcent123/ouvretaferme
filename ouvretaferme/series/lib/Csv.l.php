@@ -284,6 +284,78 @@ class CsvLib {
 
 	}
 
+	public static function getExportSoil(\farm\Farm $eFarm, int $season, &$maxSpecies): array {
+
+		$cPlace = Place::model()
+			->select([
+				'zone' => ['name'],
+				'plot' => ['name', 'zoneFill'],
+				'bed' => ['name', 'plotFill'],
+				'length',
+				'area',
+				'series' => [
+					'name', 'bedStartCalculated', 'bedStopCalculated',
+					'cCultivation' => Cultivation::model()
+						->select([
+							'series',
+							'plant' => ['name']
+						])
+						->delegateCollection('series')
+				]
+			])
+			->whereFarm($eFarm)
+			->whereSeason($season)
+			->getCollection()
+			->sort([
+				'zone' => ['name'],
+				'plot' => ['name'],
+				'bed' => ['name'],
+			], natural: TRUE);
+
+		$maxSpecies = 0;
+
+		foreach($cPlace as $ePlace) {
+
+			$maxSpecies = max($maxSpecies, $ePlace['series']['cCultivation']->count());
+
+			$line = [
+				$ePlace['zone']['name'],
+				$ePlace['plot']['zoneFill'] ? '' : $ePlace['plot']['name'],
+				$ePlace['bed']['plotFill'] ? '' : $ePlace['bed']['name'],
+				$ePlace['series']['id'],
+				$ePlace['series']['name'],
+				\util\TextUi::csvNumber($ePlace['length']),
+				\util\TextUi::csvNumber($ePlace['area']),
+				self::getWeekCalculated($ePlace['series']['bedStartCalculated'], $season, 1),
+				self::getWeekCalculated($ePlace['series']['bedStopCalculated'], $season, 7),
+			];
+
+			foreach($ePlace['series']['cCultivation'] as $eCultivation) {
+				$line[] = $eCultivation['plant']['name'];
+			}
+
+			$output[] = $line;
+
+		}
+
+		return $output;
+
+	}
+
+	private static function getWeekCalculated(?int $value, int $season, int $day) {
+
+		if($value === NULL) {
+			return '';
+		} else if($value < 0) {
+			return week_date_day(($season - 1).'-W'.(100 + $value), $day);
+		} else if($value >= 100) {
+			return week_date_day(($season + 1).'-W'.($value - 100), $day);
+		} else {
+			return week_date_day($season.'-W'.$value, $day);
+		}
+
+	}
+
 	public static function uploadCultivations(\farm\Farm $eFarm): bool {
 
 		if(isset($_FILES['csv']) === FALSE) {

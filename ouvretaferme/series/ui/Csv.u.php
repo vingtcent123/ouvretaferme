@@ -65,7 +65,7 @@ class CsvUi {
 
 	}
 
-	public function getExportCultivationsHeader($maxVarieties): array {
+	public function getExportCultivationsHeader(?int $maxVarieties): array {
 
 		$columns = [
 			'season',
@@ -98,6 +98,28 @@ class CsvUi {
 		for($i = 0; $i < $maxVarieties; $i++) {
 			$columns[] = 'variety_name';
 			$columns[] = 'variety_part';
+		}
+
+		return $columns;
+
+	}
+
+	public function getExportSoilHeader(?int $maxSpecies): array {
+
+		$columns = [
+			'parcel',
+			'block',
+			'bed',
+			'series_id',
+			'series_name',
+			'length',
+			'area',
+			'date_begin',
+			'date_end'
+		];
+
+		for($i = 0; $i < $maxSpecies; $i++) {
+			$columns[] = 'species';
 		}
 
 		return $columns;
