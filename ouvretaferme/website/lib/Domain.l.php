@@ -177,7 +177,7 @@ server {
 			->getCollection();
 
 		if($cWebsite->notEmpty()) {
-			exec('sudo /usr/bin/systemd-resolve --flush-caches');  // /etc/sudoers
+			exec('sudo /usr/bin/resolvectl flush-caches');  // /etc/sudoers
 		}
 
 		foreach($cWebsite as $eWebsite) {
@@ -234,7 +234,7 @@ server {
 
 			if(
 				is_file('/etc/letsencrypt/renewal/'.$domain.'.conf') and
-				is_file('/etc/letsencrypt/renewal/'.substr($domain, 4).'.conf')
+				(str_starts_with($domain, 'www.') === FALSE or is_file('/etc/letsencrypt/renewal/'.substr($domain, 4).'.conf'))
 			) {
 
 				Website::model()->update($eWebsite, [
