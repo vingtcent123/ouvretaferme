@@ -623,7 +623,7 @@ class ShopUi {
 			$h .= '<dl class="util-presentation util-presentation-2">';
 
 				$h .= '<dt>';
-					$h .= s("Adresse");
+					$h .= s("Adresse de la boutique");
 				$h .= '</dt>';
 				$h .= '<dd class="util-presentation-fill">';
 					$h .= '<a href="'.ShopUi::url($eShop).'" id="shop-url">'.ShopUi::url($eShop).'</a>';
