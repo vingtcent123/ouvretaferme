@@ -131,6 +131,11 @@ class DomainLib {
 
 			if(str_starts_with($url, 'www.')) {
 
+				$certificate = $ssl ? 'ssl_certificate /etc/letsencrypt/live/'.substr($url, 4).'/fullchain.pem;
+	ssl_certificate_key /etc/letsencrypt/live/'.substr($url, 4).'/privkey.pem;
+	include /etc/letsencrypt/options-ssl-nginx.conf;
+	ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem;' : '';
+
 				$rewrite .=
 
 'server {
@@ -146,6 +151,8 @@ server {
 
 	listen 443 ssl;
 	server_name '.substr($url, 4).';
+
+	'.$certificate.'
 
 	return 301 https://'.$url.'$request_uri;
 
@@ -221,7 +228,14 @@ server {
 			// Création du certificat
 			exec('sudo /usr/bin/certbot certonly --authenticator standalone -d '.$domain.' --pre-hook "service nginx stop" --post-hook "service nginx start" -n');
 
-			if(is_file('/etc/letsencrypt/renewal/'.$domain.'.conf')) {
+			if(str_starts_with($domain, 'www.')) {
+				exec('sudo /usr/bin/certbot certonly --authenticator standalone -d '.substr($domain, 4).' --pre-hook "service nginx stop" --post-hook "service nginx start" -n');
+			}
+
+			if(
+				is_file('/etc/letsencrypt/renewal/'.$domain.'.conf') and
+				is_file('/etc/letsencrypt/renewal/'.substr($domain, 4).'.conf')
+			) {
 
 				Website::model()->update($eWebsite, [
 					'domainStatus' => Website::CERTIFICATE_CREATED
