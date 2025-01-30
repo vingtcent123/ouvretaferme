@@ -623,6 +623,14 @@ class ShopUi {
 			$h .= '<dl class="util-presentation util-presentation-2">';
 
 				$h .= '<dt>';
+					$h .= s("Adresse");
+				$h .= '</dt>';
+				$h .= '<dd class="util-presentation-fill">';
+					$h .= '<a href="'.ShopUi::url($eShop).'" id="shop-url">'.ShopUi::url($eShop).'</a>';
+					$h .= '  <a onclick="doCopy(this)" data-selector="#shop-url" data-message="'.s("Copié !").'" class="btn btn-sm btn-outline-primary">'.\Asset::icon('clipboard').' '.s("Copier").'</a>';
+				$h .= '</dd>';
+
+				$h .= '<dt style="align-self: center">';
 					$h .= s("État de la boutique");
 				$h .= '</dt>';
 				$h .= '<dd>';

@@ -40,7 +40,7 @@ class ShopManageUi {
 			$h .= '<div class="shop-title">';
 				$h .= (new \media\ShopLogoUi())->getCamera($eShopCurrent, size: '5rem');
 				$h .= '<div>';
-					$h .= '<h1>';
+					$h .= '<h1 class="mb-0">';
 						$h .= '<a class="util-action-navigation" data-dropdown="bottom-start" data-dropdown-hover="true">';
 							$h .= encode($eShopCurrent['name']).' '.\farm\FarmUi::getNavigation();
 						$h .= '</a>';
@@ -59,9 +59,6 @@ class ShopManageUi {
 							}
 						$h .= '</div>';
 					$h .= '</h1>';
-					$h .= '<div class="util-subtitle">';
-						$h .= '<a href="'.ShopUi::url($eShopCurrent).'">'.ShopUi::url($eShopCurrent, showProtocol: FALSE).'</a>';;
-					$h .= '</div>';
 				$h .= '</div>';
 			$h .= '</div>';
 			$h .= '<div>';

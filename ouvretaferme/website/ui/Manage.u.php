@@ -127,10 +127,8 @@ class ManageUi {
 			$h .= '<dl class="util-presentation util-presentation-2">';
 				$h .= '<dt>'.s("Adresse du site").'</dt>';
 				$h .= '<dd class="util-presentation-fill">';
-					$h .= '<div class="input-group">';
-						$h .= '<a href="'.WebsiteUi::url($eWebsite).'" class="btn btn-outline-secondary" id="website-url">'.WebsiteUi::url($eWebsite).'</a>';
-						$h .= '<a onclick="doCopy(this)" data-selector="#website-url" data-message="'.s("Copié !").'" class="btn btn-secondary">'.\Asset::icon('clipboard').' '.s("Copier").'</a>';
-					$h .= '</div>';
+					$h .= '<a href="'.WebsiteUi::url($eWebsite).'" id="website-url">'.WebsiteUi::url($eWebsite).'</a>';
+					$h .= '  <a onclick="doCopy(this)" data-selector="#website-url" data-message="'.s("Copié !").'" class="btn btn-sm btn-outline-primary">'.\Asset::icon('clipboard').' '.s("Copier").'</a>';
 				$h .= '</dd>';
 				$h .= '<dt>'.s("Statut").'</dt>';
 				$h .= '<dd>';
@@ -144,7 +142,9 @@ class ManageUi {
 					if($eWebsite['domain'] === NULL) {
 						$h .= '<a href="/website/manage:update?id='.$eWebsite['id'].'">'.s("Configurer").'</a>';
 					} else {
-						$h .= encode($eWebsite['domain']).' ';
+						if($eWebsite['domainStatus'] !== Website::PINGED_SECURED) {
+							$h .= encode($eWebsite['domain']).' ';
+						}
 						$h .= match($eWebsite['domainStatus']) {
 							Website::FAILURE_UNSECURED => \Asset::icon('chevron-right').' <b class="color-danger">'.s("Non actif - Impossible d'atteindre le nom de domaine").'</b>',
 							Website::FAILURE_SECURED => \Asset::icon('chevron-right').' <b class="color-danger">'.s("Non actif - Impossible de sécuriser le nom de domaine").'</b>',
@@ -154,7 +154,7 @@ class ManageUi {
 							Website::CONFIGURED_SECURED => \Asset::icon('chevron-right').' <b>'.s("Non actif - Vérification du domaine sécurisé").'</b>',
 							Website::CERTIFICATE_CREATED => \Asset::icon('chevron-right').' <b>'.s("Non actif - Sécurisation du domaine en cours").'</b>',
 							Website::PINGED_UNSECURED => \Asset::icon('chevron-right').' <b>'.s("Non actif - Domaine vérifié et en attente de sécurisation").'</b>',
-							Website::PINGED_SECURED => '',
+							Website::PINGED_SECURED => '<span class="color-success">'.\Asset::icon('check-lg').' '.s("Configuré").'</span>',
 						};
 						if(in_array($eWebsite['domainStatus'], [Website::FAILURE_UNSECURED, Website::FAILURE_SECURED])) {
 
