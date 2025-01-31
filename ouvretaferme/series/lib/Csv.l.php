@@ -516,7 +516,10 @@ class CsvLib {
 					[
 						'species' => $crop,
 						'planting_type' => $plantingType,
-						'seeds_per_hole' => $line['seeds_per_hole_seedling'] ? (int)$line['seeds_per_hole_seedling'] : NULL,
+						'seeds_per_hole' => match($plantingType) {
+							Cultivation::SOWING => $line['seeds_per_hole_direct'] ? (int)$line['seeds_per_hole_direct'] : NULL,
+							default => $line['seeds_per_hole_seedling'] ? (int)$line['seeds_per_hole_seedling'] : NULL
+						},
 						'young_plants_tray' => $line['container_name'] ?: NULL,
 						'young_plants_tray_size' => $line['container_size'] ?: NULL,
 						'sowing_date' => $sowing,
