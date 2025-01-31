@@ -584,10 +584,19 @@ class Sale extends SaleElement {
 
 			'customer.check' => function(Customer $eCustomer): bool {
 
-				$this->expects(['farm']);
+				$this->expects(['farm', 'marketParent']);
+
+				if($eCustomer->empty()) {
+
+					if($this['marketParent']->notEmpty()) {
+						return TRUE;
+					} else {
+						return FALSE;
+					}
+
+				}
 
 				if(
-					$eCustomer->notEmpty() and
 					Customer::model()
 						->select(['id', 'type', 'destination', 'discount'])
 						->whereFarm($this['farm'])

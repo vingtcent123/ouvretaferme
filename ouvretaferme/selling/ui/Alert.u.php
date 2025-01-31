@@ -44,7 +44,7 @@ class AlertUi {
 			'Sale::products.check' => s("Vous ne pouvez pas continuer car votre panier est vide !"),
 			'Sale::preparationStatus.checkOutOfDraft' => s("Il est nécessaire d'indiquer une date de vente pour sortir la vente de l'état de brouillon."),
 			'Sale::preparationStatus.market' => s("Vous ne pouvez pas changer l'état de ce marché car il y a des ventes en cours."),
-			'Sale::customer.market' => s("Le marché n'est possible que pour les clients particuliers."),
+			'Sale::customer.market' => s("Le logiciel de caisse n'est disponible que pour les points de vente aux particuliers."),
 			'Sale::deliveredAt.check' => s("La date de vente est obligatoire."),
 			'Sale::paymentStatus.method' => s("Vous ne pouvez modifier l'état du paiement car le paiement est géré par un moyen de paiement externe"),
 			'Sale::shippingIncludedVat.check' => s("Les frais de livraison doivent être supérieurs à zéro ou laissés vide."),
@@ -119,7 +119,7 @@ class AlertUi {
 				Pdf::ORDER_FORM => s("Le devis a été généré au format PDF !"),
 				Pdf::DELIVERY_NOTE => s("Le bon de livraison a été généré au format PDF !"),
 			][$options['type']].$options['actions'],
-			'Sale::customerUpdated' => s("La vente a bien été transférée à un nouveau client."),
+			'Sale::customerUpdated' => s("Le client a bien été mis à jour."),
 
 			'Stock::updated' => s("Le stock a bien été mis à jour pour ce produit."),
 

@@ -1338,9 +1338,10 @@ class SaleUi {
 		}
 
 		if($eSale->canDuplicate()) {
-			$primaryList .= '<a href="/selling/sale:duplicate?id='.$eSale['id'].'" class="dropdown-item">'.s("Copier la vente").'</a>';
+			$primaryList .= '<a href="/selling/sale:duplicate?id='.$eSale['id'].'" class="dropdown-item">'.s("Dupliquer la vente").'</a>';
 		}
 
+		$primaryList .= '<a href="/selling/sale:updateCustomer?id='.$eSale['id'].'" class="dropdown-item">'.s("Transférer à un autre client ").'</a>';
 
 		if($primaryList === '' and $secondaryList === '') {
 			return '';
@@ -1537,7 +1538,7 @@ class SaleUi {
 
 		return new \Panel(
 			id: 'panel-sale-duplicate',
-			title: s("Copier une vente"),
+			title: s("Dupliquer une vente"),
 			body: $h,
 		);
 

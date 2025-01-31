@@ -508,7 +508,7 @@ class SaleLib extends SaleCrud {
 	}
 
 	/**
-	 * Copier une vente
+	 * Dupliquer une vente
 	 */
 	public static function duplicate(Sale $eSale): Sale {
 

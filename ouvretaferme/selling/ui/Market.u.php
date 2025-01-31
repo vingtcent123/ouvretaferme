@@ -336,6 +336,16 @@ class MarketUi {
 							}
 						$h .= '</div>';
 					$h .= '</dd>';
+
+					if(
+						$eSale['customer']->notEmpty() and
+						$eSale['customer']['discount'] > 0
+					) {
+						$h .= '<dt>'.s("Remise commerciale").'</dt>';
+						$h .= '<dd title="'.s("La remise commerciale s'applique sur les saisies réalisées après l'affectation de la vente à ce client").'">';
+							$h .= s("{value} %", $eSale['customer']['discount']);
+						$h .= '</dd>';
+					}
 				$h .= '</dl>';
 			$h .= '</div>';
 
@@ -360,6 +370,8 @@ class MarketUi {
 
 	protected function displaySaleItems(Sale $eSale, \Collection $cItemSale, \Collection $cItemMarket): string {
 
+		$discount = $eSale['customer']->empty() ? 0 : $eSale['customer']['discount'];
+
 		$h = '<div id="market-item-sale" class="market-item-wrapper market-item-'.$eSale['preparationStatus'].'">';
 
 			foreach($cItemMarket as $eItemMarket) {
@@ -369,6 +381,8 @@ class MarketUi {
 				} else {
 					$eItemSale = $cItemSale->find(fn($eItemTry) => $eItemTry['name'] === $eItemMarket['name'], limit: 1, default: new Item());
 				}
+
+				$eItemMarket['unitPrice'] = round($eItemMarket['unitPrice'] * (1 - $discount / 100), 2);
 
 				$h .= $this->getSaleItem($eSale, $eItemMarket, $eItemSale);
 				$h .= (new MerchantUi())->get('/selling/market:doUpdateSale', $eSale, $eItemSale->empty() ? new Item([
