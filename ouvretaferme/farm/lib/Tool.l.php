@@ -212,28 +212,23 @@ class ToolLib extends ToolCrud {
 			\production\Flow::model()
 				->whereFarm($e['farm'])
 				->where('JSON_CONTAINS(tools, \''.$e['id'].'\')')
-				->exists()
+				->exists() or
+			(
+				$e['routineName'] === 'tray' and
+				\series\Cultivation::model()
+					->whereFarm($e['farm'])
+					->whereSliceTool($e)
+					->exists()
+			)
 		) {
-			Tool::fail('deleteUsed');
-			return;
+
+			Tool::model()->update($e, [
+				'status' => Tool::DELETED
+			]);
+
+		} else {
+			parent::delete($e);
 		}
-
-		if(
-			$e['routineName'] === 'tray' and
-			\series\Cultivation::model()
-				->whereFarm($e['farm'])
-				->whereSliceTool($e)
-				->exists()
-		) {
-			Tool::fail('deleteTrayUsed');
-			return;
-		}
-
-		Tool::model()->beginTransaction();
-
-		parent::delete($e);
-
-		Tool::model()->commit();
 
 	}
 

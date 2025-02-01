@@ -9,6 +9,7 @@ abstract class ToolElement extends \Element {
 
 	const ACTIVE = 'active';
 	const INACTIVE = 'inactive';
+	const DELETED = 'deleted';
 
 	public static function getSelection(): array {
 		return Tool::model()->getProperties();
@@ -48,7 +49,7 @@ class ToolModel extends \ModuleModel {
 			'routineName' => ['text8', 'null' => TRUE, 'cast' => 'string'],
 			'routineValue' => ['json', 'null' => TRUE, 'cast' => 'array'],
 			'comment' => ['text16', 'null' => TRUE, 'cast' => 'string'],
-			'status' => ['enum', [\farm\Tool::ACTIVE, \farm\Tool::INACTIVE], 'cast' => 'enum'],
+			'status' => ['enum', [\farm\Tool::ACTIVE, \farm\Tool::INACTIVE, \farm\Tool::DELETED], 'cast' => 'enum'],
 			'createdAt' => ['datetime', 'cast' => 'string'],
 		]);
 

@@ -148,7 +148,7 @@ Tool:
   routineName: ?text8
   routineValue: ?json
   comment: ?text16
-  status: enum(ACTIVE, INACTIVE) = ACTIVE
+  status: enum(ACTIVE, INACTIVE, DELETED) = ACTIVE
   createdAt: datetime = SPECIAL(now)
   UNIQUE: [
     ["farm", "name"]

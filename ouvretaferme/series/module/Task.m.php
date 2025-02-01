@@ -61,7 +61,7 @@ class TaskModel extends \ModuleModel {
 			'harvestUnit' => ['enum', [\series\Task::KG, \series\Task::UNIT, \series\Task::BUNCH], 'null' => TRUE, 'cast' => 'enum'],
 			'harvestSize' => ['element32', 'plant\Size', 'null' => TRUE, 'cast' => 'element'],
 			'fertilizer' => ['json', 'null' => TRUE, 'cast' => 'array'],
-			'plannedWeek' => ['week', 'min' => toWeek('NOW - 2 YEAR'), 'max' => toWeek('NOW + 10 YEAR'), 'null' => TRUE, 'cast' => 'string'],
+			'plannedWeek' => ['week', 'null' => TRUE, 'cast' => 'string'],
 			'plannedDate' => ['date', 'null' => TRUE, 'cast' => 'string'],
 			'plannedUsers' => ['json', 'cast' => 'array'],
 			'doneWeek' => ['week', 'null' => TRUE, 'cast' => 'string'],

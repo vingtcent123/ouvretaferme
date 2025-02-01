@@ -98,7 +98,7 @@
 		$data->search = new Search([
 			'name' => GET('name'),
 			'action' => GET('action', 'farm\Action'),
-			'status' => GET('status', default: \farm\Tool::ACTIVE),
+			'status' => GET('status', [\farm\Tool::ACTIVE, \farm\Tool::INACTIVE], default: \farm\Tool::ACTIVE),
 		]);
 
 		$data->routineName = GET('routineName');

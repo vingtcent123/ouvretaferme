@@ -36,8 +36,6 @@ class AlertUi {
 
 			'Tool::name.duplicate' => s("Vous avez déjà créé un élément de même nom."),
 			'Tool::routineValue.tray' => s("Vous devez indiquer un nombre de mottes par plateau."),
-			'Tool::deleteUsed' => s("Vous ne pouvez pas supprimer un élément qui est déjà utilisé sur les itinéraires techniques ou les séries..."),
-			'Tool::deleteTrayUsed' => s("Vous ne pouvez pas supprimer ce plateau qui est utilisé pour répartir des variétés dans des séries..."),
 
 			'Invite::email.duplicate' => s("Une invitation a déjà été lancée pour cette adresse e-mail..."),
 			'Invite::email.duplicateCustomer' => s("Cette adresse e-mail est déjà utilisée pour un autre client de votre ferme..."),
