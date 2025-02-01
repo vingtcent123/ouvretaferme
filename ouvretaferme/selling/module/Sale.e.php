@@ -582,15 +582,27 @@ class Sale extends SaleElement {
 
 		return parent::build($properties, $input, $callbacks + [
 
-			'customer.check' => function(Customer $eCustomer): bool {
+			'customer.check' => function(Customer $eCustomer) use ($for): bool {
 
-				$this->expects(['farm', 'marketParent']);
+				$this->expects(['farm']);
 
-				if($eCustomer->empty()) {
+				if($for === 'update') {
 
-					if($this['marketParent']->notEmpty()) {
-						return TRUE;
-					} else {
+					$this->expects(['marketParent']);
+
+					if($eCustomer->empty()) {
+
+						if($this['marketParent']->notEmpty()) {
+							return TRUE;
+						} else {
+							return FALSE;
+						}
+
+					}
+
+				} else {
+
+					if($eCustomer->empty()) {
 						return FALSE;
 					}
 
