@@ -8,7 +8,7 @@ class CultivationLib extends CultivationCrud {
 	}
 
 	public static function getPropertiesUpdate(): array {
-		return ['yieldExpected', 'mainUnit', 'unitWeight', 'bunchWeight', 'harvestPeriodExpected', 'harvestMonthsExpected', 'harvestWeeksExpected', 'plant', 'distance', 'density', 'rows', 'plantSpacing', 'rowSpacing', 'seedling', 'seedlingSeeds', 'sliceUnit', 'sliceTool', 'variety'];
+		return ['yieldExpected', 'mainUnit', 'unitWeight', 'bunchWeight', 'harvestPeriodExpected', 'harvestMonthsExpected', 'harvestWeeksExpected', 'plant', 'distance', 'density', 'rows', 'plantSpacing', 'rowSpacing', 'seedling', 'seedlingSeeds', 'sliceUnit', 'sliceTool', 'variety', 'actions'];
 	}
 
 	public static function getNew(Series $eSeries, \plant\Plant $ePlant): Cultivation {
@@ -981,6 +981,10 @@ class CultivationLib extends CultivationCrud {
 			\production\CropLib::calculateDistance($e, $e['series']);
 		} else if(count($distanceUpdate) > 0) {
 			throw new \Exception('Properties must be updated together');
+		}
+
+		if(array_delete($properties, 'actions')) {
+			self::createTasks($e);
 		}
 
 		parent::update($e, $properties);

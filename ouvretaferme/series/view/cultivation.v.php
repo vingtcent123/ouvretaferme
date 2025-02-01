@@ -8,7 +8,7 @@ new JsonView('addPlant', function($data, AjaxTemplate $t) {
 });
 
 new AdaptativeView('update', function($data, PanelTemplate $t) {
-	return (new \series\CultivationUi())->update($data->e);
+	return (new \series\CultivationUi())->update($data->e, $data->cAction);
 });
 
 new AdaptativeView('harvest', function($data, PanelTemplate $t) {

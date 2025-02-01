@@ -210,6 +210,15 @@ class TaskLib extends TaskCrud {
 
 	}
 
+	public static function hasCultivationActions(Cultivation $eCultivation, \Collection $cAction): bool {
+
+		return Task::model()
+			->whereCultivation($eCultivation)
+			->whereAction('IN', $cAction)
+			->exists();
+
+	}
+
 	public static function getByYear(\farm\Farm $eFarm, int $year, \Search $search): \Collection {
 
 		self::applySearch($search);

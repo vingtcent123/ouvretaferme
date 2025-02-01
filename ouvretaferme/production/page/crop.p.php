@@ -11,6 +11,8 @@
 		$data->ePlant = \plant\PlantLib::getById(POST('plant'));
 		$data->ccVariety = \plant\VarietyLib::query($data->eSequence['farm'], $data->ePlant);
 
+		$data->cAction = \farm\ActionLib::getByFarm($data->eSequence['farm'], fqn: [ACTION_SEMIS_PEPINIERE, ACTION_SEMIS_DIRECT, ACTION_PLANTATION], index: 'fqn');
+
 		throw new \ViewAction($data);
 
 	})
@@ -54,6 +56,18 @@
 	->update(function($data) {
 
 		$data->e['ccVariety'] = \plant\VarietyLib::query($data->e['farm'], $data->e['plant']);
+
+		if($data->e['seedling'] === NULL) {
+
+			$data->cAction = \farm\ActionLib::getByFarm($data->e['farm'], fqn: [ACTION_SEMIS_PEPINIERE, ACTION_SEMIS_DIRECT, ACTION_PLANTATION], index: 'fqn');
+
+			if(\production\FlowLib::hasCropActions($data->e, $data->cAction)) {
+				$data->cAction = new Collection();
+			}
+
+		} else {
+			$data->cAction = new Collection();
+		}
 
 		throw new ViewAction($data);
 

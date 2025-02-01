@@ -2474,7 +2474,7 @@ class CultivationUi {
 
 	}
 
-	public function update(Cultivation $eCultivation): \Panel {
+	public function update(Cultivation $eCultivation, \Collection $cAction): \Panel {
 
 		$eCultivation->expects([
 			'series' => ['use', 'plants'],
@@ -2500,6 +2500,10 @@ class CultivationUi {
 
 				$h .= $form->dynamicGroup($eCultivation, 'seedling');
 				$h .= $form->dynamicGroup($eCultivation, 'seedlingSeeds');
+
+				if($cAction->notEmpty()) {
+					$h .= self::getActionsField($form, $eCultivation, $cAction);
+				}
 
 				$h .= self::getMainUnitField($form, $eCultivation);
 				$h .= self::getYieldExpectedField($form, $eCultivation);

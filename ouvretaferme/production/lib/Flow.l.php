@@ -59,6 +59,15 @@ class FlowLib extends FlowCrud {
 
 	}
 
+	public static function hasCropActions(Crop $eCrop, \Collection $cAction): bool {
+
+		return Flow::model()
+			->whereCrop($eCrop)
+			->whereAction('IN', $cAction)
+			->exists();
+
+	}
+
 	/**
 	 * Pas nécessaire de recalculer les semaines de démarrage étant donné que ces champs sont dupliqués tel quel
 	 */

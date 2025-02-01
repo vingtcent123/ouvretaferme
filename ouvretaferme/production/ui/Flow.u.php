@@ -913,7 +913,7 @@ class FlowUi {
 		$h .= '<div id="flow-period-only" style="'.$styleOnly.'">';
 			$h .= $form->group(
 				self::p('weekOnly')->label,
-				$this->getWeekField($form, $eFlow, 'only').
+				$this->getWeekField($form, $eFlow, fn($name) => $name.'Only').
 				'<div class="field-followup"><a data-action="flow-period-interval">'.s("Répéter l'intervention plusieurs fois dans la saison").'</a></div>',
 				['wrapper' => 'weekOnly yearOnly']
 			);
@@ -923,13 +923,13 @@ class FlowUi {
 
 			$h .= $form->group(
 				self::p('weekStart')->label,
-				$this->getWeekField($form, $eFlow, 'start'),
+				$this->getWeekField($form, $eFlow, fn($name) => $name.'Start'),
 				['wrapper' => 'weekStart yearStart']
 			);
 
 			$h .= $form->group(
 				self::p('weekStop')->label,
-				$this->getWeekField($form, $eFlow, 'stop').
+				$this->getWeekField($form, $eFlow, fn($name) => $name.'Stop').
 				'<div class="field-followup"><a data-action="flow-period-only">'.s("Ne pas répéter l'intervention dans la saison").'</a></div>',
 				['wrapper' => 'weekStop yearStop']
 			);
@@ -995,14 +995,12 @@ class FlowUi {
 
 	}
 
-	public function getWeekField(\util\FormUi $form, Flow $eFlow, string $name): string {
-
-		str_is($name, ['only', 'start', 'stop']);
+	public function getWeekField(\util\FormUi $form, Flow $eFlow, \Closure $name): string {
 
 		$h = '<div class="flow-write-week">';
-			$h .= $form->dynamicField($eFlow, 'week'.ucfirst($name));
+			$h .= $form->dynamicField($eFlow, $name('week'));
 			if($eFlow['sequence']['cycle'] === Sequence::ANNUAL) {
-				$h .= $form->dynamicField($eFlow, 'year'.ucfirst($name));
+				$h .= $form->dynamicField($eFlow, $name('year'));
 			}
 		$h .= '</div>';
 
@@ -1054,18 +1052,14 @@ class FlowUi {
 			case 'weekOnly' :
 			case 'weekStart' :
 			case 'weekStop' :
-				$d->field = fn(\util\FormUi $form, Flow $e) => $form->week($property, isset($e[$property]) ? date('Y').'-W'.sprintf('%02d', $e[$property]) : NULL, ['withYear' => FALSE]);
+				$d->field = fn(\util\FormUi $form, Flow $e, string $field) => $form->week($field, isset($e[$property]) ? date('Y').'-W'.sprintf('%02d', $e[$property]) : NULL, ['withYear' => FALSE]);
 				break;
 
 			case 'yearOnly' :
 			case 'yearStart' :
 			case 'yearStop' :
 				$d->field = 'select';
-				$d->values = [
-					-1 => s("Année « N-1 »"),
-					0 => s("Année « N »"),
-					1 => s("Année « N+1 »")
-				];
+				$d->values = self::getYearsSelect();
 				$d->attributes = ['mandatory' => TRUE];
 				break;
 
@@ -1122,6 +1116,14 @@ class FlowUi {
 
 		return $d;
 
+	}
+
+	public static function getYearsSelect(): array {
+		return [
+			-1 => s("Année « N-1 »"),
+			0 => s("Année « N »"),
+			1 => s("Année « N+1 »")
+		];
 	}
 	
 }

@@ -133,6 +133,43 @@ class Crop extends CropElement {
 
 			},
 
+			'actions.set' => function(?array $actions): bool {
+
+				$this->expects(['seedling']);
+
+				$this['actions'] = [];
+
+				$check = function($action) use ($actions) {
+
+					$year = (int)($actions[$action]['year'] ?? 0);
+					$week = ($actions[$action]['week'] ?? NULL);
+
+					if(
+						\Filter::check('week', $week) and
+						in_array($year, [-1, 0, 1])
+					) {
+						$this['actions'][$action] = [week_number($week), $year];
+					}
+
+				};
+
+				switch($this['seedling']) {
+
+					case Crop::SOWING :
+						$check->call($this, ACTION_SEMIS_DIRECT);
+						break;
+
+					case Crop::YOUNG_PLANT :
+						$check->call($this, ACTION_SEMIS_PEPINIERE);
+						$check->call($this, ACTION_PLANTATION);
+						break;
+
+				}
+
+				return TRUE;
+
+			}
+
 		]);
 
 	}

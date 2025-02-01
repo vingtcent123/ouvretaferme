@@ -4,11 +4,11 @@ new AdaptativeView('create', function($data, PanelTemplate $t) {
 });
 
 new JsonView('addPlant', function($data, AjaxTemplate $t) {
-	$t->qs('#crop-create-content')->innerHtml((new \production\CropUi())->createContent($data->eSequence, $data->ccVariety));
+	$t->qs('#crop-create-content')->innerHtml((new \production\CropUi())->createContent($data->eSequence, $data->ccVariety, $data->cAction));
 });
 
 new AdaptativeView('update', function($data, PanelTemplate $t) {
-	return (new \production\CropUi())->update($data->e);
+	return (new \production\CropUi())->update($data->e, $data->cAction);
 });
 
 new JsonView('changePlant', function($data, AjaxTemplate $t) {

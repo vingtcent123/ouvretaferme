@@ -4,11 +4,11 @@ namespace production;
 class CropLib extends CropCrud {
 
 	public static function getPropertiesCreate(): array {
-		return ['plant', 'distance', 'density', 'rows', 'plantSpacing', 'rowSpacing', 'seedling', 'seedlingSeeds', 'yieldExpected', 'mainUnit', 'variety'];
+		return ['plant', 'distance', 'density', 'rows', 'plantSpacing', 'rowSpacing', 'seedling', 'seedlingSeeds', 'yieldExpected', 'mainUnit', 'variety', 'actions'];
 	}
 
 	public static function getPropertiesUpdate(): array {
-		return ['yieldExpected', 'mainUnit', 'plant', 'distance', 'density', 'rows', 'plantSpacing', 'rowSpacing', 'seedling', 'seedlingSeeds', 'variety'];
+		return ['yieldExpected', 'mainUnit', 'plant', 'distance', 'density', 'rows', 'plantSpacing', 'rowSpacing', 'seedling', 'seedlingSeeds', 'variety', 'actions'];
 	}
 
 	public static function getBySequence(Sequence $eSequence): \Collection {
@@ -110,6 +110,8 @@ class CropLib extends CropCrud {
 
 			parent::create($e);
 
+			self::createFlows($e);
+
 			$fw = new \FailWatch();
 
 			// Ajout de la répartition des variétés
@@ -163,6 +165,10 @@ class CropLib extends CropCrud {
 			throw new \Exception('Properties must be updated together');
 		}
 
+		if(array_delete($properties, 'actions')) {
+			self::createFlows($e);
+		}
+
 		parent::update($e, $properties);
 
 		// Mise à jour l'espèce -> mettre à jour également le flow
@@ -177,6 +183,33 @@ class CropLib extends CropCrud {
 		}
 
 		Crop::model()->commit();
+
+	}
+
+	public static function createFlows(Crop $e): void {
+
+		$e->expects(['actions']);
+
+		$cAction = \farm\ActionLib::getByFarm($e['farm'], fqn: array_keys($e['actions']), index: 'fqn');
+		$eCategory = \farm\CategoryLib::getByFarm($e['farm'], fqn: CATEGORIE_CULTURE);
+
+		foreach($e['actions'] as $action => [$week, $year]) {
+
+			$eAction = $cAction[$action];
+
+			$eFlow = new \production\Flow([
+				'action' => $eAction,
+				'category' => $eCategory,
+				'sequence' => $e['sequence'],
+				'crop' => $e,
+				'weekOnly' => $week,
+				'yearOnly' => ($e['sequence']['cycle'] === Sequence::PERENNIAL) ? NULL : $year,
+				'seasonOnly' => ($e['sequence']['cycle'] === Sequence::PERENNIAL) ? 1 : NULL
+			]);
+
+			FlowLib::create($eFlow);
+
+		}
 
 	}
 

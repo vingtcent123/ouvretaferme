@@ -54,9 +54,45 @@ class Crop {
 	static changeSeedling(target) {
 
 		const wrapper = target.firstParent('form');
+		const value = target.qs('input:checked').value;
 
 		const seeds = wrapper.qs('[data-wrapper^="seedlingSeeds"]');
-		seeds.dataset.action = target.qs('input:checked').value;
+		seeds.qs('input').value = '1';
+		seeds.dataset.action = value;
+
+		const actionSemisPepiniere = wrapper.qs('[data-wrapper*="semis-pepiniere"]');
+		const actionSemisDirect = wrapper.qs('[data-wrapper*="semis-direct"]');
+		const actionPlantation = wrapper.qs('[data-wrapper*="plantation"]');
+
+		if(
+			actionSemisPepiniere === null ||
+			actionSemisDirect === null ||
+			actionPlantation === null
+		) {
+			return;
+		}
+
+		switch(value) {
+
+			case 'young-plant' :
+				actionSemisPepiniere.removeHide();
+				actionSemisDirect.hide();
+				actionPlantation.removeHide();
+				break;
+
+			case 'sowing' :
+				actionSemisPepiniere.hide();
+				actionSemisDirect.removeHide();
+				actionPlantation.hide();
+				break;
+
+			default :
+				actionSemisPepiniere.hide();
+				actionSemisDirect.hide();
+				actionPlantation.hide();
+				break;
+
+		}
 
 	}
 

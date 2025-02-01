@@ -157,6 +157,10 @@ tr.crop-list-title-plant .plant-vignette {
 	margin-right: 0.75rem;
 }
 
+[data-wrapper^="seedlingSeeds"]:not([data-action="sowing"]):not([data-action="young-plant"]) {
+	display: none !important;
+}
+
 [data-wrapper^="seedlingSeeds"][data-action="sowing"] .crop-field-young-plant {
 	display: none;
 }

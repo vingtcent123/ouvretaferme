@@ -80,6 +80,18 @@
 		$data->e['ccVariety'] = \plant\VarietyLib::query($data->e['farm'], $data->e['plant']);
 		$data->e['cTray'] = \farm\ToolLib::getTraysByFarm($data->e['farm']);
 
+		if($data->e['seedling'] === NULL) {
+
+			$data->cAction = \farm\ActionLib::getByFarm($data->e['farm'], fqn: [ACTION_SEMIS_PEPINIERE, ACTION_SEMIS_DIRECT, ACTION_PLANTATION], index: 'fqn');
+
+			if(\series\TaskLib::hasCultivationActions($data->e, $data->cAction)) {
+				$data->cAction = new Collection();
+			}
+
+		} else {
+			$data->cAction = new Collection();
+		}
+
 		throw new ViewAction($data);
 
 	})

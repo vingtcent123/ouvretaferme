@@ -158,7 +158,7 @@ class CropUi {
 						$h .= $presentation;
 					} else {
 						$h .= '<div class="text-center">';
-							$h .= '<a href="/production/crop:update?id='.$eCrop['id'].'" class="btn mt-1 mb-1 btn-outline-primary">'.s("Configurer maintenant").'</a>';
+							$h .= '<a href="/production/crop:update?id='.$eCrop['id'].'&actions" class="btn mt-1 mb-1 btn-outline-primary">'.s("Configurer maintenant").'</a>';
 						$h .= '</div>';
 					}
 
@@ -472,7 +472,7 @@ class CropUi {
 
 	}
 
-	public function createContent(Sequence $eSequence, \Collection $ccVariety): string {
+	public function createContent(Sequence $eSequence, \Collection $ccVariety, \Collection $cAction): string {
 
 		$eSequence->expects(['farm', 'plants']);
 
@@ -491,7 +491,7 @@ class CropUi {
 
 
 		$h = $this->getVarietyGroup($form, $eCrop, $eCrop['ccVariety'], new \Collection());
-		$h .= $this->getFieldsWrite($form, $eCrop);
+		$h .= $this->getFieldsWrite($form, $eCrop, $cAction);
 
 		$h .= $form->group(
 			content: $form->submit(s("Ajouter la production"))
@@ -501,7 +501,7 @@ class CropUi {
 
 	}
 
-	public function update(Crop $eCrop): \Panel {
+	public function update(Crop $eCrop, \Collection $cAction): \Panel {
 
 		$eCrop->expects([
 			'cSlice', 'ccVariety'
@@ -523,7 +523,7 @@ class CropUi {
 			});
 
 			$h .= $this->getVarietyGroup($form, $eCrop, $eCrop['ccVariety'], $eCrop['cSlice']);
-			$h .= $this->getFieldsWrite($form, $eCrop);
+			$h .= $this->getFieldsWrite($form, $eCrop, $cAction);
 
 			$h .= $form->group(
 				content: $form->submit(s("Modifier"))
@@ -539,7 +539,7 @@ class CropUi {
 
 	}
 
-	public function getFieldsWrite(\util\FormUi $form, Crop $eCrop): string {
+	public function getFieldsWrite(\util\FormUi $form, Crop $eCrop, \Collection $cAction): string {
 
 		$eCrop->expects([
 			'sequence' => ['use', 'plants']
@@ -552,8 +552,51 @@ class CropUi {
 		$h .= $form->dynamicGroup($eCrop, 'seedling');
 		$h .= $form->dynamicGroup($eCrop, 'seedlingSeeds');
 
+		if($cAction->notEmpty()) {
+			$h .= $this->getActionsField($form, $eCrop, $cAction);
+		}
+
 		$h .= $this->getMainUnitField($form, $eCrop);
 		$h .= $this->getYieldExpectedField($form, $eCrop);
+
+		return $h;
+
+	}
+
+	private function getActionsField(\util\FormUi $form, Crop $eCrop, \Collection $cAction): string {
+
+		$h = $form->group(
+			'<span class="util-badge ml-1" style="background-color: '.$cAction[ACTION_SEMIS_PEPINIERE]['color'].'">'.s("Semaine de semis en pépinière").'</span>',
+			$this->getWeekField($form, $eCrop, 'actions['.ACTION_SEMIS_PEPINIERE.']'),
+			['class' => 'hide']
+		);
+
+		$h .= $form->group(
+			'<span class="util-badge ml-1" style="background-color: '.$cAction[ACTION_PLANTATION]['color'].'">'.s("Semaine de plantation").'</span>',
+			$this->getWeekField($form, $eCrop, 'actions['.ACTION_PLANTATION.']'),
+			['class' => 'hide']
+		);
+
+		$h .= $form->group(
+			'<span class="util-badge ml-1" style="background-color: '.$cAction[ACTION_SEMIS_DIRECT]['color'].'">'.s("Semaine de semis direct").'</span>',
+			$this->getWeekField($form, $eCrop, 'actions['.ACTION_SEMIS_DIRECT.']'),
+			['class' => 'hide']
+		);
+
+		return $h;
+
+	}
+
+	public function getWeekField(\util\FormUi $form, Crop $eCrop, string $prefix): string {
+
+		\Asset::css('production', 'flow.css');
+
+		$h = '<div class="flow-write-week">';
+			$h .= $form->week($prefix.'[week]', attributes: ['withYear' => FALSE]);
+			if($eCrop['sequence']['cycle'] === Sequence::ANNUAL) {
+				$h .= $form->select($prefix.'[year]', FlowUi::getYearsSelect(), 0, attributes: ['mandatory' => TRUE]);
+			}
+		$h .= '</div>';
 
 		return $h;
 
