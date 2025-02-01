@@ -34,7 +34,7 @@ class ZoneLib extends ZoneCrud {
 
 	}
 
-	public static function filter(\Collection $cZone, \Search $search, \series\Series $eSeries): void {
+	public static function test(\Collection $cZone, \Search $search, \series\Series $eSeries): void {
 
 		$eSeries->expects([
 			'use',
@@ -46,80 +46,74 @@ class ZoneLib extends ZoneCrud {
 			return;
 		}
 
-		$filterAll = $search->get('width');
-		$filterMode = $search->get('mode');
-
-		if(
-			$eSeries['bedStartCalculated'] !== NULL and
-			$eSeries['bedStopCalculated'] !== NULL
-		) {
-
-			$filterAvailable = match($search->get('available')) {
-				100 => 0,
-				1 => 1,
-				2 => 2,
-				default => NULL
-			};
-
-		} else {
-			$filterAvailable = NULL;
-		}
-
-		$filterRotation = [];
+		$rotations = [];
 		
-		if($search->get('rotation') >= 1) {
+		$cFamily = $eSeries['cCultivation']
+			->getColumnCollection('plant')
+			->getColumnCollection('family');
 
-			$cFamily = $eSeries['cCultivation']->getColumnCollection('plant')->getColumnCollection('family');
+		if($cFamily->notEmpty()) {
 
-			if($cFamily->notEmpty()) {
+			$rotationLimit = 5;
 
-				$cSeriesForbidden = \series\Cultivation::model()
-					->select('series')
-					->join(\plant\Plant::model(), 'm1.plant = m2.id')
-					->where('m1.series', '!=', $eSeries)
-					->where('m1.farm', $eSeries['farm'])
-					->whereSeason('BETWEEN', new \Sql(($eSeries['season'] - $search->get('rotation')).' AND '.$eSeries['season']))
-					->where('m2.family', 'IN', $cFamily)
-					->where('m1.plant', 'NOT IN', $eSeries['farm']['rotationExclude'], if: $eSeries['farm']['rotationExclude'])
-					->getColumn('series');
+			$cCultivationRotation = \series\Cultivation::model()
+				->select([
+					'series',
+					'rotation' => new \Sql($eSeries['season'].' - season', 'int')
+				])
+				->join(\plant\Plant::model(), 'm1.plant = m2.id')
+				->where('m1.series', '!=', $eSeries)
+				->where('m1.farm', $eSeries['farm'])
+				->whereSeason('BETWEEN', new \Sql(($eSeries['season'] - $rotationLimit).' AND '.$eSeries['season']))
+				->where('m2.family', 'IN', $cFamily)
+				->where('m1.plant', 'NOT IN', $eSeries['farm']['rotationExclude'], if: $eSeries['farm']['rotationExclude'])
+				->getCollection(index: 'series');
 
-				$filterRotation = array_flip(\series\Place::model()
-					->select('bed')
-					->whereSeries('IN', $cSeriesForbidden)
-					->getColumn('bed')
-					->getIds());
+			foreach(\series\Place::model()
+				->select(['bed', 'series'])
+				->whereSeries('IN', $cCultivationRotation->getColumn('series'))
+				->getCollection() as $ePlace) {
+
+				$rotations[$ePlace['bed']['id']] = $cCultivationRotation[$ePlace['series']['id']]['rotation'];
 
 			}
 
 		}
 
+		$filterMode = $search->get('mode');
+
 		foreach($cZone as ['cPlot' => $cPlot]) {
 
 			foreach($cPlot as ['cBed' => $cBed]) {
 
-				foreach($cBed as $key => $eBed) {
+				foreach($cBed as $eBed) {
 
-					if(
-						$filterAll and
-						$eSeries['bedWidth'] !== $eBed['width']
-					) {
-						$cBed[$key]['ignore'] = TRUE;
+					if($eBed['plotFill'] or $eBed['zoneFill']) {
+						continue;
 					}
 
+					$eBed['test'] = [
+						'sameWidth' => ($eSeries['bedWidth'] === $eBed['width']),
+						'hasGreenhouse' => $eBed['greenhouse']->notEmpty(),
+						'rotation' => $rotations[$eBed['id']] ?? NULL,
+						'free' => 0,
+						'hide' => (
+							($filterMode === Plot::GREENHOUSE and $eBed['greenhouse']->empty()) or
+							($filterMode === Plot::OPEN_FIELD and $eBed['greenhouse']->notEmpty())
+						)
+					];
+
 					if(
-						($filterMode === Plot::GREENHOUSE and $eBed['greenhouse']->empty()) or
-						($filterMode === Plot::OPEN_FIELD and $eBed['greenhouse']->notEmpty())
+						$eSeries['bedStartCalculated'] !== NULL and
+						$eSeries['bedStopCalculated'] !== NULL
 					) {
-
-						$cBed[$key]['ignore'] = TRUE;
-
-					}
-
-					if($filterAvailable !== NULL) {
 
 						foreach($eBed['cPlace'] as $ePlace) {
 
-							if($ePlace['series']->empty()) {
+							if(
+								$ePlace['series']->empty() or
+								$ePlace['series']['id'] === $eSeries['id']
+							) {
 								continue;
 							}
 
@@ -130,7 +124,7 @@ class ZoneLib extends ZoneCrud {
 
 								if($ePlace['series']['cycle'] === \series\Series::PERENNIAL) {
 
-									$cBed[$key]['ignore'] = TRUE;
+									$eBed['test']['free'] = NULL;
 									break;
 
 								} else {
@@ -142,19 +136,17 @@ class ZoneLib extends ZoneCrud {
 							$placeStart = $ePlace['series']['bedStartCalculated'] + ($ePlace['series']['season'] - $eSeries['season']) * 100;
 							$placeStop = $ePlace['series']['bedStopCalculated'] + ($ePlace['series']['season'] - $eSeries['season']) * 100;
 
-							if(
-								$eSeries['bedStartCalculated'] + $filterAvailable < $placeStop and
-								$eSeries['bedStopCalculated'] - $filterAvailable > $placeStart
-							) {
-								$cBed[$key]['ignore'] = TRUE;
+							$free = min($placeStop - $eSeries['bedStartCalculated'], $eSeries['bedStopCalculated'] - $placeStart);
+
+							if($free <= 2) {
+								$eBed['test']['free'] = max($eBed['test']['free'], max($free, 0));
+							} else {
+								$eBed['test']['free'] = NULL;
+								break;
 							}
 
 						}
 
-					}
-
-					if(array_key_exists($eBed['id'], $filterRotation)) {
-						$cBed[$key]['ignore'] = TRUE;
 					}
 
 

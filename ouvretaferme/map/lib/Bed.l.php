@@ -133,6 +133,18 @@ class BedLib extends BedCrud {
 
 	}
 
+	public static function countWidthsByFarm(\farm\Farm $eFarm, int $season): int {
+
+		SeasonLib::whereSeason(Bed::model(), $season);
+
+		return Bed::model()
+			->whereFarm($eFarm)
+			->wherePlotFill(FALSE)
+			->whereZoneFill(FALSE)
+			->getValue(new \Sql('COUNT(DISTINCT width)', 'int'));
+
+	}
+
 	public static function createCollection(\Collection $c): void {
 
 		$c->map(fn($e) => self::prepareCreate($e));

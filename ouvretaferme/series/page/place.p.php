@@ -41,17 +41,12 @@
 
 			case 'series' :
 
-				$hasAlternativeBedWidth = $data->cPlace->match(fn($ePlace) => $ePlace['bed']['width'] !== $data->e['bedWidth']);
-
 				$data->search = new Search([
-					'canWidth' => $hasAlternativeBedWidth,
-					'width' => GET('width', 'bool', FALSE),
+					'canWidth' => \map\BedLib::countWidthsByFarm($data->e['farm'], $data->e['season']) > 1,
 					'mode' => GET('mode', [NULL, \map\Plot::GREENHOUSE, \map\Plot::OPEN_FIELD], NULL),
-					'available' => GET('available', 'int', 0),
-					'rotation' => GET('rotation', 'int', 0)
 				]);
 
-				\map\ZoneLib::filter($data->cZone, $data->search, $data->e);
+				\map\ZoneLib::test($data->cZone, $data->search, $data->e);
 
 				\series\SeriesLib::fillTimeline($data->e);
 

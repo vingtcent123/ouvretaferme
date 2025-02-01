@@ -15,6 +15,114 @@ class Place {
 
 	}
 
+	static resetSearch() {
+
+		const wrapper = qs('#place-search');
+
+		wrapper.qs('[name="mode"]').value = '';
+		wrapper.qs('[name="width"]').value = '0';
+		wrapper.qs('[name="rotation"]').value = '0';
+		wrapper.qs('[name="free"]').value = '0';
+
+		wrapper.hide();
+
+		this.updateSearch();
+
+	}
+
+	static updateSearch() {
+
+		const wrapper = qs('#place-search');
+
+		const searchMode = wrapper.qs('[name="mode"]').value;
+		const searchWidth = wrapper.qs('[name="width"]')?.value;
+		const searchFree = wrapper.qs('[name="free"]').value;
+		const searchRotation = parseInt(wrapper.qs('[name="rotation"]').value);
+
+		qsa('.place-grid-container', container => {
+
+			let containerHide = 1;
+
+			container.qsa('.place-grid-bed', bed => {
+
+				let bedHide = 0;
+
+				switch(searchFree) {
+
+					case '0' :
+						break;
+
+					case '100' :
+						if(bed.dataset.free !== '0') {
+							bedHide = 1;
+						}
+						break;
+
+					case '1' :
+						if(bed.dataset.free !== '0' && bed.dataset.free !== '1') {
+							bedHide = 1;
+						}
+					case '2' :
+						if(bed.dataset.free !== '0' && bed.dataset.free !== '1' && bed.dataset.free !== '2') {
+							bedHide = 1;
+						}
+						break;
+
+				}
+
+				switch(searchMode) {
+
+					case '' :
+						break;
+
+					case 'open-field' :
+						if(bed.dataset.greenhouse === '1') {
+							bedHide = 1;
+						}
+						break;
+
+					case 'greenhouse' :
+						if(bed.dataset.greenhouse === '0') {
+							bedHide = 1;
+						}
+						break;
+
+				}
+
+				if(
+					searchWidth === '1' &&
+					bed.dataset.sameWidth === '0'
+				) {
+					bedHide = 1;
+				}
+
+				if(
+					searchRotation > 0 &&
+					bed.dataset.rotation !== ''
+				) {
+
+					const rotation = parseInt(bed.dataset.rotation);
+
+					if(searchRotation > rotation) {
+						bedHide = 1;
+					}
+
+				}
+
+				if(bedHide === 0) {
+					containerHide = 0;
+				}
+
+				bed.dataset.hide = bedHide;
+
+			});
+
+			container.dataset.hide = containerHide;
+
+		});
+
+	}
+
 	static selectBed(target) {
 
 		let wrapper = target.firstParent('div.place-grid');
