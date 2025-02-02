@@ -121,7 +121,7 @@ class SequenceUi {
 				$ePlant = $cCrop->first()['plant'];
 
 				$h .= '<tr class="crop-list-title-plant">';
-					$h .= '<td colspan="'.($search?->get('status') === Sequence::ACTIVE ? 5 : 4).'">';
+					$h .= '<td colspan="'.($search?->get('status') === Sequence::ACTIVE ? 6 : 5).'">';
 						$h .= \plant\PlantUi::getVignette($ePlant, '2rem').' ';
 						$h .= encode($ePlant['name']);
 					$h .= '</td>';
@@ -161,6 +161,9 @@ class SequenceUi {
 					}
 
 				$h .= '</td>';
+				$h .= '<td class="text-center">';
+					$h .= $eCrop['yieldExpected'] ? '<b>'.$eCrop->format('yieldExpected', ['short' => TRUE]).'</b>' : '/';
+				$h .= '</td>';
 				$h .= '<td class="sequence-item-use">';
 					$h .= match($eSequence['use']) {
 						Sequence::BED => s("Planche de {bedWidth} cm", $eSequence),
@@ -171,7 +174,7 @@ class SequenceUi {
 				if($search?->get('status') === Sequence::ACTIVE) {
 
 					$h .= '<td class="text-end">';
-						$h .= $this->createSeries($eFarm, $eSequence, 'btn-sm btn-outline-secondary');
+						$h .= $this->createSeries($eFarm, $eSequence, 'btn-sm btn-secondary', TRUE);
 					$h .= '</td>';
 
 				}
@@ -191,6 +194,7 @@ class SequenceUi {
 						$h .= '<th class="util-grid-header">'.s("Nom").'</th>';
 						$h .= '<th class="util-grid-header">'.s("Semaine<br/>d'implantation").'</th>';
 						$h .= '<th class="util-grid-header">'.s("Semaines<br/>de récolte").'</th>';
+						$h .= '<th class="util-grid-header text-center">'.s("Rendement / m²").'</th>';
 						$h .= '<th class="util-grid-header sequence-item-use">'.s("Utilisation du sol").'</th>';
 						if($search?->get('status') === Sequence::ACTIVE) {
 							$h .= '<th></th>';
@@ -220,7 +224,7 @@ class SequenceUi {
 
 	}
 
-	protected function createSeries(\farm\Farm $eFarm, Sequence $eSequence, string $btn): string {
+	protected function createSeries(\farm\Farm $eFarm, Sequence $eSequence, string $btn, bool $short = FALSE): string {
 
 		$h = '';
 
@@ -239,8 +243,18 @@ class SequenceUi {
 
 			} else {
 
-				$h .= '<a class="dropdown-toggle btn '.$btn.'" data-dropdown="bottom-start">'.s("Créer une série").'</a>';
+				$h .= '<a class="dropdown-toggle btn '.$btn.'" data-dropdown="bottom-end">';
+					if($short) {
+						$h .= '<span class="hide-sm-up">'.\Asset::icon('plus-circle').'</span>';
+						$h .= '<span class="hide-xs-down">'.s("Créer une série").'</span>';
+					} else {
+						$h .= s("Créer une série");
+					}
+				$h .= '</a>';
 				$h .= '<div class="dropdown-list">';
+					if($short) {
+						$h .= '<div class="dropdown-title hide-sm-up">'.s("Créer une série").'</div>';
+					}
 
 					foreach($eFarm->getSeasons() as $season) {
 

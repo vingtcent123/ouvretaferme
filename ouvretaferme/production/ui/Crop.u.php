@@ -234,7 +234,7 @@ class CropUi {
 
 		$h = '<dt>'.$this->p('yieldExpected').'</dt>';
 		$h .= '<dd>';
-			$h .= ($eCrop['yieldExpected'] ? $eCrop->quick('yieldExpected', $eCrop->format('yieldExpected', ['short' => TRUE]).' / m²') : '');
+			$h .= ($eCrop['yieldExpected'] ? $eCrop->quick('yieldExpected', s("{value} / m²", $eCrop->format('yieldExpected', ['short' => TRUE]))) : '');
 		$h .= '</dd>';
 
 		return $h;
