@@ -925,6 +925,11 @@ class TaskUi {
 				$h .= '<div>';
 
 					$h .= $form->hidden('search', 1);
+
+					if($cUserFarm->count() > 1) {
+						$h .= $form->select('farmer', $cUserFarm->toArray(fn($eUserFarm) => [$eUserFarm['id'], $eUserFarm['firstName'].' '.$eUserFarm['lastName']], keys: TRUE), $search->get('farmer'), ['placeholder' => s("Affecté à")]);
+					}
+
 					if($cAction->notEmpty()) {
 						$h .= $form->select('action', $cAction, $search->get('action'), ['placeholder' => s("Intervention")]);
 					}
@@ -936,10 +941,6 @@ class TaskUi {
 					});
 					if($cZone->notEmpty()) {
 						$h .= (new \map\ZoneUi())->getZonePlotWidget($form, $cZone, $search->get('plot') ?? new \map\Plot(), s("Emplacement"));
-					}
-
-					if($cUserFarm->count() > 1) {
-						$h .= $form->select('farmer', $cUserFarm->toArray(fn($eUserFarm) => [$eUserFarm['id'], $eUserFarm['firstName'].' '.$eUserFarm['lastName']], keys: TRUE), $search->get('farmer'), ['placeholder' => s("Affecté à")]);
 					}
 
 				$h .= '</div>';
