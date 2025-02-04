@@ -9,7 +9,7 @@ class EditorMedia extends Media {
 
 		// Rebuild HTML to fix a very strange issue #1800
 		let html = '<a class="editor-image">';
-			html += '<img src="'+ data.media.urls.xl +'"/>';
+			html += '<img src="'+ data.media.urls.l +'"/>';
 		html += '</a>';
 
 		media.innerHTML = html;
@@ -23,12 +23,12 @@ class EditorMedia extends Media {
 		mediaSelector.setAttribute('data-xyz-w', data.media.width);
 		mediaSelector.setAttribute('data-xyz-h', data.media.height);
 		mediaSelector.setAttribute('data-xyz-version', data.media.version);
-		mediaSelector.setAttribute('data-xyz-url', data.media.urls.xl);
+		mediaSelector.setAttribute('data-xyz-url', data.media.urls.l);
 
 		mediaSelector.setAttribute('data-w', data.media.width);
 		mediaSelector.setAttribute('data-h', data.media.height);
 
-		mediaSelector.qs('.editor-image img', image => image.src = data.media.urls.xl);
+		mediaSelector.qs('.editor-image img', image => image.src = data.media.urls.l);
 
 		const figureSelector = mediaSelector.parentElement;
 		const instanceId = '#'+ figureSelector.parentNode.id;
