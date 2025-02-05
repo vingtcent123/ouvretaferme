@@ -283,7 +283,7 @@ class AnalyzeUi {
 									$weeks = $workingTimeWeekly[$eUser['id']][$hours] ?? 0;
 
 									if($hours === 10) {
-										$weeks += $workingTimeWeekly[$eUser['id']][0];
+										$weeks += $workingTimeWeekly[$eUser['id']][0] ?? 0;
 									}
 
 									$h .= '<div class="analyze-working-time-week text-end">';
