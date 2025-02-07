@@ -739,6 +739,18 @@ class Task {
 
 	}
 
+	static checkPlanningWeekSeries(selector) {
+
+		const wrapper = selector.parentElement;
+
+		wrapper.dataset.checked = (wrapper.dataset.checked === '0') ? '1' : '0';
+
+		qsa('#series-task-wrapper [name="batch[]"][data-week="'+ wrapper.dataset.week +'"]', node => node.checked = (wrapper.dataset.checked === '1'));
+
+		this.changePlanningSelection();
+
+	}
+
 	static checkPlanningPlant(selector, plant) {
 
 		const wrapper = selector.firstParent('.tasks-planning-items');

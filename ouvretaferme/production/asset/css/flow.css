@@ -88,19 +88,27 @@ div.flow-timeline-new-year > .flow-timeline-reference-year {
 	text-align: center;
 }
 
-div.flow-timeline-item {
+.flow-timeline-item,
+.flow-timeline-week {
 	display: flex;
-	grid-template-columns: 1fr;
-	justify-content: center;
 	align-items: center;
 	position: relative;
 	height: 100%;
 	min-height: 50px;
 }
 
-div.flow-timeline-week {
+.flow-timeline-item {
+	justify-content: center;
+}
+
+.flow-timeline-week {
 	font-size: 0.85rem;
 	color: var(--muted);
+}
+
+a.flow-timeline-item:hover,
+a.flow-timeline-week:hover {
+	text-decoration: none;
 }
 
 @media (max-width: 575px) {
@@ -111,11 +119,12 @@ div.flow-timeline-week {
 
 }
 
-div.flow-timeline-inter div.flow-timeline-item {
+div.flow-timeline-inter div.flow-timeline-item,
+div.flow-timeline-inter div.flow-timeline-week {
 	min-height: 14px;
 }
 
-div.flow-timeline-item:before {
+.flow-timeline-item:before {
 	position: absolute;
 	content: ' ';
 	left: calc(50% - 1);

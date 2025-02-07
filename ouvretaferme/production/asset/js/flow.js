@@ -120,6 +120,18 @@ class Flow {
 
 	}
 
+	static changeWeekSelection(selector) {
+
+		const wrapper = selector.parentElement;
+
+		wrapper.dataset.checked = (wrapper.dataset.checked === '0') ? '1' : '0';
+
+		qsa('#flow-wrapper [name="batch[]"][data-week="'+ wrapper.dataset.week +'"]', node => node.checked = (wrapper.dataset.checked === '1'));
+
+		this.changeSelection();
+
+	}
+
 	static changeSelection() {
 
 		return Batch.changeSelection(function(selection) {

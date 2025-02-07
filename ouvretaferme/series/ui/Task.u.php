@@ -1307,6 +1307,7 @@ class TaskUi {
 		}
 
 		return $form->inputCheckbox('batch[]', $eTask['id'], [
+			'data-week' => $eTask['doneWeek'] ?? $eTask['plannedWeek'],
 			'data-batch' => implode(' ', $batch),
 			'data-series' => $eTask['series']->empty() ? '' : $eTask['series']['id'],
 			'oninput' => 'Task.changePlanningSelection()'
@@ -1921,17 +1922,17 @@ class TaskUi {
 				$h .= '</div>';
 			}
 
-			$h .= '<div class="flow-timeline flow-timeline-only '.($newWeek ? 'flow-timeline-new-week' : '').'">';
+			$h .= '<div class="flow-timeline flow-timeline-only '.($newWeek ? 'flow-timeline-new-week' : '').'" data-checked="0" data-week="'.$eTask['display'].'">';
 
-				$h .= '<div class="flow-timeline-item">';
+				$h .= '<a class="flow-timeline-item" onclick="Task.checkPlanningWeekSeries(this)">';
 					$h .= ($callbacks['item'])($eTask, $newWeek);
-				$h .= '</div>';
+				$h .= '</a>';
 
-				$h .= '<div class="flow-timeline-week">';
+				$h .= '<a class="flow-timeline-week" onclick="Task.checkPlanningWeekSeries(this)">';
 					if($newWeek) {
 						$h .= \util\DateUi::weekToDays($eTask['display'], TRUE, FALSE);
 					}
-				$h .= '</div>';
+				$h .= '</a>';
 
 				if($canWrite) {
 					$h .= '<div class="flow-timeline-update">';

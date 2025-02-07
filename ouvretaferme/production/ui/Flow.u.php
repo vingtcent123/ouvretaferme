@@ -151,23 +151,23 @@ class FlowUi {
 									$h .= '</div>';
 								}
 
-								$h .= '<div class="flow-timeline flow-timeline-'.$field.' '.($newWeek ? 'flow-timeline-new-week' : '').'">';
+								$h .= '<div class="flow-timeline flow-timeline-'.$field.' '.($newWeek ? 'flow-timeline-new-week' : '').'" data-checked="0" data-week="'.$week.'">';
 
-									$h .= '<div class="flow-timeline-item">';
+									$h .= '<a class="flow-timeline-item" onclick="Flow.changeWeekSelection(this)">';
 
 										if($newWeek) {
 											$h .= '<div class="flow-timeline-circle" data-dropdown="bottom-start">'.s("s{value}", $week).'</div>';
 										}
 
-									$h .= '</div>';
+									$h .= '</a>';
 
-									$h .= '<div class="flow-timeline-week">';
+									$h .= '<a class="flow-timeline-week" onclick="Flow.changeWeekSelection(this)">';
 
 										if($newWeek) {
 											$h .= \util\DateUi::weekToDays($currentYear.'-W'.sprintf('%02d', $week), TRUE, FALSE);
 										}
 
-									$h .= '</div>';
+									$h .= '</a>';
 
 
 									$h .= '<div class="flow-timeline-update">';
@@ -175,7 +175,7 @@ class FlowUi {
 										if($write) {
 											if($field !== 'stop') {
 												$h .= '<label class="flow-timeline-select batch-item">';
-													$h .= $this->getBatchCheckbox($form, $eFlow);
+													$h .= $this->getBatchCheckbox($form, $eFlow, $week);
 												$h .= '</label>';
 											} else {
 												$h .= '<label></label>';
@@ -336,9 +336,10 @@ class FlowUi {
 
 	}
 
-	protected function getBatchCheckbox(\util\FormUi $form, Flow $eFlow): string {
+	protected function getBatchCheckbox(\util\FormUi $form, Flow $eFlow, string $week): string {
 
 		return $form->inputCheckbox('batch[]', $eFlow['id'], [
+			'data-week' => $week,
 			'oninput' => 'Flow.changeSelection()'
 		]);
 
