@@ -1348,8 +1348,8 @@ class AnalyzeUi {
 			$filters[] = s("Semaine : {value}", '<b>'.week_number($search->get('week')).'</b>');
 		}
 
-		if($search->get('user')) {
-			$filters[] = s("Utilisateur : {value}", '<b>'.$search->get('user'->getName()).'</b>');
+		if($search->get('user')->notEmpty()) {
+			$filters[] = s("Utilisateur : {value}", '<b>'.$search->get('user')->getName().'</b>');
 		}
 
 		$h .= '<div class="util-block" style="margin-bottom: 1rem">'.implode(' / ', $filters).'</div>';

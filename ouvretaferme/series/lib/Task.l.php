@@ -106,7 +106,7 @@ class TaskLib extends TaskCrud {
 
 		}
 
-		if($search->get('user')) {
+		if($search->get('user')->notEmpty()) {
 
 			Task::model()
 				->where('m1.farm', $eFarm)
