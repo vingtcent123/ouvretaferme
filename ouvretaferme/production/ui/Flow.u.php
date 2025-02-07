@@ -153,21 +153,37 @@ class FlowUi {
 
 								$h .= '<div class="flow-timeline flow-timeline-'.$field.' '.($newWeek ? 'flow-timeline-new-week' : '').'" data-checked="0" data-week="'.$week.'">';
 
-									$h .= '<a class="flow-timeline-item" onclick="Flow.changeWeekSelection(this)">';
+									if($write) {
+										$h .= '<a class="flow-timeline-item" onclick="Flow.changeWeekSelection(this)">';
+									} else {
+										$h .= '<div class="flow-timeline-item">';
+									}
 
 										if($newWeek) {
 											$h .= '<div class="flow-timeline-circle" data-dropdown="bottom-start">'.s("s{value}", $week).'</div>';
 										}
 
-									$h .= '</a>';
+									if($write) {
+										$h .= '</a>';
+									} else {
+										$h .= '</div>';
+									}
 
-									$h .= '<a class="flow-timeline-week" onclick="Flow.changeWeekSelection(this)">';
+									if($write) {
+										$h .= '<a class="flow-timeline-week" onclick="Flow.changeWeekSelection(this)">';
+									} else {
+										$h .= '<div class="flow-timeline-week">';
+									}
 
 										if($newWeek) {
 											$h .= \util\DateUi::weekToDays($currentYear.'-W'.sprintf('%02d', $week), TRUE, FALSE);
 										}
 
-									$h .= '</a>';
+									if($write) {
+										$h .= '</a>';
+									} else {
+										$h .= '</div>';
+									}
 
 
 									$h .= '<div class="flow-timeline-update">';
