@@ -707,6 +707,8 @@ class ProductUi {
 					$tabs .= '<div class="util-block-help">'.s("Un produit composé est un produit qui rassemble plusieurs autres produits. Cela peut être par exemple un panier de légumes dont vous modifiez la composition toutes les semaines, un bouquet de fleurs que vous cultivez, une cagette de légumes pour la ratatouille...").'</div>';
 				}
 
+			} else {
+				$tabs = '';
 			}
 
 			$h .= $form->group(
