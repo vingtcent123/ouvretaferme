@@ -20,7 +20,7 @@ new AdaptativeView('create', function($data, PanelTemplate $t) {
 new JsonView('doCreate', function($data, AjaxTemplate $t) {
 
 	$t->js()->moveHistory(-1);
-	$t->js()->success('selling', 'category::created');
+	$t->js()->success('selling', 'Category::created');
 
 });
 
