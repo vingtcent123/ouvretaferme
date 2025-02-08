@@ -183,6 +183,19 @@ class Product extends ProductElement {
 
 			},
 
+			'compositionVisibility.check' => function(?string &$visibility): bool {
+
+				$this->expects(['composition']);
+
+				if($this['composition']) {
+					return in_array($visibility, [Product::PUBLIC, Product::PRIVATE]);
+				} else {
+					$visibility = NULL;
+					return TRUE;
+				}
+
+			},
+
 			'vat.check' => function(int $vat): bool {
 				return array_key_exists($vat, SaleLib::getVatRates($this['farm']));
 			},

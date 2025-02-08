@@ -6,7 +6,8 @@
 
 		return new \selling\Product([
 			'farm' => $data->eFarm,
-			'status' => \selling\Product::ACTIVE
+			'status' => \selling\Product::ACTIVE,
+			'composition' => INPUT('composition', 'bool')
 		]);
 
 	})

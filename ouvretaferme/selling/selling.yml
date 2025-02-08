@@ -226,7 +226,7 @@ Product:
   size: ?text8(1, null)
   origin: ?text8(1, null)
   farm: farm\Farm
-  unit: ?selling\Unit = PHP(1)
+  unit: ?selling\Unit = PHP(\Setting::get('selling\unitDefaultId'))
   private: bool = TRUE
   privatePrice: ?decimal(8, 2)
   privateStep: ?decimal(6, 2, 0.01, null)
@@ -236,6 +236,8 @@ Product:
   proStep: ?decimal(6, 2, 0.01, null)
   vat: int8(1, null)
   quality: ?enum(ORGANIC, NATURE_PROGRES, CONVERSION)
+  composition: bool = FALSE
+  compositionVisibility: ?enum(PUBLIC, PRIVATE)
   stock: ?decimal(8, 2, 0.0, null)
   stockLast: ?selling\Stock
   stockUpdatedAt: ?datetime
@@ -267,7 +269,7 @@ Sale:
   shippingVatFixed: bool = FALSE
   shipping: ?decimal(8, 2, 0.01, null)
   shippingExcludingVat: ?decimal(8, 2)
-  preparationStatus: enum(DRAFT, BASKET, CONFIRMED, SELLING, PREPARED, DELIVERED, CANCELED) = DRAFT
+  preparationStatus: enum(COMPOSITION, DRAFT, BASKET, CONFIRMED, SELLING, PREPARED, DELIVERED, CANCELED) = DRAFT
   paymentStatus: enum(UNDEFINED, WAITING, PROCESSING, PAID, FAILED) = UNDEFINED
   paymentMethod: ?enum(ONLINE_CARD, OFFLINE, TRANSFER, CASH, CARD, CHECK)
   market: bool = FALSE

@@ -379,6 +379,10 @@ class ProductUi {
 
 		$more = self::getDetails($eProduct);
 
+		if($eProduct['composition']) {
+			$more[] .= s("Produit composé");
+		}
+
 		if($includeStock) {
 
 			if($eProduct['stock'] !== NULL) {
@@ -474,8 +478,13 @@ class ProductUi {
 
 		$h = '<div class="util-block stick-xs">';
 			$h .= '<dl class="util-presentation util-presentation-2">';
-				$h .= '<dt>'.self::p('plant')->label.'</dt>';
-				$h .= '<dd>'.($eProduct['plant']->empty() ? '' : \plant\PlantUi::link($eProduct['plant'])).'</dd>';
+				if($eProduct['composition']) {
+					$h .= '<dt>'.s("Composition").'</dt>';
+					$h .= '<dd>'.($eProduct['compositionVisibility'] === Product::PRIVATE ? s("surprise") : s("visible")).'</dd>';
+				} else {
+					$h .= '<dt>'.self::p('plant')->label.'</dt>';
+					$h .= '<dd>'.($eProduct['plant']->empty() ? '' : \plant\PlantUi::link($eProduct['plant'])).'</dd>';
+				}
 				$h .= '<dt>'.self::p('unit')->label.'</dt>';
 				$h .= '<dd>'.($eProduct['unit']->notEmpty() ? encode($eProduct['unit']['singular']) : '').'</dd>';
 				if($eProduct['size'] !== NULL) {
@@ -675,7 +684,7 @@ class ProductUi {
 			'vat' => $eFarm->getSelling('defaultVat'),
 			'private' => TRUE,
 			'pro' => TRUE,
-			'unit' => $eProduct['cUnit']->find(fn($eUnit) => $eUnit['fqn'] === 'kg', limit: 1),
+			'unit' => $eProduct['cUnit']->find(fn($eUnit) => $eUnit['fqn'] === ($eProduct['composition'] ? 'unit' : 'kg'), limit: 1),
 		]);
 
 		$h = '';
@@ -685,15 +694,37 @@ class ProductUi {
 			$h .= $form->asteriskInfo();
 
 			$h .= $form->hidden('farm', $eFarm['id']);
+			$h .= $form->hidden('composition', $eProduct['composition']);
+
+			if(LIME_ENV === 'dev') {
+
+				$tabs = '<div class="tabs-item">';
+					$tabs .= '<a data-ajax="/selling/product:create?farm='.$eFarm['id'].'" data-ajax-method="get" class="tab-item '.($eProduct['composition'] ? '' : 'selected').'">'.s("Produit simple").'</a>';
+					$tabs .= '<a data-ajax="/selling/product:create?farm='.$eFarm['id'].'&composition=1" data-ajax-method="get" class="tab-item '.($eProduct['composition'] ? 'selected' : '').'">'.s("Produit composé").'</a>';
+				$tabs .= '</div>';
+
+				if($eProduct['composition']) {
+					$tabs .= '<div class="util-block-help">'.s("Un produit composé est un produit qui rassemble plusieurs autres produits. Cela peut être par exemple un panier de légumes dont vous modifiez la composition toutes les semaines, un bouquet de fleurs que vous cultivez, une cagette de légumes pour la ratatouille...").'</div>';
+				}
+
+			}
 
 			$h .= $form->group(
-				self::p('plant')->label,
-				$form->dynamicField($eProduct, 'plant', function($d) {
-					$d->autocompleteDispatch = '#product-create';
-				})
+				content: $tabs
 			);
 
 			$h .= $form->dynamicGroup($eProduct, 'name*');
+
+			if($eProduct['composition'] === FALSE) {
+
+				$h .= $form->group(
+					self::p('plant')->label,
+					$form->dynamicField($eProduct, 'plant', function($d) {
+						$d->autocompleteDispatch = '#product-create';
+					})
+				);
+
+			}
 
 			if($eProduct['cCategory']->notEmpty()) {
 				$h .= $form->dynamicGroup($eProduct, 'category');
@@ -709,7 +740,12 @@ class ProductUi {
 			$h .= '<h3>'.s("Caractéristiques").'</h3>';
 
 			$h .= '<div class="util-block bg-background-light">';
-				$h .= $form->dynamicGroups($eProduct, ['variety', 'size', 'origin', 'description', 'quality']);
+				if($eProduct['composition']) {
+					$h .= $form->dynamicGroups($eProduct, ['compositionVisibility*']);
+				} else {
+					$h .= $form->dynamicGroups($eProduct, ['variety', 'size', 'origin']);
+				}
+				$h .= $form->dynamicGroups($eProduct, ['description', 'quality']);
 			$h .= '</div>';
 
 			$h .= '<br/>';
@@ -738,14 +774,14 @@ class ProductUi {
 
 			$h .= $form->hidden('id', $eProduct['id']);
 
+			$h .= $form->dynamicGroup($eProduct, 'name');
+
 			$h .= $form->group(
 				self::p('plant')->label,
 				$form->dynamicField($eProduct, 'plant', function($d) {
 					$d->autocompleteDispatch = '#product-update';
 				})
 			);
-
-			$h .= $form->dynamicGroup($eProduct, 'name');
 
 			if($eProduct['cCategory']->notEmpty()) {
 				$h .= $form->dynamicGroup($eProduct, 'category');
@@ -762,7 +798,12 @@ class ProductUi {
 			$h .= '<h3>'.s("Caractéristiques").'</h3>';
 
 			$h .= '<div class="util-block bg-background-light">';
-				$h .= $form->dynamicGroups($eProduct, ['variety', 'size', 'origin', 'description', 'quality']);
+				if($eProduct['composition']) {
+					$h .= $form->dynamicGroups($eProduct, ['compositionVisibility']);
+				} else {
+					$h .= $form->dynamicGroups($eProduct, ['variety', 'size', 'origin']);
+				}
+				$h .= $form->dynamicGroups($eProduct, ['description', 'quality']);
 			$h .= '</div>';
 
 			$h .= '<br/>';
@@ -911,6 +952,7 @@ class ProductUi {
 			'proPrice' => s("Prix professionnel"),
 			'proPackaging' => s("Colis de base"),
 			'proStep' => s("Multiple de vente"),
+			'compositionVisibility' => s("Affichage de la composition aux clients"),
 			'vat' => s("Taux de TVA"),
 			'statut' => s("Statut"),
 		]);
@@ -922,7 +964,7 @@ class ProductUi {
 				break;
 
 			case 'name' :
-				$d->placeholder = s("Ex. : Pomme de terre");
+				$d->placeholder = fn($eProduct) => $eProduct['composition'] ? s("Ex. : Panier familial") : s("Ex. : Pomme de terre");
 				break;
 
 			case 'category' :
@@ -951,7 +993,7 @@ class ProductUi {
 				$d->placeholder = s("&lt; Non applicable &gt;");
 				$d->after = fn(\util\FormUi $form, Product $e) => $e->exists() ?
 					\util\FormUi::info(s("L'unité de vente ne peut être modifiée que pour une autre unité de vente à l'unité.")) :
-					\util\FormUi::info(s("Les unités de vente de poids ne peuvent pas être modifiées par la suite, vous devrez créer un autre produit si vous changez d'avis."));
+					\util\FormUi::info(s("Les unités de vente au poids ne peuvent pas être modifiées par la suite, vous devrez créer un autre produit si vous changez d'avis."));
 				break;
 
 			case 'variety' :
@@ -995,6 +1037,17 @@ class ProductUi {
 			case 'size' :
 				$d->attributes = [
 					'placeholder' => s("Ex. : 14-21 cm"),
+				];
+				break;
+
+			case 'compositionVisibility' :
+				$d->values = [
+					Product::PUBLIC => s("Visible").'  <span class="color-muted"><small>'.s("La composition du produit est affichée aux clients").'</small></span>',
+					Product::PRIVATE => s("Surprise").'  <span class="color-muted"><small>'.s("Les clients ne voient pas la composition du produit").'</small></span>'
+				];
+				$d->default = Product::PRIVATE;
+				$d->attributes = [
+					'mandatory' => TRUE
 				];
 				break;
 

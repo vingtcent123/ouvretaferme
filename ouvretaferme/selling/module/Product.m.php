@@ -11,6 +11,9 @@ abstract class ProductElement extends \Element {
 	const NATURE_PROGRES = 'nature-progres';
 	const CONVERSION = 'conversion';
 
+	const PUBLIC = 'public';
+	const PRIVATE = 'private';
+
 	const ACTIVE = 'active';
 	const INACTIVE = 'inactive';
 	const DELETED = 'deleted';
@@ -64,6 +67,8 @@ class ProductModel extends \ModuleModel {
 			'proStep' => ['decimal', 'digits' => 6, 'decimal' => 2, 'min' => 0.01, 'max' => NULL, 'null' => TRUE, 'cast' => 'float'],
 			'vat' => ['int8', 'min' => 1, 'max' => NULL, 'cast' => 'int'],
 			'quality' => ['enum', [\selling\Product::ORGANIC, \selling\Product::NATURE_PROGRES, \selling\Product::CONVERSION], 'null' => TRUE, 'cast' => 'enum'],
+			'composition' => ['bool', 'cast' => 'bool'],
+			'compositionVisibility' => ['enum', [\selling\Product::PUBLIC, \selling\Product::PRIVATE], 'null' => TRUE, 'cast' => 'enum'],
 			'stock' => ['decimal', 'digits' => 8, 'decimal' => 2, 'min' => 0.0, 'max' => NULL, 'null' => TRUE, 'cast' => 'float'],
 			'stockLast' => ['element32', 'selling\Stock', 'null' => TRUE, 'cast' => 'element'],
 			'stockUpdatedAt' => ['datetime', 'null' => TRUE, 'cast' => 'string'],
@@ -72,7 +77,7 @@ class ProductModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'name', 'description', 'vignette', 'category', 'plant', 'variety', 'size', 'origin', 'farm', 'unit', 'private', 'privatePrice', 'privateStep', 'pro', 'proPrice', 'proPackaging', 'proStep', 'vat', 'quality', 'stock', 'stockLast', 'stockUpdatedAt', 'createdAt', 'status'
+			'id', 'name', 'description', 'vignette', 'category', 'plant', 'variety', 'size', 'origin', 'farm', 'unit', 'private', 'privatePrice', 'privateStep', 'pro', 'proPrice', 'proPackaging', 'proStep', 'vat', 'quality', 'composition', 'compositionVisibility', 'stock', 'stockLast', 'stockUpdatedAt', 'createdAt', 'status'
 		]);
 
 		$this->propertiesToModule += [
@@ -95,13 +100,16 @@ class ProductModel extends \ModuleModel {
 		switch($property) {
 
 			case 'unit' :
-				return 1;
+				return \Setting::get('selling\unitDefaultId');
 
 			case 'private' :
 				return TRUE;
 
 			case 'pro' :
 				return TRUE;
+
+			case 'composition' :
+				return FALSE;
 
 			case 'createdAt' :
 				return new \Sql('NOW()');
@@ -121,6 +129,9 @@ class ProductModel extends \ModuleModel {
 		switch($property) {
 
 			case 'quality' :
+				return ($value === NULL) ? NULL : (string)$value;
+
+			case 'compositionVisibility' :
 				return ($value === NULL) ? NULL : (string)$value;
 
 			case 'status' :
@@ -219,6 +230,14 @@ class ProductModel extends \ModuleModel {
 
 	public function whereQuality(...$data): ProductModel {
 		return $this->where('quality', ...$data);
+	}
+
+	public function whereComposition(...$data): ProductModel {
+		return $this->where('composition', ...$data);
+	}
+
+	public function whereCompositionVisibility(...$data): ProductModel {
+		return $this->where('compositionVisibility', ...$data);
 	}
 
 	public function whereStock(...$data): ProductModel {

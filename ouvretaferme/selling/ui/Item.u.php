@@ -739,7 +739,7 @@ class ItemUi {
 				$h .= '<div class="item-write">';
 
 					$h .= '<div class="util-info">';
-						$h .= s("Les articles ajoutés sans référence de produit n'apparaissent dans la liste des commandes à préparer.");
+						$h .= s("Les articles ajoutés sans référence de produit n'apparaissent pas dans la liste des commandes à préparer.");
 					$h .= '</div>';
 
 					$h .= '<div class="util-warning">';

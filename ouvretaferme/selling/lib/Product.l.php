@@ -3,8 +3,8 @@ namespace selling;
 
 class ProductLib extends ProductCrud {
 
-	public static function getPropertiesCreate(): array {
-		return array_merge(['unit'], self::getPropertiesWrite());
+	public static function getPropertiesCreate(): \Closure {
+		return fn($eProduct) => array_merge(['unit'], ProductLib::getPropertiesWrite($eProduct));
 	}
 
 	public static function getPropertiesUpdate(): \Closure {
@@ -22,14 +22,20 @@ class ProductLib extends ProductCrud {
 				$properties[] = 'unit';
 			}
 
-			return array_merge($properties, ProductLib::getPropertiesWrite(), ['privateStep', 'proStep']);
+			return array_merge($properties, ProductLib::getPropertiesWrite($eProduct), ['privateStep', 'proStep']);
 
 		};
 
 	}
 
-	public static function getPropertiesWrite(): array {
-		return ['name', 'category', 'variety', 'size', 'origin', 'description', 'quality', 'plant', 'pro', 'proPrice', 'proPackaging', 'private', 'privatePrice', 'vat'];
+	public static function getPropertiesWrite(Product $eProduct): array {
+
+		if($eProduct['composition']) {
+			return ['name', 'category', 'description', 'quality', 'pro', 'proPrice', 'proPackaging', 'private', 'privatePrice', 'vat', 'compositionVisibility'];
+		} else {
+			return ['name', 'category', 'variety', 'size', 'origin', 'description', 'quality', 'plant', 'pro', 'proPrice', 'proPackaging', 'private', 'privatePrice', 'vat'];
+		}
+
 	}
 
 	public static function getFromQuery(string $query, \farm\Farm $eFarm, ?string $type, ?string $stock, ?array $properties = []): \Collection {

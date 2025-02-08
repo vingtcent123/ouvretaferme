@@ -5,6 +5,8 @@ Privilege::register('selling', [
 
 Setting::register('selling', [
 
+	'unitDefaultId' => 1,
+
 	'exampleSalePro' => 1736,
 	'exampleSalePrivate' => 3133,
 
