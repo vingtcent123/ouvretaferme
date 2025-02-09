@@ -342,6 +342,7 @@ new AdaptativeView('sellingSales', function($data, FarmTemplate $t) {
 			'farm' => $data->eFarm,
 			'cShop' => new Collection(),
 			'customer' => new \selling\Customer(),
+			'composition' => new \selling\Product(),
 			'market' => FALSE
 		]);
 
