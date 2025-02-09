@@ -707,7 +707,7 @@ class ProductUi {
 
 	}
 
-	public function create(Product $eProduct, bool $createFirst): \Panel {
+	public function create(Product $eProduct, bool $createFirst = FALSE): \Panel {
 
 		$eProduct->expects(['cCategory', 'cUnit']);
 
