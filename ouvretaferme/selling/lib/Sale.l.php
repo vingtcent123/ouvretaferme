@@ -440,6 +440,20 @@ class SaleLib extends SaleCrud {
 
 	}
 
+	public static function getByComposition(Product $eProduct): \Collection {
+
+		if($eProduct['composition'] === FALSE) {
+			return new \Collection();
+		}
+
+		return Sale::model()
+			->select(Sale::getSelection())
+			->whereComposition($eProduct)
+			->sort(['deliveredAt' => SORT_DESC])
+			->getCollection(0, 100);
+
+	}
+
 	public static function create(Sale $e): void {
 
 		$e->expects([

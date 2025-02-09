@@ -4023,7 +4023,7 @@ class TaskUi {
 			);
 
 			$h .= $form->group(
-				s("Décaler de..."),
+				s("Décaler de ..."),
 				$form->inputGroup(
 					$form->number('increment', attributes: [
 						'onrender' => 'this.focus();',

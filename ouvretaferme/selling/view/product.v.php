@@ -13,7 +13,7 @@ new AdaptativeView('/produit/{id}', function($data, FarmTemplate $t) {
 		echo '<div class="util-danger mb-1">'.s("Ce produit a été supprimé et n'est plus disponible.").'</div>';
 	} else {
 		echo (new \selling\ProductUi())->display($data->e, $data->cItemYear);
-		echo (new \selling\ProductUi())->getTabs($data->e, $data->cGrid, $data->cItemLast);
+		echo (new \selling\ProductUi())->getTabs($data->e, $data->cSaleComposition, $data->cGrid, $data->cItemLast);
 	}
 
 });

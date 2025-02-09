@@ -708,7 +708,7 @@ class InvoiceUi {
 			'header' => s("Texte personnalisé affiché en haut de facture"),
 			'footer' => s("Texte personnalisé affiché en bas de facture"),
 			'paymentStatus' => s("Facturée réglée ?"),
-			'description' => s("Observations internes"),
+			'description' => s("Commentaire interne"),
 		]);
 
 		switch($property) {

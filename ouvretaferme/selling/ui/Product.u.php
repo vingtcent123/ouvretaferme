@@ -521,17 +521,30 @@ class ProductUi {
 
 	}
 
-	public function getTabs(Product $eProduct, \Collection $cGrid, \Collection $cItemLast): string {
+	public function getTabs(Product $eProduct, \Collection $cSaleComposition, \Collection $cGrid, \Collection $cItemLast): string {
 
 		$h = '<div class="tabs-h" id="product-tabs" onrender="'.encode('Lime.Tab.restore(this, "product-grid")').'">';
 
 			$h .= '<div class="tabs-item">';
-				$h .= '<a class="tab-item selected" data-tab="product-grid" onclick="Lime.Tab.select(this)">'.s("Grille tarifaire").'</a>';
+				if($eProduct['composition']) {
+					$h .= '<a class="tab-item '.($eProduct['composition'] ? 'selected' : '').'" data-tab="product-composition" onclick="Lime.Tab.select(this)">'.s("Composition").'</a>';
+				}
+				$h .= '<a class="tab-item '.($eProduct['composition'] ? '' : 'selected').'" data-tab="product-grid" onclick="Lime.Tab.select(this)">'.s("Grille tarifaire").'</a>';
 				$h .= '<a class="tab-item" data-tab="product-sales" onclick="Lime.Tab.select(this)">'.s("Dernières ventes").'</a>';
 			$h .= '</div>';
 
-			$h .= '<div class="tab-panel selected" data-tab="product-grid">';
-				$h .= (new \selling\ProductUi())->getBaseGrid($eProduct);
+			if($eProduct['composition']) {
+				$h .= '<div class="tab-panel '.($eProduct['composition'] ? 'selected' : '').'" data-tab="product-composition">';
+					if($cSaleComposition->empty()) {
+						$h .= $this->getEmptyComposition($eProduct);
+					} else {
+						$h .= $this->getComposition($eProduct, $cSaleComposition);
+					}
+				$h .= '</div>';
+			}
+
+			$h .= '<div class="tab-panel '.($eProduct['composition'] ? '' : 'selected').'" data-tab="product-grid">';
+				$h .= $this->getBaseGrid($eProduct);
 				$h .= (new \selling\GridUi())->getGridByProduct($eProduct, $cGrid);
 			$h .= '</div>';
 
@@ -540,6 +553,29 @@ class ProductUi {
 			$h .= '</div>';
 
 		$h .= '</div>';
+
+		return $h;
+
+	}
+
+	public function getEmptyComposition(Product $eProduct): string {
+
+		$h = '<div class="util-block-help">';
+			$h .= '<h4>'.s("Composez votre produit").'</h4>';
+			$h .= '<p>'.s("Vous n'avez pas encore indiqué la composition de votre produit {value}.", '<u>'.encode($eProduct['name']).'</u>').'</p>';
+			$h .= '<a href="/selling/sale:create?farm='.$eProduct['farm']['id'].'&composition='.$eProduct['id'].'" class="btn btn-secondary">'.s("Ajouter la composition du moment").'</a>';
+		$h .= '</div>';
+
+
+		return $h;
+
+	}
+
+	public function getComposition(Product $eProduct, \Collection $cSaleComposition): string {
+
+		$h = '';
+
+		d($cSaleComposition);
 
 		return $h;
 

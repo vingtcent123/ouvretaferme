@@ -6,7 +6,7 @@
 
 		return new \selling\Sale([
 			'from' => \selling\Sale::USER,
-			'farm' => $data->eFarm
+			'farm' => $data->eFarm,
 		]);
 
 	})
@@ -15,7 +15,8 @@
 		$data->e->merge([
 			'cShop' => \shop\ShopLib::getAroundByFarm($data->eFarm),
 			'market' => GET('market', 'bool'),
-			'customer' => get_exists('customer') ? \selling\CustomerLib::getById(GET('customer')) : new \selling\Customer()
+			'composition' => get_exists('composition') ? \selling\ProductLib::getById(GET('composition'))->validateProperty('farm', $data->eFarm) : new \selling\Product(),
+			'customer' => get_exists('customer') ? \selling\CustomerLib::getById(GET('customer'))->validateProperty('farm', $data->eFarm) : new \selling\Customer()
 		]);
 
 		throw new \ViewAction($data);

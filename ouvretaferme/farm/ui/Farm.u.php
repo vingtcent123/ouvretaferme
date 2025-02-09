@@ -508,13 +508,6 @@ class FarmUi {
 				$h .= \Asset::icon('basket2-fill');
 			$h .= '</a>';
 
-			$h .= '<a href="/selling/csv:exportProducts?id='.$eFarm['id'].'&year='.$year.'" class="bg-secondary util-button" data-ajax-navigation="never">';
-				$h .= '<div>';
-					$h .= '<h4>'.s("Exporter les produits").'</h4>';
-				$h .= '</div>';
-				$h .= \Asset::icon('box');
-			$h .= '</a>';
-
 			$h .= '<a href="/selling/csv:exportSales?id='.$eFarm['id'].'&year='.$year.'" class="bg-secondary util-button" data-ajax-navigation="never">';
 				$h .= '<div>';
 					$h .= '<h4>'.s("Exporter les ventes").'</h4>';

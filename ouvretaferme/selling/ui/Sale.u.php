@@ -1456,6 +1456,47 @@ class SaleUi {
 
 	public function create(Sale $eSale): \Panel {
 
+		if($eSale['composition']->empty()) {
+			return $this->createCustomer($eSale);
+		} else {
+			return $this->createComposition($eSale);
+		}
+
+	}
+
+	public function createComposition(Sale $eSale): \Panel {
+
+		$eSale->expects(['farm', 'cShop', 'market']);
+
+		$form = new \util\FormUi();
+
+		$h = '';
+
+		$h .= $form->openAjax('/selling/sale:doCreate', ['id' => 'sale-create']);
+
+			$h .= $form->asteriskInfo();
+
+			$h .= $form->hidden('farm', $eSale['farm']['id']);
+			$h .= $form->hidden('composition', $eSale['composition']['id']);
+
+			$h .= $form->dynamicGroups($eSale, ['deliveredAt', 'comment']);
+
+			$h .= $form->group(
+				content: $form->submit(s("Choisir les produits"))
+			);
+
+		$h .= $form->close();
+
+		return new \Panel(
+			id: 'panel-sale-create',
+			title: s("Ajouter une composition"),
+			body: $h
+		);
+
+	}
+
+	public function createCustomer(Sale $eSale): \Panel {
+
 		$eSale->expects(['farm', 'cShop', 'market']);
 
 		$form = new \util\FormUi();
@@ -1681,7 +1722,7 @@ class SaleUi {
 
 		$d = Sale::model()->describer($property, [
 			'customer' => s("Client"),
-			'deliveredAt' => s("Date de vente"),
+			'deliveredAt' => fn($e) => $e['composition']->notEmpty() ? s("Pour les livraisons à partir du ...") : s("Date de vente"),
 			'from' => s("Origine de la vente"),
 			'market' => s("Utiliser le logiciel de caisse<br/>pour cette vente"),
 			'preparationStatus' => s("Statut de préparation"),
@@ -1693,7 +1734,7 @@ class SaleUi {
 			'shippingVatRate' => s("Taux de TVA sur les frais de livraison"),
 			'shop' => s("Boutique"),
 			'shopDate' => s("Associer à"),
-			'comment' => s("Observations internes"),
+			'comment' => s("Commentaire interne"),
 		]);
 
 		switch($property) {

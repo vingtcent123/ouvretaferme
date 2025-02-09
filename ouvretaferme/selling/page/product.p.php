@@ -45,6 +45,7 @@
 
 		\farm\FarmerLib::register($data->eFarm);
 
+		$data->cSaleComposition = \selling\SaleLib::getByComposition($data->e);
 		$data->cGrid = \selling\GridLib::getByProduct($data->e);
 
 		$data->cItemLast = \selling\ItemLib::getByProduct($data->e);
