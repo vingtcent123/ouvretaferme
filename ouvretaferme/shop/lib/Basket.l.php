@@ -14,11 +14,7 @@ class BasketLib {
 
 			$eProductSelling = $eProduct['product'];
 
-			if(
-				array_key_exists($eProductSelling['id'], $products) === FALSE or
-				empty($products[$eProductSelling['id']]) or
-				empty($products[$eProductSelling['id']]['number'])
-			) {
+			if((float)($products[$eProductSelling['id']]['number'] ?? 0.0) === 0.0) {
 				continue;
 			}
 
