@@ -442,9 +442,10 @@ new AdaptativeView('/ferme/{id}/produits', function($data, FarmTemplate $t) {
 
 		echo (new \selling\ProductUi())->create(new \selling\Product([
 			'farm' => $data->eFarm,
+			'composition' => FALSE,
 			'cCategory' => $data->cCategory,
 			'cUnit' => $data->cUnit
-		]))->body;
+		]), TRUE)->body;
 
 	} else {
 
