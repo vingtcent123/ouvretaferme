@@ -602,15 +602,26 @@ class ItemUi {
 			'columnBreak' => 'sm'
 		]);
 
-		$h = $form->openAjax('/selling/item:doCreateCollection');
+		if($e['cProduct']->empty()) {
 
-			$h .= $form->hidden('sale', $e['id']);
+			$h = '<div class="util-block-help">';
+				$h .= '<p>'.s("Vous devez d'abord renseigner les produits que vous souhaitez proposer à la vente dans votre ferme !").'</p>';
+				$h .= '<a href="'.\farm\FarmUi::urlSellingProduct($eFarm).'" class="btn btn-secondary">'.s("Renseigner mes produits").'</a>';
+			$h .= '</div>';
 
-			$h .= $form->dynamicField($e, 'productsList');
-			$h .= '<br/>';
-			$h .= $form->submit(s("Ajouter"), ['class' => 'btn btn-primary']);
+		} else {
 
-		$h .= $form->close();
+			$h = $form->openAjax('/selling/item:doCreateCollection');
+
+				$h .= $form->hidden('sale', $e['id']);
+
+				$h .= $form->dynamicField($e, 'productsList');
+				$h .= '<br/>';
+				$h .= $form->submit(s("Ajouter"), ['class' => 'btn btn-primary']);
+
+			$h .= $form->close();
+
+		}
 
 		return new \Panel(
 			id: 'panel-item-create-collection',
@@ -619,27 +630,15 @@ class ItemUi {
 		);
 	}
 
-	public function getCreateList(\util\FormUi $form, \farm\Farm $eFarm, Sale $eSale, string $type, \Collection $cProduct, \Collection $cCategory, string $class = ''): string {
-
-		\Asset::css('shop', 'shop.css');
-		\Asset::css('shop', 'manage.css');
-		\Asset::js('shop', 'manage.js');
-
-		if($cProduct->empty()) {
-			$h = '<div class="util-block-requirement">';
-				$h .= '<p>'.s("Avant d'enregistrer une nouvelle date, vous devez renseigner les produits que vous souhaitez proposer à la vente dans votre ferme !").'</p>';
-				$h .= '<a href="'.\farm\FarmUi::urlSellingProduct($eFarm).'" class="btn btn-secondary">'.s("Renseigner mes produits").'</a>';
-			$h .= '</div>';
-			return $h;
-		}
+	public function getCreateList(\Collection $cProduct, \Collection $cCategory, \Closure $list, string $class = ''): string {
 
 		if($cCategory->empty()) {
-			return self::getCreateByCategory($form, $eFarm, $eSale, $type, $cProduct);
+			return $list($cProduct);
 		}
 
 		$ccProduct = $cProduct->reindex(['category']);
 
-		$h = '<div class="tabs-h" id="date-products-tabs" onrender="'.encode('Lime.Tab.restore(this)').'">';
+		$h = '<div class="tabs-h" id="item-create-tabs" onrender="'.encode('Lime.Tab.restore(this)').'">';
 
 			$h .= '<div class="tabs-item">';
 
@@ -683,7 +682,7 @@ class ItemUi {
 				foreach($ccProduct as $category => $cProduct) {
 
 					$h .= '<div class="tab-panel" data-tab="'.($category ?: 'empty').'">';
-						$h .= self::getCreateByCategory($form, $eFarm, $eSale, $type, $cProduct);
+						$h .= $list($cProduct);
 					$h .= '</div>';
 
 				}
@@ -695,7 +694,7 @@ class ItemUi {
 
 	}
 
-	public static function getCreateByCategory(\util\FormUi $form, \farm\Farm $eFarm, Sale $eSale, string $type, \Collection $cProduct): string {
+	public static function getCreateByCategory(\util\FormUi $form, Sale $eSale, \Collection $cProduct): string {
 
 		$hasPackaging = ($eSale['type'] === Sale::PRO);
 		$hasQuantity = ($eSale['market'] === FALSE or $eSale['preparationStatus'] !== Sale::SELLING);
@@ -710,26 +709,29 @@ class ItemUi {
 				$h .= '<div style="grid-column: span 3">';
 					$h .= s("Produit");
 				$h .= '</div>';
-				if($hasPackaging) {
-					$h .= '<div class="date-products-item-unit">'.s("Colisage").'</div>';
-				}
-				$h .= '<div class="date-products-item-unit">';
-						$h .= s("Prix unitaire");
-						if($eSale['hasVat']) {
-							$h .= ' <span class="util-annotation">'.$eSale->getTaxes().'</span>';
-						}
-					$h .= '</div>';
-				if($hasQuantity) {
-					$h .= '<div class="date-products-item-unit">'.s("Quantité vendue").'</div>';
-				}
-				if($hasPrice) {
-					$h .= '<div class="date-products-item-price">';
-						$h .= s("Montant total");
-						if($eSale['hasVat']) {
-							$h .= ' <span class="util-annotation">'.$eSale->getTaxes().'</span>';
-						}
-					$h .= '</div>';
-				}
+
+				$h .= '<div class="items-products-fields">';
+					if($hasPackaging) {
+						$h .= '<div>'.s("Colisage").'</div>';
+					}
+					$h .= '<div>';
+							$h .= s("Prix unitaire");
+							if($eSale['hasVat']) {
+								$h .= ' <span class="util-annotation">'.$eSale->getTaxes().'</span>';
+							}
+						$h .= '</div>';
+					if($hasQuantity) {
+						$h .= '<div>'.s("Quantité vendue").'</div>';
+					}
+					if($hasPrice) {
+						$h .= '<div>';
+							$h .= s("Montant total");
+							if($eSale['hasVat']) {
+								$h .= ' <span class="util-annotation">'.$eSale->getTaxes().'</span>';
+							}
+						$h .= '</div>';
+					}
+				$h .= '</div>';
 			$h .= '</div>';
 
 			$h .= '<div class="date-products-body">';
@@ -740,6 +742,7 @@ class ItemUi {
 
 					$attributes = [
 						'id' => 'items-products-checkbox-'.$eProduct['id'],
+						'class' => 'item-write-checkbox',
 						'onclick' => 'Item.selectProduct(this)'
 					];
 
@@ -747,7 +750,6 @@ class ItemUi {
 
 						$h .= '<label class="items-products-select">';
 							$h .= $form->hidden('discount['.$eProduct['id'].']', $eItem['sale']['discount']);
-							$h .= $form->hidden('name['.$eProduct['id'].']', $eProduct->getName());
 							$h .= $form->hidden('unit['.$eProduct['id'].']', $eProduct['unit']);
 							$h .= $form->hidden('quality['.$eProduct['id'].']', $eProduct['quality']);
 							$h .= $form->hidden('locked['.$eProduct['id'].']', Item::PRICE);
@@ -766,38 +768,41 @@ class ItemUi {
 							$h .= \selling\ProductUi::getVignette($eProduct, '2rem');
 						$h .= '</label>';
 						$h .= '<label for="'.$attributes['id'].'">';
-							$h .= \selling\ProductUi::getInfos($eProduct, link: FALSE);
+							$h .= \selling\ProductUi::getInfos($eProduct, includeUnit: TRUE, includeQuality: FALSE, link: FALSE);
 						$h .= '</label>';
 
-						if($hasPackaging) {
+						$h .= '<div class="items-products-fields">';
 
+							if($hasPackaging) {
+
+								$h .= '<div>';
+									$h .= self::getPackagingField($form, 'packaging['.$eProduct['id'].']', $eItem);
+								$h .= '</div>';
+
+
+							}
 							$h .= '<div>';
-								$h .= self::getPackagingField($form, 'packaging['.$eProduct['id'].']', $eItem);
-							$h .= '</div>';
 
-
-						}
-						$h .= '<div>';
-
-							$h .= $form->dynamicField($eItem, 'unitPrice['.$eProduct['id'].']*', function(\PropertyDescriber $d) use ($form) {
-								$d->append = $form->addon(s("€"));
-							});
-
-						$h .= '</div>';
-
-						if($hasQuantity) {
-							$h .= '<div data-wrapper="price['.$eProduct['id'].']" class="date-products-item-price">';
-								$h .= $form->dynamicField($eItem, $eSale['market'] ? 'number['.$eProduct['id'].']' : 'number['.$eProduct['id'].']*');
-							$h .= '</div>';
-						}
-
-						if($hasPrice) {
-							$h .= '<div data-wrapper="price['.$eProduct['id'].']" class="date-products-item-price">';
-								$h .= $form->dynamicField($eItem, 'price['.$eProduct['id'].']*', function(\PropertyDescriber $d) use ($eItem) {
-									$d->append = s("€");
+								$h .= $form->dynamicField($eItem, 'unitPrice['.$eProduct['id'].']*', function(\PropertyDescriber $d) use ($form) {
+									$d->append = $form->addon(s("€"));
 								});
+
 							$h .= '</div>';
-						}
+
+							if($hasQuantity) {
+								$h .= '<div data-wrapper="price['.$eProduct['id'].']" class="date-products-item-price">';
+									$h .= $form->dynamicField($eItem, $eSale['market'] ? 'number['.$eProduct['id'].']' : 'number['.$eProduct['id'].']*');
+								$h .= '</div>';
+							}
+
+							if($hasPrice) {
+								$h .= '<div data-wrapper="price['.$eProduct['id'].']" class="date-products-item-price">';
+									$h .= $form->dynamicField($eItem, 'price['.$eProduct['id'].']*', function(\PropertyDescriber $d) use ($eItem) {
+										$d->append = s("€");
+									});
+								$h .= '</div>';
+							}
+						$h .= '</div>';
 					$h .= '</div>';
 
 				}
@@ -873,16 +878,15 @@ class ItemUi {
 						ProductUi::getVignette($eProduct, '3rem').'  '.ProductUi::link($eProduct, TRUE)
 					);
 
-					$h .= $form->dynamicGroup($eItem, 'quality[]');
+					$h .= $form->dynamicGroup($eItem, 'quality[0]');
 
-					$h .= $form->hidden('product[]', $eProduct['id']);
-					$h .= $form->hidden('discount[]', $eItem['sale']['discount']);
-					$h .= $form->hidden('name[]', $eProduct->getName());
-					$h .= $form->hidden('unit[]', $eProduct['unit']);
-					$h .= $form->hidden('locked[]', Item::PRICE);
+					$h .= $form->hidden('product[0]', $eProduct['id']);
+					$h .= $form->hidden('discount[0]', $eItem['sale']['discount']);
+					$h .= $form->hidden('unit[0]', $eProduct['unit']);
+					$h .= $form->hidden('locked[0]', Item::PRICE);
 
 					if($eItem['sale']['hasVat']) {
-						$h .= $form->hidden('vatRate[]', \Setting::get('selling\vatRates')[$eProduct['vat']]);
+						$h .= $form->hidden('vatRate[0]', \Setting::get('selling\vatRates')[$eProduct['vat']]);
 						$h .= $form->group(
 							s("Taux de TVA"),
 							$form->fake(s("{value} %", \Setting::get('selling\vatRates')[$eProduct['vat']]))
@@ -890,14 +894,14 @@ class ItemUi {
 					}
 
 					if($eItem['sale']['type'] === Customer::PRO) {
-						$h .= self::getPackagingGroup($form, 'packaging[]', $eItem);
+						$h .= self::getPackagingGroup($form, 'packaging[0]', $eItem);
 					} else {
-						$h .= $form->hidden('packaging[]', '');
+						$h .= $form->hidden('packaging[0]', '');
 					}
 
 					$h .= $form->dynamicGroups($eItem, $eItem['sale']['market'] ?
-						($eItem['sale']['preparationStatus'] !== Sale::SELLING ? ['unitPrice[]*', 'number[]'] : ['unitPrice[]*']) :
-						['unitPrice[]*', 'number[]*', 'price[]*'], [
+						($eItem['sale']['preparationStatus'] !== Sale::SELLING ? ['unitPrice[0]*', 'number[0]'] : ['unitPrice[0]*']) :
+						['unitPrice[0]*', 'number[0]*', 'price[0]*'], [
 							'unitPrice[]' => function(\PropertyDescriber $d) use ($eItem) {
 								if($eItem['sale']['discount'] > 0 and $eItem['unitPrice'] !== NULL) {
 									$d->after = \util\FormUi::info(s("Prix de base : {value}", \util\TextUi::money($eItem['baseUnitPrice'])));
@@ -916,25 +920,25 @@ class ItemUi {
 						$h .= ' '.s("Pour plus de commodité et faciliter la gestion de votre gamme, si cet article est amené à être vendu fréquemment, vous devriez l'<link>enregistrer au préalable comme un produit</link>.", ['link' => '<a href="/selling/product:create?farm='.$eItem['sale']['farm']['id'].'">']);
 					$h .= '</div>';
 
-					$h .= $form->hidden('product[]', '');
-					$h .= $form->hidden('locked[]', Item::PRICE);
-					$h .= $form->dynamicGroup($eItem, 'name[]*');
+					$h .= $form->hidden('product[0]', '');
+					$h .= $form->hidden('locked[0]', Item::PRICE);
+					$h .= $form->dynamicGroup($eItem, 'name[0]*');
 
 					if($eItem['sale']['type'] === Customer::PRO) {
 						$eItem['unit'] = new Unit();
-						$h .= self::getPackagingGroup($form, 'packaging[]', $eItem);
+						$h .= self::getPackagingGroup($form, 'packaging[0]', $eItem);
 					} else {
-						$h .= $form->hidden('packaging[]', '');
+						$h .= $form->hidden('packaging[0]', '');
 					}
 
 					$h .= $form->dynamicGroups($eItem, $eItem['sale']['market'] ?
-						($eItem['sale']['preparationStatus'] !== Sale::SELLING ? ['unit[]', 'unitPrice[]*', 'number[]'] : ['unit[]', 'unitPrice[]*']) :
-						['unit[]', 'unitPrice[]*', 'number[]*', 'price[]*']);
+						($eItem['sale']['preparationStatus'] !== Sale::SELLING ? ['unit[0]', 'unitPrice[0]*', 'number[0]'] : ['unit[0]', 'unitPrice[0]*']) :
+						['unit[0]', 'unitPrice[0]*', 'number[0]*', 'price[0]*']);
 
 					if($eItem['sale']['hasVat']) {
 						$h .= $form->group(
 							self::p('vatRate')->label,
-							$form->select('vatRate[]', SaleUi::getVatRates($eItem['farm']), $eItem['vatRate'])
+							$form->select('vatRate[0]', SaleUi::getVatRates($eItem['farm']), $eItem['vatRate'])
 						);
 					}
 

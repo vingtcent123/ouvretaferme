@@ -262,83 +262,11 @@ class ProductUi {
 
 	}
 
-	public function getCreateList(\util\FormUi $form, \farm\Farm $eFarm, string $type, \Collection $cProduct, \Collection $cCategory, string $class = ''): string {
+	public static function getCreateByCategory(\util\FormUi $form, \farm\Farm $eFarm, string $type, \Collection $cProduct): string {
 
 		\Asset::css('shop', 'shop.css');
 		\Asset::css('shop', 'manage.css');
 		\Asset::js('shop', 'manage.js');
-
-		if($cProduct->empty()) {
-			$h = '<div class="util-block-requirement">';
-				$h .= '<p>'.s("Avant d'enregistrer une nouvelle date, vous devez renseigner les produits que vous souhaitez proposer à la vente dans votre ferme !").'</p>';
-				$h .= '<a href="'.\farm\FarmUi::urlSellingProduct($eFarm).'" class="btn btn-secondary">'.s("Renseigner mes produits").'</a>';
-			$h .= '</div>';
-			return $h;
-		}
-
-		if($cCategory->empty()) {
-			return self::getCreateByCategory($form, $eFarm, $type, $cProduct);
-		}
-
-		$ccProduct = $cProduct->reindex(['category']);
-
-		$h = '<div class="tabs-h" id="date-products-tabs" onrender="'.encode('Lime.Tab.restore(this)').'">';
-
-			$h .= '<div class="tabs-item">';
-
-				foreach($cCategory as $eCategory) {
-
-					if($ccProduct->offsetExists($eCategory['id']) === FALSE) {
-						continue;
-					}
-
-					$products = $ccProduct[$eCategory['id']]->find(fn($eProduct) => $eProduct['checked'] ?? FALSE)->count();
-
-					$h .= '<a class="tab-item " data-tab="'.$eCategory['id'].'" onclick="Lime.Tab.select(this)">';
-						$h .= encode($eCategory['name']);
-						$h .= '<span class="tab-item-count">';
-							if($products > 0) {
-								$h .= $products;
-							}
-						$h .= '</span>';
-					$h .= '</a>';
-
-				}
-
-				if($ccProduct->offsetExists('')) {
-
-					$products = $ccProduct['']->find(fn($eProduct) => $eProduct['checked'] ?? FALSE)->count();
-
-					$h .= '<a class="tab-item " data-tab="empty" onclick="Lime.Tab.select(this)">';
-						$h .= s("Non catégorisé");
-						$h .= '<span class="tab-item-count">';
-							if($products > 0) {
-								$h .= $products;
-							}
-						$h .= '</span>';
-					$h .= '</a>';
-				}
-
-			$h .= '</div>';
-
-			$h .= '<div class="tabs-panel '.$class.' stick-sm">';
-
-				foreach($ccProduct as $category => $cProduct) {
-
-					$h .= '<div class="tab-panel" data-tab="'.($category ?: 'empty').'">';
-						$h .= self::getCreateByCategory($form, $eFarm, $type, $cProduct);
-					$h .= '</div>';
-
-				}
-
-			$h .= '</div>';
-		$h .= '</div>';
-
-		return $h;
-
-	}
-
-	public static function getCreateByCategory(\util\FormUi $form, \farm\Farm $eFarm, string $type, \Collection $cProduct): string {
 
 		$displayStock = $cProduct->match(fn($eProduct) => $eProduct['stock'] !== NULL);
 
@@ -418,7 +346,7 @@ class ProductUi {
 							$h .= \selling\ProductUi::getVignette($eProduct, '2rem');
 						$h .= '</label>';
 						$h .= '<label class="date-products-item-product" for="'.$attributes['id'].'">';
-							$h .= \selling\ProductUi::getInfos($eProduct, includeQuality: FALSE, link: FALSE);
+							$h .= \selling\ProductUi::getInfos($eProduct, includeQuality: FALSE, includeUnit: TRUE, link: FALSE);
 						$h .= '</label>';
 						$h .= '<div class="date-products-item-unit text-center">';
 
@@ -950,21 +878,32 @@ class ProductUi {
 			'columnBreak' => 'sm'
 		]);
 
-		$h = $form->openAjax('/shop/product:doCreateCollection');
+		if($e['cProduct']->empty()) {
 
-			if($e instanceof Date) {
-				$h .= $form->hidden('date', $e['id']);
-			} else {
-				$h .= $form->hidden('catalog', $e['id']);
-			}
+			$h = '<div class="util-block-help">';
+				$h .= '<p>'.s("Vous devez d'abord renseigner les produits que vous souhaitez proposer à la vente dans votre ferme !").'</p>';
+				$h .= '<a href="'.\farm\FarmUi::urlSellingProduct($eFarm).'" class="btn btn-secondary">'.s("Renseigner mes produits").'</a>';
+			$h .= '</div>';
 
-			$h .= $form->hidden('farm', $eFarm['id']);
+		} else {
 
-			$h .= $form->dynamicField($e, 'productsList');
-			$h .= '<br/>';
-			$h .= $form->submit(s("Ajouter"), ['class' => 'btn btn-primary']);
+			$h = $form->openAjax('/shop/product:doCreateCollection');
 
-		$h .= $form->close();
+				if($e instanceof Date) {
+					$h .= $form->hidden('date', $e['id']);
+				} else {
+					$h .= $form->hidden('catalog', $e['id']);
+				}
+
+				$h .= $form->hidden('farm', $eFarm['id']);
+
+				$h .= $form->dynamicField($e, 'productsList');
+				$h .= '<br/>';
+				$h .= $form->submit(s("Ajouter"), ['class' => 'btn btn-primary']);
+
+			$h .= $form->close();
+
+		}
 
 		return new \Panel(
 			title: ($e instanceof Date) ?

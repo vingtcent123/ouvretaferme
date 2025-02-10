@@ -16,7 +16,7 @@
 
 		\farm\FarmerLib::register($data->eFarm);
 
-		$data->cProduct = \selling\ProductLib::getForShop($data->e['farm'], $data->e['type']);
+		$data->cProduct = \selling\ProductLib::getForSale($data->e['farm'], $data->e['type']);
 
 		// Si c'est une copie : récupérer également la liste des produits de la date en question
 		$data->eDateBase = \shop\DateLib::getById(GET('date'));

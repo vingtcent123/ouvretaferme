@@ -35,7 +35,7 @@
 
 		$data->e['cCategory'] = \selling\CategoryLib::getByFarm($data->e['farm'], index: 'id');
 
-		$cProductSelling = \selling\ProductLib::getForShop($data->e['farm'], $data->e['type']);
+		$cProductSelling = \selling\ProductLib::getForSale($data->e['farm'], $data->e['type']);
 		\shop\ProductLib::excludeExisting($data->e, $cProductSelling);
 
 		$data->e['cProduct'] = $cProductSelling;
@@ -49,7 +49,7 @@
 
 		$products = POST('productsList', 'array', []);
 
-		$cProductSelling = \selling\ProductLib::getForShop($data->e['farm'], $data->e['type']);
+		$cProductSelling = \selling\ProductLib::getForSale($data->e['farm'], $data->e['type']);
 		$data->cProduct = \shop\ProductLib::prepareCollection($data->e, $cProductSelling, $products, $_POST);
 
 		$fw->validate();

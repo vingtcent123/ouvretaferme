@@ -63,10 +63,30 @@ class Item extends ItemElement {
 	public function build(array $properties, array $input, array $callbacks = [], ?string $for = NULL): array {
 
 		$this->expects([
+			'farm',
 			'sale' => ['taxes']
 		]);
 
 		return parent::build($properties, $input, $callbacks + [
+
+			'product.check' => function(Product $eProduct): bool {
+
+				if($eProduct->notEmpty()) {
+
+					return (
+						Product::model()
+							->select('id', 'name', 'farm')
+							->whereStatus(Product::ACTIVE)
+							->get($eProduct) and
+						$eProduct->validateProperty('farm', $this['farm'])
+					);
+
+				} else {
+					return TRUE;
+				}
+
+
+			},
 
 			'vatRate.check' => function(?float &$vatRate): bool {
 
@@ -76,6 +96,16 @@ class Item extends ItemElement {
 				} else {
 					return ($vatRate !== NULL);
 				}
+
+			},
+
+			'name.prepare' => function(?string &$name): bool {
+
+				if($this['product']->notEmpty()) {
+					$name = $this['product']['name'];
+				}
+
+				return TRUE;
 
 			},
 

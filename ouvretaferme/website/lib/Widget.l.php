@@ -43,12 +43,12 @@ class WidgetLib {
 		$eShop = \shop\ShopLib::getById($id);
 
 		if($eShop->empty()) {
-			return NULL;
+			return fn() => '';
 		}
 
 		// Pas les accès en écriture sur la boutique
 		if($eShop['farm']['id'] !== $eFarm['id']) {
-			return NULL;
+			return fn() => '';
 		}
 
 		$eDate = \shop\DateLib::getMostRelevantByShop($eShop, one: TRUE);

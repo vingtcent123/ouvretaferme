@@ -25,15 +25,14 @@ class Item {
 			wrapper.classList.add('selected');
 		}
 
-		// Présence d'onglets
-		if(qs('#date-products-tabs')) {
+		qs('#item-create-tabs', tabs => {
 
 			const panel = target.firstParent('.tab-panel');
-			const products = panel.qsa('[name^="productsList["]:checked').length;
+			const products = panel.qsa('[name^="product["]:checked').length;
 
-			qs('#date-products-tabs [data-tab="'+ panel.dataset.tab +'"] .tab-item-count').innerHTML = (products > 0) ? products : '';
+			tabs.qs('[data-tab="'+ panel.dataset.tab +'"] .tab-item-count').innerHTML = (products > 0) ? products : '';
 
-		}
+		});
 
 	}
 
@@ -83,27 +82,45 @@ class Item {
 	static recalculateLock(target) {
 
 		const wrapper = target.firstParent('.item-write');
+		const checkbox = wrapper.qs('.item-write-checkbox');
 
 		const locked = wrapper.qs('[name^="locked"]').value;
 
+		const basePrice = wrapper.qs('[name^="price"]').value;
+		const baseUnitPrice = wrapper.qs('[name^="unitPrice"]').value;
+		const baseNumber = wrapper.qs('[name^="number"]').value;
+
 		const packaging = parseFloat(wrapper.qs('[name^="packaging"]')?.value || 1);
-		const price = parseFloat(wrapper.qs('[name^="price"]').value || 0);
-		const unitPrice = parseFloat(wrapper.qs('[name^="unitPrice"]').value || 0);
-		const number = parseFloat(wrapper.qs('[name^="number"]').value || 0);
+		const price = parseFloat(basePrice || 0);
+		const unitPrice = parseFloat(baseUnitPrice || 0);
+		const number = parseFloat(baseNumber || 0);
+
+		let lockedValue;
 
 		switch(locked) {
 
 			case 'price' :
-				wrapper.qs('[name^="price"]').value = Math.round(100 * packaging * unitPrice * number) / 100;
+				lockedValue = (baseNumber !== '' && baseUnitPrice !== '') ? Math.round(100 * packaging * unitPrice * number) / 100 : '';
+				wrapper.qs('[name^="price"]').value = lockedValue;
 				break;
 
 			case 'unit-price' :
-				wrapper.qs('[name^="unitPrice"]').value = (number > 0 && packaging > 0) ? Math.round(100 * price / number / packaging) / 100 : 0;
+				lockedValue = (baseNumber !== '' && basePrice !== '') ? ((number > 0 && packaging > 0) ? Math.round(100 * price / number / packaging) / 100 : 0) : '';
+				wrapper.qs('[name^="unitPrice"]').value = lockedValue;
 				break;
 
 			case 'number' :
-				wrapper.qs('[name^="number"]').value = (unitPrice > 0 && packaging > 0) ? Math.round(100 * price / unitPrice / packaging) / 100 : 0;
+				lockedValue = (basePrice !== '' && baseUnitPrice !== '') ? ((unitPrice > 0 && packaging > 0) ? Math.round(100 * price / unitPrice / packaging) / 100 : 0) : '';
+				wrapper.qs('[name^="number"]').value = lockedValue;
 				break;
+
+		}
+
+		if(checkbox) {
+
+			checkbox.checked = (lockedValue !== '');
+			this.selectProduct(checkbox);
+
 
 		}
 

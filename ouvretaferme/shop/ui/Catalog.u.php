@@ -165,7 +165,10 @@ class CatalogUi {
 
 			case 'productsList' :
 				$d->field = function(\util\FormUi $form, Catalog $e) {
-					return (new ProductUi())->getCreateList($form, $e['farm'], $e['type'], $e['cProduct'], $e['cCategory']);
+					return (new \selling\ItemUi())->getCreateList(
+						$e['cProduct'], $e['cCategory'],
+						fn($cProduct) => ProductUi::getCreateByCategory($form, $e['farm'], $e['type'], $cProduct)
+					);
 				};
 				break;
 

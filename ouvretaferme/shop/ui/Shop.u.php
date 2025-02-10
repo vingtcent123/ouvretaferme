@@ -173,7 +173,7 @@ class ShopUi {
 			$content = '<p>'.s("Pour utiliser les options suivantes, vous avez besoin de configurer préalablement votre compte de paiement en ligne sur Stripe.").'</p>';
 			$content .= '<a href="/payment/stripe:manage?farm='.$eShop['farm']['id'].'" class="btn btn-secondary" target="_blank">'.s("Configurer le paiement en ligne").'</a>';
 
-			$h .= $form->group(content: '<div class="util-block-requirement">'.$content.'</div>');
+			$h .= $form->group(content: '<div class="util-block-util-block-help">'.$content.'</div>');
 
 		} else {
 			$h .= $form->group(content: '<div class="util-block-help">'.\payment\StripeFarmUi::getWarning().'</div>');

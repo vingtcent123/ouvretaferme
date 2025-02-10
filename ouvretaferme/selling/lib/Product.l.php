@@ -164,7 +164,7 @@ class ProductLib extends ProductCrud {
 
 	}
 
-	public static function getForShop(\farm\Farm $eFarm, string $type): \Collection {
+	public static function getForSale(\farm\Farm $eFarm, string $type): \Collection {
 
 		return Product::model()
 			->select(Product::getSelection())

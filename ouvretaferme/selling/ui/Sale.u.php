@@ -1910,7 +1910,11 @@ class SaleUi {
 
 			case 'productsList' :
 				$d->field = function(\util\FormUi $form, Sale $e) {
-					return (new ItemUi())->getCreateList($form, $e['farm'], $e, $e['type'], $e['cProduct'], $e['cCategory'], $e->exists() ? '' : 'util-block');
+					return (new ItemUi())->getCreateList(
+						$e['cProduct'], $e['cCategory'],
+						fn($cProduct) => ItemUi::getCreateByCategory($form, $e, $cProduct),
+						$e->exists() ? '' : 'util-block'
+					);
 				};
 				$d->group = [
 					'wrapper' => 'productsList',

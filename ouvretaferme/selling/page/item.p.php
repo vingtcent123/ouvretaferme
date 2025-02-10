@@ -40,8 +40,7 @@
 
 		$data->eSale['cCategory'] = \selling\CategoryLib::getByFarm($data->eSale['farm'], index: 'id');
 
-		$cProduct = \selling\ProductLib::getForShop($data->eSale['farm'], $data->eSale['type']);
-	//	\shop\ProductLib::excludeExisting($data->eSale, $cProduct);
+		$cProduct = \selling\ProductLib::getForSale($data->eSale['farm'], $data->eSale['type']);
 
 		$cGrid = \selling\GridLib::getByCustomer($data->eSale['customer'], index: 'product');
 

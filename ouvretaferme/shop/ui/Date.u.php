@@ -388,7 +388,7 @@ class DateUi {
 		$ccPoint = $eDate['ccPoint'];
 
 		if($ccPoint->empty()) {
-			$h = '<div class="util-block-requirement">';
+			$h = '<div class="util-block-util-block-help">';
 				$h .= '<p>'.s("Avant d'enregistrer une nouvelle date, vous devez renseigner les modes de livraisons disponibles pour vos clients !").'</p>';
 				$h .= '<a href="'.ShopUi::adminUrl($eDate['farm'], $eShop).'&tab=points" class="btn btn-secondary">'.s("Renseigner mes produits").'</a>';
 			$h .= '</div>';
@@ -945,7 +945,11 @@ class DateUi {
 
 			case 'productsList' :
 				$d->field = function(\util\FormUi $form, Date $e) {
-					return (new ProductUi())->getCreateList($form, $e['farm'], $e['type'], $e['cProduct'], $e['cCategory'], $e->exists() ? '' : 'util-block');
+					return (new \selling\ItemUi())->getCreateList(
+						$e['cProduct'], $e['cCategory'],
+						fn($cProduct) => ProductUi::getCreateByCategory($form, $e['farm'], $e['type'], $cProduct),
+						$e->exists() ? '' : 'util-block'
+					);
 				};
 				$d->group = [
 					'wrapper' => 'productsList',
