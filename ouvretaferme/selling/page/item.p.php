@@ -1,58 +1,76 @@
 <?php
-(new \selling\SalePage())
-	->applyElement(function($data, \selling\Sale $eSale) {
+(new Page(function($data) {
 
-		$eSale->validate('acceptWriteItems');
+		$data->eSale = \selling\SaleLib::getById(INPUT('sale'))->validate('acceptUpdateItems', 'canWrite');
+
+	}))
+	->get('select', function($data) {
+
+		throw new ViewAction($data);
 
 	})
-	->read('add', fn($data) => throw new ViewAction($data))
-	->read('one', function($data) {
+	->get('create', function($data) {
 
-		$data->eProduct = \selling\ProductLib::getById(POST('product'));
+		$data->eProduct = \selling\ProductLib::getById(GET('product'));
 
 		if($data->eProduct->notEmpty()) {
 
-			if(\selling\ItemLib::isCompatible($data->e, $data->eProduct) === FALSE) {
+			if(\selling\ItemLib::isCompatible($data->eSale, $data->eProduct) === FALSE) {
 				throw new NotExpectedAction('Sale not compatible with Product');
 			}
 
 		}
 
-		$data->eItem = new \selling\Item([
-			'farm' => $data->e['farm'],
-			'sale' => $data->e,
-			'product' => $data->eProduct,
-			'vatRate' => Setting::get('selling\vatRates')[$data->e['farm']->getSelling('defaultVat')],
-			'quality' => $data->eProduct->empty() ? new \plant\Size() : $data->eProduct['quality'],
-			'customer' => $data->e['customer'],
-			'locked' => \selling\Item::PRICE,
-		]);
-
-		if($data->eProduct->empty()) {
-			$data->eItem['cUnit'] = \selling\UnitLib::getByFarm($data->e['farm']);
-		}
-
-		if($data->eProduct->notEmpty() and $data->e['customer']->notEmpty()) {
-			$data->eGrid = \selling\GridLib::getOne($data->e['customer'], $data->eProduct);
+		if($data->eProduct->notEmpty() and $data->eSale['customer']->notEmpty()) {
+			$eGrid = \selling\GridLib::getOne($data->eSale['customer'], $data->eProduct);
 		} else {
-			$data->eGrid = new \selling\Grid();
+			$eGrid = new \selling\Grid();
 		}
+
+		$data->eItem = \selling\ItemLib::getNew($data->eSale, $data->eProduct, $eGrid);
+
+		$data->eItem['cUnit'] = $data->eProduct->empty() ?
+			\selling\UnitLib::getByFarm($data->eSale['farm']) :
+			new Collection();
 
 		throw new ViewAction($data);
 
-	}, method: 'post')
-	->write('doAdd', function($data) {
+	})
+	->get('createCollection', function($data) {
+
+		$data->eSale['cCategory'] = \selling\CategoryLib::getByFarm($data->eSale['farm'], index: 'id');
+
+		$cProduct = \selling\ProductLib::getForShop($data->eSale['farm'], $data->eSale['type']);
+	//	\shop\ProductLib::excludeExisting($data->eSale, $cProduct);
+
+		$cGrid = \selling\GridLib::getByCustomer($data->eSale['customer'], index: 'product');
+
+		foreach($cProduct as $eProduct) {
+			$eProduct['item'] = \selling\ItemLib::getNew($data->eSale, $eProduct, $cGrid[$eProduct['id']] ?? new \selling\Grid());
+		}
+
+		$data->eSale['cProduct'] = $cProduct;
+
+		throw new ViewAction($data);
+
+	})
+	->post('doCreateCollection', function($data) {
 
 		$fw = new FailWatch();
 
-		$data->cItem = \selling\ItemLib::build($data->e, $_POST);
+		$data->cItem = \selling\ItemLib::build($data->eSale, $_POST);
 
 		$fw->validate();
 
 		\selling\ItemLib::createCollection($data->cItem);
 
-		throw new BackAction('selling', 'Item::created');
+		throw new ReloadAction('selling', 'Item::created');
 
+	});
+
+(new \selling\SalePage())
+	->applyElement(function($data, \selling\Sale $eSale) {
+		$eSale->validate('acceptUpdateItems');
 	})
 	->write('doUpdateMerchant', function($data) {
 
@@ -68,6 +86,7 @@
 
 
 	});
+
 
 (new \selling\ItemPage())
 	->quick(['packaging', 'number', 'unitPrice', 'vatRate', 'price', 'description'])

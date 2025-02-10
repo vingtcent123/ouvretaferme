@@ -38,7 +38,7 @@ class GridLib extends GridCrud {
 
 	}
 
-	public static function getByCustomer(Customer $e): \Collection {
+	public static function getByCustomer(Customer $e, mixed $index = NULL): \Collection {
 
 		$e->expects(['id', 'type']);
 
@@ -57,7 +57,7 @@ class GridLib extends GridCrud {
 				]
 			])
 			->whereCustomer($e)
-			->getCollection();
+			->getCollection(index: $index);
 
 		$cGrid->sort(['product' => ['name']]);
 

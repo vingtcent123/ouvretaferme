@@ -102,50 +102,14 @@ td.item-item-description:not(:empty) a {
 	opacity: 0.33;
 }
 
+.item-item-create {
+	margin-bottom: 1rem;
+}
+
 /* Ajouter des articles */
 .item-add-scratch {
 	margin-top: .5rem;
 	text-align: right;
-}
-
-#item-add-list:not(:empty) {
-	margin-top: 2rem;
-}
-
-.item-add-submit {
-	display: flex;
-	justify-content: space-between;
-}
-
-.item-add-submit-stats {
-	display: none;
-}
-
-.item-add-submit-stats.visible {
-	display: block;
-}
-
-@media (max-width: 575px) {
-
-	#item-add-list div.form-group {
-		grid-template-columns: 2fr 3fr;
-		margin-bottom: 0.375rem;
-	}
-
-}
-
-div.item-add-one:not(:last-child) {
-	margin-bottom: 2rem;
-}
-
-div.item-add-one-actions {
-	display: grid;
-	grid-auto-flow: column;
-	grid-column-gap: 0.5rem;
-}
-
-.item-add-one-price {
-	display: none;
 }
 
 .item-write-packaging {
@@ -254,3 +218,81 @@ div.item-add-one-actions {
 
 }
 
+.items-products {
+	display: grid;
+	align-items: center;
+	grid-column-gap: 1rem;
+	padding: 0;
+	border-bottom: 1px dashed #ddd;
+}
+
+.items-products:nth-child(even) {
+	background-color: var(--background-odd);
+}
+
+.items-products-0 {
+	grid-template-columns: auto auto 1fr 12rem;
+}
+
+.items-products-1 {
+	grid-template-columns: auto auto 1fr 12rem 12rem;
+}
+
+.items-products-2 {
+	grid-template-columns: auto auto 1fr 12rem 12rem 12rem;
+}
+
+.items-products-3 {
+	grid-template-columns: auto auto 1fr 12rem 10rem 12rem 12rem;
+}
+
+.items-products > * {
+	padding-top: 0.25rem;
+	padding-bottom: 0.25rem;
+}
+
+.items-products > label {
+	cursor: pointer;
+}
+
+.items-products.selected span.product-item-label-name {
+	font-weight: bold;
+}
+
+.items-products-select {
+	background-color: #0001;
+	padding: 0 0.75rem;
+	margin: 0;
+	min-height: 2rem;
+	height: 100%;
+	display: flex;
+	align-items: center;
+}
+
+.items-products.selected .items-products-select {
+	background-color: var(--secondary);
+}
+
+@media (max-width: 991px) {
+
+	.items-products {
+		grid-column-gap: 0.5rem;
+	}
+
+	.items-products-0 {
+		grid-template-columns: auto auto 1fr 10rem;
+	}
+
+	.items-products-1 {
+		grid-template-columns: auto auto 1fr 10rem 10rem;
+	}
+
+	.items-products-2 {
+		grid-template-columns: auto auto 1fr 10rem 10rem 10rem;
+	}
+
+	.items-products-3 {
+		grid-template-columns: auto auto 1fr 10rem 10rem 10rem 10rem;
+	}
+
+}

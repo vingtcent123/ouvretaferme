@@ -1735,6 +1735,7 @@ class SaleUi {
 			'shop' => s("Boutique"),
 			'shopDate' => s("Associer à"),
 			'comment' => s("Commentaire interne"),
+			'productsList' => s("Choisir les produits proposés à la vente"),
 		]);
 
 		switch($property) {
@@ -1905,6 +1906,16 @@ class SaleUi {
 			case 'orderFormPaymentCondition' :
 				$d->placeholder = s("Exemple : Acompte de 20 % à la signature du devis, et solde à la livraison.");
 				$d->after = \util\FormUi::info(s("Facultatif, indiquez ici les conditions de paiement après acceptation du devis."));
+				break;
+
+			case 'productsList' :
+				$d->field = function(\util\FormUi $form, Sale $e) {
+					return (new ItemUi())->getCreateList($form, $e['farm'], $e, $e['type'], $e['cProduct'], $e['cCategory'], $e->exists() ? '' : 'util-block');
+				};
+				$d->group = [
+					'wrapper' => 'productsList',
+					'for' => FALSE
+				];
 				break;
 
 		}

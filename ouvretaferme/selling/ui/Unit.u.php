@@ -20,6 +20,7 @@ class UnitUi {
 				'gram' => $short ? $callback($value, s("g")) : p("{value} gramme", "{value} grammes", $value, ['value' => $value]),
 				'bunch' => $short ? $callback($value, s("bte")) : p("{value} botte", "{value} bottes", $value, ['value' => $value]),
 				'unit' => $short ? $callback($value, s("p.")) : ($value < 2 ? $callback($value, s("pièce")) : $callback($value, s("pièces"))),
+				'empty' => $short ? $callback($value, s("u.")) : ($value < 2 ? $callback($value, s("unité")) : $callback($value, s("unités"))),
 				default => $unit
 			};
 
@@ -67,6 +68,7 @@ class UnitUi {
 				'gram' => $short ? s("g") : s("gramme"),
 				'bunch' => $short ? s("bte") : s("botte"),
 				'unit' => $short ? s("p.") : s("pièce"),
+				'empty' => $short ? s("u.") : s("unité"),
 				default => $unit
 			};
 

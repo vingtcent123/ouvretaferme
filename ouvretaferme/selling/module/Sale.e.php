@@ -205,14 +205,21 @@ class Sale extends SaleElement {
 		return $this->isClosed() === FALSE;
 	}
 
-	public function acceptWriteItems(): bool {
+	public function acceptUpdateItems(): bool {
 
-		$this->expects(['preparationStatus']);
+		$this->expects(['market', 'marketParent', 'preparationStatus']);
 
-		return (
-			in_array($this['preparationStatus'], [Sale::DRAFT, Sale::CONFIRMED, Sale::PREPARED, Sale::SELLING]) and
-			$this['marketParent']->empty()
-		);
+		if($this['marketParent']->notEmpty()) {
+			return FALSE;
+		} else {
+			return in_array($this['preparationStatus'], [Sale::DRAFT, Sale::CONFIRMED, Sale::PREPARED, Sale::SELLING]);
+		}
+
+	}
+
+	public function acceptCreateItems(): bool {
+
+		return $this->acceptUpdateItems();
 
 	}
 

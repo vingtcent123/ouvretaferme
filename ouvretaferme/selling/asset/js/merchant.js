@@ -315,6 +315,10 @@ class Merchant {
 
 	static changeInput(e) {
 
+		if(this.current === null) {
+			return true;
+		}
+
 		if(isTouch()) {
 			return;
 		}

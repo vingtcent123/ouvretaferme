@@ -497,7 +497,7 @@ class OrderUi {
 							}
 							$h .= \util\TextUi::money($eItem['unitPrice']);
 							if($eSale['hasVat'] and $eSale['type'] === Customer::PRO) {
-								$h .= ' '.SaleUi::getTaxes($eSale['taxes']);
+								$h .= ' '.$eSale->getTaxes();
 							}
 							$h .= ' '.$unit;
 						$h .= '</td>';
@@ -505,7 +505,7 @@ class OrderUi {
 						$h .= '<td class="item-item-price text-end">';
 							$h .= \util\TextUi::money($eItem['price']);
 							if($eSale['hasVat'] and $eSale['type'] === Customer::PRO) {
-								$h .= ' '.SaleUi::getTaxes($eSale['taxes']);
+								$h .= ' '.$eSale->getTaxes();
 							}
 						$h .= '</td>';
 

@@ -1,15 +1,14 @@
 <?php
-new AdaptativeView('add', function($data, PanelTemplate $t) {
-
-	return (new \selling\ItemUi())->add($data->e);
-
+new AdaptativeView('select', function($data, PanelTemplate $t) {
+	return (new \selling\ItemUi())->selectBySale($data->eSale);
 });
 
-new JsonView('one', function($data, AjaxTemplate $t) {
+new AdaptativeView('create', function($data, PanelTemplate $t) {
+	return (new \selling\ItemUi())->createBySale($data->eSale, $data->eItem);
+});
 
-	$t->qs('#item-add-list')->insertAdjacentHtml('afterbegin', \selling\ItemUi::addOne($data->eItem, $data->eGrid));
-	$t->package('selling')->activateLastItem();
-
+new AdaptativeView('createCollection', function($data, PanelTemplate $t) {
+	return (new \selling\ItemUi())->createCollectionBySale($data->eSale['farm'], $data->eSale);
 });
 
 new AdaptativeView('update', function($data, PanelTemplate $t) {

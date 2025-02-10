@@ -306,7 +306,7 @@ class BasketUi {
 				$h .= '<dt>'.s("Montant").'</dt>';
 				$h .= '<dd>';
 					if($eSale['hasVat'] and $eSale['type'] === \selling\Sale::PRO) {
-						$h .= \util\TextUi::money($eSale['priceExcludingVat']).' '.\selling\SaleUi::getTaxes($eSale['taxes']);
+						$h .= \util\TextUi::money($eSale['priceExcludingVat']).' '.$eSale->getTaxes();
 					} else {
 						$h .= \util\TextUi::money($eSale['priceIncludingVat']);
 					}
@@ -721,7 +721,7 @@ class BasketUi {
 				$h .= '<dt>'.s("Montant").'</dt>';
 				$h .= '<dd>';
 					if($eSale['hasVat'] and $eSale['type'] === \selling\Sale::PRO) {
-						$h .= \util\TextUi::money($eSale['priceExcludingVat']).' '.\selling\SaleUi::getTaxes($eSale['taxes']);
+						$h .= \util\TextUi::money($eSale['priceExcludingVat']).' '.$eSale->getTaxes();
 					} else {
 						$h .= \util\TextUi::money($eSale['priceIncludingVat']);
 					}

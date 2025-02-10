@@ -25,48 +25,33 @@ class ItemUi {
 			$h .= '</div>';
 		}
 
+		$h .= '<div class="h-line">';
+
+			if($eSale->isMarketPreparing()) {
+				$h .= '<h3>'.s("Préparation du marché").'</h3>';
+			} else {
+				$h .= '<h3>'.s("Articles").'</h3>';
+			}
+
+			if($eSale->acceptCreateItems()) {
+				$h .= '<a href="/selling/item:createCollection?sale='.$eSale['id'].'" class="btn btn-outline-primary">';
+					$h .= \Asset::icon('plus-circle').' '.s("Ajouter plusieurs produits");
+				$h .= '</a>';
+			}
+		$h .= '</div>';
+
 		if($cItem->empty()) {
 
-			if(
-				$eSale['market'] === FALSE or
-				$eSale->isMarketPreparing()
-			) {
+			if($eSale['market']) {
 
-				if($eSale->isMarketPreparing()) {
-
-					$h .= '<h3>'.s("Préparation du marché").'</h3>';
-
-					$h .= '<div class="util-info">';
-						$h .= s("Ajoutez les articles à vendre pendant votre marché !");
-					$h .= '</div>';
-
-				}
-
-				if($eSale->acceptWriteItems()) {
-					$h .= '<div class="mb-1">';
-						$h .= '<a href="/selling/item:add?id='.$eSale['id'].'" class="btn btn-outline-primary">'.\Asset::icon('plus-circle').' '.s("Ajouter un premier article").'</a>';
-					$h .= '</div>';
-				}
+				$h .= '<div class="util-info">';
+					$h .= s("Ajoutez les articles à vendre pendant votre marché !");
+				$h .= '</div>';
 
 			}
 
 		} else {
 
-			$h .= '<div class="h-line">';
-
-				if($eSale->isMarketPreparing()) {
-					$h .= '<h3>'.s("Préparation du marché").'</h3>';
-				} else {
-					$h .= '<h3>'.s("Articles").'</h3>';
-				}
-
-				if(
-					$eSale->acceptWriteItems() and
-					$eSale['items'] > 0
-				) {
-					$h .= '<a href="/selling/item:add?id='.$eSale['id'].'" class="btn btn-outline-primary">'.\Asset::icon('plus-circle').' '.s("Ajouter d'autres articles").'</a>';
-				}
-			$h .= '</div>';
 
 			$withPackaging = $cItem->reduce(fn($eItem, $n) => $n + (int)($eItem['packaging'] !== NULL), 0);
 			$columns = 0;
@@ -77,7 +62,7 @@ class ItemUi {
 
 			$h .= '<div class="stick-xs">';
 
-				$h .= '<table class="tbody-even item-item-table '.($withPackaging ? 'item-item-table-with-packaging' : '').' mb-2">';
+				$h .= '<table class="tbody-even item-item-table '.($withPackaging ? 'item-item-table-with-packaging' : '').'">';
 
 					$h .= '<thead>';
 						$h .= '<tr>';
@@ -101,7 +86,7 @@ class ItemUi {
 							$h .= '<th class="text-end">';
 								$h .= ItemUi::p('unitPrice')->label;
 								if($eSale['hasVat']) {
-										$h .= ' <span class="util-annotation">'.SaleUi::getTaxes($eSale['taxes']).'</span>';
+										$h .= ' <span class="util-annotation">'.$eSale->getTaxes().'</span>';
 								}
 							$h .= '</th>';
 
@@ -113,7 +98,7 @@ class ItemUi {
 								$h .= '<th class="text-end">';
 									$h .= ItemUi::p('price')->label;
 									if($eSale['hasVat']) {
-										$h .= ' <span class="util-annotation">'.SaleUi::getTaxes($eSale['taxes']).'</span>';
+										$h .= ' <span class="util-annotation">'.$eSale->getTaxes().'</span>';
 									}
 								$h .= '</th>';
 							}
@@ -121,6 +106,7 @@ class ItemUi {
 								$columns++;
 								$h .= '<th class="item-item-vat text-center hide-sm-down">'.s("TVA").'</th>';
 							}
+
 						$h .= '</tr>';
 					$h .= '</thead>';
 
@@ -287,14 +273,38 @@ class ItemUi {
 
 			$h .= '</div>';
 
-			if($eSale['market'] and $eSale['preparationStatus'] === Sale::DRAFT) {
-				$h .= '<div class="util-block bg-order color-white" style="display: flex; align-items: center; justify-content: space-between">';
-					$h .= '<h4 class="mb-0">'.s("Votre préparation de marché est complète ?").'</h4>';
-					$h .= '<a data-ajax="/selling/sale:doUpdatePreparationStatus" post-id="'.$eSale['id'].'" post-preparation-status="'.Sale::CONFIRMED.'" class="btn btn-transparent">'.s("Confirmer la vente").'</a>';
-				$h .= '</div>';
-			}
+		}
+
+		if($eSale->acceptCreateItems()) {
+
+			$form = new \util\FormUi();
+
+			$eItem = new Item([
+				'farm' => $eSale['farm'],
+				'sale' => $eSale
+			]);
+
+			$h .= '<div id="item-create" data-sale="'.$eSale['id'].'">';
+
+				$h .= $form->dynamicField($eItem, 'product', function($d) {
+					$d->autocompleteDispatch = '#item-create';
+					$d->placeholder = s("Ajouter un produit à la vente");
+					$d->attributes['class'] = 'form-control-lg';
+				});
+				$h .= '<div class="item-add-scratch">'.\Asset::icon('chevron-right').' <a href="/selling/item:create?sale='.$eSale['id'].'">'.s("Ajouter un article sans référence de produit").'</a></div>';
+
+			$h .= '</div>';
 
 		}
+
+		if($eSale['market'] and $eSale['preparationStatus'] === Sale::DRAFT) {
+			$h .= '<div class="util-block bg-order color-white" style="display: flex; align-items: center; justify-content: space-between">';
+				$h .= '<h4 class="mb-0">'.s("Votre préparation de marché est complète ?").'</h4>';
+				$h .= '<a data-ajax="/selling/sale:doUpdatePreparationStatus" post-id="'.$eSale['id'].'" post-preparation-status="'.Sale::CONFIRMED.'" class="btn btn-transparent">'.s("Confirmer la vente").'</a>';
+			$h .= '</div>';
+		}
+
+		$h .= '<br/>';
 
 		return $h;
 
@@ -584,7 +594,221 @@ class ItemUi {
 
 	}
 
-	public function add(Sale $eSale): \Panel {
+	public function createCollectionBySale(\farm\Farm $eFarm, Sale $e): \Panel {
+
+		$e->expects(['cProduct', 'cCategory']);
+
+		$form = new \util\FormUi([
+			'columnBreak' => 'sm'
+		]);
+
+		$h = $form->openAjax('/selling/item:doCreateCollection');
+
+			$h .= $form->hidden('sale', $e['id']);
+
+			$h .= $form->dynamicField($e, 'productsList');
+			$h .= '<br/>';
+			$h .= $form->submit(s("Ajouter"), ['class' => 'btn btn-primary']);
+
+		$h .= $form->close();
+
+		return new \Panel(
+			id: 'panel-item-create-collection',
+			title: s("Ajouter des produits à la vente"),
+			body: $h
+		);
+	}
+
+	public function getCreateList(\util\FormUi $form, \farm\Farm $eFarm, Sale $eSale, string $type, \Collection $cProduct, \Collection $cCategory, string $class = ''): string {
+
+		\Asset::css('shop', 'shop.css');
+		\Asset::css('shop', 'manage.css');
+		\Asset::js('shop', 'manage.js');
+
+		if($cProduct->empty()) {
+			$h = '<div class="util-block-requirement">';
+				$h .= '<p>'.s("Avant d'enregistrer une nouvelle date, vous devez renseigner les produits que vous souhaitez proposer à la vente dans votre ferme !").'</p>';
+				$h .= '<a href="'.\farm\FarmUi::urlSellingProduct($eFarm).'" class="btn btn-secondary">'.s("Renseigner mes produits").'</a>';
+			$h .= '</div>';
+			return $h;
+		}
+
+		if($cCategory->empty()) {
+			return self::getCreateByCategory($form, $eFarm, $eSale, $type, $cProduct);
+		}
+
+		$ccProduct = $cProduct->reindex(['category']);
+
+		$h = '<div class="tabs-h" id="date-products-tabs" onrender="'.encode('Lime.Tab.restore(this)').'">';
+
+			$h .= '<div class="tabs-item">';
+
+				foreach($cCategory as $eCategory) {
+
+					if($ccProduct->offsetExists($eCategory['id']) === FALSE) {
+						continue;
+					}
+
+					$products = $ccProduct[$eCategory['id']]->find(fn($eProduct) => $eProduct['checked'] ?? FALSE)->count();
+
+					$h .= '<a class="tab-item " data-tab="'.$eCategory['id'].'" onclick="Lime.Tab.select(this)">';
+						$h .= encode($eCategory['name']);
+						$h .= '<span class="tab-item-count">';
+							if($products > 0) {
+								$h .= $products;
+							}
+						$h .= '</span>';
+					$h .= '</a>';
+
+				}
+
+				if($ccProduct->offsetExists('')) {
+
+					$products = $ccProduct['']->find(fn($eProduct) => $eProduct['checked'] ?? FALSE)->count();
+
+					$h .= '<a class="tab-item " data-tab="empty" onclick="Lime.Tab.select(this)">';
+						$h .= s("Non catégorisé");
+						$h .= '<span class="tab-item-count">';
+							if($products > 0) {
+								$h .= $products;
+							}
+						$h .= '</span>';
+					$h .= '</a>';
+				}
+
+			$h .= '</div>';
+
+			$h .= '<div class="tabs-panel '.$class.' stick-sm">';
+
+				foreach($ccProduct as $category => $cProduct) {
+
+					$h .= '<div class="tab-panel" data-tab="'.($category ?: 'empty').'">';
+						$h .= self::getCreateByCategory($form, $eFarm, $eSale, $type, $cProduct);
+					$h .= '</div>';
+
+				}
+
+			$h .= '</div>';
+		$h .= '</div>';
+
+		return $h;
+
+	}
+
+	public static function getCreateByCategory(\util\FormUi $form, \farm\Farm $eFarm, Sale $eSale, string $type, \Collection $cProduct): string {
+
+		$hasPackaging = ($eSale['type'] === Sale::PRO);
+		$hasQuantity = ($eSale['market'] === FALSE or $eSale['preparationStatus'] !== Sale::SELLING);
+		$hasPrice = ($eSale['market'] === FALSE);
+
+		$class = 'items-products items-products-'.((int)$hasQuantity + (int)$hasPackaging + (int)$hasPrice).'';
+
+		$h = '<div class="util-overflow-xs">';
+
+			$h .= '<div class="'.$class.' util-grid-header">';
+
+				$h .= '<div style="grid-column: span 3">';
+					$h .= s("Produit");
+				$h .= '</div>';
+				if($hasPackaging) {
+					$h .= '<div class="date-products-item-unit">'.s("Colisage").'</div>';
+				}
+				$h .= '<div class="date-products-item-unit">';
+						$h .= s("Prix unitaire");
+						if($eSale['hasVat']) {
+							$h .= ' <span class="util-annotation">'.$eSale->getTaxes().'</span>';
+						}
+					$h .= '</div>';
+				if($hasQuantity) {
+					$h .= '<div class="date-products-item-unit">'.s("Quantité vendue").'</div>';
+				}
+				if($hasPrice) {
+					$h .= '<div class="date-products-item-price">';
+						$h .= s("Montant total");
+						if($eSale['hasVat']) {
+							$h .= ' <span class="util-annotation">'.$eSale->getTaxes().'</span>';
+						}
+					$h .= '</div>';
+				}
+			$h .= '</div>';
+
+			$h .= '<div class="date-products-body">';
+				foreach($cProduct as $eProduct) {
+
+					$eItem = $eProduct['item'];
+					$eItem['unitShort'] = TRUE;
+
+					$attributes = [
+						'id' => 'items-products-checkbox-'.$eProduct['id'],
+						'onclick' => 'Item.selectProduct(this)'
+					];
+
+					$h .= '<div class="'.$class.' item-write">';
+
+						$h .= '<label class="items-products-select">';
+							$h .= $form->hidden('discount['.$eProduct['id'].']', $eItem['sale']['discount']);
+							$h .= $form->hidden('name['.$eProduct['id'].']', $eProduct->getName());
+							$h .= $form->hidden('unit['.$eProduct['id'].']', $eProduct['unit']);
+							$h .= $form->hidden('quality['.$eProduct['id'].']', $eProduct['quality']);
+							$h .= $form->hidden('locked['.$eProduct['id'].']', Item::PRICE);
+
+							if($eSale['type'] == Customer::PRIVATE) {
+								$h .= $form->hidden('packaging['.$eProduct['id'].']', '');
+							}
+
+							if($eSale['hasVat']) {
+								$h .= $form->hidden('vatRate['.$eProduct['id'].']', \Setting::get('selling\vatRates')[$eProduct['vat']]);
+							}
+
+							$h .= $form->inputCheckbox('product['.$eProduct['id'].']', $eProduct['id'], $attributes);
+						$h .= '</label>';
+						$h .= '<label for="'.$attributes['id'].'">';
+							$h .= \selling\ProductUi::getVignette($eProduct, '2rem');
+						$h .= '</label>';
+						$h .= '<label for="'.$attributes['id'].'">';
+							$h .= \selling\ProductUi::getInfos($eProduct, link: FALSE);
+						$h .= '</label>';
+
+						if($hasPackaging) {
+
+							$h .= '<div>';
+								$h .= self::getPackagingField($form, 'packaging['.$eProduct['id'].']', $eItem);
+							$h .= '</div>';
+
+
+						}
+						$h .= '<div>';
+
+							$h .= $form->dynamicField($eItem, 'unitPrice['.$eProduct['id'].']*', function(\PropertyDescriber $d) use ($form) {
+								$d->append = $form->addon(s("€"));
+							});
+
+						$h .= '</div>';
+
+						if($hasQuantity) {
+							$h .= '<div data-wrapper="price['.$eProduct['id'].']" class="date-products-item-price">';
+								$h .= $form->dynamicField($eItem, $eSale['market'] ? 'number['.$eProduct['id'].']' : 'number['.$eProduct['id'].']*');
+							$h .= '</div>';
+						}
+
+						if($hasPrice) {
+							$h .= '<div data-wrapper="price['.$eProduct['id'].']" class="date-products-item-price">';
+								$h .= $form->dynamicField($eItem, 'price['.$eProduct['id'].']*', function(\PropertyDescriber $d) use ($eItem) {
+									$d->append = s("€");
+								});
+							$h .= '</div>';
+						}
+					$h .= '</div>';
+
+				}
+			$h .= '</div>';
+		$h .= '</div>';
+
+		return $h;
+
+	}
+
+	public function selectBySale(Sale $eSale): \Panel {
 
 		$eSale->expects(['farm']);
 
@@ -592,109 +816,61 @@ class ItemUi {
 
 		$eItem = new Item([
 			'farm' => $eSale['farm'],
-			'sale' => $eSale
+			'sale' => $eSale,
 		]);
 
-		$h = $form->group(
-			s("À partir d'un produit"),
-			$form->dynamicField($eItem, 'product', function($d) {
-				$d->autocompleteDispatch = '#item-add';
-			}),
-			['class' => 'form-group-highlight']
-		);
-		$h .= '<div class="item-add-scratch">'.\Asset::icon('chevron-right').' <a data-ajax="/selling/item:one" post-id="'.$eSale['id'].'">'.s("Ajouter un article sans référence de produit").'</a></div>';
+		$h = $form->openAjax('/selling/item:create', ['method' => 'get']);
 
-		$h .= $form->hidden('id', $eSale['id']);
+			$h .= $form->hidden('sale', $eSale['id']);
 
-		if($eSale['discount'] > 0) {
-			$h .= '<div id="item-add-discount" class="util-success hide">';
-				$h .= s("Le prix unitaire inclut la remise de {discount} % applicable à cette vente.", ['discount' => $eSale['discount']]);
-			$h .= '</div>';
-		}
+			$h .= $form->group(
+				s("À partir d'un produit"),
+				$form->dynamicField($eItem, 'product', function($d) {
+					$d->attributes = [
+						'data-autocomplete-select' => 'submit'
+					];
+				}),
+				['class' => 'form-group-highlight']
+			);
 
-		$h .= '<div id="item-add-list">';
-		$h .= '</div>';
+			$h .= '<div class="item-add-scratch">'.\Asset::icon('chevron-right').' <a href="/selling/item:create?sale='.$eSale['id'].'">'.s("Ajouter un article sans référence de produit").'</a></div>';
 
-		$footer = '<div class="item-add-submit">';
-			$footer .= $form->submit(s("Ajouter"));
-			$footer .= '<div class="item-add-submit-stats">';
-				$footer .= '<span class="btn btn-border btn-readonly">'.s("Articles {arrow} {value}", ['value' => '<span data-ref="product-item-count"></span>', 'arrow' => \Asset::icon('arrow-right')]).'</span>';
-				if($eSale['market'] === FALSE) {
-					$footer .= ' ';
-					$footer .= '<span class="btn btn-border btn-readonly">'.s("Prix total {arrow} {value} €", ['value' => '<span data-ref="product-price-sum"></span>', 'arrow' => \Asset::icon('arrow-right')]);
-					$footer .= ' '.$eSale->getTaxes().'</span>';
-				}
-			$footer .= '</div>';
-		$footer .= '</div>';
+		$h .= $form->close();
 
 		return new \Panel(
-			title: s("Ajouter des articles"),
+			id: 'panel-item-create',
+			title: s("Ajouter un article"),
 			subTitle: SaleUi::getPanelHeader($eSale),
-			dialogOpen: $form->openAjax('/selling/item:doAdd', ['class' => 'panel-dialog container', 'id' => 'item-add']),
-			dialogClose: $form->close(),
-			body: $h,
-			footer: $footer,
-			close: 'reload'
+			body: $h
 		);
 
 	}
 
-	public static function addOne(Item $eItem, Grid $eGrid): string {
+	public function createBySale(Sale $eSale, Item $eItem): \Panel {
 
-		$eItem->expects(['farm', 'product', 'sale']);
+		$eSale->expects(['farm']);
 
 		$eProduct = $eItem['product'];
 
 		$form = new \util\FormUi();
 
-		$h = '<div class="item-add-one" data-product="'.($eProduct->empty() ? '' : $eProduct['id']).'">';
+		$h = $form->openAjax('/selling/item:doCreateCollection');
 
-			$h .= '<div class="h-line">';
-				$h .= '<h3>'.s("Article n°{value}", '<span data-ref="product-number"></span>').'</h3>';
-				$h .= '<div class="item-add-one-actions">';
-					if($eItem['sale']['market'] === FALSE) {
-						$h .= '<div class="item-add-one-price btn btn-border btn-readonly">';
-							$h .= s("{value} €", ['value' => '<span data-ref="product-price"></span>']);
-							$h .= ' '.$eItem['sale']->getTaxes();
-							$h .= \Asset::icon('check-lg', ['class' => 'color-success', 'style' => 'margin-left: 1rem']);
-						$h .= '</div>';
-					}
-					$h .= '<a onclick="Item.removeFromFrom(this)" class="btn btn-outline-secondary">'.\Asset::icon('trash').'</a>';
+			$h .= $form->hidden('sale', $eSale['id']);
+
+			if($eSale['discount'] > 0) {
+				$h .= '<div class="util-success hide">';
+					$h .= s("Le prix unitaire inclut la remise de {discount} % applicable à cette vente.", ['discount' => $eSale['discount']]);
 				$h .= '</div>';
-			$h .= '</div>';
+			}
 
 			if($eProduct->notEmpty()) {
-
-				$eItem['packaging'] = NULL;
-				$eItem['unitPrice'] = NULL;
-				$eItem['unit'] = $eProduct['unit'];
-
-				if($eGrid->notEmpty()) {
-					$eItem['packaging'] = $eGrid['packaging'];
-					$eItem['unitPrice'] = $eGrid['price'];
-				}
-
-				if($eItem['sale']['type'] === Customer::PRO) {
-					$eItem['packaging'] ??= $eProduct['proPackaging'];
-				}
-
-				$eItem['unitPrice'] ??= $eProduct[$eItem['sale']['type'].'Price'];
-				$eItem['unitPrice'] ??= match($eItem['sale']['type']) {
-					Customer::PRO => $eProduct->calcProMagicPrice($eItem['sale']['hasVat']),
-					Customer::PRIVATE => $eProduct->calcPrivateMagicPrice($eItem['sale']['hasVat']),
-				};
-
-				// La réduction s'applique uniquement pour les produits qui disposent d'un prix pour ce type de client (particulier / professionnel)
-				if($eItem['sale']['discount'] > 0 and $eItem['unitPrice'] !== NULL) {
-					$eItem['baseUnitPrice'] = $eItem['unitPrice'];
-					$eItem['unitPrice'] = round($eItem['unitPrice'] * (1 - $eItem['sale']['discount'] / 100), 2);
-				}
 
 				$h .= '<div class="item-write">';
 
 					$h .= $form->group(
 						s("Produit"),
-						ProductUi::getVignette($eProduct, '2rem').'  '.ProductUi::link($eProduct, TRUE)
+						ProductUi::getVignette($eProduct, '3rem').'  '.ProductUi::link($eProduct, TRUE)
 					);
 
 					$h .= $form->dynamicGroup($eItem, 'quality[]');
@@ -714,7 +890,7 @@ class ItemUi {
 					}
 
 					if($eItem['sale']['type'] === Customer::PRO) {
-						$h .= self::getPackagingField($form, 'packaging[]', $eItem);
+						$h .= self::getPackagingGroup($form, 'packaging[]', $eItem);
 					} else {
 						$h .= $form->hidden('packaging[]', '');
 					}
@@ -733,17 +909,11 @@ class ItemUi {
 
 			} else {
 
-				$eItem['unit'] = new Unit();
-				$eItem['packaging'] = NULL;
-
 				$h .= '<div class="item-write">';
 
-					$h .= '<div class="util-info">';
+					$h .= '<div class="util-block-help">';
 						$h .= s("Les articles ajoutés sans référence de produit n'apparaissent pas dans la liste des commandes à préparer.");
-					$h .= '</div>';
-
-					$h .= '<div class="util-warning">';
-						$h .= s("Pour plus de commodité et faciliter la gestion de votre gamme, si cet article est amené à être vendu fréquemment, vous devriez l'<link>enregistrer au préalable comme un produit</link>.", ['link' => '<a href="/selling/product:create?farm='.$eItem['sale']['farm']['id'].'">']);
+						$h .= ' '.s("Pour plus de commodité et faciliter la gestion de votre gamme, si cet article est amené à être vendu fréquemment, vous devriez l'<link>enregistrer au préalable comme un produit</link>.", ['link' => '<a href="/selling/product:create?farm='.$eItem['sale']['farm']['id'].'">']);
 					$h .= '</div>';
 
 					$h .= $form->hidden('product[]', '');
@@ -752,7 +922,7 @@ class ItemUi {
 
 					if($eItem['sale']['type'] === Customer::PRO) {
 						$eItem['unit'] = new Unit();
-						$h .= self::getPackagingField($form, 'packaging[]', $eItem);
+						$h .= self::getPackagingGroup($form, 'packaging[]', $eItem);
 					} else {
 						$h .= $form->hidden('packaging[]', '');
 					}
@@ -772,10 +942,18 @@ class ItemUi {
 
 			}
 
+			$h .= $form->group(
+				content: $form->submit(s("Ajouter"))
+			);
 
-		$h .= '</div>';
+		$h .= $form->close();
 
-		return $h;
+		return new \Panel(
+			id: 'panel-item-create',
+			title: s("Ajouter un article"),
+			subTitle: SaleUi::getPanelHeader($eSale),
+			body: $h
+		);
 
 	}
 
@@ -793,14 +971,14 @@ class ItemUi {
 			if($eItem['product']->notEmpty()) {
 				$h .= $form->group(
 					self::p('product')->label,
-					ProductUi::getVignette($eItem['product'], '4rem').' '.ProductUi::link($eItem['product'])
+					ProductUi::getVignette($eItem['product'], '3rem').'  '.ProductUi::link($eItem['product'])
 				);
 			}
 
 			$h .= $form->dynamicGroups($eItem, ['name', 'quality']);
 
 			if($eItem['sale']->isPro()) {
-				$h .= self::getPackagingField($form, 'packaging', $eItem);
+				$h .= self::getPackagingGroup($form, 'packaging', $eItem);
 			}
 
 			$h .= $form->dynamicGroups($eItem, $eItem['sale']['market'] ?
@@ -825,6 +1003,17 @@ class ItemUi {
 
 	}
 
+	public static function getPackagingGroup(\util\FormUi $form, string $name, Item $eItem): string {
+
+		$h = $form->group(
+			self::p('packaging')->label,
+			self::getPackagingField($form, $name, $eItem)
+		);
+
+		return $h;
+
+	}
+
 	public static function getPackagingField(\util\FormUi $form, string $name, Item $eItem): string {
 
 		$eItem->expects(['unit']);
@@ -832,16 +1021,13 @@ class ItemUi {
 		$field = '<div class="item-write-packaging">';
 			$field .= $form->inputGroup(
 				$form->dynamicField($eItem, $name).
-				$form->addon($eItem['unit'] ? \selling\UnitUi::getSingular($eItem['unit']) : s("unité(s)"))
+				$form->addon(\selling\UnitUi::getSingular($eItem['unit']->empty() ? 'empty' : $eItem['unit'], short: $eItem['unitShort'] ?? FALSE))
 			);
 			$field .= '<a onclick="Item.removePackaging(this)" title="'.s("Supprimer le colisage").'" class="btn btn-primary">'.\Asset::icon('trash').'</a>';
 		$field .= '</div>';
 
-		$h = $form->group(
-			self::p('packaging')->label,
-			'<div class="item-write-packaging-field '.($eItem['packaging'] ? '' : 'hide').'">'.$field.'</div>'.
-			'<div class="item-write-packaging-link  '.($eItem['packaging'] ? 'hide' : '').'">'.s("Aucun").'&nbsp;&nbsp;-&nbsp;&nbsp;'.\Asset::icon('plus-circle').' <a onclick="Item.addPackaging(this)">'.s("Définir un colisage").'</a></div>'
-		);
+		$h = '<div class="item-write-packaging-field '.($eItem['packaging'] ? '' : 'hide').'">'.$field.'</div>';
+		$h .= '<div class="item-write-packaging-link  '.($eItem['packaging'] ? 'hide' : '').'">'.\Asset::icon('plus-circle').' <a onclick="Item.addPackaging(this)">'.s("Définir un colisage").'</a></div>';
 
 		return $h;
 
@@ -891,7 +1077,8 @@ class ItemUi {
 						return [];
 					} else {
 						return [
-							'oninput' => 'Item.recalculateLock(this)'
+							'oninput' => 'Item.recalculateLock(this)',
+							'onclick' => 'this.select()'
 						];
 					}
 
@@ -904,7 +1091,7 @@ class ItemUi {
 				$d->append = function(\util\FormUi $form, Item $eItem) {
 
 					$h = '<span class="item-write-packaging-label '.($eItem['packaging'] ? '' : 'hide').'">'.s("colis").'</span>';
-					$h .= '<span class="item-write-unit-label '.($eItem['packaging'] ? 'hide' : '').'">'.\selling\UnitUi::getSingular($eItem['unit']).'</span>';
+					$h .= '<span class="item-write-unit-label '.($eItem['packaging'] ? 'hide' : '').'">'.\selling\UnitUi::getSingular($eItem['unit'], short: $eItem['unitShort'] ?? FALSE).'</span>';
 
 					return $form->addon($h);
 
@@ -922,7 +1109,7 @@ class ItemUi {
 
 				$d->append = function(\util\FormUi $form, Item $eItem) {
 					$h = s("€ {taxes}", ['taxes' => $eItem['sale']->getTaxes()]);
-					$h .= \selling\UnitUi::getBy($eItem['unit']);
+					$h .= \selling\UnitUi::getBy($eItem['unit'], short: $eItem['unitShort'] ?? FALSE);
 					return $form->addon($h);
 				};
 				break;
@@ -967,7 +1154,8 @@ class ItemUi {
 			}
 
 			$attributes = [
-				'oninput' => 'Item.recalculateLock(this)'
+				'oninput' => 'Item.recalculateLock(this)',
+				'onclick' => 'this.select()'
 			];
 
 			if($eItem['locked'] === $property) {

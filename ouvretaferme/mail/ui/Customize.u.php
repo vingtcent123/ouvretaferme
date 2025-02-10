@@ -280,7 +280,7 @@ class CustomizeUi {
 				$products = rtrim($products);
 
 				if($eSale['hasVat'] and $eSale['type'] === \selling\Sale::PRO) {
-					$amount = \util\TextUi::money($eSale['priceExcludingVat']).' '.\selling\SaleUi::getTaxes($eSale['taxes']);
+					$amount = \util\TextUi::money($eSale['priceExcludingVat']).' '.$eSale->getTaxes();
 				} else {
 					$amount = \util\TextUi::money($eSale['priceIncludingVat']);
 				}

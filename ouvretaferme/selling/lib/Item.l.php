@@ -49,6 +49,60 @@ class ItemLib extends ItemCrud {
 
 	}
 
+	public static function getNew(Sale $eSale, Product $eProduct, Grid $eGrid): Item {
+
+		$eSale->expects(['farm', 'customer']);
+
+		$eFarm = $eSale['farm'];
+
+		$eItem = new \selling\Item([
+			'farm' => $eFarm,
+			'sale' => $eSale,
+			'product' => $eProduct,
+			'vatRate' => \Setting::get('selling\vatRates')[$eFarm->getSelling('defaultVat')],
+			'quality' => $eProduct->empty() ? new \plant\Size() : $eProduct['quality'],
+			'customer' => $eSale['customer'],
+			'locked' => \selling\Item::PRICE,
+		]);
+
+		if($eProduct->notEmpty()) {
+
+			$eItem['packaging'] = NULL;
+			$eItem['unitPrice'] = NULL;
+			$eItem['unit'] = $eProduct['unit'];
+
+			if($eGrid->notEmpty()) {
+				$eItem['packaging'] = $eGrid['packaging'];
+				$eItem['unitPrice'] = $eGrid['price'];
+			}
+
+			if($eSale['type'] === Customer::PRO) {
+				$eItem['packaging'] ??= $eProduct['proPackaging'];
+			}
+
+			$eItem['unitPrice'] ??= $eProduct[$eSale['type'].'Price'];
+			$eItem['unitPrice'] ??= match($eSale['type']) {
+				Customer::PRO => $eProduct->calcProMagicPrice($eSale['hasVat']),
+				Customer::PRIVATE => $eProduct->calcPrivateMagicPrice($eSale['hasVat']),
+			};
+
+			// La réduction s'applique uniquement pour les produits qui disposent d'un prix pour ce type de client (particulier / professionnel)
+			if($eSale['discount'] > 0 and $eItem['unitPrice'] !== NULL) {
+				$eItem['baseUnitPrice'] = $eItem['unitPrice'];
+				$eItem['unitPrice'] = round($eItem['unitPrice'] * (1 - $eSale['discount'] / 100), 2);
+			}
+			
+		} else {
+
+			$eItem['unit'] = new Unit();
+			$eItem['packaging'] = NULL;
+
+		}
+
+		return $eItem;
+
+	}
+
 	public static function getBySale(Sale $eSale): \Collection {
 
 		return Item::model()

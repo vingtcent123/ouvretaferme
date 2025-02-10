@@ -175,9 +175,11 @@ class MarketUi {
 
 			$h .= '<div class="util-title">';
 				$h .= '<h2>'.s("Articles proposés à la vente").'</h2>';
-				$h .= '<div>';
-					$h .= '<a href="/selling/item:add?id='.$eSale['id'].'" class="btn btn-outline-primary">'.\Asset::icon('plus-circle').' '.s("Ajouter des articles").'</a>';
-				$h .= '</div>';
+				if($eSale->acceptCreateItems()) {
+					$h .= '<div>';
+						$h .= '<a href="/selling/item:select?sale='.$eSale['id'].'" class="btn btn-outline-primary">'.\Asset::icon('plus-circle').' '.s("Ajouter un article").'</a>';
+					$h .= '</div>';
+				}
 			$h .= '</div>';
 
 			if($cItemMarket->empty()) {

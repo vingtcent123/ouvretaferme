@@ -244,7 +244,7 @@ div.bed-item-grid div.bed-item-cultivation-plant {
 }
 
 .bed-update-grid label.bed-update-grid-select {
-	background-color: var(--secondary);
+	background-color: #0001;
 	padding: 0 0.75rem;
 	margin: 0;
 	min-height: 2rem;
@@ -255,10 +255,6 @@ div.bed-item-grid div.bed-item-cultivation-plant {
 
 .bed-update-grid label:empty {
 	padding: 0 !important;
-}
-
-.bed-update-grid label.bed-update-grid-select:first-of-type {
-	background-color: var(--background);
 }
 
 .bed-update-grid div.bed-update-grid-name {

@@ -359,13 +359,29 @@ class ProductUi {
 
 	}
 
-	public static function getInfos(Product $eProduct, bool $includeStock = FALSE, bool $includeQuality = TRUE): string {
+	public static function getInfos(Product $eProduct, bool $includeStock = FALSE, bool $includeQuality = TRUE, bool $includeUnit = FALSE, bool $link = TRUE): string {
 
 		\Asset::css('selling', 'product.css');
 
 		$h = '<div class="product-item-label">';
 
-			$h .= '<a href="/produit/'.$eProduct['id'].'">'.encode($eProduct->getName()).'</a>';
+			$h .= '<div>';
+
+				if($link) {
+					$h .= '<a href="/produit/'.$eProduct['id'].'" class="product-item-label-name">'.encode($eProduct->getName()).'</a>';
+				} else {
+					$h .= '<span class="product-item-label-name">'.encode($eProduct->getName()).'</span>';
+				}
+
+				if($includeUnit) {
+
+					if($eProduct['unit']->notEmpty()) {
+						$h .= '<span class="product-item-label-unit">'.UnitUi::getSingular($eProduct['unit']).'</span>';
+					}
+
+				}
+
+			$h .= '</div>';
 
 			if($includeQuality) {
 

@@ -352,13 +352,18 @@ class ProductUi {
 				$h .= '<div style="grid-column: span 2">';
 					$h .= s("Produit");
 				$h .= '</div>';
-				$h .= '<div class="date-products-item-unit text-end">';
+				$h .= '<div class="date-products-item-unit text-center">';
 					if($type === Date::PRIVATE) {
 						$h .= s("Multiple de vente");
 					}
 				$h .= '</div>';
-				$h .= '<div class="date-products-item-price">'.s("Prix").'</div>';
-				$h .= '<div>'.s("Limiter les ventes").'</div>';
+				$h .= '<div class="date-products-item-price">';
+					$h .= s("Prix unitaire");
+					if($eFarm->getSelling('hasVat')) {
+						$h .= ' <span class="util-annotation">'.\selling\CustomerUi::getTaxes($type).'</span>';
+					}
+				$h .= '</div>';
+				$h .= '<div>'.s("Disponible").'</div>';
 				if($displayStock) {
 					$h .= '<div class="text-end hide-xs-down">';
 						$h .= s("Stock");
@@ -413,15 +418,15 @@ class ProductUi {
 							$h .= \selling\ProductUi::getVignette($eProduct, '2rem');
 						$h .= '</label>';
 						$h .= '<label class="date-products-item-product" for="'.$attributes['id'].'">';
-							$h .= \selling\ProductUi::getInfos($eProduct, includeQuality: FALSE);
+							$h .= \selling\ProductUi::getInfos($eProduct, includeQuality: FALSE, link: FALSE);
 						$h .= '</label>';
-						$h .= '<label class="date-products-item-unit text-end" for="'.$attributes['id'].'">';
+						$h .= '<div class="date-products-item-unit text-center">';
 
 							switch($type) {
 
 								case Date::PRIVATE :
 									$step = ProductUi::getStep($type, $eProduct);
-									$h .= \selling\UnitUi::getValue($step, $eProduct['unit']);
+									$h .= $eProduct->quick('privateStep', \selling\UnitUi::getValue($step, $eProduct['unit']));
 									break;
 
 								case Date::PRO :
@@ -432,7 +437,7 @@ class ProductUi {
 
 							}
 
-						$h .= '</label>';
+						$h .= '</div>';
 						$h .= '<div data-wrapper="price['.$eProduct['id'].']" class="date-products-item-price '.($checked ? '' : 'hidden').'">';
 							$h .= $form->dynamicField($eShopProduct, 'price['.$eProduct['id'].']');
 						$h .= '</div>';
@@ -1032,7 +1037,7 @@ class ProductUi {
 		$d = Product::model()->describer($property, [
 			'product' => s("Produit"),
 			'available' => s("Disponible"),
-			'price' => s("Prix unitaire"),
+			'price' => fn($e) => s("Prix unitaire").($e['farm']->getSelling('hasVat') ? ' <span class="util-annotation">'.$e->getTaxes().'</span>' : ''),
 			'date' => s("Vente"),
 			'limitStartAt' => s("Proposer pour les commandes livrées à partir de"),
 			'limitEndAt' => s("Proposer pour les commandes livrées jusqu'au"),
@@ -1121,8 +1126,7 @@ class ProductUi {
 			case 'price' :
 				$d->append = function(\util\FormUi $form, Product $e) {
 
-					return $form->addon(s('€ {taxes}{unit}', [
-						'taxes' => $e['farm']->getSelling('hasVat') ? $e->getTaxes() : '',
+					return $form->addon(s('€ {unit}', [
 						'unit' => \selling\UnitUi::getBy($e['product']['unit'], short: TRUE)
 					]));
 

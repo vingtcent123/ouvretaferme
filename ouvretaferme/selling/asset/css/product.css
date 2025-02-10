@@ -72,16 +72,18 @@ div.product-item-label {
 	display: flex;
 	justify-content: space-between;
 	column-gap: 0.25rem;
+	line-height: 1.4;
 }
 
 div.product-item-label > a {
 	line-height: 1.4;
 }
 
-@media (max-width: 575px) {
-	div.product-item-label > *:not(a) {
-		display: none;
-	}
+.product-item-label-unit {
+	font-weight: bold;
+	text-transform: uppercase;
+	font-size: 0.8rem;
+	margin-left: 0.5rem;
 }
 
 div.product-item-infos {
