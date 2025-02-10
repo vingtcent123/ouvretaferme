@@ -280,7 +280,7 @@ class ProductUi {
 				$h .= '<div style="grid-column: span 2">';
 					$h .= s("Produit");
 				$h .= '</div>';
-				$h .= '<div class="date-products-item-unit text-center">';
+				$h .= '<div class="date-products-item-unit text-end">';
 					if($type === Date::PRIVATE) {
 						$h .= s("Multiple de vente");
 					}
@@ -346,9 +346,9 @@ class ProductUi {
 							$h .= \selling\ProductUi::getVignette($eProduct, '2rem');
 						$h .= '</label>';
 						$h .= '<label class="date-products-item-product" for="'.$attributes['id'].'">';
-							$h .= \selling\ProductUi::getInfos($eProduct, includeQuality: FALSE, includeUnit: TRUE, link: FALSE);
+							$h .= \selling\ProductUi::getInfos($eProduct, includeUnit: TRUE, link: FALSE);
 						$h .= '</label>';
-						$h .= '<div class="date-products-item-unit text-center">';
+						$h .= '<div class="date-products-item-unit text-end">';
 
 							switch($type) {
 
@@ -366,16 +366,16 @@ class ProductUi {
 							}
 
 						$h .= '</div>';
-						$h .= '<div data-wrapper="price['.$eProduct['id'].']" class="date-products-item-price '.($checked ? '' : 'hidden').'">';
+						$h .= '<div data-wrapper="price['.$eProduct['id'].']" class="date-products-item-price">';
 							$h .= $form->dynamicField($eShopProduct, 'price['.$eProduct['id'].']');
 						$h .= '</div>';
-						$h .= '<div data-wrapper="available['.$eProduct['id'].']" class="date-products-item-available '.($checked ? '' : 'hidden').'">';
+						$h .= '<div data-wrapper="available['.$eProduct['id'].']" class="date-products-item-available">';
 							$h .= $form->dynamicField($eShopProduct, 'available', function($d) use ($eProduct) {
 								$d->name = 'available['.$eProduct['id'].']';
 							});
 						$h .= '</div>';
 						if($displayStock) {
-							$h .= '<label class="date-products-item-product-stock hide-xs-down '.($checked ? '' : 'hidden').'" for="'.$attributes['id'].'">';
+							$h .= '<label class="date-products-item-product-stock hide-xs-down" for="'.$attributes['id'].'">';
 								if($eProduct['stock'] !== NULL) {
 									$h .= \selling\StockUi::getExpired($eProduct);
 									$h .= '<span title="'.\selling\StockUi::getDate($eProduct['stockUpdatedAt']).'">'.\selling\UnitUi::getValue(round($eProduct['stock']), $eProduct['unit'], short: TRUE).'</span>';

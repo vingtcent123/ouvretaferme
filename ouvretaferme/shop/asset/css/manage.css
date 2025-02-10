@@ -138,9 +138,10 @@ div.shop-write-fqn label {
 	font-weight: bold;
 }
 
-.date-products-item-price.hidden,
-.date-products-item-available.hidden,
-.date-products-item-stock.hidden {
+.date-products-item:not(.selected):not(.util-grid-header) .date-products-item-unit,
+.date-products-item:not(.selected):not(.util-grid-header) .date-products-item-price,
+.date-products-item:not(.selected):not(.util-grid-header) .date-products-item-available,
+.date-products-item:not(.selected):not(.util-grid-header) .date-products-item-stock {
 	opacity: 0.25;
 	pointer-events: none;
 }

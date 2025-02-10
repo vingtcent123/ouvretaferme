@@ -99,10 +99,14 @@ class Item extends ItemElement {
 
 			},
 
-			'name.prepare' => function(?string &$name): bool {
+			'name.prepare' => function(?string &$name) use ($for): bool {
 
-				if($this['product']->notEmpty()) {
-					$name = $this['product']['name'];
+				if($for === 'create') {
+
+					if($this['product']->notEmpty()) {
+						$name = $this['product']['name'];
+					}
+
 				}
 
 				return TRUE;

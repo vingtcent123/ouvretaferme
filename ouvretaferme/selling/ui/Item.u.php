@@ -768,7 +768,7 @@ class ItemUi {
 							$h .= \selling\ProductUi::getVignette($eProduct, '2rem');
 						$h .= '</label>';
 						$h .= '<label for="'.$attributes['id'].'">';
-							$h .= \selling\ProductUi::getInfos($eProduct, includeUnit: TRUE, includeQuality: FALSE, link: FALSE);
+							$h .= \selling\ProductUi::getInfos($eProduct, includeUnit: TRUE, link: FALSE);
 						$h .= '</label>';
 
 						$h .= '<div class="items-products-fields">';
