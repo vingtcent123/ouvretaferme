@@ -40,15 +40,11 @@ class WebsiteLib extends WebsiteCrud {
 
 	public static function create(Website $e): void {
 
-		$e->expects(['farm', 'domain']);
+		$e->expects(['farm']);
 
 		Website::model()->beginTransaction();
 
 		try {
-
-			if($e['domain'] !== NULL) {
-				$e['domainStatus'] = Website::PENDING;
-			}
 
 			Website::model()->insert($e);
 
