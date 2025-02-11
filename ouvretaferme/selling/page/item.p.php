@@ -59,7 +59,7 @@
 
 		$data->cItem = \selling\ItemLib::build($data->eSale, $_POST);
 
-		$fw->validate(onKo: fn() => Fail::log('selling\Item::createCollectionError'));
+		$fw->validate(onKo: fn() => $fw->has('Item::createEmpty') ? NULL : Fail::log('selling\Item::createCollectionError'));
 
 		\selling\ItemLib::createCollection($data->cItem);
 

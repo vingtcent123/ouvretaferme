@@ -69,6 +69,7 @@ td.product-item-stock a {
 }
 
 div.product-item-label {
+	width: 100%;
 	display: flex;
 	justify-content: space-between;
 	column-gap: 0.25rem;

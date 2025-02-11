@@ -83,7 +83,7 @@ class DateManage {
 
 	static selectProduct(target) {
 
-		const parent = target.firstParent('.date-products-item');
+		const parent = target.firstParent('.date-products');
 
 		if(target.checked === false) {
 			parent.classList.remove('selected');

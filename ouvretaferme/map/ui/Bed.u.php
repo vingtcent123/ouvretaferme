@@ -786,8 +786,7 @@ class BedUi {
 
 		return new \Panel(
 			title: s("Échanger les séries de deux planches"),
-			body: $h,
-			close: 'reload'
+			body: $h
 		);
 
 	}

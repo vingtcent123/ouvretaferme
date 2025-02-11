@@ -944,7 +944,8 @@ class SequenceUi {
 				$d->autocompleteBody = function(\util\FormUi $form, Sequence $e) {
 					$e->expects(['farm']);
 					return [
-						'farm' => $e['farm']['id']
+						'farm' => $e['farm']['id'],
+						'new' => TRUE
 					];
 				};
 				(new \plant\PlantUi())->query($d, TRUE);

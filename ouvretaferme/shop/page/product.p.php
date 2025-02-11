@@ -47,12 +47,12 @@
 
 		$fw = new FailWatch();
 
-		$products = POST('productsList', 'array', []);
+		$products = POST('products', 'array', []);
 
 		$cProductSelling = \selling\ProductLib::getForSale($data->e['farm'], $data->e['type']);
 		$data->cProduct = \shop\ProductLib::prepareCollection($data->e, $cProductSelling, $products, $_POST);
 
-		$fw->validate(onKo: fn() => Fail::log('shop\Product::createCollectionError'));
+		$fw->validate(onKo: fn() => $fw->has('Product::empty') ? NULL : Fail::log('shop\Product::createCollectionError'));
 
 		\shop\ProductLib::createCollection($data->e, $data->cProduct);
 

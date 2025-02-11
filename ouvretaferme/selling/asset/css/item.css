@@ -255,6 +255,13 @@ td.item-item-description:not(:empty) a {
 
 }
 
+.items-products-info {
+	height: 100%;
+	display: flex;
+	justify-content: center;
+	flex-direction: column;
+}
+
 @media (max-width: 991px) {
 
 	.items-products {
