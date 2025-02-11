@@ -300,93 +300,92 @@ class ProductUi {
 
 			$h .= '</div>';
 
-			$h .= '<div class="date-products-body">';
-				foreach($cProduct as $eProduct) {
+			foreach($cProduct as $eProduct) {
 
-					$checked = $eProduct['checked'] ?? FALSE;
+				$checked = $eProduct['checked'] ?? FALSE;
 
-					$attributes = [
-						'id' => 'checkbox-'.$eProduct['id'],
-						'onclick' => 'DateManage.selectProduct(this)'
-					];
+				$attributes = [
+					'id' => 'checkbox-'.$eProduct['id'],
+					'onclick' => 'DateManage.selectProduct(this)'
+				];
 
-					if($eProduct['checked'] ?? FALSE) {
-						$attributes['checked'] = $checked;
-					}
+				if($eProduct['checked'] ?? FALSE) {
+					$attributes['checked'] = $checked;
+				}
 
-					switch($type) {
+				switch($type) {
 
-						case Date::PRIVATE :
-							$price = $eProduct['privatePrice'] ?? $eProduct->calcPrivateMagicPrice($eFarm->getSelling('hasVat'));
-							$packaging = NULL;
-							break;
+					case Date::PRIVATE :
+						$price = $eProduct['privatePrice'] ?? $eProduct->calcPrivateMagicPrice($eFarm->getSelling('hasVat'));
+						$packaging = NULL;
+						break;
 
-						case Date::PRO :
-							$price = $eProduct['proPrice'] ?? $eProduct->calcProMagicPrice($eFarm->getSelling('hasVat'));
-							$packaging = $eProduct['proPackaging'];
-							break;
+					case Date::PRO :
+						$price = $eProduct['proPrice'] ?? $eProduct->calcProMagicPrice($eFarm->getSelling('hasVat'));
+						$packaging = $eProduct['proPackaging'];
+						break;
 
-					}
+				}
 
-					$eShopProduct = new Product([
-						'farm' => $eFarm,
-						'type' => $type,
-						'product' => $eProduct,
-						'price' => $price,
-						'packaging' => $packaging,
-						'available' => NULL,
-					]);
+				$eShopProduct = new Product([
+					'farm' => $eFarm,
+					'type' => $type,
+					'product' => $eProduct,
+					'price' => $price,
+					'packaging' => $packaging,
+					'available' => NULL,
+				]);
 
-					$h .= '<div class="date-products-item '.($displayStock ? 'date-products-item-with-stock' : '').' '.($checked ? 'selected' : '').'">';
+				$h .= '<div class="date-products-item '.($displayStock ? 'date-products-item-with-stock' : '').' '.($checked ? 'selected' : '').'">';
 
-						$h .= '<label class="shop-select">';
-							$h .= $form->inputCheckbox('productsList['.$eProduct['id'].']', $eProduct['id'], $attributes);
-						$h .= '</label>';
-						$h .= '<label class="date-products-item-vignette" for="'.$attributes['id'].'">';
-							$h .= \selling\ProductUi::getVignette($eProduct, '2rem');
-						$h .= '</label>';
-						$h .= '<label class="date-products-item-product" for="'.$attributes['id'].'">';
-							$h .= \selling\ProductUi::getInfos($eProduct, includeUnit: TRUE, link: FALSE);
-						$h .= '</label>';
-						$h .= '<div class="date-products-item-unit text-end">';
+					$h .= '<label class="shop-select">';
+						$h .= $form->inputCheckbox('productsList['.$eProduct['id'].']', $eProduct['id'], $attributes);
+					$h .= '</label>';
+					$h .= '<label class="date-products-item-vignette" for="'.$attributes['id'].'">';
+						$h .= \selling\ProductUi::getVignette($eProduct, '2rem');
+					$h .= '</label>';
+					$h .= '<label class="date-products-item-product" for="'.$attributes['id'].'">';
+						$h .= \selling\ProductUi::getInfos($eProduct, includeUnit: TRUE, link: FALSE);
+					$h .= '</label>';
+					$h .= '<div class="date-products-item-unit text-end">';
 
-							switch($type) {
+						switch($type) {
 
-								case Date::PRIVATE :
-									$step = ProductUi::getStep($type, $eProduct);
-									$h .= $eProduct->quick('privateStep', \selling\UnitUi::getValue($step, $eProduct['unit']));
-									break;
+							case Date::PRIVATE :
+								$step = ProductUi::getStep($type, $eProduct);
+								$h .= $eProduct->quick('privateStep', \selling\UnitUi::getValue($step, $eProduct['unit']));
+								break;
 
-								case Date::PRO :
-									if($eProduct['proPackaging'] !== NULL) {
-										$h .= s("Colis de {value}", \selling\UnitUi::getValue($eProduct['proPackaging'], $eProduct['unit'], TRUE));
-									}
-									break;
-
-							}
-
-						$h .= '</div>';
-						$h .= '<div data-wrapper="price['.$eProduct['id'].']" class="date-products-item-price">';
-							$h .= $form->dynamicField($eShopProduct, 'price['.$eProduct['id'].']');
-						$h .= '</div>';
-						$h .= '<div data-wrapper="available['.$eProduct['id'].']" class="date-products-item-available">';
-							$h .= $form->dynamicField($eShopProduct, 'available', function($d) use ($eProduct) {
-								$d->name = 'available['.$eProduct['id'].']';
-							});
-						$h .= '</div>';
-						if($displayStock) {
-							$h .= '<label class="date-products-item-product-stock hide-xs-down" for="'.$attributes['id'].'">';
-								if($eProduct['stock'] !== NULL) {
-									$h .= \selling\StockUi::getExpired($eProduct);
-									$h .= '<span title="'.\selling\StockUi::getDate($eProduct['stockUpdatedAt']).'">'.\selling\UnitUi::getValue(round($eProduct['stock']), $eProduct['unit'], short: TRUE).'</span>';
+							case Date::PRO :
+								if($eProduct['proPackaging'] !== NULL) {
+									$h .= s("Colis de {value}", \selling\UnitUi::getValue($eProduct['proPackaging'], $eProduct['unit'], TRUE));
 								}
-							$h .= '</label>';
+								break;
+
 						}
 
 					$h .= '</div>';
+					$h .= '<div data-wrapper="price['.$eProduct['id'].']" class="date-products-item-price">';
+						$h .= $form->dynamicField($eShopProduct, 'price['.$eProduct['id'].']');
+					$h .= '</div>';
+					$h .= '<div data-wrapper="available['.$eProduct['id'].']" class="date-products-item-available">';
+						$h .= $form->dynamicField($eShopProduct, 'available', function($d) use ($eProduct) {
+							$d->name = 'available['.$eProduct['id'].']';
+						});
+					$h .= '</div>';
+					if($displayStock) {
+						$h .= '<label class="date-products-item-product-stock hide-xs-down" for="'.$attributes['id'].'">';
+							if($eProduct['stock'] !== NULL) {
+								$h .= \selling\StockUi::getExpired($eProduct);
+								$h .= '<span title="'.\selling\StockUi::getDate($eProduct['stockUpdatedAt']).'">'.\selling\UnitUi::getValue(round($eProduct['stock']), $eProduct['unit'], short: TRUE).'</span>';
+							}
+						$h .= '</label>';
+					}
 
-				}
-			$h .= '</div>';
+				$h .= '</div>';
+
+			}
+
 		$h .= '</div>';
 
 		return $h;
@@ -878,6 +877,10 @@ class ProductUi {
 			'columnBreak' => 'sm'
 		]);
 
+		$title = ($e instanceof Date) ?
+			s("Ajouter des produits à la vente") :
+			s("Ajouter des produits au catalogue");
+
 		if($e['cProduct']->empty()) {
 
 			$h = '<div class="util-block-help">';
@@ -885,31 +888,35 @@ class ProductUi {
 				$h .= '<a href="'.\farm\FarmUi::urlSellingProduct($eFarm).'" class="btn btn-secondary">'.s("Renseigner mes produits").'</a>';
 			$h .= '</div>';
 
+			return new \Panel(
+				id: 'panel-product-create',
+				title: $title,
+				body: $h
+			);
+
 		} else {
 
-			$h = $form->openAjax('/shop/product:doCreateCollection');
+			$h = '';
 
-				if($e instanceof Date) {
-					$h .= $form->hidden('date', $e['id']);
-				} else {
-					$h .= $form->hidden('catalog', $e['id']);
-				}
+			if($e instanceof Date) {
+				$h .= $form->hidden('date', $e['id']);
+			} else {
+				$h .= $form->hidden('catalog', $e['id']);
+			}
 
-				$h .= $form->hidden('farm', $eFarm['id']);
+			$h .= $form->hidden('farm', $eFarm['id']);
 
-				$h .= $form->dynamicField($e, 'productsList');
-				$h .= '<br/>';
-				$h .= $form->submit(s("Ajouter"), ['class' => 'btn btn-primary']);
-
-			$h .= $form->close();
+			$h .= $form->dynamicField($e, 'productsList');
 
 		}
 
 		return new \Panel(
-			title: ($e instanceof Date) ?
-				s("Ajouter des produits à la vente") :
-				s("Ajouter des produits au catalogue"),
-			body: $h
+			id: 'panel-product-create',
+			title: $title,
+			dialogOpen: $form->openAjax('/shop/product:doCreateCollection', ['class' => 'panel-dialog container']),
+			dialogClose: $form->close(),
+			body: $h,
+			footer: $form->submit(s("Ajouter les produits"))
 		);
 	}
 

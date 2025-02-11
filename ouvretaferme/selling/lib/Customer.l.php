@@ -295,8 +295,11 @@ class CustomerLib extends CustomerCrud {
 
 	public static function associateUser(Customer $e, \user\User $eUser): void {
 
+		$eUser->expects(['email']);
+
 		Customer::model()->update($e, [
-			'user' => $eUser
+			'user' => $eUser,
+			'email' => $eUser['email']
 		]);
 
 	}

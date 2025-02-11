@@ -73,12 +73,16 @@ class AlertUi {
 
 			'Item::vatRate.check' => s("Vous devez renseigner la TVA de tous les produits que vous vendez !"),
 			'Item::number.empty' => s("La quantité vendue ne peut pas être vide !"),
+			'Item::price.locked' => s("Veuillez indiquer le montant total !"),
+			'Item::unitPrice.check' => s("Veuillez indiquer le prix unitaire !"),
 			'Item::number.division' => s("Lorsque le prix unitaire est verrouillée, la quantité vendue ne peut pas être égale à zéro !"),
 			'Item::unitPrice.division' => s("Lorsque la quantité vendue est verrouillée, le prix unitaire ne peut pas être égal à zéro !"),
 			'Item::createEmpty' => s("Ajoutez au moins un article à la vente !"),
 			'Item::createDuplicateNameMarket' => fn($name) => s("Vous avez déjà ajouté un article sans référence de produit portant le nom {value} à votre marché !", $name),
 			'Item::createDuplicateProductMarket' => fn($name) => s("Vous avez déjà ajouté le produit {value} à votre marché !", $name),
 			'Item::canNotDelete' => s("Impossible de supprimer cet article"),
+
+			'Item::createCollectionError' => s("Il y a des erreurs à vérifier sur un ou plusieurs produits que vous souhaitez ajouter à la vente."),
 
 			'Unit::singular.duplicate' => s("Il y a déjà une unité avec le même nom"),
 			'Unit::deleteUsed' => s("Cette unité ne peut pas être supprimée car elle est utilisée dans une vente ou pour un produit"),

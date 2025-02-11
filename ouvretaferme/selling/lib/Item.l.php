@@ -575,7 +575,9 @@ class ItemLib extends ItemCrud {
 
 		$fw = new \FailWatch();
 
-		for($position = 0; $position < $count; $position++) {
+		$positions = array_keys($input['product'] ?? []);
+
+		foreach($positions as $position) {
 
 			$eItem = new Item([
 				'sale' => $eSale,
@@ -583,7 +585,7 @@ class ItemLib extends ItemCrud {
 				'customer' => $eSale['customer']
 			]);
 
-			$eItem->buildIndex(['product', 'quality', 'name', 'packaging', 'locked', 'discount', 'unit', 'unitPrice', 'number', 'price', 'vatRate'], $input, $position);
+			$eItem->buildIndex(['product', 'quality', 'name', 'packaging', 'locked', 'discount', 'unit', 'unitPrice', 'number', 'price', 'vatRate'], $input, $position, for: 'create');
 
 			$cItem[] = $eItem;
 

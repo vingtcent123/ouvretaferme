@@ -130,6 +130,8 @@ class InviteLib extends InviteCrud {
 			return FALSE;
 		}
 
+		$eUser->expects(['email']);
+
 		// Le cas où le Farmer est associé à un utilisateur existant est géré à part
 		if(
 			$e['type'] === Invite::FARMER and

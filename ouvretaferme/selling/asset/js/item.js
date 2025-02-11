@@ -82,7 +82,6 @@ class Item {
 	static recalculateLock(target) {
 
 		const wrapper = target.firstParent('.item-write');
-		const checkbox = wrapper.qs('.item-write-checkbox');
 
 		const locked = wrapper.qs('[name^="locked"]').value;
 
@@ -100,27 +99,16 @@ class Item {
 		switch(locked) {
 
 			case 'price' :
-				lockedValue = (baseNumber !== '' && baseUnitPrice !== '') ? Math.round(100 * packaging * unitPrice * number) / 100 : '';
-				wrapper.qs('[name^="price"]').value = lockedValue;
+				wrapper.qs('[name^="price"]').value = (baseNumber !== '' && baseUnitPrice !== '') ? Math.round(100 * packaging * unitPrice * number) / 100 : '';
 				break;
 
 			case 'unit-price' :
-				lockedValue = (baseNumber !== '' && basePrice !== '') ? ((number > 0 && packaging > 0) ? Math.round(100 * price / number / packaging) / 100 : 0) : '';
-				wrapper.qs('[name^="unitPrice"]').value = lockedValue;
+				wrapper.qs('[name^="unitPrice"]').value = (baseNumber !== '' && basePrice !== '') ? ((number > 0 && packaging > 0) ? Math.round(100 * price / number / packaging) / 100 : 0) : '';
 				break;
 
 			case 'number' :
-				lockedValue = (basePrice !== '' && baseUnitPrice !== '') ? ((unitPrice > 0 && packaging > 0) ? Math.round(100 * price / unitPrice / packaging) / 100 : 0) : '';
-				wrapper.qs('[name^="number"]').value = lockedValue;
+				wrapper.qs('[name^="number"]').value = (basePrice !== '' && baseUnitPrice !== '') ? ((unitPrice > 0 && packaging > 0) ? Math.round(100 * price / unitPrice / packaging) / 100 : 0) : '';
 				break;
-
-		}
-
-		if(checkbox) {
-
-			checkbox.checked = (lockedValue !== '');
-			this.selectProduct(checkbox);
-
 
 		}
 

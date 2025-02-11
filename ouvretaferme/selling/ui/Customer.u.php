@@ -344,7 +344,7 @@ class CustomerUi {
 					$h .= '<dd>'.($eCustomer['user']->notEmpty() ? \Asset::icon('person-fill').' '.encode($eCustomer['user']['email']) : s("Non")).'</dd>';
 					$h .= '<dt>'.s("Adresse e-mail").'</dt>';
 					$h .= '<dd>';
-						$email = $eCustomer['email'] ?? $eCustomer['user']['email'] ?? NULL;
+						$email = $eCustomer['email'] ?? NULL;
 						if($email !== NULL) {
 							$h .= '<a href="mailto:'.encode($email).'">'.encode($email).'</a>';
 						}

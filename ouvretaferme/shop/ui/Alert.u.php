@@ -20,6 +20,7 @@ class AlertUi {
 			'Product::limitEndAt.consistency' => s("La fin de la prise des commandes doit avoir lieu après le début de prise des commandes."),
 			'Product::limitMax.consistency' => s("La quantité maximale autorisée par commande ne peut pas être inférieur au minimum de commande."),
 			'Product::empty' => s("Vous n'avez sélectionné aucun produit."),
+			'Product::createCollectionError' => s("Il y a des erreurs à vérifier sur un ou plusieurs produits que vous souhaitez ajouter."),
 
 			'Sale::update.payment' => s("Vous ne pouvez pas modifier votre panier alors qu'un paiement est en cours."),
 			'Sale::terms' => s("Veuillez accepter les conditions générales de vente pour continuer."),
