@@ -94,8 +94,6 @@ class Item {
 		const unitPrice = parseFloat(baseUnitPrice || 0);
 		const number = parseFloat(baseNumber || 0);
 
-		let lockedValue;
-
 		switch(locked) {
 
 			case 'price' :
