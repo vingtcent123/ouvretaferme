@@ -122,6 +122,19 @@ class CustomerUi {
 
 	}
 
+	public static function getAutocompleteCreate(\farm\Farm $eFarm): array {
+
+		$item = \Asset::icon('plus-circle');
+		$item .= '<div>'.s("Ajouter un nouveau client").'</div>';
+
+		return [
+			'type' => 'link',
+			'link' => '/selling/customer:create?farm='.$eFarm['id'],
+			'itemHtml' => $item
+		];
+
+	}
+
 	public static function getPanelHeader(Customer $eCustomer): string {
 
 		return '<div class="panel-header-subtitle">'.encode($eCustomer->getName()).'</div>';

@@ -465,6 +465,7 @@ class CropUi {
 		$h .= $form->close();
 
 		return new \Panel(
+			id: 'panel-crop-create',
 			title: s("Ajouter une production"),
 			subTitle: SequenceUi::getPanelHeader($eSequence),
 			body: $h
@@ -532,6 +533,7 @@ class CropUi {
 		$h .= $form->close();
 
 		return new \Panel(
+			id: 'panel-crop-update',
 			title: \plant\PlantUi::getVignette($eCrop['plant'], '3rem').' '.encode($eCrop['plant']['name']),
 			body: $h,
 			subTitle: SequenceUi::getPanelHeader($eCrop['sequence'])
@@ -755,7 +757,8 @@ class CropUi {
 				$d->autocompleteBody = function(\util\FormUi $form, Crop $e) {
 					$e->expects(['farm']);
 					return [
-						'farm' => $e['farm']['id']
+						'farm' => $e['farm']['id'],
+						'new' => TRUE
 					];
 				};
 				break;

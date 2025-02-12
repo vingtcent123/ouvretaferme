@@ -91,9 +91,11 @@
 (new Page())
 	->post('query', function($data) {
 
-		$eFarm = \farm\FarmLib::getById(POST('farm'))->validate('canWrite');;
+		$data->eFarm = \farm\FarmLib::getById(POST('farm'))->validate('canWrite');
 
-		$data->cCustomer = \selling\CustomerLib::getFromQuery(POST('query'), $eFarm, POST('withCollective', 'bool', TRUE));
+		$data->cCustomer = \selling\CustomerLib::getFromQuery(POST('query'), $data->eFarm, POST('withCollective', 'bool', TRUE));
+
+		$data->hasNew = post_exists('new');
 
 		throw new \ViewAction($data);
 

@@ -12,6 +12,10 @@ document.delegateEventListener('autocompleteSelect', '#cultivation-create', func
 
 document.delegateEventListener('autocompleteSelect', '#cultivation-update', function(e) {
 
+	if(e.detail.value === '') {
+		return;
+	}
+
 	Cultivation.changePlant(this, this.qs('[name="id"]').value, e.detail.value);
 
 });

@@ -39,6 +39,10 @@ new JsonView('query', function($data, AjaxTemplate $t) {
 
 	$results = $data->cCustomer->makeArray(fn($eCustomer) => \selling\CustomerUi::getAutocomplete($eCustomer));
 
+	if($data->hasNew) {
+		$results[] = \selling\CustomerUi::getAutocompleteCreate($data->eFarm);
+	}
+
 	$t->push('results', $results);
 
 });

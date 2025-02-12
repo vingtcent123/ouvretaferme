@@ -2410,6 +2410,7 @@ class CultivationUi {
 		$h .= $form->close();
 
 		return new \Panel(
+			id: 'panel-cultivation-create',
 			title: s("Ajouter une production"),
 			body: $h,
 			subTitle: SeriesUi::getPanelHeader($eSeries)
@@ -2519,6 +2520,7 @@ class CultivationUi {
 		$title = \plant\PlantUi::getVignette($eCultivation['plant'], '3rem').' '.encode($eCultivation['plant']['name']);
 
 		return new \Panel(
+			id: 'panel-cultivation-update',
 			title: $title,
 			body: $h,
 			subTitle: SeriesUi::getPanelHeader($eCultivation['series']),

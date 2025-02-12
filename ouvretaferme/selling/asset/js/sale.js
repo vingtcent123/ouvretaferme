@@ -1,5 +1,11 @@
 document.delegateEventListener('autocompleteSelect', '#sale-create', function(e) {
+
+	if(e.detail.value === '') {
+		return;
+	}
+
 	Sale.refreshCreateCustomer(e.detail.value);
+
 });
 
 class Sale {

@@ -1,5 +1,9 @@
 document.delegateEventListener('autocompleteSelect', '#crop-create', function(e) {
 
+	if(e.detail.value === '') {
+		return;
+	}
+
 	new Ajax.Query(this)
 		.url('/production/crop:addPlant')
 		.body({

@@ -127,6 +127,10 @@ class Crop extends CropElement {
 
 			'variety.check' => function(?array $varieties, \BuildProperties $p, string $wrapper) {
 
+				if($p->isBuilt('plant') === FALSE) {
+					return TRUE;
+				}
+
 				$this['cSlice'] = SliceLib::prepare($this, $varieties, $wrapper);
 
 				return TRUE;

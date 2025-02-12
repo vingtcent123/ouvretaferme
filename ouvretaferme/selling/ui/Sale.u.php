@@ -1741,14 +1741,11 @@ class SaleUi {
 		switch($property) {
 
 			case 'customer' :
-				$d->after = function(\util\FormUi $form, Sale $e) {
-					return '<small>'.\Asset::icon('chevron-right').' <a href="/selling/customer:create?farm='.$e['farm']['id'].'">'.s("Créer un nouveau client").'</a></small>';
-				};
-
 				$d->autocompleteBody = function(\util\FormUi $form, Sale $e) {
 					$e->expects(['farm']);
 					return [
-						'farm' => $e['farm']['id']
+						'farm' => $e['farm']['id'],
+						'new' => TRUE
 					];
 				};
 				(new CustomerUi())->query($d);
