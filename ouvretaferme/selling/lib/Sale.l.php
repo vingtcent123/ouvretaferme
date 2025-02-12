@@ -4,7 +4,7 @@ namespace selling;
 class SaleLib extends SaleCrud {
 
 	public static function getPropertiesCreate(): array {
-		return ['market', 'customer', 'deliveredAt', 'comment', 'shipping'];
+		return ['market', 'customer', 'deliveredAt', 'productsList', 'shipping'];
 	}
 
 	public static function getPropertiesUpdate(): \Closure {
@@ -458,18 +458,9 @@ class SaleLib extends SaleCrud {
 
 		$e->expects([
 			'farm' => ['hasSales'],
-			'type',
+			'type', 'taxes', 'hasVat',
 			'customer',
 		]);
-
-		$eConfiguration = \selling\ConfigurationLib::getByFarm($e['farm']);
-
-		$e['taxes'] = match($e['type']) {
-			Sale::PRO => Sale::EXCLUDING,
-			Sale::PRIVATE => Sale::INCLUDING
-		};
-
-		$e['hasVat'] = $eConfiguration['hasVat'];
 
 		if($e['market']) {
 			$e['marketSales'] = 0;
@@ -492,6 +483,11 @@ class SaleLib extends SaleCrud {
 
 		}
 
+		// Ajouter des produits
+		if(($e['cItem'] ?? new \Collection())->notEmpty()) {
+			\selling\ItemLib::createCollection($e['cItem']);
+		}
+
 		Sale::model()->commit();
 
 	}
@@ -510,6 +506,8 @@ class SaleLib extends SaleCrud {
 		$e['farm'] = $eSale['farm'];
 		$e['from'] = Sale::USER;
 		$e['type'] = Customer::PRIVATE;
+		$e['taxes'] = $e->getTaxesFromType();
+		$e['hasVat'] = $e['farm']->getSelling('hasVat');
 		$e['deliveredAt'] = $eSale['deliveredAt'];
 		$e['market'] = FALSE;
 		$e['marketParent'] = $eSale;

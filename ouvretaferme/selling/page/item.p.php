@@ -39,16 +39,8 @@
 	->get('createCollection', function($data) {
 
 		$data->eSale['cCategory'] = \selling\CategoryLib::getByFarm($data->eSale['farm'], index: 'id');
-
-		$cProduct = \selling\ProductLib::getForSale($data->eSale['farm'], $data->eSale['type']);
-
-		$cGrid = \selling\GridLib::getByCustomer($data->eSale['customer'], index: 'product');
-
-		foreach($cProduct as $eProduct) {
-			$eProduct['item'] = \selling\ItemLib::getNew($data->eSale, $eProduct, $cGrid[$eProduct['id']] ?? new \selling\Grid());
-		}
-
-		$data->eSale['cProduct'] = $cProduct;
+		$data->eSale['cProduct'] = \selling\ProductLib::getForSale($data->eSale['farm'], $data->eSale['type']);
+		\selling\ProductLib::applyItemsForSale($data->eSale['cProduct'], $data->eSale);
 
 		throw new ViewAction($data);
 
@@ -57,9 +49,9 @@
 
 		$fw = new FailWatch();
 
-		$data->cItem = \selling\ItemLib::build($data->eSale, $_POST);
+		$data->cItem = \selling\ItemLib::build($data->eSale, $_POST, TRUE);
 
-		$fw->validate(onKo: fn() => $fw->has('Item::createEmpty') ? NULL : Fail::log('selling\Item::createCollectionError'));
+		$fw->validate(onKo: fn() => $fw->has('Item::createEmpty') ? NULL : \selling\Item::fail('createCollectionError'));
 
 		\selling\ItemLib::createCollection($data->cItem);
 

@@ -38,6 +38,16 @@ class Customer extends CustomerElement {
 
 	}
 
+	public function getTextCategory(bool $short = FALSE): string {
+
+		return match($this->getCategory()) {
+			Customer::COLLECTIVE => $short ? s("Point de vente") : s("Point de vente pour les particuliers"),
+			Customer::PRIVATE => $short ? s("Particulier") : s("Client particulier"),
+			Customer::PRO => $short ? s("Professionnel") : s("Client professionnel")
+		};
+
+	}
+
 	public function canRead(): bool {
 		return $this->canWrite();
 	}

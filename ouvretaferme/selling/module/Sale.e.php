@@ -542,6 +542,15 @@ class Sale extends SaleElement {
 
 	}
 
+	public function getTaxesFromType(): string {
+
+		return match($this['type']) {
+			Sale::PRO => Sale::EXCLUDING,
+			Sale::PRIVATE => Sale::INCLUDING
+		};
+
+	}
+
 	public function acceptStatusDelivered(): bool {
 
 		return in_array($this['preparationStatus'], $this['marketParent']->notEmpty() ? [Sale::DRAFT] : [Sale::CONFIRMED, Sale::PREPARED]);
@@ -622,8 +631,12 @@ class Sale extends SaleElement {
 						->whereStatus(Customer::ACTIVE)
 						->get($eCustomer)
 				) {
+
 					$this['type'] = $eCustomer['type'];
+					$this['taxes'] = $this->getTaxesFromType();
+					$this['hasVat'] = $this['farm']->getSelling('hasVat');
 					$this['discount'] = $eCustomer['discount'];
+
 					return TRUE;
 				} else {
 					return FALSE;
@@ -856,9 +869,25 @@ class Sale extends SaleElement {
 
 			},
 
-			'products.check' => function(mixed $products): bool {
+			'productsList.check' => function(): bool {
 
-				if(is_array($products) === FALSE) {
+				$fw = new \FailWatch();
+
+				$this['cItem'] = \selling\ItemLib::build($this, $_POST, FALSE);
+
+				if($fw->ko()) {
+					Item::fail('createCollectionError');
+				}
+
+				return TRUE;
+
+			},
+
+			'productsBasket.check' => function(): bool {
+
+				$products = POST('products', 'array');
+
+				if($products === []) {
 					return FALSE;
 				}
 

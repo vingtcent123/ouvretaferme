@@ -330,7 +330,7 @@
 				\selling\Sale::fail('phone.check');
 			}
 
-			$eSale->build(['products', 'shopPoint'], $_POST);
+			$eSale->build(['productsBasket', 'shopPoint'], $_POST);
 
 			$fw->validate();
 
@@ -376,7 +376,7 @@
 
 		$data->eSaleExisting['shop'] = $data->eShop;
 		$data->eSaleExisting['shopDate'] = $data->eDate;
-		$data->eSaleExisting->build(['products', 'shopPoint'], $_POST);
+		$data->eSaleExisting->build(['productsBasket', 'shopPoint'], $_POST);
 
 		$fw->validate();
 

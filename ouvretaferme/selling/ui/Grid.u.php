@@ -282,7 +282,7 @@ class GridUi {
 			dialogOpen: $form->openAjax('/selling/customer:doUpdateGrid', ['class' => 'panel-dialog container']),
 			dialogClose: $form->close(),
 			body: $h,
-			footer: $form->submit(s("Enregistrer")),
+			footer: $form->submit(s("Enregistrer"), ['class' => 'btn btn-primary btn-lg']),
 			close: 'reload'
 		);
 
@@ -346,7 +346,7 @@ class GridUi {
 			dialogOpen: $form->openAjax('/selling/product:doUpdateGrid', ['class' => 'panel-dialog container']),
 			dialogClose: $form->close(),
 			body: $h,
-			footer: $form->submit(s("Enregistrer")),
+			footer: $form->submit(s("Enregistrer"), ['class' => 'btn btn-primary btn-lg']),
 			close: 'reload'
 		);
 

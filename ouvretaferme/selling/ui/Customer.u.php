@@ -117,7 +117,7 @@ class CustomerUi {
 			'discount' => $eCustomer['discount'],
 			'type' => $eCustomer['type'],
 			'itemHtml' => $item,
-			'itemText' => $eCustomer['name']
+			'itemText' => $eCustomer['name'].' / '.$eCustomer->getTextCategory(short: TRUE)
 		];
 
 	}

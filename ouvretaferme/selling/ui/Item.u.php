@@ -649,7 +649,7 @@ class ItemUi {
 				dialogOpen: $form->openAjax('/selling/item:doCreateCollection', ['class' => 'panel-dialog container']),
 				dialogClose: $form->close(),
 				body: $h,
-				footer: $form->submit(s("Ajouter les produits"))
+				footer: $form->submit(s("Ajouter les produits"), ['class' => 'btn btn-primary btn-lg'])
 			);
 
 		}

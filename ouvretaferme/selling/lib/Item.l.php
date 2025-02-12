@@ -560,14 +560,18 @@ class ItemLib extends ItemCrud {
 
 	}
 
-	public static function build(Sale $eSale, array $input): \Collection {
+	public static function build(Sale $eSale, array $input, bool $errorIfEmpty): \Collection {
 
 		$eSale->expects(['id', 'customer', 'farm', 'marketParent']);
 
 		$count = count((array)($input['product'] ?? []));
 
 		if($count === 0) {
-			Item::fail('createEmpty');
+
+			if($errorIfEmpty) {
+				Item::fail('createEmpty');
+			}
+
 			return new \Collection();
 		}
 

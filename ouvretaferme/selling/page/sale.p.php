@@ -7,6 +7,7 @@
 		return new \selling\Sale([
 			'from' => \selling\Sale::USER,
 			'farm' => $data->eFarm,
+			'marketParent' => new \selling\Sale(),
 		]);
 
 	})
@@ -18,6 +19,19 @@
 			'composition' => get_exists('composition') ? \selling\ProductLib::getById(GET('composition'))->validateProperty('farm', $data->eFarm) : new \selling\Product(),
 			'customer' => get_exists('customer') ? \selling\CustomerLib::getById(GET('customer'))->validateProperty('farm', $data->eFarm) : new \selling\Customer()
 		]);
+
+		if($data->e['customer']->notEmpty()) {
+
+			$data->e['hasVat'] = $data->e['farm']->getSelling('hasVat');
+			$data->e['type'] = $data->e['customer']['type'];
+			$data->e['taxes'] = $data->e->getTaxesFromType();
+			$data->e['discount'] = $data->e['customer']['discount'];
+
+			$data->e['cCategory'] = \selling\CategoryLib::getByFarm($data->e['farm'], index: 'id');
+			$data->e['cProduct'] = \selling\ProductLib::getForSale($data->e['farm'], $data->e['type']);
+			\selling\ProductLib::applyItemsForSale($data->e['cProduct'], $data->e);
+
+		}
 
 		throw new \ViewAction($data);
 

@@ -115,10 +115,14 @@ class SaleLib {
 			'discount' => $eCustomer['discount'],
 			'from' => \selling\Sale::SHOP,
 			'market' => FALSE,
+			'marketParent' => new \selling\Sale(),
 			'type' => $eDate['type'],
 			'preparationStatus' => \selling\Sale::BASKET,
 			'deliveredAt' => $eSale['shopDate']['deliveryDate'],
 		]);
+
+		$eSale['taxes'] = $eSale->getTaxesFromType();
+		$eSale['hasVat'] = \selling\ConfigurationLib::getByFarm($eSale['farm'])['hasVat'];
 
 		if(
 			$eSale['shopPoint']->notEmpty() and

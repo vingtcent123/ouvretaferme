@@ -1479,7 +1479,7 @@ class SaleUi {
 			$h .= $form->hidden('farm', $eSale['farm']['id']);
 			$h .= $form->hidden('composition', $eSale['composition']['id']);
 
-			$h .= $form->dynamicGroups($eSale, ['deliveredAt', 'comment']);
+			$h .= $form->dynamicGroups($eSale, ['deliveredAt', 'productsList']);
 
 			$h .= $form->group(
 				content: $form->submit(s("Choisir les produits"))
@@ -1505,39 +1505,46 @@ class SaleUi {
 
 		$h = '';
 
-		$h .= $form->openAjax('/selling/sale:doCreate', ['id' => 'sale-create']);
+		$h .= $form->asteriskInfo();
 
-			$h .= $form->asteriskInfo();
+		$h .= $form->hidden('farm', $eSale['farm']['id']);
+		$h .= $form->hidden('market', $eSale['market']);
 
-			$h .= $form->hidden('farm', $eSale['farm']['id']);
-			$h .= $form->hidden('market', $eSale['market']);
+		$h .= $form->dynamicGroup($eSale, 'customer*', function($d) {
+				$d->autocompleteDispatch = '#sale-create';
+			});
 
-			$h .= $form->dynamicGroup($eSale, 'customer*', function($d) {
-					$d->autocompleteDispatch = '#sale-create';
-				});
+		if($eSale['customer']->notEmpty()) {
 
-			if($eSale['customer']->notEmpty()) {
-
-				if($eSale['customer']['destination'] === Customer::COLLECTIVE) {
-					$h .= '<div class="util-block util-block-dark sale-create-market bg-selling">';
-						$h .= $form->dynamicGroup($eSale, 'market');
-					$h .= '</div>';
-				}
-
-				$h .= $form->dynamicGroups($eSale, ['deliveredAt', 'comment']);
-
-				$h .= $form->group(
-					content: $form->submit(s("Créer la vente"))
-				);
-
+			if($eSale['customer']['destination'] === Customer::COLLECTIVE) {
+				$h .= '<div class="util-block util-block-dark sale-create-market bg-selling">';
+					$h .= $form->dynamicGroup($eSale, 'market');
+				$h .= '</div>';
 			}
 
-		$h .= $form->close();
+			$h .= $form->dynamicGroup($eSale, 'deliveredAt');
+
+			$h .= '<h3 class="mt-2">'.s("Ajouter des produits à la vente").'</h3>';
+
+			if($eSale['discount'] > 0) {
+				$h .= '<div class="util-info">'.s("Les prix indiqués tiennent compte de la réduction de {value} % dont bénéficie ce client.", $eSale['discount']).'</div>';
+			}
+
+			$h .= $form->dynamicField($eSale, 'productsList');
+
+			$footer = $form->submit(s("Créer la vente"), ['class' => 'btn btn-primary btn-lg']);
+
+		} else {
+			$footer = NULL;
+		}
 
 		return new \Panel(
 			id: 'panel-sale-create',
 			title: s("Ajouter une vente"),
-			body: $h
+			dialogOpen: $form->openAjax('/selling/sale:doCreate', ['id' => 'sale-create', 'class' => 'panel-dialog container']),
+			dialogClose: $form->close(),
+			body: $h,
+			footer: $footer
 		);
 
 	}

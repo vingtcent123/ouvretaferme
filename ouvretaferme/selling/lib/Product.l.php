@@ -177,6 +177,18 @@ class ProductLib extends ProductCrud {
 
 	}
 
+	public static function applyItemsForSale(\Collection $cProduct, Sale $eSale): void {
+
+		$eSale->expects(['farm', 'type', 'customer', 'discount']);
+
+		$cGrid = \selling\GridLib::getByCustomer($eSale['customer'], index: 'product');
+
+		foreach($cProduct as $eProduct) {
+			$eProduct['item'] = \selling\ItemLib::getNew($eSale, $eProduct, $cGrid[$eProduct['id']] ?? new \selling\Grid());
+		}
+
+	}
+
 	public static function getByCustomer(Customer $e, bool $onlyWithPrice = FALSE): \Collection {
 
 		$e->expects(['farm']);

@@ -51,6 +51,8 @@ class CustomerLib extends CustomerCrud {
 
 		} else if($query !== '') {
 
+			$query = preg_replace('/\s+\/\s+\w+$/i', '', $query);
+
 			Customer::model()
 				->where('
 					name LIKE '.Customer::model()->format('%'.$query.'%').'
