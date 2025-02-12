@@ -869,7 +869,11 @@ class Sale extends SaleElement {
 
 			},
 
-			'productsList.check' => function(): bool {
+			'productsList.check' => function(mixed $list, \BuildProperties $p): bool {
+
+				if($p->isInvalid('customer')) {
+					return TRUE;
+				}
 
 				$fw = new \FailWatch();
 
