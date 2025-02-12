@@ -1084,6 +1084,9 @@ class ProductUi {
 					]));
 
 				};
+				$d->attributes = [
+					'onfocus' => 'this.select()'
+				];
 				break;
 
 

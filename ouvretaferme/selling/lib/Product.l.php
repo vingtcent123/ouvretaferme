@@ -164,11 +164,12 @@ class ProductLib extends ProductCrud {
 
 	}
 
-	public static function getForSale(\farm\Farm $eFarm, string $type): \Collection {
+	public static function getForSale(\farm\Farm $eFarm, string $type, array $ids = []): \Collection {
 
 		return Product::model()
 			->select(Product::getSelection())
 			->whereFarm($eFarm)
+			->whereId('IN', $ids, if: $ids)
 			->where($type, TRUE)
 			->whereStatus(Product::ACTIVE)
 			->sort(['name' => SORT_ASC])

@@ -163,37 +163,12 @@ class Date extends DateElement {
 					return TRUE;
 				}
 
-				$this->expects([
-					'shop' => ['type']
-				]);
+				$products = POST('products', 'array', []);
+				$cProductSelling = \selling\ProductLib::getForSale($this['farm'], $this['shop']['type'], $products);
 
-				$cProductSelling = \selling\Product::model()
-					->select(\selling\Product::getSelection())
-					->whereId('IN', $products)
-					->where($this['shop']['type'], TRUE)
-					->whereStatus(\selling\Product::ACTIVE)
-					->getCollection();
+				$this['cProduct'] = ProductLib::prepareCollection($this, $cProductSelling, $products, $input);
 
-				$cProduct = new \Collection();
-
-				foreach($cProductSelling as $eProductSelling) {
-
-					$eProduct = new Product([
-						'product' => $eProductSelling,
-						'shop' => $this['shop'],
-						'date' => $this,
-						'packaging' => ($this['type'] === Date::PRO) ? $eProductSelling['proPackaging'] : NULL,
-					]);
-
-					$eProduct->buildIndex(['available', 'price'], $input, $eProductSelling['id']);
-
-					$cProduct->append($eProduct);
-
-				}
-
-				$this['cProduct'] = $cProduct;
-
-				return $cProduct->notEmpty();
+				return TRUE;
 
 			},
 

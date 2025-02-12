@@ -51,6 +51,8 @@ class DateManage {
 			input.removeAttribute('placeholder');
 		}
 
+		input.select();
+
 	}
 
 	static checkAvailableFocusOut(input) {
