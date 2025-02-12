@@ -180,15 +180,15 @@ class ProductUi {
 					$h .= '<div class="shop-product-name">';
 						$h .= '<h4>';
 							$h .= $eProductSelling->getName('html');
+							if($eShop['type'] === Shop::PRO) {
+								$h .= $quality;
+							}
+							if($eProductSelling['size'] !== NULL) {
+								$h .= '<div class="shop-product-size">';
+									$h .= encode($eProductSelling['size']);
+								$h .= '</div>';
+							}
 						$h .= '</h4>';
-						if($eShop['type'] === Shop::PRO) {
-							$h .= $quality;
-						}
-						if($eProductSelling['size'] !== NULL) {
-							$h .= '<div class="shop-product-size">';
-								$h .= encode($eProductSelling['size']);
-							$h .= '</div>';
-						}
 
 						if($eProductSelling['origin'] !== NULL) {
 							$h .= '<div class="shop-product-origin">';

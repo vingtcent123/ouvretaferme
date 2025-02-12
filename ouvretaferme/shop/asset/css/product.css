@@ -136,6 +136,7 @@
 
 .shop-product-pro .shop-header-image-quality {
 	display: inline-block;
+	margin-left: 0.5rem;
 }
 
 .shop-product-private .shop-product-image-placeholder {
@@ -234,6 +235,8 @@ input.shop-product-number-display {
 
 .shop-product-size {
 	text-decoration: underline;
+	display: inline-block;
+	margin-left: 0.5rem;
 }
 
 .shop-product-size,
