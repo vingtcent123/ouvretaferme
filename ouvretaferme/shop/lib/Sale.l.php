@@ -76,7 +76,7 @@ class SaleLib {
 
 	}
 
-	public static function getShopCustomer(Shop $eShop, \user\User $eUser): \selling\Customer {
+	public static function getShopCustomer(Shop $eShop, \user\User $eUser, bool $autocreate = FALSE): \selling\Customer {
 
 		if($eUser->empty()) {
 			return new \selling\Customer();
@@ -86,7 +86,7 @@ class SaleLib {
 
 		$eCustomer = \selling\CustomerLib::getByUserAndFarm($eUser, $eShop['farm']);
 
-		if($eCustomer->empty()) {
+		if($eCustomer->empty() and $autocreate) {
 			// Possible problème de DUPLICATE si le customer a été créé entre cette instruction et la précédente
 			$eCustomer = \selling\CustomerLib::createFromUser($eUser, $eShop['farm'], \selling\Customer::PRIVATE);
 		}
@@ -106,7 +106,7 @@ class SaleLib {
 			'basket'
 		]);
 
-		$eCustomer = self::getShopCustomer($eSale['shop'], $eUser);
+		$eCustomer = self::getShopCustomer($eSale['shop'], $eUser, autocreate: TRUE);
 		$eDate = $eSale['shopDate'];
 
 		$eSale->merge([

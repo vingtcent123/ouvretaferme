@@ -29,7 +29,7 @@ class Shop extends ShopElement {
 		$this->expects(['limitCustomers']);
 
 		return (
-			$this['limitCustomers'] == [] or
+			$this['limitCustomers'] === [] or
 			$this->canRead() or
 			($e->notEmpty() and in_array($e['id'], $this['limitCustomers']))
 		);
