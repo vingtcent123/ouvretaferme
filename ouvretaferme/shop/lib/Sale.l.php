@@ -41,10 +41,6 @@ class SaleLib {
 
 	public static function getDiscount(Date $eDate, \selling\Sale $eSale, \selling\Customer $eCustomer): int {
 
-		if($eDate['type'] === Date::PRO) {
-			return 0;
-		}
-
 		$discount = 0;
 
 		if($eSale->notEmpty()) {

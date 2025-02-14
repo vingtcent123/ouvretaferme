@@ -177,7 +177,7 @@ class BasketUi {
 					if($eDate['type'] === Date::PRO) {
 						$h .= '<th class="hide-sm-down"></th>';
 					}
-					$h .= '<th class="text-center">'.s("Quantité").'</th>';
+					$h .= '<th>'.s("Quantité").'</th>';
 					$h .= '<th class="text-end hide-xs-down">'.s("Prix unitaire").'</th>';
 					$h .= '<th class="text-end">'.s("Total").'</th>';
 					$h .= '<th class="hide-xs-down"></th>';
@@ -231,7 +231,7 @@ class BasketUi {
 								}
 							$h .= '</td>';
 						}
-						$h .= '<td class="text-center">';
+						$h .= '<td>';
 							$h .= ProductUi::numberOrder($eShop, $eDate, $eProductSelling, $eProduct, $product['number'], $available);
 						$h .= '</td>';
 						$h .= '<td class="text-end hide-xs-down">';

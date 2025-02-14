@@ -49,6 +49,15 @@ class ItemLib extends ItemCrud {
 
 	}
 
+	public static function applyGrid(Item $eItem, Grid $eGrid): void {
+
+		if($eGrid->notEmpty()) {
+			$eItem['packaging'] = $eGrid['packaging'];
+			$eItem['unitPrice'] = $eGrid['price'];
+		}
+
+	}
+
 	public static function getNew(Sale $eSale, Product $eProduct, Grid $eGrid): Item {
 
 		$eSale->expects(['farm', 'customer']);
@@ -71,10 +80,7 @@ class ItemLib extends ItemCrud {
 			$eItem['unitPrice'] = NULL;
 			$eItem['unit'] = $eProduct['unit'];
 
-			if($eGrid->notEmpty()) {
-				$eItem['packaging'] = $eGrid['packaging'];
-				$eItem['unitPrice'] = $eGrid['price'];
-			}
+			self::applyGrid($eItem, $eGrid);
 
 			if($eSale['type'] === Customer::PRO) {
 				$eItem['packaging'] ??= $eProduct['proPackaging'];

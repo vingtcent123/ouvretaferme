@@ -164,6 +164,7 @@
 }
 
 /* Uniquement dans la boutique */
+#shop-basket-summary-list  .shop-product-number,
 .shop-product-pro .shop-product-number {
 	max-width: 22rem;
 }

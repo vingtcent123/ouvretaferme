@@ -197,15 +197,21 @@ class ProductLib extends ProductCrud {
 			return new \Collection();
 		}
 
+		if($eCustomer->empty()) {
+			$cGrid = new \selling\Grid();
+		} else {
+			$cGrid = \selling\GridLib::getByCustomer($eCustomer, index: 'product');
+		}
+
 		$ccProduct = Product::model()
 			->select(Product::getSelection())
 			->whereId('IN', $ids)
 			->getCollection(NULL, NULL, ['farm', 'product']);
 
-		$ccProduct->map(function($cProduct) use ($eDate, $eSaleExclude) {
+		$ccProduct->map(function($cProduct) use ($eDate, $cGrid, $eSaleExclude) {
 
 			$cProduct->sort(['product' => ['name']], natural: TRUE);
-			self::putSold($eDate, $cProduct, $eSaleExclude);
+			self::applySold($eDate, $cProduct, $cGrid, $eSaleExclude);
 
 		});
 
@@ -250,7 +256,7 @@ class ProductLib extends ProductCrud {
 
 	}
 
-	public static function putSold(Date $eDate, \Collection $cProduct, \selling\Sale $eSaleExclude = new \selling\Sale()): \Collection {
+	public static function applySold(Date $eDate, \Collection $cProduct, \Collection $cGrid, \selling\Sale $eSaleExclude = new \selling\Sale()): \Collection {
 
 		$cItem = SaleLib::getProductsByDate($eDate, $eSaleExclude);
 
@@ -264,11 +270,22 @@ class ProductLib extends ProductCrud {
 				$sold = round($cItem[$productId]['quantity'], 2);
 			}
 
+			self::applyGrid($eProduct, $cGrid[$eProduct['product']['id']] ?? new \selling\Grid());
+
 			$eProduct['sold'] = $sold;
 
 		}
 
 		return $cProduct;
+
+	}
+
+	public static function applyGrid(Product $eProduct, \selling\Grid $eGrid): void {
+
+		if($eGrid->notEmpty()) {
+			$eProduct['packaging'] = $eGrid['packaging'];
+			$eProduct['price'] = $eGrid['price'];
+		}
 
 	}
 
