@@ -42,7 +42,7 @@ class UnitModel extends \ModuleModel {
 			'id' => ['serial32', 'cast' => 'int'],
 			'singular' => ['text8', 'min' => 1, 'max' => 15, 'collate' => 'general', 'cast' => 'string'],
 			'plural' => ['text8', 'min' => 1, 'max' => 15, 'collate' => 'general', 'cast' => 'string'],
-			'short' => ['text8', 'min' => 1, 'max' => 3, 'collate' => 'general', 'cast' => 'string'],
+			'short' => ['text8', 'min' => 1, 'max' => 4, 'collate' => 'general', 'cast' => 'string'],
 			'farm' => ['element32', 'farm\Farm', 'null' => TRUE, 'cast' => 'element'],
 			'fqn' => ['fqn', 'null' => TRUE, 'cast' => 'string'],
 			'by' => ['bool', 'cast' => 'bool'],

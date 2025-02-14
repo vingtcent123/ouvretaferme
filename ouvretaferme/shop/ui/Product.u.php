@@ -175,8 +175,8 @@ class ProductUi {
 				}
 			$h .= '</div>';
 			$h .= '<div class="shop-product-content">';
-				$h .= '<div class="shop-product-title">';
 
+				$h .= '<div class="shop-product-header">';
 					$h .= '<div class="shop-product-name">';
 						$h .= '<h4>';
 							$h .= $eProductSelling->getName('html');
@@ -196,45 +196,47 @@ class ProductUi {
 							$h .= '</div>';
 						}
 					$h .= '</div>';
+					$h .= '<div class="shop-product-title">';
 
-					$h .= '<div class="shop-product-buy-price">'.\util\TextUi::money($eProduct['price']).' '.$this->getTaxes($eProduct).\selling\UnitUi::getBy($eProductSelling['unit']).'</div>';
+						$h .= '<div class="shop-product-buy-price">'.\util\TextUi::money($eProduct['price']).' '.$this->getTaxes($eProduct).\selling\UnitUi::getBy($eProductSelling['unit']).'</div>';
 
-					if($canOrder) {
+						if($canOrder) {
 
-						$h .= '<div class="shop-product-buy-infos">';
+							$h .= '<div class="shop-product-buy-infos">';
 
-							if($eProduct['packaging'] !== NULL) {
-								$h.= '<div class="shop-product-buy-packaging">';
-									$h .= s("Colis : {value}", \selling\UnitUi::getValue($eProduct['packaging'], $eProductSelling['unit']));
-								$h .= '</div>';
-							}
-
-							if($eProduct['limitMin'] !== NULL) {
-
-								$h.= '<div class="shop-product-buy-info">';
-									$h .= s("Minimum de commande : {value}", ($eProduct['packaging'] === NULL) ? \selling\UnitUi::getValue($eProduct['limitMin'], $eProductSelling['unit'], TRUE) : s("{value} colis", $eProduct['limitMin']));
-								$h .= '</div>';
-
-							}
-
-							if($eProduct['reallyAvailable'] !== NULL) {
-
-								$h.= '<div class="shop-product-buy-info">';
-								if($eProduct['reallyAvailable'] > 0) {
-									$value = ($eProduct['packaging'] === NULL) ? \selling\UnitUi::getValue($eProduct['reallyAvailable'], $eProductSelling['unit'], TRUE) : s("{value} colis", $eProduct['reallyAvailable']);
-									$h .= '<span class="hide-sm-down">'.s("Disponible : {value}", $value).'</span>';
-									$h .= '<span class="hide-md-up">'.s("Dispo : {value}", $value).'</span>';
-								} else {
-									$h .= s("Rupture de stock");
+								if($eProduct['packaging'] !== NULL) {
+									$h.= '<div class="shop-product-buy-packaging">';
+										$h .= s("Colis : {value}", \selling\UnitUi::getValue($eProduct['packaging'], $eProductSelling['unit']));
+									$h .= '</div>';
 								}
-								$h .= '</div>';
 
-							}
+								if($eProduct['limitMin'] !== NULL) {
 
-						$h .= '</div>';
+									$h.= '<div class="shop-product-buy-info">';
+										$h .= s("Minimum de commande : {value}", ($eProduct['packaging'] === NULL) ? \selling\UnitUi::getValue($eProduct['limitMin'], $eProductSelling['unit'], TRUE) : s("{value} colis", $eProduct['limitMin']));
+									$h .= '</div>';
 
-					}
+								}
 
+								if($eProduct['reallyAvailable'] !== NULL) {
+
+									$h.= '<div class="shop-product-buy-info">';
+									if($eProduct['reallyAvailable'] > 0) {
+										$value = ($eProduct['packaging'] === NULL) ? \selling\UnitUi::getValue($eProduct['reallyAvailable'], $eProductSelling['unit'], TRUE) : s("{value} colis", $eProduct['reallyAvailable']);
+										$h .= '<span class="hide-sm-down">'.s("Disponible : {value}", $value).'</span>';
+										$h .= '<span class="hide-md-up">'.s("Dispo : {value}", $value).'</span>';
+									} else {
+										$h .= s("Rupture de stock");
+									}
+									$h .= '</div>';
+
+								}
+
+							$h .= '</div>';
+
+						}
+
+					$h .= '</div>';
 				$h .= '</div>';
 
 				if($eProductSelling['description'] !== NULL) {

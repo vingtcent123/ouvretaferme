@@ -1524,7 +1524,7 @@ class SaleUi {
 
 			$h .= $form->dynamicGroup($eSale, 'deliveredAt');
 
-			$h .= '<h3 class="mt-2">'.s("Ajouter des produits à la vente").'</h3>';
+			$h .= '<h4 class="mt-2 mb-1">'.s("Ajouter des produits à la vente").'</h4>';
 
 			if($eSale['discount'] > 0) {
 				$h .= '<div class="util-info">'.s("Les prix indiqués tiennent compte de la réduction de {value} % dont bénéficie ce client.", $eSale['discount']).'</div>';

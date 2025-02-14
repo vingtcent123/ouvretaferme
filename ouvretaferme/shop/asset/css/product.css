@@ -164,7 +164,7 @@
 }
 
 /* Uniquement dans la boutique */
-.shop-product-number {
+.shop-product-pro .shop-product-number {
 	max-width: 22rem;
 }
 
@@ -186,27 +186,20 @@ input.shop-product-number-display {
 	justify-content: space-between;
 	align-items: center;
 	gap: 0.25rem;
-	margin: 0.5rem 0;
+}
+
+.shop-product-private .shop-product-title {
+	margin-bottom: 0.5rem;
 }
 
 .shop-product-pro .shop-product-title {
 	display: grid;
 	grid-template:
-		"title infos price" auto / auto 1fr 10rem;
+		"infos price" auto / 1fr 10rem;
 	grid-gap: 0.25rem 1rem;
 	align-items: center;
 }
 
-@media (max-width: 991px) {
-
-	.shop-product-pro .shop-product-title {
-		grid-template:
-			"title price" auto
-			"infos infos" auto / auto 1fr;
-	}
-
-
-}
 
 @media (min-width: 992px) {
 
@@ -221,15 +214,40 @@ input.shop-product-number-display {
 	margin-bottom: 0.5rem;
 }
 
-.shop-product-name {
-	grid-area: title;
-	display: flex;
-	flex-wrap: wrap;
-	column-gap: 0.5rem;
-	align-items: baseline;
+.shop-product-private .shop-product-header {
+	margin-top: 0.5rem;
 }
 
-.shop-product-title h4 {
+.shop-product-pro .shop-product-header {
+	display: flex;
+}
+
+@media (min-width: 992px) {
+
+	.shop-product-pro .shop-product-header {
+		align-items: center;
+		justify-content: space-between;
+	}
+
+}
+
+@media (max-width: 991px) {
+
+	.shop-product-pro .shop-product-header {
+		flex-direction: column;
+	}
+
+}
+
+@media (max-width: 991px) {
+
+	.shop-product-pro .shop-product-title {
+		margin: 0.25rem 0 0.5rem;
+	}
+
+}
+
+.shop-product-name h4 {
 	margin-bottom: 0rem;
 }
 
@@ -258,6 +276,10 @@ input.shop-product-number-display {
 	font-size: 0.9rem;
 }
 
+.shop-product-origin {
+	margin-bottom: 0.5rem;
+}
+
 .shop-product-description {
 	max-height: 4rem;
 	overflow-y: auto;
@@ -277,7 +299,7 @@ input.shop-product-number-display {
 @media (max-width: 767px) {
 
 	.shop-product-pro .shop-product-buy {
-		margin-top: 0.75rem;
+		margin-top: 0.5rem;
 	}
 
 }
@@ -368,6 +390,14 @@ input.shop-product-number-display {
 
 	.shop-product-number .btn {
 		width: 3rem;
+	}
+
+}
+
+@media (max-width: 359px) {
+
+	.shop-product-private .shop-product-number .btn {
+		width: 5rem;
 	}
 
 }
