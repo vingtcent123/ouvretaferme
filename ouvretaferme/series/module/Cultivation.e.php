@@ -78,7 +78,7 @@ class Cultivation extends CultivationElement {
 
 	}
 
-	public function getYoungPlants(Slice $eSlice = new Slice(), bool &$targeted = NULL, ?int $safetyMargin = NULL, ?string &$error = NULL): ?int {
+	public function getYoungPlants(Slice $eSlice = new Slice(),  ?bool &$targeted = NULL, ?int $safetyMargin = NULL, ?string &$error = NULL): ?int {
 
 		$this->expects([
 			'series',
@@ -140,7 +140,7 @@ class Cultivation extends CultivationElement {
 
 	}
 
-	public function getSeeds(Slice $eSlice = new Slice(), bool &$targeted = NULL, ?int $safetyMargin = NULL, ?string &$error = NULL): ?int {
+	public function getSeeds(Slice $eSlice = new Slice(),  ?bool &$targeted = NULL, ?int $safetyMargin = NULL, ?string &$error = NULL): ?int {
 
 		$youngPlants = self::getYoungPlants($eSlice, $targeted, $safetyMargin, $error);
 

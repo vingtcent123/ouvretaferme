@@ -124,7 +124,7 @@ class FarmUi {
 
 	}
 
-	public static function urlCultivationSeries(Farm $eFarm, ?string $view = NULL, int $season = NULL): string {
+	public static function urlCultivationSeries(Farm $eFarm, ?string $view = NULL, ?int $season = NULL): string {
 
 		$view ??= \Setting::get('main\viewSeries');
 
@@ -135,7 +135,7 @@ class FarmUi {
 
 	}
 
-	public static function urlCultivationSoil(Farm $eFarm, ?string $view = NULL, int $season = NULL): string {
+	public static function urlCultivationSoil(Farm $eFarm, ?string $view = NULL, ?int $season = NULL): string {
 
 		$view ??= \Setting::get('main\viewSoil');
 
@@ -150,15 +150,15 @@ class FarmUi {
 		return self::url($eFarm).'/itineraires';
 	}
 
-	public static function urlCartography(Farm $eFarm, int $season = NULL): string {
+	public static function urlCartography(Farm $eFarm, ?int $season = NULL): string {
 		return self::url($eFarm).'/carte'.($season ? '/'.$season : '');
 	}
 
-	public static function urlSoil(Farm $eFarm, int $season = NULL): string {
+	public static function urlSoil(Farm $eFarm, ?int $season = NULL): string {
 		return self::url($eFarm).'/assolement'.($season ? '/'.$season : '');
 	}
 
-	public static function urlHistory(Farm $eFarm, int $season = NULL): string {
+	public static function urlHistory(Farm $eFarm, ?int $season = NULL): string {
 		return self::url($eFarm).'/rotation'.($season ? '/'.$season : '');
 	}
 
@@ -250,7 +250,7 @@ class FarmUi {
 		return self::url($eFarm).'/livraison';
 	}
 
-	public static function urlAnalyzeReport(Farm $eFarm, int $season = NULL): string {
+	public static function urlAnalyzeReport(Farm $eFarm, ?int $season = NULL): string {
 		return self::url($eFarm).'/analyses/rapports'.($season ? '/'.$season : '');
 	}
 

@@ -1096,7 +1096,7 @@ class TaskLib extends TaskCrud {
 	/**
 	 * Construit une liste de Task à partir de Flow
 	 */
-	public static function buildFromFlow(\Collection $cFlow, Series $eSeries, \Collection $cCultivation, int $season, int $referenceYear = NULL): array {
+	public static function buildFromFlow(\Collection $cFlow, Series $eSeries, \Collection $cCultivation, int $season, ?int $referenceYear = NULL): array {
 
 		$eSeries->expects(['farm']);
 		$cCultivation->expects(['crop']);

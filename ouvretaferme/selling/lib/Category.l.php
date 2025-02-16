@@ -11,7 +11,7 @@ class CategoryLib extends CategoryCrud {
 		return ['name'];
 	}
 
-	public static function getByFarm(\farm\Farm $eFarm, mixed $id = NULL, string $index = NULL): \Collection|Category {
+	public static function getByFarm(\farm\Farm $eFarm, mixed $id = NULL, ?string $index = NULL): \Collection|Category {
 
 		$expects = 'collection';
 

@@ -31,7 +31,7 @@ class CategoryLib extends CategoryCrud {
 
 	}
 
-	public static function getByFarm(\farm\Farm $eFarm, mixed $id = NULL, array|string|null $fqn = NULL, string $index = NULL): \Collection|Category {
+	public static function getByFarm(\farm\Farm $eFarm, mixed $id = NULL, array|string|null $fqn = NULL, ?string $index = NULL): \Collection|Category {
 
 		$expects = 'collection';
 

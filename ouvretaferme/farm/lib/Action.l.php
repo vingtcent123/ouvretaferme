@@ -44,7 +44,7 @@ class ActionLib extends ActionCrud {
 
 	}
 
-	public static function getByFarm(\farm\Farm $eFarm, mixed $id = NULL, array|string|null $fqn = NULL, Category|string $category = new Category(), string $index = NULL): \Collection|Action {
+	public static function getByFarm(\farm\Farm $eFarm, mixed $id = NULL, array|string|null $fqn = NULL, Category|string $category = new Category(), ?string $index = NULL): \Collection|Action {
 
 		$expects = 'collection';
 

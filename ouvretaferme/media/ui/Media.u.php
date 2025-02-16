@@ -75,7 +75,7 @@ class MediaUi {
 	 * Get string for background CSS property
 	 *
 	 */
-	public function getBackgroundByElement(\Element $eElement, string $size = NULL): string {
+	public function getBackgroundByElement(\Element $eElement, ?string $size = NULL): string {
 
 		if($eElement->empty()) {
 			return '';

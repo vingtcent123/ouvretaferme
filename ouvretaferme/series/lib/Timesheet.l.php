@@ -96,7 +96,7 @@ class TimesheetLib extends TimesheetCrud {
 
 	}
 
-	public static function getTasksByWeek(\farm\Farm $eFarm, string $week, \user\User $eUser = NULL): \Collection {
+	public static function getTasksByWeek(\farm\Farm $eFarm, string $week, ?\user\User $eUser = NULL): \Collection {
 
 		if($eUser !== NULL) {
 			Timesheet::model()->whereUser($eUser);

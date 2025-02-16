@@ -74,7 +74,7 @@ class PaymentLib extends PaymentCrud {
 
 	}
 
-	public static function createBySale(Sale $eSale, string $providerId = NULL): Payment {
+	public static function createBySale(Sale $eSale, ?string $providerId = NULL): Payment {
 
 		$eSale->expects(['customer', 'farm']);
 

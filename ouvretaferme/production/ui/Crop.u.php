@@ -8,7 +8,7 @@ class CropUi {
 		\Asset::js('production', 'crop.js');
 	}
 
-	public static function start(Crop|\series\Cultivation $eCrop, \Collection $cAction = new \Collection(), bool $displayYear = FALSE, bool $displayPrefix = TRUE, string $fontSize = NULL, string $class = NULL): string {
+	public static function start(Crop|\series\Cultivation $eCrop, \Collection $cAction = new \Collection(), bool $displayYear = FALSE, bool $displayPrefix = TRUE, ?string $fontSize = NULL, ?string $class = NULL): string {
 
 		if($eCrop->empty()) {
 			return '';

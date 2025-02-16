@@ -159,7 +159,7 @@ class TaskUi {
 
 	}
 
-	public function getWeekCalendar(string $week, \Closure $link, \Closure $filter = NULL): string {
+	public function getWeekCalendar(string $week, \Closure $link, ?\Closure $filter = NULL): string {
 
 		$weekBefore = date('o-\WW', strtotime($week.' - 1 WEEK'));
 		$weekAfter = date('o-\WW', strtotime($week.' + 1 WEEK'));
@@ -782,7 +782,7 @@ class TaskUi {
 
 	}
 
-	public function getYearCalendar(\farm\Farm $eFarm, int $year, \Closure $filter = NULL): string {
+	public function getYearCalendar(\farm\Farm $eFarm, int $year, ?\Closure $filter = NULL): string {
 
 		$yearBefore = $year - 1;
 		$yearAfter = $year + 1;
@@ -822,7 +822,7 @@ class TaskUi {
 
 	}
 
-	public function getYearSearch(\farm\Farm $eFarm, int $year, \Closure $search = NULL): string {
+	public function getYearSearch(\farm\Farm $eFarm, int $year, ?\Closure $search = NULL): string {
 
 		$h = '';
 

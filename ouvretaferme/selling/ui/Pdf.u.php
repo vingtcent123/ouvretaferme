@@ -116,7 +116,7 @@ class PdfUi {
 
 	}
 
-	public function getLabel(\farm\Farm $eFarm, Customer $eCustomer, ?string $name = NULL, string $quality = NULL, ?string $size = NULL, ?float $quantity = NULL, Unit $unit = new Unit()): string {
+	public function getLabel(\farm\Farm $eFarm, Customer $eCustomer, ?string $name = NULL, ?string $quality = NULL, ?string $size = NULL, ?float $quantity = NULL, Unit $unit = new Unit()): string {
 
 		$logo = (new \media\FarmLogoUi())->getUrlByElement($eFarm, 'm');
 		$colorCustomer = ($eCustomer->notEmpty() and $eCustomer['color']);
