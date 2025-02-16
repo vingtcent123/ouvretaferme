@@ -12,9 +12,10 @@ html {
 }
 
 :root {
-	--border: #eee;
+	--border: #8883;
 	--muted: #808089;
 	--radius: 0.375rem;
+	--transparent: #fff9;
 }
 
 div.website-wrapper {
@@ -87,7 +88,7 @@ main, footer {
 }
 
 main  {
-	background: #fff9;
+	background: var(--transparent);
 	box-shadow: 1px 1px 1px #ddd;
 }
 

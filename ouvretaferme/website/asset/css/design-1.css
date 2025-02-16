@@ -11,9 +11,10 @@ html {
 }
 
 :root {
-	--border: #eee;
+	--border: #8883;
 	--muted: #808089;
 	--radius: 0.375rem;
+	--transparent: #fff8;
 }
 
 body {
@@ -120,7 +121,7 @@ main, footer {
 
 nav {
 	padding: 1rem;
-	background: #fff8;
+	background: var(--transparent);
 }
 
 @media (min-width: 576px) {
