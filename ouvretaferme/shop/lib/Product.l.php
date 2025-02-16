@@ -198,7 +198,7 @@ class ProductLib extends ProductCrud {
 		}
 
 		if($eCustomer->empty()) {
-			$cGrid = new \selling\Grid();
+			$cGrid = new \Collection();
 		} else {
 			$cGrid = \selling\GridLib::getByCustomer($eCustomer, index: 'product');
 		}
