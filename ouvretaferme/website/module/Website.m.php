@@ -100,7 +100,7 @@ class WebsiteModel extends \ModuleModel {
 				return "#505075";
 
 			case 'customBackground' :
-				return "#eeeeee";
+				return "#F5F5F5";
 
 			case 'customDisabledFooter' :
 				return FALSE;

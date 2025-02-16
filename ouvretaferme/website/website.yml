@@ -78,7 +78,7 @@ Website:
   description: ?text8(1, 200)
   customDesign: website\Design = PHP(\Setting::get('website\designDefaultId'))
   customColor: color = PHP("#505075")
-  customBackground: color = PHP("#eeeeee")
+  customBackground: color = PHP("#F5F5F5")
   customDisabledFooter: bool = FALSE
   customTitleFont: text8 = PHP("'PT Serif', serif")
   customFont: text8 = PHP("'PT Serif', serif")
