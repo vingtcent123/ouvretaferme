@@ -1,6 +1,8 @@
 <?php
 namespace selling;
 
+use shop\DateUi;
+
 class SaleUi {
 
 	public function __construct() {
@@ -1466,7 +1468,7 @@ class SaleUi {
 
 	public function createComposition(Sale $eSale): \Panel {
 
-		$eSale->expects(['farm', 'cShop', 'market']);
+		$eSale->expects(['farm', 'market']);
 
 		$form = new \util\FormUi();
 
@@ -1477,6 +1479,7 @@ class SaleUi {
 			$h .= $form->asteriskInfo();
 
 			$h .= $form->hidden('farm', $eSale['farm']['id']);
+			$h .= $form->hidden('from', Sale::USER);
 			$h .= $form->hidden('composition', $eSale['composition']['id']);
 
 			$h .= $form->dynamicGroups($eSale, ['deliveredAt', 'productsList']);
@@ -1497,7 +1500,7 @@ class SaleUi {
 
 	public function createCustomer(Sale $eSale): \Panel {
 
-		$eSale->expects(['farm', 'cShop', 'market']);
+		$eSale->expects(['farm', 'market', 'shopDate']);
 
 		$form = new \util\FormUi();
 
@@ -1508,10 +1511,22 @@ class SaleUi {
 		$h .= $form->asteriskInfo();
 
 		$h .= $form->hidden('farm', $eSale['farm']['id']);
+		$h .= $form->hidden('from', $eSale['shopDate']->empty() ? Sale::USER : Sale::SHOP);
+		if($eSale['shopDate']->notEmpty()) {
+			$h .= $form->hidden('shopDate', $eSale['shopDate']['id']);
+		}
 		$h .= $form->hidden('market', $eSale['market']);
 
-		$h .= $form->dynamicGroup($eSale, 'customer*', function($d) {
+		$h .= $form->dynamicGroup($eSale, 'customer*', function($d) use ($form, $eSale) {
+
 				$d->autocompleteDispatch = '#sale-create';
+
+				if($eSale['shopDate']->notEmpty()) {
+					$d->autocompleteBody = ($d->autocompleteBody)($form, $eSale) + [
+						'type' => $eSale['shopDate']['type']
+					];
+				}
+
 			});
 
 		if($eSale['customer']->notEmpty()) {
@@ -1522,15 +1537,26 @@ class SaleUi {
 				$h .= '</div>';
 			}
 
-			$h .= $form->dynamicGroup($eSale, 'deliveredAt');
-
-			$h .= '<h4 class="mt-2 mb-1">'.s("Ajouter des produits à la vente").'</h4>';
-
-			if($eSale['discount'] > 0) {
-				$h .= '<div class="util-info">'.s("Les prix indiqués tiennent compte de la réduction de {value} % dont bénéficie ce client.", $eSale['discount']).'</div>';
+			if($eSale['shopDate']->empty()) {
+				$h .= $form->dynamicGroup($eSale, 'deliveredAt');
+			} else {
+				$h .= $form->group(
+					(self::p('deliveredAt')->label)($eSale),
+					$form->fake(\util\DateUi::numeric($eSale['shopDate']['deliveryDate']))
+				);
 			}
 
-			$h .= $form->dynamicField($eSale, 'productsList');
+			if($eSale['cProduct']->notEmpty()) {
+
+				$h .= '<h4 class="mt-2 mb-1">'.s("Ajouter des produits à la vente").'</h4>';
+
+				if($eSale['discount'] > 0) {
+					$h .= '<div class="util-info">'.s("Les prix indiqués tiennent compte de la réduction de {value} % dont bénéficie ce client.", $eSale['discount']).'</div>';
+				}
+
+				$h .= $form->dynamicField($eSale, 'productsList');
+
+			}
 
 			$footer = $form->submit(s("Créer la vente"), ['class' => 'btn btn-primary btn-lg']);
 
@@ -1593,8 +1619,6 @@ class SaleUi {
 	}
 
 	public function update(Sale $eSale): \Panel {
-
-		$eSale->expects(['cShop']);
 
 		$form = new \util\FormUi();
 
@@ -1914,6 +1938,11 @@ class SaleUi {
 
 			case 'productsList' :
 				$d->field = function(\util\FormUi $form, Sale $e) {
+
+					if($e['cProduct']->empty()) {
+						return '<div class="util-info">'.s("Aucun produit n'est disponible à la vente.").'</div>';
+					}
+
 					return (new ItemUi())->getCreateList(
 						$e['cProduct'], $e['cCategory'],
 						fn($cProduct) => ItemUi::getCreateByCategory($form, $e, $cProduct),

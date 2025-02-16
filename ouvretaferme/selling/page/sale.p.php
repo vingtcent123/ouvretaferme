@@ -14,7 +14,7 @@
 	->create(function($data) {
 
 		$data->e->merge([
-			'cShop' => \shop\ShopLib::getAroundByFarm($data->eFarm),
+			'shopDate' => get_exists('shopDate') ? \shop\DateLib::getById(GET('shopDate'))->validateProperty('farm', $data->eFarm)->validate('canOrder') : new \shop\Date(),
 			'market' => GET('market', 'bool'),
 			'composition' => get_exists('composition') ? \selling\ProductLib::getById(GET('composition'))->validateProperty('farm', $data->eFarm) : new \selling\Product(),
 			'customer' => get_exists('customer') ? \selling\CustomerLib::getById(GET('customer'))->validateProperty('farm', $data->eFarm) : new \selling\Customer()
@@ -28,7 +28,9 @@
 			$data->e['discount'] = $data->e['customer']['discount'];
 
 			$data->e['cCategory'] = \selling\CategoryLib::getByFarm($data->e['farm'], index: 'id');
-			$data->e['cProduct'] = \selling\ProductLib::getForSale($data->e['farm'], $data->e['type']);
+			$data->e['cProduct'] = $data->e['shopDate']->empty() ?
+				\selling\ProductLib::getForSale($data->e['farm'], $data->e['type']) :
+				\shop\ProductLib::getByDate($data->e['shopDate'], $data->e['customer'])->getColumnCollection('product');
 			\selling\ProductLib::applyItemsForSale($data->e['cProduct'], $data->e);
 
 		}
@@ -189,13 +191,7 @@
 		});
 	})
 	->quick(['deliveredAt', 'shipping'], validate: ['canUpdate', 'isOpen'])
-	->update(function($data) {
-
-		$data->e['cShop'] = \shop\ShopLib::getAroundByFarm($data->e['farm']);
-
-		throw new ViewAction($data);
-
-	})
+	->update()
 	->doUpdate(function($data) {
 		throw new ReloadAction('selling', 'Sale::updated');
 	})

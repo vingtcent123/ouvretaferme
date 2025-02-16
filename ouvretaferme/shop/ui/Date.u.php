@@ -680,19 +680,34 @@ class DateUi {
 				$h .= $this->getProducts($eFarm, $eDate);
 			$h .= '</div>';
 
+			$actions = '';
+
+			if($eDate->canOrder()) {
+				$actions .= '<a href="/selling/sale:create?farm='.$eDate['farm']['id'].'&shopDate='.$eDate['id'].'" data-ajax-navigation="never" class="btn btn-primary">'.\Asset::icon('plus-circle').' '.s("Ajouter une vente").'</a> ';
+			}
+
+			if($cSale->notEmpty()) {
+				$actions .= '<a href="/shop/date:downloadSales?id='.$eDate['id'].'&farm='.$eDate['farm']['id'].'" data-ajax-navigation="never" class="btn btn-primary">'.\Asset::icon('download').' '.s("Télécharger en PDF").'</a>';
+			}
+
 			$h .= '<div class="tab-panel" data-tab="sales">';
 
-				if($cSale->empty()) {
-					$h .= '<div class="util-info">'.s("Aucune commande n'a encore été enregistrée pour cette vente !").'</div>';
-				} else {
+				if($actions) {
 
 					$h .= '<div class="util-title">';
 
 						$h .= '<div></div>';
-
-						$h .= '<a href="/shop/date:downloadSales?id='.$eDate['id'].'&farm='.$eDate['farm']['id'].'" data-ajax-navigation="never" class="btn btn-primary">'.\Asset::icon('download').' '.s("Télécharger en PDF").'</a>';
+						$h .= '<div>';
+							$h .= $actions;
+						$h .= '</div>';
 
 					$h .= '</div>';
+
+				}
+
+				if($cSale->empty()) {
+					$h .= '<div class="util-info">'.s("Aucune commande n'a encore été enregistrée pour cette vente !").'</div>';
+				} else {
 
 					$h .= (new \selling\SaleUi())->getList(
 						$eFarm,

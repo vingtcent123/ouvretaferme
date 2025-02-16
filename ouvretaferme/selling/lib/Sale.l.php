@@ -4,7 +4,7 @@ namespace selling;
 class SaleLib extends SaleCrud {
 
 	public static function getPropertiesCreate(): array {
-		return ['market', 'customer', 'deliveredAt', 'productsList', 'shipping'];
+		return ['from', 'market', 'customer', 'shopDate', 'deliveredAt', 'productsList', 'shipping'];
 	}
 
 	public static function getPropertiesUpdate(): \Closure {

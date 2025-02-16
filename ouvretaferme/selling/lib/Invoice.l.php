@@ -25,7 +25,7 @@ class InvoiceLib extends InvoiceCrud {
 		}
 
 		if($search->get('customer')) {
-			$cCustomer = CustomerLib::getFromQuery($search->get('customer'), $eFarm, FALSE);
+			$cCustomer = CustomerLib::getFromQuery($search->get('customer'), $eFarm, withCollective: FALSE);
 			Invoice::model()->whereCustomer('IN', $cCustomer);
 		}
 

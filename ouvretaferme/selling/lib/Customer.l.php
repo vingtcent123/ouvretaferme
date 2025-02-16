@@ -43,7 +43,7 @@ class CustomerLib extends CustomerCrud {
 
 	}
 
-	public static function getFromQuery(string $query, \farm\Farm $eFarm, bool $withCollective = TRUE, ?array $properties = []): \Collection {
+	public static function getFromQuery(string $query, \farm\Farm $eFarm, ?string $type = NULL, bool $withCollective = TRUE, ?array $properties = []): \Collection {
 
 		if(str_starts_with($query, '#') and ctype_digit(substr($query, 1))) {
 
@@ -51,7 +51,7 @@ class CustomerLib extends CustomerCrud {
 
 		} else if($query !== '') {
 
-			$query = preg_replace('/\s+\/\s+\w+$/i', '', $query);
+			$query = preg_replace('/\s+\/(\s+\w+)+$/i', '', $query);
 
 			Customer::model()
 				->where('
@@ -82,6 +82,7 @@ class CustomerLib extends CustomerCrud {
 		return Customer::model()
 			->select($properties ?: Customer::getSelection())
 			->whereFarm($eFarm)
+			->whereType($type, if: $type !== NULL)
 			->whereStatus(Customer::ACTIVE)
 			->getCollection();
 

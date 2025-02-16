@@ -93,7 +93,12 @@
 
 		$data->eFarm = \farm\FarmLib::getById(POST('farm'))->validate('canWrite');
 
-		$data->cCustomer = \selling\CustomerLib::getFromQuery(POST('query'), $data->eFarm, POST('withCollective', 'bool', TRUE));
+		$data->cCustomer = \selling\CustomerLib::getFromQuery(
+			POST('query'),
+			$data->eFarm,
+			POST('type', default: fn() => NULL),
+			withCollective: POST('withCollective', 'bool', TRUE)
+		);
 
 		$data->hasNew = post_exists('new');
 

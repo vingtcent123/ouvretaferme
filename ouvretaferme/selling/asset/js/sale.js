@@ -28,11 +28,12 @@ class Sale {
 
 	static refreshCreateCustomer(customer) {
 
+		const form = qs('#sale-create');
+
+		const shopDate = form.qs('input[name="shopDate"]');
+
 		new Ajax.Query()
-			.url('/selling/sale:create?'+ new URLSearchParams({
-				farm: qs('#sale-create').form().get('farm'),
-				customer: customer
-			}))
+			.url('/selling/sale:create?farm='+ form.qs('input[name="farm"]').value + (shopDate ? '&shopDate='+ shopDate.value : '') +'&customer='+ customer)
 			.method('get')
 			.fetch();
 

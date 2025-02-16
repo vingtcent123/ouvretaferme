@@ -737,6 +737,13 @@ class Sale extends SaleElement {
 
 				if($this['from'] === Sale::SHOP) { // La date est gérée directement dans la boutique
 
+					try {
+						$this->expects(['shopDate']);
+					}
+					catch(\Exception) {
+						return FALSE;
+					}
+
 					$this->expects([
 						'shopDate' => ['deliveryDate']
 					]);
