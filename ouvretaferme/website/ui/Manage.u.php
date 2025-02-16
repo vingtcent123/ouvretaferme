@@ -495,7 +495,7 @@ class ManageUi {
 
 		$h .= $form->hidden('id', $eWebsite['id']);
 
-		$h .= $form->dynamicGroups($eWebsite, ['customDesign', 'customColor', 'customFont', 'customTitleFont']);
+		$h .= $form->dynamicGroups($eWebsite, ['customDesign', 'customBackground', 'customColor', 'customFont', 'customTitleFont']);
 
 		$h .= $form->group(
 				content: $form->submit(s("Enregistrer les modifications"))

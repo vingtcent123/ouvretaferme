@@ -61,6 +61,7 @@ class WebsiteModel extends \ModuleModel {
 			'description' => ['text8', 'min' => 1, 'max' => 200, 'null' => TRUE, 'cast' => 'string'],
 			'customDesign' => ['element32', 'website\Design', 'cast' => 'element'],
 			'customColor' => ['color', 'cast' => 'string'],
+			'customBackground' => ['color', 'cast' => 'string'],
 			'customDisabledFooter' => ['bool', 'cast' => 'bool'],
 			'customTitleFont' => ['text8', 'cast' => 'string'],
 			'customFont' => ['text8', 'cast' => 'string'],
@@ -69,7 +70,7 @@ class WebsiteModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'farm', 'internalDomain', 'domain', 'domainStatus', 'domainTry', 'logo', 'favicon', 'name', 'description', 'customDesign', 'customColor', 'customDisabledFooter', 'customTitleFont', 'customFont', 'createdAt', 'status'
+			'id', 'farm', 'internalDomain', 'domain', 'domainStatus', 'domainTry', 'logo', 'favicon', 'name', 'description', 'customDesign', 'customColor', 'customBackground', 'customDisabledFooter', 'customTitleFont', 'customFont', 'createdAt', 'status'
 		]);
 
 		$this->propertiesToModule += [
@@ -97,6 +98,9 @@ class WebsiteModel extends \ModuleModel {
 
 			case 'customColor' :
 				return "#505075";
+
+			case 'customBackground' :
+				return "#eeeeee";
 
 			case 'customDisabledFooter' :
 				return FALSE;
@@ -191,6 +195,10 @@ class WebsiteModel extends \ModuleModel {
 
 	public function whereCustomColor(...$data): WebsiteModel {
 		return $this->where('customColor', ...$data);
+	}
+
+	public function whereCustomBackground(...$data): WebsiteModel {
+		return $this->where('customBackground', ...$data);
 	}
 
 	public function whereCustomDisabledFooter(...$data): WebsiteModel {

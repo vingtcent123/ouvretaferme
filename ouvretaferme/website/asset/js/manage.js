@@ -33,6 +33,7 @@ class WebsiteManage {
         const newSrc = iframe.src
             .setArgument('customDesign', form.qs('[name="customDesign"]').value)
             .setArgument('customColor', form.qs('[name="customColor"]').value)
+            .setArgument('customBackground', form.qs('[name="customBackground"]').value)
             .setArgument('customFont', form.qs('[name="customFont"]').value)
             .setArgument('customTitleFont', form.qs('[name="customTitleFont"]').value);
         iframe.src = newSrc;
@@ -46,7 +47,7 @@ document.delegateEventListener('input', '#webpage-create [name="title"]', () => 
 
 });
 
-document.delegateEventListener('input', '#website-customize [name="customColor"]', () => {
+document.delegateEventListener('input', '#website-customize [name="customBackground"], #website-customize [name="customColor"]', () => {
 
     WebsiteManage.updatePreview();
 

@@ -1579,9 +1579,7 @@ class SaleUi {
 
 		$form = new \util\FormUi();
 
-		$h = '';
-
-		$h .= $form->openAjax('/selling/sale:doDuplicate');
+		$h = $form->openAjax('/selling/sale:doDuplicate');
 
 			$h .= $form->hidden('id', $eSale['id']);
 

@@ -706,7 +706,7 @@ class DateUi {
 				}
 
 				if($cSale->empty()) {
-					$h .= '<div class="util-info">'.s("Aucune commande n'a encore été enregistrée pour cette vente !").'</div>';
+					$h .= '<div class="util-info">'.s("Aucune commande n'a encore été enregistrée !").'</div>';
 				} else {
 
 					$h .= (new \selling\SaleUi())->getList(

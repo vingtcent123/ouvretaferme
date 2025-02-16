@@ -44,6 +44,7 @@ class DesignUi {
 ';
 		$h .= '<style>';
 		$h .= ':root {
+			--background: '.Website::GET('customBackground', 'customBackground', $eWebsite['customBackground']).';
 			--primary: '.Website::GET('customColor', 'customColor', $eWebsite['customColor']).';
 			--container-max-width: '.$eWebsite['customDesign']['maxWidth'].';
 			--custom-font: '.$font['value'].';

@@ -41,6 +41,7 @@ class WebsiteUi {
 		if(get_exists('customDesign')) {
 			$url .= '?'.http_build_query([
 				'customDesign' => GET('customDesign'),
+				'customBackground' => GET('customBackground'),
 				'customColor' => GET('customColor'),
 				'customFont' => GET('customFont'),
 				'customTitleFont' => GET('customTitleFont'),
@@ -106,6 +107,7 @@ class WebsiteUi {
 
 		$d = Website::model()->describer($property, [
 			'customColor' => s("Couleur contrastante"),
+			'customBackground' => s("Couleur d'arrière plan"),
 			'customDesign' => s("Template"),
 			'customFont' => s("Police pour le texte"),
 			'customTitleFont' => s("Police pour le titre principal des pages"),
