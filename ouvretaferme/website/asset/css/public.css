@@ -26,8 +26,7 @@ a {
 
 div.website-widget-shop {
 	border-radius: var(--radius);
-	border: 1px solid var(--border);
-	background-color: white;
+	border: 1px solid var(--primary);
 }
 
 div.website-widget-shop > h4 {
@@ -45,7 +44,7 @@ div.website-widget-shop > h4 a:hover {
 }
 
 div.website-widget-shop > div.shop-header-date {
-	border-top: 1px solid var(--border);
+	border-top: 1px solid var(--primary);
 	max-width: 100%;
 	grid-column-gap: 0;
 }
@@ -55,12 +54,16 @@ div.website-widget-shop > div.shop-header-date > * {
 }
 
 div.website-widget-shop > div.shop-header-date > *:first-child {
-	border-right: 1px solid var(--border);
+	border-right: 1px solid var(--primary);
 	border-radius: 0;
 }
 
+div.website-widget-shop div.shop-header-block {
+	background-color: transparent;
+}
+
 div.website-widget-shop-order {
-	border-top: 1px solid var(--border);
+	border-top: 1px solid var(--primary);
 	padding: 0.75rem 1rem;
 }
 
