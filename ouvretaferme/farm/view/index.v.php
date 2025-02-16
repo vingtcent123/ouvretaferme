@@ -342,10 +342,15 @@ new AdaptativeView('sellingSales', function($data, FarmTemplate $t) {
 			'farm' => $data->eFarm,
 			'customer' => new \selling\Customer(),
 			'composition' => new \selling\Product(),
+			'shopDate' => new \shop\Date(),
 			'market' => FALSE
 		]);
 
-		echo (new \selling\SaleUi())->create($eSale)->body;
+		$panel = (new \selling\SaleUi())->create($eSale);
+
+		echo $panel->dialogOpen;
+			echo $panel->body;
+		echo $panel->dialogClose;
 
 	} else {
 
