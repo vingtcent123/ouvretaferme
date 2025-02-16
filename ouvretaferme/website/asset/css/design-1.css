@@ -132,6 +132,11 @@ nav {
 	background: var(--transparent);
 }
 
+body[data-background="#FFFFFF"] nav {
+	background: #fafafa;
+}
+
+
 @media (min-width: 576px) {
 
 	nav {

@@ -100,6 +100,10 @@ main  {
 	box-shadow: 1px 1px 1px #ddd;
 }
 
+body[data-background="#FFFFFF"] main  {
+	background: #fafafa;
+}
+
 main a {
 	color: var(--primary);
 }
