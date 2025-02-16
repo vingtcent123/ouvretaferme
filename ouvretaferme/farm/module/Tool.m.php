@@ -50,11 +50,12 @@ class ToolModel extends \ModuleModel {
 			'routineValue' => ['json', 'null' => TRUE, 'cast' => 'array'],
 			'comment' => ['text16', 'null' => TRUE, 'cast' => 'string'],
 			'status' => ['enum', [\farm\Tool::ACTIVE, \farm\Tool::INACTIVE, \farm\Tool::DELETED], 'cast' => 'enum'],
+			'deleted' => ['bool', 'null' => TRUE, 'cast' => 'bool'],
 			'createdAt' => ['datetime', 'cast' => 'string'],
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'name', 'farm', 'action', 'vignette', 'stock', 'routineName', 'routineValue', 'comment', 'status', 'createdAt'
+			'id', 'name', 'farm', 'action', 'vignette', 'stock', 'routineName', 'routineValue', 'comment', 'status', 'deleted', 'createdAt'
 		]);
 
 		$this->propertiesToModule += [
@@ -63,7 +64,7 @@ class ToolModel extends \ModuleModel {
 		];
 
 		$this->uniqueConstraints = array_merge($this->uniqueConstraints, [
-			['farm', 'name']
+			['farm', 'name', 'status']
 		]);
 
 	}
@@ -74,6 +75,9 @@ class ToolModel extends \ModuleModel {
 
 			case 'status' :
 				return Tool::ACTIVE;
+
+			case 'deleted' :
+				return FALSE;
 
 			case 'createdAt' :
 				return new \Sql('NOW()');
@@ -162,6 +166,10 @@ class ToolModel extends \ModuleModel {
 
 	public function whereStatus(...$data): ToolModel {
 		return $this->where('status', ...$data);
+	}
+
+	public function whereDeleted(...$data): ToolModel {
+		return $this->where('deleted', ...$data);
 	}
 
 	public function whereCreatedAt(...$data): ToolModel {

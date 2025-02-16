@@ -223,7 +223,8 @@ class ToolLib extends ToolCrud {
 		) {
 
 			Tool::model()->update($e, [
-				'status' => Tool::DELETED
+				'status' => Tool::DELETED,
+				'deleted' => NULL /* Pour la gestion de l'unicité du nom */
 			]);
 
 		} else {

@@ -149,8 +149,9 @@ Tool:
   routineValue: ?json
   comment: ?text16
   status: enum(ACTIVE, INACTIVE, DELETED) = ACTIVE
+  deleted: ?bool = FALSE
   createdAt: datetime = SPECIAL(now)
   UNIQUE: [
-    ["farm", "name"]
+    ["farm", "name", "status"]
   ]
 
