@@ -90,7 +90,7 @@ div.website-news:not(:last-child) {
 
 div.website-news h2 {
 	display: inline-block;
-	border-bottom: 0.25rem solid var(--transparent);
+	border-bottom: 2px solid var(--textColor);
 	padding-bottom: 0.5rem;
 	margin-bottom: 0.5rem;
 }
@@ -101,6 +101,5 @@ div.website-news div.website-news-anchor {
 
 div.website-news div.website-news-date {
 	color: var(--muted);
-	text-align: right;
-	margin-bottom: 0.5rem;
+	margin-bottom: 1rem;
 }
