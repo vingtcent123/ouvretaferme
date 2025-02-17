@@ -34,6 +34,7 @@ class WebsiteManage {
             .setArgument('customDesign', form.qs('[name="customDesign"]').value)
             .setArgument('customColor', form.qs('[name="customColor"]').value)
             .setArgument('customBackground', form.qs('[name="customBackground"]').value)
+            .setArgument('customText', form.qs('[name="customText"]').value)
             .setArgument('customFont', form.qs('[name="customFont"]').value)
             .setArgument('customTitleFont', form.qs('[name="customTitleFont"]').value);
         iframe.src = newSrc;
@@ -54,7 +55,7 @@ document.delegateEventListener('input', '#website-customize [name="customBackgro
 });
 
 document.delegateEventListener('change',
-    '#website-customize [name="customDesign"], #website-customize [name="customFont"], #website-customize [name="customTitleFont"]', e => {
+    '#website-customize [name="customDesign"], #website-customize [name="customText"], #website-customize [name="customFont"], #website-customize [name="customTitleFont"]', e => {
 
     WebsiteManage.updatePreview();
 

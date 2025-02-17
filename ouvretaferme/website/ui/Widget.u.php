@@ -27,7 +27,7 @@ class WidgetUi {
 			$h .= (new \shop\ShopUi())->getDateHeader($eDate);
 			if($eDate['isOrderable']) {
 				$h .= '<div class="website-widget-shop-order">';
-					$h .= '<a href="'.\shop\ShopUi::url($eShop).'" class="btn btn-primary">'.s("Commander en ligne").'</a>';
+					$h .= '<a href="'.\shop\ShopUi::url($eShop).'">'.\Asset::icon('arrow-right-short').'  '.s("Commander en ligne").'  '.\Asset::icon('arrow-left-short').'</a>';
 				$h .= '</div>';
 			}
 		$h .= '</div>';

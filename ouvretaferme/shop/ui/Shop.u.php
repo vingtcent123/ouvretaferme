@@ -400,7 +400,9 @@ class ShopUi {
 				$h .= '<h3>'.s("Rendu").'</h3>';
 				$h .= '<p>'.s("En copiant le morceau de code ci-dessus sur une page de votre site, voici quel sera le rendu :").'</p>';
 				$h .= '<br/>';
-				$h .= (new \website\WidgetUi())->getShop($eShop, $eDate);
+				$h .= '<div style="max-width: 40rem">';
+					$h .= (new \website\WidgetUi())->getShop($eShop, $eDate);
+				$h .= '</div>';
 
 			}
 
@@ -520,11 +522,11 @@ class ShopUi {
 				$h .= ShopUi::link($eShop);
 			$h .= '</h4>';
 			$h .= $this->getDateHeader($eDate);
-			$h .= '<div class="shop-widget-order">';
-				if($eDate['isOrderable']) {
-					$h .= '<a href="'.ShopUi::url($eShop).'" class="btn btn-transparent">'.s("Commander en ligne").'</a>';
-				}
-			$h .= '</div>';
+			if($eDate['isOrderable']) {
+				$h .= '<div class="shop-widget-order">';
+					$h .= '<a href="'.ShopUi::url($eShop).'" class="btn btn-secondary">'.s("Commander en ligne").'</a>';
+				$h .= '</div>';
+			}
 		$h .= '</div>';
 
 		return $h;

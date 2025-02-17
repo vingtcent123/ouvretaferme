@@ -39,6 +39,9 @@ class WebsiteTemplate extends BaseTemplate {
 		$main = $this->getMain($stream);
 		$footer = $this->getFooter();
 
+		$text = \website\Website::GET('customText', 'customText', $this->data->eWebsite['customText']);
+		$background = \website\Website::GET('customBackground', 'customBackground', $this->data->eWebsite['customBackground']);
+
 		$h = '<!DOCTYPE html>';
 		$h .= '<html lang="'.$this->lang.'">';
 
@@ -48,7 +51,7 @@ class WebsiteTemplate extends BaseTemplate {
 			$h .= \website\DesignUi::getStyles($this->data->eWebsite);
 		$h .= '</head>';
 
-		$h .= '<body data-template="'.$this->template.'" data-background="'.strtoupper($this->data->eWebsite['customBackground']).'" data-touch="no">';
+		$h .= '<body data-template="'.$this->template.'" data-text="'.$text.'" data-background="'.strtoupper($background).'" data-touch="no">';
 
 			$h .= '<div class="website-wrapper">';
 				$h .= '<nav id="main-nav">'.$nav.'</nav>';
@@ -78,10 +81,10 @@ class WebsiteTemplate extends BaseTemplate {
 
 				$h .= '<div class="website-admin">';
 
-					$h .= '<a href="'.Lime::getUrl().'/website/manage?id='.$this->data->eWebsite['farm']['id'].'&tab=pages" class="btn btn-primary" title="'.s("Modifier cette page").'">'.Asset::icon('pencil-fill').'</a>';
+					$h .= '<a href="'.Lime::getUrl().'/website/manage?id='.$this->data->eWebsite['farm']['id'].'&tab=pages" class="btn btn-secondary" title="'.s("Modifier cette page").'">'.Asset::icon('pencil-fill').'</a>';
 
 					if($this->data->eWebpage['template']['fqn'] === 'news') {
-						$h .= ' <a href="'.Lime::getUrl().'/website/manage?id='.$this->data->eWebsite['farm']['id'].'&tab=news" class="btn btn-primary" title="'.s("Gérer les actualités").'">'.Asset::icon('newspaper').'</a>';
+						$h .= ' <a href="'.Lime::getUrl().'/website/manage?id='.$this->data->eWebsite['farm']['id'].'&tab=news" class="btn btn-secondary" title="'.s("Gérer les actualités").'">'.Asset::icon('newspaper').'</a>';
 					}
 
 				$h .= '</div>';

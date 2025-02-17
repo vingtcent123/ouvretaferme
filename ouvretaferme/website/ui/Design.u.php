@@ -19,6 +19,8 @@ class DesignUi {
 
 	public static function getStyles(Website $eWebsite): string {
 
+		$text = Website::GET('customText', 'customText', $eWebsite['customText']);
+
 		$fontGet = Website::GET('customFont', 'customFont', $eWebsite['customFont']);
 		$font = first(array_filter(
 			\Setting::get('website\customFonts'), fn($font) => $font['value'] === $fontGet
@@ -49,6 +51,11 @@ class DesignUi {
 			--container-max-width: '.$eWebsite['customDesign']['maxWidth'].';
 			--custom-font: '.$font['value'].';
 			--custom-title-font: '.$titleFont['value'].';
+			--border: '.($text === Website::BLACK ? '#8883' : '#8883').';
+			--textColor: '.($text === Website::BLACK ? 'var(--text)' : 'white').';
+			--linkColor: '.($text === Website::BLACK ? 'black' : 'white').';
+			--muted: '.($text === Website::BLACK ? '#888' : '#CCC').';
+			--transparent: '.($text === Website::BLACK ? '#FFF8' : '#0002').';
 		}';
 		$h .= '</style>';
 

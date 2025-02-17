@@ -2,8 +2,12 @@ nav {
    grid-area: nav;
 }
 
+body {
+	color: var(--textColor);
+}
+
 header {
-   grid-area: header;
+	grid-area: header;
 	position: relative;
 }
 
@@ -16,26 +20,24 @@ footer {
 }
 
 .website-logo {
-   display: inline-block;
+	display: inline-block;
 }
 
 a {
-   color: black;
-   text-decoration: underline;
+	text-decoration: underline;
+	color: var(--linkColor);
 }
 
 div.website-widget-shop {
 	border-radius: var(--radius);
-	background-color: var(--transparent);
 }
 
 div.website-widget-shop > h4 {
-	padding: 0.75rem 1rem;
+	padding: 0.75rem 0;
 	margin: 0 !important;
 }
 
 div.website-widget-shop > h4 a {
-	color: var(--primary);
 	text-decoration: none;
 }
 
@@ -44,31 +46,64 @@ div.website-widget-shop > h4 a:hover {
 }
 
 div.website-widget-shop > div.shop-header-date {
-	border-top: 1px solid var(--border);
 	max-width: 100%;
-	grid-column-gap: 0;
-}
-
-div.website-widget-shop > div.shop-header-date > * {
-	padding: 0.5rem;
-}
-
-div.website-widget-shop > div.shop-header-date > *:first-child {
-	border-right: 1px solid var(--border);
-	border-radius: 0;
 }
 
 div.website-widget-shop div.shop-header-block {
-	background-color: transparent;
+	background-color: var(--transparent);
 }
 
 div.website-widget-shop-order {
-	border-top: 1px solid var(--border);
-	padding: 0.75rem 1rem;
+	padding: 0.75rem 0;
+}
+
+div.website-widget-shop-order a {
+	border: 2px solid var(--border);
+	border-radius: var(--radius);
+	padding: 0.5rem;
+	display: block;
+	text-align: center;
+	text-transform: uppercase;
+	text-decoration: none;
+	background-color: var(--transparent);
+	font-weight: bold;
 }
 
 div.website-admin {
 	position: absolute;
 	top: 1rem;
 	right: 0;
+}
+
+
+div.website-menu-news-wrapper a.website-menu-news:hover {
+	text-decoration: underline;
+}
+
+div.website-news:not(:first-child) {
+	margin-top: 2rem;
+}
+
+div.website-news:not(:last-child) {
+	padding-bottom: 2rem;
+	border-bottom: 1px solid var(--border);
+}
+
+div.website-news h3 {
+	display: inline-block;
+	background-color: var(--primary);
+	padding: 0.375rem 0.75rem;
+	border-radius: var(--radius);
+	margin-bottom: 0.5rem;
+	color: white;
+}
+
+div.website-news div.website-news-anchor {
+	transform: translate(0, -10rem);
+}
+
+div.website-news div.website-news-date {
+	color: var(--muted);
+	text-align: right;
+	margin-bottom: 0.5rem;
 }

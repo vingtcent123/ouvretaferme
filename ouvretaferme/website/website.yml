@@ -77,6 +77,7 @@ Website:
   name: text8(1, 40)
   description: ?text8(1, 200)
   customDesign: website\Design = PHP(\Setting::get('website\designDefaultId'))
+  customText: enum(BLACK, WHITE) = BLACK
   customColor: color = PHP("#505075")
   customBackground: color = PHP("#F5F5F5")
   customDisabledFooter: bool = FALSE

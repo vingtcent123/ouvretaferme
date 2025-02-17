@@ -17,6 +17,9 @@ abstract class WebsiteElement extends \Element {
 	const PINGED_SECURED = 'pinged-secured';
 	const FAILURE_SECURED = 'failure-secured';
 
+	const BLACK = 'black';
+	const WHITE = 'white';
+
 	const ACTIVE = 'active';
 	const INACTIVE = 'inactive';
 
@@ -60,6 +63,7 @@ class WebsiteModel extends \ModuleModel {
 			'name' => ['text8', 'min' => 1, 'max' => 40, 'cast' => 'string'],
 			'description' => ['text8', 'min' => 1, 'max' => 200, 'null' => TRUE, 'cast' => 'string'],
 			'customDesign' => ['element32', 'website\Design', 'cast' => 'element'],
+			'customText' => ['enum', [\website\Website::BLACK, \website\Website::WHITE], 'cast' => 'enum'],
 			'customColor' => ['color', 'cast' => 'string'],
 			'customBackground' => ['color', 'cast' => 'string'],
 			'customDisabledFooter' => ['bool', 'cast' => 'bool'],
@@ -70,7 +74,7 @@ class WebsiteModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'farm', 'internalDomain', 'domain', 'domainStatus', 'domainTry', 'logo', 'favicon', 'name', 'description', 'customDesign', 'customColor', 'customBackground', 'customDisabledFooter', 'customTitleFont', 'customFont', 'createdAt', 'status'
+			'id', 'farm', 'internalDomain', 'domain', 'domainStatus', 'domainTry', 'logo', 'favicon', 'name', 'description', 'customDesign', 'customText', 'customColor', 'customBackground', 'customDisabledFooter', 'customTitleFont', 'customFont', 'createdAt', 'status'
 		]);
 
 		$this->propertiesToModule += [
@@ -95,6 +99,9 @@ class WebsiteModel extends \ModuleModel {
 
 			case 'customDesign' :
 				return \Setting::get('website\designDefaultId');
+
+			case 'customText' :
+				return Website::BLACK;
 
 			case 'customColor' :
 				return "#505075";
@@ -129,6 +136,9 @@ class WebsiteModel extends \ModuleModel {
 		switch($property) {
 
 			case 'domainStatus' :
+				return ($value === NULL) ? NULL : (string)$value;
+
+			case 'customText' :
 				return ($value === NULL) ? NULL : (string)$value;
 
 			case 'status' :
@@ -191,6 +201,10 @@ class WebsiteModel extends \ModuleModel {
 
 	public function whereCustomDesign(...$data): WebsiteModel {
 		return $this->where('customDesign', ...$data);
+	}
+
+	public function whereCustomText(...$data): WebsiteModel {
+		return $this->where('customText', ...$data);
 	}
 
 	public function whereCustomColor(...$data): WebsiteModel {

@@ -21,9 +21,9 @@ html {
 
 :root {
 	--border: #8883;
-	--muted: #808089;
 	--radius: 0.375rem;
 	--transparent: #fff9;
+	--secondary: var(--text);
 }
 
 div.website-wrapper {
@@ -96,17 +96,21 @@ main, footer {
 }
 
 main  {
-	background: var(--transparent);
+	background-color: var(--transparent);
+}
+
+body[data-text="black"] main  {
 	box-shadow: 1px 1px 1px #ddd;
+}
+
+body[data-text="white"] main  {
+	box-shadow: 1px 1px 1px #444;
 }
 
 body[data-background="#FFFFFF"] main  {
 	background: #fafafa;
 }
 
-main a {
-	color: var(--primary);
-}
 @media (min-width: 800px) {
 
 	main {
@@ -258,17 +262,17 @@ ul.website-menu a.selected {
 }
 
 .website-logo {
-	margin: .5rem;
+	margin: 1rem;
 }
 
 .website-logo img {
-	height: 5rem;
+	height: 4rem;
 }
 
 @media (max-width: 767px) {
 
 	.website-logo img {
-		height: 4rem;
+		height: 3rem;
 	}
 
 }
@@ -321,7 +325,7 @@ footer {
 	font-weight: lighter;
 	font-size: 0.9rem;
 	padding: 2rem;
-	color: #777;
+	color: var(--muted);
 	font-family: "Open Sans";
 }
 
@@ -357,33 +361,4 @@ div.website-menu-news-wrapper a.website-menu-news {
 div.website-menu-news-wrapper a.website-menu-news small {
 	opacity: 0.7;
 	white-space: nowrap;
-}
-
-div.website-menu-news-wrapper a.website-menu-news:hover {
-	text-decoration: underline;
-}
-
-div.website-news:not(:first-child) {
-	margin-top: 2rem;
-}
-
-div.website-news:not(:last-child) {
-	padding-bottom: 2rem;
-	border-bottom: 1px solid var(--border);
-}
-
-div.website-news h2 {
-	color: var(--primary);
-	font-family: var(--custom-title-font);
-	margin-bottom: 0;
-}
-
-div.website-news div.website-news-anchor {
-	transform: translate(0, -10rem);
-}
-
-div.website-news div.website-news-date {
-	color: var(--muted);
-	text-align: right;
-	margin-bottom: 0.5rem;
 }

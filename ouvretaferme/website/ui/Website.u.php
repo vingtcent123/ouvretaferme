@@ -41,6 +41,7 @@ class WebsiteUi {
 		if(get_exists('customDesign')) {
 			$url .= '?'.http_build_query([
 				'customDesign' => GET('customDesign'),
+				'customText' => GET('customText'),
 				'customBackground' => GET('customBackground'),
 				'customColor' => GET('customColor'),
 				'customFont' => GET('customFont'),
@@ -106,8 +107,9 @@ class WebsiteUi {
 	public static function p(string $property): \PropertyDescriber {
 
 		$d = Website::model()->describer($property, [
-			'customColor' => s("Couleur contrastante"),
 			'customBackground' => s("Couleur d'arrière plan"),
+			'customText' => s("Couleur du texte"),
+			'customColor' => s("Couleur contrastante"),
 			'customDesign' => s("Template"),
 			'customFont' => s("Police pour le texte"),
 			'customTitleFont' => s("Police pour le titre principal des pages"),
@@ -142,12 +144,26 @@ class WebsiteUi {
 
 			case 'customDesign':
 				$d->values = fn(Website $e) => $e['cDesign'] ?? $e->expects(['cDesign']);
+				$d->attributes = ['mandatory' => TRUE];
+				break;
+
+			case 'customText':
+				$d->field = 'select';
+				$d->attributes = ['mandatory' => TRUE];
+				$d->values = [
+					Website::BLACK => s("Noir"),
+					Website::WHITE => s("Blanc"),
+				];
 				break;
 
 			case 'customFont':
 				$d->field = 'select';
 				$d->attributes = ['mandatory' => TRUE];
 				$d->values = \Setting::get('website\customFonts');
+				break;
+
+			case 'customColor':
+				$d->labelAfter = \util\FormUi::info(s("Utilisée sur les petits écrans"));
 				break;
 
 			case 'customTitleFont':
