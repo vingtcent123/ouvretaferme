@@ -31,6 +31,8 @@ class AlertUi {
 			'Shop::terms.check' => s("Vos conditions générales de ventes ne doivent pas être vides de texte."),
 			'Shop::payment.createOwner' => s("La transaction ne peut pas aboutir avec ce moyen de paiement à cause d'une erreur de configuration : {message}.", $options),
 			'Shop::payment.create' => s("La transaction ne peut pas aboutir avec ce moyen de paiement à cause d'une erreur de configuration, veuillez vous rapprocher de votre producteur ou utiliser un autre moyen de paiement."),
+			'Shop::customColor.light' => s("La couleur constrante est trop claire, merci de choisir une teinte plus foncée pour préserer la lisibilité de votre boutique."),
+			'Shop::customBackground.light' => s("La couleur d'arrière plan est trop foncée, merci de choisir une teinte plus claire pour préserer la lisibilité de votre boutique."),
 
 			default => NULL
 
@@ -55,6 +57,7 @@ class AlertUi {
 			'Shop::pointOff' => s("Le choix du mode de livraison a bien été désactivé pour vos clients !"),
 			'Shop::created' => s("Votre boutique a bien été créée. Vous pouvez maintenant paramétrer votre première vente !"),
 			'Shop::updated' => s("Votre boutique a bien été mise à jour."),
+			'Shop::customized' => s("Le style de votre boutique a bien été enregistré."),
 			'Shop::collected' => s("La collecte des fonds a bien été lancée."),
 			'Shop::deleted' => s("La boutique a bien été supprimée."),
 

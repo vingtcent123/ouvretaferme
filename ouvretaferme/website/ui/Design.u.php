@@ -19,38 +19,40 @@ class DesignUi {
 
 	public static function getStyles(Website $eWebsite): string {
 
+		$fontLabel = ($eWebsite->canWrite() and get_exists('customFont')) ? GET('customFont') : $eWebsite['customFont'];
+		$titleFontLabel = ($eWebsite->canWrite() and get_exists('customTitleFont')) ? GET('customTitleFont') : $eWebsite['customTitleFont'];
+
+		$font = \website\DesignUi::getFont($fontLabel);
+		$titleFont = \website\DesignUi::getTitleFont($titleFontLabel);
+
+		$families = [];
+
+		if($font !== NULL) {
+			$families[] = 'family='.$font['label'];
+		}
+
+		if($titleFont !== NULL) {
+			$families[] = 'family='.$titleFont['label'];
+		}
+
 		$text = Website::GET('customText', 'customText', $eWebsite['customText']);
 
-		$fontGet = Website::GET('customFont', 'customFont', $eWebsite['customFont']);
-		$font = first(array_filter(
-			\Setting::get('website\customFonts'), fn($font) => $font['value'] === $fontGet
-		));
-		if(empty($font)) {
-			$font = first(array_filter(
-				\Setting::get('website\customFonts'), fn($font) => $font['label'] === 'PT Serif'
-			));
+		if($families) {
+			$h = '<link rel="preconnect" href="https://fonts.googleapis.com">';
+			$h .= '<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>';
+			$h .= '<link href="https://fonts.googleapis.com/css2?'.implode('&', $families).'" rel="stylesheet">';
 		}
 
-		$titleFontGet = Website::GET('customTitleFont', 'customTitleFont', $eWebsite['customTitleFont']);
-		$titleFont = first(array_filter(
-			\Setting::get('website\customTitleFonts'), fn($font) => $font['value'] === $titleFontGet
-		));
-		if(empty($titleFont)) {
-			$titleFont = first(array_filter(
-				\Setting::get('website\customTitleFonts'), fn($font) => $font['label'] === 'PT Serif'
-			));
-		}
-		$h = '<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family='.$font['label'].'&family='.$titleFont['label'].'" rel="stylesheet">
-';
+		$color = ($eWebsite->canWrite() and get_exists('customColor')) ? GET('customColor') : $eWebsite['customColor'];
+		$background = ($eWebsite->canWrite() and get_exists('customBackground')) ? GET('customBackground') : $eWebsite['customBackground'];
+
 		$h .= '<style>';
 		$h .= ':root {
-			--background: '.Website::GET('customBackground', 'customBackground', $eWebsite['customBackground']).';
-			--primary: '.Website::GET('customColor', 'customColor', $eWebsite['customColor']).';
+			--background: '.$background.';
+			--primary: '.$color.';
 			--container-max-width: '.$eWebsite['customDesign']['maxWidth'].';
-			--custom-font: '.$font['value'].';
-			--custom-title-font: '.$titleFont['value'].';
+			--custom-font: '.($font ? $font['value'] : "'Open Sans', sans-serif").';
+			--custom-title-font: '.($titleFont ? $titleFont['value'] : "'Open Sans', sans-serif").';
 			--border: '.($text === Website::BLACK ? '#8883' : '#8883').';
 			--textColor: '.($text === Website::BLACK ? 'var(--text)' : 'white').';
 			--linkColor: '.($text === Website::BLACK ? 'black' : 'white').';
@@ -60,6 +62,26 @@ class DesignUi {
 		$h .= '</style>';
 
 		return $h;
+	}
+
+	public static function getFont(string $label): ?array {
+
+		$font = array_filter(
+			\Setting::get('website\customFonts'), fn($font) => $font['value'] === $label
+		);
+
+		return $font ? first($font) : NULL;
+
+	}
+
+	public static function getTitleFont(string $label): ?array {
+
+		$font = array_filter(
+			\Setting::get('website\customTitleFonts'), fn($font) => $font['value'] === $label
+		);
+
+		return $font ? first($font) : NULL;
+
 	}
 
 }

@@ -54,6 +54,7 @@ class ShopUi {
 				$h .= '<a class="tab-item" data-tab="payment" onclick="Lime.Tab.select(this)">'.s("Moyens de paiement").' <span class="tab-item-count">'.$eShop->countPayments().'</span></a>';
 				$h .= '<a class="tab-item" data-tab="terms" onclick="Lime.Tab.select(this)">'.s("Conditions de vente").'</a>';
 				$h .= '<a class="tab-item" data-tab="mail" onclick="Lime.Tab.select(this)">'.s("E-mails").'</a>';
+				$h .= '<a class="tab-item" data-tab="customize" onclick="Lime.Tab.select(this)">'.s("Personnalisation").'</a>';
 			$h .= '</div>';
 
 			$h .= '<div class="tab-panel selected" data-tab="settings">';
@@ -70,6 +71,10 @@ class ShopUi {
 
 			$h .= '<div class="tab-panel" data-tab="mail">';
 				$h .= $this->updateMail($eShop, $cCustomize, $eSaleExample);
+			$h .= '</div>';
+
+			$h .= '<div class="tab-panel" data-tab="customize">';
+				$h .= $this->updateCustomize($eShop);
 			$h .= '</div>';
 
 		$h .= '</div>';
@@ -341,6 +346,32 @@ class ShopUi {
 			$h .= (new \mail\CustomizeUi())->getMailExample($title, $html);
 
 		}
+
+		return $h;
+
+	}
+
+
+	public function updateCustomize(Shop $eShop): string {
+
+		$form = new \util\FormUi();
+
+		$h = '';
+
+		$h .= $form->openAjax('/shop/configuration:doCustomize', ['id' => 'shop-customize']);
+
+		$h .= $form->hidden('id', $eShop['id']);
+
+		$h .= $form->dynamicGroups($eShop, ['customColor', 'customBackground', 'customFont', 'customTitleFont']);
+
+		$h .= $form->group(
+				content: $form->submit(s("Enregistrer les modifications"))
+		);
+
+		$h .= $form->close();
+
+		$h .= '<h3 class="shop-preview-title">'.s("Prévisualisation de boutique").'</h3>';
+		$h .= '<iframe id="shop-preview" src="'.ShopUi::url($eShop).'?"></iframe>';
 
 		return $h;
 
@@ -722,6 +753,10 @@ class ShopUi {
 			'shippingUntil' => s("Montant minimal de commande au delà duquel les frais de livraison sont offerts"),
 			'terms' => s("Conditions générales de vente"),
 			'termsField' => s("Demander à vos clients d'accepter explicitement les conditions générales de vente avec une case à cocher"),
+			'customBackground' => s("Couleur d'arrière plan"),
+			'customColor' => s("Couleur contrastante"),
+			'customFont' => s("Police pour le texte"),
+			'customTitleFont' => s("Police pour le titre principal des pages"),
 		]);
 
 		switch($property) {
@@ -869,6 +904,26 @@ class ShopUi {
 				};
 				(new \selling\CustomerUi())->query($d, TRUE);
 				$d->group = ['wrapper' => 'limitCustomers'];
+				break;
+
+			case 'customFont':
+				$d->field = 'select';
+				$d->placeholder = s("Par défaut");
+				$d->values = \Setting::get('website\customFonts');
+				break;
+
+			case 'customBackground':
+				$d->placeholder = s("Par défaut");
+				break;
+
+			case 'customColor':
+				$d->placeholder = s("Par défaut");
+				break;
+
+			case 'customTitleFont':
+				$d->field = 'select';
+				$d->placeholder = s("Par défaut");
+				$d->values = \Setting::get('website\customTitleFonts');
 				break;
 
 		}

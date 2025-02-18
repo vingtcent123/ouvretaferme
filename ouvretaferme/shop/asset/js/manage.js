@@ -35,7 +35,33 @@ class ShopManage {
 
 	}
 
+    static updatePreview() {
+        const form = qs('#shop-customize');
+
+        const iframe = qs('#shop-preview');
+        const newSrc = iframe.src
+            .setArgument('customize', 1)
+            .setArgument('customColor', form.qs('[name="customColor"]').value)
+            .setArgument('customBackground', form.qs('[name="customBackground"]').value)
+            .setArgument('customFont', form.qs('[name="customFont"]').value)
+            .setArgument('customTitleFont', form.qs('[name="customTitleFont"]').value);
+        iframe.src = newSrc;
+    }
+
 }
+
+document.delegateEventListener('input', '#shop-customize [name="customBackground"], #shop-customize [name="customColor"]', () => {
+
+    ShopManage.updatePreview();
+
+});
+
+document.delegateEventListener('change',
+    '#shop-customize [name="customFont"], #shop-customize [name="customTitleFont"]', e => {
+
+		ShopManage.updatePreview();
+
+});
 
 document.delegateEventListener('input', '#shop-create [name="name"]', () => {
 

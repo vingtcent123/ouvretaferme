@@ -69,13 +69,17 @@ class ShopModel extends \ModuleModel {
 			'orderMin' => ['int32', 'min' => 0, 'max' => NULL, 'null' => TRUE, 'cast' => 'int'],
 			'shipping' => ['decimal', 'digits' => 8, 'decimal' => 2, 'min' => 0.01, 'max' => NULL, 'null' => TRUE, 'cast' => 'float'],
 			'shippingUntil' => ['int32', 'min' => 0, 'max' => NULL, 'null' => TRUE, 'cast' => 'int'],
+			'customColor' => ['color', 'null' => TRUE, 'cast' => 'string'],
+			'customBackground' => ['color', 'null' => TRUE, 'cast' => 'string'],
+			'customTitleFont' => ['text8', 'cast' => 'string'],
+			'customFont' => ['text8', 'cast' => 'string'],
 			'status' => ['enum', [\shop\Shop::OPEN, \shop\Shop::CLOSED], 'cast' => 'enum'],
 			'createdAt' => ['datetime', 'cast' => 'string'],
 			'createdBy' => ['element32', 'user\User', 'cast' => 'element'],
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'fqn', 'farm', 'logo', 'name', 'email', 'type', 'frequency', 'hasPoint', 'hasPayment', 'paymentCard', 'paymentTransfer', 'paymentTransferHow', 'paymentOffline', 'paymentOfflineHow', 'description', 'terms', 'termsField', 'limitCustomers', 'orderMin', 'shipping', 'shippingUntil', 'status', 'createdAt', 'createdBy'
+			'id', 'fqn', 'farm', 'logo', 'name', 'email', 'type', 'frequency', 'hasPoint', 'hasPayment', 'paymentCard', 'paymentTransfer', 'paymentTransferHow', 'paymentOffline', 'paymentOfflineHow', 'description', 'terms', 'termsField', 'limitCustomers', 'orderMin', 'shipping', 'shippingUntil', 'customColor', 'customBackground', 'customTitleFont', 'customFont', 'status', 'createdAt', 'createdBy'
 		]);
 
 		$this->propertiesToModule += [
@@ -117,6 +121,12 @@ class ShopModel extends \ModuleModel {
 
 			case 'limitCustomers' :
 				return [];
+
+			case 'customTitleFont' :
+				return "'Open sans', sans-serif";
+
+			case 'customFont' :
+				return "'Open sans', sans-serif";
 
 			case 'status' :
 				return Shop::OPEN;
@@ -265,6 +275,22 @@ class ShopModel extends \ModuleModel {
 
 	public function whereShippingUntil(...$data): ShopModel {
 		return $this->where('shippingUntil', ...$data);
+	}
+
+	public function whereCustomColor(...$data): ShopModel {
+		return $this->where('customColor', ...$data);
+	}
+
+	public function whereCustomBackground(...$data): ShopModel {
+		return $this->where('customBackground', ...$data);
+	}
+
+	public function whereCustomTitleFont(...$data): ShopModel {
+		return $this->where('customTitleFont', ...$data);
+	}
+
+	public function whereCustomFont(...$data): ShopModel {
+		return $this->where('customFont', ...$data);
 	}
 
 	public function whereStatus(...$data): ShopModel {

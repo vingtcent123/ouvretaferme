@@ -99,7 +99,7 @@ class ProductUi {
 					$h .= '<span class="hide-xs-down">'.($isModifying ? s("Modifier la commande") : s("Poursuivre la commande")).'</span>';
 				$h .= '</a>';
 				$h .= '&nbsp;';
-				$h .= '<a onclick="BasketManage.empty(this, '.$eDate['id'].', true)" class="shop-basket-empty btn btn-danger" '.attrs($confirmEmpty).'>';
+				$h .= '<a onclick="BasketManage.empty(this, '.$eDate['id'].', true)" class="shop-basket-empty btn btn-outline-secondary" '.attrs($confirmEmpty).'>';
 					$h .= '<span class="hide-sm-up" title="'.$labelEmpty.'">'.\Asset::icon('trash').'</span>';
 					$h .= '<span class="hide-xs-down">'.$labelEmpty.'</span>';
 				$h .= '</a>';

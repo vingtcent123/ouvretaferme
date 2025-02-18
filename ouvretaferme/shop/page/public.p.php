@@ -81,12 +81,19 @@
 
 			// Cas où le client n'a pas finalisé la commande et retourne sur la boutique
 			if(
-				$data->isModifying === FALSE and
-				$data->eDateSelected['isOrderable'] and
-				$data->eSaleExisting->notEmpty() and
-				$data->eSaleExisting['preparationStatus'] === \selling\Sale::BASKET
+				$data->eShop->canWrite() === FALSE or
+				get_exists('customize') === FALSE
 			) {
-				throw new RedirectAction(\shop\ShopUi::dateUrl($data->eShop, $data->eDateSelected, 'confirmation'));
+
+				if(
+					$data->isModifying === FALSE and
+					$data->eDateSelected['isOrderable'] and
+					$data->eSaleExisting->notEmpty() and
+					$data->eSaleExisting['preparationStatus'] === \selling\Sale::BASKET
+				) {
+					throw new RedirectAction(\shop\ShopUi::dateUrl($data->eShop, $data->eDateSelected, 'confirmation'));
+				}
+
 			}
 
 			$data->discount = \shop\SaleLib::getDiscount($data->eDateSelected, $data->eSaleExisting, $data->eCustomer);

@@ -27,7 +27,7 @@
 /* Customization */
 #website-preview {
 	width: 100%;
-	min-height: 500px;
+	min-height: 750px;
 	border: 1px solid var(--border);
 }
 .website-preview-title {

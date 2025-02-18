@@ -211,7 +211,7 @@ class DateUi {
 			$value = $orderMin[0];
 
 			if($value > 0) {
-				$h .= ' '.s("Un minimum de commande de {value} € est demandé.", $value);
+				$h .= s("Un minimum de commande de {value} € est demandé.", $value);
 			}
 
 		} else {
@@ -222,9 +222,9 @@ class DateUi {
 			if($max > 0) {
 
 				if($min > 0) {
-					$h .= ' '.s("En fonction du mode de retrait, un minimum de commande compris entre {min} € et {max} € sera demandé.", ['min' => $min, 'max' => $max]);
+					$h .= s("En fonction du mode de retrait, un minimum de commande compris entre {min} € et {max} € sera demandé.", ['min' => $min, 'max' => $max]);
 				} else {
-					$h .= ' '.s("En fonction du mode de retrait, un minimum de commande pourra être demandé.");
+					$h .= s("En fonction du mode de retrait, un minimum de commande pourra être demandé.");
 				}
 
 			}

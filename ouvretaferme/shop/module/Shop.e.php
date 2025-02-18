@@ -172,7 +172,47 @@ class Shop extends ShopElement {
 
 				return TRUE;
 
-			}
+			},
+
+			'customColor.light' => function(?string $color): bool {
+
+				if($color === NULL) {
+					return TRUE;
+				}
+
+				$average = array_sum([
+					hexdec(substr($color, 1, 2)),
+					hexdec(substr($color, 3, 2)),
+					hexdec(substr($color, 5, 2)),
+				]) / 3;
+
+				return ($average < 127);
+
+			},
+
+			'customBackground.light' => function(?string $color): bool {
+
+				if($color === NULL) {
+					return TRUE;
+				}
+
+				$average = array_sum([
+					hexdec(substr($color, 1, 2)),
+					hexdec(substr($color, 3, 2)),
+					hexdec(substr($color, 5, 2)),
+				]) / 3;
+
+				return ($average > 225);
+
+			},
+
+			'customFont.check' => function(string $customFont): bool {
+				return \website\DesignLib::isCustomFont($customFont, 'customFonts');
+			},
+
+			'customTitleFont.check' => function(string $customFont): bool {
+				return \website\DesignLib::isCustomFont($customFont, 'customTitleFonts');
+			},
 
 		]);
 

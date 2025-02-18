@@ -163,7 +163,7 @@ class WebsiteUi {
 				break;
 
 			case 'customColor':
-				$d->labelAfter = \util\FormUi::info(s("Utilisée sur les petits écrans"));
+				$d->labelAfter = \util\FormUi::info(s("Utilisée sur certains templates ainsi que sur les petits écrans"));
 				break;
 
 			case 'customTitleFont':

@@ -64,13 +64,9 @@ new AdaptativeView('shop', function($data, ShopTemplate $t) {
 			echo '</div>';
 		}
 
-		if($data->eDateSelected['isOrderable']) {
+		$details = [];
 
-			echo '<div class="util-block">';
-				echo (new \shop\DateUi())->getOrderPeriod($data->eDateSelected);
-				echo ' ';
-				echo (new \shop\DateUi())->getOrderLimits($data->eShop, $data->eDateSelected['ccPoint']);
-			echo '</div>';
+		if($data->eDateSelected['isOrderable']) {
 
 			if(
 				$data->eSaleExisting->canBasket($data->eShop) === FALSE and
@@ -89,36 +85,42 @@ new AdaptativeView('shop', function($data, ShopTemplate $t) {
 
 			}
 
+			$orderPeriod = (new \shop\DateUi())->getOrderPeriod($data->eDateSelected);
+			$orderLimits = (new \shop\DateUi())->getOrderLimits($data->eShop, $data->eDateSelected['ccPoint']);
+
+			if($orderPeriod) {
+				$details[] = Asset::icon('clock').'  '.$orderPeriod;
+			}
+
+			if($orderLimits) {
+				$details[] = Asset::icon('cart').'  '.$orderLimits;
+			}
+
 		} else if(
 			$data->eDateSelected['isDeliverable'] and
 			$data->eSaleExisting->notEmpty()
 		) {
 
-			echo '<div class="util-block">';
-				echo Asset::icon('lock-fill').' ';
-				echo s("La vente est maintenant fermée, n'oubliez pas de venir chercher votre commande le {value} !", \util\DateUi::textual($data->eDateSelected['deliveryDate']));
-			echo '</div>';
+			$details[] = Asset::icon('lock-fill').'  '.s("La vente est maintenant fermée, n'oubliez pas de venir chercher votre commande le {value} !", \util\DateUi::textual($data->eDateSelected['deliveryDate']));
 
 		} else if($data->eDateSelected['isSoonOpen']) {
 
-			echo '<div class="util-info">';
-				echo s("Les prises de commandes démarrent bientôt, revenez le {date} pour passer commande !",
-					['date' => \util\DateUi::textual($data->eDateSelected['orderStartAt'], \util\DateUi::DATE_HOUR_MINUTE)]);
-			echo '</div>';
+			$details[] = Asset::icon('clock').'  '.s("Les prises de commandes démarrent bientôt, revenez le {date} pour passer commande !", ['date' => \util\DateUi::textual($data->eDateSelected['orderStartAt'], \util\DateUi::DATE_HOUR_MINUTE)]);
 
 		} else {
 
-			echo '<div class="util-block">';
-				echo Asset::icon('lock-fill').' ';
-				echo s("Cette vente est désormais terminée !");
-			echo '</div>';
+			$details[] = Asset::icon('lock-fill').'  '.s("Cette vente est désormais terminée !");
 
 		}
 
 		if($data->discount > 0) {
-			echo '<div class="util-block">';
-				echo s("Les prix affichés incluent la remise commerciale de {value} % dont vous bénéficiez !", $data->discount);
-			echo '</div>';
+			$details[] = Asset::icon('check-lg').'  '.s("Les prix affichés incluent la remise commerciale de {value} % dont vous bénéficiez !", $data->discount);
+		}
+
+		if($details) {
+			echo '<p>';
+				echo implode('<br/>', $details);
+			echo '</p>';
 		}
 
 		echo (new \shop\ProductUi())->getList($data->eShop, $data->eDateSelected, $data->eSaleExisting, $data->cCategory, $data->isModifying);

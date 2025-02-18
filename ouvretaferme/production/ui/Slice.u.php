@@ -1,8 +1,6 @@
 <?php
 namespace production;
 
-use series\Series;
-
 class SliceUi {
 
 	public function __construct() {

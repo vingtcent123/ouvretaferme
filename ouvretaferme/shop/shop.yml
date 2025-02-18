@@ -110,6 +110,10 @@ Shop:
   orderMin: ?int(0, NULL)
   shipping: ?decimal(8, 2, 0.01, null)
   shippingUntil: ?int(0, NULL)
+  customColor: ?color
+  customBackground: ?color
+  customTitleFont: text8 = PHP("'Open sans', sans-serif")
+  customFont: text8 = PHP("'Open sans', sans-serif")
   status: enum(OPEN, CLOSED) = OPEN
   createdAt: datetime = SPECIAL(now)
   createdBy: user\User = SPECIAL(user)

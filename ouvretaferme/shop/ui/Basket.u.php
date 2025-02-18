@@ -31,13 +31,13 @@ class BasketUi {
 			}
 
 			$h .= '<div>';
-				$h .= '<div class="util-title">';
+				$h .= '<div class="util-action">';
 					$h .= '<h1>';
 						$h .= encode($eShop['name']);
-						$h .= '<div class="util-subtitle">';
-							$h .= s("Livraison du {value}", \util\DateUi::getDayName(date('N', strtotime($eDate['deliveryDate']))).' '.\util\DateUi::textual($eDate['deliveryDate']));
-						$h .= '</div>';
 					$h .= '</h1>';
+				$h .= '</div>';
+				$h .= '<div class="util-subtitle mb-1">';
+					$h .= s("Livraison du {value}", \util\DateUi::getDayName(date('N', strtotime($eDate['deliveryDate']))).' '.\util\DateUi::textual($eDate['deliveryDate']));
 				$h .= '</div>';
 
 				if($currentStep !== NULL) {
@@ -170,7 +170,7 @@ class BasketUi {
 			}
 		$h .= '</div>';
 
-		$h .= '<table id="shop-basket-summary-list" class="tr-even tr-bordered stick-xs">';
+		$h .= '<table id="shop-basket-summary-list" class="stick-xs">';
 			$h .= '<thead>';
 				$h .= '<tr>';
 					$h .= '<th colspan="2">'.s("Produit").'</th>';
@@ -748,9 +748,9 @@ class BasketUi {
 
 			if($eSale->acceptCustomerCancel()) {
 				$h .= '<div>';
-					$h .= '<a '.attr('onclick', 'BasketManage.modify('.$eDate['id'].', '.$this->getJsonBasket($eSale).', \'home\')').' class="btn btn-outline-primary" title="'.s("Cette commande est modifiable jusqu'au {value}.", ['value' => \util\DateUi::textual($eDate['orderEndAt'], \util\DateUi::DATE_HOUR_MINUTE)]).'">'.s("Modifier ma commande").'</a>';
+					$h .= '<a '.attr('onclick', 'BasketManage.modify('.$eDate['id'].', '.$this->getJsonBasket($eSale).', \'home\')').' class="btn btn-secondary" title="'.s("Cette commande est modifiable jusqu'au {value}.", ['value' => \util\DateUi::textual($eDate['orderEndAt'], \util\DateUi::DATE_HOUR_MINUTE)]).'">'.s("Modifier ma commande").'</a>';
 					$h .= '&nbsp;';
-					$h .= '<a '.attr('onclick', 'BasketManage.doCancel('.$eSale['id'].')').'" class="btn btn-outline-danger" data-confirm="'.s("Êtes-vous sûr de vouloir annuler cette commande ?").'" title="'.s("Cette commande est annulable jusqu'au {value}.", ['value' => \util\DateUi::textual($eDate['orderEndAt'], \util\DateUi::DATE_HOUR_MINUTE)]).'">'.s("Annuler ma commande").'</a>';
+					$h .= '<a '.attr('onclick', 'BasketManage.doCancel('.$eSale['id'].')').'" class="btn btn-outline-secondary" data-confirm="'.s("Êtes-vous sûr de vouloir annuler cette commande ?").'" title="'.s("Cette commande est annulable jusqu'au {value}.", ['value' => \util\DateUi::textual($eDate['orderEndAt'], \util\DateUi::DATE_HOUR_MINUTE)]).'">'.s("Annuler ma commande").'</a>';
 				$h .= '</div>';
 				$h .= '<br/>';
 			}

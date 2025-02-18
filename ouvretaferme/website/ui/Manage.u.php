@@ -215,11 +215,11 @@ class ManageUi {
 			$h .= '</div>';
 
 		$h .= '<div class="tab-panel" data-tab="news">';
-		$h .= $this->getNews($eWebsite, $cNews);
+			$h .= $this->getNews($eWebsite, $cNews);
 		$h .= '</div>';
 
 		$h .= '<div class="tab-panel" data-tab="customize">';
-		$h .= $this->updateCustomization($eWebsite);
+			$h .= $this->updateCustomize($eWebsite);
 		$h .= '</div>';
 
 		$h .= '</div>';
@@ -485,7 +485,7 @@ class ManageUi {
 	}
 
 
-	public function updateCustomization(Website $eWebsite): string {
+	public function updateCustomize(Website $eWebsite): string {
 
 		$form = new \util\FormUi();
 
