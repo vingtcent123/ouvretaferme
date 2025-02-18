@@ -2,6 +2,38 @@ body[data-template~="shop"] {
 	background: var(--background);
 }
 
+@media (min-width: 1400px) {
+
+	body[data-template~="shop"] {
+		font-size: 16px;
+	}
+
+}
+
+@media (min-width: 992px) and (max-width: 1399px) {
+
+	body[data-template~="shop"] {
+		font-size: 15px;
+	}
+
+}
+
+@media (min-width: 450px) and (max-width: 991px) {
+
+	body[data-template~="shop"] {
+		font-size: 14px;
+	}
+
+}
+
+@media (max-width: 449px) {
+
+	body[data-template~="shop"] {
+		font-size: 13px;
+	}
+
+}
+
 .shop-title {
 	display: flex;
 	align-items: center;
