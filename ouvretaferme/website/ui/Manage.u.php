@@ -504,7 +504,7 @@ class ManageUi {
 		$h .= $form->close();
 
 		$h .= '<h3 class="website-preview-title">'.s("Prévisualisation de votre site internet").'</h3>';
-		$h .= '<iframe id="website-preview" src="'.WebsiteUi::url($eWebsite).'?"></iframe>';
+		$h .= '<iframe id="website-preview" src="'.WebsiteUi::url($eWebsite, internalDomain: TRUE).'?customize=1"></iframe>';
 
 		return $h;
 

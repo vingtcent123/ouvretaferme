@@ -11,11 +11,15 @@ class WebsiteUi {
 
 	}
 
-	public static function url(Website $eWebsite, string $url = '/', bool $showProtocol = TRUE): string {
+	public static function url(Website $eWebsite, string $url = '/', bool $showProtocol = TRUE, bool $internalDomain = FALSE): string {
 
 		$eWebsite->expects(['id', 'domain', 'domainStatus', 'internalDomain']);
 
-		if($eWebsite['domainStatus'] === Website::PINGED_SECURED and LIME_ENV === 'prod') {
+		if(
+			$internalDomain === FALSE and
+			$eWebsite['domainStatus'] === Website::PINGED_SECURED and
+			LIME_ENV === 'prod'
+		) {
 			$domain = $eWebsite['domain'];
 		} else {
 			$domain = \Setting::get('domain').'/'.encode($eWebsite['internalDomain']);
