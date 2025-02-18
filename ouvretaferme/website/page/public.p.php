@@ -77,12 +77,19 @@
 	->get(['/public/{domain}/', '/public/{domain}/{page}'], function($data) {
 
 		if(
-			LIME_ENV === 'prod' and (
-				($data->eWebsite['domainStatus'] === \website\Website::PINGED_SECURED and $data->origin === 'internal') or
-				($data->eWebsite['domainStatus'] !== \website\Website::PINGED_SECURED and $data->origin === 'external')
-			)
+			$data->eWebsite->canWrite() === FALSE or
+			get_exists('customize') === FALSE
 		) {
-			throw new PermanentRedirectAction($data->url.'/'.GET('page').LIME_REQUEST_ARGS);
+
+			if(
+				LIME_ENV === 'prod' and (
+					($data->eWebsite['domainStatus'] === \website\Website::PINGED_SECURED and $data->origin === 'internal') or
+					($data->eWebsite['domainStatus'] !== \website\Website::PINGED_SECURED and $data->origin === 'external')
+				)
+			) {
+				throw new PermanentRedirectAction($data->url.'/'.GET('page').LIME_REQUEST_ARGS);
+			}
+
 		}
 
 		$data->eWebpage = \website\WebpageLib::getByUrl($data->eWebsite, GET('page'));

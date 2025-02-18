@@ -31,6 +31,7 @@ class WebsiteManage {
 
         const iframe = qs('#website-preview');
         const newSrc = iframe.src
+            .setArgument('customize', 1)
             .setArgument('customDesign', form.qs('[name="customDesign"]').value)
             .setArgument('customColor', form.qs('[name="customColor"]').value)
             .setArgument('customBackground', form.qs('[name="customBackground"]').value)
