@@ -28,8 +28,8 @@ class ShopTemplate extends MainTemplate {
 		$fontLabel = ($this->data->eShop->canWrite() and get_exists('customFont')) ? GET('customFont') : $this->data->eShop['customFont'];
 		$titleFontLabel = ($this->data->eShop->canWrite() and get_exists('customTitleFont')) ? GET('customTitleFont') : $this->data->eShop['customTitleFont'];
 
-		$font = \website\DesignUi::getFont($fontLabel);
-		$titleFont = \website\DesignUi::getTitleFont($titleFontLabel);
+		$font = $fontLabel ? \website\DesignUi::getFont($fontLabel) : NULL;
+		$titleFont = $titleFontLabel ? \website\DesignUi::getTitleFont($titleFontLabel) : NULL;
 
 		$families = [];
 
@@ -41,8 +41,10 @@ class ShopTemplate extends MainTemplate {
 			$families[] = 'family='.$titleFont['label'];
 		}
 
+		$h = '';
+
 		if($families) {
-			$h = '<link rel="preconnect" href="https://fonts.googleapis.com">';
+			$h .= '<link rel="preconnect" href="https://fonts.googleapis.com">';
 			$h .= '<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>';
 			$h .= '<link href="https://fonts.googleapis.com/css2?'.implode('&', $families).'" rel="stylesheet">';
 		}

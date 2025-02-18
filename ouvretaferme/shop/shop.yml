@@ -112,8 +112,8 @@ Shop:
   shippingUntil: ?int(0, NULL)
   customColor: ?color
   customBackground: ?color
-  customTitleFont: text8 = PHP("'Open sans', sans-serif")
-  customFont: text8 = PHP("'Open sans', sans-serif")
+  customTitleFont: ?text8
+  customFont: ?text8
   status: enum(OPEN, CLOSED) = OPEN
   createdAt: datetime = SPECIAL(now)
   createdBy: user\User = SPECIAL(user)

@@ -71,8 +71,8 @@ class ShopModel extends \ModuleModel {
 			'shippingUntil' => ['int32', 'min' => 0, 'max' => NULL, 'null' => TRUE, 'cast' => 'int'],
 			'customColor' => ['color', 'null' => TRUE, 'cast' => 'string'],
 			'customBackground' => ['color', 'null' => TRUE, 'cast' => 'string'],
-			'customTitleFont' => ['text8', 'cast' => 'string'],
-			'customFont' => ['text8', 'cast' => 'string'],
+			'customTitleFont' => ['text8', 'null' => TRUE, 'cast' => 'string'],
+			'customFont' => ['text8', 'null' => TRUE, 'cast' => 'string'],
 			'status' => ['enum', [\shop\Shop::OPEN, \shop\Shop::CLOSED], 'cast' => 'enum'],
 			'createdAt' => ['datetime', 'cast' => 'string'],
 			'createdBy' => ['element32', 'user\User', 'cast' => 'element'],
@@ -121,12 +121,6 @@ class ShopModel extends \ModuleModel {
 
 			case 'limitCustomers' :
 				return [];
-
-			case 'customTitleFont' :
-				return "'Open sans', sans-serif";
-
-			case 'customFont' :
-				return "'Open sans', sans-serif";
 
 			case 'status' :
 				return Shop::OPEN;

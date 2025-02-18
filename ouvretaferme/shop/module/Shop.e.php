@@ -206,12 +206,12 @@ class Shop extends ShopElement {
 
 			},
 
-			'customFont.check' => function(string $customFont): bool {
-				return \website\DesignLib::isCustomFont($customFont, 'customFonts');
+			'customFont.check' => function(?string $customFont): bool {
+				return $customFont === NULL or \website\DesignLib::isCustomFont($customFont, 'customFonts');
 			},
 
-			'customTitleFont.check' => function(string $customFont): bool {
-				return \website\DesignLib::isCustomFont($customFont, 'customTitleFonts');
+			'customTitleFont.check' => function(?string $customFont): bool {
+				return $customFont === NULL or \website\DesignLib::isCustomFont($customFont, 'customTitleFonts');
 			},
 
 		]);
