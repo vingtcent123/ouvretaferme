@@ -685,7 +685,7 @@
 			}
 
 			$data->category = GET('category', 'string', Setting::get('main\viewPlanningCategory'));
-			$data->month = GET('month', '?int');
+			$data->month = GET('month', fn($value) => Filter::check(['?int', 'min' => 1, 'max' => 12], $value));
 			$data->week = GET('week', '?string');
 
 			switch($data->category) {
@@ -802,7 +802,7 @@
 				$currentYear = Setting::get('main\viewAnalyzeYear');
 				$data->year = array_key_exists($currentYear, $data->years) ? $currentYear : array_key_first($data->years);
 			}
-			$data->month = GET('month', '?int');
+			$data->month = GET('month', fn($value) => Filter::check(['?int', 'min' => 1, 'max' => 12], $value));
 			$data->week = GET('week', '?string');
 
 			$data->category = GET('category', 'string', Setting::get('main\viewSellingCategory'));
