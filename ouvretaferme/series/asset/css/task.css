@@ -935,20 +935,27 @@ div.task-item-header {
 div.task-item-presentation {
 	display: grid;
 	margin-bottom: 2rem;
-	grid-template-rows: auto auto;
 	padding: 0;
 	border: 1px solid var(--border);
 	border-radius: var(--radius);
 }
 
+@supports (grid-template-columns: subgrid) {
+
+	.task-item-presentation {
+		grid-template-rows: auto auto;
+	}
+
+}
+
 .task-item-presentation > div {
-	grid-row: span 2;
 	display: grid;
 }
 
 @supports (grid-template-columns: subgrid) {
 
 	.task-item-presentation > div {
+		grid-row: span 2;
 		grid-template-rows: subgrid;
 	}
 

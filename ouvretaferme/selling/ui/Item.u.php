@@ -467,7 +467,7 @@ class ItemUi {
 					$total = $cItem->reduce(fn($eItem, $v) => ($eItem['number'] !== NULL) ? (($v ?? 0) + ($eItem['packaging'] ?? 1) * $eItem['number']) : $v, NULL);
 
 					$h .= '<tr>';
-						$h .= '<td class="td-min-content">'.ProductUi::getVignette($eProduct, '2.5rem').'</td>';
+						$h .= '<td class="td-min-content">'.ProductUi::getVignette($eProduct, '3rem').'</td>';
 						$h .= '<td class="item-day-product-name">';
 							$h .= encode($eProduct->getName());
 							if($eProduct['size']) {
@@ -502,43 +502,45 @@ class ItemUi {
 			$eProduct = $cItem->first()['product'];
 			$total = $cItem->reduce(fn($eItem, $v) => $eItem['number'] !== NULL ? (($v ?? 0) + ($eItem['packaging'] ?? 1) * $eItem['number']) : $v, NULL);
 
-			$h .= '<div class="item-day-product">';
-				$h .= ProductUi::getVignette($eProduct, '2.5rem');
-				$h .= '<div class="item-day-product-name">';
-					$h .= encode($eProduct->getName());
-					$h .= '&nbsp;<span class="annotation" style="color: var(--order)">'.\selling\UnitUi::getValue($total, $cItem->first()['unit'], TRUE).'</span>';
-					if($eProduct['size']) {
-						$h .= '<div><small class="color-muted"><u>'.encode($eProduct['size']).'</u></small></div>';
-					}
+			$h .= '<div class="item-day-one">';
+				$h .= '<div class="item-day-product">';
+					$h .= ProductUi::getVignette($eProduct, '3rem');
+					$h .= '<div class="item-day-product-name">';
+						$h .= encode($eProduct->getName());
+						$h .= '&nbsp;<span class="annotation" style="color: var(--order)">'.\selling\UnitUi::getValue($total, $cItem->first()['unit'], TRUE).'</span>';
+						if($eProduct['size']) {
+							$h .= '<div><small class="color-muted"><u>'.encode($eProduct['size']).'</u></small></div>';
+						}
+					$h .= '</div>';
 				$h .= '</div>';
-			$h .= '</div>';
 
-			$h .= '<ul class="item-day-sales">';
+				$h .= '<ul class="item-day-sales">';
 
-				foreach($cItem as $eItem) {
+					foreach($cItem as $eItem) {
 
-					$color = match($cSale[$eItem['sale']['id']]['preparationStatus']) {
-						Sale::CONFIRMED => 'order',
-						Sale::PREPARED => 'secondary',
-						Sale::DELIVERED => 'success'
-					};
+						$color = match($cSale[$eItem['sale']['id']]['preparationStatus']) {
+							Sale::CONFIRMED => 'order',
+							Sale::PREPARED => 'secondary',
+							Sale::DELIVERED => 'success'
+						};
 
-					$customer = '<a href="'.SaleUi::url($eItem['sale']).'" class="btn btn-xs btn-outline-'.$color.'">'.$eItem['sale']['id'].'</a> ';
-					$customer .= '<a href="'.SaleUi::url($eItem['sale']).'">'.encode($eItem['customer']->getName()).'</a>';
+						$customer = '<a href="'.SaleUi::url($eItem['sale']).'" class="btn btn-xs btn-outline-'.$color.'">'.$eItem['sale']['id'].'</a> ';
+						$customer .= '<a href="'.SaleUi::url($eItem['sale']).'">'.encode($eItem['customer']->getName()).'</a>';
 
-					$h .= '<li>';
+						$h .= '<li>';
 
-					if($eItem['packaging']) {
-						$h .= p("<b>{number} colis</b> de {quantity} {arrow} {customer}", "<b>{number} colis</b> de {quantity} {arrow} {customer}", $eItem['number'], ['number' => $eItem['number'], 'arrow' => \Asset::icon('arrow-right'), 'quantity' => '<b>'.\selling\UnitUi::getValue($eItem['packaging'], $eItem['unit'], TRUE).'</b>', 'customer' => $customer]);
-					} else {
-						$h .= s("{quantity} {arrow} {customer}", ['quantity' => '<b>'.\selling\UnitUi::getValue($eItem['number'], $eItem['unit'], TRUE).'</b>', 'customer' => $customer, 'arrow' => \Asset::icon('arrow-right')]);
+						if($eItem['packaging']) {
+							$h .= p("<b>{number} colis</b> de {quantity} {arrow} {customer}", "<b>{number} colis</b> de {quantity} {arrow} {customer}", $eItem['number'], ['number' => $eItem['number'], 'arrow' => \Asset::icon('arrow-right'), 'quantity' => '<b>'.\selling\UnitUi::getValue($eItem['packaging'], $eItem['unit'], TRUE).'</b>', 'customer' => $customer]);
+						} else {
+							$h .= s("{quantity} {arrow} {customer}", ['quantity' => '<b>'.\selling\UnitUi::getValue($eItem['number'], $eItem['unit'], TRUE).'</b>', 'customer' => $customer, 'arrow' => \Asset::icon('arrow-right')]);
+						}
+
+						$h .= '</li>';
+
 					}
 
-					$h .= '</li>';
-
-				}
-
-			$h .= '</ul>';
+				$h .= '</ul>';
+			$h .= '</div>';
 
 
 		}
@@ -563,36 +565,38 @@ class ItemUi {
 				Sale::DELIVERED => 'success'
 			};
 
-			$h .= '<div class="item-day-product">';
-				$h .= '<a href="/vente/'.$eSale['id'].'" class="btn btn-sm btn-outline-'.$color.'">'.$eSale->getNumber().'</a> ';
-				$h .= CustomerUi::link($eCustomer);
+			$h .= '<div class="item-day-one">';
+				$h .= '<div class="item-day-product">';
+					$h .= '<a href="/vente/'.$eSale['id'].'" class="btn btn-sm btn-outline-'.$color.'">'.$eSale->getNumber().'</a> ';
+					$h .= CustomerUi::link($eCustomer);
+				$h .= '</div>';
+
+				$h .= '<ul class="item-day-sales">';
+
+					foreach($cItem as $eItem) {
+
+						$h .= '<li>';
+
+						if($eItem['packaging']) {
+							$h .= p("<b>{number} colis</b> de {quantity}", "<b>{number} colis</b> de {quantity}", $eItem['number'], ['number' => $eItem['number'], 'quantity' => '<b>'.\selling\UnitUi::getValue($eItem['packaging'], $eItem['unit'], TRUE).'</b>']);
+						} else {
+							$h .= '<b>'.\selling\UnitUi::getValue($eItem['number'], $eItem['unit'], TRUE).'</b>';
+						}
+
+						$h .= ' '.\Asset::icon('arrow-right').' ';
+
+						if($eItem['product']->notEmpty()) {
+							$h .= ProductUi::link($eItem['product']);
+						} else {
+							$h .= encode($eItem['name']);
+						}
+
+						$h .= '</li>';
+
+					}
+
+				$h .= '</ul>';
 			$h .= '</div>';
-
-			$h .= '<ul class="item-day-sales">';
-
-				foreach($cItem as $eItem) {
-
-					$h .= '<li>';
-
-					if($eItem['packaging']) {
-						$h .= p("<b>{number} colis</b> de {quantity}", "<b>{number} colis</b> de {quantity}", $eItem['number'], ['number' => $eItem['number'], 'quantity' => '<b>'.\selling\UnitUi::getValue($eItem['packaging'], $eItem['unit'], TRUE).'</b>']);
-					} else {
-						$h .= '<b>'.\selling\UnitUi::getValue($eItem['number'], $eItem['unit'], TRUE).'</b>';
-					}
-
-					$h .= ' '.\Asset::icon('arrow-right').' ';
-
-					if($eItem['product']->notEmpty()) {
-						$h .= ProductUi::link($eItem['product']);
-					} else {
-						$h .= encode($eItem['name']);
-					}
-
-					$h .= '</li>';
-
-				}
-
-			$h .= '</ul>';
 
 
 		}

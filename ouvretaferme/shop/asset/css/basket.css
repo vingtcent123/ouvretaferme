@@ -38,8 +38,15 @@
 .shop-payments {
 	display: grid;
 	grid-template-columns: 1fr 1fr 1fr;
-	grid-template-rows: 1fr auto auto;
 	grid-gap: 1rem;
+}
+
+@supports (grid-template-columns: subgrid) {
+
+	.shop-payments {
+		grid-template-rows: 1fr auto auto;
+	}
+
 }
 
 @media (min-width: 576px) and (max-width: 767px) {
@@ -61,7 +68,6 @@
 .shop-payment {
 	display: grid;
 	grid-gap: 1rem;
-	grid-row: span 3;
 	transition: border-color 0.5s;
 	color: var(--text);
 	border: 2px solid var(--border);
@@ -70,6 +76,7 @@
 @supports (grid-template-columns: subgrid) {
 
 	.shop-payment {
+		grid-row: span 3;
 		grid-template-rows: subgrid;
 	}
 
