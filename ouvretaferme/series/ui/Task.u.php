@@ -4300,7 +4300,7 @@ class TaskUi {
 					'name' => $eTask['plant']['name'],
 					'variety' => $eTask['variety']->notEmpty() ? $eTask['variety']['name'] : NULL,
 					'size' => $eTask['harvestSize']->notEmpty() ? $eTask['harvestSize']['name'] : NULL,
-					'unit' => $eTask['harvestUnit']
+					'unit' => $eTask['harvestUnit'] ?? 'kg'
 				])));
 
 				$h .= $form->group(
@@ -4329,7 +4329,7 @@ class TaskUi {
 	}
 
 	protected function getStockText(\selling\Product $eProduct): string {
-		
+
 		$text = encode($eProduct['name']).' ('.\selling\UnitUi::getSingular($eProduct['unit']).')';
 
 		if($eProduct['variety'] !== NULL) {

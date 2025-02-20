@@ -89,6 +89,8 @@ class StockLib extends StockCrud {
 			$eTask['harvestSize']->expects(['name']);
 		}
 
+		$eUnit = UnitLib::getByFqn($unit);
+
 		return Product::model()
 			->select([
 				'id', 'name', 'variety', 'size', 'origin',
@@ -96,7 +98,7 @@ class StockLib extends StockCrud {
 				'vignette', 'stock'
 			])
 			->wherePlant($eTask['plant'])
-			->whereUnit($unit)
+			->whereUnit($eUnit)
 			->whereStock('!=', NULL)
 			->sort(new \Sql('
 				'.($eTask['variety']->notEmpty() ? 'IF(variety = "'.Product::model()->format($eTask['variety']['name']).'", 1, 0)' : '0').'
