@@ -326,7 +326,7 @@ class CsvLib {
 		foreach($cPlace as $ePlace) {
 
 			$maxSpecies = max($maxSpecies, $ePlace['series']['cCultivation']->count());
-
+d($ePlace['series']['bedStartCalculated'], self::getWeekCalculated($ePlace['series']['bedStartCalculated'], $season, 1));
 			$line = [
 				$ePlace['zone']['name'],
 				$ePlace['plot']['zoneFill'] ? '' : $ePlace['plot']['name'],
@@ -360,7 +360,7 @@ class CsvLib {
 		} else if($value >= 100) {
 			return week_date_day(($season + 1).'-W'.($value - 100), $day);
 		} else {
-			return week_date_day($season.'-W'.$value, $day);
+			return week_date_day($season.'-W'.sprintf('%02d', $value), $day);
 		}
 
 	}
