@@ -34,6 +34,8 @@ class Item {
 
 		});
 
+		this.updateSummary();
+
 	}
 
 	static addPackaging(target) {
@@ -109,6 +111,23 @@ class Item {
 				break;
 
 		}
+
+		this.updateSummary();
+
+	}
+
+	static updateSummary() {
+
+		const wrapper = qs('#item-create-tabs');
+
+		const list = wrapper.qsa('[name^="product["]:checked');
+
+		let amount = 0;
+		list.forEach(node => amount += parseFloat(node.firstParent('.items-products').qs('input[name^="price["]').value) || 0.0);
+
+
+		qs('#items-submit-articles').innerHTML = list.length;
+		qs('#items-submit-price').innerHTML = money(amount);
 
 	}
 

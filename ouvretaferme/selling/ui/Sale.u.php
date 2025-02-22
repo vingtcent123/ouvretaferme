@@ -1,8 +1,6 @@
 <?php
 namespace selling;
 
-use shop\DateUi;
-
 class SaleUi {
 
 	public function __construct() {
@@ -1498,7 +1496,7 @@ class SaleUi {
 
 			$h .= $form->dynamicField($eSale, 'productsList');
 
-			$footer = $form->submit(s("Valider la composition"), ['class' => 'btn btn-primary btn-lg']);
+			$footer = ItemUi::getCreateSubmit($eSale, $form, s("Valider la composition"));
 
 		} else {
 
@@ -1520,8 +1518,8 @@ class SaleUi {
 			title: encode($eSale['composition']['name']),
 			dialogOpen: $form->openAjax('/selling/sale:doCreate', ['id' => 'sale-create', 'class' => 'panel-dialog container']),
 			dialogClose: $form->close(),
-			footer: $footer,
-			body: $h
+			body: $h,
+			footer: $footer
 		);
 
 	}
@@ -1586,7 +1584,7 @@ class SaleUi {
 
 			}
 
-			$footer = $form->submit(s("Créer la vente"), ['class' => 'btn btn-primary btn-lg']);
+			$footer = ItemUi::getCreateSubmit($eSale, $form, s("Créer la vente"));
 
 		} else {
 			$footer = NULL;
@@ -1971,8 +1969,7 @@ class SaleUi {
 
 					return (new ItemUi())->getCreateList(
 						$e['cProduct'], $e['cCategory'],
-						fn($cProduct) => ItemUi::getCreateByCategory($form, $e, $cProduct),
-						$e->exists() ? '' : 'util-block'
+						fn($cProduct) => ItemUi::getCreateByCategory($form, $e, $cProduct)
 					);
 				};
 				$d->group = [

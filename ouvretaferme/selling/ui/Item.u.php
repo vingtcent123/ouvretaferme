@@ -660,7 +660,7 @@ class ItemUi {
 
 	}
 
-	public function getCreateList(\Collection $cProduct, \Collection $cCategory, \Closure $list, string $class = ''): string {
+	public function getCreateList(\Collection $cProduct, \Collection $cCategory, \Closure $list): string {
 
 		if($cCategory->empty()) {
 			return $list($cProduct);
@@ -707,7 +707,7 @@ class ItemUi {
 
 			$h .= '</div>';
 
-			$h .= '<div class="tabs-panel '.$class.' stick-sm">';
+			$h .= '<div class="tabs-panel stick-sm">';
 
 				foreach($ccProduct as $category => $cProduct) {
 
@@ -836,6 +836,27 @@ class ItemUi {
 			$h .= '</div>';
 
 		}
+
+		return $h;
+
+	}
+
+	public static function getCreateSubmit(\selling\Sale $eSale, \util\FormUi $form, string $submitText): string {
+
+		$h = '<div class="items-submit">';
+			$h .= '<div>';
+				$h .= $form->submit($submitText, ['class' => 'btn btn-primary btn-lg']);
+			$h .= '</div>';
+			$h .= '<div>';
+				$h .= '<div class="items-submit-icon">'.\Asset::icon('basket').'</div>';
+				$h .= '<span id="items-submit-articles">0</span>';
+			$h .= '</div>';
+			$h .= '<div>';
+				$h .= '<div class="items-submit-icon">'.\Asset::icon('currency-euro').'</div>';
+				$h .= '<span id="items-submit-price">'.\util\TextUi::money(0).'</span>';
+				$h .= ' '.SaleUi::getTaxes($eSale['taxes']);
+			$h .= '</div>';
+		$h .= '</div>';
 
 		return $h;
 

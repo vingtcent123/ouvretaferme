@@ -347,3 +347,33 @@ td.item-item-description:not(:empty) a {
 .items-products.selected .items-products-select {
 	background-color: var(--secondary);
 }
+
+.items-submit {
+	display: grid;
+	grid-column-gap: 1rem;
+	grid-template-columns: 1fr auto auto;
+	align-items: center;
+}
+
+.items-submit-icon {
+	display: inline-flex;
+	justify-content: center;
+	align-items: center;
+	width: 2.5rem;
+	height: 2.5rem;
+	background-color: var(--secondary);
+	color: white;
+	border-radius: 50%;
+	margin-right: 0.5rem;
+
+}
+
+@media (max-width: 449px) {
+
+	.items-submit-icon {
+		width: 2rem;
+		height: 2rem;
+		font-size: .9rem;
+	}
+
+}

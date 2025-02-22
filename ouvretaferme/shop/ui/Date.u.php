@@ -316,14 +316,15 @@ class DateUi {
 			}
 
 			$h .= '<div data-ref="date-direct" class="'.($e['source'] === Date::DIRECT ? '' : 'hide').'">';
-				$h .= $form->dynamicGroup($e, 'productsList*');
+				$h .= '<h3 class="mt-2">'.self::p('productsList')->label.'</h3>';
+				$h .= $form->dynamicField($e, 'productsList');
 			$h .= '</div>';
 
 			$h .= '<br/>';
 
 			$h .= $form->group(
 				content: '<p class="util-danger">'.s("Veuillez corriger les erreurs en rouge pour continuer.").'</p>'.
-				$form->submit(s("Créer la date"))
+				$form->submit(s("Créer la vente"))
 			);
 
 		$h .= $form->close();
@@ -962,8 +963,7 @@ class DateUi {
 				$d->field = function(\util\FormUi $form, Date $e) {
 					return (new \selling\ItemUi())->getCreateList(
 						$e['cProduct'], $e['cCategory'],
-						fn($cProduct) => ProductUi::getCreateByCategory($form, $e['farm'], $e['type'], $cProduct),
-						$e->exists() ? '' : 'util-block'
+						fn($cProduct) => ProductUi::getCreateByCategory($form, $e['farm'], $e['type'], $cProduct)
 					);
 				};
 				$d->group = [

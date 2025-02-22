@@ -555,7 +555,7 @@ new AdaptativeView('/ferme/{id}/boutiques', function($data, FarmTemplate $t) {
 
 		$h = '<div class="util-action">';
 			$h .= '<h1>'.s("Boutiques en ligne").'</h1>';
-			$h .= '<a href="/shop/:create?farm='.$data->eFarm['id'].'" class="btn btn-secondary">'.\Asset::icon('plus-circle').' '.s("Nouvelle boutique").'</a>';
+			$h .= '<a href="/shop/:create?farm='.$data->eFarm['id'].'" class="btn btn-primary">'.\Asset::icon('plus-circle').' '.s("Nouvelle boutique").'</a>';
 		$h .= '</div>';
 
 		$t->mainTitle = $h;
