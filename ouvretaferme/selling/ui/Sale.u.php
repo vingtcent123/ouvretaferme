@@ -1474,33 +1474,53 @@ class SaleUi {
 
 		$h = '';
 
-		$h .= $form->openAjax('/selling/sale:doCreate', ['id' => 'sale-create']);
+		$h .= $form->asteriskInfo();
 
-			$h .= $form->asteriskInfo();
+		$h .= $form->hidden('farm', $eSale['farm']['id']);
+		$h .= $form->hidden('from', Sale::USER);
+		$h .= $form->hidden('composition', $eSale['composition']['id']);
 
-			$h .= $form->hidden('farm', $eSale['farm']['id']);
-			$h .= $form->hidden('from', Sale::USER);
-			$h .= $form->hidden('composition', $eSale['composition']['id']);
+		$h .= $form->dynamicGroup($eSale, 'deliveredAt');
 
-			$h .= $form->dynamicGroup($eSale, 'deliveredAt');
+		$arguments = ['product' => '<b>'.encode($eSale['composition']['name']).'</b>', 'price' => '<b>'.\util\TextUi::money($eSale['composition'][$eSale['type'].'Price']).'</b>'];
 
-			if($eSale['cProduct']->notEmpty()) {
+		if($eSale['cProduct']->notEmpty()) {
 
-				$h .= '<h4 class="mt-2 mb-1">'.s("Composition du produit").'</h4>';
+			$h .= '<h3 class="mt-2">'.s("Composition du produit").'</h3>';
 
-				$h .= $form->dynamicField($eSale, 'productsList');
+			$h .= '<div class="util-info">';
+				$h .= s("Les prix unitaires et les montants des produits sont indiqués à titre informatif pour vous aider à composer votre {product} qui sera toujours vendu à {price}.", $arguments);
+				$h .= ' '.match($eSale['composition']['compositionVisibility']) {
+					Product::PUBLIC => s("Seules les quantités sont communiquées à vos clients."),
+					Product::PRIVATE => s("Aucune information sur la composition n'est communiquée à vos clients.")
+				};
+			$h .= '</div>';
 
-			}
+			$h .= $form->dynamicField($eSale, 'productsList');
 
-			$h .= $form->group(
-				content: $form->submit(s("Choisir les produits"))
-			);
+			$footer = $form->submit(s("Valider la composition"), ['class' => 'btn btn-primary btn-lg']);
 
-		$h .= $form->close();
+		} else {
+
+			$h .= '<div class="util-block-help mt-1">';
+				$h .= '<p>';
+					$h .= match($eSale['type']) {
+						Sale::PRIVATE => s("Aucun produit vendu aux particuliers n'est disponible pour composer votre {product} d'une valeur de {price}.", $arguments),
+						Sale::PRO => s("Aucun produit vendu aux professionnels n'est disponible pour composer votre {product} d'une valeur de {price}.", $arguments)
+					};
+				$h .= '</p>';
+				$h .= '<a href="/selling/product:create?farm='.$eSale['farm']['id'].'" class="btn btn-secondary">'.s("Ajouter un produit").'</a>';
+			$h .= '</div>';
+
+			$footer = NULL;
+		}
 
 		return new \Panel(
 			id: 'panel-sale-create',
 			title: encode($eSale['composition']['name']),
+			dialogOpen: $form->openAjax('/selling/sale:doCreate', ['id' => 'sale-create', 'class' => 'panel-dialog container']),
+			dialogClose: $form->close(),
+			footer: $footer,
 			body: $h
 		);
 
@@ -1556,7 +1576,7 @@ class SaleUi {
 
 			if($eSale['cProduct']->notEmpty()) {
 
-				$h .= '<h4 class="mt-2 mb-1">'.s("Ajouter des produits à la vente").'</h4>';
+				$h .= '<h3 class="mt-2">'.s("Ajouter des produits à la vente").'</h3>';
 
 				if($eSale['discount'] > 0) {
 					$h .= '<div class="util-info">'.s("Les prix indiqués tiennent compte de la réduction de {value} % dont bénéficie ce client.", $eSale['discount']).'</div>';
