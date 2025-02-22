@@ -69,7 +69,7 @@ class ItemModel extends \ModuleModel {
 			'locked' => ['enum', [\selling\Item::UNIT_PRICE, \selling\Item::NUMBER, \selling\Item::PRICE], 'cast' => 'enum'],
 			'vatRate' => ['decimal', 'digits' => 4, 'decimal' => 2, 'min' => 0.0, 'max' => 100, 'null' => TRUE, 'cast' => 'float'],
 			'stats' => ['bool', 'cast' => 'bool'],
-			'status' => ['enum', Sale::model()->getPropertyEnum('preparationStatus'), 'cast' => 'enum'],
+			'status' => ['enum', Sale::model()->getPropertyEnum('preparationStatus'), 'null' => TRUE, 'cast' => 'enum'],
 			'createdAt' => ['datetime', 'cast' => 'string'],
 			'deliveredAt' => ['date', 'null' => TRUE, 'cast' => 'string'],
 		]);

@@ -13,6 +13,7 @@ class Sale extends SaleElement {
 			'farm' => ['name', 'url', 'vignette', 'banner', 'featureDocument', 'hasSales'],
 			'price' => fn($e) => $e['type'] === Sale::PRO ? $e['priceExcludingVat'] : $e['priceIncludingVat'],
 			'invoice' => ['name', 'emailedAt', 'createdAt', 'paymentStatus', 'priceExcludingVat', 'generation'],
+			'composition' => ['name'],
 			'marketParent' => [
 				'customer' => ['type', 'name']
 			],
@@ -36,6 +37,14 @@ class Sale extends SaleElement {
 
 			}
 		}
+
+	}
+
+	public function isComposition(): bool {
+
+		$this->expects(['composition']);
+
+		return $this['composition']->notEmpty();
 
 	}
 
@@ -133,8 +142,8 @@ class Sale extends SaleElement {
 
 	}
 
-	public function canUpdateCustomer(): bool {
-		return $this->canWrite();
+	public function acceptUpdateCustomer(): bool {
+		return $this['composition']->empty();
 	}
 
 	public function canAccess(): bool {
@@ -244,9 +253,9 @@ class Sale extends SaleElement {
 
 	}
 
-	public function canWritePreparationStatus(): bool {
+	public function acceptWritePreparationStatus(): bool {
 
-		return $this->canWrite();
+		return $this['composition']->empty();
 
 	}
 
@@ -402,8 +411,9 @@ class Sale extends SaleElement {
 
 	public function acceptAssociateShop(): bool {
 		return (
-			$this['type'] === Sale::PRIVATE and
-			$this['market'] === FALSE and
+			$this->isComposition() === FALSE and
+			$this->isPrivate() and
+			$this->isMarket() === FALSE and
 			$this['marketParent']->empty() and
 			$this['shop']->empty()
 		);
@@ -428,11 +438,12 @@ class Sale extends SaleElement {
 
 	}
 
-	public function canDuplicate(): bool {
+	public function acceptDuplicate(): bool {
 
 		return (
 			// Il n'est pas possible de dupliquer une vente d'une boutique pour éviter de créer des incohérence au seins des boutiques et des disponibilités
 			$this['from'] === self::USER and
+			$this['composition']->empty() and
 			$this['marketParent']->empty()
 		);
 
@@ -503,7 +514,7 @@ class Sale extends SaleElement {
 	}
 
 	public function getDeleteStatuses(): array {
-		return [Sale::DRAFT, Sale::BASKET, Sale::CONFIRMED, Sale::CANCELED];
+		return [NULL, Sale::DRAFT, Sale::BASKET, Sale::CONFIRMED, Sale::CANCELED];
 	}
 
 	public function acceptDeletePaymentStatus() {
@@ -598,6 +609,16 @@ class Sale extends SaleElement {
 
 		return parent::build($properties, $input, $callbacks + [
 
+			'market.prepare' => function(bool &$market): bool {
+
+				if($this->isComposition()) {
+					$this['market'] = FALSE;
+				}
+
+				return TRUE;
+
+			},
+
 			'customer.check' => function(Customer $eCustomer) use ($for): bool {
 
 				$this->expects(['farm']);
@@ -619,7 +640,19 @@ class Sale extends SaleElement {
 				} else {
 
 					if($eCustomer->empty()) {
-						return FALSE;
+
+						if($this['composition']->empty()) {
+							return FALSE;
+						} else {
+
+							$this['type'] = $this['composition']['private'] ? Sale::PRIVATE : Sale::PRO;
+							$this['taxes'] = $this->getTaxesFromType();
+							$this['hasVat'] = $this['farm']->getSelling('hasVat');
+							$this['discount'] = 0;
+
+							return TRUE;
+
+						}
 					}
 
 				}
@@ -645,6 +678,10 @@ class Sale extends SaleElement {
 			},
 
 			'customer.market' => function(Customer $eCustomer) use ($fw): bool {
+
+				if($this->isComposition()) {
+					return TRUE;
+				}
 
 				$this->expects(['market']);
 
@@ -677,7 +714,7 @@ class Sale extends SaleElement {
 
 				$this->expects(['preparationStatus', 'deliveredAt', 'market', 'marketParent']);
 
-				if($this->canWritePreparationStatus() === FALSE) {
+				if($this->acceptWritePreparationStatus() === FALSE) {
 					return FALSE;
 				}
 

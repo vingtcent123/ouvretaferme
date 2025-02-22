@@ -3,8 +3,16 @@ namespace selling;
 
 class SaleLib extends SaleCrud {
 
-	public static function getPropertiesCreate(): array {
-		return ['from', 'market', 'customer', 'shopDate', 'deliveredAt', 'productsList', 'shipping'];
+	public static function getPropertiesCreate(): \Closure {
+
+		return function(Sale $e) {
+
+			return $e['composition']->empty() ?
+				['market', 'customer', 'shopDate', 'deliveredAt', 'productsList', 'shipping'] :
+				['market', 'customer', 'deliveredAt', 'productsList'];
+
+		};
+
 	}
 
 	public static function getPropertiesUpdate(): \Closure {
@@ -208,6 +216,7 @@ class SaleLib extends SaleCrud {
 			->whereDeliveredAt('LIKE', '%'.$search->get('deliveredAt').'%', if: $search->get('deliveredAt'))
 			->whereDeliveredAt('>', new \Sql('CURDATE() - INTERVAL '.Sale::model()->format($search->get('delivered')).' DAY'), if: $search->get('delivered'))
 			->wherePreparationStatus($search->get('preparationStatus'), if: $search->get('preparationStatus'))
+			->wherePreparationStatus('!=', NULL)
 			->wherePaymentMethod($search->get('paymentMethod'), if: $search->get('paymentMethod'))
 			->whereMarketParent(NULL)
 			->sort($search->buildSort([
@@ -458,9 +467,17 @@ class SaleLib extends SaleCrud {
 
 		$e->expects([
 			'farm' => ['hasSales'],
-			'type', 'taxes', 'hasVat',
+			'type', 'taxes', 'hasVat', 'from', 'composition',
 			'customer',
 		]);
+
+		// Nouvelle composition de produit
+		if($e->isComposition()) {
+			$e['preparationStatus'] = NULL;
+			$e['market'] = FALSE;
+		} else {
+			$e->expects(['market']);
+		}
 
 		if($e['market']) {
 			$e['marketSales'] = 0;
@@ -503,6 +520,7 @@ class SaleLib extends SaleCrud {
 		$e = new Sale();
 
 		$e['customer'] = new Customer();
+		$e['composition'] = new Product();
 		$e['farm'] = $eSale['farm'];
 		$e['from'] = Sale::USER;
 		$e['type'] = Customer::PRIVATE;
@@ -534,7 +552,7 @@ class SaleLib extends SaleCrud {
 		
 		$eSale->expects($properties);
 
-		if($eSale->canDuplicate() === FALSE) {
+		if($eSale->acceptDuplicate() === FALSE) {
 			throw new NotExpectedAction('Can duplicate');
 		}
 

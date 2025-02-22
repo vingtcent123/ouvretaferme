@@ -65,6 +65,14 @@ class ProductLib extends ProductCrud {
 
 	}
 
+	public static function getCompositionById(mixed $id, array $properties = []): Product {
+
+		Product::model()->whereComposition(TRUE);
+
+		return self::getById($id, $properties);
+
+	}
+
 	public static function getFromQuery(string $query, \farm\Farm $eFarm, ?string $type, ?string $stock, ?array $properties = []): \Collection {
 
 		if(strpos($query, '#') === 0 and ctype_digit(substr($query, 1))) {

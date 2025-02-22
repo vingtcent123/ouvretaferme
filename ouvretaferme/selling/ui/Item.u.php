@@ -612,7 +612,7 @@ class ItemUi {
 		$h .= '<div data-dropdown-id="item-update-'.$eItem['id'].'-list" class="dropdown-list">';
 			$h .= '<div class="dropdown-title">'.encode($eItem['name']).'</div>';
 			$h .= '<a href="/selling/item:update?id='.$eItem['id'].'" class="dropdown-item">'.s("Modifier l'article").'</a>';
-			$h .= '<a data-ajax="/selling/item:doDelete" post-id="'.$eItem['id'].'" class="dropdown-item" data-confirm="'.s("Supprime l'article de la vente ?").'">'.s("Supprimer l'article").'</a>';
+			$h .= '<a data-ajax="/selling/item:doDelete" post-id="'.$eItem['id'].'" class="dropdown-item" data-confirm="'.s("Supprimer l'article de la vente ?").'">'.s("Supprimer l'article").'</a>';
 		$h .= '</div>';
 
 		return $h;

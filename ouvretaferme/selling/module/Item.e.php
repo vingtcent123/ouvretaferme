@@ -6,7 +6,7 @@ class Item extends ItemElement {
 	public static function getSelection(): array {
 
 		return parent::getSelection() + [
-			'sale' => ['farm', 'hasVat', 'type', 'taxes', 'shippingVatRate', 'shippingVatFixed', 'document', 'preparationStatus', 'market', 'marketParent', 'shipping'],
+			'sale' => ['farm', 'hasVat', 'type', 'taxes', 'shippingVatRate', 'shippingVatFixed', 'document', 'preparationStatus', 'market', 'marketParent', 'composition', 'shipping'],
 			'customer' => ['name', 'type'],
 			'unit' => ['fqn', 'by', 'singular', 'plural', 'short', 'type'],
 			'product' => [
@@ -36,7 +36,7 @@ class Item extends ItemElement {
 		return (
 			$this->canRead() and
 			$this['sale']['marketParent']->empty() and
-			in_array($this['sale']['preparationStatus'], [Sale::DRAFT, Sale::CONFIRMED, Sale::PREPARED])
+			in_array($this['sale']['preparationStatus'], [NULL, Sale::DRAFT, Sale::CONFIRMED, Sale::PREPARED])
 		);
 
 	}

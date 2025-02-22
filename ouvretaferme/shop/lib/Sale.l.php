@@ -108,6 +108,7 @@ class SaleLib {
 		$eSale->merge([
 			'farm' => $eSale['shop']['farm'],
 			'customer' => $eCustomer,
+			'composition' => new \selling\Product(),
 			'discount' => $eCustomer['discount'],
 			'from' => \selling\Sale::SHOP,
 			'market' => FALSE,

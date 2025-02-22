@@ -1,6 +1,8 @@
 <?php
 namespace selling;
 
+use util\DateUi;
+
 class SaleUi {
 
 	public function __construct() {
@@ -32,9 +34,11 @@ class SaleUi {
 
 	public static function getName(Sale $eSale): string {
 
-		$eSale->expects(['id', 'priceExcludingVat', 'market']);
+		$eSale->expects(['id', 'priceExcludingVat', 'market', 'composition']);
 
-		if($eSale['market']) {
+		if($eSale->isComposition()) {
+			return s("Composition du {value}", DateUi::numeric($eSale['deliveredAt']));
+		} else if($eSale['market']) {
 			return s("Marché #{value}", $eSale->getNumber());
 		} else if($eSale['priceExcludingVat'] < 0) {
 			return s("Avoir #{value}", $eSale->getNumber());
@@ -762,7 +766,7 @@ class SaleUi {
 
 		if(
 			$eSale->canWrite() === FALSE or
-			$eSale->canWritePreparationStatus() === FALSE or
+			$eSale->acceptWritePreparationStatus() === FALSE or
 			$eSale['marketParent']->notEmpty()
 		) {
 			return $h;
@@ -988,8 +992,12 @@ class SaleUi {
 
 		$h = '<div class="util-action">';
 			$h .= '<div>';
-				$h .= '<h1 style="margin-bottom: 0.25rem">'.SaleUi::getName($eSale).'</h1>';
-				$h .= $this->getPreparationStatusForUpdate($eSale, shortText: FALSE);
+				$h .= '<h1 style="margin-bottom: 0.5rem">'.SaleUi::getName($eSale).'</h1>';
+				if($eSale->isComposition() === FALSE) {
+					$h .= $this->getPreparationStatusForUpdate($eSale, shortText: FALSE);
+				} else {
+					$h .= '<h3 class="mb-0">'.encode($eSale['composition']['name']).'</h3>';
+				}
 			$h .= '</div>';
 			$h .= '<div>';
 				$h .= $this->getUpdate($eSale, 'btn-primary');
@@ -1053,6 +1061,10 @@ class SaleUi {
 	}
 
 	public function getContent(Sale $eSale, \Collection $cPdf): string {
+
+		if($eSale->isComposition()) {
+			return '';
+		}
 
 		$h = '<div class="util-block stick-xs">';
 			$h .= '<dl class="util-presentation util-presentation-2">';
@@ -1148,6 +1160,14 @@ class SaleUi {
 
 			$h .= '</dl>';
 		$h .= '</div>';
+
+		return $h;
+
+	}
+
+	public function getStats(Sale $eSale): string {
+
+		$h = '';
 
 		if(
 			$eSale->isMarket() and
@@ -1296,7 +1316,12 @@ class SaleUi {
 		}
 
 		if($eSale->canUpdate()) {
-			$primaryList .= '<a href="/selling/sale:update?id='.$eSale['id'].'" class="dropdown-item">'.s("Modifier la vente").'</a>';
+			$primaryList .= '<a href="/selling/sale:update?id='.$eSale['id'].'" class="dropdown-item">';
+				$primaryList .= match($eSale->isComposition()) {
+					TRUE => s("Modifier la composition"),
+					FALSE => s("Modifier la vente"),
+				};
+			$primaryList .= '</a>';
 		}
 
 		if($eSale->acceptAssociateShop()) {
@@ -1308,7 +1333,8 @@ class SaleUi {
 		}
 
 		if(
-			$eSale->canWritePreparationStatus() and
+			$eSale->canWrite() and
+			$eSale->acceptWritePreparationStatus() and
 			$eSale['marketParent']->empty()
 		) {
 
@@ -1334,14 +1360,21 @@ class SaleUi {
 		$secondaryList = '';
 
 		if($eSale->acceptDelete()) {
-			$secondaryList .= '<a data-ajax="/selling/sale:doDelete" post-id="'.$eSale['id'].'" class="dropdown-item" data-confirm="'.s("Confirmer la suppression de la vente ?").'">'.s("Supprimer la vente").'</a>';
+			$secondaryList .= '<a data-ajax="/selling/sale:doDelete" post-id="'.$eSale['id'].'" class="dropdown-item" data-confirm="'.s("Confirmer la suppression de la vente ?").'">';
+				$secondaryList .= match($eSale->isComposition()) {
+					TRUE => s("Supprimer la composition"),
+					FALSE => s("Supprimer la vente"),
+				};
+			$secondaryList .= '</a>';
 		}
 
-		if($eSale->canDuplicate()) {
+		if($eSale->acceptDuplicate()) {
 			$primaryList .= '<a href="/selling/sale:duplicate?id='.$eSale['id'].'" class="dropdown-item">'.s("Dupliquer la vente").'</a>';
 		}
 
-		$primaryList .= '<a href="/selling/sale:updateCustomer?id='.$eSale['id'].'" class="dropdown-item">'.s("Transférer à un autre client ").'</a>';
+		if($eSale->acceptUpdateCustomer()) {
+			$primaryList .= '<a href="/selling/sale:updateCustomer?id='.$eSale['id'].'" class="dropdown-item">'.s("Transférer à un autre client ").'</a>';
+		}
 
 		if($primaryList === '' and $secondaryList === '') {
 			return '';
@@ -1403,9 +1436,12 @@ class SaleUi {
 
 	}
 
-	public function getHistory(\Collection $cHistory) {
+	public function getHistory(Sale $eSale, \Collection $cHistory) {
 
-		if($cHistory->empty()) {
+		if(
+			$eSale->isComposition() or
+			$cHistory->empty()
+		) {
 			return '';
 		}
 
@@ -1777,7 +1813,7 @@ class SaleUi {
 
 		$d = Sale::model()->describer($property, [
 			'customer' => s("Client"),
-			'deliveredAt' => fn($e) => $e['composition']->notEmpty() ? s("Pour les livraisons à partir du") : s("Date de vente"),
+			'deliveredAt' => fn($e) => $e->isComposition() ? s("Pour les livraisons à partir du") : s("Date de vente"),
 			'from' => s("Origine de la vente"),
 			'market' => s("Utiliser le logiciel de caisse<br/>pour cette vente"),
 			'preparationStatus' => s("Statut de préparation"),

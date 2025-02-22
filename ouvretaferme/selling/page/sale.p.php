@@ -7,6 +7,7 @@
 		return new \selling\Sale([
 			'from' => \selling\Sale::USER,
 			'farm' => $data->eFarm,
+			'composition' => input_exists('composition') ? \selling\ProductLib::getCompositionById(INPUT('composition'))->validateProperty('farm', $data->eFarm) : new \selling\Product(),
 			'marketParent' => new \selling\Sale(),
 		]);
 
@@ -16,7 +17,6 @@
 		$data->e->merge([
 			'shopDate' => get_exists('shopDate') ? \shop\DateLib::getById(GET('shopDate'))->validateProperty('farm', $data->eFarm)->validate('canOrder') : new \shop\Date(),
 			'market' => GET('market', 'bool'),
-			'composition' => get_exists('composition') ? \selling\ProductLib::getById(GET('composition'))->validateProperty('farm', $data->eFarm) : new \selling\Product(),
 			'customer' => get_exists('customer') ? \selling\CustomerLib::getById(GET('customer'))->validateProperty('farm', $data->eFarm) : new \selling\Customer()
 		]);
 
@@ -39,7 +39,7 @@
 			$data->e['cCategory'] = \selling\CategoryLib::getByFarm($data->e['farm'], index: 'id');
 
 			$data->e['cProduct'] = $data->e['shopDate']->empty() ?
-				\selling\ProductLib::getForSale($data->e['farm'], $data->e['type'], excludeComposition: $data->e['composition']->notEmpty()) :
+				\selling\ProductLib::getForSale($data->e['farm'], $data->e['type'], excludeComposition: $data->e->isComposition()) :
 				\shop\ProductLib::getByDate($data->e['shopDate'], $data->e['customer'])->getColumnCollection('product');
 
 			\selling\ProductLib::applyItemsForSale($data->e['cProduct'], $data->e);
@@ -239,7 +239,7 @@
 
 		throw new ViewAction($data);
 
-	}, validate: ['canUpdateCustomer'])
+	}, validate: ['canUpdate', 'acceptUpdateCustomer'])
 	->write('doUpdateCustomer', function($data) {
 
 		$fw = new FailWatch();
@@ -252,12 +252,12 @@
 
 		throw new ReloadAction('selling', 'Sale::customerUpdated');
 
-	}, validate: ['canUpdateCustomer'])
+	}, validate: ['canUpdate', 'acceptUpdateCustomer'])
 	->doUpdateProperties('doUpdatePaymentMethod', ['paymentMethod'], fn() => throw new ReloadAction(), validate: ['canWrite'])
-	->doUpdateProperties('doUpdatePreparationStatus', ['preparationStatus'], fn($data) => throw new ViewAction($data), validate: ['canWritePreparationStatus'])
+	->doUpdateProperties('doUpdatePreparationStatus', ['preparationStatus'], fn($data) => throw new ViewAction($data), validate: ['acceptWritePreparationStatus'])
 	->read('duplicate', function($data) {
 
-		if($data->e->canDuplicate() === FALSE) {
+		if($data->e->acceptDuplicate() === FALSE) {
 			throw new NotExpectedAction('Can duplicate');
 		}
 
@@ -266,7 +266,7 @@
 	})
 	->write('doDuplicate', function($data) {
 
-		if($data->e->canDuplicate() === FALSE) {
+		if($data->e->acceptDuplicate() === FALSE) {
 			throw new NotExpectedAction('Can duplicate');
 		}
 

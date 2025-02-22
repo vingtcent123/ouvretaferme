@@ -9,11 +9,13 @@ new AdaptativeView('/vente/{id}', function($data, FarmTemplate $t) {
 	$t->mainTitle = (new \selling\SaleUi())->getHeader($data->e);
 
 	echo (new \selling\SaleUi())->getRelativeSales($data->e, $data->relativeSales);
+
 	echo (new \selling\SaleUi())->getContent($data->e, $data->cPdf);
+	echo (new \selling\SaleUi())->getStats($data->e);
 
 	echo (new \selling\ItemUi())->getBySale($data->e, $data->cItem);
 	echo (new \selling\SaleUi())->getMarket($data->eFarm, $data->ccSaleMarket);
-	echo (new \selling\SaleUi())->getHistory($data->cHistory);
+	echo (new \selling\SaleUi())->getHistory($data->e, $data->cHistory);
 
 });
 

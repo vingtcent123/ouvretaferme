@@ -39,7 +39,7 @@
 	->get('createCollection', function($data) {
 
 		$data->eSale['cCategory'] = \selling\CategoryLib::getByFarm($data->eSale['farm'], index: 'id');
-		$data->eSale['cProduct'] = \selling\ProductLib::getForSale($data->eSale['farm'], $data->eSale['type'], excludeComposition: $data->eSale['composition']->notEmpty());
+		$data->eSale['cProduct'] = \selling\ProductLib::getForSale($data->eSale['farm'], $data->eSale['type'], excludeComposition: $data->eSale->isComposition());
 		\selling\ProductLib::applyItemsForSale($data->eSale['cProduct'], $data->eSale);
 
 		throw new ViewAction($data);
