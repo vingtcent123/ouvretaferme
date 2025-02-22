@@ -1,14 +1,11 @@
 <?php
-
-use series\Series;
-
-(new \series\CultivationPage(function($data) {
+new \series\CultivationPage(function($data) {
 
 		\user\ConnectionLib::checkLogged();
 
 		$data->eFarm = \farm\FarmLib::getById(POST('farm'))->validate('canManage');
 
-	}))
+	})
 	->create(function($data) {
 
 		$data->cPlant = \plant\PlantLib::getByFarm($data->eFarm, properties: ['id', 'name']);
@@ -126,12 +123,12 @@ use series\Series;
 		$data->ePlant = \plant\PlantLib::getById(GET('plant'))->validate('notEmpty');
 		$data->cAction = \farm\ActionLib::getByFarm($data->eFarm, fqn: [ACTION_SEMIS_PEPINIERE, ACTION_SEMIS_DIRECT, ACTION_PLANTATION], index: 'fqn');
 
-		$data->eSeries = new Series([
+		$data->eSeries = new \series\Series([
 			'farm' => $data->eFarm,
 			'name' => $data->ePlant['name'],
 			'nameAuto' => TRUE,
 			'nameDefault' => $data->ePlant['name'],
-			'use' => Series::BED,
+			'use' => \series\Series::BED,
 			'area' => NULL,
 			'areaTarget' => NULL,
 			'length' => NULL,

@@ -1,8 +1,6 @@
 <?php
 namespace farm;
 
-use main\PlaceUi;
-
 class FarmUi {
 
 	public function __construct() {
@@ -1758,7 +1756,7 @@ class FarmUi {
 		switch($property) {
 
 			case 'place' :
-				(new PlaceUi())->query($d);
+				(new \main\PlaceUi())->query($d);
 				break;
 
 			case 'placeLngLat' :
