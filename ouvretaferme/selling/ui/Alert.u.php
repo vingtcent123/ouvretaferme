@@ -34,6 +34,8 @@ class AlertUi {
 			'Invoice::fileAlreadySent' => s("Cette facture a déjà été envoyée au client"),
 			'Invoice::fileEmpty' => s("Le fichier PDF de cette facture n'existe pas."),
 
+			'Product::proOrPrivate.check' => s("Veuillez déterminer si votre produit composé est vendu aux clients particuliers ou aux clients professionnels. Il ne peut pas à la fois être vendu aux professionnels et aux particuliers"),
+
 			'Sale::deletedNotDraft' => s("Il n'est possible de supprimer que les ventes à l'état de brouillon ou de panier."),
 			'Sale::deletedMarket' => s("Cette vente de marché ne peut pas être supprimée."),
 

@@ -4,7 +4,7 @@ namespace selling;
 class ProductLib extends ProductCrud {
 
 	public static function getPropertiesCreate(): \Closure {
-		return fn($eProduct) => array_merge(['unit'], ProductLib::getPropertiesWrite($eProduct));
+		return fn($eProduct) => array_merge(['unit'], ProductLib::getPropertiesWrite($eProduct, 'create'));
 	}
 
 	public static function getPropertiesUpdate(): \Closure {
@@ -22,18 +22,45 @@ class ProductLib extends ProductCrud {
 				$properties[] = 'unit';
 			}
 
-			return array_merge($properties, ProductLib::getPropertiesWrite($eProduct), ['privateStep', 'proStep']);
+			return array_merge($properties, ProductLib::getPropertiesWrite($eProduct, 'update'));
 
 		};
 
 	}
 
-	public static function getPropertiesWrite(Product $eProduct): array {
+	public static function getPropertiesWrite(Product $eProduct, string $for): array {
 
 		if($eProduct['composition']) {
-			return ['name', 'category', 'description', 'quality', 'pro', 'proPrice', 'proPackaging', 'private', 'privatePrice', 'vat', 'compositionVisibility'];
+
+			$properties = ['name', 'category', 'description', 'quality', 'vat', 'compositionVisibility'];
+
+			if($for === 'update') {
+
+				if($eProduct['private']) {
+					$properties = array_merge($properties, ['privatePrice', 'privateStep']);
+				} else if($eProduct['pro']) {
+					$properties = array_merge($properties, ['proPrice', 'proPackaging', 'proStep']);
+				}
+
+			} else if($for === 'create') {
+
+				$properties = array_merge($properties, ['pro', 'proPrice', 'proPackaging', 'private', 'privatePrice', 'proOrPrivate']);
+
+			}
+
+			return $properties;
+
 		} else {
-			return ['name', 'category', 'variety', 'size', 'origin', 'description', 'quality', 'plant', 'pro', 'proPrice', 'proPackaging', 'private', 'privatePrice', 'vat'];
+
+			$properties = ['name', 'category', 'variety', 'size', 'origin', 'description', 'quality', 'plant', 'pro', 'proPrice', 'proPackaging', 'private', 'privatePrice', 'vat'];
+
+			if($for === 'update') {
+				$properties[] = 'privateStep';
+				$properties[] = 'proStep';
+			}
+
+			return $properties;
+
 		}
 
 	}
@@ -105,6 +132,8 @@ class ProductLib extends ProductCrud {
 				'count' => new \Sql('COUNT(*)', 'int')
 			])
 			->whereFarm($eFarm)
+			->whereComposition(FALSE, if: $search->get('composition') === 'simple')
+			->whereComposition(TRUE, if: $search->get('composition') === 'composed')
 			->group('category')
 			->getCollection()
 			->toArray(fn($eProduct) => [$eProduct['category']->empty() ? NULL : $eProduct['category']['id'], $eProduct['count']], TRUE);
@@ -140,6 +169,8 @@ class ProductLib extends ProductCrud {
 		return Product::model()
 			->select(Product::getSelection())
 			->whereCategory($eCategory, if: $eCategory !== NULL)
+			->whereComposition(FALSE, if: $search->get('composition') === 'simple')
+			->whereComposition(TRUE, if: $search->get('composition') === 'composed')
 			->whereFarm($eFarm)
 			->whereStatus('!=', Product::DELETED)
 			->sort($search->buildSort())
@@ -164,7 +195,7 @@ class ProductLib extends ProductCrud {
 
 	}
 
-	public static function getForSale(\farm\Farm $eFarm, string $type, array $ids = []): \Collection {
+	public static function getForSale(\farm\Farm $eFarm, string $type, array $ids = [], bool $excludeComposition = FALSE): \Collection {
 
 		return Product::model()
 			->select(Product::getSelection())
@@ -172,6 +203,7 @@ class ProductLib extends ProductCrud {
 			->whereId('IN', $ids, if: $ids)
 			->where($type, TRUE)
 			->whereStatus(Product::ACTIVE)
+			->whereComposition(FALSE, if: $excludeComposition)
 			->sort(['name' => SORT_ASC])
 			->getCollection(NULL, NULL, 'id');
 
@@ -181,7 +213,11 @@ class ProductLib extends ProductCrud {
 
 		$eSale->expects(['farm', 'type', 'customer', 'discount']);
 
-		$cGrid = \selling\GridLib::getByCustomer($eSale['customer'], index: 'product');
+		if($eSale['composition']->empty()) {
+			$cGrid = \selling\GridLib::getByCustomer($eSale['customer'], index: 'product');
+		} else {
+			$cGrid = new \Collection();
+		}
 
 		foreach($cProduct as $eProduct) {
 			$eProduct['item'] = \selling\ItemLib::getNew($eSale, $eProduct, $cGrid[$eProduct['id']] ?? new \selling\Grid());

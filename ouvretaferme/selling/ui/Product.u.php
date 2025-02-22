@@ -77,6 +77,10 @@ class ProductUi {
 			$h .= $form->openAjax(\farm\FarmUi::urlSellingProduct($eFarm), ['method' => 'get', 'id' => 'form-search']);
 				$h .= $form->hidden('category', $search->get('category'));
 				$h .= '<div>';
+					$h .= $form->select('composition', [
+						'simple' => s("Produits simples"),
+						'composed' => s("Produits composés")
+					], $search->get('composition'), ['placeholder' => s("Type")]);
 					$h .= $form->text('name', $search->get('name'), ['placeholder' => s("Nom du produit")]);
 					$h .= $form->text('plant', $search->get('plant'), ['placeholder' => s("Espèce")]);
 					$h .= $form->submit(s("Chercher"), ['class' => 'btn btn-secondary']);
@@ -707,6 +711,7 @@ class ProductUi {
 		$h .= '<div class="dropdown-list">';
 			$h .= '<div class="dropdown-title">'.encode($eProduct->getName()).'</div>';
 			$h .= '<a href="/selling/product:update?id='.$eProduct['id'].'" class="dropdown-item">'.s("Modifier le produit").'</a>';
+			$h .= '<a href="/selling/sale:create?farm='.$eProduct['farm']['id'].'&composition='.$eProduct['id'].'" class="dropdown-item">'.s("Mettre à jour la composition").'</a>';
 			$h .= '<a data-ajax="/selling/product:doDelete" post-id="'.$eProduct['id'].'" class="dropdown-item" data-confirm="'.s("Confirmer la suppression du produit ?").'">'.s("Supprimer le produit").'</a>';
 			if($eProduct->acceptEnableStock() or $eProduct->acceptDisableStock()) {
 				$h .= '<div class="dropdown-divider"></div>';
@@ -734,8 +739,9 @@ class ProductUi {
 		$eProduct->merge([
 			'quality' => $eFarm['quality'],
 			'vat' => $eFarm->getSelling('defaultVat'),
-			'private' => TRUE,
-			'pro' => TRUE,
+			// L'utilisateur doit explicitement choisir la clientèle pour les produits composés
+			'private' => $eProduct['composition'] === FALSE,
+			'pro' => $eProduct['composition'] === FALSE,
 			'unit' => $eProduct['cUnit']->find(fn($eUnit) => $eUnit['fqn'] === ($eProduct['composition'] ? 'unit' : 'kg'), limit: 1),
 		]);
 
@@ -879,15 +885,37 @@ class ProductUi {
 	private static function getFieldPrices(\util\FormUi $form, Product $eProduct, string $for): string {
 
 		$h = '<h3>'.s("Grille tarifaire").'</h3>';
-		$h .= '<div class="util-info">'.s("Pour une vente aux particuliers et si aucun prix de vente n'a été saisi, le prix de vente pro augmenté de la TVA sera utilisé dans ce cas, et vice-versa pour une vente aux professionnels. Ces données de base pourront toujours être personnalisées pour chaque client et vente.").'</div>';
+
+		if($eProduct['composition']) {
+
+			if($for === 'create') {
+				$h .= '<div class="util-block-help">'.s("Un produit composé peut être vendu soit aux particuliers, soit aux professionnels, mais pas simultanément aux deux. Le choix que vous faites maintenant ne pourra pas être modifié par la suite, et votre produit ne pourra être composé que de produits également vendus à ce type de clientèle.").'</div>';
+			}
+
+		} else {
+			$h .= '<div class="util-info">'.s("Pour une vente aux particuliers et si aucun prix de vente n'a été saisi, le prix de vente pro augmenté de la TVA sera utilisé dans ce cas, et vice-versa pour une vente aux professionnels. Ces données de base pourront toujours être personnalisées pour chaque client et vente.").'</div>';
+		}
 
 		$h .= $form->dynamicGroup($eProduct, 'vat');
 		$h .= '<br/>';
 
-		$h .= self::getFieldPrivate($form, $eProduct, $for);
-		$h .= '<br/>';
-		$h .= self::getFieldPro($form, $eProduct, $for);
-		$h .= '<br/>';
+		if(
+			$for === 'create' or
+			$eProduct['composition'] === FALSE or
+			$eProduct['private']
+		) {
+			$h .= self::getFieldPrivate($form, $eProduct, $for);
+			$h .= '<br/>';
+		}
+
+		if(
+			$for === 'create' or
+			$eProduct['composition'] === FALSE or
+			$eProduct['pro']
+		) {
+			$h .= self::getFieldPro($form, $eProduct, $for);
+			$h .= '<br/>';
+		}
 
 		return $h;
 
@@ -899,7 +927,7 @@ class ProductUi {
 
 			$h .= $form->group(
 				'<h4>'.self::p('pro')->label.'</h4>',
-				$form->dynamicField($eProduct, 'pro')
+				($eProduct['composition'] === FALSE or $for === 'create') ? $form->dynamicField($eProduct, 'pro') : ''
 			);
 
 			$taxes = $eProduct['farm']->getSelling('hasVat') ? '/ '.CustomerUi::getTaxes(Customer::PRO) : '';
@@ -948,7 +976,7 @@ class ProductUi {
 
 			$h .= $form->group(
 				'<h4>'.self::p('private')->label.'</h4>',
-				$form->dynamicField($eProduct, 'private')
+				($eProduct['composition'] === FALSE or $for === 'create') ? $form->dynamicField($eProduct, 'private') : ''
 			);
 
 			$taxes = $eProduct['farm']->getSelling('hasVat') ? '/ '.CustomerUi::getTaxes(Customer::PRIVATE) : '';

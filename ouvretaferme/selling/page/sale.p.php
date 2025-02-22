@@ -20,17 +20,28 @@
 			'customer' => get_exists('customer') ? \selling\CustomerLib::getById(GET('customer'))->validateProperty('farm', $data->eFarm) : new \selling\Customer()
 		]);
 
-		if($data->e['customer']->notEmpty()) {
+		if(
+			$data->e['customer']->notEmpty() or
+			$data->e['composition']->notEmpty()
+		) {
+
+			if($data->e['composition']->notEmpty()) {
+				$data->e['type'] = $data->e['composition']['private'] ? \selling\Sale::PRIVATE : \selling\Sale::PRO;
+				$data->e['discount'] = 0;
+			} else {
+				$data->e['type'] = $data->e['customer']['type'];
+				$data->e['discount'] = $data->e['customer']['discount'];
+			}
 
 			$data->e['hasVat'] = $data->e['farm']->getSelling('hasVat');
-			$data->e['type'] = $data->e['customer']['type'];
 			$data->e['taxes'] = $data->e->getTaxesFromType();
-			$data->e['discount'] = $data->e['customer']['discount'];
 
 			$data->e['cCategory'] = \selling\CategoryLib::getByFarm($data->e['farm'], index: 'id');
+
 			$data->e['cProduct'] = $data->e['shopDate']->empty() ?
-				\selling\ProductLib::getForSale($data->e['farm'], $data->e['type']) :
+				\selling\ProductLib::getForSale($data->e['farm'], $data->e['type'], excludeComposition: $data->e['composition']->notEmpty()) :
 				\shop\ProductLib::getByDate($data->e['shopDate'], $data->e['customer'])->getColumnCollection('product');
+
 			\selling\ProductLib::applyItemsForSale($data->e['cProduct'], $data->e);
 
 		}

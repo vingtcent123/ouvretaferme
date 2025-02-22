@@ -200,6 +200,8 @@ class Product extends ProductElement {
 				return array_key_exists($vat, SaleLib::getVatRates($this['farm']));
 			},
 
+			'proOrPrivate.check' => fn() => ((int)$this['pro'] + (int)$this['private']) === 1,
+
 		]);
 
 	}

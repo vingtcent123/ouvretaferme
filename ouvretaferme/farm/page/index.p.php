@@ -136,6 +136,7 @@
 
 		$data->search = new Search([
 			'category' => $data->eCategory,
+			'composition' => GET('composition'),
 			'name' => GET('name'),
 			'plant' => GET('plant')
 		], GET('sort', default: 'name'));

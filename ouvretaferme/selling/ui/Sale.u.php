@@ -1482,7 +1482,15 @@ class SaleUi {
 			$h .= $form->hidden('from', Sale::USER);
 			$h .= $form->hidden('composition', $eSale['composition']['id']);
 
-			$h .= $form->dynamicGroups($eSale, ['deliveredAt', 'productsList']);
+			$h .= $form->dynamicGroup($eSale, 'deliveredAt');
+
+			if($eSale['cProduct']->notEmpty()) {
+
+				$h .= '<h4 class="mt-2 mb-1">'.s("Composition du produit").'</h4>';
+
+				$h .= $form->dynamicField($eSale, 'productsList');
+
+			}
 
 			$h .= $form->group(
 				content: $form->submit(s("Choisir les produits"))
@@ -1492,7 +1500,7 @@ class SaleUi {
 
 		return new \Panel(
 			id: 'panel-sale-create',
-			title: s("Ajouter une composition"),
+			title: encode($eSale['composition']['name']),
 			body: $h
 		);
 
@@ -1751,7 +1759,7 @@ class SaleUi {
 
 		$d = Sale::model()->describer($property, [
 			'customer' => s("Client"),
-			'deliveredAt' => fn($e) => $e['composition']->notEmpty() ? s("Pour les livraisons à partir du ...") : s("Date de vente"),
+			'deliveredAt' => fn($e) => $e['composition']->notEmpty() ? s("Pour les livraisons à partir du") : s("Date de vente"),
 			'from' => s("Origine de la vente"),
 			'market' => s("Utiliser le logiciel de caisse<br/>pour cette vente"),
 			'preparationStatus' => s("Statut de préparation"),
