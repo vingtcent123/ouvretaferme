@@ -1397,7 +1397,7 @@ class CultivationUi {
 
 		$varieties = $cTask->reduce(fn(Task $eTask, int $n) => $n + $eTask['variety']->notEmpty(), 0);
 
-		$h = '<table class="tr-bordered">';
+		$h = '<table class="table-block">';
 
 			$h .= '<thead>';
 				$h .= '<tr>';

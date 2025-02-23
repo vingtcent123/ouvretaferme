@@ -23,7 +23,7 @@ class SizeUi {
 				$h .= '</div>';
 			}
 
-			$h .= '<table class="tr-bordered">';
+			$h .= '<table class="table-block">';
 				$h .= '<thead>';
 					$h .= '<tr>';
 						$h .= '<th>'.s("Nom").'</th>';

@@ -2353,7 +2353,7 @@ class TaskUi {
 
 	protected function getListByAction(\farm\Farm $eFarm, string $week, \Collection $cTask, bool $hasTools): string {
 
-		$h = '<table class="tr-even tr-bordered tasks-week-list stick-xs">';
+		$h = '<table class="tr-even table-block tasks-week-list stick-xs">';
 			$h .= '<thead>';
 				$h .= '<tr>';
 					$h .= '<th class="tasks-week-list-name">';
@@ -2528,7 +2528,7 @@ class TaskUi {
 
 			$columns = 2;
 
-			$h .= '<table class="tbody-even tbody-bordered tasks-week-plant-list">';
+			$h .= '<table class="tbody-even table-block tasks-week-plant-list">';
 				$h .= '<thead>';
 					$h .= '<tr>';
 						$h .= '<th></th>';
@@ -2727,7 +2727,7 @@ class TaskUi {
 
 		$h = '<div class="stick-xs">';
 
-			$h .= '<table class="tr-even tr-bordered">';
+			$h .= '<table class="tr-even table-block">';
 				$h .= '<thead>';
 					$h .= '<tr>';
 						$h .= '<th colspan="2">';
@@ -3417,7 +3417,7 @@ class TaskUi {
 
 		$h = '';
 
-		$h .= '<table id="series-field-table" class="tbody-bordered stick-xs">';
+		$h .= '<table id="series-field-table" class="table-block stick-xs">';
 
 			$h .= '<thead>';
 				$h .= '<tr>';
@@ -4135,7 +4135,7 @@ class TaskUi {
 		$display = ($field === 'checkbox' and $cTask->count() > 1) ? 'checkbox' : 'hidden';
 
 		$h = '<div class="'.$class.' stick-xs mb-1">';
-			$h .= '<table class="tr-bordered">';
+			$h .= '<table class="table-block">';
 
 				$h .= '<thead>';
 					$h .= '<tr>';
@@ -4230,7 +4230,7 @@ class TaskUi {
 
 	public function getPlantsByTasksField(\util\FormUi $form, \Collection $cTask): string {
 
-		$h = '<table class="tr-bordered stick-xs mb-0">';
+		$h = '<table class="table-block stick-xs mb-0">';
 
 			$h .= '<tbody>';
 
@@ -4651,7 +4651,7 @@ class TaskUi {
 			}
 
 			if($harvested !== '') {
-				$values['harvest'] .= '<table id="task-distribution-dates" class="tr-bordered" data-day="'.implode(' ', array_keys($eTask['harvestDates'])).'" onrender="Task.toggleDistributionHarvestTable()">';
+				$values['harvest'] .= '<table id="task-distribution-dates" class="table-block" data-day="'.implode(' ', array_keys($eTask['harvestDates'])).'" onrender="Task.toggleDistributionHarvestTable()">';
 					$values['harvest'] .= $harvested;
 				$values['harvest'] .= '</table>';
 			}

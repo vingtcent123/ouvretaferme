@@ -142,7 +142,7 @@ class ActionUi {
 
 		$h .= '<div class="stick-xs">';
 
-		$h .= '<table class="tbody-even tbody-bordered">';
+		$h .= '<table class="tbody-even table-block">';
 			$h .= '<thead>';
 				$h .= '<tr>';
 					$h .= '<th>'.s("Nom").'</th>';

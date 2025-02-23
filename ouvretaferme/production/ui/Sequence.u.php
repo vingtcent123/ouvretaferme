@@ -187,7 +187,7 @@ class SequenceUi {
 
 		$h = '<div class="util-overflow-sm stick-xs">';
 
-			$h .= '<table class="sequence-item tr-bordered">';
+			$h .= '<table class="sequence-item tr-even table-block">';
 
 				$h .= '<thead>';
 					$h .= '<tr>';

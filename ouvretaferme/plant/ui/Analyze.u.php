@@ -341,7 +341,7 @@ class AnalyzeUi {
 
 		$h = '<h2>'.encode($eFamily['name']).'</h2>';
 
-		$h .= '<table class="tr-bordered analyze-rotation">';
+		$h .= '<table class="table-block analyze-rotation">';
 			$h .= '<thead>';
 				$h .= '<tr>';
 					foreach($seasons as $season) {

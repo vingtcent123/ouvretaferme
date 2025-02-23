@@ -120,7 +120,7 @@ class CategoryUi {
 
 		$h .= '<br/>';
 
-		$h .= '<table class="tr-bordered">';
+		$h .= '<table class="table-block">';
 			$h .= '<thead>';
 				$h .= '<tr>';
 					$h .= '<th colspan="2">'.s("Position").'</th>';

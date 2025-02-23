@@ -93,7 +93,7 @@ class CategoryUi {
 
 		} else {
 
-			$h .= '<table class="tr-bordered">';
+			$h .= '<table class="table-block">';
 				$h .= '<thead>';
 					$h .= '<tr>';
 						if($cCategory->count() >= 2 ) {

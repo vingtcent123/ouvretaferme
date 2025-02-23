@@ -20,7 +20,7 @@ class CustomizeUi {
 				$h .= '<p>'.s("Vous pouvez personnaliser dynamiquement le contenu de cet e-mail en copiant les variables suivantes, qui s'adapteront automatiquement à la vente sélectionnée :").'</p>';
 
 				$h .= '<div class="util-overflow-xs">';
-					$h .= '<table class="tr-bordered">';
+					$h .= '<table class="table-block">';
 						$h .= '<thead>';
 							$h .= '<tr>';
 								$h .= '<th>'.s("Variable").'</th>';

@@ -457,7 +457,7 @@ class ItemUi {
 
 		foreach([$ccItemFirst, $ccItemLast] as $ccItemChunk) {
 
-			$h .= '<table class="tr-bordered">';
+			$h .= '<table class="table-block">';
 
 				$h .= '<tbody>';
 

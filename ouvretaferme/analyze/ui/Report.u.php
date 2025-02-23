@@ -98,7 +98,7 @@ class ReportUi {
 
 		$h .= '<div class="util-overflow-xs stick-xs">';
 
-			$h .= '<table class="report-item-table tr-bordered report-harvested-table"">';
+			$h .= '<table class="report-item-table table-block report-harvested-table"">';
 
 
 				$h .= '<thead>';
@@ -285,7 +285,7 @@ class ReportUi {
 
 		$h = '<div class="util-overflow-md stick-xs">';
 
-			$h .= '<table class="tr-bordered">';
+			$h .= '<table class="table-block">';
 
 				$h .= $this->getOneHead($cCultivation->count() > 1 ? '<th colspan="3"></th>' : '<th colspan="3">'.s("Série").'</th>');
 
@@ -340,7 +340,7 @@ class ReportUi {
 
 		$h = '<div class="util-overflow-md stick-xs">';
 
-			$h .= '<table class="report-item-table tr-bordered tbody-even">';
+			$h .= '<table class="report-item-table table-block tbody-even">';
 
 				$h .= '<thead>';
 					$h .= '<tr>';

@@ -175,7 +175,7 @@ class SaleUi {
 
 		$previousSubtitle = NULL;
 
-		$h .= '<table class="sale-item-table tr-bordered tr-even">';
+		$h .= '<table class="sale-item-table table-block tr-even">';
 
 			$h .= '<thead>';
 
@@ -1267,7 +1267,7 @@ class SaleUi {
 				$form = new \util\FormUi();
 
 				$h .= '<div id="sale-money-'.$eSale['id'].'" class="hide util-overflow-sm">';
-					$h .= '<table class="tr-bordered">';
+					$h .= '<table class="table-block">';
 						$h .= '<tr>';
 							$h .= '<td><h3 class="mb-0">'.s("Donné").'</h3></td>';
 							foreach($values as $value) {
@@ -1449,7 +1449,7 @@ class SaleUi {
 
 		$h .= '<div class="util-overflow-md">';
 
-			$h .= '<table class="tr-bordered">';
+			$h .= '<table class="table-block">';
 
 				$h .= '<tr>';
 					$h .= '<th>'.s("Date").'</th>';

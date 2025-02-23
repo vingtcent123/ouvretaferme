@@ -80,7 +80,7 @@ class InvoiceUi {
 
 			$columns = 7;
 
-			$h .= '<table class="tr-bordered tr-even">';
+			$h .= '<table class="table-block tr-even">';
 
 				$h .= '<thead>';
 					$h .= '<tr>';
@@ -93,7 +93,7 @@ class InvoiceUi {
 						}
 						$h .= '<th class="text-center">'.s("Date de facturation").'</th>';
 						$h .= '<th class="text-end invoice-item-amount">'.s("Montant").'</th>';
-						$h .= '<th>'.s("Envoyée<br/>par e-mail").'</th>';
+						$h .= '<th class="td-min-content">'.s("Envoyée<br/>par e-mail").'</th>';
 						$h .= '<th>'.s("Réglée").'</th>';
 						$h .= '<th class="invoice-item-list hide-sm-down">'.s("Ventes").'</th>';
 						$h .= '<th></th>';
@@ -224,7 +224,7 @@ class InvoiceUi {
 
 						}
 
-						$h .= '<td class="text-end">';
+						$h .= '<td class="text-end td-min-content">';
 
 							if($eInvoice['content']->notEmpty()) {
 								$h .= '<a href="'.self::url($eInvoice).'" data-ajax-navigation="never" class="btn btn-outline-secondary">'.\Asset::icon('download').'</a> ';
@@ -502,7 +502,7 @@ class InvoiceUi {
 
 	protected function getCustomers(\util\FormUi $form, \farm\Farm $eFarm, \Collection $cSale): string {
 
-		$h = '<table class="tr-even tr-bordered">';
+		$h = '<table class="tr-even table-block">';
 			$h .= '<tr>';
 				$h .= '<th>';
 					$h .= '<input type="checkbox" '.attr('onclick', 'CheckboxField.all(this, \'[name^="sales"]\')').'"/>';
@@ -607,7 +607,7 @@ class InvoiceUi {
 	
 	protected function getSales(\util\FormUi $form, \Collection $cSale, bool $checked): string {
 		
-		$h = '<table class="tr-even tr-bordered">';
+		$h = '<table class="tr-even table-block">';
 			$h .= '<tr>';
 				$h .= '<th>';
 

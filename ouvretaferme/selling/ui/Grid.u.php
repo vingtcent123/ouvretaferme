@@ -206,7 +206,7 @@ class GridUi {
 
 		$h .= '<div class="util-block-help">'.s("Vous pouvez personnaliser ici les prix et les conditionnements pour votre client {value}. Les informations personnalisées ont la priorité sur les valeurs de base, mais ne s'appliquent pas dans les boutiques en ligne.", encode($eCustomer->getName())).'</div>';
 
-		$h .= '<table class="tr-bordered stick-xs">';
+		$h .= '<table class="table-block stick-xs">';
 
 		$h .= '<tr>';
 			$h .= '<th class="customer-price-vignette"></th>';
@@ -294,7 +294,7 @@ class GridUi {
 
 		$h = $form->hidden('id', $eProduct['id']);
 
-		$h .= '<table class="tr-bordered stick-xs">';
+		$h .= '<table class="table-block stick-xs">';
 
 		$h .= '<tr>';
 			$h .= '<th>'.s("Client").'</th>';

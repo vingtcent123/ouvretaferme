@@ -18,7 +18,7 @@ td.sale-item-invoice {
 td.sale-item-date {
 	text-transform: uppercase;
 	background-color: var(--background);
-	border-bottom: 1px dashed var(--border);
+	border-bottom: 1px solid var(--border);
 	font-weight: bold;
 }
 
