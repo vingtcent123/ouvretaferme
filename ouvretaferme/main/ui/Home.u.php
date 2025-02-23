@@ -95,7 +95,7 @@ class HomeUi {
 				return '';
 			}
 
-			$h = '<h2>'.s("Quoi de neuf sur {siteName} ?").'</h2>';
+			$h = '<h2>'.s("Quoi de neuf sur Ouvretaferme ?").'</h2>';
 
 			$h .= '<div class="home-blog bg-info util-block-flat">';
 				$h .= \Asset::image('main', 'favicon.png', ['style' => 'width: 6rem; height: 6rem']).'';
@@ -107,7 +107,7 @@ class HomeUi {
 
 		} else {
 
-			$h = '<h3>'.s("Du nouveau sur {siteName} !").'</h3>';
+			$h = '<h2>'.s("Du nouveau sur Ouvretaferme !").'</h2>';
 
 			$h .= '<div class="home-blog bg-info util-block-flat">';
 				$h .= '<div>';

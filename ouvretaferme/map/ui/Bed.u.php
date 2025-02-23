@@ -415,7 +415,7 @@ class BedUi {
 
 			$h .= '<div id="bed-create-form" data-number="0">';
 
-				$names = '<div class="util-block-optional">';
+				$names = '<div class="util-block">';
 					$names .= '<h4>'.s("Aide au remplissage automatique du nom des planches").'</h4>';
 					$names .= '<div class="bed-create-fill">';
 						$names .= '<div class="input-group">';

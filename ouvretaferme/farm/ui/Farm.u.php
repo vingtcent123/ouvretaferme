@@ -1433,9 +1433,9 @@ class FarmUi {
 
 		$h = '';
 
-		$h .= '<div class="util-block-optional">';
+		$h .= '<h2>'.s("La ferme").'</h2>';
 
-			$h .= '<h2>'.s("La ferme").'</h2>';
+		$h .= '<div class="util-block">';
 
 			$h .= '<div class="util-buttons">';
 
@@ -1469,9 +1469,9 @@ class FarmUi {
 
 		$h .= '</div>';
 
-		$h .= '<div class="util-block-optional">';
+		$h .= '<h2>'.s("La production").'</h2>';
 
-			$h .= '<h2>'.s("La production").'</h2>';
+		$h .= '<div class="util-block">';
 
 			$h .= '<div class="util-buttons">';
 
@@ -1514,9 +1514,9 @@ class FarmUi {
 
 		$h .= '</div>';
 
-		$h .= '<div class="util-block-optional">';
+		$h .= '<h2>'.s("La commercialisation").'</h2>';
 
-			$h .= '<h2>'.s("La commercialisation").'</h2>';
+		$h .= '<div class="util-block">';
 
 			$h .= '<div class="util-buttons">';
 
@@ -1539,9 +1539,9 @@ class FarmUi {
 
 		$h .= '</div>';
 
-		$h .= '<div class="util-block-optional">';
+		$h .= '<h2>'.s("Les ressources").'</h2>';
 
-			$h .= '<h2>'.s("Les ressources").'</h2>';
+		$h .= '<div class="util-block">';
 
 			$h .= '<div class="util-buttons">';
 
@@ -1584,7 +1584,8 @@ class FarmUi {
 				if($eFarm->canManage()) {
 
 					$h .= '<a href="/series/csv:importCultivations?id='.$eFarm['id'].'" class="bg-secondary util-button">';
-						$h .= '<h4>'.s("Importer un plan de culture").'<br><span class="util-block-optional-subtitle">'.s("compatible Qrop / Brinjel").'</span></h4>';
+						$h .= '<h4>'.s("Importer un plan de culture").'</h4>';
+						$h .= '<div class="util-button-text">'.s("Compatible Qrop / Brinjel").'</div>';
 						$h .= \Asset::icon('upload');
 					$h .= '</a>';
 
@@ -1592,13 +1593,12 @@ class FarmUi {
 
 			$h .= '</div>';
 
-			$h .= (new \main\HomeUi())->getBlog($eNews, FALSE);
-
 		$h .= '</div>';
 
-		$h .= '<div class="util-block-optional">';
+		$h .= (new \main\HomeUi())->getBlog($eNews, FALSE);
 
-			$h .= '<h2>😭</h2>';
+		$h .= '<h2>😭</h2>';
+
 
 			$h .= '<div class="util-buttons">';
 
@@ -1609,7 +1609,6 @@ class FarmUi {
 
 				$h .= '</a>';
 
-			$h .= '</div>';
 
 		$h .= '</div>';
 

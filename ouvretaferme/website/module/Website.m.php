@@ -104,7 +104,7 @@ class WebsiteModel extends \ModuleModel {
 				return Website::BLACK;
 
 			case 'customColor' :
-				return "#505075";
+				return "#4a4a70";
 
 			case 'customBackground' :
 				return "#F5F5F5";

@@ -676,7 +676,7 @@ class Cartography {
 		switch(theme) {
 
 			case 'zone' :
-				return '#505075';
+				return '#4a4a70';
 
 			case 'plot' :
 				return '#93b96d';

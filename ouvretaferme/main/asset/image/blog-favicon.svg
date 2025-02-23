@@ -224,7 +224,7 @@
      inkscape:groupmode="layer"
      id="layer1">
     <path
-       style="fill:#505075;fill-rule:evenodd;stroke-width:1.27952647;fill-opacity:1"
+       style="fill:#4a4a70;fill-rule:evenodd;stroke-width:1.27952647;fill-opacity:1"
        id="path1338"
        sodipodi:type="arc"
        sodipodi:cx="63.236"
@@ -238,7 +238,7 @@
        inkscape:export-ydpi="605.33826"
        inkscape:export-filename="/var/www/otf/ouvretaferme/main/asset/image/logo-native.png" />
     <path
-       style="fill:#505075;fill-opacity:1;fill-rule:evenodd;stroke-width:1.27953"
+       style="fill:#4a4a70;fill-opacity:1;fill-rule:evenodd;stroke-width:1.27953"
        id="path1338-3-5"
        sodipodi:type="arc"
        sodipodi:cx="103.192"
@@ -254,7 +254,7 @@
        d="m 120.192,-63.236 a 17,17 0 0 1 -17,17 v -17 z"
        transform="rotate(90)" />
     <path
-       style="fill:#505075;fill-opacity:1;fill-rule:evenodd;stroke-width:1.27953"
+       style="fill:#4a4a70;fill-opacity:1;fill-rule:evenodd;stroke-width:1.27953"
        id="path1338-7"
        sodipodi:type="arc"
        sodipodi:cx="-103.192"
@@ -270,7 +270,7 @@
        d="m -86.192001,63.236 a 17,17 0 0 1 -16.999999,17 v -17 z"
        transform="rotate(-90)" />
     <path
-       style="fill:#505075;fill-rule:evenodd;stroke-width:1.27952647;fill-opacity:1"
+       style="fill:#4a4a70;fill-rule:evenodd;stroke-width:1.27952647;fill-opacity:1"
        id="path1338-0"
        sodipodi:type="arc"
        sodipodi:cx="-63.236"

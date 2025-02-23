@@ -332,7 +332,7 @@ class SaleUi {
 						if($eSale['preparationStatus'] === Sale::CANCELED) {
 							$h .= ' style="opacity: 0.5"';
 						}
-					$h .= '">';
+					$h .= '>';
 
 						$h .= '<td class="td-checkbox">';
 							$h .= '<label>';

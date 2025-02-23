@@ -39,7 +39,7 @@ class DesignUi {
 
 	public static function getButton($link, $content): string {
 
-		$html = '<a href="'.$link.'" style="border-radius: 5px; padding: 10px; color: white; background-color: #505075; text-decoration: none">'.$content.'</a>';
+		$html = '<a href="'.$link.'" style="border-radius: 5px; padding: 10px; color: white; background-color: #4a4a70; text-decoration: none">'.$content.'</a>';
 
 		return $html;
 
