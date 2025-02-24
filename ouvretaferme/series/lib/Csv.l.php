@@ -326,7 +326,7 @@ class CsvLib {
 		foreach($cPlace as $ePlace) {
 
 			$maxSpecies = max($maxSpecies, $ePlace['series']['cCultivation']->count());
-d($ePlace['series']['bedStartCalculated'], self::getWeekCalculated($ePlace['series']['bedStartCalculated'], $season, 1));
+
 			$line = [
 				$ePlace['zone']['name'],
 				$ePlace['plot']['zoneFill'] ? '' : $ePlace['plot']['name'],
