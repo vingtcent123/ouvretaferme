@@ -162,7 +162,7 @@ class SaleUi {
 
 		$link ??= fn($eSale) => '/vente/'.$eSale['id'];
 
-		$h = '<div class="util-overflow-md stick-md">';
+		$h = '<div class="util-overflow-md stick-xs">';
 
 		$columns = 5;
 
@@ -992,11 +992,11 @@ class SaleUi {
 
 		$h = '<div class="util-action">';
 			$h .= '<div>';
-				$h .= '<h1 style="margin-bottom: 0.5rem">'.SaleUi::getName($eSale).'</h1>';
 				if($eSale->isComposition() === FALSE) {
+					$h .= '<h1 style="margin-bottom: 0.5rem">'.SaleUi::getName($eSale).'</h1>';
 					$h .= $this->getPreparationStatusForUpdate($eSale, shortText: FALSE);
 				} else {
-					$h .= '<h3 class="mb-0">'.encode($eSale['composition']['name']).'</h3>';
+					$h .= '<h1 class="mb-0">'.encode($eSale['composition']['name']).'</h1>';
 				}
 			$h .= '</div>';
 			$h .= '<div>';
@@ -1447,40 +1447,45 @@ class SaleUi {
 
 		$h = '<h3>'.s("Historique").'</h3>';
 
-		$h .= '<div class="util-overflow-md">';
+		$h .= '<div class="util-overflow-md stick-xs">';
 
-			$h .= '<table class="table-block">';
+			$h .= '<table class="table-block tr-even">';
 
-				$h .= '<tr>';
-					$h .= '<th>'.s("Date").'</th>';
-					$h .= '<th>'.s("Événement").'</th>';
-					$h .= '<th>'.s("Par").'</th>';
-				$h .= '</tr>';
-
-				foreach($cHistory as $eHistory) {
-
+				$h .= '<thead>';
 					$h .= '<tr>';
-
-						$h .= '<td>';
-							$h .= \util\DateUi::numeric($eHistory['date']);
-						$h .= '</td>';
-
-						$h .= '<td>';
-							$h .= $eHistory['event']['name'];
-							if($eHistory['comment']) {
-								$h .= '<div class="util-annotation color-muted">';
-									$h .= encode($eHistory['comment']);
-								$h .= '</div>';
-							}
-						$h .= '</td>';
-
-						$h .= '<td>';
-							$h .= $eHistory['user']->empty() ? '-' : $eHistory['user']->getName();
-						$h .= '</td>';
-
+						$h .= '<th>'.s("Date").'</th>';
+						$h .= '<th>'.s("Événement").'</th>';
+						$h .= '<th>'.s("Par").'</th>';
 					$h .= '</tr>';
+				$h .= '</thead>';
+				$h .= '<tbody>';
 
-				}
+					foreach($cHistory as $eHistory) {
+
+						$h .= '<tr>';
+
+							$h .= '<td>';
+								$h .= \util\DateUi::numeric($eHistory['date']);
+							$h .= '</td>';
+
+							$h .= '<td>';
+								$h .= $eHistory['event']['name'];
+								if($eHistory['comment']) {
+									$h .= '<div class="util-annotation color-muted">';
+										$h .= encode($eHistory['comment']);
+									$h .= '</div>';
+								}
+							$h .= '</td>';
+
+							$h .= '<td>';
+								$h .= $eHistory['user']->empty() ? '-' : $eHistory['user']->getName();
+							$h .= '</td>';
+
+						$h .= '</tr>';
+
+					}
+
+				$h .= '</tbody>';
 
 			$h .= '</table>';
 

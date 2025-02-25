@@ -455,11 +455,17 @@ class SaleLib extends SaleCrud {
 			return new \Collection();
 		}
 
-		return Sale::model()
+		$cSale = Sale::model()
 			->select(Sale::getSelection())
 			->whereComposition($eProduct)
 			->sort(['deliveredAt' => SORT_DESC])
 			->getCollection(0, 100);
+
+		if($cSale->notEmpty()) {
+			self::fillItems($cSale);
+		}
+
+		return $cSale;
 
 	}
 

@@ -34,7 +34,10 @@ class ItemUi {
 					$d->placeholder = s("Ajouter un produit");
 					$d->attributes['class'] = 'form-control-lg';
 				});
-				$new .= '<div class="item-add-scratch">'.\Asset::icon('chevron-right').' <a href="/selling/item:create?sale='.$eSale['id'].'">'.s("Ajouter un article sans référence de produit").'</a></div>';
+
+				if($eSale->isComposition() === FALSE) {
+					$new .= '<div class="item-add-scratch">'.\Asset::icon('chevron-right').' <a href="/selling/item:create?sale='.$eSale['id'].'">'.s("Ajouter un article sans référence de produit").'</a></div>';
+				}
 
 			$new .= '</div>';
 
@@ -51,16 +54,21 @@ class ItemUi {
 
 		$h .= '<div class="h-line">';
 
-			if($eSale->isMarketPreparing()) {
-				$h .= '<h3>'.s("Préparation du marché").'</h3>';
+			if($eSale->isComposition()) {
+				$h .= '<h3>'.s("Composition du {value}", \util\DateUi::numeric($eSale['deliveredAt'])).'</h3>';
 			} else {
-				$h .= '<h3>'.s("Articles").'</h3>';
-			}
 
-			if($eSale->acceptCreateItems()) {
-				$h .= '<a href="/selling/item:createCollection?sale='.$eSale['id'].'" class="btn btn-outline-primary">';
-					$h .= \Asset::icon('plus-circle').' '.s("Ajouter plusieurs produits");
-				$h .= '</a>';
+				if($eSale->isMarketPreparing()) {
+					$h .= '<h3>'.s("Préparation du marché").'</h3>';
+				} else {
+					$h .= '<h3>'.s("Articles").'</h3>';
+				}
+				if($eSale->acceptCreateItems()) {
+					$h .= '<a href="/selling/item:createCollection?sale='.$eSale['id'].'" class="btn btn-outline-primary">';
+						$h .= \Asset::icon('plus-circle').' '.s("Ajouter plusieurs produits");
+					$h .= '</a>';
+				}
+
 			}
 		$h .= '</div>';
 
@@ -103,7 +111,7 @@ class ItemUi {
 
 			$h .= '<div class="stick-xs">';
 
-				$h .= '<table class="tbody-even item-item-table '.($withPackaging ? 'item-item-table-with-packaging' : '').'">';
+				$h .= '<table class="table-block tbody-even item-item-table '.($withPackaging ? 'item-item-table-with-packaging' : '').'">';
 
 					$h .= '<thead>';
 						$h .= '<tr>';
@@ -627,7 +635,7 @@ class ItemUi {
 			'columnBreak' => 'sm'
 		]);
 
-		$title = s("Ajouter des produits à la vente");
+		$title = s("Ajouter des produits");
 
 		if($e['cProduct']->empty()) {
 
@@ -1003,7 +1011,9 @@ class ItemUi {
 
 		return new \Panel(
 			id: 'panel-item-create',
-			title: s("Ajouter un article"),
+			title: $eProduct->notEmpty() ?
+				s("Ajouter un produit") :
+				s("Ajouter un article"),
 			subTitle: SaleUi::getPanelHeader($eSale),
 			body: $h
 		);

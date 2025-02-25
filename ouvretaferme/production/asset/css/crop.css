@@ -22,7 +22,7 @@ div.crop-items {
 
 div.crop-item {
 	border-radius: var(--radius);
-	box-shadow: 0.125rem 0.125rem 0.25rem #0001;
+	box-shadow: var(--shadow);
 	background-color: white;
 }
 

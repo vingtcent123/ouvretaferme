@@ -221,7 +221,7 @@ class Sale extends SaleElement {
 		if($this['marketParent']->notEmpty()) {
 			return FALSE;
 		} else {
-			return in_array($this['preparationStatus'], [Sale::DRAFT, Sale::CONFIRMED, Sale::PREPARED, Sale::SELLING]);
+			return in_array($this['preparationStatus'], [NULL, Sale::DRAFT, Sale::CONFIRMED, Sale::PREPARED, Sale::SELLING]);
 		}
 
 	}

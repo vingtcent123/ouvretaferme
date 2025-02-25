@@ -160,7 +160,7 @@ div.series-item-body {
 	position: relative;
 	background-color: white;
 	box-sizing: content-box;
-	box-shadow: 0.125rem 0.125rem 0.25rem #0001;
+	box-shadow: var(--shadow);
 	border-bottom-left-radius: var(--radius);
 	border-bottom-right-radius: var(--radius);
 }

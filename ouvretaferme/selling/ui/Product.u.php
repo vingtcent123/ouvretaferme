@@ -1,6 +1,8 @@
 <?php
 namespace selling;
 
+use util\DateUi;
+
 class ProductUi {
 
 	public function __construct() {
@@ -591,11 +593,15 @@ class ProductUi {
 
 	}
 
-	public function getComposition(Product $eProduct, \Collection $cSaleComposition): string {
+	public function getComposition(Product $eProduct, \Collection $cSale): string {
 
 		$h = '';
 
-		d($cSaleComposition);
+		foreach($cSale as $eSale) {
+
+			$h .= (new \selling\ItemUi())->getBySale($eSale, $eSale['cItem']);
+
+		}
 
 		return $h;
 
@@ -711,7 +717,7 @@ class ProductUi {
 		$h .= '<div class="dropdown-list">';
 			$h .= '<div class="dropdown-title">'.encode($eProduct->getName()).'</div>';
 			$h .= '<a href="/selling/product:update?id='.$eProduct['id'].'" class="dropdown-item">'.s("Modifier le produit").'</a>';
-			$h .= '<a href="/selling/sale:create?farm='.$eProduct['farm']['id'].'&composition='.$eProduct['id'].'" class="dropdown-item">'.s("Mettre à jour la composition").'</a>';
+			$h .= '<a href="/selling/sale:create?farm='.$eProduct['farm']['id'].'&composition='.$eProduct['id'].'" class="dropdown-item">'.s("Nouvelle composition").'</a>';
 			$h .= '<a data-ajax="/selling/product:doDelete" post-id="'.$eProduct['id'].'" class="dropdown-item" data-confirm="'.s("Confirmer la suppression du produit ?").'">'.s("Supprimer le produit").'</a>';
 			if($eProduct->acceptEnableStock() or $eProduct->acceptDisableStock()) {
 				$h .= '<div class="dropdown-divider"></div>';

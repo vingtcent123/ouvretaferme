@@ -477,12 +477,12 @@ class DateUi {
 
 		$h = '<div class="dates-item-wrapper stick-sm util-overflow-sm">';
 
-			$h .= '<table class="sale-item-table tr-even">';
+			$h .= '<table class="table-block sale-item-table tr-even">';
 
 				$h .= '<thead>';
 
 					$h .= '<tr>';
-						$h .= '<th></th>';
+						$h .= '<th>'.s("Date").'</th>';
 						$h .= '<th></th>';
 						$h .= '<th class="text-end">'.s("Commandes").'</th>';
 						$h .= '<th class="text-end highlight">'.s("Montant").''.($hasSameTaxes ? ' <span class="util-annotation">'.$cDate->first()->getTaxes().'</span>' : '').'</th>';
@@ -889,7 +889,7 @@ class DateUi {
 		$h .= '</div>';
 
 		if($eDate['description'] !== NULL) {
-			$h .= '<h4>'.s("Complément d'information pour cette vente").'</h4>';
+			$h .= '<h3>'.s("Complément d'information pour cette vente").'</h3>';
 			$h .= '<div class="util-block" style="margin-bottom: 2rem">';
 				$h .= (new \editor\EditorUi())->value($eDate['description']);
 			$h .= '</div>';
