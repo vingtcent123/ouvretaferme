@@ -130,12 +130,12 @@ class SaleModel extends \ModuleModel {
 
 		$this->indexConstraints = array_merge($this->indexConstraints, [
 			['customer'],
-			['composition'],
 			['shopDate'],
 			['shop']
 		]);
 
 		$this->uniqueConstraints = array_merge($this->uniqueConstraints, [
+			['composition', 'deliveredAt'],
 			['farm', 'document']
 		]);
 
