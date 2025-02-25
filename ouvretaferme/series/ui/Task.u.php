@@ -2326,7 +2326,7 @@ class TaskUi {
 		$h = '<h2>'.encode($eAction['name']).'</h2>';
 
 		if($cTask->empty()) {
-			$h .= '<div class="util-block-info">'.s("Aucune intervention de cette nature à afficher cette semaine.").'</div>';
+			$h .= '<div class="util-empty">'.s("Aucune intervention de cette nature à afficher cette semaine.").'</div>';
 		} else if($hasPlant or $hasTools) {
 
 				$h .= $this->getListByAction($eFarm, $week, $cTask, $hasTools);

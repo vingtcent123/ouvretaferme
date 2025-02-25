@@ -465,7 +465,7 @@ class FlowUi {
 
 		$h = '<div id="flow-wrapper" data-sequence="'.$eSequence['id'].'">';
 
-			$h .= '<p class="util-info">';
+			$h .= '<p class="util-empty">';
 				if($write) {
 					$h .= s("Vous n'avez pas encore saisi d'intervention pour cet itinéraire technique.");
 				} else {

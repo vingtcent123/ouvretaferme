@@ -418,7 +418,7 @@ class ReportUi {
 		$h = '<h2>'.s("Comparer le rapport").'</h2>';
 
 		if($cReport->count() <= 1) {
-			$h .= '<p class="util-block-info">'.s("Il n'y a pas d'autre rapport avec le même nom et pour la plante {name} avec lequel faire une comparaison.", ['name' => encode($eReport['plant']['name'])]).'</p>';
+			$h .= '<p class="util-empty">'.s("Il n'y a pas d'autre rapport avec le même nom et pour la plante {name} avec lequel faire une comparaison.", ['name' => encode($eReport['plant']['name'])]).'</p>';
 			return $h;
 		}
 
@@ -805,7 +805,7 @@ class ReportUi {
 	public function getProductsField(\Collection $cProduct, Report $eReportFrom = new Report()) {
 
 		if($cProduct->empty()) {
-			return '<div class="util-info">'.s("Il n'y a aucun produit vendu pour cette espèce.").'</div>';
+			return '<div class="util-empty">'.s("Il n'y a aucun produit vendu pour cette espèce.").'</div>';
 		}
 
 		if($eReportFrom->empty()) {

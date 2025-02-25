@@ -417,7 +417,7 @@ class BasketUi {
 		if($eShop['terms'] !== NULL) {
 			$h = (new \editor\EditorUi())->value($eShop['terms']);
 		} else {
-			$h = '<div class="util-info">'.s("Il n'y a pas encore de conditions générales de vente sur la boutique.").'</div>';
+			$h = '<div class="util-empty">'.s("Il n'y a pas encore de conditions générales de vente sur la boutique.").'</div>';
 		}
 
 		return new \Panel(
@@ -574,7 +574,7 @@ class BasketUi {
 
 			foreach($payments as $payment) {
 
-				$h .= '<a data-ajax="'.ShopUi::dateUrl($eShop, $eDate, ':doCreatePayment').'" post-payment="'.$payment.'" class="util-block-flat shop-payment">';
+				$h .= '<a data-ajax="'.ShopUi::dateUrl($eShop, $eDate, ':doCreatePayment').'" post-payment="'.$payment.'" class="util-block shop-payment">';
 					$h .= $this->getPaymentBlock($eShop, $eDate, $eCustomer, $payment);
 				$h .= '</a>';
 

@@ -108,7 +108,7 @@ class ProductUi {
 			) {
 				$h .= '<div class="util-info">'.s("Sélectionnez une catégorie pour voir les produits associés !").'</div>';
 			} else {
-				$h .= '<div class="util-info">'.s("Il n'y a aucun produit à afficher.").'</div>';
+				$h .= '<div class="util-empty">'.s("Il n'y a aucun produit à afficher.").'</div>';
 			}
 
 			return $h;

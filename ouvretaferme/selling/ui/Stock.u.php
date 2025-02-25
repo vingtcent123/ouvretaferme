@@ -257,7 +257,7 @@ class StockUi {
 	public function getHistory(Product $eProduct, \Collection $cStock): \Panel {
 
 		if($cStock->empty()) {
-			$h = '<div class="util-info">'.s("Il n'y a aucun historique pour le stock de ce produit.").'</div>';
+			$h = '<div class="util-empty">'.s("Il n'y a aucun historique pour le stock de ce produit.").'</div>';
 		} else {
 
 			$h = '';

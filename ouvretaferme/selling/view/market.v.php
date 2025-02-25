@@ -52,7 +52,7 @@ new AdaptativeView('/vente/{id}/marche/ventes', function($data, MarketTemplate $
 
 	if($data->cSale->empty()) {
 
-		echo '<div class="util-info">';
+		echo '<div class="util-empty">';
 			echo s("Vous n'avez encore saisi aucune vente pour ce marché !");
 		echo '</div>';
 

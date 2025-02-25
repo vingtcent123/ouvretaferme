@@ -152,7 +152,7 @@ class SaleUi {
 
 		if($cSale->empty()) {
 
-			$h = '<div class="util-info">';
+			$h = '<div class="util-empty">';
 				$h .= s("Il n'y a aucune vente à afficher.");
 			$h .= '</div>';
 
@@ -923,7 +923,7 @@ class SaleUi {
 		$h = '<h4>'.s("Générer les étiquettes des ventes aux professionnels en cours").'</h4>';
 
 		if($cSale->empty()) {
-			$h .= '<div class="util-info">'.s("Il n'y a aucune vente en cours de préparation ou déjà préparée.").'</div>';
+			$h .= '<div class="util-empty">'.s("Il n'y a aucune vente en cours de préparation ou déjà préparée.").'</div>';
 		} else {
 
 			$form = new \util\FormUi();
@@ -1449,7 +1449,7 @@ class SaleUi {
 
 		$h .= '<div class="util-overflow-md stick-xs">';
 
-			$h .= '<table class="table-block tr-even">';
+			$h .= '<table>';
 
 				$h .= '<thead>';
 					$h .= '<tr>';

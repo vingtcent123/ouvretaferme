@@ -469,7 +469,7 @@ class DateUi {
 	public function getList(\farm\Farm $eFarm, Shop $eShop, \Collection $cDate): string {
 
 		if($cDate->empty()) {
-			return '<div class="util-info">'.s("Il n'y a aucune vente à afficher.").'</div>';
+			return '<div class="util-empty">'.s("Il n'y a aucune vente à afficher.").'</div>';
 		}
 
 		$hasFarmTaxes = $eFarm->getSelling('hasVat');
@@ -763,7 +763,7 @@ class DateUi {
 			$cProduct->sort(['product' => ['name']], natural: TRUE);
 
 			if($cProduct->empty()) {
-				$h .= '<div class="util-info">'.s("Cette vente est terminée et aucun produit n'a été vendu.").'</div>';
+				$h .= '<div class="util-empty">'.s("Cette vente est terminée et aucun produit n'a été vendu.").'</div>';
 			} else {
 				$h .= '<div class="util-info">'.s("Cette vente est terminée et seule la liste des produits qui ont été vendus est consultable.").'</div>';
 				$h .= (new \shop\ProductUi())->getUpdateList($eFarm, $eDate, $cProduct, $eDate['cCategory'], isExpired: TRUE);
@@ -835,9 +835,9 @@ class DateUi {
 			if($cProduct->empty()) {
 
 				if($cCatalog->notEmpty()) {
-					$h .= '<div class="util-info">'.s("Il n'y a aucun produit dans le catalogue !").'</div>';
+					$h .= '<div class="util-empty">'.s("Il n'y a aucun produit dans le catalogue !").'</div>';
 				} else {
-					$h .= '<div class="util-info">'.s("Il n'y a aucun produit disponible à la vente !").'</div>';
+					$h .= '<div class="util-empty">'.s("Il n'y a aucun produit disponible à la vente !").'</div>';
 				}
 
 			} else {

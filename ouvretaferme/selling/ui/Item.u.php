@@ -76,21 +76,17 @@ class ItemUi {
 
 			if($eSale->acceptCreateItems()) {
 
-				$h .= '<div class="util-block">';
+				$h .= '<p class="util-empty">';
 
-					$h .= '<h4>';
+					if($eSale['market']) {
+						$h .= s("Il n'y a pas encore d'article à vendre pendant votre marché !");
+					} {
+						$h .= s("Il n'y a pas encore d'article dans cette vente !");
+					}
 
-						if($eSale['market']) {
-							$h .= s("Il n'y a pas encore d'article à vendre pendant votre marché !");
-						} {
-							$h .= s("Il n'y a pas encore d'article dans cette vente !");
-						}
+				$h .= '</p>';
 
-					$h .= '</h4>';
-
-					$h .= $new;
-
-				$h .= '</div>';
+				$h .= $new;
 
 			} else {
 				$h .= '<div class="util-info">';
@@ -343,7 +339,7 @@ class ItemUi {
 
 		if($cItem->empty()) {
 
-			$h = '<p class="util-info">';
+			$h = '<p class="util-empty">';
 				$h .= s("Vous n'avez encore jamais vendu ce produit.");
 			$h .= '</p>';
 
@@ -351,56 +347,61 @@ class ItemUi {
 
 		}
 
-		$h = '<table class="tr-even stick-xs">';
+		$h = '<table class="table-block tr-even stick-xs">';
 
-			$h .= '<tr>';
-				$h .= '<th>'.s("Date").'</th>';
-				$h .= '<th class="text-center">'.s("Vente").'</th>';
-				$h .= '<th>'.s("Client").'</th>';
-				$h .= '<th class="text-end">'.s("Quantité").'</th>';
-				$h .= '<th class="text-end item-product-unit-price">'.ItemUi::p('unitPrice')->label.'</th>';
-				$h .= '<th class="text-end">'.ItemUi::p('price')->label.'</th>';
-			$h .= '</tr>';
-
-			foreach($cItem as $eItem) {
-
+			$h .= '<thead>';
 				$h .= '<tr>';
-
-					$h .= '<td>';
-						$h .= \util\DateUi::numeric($eItem['deliveredAt']);
-					$h .= '</td>';
-
-					$h .= '<td class="text-center">';
-						$h .= '<a href="/vente/'.$eItem['sale']['id'].'" class="btn btn-sm btn-outline-primary">'.$eItem['sale']->getNumber().'</a> ';
-					$h .= '</td>';
-
-					$h .= '<td>';
-						$h .= CustomerUi::link($eItem['customer']);
-					$h .= '</td>';
-
-					$h .= '<td class="text-end">';
-						$h .= \selling\UnitUi::getValue($eItem['quantity'], $eItem['unit'], TRUE);
-					$h .= '</td>';
-
-					$h .= '<td class="text-end item-product-unit-price">';
-						if($eItem['unit']) {
-							$unit = '<span class="util-annotation">'.\selling\UnitUi::getBy($eItem['unit'], short: TRUE).'</span>';
-						} else {
-							$unit = '';
-						}
-						$h .= \util\TextUi::money($eItem['unitPrice']).' '.$unit;
-					$h .= '</td>';
-
-					$h .= '<td class="text-end">';
-						if($eItem['price'] !== NULL) {
-							$h .= \util\TextUi::money($eItem['price']);
-							$h .= $eItem['sale']['hasVat'] ? ' <span class="util-annotation">'.$eItem['sale']->getTaxes().'</span>' : '';
-						}
-					$h .= '</td>';
-
+					$h .= '<th>'.s("Date").'</th>';
+					$h .= '<th class="text-center">'.s("Vente").'</th>';
+					$h .= '<th>'.s("Client").'</th>';
+					$h .= '<th class="text-end">'.s("Quantité").'</th>';
+					$h .= '<th class="text-end item-product-unit-price">'.ItemUi::p('unitPrice')->label.'</th>';
+					$h .= '<th class="text-end">'.ItemUi::p('price')->label.'</th>';
 				$h .= '</tr>';
+			$h .= '</thead>';
+			$h .= '<tbody>';
 
-			}
+				foreach($cItem as $eItem) {
+
+					$h .= '<tr>';
+
+						$h .= '<td>';
+							$h .= \util\DateUi::numeric($eItem['deliveredAt']);
+						$h .= '</td>';
+
+						$h .= '<td class="text-center">';
+							$h .= '<a href="/vente/'.$eItem['sale']['id'].'" class="btn btn-sm btn-outline-primary">'.$eItem['sale']->getNumber().'</a> ';
+						$h .= '</td>';
+
+						$h .= '<td>';
+							$h .= CustomerUi::link($eItem['customer']);
+						$h .= '</td>';
+
+						$h .= '<td class="text-end">';
+							$h .= \selling\UnitUi::getValue($eItem['quantity'], $eItem['unit'], TRUE);
+						$h .= '</td>';
+
+						$h .= '<td class="text-end item-product-unit-price">';
+							if($eItem['unit']) {
+								$unit = '<span class="util-annotation">'.\selling\UnitUi::getBy($eItem['unit'], short: TRUE).'</span>';
+							} else {
+								$unit = '';
+							}
+							$h .= \util\TextUi::money($eItem['unitPrice']).' '.$unit;
+						$h .= '</td>';
+
+						$h .= '<td class="text-end">';
+							if($eItem['price'] !== NULL) {
+								$h .= \util\TextUi::money($eItem['price']);
+								$h .= $eItem['sale']['hasVat'] ? ' <span class="util-annotation">'.$eItem['sale']->getTaxes().'</span>' : '';
+							}
+						$h .= '</td>';
+
+					$h .= '</tr>';
+
+				}
+
+			$h .= '</tbody>';
 
 		$h .= '</table>';
 

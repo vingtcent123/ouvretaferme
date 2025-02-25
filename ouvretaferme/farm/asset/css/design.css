@@ -102,7 +102,6 @@ a.nav-year:hover {
 
 	body[data-template~="farm"] main  {
 		grid-area: main;
-		background-color: var(--background);
 	}
 
 	body[data-template~="farm"] main .container {
@@ -114,7 +113,6 @@ a.nav-year:hover {
 
 	body[data-template~="farm"] main .container.farm-template-main-title {
 		height: var(--nav-height);
-		background: linear-gradient(342deg, var(--background-dark) 0, var(--background-dark) 50%, #e2e2e8 100%);
 		margin-bottom: 1rem;
 		margin-top: 0;
 		position: relative;

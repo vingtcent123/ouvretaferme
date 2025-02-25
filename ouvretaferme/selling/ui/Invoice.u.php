@@ -377,7 +377,7 @@ class InvoiceUi {
 						$sales .= $this->getSales($form, $cSaleMore, FALSE);
 
 					} else {
-						$sales .= '<div class="util-info">'.s("Il n'y a aucune vente de moins de {value} jours à afficher pour ce client. Seules les ventes déjà livrées et pour lesquelles aucune facture n'a été éditée par ailleurs peuvent être facturées.", $search->get('delivered')).'</div>';
+						$sales .= '<div class="util-empty">'.s("Il n'y a aucune vente de moins de {value} jours à afficher pour ce client. Seules les ventes déjà livrées et pour lesquelles aucune facture n'a été éditée par ailleurs peuvent être facturées.", $search->get('delivered')).'</div>';
 					}
 
 				}

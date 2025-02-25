@@ -167,7 +167,7 @@ class CustomerUi {
 	public function getList(\farm\Farm $eFarm, \Collection $cCustomer, ?int $nCustomer = NULL, \Search $search = new \Search(), ?int $page = NULL) {
 
 		if($cCustomer->empty()) {
-			return '<div class="util-info">'.s("Il n'y a aucun client à afficher.").'</div>';
+			return '<div class="util-empty">'.s("Il n'y a aucun client à afficher.").'</div>';
 		}
 
 		$year = date('Y');
@@ -599,7 +599,7 @@ class CustomerUi {
 			$h .= $this->write('update', $form, $eCustomer);
 
 			$h .= '<div class="customer-form-category customer-form-private customer-form-pro">';
-				$h .= '<div class="util-block-flat bg-background-light">';
+				$h .= '<div class="util-block bg-background-light">';
 					$h .= $form->group(content: '<h4>'.s("Gestion de la communication par e-mail").'</h4>');
 					$h .= $form->dynamicGroup($eCustomer, 'emailOptOut');
 					$h .= $form->group(
@@ -626,7 +626,7 @@ class CustomerUi {
 
 		$eCustomer->expects(['user']);
 
-		$h = '<div class="util-block-flat bg-background-light customer-form-type">';
+		$h = '<div class="util-block bg-background-light customer-form-type">';
 			$h .= '<div class="customer-form-category customer-form-pro">';
 				$h .= $form->group(content: '<h4>'.s("Client professionnel").'</h4>');
 			$h .= '</div>';
