@@ -276,7 +276,6 @@ body[data-template~="panel"] nav {
 /* Header */
 body[data-template~="default"] header {
 	padding: 1.5rem 0;
-	background: linear-gradient(135deg, var(--background) 0%, transparent 100%);
 }
 
 @media (min-height: 768px) and (min-width: 768px) {

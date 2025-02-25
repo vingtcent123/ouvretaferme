@@ -105,7 +105,7 @@ class OrderUi {
 
 		$h = '<div class="stick-xs">';
 
-			$h .= '<table class="table-block">';
+			$h .= '<table class="table-block tr-even">';
 
 				$h .= '<thead>';
 					$h .= '<tr>';
