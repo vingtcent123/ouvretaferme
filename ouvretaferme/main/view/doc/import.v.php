@@ -205,7 +205,7 @@ new AdaptativeView('index', function($data, DocTemplate $t) {
 			],
 		];
 
-		echo '<table class="table-block">';
+		echo '<table>';
 			echo '<thead>';
 				echo '<tr>';
 					echo '<th>'.s("Type de donnée").'</th>';

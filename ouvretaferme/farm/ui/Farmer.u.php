@@ -274,7 +274,7 @@ class FarmerUi {
 
 			$h .= '<div class="util-overflow-sm">';
 
-				$h .= '<table class="table-block farm-farmer-table">';
+				$h .= '<table class="farm-farmer-table">';
 					$h .= '<thead>';
 						$h .= '<tr>';
 							$h .= '<th>'.s("Nom").'</th>';

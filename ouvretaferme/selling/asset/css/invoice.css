@@ -1,6 +1,5 @@
 td.invoice-item-date {
 	text-transform: uppercase;
-	background-color: var(--background);
 	border-bottom: 1px solid var(--border);
 	font-weight: bold;
 }

@@ -477,7 +477,7 @@ class DateUi {
 
 		$h = '<div class="dates-item-wrapper stick-sm util-overflow-sm">';
 
-			$h .= '<table class="table-block sale-item-table tr-even">';
+			$h .= '<table class="sale-item-table tr-even">';
 
 				$h .= '<thead>';
 

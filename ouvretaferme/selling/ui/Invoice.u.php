@@ -80,7 +80,7 @@ class InvoiceUi {
 
 			$columns = 7;
 
-			$h .= '<table class="table-block tr-even">';
+			$h .= '<table class="tr-even">';
 
 				$h .= '<thead>';
 					$h .= '<tr>';
@@ -114,19 +114,22 @@ class InvoiceUi {
 							$h .= '<tbody>';
 						}
 
-						$h .= '<tr>';
-							$h .= '<th class="td-checkbox">';
-								$h .= '<label title="'.s("Cocher ces factures / Décocher ces factures").'">';
-									$h .= '<input type="checkbox" class="batch-all" onclick="Invoice.toggleDaySelection(this)"/>';
-								$h .= '</label>';
-							$h .= '</th>';
-							$h .= '<td colspan="'.$columns.'" class="invoice-item-date">';
-								$h .= match($currentSubtitle) {
-									currentDate() => s("Aujourd'hui"),
-									default => \util\DateUi::textual($currentSubtitle)
-								};
-							$h .= '</td>';
-						$h .= '</tr>';
+							$h .= '<tr class="tr-title">';
+								$h .= '<th class="td-checkbox">';
+									$h .= '<label title="'.s("Cocher ces factures / Décocher ces factures").'">';
+										$h .= '<input type="checkbox" class="batch-all" onclick="Invoice.toggleDaySelection(this)"/>';
+									$h .= '</label>';
+								$h .= '</th>';
+								$h .= '<td colspan="'.$columns.'" class="invoice-item-date">';
+									$h .= match($currentSubtitle) {
+										currentDate() => s("Aujourd'hui"),
+										default => \util\DateUi::textual($currentSubtitle)
+									};
+								$h .= '</td>';
+							$h .= '</tr>';
+
+						$h .= '</tbody>';
+						$h .= '<tbody>';
 
 						$previousSubtitle = $currentSubtitle;
 
@@ -502,7 +505,7 @@ class InvoiceUi {
 
 	protected function getCustomers(\util\FormUi $form, \farm\Farm $eFarm, \Collection $cSale): string {
 
-		$h = '<table class="tr-even table-block">';
+		$h = '<table class="tr-even">';
 			$h .= '<tr>';
 				$h .= '<th>';
 					$h .= '<input type="checkbox" '.attr('onclick', 'CheckboxField.all(this, \'[name^="sales"]\')').'"/>';
@@ -607,7 +610,7 @@ class InvoiceUi {
 	
 	protected function getSales(\util\FormUi $form, \Collection $cSale, bool $checked): string {
 		
-		$h = '<table class="tr-even table-block">';
+		$h = '<table class="tr-even">';
 			$h .= '<tr>';
 				$h .= '<th>';
 

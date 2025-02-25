@@ -175,7 +175,7 @@ class SaleUi {
 
 		$previousSubtitle = NULL;
 
-		$h .= '<table class="sale-item-table table-block tr-even">';
+		$h .= '<table class="sale-item-table tr-even">';
 
 			$h .= '<thead>';
 
@@ -260,7 +260,7 @@ class SaleUi {
 								$h .= '<tbody>';
 							}
 
-							$h .= '<tr>';
+							$h .= '<tr class="tr-title">';
 								$h .= '<th class="td-checkbox">';
 									$h .= '<label title="'.s("Cocher ces ventes / Décocher ces ventes").'">';
 										$h .= '<input type="checkbox" class="batch-all" onclick="Sale.toggleDaySelection(this)"/>';
@@ -274,6 +274,8 @@ class SaleUi {
 									};
 								$h .= '</td>';
 							$h .= '</tr>';
+								$h .= '</tbody>';
+								$h .= '<tbody>';
 
 							$previousSubtitle = $currentSubtitle;
 
@@ -290,7 +292,7 @@ class SaleUi {
 
 							if($currentSegment->is($previousSegment) === FALSE) {
 
-								$h .= '<tr>';
+								$h .= '<tr class="tr-title">';
 									$h .= '<td colspan="'.($columns + 1).'" class="sale-item-date">';
 										if($eSale['shopPoint']->empty()) {
 											$h .= s("Aucun mode de livraison");
@@ -1267,7 +1269,7 @@ class SaleUi {
 				$form = new \util\FormUi();
 
 				$h .= '<div id="sale-money-'.$eSale['id'].'" class="hide util-overflow-sm">';
-					$h .= '<table class="table-block">';
+					$h .= '<table>';
 						$h .= '<tr>';
 							$h .= '<td><h3 class="mb-0">'.s("Donné").'</h3></td>';
 							foreach($values as $value) {

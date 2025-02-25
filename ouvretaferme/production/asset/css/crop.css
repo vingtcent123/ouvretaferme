@@ -140,10 +140,6 @@ div.crop-write-spacing-values {
 	align-items: center;
 }
 
-tr.crop-list-title-plant {
-	background-color: white
-}
-
 tr.crop-list-title-plant td {
 	font-size: 0.9rem;
 	line-height: 1;

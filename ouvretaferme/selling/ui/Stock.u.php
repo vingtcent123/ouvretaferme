@@ -49,7 +49,7 @@ class StockUi {
 
 		$h .= '<div class="util-overflow-sm stick-xs">';
 
-		$h .= '<table class="stock-item-table table-block tr-even">';
+		$h .= '<table class="stock-item-table tr-even">';
 
 			$h .= '<thead>';
 
@@ -264,7 +264,7 @@ class StockUi {
 
 			$h .= '<div class="stick-xs">';
 
-			$h .= '<table class="stock-item-table table-block tr-even">';
+			$h .= '<table class="stock-item-table tr-even">';
 
 				$h .= '<thead>';
 
@@ -345,7 +345,7 @@ class StockUi {
 
 			$h .= '<div class="util-overflow-xs stick-xs">';
 
-			$h .= '<table class="stock-item-table table-block tr-even">';
+			$h .= '<table class="stock-item-table tr-even">';
 
 				$h .= '<thead>';
 

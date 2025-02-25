@@ -107,7 +107,7 @@ class ItemUi {
 
 			$h .= '<div class="stick-xs">';
 
-				$h .= '<table class="table-block tbody-even item-item-table '.($withPackaging ? 'item-item-table-with-packaging' : '').'">';
+				$h .= '<table class="tbody-even item-item-table '.($withPackaging ? 'item-item-table-with-packaging' : '').'">';
 
 					$h .= '<thead>';
 						$h .= '<tr>';
@@ -347,7 +347,7 @@ class ItemUi {
 
 		}
 
-		$h = '<table class="table-block tr-even stick-xs">';
+		$h = '<table class="tr-even stick-xs">';
 
 			$h .= '<thead>';
 				$h .= '<tr>';
@@ -466,7 +466,7 @@ class ItemUi {
 
 		foreach([$ccItemFirst, $ccItemLast] as $ccItemChunk) {
 
-			$h .= '<table class="table-block">';
+			$h .= '<table>';
 
 				$h .= '<tbody>';
 

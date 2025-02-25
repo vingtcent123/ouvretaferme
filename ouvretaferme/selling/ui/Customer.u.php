@@ -173,7 +173,7 @@ class CustomerUi {
 		$year = date('Y');
 		$yearBefore = $year - 1;
 
-		$h = '<table class="customer-item-table table-block tr-even stick-xs">';
+		$h = '<table class="customer-item-table tr-even stick-xs">';
 
 			$h .= '<thead>';
 				$h .= '<tr>';

@@ -829,7 +829,7 @@ class FlowUi {
 
 		$display = ($cFlow->count() > 1) ? 'checkbox' : 'hidden';
 
-		$h = '<table class="table-block stick-xs">';
+		$h = '<table class="stick-xs">';
 
 			$h .= '<thead>';
 				$h .= '<tr>';

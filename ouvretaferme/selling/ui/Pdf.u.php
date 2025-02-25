@@ -992,7 +992,7 @@ class PdfUi {
 
 	protected function getSalesSummary(\Collection $cItem): string {
 
-		$h = '<table class="pdf-sales-summary table-block tr-even">';
+		$h = '<table class="pdf-sales-summary tr-even">';
 
 			$h .= '<thead>';
 				$h .= '<tr>';

@@ -18,7 +18,7 @@ class AbsenceUi {
 
 			$h .= '<div class="util-overflow-sm">';
 
-				$h .= '<table class="table-block tr-even">';
+				$h .= '<table class="tr-even">';
 					$h .= '<thead>';
 						$h .= '<tr>';
 							$h .= '<th>'.s("Début").'</th>';

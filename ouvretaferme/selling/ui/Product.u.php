@@ -122,7 +122,7 @@ class ProductUi {
 
 		$h .= '<div class="product-item-wrapper stick-md">';
 
-		$h .= '<table class="product-item-table table-block tr-even">';
+		$h .= '<table class="product-item-table tr-even">';
 
 			$h .= '<thead>';
 

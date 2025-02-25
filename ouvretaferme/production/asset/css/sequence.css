@@ -49,7 +49,6 @@ span.sequence-header-description-icon {
 @media (min-width: 768px) {
 
 	main table.sequence-item thead {
-		background: var(--background-light);
 		position: sticky;
 		top: calc(var(--mainSticky) - 1px);
 		z-index: 1;

@@ -120,16 +120,23 @@ class SequenceUi {
 
 				$ePlant = $cCrop->first()['plant'];
 
-				$h .= '<tr class="crop-list-title-plant">';
-					$h .= '<td colspan="'.($search?->get('status') === Sequence::ACTIVE ? 6 : 5).'">';
-						$h .= \plant\PlantUi::getVignette($ePlant, '2rem').' ';
-						$h .= encode($ePlant['name']);
-					$h .= '</td>';
-				$h .= '</tr>';
+				$h .= '<tbody>';
 
-				foreach($cCrop as $eCrop) {
-					$h .= $display($eCrop);
-				}
+					$h .= '<tr class="crop-list-title-plant">';
+						$h .= '<td colspan="'.($search?->get('status') === Sequence::ACTIVE ? 6 : 5).'">';
+							$h .= \plant\PlantUi::getVignette($ePlant, '2rem').' ';
+							$h .= encode($ePlant['name']);
+						$h .= '</td>';
+					$h .= '</tr>';
+
+				$h .= '</tbody>';
+				$h .= '<tbody>';
+
+					foreach($cCrop as $eCrop) {
+						$h .= $display($eCrop);
+					}
+
+				$h .= '</tbody>';
 
 			}
 
@@ -187,7 +194,7 @@ class SequenceUi {
 
 		$h = '<div class="util-overflow-sm stick-xs">';
 
-			$h .= '<table class="sequence-item tr-even table-block">';
+			$h .= '<table class="sequence-item tbody-even">';
 
 				$h .= '<thead>';
 					$h .= '<tr>';
@@ -202,7 +209,6 @@ class SequenceUi {
 					$h .= '</tr>';
 
 				$h .= '</thead>';
-				$h .= '<tbody>';
 
 				if($browse) {
 					$h .= $browse($ccCrop, $display);
@@ -213,8 +219,6 @@ class SequenceUi {
 					}
 
 				}
-
-				$h .= '</tbody>';
 
 			$h .= '</table>';
 
