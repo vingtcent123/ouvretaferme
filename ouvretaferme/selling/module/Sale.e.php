@@ -772,7 +772,8 @@ class Sale extends SaleElement {
 					return FALSE;
 				}
 
-				if($this['from'] === Sale::SHOP) { // La date est gérée directement dans la boutique
+				// La date est gérée directement dans la boutique
+				if($this['from'] === Sale::SHOP) {
 
 					try {
 						$this->expects(['shopDate']);
@@ -790,15 +791,34 @@ class Sale extends SaleElement {
 					return TRUE;
 
 				} else {
+
 					if(
 						($for === 'create') or
 						($for === 'update' and $this->acceptWriteDeliveredAt())
 					) {
+
 						return \Filter::check('date', $date);
+
 					} else {
 						return FALSE;
 					}
+
 				}
+
+			},
+
+			'deliveredAt.composition' => function(?string $date, \BuildProperties $p) use ($for): bool {
+
+				if($this->isComposition() === FALSE) {
+					return TRUE;
+				} else {
+					return Sale::model()
+						->whereComposition($this['composition'])
+						->whereDeliveredAt($date)
+						->whereId('!=', $this, if: $for === 'update')
+						->exists() === FALSE;
+				}
+
 
 			},
 

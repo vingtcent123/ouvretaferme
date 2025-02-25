@@ -1,7 +1,7 @@
 <?php
 new AdaptativeView('/vente/{id}', function($data, FarmTemplate $t) {
 
-	$t->title = s("Vente #{value}", $data->e->getNumber());
+	$t->title = \selling\SaleUi::getName($data->e);
 
 	$t->tab = 'selling';
 	$t->subNav = (new \farm\FarmUi())->getSellingSubNav($data->eFarm);
@@ -11,7 +11,6 @@ new AdaptativeView('/vente/{id}', function($data, FarmTemplate $t) {
 	echo (new \selling\SaleUi())->getRelativeSales($data->e, $data->relativeSales);
 
 	echo (new \selling\SaleUi())->getContent($data->e, $data->cPdf);
-	echo (new \selling\SaleUi())->getStats($data->e);
 
 	echo (new \selling\ItemUi())->getBySale($data->e, $data->cItem);
 	echo (new \selling\SaleUi())->getMarket($data->eFarm, $data->ccSaleMarket);

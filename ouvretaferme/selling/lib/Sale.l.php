@@ -27,16 +27,20 @@ class SaleLib extends SaleCrud {
 
 				$properties[] = 'deliveredAt';
 
-				if($e->hasDiscount()) {
-					$properties[] = 'discount';
-				}
+				if($e->isComposition() === FALSE) {
 
-				if($e->hasShipping()) {
-					$properties[] = 'shipping';
-
-					if($e['hasVat']) {
-						$properties[] = 'shippingVatRate';
+					if($e->hasDiscount()) {
+						$properties[] = 'discount';
 					}
+
+					if($e->hasShipping()) {
+						$properties[] = 'shipping';
+
+						if($e['hasVat']) {
+							$properties[] = 'shippingVatRate';
+						}
+					}
+
 				}
 
 			}
@@ -494,7 +498,25 @@ class SaleLib extends SaleCrud {
 
 		$e['document'] = ConfigurationLib::getNextDocumentSales($e['farm']);
 
-		parent::create($e);
+		try {
+
+			parent::create($e);
+
+		} catch(\DuplicateException $e) {
+
+			switch($e->getInfo()['duplicate']) {
+
+				case ['composition', 'deliveredAt'] :
+					Sale::fail('deliveredAt.composition');
+					break;
+
+			}
+
+			Sale::model()->rollBack();
+
+			return;
+
+		}
 
 		HistoryLib::createBySale($e, 'sale-created');
 
@@ -797,7 +819,10 @@ class SaleLib extends SaleCrud {
 		Sale::model()->beginTransaction();
 
 		$deleted = Sale::model()
-			->wherePreparationStatus('IN', $e->getDeleteStatuses()) // Gestion parfaite de la concurrence
+			->or(
+				fn() => $this->wherePreparationStatus('IN', $e->getDeleteStatuses()), // NULL pas géré
+				fn() => $this->wherePreparationStatus(NULL)
+			) // Gestion parfaite de la concurrence
 			->wherePaymentStatus('IN', $e->getDeletePaymentStatuses())
 			->delete($e);
 

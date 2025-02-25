@@ -889,8 +889,8 @@ class DateUi {
 		$h .= '</div>';
 
 		if($eDate['description'] !== NULL) {
-			$h .= '<h3>'.s("Complément d'information pour cette vente").'</h3>';
 			$h .= '<div class="util-block" style="margin-bottom: 2rem">';
+				$h .= '<h4>'.s("Complément d'information pour cette vente").'</h4>';
 				$h .= (new \editor\EditorUi())->value($eDate['description']);
 			$h .= '</div>';
 		}

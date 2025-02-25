@@ -50,7 +50,11 @@
 
 	})
 	->doCreate(function($data) {
-		throw new RedirectAction(\selling\SaleUi::url($data->e).'?success=Sale::created');
+		throw new RedirectAction(
+			$data->e->isComposition() ?
+				\selling\ProductUi::url($data->e['composition']).'?success=Product::createdComposition' :
+				\selling\SaleUi::url($data->e).'?success=Sale::created'
+		);
 	});
 
 (new \selling\SalePage())
@@ -204,7 +208,7 @@
 	->quick(['deliveredAt', 'shipping'], validate: ['canUpdate', 'isOpen'])
 	->update()
 	->doUpdate(function($data) {
-		throw new ReloadAction('selling', 'Sale::updated');
+		throw new ReloadAction('selling', $data->e->isComposition() ? 'Product::updatedComposition' : 'Sale::updated');
 	})
 	->read('updateShop', function($data) {
 
@@ -299,7 +303,12 @@
 
 		\selling\SaleLib::delete($data->e);
 
-		throw new RedirectAction(\farm\FarmUi::urlSellingSalesAll($data->e['farm']).'?success=selling:Sale::deleted');
+		throw new RedirectAction(
+			$data->e->isComposition() ?
+				\selling\ProductUi::url($data->e['composition']).'?success=selling:Product::deletedComposition' :
+				\farm\FarmUi::urlSellingSalesAll($data->e['farm']).'?success=selling:Sale::deleted'
+		);
+
 	});
 
 (new Page(function($data) {

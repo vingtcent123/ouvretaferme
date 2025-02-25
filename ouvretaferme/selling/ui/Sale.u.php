@@ -1001,9 +1001,11 @@ class SaleUi {
 					$h .= '<h1 class="mb-0">'.encode($eSale['composition']['name']).'</h1>';
 				}
 			$h .= '</div>';
-			$h .= '<div>';
-				$h .= $this->getUpdate($eSale, 'btn-primary');
-			$h .= '</div>';
+			if($eSale->isComposition() === FALSE) {
+				$h .= '<div>';
+					$h .= $this->getUpdate($eSale, 'btn-primary');
+				$h .= '</div>';
+			}
 
 		$h .= '</div>';
 
@@ -1217,20 +1219,41 @@ class SaleUi {
 				if($eSale['hasVat']) {
 
 					if($onlyIncludingVat === FALSE) {
-						$h .= '<li>';
-							$h .= '<h5>'.s("Montant HT").'</h5>';
-							$h .= \util\TextUi::money($eSale['priceExcludingVat'] ?? 0);
-						$h .= '</li>';
-						$h .= '<li>';
-							$h .= '<h5>'.s("TVA").'</h5>';
-							$h .= \util\TextUi::money($eSale['vat'] ?? 0);
-						$h .= '</li>';
+
+						if(
+							$eSale->isComposition() === FALSE or
+							$eSale['taxes'] === Sale::EXCLUDING
+						) {
+
+							$h .= '<li>';
+								$h .= '<h5>'.s("Montant HT").'</h5>';
+								$h .= \util\TextUi::money($eSale['priceExcludingVat'] ?? 0);
+							$h .= '</li>';
+
+						}
+
+						if($eSale->isComposition() === FALSE) {
+
+							$h .= '<li>';
+								$h .= '<h5>'.s("TVA").'</h5>';
+								$h .= \util\TextUi::money($eSale['vat'] ?? 0);
+							$h .= '</li>';
+
+						}
+
 					}
 
-					$h .= '<li>';
-						$h .= '<h5>'.s("Montant TTC").'</h5>';
-						$h .= \util\TextUi::money($eSale['priceIncludingVat'] ?? 0);
-					$h .= '</li>';
+					if(
+						$eSale->isComposition() === FALSE or
+						$eSale['taxes'] === Sale::INCLUDING
+					) {
+
+						$h .= '<li>';
+							$h .= '<h5>'.s("Montant TTC").'</h5>';
+							$h .= \util\TextUi::money($eSale['priceIncludingVat'] ?? 0);
+						$h .= '</li>';
+
+					}
 
 				} else {
 					$h .= '<li>';
@@ -1298,7 +1321,7 @@ class SaleUi {
 
 	}
 
-	protected function getUpdate(Sale $eSale, string $btn): string {
+	public function getUpdate(Sale $eSale, string $btn): string {
 
 		$primaryList = '';
 
@@ -1362,7 +1385,12 @@ class SaleUi {
 		$secondaryList = '';
 
 		if($eSale->acceptDelete()) {
-			$secondaryList .= '<a data-ajax="/selling/sale:doDelete" post-id="'.$eSale['id'].'" class="dropdown-item" data-confirm="'.s("Confirmer la suppression de la vente ?").'">';
+
+			$confirm = $eSale->isComposition() ?
+				s("Confirmer la suppression de la composition ?") :
+				s("Confirmer la suppression de la vente ?");
+
+			$secondaryList .= '<a data-ajax="/selling/sale:doDelete" post-id="'.$eSale['id'].'" class="dropdown-item" data-confirm="'.$confirm.'">';
 				$secondaryList .= match($eSale->isComposition()) {
 					TRUE => s("Supprimer la composition"),
 					FALSE => s("Supprimer la vente"),
@@ -1699,19 +1727,24 @@ class SaleUi {
 
 				$h .= $form->dynamicGroup($eSale, 'deliveredAt');
 
-				if($eSale->hasDiscount()) {
-					$h .= $form->dynamicGroup($eSale, 'discount');
-				}
+				if($eSale->isComposition() === FALSE) {
 
-				if($eSale->hasShipping()) {
+					if($eSale->hasDiscount()) {
+						$h .= $form->dynamicGroup($eSale, 'discount');
+					}
 
-					$h .= $form->dynamicGroup($eSale, 'shipping');
+					if($eSale->hasShipping()) {
 
-					if($eSale['hasVat']) {
-						$h .= $form->dynamicGroup($eSale, 'shippingVatRate');
+						$h .= $form->dynamicGroup($eSale, 'shipping');
+
+						if($eSale['hasVat']) {
+							$h .= $form->dynamicGroup($eSale, 'shippingVatRate');
+						}
+
 					}
 
 				}
+
 			}
 
 			$h .= $form->dynamicGroup($eSale, 'comment');
@@ -1723,7 +1756,7 @@ class SaleUi {
 		$h .= $form->close();
 
 		return new \Panel(
-			title: s("Modifier une vente"),
+			title: $eSale->isComposition() ? s("Modifier une composition") : s("Modifier une vente"),
 			body: $h
 		);
 

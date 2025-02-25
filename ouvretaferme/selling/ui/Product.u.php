@@ -595,12 +595,15 @@ class ProductUi {
 
 	public function getComposition(Product $eProduct, \Collection $cSale): string {
 
-		$h = '';
+		$h = '<div class="util-title">';
+			$h .= '<div></div>';
+			$h .= '<div>';
+				$h .= '<a href="/selling/sale:create?farm='.$eProduct['farm']['id'].'&composition='.$eProduct['id'].'" class="btn btn-primary">'.\Asset::icon('plus-circle').' '.s("Nouvelle composition").'</a>';
+			$h .= '</div>';
+		$h .= '</div>';
 
 		foreach($cSale as $eSale) {
-
 			$h .= (new \selling\ItemUi())->getBySale($eSale, $eSale['cItem']);
-
 		}
 
 		return $h;
@@ -717,7 +720,9 @@ class ProductUi {
 		$h .= '<div class="dropdown-list">';
 			$h .= '<div class="dropdown-title">'.encode($eProduct->getName()).'</div>';
 			$h .= '<a href="/selling/product:update?id='.$eProduct['id'].'" class="dropdown-item">'.s("Modifier le produit").'</a>';
-			$h .= '<a href="/selling/sale:create?farm='.$eProduct['farm']['id'].'&composition='.$eProduct['id'].'" class="dropdown-item">'.s("Nouvelle composition").'</a>';
+			if($eProduct['composition']) {
+				$h .= '<a href="/selling/sale:create?farm='.$eProduct['farm']['id'].'&composition='.$eProduct['id'].'" class="dropdown-item">'.s("Nouvelle composition").'</a>';
+			}
 			$h .= '<a data-ajax="/selling/product:doDelete" post-id="'.$eProduct['id'].'" class="dropdown-item" data-confirm="'.s("Confirmer la suppression du produit ?").'">'.s("Supprimer le produit").'</a>';
 			if($eProduct->acceptEnableStock() or $eProduct->acceptDisableStock()) {
 				$h .= '<div class="dropdown-divider"></div>';

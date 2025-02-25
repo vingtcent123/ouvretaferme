@@ -16,7 +16,14 @@ class ItemUi {
 
 	public function getBySale(Sale $eSale, \Collection $cItem) {
 
-		$h = '';
+		$h = '<div class="mb-2">';
+
+		if($eSale->isComposition()) {
+			$h .= '<div class="h-line">';
+				$h .= '<h3>'.s("Composition du {value}", \util\DateUi::numeric($eSale['deliveredAt'])).'</h3>';
+				$h .= new SaleUi()->getUpdate($eSale, 'btn-outline-primary');
+			$h .= '</div>';
+		}
 
 		if($eSale->acceptCreateItems()) {
 
@@ -27,10 +34,10 @@ class ItemUi {
 				'sale' => $eSale
 			]);
 
-			$new = '<div id="item-create" data-sale="'.$eSale['id'].'">';
+			$new = '<div id="item-create-'.$eSale['id'].'" data-sale="'.$eSale['id'].'">';
 
-				$new .= $form->dynamicField($eItem, 'product', function($d) {
-					$d->autocompleteDispatch = '#item-create';
+				$new .= $form->dynamicField($eItem, 'product', function($d) use ($eSale) {
+					$d->autocompleteDispatch = '#item-create-'.$eSale['id'];
 					$d->placeholder = s("Ajouter un produit");
 					$d->attributes['class'] = 'form-control-lg';
 				});
@@ -45,19 +52,17 @@ class ItemUi {
 			$new = '';
 		}
 
+		$h .= (new \selling\SaleUi())->getStats($eSale);
+
 		if($eSale['comment']) {
-			$h .= '<h3>'.s("Observations").'</h3>';
 			$h .= '<div class="util-block">';
+				$h .= '<h4>'.s("Observations").'</h4>';
 				$h .= encode($eSale['comment']);
 			$h .= '</div>';
 		}
 
-		$h .= '<div class="h-line">';
-
-			if($eSale->isComposition()) {
-				$h .= '<h3>'.s("Composition du {value}", \util\DateUi::numeric($eSale['deliveredAt'])).'</h3>';
-			} else {
-
+		if($eSale->isComposition() === FALSE) {
+			$h .= '<div class="h-line">';
 				if($eSale->isMarketPreparing()) {
 					$h .= '<h3>'.s("Préparation du marché").'</h3>';
 				} else {
@@ -68,9 +73,8 @@ class ItemUi {
 						$h .= \Asset::icon('plus-circle').' '.s("Ajouter plusieurs produits");
 					$h .= '</a>';
 				}
-
-			}
-		$h .= '</div>';
+			$h .= '</div>';
+		}
 
 		if($cItem->empty()) {
 
@@ -147,7 +151,7 @@ class ItemUi {
 									}
 								$h .= '</th>';
 							}
-							if($eSale['hasVat']) {
+							if($eSale['hasVat'] and $eSale->isComposition() === FALSE) {
 								$columns++;
 								$h .= '<th class="item-item-vat text-center hide-sm-down">'.s("TVA").'</th>';
 							}
@@ -300,7 +304,7 @@ class ItemUi {
 									$h .= '</td>';
 								}
 
-								if($eSale['hasVat']) {
+								if($eSale['hasVat'] and $eSale->isComposition() === FALSE) {
 
 									$h .= '<td class="item-item-vat text-center hide-sm-down">';
 										$h .= $eItem->quick('vatRate', s('{value} %', $eItem['vatRate']));
@@ -329,7 +333,7 @@ class ItemUi {
 			$h .= '</div>';
 		}
 
-		$h .= '<br/>';
+		$h .= '</div>';
 
 		return $h;
 

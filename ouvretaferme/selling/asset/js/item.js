@@ -1,4 +1,4 @@
-document.delegateEventListener('autocompleteSelect', '#item-create', function(e) {
+document.delegateEventListener('autocompleteSelect', '[id^="item-create"]', function(e) {
 
 	if(e.detail.value === '') {
 		return '';
@@ -120,7 +120,12 @@ class Item {
 
 		const wrapper = qs('#item-create-tabs');
 
-		const list = wrapper.qsa('[name^="product["]:checked');
+		// Pas dans le tableau des produits
+		if(wrapper === null) {
+			return;
+		}
+
+		const list = wrapper.qsa('input[name^="product["]:checked');
 
 		let amount = 0;
 		list.forEach(node => amount += parseFloat(node.firstParent('.items-products').qs('input[name^="price["]').value) || 0.0);

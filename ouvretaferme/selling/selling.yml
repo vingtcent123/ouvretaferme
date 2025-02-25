@@ -295,11 +295,11 @@ Sale:
   statusDeliveredAt: ?datetime
   INDEX: [
     ["customer"],
-    ["composition"],
     ["shopDate"],
     ["shop"]
   ]
   UNIQUE: [
+    ["composition", "deliveredAt"],
     ["farm", "document"],
   ]
 

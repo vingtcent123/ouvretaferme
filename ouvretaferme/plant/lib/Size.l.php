@@ -42,7 +42,7 @@ class SizeLib extends SizeCrud {
 
 		try {
 			parent::create($e);
-		} catch(\DuplicateException $e) {
+		} catch(\DuplicateException) {
 			Size::fail('name.duplicate');
 		}
 
@@ -52,7 +52,7 @@ class SizeLib extends SizeCrud {
 
 		try {
 			parent::update($e, $properties);
-		} catch(\DuplicateException $e) {
+		} catch(\DuplicateException) {
 			Size::fail('name.duplicate');
 		}
 
