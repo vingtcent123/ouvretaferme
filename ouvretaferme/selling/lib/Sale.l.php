@@ -220,7 +220,7 @@ class SaleLib extends SaleCrud {
 			->whereDeliveredAt('LIKE', '%'.$search->get('deliveredAt').'%', if: $search->get('deliveredAt'))
 			->whereDeliveredAt('>', new \Sql('CURDATE() - INTERVAL '.Sale::model()->format($search->get('delivered')).' DAY'), if: $search->get('delivered'))
 			->wherePreparationStatus($search->get('preparationStatus'), if: $search->get('preparationStatus'))
-			->wherePreparationStatus('!=', NULL)
+			->wherePreparationStatus('!=', Sale::COMPOSITION)
 			->wherePaymentMethod($search->get('paymentMethod'), if: $search->get('paymentMethod'))
 			->whereMarketParent(NULL)
 			->sort($search->buildSort([
@@ -483,8 +483,9 @@ class SaleLib extends SaleCrud {
 
 		// Nouvelle composition de produit
 		if($e->isComposition()) {
-			$e['preparationStatus'] = NULL;
+			$e['preparationStatus'] = Sale::COMPOSITION;
 			$e['market'] = FALSE;
+			$e['stats'] = FALSE;
 		} else {
 			$e->expects(['market']);
 		}
@@ -819,10 +820,7 @@ class SaleLib extends SaleCrud {
 		Sale::model()->beginTransaction();
 
 		$deleted = Sale::model()
-			->or(
-				fn() => $this->wherePreparationStatus('IN', $e->getDeleteStatuses()), // NULL pas géré
-				fn() => $this->wherePreparationStatus(NULL)
-			) // Gestion parfaite de la concurrence
+			->wherePreparationStatus('IN', $e->getDeleteStatuses())
 			->wherePaymentStatus('IN', $e->getDeletePaymentStatuses())
 			->delete($e);
 

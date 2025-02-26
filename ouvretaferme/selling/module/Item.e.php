@@ -36,7 +36,7 @@ class Item extends ItemElement {
 		return (
 			$this->canRead() and
 			$this['sale']['marketParent']->empty() and
-			in_array($this['sale']['preparationStatus'], [NULL, Sale::DRAFT, Sale::CONFIRMED, Sale::PREPARED])
+			in_array($this['sale']['preparationStatus'], [Sale::COMPOSITION, Sale::DRAFT, Sale::CONFIRMED, Sale::PREPARED])
 		);
 
 	}

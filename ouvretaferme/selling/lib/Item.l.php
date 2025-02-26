@@ -449,16 +449,18 @@ class ItemLib extends ItemCrud {
 		$e->expects([
 			'sale' => ['deliveredAt', 'preparationStatus', 'shop', 'shopDate', 'type', 'stats', 'hasVat'],
 		]);
+		
+		$eSale = $e['sale'];
 
-		$e['deliveredAt'] = $e['sale']['deliveredAt'];
-		$e['shop'] = $e['sale']['shop'];
-		$e['shopDate'] = $e['sale']['shopDate'];
+		$e['deliveredAt'] = $eSale['deliveredAt'];
+		$e['shop'] = $eSale['shop'];
+		$e['shopDate'] = $eSale['shopDate'];
 		$e['shopProduct'] ??= new \shop\Product();
-		$e['type'] = $e['sale']['type'];
-		$e['stats'] = $e['sale']['stats'];
-		$e['status'] = $e['sale']['preparationStatus'];
+		$e['type'] = $eSale['type'];
+		$e['stats'] = $eSale['stats'];
+		$e['status'] = $eSale['preparationStatus'];
 
-		if($e['sale']['hasVat'] === FALSE) {
+		if($eSale['hasVat'] === FALSE) {
 			$e['vatRate'] = 0.0;
 		}
 

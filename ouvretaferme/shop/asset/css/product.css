@@ -101,6 +101,10 @@
 
 }
 
+.shop-product-private .shop-product-composition {
+	grid-row: span 2;
+}
+
 .shop-product > * {
 	padding: 0 0.5rem;
 }

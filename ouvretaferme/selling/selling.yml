@@ -167,7 +167,7 @@ Item:
   locked: enum(UNIT_PRICE, NUMBER, PRICE) = PRICE
   vatRate: ?decimal(4, 2, 0.0, 100)
   stats: bool = TRUE
-  status: ?enum(PHP(Sale::model()->getPropertyEnum('preparationStatus')))
+  status: enum(PHP(Sale::model()->getPropertyEnum('preparationStatus')))
   createdAt: datetime = SPECIAL(now)
   deliveredAt: ?date
   INDEX: [
@@ -269,7 +269,7 @@ Sale:
   shippingVatFixed: bool = FALSE
   shipping: ?decimal(8, 2, 0.01, null)
   shippingExcludingVat: ?decimal(8, 2)
-  preparationStatus: ?enum(DRAFT, BASKET, CONFIRMED, SELLING, PREPARED, DELIVERED, CANCELED) = DRAFT
+  preparationStatus: enum(COMPOSITION, DRAFT, BASKET, CONFIRMED, SELLING, PREPARED, DELIVERED, CANCELED) = DRAFT
   paymentStatus: enum(UNDEFINED, WAITING, PROCESSING, PAID, FAILED) = UNDEFINED
   paymentMethod: ?enum(ONLINE_CARD, OFFLINE, TRANSFER, CASH, CARD, CHECK)
   composition: ?selling\Product

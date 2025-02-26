@@ -221,7 +221,7 @@ class Sale extends SaleElement {
 		if($this['marketParent']->notEmpty()) {
 			return FALSE;
 		} else {
-			return in_array($this['preparationStatus'], [NULL, Sale::DRAFT, Sale::CONFIRMED, Sale::PREPARED, Sale::SELLING]);
+			return in_array($this['preparationStatus'], [Sale::COMPOSITION, Sale::DRAFT, Sale::CONFIRMED, Sale::PREPARED, Sale::SELLING]);
 		}
 
 	}
@@ -514,7 +514,7 @@ class Sale extends SaleElement {
 	}
 
 	public function getDeleteStatuses(): array {
-		return [NULL, Sale::DRAFT, Sale::BASKET, Sale::CONFIRMED, Sale::CANCELED];
+		return [Sale::COMPOSITION, Sale::DRAFT, Sale::BASKET, Sale::CONFIRMED, Sale::CANCELED];
 	}
 
 	public function acceptDeletePaymentStatus() {
