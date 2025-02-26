@@ -619,6 +619,15 @@ div.footer-content-legal {
 	justify-content: center;
 }
 
+@media (max-width: 575px) {
+
+	div.footer-content-legal {
+		padding: 1rem;
+		column-gap: 1rem;
+	}
+
+}
+
 div.h-line {
 	width: 100%;
 	display: flex;
