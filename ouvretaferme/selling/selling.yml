@@ -169,7 +169,7 @@ Item:
   stats: bool = TRUE
   status: enum(PHP(Sale::model()->getPropertyEnum('preparationStatus')))
   createdAt: datetime = SPECIAL(now)
-  deliveredAt: ?date
+  deliveredAt: date
   INDEX: [
     ["farm", "customer"],
     ["product"],
@@ -273,6 +273,7 @@ Sale:
   paymentStatus: enum(UNDEFINED, WAITING, PROCESSING, PAID, FAILED) = UNDEFINED
   paymentMethod: ?enum(ONLINE_CARD, OFFLINE, TRANSFER, CASH, CARD, CHECK)
   compositionOf: ?selling\Product
+  compositionEndAt: ?date
   market: bool = FALSE
   marketSales: ?int(0, null)
   marketParent: ?selling\Sale
@@ -291,7 +292,7 @@ Sale:
   stats: bool = TRUE
   createdAt: datetime = SPECIAL(now)
   createdBy: ?user\User = SPECIAL(user)
-  deliveredAt: ?date
+  deliveredAt: date
   statusDeliveredAt: ?datetime
   INDEX: [
     ["customer"],

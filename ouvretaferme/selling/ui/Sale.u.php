@@ -34,7 +34,7 @@ class SaleUi {
 
 	public static function getName(Sale $eSale): string {
 
-		$eSale->expects(['id', 'priceExcludingVat', 'market', 'compositionOf']);
+		$eSale->expects(['id', 'priceExcludingVat', 'market', 'compositionOf', 'compositionEndAt']);
 
 		if($eSale->isComposition()) {
 			return s("Composition du {value}", DateUi::numeric($eSale['deliveredAt']));

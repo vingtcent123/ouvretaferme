@@ -1,6 +1,8 @@
 <?php
 namespace selling;
 
+use user\ConnectionLib;
+
 class ItemUi {
 
 	public function __construct() {
@@ -21,7 +23,15 @@ class ItemUi {
 		if($eSale->isComposition()) {
 			$h .= '<div class="h-line">';
 				$h .= '<h3>';
-					$h .= s("Composition du {value}", \util\DateUi::numeric($eSale['deliveredAt']));
+					if(
+						ConnectionLib::getOnline()['id'] !== 1 or /* à des fins de debug */
+						$eSale['compositionEndAt'] === NULL or
+						$eSale['deliveredAt'] === $eSale['compositionEndAt']
+					) {
+						$h .= s("Composition du {value}", \util\DateUi::numeric($eSale['deliveredAt']));
+					} else {
+						$h .= s("Composition du {from}<small> au {to}</small>", ['from' => \util\DateUi::numeric($eSale['deliveredAt']), 'to' => \util\DateUi::numeric($eSale['compositionEndAt']), 'small' => '<small class="color-muted" style="font-weight: normal">']);
+					}
 					if($eSale->acceptWriteComposition() === FALSE) {
 						$h .= ' '.\Asset::icon('lock-fill');
 					}

@@ -790,7 +790,7 @@ class Sale extends SaleElement {
 
 			},
 
-			'deliveredAt.check' => function(?string &$date) use ($for): bool {
+			'deliveredAt.check' => function(string &$date) use ($for): bool {
 
 				try {
 					$this->expects(['from']);
@@ -834,7 +834,7 @@ class Sale extends SaleElement {
 
 			},
 
-			'deliveredAt.composition' => function(?string $date, \BuildProperties $p) use ($for): bool {
+			'deliveredAt.composition' => function(string $date, \BuildProperties $p) use ($for): bool {
 
 				if($this['compositionOf']->empty()) {
 					return TRUE;
@@ -844,6 +844,17 @@ class Sale extends SaleElement {
 						->whereDeliveredAt($date)
 						->whereId('!=', $this, if: $for === 'update')
 						->exists() === FALSE;
+				}
+
+
+			},
+
+			'deliveredAt.compositionTooLate' => function(string $date, \BuildProperties $p) use ($for): bool {
+
+				if($this['compositionOf']->empty()) {
+					return TRUE;
+				} else {
+					return Sale::testWriteComposition($date);
 				}
 
 

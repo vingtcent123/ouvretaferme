@@ -49,6 +49,7 @@ class AlertUi {
 			'Sale::customer.market' => s("Le logiciel de caisse n'est disponible que pour les points de vente aux particuliers."),
 			'Sale::deliveredAt.check' => s("La date de vente est obligatoire."),
 			'Sale::deliveredAt.composition' => s("Vous avez déjà ajouté une composition pour cette même date."),
+			'Sale::deliveredAt.compositionTooLate' => s("Vous ne pouvez modifier la composition de votre produit que sur les 30 derniers jours."),
 			'Sale::paymentStatus.method' => s("Vous ne pouvez modifier l'état du paiement car le paiement est géré par un moyen de paiement externe"),
 			'Sale::shippingIncludedVat.check' => s("Les frais de livraison doivent être supérieurs à zéro ou laissés vide."),
 			'Sale::shippingExcludedVat.check' => s("Les frais de livraison doivent être supérieurs à zéro ou laissés vide."),

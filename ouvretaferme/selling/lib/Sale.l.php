@@ -481,11 +481,15 @@ class SaleLib extends SaleCrud {
 			'customer',
 		]);
 
+		Sale::model()->beginTransaction();
+
 		// Nouvelle composition de produit
 		if($e->isComposition()) {
+
 			$e['preparationStatus'] = Sale::COMPOSITION;
 			$e['market'] = FALSE;
 			$e['stats'] = FALSE;
+
 		} else {
 			$e->expects(['market']);
 		}
@@ -494,8 +498,6 @@ class SaleLib extends SaleCrud {
 			$e['marketSales'] = 0;
 			$e['paymentStatus'] = Sale::UNDEFINED;
 		}
-
-		Sale::model()->beginTransaction();
 
 		$e['document'] = ConfigurationLib::getNextDocumentSales($e['farm']);
 
@@ -534,7 +536,38 @@ class SaleLib extends SaleCrud {
 			\selling\ItemLib::createCollection($e['cItem']);
 		}
 
+
+		if($e->isComposition()) {
+			self::reorderComposition($e);
+		}
+
 		Sale::model()->commit();
+
+	}
+
+	/**
+	 * Modifie ou supprime une composition existante
+	 */
+	public static function reorderComposition(Sale $e): void {
+
+		$cSale = Sale::model()
+			->select('id', 'compositionEndAt', 'deliveredAt')
+			->whereCompositionOf($e['compositionOf'])
+			->where('compositionEndAt IS NULL OR compositionEndAt >= CURDATE() - INTERVAL '.(\Setting::get('compositionLocked') + 1).' DAY')
+			->sort(new \Sql('deliveredAt ASC'))
+			->getCollection();
+
+		foreach($cSale as $offset => $eSale) {
+
+			$eSaleNext = $cSale[$offset + 1] ?? new Sale();
+
+			Sale::model()->update($eSale, [
+				'compositionEndAt' => $eSaleNext->empty() ?
+					NULL :
+					new \Sql(Sale::model()->format($eSaleNext['deliveredAt']).' - INTERVAL 1 DAY')
+			]);
+
+		}
 
 	}
 
@@ -753,6 +786,10 @@ class SaleLib extends SaleCrud {
 			self::recalculate($e);
 		}
 
+		if(in_array('deliveredAt', $properties) and $e->isComposition()) {
+			self::reorderComposition($e);
+		}
+
 		Sale::model()->commit();
 
 	}
@@ -843,6 +880,10 @@ class SaleLib extends SaleCrud {
 
 			if($e['marketParent']->notEmpty()) {
 				MarketLib::updateSaleMarket($e['marketParent']);
+			}
+
+			if($e->isComposition()) {
+				self::reorderComposition($e);
 			}
 
 		}

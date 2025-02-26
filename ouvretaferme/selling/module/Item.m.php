@@ -71,7 +71,7 @@ class ItemModel extends \ModuleModel {
 			'stats' => ['bool', 'cast' => 'bool'],
 			'status' => ['enum', Sale::model()->getPropertyEnum('preparationStatus'), 'cast' => 'enum'],
 			'createdAt' => ['datetime', 'cast' => 'string'],
-			'deliveredAt' => ['date', 'null' => TRUE, 'cast' => 'string'],
+			'deliveredAt' => ['date', 'cast' => 'string'],
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
