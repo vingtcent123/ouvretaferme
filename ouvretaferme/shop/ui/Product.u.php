@@ -276,7 +276,7 @@ class ProductUi {
 			$h .= '<div class="date-products '.($displayStock ? 'date-products-with-stock' : '').' util-grid-header">';
 
 				$h .= '<div class="shop-select '.($cProduct->count() < 2 ? 'shop-select-hide' : '').'">';
-					$h .= '<input type="checkbox" '.attr('onclick', 'CheckboxField.all(this, \'[name^="products["]\', node => DateManage.selectProduct(node), \'.date-products-wrapper\')').'"  title="'.s("Tout cocher / Tout décocher").'"/>';
+					$h .= '<input type="checkbox" '.attr('onclick', 'CheckboxField.all(this.firstParent(\'.date-products-wrapper\'), this.checked, \'[name^="products["]\', node => DateManage.selectProduct(node))').'"  title="'.s("Tout cocher / Tout décocher").'"/>';
 				$h .= '</div>';
 				$h .= '<div style="grid-column: span 2">';
 					$h .= s("Produit");

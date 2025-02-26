@@ -11,7 +11,7 @@ class Place {
 
 	static toggleSelection(target) {
 
-		CheckboxField.all(target, '[name^="beds[]"]', (bed) => this.selectBed(bed), '.place-grid-container');
+		CheckboxField.all(target.firstParent('.place-grid-container'), target.checked, '[name^="beds[]"]', (bed) => this.selectBed(bed));
 
 	}
 

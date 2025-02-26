@@ -508,7 +508,7 @@ class InvoiceUi {
 		$h = '<table class="tr-even">';
 			$h .= '<tr>';
 				$h .= '<th>';
-					$h .= '<input type="checkbox" '.attr('onclick', 'CheckboxField.all(this, \'[name^="sales"]\')').'"/>';
+					$h .= '<input type="checkbox" '.attr('onclick', 'CheckboxField.all(this.firstParent(\'form\'), this.checked, \'[name^="sales"]\')').'"/>';
 				$h .= '</th>';
 				$h .= '<th>'.s("Client").'</th>';
 				$h .= '<th class="text-end">'.s("Ventes").'</th>';
@@ -615,7 +615,7 @@ class InvoiceUi {
 				$h .= '<th>';
 
 					if($checked === FALSE) {
-						$h .= '<input type="checkbox" '.attr('onclick', 'CheckboxField.all(this, \'[data-invoice-checked="0"]\')').'"/>';
+						$h .= '<input type="checkbox" '.attr('onclick', 'CheckboxField.all(this.firstParent(\'form\'), this.checked, \'[data-invoice-checked="0"]\')').'"/>';
 					}
 
 				$h .= '</th>';

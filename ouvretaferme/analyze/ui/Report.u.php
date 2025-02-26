@@ -728,7 +728,7 @@ class ReportUi {
 			$h .= '<div class="util-grid-header report-create-series-name">';
 				if($cCultivation->count() > 2) {
 					$h .= '<label class="report-create-checkbox" title="'.s("Tout cocher / Tout décocher").'">';
-						$h .= '<input type="checkbox" '.($cCultivation->count() === count($cultivationsSelected) ? 'checked' : '').' '.attr('onclick', 'CheckboxField.all(this, \'[name^="cultivations[]"]\', node => Report.selectCheckbox(node))').'"/>';
+						$h .= '<input type="checkbox" '.($cCultivation->count() === count($cultivationsSelected) ? 'checked' : '').' '.attr('onclick', 'CheckboxField.all(this.firstParent(\'form\'), this.checked, \'[name^="cultivations[]"]\', node => Report.selectCheckbox(node))').'"/>';
 					$h .= '</label>';
 				}
 				$h .= s("Série");
@@ -821,7 +821,7 @@ class ReportUi {
 			$h .= '<div class="util-grid-header report-create-series-name">';
 				if($cProduct->count() > 2) {
 					$h .= '<label class="report-create-checkbox report-create-checkbox-all" title="'.s("Tout cocher / Tout décocher").'">';
-						$h .= '<input type="checkbox" checked '.attr('onclick', 'CheckboxField.all(this, \'[name^="products[]"]\', node => Report.selectCheckbox(node))').'"/>';
+						$h .= '<input type="checkbox" checked '.attr('onclick', 'CheckboxField.all(this.firstParent(\'form\'), this.checked, \'[name^="products[]"]\', node => Report.selectCheckbox(node))').'"/>';
 					$h .= '</label>';
 				}
 				$h .= s("Produit");

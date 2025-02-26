@@ -52,7 +52,7 @@ class LegalUi {
 			$h .= '<li><a href="/presentation/faq#sales">'.s("Comment vendre ma production avec {siteName} ?").'</a></li>';
 			$h .= '<li><a href="/presentation/faq#online">'.s("Comment utiliser le paiement par carte bancaire sur la boutique en ligne ?").'</a></li>';
 			$h .= '<li><a href="/presentation/faq#online">'.s("Existe t-il des formations à l'utilisation de {siteName} ?").'</a></li>';
-			$h .= '<li><a href="/presentation/faq#data">'.s("Comment sont gérées vos données ?").'</a></li>';
+			$h .= '<li><a href="/presentation/faq#data">'.s("Comment sont gérées les données de ma ferme ?").'</a></li>';
 			$h .= '<li><a href="/presentation/faq#organic">'.s("Puis-je utiliser {siteName} si ma ferme n'est pas en AB ou sous mention N&P ?").'</a></li>';
 			$h .= '<li><a href="/presentation/faq#feature">'.s("Puis-je proposer une nouvelle fonctionnalité ?").'</a></li>';
 		$h .= '</ul>';
@@ -198,7 +198,7 @@ class LegalUi {
 
 		$h .= '<div id="data"></div>';
 		$h .= '<br/>';
-		$h .= '<h2>'.s("Comment sont gérées vos données ?").'</h2>';
+		$h .= '<h2>'.s("Comment sont gérées les données de ma ferme ?").'</h2>';
 
 		$h .= '<div class="home-category">';
 

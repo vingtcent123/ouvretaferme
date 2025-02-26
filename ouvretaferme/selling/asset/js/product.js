@@ -36,7 +36,7 @@ class Product {
 
 	static toggleSelection(target) {
 
-		CheckboxField.all(target, '[name^="batch[]"]', undefined, 'table');
+		CheckboxField.all(target.firstParent('table'), target.checked, '[name^="batch[]"]');
 
 		this.changeSelection(target);
 

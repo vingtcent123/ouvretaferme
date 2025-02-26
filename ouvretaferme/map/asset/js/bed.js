@@ -88,7 +88,7 @@ class Bed {
 
 	static toggleSelection(target) {
 
-		CheckboxField.all(target, '[name^="ids[]"]');
+		CheckboxField.all(target.firstParent('form'), target.checked, '[name^="ids[]"]');
 
 		this.changeSelection(target);
 

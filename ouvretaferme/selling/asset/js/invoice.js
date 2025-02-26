@@ -9,7 +9,7 @@ class Invoice {
 
 	static toggleSelection(target) {
 
-		CheckboxField.all(target, '[name^="batch[]"]', undefined, 'table');
+		CheckboxField.all(target.firstParent('table'), target.checked, '[name^="batch[]"]');
 
 		this.changeSelection(target);
 
@@ -17,7 +17,7 @@ class Invoice {
 
 	static toggleDaySelection(target) {
 
-		CheckboxField.all(target, '[name^="batch[]"]', undefined, 'tbody');
+		CheckboxField.all(target.firstParent('tbody').nextSibling, target.checked, '[name^="batch[]"]');
 
 		this.changeSelection(target);
 
