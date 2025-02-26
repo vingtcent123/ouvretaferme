@@ -148,7 +148,7 @@ class LegalUi {
 			$h .= '<ul>';
 				$h .= '<li>'.s("Un blog pour suivre l'actualité du site").'<br/><a href="https://blog.ouvretaferme.org/" class="btn btn-secondary mb-1">'.s("Voir le blog").'</a></li>';
 				$h .= '<li>'.s("Un site de démo pour voir comment est utilisée la plateforme par la ferme à l'origine de {siteName} et dont les données ont été anonymisées").'<br/><a href="https://demo.ouvretaferme.org/" class="btn btn-secondary mb-1">'.s("Voir la démo").'</a></li>';
-				$h .= '<li>'.s("Un salon de discussion ouvert à tous").'<br/><a href="https://app.element.io/#/room/#ouvretaferme:matrix.org" class="btn btn-secondary mb-1">'.s("Voir le salon de discussion").'</a></li>';
+				$h .= '<li>'.s("Un salon de discussion ouvert à tous").'<br/><a href="https://discord.gg/bdSNc3PpwQ" class="btn btn-secondary mb-1">'.s("Voir le salon de discussion").'</a></li>';
 				$h .= '<li>'.s("Probablement des collègues qui utilisent l'outil et pourraient vous aider !").'</li>';
 			$h .= '</ul>';
 

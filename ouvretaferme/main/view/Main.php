@@ -241,7 +241,7 @@ class MainTemplate extends BaseTemplate {
 						$h .= '<div>';
 							$h .= '<h4>'.s("Ressources").'</h4>';
 							$h .= '<a href="/presentation/faq">'.s("Foire aux questions").'</a><br/>';
-							$h .= '<a href="https://app.element.io/#/room/#ouvretaferme:matrix.org" target="_blank">'.s("Signaler un problème").'</a><br/>';
+							$h .= '<a href="https://discord.gg/bdSNc3PpwQ" target="_blank">'.s("Salon de discussion").'</a><br/>';
 							$h .= '<a href="https://blog.ouvretaferme.org/" target="_blank">'.s("Blog").'</a>';
 						$h .= '</div>';
 						$h .= '<div>';
