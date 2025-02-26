@@ -258,7 +258,7 @@ input.shop-product-number-display {
 
 .shop-product-size {
 	text-decoration: underline;
-	display: inline-block;
+	display: inline;
 	margin-left: 0.5rem;
 }
 
