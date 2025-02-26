@@ -272,7 +272,7 @@ Sale:
   preparationStatus: enum(COMPOSITION, DRAFT, BASKET, CONFIRMED, SELLING, PREPARED, DELIVERED, CANCELED) = DRAFT
   paymentStatus: enum(UNDEFINED, WAITING, PROCESSING, PAID, FAILED) = UNDEFINED
   paymentMethod: ?enum(ONLINE_CARD, OFFLINE, TRANSFER, CASH, CARD, CHECK)
-  composition: ?selling\Product
+  compositionOf: ?selling\Product
   market: bool = FALSE
   marketSales: ?int(0, null)
   marketParent: ?selling\Sale
@@ -299,7 +299,7 @@ Sale:
     ["shop"]
   ]
   UNIQUE: [
-    ["composition", "deliveredAt"],
+    ["compositionOf", "deliveredAt"],
     ["farm", "document"],
   ]
 

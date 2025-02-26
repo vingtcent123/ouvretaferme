@@ -91,7 +91,9 @@ class ItemUi {
 
 					if($eSale['market']) {
 						$h .= s("Il n'y a pas encore d'article à vendre pendant votre marché !");
-					} {
+					} if($eSale->isComposition()) {
+						$h .= s("Il n'y a pas encore d'article !");
+					} else {
 						$h .= s("Il n'y a pas encore d'article dans cette vente !");
 					}
 

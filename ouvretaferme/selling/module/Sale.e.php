@@ -13,7 +13,7 @@ class Sale extends SaleElement {
 			'farm' => ['name', 'url', 'vignette', 'banner', 'featureDocument', 'hasSales'],
 			'price' => fn($e) => $e['type'] === Sale::PRO ? $e['priceExcludingVat'] : $e['priceIncludingVat'],
 			'invoice' => ['name', 'emailedAt', 'createdAt', 'paymentStatus', 'priceExcludingVat', 'generation'],
-			'composition' => ['name'],
+			'compositionOf' => ['name'],
 			'marketParent' => [
 				'customer' => ['type', 'name']
 			],
@@ -42,9 +42,9 @@ class Sale extends SaleElement {
 
 	public function isComposition(): bool {
 
-		$this->expects(['composition']);
+		$this->expects(['compositionOf']);
 
-		return $this['composition']->notEmpty();
+		return $this['compositionOf']->notEmpty();
 
 	}
 
@@ -143,7 +143,7 @@ class Sale extends SaleElement {
 	}
 
 	public function acceptUpdateCustomer(): bool {
-		return $this['composition']->empty();
+		return $this['compositionOf']->empty();
 	}
 
 	public function canAccess(): bool {
@@ -281,7 +281,7 @@ class Sale extends SaleElement {
 
 	public function acceptWritePreparationStatus(): bool {
 
-		return $this['composition']->empty();
+		return $this['compositionOf']->empty();
 
 	}
 
@@ -469,7 +469,7 @@ class Sale extends SaleElement {
 		return (
 			// Il n'est pas possible de dupliquer une vente d'une boutique pour éviter de créer des incohérence au seins des boutiques et des disponibilités
 			$this['from'] === self::USER and
-			$this['composition']->empty() and
+			$this['compositionOf']->empty() and
 			$this['marketParent']->empty()
 		);
 
@@ -638,7 +638,7 @@ class Sale extends SaleElement {
 
 			'market.prepare' => function(bool &$market): bool {
 
-				if($this['composition']->notEmpty()) {
+				if($this['compositionOf']->notEmpty()) {
 					$this['market'] = FALSE;
 				}
 
@@ -668,11 +668,11 @@ class Sale extends SaleElement {
 
 					if($eCustomer->empty()) {
 
-						if($this['composition']->empty()) {
+						if($this['compositionOf']->empty()) {
 							return FALSE;
 						} else {
 
-							$this['type'] = $this['composition']['private'] ? Sale::PRIVATE : Sale::PRO;
+							$this['type'] = $this['compositionOf']['private'] ? Sale::PRIVATE : Sale::PRO;
 							$this['taxes'] = $this->getTaxesFromType();
 							$this['hasVat'] = $this['farm']->getSelling('hasVat');
 							$this['discount'] = 0;
@@ -706,7 +706,7 @@ class Sale extends SaleElement {
 
 			'customer.market' => function(Customer $eCustomer) use ($fw): bool {
 
-				if($this['composition']->notEmpty()) {
+				if($this['compositionOf']->notEmpty()) {
 					return TRUE;
 				}
 
@@ -836,11 +836,11 @@ class Sale extends SaleElement {
 
 			'deliveredAt.composition' => function(?string $date, \BuildProperties $p) use ($for): bool {
 
-				if($this['composition']->empty()) {
+				if($this['compositionOf']->empty()) {
 					return TRUE;
 				} else {
 					return Sale::model()
-						->whereComposition($this['composition'])
+						->whereCompositionOf($this['compositionOf'])
 						->whereDeliveredAt($date)
 						->whereId('!=', $this, if: $for === 'update')
 						->exists() === FALSE;

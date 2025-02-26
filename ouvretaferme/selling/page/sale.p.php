@@ -7,7 +7,7 @@
 		return new \selling\Sale([
 			'from' => \selling\Sale::USER,
 			'farm' => $data->eFarm,
-			'composition' => input_exists('composition') ? \selling\ProductLib::getCompositionById(INPUT('composition'))->validateProperty('farm', $data->eFarm) : new \selling\Product(),
+			'compositionOf' => input_exists('compositionOf') ? \selling\ProductLib::getCompositionById(INPUT('compositionOf'))->validateProperty('farm', $data->eFarm) : new \selling\Product(),
 			'marketParent' => new \selling\Sale(),
 		]);
 
@@ -22,11 +22,11 @@
 
 		if(
 			$data->e['customer']->notEmpty() or
-			$data->e['composition']->notEmpty()
+			$data->e['compositionOf']->notEmpty()
 		) {
 
-			if($data->e['composition']->notEmpty()) {
-				$data->e['type'] = $data->e['composition']['private'] ? \selling\Sale::PRIVATE : \selling\Sale::PRO;
+			if($data->e['compositionOf']->notEmpty()) {
+				$data->e['type'] = $data->e['compositionOf']['private'] ? \selling\Sale::PRIVATE : \selling\Sale::PRO;
 				$data->e['discount'] = 0;
 			} else {
 				$data->e['type'] = $data->e['customer']['type'];
@@ -52,7 +52,7 @@
 	->doCreate(function($data) {
 		throw new RedirectAction(
 			$data->e->isComposition() ?
-				\selling\ProductUi::url($data->e['composition']).'?success=Product::createdComposition' :
+				\selling\ProductUi::url($data->e['compositionOf']).'?success=Product::createdComposition' :
 				\selling\SaleUi::url($data->e).'?success=Sale::created'
 		);
 	});
@@ -305,7 +305,7 @@
 
 		throw new RedirectAction(
 			$data->e->isComposition() ?
-				\selling\ProductUi::url($data->e['composition']).'?success=selling:Product::deletedComposition' :
+				\selling\ProductUi::url($data->e['compositionOf']).'?success=selling:Product::deletedComposition' :
 				\farm\FarmUi::urlSellingSalesAll($data->e['farm']).'?success=selling:Sale::deleted'
 		);
 

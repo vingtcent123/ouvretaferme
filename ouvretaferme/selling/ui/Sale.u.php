@@ -34,7 +34,7 @@ class SaleUi {
 
 	public static function getName(Sale $eSale): string {
 
-		$eSale->expects(['id', 'priceExcludingVat', 'market', 'composition']);
+		$eSale->expects(['id', 'priceExcludingVat', 'market', 'compositionOf']);
 
 		if($eSale->isComposition()) {
 			return s("Composition du {value}", DateUi::numeric($eSale['deliveredAt']));
@@ -998,7 +998,7 @@ class SaleUi {
 					$h .= '<h1 style="margin-bottom: 0.5rem">'.SaleUi::getName($eSale).'</h1>';
 					$h .= $this->getPreparationStatusForUpdate($eSale, shortText: FALSE);
 				} else {
-					$h .= '<h1 class="mb-0">'.encode($eSale['composition']['name']).'</h1>';
+					$h .= '<h1 class="mb-0">'.encode($eSale['compositionOf']['name']).'</h1>';
 				}
 			$h .= '</div>';
 			if($eSale->isComposition() === FALSE) {
@@ -1527,7 +1527,7 @@ class SaleUi {
 
 	public function create(Sale $eSale): \Panel {
 
-		if($eSale['composition']->empty()) {
+		if($eSale['compositionOf']->empty()) {
 			return $this->createCustomer($eSale);
 		} else {
 			return $this->createComposition($eSale);
@@ -1547,11 +1547,11 @@ class SaleUi {
 
 		$h .= $form->hidden('farm', $eSale['farm']['id']);
 		$h .= $form->hidden('from', Sale::USER);
-		$h .= $form->hidden('composition', $eSale['composition']['id']);
+		$h .= $form->hidden('compositionOf', $eSale['compositionOf']['id']);
 
 		$h .= $form->dynamicGroup($eSale, 'deliveredAt');
 
-		$arguments = ['product' => '<b>'.encode($eSale['composition']['name']).'</b>', 'price' => '<b>'.\util\TextUi::money($eSale['composition'][$eSale['type'].'Price']).'</b>'];
+		$arguments = ['product' => '<b>'.encode($eSale['compositionOf']['name']).'</b>', 'price' => '<b>'.\util\TextUi::money($eSale['compositionOf'][$eSale['type'].'Price']).'</b>'];
 
 		if($eSale['cProduct']->notEmpty()) {
 
@@ -1559,7 +1559,7 @@ class SaleUi {
 
 			$h .= '<div class="util-info">';
 				$h .= s("Les prix unitaires et les montants des produits sont indiqués à titre informatif pour vous aider à composer votre {product} qui sera toujours vendu à {price}.", $arguments);
-				$h .= ' '.match($eSale['composition']['compositionVisibility']) {
+				$h .= ' '.match($eSale['compositionOf']['compositionVisibility']) {
 					Product::PUBLIC => s("Seules les quantités sont communiquées à vos clients."),
 					Product::PRIVATE => s("Aucune information sur la composition n'est communiquée à vos clients.")
 				};
@@ -1586,7 +1586,7 @@ class SaleUi {
 
 		return new \Panel(
 			id: 'panel-sale-create',
-			title: encode($eSale['composition']['name']),
+			title: encode($eSale['compositionOf']['name']),
 			dialogOpen: $form->openAjax('/selling/sale:doCreate', ['id' => 'sale-create', 'class' => 'panel-dialog container']),
 			dialogClose: $form->close(),
 			body: $h,

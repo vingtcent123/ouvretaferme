@@ -341,7 +341,7 @@ new AdaptativeView('sellingSales', function($data, FarmTemplate $t) {
 		$eSale = new \selling\Sale([
 			'farm' => $data->eFarm,
 			'customer' => new \selling\Customer(),
-			'composition' => new \selling\Product(),
+			'compositionOf' => new \selling\Product(),
 			'shopDate' => new \shop\Date(),
 			'market' => FALSE
 		]);

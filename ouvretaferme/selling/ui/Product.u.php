@@ -585,7 +585,7 @@ class ProductUi {
 		$h = '<div class="util-block-help">';
 			$h .= '<h4>'.s("Composez votre produit").'</h4>';
 			$h .= '<p>'.s("Vous n'avez pas encore indiqué la composition de votre produit {value}.", '<u>'.encode($eProduct['name']).'</u>').'</p>';
-			$h .= '<a href="/selling/sale:create?farm='.$eProduct['farm']['id'].'&composition='.$eProduct['id'].'" class="btn btn-secondary">'.s("Ajouter la composition du moment").'</a>';
+			$h .= '<a href="/selling/sale:create?farm='.$eProduct['farm']['id'].'&compositionOf='.$eProduct['id'].'" class="btn btn-secondary">'.s("Ajouter la composition du moment").'</a>';
 		$h .= '</div>';
 
 
@@ -598,7 +598,7 @@ class ProductUi {
 		$h = '<div class="util-title">';
 			$h .= '<div></div>';
 			$h .= '<div>';
-				$h .= '<a href="/selling/sale:create?farm='.$eProduct['farm']['id'].'&composition='.$eProduct['id'].'" class="btn btn-primary">'.\Asset::icon('plus-circle').' '.s("Nouvelle composition").'</a>';
+				$h .= '<a href="/selling/sale:create?farm='.$eProduct['farm']['id'].'&compositionOf='.$eProduct['id'].'" class="btn btn-primary">'.\Asset::icon('plus-circle').' '.s("Nouvelle composition").'</a>';
 			$h .= '</div>';
 		$h .= '</div>';
 
@@ -721,7 +721,7 @@ class ProductUi {
 			$h .= '<div class="dropdown-title">'.encode($eProduct->getName()).'</div>';
 			$h .= '<a href="/selling/product:update?id='.$eProduct['id'].'" class="dropdown-item">'.s("Modifier le produit").'</a>';
 			if($eProduct['composition']) {
-				$h .= '<a href="/selling/sale:create?farm='.$eProduct['farm']['id'].'&composition='.$eProduct['id'].'" class="dropdown-item">'.s("Nouvelle composition").'</a>';
+				$h .= '<a href="/selling/sale:create?farm='.$eProduct['farm']['id'].'&compositionOf='.$eProduct['id'].'" class="dropdown-item">'.s("Nouvelle composition").'</a>';
 			}
 			$h .= '<a data-ajax="/selling/product:doDelete" post-id="'.$eProduct['id'].'" class="dropdown-item" data-confirm="'.s("Confirmer la suppression du produit ?").'">'.s("Supprimer le produit").'</a>';
 			if($eProduct->acceptEnableStock() or $eProduct->acceptDisableStock()) {

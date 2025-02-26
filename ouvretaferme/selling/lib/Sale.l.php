@@ -7,7 +7,7 @@ class SaleLib extends SaleCrud {
 
 		return function(Sale $e) {
 
-			return $e['composition']->empty() ?
+			return $e['compositionOf']->empty() ?
 				['market', 'customer', 'shopDate', 'deliveredAt', 'productsList', 'shipping'] :
 				['market', 'customer', 'deliveredAt', 'productsList'];
 
@@ -461,7 +461,7 @@ class SaleLib extends SaleCrud {
 
 		$cSale = Sale::model()
 			->select(Sale::getSelection())
-			->whereComposition($eProduct)
+			->whereCompositionOf($eProduct)
 			->sort(['deliveredAt' => SORT_DESC])
 			->getCollection(0, 100);
 
@@ -477,7 +477,7 @@ class SaleLib extends SaleCrud {
 
 		$e->expects([
 			'farm' => ['hasSales'],
-			'type', 'taxes', 'hasVat', 'from', 'composition',
+			'type', 'taxes', 'hasVat', 'from', 'compositionOf',
 			'customer',
 		]);
 
@@ -507,7 +507,7 @@ class SaleLib extends SaleCrud {
 
 			switch($e->getInfo()['duplicate']) {
 
-				case ['composition', 'deliveredAt'] :
+				case ['compositionOf', 'deliveredAt'] :
 					Sale::fail('deliveredAt.composition');
 					break;
 
@@ -549,7 +549,7 @@ class SaleLib extends SaleCrud {
 		$e = new Sale();
 
 		$e['customer'] = new Customer();
-		$e['composition'] = new Product();
+		$e['compositionOf'] = new Product();
 		$e['farm'] = $eSale['farm'];
 		$e['from'] = Sale::USER;
 		$e['type'] = Customer::PRIVATE;

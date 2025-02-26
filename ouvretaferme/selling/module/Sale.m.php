@@ -90,7 +90,7 @@ class SaleModel extends \ModuleModel {
 			'preparationStatus' => ['enum', [\selling\Sale::COMPOSITION, \selling\Sale::DRAFT, \selling\Sale::BASKET, \selling\Sale::CONFIRMED, \selling\Sale::SELLING, \selling\Sale::PREPARED, \selling\Sale::DELIVERED, \selling\Sale::CANCELED], 'cast' => 'enum'],
 			'paymentStatus' => ['enum', [\selling\Sale::UNDEFINED, \selling\Sale::WAITING, \selling\Sale::PROCESSING, \selling\Sale::PAID, \selling\Sale::FAILED], 'cast' => 'enum'],
 			'paymentMethod' => ['enum', [\selling\Sale::ONLINE_CARD, \selling\Sale::OFFLINE, \selling\Sale::TRANSFER, \selling\Sale::CASH, \selling\Sale::CARD, \selling\Sale::CHECK], 'null' => TRUE, 'cast' => 'enum'],
-			'composition' => ['element32', 'selling\Product', 'null' => TRUE, 'cast' => 'element'],
+			'compositionOf' => ['element32', 'selling\Product', 'null' => TRUE, 'cast' => 'element'],
 			'market' => ['bool', 'cast' => 'bool'],
 			'marketSales' => ['int32', 'min' => 0, 'max' => NULL, 'null' => TRUE, 'cast' => 'int'],
 			'marketParent' => ['element32', 'selling\Sale', 'null' => TRUE, 'cast' => 'element'],
@@ -114,13 +114,13 @@ class SaleModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'document', 'farm', 'customer', 'from', 'taxes', 'organic', 'conversion', 'type', 'discount', 'items', 'hasVat', 'vat', 'vatByRate', 'priceExcludingVat', 'priceIncludingVat', 'shippingVatRate', 'shippingVatFixed', 'shipping', 'shippingExcludingVat', 'preparationStatus', 'paymentStatus', 'paymentMethod', 'composition', 'market', 'marketSales', 'marketParent', 'orderFormValidUntil', 'orderFormPaymentCondition', 'invoice', 'shop', 'shopDate', 'shopUpdated', 'shopPoint', 'deliveryStreet1', 'deliveryStreet2', 'deliveryPostcode', 'deliveryCity', 'comment', 'stats', 'createdAt', 'createdBy', 'deliveredAt', 'statusDeliveredAt'
+			'id', 'document', 'farm', 'customer', 'from', 'taxes', 'organic', 'conversion', 'type', 'discount', 'items', 'hasVat', 'vat', 'vatByRate', 'priceExcludingVat', 'priceIncludingVat', 'shippingVatRate', 'shippingVatFixed', 'shipping', 'shippingExcludingVat', 'preparationStatus', 'paymentStatus', 'paymentMethod', 'compositionOf', 'market', 'marketSales', 'marketParent', 'orderFormValidUntil', 'orderFormPaymentCondition', 'invoice', 'shop', 'shopDate', 'shopUpdated', 'shopPoint', 'deliveryStreet1', 'deliveryStreet2', 'deliveryPostcode', 'deliveryCity', 'comment', 'stats', 'createdAt', 'createdBy', 'deliveredAt', 'statusDeliveredAt'
 		]);
 
 		$this->propertiesToModule += [
 			'farm' => 'farm\Farm',
 			'customer' => 'selling\Customer',
-			'composition' => 'selling\Product',
+			'compositionOf' => 'selling\Product',
 			'marketParent' => 'selling\Sale',
 			'invoice' => 'selling\Invoice',
 			'shop' => 'shop\Shop',
@@ -136,7 +136,7 @@ class SaleModel extends \ModuleModel {
 		]);
 
 		$this->uniqueConstraints = array_merge($this->uniqueConstraints, [
-			['composition', 'deliveredAt'],
+			['compositionOf', 'deliveredAt'],
 			['farm', 'document']
 		]);
 
@@ -335,8 +335,8 @@ class SaleModel extends \ModuleModel {
 		return $this->where('paymentMethod', ...$data);
 	}
 
-	public function whereComposition(...$data): SaleModel {
-		return $this->where('composition', ...$data);
+	public function whereCompositionOf(...$data): SaleModel {
+		return $this->where('compositionOf', ...$data);
 	}
 
 	public function whereMarket(...$data): SaleModel {
