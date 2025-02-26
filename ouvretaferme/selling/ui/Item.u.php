@@ -20,8 +20,15 @@ class ItemUi {
 
 		if($eSale->isComposition()) {
 			$h .= '<div class="h-line">';
-				$h .= '<h3>'.s("Composition du {value}", \util\DateUi::numeric($eSale['deliveredAt'])).'</h3>';
-				$h .= new SaleUi()->getUpdate($eSale, 'btn-outline-primary');
+				$h .= '<h3>';
+					$h .= s("Composition du {value}", \util\DateUi::numeric($eSale['deliveredAt']));
+					if($eSale->acceptWriteComposition() === FALSE) {
+						$h .= ' '.\Asset::icon('lock-fill');
+					}
+				$h .= '</h3>';
+				if($eSale->acceptWriteComposition()) {
+					$h .= new SaleUi()->getUpdate($eSale, 'btn-outline-primary');
+				}
 			$h .= '</div>';
 		}
 

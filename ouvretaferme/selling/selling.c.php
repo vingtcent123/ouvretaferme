@@ -24,6 +24,7 @@ Setting::register('selling', [
 	'defaultVatRate' => 20,
 
 	'documentExpires' => 15, // Délai d'expiration des documents avant suppression de la base de données (en mois)
+	'compositionLocked' => 30, // Nombre de jours qui permet de créer, modifier ou supprimer une composition dans le passé
 
 	'remoteKey' => fn() => throw new Exception('Undefined remote key')
 

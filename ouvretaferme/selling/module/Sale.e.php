@@ -42,9 +42,9 @@ class Sale extends SaleElement {
 
 	public function isComposition(): bool {
 
-		$this->expects(['composition']);
+		$this->expects(['preparationStatus']);
 
-		return $this['composition']->notEmpty();
+		return $this['preparationStatus'] === Sale::COMPOSITION;
 
 	}
 
@@ -207,7 +207,11 @@ class Sale extends SaleElement {
 	}
 
 	public function isClosed(): bool {
-		return in_array($this['preparationStatus'], [Sale::CANCELED, Sale::DELIVERED, Sale::BASKET]);
+		if($this->isComposition()) {
+			return $this->acceptWriteComposition() === FALSE;
+		} else {
+			return in_array($this['preparationStatus'], [Sale::CANCELED, Sale::DELIVERED, Sale::BASKET]);
+		}
 	}
 
 	public function isOpen(): bool {
@@ -216,14 +220,36 @@ class Sale extends SaleElement {
 
 	public function acceptUpdateItems(): bool {
 
-		$this->expects(['market', 'marketParent', 'preparationStatus']);
+		$this->expects(['market', 'marketParent', 'preparationStatus', 'deliveredAt']);
 
 		if($this['marketParent']->notEmpty()) {
 			return FALSE;
-		} else {
-			return in_array($this['preparationStatus'], [Sale::COMPOSITION, Sale::DRAFT, Sale::CONFIRMED, Sale::PREPARED, Sale::SELLING]);
 		}
 
+		if(in_array($this['preparationStatus'], [Sale::COMPOSITION, Sale::DRAFT, Sale::CONFIRMED, Sale::PREPARED, Sale::SELLING]) === FALSE) {
+			return FALSE;
+		}
+
+		if($this->isComposition()) {
+			return $this->acceptWriteComposition();
+		} else {
+			return TRUE;
+		}
+
+	}
+
+	public function acceptWriteComposition(): bool {
+
+		if($this->isComposition()) {
+			return self::testWriteComposition($this['deliveredAt']);
+		} else {
+			return TRUE;
+		}
+
+	}
+
+	public static function testWriteComposition(string $date): bool {
+		return $date >= date('Y-m-d', strtotime('NOW - '.\Setting::get('compositionLocked').' DAYS'));
 	}
 
 	public function acceptCreateItems(): bool {
@@ -472,7 +498,8 @@ class Sale extends SaleElement {
 		return (
 			$this->acceptDeleteStatus() and
 			$this->acceptDeletePaymentStatus() and
-			$this->acceptDeleteMarket()
+			$this->acceptDeleteMarket() and
+			$this->acceptWriteComposition()
 		);
 
 	}
@@ -611,7 +638,7 @@ class Sale extends SaleElement {
 
 			'market.prepare' => function(bool &$market): bool {
 
-				if($this->isComposition()) {
+				if($this['composition']->notEmpty()) {
 					$this['market'] = FALSE;
 				}
 
@@ -679,7 +706,7 @@ class Sale extends SaleElement {
 
 			'customer.market' => function(Customer $eCustomer) use ($fw): bool {
 
-				if($this->isComposition()) {
+				if($this['composition']->notEmpty()) {
 					return TRUE;
 				}
 
@@ -809,7 +836,7 @@ class Sale extends SaleElement {
 
 			'deliveredAt.composition' => function(?string $date, \BuildProperties $p) use ($for): bool {
 
-				if($this->isComposition() === FALSE) {
+				if($this['composition']->empty()) {
 					return TRUE;
 				} else {
 					return Sale::model()

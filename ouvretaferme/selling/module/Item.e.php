@@ -6,7 +6,7 @@ class Item extends ItemElement {
 	public static function getSelection(): array {
 
 		return parent::getSelection() + [
-			'sale' => ['farm', 'hasVat', 'type', 'taxes', 'shippingVatRate', 'shippingVatFixed', 'document', 'preparationStatus', 'market', 'marketParent', 'composition', 'shipping'],
+			'sale' => ['farm', 'hasVat', 'type', 'taxes', 'shippingVatRate', 'shippingVatFixed', 'document', 'preparationStatus', 'market', 'marketParent', 'composition', 'shipping', 'deliveredAt'],
 			'customer' => ['name', 'type'],
 			'unit' => ['fqn', 'by', 'singular', 'plural', 'short', 'type'],
 			'product' => [
@@ -33,11 +33,22 @@ class Item extends ItemElement {
 			'sale' => ['preparationStatus', 'marketParent']
 		]);
 
-		return (
-			$this->canRead() and
-			$this['sale']['marketParent']->empty() and
-			in_array($this['sale']['preparationStatus'], [Sale::COMPOSITION, Sale::DRAFT, Sale::CONFIRMED, Sale::PREPARED])
-		);
+		if(
+			$this->canRead() === FALSE or
+			$this['sale']['marketParent']->notEmpty()
+		) {
+			return FALSE;
+		}
+
+		if($this['sale']->isComposition()) {
+
+			return $this['sale']->acceptWriteComposition();
+
+		} else {
+
+			return in_array($this['sale']['preparationStatus'], [Sale::DRAFT, Sale::CONFIRMED, Sale::PREPARED]);
+
+		}
 
 	}
 
