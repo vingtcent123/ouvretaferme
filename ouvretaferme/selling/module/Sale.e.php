@@ -42,9 +42,9 @@ class Sale extends SaleElement {
 
 	public function isComposition(): bool {
 
-		$this->expects(['preparationStatus']);
+		$this->expects(['composition']);
 
-		return $this['preparationStatus'] === Sale::COMPOSITION;
+		return $this['composition']->notEmpty();
 
 	}
 
