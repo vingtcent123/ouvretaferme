@@ -401,10 +401,6 @@ class ProductUi {
 
 		$more = self::getDetails($eProduct);
 
-		if($eProduct['composition']) {
-			$more[] .= s("Produit composé");
-		}
-
 		if($includeStock) {
 
 			if($eProduct['stock'] !== NULL) {
@@ -440,7 +436,7 @@ class ProductUi {
 
 	public static function getVignette(Product $eProduct, string $size): string {
 
-		$eProduct->expects(['id', 'vignette']);
+		$eProduct->expects(['id', 'vignette', 'composition']);
 
 		$ui = new \media\ProductVignetteUi();
 
@@ -450,7 +446,7 @@ class ProductUi {
 		if($eProduct['vignette'] === NULL) {
 
 			$class .= ' media-vignette-default';
-			$content = mb_substr($eProduct->getName(), 0, 2);
+			$content = encode(mb_substr($eProduct->getName(), 0, 2));
 
 		} else {
 
@@ -461,7 +457,19 @@ class ProductUi {
 
 		}
 
-		return '<div class="'.$class.'" style="'.$ui->getSquareCss($size).'; '.$style.'">'.encode($content).'</div>';
+		if($eProduct['composition']) {
+			$content .= self::getVignetteComposition();
+		}
+
+		return '<div class="'.$class.'" style="'.$ui->getSquareCss($size).'; '.$style.'">'.$content.'</div>';
+
+	}
+
+	public static function getVignetteComposition(): string {
+
+		\Asset::css('selling', 'product.css');
+
+		return '<div class="product-vignette-composition">'.\Asset::icon('puzzle-fill').'</div>';
 
 	}
 
@@ -769,7 +777,7 @@ class ProductUi {
 
 				$tabs = '<div class="tabs-item">';
 					$tabs .= '<a data-ajax="/selling/product:create?farm='.$eFarm['id'].'" data-ajax-method="get" class="tab-item '.($eProduct['composition'] ? '' : 'selected').'">'.s("Produit simple").'</a>';
-					$tabs .= '<a data-ajax="/selling/product:create?farm='.$eFarm['id'].'&composition=1" data-ajax-method="get" class="tab-item '.($eProduct['composition'] ? 'selected' : '').'">'.s("Produit composé").'</a>';
+					$tabs .= '<a data-ajax="/selling/product:create?farm=' . $eFarm['id'] . '&composition=1" data-ajax-method="get" class="tab-item ' . ($eProduct['composition'] ? 'selected' : '') . '" xmlns="http://www.w3.org/1999/html"><span><big>'.\Asset::icon('puzzle-fill').'</big> '.s("Produit composé").'</span></a>';
 				$tabs .= '</div>';
 
 				if($eProduct['composition']) {

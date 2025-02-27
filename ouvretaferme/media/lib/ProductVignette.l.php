@@ -13,7 +13,7 @@ class ProductVignetteLib extends MediaLib {
 		if(
 			$eProduct->empty() or
 			\selling\Product::model()
-				->select(['vignette', 'farm', 'status'])
+				->select(['vignette', 'composition', 'farm', 'status'])
 				->get($eProduct) === FALSE
 		) {
 			throw new \NotExistsAction('Product');

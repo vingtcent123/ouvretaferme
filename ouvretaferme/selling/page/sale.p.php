@@ -67,8 +67,9 @@
 		}
 
 		\farm\FarmerLib::register($data->eFarm);
+		\farm\FarmerLib::setView('viewSelling', $data->eFarm, \farm\Farmer::SALE);
 
-		$data->cItem = \selling\SaleLib::getItems($data->e);
+		$data->cItem = \selling\SaleLib::getItems($data->e, withIngredients: TRUE);
 		$data->ccSaleMarket = \selling\SaleLib::getByParent($data->e);
 		$data->cHistory = \selling\HistoryLib::getBySale($data->e);
 		$data->cPdf = \selling\PdfLib::getBySale($data->e);

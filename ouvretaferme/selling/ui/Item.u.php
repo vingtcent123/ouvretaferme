@@ -1,8 +1,6 @@
 <?php
 namespace selling;
 
-use user\ConnectionLib;
-
 class ItemUi {
 
 	public function __construct() {
@@ -24,7 +22,6 @@ class ItemUi {
 			$h .= '<div class="h-line">';
 				$h .= '<h3>';
 					if(
-						ConnectionLib::getOnline()['id'] !== 1 or /* à des fins de debug */
 						$eSale['compositionEndAt'] === NULL or
 						$eSale['deliveredAt'] === $eSale['compositionEndAt']
 					) {
@@ -181,7 +178,7 @@ class ItemUi {
 					foreach($cItem as $eItem) {
 
 						if($eItem['product']->notEmpty()) {
-							$vignette = ProductUi::getVignette($eItem['product'], '2.5rem');
+							$vignette = ProductUi::getVignette($eItem['product'], '2.75rem');
 						} else {
 							$vignette = '';
 						}
@@ -192,16 +189,18 @@ class ItemUi {
 							$description[] = \farm\FarmUi::getQualityLogo($eItem['quality'], '1.5rem');
 						}
 
-						$product = encode($eItem['name']);
 
 						if($eItem['product']->notEmpty()) {
 
+							$product = '<a href="'.ProductUi::url($eItem['product']).'" class="item-item-product-link">'.encode($eItem['name']).'</a>';
 							$details = ProductUi::getDetails($eItem['product']);
 
 							if($details) {
 								$product .= '<br/><small class="color-muted">'.implode(' | ', $details).'</small>';
 							}
 
+						} else {
+							$product = encode($eItem['name']);
 						}
 
 						$h .= '</div>';
@@ -255,6 +254,7 @@ class ItemUi {
 								}
 
 								$h .= '<td class="item-item-number text-end">';
+
 									if($eItem['packaging']) {
 										$h .= '<span class="item-item-locked">'.\Asset::icon('lock-fill').'</span> '.\selling\UnitUi::getValue($eItem['number'] * $eItem['packaging'], $eItem['unit'], TRUE);
 									} else {
@@ -332,6 +332,32 @@ class ItemUi {
 								}
 
 							$h .= '</tr>';
+
+							if($eItem['productComposition']) {
+
+								if($eItem['saleComposition']->empty()) {
+
+									$h .= '<tr class="item-item-composition">';
+										$h .= '<td></td>';
+										$h .= '<td colspan="'.($columns + 1).'" class="color-muted">'.s("Pas de composition connue au {value}", \util\DateUi::numeric($eSale['deliveredAt'])).'</td>';
+									$h .= '</tr>';
+
+								} else {
+
+									foreach($eItem['saleComposition']['cItem'] as $eItemIngredient) {
+
+										$h .= '<tr class="item-item-composition">';
+											$h .= '<td></td>';
+											$h .= '<td colspan="2">'.ProductUi::getVignette($eItemIngredient['product'], '1.5rem').' '.encode($eItemIngredient['name']).'</td>';
+											$h .= '<td class="item-item-composition-number text-end">'.\selling\UnitUi::getValue($eItem['number'] * ($eItem['packaging'] ?? 1) * $eItemIngredient['number'] * ($eItemIngredient['packaging'] ?? 1), $eItemIngredient['unit'], TRUE).'</td>';
+											$h .= '<td colspan="'.($columns - 2).'"></td>';
+										$h .= '</tr>';
+
+									}
+
+								}
+
+							}
 
 						$h .= '</tbody>';
 

@@ -800,14 +800,7 @@ class Sale extends SaleElement {
 				}
 
 				// La date est gérée directement dans la boutique
-				if($this['from'] === Sale::SHOP) {
-
-					try {
-						$this->expects(['shopDate']);
-					}
-					catch(\Exception) {
-						return FALSE;
-					}
+				if($this['shopDate']->notEmpty()) {
 
 					$this->expects([
 						'shopDate' => ['deliveryDate']
@@ -862,14 +855,7 @@ class Sale extends SaleElement {
 
 			'shopDate.check' => function(\shop\Date &$eDate): bool {
 
-				try {
-					$this->expects(['from']);
-				}
-				catch(\Exception) {
-					return FALSE;
-				}
-
-				if($this['from'] === Sale::SHOP) {
+				if($eDate->notEmpty()) {
 
 					$eDate = \shop\DateLib::getById($eDate);
 

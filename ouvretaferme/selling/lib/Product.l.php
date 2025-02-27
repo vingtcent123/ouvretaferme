@@ -239,7 +239,7 @@ class ProductLib extends ProductCrud {
 
 		$cProduct = Product::model()
 			->select([
-				'id', 'name', 'variety', 'vignette', 'size', 'origin',
+				'id', 'name', 'variety', 'vignette', 'composition', 'size', 'origin',
 				'unit' => ['fqn', 'by', 'singular', 'plural', 'short', 'type'],
 				'privatePrice', 'privateStep',
 				'proPrice', 'proPackaging', 'proStep',

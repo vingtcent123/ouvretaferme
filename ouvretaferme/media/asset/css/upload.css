@@ -12,6 +12,7 @@ body[data-touch="no"] .media-upload-capture {
 }
 
 .media-image-content {
+	position: relative;
 	width: 100%;
 	height: 100%;
 }

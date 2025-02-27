@@ -21,6 +21,7 @@
 		$data->eFarm = \farm\FarmLib::getById($data->e['farm']);
 
 		\farm\FarmerLib::register($data->eFarm);
+		\farm\FarmerLib::setView('viewSelling', $data->eFarm, \farm\Farmer::CUSTOMER);
 
 		$data->cGrid = \selling\GridLib::getByCustomer($data->e);
 		$data->cSale = \selling\SaleLib::getByCustomer($data->e);

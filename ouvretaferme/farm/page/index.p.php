@@ -470,7 +470,7 @@
 				$eTask['cultivation']['series'] = $eTask['series'];
 				$eTask['cultivation']['plant'] = $eTask['plant'];
 
-				\series\CultivationLib::populateSliceStats($eTask['cultivation']);
+				\series\CultivationLib::fillSliceStats($eTask['cultivation']);
 
 			}
 

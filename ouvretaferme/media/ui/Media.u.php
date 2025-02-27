@@ -229,9 +229,9 @@ class MediaUi {
 		$h .= '" data-type="'.$this->type.'" data-id="'.$eElement['id'].'"';
 
 		if($size !== NULL) {
-			$h .= ' style="'.$this->getSquareCss($size).'"';
+			$h .= ' style="'.$this->getSquareCss($size).$this->getCameraCss().'"';
 		} else if($width !== NULL or $height !== NULL) {
-			$h .= ' style="'.$this->getRectangleCss($width, $height).'"';
+			$h .= ' style="'.$this->getRectangleCss($width, $height).$this->getCameraCss().'"';
 		}
 
 		$h .= '>';
@@ -252,6 +252,10 @@ class MediaUi {
 
 		return $h;
 
+	}
+
+	protected function getCameraCss(): string {
+		return '';
 	}
 
 	protected function getCameraContent(\Element $eElement, int|string|null $size = NULL, int|string|null $width = NULL, int|string|null $height = NULL): string {

@@ -337,7 +337,7 @@
 
 		$data->e['cultivation'] = \series\CultivationLib::getById($data->e['cultivation']);
 
-		\series\CultivationLib::populateSliceStats($data->e['cultivation']);
+		\series\CultivationLib::fillSliceStats($data->e['cultivation']);
 		\series\TaskLib::fillHarvestDates($data->e);
 
 		if($data->e['series']->empty()) {

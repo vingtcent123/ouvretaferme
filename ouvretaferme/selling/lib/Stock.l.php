@@ -95,7 +95,7 @@ class StockLib extends StockCrud {
 			->select([
 				'id', 'name', 'variety', 'size', 'origin',
 				'unit' => ['fqn', 'by', 'singular', 'plural', 'short', 'type'],
-				'vignette', 'stock'
+				'vignette', 'composition', 'stock'
 			])
 			->wherePlant($eTask['plant'])
 			->whereUnit($eUnit)

@@ -26,7 +26,7 @@ class ItemLib extends ItemCrud {
 		$ccItem = Item::model()
 			->select([
 				'sale',
-				'product' => ['name', 'variety', 'vignette', 'size'],
+				'product' => ['name', 'variety', 'vignette', 'composition', 'size'],
 				'customer' => ['type', 'name'],
 				'packaging', 'number',
 				'unit' => ['fqn', 'by', 'singular', 'plural', 'short', 'type'],
@@ -169,7 +169,7 @@ class ItemLib extends ItemCrud {
 				'unit' => ['fqn', 'by', 'singular', 'plural', 'short', 'type'],
 				'price' => new \Sql('SUM(price)', 'float'),
 				'quantity' => new \Sql('SUM(IF(packaging IS NULL, 1, packaging) * number)', 'float'),
-				'product' => ['vignette']
+				'product' => ['vignette', 'composition']
 			])
 			->whereFarm($eDate['farm'])
 			->whereStatus('IN', [Sale::CONFIRMED, Sale::PREPARED, Sale::DELIVERED])
@@ -187,7 +187,7 @@ class ItemLib extends ItemCrud {
 				'unit' => ['fqn', 'by', 'singular', 'plural', 'short', 'type'],
 				'price' => new \Sql('SUM(price)', 'float'),
 				'quantity' => new \Sql('SUM(IF(packaging IS NULL, 1, packaging) * number)', 'float'),
-				'product' => ['vignette']
+				'product' => ['vignette', 'composition']
 			])
 			->whereSale('IN', $cSale)
 			->group(['product', 'name', 'unit', 'quality'])
@@ -278,8 +278,6 @@ class ItemLib extends ItemCrud {
 				'unit' => $eItem['unit'],
 				'vatRate' => $eItem['vatRate'],
 			]);
-
-			$fw = new \FailWatch();
 
 			$eItemNew->buildIndex(['locked', 'number', 'unitPrice', 'price', 'packaging'], $post, $key);
 
@@ -465,7 +463,7 @@ class ItemLib extends ItemCrud {
 		$e['type'] = $eSale['type'];
 		$e['stats'] = $eSale['stats'];
 		$e['status'] = $eSale['preparationStatus'];
-		$e['composition'] = $e['product']->notEmpty() ? $e['product']['composition'] : FALSE;
+		$e['productComposition'] = $e['product']->notEmpty() ? $e['product']['composition'] : FALSE;
 
 		if($eSale['hasVat'] === FALSE) {
 			$e['vatRate'] = 0.0;

@@ -892,16 +892,89 @@ class SaleLib extends SaleCrud {
 
 	}
 
-	public static function getItems(Sale $e, mixed $index = NULL): \Collection {
+	public static function getItems(Sale $e, bool $withIngredients = FALSE, ?string $index = NULL): \Collection {
 
-		return Item::model()
+		$cItem = Item::model()
 			->select(Item::getSelection())
 			->whereSale($e)
+			->whereIngredientOf(NULL, if: $withIngredients === FALSE)
 			->sort([
+				new \Sql('ingredientOf IS NULL'),
 				'name' => SORT_ASC,
 				'id' => SORT_ASC
 			])
 			->getCollection(NULL, NULL, $index);
+
+		if($withIngredients) {
+			return self::fillIngredients($cItem);
+		} else {
+			return $cItem;
+		}
+
+
+	}
+
+	public static function fillIngredients(\Collection $cItem): \Collection {
+
+		$isDelivered = ($cItem->first()['status'] === Sale::DELIVERED);
+
+		if($isDelivered) {
+
+			$cItemIngredients = new \Collection();
+			$cItemMain = new \Collection();
+
+			foreach($cItem as $key => $eItem) {
+
+				if($eItem['ingredientOf']->empty()) {
+
+					$cItemMain[$key] = $eItem;
+
+					if($eItem['composition']) {
+
+						$cItemIngredients[$eItem['id']] = new \Collection();
+						$cItemMain[$key]['cItemIngredient'] = $cItemIngredients[$eItem['id']];
+
+					}
+
+				} else {
+					$cItemIngredients[$eItem['ingredientOf']['id']][] = $eItem;
+				}
+
+			}
+
+			return $cItemMain;
+
+		} else {
+
+			$deliveredAt = $cItem->first()['deliveredAt'];
+
+			$cItemComposition = $cItem->find(fn($eItem) => $eItem['productComposition'], clone: FALSE);
+
+			Item::model()
+				->select([
+					'saleComposition' => Sale::model()
+						->select([
+							'id',
+							'cItem' => new ItemModel()
+								->select(Item::getSelection())
+								->sort([
+									'name' => SORT_ASC,
+									'id' => SORT_ASC
+								])
+								->delegateCollection('sale')
+						])
+						->whereDeliveredAt('<=', $deliveredAt)
+						->or(
+							fn() => $this->whereCompositionEndAt(NULL),
+							fn() => $this->whereCompositionEndAt('>=', $deliveredAt)
+						)
+						->delegateElement('compositionOf', propertyParent: 'product')
+				])
+				->get($cItemComposition);
+
+			return $cItem;
+
+		}
 
 	}
 

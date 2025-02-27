@@ -40,7 +40,7 @@
 	->read('harvest', function($data) {
 
 		$data->cTask = \series\TaskLib::getHarvestedByCultivation($data->e);
-		\series\CultivationLib::populateSliceStats($data->e);
+		\series\CultivationLib::fillSliceStats($data->e);
 
 		throw new ViewAction($data);
 

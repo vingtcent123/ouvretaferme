@@ -34,7 +34,7 @@
 			throw new NotExpectedAction('Parent mismatch');
 		}
 
-		$data->cItemSale = \selling\SaleLib::getItems($data->eSale, index: ['product']);
+		$data->cItemSale = \selling\SaleLib::getItems($data->eSale, index: 'product');
 
 		throw new ViewAction($data);
 
@@ -97,7 +97,7 @@
 		]);
 
 		$data->cItemMarket = \selling\SaleLib::getItems($data->eSaleMarket);
-		$data->cItemSale = \selling\SaleLib::getItems($data->e, index: ['product']);
+		$data->cItemSale = \selling\SaleLib::getItems($data->e, index: 'product');
 
 		throw new ViewAction($data);
 

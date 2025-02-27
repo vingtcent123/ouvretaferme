@@ -44,6 +44,7 @@
 		$data->eFarm = \farm\FarmLib::getById($data->e['farm']);
 
 		\farm\FarmerLib::register($data->eFarm);
+		\farm\FarmerLib::setView('viewSelling', $data->eFarm, \farm\Farmer::PRODUCT);
 
 		$data->cSaleComposition = \selling\SaleLib::getByComposition($data->e);
 		$data->cGrid = \selling\GridLib::getByProduct($data->e);

@@ -416,7 +416,7 @@ class CultivationLib extends CultivationCrud {
 
 	}
 
-	public static function populateSliceStats(Cultivation $eCultivation): void {
+	public static function fillSliceStats(Cultivation $eCultivation): void {
 
 		if($eCultivation->empty()) {
 			return;

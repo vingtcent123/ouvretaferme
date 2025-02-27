@@ -100,7 +100,7 @@
 				->get($data->e['sale']['marketParent']);
 
 			$data->cItemMarket = \selling\SaleLib::getItems($data->e['sale']['marketParent']);
-			$data->cItemSale = \selling\SaleLib::getItems($data->e['sale'], index: ['product']);
+			$data->cItemSale = \selling\SaleLib::getItems($data->e['sale'], index: 'product');
 
 			throw new ViewAction($data);
 

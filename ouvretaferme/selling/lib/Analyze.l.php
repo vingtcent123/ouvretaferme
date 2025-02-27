@@ -486,7 +486,7 @@ class AnalyzeLib {
 
 		return Item::model()
 			->select([
-				'product' => ['vignette', 'name', 'variety'],
+				'product' => ['vignette', 'composition', 'name', 'variety'],
 				'quantity' => new \Sql('SUM(IF(packaging IS NULL, 1, packaging) * number)', 'float'),
 				'unit' => ['fqn', 'by', 'singular', 'plural', 'short', 'type'],
 				'turnover' => new \Sql('SUM('.$field.')', 'float'),

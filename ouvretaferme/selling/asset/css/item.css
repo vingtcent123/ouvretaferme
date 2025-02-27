@@ -51,6 +51,10 @@ td.item-item-price {
 	line-height: 1.2;
 }
 
+a.item-item-product-link {
+	color: inherit;
+}
+
 .item-item-product-description {
 	display: inline-flex;
 	gap: 0.5rem;
@@ -81,6 +85,15 @@ span.item-item-packaging-size {
 		display: none;
 	}
 
+}
+
+tr.item-item-composition td:not(:first-child) {
+	border-top: 1px dashed var(--border);
+}
+
+td.item-item-composition-number {
+	font-size: 0.9rem;
+	font-style: italic;
 }
 
 td.item-item-description:empty {
