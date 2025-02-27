@@ -109,12 +109,12 @@
 	}, onEmpty: fn($data) => throw new ReloadLayerAction());
 
 (new Page())
-	->get('getDeliveredAt', function($data) {
+	->match(['get', 'post'],'summary', function($data) {
 
 		$data->eFarm = \farm\FarmLib::getById(GET('farm'))->validate('canSelling');
 
-		$data->date = GET('date');
-		$data->type = GET('type', [\selling\Customer::PRO, \selling\Customer::PRIVATE], NULL);
+		$data->date = INPUT('date');
+		$data->type = INPUT('type', [\selling\Customer::PRO, \selling\Customer::PRIVATE], NULL);
 		$data->cSale = \selling\SaleLib::getByDeliveredDay($data->eFarm, $data->date, $data->type);
 		$data->ccItemProduct = \selling\ItemLib::getProductsBySales($data->cSale);
 		$data->ccItemSale = \selling\ItemLib::getBySales($data->cSale);

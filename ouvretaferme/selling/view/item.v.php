@@ -15,7 +15,7 @@ new AdaptativeView('update', function($data, PanelTemplate $t) {
 	return (new \selling\ItemUi())->update($data->e);
 });
 
-new AdaptativeView('getDeliveredAt', function($data, PanelTemplate $t) {
+new AdaptativeView('summary', function($data, PanelTemplate $t) {
 	return (new \selling\ItemUi())->getByDeliverDay($data->eFarm, $data->date, $data->cSale, $data->ccItemProduct, $data->ccItemSale);
 });
 

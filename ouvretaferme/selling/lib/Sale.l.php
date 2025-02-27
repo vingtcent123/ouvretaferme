@@ -929,7 +929,7 @@ class SaleLib extends SaleCrud {
 
 					$cItemMain[$key] = $eItem;
 
-					if($eItem['composition']) {
+					if($eItem['productComposition']) {
 
 						$cItemIngredients[$eItem['id']] = new \Collection();
 						$cItemMain[$key]['cItemIngredient'] = $cItemIngredients[$eItem['id']];

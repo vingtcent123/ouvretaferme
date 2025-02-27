@@ -1,8 +1,6 @@
 <?php
 namespace selling;
 
-use util\DateUi;
-
 class SaleUi {
 
 	public function __construct() {
@@ -37,7 +35,7 @@ class SaleUi {
 		$eSale->expects(['id', 'priceExcludingVat', 'market', 'compositionOf', 'compositionEndAt']);
 
 		if($eSale->isComposition()) {
-			return s("Composition du {value}", DateUi::numeric($eSale['deliveredAt']));
+			return s("Composition du {value}", \util\DateUi::numeric($eSale['deliveredAt']));
 		} else if($eSale['market']) {
 			return s("Marché #{value}", $eSale->getNumber());
 		} else if($eSale['priceExcludingVat'] < 0) {
@@ -128,7 +126,7 @@ class SaleUi {
 			foreach($nextSales as ['deliveredAt' => $date, 'turnover' => $turnover]) {
 
 				$h .= '<li>';
-					$h .= '<a href="/selling/item:getDeliveredAt?farm='.$eFarm['id'].'&date='.$date.''.($type ? '&type='.$type : '').'" style="'.($date < currentDate() ? 'opacity: 0.5' : '').'">';
+					$h .= '<a href="/selling/item:summary?farm='.$eFarm['id'].'&date='.$date.''.($type ? '&type='.$type : '').'" style="'.($date < currentDate() ? 'opacity: 0.5' : '').'">';
 						$h .= '<h5>'.\util\DateUi::numeric($date).'</h5>';
 						$h .= '<div>';
 							if($turnover > 0) {
@@ -510,15 +508,20 @@ class SaleUi {
 			$h .= \util\TextUi::pagination($page, $nSale / 100);
 		}
 
-		$h .= $this->getBatch();
+		$h .= $this->getBatch($eFarm);
 
 		return $h;
 
 	}
 
-	public function getBatch(): string {
+	public function getBatch(\farm\Farm $eFarm): string {
 
-		$menu = '<a data-ajax-submit="/selling/sale:doUpdateConfirmedCollection" data-confirm="'.s("Marquer ces ventes comme confirmées ?").'" class="batch-menu-confirmed batch-menu-item">';
+		$menu = '<a data-ajax-submit="/selling/item:summary?farm='.$eFarm['id'].'" data-ajax-navigation="never" class="batch-menu-item">';
+			$menu .= '<span class="batch-menu-item-number"><span class="sale-batch-amount"></span> €</span>';
+			$menu .= '<span>'.s("Synthèse").'</span>';
+		$menu .= '</a>';
+
+		$menu .= '<a data-ajax-submit="/selling/sale:doUpdateConfirmedCollection" data-confirm="'.s("Marquer ces ventes comme confirmées ?").'" class="batch-menu-confirmed batch-menu-item">';
 			$menu .= '<span class="sale-preparation-status-label sale-preparation-status-batch sale-preparation-status-confirmed">'.self::p('preparationStatus')->shortValues[Sale::CONFIRMED].'</span>';
 			$menu .= '<span>'.s("Confirmé").'</span>';
 		$menu .= '</a>';
