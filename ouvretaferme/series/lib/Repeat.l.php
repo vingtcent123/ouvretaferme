@@ -30,7 +30,11 @@ class RepeatLib extends RepeatCrud {
 
 	}
 
-	public static function createForYear(\farm\Farm $eFarm, string $year): void {
+	public static function createForYear(\farm\Farm $eFarm, int $year): void {
+
+		if($year > date('Y') + 2) {
+			return;
+		}
 
 		$cRepeat = Repeat::model()
 			->select(Repeat::getSelection())
@@ -80,6 +84,10 @@ class RepeatLib extends RepeatCrud {
 	}
 
 	public static function createForWeek(\farm\Farm $eFarm, string $week): void {
+
+		if(week_year($week) > date('Y') + 2) {
+			return;
+		}
 
 		$cRepeat = Repeat::model()
 			->select(Repeat::getSelection())
