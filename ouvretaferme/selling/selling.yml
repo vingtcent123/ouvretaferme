@@ -155,6 +155,7 @@ Item:
   shopDate: ?shop\Date
   shopProduct: ?shop\Product
   product: ?selling\Product
+  composition: bool
   quality: ?enum(ORGANIC, NATURE_PROGRES, CONVERSION)
   parent: ?selling\Item
   packaging: ?decimal(6, 2, 0.01, null)

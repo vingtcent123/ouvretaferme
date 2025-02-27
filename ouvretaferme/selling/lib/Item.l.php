@@ -447,8 +447,14 @@ class ItemLib extends ItemCrud {
 	public static function prepareCreate(Item $e): void {
 
 		$e->expects([
-			'sale' => ['deliveredAt', 'preparationStatus', 'shop', 'shopDate', 'type', 'stats', 'hasVat'],
+			'sale' => [
+				'deliveredAt', 'preparationStatus', 'shop', 'shopDate', 'type', 'stats', 'hasVat'
+			],
 		]);
+
+		if($e['product']->notEmpty()) {
+			$e['product']->expects(['composition']);
+		}
 		
 		$eSale = $e['sale'];
 
@@ -459,6 +465,7 @@ class ItemLib extends ItemCrud {
 		$e['type'] = $eSale['type'];
 		$e['stats'] = $eSale['stats'];
 		$e['status'] = $eSale['preparationStatus'];
+		$e['composition'] = $e['product']->notEmpty() ? $e['product']['composition'] : FALSE;
 
 		if($eSale['hasVat'] === FALSE) {
 			$e['vatRate'] = 0.0;

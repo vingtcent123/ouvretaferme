@@ -10,7 +10,7 @@ class Item extends ItemElement {
 			'customer' => ['name', 'type'],
 			'unit' => ['fqn', 'by', 'singular', 'plural', 'short', 'type'],
 			'product' => [
-				'name', 'variety', 'description', 'vignette', 'size', 'origin', 'plant',
+				'name', 'variety', 'description', 'vignette', 'size', 'origin', 'plant', 'composition',
 				'unit' => ['fqn', 'by', 'singular', 'plural', 'short', 'type'],
 				'privatePrice',
 				'quality' => ['name', 'logo']
@@ -86,7 +86,7 @@ class Item extends ItemElement {
 
 					return (
 						Product::model()
-							->select('id', 'name', 'farm')
+							->select('id', 'name', 'farm', 'composition')
 							->whereStatus(Product::ACTIVE)
 							->get($eProduct) and
 						$eProduct->validateProperty('farm', $this['farm'])
