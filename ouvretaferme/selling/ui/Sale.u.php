@@ -515,13 +515,13 @@ class SaleUi {
 	}
 
 	public function getBatch(\farm\Farm $eFarm): string {
-
+/*
 		$menu = '<a data-ajax-submit="/selling/item:summary?farm='.$eFarm['id'].'" data-ajax-navigation="never" class="batch-menu-item">';
 			$menu .= '<span class="batch-menu-item-number"><span class="sale-batch-amount"></span> €</span>';
 			$menu .= '<span>'.s("Synthèse").'</span>';
 		$menu .= '</a>';
-
-		$menu .= '<a data-ajax-submit="/selling/sale:doUpdateConfirmedCollection" data-confirm="'.s("Marquer ces ventes comme confirmées ?").'" class="batch-menu-confirmed batch-menu-item">';
+*/
+		$menu /*.*/= '<a data-ajax-submit="/selling/sale:doUpdateConfirmedCollection" data-confirm="'.s("Marquer ces ventes comme confirmées ?").'" class="batch-menu-confirmed batch-menu-item">';
 			$menu .= '<span class="sale-preparation-status-label sale-preparation-status-batch sale-preparation-status-confirmed">'.self::p('preparationStatus')->shortValues[Sale::CONFIRMED].'</span>';
 			$menu .= '<span>'.s("Confirmé").'</span>';
 		$menu .= '</a>';
