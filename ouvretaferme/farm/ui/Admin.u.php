@@ -110,15 +110,18 @@ class AdminUi {
 							} else {
 								$h .= '<small>'.implode('<br/>', $eFarm['cFarmer']->toArray(function($eFarmer) {
 
-									$h = $eFarmer['user']->getName();
-									$h .= ' <span class="color-muted">';
-
 									if($eFarmer['farmGhost']) {
-										$h .= s("Fantôme");
+										$h = $eFarmer['user']->getName();
 									} else {
-										$h .= FarmerUi::p('role')->values[$eFarmer['role']];
+										$h = '<a href="/user/admin/?id='.$eFarmer['user']['id'].'">'.$eFarmer['user']->getName().'</a>';
 									}
 
+									$h .= ' <span class="color-muted">';
+										if($eFarmer['farmGhost']) {
+											$h .= \Asset::icon('snapchat');
+										} else {
+											$h .= FarmerUi::p('role')->values[$eFarmer['role']];
+										}
 									$h .= '</span>';
 
 									return $h;
