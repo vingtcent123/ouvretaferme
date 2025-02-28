@@ -195,7 +195,7 @@ class TaskUi {
 						$h .= s("Semaine {week}, {year}", ['week' => week_number($week), 'year' => week_year($week)]);
 					$h .= '</a>';
 					$h .= '<div class="dropdown-list dropdown-list-minimalist">';
-						$h .= \util\FormUi::weekSelector((string)substr($week, 0, 4), $link('{current}'), defaultWeek: $week);
+						$h .= \util\FormUi::weekSelector((string)substr($week, 0, 4), $link('{current}'), defaultWeek: $week, minYear: $eFarm->getFirstValidSeason(), maxYear: $eFarm->getLastValidSeason());
 					$h .= '</div>';
 				$h .= '</h1>';
 				$h .= '<div class="tasks-calendar-title-period">';

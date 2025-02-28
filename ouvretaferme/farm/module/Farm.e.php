@@ -26,9 +26,25 @@ class Farm extends FarmElement {
 		$this->expects(['seasonFirst', 'seasonLast']);
 
 		return (
-			$season >= $this['seasonFirst'] - \Setting::get('farm\calendarLimit') and
-			$season <= $this['seasonLast'] + \Setting::get('farm\calendarLimit')
+			$season >= $this->getFirstValidSeason() and
+			$season <= $this->getLastValidSeason()
 		);
+
+	}
+
+	public function getFirstValidSeason(): int {
+
+		$this->expects(['seasonFirst']);
+
+		return $this['seasonFirst'] - \Setting::get('farm\calendarLimit');
+
+	}
+
+	public function getLastValidSeason(): int {
+
+		$this->expects(['seasonLast']);
+
+		return $this['seasonLast'] + \Setting::get('farm\calendarLimit');
 
 	}
 
