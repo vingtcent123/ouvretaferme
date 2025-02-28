@@ -159,10 +159,20 @@ class TaskUi {
 
 	}
 
-	public function getWeekCalendar(string $week, \Closure $link, ?\Closure $filter = NULL): string {
+	public function getWeekCalendar(\farm\Farm $eFarm, string $week, \Closure $link, ?\Closure $filter = NULL): string {
 
-		$weekBefore = date('o-\WW', strtotime($week.' - 1 WEEK'));
+		$eFarm->expects(['seasonFirst', 'seasonLast']);
+
 		$weekAfter = date('o-\WW', strtotime($week.' + 1 WEEK'));
+		$weekBefore = date('o-\WW', strtotime($week.' - 1 WEEK'));
+
+		if($eFarm->isSeasonValid(week_year($weekBefore)) === FALSE) {
+			$weekBefore = NULL;
+		}
+
+		if($eFarm->isSeasonValid(week_year($weekAfter)) === FALSE) {
+			$weekAfter = NULL;
+		}
 
 		$h = '<div id="tasks-calendar-top" class="tasks-calendar tasks-calendar-week '.($filter ? 'tasks-calendar-with-filter' : '').'">';
 
@@ -172,9 +182,11 @@ class TaskUi {
 			}
 
 			$h .= '<div class="tasks-calendar-navigation tasks-calendar-navigation-before">';
-				$h .= '<a href="'.$link($weekBefore).'">';
-					$h .= \Asset::icon('chevron-left');
-				$h .= '</a>';
+				if($weekBefore !== NULL) {
+					$h .= '<a href="'.$link($weekBefore).'">';
+						$h .= \Asset::icon('chevron-left');
+					$h .= '</a>';
+				}
 			$h .= '</div>';
 
 			$h .= '<div class="tasks-calendar-title">';
@@ -192,9 +204,11 @@ class TaskUi {
 			$h .= '</div>';
 
 			$h .= '<div class="tasks-calendar-navigation tasks-calendar-navigation-after">';
-				$h .= '<a href="'.$link($weekAfter).'">';
-					$h .= \Asset::icon('chevron-right');
-				$h .= '</a>';
+				if($weekAfter !== NULL) {
+					$h .= '<a href="'.$link($weekAfter).'">';
+						$h .= \Asset::icon('chevron-right');
+					$h .= '</a>';
+				}
 			$h .= '</div>';
 
 			if($filter !== NULL) {
@@ -787,6 +801,14 @@ class TaskUi {
 		$yearBefore = $year - 1;
 		$yearAfter = $year + 1;
 
+		if($eFarm->isSeasonValid($yearBefore) === FALSE) {
+			$yearBefore = NULL;
+		}
+
+		if($eFarm->isSeasonValid($yearAfter) === FALSE) {
+			$yearAfter = NULL;
+		}
+
 		$h = '<div id="tasks-calendar-top" class="container tasks-calendar '.($filter ? 'tasks-calendar-with-filter' : '').' tasks-calendar-year">';
 
 			if($filter !== NULL) {
@@ -795,9 +817,11 @@ class TaskUi {
 
 
 			$h .= '<div class="tasks-calendar-navigation tasks-calendar-navigation-before">';
-				$h .= '<a href="'.\farm\FarmUi::urlPlanningYear($eFarm, $yearBefore, 12).'">';
-					$h .= \Asset::icon('chevron-left');
-				$h .= '</a>';
+				if($yearBefore !== NULL) {
+					$h .= '<a href="'.\farm\FarmUi::urlPlanningYear($eFarm, $yearBefore, 12).'">';
+						$h .= \Asset::icon('chevron-left');
+					$h .= '</a>';
+				}
 			$h .= '</div>';
 
 			$h .= '<div class="tasks-calendar-title">';
@@ -805,9 +829,11 @@ class TaskUi {
 			$h .= '</div>';
 
 			$h .= '<div class="tasks-calendar-navigation tasks-calendar-navigation-after">';
-				$h .= '<a href="'.\farm\FarmUi::urlPlanningYear($eFarm, $yearAfter, 1).'">';
-					$h .= \Asset::icon('chevron-right');
-				$h .= '</a>';
+				if($yearAfter !== NULL) {
+					$h .= '<a href="'.\farm\FarmUi::urlPlanningYear($eFarm, $yearAfter, 1).'">';
+						$h .= \Asset::icon('chevron-right');
+					$h .= '</a>';
+				}
 			$h .= '</div>';
 
 			if($filter !== NULL) {
@@ -2315,7 +2341,7 @@ class TaskUi {
 	}
 
 	public function displayByActionTitle(\farm\Farm $eFarm, string $week, \farm\Action $eAction): string {
-		return $this->getWeekCalendar($week, fn($week) => \farm\FarmUi::urlPlanningAction($eFarm, $week, $eAction));
+		return $this->getWeekCalendar($eFarm, $week, fn($week) => \farm\FarmUi::urlPlanningAction($eFarm, $week, $eAction));
 	}
 
 	public function displayByAction(\farm\Farm $eFarm, string $week, \farm\Action $eAction, \Collection $cTask): string {

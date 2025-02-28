@@ -6,7 +6,6 @@ class Farm extends FarmElement {
 	const DEMO = 1;
 
 	protected static array $selling = [];
-	protected static array $farms = [];
 
 	public function __construct(array $array = []) {
 
@@ -19,6 +18,17 @@ class Farm extends FarmElement {
 		return parent::getSelection() + [
 			'calendarMonths' => new \Sql('IF(calendarMonthStart IS NULL, 0, 12 - calendarMonthStart + 1) + 12 + IF(calendarMonthStop IS NULL, 0, calendarMonthStop)', 'int'),
 		];
+
+	}
+
+	public function isSeasonValid(int $season): bool {
+
+		$this->expects(['seasonFirst', 'seasonLast']);
+
+		return (
+			$season >= $this['seasonFirst'] - \Setting::get('farm\calendarLimit') and
+			$season <= $this['seasonLast'] + \Setting::get('farm\calendarLimit')
+		);
 
 	}
 

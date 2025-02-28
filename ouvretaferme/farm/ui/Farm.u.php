@@ -1403,25 +1403,29 @@ class FarmUi {
 				$h .= '<a href="'.$url($season).'" class="dropdown-item '.($season === $selectedSeason ? 'selected' : '').'">'.s("Saison {year}", ['year' => $season]).'</a>';
 			}
 
-			$h .= '<div class="dropdown-divider"></div>';
+			if(OTF_DEMO === FALSE) {
 
-			$newLast = $eFarm['seasonLast'] + 1;
-			$newFirst = $eFarm['seasonFirst'] - 1;
+				$h .= '<div class="dropdown-divider"></div>';
 
-			if($newLast > date('Y') + 10) {
-				$alert = s("Il n'est pas possible d'ajouter des saisons plus de dix ans en avance !");
-				$h .= '<div class="dropdown-item farm-tab-disabled" data-alert="'.$alert.'" title="'.$alert.'">';
-					$h .= s("Ajouter la saison {year}", ['year' => $newLast]);
-				$h .= '</div> ';
-			} else {
-				$h .= '<a data-ajax="/farm/farm:doSeasonLast" post-id="'.$eFarm['id'].'" post-increment="1" class="dropdown-item">';
-					$h .= s("Ajouter la saison {year}", ['year' => $newLast]);
+				$newLast = $eFarm['seasonLast'] + 1;
+				$newFirst = $eFarm['seasonFirst'] - 1;
+
+				if($newLast > date('Y') + 10) {
+					$alert = s("Il n'est pas possible d'ajouter des saisons plus de dix ans en avance !");
+					$h .= '<div class="dropdown-item farm-tab-disabled" data-alert="'.$alert.'" title="'.$alert.'">';
+						$h .= s("Ajouter la saison {year}", ['year' => $newLast]);
+					$h .= '</div> ';
+				} else {
+					$h .= '<a data-ajax="/farm/farm:doSeasonLast" post-id="'.$eFarm['id'].'" post-increment="1" class="dropdown-item">';
+						$h .= s("Ajouter la saison {year}", ['year' => $newLast]);
+					$h .= '</a> ';
+				}
+
+				$h .= '<a data-ajax="/farm/farm:doSeasonFirst" post-id="'.$eFarm['id'].'" post-increment="-1" class="dropdown-item">';
+					$h .= s("Ajouter la saison {year}", ['year' => $newFirst]);
 				$h .= '</a> ';
-			}
 
-			$h .= '<a data-ajax="/farm/farm:doSeasonFirst" post-id="'.$eFarm['id'].'" post-increment="-1" class="dropdown-item">';
-				$h .= s("Ajouter la saison {year}", ['year' => $newFirst]);
-			$h .= '</a> ';
+			}
 
 		$h .= '</div>';
 
