@@ -9,7 +9,7 @@
 	]], function($data) {
 
 		$data = 'User-agent: *'."\n";
-		$data .= 'Disallow: '.Setting::get('main\robotsDisallow').''."\n";
+		$data .= 'Disallow:'."\n";
 
 		throw new DataAction($data, 'text/txt');
 
