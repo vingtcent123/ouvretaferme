@@ -17,6 +17,17 @@
 
 		throw $action;
 
+	})
+	->get([[
+		'/public/robots.txt',
+		'@priority' => 1
+	]], function() {
+
+		$data = 'User-agent: *'."\n";
+		$data .= 'Disallow:'."\n";
+
+		throw new DataAction($data, 'text/txt');
+
 	});
 
 (new Page(function($data) {

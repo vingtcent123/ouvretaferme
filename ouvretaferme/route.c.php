@@ -293,6 +293,11 @@ Route::register([
 			'priority' => 5,
 			'route' => ['public', ':404'],
 		],
+		'/public/robots.txt' => [
+			'request' => 'website/public',
+			'priority' => 1,
+			'route' => ['public', 'robots.txt'],
+		],
 		'/public/{domain}' => [
 			'request' => 'website/public',
 			'priority' => 5,
