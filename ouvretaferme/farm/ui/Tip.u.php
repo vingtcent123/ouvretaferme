@@ -124,7 +124,7 @@ class TipUi {
 				$rotationSeasons = $eFarm->getRotationSeasons(date('Y'));
 
 				$year = last($rotationSeasons);
-				$eFamily = \plant\FamilyLib::getByFqn('asteracees');
+				$eFamily = \plant\FamilyLib::getByFqn('asteraceae');
 
 				$h = '<p>'.s("Sur la page des rotations de cultures, vous pouvez retrouver facilement les planches qui n'ont pas été cultivées avec une même famille depuis deux, trois ou quatre ans. Par exemple, retrouvez toutes les planches qui n'ont pas reçu d'astéracées depuis {year} en <link>cliquant ici</link> !", ['year' => $year, 'link' => '<a href="'.$link.'?family='.$eFamily['id'].'&seen=0">']).'</p>';
 

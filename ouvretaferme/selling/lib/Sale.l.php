@@ -916,6 +916,10 @@ class SaleLib extends SaleCrud {
 
 	public static function fillIngredients(\Collection $cItem): \Collection {
 
+		if($cItem->empty()) {
+			return $cItem;
+		}
+
 		$isDelivered = ($cItem->first()['status'] === Sale::DELIVERED);
 
 		if($isDelivered) {
