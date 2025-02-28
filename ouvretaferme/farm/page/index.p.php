@@ -314,18 +314,22 @@
 		switch($view) {
 
 			case \farm\Farmer::DAILY :
-				$period = GET('period', 'string', currentWeek());
-				$subPeriod = NULL;
-				break;
-
 			case \farm\Farmer::WEEKLY :
-				$period = GET('period', 'string', currentWeek());
+				$period = GET('period', fn($value) => Filter::check('week', $value), currentWeek());
 				$subPeriod = NULL;
+
+				if($data->eFarm->isSeasonValid(date_year($period)) === FALSE) {
+					throw new NotExpectedAction('Invalid period');
+				}
 				break;
 
 			case \farm\Farmer::YEARLY :
-				$period = GET('period', 'string', date('Y'));
+				$period = GET('period', 'int', (int)date('Y'));
 				$subPeriod = GET('subPeriod', 'string', date('n'));
+
+				if($data->eFarm->isSeasonValid($period) === FALSE) {
+					throw new NotExpectedAction('Invalid period');
+				}
 				break;
 				
 			default :
