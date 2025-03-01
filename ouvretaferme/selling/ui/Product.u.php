@@ -837,6 +837,7 @@ class ProductUi {
 		$h .= $form->close();
 
 		return new \Panel(
+			id: 'panel-product-create',
 			title: s("Ajouter un produit"),
 			body: $h
 		);
@@ -895,6 +896,7 @@ class ProductUi {
 		$h .= $form->close();
 
 		return new \Panel(
+			id: 'panel-product-update',
 			title: s("Modifier un produit"),
 			body: $h
 		);
