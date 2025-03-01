@@ -789,6 +789,7 @@ class SaleLib extends SaleCrud {
 			self::recalculate($e);
 		}
 
+		// À faire obligatoirement après recalculate()
 		if(in_array('deliveredAt', $properties) and $e->isComposition()) {
 			self::reorderComposition($e);
 		}

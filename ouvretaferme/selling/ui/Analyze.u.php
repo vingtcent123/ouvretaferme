@@ -1966,10 +1966,36 @@ class AnalyzeUi {
 	public function getExportSalesHeader(\farm\Farm $eFarm): array {
 
 		$header = [
-			'item',
-			'product',
-			'sale',
-			'customer',
+			'sale_id',
+			'customer_name',
+			'type',
+			'delivery',
+			'items',
+			'shop',
+			'payment_method'
+		];
+
+		if($eFarm->getSelling('hasVat')) {
+			$header[] = 'amount_excluding_vat';
+			$header[] = 'vat';
+			$header[] = 'amount_including_vat';
+		} else {
+			$header[] = 'amount';
+		}
+
+		return $header;
+
+	}
+
+	public function getExportItemsHeader(\farm\Farm $eFarm): array {
+
+		$header = [
+			'sale_id',
+			'item_id',
+			'label',
+			'product_id',
+			'product_type',
+			'customer_name',
 			'type',
 			'delivery',
 			'quantity',
@@ -1991,6 +2017,7 @@ class AnalyzeUi {
 	public function getExportProductsHeader(\farm\Farm $eFarm): array {
 
 		return [
+			'product_id',
 			'name',
 			'species',
 			'category',

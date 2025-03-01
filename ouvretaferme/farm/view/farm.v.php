@@ -76,7 +76,7 @@ new AdaptativeView('export', function($data, FarmTemplate $t) {
 	
 	$t->mainTitle = $h;
 	
-	echo (new \farm\FarmUi())->export($data->e, $data->year, $data->hasMarket);
+	echo (new \farm\FarmUi())->export($data->e, $data->year);
 
 });
 ?>

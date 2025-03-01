@@ -5,12 +5,23 @@
 		$data->e->validate('canAnalyze', 'canPersonalData');
 
 		$year = GET('year', 'int');
-		$market = GET('market', 'bool', FALSE);
 
-		$export = \selling\AnalyzeLib::getExportSales($data->e, $year, $market);
+		$export = \selling\AnalyzeLib::getExportSales($data->e, $year);
 		array_unshift($export, (new \selling\AnalyzeUi())->getExportSalesHeader($data->e));
 
 		throw new CsvAction($export, 'ventes-'.$year.'.csv');
+
+	})
+	->read('exportItems', function($data) {
+
+		$data->e->validate('canAnalyze', 'canPersonalData');
+
+		$year = GET('year', 'int');
+
+		$export = \selling\AnalyzeLib::getExportItems($data->e, $year);
+		array_unshift($export, (new \selling\AnalyzeUi())->getExportItemsHeader($data->e));
+
+		throw new CsvAction($export, 'articles-'.$year.'.csv');
 
 	})
 	->read('exportProducts', function($data) {

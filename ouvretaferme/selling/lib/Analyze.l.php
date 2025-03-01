@@ -527,29 +527,6 @@ class AnalyzeLib {
 
 	}
 
-	public static function filterItemMarketStats(bool $join = FALSE, ?ItemModel $mItem = NULL) {
-
-		$mItem ??= Item::model();
-
-		if($join) {
-
-			$mItem
-				->where('m1.status', Sale::DELIVERED)
-				->where('m1.parent', '!=', NULL)
-				->where('m1.priceExcludingVat', '!=', NULL);
-
-		} else {
-
-			$mItem
-				->whereStatus(Sale::DELIVERED)
-				->whereParent('!=', NULL)
-				->wherePriceExcludingVat('!=', NULL);
-
-		}
-
-
-	}
-
 	public static function filterSaleStats(?SaleModel $mSale = NULL) {
 
 		$mSale ??= Sale::model();
@@ -744,31 +721,62 @@ class AnalyzeLib {
 
 	}
 
-	public static function hasExportMarket(\farm\Farm $eFarm, int $year): bool {
+	public static function getExportSales(\farm\Farm $eFarm, int $year): array {
 
-		self::filterItemMarketStats();
+		self::filterSaleStats();
 
-		return Item::model()
+		$data = Sale::model()
+			->select([
+				'id',
+				'document',
+				'items', 'discount',
+				'type',
+				'customer' => ['name'],
+				'paymentMethod', 'priceIncludingVat', 'priceExcludingVat', 'vat',
+				'shop' => ['name'],
+				'deliveredAt'
+			])
 			->whereFarm($eFarm)
-			->where('number != 0')
 			->where('EXTRACT(YEAR FROM deliveredAt) = '.$year)
-			->exists();
+			->sort('id')
+			->getCollection()
+			->toArray(function($eSale) use ($eFarm) {
+
+				$data = [
+					$eSale['document'],
+					$eSale['customer']->notEmpty() ? $eSale['customer']->getName() : '',
+					CustomerUi::getType($eSale),
+					\util\DateUi::numeric($eSale['deliveredAt']),
+					$eSale['items'],
+					$eSale['shop']->empty() ? '' : $eSale['shop']['name'],
+					$eSale['paymentMethod'] ? trim(strip_tags(SaleUi::p('paymentMethod')->values[$eSale['paymentMethod']])) :  '',
+					\util\TextUi::csvNumber($eSale['priceExcludingVat']),
+				];
+
+				if($eFarm->getSelling('hasVat')) {
+					$data[] = \util\TextUi::csvNumber($eSale['vat']);
+					$data[] = \util\TextUi::csvNumber($eSale['priceIncludingVat']);
+				}
+
+				return $data;
+			});
+
+		return $data;
 
 	}
 
-	public static function getExportSales(\farm\Farm $eFarm, int $year, bool $market): array {
+	public static function getExportItems(\farm\Farm $eFarm, int $year): array {
 
-		if($market) {
-			self::filterItemMarketStats();
-		} else {
-			self::filterItemStats();
-		}
+		self::filterItemStats();
 
 		// Ajout des articles
 		$data = Item::model()
 			->select([
+				'id',
 				'name',
 				'product' => ['name', 'variety'],
+				'productComposition',
+				'ingredientOf',
 				'sale' => ['document',  'type'],
 				'customer' => ['type', 'name'],
 				'quantity' => new \Sql('IF(packaging IS NULL, 1, packaging) * number', 'float'),
@@ -784,9 +792,11 @@ class AnalyzeLib {
 			->toArray(function($eItem) use ($eFarm) {
 
 				$data = [
-					$eItem['name'],
-					$eItem['product']->empty() ? '' : $eItem['product']->getName(),
 					$eItem['sale']['document'],
+					$eItem['id'],
+					$eItem['name'],
+					$eItem['product']->empty() ? '' : $eItem['product']['id'],
+					$eItem['ingredientOf']->notEmpty() ? 'ingredient' : ($eItem['productComposition'] ? 'composed' : 'simple'),
 					$eItem['customer']->notEmpty() ? $eItem['customer']->getName() : '',
 					CustomerUi::getType($eItem['sale']),
 					\util\DateUi::numeric($eItem['deliveredAt']),
@@ -837,11 +847,11 @@ class AnalyzeLib {
 
 		usort($data, function($a, $b) {
 
-			if($a[2] !== $b[2]) {
-				return $a[2] < $b[2] ? -1 : 1;
+			if($a[0] !== $b[0]) {
+				return $a[0] < $b[0] ? -1 : 1;
 			}
 
-			return strcmp($a[0], $b[0]);
+			return strcmp($a[2], $b[2]);
 
 		});
 
@@ -853,6 +863,7 @@ class AnalyzeLib {
 
 		$data = Product::model()
 			->select([
+				'id',
 				'name',
 				'plant' => ['name'],
 				'category' => ['name'],
@@ -868,6 +879,7 @@ class AnalyzeLib {
 			->getCollection()
 			->toArray(function($eProduct) use ($eFarm) {
 				return [
+					$eProduct['id'],
 					$eProduct['name'],
 					$eProduct['plant']->empty() ? '' : $eProduct['plant']['name'],
 					$eProduct['category']->empty() ? '' : $eProduct['category']['name'],
