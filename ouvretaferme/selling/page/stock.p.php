@@ -1,5 +1,5 @@
 <?php
-(new Page())
+new Page()
 	->get('add', function($data) {
 
 		$data->eFarm = \farm\FarmLib::getById(INPUT('farm'))->validate('canWrite');

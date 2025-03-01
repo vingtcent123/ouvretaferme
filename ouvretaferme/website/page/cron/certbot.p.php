@@ -1,5 +1,5 @@
 <?php
-(new Page())
+new Page()
 	->cron('rewrite', function($data) {
 
 		\website\DomainLib::buildRewrites();

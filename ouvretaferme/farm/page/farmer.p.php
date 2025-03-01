@@ -1,5 +1,5 @@
 <?php
-(new Page())
+new Page()
 	->get('manage', function($data) {
 
 		$farm = GET('farm', '?int');

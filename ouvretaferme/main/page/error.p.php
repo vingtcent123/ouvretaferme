@@ -1,5 +1,5 @@
 <?php
-(new Page())
+new Page()
 	->http('403', function($data) {
 
 		\user\ConnectionLib::checkLogged();

@@ -851,7 +851,7 @@ class FlowUi {
 							$h .= '</td>';
 						}
 						$h .= '<td>'.\farm\ActionUi::text($eFlow).'</td>';
-						$h .= '<td>'.(new SequenceUi())->getTextualWeek($eFlow, $eFlow['action']).'</td>';
+						$h .= '<td>'.new SequenceUi()->getTextualWeek($eFlow, $eFlow['action']).'</td>';
 					$h .= '</tr>';
 				}
 

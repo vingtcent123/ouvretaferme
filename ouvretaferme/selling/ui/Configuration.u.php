@@ -299,7 +299,7 @@ class ConfigurationUi {
 			$h .= '<a href="/mail/customize:create?farm='.$eFarm['id'].'&type='.\mail\Customize::SALE_ORDER_FORM.'" class="btn btn-outline-primary">'.s("Personnaliser l'e-mail").'</a>';
 		$h .= '</div>';
 
-		[$title, , $html] = (new PdfUi())->getOrderFormMail($eFarm, $eSaleExample, $cCustomize[\mail\Customize::SALE_ORDER_FORM]['template'] ?? NULL);
+		[$title, , $html] = new PdfUi()->getOrderFormMail($eFarm, $eSaleExample, $cCustomize[\mail\Customize::SALE_ORDER_FORM]['template'] ?? NULL);
 		$h .= (new \mail\CustomizeUi())->getMailExample($title, $html);
 
 		$h .= '<div class="util-title">';
@@ -307,7 +307,7 @@ class ConfigurationUi {
 			$h .= '<a href="/mail/customize:create?farm='.$eFarm['id'].'&type='.\mail\Customize::SALE_DELIVERY_NOTE.'" class="btn btn-outline-primary">'.s("Personnaliser l'e-mail").'</a>';
 		$h .= '</div>';
 
-		[$title, , $html] = (new PdfUi())->getDeliveryNoteMail($eFarm, $eSaleExample, $cCustomize[\mail\Customize::SALE_DELIVERY_NOTE]['template'] ?? NULL);
+		[$title, , $html] = new PdfUi()->getDeliveryNoteMail($eFarm, $eSaleExample, $cCustomize[\mail\Customize::SALE_DELIVERY_NOTE]['template'] ?? NULL);
 		$h .= (new \mail\CustomizeUi())->getMailExample($title, $html);
 
 		$h .= '<div class="util-title">';
@@ -315,7 +315,7 @@ class ConfigurationUi {
 			$h .= '<a href="/mail/customize:create?farm='.$eFarm['id'].'&type='.\mail\Customize::SALE_INVOICE.'" class="btn btn-outline-primary">'.s("Personnaliser l'e-mail").'</a>';
 		$h .= '</div>';
 
-		[$title, , $html] = (new PdfUi())->getInvoiceMail($eFarm, $eSaleExample['invoice'], new \Collection([$eSaleExample]), $cCustomize[\mail\Customize::SALE_INVOICE]['template'] ?? NULL);
+		[$title, , $html] = new PdfUi()->getInvoiceMail($eFarm, $eSaleExample['invoice'], new \Collection([$eSaleExample]), $cCustomize[\mail\Customize::SALE_INVOICE]['template'] ?? NULL);
 		$h .= (new \mail\CustomizeUi())->getMailExample($title, $html);
 
 		return $h;

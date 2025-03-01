@@ -1,5 +1,5 @@
 <?php
-(new Page())
+new Page()
 	->get('index', function($data) {
 
 		\user\ConnectionLib::checkLogged();

@@ -416,7 +416,7 @@ class CustomerUi {
 						$eCustomer['farm']->canAnalyze() and
 						$cSaleTurnover->notEmpty()
 					) {
-						$h .= (new AnalyzeUi())->getCustomerTurnover($cSaleTurnover, NULL, $eCustomer);
+						$h .= new AnalyzeUi()->getCustomerTurnover($cSaleTurnover, NULL, $eCustomer);
 					}
 
 					$h .= (new \selling\SaleUi())->getList($eCustomer['farm'], $cSale, hide: ['customer']);

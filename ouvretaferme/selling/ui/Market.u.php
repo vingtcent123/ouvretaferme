@@ -105,8 +105,8 @@ class MarketUi {
 		$h = '<h2>'.s("Meilleures ventes").'</h2>';
 
 		$h .= '<div class="analyze-chart-table">';
-			$h .= (new AnalyzeUi())->getBestProductsPie($cItemProduct);
-			$h .= (new AnalyzeUi())->getBestProductsTable(
+			$h .= new AnalyzeUi()->getBestProductsPie($cItemProduct);
+			$h .= new AnalyzeUi()->getBestProductsTable(
 				$cItemProduct,
 				zoom: FALSE, expand: FALSE, hide: ['average'],
 				moreTh: '<th class="text-end hide-sm-down">'.s("Fréquence<br/>de vente").'</th><th class="text-end hide-sm-down">'.s("Dernière<br/>vente").'</th>',
@@ -360,7 +360,7 @@ class MarketUi {
 				($eSale['paymentMethod'] === NULL or $eSale['paymentMethod'] === Sale::CASH)
 			);
 
-			$h .= (new SaleUi())->getSummary($eSale, onlyIncludingVat: TRUE, includeMoney: $money);
+			$h .= new SaleUi()->getSummary($eSale, onlyIncludingVat: TRUE, includeMoney: $money);
 
 		}
 
@@ -387,7 +387,7 @@ class MarketUi {
 				$eItemMarket['unitPrice'] = round($eItemMarket['unitPrice'] * (1 - $discount / 100), 2);
 
 				$h .= $this->getSaleItem($eSale, $eItemMarket, $eItemSale);
-				$h .= (new MerchantUi())->get('/selling/market:doUpdateSale', $eSale, $eItemSale->empty() ? new Item([
+				$h .= new MerchantUi()->get('/selling/market:doUpdateSale', $eSale, $eItemSale->empty() ? new Item([
 					'id' => $eItemMarket['id'],
 					'name' => $eItemMarket['name'],
 					'unit' => $eItemMarket['unit'],

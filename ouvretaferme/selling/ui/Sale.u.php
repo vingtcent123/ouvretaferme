@@ -977,7 +977,7 @@ class SaleUi {
 		$h .= '<h4>'.s("Modèle des étiquettes").'</h4>';
 
 		$h .= '<div class="selling-label-example">';
-			$h .= (new PdfUi())->getLabel($eFarm, new Customer(), quality: $eFarm['quality']);
+			$h .= new PdfUi()->getLabel($eFarm, new Customer(), quality: $eFarm['quality']);
 		$h .= '</div>';
 
 		$form = new \util\FormUi();
@@ -1884,7 +1884,7 @@ class SaleUi {
 						'new' => TRUE
 					];
 				};
-				(new CustomerUi())->query($d);
+				new CustomerUi()->query($d);
 				break;
 
 			case 'shopDate' :
@@ -2048,7 +2048,7 @@ class SaleUi {
 						return '<div class="util-info">'.s("Aucun produit n'est disponible à la vente.").'</div>';
 					}
 
-					return (new ItemUi())->getCreateList(
+					return new ItemUi()->getCreateList(
 						$e['cProduct'], $e['cCategory'],
 						fn($cProduct) => ItemUi::getCreateByCategory($form, $e, $cProduct)
 					);

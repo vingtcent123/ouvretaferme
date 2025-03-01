@@ -981,7 +981,7 @@ class ReportUi {
 
 			case 'cultivations' :
 				$d->field = function(\util\FormUi $form, Report $e) {
-					return (new ReportUi())->getSeries($form, $e, $e['from']);
+					return new ReportUi()->getSeries($form, $e, $e['from']);
 				};
 				break;
 

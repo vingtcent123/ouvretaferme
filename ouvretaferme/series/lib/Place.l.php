@@ -42,7 +42,7 @@ class PlaceLib extends PlaceCrud {
 
 	public static function delegateByTask(): PlaceModel {
 
-		return (new PlaceModel())
+		return new PlaceModel()
 			->select([
 				'task',
 				'zone' => ['name'],
@@ -56,7 +56,7 @@ class PlaceLib extends PlaceCrud {
 
 	public static function delegateBySeries(): PlaceModel {
 
-		return (new PlaceModel())
+		return new PlaceModel()
 			->select([
 				'series',
 				'zone' => ['name'],

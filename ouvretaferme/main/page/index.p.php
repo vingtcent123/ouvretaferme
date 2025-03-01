@@ -1,5 +1,5 @@
 <?php
-(new Page())
+new Page()
 	->get('index', function($data) {
 
 		if($data->eUserOnline->empty()) {
@@ -10,7 +10,7 @@
 		$data->cCustomerPrivate = \selling\CustomerLib::getPrivateByUser($data->eUserOnline);
 
 		$data->cShop = \shop\ShopLib::getByCustomers(
-			(new Collection())
+			new Collection()
 				->mergeCollection($data->cCustomerPrivate)
 				->mergeCollection($data->cCustomerPro)
 		);

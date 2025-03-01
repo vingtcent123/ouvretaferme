@@ -434,7 +434,7 @@ class BasketUi {
 		}
 
 		$h = '<div id="shop-basket-point">';
-			$h .= (new PointUi())->getField($eShop, $ccPoint, $ePointSelected);
+			$h .= new PointUi()->getField($eShop, $ccPoint, $ePointSelected);
 		$h .= '</div>';
 
 		$h .= '<div id="shop-basket-address-wrapper" data-type="'.($ePointSelected->empty() ? '' : $ePointSelected['type']).'">';

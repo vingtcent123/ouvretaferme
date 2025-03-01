@@ -91,7 +91,7 @@ class TimesheetUi {
 
 		$formOpen = $form->openAjax('/series/timesheet:doUpdateUser', ['data-ajax-origin' => 'timesheet', 'class' => 'panel-dialog container']);
 
-		$h .= (new TaskUi())->getTasksField($form, $cTask, 'hidden', class: 'util-overflow-xs', displayPlace: TRUE, displayTime: TRUE);
+		$h .= new TaskUi()->getTasksField($form, $cTask, 'hidden', class: 'util-overflow-xs', displayPlace: TRUE, displayTime: TRUE);
 
 		$h .= '<div class="'.($cUser->count() > 4 ? 'util-overflow-xs' : '').'">';
 			$h .= '<div class="timesheet-update-users">';

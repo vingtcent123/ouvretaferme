@@ -44,7 +44,7 @@ class ZoneUi {
 				$h .= $this->getZoneUse($eZone);
 			$h .= '</div>';
 
-			$h .= (new GreenhouseUi())->getList($eZone['farm'], $eZone['cGreenhouse'], 'btn-transparent', 'bg-secondary');
+			$h .= new GreenhouseUi()->getList($eZone['farm'], $eZone['cGreenhouse'], 'btn-transparent', 'bg-secondary');
 
 		$h .= '</div>';
 
@@ -121,7 +121,7 @@ class ZoneUi {
 
 		$h .= '</div>';
 
-		$h .= (new PlotUi())->getPlots($eFarm, $cPlot, $eZone, $season);
+		$h .= new PlotUi()->getPlots($eFarm, $cPlot, $eZone, $season);
 
 		return $h;
 
@@ -314,7 +314,7 @@ class ZoneUi {
 				$map .= s("Dessiner cette parcelle sur la carte n'est pas obligatoire, vous pouvez sauter cette étape et saisir directement la surface de la parcelle.");
 			$map .= '</div>';
 
-			$map .= (new MapboxUi())->getDrawingPolygon($container, $form, $eZone);
+			$map .= new MapboxUi()->getDrawingPolygon($container, $form, $eZone);
 
 			$map .= '<script>';
 				$map .= 'document.ready(() => setTimeout(() => {
@@ -384,7 +384,7 @@ class ZoneUi {
 						'seasonLast' => s("la fin des temps")
 					][$property];
 
-					return (new SeasonUi())->getDescriberField($form, $e, $e['farm'], NULL, NULL, $property, $placeholder);
+					return new SeasonUi()->getDescriberField($form, $e, $e['farm'], NULL, NULL, $property, $placeholder);
 				};
 				break;
 

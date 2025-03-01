@@ -1,5 +1,5 @@
 <?php
-(new Page())
+new Page()
 	->cli('index', function($data) {
 
 		foreach(\production\Requirement::model()

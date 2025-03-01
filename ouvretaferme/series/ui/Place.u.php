@@ -286,10 +286,10 @@ class PlaceUi {
 								$h .= '<input type="checkbox" onclick="Place.toggleSelection(this)"/>';
 							$h .= '</label>';
 							$h .= '<div></div>';
-							$h .= (new CultivationUi())->getListSeason($e['farm'], $e['season']);
+							$h .= new CultivationUi()->getListSeason($e['farm'], $e['season']);
 						$h .= '</div>';
 						$h .= '<div class="place-grid-content">';
-							$h .= (new CultivationUi())->getListGrid($e['farm'], $e['season']);
+							$h .= new CultivationUi()->getListGrid($e['farm'], $e['season']);
 							$h .= $beds;
 						$h .= '</div>';
 					$h .= '</div>';
@@ -331,11 +331,11 @@ class PlaceUi {
 										$h .= '<input type="checkbox" onclick="Place.toggleSelection(this)"/>';
 									$h .= '</label>';
 									$h .= '<div></div>';
-									$h .= (new CultivationUi())->getListSeason($e['farm'], $e['season']);
+									$h .= new CultivationUi()->getListSeason($e['farm'], $e['season']);
 								$h .= '</div>';
 
 								$h .= '<div class="place-grid-content">';
-									$h .= (new CultivationUi())->getListGrid($e['farm'], $e['season']);
+									$h .= new CultivationUi()->getListGrid($e['farm'], $e['season']);
 									$h .= $beds;
 								$h .= '</div>';
 							$h .= '</div>';

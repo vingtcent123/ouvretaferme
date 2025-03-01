@@ -438,7 +438,7 @@ class AnalyzeUi {
 						$eTask = $cTask[$eAction['id']];
 
 						if($eTask['totalTime'] > 0) {
-							$h .= (new SeriesUi())->getPace($cTask[$eAction['id']]['area'], $cTask[$eAction['id']]['plants'], $eTask['action'], $eTask['totalTime'], $cTaskHarvested);
+							$h .= new SeriesUi()->getPace($cTask[$eAction['id']]['area'], $cTask[$eAction['id']]['plants'], $eTask['action'], $eTask['totalTime'], $cTaskHarvested);
 						}
 
 					}

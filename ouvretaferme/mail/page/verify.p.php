@@ -1,5 +1,5 @@
 <?php
-(new Page())
+new Page()
 	/**
 	 * Handle the post page which send the email confirmation mail.
 	 */

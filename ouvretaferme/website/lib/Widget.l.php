@@ -56,7 +56,7 @@ class WidgetLib {
 		if($eDate->empty()) {
 			return fn() => '';
 		} else {
-			return fn() => (new WidgetUi())->getShop($eShop, $eDate);
+			return fn() => new WidgetUi()->getShop($eShop, $eDate);
 		}
 
 

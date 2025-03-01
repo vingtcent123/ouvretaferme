@@ -24,7 +24,7 @@ class PlotUi {
 
 			if($ePlot['zoneFill']) {
 
-				$beds = (new BedUi())->displayFromPlot($eFarm, $ePlot, $season);
+				$beds = new BedUi()->displayFromPlot($eFarm, $ePlot, $season);
 
 				if($beds) {
 					$h .= $beds;
@@ -45,7 +45,7 @@ class PlotUi {
 
 					$h .= '</div>';
 
-					$h .= (new BedUi())->displayFromPlot($eFarm, $ePlot, $season);
+					$h .= new BedUi()->displayFromPlot($eFarm, $ePlot, $season);
 
 				$h .= '</div>';
 
@@ -111,7 +111,7 @@ class PlotUi {
 							$h .= '</div>';
 
 						$h .= '</div>';
-						$h .= (new GreenhouseUi())->getList($eZone['farm'], $ePlot['cGreenhouse'], 'btn-primary', 'bg-primary');
+						$h .= new GreenhouseUi()->getList($eZone['farm'], $ePlot['cGreenhouse'], 'btn-primary', 'bg-primary');
 
 					$h .= '</div>';
 
@@ -307,7 +307,7 @@ class PlotUi {
 				$map .= s("Dessiner ce bloc sur la carte n'est pas obligatoire, vous pouvez sauter cette étape et saisir directement la surface du bloc.");
 			$map .= '</div>';
 
-			$map .= (new MapboxUi())->getDrawingPolygon($container, $form, $ePlot, TRUE);
+			$map .= new MapboxUi()->getDrawingPolygon($container, $form, $ePlot, TRUE);
 
 			$map .= '<script>';
 				$map .= 'document.ready(() => setTimeout(() => {
@@ -390,7 +390,7 @@ class PlotUi {
 						'seasonLast' => s("la disparition de la parcelle")
 					][$property];
 
-					return (new SeasonUi())->getDescriberField($form, $e, $e['farm'], $e['zone'], NULL, $property, $placeholder);
+					return new SeasonUi()->getDescriberField($form, $e, $e['farm'], $e['zone'], NULL, $property, $placeholder);
 				};
 				break;
 

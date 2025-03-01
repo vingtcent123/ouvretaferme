@@ -1,6 +1,6 @@
 <?php
 
-(new Page())
+new Page()
 	->cron('index', function($data) {
 
 		\mail\MailLib::clean();

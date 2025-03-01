@@ -1,5 +1,5 @@
 <?php
-(new Page())
+new Page()
 	->get('/public/:404', function($data) {
 
 		$data->notFound = dev\ErrorPhpLib::notFound();

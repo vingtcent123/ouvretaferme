@@ -78,7 +78,7 @@ class ProductUi {
 		$labelEmpty = $isModifying ? s("Annuler") : s("Vider mon panier");
 
 		if($eSale->notEmpty() and $eSale['paymentMethod'] === NULL) {
-			$defaultJson = (new BasketUi())->getJsonBasket($eSale);
+			$defaultJson = new BasketUi()->getJsonBasket($eSale);
 		} else {
 			$defaultJson = 'null';
 		}

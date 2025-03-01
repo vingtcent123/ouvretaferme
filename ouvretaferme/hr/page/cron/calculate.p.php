@@ -3,7 +3,7 @@
  * Update seniority
  *
  */
-(new Page())
+new Page()
 	->cron('index', function($data) {
 
 		\hr\WorkingTimeLib::calculateMissing();

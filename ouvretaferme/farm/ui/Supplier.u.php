@@ -174,7 +174,7 @@ class SupplierUi {
 						'farm' => $e['farm']->empty() ? NULL : $e['farm']['id']
 					];
 				};
-				(new SupplierUi())->query($d);
+				new SupplierUi()->query($d);
 				break;
 
 		}

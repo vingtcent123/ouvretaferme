@@ -44,7 +44,7 @@ class Action extends ActionElement {
 			'color.prepare' => function(?string &$color): bool {
 
 				if($color === '') {
-					$color = (new ActionModel())->getDefaultValue('color');
+					$color = new ActionModel()->getDefaultValue('color');
 				}
 
 				return TRUE;

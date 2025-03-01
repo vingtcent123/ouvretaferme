@@ -1410,10 +1410,10 @@ class TaskUi {
 			$place .= s("Série {value}", $name);
 			$place .= \production\CropUi::start($eTask['cultivation'], \Setting::get('farm\mainActions'));
 			if($eTask['series']['cccPlace']->notEmpty()) {
-				$place .= ' - <div class="tasks-planning-item-series-places">'.(new CultivationUi())->displayPlaces($eTask['series']['use'], $eTask['series']['cccPlace']).'</div>';
+				$place .= ' - <div class="tasks-planning-item-series-places">'.new CultivationUi()->displayPlaces($eTask['series']['use'], $eTask['series']['cccPlace']).'</div>';
 			}
 		} else if($eTask['cccPlace']->notEmpty()) {
-			$place .= '<div class="tasks-planning-item-series-places">'.(new CultivationUi())->displayPlaces(Series::BED, $eTask['cccPlace']).'</div>';
+			$place .= '<div class="tasks-planning-item-series-places">'.new CultivationUi()->displayPlaces(Series::BED, $eTask['cccPlace']).'</div>';
 		} else {
 			return '';
 		}
@@ -1522,7 +1522,7 @@ class TaskUi {
 					if($eTask['series']->empty() === FALSE) {
 						$h .= s("Série {value}", encode($eTask['series']['name']));
 					} else if($eTask['cccPlace']->notEmpty()) {
-						$h .= (new CultivationUi())->displayPlaces(Series::BED, $eTask['cccPlace']);
+						$h .= new CultivationUi()->displayPlaces(Series::BED, $eTask['cccPlace']);
 					}
 
 				$h .= '</div>';
@@ -1770,7 +1770,7 @@ class TaskUi {
 
 		if($eTask['cComment']->notEmpty()) {
 			$h .= '<div class="flow-timeline-comments" id="task-'.$eTask['id'].'-comments">';
-				$h .= (new CommentUi())->getList($eTask['cComment']);
+				$h .= new CommentUi()->getList($eTask['cComment']);
 			$h .= '</div>';
 		}
 
@@ -2151,7 +2151,7 @@ class TaskUi {
 						$h .= '<a href="/series/timesheet?ids[]='.$eTask['id'].'&close=reloadIgnoreCascade" class="btn btn-secondary">'.\Asset::icon('clock').'</a>';
 					$h .= '</div>';
 					$h .= '<div>';
-						$h .= (new TimesheetUi())->getList($eTask, $cUser, 'reloadIgnoreCascade');
+						$h .= new TimesheetUi()->getList($eTask, $cUser, 'reloadIgnoreCascade');
 					$h .= '</div>';
 				$h .= '</div>';
 
@@ -2247,7 +2247,7 @@ class TaskUi {
 		if($cComment->notEmpty()) {
 
 			$h .= '<div>';
-				$h .= (new CommentUi())->getList($cComment, TRUE, TRUE);
+				$h .= new CommentUi()->getList($cComment, TRUE, TRUE);
 			$h .= '</div>';
 			$h .= '<br/>';
 
@@ -2260,7 +2260,7 @@ class TaskUi {
 				$h .= '<h3>'.s("Assolement").'</h3>';
 
 				$h .= '<div class="util-overflow-md">';
-					$h .= (new SeriesUi())->getPlace('series', $eTask['series'], $cPlace);
+					$h .= new SeriesUi()->getPlace('series', $eTask['series'], $cPlace);
 				$h .= '</div>';
 
 				$h .= '<br/>';
@@ -2285,7 +2285,7 @@ class TaskUi {
 			if($cPlace->empty() === FALSE) {
 
 				$h .= '<div class="util-overflow-md">';
-					$h .= (new SeriesUi())->getPlace('task', $eTask, $cPlace);
+					$h .= new SeriesUi()->getPlace('task', $eTask, $cPlace);
 				$h .= '</div>';
 				$h .= '<br/>';
 
@@ -2669,7 +2669,7 @@ class TaskUi {
 		$h .= '</div>';
 
 		if($targeted) {
-			$h .= (new CultivationUi())->getWarningTargeted();
+			$h .= new CultivationUi()->getWarningTargeted();
 		}
 
 		return $h;
@@ -2843,7 +2843,7 @@ class TaskUi {
 		$h .= '</div>';
 
 		if($targeted) {
-			$h .= (new CultivationUi())->getWarningTargeted();
+			$h .= new CultivationUi()->getWarningTargeted();
 		}
 
 		return $h;
@@ -2971,7 +2971,7 @@ class TaskUi {
 			$eTask['series']->isTargeted()
 		) {
 			$h .= '<br/>';
-			$h .= (new CultivationUi())->getWarningTargeted();
+			$h .= new CultivationUi()->getWarningTargeted();
 		}
 
 		return $this->displayAction($eTask, $h);
@@ -3377,7 +3377,7 @@ class TaskUi {
 		if($eTask['series']->empty() === FALSE) {
 			return s("Série {value}", SeriesUi::link($eTask['series'], newTab: TRUE));
 		} else if($eTask['cccPlace']->notEmpty()) {
-			return (new CultivationUi())->displayPlaces(Series::BED, $eTask['cccPlace']);
+			return new CultivationUi()->displayPlaces(Series::BED, $eTask['cccPlace']);
 		} else {
 			return '';
 		}
@@ -3495,7 +3495,7 @@ class TaskUi {
 				$association = $cCultivation->count() > 1;
 				$checked = ($cSeries->count() === 1 and $association === FALSE);
 
-				$places = (new CultivationUi())->displayPlaces($eSeries['use'], $eSeries['cccPlace']);
+				$places = new CultivationUi()->displayPlaces($eSeries['use'], $eSeries['cccPlace']);
 
 				$h .= '<tbody>';
 
@@ -4611,7 +4611,7 @@ class TaskUi {
 								$harvested .= '<span class="action-name">'.encode($eTask['plant']['name']).'</span>';
 							$harvested .= '</td>';
 							$harvested .= '<td>';
-								$harvested .= (new TaskUi())->getPlace($eTask);
+								$harvested .= new TaskUi()->getPlace($eTask);
 							$harvested .= '</td>';
 							$harvested .= '<td>';
 								$harvested .= '<span class="annotation" style="color: '.$eTask['action']['color'].'">'.\selling\UnitUi::getValue($value, $eTask['harvestUnit']).'</span>';

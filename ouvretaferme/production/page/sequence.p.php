@@ -86,7 +86,7 @@
 	})
 	->doDelete(fn($data) => throw new RedirectAction(\farm\FarmUi::urlCultivationSequences($data->e['farm']).'?success=production:Sequence::deleted'));
 
-(new Page())
+new Page()
 	->post('query', function($data) {
 
 		$data->eFarm = \farm\FarmLib::getById(POST('farm'))->validate('canManage');

@@ -16,7 +16,7 @@
 	->doUpdate(fn() => throw new ReloadAction('selling', 'Unit::updated'))
 	->doDelete(fn() => throw new ReloadAction('selling', 'Unit::deleted'));
 
-(new Page())
+new Page()
 	->get('manage', function($data) {
 
 		$data->eFarm = \farm\FarmLib::getById(GET('farm'))->validate('canManage');

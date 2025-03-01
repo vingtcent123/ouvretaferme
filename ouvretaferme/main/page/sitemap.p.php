@@ -1,5 +1,5 @@
 <?php
-(new Page())
+new Page()
 	->get('/sitemap.xml', function($data) {
 
 		$host = SERVER('HTTP_HOST');

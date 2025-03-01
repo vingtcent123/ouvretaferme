@@ -725,9 +725,9 @@ class DateUi {
 
 			$h .= '<div class="tab-panel" data-tab="points">';
 				if($eShop['hasPoint']) {
-					$h .= (new PointUi())->getByDate($eShop, $eDate, $eDate['ccPoint']);
+					$h .= new PointUi()->getByDate($eShop, $eDate, $eDate['ccPoint']);
 				} else {
-					$h .= (new ShopUi())->updateInactivePoint($eShop);
+					$h .= new ShopUi()->updateInactivePoint($eShop);
 				}
 			$h .= '</div>';
 
@@ -974,7 +974,7 @@ class DateUi {
 
 			case 'points':
 				$d->field = function(\util\FormUi $form, Date $e) {
-					return (new DateUi())->getPoints($form, $e);
+					return new DateUi()->getPoints($form, $e);
 				};
 				$d->labelAfter = \util\FormUi::info(s("Sélectionnez au moins un mode de livraison pour cette vente."));
 				break;

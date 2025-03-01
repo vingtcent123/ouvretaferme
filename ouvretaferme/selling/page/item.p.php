@@ -108,7 +108,7 @@
 
 	}, onEmpty: fn($data) => throw new ReloadLayerAction());
 
-(new Page())
+new Page()
 	->match(['get', 'post'],'summary', function($data) {
 
 		$data->eFarm = \farm\FarmLib::getById(GET('farm'))->validate('canSelling');

@@ -379,7 +379,7 @@ class AnalyzeLib {
 		return Item::model()
 			->select([
 				'turnover' => new \Sql('SUM(priceExcludingVat)', 'float'),
-				'turnoverGlobal' => (new SaleModel())
+				'turnoverGlobal' => new SaleModel()
 					->select([
 						'year' => new \Sql('EXTRACT(YEAR FROM deliveredAt)', 'float')
 					])

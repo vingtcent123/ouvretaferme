@@ -35,7 +35,7 @@
 		throw new ReloadAction('payment', 'StripeFarm::deleted');
 	});
 
-(new Page())
+new Page()
 	->post('webhook', function($data) {
 
 		$eFarm = \farm\FarmLib::getById(GET('farm'))->validate('active');

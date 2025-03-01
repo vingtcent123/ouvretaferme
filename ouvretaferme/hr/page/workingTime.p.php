@@ -19,7 +19,7 @@
 		throw new ReloadAction();
 	});
 
-(new Page())
+new Page()
 	->post('getByUser', function($data) {
 
 		$data->eFarm = \farm\FarmLib::getById(POST('farm'))->validate('canPlanning');

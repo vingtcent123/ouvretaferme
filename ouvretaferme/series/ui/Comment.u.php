@@ -15,7 +15,7 @@ class CommentUi {
 
 		$h = $form->openAjax('/series/comment:doCreateCollection');
 
-			$h .= (new TaskUi())->getTasksField($form, $cTask);
+			$h .= new TaskUi()->getTasksField($form, $cTask);
 
 			$h .= $form->dynamicGroup($eComment, 'text');
 			$h .= $form->group(content: $form->submit(s("Envoyer")));

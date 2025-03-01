@@ -1,5 +1,5 @@
 <?php
-(new Page())
+new Page()
 	->cron('index', function($data) {
 
 		media\CleanLib::check();

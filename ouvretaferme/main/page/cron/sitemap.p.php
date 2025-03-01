@@ -3,7 +3,7 @@
  * Sitemap generation
  *
  */
-(new Page())
+new Page()
 	->cron('index', function($data) {
 
 		\main\SitemapLib::buildSitemap();

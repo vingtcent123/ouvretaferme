@@ -31,7 +31,7 @@
 	})
 	->doDelete(fn() => throw new ReloadAction());
 
-(new Page())
+new Page()
 	->get('check', function($data) {
 
 		$data->eInvite = \farm\InviteLib::getByKey(GET('key'));

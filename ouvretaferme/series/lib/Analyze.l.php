@@ -225,7 +225,7 @@ class AnalyzeLib {
 				},
 				'timePlant' => new \Sql('SUM(time)', 'float'),
 				'timeNoSeries' => new \Sql('SUM(IF(series IS NULL, time, 0))', 'float'),
-				'timeShared' => (new TimesheetModel())
+				'timeShared' => new TimesheetModel()
 					->select([
 						'propertySource' => new \Sql('m3.plant')
 					])
@@ -264,7 +264,7 @@ class AnalyzeLib {
 				},
 				'timePlant' => new \Sql('SUM(time)', 'float'),
 				'timeNoSeries' => new \Sql('SUM(IF(series IS NULL, time, 0))', 'float'),
-				'timeShared' => (new TimesheetModel())
+				'timeShared' => new TimesheetModel()
 					->select([
 						'propertySource' => new \Sql('CONCAT(m3.plant, "-", EXTRACT(MONTH FROM date))')
 					])

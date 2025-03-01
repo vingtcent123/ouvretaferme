@@ -16,7 +16,7 @@ class FarmerUi {
 		$h = '<div class="farmer-farms">';
 
 		foreach($cFarm as $eFarm) {
-			$h .= (new FarmUi())->getPanel($eFarm);
+			$h .= new FarmUi()->getPanel($eFarm);
 		}
 
 		$h .= '</div>';

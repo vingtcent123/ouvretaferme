@@ -1,5 +1,5 @@
 <?php
-(new Page())
+new Page()
 	->get('/shop/public/', function($data) {
 		throw new RedirectAction(Lime::getUrl());
 	})
@@ -15,7 +15,7 @@
 
 	});
 
-(new Page(function($data) {
+new Page(function($data) {
 
 		// On vérifie les redirections
 		try {
@@ -53,7 +53,7 @@
 
 		$data->eShop['ccPoint'] = \shop\PointLib::getByFarm($data->eShop['farm']);
 
-	}))
+	})
 	->get('/shop/public/{id}:conditions', function($data) {
 
 		throw new ViewAction($data);

@@ -284,7 +284,7 @@ class DemoLib {
 	public static function anonymizeUsers(): void {
 
 		$farmUsers = array_merge(
-			(new FarmerModel())->getColumn('user')->getIds(),
+			new FarmerModel()->getColumn('user')->getIds(),
 			(new \series\TimesheetModel())
 				->whereFarm(Farm::DEMO)
 				->getColumn(new \Sql('DISTINCT(user)', 'int'))

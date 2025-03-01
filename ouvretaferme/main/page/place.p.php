@@ -1,5 +1,5 @@
 <?php
-(new Page())
+new Page()
 	->post('cities', function($data) {
 
 		$query = POST('query');

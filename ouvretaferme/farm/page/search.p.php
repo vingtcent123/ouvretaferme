@@ -1,5 +1,5 @@
 <?php
-(new Page())
+new Page()
 	->post('query', function($data) {
 
 		$data->cFarm = \farm\FarmLib::getFromQuery(POST('query'));

@@ -53,7 +53,7 @@
 	})
 	->doDelete(fn($data) => throw new ViewAction($data));
 
-(new Page())
+new Page()
 	->get('/outil/{id@int}', function($data) {
 
 		$data->eTool = \farm\ToolLib::getById(REQUEST('id'))->validate('canRead');

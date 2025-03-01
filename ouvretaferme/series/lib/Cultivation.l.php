@@ -94,7 +94,7 @@ class CultivationLib extends CultivationCrud {
 				'workingTimePlant' => Task::model()
 					->group('cultivation')
 					->delegateProperty('cultivation', new \Sql('SUM(time)', 'float')),
-				'workingTimeShared' => (new TimesheetModel())
+				'workingTimeShared' => new TimesheetModel()
 					->select([
 						'propertySource' => new \Sql('m3.id')
 					])

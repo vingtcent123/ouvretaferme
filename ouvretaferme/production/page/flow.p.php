@@ -70,7 +70,7 @@ $do = function($data) {
 	})
 	->doDelete($do);
 
-(new Page())
+new Page()
 	->post('getFields', function($data) {
 
 		$eFarm = \farm\FarmLib::getById(POST('farm'))->validate('canWrite');

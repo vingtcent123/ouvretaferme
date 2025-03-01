@@ -317,7 +317,7 @@ class PointUi {
 				} else if($mode === 'date') {
 
 					$h .= '<div>';
-						$h .= (new DateUi())->togglePoint($eDate, $e, $selected);
+						$h .= new DateUi()->togglePoint($eDate, $e, $selected);
 					$h .= '</div>';
 
 				} else {

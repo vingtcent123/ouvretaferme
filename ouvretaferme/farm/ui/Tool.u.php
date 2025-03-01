@@ -381,7 +381,7 @@ class ToolUi {
 				$h .= $form->dynamicGroup($eTool, 'action');
 			}
 
-			$h .= (new RoutineUi())->getRoutinesGroup($form, $eTool, [$eTool['routineName']]);
+			$h .= new RoutineUi()->getRoutinesGroup($form, $eTool, [$eTool['routineName']]);
 			$h .= $form->dynamicGroups($eTool, ['stock', 'comment']);
 
 			$h .= $form->group(
@@ -410,7 +410,7 @@ class ToolUi {
 				$h .= $form->dynamicGroup($eTool, 'action');
 			}
 
-			$h .= (new RoutineUi())->getRoutinesGroup($form, $eTool, array_keys($routines));
+			$h .= new RoutineUi()->getRoutinesGroup($form, $eTool, array_keys($routines));
 			$h .= $form->dynamicGroups($eTool, ['stock', 'comment']);
 
 			$h .= $form->group(
@@ -445,7 +445,7 @@ class ToolUi {
 						'farm' => $e['farm']->empty() ? NULL : $e['farm']['id']
 					];
 				};
-				(new ToolUi())->query($d);
+				new ToolUi()->query($d);
 				break;
 
 			case 'action' :

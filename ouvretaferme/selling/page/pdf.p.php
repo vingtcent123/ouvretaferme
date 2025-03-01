@@ -1,5 +1,5 @@
 <?php
-(new Page())
+new Page()
 	->get('getLabels', function($data) {
 
 		$data->eFarm = \farm\FarmLib::getById(GET('id'))->validate('canRemote');

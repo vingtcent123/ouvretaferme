@@ -567,7 +567,7 @@ class BedUi {
 
 		$container = 'bed-map-line';
 
-		$h .= (new MapboxUi())->getDrawingBedLine($container, $form);
+		$h .= new MapboxUi()->getDrawingBedLine($container, $form);
 
 		$h .= '<script>';
 			$h .= 'document.ready(() => setTimeout(() => {
@@ -584,7 +584,7 @@ class BedUi {
 						}
 
 						if($ePlot['id'] === $ePlotZone['id']) {
-							$h .= (new MapUi())->addBeds($ePlotZone, $season, 0.33);
+							$h .= new MapUi()->addBeds($ePlotZone, $season, 0.33);
 						}
 
 					}
@@ -875,7 +875,7 @@ class BedUi {
 						'seasonLast' => s("la disparition du bloc")
 					][$property];
 
-					return (new SeasonUi())->getDescriberField($form, $e, $e['farm'], $e['zone'], $e['plot'], $property, $placeholder);
+					return new SeasonUi()->getDescriberField($form, $e, $e['farm'], $e['zone'], $e['plot'], $property, $placeholder);
 				};
 				break;
 

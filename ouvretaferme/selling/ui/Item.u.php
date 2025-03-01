@@ -122,7 +122,7 @@ class ItemUi {
 			$columns = 0;
 
 			foreach($cItem as $eItem) {
-				$h .= (new MerchantUi())->get('/selling/item:doUpdateMerchant', $eSale, $eItem, showDelete: FALSE);
+				$h .= new MerchantUi()->get('/selling/item:doUpdateMerchant', $eSale, $eItem, showDelete: FALSE);
 			}
 
 			$h .= '<div class="stick-xs">';
@@ -484,7 +484,7 @@ class ItemUi {
 					$h .= '<div data-tab="summary" class="tab-panel selected">';
 						$h .= $this->getItemsBySummary($cSale, $ccItemProduct);
 						$h .= '<h3>'.s("État des ventes").'</h3>';
-						$h .= (new SaleUi())->getList($eFarm, $cSale);
+						$h .= new SaleUi()->getList($eFarm, $cSale);
 					$h .= '</div>';
 					$h .= '<div data-tab="product" class="tab-panel">';
 						$h .= $this->getItemsByProduct($cSale, $ccItemProduct);
@@ -1174,7 +1174,7 @@ class ItemUi {
 						'type' => $e['sale']['type'],
 					];
 				};
-				(new ProductUi())->query($d);
+				new ProductUi()->query($d);
 				break;
 
 			case 'quality' :

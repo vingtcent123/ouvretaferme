@@ -91,7 +91,7 @@ class SequenceLib extends SequenceCrud {
 
 		// Créer une nouvelle série
 		$eSequenceNew = new Sequence($eSequence->extracts($properties));
-		$eSequenceNew['name'] = (new SequenceUi())->getDuplicateName($eSequenceNew);
+		$eSequenceNew['name'] = new SequenceUi()->getDuplicateName($eSequenceNew);
 		$eSequenceNew['duplicateOf'] = $eSequence;
 		$eSequenceNew['status'] = Sequence::ACTIVE;
 

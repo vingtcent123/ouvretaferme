@@ -1,5 +1,5 @@
 <?php
-(new Page())
+new Page()
 	->get('/robots.txt', function($data) {
 
 		$data = 'User-agent: *'."\n";

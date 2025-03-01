@@ -724,7 +724,7 @@ class InvoiceUi {
 						'withCollective' => 0
 					];
 				};
-				(new CustomerUi())->query($d);
+				new CustomerUi()->query($d);
 				break;
 
 			case 'paymentCondition' :

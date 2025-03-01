@@ -98,7 +98,7 @@
 
 	});
 
-(new Page())
+new Page()
 	->post('products', function($data) {
 
 		$data->season = POST('season', 'int');

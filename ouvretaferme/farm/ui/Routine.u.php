@@ -23,7 +23,7 @@ class RoutineUi {
 				'th' => fn() => self::getThFertilizer(),
 				'field' => function($form, Tool $eTool) {
 					$default = $eTool['routineName'] === 'fertilizer' ? $eTool['routineValue'] : NULL;
-					return (new RoutineUi())->getFieldFertilizer($form, 'routineValue', $default);
+					return new RoutineUi()->getFieldFertilizer($form, 'routineValue', $default);
 				},
 				'nameField' => s("Nom de l'intrant"),
 				'pageTitle' => fn(Farm $eFarm) => s("Les intrants de {value}", $eFarm['name']),
@@ -44,10 +44,10 @@ class RoutineUi {
 			'tray' => [
 				'name' => s("Plateau de semis"),
 				'label' => s("Nombre de mottes par plateau"),
-				'summary' => fn(Tool $eTool) => (new RoutineUi())->getSummaryTray($eTool),
+				'summary' => fn(Tool $eTool) => new RoutineUi()->getSummaryTray($eTool),
 				'field' => function($form, Tool $eTool) {
 					$default = $eTool['routineName'] === 'tray' ? $eTool['routineValue'] : NULL;
-					return (new RoutineUi())->getFieldTray($form, 'routineValue', $default);
+					return new RoutineUi()->getFieldTray($form, 'routineValue', $default);
 				},
 			]
 		];

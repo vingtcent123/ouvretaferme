@@ -29,7 +29,7 @@
 	})
 	->doDelete(fn($data) => throw new ViewAction($data));
 
-(new Page())
+new Page()
 	->get('manage', function($data) {
 
 		$data->eFarm = \farm\FarmLib::getById(GET('farm'))->validate('canManage');

@@ -3,7 +3,7 @@
  * Close expired user accounts
  *
  */
-(new Page())
+new Page()
 	->cron('index', function($data) {
 
 		\farm\DemoLib::rebuild();

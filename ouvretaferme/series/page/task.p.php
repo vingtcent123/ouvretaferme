@@ -198,7 +198,7 @@
 	}, propertiesCreate: [], page: 'createFromSeries')
 	->doCreate(fn($data) => throw new ViewAction($data));
 
-(new Page())
+new Page()
 	->post('doCreateFromSeriesCollection', function($data) {
 
 		$data->status = \series\Task::INPUT('status', 'status', \series\Task::TODO);
@@ -268,7 +268,7 @@
 	});
 
 
-(new Page())
+new Page()
 	->post('getCreateCollectionFields', function($data) {
 
 		$data->eFarm = \farm\FarmLib::getById(POST('farm'));

@@ -543,7 +543,7 @@ class ProductUi {
 			$cItemYear->notEmpty()
 		) {
 
-			$h .= (new AnalyzeUi())->getProductYear($cItemYear, NULL, $eProduct);
+			$h .= new AnalyzeUi()->getProductYear($cItemYear, NULL, $eProduct);
 
 		}
 
@@ -1063,7 +1063,7 @@ class ProductUi {
 		switch($property) {
 
 			case 'id' :
-				(new ProductUi())->query($d);
+				new ProductUi()->query($d);
 				break;
 
 			case 'name' :

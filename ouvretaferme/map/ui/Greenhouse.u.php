@@ -171,7 +171,7 @@ class GreenhouseUi {
 						'seasonLast' => s("la disparition de la ferme")
 					][$property];
 
-					return (new SeasonUi())->getDescriberField($form, $e, $e['farm'], NULL, NULL, $property, $placeholder);
+					return new SeasonUi()->getDescriberField($form, $e, $e['farm'], NULL, NULL, $property, $placeholder);
 				};
 				break;
 

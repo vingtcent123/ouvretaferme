@@ -89,7 +89,7 @@
 		throw new RedirectAction(\farm\FarmUi::urlSellingCustomer($data->e['farm']).'?success=selling:Customer::deleted');
 	});
 
-(new Page())
+new Page()
 	->post('query', function($data) {
 
 		$data->eFarm = \farm\FarmLib::getById(POST('farm'))->validate('canWrite');

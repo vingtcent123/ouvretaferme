@@ -26,7 +26,7 @@ class ShopManageUi {
 
 		$h .= '<h3>'.s("Créer une boutique").'</h3>';
 
-		$h .= (new ShopUi())->create($eFarm)->body;
+		$h .= new ShopUi()->create($eFarm)->body;
 
 		return $h;
 
@@ -116,7 +116,7 @@ class ShopManageUi {
 
 								$eDate = $eShop['eDate'];
 
-								$h .= '<h4>'.(new DateUi())->getStatus($eShop, $eDate, withColor: FALSE).'</h4>';
+								$h .= '<h4>'.new DateUi()->getStatus($eShop, $eDate, withColor: FALSE).'</h4>';
 
 								$h .= '<dl class="util-presentation util-presentation-max-content util-presentation-2">';
 
@@ -166,7 +166,7 @@ class ShopManageUi {
 			$eShop['cDate']->empty() and
 			$eShop->canWrite()
 		) {
-			$h .= (new PointUi())->createFirst($eShop);
+			$h .= new PointUi()->createFirst($eShop);
 		}
 
 		if($eShop['cDate']->empty()) {
@@ -239,7 +239,7 @@ class ShopManageUi {
 			$h .= '</div>';
 		$h .= '</div>';
 
-		$h .= (new DateUi())->getList($eFarm, $eShop, $cDate);
+		$h .= new DateUi()->getList($eFarm, $eShop, $cDate);
 
 		return $h;
 	}

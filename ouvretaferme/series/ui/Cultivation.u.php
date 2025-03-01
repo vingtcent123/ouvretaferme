@@ -72,7 +72,7 @@ class CultivationUi {
 				$h .= '<div class="series-grid-month"></div>';
 			}
 
-			[$startTs, $stopTs] = (new PlaceUi())->getPositionTimestamp($eFarm, $season);
+			[$startTs, $stopTs] = new PlaceUi()->getPositionTimestamp($eFarm, $season);
 
 			$currentTs = time();
 
@@ -1089,7 +1089,7 @@ class CultivationUi {
 
 									if($eTask['totalTime'] > 0) {
 
-										$cultivations .= (new SeriesUi())->getWorkingTimeBox($eCultivation['series'], $eCultivation, $eTask['action'], $eTask['totalTime'], $eCultivation['cTaskHarvested']);
+										$cultivations .= new SeriesUi()->getWorkingTimeBox($eCultivation['series'], $eCultivation, $eTask['action'], $eTask['totalTime'], $eCultivation['cTaskHarvested']);
 
 									}
 
@@ -1847,8 +1847,8 @@ class CultivationUi {
 
 		$h .= '</div>';
 
-		$h .= (new SeriesUi())->updatePlace($eSeries, $cPlace);
-		$h .= (new SeriesUi())->getComment($eSeries);
+		$h .= new SeriesUi()->updatePlace($eSeries, $cPlace);
+		$h .= new SeriesUi()->getComment($eSeries);
 
 		return $h;
 
@@ -2712,13 +2712,13 @@ class CultivationUi {
 
 			case 'harvestMonthsExpected' :
 				$d->field = function(\util\FormUi $form, Cultivation $e, string $property, \PropertyDescriber $d) {
-					return (new CultivationUi())->getPeriod($e['series']['season'], 'month', $e['series'], $e, form: $form, name: $d->name);
+					return new CultivationUi()->getPeriod($e['series']['season'], 'month', $e['series'], $e, form: $form, name: $d->name);
 				};
 				break;
 
 			case 'harvestWeeksExpected' :
 				$d->field = function(\util\FormUi $form, Cultivation $e, string $property, \PropertyDescriber $d) {
-					return (new CultivationUi())->getPeriod($e['series']['season'], 'week', $e['series'], $e, form: $form, name: $d->name);
+					return new CultivationUi()->getPeriod($e['series']['season'], 'week', $e['series'], $e, form: $form, name: $d->name);
 				};
 				break;
 

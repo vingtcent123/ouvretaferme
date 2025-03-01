@@ -31,7 +31,7 @@
 	->doUpdate(fn($data) => throw new ViewAction($data))
 	->doDelete(fn($data) => throw new ViewAction($data));
 
-(new Page())
+new Page()
 	->post('query', function($data) {
 
 		$eFarm = \farm\FarmLib::getById(POST('farm'))->validate('canWrite');

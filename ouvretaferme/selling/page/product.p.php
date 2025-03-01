@@ -129,7 +129,7 @@
 	->doUpdateCollectionProperties('doUpdateStatusCollection', ['status'], fn($data) => throw new ReloadAction())
 	->doUpdateCollectionProperties('doUpdateCategoryCollection', ['category'], fn($data) => throw new ReloadAction('selling', 'Product::categoryUpdated'));
 
-(new Page())
+new Page()
 	->post('query', function($data) {
 
 		$eFarm = \farm\FarmLib::getById(POST('farm', '?int'))->validate('canWrite');;

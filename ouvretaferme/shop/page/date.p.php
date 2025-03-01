@@ -129,7 +129,7 @@
 	})
 	->doUpdate(fn() => throw new ReloadAction('shop', 'Date::updated'));
 
-(new Page())
+new Page()
 	->get('getSales', function($data) {
 
 		$data->e = \shop\DateLib::getById(GET('id'))->validate('canRemote');

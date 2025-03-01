@@ -1,5 +1,5 @@
 <?php
-(new Page())
+new Page()
 	->post('query', function($data) {
 
 		$data->eFarm = \farm\FarmLib::getById(POST('farm', '?int'));

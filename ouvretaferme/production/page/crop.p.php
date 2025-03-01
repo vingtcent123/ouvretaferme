@@ -78,7 +78,7 @@
 	})
 	->doDelete(fn() => throw new ReloadAction());
 
-(new Page())
+new Page()
 	->post('changePlant', function($data) {
 
 		$data->ePlant = \plant\PlantLib::getById(POST('plant'));

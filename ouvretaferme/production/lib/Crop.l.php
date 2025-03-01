@@ -31,7 +31,7 @@ class CropLib extends CropCrud {
 		$cPlant = \plant\PlantLib::getFromQuery($query, $eFarm);
 
 		Crop::model()->select([
-			'cCrop' => (new CropModel())
+			'cCrop' => new CropModel()
 				->select(Crop::getSelection())
 				->delegateCollection('sequence', 'id', fn($c) => $c->sort(CropLib::sortByPlant()), propertyParent: 'sequence')
 		]);

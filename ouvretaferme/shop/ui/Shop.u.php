@@ -298,7 +298,7 @@ class ShopUi {
 
 			$eSaleExample['shopPoint'] = $eSaleExample['shopPoints'][Point::PLACE];
 
-			[$title, , $html] = (new MailUi())->getSaleConfirmed($eSaleExample, $eSaleExample['cItem'], $cCustomize[\mail\Customize::SHOP_CONFIRMED_PLACE]['template'] ?? NULL);
+			[$title, , $html] = new MailUi()->getSaleConfirmed($eSaleExample, $eSaleExample['cItem'], $cCustomize[\mail\Customize::SHOP_CONFIRMED_PLACE]['template'] ?? NULL);
 			$h .= (new \mail\CustomizeUi())->getMailExample($title, $html);
 
 			$h .= '<div class="util-title">';
@@ -308,7 +308,7 @@ class ShopUi {
 
 			$eSaleExample['shopPoint'] = $eSaleExample['shopPoints'][Point::HOME];
 
-			[$title, , $html] = (new MailUi())->getSaleConfirmed($eSaleExample, $eSaleExample['cItem'], $cCustomize[\mail\Customize::SHOP_CONFIRMED_HOME]['template'] ?? NULL);
+			[$title, , $html] = new MailUi()->getSaleConfirmed($eSaleExample, $eSaleExample['cItem'], $cCustomize[\mail\Customize::SHOP_CONFIRMED_HOME]['template'] ?? NULL);
 			$h .= (new \mail\CustomizeUi())->getMailExample($title, $html);
 
 		$h .= '</div>';
@@ -321,7 +321,7 @@ class ShopUi {
 
 			$eSaleExample['shopPoint'] = new Point();
 
-			[$title, , $html] = (new MailUi())->getSaleConfirmed($eSaleExample, $eSaleExample['cItem'], $cCustomize[\mail\Customize::SHOP_CONFIRMED_NONE]['template'] ?? NULL);
+			[$title, , $html] = new MailUi()->getSaleConfirmed($eSaleExample, $eSaleExample['cItem'], $cCustomize[\mail\Customize::SHOP_CONFIRMED_NONE]['template'] ?? NULL);
 			$h .= (new \mail\CustomizeUi())->getMailExample($title, $html);
 
 		$h .= '</div>';
@@ -332,7 +332,7 @@ class ShopUi {
 			$h .= '<div class="btn disabled">'.s("Non personnalisable").'</div>';
 		$h .= '</div>';
 
-		[$title, , $html] = (new MailUi())->getSaleCanceled($eSaleExample);
+		[$title, , $html] = new MailUi()->getSaleCanceled($eSaleExample);
 		$h .= (new \mail\CustomizeUi())->getMailExample($title, $html);
 
 		if($eSaleExample['paymentMethod'] === \selling\Sale::ONLINE_CARD) {
@@ -342,7 +342,7 @@ class ShopUi {
 				$h .= '<div class="btn disabled">'.s("Non personnalisable").'</div>';
 			$h .= '</div>';
 
-			[$title, , $html] = (new MailUi())->getCardSaleFailed($eSaleExample, test: TRUE);
+			[$title, , $html] = new MailUi()->getCardSaleFailed($eSaleExample, test: TRUE);
 			$h .= (new \mail\CustomizeUi())->getMailExample($title, $html);
 
 		}

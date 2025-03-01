@@ -1,5 +1,5 @@
 <?php
-(new Page())
+new Page()
 	->get('index', function($data) {
 
 		$data->eFarm = \farm\FarmLib::getById(GET('farm'))->validate('canManage');

@@ -328,7 +328,7 @@ class ActionUi {
 				break;
 
 			case 'color' :
-				$d->attributes['emptyColor'] = (new ActionModel())->getDefaultValue('color');
+				$d->attributes['emptyColor'] = new ActionModel()->getDefaultValue('color');
 				break;
 
 			case 'short' :
