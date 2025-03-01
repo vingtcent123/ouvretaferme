@@ -1021,7 +1021,7 @@ class AnalyzeUi {
 
 					$h .= '<div class="tab-panel selected '.($monthly ? '' : 'analyze-chart-table').'" data-tab="analyze-product">';
 						if($cItemProduct->empty()) {
-							$h = '<div class="util-info">';
+							$h .= '<div class="util-info">';
 								$h .= s("Aucune vente de produit n'a été enregistrée pour cette année.");
 							$h .= '</div>';
 						} else {
@@ -1034,7 +1034,7 @@ class AnalyzeUi {
 
 					$h .= '<div class="tab-panel '.($monthly ? '' : 'analyze-chart-table').'" data-tab="analyze-plant">';
 						if($cPlant->empty()) {
-							$h = '<div class="util-info">';
+							$h .= '<div class="util-info">';
 								$h .= s("Aucune vente sur une espèce n'a été enregistrée pour cette année.");
 							$h .= '</div>';
 						} else {
@@ -1049,7 +1049,7 @@ class AnalyzeUi {
 
 					$h .= '<div class="tab-panel selected" data-tab="analyze-product">';
 						if($cItemProduct->empty()) {
-							$h = '<div class="util-info">';
+							$h .= '<div class="util-info">';
 								$h .= s("Aucune vente de produit n'a été enregistrée pour cette année.");
 							$h .= '</div>';
 						} else {
@@ -1059,7 +1059,7 @@ class AnalyzeUi {
 
 					$h .= '<div class="tab-panel selected" data-tab="analyze-plant">';
 						if($cPlant->empty()) {
-							$h = '<div class="util-info">';
+							$h .= '<div class="util-info">';
 								$h .= s("Aucune vente sur une espèce n'a été enregistrée pour cette année.");
 							$h .= '</div>';
 						} else {

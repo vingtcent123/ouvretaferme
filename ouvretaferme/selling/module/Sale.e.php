@@ -800,7 +800,10 @@ class Sale extends SaleElement {
 				}
 
 				// La date est gérée directement dans la boutique
-				if($this['shopDate']->notEmpty()) {
+				if(
+					$this['compositionOf']->empty() and
+					$this['shopDate']->notEmpty()
+				) {
 
 					$this->expects([
 						'shopDate' => ['deliveryDate']

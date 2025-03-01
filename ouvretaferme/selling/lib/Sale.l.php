@@ -776,6 +776,7 @@ class SaleLib extends SaleCrud {
 
 		if($updatePreparationStatus) {
 
+			// Mise à jour des ingrédients au changement de statut sur les produits composés
 			self::updateIngredients($e);
 
 			if($e['marketParent']->notEmpty()) {
