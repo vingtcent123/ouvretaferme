@@ -143,7 +143,7 @@ class ProductUi {
 			$quality = '';
 		}
 
-		$h = '<div class="shop-product '.($eProductSelling['composition'] ? 'shop-product-composition' : '').'" data-id="'.$eProductSelling['id'].'" data-price="'.$price.'" data-has="0">';
+		$h = '<div class="shop-product '.($eProductSelling['compositionVisibility'] === \selling\Product::PUBLIC ? 'shop-product-composition' : '').'" data-id="'.$eProductSelling['id'].'" data-price="'.$price.'" data-has="0">';
 
 			if($eProductSelling['vignette'] !== NULL) {
 				$url = new \media\ProductVignetteUi()->getUrlByElement($eProductSelling, 'l');

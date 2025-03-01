@@ -28,7 +28,7 @@ new \selling\SalePage()
 
 		\farm\FarmerLib::register($data->eFarm);
 
-		$data->cItem = \selling\SaleLib::getItems($data->e);
+		$data->cItem = \selling\SaleLib::getItems($data->e, withIngredients: TRUE, public: TRUE);
 		$data->e['shopPoint'] = \shop\PointLib::getById($data->e['shopPoint']);
 
 		throw new ViewAction($data);

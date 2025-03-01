@@ -207,7 +207,7 @@ class BasketUi {
 					$h .= '<tr>';
 						$h .= '<td class="td-min-content">';
 							if($eProductSelling['vignette'] !== NULL) {
-								$h .= \selling\ProductUi::getVignette($eProductSelling, '3rem');
+								$h .= \selling\ProductUi::getVignette($eProductSelling, '3rem', public: TRUE);
 							}
 						$h .= '</td>';
 						$h .= '<td class="basket-summary-product">';

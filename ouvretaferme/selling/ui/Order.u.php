@@ -425,16 +425,26 @@ class OrderUi {
 		$h .= '</div>';
 
 		$withPackaging = $cItem->reduce(fn($eItem, $n) => $n + (int)($eItem['packaging'] !== NULL), 0);
+		$columns = 0;
 
-		$h .= '<table class="tbody-even stick-xs item-item-table '.($withPackaging ? 'item-item-table-with-packaging' : '').'">';
+		$h .= '<table class="tbody-even stick-xs item-item-table">';
 
 			$h .= '<thead>';
 				$h .= '<tr>';
 					$h .= '<th></th>';
+
+					$columns++;
 					$h .= '<th>'.ItemUi::p('name')->label.'</th>';
+
+					$columns++;
+					$h .= '<th></th>';
+
 					if($withPackaging) {
-						$h .= '<th class="text-end">'.s("Colis").'</th>';
+						$columns++;
+						$h .= '<th class="text-end">'.s("Colisage").'</th>';
 					}
+
+					$columns += 3;
 					$h .= '<th class="text-end">'.s("Quantité").'</th>';
 					$h .= '<th class="text-end">';
 						$h .= ItemUi::p('unitPrice')->label;
@@ -442,7 +452,9 @@ class OrderUi {
 					$h .= '<th class="text-end">';
 						$h .= ItemUi::p('price')->label;
 					$h .= '</th>';
+
 					if($eSale['hasVat'] and $eSale['type'] === Customer::PRO) {
+						$columns++;
 						$h .= '<th class="item-item-vat text-center">'.s("TVA").'</th>';
 					}
 				$h .= '</tr>';
@@ -450,30 +462,31 @@ class OrderUi {
 
 			foreach($cItem as $eItem) {
 
-				$values = [];
+				$description = [];
 
-				if($eItem['packaging']) {
-					$values[] = s("Taille du colis : {value}", \selling\UnitUi::getValue($eItem['packaging'], $eItem['unit'], TRUE));
+				if($eItem['quality']) {
+					$description[] = \farm\FarmUi::getQualityLogo($eItem['quality'], '1.5rem');
 				}
 
 				$h .= '<tbody>';
 					$h .= '<tr>';
 
-						$h .= '<td rowspan="'.($values ? 2 : 1).'" class="item-item-vignette">';
+						$h .= '<td class="item-item-vignette">';
 							if($eItem['product']->notEmpty()) {
-								$h .= ProductUi::getVignette($eItem['product'], '2rem');
+								$h .= ProductUi::getVignette($eItem['product'], '2rem', public: TRUE);
 							}
 						$h .= '</td>';
 
 						$h .= '<td>';
 							$h .= encode($eItem['name']);
 						$h .= '</td>';
+						$h .= '<td>'.implode('  ', $description).'</td>';
 
 						if($withPackaging) {
 
 							$h .= '<td class="text-end">';
 								if($eItem['packaging']) {
-									$h .= $eItem['number'];
+									$h .= \selling\UnitUi::getValue($eItem['packaging'], $eItem['unit'], TRUE);
 								} else {
 									$h .= '-';
 								}
@@ -519,30 +532,7 @@ class OrderUi {
 
 					$h .= '</tr>';
 
-					if($values) {
-
-						$colspan = 4;
-
-						if($eSale['taxes'] and $eSale['type'] === Customer::PRO) {
-							$colspan++;
-						}
-
-						if($withPackaging) {
-							$colspan++;
-						}
-
-						$h .= '<tr>';
-							$h .= '<td class="item-item-description util-annotation" colspan="'.$colspan.'">';
-
-								if($values) {
-									$h .= implode(' | ', $values);
-								}
-
-							$h .= '</td>';
-
-						$h .= '</tr>';
-
-					}
+					$h .= new ItemUi()->getComposition($eSale, $eItem, $columns);
 
 				$h .= '</tbody>';
 

@@ -33,6 +33,10 @@ class Product extends ProductElement {
 
 	}
 
+	public function canManage(): bool {
+		return $this['farm']->canManage();
+	}
+
 	public function acceptEnableStock(): bool {
 
 		return ($this['stock'] === NULL);

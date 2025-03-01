@@ -896,7 +896,7 @@ class SaleLib extends SaleCrud {
 
 	}
 
-	public static function getItems(Sale $e, bool $withIngredients = FALSE, ?string $index = NULL): \Collection {
+	public static function getItems(Sale $e, bool $withIngredients = FALSE, bool $public = FALSE, ?string $index = NULL): \Collection {
 
 		$cItem = Item::model()
 			->select(Item::getSelection())
@@ -910,7 +910,7 @@ class SaleLib extends SaleCrud {
 			->getCollection(NULL, NULL, $index);
 
 		if($withIngredients) {
-			return self::fillIngredients($cItem);
+			return self::fillIngredients($cItem, $public);
 		} else {
 			return $cItem;
 		}
@@ -918,7 +918,7 @@ class SaleLib extends SaleCrud {
 
 	}
 
-	public static function fillIngredients(\Collection $cItem): \Collection {
+	public static function fillIngredients(\Collection $cItem, bool $public = FALSE): \Collection {
 
 		if($cItem->empty()) {
 			return $cItem;
@@ -939,13 +939,20 @@ class SaleLib extends SaleCrud {
 
 					if($eItem['productComposition']) {
 
-						$cItemIngredient[$eItem['id']] = new \Collection();
-						$cItemMain[$key]['cItemIngredient'] = $cItemIngredient[$eItem['id']];
+						if($public === FALSE or $eItem['product']['compositionVisibility'] === Product::PUBLIC) {
+							$cItemIngredient[$eItem['id']] = new \Collection();
+							$cItemMain[$key]['cItemIngredient'] = $cItemIngredient[$eItem['id']];
+						} else {
+							$cItemMain[$key]['productComposition'] = FALSE;
+						}
 
 					}
 
 				} else {
-					$cItemIngredient[$eItem['ingredientOf']['id']][] = $eItem;
+
+					if($cItemIngredient->offsetExists($eItem['ingredientOf']['id'])) {
+						$cItemIngredient[$eItem['ingredientOf']['id']][] = $eItem;
+					}
 				}
 
 			}
@@ -956,7 +963,21 @@ class SaleLib extends SaleCrud {
 
 			$deliveredAt = $cItem->first()['deliveredAt'];
 
-			$cItemComposition = $cItem->find(fn($eItem) => $eItem['productComposition'], clone: FALSE);
+			$cItemComposition = new \Collection();
+
+			foreach($cItem as $eItem) {
+
+				if($eItem['productComposition']) {
+
+					if($public === FALSE or $eItem['product']['compositionVisibility'] === Product::PUBLIC) {
+						$cItemComposition[] = $eItem;
+					} else {
+						$eItem['productComposition'] = FALSE;
+					}
+
+				}
+
+			}
 
 			Item::model()
 				->select([

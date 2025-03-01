@@ -26,7 +26,7 @@ class ItemLib extends ItemCrud {
 		$ccItem = Item::model()
 			->select([
 				'sale',
-				'product' => ['name', 'variety', 'vignette', 'composition', 'size'],
+				'product' => ['name', 'variety', 'vignette', 'farm', 'composition', 'size'],
 				'customer' => ['type', 'name'],
 				'packaging', 'number',
 				'unit' => ['fqn', 'by', 'singular', 'plural', 'short', 'type'],
@@ -169,7 +169,7 @@ class ItemLib extends ItemCrud {
 				'unit' => ['fqn', 'by', 'singular', 'plural', 'short', 'type'],
 				'price' => new \Sql('SUM(price)', 'float'),
 				'quantity' => new \Sql('SUM(IF(packaging IS NULL, 1, packaging) * number)', 'float'),
-				'product' => ['vignette', 'composition']
+				'product' => ['vignette', 'farm', 'composition']
 			])
 			->whereFarm($eDate['farm'])
 			->whereStatus('IN', [Sale::CONFIRMED, Sale::PREPARED, Sale::DELIVERED])
@@ -187,7 +187,7 @@ class ItemLib extends ItemCrud {
 				'unit' => ['fqn', 'by', 'singular', 'plural', 'short', 'type'],
 				'price' => new \Sql('SUM(price)', 'float'),
 				'quantity' => new \Sql('SUM(IF(packaging IS NULL, 1, packaging) * number)', 'float'),
-				'product' => ['vignette', 'composition']
+				'product' => ['vignette', 'farm', 'composition']
 			])
 			->whereSale('IN', $cSale)
 			->group(['product', 'name', 'unit', 'quality'])

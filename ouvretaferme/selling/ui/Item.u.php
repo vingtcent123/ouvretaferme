@@ -127,7 +127,7 @@ class ItemUi {
 
 			$h .= '<div class="stick-xs">';
 
-				$h .= '<table class="tbody-even item-item-table '.($withPackaging ? 'item-item-table-with-packaging' : '').'">';
+				$h .= '<table class="tbody-even item-item-table">';
 
 					$h .= '<thead>';
 						$h .= '<tr>';
@@ -333,31 +333,7 @@ class ItemUi {
 
 							$h .= '</tr>';
 
-							if($eItem['productComposition']) {
-
-								if($eItem['cItemIngredient']->empty()) {
-
-									$h .= '<tr class="item-item-composition">';
-										$h .= '<td></td>';
-										$h .= '<td colspan="'.($columns + 1).'" class="color-muted">'.s("Pas de composition connue au {value}", \util\DateUi::numeric($eSale['deliveredAt'])).'</td>';
-									$h .= '</tr>';
-
-								} else {
-
-									foreach($eItem['cItemIngredient'] as $eItemIngredient) {
-
-										$h .= '<tr class="item-item-composition">';
-											$h .= '<td></td>';
-											$h .= '<td colspan="2">'.ProductUi::getVignette($eItemIngredient['product'], '1.5rem').' '.encode($eItemIngredient['name']).'</td>';
-											$h .= '<td class="item-item-composition-number text-end">'.\selling\UnitUi::getValue($eItem['number'] * ($eItem['packaging'] ?? 1) * $eItemIngredient['number'] * ($eItemIngredient['packaging'] ?? 1), $eItemIngredient['unit'], TRUE).'</td>';
-											$h .= '<td colspan="'.($columns - 2).'"></td>';
-										$h .= '</tr>';
-
-									}
-
-								}
-
-							}
+							$h .= $this->getComposition($eSale, $eItem, $columns);
 
 						$h .= '</tbody>';
 
@@ -379,6 +355,40 @@ class ItemUi {
 		}
 
 		$h .= '</div>';
+
+		return $h;
+
+	}
+
+	public function getComposition(Sale $eSale, Item $eItem, int $columns): string {
+
+		$h = '';
+
+		if($eItem['productComposition']) {
+
+			if($eItem['cItemIngredient']->empty()) {
+
+				$h .= '<tr class="item-item-composition">';
+					$h .= '<td></td>';
+					$h .= '<td colspan="'.($columns + 1).'" class="color-muted">'.s("Pas de composition connue au {value}", \util\DateUi::numeric($eSale['deliveredAt'])).'</td>';
+				$h .= '</tr>';
+
+			} else {
+
+				foreach($eItem['cItemIngredient'] as $eItemIngredient) {
+
+					$h .= '<tr class="item-item-composition">';
+						$h .= '<td></td>';
+						$h .= '<td colspan="2">'.ProductUi::getVignette($eItemIngredient['product'], '1.5rem').' '.encode($eItemIngredient['name']).'</td>';
+						$h .= '<td class="item-item-composition-number text-end">'.\selling\UnitUi::getValue($eItem['number'] * ($eItem['packaging'] ?? 1) * $eItemIngredient['number'] * ($eItemIngredient['packaging'] ?? 1), $eItemIngredient['unit'], TRUE).'</td>';
+						$h .= '<td colspan="'.($columns - 2).'"></td>';
+					$h .= '</tr>';
+
+				}
+
+			}
+
+		}
 
 		return $h;
 

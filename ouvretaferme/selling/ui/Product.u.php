@@ -434,7 +434,7 @@ class ProductUi {
 
 	}
 
-	public static function getVignette(Product $eProduct, string $size): string {
+	public static function getVignette(Product $eProduct, string $size, bool $public = FALSE): string {
 
 		$eProduct->expects(['id', 'vignette', 'composition']);
 
@@ -457,7 +457,10 @@ class ProductUi {
 
 		}
 
-		if($eProduct['composition']) {
+		if(
+			$eProduct['composition'] and
+			$public === FALSE
+		) {
 			$content .= self::getVignetteComposition();
 		}
 

@@ -10,7 +10,8 @@ class Item extends ItemElement {
 			'customer' => ['name', 'type'],
 			'unit' => ['fqn', 'by', 'singular', 'plural', 'short', 'type'],
 			'product' => [
-				'name', 'variety', 'description', 'vignette', 'size', 'origin', 'plant', 'composition',
+				'name', 'farm', 'variety', 'description', 'vignette', 'size', 'origin', 'plant',
+				'composition', 'compositionVisibility',
 				'unit' => ['fqn', 'by', 'singular', 'plural', 'short', 'type'],
 				'privatePrice',
 				'quality' => ['name', 'logo']

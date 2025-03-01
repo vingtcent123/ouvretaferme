@@ -93,7 +93,7 @@ class StockLib extends StockCrud {
 
 		return Product::model()
 			->select([
-				'id', 'name', 'variety', 'size', 'origin',
+				'id', 'name', 'farm', 'variety', 'size', 'origin',
 				'unit' => ['fqn', 'by', 'singular', 'plural', 'short', 'type'],
 				'vignette', 'composition', 'stock'
 			])

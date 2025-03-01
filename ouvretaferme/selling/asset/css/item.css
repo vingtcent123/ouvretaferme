@@ -1,5 +1,5 @@
 /* Afficher les articles d'une vente */
-table.item-item-table td:not(.item-item-actions):not(.item-item-description) {
+table.item-item-table td:not(.item-item-actions) {
 	border-bottom: 0;
 }
 
@@ -94,19 +94,6 @@ tr.item-item-composition td:not(:first-child) {
 td.item-item-composition-number {
 	font-size: 0.9rem;
 	font-style: italic;
-}
-
-td.item-item-description:empty {
-	padding: 0;
-}
-
-td.item-item-description:not(:empty) {
-	padding-top: 0;
-	color: var(--muted);
-}
-
-td.item-item-description:not(:empty) a {
-	color: var(--muted);
 }
 
 .item-item-locked {
