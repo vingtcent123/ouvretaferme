@@ -1,9 +1,9 @@
 <?php
-(new \farm\FarmPage(
+new \farm\FarmPage(
 		function($data) {
 			\user\ConnectionLib::checkLogged();
 		}
-	))
+	)
 	->getCreateElement(fn($data) => new \farm\Farm([
 		'owner' => \user\ConnectionLib::getOnline()
 	]))
@@ -12,7 +12,7 @@
 		throw new RedirectAction(\farm\FarmUi::urlCartography($data->e).'?success=farm:Farm.created');
 	});
 
-(new \farm\FarmPage())
+new \farm\FarmPage()
 	->applyElement(function($data, \farm\Farm $e) {
 		$e->validate('canManage');
 	})

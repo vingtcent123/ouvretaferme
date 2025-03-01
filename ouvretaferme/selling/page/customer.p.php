@@ -1,5 +1,5 @@
 <?php
-(new \selling\CustomerPage())
+new \selling\CustomerPage()
 	->getCreateElement(function($data) {
 
 		$data->eFarm = \farm\FarmLib::getById(INPUT('farm'));
@@ -15,7 +15,7 @@
 		throw new RedirectAction(\selling\CustomerUi::url($data->e));
 	});
 
-(new \selling\CustomerPage())
+new \selling\CustomerPage()
 	->read('/client/{id}', function($data) {
 
 		$data->eFarm = \farm\FarmLib::getById($data->e['farm']);

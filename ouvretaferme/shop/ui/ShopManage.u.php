@@ -38,7 +38,7 @@ class ShopManageUi {
 
 		$h = '<div class="util-action">';
 			$h .= '<div class="shop-title">';
-				$h .= (new \media\ShopLogoUi())->getCamera($eShopCurrent, size: '5rem');
+				$h .= new \media\ShopLogoUi()->getCamera($eShopCurrent, size: '5rem');
 				$h .= '<div>';
 					$h .= '<h1 class="mb-0">';
 						$h .= '<a class="util-action-navigation" data-dropdown="bottom-start" data-dropdown-hover="true">';

@@ -1,11 +1,11 @@
 <?php
-(new \series\CultivationPage(function($data) {
+new \series\CultivationPage(function($data) {
 
 		\user\ConnectionLib::checkLogged();
 
 		$data->eSeries = \series\SeriesLib::getById(INPUT('series'))->validate('canWrite');
 
-	}))
+	})
 	->post('addPlant', function($data) {
 
 		$data->ePlant = \plant\PlantLib::getById(POST('plant'));
@@ -30,7 +30,7 @@
 	->create()
 	->doCreate(fn() => throw new ReloadAction());
 
-(new \series\CultivationPage())
+new \series\CultivationPage()
 	->applyElement(function($data, \series\Cultivation $e) {
 
 		$e->validate('canWrite');

@@ -1,5 +1,5 @@
 <?php
-(new \farm\SupplierPage())
+new \farm\SupplierPage()
 	->getCreateElement(function($data) {
 
 		$data->eFarm = \farm\FarmLib::getById(INPUT('farm'));
@@ -12,7 +12,7 @@
 	->create()
 	->doCreate(fn($data) => throw new ViewAction($data));
 
-(new \farm\SupplierPage())
+new \farm\SupplierPage()
 	->applyElement(function($data, \farm\Supplier $e) {
 
 		$e->validate('canWrite');

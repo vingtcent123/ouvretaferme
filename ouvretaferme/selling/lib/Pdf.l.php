@@ -56,7 +56,7 @@ class PdfLib extends PdfCrud {
 
 	public static function getContentByPdf(PdfContent $ePdfContent): ?string {
 
-		$path = \storage\ImageLib::getBasePath().'/'.(new \media\PdfContentUi())->getBasenameByHash($ePdfContent['hash']);
+		$path = \storage\ImageLib::getBasePath().'/'.new \media\PdfContentUi()->getBasenameByHash($ePdfContent['hash']);
 		return file_get_contents($path);
 
 	}
@@ -135,7 +135,7 @@ class PdfLib extends PdfCrud {
 
 		}
 
-		$libMail = (new \mail\MailLib());
+		$libMail = new \mail\MailLib();
 
 		if($eFarm->getSelling('documentCopy')) {
 			$libMail->addBcc($eFarm->getSelling('legalEmail'));
@@ -204,7 +204,7 @@ class PdfLib extends PdfCrud {
 		$template = \mail\CustomizeLib::getTemplate($eFarm, \mail\Customize::SALE_INVOICE);
 		$content = new PdfUi()->getInvoiceMail($eFarm, $eInvoice, $cSale, $template);
 
-		$libMail = (new \mail\MailLib());
+		$libMail = new \mail\MailLib();
 
 		if($eFarm->getSelling('documentCopy')) {
 			$libMail->addBcc($eFarm->getSelling('legalEmail'));
@@ -234,7 +234,7 @@ class PdfLib extends PdfCrud {
 		PdfContent::model()->insert($ePdfContent);
 
 		$hash = NULL;
-		(new \media\PdfContentLib())->send($ePdfContent, $hash, $content, 'pdf');
+		new \media\PdfContentLib()->send($ePdfContent, $hash, $content, 'pdf');
 
 		$ePdf = new Pdf([
 			'type' => $type,
@@ -266,7 +266,7 @@ class PdfLib extends PdfCrud {
 		PdfContent::model()->insert($ePdfContent);
 
 		$hash = NULL;
-		(new \media\PdfContentLib())->send($ePdfContent, $hash, $content, 'pdf');
+		new \media\PdfContentLib()->send($ePdfContent, $hash, $content, 'pdf');
 
 		$cPdf = new \Collection();
 

@@ -1,5 +1,5 @@
 <?php
-(new \farm\FarmPage())
+new \farm\FarmPage()
 	->read('exportSales', function($data) {
 
 		$data->e->validate('canAnalyze', 'canPersonalData');
@@ -7,7 +7,7 @@
 		$year = GET('year', 'int');
 
 		$export = \selling\AnalyzeLib::getExportSales($data->e, $year);
-		array_unshift($export, (new \selling\AnalyzeUi())->getExportSalesHeader($data->e));
+		array_unshift($export, new \selling\AnalyzeUi()->getExportSalesHeader($data->e));
 
 		throw new CsvAction($export, 'ventes-'.$year.'.csv');
 
@@ -19,7 +19,7 @@
 		$year = GET('year', 'int');
 
 		$export = \selling\AnalyzeLib::getExportItems($data->e, $year);
-		array_unshift($export, (new \selling\AnalyzeUi())->getExportItemsHeader($data->e));
+		array_unshift($export, new \selling\AnalyzeUi()->getExportItemsHeader($data->e));
 
 		throw new CsvAction($export, 'articles-'.$year.'.csv');
 
@@ -29,7 +29,7 @@
 		$data->e->validate('canAnalyze', 'canPersonalData');
 
 		$export = \selling\AnalyzeLib::getExportProducts($data->e);
-		array_unshift($export, (new \selling\AnalyzeUi())->getExportProductsHeader($data->e));
+		array_unshift($export, new \selling\AnalyzeUi()->getExportProductsHeader($data->e));
 
 		throw new CsvAction($export, 'produits.csv');
 
@@ -39,7 +39,7 @@
 		$data->e->validate('canAnalyze', 'canPersonalData');
 
 		$export = \selling\AnalyzeLib::getExportCustomers($data->e);
-		array_unshift($export, (new \selling\AnalyzeUi())->getExportCustomersHeader($data->e));
+		array_unshift($export, new \selling\AnalyzeUi()->getExportCustomersHeader($data->e));
 
 		throw new CsvAction($export, 'clients.csv');
 

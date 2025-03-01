@@ -217,13 +217,13 @@ class PlantUi {
 
 		if($cItemYear->notEmpty()) {
 
-			$h .= (new \selling\AnalyzeUi())->getPlantTurnover($cItemYear, NULL, $ePlant);
+			$h .= new \selling\AnalyzeUi()->getPlantTurnover($cItemYear, NULL, $ePlant);
 
 		}
 
 		if($cCrop->notEmpty()) {
 			$h .= '<h3>'.s("Itinéraires techniques").'</h3>';
-			$h .= (new \production\SequenceUi())->getList($eFarm, $cCrop, $cActionMain);
+			$h .= new \production\SequenceUi()->getList($eFarm, $cCrop, $cActionMain);
 		}
 
 		return new \Panel(
@@ -292,7 +292,7 @@ class PlantUi {
 					$h .= '<tr>';
 						$h .= '<td class="util-manage-vignette">';
 							if($ePlant['fqn'] === NULL) {
-								$h .= (new \media\PlantVignetteUi())->getCamera($ePlant, size: '3rem');
+								$h .= new \media\PlantVignetteUi()->getCamera($ePlant, size: '3rem');
 							} else {
 								$h .= PlantUi::getVignette($ePlant, size: '3rem');
 							}
@@ -486,7 +486,7 @@ class PlantUi {
 						'farm' => $e['farm']->empty() ? NULL : $e['farm']['id']
 					];
 				};
-				(new \plant\PlantUi())->query($d);
+				new \plant\PlantUi()->query($d);
 				break;
 
 			case 'aliases' :

@@ -1,5 +1,5 @@
 <?php
-(new \farm\FarmPage())
+new \farm\FarmPage()
 	->read('tasks', function($data) {
 
 		$data->e->validate('canAnalyze', 'canPersonalData');

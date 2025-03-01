@@ -1,5 +1,5 @@
 <?php
-(new \farm\FarmPage())
+new \farm\FarmPage()
 	->read('index', function($data) {
 
 		\user\ConnectionLib::checkLogged();
@@ -11,14 +11,14 @@
 
 	});
 
-(new \plant\SizePage(function($data) {
+new \plant\SizePage(function($data) {
 
 		\user\ConnectionLib::checkLogged();
 
 		$data->eFarm = \farm\FarmLib::getById(INPUT('farm', '?int'))->validate('canManage');
 		$data->ePlant = \plant\PlantLib::getById(INPUT('plant'))->validate('canRead');
 
-	}))
+	})
 	->getCreateElement(function($data) {
 		return new \plant\Size([
 			'farm' => $data->eFarm,
@@ -31,7 +31,7 @@
 
 	});
 
-(new \plant\SizePage())
+new \plant\SizePage()
 	->applyElement(function($data, \plant\Size $e) {
 
 		$e->validate('canWrite');

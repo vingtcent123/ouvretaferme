@@ -4,7 +4,7 @@ new AdaptativeView('index', function($data, MainTemplate $t) {
 	\Asset::css('user', 'user.css');
 
 	$h = '<div class="user-account-header">';
-		$h .= (new \media\UserVignetteUi())->getCamera($data->eUserOnline, size: '5rem');
+		$h .= new \media\UserVignetteUi()->getCamera($data->eUserOnline, size: '5rem');
 		$h .= '<h1>'.s("Mon compte").'</h1>';
 	$h .= '</div>';
 

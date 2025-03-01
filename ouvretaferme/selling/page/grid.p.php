@@ -1,5 +1,5 @@
 <?php
-(new \selling\GridPage())
+new \selling\GridPage()
 	->applyElement(function($data, \selling\Grid $e) {
 
 		\selling\Product::model()

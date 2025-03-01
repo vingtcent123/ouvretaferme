@@ -1,5 +1,5 @@
 <?php
-(new \mail\CustomizePage())
+new \mail\CustomizePage()
 	->getCreateElement(function($data) {
 
 		$data->eFarm = \farm\FarmLib::getById(INPUT('farm'));

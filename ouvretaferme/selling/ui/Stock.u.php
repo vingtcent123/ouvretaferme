@@ -84,7 +84,7 @@ class StockUi {
 				$h .= '<tr>';
 
 					$h .= '<td class="td-min-content">';
-						$h .= (new \media\ProductVignetteUi())->getCamera($eProduct, size: '2.5rem');
+						$h .= new \media\ProductVignetteUi()->getCamera($eProduct, size: '2.5rem');
 					$h .= '</td>';
 
 					$h .= '<td class="stock-item-name">';

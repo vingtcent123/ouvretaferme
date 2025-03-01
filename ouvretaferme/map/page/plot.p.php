@@ -1,12 +1,12 @@
 <?php
-(new \map\PlotPage(function($data) {
+new \map\PlotPage(function($data) {
 
 		\user\ConnectionLib::checkLogged();
 
 		$data->season = \map\SeasonLib::getOnline(INPUT('season'));
 
 
-	}))
+	})
 	->getCreateElement(function($data) {
 
 		$data->eZone = \map\ZoneLib::getById(INPUT('zone'));
@@ -31,13 +31,13 @@
 		throw new RedirectAction(\farm\FarmUi::urlCartography($data->eZone['farm'], $data->season).'?zone='.$data->eZone['id'].'&success=map:Plot::created');
 	});
 
-(new \map\PlotPage(function($data) {
+new \map\PlotPage(function($data) {
 
 		\user\ConnectionLib::checkLogged();
 
 		$data->season = \map\SeasonLib::getOnline(INPUT('season'));
 
-	}))
+	})
 	->applyElement(function($data, \map\Plot $e) {
 
 		\farm\FarmerLib::register($e['farm']);

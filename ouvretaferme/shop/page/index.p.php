@@ -1,5 +1,5 @@
 <?php
-(new shop\ShopPage())
+new shop\ShopPage()
 	->getCreateElement(function($data) {
 
 		$data->eFarm = \farm\FarmLib::getById(INPUT('farm'));

@@ -24,8 +24,8 @@ class AnalyzeUi {
 
 				$h .= '<h3>'.s("Temps de travail mensuel").'</h3>';
 				$h .= '<div class="analyze-chart-table">';
-					$h .= (new \series\AnalyzeUi())->getPeriodMonthTable($cTimesheetMonth, $eAction['farm']->canPersonalData() ? $cTimesheetUser : new \Collection());
-					$h .= (new \series\AnalyzeUi())->getPeriodMonthChart($cTimesheetMonth, $year, $cTimesheetMonthBefore, $year - 1);
+					$h .= new \series\AnalyzeUi()->getPeriodMonthTable($cTimesheetMonth, $eAction['farm']->canPersonalData() ? $cTimesheetUser : new \Collection());
+					$h .= new \series\AnalyzeUi()->getPeriodMonthChart($cTimesheetMonth, $year, $cTimesheetMonthBefore, $year - 1);
 				$h .= '</div>';
 
 			} else {

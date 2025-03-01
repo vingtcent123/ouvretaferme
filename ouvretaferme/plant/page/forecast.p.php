@@ -1,5 +1,5 @@
 <?php
-(new \plant\ForecastPage(function($data) {
+new \plant\ForecastPage(function($data) {
 
 		$data->season = INPUT('season', 'int');
 
@@ -8,7 +8,7 @@
 			->validateSeason($data->season);
 
 
-	}))
+	})
 	->getCreateElement(function($data) {
 		return new \plant\Forecast([
 			'farm' => $data->eFarm,
@@ -18,7 +18,7 @@
 	->create()
 	->doCreate(fn($data) => throw new ReloadAction('plant', 'Forecast::created'));
 
-(new \plant\ForecastPage())
+new \plant\ForecastPage()
 	->quick(['harvestObjective', 'proPrice', 'privatePart', 'privatePrice', 'proPart'])
 	->update(function($data) {
 

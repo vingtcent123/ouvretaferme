@@ -1,9 +1,9 @@
 <?php
-(new \website\NewsPage(function($data) {
+new \website\NewsPage(function($data) {
 
 		$data->eWebsite = \website\WebsiteLib::getById(INPUT('website'));
 
-	}))
+	})
 	->create(function($data) {
 
 		$data->eFarm = \farm\FarmLib::getById($data->eWebsite['farm']);
@@ -23,7 +23,7 @@
 		throw new RedirectAction('/website/manage?id='.$data->eWebsite['farm']['id'].'&success=website:News::created');
 	});
 
-(new \website\NewsPage())
+new \website\NewsPage()
 	->applyElement(function($data, \website\News $e) {
 
 		$e['website'] = \website\WebsiteLib::getById($e['website']);

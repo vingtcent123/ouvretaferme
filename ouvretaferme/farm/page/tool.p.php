@@ -1,11 +1,11 @@
 <?php
-(new \farm\ToolPage(function($data) {
+new \farm\ToolPage(function($data) {
 
 		\user\ConnectionLib::checkLogged();
 
 		$data->eFarm = \farm\FarmLib::getById(INPUT('farm', '?int'));
 
-	}))
+	})
 	->getCreateElement(function($data) {
 
 		return \farm\ToolLib::getNewTool($data->eFarm, REQUEST('routineName', array_keys(\farm\RoutineLib::list())));
@@ -19,7 +19,7 @@
 	})
 	->doCreate(fn($data) => throw new ViewAction($data));
 
-(new \farm\ToolPage())
+new \farm\ToolPage()
 	->applyElement(function($data, \farm\Tool $e) {
 
 		$e->validate('canWrite');

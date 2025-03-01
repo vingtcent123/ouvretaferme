@@ -281,11 +281,11 @@ class BasketUi {
 		$h .= '<div class="shop-identification">';
 			$h .= '<div>';
 				$h .= '<h2>'.s("Déjà inscrit ?").'</h2>';
-				$h .= (new \user\UserUi())->logInBasic();
+				$h .= new \user\UserUi()->logInBasic();
 			$h .= '</div>';
 			$h .= '<div>';
 				$h .= '<h2>'.s("Nouveau client ?").'</h2>';
-				$h .= (new \user\UserUi())->signUp($eUser, $eRole, LIME_REQUEST);
+				$h .= new \user\UserUi()->signUp($eUser, $eRole, LIME_REQUEST);
 			$h .= '</div>';
 		$h .= '</div>';
 
@@ -396,7 +396,7 @@ class BasketUi {
 		if($eShop['termsField']) {
 
 			$h = '<label class="mb-1">';
-				$h .= (new \util\FormUi())->inputCheckbox('terms').'  ';
+				$h .= new \util\FormUi()->inputCheckbox('terms').'  ';
 				$h .= s("J'ai lu et j'accepte les <link>conditions générales de ventes</link>.", ['link' => '<a href="'.ShopUi::url($eShop).':conditions">']);
 			$h .= '</label>';
 
@@ -415,7 +415,7 @@ class BasketUi {
 	public function getTerms(Shop $eShop): \Panel {
 
 		if($eShop['terms'] !== NULL) {
-			$h = (new \editor\EditorUi())->value($eShop['terms']);
+			$h = new \editor\EditorUi()->value($eShop['terms']);
 		} else {
 			$h = '<div class="util-empty">'.s("Il n'y a pas encore de conditions générales de vente sur la boutique.").'</div>';
 		}
@@ -757,11 +757,11 @@ class BasketUi {
 
 			if($eSale['shopPoint']->notEmpty()) {
 				$h .= '<h3>'.s("Mode de livraison").'</h3>';
-				$h .= (new \selling\OrderUi())->getPointBySale($eSale);
+				$h .= new \selling\OrderUi()->getPointBySale($eSale);
 			}
 
 
-			$h .= (new \selling\OrderUi())->getItemsBySale($eSale, $eSale['cItem']);
+			$h .= new \selling\OrderUi()->getItemsBySale($eSale, $eSale['cItem']);
 
 		$h .= '</div>';
 

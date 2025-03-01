@@ -66,7 +66,7 @@ class ItemUi {
 			$new = '';
 		}
 
-		$h .= (new \selling\SaleUi())->getStats($eSale);
+		$h .= new \selling\SaleUi()->getStats($eSale);
 
 		if($eSale['comment']) {
 			$h .= '<div class="util-block">';

@@ -690,7 +690,7 @@ class AnalyzeUi {
 
 		$cCultivationPlant = $ccCultivationPlant[$season];
 
-		return (new \analyze\ChartUi())->buildPie(
+		return new \analyze\ChartUi()->buildPie(
 			s("Répartition des espèces pour la saison {value}", $season),
 			$cCultivationPlant,
 			'area',
@@ -828,7 +828,7 @@ class AnalyzeUi {
 
 		$cCultivationFamily = $ccCultivationFamily[$season];
 
-		return (new \analyze\ChartUi())->buildPie(
+		return new \analyze\ChartUi()->buildPie(
 			s("Répartition des familles pour la saison {value}", $season),
 			$cCultivationFamily,
 			'area',

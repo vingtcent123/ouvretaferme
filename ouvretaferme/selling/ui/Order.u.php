@@ -406,7 +406,7 @@ class OrderUi {
 			case \shop\Point::PLACE :
 				$h .= '<p>'.s("Votre commande sera à retirer au point de retrait suivant :").'</p>';
 				$h .= '<div class="util-block" style="max-width: 30rem">';
-					$h .= (new \shop\PointUi())->getPoint('read', $eSale['shop'], $eSale['shopPoint']);
+					$h .= new \shop\PointUi()->getPoint('read', $eSale['shop'], $eSale['shopPoint']);
 				$h .= '</div>';
 				break;
 

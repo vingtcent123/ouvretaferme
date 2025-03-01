@@ -29,7 +29,7 @@ class PhotoUi {
 
 			$h .= '<figure data-w="'.$ePhoto['width'].'" data-h="'.$ePhoto['height'].'" data-id="'.$ePhoto['id'].'" class="gallery-photo">';
 				$h .= '<a href="/gallery/photo?id='.$ePhoto['id'].'">';
-					$h .= \Asset::image((new \media\GalleryUi())->getUrlByHash($ePhoto['hash'], 'm'));
+					$h .= \Asset::image(new \media\GalleryUi()->getUrlByHash($ePhoto['hash'], 'm'));
 				$h .= '</a>';
 				if($caption) {
 					$h .= '<figcaption>'.$caption.'</figcaption>';
@@ -83,7 +83,7 @@ class PhotoUi {
 
 	public function displayOne(Photo $ePhoto): string {
 
-		$url = (new \media\GalleryUi())->getUrlByHash($ePhoto['hash']);
+		$url = new \media\GalleryUi()->getUrlByHash($ePhoto['hash']);
 
 		$h = '<div class="gallery-photo-one">';
 			$h .= \Asset::image($url);
@@ -190,7 +190,7 @@ class PhotoUi {
 				break;
 
 			case 'farm' :
-				(new \farm\FarmUi())->query($d);
+				new \farm\FarmUi()->query($d);
 				break;
 
 		}

@@ -23,7 +23,7 @@
 
 	});
 
-(new \website\WebsitePage())
+new \website\WebsitePage()
 	->getCreateElement(function($data) {
 
 		$eFarm = \farm\FarmLib::getById(INPUT('farm'));
@@ -35,7 +35,7 @@
 	})
 	->doCreate(fn($data) => throw new ReloadAction('website', 'Website::created'));
 
-(new \website\WebsitePage())
+new \website\WebsitePage()
 	->update()
 	->doUpdate(fn($data) => throw new BackAction('website', 'Website::updated'))
 	->doUpdateProperties('doUpdateStatus', ['status'], fn() => throw new ReloadAction())

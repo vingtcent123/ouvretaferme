@@ -752,7 +752,7 @@ class CropUi {
 				break;
 
 			case 'plant' :
-				(new \plant\PlantUi())->query($d);
+				new \plant\PlantUi()->query($d);
 				$d->group = ['wrapper' => 'plant'];
 				$d->autocompleteBody = function(\util\FormUi $form, Crop $e) {
 					$e->expects(['farm']);

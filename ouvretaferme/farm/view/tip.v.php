@@ -3,7 +3,7 @@ new AdaptativeView('index', function($data, FarmTemplate $t) {
 
 	$t->title = s("Toutes les astuces");
 	$t->tab = 'settings';
-	$t->subNav = (new \farm\FarmUi())->getSettingsSubNav($data->eFarm);
+	$t->subNav = new \farm\FarmUi()->getSettingsSubNav($data->eFarm);
 	$t->footer = '';
 
 });

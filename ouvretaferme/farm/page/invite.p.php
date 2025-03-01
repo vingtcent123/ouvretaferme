@@ -1,10 +1,10 @@
 <?php
 // Invitation d'un client
-(new \farm\InvitePage(function($data) {
+new \farm\InvitePage(function($data) {
 
 		$data->eCustomer = \selling\CustomerLib::getById(REQUEST('customer'))->validate('canManage');
 
-	}))
+	})
 	->getCreateElement(function($data) {
 
 		return new \farm\Invite([
@@ -19,7 +19,7 @@
 		throw new ReloadAction('farm', 'Invite::customerCreated');
 	}, page: 'doCreateCustomer');
 
-(new \farm\InvitePage())
+new \farm\InvitePage()
 	->write('doExtends', function($data) {
 
 		$data->e['farm'] = \farm\FarmLib::getById($data->e['farm']);

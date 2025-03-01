@@ -93,7 +93,7 @@ class AdminUi {
 						$h .= '<td class="text-center">'.$eFarm['id'].'</td>';
 						$h .= '<td class="farm-admin-vignette">';
 							if($eFarm['vignette'] !== NULL) {
-								$h .= \Asset::image((new \media\FarmVignetteUi())->getUrlByElement($eFarm, 's'));
+								$h .= \Asset::image(new \media\FarmVignetteUi()->getUrlByElement($eFarm, 's'));
 							}
 						$h .= '</td>';
 						$h .= '<td>';

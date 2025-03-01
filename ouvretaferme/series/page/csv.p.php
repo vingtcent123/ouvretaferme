@@ -1,5 +1,5 @@
 <?php
-(new \farm\FarmPage())
+new \farm\FarmPage()
 	->read('exportTasks', function($data) {
 
 		$data->e->validate('canAnalyze', 'canPersonalData');
@@ -7,7 +7,7 @@
 		$year = GET('year', 'int');
 
 		$export = \series\CsvLib::getExportTasks($data->e, $year);
-		array_unshift($export, (new \series\CsvUi())->getExportTasksHeader());
+		array_unshift($export, new \series\CsvUi()->getExportTasksHeader());
 
 		throw new CsvAction($export, 'planning-'.$year.'.csv');
 
@@ -19,7 +19,7 @@
 		$year = GET('year', 'int');
 
 		$export = \series\CsvLib::getExportHarvests($data->e, $year);
-		array_unshift($export, (new \series\CsvUi())->getExportHarvestsHeader());
+		array_unshift($export, new \series\CsvUi()->getExportHarvestsHeader());
 
 		throw new CsvAction($export, 'harvest-'.$year.'.csv');
 
@@ -33,7 +33,7 @@
 		$maxVarieties = NULL;
 		$export = \series\CsvLib::getExportCultivations($data->e, $year, $maxVarieties);
 
-		array_unshift($export, (new \series\CsvUi())->getExportCultivationsHeader($maxVarieties));
+		array_unshift($export, new \series\CsvUi()->getExportCultivationsHeader($maxVarieties));
 
 		throw new CsvAction($export, 'production-'.$year.'.csv');
 
@@ -48,7 +48,7 @@
 		$maxSpecies = NULL;
 		$export = \series\CsvLib::getExportSoil($data->e, $year, $maxSpecies);
 
-		array_unshift($export, (new \series\CsvUi())->getExportSoilHeader($maxSpecies));
+		array_unshift($export, new \series\CsvUi()->getExportSoilHeader($maxSpecies));
 
 		throw new CsvAction($export, 'soil-'.$year.'.csv');
 

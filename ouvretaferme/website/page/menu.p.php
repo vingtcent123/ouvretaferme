@@ -1,7 +1,7 @@
 <?php
-(new \website\MenuPage(function($data) {
+new \website\MenuPage(function($data) {
 		$data->eWebsite = \website\WebsiteLib::getById(INPUT('website'));
-	}))
+	})
 	->create(function($data) {
 
 		$data->cWebpage = \website\WebpageLib::getByWebsiteForMenu($data->eWebsite);
@@ -20,7 +20,7 @@
 		throw new BackAction('website', 'Menu::created');
 	});
 
-(new \website\MenuPage())
+new \website\MenuPage()
 	->applyElement(function($data, \website\Menu $e) {
 
 		$e['website'] = \website\WebsiteLib::getById($e['website']);
@@ -33,7 +33,7 @@
 		throw new ReloadAction('website', 'Menu::deleted');
 	});
 
-(new \website\WebsitePage())
+new \website\WebsitePage()
 	->write('doUpdatePositions', function($data) {
 		\website\MenuLib::updatePositions($data->e, explode(',', POST('positions')));
 		throw new ReloadAction();

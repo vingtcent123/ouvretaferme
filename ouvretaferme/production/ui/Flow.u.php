@@ -247,7 +247,7 @@ class FlowUi {
 
 													$h .= \farm\ActionUi::text($eFlow).' ';
 													$h .= self::getFlowComplement($eFlow);
-													$h .= (new \production\FlowUi())->getMore($eFlow);
+													$h .= new \production\FlowUi()->getMore($eFlow);
 
 													if($eFlow['frequency'] !== NULL) {
 														$h .= ' '.\Asset::icon('arrow-right').' '.$this->p('frequency')->values[$eFlow['frequency']];
@@ -535,7 +535,7 @@ class FlowUi {
 			case ACTION_FERTILISATION :
 				if($eFlow['fertilizer'] !== NULL) {
 
-					[$major, $minor] = (new \production\FlowUi())->getFertilizer($eFlow);
+					[$major, $minor] = new \production\FlowUi()->getFertilizer($eFlow);
 
 					$major = array_map(fn($value) => '<span class="annotation">'.$value.'</span>', $major);
 					$minor = array_map(fn($value) => '<span class="annotation">'.$value.'</span>', $minor);
@@ -577,7 +577,7 @@ class FlowUi {
 
 	public function getFertilizer(\series\Task|Flow $eFlow): array {
 
-		return (new \farm\RoutineUi())->getSeparateFertilizer($eFlow['fertilizer']);
+		return new \farm\RoutineUi()->getSeparateFertilizer($eFlow['fertilizer']);
 
 	}
 
@@ -592,7 +592,7 @@ class FlowUi {
 		if($cTool->notEmpty()) {
 
 			$h = '<div class="flow-timeline-tools">';
-				$h .= (new \farm\ToolUi())->getList($cTool);
+				$h .= new \farm\ToolUi()->getList($cTool);
 			$h .= '</div>';
 
 		}
@@ -875,7 +875,7 @@ class FlowUi {
 
 		return $form->group(
 			self::p('fertilizer')->label,
-			(new \farm\RoutineUi())->getFieldFertilizer($form, 'fertilizer', $eFlow['fertilizer'] ?? NULL),
+			new \farm\RoutineUi()->getFieldFertilizer($form, 'fertilizer', $eFlow['fertilizer'] ?? NULL),
 			['class' => ($eFlow['action']->notEmpty() and $eFlow['action']['fqn'] === ACTION_FERTILISATION) ? '' : 'hide', 'wrapper' => 'fertilizer']
 		);
 
@@ -1109,7 +1109,7 @@ class FlowUi {
 						'farm' => $e['sequence']['farm']['id']
 					];
 				};
-				(new \farm\MethodUi())->query($d, TRUE);
+				new \farm\MethodUi()->query($d, TRUE);
 				$d->group = ['wrapper' => 'methods'];
 				break;
 
@@ -1125,7 +1125,7 @@ class FlowUi {
 						'farm' => $e['sequence']['farm']['id']
 					];
 				};
-				(new \farm\ToolUi())->query($d, TRUE);
+				new \farm\ToolUi()->query($d, TRUE);
 				$d->group = ['wrapper' => 'tools'];
 				break;
 

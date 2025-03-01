@@ -1,15 +1,15 @@
 <?php
 new AdaptativeView('/tache/{id}', function($data, PanelTemplate $t) {
-	return (new \series\TaskUi())->getOne($data->e, $data->cPlace, $data->cPhoto, $data->cUser, $data->cComment);
+	return new \series\TaskUi()->getOne($data->e, $data->cPlace, $data->cPhoto, $data->cUser, $data->cComment);
 });
 
 new AdaptativeView('incrementPlannedCollection', function($data, PanelTemplate $t) {
-	return (new \series\TaskUi())->updateIncrementPlannedCollection($data->c);
+	return new \series\TaskUi()->updateIncrementPlannedCollection($data->c);
 });
 
 new AdaptativeView('doCheck', function($data, AjaxTemplate $t) {
 
-	$t->qsa('.flow-timeline-description[data-task="'.$data->e['id'].'"]')->outerHtml((new \series\TaskUi())->getDescription($data->e));
+	$t->qsa('.flow-timeline-description[data-task="'.$data->e['id'].'"]')->outerHtml(new \series\TaskUi()->getDescription($data->e));
 
 });
 
@@ -18,13 +18,13 @@ new AdaptativeView('getFields', function($data, AjaxTemplate $t) {
 	if($data->eTask['hasTools']->empty()) {
 		$t->push('tools', '');
 	} else {
-		$t->push('tools', (new \util\FormUi())->dynamicGroup($data->eTask, 'tools'));
+		$t->push('tools', new \util\FormUi()->dynamicGroup($data->eTask, 'tools'));
 	}
 
 	if($data->eTask['hasMethods']->empty()) {
 		$t->push('methods', '');
 	} else {
-		$t->push('methods', (new \util\FormUi())->dynamicGroup($data->eTask, 'methods'));
+		$t->push('methods', new \util\FormUi()->dynamicGroup($data->eTask, 'methods'));
 	}
 
 
@@ -38,7 +38,7 @@ new AdaptativeView('getVarietiesField', function($data, AjaxTemplate $t) {
 
 		$cVariety = $data->eCultivation['cSlice']->getColumnCollection('variety');
 
-		$t->push('field', (new \series\TaskUi())->getVarietyGroup(new \util\FormUi(), $data->e, $cVariety));
+		$t->push('field', new \series\TaskUi()->getVarietyGroup(new \util\FormUi(), $data->e, $cVariety));
 	}
 
 
@@ -47,15 +47,15 @@ new AdaptativeView('getVarietiesField', function($data, AjaxTemplate $t) {
 new AdaptativeView('createFromSeries', function($data, PanelTemplate $t) {
 
 	if($data->eSeries->notEmpty()) {
-		return (new \series\TaskUi())->createFromOneSeries($data->e, $data->eSeries);
+		return new \series\TaskUi()->createFromOneSeries($data->e, $data->eSeries);
 	} else {
-		return (new \series\TaskUi())->createFromAllSeries($data->e, $data->cSeries);
+		return new \series\TaskUi()->createFromAllSeries($data->e, $data->cSeries);
 	}
 
 });
 
 new AdaptativeView('createFromScratch', function($data, PanelTemplate $t) {
-	return (new \series\TaskUi())->createFromScratch($data->e, $data->cAction, $data->cCategory);
+	return new \series\TaskUi()->createFromScratch($data->e, $data->cAction, $data->cCategory);
 });
 
 new JsonView('doCreateFromSeriesCollection', function($data, AjaxTemplate $t) {
@@ -140,15 +140,15 @@ new JsonView('doCreate', function($data, AjaxTemplate $t) {
 });
 
 new AdaptativeView('update', function($data, PanelTemplate $t) {
-	return (new \series\TaskUi())->update($data->e, $data->cAction);
+	return new \series\TaskUi()->update($data->e, $data->cAction);
 });
 
 new AdaptativeView('updateHarvestCollection', function($data, PanelTemplate $t) {
-	return (new \series\TaskUi())->updateHarvestCollection($data->c, $data->cProductStock, $data->eProductBookmark);
+	return new \series\TaskUi()->updateHarvestCollection($data->c, $data->cProductStock, $data->eProductBookmark);
 });
 
 new AdaptativeView('updatePlannedCollection', function($data, PanelTemplate $t) {
-	return (new \series\TaskUi())->updatePlannedCollection($data->c);
+	return new \series\TaskUi()->updatePlannedCollection($data->c);
 });
 
 new JsonView('doUpdateHarvestCollection', function($data, AjaxTemplate $t) {
@@ -182,7 +182,7 @@ new JsonView('doUpdateUserCollection', function($data, AjaxTemplate $t) {
 });
 
 new AdaptativeView('updateCultivation', function($data, PanelTemplate $t) {
-	return (new \series\TaskUi())->updateCultivation($data->e, $data->cCultivation);
+	return new \series\TaskUi()->updateCultivation($data->e, $data->cCultivation);
 });
 
 new JsonView('doUpdateCultivation', function($data, AjaxTemplate $t) {
@@ -194,14 +194,14 @@ new JsonView('doUpdateCultivation', function($data, AjaxTemplate $t) {
 
 new JsonView('getCreateCollectionFields', function($data, AjaxTemplate $t) {
 
-	$t->qs('#task-create-variety')->innerHtml((new \series\TaskUi())->getVarietyGroup(
+	$t->qs('#task-create-variety')->innerHtml(new \series\TaskUi()->getVarietyGroup(
 		new \util\FormUi(),
 		new \series\Task(),
 		$data->cVariety,
 		$data->varietiesIntersect
 	));
 
-	$t->qs('#task-create-size')->innerHtml($data->eTask['cSize']->notEmpty() ? (new \series\TaskUi())->getHarvestSizeField(
+	$t->qs('#task-create-size')->innerHtml($data->eTask['cSize']->notEmpty() ? new \series\TaskUi()->getHarvestSizeField(
 		new \util\FormUi(),
 		$data->eTask
 	) : '');
@@ -210,7 +210,7 @@ new JsonView('getCreateCollectionFields', function($data, AjaxTemplate $t) {
 
 new JsonView('getStockField', function($data, AjaxTemplate $t) {
 
-	$t->qs('#task-harvest-stock')->outerHtml((new \series\TaskUi())->getStockField(
+	$t->qs('#task-harvest-stock')->outerHtml(new \series\TaskUi()->getStockField(
 		new \util\FormUi(),
 		$data->e,
 		$data->cProductStock,

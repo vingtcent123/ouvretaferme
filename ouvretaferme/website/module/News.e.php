@@ -34,7 +34,7 @@ class News extends NewsElement {
 		return parent::build($properties, $input, $callbacks + [
 
 			'content.prepare' => function(string &$value): bool {
-				$value = (new \editor\XmlLib())->fromHtml($value, ['acceptFigure' => TRUE]);
+				$value = new \editor\XmlLib()->fromHtml($value, ['acceptFigure' => TRUE]);
 				return TRUE;
 			}
 

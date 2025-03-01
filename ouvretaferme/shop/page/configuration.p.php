@@ -1,5 +1,5 @@
 <?php
-(new \shop\ShopPage())
+new \shop\ShopPage()
 	->update(function($data) {
 
 		$data->e['stripe'] = \payment\StripeLib::getByFarm($data->e['farm']);
@@ -17,7 +17,7 @@
 
 	});
 
-(new \shop\ShopPage())
+new \shop\ShopPage()
 	->applyElement(function($data, \shop\Shop $e) {
 		$e['stripe'] = \payment\StripeLib::getByFarm($e['farm']);
 	})

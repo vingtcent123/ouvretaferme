@@ -23,7 +23,7 @@ class MapboxLib {
 		$arguments['access_token'] = \Setting::get('map\mapboxToken');
 
 		$url = 'https://api.mapbox.com'.$uri;
-		$values = (new \util\CurlLib())->exec($url, $arguments);
+		$values = new \util\CurlLib()->exec($url, $arguments);
 
 		return json_decode($values, TRUE);
 

@@ -3,7 +3,7 @@ new AdaptativeView('importCultivations', function($data, FarmTemplate $t) {
 
 	$t->title = s("Importer un plan de culture");
 	$t->tab = 'settings';
-	$t->subNav = (new \farm\FarmUi())->getSettingsSubNav($data->eFarm);
+	$t->subNav = new \farm\FarmUi()->getSettingsSubNav($data->eFarm);
 
 	if(get_exists('created')) {
 
@@ -30,7 +30,7 @@ new AdaptativeView('importCultivations', function($data, FarmTemplate $t) {
 		echo '<a href="/doc/import" class="btn btn-secondary">'.Asset::icon('person-raised-hand').' '.s("Voir la documentation").'</a>';
 	echo '</div>';
 
-	echo (new \series\CsvUi())->getImportCultivations($data->eFarm);
+	echo new \series\CsvUi()->getImportCultivations($data->eFarm);
 
 });
 
@@ -38,7 +38,7 @@ new AdaptativeView('importFile', function($data, FarmTemplate $t) {
 
 	$t->title = s("Importer un plan de culture");
 	$t->tab = 'settings';
-	$t->subNav = (new \farm\FarmUi())->getSettingsSubNav($data->eFarm);
+	$t->subNav = new \farm\FarmUi()->getSettingsSubNav($data->eFarm);
 
 	$h = '<div class="util-action">';
 		$h .= '<h1>';
@@ -50,7 +50,7 @@ new AdaptativeView('importFile', function($data, FarmTemplate $t) {
 	
 	$t->mainTitle = $h;
 	
-	echo (new \series\CsvUi())->getImportFile($data->eFarm, $data->data, $data->cAction);
+	echo new \series\CsvUi()->getImportFile($data->eFarm, $data->data, $data->cAction);
 
 });
 ?>

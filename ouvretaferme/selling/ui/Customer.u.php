@@ -419,18 +419,18 @@ class CustomerUi {
 						$h .= new AnalyzeUi()->getCustomerTurnover($cSaleTurnover, NULL, $eCustomer);
 					}
 
-					$h .= (new \selling\SaleUi())->getList($eCustomer['farm'], $cSale, hide: ['customer']);
+					$h .= new \selling\SaleUi()->getList($eCustomer['farm'], $cSale, hide: ['customer']);
 				$h .= '</div>';
 
 				if($cInvoice->notEmpty()) {
 					$h .= '<div data-tab="invoices" class="tab-panel">';
-						$h .= (new \selling\InvoiceUi())->getList($cInvoice, hide: ['customer']);
+						$h .= new \selling\InvoiceUi()->getList($cInvoice, hide: ['customer']);
 					$h .= '</div>';
 				}
 
 				if($eCustomer->canGrid()) {
 					$h .= '<div data-tab="grid" class="tab-panel">';
-						$h .= (new \selling\GridUi())->getGridByCustomer($eCustomer, $cGrid);
+						$h .= new \selling\GridUi()->getGridByCustomer($eCustomer, $cGrid);
 					$h .= '</div>';
 				}
 
@@ -501,13 +501,13 @@ class CustomerUi {
 				$h .= ' <small class="color-muted">'.s("en tant que professionnel").'</small>';
 			$h .= '</h2>';
 
-			$h .= (new \selling\OrderUi())->getPro($cCustomerPro);
+			$h .= new \selling\OrderUi()->getPro($cCustomerPro);
 
 		}
 
 		if($cShop->notEmpty()) {
 			$h .= '<h2>'.s("Les prochaines ventes de mes producteurs").'</h2>';
-			$h .= (new \shop\ShopUi())->getWidgetCollection($cShop);
+			$h .= new \shop\ShopUi()->getWidgetCollection($cShop);
 
 		}
 
@@ -521,7 +521,7 @@ class CustomerUi {
 				}
 			$h .= '</h2>';
 
-			$h .= (new \selling\OrderUi())->getListForPrivate($cSale);
+			$h .= new \selling\OrderUi()->getListForPrivate($cSale);
 
 			if($cSale->count() === 5) {
 

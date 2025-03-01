@@ -5,7 +5,7 @@ new AdaptativeView('index', function($data, PanelTemplate $t) {
 		$t->js()->replaceHistory(LIME_URL);
 	}
 
-	return (new \series\TimesheetUi())->update($data->eFarm, $data->cTask, $data->cUser, $data->eUserSelected, $data->eTimesheet);
+	return new \series\TimesheetUi()->update($data->eFarm, $data->cTask, $data->cUser, $data->eUserSelected, $data->eTimesheet);
 
 });
 

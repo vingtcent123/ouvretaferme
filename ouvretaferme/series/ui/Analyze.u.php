@@ -455,7 +455,7 @@ class AnalyzeUi {
 
 	public function getActionTimesheetPie(\Collection $cTimesheet): string {
 
-		return (new \analyze\ChartUi())->buildPie(
+		return new \analyze\ChartUi()->buildPie(
 			s("Répartition par intervention"),
 			$cTimesheet,
 			'time',
@@ -595,7 +595,7 @@ class AnalyzeUi {
 
 	public function getPlantActionsPie($cTimesheetByAction): string {
 
-		return (new \analyze\ChartUi())->buildPie(
+		return new \analyze\ChartUi()->buildPie(
 			s("Répartition par intervention"),
 			$cTimesheetByAction,
 			'time',
@@ -842,7 +842,7 @@ class AnalyzeUi {
 
 	public function getCategoryPie(\Collection $cTimesheet): string {
 
-		return (new \analyze\ChartUi())->buildPie(
+		return new \analyze\ChartUi()->buildPie(
 			s("Répartition par catégorie"),
 			$cTimesheet,
 			'time',
@@ -853,7 +853,7 @@ class AnalyzeUi {
 
 	protected function getCategoryTable(\farm\Farm $eFarm, int $year, ?int $month, ?string $week, ?float $globalTime, \Collection $cTimesheet, \Collection $ccTimesheetMonthly, bool $monthly): string {
 
-		$search = (new \Search())
+		$search = new \Search()
 			->sort(GET('sort'))
 			->validateSort(['category', 'time'], 'time-');
 
@@ -873,7 +873,7 @@ class AnalyzeUi {
 					$h .= '<th>'.$search->linkSort('category', s("Catégorie")).'</th>';
 					$h .= '<th class="text-end">'.$search->linkSort('time', s("Temps passé"), SORT_DESC).'</th>';
 					$h .= '<th>';
-						$h .= (new \selling\AnalyzeUi())->getMonthlyLink($monthly, TRUE);
+						$h .= new \selling\AnalyzeUi()->getMonthlyLink($monthly, TRUE);
 					$h .= '</th>';
 
 					if($monthly) {
@@ -968,7 +968,7 @@ class AnalyzeUi {
 
 	public function getPlantPie(\Collection $cTimesheet): string {
 
-		return (new \analyze\ChartUi())->buildPie(
+		return new \analyze\ChartUi()->buildPie(
 			s("Répartition par espèce"),
 			$cTimesheet,
 			'time',
@@ -985,7 +985,7 @@ class AnalyzeUi {
 			return '<div class="util-info">'.s("Vous n'avez travaillé sur aucune espèce sur la période !").'</div>';
 		}
 
-		$search = (new \Search())
+		$search = new \Search()
 			->sort(GET('sort'))
 			->validateSort(['plant', 'time'], 'time-');
 
@@ -1005,7 +1005,7 @@ class AnalyzeUi {
 						$h .= '<th>'.$search->linkSort('plant', s("Espèce")).'</th>';
 						$h .= '<th class="text-end">'.$search->linkSort('time', s("Temps passé"), SORT_DESC).'</th>';
 						$h .= '<th>';
-							$h .= (new \selling\AnalyzeUi())->getMonthlyLink($monthly, TRUE);
+							$h .= new \selling\AnalyzeUi()->getMonthlyLink($monthly, TRUE);
 						$h .= '</th>';
 
 						if($monthly) {
@@ -1097,7 +1097,7 @@ class AnalyzeUi {
 
 	public function getSeriesPie(\Collection $cTimesheet): string {
 
-		return (new \analyze\ChartUi())->buildPie(
+		return new \analyze\ChartUi()->buildPie(
 			s("Répartition par série"),
 			$cTimesheet,
 			'time',
@@ -1108,7 +1108,7 @@ class AnalyzeUi {
 
 	public function getSeriesMonthly(\Collection $ccTimesheetMonthly): string {
 
-		return (new \analyze\ChartUi())->buildMonthly(
+		return new \analyze\ChartUi()->buildMonthly(
 			$ccTimesheetMonthly,
 			'time',
 			fn($eTimesheet) => $eTimesheet['hasSeries'] ? s("Dans une série") : s("Hors série")
@@ -1118,7 +1118,7 @@ class AnalyzeUi {
 
 	protected function getSeriesTable(\farm\Farm $eFarm, \Collection $cTimesheet): string {
 
-		$search = (new \Search())
+		$search = new \Search()
 			->sort(GET('sort'))
 			->validateSort(['series', 'time'], 'time-');
 
@@ -1185,7 +1185,7 @@ class AnalyzeUi {
 
 	public function getBestActionsPie(\Collection $cTimesheet): string {
 
-		return (new \analyze\ChartUi())->buildPie(
+		return new \analyze\ChartUi()->buildPie(
 			s("Répartition du temps de travail"),
 			$cTimesheet,
 			'time',
@@ -1197,7 +1197,7 @@ class AnalyzeUi {
 
 	protected function getBestActionsTable(\farm\Farm $eFarm, int $year, ?int $month, ?string $week, \Collection $cTimesheet, \Collection $cccTimesheetMonthly, bool $monthly): string {
 
-		$search = (new \Search())
+		$search = new \Search()
 			->sort(GET('sort'))
 			->validateSort(['action', 'time'], 'time-');
 
@@ -1220,7 +1220,7 @@ class AnalyzeUi {
 					}
 					$h .= '<th class="text-end">'.$search->linkSort('time', s("Temps passé"), SORT_DESC).'</th>';
 					$h .= '<th>';
-						$h .= (new \selling\AnalyzeUi())->getMonthlyLink($monthly, TRUE);
+						$h .= new \selling\AnalyzeUi()->getMonthlyLink($monthly, TRUE);
 					$h .= '</th>';
 
 					if($monthly) {

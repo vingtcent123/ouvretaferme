@@ -119,7 +119,7 @@ class PlotUi {
 
 				$h .= '<div class="plot-item-beds" id="plot-item-beds-'.$ePlot['id'].'">';
 					if($ePlot['beds'] > 0) {
-						$h .= (new \map\BedUi())->configure($season, $eZone, $ePlot, $ePlot['cBed'], $cGreenhouse);
+						$h .= new \map\BedUi()->configure($season, $eZone, $ePlot, $ePlot['cBed'], $cGreenhouse);
 					}
 				$h .= '</div>';
 
@@ -240,7 +240,7 @@ class PlotUi {
 
 			$h .= $form->group(
 				s("Exploité"),
-				(new SeasonUi)->getField($form, $ePlot),
+				new SeasonUi()->getField($form, $ePlot),
 				['wrapper' => 'seasonFirst seasonLast']
 			);
 

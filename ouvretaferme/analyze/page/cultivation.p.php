@@ -1,4 +1,4 @@
 <?php
-(new \analyze\CultivationPage())
+new \analyze\CultivationPage()
 	->quick(['area', 'workingTime', 'costs', 'turnover']);
 ?>

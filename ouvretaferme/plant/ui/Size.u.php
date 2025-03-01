@@ -45,7 +45,7 @@ class SizeUi {
 							if($eSize['comment'] === NULL) {
 								$h .= '-';
 							} else {
-								$h .= (new \editor\EditorUi())->value($eSize['comment']);
+								$h .= new \editor\EditorUi()->value($eSize['comment']);
 							}
 						$h .= '</td>';
 						$h .= '<td>';

@@ -39,7 +39,7 @@ class CatalogUi {
 			$h .= '</div>';
 
 		} else {
-			$h .= (new \shop\ProductUi())->getUpdateList($eFarm, $eCatalogSelected, $cProduct, $cCategory);
+			$h .= new \shop\ProductUi()->getUpdateList($eFarm, $eCatalogSelected, $cProduct, $cCategory);
 		}
 
 		return $h;
@@ -165,7 +165,7 @@ class CatalogUi {
 
 			case 'productsList' :
 				$d->field = function(\util\FormUi $form, Catalog $e) {
-					return (new \selling\ItemUi())->getCreateList(
+					return new \selling\ItemUi()->getCreateList(
 						$e['cProduct'], $e['cCategory'],
 						fn($cProduct) => ProductUi::getCreateByCategory($form, $e['farm'], $e['type'], $cProduct)
 					);

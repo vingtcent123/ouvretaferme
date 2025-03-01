@@ -3,7 +3,7 @@ new AdaptativeView('update', function($data, FarmTemplate $t) {
 
 	$t->title = s("Commercialisation de {value}", $data->e['name']);
 	$t->tab = 'settings';
-	$t->subNav = (new \farm\FarmUi())->getSettingsSubNav($data->e);
+	$t->subNav = new \farm\FarmUi()->getSettingsSubNav($data->e);
 
 
 	$h = '<h1>';
@@ -13,7 +13,7 @@ new AdaptativeView('update', function($data, FarmTemplate $t) {
 	
 	$t->mainTitle = $h;
 	
-	echo (new \selling\ConfigurationUi())->update($data->e, $data->cCustomize, $data->eSaleExample);
+	echo new \selling\ConfigurationUi()->update($data->e, $data->cCustomize, $data->eSaleExample);
 
 });
 ?>

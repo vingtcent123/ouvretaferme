@@ -145,7 +145,7 @@ class MainTemplate extends BaseTemplate {
 
 			if($this->data->userDeletedAt) {
 				$h .= '<li class="nav-deleted nav-action-optional">';
-					$h .= '<a href="/main/account" class="nav-item" title="'.(new user\DropUi())->getCloseMessage($this->data->userDeletedAt).'"><span>'.\Asset::icon('exclamation-triangle-fill').'&nbsp;'.s("Compte en cours de fermeture").'&nbsp;'.\Asset::icon('exclamation-triangle-fill').'</span></a>';
+					$h .= '<a href="/main/account" class="nav-item" title="'.new user\DropUi()->getCloseMessage($this->data->userDeletedAt).'"><span>'.\Asset::icon('exclamation-triangle-fill').'&nbsp;'.s("Compte en cours de fermeture").'&nbsp;'.\Asset::icon('exclamation-triangle-fill').'</span></a>';
 				$h .= '</li>';
 			}
 
@@ -267,7 +267,7 @@ class MainTemplate extends BaseTemplate {
 			$this->data->eUserOnline->notEmpty() and
 			$this->data->logInExternal !== NULL
 		) {
-			$h .= (new user\UserUi())->logOutExternal($this->data->logInExternal[0]);
+			$h .= new user\UserUi()->logOutExternal($this->data->logInExternal[0]);
 		}
 
 		return $h;

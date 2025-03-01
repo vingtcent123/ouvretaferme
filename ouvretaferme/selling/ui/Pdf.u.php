@@ -118,7 +118,7 @@ class PdfUi {
 
 	public function getLabel(\farm\Farm $eFarm, Customer $eCustomer, ?string $name = NULL, ?string $quality = NULL, ?string $size = NULL, ?float $quantity = NULL, Unit $unit = new Unit()): string {
 
-		$logo = (new \media\FarmLogoUi())->getUrlByElement($eFarm, 'm');
+		$logo = new \media\FarmLogoUi()->getUrlByElement($eFarm, 'm');
 		$colorCustomer = ($eCustomer->notEmpty() and $eCustomer['color']);
 
 		$color = $colorCustomer ? 'color: '.$eCustomer['color'] : '';
@@ -574,7 +574,7 @@ class PdfUi {
 	protected function getDocumentTop(string $type, Sale|Invoice $e, \farm\Farm $eFarm, string $number, string $dateDocument, ?string $dateDelivered, ?string $top): string {
 
 		$eCustomer = $e['customer'];
-		$logo = (new \media\FarmLogoUi())->getUrlByElement($eFarm, 'm');
+		$logo = new \media\FarmLogoUi()->getUrlByElement($eFarm, 'm');
 
 		$h = '<div class="pdf-document-header">';
 
@@ -656,7 +656,7 @@ class PdfUi {
 		$h .= $dateDelivered;
 
 		if($top !== NULL) {
-			$h .= '<div class="pdf-document-custom-top">'. (new \editor\EditorUi())->value($top).'</div>';
+			$h .= '<div class="pdf-document-custom-top">'. new \editor\EditorUi()->value($top).'</div>';
 		}
 
 		return $h;
@@ -668,14 +668,14 @@ class PdfUi {
 		$h = '';
 
 		if($footer !== NULL) {
-			$h .= '<div class="pdf-document-custom-bottom">'.(new \editor\EditorUi())->value($footer).'</div>';
+			$h .= '<div class="pdf-document-custom-bottom">'.new \editor\EditorUi()->value($footer).'</div>';
 		}
 
 		if($paymentCondition) {
 
 			$h .= '<div class="pdf-document-payment">';
 				$h .= '<h4>'.s("Conditions de paiement").'</h4>';
-				$h .= (new \editor\EditorUi())->value($paymentCondition);
+				$h .= new \editor\EditorUi()->value($paymentCondition);
 			$h .= '</div>';
 
 		}
@@ -690,7 +690,7 @@ class PdfUi {
 
 			$h .= '<div class="pdf-document-payment">';
 				$h .= '<h4>'.s("Moyens de paiement").'</h4>';
-				$h .= (new \editor\EditorUi())->value($paymentMode);
+				$h .= new \editor\EditorUi()->value($paymentMode);
 			$h .= '</div>';
 
 		}

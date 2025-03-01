@@ -44,7 +44,7 @@ class LimeObserverLib {
 			$data .= '		\''.$type.'\': {'."\n";
 			$data .= '			width: '.$width.','."\n";
 			$data .= '			height: '.$height.','."\n";
-			$data .= '			error: "'.(new \media\AlertUi())->getRequiredSize($width, $height).'"'."\n";
+			$data .= '			error: "'.new \media\AlertUi()->getRequiredSize($width, $height).'"'."\n";
 			$data .= '		},'."\n";
 
 		}
@@ -57,7 +57,7 @@ class LimeObserverLib {
 
 		$data .= 'class ImageMessage {'."\n";
 
-		foreach((new \media\AlertUi())->getJavascript() as $type => $message) {
+		foreach(new \media\AlertUi()->getJavascript() as $type => $message) {
 
 			$data .= '	static '.$type.' = "'.addcslashes($message, '"').'";'."\n";
 

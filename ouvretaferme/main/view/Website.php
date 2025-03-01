@@ -24,7 +24,7 @@ class WebsiteTemplate extends BaseTemplate {
 		$this->base = \website\WebsiteUi::url($this->data->eWebsite, '/');
 
 		if($this->data->eWebsite['favicon']) {
-			$this->favicon = (new \media\WebsiteFaviconUi())->getUrlByElement($this->data->eWebsite, 'm');
+			$this->favicon = new \media\WebsiteFaviconUi()->getUrlByElement($this->data->eWebsite, 'm');
 		}
 
 		Asset::css('website', 'public.css');
@@ -199,7 +199,7 @@ class WebsiteTemplate extends BaseTemplate {
 							$this->data->cNews->notEmpty()
 						) {
 							$h .= '<li>';
-								$h .= (new \website\NewsUi())->getForMenu($this->data->eWebsite, $this->data->eWebpage, $this->data->eWebpageNews, $this->data->cNews, 3);
+								$h .= new \website\NewsUi()->getForMenu($this->data->eWebsite, $this->data->eWebpage, $this->data->eWebpageNews, $this->data->cNews, 3);
 							$h .= '</li>';
 						}
 					$h .= '</ul>';

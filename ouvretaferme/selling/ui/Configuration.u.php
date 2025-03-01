@@ -102,12 +102,12 @@ class ConfigurationUi {
 				$h .= '<br/>';
 				$h .= $form->group(
 					\farm\FarmUi::p('logo')->label,
-					(new \media\FarmLogoUi())->getCamera($eFarm, size: '15rem')
+					new \media\FarmLogoUi()->getCamera($eFarm, size: '15rem')
 				);
 				$h .= '<br/>';
 				$h .= $form->group(
 					\farm\FarmUi::p('banner')->label,
-					(new \media\FarmBannerUi())->getCamera($eFarm, width: '500px', height: 'auto')
+					new \media\FarmBannerUi()->getCamera($eFarm, width: '500px', height: 'auto')
 				);
 				$h .= '<br/>';
 				$h .= $form->group(content: '<h3>'.s("TVA").'</h3>');
@@ -174,7 +174,7 @@ class ConfigurationUi {
 
 		$h .= '<div class="configuration-sale-example-wrapper">';
 			$h .= '<div class="configuration-sale-example">';
-				$h .= (new \selling\PdfUi())->getDocument($eSaleExample, Pdf::ORDER_FORM, $eFarm, $eSaleExample['cItem']);
+				$h .= new \selling\PdfUi()->getDocument($eSaleExample, Pdf::ORDER_FORM, $eFarm, $eSaleExample['cItem']);
 			$h .= '</div>';
 		$h .= '</div>';
 
@@ -219,7 +219,7 @@ class ConfigurationUi {
 
 		$h .= '<div class="configuration-sale-example-wrapper">';
 			$h .= '<div class="configuration-sale-example">';
-				$h .= (new \selling\PdfUi())->getDocument($eSaleExample, Pdf::INVOICE, $eFarm, $eSaleExample['cItem']);
+				$h .= new \selling\PdfUi()->getDocument($eSaleExample, Pdf::INVOICE, $eFarm, $eSaleExample['cItem']);
 			$h .= '</div>';
 		$h .= '</div>';
 
@@ -263,7 +263,7 @@ class ConfigurationUi {
 
 		$h .= '<div class="configuration-sale-example-wrapper">';
 			$h .= '<div class="configuration-sale-example">';
-				$h .= (new \selling\PdfUi())->getDocument($eSaleExample, Pdf::DELIVERY_NOTE, $eFarm, $eSaleExample['cItem']);
+				$h .= new \selling\PdfUi()->getDocument($eSaleExample, Pdf::DELIVERY_NOTE, $eFarm, $eSaleExample['cItem']);
 			$h .= '</div>';
 		$h .= '</div>';
 
@@ -300,7 +300,7 @@ class ConfigurationUi {
 		$h .= '</div>';
 
 		[$title, , $html] = new PdfUi()->getOrderFormMail($eFarm, $eSaleExample, $cCustomize[\mail\Customize::SALE_ORDER_FORM]['template'] ?? NULL);
-		$h .= (new \mail\CustomizeUi())->getMailExample($title, $html);
+		$h .= new \mail\CustomizeUi()->getMailExample($title, $html);
 
 		$h .= '<div class="util-title">';
 			$h .= '<h3>'.s("Envoi de bon de livraison").'</h3>';
@@ -308,7 +308,7 @@ class ConfigurationUi {
 		$h .= '</div>';
 
 		[$title, , $html] = new PdfUi()->getDeliveryNoteMail($eFarm, $eSaleExample, $cCustomize[\mail\Customize::SALE_DELIVERY_NOTE]['template'] ?? NULL);
-		$h .= (new \mail\CustomizeUi())->getMailExample($title, $html);
+		$h .= new \mail\CustomizeUi()->getMailExample($title, $html);
 
 		$h .= '<div class="util-title">';
 			$h .= '<h3>'.s("Envoi de facture").'</h3>';
@@ -316,7 +316,7 @@ class ConfigurationUi {
 		$h .= '</div>';
 
 		[$title, , $html] = new PdfUi()->getInvoiceMail($eFarm, $eSaleExample['invoice'], new \Collection([$eSaleExample]), $cCustomize[\mail\Customize::SALE_INVOICE]['template'] ?? NULL);
-		$h .= (new \mail\CustomizeUi())->getMailExample($title, $html);
+		$h .= new \mail\CustomizeUi()->getMailExample($title, $html);
 
 		return $h;
 

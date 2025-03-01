@@ -126,7 +126,7 @@ class ForecastUi {
 						'farm' => $e['farm']['id']
 					];
 				};
-				(new \plant\PlantUi())->query($d);
+				new \plant\PlantUi()->query($d);
 				break;
 
 			case 'harvestObjective' :

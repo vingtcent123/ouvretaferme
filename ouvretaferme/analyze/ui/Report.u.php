@@ -75,7 +75,7 @@ class ReportUi {
 
 			$h .= '<div class="report-description util-block">';
 
-				$description = (new \editor\EditorUi())->value($eReport['description']);
+				$description = new \editor\EditorUi()->value($eReport['description']);
 
 				$h .= '<span class="report-description-icon">'.\Asset::icon('chat-right-text').'</span>';
 				$h .= '<span>'.$description.'</span>';
@@ -673,7 +673,7 @@ class ReportUi {
 						$sales .= $form->dynamicField($e, 'lastSaleAt');
 					$sales .= '</div>';
 					$sales .= '<div id="report-create-products">';
-						$sales .= (new \analyze\ReportUi())->getProductsField($cProduct, $e['from']);
+						$sales .= new \analyze\ReportUi()->getProductsField($cProduct, $e['from']);
 					$sales .= '</div>';
 
 					$h .= $form->group(
@@ -976,7 +976,7 @@ class ReportUi {
 						'ids' => $e['cPlant']->getIds()
 					];
 				};
-				(new \plant\PlantUi())->query($d);
+				new \plant\PlantUi()->query($d);
 				break;
 
 			case 'cultivations' :

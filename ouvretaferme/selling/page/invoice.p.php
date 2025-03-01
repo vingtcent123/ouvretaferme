@@ -1,5 +1,5 @@
 <?php
-(new \selling\InvoicePage())
+new \selling\InvoicePage()
 	->getCreateElement(function($data) {
 
 		$eCustomer = \selling\CustomerLib::getById(INPUT('customer'));

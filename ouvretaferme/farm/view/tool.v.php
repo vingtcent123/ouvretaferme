@@ -1,6 +1,6 @@
 <?php
 new AdaptativeView('/outil/{id@int}', function($data, PanelTemplate $t) {
-	return (new \farm\ToolUi())->display($data->eFarm, $data->eTool);
+	return new \farm\ToolUi()->display($data->eFarm, $data->eTool);
 });
 
 new JsonView('query', function($data, AjaxTemplate $t) {
@@ -14,15 +14,15 @@ new AdaptativeView('manage', function($data, FarmTemplate $t) {
 
 	$t->title = ($data->routineName ? \farm\RoutineUi::getProperty($data->routineName, 'pageTitle')($data->eFarm) : s("Le matériel de {value}", $data->eFarm['name']));
 	$t->tab = 'settings';
-	$t->subNav = (new \farm\FarmUi())->getSettingsSubNav($data->eFarm);
+	$t->subNav = new \farm\FarmUi()->getSettingsSubNav($data->eFarm);
 
-	$t->mainTitle = (new \farm\ToolUi())->getManageTitle($data->eFarm, $data->routineName, $data->tools, $data->cTool, $data->search);
-	echo (new \farm\ToolUi())->getManage($data->eFarm, $data->routineName, $data->tools, $data->cTool, $data->eToolNew, $data->cActionUsed, $data->search);
+	$t->mainTitle = new \farm\ToolUi()->getManageTitle($data->eFarm, $data->routineName, $data->tools, $data->cTool, $data->search);
+	echo new \farm\ToolUi()->getManage($data->eFarm, $data->routineName, $data->tools, $data->cTool, $data->eToolNew, $data->cActionUsed, $data->search);
 
 });
 
 new AdaptativeView('create', function($data, PanelTemplate $t) {
-	return (new \farm\ToolUi())->create($data->e);
+	return new \farm\ToolUi()->create($data->e);
 });
 
 new JsonView('doCreate', function($data, AjaxTemplate $t) {
@@ -39,7 +39,7 @@ new JsonView('doCreate', function($data, AjaxTemplate $t) {
 
 new AdaptativeView('update', function($data, PanelTemplate $t) {
 
-	return (new \farm\ToolUi())->update($data->e, $data->routines);
+	return new \farm\ToolUi()->update($data->e, $data->routines);
 
 });
 
@@ -61,7 +61,7 @@ new AdaptativeView('getRoutinesField', function($data, AjaxTemplate $t) {
 	if($data->routines === []) {
 		$t->push('field', '');
 	} else {
-		$t->push('field', (new \farm\RoutineUi())->getFields(array_keys($data->routines), $data->eTool));
+		$t->push('field', new \farm\RoutineUi()->getFields(array_keys($data->routines), $data->eTool));
 	}
 
 

@@ -1,5 +1,5 @@
 <?php
-(new shop\PointPage())
+new shop\PointPage()
 	->getCreateElement(function($data) {
 
 		$data->eFarm = \farm\FarmLib::getById(INPUT('farm'));
@@ -17,7 +17,7 @@
 		throw new ReloadAction('shop', 'Point::'.$data->e['type'].'.created');
 	});
 
-(new shop\PointPage())
+new shop\PointPage()
 	->applyElement(function($data, \shop\Point $e) {
 		$e['stripe'] = \payment\StripeLib::getByFarm($e['farm']);
 	})

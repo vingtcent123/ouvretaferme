@@ -68,7 +68,7 @@ class SeriesUi {
 				$h .= '</div>';
 			$h .= '</div>';
 
-			$h .= (new \editor\EditorUi())->value($eSeries['comment']);
+			$h .= new \editor\EditorUi()->value($eSeries['comment']);
 
 		}
 
@@ -743,7 +743,7 @@ class SeriesUi {
 				$h .= '</div>';
 
 			} else {
-				$h .= (new \production\FlowUi())->getTimeline($eSequence, $events, FALSE);
+				$h .= new \production\FlowUi()->getTimeline($eSequence, $events, FALSE);
 			}
 
 		}
@@ -794,7 +794,7 @@ class SeriesUi {
 
 		}
 
-		$h .= (new \production\FlowUi())->getTimeline($eSequence, $events, FALSE, $startYear + $season);
+		$h .= new \production\FlowUi()->getTimeline($eSequence, $events, FALSE, $startYear + $season);
 
 		return $h;
 
@@ -1333,7 +1333,7 @@ class SeriesUi {
 			$h .= '<h3 id="scroll-photos">'.s("Photos").'</h3>';
 			if($eSeries->canWrite()) {
 				$h .= '<div data-media="gallery" post-series="'.$eSeries['id'].'">';
-					$h .= (new \media\GalleryUi())->getDropdownLinks(
+					$h .= new \media\GalleryUi()->getDropdownLinks(
 						\Asset::icon('plus-circle').' <span>'.s("Ajouter une photo").'</span>',
 						'btn-outline-primary',
 						uploadInputAttributes: ['multiple' => 'multiple']
@@ -1343,7 +1343,7 @@ class SeriesUi {
 		$h .= '</div>';
 
 		if($cPhoto->notEmpty()) {
-			$h .= (new \gallery\PhotoUi())->getList($cPhoto, NULL, 4);
+			$h .= new \gallery\PhotoUi()->getList($cPhoto, NULL, 4);
 		}
 
 		return $h;

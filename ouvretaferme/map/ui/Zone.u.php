@@ -216,7 +216,7 @@ class ZoneUi {
 
 			$h .= $form->group(
 				s("Exploité"),
-				(new SeasonUi)->getField($form, $eZone),
+				new SeasonUi()->getField($form, $eZone),
 				['wrapper' => 'seasonFirst seasonLast']
 			);
 

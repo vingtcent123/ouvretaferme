@@ -1,5 +1,5 @@
 <?php
-(new \farm\ActionPage())
+new \farm\ActionPage()
 	->getCreateElement(function($data) {
 
 		$data->eFarm = \farm\FarmLib::getById(INPUT('farm'));
@@ -18,7 +18,7 @@
 	})
 	->doCreate(fn($data) => throw new ViewAction($data));
 
-(new \farm\ActionPage())
+new \farm\ActionPage()
 	->applyElement(function($data, \farm\Action $e) {
 
 		$e->validate('canWrite');

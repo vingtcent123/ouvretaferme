@@ -1,9 +1,9 @@
 <?php
-(new Page(function($data) {
+new Page(function($data) {
 
 		$data->ePlot = \map\PlotLib::getById(INPUT('plot'))->validate('canWrite');
 
-	}))
+	})
 	->get('create', function($data) {
 
 		$data->cGreenhouse = \map\GreenhouseLib::getByPlot($data->ePlot);
@@ -39,7 +39,7 @@
 
 	});
 
-(new \map\BedPage())
+new \map\BedPage()
 	->applyElement(function($data, \map\Bed $e) {
 
 		$e->validate('canWrite');

@@ -3,16 +3,16 @@ new AdaptativeView('manage', function($data, FarmTemplate $t) {
 
 	$t->title = s("Les catégories d'interventions de {value}", $data->eFarm['name']);
 	$t->tab = 'settings';
-	$t->subNav = (new \farm\FarmUi())->getSettingsSubNav($data->eFarm);
+	$t->subNav = new \farm\FarmUi()->getSettingsSubNav($data->eFarm);
 
-	$t->mainTitle = (new \farm\CategoryUi())->getManageTitle($data->eFarm, $data->cCategory);
-	echo (new \farm\CategoryUi())->getManage($data->eFarm, $data->cCategory);
+	$t->mainTitle = new \farm\CategoryUi()->getManageTitle($data->eFarm, $data->cCategory);
+	echo new \farm\CategoryUi()->getManage($data->eFarm, $data->cCategory);
 
 });
 
 new AdaptativeView('create', function($data, PanelTemplate $t) {
 
-	return (new \farm\CategoryUi())->create($data->eFarm);
+	return new \farm\CategoryUi()->create($data->eFarm);
 
 });
 
@@ -25,7 +25,7 @@ new JsonView('doCreate', function($data, AjaxTemplate $t) {
 
 new AdaptativeView('update', function($data, PanelTemplate $t) {
 
-	return (new \farm\CategoryUi())->update($data->e);
+	return new \farm\CategoryUi()->update($data->e);
 
 });
 

@@ -273,10 +273,10 @@ class TaskLib extends TaskCrud {
 
 		$ccTimesheet = TimesheetLib::getTimesheetsByDaily($eFarm, $week, $eUser);
 
-		$cccTaskByDate = (new \Collection())->setDepth(3);
+		$cccTaskByDate = new \Collection()->setDepth(3);
 
 		foreach(week_dates($week) as $date) {
-			$cccTaskByDate[$date] = (new \Collection())->setDepth(2);
+			$cccTaskByDate[$date] = new \Collection()->setDepth(2);
 		}
 
 		$firstDate = week_date_starts($week);
@@ -1102,7 +1102,7 @@ class TaskLib extends TaskCrud {
 		$cCultivation->expects(['crop']);
 
 		$eCategory = \farm\CategoryLib::getByFarm($eSeries['farm'], fqn: CATEGORIE_CULTURE);
-		$cTask = (new \Collection())->setDepth(2);
+		$cTask = new \Collection()->setDepth(2);
 		$cRepeat = new \Collection();
 
 		$referenceYear ??= $season;

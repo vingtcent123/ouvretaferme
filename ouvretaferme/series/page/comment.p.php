@@ -1,9 +1,9 @@
 <?php
-(new \series\CommentPage(function($data) {
+new \series\CommentPage(function($data) {
 
 		\user\ConnectionLib::checkLogged();
 
-	}))
+	})
 	->update(fn($data) => throw new ViewAction($data))
 	->doUpdate(fn() => throw new BackAction())
 	->doDelete(fn($data) => throw new ViewAction($data));
@@ -13,7 +13,7 @@
 		$data->cTask = \series\TaskLib::getByIds(REQUEST('ids', 'array'))->validate();
 
 		$eFarm = $data->cTask->first()['farm'];
-		(new \series\Comment(['farm' => $eFarm]))->validate('canWrite');
+		new \series\Comment(['farm' => $eFarm])->validate('canWrite');
 
 		\series\Task::validateBatch($data->cTask);
 

@@ -1,5 +1,5 @@
 <?php
-(new \farm\FarmPage())
+new \farm\FarmPage()
 	->update(function($data) {
 
 		\farm\FarmerLib::register($data->e);
@@ -14,7 +14,7 @@
 
 	});
 
-(new \selling\ConfigurationPage())
+new \selling\ConfigurationPage()
 	->doUpdateProperties('doUpdateDeliveryNote', ['deliveryNotePrefix'], fn() => throw new ReloadAction('selling', 'Configuration::updated'))
 	->doUpdateProperties('doUpdateOrderForm', ['orderFormPrefix', 'orderFormDelivery', 'orderFormPaymentCondition', 'orderFormHeader', 'orderFormFooter'], fn() => throw new ReloadAction('selling', 'Configuration::updated'))
 	->doUpdateProperties('doUpdateInvoice', ['invoicePrefix', 'documentInvoices', 'creditPrefix', 'invoicePaymentCondition', 'invoiceHeader', 'invoiceFooter'], fn() => throw new ReloadAction('selling', 'Configuration::updated'))

@@ -162,7 +162,7 @@ class Task extends TaskElement {
 			case 'fertilizer' :
 				if($this[$property] !== NULL) {
 
-					[$major, $minor] = (new \production\FlowUi())->getFertilizer($this);
+					[$major, $minor] = new \production\FlowUi()->getFertilizer($this);
 
 					$h = implode('&nbsp;&nbsp;', $major);
 					if($major and $minor) {

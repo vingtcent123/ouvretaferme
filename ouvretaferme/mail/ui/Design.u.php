@@ -24,7 +24,7 @@ class DesignUi {
 
 		if($eFarm['banner'] !== NULL) {
 
-			$url = (\LIME_ENV === 'dev') ? 'https://media.ouvretaferme.org/farm-banner/500x100/659ff8c45b5dfde6eacp.png?6' : (new \media\FarmBannerUi())->getUrlByElement($eFarm, 'm');
+			$url = (\LIME_ENV === 'dev') ? 'https://media.ouvretaferme.org/farm-banner/500x100/659ff8c45b5dfde6eacp.png?6' : new \media\FarmBannerUi()->getUrlByElement($eFarm, 'm');
 
 			$html .= '<div>';
 				$html .= \Asset::image($url, attributes: ['width: 100%; max-width: 500px; height: auto; aspect-ratio: 5']);

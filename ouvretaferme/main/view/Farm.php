@@ -57,7 +57,7 @@ class FarmTemplate extends MainTemplate {
 	}
 
 	protected function getFarmNav(): string {
-		return (new \farm\FarmUi())->getMainTabs($this->data->eFarm, $this->tab);
+		return new \farm\FarmUi()->getMainTabs($this->data->eFarm, $this->tab);
 	}
 
 	protected function getFarmSubNav(): string {
@@ -88,7 +88,7 @@ class FarmTemplate extends MainTemplate {
 
 			$h = '';
 			if($this->data->tip) {
-				$h .= (new \farm\TipUi())->get($this->data->eFarm, $this->data->tip, $this->data->tipNavigation);
+				$h .= new \farm\TipUi()->get($this->data->eFarm, $this->data->tip, $this->data->tipNavigation);
 			}
 
 			$h .= $this->getMainTitle();

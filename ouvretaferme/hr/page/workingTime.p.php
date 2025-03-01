@@ -1,9 +1,9 @@
 <?php
-(new \hr\WorkingTimePage(function($data) {
+new \hr\WorkingTimePage(function($data) {
 
 		\user\ConnectionLib::checkLogged();
 
-	}))
+	})
 	->getCreateElement(function($data) {
 
 		$data->eFarm = \farm\FarmLib::getById(INPUT('farm'));
@@ -42,10 +42,10 @@ new Page()
 			throw new NotExpectedAction('Bad user');
 		}
 
-		(new \hr\WorkingTime([
+		new \hr\WorkingTime([
 			'farm' => $data->eFarm,
 			'user' => $data->eUserTime
-		]))->validate('canRead');
+		])->validate('canRead');
 
 		$data->eUserTime['weekTimesheet'] = \series\TimesheetLib::getTimesByWeek($data->eFarm, $data->eUserTime, $data->week);
 		$data->eUserTime['cWorkingTimeWeek'] = \hr\WorkingTimeLib::getByWeek($data->eFarm, $data->eUserTime, $data->week);

@@ -2,7 +2,7 @@
 new AdaptativeView('create', function($data, FarmTemplate $t) {
 
 	$t->tab = 'selling';
-	$t->subNav = (new \farm\FarmUi())->getShopSubNav($data->eFarm);
+	$t->subNav = new \farm\FarmUi()->getShopSubNav($data->eFarm);
 	$t->title = s("Créer une nouvelle vente");
 
 	\Asset::js('shop', 'manage.js');
@@ -16,13 +16,13 @@ new AdaptativeView('create', function($data, FarmTemplate $t) {
 	
 	$t->mainTitle = $h;
 
-	echo (new \shop\DateUi())->create($data->e, $data->cProduct, $data->eDateBase);
+	echo new \shop\DateUi()->create($data->e, $data->cProduct, $data->eDateBase);
 
 });
 
 new AdaptativeView('update', function($data, PanelTemplate $t) {
 
-	return (new \shop\DateUi())->update($data->e);
+	return new \shop\DateUi()->update($data->e);
 
 });
 
@@ -37,7 +37,7 @@ new JsonView('doUpdatePoint', function($data, AjaxTemplate $t) {
 new AdaptativeView('/ferme/{farm}/boutique/{shop}/date/{id}', function($data, FarmTemplate $t) {
 
 	$t->tab = 'shop';
-	$t->subNav = (new \farm\FarmUi())->getShopSubNav($data->eFarm);
+	$t->subNav = new \farm\FarmUi()->getShopSubNav($data->eFarm);
 	$t->title = \shop\DateUi::name($data->e);
 
 	\Asset::js('shop', 'manage.js');
@@ -49,22 +49,22 @@ new AdaptativeView('/ferme/{farm}/boutique/{shop}/date/{id}', function($data, Fa
 		$h .= '</h1>';
 		$h .= '<div>';
 			if($data->e->canWrite()) {
-				$h .= (new \shop\DateUi())->getMenu($data->e['shop'], $data->e, $data->e['sales']['count'], 'btn-primary');
+				$h .= new \shop\DateUi()->getMenu($data->e['shop'], $data->e, $data->e['sales']['count'], 'btn-primary');
 			}
 		$h .= '</div>';
 	$h .= '</div>';
 	
 	$t->mainTitle = $h;
 
-	echo (new \shop\DateUi())->getDetails($data->eShop, $data->e);
+	echo new \shop\DateUi()->getDetails($data->eShop, $data->e);
 
-	echo (new \shop\DateUi())->getContent($data->eFarm, $data->eShop, $data->e, $data->cSale);
+	echo new \shop\DateUi()->getContent($data->eFarm, $data->eShop, $data->e, $data->cSale);
 
 });
 
 new HtmlView('getSales', function($data, PdfTemplate $t) {
 
-	echo (new \selling\PdfUi())->getSalesByDate($data->e, $data->cSale, $data->cItem);
+	echo new \selling\PdfUi()->getSalesByDate($data->e, $data->cSale, $data->cItem);
 
 });
 

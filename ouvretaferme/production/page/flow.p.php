@@ -8,7 +8,7 @@ $do = function($data) {
 
 };
 
-(new \production\FlowPage(function($data) {
+new \production\FlowPage(function($data) {
 
 		\user\ConnectionLib::checkLogged();
 
@@ -18,7 +18,7 @@ $do = function($data) {
 
 		$data->cAction = \farm\ActionLib::getByFarm($data->eSequence['farm'], category: CATEGORIE_CULTURE);
 
-	}))
+	})
 	->create()
 	->getCreateElement(function($data) {
 
@@ -32,7 +32,7 @@ $do = function($data) {
 	})
 	->doCreate(fn() => throw new ReloadAction());
 
-(new \production\FlowPage())
+new \production\FlowPage()
 	->applyElement(function($data, \production\Flow $e) {
 
 		$e['sequence'] = \production\SequenceLib::getById($e['sequence'])->validate('canWrite');

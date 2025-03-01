@@ -1,11 +1,11 @@
 <?php
-(new \production\CropPage(function($data) {
+new \production\CropPage(function($data) {
 
 		\user\ConnectionLib::checkLogged();
 
 		$data->eSequence = \production\SequenceLib::getById(INPUT('sequence'))->validate('canWrite');
 
-	}))
+	})
 	->post('addPlant', function($data) {
 
 		$data->ePlant = \plant\PlantLib::getById(POST('plant'));
@@ -25,7 +25,7 @@
 	->create()
 	->doCreate(fn() => throw new ReloadAction());
 
-(new \production\CropPage())
+new \production\CropPage()
 	->applyElement(function($data, \production\Crop $e) {
 		$e['sequence'] = \production\SequenceLib::getById($e['sequence'])->validate('canWrite');
 	})

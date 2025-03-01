@@ -1,5 +1,5 @@
 <?php
-(new \gallery\PhotoPage())
+new \gallery\PhotoPage()
 	->read('index', fn($data) => throw new ViewAction($data))
 	->update(fn($data) => throw new ViewAction($data))
 	->doUpdate(function($data) {
@@ -8,7 +8,7 @@
 	->doDelete(fn($data) => throw new ViewAction($data));
 
 
-(new \gallery\PhotoPage(function($data) {
+new \gallery\PhotoPage(function($data) {
 
 		$data->hash = INPUT('hash');
 
@@ -16,7 +16,7 @@
 			throw new NotExpectedAction('Hash '.$data->hash);
 		}
 
-	}))
+	})
 	->getCreateElement(function($data) {
 		return new \gallery\Photo([
 			'hash' => $data->hash

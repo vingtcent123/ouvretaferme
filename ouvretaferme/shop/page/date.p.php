@@ -1,5 +1,5 @@
 <?php
-(new \shop\DatePage())
+new \shop\DatePage()
 	->getCreateElement(function($data) {
 
 		$data->eFarm = \farm\FarmLib::getById(INPUT('farm'));
@@ -114,7 +114,7 @@
 	})
 	->doDelete(fn($data) => throw new RedirectAction(\shop\ShopUi::adminUrl($data->e['farm'], $data->e['shop']).'&success=shop:Date::deleted'));
 
-(new \shop\DatePage())
+new \shop\DatePage()
 	->applyElement(function($data, \shop\Date $eDate) {
 
 		$eDate['shop'] = \shop\ShopLib::getById($eDate['shop']);

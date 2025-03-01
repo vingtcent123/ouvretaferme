@@ -8,7 +8,7 @@ new Page()
 
 	});
 
-(new \farm\FarmPage())
+new \farm\FarmPage()
 	->update(page: 'updateNote')
 	->doUpdateProperties('doUpdateNote', ['stockNotes'], function($data) {
 
@@ -23,7 +23,7 @@ new Page()
 
 	});
 
-(new \selling\ProductPage())
+new \selling\ProductPage()
 	->read('history', function($data) {
 
 		$data->cStock = \selling\StockLib::getByProduct($data->e);
@@ -71,6 +71,6 @@ new Page()
 
 	});
 
-(new \selling\StockBookmarkPage())
+new \selling\StockBookmarkPage()
 	->doDelete(fn() => throw new ReloadLayerAction(), page: 'doDeleteBookmark');
 ?>

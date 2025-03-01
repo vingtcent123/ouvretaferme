@@ -57,8 +57,8 @@ class AnalyzeLib {
 
 	public static function getWeeklyWorkingTime(\farm\Farm $eFarm, int $year): array {
 
-		$start = (new \DateTime())->setISODate($year, 1)->format('Y-m-d');
-		$stop = (new \DateTime())->setISODate($year, 52, 7)->format('Y-m-d');
+		$start = new \DateTime()->setISODate($year, 1)->format('Y-m-d');
+		$stop = new \DateTime()->setISODate($year, 52, 7)->format('Y-m-d');
 		$currentWeek = min(52, (int)date('W'));
 
 		$ccPresence =\hr\PresenceLib::getBetween($eFarm, $start, $stop);

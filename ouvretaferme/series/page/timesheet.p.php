@@ -27,10 +27,10 @@
 
 		$data->eUserSelected = $data->cUser->search(GET('user', 'user\User', $data->eUserOnline), new \user\User());
 
-		(new \hr\WorkingTime([
+		new \hr\WorkingTime([
 			'farm' => $data->eFarm,
 			'user' => $data->eUserSelected
-		]))->validate('canRead');
+		])->validate('canRead');
 
 		\series\TimesheetLib::fillTimesByTasks($data->cUser, $data->cTask);
 
@@ -105,10 +105,10 @@
 	})
 	->post('doDeleteUser', function($data) {
 
-		(new \series\Timesheet([
+		new \series\Timesheet([
 			'farm' => $data->eFarm,
 			'user' => $data->eUserSelected
-		]))->validate('canDelete');
+		])->validate('canDelete');
 
 		\series\TimesheetLib::deleteByUser($data->eUserSelected, $data->cTask);
 

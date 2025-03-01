@@ -187,7 +187,7 @@ new \series\CultivationPage(function($data) {
 
 	});
 
-(new \series\SeriesPage())
+new \series\SeriesPage()
 	->read('/serie/{id}', function($data) {
 
 		\user\ConnectionLib::checkLogged();
@@ -218,7 +218,7 @@ new \series\CultivationPage(function($data) {
 
 	});
 
-(new \series\SeriesPage())
+new \series\SeriesPage()
 	->applyElement(function($data, \series\Series $e) {
 
 		$e->validate('canWrite');
@@ -278,7 +278,7 @@ new \series\CultivationPage(function($data) {
 	});
 
 
-(new \series\SeriesPage())
+new \series\SeriesPage()
 	->applyCollection(function($data, Collection $c) {
 		$c->validateProperty('farm', $c->first()['farm']);
 	})

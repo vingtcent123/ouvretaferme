@@ -285,27 +285,27 @@ class DemoLib {
 
 		$farmUsers = array_merge(
 			new FarmerModel()->getColumn('user')->getIds(),
-			(new \series\TimesheetModel())
+			new \series\TimesheetModel()
 				->whereFarm(Farm::DEMO)
 				->getColumn(new \Sql('DISTINCT(user)', 'int'))
 		);
 
-		$cUserCustomer = (new \selling\CustomerModel())
+		$cUserCustomer = new \selling\CustomerModel()
 			->whereUser('!=', NULL)
 			->getColumn('user');
 
-		(new \user\UserModel())
+		new \user\UserModel()
 			->whereId('NOT IN', $farmUsers)
 			->whereId('NOT IN', $cUserCustomer)
 			->delete();
 
-		(new \user\UserModel())
-			->whereRole((new \user\RoleModel())
+		new \user\UserModel()
+			->whereRole(new \user\RoleModel()
 				->select('id')
 				->whereFqn('admin')
 				->get())
 			->update([
-				'role' => (new \user\RoleModel())
+				'role' => new \user\RoleModel()
 					->select('id')
 					->whereFqn('farmer')
 					->get()
@@ -313,7 +313,7 @@ class DemoLib {
 
 		$position = 0;
 
-		foreach((new \user\UserModel())
+		foreach(new \user\UserModel()
         ->select('id')
         ->getCollection() as $eUser) {
 
@@ -321,7 +321,7 @@ class DemoLib {
 			$eUser['lastName'] = self::getLastName();
 			$eUser['email'] = $eUser['id'].'@'.\Lime::getDomain();
 
-			(new \user\UserModel())
+			new \user\UserModel()
 				->select('firstName', 'lastName', 'email')
 				->update($eUser);
 
@@ -342,13 +342,13 @@ class DemoLib {
 
 	public static function anonymizeSales(): void {
 
-		(new \selling\SaleModel())
+		new \selling\SaleModel()
 			->whereFrom(\selling\Sale::SHOP)
 			->update([
 				'from' => \selling\Sale::USER
 			]);
 
-		(new \selling\CustomerModel())
+		new \selling\CustomerModel()
 			->whereUser(\farm\DemoLib::USER)
 			->update([
 				'user' => NULL
@@ -360,7 +360,7 @@ class DemoLib {
 
 		$position = 0;
 
-		foreach((new \selling\CustomerModel())
+		foreach(new \selling\CustomerModel()
         ->select('id')
         ->getCollection() as $eCustomer) {
 
@@ -379,7 +379,7 @@ class DemoLib {
 			$eCustomer['deliveryPostcode'] = NULL;
 			$eCustomer['deliveryCity'] = NULL;
 
-			(new \selling\CustomerModel())
+			new \selling\CustomerModel()
 				->select('firstName', 'lastName', 'name', 'phone', 'email', 'legalName', 'invoiceStreet1', 'invoiceStreet2', 'invoicePostcode', 'invoiceCity', 'deliveryStreet1', 'deliveryStreet2', 'deliveryPostcode', 'deliveryCity')
 				->update($eCustomer);
 

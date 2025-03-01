@@ -1,6 +1,6 @@
 <?php
 new AdaptativeView('index', function($data, PanelTemplate $t) {
-	return (new \gallery\PhotoUi())->displayPanel($data->e);
+	return new \gallery\PhotoUi()->displayPanel($data->e);
 });
 
 new JsonView('doCreate', function($data, AjaxTemplate $t) {
@@ -16,7 +16,7 @@ new JsonView('doCreate', function($data, AjaxTemplate $t) {
 });
 
 new AdaptativeView('update', function($data, PanelTemplate $t) {
-	return (new gallery\PhotoUi())->update($data->e);
+	return new gallery\PhotoUi()->update($data->e);
 });
 
 new JsonView('doDelete', function($data, AjaxTemplate $t) {

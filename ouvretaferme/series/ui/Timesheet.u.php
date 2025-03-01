@@ -100,10 +100,10 @@ class TimesheetUi {
 
 					$time = $eUser['time'] ?? 0;
 
-					if((new \hr\WorkingTime([
+					if(new \hr\WorkingTime([
 						'farm' => $eFarm,
 						'user' => $eUser
-					]))->canRead()) {
+					])->canRead()) {
 
 						$h .= '<a data-ajax="'.\util\HttpUi::setArgument(LIME_REQUEST, 'user', $eUser['id']).'" data-ajax-method="get" class="timesheet-update-item-user '.($eUserSelected['id'] === $eUser['id'] ? 'timesheet-update-item-user-selected' : '').'">';
 							$h .= \user\UserUi::getVignette($eUser, '3rem');

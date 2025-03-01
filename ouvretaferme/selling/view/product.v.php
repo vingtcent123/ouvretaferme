@@ -4,34 +4,34 @@ new AdaptativeView('/produit/{id}', function($data, FarmTemplate $t) {
 	$t->title = s("Produit {value}", encode($data->e['name']));
 
 	$t->tab = 'selling';
-	$t->subNav = (new \farm\FarmUi())->getSellingSubNav($data->eFarm);
+	$t->subNav = new \farm\FarmUi()->getSellingSubNav($data->eFarm);
 
-	$t->mainTitle = (new \selling\ProductUi())->displayTitle($data->e);
+	$t->mainTitle = new \selling\ProductUi()->displayTitle($data->e);
 
 
 	if($data->e['status'] === \selling\Product::DELETED) {
 		echo '<div class="util-danger mb-1">'.s("Ce produit a été supprimé et n'est plus disponible.").'</div>';
 	} else {
-		echo (new \selling\ProductUi())->display($data->e, $data->cItemYear);
-		echo (new \selling\ProductUi())->getTabs($data->e, $data->cSaleComposition, $data->cGrid, $data->cItemLast);
+		echo new \selling\ProductUi()->display($data->e, $data->cItemYear);
+		echo new \selling\ProductUi()->getTabs($data->e, $data->cSaleComposition, $data->cGrid, $data->cItemLast);
 	}
 
 });
 
 new AdaptativeView('analyze', function($data, PanelTemplate $t) {
-	return (new \selling\AnalyzeUi())->getProduct($data->e, $data->year, $data->cItemYear, $data->cItemCustomer, $data->cItemType, $data->cItemMonth, $data->cItemMonthBefore, $data->cItemWeek, $data->cItemWeekBefore, $data->search);
+	return new \selling\AnalyzeUi()->getProduct($data->e, $data->year, $data->cItemYear, $data->cItemCustomer, $data->cItemType, $data->cItemMonth, $data->cItemMonthBefore, $data->cItemWeek, $data->cItemWeekBefore, $data->search);
 });
 
 new AdaptativeView('create', function($data, PanelTemplate $t) {
-	return (new \selling\ProductUi())->create($data->e);
+	return new \selling\ProductUi()->create($data->e);
 });
 
 new AdaptativeView('update', function($data, PanelTemplate $t) {
-	return (new \selling\ProductUi())->update($data->e);
+	return new \selling\ProductUi()->update($data->e);
 });
 
 new AdaptativeView('updateGrid', function($data, PanelTemplate $t) {
-	return (new \selling\GridUi())->updateByProduct($data->e, $data->cCustomer);
+	return new \selling\GridUi()->updateByProduct($data->e, $data->cCustomer);
 });
 
 new JsonView('doUpdateGrid', function($data, AjaxTemplate $t) {

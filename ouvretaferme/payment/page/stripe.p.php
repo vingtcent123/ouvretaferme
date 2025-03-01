@@ -20,7 +20,7 @@
 
 	});
 
-(new \payment\StripeFarmPage())
+new \payment\StripeFarmPage()
 	->getCreateElement(function($data) {
 
 		return new \payment\StripeFarm([

@@ -403,9 +403,9 @@ class FarmerUi {
 
 			$h .= '</div>';
 			$h .= '<br/>';
-			$h .= (new \hr\PresenceUi())->show($eFarmer, $cPresence);
+			$h .= new \hr\PresenceUi()->show($eFarmer, $cPresence);
 			$h .= '<br/>';
-			$h .= (new \hr\AbsenceUi())->show($eFarmer, $cAbsence);
+			$h .= new \hr\AbsenceUi()->show($eFarmer, $cAbsence);
 
 		}
 

@@ -83,7 +83,7 @@ class MarketTemplate extends BaseTemplate {
 
 						$h .= '<h3>'.s("Ventes en cours ({value})", $cSaleDraft->count()).'</h3>';
 						$h .= '<div class="market-sales-list">';
-							$h .= (new \selling\MarketUi())->getList($this->data->e, $cSaleDraft, $this->eSaleSelected);
+							$h .= new \selling\MarketUi()->getList($this->data->e, $cSaleDraft, $this->eSaleSelected);
 							$h .= '<a data-ajax="/selling/market:doCreateSale" post-id="'.$this->data->e['id'].'" class="market-sales-item market-sales-item-new">';
 								$h .= Asset::icon('plus-circle');
 								$h .= '<div>'.s("Nouvelle vente").'</div>';
@@ -96,13 +96,13 @@ class MarketTemplate extends BaseTemplate {
 
 					if($cSaleDelivered->notEmpty()) {
 						$h .= '<div class="market-sales-list">';
-							$h .= (new \selling\MarketUi())->getList($this->data->e, $cSaleDelivered, $this->eSaleSelected);
+							$h .= new \selling\MarketUi()->getList($this->data->e, $cSaleDelivered, $this->eSaleSelected);
 						$h .= '</div>';
 					}
 					if($cSaleCanceled->notEmpty()) {
 						$h .= '<h3>'.s("Ventes annulées ({value})", $cSaleDraft->count()).'</h3>';
 						$h .= '<div class="market-sales-list">';
-							$h .= (new \selling\MarketUi())->getList($this->data->e, $cSaleCanceled, $this->eSaleSelected);
+							$h .= new \selling\MarketUi()->getList($this->data->e, $cSaleCanceled, $this->eSaleSelected);
 						$h .= '</div>';
 					}
 

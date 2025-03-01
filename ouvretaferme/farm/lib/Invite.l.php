@@ -100,7 +100,7 @@ class InviteLib extends InviteCrud {
 
 		$content = InviteUi::getInviteMail($e);
 
-		(new \mail\MailLib())
+		new \mail\MailLib()
 			->addTo($e['email'])
 			->setContent(...$content)
 			->send('user');
@@ -162,7 +162,7 @@ class InviteLib extends InviteCrud {
 
 			$content = InviteUi::getAcceptMail($e);
 
-			(new \mail\MailLib())
+			new \mail\MailLib()
 				->addTo($e['email'])
 				->setContent(...$content)
 				->send('user');

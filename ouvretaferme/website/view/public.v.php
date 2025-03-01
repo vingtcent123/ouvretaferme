@@ -23,9 +23,9 @@ new AdaptativeView('public', function($data, WebsiteTemplate $t) {
 
 	if($data->eWebpage['content']) {
 
-		echo (new \website\WidgetUi())->replace(
+		echo new \website\WidgetUi()->replace(
 			$data->eWebpage,
-			(new \editor\EditorUi())->value($data->eWebpage['content'], [
+			new \editor\EditorUi()->value($data->eWebpage['content'], [
 				'domain' => analyze_url(\website\WebsiteUi::url($data->eWebsite))['domain']
 			])
 		);
@@ -33,7 +33,7 @@ new AdaptativeView('public', function($data, WebsiteTemplate $t) {
 	}
 
 	if($data->eWebpage['template']['fqn'] === 'news') {
-		echo (new \website\NewsUi())->getAll($data->cNews);
+		echo new \website\NewsUi()->getAll($data->cNews);
 	}
 
 });

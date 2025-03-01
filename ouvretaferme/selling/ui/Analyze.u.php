@@ -456,7 +456,7 @@ class AnalyzeUi {
 
 	protected function getBestCustomersTable(\Collection $ccItemCustomer, int $year, ?int $limit = NULL, \Collection $ccItemCustomerMonthly = new \Collection(), ?string $monthly = NULL, ?\Search $search = NULL, bool $zoom = TRUE): string {
 
-		$search ??= (new \Search())
+		$search ??= new \Search()
 			->sort(GET('sort'))
 			->validateSort(['customer', 'turnover'], 'turnover-');
 
@@ -871,7 +871,7 @@ class AnalyzeUi {
 
 		$cItemCustomer = $ccItemCustomer[$year];
 
-		return (new \analyze\ChartUi())->buildPie(
+		return new \analyze\ChartUi()->buildPie(
 			s("Répartition des ventes par client en {value}", $year),
 			$cItemCustomer,
 			'turnover',
@@ -1079,7 +1079,7 @@ class AnalyzeUi {
 
 	public function getBestProductsTable(\Collection $cItemProduct, ?int $year = NULL, \Collection $cItemProductMonthly = new \Collection(), ?string $monthly = NULL, \Collection $cItemProductCompare = new \Collection(), ?int $yearCompare = NULL, ?int $limit = NULL, ?\Search $search = NULL, bool $zoom = TRUE, bool $expand = TRUE, array $hide = [], ?string $moreTh = NULL, ?\Closure $moreTd = NULL): string {
 
-		$search ??= (new \Search())->sort(GET('sort'));
+		$search ??= new \Search()->sort(GET('sort'));
 		$search->validateSort(['product', 'average', 'turnover', 'quantity'], 'turnover-');
 
 		$cItemProduct->sort($search->buildSort([
@@ -1395,7 +1395,7 @@ class AnalyzeUi {
 
 	public function getBestProductsPie(\Collection $cItemProduct): string {
 
-		return (new \analyze\ChartUi())->buildPie(
+		return new \analyze\ChartUi()->buildPie(
 			s("Répartition des ventes par produit"),
 			$cItemProduct,
 			'turnover',
@@ -1406,7 +1406,7 @@ class AnalyzeUi {
 
 	protected function getBestPlantsTable(\Collection $cPlant, int $year, \Collection $cccItemPlantMonthly = new \Collection(), ?string $monthly = NULL, \Collection $cPlantCompare = new \Collection(), ?int $yearCompare = NULL, ?\Search $search = NULL, bool $zoom = TRUE): string {
 
-		$search ??= (new \Search())
+		$search ??= new \Search()
 			->sort(GET('sort'))
 			->validateSort(['plant', 'turnover'], 'turnover-');
 
@@ -1619,7 +1619,7 @@ class AnalyzeUi {
 
 	public function getBestPlantsPie(\Collection $cPlant): string {
 
-		return (new \analyze\ChartUi())->buildPie(
+		return new \analyze\ChartUi()->buildPie(
 			s("Répartition des ventes"),
 			$cPlant,
 			'turnover',

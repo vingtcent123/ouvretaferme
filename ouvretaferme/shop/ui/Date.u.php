@@ -710,7 +710,7 @@ class DateUi {
 					$h .= '<div class="util-info">'.s("Aucune commande n'a encore été enregistrée !").'</div>';
 				} else {
 
-					$h .= (new \selling\SaleUi())->getList(
+					$h .= new \selling\SaleUi()->getList(
 						$eFarm,
 						$cSale,
 						hide: array_merge(['deliveredAt', 'documents', 'items'], $cSale->match(fn($eSale) => $eSale['paymentMethod'] !== NULL) ? [] : ['paymentMethod']),
@@ -766,7 +766,7 @@ class DateUi {
 				$h .= '<div class="util-empty">'.s("Cette vente est terminée et aucun produit n'a été vendu.").'</div>';
 			} else {
 				$h .= '<div class="util-info">'.s("Cette vente est terminée et seule la liste des produits qui ont été vendus est consultable.").'</div>';
-				$h .= (new \shop\ProductUi())->getUpdateList($eFarm, $eDate, $cProduct, $eDate['cCategory'], isExpired: TRUE);
+				$h .= new \shop\ProductUi()->getUpdateList($eFarm, $eDate, $cProduct, $eDate['cCategory'], isExpired: TRUE);
 			}
 
 			$h .= '<br/>';
@@ -841,7 +841,7 @@ class DateUi {
 				}
 
 			} else {
-				$h .= (new \shop\ProductUi())->getUpdateList($eFarm, $eDate, $cProduct, $eDate['cCategory']);
+				$h .= new \shop\ProductUi()->getUpdateList($eFarm, $eDate, $cProduct, $eDate['cCategory']);
 			}
 
 			$h .= '<br/>';
@@ -891,7 +891,7 @@ class DateUi {
 		if($eDate['description'] !== NULL) {
 			$h .= '<div class="util-block" style="margin-bottom: 2rem">';
 				$h .= '<h4>'.s("Complément d'information pour cette vente").'</h4>';
-				$h .= (new \editor\EditorUi())->value($eDate['description']);
+				$h .= new \editor\EditorUi()->value($eDate['description']);
 			$h .= '</div>';
 		}
 
@@ -961,7 +961,7 @@ class DateUi {
 
 			case 'productsList' :
 				$d->field = function(\util\FormUi $form, Date $e) {
-					return (new \selling\ItemUi())->getCreateList(
+					return new \selling\ItemUi()->getCreateList(
 						$e['cProduct'], $e['cCategory'],
 						fn($cProduct) => ProductUi::getCreateByCategory($form, $e['farm'], $e['type'], $cProduct)
 					);

@@ -174,7 +174,7 @@ class ProductUi {
 					$h .= '</td>';
 				
 					$h .= '<td class="product-item-vignette">';
-						$h .= (new \media\ProductVignetteUi())->getCamera($eProduct, size: '4rem');
+						$h .= new \media\ProductVignetteUi()->getCamera($eProduct, size: '4rem');
 					$h .= '</td>';
 
 					$h .= '<td class="product-item-name">';
@@ -489,7 +489,7 @@ class ProductUi {
 		$h = '<div class="util-action">';
 
 			$h .= '<div class="util-vignette">';
-				$h .= (new \media\ProductVignetteUi())->getCamera($eProduct, size: '5rem');
+				$h .= new \media\ProductVignetteUi()->getCamera($eProduct, size: '5rem');
 				$h .= '<div>';
 					$h .= '<h1 style="margin-bottom: 0.25rem">'.encode($eProduct->getName()).'</h1>';
 					$h .= $this->toggle($eProduct);
@@ -575,11 +575,11 @@ class ProductUi {
 
 			$h .= '<div class="tab-panel '.($eProduct['composition'] ? '' : 'selected').'" data-tab="product-grid">';
 				$h .= $this->getBaseGrid($eProduct);
-				$h .= (new \selling\GridUi())->getGridByProduct($eProduct, $cGrid);
+				$h .= new \selling\GridUi()->getGridByProduct($eProduct, $cGrid);
 			$h .= '</div>';
 
 			$h .= '<div class="tab-panel" data-tab="product-sales">';
-				$h .= (new \selling\ItemUi())->getByProduct($cItemLast);
+				$h .= new \selling\ItemUi()->getByProduct($cItemLast);
 			$h .= '</div>';
 
 		$h .= '</div>';
@@ -611,7 +611,7 @@ class ProductUi {
 		$h .= '</div>';
 
 		foreach($cSale as $eSale) {
-			$h .= (new \selling\ItemUi())->getBySale($eSale, $eSale['cItem']);
+			$h .= new \selling\ItemUi()->getBySale($eSale, $eSale['cItem']);
 		}
 
 		return $h;
@@ -1087,7 +1087,7 @@ class ProductUi {
 						'farm' => $e['farm']['id']
 					];
 				};
-				(new \plant\PlantUi())->query($d);
+				new \plant\PlantUi()->query($d);
 				break;
 
 			case 'unit' :

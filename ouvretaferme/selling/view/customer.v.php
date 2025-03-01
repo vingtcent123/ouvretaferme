@@ -4,27 +4,27 @@ new AdaptativeView('/client/{id}', function($data, FarmTemplate $t) {
 	$t->title = s("Client {value}", encode($data->e['name']));
 
 	$t->tab = 'selling';
-	$t->subNav = (new \farm\FarmUi())->getSellingSubNav($data->eFarm);
+	$t->subNav = new \farm\FarmUi()->getSellingSubNav($data->eFarm);
 
-	$t->mainTitle = (new \selling\CustomerUi())->displayTitle($data->e);
-	echo (new \selling\CustomerUi())->display($data->e, $data->cSaleTurnover, $data->cGrid, $data->cSale, $data->cInvoice);
+	$t->mainTitle = new \selling\CustomerUi()->displayTitle($data->e);
+	echo new \selling\CustomerUi()->display($data->e, $data->cSaleTurnover, $data->cGrid, $data->cSale, $data->cInvoice);
 
 });
 
 new AdaptativeView('analyze', function($data, PanelTemplate $t) {
-	return (new \selling\AnalyzeUi())->getCustomer($data->e, $data->year, $data->cSaleTurnover, $data->cItemProduct, $data->cItemMonth, $data->cItemMonthBefore, $data->cItemWeek, $data->cItemWeekBefore);
+	return new \selling\AnalyzeUi()->getCustomer($data->e, $data->year, $data->cSaleTurnover, $data->cItemProduct, $data->cItemMonth, $data->cItemMonthBefore, $data->cItemWeek, $data->cItemWeekBefore);
 });
 
 new AdaptativeView('create', function($data, PanelTemplate $t) {
-	return (new \selling\CustomerUi())->create($data->eFarm);
+	return new \selling\CustomerUi()->create($data->eFarm);
 });
 
 new AdaptativeView('update', function($data, PanelTemplate $t) {
-	return (new \selling\CustomerUi())->update($data->e);
+	return new \selling\CustomerUi()->update($data->e);
 });
 
 new AdaptativeView('updateGrid', function($data, PanelTemplate $t) {
-	return (new \selling\GridUi())->updateByCustomer($data->e, $data->cProduct);
+	return new \selling\GridUi()->updateByCustomer($data->e, $data->cProduct);
 });
 
 new JsonView('doUpdateGrid', function($data, AjaxTemplate $t) {
@@ -48,7 +48,7 @@ new JsonView('query', function($data, AjaxTemplate $t) {
 });
 
 new AdaptativeView('updateOptIn', function($data, PanelTemplate $t) {
-	return (new \selling\CustomerUi())->updateOptIn($data->cCustomer);
+	return new \selling\CustomerUi()->updateOptIn($data->cCustomer);
 });
 
 new AdaptativeView('/ferme/{id}/optIn', function($data, MainTemplate $t) {

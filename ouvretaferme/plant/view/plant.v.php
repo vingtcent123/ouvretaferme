@@ -3,7 +3,7 @@
 new AdaptativeView('plant', function($data, FarmTemplate $t) {
 
 	$t->tab = 'settings';
-	$t->subNav = (new \farm\FarmUi())->getSettingsSubNav($data->eFarm);
+	$t->subNav = new \farm\FarmUi()->getSettingsSubNav($data->eFarm);
 
 	$t->title = s("Espèces de {value}", $data->eFarm['name']);
 	$t->canonical = \plant\PlantUi::urlManage($data->eFarm);
@@ -23,28 +23,28 @@ new AdaptativeView('plant', function($data, FarmTemplate $t) {
 
 	$t->mainTitle = $h;
 
-	echo (new \plant\PlantUi())->getSearch($data->eFarm, $data->search);
-	echo (new \plant\PlantUi())->getManage($data->eFarm, $data->plants, $data->cPlant, $data->search);
+	echo new \plant\PlantUi()->getSearch($data->eFarm, $data->search);
+	echo new \plant\PlantUi()->getManage($data->eFarm, $data->plants, $data->cPlant, $data->search);
 
 
 });
 
 new AdaptativeView('/espece/{id@int}', function($data, PanelTemplate $t) {
 
-	return (new \plant\PlantUi())->display($data->e, $data->eFarm, $data->cItemYear, $data->cCrop, $data->cActionMain);
+	return new \plant\PlantUi()->display($data->e, $data->eFarm, $data->cItemYear, $data->cCrop, $data->cActionMain);
 
 });
 
 new AdaptativeView('analyzeSales', function($data, PanelTemplate $t) {
-	return (new \selling\AnalyzeUi())->getPlantSales($data->e, $data->year, $data->cItemTurnover, $data->cItemYear, $data->cItemCustomer, $data->cItemType, $data->cItemMonth, $data->cItemMonthBefore, $data->cItemWeek, $data->cItemWeekBefore, $data->search);
+	return new \selling\AnalyzeUi()->getPlantSales($data->e, $data->year, $data->cItemTurnover, $data->cItemYear, $data->cItemCustomer, $data->cItemType, $data->cItemMonth, $data->cItemMonthBefore, $data->cItemWeek, $data->cItemWeekBefore, $data->search);
 });
 
 new AdaptativeView('analyzeTime', function($data, PanelTemplate $t) {
-	return (new \series\AnalyzeUi())->getPlantTime($data->e, $data->year, $data->cPlantTimesheet, $data->cTimesheetByAction, $data->cTimesheetByUser, $data->cPlantMonth, $data->cPlantMonthBefore);
+	return new \series\AnalyzeUi()->getPlantTime($data->e, $data->year, $data->cPlantTimesheet, $data->cTimesheetByAction, $data->cTimesheetByUser, $data->cPlantMonth, $data->cPlantMonthBefore);
 });
 
 new AdaptativeView('create', function($data, PanelTemplate $t) {
-	return (new \plant\PlantUi())->create($data->eFarm, $data->cFamily);
+	return new \plant\PlantUi()->create($data->eFarm, $data->cFamily);
 });
 
 new JsonView('doCreate', function($data, AjaxTemplate $t) {
@@ -60,7 +60,7 @@ new JsonView('doCreate', function($data, AjaxTemplate $t) {
 });
 
 new AdaptativeView('update', function($data, PanelTemplate $t) {
-	return (new \plant\PlantUi())->update($data->e);
+	return new \plant\PlantUi()->update($data->e);
 });
 
 new JsonView('doUpdate', function($data, AjaxTemplate $t) {

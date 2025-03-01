@@ -10,15 +10,15 @@ new AdaptativeView('manage', function($data, FarmTemplate $t) {
 
 	$t->title = s("Les fournisseurs de {value}", $data->eFarm['name']);
 	$t->tab = 'settings';
-	$t->subNav = (new \farm\FarmUi())->getSettingsSubNav($data->eFarm);
+	$t->subNav = new \farm\FarmUi()->getSettingsSubNav($data->eFarm);
 
-	$t->mainTitle = (new \farm\SupplierUi())->getManageTitle($data->eFarm);
-	echo (new \farm\SupplierUi())->getManage($data->eFarm, $data->cSupplier);
+	$t->mainTitle = new \farm\SupplierUi()->getManageTitle($data->eFarm);
+	echo new \farm\SupplierUi()->getManage($data->eFarm, $data->cSupplier);
 
 });
 
 new AdaptativeView('create', function($data, PanelTemplate $t) {
-	return (new \farm\SupplierUi())->create($data->e);
+	return new \farm\SupplierUi()->create($data->e);
 });
 
 new JsonView('doCreate', function($data, AjaxTemplate $t) {
@@ -35,7 +35,7 @@ new JsonView('doCreate', function($data, AjaxTemplate $t) {
 
 new AdaptativeView('update', function($data, PanelTemplate $t) {
 
-	return (new \farm\SupplierUi())->update($data->e);
+	return new \farm\SupplierUi()->update($data->e);
 
 });
 

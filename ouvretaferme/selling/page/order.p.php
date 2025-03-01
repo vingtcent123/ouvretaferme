@@ -21,7 +21,7 @@
 
 	});
 
-(new \selling\SalePage())
+new \selling\SalePage()
 	->read('/commande/{id}', function($data) {
 
 		$data->eFarm = $data->e['farm'];

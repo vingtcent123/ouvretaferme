@@ -1,7 +1,7 @@
 <?php
-(new \website\WebpagePage(function($data) {
+new \website\WebpagePage(function($data) {
 		$data->eWebsite = \website\WebsiteLib::getById(INPUT('website'));
-	}))
+	})
 	->create(fn($data) => throw new ViewAction($data))
 	->getCreateElement(function($data) {
 
@@ -16,7 +16,7 @@
 		throw new RedirectAction('/website/manage?id='.$data->eWebsite['farm']['id'].'&success=website:Webpage::created');
 	});
 
-(new \website\WebpagePage())
+new \website\WebpagePage()
 	->applyElement(function($data, \website\Webpage $e) {
 
 		$e['website'] = \website\WebsiteLib::getById($e['website']);

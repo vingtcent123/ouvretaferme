@@ -146,9 +146,9 @@ class ProductUi {
 		$h = '<div class="shop-product '.($eProductSelling['composition'] ? 'shop-product-composition' : '').'" data-id="'.$eProductSelling['id'].'" data-price="'.$price.'" data-has="0">';
 
 			if($eProductSelling['vignette'] !== NULL) {
-				$url = (new \media\ProductVignetteUi())->getUrlByElement($eProductSelling, 'l');
+				$url = new \media\ProductVignetteUi()->getUrlByElement($eProductSelling, 'l');
 			} else if($eProductSelling['plant']->notEmpty()) {
-				$url = (new \media\PlantVignetteUi())->getUrlByElement($eProductSelling['plant'], 'l');
+				$url = new \media\PlantVignetteUi()->getUrlByElement($eProductSelling['plant'], 'l');
 			} else {
 				$url = NULL;
 			}
@@ -241,7 +241,7 @@ class ProductUi {
 
 				if($eProductSelling['description'] !== NULL) {
 					$h .= '<div class="shop-product-description">';
-						$h .= (new \editor\EditorUi())->value($eProductSelling['description']);
+						$h .= new \editor\EditorUi()->value($eProductSelling['description']);
 					$h .= '</div>';
 				}
 
@@ -1037,7 +1037,7 @@ class ProductUi {
 						'farm' => $e['farm']['id']
 					];
 				};
-				(new \selling\CustomerUi())->query($d, TRUE);
+				new \selling\CustomerUi()->query($d, TRUE);
 				$d->group = ['wrapper' => 'limitCustomers'];
 				break;
 

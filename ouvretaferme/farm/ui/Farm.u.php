@@ -359,7 +359,7 @@ class FarmUi {
 
 			$h .= $form->group(
 				self::p('vignette')->label,
-				(new \media\FarmVignetteUi())->getCamera($eFarm, size: '10rem')
+				new \media\FarmVignetteUi()->getCamera($eFarm, size: '10rem')
 			);
 			$h .= $form->dynamicGroups($eFarm, ['name', 'description', 'startedAt', 'place', 'placeLngLat', 'url', 'defaultBedLength', 'defaultBedWidth', 'defaultAlleyWidth', 'quality']);
 
@@ -417,7 +417,7 @@ class FarmUi {
 			$input .= '</div>';
 
 			$input .= '<div id="farm-update-calendar-month">';
-				$input .= (new \series\CultivationUi())->getListSeason($eFarm, date('Y'));
+				$input .= new \series\CultivationUi()->getListSeason($eFarm, date('Y'));
 			$input .= '</div>';
 
 			$h .= $form->group(s("Période affichée sur les diagrammes"), $input, ['wrapper' => 'calendarMonthStart calendarMonthStop']);
@@ -1191,7 +1191,7 @@ class FarmUi {
 				$h .= s("Rapports de production");
 			$h .= '</h1>';
 			$h .=  '<div>';
-				if((new \analyze\Report(['farm' => $eFarm]))->canCreate()) {
+				if(new \analyze\Report(['farm' => $eFarm])->canCreate()) {
 					$h .=  '<a href="/analyze/report:create?farm='.$eFarm['id'].'&season='.$selectedSeason.'" class="btn btn-primary">'.\Asset::icon('plus-circle').'<span class="hide-xs-down"> '.s("Nouveau rapport").'</span></a>';
 				}
 			$h .=  '</div>';
@@ -1595,7 +1595,7 @@ class FarmUi {
 
 		$h .= '</div>';
 
-		$h .= (new \main\HomeUi())->getBlog($eNews, FALSE);
+		$h .= new \main\HomeUi()->getBlog($eNews, FALSE);
 
 		$h .= '<h2>😭</h2>';
 
@@ -1755,7 +1755,7 @@ class FarmUi {
 		switch($property) {
 
 			case 'place' :
-				(new \main\PlaceUi())->query($d);
+				new \main\PlaceUi()->query($d);
 				break;
 
 			case 'placeLngLat' :
@@ -1774,7 +1774,7 @@ class FarmUi {
 						'farm' => $e['id']
 					];
 				};
-				(new \plant\PlantUi())->query($d, TRUE);
+				new \plant\PlantUi()->query($d, TRUE);
 				$d->group = ['wrapper' => 'rotationExclude'];
 				break;
 

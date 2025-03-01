@@ -545,7 +545,7 @@ class SequenceUi {
 
 			$h .= '<div class="sequence-header-description util-block">';
 
-				$description = (new \editor\EditorUi())->value($eSequence['description']);
+				$description = new \editor\EditorUi()->value($eSequence['description']);
 
 				$h .= '<span class="sequence-header-description-icon">'.\Asset::icon('chat-right-text').'</span>';
 				$h .= '<span>'.$description.'</span>';
@@ -571,13 +571,13 @@ class SequenceUi {
 		if($eSequence->canWrite()) {
 
 			$h .= '<p data-media="gallery" post-sequence="'.$eSequence['id'].'">';
-				$h .= \Asset::icon('plus-circle').' '.(new \media\GalleryUi())->getBothLinks();
+				$h .= \Asset::icon('plus-circle').' '.new \media\GalleryUi()->getBothLinks();
 			$h .= '</p>';
 
 		}
 
 		if($cPhoto->notEmpty()) {
-			$h .= (new \gallery\PhotoUi())->getList($cPhoto, NULL, 4);
+			$h .= new \gallery\PhotoUi()->getList($cPhoto, NULL, 4);
 		}
 
 		return $h;
@@ -664,13 +664,13 @@ class SequenceUi {
 
 								$h .= '<div class="text-end">';
 									foreach($cCultivation as $eCultivation) {
-										$h .= (new \series\CultivationUi())->getHarvestedByUnits($eCultivation);
+										$h .= new \series\CultivationUi()->getHarvestedByUnits($eCultivation);
 									}
 								$h .= '</div>';
 
 								$h .= '<div class="text-end sequence-series-item-crop">';
 									foreach($cCultivation as $eCultivation) {
-										$h .= '<span class="annotation">'.(new \series\CultivationUi())->getYieldByUnits($eSeries, $eCultivation).'</span><br/>';
+										$h .= '<span class="annotation">'.new \series\CultivationUi()->getYieldByUnits($eSeries, $eCultivation).'</span><br/>';
 									}
 								$h .= '</div>';
 
@@ -716,7 +716,7 @@ class SequenceUi {
 				$h .= '</div>';
 			$h .= '</div>';
 
-			$h .= (new \editor\EditorUi())->value($eSequence['comment']);
+			$h .= new \editor\EditorUi()->value($eSequence['comment']);
 
 		}
 
@@ -952,7 +952,7 @@ class SequenceUi {
 						'new' => TRUE
 					];
 				};
-				(new \plant\PlantUi())->query($d, TRUE);
+				new \plant\PlantUi()->query($d, TRUE);
 				$d->group = ['wrapper' => 'plantsList'];
 				break;
 

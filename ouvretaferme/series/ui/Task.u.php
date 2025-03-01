@@ -966,7 +966,7 @@ class TaskUi {
 						$d->autocompleteDefault = $search->get('plant');
 					});
 					if($cZone->notEmpty()) {
-						$h .= (new \map\ZoneUi())->getZonePlotWidget($form, $cZone, $search->get('plot') ?? new \map\Plot(), s("Emplacement"));
+						$h .= new \map\ZoneUi()->getZonePlotWidget($form, $cZone, $search->get('plot') ?? new \map\Plot(), s("Emplacement"));
 					}
 
 				$h .= '</div>';
@@ -1503,7 +1503,7 @@ class TaskUi {
 	public function getMore(Task $eTask): string {
 
 		$h = $this->getTaskComplement($eTask);
-		$h .= (new \production\FlowUi())->getMore($eTask);
+		$h .= new \production\FlowUi()->getMore($eTask);
 
 		return $h;
 
@@ -1603,7 +1603,7 @@ class TaskUi {
 								$h .= '<a href="/tache/'.$eTask['id'].'" class="flow-timeline-text">'.$this->getAction($eTask).'</a>';
 								$h .= $this->getDescription($eTask);
 								$h .= $this->getComments($eTask);
-								$h .= (new \production\FlowUi())->getTools($eTask);
+								$h .= new \production\FlowUi()->getTools($eTask);
 							$h .= '</div>';
 
 
@@ -2161,7 +2161,7 @@ class TaskUi {
 
 				$h .= '<div>';
 					$h .= '<h4>'.s("Matériel").'</h4>';
-					$h .= (new \farm\ToolUi())->getList($cTool);
+					$h .= new \farm\ToolUi()->getList($cTool);
 				$h .= '</div>';
 
 			}
@@ -2236,7 +2236,7 @@ class TaskUi {
 		$h .= '<div class="util-title">';
 			$h .= '<h3>'.s("Commentaires").'</h3>';
 			$h .= '<div>';
-				if((new \series\Comment(['farm' => $eTask['farm']]))->canCreate()) {
+				if(new \series\Comment(['farm' => $eTask['farm']])->canCreate()) {
 					$h .= '<a href="/series/comment:createCollection?ids[]='.$eTask['id'].'" class="btn btn-outline-primary">';
 						$h .= \Asset::icon('plus-circle').' '.s("Nouveau commentaire");
 					$h .= '</a>';
@@ -2305,7 +2305,7 @@ class TaskUi {
 				if($eTask->canWrite()) {
 
 					$h .= '<div data-media="gallery" post-task="'.$eTask['id'].'">';
-						$h .= (new \media\GalleryUi())->getDropdownLinks(
+						$h .= new \media\GalleryUi()->getDropdownLinks(
 							\Asset::icon('plus-circle').' <span>'.s("Nouvelle photo").'</span>',
 							'btn-outline-primary',
 							uploadInputAttributes: ['multiple' => 'multiple']
@@ -2319,7 +2319,7 @@ class TaskUi {
 		}
 
 		if($cPhoto->notEmpty()) {
-			$h .= (new \gallery\PhotoUi())->getList($cPhoto, NULL, 4);
+			$h .= new \gallery\PhotoUi()->getList($cPhoto, NULL, 4);
 		}
 
 
@@ -3121,7 +3121,7 @@ class TaskUi {
 
 			$name = encode($eTool['name']);
 
-			[$major, $minor] = (new \farm\RoutineUi())->getSeparateFertilizer($eTool['routineValue'], ' ');
+			[$major, $minor] = new \farm\RoutineUi()->getSeparateFertilizer($eTool['routineValue'], ' ');
 
 			if($minor or $major) {
 
@@ -4548,7 +4548,7 @@ class TaskUi {
 
 		return $form->group(
 			self::p('fertilizer')->label,
-			(new \farm\RoutineUi())->getFieldFertilizer($form, 'fertilizer', $eTask['fertilizer'] ?? NULL),
+			new \farm\RoutineUi()->getFieldFertilizer($form, 'fertilizer', $eTask['fertilizer'] ?? NULL),
 			['class' => ($eTask['action']->notEmpty() and $eTask['action']['fqn'] === ACTION_FERTILISATION) ? '' : 'hide', 'wrapper' => 'fertilizer']
 		);
 
@@ -4851,7 +4851,7 @@ class TaskUi {
 						'farm' => $e['farm']['id']
 					];
 				};
-				(new \plant\PlantUi())->query($d);
+				new \plant\PlantUi()->query($d);
 				break;
 
 			case 'plantsFilter' :
@@ -4867,7 +4867,7 @@ class TaskUi {
 				$d->placeholder = s("Filtrer sur une espèce...");
 				$d->prepend ??= \Asset::icon('search');
 
-				(new \plant\PlantUi())->query($d);
+				new \plant\PlantUi()->query($d);
 				$d->group = function(Task $e) {
 					return [
 						'id' => 'task-create-plant',
@@ -4928,7 +4928,7 @@ class TaskUi {
 						'farm' => $e['farm']['id']
 					];
 				};
-				(new \farm\MethodUi())->query($d, TRUE);
+				new \farm\MethodUi()->query($d, TRUE);
 				$d->group = ['wrapper' => 'methods'];
 				break;
 
@@ -4941,7 +4941,7 @@ class TaskUi {
 						'farm' => $e['farm']['id']
 					];
 				};
-				(new \farm\ToolUi())->query($d, TRUE);
+				new \farm\ToolUi()->query($d, TRUE);
 				$d->group = ['wrapper' => 'tools'];
 				break;
 

@@ -1,9 +1,9 @@
 <?php
-(new \hr\PresencePage(function($data) {
+new \hr\PresencePage(function($data) {
 
 	$data->eFarm = \farm\FarmLib::getById(INPUT('farm'))->validate('canManage');
 
-	}))
+	})
 	->getCreateElement(function($data) {
 
 		$e = new \hr\Presence([
@@ -29,7 +29,7 @@
 		throw new BackAction('hr', 'Presence::created');
 	});
 
-(new \hr\PresencePage())
+new \hr\PresencePage()
 	->update()
 	->doUpdate(function($data) {
 		throw new BackAction('hr', 'Presence::updated');

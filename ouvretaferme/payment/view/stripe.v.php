@@ -3,7 +3,7 @@ new AdaptativeView('manage', function($data, FarmTemplate $t) {
 
 	$t->title = s("Configurer un compte Stripe pour le paiement en ligne");
 	$t->tab = 'settings';
-	$t->subNav = (new \farm\FarmUi())->getSettingsSubNav($data->eFarm);
+	$t->subNav = new \farm\FarmUi()->getSettingsSubNav($data->eFarm);
 
 	$h = '<h1>';
 		$h .= '<a href="'.\farm\FarmUi::urlSettings($data->eFarm).'"  class="h-back">'.\Asset::icon('arrow-left').'</a>';
@@ -12,7 +12,7 @@ new AdaptativeView('manage', function($data, FarmTemplate $t) {
 
 	$t->mainTitle = $h;
 
-	echo (new \payment\StripeFarmUi())->getManage($data->eFarm, $data->eStripeFarm);
+	echo new \payment\StripeFarmUi()->getManage($data->eFarm, $data->eStripeFarm);
 
 });
 

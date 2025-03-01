@@ -1,5 +1,5 @@
 <?php
-(new \selling\UnitPage())
+new \selling\UnitPage()
 	->getCreateElement(function($data) {
 
 		return new \selling\Unit([
@@ -10,7 +10,7 @@
 	->create()
 	->doCreate(fn() => throw new ReloadAction('selling', 'Unit::created'));
 
-(new \selling\UnitPage())
+new \selling\UnitPage()
 	->quick(['singular', 'plural', 'short'])
 	->update()
 	->doUpdate(fn() => throw new ReloadAction('selling', 'Unit::updated'))

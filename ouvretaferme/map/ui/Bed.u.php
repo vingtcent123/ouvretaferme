@@ -47,7 +47,7 @@ class BedUi {
 		$h .= '<div class="bed-item-wrapper">';
 
 			if($view === \farm\Farmer::PLAN) {
-				$h .= (new \series\CultivationUi())->getListGrid($eFarm, $season);
+				$h .= new \series\CultivationUi()->getListGrid($eFarm, $season);
 			}
 
 			$h .= $beds;
@@ -139,7 +139,7 @@ class BedUi {
 	protected function displayHeaderBySeason(\farm\Farm $eFarm, int $season): string {
 
 		$h = '<div class="bed-item-header bed-item-places">';
-			$h .= (new \series\CultivationUi())->getListSeason($eFarm, $season);
+			$h .= new \series\CultivationUi()->getListSeason($eFarm, $season);
 		$h .= '</div>';
 
 		return $h;
@@ -149,7 +149,7 @@ class BedUi {
 	protected function displayPlaceBySeason(\farm\Farm $eFarm, Bed $eBed, \Collection $cPlace, int $season): string {
 
 		$h = '<div class="bed-item-places">';
-			$h .= (new \series\PlaceUi())->getTimeline($eFarm, $eBed, $cPlace, $season);
+			$h .= new \series\PlaceUi()->getTimeline($eFarm, $eBed, $cPlace, $season);
 		$h .= '</div>';
 
 		return $h;
@@ -504,7 +504,7 @@ class BedUi {
 
 				$h .= $form->group(
 					s("Exploitée"),
-					(new SeasonUi)->getField($form, $eBed),
+					new SeasonUi()->getField($form, $eBed),
 					['wrapper' => 'seasonFirst seasonLast']
 				);
 
@@ -680,7 +680,7 @@ class BedUi {
 
 			$h .= $form->group(
 				s("Exploité"),
-				(new SeasonUi)->getField($form, $eBedField),
+				new SeasonUi()->getField($form, $eBedField),
 				['wrapper' => 'seasonFirst seasonLast']
 			);
 

@@ -3,16 +3,16 @@ new AdaptativeView('/commandes/particuliers', function($data, MainTemplate $t) {
 
 	$t->title = s("Mes commandes");
 
-	echo (new \selling\OrderUi())->getListForPrivate($data->cSale);
+	echo new \selling\OrderUi()->getListForPrivate($data->cSale);
 
 });
 
 new AdaptativeView('/commandes/professionnels/{farm}', function($data, MainTemplate $t) {
 
 	$t->title = s("Mes commandes");
-	$t->header = (new \selling\OrderUi())->getFarmHeader($data->eCustomer['farm'], $data->eCustomer);
+	$t->header = new \selling\OrderUi()->getFarmHeader($data->eCustomer['farm'], $data->eCustomer);
 
-	echo (new \selling\OrderUi())->getListForPro($data->eCustomer, $data->cSale);
+	echo new \selling\OrderUi()->getListForPro($data->eCustomer, $data->cSale);
 
 });
 
@@ -25,14 +25,14 @@ new AdaptativeView('/commande/{id}', function($data, MainTemplate $t) {
 		\selling\Customer::PRIVATE => '<a href="/commandes/particuliers" class="btn btn-outline-secondary">'.\Asset::icon('chevron-left').' '.s("Toutes les commandes").'</a>'
 	};
 
-	$t->header = (new \selling\OrderUi())->getFarmHeader($data->eFarm, $data->e['customer'], $back);
+	$t->header = new \selling\OrderUi()->getFarmHeader($data->eFarm, $data->e['customer'], $back);
 
-	echo (new \selling\OrderUi())->displaySale($data->e);
+	echo new \selling\OrderUi()->displaySale($data->e);
 
 	if($data->cItem->empty()) {
 		echo '<div class="util-empty">'.s("Il n'y a aucun article dans cette commande.").'</div>';
 	} else {
-		echo (new \selling\OrderUi())->getItemsBySale($data->e, $data->cItem);
+		echo new \selling\OrderUi()->getItemsBySale($data->e, $data->cItem);
 	}
 
 });

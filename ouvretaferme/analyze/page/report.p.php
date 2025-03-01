@@ -1,5 +1,5 @@
 <?php
-(new \analyze\ReportPage(function($data) {
+new \analyze\ReportPage(function($data) {
 
 		$data->season = REQUEST('season', 'int');
 
@@ -7,7 +7,7 @@
 			->validate('canAnalyze')
 			->validateSeason($data->season);
 
-	}))
+	})
 	->getCreateElement(function($data) {
 
 		return new \analyze\Report([
@@ -114,7 +114,7 @@ new Page()
 
 	});
 
-(new \analyze\ReportPage())
+new \analyze\ReportPage()
 	->applyElement(function($data, \analyze\Report $e) {
 
 		$data->eFarm = \farm\FarmLib::getById($e['farm']);

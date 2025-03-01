@@ -101,7 +101,7 @@ new Page()
 
 	});
 
-(new \farm\FarmerPage(function($data) {
+new \farm\FarmerPage(function($data) {
 
 		\user\ConnectionLib::checkLogged();
 
@@ -109,7 +109,7 @@ new Page()
 			throw new \FailAction('user\User::demo.write');
 		}
 
-	}))
+	})
 	->getCreateElement(function($data) {
 
 		return new \farm\Farmer([

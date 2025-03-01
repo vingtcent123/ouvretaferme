@@ -62,7 +62,7 @@ class PhotoLib extends PhotoCrud {
 			'task' => new \series\Task()
 		]);
 
-		$path = \storage\ImageLib::getBasePath().'/'.(new \media\GalleryUi())->getBasenameByHash($e['hash']);
+		$path = \storage\ImageLib::getBasePath().'/'.new \media\GalleryUi()->getBasenameByHash($e['hash']);
 
 		[$e['width'], $e['height']] = getimagesize($path);
 

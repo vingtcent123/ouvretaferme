@@ -1,7 +1,7 @@
 <?php
-(new \map\GreenhousePage(function($data) {
+new \map\GreenhousePage(function($data) {
 		\user\ConnectionLib::checkLogged();
-	}))
+	})
 	->getCreateElement(function($data) {
 
 		$eFarm = \farm\FarmLib::getById(INPUT('farm'));
@@ -21,7 +21,7 @@
 
 	});
 
-(new \map\GreenhousePage())
+new \map\GreenhousePage()
 	->applyElement(function($data, \map\Greenhouse $e) {
 		$e->validate('canWrite');
 	})

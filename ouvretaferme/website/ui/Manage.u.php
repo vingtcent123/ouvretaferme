@@ -175,7 +175,7 @@ class ManageUi {
 				$h .= '<dt>'.s("Icône").'</dt>';
 				$h .= '<dd>';
 					$h .= '<div>';
-						$h .= (new \media\WebsiteFaviconUi())->getCamera($eWebsite, size: '2rem');
+						$h .= new \media\WebsiteFaviconUi()->getCamera($eWebsite, size: '2rem');
 					$h .= '</div>';
 				$h .= '</dd>';
 				$h .= '<dt>'.s("Description").'</dt>';
@@ -186,7 +186,7 @@ class ManageUi {
 				$h .= '</dd>';
 				$h .= '<dt>'.s("Logo").'</dt>';
 				$h .= '<dd>';
-					$h .= (new \media\WebsiteLogoUi())->getCamera($eWebsite, size: '6rem');
+					$h .= new \media\WebsiteLogoUi()->getCamera($eWebsite, size: '6rem');
 				$h .= '</dd>';
 			$h .= '</dl>';
 		$h .= '</div>';

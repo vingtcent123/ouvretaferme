@@ -1,5 +1,5 @@
 <?php
-(new \production\SequencePage())
+new \production\SequencePage()
 	->read('/itineraire/{id}', function($data) {
 
 		\user\ConnectionLib::checkLogged();
@@ -31,11 +31,11 @@
 
 	});
 
-(new \production\SequencePage(function($data) {
+new \production\SequencePage(function($data) {
 
 		\user\ConnectionLib::checkLogged();
 
-	}))
+	})
 	->getCreateElement(function($data) {
 
 		$data->eFarm = \farm\FarmLib::getById(INPUT('farm'));
@@ -62,7 +62,7 @@
 		throw new RedirectAction(\production\SequenceUi::url($data->e).'?success=production:Sequence::created');
 	});
 
-(new \production\SequencePage())
+new \production\SequencePage()
 	->applyElement(function($data, \production\Sequence $e) {
 		$e->validate('canWrite');
 	})

@@ -59,7 +59,7 @@
 
 	});
 
-(new \selling\SalePage())
+new \selling\SalePage()
 	->applyElement(function($data, \selling\Sale $eSale) {
 		$eSale->validate('acceptUpdateItems');
 	})
@@ -79,7 +79,7 @@
 	});
 
 
-(new \selling\ItemPage())
+new \selling\ItemPage()
 	->quick(['packaging', 'number', 'unitPrice', 'vatRate', 'price', 'description'])
 	->update()
 	->doUpdate(function($data) {

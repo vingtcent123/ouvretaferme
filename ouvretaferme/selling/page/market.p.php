@@ -1,5 +1,5 @@
 <?php
-(new \selling\SalePage())
+new \selling\SalePage()
 	->read('/vente/{id}/marche', function($data) {
 
 		$data->e->checkMarketSelling();

@@ -1,5 +1,5 @@
 <?php
-(new \selling\ProductPage())
+new \selling\ProductPage()
 	->getCreateElement(function($data) {
 
 		$data->eFarm = \farm\FarmLib::getById(INPUT('farm'));
@@ -24,7 +24,7 @@
 		throw new RedirectAction(\selling\ProductUi::url($data->e).'?category='.$category.'&success=selling:Product::created');
 	});
 
-(new \selling\ProductPage())
+new \selling\ProductPage()
 	->applyElement(function($data, \selling\Product $eProduct) {
 
 		$eProduct['cCategory'] = \selling\CategoryLib::getByFarm($eProduct['farm']);
@@ -34,7 +34,7 @@
 	->update(fn($data) => throw new ViewAction($data))
 	->doUpdate(fn() => throw new ReloadAction('selling', 'Product::updated'));
 
-(new \selling\ProductPage())
+new \selling\ProductPage()
 	->read('/produit/{id}', function($data) {
 
 		if($data->e['category']->notEmpty()) {
@@ -122,7 +122,7 @@
 	->doUpdateProperties('doUpdateStatus', ['status'], fn($data) => throw new ViewAction($data))
 	->doDelete(fn($data) => throw new RedirectAction(\farm\FarmUi::urlSellingProduct($data->e['farm']).'?success=selling:Product::deleted'));
 
-(new \selling\ProductPage())
+new \selling\ProductPage()
 	->applyCollection(function($data, Collection $c) {
 		$c->validateProperty('farm', $c->first()['farm']);
 	})

@@ -1,9 +1,9 @@
 <?php
-(new \farm\CategoryPage(function($data) {
+new \farm\CategoryPage(function($data) {
 
 		\user\ConnectionLib::checkLogged();
 
-	}))
+	})
 	->getCreateElement(function($data) {
 
 		$data->eFarm = \farm\FarmLib::getById(INPUT('farm'));
@@ -16,7 +16,7 @@
 	->create()
 	->doCreate(fn($data) => throw new ViewAction($data));
 
-(new \farm\CategoryPage())
+new \farm\CategoryPage()
 	->update()
 	->doUpdate(fn($data) => throw new ViewAction($data))
 	->write('doIncrementPosition', function($data) {

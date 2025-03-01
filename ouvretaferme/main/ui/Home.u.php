@@ -14,15 +14,15 @@ class HomeUi {
 		$h = '';
 
 		if($cFarm->empty()) {
-			if((new \farm\Farm())->canCreate()) {
-				$h .= (new \farm\FarmerUi())->getNoFarms();
+			if(new \farm\Farm()->canCreate()) {
+				$h .= new \farm\FarmerUi()->getNoFarms();
 			} else {
 				$h .= '';
 			}
 		} else {
 
 			$h .= '<h2>'.($cFarm->count() === 1 ? s("Ma ferme") : s("Mes fermes")).'</h2>';
-			$h .= (new \farm\FarmerUi())->getMyFarms($cFarm);
+			$h .= new \farm\FarmerUi()->getMyFarms($cFarm);
 
 		}
 

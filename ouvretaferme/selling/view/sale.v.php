@@ -4,22 +4,22 @@ new AdaptativeView('/vente/{id}', function($data, FarmTemplate $t) {
 	$t->title = \selling\SaleUi::getName($data->e);
 
 	$t->tab = 'selling';
-	$t->subNav = (new \farm\FarmUi())->getSellingSubNav($data->eFarm);
+	$t->subNav = new \farm\FarmUi()->getSellingSubNav($data->eFarm);
 
-	$t->mainTitle = (new \selling\SaleUi())->getHeader($data->e);
+	$t->mainTitle = new \selling\SaleUi()->getHeader($data->e);
 
-	echo (new \selling\SaleUi())->getRelativeSales($data->e, $data->relativeSales);
+	echo new \selling\SaleUi()->getRelativeSales($data->e, $data->relativeSales);
 
-	echo (new \selling\SaleUi())->getContent($data->e, $data->cPdf);
+	echo new \selling\SaleUi()->getContent($data->e, $data->cPdf);
 
-	echo (new \selling\ItemUi())->getBySale($data->e, $data->cItem);
-	echo (new \selling\SaleUi())->getMarket($data->eFarm, $data->ccSaleMarket);
-	echo (new \selling\SaleUi())->getHistory($data->e, $data->cHistory);
+	echo new \selling\ItemUi()->getBySale($data->e, $data->cItem);
+	echo new \selling\SaleUi()->getMarket($data->eFarm, $data->ccSaleMarket);
+	echo new \selling\SaleUi()->getHistory($data->e, $data->cHistory);
 
 });
 
 new AdaptativeView('generateOrderForm', function($data, PanelTemplate $t) {
-	return (new \selling\PdfUi())->createOrderForm($data->e, $data->ePdf);
+	return new \selling\PdfUi()->createOrderForm($data->e, $data->ePdf);
 });
 
 new AdaptativeView('doGenerateDocument', function($data, AjaxTemplate $t) {
@@ -40,23 +40,23 @@ new AdaptativeView('doGenerateDocument', function($data, AjaxTemplate $t) {
 });
 
 new AdaptativeView('create', function($data, PanelTemplate $t) {
-	return (new \selling\SaleUi())->create($data->e);
+	return new \selling\SaleUi()->create($data->e);
 });
 
 new AdaptativeView('update', function($data, PanelTemplate $t) {
-	return (new \selling\SaleUi())->update($data->e);
+	return new \selling\SaleUi()->update($data->e);
 });
 
 new AdaptativeView('duplicate', function($data, PanelTemplate $t) {
-	return (new \selling\SaleUi())->duplicate($data->e);
+	return new \selling\SaleUi()->duplicate($data->e);
 });
 
 new AdaptativeView('updateShop', function($data, PanelTemplate $t) {
-	return (new \selling\SaleUi())->updateShop($data->e);
+	return new \selling\SaleUi()->updateShop($data->e);
 });
 
 new AdaptativeView('updateCustomer', function($data, PanelTemplate $t) {
-	return (new \selling\SaleUi())->updateCustomer($data->e);
+	return new \selling\SaleUi()->updateCustomer($data->e);
 });
 
 new JsonView('doUpdatePreparationStatus', function($data, AjaxTemplate $t) {
@@ -71,7 +71,7 @@ new JsonView('doUpdatePreparationStatus', function($data, AjaxTemplate $t) {
 
 new HtmlView('getExport', function($data, PdfTemplate $t) {
 
-	echo (new \selling\PdfUi())->getSales($data->eFarm, $data->c, $data->cItem);
+	echo new \selling\PdfUi()->getSales($data->eFarm, $data->c, $data->cItem);
 
 });
 ?>

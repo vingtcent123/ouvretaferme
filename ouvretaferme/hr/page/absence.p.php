@@ -1,9 +1,9 @@
 <?php
-(new \hr\AbsencePage(function($data) {
+new \hr\AbsencePage(function($data) {
 
 		$data->eFarm = \farm\FarmLib::getById(INPUT('farm'))->validate('canManage');
 
-	}))
+	})
 	->getCreateElement(function($data) {
 
 		$e = new \hr\Absence([
@@ -29,7 +29,7 @@
 		throw new BackAction('hr', 'Absence::created');
 	});
 
-(new \hr\AbsencePage())
+new \hr\AbsencePage()
 	->update()
 	->doUpdate(function($data) {
 		throw new BackAction('hr', 'Absence::updated');

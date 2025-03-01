@@ -38,7 +38,7 @@ new Page()
 
 	});
 
-(new \selling\InvoicePage())
+new \selling\InvoicePage()
 	->read('getDocumentInvoice', function($data) {
 
 		$data->eFarm = \farm\FarmLib::getById($data->e['farm']);

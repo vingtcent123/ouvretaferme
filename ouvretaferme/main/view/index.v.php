@@ -39,7 +39,7 @@ new AdaptativeView('anonymous', function($data, MainTemplate $t) {
 
 	echo '</div>';
 
-	echo (new \main\HomeUi())->getTraining();
+	echo new \main\HomeUi()->getTraining();
 
 	echo '<h2>'.s("La philosophie du projet 👩‍🌾").'</h2>';
 
@@ -47,7 +47,7 @@ new AdaptativeView('anonymous', function($data, MainTemplate $t) {
 		echo s("Le logiciel {siteName} a été créé pour combler l'absence d'un logiciel libre, gratuit et intuitif destiné aux producteurs maraîchers. Conçu pour simplifier l'organisation du travail à la ferme, ce logiciel complet accompagne les producteurs agricoles, du plan de culture à la vente de leurs produits. Notre mission : fournir aux agriculteurs biologiques les outils nécessaires pour gérer efficacement leur exploitation maraîchère et atteindre les objectifs de leur ferme.");
 	echo '</div>';
 
-	echo (new \main\HomeUi())->getPoints();
+	echo new \main\HomeUi()->getPoints();
 
 });
 
@@ -63,24 +63,24 @@ new AdaptativeView('logged', function($data, MainTemplate $t) {
 		$t->header .= '<div class="util-info">'.s("Vous êtes connecté sur l'espace client qui vous relie à tous les producteurs auxquels vous avez l'habitude de commander sur {value}.", '<a href="'.Lime::getUrl().'">'.s("{siteName}").'</a>').'</div>';
 
 		if($data->cCustomerPrivate->notEmpty()) {
-			$t->header .= (new \selling\OrderUi())->getPrivate($data->cCustomerPrivate);
+			$t->header .= new \selling\OrderUi()->getPrivate($data->cCustomerPrivate);
 		}
 
 	}
 
 	if(Privilege::can('farm\access')) {
 
-		echo (new \main\HomeUi())->getFarms($data->cFarmUser);
+		echo new \main\HomeUi()->getFarms($data->cFarmUser);
 
-		echo (new \main\HomeUi())->getTraining();
+		echo new \main\HomeUi()->getTraining();
 
 		if($data->cFarmUser->notEmpty()) {
-			echo (new \main\HomeUi())->getBlog($data->eNews, TRUE);
+			echo new \main\HomeUi()->getBlog($data->eNews, TRUE);
 		}
 
 	}
 
-	echo (new \selling\CustomerUi())->getHome($data->cCustomerPro, $data->cShop, $data->cSale);
+	echo new \selling\CustomerUi()->getHome($data->cCustomerPro, $data->cShop, $data->cSale);
 
 });
 
@@ -103,12 +103,12 @@ new AdaptativeView('signUp', function($data, MainTemplate $t) {
 	$t->header .= '<h1>'.s("Je m'inscris sur {siteName} !").'</h1>';
 	$t->header .= '<div class="home-user-types">';
 		if($data->chooseRole) {
-			$t->header .= (new \main\HomeUi())->getCustomer($data->eRole);
-			$t->header .= (new \main\HomeUi())->getFarmer($data->eRole);
+			$t->header .= new \main\HomeUi()->getCustomer($data->eRole);
+			$t->header .= new \main\HomeUi()->getFarmer($data->eRole);
 		} else {
 			$t->header .= match($data->eRole['fqn']) {
-				'customer' => (new \main\HomeUi())->getCustomer($data->eRole),
-				'farmer' => (new \main\HomeUi())->getFarmer($data->eRole)
+				'customer' => new \main\HomeUi()->getCustomer($data->eRole),
+				'farmer' => new \main\HomeUi()->getFarmer($data->eRole)
 			};
 		}
 	$t->header .= '</div>';
@@ -121,7 +121,7 @@ new AdaptativeView('signUp', function($data, MainTemplate $t) {
 			echo '<div class="util-info">'.s("Renseignez quelques informations qui vous permettront ensuite de vous connecter sur {siteName}. Vous pourrez créer votre ferme ou rejoindre une ferme existante juste après cette étape !").'</div>';
 		}
 
-		echo (new \user\UserUi())->signUp($data->eUserOnline, $data->eRole, REQUEST('redirect'));
+		echo new \user\UserUi()->signUp($data->eUserOnline, $data->eRole, REQUEST('redirect'));
 	}
 
 
@@ -211,7 +211,7 @@ new AdaptativeView('/presentation/producteur', function($data, MainTemplate $t) 
 	echo '<br/>';
 	echo '<br/>';
 
-	echo (new \main\HomeUi())->getPoints();
+	echo new \main\HomeUi()->getPoints();
 
 	echo '<h2>'.s("Principe de gratuité").'</h2>';
 
@@ -306,7 +306,7 @@ new AdaptativeView('/presentation/service', function($data, MainTemplate $t) {
 
 	$t->header = '<h1>'.s("Conditions d'utilisation du service").'</h1>';
 
-	echo (new \main\LegalUi())->tos();
+	echo new \main\LegalUi()->tos();
 
 });
 
@@ -322,7 +322,7 @@ new AdaptativeView('/presentation/faq', function($data, MainTemplate $t) {
 
 	$t->header = '<h1>'.s("Foire aux questions").'</h1>';
 
-	echo (new \main\LegalUi())->faq();
+	echo new \main\LegalUi()->faq();
 
 });
 ?>

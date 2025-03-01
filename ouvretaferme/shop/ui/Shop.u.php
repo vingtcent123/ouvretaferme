@@ -98,7 +98,7 @@ class ShopUi {
 
 		$h .= $form->group(
 			self::p('logo')->label,
-			(new \media\ShopLogoUi())->getCamera($eShop, size: '20rem')
+			new \media\ShopLogoUi()->getCamera($eShop, size: '20rem')
 		);
 
 		$h .= '<br/>';
@@ -299,7 +299,7 @@ class ShopUi {
 			$eSaleExample['shopPoint'] = $eSaleExample['shopPoints'][Point::PLACE];
 
 			[$title, , $html] = new MailUi()->getSaleConfirmed($eSaleExample, $eSaleExample['cItem'], $cCustomize[\mail\Customize::SHOP_CONFIRMED_PLACE]['template'] ?? NULL);
-			$h .= (new \mail\CustomizeUi())->getMailExample($title, $html);
+			$h .= new \mail\CustomizeUi()->getMailExample($title, $html);
 
 			$h .= '<div class="util-title">';
 				$h .= '<h3>'.s("Confirmation de commande livrée à domicile").'</h3>';
@@ -309,7 +309,7 @@ class ShopUi {
 			$eSaleExample['shopPoint'] = $eSaleExample['shopPoints'][Point::HOME];
 
 			[$title, , $html] = new MailUi()->getSaleConfirmed($eSaleExample, $eSaleExample['cItem'], $cCustomize[\mail\Customize::SHOP_CONFIRMED_HOME]['template'] ?? NULL);
-			$h .= (new \mail\CustomizeUi())->getMailExample($title, $html);
+			$h .= new \mail\CustomizeUi()->getMailExample($title, $html);
 
 		$h .= '</div>';
 		$h .= '<div style="'.($eShop['hasPoint'] ? 'opacity: 0.33' : '').'">';
@@ -322,7 +322,7 @@ class ShopUi {
 			$eSaleExample['shopPoint'] = new Point();
 
 			[$title, , $html] = new MailUi()->getSaleConfirmed($eSaleExample, $eSaleExample['cItem'], $cCustomize[\mail\Customize::SHOP_CONFIRMED_NONE]['template'] ?? NULL);
-			$h .= (new \mail\CustomizeUi())->getMailExample($title, $html);
+			$h .= new \mail\CustomizeUi()->getMailExample($title, $html);
 
 		$h .= '</div>';
 
@@ -333,7 +333,7 @@ class ShopUi {
 		$h .= '</div>';
 
 		[$title, , $html] = new MailUi()->getSaleCanceled($eSaleExample);
-		$h .= (new \mail\CustomizeUi())->getMailExample($title, $html);
+		$h .= new \mail\CustomizeUi()->getMailExample($title, $html);
 
 		if($eSaleExample['paymentMethod'] === \selling\Sale::ONLINE_CARD) {
 
@@ -343,7 +343,7 @@ class ShopUi {
 			$h .= '</div>';
 
 			[$title, , $html] = new MailUi()->getCardSaleFailed($eSaleExample, test: TRUE);
-			$h .= (new \mail\CustomizeUi())->getMailExample($title, $html);
+			$h .= new \mail\CustomizeUi()->getMailExample($title, $html);
 
 		}
 
@@ -432,7 +432,7 @@ class ShopUi {
 				$h .= '<p>'.s("En copiant le morceau de code ci-dessus sur une page de votre site, voici quel sera le rendu :").'</p>';
 				$h .= '<br/>';
 				$h .= '<div style="max-width: 40rem">';
-					$h .= (new \website\WidgetUi())->getShop($eShop, $eDate);
+					$h .= new \website\WidgetUi()->getShop($eShop, $eDate);
 				$h .= '</div>';
 
 			}
@@ -582,7 +582,7 @@ class ShopUi {
 
 				if($eShop['description'] !== NULL) {
 					$h .= '<div class="shop-header-description">';
-						$h .= (new \editor\EditorUi())->value($eShop['description']);
+						$h .= new \editor\EditorUi()->value($eShop['description']);
 						if(substr_count($eShop['description'], '<p>') + substr_count($eShop['description'], '<ul>') > 1) {
 							$h .= '<div class="shop-header-description-full-link">';
 								$h .= '<a '.attr('onclick', 'this.parentElement.parentElement.classList.add("shop-header-description-full")').'>'.\Asset::icon('chevron-right').' '.s("Lire la suite").'</a>';
@@ -614,7 +614,7 @@ class ShopUi {
 
 		if($cDate->count() > 1) {
 			$h .= '<div class="shop-header-flow">';
-				$h .= (new \shop\DateUi())->getDeliveryPeriods($eShop, $cDate, $eDateSelected);
+				$h .= new \shop\DateUi()->getDeliveryPeriods($eShop, $cDate, $eDateSelected);
 			$h .= '</div>';
 		}
 
@@ -627,10 +627,10 @@ class ShopUi {
 		$h = '<div class="shop-header-date">';
 
 			$h .= '<div class="shop-header-block">';
-				$h .= (new \shop\DateUi())->getDeliveryPeriod($eDate, $for);
+				$h .= new \shop\DateUi()->getDeliveryPeriod($eDate, $for);
 			$h .= '</div>';
 			$h .= '<div class="shop-header-block shop-header-period">';
-				$h .= '<div>'.(new \shop\DateUi())->getOrderPeriod($eDate).'</div>';
+				$h .= '<div>'.new \shop\DateUi()->getOrderPeriod($eDate).'</div>';
 			$h .= '</div>';
 
 		$h .= '</div>';
@@ -902,7 +902,7 @@ class ShopUi {
 						'farm' => $e['farm']['id'],
 					];
 				};
-				(new \selling\CustomerUi())->query($d, TRUE);
+				new \selling\CustomerUi()->query($d, TRUE);
 				$d->group = ['wrapper' => 'limitCustomers'];
 				break;
 

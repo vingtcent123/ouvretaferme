@@ -1,10 +1,10 @@
 <?php
 new AdaptativeView('index', function($data, PanelTemplate $t) {
-	return (new \plant\VarietyUi())->displayByPlant($data->e, $data->ePlant, $data->cVariety, $data->cSupplier);
+	return new \plant\VarietyUi()->displayByPlant($data->e, $data->ePlant, $data->cVariety, $data->cSupplier);
 });
 
 new AdaptativeView('create', function($data, PanelTemplate $t) {
-	return (new \plant\VarietyUi())->create($data->eFarm, $data->ePlant, $data->cSupplier);
+	return new \plant\VarietyUi()->create($data->eFarm, $data->ePlant, $data->cSupplier);
 });
 
 new JsonView('doCreate', function($data, AjaxTemplate $t) {
@@ -20,7 +20,7 @@ new JsonView('doCreate', function($data, AjaxTemplate $t) {
 });
 
 new AdaptativeView('update', function($data, PanelTemplate $t) {
-	return (new \plant\VarietyUi())->update($data->e);
+	return new \plant\VarietyUi()->update($data->e);
 });
 
 new JsonView('doUpdate', function($data, AjaxTemplate $t) {

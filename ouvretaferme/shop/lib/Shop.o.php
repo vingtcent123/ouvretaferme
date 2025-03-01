@@ -16,7 +16,7 @@ class ShopObserverLib {
 		$eConfiguration = \selling\ConfigurationLib::getByFarm($eSale['farm']);
 		$replyTo = $eSale['shop']['email'] ?? $eConfiguration['legalEmail'];
 
-		(new \mail\MailLib())
+		new \mail\MailLib()
 			->setReplyTo($replyTo)
 			->setFromName($eSale['farm']['name'])
 			->addTo($eUser['email'])
@@ -38,7 +38,7 @@ class ShopObserverLib {
 		$eConfiguration = \selling\ConfigurationLib::getByFarm($eSale['farm']);
 		$replyTo = $eSale['shop']['email'] ?? $eConfiguration['legalEmail'];
 
-		(new \mail\MailLib())
+		new \mail\MailLib()
 			->setReplyTo($replyTo)
 			->setFromName($eSale['farm']['name'])
 			->addTo($eUser['email'])
@@ -62,7 +62,7 @@ class ShopObserverLib {
 		$eConfiguration = \selling\ConfigurationLib::getByFarm($eSale['farm']);
 		$replyTo = $eSale['shop']['email'] ?? $eConfiguration['legalEmail'];
 
-		(new \mail\MailLib())
+		new \mail\MailLib()
 			->setReplyTo($replyTo)
 			->setFromName($eSale['farm']['name'])
 			->addTo($eUser['email'])
@@ -96,7 +96,7 @@ class ShopObserverLib {
 		switch($eSale['paymentMethod']) {
 
 			case \selling\Sale::ONLINE_CARD :
-				(new \mail\MailLib())
+				new \mail\MailLib()
 					->setReplyTo($replyTo)
 					->setFromName($eSale['farm']['name'])
 					->addTo($eUser['email'])
@@ -121,7 +121,7 @@ class ShopObserverLib {
 		$eConfiguration = \selling\ConfigurationLib::getByFarm($eSale['farm']);
 		$replyTo = $eSale['shop']['email'] ?? $eConfiguration['legalEmail'];
 
-		(new \mail\MailLib())
+		new \mail\MailLib()
 			->setReplyTo($replyTo)
 			->setFromName($eSale['farm']['name'])
 			->addTo($eUser['email'])

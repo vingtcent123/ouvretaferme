@@ -75,7 +75,7 @@ class ToolUi {
 		$style = 'border-radius: var(--radius); ';
 
 		if($eTool['vignette'] === NULL) {
-			$style .= 'background-color: var(--background-light); color: var(--muted); font-size: '.(new \media\ToolVignetteUi())->getFactorSize(str_ends_with($width, '%') ? $height : $width, 0.45);
+			$style .= 'background-color: var(--background-light); color: var(--muted); font-size: '.new \media\ToolVignetteUi()->getFactorSize(str_ends_with($width, '%') ? $height : $width, 0.45);
 			$content = \Asset::icon('tools');
 		} else {
 
@@ -238,7 +238,7 @@ class ToolUi {
 
 							$h .= '<tr>';
 								$h .= '<td class="util-manage-vignette">';
-									$h .= (new \media\ToolVignetteUi())->getCamera($eTool, width: '4.8rem', height: '3.6rem');
+									$h .= new \media\ToolVignetteUi()->getCamera($eTool, width: '4.8rem', height: '3.6rem');
 								$h .= '</td>';
 								$h .= '<td>';
 									$h .= ToolUi::link($eTool);

@@ -1,5 +1,5 @@
 <?php
-(new \series\TaskPage())
+new \series\TaskPage()
 	->getCreateElement(function($data) {
 
 		$data->eFarm = \farm\FarmLib::getById(INPUT('farm'))->validate();
@@ -328,7 +328,7 @@ new Page()
 
 	});
 
-(new \series\TaskPage())
+new \series\TaskPage()
 	->read('/tache/{id}', function($data) {
 
 		$data->eFarm = $data->e['farm'];
@@ -646,7 +646,7 @@ new Page()
 
 	});
 
-(new \series\TaskPage())
+new \series\TaskPage()
 	->read('getStockField', function($data) {
 
 		$data->e['harvestUnit'] = \series\Task::POST('harvestUnit', 'harvestUnit', fn() => throw new NotExpectedAction('Invalid unit'));

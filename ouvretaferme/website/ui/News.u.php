@@ -17,7 +17,7 @@ class NewsUi {
 				$h .= '<div class="website-news-anchor" id="news-'.$eNews['id'].'"></div>';
 				$h .= '<h2 class="website-news-title">'.encode($eNews['title'] ).'</h2>';
 				$h .= '<div class="website-news-date">'.\util\DateUi::textual($eNews['publishedAt'], \util\DateUi::DATE).'</div>';
-				$h .= (new \editor\EditorUi())->value($eNews['content']);
+				$h .= new \editor\EditorUi()->value($eNews['content']);
 			$h .= '</div>';
 
 		}

@@ -1,5 +1,5 @@
 <?php
-(new \selling\SalePage())
+new \selling\SalePage()
 	->getCreateElement(function($data) {
 
 		$data->eFarm = \farm\FarmLib::getById(INPUT('farm'));
@@ -57,7 +57,7 @@
 		);
 	});
 
-(new \selling\SalePage())
+new \selling\SalePage()
 	->read('/vente/{id}', function($data) {
 
 		$data->eFarm = \farm\FarmLib::getById($data->e['farm']);
@@ -379,10 +379,10 @@
 
 	});
 
-(new \selling\PdfPage())
+new \selling\PdfPage()
 	->doDelete(fn($data) => throw new ReloadAction('selling', 'Pdf::deleted'), page: 'doDeleteDocument');
 
-(new \farm\FarmPage())
+new \farm\FarmPage()
 	->write('downloadLabels', function($data) {
 
 		if(POST('checkSales', 'bool')) {

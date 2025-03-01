@@ -220,7 +220,7 @@ class CultivationUi {
 							$cultivations .= '<a href="/serie/'.$eSeries['id'].'" class="series-item-planning-details '.($viewField === \farm\Farmer::VARIETY ? 'series-item-planning-details-with-variety' : '').'">';
 								$cultivations .= $this->getSeriesForDisplay($eSeries, $eCultivation, tag: 'span');
 								if($viewField === \farm\Farmer::VARIETY) {
-									$cultivations .= '<span class="series-item-planning-details-variety">'.(new \production\SliceUi())->getLine($eCultivation, $eCultivation['cSlice']).'</span>';
+									$cultivations .= '<span class="series-item-planning-details-variety">'.new \production\SliceUi()->getLine($eCultivation, $eCultivation['cSlice']).'</span>';
 								}
 							$cultivations .= '</a>';
 
@@ -1063,7 +1063,7 @@ class CultivationUi {
 						$cultivations .= '<div class="series-item series-item-working-time series-item-status-'.$eCultivation['series']['status'].'" id="series-item-'.$eCultivation['id'].'">';
 							$cultivations .= '<div class="series-item-planning-details">';
 								$cultivations .= $this->getSeriesForDisplay($eCultivation['series'], $eCultivation);
-								$cultivations .= '<span class="series-item-planning-details-variety">'.(new \production\SliceUi())->getLine($eCultivation, $eCultivation['cSlice']).'</span>';
+								$cultivations .= '<span class="series-item-planning-details-variety">'.new \production\SliceUi()->getLine($eCultivation, $eCultivation['cSlice']).'</span>';
 							$cultivations .= '</div>';
 							$cultivations .= '<div class="text-end">';
 								if($eCultivation['area'] !== NULL) {
@@ -1217,7 +1217,7 @@ class CultivationUi {
 
 									if($position === 1) {
 										$cultivations .= $this->getSeriesForDisplay($eCultivation['series'], $eCultivation);
-										$cultivations .= '<span class="series-item-planning-details-variety">'.(new \production\SliceUi())->getLine($eCultivation, $eCultivation['cSlice']).'</span>';
+										$cultivations .= '<span class="series-item-planning-details-variety">'.new \production\SliceUi()->getLine($eCultivation, $eCultivation['cSlice']).'</span>';
 									}
 
 								$cultivations .= '</div>';
@@ -1894,7 +1894,7 @@ class CultivationUi {
 
 			$h .= '</div>';
 
-			$h .= (new \production\CropUi())->getVarieties($eCultivation, $eCultivation['cSlice']);
+			$h .= new \production\CropUi()->getVarieties($eCultivation, $eCultivation['cSlice']);
 
 		$h .= '</div>';
 
@@ -2452,8 +2452,8 @@ class CultivationUi {
 
 		$h = '<div class="cultivation-write">';
 
-			$h .= (new \production\CropUi())->getVarietyGroup($form, $eCultivation, $eCultivation['ccVariety'], $eCultivation['cSlice'], $suffix);
-			$h .= (new \production\CropUi())->getDistanceField($form, $eCultivation, $use, $suffix);
+			$h .= new \production\CropUi()->getVarietyGroup($form, $eCultivation, $eCultivation['ccVariety'], $eCultivation['cSlice'], $suffix);
+			$h .= new \production\CropUi()->getDistanceField($form, $eCultivation, $use, $suffix);
 
 			$h .= $form->dynamicGroup($eCultivation, 'seedling'.$suffix);
 			$h .= $form->dynamicGroup($eCultivation, 'seedlingSeeds'.$suffix);
@@ -2496,8 +2496,8 @@ class CultivationUi {
 					];
 				});
 
-				$h .= (new \production\CropUi())->getVarietyGroup($form, $eCultivation, $eCultivation['ccVariety'], $eCultivation['cSlice']);
-				$h .= (new \production\CropUi())->getDistanceField($form, $eCultivation, $eCultivation['series']['use']);
+				$h .= new \production\CropUi()->getVarietyGroup($form, $eCultivation, $eCultivation['ccVariety'], $eCultivation['cSlice']);
+				$h .= new \production\CropUi()->getDistanceField($form, $eCultivation, $eCultivation['series']['use']);
 
 				$h .= $form->dynamicGroup($eCultivation, 'seedling');
 				$h .= $form->dynamicGroup($eCultivation, 'seedlingSeeds');
@@ -2667,11 +2667,11 @@ class CultivationUi {
 						'new' => TRUE
 					];
 				};
-				(new \plant\PlantUi())->query($d);
+				new \plant\PlantUi()->query($d);
 				break;
 
 			case 'sequence' :
-				(new \production\SequenceUi())->query($d);
+				new \production\SequenceUi()->query($d);
 				break;
 
 			case 'seedling' :

@@ -1,11 +1,11 @@
 <?php
-(new \map\ZonePage(function($data) {
+new \map\ZonePage(function($data) {
 
 		\user\ConnectionLib::checkLogged();
 
 		$data->season = \map\SeasonLib::getOnline(INPUT('season'));
 
-	}))
+	})
 	->getCreateElement(function($data) {
 
 		$data->eFarm = \farm\FarmLib::getById(INPUT('farm'));
@@ -27,13 +27,13 @@
 		throw new RedirectAction(\farm\FarmUi::urlCartography($data->e['farm'], $data->season).'?zone='.$data->e['id'].'&success=map:Zone::created');
 	});
 
-(new \map\ZonePage(function($data) {
+new \map\ZonePage(function($data) {
 
 		\user\ConnectionLib::checkLogged();
 
 		$data->season = \map\SeasonLib::getOnline(INPUT('season'));
 
-	}))
+	})
 	->read('getCartography', function($data) {
 
 		$data->e->validate('canRead');
@@ -51,13 +51,13 @@
 
 	});
 
-(new \map\ZonePage(function($data) {
+new \map\ZonePage(function($data) {
 
 		\user\ConnectionLib::checkLogged();
 
 		$data->season = \map\SeasonLib::getOnline(INPUT('season'));
 
-	}))
+	})
 	->applyElement(function($data, \map\Zone $e) {
 
 		$e->validate('canWrite');

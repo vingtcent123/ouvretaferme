@@ -1,5 +1,5 @@
 <?php
-(new \farm\FarmPage())
+new \farm\FarmPage()
 	->read(['/ferme/{id}/especes', '/ferme/{id}/especes/{status}'], function($data) {
 
 		\farm\FarmerLib::register($data->e);
@@ -36,7 +36,7 @@
 
 	}, validate: ['canWrite']);
 
-(new \plant\PlantPage())
+new \plant\PlantPage()
 	->applyElement(function($data, \plant\Plant $e) {
 
 		$e->validate('canRead');
@@ -112,11 +112,11 @@
 
 	});
 
-(new \plant\PlantPage(function($data) {
+new \plant\PlantPage(function($data) {
 
 		\user\ConnectionLib::checkLogged();
 
-	}))
+	})
 	->getCreateElement(function($data) {
 
 		$data->eFarm = \farm\FarmLib::getById(INPUT('farm'));
@@ -135,11 +135,11 @@
 	})
 	->doCreate(fn($data) => throw new ViewAction($data));
 
-(new \plant\PlantPage(function($data) {
+new \plant\PlantPage(function($data) {
 
 		\user\ConnectionLib::checkLogged();
 
-	}))
+	})
 	->applyElement(function($data, \plant\Plant $e) {
 
 		$e->validate('canWrite');
