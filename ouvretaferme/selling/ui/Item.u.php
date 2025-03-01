@@ -335,7 +335,7 @@ class ItemUi {
 
 							if($eItem['productComposition']) {
 
-								if($eItem['saleComposition']->empty()) {
+								if($eItem['cItemIngredient']->empty()) {
 
 									$h .= '<tr class="item-item-composition">';
 										$h .= '<td></td>';
@@ -344,7 +344,7 @@ class ItemUi {
 
 								} else {
 
-									foreach($eItem['saleComposition']['cItem'] as $eItemIngredient) {
+									foreach($eItem['cItemIngredient'] as $eItemIngredient) {
 
 										$h .= '<tr class="item-item-composition">';
 											$h .= '<td></td>';

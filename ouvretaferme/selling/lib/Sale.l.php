@@ -776,6 +776,8 @@ class SaleLib extends SaleCrud {
 
 		if($updatePreparationStatus) {
 
+			self::updateIngredients($e);
+
 			if($e['marketParent']->notEmpty()) {
 				MarketLib::updateSaleMarket($e['marketParent']);
 			}
@@ -899,7 +901,7 @@ class SaleLib extends SaleCrud {
 			->whereSale($e)
 			->whereIngredientOf(NULL, if: $withIngredients === FALSE)
 			->sort([
-				new \Sql('ingredientOf IS NULL'),
+				new \Sql('ingredientOf IS NOT NULL'),
 				'name' => SORT_ASC,
 				'id' => SORT_ASC
 			])
@@ -924,7 +926,7 @@ class SaleLib extends SaleCrud {
 
 		if($isDelivered) {
 
-			$cItemIngredients = new \Collection();
+			$cItemIngredient = new \Collection();
 			$cItemMain = new \Collection();
 
 			foreach($cItem as $key => $eItem) {
@@ -935,13 +937,13 @@ class SaleLib extends SaleCrud {
 
 					if($eItem['productComposition']) {
 
-						$cItemIngredients[$eItem['id']] = new \Collection();
-						$cItemMain[$key]['cItemIngredient'] = $cItemIngredients[$eItem['id']];
+						$cItemIngredient[$eItem['id']] = new \Collection();
+						$cItemMain[$key]['cItemIngredient'] = $cItemIngredient[$eItem['id']];
 
 					}
 
 				} else {
-					$cItemIngredients[$eItem['ingredientOf']['id']][] = $eItem;
+					$cItemIngredient[$eItem['ingredientOf']['id']][] = $eItem;
 				}
 
 			}
@@ -956,27 +958,99 @@ class SaleLib extends SaleCrud {
 
 			Item::model()
 				->select([
-					'saleComposition' => Sale::model()
-						->select([
-							'id',
-							'cItem' => new ItemModel()
-								->select(Item::getSelection())
-								->sort([
-									'name' => SORT_ASC,
-									'id' => SORT_ASC
-								])
-								->delegateCollection('sale')
-						])
-						->whereDeliveredAt('<=', $deliveredAt)
-						->or(
-							fn() => $this->whereCompositionEndAt(NULL),
-							fn() => $this->whereCompositionEndAt('>=', $deliveredAt)
-						)
-						->delegateElement('compositionOf', propertyParent: 'product')
+					'cItemIngredient' => self::delegateIngredients($deliveredAt)
 				])
 				->get($cItemComposition);
 
 			return $cItem;
+
+		}
+
+	}
+
+	public static function delegateIngredients(string $deliveredAt) {
+
+		return Sale::model()
+			->select([
+				'id',
+				'cItem' => new ItemModel()
+					->select(Item::getSelection())
+					->sort([
+						'name' => SORT_ASC,
+						'id' => SORT_ASC
+					])
+					->delegateCollection('sale')
+			])
+			->whereDeliveredAt('<=', $deliveredAt)
+			->or(
+				fn() => $this->whereCompositionEndAt(NULL),
+				fn() => $this->whereCompositionEndAt('>=', $deliveredAt)
+			)
+			->delegateProperty('compositionOf', 'cItem', propertyParent: 'product');
+
+	}
+
+	public static function updateIngredients(Sale $e): void {
+
+		Item::model()
+			->whereSale($e)
+			->whereIngredientOf('!=', NULL)
+			->delete();
+
+		if($e['preparationStatus'] === Sale::DELIVERED) {
+
+			$cItemComposition = Item::model()
+				->select(ItemElement::getSelection() + [
+					'cItemIngredient' => self::delegateIngredients($e['deliveredAt'])
+				])
+				->whereSale($e)
+				->whereProductComposition(TRUE)
+				->getCollection();
+
+			$cItemIngredient = new \Collection();
+
+			foreach($cItemComposition as $eItemComposition) {
+
+				if($eItemComposition['cItemIngredient']->empty()) {
+					continue;
+				}
+
+				$price = $eItemComposition['price'];
+				$ingredientsPrice = $eItemComposition['cItemIngredient']->sum('price');
+
+				$ratio = $price / $ingredientsPrice;
+
+				$cItemCopy = $eItemComposition['cItemIngredient'];
+
+				foreach($cItemCopy as $eItemCopy) {
+
+					$eItemIngredient = (clone $eItemComposition);
+					$eItemIngredient->merge([
+					  'id' => NULL,
+					  'name' => $eItemCopy['name'],
+					  'product' => $eItemCopy['product'],
+					  'productComposition' => FALSE,
+					  'ingredientOf' => $eItemComposition,
+					  'quality' => $eItemCopy['quality'],
+					  'parent' => $eItemCopy['parent'],
+					  'packaging' => $eItemCopy['packaging'],
+					  'unit' => $eItemCopy['unit'],
+					  'unitPrice' => $eItemCopy['unitPrice'] * $ratio,
+					  'number' => $eItemCopy['number'],
+					  'price' => $eItemCopy['price'] * $ratio,
+					  'priceExcludingVat' => $eItemCopy['priceExcludingVat'] * $ratio,
+					  'vatRate' => $eItemCopy['vatRate'],
+					  'stats' => $eItemComposition['stats']
+					]);
+
+					$cItemIngredient[] = $eItemIngredient;
+
+
+				}
+
+			}
+
+			Item::model()->insert($cItemIngredient);
 
 		}
 
