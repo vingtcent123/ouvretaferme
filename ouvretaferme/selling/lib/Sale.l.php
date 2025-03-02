@@ -664,7 +664,7 @@ class SaleLib extends SaleCrud {
 
 		$fw = new \FailWatch();
 
-		$e->build(['shopDate'], $input, new \BuildProperties('update'));
+		$e->build(['shopDate'], $input, new \Properties('update'));
 
 		$fw->validate();
 
@@ -678,7 +678,7 @@ class SaleLib extends SaleCrud {
 
 	public static function dissociateShop(Sale $e): void {
 
-		$e->build(['shopDate'], [], new \BuildProperties('update'));
+		$e->build(['shopDate'], [], new \Properties('update'));
 
 		$properties = ['from', 'shop', 'shopDate'];
 
