@@ -39,19 +39,19 @@ class Unit extends UnitElement {
 
 	}
 
-	public function build(array $properties, array $input, array $callbacks = [], ?string $for = NULL): array {
+	public function build(array $properties, array $input, \Properties $p = new \Properties()): void {
 
-		return parent::build($properties, $input, $callbacks + [
-
-			'singular.duplicate' => function(string $name): bool {
+		$p
+			->setCallback('singular.duplicate', function(string $name): bool {
 
 				return Unit::model()
 					->whereFarm(NULL)
 					->whereSingular($name)
 					->exists() === FALSE;
 
-			}
-		]);
+			});
+		
+		parent::build($properties, $input, $p);
 
 	}
 

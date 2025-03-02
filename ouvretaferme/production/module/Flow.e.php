@@ -41,7 +41,7 @@ class Flow extends FlowElement {
 
 	}
 
-	public function build(array $properties, array $input, array $callbacks = [], ?string $for = NULL): array {
+	public function build(array $properties, array $input, \Properties $p = new \Properties()): void {
 
 		$prepareYear = function(?int &$year): bool {
 
@@ -85,10 +85,9 @@ class Flow extends FlowElement {
 			return TRUE;
 
 		};
-
-		$result = parent::build($properties, $input, $callbacks + [
-
-			'action.check' => function(\farm\Action $eAction): bool {
+		
+		$p
+			->setCallback('action.check', function(\farm\Action $eAction): bool {
 
 				$this->expects([
 					'sequence' => ['farm']
@@ -96,9 +95,8 @@ class Flow extends FlowElement {
 
 				return \farm\ActionLib::canUse($eAction, $this['sequence']['farm']);
 
-			},
-
-			'crop.check' => function(Crop $eCrop, \BuildProperties $p): bool {
+			})
+			->setCallback('crop.check', function(Crop $eCrop) use ($p): bool {
 
 				$this->expects([
 					'sequence' => ['cCrop']
@@ -130,9 +128,8 @@ class Flow extends FlowElement {
 						->get($eCrop)
 				);
 
-			},
-
-			'fertilizer.check' => function(?array &$fertilizer, \BuildProperties $p): bool {
+			})
+			->setCallback('fertilizer.check', function(?array &$fertilizer) use ($p): bool {
 
 				if($p->isBuilt('action') === FALSE) {
 					return TRUE;
@@ -154,21 +151,20 @@ class Flow extends FlowElement {
 
 				return TRUE;
 
-			},
+			})
+			->setCallback('weekOnly.argument', fn($property) => $property.'Week')
+			->setCallback('weekStart.argument', fn($property) => $property.'Week')
+			->setCallback('weekStop.argument', fn($property) => $property.'Week')
 
-			'weekOnly.argument' => fn($property) => $property.'Week',
-			'weekStart.argument' => fn($property) => $property.'Week',
-			'weekStop.argument' => fn($property) => $property.'Week',
+			->setCallback('yearOnly.prepare', $prepareYear)
+			->setCallback('yearStart.prepare', $prepareYear)
+			->setCallback('yearStop.prepare', $prepareYear)
 
-			'yearOnly.prepare' => $prepareYear,
-			'yearStart.prepare' => $prepareYear,
-			'yearStop.prepare' => $prepareYear,
+			->setCallback('seasonOnly.prepare', $prepareSeason)
+			->setCallback('seasonStart.prepare', $prepareSeason)
+			->setCallback('seasonStop.prepare', $prepareSeason)
 
-			'seasonOnly.prepare' => $prepareSeason,
-			'seasonStart.prepare' => $prepareSeason,
-			'seasonStop.prepare' => $prepareSeason,
-
-			'method.check' => function(\farm\Method $eMethod, \BuildProperties $p): bool {
+			->setCallback('method.check', function(\farm\Method $eMethod) use ($p): bool {
 
 				if($p->isBuilt('action') === FALSE) {
 					return TRUE;
@@ -178,9 +174,8 @@ class Flow extends FlowElement {
 					->whereAction($this['action'])
 					->exists($eMethod);
 
-			},
-
-			'methods.check' => function(mixed &$methods, \BuildProperties $p): bool {
+			})
+			->setCallback('methods.check', function(mixed &$methods) use ($p): bool {
 
 				$p->expectsBuilt('action');
 
@@ -198,9 +193,8 @@ class Flow extends FlowElement {
 
 				return TRUE;
 
-			},
-
-			'tools.check' => function(mixed &$tools, \BuildProperties $p): bool {
+			})
+			->setCallback('tools.check', function(mixed &$tools) use ($p): bool {
 
 				$p->expectsBuilt('action');
 
@@ -218,14 +212,12 @@ class Flow extends FlowElement {
 
 				return TRUE;
 
-			},
+			});
 
-		]);
+		parent::build($properties, $input, $p);
 
 		$this->buildSeason($properties, $input);
 		$this->buildPeriod($properties, $input);
-
-		return $result;
 
 	}
 

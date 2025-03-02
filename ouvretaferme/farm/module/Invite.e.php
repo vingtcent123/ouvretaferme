@@ -62,23 +62,21 @@ class Invite extends InviteElement {
 
 	}
 
-	public function build(array $properties, array $input, array $callbacks = [], ?string $for = NULL): array {
+	public function build(array $properties, array $input, \Properties $p = new \Properties()): void {
 
-		return parent::build($properties, $input, $callbacks + [
-
-			'email.duplicate' => function(string $email): bool {
+		$p
+			->setCallback('email.duplicate', function(string $email): bool {
 
 				$this->expects(['farm']);
 
 				return Invite::model()
-					->whereFarm($this['farm'])
-					->whereEmail($email)
-					->whereStatus(Invite::PENDING)
-					->exists() === FALSE;
+						->whereFarm($this['farm'])
+						->whereEmail($email)
+						->whereStatus(Invite::PENDING)
+						->exists() === FALSE;
 
-			},
-
-			'email.duplicateCustomer' => function(string $email): bool {
+			})
+			->setCallback('email.duplicateCustomer', function(string $email): bool {
 
 				$this->expects(['farm', 'type']);
 
@@ -93,13 +91,13 @@ class Invite extends InviteElement {
 				}
 
 				return \selling\Customer::model()
-					->whereUser($eUser)
-					->whereFarm($this['farm'])
-					->exists() === FALSE;
+						->whereUser($eUser)
+						->whereFarm($this['farm'])
+						->exists() === FALSE;
 
-			}
+			});
 
-		]);
+		parent::build($properties, $input, $p);
 
 	}
 

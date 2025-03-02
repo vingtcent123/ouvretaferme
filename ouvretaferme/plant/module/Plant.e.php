@@ -64,20 +64,19 @@ class Plant extends PlantElement {
 
 	}
 
-	public function build(array $properties, array $input, array $callbacks = [], ?string $for = NULL): array {
+	public function build(array $properties, array $input, \Properties $p = new \Properties()): void {
 
-		return parent::build($properties, $input, $callbacks + [
-
-			'family.check' => function(Family $eFamily): bool {
+		$p
+			->setCallback('family.check', function(Family $eFamily): bool {
 
 				return (
 					$eFamily->empty() or
 					Family::model()->exists($eFamily)
 				);
 
-			},
+			});
 
-		]);
+		parent::build($properties, $input, $p);
 
 	}
 

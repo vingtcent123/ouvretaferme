@@ -49,11 +49,10 @@ class Absence extends AbsenceElement {
 
 	}
 
-	public function build(array $properties, array $input, array $callbacks = [], ?string $for = NULL): array {
+	public function build(array $properties, array $input, \Properties $p = new \Properties()): void {
 
-		return parent::build($properties, $input, $callbacks + [
-
-			'to.consistency' => function(string $to): bool {
+		$p
+			->setCallback('to.consistency', function(string $to): bool {
 
 				$this->expects([
 					'from'
@@ -61,9 +60,9 @@ class Absence extends AbsenceElement {
 
 				return ($to > $this['from']);
 
-			},
+			});
 
-		]);
+		parent::build($properties, $input, $p);
 
 	}
 

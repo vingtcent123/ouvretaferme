@@ -75,13 +75,12 @@ class Date extends DateElement {
 		return $this['source'] === Date::DIRECT;
 	}
 
-	public function build(array $properties, array $input, array $callbacks = [], ?string $for = NULL): array {
+	public function build(array $properties, array $input, \Properties $p = new \Properties()): void {
 
 		$fw = new \FailWatch();
 
-		return parent::build($properties, $input, $callbacks + [
-
-			'status.prepare' => function(mixed &$status): bool {
+		$p
+			->setCallback('status.prepare', function(mixed &$status): bool {
 
 				if(in_array($status, [Date::ACTIVE, Date::CLOSED])) {
 					return TRUE;
@@ -95,18 +94,16 @@ class Date extends DateElement {
 
 				return TRUE;
 
-			},
-
+			})
 			// End of order must be after start of order.
-			'orderEndAt.consistency' => function($orderEndAt, \BuildProperties $p): bool {
+			->setCallback('orderEndAt.consistency', function($orderEndAt) use ($p): bool {
 
 				$p->expectsBuilt('orderStartAt');
 
 				return $orderEndAt > $this['orderStartAt'];
-			},
-
+			})
 			// Delivery must be after order.
-			'deliveryDate.consistency' => function($deliveryDate) use ($fw): bool {
+			->setCallback('deliveryDate.consistency', function($deliveryDate) use ($fw): bool {
 
 				if(
 					$fw->has('Date::orderEndAt.consistency') or
@@ -119,9 +116,8 @@ class Date extends DateElement {
 				$this->expects(['orderEndAt']);
 
 				return $deliveryDate >= substr($this['orderEndAt'], 0, 10);
-			},
-
-			'catalogs.check' => function(?array &$catalogs, \BuildProperties $p) use ($input) {
+			})
+			->setCallback('catalogs.check', function(?array &$catalogs) use ($input, $p) {
 
 				$p->expectsBuilt('source');
 
@@ -153,9 +149,8 @@ class Date extends DateElement {
 					return TRUE;
 				}
 
-			},
-
-			'productsList.check' => function(mixed $products, \BuildProperties $p) use ($input) {
+			})
+			->setCallback('productsList.check', function() use ($input, $p) {
 
 				$p->expectsBuilt('source');
 
@@ -170,9 +165,8 @@ class Date extends DateElement {
 
 				return TRUE;
 
-			},
-
-			'points.check' => function(mixed &$points) {
+			})
+			->setCallback('points.check', function(mixed &$points) {
 
 				$this->expects(['farm']);
 
@@ -184,9 +178,9 @@ class Date extends DateElement {
 
 				return ($points !== []);
 
-			},
-
-		]);
+			});
+		
+		parent::build($properties, $input, $p);
 
 	}
 }

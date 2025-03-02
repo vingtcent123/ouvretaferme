@@ -128,11 +128,10 @@ class Product extends ProductElement {
 
 	}
 
-	public function build(array $properties, array $input, array $callbacks = [], ?string $for = NULL): array {
+	public function build(array $properties, array $input, \Properties $p = new \Properties()): void {
 
-		return parent::build($properties, $input, $callbacks + [
-
-			'category.check' => function(Category $eCategory): bool {
+		$p
+			->setCallback('category.check', function(Category $eCategory): bool {
 
 				$this->expects(['farm']);
 
@@ -145,9 +144,8 @@ class Product extends ProductElement {
 					)
 				);
 
-			},
-
-			'plant.check' => function(\plant\Plant $ePlant): bool {
+			})
+			->setCallback('plant.check', function(\plant\Plant $ePlant): bool {
 
 				return (
 					$ePlant->empty() or (
@@ -158,9 +156,8 @@ class Product extends ProductElement {
 					)
 				);
 
-			},
-
-			'unit.check' => function(Unit $eUnit) use ($for): bool {
+			})
+			->setCallback('unit.check', function(Unit $eUnit) use ($p): bool {
 
 				$this->expects(['farm']);
 
@@ -175,7 +172,7 @@ class Product extends ProductElement {
 					$eUnit->canRead()
 				) {
 
-					if($for === 'create') {
+					if($p->for === 'create') {
 						return TRUE;
 					} else {
 						return $eUnit->isWeight() === FALSE;
@@ -185,9 +182,8 @@ class Product extends ProductElement {
 					return FALSE;
 				}
 
-			},
-
-			'compositionVisibility.check' => function(?string &$visibility): bool {
+			})
+			->setCallback('compositionVisibility.check', function(?string &$visibility): bool {
 
 				$this->expects(['composition']);
 
@@ -198,15 +194,13 @@ class Product extends ProductElement {
 					return TRUE;
 				}
 
-			},
-
-			'vat.check' => function(int $vat): bool {
+			})
+			->setCallback('vat.check', function(int $vat): bool {
 				return array_key_exists($vat, SaleLib::getVatRates($this['farm']));
-			},
-
-			'proOrPrivate.check' => fn() => ((int)$this['pro'] + (int)$this['private']) === 1,
-
-		]);
+			})
+			->setCallback('proOrPrivate.check', fn() => ((int)$this['pro'] + (int)$this['private']) === 1);
+		
+		parent::build($properties, $input, $p);
 
 	}
 

@@ -478,7 +478,7 @@ class SaleLib {
 
 		\selling\HistoryLib::createBySale($eSale, 'shop-payment-succeeded', 'Stripe event #'.$eventId);
 
-		$cItem = \selling\ItemLib::getBySale($eSale);
+		$cItem = \selling\SaleLib::getItems($eSale);
 
 		self::notify('salePaid', $eSale, $cItem);
 

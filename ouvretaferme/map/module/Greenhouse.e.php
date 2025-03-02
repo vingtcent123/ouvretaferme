@@ -21,11 +21,10 @@ class Greenhouse extends GreenhouseElement {
 
 	}
 
-	public function build(array $properties, array $input, array $callbacks = [], ?string $for = NULL): array {
+	public function build(array $properties, array $input, \Properties $p = new \Properties()): void {
 
-		return parent::build($properties, $input, $callbacks + [
-
-			'plot.check' => function(Plot $ePlot): bool {
+		$p
+			->setCallback('plot.check', function(Plot $ePlot): bool {
 
 				if($this->offsetExists('farm') === FALSE) {
 					return FALSE;
@@ -36,9 +35,9 @@ class Greenhouse extends GreenhouseElement {
 					->whereFarm($this['farm'])
 					->get($ePlot);
 
-			}
-
-		]);
+			});
+			
+		parent::build($properties, $input, $p);
 
 	}
 

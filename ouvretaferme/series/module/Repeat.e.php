@@ -17,20 +17,18 @@ class Repeat extends RepeatElement {
 
 	}
 
-	public function build(array $properties, array $input, array $callbacks = [], ?string $for = NULL): array {
-
-		return parent::build($properties, $input, $callbacks + [
-
-			'stop.future' => function(?string $stop): bool {
+	public function build(array $properties, array $input, \Properties $p = new \Properties()): void {
+		
+		$p
+			->setCallback('stop.future', function(?string $stop): bool {
 
 				return (
 					$stop === NULL or
 					strcmp($stop, currentDate()) > 0
 				);
 
-			},
-
-			'stop.season' => function(?string $stop): bool {
+			})
+			->setCallback('stop.season', function(?string $stop): bool {
 
 				$this->expects([
 					'task' => ['season']
@@ -48,9 +46,9 @@ class Repeat extends RepeatElement {
 					)
 				);
 
-			},
+			});
 
-		]);
+		parent::build($properties, $input, $p);
 
 	}
 

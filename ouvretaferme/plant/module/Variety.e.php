@@ -32,20 +32,18 @@ class Variety extends VarietyElement {
 
 	}
 
-	public function build(array $properties, array $input, array $callbacks = [], ?string $for = NULL): array {
+	public function build(array $properties, array $input, \Properties $p = new \Properties()): void {
 
-		return parent::build($properties, $input, $callbacks + [
-
-			'farm.check' => function(\farm\Farm $eFarm): bool {
+		$p
+			->setCallback('farm.check', function(\farm\Farm $eFarm): bool {
 
 				return (
 					(\Privilege::can('plant\admin') and $eFarm->empty()) or
 					$eFarm->canManage()
 				);
 
-			},
-
-			'plant.check' => function(Plant $ePlant): bool {
+			})
+			->setCallback('plant.check', function(Plant $ePlant): bool {
 
 				return (
 					(\Privilege::can('plant\admin') and $ePlant->empty()) or
@@ -54,22 +52,8 @@ class Variety extends VarietyElement {
 						->exists($ePlant)
 				);
 
-			},
-
-			'supplierSeed.check' => function(\farm\Supplier $eSupplier): bool {
-
-				$this->expects(['farm']);
-
-				return (
-					$eSupplier->empty() or
-					\farm\Supplier::model()
-						->whereFarm($this['farm'])
-						->exists($eSupplier)
-				);
-
-			},
-
-			'supplierPlant.check' => function(\farm\Supplier $eSupplier): bool {
+			})
+			->setCallback('supplierSeed.check', function(\farm\Supplier $eSupplier): bool {
 
 				$this->expects(['farm']);
 
@@ -80,9 +64,21 @@ class Variety extends VarietyElement {
 						->exists($eSupplier)
 				);
 
-			}
+			})
+			->setCallback('supplierPlant.check', function(\farm\Supplier $eSupplier): bool {
 
-		]);
+				$this->expects(['farm']);
+
+				return (
+					$eSupplier->empty() or
+					\farm\Supplier::model()
+						->whereFarm($this['farm'])
+						->exists($eSupplier)
+				);
+
+			});
+
+		parent::build($properties, $input, $p);
 
 	}
 

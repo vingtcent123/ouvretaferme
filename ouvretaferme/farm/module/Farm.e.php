@@ -270,11 +270,10 @@ class Farm extends FarmElement {
 
 	}
 
-	public function build(array $properties, array $input, array $callbacks = [], ?string $for = NULL): array {
+	public function build(array $properties, array $input, \Properties $p = new \Properties()): void {
 
-		return parent::build($properties, $input, $callbacks + [
-
-			'rotationExclude.prepare' => function(mixed &$plants): bool {
+		$p
+			->setCallback('rotationExclude.prepare', function(mixed &$plants): bool {
 
 				$this->expects(['id']);
 
@@ -288,9 +287,8 @@ class Farm extends FarmElement {
 
 				return TRUE;
 
-			},
-
-			'place.required' => function(?string $place) use ($input) {
+			})
+			->setCallback('place.required', function(?string $place) use ($input) {
 
 				$required = $input['placeRequired'] ?? FALSE;
 
@@ -300,9 +298,8 @@ class Farm extends FarmElement {
 					return TRUE;
 				}
 
-			},
-
-			'placeLngLat.check' => function(?array &$placeLngLat) {
+			})
+			->setCallback('placeLngLat.check', function(?array &$placeLngLat) {
 
 				$this->expects(['place']);
 
@@ -321,9 +318,8 @@ class Farm extends FarmElement {
 
 				return TRUE;
 
-			},
-
-			'defaultBedWidth.size' => function(?int $defaultBedWidth) {
+			})
+			->setCallback('defaultBedWidth.size', function(?int $defaultBedWidth) {
 
 				if($defaultBedWidth === NULL) {
 					return TRUE;
@@ -331,9 +327,9 @@ class Farm extends FarmElement {
 
 				return ($defaultBedWidth >= 5);
 
-			}
-
-		]);
+			});
+		
+		parent::build($properties, $input, $p);
 
 	}
 

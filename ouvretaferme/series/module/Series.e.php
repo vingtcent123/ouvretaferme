@@ -112,20 +112,18 @@ class Series extends SeriesElement {
 
 	}
 
-	public function build(array $properties, array $input, array $callbacks = [], ?string $for = NULL): array {
+	public function build(array $properties, array $input, \Properties $p = new \Properties()): void {
 
-		return parent::build($properties, $input, $callbacks + [
-
-			'farm.check' => function(\farm\Farm $eFarm): bool {
+		$p
+			->setCallback('farm.check', function(\farm\Farm $eFarm): bool {
 
 				return (
 					$eFarm->empty() === FALSE and
 					$eFarm->canManage()
 				);
 
-			},
-
-			'season.check' => function(int $season): bool {
+			})
+			->setCallback('season.check', function(int $season): bool {
 
 				$this->expects(['farm']);
 
@@ -136,26 +134,23 @@ class Series extends SeriesElement {
 
 				return $this['farm']->checkSeason($season);
 
-			},
-
-			'status.check' => function(): bool {
+			})
+			->setCallback('status.check', function(): bool {
 
 				return $this->acceptStatus();
 
-			},
+			})
+			->setCallback('use.prepare', function() use ($p): bool {
 
-			'use.prepare' => function() use ($for): bool {
-
-				if($for === 'update') {
+				if($p->for === 'update') {
 					$this->expects(['use']);
 					$this['oldUse'] = $this['use'];
 				}
 
 				return TRUE;
 
-			},
-
-			'cycle.prepare' => function(?string &$cycle, \BuildProperties $p): bool {
+			})
+			->setCallback('cycle.prepare', function(?string &$cycle) use ($p): bool {
 
 				$p->expectsBuilt('sequence');
 
@@ -165,9 +160,8 @@ class Series extends SeriesElement {
 
 				return TRUE;
 
-			},
-
-			'sequence.check' => function(\production\Sequence $eSequence): bool {
+			})
+			->setCallback('sequence.check', function(\production\Sequence $eSequence): bool {
 
 				if($eSequence->empty()) {
 					return TRUE;
@@ -181,9 +175,8 @@ class Series extends SeriesElement {
 
 				return $eSequence['farm']->canWrite();
 
-			},
-
-			'bedWidth.prepare' => function(?int &$bedWidth): bool {
+			})
+			->setCallback('bedWidth.prepare', function(?int &$bedWidth): bool {
 
 				$this->expects(['use']);
 
@@ -197,9 +190,8 @@ class Series extends SeriesElement {
 
 				return TRUE;
 
-			},
-
-			'alleyWidth.prepare' => function(?int &$alleyWidth): bool {
+			})
+			->setCallback('alleyWidth.prepare', function(?int &$alleyWidth): bool {
 
 				$this->expects(['use']);
 
@@ -209,9 +201,8 @@ class Series extends SeriesElement {
 
 				return TRUE;
 
-			},
-
-			'perennialLifetime.prepare' => function(?int &$lifetime): bool {
+			})
+			->setCallback('perennialLifetime.prepare', function(?int &$lifetime): bool {
 
 				$this->expects(['id', 'cycle']);
 
@@ -221,9 +212,8 @@ class Series extends SeriesElement {
 
 				return TRUE;
 
-			},
-
-			'perennialLifetime.last' => function(?int $lifetime): bool {
+			})
+			->setCallback('perennialLifetime.last', function(?int $lifetime): bool {
 
 				$this->expects(['id', 'cycle']);
 
@@ -234,9 +224,8 @@ class Series extends SeriesElement {
 					return TRUE;
 				}
 
-			},
-
-			'perennialLifetime.consistency' => function(?int $lifetime): bool {
+			})
+			->setCallback('perennialLifetime.consistency', function(?int $lifetime): bool {
 
 				$this->expects(['id', 'cycle']);
 
@@ -254,9 +243,8 @@ class Series extends SeriesElement {
 					return TRUE;
 				}
 
-			},
-
-			'taskInterval.check' => function(mixed $value): bool {
+			})
+			->setCallback('taskInterval.check', function(mixed $value): bool {
 
 				$value = (int)$value;
 
@@ -269,9 +257,9 @@ class Series extends SeriesElement {
 					return FALSE;
 				}
 
-			},
-
-		]);
+			});
+		
+		parent::build($properties, $input, $p);
 
 	}
 

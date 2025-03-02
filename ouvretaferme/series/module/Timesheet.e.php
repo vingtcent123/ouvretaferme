@@ -21,15 +21,14 @@ class Timesheet extends TimesheetElement {
 
 	}
 
-	public function build(array $properties, array $input, array $callbacks = [], ?string $for = NULL): array {
+	public function build(array $properties, array $input, \Properties $p = new \Properties()): void {
 
-		return parent::build($properties, $input, $callbacks + [
-
-			'date.check' => function(string $date) {
+		$p
+			->setCallback('date.check', function(string $date) {
 				return \util\DateLib::compare($date, currentDate()) <= 0;
-			},
+			});
 
-		]);
+		parent::build($properties, $input, $p);
 
 	}
 

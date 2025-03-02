@@ -14,26 +14,23 @@ class StripeFarm extends StripeFarmElement {
 
 	}
 
-	public function build(array $properties, array $input, array $callbacks = [], ?string $for = NULL): array {
+	public function build(array $properties, array $input, \Properties $p = new \Properties()): void {
 
-		return parent::build($properties, $input, $callbacks + [
-
-			'apiSecretKey.check' => function(string $key): bool {
+		$p
+			->setCallback('apiSecretKey.check', function(string $key): bool {
 				return str_starts_with($key, 'rk_live_') and strlen($key) > 10;
-			},
-
-			'apiSecretKeyTest.check' => function(?string $key): bool {
+			})
+			->setCallback('apiSecretKeyTest.check', function(?string $key): bool {
 				return (
 					$key === NULL or
 					(str_starts_with($key, 'sk_test_') and strlen($key) > 10)
 				);
-			},
-
-			'webhookSecretKey.check' => function(string $key): bool {
+			})
+			->setCallback('webhookSecretKey.check', function(string $key): bool {
 				return str_starts_with($key, 'whsec_') and strlen($key) > 10;
-			},
-
-		]);
+			});
+		
+		parent::build($properties, $input, $p);
 
 	}
 

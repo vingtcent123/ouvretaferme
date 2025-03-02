@@ -65,15 +65,12 @@ class Presence extends PresenceElement {
 
 	}
 
-	public function build(array $properties, array $input, array $callbacks = [], ?string $for = NULL): array {
+	public function build(array $properties, array $input, \Properties $p = new \Properties()): void {
 
-		$fw = new \FailWatch();
+		$p
+			->setCallback('to.consistency', function(?string $to) use($p): bool {
 
-		return parent::build($properties, $input, $callbacks + [
-
-			'to.consistency' => function(?string $to) use ($fw): bool {
-
-				if($fw->has('Presence::from.check')) { // L'action génère déjà une erreur
+				if($p->isBuilt('from') === FALSE) {
 					return TRUE;
 				}
 
@@ -86,11 +83,10 @@ class Presence extends PresenceElement {
 					$to >= $this['from']
 				);
 
-			},
+			})
+			->setCallback('to.present', function(?string $to) use ($p): bool {
 
-			'to.present' => function(?string $to) use ($fw, $for): bool {
-
-				if($fw->has('Presence::from.check')) {
+				if($p->isBuilt('from') === FALSE) {
 					return TRUE;
 				}
 
@@ -99,15 +95,15 @@ class Presence extends PresenceElement {
 					'from'
 				]);
 
-				if($for === 'update') {
+				if($p->for === 'update') {
 					Presence::model()->whereId('!=', $this['id']);
 				}
 
 				return PresenceLib::isPresentBetween($this['farm'], $this['user'], $this['from'], $to) === FALSE;
 
-			},
+			});
 
-		]);
+		parent::build($properties, $input, $p);
 
 	}
 

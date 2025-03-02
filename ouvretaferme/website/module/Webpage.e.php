@@ -29,25 +29,22 @@ class Webpage extends WebpageElement {
 
 	}
 
-	public function build(array $properties, array $input, array $callbacks = [], ?string $for = NULL): array {
+	public function build(array $properties, array $input, \Properties $p = new \Properties()): void {
 
-		return parent::build($properties, $input, $callbacks + [
-
-			'url.prepare' => function(string &$url): bool {
+		$p
+			->setCallback('url.prepare', function(string &$url): bool {
 				$url = mb_strtolower($url);
 				return TRUE;
-			},
-
-			'url.check' => function(string $url): bool {
+			})
+			->setCallback('url.check', function(string $url): bool {
 				return $url !== NULL and preg_match('/^[a-z0-9\_-]*$/s', $url) > 0;
-			},
-
-			'content.prepare' => function(string &$value): bool {
+			})
+			->setCallback('content.prepare', function(string &$value): bool {
 				$value = new \editor\XmlLib()->fromHtml($value, ['acceptFigure' => TRUE]);
 				return TRUE;
-			}
-
-		]);
+			});
+		
+		parent::build($properties, $input, $p);
 
 	}
 

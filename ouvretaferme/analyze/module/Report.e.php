@@ -30,20 +30,17 @@ class Report extends ReportElement {
 
 	}
 
-	public function build(array $properties, array $input, array $callbacks = [], ?string $for = NULL): array {
+	public function build(array $properties, array $input, \Properties $p = new \Properties()): void {
 
-		return parent::build($properties, $input, $callbacks + [
-
-			'farm.check' => function(\farm\Farm $eFarm): bool {
+		$p
+			->setCallback('farm.check', function(\farm\Farm $eFarm): bool {
 				return $eFarm->canWrite();
-			},
-
-			'season.check' => function(int $season): bool {
+			})
+			->setCallback('season.check', function(int $season): bool {
 				$this->expects(['farm']);
 				return $this['farm']->checkSeason($season);
-			},
-
-			'plant.check' => function(\plant\Plant $ePlant): bool {
+			})
+			->setCallback('plant.check', function(\plant\Plant $ePlant): bool {
 
 				return (
 					$ePlant->empty() === FALSE and
@@ -53,9 +50,8 @@ class Report extends ReportElement {
 					$ePlant->canRead()
 				);
 
-			},
-
-			'from.check' => function(mixed $from): bool {
+			})
+			->setCallback('from.check', function(mixed $from): bool {
 
 				$eReportFrom = \analyze\ReportLib::getById($from);
 
@@ -67,9 +63,8 @@ class Report extends ReportElement {
 
 				return TRUE;
 
-			},
-
-			'cultivations.check' => function(mixed $ids): bool {
+			})
+			->setCallback('cultivations.check', function(mixed $ids): bool {
 
 				$this->expects(['farm', 'workingTimeAdditional']);
 
@@ -147,9 +142,8 @@ class Report extends ReportElement {
 
 				return TRUE;
 
-			},
-
-			'products.check' => function(mixed $ids): bool {
+			})
+			->setCallback('products.check', function(mixed $ids): bool {
 
 				$this->expects(['farm']);
 
@@ -196,16 +190,14 @@ class Report extends ReportElement {
 
 				return TRUE;
 
-			},
-
-			'testArea.set' => function(?int $value) {
+			})
+			->setCallback('testArea.set', function(?int $value) {
 				if($this['area'] === 0) {
 					$value = NULL;
 				}
 				$this['testArea'] = ($value === 0) ? NULL : $value;
-			},
-
-			'testAreaOperator.set' => function(?string $operator) {
+			})
+			->setCallback('testAreaOperator.set', function(?string $operator) {
 
 				if(empty($this['testArea'])) {
 					$this['testAreaOperator'] = NULL;
@@ -213,16 +205,14 @@ class Report extends ReportElement {
 					$this['testAreaOperator'] = $operator ?? Report::ABSOLUTE;
 				}
 
-			},
-
-			'testWorkingTime.set' => function(?int $value) {
+			})
+			->setCallback('testWorkingTime.set', function(?int $value) {
 				if($this['workingTime'] === 0.0) {
 					$value = NULL;
 				}
 				$this['testWorkingTime'] = ($value === 0.0) ? NULL : $value;
-			},
-
-			'testWorkingTimeOperator.set' => function(?string $operator) {
+			})
+			->setCallback('testWorkingTimeOperator.set', function(?string $operator) {
 
 				if(empty($this['testWorkingTime'])) {
 					$this['testWorkingTimeOperator'] = NULL;
@@ -230,16 +220,14 @@ class Report extends ReportElement {
 					$this['testWorkingTimeOperator'] = $operator ?? Report::ABSOLUTE;
 				}
 
-			},
-
-			'testCosts.set' => function(?int $value) {
+			})
+			->setCallback('testCosts.set', function(?int $value) {
 				if($this['costs'] === 0) {
 					$value = NULL;
 				}
 				$this['testCosts'] = ($value === 0) ? NULL : $value;
-			},
-
-			'testCostsOperator.set' => function(?string $operator) {
+			})
+			->setCallback('testCostsOperator.set', function(?string $operator) {
 
 				if(empty($this['testCosts'])) {
 					$this['testCostsOperator'] = NULL;
@@ -247,16 +235,14 @@ class Report extends ReportElement {
 					$this['testCostsOperator'] = $operator ?? Report::ABSOLUTE;
 				}
 
-			},
-
-			'testTurnover.set' => function(?int $value) {
+			})
+			->setCallback('testTurnover.set', function(?int $value) {
 				if($this['turnover'] === 0) {
 					$value = NULL;
 				}
 				$this['testTurnover'] = ($value === 0) ? NULL : $value;
-			},
-
-			'testTurnoverOperator.set' => function(?string $operator) {
+			})
+			->setCallback('testTurnoverOperator.set', function(?string $operator) {
 
 				if(empty($this['testTurnover'])) {
 					$this['testTurnoverOperator'] = NULL;
@@ -264,9 +250,9 @@ class Report extends ReportElement {
 					$this['testTurnoverOperator'] = $operator ?? Report::ABSOLUTE;
 				}
 
-			}
-
-		]);
+			});
+		
+		parent::build($properties, $input, $p);
 
 	}
 

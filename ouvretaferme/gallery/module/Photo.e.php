@@ -52,11 +52,10 @@ class Photo extends PhotoElement {
 
 	}
 
-	public function build(array $properties, array $input, array $callbacks = [], ?string $for = NULL): array {
+	public function build(array $properties, array $input, \Properties $p = new \Properties()): void {
 
-		return parent::build($properties, $input, $callbacks + [
-
-			'farm.check' => function(\farm\Farm $eFarm): bool {
+		$p
+			->setCallback('farm.check', function(\farm\Farm $eFarm): bool {
 
 				if($eFarm->empty()) {
 					return TRUE;
@@ -66,9 +65,8 @@ class Photo extends PhotoElement {
 
 				return $eFarm->canWrite();
 
-			},
-
-			'sequence.check' => function(\production\Sequence $eSequence): bool {
+			})
+			->setCallback('sequence.check', function(\production\Sequence $eSequence): bool {
 
 				if($eSequence->empty()) {
 					return TRUE;
@@ -82,9 +80,8 @@ class Photo extends PhotoElement {
 
 				return $eSequence->canWrite();
 
-			},
-
-			'series.check' => function(\series\Series $eSeries): bool {
+			})
+			->setCallback('series.check', function(\series\Series $eSeries): bool {
 
 				if($eSeries->empty()) {
 					return TRUE;
@@ -98,9 +95,8 @@ class Photo extends PhotoElement {
 
 				return $eSeries->canWrite();
 
-			},
-
-			'task.check' => function(\series\Task $eTask): bool {
+			})
+			->setCallback('task.check', function(\series\Task $eTask): bool {
 
 				if($eTask->empty()) {
 					return TRUE;
@@ -118,9 +114,9 @@ class Photo extends PhotoElement {
 
 				return $eTask->canWrite();
 
-			}
-
-		]);
+			});
+		
+		parent::build($properties, $input, $p);
 
 	}
 

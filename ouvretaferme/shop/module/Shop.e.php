@@ -109,44 +109,39 @@ class Shop extends ShopElement {
 
 	}
 
-	public function build(array $properties, array $input, array $callbacks = [], ?string $for = NULL): array {
+	public function build(array $properties, array $input, \Properties $p = new \Properties()): void {
 
 		if(array_intersect($properties, ['paymentCard', 'paymentOffline', 'paymentTransfer'])) {
 			$properties[] = 'payment';
 		}
 
-		return parent::build($properties, $input, $callbacks + [
-
-			'farm.prepare' => function(?string $farm) use ($input) {
+		$p
+			->setCallback('farm.prepare', function(?string $farm) use ($input) {
 
 				$this['farm'] = \farm\FarmLib::getById($farm);
 
-			},
-
-			'farm.check' => function() use ($input) {
+			})
+			->setCallback('farm.check', function() use ($input) {
 
 				return $this['farm']->notEmpty() and $this['farm']->canManage();
 
-			},
+			})
+			->setCallback('fqn.prepare', function() use ($p) {
 
-			'fqn.prepare' => function() use ($for) {
-
-				if($for === 'update') {
+				if($p->for === 'update') {
 					$this['oldFqn'] = $this['fqn'];
 				}
 
-			},
-
-			'terms.check' => function(?string $terms) {
+			})
+			->setCallback('terms.check', function(?string $terms) {
 
 				return (
 					$terms === NULL or
 					mb_strlen(strip_tags($terms)) > 0
 				);
 
-			},
-
-			'payment.check' => function() {
+			})
+			->setCallback('payment.check', function() {
 
 				$this->expects(['paymentCard', 'paymentOffline', 'paymentTransfer']);
 
@@ -156,9 +151,8 @@ class Shop extends ShopElement {
 					$this['paymentTransfer']
 				);
 
-			},
-
-			'limitCustomers.prepare' => function(mixed &$customers): bool {
+			})
+			->setCallback('limitCustomers.prepare', function(mixed &$customers): bool {
 
 				$this->expects(['farm']);
 
@@ -172,9 +166,8 @@ class Shop extends ShopElement {
 
 				return TRUE;
 
-			},
-
-			'customColor.light' => function(?string $color): bool {
+			})
+			->setCallback('customColor.light', function(?string $color): bool {
 
 				if($color === NULL) {
 					return TRUE;
@@ -188,9 +181,8 @@ class Shop extends ShopElement {
 
 				return ($average < 127);
 
-			},
-
-			'customBackground.light' => function(?string $color): bool {
+			})
+			->setCallback('customBackground.light', function(?string $color): bool {
 
 				if($color === NULL) {
 					return TRUE;
@@ -204,17 +196,15 @@ class Shop extends ShopElement {
 
 				return ($average > 225);
 
-			},
-
-			'customFont.check' => function(?string $customFont): bool {
+			})
+			->setCallback('customFont.check', function(?string $customFont): bool {
 				return $customFont === NULL or \website\DesignLib::isCustomFont($customFont, 'customFonts');
-			},
-
-			'customTitleFont.check' => function(?string $customFont): bool {
+			})
+			->setCallback('customTitleFont.check', function(?string $customFont): bool {
 				return $customFont === NULL or \website\DesignLib::isCustomFont($customFont, 'customTitleFonts');
-			},
-
-		]);
+			});
+	
+		parent::build($properties, $input, $p);
 
 	}
 

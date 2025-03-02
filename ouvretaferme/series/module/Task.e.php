@@ -183,13 +183,12 @@ class Task extends TaskElement {
 
 	}
 
-	public function build(array $properties, array $input, array $callbacks = [], ?string $for = NULL): array {
+	public function build(array $properties, array $input, \Properties $p = new \Properties()): void {
 
 		$fw = new \FailWatch();
 
-		return parent::build($properties, $input, $callbacks + [
-
-			'planned.check' => function(?array $planned): bool {
+		$p
+			->setCallback('planned.check', function(?array $planned): bool {
 
 				$this->expects(['status']);
 
@@ -221,9 +220,8 @@ class Task extends TaskElement {
 
 				return TRUE;
 
-			},
-
-			'planned.season' => function(): bool {
+			})
+			->setCallback('planned.season', function(): bool {
 
 				if($this['season'] === NULL) {
 					return TRUE;
@@ -236,9 +234,8 @@ class Task extends TaskElement {
 					)
 				);
 
-			},
-
-			'planned.interval' => function(): bool {
+			})
+			->setCallback('planned.interval', function(): bool {
 
 				if($this['season'] !== NULL) {
 					return TRUE;
@@ -253,9 +250,8 @@ class Task extends TaskElement {
 					)
 				);
 
-			},
-
-			'done.check' => function(array $done): bool {
+			})
+			->setCallback('done.check', function(array $done): bool {
 
 				$this->expects(['status']);
 
@@ -284,9 +280,8 @@ class Task extends TaskElement {
 
 				return TRUE;
 
-			},
-
-			'done.series' => function(): bool {
+			})
+			->setCallback('done.series', function(): bool {
 
 				if($this['season'] === NULL) {
 					return TRUE;
@@ -297,9 +292,8 @@ class Task extends TaskElement {
 					$this['doneWeek'] < toDate(($this['season'] + 2).'-12-31')
 				);
 
-			},
-
-			'done.interval' => function(): bool {
+			})
+			->setCallback('done.interval', function(): bool {
 
 				if($this['season'] !== NULL) {
 					return TRUE;
@@ -312,9 +306,8 @@ class Task extends TaskElement {
 					$this['doneWeek'] < toDate(time() + $interval)
 				);
 
-			},
-
-			'action.check' => function(\farm\Action $eAction): bool {
+			})
+			->setCallback('action.check', function(\farm\Action $eAction): bool {
 
 				$this->expects(['farm', 'category']);
 
@@ -323,11 +316,10 @@ class Task extends TaskElement {
 					in_array($this['category']['id'], $eAction['categories'])
 				);
 
-			},
+			})
+			->setCallback('action.harvest', function(\farm\Action $eAction) use ($p): bool {
 
-			'action.harvest' => function(\farm\Action $eAction) use ($for): bool {
-
-				if($for === 'update') {
+				if($p->for === 'update') {
 
 					$this->expects([
 						'action' => ['fqn'],
@@ -342,9 +334,8 @@ class Task extends TaskElement {
 					return TRUE;
 				}
 
-			},
-
-			'repeatMaster.check' => function() use ($input) {
+			})
+			->setCallback('repeatMaster.check', function() use ($input) {
 
 				// Pas de fréquence, pas de répétition
 				$frequency = var_filter($input['frequency'] ?? NULL, '?string');
@@ -365,9 +356,8 @@ class Task extends TaskElement {
 					return FALSE;
 				}
 
-			},
-
-			'harvest.check' => function(?float &$harvest) use ($fw): bool {
+			})
+			->setCallback('harvest.check', function(?float &$harvest) use ($fw): bool {
 
 				if($fw->has('Task::action.check')) { // L'action génère déjà une erreur
 					return TRUE;
@@ -389,9 +379,8 @@ class Task extends TaskElement {
 					return TRUE;
 				}
 
-			},
-
-			'harvestSize.check' => function(\plant\Size &$eSize) use ($fw): bool {
+			})
+			->setCallback('harvestSize.check', function(\plant\Size &$eSize) use ($fw): bool {
 
 				if($fw->has('Task::action.check')) { // L'action génère déjà une erreur
 					return TRUE;
@@ -412,16 +401,14 @@ class Task extends TaskElement {
 					\plant\Size::model()->exists($eSize)
 				);
 
-			},
-
-			'harvestMore.cast' => function(string &$harvest): bool {
+			})
+			->setCallback('harvestMore.cast', function(string &$harvest): bool {
 
 				$harvest = (float)$harvest;
 				return TRUE;
 
-			},
-
-			'harvestMore.negative' => function(?float $harvest): bool {
+			})
+			->setCallback('harvestMore.negative', function(?float $harvest): bool {
 
 				$this->expects([
 					'harvest',
@@ -437,9 +424,8 @@ class Task extends TaskElement {
 					return FALSE;
 				}
 
-			},
-
-			'fertilizer.check' => function(?array &$fertilizer) use ($fw): bool {
+			})
+			->setCallback('fertilizer.check', function(?array &$fertilizer) use ($fw): bool {
 
 				if($fw->has('Task::action.check')) { // L'action génère déjà une erreur
 					return TRUE;
@@ -460,9 +446,8 @@ class Task extends TaskElement {
 
 				return TRUE;
 
-			},
-
-			'cultivation.check' => function(Cultivation $eCultivation) use ($for): bool {
+			})
+			->setCallback('cultivation.check', function(Cultivation $eCultivation) use ($p): bool {
 
 				$this->expects([
 					'category' => ['fqn']
@@ -472,7 +457,7 @@ class Task extends TaskElement {
 					return FALSE;
 				}
 
-				switch($for) {
+				switch($p->for) {
 
 					case 'create':
 
@@ -534,9 +519,8 @@ class Task extends TaskElement {
 
 				}
 
-			},
-
-			'variety.check' => function(\plant\Variety $eVariety): bool {
+			})
+			->setCallback('variety.check', function(\plant\Variety $eVariety): bool {
 
 				$this->expects(['cultivation']);
 
@@ -545,9 +529,8 @@ class Task extends TaskElement {
 					->whereVariety($eVariety)
 					->exists();
 
-			},
-
-			'size.check' => function(\plant\Size $eSize): bool {
+			})
+			->setCallback('size.check', function(\plant\Size $eSize): bool {
 
 				$this->expects(['plant']);
 
@@ -555,9 +538,8 @@ class Task extends TaskElement {
 					->wherePlant($this['plant'])
 					->exists($eSize);
 
-			},
-
-			'methods.check' => function(mixed &$methods, \BuildProperties $p): bool {
+			})
+			->setCallback('methods.check', function(mixed &$methods) use ($p): bool {
 
 				$p->expectsBuilt('action');
 
@@ -577,9 +559,8 @@ class Task extends TaskElement {
 
 				return TRUE;
 
-			},
-
-			'tools.check' => function(mixed &$tools, \BuildProperties $p): bool {
+			})
+			->setCallback('tools.check', function(mixed &$tools) use ($p): bool {
 
 				$p->expectsBuilt('action');
 
@@ -597,9 +578,8 @@ class Task extends TaskElement {
 
 				return TRUE;
 
-			},
-
-			'plant.check' => function(\plant\Plant $ePlant) use ($fw): bool {
+			})
+			->setCallback('plant.check', function(\plant\Plant $ePlant) use ($fw): bool {
 
 				if($fw->has('Task::action.check')) { // L'action génère déjà une erreur
 					return TRUE;
@@ -630,9 +610,8 @@ class Task extends TaskElement {
 						->select('name') // Requis pour traitement futur
 						->get($ePlant)
 				);
-			},
-
-			'status.check' => function(string $status): bool {
+			})
+			->setCallback('status.check', function(string $status): bool {
 
 				$this->expects(['status']);
 
@@ -655,9 +634,9 @@ class Task extends TaskElement {
 
 				}
 
-			},
-
-		]);
+			});
+		
+		parent::build($properties, $input, $p);
 
 	}
 

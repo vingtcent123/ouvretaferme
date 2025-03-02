@@ -19,11 +19,10 @@ class Menu extends MenuElement {
 
 	}
 
-	public function build(array $properties, array $input, array $callbacks = [], ?string $for = NULL): array {
+	public function build(array $properties, array $input, \Properties $p = new \Properties()): void {
 
-		return parent::build($properties, $input, $callbacks + [
-
-			'webpage.check' => function(Webpage $eWebpage): bool {
+		$p
+			->setCallback('webpage.check', function(Webpage $eWebpage): bool {
 
 				if($eWebpage->empty()) {
 					return TRUE;
@@ -36,9 +35,9 @@ class Menu extends MenuElement {
 					$eWebpage->canWrite()
 				);
 
-			},
+			});
 
-		]);
+		parent::build($properties, $input, $p);
 
 	}
 

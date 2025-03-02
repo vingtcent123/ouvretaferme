@@ -42,17 +42,15 @@ class Farmer extends FarmerElement {
 
 	}
 
-	public function build(array $properties, array $input, array $callbacks = [], ?string $for = NULL): array {
+	public function build(array $properties, array $input, \Properties $p = new \Properties()): void {
 
-		return parent::build($properties, $input, $callbacks + [
-
-			'email.check' => function(string $email): bool {
+		$p
+			->setCallback('email.check', function(string $email): bool {
 
 				return \Filter::check('email', $email);
 
-			},
-
-			'id.prepare' => function(int &$id): bool {
+			})
+			->setCallback('id.prepare', function(int &$id): bool {
 
 				if($id === 0) {
 					$id = NULL;
@@ -60,9 +58,8 @@ class Farmer extends FarmerElement {
 
 				return TRUE;
 
-			},
-
-			'id.check' => function(?int $id): bool {
+			})
+			->setCallback('id.check', function(?int $id): bool {
 
 				if($id === NULL) {
 					return TRUE;
@@ -76,15 +73,13 @@ class Farmer extends FarmerElement {
 					->whereFarm($this['farm']['id'])
 					->exists();
 
-			},
-
-			'role.prepare' => function(?string $role): bool {
+			})
+			->setCallback('role.prepare', function(?string $role): bool {
 
 				return ($role !== NULL);
 
-			},
-
-			'email.duplicate' => function(string $email): bool {
+			})
+			->setCallback('email.duplicate', function(string $email): bool {
 
 				$this->expects(['farm']);
 
@@ -99,22 +94,20 @@ class Farmer extends FarmerElement {
 					->whereFarm($this['farm'])
 					->exists() === FALSE;
 
-			},
-
-			'email.set' => function(string $email): bool {
+			})
+			->setCallback('email.set', function(string $email): bool {
 				$this['email'] = $email;
 				return TRUE;
-			},
-
-			'status.can' => function(string $status): bool {
+			})
+			->setCallback('status.can', function(string $status): bool {
 
 				$this->expects(['farmGhost']);
 
 				return $this['farmGhost'];
 
-			}
+			});
 
-		]);
+		parent::build($properties, $input, $p);
 
 	}
 

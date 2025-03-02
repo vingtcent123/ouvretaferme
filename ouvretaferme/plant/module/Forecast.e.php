@@ -26,20 +26,18 @@ class Forecast extends ForecastElement {
 	}
 
 
-	public function build(array $properties, array $input, array $callbacks = [], ?string $for = NULL): array {
+	public function build(array $properties, array $input, \Properties $p = new \Properties()): void {
 
-		return parent::build($properties, $input, $callbacks + [
-
-			'farm.check' => function(\farm\Farm $eFarm): bool {
+		$p
+			->setCallback('farm.check', function(\farm\Farm $eFarm): bool {
 
 				return (
 					(\Privilege::can('plant\admin') and $eFarm->empty()) or
 					$eFarm->canManage()
 				);
 
-			},
-
-			'plant.check' => function(\plant\Plant $ePlant): bool {
+			})
+			->setCallback('plant.check', function(\plant\Plant $ePlant): bool {
 
 				return (
 					$ePlant->empty() === FALSE and
@@ -49,9 +47,8 @@ class Forecast extends ForecastElement {
 					$ePlant->canRead()
 				);
 
-			},
-
-			'proPart.consistency' => function(int $part) use ($properties): bool {
+			})
+			->setCallback('proPart.consistency', function(int $part) use ($properties): bool {
 
 				if(
 					in_array('privatePart', $properties) and
@@ -62,9 +59,9 @@ class Forecast extends ForecastElement {
 					return TRUE;
 				}
 
-			},
-
-		]);
+			});
+		
+		parent::build($properties, $input, $p);
 
 	}
 

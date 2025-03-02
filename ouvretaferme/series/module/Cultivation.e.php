@@ -302,15 +302,14 @@ class Cultivation extends CultivationElement {
 
 	}
 
-	public function build(array $properties, array $input, array $callbacks = [], ?string $for = NULL): array {
+	public function build(array $properties, array $input, \Properties $p = new \Properties()): void {
 
 		$this->expects([
 			'series' => ['use']
 		]);
-
-		return parent::build($properties, $input, $callbacks + [
-
-			'crop.check' => function(\production\Crop $eCrop): bool {
+		
+		$p
+			->setCallback('crop.check', function(\production\Crop $eCrop): bool {
 
 				return (
 					$eCrop->empty() or
@@ -321,9 +320,8 @@ class Cultivation extends CultivationElement {
 						->get($eCrop)
 				);
 
-			},
-
-			'harvest.prepare' => function(&$harvest): bool {
+			})
+			->setCallback('harvest.prepare', function(&$harvest): bool {
 
 				if($harvest === []) {
 					$harvest = NULL;
@@ -334,9 +332,8 @@ class Cultivation extends CultivationElement {
 					is_array($harvest)
 				);
 
-			},
-
-			'harvest.check' => function(?array &$harvest): bool {
+			})
+			->setCallback('harvest.check', function(?array &$harvest): bool {
 
 				if($harvest === NULL) {
 					return TRUE;
@@ -350,11 +347,11 @@ class Cultivation extends CultivationElement {
 
 				return TRUE;
 
-			},
+			})
 
-			'plant.check' => function(\plant\Plant $ePlant) use ($for): bool {
+			->setCallback('plant.check', function(\plant\Plant $ePlant) use ($p): bool {
 
-				if($for === 'update') {
+				if($p->for === 'update') {
 
 					if($ePlant->empty()) {
 						$ePlant->merge($this['plant']);
@@ -375,11 +372,10 @@ class Cultivation extends CultivationElement {
 					throw new \BuildElementError();
 				}
 
-			},
+			})
+			->setCallback('plant.unused', function(\plant\Plant $ePlant) use ($p): bool {
 
-			'plant.unused' => function(\plant\Plant $ePlant) use ($for): bool {
-
-				if($for === 'update') {
+				if($p->for === 'update') {
 
 					if($ePlant['id'] === $this['plant']['id']) {
 						return TRUE;
@@ -397,9 +393,8 @@ class Cultivation extends CultivationElement {
 					return TRUE;
 				}
 
-			},
-
-			'sliceTool.check' => function(\farm\Tool $eTool, \BuildProperties $p) {
+			})
+			->setCallback('sliceTool.check', function(\farm\Tool $eTool) use ($p) {
 
 				$p->expectsBuilt('sliceUnit');
 
@@ -414,9 +409,8 @@ class Cultivation extends CultivationElement {
 					return $eTool->empty();
 				}
 
-			},
-
-			'variety.check' => function(?array $varieties, \BuildProperties $p, string $wrapper) {
+			})
+			->setCallback('variety.check', function(?array $varieties, \Properties $p, string $wrapper) {
 
 				$p->expectsBuilt(['sliceUnit', 'sliceTray']);
 
@@ -429,9 +423,8 @@ class Cultivation extends CultivationElement {
 
 				return TRUE;
 
-			},
-
-			'seedlingSeeds.prepare' => function(?int &$seeds): bool {
+			})
+			->setCallback('seedlingSeeds.prepare', function(?int &$seeds): bool {
 
 				$this->expects(['seedling']);
 
@@ -443,9 +436,8 @@ class Cultivation extends CultivationElement {
 
 				return TRUE;
 
-			},
-
-			'rowSpacing.check' => function(?int $rowSpacing): bool {
+			})
+			->setCallback('rowSpacing.check', function(?int $rowSpacing): bool {
 
 				switch($this['series']['use']) {
 
@@ -458,9 +450,8 @@ class Cultivation extends CultivationElement {
 
 				}
 
-			},
-
-			'rows.check' => function(?int $rows): bool {
+			})
+			->setCallback('rows.check', function(?int $rows): bool {
 
 				switch($this['series']['use']) {
 
@@ -473,9 +464,8 @@ class Cultivation extends CultivationElement {
 
 				}
 
-			},
-
-			'harvestMonthsExpected.check' => function(?array $months): bool {
+			})
+			->setCallback('harvestMonthsExpected.check', function(?array $months): bool {
 
 				$this->expects(['harvestPeriodExpected']);
 
@@ -485,9 +475,8 @@ class Cultivation extends CultivationElement {
 
 				return ($months === NULL or array_filter($months, fn($month) => \Filter::check('month', $month) === FALSE) === []);
 
-			},
-
-			'harvestMonthsExpected.set' => function(?array $months): bool {
+			})
+			->setCallback('harvestMonthsExpected.set', function(?array $months): bool {
 
 				$this->expects(['harvestPeriodExpected']);
 
@@ -505,9 +494,8 @@ class Cultivation extends CultivationElement {
 
 				return TRUE;
 
-			},
-
-			'harvestWeeksExpected.check' => function(?array $weeks): bool {
+			})
+			->setCallback('harvestWeeksExpected.check', function(?array $weeks): bool {
 
 				$this->expects(['harvestPeriodExpected']);
 
@@ -517,9 +505,8 @@ class Cultivation extends CultivationElement {
 
 				return ($weeks === NULL or array_filter($weeks, fn($week) => \Filter::check('week', $week) === FALSE) === []);
 
-			},
-
-			'harvestWeeksExpected.set' => function(?array $weeks): bool {
+			})
+			->setCallback('harvestWeeksExpected.set', function(?array $weeks): bool {
 
 				$this->expects(['harvestPeriodExpected']);
 
@@ -537,9 +524,8 @@ class Cultivation extends CultivationElement {
 
 				return TRUE;
 
-			},
-
-			'actions.set' => function(?array $actions): bool {
+			})
+			->setCallback('actions.set', function(?array $actions): bool {
 
 				$this->expects(['seedling']);
 
@@ -572,9 +558,9 @@ class Cultivation extends CultivationElement {
 
 				return TRUE;
 
-			},
+			});
 
-		]);
+		parent::build($properties, $input, $p);
 
 	}
 

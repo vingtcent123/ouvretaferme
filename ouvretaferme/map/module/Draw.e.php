@@ -4,16 +4,14 @@ namespace map;
 class Draw extends DrawElement {
 
 
-	public function build(array $properties, array $input, array $callbacks = [], ?string $for = NULL): array {
+	public function build(array $properties, array $input, \Properties $p = new \Properties()): void {
 
-		return parent::build($properties, $input, $callbacks + [
-
-			'season.check' => function(int $season): bool {
+		$p
+			->setCallback('season.check', function(int $season): bool {
 				$this->expects(['farm']);
 				return $this['farm']->checkSeason($season);
-			},
-
-			'coordinates.check' => function(array &$coords): bool {
+			})
+			->setCallback('coordinates.check', function(array &$coords): bool {
 
 				if(count($coords) !== 3) {
 					return FALSE;
@@ -45,9 +43,9 @@ class Draw extends DrawElement {
 
 				return TRUE;
 
-			}
+			});
 
-		]);
+		parent::build($properties, $input, $p);
 
 	}
 

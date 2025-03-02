@@ -87,7 +87,7 @@
 
 		$eTimesheet->validate('canWrite');
 
-		$eTimesheet->build(['date'], $_POST, for: 'update');
+		$eTimesheet->build(['date'], $_POST, new Properties('update'));
 
 		$fw->validate();
 

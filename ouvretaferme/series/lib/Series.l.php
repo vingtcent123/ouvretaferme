@@ -214,7 +214,7 @@ class SeriesLib extends SeriesCrud {
 
 		$fw = new \FailWatch();
 
-		$eSeries->build(self::getPropertiesCreate(), $input, for: 'create');
+		$eSeries->build(self::getPropertiesCreate(), $input, new \Properties('create'));
 
 		if($fw->ko()) {
 			return [];
@@ -474,7 +474,7 @@ class SeriesLib extends SeriesCrud {
 					'taskInterval' => cast($input['taskInterval'][$eSeries['id']][$index] ?? 0, 'int'),
 				];
 
-				$eSeriesNew->build(['name', 'taskInterval'], $newValues, ['wrapper' => fn(string $property) => 'series-'.$eSeries['id'].'-'.$index]);
+				$eSeriesNew->build(['name', 'taskInterval'], $newValues, new \Properties()->setWrapper(fn(string $property) => 'series-'.$eSeries['id'].'-'.$index));
 
 				$cSeriesNew[] = $eSeriesNew;
 

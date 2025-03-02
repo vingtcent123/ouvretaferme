@@ -25,20 +25,17 @@ class Website extends WebsiteElement {
 
 	}
 
-	public function build(array $properties, array $input, array $callbacks = [], ?string $for = NULL): array {
+	public function build(array $properties, array $input, \Properties $p = new \Properties()): void {
 
-		return parent::build($properties, $input, $callbacks + [
-
-			'internalDomain.prepare' => function(string &$domain): bool {
+		$p
+			->setCallback('internalDomain.prepare', function(string &$domain): bool {
 				$domain = mb_strtolower($domain);
 				return TRUE;
-			},
-
-			'internalDomain.check' => function(string $domain): bool {
+			})
+			->setCallback('internalDomain.check', function(string $domain): bool {
 				return preg_match('/^[a-z0-9\_-]+$/s', $domain) > 0;
-			},
-
-			'domain.check' => function(?string $domain): bool {
+			})
+			->setCallback('domain.check', function(?string $domain): bool {
 
 				return (
 					$domain === NULL or (
@@ -49,17 +46,15 @@ class Website extends WebsiteElement {
 						str_contains($domain, '.') === TRUE
 					)
 				);
-			},
-
-			'customFont.check' => function(string $customFont): bool {
+			})
+			->setCallback('customFont.check', function(string $customFont): bool {
 				return DesignLib::isCustomFont($customFont, 'customFonts');
-			},
-
-			'customTitleFont.check' => function(string $customFont): bool {
+			})
+			->setCallback('customTitleFont.check', function(string $customFont): bool {
 				return DesignLib::isCustomFont($customFont, 'customTitleFonts');
-			},
+			});
 
-		]);
+		parent::build($properties, $input, $p);
 
 	}
 

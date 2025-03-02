@@ -37,15 +37,13 @@ class Bed extends BedElement {
 
 	}
 
-	public function build(array $properties, array $input, array $callbacks = [], ?string $for = NULL): array {
+	public function build(array $properties, array $input, \Properties $p = new \Properties()): void {
 
-		return parent::build($properties, $input, $callbacks + [
-
-			'name.empty' => function(?string $name): bool {
+		$p
+			->setCallback('name.empty', function(?string $name): bool {
 				return ($name !== NULL);
-			},
-
-			'name.duplicate' => function(string $name): bool {
+			})
+			->setCallback('name.duplicate', function(string $name): bool {
 
 				$this->expects(['plot']);
 
@@ -59,9 +57,8 @@ class Bed extends BedElement {
 					->whereStatus(Bed::ACTIVE)
 					->exists() === FALSE;
 
-			},
-
-			'zone.check' => function(Zone $eZone): bool {
+			})
+			->setCallback('zone.check', function(Zone $eZone): bool {
 
 				return (
 					Zone::model()
@@ -70,9 +67,8 @@ class Bed extends BedElement {
 					$eZone['farm']->canWrite()
 				);
 
-			},
-
-			'plot.check' => function(Plot $ePlot): bool {
+			})
+			->setCallback('plot.check', function(Plot $ePlot): bool {
 
 				$this->expects(['zone']);
 
@@ -88,27 +84,24 @@ class Bed extends BedElement {
 						->get($ePlot)
 				);
 
-			},
-
-			'length.check' => function(?float $length): bool {
+			})
+			->setCallback('length.check', function(?float $length): bool {
 
 				return (
 					$length !== NULL and
 					Bed::model()->check('length', $length)
 				);
 
-			},
-
-			'width.check' => function(?float $width): bool {
+			})
+			->setCallback('width.check', function(?float $width): bool {
 
 				return (
 					$width !== NULL and
 					Bed::model()->check('width', $width)
 				);
 
-			},
-
-			'greenhouse.check' => function(Greenhouse $eGreenhouse): bool {
+			})
+			->setCallback('greenhouse.check', function(Greenhouse $eGreenhouse): bool {
 
 				$this->expects([
 					'plot' => ['zone', 'zoneFill']
@@ -128,30 +121,29 @@ class Bed extends BedElement {
 				return Greenhouse::model()
 						->exists($eGreenhouse);
 
-			},
-
-			'seasonFirst.check' => function(?int $season): bool {
+			})
+			->setCallback('seasonFirst.check', function(?int $season): bool {
 				$this->expects([
 					'plot' => ['seasonFirst', 'seasonLast']
 				]);
 				return ($season === NULL or $this['plot']['seasonFirst'] === NULL or $season >= $this['plot']['seasonFirst']);
-			},
-			'seasonLast.check' => function(?int $season): bool {
+			})
+			->setCallback('seasonLast.check', function(?int $season): bool {
 				$this->expects([
 					'plot' => ['seasonFirst', 'seasonLast']
 				]);
 				return ($season === NULL or $this['plot']['seasonLast'] === NULL or $season <= $this['plot']['seasonLast']);
-			},
-			'seasonLast.consistency' => function(?int $season): bool {
+			})
+			->setCallback('seasonLast.consistency', function(?int $season): bool {
 
 				return (
 					$this['seasonFirst'] === NULL or
 					$season === NULL or
 					$this['seasonFirst'] <= $season
 				);
-			}
+			});
 
-		]);
+		parent::build($properties, $input, $p);
 
 	}
 

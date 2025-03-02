@@ -171,11 +171,10 @@ class Customer extends CustomerElement {
 		return hash('sha256', random_bytes(1024));
 	}
 
-	public function build(array $properties, array $input, array $callbacks = [], ?string $for = NULL): array {
+	public function build(array $properties, array $input, \Properties $p = new \Properties()): void {
 
-		return parent::build($properties, $input, $callbacks + [
-
-			'firstName.empty' => function(?string &$firstName): bool {
+		$p
+			->setCallback('firstName.empty', function(?string &$firstName): bool {
 
 				$this->expects(['user']);
 
@@ -191,9 +190,8 @@ class Customer extends CustomerElement {
 				}
 
 
-			},
-
-			'lastName.empty' => function(?string &$lastName, \BuildProperties $p): bool {
+			})
+			->setCallback('lastName.empty', function(?string &$lastName) use ($p): bool {
 
 				$this->expects(['user']);
 
@@ -214,9 +212,8 @@ class Customer extends CustomerElement {
 
 				}
 
-			},
-
-			'name.empty' => function(?string &$name): bool {
+			})
+			->setCallback('name.empty', function(?string &$name): bool {
 
 				$this->expects(['user']);
 
@@ -227,9 +224,8 @@ class Customer extends CustomerElement {
 
 				return ($name !== NULL);
 
-			},
-
-			'name.set' => function(?string $name, \BuildProperties $p): bool {
+			})
+			->setCallback('name.set', function(?string $name) use ($p): bool {
 
 				if($this->getCategory() === Customer::PRIVATE) {
 
@@ -253,27 +249,24 @@ class Customer extends CustomerElement {
 
 				return TRUE;
 
-			},
+			})
+			->setCallback('category.user', function(?string $category) use ($p): bool {
 
-			'category.user' => function(?string $category) use ($for): bool {
-
-				return match($for) {
+				return match($p->for) {
 					'create' => TRUE,
 					'update' => ($category !== Customer::COLLECTIVE)
 				};
 
-			},
-
-			'phone.check' => function(?string $phone): bool {
+			})
+			->setCallback('phone.check', function(?string $phone): bool {
 
 				return (
 					$phone === NULL or
 					preg_match('/^[0-9 \+]+$/si', $phone) > 0
 				);
 
-			},
-
-			'category.set' => function(?string $category) use ($for): bool {
+			})
+			->setCallback('category.set', function(?string $category) use ($p): bool {
 
 				$this['category'] = $category;
 
@@ -299,9 +292,9 @@ class Customer extends CustomerElement {
 
 				};
 
-			},
+			});
 
-		]);
+		parent::build($properties, $input, $p);
 
 	}
 

@@ -25,25 +25,23 @@ class Comment extends CommentElement {
 
 	}
 
-	public function build(array $properties, array $input, array $callbacks = [], ?string $for = NULL): array {
+	public function build(array $properties, array $input, \Properties $p = new \Properties()): void {
 
-		return parent::build($properties, $input, $callbacks + [
-
-			'task.check' => function(Task $eTask): bool {
+		$p
+			->setCallback('task.check', function(Task $eTask): bool {
 
 				return Task::model()
 					->select('farm', 'series', 'cultivation')
 					->get($eTask);
 
-			},
-
-			'user.check' => function(\user\User $eUser): bool {
+			})
+			->setCallback('user.check', function(\user\User $eUser): bool {
 
 				return \user\User::model()->exists($eUser) and $eUser->isOnline();
 
-			}
+			});
 
-		]);
+		parent::build($properties, $input, $p);
 
 	}
 

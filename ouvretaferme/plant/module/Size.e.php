@@ -31,20 +31,18 @@ class Size extends SizeElement {
 
 	}
 
-	public function build(array $properties, array $input, array $callbacks = [], ?string $for = NULL): array {
+	public function build(array $properties, array $input, \Properties $p = new \Properties()): void {
 
-		return parent::build($properties, $input, $callbacks + [
-
-			'farm.check' => function(\farm\Farm $eFarm): bool {
+		$p
+			->setCallback('farm.check', function(\farm\Farm $eFarm): bool {
 
 				return (
 					(\Privilege::can('plant\admin') and $eFarm->empty()) or
 					$eFarm->canManage()
 				);
 
-			},
-
-			'plant.check' => function(Plant $ePlant): bool {
+			})
+			->setCallback('plant.check', function(Plant $ePlant): bool {
 
 				$this->expects(['farm']);
 
@@ -55,9 +53,9 @@ class Size extends SizeElement {
 						->exists($ePlant)
 				);
 
-			}
-
-		]);
+			});
+		
+		parent::build($properties, $input, $p);
 
 	}
 

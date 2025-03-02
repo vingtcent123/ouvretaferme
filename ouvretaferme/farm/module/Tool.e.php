@@ -74,19 +74,17 @@ class Tool extends ToolElement {
 
 	}
 
-	public function build(array $properties, array $input, array $callbacks = [], ?string $for = NULL): array {
+	public function build(array $properties, array $input, \Properties $p = new \Properties()): void {
 
-		return parent::build($properties, $input, $callbacks + [
-
-			'action.check' => function(\farm\Action $eAction): bool {
+		$p
+			->setCallback('action.check', function(\farm\Action $eAction): bool {
 				$this->expects(['farm']);
 				return (
 					$eAction->empty() or
 					\farm\ActionLib::canUse($eAction, $this['farm'])
 				);
-			},
-
-			'routineName.check' => function(?string $routineName): bool {
+			})
+			->setCallback('routineName.check', function(?string $routineName): bool {
 
 				if($routineName === NULL) {
 					return TRUE;
@@ -105,9 +103,8 @@ class Tool extends ToolElement {
 					$this['action']['fqn'] === RoutineLib::get($routineName)['action']
 				);
 
-			},
-
-			'routineValue.check' => function(?array &$routineValue): bool {
+			})
+			->setCallback('routineValue.check', function(?array &$routineValue): bool {
 
 				$this->expects([
 					'routineName'
@@ -128,9 +125,9 @@ class Tool extends ToolElement {
 
 				return $fw->ok();
 
-			},
-
-		]);
+			});
+		
+		parent::build($properties, $input, $p);
 
 	}
 

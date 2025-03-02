@@ -246,7 +246,7 @@ new Page()
 				'status' => $data->status
 			]);
 
-			$e->build(\series\TaskLib::getPropertiesCreate()($e), $_POST, for: 'create');
+			$e->build(\series\TaskLib::getPropertiesCreate()($e), $_POST, new \Properties('create'));
 
 			$data->c[] = $e;
 

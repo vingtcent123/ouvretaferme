@@ -29,19 +29,17 @@ class Product extends ProductElement {
 
 	}
 
-	public function build(array $properties, array $input, array $callbacks = [], ?string $for = NULL): array {
+	public function build(array $properties, array $input, \Properties $p = new \Properties()): void {
 
-		return parent::build($properties, $input, $callbacks + [
-
-			'status.prepare' => function(): bool {
+		$p
+			->setCallback('status.prepare', function(): bool {
 
 				$this->expects(['catalog']);
 
 				return $this['catalog']->notEmpty();
 
-			},
-
-			'limitCustomers.prepare' => function(mixed &$customers): bool {
+			})
+			->setCallback('limitCustomers.prepare', function(mixed &$customers): bool {
 
 				$this->expects(['farm']);
 
@@ -55,9 +53,8 @@ class Product extends ProductElement {
 
 				return TRUE;
 
-			},
-
-			'limitMax.consistency' => function(?int $limitMax, \BuildProperties $p): bool {
+			})
+			->setCallback('limitMax.consistency', function(?int $limitMax) use ($p): bool {
 
 				if($p->isBuilt('limitMin') === FALSE) {
 					return TRUE;
@@ -68,9 +65,8 @@ class Product extends ProductElement {
 					$limitMax >= $this['limitMin']
 				);
 
-			},
-
-			'limitEndAt.consistency' => function($limitEndAt, \BuildProperties $p): bool {
+			})
+			->setCallback('limitEndAt.consistency', function($limitEndAt) use ($p): bool {
 
 				$p->expectsBuilt('limitStartAt');
 
@@ -83,9 +79,9 @@ class Product extends ProductElement {
 
 				return $limitEndAt > $this['limitStartAt'];
 
-			},
-
-		]);
+			});
+		
+		parent::build($properties, $input, $p);
 
 	}
 

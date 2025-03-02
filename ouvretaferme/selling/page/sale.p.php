@@ -249,7 +249,7 @@ new \selling\SalePage()
 
 		$fw = new FailWatch();
 
-		$data->e->build(['customer'], $_POST, for: 'update');
+		$data->e->build(['customer'], $_POST, new \Properties('update'));
 
 		$fw->validate();
 
@@ -277,7 +277,7 @@ new \selling\SalePage()
 
 		$fw = new \FailWatch();
 
-		$data->e->build(['deliveredAt'], $_POST, for: 'create');
+		$data->e->build(['deliveredAt'], $_POST, new \Properties('create'));
 
 		$fw->validate();
 

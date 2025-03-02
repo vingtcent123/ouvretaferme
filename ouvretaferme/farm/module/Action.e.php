@@ -21,11 +21,10 @@ class Action extends ActionElement {
 
 	}
 
-	public function build(array $properties, array $input, array $callbacks = [], ?string $for = NULL): array {
+	public function build(array $properties, array $input, \Properties $p = new \Properties()): void {
 
-		return parent::build($properties, $input, $callbacks + [
-
-			'categories.check' => function(array &$categories): bool {
+		$p
+			->setCallback('categories.check', function(array &$categories): bool {
 
 				$this->expects(['farm']);
 
@@ -39,9 +38,8 @@ class Action extends ActionElement {
 						->count() === count($categories)
 				);
 
-			},
-
-			'color.prepare' => function(?string &$color): bool {
+			})
+			->setCallback('color.prepare', function(?string &$color): bool {
 
 				if($color === '') {
 					$color = new ActionModel()->getDefaultValue('color');
@@ -49,9 +47,9 @@ class Action extends ActionElement {
 
 				return TRUE;
 
-			}
+			});
 
-		]);
+		parent::build($properties, $input, $p);
 
 	}
 

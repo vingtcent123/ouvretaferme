@@ -95,11 +95,10 @@ class Invoice extends InvoiceElement {
 
 	}
 
-	public function build(array $properties, array $input, array $callbacks = [], ?string $for = NULL): array {
+	public function build(array $properties, array $input, \Properties $p = new \Properties()): void {
 
-		return parent::build($properties, $input, $callbacks + [
-
-			'sales.prepare' => function(array &$sales): bool {
+		$p
+			->setCallback('sales.prepare', function(array &$sales): bool {
 
 				$this->expects(['customer']);
 
@@ -111,15 +110,13 @@ class Invoice extends InvoiceElement {
 
 				return TRUE;
 
-			},
-
-			'sales.check' => function(array &$sales): bool {
+			})
+			->setCallback('sales.check', function(array &$sales): bool {
 
 				return ($this['cSale']->count() === count($sales));
 
-			},
-
-			'sales.taxes' => function(): bool {
+			})
+			->setCallback('sales.taxes', function(): bool {
 
 				$this->expects(['cSale']);
 
@@ -127,9 +124,8 @@ class Invoice extends InvoiceElement {
 
 				return (count(array_unique($taxes)) === 1);
 
-			},
-
-			'sales.hasVat' => function(): bool {
+			})
+			->setCallback('sales.hasVat', function(): bool {
 
 				$this->expects(['cSale']);
 
@@ -137,9 +133,9 @@ class Invoice extends InvoiceElement {
 
 				return (count(array_unique($hasVat)) === 1);
 
-			},
-
-		]);
+			});
+		
+		parent::build($properties, $input, $p);
 
 	}
 

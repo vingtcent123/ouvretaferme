@@ -33,7 +33,7 @@ class Crop extends CropElement {
 
 	}
 
-	public function build(array $properties, array $input, array $callbacks = [], ?string $for = NULL): array {
+	public function build(array $properties, array $input, \Properties $p = new \Properties()): void {
 
 		$this->expects([
 			'sequence' => ['use']
@@ -50,10 +50,9 @@ class Crop extends CropElement {
 			return TRUE;
 
 		};
-
-		return parent::build($properties, $input, $callbacks + [
-
-			'plant.check' => function(\plant\Plant $ePlant): bool {
+		
+		$p
+			->setCallback('plant.check', function(\plant\Plant $ePlant): bool {
 
 				return (
 					$ePlant->empty() === FALSE and
@@ -63,9 +62,8 @@ class Crop extends CropElement {
 					$ePlant->canRead()
 				);
 
-			},
-
-			'seedlingSeeds.prepare' => function(?int &$seeds): bool {
+			})
+			->setCallback('seedlingSeeds.prepare', function(?int &$seeds): bool {
 
 				$this->expects(['seedling']);
 
@@ -77,9 +75,8 @@ class Crop extends CropElement {
 
 				return TRUE;
 
-			},
-
-			'density.prepare' => function(?float &$density): bool {
+			})
+			->setCallback('density.prepare', function(?float &$density): bool {
 
 				$this->expects(['distance']);
 
@@ -89,13 +86,11 @@ class Crop extends CropElement {
 
 				return TRUE;
 
-			},
-
-			'rowSpacing.prepare' => $spacing,
-			'rows.prepare' => $spacing,
-			'plantSpacing.prepare' => $spacing,
-
-			'rowSpacing.check' => function(?int &$rowSpacing): bool {
+			})
+			->setCallback('rowSpacing.prepare', $spacing)
+			->setCallback('rows.prepare', $spacing)
+			->setCallback('plantSpacing.prepare', $spacing)
+			->setCallback('rowSpacing.check', function(?int &$rowSpacing): bool {
 
 				switch($this['sequence']['use']) {
 
@@ -108,9 +103,8 @@ class Crop extends CropElement {
 
 				}
 
-			},
-
-			'rows.check' => function(?int &$rows): bool {
+			})
+			->setCallback('rows.check', function(?int &$rows): bool {
 
 				switch($this['sequence']['use']) {
 
@@ -123,9 +117,8 @@ class Crop extends CropElement {
 
 				}
 
-			},
-
-			'variety.check' => function(?array $varieties, \BuildProperties $p, string $wrapper) {
+			})
+			->setCallback('variety.check', function(?array $varieties, \Properties $p, string $wrapper) {
 
 				if($p->isBuilt('plant') === FALSE) {
 					return TRUE;
@@ -135,9 +128,8 @@ class Crop extends CropElement {
 
 				return TRUE;
 
-			},
-
-			'actions.set' => function(?array $actions): bool {
+			})
+			->setCallback('actions.set', function(?array $actions): bool {
 
 				$this->expects(['seedling']);
 
@@ -172,9 +164,9 @@ class Crop extends CropElement {
 
 				return TRUE;
 
-			}
+			});
 
-		]);
+		parent::build($properties, $input, $p);
 
 	}
 

@@ -254,7 +254,7 @@ new Page(function($data) {
 		($data->validateSale)();
 		($data->validatePayment)();
 
-		$data->eSaleExisting['cItem'] = \selling\ItemLib::getBySale($data->eSaleExisting);
+		$data->eSaleExisting['cItem'] = \selling\SaleLib::getItems($data->eSaleExisting, withIngredients: TRUE, public: TRUE);
 		$data->eSaleExisting['shopPoint'] = \shop\PointLib::getById($data->eSaleExisting['shopPoint']);
 
 		throw new ViewAction($data);

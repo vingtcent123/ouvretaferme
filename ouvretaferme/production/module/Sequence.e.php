@@ -36,11 +36,10 @@ class Sequence extends SequenceElement {
 
 	}
 
-	public function build(array $properties, array $input, array $callbacks = [], ?string $for = NULL): array {
+	public function build(array $properties, array $input, \Properties $p = new \Properties()): void {
 
-		return parent::build($properties, $input, $callbacks + [
-
-			'bedWidth.prepare' => function(?int &$bedWidth): bool {
+		$p
+			->setCallback('bedWidth.prepare', function(?int &$bedWidth): bool {
 
 				try {
 					$this->expects(['use']);
@@ -60,9 +59,8 @@ class Sequence extends SequenceElement {
 
 				return TRUE;
 
-			},
-
-			'alleyWidth.prepare' => function(?int &$alleyWidth): bool {
+			})
+			->setCallback('alleyWidth.prepare', function(?int &$alleyWidth): bool {
 
 				try {
 					$this->expects(['use']);
@@ -78,9 +76,8 @@ class Sequence extends SequenceElement {
 
 				return TRUE;
 
-			},
-
-			'alleyWidth.check' => function(?int &$alleyWidth): bool {
+			})
+			->setCallback('alleyWidth.check', function(?int &$alleyWidth): bool {
 
 				try {
 					$this->expects(['use']);
@@ -99,9 +96,8 @@ class Sequence extends SequenceElement {
 
 				}
 
-			},
-
-			'plantsList.check' => function($plants): bool {
+			})
+			->setCallback('plantsList.check', function($plants): bool {
 
 				$plants = (array)($plants ?? []);
 
@@ -124,9 +120,8 @@ class Sequence extends SequenceElement {
 					return TRUE;
 				}
 
-			},
-
-			'perennialLifetime.prepare' => function(?int &$lifetime): bool {
+			})
+			->setCallback('perennialLifetime.prepare', function(?int &$lifetime): bool {
 
 				$this->expects(['id', 'cycle']);
 
@@ -136,9 +131,9 @@ class Sequence extends SequenceElement {
 
 				return TRUE;
 
-			},
-
-		]);
+			});
+		
+		parent::build($properties, $input, $p);
 
 	}
 

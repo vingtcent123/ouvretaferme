@@ -25,37 +25,35 @@ class Zone extends ZoneElement {
 
 	}
 
-	public function build(array $properties, array $input, array $callbacks = [], ?string $for = NULL): array {
+	public function build(array $properties, array $input, \Properties $p = new \Properties()): void {
 
-		return parent::build($properties, $input, $callbacks + [
-
-			'use.empty' => function(?string $use): bool {
+		$p
+			->setCallback('use.empty', function(?string $use): bool {
 
 				return ($use !== NULL);
 
-			},
-
-			'seasonFirst.check' => function(?int $season): bool {
+			})
+			->setCallback('seasonFirst.check', function(?int $season): bool {
 				$this->expects([
 					'farm' => ['seasonFirst']
 				]);
 				return ($season === NULL or $season >= $this['farm']['seasonFirst']);
-			},
-			'seasonLast.check' => function(?int $season): bool {
+			})
+			->setCallback('seasonLast.check', function(?int $season): bool {
 				$this->expects([
 					'farm' => ['seasonLast']
 				]);
 				return ($season === NULL or $season <= $this['farm']['seasonLast']);
-			},
-			'seasonLast.consistency' => function(?int $season): bool {
+			})
+			->setCallback('seasonLast.consistency', function(?int $season): bool {
 				return (
 					$this['seasonFirst'] === NULL or
 					$season === NULL or
 					$this['seasonFirst'] <= $season
 				);
-			}
+			});
 
-		]);
+		parent::build($properties, $input, $p);
 
 	}
 

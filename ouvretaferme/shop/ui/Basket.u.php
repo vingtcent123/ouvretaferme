@@ -157,8 +157,6 @@ class BasketUi {
 
 		$eDate->expects(['cProduct']);
 
-		$updateBasket = FALSE;
-
 		$h = '<div class="util-title">';
 			$h .= '<h2>';
 				$h .= s("Mon panier").' (<span id="shop-basket-articles">'.count($basket).'</span>)';

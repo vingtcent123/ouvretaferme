@@ -630,13 +630,12 @@ class Sale extends SaleElement {
 
 	}
 
-	public function build(array $properties, array $input, array $callbacks = [], ?string $for = NULL): array {
+	public function build(array $properties, array $input, \Properties $p = new \Properties()): void {
 
 		$fw = new \FailWatch();
 
-		return parent::build($properties, $input, $callbacks + [
-
-			'market.prepare' => function(bool &$market): bool {
+		$p
+			->setCallback('market.prepare', function(bool &$market): bool {
 
 				if($this['compositionOf']->notEmpty()) {
 					$this['market'] = FALSE;
@@ -644,13 +643,12 @@ class Sale extends SaleElement {
 
 				return TRUE;
 
-			},
-
-			'customer.check' => function(Customer $eCustomer) use ($for): bool {
+			})
+			->setCallback('customer.check', function(Customer $eCustomer) use ($p): bool {
 
 				$this->expects(['farm']);
 
-				if($for === 'update') {
+				if($p->for === 'update') {
 
 					$this->expects(['marketParent']);
 
@@ -702,9 +700,8 @@ class Sale extends SaleElement {
 					return FALSE;
 				}
 
-			},
-
-			'customer.market' => function(Customer $eCustomer) use ($fw): bool {
+			})
+			->setCallback('customer.market', function(Customer $eCustomer) use ($fw): bool {
 
 				if($this['compositionOf']->notEmpty()) {
 					return TRUE;
@@ -722,9 +719,8 @@ class Sale extends SaleElement {
 					return TRUE;
 				}
 
-			},
-
-			'paymentMethod.check' => function(?string $paymentMethod): bool {
+			})
+			->setCallback('paymentMethod.check', function(?string $paymentMethod): bool {
 
 				if($this->acceptWritePaymentMethod() === FALSE) {
 					return FALSE;
@@ -735,9 +731,8 @@ class Sale extends SaleElement {
 					in_array($paymentMethod, [Sale::CARD, Sale::CHECK, Sale::CASH, Sale::TRANSFER])
 				);
 
-			},
-
-			'preparationStatus.check' => function(string $preparationStatus): bool {
+			})
+			->setCallback('preparationStatus.check', function(string $preparationStatus): bool {
 
 				$this->expects(['preparationStatus', 'deliveredAt', 'market', 'marketParent']);
 
@@ -762,9 +757,8 @@ class Sale extends SaleElement {
 
 				return TRUE;
 
-			},
-
-			'preparationStatus.market' => function(string $preparationStatus): bool {
+			})
+			->setCallback('preparationStatus.market', function(string $preparationStatus): bool {
 
 				$this->expects(['farm', 'market']);
 
@@ -788,9 +782,8 @@ class Sale extends SaleElement {
 
 				return TRUE;
 
-			},
-
-			'deliveredAt.check' => function(string &$date) use ($for): bool {
+			})
+			->setCallback('deliveredAt.check', function(string &$date) use ($p): bool {
 
 				try {
 					$this->expects(['from']);
@@ -816,8 +809,8 @@ class Sale extends SaleElement {
 				} else {
 
 					if(
-						($for === 'create') or
-						($for === 'update' and $this->acceptWriteDeliveredAt())
+						($p->for === 'create') or
+						($p->for === 'update' and $this->acceptWriteDeliveredAt())
 					) {
 
 						return \Filter::check('date', $date);
@@ -828,9 +821,8 @@ class Sale extends SaleElement {
 
 				}
 
-			},
-
-			'deliveredAt.composition' => function(string $date, \BuildProperties $p) use ($for): bool {
+			})
+			->setCallback('deliveredAt.composition', function(string $date) use ($p): bool {
 
 				if($this['compositionOf']->empty()) {
 					return TRUE;
@@ -838,14 +830,13 @@ class Sale extends SaleElement {
 					return Sale::model()
 						->whereCompositionOf($this['compositionOf'])
 						->whereDeliveredAt($date)
-						->whereId('!=', $this, if: $for === 'update')
+						->whereId('!=', $this, if: $p->for === 'update')
 						->exists() === FALSE;
 				}
 
 
-			},
-
-			'deliveredAt.compositionTooLate' => function(string $date, \BuildProperties $p) use ($for): bool {
+			})
+			->setCallback('deliveredAt.compositionTooLate', function(string $date) use ($p): bool {
 
 				if($this['compositionOf']->empty()) {
 					return TRUE;
@@ -854,9 +845,8 @@ class Sale extends SaleElement {
 				}
 
 
-			},
-
-			'shopDate.check' => function(\shop\Date &$eDate): bool {
+			})
+			->setCallback('shopDate.check', function(\shop\Date &$eDate): bool {
 
 				if($eDate->notEmpty()) {
 
@@ -879,9 +869,8 @@ class Sale extends SaleElement {
 					return TRUE;
 				}
 
-			},
-
-			'shopPoint.check' => function(\shop\Point &$ePoint): bool {
+			})
+			->setCallback('shopPoint.check', function(\shop\Point &$ePoint): bool {
 
 				$this->expects([
 					'shop' => ['hasPoint'],
@@ -919,25 +908,22 @@ class Sale extends SaleElement {
 
 				}
 
-			},
-
-			'shipping.check' => function(mixed $shipping): bool {
+			})
+			->setCallback('shipping.check', function(mixed $shipping): bool {
 
 				return (
 					$shipping === NULL or
 					\Filter::check(['float32', 'min' => 0.1], $shipping)
 				);
 
-			},
-
-			'shippingVatRate.check' => function(?float $vat): bool {
+			})
+			->setCallback('shippingVatRate.check', function(?float $vat): bool {
 				return (
 					$vat === NULL or
 					in_array($vat, \Setting::get('selling\vatRates'))
 				);
-			},
-
-			'preparationStatus.checkOutOfDraft' => function(string $preparationStatus): bool {
+			})
+			->setCallback('preparationStatus.checkOutOfDraft', function(string $preparationStatus): bool {
 
 				$this->expects(['preparationStatus', 'deliveredAt']);
 
@@ -947,9 +933,8 @@ class Sale extends SaleElement {
 
 				return ($this['deliveredAt'] !== NULL);
 
-			},
-
-			'orderFormValidUntil.check' => function(?string &$date): bool {
+			})
+			->setCallback('orderFormValidUntil.check', function(?string &$date): bool {
 
 				return (
 					$date === NULL or (
@@ -958,9 +943,8 @@ class Sale extends SaleElement {
 					)
 				);
 
-			},
-
-			'productsList.check' => function(mixed $list, \BuildProperties $p): bool {
+			})
+			->setCallback('productsList.check', function(mixed $list) use ($p): bool {
 
 				if($p->isInvalid('customer')) {
 					return TRUE;
@@ -976,9 +960,8 @@ class Sale extends SaleElement {
 
 				return TRUE;
 
-			},
-
-			'productsBasket.check' => function(): bool {
+			})
+			->setCallback('productsBasket.check', function(): bool {
 
 				$products = POST('products', 'array');
 
@@ -995,9 +978,9 @@ class Sale extends SaleElement {
 				return ($this['basket'] !== []);
 
 
-			}
-
-		]);
+			});
+		
+		parent::build($properties, $input, $p);
 
 	}
 

@@ -44,16 +44,14 @@ class Configuration extends ConfigurationElement {
 		return ($this['invoiceCity'] !== NULL);
 	}
 
-	public function build(array $properties, array $input, array $callbacks = [], ?string $for = NULL): array {
+	public function build(array $properties, array $input, \Properties $p = new \Properties()): void {
 
-		return parent::build($properties, $input, $callbacks + [
-
-			'documentInvoices.prepare' => function(string &$value): bool {
+		$p
+			->setCallback('documentInvoices.prepare', function(string &$value): bool {
 				$value--;
 				return TRUE;
-			},
-
-			'documentInvoices.consistency' => function(string &$value): bool {
+			})
+			->setCallback('documentInvoices.consistency', function(string &$value): bool {
 
 				$this->expects(['invoicePrefix']);
 
@@ -66,56 +64,46 @@ class Configuration extends ConfigurationElement {
 
 				return ($value > $this['invoicePrefixMin']);
 
-			},
-
-			'creditPrefix.prepare' => function(string &$prefix): bool {
+			})
+			->setCallback('creditPrefix.prepare', function(string &$prefix): bool {
 				$prefix = strtoupper($prefix);
 				return TRUE;
-			},
-
-			'creditPrefix.fqn' => function(string $prefix): bool {
+			})
+			->setCallback('creditPrefix.fqn', function(string $prefix): bool {
 				return preg_match('/^[a-z0-9\-\_]*[a-z\-\_]$/si', rtrim($prefix, '#')) > 0;
-			},
-
-			'invoicePrefix.prepare' => function(string &$prefix): bool {
+			})
+			->setCallback('invoicePrefix.prepare', function(string &$prefix): bool {
 				$prefix = strtoupper($prefix);
 				return TRUE;
-			},
-
-			'invoicePrefix.fqn' => function(string $prefix): bool {
+			})
+			->setCallback('invoicePrefix.fqn', function(string $prefix): bool {
 				return preg_match('/^[a-z0-9\-\_]*[a-z\-\_]$/si', rtrim($prefix, '#')) > 0;
-			},
-
-			'deliveryNotePrefix.prepare' => function(string &$prefix): bool {
+			})
+			->setCallback('deliveryNotePrefix.prepare', function(string &$prefix): bool {
 				$prefix = strtoupper($prefix);
 				return TRUE;
-			},
-
-			'deliveryNotePrefix.fqn' => function(string $prefix): bool {
+			})
+			->setCallback('deliveryNotePrefix.fqn', function(string $prefix): bool {
 				return preg_match('/^[a-z0-9\-\_]*[a-z\-\_]$/si', $prefix) > 0;
-			},
-
-			'orderFormPrefix.prepare' => function(string &$prefix): bool {
+			})
+			->setCallback('orderFormPrefix.prepare', function(string &$prefix): bool {
 				$prefix = strtoupper($prefix);
 				return TRUE;
-			},
-
-			'orderFormPrefix.fqn' => function(string $prefix): bool {
+			})
+			->setCallback('orderFormPrefix.fqn', function(string $prefix): bool {
 				return preg_match('/^[a-z0-9\-\_]*[a-z\-\_]$/si', $prefix) > 0;
-			},
-
-			'defaultVat.check' => function(int $vat): bool {
+			})
+			->setCallback('defaultVat.check', function(int $vat): bool {
 				return array_key_exists($vat, SaleLib::getVatRates($this['farm']));
-			},
-
-			'defaultVatShipping.check' => function(?int $vat): bool {
+			})
+			->setCallback('defaultVatShipping.check', function(?int $vat): bool {
 				return (
 					$vat === NULL or
 					array_key_exists($vat, SaleLib::getVatRates($this['farm']))
 				);
-			},
-
-		]);
+			});
+	
+		parent::build($properties, $input, $p);
 
 	}
 
