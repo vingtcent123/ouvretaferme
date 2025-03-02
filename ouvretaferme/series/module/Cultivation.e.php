@@ -154,19 +154,15 @@ class Cultivation extends CultivationElement {
 				return NULL;
 			}
 
-			if($this['series']['alleyWidth'] > 0) {
-				$adjustAlley = ($this['series']['alleyWidth'] + $this['series']['bedWidth']) / $this['series']['bedWidth'];
-			} else {
-				$adjustAlley = 1;
-			}
+			$density = (100 / $this['plantSpacing']) * $this['rows'];
 
 			switch($sliceUnit) {
 
 				case Cultivation::PERCENT :
-					return round($length * $this['density'] * $adjustAlley * $slicePercent / 100 * $safetyMarginMultiplier);
+					return round($length * $density * $slicePercent / 100 * $safetyMarginMultiplier);
 
 				case Cultivation::LENGTH :
-					return round($eSlice['partLength'] * $this['density'] * $adjustAlley * $safetyMarginMultiplier);
+					return round($eSlice['partLength'] * $density * $safetyMarginMultiplier);
 
 			}
 
