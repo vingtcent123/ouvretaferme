@@ -82,6 +82,7 @@ class Cultivation extends CultivationElement {
 
 		$this->expects([
 			'series' => ['use', 'alleyWidth', 'bedWidth'],
+			'distance',
 		]);
 
 		$safetyMarginMultiplier = (1 + ($safetyMargin ?? 0) / 100);
@@ -114,63 +115,60 @@ class Cultivation extends CultivationElement {
 			return NULL;
 		}
 
-		switch($this['series']['use']) {
+		if(
+			($this['series']['use'] === Series::BLOCK) or
+			($this['series']['use'] === Series::BED and $this['distance'] === Cultivation::DENSITY)
+		) {
 
-			case Series::BLOCK :
+			if($this['series']['area'] !== NULL) {
+				$area = $this['series']['area'];
+				$targeted = FALSE;
+			} else if($this['series']['areaTarget'] !== NULL) {
+				$area = $this['series']['areaTarget'];
+				$targeted = TRUE;
+			} else {
+				$error = 'area';
+				return NULL;
+			}
 
-				if($this['series']['area'] !== NULL) {
-					$area = $this['series']['area'];
-					$targeted = FALSE;
-				} else if($this['series']['areaTarget'] !== NULL) {
-					$area = $this['series']['areaTarget'];
-					$targeted = TRUE;
-				} else {
-					$error = 'area';
-					return NULL;
-				}
+			switch($sliceUnit) {
 
-				switch($sliceUnit) {
+				case Cultivation::PERCENT :
+					return round($area * $this['density'] * $slicePercent / 100 * $safetyMarginMultiplier);
 
-					case Cultivation::PERCENT :
-						return round($area * $this['density'] * $slicePercent / 100 * $safetyMarginMultiplier);
+				case Cultivation::AREA :
+					return round($eSlice['partArea'] * $this['density'] * $safetyMarginMultiplier);
 
-					case Cultivation::AREA :
-						return round($eSlice['partArea'] * $this['density'] * $safetyMarginMultiplier);
+			};
 
-				};
+		} else {
 
-				break;
+			if($this['series']['length'] !== NULL) {
+				$length = $this['series']['length'];
+				$targeted = FALSE;
+			} else if($this['series']['lengthTarget'] !== NULL) {
+				$length = $this['series']['lengthTarget'];
+				$targeted = TRUE;
+			} else {
+				$error = 'length';
+				return NULL;
+			}
 
-			case Series::BED :
+			if($this['series']['alleyWidth'] > 0) {
+				$adjustAlley = ($this['series']['alleyWidth'] + $this['series']['bedWidth']) / $this['series']['bedWidth'];
+			} else {
+				$adjustAlley = 1;
+			}
 
-				if($this['series']['length'] !== NULL) {
-					$length = $this['series']['length'];
-					$targeted = FALSE;
-				} else if($this['series']['lengthTarget'] !== NULL) {
-					$length = $this['series']['lengthTarget'];
-					$targeted = TRUE;
-				} else {
-					$error = 'length';
-					return NULL;
-				}
+			switch($sliceUnit) {
 
-				if($this['series']['alleyWidth'] > 0) {
-					$adjustAlley = ($this['series']['alleyWidth'] + $this['series']['bedWidth']) / $this['series']['bedWidth'];
-				} else {
-					$adjustAlley = 1;
-				}
+				case Cultivation::PERCENT :
+					return round($length * $this['density'] * $adjustAlley * $slicePercent / 100 * $safetyMarginMultiplier);
 
-				switch($sliceUnit) {
+				case Cultivation::LENGTH :
+					return round($eSlice['partLength'] * $this['density'] * $adjustAlley * $safetyMarginMultiplier);
 
-					case Cultivation::PERCENT :
-						return round($length * $this['density'] * $adjustAlley * $slicePercent / 100 * $safetyMarginMultiplier);
-
-					case Cultivation::LENGTH :
-						return round($eSlice['partLength'] * $this['density'] * $adjustAlley * $safetyMarginMultiplier);
-
-				};
-				
-				break;
+			}
 
 		}
 
