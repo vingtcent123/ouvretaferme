@@ -974,6 +974,7 @@ class CultivationUi {
 										[$short, $long] = match($cultivation['error']) {
 											'seedling' => [s("Implantation"), s("Implantation à définir")],
 											'area' => [s("Surface"), s("Surface à définir")],
+											'length' => [s("Surface"), s("Longueur de planche à définir")],
 											'density' => [s("Densité"), s("Densité à définir")],
 										};
 

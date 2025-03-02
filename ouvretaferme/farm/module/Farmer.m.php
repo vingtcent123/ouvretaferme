@@ -71,6 +71,9 @@ abstract class FarmerElement extends \Element {
 	const SALES = 'sales';
 	const CULTIVATION = 'cultivation';
 
+	const COMPOSITION = 'composition';
+	const INGREDIENT = 'ingredient';
+
 	const SETTINGS = 'settings';
 	const WEBSITE = 'website';
 
@@ -129,6 +132,7 @@ class FarmerModel extends \ModuleModel {
 			'viewShop' => ['enum', [\farm\Farmer::SHOP, \farm\Farmer::CATALOG, \farm\Farmer::POINT], 'cast' => 'enum'],
 			'viewShopCatalogCurrent' => ['element32', 'shop\Catalog', 'null' => TRUE, 'cast' => 'element'],
 			'viewAnalyze' => ['enum', [\farm\Farmer::WORKING_TIME, \farm\Farmer::REPORT, \farm\Farmer::SALES, \farm\Farmer::CULTIVATION], 'cast' => 'enum'],
+			'viewAnalyzeComposition' => ['enum', [\farm\Farmer::COMPOSITION, \farm\Farmer::INGREDIENT], 'cast' => 'enum'],
 			'viewAnalyzeYear' => ['int16', 'min' => 0, 'max' => NULL, 'null' => TRUE, 'cast' => 'int'],
 			'viewSettings' => ['enum', [\farm\Farmer::SETTINGS, \farm\Farmer::WEBSITE], 'cast' => 'enum'],
 			'viewSeason' => ['int16', 'min' => 0, 'max' => NULL, 'null' => TRUE, 'cast' => 'int'],
@@ -137,7 +141,7 @@ class FarmerModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'user', 'farm', 'farmGhost', 'farmStatus', 'status', 'role', 'viewPlanning', 'viewPlanningYear', 'viewPlanningCategory', 'viewPlanningHarvestExpected', 'viewPlanningField', 'viewPlanningArea', 'viewPlanningSearch', 'viewPlanningUser', 'viewCultivation', 'viewCultivationCategory', 'viewSeries', 'viewSoil', 'viewSelling', 'viewSellingSales', 'viewSellingCategory', 'viewSellingCategoryCurrent', 'viewShop', 'viewShopCatalogCurrent', 'viewAnalyze', 'viewAnalyzeYear', 'viewSettings', 'viewSeason', 'viewShopCurrent', 'createdAt'
+			'id', 'user', 'farm', 'farmGhost', 'farmStatus', 'status', 'role', 'viewPlanning', 'viewPlanningYear', 'viewPlanningCategory', 'viewPlanningHarvestExpected', 'viewPlanningField', 'viewPlanningArea', 'viewPlanningSearch', 'viewPlanningUser', 'viewCultivation', 'viewCultivationCategory', 'viewSeries', 'viewSoil', 'viewSelling', 'viewSellingSales', 'viewSellingCategory', 'viewSellingCategoryCurrent', 'viewShop', 'viewShopCatalogCurrent', 'viewAnalyze', 'viewAnalyzeComposition', 'viewAnalyzeYear', 'viewSettings', 'viewSeason', 'viewShopCurrent', 'createdAt'
 		]);
 
 		$this->propertiesToModule += [
@@ -210,6 +214,9 @@ class FarmerModel extends \ModuleModel {
 			case 'viewAnalyze' :
 				return Farmer::WORKING_TIME;
 
+			case 'viewAnalyzeComposition' :
+				return Farmer::COMPOSITION;
+
 			case 'viewSettings' :
 				return Farmer::SETTINGS;
 
@@ -279,6 +286,9 @@ class FarmerModel extends \ModuleModel {
 				return ($value === NULL) ? NULL : (string)$value;
 
 			case 'viewAnalyze' :
+				return ($value === NULL) ? NULL : (string)$value;
+
+			case 'viewAnalyzeComposition' :
 				return ($value === NULL) ? NULL : (string)$value;
 
 			case 'viewSettings' :
@@ -415,6 +425,10 @@ class FarmerModel extends \ModuleModel {
 
 	public function whereViewAnalyze(...$data): FarmerModel {
 		return $this->where('viewAnalyze', ...$data);
+	}
+
+	public function whereViewAnalyzeComposition(...$data): FarmerModel {
+		return $this->where('viewAnalyzeComposition', ...$data);
 	}
 
 	public function whereViewAnalyzeYear(...$data): FarmerModel {

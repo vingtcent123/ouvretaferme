@@ -981,6 +981,16 @@ class AnalyzeUi {
 		$h = '<div class="util-title">';
 			$h .= '<h2>'.s("Meilleures ventes").'</h2>';
 			$h .= '<div>';
+
+				$request = LIME_REQUEST;
+				$request = \util\HttpUi::setArgument($request, 'sort', $property.$direction);
+
+				$h .= \util\TextUi::switch([
+					'href' => $eInvoice->canWrite() ? '/selling/invoice:doUpdatePaymentStatus' : NULL,
+					'post-id' => $eInvoice['id'],
+					'post-payment-status' => ($eInvoice['paymentStatus'] === Invoice::PAID) ? Invoice::NOT_PAID : Invoice::PAID
+				], $eInvoice['paymentStatus'] === Invoice::PAID);
+
 				if(count($years) > 1) {
 					$h .= '<a '.attr('onclick', 'Lime.Search.toggle("#analyze-selling-search")').' class="btn btn-outline-primary">'.\Asset::icon('search').' '.s("Filtrer").'</a> ';
 					$h .= '<a data-dropdown="bottom-end" class="btn btn-outline-primary dropdown-toggle">'.s("Comparer").'</a>';
@@ -1667,7 +1677,7 @@ class AnalyzeUi {
 
 	public function getCustomerTurnover(\Collection $cSaleTurnover, ?int $year, Customer $eCustomer, bool $inPanel = FALSE): string {
 
-		$h = '<ul class="util-summarize">';
+		$h = '<ul class="util-summarize mb-2">';
 
 			foreach($cSaleTurnover as $eSaleTurnover) {
 				$h .= '<li '.($eSaleTurnover['year'] === $year ? 'class="selected"' : '').'>';
@@ -1871,7 +1881,7 @@ class AnalyzeUi {
 
 	public function getProductYear(\Collection $cItemYear, ?int $year, ?Product $eProductLink): string {
 
-		$h = '<ul class="util-summarize">';
+		$h = '<ul class="util-summarize mb-2">';
 
 			foreach($cItemYear as $eItemYear) {
 				$h .= '<li '.($eItemYear['year'] === $year ? 'class="selected"' : '').'>';

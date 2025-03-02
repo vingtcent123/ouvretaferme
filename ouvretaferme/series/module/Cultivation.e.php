@@ -81,7 +81,7 @@ class Cultivation extends CultivationElement {
 	public function getYoungPlants(Slice $eSlice = new Slice(),  ?bool &$targeted = NULL, ?int $safetyMargin = NULL, ?string &$error = NULL): ?int {
 
 		$this->expects([
-			'series',
+			'series' => ['use', 'alleyWidth', 'bedWidth'],
 		]);
 
 		$safetyMarginMultiplier = (1 + ($safetyMargin ?? 0) / 100);
@@ -109,34 +109,70 @@ class Cultivation extends CultivationElement {
 
 		}
 
-		if($this['series']['area'] !== NULL) {
-			$area = $this['series']['area'];
-			$targeted = FALSE;
-		} else if($this['series']['areaTarget'] !== NULL) {
-			$area = $this['series']['areaTarget'];
-			$targeted = TRUE;
-		} else {
-			$error = 'area';
-			return NULL;
-		}
-
 		if($this['density'] === NULL) {
 			$error = 'density';
 			return NULL;
 		}
 
-		switch($sliceUnit) {
+		switch($this['series']['use']) {
 
-			case Cultivation::PERCENT :
-				return round($area * $this['density'] * $slicePercent / 100 * $safetyMarginMultiplier);
+			case Series::BLOCK :
 
-			case Cultivation::LENGTH :
-				return round($eSlice['partLength'] * $this['density'] * $safetyMarginMultiplier);
+				if($this['series']['area'] !== NULL) {
+					$area = $this['series']['area'];
+					$targeted = FALSE;
+				} else if($this['series']['areaTarget'] !== NULL) {
+					$area = $this['series']['areaTarget'];
+					$targeted = TRUE;
+				} else {
+					$error = 'area';
+					return NULL;
+				}
 
-			case Cultivation::AREA :
-				return round($eSlice['partArea'] * $this['density'] * $safetyMarginMultiplier);
+				switch($sliceUnit) {
 
-		};
+					case Cultivation::PERCENT :
+						return round($area * $this['density'] * $slicePercent / 100 * $safetyMarginMultiplier);
+
+					case Cultivation::AREA :
+						return round($eSlice['partArea'] * $this['density'] * $safetyMarginMultiplier);
+
+				};
+
+				break;
+
+			case Series::BED :
+
+				if($this['series']['length'] !== NULL) {
+					$length = $this['series']['length'];
+					$targeted = FALSE;
+				} else if($this['series']['lengthTarget'] !== NULL) {
+					$length = $this['series']['lengthTarget'];
+					$targeted = TRUE;
+				} else {
+					$error = 'length';
+					return NULL;
+				}
+
+				if($this['series']['alleyWidth'] > 0) {
+					$adjustAlley = ($this['series']['alleyWidth'] + $this['series']['bedWidth']) / $this['series']['bedWidth'];
+				} else {
+					$adjustAlley = 1;
+				}
+
+				switch($sliceUnit) {
+
+					case Cultivation::PERCENT :
+						return round($length * $this['density'] * $adjustAlley * $slicePercent / 100 * $safetyMarginMultiplier);
+
+					case Cultivation::LENGTH :
+						return round($eSlice['partLength'] * $this['density'] * $adjustAlley * $safetyMarginMultiplier);
+
+				};
+				
+				break;
+
+		}
 
 	}
 

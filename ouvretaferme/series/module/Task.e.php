@@ -13,7 +13,7 @@ class Task extends TaskElement {
 			'cMethod?' => fn($e) => fn() => \farm\MethodLib::askByFarm($e['farm'], $e['methods']),
 			'variety' => ['name'],
 			'category' => ['fqn', 'name'],
-			'series' => ['name', 'cycle', 'mode', 'season', 'area', 'areaTarget', 'length', 'lengthTarget', 'bedWidth', 'use'],
+			'series' => ['name', 'cycle', 'mode', 'season', 'area', 'areaTarget', 'length', 'lengthTarget', 'bedWidth', 'alleyWidth', 'use'],
 			'action' => ['fqn', 'name', 'short', 'categories', 'color', 'pace', 'series'],
 			'repeat' => ['frequency', 'current', 'stop', 'completed'],
 			'delayed' => function(Task $e): bool {
