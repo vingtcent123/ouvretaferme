@@ -61,6 +61,8 @@ class Item {
 		const field = target.firstParent('[data-wrapper^="packaging"]');
 		field.qs('input').value = '';
 
+		Item.recalculateLock(target);
+
 	}
 
 	static lock(target) {
@@ -78,6 +80,8 @@ class Item {
 		target.nextElementSibling.classList.add('disabled');
 
 		wrapper.qs('[name^="locked"]').value = property;
+
+		Item.recalculateLock(target);
 
 	}
 

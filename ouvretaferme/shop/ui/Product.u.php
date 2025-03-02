@@ -630,7 +630,10 @@ class ProductUi {
 						$h .= '<tr>';
 
 							$h .= '<td class="td-min-content" '.($hasLimits ? 'rowspan="2"' : '').'>';
-								if($eProductSelling['vignette'] !== NULL) {
+								if(
+									$eProductSelling['vignette'] !== NULL or
+									$eProductSelling['composition']
+								) {
 									$h .= \selling\ProductUi::getVignette($eProductSelling, '3rem');
 								} else if($eProductSelling['plant']->notEmpty()) {
 									$h .= \plant\PlantUi::getVignette($eProductSelling['plant'], '3rem');

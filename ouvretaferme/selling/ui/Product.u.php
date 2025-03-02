@@ -446,7 +446,7 @@ class ProductUi {
 		if($eProduct['vignette'] === NULL) {
 
 			$class .= ' media-vignette-default';
-			$content = encode(mb_substr($eProduct->getName(), 0, 2));
+			$content = \Asset::icon('box');
 
 		} else {
 

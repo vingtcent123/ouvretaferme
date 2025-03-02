@@ -94,8 +94,14 @@
 .shop-product-pro .shop-product {
 	grid-template:
 		 "image content buy" auto / 4rem 1fr 22rem;
-	grid-column-gap: 0.75rem;
+	grid-gap: 0.75rem;
 	padding: 0.5rem;
+}
+
+.shop-product-pro .shop-product.shop-product-composition {
+	grid-template:
+		 "image content buy" auto
+		 "image ingredients buy" auto / 4rem 1fr 22rem;
 }
 
 @media (max-width: 767px) {
@@ -103,6 +109,13 @@
 	.shop-product-pro .shop-product {
 		grid-template:
 			 "image content" auto
+			 "image buy" auto / 4rem 1fr;
+	}
+
+	.shop-product-pro .shop-product.shop-product-composition {
+		grid-template:
+			 "image content" auto
+			 "image ingredients" auto
 			 "image buy" auto / 4rem 1fr;
 	}
 
@@ -207,19 +220,40 @@ input.shop-product-number-display {
 
 .shop-product-pro .shop-product-title {
 	display: grid;
-	grid-template:
-		"infos price" auto / 1fr 10rem;
 	grid-gap: 0.25rem 1rem;
 	align-items: center;
 }
 
-
 @media (min-width: 992px) {
+
+	.shop-product-pro .shop-product-title {
+		grid-template:
+		"infos price" auto / 1fr 10rem;
+	}
 
 	.shop-product-pro .shop-product-buy-infos {
 		justify-self: end;
 	}
 
+
+}
+
+@media (min-width: 576px) and (max-width: 991px) {
+
+	.shop-product-pro .shop-product-title {
+		grid-template:
+			"price infos" auto / 1fr 10rem;
+	}
+
+}
+
+@media (max-width: 575px) {
+
+	.shop-product-pro .shop-product-title {
+		grid-template:
+			"price" auto
+			"infos" auto / 1fr;
+	}
 
 }
 
@@ -355,8 +389,12 @@ input.shop-product-number-display {
 	white-space: nowrap;
 }
 
-.shop-product-pro .shop-product-buy-price {
-	text-align: right;
+@media (min-width: 992px) {
+
+	.shop-product-pro .shop-product-buy-price {
+		text-align: right;
+	}
+
 }
 
 .shop-product-buy-packaging,

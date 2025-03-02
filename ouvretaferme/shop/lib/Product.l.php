@@ -229,9 +229,18 @@ class ProductLib extends ProductCrud {
 
 		}
 
-		$ccProduct->map(function($cProduct) use($eDate, $cGrid, $eSaleExclude) {
+		$ccProduct->map(function($cProduct) use($eDate, $cGrid, $eSaleExclude, $withIngredients, $public) {
 
-			$cProduct->sort(['product' => ['name']], natural: TRUE);
+			$order = [];
+
+			// On place en premier les produits composés pour des raisons d'affichage
+			if($withIngredients and $public) {
+				$order[] = fn($e1, $e2) => (($e1['product']['cItemIngredient'] ?? new \Collection())->count() > ($e2['product']['cItemIngredient'] ?? new \Collection())->count()) ? -1 : 1;
+			}
+
+			$order['product'] = ['name'];
+
+			$cProduct->sort($order, natural: TRUE);
 			self::applySold($eDate, $cProduct, $cGrid, $eSaleExclude);
 
 		});

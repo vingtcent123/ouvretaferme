@@ -869,7 +869,7 @@ class ItemUi {
 
 					if($hasPackaging) {
 
-						$h .= '<div>';
+						$h .= '<div data-wrapper="packaging['.$eProduct['id'].']">';
 							$h .= '<h4>'.s("Colisage").'</h4>';
 							$h .= self::getPackagingField($form, 'packaging['.$eProduct['id'].']', $eItem);
 						$h .= '</div>';
