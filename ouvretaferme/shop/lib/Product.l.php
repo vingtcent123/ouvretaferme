@@ -181,7 +181,7 @@ class ProductLib extends ProductCrud {
 
 	}
 
-	public static function getByDate(Date $eDate, \selling\Customer $eCustomer = new \selling\Customer(), \selling\Sale $eSaleExclude = new \selling\Sale()): \Collection {
+	public static function getByDate(Date $eDate, \selling\Customer $eCustomer = new \selling\Customer(), \selling\Sale $eSaleExclude = new \selling\Sale(), bool $withIngredients = FALSE, bool $public = FALSE): \Collection {
 
 		$ids = self::getColumnByDate($eDate, 'id', function(ProductModel $m) use ($eDate, $eCustomer) {
 
@@ -208,13 +208,33 @@ class ProductLib extends ProductCrud {
 			->whereId('IN', $ids)
 			->getCollection(NULL, NULL, ['farm', 'product']);
 
+		if($withIngredients) {
+
+
+			$cProductSellingComposition = $ccProduct
+				->find(fn($eProduct) => (
+					$eProduct['product']['composition'] and
+					($public === FALSE or $eProduct['product']['compositionVisibility'] === \selling\Product::PUBLIC)
+				), depth: 2, clone: FALSE)
+				->getColumnCollection('product');
+
+			if($cProductSellingComposition->notEmpty()) {
+
+				\selling\Product::model()
+					->select([
+						'cItemIngredient' => new \selling\SaleLib()->delegateIngredients($eDate['deliveryDate'], 'id')
+					])
+					->get($cProductSellingComposition);
+			}
+
+		}
+
 		$ccProduct->map(function($cProduct) use ($eDate, $cGrid, $eSaleExclude) {
 
 			$cProduct->sort(['product' => ['name']], natural: TRUE);
 			self::applySold($eDate, $cProduct, $cGrid, $eSaleExclude);
 
 		});
-
 
 		return $ccProduct;
 

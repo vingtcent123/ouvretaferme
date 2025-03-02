@@ -98,7 +98,7 @@ new Page(function($data) {
 
 			$data->discount = \shop\SaleLib::getDiscount($data->eDateSelected, $data->eSaleExisting, $data->eCustomer);
 
-			$ccProduct = \shop\ProductLib::getByDate($data->eDateSelected, $data->eCustomer, eSaleExclude: $data->isModifying ? $data->eSaleExisting : new \selling\Sale());
+			$ccProduct = \shop\ProductLib::getByDate($data->eDateSelected, $data->eCustomer, eSaleExclude: $data->isModifying ? $data->eSaleExisting : new \selling\Sale(), withIngredients: TRUE, public: TRUE);
 
 			// Multi producteur pas géré pour l'instant
 			$cProduct = $ccProduct->empty() ? new Collection() : $ccProduct->first();
@@ -125,7 +125,7 @@ new Page(function($data) {
 
 	});
 
-(new Page(function($data) {
+new Page(function($data) {
 
 		$data->eShop = \shop\ShopLib::getByFqn(GET('fqn'))->validate('isOpen');
 		$data->eShop['farm'] = \farm\FarmLib::getById($data->eShop['farm']);
@@ -203,7 +203,7 @@ new Page(function($data) {
 
 		};
 
-	}))
+	})
 	->get('/shop/public/{fqn}/{date}/panier', function($data) {
 
 		($data->validateOrder)();

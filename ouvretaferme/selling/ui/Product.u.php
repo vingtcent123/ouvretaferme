@@ -1149,7 +1149,7 @@ class ProductUi {
 			case 'compositionVisibility' :
 				$d->values = [
 					Product::PUBLIC => s("Visible").'  <span class="color-muted"><small>'.s("La composition du produit est affichée aux clients").'</small></span>',
-					Product::PRIVATE => s("Surprise").'  <span class="color-muted"><small>'.s("Les clients ne voient pas la composition du produit").'</small></span>'
+					Product::PRIVATE => s("Cachée").'  <span class="color-muted"><small>'.s("Les clients ne voient pas la composition du produit").'</small></span>'
 				];
 				$d->default = Product::PRIVATE;
 				$d->attributes = [

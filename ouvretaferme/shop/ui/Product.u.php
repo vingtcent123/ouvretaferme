@@ -143,7 +143,7 @@ class ProductUi {
 			$quality = '';
 		}
 
-		$h = '<div class="shop-product '.($eProductSelling['compositionVisibility'] === \selling\Product::PUBLIC ? 'shop-product-composition' : '').'" data-id="'.$eProductSelling['id'].'" data-price="'.$price.'" data-has="0">';
+		$h = '<div class="shop-product '.(($eProductSelling['compositionVisibility'] === \selling\Product::PUBLIC and $eProductSelling['cItemIngredient']->notEmpty()) ? 'shop-product-composition' : '').'" data-id="'.$eProductSelling['id'].'" data-price="'.$price.'" data-has="0">';
 
 			if($eProductSelling['vignette'] !== NULL) {
 				$url = new \media\ProductVignetteUi()->getUrlByElement($eProductSelling, 'l');
@@ -257,6 +257,48 @@ class ProductUi {
 				}
 
 			$h .= '</div>';
+
+			if(
+				$eProductSelling['compositionVisibility'] === \selling\Product::PUBLIC and
+				$eProductSelling['cItemIngredient']->notEmpty()
+			) {
+
+				$ingredients = $eProductSelling['cItemIngredient']->count();
+
+				$h .= '<div class="shop-product-ingredients">';
+
+					$h .= '<h5>'.s("Composition").'</h5>';
+
+					$vignetteSize = 2.25;
+					$listSize = 1;
+
+					if($ingredients >= 6) {
+						$vignetteSize = 2;
+						$listSize = 6;
+					}
+
+					if($ingredients >= 10) {
+						$vignetteSize = 1.5;
+						$listSize = 10;
+					}
+
+					$h .= '<div class="shop-product-ingredients-list shop-product-ingredients-list-'.$listSize.'">';
+
+						foreach($eProductSelling['cItemIngredient'] as $eItemIngredient) {
+
+							$h .= \selling\ProductUi::getVignette($eItemIngredient['product'], $vignetteSize.'rem');
+							$h .= '<div>';
+								$h .= encode($eItemIngredient['name']).' ';
+								$h .= '<b>'.\selling\UnitUi::getValue($eItemIngredient['number'] * ($eItemIngredient['packaging'] ?? 1), $eProductSelling['unit'], short: TRUE).'</b>';
+							$h .= '</div>';
+
+
+						}
+					$h .= '</div>';
+
+				$h .= '</div>';
+
+			}
 
 		$h .= '</div>';
 
@@ -516,6 +558,7 @@ class ProductUi {
 
 			if($ccProduct->offsetExists('')) {
 				$h .= $update($ccProduct['']);
+				$h .= '<br/>';
 			}
 
 			foreach($cCategory as $eCategory) {
@@ -526,6 +569,7 @@ class ProductUi {
 
 				$h .= '<h3>'.encode($eCategory['name']).'</h3>';
 				$h .= $update($ccProduct[$eCategory['id']]);
+				$h .= '<br/>';
 
 			}
 

@@ -981,7 +981,7 @@ class SaleLib extends SaleCrud {
 
 			Item::model()
 				->select([
-					'cItemIngredient' => self::delegateIngredients($deliveredAt)
+					'cItemIngredient' => self::delegateIngredients($deliveredAt, 'product')
 				])
 				->get($cItemComposition);
 
@@ -991,7 +991,7 @@ class SaleLib extends SaleCrud {
 
 	}
 
-	public static function delegateIngredients(string $deliveredAt) {
+	public static function delegateIngredients(string $deliveredAt, string $propertyParent) {
 
 		return Sale::model()
 			->select([
@@ -1009,7 +1009,7 @@ class SaleLib extends SaleCrud {
 				fn() => $this->whereCompositionEndAt(NULL),
 				fn() => $this->whereCompositionEndAt('>=', $deliveredAt)
 			)
-			->delegateProperty('compositionOf', 'cItem', propertyParent: 'product');
+			->delegateProperty('compositionOf', 'cItem', propertyParent: $propertyParent);
 
 	}
 
@@ -1024,7 +1024,7 @@ class SaleLib extends SaleCrud {
 
 			$cItemComposition = Item::model()
 				->select(ItemElement::getSelection() + [
-					'cItemIngredient' => self::delegateIngredients($e['deliveredAt'])
+					'cItemIngredient' => self::delegateIngredients($e['deliveredAt'], 'product')
 				])
 				->whereSale($e)
 				->whereProductComposition(TRUE)

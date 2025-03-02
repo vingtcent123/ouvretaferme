@@ -79,8 +79,16 @@
 .shop-product-private .shop-product {
 	grid-template:
 		"image" 14rem
-		"content" 1fr
-		"buy" auto / 1fr;
+		"content" auto
+		"buy" 1fr / 1fr;
+}
+
+.shop-product-private .shop-product.shop-product-composition {
+	grid-template:
+		"image" 14rem
+		"content" auto
+		"ingredients" auto
+		"buy" 1fr / 1fr;
 }
 
 .shop-product-pro .shop-product {
@@ -298,11 +306,15 @@ input.shop-product-number-display {
 .shop-product-buy {
 	grid-area: buy;
 	display: grid;
-	align-items: center;
 }
 
 .shop-product-private .shop-product-buy {
 	padding-top: 0.5rem;
+	align-items: end;
+}
+
+.shop-product-pro .shop-product-buy {
+	align-items: center;
 }
 
 @media (max-width: 767px) {
@@ -371,6 +383,34 @@ input.shop-product-number-display {
 		font-size: .8rem;
 	}
 
+}
+
+.shop-product-ingredients {
+	grid-area: ingredients;
+}
+
+.shop-product-ingredients-list {
+	display: grid;
+	grid-template-columns: min-content 1fr;
+	align-items: center;
+	grid-gap: 0.5rem;
+	line-height: 1.4;
+}
+
+@media (max-width: 575px) {
+
+	.shop-product-ingredients-list {
+		font-size: .9rem;
+	}
+
+}
+
+.shop-product-ingredients-list.shop-product-ingredients-list-6 {
+	grid-gap: 0.375rem 0.5rem;
+}
+
+.shop-product-ingredients-list.shop-product-ingredients-list-10 {
+	grid-gap: 0.25rem 0.5rem;
 }
 
 .shop-product-number {
