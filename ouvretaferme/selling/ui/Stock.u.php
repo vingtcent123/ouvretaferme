@@ -435,7 +435,7 @@ class StockUi {
 
 			$h .= $form->group(
 				s("Produit"),
-				$form->dynamicField($eProduct, 'id', function($d) use ($eFarm) {
+				$form->dynamicField($eProduct, 'id', function($d) use($eFarm) {
 					$d->autocompleteBody = function(\util\FormUi $form, Product $e) {
 
 						$e->expects(['farm']);
@@ -536,7 +536,7 @@ class StockUi {
 				$label,
 				$form->inputGroup(
 					($sign ? '<div class="input-group-addon">'.$sign.'</div>' : '').
-					$form->dynamicField(new Stock(), 'newValue', function(\PropertyDescriber $d) use ($eProduct, $sign) {
+					$form->dynamicField(new Stock(), 'newValue', function(\PropertyDescriber $d) use($eProduct, $sign) {
 						$d->attributes['onrender'] = 'this.focus();';
 						if($sign === NULL) {
 							$d->placeholder = $eProduct['stock'];

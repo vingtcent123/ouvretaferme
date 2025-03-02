@@ -27,7 +27,7 @@ class ActionLib extends ActionCrud {
 			->whereFarm(NULL)
 			->getCollection(index: 'id');
 
-		$cAction->map(function(Action $eAction) use ($eFarm, $cCategory) {
+		$cAction->map(function(Action $eAction) use($eFarm, $cCategory) {
 
 			$eAction['id'] = NULL;
 			$eAction['farm'] = $eFarm;

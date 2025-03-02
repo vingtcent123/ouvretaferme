@@ -151,7 +151,7 @@ $updateCollection = function($data, ?Closure $callback = NULL) {
 		\map\PlotLib::putFromZone($data->ePlot['zone'], withBeds: TRUE, withDraw: TRUE, season: $data->season);
 		
 	}))
-	->post('doUpdateBedLineCollection', function($data) use ($updateCollection) {
+	->post('doUpdateBedLineCollection', function($data) use($updateCollection) {
 
 		if($data->ePlot->canBedLine() === FALSE) {
 			throw new \FailAction('map\Bed::canNotDraw');
@@ -187,7 +187,7 @@ $updateCollection = function($data, ?Closure $callback = NULL) {
 		throw new RedirectAction(\farm\FarmUi::urlCartography($eDraw['farm'], $eDraw['season']).'?zone='.$data->ePlot['zone']['id'].'&success=map:Draw::created');
 
 	})
-	->post('doDeleteBedLineCollection', function($data) use ($updateCollection) {
+	->post('doDeleteBedLineCollection', function($data) use($updateCollection) {
 
 		$fw = new \FailWatch();
 

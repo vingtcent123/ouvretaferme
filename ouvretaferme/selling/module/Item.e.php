@@ -72,7 +72,7 @@ class Item extends ItemElement {
 
 	}
 
-	public function build(array $properties, array $input, \Properties $p = new \Properties()): void {
+	public function build(array $properties, array $input, \Properties $p = new \Properties(), array $callbacks = []): void {
 
 		$this->expects([
 			'farm',
@@ -108,7 +108,7 @@ class Item extends ItemElement {
 				}
 
 			})
-			->setCallback('name.prepare', function(?string &$name) use ($p): bool {
+			->setCallback('name.prepare', function(?string &$name) use($p): bool {
 
 				if($p->for === 'create') {
 
@@ -121,7 +121,7 @@ class Item extends ItemElement {
 				return TRUE;
 
 			})
-			->setCallback('number.empty', function(?float $number) use ($p): bool {
+			->setCallback('number.empty', function(?float $number) use($p): bool {
 
 				$this->expects([
 					'sale' => ['market'],
@@ -134,7 +134,7 @@ class Item extends ItemElement {
 				}
 
 			})
-			->setCallback('number.division', function(?float $number) use ($p): bool {
+			->setCallback('number.division', function(?float $number) use($p): bool {
 
 				return (
 					($p->isBuilt('locked') and $this['locked'] !== Item::UNIT_PRICE) or
@@ -156,7 +156,7 @@ class Item extends ItemElement {
 				);
 				
 			})
-			->setCallback('unitPrice.division', function(?float $unitPrice) use ($p): bool {
+			->setCallback('unitPrice.division', function(?float $unitPrice) use($p): bool {
 
 				return (
 					($p->isBuilt('locked') and $this['locked'] !== Item::NUMBER) or
@@ -164,7 +164,7 @@ class Item extends ItemElement {
 				);
 
 			})
-			->setCallback('price.locked', function(?float $price) use ($p): bool {
+			->setCallback('price.locked', function(?float $price) use($p): bool {
 
 				return (
 					$price !== NULL or

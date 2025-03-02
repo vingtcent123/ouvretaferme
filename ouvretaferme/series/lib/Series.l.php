@@ -828,7 +828,7 @@ class SeriesLib extends SeriesCrud {
 		if($copyTimesheet) {
 
 			// Copie des temps de travail
-			$cTimesheet->map(function(Timesheet $eTimesheet) use ($cTask) {
+			$cTimesheet->map(function(Timesheet $eTimesheet) use($cTask) {
 
 				$eTask = $cTask[$eTimesheet['task']['id']];
 

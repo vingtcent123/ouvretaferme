@@ -48,7 +48,7 @@ class CommentLib extends CommentCrud {
 
 	public static function createForTasks(\Collection $cTask, Comment $e): void {
 
-		$cTask->map(function(Task $eTask) use ($e) {
+		$cTask->map(function(Task $eTask) use($e) {
 
 			self::create((clone $e)->merge([
 				'task' => $eTask

@@ -191,7 +191,7 @@ class Customer extends CustomerElement {
 
 
 			})
-			->setCallback('lastName.empty', function(?string &$lastName) use ($p): bool {
+			->setCallback('lastName.empty', function(?string &$lastName) use($p): bool {
 
 				$this->expects(['user']);
 
@@ -225,7 +225,7 @@ class Customer extends CustomerElement {
 				return ($name !== NULL);
 
 			})
-			->setCallback('name.set', function(?string $name) use ($p): bool {
+			->setCallback('name.set', function(?string $name) use($p): bool {
 
 				if($this->getCategory() === Customer::PRIVATE) {
 
@@ -250,7 +250,7 @@ class Customer extends CustomerElement {
 				return TRUE;
 
 			})
-			->setCallback('category.user', function(?string $category) use ($p): bool {
+			->setCallback('category.user', function(?string $category) use($p): bool {
 
 				return match($p->for) {
 					'create' => TRUE,
@@ -266,7 +266,7 @@ class Customer extends CustomerElement {
 				);
 
 			})
-			->setCallback('category.set', function(?string $category) use ($p): bool {
+			->setCallback('category.set', function(?string $category) use($p): bool {
 
 				$this['category'] = $category;
 

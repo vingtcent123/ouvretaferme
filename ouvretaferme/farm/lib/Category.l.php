@@ -18,7 +18,7 @@ class CategoryLib extends CategoryCrud {
 			->whereFarm(NULL)
 			->getCollection(index: 'id');
 
-		$cCategory->map(function(Category $eCategory) use ($eFarm) {
+		$cCategory->map(function(Category $eCategory) use($eFarm) {
 			$eCategory['id'] = NULL;
 			$eCategory['farm'] = $eFarm;
 		});

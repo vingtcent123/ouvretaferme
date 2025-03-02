@@ -475,7 +475,7 @@ class AnalyzeLib {
 
 		return \Cache::redis()->query(
 			'farm-series-years-'.$eFarm['id'],
-			function() use ($eFarm) {
+			function() use($eFarm) {
 
 				$firstYear = Timesheet::model()
 					->whereFarm($eFarm)

@@ -619,7 +619,7 @@ class TaskUi {
 		$tasks  = [];
 
 		$estimated =
-			($ccTask->offsetExists('todo') ? $ccTask['todo']->sum(function($e) use (&$tasks) {
+			($ccTask->offsetExists('todo') ? $ccTask['todo']->sum(function($e) use(&$tasks) {
 				$tasks[$e['id']] = $e['timeExpected'];
 				return $e['timeExpected'];
 			}, 2) : 0) +
@@ -961,7 +961,7 @@ class TaskUi {
 					}
 					$h .= $form->dynamicField(new \plant\Plant([
 						'farm' => $eFarm
-					]), 'id', function($d) use ($search) {
+					]), 'id', function($d) use($search) {
 						$d->name = 'plant';
 						$d->autocompleteDefault = $search->get('plant');
 					});
@@ -1589,7 +1589,7 @@ class TaskUi {
 						return $h;
 
 					},
-					'content' => function(Task $eTask) use ($eFarm, $cCultivation, $form) {
+					'content' => function(Task $eTask) use($eFarm, $cCultivation, $form) {
 
 						if($eTask['cultivation']->empty() === FALSE) {
 							$eCultivation = $cCultivation[$eTask['cultivation']['id']];
@@ -1618,7 +1618,7 @@ class TaskUi {
 						return $h;
 
 					},
-					'update' => function(Task $eTask) use ($form) {
+					'update' => function(Task $eTask) use($form) {
 
 						$filters = [
 							'data-filter-action' => $eTask['action']['id'],
@@ -3386,7 +3386,7 @@ class TaskUi {
 
 	public function createFromOneSeries(Task $eTask, Series $eSeries): \Panel {
 
-		$panel = $this->createFromSeries($eTask, FALSE, function(\util\FormUi $form) use ($eTask, $eSeries) {
+		$panel = $this->createFromSeries($eTask, FALSE, function(\util\FormUi $form) use($eTask, $eSeries) {
 			return $form->hidden('series[]', $eSeries['id']);
 		});
 
@@ -3398,7 +3398,7 @@ class TaskUi {
 
 	public function createFromAllSeries(Task $eTask, \Collection $cSeries): \Panel {
 
-		return $this->createFromSeries($eTask, TRUE, function(\util\FormUi $form) use ($eTask, $cSeries) {
+		return $this->createFromSeries($eTask, TRUE, function(\util\FormUi $form) use($eTask, $cSeries) {
 
 			$series = '<div id="task-create-plant">';
 				$series .= $form->dynamicField($eTask, 'plantsFilter');
@@ -3865,7 +3865,7 @@ class TaskUi {
 			if($cAction->empty()) {
 				$actions = '<p class="util-warning">'.s("Aucune intervention n'a été configurée dans cette catégorie.").'</p>';
 			} else {
-				$actions = $form->dynamicField($eTask, 'action', function(\PropertyDescriber $d) use ($cAction) {
+				$actions = $form->dynamicField($eTask, 'action', function(\PropertyDescriber $d) use($cAction) {
 					$d->values = $cAction;
 				});
 			}
@@ -3979,7 +3979,7 @@ class TaskUi {
 
 			if($eTask['action']['fqn'] !== ACTION_RECOLTE) {
 
-				$action .= $form->dynamicField($eTask, 'action', function(\PropertyDescriber $d) use ($cAction) {
+				$action .= $form->dynamicField($eTask, 'action', function(\PropertyDescriber $d) use($cAction) {
 					$d->values = $cAction;
 				});
 
@@ -4390,7 +4390,7 @@ class TaskUi {
 
 				$h .= $form->group(
 					s("Nouvelle série"),
-					$form->dynamicField($eTask, 'cultivation', function($d) use ($cCultivation) {
+					$form->dynamicField($eTask, 'cultivation', function($d) use($cCultivation) {
 
 						$d->values = $cCultivation->makeArray(function($eCultivation, &$key) {
 							$key = $eCultivation['id'];
@@ -4461,7 +4461,7 @@ class TaskUi {
 			if($cVariety->count() <= 3) {
 
 				if($varietiesIntersect !== NULL) {
-					$attributes['callbackRadioAttributes'] = function($eVariety) use ($varietiesIntersect) {
+					$attributes['callbackRadioAttributes'] = function($eVariety) use($varietiesIntersect) {
 						if($eVariety !== NULL) {
 							return in_array($eVariety['id'], $varietiesIntersect) ? [] : ['disabled'];
 						} else {
@@ -4692,7 +4692,7 @@ class TaskUi {
 
 		return $form->radios('distribution', $values, $default, [
 			'mandatory' => TRUE,
-			'callbackRadioAttributes' => function($option, $key) use ($byPlant, $byArea, $byHarvest) {
+			'callbackRadioAttributes' => function($option, $key) use($byPlant, $byArea, $byHarvest) {
 				if(
 					($key === 'area' and $byArea !== NULL) or
 					($key === 'harvest' and $byHarvest !== NULL) or
@@ -4753,7 +4753,7 @@ class TaskUi {
 
 			case 'planned' :
 			case 'done' :
-				$d->field = function(\util\FormUi $form, Task $e) use ($property) {
+				$d->field = function(\util\FormUi $form, Task $e) use($property) {
 
 					$e->expects([$property.'Week', $property.'Date']);
 

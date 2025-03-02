@@ -1468,7 +1468,7 @@ class CultivationUi {
 		[$minTs, $maxTs] = $this->getTimestampBounds($eSeries, $eCultivation, $cTask);
 
 		// Récolte réalisée
-		$showHarvest = function(bool $expected, bool $letter, int $first, int $last, \Closure $label) use ($uiPlace, $eCultivation, $startTs, $stopTs, $minTs, $maxTs) {
+		$showHarvest = function(bool $expected, bool $letter, int $first, int $last, \Closure $label) use($uiPlace, $eCultivation, $startTs, $stopTs, $minTs, $maxTs) {
 
 			if($expected) {
 				$css = 'background: repeating-linear-gradient(135deg, var(--harvest) 0, var(--harvest) 1px, #fff8 1px, #fff8 7px); color: var(--harvest)';
@@ -2170,7 +2170,7 @@ class CultivationUi {
 			throw new \Exception('harvestedByUnit must not be NULL');
 		}
 
-		uksort($eCultivation['harvestedByUnit'], function($key1, $key2) use ($eCultivation) {
+		uksort($eCultivation['harvestedByUnit'], function($key1, $key2) use($eCultivation) {
 
 			if($key1 === $eCultivation['mainUnit']) {
 				return -1;
@@ -2489,7 +2489,7 @@ class CultivationUi {
 			$h .= $form->hidden('id', $eCultivation['id']);
 			$h .= '<div class="cultivation-write" data-length="'.($eCultivation['series']['length'] ?? $eCultivation['series']['lengthTarget']).'" data-area="'.($eCultivation['series']['area'] ?? $eCultivation['series']['areaTarget']).'" data-use="'.$eCultivation['series']['use'].'" data-bed-width="'.$eCultivation['series']['bedWidth'].'" data-alley-width="'.$eCultivation['series']['alleyWidth'].'">';
 
-				$h .= $form->dynamicGroup($eCultivation, 'plant', function($d) use ($eCultivation) {
+				$h .= $form->dynamicGroup($eCultivation, 'plant', function($d) use($eCultivation) {
 					$d->autocompleteDispatch = '#cultivation-update';
 					$d->attributes = [
 						'post-id' => $eCultivation['id']
@@ -2533,11 +2533,11 @@ class CultivationUi {
 		$eCultivation->expects(['harvestPeriodExpected']);
 
 		$h = $form->hidden('harvestPeriodExpected'.$suffix, $eCultivation['harvestPeriodExpected']);
-		$h .= $form->dynamicGroup($eCultivation, 'harvestMonthsExpected'.$suffix, function($d) use ($eCultivation) {
+		$h .= $form->dynamicGroup($eCultivation, 'harvestMonthsExpected'.$suffix, function($d) use($eCultivation) {
 			$d->after = '<div class="field-followup cultivation-periods-field"><a '.attr('onclick', 'Cultivation.changeExpectedHarvest(this, "week")').'>'.s("Raisonner par semaine").'</a></div>';
 			$d->group['class'] = ($eCultivation['harvestPeriodExpected'] === Cultivation::MONTH ? '' : 'hide');
 		});
-		$h .= $form->dynamicGroup($eCultivation, 'harvestWeeksExpected'.$suffix, function($d) use ($eCultivation) {
+		$h .= $form->dynamicGroup($eCultivation, 'harvestWeeksExpected'.$suffix, function($d) use($eCultivation) {
 			$d->after = '<div class="field-followup cultivation-periods-field"><a '.attr('onclick', 'Cultivation.changeExpectedHarvest(this, "month")').'>'.s("Raisonner par mois").'</a></div>';
 			$d->group['class'] = ($eCultivation['harvestPeriodExpected'] === Cultivation::WEEK ? '' : 'hide');
 		});
@@ -2548,7 +2548,7 @@ class CultivationUi {
 
 	private static function getMainUnitField(\util\FormUi $form, Cultivation $eCultivation, ?string $suffix = NULL): string {
 
-		return $form->dynamicGroup($eCultivation, 'mainUnit'.$suffix, function(\PropertyDescriber $d) use ($eCultivation, $suffix) {
+		return $form->dynamicGroup($eCultivation, 'mainUnit'.$suffix, function(\PropertyDescriber $d) use($eCultivation, $suffix) {
 			$d->attributes = ['onchange' => 'Cultivation.changeUnit(this, "'.$suffix.'")'];
 		});
 
@@ -2556,7 +2556,7 @@ class CultivationUi {
 
 	private static function getYieldExpectedField(\util\FormUi $form, Cultivation $eCultivation, ?string $suffix = NULL): string {
 
-		$h = $form->dynamicGroup($eCultivation, 'yieldExpected'.$suffix, function(\PropertyDescriber $d) use ($eCultivation, $suffix) {
+		$h = $form->dynamicGroup($eCultivation, 'yieldExpected'.$suffix, function(\PropertyDescriber $d) use($eCultivation, $suffix) {
 			$d->append = s("{value}&nbsp;/ m²", '<span data-ref="cultivation-unit-'.$suffix.'">'.self::p('mainUnit')->values[$eCultivation['mainUnit']].'</span>');
 		});
 

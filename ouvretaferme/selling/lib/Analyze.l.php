@@ -699,7 +699,7 @@ class AnalyzeLib {
 
 		return \Cache::redis()->query(
 			'farm-sales-years-'.$eFarm['id'].'-'.date('Y-m-d'),
-			function() use ($eFarm) {
+			function() use($eFarm) {
 
 				self::filterSaleStats();
 
@@ -740,7 +740,7 @@ class AnalyzeLib {
 			->where('EXTRACT(YEAR FROM deliveredAt) = '.$year)
 			->sort('id')
 			->getCollection()
-			->toArray(function($eSale) use ($eFarm) {
+			->toArray(function($eSale) use($eFarm) {
 
 				$data = [
 					$eSale['document'],
@@ -789,7 +789,7 @@ class AnalyzeLib {
 			->where('EXTRACT(YEAR FROM deliveredAt) = '.$year)
 			->sort('id')
 			->getCollection()
-			->toArray(function($eItem) use ($eFarm) {
+			->toArray(function($eItem) use($eFarm) {
 
 				$data = [
 					$eItem['sale']['document'],
@@ -877,7 +877,7 @@ class AnalyzeLib {
 			->whereStatus(Product::ACTIVE)
 			->sort('name')
 			->getCollection()
-			->toArray(function($eProduct) use ($eFarm) {
+			->toArray(function($eProduct) use($eFarm) {
 				return [
 					$eProduct['id'],
 					$eProduct['name'],
@@ -905,7 +905,7 @@ class AnalyzeLib {
 			->whereStatus(Customer::ACTIVE)
 			->sort('name')
 			->getCollection()
-			->toArray(function($eCustomer) use ($eFarm) {
+			->toArray(function($eCustomer) use($eFarm) {
 				return [
 					$eCustomer->getName(),
 					$eCustomer['user']->empty() ? s("non") : s("oui"),

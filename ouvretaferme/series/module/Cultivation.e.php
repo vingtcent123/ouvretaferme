@@ -349,7 +349,7 @@ class Cultivation extends CultivationElement {
 
 			})
 
-			->setCallback('plant.check', function(\plant\Plant $ePlant) use ($p): bool {
+			->setCallback('plant.check', function(\plant\Plant $ePlant) use($p): bool {
 
 				if($p->for === 'update') {
 
@@ -373,7 +373,7 @@ class Cultivation extends CultivationElement {
 				}
 
 			})
-			->setCallback('plant.unused', function(\plant\Plant $ePlant) use ($p): bool {
+			->setCallback('plant.unused', function(\plant\Plant $ePlant) use($p): bool {
 
 				if($p->for === 'update') {
 
@@ -394,7 +394,7 @@ class Cultivation extends CultivationElement {
 				}
 
 			})
-			->setCallback('sliceTool.check', function(\farm\Tool $eTool) use ($p) {
+			->setCallback('sliceTool.check', function(\farm\Tool $eTool) use($p) {
 
 				$p->expectsBuilt('sliceUnit');
 

@@ -309,7 +309,7 @@ class PdfLib extends PdfCrud {
 			return '';
 		}
 
-		return \Cache::redis()->lock('pdf-'.$url, function() use ($url) {
+		return \Cache::redis()->lock('pdf-'.$url, function() use($url) {
 
 			$file = tempnam('/tmp', 'pdf-').'.pdf';
 

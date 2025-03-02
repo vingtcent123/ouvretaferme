@@ -1020,7 +1020,7 @@ class ProductUi {
 				$h .= $form->group(
 					self::p('privateStep')->label,
 					$form->inputGroup(
-						$form->dynamicField($eProduct, 'privateStep', function($d) use ($eProduct) {
+						$form->dynamicField($eProduct, 'privateStep', function($d) use($eProduct) {
 							if($eProduct->offsetExists('id')) {
 								$d->placeholder = \shop\ProductUi::getDefaultPrivateStep($eProduct);
 							}

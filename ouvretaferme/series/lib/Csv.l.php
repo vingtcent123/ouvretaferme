@@ -141,7 +141,7 @@ class CsvLib {
 						'min' => new \Sql('MIN(IF(doneWeek IS NOT NULL, doneWeek, plannedWeek))'),
 						'max' => new \Sql('MAX(IF(doneWeek IS NOT NULL, doneWeek, plannedWeek))'),
 						'toolList' => new \Sql('CONCAT("{", GROUP_CONCAT(CONCAT("\\"", IF(doneWeek IS NOT NULL, doneWeek, plannedWeek), "\\":", tools) SEPARATOR ","), "}")'),
-						'toolName' => function($e) use ($cTool) {
+						'toolName' => function($e) use($cTool) {
 
 							$tools = json_decode($e['toolList'], TRUE);
 

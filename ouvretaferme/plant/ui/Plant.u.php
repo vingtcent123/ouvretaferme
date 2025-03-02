@@ -135,7 +135,7 @@ class PlantUi {
 
 					$h .= $form->dynamicField(new Plant([
 						'farm' => $eFarm
-					]), 'id', function($d) use ($search) {
+					]), 'id', function($d) use($search) {
 						$d->name = 'plantId';
 						$d->autocompleteDefault = $search->get('id');
 						$d->attributes = [

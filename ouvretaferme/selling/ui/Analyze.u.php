@@ -599,7 +599,7 @@ class AnalyzeUi {
 		$turnover = $ccItemCustomer[$year]->sum('turnover');
 		$turnoverBefore = $ccItemCustomer->offsetExists($year - 1) ? $ccItemCustomer[$year - 1]->sum('turnover') : 0;
 
-		$line = function($eItem, $eItemBefore) use ($eProduct, $turnover, $turnoverBefore) {
+		$line = function($eItem, $eItemBefore) use($eProduct, $turnover, $turnoverBefore) {
 
 			$h = '<td class="text-end">';
 				$h .= \util\TextUi::money($eItem['turnover'], precision: 0);
@@ -715,7 +715,7 @@ class AnalyzeUi {
 		$turnover = $ccItemCustomer[$year]->sum('turnover');
 		$turnoverBefore = $ccItemCustomer->offsetExists($year - 1) ? $ccItemCustomer[$year - 1]->sum('turnover') : 0;
 
-		$line = function($eItem, $eItemBefore) use ($ePlant, $turnover, $turnoverBefore) {
+		$line = function($eItem, $eItemBefore) use($ePlant, $turnover, $turnoverBefore) {
 
 			$h = '<td class="text-end">';
 				$h .= \util\TextUi::money($eItem['turnover'], precision: 0);
@@ -1184,7 +1184,7 @@ class AnalyzeUi {
 
 				$again = $limit;
 
-				$displayItem = function(Item $eItem, string $class = '') use ($compare, $totalTurnover, $cItemProductMonthly, $monthly, $hide) {
+				$displayItem = function(Item $eItem, string $class = '') use($compare, $totalTurnover, $cItemProductMonthly, $monthly, $hide) {
 
 					if($eItem->empty()) {
 						$h = '<td class="text-end '.$class.'">/</td>';
@@ -1494,7 +1494,7 @@ class AnalyzeUi {
 
 				$h .= '</thead>';
 
-				$displayItem = function(\plant\Plant $ePlant, \Collection $cItem, string $class = '') use ($compare, $globalTurnover, $cccItemPlantMonthly, $monthly) {
+				$displayItem = function(\plant\Plant $ePlant, \Collection $cItem, string $class = '') use($compare, $globalTurnover, $cccItemPlantMonthly, $monthly) {
 
 					if($cItem->empty()) {
 						$h = '<td class="text-end '.$class.'">/</td>';

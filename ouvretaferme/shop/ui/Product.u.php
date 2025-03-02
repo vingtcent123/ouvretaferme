@@ -419,7 +419,7 @@ class ProductUi {
 						$h .= '</div>';
 						$h .= '<div data-wrapper="available['.$eProduct['id'].']">';
 							$h .= '<h4>'.s("Disponible").'</h4>';
-							$h .= $form->dynamicField($eShopProduct, 'available', function($d) use ($eProduct) {
+							$h .= $form->dynamicField($eShopProduct, 'available', function($d) use($eProduct) {
 								$d->name = 'available['.$eProduct['id'].']';
 							});
 						$h .= '</div>';

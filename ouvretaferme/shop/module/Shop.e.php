@@ -116,17 +116,17 @@ class Shop extends ShopElement {
 		}
 
 		$p
-			->setCallback('farm.prepare', function(?string $farm) use ($input) {
+			->setCallback('farm.prepare', function(?string $farm) use($input) {
 
 				$this['farm'] = \farm\FarmLib::getById($farm);
 
 			})
-			->setCallback('farm.check', function() use ($input) {
+			->setCallback('farm.check', function() use($input) {
 
 				return $this['farm']->notEmpty() and $this['farm']->canManage();
 
 			})
-			->setCallback('fqn.prepare', function() use ($p) {
+			->setCallback('fqn.prepare', function() use($p) {
 
 				if($p->for === 'update') {
 					$this['oldFqn'] = $this['fqn'];

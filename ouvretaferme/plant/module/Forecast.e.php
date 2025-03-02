@@ -48,7 +48,7 @@ class Forecast extends ForecastElement {
 				);
 
 			})
-			->setCallback('proPart.consistency', function(int $part) use ($properties): bool {
+			->setCallback('proPart.consistency', function(int $part) use($properties): bool {
 
 				if(
 					in_array('privatePart', $properties) and

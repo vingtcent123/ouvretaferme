@@ -679,7 +679,7 @@ class FlowUi {
 
 			$h .= $this->getCropField($form, $eSequence, $eFlow);
 
-			$h .= $form->dynamicGroup($eFlow, 'action', function($d) use ($cAction) {
+			$h .= $form->dynamicGroup($eFlow, 'action', function($d) use($cAction) {
 				$d->values = $cAction;
 			});
 
@@ -726,7 +726,7 @@ class FlowUi {
 
 			$h .= $this->getCropField($form, $eSequence, $eFlow);
 
-			$h .= $form->dynamicGroup($eFlow, 'action', function($d) use ($cAction) {
+			$h .= $form->dynamicGroup($eFlow, 'action', function($d) use($cAction) {
 				$d->values = $cAction;
 			});
 
@@ -971,7 +971,7 @@ class FlowUi {
 			$season = 'interval';
 		}
 
-		$values = function($d) use ($eFlow) {
+		$values = function($d) use($eFlow) {
 
 			$d->values = [];
 

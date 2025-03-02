@@ -116,7 +116,7 @@ class ReportUi {
 
 					$totalHarvestedByUnit = [];
 
-					$cCultivation->map(function($e) use (&$totalHarvestedByUnit) {
+					$cCultivation->map(function($e) use(&$totalHarvestedByUnit) {
 						if($e['harvestedByUnit']) {
 							foreach($e['harvestedByUnit'] as $unit => $value) {
 								$totalHarvestedByUnit[$unit] ??= 0;

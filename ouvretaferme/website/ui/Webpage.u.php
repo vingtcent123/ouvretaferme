@@ -98,7 +98,7 @@ class WebpageUi {
 			'<div class="webpage-write-url">'.
 				$form->inputGroup(
 					'<div class="input-group-addon">'.WebsiteUi::url($eWebpage['website']).'</div>'.
-					$form->dynamicField($eWebpage, 'url', function($d) use ($auto) {
+					$form->dynamicField($eWebpage, 'url', function($d) use($auto) {
 						if($auto) {
 							$d->attributes['class'] = 'disabled';
 						}
@@ -134,7 +134,7 @@ class WebpageUi {
 
 			$h .= $form->hidden('id', $eWebpage['id']);
 
-			$h .= $form->dynamicField($eWebpage, 'content', function($d) use ($eWebpage) {
+			$h .= $form->dynamicField($eWebpage, 'content', function($d) use($eWebpage) {
 				$d->attributes['style'] = 'max-width: '.$eWebpage['website']['customDesign']['maxWidth'];
 			});
 

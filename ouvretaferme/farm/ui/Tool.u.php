@@ -371,7 +371,7 @@ class ToolUi {
 			$h .= $form->asteriskInfo();
 
 			$h .= $form->hidden('farm', $eTool['farm']['id']);
-			$h .= $form->dynamicGroup($eTool, 'name*', function(\PropertyDescriber $d) use ($eTool) {
+			$h .= $form->dynamicGroup($eTool, 'name*', function(\PropertyDescriber $d) use($eTool) {
 				$d->label = $eTool->getStandaloneRoutine('nameField') ?? $d->label;
 			});
 
@@ -402,7 +402,7 @@ class ToolUi {
 
 			$h .= $form->hidden('id', $eTool['id']);
 
-			$h .= $form->dynamicGroup($eTool, 'name', function(\PropertyDescriber $d) use ($eTool) {
+			$h .= $form->dynamicGroup($eTool, 'name', function(\PropertyDescriber $d) use($eTool) {
 				$d->label = $eTool->getStandaloneRoutine('nameField') ?? $d->label;
 			});
 

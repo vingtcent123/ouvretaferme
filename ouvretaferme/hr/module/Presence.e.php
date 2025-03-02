@@ -84,7 +84,7 @@ class Presence extends PresenceElement {
 				);
 
 			})
-			->setCallback('to.present', function(?string $to) use ($p): bool {
+			->setCallback('to.present', function(?string $to) use($p): bool {
 
 				if($p->isBuilt('from') === FALSE) {
 					return TRUE;

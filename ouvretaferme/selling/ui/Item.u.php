@@ -50,7 +50,7 @@ class ItemUi {
 
 			$new = '<div id="item-create-'.$eSale['id'].'" data-sale="'.$eSale['id'].'">';
 
-				$new .= $form->dynamicField($eItem, 'product', function($d) use ($eSale) {
+				$new .= $form->dynamicField($eItem, 'product', function($d) use($eSale) {
 					$d->autocompleteDispatch = '#item-create-'.$eSale['id'];
 					$d->placeholder = s("Ajouter un produit");
 					$d->attributes['class'] = 'form-control-lg';
@@ -879,7 +879,7 @@ class ItemUi {
 					$h .= '<div data-wrapper="unitPrice['.$eProduct['id'].']">';
 
 						$h .= '<h4>'.s("Prix unitaire").'</h4>';
-						$h .= $form->dynamicField($eItem, 'unitPrice['.$eProduct['id'].']*', function(\PropertyDescriber $d) use ($form) {
+						$h .= $form->dynamicField($eItem, 'unitPrice['.$eProduct['id'].']*', function(\PropertyDescriber $d) use($form) {
 							$d->append = $form->addon(s("€"));
 						});
 
@@ -895,7 +895,7 @@ class ItemUi {
 					if($hasPrice) {
 						$h .= '<div data-wrapper="price['.$eProduct['id'].']">';
 							$h .= '<h4>'.s("Montant total").'</h4>';
-							$h .= $form->dynamicField($eItem, 'price['.$eProduct['id'].']*', function(\PropertyDescriber $d) use ($eItem) {
+							$h .= $form->dynamicField($eItem, 'price['.$eProduct['id'].']*', function(\PropertyDescriber $d) use($eItem) {
 								$d->append = s("€");
 							});
 						$h .= '</div>';
@@ -1019,7 +1019,7 @@ class ItemUi {
 					$h .= $form->dynamicGroups($eItem, $eItem['sale']['market'] ?
 						($eItem['sale']['preparationStatus'] !== Sale::SELLING ? ['unitPrice[0]*', 'number[0]'] : ['unitPrice[0]*']) :
 						['unitPrice[0]*', 'number[0]*', 'price[0]*'], [
-							'unitPrice[]' => function(\PropertyDescriber $d) use ($eItem) {
+							'unitPrice[]' => function(\PropertyDescriber $d) use($eItem) {
 								if($eItem['sale']['discount'] > 0 and $eItem['unitPrice'] !== NULL) {
 									$d->after = \util\FormUi::info(s("Prix de base : {value}", \util\TextUi::money($eItem['baseUnitPrice'])));
 								}

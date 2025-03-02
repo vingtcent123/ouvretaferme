@@ -96,7 +96,7 @@ class Flow extends FlowElement {
 				return \farm\ActionLib::canUse($eAction, $this['sequence']['farm']);
 
 			})
-			->setCallback('crop.check', function(Crop $eCrop) use ($p): bool {
+			->setCallback('crop.check', function(Crop $eCrop) use($p): bool {
 
 				$this->expects([
 					'sequence' => ['cCrop']
@@ -129,7 +129,7 @@ class Flow extends FlowElement {
 				);
 
 			})
-			->setCallback('fertilizer.check', function(?array &$fertilizer) use ($p): bool {
+			->setCallback('fertilizer.check', function(?array &$fertilizer) use($p): bool {
 
 				if($p->isBuilt('action') === FALSE) {
 					return TRUE;
@@ -164,7 +164,7 @@ class Flow extends FlowElement {
 			->setCallback('seasonStart.prepare', $prepareSeason)
 			->setCallback('seasonStop.prepare', $prepareSeason)
 
-			->setCallback('method.check', function(\farm\Method $eMethod) use ($p): bool {
+			->setCallback('method.check', function(\farm\Method $eMethod) use($p): bool {
 
 				if($p->isBuilt('action') === FALSE) {
 					return TRUE;
@@ -175,7 +175,7 @@ class Flow extends FlowElement {
 					->exists($eMethod);
 
 			})
-			->setCallback('methods.check', function(mixed &$methods) use ($p): bool {
+			->setCallback('methods.check', function(mixed &$methods) use($p): bool {
 
 				$p->expectsBuilt('action');
 
@@ -194,7 +194,7 @@ class Flow extends FlowElement {
 				return TRUE;
 
 			})
-			->setCallback('tools.check', function(mixed &$tools) use ($p): bool {
+			->setCallback('tools.check', function(mixed &$tools) use($p): bool {
 
 				$p->expectsBuilt('action');
 

@@ -34,7 +34,7 @@ class PlaceUi {
 			];
 		};
 
-		$d->after = function(\util\FormUi $form, \Element $e, string $property) use ($mapId, $lngLatId) {
+		$d->after = function(\util\FormUi $form, \Element $e, string $property) use($mapId, $lngLatId) {
 
 			$valueLngLat = $e[$property.'LngLat'] ?? NULL;
 

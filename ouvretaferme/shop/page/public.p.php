@@ -159,7 +159,7 @@ new Page(function($data) {
 
 		$data->isModifying = GET('modify', 'bool', FALSE);
 
-		$data->validateLogged = function() use ($data) {
+		$data->validateLogged = function() use($data) {
 
 			if($data->isLogged === FALSE) {
 
@@ -173,7 +173,7 @@ new Page(function($data) {
 
 		};
 
-		$data->validateOrder = function() use ($data) {
+		$data->validateOrder = function() use($data) {
 
 			if($data->eDate->canOrder() === FALSE) {
 				throw new RedirectAction(\shop\ShopUi::url($data->eShop).'?error=shop:Date::canNotOrder');
@@ -181,7 +181,7 @@ new Page(function($data) {
 
 		};
 
-		$data->validateSale = function() use ($data) {
+		$data->validateSale = function() use($data) {
 
 			if(
 				$data->eSaleExisting->empty() or
@@ -192,7 +192,7 @@ new Page(function($data) {
 
 		};
 
-		$data->validatePayment = function() use ($data) {
+		$data->validatePayment = function() use($data) {
 
 			if(
 				$data->eSaleExisting['preparationStatus'] === \selling\Sale::BASKET and

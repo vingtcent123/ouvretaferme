@@ -644,7 +644,7 @@ class Sale extends SaleElement {
 				return TRUE;
 
 			})
-			->setCallback('customer.check', function(Customer $eCustomer) use ($p): bool {
+			->setCallback('customer.check', function(Customer $eCustomer) use($p): bool {
 
 				$this->expects(['farm']);
 
@@ -701,7 +701,7 @@ class Sale extends SaleElement {
 				}
 
 			})
-			->setCallback('customer.market', function(Customer $eCustomer) use ($fw): bool {
+			->setCallback('customer.market', function(Customer $eCustomer) use($fw): bool {
 
 				if($this['compositionOf']->notEmpty()) {
 					return TRUE;
@@ -783,7 +783,7 @@ class Sale extends SaleElement {
 				return TRUE;
 
 			})
-			->setCallback('deliveredAt.check', function(string &$date) use ($p): bool {
+			->setCallback('deliveredAt.check', function(string &$date) use($p): bool {
 
 				try {
 					$this->expects(['from']);
@@ -822,7 +822,7 @@ class Sale extends SaleElement {
 				}
 
 			})
-			->setCallback('deliveredAt.composition', function(string $date) use ($p): bool {
+			->setCallback('deliveredAt.composition', function(string $date) use($p): bool {
 
 				if($this['compositionOf']->empty()) {
 					return TRUE;
@@ -836,7 +836,7 @@ class Sale extends SaleElement {
 
 
 			})
-			->setCallback('deliveredAt.compositionTooLate', function(string $date) use ($p): bool {
+			->setCallback('deliveredAt.compositionTooLate', function(string $date) use($p): bool {
 
 				if($this['compositionOf']->empty()) {
 					return TRUE;
@@ -944,7 +944,7 @@ class Sale extends SaleElement {
 				);
 
 			})
-			->setCallback('productsList.check', function(mixed $list) use ($p): bool {
+			->setCallback('productsList.check', function(mixed $list) use($p): bool {
 
 				if($p->isInvalid('customer')) {
 					return TRUE;

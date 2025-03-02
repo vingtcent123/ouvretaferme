@@ -183,7 +183,7 @@ class ProductLib extends ProductCrud {
 
 	public static function getByDate(Date $eDate, \selling\Customer $eCustomer = new \selling\Customer(), \selling\Sale $eSaleExclude = new \selling\Sale(), bool $withIngredients = FALSE, bool $public = FALSE): \Collection {
 
-		$ids = self::getColumnByDate($eDate, 'id', function(ProductModel $m) use ($eDate, $eCustomer) {
+		$ids = self::getColumnByDate($eDate, 'id', function(ProductModel $m) use($eDate, $eCustomer) {
 
 			$m
 				->whereStatus(Product::ACTIVE, if: $eCustomer->notEmpty())
@@ -229,7 +229,7 @@ class ProductLib extends ProductCrud {
 
 		}
 
-		$ccProduct->map(function($cProduct) use ($eDate, $cGrid, $eSaleExclude) {
+		$ccProduct->map(function($cProduct) use($eDate, $cGrid, $eSaleExclude) {
 
 			$cProduct->sort(['product' => ['name']], natural: TRUE);
 			self::applySold($eDate, $cProduct, $cGrid, $eSaleExclude);

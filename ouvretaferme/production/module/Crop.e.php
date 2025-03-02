@@ -135,7 +135,7 @@ class Crop extends CropElement {
 
 				$this['actions'] = [];
 
-				$check = function($action) use ($actions) {
+				$check = function($action) use($actions) {
 
 					$year = (int)($actions[$action]['year'] ?? 0);
 					$week = ($actions[$action]['week'] ?? NULL);

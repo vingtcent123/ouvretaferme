@@ -516,7 +516,7 @@ class CropUi {
 
 			$h .= $form->hidden('id', $eCrop['id']);
 
-			$h .= $form->dynamicGroup($eCrop, 'plant', function($d) use ($eCrop) {
+			$h .= $form->dynamicGroup($eCrop, 'plant', function($d) use($eCrop) {
 				$d->autocompleteDispatch = '#crop-update';
 				$d->attributes = [
 					'post-id' => $eCrop['id']
@@ -620,13 +620,13 @@ class CropUi {
 
 		$fields = $form->dynamicField($eCrop, 'plantSpacing'.$suffix);
 		$fields .= '<span>&nbsp;&nbsp;x&nbsp;&nbsp;</span>';
-		$fields .= $form->dynamicField($eCrop, 'rows'.$suffix, function(\PropertyDescriber $d) use ($use) {
+		$fields .= $form->dynamicField($eCrop, 'rows'.$suffix, function(\PropertyDescriber $d) use($use) {
 			$d->inputGroup['class'] = 'crop-write-rows';
 			if($use === Sequence::BLOCK) {
 				$d->inputGroup['class'] .= ' hide';
 			}
 		});
-		$fields .= $form->dynamicField($eCrop, 'rowSpacing'.$suffix, function(\PropertyDescriber $d) use ($use) {
+		$fields .= $form->dynamicField($eCrop, 'rowSpacing'.$suffix, function(\PropertyDescriber $d) use($use) {
 			$d->inputGroup['class'] = 'crop-write-row-spacing';
 			if($use === Sequence::BED) {
 				$d->inputGroup['class'] .= ' hide';
@@ -644,7 +644,7 @@ class CropUi {
 			['class' => 'crop-write-spacing '.($eCrop['distance'] === Crop::SPACING ? '' : 'hide'), 'wrapper' => 'plantSpacing rowSpacing rows']
 		);
 
-		$h .= $form->dynamicGroup($eCrop, 'density'.$suffix, function($d) use ($eCrop) {
+		$h .= $form->dynamicGroup($eCrop, 'density'.$suffix, function($d) use($eCrop) {
 			$d->default = function($eCrop) {
 				return isset($eCrop['density']) ? round($eCrop['density'], 1) : NULL;
 			};
@@ -670,7 +670,7 @@ class CropUi {
 
 	private function getYieldExpectedField(\util\FormUi $form, Crop $eCrop): string {
 
-		return $form->dynamicGroup($eCrop, 'yieldExpected', function(\PropertyDescriber $d) use ($eCrop) {
+		return $form->dynamicGroup($eCrop, 'yieldExpected', function(\PropertyDescriber $d) use($eCrop) {
 			$d->append = s("{value}&nbsp;/ m²", '<span data-ref="crop-unit">'.self::p('mainUnit')->values[$eCrop['mainUnit']].'</span>');
 		});
 	}

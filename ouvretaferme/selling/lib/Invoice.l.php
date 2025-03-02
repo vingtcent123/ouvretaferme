@@ -172,7 +172,7 @@ class InvoiceLib extends InvoiceCrud {
 
 			$totalVat = 0.0;
 
-			array_walk($vatByRate, function(&$entry) use ($e, &$totalVat) {
+			array_walk($vatByRate, function(&$entry) use($e, &$totalVat) {
 
 				$entry['amount'] = round($entry['amount'], 2);
 

@@ -346,7 +346,7 @@ class InvoiceUi {
 		$body = $this->getGenerateBody(
 			$eInvoice,
 			'/selling/invoice:doCreate',
-			function(\util\FormUi $form) use ($cSale, $cSaleMore, $search) {
+			function(\util\FormUi $form) use($cSale, $cSaleMore, $search) {
 	
 				$sales = '';
 

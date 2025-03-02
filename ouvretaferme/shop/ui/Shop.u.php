@@ -148,7 +148,7 @@ class ShopUi {
 		$h .= $form->group(content: '<h3>'.s("Paiement en direct avec le producteur").'</h3>');
 
 		$h .= $form->dynamicGroup($eShop, 'paymentOffline');
-		$h .= $form->dynamicGroup($eShop, 'paymentOfflineHow', function(\PropertyDescriber $d) use ($eShop) {
+		$h .= $form->dynamicGroup($eShop, 'paymentOfflineHow', function(\PropertyDescriber $d) use($eShop) {
 			$d->group['class'] = $eShop['paymentOffline'] ? '' : 'hide';
 		});
 
@@ -165,7 +165,7 @@ class ShopUi {
 		$h .= $form->group(content: '<div class="util-block-help">'.$content.'</div>');
 
 		$h .= $form->dynamicGroup($eShop, 'paymentTransfer');
-		$h .= $form->dynamicGroup($eShop, 'paymentTransferHow', function(\PropertyDescriber $d) use ($eShop) {
+		$h .= $form->dynamicGroup($eShop, 'paymentTransferHow', function(\PropertyDescriber $d) use($eShop) {
 			$d->group['class'] = $eShop['paymentTransfer'] ? '' : 'hide';
 		});
 
@@ -379,7 +379,7 @@ class ShopUi {
 
 	protected function getTypeDescriber(\farm\Farm $eFarm, string $for) {
 
-		return function(\PropertyDescriber $d) use ($eFarm, $for) {
+		return function(\PropertyDescriber $d) use($eFarm, $for) {
 
 			$d->values = $eFarm->getSelling('hasVat') ?
 				[
@@ -762,7 +762,7 @@ class ShopUi {
 		switch($property) {
 
 			case 'fqn':
-				$d->field = function(\util\FormUi $form, Shop $eShop) use ($d) {
+				$d->field = function(\util\FormUi $form, Shop $eShop) use($d) {
 
 					\Asset::css('shop', 'manage.css');
 					\Asset::js('shop', 'manage.js');
@@ -845,7 +845,7 @@ class ShopUi {
 			case 'paymentOffline' :
 			case 'paymentTransfer' :
 				$d->field = 'yesNo';
-				$d->attributes = function(\util\FormUi $form, Shop $eShop) use ($property) {
+				$d->attributes = function(\util\FormUi $form, Shop $eShop) use($property) {
 
 					$eShop->expects(['stripe']);
 

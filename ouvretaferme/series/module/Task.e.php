@@ -317,7 +317,7 @@ class Task extends TaskElement {
 				);
 
 			})
-			->setCallback('action.harvest', function(\farm\Action $eAction) use ($p): bool {
+			->setCallback('action.harvest', function(\farm\Action $eAction) use($p): bool {
 
 				if($p->for === 'update') {
 
@@ -335,7 +335,7 @@ class Task extends TaskElement {
 				}
 
 			})
-			->setCallback('repeatMaster.check', function() use ($input) {
+			->setCallback('repeatMaster.check', function() use($input) {
 
 				// Pas de fréquence, pas de répétition
 				$frequency = var_filter($input['frequency'] ?? NULL, '?string');
@@ -357,7 +357,7 @@ class Task extends TaskElement {
 				}
 
 			})
-			->setCallback('harvest.check', function(?float &$harvest) use ($fw): bool {
+			->setCallback('harvest.check', function(?float &$harvest) use($fw): bool {
 
 				if($fw->has('Task::action.check')) { // L'action génère déjà une erreur
 					return TRUE;
@@ -380,7 +380,7 @@ class Task extends TaskElement {
 				}
 
 			})
-			->setCallback('harvestSize.check', function(\plant\Size &$eSize) use ($fw): bool {
+			->setCallback('harvestSize.check', function(\plant\Size &$eSize) use($fw): bool {
 
 				if($fw->has('Task::action.check')) { // L'action génère déjà une erreur
 					return TRUE;
@@ -425,7 +425,7 @@ class Task extends TaskElement {
 				}
 
 			})
-			->setCallback('fertilizer.check', function(?array &$fertilizer) use ($fw): bool {
+			->setCallback('fertilizer.check', function(?array &$fertilizer) use($fw): bool {
 
 				if($fw->has('Task::action.check')) { // L'action génère déjà une erreur
 					return TRUE;
@@ -447,7 +447,7 @@ class Task extends TaskElement {
 				return TRUE;
 
 			})
-			->setCallback('cultivation.check', function(Cultivation $eCultivation) use ($p): bool {
+			->setCallback('cultivation.check', function(Cultivation $eCultivation) use($p): bool {
 
 				$this->expects([
 					'category' => ['fqn']
@@ -539,7 +539,7 @@ class Task extends TaskElement {
 					->exists($eSize);
 
 			})
-			->setCallback('methods.check', function(mixed &$methods) use ($p): bool {
+			->setCallback('methods.check', function(mixed &$methods) use($p): bool {
 
 				$p->expectsBuilt('action');
 
@@ -560,7 +560,7 @@ class Task extends TaskElement {
 				return TRUE;
 
 			})
-			->setCallback('tools.check', function(mixed &$tools) use ($p): bool {
+			->setCallback('tools.check', function(mixed &$tools) use($p): bool {
 
 				$p->expectsBuilt('action');
 
@@ -579,7 +579,7 @@ class Task extends TaskElement {
 				return TRUE;
 
 			})
-			->setCallback('plant.check', function(\plant\Plant $ePlant) use ($fw): bool {
+			->setCallback('plant.check', function(\plant\Plant $ePlant) use($fw): bool {
 
 				if($fw->has('Task::action.check')) { // L'action génère déjà une erreur
 					return TRUE;

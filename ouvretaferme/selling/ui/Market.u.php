@@ -110,7 +110,7 @@ class MarketUi {
 				$cItemProduct,
 				zoom: FALSE, expand: FALSE, hide: ['average'],
 				moreTh: '<th class="text-end hide-sm-down">'.s("Fréquence<br/>de vente").'</th><th class="text-end hide-sm-down">'.s("Dernière<br/>vente").'</th>',
-				moreTd: function(Item $eItemProduct) use ($cItemStats, $sales) {
+				moreTd: function(Item $eItemProduct) use($cItemStats, $sales) {
 
 					if($cItemStats->offsetExists($eItemProduct['product']['id']) === FALSE) {
 						return str_repeat('<td class="text-end color-muted">-</td>', 2);

@@ -262,7 +262,7 @@ class SliceUi {
 				$h .= $form->hidden($name.'[variety][]', 'new');
 				$h .= $this->getFieldCreate($form, $name, TRUE);
 			} else {
-				$h .= $form->dynamicField($eSlice, 'variety', function($d) use ($ccVariety, $name, $eSlice) {
+				$h .= $form->dynamicField($eSlice, 'variety', function($d) use($ccVariety, $name, $eSlice) {
 					$d->values = $this->getFieldValues($ccVariety);
 					$d->name = $name.'[variety][]';
 					$d->attributes = [

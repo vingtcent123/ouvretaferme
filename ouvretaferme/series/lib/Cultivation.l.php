@@ -732,7 +732,7 @@ class CultivationLib extends CultivationCrud {
 
 		$cPlant = $cxCultivationInput->getColumn('plant', 'plant');
 
-		$cxCultivationInput->uksort(function($a, $b) use ($cPlant, $priorities) {
+		$cxCultivationInput->uksort(function($a, $b) use($cPlant, $priorities) {
 
 			if($priorities !== []) {
 

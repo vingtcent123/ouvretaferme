@@ -58,7 +58,7 @@ class FarmerUi {
 			$eUser = new \user\User();
 
 			$h .= $form->dynamicGroups($eUser, ['firstName', 'lastName*'], [
-				'firstName' => function($d) use ($form) {
+				'firstName' => function($d) use($form) {
 					$d->after =  \util\FormUi::info(s("Facultatif"));
 				}
 			]);
@@ -87,7 +87,7 @@ class FarmerUi {
 			$h .= $form->hidden('user', $eUser['id']);
 
 			$h .= $form->dynamicGroups($eUser, ['firstName', 'lastName'], [
-				'firstName' => function($d) use ($form) {
+				'firstName' => function($d) use($form) {
 					$d->after =  \util\FormUi::info(s("Facultatif"));
 				}
 			]);

@@ -53,7 +53,7 @@ class SequenceUi {
 			$h .= $form->openAjax($url, ['method' => 'get', 'id' => 'form-search']);
 				$h .= '<div>';
 					$h .= $form->text('name', $search->get('name'), ['placeholder' => s("Nom de l'itinéraire")]);
-					$h .= $form->dynamicField(new \series\Cultivation(['farm' => $eFarm]), 'plant', function($d) use ($search) {
+					$h .= $form->dynamicField(new \series\Cultivation(['farm' => $eFarm]), 'plant', function($d) use($search) {
 						$d->autocompleteDefault = $search->get('plant');
 						$d->attributes = [
 							'data-autocomplete-select' => 'submit',
@@ -62,7 +62,7 @@ class SequenceUi {
 					});
 					$h .= $form->select('use', SequenceUi::p('use')->values, $search->get('use'), ['placeholder' => s("Utilisation du sol")]);
 
-					$h .= $form->dynamicField(new \farm\Tool(['farm' => $eFarm]), 'id', function($d) use ($search) {
+					$h .= $form->dynamicField(new \farm\Tool(['farm' => $eFarm]), 'id', function($d) use($search) {
 
 						$d->name = 'tool';
 
@@ -112,7 +112,7 @@ class SequenceUi {
 			return '<div class="util-empty">'.s("Il n'y a aucun itinéraire technique à afficher...").'</div>';
 		}
 
-		return $this->getList($eFarm, $ccCrop, $cActionMain, $search, function(\Collection $ccCrop, \Closure $display) use ($search) {
+		return $this->getList($eFarm, $ccCrop, $cActionMain, $search, function(\Collection $ccCrop, \Closure $display) use($search) {
 
 			$h = '';
 
@@ -148,7 +148,7 @@ class SequenceUi {
 
 	public function getList(\farm\Farm $eFarm, \Collection $ccCrop, \Collection $cActionMain, ?\Search $search = NULL, ?\Closure $browse = NULL) {
 
-		$display = function(Crop $eCrop) use ($eFarm, $cActionMain, $search) {
+		$display = function(Crop $eCrop) use($eFarm, $cActionMain, $search) {
 
 			$eSequence = $eCrop['sequence'];
 

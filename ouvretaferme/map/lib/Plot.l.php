@@ -329,7 +329,7 @@ class PlotLib extends PlotCrud {
 
 	public static function putFromZoneWithSeries(\farm\Farm $eFarm, \Collection|Zone $value, ?int $season = NULL, array $withSeries = [], bool $onlySeries = FALSE): void {
 
-		self::putFromZone($value, withBeds: TRUE, season: $season, newSelection: function(&$selection) use ($eFarm, $withSeries, $onlySeries) {
+		self::putFromZone($value, withBeds: TRUE, season: $season, newSelection: function(&$selection) use($eFarm, $withSeries, $onlySeries) {
 
 			$cAction = \farm\ActionLib::getByFarm($eFarm, fqn: [ACTION_SEMIS_DIRECT, ACTION_PLANTATION]);
 

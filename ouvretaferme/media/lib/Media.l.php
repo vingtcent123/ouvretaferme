@@ -122,7 +122,7 @@ abstract class MediaLib {
 			$toType = $this->type;
 
 			// We extract a portion
-			$apply = function(\Imagick $resource, &$result) use ($bounds, $toType) {
+			$apply = function(\Imagick $resource, &$result) use($bounds, $toType) {
 
 				if(\storage\ImageLib::extractImagePortion($bounds, $resource, $toType)) {
 					$result['crop'] = $bounds;
@@ -179,7 +179,7 @@ abstract class MediaLib {
 
 		// We extract a portion
 		$type = $this->type;
-		$apply = function(\Imagick $resource, &$metadata) use ($bounds, $type) {
+		$apply = function(\Imagick $resource, &$metadata) use($bounds, $type) {
 
 			if(\storage\ImageLib::extractImagePortion($bounds, $resource, $type)) {
 

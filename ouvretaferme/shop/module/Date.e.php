@@ -96,14 +96,14 @@ class Date extends DateElement {
 
 			})
 			// End of order must be after start of order.
-			->setCallback('orderEndAt.consistency', function($orderEndAt) use ($p): bool {
+			->setCallback('orderEndAt.consistency', function($orderEndAt) use($p): bool {
 
 				$p->expectsBuilt('orderStartAt');
 
 				return $orderEndAt > $this['orderStartAt'];
 			})
 			// Delivery must be after order.
-			->setCallback('deliveryDate.consistency', function($deliveryDate) use ($fw): bool {
+			->setCallback('deliveryDate.consistency', function($deliveryDate) use($fw): bool {
 
 				if(
 					$fw->has('Date::orderEndAt.consistency') or
@@ -117,7 +117,7 @@ class Date extends DateElement {
 
 				return $deliveryDate >= substr($this['orderEndAt'], 0, 10);
 			})
-			->setCallback('catalogs.check', function(?array &$catalogs) use ($input, $p) {
+			->setCallback('catalogs.check', function(?array &$catalogs) use($input, $p) {
 
 				$p->expectsBuilt('source');
 
@@ -150,7 +150,7 @@ class Date extends DateElement {
 				}
 
 			})
-			->setCallback('productsList.check', function() use ($input, $p) {
+			->setCallback('productsList.check', function() use($input, $p) {
 
 				$p->expectsBuilt('source');
 

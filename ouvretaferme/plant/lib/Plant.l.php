@@ -76,7 +76,7 @@ class PlantLib extends PlantCrud {
 			->whereFarm(NULL)
 			->getCollection();
 
-		$cPlant->map(function(Plant $ePlant) use ($eFarm) {
+		$cPlant->map(function(Plant $ePlant) use($eFarm) {
 			$ePlant['id'] = NULL;
 			$ePlant['farm'] = $eFarm;
 		});

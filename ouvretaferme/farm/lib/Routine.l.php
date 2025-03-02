@@ -51,7 +51,7 @@ class RoutineLib extends ToolCrud {
 
 		$mask = ['float32', 'min' => 0.1, 'max' => NULL, 'null' => TRUE];
 
-		$check = function($value) use ($mask) {
+		$check = function($value) use($mask) {
 			if($value === NULL) {
 				return NULL;
 			} else {

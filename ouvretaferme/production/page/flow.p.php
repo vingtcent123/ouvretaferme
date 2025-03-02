@@ -51,7 +51,7 @@ new \production\FlowPage()
 
 	})
 	->doUpdate($do)
-	->write('doPosition', function($data) use ($do) {
+	->write('doPosition', function($data) use($do) {
 
 		$positions = POST('positions', 'json', []);
 
@@ -60,7 +60,7 @@ new \production\FlowPage()
 		$do($data);
 
 	})
-	->write('doIncrementWeek', function($data) use ($do) {
+	->write('doIncrementWeek', function($data) use($do) {
 
 		$increment = POST('increment', 'int');
 		\production\FlowLib::incrementWeek($data->e, $increment);

@@ -1619,7 +1619,7 @@ class SaleUi {
 		}
 		$h .= $form->hidden('market', $eSale['market']);
 
-		$h .= $form->dynamicGroup($eSale, 'customer*', function($d) use ($form, $eSale) {
+		$h .= $form->dynamicGroup($eSale, 'customer*', function($d) use($form, $eSale) {
 
 				$d->autocompleteDispatch = '#sale-create';
 

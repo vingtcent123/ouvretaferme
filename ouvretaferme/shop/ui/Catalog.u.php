@@ -122,7 +122,7 @@ class CatalogUi {
 
 	protected function getTypeDescriber(\farm\Farm $eFarm, string $for) {
 
-		return function(\PropertyDescriber $d) use ($eFarm, $for) {
+		return function(\PropertyDescriber $d) use($eFarm, $for) {
 
 			$d->values = $eFarm->getSelling('hasVat') ?
 				[

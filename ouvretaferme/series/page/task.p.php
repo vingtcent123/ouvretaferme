@@ -122,7 +122,7 @@ new \series\TaskPage()
 			// Si sélection par plante, on trie correctement les séries par ordre chronologique
 			if($ePlant->notEmpty()) {
 
-				$data->cSeries->sort(function($eSeries1, $eSeries2) use ($ePlant) {
+				$data->cSeries->sort(function($eSeries1, $eSeries2) use($ePlant) {
 
 					$eCultivation1 = $eSeries1['cCultivation']->find(fn($eCultivation) => $eCultivation['plant']['id'] === $ePlant['id'], limit: 1, clone: FALSE);
 					$eCultivation2 = $eSeries2['cCultivation']->find(fn($eCultivation) => $eCultivation['plant']['id'] === $ePlant['id'], limit: 1, clone: FALSE);

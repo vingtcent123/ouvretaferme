@@ -140,7 +140,7 @@ class Series extends SeriesElement {
 				return $this->acceptStatus();
 
 			})
-			->setCallback('use.prepare', function() use ($p): bool {
+			->setCallback('use.prepare', function() use($p): bool {
 
 				if($p->for === 'update') {
 					$this->expects(['use']);
@@ -150,7 +150,7 @@ class Series extends SeriesElement {
 				return TRUE;
 
 			})
-			->setCallback('cycle.prepare', function(?string &$cycle) use ($p): bool {
+			->setCallback('cycle.prepare', function(?string &$cycle) use($p): bool {
 
 				$p->expectsBuilt('sequence');
 

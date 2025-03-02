@@ -36,7 +36,7 @@ $put = function($data, AjaxTemplate $t) {
 
 };
 
-new JsonView('put', function($data, AjaxTemplate $t) use ($put) {
+new JsonView('put', function($data, AjaxTemplate $t) use($put) {
 
 	$put($data, $t);
 
@@ -50,7 +50,7 @@ new JsonView('delete', function($data, AjaxTemplate $t) {
 
 });
 
-new JsonView('update', function($data, AjaxTemplate $t) use ($put) {
+new JsonView('update', function($data, AjaxTemplate $t) use($put) {
 
 	$put($data, $t);
 

@@ -68,7 +68,7 @@ class RepeatLib extends RepeatCrud {
 
 			$week = $year.'-W'.sprintf('%02d', $weekNumber);
 
-			$cRepeatWeek = $cRepeat->find(function(Repeat $eRepeat) use ($week) {
+			$cRepeatWeek = $cRepeat->find(function(Repeat $eRepeat) use($week) {
 
 				return (
 					$eRepeat['stop'] === NULL or

@@ -133,11 +133,11 @@ class DemoLib {
 			$properties = $m->getProperties();
 			$demoProperties = $m->getProperties();
 
-			array_walk($demoProperties, function(&$value) use ($pdo) {
+			array_walk($demoProperties, function(&$value) use($pdo) {
 				$value = $pdo->api->field($value);
 			});
 
-			array_walk($properties, function(&$value, $key) use ($module, $m, $pdo) {
+			array_walk($properties, function(&$value, $key) use($module, $m, $pdo) {
 
 				if(
 					($m->getModule() === 'farm\\Farm' and $value === 'id') or

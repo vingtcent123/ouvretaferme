@@ -157,7 +157,7 @@ class Product extends ProductElement {
 				);
 
 			})
-			->setCallback('unit.check', function(Unit $eUnit) use ($p): bool {
+			->setCallback('unit.check', function(Unit $eUnit) use($p): bool {
 
 				$this->expects(['farm']);
 

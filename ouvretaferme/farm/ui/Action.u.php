@@ -155,7 +155,7 @@ class ActionUi {
 
 			foreach($cAction as $eAction) {
 
-				$categories = array_map(function($category) use ($cCategory) {
+				$categories = array_map(function($category) use($cCategory) {
 					return encode($cCategory[$category]['name']);
 				}, $eAction['categories']);
 

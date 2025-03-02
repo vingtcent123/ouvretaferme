@@ -215,7 +215,7 @@ class TimesheetLib extends TimesheetCrud {
 			$distribution,
 			$timeAdd,
 			$precision,
-			function(Task $eTask) use ($cTimesheet, $eTimesheetBase, $precision) {
+			function(Task $eTask) use($cTimesheet, $eTimesheetBase, $precision) {
 
 				$eTimesheet = (clone $eTimesheetBase)->merge([
 					'task' => $eTask

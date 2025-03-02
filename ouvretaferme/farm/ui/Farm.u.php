@@ -780,7 +780,7 @@ class FarmUi {
 
 						$h .= $form->inputGroup($form->addon(s('Largeur travaillée de planche')).$form->number('bedWidth', $search->get('bedWidth')).$form->addon(s('cm')));
 
-						$h .= $form->dynamicField(new Tool(['farm' => $eFarm]), 'id', function($d) use ($search) {
+						$h .= $form->dynamicField(new Tool(['farm' => $eFarm]), 'id', function($d) use($search) {
 
 							$d->name = 'tool';
 

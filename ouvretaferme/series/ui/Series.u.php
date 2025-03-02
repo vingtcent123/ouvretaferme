@@ -458,7 +458,7 @@ class SeriesUi {
 
 				$h .= $form->hidden('farm', $eFarm['id']);
 
-				$h .= $form->dynamicGroup($eSeries, 'season', function(\PropertyDescriber $d) use ($eFarm, $season) {
+				$h .= $form->dynamicGroup($eSeries, 'season', function(\PropertyDescriber $d) use($eFarm, $season) {
 
 					$d->label = s("Pour la saison");
 
@@ -501,7 +501,7 @@ class SeriesUi {
 
 				$h .= $form->group(
 					s("À partir d'une espèce"),
-					$form->dynamicField($eCultivation, 'plant', function($d) use ($eFarm) {
+					$form->dynamicField($eCultivation, 'plant', function($d) use($eFarm) {
 						$d->autocompleteDispatch = '#series-create-from-plant';
 						$d->attributes = [
 							'data-autocomplete-select' => 'submit'
@@ -517,7 +517,7 @@ class SeriesUi {
 				$h .= $form->hidden('season', $season);
 				$h .= $form->group(
 					s("À partir d'un itinéraire technique"),
-					$form->dynamicField($eCultivation, 'sequence', function($d) use ($eFarm) {
+					$form->dynamicField($eCultivation, 'sequence', function($d) use($eFarm) {
 						$d->autocompleteBody = ['farm' => $eFarm['id']];
 						$d->attributes = [
 							'data-autocomplete-select' => 'submit'
@@ -598,17 +598,17 @@ class SeriesUi {
 
 	protected function getBlockFields(\util\FormUi $form, Series $eSeries): string {
 
-		$h = $form->dynamicGroup($eSeries, 'areaTarget', function($d) use ($eSeries) {
+		$h = $form->dynamicGroup($eSeries, 'areaTarget', function($d) use($eSeries) {
 			$d->group = ($eSeries['use'] !== Series::BLOCK ? ['class' => 'hide'] : []);
 		});
 
-		$h .= $form->dynamicGroup($eSeries, 'lengthTarget', function($d) use ($eSeries) {
+		$h .= $form->dynamicGroup($eSeries, 'lengthTarget', function($d) use($eSeries) {
 			$d->group = ($eSeries['use'] !== Series::BED ? ['class' => 'hide'] : []);
 		});
-		$h .= $form->dynamicGroup($eSeries, 'bedWidth', function($d) use ($eSeries) {
+		$h .= $form->dynamicGroup($eSeries, 'bedWidth', function($d) use($eSeries) {
 			$d->group = ($eSeries['use'] !== Series::BED ? ['class' => 'hide'] : []);
 		});
-		$h .= $form->dynamicGroup($eSeries, 'alleyWidth', function($d) use ($eSeries) {
+		$h .= $form->dynamicGroup($eSeries, 'alleyWidth', function($d) use($eSeries) {
 			$d->group = ($eSeries['use'] !== Series::BED ? ['class' => 'hide'] : []);
 		});
 
@@ -820,7 +820,7 @@ class SeriesUi {
 
 				$h .= $form->dynamicGroup(new Cultivation([
 					'sequence' => $eSeries['sequence']
-				]), 'sequence', function($d) use ($eSeries) {
+				]), 'sequence', function($d) use($eSeries) {
 
 					$body = [
 						'farm' => $eSeries['farm']['id']
@@ -838,7 +838,7 @@ class SeriesUi {
 
 			$h .= $form->dynamicGroup($eSeries, 'mode');
 
-			$h .= $form->dynamicGroup($eSeries, 'use', function(\PropertyDescriber $d) use ($eSeries) {
+			$h .= $form->dynamicGroup($eSeries, 'use', function(\PropertyDescriber $d) use($eSeries) {
 
 				$infos = [];
 
@@ -962,7 +962,7 @@ class SeriesUi {
 				$input
 			);
 
-			$h .= $form->dynamicGroup($eSeriesFirst, 'season', function(\PropertyDescriber $d) use ($eSeriesFirst) {
+			$h .= $form->dynamicGroup($eSeriesFirst, 'season', function(\PropertyDescriber $d) use($eSeriesFirst) {
 				$d->label = s("Dupliquer pour la saison");
 				$d->attributes['onclick'] = 'Series.changeDuplicateSeason(this)';
 				$d->after = \util\FormUi::info(s("Lorsque vous dupliquez une série sur une saison différente, les interventions <i>Fait</i> sont replacées en <i>À faire</i> et les récoltes sont remises à zéro."), class: 'series-duplicate-season hide');
@@ -1144,7 +1144,7 @@ class SeriesUi {
 		return $form->group(
 			self::p('name')->label,
 			$form->inputGroup(
-				$form->dynamicField($eSeries, 'name', function($d) use ($eSeries) {
+				$form->dynamicField($eSeries, 'name', function($d) use($eSeries) {
 					$d->attributes['data-auto'] = 'true';
 					$d->attributes['oninput'] = 'Series.changeNameAuto(this)';
 				})
