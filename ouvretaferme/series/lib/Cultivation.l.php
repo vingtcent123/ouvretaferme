@@ -447,13 +447,13 @@ class CultivationLib extends CultivationCrud {
 
 			$eSlice['youngPlants'] = $eCultivation->getYoungPlants($eSlice, safetyMargin: match($eCultivation['seedling']) {
 				Cultivation::YOUNG_PLANT => $eCultivation['plant']['plantsSafetyMargin'],
-				default => 1
+				default => NULL
 			}, error: $error);
 
 			$eSlice['seeds'] = $eCultivation->getSeeds($eSlice, safetyMargin: match($eCultivation['seedling']) {
 				Cultivation::SOWING => $eCultivation['plant']['seedsSafetyMargin'],
 				Cultivation::YOUNG_PLANT => $eCultivation['plant']['plantsSafetyMargin'],
-				default => 1
+				default => NULL
 			});
 
 			$eSlice['area'] = self::getArea($eCultivation['series'], $eCultivation, $eSlice);
