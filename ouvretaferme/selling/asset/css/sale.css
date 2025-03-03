@@ -168,6 +168,10 @@ a.sale-preparation-status-action {
 	color: var(--todo);
 }
 
+.sale-preparation-status-outline.sale-preparation-status-draft {
+	border-color: var(--todo);
+}
+
 .sale-preparation-status-label.sale-preparation-status-draft {
 	background-color: var(--todo);
 	color: white;
@@ -177,6 +181,10 @@ a.sale-preparation-status-action {
 	color: var(--order);
 }
 
+.sale-preparation-status-outline.sale-preparation-status-confirmed {
+	border-color: var(--order);
+}
+
 .sale-preparation-status-label.sale-preparation-status-confirmed {
 	background-color: var(--order);
 	color: white;
@@ -184,6 +192,10 @@ a.sale-preparation-status-action {
 
 .sale-preparation-status-selling {
 	color: var(--selling);
+}
+
+.sale-preparation-status-outline.sale-preparation-status-selling {
+	border-color: var(--selling);
 }
 
 .sale-preparation-status-label.sale-preparation-status-selling {
@@ -196,6 +208,10 @@ a.sale-preparation-status-action {
 	color: var(--done);
 }
 
+.sale-preparation-status-outline.sale-preparation-status-prepared {
+	border-color: var(--done);
+}
+
 .sale-preparation-status-label.sale-preparation-status-prepared {
 	background-color: var(--done);
 	color: white;
@@ -203,6 +219,10 @@ a.sale-preparation-status-action {
 
 .sale-preparation-status-delivered {
 	color: var(--success);
+}
+
+.sale-preparation-status-outline.sale-preparation-status-delivered {
+	border-color: var(--success);
 }
 
 .sale-preparation-status-label.sale-preparation-status-delivered {
@@ -214,6 +234,10 @@ a.sale-preparation-status-action {
 	color: var(--basket);
 }
 
+.sale-preparation-status-outline.sale-preparation-status-basket {
+	border-color: var(--basket);
+}
+
 .sale-preparation-status-label.sale-preparation-status-basket {
 	background-color: var(--basket);
 	color: white;
@@ -221,6 +245,10 @@ a.sale-preparation-status-action {
 
 .sale-preparation-status-canceled {
 	color: var(--muted);
+}
+
+.sale-preparation-status-outline.sale-preparation-status-canceled {
+	border-color: var(--muted);
 }
 
 .sale-preparation-status-label.sale-preparation-status-canceled {

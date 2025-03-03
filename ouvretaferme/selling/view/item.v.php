@@ -16,7 +16,7 @@ new AdaptativeView('update', function($data, PanelTemplate $t) {
 });
 
 new AdaptativeView('summary', function($data, PanelTemplate $t) {
-	return new \selling\ItemUi()->getByDeliverDay($data->eFarm, $data->date, $data->cSale, $data->ccItemProduct, $data->ccItemSale);
+	return new \selling\ItemUi()->getSummary($data->eFarm, $data->date, $data->cSale, $data->ccItemProduct, $data->ccItemSale);
 });
 
 // TODO : refactoriser

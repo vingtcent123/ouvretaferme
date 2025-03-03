@@ -75,7 +75,22 @@ class Sale {
 
 			let actions = 0;
 
-			qsa(
+			let amount = 0.0;
+			let ids = '';
+			selection.forEach(node => {
+				amount += parseFloat(node.dataset.batchAmount);
+				ids += '&ids[]='+ node.value;
+			});
+
+			qs(
+				'.batch-menu-item-number',
+				node => {
+					node.innerHTML = money(amount, 2);
+					node.parentElement.setAttribute('href', node.parentElement.dataset.url + ids);
+				}
+			);
+
+			qs(
 				'.batch-menu-cancel',
 				selection.filter('[data-batch~="not-canceled"]').length > 0 ?
 					node => node.hide() :
@@ -85,7 +100,7 @@ class Sale {
 					}
 			);
 
-			qsa(
+			qs(
 				'.batch-menu-confirmed',
 				selection.filter('[data-batch~="not-confirmed"]').length > 0 ?
 					node => node.hide() :
@@ -95,7 +110,7 @@ class Sale {
 					}
 			);
 
-			qsa(
+			qs(
 				'.batch-menu-delivered',
 				selection.filter('[data-batch~="not-delivered"]').length > 0 ?
 					node => node.hide() :
@@ -105,7 +120,7 @@ class Sale {
 					}
 			);
 
-			qsa(
+			qs(
 				'.batch-menu-delete',
 				selection.filter('[data-batch~="not-delete"]').length > 0 ?
 					node => node.hide() :

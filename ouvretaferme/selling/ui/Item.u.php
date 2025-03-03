@@ -468,7 +468,7 @@ class ItemUi {
 
 	}
 
-	public function getByDeliverDay(\farm\Farm $eFarm, string $date, \Collection $cSale, \Collection $ccItemProduct, \Collection $ccItemSale) {
+	public function getSummary(\farm\Farm $eFarm, ?string $date, \Collection $cSale, \Collection $ccItemProduct, \Collection $ccItemSale) {
 
 		if($cSale->empty()) {
 			$h = '<div class="util-info">'.s("Il n'y a aucune commande à préparer pour ce jour").'</div>';
@@ -509,7 +509,10 @@ class ItemUi {
 		}
 
 		return new \Panel(
-			title: s("Commandes pour le {value}", lcfirst(\util\DateUi::getDayName(date('N', strtotime($date)))).' '.\util\DateUi::textual($date, \util\DateUi::DAY_MONTH)),
+			id: 'panel-item-summary',
+			title: $date ?
+				s("Commandes pour le {value}", lcfirst(\util\DateUi::getDayName(date('N', strtotime($date)))).' '.\util\DateUi::textual($date, \util\DateUi::DAY_MONTH)) :
+				s("Commandes sélectionnées"),
 			body: $h
 		);
 
@@ -586,13 +589,7 @@ class ItemUi {
 
 					foreach($cItem as $eItem) {
 
-						$color = match($cSale[$eItem['sale']['id']]['preparationStatus']) {
-							Sale::CONFIRMED => 'order',
-							Sale::PREPARED => 'secondary',
-							Sale::DELIVERED => 'success'
-						};
-
-						$customer = '<a href="'.SaleUi::url($eItem['sale']).'" class="btn btn-xs btn-outline-'.$color.'">'.$eItem['sale']['id'].'</a> ';
+						$customer = '<a href="'.SaleUi::url($eItem['sale']).'" class="btn btn-xs sale-preparation-status-outline sale-preparation-status-'.$cSale[$eItem['sale']['id']]['preparationStatus'].'">'.$eItem['sale']['id'].'</a> ';
 						$customer .= '<a href="'.SaleUi::url($eItem['sale']).'">'.encode($eItem['customer']->getName()).'</a>';
 
 						$h .= '<li>';
@@ -627,15 +624,9 @@ class ItemUi {
 			$eSale = $cItem->first()['sale'];
 			$eCustomer = $cItem->first()['customer'];
 
-			$color = match($cSale[$eSale['id']]['preparationStatus']) {
-				Sale::CONFIRMED => 'order',
-				Sale::PREPARED => 'secondary',
-				Sale::DELIVERED => 'success'
-			};
-
 			$h .= '<div class="item-day-one">';
 				$h .= '<div class="item-day-product">';
-					$h .= '<a href="/vente/'.$eSale['id'].'" class="btn btn-sm btn-outline-'.$color.'">'.$eSale->getNumber().'</a> ';
+					$h .= '<a href="/vente/'.$eSale['id'].'" class="btn btn-sm sale-preparation-status-label sale-preparation-status-'.$eSale['preparationStatus'].'">'.$eSale->getNumber().'</a> ';
 					$h .= CustomerUi::link($eCustomer);
 				$h .= '</div>';
 

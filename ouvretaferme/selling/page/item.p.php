@@ -109,13 +109,28 @@ new \selling\ItemPage()
 	}, onEmpty: fn($data) => throw new ReloadLayerAction());
 
 new Page()
-	->match(['get', 'post'],'summary', function($data) {
+	->get('summary', function($data) {
 
 		$data->eFarm = \farm\FarmLib::getById(GET('farm'))->validate('canSelling');
 
-		$data->date = INPUT('date');
-		$data->type = INPUT('type', [\selling\Customer::PRO, \selling\Customer::PRIVATE], NULL);
-		$data->cSale = \selling\SaleLib::getByDeliveredDay($data->eFarm, $data->date, $data->type);
+		if(input_exists('date')) {
+
+			$type = GET('type', [\selling\Customer::PRO, \selling\Customer::PRIVATE], NULL);
+
+			$data->date = INPUT('date');
+			$data->cSale = \selling\SaleLib::getByDeliveredDay($data->eFarm, $data->date, $type);
+
+		} else if(input_exists('ids')) {
+
+			$ids = GET('ids', 'array');
+
+			$data->date = NULL;
+			$data->cSale = \selling\SaleLib::getByIds($ids, index: 'id')->validateProperty('farm', $data->eFarm);
+
+		} else {
+			throw new NotExpectedAction('Invalid parameters');
+		}
+
 		$data->ccItemProduct = \selling\ItemLib::getProductsBySales($data->cSale);
 		$data->ccItemSale = \selling\ItemLib::getBySales($data->cSale);
 

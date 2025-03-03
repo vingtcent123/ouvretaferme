@@ -336,7 +336,7 @@ class SaleUi {
 
 						$h .= '<td class="td-checkbox">';
 							$h .= '<label>';
-								$h .= '<input type="checkbox" name="batch[]" value="'.$eSale['id'].'" oninput="Sale.changeSelection()" data-batch="'.implode(' ', $batch).'"/>';
+								$h .= '<input type="checkbox" name="batch[]" value="'.$eSale['id'].'" oninput="Sale.changeSelection()" data-batch-amount="'.($eSale['priceExcludingVat'] ?? 0.0).'" data-batch="'.implode(' ', $batch).'"/>';
 							$h .= '</label>';
 						$h .= '</td>';
 
@@ -516,14 +516,12 @@ class SaleUi {
 
 	public function getBatch(\farm\Farm $eFarm): string {
 
-/*
-		$menu = '<a data-ajax-submit="/selling/item:summary?farm='.$eFarm['id'].'" data-ajax-navigation="never" class="batch-menu-item">';
-			$menu .= '<span class="batch-menu-item-number"><span class="sale-batch-amount"></span> €</span>';
+		$menu = '<a data-url="/selling/item:summary?farm='.$eFarm['id'].'" class="batch-menu-amount batch-menu-item">';
+			$menu .= '<span class="batch-menu-item-number"></span>';
 			$menu .= '<span>'.s("Synthèse").'</span>';
 		$menu .= '</a>';
-*/
 
-		$menu /*.*/= '<a data-ajax-submit="/selling/sale:doUpdateConfirmedCollection" data-confirm="'.s("Marquer ces ventes comme confirmées ?").'" class="batch-menu-confirmed batch-menu-item">';
+		$menu .= '<a data-ajax-submit="/selling/sale:doUpdateConfirmedCollection" data-confirm="'.s("Marquer ces ventes comme confirmées ?").'" class="batch-menu-confirmed batch-menu-item">';
 			$menu .= '<span class="sale-preparation-status-label sale-preparation-status-batch sale-preparation-status-confirmed">'.self::p('preparationStatus')->shortValues[Sale::CONFIRMED].'</span>';
 			$menu .= '<span>'.s("Confirmé").'</span>';
 		$menu .= '</a>';
@@ -779,13 +777,7 @@ class SaleUi {
 			return $h;
 		}
 
-		$buttonsStyle = [
-			Sale::CANCELED => 'btn-outline-muted',
-			Sale::CONFIRMED => 'btn-outline-order',
-			Sale::PREPARED => 'btn-outline-done',
-			Sale::SELLING => 'btn-outline-selling',
-			Sale::DELIVERED => 'btn-outline-success',
-		];
+		$buttonsStyle = self::getPreparationStatusButtons();
 
 		$button = fn(string $preparationStatus, ?string $confirm = NULL) => ' <a data-ajax="/selling/sale:doUpdatePreparationStatus" post-id="'.$eSale['id'].'" post-preparation-status="'.$preparationStatus.'" class="sale-preparation-status-action '.$buttonsStyle[$preparationStatus].'" title="'.self::p('preparationStatus')->values[$preparationStatus].'" '.($confirm ? attr('data-confirm', $confirm) : '').'>'.($shortText ? self::p('preparationStatus')->shortValues[$preparationStatus] : self::p('preparationStatus')->values[$preparationStatus]).'</a>';
 
@@ -855,6 +847,19 @@ class SaleUi {
 		}
 
 		return $h;
+
+	}
+
+	public static function getPreparationStatusButtons(): array {
+
+		return [
+			Sale::DRAFT => 'btn-outline-todo',
+			Sale::CANCELED => 'btn-outline-muted',
+			Sale::CONFIRMED => 'btn-outline-order',
+			Sale::PREPARED => 'btn-outline-done',
+			Sale::SELLING => 'btn-outline-selling',
+			Sale::DELIVERED => 'btn-outline-success',
+		];
 
 	}
 
@@ -1619,7 +1624,7 @@ class SaleUi {
 		}
 		$h .= $form->hidden('market', $eSale['market']);
 
-		$h .= $form->dynamicGroup($eSale, 'customer*', function($d) use($form, $eSale) {
+		$h .= $form->dynamicGroup($eSale, 'customer*', function($d) use ($form, $eSale) {
 
 				$d->autocompleteDispatch = '#sale-create';
 
