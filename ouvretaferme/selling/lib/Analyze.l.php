@@ -490,7 +490,9 @@ class AnalyzeLib {
 				'quantity' => new \Sql('SUM(IF(packaging IS NULL, 1, packaging) * number)', 'float'),
 				'unit' => ['fqn', 'by', 'singular', 'plural', 'short', 'type'],
 				'turnover' => new \Sql('SUM('.$field.')', 'float'),
-				'average' => new \Sql('SUM('.$field.') / SUM(IF(packaging IS NULL, 1, packaging) * number)', 'float')
+				'average' => new \Sql('SUM('.$field.') / SUM(IF(packaging IS NULL, 1, packaging) * number)', 'float'),
+				'containsComposition' => new \Sql('SUM(productComposition) > 0', 'bool'),
+				'containsIngredient' => new \Sql('SUM(ingredientOf IS NOT NULL) > 0', 'bool')
 			])
 			->join(Customer::model(), 'm1.customer = m2.id')
 			->where(new \Sql('EXTRACT(YEAR FROM deliveredAt)'), $year, if: $year)
@@ -611,7 +613,9 @@ class AnalyzeLib {
 			->select([
 				'quantity' => new \Sql('SUM(IF(packaging IS NULL, 1, packaging) * number)', 'float'),
 				'turnover' => new \Sql('SUM(priceExcludingVat)', 'float'),
-				'average' => new \Sql('SUM(priceExcludingVat) / SUM(IF(packaging IS NULL, 1, packaging) * number)', 'float')
+				'average' => new \Sql('SUM(priceExcludingVat) / SUM(IF(packaging IS NULL, 1, packaging) * number)', 'float'),
+				'containsComposition' => new \Sql('SUM(productComposition) > 0', 'bool'),
+				'containsIngredient' => new \Sql('SUM(ingredientOf IS NOT NULL) > 0', 'bool')
 			])
 			->join(Product::model()
 				->select([

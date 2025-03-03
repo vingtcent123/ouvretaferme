@@ -143,6 +143,9 @@ new \farm\FarmerPage(function($data) {
 		$eFarm = \farm\FarmLib::getById($data->e['farm']);
 		throw new RedirectAction(\farm\FarmerUi::urlManage($eFarm).'&success=farm:'.($data->e['status'] === \farm\Farmer::IN ? 'Farmer::created' : 'Farmer::deleted'));
 	})
+	->quick(['viewAnalyzeComposition'], [
+		'viewAnalyzeComposition' => fn() => throw new ReloadAction()
+	])
 	->update()
 	->doUpdate(fn($data) => throw new ViewAction($data))
 	->doDelete(fn($data) => throw new RedirectAction('/farm/farmer:manage?farm='.$data->e['farm']['id'].'&success=farm:Farmer::deleted'));

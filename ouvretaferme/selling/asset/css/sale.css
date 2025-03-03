@@ -490,3 +490,22 @@ a.sale-relative-after:hover .sale-relative-customer {
 	background-color: #fff4;
 	color: white;
 }
+
+.sale-composition-switch {
+	display: inline-grid;
+	grid-template-columns: max-content max-content max-content;
+	grid-column-gap: 0.5rem;
+	line-height: 0.8;
+	font-size: 1.2rem;
+	align-items: center;
+}
+
+.sale-composition-switch-label {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.sale-composition-switch .field-switch {
+	background-color: var(--secondary);
+}

@@ -34,10 +34,6 @@ class FarmerLib extends FarmerCrud {
 
 	}
 
-	public static function getOnlineByFarm(Farm $eFarm): Farmer {
-		return self::getOnline()[$eFarm['id']] ?? new Farmer();
-	}
-
 	public static function create(Farmer $e): void {
 
 		$e->expects(['id', 'role']);
@@ -349,7 +345,7 @@ class FarmerLib extends FarmerCrud {
 
 	public static function register(Farm $eFarm): void {
 
-		$eFarmer = self::getOnlineByFarm($eFarm);
+		$eFarmer = $eFarm->getOnlineFarmer();
 
 		$properties = array_filter(Farmer::model()->getProperties(), fn($property) => str_starts_with($property, 'view'));
 
@@ -384,7 +380,7 @@ class FarmerLib extends FarmerCrud {
 
 	public static function setView(string $field, Farm $eFarm, mixed $newView): mixed {
 
-		$eFarmer = self::getOnlineByFarm($eFarm);
+		$eFarmer = $eFarm->getOnlineFarmer();
 
 		if($eFarmer->empty()) {
 			return $newView;

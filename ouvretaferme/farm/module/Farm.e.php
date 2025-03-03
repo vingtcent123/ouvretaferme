@@ -13,6 +13,10 @@ class Farm extends FarmElement {
 
 	}
 
+	public function getOnlineFarmer(): Farmer {
+		return FarmerLib::getOnline()[$this['id']] ?? new Farmer();
+	}
+
 	public static function getSelection(): array {
 
 		return parent::getSelection() + [

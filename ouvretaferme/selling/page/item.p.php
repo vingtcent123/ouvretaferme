@@ -113,14 +113,14 @@ new Page()
 
 		$data->eFarm = \farm\FarmLib::getById(GET('farm'))->validate('canSelling');
 
-		if(input_exists('date')) {
+		if(get_exists('date')) {
 
 			$type = GET('type', [\selling\Customer::PRO, \selling\Customer::PRIVATE], NULL);
 
-			$data->date = INPUT('date');
+			$data->date = \selling\Sale::GET('date', 'deliveredAt', fn() => throw new NotExpectedAction());
 			$data->cSale = \selling\SaleLib::getByDeliveredDay($data->eFarm, $data->date, $type);
 
-		} else if(input_exists('ids')) {
+		} else if(get_exists('ids')) {
 
 			$ids = GET('ids', 'array');
 

@@ -47,8 +47,6 @@ new \production\SequencePage(function($data) {
 	})
 	->create(function($data) {
 
-		$eFarmer = \farm\FarmerLib::getOnlineByFarm($data->eFarm);
-
 		$data->e->add([
 			'cycle' => \production\Sequence::ANNUAL,
 			'bedWidth' => $data->eFarm['defaultBedWidth'],

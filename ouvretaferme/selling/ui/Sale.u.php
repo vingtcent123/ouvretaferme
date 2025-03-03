@@ -1832,6 +1832,37 @@ class SaleUi {
 
 	}
 
+	public static function getCompositionSwitch(\farm\Farm $eFarm): string {
+
+		\Asset::css('selling', 'sale.css');
+
+		$eFarmer = $eFarm->getOnlineFarmer();
+
+		$action = fn() => attrs([
+			'data-ajax' => \util\FormUi::getQuickUrl($eFarmer),
+			'post-id' => $eFarmer['id'],
+			'post-property' => 'viewAnalyzeComposition',
+			'post-view-analyze-composition' => ($eFarmer['viewAnalyzeComposition'] === \farm\Farmer::COMPOSITION ? \farm\Farmer::INGREDIENT : \farm\Farmer::COMPOSITION),
+		]);
+
+		$composition = \Asset::icon('puzzle-fill');
+		$ingredient = \Asset::icon('puzzle-fill').' '.\Asset::icon('arrow-right').' '.\Asset::icon('boxes');
+
+		$h = '<a data-dropdown="bottom-end" class="btn btn-outline-secondary dropdown-toggle">'.($eFarmer['viewAnalyzeComposition'] === \farm\Farmer::COMPOSITION ? $composition : $ingredient).'</a>';
+		$h .= '<div class="dropdown-list">';
+
+			if($eFarmer['viewAnalyzeComposition'] === \farm\Farmer::COMPOSITION) {
+				$h .= '<a '.$action().' data-confirm="'.s("Remplacer les produits composés par leur composition dans l'affichage ?").'" class="dropdown-item">'.\Asset::icon('puzzle-fill').' '.\Asset::icon('arrow-right').' '.\Asset::icon('boxes').'</a>';
+			} else {
+				$h .= '<a '.$action().' data-confirm="'.s("Afficher les produits composés et non plus leur composition ?").'" class="dropdown-item">'.\Asset::icon('puzzle-fill').'</a>';
+			}
+
+		$h .= '</div>';
+
+		return $h;
+
+	}
+
 	public static function getVat(\farm\Farm $eFarm, bool $short = FALSE): array {
 
 		/* La ferme permettra ultérieurement de personnaliser la TVA en fonction du pays */

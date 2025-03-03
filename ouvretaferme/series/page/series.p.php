@@ -119,7 +119,7 @@ new \series\CultivationPage(function($data) {
 	->get('createFrom', fn($data) => throw new ViewAction($data))
 	->get('createFromPlant', function($data) {
 
-		$data->eFarmer = \farm\FarmerLib::getOnlineByFarm($data->eFarm);
+		$data->eFarmer = $data->eFarm->getOnlineFarmer();
 		$data->ePlant = \plant\PlantLib::getById(GET('plant'))->validate('notEmpty');
 		$data->cAction = \farm\ActionLib::getByFarm($data->eFarm, fqn: [ACTION_SEMIS_PEPINIERE, ACTION_SEMIS_DIRECT, ACTION_PLANTATION], index: 'fqn');
 
