@@ -147,8 +147,7 @@ class Cultivation {
 
 				case 'bed' :
 					const bedWidth = parseInt(wrapper.dataset.bedWidth) || parseInt(form.qs('input[name="bedWidth"]').value) || null;
-					const alleyWidth = parseInt(wrapper.dataset.alleyWidth) || parseInt(form.qs('input[name="alleyWidth"]').value) || 0;
-					density = (rows !== null && plantSpacing !== null && bedWidth !== null) ? (rows / ((bedWidth + alleyWidth) / 100) * 100 / plantSpacing) : null;
+					density = (rows !== null && plantSpacing !== null && bedWidth !== null) ? ((100 / plantSpacing) * rows) : null;
 					break;
 
 			}

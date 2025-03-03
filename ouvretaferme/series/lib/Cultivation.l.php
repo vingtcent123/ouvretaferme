@@ -891,6 +891,8 @@ class CultivationLib extends CultivationCrud {
 			'lengthTarget' => NULL,
 			'area' => 0,
 			'areaTarget' => 0,
+			'bedWidth' => $eSequence['bedWidth'] ?? $eFarm['defaultBedWidth'],
+			'alleyWidth' => $eSequence['alleyWidth'] ?? $eFarm['defaultAlleyWidth'],
 		]);
 
 		// Construction des cultivations

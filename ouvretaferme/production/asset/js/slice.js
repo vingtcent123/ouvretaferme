@@ -78,6 +78,8 @@ class Slice {
 		const length = parseInt(wrapper.dataset.length) || null;
 		const sliceUnit = wrapper.qs('input[name^="sliceUnit"]').value;
 
+		let plants;
+
 		switch(use) {
 
 			case 'block' :
@@ -93,6 +95,9 @@ class Slice {
 					}
 
 				});
+
+				plants = (area !== null && density !== null) ? Math.round(area * density) : null;
+
 				break;
 
 			case 'bed' :
@@ -108,6 +113,9 @@ class Slice {
 				});
 
 				wrapper.qs('[data-action="slice-unit"][data-unit="area"]').classList.add('hide');
+
+				plants = (length !== null && density !== null) ? Math.round(length * density) : null;
+
 				break;
 
 		}
@@ -115,7 +123,6 @@ class Slice {
 		wrapper.qs('.slice-item-limit[data-unit="length"] .slice-item-max').innerHTML = length ?? '';
 		wrapper.qs('.slice-item-limit[data-unit="area"] .slice-item-max').innerHTML = area ?? '';
 
-		const plants = (area !== null && density !== null) ? Math.round(area * density) : null;
 
 		wrapper.qs('.slice-item-limit[data-unit="plant"] .slice-item-max').innerHTML = plants ?? '';
 

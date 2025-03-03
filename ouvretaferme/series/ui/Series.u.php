@@ -657,9 +657,7 @@ class SeriesUi {
 
 	public function createFromSequence(\farm\Farm $eFarm, int $season, \production\Sequence $eSequence, \Collection $cCultivation, \Collection $cFlow, array $events): \Panel {
 
-		$eSeries = new Series([
-			'season' => $season,
-			'farm' => $eFarm,
+		$eSeries = $cCultivation->first()['series']->merge([
 			'name' => $eSequence['name'],
 			'nameDefault' => $eSequence['name'],
 			'nameAuto' => TRUE
@@ -691,11 +689,7 @@ class SeriesUi {
 		$h .= $form->dynamicGroup($eSequence, 'mode');
 		$h .= $form->dynamicGroup($eSequence, 'use');
 
-		$h .= $this->getBlockFields($form, new Series([
-			'use' => $eSequence['use'],
-			'bedWidth' => $eSequence['bedWidth'] ?? $eFarm['defaultBedWidth'],
-			'alleyWidth' => $eSequence['alleyWidth'] ?? $eFarm['defaultAlleyWidth']
-		]));
+		$h .= $this->getBlockFields($form, $eSeries);
 
 		$h .= '</div>';
 

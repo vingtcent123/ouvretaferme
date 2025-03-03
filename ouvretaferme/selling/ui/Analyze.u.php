@@ -981,7 +981,7 @@ class AnalyzeUi {
 		$h = '<div class="util-title">';
 			$h .= '<h2>'.s("Meilleures ventes").'</h2>';
 			$h .= '<div>';
-
+/*
 				$request = LIME_REQUEST;
 				$request = \util\HttpUi::setArgument($request, 'sort', $property.$direction);
 
@@ -990,7 +990,7 @@ class AnalyzeUi {
 					'post-id' => $eInvoice['id'],
 					'post-payment-status' => ($eInvoice['paymentStatus'] === Invoice::PAID) ? Invoice::NOT_PAID : Invoice::PAID
 				], $eInvoice['paymentStatus'] === Invoice::PAID);
-
+*/
 				if(count($years) > 1) {
 					$h .= '<a '.attr('onclick', 'Lime.Search.toggle("#analyze-selling-search")').' class="btn btn-outline-primary">'.\Asset::icon('search').' '.s("Filtrer").'</a> ';
 					$h .= '<a data-dropdown="bottom-end" class="btn btn-outline-primary dropdown-toggle">'.s("Comparer").'</a>';
