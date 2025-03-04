@@ -70,6 +70,7 @@ class FarmerUi {
 		$h .= $form->close();
 
 		return new \Panel(
+			id: 'panel-farmer-ghost',
 			title: s("Créer un utilisateur fantôme pour la ferme"),
 			body: $h,
 			close: 'reload'
@@ -99,6 +100,7 @@ class FarmerUi {
 		$h .= $form->close();
 
 		return new \Panel(
+			id: 'panel-farmer-update',
 			title: s("Modifier un utilisateur de la ferme"),
 			body: $h,
 			close: 'reload'
@@ -109,6 +111,7 @@ class FarmerUi {
 	public function create(Farmer $eFarmer, Farmer $eFarmerLink): \Panel {
 
 		return new \Panel(
+			id: 'panel-farmer-invite',
 			title: s("Inviter un utilisateur dans l'équipe"),
 			body: $this->createForm($eFarmer, $eFarmerLink, 'panel'),
 			close: 'reload'
@@ -486,6 +489,7 @@ class FarmerUi {
 		$h .= $form->close();
 
 		return new \Panel(
+			id: 'panel-farmer-update',
 			title: s("Modifier un utilisateur de la ferme"),
 			body: $h,
 			close: 'reload'

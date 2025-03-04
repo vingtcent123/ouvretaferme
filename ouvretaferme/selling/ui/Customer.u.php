@@ -575,6 +575,7 @@ class CustomerUi {
 		$h .= $form->close();
 
 		return new \Panel(
+			id: 'panel-customer-create',
 			title: s("Ajouter un client"),
 			body: $h
 		);
@@ -616,6 +617,7 @@ class CustomerUi {
 		$h .= $form->close();
 
 		return new \Panel(
+			id: 'panel-customer-update',
 			title: s("Modifier un client"),
 			body: $h
 		);
@@ -705,6 +707,7 @@ class CustomerUi {
 		$h .= $form->close();
 
 		return new \Panel(
+			id: 'panel-customer-email',
 			title: s("Préférences de communication par e-mail"),
 			body: $h
 		);

@@ -31,6 +31,7 @@ class WebpageUi {
 		$h .= $form->close();
 
 		return new \Panel(
+			id: 'panel-webpage-create',
 			title: s("Créer une nouvelle page"),
 			body: $h,
 			close: 'reload'
@@ -76,6 +77,7 @@ class WebpageUi {
 		$h .= $form->close();
 
 		return new \Panel(
+			id: 'panel-webpage-update',
 			title: s("Paramétrer la page"),
 			body: $h,
 			close: 'reload'

@@ -105,6 +105,7 @@ class AbsenceUi {
 		$h .= $form->close();
 
 		return new \Panel(
+			id: 'panel-absence-create',
 			title: s("Ajouter une absence"),
 			body: $h,
 			close: 'reload'
@@ -136,6 +137,7 @@ class AbsenceUi {
 		$h .= $form->close();
 
 		return new \Panel(
+			id: 'panel-absence-update',
 			title: s("Modifier une absence"),
 			body: $h,
 			footer: '<div class="text-end"><a data-ajax="/hr/absence:doDelete" post-id="'.$eAbsence['id'].'" data-confirm="'.s("Supprimer cette absence ?").'" class="btn btn-danger">'.s("Supprimer").'</a></div>',

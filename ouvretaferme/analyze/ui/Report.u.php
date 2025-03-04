@@ -934,6 +934,7 @@ class ReportUi {
 		$h .= $form->close();
 
 		return new \Panel(
+			id: 'panel-report-update',
 			title: s("Modifier un rapport"),
 			body: $h
 		);

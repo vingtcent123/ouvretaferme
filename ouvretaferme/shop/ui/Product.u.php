@@ -1014,6 +1014,7 @@ class ProductUi {
 		$h .= $form->close();
 
 		return new \Panel(
+			id: 'panel-product-update',
 			title: s("Modifier un produit"),
 			subTitle: \selling\ProductUi::getPanelHeader($e['product']),
 			body: $h

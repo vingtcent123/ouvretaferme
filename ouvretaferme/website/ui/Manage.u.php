@@ -65,6 +65,7 @@ class ManageUi {
 		$h .= $form->close();
 
 		return new \Panel(
+			id: 'panel-website-update',
 			title: s("Paramétrer le site internet"),
 			body: $h,
 			close: 'reload'

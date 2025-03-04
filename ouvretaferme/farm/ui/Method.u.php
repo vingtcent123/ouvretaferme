@@ -68,6 +68,7 @@ class MethodUi {
 		$h .= $form->close();
 
 		return new \Panel(
+			id: 'panel-method-create',
 			title: \s("Ajouter une méthode de travail"),
 			subTitle: ActionUi::getPanelHeader($eAction),
 			body: $h
@@ -99,7 +100,8 @@ class MethodUi {
 		$h .= $form->close();
 
 		return new \Panel(
-			title: \s("Modifier une intervention"),
+			id: 'panel-method-update',
+			title: s("Modifier une intervention"),
 			body: $h,
 			close: 'reload'
 		);

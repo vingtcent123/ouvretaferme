@@ -329,6 +329,7 @@ class StockUi {
 		}
 
 		return new \Panel(
+			id: 'panel-stock-history',
 			title: s("Historique du stock"),
 			body: $h,
 			subTitle: ProductUi::getPanelHeader($eProduct)
@@ -555,6 +556,7 @@ class StockUi {
 		$h .= $form->close();
 
 		return new \Panel(
+			id: 'panel-stock-crement',
 			title: $header,
 			body: $h,
 			subTitle: ProductUi::getPanelHeader($eProduct)

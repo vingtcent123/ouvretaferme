@@ -37,6 +37,7 @@ class ForecastUi {
 		$h .= $form->close();
 
 		return new \Panel(
+			id: 'panel-forecast-create',
 			title: s("Ajouter une espèce au prévisionnel"),
 			body: $h
 		);
@@ -77,6 +78,7 @@ class ForecastUi {
 
 
 		return new \Panel(
+			id: 'panel-forecast-update',
 			title: s("Modifier une espèce du prévisionnel"),
 			body: $h,
 			footer: $footer

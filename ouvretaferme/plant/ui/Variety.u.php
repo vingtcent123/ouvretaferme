@@ -128,6 +128,7 @@ class VarietyUi {
 	public function create(\farm\Farm $eFarm, Plant $ePlant, \Collection $cSupplier): \Panel {
 
 		return new \Panel(
+			id: 'panel-variety-create',
 			title: s("Ajouter une variété"),
 			body: $this->createForm($eFarm, $ePlant, $cSupplier, 'panel'),
 			close: 'reload'
@@ -191,6 +192,7 @@ class VarietyUi {
 		$h .= $form->close();
 
 		return new \Panel(
+			id: 'panel-variety-update',
 			title: s("Modifier une variété de la ferme"),
 			body: $h,
 			close: 'reload'

@@ -199,6 +199,7 @@ class CategoryUi {
 		$h .= $form->close();
 
 		return new \Panel(
+			id: 'panel-category-create',
 			title: s("Ajouter une nouvelle catégorie"),
 			body: $h,
 			close: 'reload'
@@ -221,6 +222,7 @@ class CategoryUi {
 		$h .= $form->close();
 
 		return new \Panel(
+			id: 'panel-category-update',
 			title: s("Modifier une catégorie"),
 			body: $h,
 			close: 'reload'

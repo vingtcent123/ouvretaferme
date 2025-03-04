@@ -253,6 +253,7 @@ class ActionUi {
 		$h .= $form->close();
 
 		return new \Panel(
+			id: 'panel-action-create',
 			title: s("Ajouter un nouveau type d'intervention"),
 			body: $h,
 			close: 'reload'
@@ -284,6 +285,7 @@ class ActionUi {
 		$h .= $form->close();
 
 		return new \Panel(
+			id: 'panel-action-update',
 			title: s("Modifier une intervention"),
 			body: $h,
 			close: 'reload'

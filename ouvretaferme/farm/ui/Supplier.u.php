@@ -108,6 +108,7 @@ class SupplierUi {
 	public function create(Supplier $eSupplier): \Panel {
 
 		return new \Panel(
+			id: 'panel-supplier-create',
 			title: s("Ajouter un nouveau fournisseur"),
 			body: $this->createForm($eSupplier, 'panel'),
 			close: 'reload'
@@ -152,6 +153,7 @@ class SupplierUi {
 		$h .= $form->close();
 
 		return new \Panel(
+			id: 'panel-supplier-update',
 			title: s("Modifier le fournisseur"),
 			body: $h,
 			close: 'reload'

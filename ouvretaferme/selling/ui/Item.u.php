@@ -1111,6 +1111,7 @@ class ItemUi {
 		$h .= $form->close();
 
 		return new \Panel(
+			id: 'panel-item-update',
 			title: s("Modifier un article"),
 			body: $h
 		);

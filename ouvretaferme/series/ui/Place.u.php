@@ -42,6 +42,7 @@ class PlaceUi {
 			$h .= '</div>';
 
 			return new \Panel(
+				id: 'panel-place-update',
 				title: $title,
 				subTitle: $subTitle,
 				body: $h,

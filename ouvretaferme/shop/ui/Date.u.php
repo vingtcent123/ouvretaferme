@@ -376,6 +376,7 @@ class DateUi {
 		$h .= $form->close();
 
 		return new \Panel(
+			id: 'panel-date-update',
 			title: s("Paramétrer une vente"),
 			body: $h
 		);

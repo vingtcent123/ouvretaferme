@@ -819,6 +819,7 @@ class FlowUi {
 		$h .= $form->close();
 
 		return new \Panel(
+			id: 'panel-flow-increment',
 			title: s("Décaler"),
 			body: $h
 		);

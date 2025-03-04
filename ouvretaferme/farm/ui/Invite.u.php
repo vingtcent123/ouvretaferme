@@ -262,6 +262,7 @@ class InviteUi {
 		$h .= $form->close();
 
 		return new \Panel(
+			id: 'panel-customer-invite',
 			title: s("Inviter un client à créer un compte"),
 			body: $h
 		);

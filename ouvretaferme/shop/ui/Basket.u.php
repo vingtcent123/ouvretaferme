@@ -419,6 +419,7 @@ class BasketUi {
 		}
 
 		return new \Panel(
+			id: 'panel-basket-conditions',
 			title: s("Conditions générales de vente"),
 			body: $h
 		);

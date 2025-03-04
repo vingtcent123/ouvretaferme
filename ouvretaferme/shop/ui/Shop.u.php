@@ -39,6 +39,7 @@ class ShopUi {
 		$h .= $form->close();
 
 		return new \Panel(
+			id: 'panel-shop-create',
 			title: s("Créer une boutique"),
 			body: $h
 		);
@@ -440,6 +441,7 @@ class ShopUi {
 		}
 
 		return new \Panel(
+			id: 'panel-shop-website',
 			title: s("Intégrer la boutique sur votre site internet"),
 			body: $h
 		);
@@ -467,6 +469,7 @@ class ShopUi {
 
 
 		return new \Panel(
+			id: 'panel-shop-email',
 			title: s("Obtenir les adresses e-mail des clients"),
 			body: $h
 		);

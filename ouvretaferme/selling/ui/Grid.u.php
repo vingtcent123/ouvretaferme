@@ -277,6 +277,7 @@ class GridUi {
 		$h .= '</table>';
 
 		return new \Panel(
+			id: 'panel-grid-customer',
 			title: s("Personnaliser la grille tarifaire"),
 			subTitle: CustomerUi::getPanelHeader($eCustomer),
 			dialogOpen: $form->openAjax('/selling/customer:doUpdateGrid', ['class' => 'panel-dialog container']),
@@ -341,6 +342,7 @@ class GridUi {
 		$h .= '</table>';
 
 		return new \Panel(
+			id: 'panel-grid-product',
 			title: s("Personnaliser la grille tarifaire"),
 			subTitle: ProductUi::getPanelHeader($eProduct),
 			dialogOpen: $form->openAjax('/selling/product:doUpdateGrid', ['class' => 'panel-dialog container']),

@@ -394,6 +394,7 @@ class PointUi {
 		$h .= $form->close();
 
 		return new \Panel(
+			id: 'panel-point-create',
 			title: match($e['type']) {
 				Point::PLACE => s("Ajouter un point de retrait"),
 				Point::HOME => s("Ajouter une tournée de livraison à domicile"),
@@ -442,6 +443,7 @@ class PointUi {
 		$h .= $form->close();
 
 		return new \Panel(
+			id: 'panel-point-update',
 			title: match($e['type']) {
 				Point::PLACE => s("Modifier un point de retrait"),
 				Point::HOME => s("Modifier une tournée de livraison à domicile"),

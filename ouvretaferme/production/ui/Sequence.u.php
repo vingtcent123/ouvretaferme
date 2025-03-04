@@ -778,6 +778,7 @@ class SequenceUi {
 		$h .= $form->close();
 
 		return new \Panel(
+			id: 'panel-sequence-create',
 			title: s("Créer un itinéraire technique"),
 			body: $h
 		);
@@ -830,6 +831,7 @@ class SequenceUi {
 		$h .= $form->close();
 
 		return new \Panel(
+			id: 'panel-sequence-update',
 			title: s("Modifier un itinéraire technique"),
 			body: $h
 		);

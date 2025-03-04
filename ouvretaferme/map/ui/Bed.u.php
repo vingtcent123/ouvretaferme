@@ -785,6 +785,7 @@ class BedUi {
 		$h .= $form->close();
 
 		return new \Panel(
+			id: 'panel-bed-swap',
 			title: s("Échanger les séries de deux planches"),
 			body: $h
 		);

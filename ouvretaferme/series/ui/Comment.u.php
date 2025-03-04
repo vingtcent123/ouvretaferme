@@ -23,6 +23,7 @@ class CommentUi {
 		$h .= $form->close();
 
 		return new \Panel(
+			id: 'panel-comment-create',
 			title: s("Commenter"),
 			body: $h,
 			close: 'reloadOnHistory'
@@ -92,7 +93,8 @@ class CommentUi {
 		$h .= $form->close();
 
 		return new \Panel(
-			title: s("Modifier un utilisateur de la ferme"),
+			id: 'panel-comment-update',
+			title: s("Modifier un commentaire"),
 			body: $h,
 			close: 'reloadOnHistory'
 		);

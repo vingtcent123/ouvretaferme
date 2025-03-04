@@ -89,6 +89,7 @@ class PresenceUi {
 		$h .= $form->close();
 
 		return new \Panel(
+			id: 'panel-presence-create',
 			title: s("Ajouter une présence à la ferme"),
 			body: $h,
 			close: 'reload'
@@ -176,6 +177,7 @@ class PresenceUi {
 		$h .= $form->close();
 
 		return new \Panel(
+			id: 'panel-presence-update',
 			title: s("Modifier une présence à la ferme"),
 			body: $h,
 			close: 'reload'

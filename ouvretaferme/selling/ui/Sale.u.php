@@ -1766,6 +1766,7 @@ class SaleUi {
 		$h .= $form->close();
 
 		return new \Panel(
+			id: 'panel-sale-update',
 			title: $eSale->isComposition() ? s("Modifier une composition") : s("Modifier une vente"),
 			body: $h
 		);
@@ -1801,6 +1802,7 @@ class SaleUi {
 		$h .= $form->close();
 
 		return new \Panel(
+			id: 'panel-sale-associate',
 			title: s("Associer une vente à une boutique"),
 			body: $h
 		);
@@ -1826,6 +1828,7 @@ class SaleUi {
 		$h .= $form->close();
 
 		return new \Panel(
+			id: 'panel-sale-customer',
 			title: s("Transférer la vente à un autre client"),
 			body: $h
 		);

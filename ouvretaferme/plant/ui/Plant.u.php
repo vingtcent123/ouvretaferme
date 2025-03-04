@@ -392,6 +392,7 @@ class PlantUi {
 	public function create(\farm\Farm $eFarm, \Collection $cFamily): \Panel {
 
 		return new \Panel(
+			id: 'panel-plant-create',
 			title: s("Ajouter une espèce pour la ferme"),
 			body: $this->createForm($eFarm, $cFamily, 'panel'),
 			close: 'reload'
@@ -451,6 +452,7 @@ class PlantUi {
 		$h .= $form->close();
 
 		return new \Panel(
+			id: 'panel-plant-update',
 			title: s("Modifier une espèce"),
 			subTitle: self::getPanelHeader($ePlant),
 			body: $h,

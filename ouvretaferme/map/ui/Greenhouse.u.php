@@ -84,6 +84,7 @@ class GreenhouseUi {
 		$h .= $form->close();
 
 		return new \Panel(
+			id: 'panel-greenhouse-create',
 			title: s("Ajouter un abri"),
 			body: $h
 		);
@@ -110,6 +111,7 @@ class GreenhouseUi {
 		$h .= $form->close();
 
 		return new \Panel(
+			id: 'panel-greenhouse-update',
 			title: s("Modifier un abri"),
 			body: $h
 		);

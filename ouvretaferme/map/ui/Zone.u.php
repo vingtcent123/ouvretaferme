@@ -190,6 +190,7 @@ class ZoneUi {
 		$h .= $form->close();
 
 		return new \Panel(
+			id: 'panel-zone-create',
 			title: s("Ajouter une parcelle"),
 			body: $h
 		);
@@ -232,6 +233,7 @@ class ZoneUi {
 		$h .= $form->close();
 
 		return new \Panel(
+			id: 'panel-zone-update',
 			title: s("Modifier une parcelle"),
 			body: $h
 		);

@@ -350,6 +350,7 @@ class ToolUi {
 	public function create(Tool $eTool): \Panel {
 
 		return new \Panel(
+			id: 'panel-tool-create',
 			title: $eTool->getStandaloneRoutine('createTitle') ?? s("Ajouter un nouveau matériel"),
 			body: $this->createForm($eTool, 'panel'),
 			close: 'reload'
@@ -420,6 +421,7 @@ class ToolUi {
 		$h .= $form->close();
 
 		return new \Panel(
+			id: 'panel-tool-update',
 			title: $eTool->getStandaloneRoutine('updateTitle') ?? s("Modifier le matériel"),
 			body: $h,
 			close: 'reload'

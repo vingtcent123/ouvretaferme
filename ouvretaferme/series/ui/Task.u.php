@@ -4068,6 +4068,7 @@ class TaskUi {
 		$h .= $form->close();
 
 		return new \Panel(
+			id: 'panel-task-increment',
 			title: s("Décaler"),
 			body: $h
 		);
@@ -4121,6 +4122,7 @@ class TaskUi {
 		$h .= $form->close();
 
 		return new \Panel(
+			id: 'panel-task-harvest',
 			title: s("Compléter la récolte"),
 			body: $h
 		);
@@ -4146,6 +4148,7 @@ class TaskUi {
 		$h .= $form->close();
 
 		return new \Panel(
+			id: 'panel-task-planned',
 			title: s("Planifier"),
 			body: $h
 		);

@@ -158,6 +158,7 @@ class PhotoUi {
 		$h .= $form->close();
 
 		return new \Panel(
+			id: 'panel-photo-update',
 			title: s("Modifier une photo"),
 			body: $h,
 			close: 'reload'

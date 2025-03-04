@@ -81,6 +81,7 @@ class SizeUi {
 	public function create(\farm\Farm $eFarm, Plant $ePlant): \Panel {
 
 		return new \Panel(
+			id: 'panel-size-create',
 			title: s("Ajouter un calibre"),
 			body: $this->createForm($eFarm, $ePlant, 'panel'),
 			close: 'reload'
@@ -137,6 +138,7 @@ class SizeUi {
 		$h .= $form->close();
 
 		return new \Panel(
+			id: 'panel-size-update',
 			title: s("Modifier un calibre de la ferme"),
 			body: $h,
 			close: 'reload'

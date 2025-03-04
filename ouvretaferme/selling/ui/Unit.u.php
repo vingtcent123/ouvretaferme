@@ -227,6 +227,7 @@ class UnitUi {
 		$h .= $form->close();
 
 		return new \Panel(
+			id: 'panel-unit-create',
 			title: s("Ajouter une nouvelle unité"),
 			body: $h
 		);
@@ -248,6 +249,7 @@ class UnitUi {
 		$h .= $form->close();
 
 		return new \Panel(
+			id: 'panel-unit-update',
 			title: s("Modifier l'unité"),
 			body: $h
 		);

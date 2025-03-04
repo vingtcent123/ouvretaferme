@@ -91,6 +91,7 @@ class CatalogUi {
 		$h .= $form->close();
 
 		return new \Panel(
+			id: 'panel-catalog-create',
 			title: s("Créer un nouveau catalogue"),
 			body: $h,
 			close: 'reload'
@@ -113,6 +114,7 @@ class CatalogUi {
 		$h .= $form->close();
 
 		return new \Panel(
+			id: 'panel-catalog-update',
 			title: s("Modifier un catalogue"),
 			body: $h,
 			close: 'reload'
