@@ -125,7 +125,7 @@ class AnalyzeUi {
 		if($selectedWeek !== NULL) {
 			$h .= ' '.\Asset::icon('chevron-right').' ';
 			$h .= s("Semaine {value}", week_number($selectedWeek));
-			$h .= ' <a href="'.$url($selectedYear).'" class="btn btn-sm btn-outline-secondary">'.\Asset::icon('x-circle').'</a>';
+			$h .= ' <a href="'.$url($selectedYear).'" class="btn btn-sm btn-outline-primary">'.\Asset::icon('x-circle').'</a>';
 		}
 
 		return $h;
