@@ -1933,44 +1933,6 @@ class AnalyzeUi {
 
 	}
 
-	public function getYears(\farm\Farm $eFarm, array $years, int $selectedYear, ?int $selectedMonth, ?string $selectedWeek, string $selectedView): string {
-
-		if(count($years) === 1) {
-			return '<div class="nav-year">'.$selectedYear.'</div>';
-		}
-
-		$h = '<a data-dropdown-offset-x="2" class="nav-year" data-dropdown="bottom-start" data-dropdown-hover="true">'.s("Année {value}", $selectedYear).'  '.\Asset::icon('chevron-down').'</a>';
-
-		$h .= '<div class="dropdown-list bg-primary">';
-
-			$h .= '<div class="dropdown-title">'.s("Changer l'année").'</div>';
-
-			foreach($years as $year => $sales) {
-
-				$url = \farm\FarmUi::urlAnalyzeSelling($eFarm, $year, $selectedView);
-
-				$h .= '<a href="'.$url.'" class="dropdown-item dropdown-item-full '.(($selectedYear === $year and $selectedMonth === NULL) ? 'selected' : '').'">'.s("Année {value}", $year).'</a>';
-
-			}
-
-		$h .= '</div>';
-
-		if($selectedMonth !== NULL) {
-			$h .= ' '.\Asset::icon('chevron-right').' ';
-			$h .= mb_ucfirst(\util\DateUi::getMonthName($selectedMonth));
-			$h .= ' <a href="'.\farm\FarmUi::urlAnalyzeSelling($eFarm, $selectedYear, $selectedView).'" class="btn btn-sm btn-outline-secondary">'.\Asset::icon('x-circle').'</a>';
-		}
-
-		if($selectedWeek !== NULL) {
-			$h .= ' '.\Asset::icon('chevron-right').' ';
-			$h .= s("Semaine {value}", week_number($selectedWeek));
-			$h .= ' <a href="'.\farm\FarmUi::urlAnalyzeSelling($eFarm, $selectedYear, $selectedView).'" class="btn btn-sm btn-outline-secondary">'.\Asset::icon('x-circle').'</a>';
-		}
-
-		return $h;
-
-	}
-
 	public function getExportSalesHeader(\farm\Farm $eFarm): array {
 
 		$header = [

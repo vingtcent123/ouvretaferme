@@ -1024,6 +1024,7 @@ class AnalyzeUi {
 						$h .= '<tr>';
 
 							$h .= '<td>';
+								$h .= \plant\PlantUi::getVignette($eTimesheet['plant'], '2rem').'  ';
 								$h .= encode($eTimesheet['plant']['name']);
 							$h .= '</td>';
 							$h .= '<td class="text-end">';

@@ -1838,11 +1838,11 @@ class SaleUi {
 
 		$eFarmer = $eFarm->getOnlineFarmer();
 
-		$action = fn() => attrs([
+		$action = fn($to) => attrs([
 			'data-ajax' => \util\FormUi::getQuickUrl($eFarmer),
 			'post-id' => $eFarmer['id'],
 			'post-property' => 'viewAnalyzeComposition',
-			'post-view-analyze-composition' => ($eFarmer['viewAnalyzeComposition'] === \farm\Farmer::COMPOSITION ? \farm\Farmer::INGREDIENT : \farm\Farmer::COMPOSITION),
+			'post-view-analyze-composition' => $to,
 		]);
 
 		$composition = \Asset::icon('puzzle-fill');
@@ -1852,9 +1852,9 @@ class SaleUi {
 		$h .= '<div class="dropdown-list">';
 
 			if($eFarmer['viewAnalyzeComposition'] === \farm\Farmer::COMPOSITION) {
-				$h .= '<a '.$action().' data-confirm="'.s("Remplacer les produits composés par leur composition dans l'affichage ?").'" class="dropdown-item">'.\Asset::icon('puzzle-fill').' '.\Asset::icon('arrow-right').' '.\Asset::icon('boxes').'</a>';
+				$h .= '<a '.$action(\farm\Farmer::INGREDIENT).' data-confirm="'.s("Remplacer les produits composés par leur composition dans l'affichage ?").'" class="dropdown-item">'.$ingredient.'</a>';
 			} else {
-				$h .= '<a '.$action().' data-confirm="'.s("Afficher les produits composés et non plus leur composition ?").'" class="dropdown-item">'.\Asset::icon('puzzle-fill').'</a>';
+				$h .= '<a '.$action(\farm\Farmer::COMPOSITION).' data-confirm="'.s("Afficher les produits composés et non plus leur composition ?").'" class="dropdown-item">'.$composition.'</a>';
 			}
 
 		$h .= '</div>';

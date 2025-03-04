@@ -74,7 +74,11 @@ class AnalyzeUi {
 
 	}
 
-	public function getYears(\farm\Farm $eFarm, array $years, int $selectedYear, ?int $selectedMonth, ?string $selectedWeek, string $selectedView): string {
+	public function getYears(
+		array $years,
+		int $selectedYear, ?int $selectedMonth, ?string $selectedWeek,
+		\Closure $url
+	): string {
 
 		if(count($years) === 1) {
 			return '<div class="nav-year">'.$selectedYear.'</div>';
@@ -88,9 +92,7 @@ class AnalyzeUi {
 
 			foreach($years as $year) {
 
-				$url = \farm\FarmUi::urlAnalyzeWorkingTime($eFarm, $year, $selectedView);
-
-				$h .= '<a href="'.$url.'" class="dropdown-item dropdown-item-full '.(($selectedYear === $year and $selectedMonth === NULL) ? 'selected' : '').'">'.s("Année {value}", $year).'</a>';
+				$h .= '<a href="'.$url($year).''.($selectedMonth ? '?month='.$selectedMonth : '').'" class="dropdown-item dropdown-item-full '.(($selectedYear === $year and $selectedMonth === NULL) ? 'selected' : '').'">'.s("Année {value}", $year).'</a>';
 
 			}
 
@@ -98,14 +100,21 @@ class AnalyzeUi {
 
 		if($selectedMonth !== NULL) {
 			$h .= ' '.\Asset::icon('chevron-right').' ';
-			$h .= mb_ucfirst(\util\DateUi::getMonthName($selectedMonth));
-			$h .= ' <a href="'.\farm\FarmUi::urlAnalyzeWorkingTime($eFarm, $selectedYear, $selectedView).'" class="btn btn-sm btn-outline-secondary">'.\Asset::icon('x-circle').'</a>';
+			$h .= '<div class="btn-group">';
+				$h .= '<a data-dropdown="bottom-start" data-dropdown-hover="true" class="btn btn-sm btn-outline-primary">'.mb_ucfirst(\util\DateUi::getMonthName($selectedMonth)).' '.\Asset::icon('chevron-down').'</a>';
+				$h .= '<div class="dropdown-list">';
+					foreach(\util\DateUi::months() as $position => $month) {
+						$h .= '<a href="'.$url($selectedYear).'?month='.$position.'" class="dropdown-item">'.mb_ucfirst($month).'</a>';
+					}
+				$h .= '</div>';
+				$h .= '<a href="'.$url($selectedYear,).'" class="btn btn-sm btn-outline-primary">'.\Asset::icon('x-circle').'</a>';
+			$h .= '</div>';
 		}
 
 		if($selectedWeek !== NULL) {
 			$h .= ' '.\Asset::icon('chevron-right').' ';
 			$h .= s("Semaine {value}", week_number($selectedWeek));
-			$h .= ' <a href="'.\farm\FarmUi::urlAnalyzeWorkingTime($eFarm, $selectedYear, $selectedView).'" class="btn btn-sm btn-outline-secondary">'.\Asset::icon('x-circle').'</a>';
+			$h .= ' <a href="'.$url($selectedYear).'" class="btn btn-sm btn-outline-secondary">'.\Asset::icon('x-circle').'</a>';
 		}
 
 		return $h;

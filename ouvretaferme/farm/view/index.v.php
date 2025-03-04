@@ -770,7 +770,7 @@ new AdaptativeView('analyzeWorkingTime', function($data, FarmTemplate $t) {
 
 	} else {
 
-		$t->mainYear = new \farm\AnalyzeUi()->getYears($data->eFarm, $data->years, $data->year, $data->month, $data->week, $data->category);
+		$t->mainYear = new \farm\AnalyzeUi()->getYears($data->years, $data->year, $data->month, $data->week, fn($year) => \farm\FarmUi::urlAnalyzeWorkingTime($data->eFarm, $year, $data->category));
 		$t->mainTitle = new \farm\FarmUi()->getAnalyzeWorkingTimeTitle($data->eFarm, $data->years, $data->year, $data->month, $data->week, $data->category);
 
 		$uiAnalyze = new \series\AnalyzeUi();
@@ -819,7 +819,7 @@ new AdaptativeView('analyzeSelling', function($data, FarmTemplate $t) {
 
 		$uiAnalyze = new \selling\AnalyzeUi();
 
-		$t->mainYear = new \selling\AnalyzeUi()->getYears($data->eFarm, $data->years, $data->year, $data->month, $data->week, $data->category);
+		$t->mainYear = new \farm\AnalyzeUi()->getYears($data->years, $data->year, $data->month, $data->week, fn($year) => \farm\FarmUi::urlAnalyzeSelling($data->eFarm, $year, $data->category));
 		$t->mainTitle = new \farm\FarmUi()->getAnalyzeSellingTitle($data->eFarm, $data->years, $data->year, $data->month, $data->week, $data->category);
 
 		echo match($data->category) {
