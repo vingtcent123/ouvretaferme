@@ -139,6 +139,9 @@ class Cultivation extends CultivationElement {
 				case Cultivation::AREA :
 					return round($eSlice['partArea'] * $this['density'] * $safetyMarginMultiplier);
 
+				case Cultivation::LENGTH :
+					return round($eSlice['partLength'] * $this['density'] * $safetyMarginMultiplier);
+
 			};
 
 		} else {
