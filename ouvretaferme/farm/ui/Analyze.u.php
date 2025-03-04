@@ -10,13 +10,13 @@ class AnalyzeUi {
 
 	}
 
-	public function getActionTime(\farm\Action $eAction, Category $eCategory, int $year, \Collection $cActionTimesheet, \Collection $cTimesheetMonth, \Collection $cTimesheetMonthBefore, \Collection $cTimesheetUser): \Panel {
+	public function getTime(\farm\Action $eAction, Category $eCategory, int $year, \Collection $cTimesheetTarget, \Collection $cTimesheetMonth, \Collection $cTimesheetMonthBefore, \Collection $cTimesheetUser): \Panel {
 
 		$h = '';
 
-		if($cActionTimesheet->notEmpty()) {
+		if($cTimesheetTarget->notEmpty()) {
 
-			$h .= $this->getActionTimesheet($eAction, $eCategory, $cActionTimesheet, $year);
+			$h .= $this->getTimesheet($eAction, $eCategory, $cTimesheetTarget, $year);
 
 			if($cTimesheetMonth->notEmpty()) {
 
@@ -24,7 +24,7 @@ class AnalyzeUi {
 
 				$h .= '<h3>'.s("Temps de travail mensuel").'</h3>';
 				$h .= '<div class="analyze-chart-table">';
-					$h .= new \series\AnalyzeUi()->getPeriodMonthTable($cTimesheetMonth, $eAction['farm']->canPersonalData() ? $cTimesheetUser : new \Collection());
+					$h .= new \series\AnalyzeUi()->getPeriodMonthTable($cTimesheetMonth, $eCategory['farm']->canPersonalData() ? $cTimesheetUser : new \Collection());
 					$h .= new \series\AnalyzeUi()->getPeriodMonthChart($cTimesheetMonth, $year, $cTimesheetMonthBefore, $year - 1);
 				$h .= '</div>';
 
@@ -37,32 +37,43 @@ class AnalyzeUi {
 		} else {
 
 			$h .= '<p class="util-info">';
-				$h .= s("Vous n'avez jamais utilisé cette intervention.");
+				if($eAction->empty()) {
+					$h .= s("Vous n'avez jamais utilisé cette catégorie.");
+				} else {
+					$h .= s("Vous n'avez jamais utilisé cette intervention.");
+				}
 			$h .= '</p>';
 
 		}
 
-		$title = s("{value} en {year}", ['value' => encode($eAction['name']), 'year' => $year]);
+		if($eAction->empty()) {
+			$title = s("{value} en {year}", ['value' => encode($eCategory['name']), 'year' => $year]);
+			$header = '<h2 class="panel-title">'.$title.'</h2>';
+		} else {
+			$title = s("{value} en {year}", ['value' => encode($eAction['name']), 'year' => $year]);
+			$header = '<h2 class="panel-title">'.$title.'</h2>';
+			$header .= '<h4 class="panel-subtitle">'.encode($eCategory['name']).'</h4>';
+		}
 
 		return new \Panel(
 			id: 'panel-action-analyze',
 			documentTitle: $title,
 			body: $h,
-			header: '<h2 class="panel-title">'.$title.'</h2><h4 class="panel-subtitle">'.encode($eCategory['name']).'</h4>',
+			header: $header,
 		);
 
 	}
 
-	public function getActionTimesheet(\farm\Action $eAction, Category $eCategory, \Collection $cActionTimesheet, ?int $year): string {
+	public function getTimesheet(\farm\Action $eAction, Category $eCategory, \Collection $cTimesheetTarget, ?int $year): string {
 
 		$h = '<ul class="util-summarize">';
 
-			foreach($cActionTimesheet as $eActionTimesheet) {
+			foreach($cTimesheetTarget as $eTimesheet) {
 
-				$h .= '<li '.($eActionTimesheet['year'] === $year ? 'class="selected"' : '').'>';
-					$h .= '<a data-ajax="/farm/action:analyzeTime?id='.$eAction['id'].'&category='.$eCategory['id'].'&year='.$eActionTimesheet['year'].'" data-ajax-method="get">';
-						$h .= '<h5>'.$eActionTimesheet['year'].'</h5>';
-						$h .= '<div>'.\series\TaskUi::convertTime($eActionTimesheet['time']).'</div>';
+				$h .= '<li '.($eTimesheet['year'] === $year ? 'class="selected"' : '').'>';
+					$h .= '<a data-ajax="/farm/action:analyzeTime?'.($eAction->notEmpty() ? 'action='.$eAction['id'] : '').'&category='.$eCategory['id'].'&year='.$eTimesheet['year'].'" data-ajax-method="get">';
+						$h .= '<h5>'.$eTimesheet['year'].'</h5>';
+						$h .= '<div>'.\series\TaskUi::convertTime($eTimesheet['time']).'</div>';
 					$h .= '</a>';
 				$h .= '</li>';
 

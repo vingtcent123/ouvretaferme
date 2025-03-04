@@ -939,6 +939,9 @@ class AnalyzeUi {
 								if($eFarm->canPersonalData()) {
 									$h .= '<a href="/series/analyze:tasks?id='.$eFarm['id'].'&status='.Task::DONE.'&category='.$eTimesheet['category']['id'].'&year='.$year.($month ? '&month='.$month : '').($week ? '&week='.$week : '').'" class="btn btn-sm btn-outline-primary">'.\Asset::icon('calendar3').'</a> ';
 								}
+								if($month === NULL and $week === NULL) {
+									$h .= '<a href="/farm/action:analyzeTime?category='.$eTimesheet['category']['id'].'&year='.$year.'" class="btn btn-sm btn-outline-secondary">'.\Asset::icon('search').'</a>';
+								}
 							$h .= '</td>';
 						}
 
@@ -1279,7 +1282,7 @@ class AnalyzeUi {
 								$h .= '<a href="/series/analyze:tasks?id='.$eFarm['id'].'&status='.Task::DONE.'&action='.$eTimesheet['action']['id'].'&year='.$year.($month ? '&month='.$month : '').($week ? '&week='.$week : '').'&category='.$eTimesheet['category']['id'].'" class="btn btn-sm btn-outline-primary">'.\Asset::icon('calendar3').'</a> ';
 							}
 							if($month === NULL and $week === NULL) {
-								$h .= '<a href="/farm/action:analyzeTime?id='.$eTimesheet['action']['id'].'&category='.$eTimesheet['category']['id'].'&year='.$year.'" class="btn btn-sm btn-outline-secondary">'.\Asset::icon('search').'</a>';
+								$h .= '<a href="/farm/action:analyzeTime?action='.$eTimesheet['action']['id'].'&category='.$eTimesheet['category']['id'].'&year='.$year.'" class="btn btn-sm btn-outline-secondary">'.\Asset::icon('search').'</a>';
 							}
 						$h .= '</td>';
 

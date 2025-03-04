@@ -12,7 +12,7 @@ class AnalyzeLib {
 				'user' => ['firstName', 'lastName', 'vignette']
 			])
 			->join(\series\Task::model(), 'm2.id = m1.task')
-			->where('m2.action', $eAction)
+			->where('m2.action', $eAction, if: $eAction->notEmpty())
 			->where('m2.category', $eCategory)
 			->where(new \Sql('EXTRACT(YEAR FROM date)'), $year)
 			->group(new \Sql('m1_month, m1_user'))
@@ -59,7 +59,7 @@ class AnalyzeLib {
 				'time' => new \Sql('SUM(m1.time)')
 			])
 			->join(\series\Task::model(), 'm2.id = m1.task')
-			->where('m2.action', $eAction)
+			->where('m2.action', $eAction, if: $eAction->notEmpty())
 			->where('m2.category', $eCategory)
 			->where(new \Sql('EXTRACT(YEAR FROM date)'), 'BETWEEN', new \Sql(($year - 2).' AND '.($year + 2)))
 			->group(new \Sql('m1_year'))

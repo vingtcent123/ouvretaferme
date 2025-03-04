@@ -40,21 +40,29 @@ new \farm\ActionPage()
 
 	})
 	->doUpdate(fn($data) => throw new ViewAction($data))
-	->doDelete(fn($data) => throw new ViewAction($data))
-	->read('analyzeTime', function($data) {
+	->doDelete(fn($data) => throw new ViewAction($data));
+
+new Page()
+	->get('analyzeTime', function($data) {
 
 		$data->year = GET('year', 'int', date('Y'));
-		$data->eCategory = \farm\CategoryLib::getByFarm($data->eFarm, id: GET('category'));
 
-		$data->cActionTimesheet = \farm\AnalyzeLib::getActionTimesheet($data->e, $data->eCategory, $data->year);
-		[$data->cTimesheetMonth, $data->cTimesheetUser] = \farm\AnalyzeLib::getActionMonths($data->e, $data->eCategory, $data->year);
-		[$data->cTimesheetMonthBefore] = \farm\AnalyzeLib::getActionMonths($data->e, $data->eCategory, $data->year - 1);
+		$data->eCategory = \farm\CategoryLib::getById(GET('category'));
+		$data->eCategory['farm']->validate('canAnalyze');
+
+		$data->eAction = \farm\ActionLib::getById(GET('action'));
+
+		if($data->eAction->notEmpty()) {
+			$data->eAction->validateProperty('farm' , $data->eCategory['farm']);
+		}
+
+		$data->cTimesheetTarget = \farm\AnalyzeLib::getActionTimesheet($data->eAction, $data->eCategory, $data->year);
+		[$data->cTimesheetMonth, $data->cTimesheetUser] = \farm\AnalyzeLib::getActionMonths($data->eAction, $data->eCategory, $data->year);
+		[$data->cTimesheetMonthBefore] = \farm\AnalyzeLib::getActionMonths($data->eAction, $data->eCategory, $data->year - 1);
 
 		throw new ViewAction($data);
 
-	});
-
-new Page()
+	})
 	->get('manage', function($data) {
 
 		$data->eFarm = \farm\FarmLib::getById(GET('farm'))->validate('canManage');
