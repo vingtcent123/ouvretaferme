@@ -94,7 +94,9 @@ new \series\CultivationPage(function($data) {
 			'area' => NULL,
 			'areaTarget' => 0,
 			'length' => NULL,
-			'lengthTarget' => ($use === \series\Series::BED) ? 0 : NULL
+			'lengthTarget' => ($use === \series\Series::BED) ? 0 : NULL,
+			'bedWidth' => $data->eFarm['defaultBedWidth'],
+			'alleyWidth' => $data->eFarm['defaultAlleyWidth']
 		]);
 
 		$data->cAction = \farm\ActionLib::getByFarm($data->eFarm, fqn: [ACTION_SEMIS_PEPINIERE, ACTION_SEMIS_DIRECT, ACTION_PLANTATION], index: 'fqn');
