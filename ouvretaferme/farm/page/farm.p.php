@@ -19,7 +19,6 @@ new \farm\FarmPage()
 	->update(function($data) {
 
 		$data->eFarm = $data->e;
-		\farm\FarmerLib::register($data->e);
 
 		throw new ViewAction($data);
 
@@ -28,7 +27,6 @@ new \farm\FarmPage()
 	->update(function($data) {
 
 		$data->eFarm = $data->e;
-		\farm\FarmerLib::register($data->e);
 
 		$data->e['cPlantRotationExclude'] = \plant\PlantLib::getByIds($data->e['rotationExclude'], sort: 'name');
 
@@ -39,7 +37,6 @@ new \farm\FarmPage()
 	->update(function($data) {
 
 		$data->eFarm = $data->e;
-		\farm\FarmerLib::register($data->e);
 
 		throw new ViewAction($data);
 
@@ -88,8 +85,6 @@ new \farm\FarmPage()
 
 		$data->eFarm = $data->e;
 		$data->year = GET('year', default: $data->e['seasonLast']);
-
-		\farm\FarmerLib::register($data->e);
 
 		throw new \ViewAction($data);
 

@@ -14,7 +14,6 @@ new \shop\DatePage()
 	})
 	->create(function($data) {
 
-		\farm\FarmerLib::register($data->eFarm);
 
 		$data->cProduct = \selling\ProductLib::getForSale($data->e['farm'], $data->e['type']);
 
@@ -52,7 +51,6 @@ new \shop\DatePage()
 
 		\farm\FarmerLib::setView('viewShop', $data->eFarm, \farm\Farmer::SHOP);
 
-		\farm\FarmerLib::register($data->eFarm);
 
 		$data->cSale = \selling\SaleLib::getByDate($data->e, NULL, select: \selling\Sale::getSelection() + [
 			'shopPoint' => \shop\PointElement::getSelection()

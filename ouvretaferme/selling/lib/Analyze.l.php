@@ -429,7 +429,7 @@ class AnalyzeLib {
 		Item::model()->where('m1.farm', $eFarm);
 
 		self::filterItemStats(TRUE);
-
+//dd($eFarm->getView('viewAnalyzeComposition'));
 		return self::getProducts($year, $month, $week, $search);
 
 	}

@@ -103,7 +103,7 @@ class PlotUi {
 											$h .= '<div class="dropdown-divider"></div>';
 										}
 										$h .= '<a href="/map/plot:update?id='.$ePlot['id'].'&season='.$season.'" class="dropdown-item">'.s("Modifier le bloc").'</a>';
-										$h .= '<a data-ajax="/map/plot:doDelete" post-id="'.$ePlot['id'].'" post-season="'.$season.'" post-view="'.\Setting::get('main\viewCultivation').'" class="dropdown-item" data-confirm="'.s("Confirmer la suppression de ce bloc ?").'">'.s("Supprimer le bloc").'</a>';
+										$h .= '<a data-ajax="/map/plot:doDelete" post-id="'.$ePlot['id'].'" post-season="'.$season.'" post-view="'.$eZone['farm']->getView('viewCultivation').'" class="dropdown-item" data-confirm="'.s("Confirmer la suppression de ce bloc ?").'">'.s("Supprimer le bloc").'</a>';
 									$h .= '</div>';
 
 								}
@@ -187,7 +187,7 @@ class PlotUi {
 
 			$h .= $form->hidden('zone', $eZone['id']);
 			$h .= $form->hidden('season', \Setting::get('main\onlineSeason'));
-			$h .= $form->hidden('view', \Setting::get('main\viewCultivation'));
+			$h .= $form->hidden('view', $eZone['farm']->getView('viewCultivation'));
 
 			$h .= $form->group(
 				s("Parcelle"),
@@ -229,7 +229,7 @@ class PlotUi {
 
 			$h .= $form->hidden('id', $ePlot['id']);
 			$h .= $form->hidden('season', \Setting::get('main\onlineSeason'));
-			$h .= $form->hidden('view', \Setting::get('main\viewCultivation'));
+			$h .= $form->hidden('view', $eZone['farm']->getView('viewCultivation'));
 
 			$h .= $form->group(
 				s("Parcelle"),

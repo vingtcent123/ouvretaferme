@@ -343,18 +343,6 @@ class FarmerLib extends FarmerCrud {
 
 	}
 
-	public static function register(Farm $eFarm): void {
-
-		$eFarmer = $eFarm->getOnlineFarmer();
-
-		$properties = array_filter(Farmer::model()->getProperties(), fn($property) => str_starts_with($property, 'view'));
-
-		foreach($properties as $property) {
-			\Setting::set('main\\'.$property, $eFarmer->notEmpty() ? $eFarmer[$property] : Farmer::model()->getDefaultValue($property));
-		}
-
-	}
-
 	/**
 	 * Get season from $season or from Farmer::$viewSeason
 	 */
@@ -368,19 +356,19 @@ class FarmerLib extends FarmerCrud {
 				$season = $eFarm['seasonLast'];
 			}
 
-			\farm\FarmerLib::setView('viewSeason', $eFarm, $season);
+			self::setView('viewSeason', $eFarm, $season);
 
 			return $season;
 
 		} else {
-			return \Setting::get('main\viewSeason') ?? $eFarm['seasonLast'];
+			return $eFarm->getView('viewSeason') ?? $eFarm['seasonLast'];
 		}
 
 	}
 
 	public static function setView(string $field, Farm $eFarm, mixed $newView): mixed {
 
-		$eFarmer = $eFarm->getOnlineFarmer();
+		$eFarmer = $eFarm->getFarmer();
 
 		if($eFarmer->empty()) {
 			return $newView;
@@ -397,8 +385,6 @@ class FarmerLib extends FarmerCrud {
 			Farmer::model()
 				->select($field)
 				->update($eFarmer);
-
-			\Setting::set('main\\'.$field, $eFarmer[$field]);
 
 
 		}

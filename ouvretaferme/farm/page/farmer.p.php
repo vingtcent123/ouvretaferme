@@ -6,7 +6,6 @@ new Page()
 
 		$data->eFarm = \farm\FarmLib::getById($farm)->validate('canManage');
 
-		\farm\FarmerLib::register($data->eFarm);
 		\farm\FarmerLib::setView('viewPlanning', $data->eFarm, \farm\Farmer::TEAM);
 
 		$data->cFarmer = \farm\FarmerLib::getByFarm($data->eFarm);
@@ -24,7 +23,6 @@ new Page()
 		$data->eFarmer = \farm\FarmerLib::getById(GET('id'))->validate('canWrite');
 		$data->eFarm = \farm\FarmLib::getById($data->eFarmer['farm']);
 
-		\farm\FarmerLib::register($data->eFarm);
 		\farm\FarmerLib::setView('viewPlanning', $data->eFarm, \farm\Farmer::TEAM);
 
 		$data->cPresence = \hr\PresenceLib::getByUser($data->eFarmer['farm'], $data->eFarmer['user']);

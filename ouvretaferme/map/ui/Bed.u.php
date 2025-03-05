@@ -18,7 +18,7 @@ class BedUi {
 			return '';
 		}
 
-		$view = \Setting::get('main\viewSoil');
+		$view = $eFarm->getView('viewSoil');
 
 		\Asset::css('series', 'series.css');
 
@@ -60,7 +60,7 @@ class BedUi {
 
 	public function displayBedsFromPlot(\farm\Farm $eFarm, Plot $ePlot, int $season): string {
 
-		$view = \Setting::get('main\viewSoil');
+		$view = $eFarm->getView('viewSoil');
 
 		$cBed = $ePlot['cBed'];
 

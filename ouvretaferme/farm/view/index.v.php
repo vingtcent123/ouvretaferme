@@ -7,7 +7,7 @@ new AdaptativeView('planning', function($data, FarmTemplate $t) {
 
 	$uiTask = new \series\TaskUi();
 
-	$period = Setting::get('main\viewPlanning');
+	$period = $data->eFarm->getView('viewPlanning');
 
 	switch($period) {
 
@@ -142,7 +142,7 @@ new AdaptativeView('series', function($data, FarmTemplate $t) {
 
 	$t->js()->replaceHistory($t->canonical);
 
-	$view = Setting::get('main\viewSeries');
+	$view = $data->eFarm->getView('viewSeries');
 
 	$uiSeries = new \series\SeriesUi();
 	$uiFarm = new \farm\FarmUi();
@@ -266,7 +266,7 @@ new AdaptativeView('soil', function($data, FarmTemplate $t) {
 	$t->tab = 'cultivation';
 	$t->subNav = new \farm\FarmUi()->getCultivationSubNav($data->eFarm);
 
-	$view = Setting::get('main\viewSoil');
+	$view = $data->eFarm->getView('viewSoil');
 
 	$t->js()->replaceHistory($t->canonical);
 	$t->package('main')->updateNavCultivation($t->canonical);
@@ -356,7 +356,7 @@ new AdaptativeView('sellingSales', function($data, FarmTemplate $t) {
 
 	} else {
 
-		$t->mainTitle = new \farm\FarmUi()->getSellingSalesTitle($data->eFarm, Setting::get('main\viewSellingSales'));
+		$t->mainTitle = new \farm\FarmUi()->getSellingSalesTitle($data->eFarm, $data->eFarm->getView('viewSellingSales'));
 
 		echo new \selling\SaleUi()->getSearch($data->search);
 

@@ -59,7 +59,6 @@ new Page()
 		$data->eTool = \farm\ToolLib::getById(REQUEST('id'))->validate('canRead');
 
 		$data->eFarm = \farm\FarmLib::getById($data->eTool['farm']);
-		\farm\FarmerLib::register($data->eFarm);
 
 		throw new ViewAction($data);
 
@@ -127,7 +126,6 @@ new Page()
 
 		$data->cActionUsed = \farm\ToolLib::getActionsByFarm($data->eFarm);
 
-		\farm\FarmerLib::register($data->eFarm);
 
 		throw new \ViewAction($data);
 

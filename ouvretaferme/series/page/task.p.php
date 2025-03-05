@@ -333,7 +333,6 @@ new \series\TaskPage()
 
 		$data->eFarm = $data->e['farm'];
 
-		\farm\FarmerLib::register($data->eFarm);
 
 		$data->e['cultivation'] = \series\CultivationLib::getById($data->e['cultivation']);
 

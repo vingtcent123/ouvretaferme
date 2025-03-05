@@ -38,8 +38,6 @@ new \map\ZonePage(function($data) {
 
 		$data->e->validate('canRead');
 
-		\farm\FarmerLib::register($data->e['farm']);
-
 		\map\GreenhouseLib::putFromZone($data->e);
 		\map\PlotLib::putFromZone($data->e, withBeds: TRUE, withDraw: TRUE, season: $data->season);
 

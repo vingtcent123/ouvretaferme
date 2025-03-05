@@ -1835,11 +1835,11 @@ class SaleUi {
 
 	}
 
-	public static function getCompositionSwitch(\farm\Farm $eFarm): string {
+	public static function getCompositionSwitch(\farm\Farm $eFarm, string $btn): string {
 
 		\Asset::css('selling', 'sale.css');
 
-		$eFarmer = $eFarm->getOnlineFarmer();
+		$eFarmer = $eFarm->getFarmer();
 
 		$action = fn($to) => attrs([
 			'data-ajax' => \util\FormUi::getQuickUrl($eFarmer),
@@ -1851,7 +1851,7 @@ class SaleUi {
 		$composition = \Asset::icon('puzzle-fill');
 		$ingredient = \Asset::icon('puzzle-fill').' '.\Asset::icon('arrow-right').' '.\Asset::icon('boxes');
 
-		$h = '<a data-dropdown="bottom-end" class="btn btn-outline-secondary dropdown-toggle">'.($eFarmer['viewAnalyzeComposition'] === \farm\Farmer::COMPOSITION ? $composition : $ingredient).'</a>';
+		$h = '<a data-dropdown="bottom-start" class="btn '.$btn.' dropdown-toggle">'.($eFarmer['viewAnalyzeComposition'] === \farm\Farmer::COMPOSITION ? $composition : $ingredient).'</a>';
 		$h .= '<div class="dropdown-list">';
 
 			if($eFarmer['viewAnalyzeComposition'] === \farm\Farmer::COMPOSITION) {

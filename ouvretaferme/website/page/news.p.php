@@ -8,7 +8,6 @@ new \website\NewsPage(function($data) {
 
 		$data->eFarm = \farm\FarmLib::getById($data->eWebsite['farm']);
 
-		\farm\FarmerLib::register($data->eFarm);
 
 		throw new ViewAction($data);
 	})
@@ -36,7 +35,6 @@ new \website\NewsPage()
 
 		$data->eFarm = \farm\FarmLib::getById($data->e['farm']);
 
-		\farm\FarmerLib::register($data->eFarm);
 
 		throw new ViewAction($data);
 	})

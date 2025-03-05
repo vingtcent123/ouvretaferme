@@ -19,8 +19,6 @@ new \map\PlotPage(function($data) {
 	})
 	->create(function($data) {
 
-		\farm\FarmerLib::register($data->eZone['farm']);
-
 		\map\GreenhouseLib::putFromZone($data->eZone);
 		\map\PlotLib::putFromZone($data->eZone);
 
@@ -39,8 +37,6 @@ new \map\PlotPage(function($data) {
 
 	})
 	->applyElement(function($data, \map\Plot $e) {
-
-		\farm\FarmerLib::register($e['farm']);
 
 		$e->validate('canWrite');
 

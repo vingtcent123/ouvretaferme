@@ -92,10 +92,10 @@ class CultivationUi {
 
 	public function displayByArea(int $season, \farm\Farm $eFarm, \Collection $ccCultivation) {
 
-		$viewHarvestExpected = ($ccCultivation->reduce(fn($cCultivation, $n) => $cCultivation->reduce(fn($eCultivation, $n) => $n + (int)($eCultivation['harvestExpectedTarget'] !== NULL or $eCultivation['harvestExpected'] !== NULL), $n), 0) > 0) ? \Setting::get('main\viewPlanningHarvestExpected') : NULL;
+		$viewHarvestExpected = ($ccCultivation->reduce(fn($cCultivation, $n) => $cCultivation->reduce(fn($eCultivation, $n) => $n + (int)($eCultivation['harvestExpectedTarget'] !== NULL or $eCultivation['harvestExpected'] !== NULL), $n), 0) > 0) ? $eFarm->getView('viewPlanningHarvestExpected') : NULL;
 
-		$viewField = \Setting::get('main\viewPlanningField');
-		$viewArea = \Setting::get('main\viewPlanningArea');
+		$viewField = $eFarm->getView('viewPlanningField');
+		$viewArea = $eFarm->getView('viewPlanningArea');
 
 		$h = '<div id="series-wrapper" class="series-item-wrapper series-item-planning-wrapper '.($viewHarvestExpected ? 'series-item-planning-harvest' : '').' util-overflow-md stick-md">';
 

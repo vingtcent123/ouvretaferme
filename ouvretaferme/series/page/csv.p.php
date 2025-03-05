@@ -58,7 +58,6 @@ new \farm\FarmPage()
 
 		$data->eFarm = $data->e;
 
-		\farm\FarmerLib::register($data->eFarm);
 
 		if(get_exists('reset')) {
 			\series\CsvLib::reset($data->eFarm);

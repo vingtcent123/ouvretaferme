@@ -47,7 +47,6 @@ new Page()
 
 		$data->cSupplier = \farm\SupplierLib::getByFarm($data->eFarm);
 
-		\farm\FarmerLib::register($data->eFarm);
 
 		throw new \ViewAction($data);
 

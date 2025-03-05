@@ -13,7 +13,7 @@ class Farm extends FarmElement {
 
 	}
 
-	public function getOnlineFarmer(): Farmer {
+	public function getFarmer(): Farmer {
 		return FarmerLib::getOnline()[$this['id']] ?? new Farmer();
 	}
 
@@ -201,19 +201,21 @@ class Farm extends FarmElement {
 
 	}
 
-	public function getSelling(string $name) {
-
+	public function getSelling(string $name): mixed {
 		return $this->selling()[$name];
-
 	}
 
-	public function validateSellingComplete() {
+	public function getView(string $name): mixed {
+		return $this->getFarmer()[$name];
+	}
+
+	public function validateSellingComplete(): void {
 
 		$this->selling()->isComplete() ?: throw new \FailAction('selling\Configuration::notComplete', ['farm' => $this]);
 
 	}
 
-	public function saveFeaturesAsSettings() {
+	public function saveFeaturesAsSettings(): void {
 
 		foreach(['featureTime', 'featureDocument'] as $feature) {
 			\Setting::set('farm\\'.$feature, $this[$feature]);
@@ -253,14 +255,6 @@ class Farm extends FarmElement {
 		$this->expects(['featureDocument']);
 
 		return in_array($this['featureDocument'], [Farm::ALL, Farm::PRIVATE]);
-
-	}
-
-	public function getFarmer(): Farmer {
-
-		$this->expects(['id']);
-
-		return FarmerLib::getOnline()[$this['id']] ?? new Farmer();
 
 	}
 

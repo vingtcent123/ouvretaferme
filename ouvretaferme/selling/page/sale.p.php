@@ -66,7 +66,6 @@ new \selling\SalePage()
 			throw new NotExpectedAction('Market sale');
 		}
 
-		\farm\FarmerLib::register($data->eFarm);
 		\farm\FarmerLib::setView('viewSelling', $data->eFarm, \farm\Farmer::SALE);
 
 		$data->cItem = \selling\SaleLib::getItems($data->e, withIngredients: TRUE);

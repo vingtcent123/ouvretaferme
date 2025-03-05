@@ -986,7 +986,7 @@ class AnalyzeUi {
 					$cItemProduct->contains(fn($eItemProduct) => $eItemProduct['containsComposition'] or $eItemProduct['containsIngredient']) or
 					$cItemProductCompare->contains(fn($eItemProduct) => $eItemProduct['containsComposition'] or $eItemProduct['containsIngredient'])
 				) {
-					$h .= SaleUi::getCompositionSwitch($eFarm).' ';
+					$h .= SaleUi::getCompositionSwitch($eFarm, 'btn-outline-primary').' ';
 				}
 
 				if(count($years) > 1) {

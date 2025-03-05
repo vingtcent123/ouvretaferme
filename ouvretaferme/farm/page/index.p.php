@@ -6,9 +6,6 @@
 		$data->eFarm = \farm\FarmLib::getById(GET('id'))->validate('canWrite');
 		$data->eFarm->saveFeaturesAsSettings();
 
-		\farm\FarmerLib::register($data->eFarm);
-
-
 		$data->tip = \farm\TipLib::pickRandom($data->eUserOnline, $data->eFarm);
 		$data->tipNavigation = 'close';
 
@@ -131,7 +128,7 @@
 			\farm\FarmerLib::setView('viewSellingCategoryCurrent', $data->eFarm, $data->eCategory);
 
 		} else {
-			$data->eCategory = Setting::get('main\viewSellingCategoryCurrent');
+			$data->eCategory = $data->eFarm->getView('viewSellingCategoryCurrent');
 		}
 
 		$data->search = new Search([
@@ -226,9 +223,9 @@
 
 			\farm\FarmerLib::setView('viewShopCatalogCurrent', $data->eFarm, $eCatalog);
 
-		} else if(Setting::get('main\viewShopCatalogCurrent')->notEmpty()) {
+		} else if($data->eFarm->getView('viewShopCatalogCurrent')->notEmpty()) {
 
-			$eCatalog = Setting::get('main\viewShopCatalogCurrent');
+			$eCatalog = $data->eFarm->getView('viewShopCatalogCurrent');
 
 			$data->eCatalogSelected = $data->cCatalog[$eCatalog['id']] ?? new \shop\Catalog();
 
@@ -345,7 +342,7 @@
 
 		\map\PlotLib::putFromZone($data->cZone);
 
-		$search = get_exists('search') ? [] : (Setting::get('main\viewPlanningSearch') ?? []);
+		$search = get_exists('search') ? [] : ($data->eFarm->getView('viewPlanningSearch') ?? []);
 
 		$search = array_filter([
 			'plant' => GET('plant', '?int'),
@@ -377,7 +374,7 @@
 
 		$data->cActionMain = \farm\ActionLib::getMainByFarm($data->eFarm);
 
-		switch(Setting::get('main\viewPlanning')) {
+		switch($data->eFarm->getView('viewPlanning')) {
 
 			case \farm\Farmer::DAILY :
 
@@ -392,7 +389,7 @@
 						$data->eUserSelected = GET('user', 'user\User');
 						\farm\FarmerLib::setView('viewPlanningUser', $data->eFarm, $data->eUserSelected);
 					} else {
-						$data->eUserSelected = Setting::get('main\viewPlanningUser') ?? new \user\User();
+						$data->eUserSelected = $data->eFarm->getView('viewPlanningUser') ?? new \user\User();
 					}
 
 				} else {
@@ -533,7 +530,7 @@
 
 		\farm\ActionLib::getMainByFarm($data->eFarm);
 
-		switch(Setting::get('main\viewSeries')) {
+		switch($data->eFarm->getView('viewSeries')) {
 
 			case \farm\Farmer::AREA :
 
@@ -685,11 +682,11 @@
 				$data->year = in_array($selectedYear, $data->years) ? $selectedYear : first($data->years);
 				\farm\FarmerLib::setView('viewAnalyzeYear', $data->eFarm, $data->year);
 			} else {
-				$currentYear = Setting::get('main\viewAnalyzeYear');
+				$currentYear = $data->eFarm->getView('viewAnalyzeYear');
 				$data->year = in_array($currentYear, $data->years) ? $currentYear : first($data->years);
 			}
 
-			$data->category = GET('category', 'string', Setting::get('main\viewPlanningCategory'));
+			$data->category = GET('category', 'string', $data->eFarm->getView('viewPlanningCategory'));
 			$data->month = GET('month', fn($value) => Filter::check(['?int', 'min' => 1, 'max' => 12], $value));
 			$data->week = GET('week', '?string');
 
@@ -772,7 +769,7 @@
 			$data->season = ($selectedSeason >= $data->eFarm['seasonFirst'] and $selectedSeason <= $data->eFarm['seasonLast']) ? $selectedSeason : $data->eFarm['seasonLast'];
 			\farm\FarmerLib::setView('viewAnalyzeYear', $data->eFarm, $data->season);
 		} else {
-			$currentSeason = Setting::get('main\viewAnalyzeYear');
+			$currentSeason = $data->eFarm->getView('viewAnalyzeYear');
 			$data->season = ($currentSeason >= $data->eFarm['seasonFirst'] and $currentSeason <= $data->eFarm['seasonLast']) ? $currentSeason : $data->eFarm['seasonLast'];
 		}
 
@@ -804,13 +801,13 @@
 				$data->year = array_key_exists($selectedYear, $data->years) ? $selectedYear : array_key_first($data->years);
 				\farm\FarmerLib::setView('viewAnalyzeYear', $data->eFarm, $data->year);
 			} else {
-				$currentYear = Setting::get('main\viewAnalyzeYear');
+				$currentYear = $data->eFarm->getView('viewAnalyzeYear');
 				$data->year = array_key_exists($currentYear, $data->years) ? $currentYear : array_key_first($data->years);
 			}
 			$data->month = GET('month', fn($value) => Filter::check(['?int', 'min' => 1, 'max' => 12], $value));
 			$data->week = GET('week', '?string');
 
-			$data->category = GET('category', 'string', Setting::get('main\viewSellingCategory'));
+			$data->category = GET('category', 'string', $data->eFarm->getView('viewSellingCategory'));
 
 			if(
 				$data->category === \farm\Farmer::CUSTOMER or
@@ -958,11 +955,11 @@
 			$data->season = in_array($selectedSeason, $data->seasons) ? $selectedSeason : first($data->seasons);
 			\farm\FarmerLib::setView('viewAnalyzeYear', $data->eFarm, $data->season);
 		} else {
-			$currentYear = Setting::get('main\viewAnalyzeYear');
+			$currentYear = $data->eFarm->getView('viewAnalyzeYear');
 			$data->season = in_array($currentYear, $data->seasons) ? $currentYear : last($data->seasons);
 		}
 
-		$data->category = GET('category', 'string', Setting::get('main\viewCultivationCategory'));
+		$data->category = GET('category', 'string', $data->eFarm->getView('viewCultivationCategory'));
 
 		switch($data->category) {
 

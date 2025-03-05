@@ -4,7 +4,6 @@ new Page()
 
 		$data->eFarm = \farm\FarmLib::getById(GET('farm'))->validate('canManage');
 
-		\farm\FarmerLib::register($data->eFarm);
 
 		$data->tip = \farm\TipLib::pickPosition($data->eUserOnline);
 		$data->tipNavigation = 'next';

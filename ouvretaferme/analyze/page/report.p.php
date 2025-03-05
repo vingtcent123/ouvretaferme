@@ -123,7 +123,6 @@ new \analyze\ReportPage()
 	})
 	->read('/rapport/{id}', function($data) {
 
-		\farm\FarmerLib::register($data->eFarm);
 
 		$data->cCultivation = \analyze\CultivationLib::getByReport($data->e);
 		$data->ccProduct = \analyze\ProductLib::getByReport($data->e);

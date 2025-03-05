@@ -69,7 +69,6 @@ new Page()
 		$data->cCategory = \farm\CategoryLib::getByFarm($data->eFarm, index: 'id');
 		$data->cAction = \farm\ActionLib::getForManage($data->eFarm);
 
-		\farm\FarmerLib::register($data->eFarm);
 
 		throw new \ViewAction($data);
 

@@ -9,7 +9,6 @@
 
 	$data->eFarm = \farm\FarmLib::getById($farm)->validate('canManage');
 
-	\farm\FarmerLib::register($data->eFarm);
 
 	}))
 	->get('manage', function($data) {

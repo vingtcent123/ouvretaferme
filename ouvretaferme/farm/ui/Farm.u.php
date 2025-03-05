@@ -44,7 +44,7 @@ class FarmUi {
 
 	public static function urlPlanning(Farm $eFarm, ?string $view = NULL): string {
 
-		$view ??= \Setting::get('main\viewPlanning');
+		$view ??= $eFarm->getView('viewPlanning');
 
 		return match($view) {
 			Farmer::DAILY => self::urlPlanningDaily($eFarm),
@@ -111,7 +111,7 @@ class FarmUi {
 
 	public static function urlCultivation(Farm $eFarm, ?string $view = NULL, ?string $subView = NULL, ?int $season = NULL): string {
 
-		$view ??= \Setting::get('main\viewCultivation');
+		$view ??= $eFarm->getView('viewCultivation');
 
 		return match($view) {
 			Farmer::SERIES => self::urlCultivationSeries($eFarm, $subView, $season),
@@ -124,7 +124,7 @@ class FarmUi {
 
 	public static function urlCultivationSeries(Farm $eFarm, ?string $view = NULL, ?int $season = NULL): string {
 
-		$view ??= \Setting::get('main\viewSeries');
+		$view ??= $eFarm->getView('viewSeries');
 
 		return match($view) {
 			Farmer::SEQUENCE => self::urlCultivationSequences($eFarm),
@@ -135,7 +135,7 @@ class FarmUi {
 
 	public static function urlCultivationSoil(Farm $eFarm, ?string $view = NULL, ?int $season = NULL): string {
 
-		$view ??= \Setting::get('main\viewSoil');
+		$view ??= $eFarm->getView('viewSoil');
 
 		return match($view) {
 			Farmer::PLAN => self::urlSoil($eFarm, $season),
@@ -162,7 +162,7 @@ class FarmUi {
 
 	public static function urlSelling(Farm $eFarm, ?string $view = NULL): string {
 
-		$view ??= \Setting::get('main\viewSelling');
+		$view ??= $eFarm->getView('viewSelling');
 
 		return match($view) {
 			Farmer::SALE => self::urlSellingSales($eFarm),
@@ -192,7 +192,7 @@ class FarmUi {
 
 	public static function urlSellingSales(Farm $eFarm, ?string $view = NULL): string {
 
-		$view ??= \Setting::get('main\viewSellingSales');
+		$view ??= $eFarm->getView('viewSellingSales');
 
 		return match($view) {
 			Farmer::ALL => self::urlSellingSalesAll($eFarm),
@@ -226,7 +226,7 @@ class FarmUi {
 
 	public static function urlShop(Farm $eFarm, ?string $view = NULL): string {
 
-		$view ??= \Setting::get('main\viewShop');
+		$view ??= $eFarm->getView('viewShop');
 
 		return match($view) {
 			Farmer::SHOP => self::urlShopList($eFarm),
@@ -254,7 +254,7 @@ class FarmUi {
 
 	public static function urlAnalyze(Farm $eFarm, ?string $view = NULL): string {
 
-		$view ??= \Setting::get('main\viewAnalyze');
+		$view ??= $eFarm->getView('viewAnalyze');
 
 		$categories = self::getAnalyzeCategories($eFarm);
 
@@ -557,7 +557,7 @@ class FarmUi {
 				if($eFarm->canPlanning()) {
 
 					$categories = $this->getPlanningCategories($eFarm);
-					$selectedPeriod = \Setting::get('main\viewPlanning');
+					$selectedPeriod = $eFarm->getView('viewPlanning');
 
 					$h .= '<a href="'.FarmUi::urlPlanning($eFarm).'" data-tab="home" class="farm-tab '.($tab === 'home' ? 'selected' : '').'">';
 						$h .= '<span class="farm-tab-icon">'.\Asset::icon('calendar3').'</span>';
@@ -608,7 +608,7 @@ class FarmUi {
 
 				if($eFarm->canAnalyze() and $categories) {
 
-					$selectedCategory = \Setting::get('main\viewAnalyze');
+					$selectedCategory = $eFarm->getView('viewAnalyze');
 
 					if(array_key_exists($selectedCategory, $categories) === FALSE) {
 						$selectedCategory = array_key_first($categories);
@@ -663,7 +663,7 @@ class FarmUi {
 
 	public function getPlanningSubNav(Farm $eFarm, ?string $week = NULL): string {
 
-		$selectedView = \Setting::get('main\viewPlanning');
+		$selectedView = $eFarm->getView('viewPlanning');
 
 		$h = '<nav id="farm-subnav">';
 			$h .= '<div class="farm-subnav-wrapper">';
@@ -868,7 +868,7 @@ class FarmUi {
 
 	public function getCultivationMenu(Farm $eFarm, ?int $season = NULL, string $prefix = '', ?string $tab = NULL): string {
 
-		$selectedView = ($tab === 'cultivation') ? \Setting::get('main\viewCultivation') : NULL;
+		$selectedView = ($tab === 'cultivation') ? $eFarm->getView('viewCultivation') : NULL;
 
 		$h = '<div class="farm-subnav-wrapper">';
 
@@ -985,7 +985,7 @@ class FarmUi {
 
 	public function getSellingMenu(Farm $eFarm, ?int $season = NULL, string $prefix = '', ?string $tab = NULL): string {
 
-		$selectedView = ($tab === 'selling') ? \Setting::get('main\viewSelling') : NULL;
+		$selectedView = ($tab === 'selling') ? $eFarm->getView('viewSelling') : NULL;
 
 		$h = '<div class="farm-subnav-wrapper">';
 
@@ -1090,7 +1090,7 @@ class FarmUi {
 
 	public function getShopMenu(Farm $eFarm, string $prefix = '', ?string $tab = NULL): string {
 
-		$selectedView = ($tab === 'shop') ? \Setting::get('main\viewShop') : NULL;
+		$selectedView = ($tab === 'shop') ? $eFarm->getView('viewShop') : NULL;
 
 		$h = '<div class="farm-subnav-wrapper">';
 
@@ -1139,7 +1139,7 @@ class FarmUi {
 
 	public function getAnalyzeMenu(Farm $eFarm, string $prefix = '', ?string $tab = NULL): string {
 
-		$selectedView = ($tab === 'analyze') ? \Setting::get('main\viewAnalyze') : NULL;
+		$selectedView = ($tab === 'analyze') ? $eFarm->getView('viewAnalyze') : NULL;
 
 		$h = '<div class="farm-subnav-wrapper">';
 
@@ -1338,7 +1338,7 @@ class FarmUi {
 
 	public function getSettingsSubNav(Farm $eFarm): string {
 
-		$selectedView = \Setting::get('main\viewSettings');
+		$selectedView = $eFarm->getView('viewSettings');
 
 		$h = '<nav id="farm-subnav">';
 			$h .= '<div class="farm-subnav-wrapper">';

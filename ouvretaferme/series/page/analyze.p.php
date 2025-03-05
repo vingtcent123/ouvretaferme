@@ -14,8 +14,6 @@ new \farm\FarmPage()
 
 		$data->eFarm = $data->e;
 
-		\farm\FarmerLib::register($data->e);
-
 		$data->search = new Search([
 			'year' => $data->year,
 			'month' => $data->month,

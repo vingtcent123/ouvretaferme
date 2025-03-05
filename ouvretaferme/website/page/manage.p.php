@@ -3,7 +3,6 @@
 
 		$data->eFarm = \farm\FarmLib::getById(GET('id'))->validate('canManage');
 
-		\farm\FarmerLib::register($data->eFarm);
 
 	}))
 	->get('index', function($data) {

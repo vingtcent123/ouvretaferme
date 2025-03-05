@@ -36,10 +36,10 @@ class FarmTemplate extends MainTemplate {
 		try {
 
 			$subTab = match($this->tab) {
-				'cultivation' => \Setting::get('main\viewCultivation'),
-				'selling' => \Setting::get('main\viewSelling'),
-				'shop' => \Setting::get('main\viewShop'),
-				'analyze' => \Setting::get('main\viewAnalyze'),
+				'cultivation' => $this->data->eFarm->getView('viewCultivation'),
+				'selling' => $this->data->eFarm->getView('viewSelling'),
+				'shop' => $this->data->eFarm->getView('viewShop'),
+				'analyze' => $this->data->eFarm->getView('viewAnalyze'),
 				default => NULL,
 			};
 

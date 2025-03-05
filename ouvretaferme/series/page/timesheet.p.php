@@ -17,7 +17,6 @@
 		$data->eFarm = $data->cTask->first()['farm'];
 		$data->eFarm->validate('hasFeatureTime');
 
-		\farm\FarmerLib::register($data->eFarm);
 
 		$data->cUser = \farm\FarmerLib::getUsersByFarmForTasks(
 			$data->eFarm,

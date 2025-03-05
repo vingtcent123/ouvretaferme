@@ -2,8 +2,6 @@
 new \farm\FarmPage()
 	->read(['/ferme/{id}/especes', '/ferme/{id}/especes/{status}'], function($data) {
 
-		\farm\FarmerLib::register($data->e);
-
 		$data->plants = \plant\PlantLib::countByFarm($data->e);
 
 		if(
@@ -56,7 +54,6 @@ new \plant\PlantPage()
 
 		$data->cItemYear = \selling\AnalyzeLib::getProductsYear($data->cProduct);
 
-		\farm\FarmerLib::register($data->eFarm);
 
 		throw new ViewAction($data);
 

@@ -119,7 +119,7 @@ new \series\CultivationPage(function($data) {
 	->get('createFrom', fn($data) => throw new ViewAction($data))
 	->get('createFromPlant', function($data) {
 
-		$data->eFarmer = $data->eFarm->getOnlineFarmer();
+		$data->eFarmer = $data->eFarm->getFarmer();
 		$data->ePlant = \plant\PlantLib::getById(GET('plant'))->validate('notEmpty');
 		$data->cAction = \farm\ActionLib::getByFarm($data->eFarm, fqn: [ACTION_SEMIS_PEPINIERE, ACTION_SEMIS_DIRECT, ACTION_PLANTATION], index: 'fqn');
 
@@ -195,7 +195,6 @@ new \series\SeriesPage()
 		$data->eFarm = \farm\FarmLib::getById($data->e['farm']);
 		$data->eFarm->saveFeaturesAsSettings();
 
-		\farm\FarmerLib::register($data->eFarm);
 		\farm\FarmerLib::setView('viewCultivation', $data->eFarm, \farm\Farmer::SERIES);
 
 		$data->season = $data->e['season'];
