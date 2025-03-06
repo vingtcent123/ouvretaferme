@@ -420,7 +420,7 @@ class AnalyzeLib {
 
 		Item::model()->where('m1.sale', $eSale);
 
-		return self::getProducts(field: $displayExcludingVat ? 'priceExcludingVat' : 'price');
+		return self::getProducts($eSale['farm'], field: $displayExcludingVat ? 'priceExcludingVat' : 'price');
 
 	}
 
@@ -440,7 +440,7 @@ class AnalyzeLib {
 
 		self::filterItemStats(TRUE);
 
-		return self::getProducts($year, $month, $week);
+		return self::getProducts($eShop['farm'], $year, $month, $week);
 
 	}
 
@@ -450,7 +450,7 @@ class AnalyzeLib {
 
 		self::filterItemStats(TRUE);
 
-		return self::getProducts($year, $month, $week);
+		return self::getProducts($eCustomer['farm'], $year, $month, $week);
 
 	}
 

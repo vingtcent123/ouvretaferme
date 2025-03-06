@@ -478,40 +478,43 @@ class AnalyzeUi {
 
 			$h .= '<table class="tr-even analyze-values '.$monthlyClass.'">';
 
-				$h .= '<tr>';
-					$h .= '<th rowspan="2">'.$search->linkSort('customer', s("Client")).'</th>';
-					$h .= '<th colspan="'.($monthly === NULL ? 4 : 2 + 12).'" class="text-center">'.s("Ventes").'</th>';
-					$h .= '<th rowspan="2"></th>';
-				$h .= '</tr>';
+				$h .= '<thead>';
+					$h .= '<tr>';
+						$h .= '<th rowspan="2">'.$search->linkSort('customer', s("Client")).'</th>';
+						$h .= '<th colspan="'.($monthly === NULL ? 4 : 2 + 12).'" class="text-center">'.s("Ventes").'</th>';
+						$h .= '<th rowspan="2"></th>';
+					$h .= '</tr>';
 
-				$h .= '<tr>';
-					$h .= '<th class="text-end">';
-						$h .= $search->linkSort('turnover', $year, SORT_DESC);
-					$h .= '</th>';
-					$h .= '<th>';
-						$h .= $this->getMonthlyLink($monthly, 'turnover');
-					$h .= '</th>';
+					$h .= '<tr>';
+						$h .= '<th class="text-end">';
+							$h .= $search->linkSort('turnover', $year, SORT_DESC);
+						$h .= '</th>';
+						$h .= '<th>';
+							$h .= $this->getMonthlyLink($monthly, 'turnover');
+						$h .= '</th>';
 
-					switch($monthly) {
+						switch($monthly) {
 
-						case 'turnover' :
+							case 'turnover' :
 
-							for($month = 1; $month <= 12; $month++) {
-								$h .= '<th class="text-center">'.\util\DateUi::getMonthName($month, type: 'short').'</th>';
-							}
+								for($month = 1; $month <= 12; $month++) {
+									$h .= '<th class="text-center">'.\util\DateUi::getMonthName($month, type: 'short').'</th>';
+								}
 
-							break;
+								break;
 
-						default :
+							default :
 
-							$h .= '<th class="text-end">'.($year - 1).'</th>';
-							$h .= '<th></th>';
+								$h .= '<th class="text-end">'.($year - 1).'</th>';
+								$h .= '<th></th>';
 
-							break;
+								break;
 
-					}
+						}
 
-				$h .= '</tr>';
+					$h .= '</tr>';
+				$h .= '</thead>';
+				$h .= '<tbody>';
 
 				$again = $limit;
 
@@ -580,6 +583,7 @@ class AnalyzeUi {
 
 				}
 
+				$h .= '</tbody>';
 			$h .= '</table>';
 
 		$h .= '</div>';
