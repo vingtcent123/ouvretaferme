@@ -471,52 +471,56 @@ class AnalyzeUi {
 
 		$h = '<table class="tr-even analyze-values stick-xs">';
 
-			$h .= '<tr>';
-				$h .= '<th>'.s("Intervention").'</th>';
-				$h .= '<th>'.s("Catégorie").'</th>';
-				$h .= '<th class="text-center" colspan="2">'.s("Temps passé").'</th>';
-				$h .= '<th></th>';
-			$h .= '</tr>';
+			$h .= '<thead>';
+				$h .= '<tr>';
+					$h .= '<th>'.s("Intervention").'</th>';
+					$h .= '<th>'.s("Catégorie").'</th>';
+					$h .= '<th class="text-center" colspan="2">'.s("Temps passé").'</th>';
+					$h .= '<th></th>';
+				$h .= '</tr>';
+			$h .= '</thead>';
+			$h .= '<tbody>';
 
-			$position = 0;
+				$position = 0;
 
-			foreach($cTimesheet as $eTimesheet) {
+				foreach($cTimesheet as $eTimesheet) {
 
-				if($position++ === 15) {
-					break;
+					if($position++ === 15) {
+						break;
+					}
+
+					$isLost = ($eTimesheet['action']->notEmpty() and $eTimesheet['action']['id'] === NULL);
+
+					$h .= '<tr class="'.($isLost ? 'analyze-lost' : '').'">';
+
+						$h .= '<td>';
+							$h .= encode($eTimesheet['action']['name']);
+						$h .= '</td>';
+						$h .= '<td class="color-muted">';
+							if($eTimesheet['category']->notEmpty()) {
+								$h .= encode($eTimesheet['category']['name']);
+							}
+						$h .= '</td>';
+						$h .= '<td class="text-end">';
+							$h .= TaskUi::convertTime($eTimesheet['time']);
+						$h .= '</td>';
+						$h .= '<td class="util-annotation">';
+							$h .= \util\TextUi::pc($eTimesheet['time'] / $globalTime * 100);
+						$h .= '</td>';
+						$h .= '<td class="text-end">';
+							if(
+								$eFarm->canPersonalData() and
+								$eTimesheet['action']['id'] !== NULL
+							) {
+								$h .= '<a href="/series/analyze:tasks?id='.$eFarm['id'].'&action='.$eTimesheet['action']['id'].'&status='.Task::DONE.'&year='.$year.'&category='.$eTimesheet['category']['id'].'&user='.$eUser['id'].'" class="btn btn-sm btn-outline-primary">'.\Asset::icon('calendar3').'</a> ';
+							}
+						$h .= '</td>';
+
+					$h .= '</tr>';
+
 				}
 
-				$isLost = ($eTimesheet['action']->notEmpty() and $eTimesheet['action']['id'] === NULL);
-
-				$h .= '<tr class="'.($isLost ? 'analyze-lost' : '').'">';
-
-					$h .= '<td>';
-						$h .= encode($eTimesheet['action']['name']);
-					$h .= '</td>';
-					$h .= '<td class="color-muted">';
-						if($eTimesheet['category']->notEmpty()) {
-							$h .= encode($eTimesheet['category']['name']);
-						}
-					$h .= '</td>';
-					$h .= '<td class="text-end">';
-						$h .= TaskUi::convertTime($eTimesheet['time']);
-					$h .= '</td>';
-					$h .= '<td class="util-annotation">';
-						$h .= \util\TextUi::pc($eTimesheet['time'] / $globalTime * 100);
-					$h .= '</td>';
-					$h .= '<td class="text-end">';
-						if(
-							$eFarm->canPersonalData() and
-							$eTimesheet['action']['id'] !== NULL
-						) {
-							$h .= '<a href="/series/analyze:tasks?id='.$eFarm['id'].'&action='.$eTimesheet['action']['id'].'&status='.Task::DONE.'&year='.$year.'&category='.$eTimesheet['category']['id'].'&user='.$eUser['id'].'" class="btn btn-sm btn-outline-primary">'.\Asset::icon('calendar3').'</a> ';
-						}
-					$h .= '</td>';
-
-				$h .= '</tr>';
-
-			}
-
+			$h .= '</tbody>';
 		$h .= '</table>';
 
 		return $h;
@@ -869,98 +873,101 @@ class AnalyzeUi {
 
 			$h .= '<table class="tr-even analyze-values '.($monthly ? 'analyze-month-table-5' : '').'">';
 
-				$h .= '<tr>';
-					$h .= '<th>'.$search->linkSort('category', s("Catégorie")).'</th>';
-					$h .= '<th class="text-end">'.$search->linkSort('time', s("Temps passé"), SORT_DESC).'</th>';
-					$h .= '<th>';
-						$h .= new \selling\AnalyzeUi()->getMonthlyLink($monthly, TRUE);
-					$h .= '</th>';
-
-					if($monthly) {
-						for($monthlyMonth = 1; $monthlyMonth <= 12; $monthlyMonth++) {
-							$h .= '<th class="text-center">'.\util\DateUi::getMonthName($monthlyMonth, type: 'short').'</th>';
-						}
-					}
-
-					$h .= '<th></th>';
-				$h .= '</tr>';
-
-				foreach($cTimesheet as $eTimesheet) {
-
-					$eCategory = $eTimesheet['category'];
-					$isLost = ($eCategory['id'] === NULL);
-
-					$h .= '<tr class="'.($isLost ? 'analyze-lost' : '').'">';
-
-						$h .= '<td>';
-							$h .= encode($eCategory['name']);
-						$h .= '</td>';
-						$h .= '<td class="text-end">';
-							$h .= TaskUi::convertTime($eTimesheet['time']);
-						$h .= '</td>';
-						$h .= '<td class="util-annotation">';
-							$h .= \util\TextUi::pc($eTimesheet['time'] / $globalTime * 100);
-						$h .= '</td>';
+				$h .= '<thead>';
+					$h .= '<tr>';
+						$h .= '<th>'.$search->linkSort('category', s("Catégorie")).'</th>';
+						$h .= '<th class="text-end">'.$search->linkSort('time', s("Temps passé"), SORT_DESC).'</th>';
+						$h .= '<th>';
+							$h .= new \selling\AnalyzeUi()->getMonthlyLink($monthly, TRUE);
+						$h .= '</th>';
 
 						if($monthly) {
+							for($monthlyMonth = 1; $monthlyMonth <= 12; $monthlyMonth++) {
+								$h .= '<th class="text-center">'.\util\DateUi::getMonthName($monthlyMonth, type: 'short').'</th>';
+							}
+						}
 
-							if($isLost) {
+						$h .= '<th></th>';
+					$h .= '</tr>';
+				$h .= '</thead>';
+				$h .= '<tbody>';
 
-								$h .= '<td colspan="13"></td>';
+					foreach($cTimesheet as $eTimesheet) {
+
+						$eCategory = $eTimesheet['category'];
+						$isLost = ($eCategory['id'] === NULL);
+
+						$h .= '<tr class="'.($isLost ? 'analyze-lost' : '').'">';
+
+							$h .= '<td>';
+								$h .= encode($eCategory['name']);
+							$h .= '</td>';
+							$h .= '<td class="text-end">';
+								$h .= TaskUi::convertTime($eTimesheet['time']);
+							$h .= '</td>';
+							$h .= '<td class="util-annotation">';
+								$h .= \util\TextUi::pc($eTimesheet['time'] / $globalTime * 100);
+							$h .= '</td>';
+
+							if($monthly) {
+
+								if($isLost) {
+
+									$h .= '<td colspan="13"></td>';
+
+								} else {
+
+									for($monthlyMonth = 1; $monthlyMonth <= 12; $monthlyMonth++) {
+
+										$eTimesheetMonthly = $ccTimesheetMonthly[$eCategory['id']][$monthlyMonth] ?? new Timesheet();
+
+										$h .= '<td class="text-end analyze-month-value">';
+
+											if($eTimesheetMonthly->notEmpty()) {
+												$h .= TaskUi::convertTime(max(1, $eTimesheetMonthly['time']), showMinutes: FALSE);
+											}
+
+										$h .= '</td>';
+
+									}
+
+								}
 
 							} else {
 
-								for($monthlyMonth = 1; $monthlyMonth <= 12; $monthlyMonth++) {
-
-									$eTimesheetMonthly = $ccTimesheetMonthly[$eCategory['id']][$monthlyMonth] ?? new Timesheet();
-
-									$h .= '<td class="text-end analyze-month-value">';
-
-										if($eTimesheetMonthly->notEmpty()) {
-											$h .= TaskUi::convertTime(max(1, $eTimesheetMonthly['time']), showMinutes: FALSE);
-										}
-
-									$h .= '</td>';
-
+								if($isLost) {
+									$h .= '<td></td>';
 								}
 
 							}
 
-						} else {
-
-							if($isLost) {
-								$h .= '<td></td>';
+							if($isLost === FALSE) {
+								$h .= '<td class="text-end">';
+									if($eFarm->canPersonalData()) {
+										$h .= '<a href="/series/analyze:tasks?id='.$eFarm['id'].'&status='.Task::DONE.'&category='.$eTimesheet['category']['id'].'&year='.$year.($month ? '&month='.$month : '').($week ? '&week='.$week : '').'" class="btn btn-sm btn-outline-primary">'.\Asset::icon('calendar3').'</a> ';
+									}
+									if($month === NULL and $week === NULL) {
+										$h .= '<a href="/farm/action:analyzeTime?category='.$eTimesheet['category']['id'].'&year='.$year.'" class="btn btn-sm btn-outline-secondary">'.\Asset::icon('search').'</a>';
+									}
+								$h .= '</td>';
 							}
 
-						}
+						$h .= '</tr>';
 
-						if($isLost === FALSE) {
-							$h .= '<td class="text-end">';
-								if($eFarm->canPersonalData()) {
-									$h .= '<a href="/series/analyze:tasks?id='.$eFarm['id'].'&status='.Task::DONE.'&category='.$eTimesheet['category']['id'].'&year='.$year.($month ? '&month='.$month : '').($week ? '&week='.$week : '').'" class="btn btn-sm btn-outline-primary">'.\Asset::icon('calendar3').'</a> ';
-								}
-								if($month === NULL and $week === NULL) {
-									$h .= '<a href="/farm/action:analyzeTime?category='.$eTimesheet['category']['id'].'&year='.$year.'" class="btn btn-sm btn-outline-secondary">'.\Asset::icon('search').'</a>';
-								}
-							$h .= '</td>';
-						}
+					}
+
+					$h .= '<tr class="analyze-total">';
+
+						$h .= '<td>';
+							$h .= s("Total");
+						$h .= '</td>';
+						$h .= '<td class="text-end">';
+							$h .= TaskUi::convertTime($globalTime);
+						$h .= '<td colspan="2">';
+						$h .= '</td>';
 
 					$h .= '</tr>';
-
-				}
-
-				$h .= '<tr class="analyze-total">';
-
-					$h .= '<td>';
-						$h .= s("Total");
-					$h .= '</td>';
-					$h .= '<td class="text-end">';
-						$h .= TaskUi::convertTime($globalTime);
-					$h .= '<td colspan="2">';
-					$h .= '</td>';
-
-				$h .= '</tr>';
-
+				$h .= '</tbody>';
 			$h .= '</table>';
 
 		$h .= '</div>';
@@ -1004,91 +1011,95 @@ class AnalyzeUi {
 
 				$h .= '<table class="tr-even  '.($monthly ? 'analyze-month-table-5' : '').'">';
 
-					$h .= '<tr>';
-						$h .= '<th>'.$search->linkSort('plant', s("Espèce")).'</th>';
-						$h .= '<th class="text-end">'.$search->linkSort('time', s("Temps passé"), SORT_DESC).'</th>';
-						$h .= '<th>';
-							$h .= new \selling\AnalyzeUi()->getMonthlyLink($monthly, TRUE);
-						$h .= '</th>';
-
-						if($monthly) {
-							for($monthlyMonth = 1; $monthlyMonth <= 12; $monthlyMonth++) {
-								$h .= '<th class="text-center">'.\util\DateUi::getMonthName($monthlyMonth, type: 'short').'</th>';
-							}
-						} else {
-							$h .= '<th class="text-end">'.s("Dont hors série").'</th>';
-						}
-
-						$h .= '<th></th>';
-					$h .= '</tr>';
-
-					foreach($cTimesheet as $eTimesheet) {
-
+					$h .= '<thead>';
 						$h .= '<tr>';
-
-							$h .= '<td>';
-								$h .= \plant\PlantUi::getVignette($eTimesheet['plant'], '2rem').'  ';
-								$h .= encode($eTimesheet['plant']['name']);
-							$h .= '</td>';
-							$h .= '<td class="text-end">';
-								$h .= TaskUi::convertTime($eTimesheet['time']);
-							$h .= '</td>';
-							$h .= '<td class="util-annotation">';
-								$h .= \util\TextUi::pc($eTimesheet['time'] / $timesheetGlobalTime * 100, 0);
-							$h .= '</td>';
+							$h .= '<th>'.$search->linkSort('plant', s("Espèce")).'</th>';
+							$h .= '<th class="text-end">'.$search->linkSort('time', s("Temps passé"), SORT_DESC).'</th>';
+							$h .= '<th>';
+								$h .= new \selling\AnalyzeUi()->getMonthlyLink($monthly, TRUE);
+							$h .= '</th>';
 
 							if($monthly) {
-
 								for($monthlyMonth = 1; $monthlyMonth <= 12; $monthlyMonth++) {
-
-									$eTimesheetMonthly = $ccTimesheetMonthly[$eTimesheet['plant']['id']][$monthlyMonth] ?? new Timesheet();
-
-									$h .= '<td class="text-end analyze-month-value">';
-
-										if($eTimesheetMonthly->notEmpty()) {
-											$h .= TaskUi::convertTime(max(1, $eTimesheetMonthly['time']), showMinutes: FALSE);
-										}
-
-									$h .= '</td>';
-
+									$h .= '<th class="text-center">'.\util\DateUi::getMonthName($monthlyMonth, type: 'short').'</th>';
 								}
-
 							} else {
-								$h .= '<td class="text-end">';
-									if($eTimesheet['timeNoSeries'] > 0) {
-										$h .= TaskUi::convertTime($eTimesheet['timeNoSeries']);
-									} else {
-										$h .= '-';
-									}
-								$h .= '</td>';
+								$h .= '<th class="text-end">'.s("Dont hors série").'</th>';
 							}
 
-							$h .= '<td class="text-end td-min-content">';
-								if($eFarm->canPersonalData()) {
-									$h .= '<a href="/series/analyze:tasks?id='.$eFarm['id'].'&status='.Task::DONE.'&plant='.$eTimesheet['plant']['id'].'&year='.$year.($month ? '&month='.$month : '').($week ? '&week='.$week : '').'" class="btn btn-sm btn-outline-primary">'.\Asset::icon('calendar3').'</a> ';
+							$h .= '<th></th>';
+						$h .= '</tr>';
+					$h .= '</thead>';
+					$h .= '<tbody>';
+
+						foreach($cTimesheet as $eTimesheet) {
+
+							$h .= '<tr>';
+
+								$h .= '<td>';
+									$h .= \plant\PlantUi::getVignette($eTimesheet['plant'], '2rem').'  ';
+									$h .= encode($eTimesheet['plant']['name']);
+								$h .= '</td>';
+								$h .= '<td class="text-end">';
+									$h .= TaskUi::convertTime($eTimesheet['time']);
+								$h .= '</td>';
+								$h .= '<td class="util-annotation">';
+									$h .= \util\TextUi::pc($eTimesheet['time'] / $timesheetGlobalTime * 100, 0);
+								$h .= '</td>';
+
+								if($monthly) {
+
+									for($monthlyMonth = 1; $monthlyMonth <= 12; $monthlyMonth++) {
+
+										$eTimesheetMonthly = $ccTimesheetMonthly[$eTimesheet['plant']['id']][$monthlyMonth] ?? new Timesheet();
+
+										$h .= '<td class="text-end analyze-month-value">';
+
+											if($eTimesheetMonthly->notEmpty()) {
+												$h .= TaskUi::convertTime(max(1, $eTimesheetMonthly['time']), showMinutes: FALSE);
+											}
+
+										$h .= '</td>';
+
+									}
+
+								} else {
+									$h .= '<td class="text-end">';
+										if($eTimesheet['timeNoSeries'] > 0) {
+											$h .= TaskUi::convertTime($eTimesheet['timeNoSeries']);
+										} else {
+											$h .= '-';
+										}
+									$h .= '</td>';
 								}
-								if($month === NULL and $week === NULL) {
-									$h .= '<a href="/plant/plant:analyzeTime?id='.$eTimesheet['plant']['id'].'&year='.$year.'" class="btn btn-sm btn-outline-secondary">'.\Asset::icon('search').'</a>';
-								}
+
+								$h .= '<td class="text-end td-min-content">';
+									if($eFarm->canPersonalData()) {
+										$h .= '<a href="/series/analyze:tasks?id='.$eFarm['id'].'&status='.Task::DONE.'&plant='.$eTimesheet['plant']['id'].'&year='.$year.($month ? '&month='.$month : '').($week ? '&week='.$week : '').'" class="btn btn-sm btn-outline-primary">'.\Asset::icon('calendar3').'</a> ';
+									}
+									if($month === NULL and $week === NULL) {
+										$h .= '<a href="/plant/plant:analyzeTime?id='.$eTimesheet['plant']['id'].'&year='.$year.'" class="btn btn-sm btn-outline-secondary">'.\Asset::icon('search').'</a>';
+									}
+								$h .= '</td>';
+
+							$h .= '</tr>';
+
+						}
+
+						$h .= '<tr class="analyze-total">';
+
+							$h .= '<td>';
+								$h .= s("Total");
+							$h .= '</td>';
+							$h .= '<td class="text-end">';
+								$h .= TaskUi::convertTime($timesheetGlobalTime);
+							$h .= '</td>';
+							$h .= '<td colspan="'.($monthly ? 2 + 12 : 3).'">';
 							$h .= '</td>';
 
 						$h .= '</tr>';
 
-					}
-
-					$h .= '<tr class="analyze-total">';
-
-						$h .= '<td>';
-							$h .= s("Total");
-						$h .= '</td>';
-						$h .= '<td class="text-end">';
-							$h .= TaskUi::convertTime($timesheetGlobalTime);
-						$h .= '</td>';
-						$h .= '<td colspan="'.($monthly ? 2 + 12 : 3).'">';
-						$h .= '</td>';
-
-					$h .= '</tr>';
-
+					$h .= '</tbody>';
 				$h .= '</table>';
 
 			$h .= '</div>';
@@ -1138,46 +1149,50 @@ class AnalyzeUi {
 
 			$h .= '<table class="tr-even stick-xs">';
 
-				$h .= '<tr>';
-					$h .= '<th>'.$search->linkSort('series', s("Série")).'</th>';
-					$h .= '<th class="text-center" colspan="2">'.$search->linkSort('time', s("Temps passé"), SORT_DESC).'</th>';
-				$h .= '</tr>';
-
-				$limit = 20;
-
-				foreach($cTimesheet as $eTimesheet) {
-
+				$h .= '<thead>';
 					$h .= '<tr>';
+						$h .= '<th>'.$search->linkSort('series', s("Série")).'</th>';
+						$h .= '<th class="text-center" colspan="2">'.$search->linkSort('time', s("Temps passé"), SORT_DESC).'</th>';
+					$h .= '</tr>';
+				$h .= '</thead>';
+				$h .= '<tbody>';
+
+					$limit = 20;
+
+					foreach($cTimesheet as $eTimesheet) {
+
+						$h .= '<tr>';
+
+							$h .= '<td>';
+								$h .= $eTimesheet['series']->empty() ? s("Hors série") : SeriesUi::link($eTimesheet['series']);
+							$h .= '</td>';
+							$h .= '<td class="text-end">';
+								$h .= TaskUi::convertTime($eTimesheet['time']);
+							$h .= '</td>';
+							$h .= '<td class="util-annotation">';
+								$h .= \util\TextUi::pc($eTimesheet['time'] / $timesheetGlobalTime * 100, 0);
+							$h .= '</td>';
+
+						$h .= '</tr>';
+
+						if(--$limit === 0) {
+							break;
+						}
+
+					}
+
+					$h .= '<tr class="analyze-total">';
 
 						$h .= '<td>';
-							$h .= $eTimesheet['series']->empty() ? s("Hors série") : SeriesUi::link($eTimesheet['series']);
+							$h .= s("Total");
 						$h .= '</td>';
 						$h .= '<td class="text-end">';
-							$h .= TaskUi::convertTime($eTimesheet['time']);
-						$h .= '</td>';
-						$h .= '<td class="util-annotation">';
-							$h .= \util\TextUi::pc($eTimesheet['time'] / $timesheetGlobalTime * 100, 0);
+							$h .= TaskUi::convertTime($timesheetGlobalTime);
+						$h .= '<td colspan="2">';
 						$h .= '</td>';
 
 					$h .= '</tr>';
-
-					if(--$limit === 0) {
-						break;
-					}
-
-				}
-
-				$h .= '<tr class="analyze-total">';
-
-					$h .= '<td>';
-						$h .= s("Total");
-					$h .= '</td>';
-					$h .= '<td class="text-end">';
-						$h .= TaskUi::convertTime($timesheetGlobalTime);
-					$h .= '<td colspan="2">';
-					$h .= '</td>';
-
-				$h .= '</tr>';
+				$h .= '</tbody>';
 
 			$h .= '</table>';
 
@@ -1217,93 +1232,97 @@ class AnalyzeUi {
 
 			$h .= '<table class="tr-even analyze-values '.($monthly ? 'analyze-month-table-5' : '').'">';
 
-				$h .= '<tr>';
-					$h .= '<th>'.$search->linkSort('action', s("Intervention")).'</th>';
-					if($monthly === FALSE) {
-						$h .= '<th class="hide-xs-down">'.s("Catégorie").'</th>';
-					}
-					$h .= '<th class="text-end">'.$search->linkSort('time', s("Temps passé"), SORT_DESC).'</th>';
-					$h .= '<th>';
-						$h .= new \selling\AnalyzeUi()->getMonthlyLink($monthly, TRUE);
-					$h .= '</th>';
-
-					if($monthly) {
-						for($monthlyMonth = 1; $monthlyMonth <= 12; $monthlyMonth++) {
-							$h .= '<th class="text-center">'.\util\DateUi::getMonthName($monthlyMonth, type: 'short').'</th>';
-						}
-					}
-
-					$h .= '<th></th>';
-				$h .= '</tr>';
-
-				foreach($cTimesheet as $eTimesheet) {
-
+				$h .= '<thead>';
 					$h .= '<tr>';
-						$h .= '<td>';
-							$h .= encode($eTimesheet['action']['name']);
-							if($monthly) {
-								$h .= '<div class="color-muted" style="line-height: 1"> ';
-									$h .= '<small>'.encode($eTimesheet['category']['name']).'</small>';
-								$h .= '</div>';
-							}
-						$h .= '</td>';
+						$h .= '<th>'.$search->linkSort('action', s("Intervention")).'</th>';
 						if($monthly === FALSE) {
-							$h .= '<td class="hide-xs-down color-muted">';
-								$h .= encode($eTimesheet['category']['name']);
-							$h .= '</td>';
+							$h .= '<th class="hide-xs-down">'.s("Catégorie").'</th>';
 						}
-						$h .= '<td class="text-end">';
-							$h .= TaskUi::convertTime($eTimesheet['time']);
-						$h .= '</td>';
-						$h .= '<td class="util-annotation">';
-							$h .= \util\TextUi::pc($eTimesheet['time'] / $timesheetGlobalTime * 100, 0);
-						$h .= '</td>';
+						$h .= '<th class="text-end">'.$search->linkSort('time', s("Temps passé"), SORT_DESC).'</th>';
+						$h .= '<th>';
+							$h .= new \selling\AnalyzeUi()->getMonthlyLink($monthly, TRUE);
+						$h .= '</th>';
 
 						if($monthly) {
-
 							for($monthlyMonth = 1; $monthlyMonth <= 12; $monthlyMonth++) {
-
-								$eTimesheetMonthly = $cccTimesheetMonthly[$eTimesheet['action']['id']][$eTimesheet['category']['id']][$monthlyMonth] ?? new Timesheet();
-
-								$h .= '<td class="text-end analyze-month-value">';
-
-									if($eTimesheetMonthly->notEmpty()) {
-										$h .= TaskUi::convertTime(max(1, $eTimesheetMonthly['time']), showMinutes: FALSE);
-									}
-
-								$h .= '</td>';
-
+								$h .= '<th class="text-center">'.\util\DateUi::getMonthName($monthlyMonth, type: 'short').'</th>';
 							}
-
 						}
 
+						$h .= '<th></th>';
+					$h .= '</tr>';
+				$h .= '</thead>';
+				$h .= '<tbody>';
+
+					foreach($cTimesheet as $eTimesheet) {
+
+						$h .= '<tr>';
+							$h .= '<td>';
+								$h .= encode($eTimesheet['action']['name']);
+								if($monthly) {
+									$h .= '<div class="color-muted" style="line-height: 1"> ';
+										$h .= '<small>'.encode($eTimesheet['category']['name']).'</small>';
+									$h .= '</div>';
+								}
+							$h .= '</td>';
+							if($monthly === FALSE) {
+								$h .= '<td class="hide-xs-down color-muted">';
+									$h .= encode($eTimesheet['category']['name']);
+								$h .= '</td>';
+							}
+							$h .= '<td class="text-end">';
+								$h .= TaskUi::convertTime($eTimesheet['time']);
+							$h .= '</td>';
+							$h .= '<td class="util-annotation">';
+								$h .= \util\TextUi::pc($eTimesheet['time'] / $timesheetGlobalTime * 100, 0);
+							$h .= '</td>';
+
+							if($monthly) {
+
+								for($monthlyMonth = 1; $monthlyMonth <= 12; $monthlyMonth++) {
+
+									$eTimesheetMonthly = $cccTimesheetMonthly[$eTimesheet['action']['id']][$eTimesheet['category']['id']][$monthlyMonth] ?? new Timesheet();
+
+									$h .= '<td class="text-end analyze-month-value">';
+
+										if($eTimesheetMonthly->notEmpty()) {
+											$h .= TaskUi::convertTime(max(1, $eTimesheetMonthly['time']), showMinutes: FALSE);
+										}
+
+									$h .= '</td>';
+
+								}
+
+							}
+
+							$h .= '<td class="text-end">';
+								if($eFarm->canPersonalData()) {
+									$h .= '<a href="/series/analyze:tasks?id='.$eFarm['id'].'&status='.Task::DONE.'&action='.$eTimesheet['action']['id'].'&year='.$year.($month ? '&month='.$month : '').($week ? '&week='.$week : '').'&category='.$eTimesheet['category']['id'].'" class="btn btn-sm btn-outline-primary">'.\Asset::icon('calendar3').'</a> ';
+								}
+								if($month === NULL and $week === NULL) {
+									$h .= '<a href="/farm/action:analyzeTime?action='.$eTimesheet['action']['id'].'&category='.$eTimesheet['category']['id'].'&year='.$year.'" class="btn btn-sm btn-outline-secondary">'.\Asset::icon('search').'</a>';
+								}
+							$h .= '</td>';
+
+						$h .= '</tr>';
+
+					}
+
+					$h .= '<tr class="analyze-total">';
+
+						$h .= '<td>';
+							$h .= s("Total");
+						$h .= '</td>';
+						$h .= '<td class="hide-xs-down"></td>';
 						$h .= '<td class="text-end">';
-							if($eFarm->canPersonalData()) {
-								$h .= '<a href="/series/analyze:tasks?id='.$eFarm['id'].'&status='.Task::DONE.'&action='.$eTimesheet['action']['id'].'&year='.$year.($month ? '&month='.$month : '').($week ? '&week='.$week : '').'&category='.$eTimesheet['category']['id'].'" class="btn btn-sm btn-outline-primary">'.\Asset::icon('calendar3').'</a> ';
-							}
-							if($month === NULL and $week === NULL) {
-								$h .= '<a href="/farm/action:analyzeTime?action='.$eTimesheet['action']['id'].'&category='.$eTimesheet['category']['id'].'&year='.$year.'" class="btn btn-sm btn-outline-secondary">'.\Asset::icon('search').'</a>';
-							}
+							$h .= TaskUi::convertTime($timesheetGlobalTime);
+						$h .= '</td>';
+						$h .= '<td colspan="2">';
 						$h .= '</td>';
 
 					$h .= '</tr>';
 
-				}
-
-				$h .= '<tr class="analyze-total">';
-
-					$h .= '<td>';
-						$h .= s("Total");
-					$h .= '</td>';
-					$h .= '<td class="hide-xs-down"></td>';
-					$h .= '<td class="text-end">';
-						$h .= TaskUi::convertTime($timesheetGlobalTime);
-					$h .= '</td>';
-					$h .= '<td colspan="2">';
-					$h .= '</td>';
-
-				$h .= '</tr>';
-
+				$h .= '</tbody>';
 			$h .= '</table>';
 
 		$h .= '</div>';
