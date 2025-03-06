@@ -1248,7 +1248,7 @@ class FarmUi {
 		];
 	}
 
-	public function getAnalyzeSellingTitle(\farm\Farm $eFarm, array $years, int $selectedYear, ?int $selectedMonth, ?string $selectedWeek, string $selectedView): string {
+	public function getAnalyzeSellingTitle(\farm\Farm $eFarm, int $selectedYear, ?string $selectedWeek, string $selectedView): string {
 
 		$categories = $this->getAnalyzeSellingCategories($eFarm);
 

@@ -792,17 +792,17 @@
 
 		\farm\FarmerLib::setView('viewAnalyze', $data->eFarm, \farm\Farmer::SALES);
 
-		$data->years = \selling\AnalyzeLib::getYears($data->eFarm);
+		[$data->years, $data->salesByYear] = \selling\AnalyzeLib::getYears($data->eFarm);
 
 		if($data->years) {
 
 			if(get_exists('year')) {
 				$selectedYear = GET('year', 'int');
-				$data->year = array_key_exists($selectedYear, $data->years) ? $selectedYear : array_key_first($data->years);
+				$data->year = in_array($selectedYear, $data->years) ? $selectedYear : first($data->years);
 				\farm\FarmerLib::setView('viewAnalyzeYear', $data->eFarm, $data->year);
 			} else {
 				$currentYear = $data->eFarm->getView('viewAnalyzeYear');
-				$data->year = array_key_exists($currentYear, $data->years) ? $currentYear : array_key_first($data->years);
+				$data->year = in_array($currentYear, $data->years) ? $currentYear : first($data->years);
 			}
 			$data->month = GET('month', fn($value) => Filter::check(['?int', 'min' => 1, 'max' => 12], $value));
 			$data->week = GET('week', '?string');
@@ -846,7 +846,7 @@
 
 					if($data->yearCompare !== NULL) {
 
-						if(array_key_exists($data->yearCompare, $data->years) and $data->yearCompare !== $data->year) {
+						if(in_array($data->yearCompare, $data->years) and $data->yearCompare !== $data->year) {
 
 							$data->cItemProductCompare = \selling\AnalyzeLib::getFarmProducts($data->eFarm, $data->yearCompare, $data->month, $data->week ? str_replace($data->year, $data->yearCompare, $data->week) : NULL, $data->search);
 

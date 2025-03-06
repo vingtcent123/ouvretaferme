@@ -820,7 +820,7 @@ new AdaptativeView('analyzeSelling', function($data, FarmTemplate $t) {
 		$uiAnalyze = new \selling\AnalyzeUi();
 
 		$t->mainYear = new \farm\AnalyzeUi()->getYears($data->years, $data->year, $data->month, $data->week, fn($year) => \farm\FarmUi::urlAnalyzeSelling($data->eFarm, $year, $data->category));
-		$t->mainTitle = new \farm\FarmUi()->getAnalyzeSellingTitle($data->eFarm, $data->years, $data->year, $data->month, $data->week, $data->category);
+		$t->mainTitle = new \farm\FarmUi()->getAnalyzeSellingTitle($data->eFarm, $data->year, $data->week, $data->category);
 
 		echo match($data->category) {
 			\farm\Farmer::ITEM => $uiAnalyze->getTurnover($data->eFarm, $data->cSaleTurnover, $data->year, $data->month, $data->week),
@@ -830,7 +830,7 @@ new AdaptativeView('analyzeSelling', function($data, FarmTemplate $t) {
 		echo '<br/>';
 
 		echo match($data->category) {
-			\farm\Farmer::ITEM => $uiAnalyze->getBestSeller($data->eFarm, $data->cItemProduct, $data->cItemProductMonthly, $data->cPlant, $data->cccItemPlantMonthly, $data->year, $data->cItemProductCompare, $data->cPlantCompare, $data->yearCompare, $data->years, $data->monthly, $data->month, $data->week, $data->search),
+			\farm\Farmer::ITEM => $uiAnalyze->getBestSeller($data->eFarm, $data->cItemProduct, $data->cItemProductMonthly, $data->cPlant, $data->cccItemPlantMonthly, $data->year, $data->cItemProductCompare, $data->cPlantCompare, $data->yearCompare, $data->salesByYear, $data->monthly, $data->month, $data->week, $data->search),
 			\farm\Farmer::CUSTOMER => $uiAnalyze->getBestCustomers($data->ccItemCustomer, $data->ccItemCustomerMonthly, $data->year, $data->month, $data->week, $data->monthly, $data->search),
 			\farm\Farmer::SHOP => $data->cShop->empty() ? $uiAnalyze->getEmptyShop() : $uiAnalyze->getShop($data->eFarm, $data->cShop, $data->eShop, $data->cSaleTurnover, $data->cItemProduct, $data->cItemProductMonthly, $data->cPlant, $data->cccItemPlantMonthly, $data->ccItemCustomer, $data->year, $data->monthly),
 			\farm\Farmer::PERIOD => $uiAnalyze->getPeriod($data->year, $data->cItemMonth, $data->cItemMonthBefore, $data->cItemWeek, $data->cItemWeekBefore),

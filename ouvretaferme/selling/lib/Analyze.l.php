@@ -702,12 +702,12 @@ class AnalyzeLib {
 	public static function getYears(\farm\Farm $eFarm): array {
 
 		return \Cache::redis()->query(
-			'farm-sales-years-'.$eFarm['id'].'-'.date('Y-m-d'),
+			'farm-sales-'.$eFarm['id'].'-'.date('Y-m-d'),
 			function() use($eFarm) {
 
 				self::filterSaleStats();
 
-				return Sale::model()
+				$cSale = Sale::model()
 					->select([
 						'year' => new \Sql('EXTRACT(YEAR FROM deliveredAt)', 'int'),
 						'sales' => new \Sql('COUNT(*)', 'int')
@@ -715,10 +715,14 @@ class AnalyzeLib {
 					->whereFarm($eFarm)
 					->group(new \Sql('year'))
 					->sort(new \Sql('year DESC'))
-					->getCollection()
-					->toArray(function($eSale) {
+					->getCollection();
+
+				return [
+					$cSale->getColumn('year'),
+					$cSale->toArray(function($eSale) {
 						return [$eSale['year'], $eSale['sales']];
-					}, keys: TRUE);
+					}, keys: TRUE)
+				];
 			},
 			86400
 		);
