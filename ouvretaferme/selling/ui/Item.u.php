@@ -380,7 +380,7 @@ class ItemUi {
 					$h .= '<tr class="item-item-composition">';
 						$h .= '<td></td>';
 						$h .= '<td colspan="2">'.ProductUi::getVignette($eItemIngredient['product'], '1.5rem').' '.encode($eItemIngredient['name']).'</td>';
-						$h .= '<td class="item-item-composition-number text-end">'.\selling\UnitUi::getValue($eItem['number'] * ($eItem['packaging'] ?? 1) * $eItemIngredient['number'] * ($eItemIngredient['packaging'] ?? 1), $eItemIngredient['unit'], TRUE).'</td>';
+						$h .= '<td class="item-item-composition-number text-end">'.\selling\UnitUi::getValue($eItemIngredient['number'] * ($eItemIngredient['packaging'] ?? 1), $eItemIngredient['unit'], TRUE).'</td>';
 						$h .= '<td colspan="'.($columns - 2).'"></td>';
 					$h .= '</tr>';
 

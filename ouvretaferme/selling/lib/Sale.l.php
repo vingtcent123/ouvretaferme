@@ -985,6 +985,14 @@ class SaleLib extends SaleCrud {
 				])
 				->get($cItemComposition);
 
+			foreach($cItemComposition as $eItemComposition) {
+
+				foreach($eItemComposition['cItemIngredient'] as $eItemIngredient) {
+					$eItemIngredient['number'] *= $eItemComposition['number'] * ($eItemComposition['packaging'] ?? 1);
+				}
+
+			}
+
 			return $cItem;
 
 		}
@@ -1038,14 +1046,18 @@ class SaleLib extends SaleCrud {
 					continue;
 				}
 
-				$price = $eItemComposition['price'];
 				$ingredientsPrice = $eItemComposition['cItemIngredient']->sum('price');
 
-				$ratio = $price / $ingredientsPrice;
+				$ratio = ($ingredientsPrice > 0) ? $eItemComposition['price'] / $ingredientsPrice : NULL;
 
 				$cItemCopy = $eItemComposition['cItemIngredient'];
 
 				foreach($cItemCopy as $eItemCopy) {
+
+					$copyPrice = ($ratio !== NULL) ? $eItemCopy['price'] * $ratio : $eItemComposition['price'] / $cItemCopy->count();
+					$copyPriceExcludingVat = ($ratio !== NULL) ? $eItemCopy['priceExcludingVat'] * $ratio : $eItemComposition['priceExcludingVat'] / $cItemCopy->count();
+					$copyPackaging = $eItemCopy['packaging'];
+					$copyNumber = $eItemCopy['number'] * $eItemComposition['number'] * ($eItemComposition['packaging'] ?? 1);
 
 					$eItemIngredient = (clone $eItemComposition);
 					$eItemIngredient->merge([
@@ -1058,10 +1070,10 @@ class SaleLib extends SaleCrud {
 					  'parent' => $eItemCopy['parent'],
 					  'packaging' => $eItemCopy['packaging'],
 					  'unit' => $eItemCopy['unit'],
-					  'unitPrice' => $eItemCopy['unitPrice'] * $ratio,
-					  'number' => $eItemCopy['number'],
-					  'price' => $eItemCopy['price'] * $ratio,
-					  'priceExcludingVat' => $eItemCopy['priceExcludingVat'] * $ratio,
+					  'unitPrice' => ($copyNumber > 0 and $copyPackaging > 0) ? $copyPrice / $copyNumber / $copyPackaging : $eItemCopy['unitPrice'],
+					  'number' => $copyNumber,
+					  'price' => $copyPrice,
+					  'priceExcludingVat' => $copyPriceExcludingVat,
 					  'vatRate' => $eItemCopy['vatRate'],
 					  'stats' => $eItemComposition['stats']
 					]);

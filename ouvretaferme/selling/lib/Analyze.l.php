@@ -429,8 +429,8 @@ class AnalyzeLib {
 		Item::model()->where('m1.farm', $eFarm);
 
 		self::filterItemStats(TRUE);
-//dd($eFarm->getView('viewAnalyzeComposition'));
-		return self::getProducts($year, $month, $week, $search);
+
+		return self::getProducts($eFarm, $year, $month, $week, $search);
 
 	}
 
@@ -478,11 +478,13 @@ class AnalyzeLib {
 
 	}
 
-	private static function getProducts(?int $year = NULL, ?int $month = NULL, ?string $week = NULL, \Search $search = new \Search(), string $field = 'priceExcludingVat'): \Collection {
+	private static function getProducts(\farm\Farm $eFarm, ?int $year = NULL, ?int $month = NULL, ?string $week = NULL, \Search $search = new \Search(), string $field = 'priceExcludingVat'): \Collection {
 
 		if($search->get('type')) {
 			Item::model()->where('m2.type', $search->get('type'));
 		}
+
+		$display = $eFarm->getView('viewAnalyzeComposition');
 
 		return Item::model()
 			->select([
@@ -495,11 +497,14 @@ class AnalyzeLib {
 				'containsIngredient' => new \Sql('SUM(ingredientOf IS NOT NULL) > 0', 'bool')
 			])
 			->join(Customer::model(), 'm1.customer = m2.id')
+			->where('m1.farm', $eFarm)
 			->where(new \Sql('EXTRACT(YEAR FROM deliveredAt)'), $year, if: $year)
 			->where('number != 0')
 			->where($month ? 'EXTRACT(MONTH FROM deliveredAt) = '.$month : NULL)
 			->where($week ? 'WEEK(deliveredAt, 1) = '.week_number($week) : NULL)
 			->whereProduct('!=', NULL)
+			->whereIngredientOf(NULL, if: $display === \farm\Farmer::COMPOSITION)
+			->whereProductComposition(FALSE, if: $display === \farm\Farmer::INGREDIENT)
 			->group(['product', 'unit'])
 			->sort(new \Sql('m1_turnover DESC'))
 			->getCollection(index: fn($eItem) => $eItem['product']['id'].'-'.$eItem['unit']);
