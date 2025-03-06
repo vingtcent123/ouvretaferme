@@ -111,7 +111,7 @@ label.report-create-checkbox {
 		position: sticky;
 		top: calc(var(--mainSticky) - 1px);
 		z-index: 1;
-		background-color: var(--background-light);
+		background-color: var(--background-body);
 	}
 
 }

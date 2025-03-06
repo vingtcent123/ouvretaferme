@@ -8,6 +8,7 @@
 	--muted: #707079;
 	--selling: #722583;
 	--basket: #b17e2f;
+	--background-body: #e4e4e8;
 	--background: #ededf1;
 	--background-light: #f5f5f7;
 	--background-odd: #fafafc;
@@ -230,7 +231,7 @@ h5 {
 body {
 	display: flex;
 	flex-direction: column;
-	background: linear-gradient(90deg, #e4e4e8 0, #e8e8ea 100%);
+	background: linear-gradient(90deg, var(--background-body) 0, #e8e8ea 100%);
 }
 
 @media print {

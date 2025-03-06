@@ -122,6 +122,7 @@ div.series-grid > div.series-grid-month:not(:first-child) {
 }
 
 div.series-item-header {
+	background: var(--background-body);
 	padding-bottom: 1rem;
 	padding-left: 1rem;
 	padding-right: 1rem;
