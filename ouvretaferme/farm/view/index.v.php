@@ -796,11 +796,19 @@ new AdaptativeView('analyzeSelling', function($data, FarmTemplate $t) {
 
 	$t->canonical = \farm\FarmUi::urlAnalyzeSelling($data->eFarm, $data->year, $data->category);
 
+	$arguments = [];
 	if($data->week) {
-		$t->canonical .= '?week='.$data->week;
+		$arguments[] = 'week='.$data->week;
 	}
 	if($data->month) {
-		$t->canonical .= '?month='.$data->month;
+		$arguments[] = 'month='.$data->month;
+	}
+	if(get_exists('shop')) {
+		$arguments[] = 'shop='.$data->eShop['id'];
+	}
+
+	if($arguments) {
+		$t->canonical .= '?'.implode('&', $arguments);
 	}
 
 	$t->js()->replaceHistory($t->canonical);

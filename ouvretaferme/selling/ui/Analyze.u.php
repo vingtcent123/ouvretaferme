@@ -896,20 +896,27 @@ class AnalyzeUi {
 
 	public function getShop(\farm\Farm $eFarm, \Collection $cShop, \shop\Shop $eShopSelected, \Collection $cSaleTurnover, \Collection $cItemProduct, \Collection $cItemProductMonthly, \Collection $cPlant, \Collection $cccItemPlantMonthly, \Collection $ccItemCustomer, int $year, ?string $monthly): string {
 
-		$h = '<h2>';
-			if($cShop->count() === 1) {
-				$h .= encode($eShopSelected['name']);
-			} else {
+		$h = '<div class="util-title">';
+			$h .= '<h2>';
+				if($cShop->count() === 1) {
+					$h .= encode($eShopSelected['name']);
+				} else {
 
-				$h .= '<a data-dropdown="bottom-start" class="dropdown-toggle" data-dropdown-hover="true">'.encode($eShopSelected['name']).'</a>';
-				$h .=' <div class="dropdown-list bg-secondary">';
-					foreach($cShop as $eShop) {
-						$h .= '<a href="'.\farm\FarmUi::urlAnalyzeSelling($eFarm, $year, \farm\Farmer::SHOP).'?shop='.$eShop['id'].'" class="dropdown-item '.($eShopSelected['id'] === $eShop['id'] ? 'selected' : '').'">'.encode($eShop['name']).'</a>';
-					}
-				$h .= '</div>';
+					$h .= '<a data-dropdown="bottom-start" class="dropdown-toggle" data-dropdown-hover="true">'.encode($eShopSelected['name']).'</a>';
+					$h .=' <div class="dropdown-list bg-secondary">';
+						foreach($cShop as $eShop) {
+							$h .= '<a href="'.\farm\FarmUi::urlAnalyzeSelling($eFarm, $year, \farm\Farmer::SHOP).'?shop='.$eShop['id'].'" class="dropdown-item '.($eShopSelected['id'] === $eShop['id'] ? 'selected' : '').'">'.encode($eShop['name']).'</a>';
+						}
+					$h .= '</div>';
 
-			}
-		$h .= '</h2>';
+				}
+			$h .= '</h2>';
+			$h .= '<div>';
+				if($cItemProduct->contains(fn($eItemProduct) => $eItemProduct['containsComposition'] or $eItemProduct['containsIngredient'])) {
+					$h .= SaleUi::getCompositionSwitch($eFarm, 'btn-outline-primary').' ';
+				}
+			$h .= '</div>';
+		$h .= '</div>';
 
 		$h .= $this->getShopTurnover($eFarm, $eShopSelected, $cSaleTurnover, $year);
 
@@ -1644,7 +1651,14 @@ class AnalyzeUi {
 
 		$h = $this->getCustomerTurnover($cSaleTurnover, $year, $e, inPanel: TRUE);
 
-		$h .= '<h3>'.s("Produits les plus vendus").'</h3>';
+		$h .= '<div class="util-title">';
+			$h .= '<h3>'.s("Produits les plus vendus").'</h3>';
+			$h .= '<div>';
+				if($cItemProduct->contains(fn($eItemProduct) => $eItemProduct['containsComposition'] or $eItemProduct['containsIngredient'])) {
+					$h .= SaleUi::getCompositionSwitch($e['farm'], 'btn-outline-primary').' ';
+				}
+			$h .= '</div>';
+		$h .= '</div>';
 		$h .= '<div class="analyze-chart-table">';
 			$h .= $this->getBestProductsTable($cItemProduct, $year, limit: 30);
 			$h .= $this->getBestProductsPie($cItemProduct);

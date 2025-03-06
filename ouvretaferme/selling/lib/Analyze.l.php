@@ -484,7 +484,7 @@ class AnalyzeLib {
 			Item::model()->where('m2.type', $search->get('type'));
 		}
 
-		$display = $eFarm->getView('viewAnalyzeComposition');
+		self::filterItemComposition($eFarm);
 
 		return Item::model()
 			->select([
@@ -503,11 +503,19 @@ class AnalyzeLib {
 			->where($month ? 'EXTRACT(MONTH FROM deliveredAt) = '.$month : NULL)
 			->where($week ? 'WEEK(deliveredAt, 1) = '.week_number($week) : NULL)
 			->whereProduct('!=', NULL)
-			->whereIngredientOf(NULL, if: $display === \farm\Farmer::COMPOSITION)
-			->whereProductComposition(FALSE, if: $display === \farm\Farmer::INGREDIENT)
 			->group(['product', 'unit'])
 			->sort(new \Sql('m1_turnover DESC'))
 			->getCollection(index: fn($eItem) => $eItem['product']['id'].'-'.$eItem['unit']);
+
+	}
+
+	public static function filterItemComposition(\farm\Farm $eFarm, ?ItemModel $mItem = NULL) {
+
+		$display = $eFarm->getView('viewAnalyzeComposition');
+
+		($mItem ?? Item::model())
+			->whereIngredientOf(NULL, if: $display === \farm\Farmer::COMPOSITION)
+			->whereProductComposition(FALSE, if: $display === \farm\Farmer::INGREDIENT);
 
 	}
 
@@ -549,7 +557,7 @@ class AnalyzeLib {
 
 		Item::model()->where('m1.farm', $eFarm);
 
-		return self::getMonthlyProducts($year, $search);
+		return self::getMonthlyProducts($eFarm, $year, $search);
 
 	}
 
@@ -557,17 +565,18 @@ class AnalyzeLib {
 
 		Item::model()->whereShop($eShop);
 
-		return self::getMonthlyProducts($year);
+		return self::getMonthlyProducts($eShop['farm'], $year);
 
 	}
 
-	private static function getMonthlyProducts(int $year, \Search $search = new \Search()): \Collection {
+	private static function getMonthlyProducts(\farm\Farm $eFarm, int $year, \Search $search = new \Search()): \Collection {
 
 		if($search->get('type')) {
 			Item::model()->where('m2.type', $search->get('type'));
 		}
 
 		self::filterItemStats(TRUE);
+		self::filterItemComposition($eFarm);
 
 		return Item::model()
 			->select([

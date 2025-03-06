@@ -1067,7 +1067,7 @@ class SaleLib extends SaleCrud {
 					  'productComposition' => FALSE,
 					  'ingredientOf' => $eItemComposition,
 					  'quality' => $eItemCopy['quality'],
-					  'parent' => $eItemCopy['parent'],
+					  'parent' => new Item(),
 					  'packaging' => $eItemCopy['packaging'],
 					  'unit' => $eItemCopy['unit'],
 					  'unitPrice' => ($copyNumber > 0 and $copyPackaging > 0) ? $copyPrice / $copyNumber / $copyPackaging : $eItemCopy['unitPrice'],

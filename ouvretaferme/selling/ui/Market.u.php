@@ -94,7 +94,7 @@ class MarketUi {
 
 	}
 
-	public function getBestProducts(\Collection $cSale, \Collection $cItemProduct, \Collection $cItemStats): string {
+	public function getBestProducts(\farm\Farm $eFarm, \Collection $cSale, \Collection $cItemProduct, \Collection $cItemStats): string {
 
 		if($cItemProduct->empty()) {
 			return '';
@@ -102,7 +102,14 @@ class MarketUi {
 
 		$sales = $cSale->count();
 
-		$h = '<h2>'.s("Meilleures ventes").'</h2>';
+		$h = '<div class="util-title">';
+			$h .= '<h2>'.s("Meilleures ventes").'</h2>';
+			$h .= '<div>';
+				if($cItemProduct->contains(fn($eItemProduct) => $eItemProduct['containsComposition'] or $eItemProduct['containsIngredient'])) {
+					$h .= SaleUi::getCompositionSwitch($eFarm, 'btn-outline-primary').' ';
+				}
+			$h .= '</div>';
+		$h .= '</div>';
 
 		$h .= '<div class="analyze-chart-table">';
 			$h .= new AnalyzeUi()->getBestProductsPie($cItemProduct);
