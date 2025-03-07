@@ -470,6 +470,8 @@ class AnalyzeLib {
 				'unit' => new Unit(),
 				'quantity' => NULL,
 				'average' => NULL,
+				'containsComposition' => FALSE,
+				'containsIngredient' => FALSE,
 			]);
 			$cItemProduct->sort([
 				'turnover' => SORT_DESC
