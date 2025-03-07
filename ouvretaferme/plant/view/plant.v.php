@@ -36,7 +36,7 @@ new AdaptativeView('/espece/{id@int}', function($data, PanelTemplate $t) {
 });
 
 new AdaptativeView('analyzeSales', function($data, PanelTemplate $t) {
-	return new \selling\AnalyzeUi()->getPlantSales($data->e, $data->year, $data->cItemTurnover, $data->cItemYear, $data->cItemCustomer, $data->cItemType, $data->cItemMonth, $data->cItemMonthBefore, $data->cItemWeek, $data->cItemWeekBefore, $data->search);
+	return new \selling\AnalyzeUi()->getPlantSales($data->e, $data->switchComposition, $data->year, $data->cItemTurnover, $data->cItemYear, $data->cItemCustomer, $data->cItemType, $data->cItemMonth, $data->cItemMonthBefore, $data->cItemWeek, $data->cItemWeekBefore, $data->search);
 });
 
 new AdaptativeView('analyzeTime', function($data, PanelTemplate $t) {

@@ -109,6 +109,24 @@ class ItemLib extends ItemCrud {
 
 	}
 
+	public static function containsProductIngredient(Product $eProduct): bool {
+
+		return Item::model()
+			->whereProduct($eProduct)
+			->whereIngredientOf('!=', NULL)
+			->exists();
+
+	}
+
+	public static function containsProductsIngredient(\Collection $cProduct): bool {
+
+		return Item::model()
+			->whereProduct('IN', $cProduct)
+			->whereIngredientOf('!=', NULL)
+			->exists();
+
+	}
+
 	public static function getBySale(Sale $eSale): \Collection {
 
 		return Item::model()
@@ -143,6 +161,10 @@ class ItemLib extends ItemCrud {
 
 	public static function getByProduct(Product $eProduct): \Collection {
 
+		if($eProduct['composition'] === FALSE) {
+			AnalyzeLib::filterItemComposition($eProduct['farm']);
+		}
+
 		return Item::model()
 			->select([
 				'sale' => ['farm', 'hasVat', 'taxes', 'shippingVatRate', 'shippingVatFixed', 'document'],
@@ -155,7 +177,7 @@ class ItemLib extends ItemCrud {
 			])
 			->join(Sale::model(), 'm2.id = m1.sale')
 			->whereProduct($eProduct)
-			->where('m2.marketParent', NULL)
+			->where('m1.stats', TRUE)
 			->sort(['m1.deliveredAt' => SORT_DESC])
 			->getCollection(0, 50);
 

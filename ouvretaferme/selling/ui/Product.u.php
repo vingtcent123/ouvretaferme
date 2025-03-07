@@ -487,7 +487,7 @@ class ProductUi {
 
 	}
 
-	public function displayTitle(Product $eProduct): string {
+	public function displayTitle(Product $eProduct, bool $switchComposition): string {
 
 		$h = '<div class="util-action">';
 
@@ -499,6 +499,9 @@ class ProductUi {
 				$h .= '</div>';
 			$h .= '</div>';
 			$h .= '<div>';
+				if($switchComposition) {
+					$h .= SaleUi::getCompositionSwitch($eProduct['farm'], 'btn-primary').' ';
+				}
 				$h .= $this->getUpdate($eProduct, 'btn-primary');
 			$h .= '</div>';
 		$h .= '</div>';

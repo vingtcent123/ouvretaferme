@@ -52,7 +52,7 @@ new \plant\PlantPage()
 
 		$data->cProduct = \selling\ProductLib::getByPlant($data->e);
 
-		$data->cItemYear = \selling\AnalyzeLib::getProductsYear($data->cProduct);
+		$data->cItemYear = \selling\AnalyzeLib::getProductsYear($data->eFarm, $data->cProduct);
 
 
 		throw new ViewAction($data);
@@ -70,7 +70,12 @@ new \plant\PlantPage()
 
 		$data->cProduct = \selling\ProductLib::getByPlant($data->e, index: 'id');
 
-		$cItem = \selling\AnalyzeLib::getPlants($data->year, search: new Search([
+		$data->switchComposition = (
+			$data->cProduct->contains(fn($eProduct) => $eProduct['composition']) or
+			\selling\ItemLib::containsProductsIngredient($data->cProduct)
+		);
+
+		$cItem = \selling\AnalyzeLib::getPlants($data->eFarm, $data->year, search: new Search([
 			'plant' => $data->e
 		]));
 
@@ -78,17 +83,17 @@ new \plant\PlantPage()
 			$data->e['cItem'] = $cItem[$data->e['id']]['cItem'];
 		}
 
-		$data->cItemTurnover = \selling\AnalyzeLib::getProductsTurnover($data->cProduct, $data->year, $data->search);
+		$data->cItemTurnover = \selling\AnalyzeLib::getProductsTurnover($data->eFarm, $data->cProduct, $data->year, $data->search);
 		$data->cItemTurnover->setColumn('product', fn($eItem) => $data->cProduct[$eItem['product']['id']]);
 
-		$data->cItemYear = \selling\AnalyzeLib::getProductsYear($data->cProduct, $data->year, $data->search);
+		$data->cItemYear = \selling\AnalyzeLib::getProductsYear($data->eFarm, $data->cProduct, $data->year, $data->search);
 
-		$data->cItemCustomer = \selling\AnalyzeLib::getProductsCustomers($data->cProduct, $data->year, $data->search);
+		$data->cItemCustomer = \selling\AnalyzeLib::getProductsCustomers($data->eFarm, $data->cProduct, $data->year, $data->search);
 		$data->cItemType = \selling\AnalyzeLib::getProductsTypes($data->cProduct, $data->year, $data->search);
 		$data->cItemMonth = \selling\AnalyzeLib::getProductsMonths($data->cProduct, $data->year, $data->search);
 		$data->cItemMonthBefore = \selling\AnalyzeLib::getProductsMonths($data->cProduct, $data->year - 1, $data->search);
-		$data->cItemWeek = \selling\AnalyzeLib::getProductsWeeks($data->cProduct, $data->year, $data->search);
-		$data->cItemWeekBefore = \selling\AnalyzeLib::getProductsWeeks($data->cProduct, $data->year - 1, $data->search);
+		$data->cItemWeek = \selling\AnalyzeLib::getProductsWeeks($data->eFarm, $data->cProduct, $data->year, $data->search);
+		$data->cItemWeekBefore = \selling\AnalyzeLib::getProductsWeeks($data->eFarm, $data->cProduct, $data->year - 1, $data->search);
 
 		throw new ViewAction($data);
 

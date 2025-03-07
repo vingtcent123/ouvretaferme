@@ -1857,7 +1857,7 @@ class SaleUi {
 			if($eFarmer['viewAnalyzeComposition'] === \farm\Farmer::COMPOSITION) {
 				$h .= '<a '.$action(\farm\Farmer::INGREDIENT).' data-confirm="'.s("Remplacer les produits composés par leur composition dans l'affichage ?").'" class="dropdown-item">'.$ingredient.'</a>';
 			} else {
-				$h .= '<a '.$action(\farm\Farmer::COMPOSITION).' data-confirm="'.s("Afficher les produits composés et non plus leur composition ?").'" class="dropdown-item">'.$composition.'</a>';
+				$h .= '<a '.$action(\farm\Farmer::COMPOSITION).' data-confirm="'.s("Ne plus remplacer les produits composés par leur composition ?").'" class="dropdown-item">'.$composition.'</a>';
 			}
 
 		$h .= '</div>';

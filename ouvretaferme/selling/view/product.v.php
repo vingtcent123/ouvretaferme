@@ -6,7 +6,7 @@ new AdaptativeView('/produit/{id}', function($data, FarmTemplate $t) {
 	$t->tab = 'selling';
 	$t->subNav = new \farm\FarmUi()->getSellingSubNav($data->eFarm);
 
-	$t->mainTitle = new \selling\ProductUi()->displayTitle($data->e);
+	$t->mainTitle = new \selling\ProductUi()->displayTitle($data->e, $data->switchComposition);
 
 
 	if($data->e['status'] === \selling\Product::DELETED) {
@@ -19,7 +19,7 @@ new AdaptativeView('/produit/{id}', function($data, FarmTemplate $t) {
 });
 
 new AdaptativeView('analyze', function($data, PanelTemplate $t) {
-	return new \selling\AnalyzeUi()->getProduct($data->e, $data->year, $data->cItemYear, $data->cItemCustomer, $data->cItemType, $data->cItemMonth, $data->cItemMonthBefore, $data->cItemWeek, $data->cItemWeekBefore, $data->search);
+	return new \selling\AnalyzeUi()->getProduct($data->e, $data->switchComposition, $data->year, $data->cItemYear, $data->cItemCustomer, $data->cItemType, $data->cItemMonth, $data->cItemMonthBefore, $data->cItemWeek, $data->cItemWeekBefore, $data->search);
 });
 
 new AdaptativeView('create', function($data, PanelTemplate $t) {

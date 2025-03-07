@@ -1715,7 +1715,7 @@ class AnalyzeUi {
 
 	}
 
-	public function getPlantSales(\plant\Plant $e, int $year, \Collection $cItemTurnover, \Collection $cItemYear, \Collection $cItemCustomer, \Collection $cItemType, \Collection $cItemMonth, \Collection $cItemMonthBefore, \Collection $cItemWeek, $cItemWeekBefore, \Search $search): \Panel {
+	public function getPlantSales(\plant\Plant $e, bool $switchComposition, int $year, \Collection $cItemTurnover, \Collection $cItemYear, \Collection $cItemCustomer, \Collection $cItemType, \Collection $cItemMonth, \Collection $cItemMonthBefore, \Collection $cItemWeek, $cItemWeekBefore, \Search $search): \Panel {
 
 		$h = '';
 
@@ -1790,19 +1790,29 @@ class AnalyzeUi {
 		}
 
 		$title = s("{value} en {year}", ['value' => encode($e['name']), 'year' => $year]);
+		$product = '<h2 class="panel-title">'.\plant\PlantUi::getVignette($e, '3rem').' '.$title.'</h2>';
+
+		if($switchComposition) {
+			$header = '<div style="display: flex; justify-content: space-between; align-items: center">';
+				$header .= $product;
+				$header .= SaleUi::getCompositionSwitch($e['farm'], 'btn-outline-primary');
+			$header .= '</div>';
+		} else {
+			$header = $product;
+		}
 
 		return new \Panel(
 			id: 'panel-plant-analyze',
 			documentTitle: $title,
 			body: $h,
-			header: '<h4>'.s("ESPÈCE CULTIVÉE").'</h4><h2 class="panel-title">'.\plant\PlantUi::getVignette($e, '3rem').' '.$title.'</h2>',
+			header: '<h4>'.s("ESPÈCE CULTIVÉE").'</h4>'.$header,
 		);
 
 	}
 
 	public function getPlantTurnover(\Collection $cItemYear, ?int $year, ?\plant\Plant $ePlantLink): string {
 
-		$h = '<ul class="util-summarize">';
+		$h = '<ul class="util-summarize mb-2">';
 
 			foreach($cItemYear as $eItemYear) {
 				$h .= '<li '.($eItemYear['year'] === $year ? 'class="selected"' : '').'>';
@@ -1820,7 +1830,7 @@ class AnalyzeUi {
 
 	}
 
-	public function getProduct(Product $e, int $year, \Collection $cItemYear, \Collection $cItemCustomer, \Collection $cItemType, \Collection $cItemMonth, \Collection $cItemMonthBefore, \Collection $cItemWeek, \Collection $cItemWeekBefore, \Search $search = new \Search()): \Panel {
+	public function getProduct(Product $e, bool $switchComposition, int $year, \Collection $cItemYear, \Collection $cItemCustomer, \Collection $cItemType, \Collection $cItemMonth, \Collection $cItemMonthBefore, \Collection $cItemWeek, \Collection $cItemWeekBefore, \Search $search = new \Search()): \Panel {
 
 		$h = '';
 
@@ -1885,12 +1895,22 @@ class AnalyzeUi {
 		}
 
 		$title = s("{value} en {year}", ['value' => encode($e['name']), 'year' => $year]);
+		$product = '<h2 class="panel-title">'.ProductUi::getVignette($e, '3rem').' '.$title.'</h2>';
+
+		if($switchComposition) {
+			$header = '<div style="display: flex; justify-content: space-between; align-items: center">';
+				$header .= $product;
+				$header .= SaleUi::getCompositionSwitch($e['farm'], 'btn-outline-primary');
+			$header .= '</div>';
+		} else {
+			$header = $product;
+		}
 
 		return new \Panel(
 			id: 'panel-product-analyze',
 			documentTitle: $title,
 			body: $h,
-			header: '<h4>'.s("PRODUIT").'</h4><h2 class="panel-title">'.ProductUi::getVignette($e, '3rem').' '.$title.'</h2>',
+			header: '<h4>'.s("PRODUIT").'</h4>'.$header,
 		);
 
 	}
@@ -1901,7 +1921,7 @@ class AnalyzeUi {
 
 			foreach($cItemYear as $eItemYear) {
 				$h .= '<li '.($eItemYear['year'] === $year ? 'class="selected"' : '').'>';
-					$h .= '<a data-ajax="/selling/product:analyze?id='.$eProductLink['id'].'&year='.$eItemYear['year'].'" data-ajax-method="get">';
+					$h .= '<a href="/selling/product:analyze?id='.$eProductLink['id'].'&year='.$eItemYear['year'].'">';
 						$h .= '<h5>'.$eItemYear['year'].'</h5>';
 						$h .= '<div>'.\util\TextUi::money($eItemYear['turnover'], precision: 0).'</div>';
 						$h .= '<div class="util-summarize-muted">('.\util\TextUi::pc($eItemYear['turnover'] / $eItemYear['turnoverGlobal'] * 100, 0).')</div>';

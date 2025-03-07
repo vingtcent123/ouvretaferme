@@ -7,7 +7,7 @@ class AnalyzeLib {
 
 		Item::model()->whereFarm($eFarm);
 
-		return self::getMonths($year);
+		return self::getMonths($eFarm, $year);
 
 	}
 
@@ -15,11 +15,15 @@ class AnalyzeLib {
 
 		Item::model()->whereCustomer($eCustomer);
 
-		return self::getMonths($year);
+		return self::getMonths($eCustomer['farm'], $year);
 
 	}
 
 	public static function getProductMonths(Product $eProduct, int $year, \Search $search = new \Search()): \Collection {
+
+		if($eProduct['composition']) {
+			$search->set('doNotFilterComposition', TRUE);
+		}
 
 		Item::model()
 			->select([
@@ -28,7 +32,7 @@ class AnalyzeLib {
 			->whereProduct($eProduct)
 			->where('number != 0');
 
-		return self::getMonths($year, $search);
+		return self::getMonths($eProduct['farm'], $year, $search);
 
 	}
 
@@ -75,11 +79,15 @@ class AnalyzeLib {
 		return $cItemMonth;
 	}
 
-	private static function getMonths(int $year, \Search $search = new \Search()): \Collection {
+	private static function getMonths(\farm\Farm $eFarm, int $year, \Search $search = new \Search()): \Collection {
 
 		$search->filter('type', fn($type) => Item::model()->whereType($type));
 
 		self::filterItemStats();
+
+		if($search->get('doNotFilterComposition') !== TRUE) {
+			self::filterItemComposition($eFarm);
+		}
 
 		return Item::model()
 			->select([
@@ -101,7 +109,7 @@ class AnalyzeLib {
 
 		Item::model()->whereFarm($eFarm);
 
-		return self::getWeeks($year);
+		return self::getWeeks($eFarm, $year);
 
 	}
 
@@ -109,11 +117,15 @@ class AnalyzeLib {
 
 		Item::model()->whereCustomer($eCustomer);
 
-		return self::getWeeks($year);
+		return self::getWeeks($eCustomer['farm'], $year);
 
 	}
 
 	public static function getProductWeeks(Product $eProduct, int $year, \Search $search = new \Search()): \Collection {
+
+		if($eProduct['composition']) {
+			$search->set('doNotFilterComposition', TRUE);
+		}
 
 		Item::model()
 			->whereProduct($eProduct)
@@ -122,11 +134,11 @@ class AnalyzeLib {
 			])
 			->where('number != 0');
 
-		return self::getWeeks($year, $search);
+		return self::getWeeks($eProduct['farm'], $year, $search);
 
 	}
 
-	public static function getProductsWeeks(\Collection $cProduct, int $year, \Search $search = new \Search()): \Collection {
+	public static function getProductsWeeks(\farm\Farm $eFarm, \Collection $cProduct, int $year, \Search $search = new \Search()): \Collection {
 
 		Item::model()
 			->whereProduct('IN', $cProduct)
@@ -135,15 +147,19 @@ class AnalyzeLib {
 			])
 			->where('number != 0');
 
-		return self::getWeeks($year, $search);
+		return self::getWeeks($eFarm, $year, $search);
 
 	}
 
-	private static function getWeeks(int $year, \Search $search = new \Search()): \Collection {
+	private static function getWeeks(\farm\Farm $eFarm, int $year, \Search $search = new \Search()): \Collection {
 
 		$search->filter('type', fn($type) => Item::model()->whereType($type));
 
 		self::filterItemStats();
+
+		if($search->get('doNotFilterComposition') !== TRUE) {
+			self::filterItemComposition($eFarm);
+		}
 
 		return Item::model()
 			->select([
@@ -161,7 +177,7 @@ class AnalyzeLib {
 
 		Item::model()->where('m1.farm', $eFarm);
 
-		return self::getCustomers($year, $month, $week, $search);
+		return self::getCustomers($eFarm, $year, $month, $week, $search);
 
 	}
 
@@ -169,15 +185,20 @@ class AnalyzeLib {
 
 		Item::model()->whereShop($eShop);
 
-		return self::getCustomers($year, $month, $week);
+		return self::getCustomers($eShop['farm'], $year, $month, $week);
 
 	}
 
 	public static function getProductCustomers(Product $eProduct, int $year, \Search $search = new \Search()): \Collection {
-		return self::getProductsCustomers(new \Collection([$eProduct]), $year, $search);
+
+		if($eProduct['composition']) {
+			$search->set('doNotFilterComposition', TRUE);
+		}
+
+		return self::getProductsCustomers($eProduct['farm'], new \Collection([$eProduct]), $year, $search);
 	}
 
-	public static function getProductsCustomers(\Collection $cProduct, int $year, \Search $search = new \Search()): \Collection {
+	public static function getProductsCustomers(\farm\Farm $eFarm, \Collection $cProduct, int $year, \Search $search = new \Search()): \Collection {
 
 		Item::model()->whereProduct('IN', $cProduct);
 
@@ -187,15 +208,19 @@ class AnalyzeLib {
 			])
 			->where('number != 0');
 
-		return self::getCustomers($year, NULL, NULL, $search);
+		return self::getCustomers($eFarm, $year, NULL, NULL, $search);
 
 	}
 
-	private static function getCustomers(int $year, ?int $month, ?string $week, \Search $search = new \Search()): \Collection {
+	private static function getCustomers(\farm\Farm $eFarm, int $year, ?int $month, ?string $week, \Search $search = new \Search()): \Collection {
 
 		$search->filter('type', fn($type) => Item::model()->where('m2.type', $type));
 
 		self::filterItemStats(TRUE);
+
+		if($search->get('doNotFilterComposition') !== TRUE) {
+			self::filterItemComposition($eFarm);
+		}
 
 		return Item::model()
 			->select([
@@ -353,13 +378,17 @@ class AnalyzeLib {
 
 	}
 
-	public static function getProductYear(Product $eProduct, ?int $year = NULL, \Search $search = new \Search()): \Collection {
+	public static function getProductYear(\farm\Farm $eFarm, Product $eProduct, ?int $year = NULL, \Search $search = new \Search()): \Collection {
 
-		return self::getProductsYear(new \Collection([$eProduct]), $year, $search);
+		if($eProduct['composition']) {
+			$search->set('doNotFilterComposition', TRUE);
+		}
+
+		return self::getProductsYear($eFarm, new \Collection([$eProduct]), $year, $search);
 
 	}
 
-	public static function getProductsYear(\Collection $cProduct, ?int $year = NULL, \Search $search = new \Search()): \Collection {
+	public static function getProductsYear(\farm\Farm $eFarm, \Collection $cProduct, ?int $year = NULL, \Search $search = new \Search()): \Collection {
 
 		if($cProduct->empty()) {
 			return new \Collection();
@@ -375,6 +404,10 @@ class AnalyzeLib {
 
 		self::filterItemStats();
 		self::filterSaleStats();
+
+		if($search->get('doNotFilterComposition') !== TRUE) {
+			self::filterItemComposition($eFarm);
+		}
 
 		return Item::model()
 			->select([
@@ -395,12 +428,13 @@ class AnalyzeLib {
 
 	}
 
-	public static function getProductsTurnover(\Collection $cProduct, int $year, \Search $search = new \Search()): \Collection {
+	public static function getProductsTurnover(\farm\Farm $eFarm, \Collection $cProduct, int $year, \Search $search = new \Search()): \Collection {
 
 		$search->filter('type', fn($type) => Item::model()->whereType($type));
 
 		self::filterItemStats();
 		self::filterSaleStats();
+		self::filterItemComposition($eFarm);
 
 		return Item::model()
 			->select([
@@ -601,7 +635,7 @@ class AnalyzeLib {
 
 		Item::model()->where('m1.farm', $eFarm);
 
-		return self::getPlants($year, $month, $week, $search);
+		return self::getPlants($eFarm, $year, $month, $week, $search);
 
 	}
 
@@ -609,11 +643,11 @@ class AnalyzeLib {
 
 		Item::model()->where('m1.shop', $eShop);
 
-		return self::getPlants($year, $month, $week);
+		return self::getPlants($eShop['farm'], $year, $month, $week);
 
 	}
 
-	public static function getPlants(int $year, ?int $month = NULL, ?string $week = NULL, \Search $search = new \Search()): \Collection {
+	public static function getPlants(\farm\Farm $eFarm, int $year, ?int $month = NULL, ?string $week = NULL, \Search $search = new \Search()): \Collection {
 
 		if($search->get('type')) {
 			Item::model()->where('m3.type', $search->get('type'));
@@ -624,6 +658,7 @@ class AnalyzeLib {
 		}
 
 		self::filterItemStats(TRUE);
+		self::filterItemComposition($eFarm);
 
 		$ccItemPlant = Item::model()
 			->select([

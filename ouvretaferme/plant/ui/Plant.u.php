@@ -214,10 +214,13 @@ class PlantUi {
 
 
 		$h .= '</div>';
+		$h .= '<br/>';
+		$h .= '<br/>';
 
 		if($cItemYear->notEmpty()) {
 
 			$h .= new \selling\AnalyzeUi()->getPlantTurnover($cItemYear, NULL, $ePlant);
+			$h .= '<br/>';
 
 		}
 
