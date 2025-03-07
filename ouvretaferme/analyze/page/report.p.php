@@ -68,11 +68,20 @@ new \analyze\ReportPage(function($data) {
 			}
 
 			$data->workingTimeNoSeries = \series\TaskLib::calculateWorkingTimeForReport($data->eFarm, $data->season, $ePlant);
-			$data->cProduct = \selling\ProductLib::getForReport($ePlant, $data->e['firstSaleAt'], $data->e['lastSaleAt']);
+
+			$data->cProduct = \selling\ProductLib::getByPlant($ePlant);
+
+			$data->switchComposition = (
+				$data->cProduct->contains(fn($eProduct) => $eProduct['composition']) or
+				\selling\ItemLib::containsProductsIngredient($data->cProduct)
+			);
+
+			\selling\ProductLib::fillForReport($ePlant['farm'], $data->cProduct, $data->e['firstSaleAt'], $data->e['lastSaleAt']);
 
 		} else {
 			$data->workingTimeNoSeries = NULL;
 			$data->cProduct = new Collection();
+			$data->switchComposition = FALSE;
 		}
 
 		$data->e['plant'] = $ePlant;
@@ -108,7 +117,14 @@ new Page()
 		$firstSale = POST('firstSaleAt');
 		$lastSale = POST('lastSaleAt');
 
-		$data->cProduct = \selling\ProductLib::getForReport($data->ePlant, $firstSale, $lastSale);
+		$data->cProduct = \selling\ProductLib::getByPlant($data->ePlant);
+
+		$data->switchComposition = (
+			$data->cProduct->contains(fn($eProduct) => $eProduct['composition']) or
+			\selling\ItemLib::containsProductsIngredient($data->cProduct)
+		);
+
+		\selling\ProductLib::fillForReport($data->ePlant['farm'], $data->cProduct, $firstSale, $lastSale);
 
 		throw new ViewAction($data);
 

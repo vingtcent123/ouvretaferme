@@ -16,11 +16,11 @@ new AdaptativeView('/rapport/{id}', function($data, FarmTemplate $t) {
 });
 
 new AdaptativeView('create', function($data, PanelTemplate $t) {
-	return new \analyze\ReportUi()->create($data->e, $data->workingTimeNoSeries, $data->cProduct);
+	return new \analyze\ReportUi()->create($data->e, $data->workingTimeNoSeries, $data->cProduct, $data->switchComposition);
 });
 
 new AdaptativeView('products', function($data, AjaxTemplate $t) {
-	$t->qs('#report-create-products')->innerHtml(new \analyze\ReportUi()->getProductsField($data->cProduct));
+	$t->qs('#report-create-products')->innerHtml(new \analyze\ReportUi()->getProductsField($data->ePlant['farm'], $data->cProduct, $data->switchComposition));
 	$t->qs('#report-create-submit')->removeClass('hide');
 });
 

@@ -6,7 +6,7 @@ class Report {
 
 	static refreshCreateSeries() {
 
-		new Ajax.Query()
+		new Ajax.Navigation()
 			.url('/analyze/report:create?'+ new URLSearchParams(qs('#report-create').form()))
 			.method('get')
 			.fetch();

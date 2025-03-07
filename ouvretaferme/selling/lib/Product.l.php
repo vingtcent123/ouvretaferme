@@ -262,12 +262,13 @@ class ProductLib extends ProductCrud {
 
 	}
 
-	public static function getForReport(\plant\Plant $ePlant, string $firstSale, string $lastSale): \Collection {
+	public static function fillForReport(\farm\Farm $eFarm, \Collection $cProduct, string $firstSale, string $lastSale): void {
 
 		AnalyzeLib::filterItemStats();
+		AnalyzeLib::filterItemComposition($eFarm);
 
-		return Product::model()
-			->select(Product::getSelection() + [
+		Product::model()
+			->select([
 				'sales' => Item::model()
 					->select([
 						'turnover' => new \Sql('SUM(priceExcludingVat)', 'float'),
@@ -277,9 +278,7 @@ class ProductLib extends ProductCrud {
 					->group('product')
 					->delegateElement('product')
 			])
-			->wherePlant($ePlant)
-			->sort('name')
-			->getCollection();
+			->get($cProduct);
 
 	}
 

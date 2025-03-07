@@ -607,7 +607,7 @@ class ReportUi {
 		
 	}
 
-	public function create(Report $e, ?float $workingTimeNoSeries, \Collection $cProduct): \Panel {
+	public function create(Report $e, ?float $workingTimeNoSeries, \Collection $cProduct, bool $switchComposition): \Panel {
 
 		$form = new \util\FormUi();
 
@@ -673,7 +673,7 @@ class ReportUi {
 						$sales .= $form->dynamicField($e, 'lastSaleAt');
 					$sales .= '</div>';
 					$sales .= '<div id="report-create-products">';
-						$sales .= new \analyze\ReportUi()->getProductsField($cProduct, $e['from']);
+						$sales .= new \analyze\ReportUi()->getProductsField($e['farm'], $cProduct, $switchComposition, $e['from']);
 					$sales .= '</div>';
 
 					$h .= $form->group(
@@ -802,7 +802,7 @@ class ReportUi {
 
 	}
 
-	public function getProductsField(\Collection $cProduct, Report $eReportFrom = new Report()) {
+	public function getProductsField(\farm\Farm $eFarm, \Collection $cProduct, bool $switchComposition, Report $eReportFrom = new Report()) {
 
 		if($cProduct->empty()) {
 			return '<div class="util-empty">'.s("Il n'y a aucun produit vendu pour cette espèce.").'</div>';
@@ -816,7 +816,15 @@ class ReportUi {
 
 		$form = new \util\FormUi();
 
-		$h = '<div class="report-create-series stick-xs tr-even" onrender="Report.refreshStats()">';
+		$h = '';
+
+		if($switchComposition) {
+			$h .= '<div class="text-end mb-1">';
+				$h .= \selling\SaleUi::getCompositionSwitch($eFarm, 'btn-outline-primary');
+			$h .= '</div>';
+		}
+
+		$h .= '<div class="report-create-series stick-xs tr-even" onrender="Report.refreshStats()">';
 
 			$h .= '<div class="util-grid-header report-create-series-name">';
 				if($cProduct->count() > 2) {
