@@ -1061,7 +1061,7 @@ class PdfUi {
 								$h .= '  <small><b>'.\selling\UnitUi::getValue($quantity, $eItemIngredient['unit'], TRUE).'</b></small>';
 							$h .= '</td>';
 							$h .= '<td class="pdf-sales-summary-quantity text-end">';
-								$h .= $quantity;
+								$h .= $eItem['quantity'] * $quantity;
 							$h .= '</td>';
 							$h .= '<td>';
 								$h .= \selling\UnitUi::getSingular($eItemIngredient['unit'], TRUE);
