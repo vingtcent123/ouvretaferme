@@ -43,6 +43,7 @@ class MarketLib {
 				'last' => new \Sql('MAX(createdAt)')
 			])
 			->whereSale('IN', $cSale)
+			->whereIngredientOf(NULL)
 			->group('product')
 			->getCollection(index: 'product');
 

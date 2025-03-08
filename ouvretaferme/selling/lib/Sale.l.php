@@ -148,6 +148,7 @@ class SaleLib extends SaleCrud {
 			->select([
 				'cItem' => Item::model()
 					->select(Item::getSelection())
+					->whereIngredientOf(NULL)
 					->sort([
 						'name' => SORT_ASC,
 						'id' => SORT_ASC
@@ -1095,6 +1096,7 @@ class SaleLib extends SaleCrud {
 
 		return Item::model()
 			->whereSale($e)
+			->whereIngredientOf(NULL)
 			->count();
 
 	}
@@ -1109,6 +1111,7 @@ class SaleLib extends SaleCrud {
 		$cItem = Item::model()
 			->select(['price', 'vatRate', 'quality'])
 			->whereSale($e)
+			->whereIngredientOf(NULL)
 			->getCollection();
 
 		// Plus rien dans la vente

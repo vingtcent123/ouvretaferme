@@ -33,6 +33,7 @@ class ItemLib extends ItemCrud {
 			])
 			->join(Product::model(), 'm2.id = m1.product')
 			->where('sale', 'IN', $cSale)
+			->whereIngredientOf(NULL)
 			->sort('sale')
 			->getCollection(NULL, NULL, ['product', NULL]);
 
@@ -127,15 +128,6 @@ class ItemLib extends ItemCrud {
 
 	}
 
-	public static function getBySale(Sale $eSale): \Collection {
-
-		return Item::model()
-			->select(Item::getSelection())
-			->whereSale($eSale)
-			->getCollection();
-
-	}
-
 	public static function getBySales(\Collection $cSale): \Collection {
 
 		$ccItem = Item::model()
@@ -143,6 +135,7 @@ class ItemLib extends ItemCrud {
 				'customer' => ['type', 'name']
 			])
 			->where('sale', 'IN', $cSale)
+			->whereIngredientOf(NULL)
 			->sort('sale')
 			->getCollection(NULL, NULL, ['sale', NULL]);
 
@@ -190,15 +183,21 @@ class ItemLib extends ItemCrud {
 				'name', 'quality',
 				'unit' => ['fqn', 'by', 'singular', 'plural', 'short', 'type'],
 				'price' => new \Sql('SUM(price)', 'float'),
+				'number' => new \Sql('SUM(number)', 'float'),
 				'quantity' => new \Sql('SUM(IF(packaging IS NULL, 1, packaging) * number)', 'float'),
-				'product' => ['vignette', 'farm', 'composition']
+				'product' => ['vignette', 'farm', 'composition'],
+				'productComposition',
+				'deliveredAt' => fn() => $eDate['deliveryDate'],
+				'cItemIngredient' => SaleLib::delegateIngredients($eDate['deliveryDate'], 'product')
 			])
 			->whereFarm($eDate['farm'])
 			->whereStatus('IN', [Sale::CONFIRMED, Sale::PREPARED, Sale::DELIVERED])
+			->whereIngredientOf(NULL)
 			->whereShopDate($eDate)
-			->group(['product', 'name', 'unit', 'quality'])
+			->group(['product', 'productComposition', 'name', 'unit', 'quality'])
 			->sort('name')
 			->getCollection();
+
 	}
 
 	public static function getSummaryBySales(\Collection $cSale): \Collection {
@@ -209,8 +208,10 @@ class ItemLib extends ItemCrud {
 				'unit' => ['fqn', 'by', 'singular', 'plural', 'short', 'type'],
 				'price' => new \Sql('SUM(price)', 'float'),
 				'quantity' => new \Sql('SUM(IF(packaging IS NULL, 1, packaging) * number)', 'float'),
-				'product' => ['vignette', 'farm', 'composition']
+				'product' => ['vignette', 'farm', 'composition'],
+				'productComposition' => fn() => FALSE
 			])
+			->whereIngredientOf(NULL)
 			->whereSale('IN', $cSale)
 			->group(['product', 'name', 'unit', 'quality'])
 			->sort('name')
@@ -445,20 +446,6 @@ class ItemLib extends ItemCrud {
 			SaleLib::recalculate($eSale);
 
 			\shop\ProductLib::addAvailable($c);
-
-		Item::model()->commit();
-
-	}
-
-	public static function deleteBySale(Sale $e): void {
-
-		Item::model()->beginTransaction();
-
-		Item::model()
-			->whereSale($e)
-			->delete();
-
-		SaleLib::recalculate($e);
 
 		Item::model()->commit();
 

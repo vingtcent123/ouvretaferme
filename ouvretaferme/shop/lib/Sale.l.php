@@ -34,6 +34,7 @@ class SaleLib {
 				'quantity'=> new \Sql('SUM(number)', 'float'),
 			])
 			->whereSale('in', $cSale)
+			->whereIngredientOf(NULL)
 			->group('product')
 			->getCollection(NULL, NULL, 'product');
 
@@ -63,6 +64,7 @@ class SaleLib {
 			->select(\selling\Sale::getSelection() + [
 				'cItem' => \selling\Item::model()
 					->select(\selling\Item::getSelection())
+					->whereIngredientOf(NULL)
 					->delegateCollection('sale')
 			])
 			->whereShopDate($eDate)
@@ -404,17 +406,6 @@ class SaleLib {
 			self::notify('saleCanceled', $eSale);
 
 		\selling\Sale::model()->commit();
-
-	}
-
-	public static function getById(mixed $id): \selling\Sale {
-
-		return \selling\Sale::model()
-			->select(\selling\Sale::getSelection() + ['cItem' => \selling\Item::model()
-				->select(\selling\Item::getSelection())
-				->delegateCollection('sale')])
-			->whereId($id)
-			->get();
 
 	}
 

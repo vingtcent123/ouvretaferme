@@ -429,6 +429,15 @@ table.pdf-sales-summary {
 	padding-right: 0;
 }
 
+.pdf-sales-summary-composition {
+	margin-bottom: 0.5rem;
+}
+
+.pdf-sales-summary-composition table {
+	width: auto;
+	min-width: 7cm;
+}
+
 .pdf-sales-label-wrapper {
 	display: grid;
 	grid-template-columns: 1fr 1fr;

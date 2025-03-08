@@ -116,6 +116,7 @@ class ProductLib extends ProductCrud {
 			->where('sale', 'IN', $cSale)
 			->where('product', 'NOT IN', $cProductExclude)
 			->where('number > 0')
+			->whereIngredientOf(NULL)
 			->group(['farm', 'product', 'packaging'])
 			->getCollection();
 

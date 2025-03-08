@@ -153,6 +153,7 @@ class ProductLib extends ProductCrud {
 		if($selectSales) {
 
 			AnalyzeLib::filterItemStats();
+			AnalyzeLib::filterItemComposition($eFarm);
 
 			Product::model()
 				->select([

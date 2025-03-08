@@ -1019,12 +1019,62 @@ class PdfUi {
 								$h .= \util\TextUi::money($eItem['price']);
 							}
 						$h.= '</td>';
-						$h .= '<td></td>';
+						$h .= '<td>';
+							$h .= $this->getItemComposition($eItem);
+						$h .= '</td>';
 					$h .= '</tr>';
 				}
 			$h .= '</tbody>';
 
 		$h .= '</table>';
+
+		return $h;
+
+	}
+
+	protected function getItemComposition(Item $eItem): string {
+
+
+		$h = '';
+
+		if(
+			$eItem['productComposition'] and
+			$eItem['cItemIngredient']->notEmpty()
+		) {
+
+			$h .= '<div class="pdf-sales-summary-composition">';
+
+				$h .= '<table class="mb-0">';
+
+					$h .= '<tr>';
+						$h .= '<th>'.s("Composition").'</th>';
+						$h .= '<th class="text-center" colspan="2">'.s("Total").'</th>';
+					$h .= '</tr>';
+
+					foreach($eItem['cItemIngredient'] as $eItemIngredient) {
+
+						$quantity = $eItemIngredient['number'] * ($eItemIngredient['packaging'] ?? 1);
+
+						$h .= '<tr>';
+							$h .= '<td>';
+								$h .= ProductUi::getVignette($eItemIngredient['product'], '1.5rem').' '.encode($eItemIngredient['name']);
+								$h .= '  <small><b>'.\selling\UnitUi::getValue($quantity, $eItemIngredient['unit'], TRUE).'</b></small>';
+							$h .= '</td>';
+							$h .= '<td class="pdf-sales-summary-quantity text-end">';
+								$h .= $quantity;
+							$h .= '</td>';
+							$h .= '<td>';
+								$h .= \selling\UnitUi::getSingular($eItemIngredient['unit'], TRUE);
+							$h .= '</td>';
+						$h .= '</tr>';
+
+					}
+
+				$h .= '</table>';
+
+			$h .= '</div>';
+
+		}
 
 		return $h;
 
