@@ -48,10 +48,7 @@ new \selling\ProductPage()
 		$data->cSaleComposition = \selling\SaleLib::getByComposition($data->e);
 		$data->cGrid = \selling\GridLib::getByProduct($data->e);
 
-		$data->switchComposition = (
-			$data->e['composition'] or
-			\selling\ItemLib::containsProductIngredient($data->e)
-		);
+		$data->switchComposition = \selling\ItemLib::containsProductIngredient($data->e);
 
 		$data->cItemLast = \selling\ItemLib::getByProduct($data->e);
 		$data->cItemYear = \selling\AnalyzeLib::getProductYear($data->eFarm, $data->e);
@@ -69,10 +66,7 @@ new \selling\ProductPage()
 
 		$data->year = GET('year', 'int', date('Y'));
 
-		$data->switchComposition = (
-			$data->e['composition'] or
-			\selling\ItemLib::containsProductIngredient($data->e)
-		);
+		$data->switchComposition = \selling\ItemLib::containsProductIngredient($data->e);
 
 		$data->cItemYear = \selling\AnalyzeLib::getProductYear($data->e['farm'], $data->e, $data->year, $data->search);
 
