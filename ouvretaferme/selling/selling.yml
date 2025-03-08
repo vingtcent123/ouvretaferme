@@ -176,6 +176,7 @@ Item:
     ["farm", "customer"],
     ["product"],
     ["sale"],
+    ["ingredientOf"],
     ["parent"]
   ]
 

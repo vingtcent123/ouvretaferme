@@ -172,21 +172,27 @@ class MarketLib {
 
 				$eItemSaled = $cItemSaled[$eItemMarket['id']];
 
-				$update = [
+				$eItemMarket->merge([
 					'number' => round($eItemSaled['totalNumber'], 2),
 					'price' => round($eItemSaled['totalPrice'], 2),
 					'priceExcludingVat' => round($eItemSaled['totalPriceExcludingVat'], 2)
-				];
+				]);
 
 			} else {
-				$update = [
+				$eItemMarket->merge([
 					'number' => 0.0,
 					'price' => 0.0,
 					'priceExcludingVat' => 0.0
-				];
+				]);
 			}
 
-			Item::model()->update($eItemMarket, $update);
+			Item::model()
+				->select('number', 'price', 'priceExcludingVat')
+				->update($eItemMarket);
+
+			if($eItemMarket['productComposition']) {
+				ItemLib::updateIngredients($eItemMarket);
+			}
 
 		}
 

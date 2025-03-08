@@ -97,6 +97,7 @@ class ItemModel extends \ModuleModel {
 			['farm', 'customer'],
 			['product'],
 			['sale'],
+			['ingredientOf'],
 			['parent']
 		]);
 

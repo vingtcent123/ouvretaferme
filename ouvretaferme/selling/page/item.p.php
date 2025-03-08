@@ -131,8 +131,8 @@ new Page()
 			throw new NotExpectedAction('Invalid parameters');
 		}
 
-		$data->ccItemProduct = \selling\ItemLib::getProductsBySales($data->cSale);
-		$data->ccItemSale = \selling\ItemLib::getBySales($data->cSale);
+		$data->ccItemProduct = \selling\ItemLib::getProductsBySales($data->eFarm, $data->cSale);
+		$data->ccItemSale = \selling\ItemLib::getBySales($data->eFarm, $data->cSale);
 
 		throw new ViewAction($data);
 

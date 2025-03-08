@@ -21,7 +21,9 @@ class ItemLib extends ItemCrud {
 		};
 	}
 
-	public static function getProductsBySales(\Collection $cSale): \Collection {
+	public static function getProductsBySales(\farm\Farm $eFarm, \Collection $cSale): \Collection {
+
+		AnalyzeLib::filterItemComposition($eFarm);
 
 		$ccItem = Item::model()
 			->select([
@@ -30,10 +32,11 @@ class ItemLib extends ItemCrud {
 				'customer' => ['type', 'name'],
 				'packaging', 'number',
 				'unit' => ['fqn', 'by', 'singular', 'plural', 'short', 'type'],
+				'containsComposition' => new \Sql('productComposition', 'bool'),
+				'containsIngredient' => new \Sql('ingredientOf IS NOT NULL', 'bool')
 			])
 			->join(Product::model(), 'm2.id = m1.product')
 			->where('sale', 'IN', $cSale)
-			->whereIngredientOf(NULL)
 			->sort('sale')
 			->getCollection(NULL, NULL, ['product', NULL]);
 
@@ -128,14 +131,15 @@ class ItemLib extends ItemCrud {
 
 	}
 
-	public static function getBySales(\Collection $cSale): \Collection {
+	public static function getBySales(\farm\Farm $eFarm, \Collection $cSale): \Collection {
+
+		AnalyzeLib::filterItemComposition($eFarm);
 
 		$ccItem = Item::model()
 			->select(Item::getSelection() + [
 				'customer' => ['type', 'name']
 			])
 			->where('sale', 'IN', $cSale)
-			->whereIngredientOf(NULL)
 			->sort('sale')
 			->getCollection(NULL, NULL, ['sale', NULL]);
 
@@ -322,7 +326,15 @@ class ItemLib extends ItemCrud {
 
 		Item::model()->beginTransaction();
 
-			Item::model()->insert($c);
+			foreach($c as $e) {
+
+				Item::model()->insert($e);
+
+				if($e['productComposition']) {
+					self::createIngredients($e);
+				}
+
+			}
 
 			SaleLib::recalculate($c->first()['sale']);
 
@@ -339,6 +351,10 @@ class ItemLib extends ItemCrud {
 		Item::model()->beginTransaction();
 
 		Item::model()->insert($e);
+
+		if($e['productComposition']) {
+			self::createIngredients($e);
+		}
 
 		SaleLib::recalculate($e['sale']);
 
@@ -362,6 +378,7 @@ class ItemLib extends ItemCrud {
 				->whereSale($eSale)
 				->or(
 					fn() => $this->whereId('IN', $cItem->find(fn($eItem) => $eItem['id'] !== NULL)),
+					fn() => $this->whereIngredientOf('IN', $cItem->find(fn($eItem) => $eItem['id'] !== NULL)),
 					fn() => $this->whereParent('IN', $cItem->find(fn($eItem) => $eItem['parent']->notEmpty())->getColumnCollection('parent'))
 				)
 				->delete();
@@ -389,6 +406,71 @@ class ItemLib extends ItemCrud {
 
 	}
 
+	public static function createIngredients(Item $e): void {
+
+		$e->expects(['productComposition', 'deliveredAt']);
+
+		if($e['productComposition'] === FALSE) {
+			throw new \Exception('Invalid call');
+		}
+
+		Item::model()
+			->select([
+				'cItemIngredient' => SaleLib::delegateIngredients($e['deliveredAt'], 'product')
+			])
+			->get($e);
+
+		if($e['cItemIngredient']->empty()) {
+			return;
+		}
+
+		$cItemIngredient = new \Collection();
+		self::buildIngredients($cItemIngredient, $e, $e['cItemIngredient']);
+		Item::model()->insert($cItemIngredient);
+
+	}
+
+	public static function buildIngredients(\Collection $cItemIngredient, Item $eItemComposition, \Collection $cItemCopy): \Collection {
+
+		$ingredientsPrice = $cItemCopy->sum('price');
+
+		$ratio = ($ingredientsPrice > 0) ? $eItemComposition['price'] / $ingredientsPrice : NULL;
+
+		foreach($cItemCopy as $eItemCopy) {
+
+			$copyPrice = ($ratio !== NULL) ? $eItemCopy['price'] * $ratio : $eItemComposition['price'] / $cItemCopy->count();
+			$copyPriceExcludingVat = ($ratio !== NULL) ? $eItemCopy['priceExcludingVat'] * $ratio : $eItemComposition['priceExcludingVat'] / $cItemCopy->count();
+			$copyPackaging = $eItemCopy['packaging'];
+			$copyNumber = $eItemCopy['number'] * $eItemComposition['number'] * ($eItemComposition['packaging'] ?? 1);
+
+			$eItemIngredient = (clone $eItemComposition);
+			$eItemIngredient->merge([
+			  'id' => NULL,
+			  'name' => $eItemCopy['name'],
+			  'product' => $eItemCopy['product'],
+			  'productComposition' => FALSE,
+			  'ingredientOf' => $eItemComposition,
+			  'quality' => $eItemCopy['quality'],
+			  'parent' => new Item(),
+			  'packaging' => $eItemCopy['packaging'],
+			  'unit' => $eItemCopy['unit'],
+			  'unitPrice' => ($copyNumber > 0 and $copyPackaging > 0) ? $copyPrice / $copyNumber / $copyPackaging : $eItemCopy['unitPrice'],
+			  'number' => $copyNumber,
+			  'price' => $copyPrice,
+			  'priceExcludingVat' => $copyPriceExcludingVat,
+			  'vatRate' => $eItemCopy['vatRate'],
+			  'stats' => $eItemComposition['stats']
+			]);
+
+			$cItemIngredient[] = $eItemIngredient;
+
+
+		}
+
+		return $cItemIngredient;
+
+	}
+
 	public static function update(Item $e, array $properties): void {
 
 		if($e->canUpdate() === FALSE) {
@@ -411,7 +493,18 @@ class ItemLib extends ItemCrud {
 			SaleLib::recalculate($e['sale']);
 		}
 
+		if($e['productComposition']) {
+			self::updateIngredients($e);
+		}
+
 		Item::model()->commit();
+
+	}
+
+	public static function updateIngredients(Item $e): void {
+
+		self::deleteIngredients($e);
+		self::createIngredients($e);
 
 	}
 
@@ -424,6 +517,10 @@ class ItemLib extends ItemCrud {
 		Item::model()->beginTransaction();
 
 			parent::delete($e);
+
+			if($e['productComposition']) {
+				self::deleteIngredients($e);
+			}
 
 			SaleLib::recalculate($e['sale']);
 
@@ -440,7 +537,13 @@ class ItemLib extends ItemCrud {
 			$eSale = $c->first()['sale'];
 
 			foreach($c as $e) {
+
 				parent::delete($e);
+
+				if($e['productComposition']) {
+					self::deleteIngredients($e);
+				}
+
 			}
 
 			SaleLib::recalculate($eSale);
@@ -448,6 +551,18 @@ class ItemLib extends ItemCrud {
 			\shop\ProductLib::addAvailable($c);
 
 		Item::model()->commit();
+
+	}
+
+	public static function deleteIngredients(Item $e): void {
+
+		if($e['productComposition'] === FALSE) {
+			throw new \Exception('Invalid call');
+		}
+
+		Item::model()
+			->whereIngredientOf($e)
+			->delete();
 
 	}
 

@@ -549,6 +549,43 @@ class SaleLib extends SaleCrud {
 	/**
 	 * Modifie ou supprime une composition existante
 	 */
+	public static function recalculateComposition(Sale $e, \Collection $cItemCopy): void {
+
+		$e->expects(['deliveredAt', 'compositionEndAt']);
+
+		$eProductComposition = $e['compositionOf'];
+
+		$cItemComposition = Item::model()
+			->select(ItemElement::getSelection())
+			->whereFarm($e['farm'])
+			->whereProduct($eProductComposition)
+			->whereDeliveredAt('>=', $e['deliveredAt'])
+			->whereDeliveredAt('<=', $e['compositionEndAt'], if: $e['compositionEndAt'] !== NULL)
+			->getCollection();
+
+		if($cItemComposition->empty()) {
+			return;
+		}
+
+		Item::model()
+			->whereSale('IN', $cItemComposition->getColumn('sale'))
+			->whereIngredientOf('IN', $cItemComposition)
+			->delete();
+
+		$cItemIngredient = new \Collection();
+
+		foreach($cItemComposition as $eItemComposition) {
+			ItemLib::buildIngredients($cItemIngredient, $eItemComposition, $cItemCopy);
+		}
+
+		Item::model()->insert($cItemIngredient);
+
+
+	}
+
+	/**
+	 * Modifie ou supprime une composition existante
+	 */
 	public static function reorderComposition(Sale $e): void {
 
 		$cSale = Sale::model()
@@ -746,12 +783,6 @@ class SaleLib extends SaleCrud {
 
 			$newItems['status'] = $e['preparationStatus'];
 
-			if($e['preparationStatus'] === Sale::SELLING) {
-
-				MarketLib::updateSaleMarket($e);
-
-			}
-
 		}
 
 		if(in_array('shopDate', $properties)) {
@@ -777,10 +808,10 @@ class SaleLib extends SaleCrud {
 
 		if($updatePreparationStatus) {
 
-			// Mise à jour des ingrédients au changement de statut sur les produits composés
-			self::updateIngredients($e);
-
-			if($e['marketParent']->notEmpty()) {
+			if(
+				$e['preparationStatus'] === Sale::SELLING or
+				$e['marketParent']->notEmpty()
+			) {
 				MarketLib::updateSaleMarket($e['marketParent']);
 			}
 
@@ -925,78 +956,36 @@ class SaleLib extends SaleCrud {
 			return $cItem;
 		}
 
-		$isDelivered = ($cItem->first()['status'] === Sale::DELIVERED);
+		$cItemIngredient = new \Collection();
+		$cItemMain = new \Collection();
 
-		if($isDelivered) {
+		foreach($cItem as $key => $eItem) {
 
-			$cItemIngredient = new \Collection();
-			$cItemMain = new \Collection();
+			if($eItem['ingredientOf']->empty()) {
 
-			foreach($cItem as $key => $eItem) {
-
-				if($eItem['ingredientOf']->empty()) {
-
-					$cItemMain[$key] = $eItem;
-
-					if($eItem['productComposition']) {
-
-						if($public === FALSE or $eItem['product']['compositionVisibility'] === Product::PUBLIC) {
-							$cItemIngredient[$eItem['id']] = new \Collection();
-							$cItemMain[$key]['cItemIngredient'] = $cItemIngredient[$eItem['id']];
-						} else {
-							$cItemMain[$key]['productComposition'] = FALSE;
-						}
-
-					}
-
-				} else {
-
-					if($cItemIngredient->offsetExists($eItem['ingredientOf']['id'])) {
-						$cItemIngredient[$eItem['ingredientOf']['id']][] = $eItem;
-					}
-				}
-
-			}
-
-			return $cItemMain;
-
-		} else {
-
-			$deliveredAt = $cItem->first()['deliveredAt'];
-
-			$cItemComposition = new \Collection();
-
-			foreach($cItem as $eItem) {
+				$cItemMain[$key] = $eItem;
 
 				if($eItem['productComposition']) {
 
 					if($public === FALSE or $eItem['product']['compositionVisibility'] === Product::PUBLIC) {
-						$cItemComposition[] = $eItem;
+						$cItemIngredient[$eItem['id']] = new \Collection();
+						$cItemMain[$key]['cItemIngredient'] = $cItemIngredient[$eItem['id']];
 					} else {
-						$eItem['productComposition'] = FALSE;
+						$cItemMain[$key]['productComposition'] = FALSE;
 					}
 
 				}
 
-			}
+			} else {
 
-			Item::model()
-				->select([
-					'cItemIngredient' => self::delegateIngredients($deliveredAt, 'product')
-				])
-				->get($cItemComposition);
-
-			foreach($cItemComposition as $eItemComposition) {
-
-				foreach($eItemComposition['cItemIngredient'] as $eItemIngredient) {
-					$eItemIngredient['number'] *= $eItemComposition['number'] * ($eItemComposition['packaging'] ?? 1);
+				if($cItemIngredient->offsetExists($eItem['ingredientOf']['id'])) {
+					$cItemIngredient[$eItem['ingredientOf']['id']][] = $eItem;
 				}
-
 			}
-
-			return $cItem;
 
 		}
+
+		return $cItemMain;
 
 	}
 
@@ -1022,76 +1011,6 @@ class SaleLib extends SaleCrud {
 
 	}
 
-	public static function updateIngredients(Sale $e): void {
-
-		Item::model()
-			->whereSale($e)
-			->whereIngredientOf('!=', NULL)
-			->delete();
-
-		if($e['preparationStatus'] === Sale::DELIVERED) {
-
-			$cItemComposition = Item::model()
-				->select(ItemElement::getSelection() + [
-					'cItemIngredient' => self::delegateIngredients($e['deliveredAt'], 'product')
-				])
-				->whereSale($e)
-				->whereProductComposition(TRUE)
-				->getCollection();
-
-			$cItemIngredient = new \Collection();
-
-			foreach($cItemComposition as $eItemComposition) {
-
-				if($eItemComposition['cItemIngredient']->empty()) {
-					continue;
-				}
-
-				$ingredientsPrice = $eItemComposition['cItemIngredient']->sum('price');
-
-				$ratio = ($ingredientsPrice > 0) ? $eItemComposition['price'] / $ingredientsPrice : NULL;
-
-				$cItemCopy = $eItemComposition['cItemIngredient'];
-
-				foreach($cItemCopy as $eItemCopy) {
-
-					$copyPrice = ($ratio !== NULL) ? $eItemCopy['price'] * $ratio : $eItemComposition['price'] / $cItemCopy->count();
-					$copyPriceExcludingVat = ($ratio !== NULL) ? $eItemCopy['priceExcludingVat'] * $ratio : $eItemComposition['priceExcludingVat'] / $cItemCopy->count();
-					$copyPackaging = $eItemCopy['packaging'];
-					$copyNumber = $eItemCopy['number'] * $eItemComposition['number'] * ($eItemComposition['packaging'] ?? 1);
-
-					$eItemIngredient = (clone $eItemComposition);
-					$eItemIngredient->merge([
-					  'id' => NULL,
-					  'name' => $eItemCopy['name'],
-					  'product' => $eItemCopy['product'],
-					  'productComposition' => FALSE,
-					  'ingredientOf' => $eItemComposition,
-					  'quality' => $eItemCopy['quality'],
-					  'parent' => new Item(),
-					  'packaging' => $eItemCopy['packaging'],
-					  'unit' => $eItemCopy['unit'],
-					  'unitPrice' => ($copyNumber > 0 and $copyPackaging > 0) ? $copyPrice / $copyNumber / $copyPackaging : $eItemCopy['unitPrice'],
-					  'number' => $copyNumber,
-					  'price' => $copyPrice,
-					  'priceExcludingVat' => $copyPriceExcludingVat,
-					  'vatRate' => $eItemCopy['vatRate'],
-					  'stats' => $eItemComposition['stats']
-					]);
-
-					$cItemIngredient[] = $eItemIngredient;
-
-
-				}
-
-			}
-
-			Item::model()->insert($cItemIngredient);
-
-		}
-
-	}
-
 	public static function countItems(Sale $e): int {
 
 		return Item::model()
@@ -1109,10 +1028,14 @@ class SaleLib extends SaleCrud {
 		$e->expects(['farm', 'taxes', 'shippingVatRate', 'shippingVatFixed']);
 
 		$cItem = Item::model()
-			->select(['price', 'vatRate', 'quality'])
+			->select(ItemElement::getSelection())
 			->whereSale($e)
 			->whereIngredientOf(NULL)
 			->getCollection();
+
+		if($e['compositionOf']->notEmpty()) {
+			self::recalculateComposition($e, $cItem);
+		}
 
 		// Plus rien dans la vente
 		if($cItem->empty()) {

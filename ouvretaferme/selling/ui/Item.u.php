@@ -333,7 +333,9 @@ class ItemUi {
 
 							$h .= '</tr>';
 
-							$h .= $this->getComposition($eSale, $eItem, $columns);
+							if($eItem['number'] !== NULL) {
+								$h .= $this->getComposition($eSale, $eItem, $columns);
+							}
 
 						$h .= '</tbody>';
 
@@ -508,11 +510,24 @@ class ItemUi {
 
 		}
 
+		$title = $date ?
+			s("Commandes pour le {value}", lcfirst(\util\DateUi::getDayName(date('N', strtotime($date)))).' '.\util\DateUi::textual($date, \util\DateUi::DAY_MONTH)) :
+			s("Commandes sélectionnées");
+
+		if(
+			$ccItemProduct->contains(fn($eItem) => $eItem['containsComposition'] or $eItem['containsIngredient'], depth: 2)
+		) {
+			$header = '<div style="display: flex; justify-content: space-between; align-items: center">';
+				$header .= '<h2 class="panel-title">'.$title.'</h2>';
+				$header .= SaleUi::getCompositionSwitch($eFarm, 'btn-outline-primary');
+			$header .= '</div>';
+		} else {
+			$header = '<h2 class="panel-title">'.$title.'</h2>';
+		}
+
 		return new \Panel(
 			id: 'panel-item-summary',
-			title: $date ?
-				s("Commandes pour le {value}", lcfirst(\util\DateUi::getDayName(date('N', strtotime($date)))).' '.\util\DateUi::textual($date, \util\DateUi::DAY_MONTH)) :
-				s("Commandes sélectionnées"),
+			header: $header,
 			body: $h
 		);
 
