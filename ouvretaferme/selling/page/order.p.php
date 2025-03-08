@@ -5,7 +5,15 @@
 	->get('/commandes/particuliers', function($data) {
 
 		$data->ccCustomer = \selling\CustomerLib::getPrivateByUser($data->eUserOnline);
-		$data->cSale = \selling\SaleLib::getByCustomers($data->ccCustomer, limit: NULL);
+		$data->cSale = \selling\SaleLib::getByCustomers($data->ccCustomer);
+
+		throw new ViewAction($data);
+
+	})
+	->get('/factures/particuliers', function($data) {
+
+		$data->ccCustomer = \selling\CustomerLib::getPrivateByUser($data->eUserOnline);
+		$data->cInvoice = \selling\InvoiceLib::getByCustomers($data->ccCustomer);
 
 		throw new ViewAction($data);
 

@@ -101,7 +101,7 @@ class OrderUi {
 
 	}
 
-	public function getListForPrivate(\Collection $cSale, bool $showFarm = TRUE): string {
+	public function getSalesForPrivate(\Collection $cSale): string {
 
 		$h = '<div class="stick-xs">';
 
@@ -110,9 +110,7 @@ class OrderUi {
 				$h .= '<thead>';
 					$h .= '<tr>';
 						$h .= '<th>'.s("Numéro").'</th>';
-						if($showFarm) {
-							$h .= '<th>'.s("Ferme").'</th>';
-						}
+						$h .= '<th>'.s("Ferme").'</th>';
 						$h .= '<th>'.s("Réception").'</th>';
 						$h .= '<th>'.s("Statut").'</th>';
 						$h .= '<th class="text-center hide-xs-down">'.s("Produits").'</th>';
@@ -134,12 +132,10 @@ class OrderUi {
 								$h .= '<a href="/commande/'.$eSale['id'].'" class="btn btn-sm '.($eSale['deliveredAt'] === currentDate() ? 'btn-primary' : 'btn-outline-primary').'">'.$eSale->getNumber().'</a>';
 							$h .= '</td>';
 
-							if($showFarm) {
-								$h .= '<td>';
-									$h .= '<span class="hide-xs-down">'.\farm\FarmUi::getVignette($eSale['farm'], '2rem').'&nbsp;&nbsp;</span>';
-									$h .= \farm\FarmUi::websiteLink($eSale['farm']);
-								$h .= '</td>';
-							}
+							$h .= '<td>';
+								$h .= '<span class="hide-xs-down">'.\farm\FarmUi::getVignette($eSale['farm'], '2rem').'&nbsp;&nbsp;</span>';
+								$h .= \farm\FarmUi::websiteLink($eSale['farm']);
+							$h .= '</td>';
 
 							$h .= '<td class="sale-item-delivery">';
 								$h .= '<div>';
@@ -181,7 +177,71 @@ class OrderUi {
 
 	}
 
-	public function getListForPro(Customer $eCustomer, \Collection $cSale): string {
+	public function getInvoicesForPrivate(\Collection $cInvoice): string {
+
+		$h = '<div class="stick-xs">';
+
+			$h .= '<table class="tr-even">';
+
+				$h .= '<thead>';
+					$h .= '<tr>';
+						$h .= '<th></th>';
+						$h .= '<th>'.s("Ferme").'</th>';
+						$h .= '<th class="text-center">'.s("Date").'</th>';
+						$h .= '<th class="text-end">'.s("Montant").'</th>';
+						$h .= '<th></th>';
+					$h .= '</tr>';
+				$h .= '</thead>';
+
+				$h .= '<tbody>';
+
+					foreach($cInvoice as $eInvoice) {
+
+						$h .= '<tr>';
+
+							$h .= '<td class="text-center td-min-content">';
+								if($eInvoice['content']->empty()) {
+									$h .= '<span class="btn disabled">'.encode($eInvoice['name']).'</span>';
+								} else {
+									$h .= InvoiceUi::link($eInvoice);
+								}
+							$h .= '</td>';
+
+							$h .= '<td>';
+								$h .= '<span class="hide-xs-down">'.\farm\FarmUi::getVignette($eInvoice['farm'], '2rem').'&nbsp;&nbsp;</span>';
+								$h .= \farm\FarmUi::websiteLink($eInvoice['farm']);
+							$h .= '</td>';
+
+							$h .= '<td class="text-center">';
+								$h .= \util\DateUi::numeric($eInvoice['date']);
+							$h .= '</td>';
+
+							$h .= '<td class="text-end td-min-content">';
+								$h .= SaleUi::getTotal($eInvoice);
+							$h .= '</td>';
+
+							$h .= '<td class="text-end">';
+
+								if($eInvoice['content']->notEmpty()) {
+									$h .= '<a href="'.InvoiceUi::url($eInvoice).'" data-ajax-navigation="never" class="btn btn-outline-secondary">'.\Asset::icon('download').' '.s("Télécharger").'</a> ';
+								}
+							$h .= '</td>';
+
+						$h .= '</tr>';
+
+					}
+
+				$h .= '</tbody>';
+
+			$h .= '</table>';
+
+		$h .= '</div>';
+
+		return $h;
+
+	}
+
+	public function getForPro(Customer $eCustomer, \Collection $cSale): string {
 
 		$h = '<div class="tabs-h" id="order-pro" onrender="'.encode('Lime.Tab.restore(this, "list")').'">';
 

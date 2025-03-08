@@ -490,7 +490,7 @@ class CustomerUi {
 
 	}
 
-	public function getHome(\Collection $cCustomerPro, \Collection $cShop, \Collection $cSale): string {
+	public function getHome(\Collection $cCustomerPro, \Collection $cShop, \Collection $cSale, \Collection $cInvoice): string {
 
 		$h = '';
 
@@ -511,7 +511,6 @@ class CustomerUi {
 
 		}
 
-
 		if($cSale->notEmpty()) {
 
 			$h .= '<h2>';
@@ -521,12 +520,35 @@ class CustomerUi {
 				}
 			$h .= '</h2>';
 
-			$h .= new \selling\OrderUi()->getListForPrivate($cSale);
+			$h .= new \selling\OrderUi()->getSalesForPrivate($cSale);
 
 			if($cSale->count() === 5) {
 
 				$h .= '<div>';
 					$h .= '<a href="/commandes/particuliers" class="btn btn-secondary">'.\Asset::icon('search').' '.s("Toutes mes commandes").'</a>';
+				$h .= '</div>';
+
+			}
+
+			$h .= '<br/>';
+
+		}
+
+		if($cInvoice->notEmpty()) {
+
+			$h .= '<h2>';
+				$h .= s("Mes dernières factures");
+				if($cCustomerPro->notEmpty()) {
+					$h .= ' <small class="color-muted">'.s("en tant que particulier").'</small>';
+				}
+			$h .= '</h2>';
+
+			$h .= new \selling\OrderUi()->getInvoicesForPrivate($cInvoice);
+
+			if($cInvoice->count() === 5) {
+
+				$h .= '<div>';
+					$h .= '<a href="/factures/particuliers" class="btn btn-secondary">'.\Asset::icon('search').' '.s("Toutes mes factures").'</a>';
 				$h .= '</div>';
 
 			}

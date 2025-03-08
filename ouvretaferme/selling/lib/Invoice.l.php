@@ -75,6 +75,18 @@ class InvoiceLib extends InvoiceCrud {
 
 	}
 
+	public static function getByCustomers(\Collection $cCustomer, ?int $limit = NULL): \Collection {
+
+		return Invoice::model()
+			->select(Invoice::getSelection() + [
+				'farm' => ['name', 'url', 'vignette']
+			])
+			->whereCustomer('IN', $cCustomer)
+			->sort(['id' => SORT_DESC])
+			->getCollection(0, $limit);
+
+	}
+
 	public static function getPendingTransfer(\farm\Farm $eFarm, string $month): int {
 
 		return Sale::model()

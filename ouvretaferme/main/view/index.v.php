@@ -80,7 +80,7 @@ new AdaptativeView('logged', function($data, MainTemplate $t) {
 
 	}
 
-	echo new \selling\CustomerUi()->getHome($data->cCustomerPro, $data->cShop, $data->cSale);
+	echo new \selling\CustomerUi()->getHome($data->cCustomerPro, $data->cShop, $data->cSale, $data->cInvoice);
 
 });
 

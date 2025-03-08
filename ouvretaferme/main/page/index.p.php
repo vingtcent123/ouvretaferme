@@ -17,8 +17,10 @@ new Page()
 
 		if($data->cCustomerPrivate->notEmpty()) {
 			$data->cSale = \selling\SaleLib::getByCustomers($data->cCustomerPrivate, limit: 5);
+			$data->cInvoice = \selling\InvoiceLib::getByCustomers($data->cCustomerPrivate, limit: 5);
 		} else {
 			$data->cSale = new Collection();
+			$data->cInvoice = new Collection();
 		}
 
 		$data->eNews = \website\NewsLib::getLastForBlog();

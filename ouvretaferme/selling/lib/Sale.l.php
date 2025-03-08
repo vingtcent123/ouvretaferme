@@ -412,7 +412,7 @@ class SaleLib extends SaleCrud {
 
 	}
 
-	public static function getByCustomers(\Collection $cCustomer, ?int $limit = 10): \Collection {
+	public static function getByCustomers(\Collection $cCustomer, ?int $limit = NULL): \Collection {
 
 		if($cCustomer->empty()) {
 			return new \Collection();
