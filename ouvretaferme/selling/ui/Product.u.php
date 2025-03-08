@@ -779,7 +779,7 @@ class ProductUi {
 			$h .= $form->hidden('farm', $eFarm['id']);
 			$h .= $form->hidden('composition', $eProduct['composition']);
 
-			if(LIME_ENV === 'dev' and $createFirst === FALSE) {
+			if($createFirst === FALSE) {
 
 				$tabs = '<div class="tabs-item">';
 					$tabs .= '<a data-ajax="/selling/product:create?farm='.$eFarm['id'].'" data-ajax-method="get" class="tab-item '.($eProduct['composition'] ? '' : 'selected').'">'.s("Produit simple").'</a>';
