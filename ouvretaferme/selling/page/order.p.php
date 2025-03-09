@@ -24,6 +24,7 @@
 		$data->eCustomer = \selling\CustomerLib::getByUserAndFarm($data->eUserOnline, $data->eFarm)->validate('isPro');
 
 		$data->cSale = \selling\SaleLib::getByCustomer($data->eCustomer);
+		$data->cInvoice = \selling\InvoiceLib::getByCustomer($data->eCustomer);
 
 		throw new ViewAction($data);
 

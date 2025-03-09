@@ -3,7 +3,7 @@ new AdaptativeView('/commandes/particuliers', function($data, MainTemplate $t) {
 
 	$t->title = s("Mes commandes");
 
-	echo new \selling\OrderUi()->getSalesForPrivate($data->cSale);
+	echo new \selling\OrderUi()->getSales($data->cSale, \selling\Customer::PRIVATE);
 
 });
 
@@ -11,7 +11,7 @@ new AdaptativeView('/factures/particuliers', function($data, MainTemplate $t) {
 
 	$t->title = s("Mes factures");
 
-	echo new \selling\OrderUi()->getInvoicesForPrivate($data->cInvoice);
+	echo new \selling\OrderUi()->getInvoices($data->cInvoice, \selling\Customer::PRIVATE);
 
 });
 
@@ -20,7 +20,7 @@ new AdaptativeView('/commandes/professionnels/{farm}', function($data, MainTempl
 	$t->title = s("Mes commandes");
 	$t->header = new \selling\OrderUi()->getFarmHeader($data->eCustomer['farm'], $data->eCustomer);
 
-	echo new \selling\OrderUi()->getForPro($data->eCustomer, $data->cSale);
+	echo new \selling\OrderUi()->getForPro($data->eCustomer, $data->cSale, $data->cInvoice);
 
 });
 

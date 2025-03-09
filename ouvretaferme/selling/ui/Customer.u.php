@@ -520,7 +520,7 @@ class CustomerUi {
 				}
 			$h .= '</h2>';
 
-			$h .= new \selling\OrderUi()->getSalesForPrivate($cSale);
+			$h .= new \selling\OrderUi()->getSales($cSale, Customer::PRIVATE);
 
 			if($cSale->count() === 5) {
 
@@ -543,7 +543,7 @@ class CustomerUi {
 				}
 			$h .= '</h2>';
 
-			$h .= new \selling\OrderUi()->getInvoicesForPrivate($cInvoice);
+			$h .= new \selling\OrderUi()->getInvoices($cInvoice, Customer::PRIVATE);
 
 			if($cInvoice->count() === 5) {
 

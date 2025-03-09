@@ -101,7 +101,7 @@ class OrderUi {
 
 	}
 
-	public function getSalesForPrivate(\Collection $cSale): string {
+	public function getSales(\Collection $cSale, string $type): string {
 
 		$h = '<div class="stick-xs">';
 
@@ -110,8 +110,10 @@ class OrderUi {
 				$h .= '<thead>';
 					$h .= '<tr>';
 						$h .= '<th>'.s("Numéro").'</th>';
-						$h .= '<th>'.s("Ferme").'</th>';
-						$h .= '<th>'.s("Réception").'</th>';
+						if($type === Customer::PRIVATE) {
+							$h .= '<th>'.s("Ferme").'</th>';
+						}
+						$h .= '<th>'.s("Livraison").'</th>';
 						$h .= '<th>'.s("Statut").'</th>';
 						$h .= '<th class="text-center hide-xs-down">'.s("Produits").'</th>';
 						$h .= '<th class="text-end">'.s("Montant").'</th>';
@@ -132,10 +134,12 @@ class OrderUi {
 								$h .= '<a href="/commande/'.$eSale['id'].'" class="btn btn-sm '.($eSale['deliveredAt'] === currentDate() ? 'btn-primary' : 'btn-outline-primary').'">'.$eSale->getNumber().'</a>';
 							$h .= '</td>';
 
-							$h .= '<td>';
-								$h .= '<span class="hide-xs-down">'.\farm\FarmUi::getVignette($eSale['farm'], '2rem').'&nbsp;&nbsp;</span>';
-								$h .= \farm\FarmUi::websiteLink($eSale['farm']);
-							$h .= '</td>';
+							if($type === Customer::PRIVATE) {
+								$h .= '<td>';
+									$h .= '<span class="hide-xs-down">'.\farm\FarmUi::getVignette($eSale['farm'], '2rem').'&nbsp;&nbsp;</span>';
+									$h .= \farm\FarmUi::websiteLink($eSale['farm']);
+								$h .= '</td>';
+							}
 
 							$h .= '<td class="sale-item-delivery">';
 								$h .= '<div>';
@@ -177,7 +181,7 @@ class OrderUi {
 
 	}
 
-	public function getInvoicesForPrivate(\Collection $cInvoice): string {
+	public function getInvoices(\Collection $cInvoice, string $type): string {
 
 		$h = '<div class="stick-xs">';
 
@@ -186,8 +190,10 @@ class OrderUi {
 				$h .= '<thead>';
 					$h .= '<tr>';
 						$h .= '<th></th>';
-						$h .= '<th>'.s("Ferme").'</th>';
-						$h .= '<th class="text-center">'.s("Date").'</th>';
+						if($type === Customer::PRIVATE) {
+							$h .= '<th>'.s("Ferme").'</th>';
+						}
+						$h .= '<th>'.s("Date").'</th>';
 						$h .= '<th class="text-end">'.s("Montant").'</th>';
 						$h .= '<th></th>';
 					$h .= '</tr>';
@@ -207,12 +213,14 @@ class OrderUi {
 								}
 							$h .= '</td>';
 
-							$h .= '<td>';
-								$h .= '<span class="hide-xs-down">'.\farm\FarmUi::getVignette($eInvoice['farm'], '2rem').'&nbsp;&nbsp;</span>';
-								$h .= \farm\FarmUi::websiteLink($eInvoice['farm']);
-							$h .= '</td>';
+							if($type === Customer::PRIVATE) {
+								$h .= '<td>';
+									$h .= '<span class="hide-xs-down">'.\farm\FarmUi::getVignette($eInvoice['farm'], '2rem').'&nbsp;&nbsp;</span>';
+									$h .= \farm\FarmUi::websiteLink($eInvoice['farm']);
+								$h .= '</td>';
+							}
 
-							$h .= '<td class="text-center">';
+							$h .= '<td>';
 								$h .= \util\DateUi::numeric($eInvoice['date']);
 							$h .= '</td>';
 
@@ -241,7 +249,7 @@ class OrderUi {
 
 	}
 
-	public function getForPro(Customer $eCustomer, \Collection $cSale): string {
+	public function getForPro(Customer $eCustomer, \Collection $cSale, \Collection $cInvoice): string {
 
 		$h = '<div class="tabs-h" id="order-pro" onrender="'.encode('Lime.Tab.restore(this, "list")').'">';
 
@@ -249,13 +257,20 @@ class OrderUi {
 				$h .= '<a class="tab-item selected" data-tab="order" onclick="Lime.Tab.select(this)">';
 					$h .= s("Commandes");
 				$h .= '</a>';
+				$h .= '<a class="tab-item" data-tab="invoice" onclick="Lime.Tab.select(this)">';
+					$h .= s("Factures");
+				$h .= '</a>';
 				$h .= '<a class="tab-item" data-tab="info" onclick="Lime.Tab.select(this)">';
 					$h .= s("Coordonnées");
 				$h .= '</a>';
 			$h .= '</div>';
 
 			$h .= '<div class="tab-panel selected" data-tab="order">';
-				$h .= $this->getOrdersForPro($cSale);
+				$h .= $this->getSales($cSale, Customer::PRO);
+			$h .= '</div>';
+
+			$h .= '<div class="tab-panel" data-tab="invoice">';
+				$h .= $this->getInvoices($cInvoice, Customer::PRO);
 			$h .= '</div>';
 
 			$h .= '<div class="tab-panel" data-tab="info">';
@@ -287,76 +302,6 @@ class OrderUi {
 				$h .= '<dd>'.encode($eCustomer['email'] ?? '/').'</dd>';
 
 			$h .= '</dl>';
-		$h .= '</div>';
-
-		return $h;
-
-	}
-
-	protected function getOrdersForPro(\Collection $cSale): string {
-
-		$h = '<div class="util-overflow-sm stick-xs">';
-
-			$h .= '<table>';
-
-				$h .= '<thead>';
-					$h .= '<tr>';
-						$h .= '<th>'.s("Numéro").'</th>';
-						$h .= '<th>'.s("Livraison").'</th>';
-						$h .= '<th>'.s("Statut").'</th>';
-						$h .= '<th class="text-center hide-xs-down">'.s("Produits").'</th>';
-						$h .= '<th class="text-end">'.s("Montant").'</th>';
-					$h .= '</tr>';
-				$h .= '</thead>';
-
-				$h .= '<tbody>';
-
-					foreach($cSale as $eSale) {
-
-						$h .= '<tr class="';
-							if($eSale['preparationStatus'] === Sale::CANCELED) {
-								$h .= 'color-muted ';
-							}
-						$h .= '">';
-
-							$h .= '<td class="td-min-content text-center">';
-								$h .= '<a href="/commande/'.$eSale['id'].'" class="btn btn-sm '.($eSale['deliveredAt'] === currentDate() ? 'btn-primary' : 'btn-outline-primary').'">'.$eSale->getNumber().'</a>';
-							$h .= '</td>';
-
-							$h .= '<td class="sale-item-delivery">';
-								$h .= '<div>';
-									if($eSale['preparationStatus'] === Sale::DELIVERED) {
-										$h .= \util\DateUi::numeric($eSale['deliveredAt']);
-									} else {
-										if($eSale['deliveredAt'] !== NULL) {
-											$h .= \util\DateUi::numeric($eSale['deliveredAt']);
-										} else {
-											$h .= s("Non planifiée");
-										}
-									}
-								$h .= '</div>';
-							$h .= '</td>';
-
-							$h .= '<td class="sale-item-status">';
-								$h .= SaleUi::getPreparationStatusForCustomer($eSale);
-							$h .= '</td>';
-
-							$h .= '<td class="text-center hide-xs-down">';
-								$h .= $eSale['items'];
-							$h .= '</td>';
-
-							$h .= '<td class="sale-item-price text-end">';
-								$h .= SaleUi::getTotal($eSale);
-							$h .= '</td>';
-
-						$h .= '</tr>';
-
-					}
-
-				$h .= '</tbody>';
-
-			$h .= '</table>';
-
 		$h .= '</div>';
 
 		return $h;
