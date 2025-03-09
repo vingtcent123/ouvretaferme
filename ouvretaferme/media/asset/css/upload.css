@@ -51,11 +51,6 @@ body[data-touch="no"] .media-upload-capture {
 	opacity: 0;
 }
 
-
-.disabled {
-	color: #bbb;
-}
-
 .message-info {
 	color: #bbb;
 }

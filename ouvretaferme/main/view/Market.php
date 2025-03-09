@@ -35,7 +35,7 @@ class MarketTemplate extends BaseTemplate {
 			$h .= Asset::importHtml();
 		$h .= '</head>';
 
-		$h .= '<body data-template="'.$this->template.'" data-touch="no">';
+		$h .= '<body data-template="'.$this->getTemplate().'" data-touch="no">';
 
 			$h .= '<nav id="main-nav"></nav>';
 			$h .= '<header></header>';

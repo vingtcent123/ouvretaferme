@@ -129,7 +129,7 @@ new AdaptativeView('shop', function($data, ShopTemplate $t) {
 
 });
 
-new AdaptativeView('/shop/public/{id}:conditions', function($data, PanelTemplate $t) {
+new AdaptativeView('/shop/public/{fqn}:conditions', function($data, PanelTemplate $t) {
 
 	return new \shop\BasketUi()->getTerms($data->eShop);
 
@@ -137,10 +137,12 @@ new AdaptativeView('/shop/public/{id}:conditions', function($data, PanelTemplate
 
 new AdaptativeView('/shop/public/{fqn}/{date}/panier', function($data, ShopTemplate $t) {
 
-	$t->title = encode($data->eShop['name']);
-	$t->header = new \shop\BasketUi()->getHeader($data->eShop, $data->eDate, currentStep: \shop\BasketUi::STEP_SUMMARY);
-
 	$uiBasket = new \shop\BasketUi();
+
+	$t->title = encode($data->eShop['name']);
+	$t->header = $uiBasket->getHeader($data->eShop, $data->eDate);
+
+	echo $uiBasket->getSteps($data->eShop, $data->eDate, \shop\BasketUi::STEP_SUMMARY);
 
 	echo $uiBasket->getAccount($data->eUserOnline);
 
@@ -171,37 +173,49 @@ new JsonView('/shop/public/{fqn}/{date}/:getBasket', function($data, AjaxTemplat
 
 new AdaptativeView('/shop/public/{fqn}/{date}/livraison', function($data, ShopTemplate $t) {
 
-	$t->title = encode($data->eShop['name']);
-	$t->header = new \shop\BasketUi()->getHeader($data->eShop, $data->eDate, currentStep: \shop\BasketUi::STEP_DELIVERY);
+	$uiBasket = new \shop\BasketUi();
 
+	$t->title = encode($data->eShop['name']);
+	$t->header = $uiBasket->getHeader($data->eShop, $data->eDate);
+
+	echo $uiBasket->getSteps($data->eShop, $data->eDate, \shop\BasketUi::STEP_DELIVERY);
 
 });
 
 new AdaptativeView('authenticate', function($data, ShopTemplate $t) {
 
-	$t->title = encode($data->eShop['name']);
-	$t->header = new \shop\BasketUi()->getHeader($data->eShop, $data->eDate, currentStep: \shop\BasketUi::STEP_SUMMARY);
+	$uiBasket = new \shop\BasketUi();
 
-	echo new \shop\BasketUi()->getAuthenticateForm($data->eUserOnline, $data->eRole);
+	$t->title = encode($data->eShop['name']);
+	$t->header = $uiBasket->getHeader($data->eShop, $data->eDate);
+
+	echo $uiBasket->getSteps($data->eShop, $data->eDate, \shop\BasketUi::STEP_SUMMARY);
+	echo $uiBasket->getAuthenticateForm($data->eUserOnline, $data->eRole);
 
 });
 
 new AdaptativeView('/shop/public/{fqn}/{date}/paiement', function($data, ShopTemplate $t) {
 
-	$t->title = encode($data->eShop['name']);
-	$t->header = new \shop\BasketUi()->getHeader($data->eShop, $data->eDate, currentStep: \shop\BasketUi::STEP_PAYMENT);
+	$uiBasket = new \shop\BasketUi();
 
-	echo new \shop\BasketUi()->getOrder($data->eDate, $data->eSaleExisting);
-	echo new \shop\BasketUi()->getPayment($data->eShop, $data->eDate, $data->eCustomer, $data->eSaleExisting, $data->eStripeFarm);
+	$t->title = encode($data->eShop['name']);
+	$t->header = $uiBasket->getHeader($data->eShop, $data->eDate);
+
+	echo $uiBasket->getSteps($data->eShop, $data->eDate, \shop\BasketUi::STEP_PAYMENT);
+	echo $uiBasket->getOrder($data->eDate, $data->eSaleExisting);
+	echo $uiBasket->getPayment($data->eShop, $data->eDate, $data->eCustomer, $data->eSaleExisting, $data->eStripeFarm);
 
 });
 
 new AdaptativeView('/shop/public/{fqn}/{date}/confirmation', function($data, ShopTemplate $t) {
 
-	$t->title = encode($data->eShop['name']);
-	$t->header = new \shop\BasketUi()->getHeader($data->eShop, $data->eDate, currentContent: new \shop\BasketUi()->getPaymentStatus($data->eShop, $data->eDate, $data->eSaleExisting));
+	$uiBasket = new \shop\BasketUi();
 
-	echo new \shop\BasketUi()->getConfirmation($data->eShop, $data->eDate, $data->eSaleExisting);
+	$t->title = encode($data->eShop['name']);
+	$t->header = $uiBasket->getHeader($data->eShop, $data->eDate);
+
+	echo $uiBasket->getPaymentStatus($data->eShop, $data->eDate, $data->eSaleExisting);
+	echo $uiBasket->getConfirmation($data->eShop, $data->eDate, $data->eSaleExisting);
 
 });
 

@@ -38,6 +38,17 @@ body[data-template~="shop"] .container {
 	max-width: 1400px;
 }
 
+body[data-template~="shop-embed"] {
+	display: block;
+	overflow-y: hidden;
+}
+
+body[data-template~="shop-embed"] > nav,
+body[data-template~="shop-embed"] > header,
+body[data-template~="shop-embed"] > footer {
+	display: none;
+}
+
 .shop-title {
 	display: flex;
 	align-items: center;
@@ -185,6 +196,7 @@ body[data-template~="shop"] .container {
 .shop-header-description {
 	color: var(--primary);
 	text-align: left;
+	margin-bottom: 1rem;
 }
 
 .shop-header-description-full-link {
@@ -195,7 +207,7 @@ body[data-template~="shop"] .container {
 
 	.shop-header-description {
 		background: transparent;
-		margin: 1rem 0;
+		margin-top: 1rem;
 	}
 
 	.shop-header-description .reador > p:first-child {

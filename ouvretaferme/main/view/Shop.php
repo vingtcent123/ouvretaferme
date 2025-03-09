@@ -11,6 +11,19 @@ class ShopTemplate extends MainTemplate {
 		parent::__construct();
 
 		Asset::css('shop', 'shop.css');
+		Asset::js('shop', 'shop.js');
+
+	}
+
+	protected function getTemplate(): string {
+
+		$template = parent::getTemplate();
+
+		if(\shop\Shop::isEmbed()) {
+			$template .= ' shop-embed';
+		}
+
+		return $template;
 
 	}
 
@@ -18,6 +31,10 @@ class ShopTemplate extends MainTemplate {
 
 		$h = parent::getHead();
 		$h .= $this->getStyles();
+
+		if($this->data->embed) {
+			$this->template .= ' shop-embed';
+		}
 
 		return $h;
 

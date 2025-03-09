@@ -9,7 +9,12 @@ new Page()
 	]], function($data) {
 
 		$data = 'User-agent: *'."\n";
-		$data .= 'Disallow:'."\n";
+
+		if(\shop\Shop::isEmbed()) {
+			$data .= 'Disallow: /'."\n";
+		} else {
+			$data .= 'Disallow: '."\n";
+		}
 
 		throw new DataAction($data, 'text/txt');
 
@@ -18,27 +23,39 @@ new Page()
 new Page(function($data) {
 
 		// On vérifie les redirections
+		if(get_exists('fqn')) {
+
+			try {
+
+				$eRedirect = \shop\Redirect::model()
+					->select([
+						'shop' => ['fqn']
+					])
+					->where(GET('fqn'))
+					->get();
+
+			}
+			// Impossible de gérer les problèmes utf8 avec CONVERT() pour une raison inconnue
+			catch(Exception) {
+				$eRedirect = new \shop\Redirect();
+			}
+
+			if($eRedirect->notEmpty()) {
+				throw new PermanentRedirectAction(\shop\ShopUi::url($eRedirect['shop']));
+			}
+
+		}
+
 		try {
 
-			$eRedirect = \shop\Redirect::model()
-				->select([
-					'shop' => ['fqn']
-				])
-				->where(GET('id'))
-				->get();
+			if(get_exists('fqn')) {
+				$data->eShop = \shop\ShopLib::getByFqn(GET('fqn'));
+			} else if(get_exists('id')) {
+				$data->eShop = \shop\ShopLib::getById(GET('id'));
+			} else {
+				throw new NotExpectedAction('Missing parameter');
+			}
 
-		}
-		// Impossible de gérer les problèmes utf8 avec CONVERT() pour une raison inconnue
-		catch(Exception) {
-			$eRedirect = new \shop\Redirect();
-		}
-
-		if($eRedirect->notEmpty()) {
-			throw new PermanentRedirectAction(\shop\ShopUi::url($eRedirect['shop']));
-		}
-
-		try {
-			$data->eShop = \shop\ShopLib::getByFqn(GET('id'));
 		}
 		// Impossible de gérer les problèmes utf8 avec CONVERT() pour une raison inconnue
 		catch(Exception) {
@@ -54,15 +71,60 @@ new Page(function($data) {
 		$data->eShop['ccPoint'] = \shop\PointLib::getByFarm($data->eShop['farm']);
 
 	})
-	->get('/shop/public/{id}:conditions', function($data) {
+	->get([[
+		'/shop/public/embed.js',
+		'@priority' => 1
+	]], function($data) {
+
+		header('Content-Type: application/javascript');
+		header('Sec-Fetch-Dest: script');
+		header('Sec-Fetch-Mode: no-cors');
+		header('Sec-Fetch-Site: cross-site');
+		header('Sec-GPC: 1');
+
+		$url = \shop\ShopUi::url($data->eShop, forceEmbed: TRUE);
+
+		echo <<<END
+
+		const otfIframe = document.createElement("iframe");
+		let otfIframeHeight = 500;
+		otfIframe.src = "$url";
+		otfIframe.style.width = "1px";
+		otfIframe.style.minWidth = "100%";
+		otfIframe.style.border = "none";
+		otfIframe.style.height = otfIframeHeight +"px";
+		document.getElementById("otf-shop").appendChild(otfIframe);
+
+		window.addEventListener('message', function(e) {
+
+			 let message = e.data;
+
+			 if (
+				  message.height &&
+				  message.height !== otfIframeHeight
+			 ) {
+				  otfIframe.style.height = (message.height + 50) +'px';
+				  otfIframeHeight = message.height;
+			 }
+
+		},false);
+
+END;
+
+	})
+	->get('/shop/public/{fqn}:conditions', function($data) {
+
+		$data->embed = \shop\ShopLib::activateEmbed();
 
 		throw new ViewAction($data);
 
 	})
 	->get([
-		'/shop/public/{id}',
-		'/shop/public/{id}/{date}',
+		'/shop/public/{fqn}',
+		'/shop/public/{fqn}/{date}',
 	], function($data) {
+
+		$data->embed = \shop\ShopLib::activateEmbed();
 
 		$data->eCustomer = \shop\SaleLib::getShopCustomer($data->eShop, $data->eUserOnline);
 
@@ -126,6 +188,8 @@ new Page(function($data) {
 	});
 
 new Page(function($data) {
+
+		$data->embed = \shop\ShopLib::activateEmbed();
 
 		$data->eShop = \shop\ShopLib::getByFqn(GET('fqn'))->validate('isOpen');
 		$data->eShop['farm'] = \farm\FarmLib::getById($data->eShop['farm']);

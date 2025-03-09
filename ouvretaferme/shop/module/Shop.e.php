@@ -10,6 +10,10 @@ class Shop extends ShopElement {
 
 	}
 
+	public static function isEmbed(): bool {
+		return (LIME_HOST === \Setting::get('shop\embed'));
+	}
+
 	public function isOpen(): bool {
 
 		$this->expects(['status']);

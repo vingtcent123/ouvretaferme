@@ -85,6 +85,10 @@ class BaseTemplate extends SmartTemplate {
 
 	}
 
+	protected function getTemplate(): string {
+		return $this->template;
+	}
+
 	protected function buildHtml(string $stream): string {
 
 		$nav = $this->getNav();
@@ -100,7 +104,7 @@ class BaseTemplate extends SmartTemplate {
 			$h .= Asset::importHtml();
 		$h .= '</head>';
 
-		$h .= '<body data-template="'.$this->template.'" '.(OTF_DEMO ? 'data-demo' : '').' data-touch="no">';
+		$h .= '<body data-template="'.$this->getTemplate().'" '.(OTF_DEMO ? 'data-demo' : '').' data-touch="no">';
 
 			$h .= '<nav id="main-nav">'.$nav.'</nav>';
 			$h .= '<header>'.$header.'</header>';
@@ -122,7 +126,7 @@ class BaseTemplate extends SmartTemplate {
 		$t = new AjaxTemplate();
 		$t->copyInstructions($this);
 		
-		$t->qs('body')->setAttribute('data-template', $this->template);
+		$t->qs('body')->setAttribute('data-template', $this->getTemplate());
 		$t->qs('title')->innerHtml(encode($this->title));
 		$t->qs('meta[name="description"]')->setAttribute('content', $this->metaDescription);
 		$t->qs('meta[property="og:title"]')->setAttribute('content', $ogTitle);

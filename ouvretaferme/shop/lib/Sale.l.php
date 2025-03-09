@@ -239,6 +239,8 @@ class SaleLib {
 			throw new \Exception('Payment security');
 		}
 
+		$properties = ['preparationStatus', 'shopPoint', 'shopUpdated', 'shipping'];
+
 		$eSale['shopPoint'] = PointLib::getById($eSale['shopPoint']);
 		$eSale['shopUpdated'] = TRUE;
 		$eSale['oldStatus'] = $eSale['preparationStatus'];
@@ -248,7 +250,7 @@ class SaleLib {
 			$eSale['shopPoint']->notEmpty() and
 			$eSale['shopPoint']['type'] === Point::HOME
 		) {
-			$eSale->copyAddressFromUser($eUser);
+			$eSale->copyAddressFromUser($eUser, $properties);
 		}
 
 		// Ajout des produits
@@ -297,7 +299,7 @@ class SaleLib {
 
 			\selling\ItemLib::createCollection($cItem);
 
-			\selling\SaleLib::update($eSale, ['preparationStatus', 'shopPoint', 'shopUpdated', 'shipping']);
+			\selling\SaleLib::update($eSale, $properties);
 
 		\selling\Sale::model()->commit();
 

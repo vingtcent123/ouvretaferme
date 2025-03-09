@@ -51,7 +51,7 @@ class WebsiteTemplate extends BaseTemplate {
 			$h .= \website\DesignUi::getStyles($this->data->eWebsite);
 		$h .= '</head>';
 
-		$h .= '<body data-template="'.$this->template.'" data-text="'.$text.'" data-background="'.strtoupper($background).'" data-touch="no">';
+		$h .= '<body data-template="'.$this->getTemplate().'" data-text="'.$text.'" data-background="'.strtoupper($background).'" data-touch="no">';
 
 			$h .= '<div class="website-wrapper">';
 				$h .= '<nav id="main-nav">'.$nav.'</nav>';

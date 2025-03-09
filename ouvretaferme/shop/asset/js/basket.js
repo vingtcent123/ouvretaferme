@@ -311,11 +311,11 @@ class BasketManage {
 		qs('#shop-basket').removeHide();
 
 		if(totalArticles === 0) {
-			qs('#shop-basket-next').style.display = 'none';
-			qsa('.shop-basket-empty', node => node.style.display = 'none');
+			qs('#shop-basket-next').classList.add('disabled');
+			qsa('.shop-basket-empty', node => node.classList.add('disabled'));
 		} else {
-			qs('#shop-basket-next').style.display = 'block';
-			qsa('.shop-basket-empty', node => node.style.display = 'block');
+			qs('#shop-basket-next').classList.remove('disabled');
+			qsa('.shop-basket-empty', node => node.classList.remove('disabled'));
 		}
 
 	}

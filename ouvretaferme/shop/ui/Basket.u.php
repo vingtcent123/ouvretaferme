@@ -18,39 +18,104 @@ class BasketUi {
 
 	}
 
-	public function getHeader(Shop $eShop, Date $eDate, ?string $currentContent = NULL, ?int $currentStep = NULL): string {
+	public function getHeader(Shop $eShop, Date $eDate): string {
 
 		$h = '<div class="util-vignette mb-0">';
 
 			if($eShop['logo']) {
 
 				$h .= '<div class="hide-xs-down">';
-					$h .= '<a href="'.ShopUi::url($eShop).'">'.ShopUi::getLogo($eShop, '10rem').'</a>';
+					$h .= '<a href="'.ShopUi::url($eShop).'">'.ShopUi::getLogo($eShop, '5rem').'</a>';
 				$h .= '</div>';
 
 			}
 
-			$h .= '<div>';
+			$h .= '<div class="shop-header-content">';
 				$h .= '<div class="util-action">';
 					$h .= '<h1>';
 						$h .= encode($eShop['name']);
 					$h .= '</h1>';
 				$h .= '</div>';
-				$h .= '<div class="util-subtitle mb-1">';
-					$h .= s("Livraison du {value}", \util\DateUi::getDayName(date('N', strtotime($eDate['deliveryDate']))).' '.\util\DateUi::textual($eDate['deliveryDate']));
-				$h .= '</div>';
 
-				if($currentStep !== NULL) {
-					$h .= '<div class="basket-flow">';
-						$h .= '<h4>'.s("Les étapes de votre commande").'</h4>';
-						$h .= $this->getNav($eShop, $eDate, $currentStep);
-					$h .= '</div>';
-				}
-				if($currentContent !== NULL) {
-					$h .= $currentContent;
-				}
 			$h .= '</div>';
 
+		$h .= '</div>';
+
+		return $h;
+
+	}
+
+	public function getDeliveryTitle(Date $eDate): string {
+
+		$h = '<h2>';
+			$h .= s("Livraison du {value}", \util\DateUi::getDayName(date('N', strtotime($eDate['deliveryDate']))).' '.\util\DateUi::textual($eDate['deliveryDate']));
+		$h .= '</h2>';
+
+		return $h;
+
+	}
+
+	public function getSteps(Shop $eShop, Date $eDate, ?int $currentStep): string {
+
+		if($currentStep === NULL) {
+			return '';
+		}
+
+		$h = $this->getDeliveryTitle($eDate);
+
+		$h .= '<div class="basket-flow">';
+			$h .= '<h4>'.s("Les étapes de votre commande").'</h4>';
+
+			$steps = $this->getStepsList($eShop, $eDate);
+
+			$h .= '<nav id="shop-order-nav">';
+				$h .= '<ol>';
+
+				$getCurrent = FALSE;
+
+				foreach($steps as [$step, $text, $url]) {
+
+					if($getCurrent === FALSE and $currentStep === $step) {
+						$getCurrent = TRUE;
+					}
+
+					if(
+						$currentStep === self::STEP_CONFIRMATION or
+						$step === self::STEP_CONFIRMATION
+					) {
+						$attribute = '';
+					} else {
+						$attribute = 'href="'.$url.'"';
+					}
+
+					$h .= '<li '.($currentStep === $step ? 'current' : '').'">';
+
+						if($getCurrent === FALSE ) {
+
+							$h .= '<a class="btn '.($getCurrent === FALSE ? 'btn-secondary' : 'btn-transparent').'" '.$attribute.'>';
+								$h .= $text;
+							$h .= '</a>';
+
+						} else if($currentStep === $step) {
+
+							$h .= '<span class="btn btn-transparent">';
+								$h .= $text;
+							$h .= '</span>';
+
+						} else {
+
+							$h .= '<span class="btn btn-secondary btn-readonly" style="opacity: 0.5">';
+								$h .= $text;
+							$h .= '</a>';
+
+						}
+
+					$h .= '</li>';
+
+				}
+
+				$h .= '</ol>';
+			$h .= '</nav>';
 		$h .= '</div>';
 
 		if(
@@ -64,64 +129,7 @@ class BasketUi {
 
 	}
 
-	public function getNav(Shop $eShop, Date $eDate, int $currentStep): string {
-
-		$steps = $this->getSteps($eShop, $eDate);
-
-		$h = '<nav id="shop-order-nav">';
-			$h .= '<ol>';
-
-			$getCurrent = FALSE;
-
-			foreach($steps as [$step, $text, $url]) {
-
-				if($getCurrent === FALSE and $currentStep === $step) {
-					$getCurrent = TRUE;
-				}
-
-				if(
-					$currentStep === self::STEP_CONFIRMATION or
-					$step === self::STEP_CONFIRMATION
-				) {
-					$attribute = '';
-				} else {
-					$attribute = 'href="'.$url.'"';
-				}
-
-				$h .= '<li '.($currentStep === $step ? 'current' : '').'">';
-
-					if($getCurrent === FALSE ) {
-
-						$h .= '<a class="btn '.($getCurrent === FALSE ? 'btn-secondary' : 'btn-transparent').'" '.$attribute.'>';
-							$h .= $text;
-						$h .= '</a>';
-
-					} else if($currentStep === $step) {
-
-						$h .= '<span class="btn btn-transparent">';
-							$h .= $text;
-						$h .= '</span>';
-
-					} else {
-
-						$h .= '<span class="btn btn-secondary btn-readonly" style="opacity: 0.5">';
-							$h .= $text;
-						$h .= '</a>';
-
-					}
-
-				$h .= '</li>';
-
-			}
-
-			$h .= '</ol>';
-		$h .= '</nav>';
-
-		return $h;
-
-	}
-
-	private function getSteps(Shop $eShop, Date $eDate): array {
+	private function getStepsList(Shop $eShop, Date $eDate): array {
 
 		$steps = [];
 
@@ -702,7 +710,8 @@ class BasketUi {
 
 		}
 
-		$h = '<div class="basket-flow '.$class.'">';
+		$h = $this->getDeliveryTitle($eDate);
+		$h .= '<div class="basket-flow '.$class.'">';
 			$h .= $content;
 		$h .= '</div>';
 

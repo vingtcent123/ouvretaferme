@@ -348,10 +348,25 @@ Route::register([
 			'priority' => 5,
 			'route' => ['shop', 'public'],
 		],
+		'/shop/public/embed.js' => [
+			'request' => 'shop/public',
+			'priority' => 1,
+			'route' => ['shop', 'public', 'embed.js'],
+		],
 		'/shop/public/robots.txt' => [
 			'request' => 'shop/public',
 			'priority' => 1,
 			'route' => ['shop', 'public', 'robots.txt'],
+		],
+		'/shop/public/{fqn}' => [
+			'request' => 'shop/public',
+			'priority' => 5,
+			'route' => ['shop', 'public', '{fqn}'],
+		],
+		'/shop/public/{fqn}/{date}' => [
+			'request' => 'shop/public',
+			'priority' => 5,
+			'route' => ['shop', 'public', '{fqn}', '{date}'],
 		],
 		'/shop/public/{fqn}/{date}/confirmation' => [
 			'request' => 'shop/public',
@@ -368,20 +383,10 @@ Route::register([
 			'priority' => 5,
 			'route' => ['shop', 'public', '{fqn}', '{date}', 'panier'],
 		],
-		'/shop/public/{id}' => [
+		'/shop/public/{fqn}:conditions' => [
 			'request' => 'shop/public',
 			'priority' => 5,
-			'route' => ['shop', 'public', '{id}'],
-		],
-		'/shop/public/{id}/{date}' => [
-			'request' => 'shop/public',
-			'priority' => 5,
-			'route' => ['shop', 'public', '{id}', '{date}'],
-		],
-		'/shop/public/{id}:conditions' => [
-			'request' => 'shop/public',
-			'priority' => 5,
-			'route' => ['shop', 'public', '{id}:conditions'],
+			'route' => ['shop', 'public', '{fqn}:conditions'],
 		],
 		'/sitemap.xml' => [
 			'request' => 'main/sitemap',

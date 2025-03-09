@@ -78,7 +78,7 @@ class Sale extends SaleElement {
 		return ($this['deliveryCity'] !== NULL);
 	}
 
-	public function copyAddressFromUser(\user\User $eUser): void {
+	public function copyAddressFromUser(\user\User $eUser, &$properties = []): void {
 
 		$this->merge([
 			'deliveryStreet1' => $eUser['street1'],
@@ -86,6 +86,8 @@ class Sale extends SaleElement {
 			'deliveryPostcode' => $eUser['postcode'],
 			'deliveryCity' => $eUser['city'],
 		]);
+
+		$properties = array_merge($properties, ['deliveryStreet1', 'deliveryStreet2', 'deliveryPostcode', 'deliveryCity']);
 
 	}
 
