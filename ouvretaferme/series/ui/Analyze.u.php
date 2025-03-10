@@ -1418,7 +1418,7 @@ class AnalyzeUi {
 
 									case Task::DONE :
 										if($eTask['timesheetStart'] === NULL) {
-											$h .= \util\DateUi::numeric($eTask['updatedAt']);
+											$h .= \util\DateUi::numeric($eTask['updatedAt'] ?? $eTask['createdAt']);
 										} else {
 											if($eTask['timesheetStart'] === $eTask['timesheetStop']) {
 												$h .= \util\DateUi::numeric($eTask['timesheetStart']);
