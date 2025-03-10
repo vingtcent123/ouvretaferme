@@ -14,7 +14,7 @@ new \production\FlowPage(function($data) {
 
 		$sequence = INPUT('sequence', '?int');
 
-		$data->eSequence = \production\SequenceLib::getById($sequence);
+		$data->eSequence = \production\SequenceLib::getById($sequence)->validate('canWrite');
 
 		$data->cAction = \farm\ActionLib::getByFarm($data->eSequence['farm'], category: CATEGORIE_CULTURE);
 
