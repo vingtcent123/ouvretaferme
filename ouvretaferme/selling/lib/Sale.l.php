@@ -808,10 +808,11 @@ class SaleLib extends SaleCrud {
 
 		if($updatePreparationStatus) {
 
-			if(
-				$e['preparationStatus'] === Sale::SELLING or
-				$e['marketParent']->notEmpty()
-			) {
+			if($e['preparationStatus'] === Sale::SELLING) {
+				MarketLib::updateSaleMarket($e);
+			}
+
+			if($e['marketParent']->notEmpty()) {
 				MarketLib::updateSaleMarket($e['marketParent']);
 			}
 

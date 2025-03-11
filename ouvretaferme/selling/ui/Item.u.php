@@ -310,16 +310,19 @@ class ItemUi {
 									$eSale->isMarketPreparing() === FALSE
 								) {
 									$h .= '<td class="item-item-price text-end">';
-										$value = \util\TextUi::money($eItem['price']);
-
-										if($eItem['locked'] === Item::PRICE) {
-											$h .= '<span class="item-item-locked">'.\Asset::icon('lock-fill').'</span> '.$value;
-										} else if($eItem->canUpdate() === FALSE) {
-											$h .= $value;
+										if($eItem['price'] === NULL) {
+											$h .= '?';
 										} else {
-											$h .= '<a onclick="Merchant.show(this)" class="util-quick" data-item="'.$eItem['id'].'" data-property="price">'.$value.'</a>';
-										}
+											$value = \util\TextUi::money($eItem['price']);
 
+											if($eItem['locked'] === Item::PRICE) {
+												$h .= '<span class="item-item-locked">'.\Asset::icon('lock-fill').'</span> '.$value;
+											} else if($eItem->canUpdate() === FALSE) {
+												$h .= $value;
+											} else {
+												$h .= '<a onclick="Merchant.show(this)" class="util-quick" data-item="'.$eItem['id'].'" data-property="price">'.$value.'</a>';
+											}
+										}
 									$h .= '</td>';
 								}
 
