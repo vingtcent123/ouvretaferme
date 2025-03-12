@@ -16,6 +16,7 @@ class Shop {
 
 }
 
+
 document.addEventListener('DOMContentLoaded', () => {
 
     if(document.body.dataset.template.includes('shop-embed')) {

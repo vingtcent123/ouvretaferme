@@ -32,10 +32,6 @@ class ShopTemplate extends MainTemplate {
 		$h = parent::getHead();
 		$h .= $this->getStyles();
 
-		if($this->data->embed) {
-			$this->template .= ' shop-embed';
-		}
-
 		return $h;
 
 	}

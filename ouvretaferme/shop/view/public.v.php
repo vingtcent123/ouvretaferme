@@ -219,6 +219,20 @@ new AdaptativeView('/shop/public/{fqn}/{date}/confirmation', function($data, Sho
 
 });
 
+new AdaptativeView('/shop/public/{fqn}/{date}/:doCreatePayment', function($data, AjaxTemplate $t) {
+
+	if(
+		$data->embed !== NULL and
+		$data->payment === \selling\Sale::ONLINE_CARD
+	) {
+		$t->js()->parentLocation($data->redirect);
+	} else {
+		$t->redirect($data->redirect);
+	}
+
+
+});
+
 new AdaptativeView('/shop/public/{fqn}/{date}/:doCreateSale', function($data, AjaxTemplate $t) {
 
 	if($data->created) {

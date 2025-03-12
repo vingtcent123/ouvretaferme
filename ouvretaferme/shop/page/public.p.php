@@ -86,9 +86,41 @@ new Page(function($data) {
 
 		echo <<<END
 
+		let otfDate = null;
+		let otfPage = null;
+		
+		location.search
+			.substr(1)
+			.split("&")
+			.forEach(function(item) {
+			
+				const tmp = item.split("=");
+				
+				switch(tmp[0]) {
+					case 'otfDate' :
+						otfDate = decodeURIComponent(tmp[1])
+						break;
+					case 'otfPage' :
+						otfPage = decodeURIComponent(tmp[1])
+						break;
+				}
+				
+			});
+		
+		let url = '$url';
+			
+		if(otfDate !== null && /^\d+$/.test(otfDate)) {
+			url += '/'+ otfDate;
+			if(['confirmation', 'paiement'].includes(otfPage)) {
+				url += '/'+ otfPage;
+			}
+		}
+	
+		url = url.setArgument('parent', window.location.href);
+	
 		const otfIframe = document.createElement("iframe");
 		let otfIframeHeight = 500;
-		otfIframe.src = "$url";
+		otfIframe.src = url;
 		otfIframe.style.width = "1px";
 		otfIframe.style.minWidth = "100%";
 		otfIframe.style.border = "none";
@@ -259,8 +291,8 @@ new Page(function($data) {
 		$data->validatePayment = function() use($data) {
 
 			if(
-				$data->eSaleExisting['preparationStatus'] === \selling\Sale::BASKET and
-				$data->eSaleExisting['paymentMethod'] === NULL
+				($data->eSaleExisting['preparationStatus'] === \selling\Sale::BASKET and $data->eSaleExisting['paymentMethod'] === NULL) or
+				($data->eSaleExisting['paymentMethod'] === \selling\Sale::ONLINE_CARD and $data->eSaleExisting['paymentStatus'] === \selling\Sale::UNDEFINED)
 			) {
 				throw new RedirectAction(\shop\ShopUi::dateUrl($data->eShop, $data->eDate, 'paiement'));
 			}
@@ -336,20 +368,20 @@ new Page(function($data) {
 
 		$data->eSaleExisting['shopPoint'] = $data->eShop['ccPoint']->find(fn($ePoint) => $ePoint['id'] === $data->eSaleExisting['shopPoint']['id'], depth: 2, limit: 1, default: new \shop\Point());
 
-		$payment = POST('payment');
+		$data->payment = POST('payment');
 
-		if(in_array($payment, $data->eShop->getPayments($data->eSaleExisting['shopPoint'])) === FALSE) {
+		if(in_array($data->payment, $data->eShop->getPayments($data->eSaleExisting['shopPoint'])) === FALSE) {
 			throw new NotExpectedAction('Invalid payment for shop');
 		}
 
 		try {
-			$url = \shop\SaleLib::createPayment($payment, $data->eDate, $data->eSaleExisting);
+			$data->redirect = \shop\SaleLib::createPayment($data->payment, $data->eDate, $data->eSaleExisting);
 		} catch(Exception $e) {
 			throw new FailAction($data->eDate->canWrite() ? 'shop\Shop::payment.createOwner' : 'shop\Shop::payment.create', ['message' => $e->getMessage()]);
 		}
 
 
-		throw new RedirectAction($url);
+		throw new ViewAction($data);
 
 	})
 	->post('/shop/public/{fqn}/{date}/:getBasket', function($data) {

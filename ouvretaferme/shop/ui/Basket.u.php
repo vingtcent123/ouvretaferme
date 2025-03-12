@@ -542,7 +542,7 @@ class BasketUi {
 
 			if(
 				$eStripeFarm->empty() and
-				$payment === 'onlineCard'
+				$payment === \selling\Sale::ONLINE_CARD
 			) {
 				unset($payments[$key]);
 			}
@@ -610,9 +610,9 @@ class BasketUi {
 		$h = '<div>';
 			$h .= '<h4>';
 				$h .= match($payment) {
-					'offline' => s("Paiement avec le producteur"),
-					'onlineCard' => s("Carte Bancaire"),
-					'transfer' => s("Virement bancaire"),
+					\selling\Sale::OFFLINE => s("Paiement avec le producteur"),
+					\selling\Sale::ONLINE_CARD => s("Carte Bancaire"),
+					\selling\Sale::TRANSFER => s("Virement bancaire"),
 				};
 			$h .= '</h4>';
 
@@ -620,9 +620,9 @@ class BasketUi {
 
 				$h .= '<b>';
 					$h .= match($payment) {
-						'offline' => $eShop['paymentOfflineHow'] ? encode($eShop['paymentOfflineHow']) : s("Vous gérez le paiement de votre commande directement avec votre producteur."),
-						'onlineCard' => s("Payez maintenant votre commande en ligne avec votre carte bancaire."),
-						'transfer' => $eShop['paymentTransferHow'] ? encode($eShop['paymentTransferHow']) : s("Vous paierez plus tard votre commande par virement bancaire à réception de facture.")
+						\selling\Sale::OFFLINE => $eShop['paymentOfflineHow'] ? encode($eShop['paymentOfflineHow']) : s("Vous gérez le paiement de votre commande directement avec votre producteur."),
+						\selling\Sale::ONLINE_CARD => s("Payez maintenant votre commande en ligne avec votre carte bancaire."),
+						\selling\Sale::TRANSFER => $eShop['paymentTransferHow'] ? encode($eShop['paymentTransferHow']) : s("Vous paierez plus tard votre commande par virement bancaire à réception de facture.")
 					};
 				$h .= '</b>';
 
@@ -635,18 +635,18 @@ class BasketUi {
 
 		$h .= '<div class="shop-payment-cancel">';
 			$h .= match($payment) {
-				'offline' => $editCancel,
-				'onlineCard' => $notEditCancel,
-				'transfer' => $editCancel
+				\selling\Sale::OFFLINE => $editCancel,
+				\selling\Sale::ONLINE_CARD => $notEditCancel,
+				\selling\Sale::TRANSFER => $editCancel
 			};
 		$h .= '</div>';
 
 		$h .= '<span class="btn btn-secondary">';
 
 			$h .= match($payment) {
-				'offline' => s("Choisir le paiement avec le producteur").' ',
-				'onlineCard' => s("Payer maintenant par carte bancaire").' ',
-				'transfer' => s("Choisir le paiement par virement bancaire").' '
+				\selling\Sale::OFFLINE => s("Choisir le paiement avec le producteur").' ',
+				\selling\Sale::ONLINE_CARD => s("Payer maintenant par carte bancaire").' ',
+				\selling\Sale::TRANSFER => s("Choisir le paiement par virement bancaire").' '
 			};
 
 		$h .= '</span>';
@@ -665,13 +665,6 @@ class BasketUi {
 			case \selling\Sale::ONLINE_CARD :
 
 				switch($eSale['paymentStatus']) {
-
-					case \selling\Sale::UNDEFINED :
-						$class = 'bg-danger';
-						$content .= '<h2>'.\Asset::icon('exclamation-triangle-fill').' '.s("Votre commande n'est pas encore confirmée !").'</h2>';
-						$content .= '<p>'.s("Vous avez choisi de payer cette commande par carte bancaire, mais vous n'avez pas encore effectué le règlement.").'</p>';
-						$content .= '<a href="'.\shop\ShopUi::dateUrl($eShop, $eDate, 'paiement').'" class="btn btn-transparent">'.s("Retenter un paiement").'</a> ';
-						break;
 
 					case \selling\Sale::PAID :
 						$content .= '<h2>'.\Asset::icon('check').' '.s("Merci, votre commande est confirmée et payée !").'</h2>';

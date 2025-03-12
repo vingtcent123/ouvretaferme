@@ -314,9 +314,9 @@ class SaleLib {
 	public static function createPayment(string $payment, Date $eDate, \selling\Sale $eSale): string {
 
 		return match($payment) {
-			'onlineCard' => self::createCardPayment($eSale),
-			'offline' => self::createDirectPayment(\selling\Sale::OFFLINE, $eSale),
-			'transfer' => self::createDirectPayment(\selling\Sale::TRANSFER, $eSale)
+			\selling\Sale::ONLINE_CARD => self::createCardPayment($eSale),
+			\selling\Sale::OFFLINE => self::createDirectPayment(\selling\Sale::OFFLINE, $eSale),
+			\selling\Sale::TRANSFER => self::createDirectPayment(\selling\Sale::TRANSFER, $eSale)
 		};
 
 	}
@@ -345,13 +345,32 @@ class SaleLib {
 			]
 		];
 
-		$redirectUrl = \Lime::getProtocol().'://'.\Setting::get('shop\domain').ShopUi::dateUrl($eSale['shop'], $eSale['shopDate'], 'confirmation');
+
+		try {
+
+			if(Shop::isEmbed()) {
+
+				$url = \session\SessionLib::get('embedParent');
+				$url = \util\HttpUi::setArgument($url, 'otfDate', $eSale['shopDate']['id']);
+
+				$successUrl = \util\HttpUi::setArgument($url, 'otfPage', 'confirmation');
+				$cancelUrl = \util\HttpUi::setArgument($url, 'otfPage', 'paiement');
+
+			} else {
+				throw new \Exception();
+			}
+
+		}
+		catch(\Exception) {
+			$successUrl = \Lime::getProtocol().'://'.\Setting::get('shop\domain').ShopUi::dateUrl($eSale['shop'], $eSale['shopDate'], 'confirmation');
+			$cancelUrl = \Lime::getProtocol().'://'.\Setting::get('shop\domain').ShopUi::dateUrl($eSale['shop'], $eSale['shopDate'], 'paiement');
+		}
 
 		$arguments = [
 			'client_reference_id' => $eCustomer['id'],
 			'line_items' => $items,
-			'success_url' => $redirectUrl,
-			'cancel_url' => $redirectUrl,
+			'success_url' => $successUrl,
+			'cancel_url' => $cancelUrl,
 		];
 
 		$stripeSession = \payment\StripeLib::createCheckoutSession($eStripeFarm, $arguments);

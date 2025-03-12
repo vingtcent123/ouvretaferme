@@ -237,6 +237,10 @@ class ShopLib extends ShopCrud {
 
 		if(Shop::isEmbed()) {
 
+			if(get_exists('parent')) {
+				\session\SessionLib::set('embedParent', GET('parent'));
+			}
+
 			header('Sec-Fetch-Dest: iframe');
 			header('Sec-Fetch-Mode: navigate');
 			header('Sec-Fetch-Site: cross-site');

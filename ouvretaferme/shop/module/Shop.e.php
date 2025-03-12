@@ -77,13 +77,13 @@ class Shop extends ShopElement {
 		if($ePoint->empty()) {
 
 			if($this['paymentCard']) {
-				$payments[] = 'onlineCard';
+				$payments[] = \selling\Sale::ONLINE_CARD;
 			}
 			if($this['paymentTransfer']) {
-				$payments[] = 'transfer';
+				$payments[] = \selling\Sale::TRANSFER;
 			}
 			if($this['paymentOffline']) {
-				$payments[] = 'offline';
+				$payments[] = \selling\Sale::OFFLINE;
 			}
 
 		} else {
@@ -92,19 +92,19 @@ class Shop extends ShopElement {
 				$ePoint['paymentCard'] or
 				($ePoint['paymentCard'] === NULL and $this['paymentCard'])
 			) {
-				$payments[] = 'onlineCard';
+				$payments[] = \selling\Sale::ONLINE_CARD;
 			}
 			if(
 				$ePoint['paymentTransfer'] or
 				($ePoint['paymentTransfer'] === NULL and $this['paymentTransfer'])
 			) {
-				$payments[] = 'transfer';
+				$payments[] = \selling\Sale::TRANSFER;
 			}
 			if(
 				$ePoint['paymentOffline'] or
 				($ePoint['paymentOffline'] === NULL and $this['paymentOffline'])
 			) {
-				$payments[] = 'offline';
+				$payments[] = \selling\Sale::OFFLINE;
 			}
 
 		}
