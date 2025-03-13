@@ -434,10 +434,12 @@ new Page(function($data) {
 		}
 
 		try {
-			throw new RedirectAction(\shop\SaleLib::createPayment($data->payment, $data->eDate, $data->eSaleExisting));
+			$url = \shop\SaleLib::createPayment($data->payment, $data->eDate, $data->eSaleExisting);
 		} catch(Exception $e) {
 			throw new FailAction($data->eDate->canWrite() ? 'shop\Shop::payment.createOwner' : 'shop\Shop::payment.create', ['message' => $e->getMessage()]);
 		}
+
+		throw new RedirectAction($url);
 
 	})
 	->post('/shop/public/{fqn}/{date}/:getBasket', function($data) {
