@@ -14,8 +14,13 @@ class BasketManage {
 
 	static prefix = 'basket-';
 	static version = 'v2';
+	static json = null;
 
-	/* Fonctions génériques pour la gestion du panier en localStorage */
+	static isEmbed() {
+		return document.body.dataset.template.includes('embed');
+	}
+
+	/* Fonctions génériques pour la gestion du panier */
 	static key(dateId) {
 		return this.prefix + this.version +'-'+ dateId;
 	}
@@ -24,7 +29,9 @@ class BasketManage {
 
 		this.checkExpiration();
 
-		const basket = localStorage.getItem(this.key(dateId));
+		const basket = this.isEmbed() ?
+			this.json :
+			localStorage.getItem(this.key(dateId));
 
 		if(!basket) {
 			return (defaultJson !== null) ? defaultJson : this.newBasket();
@@ -44,16 +51,30 @@ class BasketManage {
 	}
 
 	static hasBasket(dateId) {
-		return !!localStorage.getItem(this.key(dateId));
+		return !!(
+			this.isEmbed() ?
+				this.json :
+				localStorage.getItem(this.key(dateId))
+		);
 	}
 
 	static setBasket(dateId, basket) {
-		const basketJson = JSON.stringify(basket);
-		localStorage.setItem(this.key(dateId), basketJson);
+
+		this.json = JSON.stringify(basket);
+
+		if(this.isEmbed() === false) {
+			localStorage.setItem(this.key(dateId), this.json);
+		}
+
 	}
 
 	static deleteBasket(dateId) {
-		localStorage.removeItem(this.key(dateId));
+
+		this.json = null;
+
+		if(this.isEmbed() === false) {
+			localStorage.removeItem(this.key(dateId));
+		}
 	}
 
 	static modify(dateId, basket, to) {
@@ -512,6 +533,10 @@ class BasketManage {
 	}
 
 	static checkExpiration() {
+
+		if(this.isEmbed()) {
+			return;
+		}
 
 		const time = Date.now() / 1000;
 

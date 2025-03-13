@@ -100,92 +100,9 @@ END;
 
 		echo <<<END
 
-		String.prototype.setArgument = function(name, value) {
-		
-			let location = this;
-		
-			const regex = new RegExp('([\&\?])'+ name +'=([^\&]*)', 'i');
-		
-			if(location.match(regex)) {
-		
-				location = location.replace(regex, '$1'+ name +'='+ encodeURIComponent(value));
-		
-			} else {
-		
-				location = location + (location .indexOf('?') === -1 ? '?' : '&');
-		
-				if(typeof value !== 'undefined') {
-					location = location + name +'='+ encodeURIComponent(value);
-				} else {
-					location = location + name;
-				}
-		
-			}
-		
-			return location;
-		
-		};
-
-		String.prototype.removeArgument = function(name) {
-		
-			let location = this;
-
-			const regex = new RegExp('([\&\?])'+ name.replace('[', '\\\\[').replace(']', '\\\\]') +'(=[a-z0-9/\.\%\:\\\\-\\\\\\\\+]*)*[&]?', 'gi');
-			location = location.replace(regex, '$1');
-			location = location.replace('?&', '?');
-			location = location.replace('&&', '&');
-		
-			if(
-				location.charAt(location.length - 1) === '?' ||
-				location.charAt(location.length - 1) === '&'
-			) {
-				location = location.substring(0, location.length - 1);
-			}
-		
-			return location;
-		
-		};
-
-		let otfDate = null;
-		let otfPage = null;
-		
-		location.search
-			.substr(1)
-			.split("&")
-			.forEach(function(item) {
-			
-				const tmp = item.split("=");
-				
-				switch(tmp[0]) {
-					case 'otfDate' :
-						otfDate = decodeURIComponent(tmp[1])
-						break;
-					case 'otfPage' :
-						otfPage = decodeURIComponent(tmp[1])
-						break;
-				}
-				
-			});
-		
-		let url = '$url';
-		let parent = window.location.href;
-			
-		if(otfDate !== null && /^\d+$/.test(otfDate)) {
-			url += '/'+ otfDate;
-			parent = parent.removeArgument('otfDate');
-			if(['confirmation', 'paiement'].includes(otfPage)) {
-				url += '/'+ otfPage;
-				parent = parent.removeArgument('otfPage');
-			}
-		}
-	
-		url = url.setArgument('parent', parent);
-		
-		history.replaceState(history.state, '', parent);
-	
 		const otfIframe = document.createElement("iframe");
 		let otfIframeHeight = 500;
-		otfIframe.src = url;
+		otfIframe.src = '$url';
 		otfIframe.style.width = "1px";
 		otfIframe.style.minWidth = "100%";
 		otfIframe.style.border = "none";
