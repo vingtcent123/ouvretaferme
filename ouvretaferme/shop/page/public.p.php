@@ -75,14 +75,28 @@ new Page(function($data) {
 		'/shop/public/embed.js',
 		'@priority' => 1
 	]], function($data) {
+/*
 
+		$eDate = \shop\DateLib::getMostRelevantByShop($data->eShop, one: TRUE);
+
+		$content = new \website\WidgetUi()->getShop($data->eShop, $eDate);
+		$content = str_replace("\n", "", $content);
+		$content = addcslashes($content, '\'\\');
+
+		echo <<<END
+
+		document.getElementById("otf-shop").innerHTML = '$content';
+
+END;
+
+ */
 		header('Content-Type: application/javascript');
 		header('Sec-Fetch-Dest: script');
 		header('Sec-Fetch-Mode: no-cors');
 		header('Sec-Fetch-Site: cross-site');
 		header('Sec-GPC: 1');
 
-		$url = \shop\ShopUi::url($data->eShop, forceEmbed: TRUE);
+		$url = \shop\ShopUi::url($data->eShop, force: 'embed');
 
 		echo <<<END
 
@@ -197,8 +211,6 @@ END;
 	})
 	->get('/shop/public/{fqn}:conditions', function($data) {
 
-		$data->embed = \shop\ShopLib::activateEmbed();
-
 		throw new ViewAction($data);
 
 	})
@@ -206,8 +218,6 @@ END;
 		'/shop/public/{fqn}',
 		'/shop/public/{fqn}/{date}',
 	], function($data) {
-
-		$data->embed = \shop\ShopLib::activateEmbed();
 
 		$data->eCustomer = \shop\SaleLib::getShopCustomer($data->eShop, $data->eUserOnline);
 
@@ -271,8 +281,6 @@ END;
 	});
 
 new Page(function($data) {
-
-		$data->embed = \shop\ShopLib::activateEmbed();
 
 		$data->eShop = \shop\ShopLib::getByFqn(GET('fqn'))->validate('isOpen');
 		$data->eShop['farm'] = \farm\FarmLib::getById($data->eShop['farm']);
@@ -426,13 +434,10 @@ new Page(function($data) {
 		}
 
 		try {
-			$data->redirect = \shop\SaleLib::createPayment($data->payment, $data->eDate, $data->eSaleExisting);
+			throw new RedirectAction(\shop\SaleLib::createPayment($data->payment, $data->eDate, $data->eSaleExisting));
 		} catch(Exception $e) {
 			throw new FailAction($data->eDate->canWrite() ? 'shop\Shop::payment.createOwner' : 'shop\Shop::payment.create', ['message' => $e->getMessage()]);
 		}
-
-
-		throw new ViewAction($data);
 
 	})
 	->post('/shop/public/{fqn}/{date}/:getBasket', function($data) {

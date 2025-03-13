@@ -480,17 +480,23 @@ class ShopUi {
 		return '<a href="'.self::url($eShop).'" '.($newTab ? 'target="_blank"' : '').'>'.encode($eShop['name']).'</a>';
 	}
 
-	public static function url(Shop $eShop, bool $showProtocol = TRUE, bool $forceEmbed = FALSE): string {
+	public static function url(Shop $eShop, bool $showProtocol = TRUE, ?string $force = NULL): string {
 
 		$eShop->expects(['fqn']);
 
-		return self::baseUrl($showProtocol, $forceEmbed).'/'.$eShop['fqn'];
+		return self::baseUrl($showProtocol, $force).'/'.$eShop['fqn'];
 
 	}
 
-	public static function baseUrl(bool $showProtocol = TRUE, bool $forceEmbed = FALSE): string {
+	public static function baseUrl(bool $showProtocol = TRUE, ?string $force = NULL): string {
 
-		$domain = $forceEmbed ? \Setting::get('shop\embed') : \Setting::get('shop\domain');
+		if($force === 'embed') {
+			$domain = \Setting::get('shop\embed');
+		} else if($force === 'base') {
+			$domain = \Setting::get('shop\base');
+		} else {
+			$domain = \Setting::get('shop\domain');
+		}
 
 		return $showProtocol ? match(LIME_ENV) {
 			'dev' => 'http://'.$domain,

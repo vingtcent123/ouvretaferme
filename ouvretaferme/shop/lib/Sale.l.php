@@ -346,25 +346,8 @@ class SaleLib {
 		];
 
 
-		try {
-
-			if(Shop::isEmbed()) {
-
-				$url = \session\SessionLib::get('embedParent');
-				$url = \util\HttpUi::setArgument($url, 'otfDate', $eSale['shopDate']['id']);
-
-				$successUrl = \util\HttpUi::setArgument($url, 'otfPage', 'confirmation');
-				$cancelUrl = \util\HttpUi::setArgument($url, 'otfPage', 'paiement');
-
-			} else {
-				throw new \Exception();
-			}
-
-		}
-		catch(\Exception) {
-			$successUrl = \Lime::getProtocol().'://'.\Setting::get('shop\domain').ShopUi::dateUrl($eSale['shop'], $eSale['shopDate'], 'confirmation');
-			$cancelUrl = \Lime::getProtocol().'://'.\Setting::get('shop\domain').ShopUi::dateUrl($eSale['shop'], $eSale['shopDate'], 'paiement');
-		}
+		$successUrl = \Lime::getProtocol().'://'.\Setting::get('shop\domain').ShopUi::dateUrl($eSale['shop'], $eSale['shopDate'], 'confirmation');
+		$cancelUrl = \Lime::getProtocol().'://'.\Setting::get('shop\domain').ShopUi::dateUrl($eSale['shop'], $eSale['shopDate'], 'paiement');
 
 		$arguments = [
 			'client_reference_id' => $eCustomer['id'],

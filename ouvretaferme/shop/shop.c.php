@@ -5,7 +5,8 @@ Privilege::register('shop', [
 ]);
 
 Setting::register('shop', [
-	'domain' => fn() => \shop\Shop::isEmbed() ? Setting::get('shop\embed') : 'boutique.'.Lime::getDomain(),
+	'domain' => fn() => \shop\Shop::isEmbed() ? Setting::get('shop\embed') : Setting::get('shop\base'),
+	'base' => 'boutique.'.Lime::getDomain(),
 	'embed' => 'embed.'.Lime::getDomain(),
 ]);
 ?>
