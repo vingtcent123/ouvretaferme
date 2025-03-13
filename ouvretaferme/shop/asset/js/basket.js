@@ -83,7 +83,6 @@ class BasketManage {
 
 		const pathname = location.pathname;
 		const shopAndDatePathname = pathname.substring(0, pathname.lastIndexOf('/'));
-		const shopPathname = shopAndDatePathname.substring(0, shopAndDatePathname.lastIndexOf('/'));
 
 		switch(to) {
 
@@ -222,8 +221,7 @@ class BasketManage {
 			delete basket.products[productId];
 		} else {
 			basket.products[productId] = {
-				number: newNumber,
-				numberOrdered: newNumber
+				number: newNumber
 			};
 		}
 
@@ -232,7 +230,7 @@ class BasketManage {
 		// Quand on est sur le résumé du panier, on reload le panier pour tout mettre à jour.
 		if(qs('#shop-basket-summary')) {
 
-			this.loadSummary(dateId, basket.sale, isModifying);
+			this.loadSummary(dateId, basket.sale, null, isModifying);
 
 		} else {
 
@@ -305,7 +303,7 @@ class BasketManage {
 			if(target !== null) {
 				this.updateNumber(target, number);
 			} else {
-				this.deleteBasket(dateId, productId);
+				this.deleteBasketProduct(dateId, productId);
 			}
 
 		});
@@ -342,7 +340,7 @@ class BasketManage {
 	}
 
 	/* Fonctions appelées sur la page de résumé du panier */
-	static loadSummary(dateId, saleId, isModifying) {
+	static loadSummary(dateId, saleId, products = null, isModifying = false) {
 
 		const pathname = location.pathname;
 		const shopAndDatePathname = pathname.substring(0, pathname.lastIndexOf('/'));
@@ -353,12 +351,19 @@ class BasketManage {
 			basket = this.emptyBasket(dateId);
 		}
 
+		if(products === null) {
+			products = basket.products;
+		} else {
+			history.removeArgument('products');
+			this.updateBasketProducts(dateId, products);
+		}
+
 		const modifyingArg = isModifying ? '?modify=1' : '';
 
 		new Ajax.Query()
 			.url(shopAndDatePathname +'/:getBasket'+ modifyingArg)
 			.body({
-				products: basket.products,
+				products: products,
 				date: dateId,
 			})
 			.fetch()
@@ -452,20 +457,10 @@ class BasketManage {
 
 	static deleteProduct(dateId, productId) {
 
-		this.deleteBasket(dateId, productId);
+		this.deleteBasketProduct(dateId, productId);
 
-		const basket = this.newBasket();
+		const basket = this.getBasket(dateId);
 		this.loadSummary(dateId, basket.sale);
-
-		return false;
-
-	}
-
-	static deleteBasket(dateId, productId) {
-
-		let basket = this.getBasket(dateId);
-		delete basket.products[productId];
-		this.setBasket(dateId, basket);
 
 		return false;
 
@@ -485,8 +480,8 @@ class BasketManage {
 
 		this.emptyBasket(dateId);
 
-		const location = document.location.href.removeArgument('modify');
-		window.location.href = location;
+		const newLocation = document.location.href.removeArgument('modify');
+		window.location.href = newLocation;
 
 		return false;
 
@@ -501,12 +496,44 @@ class BasketManage {
 
 	}
 
+	static updateBasketProducts(dateId, products) {
+
+		let basket = this.getBasket(dateId);
+		basket.products = products;
+		this.setBasket(dateId, basket);
+
+		return false;
+
+	}
+
+	static deleteBasketProduct(dateId, productId) {
+
+		let basket = this.getBasket(dateId);
+		delete basket.products[productId];
+
+		this.setBasket(dateId, basket);
+
+		return false;
+
+	}
+
 	static emptyBasket(dateId) {
 
 		const basket = this.newBasket();
 		this.setBasket(dateId, basket);
 
 		return basket;
+
+	}
+
+	static transfer(target, dateId) {
+
+		const products = this.getBasket(dateId).products;
+
+		let url = target.dataset.url;
+		url = url.setArgument('products', JSON.stringify(products));
+
+		window.parent.location = url;
 
 	}
 

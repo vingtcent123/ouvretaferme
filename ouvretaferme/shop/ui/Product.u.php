@@ -97,7 +97,7 @@ class ProductUi {
 
 				if(Shop::isEmbed()) {
 
-					$h .= '<a href="'.ShopUi::url($eShop).'/'.$eDate['id'].'/panier'.($isModifying ? '?modify=1' : '').'" class="btn btn-secondary" id="shop-basket-next">';
+					$h .= '<a onclick="BasketManage.transfer(this, '.$eDate['id'].')" data-url="'.ShopUi::url($eShop, force: 'base').'/'.$eDate['id'].'/panier" class="btn btn-secondary" id="shop-basket-next">';
 						$h .= '<span class="hide-sm-up">'.($isModifying ? s("Modifier") : s("Commander")).'</span>';
 						$h .= '<span class="hide-xs-down">'.($isModifying ? s("Modifier la commande") : s("Poursuivre la commande")).'</span>';
 					$h .= '</a>';

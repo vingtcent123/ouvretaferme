@@ -177,24 +177,25 @@ Setting::register('media', [
 		'f' => 'pdf',
 	],
 
+	'basePath' => '/var/www/storage',
+
 	'mediaDriver' => function () {
-
-		return new \util\XyzLib();
-
+		return new \storage\DriverLib();
 	},
 
 	// URL of the images
-	'mediaUrl' => function() { // TODO OVH : à renommer
+	'mediaUrl' => function() {
 
 		$driver = Setting::get('mediaDriver');
 
-		if($driver instanceof \util\XyzLib) {
+		if($driver instanceof \storage\DriverLib) {
 
 			if(LIME_ENV === 'dev') {
 				return 'http://media.dev-ouvretaferme.org';
+			} else {
+				return 'https://media.ouvretaferme.org';
 			}
 
-			return 'https://media.ouvretaferme.org';
 
 		}
 

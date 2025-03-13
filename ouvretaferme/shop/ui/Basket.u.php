@@ -782,7 +782,7 @@ class BasketUi {
 				$h .= 'sale: '.$eSale['id'].',';
 				$h .= 'products: {';
 					foreach ($eSale['cItem'] as $eItem) {
-						$h .= '"'.$eItem['product']['id'].'": {number: '.$eItem['number'].', numberOrdered: '.$eItem['number'].', unitPrice: '.$eItem['unitPrice'].'},';
+						$h .= '"'.$eItem['product']['id'].'": {number: '.$eItem['number'].', unitPrice: '.$eItem['unitPrice'].'},';
 					}
 					$h = substr($h, 0, -1);
 				$h .= '}';

@@ -146,7 +146,7 @@ new AdaptativeView('/shop/public/{fqn}/{date}/panier', function($data, ShopTempl
 
 	echo $uiBasket->getAccount($data->eUserOnline);
 
-	echo '<div id="shop-basket-summary" onrender="BasketManage.loadSummary('.$data->eDate['id'].', '.($data->eSaleExisting->empty() ? 'null' : $data->eSaleExisting['id']).', '.($data->isModifying ? 'true' : 'false').');"></div>';
+	echo '<div id="shop-basket-summary" '.attr('onrender', 'BasketManage.loadSummary('.$data->eDate['id'].', '.($data->eSaleExisting->empty() ? 'null' : $data->eSaleExisting['id']).', '.($data->products === NULL ? 'null' : json_encode($data->products)).', '.($data->isModifying ? 'true' : 'false').');').'></div>';
 
 	if($data->eUserOnline['phone'] === NULL) {
 		echo '<div id="shop-basket-phone">';

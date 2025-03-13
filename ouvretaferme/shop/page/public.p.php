@@ -100,9 +100,92 @@ END;
 
 		echo <<<END
 
+		String.prototype.setArgument = function(name, value) {
+		
+			let location = this;
+		
+			const regex = new RegExp('([\&\?])'+ name +'=([^\&]*)', 'i');
+		
+			if(location.match(regex)) {
+		
+				location = location.replace(regex, '$1'+ name +'='+ encodeURIComponent(value));
+		
+			} else {
+		
+				location = location + (location .indexOf('?') === -1 ? '?' : '&');
+		
+				if(typeof value !== 'undefined') {
+					location = location + name +'='+ encodeURIComponent(value);
+				} else {
+					location = location + name;
+				}
+		
+			}
+		
+			return location;
+		
+		};
+
+		String.prototype.removeArgument = function(name) {
+		
+			let location = this;
+
+			const regex = new RegExp('([\&\?])'+ name.replace('[', '\\\\[').replace(']', '\\\\]') +'(=[a-z0-9/\.\%\:\\\\-\\\\\\\\+]*)*[&]?', 'gi');
+			location = location.replace(regex, '$1');
+			location = location.replace('?&', '?');
+			location = location.replace('&&', '&');
+		
+			if(
+				location.charAt(location.length - 1) === '?' ||
+				location.charAt(location.length - 1) === '&'
+			) {
+				location = location.substring(0, location.length - 1);
+			}
+		
+			return location;
+		
+		};
+
+		let otfDate = null;
+		let otfKey = null;
+		
+		location.search
+			.substr(1)
+			.split("&")
+			.forEach(function(item) {
+			
+				const tmp = item.split("=");
+				
+				switch(tmp[0]) {
+					case 'otfDate' :
+						otfDate = decodeURIComponent(tmp[1])
+						break;
+					case 'otfKey' :
+						otfKey = decodeURIComponent(tmp[1])
+						break;
+				}
+				
+			});
+		
+		let url = '$url';
+		let parent = window.location.href;
+			
+		if(
+			otfDate !== null && /^\d+$/.test(otfDate) &&
+			otfKey !== null
+		) {
+			url += '/'+ otfDate +'/confirmation?key='+ otfKey;
+			parent = parent.removeArgument('otfDate');
+			parent = parent.removeArgument('otfKey');
+		}
+	
+		url = url.setArgument('parent', parent);
+		
+		history.replaceState(history.state, '', parent);
+	
 		const otfIframe = document.createElement("iframe");
 		let otfIframeHeight = 500;
-		otfIframe.src = '$url';
+		otfIframe.src = url;
 		otfIframe.style.width = "1px";
 		otfIframe.style.minWidth = "100%";
 		otfIframe.style.border = "none";
@@ -293,6 +376,22 @@ new Page(function($data) {
 			$data->eDate['ccPoint']->notEmpty()
 		);
 		$data->ePointSelected = \shop\PointLib::getSelected($data->eShop, $data->eDate['ccPoint'], $data->eCustomer, $data->eSaleExisting);
+
+		$data->products = NULL;
+
+		try {
+			if(get_exists('products')) {
+				$products = json_decode(GET('products'), TRUE, flags:  JSON_THROW_ON_ERROR);
+				$data->products = [];
+				foreach($products as $product => $value) {
+					$number = (float)($value['number'] ?? 0.0);
+					if($number !== 0.0) {
+						$data->products[(int)$product] = ['number' => $number];
+					}
+				}
+			}
+		} catch(Exception) {
+		}
 
 		throw new ViewAction($data);
 
