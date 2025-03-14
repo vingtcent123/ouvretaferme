@@ -56,7 +56,7 @@ class PdfLib extends PdfCrud {
 
 	public static function getContentByPdf(PdfContent $ePdfContent): ?string {
 
-		$path = \storage\ImageLib::getBasePath().'/'.new \media\PdfContentUi()->getBasenameByHash($ePdfContent['hash']);
+		$path = \storage\DriverLib::directory().'/'.new \media\PdfContentUi()->getBasenameByHash($ePdfContent['hash']);
 		return file_get_contents($path);
 
 	}
