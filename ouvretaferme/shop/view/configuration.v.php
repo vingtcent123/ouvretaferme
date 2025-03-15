@@ -2,8 +2,8 @@
 new AdaptativeView('update', function($data, FarmTemplate $t) {
 
 	$t->title = s("Paramétrer la boutique");
-	$t->tab = 'selling';
-	$t->subNav = new \farm\FarmUi()->getSellingSubNav($data->eFarm);
+	$t->tab = 'shop';
+	$t->subNav = new \farm\FarmUi()->getShopSubNav($data->eFarm);
 
 	$h = '<h1>';
 		$h .= '<a href="'.\shop\ShopUi::adminUrl($data->eFarm, $data->e).'" class="h-back">'.\Asset::icon('arrow-left').'</a>';

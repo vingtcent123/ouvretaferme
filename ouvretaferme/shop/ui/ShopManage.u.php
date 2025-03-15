@@ -69,7 +69,7 @@ class ShopManageUi {
 					$h .= '<div class="dropdown-list bg-primary">';
 						$h .= '<div class="dropdown-title">'.encode($eShopCurrent['name']).'</div>';
 						$h .= '<a href="/shop/configuration:update?id='.$eShopCurrent['id'].'" class="dropdown-item">'.s("Paramétrer la boutique").'</a>';
-						$h .= '<a href="/shop/:website?id='.$eShopCurrent['id'].'&farm='.$eFarm['id'].'" class="dropdown-item">'.s("Intégrer sur votre site internet").'</a>';
+						$h .= '<a href="/shop/:website?id='.$eShopCurrent['id'].'&farm='.$eFarm['id'].'" class="dropdown-item">'.s("Intégrer la boutique sur votre site internet").'</a>';
 						$h .= '<a href="/shop/:emails?id='.$eShopCurrent['id'].'&farm='.$eFarm['id'].'" class="dropdown-item">'.s("Obtenir les adresses e-mail des clients").'</a>';
 						if($eShopCurrent['cDate']->empty()) {
 							$h .= '<div class="dropdown-divider"></div>';

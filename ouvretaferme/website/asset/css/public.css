@@ -33,47 +33,6 @@ main a:hover {
 	opacity: 0.8;
 }
 
-div.website-widget-shop {
-	border-radius: var(--radius);
-}
-
-div.website-widget-shop > h4 {
-	padding: 0.75rem 0;
-	margin: 0 !important;
-}
-
-div.website-widget-shop > h4 a {
-	text-decoration: none;
-}
-
-div.website-widget-shop > h4 a:hover {
-	text-decoration: underline;
-}
-
-div.website-widget-shop > div.shop-header-date {
-	max-width: 100%;
-}
-
-div.website-widget-shop div.shop-header-block {
-	background-color: var(--transparent);
-}
-
-div.website-widget-shop-order {
-	padding: 0.75rem 0;
-}
-
-div.website-widget-shop-order a {
-	border: 2px solid var(--border);
-	border-radius: var(--radius);
-	padding: 0.5rem;
-	display: block;
-	text-align: center;
-	text-transform: uppercase;
-	text-decoration: none;
-	background-color: var(--transparent);
-	font-weight: bold;
-}
-
 div.website-admin {
 	position: absolute;
 	top: 1rem;
@@ -107,4 +66,25 @@ div.website-news div.website-news-anchor {
 div.website-news div.website-news-date {
 	color: var(--muted);
 	margin-bottom: 1rem;
+}
+
+
+div.website-wrapper div.website-widget-shop,
+div.website-wrapper div.website-widget-shop-order a,
+div.website-widget div.website-widget-header-block {
+	border-radius: var(--radius);
+}
+
+div.website-wrapper div.website-widget-shop div.shop-header-block {
+	background-color: var(--transparent);
+}
+
+div.website-wrapper div.website-widget-header-block,
+div.website-wrapper div.website-widget-shop-order a {
+	border: 2px solid var(--border);
+}
+
+div.website-wrapper div.website-widget-header-block,
+div.website-wrapper div.website-widget-shop-order a {
+	background-color: var(--transparent);
 }

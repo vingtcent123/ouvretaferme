@@ -132,7 +132,7 @@ class DateUi {
 
 	}
 
-	public function getDeliveryPeriod(Date $eDate, string $for = 'next'): string {
+	public function getDeliveryPeriod(Date $eDate, string $for = 'next', string $cssPrefix = 'shop'): string {
 
 		$h = '';
 
@@ -151,7 +151,7 @@ class DateUi {
 			}
 
 			$h .= '<h4>'.\Asset::icon('calendar3').'&nbsp;&nbsp;'.$title.'</h4>';
-			$h .= '<div class="shop-header-date-day">';
+			$h .= '<div class="'.$cssPrefix.'-header-date-day">';
 				$h .= \util\DateUi::getDayName(date('N', strtotime($eDate['deliveryDate']))).' '.\util\DateUi::textual($eDate['deliveryDate']).'<br/>';
 			$h .= '</div>';
 
@@ -163,11 +163,11 @@ class DateUi {
 
 	}
 
-	protected function getEmptyPeriod(): string {
+	protected function getEmptyPeriod(string $cssPrefix = 'shop'): string {
 
 		$h = '<h4>'.\Asset::icon('calendar3').'&nbsp;&nbsp;'.s("Prochaine vente").'</h4>';
 
-		$h .= '<div class="shop-header-date-content">';
+		$h .= '<div class="'.$cssPrefix.'-header-date-content">';
 			$h .= s("Date à venir bientôt !");
 		$h .= '</div>';
 

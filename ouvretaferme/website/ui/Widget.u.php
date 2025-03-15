@@ -18,13 +18,13 @@ class WidgetUi {
 
 	public function getShop(\shop\Shop $eShop, \shop\Date $eDate) {
 
-		\Asset::css('website', 'public.css');
+		\Asset::css('website', 'widget.css');
 
 		$h = '<div class="website-widget-shop">';
 			$h .= '<h4>';
 				$h .= \shop\ShopUi::link($eShop);
 			$h .= '</h4>';
-			$h .= new \shop\ShopUi()->getDateHeader($eDate);
+			$h .= new \shop\ShopUi()->getDateHeader($eDate, cssPrefix: 'website-widget');
 			if($eDate['isOrderable']) {
 				$h .= '<div class="website-widget-shop-order">';
 					$h .= '<a href="'.\shop\ShopUi::url($eShop).'">'.\Asset::icon('arrow-right-short').'  '.s("Commander en ligne").'  '.\Asset::icon('arrow-left-short').'</a>';

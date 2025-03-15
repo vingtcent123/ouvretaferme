@@ -122,14 +122,6 @@ body[data-template~="shop-embedded"] > footer {
 
 }
 
-.shop-header-block {
-	width: 100%;
-	max-width: 22rem;
-	padding: 1rem;
-	margin: 0;
-	border-radius: var(--radius);
-	border: 2px solid var(--border);
-}
 
 .shop-header-flow {
 	margin-bottom: 2rem;
@@ -162,6 +154,14 @@ body[data-template~="shop-embedded"] > footer {
 .shop-header-date-days a.selected {
 	background-color: var(--secondary);
 	color: white;
+}
+
+.shop-header-block {
+	width: 100%;
+	padding: 1rem;
+	margin: 0;
+	border-radius: var(--radius);
+	border: 2px solid var(--border);
 }
 
 .shop-header-date-day,

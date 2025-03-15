@@ -400,24 +400,28 @@ class ShopUi {
 
 	}
 
-	public function displayWebsite(Shop $eShop, Date $eDate, \farm\Farm $eFarm, \website\Website $eWebsite): \Panel {
+	public function displayWebsiteInternal(Shop $eShop, Date $eDate, \farm\Farm $eFarm, \website\Website $eWebsite): string {
+
+		$h = '<h2>'.s("Option 1").'</h2>';
+		$h .= '<h3 style="text-transform: uppercase">'.s("Intégrer sur un site internet créé avec {siteName}").'</h3>';
+		$h .= '<div class="util-block mb-3">';
 
 		if($eWebsite->empty()) {
 
-			$h = '<p class="util-info">'.s("Vous ne pouvez intégrer la boutique sur votre site internet uniquement si vous avez créé celui-ci avec <i>{siteName}</i>, ce qui n'est pas encore le cas !").'</p>';
+			$h .= '<p class="util-empty">'.s("Vous n'avez pas encore créé votre site internet avec <i>{siteName}</i> !").'</p>';
 
 			$h .= '<a href="/website/manage?id='.$eFarm['id'].'" class="btn btn-primary">'.s("Créer mon site internet").'</a>';
 
 		} else {
 
-			$h = '<p>'.s("Vous souhaitez mettre en avant cette boutique sur le site internet de votre ferme afin de permettre à vos clients de passer facilement leurs commandes :").'</p>';
+				$h .= '<p>'.s("Vous souhaitez mettre en avant cette boutique sur le site internet de votre ferme afin de permettre à vos clients de passer facilement leurs commandes :").'</p>';
 
-			$h .= '<dl class="util-presentation util-presentation-1">';
-				$h .= '<dt>'.s("Ferme").'</dt>';
-				$h .= '<dd>'.encode($eFarm['name']).'</dd>';
-				$h .= '<dt>'.s("Site internet").'</dt>';
-				$h .= '<dd>'.\website\WebsiteUi::link($eWebsite).'</dd>';
-			$h .= '</dl>';
+				$h .= '<dl class="util-presentation util-presentation-1">';
+					$h .= '<dt>'.s("Ferme").'</dt>';
+					$h .= '<dd>'.encode($eFarm['name']).'</dd>';
+					$h .= '<dt>'.s("Site internet").'</dt>';
+					$h .= '<dd>'.\website\WebsiteUi::link($eWebsite).'</dd>';
+				$h .= '</dl>';
 
 			$h .= '<br/>';
 
@@ -440,13 +444,39 @@ class ShopUi {
 
 		}
 
-		return new \Panel(
-			id: 'panel-shop-website',
-			title: s("Intégrer la boutique sur votre site internet"),
-			body: $h
-		);
+		$h .= '</div>';
+
+		return $h;
 
 	}
+
+	public function displayWebsiteExternal(Shop $eShop, Date $eDate, \farm\Farm $eFarm): string {
+return '';
+		$h = '<h2>'.s("Option 2").'</h2>';
+		$h .= '<h3 style="text-transform: uppercase">'.s("Intégrer sur un autre site internet").'</h3>';
+
+		$h .= '<h3>'.s("Intégration").'</h3>';
+		$h .= '<p>'.s("Copiez ce morceau de code sur n'importe quelle page de votre site pour y mettre en avant cette boutique :").'</p>';
+		$h .= '<code>@shop='.$eShop['id'].'</code>';
+
+		if($eDate->notEmpty()) {
+
+			$h .= '<br/>';
+
+			$h .= '<h3>'.s("Rendu").'</h3>';
+			$h .= '<p>'.s("En copiant le morceau de code ci-dessus sur une page de votre site, voici quel sera le rendu :").'</p>';
+			$h .= '<br/>';
+			$h .= '<div style="max-width: 40rem">';
+				$h .= new \website\WidgetUi()->getShop($eShop, $eDate);
+			$h .= '</div>';
+
+		}
+
+		return $h;
+
+	}
+
+
 	public function displayEmails(\farm\Farm $eFarm, array $emails): \Panel {
 
 		$eFarm->expects(['name', 'url']);
@@ -636,14 +666,14 @@ class ShopUi {
 
 	}
 
-	public function getDateHeader(Date $eDate, string $for = 'next'): string {
+	public function getDateHeader(Date $eDate, string $for = 'next', string $cssPrefix = 'shop'): string {
 
-		$h = '<div class="shop-header-date">';
+		$h = '<div class="'.$cssPrefix.'-header-date">';
 
-			$h .= '<div class="shop-header-block">';
-				$h .= new \shop\DateUi()->getDeliveryPeriod($eDate, $for);
+			$h .= '<div class="'.$cssPrefix.'-header-block">';
+				$h .= new \shop\DateUi()->getDeliveryPeriod($eDate, $for, $cssPrefix);
 			$h .= '</div>';
-			$h .= '<div class="shop-header-block shop-header-period">';
+			$h .= '<div class="'.$cssPrefix.'-header-block '.$cssPrefix.'-header-period">';
 				$h .= '<div>'.new \shop\DateUi()->getOrderPeriod($eDate).'</div>';
 			$h .= '</div>';
 
