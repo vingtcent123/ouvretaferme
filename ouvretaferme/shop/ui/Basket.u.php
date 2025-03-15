@@ -20,16 +20,13 @@ class BasketUi {
 
 	public function getHeader(Shop $eShop): string {
 
-		if($eShop['embedOnly']) {
-			return 'LIEN VERS LE SITE DE BASE';
-		}
 
 		$h = '<div class="util-vignette mb-0">';
 
 			if($eShop['logo']) {
 
 				$h .= '<div class="hide-xs-down">';
-					$h .= '<a href="'.ShopUi::url($eShop).'">'.ShopUi::getLogo($eShop, '5rem').'</a>';
+					$h .= ShopUi::getLogo($eShop, '4rem');
 				$h .= '</div>';
 
 			}
@@ -40,6 +37,7 @@ class BasketUi {
 						$h .= encode($eShop['name']);
 					$h .= '</h1>';
 				$h .= '</div>';
+
 
 			$h .= '</div>';
 
@@ -695,6 +693,14 @@ class BasketUi {
 		$h .= '<div class="basket-flow '.$class.'">';
 			$h .= $content;
 		$h .= '</div>';
+
+		if($eShop['embedOnly']) {
+			$h .= '<div class="mb-1">';
+				$h .= '<a href="'.encode($eShop['embedUrl']).'" class="btn btn-outline-secondary">'.s("Retourner sur le site du producteur").'</a>';
+			$h .= '</div>';
+		}
+
+		$h .= '<br/>';
 
 		return $h;
 

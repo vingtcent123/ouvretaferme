@@ -24,13 +24,13 @@
 	border-radius: var(--radius);
 	padding: 1rem;
 	color: white;
-	margin-bottom: 2rem;
+	margin-bottom: 1rem;
 }
 
 @media (min-width: 576px) {
 
 	.basket-flow {
-		display: inline-block;
+		max-width: max-content;
 	}
 
 }
