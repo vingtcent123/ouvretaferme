@@ -230,7 +230,7 @@ new Page(function($data) {
 				user\ConnectionLib::loadSignUp($data);
 				$data->eRole = \shop\ShopLib::getRoleForSignUp();
 
-				throw new ViewAction($data);
+				throw new ViewAction($data, ':authenticate');
 
 			}
 

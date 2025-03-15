@@ -214,7 +214,7 @@ class LegalUi {
 
 		$h .= '<div class="home-category">';
 
-			$h .= '<p>'.s("Nous ne collectons pas de données à travers ces fameux cookies, et il n'est par conséquent pas nécessaire de vous demander une autorisation.").'</p>';
+			$h .= '<p>'.s("Nous ne collectons pas de données à travers ces fameux cookies, et il n'est par conséquent pas nécessaire de vous demander l'autorisation d'en manger.").'</p>';
 
 		$h .= '</div>';
 
