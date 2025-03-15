@@ -48,6 +48,7 @@ class WebsiteUi {
 				'customText' => GET('customText'),
 				'customBackground' => GET('customBackground'),
 				'customColor' => GET('customColor'),
+				'customLinkColor' => GET('customLinkColor'),
 				'customFont' => GET('customFont'),
 				'customTitleFont' => GET('customTitleFont'),
 			]);
@@ -114,6 +115,7 @@ class WebsiteUi {
 			'customBackground' => s("Couleur d'arrière plan"),
 			'customText' => s("Couleur du texte"),
 			'customColor' => s("Couleur contrastante"),
+			'customLinkColor' => s("Couleur des liens"),
 			'customDesign' => s("Template"),
 			'customFont' => s("Police pour le texte"),
 			'customTitleFont' => s("Police pour le titre principal des pages"),
@@ -168,6 +170,11 @@ class WebsiteUi {
 
 			case 'customColor':
 				$d->labelAfter = \util\FormUi::info(s("Utilisée sur certains templates ainsi que sur les petits écrans"));
+				break;
+
+			case 'customLinkColor':
+				$d->labelAfter = \util\FormUi::info(s("À l'exception des liens du menu principal de votre site"));
+				$d->placeholder = s("Par défaut");
 				break;
 
 			case 'customTitleFont':

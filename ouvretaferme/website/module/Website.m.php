@@ -65,6 +65,7 @@ class WebsiteModel extends \ModuleModel {
 			'customDesign' => ['element32', 'website\Design', 'cast' => 'element'],
 			'customText' => ['enum', [\website\Website::BLACK, \website\Website::WHITE], 'cast' => 'enum'],
 			'customColor' => ['color', 'cast' => 'string'],
+			'customLinkColor' => ['color', 'null' => TRUE, 'cast' => 'string'],
 			'customBackground' => ['color', 'cast' => 'string'],
 			'customDisabledFooter' => ['bool', 'cast' => 'bool'],
 			'customTitleFont' => ['text8', 'cast' => 'string'],
@@ -74,7 +75,7 @@ class WebsiteModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'farm', 'internalDomain', 'domain', 'domainStatus', 'domainTry', 'logo', 'favicon', 'name', 'description', 'customDesign', 'customText', 'customColor', 'customBackground', 'customDisabledFooter', 'customTitleFont', 'customFont', 'createdAt', 'status'
+			'id', 'farm', 'internalDomain', 'domain', 'domainStatus', 'domainTry', 'logo', 'favicon', 'name', 'description', 'customDesign', 'customText', 'customColor', 'customLinkColor', 'customBackground', 'customDisabledFooter', 'customTitleFont', 'customFont', 'createdAt', 'status'
 		]);
 
 		$this->propertiesToModule += [
@@ -209,6 +210,10 @@ class WebsiteModel extends \ModuleModel {
 
 	public function whereCustomColor(...$data): WebsiteModel {
 		return $this->where('customColor', ...$data);
+	}
+
+	public function whereCustomLinkColor(...$data): WebsiteModel {
+		return $this->where('customLinkColor', ...$data);
 	}
 
 	public function whereCustomBackground(...$data): WebsiteModel {

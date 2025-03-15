@@ -44,18 +44,20 @@ class DesignUi {
 		}
 
 		$color = ($eWebsite->canWrite() and get_exists('customColor')) ? GET('customColor') : $eWebsite['customColor'];
+		$linkColor = ($eWebsite->canWrite() and get_exists('customLinkColor')) ? GET('customLinkColor') : $eWebsite['customLinkColor'];
 		$background = ($eWebsite->canWrite() and get_exists('customBackground')) ? GET('customBackground') : $eWebsite['customBackground'];
 
 		$h .= '<style>';
 		$h .= ':root {
 			--background: '.$background.';
 			--primary: '.$color.';
-			--container-max-width: '.$eWebsite['customDesign']['maxWidth'].';
-			--custom-font: '.($font ? $font['value'] : "'Open Sans', sans-serif").';
-			--custom-title-font: '.($titleFont ? $titleFont['value'] : "'Open Sans', sans-serif").';
+			--containerMaxWidth: '.$eWebsite['customDesign']['maxWidth'].';
+			--customFont: '.($font ? $font['value'] : "'Open Sans', sans-serif").';
+			--customTitleFont: '.($titleFont ? $titleFont['value'] : "'Open Sans', sans-serif").';
 			--border: '.($text === Website::BLACK ? '#8883' : '#8883').';
 			--textColor: '.($text === Website::BLACK ? 'var(--text)' : 'white').';
-			--linkColor: '.($text === Website::BLACK ? 'black' : 'white').';
+			--defaultLinkColor: '.($text === Website::BLACK ? 'black' : 'white').';
+			--linkColor: '.($linkColor ?: 'var(--defaultLinkColor)').';
 			--muted: '.($text === Website::BLACK ? '#888' : '#CCC').';
 			--transparent: '.($text === Website::BLACK ? '#FFF8' : '#0002').';
 		}';

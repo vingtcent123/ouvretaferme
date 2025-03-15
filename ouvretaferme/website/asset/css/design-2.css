@@ -27,7 +27,7 @@ html {
 }
 
 div.website-wrapper {
-	font-family: var(--custom-font);
+	font-family: var(--customFont);
 	min-height: 100vh;
 	margin: auto;
 	position: relative;
@@ -61,7 +61,7 @@ body[data-touch="no"] {
 }
 
 h1 {
-	font-family: var(--custom-title-font);
+	font-family: var(--customTitleFont);
 	font-size: 2.5rem;
 	position: relative;
 	line-height: 1.3;
@@ -78,7 +78,7 @@ h1 {
 
 header, main, footer {
 	margin: auto;
-	max-width: var(--container-max-width);
+	max-width: var(--containerMaxWidth);
 	position: relative;
 	width: 100%;
 }
@@ -212,6 +212,11 @@ ul.website-menu {
 	padding: 0;
 	margin: 0;
 	font-size: calc(1rem + 1px);
+}
+
+ul.website-menu a,
+ul.website-menu a:hover {
+	color: var(--defaultLinkColor);
 }
 
 @media (min-width: 768px) {

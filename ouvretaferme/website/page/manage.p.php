@@ -39,6 +39,6 @@ new \website\WebsitePage()
 	->doUpdate(fn($data) => throw new BackAction('website', 'Website::updated'))
 	->doUpdateProperties('doUpdateStatus', ['status'], fn() => throw new ReloadAction())
 	->doUpdateProperties('doUpdateDomainTry', ['domainTry'], fn() => throw new ReloadAction('website', 'Website::domainRetry'))
-	->doUpdateProperties('doCustomize', ['customDesign', 'customText', 'customBackground', 'customColor', 'customFont', 'customTitleFont'], fn() => throw new ReloadAction('website', 'Website::customized'))
+	->doUpdateProperties('doCustomize', ['customDesign', 'customText', 'customBackground', 'customColor', 'customLinkColor', 'customFont', 'customTitleFont'], fn() => throw new ReloadAction('website', 'Website::customized'))
 	->doDelete(fn($data) => throw new ReloadAction('website', 'Website::deleted'));
 ?>

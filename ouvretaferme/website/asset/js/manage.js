@@ -34,6 +34,7 @@ class WebsiteManage {
             .setArgument('customize', 1)
             .setArgument('customDesign', form.qs('[name="customDesign"]').value)
             .setArgument('customColor', form.qs('[name="customColor"]').value)
+            .setArgument('customLinkColor', form.qs('[name="customLinkColor"]').value)
             .setArgument('customBackground', form.qs('[name="customBackground"]').value)
             .setArgument('customText', form.qs('[name="customText"]').value)
             .setArgument('customFont', form.qs('[name="customFont"]').value)
