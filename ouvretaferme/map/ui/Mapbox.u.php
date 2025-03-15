@@ -8,7 +8,7 @@ class MapboxUi {
 		\Asset::js('map', 'cartography.js');
 		\Asset::css('map', 'cartography.css');
 
-		\Asset::jsUrl('https://npmcdn.com/@turf/turf@6.5.0/turf.min.js');
+		\Asset::lib('map', 'turf-7.2.0.min.js');
 
 		\Asset::jsUrl('https://api.mapbox.com/mapbox-gl-js/v2.14.1/mapbox-gl.js');
 		\Asset::js('map', 'mapbox.js');

@@ -4,19 +4,31 @@ new AdaptativeView('denied', function($data, ShopTemplate $t) {
 	$t->title = s("Boutique en accès restreint");
 	$t->header = '<h1>'.Asset::icon('lock-fill').' '.$t->title.'</h1>';
 
-	if(\user\ConnectionLib::getOnline()->empty()) {
+	if(\shop\Shop::isEmbed()) {
 
-		echo '<div class="util-info">';
-			echo s("Veuillez vous connecter pour accéder à cette boutique en ligne.");
+		echo '<div class="util-danger">';
+			echo s("Les boutiques en ligne restreintes à certains clients ne peuvent pas être embarquées sur un site internet.");
 		echo '</div>';
-
-		echo new \user\UserUi()->logInBasic();
 
 	} else {
 
-		echo '<div class="util-info">';
-			echo s("Vous n'avez pas accès à cette boutique en ligne, rapprochez-vous de la ferme pour corriger ce problème.");
-		echo '</div>';
+		if(\user\ConnectionLib::getOnline()->empty()) {
+
+			echo '<div class="util-block">';
+				echo '<h4>'.s("Vous n'êtes pas connecté !").'</h4>';
+				echo s("Veuillez vous connecter pour accéder à cette boutique en ligne.");
+			echo '</div>';
+
+			echo new \user\UserUi()->logInBasic();
+
+		} else {
+
+			echo '<div class="util-block">';
+				echo '<h4>'.s("Accès impossible").'</h4>';
+				echo s("Vous n'avez pas accès à cette boutique en ligne, rapprochez-vous de la ferme pour corriger ce problème.");
+			echo '</div>';
+
+		}
 
 	}
 
@@ -36,7 +48,7 @@ new AdaptativeView('shop', function($data, ShopTemplate $t) {
 
 		if($data->eShop->canWrite()) {
 
-			echo '<div class="util-warning">';
+			echo '<div class="util-danger">';
 				echo s("Cette boutique est actuellement fermée. Vos clients ne pourront pas consulter cette page tant que vous ne l'aurez pas ouverte !");
 			echo '</div>';
 
@@ -153,7 +165,7 @@ new AdaptativeView('/shop/public/{fqn}/{date}/panier', function($data, ShopTempl
 	$t->title = encode($data->eShop['name']);
 	$t->header = $uiBasket->getHeader($data->eShop);
 
-	echo $uiBasket->getSteps($data->eShop, $data->eDate, \shop\BasketUi::STEP_SUMMARY);
+	echo $uiBasket->getSteps($data->eShop, $data->eDate, $data->step);
 
 	echo $uiBasket->getAccount($data->eUserOnline);
 
@@ -182,14 +194,18 @@ new JsonView('/shop/public/{fqn}/{date}/:getBasket', function($data, AjaxTemplat
 
 });
 
-new AdaptativeView('/shop/public/{fqn}/{date}/livraison', function($data, ShopTemplate $t) {
+new AdaptativeView('basketExisting', function($data, ShopTemplate $t) {
 
 	$uiBasket = new \shop\BasketUi();
 
 	$t->title = encode($data->eShop['name']);
 	$t->header = $uiBasket->getHeader($data->eShop);
 
-	echo $uiBasket->getSteps($data->eShop, $data->eDate, \shop\BasketUi::STEP_DELIVERY);
+	echo '<div class="util-block">';
+		echo '<h4>'.s("Vous avez déjà commandé !").'</h4>';
+		echo '<p>'.s("Nous avons déjà une commande enregistrée à votre nom pour la livraison du {value} et vous ne pouvez pas en passer une autre avec le même compte client.", \util\DateUi::textual($data->eDate['deliveryDate'])).'</p>';
+		echo '<a href="'.\shop\ShopUi::confirmationUrl($data->eShop, $data->eDate).'" class="btn btn-primary">'.s("Consulter ma commande").'</a>';
+	echo '</div>';
 
 });
 
@@ -200,7 +216,11 @@ new AdaptativeView('authenticate', function($data, ShopTemplate $t) {
 	$t->title = encode($data->eShop['name']);
 	$t->header = $uiBasket->getHeader($data->eShop);
 
-	echo $uiBasket->getSteps($data->eShop, $data->eDate, \shop\BasketUi::STEP_SUMMARY);
+	if($data->step === \shop\BasketUi::STEP_SUMMARY) {
+		echo $uiBasket->getSteps($data->eShop, $data->eDate, $data->step);
+	}
+
+	echo $uiBasket->getAuthenticateText($data->step);
 	echo $uiBasket->getAuthenticateForm($data->eUserOnline, $data->eRole);
 
 });
@@ -212,7 +232,7 @@ new AdaptativeView('/shop/public/{fqn}/{date}/paiement', function($data, ShopTem
 	$t->title = encode($data->eShop['name']);
 	$t->header = $uiBasket->getHeader($data->eShop);
 
-	echo $uiBasket->getSteps($data->eShop, $data->eDate, \shop\BasketUi::STEP_PAYMENT);
+	echo $uiBasket->getSteps($data->eShop, $data->eDate, $data->step);
 	echo $uiBasket->getOrder($data->eDate, $data->eSaleExisting);
 	echo $uiBasket->getPayment($data->eShop, $data->eDate, $data->eCustomer, $data->eSaleExisting, $data->eStripeFarm);
 
@@ -227,6 +247,21 @@ new AdaptativeView('/shop/public/{fqn}/{date}/confirmation', function($data, Sho
 
 	echo $uiBasket->getPaymentStatus($data->eShop, $data->eDate, $data->eSaleExisting);
 	echo $uiBasket->getConfirmation($data->eShop, $data->eDate, $data->eSaleExisting);
+
+});
+
+new AdaptativeView('confirmationEmpty', function($data, ShopTemplate $t) {
+
+	$uiBasket = new \shop\BasketUi();
+
+	$t->title = encode($data->eShop['name']);
+	$t->header = $uiBasket->getHeader($data->eShop);
+
+	echo '<div class="util-block">';
+		echo '<h4>'.s("Aucune commande enregistrée").'</h4>';
+		echo '<p>'.s("Nous n'avons pas retrouvé de commande enregistrée à votre nom pour la livraison du {value}.", \util\DateUi::textual($data->eDate['deliveryDate'])).'</p>';
+		echo '<a href="'.\shop\ShopUi::url($data->eShop).'" class="btn btn-primary">'.s("Revenir sur la boutique").'</a>';
+	echo '</div>';
 
 });
 

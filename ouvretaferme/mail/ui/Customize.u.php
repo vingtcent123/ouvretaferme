@@ -119,6 +119,7 @@ class CustomizeUi {
 				'farm' => s("Nom de votre ferme"),
 				'amount' => s("Montant de la vente"),
 				'products' => s("Liste des produits commandés"),
+				'link' => s("Lien vers la page de confirmation de commande"),
 				'payment' => s("Moyen de paiement utilisé"),
 				'delivery' => s("Date de livraison")
 			] + (($e['type'] === Customize::SHOP_CONFIRMED_NONE) ? [] : [
@@ -285,12 +286,20 @@ class CustomizeUi {
 					$amount = \util\TextUi::money($eSale['priceIncludingVat']);
 				}
 
+				if($eSale['paymentMethod'] === \selling\Sale::ONLINE_CARD) {
+					$link = s("Vous pouvez consulter votre commande avec le lien suivant :")."\n";
+				} else {
+					$link = s("Vous pouvez consulter et modifier votre commande avec le lien suivant :")."\n";
+				}
+				$link .= \shop\ShopUi::confirmationUrl($eSale['shop'], $eSale['shopDate']);
+
 				$variables = [
 					'number' => $eSale['document'],
 					'farm' => encode($eSale['farm']['name']),
 					'amount' => $amount,
 					'products' => $products,
 					'payment' => $payment,
+					'link' => $link,
 					'delivery' => \util\DateUi::numeric($eSale['shopDate']['deliveryDate']),
 				];
 
@@ -384,6 +393,8 @@ Vous avez commandé :
 
 @payment
 
+@link
+
 Merci et à bientôt,
 @farm");
 
@@ -400,6 +411,8 @@ Vous avez commandé :
 Vous pourrez venir retirer votre commande le @delivery au point de retrait suivant :
 @address
 
+@link
+
 Merci et à bientôt,
 @farm");
 
@@ -415,6 +428,8 @@ Vous avez commandé :
 
 Votre commande vous sera livrée le @delivery à l'adresse suivante :
 @address
+
+@link
 
 Merci et à bientôt,
 @farm");

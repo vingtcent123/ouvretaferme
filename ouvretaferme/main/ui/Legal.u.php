@@ -53,6 +53,7 @@ class LegalUi {
 			$h .= '<li><a href="/presentation/faq#online">'.s("Comment utiliser le paiement par carte bancaire sur la boutique en ligne ?").'</a></li>';
 			$h .= '<li><a href="/presentation/faq#online">'.s("Existe t-il des formations à l'utilisation de {siteName} ?").'</a></li>';
 			$h .= '<li><a href="/presentation/faq#data">'.s("Comment sont gérées les données de ma ferme ?").'</a></li>';
+			$h .= '<li><a href="/presentation/faq#cookies">'.s("Pourquoi n'y a-t-il pas de bandeau <i>Youpi c'est nous les cookies</i> quand je me connecte ?").'</a></li>';
 			$h .= '<li><a href="/presentation/faq#organic">'.s("Puis-je utiliser {siteName} si ma ferme n'est pas en AB ou sous mention N&P ?").'</a></li>';
 			$h .= '<li><a href="/presentation/faq#feature">'.s("Puis-je proposer une nouvelle fonctionnalité ?").'</a></li>';
 		$h .= '</ul>';
@@ -204,6 +205,16 @@ class LegalUi {
 
 			$h .= '<p>'.s("Les données relatives à votre ferme vous appartiennent, vous en êtes seul responsable. Cela concerne votre plan de culture, votre assolement, vos ventes, vos clients... et tout autre contenu relatif à votre ferme. Personne d'autre que vous n'a accès à ces données, à moins que vous ne donniez un consentement explicite, par exemple en invitant sur {siteName} des membres de votre équipe.").'</p>';
 			$h .= '<p>'.s("Nos serveurs sont situés en France, et vos données restent donc en France. Des sauvegardes sont effectuées de manière régulière de façon à limiter le risque de perte de données.").'</p>';
+
+		$h .= '</div>';
+
+		$h .= '<div id="cookies"></div>';
+		$h .= '<br/>';
+		$h .= '<h2>'.s("Pourquoi n'y a-t-il pas de bandeau <i>Youpi c'est nous les cookies</i> quand je me connecte ?").'</h2>';
+
+		$h .= '<div class="home-category">';
+
+			$h .= '<p>'.s("Nous ne collectons pas de données à travers ces fameux cookies, et il n'est par conséquent pas nécessaire de vous demander une autorisation.").'</p>';
 
 		$h .= '</div>';
 

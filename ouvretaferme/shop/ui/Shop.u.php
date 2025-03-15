@@ -582,10 +582,6 @@ class ShopUi {
 
 	public function getHeader(Shop $eShop, \Collection $cDate): string {
 
-		if($eShop['embedOnly']) {
-			return 'LIEN VERS LE SITE DE BASE';
-		}
-
 		$h = '<div class="shop-header shop-header-'.($eShop['logo'] ? 'with' : 'without').'-logo">';
 
 			if($eShop['logo']) {
@@ -600,15 +596,19 @@ class ShopUi {
 					$h .= encode($eShop['name']);
 				$h .= '</h1>';
 
-				if($eShop['description'] !== NULL) {
-					$h .= '<div class="shop-header-description">';
-						$h .= new \editor\EditorUi()->value($eShop['description']);
-						if(substr_count($eShop['description'], '<p>') + substr_count($eShop['description'], '<ul>') > 1) {
-							$h .= '<div class="shop-header-description-full-link">';
-								$h .= '<a '.attr('onclick', 'this.parentElement.parentElement.classList.add("shop-header-description-full")').'>'.\Asset::icon('chevron-right').' '.s("Lire la suite").'</a>';
-							$h .= '</div>';
-						}
-					$h .= '</div>';
+				if($eShop['embedOnly'] === FALSE) {
+
+					if($eShop['description'] !== NULL) {
+						$h .= '<div class="shop-header-description">';
+							$h .= new \editor\EditorUi()->value($eShop['description']);
+							if(substr_count($eShop['description'], '<p>') + substr_count($eShop['description'], '<ul>') > 1) {
+								$h .= '<div class="shop-header-description-full-link">';
+									$h .= '<a '.attr('onclick', 'this.parentElement.parentElement.classList.add("shop-header-description-full")').'>'.\Asset::icon('chevron-right').' '.s("Lire la suite").'</a>';
+								$h .= '</div>';
+							}
+						$h .= '</div>';
+					}
+
 				}
 
 				if($cDate->empty()) {

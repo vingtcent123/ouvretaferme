@@ -99,7 +99,8 @@ class SaleLib extends SaleCrud {
 			$eShop->expects(['hasPayment', 'paymentOfflineHow', 'paymentTransferHow']);
 
 			$eSale['shop'] = $eShop;
-			$eSale['shopDate'] = new \shop\Shop([
+			$eSale['shopDate'] = new \shop\Date([
+				'id' => 123,
 				'deliveryDate' => currentDate(),
 				'type' => $eShop['type']
 			]);

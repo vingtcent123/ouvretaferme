@@ -187,6 +187,8 @@ END;
 
 new Page(function($data) {
 
+		$data->step = NULL;
+
 		$data->eShop = \shop\ShopLib::getByFqn(GET('fqn'))->validate('isOpen');
 		$data->eShop['farm'] = \farm\FarmLib::getById($data->eShop['farm']);
 		$data->eShop['ccPoint'] = \shop\PointLib::getByFarm($data->eShop['farm']);
@@ -228,7 +230,7 @@ new Page(function($data) {
 				user\ConnectionLib::loadSignUp($data);
 				$data->eRole = \shop\ShopLib::getRoleForSignUp();
 
-				throw new ViewAction($data, ':authenticate');
+				throw new ViewAction($data);
 
 			}
 
@@ -267,6 +269,8 @@ new Page(function($data) {
 	})
 	->get('/shop/public/{fqn}/{date}/panier', function($data) {
 
+		$data->step = \shop\BasketUi::STEP_SUMMARY;
+
 		($data->validateOrder)();
 		($data->validateLogged)();
 
@@ -274,7 +278,7 @@ new Page(function($data) {
 			$data->eSaleExisting->canBasket($data->eShop) === FALSE and
 			$data->isModifying === FALSE
 		) {
-			throw new RedirectAction(\shop\ShopUi::confirmationUrl($data->eShop, $data->eDate));
+			throw new ViewAction($data, ':basketExisting');
 		}
 
 		$data->hasPoint = (
@@ -289,6 +293,8 @@ new Page(function($data) {
 
 	})
 	->match(['get', 'post'], '/shop/public/{fqn}/{date}/paiement', function($data) {
+
+		$data->step = \shop\BasketUi::STEP_PAYMENT;
 
 		($data->validateLogged)();
 		($data->validateSale)();
@@ -313,8 +319,16 @@ new Page(function($data) {
 	})
 	->get('/shop/public/{fqn}/{date}/confirmation', function($data) {
 
+		$data->step = \shop\BasketUi::STEP_CONFIRMATION;
+
 		($data->validateLogged)();
-		($data->validateSale)();
+
+		try {
+			($data->validateSale)();
+		} catch(Action) {
+			throw new ViewAction($data, ':confirmationEmpty');
+		}
+
 		($data->validatePayment)();
 
 		$data->eSaleExisting['cItem'] = \selling\SaleLib::getItems($data->eSaleExisting, withIngredients: TRUE, public: TRUE);

@@ -7,9 +7,8 @@ class BasketUi {
 	 * Basket steps
 	 */
 	const STEP_SUMMARY = 1;
-	const STEP_DELIVERY = 2;
-	const STEP_PAYMENT = 3;
-	const STEP_CONFIRMATION = 4;
+	const STEP_PAYMENT = 2;
+	const STEP_CONFIRMATION = 3;
 
 	public function __construct() {
 
@@ -112,7 +111,7 @@ class BasketUi {
 		$h .= '</div>';
 
 		if(
-			in_array($currentStep, [BasketUi::STEP_DELIVERY, BasketUi::STEP_PAYMENT, BasketUi::STEP_SUMMARY]) and
+			in_array($currentStep, [BasketUi::STEP_PAYMENT, BasketUi::STEP_SUMMARY]) and
 			$eDate->isOrderSoonExpired()
 		) {
 			$h .= '<br/><span class="color-danger">'.\Asset::icon('exclamation-circle').' '.s("Attention, il ne vous reste plus que quelques minutes pour finaliser votre commande. Après {value}, votre panier sera supprimé et vous ne pourrez pas terminer votre achat.", \util\DateUi::numeric($eDate['orderEndAt'], \util\DateUi::TIME_HOUR_MINUTE)).'</span>';
@@ -263,14 +262,33 @@ class BasketUi {
 
 	}
 
+	public function getAuthenticateText(string $step): string {
+
+		switch($step) {
+
+			case BasketUi::STEP_SUMMARY :
+				$h = '<div class="util-block">';
+				$h .= '<h4>'.s("Votre panier est enregistré !").'</h4>';
+				$h .= '<p>'.s("Pour confirmer votre commande, veuillez vous connecter si vous avez déjà un compte. Si vous êtes un nouveau client, saisissez quelques informations qui permettront à votre producteur de vous reconnaître !").'</p>';
+				$h .= '</div>';
+				break;
+
+			case BasketUi::STEP_CONFIRMATION :
+				$h = '<div class="util-block">';
+				$h .= '<h4>'.s("Votre confirmation de commande").'</h4>';
+				$h .= '<p>'.s("Pour consulter votre confirmation de commande, veuillez vous connecter à votre compte client.").'</p>';
+				$h .= '</div>';
+				break;
+
+		}
+
+		return $h;
+
+	}
+
 	public function getAuthenticateForm(\user\User $eUser, \user\Role $eRole): string {
 
-		$h = '<div class="util-block">';
-			$h .= '<h4>'.s("Votre panier est enregistré !").'</h4>';
-			$h .= '<p>'.s("Pour confirmer votre commande, veuillez vous connecter si vous avez déjà un compte. Si vous êtes un nouveau client, saisissez quelques informations qui permettront à votre producteur de vous reconnaître !").'</p>';
-		$h .= '</div>';
-
-		$h .= '<div class="shop-identification">';
+		$h = '<div class="shop-identification">';
 			$h .= '<div>';
 				$h .= '<h2>'.s("Déjà inscrit ?").'</h2>';
 				$h .= new \user\UserUi()->logInBasic();
