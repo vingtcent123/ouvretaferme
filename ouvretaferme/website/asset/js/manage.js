@@ -50,7 +50,7 @@ document.delegateEventListener('input', '#webpage-create [name="title"]', () => 
 
 });
 
-document.delegateEventListener('input', '#website-customize [name="customBackground"], #website-customize [name="customColor"]', () => {
+document.delegateEventListener('input', '#website-customize [name="customBackground"], #website-customize [name="customColor"], #website-customize [name="customLinkColor"]', () => {
 
     WebsiteManage.updatePreview();
 
