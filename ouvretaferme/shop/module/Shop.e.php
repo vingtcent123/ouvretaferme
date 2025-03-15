@@ -11,7 +11,20 @@ class Shop extends ShopElement {
 	}
 
 	public static function isEmbed(): bool {
-		return (LIME_HOST === \Setting::get('shop\embed'));
+		return get_exists('embed');
+	}
+
+	public function validateEmbed(): void {
+
+		$this->expects(['embedOnly', 'embedUrl']);
+
+		if(
+			$this['embedOnly'] and
+			self::isEmbed() === FALSE
+		) {
+			throw new \RedirectAction($this['embedUrl']);
+		}
+
 	}
 
 	public function isOpen(): bool {

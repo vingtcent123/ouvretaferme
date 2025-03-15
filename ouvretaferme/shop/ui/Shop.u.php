@@ -482,32 +482,39 @@ class ShopUi {
 
 	public static function url(Shop $eShop, bool $showProtocol = TRUE, ?string $force = NULL): string {
 
-		$eShop->expects(['fqn']);
+		$eShop->expects(['fqn', 'embedUrl', 'embedOnly']);
 
-		return self::baseUrl($showProtocol, $force).'/'.$eShop['fqn'];
+		return self::domain($showProtocol, $force).'/'.$eShop['fqn'];
 
 	}
 
-	public static function baseUrl(bool $showProtocol = TRUE, ?string $force = NULL): string {
-
-		if($force === 'embed') {
-			$domain = \Setting::get('shop\embed');
-		} else if($force === 'base') {
-			$domain = \Setting::get('shop\base');
-		} else {
-			$domain = \Setting::get('shop\domain');
-		}
+	public static function domain(bool $showProtocol = TRUE): string {
 
 		return $showProtocol ? match(LIME_ENV) {
-			'dev' => 'http://'.$domain,
-			'prod' => SERVER('REQUEST_SCHEME', default: 'https').'://'.$domain
-		} : $domain;
+			'dev' => 'http://'.\Setting::get('shop\domain'),
+			'prod' => SERVER('REQUEST_SCHEME', default: 'https').'://'.\Setting::get('shop\domain')
+		} : \Setting::get('shop\domain');
 
 	}
 
-	public static function dateUrl(Shop $eShop, Date $eDate, ?string $page = NULL, bool $showDomain = FALSE): string {
-		$dateUrl = '/'.$eDate['id'].($page !== NULL ? '/'.$page : '');
-		return ($showDomain ? self::url($eShop) : '/'.$eShop['fqn']).$dateUrl;
+	public static function dateUrl(Shop $eShop, Date $eDate, ?string $page = NULL): string {
+		return self::url($eShop).'/'.$eDate['id'].($page !== NULL ? '/'.$page : '');
+	}
+
+	public static function basketUrl(Shop $eShop, Date $eDate): string {
+		return self::dateUrl($eShop, $eDate, 'panier');
+	}
+
+	public static function paymentUrl(Shop $eShop, Date $eDate): string {
+		return self::dateUrl($eShop, $eDate, 'paiement');
+	}
+
+	public static function confirmationUrl(Shop $eShop, Date $eDate): string {
+		return self::dateUrl($eShop, $eDate, 'confirmation');
+	}
+
+	public static function userUrl(Shop $eShop, Date $eDate, string $page): string {
+		return self::dateUrl($eShop, $eDate, $page);
 	}
 
 	public static function adminUrl(\farm\Farm $eFarm, Shop $eShop): string {
@@ -573,7 +580,11 @@ class ShopUi {
 
 	}
 
-	public function getHeader(Shop $eShop, \Collection $cDate, Date $eDateSelected): string {
+	public function getHeader(Shop $eShop, \Collection $cDate): string {
+
+		if($eShop['embedOnly']) {
+			return 'LIEN VERS LE SITE DE BASE';
+		}
 
 		$h = '<div class="shop-header shop-header-'.($eShop['logo'] ? 'with' : 'without').'-logo">';
 
@@ -620,12 +631,6 @@ class ShopUi {
 
 
 		$h .= '</div>';
-
-		if($cDate->count() > 1) {
-			$h .= '<div class="shop-header-flow">';
-				$h .= new \shop\DateUi()->getDeliveryPeriods($eShop, $cDate, $eDateSelected);
-			$h .= '</div>';
-		}
 
 		return $h;
 

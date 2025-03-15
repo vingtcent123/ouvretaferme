@@ -20,7 +20,7 @@ class ProductUi {
 
 	}
 
-	public function getList(Shop $eShop, Date $eDate, \selling\Sale $eSale, \Collection $cCategory, bool $isModifying): string {
+	public function getList(Shop $eShop, Date $eDate, \selling\Sale $eSale, \Collection $cCategory, ?array $basketProducts, bool $isModifying): string {
 
 		$eDate->expects(['cProduct']);
 
@@ -62,23 +62,20 @@ class ProductUi {
 		$h .= '</div>';
 
 		if($eDate['isOrderable'] and ($eSale->canBasket($eShop) or $isModifying)) {
-			$h .= $this->getOrderedProducts($eShop, $eDate, $eSale, $isModifying);
+			$h .= $this->getOrderedProducts($eShop, $eDate, $eSale, $basketProducts, $isModifying);
 		}
 
 		return $h;
 
 	}
 
-	protected function getOrderedProducts(Shop $eShop, Date $eDate, \selling\Sale $eSale, bool $isModifying): string {
+	protected function getOrderedProducts(Shop $eShop, Date $eDate, \selling\Sale $eSale, ?array $basketProducts, bool $isModifying): string {
 
-		$confirmEmpty = [
-			'data-confirm-normal' => s("Voulez-vous vider votre panier ?"),
-			'data-confirm-modify' => s("Votre commande n'a pas été modifiée, et votre ancienne commande reste valide. Confirmer ?"),
-		];
-		$labelEmpty = $isModifying ? s("Annuler") : s("Vider mon panier");
 
-		if($eSale->notEmpty() and $eSale['paymentMethod'] === NULL) {
-			$defaultJson = new BasketUi()->getJsonBasket($eSale);
+		if($eSale->notEmpty() and $isModifying) {
+			$defaultJson = new BasketUi()->getJsonBasket($eSale, $basketProducts);
+		} else if($basketProducts !== NULL) {
+			$defaultJson = new BasketUi()->getJsonBasket(new \selling\Sale(), $basketProducts);
 		} else {
 			$defaultJson = 'null';
 		}
@@ -97,7 +94,7 @@ class ProductUi {
 
 				if(Shop::isEmbed()) {
 
-					$h .= '<a onclick="BasketManage.transfer(this, '.$eDate['id'].')" data-url="'.ShopUi::url($eShop, force: 'base').'/'.$eDate['id'].'/panier" class="btn btn-secondary" id="shop-basket-next">';
+					$h .= '<a onclick="BasketManage.transfer(this, '.$eDate['id'].')" data-url="'.ShopUi::basketUrl($eShop, $eDate).'?products=" class="btn btn-secondary" id="shop-basket-next">';
 						$h .= '<span class="hide-sm-up">'.($isModifying ? s("Modifier") : s("Commander")).'</span>';
 						$h .= '<span class="hide-xs-down">'.($isModifying ? s("Modifier la commande") : s("Poursuivre la commande")).'</span>';
 					$h .= '</a>';
@@ -105,7 +102,7 @@ class ProductUi {
 
 				} else {
 
-					$h .= '<a href="'.ShopUi::url($eShop).'/'.$eDate['id'].'/panier'.($isModifying ? '?modify=1' : '').'" class="btn btn-secondary" id="shop-basket-next">';
+					$h .= '<a href="'.ShopUi::basketUrl($eShop, $eDate).($isModifying ? '?modify=1' : '').'" class="btn btn-secondary" id="shop-basket-next">';
 						$h .= '<span class="hide-sm-up">'.($isModifying ? s("Modifier") : s("Commander")).'</span>';
 						$h .= '<span class="hide-xs-down">'.($isModifying ? s("Modifier la commande") : s("Poursuivre la commande")).'</span>';
 					$h .= '</a>';
@@ -113,7 +110,22 @@ class ProductUi {
 				}
 
 				$h .= '&nbsp;';
-				$h .= '<a onclick="BasketManage.empty(this, '.$eDate['id'].', true)" class="shop-basket-empty btn btn-outline-secondary" '.attrs($confirmEmpty).'>';
+
+				if($isModifying) {
+
+					$confirmEmpty = s("Votre commande n'a pas été modifiée, et votre ancienne commande reste valide. Confirmer ?");
+					$labelEmpty = s("Annuler");
+					$urlEmpty = ShopUi::confirmationUrl($eShop, $eDate);
+
+				} else {
+
+					$confirmEmpty = s("Voulez-vous vider votre panier ?");
+					$labelEmpty = s("Vider mon panier");
+					$urlEmpty = ShopUi::dateUrl($eShop, $eDate).(Shop::isEmbed() ? '?embed' : '');
+
+				}
+
+				$h .= '<a onclick="BasketManage.empty(this, '.$eDate['id'].')" data-url="'.$urlEmpty.'" class="shop-basket-empty btn btn-outline-secondary" data-confirm="'.$confirmEmpty.'">';
 					$h .= '<span class="hide-sm-up" title="'.$labelEmpty.'">'.\Asset::icon('trash').'</span>';
 					$h .= '<span class="hide-xs-down">'.$labelEmpty.'</span>';
 				$h .= '</a>';

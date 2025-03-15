@@ -115,7 +115,7 @@ class DateUi {
 				$h .= '<div class="shop-header-date-days">';
 					foreach($cDate as $eDate) {
 
-						$h .= '<a href="'.ShopUi::dateUrl($eShop, $eDate).'" class="'.($eDate['id'] === $eDateSelected['id'] ? 'selected' : '').'">';
+						$h .= '<a href="'.ShopUi::dateUrl($eShop, $eDate).(Shop::isEmbed() ? '?embed' : '').'" class="'.($eDate['id'] === $eDateSelected['id'] ? 'selected' : '').'">';
 							$h .= '<div class="shop-header-date-day-name">'.\util\DateUi::getDayName(date('N', strtotime($eDate['deliveryDate']))).'</div>';
 							$h .= '<div class="shop-header-date-day-value">'.\util\DateUi::textual($eDate['deliveryDate'], \util\DateUi::DAY_MONTH).'</div>';
 						$h .= '</a>';

@@ -178,7 +178,7 @@ class WebsiteTemplate extends BaseTemplate {
 								if($eMenu['url'] !== NULL) {
 
 									// Shop
-									if(str_starts_with($eMenu['url'], \shop\ShopUi::baseUrl())) {
+									if(str_starts_with($eMenu['url'], \shop\ShopUi::domain())) {
 										$h .= '<a href="'.encode($eMenu['url']).'" class="website-menu-item" target="_blank">'.encode($eMenu['label']).' '.Asset::icon('basket2-fill').'</a>';
 									}
 									// Autre chose

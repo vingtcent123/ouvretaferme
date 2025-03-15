@@ -73,13 +73,15 @@ class ShopModel extends \ModuleModel {
 			'customBackground' => ['color', 'null' => TRUE, 'cast' => 'string'],
 			'customTitleFont' => ['text8', 'null' => TRUE, 'cast' => 'string'],
 			'customFont' => ['text8', 'null' => TRUE, 'cast' => 'string'],
+			'embedOnly' => ['bool', 'cast' => 'bool'],
+			'embedUrl' => ['text8', 'null' => TRUE, 'cast' => 'string'],
 			'status' => ['enum', [\shop\Shop::OPEN, \shop\Shop::CLOSED], 'cast' => 'enum'],
 			'createdAt' => ['datetime', 'cast' => 'string'],
 			'createdBy' => ['element32', 'user\User', 'cast' => 'element'],
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'fqn', 'farm', 'logo', 'name', 'email', 'type', 'frequency', 'hasPoint', 'hasPayment', 'paymentCard', 'paymentTransfer', 'paymentTransferHow', 'paymentOffline', 'paymentOfflineHow', 'description', 'terms', 'termsField', 'limitCustomers', 'orderMin', 'shipping', 'shippingUntil', 'customColor', 'customBackground', 'customTitleFont', 'customFont', 'status', 'createdAt', 'createdBy'
+			'id', 'fqn', 'farm', 'logo', 'name', 'email', 'type', 'frequency', 'hasPoint', 'hasPayment', 'paymentCard', 'paymentTransfer', 'paymentTransferHow', 'paymentOffline', 'paymentOfflineHow', 'description', 'terms', 'termsField', 'limitCustomers', 'orderMin', 'shipping', 'shippingUntil', 'customColor', 'customBackground', 'customTitleFont', 'customFont', 'embedOnly', 'embedUrl', 'status', 'createdAt', 'createdBy'
 		]);
 
 		$this->propertiesToModule += [
@@ -121,6 +123,9 @@ class ShopModel extends \ModuleModel {
 
 			case 'limitCustomers' :
 				return [];
+
+			case 'embedOnly' :
+				return FALSE;
 
 			case 'status' :
 				return Shop::OPEN;
@@ -285,6 +290,14 @@ class ShopModel extends \ModuleModel {
 
 	public function whereCustomFont(...$data): ShopModel {
 		return $this->where('customFont', ...$data);
+	}
+
+	public function whereEmbedOnly(...$data): ShopModel {
+		return $this->where('embedOnly', ...$data);
+	}
+
+	public function whereEmbedUrl(...$data): ShopModel {
+		return $this->where('embedUrl', ...$data);
 	}
 
 	public function whereStatus(...$data): ShopModel {

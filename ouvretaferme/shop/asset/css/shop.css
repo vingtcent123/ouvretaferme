@@ -38,14 +38,14 @@ body[data-template~="shop"] .container {
 	max-width: 1400px;
 }
 
-body[data-template~="shop-embed"] {
+body[data-template~="shop-embedded"] {
 	display: block;
 	overflow-y: hidden;
 }
 
-body[data-template~="shop-embed"] > nav,
-body[data-template~="shop-embed"] > header,
-body[data-template~="shop-embed"] > footer {
+body[data-template~="shop-embedded"] > nav,
+body[data-template~="shop-embedded"] > header,
+body[data-template~="shop-embedded"] > footer {
 	display: none;
 }
 
@@ -132,7 +132,7 @@ body[data-template~="shop-embed"] > footer {
 }
 
 .shop-header-flow {
-	margin-top: 1rem;
+	margin-bottom: 2rem;
 }
 
 .shop-header-date-days {

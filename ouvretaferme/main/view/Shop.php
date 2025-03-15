@@ -20,7 +20,7 @@ class ShopTemplate extends MainTemplate {
 		$template = parent::getTemplate();
 
 		if(\shop\Shop::isEmbed()) {
-			$template .= ' shop-embed';
+			$template .= ' shop-embedded';
 		}
 
 		return $template;
@@ -30,6 +30,15 @@ class ShopTemplate extends MainTemplate {
 	protected function getHead(): string {
 
 		$h = parent::getHead();
+
+		if(
+			\shop\Shop::isEmbed() or
+			$this->data->eShop['embedOnly']
+		) {
+
+			$h .= '<meta name="robots" content="noindex"/>';
+
+		}
 		$h .= $this->getStyles();
 
 		return $h;

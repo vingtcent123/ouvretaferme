@@ -128,7 +128,7 @@ Votre commande n°{id} d'un montant de {amount} a bien été annulée.
 		if($test) {
 			$link = LIME_URL;
 		} else {
-			$link = \shop\ShopUi::dateUrl($eSale['shop'], $eSale['shopDate'], 'paiement', showDomain: TRUE);
+			$link = \shop\ShopUi::paymentUrl($eSale['shop'], $eSale['shopDate']);
 		}
 
 		$get = fn($payment) => s("Bonjour,

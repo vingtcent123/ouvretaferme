@@ -186,7 +186,7 @@ class SaleLib {
 		if($eSale['shop']['hasPayment'] === FALSE) {
 			return self::createDirectPayment(NULL, $eSale);
 		} else {
-			return \shop\ShopUi::dateUrl($eSale['shop'], $eSale['shopDate'], 'paiement');
+			return \shop\ShopUi::paymentUrl($eSale['shop'], $eSale['shopDate']);
 		}
 
 
@@ -306,7 +306,7 @@ class SaleLib {
 		if($eSale['shop']['hasPayment'] === FALSE) {
 			return self::createDirectPayment(NULL, $eSale);
 		} else {
-			return \shop\ShopUi::dateUrl($eSale['shop'], $eSale['shopDate'], 'paiement');
+			return \shop\ShopUi::paymentUrl($eSale['shop'], $eSale['shopDate']);
 		}
 
 	}
@@ -346,8 +346,8 @@ class SaleLib {
 		];
 
 
-		$successUrl = \Lime::getProtocol().'://'.\Setting::get('shop\domain').ShopUi::dateUrl($eSale['shop'], $eSale['shopDate'], 'confirmation');
-		$cancelUrl = \Lime::getProtocol().'://'.\Setting::get('shop\domain').ShopUi::dateUrl($eSale['shop'], $eSale['shopDate'], 'paiement');
+		$successUrl = ShopUi::confirmationUrl($eSale['shop'], $eSale['shopDate']);
+		$cancelUrl = ShopUi::paymentUrl($eSale['shop'], $eSale['shopDate']);
 
 		$arguments = [
 			'client_reference_id' => $eCustomer['id'],
@@ -388,7 +388,7 @@ class SaleLib {
 
 		self::notify($eSale['shopUpdated'] ? 'saleUpdated' : 'saleConfirmed', $eSale, $eSale['cItem']);
 
-		return \Lime::getProtocol().'://'.\Setting::get('shop\domain').ShopUi::dateUrl($eSale['shop'], $eSale['shopDate'], 'confirmation');
+		return ShopUi::confirmationUrl($eSale['shop'], $eSale['shopDate'], $eSale);
 
 	}
 

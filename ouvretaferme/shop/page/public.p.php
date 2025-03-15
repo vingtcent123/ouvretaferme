@@ -9,12 +9,7 @@ new Page()
 	]], function($data) {
 
 		$data = 'User-agent: *'."\n";
-
-		if(\shop\Shop::isEmbed()) {
-			$data .= 'Disallow: /'."\n";
-		} else {
-			$data .= 'Disallow: '."\n";
-		}
+		$data .= 'Disallow: '."\n";
 
 		throw new DataAction($data, 'text/txt');
 
@@ -85,7 +80,7 @@ new Page(function($data) {
 
 		echo <<<END
 
-		document.getElementById("otf-shop").innerHTML = '$content';
+		document.getElementById("otf").innerHTML = '$content';
 
 END;
 
@@ -96,117 +91,10 @@ END;
 		header('Sec-Fetch-Site: cross-site');
 		header('Sec-GPC: 1');
 
-		$url = \shop\ShopUi::url($data->eShop, force: 'embed');
+		$url = \shop\ShopUi::url($data->eShop).'?embed';
 
-		echo <<<END
-
-		String.prototype.setArgument = function(name, value) {
-		
-			let location = this;
-		
-			const regex = new RegExp('([\&\?])'+ name +'=([^\&]*)', 'i');
-		
-			if(location.match(regex)) {
-		
-				location = location.replace(regex, '$1'+ name +'='+ encodeURIComponent(value));
-		
-			} else {
-		
-				location = location + (location .indexOf('?') === -1 ? '?' : '&');
-		
-				if(typeof value !== 'undefined') {
-					location = location + name +'='+ encodeURIComponent(value);
-				} else {
-					location = location + name;
-				}
-		
-			}
-		
-			return location;
-		
-		};
-
-		String.prototype.removeArgument = function(name) {
-		
-			let location = this;
-
-			const regex = new RegExp('([\&\?])'+ name.replace('[', '\\\\[').replace(']', '\\\\]') +'(=[a-z0-9/\.\%\:\\\\-\\\\\\\\+]*)*[&]?', 'gi');
-			location = location.replace(regex, '$1');
-			location = location.replace('?&', '?');
-			location = location.replace('&&', '&');
-		
-			if(
-				location.charAt(location.length - 1) === '?' ||
-				location.charAt(location.length - 1) === '&'
-			) {
-				location = location.substring(0, location.length - 1);
-			}
-		
-			return location;
-		
-		};
-
-		let otfDate = null;
-		let otfKey = null;
-		
-		location.search
-			.substr(1)
-			.split("&")
-			.forEach(function(item) {
-			
-				const tmp = item.split("=");
-				
-				switch(tmp[0]) {
-					case 'otfDate' :
-						otfDate = decodeURIComponent(tmp[1])
-						break;
-					case 'otfKey' :
-						otfKey = decodeURIComponent(tmp[1])
-						break;
-				}
-				
-			});
-		
-		let url = '$url';
-		let parent = window.location.href;
-			
-		if(
-			otfDate !== null && /^\d+$/.test(otfDate) &&
-			otfKey !== null
-		) {
-			url += '/'+ otfDate +'/confirmation?key='+ otfKey;
-			parent = parent.removeArgument('otfDate');
-			parent = parent.removeArgument('otfKey');
-		}
-	
-		url = url.setArgument('parent', parent);
-		
-		history.replaceState(history.state, '', parent);
-	
-		const otfIframe = document.createElement("iframe");
-		let otfIframeHeight = 500;
-		otfIframe.src = url;
-		otfIframe.style.width = "1px";
-		otfIframe.style.minWidth = "100%";
-		otfIframe.style.border = "none";
-		otfIframe.style.height = otfIframeHeight +"px";
-		document.getElementById("otf-shop").appendChild(otfIframe);
-
-		window.addEventListener('message', function(e) {
-
-			 let message = e.data;
-
-			 if (
-				  message.height &&
-				  message.height !== otfIframeHeight
-			 ) {
-				  otfIframe.style.height = (message.height + 50) +'px';
-				  otfIframeHeight = message.height;
-			 }
-
-		},false);
-
-END;
+		echo 'let url = "'.$url.'";'."\n";
+		echo file_get_contents(Package::getPath('shop').'/asset/js/embed.js');
 
 	})
 	->get('/shop/public/{fqn}:conditions', function($data) {
@@ -227,12 +115,23 @@ END;
 
 		$data->isModifying = GET('modify', 'bool', FALSE);
 
+		if($data->isModifying === FALSE) {
+			$data->eShop->validateEmbed();
+		}
+
 		$data->cDate = \shop\DateLib::getMostRelevantByShop($data->eShop);
 
 		if($data->cDate->notEmpty()) {
 
 			$data->eDateSelected = $data->cDate[GET('date', 'int')] ?? $data->cDate->first();
 			$data->eSaleExisting = \shop\SaleLib::getSaleForDate($data->eDateSelected, $data->eCustomer);
+
+			if(
+				$data->isModifying and
+				$data->eSaleExisting->empty()
+			) {
+				$data->isModifying = FALSE;
+			}
 
 			// Cas où le client n'a pas finalisé la commande et retourne sur la boutique
 			if(
@@ -246,7 +145,7 @@ END;
 					$data->eSaleExisting->notEmpty() and
 					$data->eSaleExisting['preparationStatus'] === \selling\Sale::BASKET
 				) {
-					throw new RedirectAction(\shop\ShopUi::dateUrl($data->eShop, $data->eDateSelected, 'confirmation'));
+					throw new RedirectAction(\shop\ShopUi::confirmationUrl($data->eShop, $data->eDateSelected));
 				}
 
 			}
@@ -276,6 +175,12 @@ END;
 
 		$data->cCategory = \selling\CategoryLib::getByFarm($data->eShop['farm']);
 
+		if($data->isModifying) {
+			$data->basketProducts = \shop\BasketLib::getFromItem($data->eSaleExisting['cItem']);
+		} else {
+			$data->basketProducts = \shop\BasketLib::getFromQuery();
+		}
+
 		throw new ViewAction($data, path: ':shop');
 
 	});
@@ -287,6 +192,7 @@ new Page(function($data) {
 		$data->eShop['ccPoint'] = \shop\PointLib::getByFarm($data->eShop['farm']);
 
 		$data->eDate = \shop\DateLib::getById(GET('date'))->validateProperty('shop', $data->eShop);
+
 		$data->eCustomer = \shop\SaleLib::getShopCustomer($data->eShop, $data->eUserOnline);
 
 		if($data->eShop->canAccess($data->eCustomer) === FALSE) {
@@ -353,7 +259,7 @@ new Page(function($data) {
 				($data->eSaleExisting['preparationStatus'] === \selling\Sale::BASKET and $data->eSaleExisting['paymentMethod'] === NULL) or
 				($data->eSaleExisting['paymentMethod'] === \selling\Sale::ONLINE_CARD and $data->eSaleExisting['paymentStatus'] === \selling\Sale::UNDEFINED)
 			) {
-				throw new RedirectAction(\shop\ShopUi::dateUrl($data->eShop, $data->eDate, 'paiement'));
+				throw new RedirectAction(\shop\ShopUi::paymentUrl($data->eShop, $data->eDate));
 			}
 
 		};
@@ -368,7 +274,7 @@ new Page(function($data) {
 			$data->eSaleExisting->canBasket($data->eShop) === FALSE and
 			$data->isModifying === FALSE
 		) {
-			throw new RedirectAction(\shop\ShopUi::dateUrl($data->eShop, $data->eDate, 'confirmation'));
+			throw new RedirectAction(\shop\ShopUi::confirmationUrl($data->eShop, $data->eDate));
 		}
 
 		$data->hasPoint = (
@@ -377,21 +283,7 @@ new Page(function($data) {
 		);
 		$data->ePointSelected = \shop\PointLib::getSelected($data->eShop, $data->eDate['ccPoint'], $data->eCustomer, $data->eSaleExisting);
 
-		$data->products = NULL;
-
-		try {
-			if(get_exists('products')) {
-				$products = json_decode(GET('products'), TRUE, flags:  JSON_THROW_ON_ERROR);
-				$data->products = [];
-				foreach($products as $product => $value) {
-					$number = (float)($value['number'] ?? 0.0);
-					if($number !== 0.0) {
-						$data->products[(int)$product] = ['number' => $number];
-					}
-				}
-			}
-		} catch(Exception) {
-		}
+		$data->basketProducts = \shop\BasketLib::getFromQuery();
 
 		throw new ViewAction($data);
 
@@ -403,12 +295,12 @@ new Page(function($data) {
 
 		// Si la vente est déjà payée, on ne peut pas changer de moyen de paiement
 		if($data->eSaleExisting['paymentStatus'] === \selling\Sale::PAID) {
-			throw new RedirectAction(\shop\ShopUi::dateUrl($data->eShop, $data->eDate, 'confirmation'));
+			throw new RedirectAction(\shop\ShopUi::confirmationUrl($data->eShop, $data->eDate));
 		}
 
 		// Si le paiement est désactivé, on retourne sur le panier
 		if($data->eShop['hasPayment'] === FALSE) {
-			throw new RedirectAction(\shop\ShopUi::dateUrl($data->eShop, $data->eDate, 'panier'));
+			throw new RedirectAction(\shop\ShopUi::basketUrl($data->eShop, $data->eDate));
 		}
 
 		$eFarm = $data->eShop['farm'];
@@ -438,7 +330,7 @@ new Page(function($data) {
 
 		// Si la vente est déjà payée, on ne peut pas changer de moyen de paiement
 		if($data->eSaleExisting['paymentStatus'] === \selling\Sale::PAID) {
-			throw new RedirectAction(\shop\ShopUi::dateUrl($data->eShop, $data->eDate, 'confirmation'));
+			throw new RedirectAction(\shop\ShopUi::confirmationUrl($data->eShop, $data->eDate));
 		}
 
 		$data->eSaleExisting['shopPoint'] = $data->eShop['ccPoint']->find(fn($ePoint) => $ePoint['id'] === $data->eSaleExisting['shopPoint']['id'], depth: 2, limit: 1, default: new \shop\Point());
@@ -526,7 +418,7 @@ new Page(function($data) {
 			$fw->validate();
 
 		} else {
-			$url = \shop\ShopUi::dateUrl($data->eShop, $data->eDate, 'paiement');
+			$url = \shop\ShopUi::paymentUrl($data->eShop, $data->eDate);
 		}
 
 		throw new RedirectAction($url);
@@ -576,7 +468,6 @@ new Page(function($data) {
 	})
 	->post('/shop/public/{fqn}/{date}/:doCancelSale', function($data) {
 
-		\user\ConnectionLib::checkLogged();
 		($data->validateSale)();
 
 		\shop\SaleLib::cancel($data->eSaleExisting);

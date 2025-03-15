@@ -13,7 +13,7 @@ document.delegateEventListener('click', '#shop-basket-point div.point-place-wrap
 class BasketManage {
 
 	static prefix = 'basket-';
-	static version = 'v2';
+	static version = 'v3';
 	static json = null;
 
 	static isEmbed() {
@@ -50,14 +50,6 @@ class BasketManage {
 
 	}
 
-	static hasBasket(dateId) {
-		return !!(
-			this.isEmbed() ?
-				this.json :
-				localStorage.getItem(this.key(dateId))
-		);
-	}
-
 	static setBasket(dateId, basket) {
 
 		this.json = JSON.stringify(basket);
@@ -75,27 +67,6 @@ class BasketManage {
 		if(this.isEmbed() === false) {
 			localStorage.removeItem(this.key(dateId));
 		}
-	}
-
-	static modify(dateId, basket, to) {
-
-		this.setBasket(dateId, basket);
-
-		const pathname = location.pathname;
-		const shopAndDatePathname = pathname.substring(0, pathname.lastIndexOf('/'));
-
-		switch(to) {
-
-			case 'basket' :
-				window.location.href = shopAndDatePathname +'/panier?modify=1';
-				break;
-
-			case 'home' :
-				window.location.href = shopAndDatePathname +'?modify=1';
-				break;
-
-		}
-
 	}
 
 	static doUpdate(dateId) {
@@ -293,6 +264,7 @@ class BasketManage {
 	static init(dateId, defaultJson) {
 
 		const basket = this.getBasket(dateId, defaultJson);
+
 		this.setBasket(dateId, basket);
 
 		// Met à jour toutes les quantités.
@@ -345,17 +317,18 @@ class BasketManage {
 		const pathname = location.pathname;
 		const shopAndDatePathname = pathname.substring(0, pathname.lastIndexOf('/'));
 
-		let basket = this.getBasket(dateId);
+		let basket;
+
+		if(products === null) {
+			basket = this.getBasket(dateId);
+		} else {
+			basket = this.newBasket(saleId, products);
+			this.setBasket(dateId, basket);
+			history.removeArgument('products');
+		}
 
 		if(saleId !== basket.sale) { // Problème de consistence
 			basket = this.emptyBasket(dateId);
-		}
-
-		if(products === null) {
-			products = basket.products;
-		} else {
-			history.removeArgument('products');
-			this.updateBasketProducts(dateId, products);
 		}
 
 		const modifyingArg = isModifying ? '?modify=1' : '';
@@ -363,7 +336,7 @@ class BasketManage {
 		new Ajax.Query()
 			.url(shopAndDatePathname +'/:getBasket'+ modifyingArg)
 			.body({
-				products: products,
+				products: basket.products,
 				date: dateId,
 			})
 			.fetch()
@@ -466,43 +439,22 @@ class BasketManage {
 
 	}
 
-	static empty(source, dateId) {
-
-		if(this.getBasket(dateId).sale === null) {
-			if(confirm(source.dataset.confirmNormal) === false) {
-				return false;
-			}
-		} else {
-			if(confirm(source.dataset.confirmModify) === false) {
-				return false;
-			}
-		}
+	static empty(target, dateId) {
 
 		this.emptyBasket(dateId);
 
-		const newLocation = document.location.href.removeArgument('modify');
-		window.location.href = newLocation;
+		window.location.href = target.dataset.url;
 
 		return false;
 
 	}
 
-	static newBasket() {
+	static newBasket(saleId = null, products = {}) {
 		return {
-			products: {},
+			products: products,
 			createdAt: Date.now() / 1000,
-			sale: null
+			sale: saleId
 		};
-
-	}
-
-	static updateBasketProducts(dateId, products) {
-
-		let basket = this.getBasket(dateId);
-		basket.products = products;
-		this.setBasket(dateId, basket);
-
-		return false;
 
 	}
 
@@ -529,11 +481,7 @@ class BasketManage {
 	static transfer(target, dateId) {
 
 		const products = this.getBasket(dateId).products;
-
-		let url = target.dataset.url;
-		url = url.setArgument('products', JSON.stringify(products));
-
-		window.parent.location = url;
+		window.parent.location = target.dataset.url + JSON.stringify(products);
 
 	}
 
@@ -573,11 +521,19 @@ class BasketManage {
 				continue;
 			}
 
-			const basket = JSON.parse(localStorage.getItem(key));
+			try {
 
-			if(basket['createdAt'] < time - 86400 * 15) {
-				delete(localStorage.removeItem(key))
+				const basket = JSON.parse(localStorage.getItem(key));
+
+				if(basket['createdAt'] > time - 86400 * 15) {
+					continue;
+				}
+
+			} catch(e) {
+				continue;
 			}
+
+			delete(localStorage.removeItem(key))
 
 		}
 	}

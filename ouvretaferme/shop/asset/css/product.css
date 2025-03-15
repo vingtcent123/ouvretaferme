@@ -2,7 +2,7 @@
 	margin-top: 2rem;
 }
 
-body:not([data-template~="shop-embed"]) {
+body:not([data-template~="shop-embedded"]) {
 
 	.shop-product-wrapper {
 		margin-bottom: 5rem;
@@ -544,7 +544,7 @@ input.shop-product-number-display {
 	align-items: center;
 }
 
-body[data-template~="shop-embed"] {
+body[data-template~="shop-embedded"] {
 
 	.shop-product-ordered {
 		border-radius: var(--radius);
@@ -552,7 +552,7 @@ body[data-template~="shop-embed"] {
 
 }
 
-body:not([data-template~="shop-embed"]) {
+body:not([data-template~="shop-embedded"]) {
 
 	.shop-product-ordered {
 		position: fixed;

@@ -18,7 +18,11 @@ class BasketUi {
 
 	}
 
-	public function getHeader(Shop $eShop, Date $eDate): string {
+	public function getHeader(Shop $eShop): string {
+
+		if($eShop['embedOnly']) {
+			return 'LIEN VERS LE SITE DE BASE';
+		}
 
 		$h = '<div class="util-vignette mb-0">';
 
@@ -73,32 +77,23 @@ class BasketUi {
 
 				$getCurrent = FALSE;
 
-				foreach($steps as [$step, $text, $url]) {
+				foreach($steps as [$step, $text]) {
 
 					if($getCurrent === FALSE and $currentStep === $step) {
 						$getCurrent = TRUE;
-					}
-
-					if(
-						$currentStep === self::STEP_CONFIRMATION or
-						$step === self::STEP_CONFIRMATION
-					) {
-						$attribute = '';
-					} else {
-						$attribute = 'href="'.$url.'"';
 					}
 
 					$h .= '<li '.($currentStep === $step ? 'current' : '').'">';
 
 						if($getCurrent === FALSE ) {
 
-							$h .= '<a class="btn '.($getCurrent === FALSE ? 'btn-secondary' : 'btn-transparent').'" '.$attribute.'>';
+							$h .= '<span class="btn '.($getCurrent === FALSE ? 'btn-secondary' : 'btn-transparent').' btn-readonly">';
 								$h .= $text;
-							$h .= '</a>';
+							$h .= '</span>';
 
 						} else if($currentStep === $step) {
 
-							$h .= '<span class="btn btn-transparent">';
+							$h .= '<span class="btn btn-transparent btn-readonly">';
 								$h .= $text;
 							$h .= '</span>';
 
@@ -135,24 +130,22 @@ class BasketUi {
 
 		$steps[] = [
 			self::STEP_SUMMARY,
-			s("Panier"),
-			ShopUi::dateUrl($eShop, $eDate, 'panier')
+			s("Panier")
 		];
 
 		if($eShop['hasPayment']) {
 
 			$steps[] = [
 				self::STEP_PAYMENT,
-				s("Paiement"),
-				ShopUi::dateUrl($eShop, $eDate, 'paiement')
+				s("Paiement")
 			];
 
 		}
 
 		$steps[] = [
 			self::STEP_CONFIRMATION,
-			s("Confirmation"),
-			ShopUi::dateUrl($eShop, $eDate, 'confirmation')
+			s("Confirmation")
+
 		];
 
 		return $steps;
@@ -169,11 +162,7 @@ class BasketUi {
 			$h .= '<h2>';
 				$h .= s("Mon panier").' (<span id="shop-basket-articles">'.count($basket).'</span>)';
 			$h .= '</h2>';
-			if($eSaleExisting->empty()) {
-				$h .= '<a href="'.ShopUi::dateUrl($eShop, $eDate).'" class="btn btn-outline-primary hide-xs-down">'.\Asset::icon('chevron-left').' '.s("Retourner sur la boutique").'</a>';
-			} else {
-				$h .= '<a href="'.ShopUi::dateUrl($eShop, $eDate).''.($isModifying ? '?modify=1' : '').'" class="btn btn-outline-secondary"><span class="hide-xs-down">'.s("Modifier les produits").'</span><span class="hide-sm-up">'.s("Modifier").'</span></a>';
-			}
+			$h .= '<a href="'.ShopUi::dateUrl($eShop, $eDate).'?modify=1" class="btn btn-outline-primary">'.\Asset::icon('chevron-left').' <span class="hide-xs-down">'.s("Modifier ma sélection").'</span><span class="hide-sm-up">'.s("Modifier").'</span></a>';
 		$h .= '</div>';
 
 		$h .= '<table id="shop-basket-summary-list" class="stick-xs">';
@@ -191,7 +180,6 @@ class BasketUi {
 			$h .= '</thead>';
 
 			$total = 0;
-			$hasWarning = FALSE;
 
 			$h .= '<tbody>';
 				foreach($basket as $product) {
@@ -303,7 +291,7 @@ class BasketUi {
 
 		$h = '<div class="util-title">';
 			$h .= '<h2>'.s("Ma commande").'</h2>';
-			$h .= '<a '.attr('onclick', 'BasketManage.modify('.$eSale['shopDate']['id'].', '.$this->getJsonBasket($eSale).', \'home\')').' class="btn btn-outline-primary">'.\Asset::icon('chevron-left').' '.s("Modifier la commande").'</a>';
+			$h .= '<a href="'.ShopUi::dateUrl($eDate['shop'], $eDate).'?modify=1" target="_parent" class="btn btn-outline-primary">'.\Asset::icon('chevron-left').' '.s("Modifier la commande").'</a>';
 		$h .= '</div>';
 		$h .= '<div class="util-block mb-2">';
 			$h .= '<dl class="util-presentation util-presentation-2">';
@@ -348,7 +336,7 @@ class BasketUi {
 
 	}
 
-	public function getSubmitBasket(Shop $eShop, Date $eDate, \user\User $eUserOnline, bool $hasPoint, Point $ePointSelected): string {
+	public function getSubmitBasket(Shop $eShop, Date $eDate, \selling\Sale $eSaleExisting, \user\User $eUserOnline, bool $hasPoint, Point $ePointSelected): string {
 
 		$class = $hasPoint === FALSE or (
 			$ePointSelected->notEmpty() and (
@@ -377,7 +365,7 @@ class BasketUi {
 
 				$h .= '<div class="basket-buttons hide" data-ref="basket-update">';
 					$h .= '<a onclick="BasketManage.doUpdate('.$eDate['id'].');" class="btn btn-lg btn-secondary">'.s("Valider la modification de commande").' '.\Asset::icon('chevron-right').'</a> ';
-					$h .= '<a href="'.\shop\ShopUi::dateUrl($eShop, $eDate, 'confirmation').'" class="btn btn-lg btn-outline-secondary">'.s("Conserver ma commande initiale").'</a> ';
+					$h .= '<a href="'.\shop\ShopUi::confirmationUrl($eShop, $eDate).'" class="btn btn-lg btn-outline-secondary">'.s("Conserver ma commande initiale").'</a> ';
 				$h .= '</div>';
 
 			$h .= '</div>';
@@ -467,7 +455,7 @@ class BasketUi {
 
 		$form = new \util\FormUi();
 
-		$h .= $form->openAjax(\shop\ShopUi::dateUrl($eShop, $eDate, ':doUpdatePhone'));
+		$h .= $form->openAjax(\shop\ShopUi::userUrl($eShop, $eDate, ':doUpdatePhone'));
 
 			$h .= $form->dynamicField($eUser, 'phone').'<br/>';
 			$h .= $form->submit(s("Enregistrer le numéro").' '.\Asset::icon('chevron-right'), ['class' => 'btn btn-lg btn-secondary']);
@@ -489,7 +477,7 @@ class BasketUi {
 
 			$form = new \util\FormUi();
 
-			$h .= $form->openAjax(\shop\ShopUi::dateUrl($eShop, $eDate, ':doUpdateAddress'), ['style' => 'max-width: 40rem']);
+			$h .= $form->openAjax(\shop\ShopUi::userUrl($eShop, $eDate, ':doUpdateAddress'), ['style' => 'max-width: 40rem']);
 
 				$h .= $form->address(NULL, $eUser).'<br/>';
 				$h .= $form->submit(s("Enregistrer l'adresse").' '.\Asset::icon('chevron-right'), ['class' => 'btn btn-lg btn-secondary']);
@@ -581,7 +569,7 @@ class BasketUi {
 
 			foreach($payments as $payment) {
 
-				$h .= '<a data-ajax="'.ShopUi::dateUrl($eShop, $eDate, ':doCreatePayment').'" post-payment="'.$payment.'" class="util-block shop-payment">';
+				$h .= '<a data-ajax="'.ShopUi::userUrl($eShop, $eDate, ':doCreatePayment').'" post-payment="'.$payment.'" class="util-block shop-payment">';
 					$h .= $this->getPaymentBlock($eShop, $eDate, $eCustomer, $payment);
 				$h .= '</a>';
 
@@ -674,7 +662,7 @@ class BasketUi {
 					case \selling\Sale::FAILED :
 						$content .= '<h2>'.\Asset::icon('exclamation-triangle-fill').' '.s("Le paiement de votre commande a échoué !").'</h2>';
 						$content .= '<p>'.s("Votre compte n'a pas été débité et votre commande n'est pas encore confirmée. Pour confirmer votre commande, veuillez retenter un paiement.").'</p>';
-						$content .= '<a href="'.\shop\ShopUi::dateUrl($eShop, $eDate, 'paiement').'" class="btn btn-transparent">'.s("Retenter un paiement").'</a> ';
+						$content .= '<a href="'.\shop\ShopUi::paymentUrl($eShop, $eDate).'" class="btn btn-transparent">'.s("Retenter un paiement").'</a> ';
 						break;
 
 				};
@@ -749,7 +737,7 @@ class BasketUi {
 
 			if($eSale->acceptCustomerCancel()) {
 				$h .= '<div>';
-					$h .= '<a '.attr('onclick', 'BasketManage.modify('.$eDate['id'].', '.$this->getJsonBasket($eSale).', \'home\')').' class="btn btn-secondary" title="'.s("Cette commande est modifiable jusqu'au {value}.", ['value' => \util\DateUi::textual($eDate['orderEndAt'], \util\DateUi::DATE_HOUR_MINUTE)]).'">'.s("Modifier ma commande").'</a>';
+					$h .= '<a href="'.ShopUi::dateUrl($eDate['shop'], $eDate).'?modify=1" target="_parent" class="btn btn-secondary" title="'.s("Cette commande est modifiable jusqu'au {value}.", ['value' => \util\DateUi::textual($eDate['orderEndAt'], \util\DateUi::DATE_HOUR_MINUTE)]).'">'.s("Modifier ma commande").'</a>';
 					$h .= '&nbsp;';
 					$h .= '<a '.attr('onclick', 'BasketManage.doCancel('.$eSale['id'].')').'" class="btn btn-outline-secondary" data-confirm="'.s("Êtes-vous sûr de vouloir annuler cette commande ?").'" title="'.s("Cette commande est annulable jusqu'au {value}.", ['value' => \util\DateUi::textual($eDate['orderEndAt'], \util\DateUi::DATE_HOUR_MINUTE)]).'">'.s("Annuler ma commande").'</a>';
 				$h .= '</div>';
@@ -769,9 +757,9 @@ class BasketUi {
 		return $h;
 	}
 
-	public function getJsonBasket(\selling\Sale $eSale): string {
+	public function getJsonBasket(\selling\Sale $eSale, ?array $products = NULL): string {
 
-		if($eSale->empty()) {
+		if($eSale->empty() and $products === NULL) {
 
 			return '{}';
 
@@ -779,13 +767,25 @@ class BasketUi {
 
 			$h = '{';
 				$h .= 'createdAt: '.time().',';
-				$h .= 'sale: '.$eSale['id'].',';
-				$h .= 'products: {';
-					foreach ($eSale['cItem'] as $eItem) {
-						$h .= '"'.$eItem['product']['id'].'": {number: '.$eItem['number'].', unitPrice: '.$eItem['unitPrice'].'},';
+				$h .= 'sale: '.($eSale->notEmpty() ? $eSale['id'] : 'null').',';
+				$h .= 'products: ';
+
+					if($products !== NULL) {
+						$h .= json_encode($products);
+					} else if($eSale->notEmpty()) {
+
+						$h .= '{';
+
+							foreach ($eSale['cItem'] as $eItem) {
+								$h .= '"'.$eItem['product']['id'].'": {number: '.$eItem['number'].'},';
+							}
+
+							$h = substr($h, 0, -1);
+
+						$h .= '}';
+
 					}
-					$h = substr($h, 0, -1);
-				$h .= '}';
+				$h .= '';
 			$h .= '}';
 
 			return $h;
