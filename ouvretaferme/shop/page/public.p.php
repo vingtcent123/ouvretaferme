@@ -70,7 +70,7 @@ new Page(function($data) {
 		'/shop/public/embed.js',
 		'@priority' => 1
 	]], function($data) {
-/*
+
 
 		$eDate = \shop\DateLib::getMostRelevantByShop($data->eShop, one: TRUE);
 
@@ -78,13 +78,22 @@ new Page(function($data) {
 		$content = str_replace("\n", "", $content);
 		$content = addcslashes($content, '\'\\');
 
+		$css = Lime::getUrl().(string)Asset::getCssPath('website', 'widget.css');
+
 		echo <<<END
 
+		var otfCss  = document.createElement('link');
+		otfCss.rel  = 'stylesheet';
+		otfCss.type = 'text/css';
+		otfCss.href = '$css';
+		
+		document.getElementsByTagName("head")[0].appendChild(otfCss);
+		
 		document.getElementById("otf").innerHTML = '$content';
 
 END;
+return;
 
- */
 		header('Content-Type: application/javascript');
 		header('Sec-Fetch-Dest: script');
 		header('Sec-Fetch-Mode: no-cors');

@@ -34,7 +34,7 @@ new AdaptativeView('index', function($data, DocTemplate $t) {
 			echo '<li>'.s("Le séparateur des nombres décimaux est le point (.) et non la virgule (,)").'</li>';
 		echo '</ul>';
 		echo '<p>';
-			echo '<a href="'.Asset::path('series', 'plan.csv').'" data-ajax-navigation="never" class="btn btn-outline-secondary">'.s("Télécharger un exemple CSV").'</a>';
+			echo '<a href="'.Asset::getPath('series', 'plan.csv').'" data-ajax-navigation="never" class="btn btn-outline-secondary">'.s("Télécharger un exemple CSV").'</a>';
 		echo '</p>';
 		echo '<br/>';
 		echo '<h3>'.s("Liste des données à fournir").'</h3>';

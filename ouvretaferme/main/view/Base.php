@@ -54,7 +54,7 @@ class BaseTemplate extends SmartTemplate {
 		parent::__construct();
 
 		$this->base = \Lime::getProtocol().'://'.SERVER('HTTP_HOST');
-		$this->favicon = \Asset::path('main', LIME_ENV === 'dev' ? 'favicon-dev.png' : 'favicon.png', 'image');
+		$this->favicon = \Asset::getPath('main', LIME_ENV === 'dev' ? 'favicon-dev.png' : 'favicon.png', 'image');
 
 		\Asset::css('util', 'font-open-sans.css');
 

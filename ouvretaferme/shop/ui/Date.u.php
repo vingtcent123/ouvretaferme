@@ -150,7 +150,12 @@ class DateUi {
 				$title = s("Date de retrait");
 			}
 
-			$h .= '<h4>'.\Asset::icon('calendar3').'&nbsp;&nbsp;'.$title.'</h4>';
+			$calendar = match($cssPrefix) {
+				'shop' => \Asset::icon('calendar3'),
+				'website-widget' => '📅'
+			};
+
+			$h .= '<h4>'.$calendar.'&nbsp;&nbsp;'.$title.'</h4>';
 			$h .= '<div class="'.$cssPrefix.'-header-date-day">';
 				$h .= \util\DateUi::getDayName(date('N', strtotime($eDate['deliveryDate']))).' '.\util\DateUi::textual($eDate['deliveryDate']).'<br/>';
 			$h .= '</div>';

@@ -25,7 +25,7 @@ class FarmUi {
 		if($quality === Farm::CONVERSION) {
 			return s("En conversion");
 		} else {
-			return '<div class="media-rectangle-view" style="'.\media\MediaUi::getSquareCss($size).'; background-image: url('.\Asset::path('farm', $quality.'.png', 'image').');"></div>';
+			return '<div class="media-rectangle-view" style="'.\media\MediaUi::getSquareCss($size).'; background-image: url('.\Asset::getPath('farm', $quality.'.png', 'image').');"></div>';
 		}
 
 	}

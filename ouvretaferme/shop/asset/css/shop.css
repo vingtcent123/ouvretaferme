@@ -157,7 +157,9 @@ body[data-template~="shop-embedded"] > footer {
 }
 
 .shop-header-block {
-	width: 100%;
+	display: grid;
+	grid-template-columns: 1fr;
+	align-content: center;
 	padding: 1rem;
 	margin: 0;
 	border-radius: var(--radius);
@@ -174,6 +176,7 @@ body[data-template~="shop-embedded"] > footer {
 .shop-header-block h4 {
 	font-size: 1.2rem;
 	font-weight: bold;
+	margin: 0 0 1rem;
 }
 
 @media (max-width: 449px) {
