@@ -215,7 +215,7 @@ class MailLib {
 			$mail->SMTPAuth = TRUE;
 			$mail->Username = $server['user'];
 			$mail->Password = $server['password'];
-			$mail->SMTPSecure = \PHPMailer\PHPMailer\PHPMailer::ENCRYPTION_SMTPS;
+			$mail->SMTPSecure = $server['secure'];
 
 			$mail->setFrom($eEmail['fromEmail'] ?? $server['from'], $eEmail['fromName']);
 			$mail->addAddress($to);
