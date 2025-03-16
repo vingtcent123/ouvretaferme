@@ -23,6 +23,14 @@ new shop\ShopPage()
 		throw new \ViewAction($data);
 
 	}, validate: ['canWrite'])
+	->update(function($data) {
+
+		$data->eFarm = $data->e;
+
+		throw new ViewAction($data);
+
+	}, page: 'updateEmbed')
+	->doUpdateProperties('doUpdateEmbed', ['embedUrl', 'embedOnly'], fn() => throw new ReloadAction('shop', 'Shop::updatedEmbed'))
 	->read('emails', function($data) {
 
 		$data->eFarm = \farm\FarmLib::getById($data->e['farm']);

@@ -8,7 +8,7 @@ Lime::setApps(['framework', 'agora', 'ouvretaferme']);
 
 L::setLang('fr_FR');
 L::setVariables([
-	'siteName' => 'ouvretaferme.org',
+	'siteName' => 'Ouvretaferme',
 ]);
 
 Lime::setName('Ouvretaferme');

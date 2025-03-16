@@ -21,15 +21,23 @@ class WidgetUi {
 		\Asset::css('website', 'widget.css');
 
 		$h = '<div class="website-widget-shop">';
+
 			$h .= '<h3>';
 				$h .= \shop\ShopUi::link($eShop);
 			$h .= '</h3>';
+
 			$h .= new \shop\ShopUi()->getDateHeader($eDate, cssPrefix: 'website-widget');
+
 			if($eDate['isOrderable']) {
+
+				$url = $eShop['embedOnly'] ? $eShop['embedUrl'] : \shop\ShopUi::url($eShop);
+
 				$h .= '<div class="website-widget-shop-order">';
-					$h .= '<a href="'.\shop\ShopUi::url($eShop).'">⮞  '.s("Commander en ligne").'  ⮜</a>';
+					$h .= '<a href="'.encode($url).'">&gt;  '.s("Commander en ligne").'  &lt;</a>';
 				$h .= '</div>';
+
 			}
+
 		$h .= '</div>';
 
 		return $h;

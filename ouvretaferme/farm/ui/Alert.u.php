@@ -69,11 +69,11 @@ class AlertUi {
 			'Supplier::updated' => s("Le fournisseur a bien été mis à jour."),
 			'Supplier::deleted' => s("Le fournisseur a bien été supprimé."),
 
-			'Farm.created' => s("La ferme a bien été créée, à vous de jouer !"),
-			'Farm.updated' => s("La ferme a bien été mise à jour !"),
-			'Farm.updatedRotation' => s("La configuration des rotations de culture a bien été mise à jour !"),
-			'Farm.updatedFeatures' => s("Les fonctionnalités activées et désactivées pour votre fermes ont bien été mises à jour !"),
-			'Farm.closed' => s("La ferme a bien été supprimée !"),
+			'Farm::created' => s("La ferme a bien été créée, à vous de jouer !"),
+			'Farm::updated' => s("La ferme a bien été mise à jour !"),
+			'Farm::updatedRotation' => s("La configuration des rotations de culture a bien été mise à jour !"),
+			'Farm::updatedFeatures' => s("Les fonctionnalités activées et désactivées pour votre fermes ont bien été mises à jour !"),
+			'Farm::closed' => s("La ferme a bien été supprimée !"),
 
 			'Farmer::userCreated' => s("L'utilisateur a bien été créé et peut désormais être ajouté dans l'équipe de la ferme !"),
 			'Farmer::userUpdated' => s("L'utilisateur a bien été mis à jour !"),

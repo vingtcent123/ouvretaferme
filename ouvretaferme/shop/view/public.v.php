@@ -103,7 +103,7 @@ new AdaptativeView('shop', function($data, ShopTemplate $t) {
 							echo '<br/>'.s("Cette commande est modifiable et annulable jusqu'au {value}.", \util\DateUi::textual($data->eDateSelected['orderEndAt'], \util\DateUi::DATE_HOUR_MINUTE));
 						}
 					echo '</p>';
-					echo '<a href="'.\shop\ShopUi::confirmationUrl($data->eShop, $data->eDateSelected).'" target="_parent" class="btn btn-transparent">'.s("Consulter ma commande").'</a>';
+					echo '<a href="'.\shop\ShopUi::confirmationUrl($data->eShop, $data->eDateSelected).'" '.(\shop\Shop::isEmbed() ? 'target="_blank"' : '').' class="btn btn-transparent">'.s("Consulter ma commande").'</a>';
 				echo '</div>';
 
 			}

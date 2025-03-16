@@ -9,7 +9,7 @@ new \farm\FarmPage(
 	]))
 	->create()
 	->doCreate(function($data) {
-		throw new RedirectAction(\farm\FarmUi::urlCartography($data->e).'?success=farm:Farm.created');
+		throw new RedirectAction(\farm\FarmUi::urlCartography($data->e).'?success=farm:Farm::created');
 	});
 
 new \farm\FarmPage()
@@ -23,7 +23,7 @@ new \farm\FarmPage()
 		throw new ViewAction($data);
 
 	})
-	->doUpdate(fn() => throw new ReloadAction('farm', 'Farm.updated'))
+	->doUpdate(fn() => throw new ReloadAction('farm', 'Farm::updated'))
 	->update(function($data) {
 
 		$data->eFarm = $data->e;
@@ -33,7 +33,7 @@ new \farm\FarmPage()
 		throw new ViewAction($data);
 
 	}, page: 'updateSeries')
-	->doUpdateProperties('doUpdateSeries', ['calendarMonthStart', 'calendarMonthStop', 'rotationYears', 'rotationExclude'], fn() => throw new ReloadAction('farm', 'Farm.updatedRotation'))
+	->doUpdateProperties('doUpdateSeries', ['calendarMonthStart', 'calendarMonthStop', 'rotationYears', 'rotationExclude'], fn() => throw new ReloadAction('farm', 'Farm::updatedRotation'))
 	->update(function($data) {
 
 		$data->eFarm = $data->e;
@@ -41,7 +41,7 @@ new \farm\FarmPage()
 		throw new ViewAction($data);
 
 	}, page: 'updateFeature')
-	->doUpdateProperties('doUpdateFeature', ['featureTime', 'featureDocument'], fn() => throw new ReloadAction('farm', 'Farm.updatedFeatures'))
+	->doUpdateProperties('doUpdateFeature', ['featureTime', 'featureDocument'], fn() => throw new ReloadAction('farm', 'Farm::updatedFeatures'))
 	->doUpdateProperties('doUpdatePlanningDelayedMax', ['planningDelayedMax'], fn() => throw new ReloadAction())
 	->read('calendarMonth', function($data) {
 
@@ -78,7 +78,7 @@ new \farm\FarmPage()
 
 		\farm\FarmLib::update($data->e, ['status']);
 
-		throw new RedirectAction('/?success=farm:Farm.closed');
+		throw new RedirectAction('/?success=farm:Farm::closed');
 
 	})
 	->read('export', function($data) {

@@ -115,7 +115,7 @@ Shop:
   customTitleFont: ?text8
   customFont: ?text8
   embedOnly: bool = FALSE
-  embedUrl: ?text8
+  embedUrl: ?url
   status: enum(OPEN, CLOSED) = OPEN
   createdAt: datetime = SPECIAL(now)
   createdBy: user\User = SPECIAL(user)

@@ -57,6 +57,7 @@ class AlertUi {
 			'Shop::pointOff' => s("Le choix du mode de livraison a bien été désactivé pour vos clients !"),
 			'Shop::created' => s("Votre boutique a bien été créée. Vous pouvez maintenant paramétrer votre première vente !"),
 			'Shop::updated' => s("Votre boutique a bien été mise à jour."),
+			'Shop::updatedEmbed' => s("La configuration de l'intégration a bien été mise à jour !"),
 			'Shop::customized' => s("Le style de votre boutique a bien été enregistré."),
 			'Shop::collected' => s("La collecte des fonds a bien été lancée."),
 			'Shop::deleted' => s("La boutique a bien été supprimée."),

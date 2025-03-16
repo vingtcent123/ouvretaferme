@@ -400,10 +400,16 @@ class ShopUi {
 
 	}
 
+	public function getEmbedScript(Shop $eShop, string $mode) {
+
+		return '<script type="text/javascript">(function() { const element = document.createElement("script"); element.src = "'.self::domain().'/embed-'.$mode.'.js?id='.$eShop['id'].'"; document.getElementsByTagName("head")[0].appendChild(element); })()</script><div id="otf-'.$mode.'"></div>';
+
+	}
+
 	public function displayWebsiteInternal(Shop $eShop, Date $eDate, \farm\Farm $eFarm, \website\Website $eWebsite): string {
 
 		$h = '<h2>'.s("Option 1").'</h2>';
-		$h .= '<h3 style="text-transform: uppercase">'.s("Intégrer sur un site internet créé avec {siteName}").'</h3>';
+		$h .= '<h3 style="text-transform: uppercase">'.s("Intégration simple sur un site internet créé avec {siteName}").'</h3>';
 		$h .= '<div class="util-block mb-3">';
 
 		if($eWebsite->empty()) {
@@ -426,20 +432,25 @@ class ShopUi {
 			$h .= '<br/>';
 
 			$h .= '<h3>'.s("Intégration").'</h3>';
-			$h .= '<p>'.s("Copiez ce morceau de code sur n'importe quelle page de votre site pour y mettre en avant cette boutique :").'</p>';
+			$h .= '<p>'.s("Copiez ce morceau de code sur n'importe quelle page de votre site :").'</p>';
 			$h .= '<code>@shop='.$eShop['id'].'</code>';
+			$h .= '<br/>';
+
+			$h .= '<h3>'.s("Comportement").'</h3>';
+			$h .= '<p>'.s("Un bloc contenant le nom de votre boutique et la date de la prochaine vente sera affiché sur votre site internet. Si une vente est ouverte, un lien pour commander en ligne sera affiché à votre client.").'</p>';
+
+			$h .= '<br/>';
+
+			$h .= '<h3>'.s("Rendu").'</h3>';
 
 			if($eDate->notEmpty()) {
 
-				$h .= '<br/>';
-
-				$h .= '<h3>'.s("Rendu").'</h3>';
-				$h .= '<p>'.s("En copiant le morceau de code ci-dessus sur une page de votre site, voici quel sera le rendu :").'</p>';
-				$h .= '<br/>';
-				$h .= '<div style="max-width: 40rem">';
+				$h .= '<div>';
 					$h .= new \website\WidgetUi()->getShop($eShop, $eDate);
 				$h .= '</div>';
 
+			} else {
+				$h .= '<p>'.s("Créez une première vente pour visualiser le rendu.").'</p>';
 			}
 
 		}
@@ -451,31 +462,122 @@ class ShopUi {
 	}
 
 	public function displayWebsiteExternal(Shop $eShop, Date $eDate, \farm\Farm $eFarm): string {
-return '';
+
 		$h = '<h2>'.s("Option 2").'</h2>';
-		$h .= '<h3 style="text-transform: uppercase">'.s("Intégrer sur un autre site internet").'</h3>';
+		$h .= '<h3 style="text-transform: uppercase">'.s("Intégration simple sur un autre site internet").'</h3>';
+		$h .= '<div class="util-block mb-3">';
 
-		$h .= '<h3>'.s("Intégration").'</h3>';
-		$h .= '<p>'.s("Copiez ce morceau de code sur n'importe quelle page de votre site pour y mettre en avant cette boutique :").'</p>';
-		$h .= '<code>@shop='.$eShop['id'].'</code>';
+			$h .= '<h3>'.s("Intégration").'</h3>';
+			$h .= '<p>'.s("Copiez ce morceau de code sur n'importe quelle page de votre site :").'</p>';
+			$h .= '<code>';
+				$h .= encode($this->getEmbedScript($eShop, 'limited'));
+			$h .= '</code>';
 
-		if($eDate->notEmpty()) {
+			$h .= '<br/>';
+
+			$h .= '<h3>'.s("Comportement").'</h3>';
+			$h .= '<p>'.s("Un bloc contenant le nom de votre boutique et la date de la prochaine vente sera affiché sur votre site internet. Si une vente est ouverte, un lien pour commander en ligne sera affiché à votre client.").'</p>';
 
 			$h .= '<br/>';
 
 			$h .= '<h3>'.s("Rendu").'</h3>';
-			$h .= '<p>'.s("En copiant le morceau de code ci-dessus sur une page de votre site, voici quel sera le rendu :").'</p>';
-			$h .= '<br/>';
-			$h .= '<div style="max-width: 40rem">';
-				$h .= new \website\WidgetUi()->getShop($eShop, $eDate);
-			$h .= '</div>';
 
-		}
+			if($eDate->notEmpty()) {
+
+				$h .= '<div>';
+					$h .= $this->getEmbedScript($eShop, 'limited');
+				$h .= '</div>';
+
+			} else {
+				$h .= '<p>'.s("Créez une première vente pour visualiser le rendu.").'</p>';
+			}
+		$h .= '</div>';
+
+		$h .= '<h2>'.s("Option 3").'</h2>';
+		$h .= '<h3 style="text-transform: uppercase">'.s("Intégration complète sur un autre site internet").'</h3>';
+
+		$h .= '<div class="util-block mb-3">';
+			$h .= '<h3>'.s("Intégration").'</h3>';
+
+			if($eShop['embedUrl'] === NULL) {
+
+				$h .= '<p class="util-empty">'.s("Vous devez d'abord configurer l'intégration avant d'utiliser cette fonctionnalité.").'</p>';
+				$h .= '<div>';
+					$h .= '<a href="/shop/:updateEmbed?id='.$eShop['id'].'" class="btn btn-secondary">'.s("Configurer l'intégration").'</a>';
+				$h .= '</div>';
+
+			} else {
+
+				$h .= '<dl class="util-presentation util-presentation-1">';
+					$h .= '<dt>'.s("Site internet").'</dt>';
+					$h .= '<dd>'.encode($eShop['embedUrl']).'</dd>';
+					$h .= '<dt>'.s("Accès à cette boutique").'</dt>';
+					$h .= '<dd>'.self::p('embedOnly')->values[$eShop['embedOnly']].'</dd>';
+				$h .= '</dl>';
+
+				$h .= '<div class="mt-1">';
+					$h .= '<a href="/shop/:updateEmbed?id='.$eShop['id'].'" class="btn btn-secondary">'.s("Modifier l'intégration").'</a> ';
+					$h .= '<a data-ajax="/shop/:doUpdateEmbed" post-id="'.$eShop['id'].'" class="btn btn-outline-secondary" data-confirm="'.s("Voulez-vous réellement supprimer cette intégration ?").'">'.s("Supprimer l'intégration").'</a>';
+				$h .= '</div>';
+
+				$h .= '<br/>';
+
+				$h .= '<p>'.s("Copiez ce morceau de code sur votre site :").'</p>';
+				$h .= '<code>';
+					$h .= encode($this->getEmbedScript($eShop, 'full'));
+				$h .= '</code>';
+
+			}
+
+			$h .= '<br/>';
+
+			$h .= '<h3>'.s("Comportement").'</h3>';
+			$h .= '<p>'.s("La page d'accueil de votre boutique sera pleinement visible sur votre site internet. Si le client s'engage dans un processus de vente, il sera redirigé vers {siteName} pour finaliser sa commande et sera invité à revenir vers votre site Internet si vous avez indiqué l'adresse la page sur laquelle vous allez faire l'intégration de cette boutique.").'</p>';
+
+			$h .= '<br/>';
+
+			$h .= '<h3>'.s("Rendu").'</h3>';
+
+			if($eDate->notEmpty()) {
+
+				$h .= '<div>';
+					$h .= $this->getEmbedScript($eShop, 'full');
+				$h .= '</div>';
+
+			} else {
+				$h .= '<p>'.s("Créez une première vente pour visualiser le rendu.").'</p>';
+			}
+		$h .= '</div>';
 
 		return $h;
 
 	}
 
+
+	public function updateEmbed(Shop $eShop): \Panel {
+
+		$form = new \util\FormUi();
+
+		$h = '<p class="util-info">'.s("Vous devez indiquer l'adresse du site internet sur lequel vous souhaitez intégrer votre boutique. C'est cette adresse qui sera utilisé par {siteName} pour rediriger vos clients sur votre site pendant le processus de prise de commande.").'</p>';
+
+		$h .= $form->openAjax('/shop/:doUpdateEmbed');
+
+		$h .= $form->hidden('id', $eShop['id']);
+		$h .= $form->dynamicGroups($eShop, ['embedUrl', 'embedOnly']);
+
+		$h .= $form->group(
+			content: $form->submit(s("Configurer"))
+		);
+
+		$h .= $form->close();
+
+		return new \Panel(
+			id: 'panel-shop-embed',
+			title: s("Configuration de l'intégration"),
+			body: $h
+		);
+
+	}
 
 	public function displayEmails(\farm\Farm $eFarm, array $emails): \Panel {
 
@@ -510,11 +612,11 @@ return '';
 		return '<a href="'.self::url($eShop).'" '.($newTab ? 'target="_blank"' : '').'>'.encode($eShop['name']).'</a>';
 	}
 
-	public static function url(Shop $eShop, bool $showProtocol = TRUE, ?string $force = NULL): string {
+	public static function url(Shop $eShop, bool $showProtocol = TRUE): string {
 
 		$eShop->expects(['fqn', 'embedUrl', 'embedOnly']);
 
-		return self::domain($showProtocol, $force).'/'.$eShop['fqn'];
+		return self::domain($showProtocol).'/'.$eShop['fqn'];
 
 	}
 
@@ -795,7 +897,8 @@ return '';
 			'limitCustomers' => s("Limiter l'accès à cette boutique à certains clients seulement"),
 			'shipping' => s("Frais de livraison par commande"),
 			'shippingUntil' => s("Montant minimal de commande au delà duquel les frais de livraison sont offerts"),
-			'terms' => s("Conditions générales de vente"),
+			'embedUrl' => s("Adresse de votre site internet"),
+			'embedOnly' => s("Comment vos clients peuvent-ils accéder à votre boutique pour commander ?"),
 			'termsField' => s("Demander à vos clients d'accepter explicitement les conditions générales de vente avec une case à cocher"),
 			'customBackground' => s("Couleur d'arrière plan"),
 			'customColor' => s("Couleur contrastante"),
@@ -968,6 +1071,24 @@ return '';
 				$d->field = 'select';
 				$d->placeholder = s("Par défaut");
 				$d->values = \Setting::get('website\customTitleFonts');
+				break;
+
+			case 'embedUrl':
+				$d->attributes = [
+					'mandatory' => TRUE
+				];
+				$d->placeholder = 'https://www.lesitedemaferme.fr/';
+				break;
+
+			case 'embedOnly':
+				$d->field = 'radio';
+				$d->values = [
+					TRUE => s("Uniquement depuis votre site internet"),
+					FALSE => s("Depuis votre site internet et depuis {siteName}")
+				];
+				$d->attributes = [
+					'mandatory' => TRUE
+				];
 				break;
 
 		}

@@ -264,17 +264,19 @@ class BasketUi {
 
 	public function getAuthenticateText(string $step): string {
 
+		$h = '';
+
 		switch($step) {
 
 			case BasketUi::STEP_SUMMARY :
-				$h = '<div class="util-block">';
+				$h .= '<div class="util-block">';
 				$h .= '<h4>'.s("Votre panier est enregistré !").'</h4>';
 				$h .= '<p>'.s("Pour confirmer votre commande, veuillez vous connecter si vous avez déjà un compte. Si vous êtes un nouveau client, saisissez quelques informations qui permettront à votre producteur de vous reconnaître !").'</p>';
 				$h .= '</div>';
 				break;
 
 			case BasketUi::STEP_CONFIRMATION :
-				$h = '<div class="util-block">';
+				$h .= '<div class="util-block">';
 				$h .= '<h4>'.s("Votre confirmation de commande").'</h4>';
 				$h .= '<p>'.s("Pour consulter votre confirmation de commande, veuillez vous connecter à votre compte client.").'</p>';
 				$h .= '</div>';

@@ -67,7 +67,7 @@ new Page(function($data) {
 
 	})
 	->get([[
-		'/shop/public/embed.js',
+		'/shop/public/embed-limited.js',
 		'@priority' => 1
 	]], function($data) {
 
@@ -79,20 +79,32 @@ new Page(function($data) {
 		$content = addcslashes($content, '\'\\');
 
 		$css = Lime::getUrl().(string)Asset::getCssPath('website', 'widget.css');
+		$key = random_int(0, 1000000);
 
 		echo <<<END
 
-		var otfCss  = document.createElement('link');
-		otfCss.rel  = 'stylesheet';
-		otfCss.type = 'text/css';
-		otfCss.href = '$css';
+		let otfCss$key  = document.createElement('link');
+		otfCss$key.rel  = 'stylesheet';
+		otfCss$key.type = 'text/css';
+		otfCss$key.href = '$css';
 		
-		document.getElementsByTagName("head")[0].appendChild(otfCss);
+		document.getElementsByTagName("head")[0].appendChild(otfCss$key);
 		
-		document.getElementById("otf").innerHTML = '$content';
-
+		document.getElementById("otf-limited").innerHTML = '$content';
 END;
-return;
+
+	})
+	->get([[
+		'/shop/public/embed-full.js',
+		'@priority' => 1
+	]], function($data) {
+
+		if(
+			$data->eShop['embedUrl'] === NULL and
+			$data->eShop->canWrite() === FALSE
+		) {
+			return;
+		}
 
 		header('Content-Type: application/javascript');
 		header('Sec-Fetch-Dest: script');
@@ -101,9 +113,33 @@ return;
 		header('Sec-GPC: 1');
 
 		$url = \shop\ShopUi::url($data->eShop).'?embed';
+		$key = random_int(0, 1000000);
 
-		echo 'let url = "'.$url.'";'."\n";
-		echo file_get_contents(Package::getPath('shop').'/asset/js/embed.js');
+		echo <<<END
+
+		let otfIframe$key = document.createElement("iframe");
+		let otfIframeHeight$key = 500;
+		otfIframe$key.src = "$url";
+		otfIframe$key.style.width = "1px";
+		otfIframe$key.style.minWidth = "100%";
+		otfIframe$key.style.border = "none";
+		otfIframe$key.style.height = otfIframeHeight$key +"px";
+		document.getElementById("otf-full").appendChild(otfIframe$key);
+		
+		window.addEventListener('message', function(e) {
+		
+			  let message = e.data;
+		
+			  if (
+					 message.height &&
+					 message.height !== otfIframeHeight$key
+			  ) {
+					 otfIframe$key.style.height = (message.height + 50) +'px';
+					 otfIframeHeight$key = message.height;
+			  }
+		
+		},false);
+END;
 
 	})
 	->get('/shop/public/{fqn}:conditions', function($data) {

@@ -21,6 +21,12 @@ new AdaptativeView('website', function($data, FarmTemplate $t) {
 
 });
 
+new AdaptativeView('updateEmbed', function($data, PanelTemplate $t) {
+
+	return new \shop\ShopUi()->updateEmbed($data->e);
+
+});
+
 new AdaptativeView('emails', function($data, PanelTemplate $t) {
 	return new \shop\ShopUi()->displayEmails($data->eFarm, $data->emails);
 });

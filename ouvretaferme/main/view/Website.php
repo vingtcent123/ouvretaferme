@@ -179,17 +179,19 @@ class WebsiteTemplate extends BaseTemplate {
 
 									// Shop
 									if(str_starts_with($eMenu['url'], \shop\ShopUi::domain())) {
-										$h .= '<a href="'.encode($eMenu['url']).'" class="website-menu-item" target="_blank">'.encode($eMenu['label']).' '.Asset::icon('basket2-fill').'</a>';
+										$icon = Asset::icon('basket2-fill');
 									}
 									// Autre chose
 									else {
-										$h .= '<a href="'.encode($eMenu['url']).'" class="website-menu-item" target="_blank">'.encode($eMenu['label']).' '.Asset::icon('box-arrow-up-right').'</a>';
+										$icon = Asset::icon('box-arrow-up-right');
 									}
+
+									$h .= '<a href="'.encode($eMenu['url']).'" class="website-menu-item" target="_blank">'.encode($eMenu['label']).' '.$icon.'</a>';
 
 
 								} else {
 									$class = ($this->data->eWebpage->notEmpty() and $eMenu['webpage']['id'] === $this->data->eWebpage['id']) ? 'selected' : '';
-									$h .= '<a href="'.\website\WebsiteUi::path($this->data->eWebsite, '/'.$eMenu['webpage']['url']).'" class="website-menu-item '.$class.'" rel="nofollow">'.encode($eMenu['label']).'</a>';
+									$h .= '<a href="'.\website\WebsiteUi::path($this->data->eWebsite, '/'.$eMenu['webpage']['url']).'" class="website-menu-item '.$class.'">'.encode($eMenu['label']).'</a>';
 								}
 							$h .= '</li>';
 						}

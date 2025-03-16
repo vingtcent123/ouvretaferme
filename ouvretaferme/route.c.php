@@ -348,10 +348,15 @@ Route::register([
 			'priority' => 5,
 			'route' => ['shop', 'public'],
 		],
-		'/shop/public/embed.js' => [
+		'/shop/public/embed-full.js' => [
 			'request' => 'shop/public',
 			'priority' => 1,
-			'route' => ['shop', 'public', 'embed.js'],
+			'route' => ['shop', 'public', 'embed-full.js'],
+		],
+		'/shop/public/embed-limited.js' => [
+			'request' => 'shop/public',
+			'priority' => 1,
+			'route' => ['shop', 'public', 'embed-limited.js'],
 		],
 		'/shop/public/robots.txt' => [
 			'request' => 'shop/public',
