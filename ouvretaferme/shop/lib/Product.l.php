@@ -235,8 +235,21 @@ class ProductLib extends ProductCrud {
 			$order = [];
 
 			// On place en premier les produits composés pour des raisons d'affichage
-			if($withIngredients and $public) {
-				$order[] = fn($e1, $e2) => (($e1['product']['cItemIngredient'] ?? new \Collection())->count() > ($e2['product']['cItemIngredient'] ?? new \Collection())->count()) ? -1 : 1;
+			if(
+				$withIngredients and
+				$eDate['type'] === Date::PRIVATE and
+				$public
+			) {
+
+				$order[] = function($e1, $e2) {
+
+					$n1 = ($e1['product']['cItemIngredient'] ?? new \Collection())->count();
+					$n2 = ($e2['product']['cItemIngredient'] ?? new \Collection())->count();
+
+					return ($n1 === $n2) ? 0 : (($n1 > $n2) ? -1 : 1);
+
+				};
+
 			}
 
 			$order['product'] = ['name'];
