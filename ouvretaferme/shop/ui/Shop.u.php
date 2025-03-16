@@ -534,6 +534,12 @@ class ShopUi {
 			$h .= '<h3>'.s("Comportement").'</h3>';
 			$h .= '<p>'.s("La page d'accueil de votre boutique sera pleinement visible sur votre site internet. Si le client s'engage dans un processus de vente, il sera redirigé vers {siteName} pour finaliser sa commande et sera invité à revenir vers votre site Internet si vous avez indiqué l'adresse la page sur laquelle vous allez faire l'intégration de cette boutique.").'</p>';
 
+			$h .= '<h4>'.s("Les limites de cette intégration").'</h4>';
+			$h .= '<ul>';
+				$h .= '<li>'.s("À moins que votre client n'ait activé les cookies tiers, il ne verra pas sur votre site sa commande en cours ou les réductions auxquelles il a droit, mais celles-ci seront bien prises en compte sur la page de confirmation de commande.").'</li>';
+				$h .= '<li>'.s("Cette intégration ne fonctionnera pas avec les boutiques dont l'accès a été limité à certains clients seulement.").'</li>';
+			$h .= '</ul>';
+
 			$h .= '<br/>';
 
 			$h .= '<h3>'.s("Rendu").'</h3>';
