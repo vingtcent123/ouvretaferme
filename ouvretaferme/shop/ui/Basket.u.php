@@ -354,7 +354,30 @@ class BasketUi {
 
 	}
 
-	public function getSubmitBasket(Shop $eShop, Date $eDate, \selling\Sale $eSaleExisting, \user\User $eUserOnline, bool $hasPoint, Point $ePointSelected): string {
+	public function getComment(Shop $eShop, \selling\Sale $eSaleExisting): string {
+
+		if($eShop['comment'] === FALSE) {
+			return '';
+		}
+
+		$h = '<h2>'.s("Laisser un commentaire").'</h2>';
+
+		if($eShop['commentCaption'] !== NULL) {
+			$h .= '<h4>'.encode($eShop['commentCaption']).'</h4>';
+		}
+
+		$h .= '<div class="mb-3">';
+			$h .= (new \util\FormUi())->dynamicField($eSaleExisting, 'shopComment', function(\PropertyDescriber $d) {
+				$d->attributes['id'] = 'basket-comment';
+			});
+		$h .= '</div>';
+
+
+		return $h;
+
+	}
+
+	public function getSubmitBasket(Shop $eShop, Date $eDate, \user\User $eUserOnline, bool $hasPoint, Point $ePointSelected): string {
 
 		$class = $hasPoint === FALSE or (
 			$ePointSelected->notEmpty() and (
@@ -409,13 +432,13 @@ class BasketUi {
 
 			$h = '<label class="mb-1">';
 				$h .= new \util\FormUi()->inputCheckbox('terms').'  ';
-				$h .= s("J'ai lu et j'accepte les <link>conditions générales de ventes</link>.", ['link' => '<a href="'.ShopUi::url($eShop).':conditions">']);
+				$h .= s("J'ai lu et j'accepte les <link>conditions générales de vente</link>.", ['link' => '<a href="'.ShopUi::url($eShop).':conditions">']);
 			$h .= '</label>';
 
 		} else {
 
 			$h = '<div class="mb-1">';
-				$h .= s("En validant ma commande, je confirme que j'ai lu et que j'accepte les <link>conditions générales de ventes</link>.", ['link' => '<a href="'.ShopUi::url($eShop).':conditions">']);
+				$h .= s("En validant ma commande, je confirme que j'ai lu et que j'accepte les <link>conditions générales de vente</link>.", ['link' => '<a href="'.ShopUi::url($eShop).':conditions">']);
 			$h .= '</div>';
 
 		}
@@ -773,6 +796,11 @@ class BasketUi {
 			if($eSale['shopPoint']->notEmpty()) {
 				$h .= '<h3>'.s("Mode de livraison").'</h3>';
 				$h .= new \selling\OrderUi()->getPointBySale($eSale);
+			}
+
+			if($eSale['shopComment'] !== NULL) {
+				$h .= '<h3>'.s("Commentaire").'</h3>';
+				$h .= '<div class="util-block">'.encode($eSale['shopComment']).'</div>';
 			}
 
 

@@ -287,6 +287,7 @@ Sale:
   shopDate: ?shop\Date
   shopUpdated: bool = FALSE
   shopPoint: ?shop\Point
+  shopComment: ?text8(1, 250)
   deliveryStreet1: ?text8
   deliveryStreet2: ?text8
   deliveryPostcode: ?text8

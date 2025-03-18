@@ -76,6 +76,11 @@ class BasketManage {
 
 		const post = this.getBasket(dateId);
 		post.shopDate = dateId
+		post.shopComment = '';
+
+		qs('#basket-comment', node => post.shopComment = node.value);
+
+		post.comment = qs('#basket-comment', node => node.value, () => '');
 
 		qs('#shop-basket-point input[name="shopPoint"]:checked', node => post.shopPoint = node.value);
 		qs('#shop-basket-submit input[name="terms"]:checked', () => post.terms = 1);
@@ -492,9 +497,13 @@ class BasketManage {
 
 		const basket = this.getBasket(dateId);
 
+		let comment = '';
+		qs('#basket-comment', node => comment = node.value);
+
 		const post = {
 			products: basket.products,
 			date: dateId,
+			shopComment: comment
 		};
 
 		qs('#shop-basket-point input[name="shopPoint"]:checked', node => post.shopPoint = node.value);

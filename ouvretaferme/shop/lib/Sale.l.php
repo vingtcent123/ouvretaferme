@@ -231,7 +231,7 @@ class SaleLib {
 
 	}
 
-	public static function updateForShop(\selling\Sale $eSale, \user\User $eUser): ?string {
+	public static function updateForShop(\selling\Sale $eSale, Shop $eShop, \user\User $eUser): ?string {
 
 		$eSale->expects(['basket', 'paymentMethod']);
 
@@ -240,6 +240,10 @@ class SaleLib {
 		}
 
 		$properties = ['preparationStatus', 'shopPoint', 'shopUpdated', 'shipping'];
+
+		if($eShop['comment']) {
+			$properties[] = 'shopComment';
+		}
 
 		$eSale['shopPoint'] = PointLib::getById($eSale['shopPoint']);
 		$eSale['shopUpdated'] = TRUE;

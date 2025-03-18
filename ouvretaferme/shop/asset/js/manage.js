@@ -26,6 +26,18 @@ class ShopManage {
 
 	}
 
+	static changeComment(target) {
+
+		const hasComment = !!parseInt(target.value);
+
+		const form = target.firstParent('form');
+
+		form.qsa('[data-wrapper="commentCaption"]', wrapper => hasComment ?
+			wrapper.classList.remove('hide') :
+			wrapper.classList.add('hide'));
+
+	}
+
 	static updatePayment(target) {
 
 		const form = target.firstParent('form');

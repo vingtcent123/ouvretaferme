@@ -1627,7 +1627,7 @@ class SaleUi {
 		}
 		$h .= $form->hidden('market', $eSale['market']);
 
-		$h .= $form->dynamicGroup($eSale, 'customer*', function($d) use ($form, $eSale) {
+		$h .= $form->dynamicGroup($eSale, 'customer*', function($d) use($form, $eSale) {
 
 				$d->autocompleteDispatch = '#sale-create';
 
@@ -1991,6 +1991,11 @@ class SaleUi {
 					];
 
 				};
+				break;
+
+			case 'shopComment' :
+				$d->field = 'textarea';
+				$d->attributes = ['data-limit' => Sale::model()->getPropertyRange('shopComment')[1]];
 				break;
 
 			case 'market' :

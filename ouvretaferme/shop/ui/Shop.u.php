@@ -93,8 +93,14 @@ class ShopUi {
 		$h .= $form->openAjax('/shop/configuration:doUpdate');
 
 		$h .= $form->hidden('id', $eShop['id']);
-		$h .= $form->dynamicGroups($eShop, ['name', 'type', 'fqn', 'email', 'frequency', 'orderMin', 'shipping', 'shippingUntil', 'limitCustomers', 'hasPoint', 'description'], [
-				'type' => self::getTypeDescriber($eFarm, 'update')
+		$h .= $form->dynamicGroups($eShop, ['name', 'type', 'fqn', 'email', 'frequency', 'orderMin', 'shipping', 'shippingUntil', 'limitCustomers', 'hasPoint', 'comment', 'commentCaption', 'description'], [
+				'type' => self::getTypeDescriber($eFarm, 'update'),
+				'comment' => function(\PropertyDescriber $d) {
+					$d->attributes['callbackRadioAttributes'] = fn() => ['onclick' => 'ShopManage.changeComment(this)'];
+				},
+				'commentCaption' => $eShop['comment'] ? NULL : function(\PropertyDescriber $d) {
+					$d->group['class'] = 'hide';
+				}
 		]);
 
 		$h .= $form->group(
@@ -235,7 +241,7 @@ class ShopUi {
 
 		if($eShop['terms'] === NULL) {
 			$content .= '<div class="util-info">';
-				$content .= '<p>'.s("Actuellement, vous n'avez pas ajouté de conditions générales de ventes à votre boutique.").'</p>';
+				$content .= '<p>'.s("Actuellement, vous n'avez pas ajouté de conditions générales de vente à votre boutique.").'</p>';
 			$content .= '</div>';
 		} else {
 			$content .= '<div class="util-success">';
@@ -905,7 +911,10 @@ class ShopUi {
 			'shippingUntil' => s("Montant minimal de commande au delà duquel les frais de livraison sont offerts"),
 			'embedUrl' => s("Adresse de votre site internet"),
 			'embedOnly' => s("Comment vos clients peuvent-ils accéder à votre boutique pour commander ?"),
+			'terms' => s("Vos conditions générales de vente"),
 			'termsField' => s("Demander à vos clients d'accepter explicitement les conditions générales de vente avec une case à cocher"),
+			'comment' => s("Permettre à vos clients de laisser un commentaire lors d'une commande"),
+			'commentCaption' => s("Instructions à communiquer à vos clients pour remplir le commentaire"),
 			'customBackground' => s("Couleur d'arrière plan"),
 			'customColor' => s("Couleur contrastante"),
 			'customFont' => s("Police pour le texte"),
@@ -1095,6 +1104,14 @@ class ShopUi {
 				$d->attributes = [
 					'mandatory' => TRUE
 				];
+				break;
+
+			case 'comment' :
+				$d->field = 'yesNo';
+				break;
+
+			case 'commentCaption' :
+				$d->placeholder = s("Tapez vos instructions...");
 				break;
 
 		}

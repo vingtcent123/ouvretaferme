@@ -458,7 +458,12 @@ new Page(function($data) {
 				\selling\Sale::fail('phone.check');
 			}
 
-			$eSale->build(['productsBasket', 'shopPoint'], $_POST);
+			$properties = ['productsBasket', 'shopPoint'];
+			if($data->eShop['comment']) {
+				$properties[] = 'shopComment';
+			}
+
+			$eSale->build($properties, $_POST);
 
 			$fw->validate();
 
@@ -504,7 +509,13 @@ new Page(function($data) {
 
 		$data->eSaleExisting['shop'] = $data->eShop;
 		$data->eSaleExisting['shopDate'] = $data->eDate;
-		$data->eSaleExisting->build(['productsBasket', 'shopPoint'], $_POST);
+
+		$properties = ['productsBasket', 'shopPoint'];
+		if($data->eShop['comment']) {
+			$properties[] = 'shopComment';
+		}
+
+		$data->eSaleExisting->build($properties, $_POST);
 
 		$fw->validate();
 
@@ -518,7 +529,7 @@ new Page(function($data) {
 
 		$fw->validate();
 
-		$url = \shop\SaleLib::updateForShop($data->eSaleExisting, $data->eUserOnline);
+		$url = \shop\SaleLib::updateForShop($data->eSaleExisting, $data->eShop, $data->eUserOnline);
 
 		$fw->validate();
 

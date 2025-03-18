@@ -158,6 +158,17 @@ class Shop extends ShopElement {
 				);
 
 			})
+			->setCallback('commentCaption.prepare', function(?string &$caption) use($p) {
+
+				if($p->isBuilt('comment') === FALSE) {
+					return TRUE;
+				}
+
+				if($this['comment'] === FALSE) {
+					$caption = NULL;
+				}
+
+			})
 			->setCallback('payment.check', function() {
 
 				$this->expects(['paymentCard', 'paymentOffline', 'paymentTransfer']);

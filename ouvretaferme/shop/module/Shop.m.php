@@ -74,14 +74,16 @@ class ShopModel extends \ModuleModel {
 			'customTitleFont' => ['text8', 'null' => TRUE, 'cast' => 'string'],
 			'customFont' => ['text8', 'null' => TRUE, 'cast' => 'string'],
 			'embedOnly' => ['bool', 'cast' => 'bool'],
-			'embedUrl' => ['text8', 'null' => TRUE, 'cast' => 'string'],
+			'embedUrl' => ['url', 'null' => TRUE, 'cast' => 'string'],
+			'comment' => ['bool', 'cast' => 'bool'],
+			'commentCaption' => ['text8', 'null' => TRUE, 'cast' => 'string'],
 			'status' => ['enum', [\shop\Shop::OPEN, \shop\Shop::CLOSED], 'cast' => 'enum'],
 			'createdAt' => ['datetime', 'cast' => 'string'],
 			'createdBy' => ['element32', 'user\User', 'cast' => 'element'],
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'fqn', 'farm', 'logo', 'name', 'email', 'type', 'frequency', 'hasPoint', 'hasPayment', 'paymentCard', 'paymentTransfer', 'paymentTransferHow', 'paymentOffline', 'paymentOfflineHow', 'description', 'terms', 'termsField', 'limitCustomers', 'orderMin', 'shipping', 'shippingUntil', 'customColor', 'customBackground', 'customTitleFont', 'customFont', 'embedOnly', 'embedUrl', 'status', 'createdAt', 'createdBy'
+			'id', 'fqn', 'farm', 'logo', 'name', 'email', 'type', 'frequency', 'hasPoint', 'hasPayment', 'paymentCard', 'paymentTransfer', 'paymentTransferHow', 'paymentOffline', 'paymentOfflineHow', 'description', 'terms', 'termsField', 'limitCustomers', 'orderMin', 'shipping', 'shippingUntil', 'customColor', 'customBackground', 'customTitleFont', 'customFont', 'embedOnly', 'embedUrl', 'comment', 'commentCaption', 'status', 'createdAt', 'createdBy'
 		]);
 
 		$this->propertiesToModule += [
@@ -125,6 +127,9 @@ class ShopModel extends \ModuleModel {
 				return [];
 
 			case 'embedOnly' :
+				return FALSE;
+
+			case 'comment' :
 				return FALSE;
 
 			case 'status' :
@@ -298,6 +303,14 @@ class ShopModel extends \ModuleModel {
 
 	public function whereEmbedUrl(...$data): ShopModel {
 		return $this->where('embedUrl', ...$data);
+	}
+
+	public function whereComment(...$data): ShopModel {
+		return $this->where('comment', ...$data);
+	}
+
+	public function whereCommentCaption(...$data): ShopModel {
+		return $this->where('commentCaption', ...$data);
 	}
 
 	public function whereStatus(...$data): ShopModel {
