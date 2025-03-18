@@ -336,7 +336,7 @@ class SaleUi {
 
 						$h .= '<td class="td-checkbox">';
 							$h .= '<label>';
-								$h .= '<input type="checkbox" name="batch[]" value="'.$eSale['id'].'" oninput="Sale.changeSelection()" data-batch-amount="'.($eSale['priceExcludingVat'] ?? 0.0).'" data-batch="'.implode(' ', $batch).'"/>';
+								$h .= '<input type="checkbox" name="batch[]" value="'.$eSale['id'].'" oninput="Sale.changeSelection()" data-batch-amount-excluding="'.($eSale['priceExcludingVat'] ?? 0.0).'" data-batch-amount-including="'.($eSale['priceIncludingVat'] ?? 0.0).'" data-batch-taxes="'.($eSale['hasVat'] ? $eSale['taxes'] : '').'" data-batch="'.implode(' ', $batch).'"/>';
 							$h .= '</label>';
 						$h .= '</td>';
 
@@ -517,7 +517,10 @@ class SaleUi {
 	public function getBatch(\farm\Farm $eFarm): string {
 
 		$menu = '<a data-url="/selling/item:summary?farm='.$eFarm['id'].'" class="batch-menu-amount batch-menu-item">';
-			$menu .= '<span class="batch-menu-item-number"></span>';
+			$menu .= '<span>';
+				$menu .= '<span class="batch-menu-item-number"></span>';
+					$menu .= ' <span class="batch-menu-item-taxes" data-excluding="'.s("HT").'" data-including="'.s("TTC").'"></span>';
+			$menu .= '</span>';
 			$menu .= '<span>'.s("Synthèse").'</span>';
 		$menu .= '</a>';
 

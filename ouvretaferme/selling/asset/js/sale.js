@@ -75,12 +75,31 @@ class Sale {
 
 			let actions = 0;
 
-			let amount = 0.0;
+			let taxes = null;
+			let amountIncluding = 0.0;
+			let amountExcluding = 0.0;
 			let ids = '';
+
 			selection.forEach(node => {
-				amount += parseFloat(node.dataset.batchAmount);
+
+				amountIncluding += parseFloat(node.dataset.batchAmountIncluding);
+				amountExcluding += parseFloat(node.dataset.batchAmountExcluding);
+
+				if(node.dataset.batchTaxes !== '') {
+
+					if(taxes === null) {
+						taxes = node.dataset.batchTaxes;
+					} else if(taxes !== node.dataset.batchTaxes) {
+						taxes = 'excluding';
+					}
+
+				}
+
 				ids += '&ids[]='+ node.value;
+
 			});
+
+			const amount = (taxes === 'excluding') ? amountExcluding : amountIncluding;
 
 			qs(
 				'.batch-menu-item-number',
@@ -88,6 +107,11 @@ class Sale {
 					node.innerHTML = money(amount, 2);
 					node.parentElement.setAttribute('href', node.parentElement.dataset.url + ids);
 				}
+			);
+
+			qs(
+				'.batch-menu-item-taxes',
+				node => node.innerHTML = (taxes === null) ? '' : ((taxes === 'excluding') ? node.dataset.excluding : node.dataset.including)
 			);
 
 			qs(

@@ -98,7 +98,6 @@ class DateLib extends DateCrud {
 					'amountValidIncludingVat' => new \Sql('SUM(IF(preparationStatus != \''.\selling\Sale::BASKET.'\', priceIncludingVat, 0))'),
 					'amountValidExcludingVat' => new \Sql('SUM(IF(preparationStatus != \''.\selling\Sale::BASKET.'\', priceExcludingVat, 0))'),
 				])
-				->whereFrom(\selling\Sale::SHOP)
 				->wherePreparationStatus('in', [\selling\Sale::BASKET, \selling\Sale::CONFIRMED, \selling\Sale::PREPARED, \selling\Sale::DELIVERED]);
 
 	}
