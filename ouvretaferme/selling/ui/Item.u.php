@@ -70,8 +70,15 @@ class ItemUi {
 
 		if($eSale['comment']) {
 			$h .= '<div class="util-block">';
-				$h .= '<h4>'.s("Observations").'</h4>';
-				$h .= encode($eSale['comment']);
+				$h .= '<h4>'.s("Commentaire interne	").'</h4>';
+				$h .= encode($eSale['comment']).' &raquo;';
+			$h .= '</div>';
+		}
+
+		if($eSale['shopComment']) {
+			$h .= '<div class="util-block">';
+				$h .= '<h4>'.s("Commentaire laissé par le client").'</h4>';
+				$h .= encode($eSale['shopComment']);
 			$h .= '</div>';
 		}
 

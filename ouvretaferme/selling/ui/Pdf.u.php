@@ -1122,13 +1122,21 @@ class PdfUi {
 
 		foreach($itemsChunck as $position => $items) {
 
+			$showComment = ($eSale['shopComment'] !== NULL and $position === 0);
+
 			$entry = '<div class="pdf-sales-label-item">';
 
-				$entry .= '<div class="pdf-sales-label-customer">';
-					$entry .= '<span>'.encode($eCustomer->getName()).'</span>';
+				$entry .= '<div class="pdf-sales-label-customer '.($showComment ? 'pdf-sales-label-customer-with-comment' : '').'">';
+					$entry .= '<span '.(mb_strlen($eCustomer->getName()) > 50 ? 'pdf-sales-label-customer-large' : '').'>'.encode($eCustomer->getName()).'</span>';
+
+					if($showComment) {
+						$entry .= '<span class="pdf-sales-label-comment">&laquo; '.encode($eSale['shopComment']).' &raquo;</span>';
+					}
 
 					if(count($itemsChunck) > 1) {
 						$entry .= '<span class="pdf-sales-label-page">'.($position + 1).' / '.$pages.'</span>';
+					} else {
+						$entry .= '<span></span>';
 					}
 
 				$entry.= '</div>';
@@ -1209,7 +1217,7 @@ class PdfUi {
 
 				$entry .= '</div>';
 
-				$entry .= '<div class="pdf-sales-label-content">';
+				$entry .= '<div class="pdf-sales-label-content pdf-sales-label-content-'.count($items).'">';
 					$entry .= implode('', $items);
 				$entry .= '</div>';
 

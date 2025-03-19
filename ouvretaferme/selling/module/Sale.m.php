@@ -102,7 +102,7 @@ class SaleModel extends \ModuleModel {
 			'shopDate' => ['element32', 'shop\Date', 'null' => TRUE, 'cast' => 'element'],
 			'shopUpdated' => ['bool', 'cast' => 'bool'],
 			'shopPoint' => ['element32', 'shop\Point', 'null' => TRUE, 'cast' => 'element'],
-			'shopComment' => ['text8', 'min' => 1, 'max' => 250, 'null' => TRUE, 'cast' => 'string'],
+			'shopComment' => ['text8', 'min' => 1, 'max' => 150, 'null' => TRUE, 'cast' => 'string'],
 			'deliveryStreet1' => ['text8', 'null' => TRUE, 'cast' => 'string'],
 			'deliveryStreet2' => ['text8', 'null' => TRUE, 'cast' => 'string'],
 			'deliveryPostcode' => ['text8', 'null' => TRUE, 'cast' => 'string'],
