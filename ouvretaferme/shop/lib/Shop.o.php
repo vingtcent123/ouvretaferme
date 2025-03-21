@@ -13,8 +13,7 @@ class ShopObserverLib {
 
 		$eUser = \user\UserLib::getById($eSale['customer']['user']);
 
-		$eConfiguration = \selling\ConfigurationLib::getByFarm($eSale['farm']);
-		$replyTo = $eSale['shop']['email'] ?? $eConfiguration['legalEmail'];
+		$replyTo = $eSale['shop']['email'];
 
 		new \mail\MailLib()
 			->setReplyTo($replyTo)
@@ -44,8 +43,7 @@ class ShopObserverLib {
 
 		$eUser = \user\UserLib::getById($eSale['customer']['user']);
 
-		$eConfiguration = \selling\ConfigurationLib::getByFarm($eSale['farm']);
-		$replyTo = $eSale['shop']['email'] ?? $eConfiguration['legalEmail'];
+		$replyTo = $eSale['shop']['email'];
 
 		new \mail\MailLib()
 			->setReplyTo($replyTo)
@@ -77,8 +75,7 @@ class ShopObserverLib {
 		$eUser = \user\UserLib::getById($eSale['customer']['user']);
 		$eSale['shopPoint'] = PointLib::getById($eSale['shopPoint']);
 
-		$eConfiguration = \selling\ConfigurationLib::getByFarm($eSale['farm']);
-		$replyTo = $eSale['shop']['email'] ?? $eConfiguration['legalEmail'];
+		$replyTo = $eSale['shop']['email'];
 
 		new \mail\MailLib()
 			->setReplyTo($replyTo)
@@ -108,8 +105,7 @@ class ShopObserverLib {
 
 		$eUser = \user\UserLib::getById($eSale['customer']['user']);
 
-		$eConfiguration = \selling\ConfigurationLib::getByFarm($eSale['farm']);
-		$replyTo = $eSale['shop']['email'] ?? $eConfiguration['legalEmail'];
+		$replyTo = $eSale['shop']['email'];
 
 		switch($eSale['paymentMethod']) {
 
@@ -136,8 +132,7 @@ class ShopObserverLib {
 
 		$eUser = \user\UserLib::getById($eSale['customer']['user']);
 
-		$eConfiguration = \selling\ConfigurationLib::getByFarm($eSale['farm']);
-		$replyTo = $eSale['shop']['email'] ?? $eConfiguration['legalEmail'];
+		$replyTo = $eSale['shop']['email'];
 
 		new \mail\MailLib()
 			->setReplyTo($replyTo)

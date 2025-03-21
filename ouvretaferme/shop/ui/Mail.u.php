@@ -215,16 +215,9 @@ Merci et à bientôt,
 
 		$hasVat = $eDate['farm']->getSelling('hasVat');
 
-		$price = \util\TextUi::money($eDate['type'] === Date::PRO ? $sales['priceExcludingVat'] : $sales['priceIncludingVat']);
-
-		if($hasVat and $eDate['type'] === Date::PRO) {
-			$price .= ' '.\selling\CustomerUi::getTaxes(Date::PRO);
-		}
-
 		$arguments = [
 			'shop' => encode($eDate['shop']['name']),
 			'date' => \util\DateUi::numeric($eDate['deliveryDate']),
-			'price' => $price
 		];
 
 		if($sales['number'] === 0) {
@@ -243,6 +236,14 @@ Bonne réception,
 			];
 
 		}
+
+		$price = \util\TextUi::money($eDate['type'] === Date::PRO ? $sales['priceExcludingVat'] : $sales['priceIncludingVat']);
+
+		if($hasVat and $eDate['type'] === Date::PRO) {
+			$price .= ' '.\selling\CustomerUi::getTaxes(Date::PRO);
+		}
+
+		$arguments['price'] = $price;
 
 		$title = p("✅ {value} commande pour le {date} sur {shop}", "✅ {value} commandes pour le {date} sur {shop}", $sales['number'], $arguments);
 

@@ -306,7 +306,7 @@ class DateLib extends DateCrud {
 				'shop' => ['name', 'email', 'emailEndDate'],
 				'farm' => ['banner']
 			])
-			->where('orderEndAt BETWEEN NOW() - INTERVAL 6 HOUR AND NOW() - INTERVAL 10 MINUTE')
+			->where('orderEndAt BETWEEN NOW() - INTERVAL 6 MONTH AND NOW() - INTERVAL 10 MINUTE')
 			->where('orderEndAt != orderEndEmailedAt OR orderEndEmailedAt IS NULL')
 			->getCollection();
 
@@ -334,8 +334,7 @@ class DateLib extends DateCrud {
 
 			$cItem = \selling\ItemLib::getSummaryByDate($eDate);
 
-			$eConfiguration = \selling\ConfigurationLib::getByFarm($eDate['farm']);
-			$email = $eSale['shop']['email'] ?? $eConfiguration['legalEmail'];
+			$email = $eDate['shop']['email'];
 
 			new \mail\MailLib()
 				->addTo($email)
