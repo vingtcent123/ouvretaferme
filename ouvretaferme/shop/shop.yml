@@ -23,6 +23,7 @@ Date:
   source: enum(DIRECT, CATALOG)
   orderStartAt: datetime
   orderEndAt: datetime
+  orderEndEmailedAt: ?date
   description: ?editor24
   points: json = PHP([])
   catalogs: ?json = PHP([])
@@ -118,6 +119,8 @@ Shop:
   embedUrl: ?url
   comment: bool = FALSE
   commentCaption: ?text8
+  emailNewSale: bool = FALSE
+  emailEndDate: bool = TRUE
   status: enum(OPEN, CLOSED) = OPEN
   createdAt: datetime = SPECIAL(now)
   createdBy: user\User = SPECIAL(user)

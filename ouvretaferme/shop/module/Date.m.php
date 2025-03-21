@@ -54,6 +54,7 @@ class DateModel extends \ModuleModel {
 			'source' => ['enum', [\shop\Date::DIRECT, \shop\Date::CATALOG], 'cast' => 'enum'],
 			'orderStartAt' => ['datetime', 'cast' => 'string'],
 			'orderEndAt' => ['datetime', 'cast' => 'string'],
+			'orderEndEmailedAt' => ['date', 'null' => TRUE, 'cast' => 'string'],
 			'description' => ['editor24', 'null' => TRUE, 'cast' => 'string'],
 			'points' => ['json', 'cast' => 'array'],
 			'catalogs' => ['json', 'null' => TRUE, 'cast' => 'array'],
@@ -61,7 +62,7 @@ class DateModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'createdAt', 'shop', 'type', 'farm', 'status', 'source', 'orderStartAt', 'orderEndAt', 'description', 'points', 'catalogs', 'deliveryDate'
+			'id', 'createdAt', 'shop', 'type', 'farm', 'status', 'source', 'orderStartAt', 'orderEndAt', 'orderEndEmailedAt', 'description', 'points', 'catalogs', 'deliveryDate'
 		]);
 
 		$this->propertiesToModule += [
@@ -183,6 +184,10 @@ class DateModel extends \ModuleModel {
 
 	public function whereOrderEndAt(...$data): DateModel {
 		return $this->where('orderEndAt', ...$data);
+	}
+
+	public function whereOrderEndEmailedAt(...$data): DateModel {
+		return $this->where('orderEndEmailedAt', ...$data);
 	}
 
 	public function whereDescription(...$data): DateModel {

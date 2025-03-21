@@ -77,13 +77,15 @@ class ShopModel extends \ModuleModel {
 			'embedUrl' => ['url', 'null' => TRUE, 'cast' => 'string'],
 			'comment' => ['bool', 'cast' => 'bool'],
 			'commentCaption' => ['text8', 'null' => TRUE, 'cast' => 'string'],
+			'emailNewSale' => ['bool', 'cast' => 'bool'],
+			'emailEndDate' => ['bool', 'cast' => 'bool'],
 			'status' => ['enum', [\shop\Shop::OPEN, \shop\Shop::CLOSED], 'cast' => 'enum'],
 			'createdAt' => ['datetime', 'cast' => 'string'],
 			'createdBy' => ['element32', 'user\User', 'cast' => 'element'],
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'fqn', 'farm', 'logo', 'name', 'email', 'type', 'frequency', 'hasPoint', 'hasPayment', 'paymentCard', 'paymentTransfer', 'paymentTransferHow', 'paymentOffline', 'paymentOfflineHow', 'description', 'terms', 'termsField', 'limitCustomers', 'orderMin', 'shipping', 'shippingUntil', 'customColor', 'customBackground', 'customTitleFont', 'customFont', 'embedOnly', 'embedUrl', 'comment', 'commentCaption', 'status', 'createdAt', 'createdBy'
+			'id', 'fqn', 'farm', 'logo', 'name', 'email', 'type', 'frequency', 'hasPoint', 'hasPayment', 'paymentCard', 'paymentTransfer', 'paymentTransferHow', 'paymentOffline', 'paymentOfflineHow', 'description', 'terms', 'termsField', 'limitCustomers', 'orderMin', 'shipping', 'shippingUntil', 'customColor', 'customBackground', 'customTitleFont', 'customFont', 'embedOnly', 'embedUrl', 'comment', 'commentCaption', 'emailNewSale', 'emailEndDate', 'status', 'createdAt', 'createdBy'
 		]);
 
 		$this->propertiesToModule += [
@@ -131,6 +133,12 @@ class ShopModel extends \ModuleModel {
 
 			case 'comment' :
 				return FALSE;
+
+			case 'emailNewSale' :
+				return FALSE;
+
+			case 'emailEndDate' :
+				return TRUE;
 
 			case 'status' :
 				return Shop::OPEN;
@@ -311,6 +319,14 @@ class ShopModel extends \ModuleModel {
 
 	public function whereCommentCaption(...$data): ShopModel {
 		return $this->where('commentCaption', ...$data);
+	}
+
+	public function whereEmailNewSale(...$data): ShopModel {
+		return $this->where('emailNewSale', ...$data);
+	}
+
+	public function whereEmailEndDate(...$data): ShopModel {
+		return $this->where('emailEndDate', ...$data);
 	}
 
 	public function whereStatus(...$data): ShopModel {

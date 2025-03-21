@@ -3,6 +3,58 @@ namespace shop;
 
 class MailUi {
 
+	public static function getNewFarmSale(string $type, \selling\Sale $eSale, \Collection $cItem): array {
+
+		$title = match($type) {
+			'confirmed' => s("Commande de {customer} reçue pour une livraison le {date}", ['customer' => $eSale['customer']->getName(), 'date' => \util\DateUi::numeric($eSale['shopDate']['deliveryDate'])]),
+			'updated' => s("Commande de {customer} modifiée pour une livraison le {date}", ['customer' => $eSale['customer']->getName(), 'date' => \util\DateUi::numeric($eSale['shopDate']['deliveryDate'])]),
+		};
+
+		$variables = \mail\CustomizeUi::getShopVariables(\mail\Customize::SHOP_CONFIRMED_NONE, $eSale, $cItem);
+
+		$template = match($type) {
+			'confirmed' => s("Vous avez reçu une commande de @customer."),
+			'updated' => s("Vous avez reçu une modification de commande de @customer.")
+		};
+		$template .= "\n\n";
+		$template .= s("- Boutique : {shop}
+- Date de livraison : @delivery
+- Montant de la commande : @amount
+
+Contenu de la commande :
+
+@products
+
+Bonne réception,
+L'équipe {siteName}", ['shop' => encode($eSale['shop']['name'])]);
+		$content = \mail\CustomizeUi::convertTemplate($template, $variables);
+
+		return \mail\DesignUi::format($eSale['farm'], $title, $content);
+
+	}
+
+	public static function getCancelFarmSale(\selling\Sale $eSale): array {
+
+		$arguments = [
+			'shop' => encode($eSale['shop']['name']),
+			'customer' => $eSale['customer']->getName(),
+			'date' => \util\DateUi::numeric($eSale['shopDate']['deliveryDate'])
+		];
+
+		$title = s("Commande annulée de {customer} pour une livraison le {date}", $arguments);
+
+		$content = s("Votre client {customer} a annulé une commande.
+
+- Boutique : {shop}
+- Date de livraison : {date}
+
+Bonne réception,
+L'équipe {siteName}", $arguments);
+
+		return \mail\DesignUi::format($eSale['farm'], $title, $content);
+
+	}
+
 	public static function getSaleUpdated(\selling\Sale $eSale, \Collection $cItem, ?string $template = NULL): array {
 
 		$eSale->expects([
@@ -151,6 +203,75 @@ Merci et à bientôt,
 
 		$html = \mail\DesignUi::getBanner($eSale['farm']);
 		$html .= nl2br($get(\mail\DesignUi::getButton($link, s("Retenter un paiement")))."\n");
+
+		return [
+			$title,
+			$text,
+			$html
+		];
+	}
+
+	public static function getOrderEnd(Date $eDate, array $sales, \Collection $cItem): array {
+
+		$hasVat = $eDate['farm']->getSelling('hasVat');
+
+		$price = \util\TextUi::money($eDate['type'] === Date::PRO ? $sales['priceExcludingVat'] : $sales['priceIncludingVat']);
+
+		if($hasVat and $eDate['type'] === Date::PRO) {
+			$price .= ' '.\selling\CustomerUi::getTaxes(Date::PRO);
+		}
+
+		$arguments = [
+			'shop' => encode($eDate['shop']['name']),
+			'date' => \util\DateUi::numeric($eDate['deliveryDate']),
+			'price' => $price
+		];
+
+		if($sales['number'] === 0) {
+
+			$text = s("Vous n'avez pas reçu de commande cette fois-ci.
+
+Si vous avez besoin d'aide pour configurer ou déployer votre boutique, n'hésitez pas à vous rendre sur le salon de discussion Discord accessible depuis {siteName}.
+
+Bonne réception,
+{siteName}");
+
+			return [
+				s("Pas de commande pour le {date} sur {shop}", $arguments),
+				$text,
+				\mail\DesignUi::getBanner($eDate['farm']).nl2br($text)
+			];
+
+		}
+
+		$title = p("✅ {value} commande pour le {date} sur {shop}", "✅ {value} commandes pour le {date} sur {shop}", $sales['number'], $arguments);
+
+		$items = '';
+
+		foreach($cItem as $eItem) {
+
+
+			$quantity = \selling\UnitUi::getValue($eItem['number'], $eItem['unit'], short: TRUE);
+
+			$items .= '- '.s("{item} : {quantity}", ['item' => $eItem['name'], 'quantity' => $quantity])."\n";
+
+		}
+
+		$intro = p("Vous avez reçu {value} commande d'un montant total de {price} pour la livraison du {date} sur votre boutique {shop}", "Vous avez reçu {value} commandes d'un montant total de {price} pour la livraison du {date} sur votre boutique {shop}", $sales['number'], $arguments)."\n\n";
+		$products = s("Vos clients ont commandé :
+
+{items}
+
+Bonne réception,
+{siteName}", ['items' => $items]);
+
+		$text = $intro.$products;
+
+		$content = $intro;
+		$content .= \mail\DesignUi::getButton(\Lime::getUrl().ShopUi::adminDateUrl($eDate['farm'], $eDate['shop'], $eDate).'/', s("Voir la vente"))."\n\n";
+		$content .= $products;
+
+		$html = \mail\DesignUi::getBanner($eDate['farm']).nl2br($content);
 
 		return [
 			$title,

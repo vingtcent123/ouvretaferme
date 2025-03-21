@@ -240,7 +240,7 @@ class ShopUi {
 		$content .= '</div>';
 
 		if($eShop['terms'] === NULL) {
-			$content .= '<div class="util-info">';
+			$content .= '<div class="util-empty">';
 				$content .= '<p>'.s("Actuellement, vous n'avez pas ajouté de conditions générales de vente à votre boutique.").'</p>';
 			$content .= '</div>';
 		} else {
@@ -270,8 +270,26 @@ class ShopUi {
 
 		$form = new \util\FormUi();
 
+		$h .= '<h2>'.s("Configuration des e-mails").'</h2>';
+
+		$h .= $form->openAjax('/shop/configuration:doUpdateEmail');
+
+		$h .= $form->hidden('id', $eShop['id']);
+		$h .= $form->dynamicGroups($eShop, ['emailNewSale', 'emailEndDate']);
+
+		$h .= $form->group(
+			content: $form->submit(s("Enregistrer les modifications"))
+		);
+
+		$h .= $form->close();
+
+		$h .= '<br/>';
+
+		$h .= '<h2>'.s("Personnalisation des e-mails").'</h2>';
+
+		$form = new \util\FormUi();
+
 		$h .= '<div class="util-block-help">';
-			$h .= '<h4>'.s("Personnalisation des e-mails").'</h4>';
 			$h .= '<p>';
 				$h .= s("Vous pouvez personnaliser le contenu des e-mails envoyés à vos clients lorsqu'ils commandent dans votre boutique, en fonction du mode de livraison choisi.");
 				if($eShop['hasPayment']) {
@@ -919,6 +937,8 @@ class ShopUi {
 			'customColor' => s("Couleur contrastante"),
 			'customFont' => s("Police pour le texte"),
 			'customTitleFont' => s("Police pour le titre principal des pages"),
+				'emailNewSale' => s("Recevoir une copie des e-mails envoyés à chaque nouvelle commande ou modification de commande d'un de vos clients"),
+			'emailEndDate' => s("Recevoir un e-mail de synthèse lorsqu'une vente se termine")
 		]);
 
 		switch($property) {
@@ -1107,6 +1127,8 @@ class ShopUi {
 				break;
 
 			case 'comment' :
+			case 'emailNewSale' :
+			case 'emailEndDate' :
 				$d->field = 'yesNo';
 				break;
 

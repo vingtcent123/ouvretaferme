@@ -6,7 +6,7 @@ class ShopObserverLib {
 	public static function saleConfirmed(\selling\Sale $eSale, \Collection $cItem): void {
 
 		$eSale->expects([
-			'shop' => ['email'],
+			'shop' => ['email', 'emailNewSale'],
 			'farm' => ['name'],
 			'customer' => ['user']
 		]);
@@ -22,6 +22,15 @@ class ShopObserverLib {
 			->addTo($eUser['email'])
 			->setContent(...MailUi::getSaleConfirmed($eSale, $cItem, self::getTemplate($eSale)))
 			->send('shop');
+
+		if($eSale['shop']['emailNewSale']) {
+
+			new \mail\MailLib()
+				->addTo($replyTo)
+				->setContent(...MailUi::getNewFarmSale('confirmed', $eSale, $cItem))
+				->send('shop');
+
+		}
 
 	}
 
@@ -44,6 +53,15 @@ class ShopObserverLib {
 			->addTo($eUser['email'])
 			->setContent(...MailUi::getSaleUpdated($eSale, $cItem, self::getTemplate($eSale)))
 			->send('shop');
+
+		if($eSale['shop']['emailNewSale']) {
+
+			new \mail\MailLib()
+				->addTo($replyTo)
+				->setContent(...MailUi::getNewFarmSale('updated', $eSale, $cItem))
+				->send('shop');
+
+		}
 
 	}
 
@@ -127,6 +145,15 @@ class ShopObserverLib {
 			->addTo($eUser['email'])
 			->setContent(...MailUi::getSaleCanceled($eSale))
 			->send('shop');
+
+		if($eSale['shop']['emailNewSale']) {
+
+			new \mail\MailLib()
+				->addTo($replyTo)
+				->setContent(...MailUi::getCancelFarmSale($eSale))
+				->send('shop');
+
+		}
 
 		// On remet en circuit les produits en stock
 		$cItem = \selling\Item::model()

@@ -24,7 +24,6 @@ class SaleLib {
 		$cSale = \selling\Sale::model()
 			->select(['id'])
 			->whereShopDate($eDate)
-			->whereFrom(\selling\Sale::SHOP)
 			->wherePreparationStatus('!=', \selling\Sale::CANCELED)
 			->getCollection();
 

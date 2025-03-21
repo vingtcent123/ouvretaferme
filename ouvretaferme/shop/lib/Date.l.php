@@ -202,7 +202,6 @@ class DateLib extends DateCrud {
 	public static function delete(Date $eDate): void {
 
 		if(\selling\Sale::model()
-			->whereFrom(\selling\Sale::SHOP)
 			->wherePreparationStatus('in', [\selling\Sale::BASKET, \selling\Sale::CONFIRMED, \selling\Sale::PREPARED, \selling\Sale::DELIVERED])
 			->whereShopDate($eDate)
 			->exists()) {
@@ -296,6 +295,53 @@ class DateLib extends DateCrud {
 			} else {
 				return $cDate->count() > 8 ? $cDate->slice(0, 8, preserveKeys: TRUE) : $cDate;
 			}
+		}
+
+	}
+
+	public static function sendEndEmail(): void {
+
+		$cDate = Date::model()
+			->select(Date::getSelection() + [
+				'shop' => ['name', 'email', 'emailEndDate'],
+				'farm' => ['banner']
+			])
+			->where('orderEndAt BETWEEN NOW() - INTERVAL 6 HOUR AND NOW() - INTERVAL 10 MINUTE')
+			->where('orderEndAt != orderEndEmailedAt OR orderEndEmailedAt IS NULL')
+			->getCollection();
+
+		foreach($cDate as $eDate) {
+
+			if(
+				$eDate['shop']['emailEndDate'] === FALSE or
+				Date::model()->update($eDate, [
+					'orderEndEmailedAt' => $eDate['orderEndAt']
+				]) === 0
+			) {
+				continue;
+			}
+
+			$sales = \selling\Sale::model()
+				->select([
+					'number' => new \Sql('COUNT(*)', 'int'),
+					'priceExcludingVat' => new \Sql('SUM(priceExcludingVat)', 'float'),
+					'priceIncludingVat' => new \Sql('SUM(priceIncludingVat)', 'float')
+				])
+				->whereShopDate($eDate)
+				->wherePreparationStatus('IN', [\selling\Sale::CONFIRMED, \selling\Sale::PREPARED, \selling\Sale::DELIVERED])
+				->get()
+				->getArrayCopy();
+
+			$cItem = \selling\ItemLib::getSummaryByDate($eDate);
+
+			$eConfiguration = \selling\ConfigurationLib::getByFarm($eDate['farm']);
+			$email = $eSale['shop']['email'] ?? $eConfiguration['legalEmail'];
+
+			new \mail\MailLib()
+				->addTo($email)
+				->setContent(...MailUi::getOrderEnd($eDate, $sales, $cItem))
+				->send('user');
+
 		}
 
 	}

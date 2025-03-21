@@ -17,6 +17,7 @@
 0 6 * * * php /var/www/otf/framework/lime.php -e preprod -a ouvretaferme cron/sitemap
 0 6 * * * php /var/www/otf/framework/lime.php -e preprod -a ouvretaferme user/cron/close
 0 6 * * * php /var/www/otf/framework/lime.php -e preprod -a ouvretaferme user/cron/log
+15 * * * * php /var/www/otf/framework/lime.php -e preprod -a ouvretaferme shop/cron/notification:endEmail
 17 7 * * * php /var/www/otf/framework/lime.php -e preprod -a ouvretaferme dev/cron/minifyClean
 19 5 * * * php /var/www/otf/framework/lime.php -e preprod -a ouvretaferme selling/cron/clean
 28 4 * * * php /var/www/otf/framework/lime.php -e preprod -a ouvretaferme website/cron/certbot:clean

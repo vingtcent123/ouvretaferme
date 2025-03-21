@@ -606,9 +606,8 @@ new AdaptativeView('/ferme/{id}/catalogues', function($data, FarmTemplate $t) {
 
 		echo '<h3>'.s("Créer un premier catalogue").'</h3>';
 
-		echo '<div class="util-help">';
-			echo Asset::icon('person-raised-hand');
-			echo '<p>'.s("Les catalogues ne sont pas indispensables au fonctionnement de vos boutiques en ligne, nous vous conseillons de les utiliser uniquement si vous êtes dans le cas mentionné ci-dessus et si vous êtes déjà bien à l'aise avec {siteName}.").'</p>';
+		echo '<div class="util-block-help">';
+			echo s("Les catalogues ne sont pas indispensables au fonctionnement de vos boutiques en ligne, nous vous conseillons de les utiliser uniquement si vous êtes dans le cas mentionné ci-dessus et si vous êtes déjà bien à l'aise avec {siteName}.");
 		echo '</div>';
 
 		echo new \shop\CatalogUi()->create($data->eFarm)->body;

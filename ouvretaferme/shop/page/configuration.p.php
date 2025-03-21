@@ -28,6 +28,9 @@ new \shop\ShopPage()
 		}
 		return $properties;
 	}, fn() => throw new ReloadAction('shop', 'Shop::updated'))
+	->doUpdateProperties('doUpdateEmail', ['emailNewSale', 'emailEndDate'], function($data) {
+		throw new ReloadAction('shop', 'Shop::updated');
+	})
 	->doUpdateProperties('doCustomize', ['customBackground', 'customColor', 'customFont', 'customTitleFont'], fn() => throw new ReloadAction('shop', 'Shop::customized'))
 	->doUpdateProperties('doUpdateTerms', ['terms', 'termsField'], fn() => throw new ReloadAction('shop', 'Shop::updated'));
 ?>

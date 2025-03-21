@@ -117,6 +117,7 @@ class CustomizeUi {
 			Customize::SHOP_CONFIRMED_NONE, Customize::SHOP_CONFIRMED_PLACE, Customize::SHOP_CONFIRMED_HOME => [
 				'number' => s("Numéro de vente"),
 				'farm' => s("Nom de votre ferme"),
+				'customer' => s("Nom du client"),
 				'amount' => s("Montant de la vente"),
 				'products' => s("Liste des produits commandés"),
 				'link' => s("Lien vers la page de confirmation de commande"),
@@ -296,6 +297,7 @@ class CustomizeUi {
 				$variables = [
 					'number' => $eSale['document'],
 					'farm' => encode($eSale['farm']['name']),
+					'customer' => encode($eSale['customer']->getName()),
 					'amount' => $amount,
 					'products' => $products,
 					'payment' => $payment,
