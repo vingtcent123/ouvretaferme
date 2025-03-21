@@ -258,7 +258,7 @@ Bonne réception,
 
 		}
 
-		$intro = p("Vous avez reçu {value} commande d'un montant total de {price} pour la livraison du {date} sur votre boutique {shop}", "Vous avez reçu {value} commandes d'un montant total de {price} pour la livraison du {date} sur votre boutique {shop}", $sales['number'], $arguments)."\n\n";
+		$intro = p("Vous avez reçu {value} commande d'un montant total de {price} pour la livraison du {date} sur votre boutique {shop}.", "Vous avez reçu {value} commandes d'un montant total de {price} pour la livraison du {date} sur votre boutique {shop}.", $sales['number'], $arguments)."\n\n";
 		$products = s("Vos clients ont commandé :
 
 {items}
