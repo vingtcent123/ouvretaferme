@@ -105,7 +105,9 @@ class Sale {
 				'.batch-menu-item-number',
 				node => {
 					node.innerHTML = money(amount, 2);
-					node.parentElement.setAttribute('href', node.parentElement.dataset.url + ids);
+
+					const link = node.firstParent('.batch-menu-amount');
+					link.setAttribute('href', link.dataset.url + ids);
 				}
 			);
 

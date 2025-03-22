@@ -7,7 +7,6 @@ new \shop\ShopPage()
 
 		$data->eFarm = \farm\FarmLib::getById($data->e['farm']);
 
-
 		$data->cCustomize = \mail\CustomizeLib::getByFarm($data->eFarm, $data->e);
 		$data->eSaleExample = \selling\SaleLib::getExample($data->eFarm, \selling\Customer::PRIVATE, $data->e);
 		$data->eSaleExample['paymentMethod'] = $data->e['hasPayment'] ? \selling\Sale::GET('paymentMethod', 'paymentMethod', \selling\Sale::OFFLINE) : NULL;

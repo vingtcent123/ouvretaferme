@@ -519,7 +519,7 @@ class SaleUi {
 		$menu = '<a data-url="/selling/item:summary?farm='.$eFarm['id'].'" class="batch-menu-amount batch-menu-item">';
 			$menu .= '<span>';
 				$menu .= '<span class="batch-menu-item-number"></span>';
-					$menu .= ' <span class="batch-menu-item-taxes" data-excluding="'.s("HT").'" data-including="'.s("TTC").'"></span>';
+				$menu .= ' <span class="batch-menu-item-taxes" data-excluding="'.s("HT").'" data-including="'.s("TTC").'"></span>';
 			$menu .= '</span>';
 			$menu .= '<span>'.s("Synthèse").'</span>';
 		$menu .= '</a>';
