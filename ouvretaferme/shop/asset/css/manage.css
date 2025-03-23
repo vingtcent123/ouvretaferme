@@ -184,3 +184,63 @@ div.shop-write-fqn label {
 .shop-preview-title {
 	margin-top: 3rem;
 }
+
+/* List of farms */
+.shop-farm-grid {
+	display: grid;
+	grid-template-columns: 1fr 1fr 1fr;
+	grid-gap: 1rem;
+	margin-bottom: 2rem;
+}
+
+@media (max-width: 1199px) {
+
+	.shop-farm-grid {
+		grid-template-columns: 1fr 1fr;
+	}
+
+}
+
+@media (max-width: 767px) {
+
+	.shop-farm-grid {
+		grid-template-columns: 1fr;
+	}
+
+}
+
+.shop-farm-item {
+	display: grid;
+	grid-template: "vignette content" 1fr / 3rem 1fr;
+	grid-column-gap: 1rem;
+	align-items: center;
+}
+
+a.shop-farm-item {
+	text-decoration: none;
+	color: var(--secondary);
+	background: white;
+	border-radius: var(--radius);
+}
+
+@media (max-width: 767px) {
+
+	.shop-farm-item {
+		grid-column-gap: 1rem;
+	}
+
+}
+
+div.shop-farm-item-vignette {
+	grid-area: vignette;
+}
+
+div.shop-farm-item-content {
+	grid-area: content;
+	transition: color .5s;
+}
+
+div.shop-farm-item-content h4 {
+	margin-bottom: 0;
+	font-weight: lighter;
+}

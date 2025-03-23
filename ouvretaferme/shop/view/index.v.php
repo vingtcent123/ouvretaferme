@@ -1,4 +1,31 @@
 <?php
+new AdaptativeView('/ferme/{farm}/boutique/{shop}', function($data, FarmTemplate $t) {
+
+	$t->tab = 'shop';
+	$t->subNav = new \farm\FarmUi()->getShopSubNav($data->eFarm);
+
+	$t->title = $data->eShop['name'];
+	$t->canonical = \farm\FarmUi::urlShopList($data->eFarm);
+
+	$t->package('main')->updateNavShop($t->canonical);
+
+	$uiShopManage = new \shop\ShopManageUi();
+
+	$t->mainTitle = $uiShopManage->getHeader($data->eFarm, $data->eShop, $data->cShop);
+
+	echo new \shop\ShopUi()->getDetails($data->eShop);
+
+	if(
+		$data->eShop['ccPoint']->notEmpty() and
+		$data->eShop['cDate']->notEmpty()
+	) {
+		echo $uiShopManage->getDateList($data->eFarm, $data->eShop);
+	} else {
+		echo $uiShopManage->getInlineContent($data->eFarm, $data->eShop);
+	}
+
+});
+
 new AdaptativeView('create', function($data, PanelTemplate $t) {
 	return new \shop\ShopUi()->create($data->e);
 });
@@ -29,5 +56,9 @@ new AdaptativeView('updateEmbed', function($data, PanelTemplate $t) {
 
 new AdaptativeView('emails', function($data, PanelTemplate $t) {
 	return new \shop\ShopUi()->displayEmails($data->eFarm, $data->emails);
+});
+
+new AdaptativeView('invite', function($data, PanelTemplate $t) {
+	return new \shop\ShopUi()->displayInvite($data->e);
 });
 ?>

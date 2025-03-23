@@ -33,6 +33,22 @@ class ShopLib extends ShopCrud {
 
 	}
 
+	public static function getSharedFarms(Shop $eShop): \Collection {
+
+		if($eShop['shared'] === FALSE) {
+			return new \Collection();
+		}
+
+		return Shared::model()
+			->select(Shared::getSelection())
+			->whereShop($eShop)
+			->getCollection()
+			->sort([
+				'farm' => ['name']
+			]);
+
+	}
+
 	public static function getByCustomers(\Collection $cCustomer, string $last = '1 YEAR'): \Collection {
 
 		return \selling\Sale::model()
@@ -87,9 +103,13 @@ class ShopLib extends ShopCrud {
 
 	public static function create(Shop $e): void {
 
-		$e->expects(['farm']);
+		$e->expects(['farm', 'shared']);
 
 		Shop::model()->beginTransaction();
+
+		if($e['shared']) {
+			$e['sharedHash'] = $e->getNewSharedHash();
+		}
 
 		try {
 
@@ -119,6 +139,17 @@ class ShopLib extends ShopCrud {
 
 		}
 
+
+	}
+
+	public static function regenerateSharedHash(Shop $e): void {
+
+		Shop::model()
+			->whereShared(TRUE)
+			->update($e, [
+				'sharedHash' => $e->getNewSharedHash(),
+				'sharedHashExpiresAt' => new \Sql('CURDATE() + INTERVAL 7 DAY')
+			]);
 
 	}
 

@@ -43,6 +43,11 @@ Route::register([
 			'priority' => 5,
 			'route' => ['factures', 'particuliers'],
 		],
+		'/ferme/{farm}/boutique/{shop}' => [
+			'request' => 'shop/index',
+			'priority' => 5,
+			'route' => ['ferme', '{farm}', 'boutique', '{shop}'],
+		],
 		'/ferme/{farm}/boutique/{shop}/date/{id}' => [
 			'request' => 'shop/date',
 			'priority' => 5,

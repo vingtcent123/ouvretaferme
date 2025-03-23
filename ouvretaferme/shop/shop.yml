@@ -97,7 +97,8 @@ Shop:
   email: ?email
   type: enum(PRIVATE, PRO)
   shared: bool
-  sharedFarms: json = PHP([])
+  sharedHash: ?text8
+  sharedHashExpiresAt: ?date
   frequency: enum(WEEKLY, BIMONTHLY, MONTHLY, OTHER) = WEEKLY
   hasPoint: bool = TRUE
   hasPayment: bool = TRUE
@@ -130,3 +131,11 @@ Shop:
     ["fqn"],
     ["farm", "name"]
   ]
+
+Shared:
+  id: serial32
+  shop: shop\Shop
+  farm: farm\Farm
+  admin: bool = FALSE
+  createdAt: datetime = SPECIAL(now)
+  createdBy: user\User = SPECIAL(user)

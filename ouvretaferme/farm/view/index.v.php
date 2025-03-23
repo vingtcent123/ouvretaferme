@@ -550,10 +550,7 @@ new AdaptativeView('/ferme/{id}/boutiques', function($data, FarmTemplate $t) {
 
 		echo $uiShopManage->getIntroCreate($data->eFarm);
 
-	} else if(
-		$data->cShop->count() > 1 and
-		$data->eShop->empty()
-	) {
+	} else {
 
 		$h = '<div class="util-action">';
 			$h .= '<h1>'.s("Boutiques en ligne").'</h1>';
@@ -563,21 +560,6 @@ new AdaptativeView('/ferme/{id}/boutiques', function($data, FarmTemplate $t) {
 		$t->mainTitle = $h;
 
 		echo $uiShopManage->getList($data->eFarm, $data->cShop);
-
-	} else {
-
-		$t->mainTitle = $uiShopManage->getHeader($data->eFarm, $data->eShop, $data->cShop);
-
-		echo new \shop\ShopUi()->getDetails($data->eShop);
-
-		if(
-			$data->eShop['ccPoint']->notEmpty() and
-			$data->eShop['cDate']->notEmpty()
-		) {
-			echo $uiShopManage->getDateList($data->eFarm, $data->eShop);
-		} else {
-			echo $uiShopManage->getInlineContent($data->eFarm, $data->eShop);
-		}
 
 	}
 

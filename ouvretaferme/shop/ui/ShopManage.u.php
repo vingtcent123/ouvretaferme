@@ -4,7 +4,10 @@ namespace shop;
 class ShopManageUi {
 
 	public function __construct() {
+
 		\Asset::css('shop', 'shop.css');
+		\Asset::css('shop', 'manage.css');
+
 	}
 	
 	public function getIntroCreate(\farm\Farm $eFarm): string {
@@ -124,6 +127,9 @@ class ShopManageUi {
 						$h .= ShopUi::getLogo($eShop, '3rem');
 						$h .= '<h2>';
 							$h .= encode($eShop['name']);
+							if($eShop['shared']) {
+								$h .= ' <span class="shop-list-item-shared">'.\Asset::icon('people-fill').' '.s("Partagée").'</span>';
+							}
 						$h .= '</h2>';
 					$h .= '</div>';
 
@@ -191,8 +197,8 @@ class ShopManageUi {
 		if($eShop['cDate']->empty()) {
 
 			if(
-				$eShop['hasPoint'] === FALSE or
-				$eShop['ccPoint']->notEmpty()
+				($eShop['hasPoint'] === FALSE or	$eShop['ccPoint']->notEmpty()) and
+				($eShop['shared'] === FALSE or $eShop['cFarmShared']->notEmpty())
 			) {
 				$h .= $this->createFirstDate($eFarm, $eShop);
 			}
@@ -203,6 +209,35 @@ class ShopManageUi {
 
 		return $h;
 	}
+
+	public function getFarms(\Collection $cShared): string {
+
+		$h = '<div class="util-block shop-farm-grid">';
+
+		foreach($cShared as $eShared) {
+
+			$eFarm = $eShared['farm'];
+
+			$h .= '<div class="shop-farm-item">';
+
+				$h .= '<div class="shop-farm-item-vignette">';
+					$h .= \farm\FarmUi::getVignette($eFarm, '3rem');
+				$h .= '</div>';
+				$h .= '<div class="shop-farm-item-content">';
+					$h .= '<h4>';
+						$h .= encode($eFarm['name']);
+					$h .= '</h4>';
+				$h .= '</div>';
+
+			$h .= '</div>';
+
+		}
+
+		$h .= '</div>';
+
+		return $h;
+
+	}
 	
 	public function createFirstDate(\farm\Farm $eFarm, Shop $eShop): string {
 
@@ -210,15 +245,17 @@ class ShopManageUi {
 			return '';
 		}
 
-		$h = '<div class="util-block-help mb-2">';
-			$h .= '<p>'.s("La configuration initiale de votre boutique est terminée. Si vous le souhaitez, vous pouvez continuer à personnaliser l'expérience de vos clients en activant par exemple le paiement en ligne ou en personnalisant les e-mails envoyés automatiquement à vos clients lors de leurs commandes.").'</p>';
+		$h = '<h2>'.s("Configuration initiale de votre boutique terminée !").'</h2>';
+
+		$h .= '<div class="util-block-help mb-2">';
+			$h .= '<p>'.s("Si vous le souhaitez, vous pouvez continuer à personnaliser l'expérience de vos clients en activant par exemple le paiement en ligne ou en personnalisant les e-mails envoyés automatiquement à vos clients lors de leurs commandes.").'</p>';
 			$h .= '<a href="/shop/configuration:update?id='.$eShop['id'].'" class="btn btn-secondary">'.s("Continuer à personnaliser la boutique").'</a>';
 		$h .= '</div>';
 
 		$h .= '<h2>'.s("Vendre pour la première fois").'</h2>';
 
-		$h .= '<div class="util-block-help">';
-			$h .= '<p>'.s("Lorsque vous êtes satisfait de la configuration de votre boutique, créez une première vente en choisissant une date et la liste des produits que vous avez en stock et que vous souhaitez proposer à vos clients !").'</p>';
+		$h .= '<div class="util-empty">';
+			$h .= s("Lorsque vous êtes satisfait de la configuration de votre boutique, créez une première vente en choisissant une date et la liste des produits que vous avez en stock et que vous souhaitez proposer à vos clients !");
 		$h .= '</div>';
 
 		$h .= '<a href="/shop/date:create?shop='.$eShop['id'].'&farm='.$eFarm['id'].'" class="btn btn-primary">'.\Asset::icon('plus-circle').' '.s("Ajouter une première vente").'</a>';

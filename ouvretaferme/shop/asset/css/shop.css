@@ -365,6 +365,16 @@ div.shop-widget-order {
 	grid-column: span 2;
 }
 
+.shop-list-item-shared {
+	border-radius: var(--radius);
+	color: white;
+	background-color: var(--secondary);
+	font-size: 1rem;
+	font-weight: normal;
+	padding: 0.25rem 0.75rem;
+	vertical-align: middle;
+}
+
 .shop-list-item-content {
 	grid-column: span 2;
 	border-top: 1px solid var(--border);

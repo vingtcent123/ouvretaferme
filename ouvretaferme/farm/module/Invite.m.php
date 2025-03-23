@@ -9,7 +9,6 @@ abstract class InviteElement extends \Element {
 
 	const FARMER = 'farmer';
 	const CUSTOMER = 'customer';
-	const SHOP = 'shop';
 
 	const PENDING = 'pending';
 	const ACCEPTED = 'accepted';
@@ -45,8 +44,8 @@ class InviteModel extends \ModuleModel {
 		$this->properties = array_merge($this->properties, [
 			'id' => ['serial32', 'cast' => 'int'],
 			'farm' => ['element32', 'farm\Farm', 'cast' => 'element'],
-			'email' => ['email', 'null' => TRUE, 'cast' => 'string'],
-			'type' => ['enum', [\farm\Invite::FARMER, \farm\Invite::CUSTOMER, \farm\Invite::SHOP], 'cast' => 'enum'],
+			'email' => ['email', 'cast' => 'string'],
+			'type' => ['enum', [\farm\Invite::FARMER, \farm\Invite::CUSTOMER], 'cast' => 'enum'],
 			'customer' => ['element32', 'selling\Customer', 'null' => TRUE, 'cast' => 'element'],
 			'farmer' => ['element32', 'farm\Farmer', 'null' => TRUE, 'cast' => 'element'],
 			'expiresAt' => ['date', 'cast' => 'string'],

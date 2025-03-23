@@ -177,26 +177,9 @@
 		// Liste des boutiques
 		$data->cShop = \shop\ShopLib::getForList($data->eFarm);
 
-		// Boutique sélectionnée
-		if(get_exists('shop')) {
-			$eShop = GET('shop', 'shop\Shop');
-			$data->eShop = $data->cShop[$eShop['id']] ?? ($data->cShop->empty() ? new \shop\Shop() : $data->cShop->first());
-		} else if($data->cShop->count() === 1) {
-			$data->eShop = $data->cShop->first();
-		} else {
-			$data->eShop = new \shop\Shop();
-		}
-
-		if($data->eShop->notEmpty()) {
-
-			\farm\FarmerLib::setView('viewShopCurrent', $data->eFarm, $data->eShop);
-
-			$data->eShop['cCustomer'] = \selling\CustomerLib::getByIds($data->eShop['limitCustomers'], sort: ['lastName' => SORT_ASC, 'firstName' => SORT_ASC]);
-			$data->eShop['ccPoint'] = \shop\PointLib::getByFarm($data->eFarm);
-
-			// Liste des dates de la boutique sélectionnée
-			$data->eShop['cDate'] = \shop\DateLib::getByShop($data->eShop);
-
+		// Une seule boutique
+		if($data->cShop->count() === 1) {
+			throw new RedirectAction(\shop\ShopUi::adminUrl($data->eFarm, $data->cShop->first()));
 		}
 
 		throw new ViewAction($data);

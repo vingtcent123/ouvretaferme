@@ -82,7 +82,7 @@ class ShopUi {
 
 		return new \Panel(
 			id: 'panel-shop-create',
-			title: s("Créer une boutique"),
+			title: s("Nouvelle boutique"),
 			body: $h
 		);
 
@@ -625,7 +625,6 @@ class ShopUi {
 
 	}
 
-
 	public function updateEmbed(Shop $eShop): \Panel {
 
 		$form = new \util\FormUi();
@@ -680,6 +679,37 @@ class ShopUi {
 
 	}
 
+	public function displayInvite(Shop $eShop): \Panel {
+
+		$h = '<p class="util-block-help">'.s("Pour inviter des producteurs sur cette boutique, communiquez-leur le code d'invitation affiché ci-dessous. Ils pourront ensuite rejoindre votre boutique et proposer leurs catalogues de produits.").'</p>';
+
+		$h .= '<h3>'.s("Code d'invitation").'</h3>';
+
+		$h .= '<div class="input-group mb-1">';
+			$h .= '<div class="form-control" id="invite-key">'.$eShop->getSharedKey().'</div>';
+			$h .= '<a onclick="doCopy(this)" data-selector="#invite-key" data-message="'.s("Copié !").'" class="btn btn-primary">'.\Asset::icon('clipboard').' '.s("Copier").'</a>';
+		$h .= '</div>';
+
+		if($eShop->isSharedKeyExpired()) {
+			$h .= '<div class="util-block util-block-dark bg-danger">'.s("Ce code a expiré et n'est plus utilisable.").'</div>';
+		} else {
+			$h .= '<div class="util-block-gradient">'.\Asset::icon('exclamation-circle').' '.s("Ce code expirera le {value}.", \util\DateUi::textual($eShop['sharedHashExpiresAt'])).'</div>';
+		}
+
+		$h .= '<br/>';
+
+		$h .= '<h3>'.s("Renouveler le code d'invitation").'</h3>';
+
+		$h .= '<a data-ajax="/shop/:doRegenerateSharedHash" post-id="'.$eShop['id'].'" class="btn btn-secondary">'.s("Créer un nouveau code").'</a>';
+
+		return new \Panel(
+			id: 'panel-shop-invite',
+			title: s("Inviter des producteurs sur la boutique"),
+			body: $h
+		);
+
+	}
+
 	public static function link(Shop $eShop, bool $newTab = FALSE): string {
 		return '<a href="'.self::url($eShop).'" '.($newTab ? 'target="_blank"' : '').'>'.encode($eShop['name']).'</a>';
 	}
@@ -722,11 +752,11 @@ class ShopUi {
 	}
 
 	public static function adminUrl(\farm\Farm $eFarm, Shop $eShop): string {
-		return \farm\FarmUi::url($eFarm).'/boutiques?shop='.$eShop['id'];
+		return '/ferme/'.$eFarm['id'].'/boutique/'.$eShop['id'];
 	}
 
 	public static function adminDateUrl(\farm\Farm $eFarm, Shop $eShop, Date $eDate): string {
-		return \farm\FarmUi::url($eFarm).'/boutique/'.$eShop['id'].'/date/'.$eDate['id'];
+		return '/ferme/'.$eFarm['id'].'/boutique/'.$eShop['id'].'/date/'.$eDate['id'];
 	}
 
 	public static function getLogo(Shop $eShop, string $size): string {
@@ -821,7 +851,7 @@ class ShopUi {
 
 						if($eShop->canWrite()) {
 							$h .= '<div class="util-block-help">';
-								$h .= '<p>'.s("Pour activer votre boutique, vous devez créer une première date avec les produits que vous souhaitez vendre !").'</p>';
+								$h .= '<p>'.s("Pour activer votre boutique, vous devez créer une première vente avec vos produits !").'</p>';
 								$h .= '<a href="'.\Lime::getUrl().''.ShopUi::adminUrl($eShop['farm'], $eShop).'" class="btn btn-secondary">'.s("Configurer ma boutique").'</a>';
 							$h .= '</div>';
 						} else {
@@ -946,7 +976,58 @@ class ShopUi {
 			$h .= '</dl>';
 		$h .= '</div>';
 
+		if($eShop['shared']) {
+
+			$h .= '<div class="util-title">';
+				$h .= '<h2>';
+					$h .= s("Producteurs");
+				$h .= '</h2>';
+				$h .= '<div>';
+					$h .= '<a href="/shop/:invite?id='.$eShop['id'].'" class="btn btn-primary">'.\Asset::icon('plus-circle').' '.s("Inviter des producteurs").'</a>';
+				$h .= '</div>';
+			$h .= '</div>';
+
+			if($eShop['cFarmShared']->empty()) {
+
+				$h .= '<div class="util-empty">'.s("Il n'y a pas encore de producteur invité sur la boutique. Vous pouvez envoyer vos invitations, en commençant par votre ferme ?").'</div>';
+
+			} else {
+
+				$h .= new ShopManageUi()->getFarms($eShop['cFarmShared']);
+
+			}
+
+		}
+
 		return $h;
+	}
+
+	public function getFarms(\Collection $cFarm): string {
+
+		$h = '<div class="shop-farm-grid">';
+
+		foreach($cFarm as $eFarm) {
+
+			$h .= '<div class="shop-farm-item">';
+
+				$h .= '<div class="shop-farm-item-vignette">';
+					$h .= \farm\FarmUi::getVignette($eFarm['farm'], '3rem');
+				$h .= '</div>';
+				$h .= '<div class="shop-farm-item-content">';
+					$h .= '<h4>';
+						$h .= encode($eFarm['farm']['name']);
+					$h .= '</h4>';
+
+				$h .= '</div>';
+
+			$h .= '</div>';
+
+		}
+
+		$h .= '</div>';
+
+		return $h;
+
 	}
 
 	public static function p(string $property): \PropertyDescriber {

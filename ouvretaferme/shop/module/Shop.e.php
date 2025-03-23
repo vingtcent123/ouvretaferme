@@ -3,13 +3,6 @@ namespace shop;
 
 class Shop extends ShopElement {
 
-	public static function getSelection(): array {
-
-		return parent::getSelection() + [
-		];
-
-	}
-
 	public static function isEmbed(): bool {
 		return get_exists('embed');
 	}
@@ -124,6 +117,28 @@ class Shop extends ShopElement {
 
 		return $payments;
 
+	}
+
+	public function getSharedKey(): string {
+
+		$this->expects(['id', 'sharedHash']);
+
+		return $this['id'].'-'.$this['sharedHash'];
+
+	}
+
+	public function isSharedKeyExpired(): bool {
+
+		if($this['sharedHashExpiresAt'] === NULL) {
+			return FALSE;
+		} else {
+			return $this['sharedHashExpiresAt'] < currentDate();
+		}
+
+	}
+
+	public function getNewSharedHash(): string {
+		return bin2hex(random_bytes(6));
 	}
 
 	public function build(array $properties, array $input, \Properties $p = new \Properties()): void {
