@@ -32,7 +32,7 @@ new \farm\InvitePage()
 	->doDelete(fn() => throw new ReloadAction());
 
 new Page()
-	->get('check', function($data) {
+	->get('/in/{key}', function($data) {
 
 		$data->eInvite = \farm\InviteLib::getByKey(GET('key'));
 
@@ -45,7 +45,7 @@ new Page()
 		if(\farm\InviteLib::accept($data->eInvite, \user\ConnectionLib::getOnline())) {
 			throw new ViewAction($data, ':accept');
 		} else {
-			throw new ViewAction($data);
+			throw new ViewAction($data, ':check');
 		}
 
 	})

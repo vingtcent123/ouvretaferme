@@ -330,15 +330,21 @@ class CustomerUi {
 		$h = '';
 
 		if($eCustomer['invite']->isPending() and $eCustomer['invite']->canWrite()) {
-			$h .= '<div class="util-block-gradient color-secondary">';
+			$h .= '<div class="util-block stick-xs">';
+				$h .= '<h3>'.s("Invitation").'</h3>';
 				$h .= '<p>';
-					$h .= \Asset::icon('info-circle').' ';
 					if($eCustomer['invite']->isValid()) {
-						$h .= s("Vous avez invité ce client à créer son compte client avec l'adresse e-mail {email}. Le client n'a pas encore créé son compte client en suivant les instructions présentes dans le mail que nous lui avons envoyé. Il a jusqu'au {date} pour le faire, après quoi cette invitation sera effacée.", ['email' => '<u>'.encode($eCustomer['invite']['email']).'</u>', 'date' => \util\DateUi::numeric($eCustomer['invite']['expiresAt'])]);
+						$h .= s("Vous avez invité ce client à créer son compte client avec l'adresse e-mail {email}. Le client n'a pas encore suivi les instructions présentes dans le mail que nous lui avons envoyé. Il a jusqu'au {date} pour le faire, après quoi cette invitation sera effacée.", ['email' => '<u>'.encode($eCustomer['invite']['email']).'</u>', 'date' => \util\DateUi::numeric($eCustomer['invite']['expiresAt'])]);
 					} else {
 						$h .= s("Vous avez invité ce client à créer son compte client avec l'adresse e-mail {email} mais cette invitation a expiré le {date}.", ['email' => '<u>'.encode($eCustomer['invite']['email']).'</u>', 'date' => \util\DateUi::numeric($eCustomer['invite']['expiresAt'])]);
 					}
 				$h .= '</p>';
+				$h .= '<p>'.s("Si votre client ne retrouve pas l'e-mail qu'il a reçu, vous pouvez lui communiquer directement ce lien :").'</p>';
+				$h .= '<div class="input-group">';
+					$h .= '<div class="form-control" id="invite-url">'.$eCustomer['invite']->getLink().'</div>';
+					$h .= '<a onclick="doCopy(this)" data-selector="#invite-url" data-message="'.s("Copié !").'" class="btn btn-primary">'.\Asset::icon('clipboard').' '.s("Copier").'</a>';
+				$h .= '</div>';
+				$h .= '<br/><br/>';
 				$h .= '<a data-ajax="/farm/invite:doDelete" post-id="'.$eCustomer['invite']['id'].'" class="btn btn-secondary">'.s("Annuler l'invitation").'</a>';
 			$h .= '</div>';
 		}

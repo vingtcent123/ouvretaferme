@@ -303,12 +303,14 @@ class FarmerLib extends FarmerCrud {
 		if($affected) {
 
 			// L'utilisateur passe forcément Farmer
+			$eRoleCustomer = \user\RoleLib::getByFqn('customer');
+			$eRoleFarmer = \user\RoleLib::getByFqn('farmer');
 
-			$eRoleNew = \user\RoleLib::getByFqn('farmer');
-
-			\user\User::model()->update($eUser, [
-				'role' => $eRoleNew
-			]);
+			\user\User::model()
+				->whereRole($eRoleCustomer)
+				->update($eUser, [
+					'role' => $eRoleFarmer
+				]);
 
 		}
 

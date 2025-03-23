@@ -100,8 +100,8 @@ Invite:
   type: enum(FARMER, CUSTOMER)
   customer: ?selling\Customer
   farmer: ?farm\Farmer
-  expiresAt: date = SQL(NOW() + INTERVAL 3 DAY)
-  key: ?text8 = PHP(bin2hex(random_bytes(16)))
+  expiresAt: date
+  key: ?text8 = PHP(bin2hex(random_bytes(6)))
   status: enum(PENDING, ACCEPTED) = PENDING
   INDEX: [
     ["customer"],

@@ -143,17 +143,6 @@ class Shop extends ShopElement {
 				return $this['farm']->notEmpty() and $this['farm']->canManage();
 
 			})
-			->setCallback('email.empty', function(?string $email) use($input) {
-
-				$this->expects(['shared']);
-
-				if($this['shared']) {
-					return ($email !== NULL);
-				} else {
-					return TRUE;
-				}
-
-			})
 			->setCallback('fqn.prepare', function() use($p) {
 
 				if($p->for === 'update') {

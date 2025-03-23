@@ -22,18 +22,18 @@ class MailLib {
 	public function __construct() {
 	}
 
-	public function setFromEmail(string $fromEmail): MailLib {
+	public function setFromEmail(?string $fromEmail): MailLib {
 		$this->fromEmail = $fromEmail;
 		return $this;
 	}
 
-	public function setReplyTo(string $email): MailLib {
-		$this->replyTo = $email;
+	public function setFromName(?string $fromName): MailLib {
+		$this->fromName = $fromName;
 		return $this;
 	}
 
-	public function setFromName(string $fromName): MailLib {
-		$this->fromName = $fromName;
+	public function setReplyTo(?string $email): MailLib {
+		$this->replyTo = $email;
 		return $this;
 	}
 

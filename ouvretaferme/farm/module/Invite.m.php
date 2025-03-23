@@ -79,7 +79,7 @@ class InviteModel extends \ModuleModel {
 				return new \Sql('NOW() + INTERVAL 3 DAY');
 
 			case 'key' :
-				return bin2hex(random_bytes(16));
+				return bin2hex(random_bytes(6));
 
 			case 'status' :
 				return Invite::PENDING;

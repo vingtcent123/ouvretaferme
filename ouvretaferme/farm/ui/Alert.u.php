@@ -81,7 +81,7 @@ class AlertUi {
 			'Farmer::created' => s("L'utilisateur a bien été ajouté à l'équipe de la ferme !"),
 			'Farmer::deleted' => s("L'utilisateur a bien été retiré de l'équipe de la ferme !"),
 
-			'Invite::customerCreated' => s("Le client a bien été invité à créer un compte client sur {siteName} !"),
+			'Invite::customerCreated' => s("L'invitation a bien été créée !"),
 			'Invite::extended' => s("L'invitation a bien été prolongée et un e-mail avec un nouveau lien a été envoyé à la personne !"),
 			'Invite::deleted' => s("L'invitation à rejoindre la ferme a bien été supprimée !"),
 

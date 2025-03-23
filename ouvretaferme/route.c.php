@@ -243,6 +243,11 @@ Route::register([
 			'priority' => 5,
 			'route' => ['ferme', '{id}', 'ventes', 'professionnels'],
 		],
+		'/in/{key}' => [
+			'request' => 'farm/invite',
+			'priority' => 5,
+			'route' => ['in', '{key}'],
+		],
 		'/itineraire/{id}' => [
 			'request' => 'production/sequence',
 			'priority' => 5,

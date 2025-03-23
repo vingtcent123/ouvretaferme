@@ -62,6 +62,14 @@ class Invite extends InviteElement {
 
 	}
 
+	public function getLink(): string {
+
+		$this->expects(['key']);
+
+		return \Lime::getUrl().'/in/'.$this['key'];
+
+	}
+
 	public function build(array $properties, array $input, \Properties $p = new \Properties()): void {
 
 		$p
@@ -91,7 +99,7 @@ class Invite extends InviteElement {
 				}
 
 				return \selling\Customer::model()
-						->whereUser($eUser)
+						->whereEmail($eUser)
 						->whereFarm($this['farm'])
 						->exists() === FALSE;
 

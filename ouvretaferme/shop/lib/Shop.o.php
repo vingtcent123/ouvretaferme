@@ -156,14 +156,18 @@ class ShopObserverLib {
 
 	}
 
-	private static function getEmail(\selling\Sale $eSale): string {
+	private static function getEmail(\selling\Sale $eSale): ?string {
 
 		$eSale->expects([
 			'shop' => ['shared', 'email'],
 			'farm'
 		]);
 
-		return $eSale['shop']['email'] ?? $eSale['farm']->selling()['legalEmail'];
+		if($eSale['shop']['shared']) {
+			return $eSale['shop']['email'];
+		} else {
+			return $eSale['shop']['email'] ?? $eSale['farm']->selling()['legalEmail'];
+		}
 
 	}
 

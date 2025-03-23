@@ -27,7 +27,6 @@ class AlertUi {
 
 			'Shop::name.fqn' => s("Une boutique existe déjà avec la même adresse."),
 			'Shop::name.duplicate' => s("Une boutique existe déjà avec le même nom, merci de choisir un autre nom."),
-			'Shop::email.empty' => s("Merci d'indiquer une adresse e-mail."),
 			'Shop::payment.check' => s("Veuillez sélectionner au moins un moyen de paiement, ou alternativement désactiver la page de choix du moyen de paiement."),
 			'Shop::terms.check' => s("Vos conditions générales de vente ne doivent pas être vides de texte."),
 			'Shop::payment.createOwner' => s("La transaction ne peut pas aboutir avec ce moyen de paiement à cause d'une erreur de configuration : {message}.", $options),

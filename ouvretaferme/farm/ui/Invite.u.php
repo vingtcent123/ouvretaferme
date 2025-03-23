@@ -14,7 +14,7 @@ class InviteUi {
 			$h = '<div class="util-block text-center">';
 				$h .= '<br/><br/>';
 				$h .= '<h2>'.s("Le lien que vous avez utilisé pour activer votre compte a expiré !").'</h2>';
-				$h .= '<h4>'.s("Merci de demander à la ferme de vous envoyer un nouveau lien.").'</h4>';
+				$h .= '<h4>'.s("Merci de demander au producteur de vous envoyer un nouveau lien.").'</h4>';
 				$h .= '<br/><br/>';
 			$h .= '</div>';
 
@@ -38,7 +38,7 @@ class InviteUi {
 			$h = '<div class="util-block text-center">';
 				$h .= '<br/><br/>';
 				$h .= '<h2>'.s("Le lien que vous avez utilisé pour activer votre compte client a expiré !").'</h2>';
-				$h .= '<h4>'.s("Merci de demander à la ferme {farm} de vous envoyer un nouveau lien.", ['farm' => '<b>'.encode($eFarm['name']).'</b>']).'</h4>';
+				$h .= '<h4>'.s("Merci de demander au producteur {farm} de vous envoyer un nouveau lien.", ['farm' => '<b>'.encode($eFarm['name']).'</b>']).'</h4>';
 				$h .= '<br/><br/>';
 			$h .= '</div>';
 
@@ -70,7 +70,7 @@ class InviteUi {
 			$h = '<div class="util-block text-center">';
 				$h .= '<br/><br/>';
 				$h .= '<h2>'.s("Vous devez être connecté sur {siteName} avec {emailExpected} pour activer votre compte client ! Vous êtes actuellement connecté avec l'adresse e-mail {emailCurrent}.", ['emailExpected' => '<b>'.encode($eInvite['email']).'</b>', 'emailCurrent' => encode($eUser['email'])]).'</h2>';
-				$h .= '<h4>'.s("Merci de vous déconnecter de {siteName} et de vous reconnecter avec la bonne adresse e-mail, ou bien de demander à la ferme {farm} de vous envoyer un lien sur {emailCurrent}}.", ['farm' => '<b>'.encode($eFarm['name']).'</b>', 'emailCurrent' => encode($eUser['email'])]).'</h4>';
+				$h .= '<h4>'.s("Merci de vous déconnecter de {siteName} et de vous reconnecter avec la bonne adresse e-mail, ou bien de demander à {farm} de vous envoyer un lien sur {emailCurrent}}.", ['farm' => '<b>'.encode($eFarm['name']).'</b>', 'emailCurrent' => encode($eUser['email'])]).'</h4>';
 				$h .= '<br/><br/>';
 			$h .= '</div>';
 
@@ -138,7 +138,7 @@ class InviteUi {
 			$h = '<div class="util-block text-center">';
 				$h .= '<br/><br/>';
 				$h .= '<h2>'.s("Vous devez être connecté sur {siteName} avec {emailExpected} pour rejoindre l'équipe de la ferme ! Vous êtes actuellement connecté avec l'adresse e-mail {emailCurrent}.", ['emailExpected' => '<b>'.encode($eInvite['email']).'</b>', 'emailCurrent' => encode($eUser['email'])]).'</h2>';
-				$h .= '<h4>'.s("Merci de vous déconnecter de {siteName} et de vous reconnecter avec la bonne adresse e-mail, ou bien de demander à la ferme {farm} de vous envoyer un lien sur {emailCurrent}}.", ['farm' => '<b>'.encode($eFarm['name']).'</b>', 'emailCurrent' => encode($eUser['email'])]).'</h4>';
+				$h .= '<h4>'.s("Merci de vous déconnecter de {siteName} et de vous reconnecter avec la bonne adresse e-mail, ou bien de demander à {farm} de vous envoyer un lien sur {emailCurrent}}.", ['farm' => '<b>'.encode($eFarm['name']).'</b>', 'emailCurrent' => encode($eUser['email'])]).'</h4>';
 				$h .= '<br/><br/>';
 			$h .= '</div>';
 
@@ -248,7 +248,7 @@ class InviteUi {
 					$description .= '<li>'.s("Ses commandes passées et futures").'</li>';
 					$description .= '<li>'.s("Ses données personnelles (numéro de téléphone, adresse de livraison...)").'</li>';
 				$description .= '</ul>';
-				$description .= '<p>'.s("Pour permettre à ce client de créer son compte, saisissez son adresse e-mail. Il recevra un e-mail lui donnant les instructions à suivre, et devra les réaliser dans un délai de trois jours.").'</p>';
+				$description .= '<p>'.s("Pour permettre à ce client de créer son compte, saisissez son adresse e-mail. Il recevra un e-mail lui donnant les instructions à suivre, et devra les réaliser dans un délai de {value} jours.", \Setting::get('farm\inviteDelay')).'</p>';
 			$description .= '</div>';
 
 			$h .= $form->group(content: $description);
@@ -283,20 +283,18 @@ class InviteUi {
 
 	public static function getInviteCustomerMail(Invite $e): array {
 
-		$urlHash = \Lime::getUrl().'/farm/invite:check?key='.$e['key'];
-
 		$title = s("{farm} vous invite à créer votre compte client !", ['farm' => $e['farm']['name']]);
 
 		$text = s("Bonjour,
 
-La ferme {farm} vous invite à créer votre compte client sur {siteName}.
-Ce compte client vous permettra de consulter l'historique de vos commandes.
+Le producteur {farm} vous invite à créer votre compte client sur {siteName}.
+{siteName} est un logiciel de vente pour les producteurs.
 
-Utilisez le lien suivant dans votre navigateur pour activer votre compte client :
+Utilisez le lien suivant pour activer votre compte client :
 {url}
 
 À bientôt,
-L'équipe {siteName}", ['farm' => $e['farm']['name'], 'email' => $e['email'], 'url' => $urlHash]);
+L'équipe {siteName}", ['farm' => $e['farm']['name'], 'email' => $e['email'], 'url' => $e->getLink()]);
 
 
 		return [
@@ -308,19 +306,18 @@ L'équipe {siteName}", ['farm' => $e['farm']['name'], 'email' => $e['email'], 'u
 
 	public static function getInviteFarmerMail(Invite $e): array {
 
-		$urlHash = \Lime::getUrl().'/farm/invite:check?key='.$e['key'];
-
 		$title = s("{farm} vous invite à rejoindre son équipe !", ['farm' => $e['farm']['name']]);
 
 		$text = s("Bonjour,
 
-La ferme {farm} vous invite à créer un compte {siteName} pour rejoindre l'équipe de la ferme.
+La ferme {farm} vous invite à rejoindre son équipe sur {siteName}.
+{siteName} est un logiciel de gestion de la production et de la vente pour les producteurs.
 
-Utilisez le lien suivant dans votre navigateur pour activer votre compte :
+Utilisez le lien suivant pour activer votre compte :
 {url}
 
 À bientôt,
-L'équipe {siteName}", ['farm' => $e['farm']['name'], 'email' => $e['email'], 'url' => $urlHash]);
+L'équipe {siteName}", ['farm' => $e['farm']['name'], 'email' => $e['email'], 'url' => $e->getLink()]);
 
 
 		return [
@@ -370,9 +367,9 @@ L'équipe {siteName}", ['farm' => $e['farm']['name'], 'email' => $e['email'], 'u
 
 		$text = s("Bonjour,
 
-Vous avez accepté l'invitation à rejoindre l'équipe de {farm} avec succès sur {siteName}.
+Vous avez accepté l'invitation à rejoindre l'équipe de {farm} sur {siteName}.
 
-Vous pouvez accéder à la page de la ferme en utilisant le lien suivant :
+Vous pouvez accéder à la ferme en utilisant le lien suivant :
 {url}
 
 À bientôt,

@@ -93,6 +93,7 @@ class InviteLib extends InviteCrud {
 		}
 
 		$e['email'] = mb_strtolower($e['email']);
+		$e['expiresAt'] = new \Sql('CURDATE() + INTERVAL '.\Setting::get('farm\inviteDelay').' DAY');
 
 		Invite::model()->insert($e);
 
@@ -221,6 +222,14 @@ class InviteLib extends InviteCrud {
 		else {
 			FarmerLib::delete($e);
 		}
+
+	}
+
+	public static function deleteExpired(): void {
+
+		Invite::model()
+			->whereExpiresAt('<', new \Sql('NOW()'))
+			->delete();
 
 	}
 
