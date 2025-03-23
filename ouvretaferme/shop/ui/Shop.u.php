@@ -10,33 +10,71 @@ class ShopUi {
 
 	}
 
-	public function create(\farm\Farm $eFarm): \Panel {
+	public function create(Shop $eShop): \Panel {
+
+		$eFarm = $eShop['farm'];
 
 		$form = new \util\FormUi();
 
-		$eShop = new Shop([
-			'farm' => $eFarm,
+		$eShop->merge([
 			'name' => s("Boutique de {value}", $eFarm['name']),
 			'fqn' => toFqn($eFarm['name']),
 		]);
 
-		$h = '';
+		if($eShop['shared'] === NULL) {
 
-		$h .= $form->openAjax('/shop/:doCreate', ['id' => 'shop-create']);
+			$h = '<div class="util-block-help">';
+				$h .= s("Vous devez choisir si vous souhaitez créer une boutique en ligne dédiée à la vente de votre seule production, ou si cette boutique en ligne sera partagée avec d'autres producteurs. Le choix que vous faites maintenant ne pourra pas être modifié par la suite, mais vous pouvez toujours créer autant de boutiques que vous le souhaitez.");
+			$h .= '</div>';
 
-			$h .= $form->asteriskInfo();
+			$h .= '<div class="util-buttons">';
 
-			$h .= $form->hidden('farm', $eFarm['id']);
+				$h .= '<a href="/shop/:create?farm='.$eShop['farm']['id'].'&shared=0" class="bg-secondary util-button">';
+					$h .= '<div>';
+						$h .= '<h4>'.s("Créer une boutique personnelle").'</h4>';
+						$h .= '<div class="util-button-text">'.s("Vous serez le seul producteur à vendre sur cette boutique.").'</div>';
+					$h .= '</div>';
+					$h .= \Asset::icon('person-fill-lock');
+				$h .= '</a>';
 
-			$h .= $form->dynamicGroups($eShop, ['name*', 'type*', 'fqn', 'email*', 'frequency', 'description'], [
-				'type*' => self::getTypeDescriber($eFarm, 'create')
-			]);
+				$h .= '<a href="/shop/:create?farm='.$eShop['farm']['id'].'&shared=1" class="bg-secondary util-button">';
+					$h .= '<div>';
+						$h .= '<h4>'.s("Créer une boutique partagée").'</h4>';
+						$h .= '<div class="util-button-text">'.s("Vous pourrez inviter d'autres producteurs à vendre leur production sur cette boutique.").'</div>';
+					$h .= '</div>';
+					$h .= \Asset::icon('people-fill');
+				$h .= '</a>';
 
-		$h .= $form->group(
-				content: $form->submit(s("Créer la boutique"))
-		);
+			$h .= '</div>';
 
-		$h .= $form->close();
+		} else {
+
+			$h = $form->openAjax('/shop/:doCreate', ['id' => 'shop-create']);
+
+				$h .= $form->asteriskInfo();
+
+				$h .= $form->hidden('farm', $eFarm['id']);
+				$h .= $form->hidden('shared', $eShop['shared']);
+
+				$h .= $form->group(
+					s("Boutique"),
+					match($eShop['shared']) {
+						FALSE => $form->fake(s("Personnelle").' <span class="util-annotation">'.s("/ vous seul pourrez vendre sur cette boutique").'</span>', \Asset::icon('person-fill-lock'), encode: FALSE),
+						TRUE => $form->fake(s("Partagée").' <span class="util-annotation">'.s("/ vous pourrez inviter d'autres producteurs à vendre sur cette boutique").'</span>', \Asset::icon('people-fill'), encode: FALSE)
+					}
+				);
+
+				$h .= $form->dynamicGroups($eShop, ['name*', 'type*', 'fqn*', 'email', 'frequency', 'description'], [
+					'type*' => self::getTypeDescriber($eFarm, 'create')
+				]);
+
+			$h .= $form->group(
+					content: $form->submit(s("Créer la boutique"))
+			);
+
+			$h .= $form->close();
+
+		}
 
 		return new \Panel(
 			id: 'panel-shop-create',
@@ -408,8 +446,8 @@ class ShopUi {
 
 			$d->values = $eFarm->getSelling('hasVat') ?
 				[
-					Shop::PRIVATE => s("Utiliser les prix particuliers").' <span class="util-annotation">'.s("affichage TTC sur la boutique").'</span>',
-					Shop::PRO => s("Utiliser les prix professionnels").' <span class="util-annotation">'.s("affichage HT sur la boutique").'</span>',
+					Shop::PRIVATE => s("Utiliser les prix particuliers").' <span class="util-annotation">'.s("/ affichage TTC sur la boutique").'</span>',
+					Shop::PRO => s("Utiliser les prix professionnels").' <span class="util-annotation">'.s("/ affichage HT sur la boutique").'</span>',
 				] :
 				[
 					Shop::PRIVATE => s("Utiliser les prix particuliers"),
@@ -438,7 +476,7 @@ class ShopUi {
 
 		if($eWebsite->empty()) {
 
-			$h .= '<p class="util-empty">'.s("Vous n'avez pas encore créé votre site internet avec <i>{siteName}</i> !").'</p>';
+			$h .= '<p class="util-empty">'.s("Vous n'avez pas encore créé votre site internet avec {siteName} !").'</p>';
 
 			$h .= '<a href="/website/manage?id='.$eFarm['id'].'" class="btn btn-primary">'.s("Créer mon site internet").'</a>';
 
@@ -984,7 +1022,7 @@ class ShopUi {
 				$label = s("Nous vous recommandons de préciser dans la description :");
 				$label .= '<ul class="mt-1">';
 					$label .= '<li>'.s("une courte présentation de votre activité").'</li>';
-					$label .= '<li>'.s("les conditions pour récupérer sa commande").'</li>';
+					$label .= '<li>'.s("les modalités pour récupérer les commandes").'</li>';
 					$label .= '<li>'.s("les moyens de paiements que vous autorisez").'</li>';
 				$label .= '</ul>';
 				$label .= '<p>'.s("Veuillez noter que seul le premier paragraphe sera visible immédiatement sur les petits écrans de smartphone.").'</p>';
@@ -1011,7 +1049,8 @@ class ShopUi {
 				break;
 
 			case 'email' :
-				$d->after = \util\FormUi::info(s("Cette adresse e-mail est utilisé comme expéditeur des e-mails envoyés aux clients pour les confirmation de commande."));
+				$d->placeholder = fn($eShop) => $eShop['farm']->selling()['legalEmail'];
+				$d->after = \util\FormUi::info(s("Cette adresse e-mail est utilisé comme expéditeur des e-mails envoyés aux clients pour les confirmations de commande. Par défaut, l'adresse e-mail de la ferme est utilisée."));
 				break;
 
 			case 'frequency':

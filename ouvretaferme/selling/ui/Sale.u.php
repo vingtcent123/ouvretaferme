@@ -1666,9 +1666,11 @@ class SaleUi {
 
 				$h .= $form->dynamicField($eSale, 'productsList');
 
-			}
+				$footer = ItemUi::getCreateSubmit($eSale, $form, s("Créer la vente"));
 
-			$footer = ItemUi::getCreateSubmit($eSale, $form, s("Créer la vente"));
+			} else {
+				$footer = $form->submit(s("Créer la vente"), ['class' => 'btn btn-primary btn-lg']);
+			}
 
 		} else {
 			$footer = NULL;

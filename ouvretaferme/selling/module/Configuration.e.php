@@ -3,11 +3,19 @@ namespace selling;
 
 class Configuration extends ConfigurationElement {
 
-	public function isComplete(): bool {
+	public function isLegal(): bool {
 
 		return (
 			$this['legalName'] !== NULL and
-			$this['legalEmail'] !== NULL and
+			$this['legalEmail'] !== NULL
+		);
+
+	}
+
+	public function isComplete(): bool {
+
+		return (
+			$this->isLegal() and
 			$this['invoiceCity'] !== NULL
 		);
 
@@ -47,6 +55,12 @@ class Configuration extends ConfigurationElement {
 	public function build(array $properties, array $input, \Properties $p = new \Properties()): void {
 
 		$p
+			->setCallback('legalName.empty', function(?string $value): bool {
+				return ($value !== NULL);
+			})
+			->setCallback('legalEmail.empty', function(?string $value): bool {
+				return ($value !== NULL);
+			})
 			->setCallback('documentInvoices.prepare', function(string &$value): bool {
 				$value--;
 				return TRUE;

@@ -334,7 +334,7 @@ class DateLib extends DateCrud {
 
 			$cItem = \selling\ItemLib::getSummaryByDate($eDate);
 
-			$email = $eDate['shop']['email'];
+			$email = $eDate['shop']['email'] ?? $eDate['farm']->selling()['legalEmail'];
 
 			new \mail\MailLib()
 				->addTo($email)

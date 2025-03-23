@@ -83,7 +83,7 @@ class MerchantUi {
 										$h .= '<a '.attr('onclick', "Merchant.packagingToggle()").' title="'.s("Définir un colisage").'">'.\Asset::icon('plus-circle').'</a>';
 									$h .= '</div>';
 									$h .= '<div class="merchant-erase merchant-packaging '.($eItem['packaging'] !== NULL ? '' : 'hide').'">';
-										$h .= '<a '.attr('onclick', "Merchant.packagingToggle()").' data-confirm="'.s("Supprimer les colisage et saisir directement une quantité ?").'" title="'.s("Supprimer le colisage").'">'.\Asset::icon('trash-fill').'</a>';
+										$h .= '<a '.attr('onclick', "Merchant.packagingToggle()").' data-confirm="'.s("Supprimer les colisages et saisir directement une quantité ?").'" title="'.s("Supprimer le colisage").'">'.\Asset::icon('trash-fill').'</a>';
 									$h .= '</div>';
 								$h .= '</div>';
 								$h .= '<a onclick="Merchant.keyboardToggle(this)" data-property="packaging" class="merchant-field merchant-packaging '.($eItem['packaging'] !== NULL ? '' : 'hide').'">';

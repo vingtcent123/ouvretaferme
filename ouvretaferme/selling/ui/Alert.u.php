@@ -7,12 +7,16 @@ class AlertUi {
 
 		return match($fqn) {
 
+			'Configuration::error' => s("Il y a des erreurs à corriger sur le formulaire."),
+			'Configuration::legalName.empty' => s("Merci d'indiquer la raison sociale de la ferme"),
+			'Configuration::legalEmail.empty' => s("Merci d'indiquer l'adresse e-mail de la ferme"),
 			'Configuration::creditPrefix.fqn' => s("Ne doit pas finir par un chiffre, et contenir uniquement des caractères alphanumériques ou un tiret"),
 			'Configuration::invoicePrefix.fqn' => s("Ne doit pas finir par un chiffre, et contenir uniquement des caractères alphanumériques ou un tiret"),
 			'Configuration::documentInvoices.consistency' => fn($e) => s("Par souci de cohérence avec les factures existantes, le numéro ne peut pas être inférieur à {value}", $e['invoicePrefixMin']),
 			'Configuration::orderFormPrefix.fqn' => s("Ne doit pas finir par un chiffre, et contenir uniquement des caractères alphanumériques ou un tiret"),
 			'Configuration::deliveryNotePrefix.fqn' => s("Ne doit pas finir par un chiffre, et contenir uniquement des caractères alphanumériques ou un tiret"),
-			'Configuration::notComplete' => '<p>'.s("Nous avons besoin de quelques informations administratives de base à propos de votre ferme (adresse e-mail de facturation, objet social...) pour générer des documents !").'</p><a href="/selling/configuration:update?id='.$options['farm']['id'].'" class="btn btn-transparent">'.s("Compléter mes informations").'</a>',
+			'Configuration::notLegal' => '<p>'.s("Vous devez configurer la raison sociale et l'adresse e-mail de votre ferme pour continuer !").'</p><a href="/selling/configuration:update?id='.$options['farm']['id'].'" class="btn '.($options['btn'] ?? 'btn-transparent').'">'.s("Compléter mes informations").'</a>',
+			'Configuration::notSelling' => '<p>'.s("Nous avons besoin de quelques informations administratives de base à propos de votre ferme (adresse e-mail, objet social...) pour accéder à cette fonctionnalité !").'</p><a href="/selling/configuration:update?id='.$options['farm']['id'].'" class="btn '.($options['btn'] ?? 'btn-transparent').'">'.s("Compléter mes informations").'</a>',
 
 			'Customer::name.empty' => s("Un nom de client valide est obligatoire."),
 			'Customer::phone.check' => s("Le numéro de téléphone est invalide."),
@@ -68,7 +72,7 @@ class AlertUi {
 			'Stock::newValue.negative' => s("Le stock ne peut pas être négatif"),
 
 			'Pdf::noCustomerEmail' => s("Vous n'avez pas renseigné d'adresse e-mail pour ce client"),
-			'Pdf::noFarmEmail' => s("Vous n'avez pas renseigné d'adresse e-mail de facturation pour votre ferme"),
+			'Pdf::noFarmEmail' => s("Vous n'avez pas renseigné d'adresse e-mail pour votre ferme"),
 			'Pdf::emptySale' => s("Vous pourrez générer ce document dès que vous aurez ajouté au moins un article à la vente !"),
 			'Pdf::fileAlreadySent' => s("Ce fichier a déjà été envoyé au client"),
 			'Pdf::fileEmpty' => s("Ce fichier PDF n'existe pas."),

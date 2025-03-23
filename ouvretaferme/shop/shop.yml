@@ -94,7 +94,7 @@ Shop:
   farm: farm\Farm
   logo: ?textFixed(30, 30) @charset(ascii)
   name: text8(1, null) @collate(general)
-  email: email
+  email: ?email
   type: enum(PRIVATE, PRO)
   shared: bool
   sharedFarms: json = PHP([])

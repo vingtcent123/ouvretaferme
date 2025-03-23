@@ -440,7 +440,7 @@ class FarmUi {
 		$form = new \util\FormUi();
 
 		$h = '<div class="util-block-help">';
-			$h .= s("Pour que <i>{siteName}</i> corresponde le plus fidèlement possible aux besoins de votre ferme, vous pouvez choisir d'activer ou désactiver certaines fonctionnalités. Désactiver des fonctionnalités simplifie l'interface du site, tandis qu'en activer vous offre plus de possibilités.");
+			$h .= s("Pour que {siteName} corresponde le plus fidèlement possible aux besoins de votre ferme, vous pouvez choisir d'activer ou désactiver certaines fonctionnalités. Désactiver des fonctionnalités simplifie l'interface du site, tandis qu'en activer vous offre plus de possibilités.");
 		$h .= '</div>';
 
 		$h .= $form->openAjax('/farm/farm:doUpdateFeature');
@@ -1558,7 +1558,7 @@ class FarmUi {
 				$h .= '<a href="https://blog.ouvretaferme.org/" class="bg-secondary util-button" target="_blank">';
 
 					$h .= '<div>';
-						$h .= '<h4>'.s("Explorer le blog <i>{siteName}</i>").'</h4>';
+						$h .= '<h4>'.s("Explorer le blog {siteName}").'</h4>';
 						$h .= '<div class="util-button-text">'.s("Découvrez les nouvelles fonctionnalités, des ressources et la feuille de route de {siteName} !").'</div>';
 					$h .= '</div>';
 					$h .= \Asset::icon('book');

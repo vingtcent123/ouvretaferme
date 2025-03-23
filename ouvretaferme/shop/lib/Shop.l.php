@@ -4,7 +4,7 @@ namespace shop;
 class ShopLib extends ShopCrud {
 
 	public static function getPropertiesCreate(): array {
-		return ['fqn', 'name', 'type', 'email', 'description', 'frequency'];
+		return ['fqn', 'name', 'type', 'email', 'description', 'frequency', 'shared'];
 	}
 
 	public static function getPropertiesUpdate(): array {
@@ -90,8 +90,6 @@ class ShopLib extends ShopCrud {
 		$e->expects(['farm']);
 
 		Shop::model()->beginTransaction();
-
-		$e['shared'] = FALSE;
 
 		try {
 

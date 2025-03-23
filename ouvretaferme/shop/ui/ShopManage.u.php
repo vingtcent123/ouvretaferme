@@ -26,7 +26,26 @@ class ShopManageUi {
 
 		$h .= '<h3>'.s("Créer une boutique").'</h3>';
 
-		$h .= new ShopUi()->create($eFarm)->body;
+
+		if($eFarm->selling()->isLegal()) {
+
+			$eShop = new Shop([
+				'farm' => $eFarm,
+				'shared' => LIME_ENV === 'prod' ? INPUT('shared', '?bool') : FALSE
+			]);
+
+			$h .= new ShopUi()->create($eShop)->body;
+
+		} else {
+
+			$h .= '<div class="util-block">';
+				$h .= \selling\AlertUi::getError('Configuration::notLegal', [
+					'farm' => $eFarm,
+					'btn' => 'btn-secondary'
+				]);
+			$h .= '</div>';
+
+		}
 
 		return $h;
 

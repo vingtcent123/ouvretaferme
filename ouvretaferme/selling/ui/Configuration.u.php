@@ -72,31 +72,27 @@ class ConfigurationUi {
 
 		$h = '';
 
-		if($eFarm->selling()->isComplete() === FALSE) {
-
-			$h .= '<div class="util-block-help">';
-				$h .= '<p>'.s("Pour générer des devis, bons de livraison et factures sur <i>{siteName}</i>, veuillez renseigner à minima les informations suivantes :").'</p>';
-				$h .= '<ul>';
-					if($eConfiguration['legalName'] === NULL) {
-						$h .= '<li>'.self::p('legalName')->label.'</li>';
-					}
-					if($eConfiguration['legalEmail'] === NULL) {
-						$h .= '<li>'.self::p('legalEmail')->label.'</li>';
-					}
-					if($eConfiguration->hasInvoiceAddress() === FALSE) {
-						$h .= '<li>'.s("Adresse de facturation de la ferme").'</li>';
-					}
-				$h .= '</ul>';
-			$h .= '</div>';
-
-		}
-
 		$h .= $form->openAjax('/selling/configuration:doUpdate', ['id' => 'farm-update', 'autocomplete' => 'off']);
 
 			$h .= $form->hidden('id', $eConfiguration['id']);
 
+				$h .= $form->group(content: '<h3>'.s("Général").'</h3>');
+
+				if($eConfiguration['legalName'] === NULL or $eConfiguration['legalEmail'] === NULL) {
+
+					$h .= $form->group(content: '<div class="util-block-help">'.s("Veuillez renseigner la raison sociale et l'adresse e-mail de la ferme pour utiliser les fonctionnalités relatives à la commercialisation sur {siteName}.").'</div>');
+
+				}
+
+				$h .= $form->dynamicGroups($eConfiguration, ['legalName*', 'legalEmail*']);
 				$h .= $form->group(content: '<h3>'.s("Facturation").'</h3>');
-				$h .= $form->dynamicGroups($eConfiguration, ['legalName', 'legalEmail']);
+
+				if($eConfiguration->hasInvoiceAddress() === FALSE) {
+
+					$h .= $form->group(content: '<div class="util-block-help">'.s("Pour générer des devis, bons de livraison et factures sur {siteName}, veuillez renseigner à minima l'adresse de facturation de la ferme.").'</div>');
+
+				}
+
 				$h .= $form->addressGroup(s("Adresse de facturation de la ferme"), 'invoice', $eConfiguration);
 				$h .= $form->dynamicGroups($eConfiguration, ['invoiceRegistration', 'paymentMode', 'documentCopy']);
 				$h .= '<br/>';
@@ -330,7 +326,7 @@ class ConfigurationUi {
 			'documentInvoices' => s("Prochain numéro de facture ou d'avoir"),
 			'hasVat' => s("Assujettissement à la TVA"),
 			'invoiceVat' => s("Numéro de TVA intracommunautaire"),
-			'legalEmail' => s("Adresse e-mail utilisée pour la facturation de vos clients"),
+			'legalEmail' => s("Adresse e-mail de la ferme"),
 			'defaultVat' => s("Taux de TVA par défaut sur vos produits"),
 			'defaultVatShipping' => s("Taux de TVA par défaut sur les frais de livraison"),
 			'organicCertifier' => s("Organisme de certification pour l'Agriculture Biologique"),

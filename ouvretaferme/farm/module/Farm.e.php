@@ -209,9 +209,15 @@ class Farm extends FarmElement {
 		return $this->getFarmer()[$name];
 	}
 
+	public function validateLegalComplete(): void {
+
+		$this->selling()->isLegal() ?: throw new \FailAction('selling\Configuration::notLegal', ['farm' => $this]);
+
+	}
+
 	public function validateSellingComplete(): void {
 
-		$this->selling()->isComplete() ?: throw new \FailAction('selling\Configuration::notComplete', ['farm' => $this]);
+		$this->selling()->isComplete() ?: throw new \FailAction('selling\Configuration::notSelling', ['farm' => $this]);
 
 	}
 

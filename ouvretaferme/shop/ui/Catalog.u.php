@@ -128,8 +128,8 @@ class CatalogUi {
 
 			$d->values = $eFarm->getSelling('hasVat') ?
 				[
-					Shop::PRIVATE => s("Utiliser les prix particuliers").' <span class="util-annotation">'.s("affichage TTC sur le catalogue").'</span>',
-					Shop::PRO => s("Utiliser les prix professionnels").' <span class="util-annotation">'.s("affichage HT sur le catalogue").'</span>',
+					Shop::PRIVATE => s("Utiliser les prix particuliers").' <span class="util-annotation">'.s("/ affichage TTC sur le catalogue").'</span>',
+					Shop::PRO => s("Utiliser les prix professionnels").' <span class="util-annotation">'.s("/ affichage HT sur le catalogue").'</span>',
 				] :
 				[
 					Shop::PRIVATE => s("Utiliser les prix particuliers"),
@@ -154,8 +154,8 @@ class CatalogUi {
 
 					return $e['farm']->getSelling('hasVat') ?
 						[
-							Shop::PRIVATE => s("Utiliser les prix particuliers").' <span class="util-annotation">'.s("affichage TTC sur le catalogue").'</span>',
-							Shop::PRO => s("Utiliser les prix professionnels").' <span class="util-annotation">'.s("affichage HT sur le catalogue").'</span>',
+							Shop::PRIVATE => s("Utiliser les prix particuliers").' <span class="util-annotation">'.s("/ affichage TTC sur le catalogue").'</span>',
+							Shop::PRO => s("Utiliser les prix professionnels").' <span class="util-annotation">'.s("/ affichage HT sur le catalogue").'</span>',
 						] :
 						[
 							Shop::PRIVATE => s("Utiliser les prix particuliers"),

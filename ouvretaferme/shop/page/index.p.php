@@ -3,9 +3,11 @@ new shop\ShopPage()
 	->getCreateElement(function($data) {
 
 		$data->eFarm = \farm\FarmLib::getById(INPUT('farm'));
+		$data->eFarm->validateLegalComplete();
 
 		return new \shop\Shop([
-			'farm' => $data->eFarm
+			'farm' => $data->eFarm,
+			'shared' => LIME_ENV === 'dev' ? INPUT('shared', '?bool') : FALSE
 		]);
 
 	})

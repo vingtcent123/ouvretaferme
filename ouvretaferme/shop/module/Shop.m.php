@@ -52,7 +52,7 @@ class ShopModel extends \ModuleModel {
 			'farm' => ['element32', 'farm\Farm', 'cast' => 'element'],
 			'logo' => ['textFixed', 'min' => 30, 'max' => 30, 'charset' => 'ascii', 'null' => TRUE, 'cast' => 'string'],
 			'name' => ['text8', 'min' => 1, 'max' => NULL, 'collate' => 'general', 'cast' => 'string'],
-			'email' => ['email', 'cast' => 'string'],
+			'email' => ['email', 'null' => TRUE, 'cast' => 'string'],
 			'type' => ['enum', [\shop\Shop::PRIVATE, \shop\Shop::PRO], 'cast' => 'enum'],
 			'shared' => ['bool', 'cast' => 'bool'],
 			'sharedFarms' => ['json', 'cast' => 'array'],

@@ -13,7 +13,7 @@ class ShopObserverLib {
 
 		$eUser = \user\UserLib::getById($eSale['customer']['user']);
 
-		$replyTo = $eSale['shop']['email'];
+		$replyTo = $eSale['shop']['email'] ?? $eSale['farm']->selling()['legalEmail'];
 
 		new \mail\MailLib()
 			->setReplyTo($replyTo)
@@ -43,7 +43,7 @@ class ShopObserverLib {
 
 		$eUser = \user\UserLib::getById($eSale['customer']['user']);
 
-		$replyTo = $eSale['shop']['email'];
+		$replyTo = $eSale['shop']['email'] ?? $eSale['farm']->selling()['legalEmail'];
 
 		new \mail\MailLib()
 			->setReplyTo($replyTo)
@@ -75,7 +75,7 @@ class ShopObserverLib {
 		$eUser = \user\UserLib::getById($eSale['customer']['user']);
 		$eSale['shopPoint'] = PointLib::getById($eSale['shopPoint']);
 
-		$replyTo = $eSale['shop']['email'];
+		$replyTo = $eSale['shop']['email'] ?? $eSale['farm']->selling()['legalEmail'];
 
 		new \mail\MailLib()
 			->setReplyTo($replyTo)
@@ -105,7 +105,7 @@ class ShopObserverLib {
 
 		$eUser = \user\UserLib::getById($eSale['customer']['user']);
 
-		$replyTo = $eSale['shop']['email'];
+		$replyTo = $eSale['shop']['email'] ?? $eSale['farm']->selling()['legalEmail'];
 
 		switch($eSale['paymentMethod']) {
 
@@ -132,7 +132,7 @@ class ShopObserverLib {
 
 		$eUser = \user\UserLib::getById($eSale['customer']['user']);
 
-		$replyTo = $eSale['shop']['email'];
+		$replyTo = $eSale['shop']['email'] ?? $eSale['farm']->selling()['legalEmail'];
 
 		new \mail\MailLib()
 			->setReplyTo($replyTo)

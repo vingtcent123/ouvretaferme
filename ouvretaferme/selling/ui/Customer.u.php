@@ -788,7 +788,7 @@ class CustomerUi {
 				$d->after = function(\util\FormUi $form, Customer $e) {
 					$e->expects(['user']);
 					if($e['user']->notEmpty()) {
-						return '<div class="customer-form-itself-private">'.\util\FormUi::info(s("Le client a aussi la main sur son prénom et est susceptible de le modifier de lui-même."), 'person-circle').'</div>';
+						return '<div class="customer-form-itself-private">'.\util\FormUi::info(\Asset::icon('person-circle').' '.s("Le client a aussi la main sur son prénom et est susceptible de le modifier de lui-même.")).'</div>';
 					} else {
 						return NULL;
 					}
@@ -799,7 +799,7 @@ class CustomerUi {
 				$d->after = function(\util\FormUi $form, Customer $e) {
 					$e->expects(['user']);
 					if($e['user']->notEmpty()) {
-						return '<div class="customer-form-itself-private">'.\util\FormUi::info(s("Le client a aussi la main sur son nom et est susceptible de le modifier de lui-même."), 'person-circle').'</div>';
+						return '<div class="customer-form-itself-private">'.\util\FormUi::info(\Asset::icon('person-circle').' '.s("Le client a aussi la main sur son nom et est susceptible de le modifier de lui-même.")).'</div>';
 					} else {
 						return NULL;
 					}
@@ -810,7 +810,7 @@ class CustomerUi {
 				$d->after = function(\util\FormUi $form, Customer $e) {
 					$e->expects(['user']);
 					if($e['user']->notEmpty()) {
-						return '<div class="customer-form-itself-private">'.\util\FormUi::info(s("Le client a aussi la main sur son numéro de téléphone et est susceptible de le modifier de lui-même."), 'person-circle').'</div>';
+						return '<div class="customer-form-itself-private">'.\util\FormUi::info(\Asset::icon('person-circle').' '.s("Le client a aussi la main sur son numéro de téléphone et est susceptible de le modifier de lui-même.")).'</div>';
 					} else {
 						return NULL;
 					}
@@ -828,7 +828,7 @@ class CustomerUi {
 				$d->after = function(\util\FormUi $form, Customer $e) {
 					$e->expects(['user']);
 					if($e['user']->notEmpty()) {
-						return '<div class="customer-form-itself-private">'.\util\FormUi::info(s("Le client a aussi la main sur son adresse e-mail et est susceptible de le modifier de lui-même."), 'person-circle').'</div>';
+						return '<div class="customer-form-itself-private">'.\util\FormUi::info(\Asset::icon('person-circle').' '.s("Le client a aussi la main sur son adresse e-mail et est susceptible de le modifier de lui-même.")).'</div>';
 					} else {
 						return NULL;
 					}
