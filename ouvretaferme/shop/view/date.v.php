@@ -34,7 +34,7 @@ new JsonView('doUpdatePoint', function($data, AjaxTemplate $t) {
 	$t->qs('#point-switch-'.$data->ePoint['id'])->toggleSwitch('post-status', [TRUE, FALSE]);
 });
 
-new AdaptativeView('/boutique/{shop}/date/{id}', function($data, FarmTemplate $t) {
+new AdaptativeView('/ferme/{farm}/boutique/{shop}/date/{id}', function($data, FarmTemplate $t) {
 
 	$t->tab = 'shop';
 	$t->subNav = new \farm\FarmUi()->getShopSubNav($data->eFarm);
