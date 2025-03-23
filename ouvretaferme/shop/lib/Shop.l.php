@@ -91,6 +91,8 @@ class ShopLib extends ShopCrud {
 
 		Shop::model()->beginTransaction();
 
+		$e['shared'] = FALSE;
+
 		try {
 
 			Shop::model()->insert($e);

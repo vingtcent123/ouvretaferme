@@ -55,6 +55,7 @@ class ShopModel extends \ModuleModel {
 			'email' => ['email', 'cast' => 'string'],
 			'type' => ['enum', [\shop\Shop::PRIVATE, \shop\Shop::PRO], 'cast' => 'enum'],
 			'shared' => ['bool', 'cast' => 'bool'],
+			'sharedFarms' => ['json', 'cast' => 'array'],
 			'frequency' => ['enum', [\shop\Shop::WEEKLY, \shop\Shop::BIMONTHLY, \shop\Shop::MONTHLY, \shop\Shop::OTHER], 'cast' => 'enum'],
 			'hasPoint' => ['bool', 'cast' => 'bool'],
 			'hasPayment' => ['bool', 'cast' => 'bool'],
@@ -86,7 +87,7 @@ class ShopModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'fqn', 'farm', 'logo', 'name', 'email', 'type', 'shared', 'frequency', 'hasPoint', 'hasPayment', 'paymentCard', 'paymentTransfer', 'paymentTransferHow', 'paymentOffline', 'paymentOfflineHow', 'description', 'terms', 'termsField', 'limitCustomers', 'orderMin', 'shipping', 'shippingUntil', 'customColor', 'customBackground', 'customTitleFont', 'customFont', 'embedOnly', 'embedUrl', 'comment', 'commentCaption', 'emailNewSale', 'emailEndDate', 'status', 'createdAt', 'createdBy'
+			'id', 'fqn', 'farm', 'logo', 'name', 'email', 'type', 'shared', 'sharedFarms', 'frequency', 'hasPoint', 'hasPayment', 'paymentCard', 'paymentTransfer', 'paymentTransferHow', 'paymentOffline', 'paymentOfflineHow', 'description', 'terms', 'termsField', 'limitCustomers', 'orderMin', 'shipping', 'shippingUntil', 'customColor', 'customBackground', 'customTitleFont', 'customFont', 'embedOnly', 'embedUrl', 'comment', 'commentCaption', 'emailNewSale', 'emailEndDate', 'status', 'createdAt', 'createdBy'
 		]);
 
 		$this->propertiesToModule += [
@@ -105,8 +106,8 @@ class ShopModel extends \ModuleModel {
 
 		switch($property) {
 
-			case 'shared' :
-				return FALSE;
+			case 'sharedFarms' :
+				return [];
 
 			case 'frequency' :
 				return Shop::WEEKLY;
@@ -167,6 +168,9 @@ class ShopModel extends \ModuleModel {
 			case 'type' :
 				return ($value === NULL) ? NULL : (string)$value;
 
+			case 'sharedFarms' :
+				return $value === NULL ? NULL : json_encode($value, JSON_UNESCAPED_UNICODE);
+
 			case 'frequency' :
 				return ($value === NULL) ? NULL : (string)$value;
 
@@ -186,6 +190,9 @@ class ShopModel extends \ModuleModel {
 	public function decode(string $property, $value) {
 
 		switch($property) {
+
+			case 'sharedFarms' :
+				return $value === NULL ? NULL : json_decode($value, TRUE);
 
 			case 'limitCustomers' :
 				return $value === NULL ? NULL : json_decode($value, TRUE);
@@ -235,6 +242,10 @@ class ShopModel extends \ModuleModel {
 
 	public function whereShared(...$data): ShopModel {
 		return $this->where('shared', ...$data);
+	}
+
+	public function whereSharedFarms(...$data): ShopModel {
+		return $this->where('sharedFarms', ...$data);
 	}
 
 	public function whereFrequency(...$data): ShopModel {
