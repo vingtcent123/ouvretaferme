@@ -206,14 +206,6 @@ class InviteLib extends InviteCrud {
 
 	}
 
-	public static function deleteExpired(): void {
-
-		Invite::model()
-			->whereExpiresAt('<', new \Sql('NOW()'))
-			->delete();
-
-	}
-
 	public static function acceptByUser(\user\User $eUser): void {
 
 		Invite::model()

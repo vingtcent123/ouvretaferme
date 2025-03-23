@@ -23,4 +23,3 @@
 28 4 * * * php /var/www/otf/framework/lime.php -e preprod -a ouvretaferme website/cron/certbot:clean
 3 */12 * * * php /var/www/otf/framework/lime.php -e preprod -a ouvretaferme website/cron/certbot:certificate
 47 5 * * * php /var/www/otf/framework/lime.php -e preprod -a ouvretaferme dev/cron/error
-5 19 * * * php /var/www/otf/framework/lime.php -e preprod -a ouvretaferme farm/cron/clean

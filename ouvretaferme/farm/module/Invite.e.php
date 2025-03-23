@@ -73,6 +73,18 @@ class Invite extends InviteElement {
 	public function build(array $properties, array $input, \Properties $p = new \Properties()): void {
 
 		$p
+			->setCallback('email.empty', function(?string &$email): bool {
+
+				$this->expects(['type']);
+
+				if($this['type'] === Invite::SHOP) {
+					$email = NULL;
+					return TRUE;
+				} else {
+					return ($email !== NULL);
+				}
+
+			})
 			->setCallback('email.duplicate', function(string $email): bool {
 
 				$this->expects(['farm']);

@@ -96,8 +96,8 @@ Farmer:
 Invite:
   id: serial32
   farm: farm\Farm
-  email: email
-  type: enum(FARMER, CUSTOMER)
+  email: ?email
+  type: enum(FARMER, CUSTOMER, SHOP)
   customer: ?selling\Customer
   farmer: ?farm\Farmer
   expiresAt: date
