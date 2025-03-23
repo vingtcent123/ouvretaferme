@@ -6,18 +6,14 @@ class ShopObserverLib {
 	public static function saleConfirmed(\selling\Sale $eSale, \Collection $cItem): void {
 
 		$eSale->expects([
-			'shop' => ['email', 'emailNewSale'],
+			'shop' => ['shared', 'email', 'emailNewSale'],
 			'farm' => ['name'],
 			'customer' => ['user']
 		]);
 
 		$eUser = \user\UserLib::getById($eSale['customer']['user']);
 
-		$replyTo = $eSale['shop']['email'] ?? $eSale['farm']->selling()['legalEmail'];
-
-		new \mail\MailLib()
-			->setReplyTo($replyTo)
-			->setFromName($eSale['farm']['name'])
+		self::newSend($eSale)
 			->addTo($eUser['email'])
 			->setContent(...MailUi::getSaleConfirmed($eSale, $cItem, self::getTemplate($eSale)))
 			->send('shop');
@@ -25,7 +21,7 @@ class ShopObserverLib {
 		if($eSale['shop']['emailNewSale']) {
 
 			new \mail\MailLib()
-				->addTo($replyTo)
+				->addTo(self::getEmail($eSale))
 				->setContent(...MailUi::getNewFarmSale('confirmed', $eSale, $cItem))
 				->send('shop');
 
@@ -43,11 +39,7 @@ class ShopObserverLib {
 
 		$eUser = \user\UserLib::getById($eSale['customer']['user']);
 
-		$replyTo = $eSale['shop']['email'] ?? $eSale['farm']->selling()['legalEmail'];
-
-		new \mail\MailLib()
-			->setReplyTo($replyTo)
-			->setFromName($eSale['farm']['name'])
+		self::newSend($eSale)
 			->addTo($eUser['email'])
 			->setContent(...MailUi::getSaleUpdated($eSale, $cItem, self::getTemplate($eSale)))
 			->send('shop');
@@ -55,7 +47,7 @@ class ShopObserverLib {
 		if($eSale['shop']['emailNewSale']) {
 
 			new \mail\MailLib()
-				->addTo($replyTo)
+				->addTo(self::getEmail($eSale))
 				->setContent(...MailUi::getNewFarmSale('updated', $eSale, $cItem))
 				->send('shop');
 
@@ -75,11 +67,7 @@ class ShopObserverLib {
 		$eUser = \user\UserLib::getById($eSale['customer']['user']);
 		$eSale['shopPoint'] = PointLib::getById($eSale['shopPoint']);
 
-		$replyTo = $eSale['shop']['email'] ?? $eSale['farm']->selling()['legalEmail'];
-
-		new \mail\MailLib()
-			->setReplyTo($replyTo)
-			->setFromName($eSale['farm']['name'])
+		self::newSend($eSale)
 			->addTo($eUser['email'])
 			->setContent(...MailUi::getSaleConfirmed($eSale, $cItem, self::getTemplate($eSale)))
 			->send('shop');
@@ -105,14 +93,10 @@ class ShopObserverLib {
 
 		$eUser = \user\UserLib::getById($eSale['customer']['user']);
 
-		$replyTo = $eSale['shop']['email'] ?? $eSale['farm']->selling()['legalEmail'];
-
 		switch($eSale['paymentMethod']) {
 
 			case \selling\Sale::ONLINE_CARD :
-				new \mail\MailLib()
-					->setReplyTo($replyTo)
-					->setFromName($eSale['farm']['name'])
+				self::newSend($eSale)
 					->addTo($eUser['email'])
 					->setContent(...MailUi::getCardSaleFailed($eSale))
 					->send('shop');
@@ -132,11 +116,7 @@ class ShopObserverLib {
 
 		$eUser = \user\UserLib::getById($eSale['customer']['user']);
 
-		$replyTo = $eSale['shop']['email'] ?? $eSale['farm']->selling()['legalEmail'];
-
-		new \mail\MailLib()
-			->setReplyTo($replyTo)
-			->setFromName($eSale['farm']['name'])
+		self::newSend($eSale)
 			->addTo($eUser['email'])
 			->setContent(...MailUi::getSaleCanceled($eSale))
 			->send('shop');
@@ -144,7 +124,7 @@ class ShopObserverLib {
 		if($eSale['shop']['emailNewSale']) {
 
 			new \mail\MailLib()
-				->addTo($replyTo)
+				->addTo(self::getEmail($eSale))
 				->setContent(...MailUi::getCancelFarmSale($eSale))
 				->send('shop');
 
@@ -161,6 +141,29 @@ class ShopObserverLib {
 			->getCollection();
 
 		ProductLib::addAvailable($cItem);
+
+	}
+
+	private static function newSend(\selling\Sale $eSale): \mail\MailLib {
+
+		$eSale->expects([
+			'farm'
+		]);
+
+		return new \mail\MailLib()
+			->setReplyTo(self::getEmail($eSale))
+			->setFromName($eSale['farm']['name']);
+
+	}
+
+	private static function getEmail(\selling\Sale $eSale): string {
+
+		$eSale->expects([
+			'shop' => ['shared', 'email'],
+			'farm'
+		]);
+
+		return $eSale['shop']['email'] ?? $eSale['farm']->selling()['legalEmail'];
 
 	}
 

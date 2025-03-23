@@ -303,7 +303,7 @@ class DateLib extends DateCrud {
 
 		$cDate = Date::model()
 			->select(Date::getSelection() + [
-				'shop' => ['name', 'email', 'emailEndDate'],
+				'shop' => ['name', 'shared', 'email', 'emailEndDate'],
 				'farm' => ['banner']
 			])
 			->where('orderEndAt BETWEEN NOW() - INTERVAL 6 HOUR AND NOW() - INTERVAL 10 MINUTE')

@@ -16,10 +16,14 @@ class ShopUi {
 
 		$form = new \util\FormUi();
 
-		$eShop->merge([
-			'name' => s("Boutique de {value}", $eFarm['name']),
-			'fqn' => toFqn($eFarm['name']),
-		]);
+		if($eShop['shared'] === FALSE) {
+
+			$eShop->merge([
+				'name' => s("Boutique de {value}", $eFarm['name']),
+				'fqn' => toFqn($eFarm['name']),
+			]);
+
+		}
 
 		if($eShop['shared'] === NULL) {
 
@@ -57,10 +61,10 @@ class ShopUi {
 				$h .= $form->hidden('shared', $eShop['shared']);
 
 				$h .= $form->group(
-					s("Boutique"),
+					s("Visibilité de la boutique"),
 					match($eShop['shared']) {
-						FALSE => $form->fake(s("Personnelle").' <span class="util-annotation">'.s("/ vous seul pourrez vendre sur cette boutique").'</span>', \Asset::icon('person-fill-lock'), encode: FALSE),
-						TRUE => $form->fake(s("Partagée").' <span class="util-annotation">'.s("/ vous pourrez inviter d'autres producteurs à vendre sur cette boutique").'</span>', \Asset::icon('people-fill'), encode: FALSE)
+						FALSE => $form->fake(s("Boutique personnelle").' <span class="util-annotation">'.s("/ vous seul pourrez vendre sur cette boutique").'</span>', \Asset::icon('person-fill-lock'), encode: FALSE),
+						TRUE => $form->fake(s("Boutique partagée").' <span class="util-annotation">'.s("/ vous pourrez inviter d'autres producteurs à vendre sur cette boutique").'</span>', \Asset::icon('people-fill'), encode: FALSE)
 					}
 				);
 
@@ -996,7 +1000,7 @@ class ShopUi {
 						$h ='<div class="shop-write-fqn form-info-ancestor">';
 
 							$h .= $form->inputGroup(
-									'<div class="input-group-addon">'.\Lime::getProtocol().'://'.\Setting::get('shop\domain').'</div>'.
+									'<div class="input-group-addon">'.ShopUi::domain().'/</div>'.
 									$form->text('fqn', $eShop['fqn'] ?? '', $attributes)
 								);
 							$h .=	$auto;
@@ -1049,8 +1053,12 @@ class ShopUi {
 				break;
 
 			case 'email' :
-				$d->placeholder = fn($eShop) => $eShop['farm']->selling()['legalEmail'];
-				$d->after = \util\FormUi::info(s("Cette adresse e-mail est utilisé comme expéditeur des e-mails envoyés aux clients pour les confirmations de commande. Par défaut, l'adresse e-mail de la ferme est utilisée."));
+				$d->placeholder = fn(Shop $eShop) => $eShop['shared'] ? '' : $eShop['farm']->selling()['legalEmail'];
+				$d->after = fn(\util\FormUi $form, Shop $eShop) => \util\FormUi::info(
+					$eShop['shared'] ?
+						s("Cette adresse e-mail est utilisée comme expéditeur des e-mails envoyés aux clients pour les confirmations de commande, choisissez de préférence une adresse e-mail commune à tous les producteurs.") :
+						s("Cette adresse e-mail est utilisée comme expéditeur des e-mails envoyés aux clients pour les confirmations de commande.")
+				);
 				break;
 
 			case 'frequency':
