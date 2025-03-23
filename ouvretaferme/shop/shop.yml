@@ -96,6 +96,7 @@ Shop:
   name: text8(1, null) @collate(general)
   email: email
   type: enum(PRIVATE, PRO)
+  shared: bool = FALSE
   frequency: enum(WEEKLY, BIMONTHLY, MONTHLY, OTHER) = WEEKLY
   hasPoint: bool = TRUE
   hasPayment: bool = TRUE
