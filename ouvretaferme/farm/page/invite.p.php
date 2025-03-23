@@ -48,37 +48,5 @@ new Page()
 			throw new ViewAction($data, ':check');
 		}
 
-	})
-	->post('doAcceptUser', function($data) {
-
-		$data->eInvite = \farm\InviteLib::getByKey(POST('key'));
-
-		if(
-			$data->eInvite->empty() or
-			$data->eInvite['farmer']['user']->empty()
-		) {
-			throw new NotExpectedAction();
-		}
-
-		$data->eInvite['farm'] = \farm\FarmLib::getById($data->eInvite['farm']);
-
-		$eUser = $data->eInvite['farmer']['user'];
-
-		$fw = new FailWatch();
-
-		$eUser->build(['email', 'password'], $_POST);
-
-		user\SignUpLib::matchBasicPassword('create', $eUser, $_POST);
-
-		$fw->validate();
-
-		if(\farm\InviteLib::acceptUser($data->eInvite, $eUser)) {
-
-			\user\ConnectionLib::logInUser($eUser);
-
-			throw new RedirectAction('/');
-
-		}
-
 	});
 ?>

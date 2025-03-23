@@ -110,7 +110,7 @@ class InviteLib extends InviteCrud {
 
 	}
 
-	public static function accept(Invite $e, \user\User $eUser, bool $bypassExistingUser = FALSE): bool {
+	public static function accept(Invite $e, \user\User $eUser): bool {
 
 		$e->expects([
 			'type', 'status',
@@ -136,7 +136,6 @@ class InviteLib extends InviteCrud {
 		// Le cas où le Farmer est associé à un utilisateur existant est géré à part
 		if(
 			$e['type'] === Invite::FARMER and
-			$bypassExistingUser === FALSE and
 			$e['farmer']['user']->notEmpty()
 		) {
 			return FALSE;
@@ -176,24 +175,6 @@ class InviteLib extends InviteCrud {
 
 	}
 
-	public static function acceptUser(Invite $e, \user\User $eUser): bool {
-
-		\user\User::model()->beginTransaction();
-
-		\user\SignUpLib::updateEmail($eUser, TRUE);
-		\user\SignUpLib::createPassword($eUser);
-
-		$eUser['visibility'] = \user\User::PUBLIC;
-		\user\UserLib::update($eUser, ['visibility']);
-
-		self::accept($e, $e['farmer']['user'], bypassExistingUser: TRUE);
-
-		\user\User::model()->commit();
-
-		return TRUE;
-
-	}
-
 	public static function deleteFromFarmer(Farmer $e): void {
 
 		$e->expects(['id', 'status', 'farmGhost', 'user']);
@@ -229,14 +210,6 @@ class InviteLib extends InviteCrud {
 
 		Invite::model()
 			->whereExpiresAt('<', new \Sql('NOW()'))
-			->delete();
-
-	}
-
-	public static function deleteFromCustomer(\selling\Customer $e): void {
-
-		Invite::model()
-			->whereCustomer($e)
 			->delete();
 
 	}

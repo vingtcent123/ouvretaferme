@@ -99,21 +99,6 @@ class InviteUi {
 
 		}
 
-		if($eInvite['farmer']['user']->notEmpty()) {
-
-			$h = '<div class="util-block text-center">';
-				$h .= '<br/><br/>';
-				$h .= '<h2>'.s("Vous avez été invité sur {siteName} !").'</h2>';
-				$h .= '<h4>'.s("Pour rejoindre l'équipe de la ferme {farm}, veuillez accepter cette invitation en choisissant un mot de passe qui vous permettra de vous connecter sur le site.", ['farm' => '<b>'.encode($eFarm['name']).'</b>']).'</h4>';
-				$h .= '<br/><br/>';
-			$h .= '</div>';
-
-			$h .= $this->signUp($eInvite);
-
-			return $h;
-
-		}
-
 		$eUser = \user\ConnectionLib::getOnline();
 
 		if($eUser->empty()) {
@@ -147,41 +132,6 @@ class InviteUi {
 		}
 
 		return $this->checkDefault();
-
-	}
-	public function signUp(Invite $e): string {
-
-		$form = new \util\FormUi([
-			'firstColumnSize' => 40
-		]);
-
-		$h = $form->openAjax('/farm/invite:doAcceptUser', ['autocomplete' => 'off']);
-
-		$h .= $form->hidden('key', $e['key']);
-
-		$eUser = new \user\User([
-			'email' => $e['email']
-		]);
-
-		$h .= $form->dynamicGroup($eUser, 'email');
-
-		$h .= $form->group(
-			s("Votre mot de passe"),
-			$form->password('password', NULL, ['placeholder' => s("Mot de passe")])
-		);
-
-		$h .= $form->group(
-			s("Retapez le mot de passe"),
-			$form->password('passwordBis')
-		);
-
-		$h .= $form->group(
-			content: $form->submit(s("S'inscrire"))
-		);
-
-		$h .= $form->close();
-
-		return $h;
 
 	}
 
