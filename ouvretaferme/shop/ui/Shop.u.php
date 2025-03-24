@@ -10,6 +10,71 @@ class ShopUi {
 
 	}
 
+	public function join(\farm\Farm $eFarm): \Panel {
+
+		$form = new \util\FormUi();
+
+		$h = $form->openAjax('/shop/:doJoin', ['id' => 'shop-join']);
+
+			$h .= $form->hidden('farm', $eFarm['id']);
+
+			$h .= '<div class="util-block-help">';
+				$h .= s("Pour rejoindre une boutique partagée, munissez-vous du code que l'administrateur de la boutique vous a donné et saisissez-le dans le formulaire ci-dessous.");
+			$h .= '</div>';
+
+			$h .= $form->group(
+				s("Code d'invitation"),
+				$form->text('key')
+			);
+
+			$h .= $form->group(
+				content: $form->submit(s("Valider"))
+			);
+
+		$h .= $form->close();
+
+		return new \Panel(
+			id: 'panel-shop-join',
+			title: s("Rejoindre une boutique partagée"),
+			body: $h
+		);
+
+	}
+
+	public function checkJoin(\farm\Farm $eFarm, Shop $eShop, bool $hasJoin): string {
+
+		$form = new \util\FormUi();
+
+		$h = $form->openAjax('/shop/:doJoin', ['id' => 'shop-join']);
+
+			$h .= $form->hidden('farm', $eFarm['id']);
+			$h .= $form->hidden('key', $eShop->getSharedKey());
+
+			if($hasJoin === FALSE) {
+				$h .= '<div class="util-info">';
+					$h .= s("Nous avons trouvé une boutique correspondant au code d'invitation que vous avez saisi !");
+				$h .= '</div>';
+			}
+
+			$h .= '<h3>'.encode($eShop['name']).'</h3>';
+
+			if($eShop['description']) {
+				$h .= '<div class="util-block-gradient">'.new \editor\EditorUi()->value($eShop['description']).'</div>';
+			}
+
+			if($hasJoin) {
+				$h .= '<div class="util-block util-block-dark bg-success">'.s("Vous avez déjà rejoint cette boutique !").'</div>';
+			} else {
+				$h .= $form->hidden('do', TRUE);
+				$h .= $form->submit(s("Rejoindre la boutique"));
+			}
+
+		$h .= $form->close();
+
+		return $h;
+
+	}
+
 	public function create(Shop $eShop): \Panel {
 
 		$eFarm = $eShop['farm'];
@@ -31,7 +96,7 @@ class ShopUi {
 				$h .= s("Vous devez choisir si vous souhaitez créer une boutique en ligne dédiée à la vente de votre seule production, ou si cette boutique en ligne sera partagée avec d'autres producteurs. Le choix que vous faites maintenant ne pourra pas être modifié par la suite, mais vous pouvez toujours créer autant de boutiques que vous le souhaitez.");
 			$h .= '</div>';
 
-			$h .= '<div class="util-buttons">';
+			$h .= '<div class="util-buttons mb-3">';
 
 				$h .= '<a href="/shop/:create?farm='.$eShop['farm']['id'].'&shared=0" class="bg-secondary util-button">';
 					$h .= '<div>';
@@ -47,6 +112,16 @@ class ShopUi {
 						$h .= '<div class="util-button-text">'.s("Vous pourrez inviter d'autres producteurs à vendre leur production sur cette boutique.").'</div>';
 					$h .= '</div>';
 					$h .= \Asset::icon('people-fill');
+				$h .= '</a>';
+
+			$h .= '</div>';
+
+			$h .= '<h3>'.s("Vous avez un code d'invitation ?").'</h3>';
+
+			$h .= '<div>';
+
+				$h .= '<a href="/shop/:join?farm='.$eShop['farm']['id'].'&shared=1" class="btn btn-outline-primary">';
+					$h .= s("Rejoindre une boutique");
 				$h .= '</a>';
 
 			$h .= '</div>';

@@ -54,6 +54,10 @@ class SharedModel extends \ModuleModel {
 			'createdBy' => 'user\User',
 		];
 
+		$this->uniqueConstraints = array_merge($this->uniqueConstraints, [
+			['farm', 'shop']
+		]);
+
 	}
 
 	public function getDefaultValue(string $property) {

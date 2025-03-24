@@ -26,6 +26,48 @@ new Page()
 
 	});
 
+new Page(function($data) {
+
+		$data->eFarm = \farm\FarmLib::getById(INPUT('farm'))->validate('canManage');
+
+	})
+	->get( 'join', function($data) {
+
+		if(post_exists('key')) {
+			$data->eShop = \shop\ShopLib::getByKey(POST('key'));
+		} else {
+			$data->eShop = new \shop\Shop();
+		}
+
+		throw new ViewAction($data);
+
+	})
+	->post( 'doJoin', function($data) {
+
+		$data->eShop = \shop\ShopLib::getByKey(POST('key'));
+
+		if($data->eShop->empty()) {
+			throw new FailAction('shop\Shop::invalidKey');
+		}
+
+		$data->hasJoin = \shop\SharedLib::match($data->eShop, $data->eFarm);
+
+		if(
+			$data->hasJoin === FALSE and
+			post_exists('do')
+		) {
+
+			\shop\ShopLib::joinShared($data->eShop, $data->eFarm);
+
+			throw new RedirectAction(\shop\ShopUi::adminUrl($data->eFarm, $data->eShop).'?success=shop:Shop::joined');
+
+		} else {
+			throw new ViewAction($data);
+		}
+
+
+	});
+
 new shop\ShopPage()
 	->getCreateElement(function($data) {
 

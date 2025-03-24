@@ -142,7 +142,7 @@ class FarmTemplate extends MainTemplate {
 
 				} else {
 					$farm .= '<div class="nav-title-farm">';
-						$farm .= '<div>'.\farm\FarmUi::getVignette($this->data->eFarm, '1.75rem').'</div>';
+						$farm .= '<div>'.\farm\FarmUi::getVignette($this->data->eFarm, '4rem').'</div>';
 						$farm .= '<div>'.encode($this->data->eFarm['name']).'</div>';
 					$farm .= '</div>';
 				}

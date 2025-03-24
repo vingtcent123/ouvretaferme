@@ -33,6 +33,7 @@ class AlertUi {
 			'Shop::payment.create' => s("La transaction ne peut pas aboutir avec ce moyen de paiement à cause d'une erreur de configuration, veuillez vous rapprocher de votre producteur ou utiliser un autre moyen de paiement."),
 			'Shop::customColor.light' => s("La couleur constrante est trop claire, merci de choisir une teinte plus foncée pour préserer la lisibilité de votre boutique."),
 			'Shop::customBackground.light' => s("La couleur d'arrière plan est trop foncée, merci de choisir une teinte plus claire pour préserer la lisibilité de votre boutique."),
+			'Shop::invalidKey' => s("Le code d'invitation que vous avez saisi n'est pas reconnu ou a expiré."),
 
 			default => NULL
 
@@ -61,6 +62,7 @@ class AlertUi {
 			'Shop::customized' => s("Le style de votre boutique a bien été enregistré."),
 			'Shop::collected' => s("La collecte des fonds a bien été lancée."),
 			'Shop::deleted' => s("La boutique a bien été supprimée."),
+			'Shop::joined' => s("Vous avez rejoint la boutique !"),
 
 			'Point::home.created' => s("Le point de livraison à domicile a bien été créé. Vous pouvez aller l'activer sur les boutiques sur lequel vous souhaitez l'autoriser pour vos clients."),
 			'Point::home.updated' => s("Le point de livraison à domicile a bien été mis à jour."),

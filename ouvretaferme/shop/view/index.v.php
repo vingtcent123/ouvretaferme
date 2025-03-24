@@ -26,6 +26,14 @@ new AdaptativeView('/ferme/{farm}/boutique/{shop}', function($data, FarmTemplate
 
 });
 
+new AdaptativeView('join', function($data, PanelTemplate $t) {
+	return new \shop\ShopUi()->join($data->eFarm);
+});
+
+new AdaptativeView('doJoin', function($data, AjaxTemplate $t) {
+	$t->qs('#shop-join')->outerHtml(new \shop\ShopUi()->checkJoin($data->eFarm, $data->eShop, $data->hasJoin));
+});
+
 new AdaptativeView('create', function($data, PanelTemplate $t) {
 	return new \shop\ShopUi()->create($data->e);
 });

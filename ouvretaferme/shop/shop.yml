@@ -139,3 +139,6 @@ Shared:
   admin: bool = FALSE
   createdAt: datetime = SPECIAL(now)
   createdBy: user\User = SPECIAL(user)
+  UNIQUE: [
+    ["farm", "shop"]
+  ]

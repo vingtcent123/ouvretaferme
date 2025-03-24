@@ -33,6 +33,24 @@ class ShopLib extends ShopCrud {
 
 	}
 
+	public static function getByKey(string $key): Shop {
+
+		if(str_contains($key, '-') === FALSE) {
+			return new Shop();
+		}
+
+		[$id, $hash] = explode('-', $key, 2);
+
+		return Shop::model()
+			->select(Shop::getSelection())
+			->whereId((int)$id)
+			->whereShared(TRUE)
+			->whereSharedHash($hash)
+			->whereSharedHashExpiresAt('>=', new \Sql('CURDATE()'))
+			->get();
+
+	}
+
 	public static function getSharedFarms(Shop $eShop): \Collection {
 
 		if($eShop['shared'] === FALSE) {
@@ -139,6 +157,20 @@ class ShopLib extends ShopCrud {
 
 		}
 
+
+	}
+
+	public static function joinShared(Shop $e, \farm\Farm $eFarm): void {
+
+		$eShared = new Shared([
+			'shop' => $e,
+			'farm' => $eFarm
+		]);
+
+		try {
+			SharedLib::create($eShared);
+		} catch(\DuplicateException) {
+		}
 
 	}
 

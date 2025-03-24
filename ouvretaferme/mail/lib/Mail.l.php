@@ -118,7 +118,7 @@ class MailLib {
 			empty($this->subject)
 		) {
 
-			trigger_error('Internal error: it needs at least to set: a to address ('.var_export($this->to, true).'), a subject ('.var_export($this->subject, true).'), a body (text or html) to send a mail.', E_USER_ERROR);
+			throw new \Exception('Internal error: it needs at least to set: a to address ('.var_export($this->to, true).'), a subject ('.var_export($this->subject, true).'), a body (text or html) to send a mail.');
 
 		} else {
 
