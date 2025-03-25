@@ -349,7 +349,11 @@ class Task extends TaskElement {
 					'task' => $this
 				]);
 
-				if($eRepeat->build(['frequency', 'stop'], $input)) {
+				$fw = new \FailWatch();
+
+				$eRepeat->build(['frequency', 'stop'], $input);
+
+				if($fw->ok()) {
 					$this['repeatMaster'] = $eRepeat;
 					return TRUE;
 				} else {
