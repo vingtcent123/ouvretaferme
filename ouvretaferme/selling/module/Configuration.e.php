@@ -61,11 +61,10 @@ class Configuration extends ConfigurationElement {
 			->setCallback('legalEmail.empty', function(?string $value): bool {
 				return ($value !== NULL);
 			})
-			->setCallback('documentInvoices.prepare', function(string &$value): bool {
-				$value--;
-				return TRUE;
+			->setCallback('documentInvoices.set', function(int &$value): void {
+				$this['documentInvoices'] = $value - 1;
 			})
-			->setCallback('documentInvoices.consistency', function(string &$value): bool {
+			->setCallback('documentInvoices.consistency', function(int &$value): bool {
 
 				$this->expects(['invoicePrefix']);
 

@@ -132,7 +132,7 @@ class InvoiceLib extends InvoiceCrud {
 
 		Invoice::model()->beginTransaction();
 
-			$e['document'] = ConfigurationLib::getNextDocumentInvoices($e['farm'], 'documentInvoices');
+			$e['document'] = ConfigurationLib::getNextDocumentInvoices($e['farm']);
 			$e['taxes'] = $e['cSale']->first()['taxes'];
 			$e['hasVat'] = $e['cSale']->first()['hasVat'];
 			$e['organic'] = FALSE;
