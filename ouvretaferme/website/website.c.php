@@ -24,7 +24,7 @@ Setting::register('website', [
 		['label' => 'Parisienne', 'value' => "'Parisienne', cursive"],
 		['label' => 'Poiret One', 'value' => "'Poiret One', cursive"],
 		['label' => 'PT Serif', 'value' => "'PT Serif', serif"],
-		['label' => 'Quattrocento Sans', 'value' => "'Quattrocento Sans', sans-serif"],
+		['label' => 'Quattrocento Sans', 'value' => "'Quattrocento Sans', sans-serif", 'link' => "Quattrocento Sans:wght@400;700"],
 		['label' => 'Roboto', 'value' => "'Roboto', sans-serif"],
 		['label' => 'Sail', 'value' => "'Sail', cursive"],
 		['label' => 'Source Sans Pro', 'value' => "'Source Sans Pro', sans-serif"],

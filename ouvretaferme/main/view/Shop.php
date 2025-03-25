@@ -56,11 +56,11 @@ class ShopTemplate extends MainTemplate {
 		$families = [];
 
 		if($font !== NULL) {
-			$families[] = 'family='.$font['label'];
+			$families[] = 'family='.($font['link'] ?? $font['label']);
 		}
 
 		if($titleFont !== NULL) {
-			$families[] = 'family='.$titleFont['label'];
+			$families[] = 'family='.($titleFont['link'] ?? $titleFont['label']);
 		}
 
 		$h = '';
