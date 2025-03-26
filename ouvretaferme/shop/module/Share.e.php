@@ -1,7 +1,7 @@
 <?php
 namespace shop;
 
-class Shared extends SharedElement {
+class Share extends ShareElement {
 
 	public static function getSelection(): array {
 

@@ -61,7 +61,7 @@ class StripeFarmUi {
 
 	public static function getWarning(): string {
 
-		$h = '<h4><u>'.s("Rappel important").'</u></h4>';
+		$h = '<h4>'.s("Rappel important").'</h4>';
 		$h .= '<p>'.s("{siteName} connecte vos clients directement avec Stripe et ne prend donc <b>aucune commission</b> sur le paiement en ligne. La contrepartie naturelle de cette gratuité est que {siteName} ne vous apporte aucune garantie et aucun support sur le paiement en ligne. Si ce service ne correspond pas à vos attentes, nous vous invitons à le désactiver et utiliser des solutions alternatives.").'</p>';
 
 		return $h;

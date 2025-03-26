@@ -1,35 +1,35 @@
 <?php
 namespace shop;
 
-abstract class SharedElement extends \Element {
+abstract class ShareElement extends \Element {
 
 	use \FilterElement;
 
-	private static ?SharedModel $model = NULL;
+	private static ?ShareModel $model = NULL;
 
 	public static function getSelection(): array {
-		return Shared::model()->getProperties();
+		return Share::model()->getProperties();
 	}
 
-	public static function model(): SharedModel {
+	public static function model(): ShareModel {
 		if(self::$model === NULL) {
-			self::$model = new SharedModel();
+			self::$model = new ShareModel();
 		}
 		return self::$model;
 	}
 
 	public static function fail(string|\FailException $failName, array $arguments = [], ?string $wrapper = NULL): bool {
-		return \Fail::log('Shared::'.$failName, $arguments, $wrapper);
+		return \Fail::log('Share::'.$failName, $arguments, $wrapper);
 	}
 
 }
 
 
-class SharedModel extends \ModuleModel {
+class ShareModel extends \ModuleModel {
 
-	protected string $module = 'shop\Shared';
+	protected string $module = 'shop\Share';
 	protected string $package = 'shop';
-	protected string $table = 'shopShared';
+	protected string $table = 'shopShare';
 
 	public function __construct() {
 
@@ -39,13 +39,12 @@ class SharedModel extends \ModuleModel {
 			'id' => ['serial32', 'cast' => 'int'],
 			'shop' => ['element32', 'shop\Shop', 'cast' => 'element'],
 			'farm' => ['element32', 'farm\Farm', 'cast' => 'element'],
-			'admin' => ['bool', 'cast' => 'bool'],
 			'createdAt' => ['datetime', 'cast' => 'string'],
 			'createdBy' => ['element32', 'user\User', 'cast' => 'element'],
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'shop', 'farm', 'admin', 'createdAt', 'createdBy'
+			'id', 'shop', 'farm', 'createdAt', 'createdBy'
 		]);
 
 		$this->propertiesToModule += [
@@ -64,9 +63,6 @@ class SharedModel extends \ModuleModel {
 
 		switch($property) {
 
-			case 'admin' :
-				return FALSE;
-
 			case 'createdAt' :
 				return new \Sql('NOW()');
 
@@ -80,35 +76,31 @@ class SharedModel extends \ModuleModel {
 
 	}
 
-	public function select(...$fields): SharedModel {
+	public function select(...$fields): ShareModel {
 		return parent::select(...$fields);
 	}
 
-	public function where(...$data): SharedModel {
+	public function where(...$data): ShareModel {
 		return parent::where(...$data);
 	}
 
-	public function whereId(...$data): SharedModel {
+	public function whereId(...$data): ShareModel {
 		return $this->where('id', ...$data);
 	}
 
-	public function whereShop(...$data): SharedModel {
+	public function whereShop(...$data): ShareModel {
 		return $this->where('shop', ...$data);
 	}
 
-	public function whereFarm(...$data): SharedModel {
+	public function whereFarm(...$data): ShareModel {
 		return $this->where('farm', ...$data);
 	}
 
-	public function whereAdmin(...$data): SharedModel {
-		return $this->where('admin', ...$data);
-	}
-
-	public function whereCreatedAt(...$data): SharedModel {
+	public function whereCreatedAt(...$data): ShareModel {
 		return $this->where('createdAt', ...$data);
 	}
 
-	public function whereCreatedBy(...$data): SharedModel {
+	public function whereCreatedBy(...$data): ShareModel {
 		return $this->where('createdBy', ...$data);
 	}
 
@@ -116,24 +108,24 @@ class SharedModel extends \ModuleModel {
 }
 
 
-abstract class SharedCrud extends \ModuleCrud {
+abstract class ShareCrud extends \ModuleCrud {
 
  private static array $cache = [];
 
-	public static function getById(mixed $id, array $properties = []): Shared {
+	public static function getById(mixed $id, array $properties = []): Share {
 
-		$e = new Shared();
+		$e = new Share();
 
 		if(empty($id)) {
-			Shared::model()->reset();
+			Share::model()->reset();
 			return $e;
 		}
 
 		if($properties === []) {
-			$properties = Shared::getSelection();
+			$properties = Share::getSelection();
 		}
 
-		if(Shared::model()
+		if(Share::model()
 			->select($properties)
 			->whereId($id)
 			->get($e) === FALSE) {
@@ -151,14 +143,14 @@ abstract class SharedCrud extends \ModuleCrud {
 		}
 
 		if($properties === []) {
-			$properties = Shared::getSelection();
+			$properties = Share::getSelection();
 		}
 
 		if($sort !== NULL) {
-			Shared::model()->sort($sort);
+			Share::model()->sort($sort);
 		}
 
-		return Shared::model()
+		return Share::model()
 			->select($properties)
 			->whereId('IN', $ids)
 			->getCollection(NULL, NULL, $index);
@@ -172,51 +164,51 @@ abstract class SharedCrud extends \ModuleCrud {
 
 	}
 
-	public static function getCreateElement(): Shared {
+	public static function getCreateElement(): Share {
 
-		return new Shared(['id' => NULL]);
-
-	}
-
-	public static function create(Shared $e): void {
-
-		Shared::model()->insert($e);
+		return new Share(['id' => NULL]);
 
 	}
 
-	public static function update(Shared $e, array $properties): void {
+	public static function create(Share $e): void {
+
+		Share::model()->insert($e);
+
+	}
+
+	public static function update(Share $e, array $properties): void {
 
 		$e->expects(['id']);
 
-		Shared::model()
+		Share::model()
 			->select($properties)
 			->update($e);
 
 	}
 
-	public static function updateCollection(\Collection $c, Shared $e, array $properties): void {
+	public static function updateCollection(\Collection $c, Share $e, array $properties): void {
 
-		Shared::model()
+		Share::model()
 			->select($properties)
 			->whereId('IN', $c)
 			->update($e->extracts($properties));
 
 	}
 
-	public static function delete(Shared $e): void {
+	public static function delete(Share $e): void {
 
 		$e->expects(['id']);
 
-		Shared::model()->delete($e);
+		Share::model()->delete($e);
 
 	}
 
 }
 
 
-class SharedPage extends \ModulePage {
+class SharePage extends \ModulePage {
 
-	protected string $module = 'shop\Shared';
+	protected string $module = 'shop\Share';
 
 	public function __construct(
 	   ?\Closure $start = NULL,
@@ -225,8 +217,8 @@ class SharedPage extends \ModulePage {
 	) {
 		parent::__construct(
 		   $start,
-		   $propertiesCreate ?? SharedLib::getPropertiesCreate(),
-		   $propertiesUpdate ?? SharedLib::getPropertiesUpdate()
+		   $propertiesCreate ?? ShareLib::getPropertiesCreate(),
+		   $propertiesUpdate ?? ShareLib::getPropertiesUpdate()
 		);
 	}
 

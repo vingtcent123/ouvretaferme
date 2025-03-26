@@ -132,11 +132,10 @@ Shop:
     ["farm", "name"]
   ]
 
-Shared:
+Share:
   id: serial32
   shop: shop\Shop
   farm: farm\Farm
-  admin: bool = FALSE
   createdAt: datetime = SPECIAL(now)
   createdBy: user\User = SPECIAL(user)
   UNIQUE: [

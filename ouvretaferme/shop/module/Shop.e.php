@@ -56,6 +56,7 @@ class Shop extends ShopElement {
 	public function canWrite(): bool {
 
 		$this->expects(['farm']);
+
 		return $this['farm']->canManage();
 
 	}

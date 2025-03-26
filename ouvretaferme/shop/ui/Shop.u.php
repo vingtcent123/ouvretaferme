@@ -19,7 +19,7 @@ class ShopUi {
 			$h .= $form->hidden('farm', $eFarm['id']);
 
 			$h .= '<div class="util-block-help">';
-				$h .= s("Pour rejoindre une boutique partagée, munissez-vous du code que l'administrateur de la boutique vous a donné et saisissez-le dans le formulaire ci-dessous.");
+				$h .= s("Pour rejoindre une boutique collective, munissez-vous du code que l'administrateur de la boutique vous a donné et saisissez-le dans le formulaire ci-dessous.");
 			$h .= '</div>';
 
 			$h .= $form->group(
@@ -35,7 +35,7 @@ class ShopUi {
 
 		return new \Panel(
 			id: 'panel-shop-join',
-			title: s("Rejoindre une boutique partagée"),
+			title: s("Rejoindre une boutique collective"),
 			body: $h
 		);
 
@@ -108,7 +108,7 @@ class ShopUi {
 
 				$h .= '<a href="/shop/:create?farm='.$eShop['farm']['id'].'&shared=1" class="bg-secondary util-button">';
 					$h .= '<div>';
-						$h .= '<h4>'.s("Créer une boutique partagée").'</h4>';
+						$h .= '<h4>'.s("Créer une boutique collective").'</h4>';
 						$h .= '<div class="util-button-text">'.s("Vous pourrez inviter d'autres producteurs à vendre leur production sur cette boutique.").'</div>';
 					$h .= '</div>';
 					$h .= \Asset::icon('people-fill');
@@ -135,13 +135,15 @@ class ShopUi {
 				$h .= $form->hidden('farm', $eFarm['id']);
 				$h .= $form->hidden('shared', $eShop['shared']);
 
-				$h .= $form->group(
-					s("Visibilité de la boutique"),
-					match($eShop['shared']) {
-						FALSE => $form->fake(s("Boutique personnelle").' <span class="util-annotation">'.s("/ vous seul pourrez vendre sur cette boutique").'</span>', \Asset::icon('person-fill-lock'), encode: FALSE),
-						TRUE => $form->fake(s("Boutique partagée").' <span class="util-annotation">'.s("/ vous pourrez inviter d'autres producteurs à vendre sur cette boutique").'</span>', \Asset::icon('people-fill'), encode: FALSE)
-					}
-				);
+				if($eShop['shared']) {
+
+					$content = '<h4>'.s("Démarrer une boutique collective").'</h4>';
+					$content .= '<p>'.s("Nous vous recommandons de bien réfléchir au mode de fonctionnement de votre collectif avant d'engager la création d'une boutique en commun, à la fois en termes organisationnels, logistiques et financiers afin que votre projet soit un succès.").'</p>';
+					$content .= '<p>'.s("Veuillez noter que sur {siteName}, seul le producteur à l'origine de la boutique peut administrer celle-ci. Si vous souhaitez administrer une boutique collective à plusieurs, nous vous recommandons de <link>créer une ferme</link> dédiée à cette boutique, et d'ajouter chaque administrateur comme membre de l'équipe de cette ferme.", ['link' => '<a href="/farm/farm:create">']).'</p>';
+
+					$h .= $form->group(content: '<div class="util-block-help">'.$content.'</div>');
+
+				}
 
 				$h .= $form->dynamicGroups($eShop, ['name*', 'type*', 'fqn*', 'email', 'frequency', 'description'], [
 					'type*' => self::getTypeDescriber($eFarm, 'create')
@@ -157,7 +159,7 @@ class ShopUi {
 
 		return new \Panel(
 			id: 'panel-shop-create',
-			title: s("Nouvelle boutique"),
+			title: $eShop['shared'] ? s("Nouvelle boutique collective") : s("Nouvelle boutique personnelle"),
 			body: $h
 		);
 
@@ -180,7 +182,7 @@ class ShopUi {
 			$h .= '</div>';
 
 			$h .= '<div class="tab-panel" data-tab="payment">';
-				$h .= $this->updatePayment($eShop);
+				$h .= $this->updatePayment($eShop, $eFarm);
 			$h .= '</div>';
 
 			$h .= '<div class="tab-panel" data-tab="terms">';
@@ -210,7 +212,15 @@ class ShopUi {
 		$h .= $form->openAjax('/shop/configuration:doUpdate');
 
 		$h .= $form->hidden('id', $eShop['id']);
-		$h .= $form->dynamicGroups($eShop, ['name', 'type', 'fqn', 'email', 'frequency', 'orderMin', 'shipping', 'shippingUntil', 'limitCustomers', 'hasPoint', 'comment', 'commentCaption', 'description'], [
+
+		$update = ['name', 'type', 'fqn', 'email', 'frequency', 'orderMin', 'shipping', 'shippingUntil', 'limitCustomers', 'hasPoint', 'comment', 'commentCaption', 'description'];
+
+		if($eShop['shared']) {
+			array_delete($update, 'shipping');
+			array_delete($update, 'shippingUntil');
+		}
+
+		$h .= $form->dynamicGroups($eShop, $update, [
 				'type' => self::getTypeDescriber($eFarm, 'update'),
 				'comment' => function(\PropertyDescriber $d) {
 					$d->attributes['callbackRadioAttributes'] = fn() => ['onclick' => 'ShopManage.changeComment(this)'];
@@ -249,17 +259,17 @@ class ShopUi {
 
 	}
 
-	protected function updatePayment(Shop $eShop): string {
+	protected function updatePayment(Shop $eShop, \farm\Farm $eFarm): string {
 
 		if($eShop['hasPayment']) {
-			return $this->updateActivePayment($eShop);
+			return $this->updateActivePayment($eShop, $eFarm);
 		} else {
 			return $this->updateInactivePayment($eShop);
 		}
 
 	}
 
-	protected function updateActivePayment(Shop $eShop): string {
+	protected function updateActivePayment(Shop $eShop, \farm\Farm $eFarm): string {
 
 		$form = new \util\FormUi();
 
@@ -288,6 +298,15 @@ class ShopUi {
 
 		$h .= $form->group(content: '<div class="util-block-help">'.$content.'</div>');
 
+		if($eShop['shared']) {
+			$alert = '<div class="util-block util-block-dark bg-danger">';
+				$alert .= '<h4>'.s("Attention !").'</h4>';
+				$alert .= '<p>'.s("Chaque membre du collectif devra éditer ses propres factures à destination des clients qui lui auront passé commande pendant le mois écoulé.").'</p>';
+			$alert .= '</div>';
+
+			$h .= $form->group(content: $alert);
+		}
+
 		$h .= $form->dynamicGroup($eShop, 'paymentTransfer');
 		$h .= $form->dynamicGroup($eShop, 'paymentTransferHow', function(\PropertyDescriber $d) use($eShop) {
 			$d->group['class'] = $eShop['paymentTransfer'] ? '' : 'hide';
@@ -306,6 +325,16 @@ class ShopUi {
 
 		} else {
 			$h .= $form->group(content: '<div class="util-block-help">'.\payment\StripeFarmUi::getWarning().'</div>');
+
+			if($eShop['shared']) {
+				$alert = '<div class="util-block util-block-dark bg-danger">';
+					$alert .= '<h4>'.s("Attention !").'</h4>';
+					$alert .= '<p>'.s("Le compte Stripe configuré sur {value} recevra l'intégralité des paiements réalisés par les clients et ce sera la responsabilité du propriétaire de ce compte Stripe de répartir le produit des ventes entre les membres du collectif.", '<u>'.encode($eFarm['name']).'</u>').'</p>';
+				$alert .= '</div>';
+
+				$h .= $form->group(content: $alert);
+			}
+
 		}
 
 		$h .= $form->dynamicGroup($eShop, 'paymentCard');
@@ -858,8 +887,8 @@ class ShopUi {
 
 		$h = '<div class="shop-widget-wrapper stick-xs">';
 		foreach($cShop as $eShop) {
-			$eShop->expects(['eDate']);
-			$h .= $this->getWidget($eShop, $eShop['eDate']);
+			$eShop->expects(['date']);
+			$h .= $this->getWidget($eShop, $eShop['date']);
 		}
 		$h .= '</div>';
 
@@ -964,18 +993,35 @@ class ShopUi {
 
 	public function toggle(Shop $eShop) {
 
-		return \util\TextUi::switch([
-			'id' => 'shop-switch-'.$eShop['id'],
-			'data-ajax' => $eShop->canWrite() ? '/shop/:doUpdateStatus' : NULL,
-			'post-id' => $eShop['id'],
-			'post-status' => ($eShop['status'] === Shop::OPEN) ? Shop::CLOSED : Shop::OPEN
-		], $eShop['status'] === Shop::OPEN, s("Ouverte"), s("Fermée"));
+		if($eShop->canWrite()) {
+
+			$switch = [
+				'id' => 'shop-switch-'.$eShop['id'],
+				'data-ajax' => $eShop->canWrite() ? '/shop/:doUpdateStatus' : NULL,
+				'post-id' => $eShop['id'],
+				'post-status' => ($eShop['status'] === Shop::OPEN) ? Shop::CLOSED : Shop::OPEN
+			];
+
+		} else {
+			$switch = ['class' => 'disabled'];
+		}
+
+		return \util\TextUi::switch($switch, $eShop['status'] === Shop::OPEN, s("Ouverte"), s("Fermée"));
 
 	}
 
 	public function getDetails(Shop $eShop): string {
 
 		$h = '<div class="util-block stick-xs" style="margin-bottom: 2rem">';
+
+			if($eShop['shared']) {
+
+				$h .= \Asset::icon('people-fill').'  '.s("Boutique collective administrée par {value}", '<b>'.encode($eShop['farm']['name']).'</b>');
+
+				$h .= '<div class="util-block-separator"></div>';
+
+			}
+
 			$h .= '<dl class="util-presentation util-presentation-2">';
 
 				$h .= '<dt>';
@@ -1057,18 +1103,21 @@ class ShopUi {
 				$h .= '<h2>';
 					$h .= s("Producteurs");
 				$h .= '</h2>';
-				$h .= '<div>';
-					$h .= '<a href="/shop/:invite?id='.$eShop['id'].'" class="btn btn-primary">'.\Asset::icon('plus-circle').' '.s("Inviter des producteurs").'</a>';
-				$h .= '</div>';
+
+				if($eShop->canWrite()) {
+					$h .= '<div>';
+						$h .= '<a href="/shop/:invite?id='.$eShop['id'].'" class="btn btn-primary">'.\Asset::icon('plus-circle').' '.s("Inviter des producteurs").'</a>';
+					$h .= '</div>';
+				}
 			$h .= '</div>';
 
-			if($eShop['cFarmShared']->empty()) {
+			if($eShop['cFarmShare']->empty()) {
 
 				$h .= '<div class="util-empty">'.s("Il n'y a pas encore de producteur invité sur la boutique. Vous pouvez envoyer vos invitations, en commençant par votre ferme ?").'</div>';
 
 			} else {
 
-				$h .= new ShopManageUi()->getFarms($eShop['cFarmShared']);
+				$h .= new ShopManageUi()->getFarms($eShop['cFarmShare']);
 
 			}
 

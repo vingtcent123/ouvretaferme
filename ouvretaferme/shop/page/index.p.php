@@ -16,7 +16,7 @@ new Page()
 		\farm\FarmerLib::setView('viewShopCurrent', $data->eFarm, $data->eShop);
 
 		$data->eShop['cCustomer'] = \selling\CustomerLib::getByIds($data->eShop['limitCustomers'], sort: ['lastName' => SORT_ASC, 'firstName' => SORT_ASC]);
-		$data->eShop['cFarmShared'] = \shop\ShopLib::getSharedFarms($data->eShop);
+		$data->eShop['cFarmShare'] = \shop\ShopLib::getSharedFarms($data->eShop);
 		$data->eShop['ccPoint'] = \shop\PointLib::getByFarm($data->eFarm);
 
 		// Liste des dates de la boutique sélectionnée
@@ -50,7 +50,7 @@ new Page(function($data) {
 			throw new FailAction('shop\Shop::invalidKey');
 		}
 
-		$data->hasJoin = \shop\SharedLib::match($data->eShop, $data->eFarm);
+		$data->hasJoin = \shop\ShareLib::match($data->eShop, $data->eFarm);
 
 		if(
 			$data->hasJoin === FALSE and

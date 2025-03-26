@@ -7,8 +7,19 @@ class ShopLib extends ShopCrud {
 		return ['fqn', 'name', 'type', 'email', 'description', 'frequency', 'shared'];
 	}
 
-	public static function getPropertiesUpdate(): array {
-		return ['fqn', 'name', 'type', 'email', 'description', 'frequency', 'orderMin', 'shipping', 'shippingUntil', 'limitCustomers', 'hasPoint', 'comment', 'commentCaption'];
+	public static function getPropertiesUpdate(): \Closure {
+		return function($eShop) {
+
+			$properties = ['fqn', 'name', 'type', 'email', 'description', 'frequency', 'orderMin', 'shipping', 'shippingUntil', 'limitCustomers', 'hasPoint', 'comment', 'commentCaption'];
+
+			if($eShop['shared']) {
+				array_delete($properties, 'shipping');
+				array_delete($properties, 'shippingUntil');
+			}
+
+			return $properties;
+
+		};
 	}
 
 	public static function getByFarm(\farm\Farm $eFarm): \Collection {
@@ -23,13 +34,24 @@ class ShopLib extends ShopCrud {
 
 	public static function getForList(\farm\Farm $eFarm): \Collection {
 
-		return Shop::model()
-			->select(Shop::getSelection() + [
-				'eDate' => fn(\shop\Shop $eShop) => \shop\DateLib::getMostRelevantByShop($eShop, one: TRUE, withSales: TRUE)
-			])
+		$cShare = Share::model()
+			->select(Share::getSelection())
 			->whereFarm($eFarm)
+			->getCollection(index: 'shop');
+
+		return Shop::model()
+			->select(ShopElement::getSelection() + [
+				'farm' => ['name'],
+				'date' => fn(Shop $eShop) => \shop\DateLib::getMostRelevantByShop($eShop, one: TRUE, withSales: TRUE),
+				'share' => fn(Shop $eShop) => $cShare[$eShop['id']] ?? new Share()
+			])
+			->or(
+				fn() => $this->whereFarm($eFarm),
+				fn() => $this->whereId('IN', $cShare->getColumnCollection('shop')),
+			)
 			->sort(['name' => SORT_ASC])
-			->getCollection(NULL, NULL, 'id');
+			->getCollection(index: 'id');
+
 
 	}
 
@@ -57,8 +79,8 @@ class ShopLib extends ShopCrud {
 			return new \Collection();
 		}
 
-		return Shared::model()
-			->select(Shared::getSelection())
+		return Share::model()
+			->select(Share::getSelection())
 			->whereShop($eShop)
 			->getCollection()
 			->sort([
@@ -72,7 +94,7 @@ class ShopLib extends ShopCrud {
 		return \selling\Sale::model()
 			->select([
 				'shop' => Shop::getSelection() + [
-					'eDate' => fn(Shop $eShop) => \shop\DateLib::getMostRelevantByShop($eShop, one: TRUE),
+					'date' => fn(Shop $eShop) => \shop\DateLib::getMostRelevantByShop($eShop, one: TRUE),
 					'farm' => ['name', 'vignette', 'url']
 				]
 			])
@@ -84,7 +106,7 @@ class ShopLib extends ShopCrud {
 			->filter(function($eShop) {
 				return (
 					$eShop['status'] === Shop::OPEN and
-					$eShop['eDate']->notEmpty()
+					$eShop['date']->notEmpty()
 				);
 			})
 			->sort('name');
@@ -162,13 +184,13 @@ class ShopLib extends ShopCrud {
 
 	public static function joinShared(Shop $e, \farm\Farm $eFarm): void {
 
-		$eShared = new Shared([
+		$eShare = new Share([
 			'shop' => $e,
 			'farm' => $eFarm
 		]);
 
 		try {
-			SharedLib::create($eShared);
+			ShareLib::create($eShare);
 		} catch(\DuplicateException) {
 		}
 

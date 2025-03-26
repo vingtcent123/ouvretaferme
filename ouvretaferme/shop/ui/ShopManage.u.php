@@ -58,6 +58,8 @@ class ShopManageUi {
 
 		$eShopCurrent->expects(['cDate']);
 
+		$cShop->sort(['shared', 'name']);
+
 		$h = '<div class="util-action">';
 			$h .= '<div class="shop-title">';
 				$h .= new \media\ShopLogoUi()->getCamera($eShopCurrent, size: '5rem');
@@ -71,12 +73,15 @@ class ShopManageUi {
 							foreach($cShop as $eShop) {
 								$h .= '<a href="'.ShopUi::adminUrl($eFarm, $eShop).'" class="dropdown-item '.($eShop['id'] === $eShopCurrent['id'] ? 'selected' : '').'">';
 									$h .= encode($eShop['name']);
+									if($eShop['shared']) {
+										$h .= ' <span class="util-badge bg-primary">'.\Asset::icon('people-fill').' '.s("Collective").'</span>';
+									}
 								$h .= '</a> ';
 							}
 							if((new Shop(['farm' => $eFarm]))->canCreate()) {
 								$h .= '<div class="dropdown-divider"></div>';
 								$h .= '<a href="/shop/:create?farm='.$eFarm['id'].'" class="dropdown-item">';
-									$h .= s("Créer une nouvelle boutique");
+									$h .= \Asset::icon('plus-circle').' '.s("Nouvelle boutique");
 								$h .= '</a> ';
 							}
 						$h .= '</div>';
@@ -91,12 +96,17 @@ class ShopManageUi {
 					$h .= '<div class="dropdown-list bg-primary">';
 						$h .= '<div class="dropdown-title">'.encode($eShopCurrent['name']).'</div>';
 						$h .= '<a href="/shop/configuration:update?id='.$eShopCurrent['id'].'" class="dropdown-item">'.s("Paramétrer la boutique").'</a>';
-						$h .= '<a href="/shop/:website?id='.$eShopCurrent['id'].'&farm='.$eFarm['id'].'" class="dropdown-item">'.s("Intégrer la boutique sur votre site internet").'</a>';
+						$h .= '<a href="/shop/:website?id='.$eShopCurrent['id'].'&farm='.$eFarm['id'].'" class="dropdown-item">'.s("Intégrer la boutique sur un site internet").'</a>';
 						$h .= '<a href="/shop/:emails?id='.$eShopCurrent['id'].'&farm='.$eFarm['id'].'" class="dropdown-item">'.s("Obtenir les adresses e-mail des clients").'</a>';
-						if($eShopCurrent['cDate']->empty()) {
+
+						if(
+							$eShopCurrent->canDelete() and
+							$eShopCurrent['cDate']->empty()
+						) {
 							$h .= '<div class="dropdown-divider"></div>';
 							$h .= '<a data-ajax="/shop/:doDelete" post-id="'.$eShopCurrent['id'].'" class="dropdown-item" data-confirm="'.s("Voulez-vous réellement supprimer définitivement cette boutique ?").'">'.s("Supprimer la boutique").'</a>';
 						}
+
 					$h .= '</div>';
 
 				}
@@ -112,70 +122,88 @@ class ShopManageUi {
 
 		$cShop->setColumn('hasDate', fn($eShop) => (
 			$eShop['status'] !== Shop::CLOSED and
-			$eShop['eDate']->notEmpty()
+			$eShop['date']->notEmpty()
 		));
 
 		$hasDate = $cShop->match(fn($eShop) => $eShop['hasDate']);
 
-		$h = '<div class="shop-list">';
+		$ccShop = $cShop->reindex(['shared']);
 
-			foreach($cShop as $eShop) {
+		$h = '';
 
-				$h .= '<a href="'.ShopUi::adminUrl($eFarm, $eShop).'" class="shop-list-item util-block">';
+		foreach($ccShop as $shared => $cShop) {
 
-					$h .= '<div class="shop-list-item-header">';
-						$h .= ShopUi::getLogo($eShop, '3rem');
-						$h .= '<h2>';
-							$h .= encode($eShop['name']);
-							if($eShop['shared']) {
-								$h .= ' <span class="shop-list-item-shared">'.\Asset::icon('people-fill').' '.s("Partagée").'</span>';
-							}
-						$h .= '</h2>';
-					$h .= '</div>';
+			if($ccShop->count() > 1) {
 
-					if($hasDate) {
-
-						$h .= '<div class="shop-list-item-content">';
-
-						if($eShop['hasDate']) {
-
-								$eDate = $eShop['eDate'];
-
-								$h .= '<h4>'.new DateUi()->getStatus($eShop, $eDate, withColor: FALSE).'</h4>';
-
-								$h .= '<dl class="util-presentation util-presentation-max-content util-presentation-2">';
-
-									$h .= '<dt>'.s("Date").'</dt>';
-									$h .= '<dd>';
-										$h .= \util\DateUi::textual($eDate['deliveryDate']);
-									$h .= '</dd>';
-
-									$h .= '<dt>'.s("Commandes").'</dt>';
-									$h .= '<dd>'.$eDate['sales']['countValid'].'</dd>';
-
-									if($eDate['sales']['countValid'] > 0) {
-										$h .= '<dt>'.s("Montant").'</dt>';
-										$h .= '<dd>'.($eDate['sales']['amountValidIncludingVat'] ? \util\TextUi::money($eDate['sales']['amountValidIncludingVat']) : '-').'</dd>';
-									}
-
-								$h .= '</dl>';
-
-						} else {
-							if($eShop['status'] === Shop::CLOSED) {
-								$h .= '<h4 class="color-muted">'.s("Boutique fermée").'</h4>';
-							} else {
-								$h .= '<h4 class="color-muted">'.s("Aucune vente").'</h4>';
-							}
-						}
-
-						$h .= '</div>';
-
-					}
-
-				$h .= '</a>';
+				if($shared) {
+					$h .= '<h2>'.s("Boutiques collectives").'</h2>';
+				} else {
+					$h .= '<h2>'.s("Boutiques personnelles").'</h2>';
+				}
 
 			}
-		$h .= '</div>';
+
+			$h .= '<div class="shop-list mb-2">';
+
+				foreach($cShop as $eShop) {
+
+					$h .= '<a href="'.ShopUi::adminUrl($eFarm, $eShop).'" class="shop-list-item util-block">';
+
+						$h .= '<div class="shop-list-item-header">';
+							$h .= ShopUi::getLogo($eShop, '3rem');
+							$h .= '<h2>';
+								$h .= encode($eShop['name']);
+								if($eShop['shared']) {
+									$h .= ' <span class="shop-list-item-shared">'.\Asset::icon('people-fill').' '.s("Collective").'</span>';
+								}
+							$h .= '</h2>';
+						$h .= '</div>';
+
+						if($hasDate) {
+
+							$h .= '<div class="shop-list-item-content">';
+
+							if($eShop['hasDate']) {
+
+									$eDate = $eShop['date'];
+
+									$h .= '<h4>'.new DateUi()->getStatus($eShop, $eDate, withColor: FALSE).'</h4>';
+
+									$h .= '<dl class="util-presentation util-presentation-max-content util-presentation-2">';
+
+										$h .= '<dt>'.s("Date").'</dt>';
+										$h .= '<dd>';
+											$h .= \util\DateUi::textual($eDate['deliveryDate']);
+										$h .= '</dd>';
+
+										$h .= '<dt>'.s("Commandes").'</dt>';
+										$h .= '<dd>'.$eDate['sales']['countValid'].'</dd>';
+
+										if($eDate['sales']['countValid'] > 0) {
+											$h .= '<dt>'.s("Montant").'</dt>';
+											$h .= '<dd>'.($eDate['sales']['amountValidIncludingVat'] ? \util\TextUi::money($eDate['sales']['amountValidIncludingVat']) : '-').'</dd>';
+										}
+
+									$h .= '</dl>';
+
+							} else {
+								if($eShop['status'] === Shop::CLOSED) {
+									$h .= '<h4 class="color-muted">'.s("Boutique fermée").'</h4>';
+								} else {
+									$h .= '<h4 class="color-muted">'.s("Aucune vente").'</h4>';
+								}
+							}
+
+							$h .= '</div>';
+
+						}
+
+					$h .= '</a>';
+
+				}
+			$h .= '</div>';
+
+		}
 
 		return $h;
 
@@ -198,7 +226,7 @@ class ShopManageUi {
 
 			if(
 				($eShop['hasPoint'] === FALSE or	$eShop['ccPoint']->notEmpty()) and
-				($eShop['shared'] === FALSE or $eShop['cFarmShared']->notEmpty())
+				($eShop['shared'] === FALSE or $eShop['cFarmShare']->notEmpty())
 			) {
 				$h .= $this->createFirstDate($eFarm, $eShop);
 			}
@@ -210,13 +238,13 @@ class ShopManageUi {
 		return $h;
 	}
 
-	public function getFarms(\Collection $cShared): string {
+	public function getFarms(\Collection $cShare): string {
 
 		$h = '<div class="util-block shop-farm-grid">';
 
-		foreach($cShared as $eShared) {
+		foreach($cShare as $eShare) {
 
-			$eFarm = $eShared['farm'];
+			$eFarm = $eShare['farm'];
 
 			$h .= '<div class="shop-farm-item">';
 
@@ -245,18 +273,28 @@ class ShopManageUi {
 			return '';
 		}
 
-		$h = '<h2>'.s("Configuration initiale de votre boutique terminée !").'</h2>';
+		$h = '';
 
-		$h .= '<div class="util-block-help mb-2">';
-			$h .= '<p>'.s("Si vous le souhaitez, vous pouvez continuer à personnaliser l'expérience de vos clients en activant par exemple le paiement en ligne ou en personnalisant les e-mails envoyés automatiquement à vos clients lors de leurs commandes.").'</p>';
-			$h .= '<a href="/shop/configuration:update?id='.$eShop['id'].'" class="btn btn-secondary">'.s("Continuer à personnaliser la boutique").'</a>';
-		$h .= '</div>';
+		if($eShop['shared'] === FALSE) {
+
+			$h .= '<h2>'.s("Configuration initiale de votre boutique terminée !").'</h2>';
+
+			$h .= '<div class="util-block-help mb-2">';
+				$h .= '<p>'.s("Si vous le souhaitez, vous pouvez continuer à personnaliser l'expérience de vos clients en activant par exemple le paiement en ligne ou en personnalisant les e-mails envoyés automatiquement à vos clients lors de leurs commandes.").'</p>';
+				$h .= '<a href="/shop/configuration:update?id='.$eShop['id'].'" class="btn btn-secondary">'.s("Continuer à personnaliser la boutique").'</a>';
+			$h .= '</div>';
+
+		}
 
 		$h .= '<h2>'.s("Vendre pour la première fois").'</h2>';
 
-		$h .= '<div class="util-empty">';
-			$h .= s("Lorsque vous êtes satisfait de la configuration de votre boutique, créez une première vente en choisissant une date et la liste des produits que vous avez en stock et que vous souhaitez proposer à vos clients !");
-		$h .= '</div>';
+		if($eShop['shared'] === FALSE) {
+
+			$h .= '<div class="util-empty">';
+				$h .= s("Lorsque vous êtes satisfait de la configuration de votre boutique, créez une première vente en choisissant une date et la liste des produits que vous avez en stock et que vous souhaitez proposer à vos clients !");
+			$h .= '</div>';
+
+		}
 
 		$h .= '<a href="/shop/date:create?shop='.$eShop['id'].'&farm='.$eFarm['id'].'" class="btn btn-primary">'.\Asset::icon('plus-circle').' '.s("Ajouter une première vente").'</a>';
 
