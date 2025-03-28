@@ -12,6 +12,16 @@ class MailUi {
 
 		$variables = \mail\CustomizeUi::getShopVariables(\mail\Customize::SHOP_CONFIRMED_NONE, $eSale, $cItem);
 
+		if($eSale['shopComment'] !== NULL) {
+			$comment = s("Commentaire du client :
+
+{value}
+
+", $eSale['shopComment']);
+		} else {
+			$comment = '';
+		}
+
 		$template = match($type) {
 			'confirmed' => s("Vous avez reçu une commande de @customer."),
 			'updated' => s("Vous avez reçu une modification de commande de @customer.")
@@ -21,12 +31,12 @@ class MailUi {
 - Date de livraison : @delivery
 - Montant de la commande : @amount
 
-Contenu de la commande :
+{comment}Contenu de la commande :
 
 @products
 
 Bonne réception,
-L'équipe {siteName}", ['shop' => encode($eSale['shop']['name'])]);
+L'équipe {siteName}", ['shop' => encode($eSale['shop']['name']), 'comment' => $comment]);
 		$content = \mail\CustomizeUi::convertTemplate($template, $variables);
 
 		return \mail\DesignUi::format($eSale['farm'], $title, $content);
