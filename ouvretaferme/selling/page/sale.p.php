@@ -40,7 +40,7 @@ new \selling\SalePage()
 
 			$data->e['cProduct'] = $data->e['shopDate']->empty() ?
 				\selling\ProductLib::getForSale($data->e['farm'], $data->e['type'], excludeComposition: $data->e->isComposition()) :
-				\shop\ProductLib::getByDate($data->e['shopDate'], $data->e['customer'])->getColumnCollection('product');
+				\shop\ProductLib::getByDate($data->e['shopDate'], $data->e['customer'], public: TRUE)->getColumnCollection('product');
 
 			\selling\ProductLib::applyItemsForSale($data->e['cProduct'], $data->e);
 

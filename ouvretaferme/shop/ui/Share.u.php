@@ -34,6 +34,9 @@ class ShareUi {
 				}
 			$h .= '</div>';
 
+			$h .= 'PROPOSER LE GROUPAGE PAR PRODUCTEUR ICI';
+			$h .= 'CHOISIR ORDRE ICI';
+
 			$h .= $this->getFarms($eShop, $cShare);
 
 		}

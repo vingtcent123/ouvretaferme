@@ -252,7 +252,7 @@ new Page(function($data) {
 
 		$data->eDate['shop'] = $data->eShop;
 
-		$ccProduct = \shop\ProductLib::getByDate($data->eDate, $data->eCustomer, eSaleExclude: $data->eSaleExisting);
+		$ccProduct = \shop\ProductLib::getByDate($data->eDate, $data->eCustomer, eSaleExclude: $data->eSaleExisting, public: TRUE);
 
 		// Multi producteur pas géré pour le moment
 		$data->eDate['cProduct'] = $ccProduct->empty() ? new Collection() : $ccProduct->first();

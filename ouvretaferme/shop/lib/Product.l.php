@@ -184,11 +184,12 @@ class ProductLib extends ProductCrud {
 
 	public static function getByDate(Date $eDate, \selling\Customer $eCustomer = new \selling\Customer(), \selling\Sale $eSaleExclude = new \selling\Sale(), bool $withIngredients = FALSE, bool $public = FALSE): \Collection {
 
-		$ids = self::getColumnByDate($eDate, 'id', function(ProductModel $m) use($eDate, $eCustomer) {
+		$ids = self::getColumnByDate($eDate, 'id', function(ProductModel $m) use($eDate, $eCustomer, $public) {
 
 			$m
-				->whereStatus(Product::ACTIVE, if: $eCustomer->notEmpty())
-				->where(fn() => 'JSON_LENGTH(limitCustomers) = 0 OR JSON_CONTAINS(limitCustomers, \''.$eCustomer['id'].'\')', if: $eCustomer->notEmpty())
+				->whereStatus(Product::ACTIVE, if: $public)
+				->where(fn() => 'JSON_LENGTH(limitCustomers) = 0 OR JSON_CONTAINS(limitCustomers, \''.$eCustomer['id'].'\')', if: ($public and $eCustomer->notEmpty()))
+				->where(fn() => 'JSON_LENGTH(limitCustomers) = 0', if: ($public and $eCustomer->empty()))
 				->where('limitStartAt IS NULL OR '.$m->format($eDate['deliveryDate']).' >= limitStartAt')
 				->where('limitEndAt IS NULL OR '.$m->format($eDate['deliveryDate']).' <= limitEndAt');
 
@@ -210,7 +211,6 @@ class ProductLib extends ProductCrud {
 			->getCollection(NULL, NULL, ['farm', 'product']);
 
 		if($withIngredients) {
-
 
 			$cProductSellingComposition = $ccProduct
 				->find(fn($eProduct) => (

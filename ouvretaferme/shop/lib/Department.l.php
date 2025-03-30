@@ -11,34 +11,13 @@ class DepartmentLib extends DepartmentCrud {
 		return ['name'];
 	}
 
-	public static function getByShop(\shop\Shop $eShop, mixed $id = NULL, array|string|null $fqn = NULL, ?string $index = NULL): \Collection|Department {
+	public static function getByShop(\shop\Shop $eShop): \Collection {
 
-		$expects = 'collection';
-
-		if($id !== NULL) {
-			$expects = 'element';
-			Department::model()->whereId($id);
-		}
-
-		if($fqn !== NULL) {
-			if(is_string($fqn)) {
-				$expects = 'element';
-				Department::model()->whereFqn($fqn);
-			} else {
-				Department::model()->where('fqn', 'IN', $fqn);
-			}
-		}
-
-		Department::model()
+		return Department::model()
 			->select(Department::getSelection())
 			->whereShop($eShop)
-			->sort(['position' => SORT_ASC]);
-
-		if($expects === 'element') {
-			return Department::model()->get();
-		} else {
-			return Department::model()->getCollection(NULL, NULL, $index);
-		}
+			->sort(['position' => SORT_ASC])
+			->getCollection();
 
 	}
 
