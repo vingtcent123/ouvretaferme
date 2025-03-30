@@ -13,6 +13,7 @@ class ShopLib extends ShopCrud {
 			$properties = ['fqn', 'name', 'type', 'email', 'description', 'frequency', 'orderMin', 'shipping', 'shippingUntil', 'limitCustomers', 'hasPoint', 'comment', 'commentCaption'];
 
 			if($eShop['shared']) {
+				$properties[] = 'sharedGroup';
 				array_delete($properties, 'shipping');
 				array_delete($properties, 'shippingUntil');
 			}
@@ -32,14 +33,14 @@ class ShopLib extends ShopCrud {
 
 	}
 
-	public static function getForList(\farm\Farm $eFarm): \Collection {
+	public static function getList(\farm\Farm $eFarm): \Collection {
 
 		$cShare = Share::model()
 			->select(Share::getSelection())
 			->whereFarm($eFarm)
 			->getCollection(index: 'shop');
 
-		return Shop::model()
+		$cShop = Shop::model()
 			->select(ShopElement::getSelection() + [
 				'farm' => ['name'],
 				'date' => fn(Shop $eShop) => \shop\DateLib::getMostRelevantByShop($eShop, one: TRUE, withSales: TRUE),
@@ -52,6 +53,24 @@ class ShopLib extends ShopCrud {
 			->sort(['name' => SORT_ASC])
 			->getCollection(index: 'id');
 
+		$ccShop = new \Collection([
+			'selling' => new \Collection(),
+			'admin' => new \Collection(),
+		])->setDepth(2);
+
+		foreach($cShop as $eShop) {
+
+			if($eShop['farm']['id'] === $eFarm['id'] and $eShop['shared']) {
+				$ccShop['admin'][$eShop['id']] = $eShop;
+			}
+
+			if($eShop['share']->notEmpty() or $eShop['shared'] === FALSE) {
+				$ccShop['selling'][$eShop['id']] = $eShop;
+			}
+
+		}
+
+		return $ccShop;
 
 	}
 
@@ -70,22 +89,6 @@ class ShopLib extends ShopCrud {
 			->whereSharedHash($hash)
 			->whereSharedHashExpiresAt('>=', new \Sql('CURDATE()'))
 			->get();
-
-	}
-
-	public static function getSharedFarms(Shop $eShop): \Collection {
-
-		if($eShop['shared'] === FALSE) {
-			return new \Collection();
-		}
-
-		return Share::model()
-			->select(Share::getSelection())
-			->whereShop($eShop)
-			->getCollection()
-			->sort([
-				'farm' => ['name']
-			]);
 
 	}
 
@@ -146,10 +149,6 @@ class ShopLib extends ShopCrud {
 		$e->expects(['farm', 'shared']);
 
 		Shop::model()->beginTransaction();
-
-		if($e['shared']) {
-			$e['sharedHash'] = $e->getNewSharedHash();
-		}
 
 		try {
 

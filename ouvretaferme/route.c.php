@@ -43,16 +43,6 @@ Route::register([
 			'priority' => 5,
 			'route' => ['factures', 'particuliers'],
 		],
-		'/ferme/{farm}/boutique/{shop}' => [
-			'request' => 'shop/index',
-			'priority' => 5,
-			'route' => ['ferme', '{farm}', 'boutique', '{shop}'],
-		],
-		'/ferme/{farm}/boutique/{shop}/date/{id}' => [
-			'request' => 'shop/date',
-			'priority' => 5,
-			'route' => ['ferme', '{farm}', 'boutique', '{shop}', 'date', '{id}'],
-		],
 		'/ferme/{id}/analyses/cultures' => [
 			'request' => 'farm/index',
 			'priority' => 5,
@@ -113,6 +103,11 @@ Route::register([
 			'priority' => 5,
 			'route' => ['ferme', '{id}', 'assolement', '{season}'],
 		],
+		'/ferme/{id}/boutique/{shop}' => [
+			'request' => 'shop/index',
+			'priority' => 5,
+			'route' => ['ferme', '{id}', 'boutique', '{shop}'],
+		],
 		'/ferme/{id}/boutiques' => [
 			'request' => 'farm/index',
 			'priority' => 5,
@@ -142,6 +137,11 @@ Route::register([
 			'request' => 'farm/index',
 			'priority' => 5,
 			'route' => ['ferme', '{id}', 'configuration'],
+		],
+		'/ferme/{id}/date/{date}' => [
+			'request' => 'shop/date',
+			'priority' => 5,
+			'route' => ['ferme', '{id}', 'date', '{date}'],
 		],
 		'/ferme/{id}/especes' => [
 			'request' => 'plant/plant',

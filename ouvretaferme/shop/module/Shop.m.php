@@ -10,6 +10,10 @@ abstract class ShopElement extends \Element {
 	const PRIVATE = 'private';
 	const PRO = 'pro';
 
+	const FARMER = 'farmer';
+	const CATALOG = 'catalog';
+	const DEPARTMENT = 'department';
+
 	const WEEKLY = 'weekly';
 	const BIMONTHLY = 'bimonthly';
 	const MONTHLY = 'monthly';
@@ -55,6 +59,7 @@ class ShopModel extends \ModuleModel {
 			'email' => ['email', 'null' => TRUE, 'cast' => 'string'],
 			'type' => ['enum', [\shop\Shop::PRIVATE, \shop\Shop::PRO], 'cast' => 'enum'],
 			'shared' => ['bool', 'cast' => 'bool'],
+			'sharedGroup' => ['enum', [\shop\Shop::FARMER, \shop\Shop::CATALOG, \shop\Shop::DEPARTMENT], 'null' => TRUE, 'cast' => 'enum'],
 			'sharedHash' => ['text8', 'null' => TRUE, 'cast' => 'string'],
 			'sharedHashExpiresAt' => ['date', 'null' => TRUE, 'cast' => 'string'],
 			'frequency' => ['enum', [\shop\Shop::WEEKLY, \shop\Shop::BIMONTHLY, \shop\Shop::MONTHLY, \shop\Shop::OTHER], 'cast' => 'enum'],
@@ -88,7 +93,7 @@ class ShopModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'fqn', 'farm', 'logo', 'name', 'email', 'type', 'shared', 'sharedHash', 'sharedHashExpiresAt', 'frequency', 'hasPoint', 'hasPayment', 'paymentCard', 'paymentTransfer', 'paymentTransferHow', 'paymentOffline', 'paymentOfflineHow', 'description', 'terms', 'termsField', 'limitCustomers', 'orderMin', 'shipping', 'shippingUntil', 'customColor', 'customBackground', 'customTitleFont', 'customFont', 'embedOnly', 'embedUrl', 'comment', 'commentCaption', 'emailNewSale', 'emailEndDate', 'status', 'createdAt', 'createdBy'
+			'id', 'fqn', 'farm', 'logo', 'name', 'email', 'type', 'shared', 'sharedGroup', 'sharedHash', 'sharedHashExpiresAt', 'frequency', 'hasPoint', 'hasPayment', 'paymentCard', 'paymentTransfer', 'paymentTransferHow', 'paymentOffline', 'paymentOfflineHow', 'description', 'terms', 'termsField', 'limitCustomers', 'orderMin', 'shipping', 'shippingUntil', 'customColor', 'customBackground', 'customTitleFont', 'customFont', 'embedOnly', 'embedUrl', 'comment', 'commentCaption', 'emailNewSale', 'emailEndDate', 'status', 'createdAt', 'createdBy'
 		]);
 
 		$this->propertiesToModule += [
@@ -166,6 +171,9 @@ class ShopModel extends \ModuleModel {
 			case 'type' :
 				return ($value === NULL) ? NULL : (string)$value;
 
+			case 'sharedGroup' :
+				return ($value === NULL) ? NULL : (string)$value;
+
 			case 'frequency' :
 				return ($value === NULL) ? NULL : (string)$value;
 
@@ -234,6 +242,10 @@ class ShopModel extends \ModuleModel {
 
 	public function whereShared(...$data): ShopModel {
 		return $this->where('shared', ...$data);
+	}
+
+	public function whereSharedGroup(...$data): ShopModel {
+		return $this->where('sharedGroup', ...$data);
 	}
 
 	public function whereSharedHash(...$data): ShopModel {

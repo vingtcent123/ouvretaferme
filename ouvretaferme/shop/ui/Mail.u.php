@@ -279,7 +279,7 @@ Bonne réception,
 		$text = $intro.$products;
 
 		$content = $intro;
-		$content .= \mail\DesignUi::getButton(\Lime::getUrl().ShopUi::adminDateUrl($eDate['farm'], $eDate['shop'], $eDate).'/', s("Voir la vente"))."\n\n";
+		$content .= \mail\DesignUi::getButton(\Lime::getUrl().ShopUi::adminDateUrl($eDate['farm'], $eDate).'/', s("Voir la vente"))."\n\n";
 		$content .= $products;
 
 		$html = \mail\DesignUi::getBanner($eDate['farm']).nl2br($content);

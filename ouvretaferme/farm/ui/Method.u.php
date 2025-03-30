@@ -60,7 +60,7 @@ class MethodUi {
 			$h .= $form->hidden('action', $eAction['id']);
 			$h .= $form->dynamicGroups($eMethod, ['name*']);
 			$h .= $form->group(
-				content: $form->submit(\s("Ajouter"))
+				content: $form->submit(s("Ajouter"))
 			);
 
 			$h .= $form->asteriskInfo();
@@ -69,7 +69,7 @@ class MethodUi {
 
 		return new \Panel(
 			id: 'panel-method-create',
-			title: \s("Ajouter une méthode de travail"),
+			title: s("Ajouter une méthode de travail"),
 			subTitle: ActionUi::getPanelHeader($eAction),
 			body: $h
 		);
@@ -94,7 +94,7 @@ class MethodUi {
 
 			$h .= $form->dynamicGroups($eAction, $properties);
 			$h .= $form->group(
-				content: $form->submit(\s("Modifier"))
+				content: $form->submit(s("Modifier"))
 			);
 
 		$h .= $form->close();
@@ -111,7 +111,7 @@ class MethodUi {
 	public static function p(string $property): \PropertyDescriber {
 
 		$d = Action::model()->describer($property, [
-			'name' => \s("Nom de la méthode"),
+			'name' => s("Nom de la méthode"),
 		]);
 
 		return $d;

@@ -1,30 +1,34 @@
 <?php
-new Page()
-	->get('/ferme/{farm}/boutique/{shop}', function($data) {
+new \farm\FarmPage()
+	->read('/ferme/{id}/boutique/{shop}', function($data) {
 
-		$data->eFarm = \farm\FarmLib::getById(INPUT('farm'));
-		$data->eFarm->validate('canSelling');
-
-		\farm\FarmerLib::setView('viewShop', $data->eFarm, \farm\Farmer::SHOP);
+		\farm\FarmerLib::setView('viewShop', $data->e, \farm\Farmer::SHOP);
 
 		// Liste des boutiques
-		$data->cShop = \shop\ShopLib::getForList($data->eFarm);
+		$data->ccShop = \shop\ShopLib::getList($data->e);
 
 		$eShop = GET('shop', 'shop\Shop');
-		$data->eShop = $data->cShop[$eShop['id']] ?? throw new NotExistsAction();
+		$data->eShop = $data->ccShop['selling'][$eShop['id']] ?? $data->ccShop['admin'][$eShop['id']] ?? throw new NotExistsAction();
 
-		\farm\FarmerLib::setView('viewShopCurrent', $data->eFarm, $data->eShop);
+		\farm\FarmerLib::setView('viewShopCurrent', $data->e, $data->eShop);
 
 		$data->eShop['cCustomer'] = \selling\CustomerLib::getByIds($data->eShop['limitCustomers'], sort: ['lastName' => SORT_ASC, 'firstName' => SORT_ASC]);
-		$data->eShop['cFarmShare'] = \shop\ShopLib::getSharedFarms($data->eShop);
-		$data->eShop['ccPoint'] = \shop\PointLib::getByFarm($data->eFarm);
+
+		if($data->eShop['shared']) {
+			$data->eShop['cShare'] = \shop\ShareLib::getForShop($data->eShop);
+			$data->eShop['cDepartment'] = \shop\DepartmentLib::getByShop($data->eShop);;
+		}
+
+		$data->eShop['ccPoint'] = \shop\PointLib::getByFarm($data->e);
 
 		// Liste des dates de la boutique sélectionnée
 		$data->eShop['cDate'] = \shop\DateLib::getByShop($data->eShop);
 
+		$data->eFarm = $data->e;
+
 		throw new ViewAction($data);
 
-	});
+	}, validate: ['canSelling']);
 
 new Page(function($data) {
 
@@ -82,7 +86,14 @@ new shop\ShopPage()
 	})
 	->create()
 	->doCreate(function($data) {
-		throw new RedirectAction(\shop\ShopUi::adminUrl($data->eFarm, $data->e));
+
+		$url = \shop\ShopUi::adminUrl($data->eFarm, $data->e);
+
+		if($data->e['shared']) {
+			$url .= '?tab=farmers';
+		}
+
+		throw new RedirectAction($url);
 	})
 	->read('invite', function($data) {
 
@@ -98,6 +109,15 @@ new shop\ShopPage()
 		\shop\ShopLib::regenerateSharedHash($data->e);
 
 		throw new ReloadLayerAction();
+
+	})
+	->write('doDeleteSharedFarm', function($data) {
+
+		$data->eFarm = \farm\FarmLib::getById(INPUT('farm'));
+
+		\shop\ShareLib::remove($data->e, $data->eFarm);
+
+		throw new ReloadAction('shop', 'Shop::deletedFarmer');
 
 	})
 	->read('website', function($data) {
@@ -131,7 +151,7 @@ new shop\ShopPage()
 	->doUpdateProperties('doUpdatePoint', ['hasPoint'], function($data) {
 		throw new ReloadAction('shop', $data->e['hasPoint'] ? 'Shop::pointOn' : 'Shop::pointOff');
 	})
-	->doDelete(function() {
-		throw new ReloadAction('shop', 'Shop::deleted');
+	->doDelete(function($data) {
+		throw new RedirectAction(\farm\FarmUi::urlShopList($data->e['farm']).'?success=shop:Shop::deleted');
 	});
 ?>

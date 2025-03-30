@@ -383,7 +383,7 @@ class SaleUi {
 								$h .= '</div>';
 								$h .= '<div class="sale-item-delivery-source util-annotation">';
 									if($eSale['shop']->notEmpty()) {
-										$h .= '<a href="'.\shop\ShopUi::adminDateUrl($eSale['farm'], $eSale['shop'], $eSale['shopDate']).'">'.encode($eSale['shop']['name']).'</a>';
+										$h .= '<a href="'.\shop\ShopUi::adminDateUrl($eSale['farm'], $eSale['shopDate']).'">'.encode($eSale['shop']['name']).'</a>';
 									} else if($eSale['marketParent']->notEmpty()) {
 										$h .= '<a href="'.SaleUi::url($eSale['marketParent']).'">'.encode($eSale['marketParent']['customer']->getName()).'</a>';;
 									} else if($eSale['market']) {
@@ -1054,7 +1054,7 @@ class SaleUi {
 
 			$h .= '<div class="sale-relative-title">';
 				$h .= '<h4>'.encode($e['shop']['name']).'</h4>';
-				$h .= '<a href="'.\shop\ShopUi::adminDateUrl($e['farm'], $e['shop'], $e['shopDate']).'" class="sale-relative-date">'.s("Vente du {value}", \util\DateUi::numeric($e['shopDate']['deliveryDate'])).'</a>';
+				$h .= '<a href="'.\shop\ShopUi::adminDateUrl($e['farm'], $e['shopDate']).'" class="sale-relative-date">'.s("Vente du {value}", \util\DateUi::numeric($e['shopDate']['deliveryDate'])).'</a>';
 				$h .= '<div class="sale-relative-current">';
 					$h .= s("Commande {position} / {count}", ['position' => $position, 'count' => $count]);
 				$h .= '</div>';

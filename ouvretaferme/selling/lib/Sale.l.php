@@ -659,7 +659,7 @@ class SaleLib extends SaleCrud {
 
 		Sale::model()->beginTransaction();
 
-		// Créer une nouvelle vente
+		// Ajouter une nouvelle vente
 		$eSaleNew = new Sale($eSale->extracts($properties));
 		$eSaleNew['preparationStatus'] = Sale::DRAFT;
 		$eSaleNew['paymentStatus'] = Sale::UNDEFINED;

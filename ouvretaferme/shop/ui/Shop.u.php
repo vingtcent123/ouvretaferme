@@ -121,7 +121,7 @@ class ShopUi {
 			$h .= '<div>';
 
 				$h .= '<a href="/shop/:join?farm='.$eShop['farm']['id'].'&shared=1" class="btn btn-outline-primary">';
-					$h .= s("Rejoindre une boutique");
+					$h .= s("Rejoindre une boutique collective");
 				$h .= '</a>';
 
 			$h .= '</div>';
@@ -218,6 +218,7 @@ class ShopUi {
 		if($eShop['shared']) {
 			array_delete($update, 'shipping');
 			array_delete($update, 'shippingUntil');
+			$update[] = 'sharedGroup';
 		}
 
 		$h .= $form->dynamicGroups($eShop, $update, [
@@ -785,26 +786,46 @@ class ShopUi {
 
 	public function displayInvite(Shop $eShop): \Panel {
 
-		$h = '<p class="util-block-help">'.s("Pour inviter des producteurs sur cette boutique, communiquez-leur le code d'invitation affiché ci-dessous. Ils pourront ensuite rejoindre votre boutique et proposer leurs catalogues de produits.").'</p>';
-
-		$h .= '<h3>'.s("Code d'invitation").'</h3>';
-
-		$h .= '<div class="input-group mb-1">';
-			$h .= '<div class="form-control" id="invite-key">'.$eShop->getSharedKey().'</div>';
-			$h .= '<a onclick="doCopy(this)" data-selector="#invite-key" data-message="'.s("Copié !").'" class="btn btn-primary">'.\Asset::icon('clipboard').' '.s("Copier").'</a>';
+		$h = '<div class="util-block-help">';
+			$h .= '<p>'.s("Pour inviter des producteurs sur cette boutique collective, communiquez-leur un code d'invitation que vous aurez généré.").'</p>';
+			$h .= '<h4>'.s("Un producteur invité pourra :").'</h4>';
+			$h .= '<ul>';
+				$h .= '<li>'.s("Proposer son catalogue de produits sur la boutique").'</li>';
+				$h .= '<li>'.s("Consulter les commandes de la boutique").'</li>';
+			$h .= '</ul>';
+			$h .= '<h4>'.s("Un producteur invité ne pourra pas :").'</h4>';
+			$h .= '<ul>';
+				$h .= '<li>'.s("Organiser de nouvelles ventes sur la boutique").'</li>';
+				$h .= '<li>'.s("Configurer ou supprimer la boutique").'</li>';
+			$h .= '</ul>';
 		$h .= '</div>';
 
-		if($eShop->isSharedKeyExpired()) {
-			$h .= '<div class="util-block util-block-dark bg-danger">'.s("Ce code a expiré et n'est plus utilisable.").'</div>';
-		} else {
-			$h .= '<div class="util-block-gradient">'.\Asset::icon('exclamation-circle').' '.s("Ce code expirera le {value}.", \util\DateUi::textual($eShop['sharedHashExpiresAt'])).'</div>';
+		$h .= '<h2>'.s("Code d'invitation").'</h2>';
+
+		if($eShop->hasSharedKey()) {
+
+			$h .= '<div class="input-group mb-1">';
+				$h .= '<div class="form-control" id="invite-key">'.$eShop->getSharedKey().'</div>';
+				$h .= '<a onclick="doCopy(this)" data-selector="#invite-key" data-message="'.s("Copié !").'" class="btn btn-primary">'.\Asset::icon('clipboard').' '.s("Copier").'</a>';
+			$h .= '</div>';
+
+			if($eShop['sharedHashExpiresAt'] !== NULL) {
+
+				if($eShop->isSharedKeyExpired()) {
+					$h .= '<div class="util-block util-block-dark bg-danger">'.s("Ce code a expiré et n'est plus utilisable.").'</div>';
+				} else {
+					$h .= '<div class="util-block-gradient">'.\Asset::icon('exclamation-circle').' '.s("Ce code expirera le {value}.", \util\DateUi::textual($eShop['sharedHashExpiresAt'])).'</div>';
+				}
+
+			}
+
+			$h .= '<br/>';
+
+			$h .= '<h3>'.s("Renouveler le code d'invitation").'</h3>';
+
 		}
 
-		$h .= '<br/>';
-
-		$h .= '<h3>'.s("Renouveler le code d'invitation").'</h3>';
-
-		$h .= '<a data-ajax="/shop/:doRegenerateSharedHash" post-id="'.$eShop['id'].'" class="btn btn-secondary">'.s("Créer un nouveau code").'</a>';
+		$h .= '<a data-ajax="/shop/:doRegenerateSharedHash" post-id="'.$eShop['id'].'" class="btn btn-secondary">'.s("Générer un nouveau code").'</a>';
 
 		return new \Panel(
 			id: 'panel-shop-invite',
@@ -859,8 +880,8 @@ class ShopUi {
 		return '/ferme/'.$eFarm['id'].'/boutique/'.$eShop['id'];
 	}
 
-	public static function adminDateUrl(\farm\Farm $eFarm, Shop $eShop, Date $eDate): string {
-		return '/ferme/'.$eFarm['id'].'/boutique/'.$eShop['id'].'/date/'.$eDate['id'];
+	public static function adminDateUrl(\farm\Farm $eFarm, Date $eDate): string {
+		return '/ferme/'.$eFarm['id'].'/date/'.$eDate['id'];
 	}
 
 	public static function getLogo(Shop $eShop, string $size): string {
@@ -1097,61 +1118,7 @@ class ShopUi {
 			$h .= '</dl>';
 		$h .= '</div>';
 
-		if($eShop['shared']) {
-
-			$h .= '<div class="util-title">';
-				$h .= '<h2>';
-					$h .= s("Producteurs");
-				$h .= '</h2>';
-
-				if($eShop->canWrite()) {
-					$h .= '<div>';
-						$h .= '<a href="/shop/:invite?id='.$eShop['id'].'" class="btn btn-primary">'.\Asset::icon('plus-circle').' '.s("Inviter des producteurs").'</a>';
-					$h .= '</div>';
-				}
-			$h .= '</div>';
-
-			if($eShop['cFarmShare']->empty()) {
-
-				$h .= '<div class="util-empty">'.s("Il n'y a pas encore de producteur invité sur la boutique. Vous pouvez envoyer vos invitations, en commençant par votre ferme ?").'</div>';
-
-			} else {
-
-				$h .= new ShopManageUi()->getFarms($eShop['cFarmShare']);
-
-			}
-
-		}
-
 		return $h;
-	}
-
-	public function getFarms(\Collection $cFarm): string {
-
-		$h = '<div class="shop-farm-grid">';
-
-		foreach($cFarm as $eFarm) {
-
-			$h .= '<div class="shop-farm-item">';
-
-				$h .= '<div class="shop-farm-item-vignette">';
-					$h .= \farm\FarmUi::getVignette($eFarm['farm'], '3rem');
-				$h .= '</div>';
-				$h .= '<div class="shop-farm-item-content">';
-					$h .= '<h4>';
-						$h .= encode($eFarm['farm']['name']);
-					$h .= '</h4>';
-
-				$h .= '</div>';
-
-			$h .= '</div>';
-
-		}
-
-		$h .= '</div>';
-
-		return $h;
-
 	}
 
 	public static function p(string $property): \PropertyDescriber {
@@ -1170,6 +1137,7 @@ class ShopUi {
 			'paymentOfflineHow' => s("Modalités du paiement en direct"),
 			'paymentTransfer' => s("Activer le choix du paiement par virement bancaire"),
 			'paymentTransferHow' => s("Modalités du paiement par virement bancaire"),
+			'sharedGroup' => s("Groupage des produits sur la boutique"),
 			'orderMin' => s("Montant minimal de commande"),
 			'limitCustomers' => s("Limiter l'accès à cette boutique à certains clients seulement"),
 			'shipping' => s("Frais de livraison par commande"),
@@ -1184,7 +1152,7 @@ class ShopUi {
 			'customColor' => s("Couleur contrastante"),
 			'customFont' => s("Police pour le texte"),
 			'customTitleFont' => s("Police pour le titre principal des pages"),
-				'emailNewSale' => s("Recevoir une copie des e-mails envoyés à chaque nouvelle commande ou modification de commande d'un de vos clients"),
+			'emailNewSale' => s("Recevoir une copie des e-mails envoyés à chaque nouvelle commande ou modification de commande d'un de vos clients"),
 			'emailEndDate' => s("Recevoir un e-mail de synthèse lorsqu'une vente se termine")
 		]);
 
@@ -1373,6 +1341,18 @@ class ShopUi {
 					TRUE => s("Uniquement depuis votre site internet"),
 					FALSE => s("Depuis votre site internet et depuis {siteName}")
 				];
+				$d->attributes = [
+					'mandatory' => TRUE
+				];
+				break;
+
+			case 'sharedGroup':
+				$d->values = [
+					Shop::FARMER => s("Grouper par producteur"),
+					Shop::DEPARTMENT => s("Grouper par rayon"),
+					NULL => s("Ne pas grouper les produits")
+				];
+				$d->field = 'select';
 				$d->attributes = [
 					'mandatory' => TRUE
 				];

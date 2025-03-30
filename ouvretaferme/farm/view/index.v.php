@@ -544,7 +544,10 @@ new AdaptativeView('/ferme/{id}/boutiques', function($data, FarmTemplate $t) {
 
 	$uiShopManage = new \shop\ShopManageUi();
 
-	if($data->cShop->empty()) {
+	if(
+		$data->ccShop['selling']->empty() and
+		$data->ccShop['admin']->empty()
+	) {
 
 		$t->mainTitle = '<h1>'.s("Une boutique pour votre ferme").'</h1>';
 
@@ -559,7 +562,21 @@ new AdaptativeView('/ferme/{id}/boutiques', function($data, FarmTemplate $t) {
 
 		$t->mainTitle = $h;
 
-		echo $uiShopManage->getList($data->eFarm, $data->cShop);
+		if($data->ccShop['selling']->notEmpty()) {
+
+			if($data->ccShop['admin']->notEmpty()) {
+				echo '<h2>'.s("Producteur").'</h2>';
+			}
+
+			echo $uiShopManage->getList($data->eFarm, $data->ccShop['selling']);
+
+		}
+
+		if($data->ccShop['admin']->notEmpty()) {
+			echo '<h2>'.s("Administrateur").'</h2>';
+			echo $uiShopManage->getList($data->eFarm, $data->ccShop['admin']);
+		}
+
 
 	}
 

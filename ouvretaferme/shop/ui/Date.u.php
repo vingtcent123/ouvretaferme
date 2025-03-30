@@ -511,7 +511,7 @@ class DateUi {
 						$h .= '<tr>';
 
 							$h .= '<td class="td-min-content">';
-								$h .= '<a href="'.ShopUi::adminDateUrl($eFarm, $eShop, $eDate).'" class="btn btn-outline-primary" style="width: 100%">';
+								$h .= '<a href="'.ShopUi::adminDateUrl($eFarm, $eDate).'" class="btn btn-outline-primary" style="width: 100%">';
 									$h .= '<span class="hide-xs-down">'.\util\DateUi::textual($eDate['deliveryDate']).'</span>';
 									$h .= '<span class="hide-sm-up">'.\util\DateUi::numeric($eDate['deliveryDate']).'</span>';
 								$h .= '</div>';
@@ -522,7 +522,7 @@ class DateUi {
 							$h .= '</td>';
 
 							$h .= '<td class="text-end">';
-								$h .= '<a href="'.ShopUi::adminDateUrl($eFarm, $eShop, $eDate).'?tab=sales">'.$eDate['sales']['countValid'].'</a>';
+								$h .= '<a href="'.ShopUi::adminDateUrl($eFarm, $eDate).'?tab=sales">'.$eDate['sales']['countValid'].'</a>';
 							$h .= '</td>';
 
 							$h .= '<td class="text-end highlight" style="white-space: nowrap">';
@@ -663,12 +663,24 @@ class DateUi {
 		$h = '<div class="tabs-h" id="shop-date-tabs" onrender="'.encode('Lime.Tab.restore(this, "products"'.(get_exists('tab') ? ', "'.GET('tab', ['products', 'sales'], 'products').'"' : '').')').'">';
 
 			$h .= '<div class="tabs-item">';
-				$h .= '<a class="tab-item" data-tab="products" onclick="Lime.Tab.select(this)">';
-					$h .= s("Produits");
-					if($products > 0) {
-						$h .= '<span class="tab-item-count">'.$products.'</span>';
-					}
-				$h .= '</a>';
+
+				if($eShop['shared']) {
+
+					$h .= '<a class="tab-item" data-tab="farmers" onclick="Lime.Tab.select(this)">';
+						$h .= s("Catalogues");
+					$h .= '</a>';
+
+				} else {
+
+					$h .= '<a class="tab-item" data-tab="products" onclick="Lime.Tab.select(this)">';
+						$h .= s("Produits");
+						if($products > 0) {
+							$h .= '<span class="tab-item-count">'.$products.'</span>';
+						}
+					$h .= '</a>';
+
+				}
+
 				$h .= '<a class="tab-item" data-tab="sales" onclick="Lime.Tab.select(this)">';
 					$h .= s("Commandes");
 					if($cSale->notEmpty()) {
@@ -685,9 +697,19 @@ class DateUi {
 				$h .= '</a>';
 			$h .= '</div>';
 
-			$h .= '<div class="tab-panel" data-tab="products">';
-				$h .= $this->getProducts($eFarm, $eDate);
-			$h .= '</div>';
+			if($eShop['shared']) {
+
+				$h .= '<div class="tab-panel" data-tab="farmers">';
+					$h .= $this->getFarmers($eFarm, $eShop, $eDate);
+				$h .= '</div>';
+
+			} else {
+
+				$h .= '<div class="tab-panel" data-tab="products">';
+					$h .= $this->getProducts($eFarm, $eDate);
+				$h .= '</div>';
+
+			}
 
 			$actions = '';
 
@@ -742,6 +764,23 @@ class DateUi {
 		$h .= '</div>';
 
 		return $h;
+	}
+
+	public function getFarmers(\farm\Farm $eFarm, Shop $eShop, Date $eDate): string {
+
+		$h = '';
+
+		foreach($eShop['cShare'] as $eShare) {
+
+			$h .= '<h3>';
+				$h .= \farm\FarmUi::getVignette($eShare['farm'], '3rem').' ';
+				$h .= encode($eShare['farm']['name']);
+			$h .= '</h3>';
+
+		}
+
+		return $h;
+
 	}
 
 	public function getProducts(\farm\Farm $eFarm, Date $eDate): string {
@@ -864,6 +903,14 @@ class DateUi {
 		
 		$h = '<div class="util-block" style="margin-bottom: 2rem">';
 			$h .= '<dl class="util-presentation util-presentation-2">';
+
+				$h .= '<dt>';
+					$h .= s("Adresse de la vente");
+				$h .= '</dt>';
+				$h .= '<dd class="util-presentation-fill">';
+					$h .= '<a href="'.ShopUi::dateUrl($eShop, $eDate).'" id="date-url">'.ShopUi::dateUrl($eShop, $eDate).'</a>';
+					$h .= '  <a onclick="doCopy(this)" data-selector="#date-url" data-message="'.s("Copié !").'" class="btn btn-sm btn-outline-primary">'.\Asset::icon('clipboard').' '.s("Copier").'</a>';
+				$h .= '</dd>';
 
 				$h .= '<dt style="align-self: center">';
 					$h .= s("État de la vente");

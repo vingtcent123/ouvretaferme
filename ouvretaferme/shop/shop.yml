@@ -8,10 +8,16 @@ Catalog:
   INDEX: [
     ["farm"]
   ]
-  
-CatalogShare:
-  catalog: shop\Catalog
-  farm: farm\Farm
+
+Department:
+  id: serial32
+  shop: shop\Shop
+  name: text8(1, 50) @collate(general)
+  catalogs: ?json = PHP([])
+  position: int8(0, null)
+  INDEX: [
+    ["shop"]
+  ]
 
 Date:
   id: serial32
@@ -97,6 +103,7 @@ Shop:
   email: ?email
   type: enum(PRIVATE, PRO)
   shared: bool
+  sharedGroup: ?enum(FARMER, CATALOG, DEPARTMENT)
   sharedHash: ?text8
   sharedHashExpiresAt: ?date
   frequency: enum(WEEKLY, BIMONTHLY, MONTHLY, OTHER) = WEEKLY
@@ -132,10 +139,23 @@ Shop:
     ["farm", "name"]
   ]
 
+Range:
+  id: serial32
+  shop: shop\Shop
+  catalog: shop\Catalog
+  department: shop\Department
+  byDefault: bool
+  createdAt: datetime = SPECIAL(now)
+  createdBy: user\User = SPECIAL(user)
+  UNIQUE: [
+    ["farm", "shop"]
+  ]
+
 Share:
   id: serial32
   shop: shop\Shop
   farm: farm\Farm
+  label: ?text8(1, 50)
   createdAt: datetime = SPECIAL(now)
   createdBy: user\User = SPECIAL(user)
   UNIQUE: [

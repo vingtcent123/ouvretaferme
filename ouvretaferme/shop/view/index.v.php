@@ -1,27 +1,33 @@
 <?php
-new AdaptativeView('/ferme/{farm}/boutique/{shop}', function($data, FarmTemplate $t) {
+new AdaptativeView('/ferme/{id}/boutique/{shop}', function($data, FarmTemplate $t) {
 
 	$t->tab = 'shop';
-	$t->subNav = new \farm\FarmUi()->getShopSubNav($data->eFarm);
+	$t->subNav = new \farm\FarmUi()->getShopSubNav($data->e);
 
 	$t->title = $data->eShop['name'];
-	$t->canonical = \farm\FarmUi::urlShopList($data->eFarm);
+	$t->canonical = \farm\FarmUi::urlShopList($data->e);
 
 	$t->package('main')->updateNavShop($t->canonical);
 
 	$uiShopManage = new \shop\ShopManageUi();
 
-	$t->mainTitle = $uiShopManage->getHeader($data->eFarm, $data->eShop, $data->cShop);
+	$t->mainTitle = $uiShopManage->getHeader($data->e, $data->eShop, $data->ccShop);
 
 	echo new \shop\ShopUi()->getDetails($data->eShop);
 
-	if(
-		$data->eShop['ccPoint']->notEmpty() and
-		$data->eShop['cDate']->notEmpty()
-	) {
-		echo $uiShopManage->getDateList($data->eFarm, $data->eShop);
+	if($data->eShop['shared']) {
+		echo $uiShopManage->getSharedContent($data->e, $data->eShop);
 	} else {
-		echo $uiShopManage->getInlineContent($data->eFarm, $data->eShop);
+
+		if(
+			$data->eShop['ccPoint']->notEmpty() and
+			$data->eShop['cDate']->notEmpty()
+		) {
+			echo $uiShopManage->getDateList($data->e, $data->eShop);
+		} else {
+			echo $uiShopManage->getInlineContent($data->e, $data->eShop);
+		}
+
 	}
 
 });

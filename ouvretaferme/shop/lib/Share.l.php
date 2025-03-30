@@ -3,28 +3,42 @@ namespace shop;
 
 class ShareLib extends ShareCrud {
 
-	private static array $cache = [];
+	private static array $cacheList = [];
+	private static array $cacheMatch = [];
 
-	public static function getForShop(Shop $eShop): Share {
+	public static function getPropertiesUpdate(): array {
+		return ['label'];
+	}
 
-		$cFarm = \farm\FarmLib::getOnline();
+	public static function getForShop(Shop $eShop): \Collection {
 
-		self::$cache[$eShop['id']] ??= Share::model()
+		self::$cacheList[$eShop['id']] ??= Share::model()
 			->select(Share::getSelection())
 			->whereShop($eShop)
-			->whereFarm('IN', $cFarm)
-			->get();
+			->getCollection()
+			->sort(['farm' => ['name']]);
 
-		return self::$cache[$eShop['id']];
+		return self::$cacheList[$eShop['id']];
 
 	}
 
 	public static function match(Shop $eShop, \farm\Farm $eFarm): bool {
 
-		return Share::model()
+		self::$cacheMatch[$eShop['id']][$eFarm['id']] ??= Share::model()
 			->whereShop($eShop)
 			->whereFarm($eFarm)
 			->exists();
+
+		return self::$cacheMatch[$eShop['id']][$eFarm['id']];
+
+	}
+
+	public static function remove(Shop $eShop, \farm\Farm $eFarm): void {
+
+		Share::model()
+			->whereShop($eShop)
+			->whereFarm($eFarm)
+			->delete();
 
 	}
 

@@ -20,6 +20,24 @@ class Shop extends ShopElement {
 
 	}
 
+	public function validateAdminRead(\farm\Farm $eFarm): self {
+
+		$this->expects(['shared']);
+
+		if($this['shared']) {
+
+			if(\shop\ShareLib::match($this, $eFarm)) {
+				return $this;
+			} else {
+				throw new \NotAllowedAction();
+			}
+
+		} else {
+			return $this->validate('canRead');
+		}
+
+	}
+
 	public function isOpen(): bool {
 
 		$this->expects(['status']);
@@ -34,7 +52,7 @@ class Shop extends ShopElement {
 
 	}
 
-	public function canAccess(\selling\Customer $e): bool {
+	public function canCustomerRead(\selling\Customer $e): bool {
 
 		$this->expects(['limitCustomers']);
 
@@ -48,7 +66,7 @@ class Shop extends ShopElement {
 
 	public function canRead(): bool {
 
-		$this->expects(['farm']);
+		$this->expects(['farm', 'shared']);
 		return $this['farm']->canSelling();
 
 	}
@@ -118,6 +136,10 @@ class Shop extends ShopElement {
 
 		return $payments;
 
+	}
+
+	public function hasSharedKey(): bool {
+		return ($this['sharedHash'] !== NULL);
 	}
 
 	public function getSharedKey(): string {

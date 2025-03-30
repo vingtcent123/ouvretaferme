@@ -154,7 +154,7 @@ END;
 
 		$data->eCustomer = \shop\SaleLib::getShopCustomer($data->eShop, $data->eUserOnline);
 
-		if($data->eShop->canAccess($data->eCustomer) === FALSE) {
+		if($data->eShop->canCustomerRead($data->eCustomer) === FALSE) {
 			throw new ViewAction($data, path: ':denied');
 		}
 
@@ -242,7 +242,7 @@ new Page(function($data) {
 
 		$data->eCustomer = \shop\SaleLib::getShopCustomer($data->eShop, $data->eUserOnline);
 
-		if($data->eShop->canAccess($data->eCustomer) === FALSE) {
+		if($data->eShop->canCustomerRead($data->eCustomer) === FALSE) {
 			throw new ViewAction($data, path: ':denied');
 		}
 

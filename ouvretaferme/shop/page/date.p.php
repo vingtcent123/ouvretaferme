@@ -1,4 +1,52 @@
 <?php
+new \farm\FarmPage()
+	->read('/ferme/{id}/date/{date}', function($data) {
+
+		\farm\FarmerLib::setView('viewShop', $data->e, \farm\Farmer::SHOP);
+
+		$data->eDate = \shop\DateLib::getById(GET('date'));
+		$data->eShop = \shop\ShopLib::getById($data->eDate['shop'])->validateAdminRead($data->e);
+
+		$data->eShop['ccPoint'] = \shop\PointLib::getByFarm($data->eShop['farm']);
+
+		\shop\DateLib::applySales($data->eDate);
+
+
+		$data->cSale = \selling\SaleLib::getByDate($data->eDate, NULL, select: \selling\Sale::getSelection() + [
+			'shopPoint' => \shop\PointElement::getSelection()
+		]);
+
+		$data->eDate['farm'] = $data->eShop['farm'];
+
+		$data->eDate['ccProduct'] = \shop\ProductLib::getByDate($data->eDate);
+		$data->eDate['cCustomer'] = \selling\CustomerLib::getLimitedByProducts($data->eDate['ccProduct']);
+
+		// Uniquement les boutiques avec un seul producteur
+		$data->eDate['ccProductOut'] = \shop\ProductLib::aggregateBySales($data->cSale, $data->eDate['ccProduct']->getColumnCollection('product'));
+
+		$data->eDate['cCategory'] = \selling\CategoryLib::getByFarm($data->e);
+		$data->eDate['ccPoint'] = \shop\PointLib::getByDate($data->eDate);
+
+		if($data->eDate['catalogs']) {
+			$data->eDate['cCatalog'] = \shop\CatalogLib::getByIds($data->eDate['catalogs'], index: 'farm');
+			$data->eDate['cFarm'] = $data->eDate['cCatalog']->getColumnCollection('farm');
+		} else {
+			$data->eDate['cCatalog'] = new Collection();
+			$data->eDate['cFarm'] = new Collection([
+				$data->e
+			]);
+		}
+
+		if($data->eShop['shared']) {
+			$data->eShop['cShare'] = \shop\ShareLib::getForShop($data->eShop);
+		}
+
+		$data->eFarm = $data->e;
+
+		throw new \ViewAction($data);
+
+	});
+
 new \shop\DatePage()
 	->getCreateElement(function($data) {
 
@@ -33,54 +81,8 @@ new \shop\DatePage()
 		throw new \ViewAction($data);
 
 	})
-	->doCreate(fn($data) => throw new RedirectAction(\shop\ShopUi::adminDateUrl($data->e['farm'], $data->e['shop'], $data->e).'?success=shop:'.(GET('copied', 'bool') ? 'Date::created' : 'Date::copied')))
+	->doCreate(fn($data) => throw new RedirectAction(\shop\ShopUi::adminDateUrl($data->e['farm'], $data->e).'?success=shop:'.(GET('copied', 'bool') ? 'Date::created' : 'Date::copied')))
 	->doUpdateProperties('doUpdateStatus', ['status'], fn($data) => throw new ViewAction($data))
-	->read('/ferme/{farm}/boutique/{shop}/date/{id}', function($data) {
-
-		$data->eShop = \shop\ShopLib::getById(GET('shop'))->validate('canRead');
-
-		if($data->e['shop']['id'] !== $data->eShop['id']) {
-			throw new NotExpectedAction('Inconsistency');
-		}
-
-		$data->eShop['ccPoint'] = \shop\PointLib::getByFarm($data->eShop['farm']);
-
-		\shop\DateLib::applySales($data->e);
-
-		$data->eFarm = \farm\FarmLib::getById($data->eShop['farm']);
-
-		\farm\FarmerLib::setView('viewShop', $data->eFarm, \farm\Farmer::SHOP);
-
-
-		$data->cSale = \selling\SaleLib::getByDate($data->e, NULL, select: \selling\Sale::getSelection() + [
-			'shopPoint' => \shop\PointElement::getSelection()
-		]);
-
-		$data->e['farm'] = $data->eFarm;
-
-		$data->e['ccProduct'] = \shop\ProductLib::getByDate($data->e);
-		$data->e['cCustomer'] = \selling\CustomerLib::getLimitedByProducts($data->e['ccProduct']);
-
-		// Uniquement les boutiques avec un seul producteur
-		$data->e['ccProductOut'] = \shop\ProductLib::aggregateBySales($data->cSale, $data->e['ccProduct']->getColumnCollection('product'));
-
-		$data->e['cCategory'] = \selling\CategoryLib::getByFarm($data->eFarm);
-		$data->e['ccPoint'] = \shop\PointLib::getByDate($data->e);
-
-		if($data->e['catalogs']) {
-			$data->e['cCatalog'] = \shop\CatalogLib::getByIds($data->e['catalogs'], index: 'farm');
-			$data->e['cFarm'] = $data->e['cCatalog']->getColumnCollection('farm');
-		} else {
-			$data->e['cCatalog'] = new Collection();
-			$data->e['cFarm'] = new Collection([
-				$data->eFarm
-			]);
-		}
-
-
-		throw new \ViewAction($data);
-
-	})
 	->write('doUpdatePoint', function($data) {
 
 		$data->ePoint = \shop\PointLib::getById(POST('point'))

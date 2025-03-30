@@ -50,6 +50,8 @@ class AlertUi {
 			'Date::deleted' => s("La vente a bien été supprimée"),
 			'Date::updated' => s("Le paramétrage a bien été enregistré."),
 
+			'Share::updated' => s("L'activité a bien été mise à jour."),
+
 			'Shop::opened' => s("Votre boutique a bien été ouverte !"),
 			'Shop::closed' => s("Votre boutique a bien été fermée !"),
 			'Shop::paymentOn' => s("La page de choix des moyens de paiement a bien été activée pour vos clients !"),
@@ -63,6 +65,7 @@ class AlertUi {
 			'Shop::collected' => s("La collecte des fonds a bien été lancée."),
 			'Shop::deleted' => s("La boutique a bien été supprimée."),
 			'Shop::joined' => s("Vous avez rejoint la boutique !"),
+			'Shop::deletedFarmer' => s("Le producteur a bien été retiré de la boutique !"),
 
 			'Point::home.created' => s("Le point de livraison à domicile a bien été créé. Vous pouvez aller l'activer sur les boutiques sur lequel vous souhaitez l'autoriser pour vos clients."),
 			'Point::home.updated' => s("Le point de livraison à domicile a bien été mis à jour."),
@@ -75,6 +78,10 @@ class AlertUi {
 			'Products::created' => s("Les produits ont bien été ajoutés."),
 			'Product::updated' => s("Le produit a bien été mis à jour."),
 			'Product::deleted' => s("Le produit a bien été supprimé."),
+
+			'Department::created' => s("Le rayon a bien été créé."),
+			'Department::updated' => s("Le rayon a bien été mis à jour."),
+			'Department::deleted' => s("Le rayon a bien été supprimé."),
 
 			'Sale::phone' => s("Votre numéro de téléphone a bien été enregistré, vous pouvez maintenant valider votre mode de livraison !"),
 			'Sale::address' => s("Votre adresse a bien été enregistré, vous pouvez maintenant valider votre commande !"),

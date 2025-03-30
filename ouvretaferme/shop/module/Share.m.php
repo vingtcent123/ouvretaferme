@@ -39,12 +39,13 @@ class ShareModel extends \ModuleModel {
 			'id' => ['serial32', 'cast' => 'int'],
 			'shop' => ['element32', 'shop\Shop', 'cast' => 'element'],
 			'farm' => ['element32', 'farm\Farm', 'cast' => 'element'],
+			'label' => ['text8', 'min' => 1, 'max' => 50, 'null' => TRUE, 'cast' => 'string'],
 			'createdAt' => ['datetime', 'cast' => 'string'],
 			'createdBy' => ['element32', 'user\User', 'cast' => 'element'],
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'shop', 'farm', 'createdAt', 'createdBy'
+			'id', 'shop', 'farm', 'label', 'createdAt', 'createdBy'
 		]);
 
 		$this->propertiesToModule += [
@@ -94,6 +95,10 @@ class ShareModel extends \ModuleModel {
 
 	public function whereFarm(...$data): ShareModel {
 		return $this->where('farm', ...$data);
+	}
+
+	public function whereLabel(...$data): ShareModel {
+		return $this->where('label', ...$data);
 	}
 
 	public function whereCreatedAt(...$data): ShareModel {

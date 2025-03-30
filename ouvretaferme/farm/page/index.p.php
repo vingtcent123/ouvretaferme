@@ -175,11 +175,14 @@
 		\farm\FarmerLib::setView('viewShop', $data->eFarm, \farm\Farmer::SHOP);
 
 		// Liste des boutiques
-		$data->cShop = \shop\ShopLib::getForList($data->eFarm);
+		$data->ccShop = \shop\ShopLib::getList($data->eFarm);
 
 		// Une seule boutique
-		if($data->cShop->count() === 1) {
-			throw new RedirectAction(\shop\ShopUi::adminUrl($data->eFarm, $data->cShop->first()));
+		if(
+			$data->ccShop['admin']->empty() and
+			$data->ccShop['selling']->count() === 1
+		) {
+			throw new RedirectAction(\shop\ShopUi::adminUrl($data->eFarm, $data->ccShop['selling']->first()));
 		}
 
 		throw new ViewAction($data);

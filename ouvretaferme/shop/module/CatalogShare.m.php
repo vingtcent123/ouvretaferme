@@ -37,16 +37,16 @@ class CatalogShareModel extends \ModuleModel {
 
 		$this->properties = array_merge($this->properties, [
 			'catalog' => ['element32', 'shop\Catalog', 'cast' => 'element'],
-			'farm' => ['element32', 'farm\Farm', 'cast' => 'element'],
+			'shop' => ['element32', 'shop\Shop', 'cast' => 'element'],
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'catalog', 'farm'
+			'catalog', 'shop'
 		]);
 
 		$this->propertiesToModule += [
 			'catalog' => 'shop\Catalog',
-			'farm' => 'farm\Farm',
+			'shop' => 'shop\Shop',
 		];
 
 	}
@@ -63,8 +63,8 @@ class CatalogShareModel extends \ModuleModel {
 		return $this->where('catalog', ...$data);
 	}
 
-	public function whereFarm(...$data): CatalogShareModel {
-		return $this->where('farm', ...$data);
+	public function whereShop(...$data): CatalogShareModel {
+		return $this->where('shop', ...$data);
 	}
 
 

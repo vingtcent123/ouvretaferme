@@ -3,7 +3,7 @@ new AdaptativeView('create', function($data, FarmTemplate $t) {
 
 	$t->tab = 'selling';
 	$t->subNav = new \farm\FarmUi()->getShopSubNav($data->eFarm);
-	$t->title = s("Créer une nouvelle vente");
+	$t->title = s("Ajouter une nouvelle vente");
 
 	\Asset::js('shop', 'manage.js');
 
@@ -34,31 +34,31 @@ new JsonView('doUpdatePoint', function($data, AjaxTemplate $t) {
 	$t->qs('#point-switch-'.$data->ePoint['id'])->toggleSwitch('post-status', [TRUE, FALSE]);
 });
 
-new AdaptativeView('/ferme/{farm}/boutique/{shop}/date/{id}', function($data, FarmTemplate $t) {
+new AdaptativeView('/ferme/{id}/date/{date}', function($data, FarmTemplate $t) {
 
 	$t->tab = 'shop';
-	$t->subNav = new \farm\FarmUi()->getShopSubNav($data->eFarm);
-	$t->title = \shop\DateUi::name($data->e);
+	$t->subNav = new \farm\FarmUi()->getShopSubNav($data->e);
+	$t->title = \shop\DateUi::name($data->eDate);
 
 	\Asset::js('shop', 'manage.js');
 
 	$h = '<div class="util-action">';
 		$h .= '<h1>';
-			$h .= '<a href="'.\shop\ShopUi::adminUrl($data->eFarm, $data->e['shop']).'" class="h-back">'.\Asset::icon('arrow-left').'</a>';
+			$h .= '<a href="'.\shop\ShopUi::adminUrl($data->e, $data->eShop).'" class="h-back">'.\Asset::icon('arrow-left').'</a>';
 			$h .= $t->title;
 		$h .= '</h1>';
 		$h .= '<div>';
-			if($data->e->canWrite()) {
-				$h .= new \shop\DateUi()->getMenu($data->e['shop'], $data->e, $data->e['sales']['count'], 'btn-primary');
+			if($data->eDate->canWrite()) {
+				$h .= new \shop\DateUi()->getMenu($data->eShop, $data->eDate, $data->eDate['sales']['count'], 'btn-primary');
 			}
 		$h .= '</div>';
 	$h .= '</div>';
 	
 	$t->mainTitle = $h;
 
-	echo new \shop\DateUi()->getDetails($data->eShop, $data->e);
+	echo new \shop\DateUi()->getDetails($data->eShop, $data->eDate);
 
-	echo new \shop\DateUi()->getContent($data->eFarm, $data->eShop, $data->e, $data->cSale);
+	echo new \shop\DateUi()->getContent($data->e, $data->eShop, $data->eDate, $data->cSale);
 
 });
 
