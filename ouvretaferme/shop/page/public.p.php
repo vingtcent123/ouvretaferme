@@ -26,7 +26,7 @@ new Page(function($data) {
 					->select([
 						'shop' => ['fqn']
 					])
-					->where(GET('fqn'))
+					->whereFqn(GET('fqn'))
 					->get();
 
 			}
