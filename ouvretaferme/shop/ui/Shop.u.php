@@ -841,7 +841,7 @@ class ShopUi {
 
 	public static function url(Shop $eShop, bool $showProtocol = TRUE): string {
 
-		$eShop->expects(['fqn', 'embedUrl', 'embedOnly']);
+		$eShop->expects(['fqn']);
 
 		return self::domain($showProtocol).'/'.$eShop['fqn'];
 
