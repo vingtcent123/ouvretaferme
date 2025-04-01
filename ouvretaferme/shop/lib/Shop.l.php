@@ -305,6 +305,18 @@ class ShopLib extends ShopCrud {
 				->whereShop($e)
 				->delete();
 
+			Range::model()
+				->whereShop($e)
+				->delete();
+
+			Share::model()
+				->whereShop($e)
+				->delete();
+
+			Department::model()
+				->whereShop($e)
+				->delete();
+
 			Shop::model()->delete($e);
 
 			\farm\Farm::model()->update($e['farm'], [

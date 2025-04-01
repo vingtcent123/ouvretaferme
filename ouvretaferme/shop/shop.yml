@@ -148,7 +148,7 @@ Range:
   createdAt: datetime = SPECIAL(now)
   createdBy: user\User = SPECIAL(user)
   UNIQUE: [
-    ["farm", "shop"]
+    ["shop"]
   ]
 
 Share:
