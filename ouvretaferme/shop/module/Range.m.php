@@ -40,7 +40,7 @@ class RangeModel extends \ModuleModel {
 
 		$this->properties = array_merge($this->properties, [
 			'id' => ['serial32', 'cast' => 'int'],
-			'shop' => ['element32', 'shop\Shop', 'cast' => 'element'],
+			'shop' => ['element32', 'shop\Shop', 'unique' => TRUE, 'cast' => 'element'],
 			'catalog' => ['element32', 'shop\Catalog', 'cast' => 'element'],
 			'department' => ['element32', 'shop\Department', 'cast' => 'element'],
 			'status' => ['enum', [\shop\Range::ACTIVE, \shop\Range::INACTIVE], 'cast' => 'enum'],
@@ -60,7 +60,7 @@ class RangeModel extends \ModuleModel {
 		];
 
 		$this->uniqueConstraints = array_merge($this->uniqueConstraints, [
-			['farm', 'shop']
+			['shop']
 		]);
 
 	}
