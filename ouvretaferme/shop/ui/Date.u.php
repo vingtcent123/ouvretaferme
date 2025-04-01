@@ -667,7 +667,7 @@ class DateUi {
 				if($eShop['shared']) {
 
 					$h .= '<a class="tab-item" data-tab="farmers" onclick="Lime.Tab.select(this)">';
-						$h .= s("Catalogues");
+						$h .= s("Producteurs");
 					$h .= '</a>';
 
 				} else {

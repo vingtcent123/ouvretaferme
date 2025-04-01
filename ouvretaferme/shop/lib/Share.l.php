@@ -15,8 +15,8 @@ class ShareLib extends ShareCrud {
 		self::$cacheList[$eShop['id']] ??= Share::model()
 			->select(Share::getSelection())
 			->whereShop($eShop)
-			->getCollection()
-			->sort(['farm' => ['name']]);
+			->sort(['position' => SORT_ASC])
+			->getCollection();
 
 		return self::$cacheList[$eShop['id']];
 
@@ -33,12 +33,100 @@ class ShareLib extends ShareCrud {
 
 	}
 
+	public static function create(Share $e): void {
+
+		Share::model()->beginTransaction();
+
+		$shares = Share::model()
+			->whereShop($e['shop'])
+			->count();
+
+		$e['position'] = $shares + 1;
+
+		parent::create($e);
+
+		Share::model()->commit();
+
+	}
+
+	public static function incrementPosition(Share $e, int $increment): void {
+
+		$e->expects(['shop']);
+
+		if($increment !== -1 and $increment !== 1) {
+			return;
+		}
+
+		$eShop = $e['shop'];
+
+		Share::model()->beginTransaction();
+
+		$position = Share::model()
+			->whereId($e)
+			->getValue('position');
+
+		switch($increment) {
+
+			case -1 :
+
+				Share::model()
+					->whereShop($eShop)
+					->wherePosition($position - 1)
+					->update([
+						'position' => $position
+					]);
+
+				Share::model()->update($e, [
+						'position' => $position - 1
+					]);
+
+				break;
+
+			case 1 :
+
+				Share::model()
+					->whereShop($eShop)
+					->wherePosition($position + 1)
+					->update([
+						'position' => $position
+					]);
+
+				Share::model()->update($e, [
+						'position' => $position + 1
+					]);
+
+				break;
+
+		}
+
+		Share::model()->commit();
+
+	}
+
 	public static function remove(Shop $eShop, \farm\Farm $eFarm): void {
 
 		Share::model()
 			->whereShop($eShop)
 			->whereFarm($eFarm)
 			->delete();
+
+		self::reorder($eShop);
+
+	}
+
+	public static function reorder(\shop\Shop $eShop): void {
+
+		$cShare = self::getByShop($eShop);
+
+		$position = 1;
+
+		foreach($cShare as $eShare) {
+
+			Share::model()->update($eShare, [
+				'position' => $position++
+			]);
+
+		}
 
 	}
 

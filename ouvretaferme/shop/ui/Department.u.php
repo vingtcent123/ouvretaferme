@@ -127,9 +127,10 @@ class DepartmentUi {
 		$h .= '<table class="tr-even">';
 			$h .= '<thead>';
 				$h .= '<tr>';
-					$h .= '<th colspan="2">'.s("Position").'</th>';
+					$h .= '<th></th>';
 					$h .= '<th>'.self::p('name')->label.'</th>';
 					$h .= '<th>'.s("Catalogues du rayon").'</th>';
+					$h .= '<th>'.s("Position").'</th>';
 					$h .= '<th></th>';
 				$h .= '</tr>';
 			$h .= '</thead>';
@@ -143,6 +144,11 @@ class DepartmentUi {
 						$h .= '<b>'.$eDepartment['position'].'.</b>';
 					$h .= '</td>';
 					$h .= '<td>';
+						$h .= encode($eDepartment['name']);
+					$h .= '</td>';
+					$h .= '<td>';
+					$h .= '</td>';
+					$h .= '<td class="td-min-content">';
 
 						if($eDepartment['position'] > 1) {
 							$h .= '<a data-ajax="/shop/department:doIncrementPosition" post-id='.$eDepartment['id'].'" post-increment="-1" class="btn btn-sm btn-secondary">'.\Asset::icon('arrow-up').'</a> ';
@@ -155,11 +161,6 @@ class DepartmentUi {
 						} else {
 							$h .= '<a class="btn btn-sm disabled">'.\Asset::icon('arrow-down').'</a> ';
 						}
-					$h .= '</td>';
-					$h .= '<td>';
-						$h .= encode($eDepartment['name']);
-					$h .= '</td>';
-					$h .= '<td>';
 					$h .= '</td>';
 					$h .= '<td class="text-end" style="white-space: nowrap">';
 

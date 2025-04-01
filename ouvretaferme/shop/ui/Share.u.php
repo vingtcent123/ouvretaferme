@@ -34,9 +34,6 @@ class ShareUi {
 				}
 			$h .= '</div>';
 
-			$h .= 'PROPOSER LE GROUPAGE PAR PRODUCTEUR ICI';
-			$h .= 'CHOISIR ORDRE ICI';
-
 			$h .= $this->getFarms($eShop, $cShare);
 
 		}
@@ -55,9 +52,11 @@ class ShareUi {
 				$h .= '<thead>';
 
 					$h .= '<tr>';
+						$h .= '<th></th>';
 						$h .= '<th colspan="2">'.s("Producteur").'</th>';
 						$h .= '<th>'.s("Activité").'</th>';
 						if($eShop->canWrite()) {
+							$h .= '<th>'.s("Position").'</th>';
 							$h .= '<th></th>';
 						}
 					$h .= '</tr>';
@@ -71,6 +70,9 @@ class ShareUi {
 						$eFarm = $eShare['farm'];
 
 						$h .= '<tr>';
+							$h .= '<td class="td-min-content">';
+								$h .= '<b>'.$eShare['position'].'.</b>';
+							$h .= '</td>';
 
 							$h .= '<td class="td-min-content">';
 								$h .= \farm\FarmUi::getVignette($eFarm, '2rem');
@@ -86,9 +88,24 @@ class ShareUi {
 
 							if($eShop->canWrite()) {
 
+								$h .= '<td class="td-min-content">';
+
+									if($eShare['position'] > 1) {
+										$h .= '<a data-ajax="/shop/share:doIncrementPosition" post-id='.$eShare['id'].'" post-increment="-1" class="btn btn-sm btn-secondary">'.\Asset::icon('arrow-up').'</a> ';
+									} else {
+										$h .= '<a class="btn btn-sm disabled">'.\Asset::icon('arrow-up').'</a> ';
+									}
+
+									if($eShare['position'] !== $cShare->count()) {
+										$h .= '<a data-ajax="/shop/share:doIncrementPosition" post-id='.$eShare['id'].'" post-increment="1" class="btn btn-sm btn-secondary">'.\Asset::icon('arrow-down').'</a> ';
+									} else {
+										$h .= '<a class="btn btn-sm disabled">'.\Asset::icon('arrow-down').'</a> ';
+									}
+								$h .= '</td>';
+
 								$h .= '<td class="text-end" style="white-space: nowrap">';
 
-									$h .= '<a class="btn btn-outline-primary dropdown-toggle" data-dropdown="bottom-end">'.\Asset::icon('gear-fill').'</a>';
+									$h .= '<a class="btn btn-outline-secondary dropdown-toggle" data-dropdown="bottom-end">'.\Asset::icon('gear-fill').'</a>';
 									$h .= '<div class="dropdown-list bg-primary">';
 										$h .= '<a href="/shop/share:update?id='.$eShare['id'].'" class="dropdown-item">'.s("Définir l'activité du producteur").'</a>';
 										$h .= '<div class="dropdown-divider"></div>';

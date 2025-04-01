@@ -1137,7 +1137,7 @@ class ShopUi {
 			'paymentOfflineHow' => s("Modalités du paiement en direct"),
 			'paymentTransfer' => s("Activer le choix du paiement par virement bancaire"),
 			'paymentTransferHow' => s("Modalités du paiement par virement bancaire"),
-			'sharedGroup' => s("Groupage des produits sur la boutique"),
+			'sharedGroup' => s("Groupage par défaut des produits sur la boutique"),
 			'orderMin' => s("Montant minimal de commande"),
 			'limitCustomers' => s("Limiter l'accès à cette boutique à certains clients seulement"),
 			'shipping' => s("Frais de livraison par commande"),

@@ -144,7 +144,7 @@ Range:
   shop: shop\Shop
   catalog: shop\Catalog
   department: shop\Department
-  byDefault: bool
+  status: enum(ACTIVE, INACTIVE)
   createdAt: datetime = SPECIAL(now)
   createdBy: user\User = SPECIAL(user)
   UNIQUE: [
@@ -156,6 +156,7 @@ Share:
   shop: shop\Shop
   farm: farm\Farm
   label: ?text8(1, 50)
+  position: int8(0, null)
   createdAt: datetime = SPECIAL(now)
   createdBy: user\User = SPECIAL(user)
   UNIQUE: [
