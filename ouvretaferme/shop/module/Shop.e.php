@@ -20,7 +20,7 @@ class Shop extends ShopElement {
 
 	}
 
-	public function validateAdminRead(\farm\Farm $eFarm): self {
+	public function validateShareRead(\farm\Farm $eFarm): self {
 
 		$this->expects(['shared']);
 

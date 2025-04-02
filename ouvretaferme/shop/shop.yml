@@ -142,13 +142,15 @@ Shop:
 Range:
   id: serial32
   shop: shop\Shop
+  farm: farm\Farm
   catalog: shop\Catalog
-  department: shop\Department
-  status: enum(ACTIVE, INACTIVE)
+  department: ?shop\Department
+  regular: bool = FALSE
+  status: enum(ACTIVE, INACTIVE) = ACTIVE
   createdAt: datetime = SPECIAL(now)
   createdBy: user\User = SPECIAL(user)
   UNIQUE: [
-    ["shop"]
+    ["shop", "catalog"]
   ]
 
 Share:

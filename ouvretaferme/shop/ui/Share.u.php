@@ -3,7 +3,7 @@ namespace shop;
 
 class ShareUi {
 
-	public function getList(Shop $eShop, \Collection $cShare): string {
+	public function getList(\farm\Farm $eFarm, Shop $eShop, \Collection $cShare): string {
 
 		$h = '';
 
@@ -34,7 +34,7 @@ class ShareUi {
 				}
 			$h .= '</div>';
 
-			$h .= $this->getFarms($eShop, $cShare);
+			$h .= $this->getFarms($eFarm, $eShop, $cShare);
 
 		}
 
@@ -43,11 +43,11 @@ class ShareUi {
 	}
 
 
-	public function getFarms(Shop $eShop, \Collection $cShare): string {
+	public function getFarms(\farm\Farm $eFarm, Shop $eShop, \Collection $cShare): string {
 
-		$h = '<div class="dates-item-wrapper stick-sm util-overflow-sm">';
+		$h = '<div class="util-overflow-lg">';
 
-			$h .= '<table class="sale-item-table tr-even">';
+			$h .= '<table class="shop-share-list tbody-even">';
 
 				$h .= '<thead>';
 
@@ -55,6 +55,7 @@ class ShareUi {
 						$h .= '<th></th>';
 						$h .= '<th colspan="2">'.s("Producteur").'</th>';
 						$h .= '<th>'.s("Activité").'</th>';
+						$h .= '<th class="highlight">'.s("Catalogues associés").'</th>';
 						if($eShop->canWrite()) {
 							$h .= '<th>'.s("Position").'</th>';
 							$h .= '<th></th>';
@@ -63,32 +64,48 @@ class ShareUi {
 
 				$h .= '</thead>';
 
-				$h .= '<tbody>';
 
-					foreach($cShare as $eShare) {
+				foreach($cShare as $eShare) {
 
-						$eFarm = $eShare['farm'];
+					$cRange = $eShop['cRange'][$eShare['farm']['id']] ?? new \Collection();
+					$selected = ($eShare['farm']['id'] === $eFarm['id']);
 
+					$rows = $cRange->count() + (int)$selected;
+
+					$h .= '<tbody '.($selected ? 'class="selected"' : '').'>';
 						$h .= '<tr>';
-							$h .= '<td class="td-min-content">';
+							$h .= '<td class="td-min-content" rowspan="'.$rows.'">';
 								$h .= '<b>'.$eShare['position'].'.</b>';
 							$h .= '</td>';
 
-							$h .= '<td class="td-min-content">';
-								$h .= \farm\FarmUi::getVignette($eFarm, '2rem');
+							$h .= '<td class="td-min-content" rowspan="'.$rows.'">';
+								$h .= \farm\FarmUi::getVignette($eShare['farm'], '2rem');
 							$h .= '</td>';
 
-							$h .= '<td class="td-min-content">';
-								$h .= encode($eFarm['name']);
+							$h .= '<td class="td-min-content" rowspan="'.$rows.'">';
+								$h .= encode($eShare['farm']['name']);
 							$h .= '</td>';
 
-							$h .= '<td>';
+							$h .= '<td rowspan="'.$rows.'">';
 								$h .= ($eShare['label'] === NULL) ? '/' : encode($eShare['label']);
 							$h .= '</td>';
 
+
+							if($cRange->notEmpty()) {
+								$h .= $this->getRange($cRange->first());
+							} else {
+								$h .= '<td class="highlight">';
+									if($selected) {
+										$h .= '<a href="/shop/range:create?farm='.$eFarm['id'].'&shop='.$eShop['id'].'" class="btn btn-primary">'.s("Associer un catalogue").'</a>';
+									} else {
+										$h .= '-';
+									}
+								$h .= '</td>';
+							}
+
 							if($eShop->canWrite()) {
 
-								$h .= '<td class="td-min-content">';
+								$h .= '<td class="td-min-content" rowspan="'.$rows.'">';
 
 									if($eShare['position'] > 1) {
 										$h .= '<a data-ajax="/shop/share:doIncrementPosition" post-id='.$eShare['id'].'" post-increment="-1" class="btn btn-sm btn-secondary">'.\Asset::icon('arrow-up').'</a> ';
@@ -103,13 +120,13 @@ class ShareUi {
 									}
 								$h .= '</td>';
 
-								$h .= '<td class="text-end" style="white-space: nowrap">';
+								$h .= '<td class="text-end" style="white-space: nowrap" rowspan="'.$rows.'">';
 
 									$h .= '<a class="btn btn-outline-secondary dropdown-toggle" data-dropdown="bottom-end">'.\Asset::icon('gear-fill').'</a>';
 									$h .= '<div class="dropdown-list bg-primary">';
-										$h .= '<a href="/shop/share:update?id='.$eShare['id'].'" class="dropdown-item">'.s("Définir l'activité du producteur").'</a>';
+										$h .= '<a href="/shop/share:update?id='.$eShare['id'].'" class="dropdown-item">'.s("Configurer le producteur").'</a>';
 										$h .= '<div class="dropdown-divider"></div>';
-										$h .= '<a data-ajax="/shop/:doDeleteSharedFarm" post-id="'.$eShop['id'].'" post-farm="'.$eFarm['id'].'" data-confirm="'.s("Le producteur n'aura plus accès à la boutique et les clients ne pourront plus commander ses produits. Voulez-vous continuer ?").'" class="dropdown-item">'.s("Retirer le producteur de la boutique").'</a>';
+										$h .= '<a data-ajax="/shop/:doDeleteSharedFarm" post-id="'.$eShop['id'].'" post-farm="'.$eShare['farm']['id'].'" data-confirm="'.s("Le producteur n'aura plus accès à la boutique et les clients ne pourront plus commander ses produits. Voulez-vous continuer ?").'" class="dropdown-item">'.s("Retirer le producteur de la boutique").'</a>';
 									$h .= '</div>';
 
 								$h .= '</td>';
@@ -118,13 +135,48 @@ class ShareUi {
 
 						$h .= '</tr>';
 
-					}
+							foreach($cRange->slice(1) as $eRange) {
+								$h .= '<tr>';
+									$h .= $this->getRange($eRange);
+								$h .= '</tr>';
+							}
 
-				$h .= '</tbody>';
+							if($selected) {
+
+								$h .= '<tr>';
+									$h .= '<td class="highlight">';
+										$h .= '<a href="/shop/range:create?farm='.$eFarm['id'].'&shop='.$eShop['id'].'" class="btn btn-primary btn-sm">'.s("Associer un autre catalogue").'</a>';
+									$h .= '</td>';
+								$h .= '</tr>';
+
+							}
+
+
+
+					$h .= '</tbody>';
+
+				}
+
 
 			$h .= '</table>';
 
 		$h .= '</div>';
+
+		return $h;
+
+	}
+
+	protected function getRange(Range $eRange): string {
+
+		$eCatalog = $eRange['catalog'];
+
+		$h = '<td class="highlight">';
+			$h .= '<div class="shop-share-range">';
+				$h .= new RangeUi()->toggle($eRange);
+				$h .= '<span>'.encode($eCatalog['name']).'</span>';
+				$h .= '<span>'.s("chaque semaine").'</span>';
+			$h .= '</div>';
+		$h .= '</td>';
 
 		return $h;
 
@@ -149,7 +201,7 @@ class ShareUi {
 
 		return new \Panel(
 			id: 'panel-share-update',
-			title: s("Mettre à jour"),
+			title: s("Configurer le producteur"),
 			body: $h
 		);
 	}

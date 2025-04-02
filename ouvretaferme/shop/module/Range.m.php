@@ -40,27 +40,30 @@ class RangeModel extends \ModuleModel {
 
 		$this->properties = array_merge($this->properties, [
 			'id' => ['serial32', 'cast' => 'int'],
-			'shop' => ['element32', 'shop\Shop', 'unique' => TRUE, 'cast' => 'element'],
+			'shop' => ['element32', 'shop\Shop', 'cast' => 'element'],
+			'farm' => ['element32', 'farm\Farm', 'cast' => 'element'],
 			'catalog' => ['element32', 'shop\Catalog', 'cast' => 'element'],
-			'department' => ['element32', 'shop\Department', 'cast' => 'element'],
+			'department' => ['element32', 'shop\Department', 'null' => TRUE, 'cast' => 'element'],
+			'regular' => ['bool', 'cast' => 'bool'],
 			'status' => ['enum', [\shop\Range::ACTIVE, \shop\Range::INACTIVE], 'cast' => 'enum'],
 			'createdAt' => ['datetime', 'cast' => 'string'],
 			'createdBy' => ['element32', 'user\User', 'cast' => 'element'],
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'shop', 'catalog', 'department', 'status', 'createdAt', 'createdBy'
+			'id', 'shop', 'farm', 'catalog', 'department', 'regular', 'status', 'createdAt', 'createdBy'
 		]);
 
 		$this->propertiesToModule += [
 			'shop' => 'shop\Shop',
+			'farm' => 'farm\Farm',
 			'catalog' => 'shop\Catalog',
 			'department' => 'shop\Department',
 			'createdBy' => 'user\User',
 		];
 
 		$this->uniqueConstraints = array_merge($this->uniqueConstraints, [
-			['shop']
+			['shop', 'catalog']
 		]);
 
 	}
@@ -68,6 +71,12 @@ class RangeModel extends \ModuleModel {
 	public function getDefaultValue(string $property) {
 
 		switch($property) {
+
+			case 'regular' :
+				return FALSE;
+
+			case 'status' :
+				return Range::ACTIVE;
 
 			case 'createdAt' :
 				return new \Sql('NOW()');
@@ -112,12 +121,20 @@ class RangeModel extends \ModuleModel {
 		return $this->where('shop', ...$data);
 	}
 
+	public function whereFarm(...$data): RangeModel {
+		return $this->where('farm', ...$data);
+	}
+
 	public function whereCatalog(...$data): RangeModel {
 		return $this->where('catalog', ...$data);
 	}
 
 	public function whereDepartment(...$data): RangeModel {
 		return $this->where('department', ...$data);
+	}
+
+	public function whereRegular(...$data): RangeModel {
+		return $this->where('regular', ...$data);
 	}
 
 	public function whereStatus(...$data): RangeModel {

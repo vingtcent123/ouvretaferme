@@ -83,6 +83,10 @@ class AlertUi {
 			'Department::updated' => s("Le rayon a bien été mis à jour."),
 			'Department::deleted' => s("Le rayon a bien été supprimé."),
 
+			'Range::created' => s("Le catalogue a bien été associé à la boutique."),
+			'Range::updated' => s("La configuration du catalague a bien été mise à jour dans la boutique."),
+			'Range::deleted' => s("Le catalogue a bien été dissocié de la boutique."),
+
 			'Sale::phone' => s("Votre numéro de téléphone a bien été enregistré, vous pouvez maintenant valider votre mode de livraison !"),
 			'Sale::address' => s("Votre adresse a bien été enregistré, vous pouvez maintenant valider votre commande !"),
 			'Sale::canceled' => s("Votre commande a bien été annulée."),

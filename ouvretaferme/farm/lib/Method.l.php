@@ -66,14 +66,12 @@ class MethodLib extends MethodCrud {
 
 			parent::delete($e);
 
-			/* JSON_SEARCH() ne fonctionne pas avec les entiers */
-
 			\series\Task::model()
 				->whereFarm($e['farm'])
 				->whereAction($e['action'])
 				->where('JSON_CONTAINS(methods, \''.$e['id'].'\')')
 				->update([
-					'methods' => new \Sql('REPLACE(REGEXP_REPLACE(REGEXP_REPLACE(methods, \'([\\\\[ ])'.$e['id'].', \', \'$1\'), \', '.$e['id'].'([\\\\],])\', \'$1\'), \'['.$e['id'].']\', \'[]\')')
+					'methods' => new \Sql(\series\Task::model()->pdo()->api->jsonRemove('methods', $e['id']))
 				]);
 
 			\production\Flow::model()
@@ -81,7 +79,7 @@ class MethodLib extends MethodCrud {
 				->whereAction($e['action'])
 				->where('JSON_CONTAINS(methods, \''.$e['id'].'\')')
 				->update([
-					'methods' => new \Sql('REPLACE(REGEXP_REPLACE(REGEXP_REPLACE(methods, \'([\\\\[ ])'.$e['id'].', \', \'$1\'), \', '.$e['id'].'([\\\\],])\', \'$1\'), \'['.$e['id'].']\', \'[]\')')
+					'methods' => new \Sql(\production\Flow::model()->pdo()->api->jsonRemove('methods', $e['id']))
 				]);
 
 		Method::model()->commit();

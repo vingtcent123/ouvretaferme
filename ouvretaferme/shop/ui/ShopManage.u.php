@@ -207,7 +207,25 @@ class ShopManageUi {
 
 	public function getSharedContent(\farm\Farm $eFarm, Shop $eShop): string {
 
-		$h = '<div class="tabs-h" id="shop-tabs" onrender="'.encode('Lime.Tab.restore(this, "farmers"'.(get_exists('tab') ? ', "'.GET('tab', ['dates', 'farmers', 'departments'], 'farmers').'"' : '').')').'">';
+		$h = '';
+
+		$cRangeFarm = $eShop['cRange'][$eFarm['id']] ?? new \Collection();
+
+		if($cRangeFarm->empty()) {
+
+			$h .= '<div class="util-block-help mb-2">';
+				$h .= '<h3>'.s("Bienvenue sur cette boutique collective, {value} !", encode($eFarm['name'])).'</h3>';
+				$h .= '<p>'.s("Pour commencer à vendre votre production ici, vous devez associer un ou plusieurs de vos catalogues à cette boutique. Ce sont les produits de ces catalogues qui seront proposés aux clients !").'</p>';
+
+				if(GET('tab') !== 'farmers') {
+					$h .= '<a href="'.ShopUi::adminUrl($eFarm, $eShop).'?tab=farmers" class="btn btn-secondary">'.s("Associer un catalogue à cette boutique").'</a>';
+				}
+
+			$h .= '</div>';
+
+		}
+
+		$h .= '<div class="tabs-h" id="shop-tabs" onrender="'.encode('Lime.Tab.restore(this, "farmers"'.(get_exists('tab') ? ', "'.GET('tab', ['dates', 'farmers', 'departments'], 'farmers').'"' : '').')').'">';
 
 			$h .= '<div class="tabs-item">';
 
@@ -234,7 +252,7 @@ class ShopManageUi {
 			$h .= '</div>';
 
 			$h .= '<div class="tab-panel" data-tab="farmers">';
-				$h .= new ShareUi()->getList($eShop, $eShop['cShare']);
+				$h .= new ShareUi()->getList($eFarm, $eShop, $eShop['cShare']);
 			$h .= '</div>';
 
 			$h .= '<div class="tab-panel" data-tab="departments">';

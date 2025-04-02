@@ -25,6 +25,26 @@ class CatalogLib extends CatalogCrud {
 
 	}
 
+	public static function getForRange(\farm\Farm $eFarm, Shop $eShop): \Collection {
+
+		$cCatalogUsed = Range::model()
+			->whereFarm($eFarm)
+			->whereShop($eShop)
+			->getColumn('catalog');
+
+		return Catalog::model()
+			->select(Catalog::getSelection())
+			->whereId('NOT IN', $cCatalogUsed, if: $cCatalogUsed->notEmpty())
+			->whereFarm($eFarm)
+			->whereType($eShop['type'])
+			->whereStatus(Catalog::ACTIVE)
+			->sort([
+				'name' => SORT_ASC
+			])
+			->getCollection(index: 'id');
+
+	}
+
 	public static function getByDates(\Collection $cDate): \Collection {
 
 		$catalogs = $cDate->reduce(fn($e, $n) => array_merge($n, $e['catalogs'] ?? []), []);
@@ -40,6 +60,18 @@ class CatalogLib extends CatalogCrud {
 	public static function delete(Catalog $e): void {
 
 		$e->expects(['farm']);
+
+		Catalog::model()->beginTransaction();
+
+		Department::model()
+			->where('JSON_CONTAINS(catalogs, \''.$e['id'].'\')')
+			->update([
+				'catalogs' => new \Sql(Department::model()->pdo()->api->jsonRemove('catalogs', $e['id']))
+			]);
+
+		Range::model()
+			->whereCatalog($e)
+			->delete();
 
 		if(
 			// Un produit a déjà été créé avec ce catalogue
@@ -59,6 +91,8 @@ class CatalogLib extends CatalogCrud {
 		} else {
 			Catalog::model()->delete($e);
 		}
+
+		Catalog::model()->commit();
 
 	}
 

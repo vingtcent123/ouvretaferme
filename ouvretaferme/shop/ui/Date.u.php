@@ -483,9 +483,9 @@ class DateUi {
 		$hasFarmTaxes = $eFarm->getSelling('hasVat');
 		$hasSameTaxes = ($hasFarmTaxes and count(array_count_values($cDate->getColumn('type'))) === 1);
 
-		$h = '<div class="dates-item-wrapper stick-sm util-overflow-sm">';
+		$h = '<div class="stick-sm util-overflow-sm">';
 
-			$h .= '<table class="sale-item-table tr-even">';
+			$h .= '<table class="tr-even">';
 
 				$h .= '<thead>';
 

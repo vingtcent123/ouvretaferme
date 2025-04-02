@@ -173,7 +173,7 @@ class SaleUi {
 
 		$previousSubtitle = NULL;
 
-		$h .= '<table class="sale-item-table tr-even">';
+		$h .= '<table class="tr-even">';
 
 			$h .= '<thead>';
 

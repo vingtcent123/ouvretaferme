@@ -403,3 +403,15 @@ div.shop-widget-order {
 	margin-bottom: 0;
 	font-size: 1.6rem;
 }
+
+.shop-share-list tbody.selected {
+	border: 1px solid var(--primary);
+	box-shadow: 0 0 1rem #0003;
+}
+
+.shop-share-range {
+	display: grid;
+	align-items: center;
+	grid-template-columns: min-content 1fr auto;
+	column-gap: 0.5rem;
+}
