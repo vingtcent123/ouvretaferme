@@ -7,8 +7,8 @@ abstract class RangeElement extends \Element {
 
 	private static ?RangeModel $model = NULL;
 
-	const ACTIVE = 'active';
-	const INACTIVE = 'inactive';
+	const AUTO = 'auto';
+	const MANUAL = 'manual';
 
 	public static function getSelection(): array {
 		return Range::model()->getProperties();
@@ -44,14 +44,13 @@ class RangeModel extends \ModuleModel {
 			'farm' => ['element32', 'farm\Farm', 'cast' => 'element'],
 			'catalog' => ['element32', 'shop\Catalog', 'cast' => 'element'],
 			'department' => ['element32', 'shop\Department', 'null' => TRUE, 'cast' => 'element'],
-			'regular' => ['bool', 'cast' => 'bool'],
-			'status' => ['enum', [\shop\Range::ACTIVE, \shop\Range::INACTIVE], 'cast' => 'enum'],
+			'status' => ['enum', [\shop\Range::AUTO, \shop\Range::MANUAL], 'cast' => 'enum'],
 			'createdAt' => ['datetime', 'cast' => 'string'],
 			'createdBy' => ['element32', 'user\User', 'cast' => 'element'],
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'shop', 'farm', 'catalog', 'department', 'regular', 'status', 'createdAt', 'createdBy'
+			'id', 'shop', 'farm', 'catalog', 'department', 'status', 'createdAt', 'createdBy'
 		]);
 
 		$this->propertiesToModule += [
@@ -71,12 +70,6 @@ class RangeModel extends \ModuleModel {
 	public function getDefaultValue(string $property) {
 
 		switch($property) {
-
-			case 'regular' :
-				return FALSE;
-
-			case 'status' :
-				return Range::ACTIVE;
 
 			case 'createdAt' :
 				return new \Sql('NOW()');
@@ -131,10 +124,6 @@ class RangeModel extends \ModuleModel {
 
 	public function whereDepartment(...$data): RangeModel {
 		return $this->where('department', ...$data);
-	}
-
-	public function whereRegular(...$data): RangeModel {
-		return $this->where('regular', ...$data);
 	}
 
 	public function whereStatus(...$data): RangeModel {

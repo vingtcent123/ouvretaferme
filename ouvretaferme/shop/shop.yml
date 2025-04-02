@@ -145,8 +145,7 @@ Range:
   farm: farm\Farm
   catalog: shop\Catalog
   department: ?shop\Department
-  regular: bool = FALSE
-  status: enum(ACTIVE, INACTIVE) = ACTIVE
+  status: enum(AUTO, MANUAL)
   createdAt: datetime = SPECIAL(now)
   createdBy: user\User = SPECIAL(user)
   UNIQUE: [

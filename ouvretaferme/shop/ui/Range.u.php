@@ -9,8 +9,8 @@ class RangeUi {
 			'id' => 'range-switch-'.$eRange['id'],
 			'data-ajax' => $eRange->canWrite() ? '/shop/range:doUpdateStatus' : NULL,
 			'post-id' => $eRange['id'],
-			'post-status' => ($eRange['status'] === Range::ACTIVE) ? Range::INACTIVE : Range::ACTIVE
-		], $eRange['status'] === Range::ACTIVE);
+			'post-status' => ($eRange['status'] === Range::AUTO) ? Range::MANUAL : Range::AUTO
+		], $eRange['status'] === Range::AUTO, s("Automatique"), s("Manuel"));
 
 	}
 
@@ -45,7 +45,7 @@ class RangeUi {
 
 				$h .= $form->hidden('shop', $eRange['shop']['id']);
 				$h .= $form->hidden('farm', $eRange['farm']['id']);
-				$h .= $form->dynamicGroups($eRange, ['catalog*', 'regular*']);
+				$h .= $form->dynamicGroups($eRange, ['catalog*', 'status*']);
 				$h .= $form->group(
 					content: $form->submit(s("Associer à la boutique"))
 				);
@@ -70,7 +70,7 @@ class RangeUi {
 		$h = $form->openAjax('/shop/range:doUpdate');
 
 			$h .= $form->hidden('id', $eRange['id']);
-			$h .= $form->dynamicGroups($eRange, ['regular']);
+			$h .= $form->dynamicGroups($eRange, ['status']);
 			$h .= $form->group(
 				content: $form->submit(s("Modifier"))
 			);
@@ -90,7 +90,7 @@ class RangeUi {
 
 		$d = Range::model()->describer($property, [
 			'catalog' => s("Catalogue"),
-			'regular' => s("Régularité des ventes"),
+			'status' => s("Activation"),
 		]);
 
 		switch($property) {
@@ -99,12 +99,12 @@ class RangeUi {
 				$d->values = fn(Range $e) => $e['cCatalog'] ?? $e->expects(['cCatalog']);
 				break;
 
-			case 'regular' :
+			case 'status' :
 				$d->field = 'radio';
 				$d->attributes['mandatory'] = TRUE;
 				$d->values = [
-					TRUE => s("Catalogue activé par défaut à chaque nouvelle vente dans la boutique"),
-					FALSE => s("Catalogue désactivé par défaut lors d'une nouvelle vente, c'est à vous de l'activer lorsque vous voulez autoriser les commandes !"),
+					Range::AUTO => s("<u>Automatique</u> → Catalogue activé par défaut à chaque nouvelle vente dans la boutique"),
+					Range::MANUAL => s("<u>Manuelle</u> → Vous activez manuellement ce catalogue dans la boutique lorsque vous voulez autoriser les commandes"),
 				];
 				break;
 

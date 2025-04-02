@@ -172,9 +172,8 @@ class ShareUi {
 
 		$h = '<td class="highlight">';
 			$h .= '<div class="shop-share-range">';
-				$h .= new RangeUi()->toggle($eRange);
 				$h .= '<span>'.encode($eCatalog['name']).'</span>';
-				$h .= '<span>'.s("chaque semaine").'</span>';
+				$h .= new RangeUi()->toggle($eRange);
 			$h .= '</div>';
 		$h .= '</td>';
 

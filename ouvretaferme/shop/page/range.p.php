@@ -21,14 +21,7 @@ new \shop\RangePage(function($data) {
 
 new \shop\RangePage()
 	->update()
+	->doUpdateProperties('doUpdateStatus', ['status'], fn() => throw new ReloadAction())
 	->doUpdate(fn($data) => throw new ViewAction($data))
-	->write('doIncrementPosition', function($data) {
-
-		$increment = POST('increment', 'int');
-		\shop\RangeLib::incrementPosition($data->e, $increment);
-
-		throw new ReloadAction();
-
-	})
 	->doDelete(fn($data) => throw new ViewAction($data));
 ?>
