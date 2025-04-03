@@ -44,7 +44,6 @@ class DepartmentUi {
 					$h .= '<th></th>';
 					$h .= '<th>'.self::p('name')->label.'</th>';
 					$h .= '<th>'.s("Catalogues du rayon").'</th>';
-					$h .= '<th>'.s("Position").'</th>';
 					$h .= '<th></th>';
 				$h .= '</tr>';
 			$h .= '</thead>';
@@ -65,18 +64,16 @@ class DepartmentUi {
 					$h .= '<td class="td-min-content">';
 
 						if($eDepartment['position'] > 1) {
-							$h .= '<a data-ajax="/shop/department:doIncrementPosition" post-id='.$eDepartment['id'].'" post-increment="-1" class="btn btn-sm btn-secondary">'.\Asset::icon('arrow-up').'</a> ';
+							$h .= '<a data-ajax="/shop/department:doIncrementPosition" post-id='.$eDepartment['id'].'" post-increment="-1" class="btn btn-secondary">'.\Asset::icon('arrow-up').'</a>  ';
 						} else {
-							$h .= '<a class="btn btn-sm disabled">'.\Asset::icon('arrow-up').'</a> ';
+							$h .= '<a class="btn disabled">'.\Asset::icon('arrow-up').'</a>  ';
 						}
 
 						if($eDepartment['position'] !== $cDepartment->count()) {
-							$h .= '<a data-ajax="/shop/department:doIncrementPosition" post-id='.$eDepartment['id'].'" post-increment="1" class="btn btn-sm btn-secondary">'.\Asset::icon('arrow-down').'</a> ';
+							$h .= '<a data-ajax="/shop/department:doIncrementPosition" post-id='.$eDepartment['id'].'" post-increment="1" class="btn btn-secondary">'.\Asset::icon('arrow-down').'</a>  ';
 						} else {
-							$h .= '<a class="btn btn-sm disabled">'.\Asset::icon('arrow-down').'</a> ';
+							$h .= '<a class="btn disabled">'.\Asset::icon('arrow-down').'</a>  ';
 						}
-					$h .= '</td>';
-					$h .= '<td class="text-end" style="white-space: nowrap">';
 
 						$h .= '<a href="/shop/department:update?id='.$eDepartment['id'].'" class="btn btn-outline-secondary">';
 							$h .= \Asset::icon('gear-fill');

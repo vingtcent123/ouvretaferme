@@ -10,7 +10,7 @@ const destination = argv.destination;
 (async() => {
 
 	const browser = await puppeteer.launch({
-		executablePath: '/var/www/chrome-linux/chrome',
+		executablePath: '/usr/bin/google-chrome',
 		args: ['--no-sandbox']
 	});
 

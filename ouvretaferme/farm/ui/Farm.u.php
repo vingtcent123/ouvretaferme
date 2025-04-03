@@ -767,9 +767,14 @@ class FarmUi {
 
 				$h .= '<div>';
 
-					if($view === Farmer::SEEDLING and $cSupplier->notEmpty()) {
+					if($view === Farmer::SEEDLING) {
+
 						$h .= $form->select('seedling', \series\CultivationUi::p('seedling')->values, $search->get('seedling'), ['placeholder' => s("Implantation")]);
-						$h .= $form->select('supplier', $cSupplier, $search->get('supplier'), ['placeholder' => s("Fournisseur")]);
+
+						if($cSupplier->notEmpty()) {
+							$h .= $form->select('supplier', $cSupplier, $search->get('supplier'), ['placeholder' => s("Fournisseur")]);
+						}
+
 					}
 
 					if($view === Farmer::WORKING_TIME) {
