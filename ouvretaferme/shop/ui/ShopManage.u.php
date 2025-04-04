@@ -209,19 +209,23 @@ class ShopManageUi {
 
 		$h = '';
 
-		$cRangeFarm = $eShop['ccRange'][$eFarm['id']] ?? new \Collection();
+		if($eShop->canShareRead($eFarm)) {
 
-		if($cRangeFarm->empty()) {
+			$cRangeFarm = $eShop['ccRange'][$eFarm['id']] ?? new \Collection();
 
-			$h .= '<div class="util-block-help mb-2">';
-				$h .= '<h3>'.s("Bienvenue sur cette boutique collective, {value} !", encode($eFarm['name'])).'</h3>';
-				$h .= '<p>'.s("Pour commencer à vendre votre production ici, vous devez associer un ou plusieurs de vos catalogues à cette boutique. Ce sont les produits de ces catalogues qui seront proposés aux clients !").'</p>';
+			if($cRangeFarm->empty()) {
 
-				if(GET('tab') !== 'farmers') {
-					$h .= '<a href="'.ShopUi::adminUrl($eFarm, $eShop).'?tab=farmers" class="btn btn-secondary">'.s("Associer un catalogue à cette boutique").'</a>';
-				}
+				$h .= '<div class="util-block-help mb-2">';
+					$h .= '<h3>'.s("Bienvenue sur cette boutique collective, {value} !", encode($eFarm['name'])).'</h3>';
+					$h .= '<p>'.s("Pour commencer à vendre votre production ici, vous devez associer un ou plusieurs de vos catalogues à cette boutique. Ce sont les produits de ces catalogues qui seront proposés aux clients !").'</p>';
 
-			$h .= '</div>';
+					if(GET('tab') !== 'farmers') {
+						$h .= '<a href="'.ShopUi::adminUrl($eFarm, $eShop).'?tab=farmers" class="btn btn-secondary">'.s("Associer un catalogue à cette boutique").'</a>';
+					}
+
+				$h .= '</div>';
+
+			}
 
 		}
 

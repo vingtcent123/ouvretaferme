@@ -38,7 +38,7 @@ new \farm\FarmPage()
 		}
 
 		if($data->eShop['shared']) {
-			$data->eShop['cShare'] = \shop\ShareLib::getForShop($data->eShop);
+			$data->eShop['cShare'] = \shop\ShareLib::getByShop($data->eShop);
 		}
 
 		$data->eFarm = $data->e;

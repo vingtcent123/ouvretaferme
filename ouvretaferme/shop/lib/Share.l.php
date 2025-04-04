@@ -10,7 +10,7 @@ class ShareLib extends ShareCrud {
 		return ['label'];
 	}
 
-	public static function getForShop(Shop $eShop): \Collection {
+	public static function getByShop(Shop $eShop): \Collection {
 
 		self::$cacheList[$eShop['id']] ??= Share::model()
 			->select(Share::getSelection())
@@ -105,12 +105,26 @@ class ShareLib extends ShareCrud {
 
 	public static function remove(Shop $eShop, \farm\Farm $eFarm): void {
 
-		Share::model()
-			->whereShop($eShop)
-			->whereFarm($eFarm)
-			->delete();
+		Share::model()->beginTransaction();
 
-		self::reorder($eShop);
+			$cRange = Range::model()
+				->select(RangeElement::getSelection())
+				->whereShop($eShop)
+				->whereFarm($eFarm)
+				->getCollection();
+
+			foreach($cRange as $eRange) {
+				RangeLib::dissociate($eRange, TRUE);
+			}
+
+			Share::model()
+				->whereShop($eShop)
+				->whereFarm($eFarm)
+				->delete();
+
+			self::reorder($eShop);
+
+		Share::model()->commit();
 
 	}
 

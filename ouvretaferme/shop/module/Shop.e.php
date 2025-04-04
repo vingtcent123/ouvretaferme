@@ -26,7 +26,7 @@ class Shop extends ShopElement {
 
 		if($this['shared']) {
 
-			if(\shop\ShareLib::match($this, $eFarm)) {
+			if($this->canShareRead($eFarm)) {
 				return $this;
 			} else {
 				throw new \NotAllowedAction();
@@ -49,6 +49,12 @@ class Shop extends ShopElement {
 
 		$this->expects(['status']);
 		return $this['status'] === Shop::CLOSED;
+
+	}
+
+	public function canShareRead(\farm\Farm $e): bool {
+
+		return \shop\ShareLib::match($this, $e);
 
 	}
 

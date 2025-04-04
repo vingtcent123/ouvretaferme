@@ -15,7 +15,7 @@ new \farm\FarmPage()
 		$data->eShop['cCustomer'] = \selling\CustomerLib::getByIds($data->eShop['limitCustomers'], sort: ['lastName' => SORT_ASC, 'firstName' => SORT_ASC]);
 
 		if($data->eShop['shared']) {
-			$data->eShop['cShare'] = \shop\ShareLib::getForShop($data->eShop);
+			$data->eShop['cShare'] = \shop\ShareLib::getByShop($data->eShop);
 			$data->eShop['cDepartment'] = \shop\DepartmentLib::getByShop($data->eShop);
 			$data->eShop['ccRange'] = \shop\RangeLib::getByShop($data->eShop);
 		}

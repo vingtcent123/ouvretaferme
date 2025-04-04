@@ -79,7 +79,7 @@ class ShareUi {
 					$cRange = $eShop['ccRange'][$eShare['farm']['id']] ?? new \Collection();
 					$selected = ($eShare['farm']['id'] === $eFarm['id']);
 
-					$rows = $cRange->count() + (int)$selected;
+					$rows = max(1, $cRange->count()) + (int)$selected;
 
 					$h .= '<tbody '.($selected ? 'class="selected"' : '').'>';
 						$h .= '<tr>';
@@ -107,11 +107,7 @@ class ShareUi {
 								$h .= $this->getRange($cRange->first(), $cDepartment);
 							} else {
 								$h .= '<td class="highlight" colspan="3">';
-									if($selected) {
-										$h .= '<a href="/shop/range:create?farm='.$eFarm['id'].'&shop='.$eShop['id'].'" class="btn btn-primary">'.s("Associer un catalogue").'</a>';
-									} else {
-										$h .= '<span class="color-muted">'.s("Aucun catalogue").'</span>';
-									}
+									$h .= '<span class="color-muted">'.s("Aucun catalogue").'</span>';
 								$h .= '</td>';
 							}
 
@@ -144,22 +140,27 @@ class ShareUi {
 
 						$h .= '</tr>';
 
-							foreach($cRange->slice(1) as $eRange) {
-								$h .= '<tr>';
-									$h .= $this->getRange($eRange, $cDepartment);
-								$h .= '</tr>';
-							}
+						foreach($cRange->slice(1) as $eRange) {
+							$h .= '<tr>';
+								$h .= $this->getRange($eRange, $cDepartment);
+							$h .= '</tr>';
+						}
 
-							if($selected) {
+						if($selected) {
 
-								$h .= '<tr>';
-									$h .= '<td class="highlight" colspan="3">';
-										$h .= '<a href="/shop/range:create?farm='.$eFarm['id'].'&shop='.$eShop['id'].'" class="btn btn-primary btn-sm">'.s("Associer un autre catalogue").'</a>';
-									$h .= '</td>';
-								$h .= '</tr>';
+							$h .= '<tr>';
+								$h .= '<td class="highlight" colspan="3">';
+									$h .= '<a href="/shop/range:create?farm='.$eFarm['id'].'&shop='.$eShop['id'].'" class="btn btn-primary btn-sm">';
+										if($cRange->empty()) {
+											$h .= s("Associer un catalogue à la boutique");
+										} else {
+											$h .= s("Associer un autre catalogue");
+										}
+									$h .= '</a>';
+								$h .= '</td>';
+							$h .= '</tr>';
 
-							}
-
+						}
 
 
 					$h .= '</tbody>';
