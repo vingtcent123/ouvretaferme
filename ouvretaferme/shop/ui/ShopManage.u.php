@@ -220,7 +220,7 @@ class ShopManageUi {
 					$h .= '<p>'.s("Pour commencer à vendre votre production ici, vous devez associer un ou plusieurs de vos catalogues à cette boutique. Ce sont les produits de ces catalogues qui seront proposés aux clients !").'</p>';
 
 					if(GET('tab') !== 'farmers') {
-						$h .= '<a href="'.ShopUi::adminUrl($eFarm, $eShop).'?tab=farmers" class="btn btn-secondary">'.s("Associer un catalogue à cette boutique").'</a>';
+						$h .= '<a href="/shop/range:create?farm='.$eFarm['id'].'&shop='.$eShop['id'].'?tab=farmers" class="btn btn-secondary">'.s("Associer un catalogue à cette boutique").'</a>';
 					}
 
 				$h .= '</div>';
