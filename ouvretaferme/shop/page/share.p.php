@@ -11,5 +11,6 @@ new \shop\SharePage()
 		throw new ReloadAction();
 
 	})
+	->quick(['label'])
 	->doUpdate(fn() => throw new ReloadAction('shop', 'Share::updated'));
 ?>

@@ -209,7 +209,7 @@ class ShopManageUi {
 
 		$h = '';
 
-		$cRangeFarm = $eShop['cRange'][$eFarm['id']] ?? new \Collection();
+		$cRangeFarm = $eShop['ccRange'][$eFarm['id']] ?? new \Collection();
 
 		if($cRangeFarm->empty()) {
 
@@ -252,11 +252,11 @@ class ShopManageUi {
 			$h .= '</div>';
 
 			$h .= '<div class="tab-panel" data-tab="farmers">';
-				$h .= new ShareUi()->getList($eFarm, $eShop, $eShop['cShare']);
+				$h .= new ShareUi()->getList($eFarm, $eShop, $eShop['cShare'], $eShop['cDepartment']);
 			$h .= '</div>';
 
 			$h .= '<div class="tab-panel" data-tab="departments">';
-				$h .= new DepartmentUi()->getManage($eShop, $eShop['cDepartment']);
+				$h .= new DepartmentUi()->getManage($eShop, $eShop['cShare'], $eShop['ccRange'], $eShop['cDepartment']);
 			$h .= '</div>';
 
 		$h .= '</div>';

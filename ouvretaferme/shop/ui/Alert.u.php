@@ -22,6 +22,8 @@ class AlertUi {
 			'Product::empty' => s("Vous n'avez sélectionné aucun produit."),
 			'Product::createCollectionError' => s("Il y a des erreurs à vérifier sur un ou plusieurs produits que vous souhaitez ajouter."),
 
+			'Range::missingDate' => s("Veuillez choisir si vous souhaitez retirer le catalogue de toutes les ventes en cours sur la boutique ou non."),
+
 			'Sale::update.payment' => s("Vous ne pouvez pas modifier votre panier alors qu'un paiement est en cours."),
 			'Sale::terms' => s("Veuillez accepter les conditions générales de vente pour continuer."),
 
@@ -84,7 +86,6 @@ class AlertUi {
 			'Department::deleted' => s("Le rayon a bien été supprimé."),
 
 			'Range::created' => s("Le catalogue a bien été associé à la boutique."),
-			'Range::updated' => s("La configuration du catalague a bien été mise à jour dans la boutique."),
 			'Range::deleted' => s("Le catalogue a bien été dissocié de la boutique."),
 
 			'Sale::phone' => s("Votre numéro de téléphone a bien été enregistré, vous pouvez maintenant valider votre mode de livraison !"),

@@ -23,6 +23,18 @@ class Range extends RangeElement {
 					$this['cCatalog']->offsetExists($eCatalog['id'])
 				);
 
+			})
+			->setCallback('department.check', function(Department $eDepartment): bool {
+
+				$this->expects(['shop']);
+
+				return (
+					$eDepartment->empty() or
+					Department::model()
+						->whereShop($this['shop'])
+						->exists($eDepartment)
+				);
+
 			});
 
 		parent::build($properties, $input, $p);

@@ -642,6 +642,16 @@ Route::register([
 			'priority' => 5,
 			'route' => ['@module', 'series', 'Task', 'quick'],
 		],
+		'/@module/shop/Department/doQuick' => [
+			'request' => 'shop/department',
+			'priority' => 5,
+			'route' => ['@module', 'shop', 'Department', 'doQuick'],
+		],
+		'/@module/shop/Department/quick' => [
+			'request' => 'shop/department',
+			'priority' => 5,
+			'route' => ['@module', 'shop', 'Department', 'quick'],
+		],
 		'/@module/shop/Product/doQuick' => [
 			'request' => 'shop/product',
 			'priority' => 5,
@@ -651,6 +661,16 @@ Route::register([
 			'request' => 'shop/product',
 			'priority' => 5,
 			'route' => ['@module', 'shop', 'Product', 'quick'],
+		],
+		'/@module/shop/Share/doQuick' => [
+			'request' => 'shop/share',
+			'priority' => 5,
+			'route' => ['@module', 'shop', 'Share', 'doQuick'],
+		],
+		'/@module/shop/Share/quick' => [
+			'request' => 'shop/share',
+			'priority' => 5,
+			'route' => ['@module', 'shop', 'Share', 'quick'],
 		],
 		'/@module/website/Menu/doQuick' => [
 			'request' => 'website/menu',

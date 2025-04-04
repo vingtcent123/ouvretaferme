@@ -11,8 +11,8 @@ Catalog:
 
 Department:
   id: serial32
-  shop: shop\Shop
   name: text8(1, 50) @collate(general)
+  shop: shop\Shop
   catalogs: ?json = PHP([])
   position: int8(0, null)
   INDEX: [
@@ -85,6 +85,19 @@ Product:
     ["date", "product"],
     ["catalog", "product"]
   ]
+
+Range:
+  id: serial32
+  shop: shop\Shop
+  farm: farm\Farm
+  catalog: shop\Catalog
+  department: ?shop\Department
+  status: enum(AUTO, MANUAL)
+  createdAt: datetime = SPECIAL(now)
+  createdBy: user\User = SPECIAL(user)
+  UNIQUE: [
+    ["shop", "catalog"]
+  ]
   
 Redirect:
   fqn: fqn
@@ -92,6 +105,18 @@ Redirect:
   createdAt: datetime = SPECIAL(now)
   UNIQUE: [
     ["fqn", "shop"]
+  ]
+
+Share:
+  id: serial32
+  shop: shop\Shop
+  farm: farm\Farm
+  label: ?text8(1, 50)
+  position: int8(0, null)
+  createdAt: datetime = SPECIAL(now)
+  createdBy: user\User = SPECIAL(user)
+  UNIQUE: [
+    ["farm", "shop"]
   ]
 
 Shop:
@@ -137,29 +162,4 @@ Shop:
   UNIQUE: [
     ["fqn"],
     ["farm", "name"]
-  ]
-
-Range:
-  id: serial32
-  shop: shop\Shop
-  farm: farm\Farm
-  catalog: shop\Catalog
-  department: ?shop\Department
-  status: enum(AUTO, MANUAL)
-  createdAt: datetime = SPECIAL(now)
-  createdBy: user\User = SPECIAL(user)
-  UNIQUE: [
-    ["shop", "catalog"]
-  ]
-
-Share:
-  id: serial32
-  shop: shop\Shop
-  farm: farm\Farm
-  label: ?text8(1, 50)
-  position: int8(0, null)
-  createdAt: datetime = SPECIAL(now)
-  createdBy: user\User = SPECIAL(user)
-  UNIQUE: [
-    ["farm", "shop"]
   ]

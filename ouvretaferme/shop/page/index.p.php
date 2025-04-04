@@ -17,7 +17,7 @@ new \farm\FarmPage()
 		if($data->eShop['shared']) {
 			$data->eShop['cShare'] = \shop\ShareLib::getForShop($data->eShop);
 			$data->eShop['cDepartment'] = \shop\DepartmentLib::getByShop($data->eShop);
-			$data->eShop['cRange'] = \shop\RangeLib::getByShop($data->eShop);
+			$data->eShop['ccRange'] = \shop\RangeLib::getByShop($data->eShop);
 		}
 
 		$data->eShop['ccPoint'] = \shop\PointLib::getByFarm($data->e);

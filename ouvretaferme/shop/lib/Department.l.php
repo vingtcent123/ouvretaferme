@@ -17,7 +17,7 @@ class DepartmentLib extends DepartmentCrud {
 			->select(Department::getSelection())
 			->whereShop($eShop)
 			->sort(['position' => SORT_ASC])
-			->getCollection();
+			->getCollection(index: 'id');
 
 	}
 
@@ -93,32 +93,20 @@ class DepartmentLib extends DepartmentCrud {
 
 	public static function delete(Department $e): void {
 
-		$e->expects(['id', 'shop', 'fqn']);
-
-		if($e['fqn'] !== NULL) {
-			Department::fail('deleteMandatory');
-			return;
-		}
-
-		if(
-			Action::model()
-				->whereShop($e['shop'])
-				->where('JSON_CONTAINS(categories, \''.$e['id'].'\')')
-				->exists() or
-			\series\Task::model()
-				->whereShop($e['shop'])
-				->whereDepartment($e)
-				->exists()
-		) {
-			Department::fail('deleteUsed');
-			return;
-		}
+		$e->expects(['id', 'shop']);
 
 		Department::model()->beginTransaction();
 
-		parent::delete($e);
+			Range::model()
+				->whereShop($e['shop'])
+				->whereDepartment($e)
+				->update([
+					'department' => NULL
+				]);
 
-		self::reorder($e['shop']);
+			parent::delete($e);
+
+			self::reorder($e['shop']);
 
 		Department::model()->commit();
 

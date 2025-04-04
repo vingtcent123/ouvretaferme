@@ -20,8 +20,18 @@ new \shop\RangePage(function($data) {
 	->doCreate(fn($data) => throw new RedirectAction(\shop\ShopUi::adminUrl($data->e['shop']['farm'], $data->e['shop']).'?tab=farmers&success=Shop:Range::created'));
 
 new \shop\RangePage()
-	->update()
 	->doUpdateProperties('doUpdateStatus', ['status'], fn() => throw new ReloadAction())
-	->doUpdate(fn($data) => throw new ViewAction($data))
-	->doDelete(fn($data) => throw new ViewAction($data));
+	->doUpdateProperties('doUpdateDepartment', ['department'], fn() => throw new ReloadAction())
+	->read('dissociate', fn($data) => throw new ViewAction($data))
+	->write('doDissociate', function($data) {
+
+		if(POST('date') === '') {
+			throw new \FailAction('shop\Range::missingDate');
+		}
+
+		\shop\RangeLib::dissociate($data->e, POST('date', 'bool'));
+
+		throw new ReloadAction('shop', 'Range::deleted');
+
+	});
 ?>

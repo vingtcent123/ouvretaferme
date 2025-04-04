@@ -3,7 +3,7 @@ namespace shop;
 
 class DepartmentUi {
 
-	public function getManage(\shop\Shop $eShop, \Collection $cDepartment): string {
+	public function getManage(\shop\Shop $eShop, \Collection $cShare, \Collection $ccRange, \Collection $cDepartment): string {
 
 		if($cDepartment->empty()) {
 
@@ -35,9 +35,6 @@ class DepartmentUi {
 
 		$h .= '</div>';
 
-		$h .= 'PROPOSER LE GROUPAGE PAR RAYON ICI';
-		$h .= 'CATALOGUES HORS RAYONS À AFFECTER ICI';
-
 		$h .= '<table class="tr-even">';
 			$h .= '<thead>';
 				$h .= '<tr>';
@@ -50,16 +47,34 @@ class DepartmentUi {
 
 			$h .= '<tbody>';
 
+			$ccRangeDepartment = $ccRange
+				->linearize()
+				->reindex('department');
+
 			foreach($cDepartment as $eDepartment) {
+
+				$cRange = $ccRangeDepartment[$eDepartment['id']] ?? new \Collection();
 
 				$h .= '<tr>';
 					$h .= '<td class="td-min-content">';
 						$h .= '<b>'.$eDepartment['position'].'.</b>';
 					$h .= '</td>';
 					$h .= '<td>';
-						$h .= encode($eDepartment['name']);
+						$h .= $eDepartment->quick('name', encode($eDepartment['name']));
 					$h .= '</td>';
 					$h .= '<td>';
+						if($cRange->empty()) {
+							$h .= '-';
+						} else {
+							$h .= '<ul class="mb-0">';
+								foreach($cRange as $eRange) {
+									$eFarm = $cShare[$eRange['farm']['id']]['farm'];
+									$h .= '<li>';
+										$h .= s("{catalog} de {farm}", ['catalog' => '<b>'.encode($eRange['catalog']['name']).'</b>', 'farm' => ' '.\farm\FarmUi::getVignette($eFarm, '2rem').'  '.encode($eFarm['name'])]);
+									$h .= '</li>';
+								}
+							$h .= '</ul>';
+						}
 					$h .= '</td>';
 					$h .= '<td class="td-min-content">';
 

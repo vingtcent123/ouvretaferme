@@ -16,7 +16,7 @@ class ShareLib extends ShareCrud {
 			->select(Share::getSelection())
 			->whereShop($eShop)
 			->sort(['position' => SORT_ASC])
-			->getCollection();
+			->getCollection(index: 'farm');
 
 		return self::$cacheList[$eShop['id']];
 

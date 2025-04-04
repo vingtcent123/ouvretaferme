@@ -10,7 +10,7 @@ class RangeUi {
 			'data-ajax' => $eRange->canWrite() ? '/shop/range:doUpdateStatus' : NULL,
 			'post-id' => $eRange['id'],
 			'post-status' => ($eRange['status'] === Range::AUTO) ? Range::MANUAL : Range::AUTO
-		], $eRange['status'] === Range::AUTO, s("Automatique"), s("Manuel"));
+		], $eRange['status'] === Range::AUTO, s("Automatique"), s("Manuel"), self::getStatusLabel(Range::AUTO), self::getStatusLabel(Range::MANUAL));
 
 	}
 
@@ -63,23 +63,24 @@ class RangeUi {
 
 	}
 
-	public function update(Range $eRange): \Panel {
+	public function dissociate(Range $eRange): \Panel {
 
 		$form = new \util\FormUi();
 
-		$h = $form->openAjax('/shop/range:doUpdate');
+		$h = $form->openAjax('/shop/range:doDissociate');
 
 			$h .= $form->hidden('id', $eRange['id']);
-			$h .= $form->dynamicGroups($eRange, ['status']);
+			$h .= $form->group(s("Catalogue"), $form->fake($eRange['catalog']['name']));
+			$h .= $form->group(s("Retirer le catalogue de toutes les ventes en cours sur la boutique"), $form->yesNo('date'));
 			$h .= $form->group(
-				content: $form->submit(s("Modifier"))
+				content: $form->submit(s("Dissocier"))
 			);
 
 		$h .= $form->close();
 
 		return new \Panel(
 			id: 'panel-range-update',
-			title: s("Modifier un rayon"),
+			title: s("Dissocier un catalogue de la boutique"),
 			body: $h,
 			close: 'reload'
 		);
@@ -103,14 +104,23 @@ class RangeUi {
 				$d->field = 'radio';
 				$d->attributes['mandatory'] = TRUE;
 				$d->values = [
-					Range::AUTO => s("<u>Automatique</u> → Catalogue activé par défaut à chaque nouvelle vente dans la boutique"),
-					Range::MANUAL => s("<u>Manuelle</u> → Vous activez manuellement ce catalogue dans la boutique lorsque vous voulez autoriser les commandes"),
+					Range::AUTO => s("<u>Automatique</u> → {value}", self::getStatusLabel(Range::AUTO)),
+					Range::MANUAL => s("<u>Manuelle</u> → {value}", self::getStatusLabel(Range::MANUAL)),
 				];
 				break;
 
 		}
 
 		return $d;
+
+	}
+
+	private static function getStatusLabel(string $status): string {
+
+		return match($status) {
+			Range::AUTO => s("Catalogue activé par défaut à chaque nouvelle vente dans la boutique"),
+			Range::MANUAL => s("Catalogue à activer manuellement dans la boutique pour autoriser les commandes"),
+		};
 
 	}
 
