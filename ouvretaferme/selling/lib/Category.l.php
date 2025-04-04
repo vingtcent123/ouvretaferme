@@ -113,6 +113,13 @@ class CategoryLib extends CategoryCrud {
 				'category' => new Category()
 			]);
 
+		\farm\Farmer::model()
+			->whereFarm($e['farm'])
+			->whereViewSellingCategoryCurrent($e)
+			->update([
+				'viewSellingCategoryCurrent' => new Category()
+			]);
+
 		parent::delete($e);
 
 		self::reorder($e['farm']);
