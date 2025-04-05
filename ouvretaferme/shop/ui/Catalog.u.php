@@ -70,6 +70,22 @@ class CatalogUi {
 
 	}
 
+	public function getOne(Catalog $eCatalog): \Panel {
+
+		if($eCatalog['cProduct']->empty()) {
+			$h = '<div class="util-empty">'.s("Ce catalogue de vente est vide.").'</div>';
+		} else {
+			$h = new \shop\ProductUi()->getUpdateList($eCatalog['farm'], $eCatalog, $eCatalog['cProduct'], $eCatalog['cCategory']);
+		}
+
+		return new \Panel(
+			id: 'panel-catalog-show',
+			title: $eCatalog['name'],
+			body: $h
+		);
+
+	}
+
 	public function create(\farm\Farm $eFarm): \Panel {
 
 		$eCatalog = new Catalog([

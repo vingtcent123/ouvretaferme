@@ -13,6 +13,7 @@ class ProductUi {
 
 		return \util\TextUi::switch([
 			'id' => 'product-switch-'.$eProduct['id'],
+			'disabled' => $eProduct->canWrite() === FALSE,
 			'data-ajax' => $eProduct->canWrite() ? '/shop/product:doUpdateStatus' : NULL,
 			'post-id' => $eProduct['id'],
 			'post-status' => ($eProduct['status'] === Product::ACTIVE) ? Product::INACTIVE : Product::ACTIVE
@@ -763,7 +764,9 @@ class ProductUi {
 						$h .= '<th class="text-center">';
 							$h .= s("En vente");
 						$h .= '</th>';
-						$h .= '<th></th>';
+						if($e->canWrite()) {
+							$h .= '<th></th>';
+						}
 					$h .= '</tr>';
 				$h .= '</thead>';
 
@@ -815,10 +818,14 @@ class ProductUi {
 								$h .= $this->toggle($eProduct);
 							$h .= '</td>';
 
-							$h .= '<td class="td-min-content" '.($hasLimits ? 'rowspan="2"' : '').'>';
-								$h .= '<a href="/shop/product:update?id='.$eProduct['id'].'" class="btn btn-outline-secondary">'.\Asset::icon('gear-fill').'</a> ';
-								$h .= '<a data-ajax="/shop/product:doDelete" class="btn btn-outline-secondary" data-confirm="'.s("Voulez-vous vraiment supprimer ce produit de ce catalogue ?").'" post-id="'.$eProduct['id'].'">'.\Asset::icon('trash-fill').'</a>';
-							$h .= '</td>';
+							if($e->canWrite()) {
+
+								$h .= '<td class="td-min-content" '.($hasLimits ? 'rowspan="2"' : '').'>';
+									$h .= '<a href="/shop/product:update?id='.$eProduct['id'].'" class="btn btn-outline-secondary">'.\Asset::icon('gear-fill').'</a> ';
+									$h .= '<a data-ajax="/shop/product:doDelete" class="btn btn-outline-secondary" data-confirm="'.s("Voulez-vous vraiment supprimer ce produit de ce catalogue ?").'" post-id="'.$eProduct['id'].'">'.\Asset::icon('trash-fill').'</a>';
+								$h .= '</td>';
+
+							}
 
 						$h .= '</tr>';
 

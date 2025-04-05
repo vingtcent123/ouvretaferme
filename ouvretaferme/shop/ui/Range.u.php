@@ -7,6 +7,7 @@ class RangeUi {
 
 		return \util\TextUi::switch([
 			'id' => 'range-switch-'.$eRange['id'],
+			'disabled' => $eRange->canWrite() === FALSE,
 			'data-ajax' => $eRange->canWrite() ? '/shop/range:doUpdateStatus' : NULL,
 			'post-id' => $eRange['id'],
 			'post-status' => ($eRange['status'] === Range::AUTO) ? Range::MANUAL : Range::AUTO

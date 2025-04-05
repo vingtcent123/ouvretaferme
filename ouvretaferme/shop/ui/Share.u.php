@@ -190,6 +190,7 @@ class ShareUi {
 			if($eRange->canWrite()) {
 				$h .= '<a data-dropdown="bottom-start" class="dropdown-toggle">'.encode($eCatalog['name']).'</a>';
 				$h .= '<div class="dropdown-list bg-secondary">';
+					$h .= '<a href="/shop/catalog:show?id='.$eCatalog['id'].'" class="dropdown-item">'.s("Consulter le contenu du catalogue").'</a>';
 					$h .= '<a href="/shop/range:dissociate?id='.$eRange['id'].'" class="dropdown-item">'.s("Dissocier le catalogue de la boutique").'</a>';
 				$h .= '</div>';
 			} else {

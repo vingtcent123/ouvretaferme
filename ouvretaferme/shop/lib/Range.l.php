@@ -3,8 +3,40 @@ namespace shop;
 
 class RangeLib extends RangeCrud {
 
+	private static ?\Collection $cCatalogOnline = NULL;
+
 	public static function getPropertiesCreate(): array {
 		return ['catalog', 'status'];
+	}
+
+	public static function getOnlineCatalogs(): \Collection {
+
+		if(self::$cCatalogOnline === NULL) {
+
+			$cFarm = \farm\FarmLib::getOnline();
+
+			if($cFarm->empty()) {
+				return new \Collection();
+			}
+
+			$cShop = Shop::model()
+				->select('id')
+				->whereFarm('IN', $cFarm)
+				->whereShared(TRUE)
+				->getCollection();
+
+			if($cShop->empty()) {
+				return new \Collection();
+			}
+
+			self::$cCatalogOnline ??= Range::model()
+				->whereShop('IN', $cShop)
+				->getColumn('catalog');
+
+		}
+
+		return self::$cCatalogOnline;
+
 	}
 
 	public static function getByShop(Shop $eShop): \Collection {
