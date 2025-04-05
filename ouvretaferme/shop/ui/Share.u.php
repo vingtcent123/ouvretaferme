@@ -52,14 +52,9 @@ class ShareUi {
 				$h .= '<thead>';
 
 					$h .= '<tr>';
-						$h .= '<th rowspan="2"></th>';
-						$h .= '<th colspan="2" rowspan="2">'.s("Producteur").'</th>';
-						$h .= '<th class="hide-md-down" rowspan="2">'.s("Activité").'</th>';
-						$h .= '<th class="highlight text-center" colspan="3">'.s("Catalogues associés à la boutique").'</th>';
-						$h .= '<th class="td-min-content" rowspan="2"></th>';
-					$h .= '</tr>';
-
-					$h .= '<tr>';
+						$h .= '<th></th>';
+						$h .= '<th colspan="2">'.s("Producteur").'</th>';
+						$h .= '<th class="hide-md-down">'.s("Activité").'</th>';
 						$h .= '<th class="highlight highlight-stick-right">'.s("Catalogue").'</th>';
 						$h .= '<th class="highlight highlight-stick-both">';
 							if($cDepartment->notEmpty()) {
@@ -67,6 +62,7 @@ class ShareUi {
 							}
 						$h .= '</th>';
 						$h .= '<th class="highlight highlight-stick-left">'.s("Activation").'</th>';
+						$h .= '<th class="td-min-content"></th>';
 					$h .= '</tr>';
 
 				$h .= '</thead>';

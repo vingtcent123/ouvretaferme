@@ -13,7 +13,8 @@ class DepartmentUi {
 
 				$h .= '<div class="util-block-help">';
 					$h .= '<h4>'.s("Ajouter des rayons sur la boutique").'</h4>';
-					$h .= '<p>'.s("Les rayons sont une option des boutiques collectives qui permet de classer les produits proposés par les producteurs. Vous pouvez par exemple ajouter des rayons <i>Légumes</i>, <i>Crèmerie</i>, <i>Confitures</i>... et associer les catalogues de vos producteurs au bon rayon.").'</p>';
+					$h .= '<p>'.s("Les rayons sont une option des boutiques collectives qui permet de classer les produits proposés par les producteurs. Vous pouvez par exemple ajouter des rayons <i>Légumes</i>, <i>Crèmerie</i>, <i>Confitures</i>... et associer les catalogues de vos producteurs au rayon correspondant.").'</p>';
+					$h .= '<p>'.s("Lorsque vous créez des rayons, vous avez la possibilité de grouper les produits par rayon plutôt que par producteur sur la boutique.").'</p>';
 					$h .= '<a href="/shop/department:create?shop='.$eShop['id'].'" class="btn btn-secondary">'.s("Ajouter un rayon").'</a>';
 				$h .= '</div>';
 
