@@ -103,9 +103,12 @@ class ShareLib extends ShareCrud {
 
 	}
 
-	public static function remove(Shop $eShop, \farm\Farm $eFarm): void {
+	public static function delete(Share $e): void {
 
 		Share::model()->beginTransaction();
+
+			$eShop = $e['shop'];
+			$eFarm = $e['farm'];
 
 			$cRange = Range::model()
 				->select(RangeElement::getSelection())
@@ -117,10 +120,7 @@ class ShareLib extends ShareCrud {
 				RangeLib::dissociate($eRange, TRUE);
 			}
 
-			Share::model()
-				->whereShop($eShop)
-				->whereFarm($eFarm)
-				->delete();
+			parent::delete($e);
 
 			self::reorder($eShop);
 

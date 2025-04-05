@@ -53,6 +53,8 @@ class AlertUi {
 			'Date::updated' => s("Le paramétrage a bien été enregistré."),
 
 			'Share::updated' => s("L'activité a bien été mise à jour."),
+			'Share::deleted' => s("Le producteur a bien été retiré de la boutique."),
+			'Share::deletedSelf' => s("Vous avez bien quitté cette boutique collective."),
 
 			'Shop::opened' => s("Votre boutique a bien été ouverte !"),
 			'Shop::closed' => s("Votre boutique a bien été fermée !"),

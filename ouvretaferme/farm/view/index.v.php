@@ -598,7 +598,7 @@ new AdaptativeView('/ferme/{id}/catalogues', function($data, FarmTemplate $t) {
 
 		echo '<div class="util-block-help">';
 			echo '<h4>'.s("Vous êtes sur la page pour gérer vos catalogues de vente").'</h4>';
-			echo '<p>'.s("Créez des catalogues de vente pour gérer facilement les disponibilités dans vos boutiques en ligne. Les catalogues sont particulièrement indiqués si vous voulez partager facilement la même gamme de produits entre plusieurs boutiques.").'</p>';
+			echo '<p>'.s("Créez des catalogues de vente pour gérer facilement les disponibilités dans vos boutiques en ligne. Les catalogues sont particulièrement indiqués si vous voulez partager facilement la même gamme de produits entre plusieurs boutiques ou participer à des boutiques collectives.").'</p>';
 		echo '</div>';
 
 		echo '<br/>';

@@ -56,9 +56,7 @@ class ShareUi {
 						$h .= '<th colspan="2" rowspan="2">'.s("Producteur").'</th>';
 						$h .= '<th class="hide-md-down" rowspan="2">'.s("Activité").'</th>';
 						$h .= '<th class="highlight text-center" colspan="3">'.s("Catalogues associés à la boutique").'</th>';
-						if($eShop->canWrite()) {
-							$h .= '<th class="td-min-content" rowspan="2"></th>';
-						}
+						$h .= '<th class="td-min-content" rowspan="2"></th>';
 					$h .= '</tr>';
 
 					$h .= '<tr>';
@@ -111,9 +109,9 @@ class ShareUi {
 								$h .= '</td>';
 							}
 
-							if($eShop->canWrite()) {
+							$h .= '<td class="td-min-content" rowspan="'.$rows.'">';
 
-								$h .= '<td class="td-min-content" rowspan="'.$rows.'">';
+								if($eShop->canWrite()) {
 
 									if($eShare['position'] > 1) {
 										$h .= '<a data-ajax="/shop/share:doIncrementPosition" post-id='.$eShare['id'].'" post-increment="-1" class="btn btn-secondary">'.\Asset::icon('arrow-up').'</a>  ';
@@ -131,12 +129,20 @@ class ShareUi {
 									$h .= '<div class="dropdown-list bg-primary">';
 										$h .= '<a href="/shop/share:update?id='.$eShare['id'].'" class="dropdown-item">'.s("Configurer le producteur").'</a>';
 										$h .= '<div class="dropdown-divider"></div>';
-										$h .= '<a data-ajax="/shop/:doDeleteSharedFarm" post-id="'.$eShop['id'].'" post-farm="'.$eShare['farm']['id'].'" data-confirm="'.s("Le producteur n'aura plus accès à la boutique et les clients ne pourront plus commander ses produits. Voulez-vous continuer ?").'" class="dropdown-item">'.s("Retirer le producteur de la boutique").'</a>';
+										$h .= '<a data-ajax="/shop/share:doDelete" post-id="'.$eShare['id'].'" data-confirm="'.s("Le producteur n'aura plus accès à la boutique et les clients ne pourront plus commander ses produits. Voulez-vous continuer ?").'" class="dropdown-item">'.s("Retirer le producteur de la boutique").'</a>';
 									$h .= '</div>';
 
-								$h .= '</td>';
+								} else {
 
-							}
+									if($eShare->canDelete()) {
+
+										$h .= '<a data-ajax="/shop/share:doDelete" post-id="'.$eShare['id'].'" data-confirm="'.s("Voulez-vous réellement quitter cette boutique collective ?").'" class="btn btn-outline-secondary" title="'.s("Quitter cette boutique collective").'">'.\Asset::icon('box-arrow-right').'</a>';
+
+									}
+
+								}
+
+							$h .= '</td>';
 
 						$h .= '</tr>';
 
@@ -181,23 +187,36 @@ class ShareUi {
 		$eCatalog = $eRange['catalog'];
 
 		$h = '<td class="highlight highlight-stick-right">';
+			if($eRange->canWrite()) {
 				$h .= '<a data-dropdown="bottom-start" class="dropdown-toggle">'.encode($eCatalog['name']).'</a>';
 				$h .= '<div class="dropdown-list bg-secondary">';
 					$h .= '<a href="/shop/range:dissociate?id='.$eRange['id'].'" class="dropdown-item">'.s("Dissocier le catalogue de la boutique").'</a>';
 				$h .= '</div>';
-			$h .= '</div>';
+			} else {
+				$h .= encode($eCatalog['name']);
+			}
 		$h .= '</td>';
 		$h .= '<td class="highlight highlight-stick-both">';
+
 			if($cDepartment->notEmpty()) {
-				$h .= '<a data-dropdown="bottom-start" class="shop-share-range-department dropdown-toggle">';
-					$h .= $eRange['department']->empty() ? s("Pas de rayonnage") :  encode($cDepartment[$eRange['department']['id']]['name']);
-				$h .= '</a>';
-				$h .= '<div class="dropdown-list bg-secondary">';
-					foreach($cDepartment as $eDepartment) {
-						$h .= '<a data-ajax="/shop/range:doUpdateDepartment" post-id="'.$eRange['id'].'" post-department="'.$eDepartment['id'].'" class="dropdown-item '.(($eRange['department']->notEmpty() and $eDepartment['id'] === $eRange['department']['id']) ? 'selected' : '').'">'.encode($eDepartment['name']).'</a>';
-					}
-					$h .= '<a data-ajax="/shop/range:doUpdateDepartment" post-id="'.$eRange['id'].'" post-department="" class="dropdown-item '.($eRange['department']->empty() ? 'selected' : '').'"><i>'.s("Pas de rayonnage").'</i></a>';
-				$h .= '</div>';;
+
+				$department = $eRange['department']->empty() ? s("Pas de rayonnage") :  encode($cDepartment[$eRange['department']['id']]['name']);
+
+				if($eRange->canWrite()) {
+
+					$h .= '<a data-dropdown="bottom-start" class="shop-share-range-department dropdown-toggle">';
+						$h .= $department;
+					$h .= '</a>';
+					$h .= '<div class="dropdown-list bg-secondary">';
+						foreach($cDepartment as $eDepartment) {
+							$h .= '<a data-ajax="/shop/range:doUpdateDepartment" post-id="'.$eRange['id'].'" post-department="'.$eDepartment['id'].'" class="dropdown-item '.(($eRange['department']->notEmpty() and $eDepartment['id'] === $eRange['department']['id']) ? 'selected' : '').'">'.encode($eDepartment['name']).'</a>';
+						}
+						$h .= '<a data-ajax="/shop/range:doUpdateDepartment" post-id="'.$eRange['id'].'" post-department="" class="dropdown-item '.($eRange['department']->empty() ? 'selected' : '').'"><i>'.s("Pas de rayonnage").'</i></a>';
+					$h .= '</div>';
+
+				} else {
+					$h .= $department;
+				}
 
 			}
 		$h .= '</td>';

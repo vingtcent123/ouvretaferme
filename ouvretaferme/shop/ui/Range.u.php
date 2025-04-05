@@ -57,8 +57,7 @@ class RangeUi {
 		return new \Panel(
 			id: 'panel-range-create',
 			title: s("Associer un catalogue à cette boutique"),
-			body: $h,
-			close: 'reload'
+			body: $h
 		);
 
 	}
@@ -81,8 +80,7 @@ class RangeUi {
 		return new \Panel(
 			id: 'panel-range-update',
 			title: s("Dissocier un catalogue de la boutique"),
-			body: $h,
-			close: 'reload'
+			body: $h
 		);
 
 	}

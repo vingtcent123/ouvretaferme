@@ -7,7 +7,7 @@ new \shop\RangePage(function($data) {
 	->getCreateElement(function($data) {
 
 		$data->eFarm = \farm\FarmLib::getById(INPUT('farm'))->validate('canWrite');
-		$data->eShop = \shop\ShopLib::getById(INPUT('shop'))->validateShareRead($data->eFarm);
+		$data->eShop = \shop\ShopLib::getById(INPUT('shop'));
 
 		return new \shop\Range([
 			'shop' => $data->eShop,
@@ -17,7 +17,7 @@ new \shop\RangePage(function($data) {
 
 	})
 	->create()
-	->doCreate(fn($data) => throw new RedirectAction(\shop\ShopUi::adminUrl($data->e['shop']['farm'], $data->e['shop']).'?tab=farmers&success=Shop:Range::created'));
+	->doCreate(fn($data) => throw new RedirectAction(\shop\ShopUi::adminUrl($data->e['farm'], $data->e['shop']).'?tab=farmers&success=Shop:Range::created'));
 
 new \shop\RangePage()
 	->doUpdateProperties('doUpdateStatus', ['status'], fn() => throw new ReloadAction())

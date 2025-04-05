@@ -156,9 +156,7 @@ class ShopLib extends ShopCrud {
 
 			if($e['farm']['hasShops'] === FALSE) {
 
-				\farm\Farm::model()->update($e['farm'], [
-					'hasShops' => TRUE
-				]);
+				self::updateHasShop($e['farm'], TRUE);
 
 			}
 
@@ -189,7 +187,11 @@ class ShopLib extends ShopCrud {
 		]);
 
 		try {
+
 			ShareLib::create($eShare);
+
+			self::updateHasShop($eFarm, TRUE);
+
 		} catch(\DuplicateException) {
 		}
 
@@ -319,13 +321,24 @@ class ShopLib extends ShopCrud {
 
 			Shop::model()->delete($e);
 
-			\farm\Farm::model()->update($e['farm'], [
-				'hasShops' => Shop::model()
-					->whereFarm($e['farm'])
-					->exists()
-			]);
+			self::updateHasShop($e['farm']);
 
 		Shop::model()->commit();
+
+	}
+
+	protected static function updateHasShop(\farm\Farm $eFarm, ?bool $newValue = NULL): void {
+
+		\farm\Farm::model()->update($eFarm, [
+			'hasShops' => $newValue ?? (
+				Shop::model()
+					->whereFarm($eFarm)
+					->exists() or
+				Share::model()
+					->whereFarm($eFarm)
+					->exists()
+				)
+		]);
 
 	}
 

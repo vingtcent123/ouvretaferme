@@ -112,15 +112,6 @@ new shop\ShopPage()
 		throw new ReloadLayerAction();
 
 	})
-	->write('doDeleteSharedFarm', function($data) {
-
-		$data->eFarm = \farm\FarmLib::getById(INPUT('farm'));
-
-		\shop\ShareLib::remove($data->e, $data->eFarm);
-
-		throw new ReloadAction('shop', 'Shop::deletedFarmer');
-
-	})
 	->read('website', function($data) {
 
 		$data->eFarm = \farm\FarmLib::getById(INPUT('farm'));

@@ -12,5 +12,8 @@ new \shop\SharePage()
 
 	})
 	->quick(['label'])
-	->doUpdate(fn() => throw new ReloadAction('shop', 'Share::updated'));
+	->doUpdate(fn() => throw new ReloadAction('shop', 'Share::updated'))
+	->doDelete(fn($data) => $data->e->isSelf() ?
+		throw new RedirectAction(\farm\FarmUi::urlShopList($data->e['farm']).'?success=shop:Share::deletedSelf') :
+		throw new ReloadAction('shop', 'Share::deleted'));
 ?>

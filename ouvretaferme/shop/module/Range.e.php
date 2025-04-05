@@ -7,7 +7,30 @@ class Range extends RangeElement {
 
 		return parent::getSelection() + [
 			'catalog' => ['name'],
+			'shop' => ['farm'],
 		];
+
+	}
+
+	public function canCreate(): bool {
+
+		$this->expects(['shop', 'farm']);
+
+		return $this['shop']->canShareRead($this['farm']);
+
+	}
+
+	public function canWrite(): bool {
+
+		$this->expects(['shop', 'farm']);
+
+		return (
+			(
+				$this['farm']->canWrite() and
+				$this['shop']->canShareRead($this['farm'])
+			) or
+			$this['shop']->canWrite()
+		);
 
 	}
 

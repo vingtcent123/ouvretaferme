@@ -300,7 +300,7 @@ class ShopManageUi {
 	public function createFirstDate(\farm\Farm $eFarm, Shop $eShop): string {
 
 		if($eShop->canWrite() === FALSE) {
-			return '';
+			return '<div class="util-empty">'.s("Aucune vente n'a encore été démarrée sur cette boutique.").'</div>';
 		}
 
 		$h = '';

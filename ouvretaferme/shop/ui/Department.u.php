@@ -129,8 +129,7 @@ class DepartmentUi {
 		return new \Panel(
 			id: 'panel-department-create',
 			title: s("Ajouter un nouveau rayon"),
-			body: $h,
-			close: 'reload'
+			body: $h
 		);
 
 	}
@@ -152,8 +151,7 @@ class DepartmentUi {
 		return new \Panel(
 			id: 'panel-department-update',
 			title: s("Modifier un rayon"),
-			body: $h,
-			close: 'reload'
+			body: $h
 		);
 
 	}
