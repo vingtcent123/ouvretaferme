@@ -80,6 +80,15 @@ class Date extends DateElement {
 		$fw = new \FailWatch();
 
 		$p
+			->setCallback('source.prepare', function(?string &$source): bool {
+
+				if($this['shop']['shared']) {
+					$source = \shop\Date::CATALOG;
+				}
+
+				return TRUE;
+
+			})
 			->setCallback('status.prepare', function(mixed &$status): bool {
 
 				if(in_array($status, [Date::ACTIVE, Date::CLOSED])) {

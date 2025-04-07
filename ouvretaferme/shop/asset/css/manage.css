@@ -153,6 +153,10 @@ div.shop-write-fqn label {
 	padding-bottom: 0.25rem;
 }
 
+.date-points-label:hover {
+	cursor: pointer;
+}
+
 .shop-select {
 	background-color: #0001;
 	padding: 0 0.75rem;

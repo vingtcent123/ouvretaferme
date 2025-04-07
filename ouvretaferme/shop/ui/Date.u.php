@@ -313,19 +313,25 @@ class DateUi {
 				$form->fake($grid)
 			);
 
-			if($e['cCatalog']->notEmpty()) {
-				$h .= $form->dynamicGroup($e, 'source*');
-				$h .= '<div data-ref="date-catalog" class="'.($e['source'] === Date::CATALOG ? '' : 'hide').'">';
-					$h .= $form->dynamicGroup($e, 'catalogs*');
-				$h .= '</div>';
-			} else {
-				$h .= $form->hidden('source', Date::DIRECT);
-			}
+			if($e['shop']['shared'] === FALSE) {
 
-			$h .= '<div data-ref="date-direct" class="'.($e['source'] === Date::DIRECT ? '' : 'hide').'">';
-				$h .= '<h3 class="mt-2">'.self::p('productsList')->label.'</h3>';
-				$h .= $form->dynamicField($e, 'productsList');
-			$h .= '</div>';
+				if($e['cCatalog']->notEmpty()) {
+					$h .= $form->dynamicGroup($e, 'source*');
+					$h .= '<div data-ref="date-catalog" class="'.($e['source'] === Date::CATALOG ? '' : 'hide').'">';
+						$h .= $form->dynamicGroup($e, 'catalogs*');
+					$h .= '</div>';
+				} else {
+					$h .= $form->hidden('source', Date::DIRECT);
+				}
+
+				$h .= '<div data-ref="date-direct" class="'.($e['source'] === Date::DIRECT ? '' : 'hide').'">';
+					$h .= '<h3 class="mt-2">'.self::p('productsList')->label.'</h3>';
+					$h .= $form->dynamicField($e, 'productsList');
+				$h .= '</div>';
+
+			} else {
+				$h .= $form->dynamicGroup($e, 'catalogs*');
+			}
 
 			$h .= '<br/>';
 
@@ -426,7 +432,7 @@ class DateUi {
 						$h .= '<label class="shop-select">';
 							$h .= $form->inputCheckbox('points[]', $ePoint['id'], $attributes);
 						$h .= '</label>';
-						$h .= '<label for="'.$attributes['id'].'">';
+						$h .= '<label class="date-points-label" for="'.$attributes['id'].'">';
 							$h .= match($type) {
 								Point::HOME => nl2br(encode($ePoint['zone'])),
 								Point::PLACE => encode($ePoint['name']).' <small class="color-muted">'.encode($ePoint['address']).' '.encode($ePoint['place']).'</small>'
@@ -664,19 +670,17 @@ class DateUi {
 
 			$h .= '<div class="tabs-item">';
 
+				$h .= '<a class="tab-item" data-tab="products" onclick="Lime.Tab.select(this)">';
+					$h .= s("Produits");
+					if($products > 0) {
+						$h .= '<span class="tab-item-count">'.$products.'</span>';
+					}
+				$h .= '</a>';
+
 				if($eShop['shared']) {
 
-					$h .= '<a class="tab-item" data-tab="farmers" onclick="Lime.Tab.select(this)">';
-						$h .= s("Producteurs");
-					$h .= '</a>';
-
-				} else {
-
-					$h .= '<a class="tab-item" data-tab="products" onclick="Lime.Tab.select(this)">';
-						$h .= s("Produits");
-						if($products > 0) {
-							$h .= '<span class="tab-item-count">'.$products.'</span>';
-						}
+					$h .= '<a class="tab-item" data-tab="catalogs" onclick="Lime.Tab.select(this)">';
+						$h .= s("Catalogues");
 					$h .= '</a>';
 
 				}
@@ -697,16 +701,14 @@ class DateUi {
 				$h .= '</a>';
 			$h .= '</div>';
 
+			$h .= '<div class="tab-panel" data-tab="products">';
+				$h .= $this->getProducts($eFarm, $eDate);
+			$h .= '</div>';
+
 			if($eShop['shared']) {
 
-				$h .= '<div class="tab-panel" data-tab="farmers">';
-					$h .= $this->getFarmers($eFarm, $eShop, $eDate);
-				$h .= '</div>';
-
-			} else {
-
-				$h .= '<div class="tab-panel" data-tab="products">';
-					$h .= $this->getProducts($eFarm, $eDate);
+				$h .= '<div class="tab-panel" data-tab="catalogs">';
+					$h .= $this->getCatalogs($eFarm, $eShop, $eDate);
 				$h .= '</div>';
 
 			}
@@ -766,7 +768,7 @@ class DateUi {
 		return $h;
 	}
 
-	public function getFarmers(\farm\Farm $eFarm, Shop $eShop, Date $eDate): string {
+	public function getCatalogs(\farm\Farm $eFarm, Shop $eShop, Date $eDate): string {
 
 		$h = '';
 
@@ -961,7 +963,7 @@ class DateUi {
 			'orderEndAt' => s("Fin des commandes"),
 			'deliveryDate' => s("Date de livraison des commandes"),
 			'source' => s("Gamme de produits proposée à la vente"),
-			'catalogs' => s("Choisir un catalogue"),
+			'catalogs' => s("Choisir les catalogues proposés à la vente"),
 			'description' => s("Complément d'information"),
 			'productsList' => s("Choisir les produits proposés à la vente"),
 			'status' => s("Statut"),
@@ -1001,6 +1003,39 @@ class DateUi {
 				break;
 
 			case 'catalogs' :
+				$d->field = function(\util\FormUi $form, Date $e) {
+
+					$e->expects(['cCatalog']);
+
+					$h = '<div class="field-radio-group">';
+
+							foreach($e['cCatalog'] as $eCatalog) {
+
+								$attributes = [
+									'id' => 'checkbox-catalog-'.$eCatalog['id'],
+									'checked' => in_array($eCatalog['id'], $e['catalogs'])
+								];
+
+								$h .= '<div class="date-points-item">';
+
+									$h .= '<label class="shop-select">';
+										$h .= $form->inputRadio('catalogs[]', $eCatalog['id'], selectedValue: $e['catalogs'] ? first($e['catalogs']) : NULL, attributes: $attributes);
+									$h .= '</label>';
+
+									$h .= '<label class="date-points-label" for="'.$attributes['id'].'">';
+										$h .= encode($eCatalog['name']).' <small>/ '.p("{value} produit", "{value} produits", $eCatalog['products']).'</small>';
+									$h .= '</label>';
+
+								$h .= '</div>';
+
+							}
+
+					$h .= '</div>';
+
+					return $h;
+
+				};
+				/*
 				$d->field = 'radio';
 				$d->default = fn(Date $e) => $e['catalogs'] ?
 					new Catalog(['id' => first($e['catalogs'])]) :
@@ -1011,7 +1046,7 @@ class DateUi {
 					'value' => $eCatalog['id'],
 					'label' => encode($eCatalog['name']).' <small>/ '.p("{value} produit", "{value} produits", $eCatalog['products']).'</small>'
 				]) ?? $e->expects(['cCatalog']);
-				$d->attributes['mandatory'] = TRUE;
+				$d->attributes['mandatory'] = TRUE;*/
 				break;
 
 			case 'productsList' :

@@ -56,7 +56,7 @@ new \shop\DatePage()
 		return new \shop\Date([
 			'farm' => $data->eFarm,
 			'shop' => $data->eShop,
-			'type' => $data->eShop['type']
+			'type' => $data->eShop['type'],
 		]);
 
 	})
