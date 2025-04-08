@@ -143,13 +143,7 @@ class Date extends DateElement {
 					return FALSE;
 				}
 
-				$cCatalog = Catalog::model()
-					->select('id')
-					->whereId('IN', $catalogs)
-					->whereType($this['type'])
-					->whereFarm($this['farm'])
-					->whereStatus(Catalog::ACTIVE)
-					->getCollection();
+				$cCatalog = \shop\CatalogLib::getForShop($this['shop'], $this['type'], onlyIds: $catalogs);
 
 				if($cCatalog->count() !== count($catalogs)) {
 					return FALSE;

@@ -11,17 +11,69 @@ class CatalogLib extends CatalogCrud {
 		return ['name'];
 	}
 
-	public static function getByFarm(\farm\Farm $eFarm, ?string $type = NULL, mixed $index = NULL): \Collection {
+	public static function getByFarm(\farm\Farm $eFarm, ?string $type = NULL, mixed $index = NULL, array $onlyIds = []): \Collection {
 
 		return Catalog::model()
 			->select(Catalog::getSelection())
 			->whereFarm($eFarm)
+			->whereId('IN', $onlyIds, if: $onlyIds)
 			->whereType($type, if: $type !== NULL)
 			->whereStatus(Catalog::ACTIVE)
 			->sort([
 				'name' => SORT_ASC
 			])
 			->getCollection(index: $index);
+
+	}
+
+	public static function getForShop(Shop $eShop, ?string $type = NULL, Date $eDateBase = new Date(), array $onlyIds = []): \Collection {
+
+		if($eShop['shared']) {
+
+			$cRange = Range::model()
+					->select([
+						'status',
+						'catalog' => Catalog::getSelection(),
+					])
+					->whereCatalog('IN', $onlyIds, if: $onlyIds)
+					->whereShop($eShop)
+					->getCollection();
+
+			$cCatalog = new \Collection();
+
+			foreach($cRange as $eRange) {
+
+				$cCatalog[$eRange['catalog']['id']] = $eRange['catalog']->merge([
+					'selected' => $eRange['status'] === Range::AUTO
+				]);
+
+			}
+
+			$cCatalog->sort('name', natural: TRUE);
+
+		} else {
+
+			$cCatalog = self::getByFarm($eShop['farm'], $type, index: 'id', onlyIds: $onlyIds);
+			$cCatalog->setColumn('selected', FALSE);
+
+		}
+
+		if(
+			$eDateBase->notEmpty() and
+			$eDateBase['catalogs']
+		) {
+
+			foreach($eDateBase['catalogs'] as $catalog) {
+
+				if($cCatalog->offsetExists($catalog)) {
+					$cCatalog[$catalog]['selected'] = TRUE;
+				}
+
+			}
+
+		}
+
+		return $cCatalog;
 
 	}
 

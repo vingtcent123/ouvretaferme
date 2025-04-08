@@ -276,12 +276,10 @@ class DateUi {
 			}
 
 			$e['points'] = $eDateBase['points'];
-			$e['catalogs'] = $eDateBase['catalogs'];
 			$e['source'] ??= $eDateBase['source'];
 
 		} else {
 			$e['points'] = [];
-			$e['catalogs'] = [];
 		}
 
 		$e['cProduct'] = $cProduct;
@@ -982,7 +980,7 @@ class DateUi {
 
 			case 'source' :
 				$d->values = [
-					Date::CATALOG => s("Passer par un catalogue"),
+					Date::CATALOG => s("Passer par les catalogues"),
 					Date::DIRECT => s("Choisir mes produits"),
 				];
 				$d->attributes = [
@@ -1011,15 +1009,17 @@ class DateUi {
 
 							foreach($e['cCatalog'] as $eCatalog) {
 
+								$eCatalog->expects('selected');
+
 								$attributes = [
 									'id' => 'checkbox-catalog-'.$eCatalog['id'],
-									'checked' => in_array($eCatalog['id'], $e['catalogs'])
+									'checked' => $eCatalog['selected']
 								];
 
 								$h .= '<div class="date-points-item">';
 
 									$h .= '<label class="shop-select">';
-										$h .= $form->inputRadio('catalogs[]', $eCatalog['id'], selectedValue: $e['catalogs'] ? first($e['catalogs']) : NULL, attributes: $attributes);
+										$h .= $form->checkbox('catalogs[]', $eCatalog['id'], $attributes);
 									$h .= '</label>';
 
 									$h .= '<label class="date-points-label" for="'.$attributes['id'].'">';

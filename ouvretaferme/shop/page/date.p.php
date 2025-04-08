@@ -74,7 +74,7 @@ new \shop\DatePage()
 		}
 
 
-		$data->e['cCatalog'] = \shop\CatalogLib::getByFarm($data->eFarm, type: $data->e['type']);
+		$data->e['cCatalog'] = \shop\CatalogLib::getForShop($data->eShop, $data->e['type'], $data->eDateBase);
 		$data->e['cCategory'] = \selling\CategoryLib::getByFarm($data->eFarm, index: 'id');
 		$data->e['ccPoint'] = \shop\PointLib::getByFarm($data->eFarm);
 

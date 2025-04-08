@@ -23,7 +23,13 @@ class RangeLib extends RangeCrud {
 				->select('id')
 				->whereFarm('IN', $cFarm)
 				->whereShared(TRUE)
-				->getCollection();
+				->getCollection()
+				->mergeCollection(
+					Share::model()
+						->select('shop')
+						->whereFarm('IN', $cFarm)
+						->getColumn('shop')
+				);
 
 			if($cShop->empty()) {
 				return new \Collection();

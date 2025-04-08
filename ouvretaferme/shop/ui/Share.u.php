@@ -190,7 +190,7 @@ class ShareUi {
 					$h .= '<a href="/shop/range:dissociate?id='.$eRange['id'].'" class="dropdown-item">'.s("Dissocier le catalogue de la boutique").'</a>';
 				$h .= '</div>';
 			} else {
-				$h .= encode($eCatalog['name']);
+				$h .= '<a href="/shop/catalog:show?id='.$eCatalog['id'].'">'.encode($eCatalog['name']).'</a>';
 			}
 		$h .= '</td>';
 		$h .= '<td class="highlight highlight-stick-both">';

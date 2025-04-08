@@ -26,7 +26,10 @@ class Shop extends ShopElement {
 
 		if($this['shared']) {
 
-			if($this->canShareRead($eFarm)) {
+			if(
+				$this->canRead() or
+				$this->canShareRead($eFarm)
+			) {
 				return $this;
 			} else {
 				throw new \NotAllowedAction();
