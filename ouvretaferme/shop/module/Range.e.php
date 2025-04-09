@@ -6,7 +6,7 @@ class Range extends RangeElement {
 	public static function getSelection(): array {
 
 		return parent::getSelection() + [
-			'catalog' => ['name'],
+			'catalog' => ['name', 'products'],
 			'shop' => ['farm'],
 		];
 

@@ -23,5 +23,26 @@ class Catalog extends CatalogElement {
 
 	}
 
+	public function validateShop(Shop $eShop): self {
+
+		$eShop->expects(['shared']);
+
+		if(
+			$this->empty() or
+			$eShop['shared'] === FALSE
+		) {
+			return $this->validate('canRead');
+		} else {
+
+			if(RangeLib::hasCatalog($eShop, $this)) {
+				return $this;
+			} else {
+				throw new \NotAllowedAction();
+			}
+
+		}
+
+	}
+
 }
 ?>

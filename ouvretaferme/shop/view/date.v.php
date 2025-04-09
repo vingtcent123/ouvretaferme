@@ -34,6 +34,10 @@ new JsonView('doUpdatePoint', function($data, AjaxTemplate $t) {
 	$t->qs('#point-switch-'.$data->ePoint['id'])->toggleSwitch('post-status', [TRUE, FALSE]);
 });
 
+new JsonView('doUpdateCatalog', function($data, AjaxTemplate $t) {
+	$t->qs('#catalog-switch-'.$data->eCatalog['id'])->toggleSwitch('post-status', [TRUE, FALSE]);
+});
+
 new AdaptativeView('/ferme/{id}/date/{date}', function($data, FarmTemplate $t) {
 
 	$t->tab = 'shop';

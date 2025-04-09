@@ -28,7 +28,7 @@ new \farm\FarmPage()
 		$data->eDate['ccPoint'] = \shop\PointLib::getByDate($data->eDate);
 
 		if($data->eDate['catalogs']) {
-			$data->eDate['cCatalog'] = \shop\CatalogLib::getByIds($data->eDate['catalogs'], index: 'farm');
+			$data->eDate['cCatalog'] = \shop\CatalogLib::getByIds($data->eDate['catalogs']);
 			$data->eDate['cFarm'] = $data->eDate['cCatalog']->getColumnCollection('farm');
 		} else {
 			$data->eDate['cCatalog'] = new Collection();
@@ -39,6 +39,8 @@ new \farm\FarmPage()
 
 		if($data->eShop['shared']) {
 			$data->eShop['cShare'] = \shop\ShareLib::getByShop($data->eShop);
+			$data->eShop['ccRange'] = \shop\RangeLib::getByShop($data->eShop);
+			$data->eShop['cDepartment'] = \shop\DepartmentLib::getByShop($data->eShop);
 		}
 
 		$data->eFarm = $data->e;
@@ -118,6 +120,19 @@ new \shop\DatePage()
 	->applyElement(function($data, \shop\Date $eDate) {
 
 		$eDate['shop'] = \shop\ShopLib::getById($eDate['shop']);
+
+	})
+	->write('doUpdateCatalog', function($data) {
+
+		$data->eCatalog = \shop\CatalogLib::getById(POST('catalog'))->validateShop($data->e['shop']);
+
+		$fw = new FailWatch();
+
+		\shop\DateLib::updateCatalog($data->e, $data->eCatalog, POST('status', 'bool'));
+
+		$fw->validate();
+
+		throw new ViewAction($data);
 
 	})
 	->update(function($data) {

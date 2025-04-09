@@ -11,7 +11,7 @@ class RangeUi {
 			'data-ajax' => $eRange->canWrite() ? '/shop/range:doUpdateStatus' : NULL,
 			'post-id' => $eRange['id'],
 			'post-status' => ($eRange['status'] === Range::AUTO) ? Range::MANUAL : Range::AUTO
-		], $eRange['status'] === Range::AUTO, s("Automatique"), s("Manuel"), self::getStatusLabel(Range::AUTO), self::getStatusLabel(Range::MANUAL));
+		], $eRange['status'] === Range::AUTO, s("Automatique"), s("Manuelle"), self::getStatusLabel(Range::AUTO), self::getStatusLabel(Range::MANUAL));
 
 	}
 

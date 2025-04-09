@@ -9,6 +9,16 @@ class RangeLib extends RangeCrud {
 		return ['catalog', 'status'];
 	}
 
+	public static function create(Range $e): void {
+
+		try {
+			parent::create($e);
+		} catch(\DuplicateException) {
+			Range::fail('duplicate');
+		}
+
+	}
+
 	public static function getOnlineCatalogs(): \Collection {
 
 		if(self::$cCatalogOnline === NULL) {
@@ -51,6 +61,15 @@ class RangeLib extends RangeCrud {
 			->select(Range::getSelection())
 			->whereShop($eShop)
 			->getCollection(index: ['farm', NULL]);
+
+	}
+
+	public static function hasCatalog(Shop $eShop, Catalog $eCatalog): bool {
+
+		return Range::model()
+			->whereShop($eShop)
+			->whereCatalog($eCatalog)
+			->exists();
 
 	}
 

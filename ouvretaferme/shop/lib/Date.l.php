@@ -199,6 +199,28 @@ class DateLib extends DateCrud {
 
 	}
 
+	public static function updateCatalog(Date $eDate, Catalog $eCatalog, bool $status): void {
+
+		$catalogs = $eDate['catalogs'];
+
+		if($status) {
+			if(in_array($eCatalog['id'], $catalogs) === FALSE) {
+				$catalogs[] = $eCatalog['id'];
+			}
+		} else {
+			array_delete($catalogs, $eCatalog['id']);
+		}
+
+		if($catalogs !== $eDate['catalogs']) {
+
+			Date::model()->update($eDate, [
+				'catalogs' => $catalogs,
+			]);
+
+		}
+
+	}
+
 	public static function delete(Date $eDate): void {
 
 		if(\selling\Sale::model()

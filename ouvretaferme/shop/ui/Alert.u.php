@@ -23,6 +23,7 @@ class AlertUi {
 			'Product::createCollectionError' => s("Il y a des erreurs à vérifier sur un ou plusieurs produits que vous souhaitez ajouter."),
 
 			'Range::missingDate' => s("Veuillez choisir si vous souhaitez retirer le catalogue de toutes les ventes en cours sur la boutique ou non."),
+			'Range::duplicate' => s("Ce catalogue a déjà été associé à la boutique."),
 
 			'Sale::update.payment' => s("Vous ne pouvez pas modifier votre panier alors qu'un paiement est en cours."),
 			'Sale::terms' => s("Veuillez accepter les conditions générales de vente pour continuer."),

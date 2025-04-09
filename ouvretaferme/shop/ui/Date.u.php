@@ -677,8 +677,8 @@ class DateUi {
 
 				if($eShop['shared']) {
 
-					$h .= '<a class="tab-item" data-tab="catalogs" onclick="Lime.Tab.select(this)">';
-						$h .= s("Catalogues");
+					$h .= '<a class="tab-item" data-tab="farms" onclick="Lime.Tab.select(this)">';
+						$h .= s("Producteurs");
 					$h .= '</a>';
 
 				}
@@ -705,8 +705,8 @@ class DateUi {
 
 			if($eShop['shared']) {
 
-				$h .= '<div class="tab-panel" data-tab="catalogs">';
-					$h .= $this->getCatalogs($eFarm, $eShop, $eDate);
+				$h .= '<div class="tab-panel" data-tab="farms">';
+					$h .= $this->getFarms($eShop, $eDate, $eShop['cDepartment'], $eShop['ccRange']);
 				$h .= '</div>';
 
 			}
@@ -744,8 +744,8 @@ class DateUi {
 						$eFarm,
 						$cSale,
 						hide: array_merge(['deliveredAt', 'documents', 'items'], $cSale->match(fn($eSale) => $eSale['paymentMethod'] !== NULL) ? [] : ['paymentMethod']),
-						show: ['point'],
 						dynamicHide: ['paymentMethod' => ''],
+						show: ['point'],
 						hasSubtitles: FALSE,
 						segment: ($eDate['ccPoint']->reduce(fn($c, $n) => $n + $c->count(), 0) > 1) ? 'point' : NULL
 					);
@@ -766,18 +766,114 @@ class DateUi {
 		return $h;
 	}
 
-	public function getCatalogs(\farm\Farm $eFarm, Shop $eShop, Date $eDate): string {
+	public function getFarms(Shop $eShop, Date $eDate, \Collection $cDepartment, \Collection $ccRange): string {
 
-		$h = '';
-
-		foreach($eShop['cShare'] as $eShare) {
-
-			$h .= '<h3>';
-				$h .= \farm\FarmUi::getVignette($eShare['farm'], '3rem').' ';
-				$h .= encode($eShare['farm']['name']);
-			$h .= '</h3>';
-
+		if(
+			$eDate['catalogs'] === [] or
+			$ccRange->empty()
+		) {
+			return '<div class="util-empty">'.s("Aucun producteur n'a associé de catalogue à cette boutique.").'</div>';
 		}
+
+		$h = '<div class="util-overflow-xs">';
+			$h .= '<table class="tbody-even">';
+
+				$h .= '<thead>';
+
+					$h .= '<tr>';
+						$h .= '<th>'.s("Producteur").'</th>';
+						$h .= '<th>'.s("Catalogue").'</th>';
+							if($cDepartment->notEmpty()) {
+								$h .= s("Rayon");
+							}
+						$h .= '</th>';
+						$h .= '<th class="text-center">'.s("Activé").'</th>';
+					$h .= '</tr>';
+
+				$h .= '</thead>';
+
+				foreach($eShop['cShare'] as $eShare) {
+
+					$cRange = clone ($ccRange[$eShare['farm']['id']] ?? new \Collection());
+					$rangeCatalogs = $cRange->getColumnCollection('catalog')->getIds();
+
+					// Ajout des catalogues de la ferme pas dans range
+					foreach($eDate['cCatalog'] as $eCatalog) {
+
+						if(
+							$eCatalog['farm']['id'] === $eShare['farm']['id'] and
+							in_array($eCatalog['id'], $rangeCatalogs) === FALSE
+						) {
+							$cRange[] = new Range([
+								'id' => NULL,
+								'catalog' => $eCatalog,
+								'department' => new Department()
+							]);
+						}
+
+					}
+
+					if($cRange->empty()) {
+						continue;
+					}
+
+					$h .= '<tbody>';
+
+						$h .= '<tr>';
+							$h .= '<td rowspan="'.$cRange->count().'">';
+								$h .= \farm\FarmUi::getVignette($eShare['farm'], '3rem').'  ';
+								$h .= encode($eShare['farm']['name']);
+							$h .= '</td>';
+
+							$h .= $this->getCatalog($eDate, $cRange->first(), $cDepartment);
+
+						$h .= '</tr>';
+
+						foreach($cRange->slice(1) as $eRange) {
+							$h .= '<tr>';
+								$h .= $this->getCatalog($eDate, $eRange, $cDepartment);
+							$h .= '</tr>';
+						}
+
+					$h .= '</tbody>';
+
+				}
+
+
+			$h .= '</table>';
+		$h .= '</div>';
+
+		return $h;
+
+	}
+
+	protected function getCatalog(Date $eDate, Range $eRange, \Collection $cDepartment): string {
+
+		$eRange->expects(['id', 'catalog', 'department']);
+
+		$selected = in_array($eRange['catalog']['id'], $eDate['catalogs']);
+
+		$h = '<td>';
+			$h .= '<a href="/shop/catalog:show?id='.$eRange['catalog']['id'].'">'.encode($eRange['catalog']['name']).'</a>';
+			$h .= ' <small class="color-muted">/ '.p("{value} produit", "{value} produits", $eRange['catalog']['products']).'</small>';
+		$h .= '</td>';
+
+		if($cDepartment->notEmpty()) {
+			$h .= '<td>';
+				$h .= $eRange['department']->empty() ? '-' :  encode($cDepartment[$eRange['department']['id']]['name']);
+			$h .= '</td>';
+		}
+
+		$h .= '<td class="text-center">';
+			$h .= \util\TextUi::switch([
+				'id' => 'catalog-switch-'.$eRange['catalog']['id'],
+				'disabled' => $eDate->canWrite() === FALSE,
+				'data-ajax' => $eDate->canWrite() ? '/shop/date:doUpdateCatalog' : NULL,
+				'post-id' => $eDate['id'],
+				'post-catalog' => $eRange['catalog']['id'],
+				'post-status' => $selected ? 0 : 1
+			], $selected);
+		$h .= '</td>';
 
 		return $h;
 
@@ -834,9 +930,9 @@ class DateUi {
 
 		$h = '';
 
-		foreach($eDate['cFarm'] as $eFarmCurrent) {
+		foreach($cCatalog as $eCatalog) {
 
-			$eCatalog = $cCatalog[$eFarmCurrent['id']] ?? new Catalog();
+			$eFarmCurrent = $eCatalog['farm'];
 
 			$cProduct = ($ccProduct[$eFarmCurrent['id']] ?? new \Collection());
 			$cProduct->mergeCollection($ccProductOut[$eFarmCurrent['id']] ?? new \Collection());
@@ -1035,18 +1131,6 @@ class DateUi {
 					return $h;
 
 				};
-				/*
-				$d->field = 'radio';
-				$d->default = fn(Date $e) => $e['catalogs'] ?
-					new Catalog(['id' => first($e['catalogs'])]) :
-					(($e['cCatalog']->count() === 1) ?
-						$e['cCatalog']->first() :
-						new Catalog());
-				$d->values = fn(Date $e) => $e['cCatalog']->toArray(fn($eCatalog) => [
-					'value' => $eCatalog['id'],
-					'label' => encode($eCatalog['name']).' <small>/ '.p("{value} produit", "{value} produits", $eCatalog['products']).'</small>'
-				]) ?? $e->expects(['cCatalog']);
-				$d->attributes['mandatory'] = TRUE;*/
 				break;
 
 			case 'productsList' :
