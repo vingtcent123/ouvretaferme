@@ -22,9 +22,14 @@ class Shop extends ShopElement {
 
 	public function validateShareRead(\farm\Farm $eFarm): self {
 
-		$this->expects(['shared']);
+		if(
+			$this->empty() or
+			$this['shared'] === FALSE
+		) {
+			return $this->validate('canRead');
+		} else {
 
-		if($this['shared']) {
+			$this->expects(['shared']);
 
 			if(
 				$this->canRead() or
@@ -35,8 +40,6 @@ class Shop extends ShopElement {
 				throw new \NotAllowedAction();
 			}
 
-		} else {
-			return $this->validate('canRead');
 		}
 
 	}
