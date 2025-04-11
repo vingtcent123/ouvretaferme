@@ -20,6 +20,7 @@ class DateUi {
 
 		return \util\TextUi::switch([
 			'id' => 'date-switch-'.$eDate['id'],
+			'disabled' => $eDate->canWrite() === FALSE,
 			'data-ajax' => $eDate->canWrite() ? '/shop/date:doUpdateStatus' : NULL,
 			'post-id' => $eDate['id'],
 			'post-status' => ($eDate['status'] === Date::ACTIVE) ? Date::CLOSED : Date::ACTIVE
@@ -31,11 +32,12 @@ class DateUi {
 
 		return \util\TextUi::switch([
 			'id' => 'point-switch-'.$ePoint['id'],
-			'data-ajax' => '/shop/date:doUpdatePoint',
+			'disabled' => $eDate->canWrite() === FALSE,
+			'data-ajax' => $eDate->canWrite() ? '/shop/date:doUpdatePoint' : NULL,
 			'post-id' => $eDate['id'],
 			'post-point' => $ePoint['id'],
 			'post-status' => $selected ? 0 : 1
-		], $selected);
+		], $selected, s("Activé"), s("Désactivé"));
 
 	}
 
@@ -790,7 +792,7 @@ class DateUi {
 								$h .= s("Rayon");
 							}
 						$h .= '</th>';
-						$h .= '<th class="text-center">'.s("Activé").'</th>';
+						$h .= '<th class="text-center"></th>';
 					$h .= '</tr>';
 
 				$h .= '</thead>';
@@ -875,7 +877,7 @@ class DateUi {
 				'post-id' => $eDate['id'],
 				'post-catalog' => $eRange['catalog']['id'],
 				'post-status' => $selected ? 0 : 1
-			], $selected);
+			], $selected, s("Activé"), ("Désactivé"));
 		$h .= '</td>';
 
 		return $h;

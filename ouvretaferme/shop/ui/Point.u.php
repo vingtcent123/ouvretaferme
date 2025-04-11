@@ -65,7 +65,7 @@ class PointUi {
 								$h .= s("La livraison à domicile n'est pas activée sur votre ferme. Pour l'activer, créez une première tournée avec les zones géographiques dans lesquelles vous acceptez de livrer vos clients !");
 							$h .= '</div>';
 						} else {
-							$h .= s("La livraison à domicile n'est pas activée sur la ferme   .");
+							$h .= s("La livraison à domicile n'est pas activée sur la ferme.");
 						}
 
 					}
