@@ -197,10 +197,7 @@ END;
 
 			$data->discount = \shop\SaleLib::getDiscount($data->eDateSelected, $data->eSaleExisting, $data->eCustomer);
 
-			$ccProduct = \shop\ProductLib::getByDate($data->eDateSelected, $data->eCustomer, eSaleExclude: $data->isModifying ? $data->eSaleExisting : new \selling\Sale(), withIngredients: TRUE, public: TRUE);
-
-			// Multi producteur pas géré pour l'instant
-			$cProduct = $ccProduct->empty() ? new Collection() : $ccProduct->first();
+			$cProduct = \shop\ProductLib::getByDate($data->eDateSelected, $data->eCustomer, eSaleExclude: $data->isModifying ? $data->eSaleExisting : new \selling\Sale(), withIngredients: TRUE, public: TRUE);
 
 			foreach($cProduct as $eProduct) {
 				$eProduct['reallyAvailable'] = \shop\ProductLib::getReallyAvailable($eProduct, $eProduct['product'], $data->eSaleExisting);
@@ -252,10 +249,7 @@ new Page(function($data) {
 
 		$data->eDate['shop'] = $data->eShop;
 
-		$ccProduct = \shop\ProductLib::getByDate($data->eDate, $data->eCustomer, eSaleExclude: $data->eSaleExisting, public: TRUE);
-
-		// Multi producteur pas géré pour le moment
-		$data->eDate['cProduct'] = $ccProduct->empty() ? new Collection() : $ccProduct->first();
+		$data->eDate['cProduct'] = \shop\ProductLib::getByDate($data->eDate, $data->eCustomer, eSaleExclude: $data->eSaleExisting, public: TRUE);
 		\shop\ProductLib::applyDiscount($data->eDate['cProduct'], $data->discount);
 
 		$data->eDate['ccPoint'] = $data->eShop['ccPoint'];

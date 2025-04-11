@@ -49,9 +49,7 @@ class ProductLib extends ProductCrud {
 			return $cProductShop;
 
 		} else {
-			$ccProduct = self::getByDate($eDate);
-			// Multi producteur pas géré
-			return $ccProduct->empty() ? new \Collection() : $ccProduct->first();
+			return self::getByDate($eDate);
 		}
 
 	}
@@ -120,13 +118,11 @@ class ProductLib extends ProductCrud {
 			->group(['farm', 'product', 'packaging'])
 			->getCollection();
 
-		$ccProduct = new \Collection();
+		$cProduct = new \Collection();
 
 		foreach($cItem as $eItem) {
 
-			$ccProduct[$eItem['farm']['id']] ??= new \Collection();
-
-			$ccProduct[$eItem['farm']['id']][] = new Product([
+			$cProduct[] = new Product([
 				'farm' => $eItem['farm'],
 				'product' => $eItem['product'],
 				'packaging' => $eItem['packaging'],
@@ -144,7 +140,7 @@ class ProductLib extends ProductCrud {
 
 		}
 
-		return $ccProduct;
+		return $cProduct;
 
 	}
 
@@ -205,18 +201,18 @@ class ProductLib extends ProductCrud {
 			$cGrid = \selling\GridLib::getByCustomer($eCustomer, index: 'product');
 		}
 
-		$ccProduct = Product::model()
+		$cProduct = Product::model()
 			->select(Product::getSelection())
 			->whereId('IN', $ids)
-			->getCollection(NULL, NULL, ['farm', 'product']);
+			->getCollection(NULL, NULL, ['product']);
 
 		if($withIngredients) {
 
-			$cProductSellingComposition = $ccProduct
+			$cProductSellingComposition = $cProduct
 				->find(fn($eProduct) => (
 					$eProduct['product']['composition'] and
 					($public === FALSE or $eProduct['product']['compositionVisibility'] === \selling\Product::PUBLIC)
-				), depth: 2, clone: FALSE)
+				), clone: FALSE)
 				->getColumnCollection('product');
 
 			if($cProductSellingComposition->notEmpty()) {
@@ -230,36 +226,32 @@ class ProductLib extends ProductCrud {
 
 		}
 
-		$ccProduct->map(function($cProduct) use($eDate, $cGrid, $eSaleExclude, $withIngredients, $public) {
+		$order = [];
 
-			$order = [];
+		// On place en premier les produits composés pour des raisons d'affichage
+		if(
+			$withIngredients and
+			$eDate['type'] === Date::PRIVATE and
+			$public
+		) {
 
-			// On place en premier les produits composés pour des raisons d'affichage
-			if(
-				$withIngredients and
-				$eDate['type'] === Date::PRIVATE and
-				$public
-			) {
+			$order[] = function($e1, $e2) {
 
-				$order[] = function($e1, $e2) {
+				$n1 = ($e1['product']['cItemIngredient'] ?? new \Collection())->count();
+				$n2 = ($e2['product']['cItemIngredient'] ?? new \Collection())->count();
 
-					$n1 = ($e1['product']['cItemIngredient'] ?? new \Collection())->count();
-					$n2 = ($e2['product']['cItemIngredient'] ?? new \Collection())->count();
+				return ($n1 === $n2) ? 0 : (($n1 > $n2) ? -1 : 1);
 
-					return ($n1 === $n2) ? 0 : (($n1 > $n2) ? -1 : 1);
+			};
 
-				};
+		}
 
-			}
+		$order['product'] = ['name'];
 
-			$order['product'] = ['name'];
+		$cProduct->sort($order, natural: TRUE);
+		self::applySold($eDate, $cProduct, $cGrid, $eSaleExclude);
 
-			$cProduct->sort($order, natural: TRUE);
-			self::applySold($eDate, $cProduct, $cGrid, $eSaleExclude);
-
-		});
-
-		return $ccProduct;
+		return $cProduct;
 
 	}
 

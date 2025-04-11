@@ -27,9 +27,9 @@ class ProductUi {
 
 		$h = '';
 
-		$ccProduct = $eDate['cProduct']->reindex(['product', 'category']);
+		$cProduct = $eDate['cProduct']->reindex(['product', 'category']);
 
-		if($ccProduct->empty()) {
+		if($cProduct->empty()) {
 			$h .= '<div class="util-block-help">';
 				$h .= '<h4>'.s("Il n'y a pas encore de produit disponible à la vente !").'</h4>';
 				$h .= '<p>'.s("La vente du {value} est fermée pour le moment car votre producteur n'a pas encore indiqué les produits qu'il souhaite vous proposer.", \util\DateUi::textual($eDate['deliveryDate'])).'</p>';
@@ -39,22 +39,22 @@ class ProductUi {
 
 		$h .= '<div class="shop-product-wrapper shop-product-'.$eShop['type'].'">';
 
-			if($ccProduct->count() === 1) {
-				$h .= $this->getProducts($eShop, $eDate, $eSale, $isModifying, $ccProduct->first());
+			if($cProduct->count() === 1) {
+				$h .= $this->getProducts($eShop, $eDate, $eSale, $isModifying, $cProduct->first());
 			} else {
 
-				if($ccProduct->offsetExists('')) {
-					$h .= $this->getProducts($eShop, $eDate, $eSale, $isModifying, $ccProduct['']);
+				if($cProduct->offsetExists('')) {
+					$h .= $this->getProducts($eShop, $eDate, $eSale, $isModifying, $cProduct['']);
 				}
 
 				foreach($cCategory as $eCategory) {
 
-					if($ccProduct->offsetExists($eCategory['id']) === FALSE) {
+					if($cProduct->offsetExists($eCategory['id']) === FALSE) {
 						continue;
 					}
 
 					$h .= '<h3>'.encode($eCategory['name']).'</h3>';
-					$h .= $this->getProducts($eShop, $eDate, $eSale, $isModifying, $ccProduct[$eCategory['id']]);
+					$h .= $this->getProducts($eShop, $eDate, $eSale, $isModifying, $cProduct[$eCategory['id']]);
 
 				}
 
@@ -565,38 +565,36 @@ class ProductUi {
 	}
 
 	public static function getDefaultProStep(\selling\Product $eProduct): float {
-
 		return 1;
-
 	}
 
 	public function getUpdateList(\farm\Farm $eFarm, Date|Catalog $e, \Collection $cProduct, \Collection $cCategory, bool $isExpired = FALSE): string {
 
-		$ccProduct = $cProduct->reindex(['product', 'category']);
+		$cProduct = $cProduct->reindex(['product', 'category']);
 
 		$update = fn($cProduct) => ($e instanceof Date) ?
 			$this->getUpdateDate($eFarm, $e, $cProduct, $isExpired) :
 			$this->getUpdateCatalog($eFarm, $e, $cProduct);
 
-		if($ccProduct->count() === 1) {
-			return $update($ccProduct->first());
+		if($cProduct->count() === 1) {
+			return $update($cProduct->first());
 		} else {
 
 			$h = '';
 
-			if($ccProduct->offsetExists('')) {
-				$h .= $update($ccProduct['']);
+			if($cProduct->offsetExists('')) {
+				$h .= $update($cProduct['']);
 				$h .= '<br/>';
 			}
 
 			foreach($cCategory as $eCategory) {
 
-				if($ccProduct->offsetExists($eCategory['id']) === FALSE) {
+				if($cProduct->offsetExists($eCategory['id']) === FALSE) {
 					continue;
 				}
 
 				$h .= '<h3>'.encode($eCategory['name']).'</h3>';
-				$h .= $update($ccProduct[$eCategory['id']]);
+				$h .= $update($cProduct[$eCategory['id']]);
 				$h .= '<br/>';
 
 			}
@@ -648,10 +646,15 @@ class ProductUi {
 					$outCatalog = ($hasCatalog and $canUpdate);
 
 					$hasLimits = (
+						$e['shop']['shared'] or
 						$eProduct['limitCustomers'] or
 						$eProduct['limitMax'] or
 						$outCatalog
 					);
+
+					if($e['shop']['shared']) {
+						$eProduct['farm'] = $e['cFarm'][$eProduct['farm']['id']];
+					}
 
 					$h .= '<tbody>';
 
@@ -731,7 +734,7 @@ class ProductUi {
 						$h .= '</tr>';
 
 						if($hasLimits) {
-							$h .= $this->getLimits($columns, $eProduct, $e['cCustomer'], excludeAt: TRUE, outCatalog: $outCatalog);
+							$h .= $this->getLimits($columns, $eProduct, $e['cCustomer'], eDate: $e, excludeAt: TRUE, outCatalog: $outCatalog);
 						}
 
 					$h .= '</tbody>';
@@ -844,7 +847,7 @@ class ProductUi {
 
 	}
 
-	protected function getLimits(int $columns, Product $eProduct, \Collection $cCustomer, bool $excludeAt = FALSE, bool $outCatalog = FALSE): string {
+	protected function getLimits(int $columns, Product $eProduct, \Collection $cCustomer, Date $eDate = new Date(), bool $excludeAt = FALSE, bool $outCatalog = FALSE): string {
 
 		$h = '<tr>';
 
@@ -854,6 +857,10 @@ class ProductUi {
 
 					if($outCatalog) {
 						$h .= '<span>'.s("Hors catalogue").'</span>';
+					}
+
+					if($eDate->notEmpty() and $eDate['shop']['shared']) {
+						$h .= '<span>'.\farm\FarmUi::getVignette($eProduct['farm'], '2rem').'  '.encode($eProduct['farm']['name']).'</span>';
 					}
 
 					if($eProduct['limitMin']) {

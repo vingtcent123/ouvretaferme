@@ -664,7 +664,7 @@ class DateUi {
 	
 	public function getContent(\farm\Farm $eFarm, Shop $eShop, Date $eDate, \Collection $cSale): string {
 
-		$products = $eDate['ccProductOut']->reduce(fn($c, $n) => $c->count() + $n, 0) + $eDate['ccProduct']->reduce(fn($c, $n) => $c->count() + $n, 0);
+		$products = $eDate['cProduct']->reduce(fn($c, $n) => $c->count() + $n, 0);
 
 		$h = '<div class="tabs-h" id="shop-date-tabs" onrender="'.encode('Lime.Tab.restore(this, "products"'.(get_exists('tab') ? ', "'.GET('tab', ['products', 'sales'], 'products').'"' : '').')').'">';
 
@@ -901,30 +901,19 @@ class DateUi {
 
 	public function getExpiredProducts(\farm\Farm $eFarm, Date $eDate): string {
 
-		[
-			'ccProduct' => $ccProduct,
-			'ccProductOut' => $ccProductOut,
-			'cCatalog' => $cCatalog
-		] = $eDate;
-
 		$h = '';
 
-		foreach($eDate['cFarm'] as $eFarmCurrent) {
+		$cProduct = $eDate['cProduct'];
+		$cProduct->sort(['product' => ['name']], natural: TRUE);
 
-			$cProduct = ($ccProduct[$eFarmCurrent['id']] ?? new \Collection())->find(fn($eProduct) => $eProduct['sold'] > 0);
-			$cProduct->mergeCollection($ccProductOut[$eFarmCurrent['id']] ?? new \Collection());
-			$cProduct->sort(['product' => ['name']], natural: TRUE);
-
-			if($cProduct->empty()) {
-				$h .= '<div class="util-empty">'.s("Cette vente est terminée et aucun produit n'a été vendu.").'</div>';
-			} else {
-				$h .= '<div class="util-info">'.s("Cette vente est terminée et seule la liste des produits qui ont été vendus est consultable.").'</div>';
-				$h .= new \shop\ProductUi()->getUpdateList($eFarm, $eDate, $cProduct, $eDate['cCategory'], isExpired: TRUE);
-			}
-
-			$h .= '<br/>';
-
+		if($cProduct->empty()) {
+			$h .= '<div class="util-empty">'.s("Cette vente est terminée et aucun produit n'a été vendu.").'</div>';
+		} else {
+			$h .= '<div class="util-info">'.s("Cette vente est terminée et seule la liste des produits qui ont été vendus est consultable.").'</div>';
+			$h .= new \shop\ProductUi()->getUpdateList($eFarm, $eDate, $cProduct, $eDate['cCategory'], isExpired: TRUE);
 		}
+
+		$h .= '<br/>';
 
 		return $h;
 
@@ -933,60 +922,42 @@ class DateUi {
 	public function getSegmentedProducts(\farm\Farm $eFarm, Date $eDate): string {
 
 		[
-			'ccProduct' => $ccProduct,
-			'ccProductOut' => $ccProductOut,
-			'cCatalog' => $cCatalog
+			'cCatalog' => $cCatalog,
+			'cProduct' => $cProduct,
 		] = $eDate;
 
 		$h = '';
 
-		if($cCatalog->notEmpty()) {
-
-			foreach($cCatalog as $eCatalog) {
-
-				$h .= $this->getBlockProducts($eFarm, $eDate, $ccProduct, $ccProductOut, $eCatalog);
-
-			}
-
-		} else {
-			$h .= $this->getBlockProducts($eFarm, $eDate, $ccProduct, $ccProductOut, new Catalog());
-		}
-
-		return $h;
-
-	}
-
-	public function getBlockProducts(\farm\Farm $eFarm, Date $eDate, \Collection $ccProduct, \Collection $ccProductOut, Catalog $eCatalog): string {
-
-		$h = '';
-
-		$eFarmCurrent = $eCatalog->empty() ? $eFarm : $eCatalog['farm'];
-
-		$cProduct = ($ccProduct[$eFarmCurrent['id']] ?? new \Collection());
-		$cProduct->mergeCollection($ccProductOut[$eFarmCurrent['id']] ?? new \Collection());
 		$cProduct->sort(['product' => ['name']], natural: TRUE);
 
-		$h .= '<div class="util-title">';
+		if($eDate->acceptNotShared()) {
 
-			if($eCatalog->notEmpty()) {
+			$h .= '<div class="util-title">';
 
-				if($eCatalog['status'] === Catalog::DELETED) {
-					$h .= '<h2>'.s("Catalogue {value}", '<span class="btn btn-lg btn-primary disabled">'.encode($eCatalog['name']).'</span>').'</h2>';
+				if($cCatalog->notEmpty()) {
+
+					$catalogs = [];
+
+					foreach($cCatalog as $eCatalog) {
+
+						if($eCatalog['status'] === Catalog::DELETED) {
+							$catalogs[] = '<span class="btn btn-lg btn-primary disabled" style="margin: 0.125rem 0">'.encode($eCatalog['name']).'</span>';
+						} else {
+							$catalogs[] = '<a href="'.\farm\FarmUi::urlShopCatalog($eFarm).'?catalog='.$eCatalog['id'].'" class="btn btn-lg btn-primary" style="margin: 0.125rem 0">'.\Asset::icon('pencil-fill', ['class' => 'asset-icon-flip-h']).'  '.encode($eCatalog['name']).'</a>';
+						}
+					}
+
+					$h .= '<h2>'.p("Catalogue {value}", "Catalogues {value}", count($catalogs), ['value' => implode(' ', $catalogs)]).'</h2>';
+
 				} else {
-					$h .= '<h2>'.s("Catalogue {value}", '<a href="'.\farm\FarmUi::urlShopCatalog($eFarm).'?catalog='.$eCatalog['id'].'" class="btn btn-lg btn-primary">'.\Asset::icon('pencil-fill', ['class' => 'asset-icon-flip-h']).'  '.encode($eCatalog['name']).'</a>').'</h2>';
+					$h .= '<div></div>';
 				}
-
-			} else {
-				$h .= '<div></div>';
-			}
-
-			if($eDate->acceptNotShared()) {
 
 				$h .= '<div>';
 
 					$h .= ' <a href="/shop/product:createCollection?date='.$eDate['id'].'" class="btn btn-primary">';
 						$h .= \Asset::icon('plus-circle').' ';
-						if($eCatalog->notEmpty()) {
+						if($cCatalog->notEmpty()) {
 							$h .= s("Ajouter des produits hors catalogue");
 						} else if($cProduct->empty()) {
 							$h .= s("Ajouter des produits à la vente");
@@ -997,20 +968,22 @@ class DateUi {
 
 				$h .= '</div>';
 
-			}
-		$h .= '</div>';
+			$h .= '</div>';
 
-		if(
-			$eCatalog->notEmpty() and
-			$eCatalog['status'] === Catalog::DELETED
-		) {
-			$h .= '<div class="util-danger">'.s("Ce catalogue a été supprimé.").'</div>';
+		}
+
+		foreach($cCatalog as $eCatalog) {
+
+			if($eCatalog['status'] === Catalog::DELETED) {
+				$h .= '<div class="util-danger">'.s("Le catalogue {value} a été supprimé.", '<u>'.encode($eCatalog['name']).'</u>').'</div>';
+			}
+
 		}
 
 		if($cProduct->empty()) {
 
-			if($eCatalog->notEmpty()) {
-				$h .= '<div class="util-empty">'.s("Il n'y a aucun produit dans le catalogue !").'</div>';
+			if($cCatalog->notEmpty()) {
+				$h .= '<div class="util-empty">'.p("Il n'y a aucun produit dans le catalogue !", "Il n'y a aucun produit dans les catalogues !", $cCatalog->count()).'</div>';
 			} else {
 				$h .= '<div class="util-empty">'.s("Il n'y a aucun produit disponible à la vente !").'</div>';
 			}
