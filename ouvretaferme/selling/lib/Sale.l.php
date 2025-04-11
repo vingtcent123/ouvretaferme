@@ -991,7 +991,7 @@ class SaleLib extends SaleCrud {
 
 	}
 
-	public static function delegateIngredients(string $deliveredAt, string $propertyParent) {
+	public static function delegateIngredients(string $deliveredAt, string $propertyParent): SaleModel {
 
 		return Sale::model()
 			->select([
@@ -1009,7 +1009,7 @@ class SaleLib extends SaleCrud {
 				fn() => $this->whereCompositionEndAt(NULL),
 				fn() => $this->whereCompositionEndAt('>=', $deliveredAt)
 			)
-			->delegateProperty('compositionOf', 'cItem', propertyParent: $propertyParent);
+			->delegateProperty('compositionOf', 'cItem', fn($value) => $value ?? new \Collection(), propertyParent: $propertyParent);
 
 	}
 
