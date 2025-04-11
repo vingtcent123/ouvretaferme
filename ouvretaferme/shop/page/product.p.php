@@ -20,7 +20,7 @@ new \shop\ProductPage()
 
 		if(request_exists('date')) {
 
-			$data->e = \shop\DateLib::getById(REQUEST('date'))->validate('canWrite');
+			$data->e = \shop\DateLib::getById(REQUEST('date'), \shop\Date::getSelection() + ['shop' => ['shared']])->validate('canWrite', 'acceptNotShared');
 
 		} else if(request_exists('catalog')) {
 

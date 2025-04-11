@@ -5,8 +5,8 @@ new \farm\FarmPage()
 		\farm\FarmerLib::setView('viewShop', $data->e, \farm\Farmer::SHOP);
 
 		$data->eDate = \shop\DateLib::getById(GET('date'));
-		$data->eShop = \shop\ShopLib::getById($data->eDate['shop'])->validateShareRead($data->e);
 
+		$data->eShop = \shop\ShopLib::getById($data->eDate['shop'])->validateShareRead($data->e);
 		$data->eShop['ccPoint'] = \shop\PointLib::getByFarm($data->eShop['farm']);
 
 		\shop\DateLib::applySales($data->eDate);
@@ -17,6 +17,7 @@ new \farm\FarmPage()
 		]);
 
 		$data->eDate['farm'] = $data->eShop['farm'];
+		$data->eDate['shop'] = $data->eShop;
 
 		$data->eDate['ccProduct'] = \shop\ProductLib::getByDate($data->eDate);
 		$data->eDate['cCustomer'] = \selling\CustomerLib::getLimitedByProducts($data->eDate['ccProduct']);

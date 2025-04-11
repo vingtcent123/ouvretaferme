@@ -373,7 +373,7 @@ class ProductUi {
 
 			$h .= '<div>';
 
-				if($link) {
+				if($link and $eProduct->canWrite()) {
 					$h .= '<a href="/produit/'.$eProduct['id'].'" class="product-item-label-name">'.encode($eProduct->getName()).'</a>';
 				} else {
 					$h .= '<span class="product-item-label-name">'.encode($eProduct->getName()).'</span>';

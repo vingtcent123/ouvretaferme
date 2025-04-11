@@ -722,7 +722,7 @@ class DateUi {
 
 			if(
 				$eDate->acceptOrder() and
-				$eDate->acceptUserCreateSale()
+				$eDate->acceptNotShared()
 			) {
 				$actions .= '<a href="/selling/sale:create?farm='.$eDate['farm']['id'].'&shopDate='.$eDate['id'].'" data-ajax-navigation="never" class="btn btn-primary">'.\Asset::icon('plus-circle').' '.s("Ajouter une commande").'</a> ';
 			}
@@ -980,20 +980,24 @@ class DateUi {
 				$h .= '<div></div>';
 			}
 
-			$h .= '<div>';
+			if($eDate->acceptNotShared()) {
 
-				$h .= ' <a href="/shop/product:createCollection?date='.$eDate['id'].'" class="btn btn-primary">';
-					$h .= \Asset::icon('plus-circle').' ';
-					if($eCatalog->notEmpty()) {
-						$h .= s("Ajouter des produits hors catalogue");
-					} else if($cProduct->empty()) {
-						$h .= s("Ajouter des produits à la vente");
-					} else {
-						$h .= s("Ajouter des produits");
-					}
-				$h .= '</a>';
+				$h .= '<div>';
 
-			$h .= '</div>';
+					$h .= ' <a href="/shop/product:createCollection?date='.$eDate['id'].'" class="btn btn-primary">';
+						$h .= \Asset::icon('plus-circle').' ';
+						if($eCatalog->notEmpty()) {
+							$h .= s("Ajouter des produits hors catalogue");
+						} else if($cProduct->empty()) {
+							$h .= s("Ajouter des produits à la vente");
+						} else {
+							$h .= s("Ajouter des produits");
+						}
+					$h .= '</a>';
+
+				$h .= '</div>';
+
+			}
 		$h .= '</div>';
 
 		if(
