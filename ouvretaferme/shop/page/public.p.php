@@ -283,7 +283,7 @@ new Page(function($data) {
 
 		$data->validateOrder = function() use($data) {
 
-			if($data->eDate->canOrder() === FALSE) {
+			if($data->eDate->acceptOrder() === FALSE) {
 				throw new RedirectAction(\shop\ShopUi::url($data->eShop).'?error=shop:Date::canNotOrder');
 			}
 

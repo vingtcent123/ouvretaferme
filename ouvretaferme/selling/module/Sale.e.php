@@ -537,7 +537,7 @@ class Sale extends SaleElement {
 
 		return (
 			in_array($this['preparationStatus'], $this->getDeleteStatuses()) and
-			($this['preparationStatus'] !== Sale::BASKET or ($this['shopDate']->canOrder() === FALSE))
+			($this['preparationStatus'] !== Sale::BASKET or ($this['shopDate']->acceptOrder() === FALSE))
 		);
 
 	}
@@ -609,7 +609,7 @@ class Sale extends SaleElement {
 
 		if(
 			$this['preparationStatus'] === Sale::BASKET and
-			$this['shopDate']->canOrder() === TRUE
+			$this['shopDate']->acceptOrder() === TRUE
 		) {
 			return FALSE;
 		}

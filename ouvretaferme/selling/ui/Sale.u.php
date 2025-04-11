@@ -421,7 +421,7 @@ class SaleUi {
 							if($eSale['preparationStatus'] === Sale::BASKET) {
 
 								$h .= '<td class="sale-item-basket" colspan="3">';
-									if($eSale['shopDate']->canOrder()) {
+									if($eSale['shopDate']->acceptOrder()) {
 										$h .= s("Vente à l'état de panier et non confirmée par le client.");
 									} else {
 										$h .= s("Vente restée à l'état de panier et non confirmée par le client.");
@@ -817,7 +817,7 @@ class SaleUi {
 			switch($eSale['preparationStatus']) {
 
 				case Sale::BASKET :
-					if($eSale['shopDate']->canOrder() === FALSE) {
+					if($eSale['shopDate']->acceptOrder() === FALSE) {
 						$h .= $wrapper(
 							$button(Sale::CONFIRMED).
 							$button(Sale::CANCELED)

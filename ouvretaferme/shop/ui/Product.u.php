@@ -152,7 +152,7 @@ class ProductUi {
 
 		$eProduct->expects(['reallyAvailable']);
 
-		$canOrder = ($eSale->canBasket($eShop) or $isModifying);
+		$acceptOrder = ($eSale->canBasket($eShop) or $isModifying);
 
 		$eProductSelling = $eProduct['product'];
 
@@ -228,7 +228,7 @@ class ProductUi {
 
 						$h .= '<div class="shop-product-buy-price">'.\util\TextUi::money($eProduct['price']).' '.$this->getTaxes($eProduct).\selling\UnitUi::getBy($eProductSelling['unit']).'</div>';
 
-						if($canOrder) {
+						if($acceptOrder) {
 
 							$h .= '<div class="shop-product-buy-infos">';
 
@@ -278,7 +278,7 @@ class ProductUi {
 			$h .= '<div class="shop-product-buy">';
 
 				if(
-					$canOrder and
+					$acceptOrder and
 					($eProduct['reallyAvailable'] === NULL or $eProduct['reallyAvailable'] > 0.0)
 				) {
 					$h .= self::numberOrder($eShop, $eDate, $eProductSelling, $eProduct, 0, $eProduct['reallyAvailable']);

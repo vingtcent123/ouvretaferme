@@ -33,7 +33,15 @@ class Date extends DateElement {
 		return $this->canRead() or GET('key') === \Setting::get('selling\remoteKey');
 	}
 
-	public function canOrder(): bool {
+	public function acceptUserCreateSale(): bool {
+
+		$this->expects(['shop' => ['shared']]);
+
+		return $this['shop']['shared'] === FALSE;
+
+	}
+
+	public function acceptOrder(): bool {
 
 		$this->expects(['status', 'orderStartAt', 'orderEndAt']);
 
@@ -45,7 +53,7 @@ class Date extends DateElement {
 
 	}
 
-	public function canOrderSoon(): bool {
+	public function acceptOrderSoon(): bool {
 
 		$this->expects(['status', 'orderStartAt']);
 

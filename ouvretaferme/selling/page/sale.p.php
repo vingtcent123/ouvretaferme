@@ -15,7 +15,7 @@ new \selling\SalePage()
 	->create(function($data) {
 
 		$data->e->merge([
-			'shopDate' => get_exists('shopDate') ? \shop\DateLib::getById(GET('shopDate'))->validateProperty('farm', $data->eFarm)->validate('canOrder') : new \shop\Date(),
+			'shopDate' => get_exists('shopDate') ? \shop\DateLib::getById(GET('shopDate'), \shop\Date::getSelection() + ['shop' => ['shared']])->validateProperty('farm', $data->eFarm)->validate('acceptOrder', 'acceptUserCreateSale') : new \shop\Date(),
 			'market' => GET('market', 'bool'),
 			'customer' => get_exists('customer') ? \selling\CustomerLib::getById(GET('customer'))->validateProperty('farm', $data->eFarm) : new \selling\Customer()
 		]);
