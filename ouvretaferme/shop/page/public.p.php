@@ -214,16 +214,16 @@ END;
 			$data->eDateSelected['ccPoint'] = $data->eShop['ccPoint'];
 			$data->eDateSelected['ccPoint']->filter(fn($ePoint) => in_array($ePoint['id'], $data->eDateSelected['points']), depth: 2);
 
+			$data->cCategory = \selling\CategoryLib::getByFarm($data->eShop['farm']);
+
+			if($data->isModifying) {
+				$data->basketProducts = \shop\BasketLib::getFromItem($data->eSaleExisting['cItem']);
+			} else {
+				$data->basketProducts = \shop\BasketLib::getFromQuery();
+			}
+
 		} else {
 			$data->eDateSelected = new \shop\Date();
-		}
-
-		$data->cCategory = \selling\CategoryLib::getByFarm($data->eShop['farm']);
-
-		if($data->isModifying) {
-			$data->basketProducts = \shop\BasketLib::getFromItem($data->eSaleExisting['cItem']);
-		} else {
-			$data->basketProducts = \shop\BasketLib::getFromQuery();
 		}
 
 		throw new ViewAction($data, path: ':shop');

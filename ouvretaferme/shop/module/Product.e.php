@@ -54,7 +54,7 @@ class Product extends ProductElement {
 				return TRUE;
 
 			})
-			->setCallback('limitMax.consistency', function(?int $limitMax) use($p): bool {
+			->setCallback('limitMax.consistency', function(?float $limitMax) use($p): bool {
 
 				if($p->isBuilt('limitMin') === FALSE) {
 					return TRUE;
