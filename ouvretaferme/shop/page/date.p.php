@@ -125,11 +125,18 @@ new \shop\DatePage()
 	})
 	->write('doUpdateCatalog', function($data) {
 
-		$data->eCatalog = \shop\CatalogLib::getById(POST('catalog'))->validateShop($data->e['shop']);
+		$newStatus = POST('status', 'bool');
+
+		$data->eCatalog = \shop\CatalogLib::getById(POST('catalog'));
+
+		// On ne vérifie l'existence du catalogue qu'en cas d'ajout à la vente
+		if($newStatus) {
+			$data->eCatalog->validateShop($data->e['shop']);
+		}
 
 		$fw = new FailWatch();
 
-		\shop\DateLib::updateCatalog($data->e, $data->eCatalog, POST('status', 'bool'));
+		\shop\DateLib::updateCatalog($data->e, $data->eCatalog, $newStatus);
 
 		$fw->validate();
 
