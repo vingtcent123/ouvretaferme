@@ -664,7 +664,7 @@ class DateUi {
 	
 	public function getContent(\farm\Farm $eFarm, Shop $eShop, Date $eDate, \Collection $cSale): string {
 
-		$products = $eDate['cProduct']->reduce(fn($c, $n) => $c->count() + $n, 0);
+		$products = $eDate['cProduct']->count();
 
 		$h = '<div class="tabs-h" id="shop-date-tabs" onrender="'.encode('Lime.Tab.restore(this, "products"'.(get_exists('tab') ? ', "'.GET('tab', ['products', 'sales'], 'products').'"' : '').')').'">';
 
