@@ -793,10 +793,11 @@ class DateUi {
 					$h .= '<tr>';
 						$h .= '<th>'.s("Producteur").'</th>';
 						$h .= '<th>'.s("Catalogue").'</th>';
-							if($cDepartment->notEmpty()) {
+						if($cDepartment->notEmpty()) {
+							$h .= '<th>';
 								$h .= s("Rayon");
-							}
-						$h .= '</th>';
+							$h .= '</th>';
+						}
 						$h .= '<th class="text-center"></th>';
 					$h .= '</tr>';
 

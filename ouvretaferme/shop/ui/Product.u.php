@@ -615,11 +615,21 @@ class ProductUi {
 		$hasCatalog = $cProduct->contains(fn($eProduct) => $eProduct['catalog']->notEmpty());
 		$canAction = ($isExpired === FALSE and $cProduct->contains(fn($eProduct) => $eProduct->exists() and $eProduct['catalog']->empty()));
 
-		$h = '<div class="'.($type === Date::PRIVATE ? 'util-overflow-xs' : 'util-overflow-sm').' stick-xs">';
-			$h .= '<table class="tbody-even">';
+		if($type === Date::PRIVATE) {
+			$overflow = $e['shop']['shared'] ? 'util-overflow-sm' : 'util-overflow-xs';
+		} else {
+			$overflow = $e['shop']['shared'] ? 'util-overflow-lg' : 'util-overflow-sm';
+		}
+
+		$h = '<div class="'.$overflow.' stick-xs">';
+			$h .= '<table class="tbody-even td-padding-sm">';
 				$h .= '<thead>';
 					$h .= '<tr>';
 						$h .= '<th colspan="2">'.s("Produit").'</th>';
+						if($e['shop']['shared']) {
+							$columns++;
+							$h .= '<td></td>';
+						}
 						if($type === Date::PRO) {
 							$columns++;
 							$h .= '<td></td>';
@@ -646,7 +656,6 @@ class ProductUi {
 					$outCatalog = ($hasCatalog and $canUpdate);
 
 					$hasLimits = (
-						$e['shop']['shared'] or
 						$eProduct['limitCustomers'] or
 						$eProduct['limitMax'] or
 						$outCatalog
@@ -674,6 +683,12 @@ class ProductUi {
 							$h .= '<td class="'.(($isExpired or $eProduct->exists()) ? '' : 'shop-product-not-exist').'">';
 								$h .= $uiProductSelling->getInfos($eProductSelling, includeStock: $isExpired === FALSE);
 							$h .= '</td>';
+
+							if($e['shop']['shared']) {
+								$h .= '<td class="font-sm color-muted">';
+									$h .= encode($eProduct['farm']['name']);
+								$h .= '</td>';
+							}
 
 							if($type === Date::PRO) {
 								$h .= '<td class="td-min-content '.(($isExpired or $eProduct->exists()) ? '' : 'shop-product-not-exist').'">';
@@ -734,7 +749,7 @@ class ProductUi {
 						$h .= '</tr>';
 
 						if($hasLimits) {
-							$h .= $this->getLimits($columns, $eProduct, $e['cCustomer'], eDate: $e, excludeAt: TRUE, outCatalog: $outCatalog);
+							$h .= $this->getLimits($columns, $eProduct, $e['cCustomer'], excludeAt: TRUE, outCatalog: $outCatalog);
 						}
 
 					$h .= '</tbody>';
@@ -754,7 +769,7 @@ class ProductUi {
 		$columns = 2;
 
 		$h = '<div class="util-overflow-sm stick-xs">';
-			$h .= '<table class="tbody-even">';
+			$h .= '<table class="tbody-even td-padding-sm">';
 				$h .= '<thead>';
 					$h .= '<tr>';
 						$h .= '<th colspan="2">'.s("Produit").'</th>';
@@ -847,7 +862,7 @@ class ProductUi {
 
 	}
 
-	protected function getLimits(int $columns, Product $eProduct, \Collection $cCustomer, Date $eDate = new Date(), bool $excludeAt = FALSE, bool $outCatalog = FALSE): string {
+	protected function getLimits(int $columns, Product $eProduct, \Collection $cCustomer, bool $excludeAt = FALSE, bool $outCatalog = FALSE): string {
 
 		$h = '<tr>';
 
@@ -857,10 +872,6 @@ class ProductUi {
 
 					if($outCatalog) {
 						$h .= '<span>'.s("Hors catalogue").'</span>';
-					}
-
-					if($eDate->notEmpty() and $eDate['shop']['shared']) {
-						$h .= '<span>'.\farm\FarmUi::getVignette($eProduct['farm'], '2rem').'  '.encode($eProduct['farm']['name']).'</span>';
 					}
 
 					if($eProduct['limitMin']) {
