@@ -679,6 +679,9 @@ class DateUi {
 
 					$h .= '<a class="tab-item" data-tab="farms" onclick="Lime.Tab.select(this)">';
 						$h .= s("Producteurs");
+						if($eShop['ccRange']->count() > 0) {
+							$h .= '<span class="tab-item-count">'.$eShop['ccRange']->count().'</span>';
+						}
 					$h .= '</a>';
 
 				}
@@ -930,66 +933,82 @@ class DateUi {
 
 		$h = '';
 
-		foreach($cCatalog as $eCatalog) {
+		if($cCatalog->notEmpty()) {
 
-			$eFarmCurrent = $eCatalog['farm'];
+			foreach($cCatalog as $eCatalog) {
 
-			$cProduct = ($ccProduct[$eFarmCurrent['id']] ?? new \Collection());
-			$cProduct->mergeCollection($ccProductOut[$eFarmCurrent['id']] ?? new \Collection());
-			$cProduct->sort(['product' => ['name']], natural: TRUE);
+				$h .= $this->getBlockProducts($eFarm, $eDate, $ccProduct, $ccProductOut, $eCatalog);
 
-			$h .= '<div class="util-title">';
-
-				if($eCatalog->notEmpty()) {
-
-					if($eCatalog['status'] === Catalog::DELETED) {
-						$h .= '<h2>'.s("Catalogue {value}", '<span class="btn btn-lg btn-primary disabled">'.encode($eCatalog['name']).'</span>').'</h2>';
-					} else {
-						$h .= '<h2>'.s("Catalogue {value}", '<a href="'.\farm\FarmUi::urlShopCatalog($eFarm).'?catalog='.$eCatalog['id'].'" class="btn btn-lg btn-primary">'.\Asset::icon('pencil-fill', ['class' => 'asset-icon-flip-h']).'  '.encode($eCatalog['name']).'</a>').'</h2>';
-					}
-
-				} else {
-					$h .= '<div></div>';
-				}
-
-				$h .= '<div>';
-
-					$h .= ' <a href="/shop/product:createCollection?date='.$eDate['id'].'" class="btn btn-primary">';
-						$h .= \Asset::icon('plus-circle').' ';
-						if($eCatalog->notEmpty()) {
-							$h .= s("Ajouter des produits hors catalogue");
-						} else if($cProduct->empty()) {
-							$h .= s("Ajouter des produits à la vente");
-						} else {
-							$h .= s("Ajouter des produits");
-						}
-					$h .= '</a>';
-
-				$h .= '</div>';
-			$h .= '</div>';
-
-			if(
-				$eCatalog->notEmpty() and
-				$eCatalog['status'] === Catalog::DELETED
-			) {
-				$h .= '<div class="util-danger">'.s("Ce catalogue a été supprimé.").'</div>';
 			}
 
-			if($cProduct->empty()) {
+		} else {
+			$h .= $this->getBlockProducts($eFarm, $eDate, $ccProduct, $ccProductOut, new Catalog());
+		}
 
-				if($cCatalog->notEmpty()) {
-					$h .= '<div class="util-empty">'.s("Il n'y a aucun produit dans le catalogue !").'</div>';
+		return $h;
+
+	}
+
+	public function getBlockProducts(\farm\Farm $eFarm, Date $eDate, \Collection $ccProduct, \Collection $ccProductOut, Catalog $eCatalog): string {
+
+		$h = '';
+
+		$eFarmCurrent = $eCatalog->empty() ? $eFarm : $eCatalog['farm'];
+
+		$cProduct = ($ccProduct[$eFarmCurrent['id']] ?? new \Collection());
+		$cProduct->mergeCollection($ccProductOut[$eFarmCurrent['id']] ?? new \Collection());
+		$cProduct->sort(['product' => ['name']], natural: TRUE);
+
+		$h .= '<div class="util-title">';
+
+			if($eCatalog->notEmpty()) {
+
+				if($eCatalog['status'] === Catalog::DELETED) {
+					$h .= '<h2>'.s("Catalogue {value}", '<span class="btn btn-lg btn-primary disabled">'.encode($eCatalog['name']).'</span>').'</h2>';
 				} else {
-					$h .= '<div class="util-empty">'.s("Il n'y a aucun produit disponible à la vente !").'</div>';
+					$h .= '<h2>'.s("Catalogue {value}", '<a href="'.\farm\FarmUi::urlShopCatalog($eFarm).'?catalog='.$eCatalog['id'].'" class="btn btn-lg btn-primary">'.\Asset::icon('pencil-fill', ['class' => 'asset-icon-flip-h']).'  '.encode($eCatalog['name']).'</a>').'</h2>';
 				}
 
 			} else {
-				$h .= new \shop\ProductUi()->getUpdateList($eFarm, $eDate, $cProduct, $eDate['cCategory']);
+				$h .= '<div></div>';
 			}
 
-			$h .= '<br/>';
+			$h .= '<div>';
 
+				$h .= ' <a href="/shop/product:createCollection?date='.$eDate['id'].'" class="btn btn-primary">';
+					$h .= \Asset::icon('plus-circle').' ';
+					if($eCatalog->notEmpty()) {
+						$h .= s("Ajouter des produits hors catalogue");
+					} else if($cProduct->empty()) {
+						$h .= s("Ajouter des produits à la vente");
+					} else {
+						$h .= s("Ajouter des produits");
+					}
+				$h .= '</a>';
+
+			$h .= '</div>';
+		$h .= '</div>';
+
+		if(
+			$eCatalog->notEmpty() and
+			$eCatalog['status'] === Catalog::DELETED
+		) {
+			$h .= '<div class="util-danger">'.s("Ce catalogue a été supprimé.").'</div>';
 		}
+
+		if($cProduct->empty()) {
+
+			if($eCatalog->notEmpty()) {
+				$h .= '<div class="util-empty">'.s("Il n'y a aucun produit dans le catalogue !").'</div>';
+			} else {
+				$h .= '<div class="util-empty">'.s("Il n'y a aucun produit disponible à la vente !").'</div>';
+			}
+
+		} else {
+			$h .= new \shop\ProductUi()->getUpdateList($eFarm, $eDate, $cProduct, $eDate['cCategory']);
+		}
+
+		$h .= '<br/>';
 
 		return $h;
 
