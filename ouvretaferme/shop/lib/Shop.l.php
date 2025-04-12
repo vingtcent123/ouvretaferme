@@ -152,6 +152,10 @@ class ShopLib extends ShopCrud {
 
 		try {
 
+			if($e['shared']) {
+				$e['sharedGroup'] = Shop::PRODUCT;
+			}
+
 			Shop::model()->insert($e);
 
 			if($e['farm']['hasShops'] === FALSE) {

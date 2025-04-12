@@ -280,6 +280,9 @@ class Shop extends ShopElement {
 			})
 			->setCallback('customTitleFont.check', function(?string $customFont): bool {
 				return $customFont === NULL or \website\DesignLib::isCustomFont($customFont, 'customTitleFonts');
+			})
+			->setCallback('shopShare.empty', function(?string $value): bool {
+				return ($value !== NULL);
 			});
 	
 		parent::build($properties, $input, $p);

@@ -60,7 +60,7 @@ class RangeLib extends RangeCrud {
 		return Range::model()
 			->select(Range::getSelection())
 			->whereShop($eShop)
-			->getCollection(index: ['farm', NULL]);
+			->getCollection(index: ['farm', 'catalog']);
 
 	}
 

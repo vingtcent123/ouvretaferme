@@ -128,7 +128,7 @@ Shop:
   email: ?email
   type: enum(PRIVATE, PRO)
   shared: bool
-  sharedGroup: ?enum(FARMER, CATALOG, DEPARTMENT)
+  sharedGroup: ?enum(FARM, DEPARTMENT, PRODUCT)
   sharedHash: ?text8
   sharedHashExpiresAt: ?date
   frequency: enum(WEEKLY, BIMONTHLY, MONTHLY, OTHER) = WEEKLY

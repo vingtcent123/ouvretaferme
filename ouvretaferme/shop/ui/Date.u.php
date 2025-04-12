@@ -778,10 +778,7 @@ class DateUi {
 
 	public function getFarms(Shop $eShop, Date $eDate, \Collection $cDepartment, \Collection $ccRange): string {
 
-		if(
-			$eDate['catalogs'] === [] or
-			$ccRange->empty()
-		) {
+		if($ccRange->empty()) {
 			return '<div class="util-empty">'.s("Aucun producteur n'a associé de catalogue à cette boutique.").'</div>';
 		}
 
@@ -864,18 +861,18 @@ class DateUi {
 
 		$selected = in_array($eRange['catalog']['id'], $eDate['catalogs']);
 
-		$h = '<td>';
+		$h = '<td class="td-border">';
 			$h .= '<a href="/shop/catalog:show?id='.$eRange['catalog']['id'].'">'.encode($eRange['catalog']['name']).'</a>';
 			$h .= ' <small class="color-muted">/ '.p("{value} produit", "{value} produits", $eRange['catalog']['products']).'</small>';
 		$h .= '</td>';
 
 		if($cDepartment->notEmpty()) {
-			$h .= '<td>';
+			$h .= '<td class="td-border">';
 				$h .= $eRange['department']->empty() ? '-' :  encode($cDepartment[$eRange['department']['id']]['name']);
 			$h .= '</td>';
 		}
 
-		$h .= '<td class="text-center">';
+		$h .= '<td class="td-border text-center">';
 			$h .= \util\TextUi::switch([
 				'id' => 'catalog-switch-'.$eRange['catalog']['id'],
 				'disabled' => $eDate->canWrite() === FALSE,

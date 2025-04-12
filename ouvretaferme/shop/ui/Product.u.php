@@ -23,47 +23,69 @@ class ProductUi {
 
 	public function getList(Shop $eShop, Date $eDate, \selling\Sale $eSale, \Collection $cCategory, ?array $basketProducts, bool $isModifying): string {
 
-		$eDate->expects(['cProduct']);
+		$eDate->expects(['productsIndex', 'productsEmpty']);
 
 		$h = '';
 
-		$cProduct = $eDate['cProduct']->reindex(['product', 'category']);
+		if($eDate['productsEmpty']) {
 
-		if($cProduct->empty()) {
 			$h .= '<div class="util-block-help">';
 				$h .= '<h4>'.s("Il n'y a pas encore de produit disponible à la vente !").'</h4>';
 				$h .= '<p>'.s("La vente du {value} est fermée pour le moment car votre producteur n'a pas encore indiqué les produits qu'il souhaite vous proposer.", \util\DateUi::textual($eDate['deliveryDate'])).'</p>';
 			$h .= '</div>';
+
 			return $h;
+
 		}
 
 		$h .= '<div class="shop-product-wrapper shop-product-'.$eShop['type'].'">';
 
-			if($cProduct->count() === 1) {
-				$h .= $this->getProducts($eShop, $eDate, $eSale, $isModifying, $cProduct->first());
-			} else {
-
-				if($cProduct->offsetExists('')) {
-					$h .= $this->getProducts($eShop, $eDate, $eSale, $isModifying, $cProduct['']);
-				}
-
-				foreach($cCategory as $eCategory) {
-
-					if($cProduct->offsetExists($eCategory['id']) === FALSE) {
-						continue;
-					}
-
-					$h .= '<h3>'.encode($eCategory['name']).'</h3>';
-					$h .= $this->getProducts($eShop, $eDate, $eSale, $isModifying, $cProduct[$eCategory['id']]);
-
-				}
-
-			}
+			$h .= match($eDate['productsIndex']) {
+				'product' => $this->getListByProduct($eShop, $eDate, $eSale, $eDate['cProduct'], $isModifying),
+				'farm' => $this->getListByFarm($eShop, $eDate, $eSale, $cCategory, $isModifying),
+				'department' => $this->getListByDepartment($eShop, $eDate, $eSale, $cCategory, $isModifying),
+				'category' => $this->getListByCategory($eShop, $eDate, $eSale, $cCategory, $eDate['ccProduct'], $isModifying),
+			};
 
 		$h .= '</div>';
 
 		if($eDate['isOrderable'] and ($eSale->canBasket($eShop) or $isModifying)) {
 			$h .= $this->getOrderedProducts($eShop, $eDate, $eSale, $basketProducts, $isModifying);
+		}
+
+		return $h;
+
+	}
+
+	protected function getListByProduct(Shop $eShop, Date $eDate, \selling\Sale $eSale, \Collection $cProduct, bool $isModifying): string {
+
+		return $this->getProducts($eShop, $eDate, $eSale, $isModifying, $cProduct);
+
+	}
+
+	protected function getListByCategory(Shop $eShop, Date $eDate, \selling\Sale $eSale, \Collection $cCategory, \Collection $ccProduct, bool $isModifying): string {
+
+		$h = '';
+
+		if($ccProduct->count() === 1) {
+			$h .= $this->getProducts($eShop, $eDate, $eSale, $isModifying, $ccProduct->first());
+		} else {
+
+			if($ccProduct->offsetExists('')) {
+				$h .= $this->getProducts($eShop, $eDate, $eSale, $isModifying, $ccProduct['']);
+			}
+
+			foreach($cCategory as $eCategory) {
+
+				if($ccProduct->offsetExists($eCategory['id']) === FALSE) {
+					continue;
+				}
+
+				$h .= '<h3>'.encode($eCategory['name']).'</h3>';
+				$h .= $this->getProducts($eShop, $eDate, $eSale, $isModifying, $ccProduct[$eCategory['id']]);
+
+			}
+
 		}
 
 		return $h;

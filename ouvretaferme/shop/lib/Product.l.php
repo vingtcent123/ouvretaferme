@@ -315,6 +315,47 @@ class ProductLib extends ProductCrud {
 
 	}
 
+	public static function applyIndexing(Shop $eShop, Date $eDate, \Collection $cProduct): void {
+
+		if($eShop['shared']) {
+
+			$index = $eShop['sharedGroup'] ?? 'product';
+
+			switch($index) {
+
+				case 'product' :
+					$eDate['cProduct'] = $cProduct;
+					break;
+
+				case 'farm' :
+					$eDate['ccProduct'] = $cProduct->reindex(['product', 'farm']);
+					break;
+
+				case 'department' :
+					$eDate['ccProduct'] = $cProduct->reindex(function($eProduct) use($eShop) {
+
+						$eRange = $eShop['ccRange'][$eProduct['farm']['id']][$eProduct['catalog']['id']] ?? new Range();
+
+						if($eRange->empty() or $eRange['department']->empty()) {
+							return NULL;
+						} else {
+							return $eRange['department']['id'];
+						}
+					});
+					break;
+
+			}
+
+		} else {
+			$index = 'category';
+			$eDate['ccProduct'] = $cProduct->reindex(['product', 'category']);
+		}
+
+		$eDate['productsIndex'] = $index;
+		$eDate['productsEmpty'] = $cProduct->empty();
+
+	}
+
 	public static function applyGrid(Product $eProduct, \selling\Grid $eGrid): void {
 
 		if($eGrid->notEmpty()) {

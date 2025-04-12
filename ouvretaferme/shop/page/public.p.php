@@ -203,9 +203,17 @@ END;
 				$eProduct['reallyAvailable'] = \shop\ProductLib::getReallyAvailable($eProduct, $eProduct['product'], $data->eSaleExisting);
 			}
 
-			\shop\ProductLib::applyDiscount($cProduct, $data->discount);
+			if($data->eShop['shared']) {
 
-			$data->eDateSelected['cProduct'] = $cProduct;
+				$data->eShop['cShare'] = \shop\ShareLib::getByShop($data->eShop);
+				$data->eShop['ccRange'] = \shop\RangeLib::getByShop($data->eShop);
+				$data->eShop['cDepartment'] = \shop\DepartmentLib::getByShop($data->eShop);
+
+			}
+
+			\shop\ProductLib::applyDiscount($cProduct, $data->discount);
+			\shop\ProductLib::applyIndexing($data->eShop, $data->eDateSelected, $cProduct);
+
 			$data->eDateSelected['farm'] = $data->eShop['farm'];
 
 			$data->eDateSelected['ccPoint'] = $data->eShop['ccPoint'];

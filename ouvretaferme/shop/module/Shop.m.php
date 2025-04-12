@@ -10,9 +10,9 @@ abstract class ShopElement extends \Element {
 	const PRIVATE = 'private';
 	const PRO = 'pro';
 
-	const FARMER = 'farmer';
-	const CATALOG = 'catalog';
+	const FARM = 'farm';
 	const DEPARTMENT = 'department';
+	const PRODUCT = 'product';
 
 	const WEEKLY = 'weekly';
 	const BIMONTHLY = 'bimonthly';
@@ -59,7 +59,7 @@ class ShopModel extends \ModuleModel {
 			'email' => ['email', 'null' => TRUE, 'cast' => 'string'],
 			'type' => ['enum', [\shop\Shop::PRIVATE, \shop\Shop::PRO], 'cast' => 'enum'],
 			'shared' => ['bool', 'cast' => 'bool'],
-			'sharedGroup' => ['enum', [\shop\Shop::FARMER, \shop\Shop::CATALOG, \shop\Shop::DEPARTMENT], 'null' => TRUE, 'cast' => 'enum'],
+			'sharedGroup' => ['enum', [\shop\Shop::FARM, \shop\Shop::DEPARTMENT, \shop\Shop::PRODUCT], 'null' => TRUE, 'cast' => 'enum'],
 			'sharedHash' => ['text8', 'null' => TRUE, 'cast' => 'string'],
 			'sharedHashExpiresAt' => ['date', 'null' => TRUE, 'cast' => 'string'],
 			'frequency' => ['enum', [\shop\Shop::WEEKLY, \shop\Shop::BIMONTHLY, \shop\Shop::MONTHLY, \shop\Shop::OTHER], 'cast' => 'enum'],

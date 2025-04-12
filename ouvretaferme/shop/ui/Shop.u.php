@@ -1348,9 +1348,9 @@ class ShopUi {
 
 			case 'sharedGroup':
 				$d->values = [
-					Shop::FARMER => s("Grouper par producteur"),
+					Shop::FARM => s("Grouper par producteur"),
 					Shop::DEPARTMENT => s("Grouper par rayon"),
-					NULL => s("Ne pas grouper les produits")
+					Shop::PRODUCT => s("Ne pas grouper les produits")
 				];
 				$d->field = 'select';
 				$d->attributes = [
