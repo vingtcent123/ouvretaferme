@@ -42,7 +42,7 @@ class ProductUi {
 
 			$h .= match($eDate['productsIndex']) {
 				'product' => $this->getListByProduct($eShop, $eDate, $eSale, $eDate['cProduct'], $isModifying),
-				'farm' => $this->getListByFarm($eShop, $eDate, $eSale, $cCategory, $isModifying),
+				'farm' => $this->getListByFarm($eShop, $eDate, $eSale, $eShop['cShare'], $eDate['ccProduct'], $isModifying),
 				'department' => $this->getListByDepartment($eShop, $eDate, $eSale, $cCategory, $isModifying),
 				'category' => $this->getListByCategory($eShop, $eDate, $eSale, $cCategory, $eDate['ccProduct'], $isModifying),
 			};
@@ -60,6 +60,41 @@ class ProductUi {
 	protected function getListByProduct(Shop $eShop, Date $eDate, \selling\Sale $eSale, \Collection $cProduct, bool $isModifying): string {
 
 		return $this->getProducts($eShop, $eDate, $eSale, $isModifying, $cProduct);
+
+	}
+
+	protected function getListByFarm(Shop $eShop, Date $eDate, \selling\Sale $eSale, \Collection $cShare, \Collection $ccProduct, bool $isModifying): string {
+
+		$h = '';
+
+		foreach($cShare as $eShare) {
+
+			$eFarm = $eShare['farm'];
+
+			if($ccProduct->offsetExists($eFarm['id']) === FALSE) {
+				continue;
+			}
+
+			$h .= '<div data-filter-farm="'.$eFarm['id'].'">';
+				$h .= '<h3 class="shop-title-group">';
+					$h .= encode($eFarm['name']);
+					if($eShare['label'] !== NULL) {
+						$h .= '<span class="shop-title-group-label">  /  '.encode($eShare['label']).'</span>';
+					}
+				$h .= '</h3>';
+				$h .= $this->getProducts($eShop, $eDate, $eSale, $isModifying, $ccProduct[$eFarm['id']]);
+			$h .= '</div>';
+
+		}
+
+		if($ccProduct->offsetExists('')) {
+			$h .= '<div data-filter-farm="">';
+				$h .= '<h3 class="shop-title-group">'.s("Autres producteurs").'</h3>';
+				$h .= $this->getProducts($eShop, $eDate, $eSale, $isModifying, $ccProduct['']);
+			$h .= '</div>';
+		}
+
+		return $h;
 
 	}
 

@@ -127,6 +127,10 @@
 
 }
 
+.shop-basket-summary-farm {
+	background-color: #00000005;
+}
+
 .basket-buttons {
 	display: flex;
 	flex-wrap: wrap;

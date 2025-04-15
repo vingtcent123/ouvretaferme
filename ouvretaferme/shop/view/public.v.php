@@ -77,9 +77,16 @@ new AdaptativeView('shop', function($data, ShopTemplate $t) {
 
 	if($data->eDateSelected->notEmpty()) {
 
-		echo '<h3>';
-			echo \shop\DateUi::name($data->eDateSelected);
-		echo '</h3>';
+		echo '<div class="util-title">';
+			echo '<h3>';
+				echo \shop\DateUi::name($data->eDateSelected);
+			echo '</h3>';
+			echo '<div>';
+				if($data->eShop['shared']) {
+					echo new \shop\BasketUi()->getSearch($data->eShop['cShare']);
+				}
+			echo '</div>';
+		echo '</div>';
 
 		if($data->eDateSelected['description'] !== NULL) {
 			echo '<div class="util-block">';
@@ -190,7 +197,7 @@ new AdaptativeView('/shop/public/{fqn}/{date}/panier', function($data, ShopTempl
 
 new JsonView('/shop/public/{fqn}/{date}/:getBasket', function($data, AjaxTemplate $t) {
 
-	$t->push('basketSummary', new \shop\BasketUi()->getSummary($data->eShop, $data->eDate, $data->eSaleExisting, $data->basket, $data->isModifying));
+	$t->push('basketSummary', new \shop\BasketUi()->getSummary($data->eShop, $data->eDate, $data->eSaleExisting, $data->basket));
 	$t->push('basketPrice', $data->price);
 
 });

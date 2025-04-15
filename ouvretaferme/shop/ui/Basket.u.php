@@ -17,6 +17,27 @@ class BasketUi {
 
 	}
 
+	public function getSearch(\Collection $cShare): string {
+
+		$label = s("Producteur");
+
+		$h = '<div id="basket-search" data-label="'.$label.'">';
+			$h .= '<a data-dropdown="bottom-end" class="btn btn-outline-secondary dropdown-toggle">';
+				$h .= \Asset::icon('search').'  ';
+				$h .= '<span id="basket-search-label">'.$label.'</span>';
+			$h .= '</a>';
+			$h .= '<div class="dropdown-list">';
+				foreach($cShare as $eShare) {
+					$h .= '<a onclick="BasketManage.search(this, '.$eShare['farm']['id'].')" class="dropdown-item">'.encode($eShare['farm']['name']).'</a>';
+				}
+			$h .= '</div>';
+			$h .= '<a id="basket-search-close" onclick="BasketManage.closeSearch()" class="btn btn-secondary ml-1 hide">'.\Asset::icon('x-lg').'</a>';
+		$h .= '</div>';
+
+		return $h;
+
+	}
+
 	public function getHeader(Shop $eShop): string {
 
 
@@ -149,7 +170,7 @@ class BasketUi {
 
 	}
 
-	public function getSummary(Shop $eShop, Date $eDate, \selling\Sale $eSaleExisting, array $basket, bool $isModifying): string {
+	public function getSummary(Shop $eShop, Date $eDate, \selling\Sale $eSaleExisting, array $basket): string {
 
 		\Asset::css('shop', 'product.css');
 
@@ -162,85 +183,60 @@ class BasketUi {
 			$h .= '<a href="'.ShopUi::dateUrl($eShop, $eDate).'?modify=1" class="btn btn-outline-primary">'.\Asset::icon('chevron-left').' <span class="hide-xs-down">'.s("Modifier ma sélection").'</span><span class="hide-sm-up">'.s("Modifier").'</span></a>';
 		$h .= '</div>';
 
-		$h .= '<table id="shop-basket-summary-list" class="stick-xs">';
-			$h .= '<thead>';
-				$h .= '<tr>';
-					$h .= '<th colspan="2">'.s("Produit").'</th>';
-					if($eDate['type'] === Date::PRO) {
-						$h .= '<th class="hide-sm-down"></th>';
-					}
-					$h .= '<th>'.s("Quantité").'</th>';
-					$h .= '<th class="text-end hide-xs-down">'.s("Prix unitaire").'</th>';
-					$h .= '<th class="text-end">'.s("Total").'</th>';
-					$h .= '<th class="hide-xs-down"></th>';
-				$h .= '</tr>';
-			$h .= '</thead>';
+		$total = 0.0;
 
-			$total = 0;
+		$h .= '<div id="shop-basket-summary-list" class="mb-2">';
 
-			$h .= '<tbody>';
-				foreach($basket as $product) {
+			$h .= '<table class="stick-xs">';
 
-					$eProduct = $product['product'];
-					$eProductSelling = $eProduct['product'];
+				$columns = 6;
 
-					$available = ProductLib::getReallyAvailable($eProduct, $eProductSelling, $eSaleExisting);
-
-					$deleteAttributes = [
-						'data-confirm' => s("Souhaitez-vous réellement supprimer ce produit ?"),
-						'onclick' => 'BasketManage.deleteProduct('.$eDate['id'].', '.$eProductSelling['id'].')',
-						'title' => s("Supprimer cet article"),
-					];
-
-					$unitPrice = \util\TextUi::money($eProduct['price']).' '.ProductUi::getTaxes($eProduct).\selling\UnitUi::getBy($eProductSelling['unit'], short: TRUE);
-					$price = $eProduct['price'] * $product['number'] * ($eProduct['packaging'] ?? 1);
-
+				$h .= '<thead>';
 					$h .= '<tr>';
-						$h .= '<td class="td-min-content">';
-							if($eProductSelling['vignette'] !== NULL) {
-								$h .= \selling\ProductUi::getVignette($eProductSelling, '3rem', public: TRUE);
-							}
-						$h .= '</td>';
-						$h .= '<td class="basket-summary-product">';
-							$h .= encode($eProductSelling->getName());
-							$h .= '<div class="hide-sm-up"><small style="white-space: nowrap">'.$unitPrice.'</small></div>';
-							if($product['warning'] !== NULL) {
-
-								$h .= '<div class="color-danger">';
-									$h .= match($product['warning']) {
-										'number' => s("Ce produit n'étant plus disponible en quantité suffisante, la quantité de votre commande a été modifiée."),
-										'min' => s("La quantité de ce produit a été modifiée car vous avez commandé en dessous du minimum de commande."),
-									};
-								$h .= '</div>';
-
-							}
-						$h .= '</td>';
+						$h .= '<th colspan="2">'.s("Produit").'</th>';
 						if($eDate['type'] === Date::PRO) {
-							$h .= '<td class="hide-sm-down">';
-								if($eProduct['packaging'] !== NULL) {
-									$h .= s("Colis de {value}", \selling\UnitUi::getValue($eProduct['packaging'], $eProductSelling['unit'], TRUE));
-								}
-							$h .= '</td>';
+							$columns++;
+							$h .= '<th class="hide-sm-down"></th>';
 						}
-						$h .= '<td>';
-							$h .= ProductUi::numberOrder($eShop, $eDate, $eProductSelling, $eProduct, $product['number'], $available);
-						$h .= '</td>';
-						$h .= '<td class="text-end hide-xs-down">';
-							$h .= $unitPrice;
-							if($eProduct['packaging'] !== NULL) {
-								$h .= '<div class="hide-md-up">'.s("Colis de {value}", \selling\UnitUi::getValue($eProduct['packaging'], $eProductSelling['unit'], TRUE)).'</div>';
-							}
-						$h .= '</td>';
-						$h .= '<td class="text-end">'.\util\TextUi::money($price).' '.ProductUi::getTaxes($eProduct).'</td>';
-						$h .= '<td class="hide-xs-down text-center">';
-							$h .= '<a '.attrs($deleteAttributes).'>'.\Asset::icon('trash').'</a>';
-						$h .= '</td>';
+						$h .= '<th>'.s("Quantité").'</th>';
+						$h .= '<th class="text-end hide-xs-down">'.s("Prix unitaire").'</th>';
+						$h .= '<th class="text-end">'.s("Total").'</th>';
+						$h .= '<th class="hide-xs-down"></th>';
 					$h .= '</tr>';
+				$h .= '</thead>';
 
-					$total += $price;
+				$h .= '<tbody>';
 
-				}
+					if($eShop['shared']) {
 
+						$basketByFarm = [];
+
+						foreach($basket as $product) {
+
+							$eFarm = $product['product']['product']['farm'];
+
+							$basketByFarm[$eFarm['id']] ??= [];
+							$basketByFarm[$eFarm['id']][] = $product;
+
+						}
+
+						foreach($basketByFarm as $basket) {
+
+							$eFarm = first($basket)['product']['product']['farm'];
+
+							$h .= '<tr class="tr-title shop-basket-summary-farm">';
+								$h .= '<td colspan="'.$columns.'">'.encode($eFarm['name']).'</td>';
+							$h .= '</tr>';
+
+							$h .= $this->getProducts($eShop, $eDate, $eSaleExisting, $basket, $total);
+
+						}
+
+					} else {
+						$h .= $this->getProducts($eShop, $eDate, $eSaleExisting, $basket, $total);
+					}
+
+				$h .= '</tbody>';
 				$h .= '<tfoot>';
 					$h .= '<tr>';
 						$h .= '<td class="hide-xs-down"></td>';
@@ -253,10 +249,79 @@ class BasketUi {
 					$h .= '</tr>';
 				$h .= '</tfoot>';
 
-			$h .= '</tbody>';
+			$h .= '</table>';
 
-		$h .= '</table>';
-		$h .= '<br/>';
+		$h .= '</div>';
+
+		return $h;
+
+	}
+
+	public function getProducts(Shop $eShop, Date $eDate, \selling\Sale $eSaleExisting, array $basket, float &$total): string {
+
+		$h = '';
+
+		foreach($basket as $product) {
+
+			$eProduct = $product['product'];
+			$eProductSelling = $eProduct['product'];
+
+			$available = ProductLib::getReallyAvailable($eProduct, $eProductSelling, $eSaleExisting);
+
+			$deleteAttributes = [
+				'data-confirm' => s("Souhaitez-vous réellement supprimer ce produit ?"),
+				'onclick' => 'BasketManage.deleteProduct('.$eDate['id'].', '.$eProductSelling['id'].')',
+				'title' => s("Supprimer cet article"),
+			];
+
+			$unitPrice = \util\TextUi::money($eProduct['price']).' '.ProductUi::getTaxes($eProduct).\selling\UnitUi::getBy($eProductSelling['unit'], short: TRUE);
+			$price = $eProduct['price'] * $product['number'] * ($eProduct['packaging'] ?? 1);
+
+			$h .= '<tr>';
+				$h .= '<td class="td-min-content">';
+					if($eProductSelling['vignette'] !== NULL) {
+						$h .= \selling\ProductUi::getVignette($eProductSelling, '3rem', public: TRUE);
+					}
+				$h .= '</td>';
+				$h .= '<td class="basket-summary-product">';
+					$h .= encode($eProductSelling->getName());
+					$h .= '<div class="hide-sm-up"><small style="white-space: nowrap">'.$unitPrice.'</small></div>';
+					if($product['warning'] !== NULL) {
+
+						$h .= '<div class="color-danger">';
+							$h .= match($product['warning']) {
+								'number' => s("Ce produit n'étant plus disponible en quantité suffisante, la quantité de votre commande a été modifiée."),
+								'min' => s("La quantité de ce produit a été modifiée car vous avez commandé en dessous du minimum de commande."),
+							};
+						$h .= '</div>';
+
+					}
+				$h .= '</td>';
+				if($eDate['type'] === Date::PRO) {
+					$h .= '<td class="hide-sm-down">';
+						if($eProduct['packaging'] !== NULL) {
+							$h .= s("Colis de {value}", \selling\UnitUi::getValue($eProduct['packaging'], $eProductSelling['unit'], TRUE));
+						}
+					$h .= '</td>';
+				}
+				$h .= '<td>';
+					$h .= ProductUi::numberOrder($eShop, $eDate, $eProductSelling, $eProduct, $product['number'], $available);
+				$h .= '</td>';
+				$h .= '<td class="text-end hide-xs-down">';
+					$h .= $unitPrice;
+					if($eProduct['packaging'] !== NULL) {
+						$h .= '<div class="hide-md-up">'.s("Colis de {value}", \selling\UnitUi::getValue($eProduct['packaging'], $eProductSelling['unit'], TRUE)).'</div>';
+					}
+				$h .= '</td>';
+				$h .= '<td class="text-end">'.\util\TextUi::money($price).' '.ProductUi::getTaxes($eProduct).'</td>';
+				$h .= '<td class="hide-xs-down text-center">';
+					$h .= '<a '.attrs($deleteAttributes).'>'.\Asset::icon('trash').'</a>';
+				$h .= '</td>';
+			$h .= '</tr>';
+
+			$total += $price;
+
+		}
 
 		return $h;
 
