@@ -106,10 +106,6 @@ class DateUi {
 
 	}
 
-	public function getSearch(Shop $eShop): string {
-
-	}
-
 	public function getDeliveryPeriods(Shop $eShop, \Collection $cDate, Date $eDateSelected): string {
 
 		$h = '';
