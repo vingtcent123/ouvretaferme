@@ -491,10 +491,7 @@ class Sale extends SaleElement {
 
 		$code = $eFarm->getSelling('orderFormPrefix');
 
-		$prefix = rtrim($code, '#');
-		$zero = strlen($code) - strlen($prefix);
-
-		return $prefix.($zero > 1 ? sprintf('%0'.$zero.'d', $this['document']) : $this['document']);
+		return Configuration::getNumber($code, $this['document']);
 
 	}
 
@@ -504,10 +501,7 @@ class Sale extends SaleElement {
 
 		$code = $eFarm->getSelling('deliveryNotePrefix');
 
-		$prefix = rtrim($code, '#');
-		$zero = strlen($code) - strlen($prefix);
-
-		return $prefix.($zero > 1 ? sprintf('%0'.$zero.'d', $this['document']) : $this['document']);
+		return Configuration::getNumber($code, $this['document']);
 
 	}
 

@@ -52,6 +52,15 @@ class Configuration extends ConfigurationElement {
 		return ($this['invoiceCity'] !== NULL);
 	}
 
+	public static function getNumber(string $code, int $document): string {
+
+		$prefix = rtrim($code, '#');
+		$zero = strlen($code) - strlen($prefix);
+
+		return $prefix.($zero > 1 ? sprintf('%0'.$zero.'d', $document) : $document);
+
+	}
+
 	public function build(array $properties, array $input, \Properties $p = new \Properties()): void {
 
 		$p

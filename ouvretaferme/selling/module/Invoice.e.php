@@ -76,10 +76,7 @@ class Invoice extends InvoiceElement {
 			$code = $eFarm->getSelling('invoicePrefix');
 		}
 
-		$prefix = rtrim($code, '#');
-		$zero = strlen($code) - strlen($prefix);
-
-		return $prefix.($zero > 1 ? sprintf('%0'.$zero.'d', $this['document']) : $this['document']);
+		return Configuration::getNumber($code, $this['document']);
 
 	}
 

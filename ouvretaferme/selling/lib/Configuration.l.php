@@ -77,9 +77,14 @@ class ConfigurationLib extends ConfigurationCrud {
 
 			$newValue++;
 
+			$names = [
+				Configuration::getNumber($eConfiguration['creditPrefix'], $newValue),
+				Configuration::getNumber($eConfiguration['invoicePrefix'], $newValue),
+			];
+
 			if(Invoice::model()
 				->whereFarm($eFarm)
-				->whereName('IN', [$eConfiguration['creditPrefix'].$newValue, $eConfiguration['invoicePrefix'].$newValue])
+				->whereName('IN', $names)
 				->exists()) {
 
 				if($i === 100) {
