@@ -486,13 +486,29 @@ class Sale extends SaleElement {
 	}
 
 	public function getOrderForm(\farm\Farm $eFarm): string {
+
 		$this->expects(['document']);
-		return $eFarm->getSelling('orderFormPrefix').$this['document'];
+
+		$code = $eFarm->getSelling('orderFormPrefix');
+
+		$prefix = rtrim($code, '#');
+		$zero = strlen($code) - strlen($prefix);
+
+		return $prefix.($zero > 1 ? sprintf('%0'.$zero.'d', $this['document']) : $this['document']);
+
 	}
 
 	public function getDeliveryNote(\farm\Farm $eFarm): string {
+
 		$this->expects(['document']);
-		return $eFarm->getSelling('deliveryNotePrefix').$this['document'];
+
+		$code = $eFarm->getSelling('deliveryNotePrefix');
+
+		$prefix = rtrim($code, '#');
+		$zero = strlen($code) - strlen($prefix);
+
+		return $prefix.($zero > 1 ? sprintf('%0'.$zero.'d', $this['document']) : $this['document']);
+
 	}
 
 	public function acceptDelete(): bool {

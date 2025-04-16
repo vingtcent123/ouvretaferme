@@ -97,14 +97,14 @@ class Configuration extends ConfigurationElement {
 				return TRUE;
 			})
 			->setCallback('deliveryNotePrefix.fqn', function(string $prefix): bool {
-				return preg_match('/^[a-z0-9\-\_]*[a-z\-\_]$/si', $prefix) > 0;
+				return preg_match('/^[a-z0-9\-\_]*[a-z\-\_]$/si', rtrim($prefix, '#')) > 0;
 			})
 			->setCallback('orderFormPrefix.prepare', function(string &$prefix): bool {
 				$prefix = strtoupper($prefix);
 				return TRUE;
 			})
 			->setCallback('orderFormPrefix.fqn', function(string $prefix): bool {
-				return preg_match('/^[a-z0-9\-\_]*[a-z\-\_]$/si', $prefix) > 0;
+				return preg_match('/^[a-z0-9\-\_]*[a-z\-\_]$/si', rtrim($prefix, '#')) > 0;
 			})
 			->setCallback('defaultVat.check', function(int $vat): bool {
 				return array_key_exists($vat, SaleLib::getVatRates($this['farm']));
