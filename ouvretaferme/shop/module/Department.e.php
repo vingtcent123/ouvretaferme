@@ -21,7 +21,7 @@ class Department extends DepartmentElement {
 
 	public static function getIcons(): array {
 
-		return ['lait', 'oeuf'];
+		return ['fruit', 'legume', 'lait', 'vin', 'oeuf', 'fromage', 'champignon', 'viande', 'pain', 'charcuterie'];
 
 	}
 

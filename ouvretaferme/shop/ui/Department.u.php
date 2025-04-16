@@ -83,7 +83,7 @@ class DepartmentUi {
 					$h .= '</td>';
 					$h .= '<td>';
 						if($eDepartment['icon'] !== NULL) {
-							$h .= self::getVignette($eDepartment, '4rem').'  ';
+							$h .= self::getVignette($eDepartment, '3rem').'  ';
 						}
 						$h .= $eDepartment->quick('name', encode($eDepartment['name']));
 					$h .= '</td>';
@@ -193,17 +193,19 @@ class DepartmentUi {
 			case 'icon' :
 				$d->field = function(\util\FormUi $form, Department $e) {
 
+					$selectedIcon = $e->empty() ? NULL : $e['icon'];
+
 					$h = '<div class="department-vignette-wrapper">';
 
 						$h .= '<label class="department-vignette-empty">';
-							$h .= '<span>'.$form->inputRadio('icon', '', s("Pas d'icône"), selectedValue: $e['icon']).'</span>';
+							$h .= '<span>'.$form->inputRadio('icon', '', s("Pas d'icône"), selectedValue: $selectedIcon).'</span>';
 						$h .= '</label>';
 
 						foreach(Department::getIcons() as $icon) {
 
 							$h .= '<label class="department-vignette-icon">';
 								$h .= DepartmentUi::getVignette(new Department(['icon' => $icon]), '4rem');
-								$h .= $form->inputRadio('icon', $icon, selectedValue: $e['icon'], attributes: ['class' => 'hide']);
+								$h .= $form->inputRadio('icon', $icon, selectedValue: $selectedIcon, attributes: ['class' => 'hide']);
 							$h .= '</label>';
 
 						}

@@ -19,7 +19,7 @@ new \shop\DepartmentPage(function($data) {
 new \shop\DepartmentPage()
 	->update()
 	->quick(['name'])
-	->doUpdate(fn($data) => throw new ViewAction($data))
+	->doUpdate(fn($data) => throw new ReloadAction('shop', 'Department::updated'))
 	->write('doIncrementPosition', function($data) {
 
 		$increment = POST('increment', 'int');

@@ -18,13 +18,6 @@ new AdaptativeView('update', function($data, PanelTemplate $t) {
 
 });
 
-new JsonView('doUpdate', function($data, AjaxTemplate $t) {
-
-	$t->js()->success('shop', 'Department::updated');
-	$t->js()->moveHistory(-1);
-
-});
-
 new JsonView('doDelete', function($data, AjaxTemplate $t) {
 
 	$t->js()->success('shop', 'Department::deleted');

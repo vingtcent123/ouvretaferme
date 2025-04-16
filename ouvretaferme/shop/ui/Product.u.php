@@ -253,6 +253,9 @@ class ProductUi {
 
 	public function getProduct(Shop $eShop, Date $eDate, Product $eProduct, \selling\Sale $eSale, bool $isModifying): string {
 
+		$eShop->expects(['shared']);
+		$eDate->expects(['productsIndex']);
+
 		$eProduct->expects(['reallyAvailable']);
 
 		$acceptOrder = ($eSale->canBasket($eShop) or $isModifying);
@@ -314,12 +317,22 @@ class ProductUi {
 							if($eShop['type'] === Shop::PRO) {
 								$h .= $quality;
 							}
+
 							if($eProductSelling['size'] !== NULL) {
 								$h .= '<div class="shop-product-size">';
 									$h .= encode($eProductSelling['size']);
 								$h .= '</div>';
 							}
 						$h .= '</h4>';
+
+						if(
+							$eShop['shared'] and
+							$eDate['productsIndex'] !== 'farm'
+						) {
+							$h .= '<div class="shop-product-farm">';
+								$h .= \Asset::icon('person-fill').' '.encode($eProduct['product']['farm']['name']);
+							$h .= '</div>';
+						}
 
 						if($eProductSelling['origin'] !== NULL) {
 							$h .= '<div class="shop-product-origin">';

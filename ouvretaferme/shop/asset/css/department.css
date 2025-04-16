@@ -1,7 +1,15 @@
 .department-vignette-wrapper {
 	display: flex;
 	flex-wrap: wrap;
-	gap: 1rem;
+	row-gap: 1rem;
+}
+
+.department-vignette-wrapper > * {
+	padding: 0 1rem;
+}
+
+.department-vignette-wrapper > *:not(:last-child) {
+	border-right: 1px solid var(--border);
 }
 
 label.department-vignette-empty  {
@@ -10,15 +18,12 @@ label.department-vignette-empty  {
 }
 
 label.department-vignette-icon  {
-	border-radius: 50%;
 	transition: all 0.25s;
 	cursor: pointer;
-	padding: 0.25rem;
 }
 
 label.department-vignette-icon:has(> input:checked),
 label.department-vignette-icon:hover {
-	background-color: #00000005;
 }
 
 label.department-vignette-icon:has(> input:checked) svg,
