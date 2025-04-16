@@ -58,15 +58,6 @@ class DepartmentUi {
 		$h .= '</div>';
 
 		$h .= '<table class="tr-even">';
-			$h .= '<thead>';
-				$h .= '<tr>';
-					$h .= '<th></th>';
-					$h .= '<th>'.s("Nom").'</th>';
-					$h .= '<th>'.s("Catalogues").'</th>';
-					$h .= '<th></th>';
-				$h .= '</tr>';
-			$h .= '</thead>';
-
 			$h .= '<tbody>';
 
 			$ccRangeDepartment = $ccRange
@@ -86,20 +77,6 @@ class DepartmentUi {
 							$h .= self::getVignette($eDepartment, '3rem').'   ';
 						}
 						$h .= $eDepartment->quick('name', encode($eDepartment['name']));
-					$h .= '</td>';
-					$h .= '<td>';
-						if($cRange->empty()) {
-							$h .= '-';
-						} else {
-							$h .= '<ul class="mb-0">';
-								foreach($cRange as $eRange) {
-									$eFarm = $cShare[$eRange['farm']['id']]['farm'];
-									$h .= '<li>';
-										$h .= s("{catalog} de {farm}", ['catalog' => '<b>'.encode($eRange['catalog']['name']).'</b>', 'farm' => ' '.\farm\FarmUi::getVignette($eFarm, '2rem').'  '.encode($eFarm['name'])]);
-									$h .= '</li>';
-								}
-							$h .= '</ul>';
-						}
 					$h .= '</td>';
 					$h .= '<td class="td-min-content">';
 
