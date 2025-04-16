@@ -1,0 +1,39 @@
+.department-vignette-wrapper {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 1rem;
+}
+
+label.department-vignette-empty  {
+	display: flex;
+	align-items: center;
+}
+
+label.department-vignette-icon  {
+	border-radius: 50%;
+	transition: all 0.25s;
+	cursor: pointer;
+	padding: 0.25rem;
+}
+
+label.department-vignette-icon:has(> input:checked),
+label.department-vignette-icon:hover {
+	background-color: #00000005;
+}
+
+label.department-vignette-icon:has(> input:checked) svg,
+label.department-vignette-icon:hover svg {
+	stroke-width: 4px;
+}
+
+.department-vignette {
+	display: inline-block;
+	vertical-align: middle;
+	border-radius: 50%;
+}
+
+.department-vignette svg {
+	stroke: var(--text);
+	stroke-width: 2px;
+	transition: all 0.25s;
+}

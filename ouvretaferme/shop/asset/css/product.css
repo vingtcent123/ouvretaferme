@@ -638,3 +638,38 @@ body:not([data-template~="shop-embedded"]) {
 	color: var(--muted);
 	text-decoration: line-through;
 }
+
+.shop-department-list {
+	display: flex;
+	row-gap: 1rem;
+	flex-wrap: wrap;
+	margin-bottom: 2rem;
+}
+
+a.shop-department-item {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	text-align: center;
+	color: var(--text);
+	padding: 0 1rem;
+	text-decoration: none;
+}
+
+a.shop-department-item.selected {
+	color: var(--secondary);
+}
+
+a.shop-department-item.selected svg {
+	stroke: var(--secondary);
+}
+
+a.shop-department-item.selected svg,
+a.shop-department-item:hover svg {
+	stroke-width: 4px;
+}
+
+.shop-department-item:not(:last-child) {
+	border-right: 1px solid var(--border);
+}

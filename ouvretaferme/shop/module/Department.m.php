@@ -37,6 +37,7 @@ class DepartmentModel extends \ModuleModel {
 
 		$this->properties = array_merge($this->properties, [
 			'id' => ['serial32', 'cast' => 'int'],
+			'icon' => ['text8', 'min' => 1, 'max' => 50, 'charset' => 'ascii', 'null' => TRUE, 'cast' => 'string'],
 			'name' => ['text8', 'min' => 1, 'max' => 50, 'collate' => 'general', 'cast' => 'string'],
 			'shop' => ['element32', 'shop\Shop', 'cast' => 'element'],
 			'catalogs' => ['json', 'null' => TRUE, 'cast' => 'array'],
@@ -44,7 +45,7 @@ class DepartmentModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'name', 'shop', 'catalogs', 'position'
+			'id', 'icon', 'name', 'shop', 'catalogs', 'position'
 		]);
 
 		$this->propertiesToModule += [
@@ -109,6 +110,10 @@ class DepartmentModel extends \ModuleModel {
 
 	public function whereId(...$data): DepartmentModel {
 		return $this->where('id', ...$data);
+	}
+
+	public function whereIcon(...$data): DepartmentModel {
+		return $this->where('icon', ...$data);
 	}
 
 	public function whereName(...$data): DepartmentModel {

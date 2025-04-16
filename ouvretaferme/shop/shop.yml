@@ -11,6 +11,7 @@ Catalog:
 
 Department:
   id: serial32
+  icon: ?text8(1, 50) @charset(ascii)
   name: text8(1, 50) @collate(general)
   shop: shop\Shop
   catalogs: ?json = PHP([])

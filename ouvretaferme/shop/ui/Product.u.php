@@ -43,7 +43,7 @@ class ProductUi {
 			$h .= match($eDate['productsIndex']) {
 				'product' => $this->getListByProduct($eShop, $eDate, $eSale, $eDate['cProduct'], $isModifying),
 				'farm' => $this->getListByFarm($eShop, $eDate, $eSale, $eShop['cShare'], $eDate['ccProduct'], $isModifying),
-				'department' => $this->getListByDepartment($eShop, $eDate, $eSale, $cCategory, $isModifying),
+				'department' => $this->getListByDepartment($eShop, $eDate, $eSale, $eShop['cDepartment'], $eDate['ccProduct'], $isModifying),
 				'category' => $this->getListByCategory($eShop, $eDate, $eSale, $cCategory, $eDate['ccProduct'], $isModifying),
 			};
 
@@ -90,6 +90,52 @@ class ProductUi {
 		if($ccProduct->offsetExists('')) {
 			$h .= '<div data-filter-farm="">';
 				$h .= '<h3 class="shop-title-group">'.s("Autres producteurs").'</h3>';
+				$h .= $this->getProducts($eShop, $eDate, $eSale, $isModifying, $ccProduct['']);
+			$h .= '</div>';
+		}
+
+		return $h;
+
+	}
+
+	protected function getListByDepartment(Shop $eShop, Date $eDate, \selling\Sale $eSale, \Collection $cDepartment, \Collection $ccProduct, bool $isModifying): string {
+
+		$h = '';
+		$h .= '<div class="util-block shop-department-list">';
+
+			foreach($cDepartment as $eDepartment) {
+
+				if($ccProduct->offsetExists($eDepartment['id'])) {
+
+					$h .= '<a href="" class="shop-department-item">';
+						$h .= DepartmentUi::getVignette($eDepartment, '3rem');
+						$h .= encode($eDepartment['name']);
+					$h .= '</a>';
+
+				}
+
+			}
+
+		$h .= '</div>';
+
+		foreach($cDepartment as $eDepartment) {
+
+			if($ccProduct->offsetExists($eDepartment['id']) === FALSE) {
+				continue;
+			}
+
+			$h .= '<div data-filter-department="'.$eDepartment['id'].'">';
+				$h .= '<h3 class="shop-title-group">';
+					$h .= encode($eDepartment['name']);
+				$h .= '</h3>';
+				$h .= $this->getProducts($eShop, $eDate, $eSale, $isModifying, $ccProduct[$eDepartment['id']]);
+			$h .= '</div>';
+
+		}
+
+		if($ccProduct->offsetExists('')) {
+			$h .= '<div data-filter-farm="">';
+				$h .= '<h3 class="shop-title-group">'.s("Autres").'</h3>';
 				$h .= $this->getProducts($eShop, $eDate, $eSale, $isModifying, $ccProduct['']);
 			$h .= '</div>';
 		}

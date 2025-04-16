@@ -3,6 +3,27 @@ namespace shop;
 
 class DepartmentUi {
 
+	public function __construct() {
+
+		\Asset::css('shop', 'department.css');
+
+	}
+
+	public static function getVignette(Department $eDepartment, string $size): string {
+
+		\Asset::css('shop', 'department.css');
+
+		$eDepartment->expects(['icon']);
+
+		$h = '<div class="department-vignette" style="'.\media\MediaUi::getSquareCss($size).'">';
+			$h .= '<svg width="100%" height="100%"><use xlink:href="'.\Asset::getPath('shop', 'departments.svg', 'image').'#'.strtolower($eDepartment['icon']).'"/></svg>';
+		$h .= '</div>';
+
+		return $h;
+
+
+	}
+
 	public function getManage(\shop\Shop $eShop, \Collection $cShare, \Collection $ccRange, \Collection $cDepartment): string {
 
 		if($cDepartment->empty()) {
@@ -40,7 +61,7 @@ class DepartmentUi {
 			$h .= '<thead>';
 				$h .= '<tr>';
 					$h .= '<th></th>';
-					$h .= '<th>'.self::p('name')->label.'</th>';
+					$h .= '<th>'.s("Nom").'</th>';
 					$h .= '<th>'.s("Catalogues du rayon").'</th>';
 					$h .= '<th></th>';
 				$h .= '</tr>';
@@ -61,6 +82,9 @@ class DepartmentUi {
 						$h .= '<b>'.$eDepartment['position'].'.</b>';
 					$h .= '</td>';
 					$h .= '<td>';
+						if($eDepartment['icon'] !== NULL) {
+							$h .= self::getVignette($eDepartment, '4rem').'  ';
+						}
 						$h .= $eDepartment->quick('name', encode($eDepartment['name']));
 					$h .= '</td>';
 					$h .= '<td>';
@@ -120,7 +144,7 @@ class DepartmentUi {
 			$h .= $form->asteriskInfo();
 
 			$h .= $form->hidden('shop', $eShop['id']);
-			$h .= $form->dynamicGroups($eDepartment, ['name*']);
+			$h .= $form->dynamicGroups($eDepartment, ['name*', 'icon']);
 			$h .= $form->group(
 				content: $form->submit(s("Ajouter"))
 			);
@@ -142,7 +166,7 @@ class DepartmentUi {
 		$h = $form->openAjax('/shop/department:doUpdate');
 
 			$h .= $form->hidden('id', $eDepartment['id']);
-			$h .= $form->dynamicGroups($eDepartment, ['name']);
+			$h .= $form->dynamicGroups($eDepartment, ['name', 'icon']);
 			$h .= $form->group(
 				content: $form->submit(s("Modifier"))
 			);
@@ -160,10 +184,36 @@ class DepartmentUi {
 	public static function p(string $property): \PropertyDescriber {
 
 		$d = Department::model()->describer($property, [
-			'name' => s("Nom du rayon")
+			'name' => s("Nom du rayon"),
+			'icon' => s("Icône du rayon")
 		]);
 
 		switch($property) {
+
+			case 'icon' :
+				$d->field = function(\util\FormUi $form, Department $e) {
+
+					$h = '<div class="department-vignette-wrapper">';
+
+						$h .= '<label class="department-vignette-empty">';
+							$h .= '<span>'.$form->inputRadio('icon', '', s("Pas d'icône"), selectedValue: $e['icon']).'</span>';
+						$h .= '</label>';
+
+						foreach(Department::getIcons() as $icon) {
+
+							$h .= '<label class="department-vignette-icon">';
+								$h .= DepartmentUi::getVignette(new Department(['icon' => $icon]), '4rem');
+								$h .= $form->inputRadio('icon', $icon, selectedValue: $e['icon'], attributes: ['class' => 'hide']);
+							$h .= '</label>';
+
+						}
+
+					$h .= '</div>';
+
+					return $h;
+
+				};
+				break;
 
 		}
 

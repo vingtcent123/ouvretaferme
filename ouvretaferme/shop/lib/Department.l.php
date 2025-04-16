@@ -4,11 +4,11 @@ namespace shop;
 class DepartmentLib extends DepartmentCrud {
 
 	public static function getPropertiesCreate(): array {
-		return ['name'];
+		return ['name', 'icon'];
 	}
 
 	public static function getPropertiesUpdate(): array {
-		return ['name'];
+		return ['name', 'icon'];
 	}
 
 	public static function getByShop(\shop\Shop $eShop): \Collection {

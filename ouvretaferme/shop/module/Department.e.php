@@ -19,5 +19,27 @@ class Department extends DepartmentElement {
 
 	}
 
+	public static function getIcons(): array {
+
+		return ['lait', 'oeuf'];
+
+	}
+
+	public function build(array $properties, array $input, \Properties $p = new \Properties()): void {
+
+		$p
+			->setCallback('icon.check', function(?string $icon) {
+
+				return (
+					$icon == NULL or
+					in_array($icon, Department::getIcons())
+				);
+
+			});
+
+		parent::build($properties, $input, $p);
+
+	}
+
 }
 ?>
