@@ -62,7 +62,7 @@ class DepartmentUi {
 				$h .= '<tr>';
 					$h .= '<th></th>';
 					$h .= '<th>'.s("Nom").'</th>';
-					$h .= '<th>'.s("Catalogues du rayon").'</th>';
+					$h .= '<th>'.s("Catalogues").'</th>';
 					$h .= '<th></th>';
 				$h .= '</tr>';
 			$h .= '</thead>';
@@ -83,7 +83,7 @@ class DepartmentUi {
 					$h .= '</td>';
 					$h .= '<td>';
 						if($eDepartment['icon'] !== NULL) {
-							$h .= self::getVignette($eDepartment, '3rem').'  ';
+							$h .= self::getVignette($eDepartment, '3rem').'   ';
 						}
 						$h .= $eDepartment->quick('name', encode($eDepartment['name']));
 					$h .= '</td>';
@@ -204,7 +204,7 @@ class DepartmentUi {
 						foreach(Department::getIcons() as $icon) {
 
 							$h .= '<label class="department-vignette-icon">';
-								$h .= DepartmentUi::getVignette(new Department(['icon' => $icon]), '4rem');
+								$h .= DepartmentUi::getVignette(new Department(['icon' => $icon]), '3rem');
 								$h .= $form->inputRadio('icon', $icon, selectedValue: $selectedIcon, attributes: ['class' => 'hide']);
 							$h .= '</label>';
 
