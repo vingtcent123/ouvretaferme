@@ -101,13 +101,13 @@ class ProductUi {
 	protected function getListByDepartment(Shop $eShop, Date $eDate, \selling\Sale $eSale, \Collection $cDepartment, \Collection $ccProduct, bool $isModifying): string {
 
 		$h = '';
-		$h .= '<div class="util-block shop-department-list">';
+		$h .= '<div id="shop-department-list" class="util-block">';
 
 			foreach($cDepartment as $eDepartment) {
 
 				if($ccProduct->offsetExists($eDepartment['id'])) {
 
-					$h .= '<a href="" class="shop-department-item">';
+					$h .= '<a onclick="BasketManage.clickDepartment(this);" class="shop-department-item" data-department="'.$eDepartment['id'].'">';
 						$h .= DepartmentUi::getVignette($eDepartment, '3rem');
 						$h .= encode($eDepartment['name']);
 					$h .= '</a>';
@@ -124,7 +124,7 @@ class ProductUi {
 				continue;
 			}
 
-			$h .= '<div data-filter-department="'.$eDepartment['id'].'">';
+			$h .= '<div class="shop-department-element" data-department="'.$eDepartment['id'].'">';
 				$h .= '<h3 class="shop-title-group">';
 					$h .= encode($eDepartment['name']);
 				$h .= '</h3>';
