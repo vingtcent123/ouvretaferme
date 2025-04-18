@@ -572,6 +572,7 @@ body[data-template~="shop-embedded"] {
 body:not([data-template~="shop-embedded"]) {
 
 	.shop-product-ordered {
+		z-index: 1101;
 		position: fixed;
 		bottom: 0;
 		left: 0;
@@ -651,12 +652,14 @@ body:not([data-template~="shop-embedded"]) {
 	row-gap: 1rem;
 	margin-bottom: 2rem;
 	position: sticky;
-	z-index: 2000;
+	z-index: 1100;
 	transition: all 0.25s;
 	overflow-x: auto;
+	background-color: var(--secondary);
+	border-radius: var(--radius);
 }
 
-.shop-department-list-sticky {
+#shop-department-list.shop-department-list-sticky {
 	border-top-left-radius: 0;
 	border-top-right-radius: 0;
 	box-shadow: 1px 1px 1px var(--border);
@@ -668,51 +671,55 @@ a.shop-department-item {
 	justify-content: center;
 	align-items: center;
 	text-align: center;
-	color: var(--text);
-	padding: 0 1rem;
+	color: white;
 	text-decoration: none;
 	line-height: 1.2;
 }
 
-a.shop-department-item.selected,
-a.shop-department-item:hover {
-	color: var(--secondary);
+a.shop-department-item:hover,
+a.shop-department-item.selected {
+	background-color: #fff2;
 }
 
-a.shop-department-item.selected svg,
-a.shop-department-item:hover svg {
-	stroke-width: 4px;
-	stroke: var(--secondary);
+a.shop-department-item svg:not(.asset-icon) {
+	stroke: white;
 }
 
-.shop-department-item:not(:last-child) {
-	border-right: 1px solid var(--border);
+a.shop-department-item:not(:last-child) {
+	border-right: 1px solid #fff5;
 }
 
-.department-vignette {
+a.shop-department-item .department-vignette {
 	margin-bottom: 0.5rem;
-	transition: all 0.25s;
 }
 
 @media (min-height: 768px) and (min-width: 768px) {
 
 	#shop-department-list {
-		padding: 1rem 0;
+		padding: 0;
 		top: calc(var(--mainNav));
 	}
 
-	.shop-department-list-sticky .shop-department-item .department-vignette {
-		width: 2.5rem !important;
-		height: 2.5rem !important;
-		min-width: 2.5rem !important;
+	a.shop-department-item {
+		padding: 0.75rem 1rem;
+	}
+
+	.shop-department-list-sticky a.shop-department-item .department-vignette {
+		width: 2.25rem !important;
+		height: 2.25rem !important;
+		min-width: 2.25rem !important;
 	}
 
 }
 
 @media (max-height: 767px), (max-width: 767px) {
 
+	a.shop-department-item {
+		padding: 0.5rem 0.5rem;
+	}
+
 	#shop-department-list {
-		padding: 0.75rem 0;
+		padding: 0;
 		top: 0;
 	}
 
@@ -720,10 +727,10 @@ a.shop-department-item:hover svg {
 		font-size: 0.9rem;
 	}
 
-	.shop-department-item .department-vignette {
-		width: 2rem !important;
-		height: 2rem !important;
-		min-width: 2rem !important;
+	a.shop-department-item .department-vignette {
+		width: 1.75rem !important;
+		height: 1.75rem !important;
+		min-width: 1.75rem !important;
 	}
 
 }

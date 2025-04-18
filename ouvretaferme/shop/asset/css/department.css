@@ -1,15 +1,12 @@
 .department-vignette-wrapper {
 	display: flex;
 	flex-wrap: wrap;
-	row-gap: 1rem;
+	row-gap: 0.5rem;
 }
 
 .department-vignette-wrapper > * {
-	padding: 0 1rem;
-}
-
-.department-vignette-wrapper > *:not(:last-child) {
-	border-right: 1px solid var(--border);
+	padding: 0.5rem 1rem;
+	border-radius: var(--radius);
 }
 
 label.department-vignette-empty  {
@@ -24,21 +21,20 @@ label.department-vignette-icon  {
 
 label.department-vignette-icon:has(> input:checked),
 label.department-vignette-icon:hover {
-}
-
-label.department-vignette-icon:has(> input:checked) svg,
-label.department-vignette-icon:hover svg {
-	stroke-width: 4px;
+	background-color: var(--background-light);
 }
 
 .department-vignette {
-	display: inline-block;
-	vertical-align: middle;
-	border-radius: 50%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
 }
 
 .department-vignette svg {
-	stroke: var(--text);
-	stroke-width: 2px;
 	transition: all 0.25s;
+}
+
+.department-vignette svg:not(.asset-icon) {
+	stroke: var(--text);
+	stroke-width: 5px;
 }

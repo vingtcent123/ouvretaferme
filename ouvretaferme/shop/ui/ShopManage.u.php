@@ -260,7 +260,7 @@ class ShopManageUi {
 			$h .= '</div>';
 
 			$h .= '<div class="tab-panel" data-tab="departments">';
-				$h .= new DepartmentUi()->getManage($eShop, $eShop['cShare'], $eShop['ccRange'], $eShop['cDepartment']);
+				$h .= new DepartmentUi()->getManage($eShop, $eShop['cDepartment']);
 			$h .= '</div>';
 
 		$h .= '</div>';

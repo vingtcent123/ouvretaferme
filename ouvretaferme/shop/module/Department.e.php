@@ -21,7 +21,7 @@ class Department extends DepartmentElement {
 
 	public static function getIcons(): array {
 
-		return ['fruit', 'legume', 'lait', 'vin', 'biere', 'oeuf', 'fromage', 'champignon', 'plant', 'pain', 'farine', 'miel', 'pot', 'viande', 'charcuterie', 'poisson', 'tisane', 'savon', 'panier'];
+		return ['fruit', 'legume', 'lait', 'vin', 'biere', 'oeuf', 'fromage', 'champignon', 'plant', 'pain', 'farine', 'bs-flower1', 'miel', 'pot', 'viande', 'charcuterie', 'poisson', 'tisane', 'savon', 'panier', 'bs-box', 'bs-heart', 'bs-star', 'bs-list', 'bs-plus', 'bs-percent'];
 
 	}
 

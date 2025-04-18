@@ -15,8 +15,14 @@ class DepartmentUi {
 
 		$eDepartment->expects(['icon']);
 
-		$h = '<div class="department-vignette" style="'.\media\MediaUi::getSquareCss($size).'">';
+		$h = '<div class="department-vignette" style="'.\media\MediaUi::getSquareCss($size).';">';
+
+		if(str_starts_with($eDepartment['icon'], 'bs-')) {
+			$h .= \Asset::icon(substr($eDepartment['icon'], 3), ['style' => 'width: 90%; height: 90%']);
+		} else {
 			$h .= '<svg width="100%" height="100%"><use xlink:href="'.\Asset::getPath('shop', 'departments.svg', 'image').'#'.strtolower($eDepartment['icon']).'"/></svg>';
+		}
+
 		$h .= '</div>';
 
 		return $h;
@@ -24,7 +30,7 @@ class DepartmentUi {
 
 	}
 
-	public function getManage(\shop\Shop $eShop, \Collection $cShare, \Collection $ccRange, \Collection $cDepartment): string {
+	public function getManage(\shop\Shop $eShop, \Collection $cDepartment): string {
 
 		if($cDepartment->empty()) {
 
@@ -60,22 +66,16 @@ class DepartmentUi {
 		$h .= '<table class="tr-even">';
 			$h .= '<tbody>';
 
-			$ccRangeDepartment = $ccRange
-				->linearize()
-				->reindex('department');
-
 			foreach($cDepartment as $eDepartment) {
-
-				$cRange = $ccRangeDepartment[$eDepartment['id']] ?? new \Collection();
 
 				$h .= '<tr>';
 					$h .= '<td class="td-min-content">';
 						$h .= '<b>'.$eDepartment['position'].'.</b>';
 					$h .= '</td>';
+					$h .= '<td class="td-min-content">';
+						$h .= self::getVignette($eDepartment, '2.5rem');
+					$h .= '</td>';
 					$h .= '<td>';
-						if($eDepartment['icon'] !== NULL) {
-							$h .= self::getVignette($eDepartment, '3rem').'   ';
-						}
 						$h .= $eDepartment->quick('name', encode($eDepartment['name']));
 					$h .= '</td>';
 					$h .= '<td class="td-min-content">';
@@ -173,10 +173,6 @@ class DepartmentUi {
 					$selectedIcon = $e->empty() ? NULL : $e['icon'];
 
 					$h = '<div class="department-vignette-wrapper">';
-
-						$h .= '<label class="department-vignette-empty">';
-							$h .= '<span>'.$form->inputRadio('icon', '', s("Pas d'icône"), selectedValue: $selectedIcon).'</span>';
-						$h .= '</label>';
 
 						foreach(Department::getIcons() as $icon) {
 
