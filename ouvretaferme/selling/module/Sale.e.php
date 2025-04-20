@@ -148,6 +148,12 @@ class Sale extends SaleElement {
 		return $this['compositionOf']->empty();
 	}
 
+	public function canUpdateCustomer(): bool {
+
+		return $this->canWrite();
+
+	}
+
 	public function canAccess(): bool {
 
 		$this->expects(['customer', 'farm', 'marketParent']);

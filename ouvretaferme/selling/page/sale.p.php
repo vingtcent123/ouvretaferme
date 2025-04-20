@@ -243,7 +243,7 @@ new \selling\SalePage()
 
 		throw new ViewAction($data);
 
-	}, validate: ['canUpdate', 'acceptUpdateCustomer'])
+	}, validate: ['canUpdateCustomer', 'acceptUpdateCustomer'])
 	->write('doUpdateCustomer', function($data) {
 
 		$fw = new FailWatch();
@@ -256,7 +256,7 @@ new \selling\SalePage()
 
 		throw new ReloadAction('selling', 'Sale::customerUpdated');
 
-	}, validate: ['canUpdate', 'acceptUpdateCustomer'])
+	}, validate: ['canUpdateCustomer', 'acceptUpdateCustomer'])
 	->doUpdateProperties('doUpdatePaymentMethod', ['paymentMethod'], fn() => throw new ReloadAction(), validate: ['canWrite'])
 	->doUpdateProperties('doUpdatePreparationStatus', ['preparationStatus'], fn($data) => throw new ViewAction($data), validate: ['acceptWritePreparationStatus'])
 	->read('duplicate', function($data) {
