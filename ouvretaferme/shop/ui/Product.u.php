@@ -124,7 +124,9 @@ class ProductUi {
 				continue;
 			}
 
-			$h .= '<div class="shop-department-element" data-department="'.$eDepartment['id'].'">';
+			$farms = array_unique($ccProduct[$eDepartment['id']]->makeArray(fn($eProduct) => $eProduct['product']['farm']['id']));
+
+			$h .= '<div class="shop-department-element" data-department="'.$eDepartment['id'].'" data-filter-farm="'.implode(' ', $farms).'">';
 				$h .= '<h3 class="shop-title-group">';
 					$h .= encode($eDepartment['name']);
 				$h .= '</h3>';
@@ -134,7 +136,7 @@ class ProductUi {
 		}
 
 		if($ccProduct->offsetExists('')) {
-			$h .= '<div data-filter-farm="">';
+			$h .= '<div>';
 				$h .= '<h3 class="shop-title-group">'.s("Autres").'</h3>';
 				$h .= $this->getProducts($eShop, $eDate, $eSale, $isModifying, $ccProduct['']);
 			$h .= '</div>';
@@ -258,6 +260,11 @@ class ProductUi {
 
 		$eProduct->expects(['reallyAvailable']);
 
+		$showFarm = (
+			$eShop['shared'] and
+			$eDate['productsIndex'] !== 'farm'
+		);
+
 		$acceptOrder = ($eSale->canBasket($eShop) or $isModifying);
 
 		$eProductSelling = $eProduct['product'];
@@ -277,7 +284,9 @@ class ProductUi {
 			$quality = '';
 		}
 
-		$h = '<div class="shop-product '.(($eProductSelling['compositionVisibility'] === \selling\Product::PUBLIC and $eProductSelling['cItemIngredient']->notEmpty()) ? 'shop-product-composition' : '').'" data-id="'.$eProductSelling['id'].'" data-price="'.$price.'" data-has="0">';
+		$eFarm = $eProduct['product']['farm'];
+
+		$h = '<div class="shop-product '.(($eProductSelling['compositionVisibility'] === \selling\Product::PUBLIC and $eProductSelling['cItemIngredient']->notEmpty()) ? 'shop-product-composition' : '').'" data-id="'.$eProductSelling['id'].'" data-price="'.$price.'" data-has="0" '.($showFarm ? 'data-filter-farm="'.$eFarm['id'].'"' : '').'>';
 
 			if($eProductSelling['vignette'] !== NULL) {
 				$url = new \media\ProductVignetteUi()->getUrlByElement($eProductSelling, 'l');
@@ -325,12 +334,9 @@ class ProductUi {
 							}
 						$h .= '</h4>';
 
-						if(
-							$eShop['shared'] and
-							$eDate['productsIndex'] !== 'farm'
-						) {
+						if($showFarm) {
 							$h .= '<div class="shop-product-farm">';
-								$h .= \Asset::icon('person-fill').' '.encode($eProduct['product']['farm']['name']);
+								$h .= \Asset::icon('person-fill').' '.encode($eFarm['name']);
 							$h .= '</div>';
 						}
 

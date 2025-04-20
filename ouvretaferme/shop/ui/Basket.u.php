@@ -28,10 +28,10 @@ class BasketUi {
 			$h .= '</a>';
 			$h .= '<div class="dropdown-list">';
 				foreach($cShare as $eShare) {
-					$h .= '<a onclick="BasketManage.search(this, '.$eShare['farm']['id'].')" class="dropdown-item">'.encode($eShare['farm']['name']).'</a>';
+					$h .= '<a onclick="BasketManage.searchFarm(this, '.$eShare['farm']['id'].')" class="dropdown-item">'.encode($eShare['farm']['name']).'</a>';
 				}
 			$h .= '</div>';
-			$h .= '<a id="basket-search-close" onclick="BasketManage.closeSearch()" class="btn btn-secondary ml-1 hide">'.\Asset::icon('x-lg').'</a>';
+			$h .= '<a id="basket-search-close" onclick="BasketManage.closeSearchFarm()" class="btn btn-secondary ml-1 hide">'.\Asset::icon('x-lg').'</a>';
 		$h .= '</div>';
 
 		return $h;

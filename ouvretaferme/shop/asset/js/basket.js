@@ -111,16 +111,17 @@ class BasketManage {
 		return document.body.dataset.template.includes('embed');
 	}
 
-	static search(target, farmId) {
+	static searchFarm(target, farmId) {
 
 		qs('#basket-search-close').removeHide();
 		qs('#basket-search-label').innerHTML = target.innerHTML;
-		qs('[data-filter-farm="'+ farmId +'"]', node => node.removeHide());
-		qsa('[data-filter-farm]:not([data-filter-farm="'+ farmId +'"])', node => node.hide());
+
+		qsa('[data-filter-farm~="'+ farmId +'"]', node => node.removeHide());
+		qsa('[data-filter-farm]:not([data-filter-farm~="'+ farmId +'"])', node => node.hide());
 
 	}
 
-	static closeSearch() {
+	static closeSearchFarm() {
 
 		qs('#basket-search-label').innerHTML = qs('#basket-search').dataset.label;
 		qs('#basket-search-close').hide();
