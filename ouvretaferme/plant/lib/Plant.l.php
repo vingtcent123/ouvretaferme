@@ -225,13 +225,22 @@ class PlantLib extends PlantCrud {
 
 		Plant::model()->beginTransaction();
 
-		Variety::model()
-			->wherePlant($e)
-			->delete();
+			Variety::model()
+				->whereFarm($e['farm'])
+				->wherePlant($e)
+				->delete();
 
-		Forecast::model()
-			->wherePlant($e)
-			->delete();
+			Forecast::model()
+				->whereFarm($e['farm'])
+				->wherePlant($e)
+				->delete();
+
+			\selling\Product::model()
+				->whereFarm($e['farm'])
+				->wherePlant($e)
+				->update([
+					'plant' => new Plant()
+				]);
 
 		Plant::model()->delete($e);
 
