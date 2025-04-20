@@ -1,8 +1,4 @@
 /* Afficher les articles d'une vente */
-table.item-item-table td:not(.item-item-actions) {
-	border-bottom: 0;
-}
-
 td.item-item-actions {
 	text-align: right;
 }
@@ -37,6 +33,10 @@ td.item-item-price {
 
 .item-item-empty {
 	padding: 0;
+}
+
+.item-item-farm {
+	background-color: #00000005;
 }
 
 .item-item-vignette {

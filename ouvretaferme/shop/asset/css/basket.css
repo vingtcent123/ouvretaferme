@@ -110,11 +110,6 @@
 	margin-bottom: 2rem;
 }
 
-#shop-basket-summary-list thead tr,
-#shop-basket-summary-list tbody tr {
-    border-bottom: 1px solid #0003;
-}
-
 #shop-basket-summary-list td.basket-summary-product {
 	line-height: 1.4;
 }

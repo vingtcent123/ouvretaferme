@@ -351,7 +351,7 @@ class BasketManage {
 				const price = parseFloat(product.dataset.price);
 
 				articles++;
-				amount += number * price;
+				amount += Math.round(number * price * 100) / 100;
 
 				product.qs('.shop-product-number-decrease').classList.remove('shop-product-number-decrease-disabled');
 

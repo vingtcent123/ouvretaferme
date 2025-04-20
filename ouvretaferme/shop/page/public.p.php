@@ -429,7 +429,7 @@ new Page(function($data) {
 		}
 
 		$data->price = round(array_reduce($data->basket, function($total, $item) {
-			return $total + $item['product']['price'] * $item['number'] * ($item['product']['packaging'] ?? 1);
+			return $total + round($item['product']['price'] * $item['number'] * ($item['product']['packaging'] ?? 1), 2);
 		}, 0), 2);
 
 		throw new ViewAction($data);

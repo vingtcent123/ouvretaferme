@@ -134,7 +134,7 @@ class ItemUi {
 
 			$h .= '<div class="stick-xs">';
 
-				$h .= '<table class="tbody-even item-item-table">';
+				$h .= '<table class="tbody-even">';
 
 					$h .= '<thead>';
 						$h .= '<tr>';

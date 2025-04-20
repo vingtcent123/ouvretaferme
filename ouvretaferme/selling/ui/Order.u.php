@@ -432,7 +432,7 @@ class OrderUi {
 		$withPackaging = $cItem->reduce(fn($eItem, $n) => $n + (int)($eItem['packaging'] !== NULL), 0);
 		$columns = 0;
 
-		$h .= '<table class="tbody-even stick-xs item-item-table">';
+		$h .= '<table class="stick-xs tr-bordered">';
 
 			$h .= '<thead>';
 				$h .= '<tr>';
@@ -465,86 +465,22 @@ class OrderUi {
 				$h .= '</tr>';
 			$h .= '</thead>';
 
-			foreach($cItem as $eItem) {
+			if(
+				$eSale['shop']->notEmpty() and
+				$eSale['shop']['shared']
+			) {
 
-				$description = [];
+				$ccItem = $cItem->reindex(['product', 'farm']);
 
-				if($eItem['quality']) {
-					$description[] = \farm\FarmUi::getQualityLogo($eItem['quality'], '1.5rem');
+				foreach($ccItem as $cItem) {
+					$h .= $this->getItemsBody($eSale, $cItem, $columns, $withPackaging);
 				}
 
-				$h .= '<tbody>';
-					$h .= '<tr>';
-
-						$h .= '<td class="item-item-vignette">';
-							if($eItem['product']->notEmpty()) {
-								$h .= ProductUi::getVignette($eItem['product'], '2rem', public: TRUE);
-							}
-						$h .= '</td>';
-
-						$h .= '<td>';
-							$h .= encode($eItem['name']);
-						$h .= '</td>';
-						$h .= '<td>'.implode('  ', $description).'</td>';
-
-						if($withPackaging) {
-
-							$h .= '<td class="text-end">';
-								if($eItem['packaging']) {
-									$h .= \selling\UnitUi::getValue($eItem['packaging'], $eItem['unit'], TRUE);
-								} else {
-									$h .= '-';
-								}
-							$h .= '</td>';
-
-						}
-
-						$h .= '<td class="item-item-number text-end">';
-							if($eItem['packaging']) {
-								$h .= \selling\UnitUi::getValue($eItem['number'] * $eItem['packaging'], $eItem['unit'], TRUE);
-							} else {
-								$h .= \selling\UnitUi::getValue($eItem['number'], $eItem['unit'], TRUE);
-							}
-						$h .= '</td>';
-
-						$h .= '<td class="item-item-unit-price text-end">';
-							if($eItem['unit']) {
-								$unit = '<span class="util-annotation">'.\selling\UnitUi::getBy($eItem['unit'], short: TRUE).'</span>';
-							} else {
-								$unit = '';
-							}
-							$h .= \util\TextUi::money($eItem['unitPrice']);
-							if($eSale['hasVat'] and $eSale['type'] === Customer::PRO) {
-								$h .= ' '.$eSale->getTaxes();
-							}
-							$h .= ' '.$unit;
-						$h .= '</td>';
-
-						$h .= '<td class="item-item-price text-end">';
-							$h .= \util\TextUi::money($eItem['price']);
-							if($eSale['hasVat'] and $eSale['type'] === Customer::PRO) {
-								$h .= ' '.$eSale->getTaxes();
-							}
-						$h .= '</td>';
-
-						if($eSale['hasVat'] and $eSale['type'] === Customer::PRO) {
-
-							$h .= '<td class="item-item-vat text-center">';
-								$h .= s('{value} %', $eItem['vatRate']);
-							$h .= '</td>';
-
-						}
-
-					$h .= '</tr>';
-
-					$h .= new ItemUi()->getComposition($eSale, $eItem, $columns);
-
-				$h .= '</tbody>';
-
+			} else {
+				$h .= $this->getItemsBody($eSale, $cItem, $columns, $withPackaging);
 			}
 
 			if($eSale['shipping'] !== NULL) {
-
 
 				$h .= '<tbody>';
 					$h .= '<tr>';
@@ -581,6 +517,107 @@ class OrderUi {
 			}
 
 		$h .= '</table>';
+
+		return $h;
+
+	}
+
+	protected function getItemsBody(Sale $eSale, \Collection $cItem, int $columns, bool $withPackaging): string {
+
+		$h = '';
+
+		foreach($cItem as $position => $eItem) {
+
+			$description = [];
+
+			if($eItem['quality']) {
+				$description[] = \farm\FarmUi::getQualityLogo($eItem['quality'], '1.5rem');
+			}
+
+			$h .= '<tbody>';
+
+				if(
+					$eSale['shop']->notEmpty() and
+					$eSale['shop']['shared'] and
+					$position === 0
+				) {
+
+					$h .= '<tr class="item-item-farm">';
+						$h .= '<td colspan="'.($columns + 1).'">';
+							$h .= $eItem['farm']['name'];
+						$h .= '</td>';
+					$h .= '</tr>';
+
+				}
+
+				$h .= '<tr>';
+
+					$h .= '<td class="item-item-vignette">';
+						if($eItem['product']->notEmpty()) {
+							$h .= ProductUi::getVignette($eItem['product'], '2rem', public: TRUE);
+						}
+					$h .= '</td>';
+
+					$h .= '<td>';
+						$h .= encode($eItem['name']);
+					$h .= '</td>';
+					$h .= '<td>'.implode('  ', $description).'</td>';
+
+					if($withPackaging) {
+
+						$h .= '<td class="text-end">';
+							if($eItem['packaging']) {
+								$h .= \selling\UnitUi::getValue($eItem['packaging'], $eItem['unit'], TRUE);
+							} else {
+								$h .= '-';
+							}
+						$h .= '</td>';
+
+					}
+
+					$h .= '<td class="item-item-number text-end">';
+						if($eItem['packaging']) {
+							$h .= \selling\UnitUi::getValue($eItem['number'] * $eItem['packaging'], $eItem['unit'], TRUE);
+						} else {
+							$h .= \selling\UnitUi::getValue($eItem['number'], $eItem['unit'], TRUE);
+						}
+					$h .= '</td>';
+
+					$h .= '<td class="item-item-unit-price text-end">';
+						if($eItem['unit']) {
+							$unit = '<span class="util-annotation">'.\selling\UnitUi::getBy($eItem['unit'], short: TRUE).'</span>';
+						} else {
+							$unit = '';
+						}
+						$h .= \util\TextUi::money($eItem['unitPrice']);
+						if($eSale['hasVat'] and $eSale['type'] === Customer::PRO) {
+							$h .= ' '.$eSale->getTaxes();
+						}
+						$h .= ' '.$unit;
+					$h .= '</td>';
+
+					$h .= '<td class="item-item-price text-end">';
+						$h .= \util\TextUi::money($eItem['price']);
+						if($eSale['hasVat'] and $eSale['type'] === Customer::PRO) {
+							$h .= ' '.$eSale->getTaxes();
+						}
+					$h .= '</td>';
+
+					if($eSale['hasVat'] and $eSale['type'] === Customer::PRO) {
+
+						$h .= '<td class="item-item-vat text-center">';
+							$h .= s('{value} %', $eItem['vatRate']);
+						$h .= '</td>';
+
+					}
+
+				$h .= '</tr>';
+
+				$h .= new ItemUi()->getComposition($eSale, $eItem, $columns);
+
+			$h .= '</tbody>';
+
+		}
 
 		return $h;
 

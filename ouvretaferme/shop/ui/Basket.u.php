@@ -187,7 +187,7 @@ class BasketUi {
 
 		$h .= '<div id="shop-basket-summary-list" class="mb-2">';
 
-			$h .= '<table class="stick-xs">';
+			$h .= '<table class="stick-xs tr-bordered">';
 
 				$columns = 6;
 
@@ -275,7 +275,7 @@ class BasketUi {
 			];
 
 			$unitPrice = \util\TextUi::money($eProduct['price']).' '.ProductUi::getTaxes($eProduct).\selling\UnitUi::getBy($eProductSelling['unit'], short: TRUE);
-			$price = $eProduct['price'] * $product['number'] * ($eProduct['packaging'] ?? 1);
+			$price = round($eProduct['price'] * $product['number'] * ($eProduct['packaging'] ?? 1), 2);
 
 			$h .= '<tr>';
 				$h .= '<td class="td-min-content">';
