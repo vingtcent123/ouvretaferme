@@ -321,6 +321,20 @@ class DateLib extends DateCrud {
 
 	}
 
+	public static function getFutureByShop(Shop $eShop): Date|\Collection {
+
+		return Date::model()
+			->select(Date::getSelection())
+			->whereShop($eShop)
+			->whereStatus(Date::ACTIVE)
+			->where('orderEndAt > NOW()')
+			->sort([
+				'deliveryDate' => SORT_ASC
+			])
+			->getCollection(index: 'id');
+
+	}
+
 	public static function sendEndEmail(): void {
 
 		$cDate = Date::model()

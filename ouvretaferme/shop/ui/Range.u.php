@@ -46,7 +46,7 @@ class RangeUi {
 
 				$h .= $form->hidden('shop', $eRange['shop']['id']);
 				$h .= $form->hidden('farm', $eRange['farm']['id']);
-				$h .= $form->dynamicGroups($eRange, ['catalog*', 'status*']);
+				$h .= $form->dynamicGroups($eRange, ['catalog*', 'status*', 'datesList']);
 				$h .= $form->group(
 					content: $form->submit(s("Associer à la boutique"))
 				);
@@ -91,6 +91,7 @@ class RangeUi {
 		$d = Range::model()->describer($property, [
 			'catalog' => s("Catalogue"),
 			'status' => s("Activation"),
+			'datesList' => s("Activer le catalogue sur des ventes en cours"),
 		]);
 
 		switch($property) {
@@ -108,6 +109,30 @@ class RangeUi {
 				];
 				break;
 
+			case 'datesList' :
+				$d->field = function(\util\FormUi $form, Range $e) {
+
+					$e->expects(['cDateAvailable']);
+
+					if($e['cDateAvailable']->empty()) {
+						return '<div class="util-info">'.s("Aucun produit n'est disponible à la vente.").'</div>';
+					}
+
+					$dates = [];
+
+					foreach($e['cDateAvailable'] as $eDate) {
+						$dates[$eDate['id']] = s("Vente du {value}", \util\DateUi::numeric($eDate['deliveryDate']));
+					}
+
+					return $form->checkboxes('datesList[]', $dates);
+
+				};
+				$d->group = [
+					'wrapper' => 'datesList',
+					'for' => FALSE
+				];
+				break;
+
 		}
 
 		return $d;
@@ -118,7 +143,7 @@ class RangeUi {
 
 		return match($status) {
 			Range::AUTO => s("Catalogue activé par défaut à chaque nouvelle vente dans la boutique"),
-			Range::MANUAL => s("Catalogue à activer manuellement dans la boutique pour autoriser les commandes"),
+			Range::MANUAL => s("Catalogue à activer manuellement à chaque nouvelle vente pour autoriser les commandes"),
 		};
 
 	}

@@ -126,6 +126,7 @@ class ShareUi {
 													}
 												$h .= '</th>';
 												$h .= '<th>'.s("Activation").'</th>';
+												$h .= '<th>'.s("Actions").'</th>';
 											$h .= '</tr>';
 
 										$h .= '</thead>';
@@ -173,18 +174,8 @@ class ShareUi {
 		$eCatalog = $eRange['catalog'];
 
 		$h = '<td>';
-			if($eRange->canWrite()) {
-				$h .= '<a data-dropdown="bottom-start" class="dropdown-toggle">';
-					$h .= encode($eCatalog['name']);
-					$h .= ' <small class="color-muted">/ '.p("{value} produit", "{value} produits", $eRange['catalog']['products']).'</small>';
-				$h .= '</a>';
-				$h .= '<div class="dropdown-list bg-secondary">';
-					$h .= '<a href="/shop/catalog:show?id='.$eCatalog['id'].'" class="dropdown-item">'.s("Consulter le contenu du catalogue").'</a>';
-					$h .= '<a href="/shop/range:dissociate?id='.$eRange['id'].'" class="dropdown-item">'.s("Dissocier le catalogue de la boutique").'</a>';
-				$h .= '</div>';
-			} else {
-				$h .= '<a href="/shop/catalog:show?id='.$eCatalog['id'].'">'.encode($eCatalog['name']).'</a>';
-			}
+			$h .= encode($eCatalog['name']);
+			$h .= ' <small class="color-muted">/ '.p("{value} produit", "{value} produits", $eRange['catalog']['products']).'</small>';
 		$h .= '</td>';
 		$h .= '<td>';
 
@@ -215,6 +206,14 @@ class ShareUi {
 		$h .= '</td>';
 		$h .= '<td class="td-min-content">';
 			$h .= new RangeUi()->toggle($eRange);
+		$h .= '</td>';
+		$h .= '<td class="td-min-content">';
+			$h .= '<a href="/shop/catalog:show?id='.$eCatalog['id'].'" class="btn btn-outline-secondary" title="'.s("Consulter le contenu du catalogue").'">'.\Asset::icon('search').'</a> ';
+			if($eRange->canWrite()) {
+				$h .= '<a href="/shop/range:dissociate?id='.$eRange['id'].'" class="btn btn-outline-secondary" title="'.s("Dissocier le catalogue de la boutique").'">'.\Asset::icon('trash-fill').'</a>';
+			} else {
+				$h .= '<a class="btn btn-outline-secondary disabled">'.\Asset::icon('trash-fill').'</a>';
+			}
 		$h .= '</td>';
 
 		return $h;

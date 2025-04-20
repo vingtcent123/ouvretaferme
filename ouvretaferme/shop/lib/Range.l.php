@@ -6,13 +6,23 @@ class RangeLib extends RangeCrud {
 	private static ?\Collection $cCatalogOnline = NULL;
 
 	public static function getPropertiesCreate(): array {
-		return ['catalog', 'status'];
+		return ['catalog', 'status', 'datesList'];
 	}
 
 	public static function create(Range $e): void {
 
 		try {
+
+			Range::model()->beginTransaction();
+
 			parent::create($e);
+
+				foreach($e['cDate'] as $eDate) {
+					\shop\DateLib::updateCatalog($eDate, $e['catalog'], TRUE);
+				}
+
+			Range::model()->commit();
+
 		} catch(\DuplicateException) {
 			Range::fail('duplicate');
 		}

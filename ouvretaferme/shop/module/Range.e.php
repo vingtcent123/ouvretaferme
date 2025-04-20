@@ -58,6 +58,28 @@ class Range extends RangeElement {
 						->exists($eDepartment)
 				);
 
+			})
+			->setCallback('datesList.check', function(mixed $list) {
+
+				$this->expects(['cDateAvailable']);
+
+				$cDateAvaible = $this['cDateAvailable'];
+				$cDate = new \Collection();
+
+				foreach((array)$list as $date) {
+
+					if($cDateAvaible->offsetExists($date) === FALSE) {
+						return FALSE;
+					}
+
+					$cDate[] = $cDateAvaible[$date];
+
+				}
+
+				$this['cDate'] = $cDate;
+
+				return TRUE;
+
 			});
 
 		parent::build($properties, $input, $p);

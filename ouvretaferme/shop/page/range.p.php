@@ -12,7 +12,8 @@ new \shop\RangePage(function($data) {
 		return new \shop\Range([
 			'shop' => $data->eShop,
 			'farm' => $data->eFarm,
-			'cCatalog' => \shop\CatalogLib::getForRange($data->eFarm, $data->eShop)
+			'cCatalog' => \shop\CatalogLib::getForRange($data->eFarm, $data->eShop),
+			'cDateAvailable' => \shop\DateLib::getFutureByShop($data->eShop)
 		]);
 
 	})
