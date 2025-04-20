@@ -147,6 +147,16 @@ class PointLib extends PointCrud {
 
 	}
 
+	public static function update(Point $e, array $properties): void {
+
+		try {
+			parent::update($e, $properties);
+		} catch(\DuplicateException) {
+			Point::fail('name.duplicate');
+		}
+
+	}
+
 	public static function delete(Point $ePoint): void {
 
 		$ePoint->expects(['farm']);
