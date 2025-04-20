@@ -783,7 +783,7 @@ class DateUi {
 		}
 
 		$h = '<div class="util-overflow-xs">';
-			$h .= '<table class="tbody-even">';
+			$h .= '<table class="tr-even">';
 
 				$h .= '<thead>';
 
@@ -795,7 +795,7 @@ class DateUi {
 								$h .= s("Rayon");
 							$h .= '</th>';
 						}
-						$h .= '<th class="text-center"></th>';
+						$h .= '<th class="text-center">'.s("État").'</th>';
 					$h .= '</tr>';
 
 				$h .= '</thead>';
@@ -825,25 +825,11 @@ class DateUi {
 						continue;
 					}
 
-					$h .= '<tbody>';
-
+					foreach($cRange as $eRange) {
 						$h .= '<tr>';
-							$h .= '<td rowspan="'.$cRange->count().'">';
-								$h .= \farm\FarmUi::getVignette($eShare['farm'], '3rem').'  ';
-								$h .= encode($eShare['farm']['name']);
-							$h .= '</td>';
-
-							$h .= $this->getCatalog($eDate, $cRange->first(), $cDepartment);
-
+							$h .= $this->getCatalog($eDate, $eShare, $eRange, $cDepartment);
 						$h .= '</tr>';
-
-						foreach($cRange->slice(1) as $eRange) {
-							$h .= '<tr>';
-								$h .= $this->getCatalog($eDate, $eRange, $cDepartment);
-							$h .= '</tr>';
-						}
-
-					$h .= '</tbody>';
+					}
 
 				}
 
@@ -855,20 +841,28 @@ class DateUi {
 
 	}
 
-	protected function getCatalog(Date $eDate, Range $eRange, \Collection $cDepartment): string {
+	protected function getCatalog(Date $eDate, Share $eShare, Range $eRange, \Collection $cDepartment): string {
 
 		$eRange->expects(['id', 'catalog', 'department']);
 
 		$selected = in_array($eRange['catalog']['id'], $eDate['catalogs']);
 
-		$h = '<td class="td-border">';
+		$h = '<td >';
+			$h .= \farm\FarmUi::getVignette($eShare['farm'], '2rem').'  ';
+			$h .= encode($eShare['farm']['name']);
+		$h .= '</td>';
+		$h .= '<td class="td-border">';
 			$h .= '<a href="/shop/catalog:show?id='.$eRange['catalog']['id'].'">'.encode($eRange['catalog']['name']).'</a>';
 			$h .= ' <small class="color-muted">/ '.p("{value} produit", "{value} produits", $eRange['catalog']['products']).'</small>';
 		$h .= '</td>';
 
 		if($cDepartment->notEmpty()) {
 			$h .= '<td class="td-border">';
-				$h .= $eRange['department']->empty() ? '-' :  encode($cDepartment[$eRange['department']['id']]['name']);
+				if($eRange['department']->notEmpty()) {
+					$h .= DepartmentUi::getVignette($cDepartment[$eRange['department']['id']], '1.75rem').'  '.encode($cDepartment[$eRange['department']['id']]['name']);
+				} else {
+					$h .= '-';
+				}
 			$h .= '</td>';
 		}
 

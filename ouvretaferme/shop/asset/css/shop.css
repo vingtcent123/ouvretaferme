@@ -404,11 +404,6 @@ div.shop-widget-order {
 	font-size: 1.6rem;
 }
 
-.shop-share-list tbody.selected {
-	border: 1px solid var(--primary);
-	box-shadow: 0 0 1rem #0003;
-}
-
 a.shop-share-range-department {
 	color: var(--text);
 }

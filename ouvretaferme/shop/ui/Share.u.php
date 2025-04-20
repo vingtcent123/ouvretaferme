@@ -45,67 +45,37 @@ class ShareUi {
 
 	public function getFarms(\farm\Farm $eFarm, Shop $eShop, \Collection $cShare, \Collection $cDepartment): string {
 
-		$h = '<div class="util-overflow-lg">';
+		$h = '<div class="util-overflow-md">';
 
-			$h .= '<table class="shop-share-list tbody-even">';
-
-				$h .= '<thead>';
-
-					$h .= '<tr>';
-						$h .= '<th></th>';
-						$h .= '<th colspan="2">'.s("Producteur").'</th>';
-						$h .= '<th class="hide-md-down">'.s("Activité").'</th>';
-						$h .= '<th class="highlight highlight-stick-right">'.s("Catalogue").'</th>';
-						$h .= '<th class="highlight highlight-stick-both">';
-							if($cDepartment->notEmpty()) {
-								$h .= s("Rayon");
-							}
-						$h .= '</th>';
-						$h .= '<th class="highlight highlight-stick-left">'.s("Activation").'</th>';
-						$h .= '<th class="td-min-content"></th>';
-					$h .= '</tr>';
-
-				$h .= '</thead>';
-
+			$h .= '<table class="shop-share-list">';
 
 				foreach($cShare as $eShare) {
 
 					$cRange = $eShop['ccRange'][$eShare['farm']['id']] ?? new \Collection();
 					$selected = ($eShare['farm']['id'] === $eFarm['id']);
 
-					$rows = max(1, $cRange->count()) + (int)$selected;
-
-					$h .= '<tbody '.($selected ? 'class="selected"' : '').'>';
+					$h .= '<tbody>';
 						$h .= '<tr>';
-							$h .= '<td class="td-min-content" rowspan="'.$rows.'">';
+							$h .= '<td class="td-min-content">';
 								$h .= '<b>'.$eShare['position'].'.</b>';
 							$h .= '</td>';
 
-							$h .= '<td class="td-min-content" rowspan="'.$rows.'">';
+							$h .= '<td class="td-min-content">';
 								$h .= \farm\FarmUi::getVignette($eShare['farm'], '3rem');
 							$h .= '</td>';
 
-							$h .= '<td class="td-min-content" rowspan="'.$rows.'">';
+							$h .= '<td>';
 								$h .= encode($eShare['farm']['name']);
 								if($eShare['label'] !== NULL) {
-									$h .= '<div class="color-muted hide-lg-up"><small>'.$eShare->quick('label', ($eShare['label'] === NULL) ? '-' : encode($eShare['label'])).'</small></div>';
+									$h .= '  <small class="color-muted">'.$eShare->quick('label', ($eShare['label'] === NULL) ? '-' : encode($eShare['label'])).'</small>';
+								}
+								if($selected) {
+									$h .= '  <span class="util-badge bg-primary">'.s("Votre ferme").'</span>';
 								}
 							$h .= '</td>';
 
-							$h .= '<td rowspan="'.$rows.'" class="hide-md-down">';
-								$h .= $eShare->quick('label', ($eShare['label'] === NULL) ? '-' : encode($eShare['label']));
-							$h .= '</td>';
 
-
-							if($cRange->notEmpty()) {
-								$h .= $this->getRange($cRange->first(), $cDepartment);
-							} else {
-								$h .= '<td class="highlight" colspan="3">';
-									$h .= '<span class="color-muted">'.s("Aucun catalogue").'</span>';
-								$h .= '</td>';
-							}
-
-							$h .= '<td class="td-min-content" rowspan="'.$rows.'">';
+							$h .= '<td class="td-min-content">';
 
 								if($eShop->canWrite()) {
 
@@ -142,28 +112,48 @@ class ShareUi {
 
 						$h .= '</tr>';
 
-						foreach($cRange->slice(1) as $eRange) {
-							$h .= '<tr>';
-								$h .= $this->getRange($eRange, $cDepartment);
-							$h .= '</tr>';
-						}
+						$h .= '<tr>';
+							$h .= '<td colspan="4">';
 
-						if($selected) {
+									$h .= '<table class="util-block">';
+										$h .= '<thead>';
 
-							$h .= '<tr>';
-								$h .= '<td class="highlight" colspan="3">';
-									$h .= '<a href="/shop/range:create?farm='.$eFarm['id'].'&shop='.$eShop['id'].'" class="btn btn-primary btn-sm">';
-										if($cRange->empty()) {
-											$h .= s("Associer un catalogue à la boutique");
-										} else {
-											$h .= s("Associer un autre catalogue");
-										}
-									$h .= '</a>';
-								$h .= '</td>';
-							$h .= '</tr>';
+											$h .= '<tr>';
+												$h .= '<th>'.s("Catalogue").'</th>';
+												$h .= '<th style="width: 20rem">';
+													if($cDepartment->notEmpty()) {
+														$h .= s("Rayon");
+													}
+												$h .= '</th>';
+												$h .= '<th>'.s("Activation").'</th>';
+											$h .= '</tr>';
 
-						}
+										$h .= '</thead>';
+										$h .= '<tbody>';
 
+											foreach($cRange as $eRange) {
+												$h .= '<tr>';
+													$h .= $this->getRange($eRange, $cDepartment);
+												$h .= '</tr>';
+											}
+
+										$h .= '</tbody>';
+									$h .= '</table>';
+
+									if($selected) {
+
+										$h .= '<a href="/shop/range:create?farm='.$eFarm['id'].'&shop='.$eShop['id'].'" class="btn btn-primary btn-sm mb-1">';
+											if($cRange->empty()) {
+												$h .= s("Associer un catalogue à la boutique");
+											} else {
+												$h .= s("Associer un autre catalogue");
+											}
+										$h .= '</a>';
+
+									}
+
+							$h .= '</td>';
+						$h .= '</tr>';
 
 					$h .= '</tbody>';
 
@@ -182,7 +172,7 @@ class ShareUi {
 
 		$eCatalog = $eRange['catalog'];
 
-		$h = '<td class="highlight highlight-stick-right">';
+		$h = '<td>';
 			if($eRange->canWrite()) {
 				$h .= '<a data-dropdown="bottom-start" class="dropdown-toggle">';
 					$h .= encode($eCatalog['name']);
@@ -196,20 +186,23 @@ class ShareUi {
 				$h .= '<a href="/shop/catalog:show?id='.$eCatalog['id'].'">'.encode($eCatalog['name']).'</a>';
 			}
 		$h .= '</td>';
-		$h .= '<td class="highlight highlight-stick-both">';
+		$h .= '<td>';
 
 			if($cDepartment->notEmpty()) {
 
-				$department = $eRange['department']->empty() ? s("Pas de rayonnage") :  encode($cDepartment[$eRange['department']['id']]['name']);
+				$department = $eRange['department']->empty() ? s("Pas de rayonnage") : encode($cDepartment[$eRange['department']['id']]['name']);
 
 				if($eRange->canWrite()) {
+					if($eRange['department']->notEmpty()) {
+						$h .= DepartmentUi::getVignette($cDepartment[$eRange['department']['id']], '1.75rem').'  ';
+					}
 
 					$h .= '<a data-dropdown="bottom-start" class="shop-share-range-department dropdown-toggle">';
 						$h .= $department;
 					$h .= '</a>';
 					$h .= '<div class="dropdown-list bg-secondary">';
 						foreach($cDepartment as $eDepartment) {
-							$h .= '<a data-ajax="/shop/range:doUpdateDepartment" post-id="'.$eRange['id'].'" post-department="'.$eDepartment['id'].'" class="dropdown-item '.(($eRange['department']->notEmpty() and $eDepartment['id'] === $eRange['department']['id']) ? 'selected' : '').'">'.encode($eDepartment['name']).'</a>';
+							$h .= '<a data-ajax="/shop/range:doUpdateDepartment" post-id="'.$eRange['id'].'" post-department="'.$eDepartment['id'].'" class="dropdown-item '.(($eRange['department']->notEmpty() and $eDepartment['id'] === $eRange['department']['id']) ? 'selected' : '').'">'.DepartmentUi::getVignette($eDepartment, '2rem').'  '.encode($eDepartment['name']).'</a>';
 						}
 						$h .= '<a data-ajax="/shop/range:doUpdateDepartment" post-id="'.$eRange['id'].'" post-department="" class="dropdown-item '.($eRange['department']->empty() ? 'selected' : '').'"><i>'.s("Pas de rayonnage").'</i></a>';
 					$h .= '</div>';
@@ -220,7 +213,7 @@ class ShareUi {
 
 			}
 		$h .= '</td>';
-		$h .= '<td class="highlight highlight-stick-left td-min-content">';
+		$h .= '<td class="td-min-content">';
 			$h .= new RangeUi()->toggle($eRange);
 		$h .= '</td>';
 

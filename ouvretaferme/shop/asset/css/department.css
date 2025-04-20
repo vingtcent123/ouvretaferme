@@ -25,9 +25,10 @@ label.department-vignette-icon:hover {
 }
 
 .department-vignette {
-	display: flex;
+	display: inline-flex;
 	align-items: center;
 	justify-content: center;
+	vertical-align: middle;
 }
 
 .department-vignette svg {
@@ -37,4 +38,8 @@ label.department-vignette-icon:hover {
 .department-vignette svg:not(.asset-icon) {
 	stroke: var(--text);
 	stroke-width: 5px;
+}
+
+.dropdown-item .department-vignette svg:not(.asset-icon) {
+	stroke: white;
 }
