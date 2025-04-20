@@ -264,7 +264,7 @@ class SaleUi {
 										$h .= '<input type="checkbox" class="batch-all" onclick="Sale.toggleDaySelection(this)"/>';
 									$h .= '</label>';
 								$h .= '</th>';
-								$h .= '<td colspan="'.$columns.'" class="sale-item-date">';
+								$h .= '<td colspan="'.$columns.'">';
 									$h .= match($currentSubtitle) {
 										Sale::DRAFT => s("Brouillon"),
 										currentDate() => s("Aujourd'hui"),
@@ -291,7 +291,7 @@ class SaleUi {
 							if($currentSegment->is($previousSegment) === FALSE) {
 
 								$h .= '<tr class="tr-title">';
-									$h .= '<td colspan="'.($columns + 1).'" class="sale-item-date">';
+									$h .= '<td colspan="'.($columns + 1).'">';
 										if($eSale['shopPoint']->empty()) {
 											$h .= s("Aucun mode de livraison");
 										} else if($eSale['shopPoint']['type'] === \shop\Point::HOME) {

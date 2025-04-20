@@ -224,7 +224,7 @@ class BasketUi {
 
 							$eFarm = first($basket)['product']['product']['farm'];
 
-							$h .= '<tr class="tr-title shop-basket-summary-farm">';
+							$h .= '<tr class="shop-basket-summary-farm">';
 								$h .= '<td colspan="'.$columns.'">'.encode($eFarm['name']).'</td>';
 							$h .= '</tr>';
 

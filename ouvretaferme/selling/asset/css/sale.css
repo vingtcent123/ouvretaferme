@@ -15,11 +15,6 @@ td.sale-item-invoice {
 	padding: 0.5rem 1rem;
 }
 
-td.sale-item-date {
-	text-transform: uppercase;
-	font-weight: bold;
-}
-
 @media (max-width: 575px) {
 
 	td.sale-item-name {

@@ -8,6 +8,7 @@ class Item extends ItemElement {
 		return parent::getSelection() + [
 			'sale' => ['farm', 'hasVat', 'type', 'taxes', 'shippingVatRate', 'shippingVatFixed', 'document', 'preparationStatus', 'market', 'marketParent', 'compositionOf', 'compositionEndAt', 'shipping', 'deliveredAt'],
 			'customer' => ['name', 'type'],
+			'farm' => ['name'],
 			'unit' => ['fqn', 'by', 'singular', 'plural', 'short', 'type'],
 			'product' => [
 				'name', 'farm', 'variety', 'description', 'vignette', 'size', 'origin', 'plant',

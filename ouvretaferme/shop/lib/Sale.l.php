@@ -139,7 +139,7 @@ class SaleLib {
 
 			$eItem = new \selling\Item([
 				'sale' => $eSale,
-				'farm' => $eSale['farm'],
+				'farm' => $eProductSelling['farm'],
 				'customer' => $eSale['customer'],
 				'shopProduct' => $eProduct,
 				'product' => $eProductSelling,
@@ -266,7 +266,7 @@ class SaleLib {
 
 			$eItem = new \selling\Item([
 				'sale' => $eSale,
-				'farm' => $eSale['farm'],
+				'farm' => $eProductSelling['farm'],
 				'customer' => $eSale['customer'],
 				'shopProduct' => $eProduct,
 				'product' => $eProductSelling,

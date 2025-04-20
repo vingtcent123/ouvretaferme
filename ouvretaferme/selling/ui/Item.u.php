@@ -182,176 +182,22 @@ class ItemUi {
 						$h .= '</tr>';
 					$h .= '</thead>';
 
-					foreach($cItem as $eItem) {
+					if(
+						$eSale['shop']->notEmpty() and
+						$eSale['shop']['shared']
+					) {
 
-						if($eItem['product']->notEmpty()) {
-							$vignette = ProductUi::getVignette($eItem['product'], '2.75rem');
-						} else {
-							$vignette = '';
+						$ccItem = $cItem->reindex( ['product', 'farm']);
+
+						foreach($ccItem as $cItem) {
+							$h .= $this->getItemsBody($eSale, $cItem, $columns, $withPackaging);
 						}
 
-						$description = [];
-
-						if($eItem['quality']) {
-							$description[] = \farm\FarmUi::getQualityLogo($eItem['quality'], '1.5rem');
-						}
-
-
-						if($eItem['product']->notEmpty()) {
-
-							$product = '<a href="'.ProductUi::url($eItem['product']).'" class="item-item-product-link">'.encode($eItem['name']).'</a>';
-							$details = ProductUi::getDetails($eItem['product']);
-
-							if($details) {
-								$product .= '<br/><small class="color-muted">'.implode(' | ', $details).'</small>';
-							}
-
-						} else {
-							$product = encode($eItem['name']);
-						}
-
-						$h .= '</div>';
-
-						$h .= '<tbody>';
-							$h .= '<tr class="item-item-line-1">';
-								$h .= '<td class="item-item-vignette" rowspan="2">'.$vignette.'</td>';
-								$h .= '<td class="hide-md-up" colspan="'.$columns.'" style="border-bottom: 1px dashed var(--border)">';
-									$h .= '<div class="item-item-product">';
-										$h .= '<div>'.$product.'</div>';
-										if($description) {
-											$h .= '<span class="item-item-product-description">'.implode('', $description).'</span>';
-										}
-									$h .= '</div>';
-								$h .= '</td>';
-								$h .= '<td class="item-item-empty hide-sm-down" colspan="'.$columns.'"></td>';
-								if($eItem->canWrite()) {
-									$h .= '<td class="item-item-actions td-min-content" rowspan="2">';
-										$h .= $this->getUpdate($eItem);
-									$h .= '</td>';
-								}
-							$h .= '</tr>';
-							$h .= '<tr class="item-item-line-2">';
-
-								$h .= '<td class="td-min-content hide-sm-down" style="line-height: 1.2">'.$product.'</td>';
-								$h .= '<td class="hide-sm-down">'.implode('  ', $description).'</td>';
-
-								if($withPackaging) {
-
-									$h .= '<td class="item-item-packaging">';
-
-										if($eItem['packaging']) {
-
-											$value = '<b>'.$eItem['number'].'</b>';
-
-											if($eItem['locked'] === Item::NUMBER) {
-												$h .= '<span class="item-item-locked">'.\Asset::icon('lock-fill').'</span> '.$value;
-											} else {
-												$h .= '<a onclick="Merchant.show(this)" class="util-quick" data-item="'.$eItem['id'].'" data-property="'.Item::NUMBER.'">'.$value.'</a>';
-											}
-
-											$h .= '<span class="item-item-packaging-size"> x ';
-												$h .= '<a onclick="Merchant.show(this)" class="util-quick" data-item="'.$eItem['id'].'" data-property="packaging">'.\selling\UnitUi::getValue($eItem['packaging'], $eItem['unit'], TRUE).'</a>';
-											$h .= '</span>';
-										} else {
-											$h .= '-';
-										}
-
-									$h .= '</td>';
-
-								}
-
-								$h .= '<td class="item-item-number text-end">';
-
-									if($eItem['packaging']) {
-										$h .= '<span class="item-item-locked">'.\Asset::icon('lock-fill').'</span> '.\selling\UnitUi::getValue($eItem['number'] * $eItem['packaging'], $eItem['unit'], TRUE);
-									} else {
-										$value = \selling\UnitUi::getValue($eItem['number'], $eItem['unit'], TRUE);
-
-										if($eItem['locked'] === Item::NUMBER) {
-											$h .= '<span class="item-item-locked">'.\Asset::icon('lock-fill').'</span> '.$value;
-										} else if($eItem->canUpdate() === FALSE) {
-											$h .= $value;
-										} else {
-											$h .= '<a onclick="Merchant.show(this)" class="util-quick" data-item="'.$eItem['id'].'" data-property="number">'.$value.'</a>';
-										}
-
-									}
-
-								$h .= '</td>';
-
-								$h .= '<td class="item-item-unit-price text-end">';
-
-									if($eItem['unit']) {
-										$unit = '<span class="util-annotation">'.\selling\UnitUi::getBy($eItem['unit'], short: TRUE).'</span>';
-									} else {
-										$unit = '';
-									}
-									$value = \util\TextUi::money($eItem['unitPrice']).' '.$unit;
-
-									if($eItem['locked'] === Item::UNIT_PRICE) {
-										$h .= '<span class="item-item-locked">'.\Asset::icon('lock-fill').'</span> '.$value;
-									} else if($eItem->canUpdate() === FALSE) {
-										$h .= $value;
-									} else {
-										$h .= '<a onclick="Merchant.show(this)" class="util-quick" data-item="'.$eItem['id'].'" data-property="unit-price">'.$value.'</a>';
-									}
-
-									if(
-										$eSale['market'] and
-										$eItem['number'] and
-										$eItem['price']
-									) {
-
-										$realUnitPrice = round($eItem['price'] / $eItem['number'], 2);
-
-										if(abs($realUnitPrice - $eItem['unitPrice']) > 0.1) {
-											$h .= '<div class="color-muted text-sm">'.s("({value} en réel)", \util\TextUi::money($realUnitPrice).' '.$unit).'</div>';
-										}
-
-									}
-
-								$h .= '</td>';
-
-								if(
-									$eSale['market'] === FALSE or
-									$eSale->isMarketPreparing() === FALSE
-								) {
-									$h .= '<td class="item-item-price text-end">';
-										if($eItem['price'] === NULL) {
-											$h .= '?';
-										} else {
-											$value = \util\TextUi::money($eItem['price']);
-
-											if($eItem['locked'] === Item::PRICE) {
-												$h .= '<span class="item-item-locked">'.\Asset::icon('lock-fill').'</span> '.$value;
-											} else if($eItem->canUpdate() === FALSE) {
-												$h .= $value;
-											} else {
-												$h .= '<a onclick="Merchant.show(this)" class="util-quick" data-item="'.$eItem['id'].'" data-property="price">'.$value.'</a>';
-											}
-										}
-									$h .= '</td>';
-								}
-
-								if($eSale['hasVat'] and $eSale->isComposition() === FALSE) {
-
-									$h .= '<td class="item-item-vat text-center hide-sm-down">';
-										$h .= $eItem->quick('vatRate', s('{value} %', $eItem['vatRate']));
-									$h .= '</td>';
-
-								}
-
-							$h .= '</tr>';
-
-							if($eItem['number'] !== NULL) {
-								$h .= $this->getComposition($eSale, $eItem, $columns);
-							}
-
-						$h .= '</tbody>';
-
+					} else {
+						$h .= $this->getItemsBody($eSale, $cItem, $columns, $withPackaging);
 					}
 
-				$h .= '</table>';
+			$h .= '</table>';
 
 			$h .= '</div>';
 
@@ -367,6 +213,198 @@ class ItemUi {
 		}
 
 		$h .= '</div>';
+
+		return $h;
+
+	}
+
+	protected function getItemsBody(Sale $eSale, \Collection $cItem, int $columns, bool $withPackaging): string {
+
+		$h = '';
+
+		foreach($cItem as $position => $eItem) {
+
+			if($eItem['product']->notEmpty()) {
+				$vignette = ProductUi::getVignette($eItem['product'], '2.75rem');
+			} else {
+				$vignette = '';
+			}
+
+			$description = [];
+
+			if($eItem['quality']) {
+				$description[] = \farm\FarmUi::getQualityLogo($eItem['quality'], '1.5rem');
+			}
+
+
+			if($eItem['product']->notEmpty()) {
+
+				if($eItem['product']->canRead()) {
+					$product = '<a href="'.ProductUi::url($eItem['product']).'" class="item-item-product-link">'.encode($eItem['name']).'</a>';
+				} else {
+					$product = encode($eItem['name']);
+				}
+				$details = ProductUi::getDetails($eItem['product']);
+
+				if($details) {
+					$product .= '<div>';
+						$product .= '<small class="color-muted">'.implode(' | ', $details).'</small>';
+					$product .= '</div>';
+				}
+
+			} else {
+				$product = encode($eItem['name']);
+			}
+
+			$h .= '<tbody>';
+
+				if($position === 0) {
+
+					$h .= '<tr class="tr-title">';
+						$h .= '<td colspan="'.($columns + 1).'">';
+							$h .= $eItem['farm']['name'];
+						$h .= '</td>';
+					$h .= '</tr>';
+
+				}
+
+				$h .= '<tr class="item-item-line-1">';
+					$h .= '<td class="item-item-vignette" rowspan="2">'.$vignette.'</td>';
+					$h .= '<td class="hide-md-up" colspan="'.$columns.'" style="border-bottom: 1px dashed var(--border)">';
+						$h .= '<div class="item-item-product">';
+							$h .= '<div>'.$product.'</div>';
+							if($description) {
+								$h .= '<span class="item-item-product-description">'.implode('', $description).'</span>';
+							}
+						$h .= '</div>';
+					$h .= '</td>';
+					$h .= '<td class="item-item-empty hide-sm-down" colspan="'.$columns.'"></td>';
+					if($eItem->canWrite()) {
+						$h .= '<td class="item-item-actions td-min-content" rowspan="2">';
+							$h .= $this->getUpdate($eItem);
+						$h .= '</td>';
+					}
+				$h .= '</tr>';
+				$h .= '<tr class="item-item-line-2">';
+
+					$h .= '<td class="td-min-content hide-sm-down" style="line-height: 1.2">'.$product.'</td>';
+					$h .= '<td class="hide-sm-down">'.implode('  ', $description).'</td>';
+
+					if($withPackaging) {
+
+						$h .= '<td class="item-item-packaging">';
+
+							if($eItem['packaging']) {
+
+								$value = '<b>'.$eItem['number'].'</b>';
+
+								if($eItem['locked'] === Item::NUMBER) {
+									$h .= '<span class="item-item-locked">'.\Asset::icon('lock-fill').'</span> '.$value;
+								} else {
+									$h .= '<a onclick="Merchant.show(this)" class="util-quick" data-item="'.$eItem['id'].'" data-property="'.Item::NUMBER.'">'.$value.'</a>';
+								}
+
+								$h .= '<span class="item-item-packaging-size"> x ';
+									$h .= '<a onclick="Merchant.show(this)" class="util-quick" data-item="'.$eItem['id'].'" data-property="packaging">'.\selling\UnitUi::getValue($eItem['packaging'], $eItem['unit'], TRUE).'</a>';
+								$h .= '</span>';
+							} else {
+								$h .= '-';
+							}
+
+						$h .= '</td>';
+
+					}
+
+					$h .= '<td class="item-item-number text-end">';
+
+						if($eItem['packaging']) {
+							$h .= '<span class="item-item-locked">'.\Asset::icon('lock-fill').'</span> '.\selling\UnitUi::getValue($eItem['number'] * $eItem['packaging'], $eItem['unit'], TRUE);
+						} else {
+							$value = \selling\UnitUi::getValue($eItem['number'], $eItem['unit'], TRUE);
+
+							if($eItem['locked'] === Item::NUMBER) {
+								$h .= '<span class="item-item-locked">'.\Asset::icon('lock-fill').'</span> '.$value;
+							} else if($eItem->canUpdate() === FALSE) {
+								$h .= $value;
+							} else {
+								$h .= '<a onclick="Merchant.show(this)" class="util-quick" data-item="'.$eItem['id'].'" data-property="number">'.$value.'</a>';
+							}
+
+						}
+
+					$h .= '</td>';
+
+					$h .= '<td class="item-item-unit-price text-end">';
+
+						if($eItem['unit']) {
+							$unit = '<span class="util-annotation">'.\selling\UnitUi::getBy($eItem['unit'], short: TRUE).'</span>';
+						} else {
+							$unit = '';
+						}
+						$value = \util\TextUi::money($eItem['unitPrice']).' '.$unit;
+
+						if($eItem['locked'] === Item::UNIT_PRICE) {
+							$h .= '<span class="item-item-locked">'.\Asset::icon('lock-fill').'</span> '.$value;
+						} else if($eItem->canUpdate() === FALSE) {
+							$h .= $value;
+						} else {
+							$h .= '<a onclick="Merchant.show(this)" class="util-quick" data-item="'.$eItem['id'].'" data-property="unit-price">'.$value.'</a>';
+						}
+
+						if(
+							$eSale['market'] and
+							$eItem['number'] and
+							$eItem['price']
+						) {
+
+							$realUnitPrice = round($eItem['price'] / $eItem['number'], 2);
+
+							if(abs($realUnitPrice - $eItem['unitPrice']) > 0.1) {
+								$h .= '<div class="color-muted text-sm">'.s("({value} en réel)", \util\TextUi::money($realUnitPrice).' '.$unit).'</div>';
+							}
+
+						}
+
+					$h .= '</td>';
+
+					if(
+						$eSale['market'] === FALSE or
+						$eSale->isMarketPreparing() === FALSE
+					) {
+						$h .= '<td class="item-item-price text-end">';
+							if($eItem['price'] === NULL) {
+								$h .= '?';
+							} else {
+								$value = \util\TextUi::money($eItem['price']);
+
+								if($eItem['locked'] === Item::PRICE) {
+									$h .= '<span class="item-item-locked">'.\Asset::icon('lock-fill').'</span> '.$value;
+								} else if($eItem->canUpdate() === FALSE) {
+									$h .= $value;
+								} else {
+									$h .= '<a onclick="Merchant.show(this)" class="util-quick" data-item="'.$eItem['id'].'" data-property="price">'.$value.'</a>';
+								}
+							}
+						$h .= '</td>';
+					}
+
+					if($eSale['hasVat'] and $eSale->isComposition() === FALSE) {
+
+						$h .= '<td class="item-item-vat text-center hide-sm-down">';
+							$h .= $eItem->quick('vatRate', s('{value} %', $eItem['vatRate']));
+						$h .= '</td>';
+
+					}
+
+				$h .= '</tr>';
+
+				if($eItem['number'] !== NULL) {
+					$h .= $this->getComposition($eSale, $eItem, $columns);
+				}
+
+			$h .= '</tbody>';
+
+		}
 
 		return $h;
 

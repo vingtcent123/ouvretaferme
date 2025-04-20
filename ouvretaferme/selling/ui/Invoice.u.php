@@ -120,7 +120,7 @@ class InvoiceUi {
 										$h .= '<input type="checkbox" class="batch-all" onclick="Invoice.toggleDaySelection(this)"/>';
 									$h .= '</label>';
 								$h .= '</th>';
-								$h .= '<td colspan="'.$columns.'" class="invoice-item-date">';
+								$h .= '<td colspan="'.$columns.'">';
 									$h .= match($currentSubtitle) {
 										currentDate() => s("Aujourd'hui"),
 										default => \util\DateUi::textual($currentSubtitle)
