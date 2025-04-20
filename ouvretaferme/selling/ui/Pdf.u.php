@@ -1012,7 +1012,7 @@ class PdfUi {
 								$h .= \Asset::image('main', $eItem['quality'].'.png', ['style' => 'height: 0.4cm']);
 							}
 						$h .= '</th>';
-						$h .= '<td class="pdf-sales-summary-quantity text-end">'.round($eItem['quantity'], 2).'</td>';
+						$h .= '<td class="pdf-sales-summary-quantity text-end">'.($eItem['quantity'] === NULL ? '?' : round($eItem['quantity'], 2)).'</td>';
 						$h .= '<td class="td-min-content">'.\selling\UnitUi::getSingular($eItem['unit'], short: TRUE).'</td>';
 						$h .= '<td class="text-end">';
 							if($eItem['price'] !== NULL) {
