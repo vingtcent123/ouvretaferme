@@ -187,7 +187,7 @@ class ItemUi {
 						$eSale['shop']['shared']
 					) {
 
-						$ccItem = $cItem->reindex( ['product', 'farm']);
+						$ccItem = $cItem->reindex(['product', 'farm']);
 
 						foreach($ccItem as $cItem) {
 							$h .= $this->getItemsBody($eSale, $cItem, $columns, $withPackaging);
@@ -258,7 +258,11 @@ class ItemUi {
 
 			$h .= '<tbody>';
 
-				if($position === 0) {
+				if(
+					$eSale['shop']->notEmpty() and
+					$eSale['shop']['shared'] and
+					$position === 0
+				) {
 
 					$h .= '<tr class="tr-title">';
 						$h .= '<td colspan="'.($columns + 1).'">';
