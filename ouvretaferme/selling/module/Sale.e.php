@@ -446,7 +446,6 @@ class Sale extends SaleElement {
 	public function acceptAssociateShop(): bool {
 		return (
 			$this->isComposition() === FALSE and
-			$this->isPrivate() and
 			$this->isMarket() === FALSE and
 			$this['marketParent']->empty() and
 			$this['shop']->empty()

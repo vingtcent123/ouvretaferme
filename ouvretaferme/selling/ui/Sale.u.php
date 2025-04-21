@@ -1940,6 +1940,10 @@ class SaleUi {
 
 					foreach($e['cShop'] as $eShop) {
 
+						if($eShop['cDate']->empty()) {
+							continue;
+						}
+
 						$h .= '<h5>'.encode($eShop['name']).'</h5>';
 
 						$h .= $form->radios('shopDate', $eShop['cDate'], $e['shopDate'] ?? new \shop\Date(), attributes: [

@@ -23,11 +23,12 @@ class ShopLib extends ShopCrud {
 		};
 	}
 
-	public static function getByFarm(\farm\Farm $eFarm): \Collection {
+	public static function getByFarm(\farm\Farm $eFarm, ?string $type = NULL): \Collection {
 
 		return Shop::model()
 			->select(Shop::getSelection())
 			->whereFarm($eFarm)
+			->whereType($type, if: $type !== NULL)
 			->sort(['name' => SORT_ASC])
 			->getCollection(NULL, NULL, 'id');
 
@@ -275,9 +276,9 @@ class ShopLib extends ShopCrud {
 
 	}
 
-	public static function getAroundByFarm(\farm\Farm $eFarm, string $period = '1 MONTH'): \Collection {
+	public static function getAroundByFarm(\farm\Farm $eFarm, ?string $type = NULL, string $period = '1 MONTH'): \Collection {
 
-		$cShop = self::getByFarm($eFarm);
+		$cShop = self::getByFarm($eFarm, $type);
 
 		Shop::model()
 			->select([
