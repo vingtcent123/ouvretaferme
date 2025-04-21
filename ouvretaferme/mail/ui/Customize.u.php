@@ -500,7 +500,7 @@ Merci et à bientôt,
 
 Votre commande n°@number d'un montant de @amount a bien été enregistrée.
 
-Vous avez commandé auprès des producteurs suivants:
+Vous avez commandé auprès des producteurs suivants :
 
 @products
 
