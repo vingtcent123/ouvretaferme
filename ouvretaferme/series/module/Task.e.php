@@ -545,7 +545,11 @@ class Task extends TaskElement {
 			})
 			->setCallback('methods.check', function(mixed &$methods) use($p): bool {
 
-				$p->expectsBuilt('action');
+				if($p->hasProperty('action')) {
+					$p->expectsBuilt('action');
+				} else {
+					$this->expects(['action']);
+				}
 
 				if($this['action']->empty()) {
 					$methods = [];
@@ -566,7 +570,11 @@ class Task extends TaskElement {
 			})
 			->setCallback('tools.check', function(mixed &$tools) use($p): bool {
 
-				$p->expectsBuilt('action');
+				if($p->hasProperty('action')) {
+					$p->expectsBuilt('action');
+				} else {
+					$this->expects(['action']);
+				}
 
 				if($this['action']->empty()) {
 					$tools = [];
