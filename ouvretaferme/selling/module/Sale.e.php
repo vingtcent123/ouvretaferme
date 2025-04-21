@@ -875,6 +875,7 @@ class Sale extends SaleElement {
 
 						$eShop = \shop\ShopLib::getById($eDate['shop']);
 						$this['shop'] = $eShop;
+						$this['shopShared'] = $eShop['shared'];
 
 						return $eShop->canWrite();
 
@@ -882,6 +883,7 @@ class Sale extends SaleElement {
 
 				} else {
 					$this['shop'] = new \shop\Shop();
+					$this['shopShared'] = FALSE;
 					$this['shopDate'] = new \shop\Date();
 					return TRUE;
 				}

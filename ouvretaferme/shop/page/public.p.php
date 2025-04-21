@@ -454,6 +454,7 @@ new Page(function($data) {
 			$eSale = new \selling\Sale([
 				'shop' => $data->eShop,
 				'shopDate' => $data->eDate,
+				'shopShared' => $data->eShop['shared'],
 			]);
 
 			$fw = new FailWatch();

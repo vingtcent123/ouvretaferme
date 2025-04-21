@@ -285,6 +285,7 @@ Sale:
   invoice: ?selling\Invoice
   shop: ?shop\Shop
   shopDate: ?shop\Date
+  shopShared: bool = FALSE
   shopUpdated: bool = FALSE
   shopPoint: ?shop\Point
   shopComment: ?text8(1, 150)
