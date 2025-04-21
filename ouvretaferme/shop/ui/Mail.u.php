@@ -103,7 +103,7 @@ L'équipe {siteName}", $arguments);
 
 	protected static function getSaleNone(string $type, \selling\Sale $eSale, \Collection $cItem, ?string $template = NULL): array {
 
-		$template ??= \mail\CustomizeUi::getDefaultTemplate(\mail\Customize::SHOP_CONFIRMED_NONE);
+		$template ??= \mail\CustomizeUi::getDefaultTemplate(\mail\Customize::SHOP_CONFIRMED_NONE, $eSale);
 		$variables = \mail\CustomizeUi::getShopVariables(\mail\Customize::SHOP_CONFIRMED_NONE, $eSale, $cItem);
 
 		$title = match($type) {
@@ -118,7 +118,7 @@ L'équipe {siteName}", $arguments);
 
 	protected static function getSaleHome(string $type, \selling\Sale $eSale, \Collection $cItem, ?string $template = NULL): array {
 
-		$template ??= \mail\CustomizeUi::getDefaultTemplate(\mail\Customize::SHOP_CONFIRMED_HOME);
+		$template ??= \mail\CustomizeUi::getDefaultTemplate(\mail\Customize::SHOP_CONFIRMED_HOME, $eSale);
 		$variables = \mail\CustomizeUi::getShopVariables(\mail\Customize::SHOP_CONFIRMED_HOME, $eSale, $cItem);
 
 		$title = match($type) {
@@ -133,7 +133,7 @@ L'équipe {siteName}", $arguments);
 
 	protected static function getSalePlace(string $type, \selling\Sale $eSale, \Collection $cItem, ?string $template = NULL): array {
 
-		$template ??= \mail\CustomizeUi::getDefaultTemplate(\mail\Customize::SHOP_CONFIRMED_PLACE);
+		$template ??= \mail\CustomizeUi::getDefaultTemplate(\mail\Customize::SHOP_CONFIRMED_PLACE, $eSale);
 		$variables = \mail\CustomizeUi::getShopVariables(\mail\Customize::SHOP_CONFIRMED_PLACE, $eSale, $cItem);
 
 		$title = match($type) {

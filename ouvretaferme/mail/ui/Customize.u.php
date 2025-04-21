@@ -55,7 +55,7 @@ class CustomizeUi {
 
 			}
 
-			$e['template'] ??= self::getDefaultTemplate($e['type']);
+			$e['template'] ??= self::getDefaultTemplate($e['type'], $eSaleExample);
 			$h .= $form->dynamicGroup($e, 'template');
 
 			$h .= $form->group(
@@ -250,7 +250,11 @@ class CustomizeUi {
 						break;
 
 					case \selling\Sale::OFFLINE :
-						$payment = s("Vous avez choisi de régler cette commande en direct avec votre producteur.");
+						if($eSale['shop']['shared']) {
+							$payment = s("Vous avez choisi de régler cette commande en direct avec vos producteurs.");
+						} else {
+							$payment = s("Vous avez choisi de régler cette commande en direct avec votre producteur.");
+						}
 						if($eSale['shop']['paymentOfflineHow']) {
 							$payment .= "\n".encode($eSale['shop']['paymentOfflineHow']);
 						}
@@ -265,21 +269,24 @@ class CustomizeUi {
 
 				}
 
-				$products = '';
+				if($eSale['shop']['shared']) {
 
-				foreach($cItem as $eItem) {
+					$products = '';
 
-					if($eItem['packaging'] === NULL) {
-						$number = \selling\UnitUi::getValue($eItem['number'], $eItem['unit']);
-					} else {
-						$number = p("{value} colis de {quantity}", "{value} colis de {quantity}", $eItem['number'], ['quantity' => \selling\UnitUi::getValue($eItem['packaging'], $eItem['unit'])]);
+					foreach($cItem->reindex(['product', 'farm']) as $cItemFarm) {
+
+						$products .= '<u>'.encode($cItemFarm->first()['farm']['name']).'</u>';
+						$products .= "\n";
+						$products .= self::getShopProducts($cItemFarm);
+
 					}
 
-					$products .= '- '.s("{name} : {number}", ['name' => encode($eItem['name']), 'number' => $number])."\n";
+				} else {
+
+					$products = self::getShopProducts($cItem);
+					$products = rtrim($products);
 
 				}
-
-				$products = rtrim($products);
 
 				if($eSale['hasVat'] and $eSale['type'] === \selling\Sale::PRO) {
 					$amount = \util\TextUi::money($eSale['priceExcludingVat']).' '.$eSale->getTaxes();
@@ -344,6 +351,26 @@ class CustomizeUi {
 
 	}
 
+	protected static function getShopProducts(\Collection $cItem): string {
+
+		$products = '';
+
+		foreach($cItem as $eItem) {
+
+			if($eItem['packaging'] === NULL) {
+				$number = \selling\UnitUi::getValue($eItem['number'], $eItem['unit']);
+			} else {
+				$number = p("{value} colis de {quantity}", "{value} colis de {quantity}", $eItem['number'], ['quantity' => \selling\UnitUi::getValue($eItem['packaging'], $eItem['unit'])]);
+			}
+
+			$products .= '- '.s("{name} : {number}", ['name' => encode($eItem['name']), 'number' => $number])."\n";
+
+		}
+
+		return $products;
+
+	}
+
 	public static function convertTemplate(string $template, array $variables) {
 
 		$template = encode($template);
@@ -356,7 +383,7 @@ class CustomizeUi {
 
 	}
 
-	public static function getDefaultTemplate(string $type) {
+	public static function getDefaultTemplate(string $type, ?\selling\Sale $eSale = NULL) {
 
 		switch($type) {
 
@@ -386,7 +413,27 @@ Cordialement,
 @farm");
 
 			case Customize::SHOP_CONFIRMED_NONE :
-				return s("Bonjour,
+
+				if($eSale['shop']['shared']) {
+
+					return s("Bonjour,
+
+Votre commande n°@number d'un montant de @amount pour le @delivery a bien été enregistrée.
+
+Vous avez commandé auprès des producteurs suivants :
+
+@products
+
+@payment
+
+@link
+
+Merci et à bientôt,
+@farm");
+
+				} else {
+
+					return s("Bonjour,
 
 Votre commande n°@number d'un montant de @amount pour le @delivery a bien été enregistrée.
 
@@ -400,8 +447,33 @@ Vous avez commandé :
 Merci et à bientôt,
 @farm");
 
+				}
+
 			case Customize::SHOP_CONFIRMED_PLACE :
-				return s("Bonjour,
+
+				if($eSale['shop']['shared']) {
+
+					return s("Bonjour,
+
+Votre commande n°@number d'un montant de @amount a bien été enregistrée.
+
+Vous avez commandé auprès des producteurs suivants :
+
+@products
+
+@payment
+
+Vous pourrez venir retirer votre commande le @delivery au point de retrait suivant :
+@address
+
+@link
+
+Merci et à bientôt,
+@farm");
+
+				} else {
+
+					return s("Bonjour,
 
 Votre commande n°@number d'un montant de @amount a bien été enregistrée.
 
@@ -418,8 +490,33 @@ Vous pourrez venir retirer votre commande le @delivery au point de retrait suiva
 Merci et à bientôt,
 @farm");
 
+				}
+
 			case Customize::SHOP_CONFIRMED_HOME :
-				return s("Bonjour,
+
+				if($eSale['shop']['shared']) {
+
+					return s("Bonjour,
+
+Votre commande n°@number d'un montant de @amount a bien été enregistrée.
+
+Vous avez commandé auprès des producteurs suivants:
+
+@products
+
+@payment
+
+Votre commande vous sera livrée le @delivery à l'adresse suivante :
+@address
+
+@link
+
+Merci et à bientôt,
+@farm");
+
+				} else {
+
+					return s("Bonjour,
 
 Votre commande n°@number d'un montant de @amount a bien été enregistrée.
 
@@ -435,6 +532,8 @@ Votre commande vous sera livrée le @delivery à l'adresse suivante :
 
 Merci et à bientôt,
 @farm");
+
+				}
 
 		}
 

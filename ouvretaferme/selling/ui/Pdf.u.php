@@ -827,7 +827,7 @@ class PdfUi {
 
 	public function getOrderFormMail(\farm\Farm $eFarm, Sale $eSale, ?string $template): array {
 
-		$template ??= \mail\CustomizeUi::getDefaultTemplate(\mail\Customize::SALE_ORDER_FORM);
+		$template ??= \mail\CustomizeUi::getDefaultTemplate(\mail\Customize::SALE_ORDER_FORM, $eSale);
 		$variables = \mail\CustomizeUi::getSaleVariables(\mail\Customize::SALE_ORDER_FORM, $eFarm, $eSale);
 
 		$title = s("Devis {value}", $variables['number'].' - '.$variables['customer']);
@@ -839,7 +839,7 @@ class PdfUi {
 
 	public function getDeliveryNoteMail(\farm\Farm $eFarm, Sale $eSale, ?string $template): array {
 
-		$template ??= \mail\CustomizeUi::getDefaultTemplate(\mail\Customize::SALE_DELIVERY_NOTE);
+		$template ??= \mail\CustomizeUi::getDefaultTemplate(\mail\Customize::SALE_DELIVERY_NOTE, $eSale);
 		$variables = \mail\CustomizeUi::getSaleVariables(\mail\Customize::SALE_DELIVERY_NOTE, $eFarm, $eSale);
 
 		$title = s("Bon de livraison {value}", $variables['number'].' - '.$variables['customer']);
