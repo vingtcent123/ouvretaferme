@@ -12,7 +12,7 @@
 
 			$data->e = \series\TaskLib::getById(INPUT('task'))->validate('canWrite', 'acceptSoil');
 			$data->e['farm'] = \farm\FarmLib::getById($data->e['farm']);
-			$data->e['season'] = $data->e['farm']['seasonLast'];
+			$data->e['season'] = week_year($data->e['doneWeek'] ?? $data->e['plannedWeek']);
 			$data->e['use'] = \series\Series::BED;
 			$data->e['bedWidth'] = NULL;
 
