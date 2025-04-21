@@ -394,7 +394,9 @@ new Page(function($data) {
 			throw new RedirectAction(\shop\ShopUi::confirmationUrl($data->eShop, $data->eDate));
 		}
 
-		$data->eSaleExisting['shopPoint'] = $data->eShop['ccPoint']->find(fn($ePoint) => $ePoint['id'] === $data->eSaleExisting['shopPoint']['id'], depth: 2, limit: 1, default: new \shop\Point());
+		if($data->eSaleExisting['shopPoint']->notEmpty()) {
+			$data->eSaleExisting['shopPoint'] = $data->eShop['ccPoint']->find(fn($ePoint) => $ePoint['id'] === $data->eSaleExisting['shopPoint']['id'], depth: 2, limit: 1, default: new \shop\Point());
+		}
 
 		$data->payment = POST('payment');
 
