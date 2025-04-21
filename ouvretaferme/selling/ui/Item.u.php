@@ -179,6 +179,7 @@ class ItemUi {
 								$h .= '<th class="item-item-vat text-center hide-sm-down">'.s("TVA").'</th>';
 							}
 
+							$h .= '<th></th>';
 						$h .= '</tr>';
 					$h .= '</thead>';
 
@@ -287,6 +288,8 @@ class ItemUi {
 						$h .= '<td class="item-item-actions td-min-content" rowspan="2">';
 							$h .= $this->getUpdate($eItem);
 						$h .= '</td>';
+					} else {
+						$h .= '<td rowspan="2"></td>';
 					}
 				$h .= '</tr>';
 				$h .= '<tr class="item-item-line-2">';
