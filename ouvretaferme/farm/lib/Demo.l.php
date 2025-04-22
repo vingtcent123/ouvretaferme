@@ -33,7 +33,7 @@ class DemoLib {
 		'user\User' => ['birthdate', 'phone', 'vignette', 'street1', 'street2', 'postcode', 'city'],
 		'series\Repeat' => ['description'],
 		'series\Series' => ['comment'],
-		'selling\Sale' => ['invoice']
+		'selling\Sale' => ['invoice', 'deliveryStreet1', 'deliveryStreet2', 'deliveryPostcode', 'deliveryCity']
 	];
 
 	private static array $ms = [];
@@ -346,14 +346,6 @@ class DemoLib {
 			->whereFrom(\selling\Sale::SHOP)
 			->update([
 				'from' => \selling\Sale::USER,
-			]);
-
-		new \selling\SaleModel()
-			->update([
-				'deliveryStreet1' => NULL,
-				'deliveryStreet2' => NULL,
-				'deliveryPostcode' => NULL,
-				'deliveryCity' => NULL
 			]);
 
 		new \selling\CustomerModel()
