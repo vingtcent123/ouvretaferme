@@ -26,7 +26,7 @@ Date:
   shop: shop\Shop
   type: enum(PRIVATE, PRO)
   farm: farm\Farm
-  status: enum(ACTIVE, CLOSED) = ACTIVE
+  status: enum(ACTIVE, INACTIVE, CLOSED) = ACTIVE
   source: enum(DIRECT, CATALOG)
   orderStartAt: datetime
   orderEndAt: datetime

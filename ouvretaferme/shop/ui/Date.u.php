@@ -23,7 +23,7 @@ class DateUi {
 			'disabled' => $eDate->canWrite() === FALSE,
 			'data-ajax' => $eDate->canWrite() ? '/shop/date:doUpdateStatus' : NULL,
 			'post-id' => $eDate['id'],
-			'post-status' => ($eDate['status'] === Date::ACTIVE) ? Date::CLOSED : Date::ACTIVE
+			'post-status' => ($eDate['status'] === Date::ACTIVE) ? Date::INACTIVE : Date::ACTIVE
 		], $eDate['status'] === Date::ACTIVE, s("En ligne"), ("Hors ligne"));
 
 	}
@@ -640,7 +640,7 @@ class DateUi {
 			$h .= '<div class="color-danger">'.\Asset::icon('exclamation-triangle-fill').' '.s("Boutique fermée").'</div>';
 		} else {
 
-			if($eDate['status'] === Date::CLOSED) {
+			if($eDate['status'] === Date::INACTIVE) {
 				$h .= '<span class="color-danger">'.\Asset::icon('exclamation-triangle-fill').' '.s("Vente hors ligne").'</span>';
 			} else if($eDate['orderStartAt'] < $now and $eDate['orderEndAt'] > $now) {
 				$h .= '<span class="color-order">'.s("Vente ouverte encore {value}", \util\DateUi::secondToDuration(strtotime($eDate['orderEndAt']) - time(), \util\DateUi::AGO, maxNumber: 1)).'</span>';

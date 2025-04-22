@@ -99,14 +99,14 @@ class Date extends DateElement {
 			})
 			->setCallback('status.prepare', function(mixed &$status): bool {
 
-				if(in_array($status, [Date::ACTIVE, Date::CLOSED])) {
+				if(in_array($status, [Date::ACTIVE, Date::INACTIVE])) {
 					return TRUE;
 				}
 
 				if($status) {
 					$status = Date::ACTIVE;
 				} else {
-					$status = Date::CLOSED;
+					$status = Date::INACTIVE;
 				}
 
 				return TRUE;

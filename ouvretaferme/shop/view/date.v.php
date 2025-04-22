@@ -27,7 +27,7 @@ new AdaptativeView('update', function($data, PanelTemplate $t) {
 });
 
 new JsonView('doUpdateStatus', function($data, AjaxTemplate $t) {
-	$t->qs('#date-switch-'.$data->e['id'])->toggleSwitch('post-status', [\shop\Date::ACTIVE, \shop\Date::CLOSED]);
+	$t->qs('#date-switch-'.$data->e['id'])->toggleSwitch('post-status', [\shop\Date::ACTIVE, \shop\Date::INACTIVE]);
 });
 
 new JsonView('doUpdatePoint', function($data, AjaxTemplate $t) {

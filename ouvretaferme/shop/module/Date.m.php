@@ -11,6 +11,7 @@ abstract class DateElement extends \Element {
 	const PRO = 'pro';
 
 	const ACTIVE = 'active';
+	const INACTIVE = 'inactive';
 	const CLOSED = 'closed';
 
 	const DIRECT = 'direct';
@@ -50,7 +51,7 @@ class DateModel extends \ModuleModel {
 			'shop' => ['element32', 'shop\Shop', 'cast' => 'element'],
 			'type' => ['enum', [\shop\Date::PRIVATE, \shop\Date::PRO], 'cast' => 'enum'],
 			'farm' => ['element32', 'farm\Farm', 'cast' => 'element'],
-			'status' => ['enum', [\shop\Date::ACTIVE, \shop\Date::CLOSED], 'cast' => 'enum'],
+			'status' => ['enum', [\shop\Date::ACTIVE, \shop\Date::INACTIVE, \shop\Date::CLOSED], 'cast' => 'enum'],
 			'source' => ['enum', [\shop\Date::DIRECT, \shop\Date::CATALOG], 'cast' => 'enum'],
 			'orderStartAt' => ['datetime', 'cast' => 'string'],
 			'orderEndAt' => ['datetime', 'cast' => 'string'],
