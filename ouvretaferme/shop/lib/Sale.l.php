@@ -39,17 +39,17 @@ class SaleLib {
 
 	}
 
-	public static function getDiscount(Date $eDate, \selling\Sale $eSale, \selling\Customer $eCustomer): int {
+	public static function getDiscount(Shop $eShop, \selling\Sale $eSale, \selling\Customer $eCustomer): int {
 
-		$discount = 0;
-
-		if($eSale->notEmpty()) {
-			$discount = $eSale['discount'];
+		if($eShop['shared']) {
+			return 0;
+		} else if($eSale->notEmpty()) {
+			return $eSale['discount'];
 		} else if($eCustomer->notEmpty()) {
-			$discount = $eCustomer['discount'];
+			return $eCustomer['discount'];
+		} else {
+			return 0;
 		}
-
-		return $discount;
 
 	}
 

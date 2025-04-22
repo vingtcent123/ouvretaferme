@@ -195,7 +195,7 @@ END;
 
 			}
 
-			$data->discount = \shop\SaleLib::getDiscount($data->eDateSelected, $data->eSaleExisting, $data->eCustomer);
+			$data->discount = \shop\SaleLib::getDiscount($data->eShop, $data->eSaleExisting, $data->eCustomer);
 
 			$cProduct = \shop\ProductLib::getByDate($data->eDateSelected, $data->eCustomer, eSaleExclude: $data->isModifying ? $data->eSaleExisting : new \selling\Sale(), withIngredients: TRUE, public: TRUE);
 
@@ -253,7 +253,7 @@ new Page(function($data) {
 
 		$data->eSaleExisting = \shop\SaleLib::getSaleForDate($data->eDate, $data->eCustomer);
 
-		$data->discount = \shop\SaleLib::getDiscount($data->eDate, $data->eSaleExisting, $data->eCustomer);
+		$data->discount = \shop\SaleLib::getDiscount($data->eShop, $data->eSaleExisting, $data->eCustomer);
 
 		$data->eDate['shop'] = $data->eShop;
 

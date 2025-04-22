@@ -2,13 +2,28 @@ div.doc-wrapper {
 	display: grid;
 	grid-template:
 		"menu header" auto
-		"menu content" auto / 15rem 1fr;
+		"menu content" auto / minmax(15rem, 20vw) 1fr;
 }
 
 div.doc-menu {
 	grid-area: menu;
-	background: repeating-linear-gradient(135deg, white 0, var(--background-light) 100%);
+	background-color: var(--background);
 	box-shadow: 0 0 1rem #0003;
+}
+
+div.doc-menu-title {
+	font-weight: bold;
+	padding: 1rem;
+}
+
+div.doc-menu a {
+	display: block;
+	padding: 0.5rem 1rem;
+}
+
+div.doc-menu a.selected {
+	background-color: var(--secondary);
+	color: white;
 }
 
 div.doc-header {

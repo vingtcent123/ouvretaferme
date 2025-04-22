@@ -1,15 +1,12 @@
 <?php
 new AdaptativeView('index', function($data, DocTemplate $t) {
 
-	$t->title = s("{siteName} - Formations");
-	$t->metaDescription = s("Formez-vous à l'utilisation de {siteName} !");
 	$t->template = 'doc';
-
-	Asset::css('main', 'font-itim.css');
-	Asset::css('main', 'doc.css');
 
 	$t->title = s("Importer un plan de culture");
 	$t->subTitle = s("Vous pouvez importer un plan de culture au format CSV sur votre ferme. C'est une fonctionnalité bien pratique si vous préférez concevoir votre plan de culture avec un tableur et le visualiser ensuite sur {siteName} !");
+
+	$t->menuSelected = 'import';
 
 	echo '<div class="util-block">';
 

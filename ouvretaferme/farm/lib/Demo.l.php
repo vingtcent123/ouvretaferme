@@ -345,7 +345,11 @@ class DemoLib {
 		new \selling\SaleModel()
 			->whereFrom(\selling\Sale::SHOP)
 			->update([
-				'from' => \selling\Sale::USER
+				'from' => \selling\Sale::USER,
+				'deliveryStreet1' => NULL,
+				'deliveryStreet2' => NULL,
+				'deliveryPostcode' => NULL,
+				'deliveryCity' => NULL
 			]);
 
 		new \selling\CustomerModel()

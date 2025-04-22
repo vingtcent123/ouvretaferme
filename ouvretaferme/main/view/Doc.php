@@ -12,11 +12,19 @@ class DocTemplate extends MainTemplate {
 
 	public bool $mainContainer = FALSE;
 
+	public ?string $menuSelected = NULL;
+
 	protected function getMain(string $stream):string {
+
+		Asset::css('main', 'font-itim.css');
+		Asset::css('main', 'doc.css');
 
 		$h = '<div class="doc-wrapper">';
 			$h .= '<div class="doc-menu">';
-				/* Pas de menu pour l'instant */
+				$h .= '<div class="doc-menu-title">'.s("Boutiques en ligne").'</div>';
+				$h .= '<a href="/doc/shop:shared" '.$this->menuSelected('shopShared').'>'.s("Les boutiques collectives").'</a>';
+				$h .= '<div class="doc-menu-title">'.s("Importer des données").'</div>';
+				$h .= '<a href="/doc/import" '.$this->menuSelected('import').'>'.s("Importer un plan de culture").'</a>';
 			$h .= '</div>';
 			$h .= '<div class="doc-header">';
 				$h .= '<h1>'.$this->title.'</h1>';
@@ -33,6 +41,10 @@ class DocTemplate extends MainTemplate {
 
 		return $h;
 
+	}
+
+	protected function menuSelected(string $page): string {
+		return ($page === $this->menuSelected) ? 'class="selected"' : '';
 	}
 
 }

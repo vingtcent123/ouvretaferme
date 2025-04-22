@@ -145,7 +145,10 @@ class Sale extends SaleElement {
 	}
 
 	public function acceptUpdateCustomer(): bool {
-		return $this['compositionOf']->empty();
+		return (
+			$this['compositionOf']->empty() and
+			$this['shopShared'] === FALSE
+		);
 	}
 
 	public function canUpdateCustomer(): bool {
@@ -453,7 +456,10 @@ class Sale extends SaleElement {
 	}
 
 	public function acceptDissociateShop(): bool {
-		return $this['shop']->notEmpty();
+		return (
+			$this['shop']->notEmpty() and
+			$this['shopShared'] === FALSE
+		);
 	}
 
 	public function acceptCustomerCancel(): bool {

@@ -137,9 +137,9 @@ class ShopUi {
 
 				if($eShop['shared']) {
 
-					$content = '<h4>'.s("Démarrer une boutique collective").'</h4>';
+					$content = '<h3>'.s("Démarrer une boutique collective").'</h3>';
 					$content .= '<p>'.s("Nous vous recommandons de bien réfléchir au mode de fonctionnement de votre collectif avant d'engager la création d'une boutique en commun, à la fois en termes organisationnels, logistiques et financiers afin que votre projet soit un succès.").'</p>';
-					$content .= '<p>'.s("Veuillez noter que sur {siteName}, seul le producteur à l'origine de la boutique peut administrer celle-ci. Si vous souhaitez administrer une boutique collective à plusieurs, nous vous recommandons de <link>créer une ferme</link> dédiée à cette boutique, et d'ajouter chaque administrateur comme membre de l'équipe de cette ferme.", ['link' => '<a href="/farm/farm:create">']).'</p>';
+					$content .= '<p>'.s("Seul le producteur à l'origine d'une boutique collective peut administrer celle-ci. Pour <b>administrer une boutique collective à plusieurs, nous vous recommandons de <link>créer une ferme dédiée</link> pour créer cette boutique</b>, et d'ajouter chaque producteur comme membre de l'équipe de cette ferme.", ['link' => '<a href="/farm/farm:create">']).'</p>';
 
 					$h .= $form->group(content: '<div class="util-block-help">'.$content.'</div>');
 
