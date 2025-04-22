@@ -282,11 +282,7 @@ class DateLib extends DateCrud {
 			->select($select)
 			->whereShop($eShop)
 			->whereStatus(Date::ACTIVE)
-			->or(
-				fn() => $this->where(new \Sql('NOW() BETWEEN orderStartAt AND orderEndAt')),
-				fn() => $this->where(new \Sql('NOW() < orderStartAt')),
-				fn() => $this->whereDeliveryDate(new \Sql('orderEndAt > NOW()'))
-			)
+			->whereDeliveryDate('>=', new \Sql('NOW()'))
 			->sort([
 				'isOrderable' => SORT_DESC,
 				'deliveryDate' => SORT_ASC
