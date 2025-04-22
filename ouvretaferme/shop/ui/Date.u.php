@@ -524,7 +524,11 @@ class DateUi {
 							$h .= '</td>';
 
 							$h .= '<td>';
-								$h .= $this->getStatus($eShop, $eDate);
+								if($eDate['status'] === Date::INACTIVE) {
+									$h .= '<span class="color-danger">'.s("Vente hors ligne").'</span>';
+								} else {
+									$h .= $this->getStatus($eShop, $eDate);
+								}
 							$h .= '</td>';
 
 							$h .= '<td class="text-end">';
@@ -640,17 +644,15 @@ class DateUi {
 			$h .= '<div class="color-danger">'.\Asset::icon('exclamation-triangle-fill').' '.s("Boutique fermée").'</div>';
 		} else {
 
-			if($eDate['status'] === Date::INACTIVE) {
-				$h .= '<span class="color-danger">'.\Asset::icon('exclamation-triangle-fill').' '.s("Vente hors ligne").'</span>';
-			} else if($eDate['orderStartAt'] < $now and $eDate['orderEndAt'] > $now) {
+			if($eDate['orderStartAt'] < $now and $eDate['orderEndAt'] > $now) {
 				$h .= '<span class="color-order">'.s("Vente ouverte encore {value}", \util\DateUi::secondToDuration(strtotime($eDate['orderEndAt']) - time(), \util\DateUi::AGO, maxNumber: 1)).'</span>';
 			} else if($eDate['orderEndAt'] < $now) {
 				if(currentDate() === $eDate['deliveryDate']) {
-					$h .= s("Vente livrée aujourd'hui");
+					$h .= s("En attente de livraison aujourd'hui");
 				} else if(currentDate() < $eDate['deliveryDate']) {
-					$h .= s("Vente fermée en attente de livraison");
+					$h .= s("En attente de livraison le {value}", \util\DateUi::numeric($eDate['deliveryDate']));
 				} else {
-					$h .= '<span class="color-success">'.s("Vente terminée   ").'</span>';
+					$h .= '<span class="color-success">'.s("Vente terminée").'</span>';
 				}
 			} else if($eShop['status'] === Shop::OPEN) {
 				$h .= s("Ouverture des ventes dans {value}", \util\DateUi::secondToDuration(strtotime($eDate['orderStartAt']) - time(), \util\DateUi::AGO, maxNumber: 1));
@@ -1004,17 +1006,17 @@ class DateUi {
 				$h .= '</dd>';
 
 				$h .= '<dt style="align-self: center">';
-					$h .= s("État de la vente");
+					$h .= s("Visibilité de la vente");
 				$h .= '</dt>';
 				$h .= '<dd>';
 					$h .= $this->toggle($eDate);
 				$h .= '</dd>';
 
 				$h .= '<dt>';
-					$h .= s("Grille tarifaire");
+					$h .= s("Statut");
 				$h .= '</dt>';
 				$h .= '<dd>';
-					$h .= ShopUi::p('type')->values[$eDate['type']];
+					$h .= $this->getStatus($eShop, $eDate);
 				$h .= '</dd>';
 
 				$h .= '<dt>';
@@ -1025,10 +1027,10 @@ class DateUi {
 				$h .= '</dd>';
 
 				$h .= '<dt>';
-					$h .= s("Statut de la vente");
+					$h .= s("Grille tarifaire");
 				$h .= '</dt>';
 				$h .= '<dd>';
-					$h .= $this->getStatus($eShop, $eDate);
+					$h .= ShopUi::p('type')->values[$eDate['type']];
 				$h .= '</dd>';
 
 			$h .= '</dl>';
