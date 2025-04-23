@@ -282,7 +282,7 @@ class DateLib extends DateCrud {
 			->select($select)
 			->whereShop($eShop)
 			->whereStatus(Date::ACTIVE)
-			->whereDeliveryDate('>=', new \Sql('NOW()'))
+			->whereDeliveryDate('>=', new \Sql('CURRENT_DATE'))
 			->sort([
 				'isOrderable' => SORT_DESC,
 				'deliveryDate' => SORT_ASC
@@ -295,7 +295,7 @@ class DateLib extends DateCrud {
 			$eDatePast = Date::model()
 				->select($select)
 				->whereShop($eShop)
-				->whereDeliveryDate('<',  new \Sql('NOW()'))
+				->whereDeliveryDate('<',  new \Sql('CURRENT_DATE'))
 				->sort(['deliveryDate' => SORT_DESC])
 				->get();
 
