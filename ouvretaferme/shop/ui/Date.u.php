@@ -666,16 +666,14 @@ class DateUi {
 	
 	public function getContent(\farm\Farm $eFarm, Shop $eShop, Date $eDate, \Collection $cSale): string {
 
-		$products = $eDate['cProduct']->count();
-
 		$h = '<div class="tabs-h" id="shop-date-tabs" onrender="'.encode('Lime.Tab.restore(this, "products"'.(get_exists('tab') ? ', "'.GET('tab', ['products', 'sales'], 'products').'"' : '').')').'">';
 
 			$h .= '<div class="tabs-item">';
 
 				$h .= '<a class="tab-item" data-tab="products" onclick="Lime.Tab.select(this)">';
 					$h .= s("Produits");
-					if($products > 0) {
-						$h .= '<span class="tab-item-count">'.$products.'</span>';
+					if($eDate['nProduct'] > 0) {
+						$h .= '<span class="tab-item-count">'.$eDate['nProduct'].'</span>';
 					}
 				$h .= '</a>';
 
@@ -707,7 +705,7 @@ class DateUi {
 			$h .= '</div>';
 
 			$h .= '<div class="tab-panel" data-tab="products">';
-				$h .= $this->getProducts($eFarm, $eDate);
+				$h .= $this->getProducts($eFarm, $eShop, $eDate);
 			$h .= '</div>';
 
 			if($eShop['shared']) {
@@ -883,46 +881,39 @@ class DateUi {
 
 	}
 
-	public function getProducts(\farm\Farm $eFarm, Date $eDate): string {
+	public function getProducts(\farm\Farm $eFarm, Shop $eShop, Date $eDate): string {
 
 		if(currentDate() > $eDate['deliveryDate']) {
-			return $this->getExpiredProducts($eFarm, $eDate);
+			return $this->getDeliveredProducts($eFarm, $eShop, $eDate);
 		} else {
-			return $this->getSegmentedProducts($eFarm, $eDate);
+			return $this->getPendingProducts($eFarm, $eShop, $eDate);
 		}
-
-	}
-
-	public function getExpiredProducts(\farm\Farm $eFarm, Date $eDate): string {
-
-		$h = '';
-
-		$cProduct = $eDate['cProduct'];
-		$cProduct->sort(['product' => ['name']], natural: TRUE);
-
-		if($cProduct->empty()) {
-			$h .= '<div class="util-empty">'.s("Cette vente est terminée et aucun produit n'a été vendu.").'</div>';
-		} else {
-			$h .= '<div class="util-info">'.s("Cette vente est terminée et seule la liste des produits qui ont été vendus est consultable.").'</div>';
-			$h .= new \shop\ProductUi()->getUpdateList($eFarm, $eDate, $cProduct, $eDate['cCategory'], isExpired: TRUE);
-		}
-
-		$h .= '<br/>';
 
 		return $h;
 
 	}
 
-	public function getSegmentedProducts(\farm\Farm $eFarm, Date $eDate): string {
-
-		[
-			'cCatalog' => $cCatalog,
-			'cProduct' => $cProduct,
-		] = $eDate;
+	public function getDeliveredProducts(\farm\Farm $eFarm, Shop $eShop, Date $eDate): string {
 
 		$h = '';
 
-		$cProduct->sort(['product' => ['name']], natural: TRUE);
+		if($eDate['nProduct'] === 0) {
+			$h .= '<div class="util-empty">'.s("Cette vente est terminée et aucun produit n'a été vendu.").'</div>';
+		} else {
+			$h .= '<div class="util-info">'.s("Cette vente est terminée et seule la liste des produits qui ont été vendus est consultable.").'</div>';
+		}
+
+		$h .= new ProductUi()->getUpdateDate($eFarm, $eShop, $eDate, TRUE);
+
+		return $h;
+
+	}
+
+	public function getPendingProducts(\farm\Farm $eFarm, Shop $eShop, Date $eDate): string {
+
+		$cCatalog = $eDate['cCatalog'];
+
+		$h = '';
 
 		if($eDate->acceptNotShared()) {
 
@@ -953,7 +944,7 @@ class DateUi {
 						$h .= \Asset::icon('plus-circle').' ';
 						if($cCatalog->notEmpty()) {
 							$h .= s("Ajouter des produits hors catalogue");
-						} else if($cProduct->empty()) {
+						} else if($eDate['nProduct'] === 0) {
 							$h .= s("Ajouter des produits à la vente");
 						} else {
 							$h .= s("Ajouter des produits");
@@ -974,7 +965,7 @@ class DateUi {
 
 		}
 
-		if($cProduct->empty()) {
+		if($eDate['nProduct'] === 0) {
 
 			if($cCatalog->notEmpty()) {
 				$h .= '<div class="util-empty">'.p("Il n'y a aucun produit dans le catalogue !", "Il n'y a aucun produit dans les catalogues !", $cCatalog->count()).'</div>';
@@ -983,10 +974,8 @@ class DateUi {
 			}
 
 		} else {
-			$h .= new \shop\ProductUi()->getUpdateList($eFarm, $eDate, $cProduct, $eDate['cCategory']);
+			$h .= new ProductUi()->getUpdateDate($eFarm, $eShop, $eDate, FALSE);
 		}
-
-		$h .= '<br/>';
 
 		return $h;
 

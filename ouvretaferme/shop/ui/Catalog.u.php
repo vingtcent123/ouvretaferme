@@ -39,7 +39,7 @@ class CatalogUi {
 			$h .= '</div>';
 
 		} else {
-			$h .= new \shop\ProductUi()->getUpdateList($eFarm, $eCatalogSelected, $cProduct, $cCategory);
+			$h .= new \shop\ProductUi()->getUpdateCatalog($eFarm, $eCatalogSelected, $cProduct->reindex(['product', 'category']), $cCategory);
 		}
 
 		return $h;
@@ -75,7 +75,7 @@ class CatalogUi {
 		if($eCatalog['cProduct']->empty()) {
 			$h = '<div class="util-empty">'.s("Ce catalogue de vente est vide.").'</div>';
 		} else {
-			$h = new \shop\ProductUi()->getUpdateList($eCatalog['farm'], $eCatalog, $eCatalog['cProduct'], $eCatalog['cCategory']);
+			$h = new \shop\ProductUi()->getUpdateCatalog($eCatalog['farm'], $eCatalog, $eCatalog['cProduct']->reindex(['product', 'category']), $eCatalog['cCategory']);
 		}
 
 		return new \Panel(

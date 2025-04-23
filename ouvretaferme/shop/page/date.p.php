@@ -19,30 +19,39 @@ new \farm\FarmPage()
 		$data->eDate['farm'] = $data->eShop['farm'];
 		$data->eDate['shop'] = $data->eShop;
 
-		$data->eDate['cProduct'] = \shop\ProductLib::getByDate($data->eDate);
-		$data->eDate['cCustomer'] = \selling\CustomerLib::getLimitedByProducts($data->eDate['cProduct']);
+		$data->eDate['cCatalog'] = $data->eDate['catalogs'] ?
+			\shop\CatalogLib::getByIds($data->eDate['catalogs']) :
+			new Collection();
+
+		$cProduct = \shop\ProductLib::getByDate($data->eDate);
+		$data->eDate['cCustomer'] = \selling\CustomerLib::getLimitedByProducts($cProduct);
 
 		// Uniquement les boutiques avec un seul producteur
-		$data->eDate['cProduct']->mergeCollection(\shop\ProductLib::aggregateBySales($data->cSale, $data->eDate['cProduct']->getColumnCollection('product')));
-
-		$data->eDate['cCategory'] = \selling\CategoryLib::getByFarm($data->e);
-		$data->eDate['ccPoint'] = \shop\PointLib::getByDate($data->eDate);
-
-		if($data->eDate['catalogs']) {
-			$data->eDate['cCatalog'] = \shop\CatalogLib::getByIds($data->eDate['catalogs']);
-			$data->eDate['cFarm'] = \farm\FarmLib::getByIds($data->eDate['cCatalog']->getColumnCollection('farm'), index: 'id');
-		} else {
-			$data->eDate['cCatalog'] = new Collection();
-			$data->eDate['cFarm'] = new Collection([
-				$data->e['id'] => $data->e
-			]);
-		}
+		$cProduct->mergeCollection(\shop\ProductLib::aggregateBySales($data->cSale, $cProduct->getColumnCollection('product')));
+		$cProduct->sort(['product' => ['name']], natural: TRUE);
 
 		if($data->eShop['shared']) {
+
 			$data->eShop['cShare'] = \shop\ShareLib::getByShop($data->eShop);
 			$data->eShop['ccRange'] = \shop\RangeLib::getByShop($data->eShop);
 			$data->eShop['cDepartment'] = \shop\DepartmentLib::getByShop($data->eShop);
+			$data->eDate['cFarm'] = $data->eShop['cShare']->getColumnCollection('farm', index: 'farm');
+
+		} else {
+
+			$data->eDate['cFarm'] = $data->eDate['catalogs'] ?
+				\farm\FarmLib::getByIds($data->eDate['cCatalog']->getColumnCollection('farm'), index: 'id') :
+				new Collection([
+					$data->e['id'] => $data->e
+				]);
+
 		}
+
+		\shop\ProductLib::applyIndexing($data->eShop, $data->eDate, $cProduct);
+		$data->eDate['nProduct'] = $cProduct->count();
+
+		$data->eDate['cCategory'] = \selling\CategoryLib::getByFarm($data->e);
+		$data->eDate['ccPoint'] = \shop\PointLib::getByDate($data->eDate);
 
 		$data->eFarm = $data->e;
 

@@ -332,6 +332,8 @@ class ProductLib extends ProductCrud {
 					break;
 
 				case 'department' :
+					$eShop->expects(['ccRange']);
+
 					$eDate['ccProduct'] = $cProduct->reindex(function($eProduct) use($eShop) {
 
 						$eRange = $eShop['ccRange'][$eProduct['farm']['id']][$eProduct['catalog']['id']] ?? new Range();

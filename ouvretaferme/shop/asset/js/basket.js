@@ -27,9 +27,9 @@ class BasketManage {
 		const mainNavHeight = window.matchMedia('(min-height: 768px) and (min-width: 768px)').matches ?
 			parseFloat(window.getComputedStyle(document.body).getPropertyValue('--mainNav')) * rem() :
 			0;
-		const departmentsListHeight = parseInt(window.getComputedStyle(qs('#shop-department-list')).height);
+		const departmentsListHeight = parseInt(window.getComputedStyle(qs('#product-department-list')).height);
 
-		const destination = qs('.shop-department-element[data-department="'+ target.dataset.department +'"]');
+		const destination = qs('.product-department-element[data-department="'+ target.dataset.department +'"]');
 
 		window.scrollTo({
 			left: 0,
@@ -42,7 +42,7 @@ class BasketManage {
 
 	static scrollDepartment() {
 
-		const departmentsList = qs('#shop-department-list');
+		const departmentsList = qs('#product-department-list');
 
 		if(departmentsList === null) {
 			return;
@@ -55,14 +55,14 @@ class BasketManage {
 
 		if(isSticky) {
 
-			if(departmentsList.classList.contains('shop-department-list-sticky') === false) {
-				departmentsList.classList.add('shop-department-list-sticky');
+			if(departmentsList.classList.contains('product-department-list-sticky') === false) {
+				departmentsList.classList.add('product-department-list-sticky');
 			}
 
 		} else {
 
-			if(departmentsList.classList.contains('shop-department-list-sticky')) {
-				departmentsList.classList.remove('shop-department-list-sticky');
+			if(departmentsList.classList.contains('product-department-list-sticky')) {
+				departmentsList.classList.remove('product-department-list-sticky');
 			}
 
 			departmentsList.qsa('[data-department]', node => node.classList.remove('selected'));
@@ -95,7 +95,7 @@ class BasketManage {
 
 	static selectDepartment(target) {
 
-		qsa('#shop-department-list [data-department]', node => {
+		qsa('#product-department-list [data-department]', node => {
 
 			if(node.dataset.department === target.dataset.department) {
 				node.classList.add('selected');

@@ -69,7 +69,7 @@ new AdaptativeView('shared', function($data, DocTemplate $t) {
 		echo '<h2>'.s("Comment se passe une vente ?").'</h2>';
 		echo '<p>'.s("Tant que les prises de commandes sont ouvertes, les clients passent leur commande et peuvent éventuellement les modifier comme sur les boutiques personnelles. Pendant cette période, les commandes ne sont pas encore visibles sur la page des ventes des fermes de chaque producteur, mais elles sont par contre bien visibles et modifiables directement sur la page de la boutique collective.").'</p>';
 		echo '<p>'.s("Dans les minutes qui suivent la fin de la période de prise de commande, les commandes sont dupliquées pour toutes les fermes qui ont vendu leur production afin de permettre la préparation des commandes et éventuellement la facturation de chaque client par chaque ferme.").'</p>';
-		echo '<p>'.s("<b>Nous vous rappellons que {siteName} ne propose volontairement un fonctionnement prédéterminé pour la préparation et la logistique des commandes réalisées dans les boutiques collectives. C'est aux producteurs de s'organiser et de trouver un fonctionnement qui leur convient.</b>").'</p>';
+		echo '<p>'.s("<b>Nous vous rappelons que {siteName} ne propose volontairement pas de fonctionnement prédéterminé pour la préparation et la logistique des commandes réalisées dans les boutiques collectives. C'est aux producteurs de s'organiser et de trouver un fonctionnement qui leur convient.</b>").'</p>';
 
 	echo '</div>';
 

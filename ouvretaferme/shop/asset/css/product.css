@@ -647,7 +647,7 @@ body:not([data-template~="shop-embedded"]) {
 	text-decoration: line-through;
 }
 
-#shop-department-list {
+#product-department-list {
 	display: flex;
 	row-gap: 1rem;
 	margin-bottom: 2rem;
@@ -659,7 +659,7 @@ body:not([data-template~="shop-embedded"]) {
 	border-radius: var(--radius);
 }
 
-#shop-department-list.shop-department-list-sticky {
+#product-department-list.product-department-list-sticky {
 	border-top-left-radius: 0;
 	border-top-right-radius: 0;
 	box-shadow: 1px 1px 1px var(--border);
@@ -695,7 +695,7 @@ a.shop-department-item .department-vignette {
 
 @media (min-height: 768px) and (min-width: 768px) {
 
-	#shop-department-list {
+	#product-department-list {
 		padding: 0;
 		top: calc(var(--mainNav));
 	}
@@ -704,7 +704,7 @@ a.shop-department-item .department-vignette {
 		padding: 0.75rem 1rem;
 	}
 
-	.shop-department-list-sticky a.shop-department-item .department-vignette {
+	.product-department-list-sticky a.shop-department-item .department-vignette {
 		width: 2.25rem !important;
 		height: 2.25rem !important;
 		min-width: 2.25rem !important;
@@ -718,12 +718,12 @@ a.shop-department-item .department-vignette {
 		padding: 0.5rem 0.5rem;
 	}
 
-	#shop-department-list {
+	#product-department-list {
 		padding: 0;
 		top: 0;
 	}
 
-	.shop-department-list-sticky {
+	.product-department-list-sticky {
 		font-size: 0.9rem;
 	}
 
@@ -737,7 +737,7 @@ a.shop-department-item .department-vignette {
 
 @media (max-width: 575px) {
 
-	#shop-department-list {
+	#product-department-list {
 		font-size: 0.85rem;
 		letter-spacing: -0.1px;
 	}

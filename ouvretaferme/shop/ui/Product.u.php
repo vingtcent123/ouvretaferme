@@ -38,13 +38,45 @@ class ProductUi {
 
 		}
 
+		$callback = fn(\Collection $cProduct) => $this->getProducts($eShop, $eDate, $eSale, $isModifying, $cProduct);
+
 		$h .= '<div class="shop-product-wrapper shop-product-'.$eShop['type'].'">';
 
-			$h .= match($eDate['productsIndex']) {
-				'product' => $this->getListByProduct($eShop, $eDate, $eSale, $eDate['cProduct'], $isModifying),
-				'farm' => $this->getListByFarm($eShop, $eDate, $eSale, $eShop['cShare'], $eDate['ccProduct'], $isModifying),
-				'department' => $this->getListByDepartment($eShop, $eDate, $eSale, $eShop['cDepartment'], $eDate['ccProduct'], $isModifying),
-				'category' => $this->getListByCategory($eShop, $eDate, $eSale, $cCategory, $eDate['ccProduct'], $isModifying),
+			switch($eDate['productsIndex']) {
+
+				case 'product'  :
+					$h .= $callback($eDate['cProduct']);
+					break;
+
+				case 'farm' :
+					$h .= $this->getListByFarm($eShop['cShare'], $eDate['ccProduct'], $callback);
+					break;
+
+				case 'department' :
+
+					$h .= '<div id="product-department-list">';
+
+						foreach($eShop['cDepartment'] as $eDepartment) {
+
+							if($eDate['ccProduct']->offsetExists($eDepartment['id'])) {
+
+								$h .= '<a onclick="BasketManage.clickDepartment(this);" class="shop-department-item" data-department="'.$eDepartment['id'].'">';
+									$h .= DepartmentUi::getVignette($eDepartment, '2.5rem');
+									$h .= encode($eDepartment['name']);
+								$h .= '</a>';
+
+							}
+
+						}
+
+					$h .= '</div>';
+					$h .= $this->getListByDepartment($eShop['cDepartment'], $eDate['ccProduct'], $callback);
+
+					break;
+
+				case 'category' :
+					$h .= $this->getListByCategory($cCategory, $eDate['ccProduct'], $callback);
+					break;
 			};
 
 		$h .= '</div>';
@@ -57,13 +89,7 @@ class ProductUi {
 
 	}
 
-	protected function getListByProduct(Shop $eShop, Date $eDate, \selling\Sale $eSale, \Collection $cProduct, bool $isModifying): string {
-
-		return $this->getProducts($eShop, $eDate, $eSale, $isModifying, $cProduct);
-
-	}
-
-	protected function getListByFarm(Shop $eShop, Date $eDate, \selling\Sale $eSale, \Collection $cShare, \Collection $ccProduct, bool $isModifying): string {
+	protected function getListByFarm(\Collection $cShare, \Collection $ccProduct, \Closure $callback): string {
 
 		$h = '';
 
@@ -82,7 +108,7 @@ class ProductUi {
 						$h .= '<span class="shop-title-group-label">  /  '.encode($eShare['label']).'</span>';
 					}
 				$h .= '</h3>';
-				$h .= $this->getProducts($eShop, $eDate, $eSale, $isModifying, $ccProduct[$eFarm['id']]);
+				$h .= $callback($ccProduct[$eFarm['id']]);
 			$h .= '</div>';
 
 		}
@@ -90,7 +116,7 @@ class ProductUi {
 		if($ccProduct->offsetExists('')) {
 			$h .= '<div data-filter-farm="">';
 				$h .= '<h3 class="shop-title-group">'.s("Autres producteurs").'</h3>';
-				$h .= $this->getProducts($eShop, $eDate, $eSale, $isModifying, $ccProduct['']);
+				$h .= $callback($ccProduct['']);
 			$h .= '</div>';
 		}
 
@@ -98,64 +124,49 @@ class ProductUi {
 
 	}
 
-	protected function getListByDepartment(Shop $eShop, Date $eDate, \selling\Sale $eSale, \Collection $cDepartment, \Collection $ccProduct, bool $isModifying): string {
+	protected function getListByDepartment(\Collection $cDepartment, \Collection $ccProduct, \Closure $callback, string $header = ''): string {
 
-		$h = '';
-		$h .= '<div id="shop-department-list">';
+		$h = '<div id="product-department-wrapper">';
 
 			foreach($cDepartment as $eDepartment) {
 
-				if($ccProduct->offsetExists($eDepartment['id'])) {
-
-					$h .= '<a onclick="BasketManage.clickDepartment(this);" class="shop-department-item" data-department="'.$eDepartment['id'].'">';
-						$h .= DepartmentUi::getVignette($eDepartment, '2.5rem');
-						$h .= encode($eDepartment['name']);
-					$h .= '</a>';
-
+				if($ccProduct->offsetExists($eDepartment['id']) === FALSE) {
+					continue;
 				}
 
+				$farms = array_unique($ccProduct[$eDepartment['id']]->makeArray(fn($eProduct) => $eProduct['product']['farm']['id']));
+
+				$h .= '<div class="product-department-element" data-department="'.$eDepartment['id'].'" data-filter-farm="'.implode(' ', $farms).'">';
+					$h .= '<h3 class="shop-title-group">';
+						$h .= encode($eDepartment['name']);
+					$h .= '</h3>';
+					$h .= $callback($ccProduct[$eDepartment['id']]);
+				$h .= '</div>';
+
 			}
 
+			if($ccProduct->offsetExists('')) {
+				$h .= '<div>';
+					$h .= '<h3 class="shop-title-group">'.s("Autres").'</h3>';
+					$h .= $callback($ccProduct['']);
+				$h .= '</div>';
+			}
 		$h .= '</div>';
-
-		foreach($cDepartment as $eDepartment) {
-
-			if($ccProduct->offsetExists($eDepartment['id']) === FALSE) {
-				continue;
-			}
-
-			$farms = array_unique($ccProduct[$eDepartment['id']]->makeArray(fn($eProduct) => $eProduct['product']['farm']['id']));
-
-			$h .= '<div class="shop-department-element" data-department="'.$eDepartment['id'].'" data-filter-farm="'.implode(' ', $farms).'">';
-				$h .= '<h3 class="shop-title-group">';
-					$h .= encode($eDepartment['name']);
-				$h .= '</h3>';
-				$h .= $this->getProducts($eShop, $eDate, $eSale, $isModifying, $ccProduct[$eDepartment['id']]);
-			$h .= '</div>';
-
-		}
-
-		if($ccProduct->offsetExists('')) {
-			$h .= '<div>';
-				$h .= '<h3 class="shop-title-group">'.s("Autres").'</h3>';
-				$h .= $this->getProducts($eShop, $eDate, $eSale, $isModifying, $ccProduct['']);
-			$h .= '</div>';
-		}
 
 		return $h;
 
 	}
 
-	protected function getListByCategory(Shop $eShop, Date $eDate, \selling\Sale $eSale, \Collection $cCategory, \Collection $ccProduct, bool $isModifying): string {
+	protected function getListByCategory(\Collection $cCategory, \Collection $ccProduct, \Closure $callback): string {
 
 		$h = '';
 
 		if($ccProduct->count() === 1) {
-			$h .= $this->getProducts($eShop, $eDate, $eSale, $isModifying, $ccProduct->first());
+			$h .= $callback($ccProduct->first());
 		} else {
 
 			if($ccProduct->offsetExists('')) {
-				$h .= $this->getProducts($eShop, $eDate, $eSale, $isModifying, $ccProduct['']);
+				$h .= $callback($ccProduct['']);
 			}
 
 			foreach($cCategory as $eCategory) {
@@ -165,7 +176,7 @@ class ProductUi {
 				}
 
 				$h .= '<h3>'.encode($eCategory['name']).'</h3>';
-				$h .= $this->getProducts($eShop, $eDate, $eSale, $isModifying, $ccProduct[$eCategory['id']]);
+				$h .= $callback($ccProduct[$eCategory['id']]);
 
 			}
 
@@ -690,46 +701,36 @@ class ProductUi {
 		return 1;
 	}
 
-	public function getUpdateList(\farm\Farm $eFarm, Date|Catalog $e, \Collection $cProduct, \Collection $cCategory, bool $isExpired = FALSE): string {
+	public function getUpdateDate(\farm\Farm $eFarm, Shop $eShop, Date $eDate, bool $isExpired = FALSE): string {
 
-		$cProduct = $cProduct->reindex(['product', 'category']);
+		$eDate->expects(['productsIndex']);
 
-		$update = fn($cProduct) => ($e instanceof Date) ?
-			$this->getUpdateDate($eFarm, $e, $cProduct, $isExpired) :
-			$this->getUpdateCatalog($eFarm, $e, $cProduct);
+		$showFarm = ($eShop['shared'] and $eDate['productsIndex'] !== 'farm');
 
-		if($cProduct->count() === 1) {
-			return $update($cProduct->first());
-		} else {
+		$callback = fn(\Collection $cProduct) => $this->getListByDate($eFarm, $eDate, $cProduct, $isExpired, $showFarm);
 
-			$h = '';
-
-			if($cProduct->offsetExists('')) {
-				$h .= $update($cProduct['']);
-				$h .= '<br/>';
-			}
-
-			foreach($cCategory as $eCategory) {
-
-				if($cProduct->offsetExists($eCategory['id']) === FALSE) {
-					continue;
-				}
-
-				$h .= '<h3>'.encode($eCategory['name']).'</h3>';
-				$h .= $update($cProduct[$eCategory['id']]);
-				$h .= '<br/>';
-
-			}
-
-			return $h;
-
-		}
+		return match($eDate['productsIndex']) {
+			'product' => $callback($eDate['cProduct']),
+			'farm' => $this->getListByFarm($eShop['cShare'], $eDate['ccProduct'], $callback),
+			'department' => $this->getListByDepartment($eShop['cDepartment'], $eDate['ccProduct'], $callback),
+			'category' => $this->getListByCategory($eDate['cCategory'], $eDate['ccProduct'], $callback),
+		};
 
 	}
 
-	public function getUpdateDate(\farm\Farm $eFarm, Date $e, \Collection $cProduct, bool $isExpired = FALSE): string {
+	public function getUpdateCatalog(\farm\Farm $eFarm, Catalog $eCatalog, \Collection $ccProduct, \Collection $cCategory): string {
 
-		$type = $e['type'];
+		return $this->getListByCategory(
+			$cCategory,
+			$ccProduct,
+			fn(\Collection $cProduct) => $this->getListByCatalog($eFarm, $eCatalog, $cProduct)
+		);
+
+	}
+
+	public function getListByDate(\farm\Farm $eFarm, Date $eDate, \Collection $cProduct, bool $isExpired, bool $showFarm): string {
+
+		$type = $eDate['type'];
 		$taxes = $eFarm->getSelling('hasVat') ? '<span class="util-annotation">'.\selling\CustomerUi::getTaxes($type).'</span>' : '';
 		$hasSold = $cProduct->contains(fn($eProduct) => $eProduct['sold'] !== NULL);
 		$columns = 2;
@@ -738,17 +739,17 @@ class ProductUi {
 		$canAction = ($isExpired === FALSE and $cProduct->contains(fn($eProduct) => $eProduct->exists() and $eProduct['catalog']->empty()));
 
 		if($type === Date::PRIVATE) {
-			$overflow = $e['shop']['shared'] ? 'util-overflow-sm' : 'util-overflow-xs';
+			$overflow = $eDate['shop']['shared'] ? 'util-overflow-sm' : 'util-overflow-xs';
 		} else {
-			$overflow = $e['shop']['shared'] ? 'util-overflow-lg' : 'util-overflow-sm';
+			$overflow = $eDate['shop']['shared'] ? 'util-overflow-lg' : 'util-overflow-sm';
 		}
 
-		$h = '<div class="'.$overflow.' stick-xs">';
+		$h = '<div class="'.$overflow.' stick-xs mb-3">';
 			$h .= '<table class="tbody-even td-padding-sm">';
 				$h .= '<thead>';
 					$h .= '<tr>';
 						$h .= '<th colspan="2">'.s("Produit").'</th>';
-						if($e['shop']['shared']) {
+						if($showFarm) {
 							$columns++;
 							$h .= '<td></td>';
 						}
@@ -783,8 +784,8 @@ class ProductUi {
 						$outCatalog
 					);
 
-					if($e['shop']['shared']) {
-						$eProduct['farm'] = $e['cFarm'][$eProduct['farm']['id']];
+					if($showFarm) {
+						$eProduct['farm'] = $eDate['cFarm'][$eProduct['farm']['id']];
 					}
 
 					$h .= '<tbody>';
@@ -806,7 +807,7 @@ class ProductUi {
 								$h .= $uiProductSelling->getInfos($eProductSelling, includeStock: $isExpired === FALSE);
 							$h .= '</td>';
 
-							if($e['shop']['shared']) {
+							if($showFarm) {
 								$h .= '<td class="font-sm color-muted">';
 									$h .= encode($eProduct['farm']['name']);
 								$h .= '</td>';
@@ -871,7 +872,7 @@ class ProductUi {
 						$h .= '</tr>';
 
 						if($hasLimits) {
-							$h .= $this->getLimits($columns, $eProduct, $e['cCustomer'], excludeAt: TRUE, outCatalog: $outCatalog);
+							$h .= $this->getLimits($columns, $eProduct, $eDate['cCustomer'], excludeAt: TRUE, outCatalog: $outCatalog);
 						}
 
 					$h .= '</tbody>';
@@ -885,9 +886,9 @@ class ProductUi {
 
 	}
 
-	public function getUpdateCatalog(\farm\Farm $eFarm, Catalog $e, \Collection $cProduct): string {
+	public function getListByCatalog(\farm\Farm $eFarm, Catalog $eCatalog, \Collection $cProduct): string {
 
-		$taxes = $eFarm->getSelling('hasVat') ? '<span class="util-annotation">'.\selling\CustomerUi::getTaxes($e['type']).'</span>' : '';
+		$taxes = $eFarm->getSelling('hasVat') ? '<span class="util-annotation">'.\selling\CustomerUi::getTaxes($eCatalog['type']).'</span>' : '';
 		$columns = 2;
 
 		$h = '<div class="util-overflow-sm stick-xs">';
@@ -895,7 +896,7 @@ class ProductUi {
 				$h .= '<thead>';
 					$h .= '<tr>';
 						$h .= '<th colspan="2">'.s("Produit").'</th>';
-						if($e['type'] === Date::PRO) {
+						if($eCatalog['type'] === Date::PRO) {
 							$columns++;
 							$h .= '<td></td>';
 						}
@@ -904,7 +905,7 @@ class ProductUi {
 						$h .= '<th class="text-center">';
 							$h .= s("En vente");
 						$h .= '</th>';
-						if($e->canWrite()) {
+						if($eCatalog->canWrite()) {
 							$h .= '<th></th>';
 						}
 					$h .= '</tr>';
@@ -937,7 +938,7 @@ class ProductUi {
 								$h .= $uiProductSelling->getInfos($eProductSelling, includeStock: TRUE);
 							$h .= '</td>';
 
-							if($e['type'] === Date::PRO) {
+							if($eCatalog['type'] === Date::PRO) {
 								$h .= '<td class="td-min-content">';
 									if($eProduct['packaging'] !== NULL) {
 										$h .= s("Colis de {value}", \selling\UnitUi::getValue($eProduct['packaging'], $eProductSelling['unit'], TRUE));
@@ -958,7 +959,7 @@ class ProductUi {
 								$h .= $this->toggle($eProduct);
 							$h .= '</td>';
 
-							if($e->canWrite()) {
+							if($eCatalog->canWrite()) {
 
 								$h .= '<td class="td-min-content" '.($hasLimits ? 'rowspan="2"' : '').'>';
 									$h .= '<a href="/shop/product:update?id='.$eProduct['id'].'" class="btn btn-outline-secondary">'.\Asset::icon('gear-fill').'</a> ';
@@ -970,7 +971,7 @@ class ProductUi {
 						$h .= '</tr>';
 
 						if($hasLimits) {
-							$h .= $this->getLimits($columns, $eProduct, $e['cCustomer']);
+							$h .= $this->getLimits($columns, $eProduct, $eCatalog['cCustomer']);
 						}
 
 					$h .= '</tbody>';
