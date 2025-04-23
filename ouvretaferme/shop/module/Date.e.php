@@ -22,10 +22,22 @@ class Date extends DateElement {
 
 	}
 
-	public function canWrite(): bool {
+	public function canCreate(): bool {
 
 		$this->expects(['farm']);
+
 		return $this['farm']->canManage();
+
+	}
+
+	public function canWrite(): bool {
+
+		$this->expects(['farm', 'status']);
+
+		return (
+			$this['status'] !== Date::CLOSED and
+			$this['farm']->canManage()
+		);
 
 	}
 

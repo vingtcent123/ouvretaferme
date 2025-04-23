@@ -101,6 +101,7 @@ class SaleModel extends \ModuleModel {
 			'shop' => ['element32', 'shop\Shop', 'null' => TRUE, 'cast' => 'element'],
 			'shopDate' => ['element32', 'shop\Date', 'null' => TRUE, 'cast' => 'element'],
 			'shopShared' => ['bool', 'cast' => 'bool'],
+			'shopParent' => ['element32', 'selling\Sale', 'null' => TRUE, 'cast' => 'element'],
 			'shopUpdated' => ['bool', 'cast' => 'bool'],
 			'shopPoint' => ['element32', 'shop\Point', 'null' => TRUE, 'cast' => 'element'],
 			'shopComment' => ['text8', 'min' => 1, 'max' => 150, 'null' => TRUE, 'cast' => 'string'],
@@ -117,7 +118,7 @@ class SaleModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'document', 'farm', 'customer', 'from', 'taxes', 'organic', 'conversion', 'type', 'discount', 'items', 'hasVat', 'vat', 'vatByRate', 'priceExcludingVat', 'priceIncludingVat', 'shippingVatRate', 'shippingVatFixed', 'shipping', 'shippingExcludingVat', 'preparationStatus', 'paymentStatus', 'paymentMethod', 'compositionOf', 'compositionEndAt', 'market', 'marketSales', 'marketParent', 'orderFormValidUntil', 'orderFormPaymentCondition', 'invoice', 'shop', 'shopDate', 'shopShared', 'shopUpdated', 'shopPoint', 'shopComment', 'deliveryStreet1', 'deliveryStreet2', 'deliveryPostcode', 'deliveryCity', 'comment', 'stats', 'createdAt', 'createdBy', 'deliveredAt', 'statusDeliveredAt'
+			'id', 'document', 'farm', 'customer', 'from', 'taxes', 'organic', 'conversion', 'type', 'discount', 'items', 'hasVat', 'vat', 'vatByRate', 'priceExcludingVat', 'priceIncludingVat', 'shippingVatRate', 'shippingVatFixed', 'shipping', 'shippingExcludingVat', 'preparationStatus', 'paymentStatus', 'paymentMethod', 'compositionOf', 'compositionEndAt', 'market', 'marketSales', 'marketParent', 'orderFormValidUntil', 'orderFormPaymentCondition', 'invoice', 'shop', 'shopDate', 'shopShared', 'shopParent', 'shopUpdated', 'shopPoint', 'shopComment', 'deliveryStreet1', 'deliveryStreet2', 'deliveryPostcode', 'deliveryCity', 'comment', 'stats', 'createdAt', 'createdBy', 'deliveredAt', 'statusDeliveredAt'
 		]);
 
 		$this->propertiesToModule += [
@@ -128,6 +129,7 @@ class SaleModel extends \ModuleModel {
 			'invoice' => 'selling\Invoice',
 			'shop' => 'shop\Shop',
 			'shopDate' => 'shop\Date',
+			'shopParent' => 'selling\Sale',
 			'shopPoint' => 'shop\Point',
 			'createdBy' => 'user\User',
 		];
@@ -135,6 +137,7 @@ class SaleModel extends \ModuleModel {
 		$this->indexConstraints = array_merge($this->indexConstraints, [
 			['customer'],
 			['shopDate'],
+			['shopParent'],
 			['shop']
 		]);
 
@@ -383,6 +386,10 @@ class SaleModel extends \ModuleModel {
 
 	public function whereShopShared(...$data): SaleModel {
 		return $this->where('shopShared', ...$data);
+	}
+
+	public function whereShopParent(...$data): SaleModel {
+		return $this->where('shopParent', ...$data);
 	}
 
 	public function whereShopUpdated(...$data): SaleModel {

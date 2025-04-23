@@ -286,6 +286,7 @@ Sale:
   shop: ?shop\Shop
   shopDate: ?shop\Date
   shopShared: bool = FALSE
+  shopParent: ?selling\Sale
   shopUpdated: bool = FALSE
   shopPoint: ?shop\Point
   shopComment: ?text8(1, 150)
@@ -302,6 +303,7 @@ Sale:
   INDEX: [
     ["customer"],
     ["shopDate"],
+    ["shopParent"],
     ["shop"]
   ]
   UNIQUE: [

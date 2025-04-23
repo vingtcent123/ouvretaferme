@@ -377,4 +377,57 @@ class DateLib extends DateCrud {
 
 	}
 
+	public static function finish(): void {
+
+		$cDate = Date::model()
+			->select(Date::getSelection() + [
+				'shop' => ['shared']
+			])
+			->join(Shop::model()->select('shared'), 'm1.shop = m2.id')
+			->or(
+				fn() => $this->where('m2.shared = 0 and m1.deliveryDate < CURRENT_DATE'),
+				fn() => $this->where('m2.shared = 1 and m1.orderEndAt < CURRENT_TIMESTAMP')
+			)->highlight()
+			->where('m1.status', '!=', Date::CLOSED)
+			->getCollection();
+
+		foreach($cDate as $eDate) {
+
+			Date::model()->beginTransaction();
+
+			if(false and Date::model()
+			->whereStatus('!=', Date::CLOSED)
+			->update($e, [
+				'status' => Date::CLOSED
+			]) === 0) {
+				Date::model()->rollBack();
+				continue;
+			}
+
+			if($eDate['shop']['shared']) {
+				self::finishShared($eDate);
+			}
+
+			Date::model()->commit();
+
+		}
+
+	}
+
+	private static function finishShared(Date $e): void {
+
+		$cSale = SaleLib::getConfirmedForDate($e);
+
+		foreach($cSale as $eSale) {
+
+			$ccItem = $eSale['cItem']->reindex(['farm']);
+
+			foreach($ccItem as $cItem) {
+
+			}
+
+		}
+
+	}
+
 }

@@ -4,5 +4,10 @@ new Page()
 
 		\shop\DateLib::sendEndEmail();
 
-	}, interval: '15 * * * *');
+	}, interval: '15 * * * *')
+	->cron('finish', function($data) {
+
+		\shop\DateLib::finish();
+
+	}, interval: 'permanent@2');
 ?>

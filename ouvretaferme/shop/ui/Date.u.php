@@ -620,13 +620,16 @@ class DateUi {
 					if($eDate->isDirect()) {
 						$h .= '<a href="/shop/product:createCollection?date='.$eDate['id'].'" class="dropdown-item">'.s("Ajouter des produits à la vente").'</a>';
 					}
+
+				}
+
+				if($eShop->canWrite()) {
 					$h .= '<a href="/shop/date:create?shop='.$eShop['id'].'&farm='.$eDate['farm']['id'].'&date='.$eDate['id'].'" class="dropdown-item">'.s("Nouvelle vente à partir de celle-ci").'</a>';
+				}
 
-					if($sales === 0) {
-						$h .= '<div class="dropdown-divider"></div>';
-						$h .= '<a data-ajax="/shop/date:doDelete" post-id="'.$eDate['id'].'" post-farm="'.$eDate['farm']['id'].'" post-shop="'.$eShop['id'].'" class="dropdown-item" data-confirm="'.s("Êtes-vous sûr de vouloir supprimer cette vente ?").'">'.s("Supprimer la vente").'</a>';
-					}
-
+				if($eDate->canWrite() and $sales === 0) {
+					$h .= '<div class="dropdown-divider"></div>';
+					$h .= '<a data-ajax="/shop/date:doDelete" post-id="'.$eDate['id'].'" post-farm="'.$eDate['farm']['id'].'" post-shop="'.$eShop['id'].'" class="dropdown-item" data-confirm="'.s("Êtes-vous sûr de vouloir supprimer cette vente ?").'">'.s("Supprimer la vente").'</a>';
 				}
 
 			$h .= '</div>';
@@ -642,6 +645,8 @@ class DateUi {
 
 		if($eShop['status'] === Shop::CLOSED) {
 			$h .= '<div class="color-danger">'.\Asset::icon('exclamation-triangle-fill').' '.s("Boutique fermée").'</div>';
+		} else if($eDate['status'] === Date::CLOSED) {
+			$h .= '<div class="color-success">'.\Asset::icon('check-lg').' '.s("Vente clôturée").'</div>';
 		} else {
 
 			if($eDate['orderStartAt'] < $now and $eDate['orderEndAt'] > $now) {
@@ -652,9 +657,9 @@ class DateUi {
 				} else if(currentDate() < $eDate['deliveryDate']) {
 					$h .= s("En attente de livraison le {value}", \util\DateUi::numeric($eDate['deliveryDate']));
 				} else {
-					$h .= '<span class="color-success">'.s("Vente terminée").'</span>';
+					$h .= '<span class="color-success">'.s("Vente livrée").'</span>';
 				}
-			} else if($eShop['status'] === Shop::OPEN) {
+			} else {
 				$h .= s("Ouverture des ventes dans {value}", \util\DateUi::secondToDuration(strtotime($eDate['orderStartAt']) - time(), \util\DateUi::AGO, maxNumber: 1));
 			}
 
@@ -994,18 +999,18 @@ class DateUi {
 					$h .= '  <a onclick="doCopy(this)" data-selector="#date-url" data-message="'.s("Copié !").'" class="btn btn-sm btn-outline-primary">'.\Asset::icon('clipboard').' '.s("Copier").'</a>';
 				$h .= '</dd>';
 
-				$h .= '<dt style="align-self: center">';
-					$h .= s("Visibilité de la vente");
-				$h .= '</dt>';
-				$h .= '<dd>';
-					$h .= $this->toggle($eDate);
-				$h .= '</dd>';
-
 				$h .= '<dt>';
-					$h .= s("Statut");
+					$h .= s("Statut de la vente");
 				$h .= '</dt>';
 				$h .= '<dd>';
 					$h .= $this->getStatus($eShop, $eDate);
+				$h .= '</dd>';
+
+				$h .= '<dt style="align-self: center">';
+					$h .= s("Visibilité");
+				$h .= '</dt>';
+				$h .= '<dd>';
+					$h .= $this->toggle($eDate);
 				$h .= '</dd>';
 
 				$h .= '<dt>';

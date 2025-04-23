@@ -169,7 +169,7 @@ END;
 		if($data->cDate->notEmpty()) {
 
 			$data->eDateSelected = $data->cDate[GET('date', 'int')] ?? $data->cDate->first();
-			$data->eSaleExisting = \shop\SaleLib::getSaleForDate($data->eDateSelected, $data->eCustomer);
+			$data->eSaleExisting = \shop\SaleLib::getByCustomerForDate($data->eDateSelected, $data->eCustomer);
 
 			if(
 				$data->isModifying and
@@ -251,7 +251,7 @@ new Page(function($data) {
 			throw new ViewAction($data, path: ':denied');
 		}
 
-		$data->eSaleExisting = \shop\SaleLib::getSaleForDate($data->eDate, $data->eCustomer);
+		$data->eSaleExisting = \shop\SaleLib::getByCustomerForDate($data->eDate, $data->eCustomer);
 
 		$data->discount = \shop\SaleLib::getDiscount($data->eShop, $data->eSaleExisting, $data->eCustomer);
 

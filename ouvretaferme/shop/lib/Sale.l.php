@@ -53,7 +53,7 @@ class SaleLib {
 
 	}
 
-	public static function getSaleForDate(Date $eDate, \selling\Customer $eCustomer): \selling\Sale {
+	public static function getByCustomerForDate(Date $eDate, \selling\Customer $eCustomer): \selling\Sale {
 
 		if($eCustomer->empty()) {
 			return new \selling\Sale();
@@ -70,6 +70,21 @@ class SaleLib {
 			->whereCustomer($eCustomer)
 			->wherePreparationStatus('NOT IN', [\selling\Sale::CANCELED, \selling\Sale::DRAFT])
 			->get();
+
+	}
+
+	public static function getConfirmedForDate(Date $eDate): \Collection {
+
+		return \selling\Sale::model()
+			->select(\selling\Sale::getSelection() + [
+				'cItem' => \selling\Item::model()
+					->select(\selling\Item::getSelection())
+					->whereIngredientOf(NULL)
+					->delegateCollection('sale')
+			])
+			->whereShopDate($eDate)
+			->wherePreparationStatus(\selling\Sale::CONFIRMED)
+			->getCollection();
 
 	}
 
