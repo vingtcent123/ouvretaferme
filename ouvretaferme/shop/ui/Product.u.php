@@ -788,6 +788,7 @@ class ProductUi {
 						$eProduct['farm'] = $eDate['cFarm'][$eProduct['farm']['id']];
 					}
 
+
 					$h .= '<tbody>';
 
 						$h .= '<tr>';
