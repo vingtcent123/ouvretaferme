@@ -387,7 +387,7 @@ class DateLib extends DateCrud {
 			->or(
 				fn() => $this->where('m2.shared = 0 and m1.deliveryDate < CURRENT_DATE'),
 				fn() => $this->where('m2.shared = 1 and m1.orderEndAt < CURRENT_TIMESTAMP')
-			)->highlight()
+			)
 			->where('m1.status', '!=', Date::CLOSED)
 			->getCollection();
 
