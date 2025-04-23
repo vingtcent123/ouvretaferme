@@ -535,7 +535,7 @@ class SaleLib extends SaleCrud {
 
 		// Ajouter des produits
 		if(($e['cItem'] ?? new \Collection())->notEmpty()) {
-			\selling\ItemLib::createCollection($e['cItem']);
+			\selling\ItemLib::createCollection($e, $e['cItem']);
 		}
 
 

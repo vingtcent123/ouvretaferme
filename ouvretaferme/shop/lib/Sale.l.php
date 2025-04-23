@@ -171,7 +171,7 @@ class SaleLib {
 
 		\selling\SaleLib::create($eSale);
 
-		\selling\ItemLib::createCollection($cItem);
+		\selling\ItemLib::createCollection($eSale, $cItem);
 
 		// Récupération du montant de la commande à jour après l'ajout des produits
 		\selling\Sale::model()
@@ -300,7 +300,7 @@ class SaleLib {
 			// Nouveaux items pour les mails de confirmation
 			$eSale['cItem'] = $cItem;
 
-			\selling\ItemLib::createCollection($cItem);
+			\selling\ItemLib::createCollection($eSale, $cItem);
 
 			\selling\SaleLib::update($eSale, $properties);
 

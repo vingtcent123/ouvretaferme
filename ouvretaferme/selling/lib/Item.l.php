@@ -316,7 +316,7 @@ class ItemLib extends ItemCrud {
 
 	}
 
-	public static function createCollection(\Collection $c): void {
+	public static function createCollection(Sale $eSale, \Collection $c): void {
 
 		if($c->empty()) {
 			throw new \Exception('Collection must not be empty');
@@ -336,7 +336,7 @@ class ItemLib extends ItemCrud {
 
 			}
 
-			SaleLib::recalculate($c->first()['sale']);
+			SaleLib::recalculate($eSale);
 
 			\shop\ProductLib::removeAvailable($c);
 
@@ -393,13 +393,13 @@ class ItemLib extends ItemCrud {
 				));
 
 				if($cItemFiltered->notEmpty()) {
-					ItemLib::createCollection($cItemFiltered);
+					ItemLib::createCollection($eSale, $cItemFiltered);
 				} else {
 					SaleLib::recalculate($eSale);
 				}
 
 			} else {
-				ItemLib::createCollection($cItem);
+				ItemLib::createCollection($eSale, $cItem);
 			}
 
 		Item::model()->commit();

@@ -53,7 +53,7 @@
 
 		$fw->validate(onKo: fn() => $fw->has('Item::createEmpty') ? NULL : \selling\Item::fail('createCollectionError'));
 
-		\selling\ItemLib::createCollection($data->cItem);
+		\selling\ItemLib::createCollection($data->eSale, $data->cItem);
 
 		throw new ReloadAction('selling', 'Item::created');
 
