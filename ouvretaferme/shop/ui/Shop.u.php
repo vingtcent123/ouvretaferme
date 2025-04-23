@@ -422,7 +422,12 @@ class ShopUi {
 		$h .= $form->openAjax('/shop/configuration:doUpdateEmail');
 
 		$h .= $form->hidden('id', $eShop['id']);
-		$h .= $form->dynamicGroups($eShop, ['emailNewSale', 'emailEndDate']);
+
+		if($eShop['shared'] === FALSE) {
+			$h .= $form->dynamicGroup($eShop, 'emailNewSale');
+		}
+
+		$h .= $form->dynamicGroup($eShop, 'emailEndDate');
 
 		$h .= $form->group(
 			content: $form->submit(s("Enregistrer les modifications"))

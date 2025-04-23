@@ -1,6 +1,6 @@
 <?php
 new Page()
-	->cron('endEmail', function($data) {
+	->cron('email', function($data) {
 
 		\shop\DateLib::sendEndEmail();
 
