@@ -67,16 +67,16 @@ new \selling\SalePage()
 
 		$fw = new FailWatch();
 
-		$cItemSale = \selling\ItemLib::checkNewItems($data->e, $_POST);
+		$cItemSale = \selling\ItemLib::checkNewItems($data->e, $_POST)->validate('canWrite');
 
 		$fw->validate();
 
 		\selling\ItemLib::updateSaleCollection($data->e, $cItemSale);
 
-		throw new ReloadAction();
+		throw new ReloadLayerAction();
 
 
-	});
+	}, validate: ['canRead']);
 
 
 new \selling\ItemPage()

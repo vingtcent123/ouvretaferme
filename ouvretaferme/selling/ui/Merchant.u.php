@@ -35,7 +35,6 @@ class MerchantUi {
 			$h .= '<div class="merchant-background" onclick="Merchant.hide()"></div>';
 			$h .= '<div class="merchant-content">';
 
-
 				$form = new \util\FormUi();
 
 				$h .= '<div class="merchant-item">';

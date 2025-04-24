@@ -79,6 +79,7 @@ new AdaptativeView('shared', function($data, DocTemplate $t) {
 		echo '<p>'.s("Quelques limites ont été introduites dans les boutiques collectives par rapport aux boutiques personnelles :").'</p>';
 		echo '<ul>';
 			echo '<li>'.s("Une fois qu'une vente est terminée, il n'est plus possible de réouvrir les ventes en modifiant les dates de prise de commande").'</li>';
+			echo '<li>'.s("Il n'est pas possible d'ajouter des commandes manuellement").'</li>';
 			echo '<li>'.s("Il n'est pas possible d'activer l'option qui permet de recevoir un e-mail à chaque commande").'</li>';
 			echo '<li>'.s("Les remises commerciales appliquées par les fermes aux clients ne sont <b>pas prises en compte</b> dans les boutiques collectives").'</li>';
 		echo '</ul>';

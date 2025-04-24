@@ -82,7 +82,7 @@ new \selling\SalePage()
 			$data->relativeSales = NULL;
 		}
 
-		throw new ViewAction($data);
+		throw new ViewAction($data, $data->eFarm->canSelling() ? ':salePlain' :  ':salePanel');
 
 	})
 	->read('/vente/{id}/devis', function($data) {

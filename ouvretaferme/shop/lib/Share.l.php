@@ -22,6 +22,15 @@ class ShareLib extends ShareCrud {
 
 	}
 
+	public static function getByFarm(\farm\Farm $eFarm): \Collection {
+
+		return Share::model()
+			->select(Share::getSelection())
+			->whereFarm($eFarm)
+			->getCollection();
+
+	}
+
 	public static function match(Shop $eShop, \farm\Farm $eFarm): bool {
 
 		self::$cacheMatch[$eShop['id']][$eFarm['id']] ??= Share::model()

@@ -384,6 +384,9 @@ class SaleUi {
 								$h .= '<div class="sale-item-delivery-source util-annotation">';
 									if($eSale['shop']->notEmpty()) {
 										$h .= '<a href="'.\shop\ShopUi::adminDateUrl($eSale['farm'], $eSale['shopDate']).'">'.encode($eSale['shop']['name']).'</a>';
+										if($eSale['shopShared']) {
+											$h .= '  <span class="util-badge bg-secondary">'.\Asset::icon('people-fill').'</span>';
+										}
 									} else if($eSale['marketParent']->notEmpty()) {
 										$h .= '<a href="'.SaleUi::url($eSale['marketParent']).'">'.encode($eSale['marketParent']['customer']->getName()).'</a>';;
 									} else if($eSale['market']) {
@@ -1083,7 +1086,7 @@ class SaleUi {
 			return '';
 		}
 
-		$h = '<div class="util-block stick-xs">';
+		$h = '<div class="sale-info-wrapper util-block stick-xs">';
 			$h .= '<dl class="util-presentation util-presentation-2">';
 				$h .= '<dt>'.s("Client").'</dt>';
 				$h .= '<dd>'.CustomerUi::link($eSale['customer']).'</dd>';
@@ -1397,7 +1400,10 @@ class SaleUi {
 
 		$secondaryList = '';
 
-		if($eSale->acceptDelete()) {
+		if(
+			$eSale->acceptDelete() and
+			$eSale->canDelete()
+		) {
 
 			$confirm = $eSale->isComposition() ?
 				s("Confirmer la suppression de la composition ?") :

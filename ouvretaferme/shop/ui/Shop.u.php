@@ -1029,7 +1029,7 @@ class ShopUi {
 			];
 
 		} else {
-			$switch = ['class' => 'disabled'];
+			$switch = ['disabled' => TRUE];
 		}
 
 		return \util\TextUi::switch($switch, $eShop['status'] === Shop::OPEN, s("Ouverte"), s("Fermée"));

@@ -261,16 +261,16 @@ class SaleLib extends SaleCrud {
 
 	public static function getNextByFarm(\farm\Farm $eFarm, ?string $type = NULL): array {
 
-		$getSales = fn(string $sign, int $sort, int $number) => Sale::model()
+		$getSales = fn(string $sign, int $sort, int $number) => Item::model()
 			->select([
 				'deliveredAt',
 				'turnover' => new \Sql('SUM(priceExcludingVat)', 'float')
 			])
 			->whereFarm($eFarm)
 			->whereType($type, if: $type !== NULL)
-			->wherePreparationStatus('IN', [Sale::CONFIRMED, Sale::PREPARED, Sale::SELLING, Sale::DELIVERED])
+			->whereStatus('IN', [Sale::CONFIRMED, Sale::PREPARED, Sale::SELLING, Sale::DELIVERED])
 			->whereDeliveredAt($sign, currentDate())
-			->whereMarketParent(NULL)
+			->whereParent(NULL)
 			->group('deliveredAt')
 			->sort(['deliveredAt' => $sort])
 			->getCollection(0, $number)
@@ -310,12 +310,22 @@ class SaleLib extends SaleCrud {
 			Sale::model()->whereType($type);
 		}
 
-		return Sale::model()
-			->select(Sale::getSelection())
+		$cSale = Item::model()
+			->select('sale')
 			->whereFarm($eFarm)
 			->whereDeliveredAt($date)
-			->wherePreparationStatus('IN', [Sale::CONFIRMED, Sale::PREPARED, Sale::DELIVERED])
-			->whereMarketParent(NULL)
+			->whereStatus('IN', [Sale::CONFIRMED, Sale::PREPARED, Sale::DELIVERED])
+			->whereParent(NULL)
+			->group('sale')
+			->getColumn('sale');
+
+		if($cSale->empty()) {
+			return new \Collection();
+		}
+
+		return Sale::model()
+			->select(Sale::getSelection())
+			->whereId('IN', $cSale)
 			->sort('id')
 			->getCollection(NULL, NULL, 'id');
 
@@ -907,11 +917,22 @@ class SaleLib extends SaleCrud {
 
 			if($e['market']) {
 
-				Sale::model()
+				$cSaleMarket = Sale::model()
+					->select('id')
 					->whereFarm($e['farm'])
 					->whereMarketParent($e)
+					->getCollection();
+
+				Sale::model()
+					->whereId('IN', $cSaleMarket)
 					->update([
 						'marketParent' => NULL
+					]);
+
+				Item::model()
+					->whereSale('IN', $cSaleMarket)
+					->update([
+						'parent' => NULL
 					]);
 
 			}

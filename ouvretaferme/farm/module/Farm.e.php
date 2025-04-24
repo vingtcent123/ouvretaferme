@@ -206,7 +206,13 @@ class Farm extends FarmElement {
 	}
 
 	public function getView(string $name): mixed {
-		return $this->getFarmer()[$name];
+		$eFarmer = $this->getFarmer();
+
+		if($eFarmer->notEmpty()) {
+			return $eFarmer[$name];
+		} else {
+			return new FarmerModel()->getDefaultValue($name);
+		}
 	}
 
 	public function validateLegalComplete(): void {

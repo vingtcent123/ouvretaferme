@@ -1,4 +1,9 @@
 /* Sales */
+#panel-sale,
+#panel-sale .panel-header {
+	background-color: var(--background-body);
+}
+
 .sale-item-invoice {
 	padding: 0rem;
 }

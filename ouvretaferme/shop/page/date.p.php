@@ -37,6 +37,16 @@ new \farm\FarmPage()
 			$data->eShop['cDepartment'] = \shop\DepartmentLib::getByShop($data->eShop);
 			$data->eDate['cFarm'] = $data->eShop['cShare']->getColumnCollection('farm', index: 'farm');
 
+			if(get_exists('farm')) {
+				$data->eShop['eFarmSelected'] = $data->eDate['cFarm'][GET('farm', 'int')] ?? new \farm\Farm();
+			} else {
+				$data->eShop['eFarmSelected'] = new \farm\Farm();
+			}
+
+			if($data->eShop['eFarmSelected']->notEmpty()) {
+				$cProduct->filter(fn($eProduct) => $eProduct['farm']['id'] === $data->eShop['eFarmSelected']['id']);
+			}
+
 		} else {
 
 			$data->eDate['cFarm'] = $data->eDate['catalogs'] ?

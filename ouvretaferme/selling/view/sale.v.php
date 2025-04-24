@@ -1,5 +1,24 @@
 <?php
-new AdaptativeView('/vente/{id}', function($data, FarmTemplate $t) {
+new AdaptativeView('salePanel', function($data, PanelTemplate $t) {
+
+		$h = '';
+
+		$h .= new \selling\SaleUi()->getRelativeSales($data->e, $data->relativeSales);
+		$h .= new \selling\SaleUi()->getContent($data->e, $data->cPdf);
+		$h .= new \selling\ItemUi()->getBySale($data->e, $data->cItem);
+		$h .= new \selling\SaleUi()->getMarket($data->eFarm, $data->ccSaleMarket);
+		$h .= new \selling\SaleUi()->getHistory($data->e, $data->cHistory);
+
+		return new \Panel(
+			id: 'panel-sale',
+			title: \selling\SaleUi::getName($data->e),
+			body: $h,
+			close: 'reload'
+		);
+
+});
+
+new AdaptativeView('salePlain', function($data, FarmTemplate $t) {
 
 	$t->title = \selling\SaleUi::getName($data->e);
 
@@ -9,9 +28,7 @@ new AdaptativeView('/vente/{id}', function($data, FarmTemplate $t) {
 	$t->mainTitle = new \selling\SaleUi()->getHeader($data->e);
 
 	echo new \selling\SaleUi()->getRelativeSales($data->e, $data->relativeSales);
-
 	echo new \selling\SaleUi()->getContent($data->e, $data->cPdf);
-
 	echo new \selling\ItemUi()->getBySale($data->e, $data->cItem);
 	echo new \selling\SaleUi()->getMarket($data->eFarm, $data->ccSaleMarket);
 	echo new \selling\SaleUi()->getHistory($data->e, $data->cHistory);

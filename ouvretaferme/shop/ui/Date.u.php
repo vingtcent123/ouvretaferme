@@ -888,10 +888,33 @@ class DateUi {
 
 	public function getProducts(\farm\Farm $eFarm, Shop $eShop, Date $eDate): string {
 
+		$h = '';
+
+		if($eShop['shared']) {
+
+			$cShare = $eShop['cShare'];
+
+			$h = '<div class="text-end mb-1">';
+				$h .= '<a data-dropdown="bottom-end" class="btn btn-outline-secondary dropdown-toggle">';
+					$h .= \Asset::icon('search').'  ';
+					$h .= $eShop['eFarmSelected']->empty() ? s("Producteur") : encode($eShop['eFarmSelected']['name']);
+				$h .= '</a>';
+				$h .= '<div class="dropdown-list">';
+					foreach($cShare as $eShare) {
+						$h .= '<a href="'.ShopUi::adminDateUrl($eFarm, $eDate).'?farm='.$eShare['farm']['id'].'" class="dropdown-item '.($eShare['farm']->is($eShop['eFarmSelected']) ? 'selected' : '').'">'.encode($eShare['farm']['name']).'</a>';
+					}
+				$h .= '</div>';
+				if($eShop['eFarmSelected']->notEmpty()) {
+				$h .= '<a href="'.ShopUi::adminDateUrl($eFarm, $eDate).'" class="btn btn-secondary ml-1">'.\Asset::icon('x-lg').'</a>';
+		}
+			$h .= '</div>';
+
+		}
+
 		if(currentDate() > $eDate['deliveryDate']) {
-			return $this->getDeliveredProducts($eFarm, $eShop, $eDate);
+			$h .= $this->getDeliveredProducts($eFarm, $eShop, $eDate);
 		} else {
-			return $this->getPendingProducts($eFarm, $eShop, $eDate);
+			$h .= $this->getPendingProducts($eFarm, $eShop, $eDate);
 		}
 
 		return $h;

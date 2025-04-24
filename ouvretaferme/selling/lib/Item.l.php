@@ -36,6 +36,7 @@ class ItemLib extends ItemCrud {
 				'containsIngredient' => new \Sql('ingredientOf IS NOT NULL', 'bool')
 			])
 			->join(Product::model(), 'm2.id = m1.product')
+			->where('m1.farm', $eFarm)
 			->where('sale', 'IN', $cSale)
 			->sort('sale')
 			->getCollection(NULL, NULL, ['product', NULL]);
@@ -139,6 +140,7 @@ class ItemLib extends ItemCrud {
 			->select(Item::getSelection() + [
 				'customer' => ['type', 'name']
 			])
+			->whereFarm($eFarm)
 			->where('sale', 'IN', $cSale)
 			->sort('sale')
 			->getCollection(NULL, NULL, ['sale', NULL]);
@@ -164,7 +166,7 @@ class ItemLib extends ItemCrud {
 
 		return Item::model()
 			->select([
-				'sale' => ['farm', 'hasVat', 'taxes', 'shippingVatRate', 'shippingVatFixed', 'document'],
+				'sale' => ['farm', 'shop', 'shopShared', 'hasVat', 'taxes', 'shippingVatRate', 'shippingVatFixed', 'document'],
 				'customer' => ['type', 'name'],
 				'quantity' => new \Sql('IF(packaging IS NULL, 1, packaging) * number', 'float'),
 				'unit' => ['fqn', 'by', 'singular', 'plural', 'short', 'type'],
@@ -297,7 +299,7 @@ class ItemLib extends ItemCrud {
 				'id' => ($type === 'parent') ? NULL : $eItem['id'],
 				'parent' => ($type === 'parent') ? $eItem : $eItem['parent'],
 				'sale' => $eSale,
-				'farm' => $eSale['farm'],
+				'farm' => $eItem['farm'],
 				'customer' => $eSale['customer'],
 				'product' => $eItem['product'],
 				'name' => $eItem['name'],

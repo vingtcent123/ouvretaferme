@@ -16,6 +16,12 @@ class ItemUi {
 
 	public function getBySale(Sale $eSale, \Collection $cItem) {
 
+		$eItemCreate = new Item([
+			'sale' => $eSale,
+			'farm' => $eSale['farm']
+		]);
+
+
 		$h = '<div class="mb-2">';
 
 		if($eSale->isComposition()) {
@@ -39,7 +45,10 @@ class ItemUi {
 			$h .= '</div>';
 		}
 
-		if($eSale->acceptCreateItems()) {
+		if(
+			$eSale->acceptCreateItems() and
+			$eItemCreate->canCreate()
+		) {
 
 			$form = new \util\FormUi();
 
@@ -89,7 +98,10 @@ class ItemUi {
 				} else {
 					$h .= '<h3>'.s("Articles").'</h3>';
 				}
-				if($eSale->acceptCreateItems()) {
+				if(
+					$eSale->acceptCreateItems() and
+					$eItemCreate->canCreate()
+				) {
 					$h .= '<a href="/selling/item:createCollection?sale='.$eSale['id'].'" class="btn btn-outline-primary">';
 						$h .= \Asset::icon('plus-circle').' '.s("Ajouter plusieurs produits");
 					$h .= '</a>';

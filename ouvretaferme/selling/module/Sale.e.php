@@ -93,8 +93,22 @@ class Sale extends SaleElement {
 
 	public function canRead(): bool {
 
-		$this->expects(['farm']);
-		return $this['farm']->canSelling();
+		$this->expects(['farm', 'shop', 'shopShared']);
+
+		if($this['farm']->canSelling()) {
+			return TRUE;
+		}
+
+		if(
+			$this['shop']->notEmpty() and
+			$this['shopShared']
+		) {
+
+			return \shop\ShareLib::match($this['shop'], $this['farm']);
+
+		}
+
+		return FALSE;
 
 	}
 
