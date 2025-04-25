@@ -197,7 +197,8 @@ class ItemUi {
 
 					if(
 						$eSale['shop']->notEmpty() and
-						$eSale['shop']['shared']
+						$eSale['shop']['shared'] and
+						$eSale['shopMaster']
 					) {
 
 						$ccItem = $cItem->reindex(['product', 'farm']);
@@ -274,6 +275,7 @@ class ItemUi {
 				if(
 					$eSale['shop']->notEmpty() and
 					$eSale['shop']['shared'] and
+					$eSale['shopMaster'] and
 					$position === 0
 				) {
 

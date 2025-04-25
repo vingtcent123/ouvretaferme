@@ -60,7 +60,10 @@ new \selling\SalePage()
 new \selling\SalePage()
 	->read('/vente/{id}', function($data) {
 
-		if($data->e['shopParent']->notEmpty()) {
+		if(
+			$data->e['preparationStatus'] === \selling\Sale::PROVISIONAL and
+			$data->e['shopParent']->notEmpty()
+		) {
 			$data->e = \selling\SaleLib::getById($data->e['shopParent']);
 		}
 

@@ -390,8 +390,7 @@ class DateLib extends DateCrud {
 				self::finishShared($eDate);
 			}
 
-			Date::model()->rollBack();
-		//	Date::model()->commit();
+			Date::model()->commit();
 
 		}
 
@@ -404,7 +403,7 @@ class DateLib extends DateCrud {
 		foreach($cSale as $eSale) {
 
 			$cSaleChildren = \selling\Sale::model()
-				->select('marketParent', 'preparationStatus', 'document', 'farm')
+				->select('id', 'marketParent', 'preparationStatus', 'document', 'farm')
 				->whereShopParent($eSale)
 				->getCollection();
 
@@ -414,7 +413,7 @@ class DateLib extends DateCrud {
 				$eSaleChild['preparationStatus'] = $eSale['preparationStatus'];
 
 				if($eSaleChild['document'] === NULL) {
-					$eSaleChild['document'] = ConfigurationLib::getNextDocumentSales($eSaleChild['farm']);
+					$eSaleChild['document'] = \selling\ConfigurationLib::getNextDocumentSales($eSaleChild['farm']);
 				}
 
 				\selling\SaleLib::update($eSaleChild, ['preparationStatus', 'document']);
