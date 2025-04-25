@@ -3,7 +3,7 @@ new AdaptativeView('create', function($data, FarmTemplate $t) {
 
 	$t->tab = 'selling';
 	$t->subNav = new \farm\FarmUi()->getShopSubNav($data->eFarm);
-	$t->title = s("Ajouter une nouvelle livraison");
+	$t->title = s("Ajouter une nouvelle date de livraison");
 
 	\Asset::js('shop', 'manage.js');
 
