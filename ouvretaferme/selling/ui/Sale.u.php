@@ -1079,7 +1079,7 @@ class SaleUi {
 
 			$h .= '<div class="sale-relative-title">';
 				$h .= '<h4>'.encode($e['shop']['name']).'</h4>';
-				$h .= '<a href="'.\shop\ShopUi::adminDateUrl($e['farm'], $e['shopDate']).'" class="sale-relative-date">'.s("Vente du {value}", \util\DateUi::numeric($e['shopDate']['deliveryDate'])).'</a>';
+				$h .= '<a href="'.\shop\ShopUi::adminDateUrl($e['farm'], $e['shopDate']).'" class="sale-relative-date">'.s("Livraison du {value}", \util\DateUi::numeric($e['shopDate']['deliveryDate'])).'</a>';
 				$h .= '<div class="sale-relative-current">';
 					$h .= s("Commande {position} / {count}", ['position' => $position, 'count' => $count]);
 				$h .= '</div>';
@@ -1108,7 +1108,7 @@ class SaleUi {
 			return '';
 		}
 
-		$h = '<div class="sale-info-wrapper util-block stick-xs">';
+		$h = '<div class="sale-content-wrapper util-block stick-xs">';
 			$h .= '<dl class="util-presentation util-presentation-2">';
 				$h .= '<dt>'.s("Client").'</dt>';
 				$h .= '<dd>'.CustomerUi::link($eSale['customer']).'</dd>';
@@ -1201,6 +1201,24 @@ class SaleUi {
 				}
 
 			$h .= '</dl>';
+		$h .= '</div>';
+
+		$h .= $this->getShopParent($eSale);
+
+		return $h;
+
+	}
+
+	public function getShopParent(Sale $e): string {
+
+		if($e['shopParent']->empty()) {
+			return '';
+		}
+
+		$h = '<div class="sale-parent-wrapper stick-xs">';
+
+			$h .= '<p>'.s("Cette vente concerne uniquement votre production vendue à {customer} pour la livraison du {date} sur la boutique collective {shop}.", ['customer' => CustomerUi::link($e['customer']), 'date' => '<a href="'.\shop\ShopUi::adminDateUrl($e['farm'], $e['shopDate']).'">'.\util\DateUi::numeric($e['shopDate']['deliveryDate']).'</a>', 'shop' => '<a href="'.\shop\ShopUi::adminUrl($e['farm'], $e['shop']).'">'.encode($e['shop']['name']).'</a>']).'</p>';
+			$h .= '<a href="'.SaleUi::url($e['shopParent']).'" class="btn btn-outline-transparent">'.s("Voir la commande complète de ce client").'</a>';
 		$h .= '</div>';
 
 		return $h;
@@ -1734,7 +1752,7 @@ class SaleUi {
 			);
 
 			$h .= $form->group(
-				s("Date de la nouvelle vente"),
+				s("Date de la nouvelle livraison"),
 				$form->dynamicField($eSale, 'deliveredAt')
 			);
 
@@ -1975,7 +1993,7 @@ class SaleUi {
 						$h .= '<h5>'.encode($eShop['name']).'</h5>';
 
 						$h .= $form->radios('shopDate', $eShop['cDate'], $e['shopDate'] ?? new \shop\Date(), attributes: [
-							'callbackRadioContent' => fn($eDate) => s("Vente du {value}", \util\DateUi::numeric($eDate['deliveryDate'])),
+							'callbackRadioContent' => fn($eDate) => s("Livraison du {value}", \util\DateUi::numeric($eDate['deliveryDate'])),
 							'mandatory' => TRUE,
 						]);
 

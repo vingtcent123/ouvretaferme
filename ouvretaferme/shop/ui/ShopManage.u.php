@@ -234,7 +234,7 @@ class ShopManageUi {
 			$h .= '<div class="tabs-item">';
 
 				$h .= '<a class="tab-item" data-tab="dates" onclick="Lime.Tab.select(this)">';
-					$h .= s("Ventes");
+					$h .= s("Livraisons");
 				$h .= '</a>';
 				$h .= '<a class="tab-item" data-tab="farmers" onclick="Lime.Tab.select(this)">';
 					$h .= s("Producteurs");
@@ -341,7 +341,7 @@ class ShopManageUi {
 		$h = '<div class="util-title">';
 
 			if($eShop['shared'] === FALSE) {
-				$h .= '<h2>'.s("Ventes").'</h2>';
+				$h .= '<h2>'.s("Livraisons").'</h2>';
 			} else {
 				$h .= '<div></div>';
 			}
@@ -349,19 +349,19 @@ class ShopManageUi {
 			$h .= '<div>';
 				if($eShop->canWrite()) {
 					if($cDate->empty()) {
-						$h .= '<a href="/shop/date:create?shop='.$eShop['id'].'&farm='.$eFarm['id'].'" class="btn btn-primary">'.\Asset::icon('plus-circle').' '.s("Nouvelle vente").'</a>';
+						$h .= '<a href="/shop/date:create?shop='.$eShop['id'].'&farm='.$eFarm['id'].'" class="btn btn-primary">'.\Asset::icon('plus-circle').' '.s("Nouvelle livraison").'</a>';
 					} else {
-						$h .= '<a data-dropdown="bottom-end" class="btn btn-primary dropdown-toggle">'.\Asset::icon('plus-circle').' '.s("Nouvelle vente").'</a>';
+						$h .= '<a data-dropdown="bottom-end" class="btn btn-primary dropdown-toggle">'.\Asset::icon('plus-circle').' '.s("Nouvelle livraison").'</a>';
 						$h .= '<div class="dropdown-list">';
-							$h .= '<a href="/shop/date:create?shop='.$eShop['id'].'&farm='.$eFarm['id'].'" class="dropdown-item">'.s("Créer une vente de zéro").'</a>';
+							$h .= '<a href="/shop/date:create?shop='.$eShop['id'].'&farm='.$eFarm['id'].'" class="dropdown-item">'.s("Créer une livraison de zéro").'</a>';
 							$h .= '<div class="dropdown-divider"></div>';
-							$h .= '<div class="dropdown-subtitle">'.s("Créer à partir une autre vente").'</div>';
+							$h .= '<div class="dropdown-subtitle">'.s("Créer à partir une autre livraison").'</div>';
 							$count = 0;
 							foreach($cDate as $eDate) {
 								if($count++ >= 3) {
 									break;
 								}
-								$h .= '<a href="/shop/date:create?shop='.$eShop['id'].'&farm='.$eFarm['id'].'&date='.$eDate['id'].'" class="dropdown-item">'.\Asset::icon('chevron-right').' '.s("Vente du {value}", \util\DateUi::textual($eDate['deliveryDate'])).'</a>';
+								$h .= '<a href="/shop/date:create?shop='.$eShop['id'].'&farm='.$eFarm['id'].'&date='.$eDate['id'].'" class="dropdown-item">'.\Asset::icon('chevron-right').' '.s("Livraison du {value}", \util\DateUi::textual($eDate['deliveryDate'])).'</a>';
 							}
 						$h .= '</div>';
 					}

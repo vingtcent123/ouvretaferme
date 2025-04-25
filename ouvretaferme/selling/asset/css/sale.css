@@ -381,6 +381,33 @@ a.sale-document-new .sale-document-status {
 	font-weight: normal;
 }
 
+.sale-parent-wrapper {
+	background-color: var(--selling);
+	padding: 1rem;
+	color: white;
+	margin-bottom: 1rem;
+}
+
+.sale-parent-wrapper a:not(.btn) {
+	color: white;
+	text-decoration: underline;
+}
+
+@media (min-width: 576px) {
+
+	.sale-parent-wrapper {
+		border-bottom-left-radius: var(--radius);
+		border-bottom-right-radius: var(--radius);
+	}
+
+	.sale-content-wrapper:has(+ .sale-parent-wrapper) {
+		border-bottom-left-radius: 0;
+		border-bottom-right-radius: 0;
+		margin-bottom: 0;
+	}
+
+}
+
 .sale-relative-wrapper {
 	display: grid;
 	grid-template: "before title after" auto / 1fr auto 1fr;

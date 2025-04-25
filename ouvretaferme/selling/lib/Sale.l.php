@@ -335,6 +335,7 @@ class SaleLib extends SaleCrud {
 			->whereShopDate($eDate)
 			->whereShopParent(NULL, if: $eFarm->empty())
 			->where('m1.farm', $eFarm, if: $eFarm->notEmpty())
+			->where('m1.shopMaster', FALSE, if: $eFarm->notEmpty())
 			->wherePreparationStatus('IN', $preparationStatus, if: $preparationStatus !== NULL)
 			->sort($sort)
 			->getCollection(NULL, NULL, 'id');

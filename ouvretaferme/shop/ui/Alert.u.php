@@ -48,9 +48,9 @@ class AlertUi {
 
 		return match($fqn) {
 
-			'Date::copied' => s("La nouvelle vente a bien été copiée à partir d'une date précédente !"),
-			'Date::created' => s("La nouvelle vente a bien été créée !"),
-			'Date::deleted' => s("La vente a bien été supprimée"),
+			'Date::copied' => s("La nouvelle livraison a bien été copiée à partir d'une date précédente !"),
+			'Date::created' => s("La nouvelle livraison a bien été créée !"),
+			'Date::deleted' => s("La livraison a bien été supprimée"),
 			'Date::updated' => s("Le paramétrage a bien été enregistré."),
 
 			'Share::updated' => s("L'activité a bien été mise à jour."),

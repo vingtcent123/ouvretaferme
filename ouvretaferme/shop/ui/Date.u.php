@@ -13,7 +13,7 @@ class DateUi {
 	}
 
 	public static function name(Date $e): string {
-		return s("Vente du {value}", lcfirst(\util\DateUi::getDayName(date('N', strtotime($e['deliveryDate'])))).' '.\util\DateUi::textual($e['deliveryDate']));
+		return s("Livraison du {value}", lcfirst(\util\DateUi::getDayName(date('N', strtotime($e['deliveryDate'])))).' '.\util\DateUi::textual($e['deliveryDate']));
 	}
 
 	public function toggle(Date $eDate) {
@@ -390,7 +390,7 @@ class DateUi {
 
 		return new \Panel(
 			id: 'panel-date-update',
-			title: s("Paramétrer une vente"),
+			title: s("Paramétrer la livraison"),
 			body: $h
 		);
 	}
@@ -496,7 +496,7 @@ class DateUi {
 				$h .= '<thead>';
 
 					$h .= '<tr>';
-						$h .= '<th>'.s("Date").'</th>';
+						$h .= '<th></th>';
 						$h .= '<th></th>';
 						$h .= '<th class="text-end">'.s("Commandes").'</th>';
 						$h .= '<th class="text-end highlight">'.s("Montant").''.($hasSameTaxes ? ' <span class="util-annotation">'.$cDate->first()->getTaxes().'</span>' : '').'</th>';
@@ -616,20 +616,20 @@ class DateUi {
 
 				if($eDate->canWrite()) {
 
-					$h .= '<a href="/shop/date:update?id='.$eDate['id'].'" class="dropdown-item">'.s("Paramétrer la vente").'</a>';
+					$h .= '<a href="/shop/date:update?id='.$eDate['id'].'" class="dropdown-item">'.s("Paramétrer la livraison").'</a>';
 					if($eDate->isDirect()) {
-						$h .= '<a href="/shop/product:createCollection?date='.$eDate['id'].'" class="dropdown-item">'.s("Ajouter des produits à la vente").'</a>';
+						$h .= '<a href="/shop/product:createCollection?date='.$eDate['id'].'" class="dropdown-item">'.s("Ajouter des produits à la livraison").'</a>';
 					}
 
 				}
 
 				if($eShop->canWrite()) {
-					$h .= '<a href="/shop/date:create?shop='.$eShop['id'].'&farm='.$eDate['farm']['id'].'&date='.$eDate['id'].'" class="dropdown-item">'.s("Nouvelle vente à partir de celle-ci").'</a>';
+					$h .= '<a href="/shop/date:create?shop='.$eShop['id'].'&farm='.$eDate['farm']['id'].'&date='.$eDate['id'].'" class="dropdown-item">'.s("Nouvelle livraison à partir de celle-ci").'</a>';
 				}
 
 				if($eDate->canWrite() and $sales === 0) {
 					$h .= '<div class="dropdown-divider"></div>';
-					$h .= '<a data-ajax="/shop/date:doDelete" post-id="'.$eDate['id'].'" post-farm="'.$eDate['farm']['id'].'" post-shop="'.$eShop['id'].'" class="dropdown-item" data-confirm="'.s("Êtes-vous sûr de vouloir supprimer cette vente ?").'">'.s("Supprimer la vente").'</a>';
+					$h .= '<a data-ajax="/shop/date:doDelete" post-id="'.$eDate['id'].'" post-farm="'.$eDate['farm']['id'].'" post-shop="'.$eShop['id'].'" class="dropdown-item" data-confirm="'.s("Êtes-vous sûr de vouloir supprimer cette livraison ?").'">'.s("Supprimer la livraison").'</a>';
 				}
 
 			$h .= '</div>';
@@ -646,18 +646,16 @@ class DateUi {
 		if($eShop['status'] === Shop::CLOSED) {
 			$h .= '<div class="color-danger">'.\Asset::icon('exclamation-triangle-fill').' '.s("Boutique fermée").'</div>';
 		} else if($eDate['status'] === Date::CLOSED) {
-			$h .= '<div class="color-success">'.\Asset::icon('check-lg').' '.s("Vente clôturée").'</div>';
+			$h .= '<div class="color-success">'.\Asset::icon('check-lg').' '.s("Livré").'</div>';
 		} else {
 
 			if($eDate['orderStartAt'] < $now and $eDate['orderEndAt'] > $now) {
-				$h .= '<span class="color-order">'.s("Vente ouverte encore {value}", \util\DateUi::secondToDuration(strtotime($eDate['orderEndAt']) - time(), \util\DateUi::AGO, maxNumber: 1)).'</span>';
+				$h .= '<span class="color-order">'.s("Prises de commande ouvertes encore {value}", \util\DateUi::secondToDuration(strtotime($eDate['orderEndAt']) - time(), \util\DateUi::AGO, maxNumber: 1)).'</span>';
 			} else if($eDate['orderEndAt'] < $now) {
 				if(currentDate() === $eDate['deliveryDate']) {
 					$h .= s("En attente de livraison aujourd'hui");
 				} else if(currentDate() < $eDate['deliveryDate']) {
 					$h .= s("En attente de livraison le {value}", \util\DateUi::numeric($eDate['deliveryDate']));
-				} else {
-					$h .= '<span class="color-success">'.s("Vente livrée").'</span>';
 				}
 			} else {
 				$h .= s("Ouverture des ventes dans {value}", \util\DateUi::secondToDuration(strtotime($eDate['orderStartAt']) - time(), \util\DateUi::AGO, maxNumber: 1));
@@ -1039,7 +1037,7 @@ class DateUi {
 			$h .= '<dl class="util-presentation util-presentation-2">';
 
 				$h .= '<dt>';
-					$h .= s("Adresse de la vente");
+					$h .= s("Lien de la livraison");
 				$h .= '</dt>';
 				$h .= '<dd class="util-presentation-fill">';
 					$h .= '<a href="'.ShopUi::dateUrl($eShop, $eDate).'" id="date-url">'.ShopUi::dateUrl($eShop, $eDate).'</a>';
@@ -1047,7 +1045,7 @@ class DateUi {
 				$h .= '</dd>';
 
 				$h .= '<dt>';
-					$h .= s("Statut de la vente");
+					$h .= s("Statut de la livraison");
 				$h .= '</dt>';
 				$h .= '<dd>';
 					$h .= $this->getStatus($eShop, $eDate);
@@ -1099,7 +1097,7 @@ class DateUi {
 			'description' => s("Complément d'information"),
 			'productsList' => s("Choisir les produits proposés à la vente"),
 			'status' => s("Statut"),
-			'points' => s("Modes de livraison pour cette vente"),
+			'points' => s("Modes de livraison activés"),
 		]);
 
 		switch($property) {
@@ -1127,7 +1125,7 @@ class DateUi {
 				break;
 
 			case 'description' ;
-				$d->label .= \util\FormUi::info(s("Utilisez cet espace pour donner à vos clients des informations valables uniquement pour cette vente, comme par exemple <i>Dernière vente avant nos congés annuels !</i>"));
+				$d->label .= \util\FormUi::info(s("Utilisez cet espace pour donner à vos clients des informations valables uniquement pour cette livraison, comme par exemple <i>Dernière vente avant nos congés annuels !</i>"));
 				break;
 
 			case 'deliveryDate' ;
@@ -1188,7 +1186,6 @@ class DateUi {
 				$d->field = function(\util\FormUi $form, Date $e) {
 					return new DateUi()->getPoints($form, $e);
 				};
-				$d->labelAfter = \util\FormUi::info(s("Sélectionnez au moins un mode de livraison pour cette vente."));
 				break;
 
 		}

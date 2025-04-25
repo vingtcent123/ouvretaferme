@@ -121,7 +121,7 @@ class RangeUi {
 					$dates = [];
 
 					foreach($e['cDateAvailable'] as $eDate) {
-						$dates[$eDate['id']] = s("Vente du {value}", \util\DateUi::numeric($eDate['deliveryDate']));
+						$dates[$eDate['id']] = s("Livraison du {value}", \util\DateUi::numeric($eDate['deliveryDate']));
 					}
 
 					return $form->checkboxes('datesList[]', $dates);
@@ -142,8 +142,8 @@ class RangeUi {
 	private static function getStatusLabel(string $status): string {
 
 		return match($status) {
-			Range::AUTO => s("Catalogue activé par défaut à chaque nouvelle vente dans la boutique"),
-			Range::MANUAL => s("Catalogue à activer manuellement à chaque nouvelle vente pour autoriser les commandes"),
+			Range::AUTO => s("Catalogue activé par défaut à chaque nouvelle livraison dans la boutique"),
+			Range::MANUAL => s("Catalogue à activer manuellement à chaque nouvelle livraison pour autoriser les commandes"),
 		};
 
 	}

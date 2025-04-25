@@ -907,7 +907,7 @@ class PdfUi {
 		$h .= '<div class="pdf-sales-summary-wrapper">';
 
 			$h .= '<h1>'.encode($eDate['shop']['name']).'</h1>';
-			$h .= '<h2>'.s("Vente du {value}", \util\DateUi::numeric($eDate['deliveryDate'])).' | '.p("{value} commande", "{value} commandes", $cSale->count()).'</h2>';
+			$h .= '<h2>'.s("Livraison du {value}", \util\DateUi::numeric($eDate['deliveryDate'])).' | '.p("{value} commande", "{value} commandes", $cSale->count()).'</h2>';
 
 			$h .= $this->getSalesSummary($cItem);
 
