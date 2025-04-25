@@ -105,7 +105,7 @@ class DateLib extends DateCrud {
 
 	public static function getRelativeSales(Date $e, \selling\Sale $eSaleSelected): ?array {
 
-		$cSale = \selling\SaleLib::getByDate($e, [Sale::CONFIRMED, Sale::PREPARED, Sale::DELIVERED], select: [
+		$cSale = \selling\SaleLib::getByDate($e, [\selling\Sale::CONFIRMED, \selling\Sale::PREPARED, \selling\Sale::DELIVERED], select: [
 			'id', 'document',
 			'customer' => ['type', 'name']
 		]);
