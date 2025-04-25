@@ -498,7 +498,7 @@ class DateUi {
 					$h .= '<tr>';
 						$h .= '<th></th>';
 						$h .= '<th></th>';
-						$h .= '<th class="text-end">'.s("Commandes").'</th>';
+						$h .= '<th class="text-end">'.s("Ventes").'</th>';
 						$h .= '<th class="text-end highlight">'.s("Montant").''.($hasSameTaxes ? ' <span class="util-annotation">'.$cDate->first()->getTaxes().'</span>' : '').'</th>';
 						$h .= '<th class="text-end hide-md-down">'.s("Panier moyen").''.($hasSameTaxes ? ' <span class="util-annotation">'.$cDate->first()->getTaxes().'</span>' : '').'</th>';
 						$h .= '<th></th>';
@@ -692,7 +692,7 @@ class DateUi {
 				}
 
 				$h .= '<a class="tab-item" data-tab="sales" onclick="Lime.Tab.select(this)">';
-					$h .= s("Commandes");
+					$h .= s("Ventes");
 					if($cSale->notEmpty()) {
 						$h .= '<span class="tab-item-count">'.$cSale
 								->find(fn($eSale) => in_array($eSale['preparationStatus'], [\selling\Sale::CONFIRMED, \selling\Sale::PREPARED, \selling\Sale::DELIVERED]))
@@ -754,7 +754,7 @@ class DateUi {
 				}
 
 				if($cSale->empty()) {
-					$h .= '<div class="util-info">'.s("Aucune commande n'a encore été enregistrée !").'</div>';
+					$h .= '<div class="util-info">'.s("Aucune vente n'a encore été enregistrée !").'</div>';
 				} else {
 
 					$h .= new \selling\SaleUi()->getList(

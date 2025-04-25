@@ -139,7 +139,6 @@ class ShopManageUi {
 			$eShop['date']->notEmpty()
 		));
 
-		$hasDate = $cShop->match(fn($eShop) => $eShop['hasDate']);
 
 		$h = '<div class="shop-list mb-2">';
 
@@ -157,7 +156,6 @@ class ShopManageUi {
 						$h .= '</h2>';
 					$h .= '</div>';
 
-					if($hasDate) {
 
 						$h .= '<div class="shop-list-item-content">';
 
@@ -174,7 +172,7 @@ class ShopManageUi {
 										$h .= \util\DateUi::textual($eDate['deliveryDate']);
 									$h .= '</dd>';
 
-									$h .= '<dt>'.s("Commandes").'</dt>';
+									$h .= '<dt>'.s("Ventes").'</dt>';
 									$h .= '<dd>'.$eDate['sales']['countValid'].'</dd>';
 
 									if($eDate['sales']['countValid'] > 0) {
@@ -186,15 +184,14 @@ class ShopManageUi {
 
 						} else {
 							if($eShop['status'] === Shop::CLOSED) {
-								$h .= '<h4 class="color-muted">'.s("Boutique fermée").'</h4>';
+								$h .= '<h4>'.\Asset::icon('x-circle-fill').' '.s("Boutique fermée").'</h4>';
 							} else {
-								$h .= '<h4 class="color-muted">'.s("Aucune vente").'</h4>';
+								$h .= '<h4>'.s("Il n'y a pas encore de livraison planifiée sur cette boutique !").'</h4>';
 							}
 						}
 
 						$h .= '</div>';
 
-					}
 
 				$h .= '</a>';
 
@@ -304,31 +301,29 @@ class ShopManageUi {
 		}
 
 		$h = '';
+		$h .= '<div class="util-block-help">';
+			$h .= '<h4>'.s("Ajouter une première date de livraison").'</h4>';
 
 		if($eShop['shared']) {
 
-			$h .= '<div class="util-block-help">';
-				$h .= '<h4>'.s("Créer une première vente").'</h4>';
-				$h .= '<ul>';
-					$h .= '<li>'.s("Vous avez invité des producteurs sur la boutique ?").'</li>';
-					$h .= '<li>'.s("La configuration de la boutique est terminée ?").'</li>';
-				$h .= '</ul>';
-				$h .= '<p>'.s("Alors c'est le moment de créer une première vente à destination de vos clients !").'</p>';
-				$h .= '<a href="/shop/date:create?shop='.$eShop['id'].'&farm='.$eFarm['id'].'" class="btn btn-secondary">'.s("Ajouter une première vente").'</a>';
-			$h .= '</div>';
+			$h .= '<ul>';
+				$h .= '<li>'.s("Vous avez invité des producteurs sur la boutique ?").'</li>';
+				$h .= '<li>'.s("La configuration de la boutique est terminée ?").'</li>';
+			$h .= '</ul>';
+			$h .= '<p>'.s("Alors c'est le moment de configurer une première vente à destination de vos clients !").'</p>';
+			$h .= '<a href="/shop/date:create?shop='.$eShop['id'].'&farm='.$eFarm['id'].'" class="btn btn-secondary">'.s("Ajouter une première date de livraison").'</a>';
 
 		} else {
 
-			$h .= '<div class="util-block-help">';
-				$h .= '<h4>'.s("Créer une première vente").'</h4>';
-				$h .= '<p>'.s("Vous êtes satisfait de la configuration de votre boutique ?<br/>Alors c'est le moment d'ajouter une première vente en choisissant une date et la liste des produits que vous avez en stock et que vous souhaitez proposer à vos clients !").'</p>';
-				$h .= '<a href="/shop/date:create?shop='.$eShop['id'].'&farm='.$eFarm['id'].'" class="btn btn-secondary">'.s("Ajouter une première vente").'</a>';
-				$h .= '<br/><br/>';
-				$h .= '<p>'.s("Vous voulez continuer à personnaliser l'expérience de vos clients ?<br/>Activez par exemple le paiement en ligne ou personnalisez les e-mails envoyés automatiquement à vos clients lors de leurs commandes.").'</p>';
-				$h .= '<a href="/shop/configuration:update?id='.$eShop['id'].'" class="btn btn-outline-secondary">'.s("Continuer à personnaliser la boutique").'</a>';
-			$h .= '</div>';
+			$h .= '<p>'.s("Vous êtes satisfait de la configuration de votre boutique ?<br/>Alors c'est le moment d'ajouter une première vente en choisissant une date et la liste des produits que vous avez en stock et que vous souhaitez proposer à vos clients !").'</p>';
+			$h .= '<a href="/shop/date:create?shop='.$eShop['id'].'&farm='.$eFarm['id'].'" class="btn btn-secondary">'.s("Ajouter une première date de livraison").'</a>';
+			$h .= '<br/><br/>';
+			$h .= '<p>'.s("Vous voulez continuer à personnaliser l'expérience de vos clients ?<br/>Activez par exemple le paiement en ligne ou personnalisez les e-mails envoyés automatiquement à vos clients lors de leurs commandes.").'</p>';
+			$h .= '<a href="/shop/configuration:update?id='.$eShop['id'].'" class="btn btn-outline-secondary">'.s("Continuer à personnaliser la boutique").'</a>';
 
 		}
+
+		$h .= '</div>';
 
 		return $h;
 		

@@ -46,7 +46,12 @@ class RangeUi {
 
 				$h .= $form->hidden('shop', $eRange['shop']['id']);
 				$h .= $form->hidden('farm', $eRange['farm']['id']);
-				$h .= $form->dynamicGroups($eRange, ['catalog*', 'status*', 'datesList']);
+				$h .= $form->dynamicGroups($eRange, ['catalog*', 'status*']);
+
+				if($eRange['cDateAvailable']->notEmpty()) {
+					$h .= $form->dynamicGroup($eRange, 'datesList');
+				}
+
 				$h .= $form->group(
 					content: $form->submit(s("Associer à la boutique"))
 				);
@@ -115,7 +120,7 @@ class RangeUi {
 					$e->expects(['cDateAvailable']);
 
 					if($e['cDateAvailable']->empty()) {
-						return '<div class="util-info">'.s("Aucun produit n'est disponible à la vente.").'</div>';
+						return '<div class="util-info">'.s("Aucune vente en cours.").'</div>';
 					}
 
 					$dates = [];

@@ -115,6 +115,8 @@ class ShareUi {
 						$h .= '<tr>';
 							$h .= '<td colspan="4">';
 
+								if($cRange->notEmpty()) {
+
 									$h .= '<table class="util-block">';
 										$h .= '<thead>';
 
@@ -141,17 +143,25 @@ class ShareUi {
 										$h .= '</tbody>';
 									$h .= '</table>';
 
-									if($selected) {
+								}
 
-										$h .= '<a href="/shop/range:create?farm='.$eFarm['id'].'&shop='.$eShop['id'].'" class="btn btn-primary btn-sm mb-1">';
-											if($cRange->empty()) {
-												$h .= s("Associer un catalogue à la boutique");
-											} else {
-												$h .= s("Associer un autre catalogue");
-											}
-										$h .= '</a>';
+								if($selected) {
 
+									$h .= '<a href="/shop/range:create?farm='.$eFarm['id'].'&shop='.$eShop['id'].'" class="btn btn-primary btn-sm mb-1">';
+										if($cRange->empty()) {
+											$h .= s("Associer un premier catalogue à la boutique");
+										} else {
+											$h .= s("Associer un autre catalogue");
+										}
+									$h .= '</a>';
+
+								} else {
+
+									if($cRange->empty()){
+										$h .= '<div class="util-empty">'.s("Aucun catalogue associé à la boutique").'</div>';
 									}
+
+								}
 
 							$h .= '</td>';
 						$h .= '</tr>';
