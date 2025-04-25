@@ -496,7 +496,11 @@ class SaleLib extends SaleCrud {
 			$e['stats'] = FALSE;
 
 		} else {
+
 			$e->expects(['market']);
+
+			$e['preparationStatus'] ??= Sale::DRAFT;
+
 		}
 
 		if($e['market']) {
