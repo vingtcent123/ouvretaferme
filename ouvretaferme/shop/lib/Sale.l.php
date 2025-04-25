@@ -408,7 +408,9 @@ class SaleLib {
 
 		self::notify($eSale['shopUpdated'] ? 'saleUpdated' : 'saleConfirmed', $eSale, $eSale['cItem']);
 
-		\selling\SaleLib::recalculateMaster($eSale, $eSale['cItem']);
+		if($eSale['shop']['shared']) {
+			\selling\SaleLib::recalculateMaster($eSale, $eSale['cItem']);
+		}
 
 		\selling\Sale::model()->commit();
 
@@ -507,7 +509,9 @@ class SaleLib {
 
 		$cItem = \selling\SaleLib::getItems($eSale);
 
-		\selling\SaleLib::recalculateMaster($eSale, $cItem);
+		if($eSale['shop']['shared']) {
+			\selling\SaleLib::recalculateMaster($eSale, $cItem);
+		}
 
 		self::notify('salePaid', $eSale, $cItem);
 
