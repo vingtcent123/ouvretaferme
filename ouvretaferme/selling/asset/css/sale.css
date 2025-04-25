@@ -381,26 +381,31 @@ a.sale-document-new .sale-document-status {
 	font-weight: normal;
 }
 
-.sale-parent-wrapper {
+.sale-shared-wrapper {
 	background-color: var(--selling);
 	padding: 1rem;
 	color: white;
 	margin-bottom: 1rem;
+	background-color: var(--selling);
 }
 
-.sale-parent-wrapper a:not(.btn) {
+.sale-shared-wrapper.sale-shared-provisional {
+	background-color: var(--provisional);
+}
+
+.sale-shared-wrapper a:not(.btn) {
 	color: white;
 	text-decoration: underline;
 }
 
 @media (min-width: 576px) {
 
-	.sale-parent-wrapper {
+	.sale-shared-wrapper {
 		border-bottom-left-radius: var(--radius);
 		border-bottom-right-radius: var(--radius);
 	}
 
-	.sale-content-wrapper:has(+ .sale-parent-wrapper) {
+	.sale-content-wrapper:has(+ .sale-shared-wrapper) {
 		border-bottom-left-radius: 0;
 		border-bottom-right-radius: 0;
 		margin-bottom: 0;

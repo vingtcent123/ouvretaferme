@@ -60,13 +60,6 @@ new \selling\SalePage()
 new \selling\SalePage()
 	->read('/vente/{id}', function($data) {
 
-		if(
-			$data->e['preparationStatus'] === \selling\Sale::PROVISIONAL and
-			$data->e['shopParent']->notEmpty()
-		) {
-			$data->e = \selling\SaleLib::getById($data->e['shopParent']);
-		}
-
 		$data->eFarm = \farm\FarmLib::getById($data->e['farm']);
 
 		if($data->e['marketParent']->notEmpty()) {

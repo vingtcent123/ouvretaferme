@@ -1204,6 +1204,7 @@ class SaleUi {
 		$h .= '</div>';
 
 		$h .= $this->getShopParent($eSale);
+		$h .= $this->getShopChild($eSale);
 
 		return $h;
 
@@ -1215,10 +1216,31 @@ class SaleUi {
 			return '';
 		}
 
-		$h = '<div class="sale-parent-wrapper stick-xs">';
+		$h = '<div class="sale-shared-wrapper util-action '.($e['preparationStatus'] === Sale::PROVISIONAL ? 'sale-shared-provisional' : '').' stick-xs">';
 
-			$h .= '<p>'.s("Cette vente concerne uniquement votre production vendue à {customer} pour la livraison du {date} sur la boutique collective {shop}.", ['customer' => CustomerUi::link($e['customer']), 'date' => '<a href="'.\shop\ShopUi::adminDateUrl($e['farm'], $e['shopDate']).'">'.\util\DateUi::numeric($e['shopDate']['deliveryDate']).'</a>', 'shop' => '<a href="'.\shop\ShopUi::adminUrl($e['farm'], $e['shop']).'">'.encode($e['shop']['name']).'</a>']).'</p>';
-			$h .= '<a href="'.SaleUi::url($e['shopParent']).'" class="btn btn-outline-transparent">'.s("Voir la commande complète de ce client").'</a>';
+			$h .= '<div>';
+				$h .= s("Cette vente n'intègre que les articles de votre production.", ['customer' => CustomerUi::link($e['customer']), 'date' => '<a href="'.\shop\ShopUi::adminDateUrl($e['farm'], $e['shopDate']).'">'.\util\DateUi::numeric($e['shopDate']['deliveryDate']).'</a>', 'shop' => '<a href="'.\shop\ShopUi::adminUrl($e['farm'], $e['shop']).'">'.encode($e['shop']['name']).'</a>']);
+					if($e['preparationStatus'] === Sale::PROVISIONAL) {
+						$h .= '<br/>'.s("Il s'agit d'un document provisoire car les prises de commande sont encore ouvertes sur la boutique.");
+					}
+			$h .= '</div>';
+			$h .= '<a href="'.SaleUi::url($e['shopParent']).'" class="btn btn-outline-transparent">'.s("Voir la vente complète").'</a>';
+		$h .= '</div>';
+
+
+		dd('permettre de modifier les items en cheatant l\'ID');
+		return $h;
+
+	}
+
+	public function getShopChild(Sale $e): string {
+
+		if($e['shopMaster'] === FALSE) {
+			return '';
+		}
+
+		$h = '<div class="sale-shared-wrapper text-center stick-xs">';
+			$h .= s("Cette vente intègre les articles vendus par tous les producteurs.");
 		$h .= '</div>';
 
 		return $h;
@@ -1529,6 +1551,7 @@ class SaleUi {
 
 		if(
 			$eSale->isComposition() or
+			$eSale['preparationStatus'] === Sale::PROVISIONAL or
 			$cHistory->empty()
 		) {
 			return '';

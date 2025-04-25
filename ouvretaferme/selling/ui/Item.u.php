@@ -326,7 +326,11 @@ class ItemUi {
 								}
 
 								$h .= '<span class="item-item-packaging-size"> x ';
-									$h .= '<a onclick="Merchant.show(this)" class="util-quick" data-item="'.$eItem['id'].'" data-property="packaging">'.\selling\UnitUi::getValue($eItem['packaging'], $eItem['unit'], TRUE).'</a>';
+									if($eItem->canUpdate()) {
+										$h .= '<a onclick="Merchant.show(this)" class="util-quick" data-item="'.$eItem['id'].'" data-property="packaging">'.\selling\UnitUi::getValue($eItem['packaging'], $eItem['unit'], TRUE).'</a>';
+									} else {
+										$h .= \selling\UnitUi::getValue($eItem['packaging'], $eItem['unit'], TRUE);
+									}
 								$h .= '</span>';
 							} else {
 								$h .= '-';
