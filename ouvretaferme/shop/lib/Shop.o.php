@@ -140,7 +140,7 @@ class ShopObserverLib {
 			->whereIngredientOf(NULL)
 			->getCollection();
 
-		ProductLib::addAvailable($cItem);
+		ProductLib::addAvailable($eSale, $cItem);
 
 	}
 

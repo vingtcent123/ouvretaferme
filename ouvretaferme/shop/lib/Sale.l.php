@@ -67,6 +67,7 @@ class SaleLib {
 					->delegateCollection('sale')
 			])
 			->whereShopDate($eDate)
+			->whereShopParent(NULL)
 			->whereCustomer($eCustomer)
 			->wherePreparationStatus('NOT IN', [\selling\Sale::CANCELED, \selling\Sale::DRAFT])
 			->get();
@@ -76,13 +77,9 @@ class SaleLib {
 	public static function getConfirmedForDate(Date $eDate): \Collection {
 
 		return \selling\Sale::model()
-			->select(\selling\Sale::getSelection() + [
-				'cItem' => \selling\Item::model()
-					->select(\selling\Item::getSelection())
-					->whereIngredientOf(NULL)
-					->delegateCollection('sale')
-			])
+			->select(\selling\Sale::getSelection() )
 			->whereShopDate($eDate)
+			->whereShopMaster(TRUE)
 			->wherePreparationStatus(\selling\Sale::CONFIRMED)
 			->getCollection();
 
@@ -112,6 +109,7 @@ class SaleLib {
 		$eSale->expects([
 			'shop' => [
 				'farm' => ['name'],
+				'shared',
 				'hasPayment'
 			],
 			'shopDate', 'shopPoint',
@@ -125,13 +123,15 @@ class SaleLib {
 			'farm' => $eSale['shop']['farm'],
 			'customer' => $eCustomer,
 			'compositionOf' => new \selling\Product(),
-			'discount' => $eCustomer['discount'],
+			'discount' => \shop\SaleLib::getDiscount($eSale['shop'], new \selling\Sale(), $eCustomer),
 			'from' => \selling\Sale::SHOP,
 			'market' => FALSE,
 			'marketParent' => new \selling\Sale(),
 			'type' => $eDate['type'],
 			'preparationStatus' => \selling\Sale::BASKET,
 			'deliveredAt' => $eSale['shopDate']['deliveryDate'],
+			'stats' => ($eSale['shop']['shared'] === FALSE),
+			'shopMaster' => $eSale['shop']['shared'],
 		]);
 
 		$eSale['taxes'] = $eSale->getTaxesFromType();
@@ -310,7 +310,7 @@ class SaleLib {
 		\selling\Sale::model()->beginTransaction();
 
 			// Suppression des anciens items
-			\selling\ItemLib::deleteCollection($eSale['cItem']);
+			\selling\ItemLib::deleteCollection($eSale, $eSale['cItem']);
 
 			// Nouveaux items pour les mails de confirmation
 			$eSale['cItem'] = $cItem;
@@ -400,11 +400,17 @@ class SaleLib {
 		$eSale['preparationStatus'] = \selling\Sale::CONFIRMED;
 		$eSale['paymentMethod'] = $method;
 
+		\selling\Sale::model()->beginTransaction();
+
 		\selling\SaleLib::update($eSale, ['preparationStatus', 'paymentMethod']);
 
 		\selling\HistoryLib::createBySale($eSale, 'shop-payment-delivery');
 
 		self::notify($eSale['shopUpdated'] ? 'saleUpdated' : 'saleConfirmed', $eSale, $eSale['cItem']);
+
+		\selling\SaleLib::recalculateMaster($eSale, $eSale['cItem']);
+
+		\selling\Sale::model()->commit();
 
 		return ShopUi::confirmationUrl($eSale['shop'], $eSale['shopDate'], $eSale);
 
@@ -435,6 +441,8 @@ class SaleLib {
 
 		$object = $event['data']['object'];
 
+		\selling\Sale::model()->beginTransaction();
+
 		$affected = \selling\PaymentLib::updateStatus($object['id'], \selling\Payment::FAILURE);
 
 		if(
@@ -458,12 +466,16 @@ class SaleLib {
 
 		}
 
+		\selling\Sale::model()->commit();
+
 	}
 
 	/**
 	 * Validation d'un paiement par carte bancaire
 	 */
 	public static function paymentSucceeded(\selling\Sale $eSale, array $event): void {
+
+		\selling\Sale::model()->beginTransaction();
 
 		$object = $event['data']['object'];
 
@@ -479,6 +491,8 @@ class SaleLib {
 
 		self::completePaid($eSale, $object['id']);
 
+		\selling\Sale::model()->commit();
+
 	}
 
 	private static function completePaid(\selling\Sale $eSale, string $eventId): void {
@@ -492,6 +506,8 @@ class SaleLib {
 		\selling\HistoryLib::createBySale($eSale, 'shop-payment-succeeded', 'Stripe event #'.$eventId);
 
 		$cItem = \selling\SaleLib::getItems($eSale);
+
+		\selling\SaleLib::recalculateMaster($eSale, $cItem);
 
 		self::notify('salePaid', $eSale, $cItem);
 

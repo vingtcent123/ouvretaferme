@@ -40,11 +40,19 @@ td.sale-item-price {
 	white-space: nowrap;
 }
 
-td.sale-item-basket {
-	color: var(--basket);
+td.sale-item-basket,
+td.sale-item-provisional {
 	line-height: 1.2;
 	font-size: 0.9rem;
 	text-align: center;
+}
+
+td.sale-item-basket {
+	color: var(--basket);
+}
+
+td.sale-item-provisional {
+	color: var(--provisional);
 }
 
 td.sale-item-payment-type {
@@ -240,6 +248,19 @@ a.sale-preparation-status-action {
 
 .sale-preparation-status-label.sale-preparation-status-basket {
 	background-color: var(--basket);
+	color: white;
+}
+
+.sale-preparation-status-provisional {
+	color: var(--provisional);
+}
+
+.sale-preparation-status-outline.sale-preparation-status-provisional {
+	border-color: var(--provisional);
+}
+
+.sale-preparation-status-label.sale-preparation-status-provisional {
+	background-color: var(--provisional);
 	color: white;
 }
 

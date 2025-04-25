@@ -95,6 +95,7 @@ class ItemModel extends \ModuleModel {
 
 		$this->indexConstraints = array_merge($this->indexConstraints, [
 			['farm', 'customer'],
+			['farm', 'deliveredAt'],
 			['product'],
 			['sale'],
 			['ingredientOf'],

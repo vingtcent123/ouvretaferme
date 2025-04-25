@@ -10,6 +10,7 @@ class Sale extends SaleElement {
 			'shop' => ['fqn', 'shared', 'name', 'email', 'emailNewSale', 'emailEndDate', 'hasPayment', 'paymentOfflineHow', 'paymentTransferHow', 'shipping', 'shippingUntil', 'orderMin', 'embedOnly', 'embedUrl'],
 			'shopDate' => ['status', 'deliveryDate', 'orderStartAt', 'orderEndAt'],
 			'shopPoint' => ['type', 'name'],
+			'shopParent' => ['preparationStatus'],
 			'farm' => ['name', 'url', 'vignette', 'banner', 'featureDocument', 'hasSales'],
 			'price' => fn($e) => $e['type'] === Sale::PRO ? $e['priceExcludingVat'] : $e['priceIncludingVat'],
 			'invoice' => ['name', 'emailedAt', 'createdAt', 'paymentStatus', 'priceExcludingVat', 'generation'],
@@ -151,9 +152,24 @@ class Sale extends SaleElement {
 
 	public function canUpdate(): bool {
 
+		$this->expects(['marketParent', 'preparationStatus']);
+
 		return (
 			$this->canWrite() and
-			$this['marketParent']->empty()
+			$this['marketParent']->empty() and
+			$this['preparationStatus'] !== Sale::PROVISIONAL
+		);
+
+	}
+
+	public function canDelete(): bool {
+
+		$this->expects(['shopMaster', 'preparationStatus']);
+
+		return (
+			$this->canWrite() and
+			$this['shopMaster'] === FALSE and
+			$this['preparationStatus'] !== Sale::PROVISIONAL
 		);
 
 	}
@@ -507,7 +523,7 @@ class Sale extends SaleElement {
 	}
 
 	public function getNumber(): string {
-		return $this['document'];
+		return $this['document'] ?? str_repeat('#', strlen($this['farm']->getSelling('documentSales')));
 	}
 
 	public function getOrderForm(\farm\Farm $eFarm): string {
@@ -578,7 +594,7 @@ class Sale extends SaleElement {
 	}
 
 	public function getDeleteStatuses(): array {
-		return [Sale::COMPOSITION, Sale::DRAFT, Sale::BASKET, Sale::CONFIRMED, Sale::CANCELED];
+		return [Sale::COMPOSITION, Sale::DRAFT, Sale::BASKET, Sale::CONFIRMED, Sale::CANCELED, Sale::PROVISIONAL];
 	}
 
 	public function acceptDeletePaymentStatus() {

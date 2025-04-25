@@ -497,15 +497,17 @@ class ProductLib extends ProductCrud {
 
 	}
 
-	public static function addAvailable(\Collection $cItem): void {
-		self::setAvailable($cItem, '+');
+	public static function addAvailable(\selling\Sale $eSale, \Collection $cItem): void {
+		self::setAvailable($eSale, $cItem, '+');
 	}
 
-	public static function removeAvailable(\Collection $cItem): void {
-		self::setAvailable($cItem, '-');
+	public static function removeAvailable(\selling\Sale $eSale, \Collection $cItem): void {
+		self::setAvailable($eSale, $cItem, '-');
 	}
 
-	private static function setAvailable(\Collection $cItem, string $sign): void {
+	private static function setAvailable(\selling\Sale $eSale, \Collection $cItem, string $sign): void {
+
+		$eSale->expects(['shopParent']);
 
 		$cItem->expects([
 			'shopProduct',
@@ -516,7 +518,10 @@ class ProductLib extends ProductCrud {
 
 			$eProduct = $eItem['shopProduct'];
 
-			if($eProduct->notEmpty()) {
+			if(
+				$eProduct->notEmpty() and
+				$eSale['shopParent']->empty()
+			) {
 
 				Product::model()
 					->whereAvailable('!=', NULL)

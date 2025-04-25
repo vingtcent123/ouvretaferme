@@ -254,7 +254,7 @@ Product:
 
 Sale:
   id: serial32
-  document: int32(1, null)
+  document: ?int32(1, null)
   farm: farm\Farm
   customer: ?selling\Customer
   from: enum(USER, SHOP)
@@ -273,7 +273,7 @@ Sale:
   shippingVatFixed: bool = FALSE
   shipping: ?decimal(8, 2, 0.01, null)
   shippingExcludingVat: ?decimal(8, 2)
-  preparationStatus: enum(COMPOSITION, DRAFT, BASKET, CONFIRMED, SELLING, PREPARED, DELIVERED, CANCELED) = DRAFT
+  preparationStatus: enum(COMPOSITION, DRAFT, PROVISIONAL, BASKET, CONFIRMED, SELLING, PREPARED, DELIVERED, CANCELED) = DRAFT
   paymentStatus: enum(UNDEFINED, WAITING, PROCESSING, PAID, FAILED) = UNDEFINED
   paymentMethod: ?enum(ONLINE_CARD, OFFLINE, TRANSFER, CASH, CARD, CHECK)
   compositionOf: ?selling\Product
@@ -287,6 +287,7 @@ Sale:
   shop: ?shop\Shop
   shopDate: ?shop\Date
   shopShared: bool = FALSE
+  shopMaster: bool = FALSE
   shopParent: ?selling\Sale
   shopUpdated: bool = FALSE
   shopPoint: ?shop\Point
@@ -304,12 +305,12 @@ Sale:
   INDEX: [
     ["customer"],
     ["shopDate"],
-    ["shopParent"],
     ["shop"]
   ]
   UNIQUE: [
     ["compositionOf", "deliveredAt"],
     ["farm", "document"],
+    ["shopParent", "farm"],
   ]
 
 Stock:

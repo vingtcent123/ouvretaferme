@@ -9,10 +9,28 @@ new \farm\FarmPage()
 		$data->eShop = \shop\ShopLib::getById($data->eDate['shop'])->validateShareRead($data->e);
 		$data->eShop['ccPoint'] = \shop\PointLib::getByFarm($data->eShop['farm']);
 
+		if($data->eShop['shared']) {
+
+			$data->eShop['cShare'] = \shop\ShareLib::getByShop($data->eShop);
+			$data->eShop['ccRange'] = \shop\RangeLib::getByShop($data->eShop);
+			$data->eShop['cDepartment'] = \shop\DepartmentLib::getByShop($data->eShop);
+
+			if(get_exists('farm')) {
+
+				$eShareSelected = $data->eShop['cShare'][GET('farm', 'int')] ?? new \shop\Share();
+
+				$data->eShop['eFarmSelected'] = $eShareSelected->empty() ? new \farm\Farm() : $eShareSelected['farm'];
+			} else {
+				$data->eShop['eFarmSelected'] = new \farm\Farm();
+			}
+
+		} else {
+			$data->eShop['eFarmSelected'] = new \farm\Farm();
+		}
+
 		\shop\DateLib::applySales($data->eDate);
 
-
-		$data->cSale = \selling\SaleLib::getByDate($data->eDate, NULL, select: \selling\Sale::getSelection() + [
+		$data->cSale = \selling\SaleLib::getByDate($data->eDate, eFarm: $data->eShop['eFarmSelected'], select: \selling\Sale::getSelection() + [
 			'shopPoint' => \shop\PointElement::getSelection()
 		]);
 
@@ -32,16 +50,7 @@ new \farm\FarmPage()
 
 		if($data->eShop['shared']) {
 
-			$data->eShop['cShare'] = \shop\ShareLib::getByShop($data->eShop);
-			$data->eShop['ccRange'] = \shop\RangeLib::getByShop($data->eShop);
-			$data->eShop['cDepartment'] = \shop\DepartmentLib::getByShop($data->eShop);
 			$data->eDate['cFarm'] = $data->eShop['cShare']->getColumnCollection('farm', index: 'farm');
-
-			if(get_exists('farm')) {
-				$data->eShop['eFarmSelected'] = $data->eDate['cFarm'][GET('farm', 'int')] ?? new \farm\Farm();
-			} else {
-				$data->eShop['eFarmSelected'] = new \farm\Farm();
-			}
 
 			if($data->eShop['eFarmSelected']->notEmpty()) {
 				$cProduct->filter(fn($eProduct) => $eProduct['farm']['id'] === $data->eShop['eFarmSelected']['id']);

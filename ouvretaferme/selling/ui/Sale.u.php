@@ -247,6 +247,12 @@ class SaleUi {
 
 				foreach($cSale as $eSale) {
 
+					if($eSale['shopParent']->notEmpty()) {
+						$saleStatus = $eSale['shopParent']['preparationStatus'];
+					} else {
+						$saleStatus = $eSale['preparationStatus'];
+					}
+
 					if($hasSubtitles) {
 
 						$currentSubtitle = ($eSale['preparationStatus'] === Sale::DRAFT) ? Sale::DRAFT : $eSale['deliveredAt'];
@@ -329,7 +335,7 @@ class SaleUi {
 					}
 
 					$h .= '<tr';
-						if($eSale['preparationStatus'] === Sale::CANCELED) {
+						if($saleStatus === Sale::CANCELED) {
 							$h .= ' style="opacity: 0.5"';
 						}
 					$h .= '>';
@@ -425,9 +431,9 @@ class SaleUi {
 
 								$h .= '<td class="sale-item-basket" colspan="3">';
 									if($eSale['shopDate']->acceptOrder()) {
-										$h .= s("Vente à l'état de panier et non confirmée par le client.");
+										$h .= s("Commande à l'état de panier et non confirmée par le client.");
 									} else {
-										$h .= s("Vente restée à l'état de panier et non confirmée par le client.");
+										$h .= s("Commande restée à l'état de panier et non confirmée par le client.");
 									}
 								$h .= '</td>';
 
@@ -771,9 +777,15 @@ class SaleUi {
 
 	public function getPreparationStatusForUpdate(Sale $eSale, bool $shortText = TRUE): string {
 
-		$text = $shortText ? self::p('preparationStatus')->shortValues[$eSale['preparationStatus']] : self::p('preparationStatus')->values[$eSale['preparationStatus']];
+		if($eSale['shopParent']->notEmpty()) {
+			$saleStatus = $eSale['shopParent']['preparationStatus'];
+		} else {
+			$saleStatus = $eSale['preparationStatus'];
+		}
 
-		$h = '<span class="sale-preparation-status-label sale-preparation-status-'.$eSale['preparationStatus'].'" title="'.self::p('preparationStatus')->values[$eSale['preparationStatus']].'">'.$text.'</span>';
+		$text = $shortText ? self::p('preparationStatus')->shortValues[$saleStatus] : self::p('preparationStatus')->values[$saleStatus];
+
+		$h = '<span class="sale-preparation-status-label sale-preparation-status-'.$saleStatus.'" title="'.self::p('preparationStatus')->values[$saleStatus].'">'.$text.'</span>';
 
 		if(
 			$eSale->canWrite() === FALSE or
@@ -785,7 +797,7 @@ class SaleUi {
 
 		$buttonsStyle = self::getPreparationStatusButtons();
 
-		$button = fn(string $preparationStatus, ?string $confirm = NULL) => ' <a data-ajax="/selling/sale:doUpdatePreparationStatus" post-id="'.$eSale['id'].'" post-preparation-status="'.$preparationStatus.'" class="sale-preparation-status-action '.$buttonsStyle[$preparationStatus].'" title="'.self::p('preparationStatus')->values[$preparationStatus].'" '.($confirm ? attr('data-confirm', $confirm) : '').'>'.($shortText ? self::p('preparationStatus')->shortValues[$preparationStatus] : self::p('preparationStatus')->values[$preparationStatus]).'</a>';
+		$button = fn(string $status, ?string $confirm = NULL) => ' <a data-ajax="/selling/sale:doUpdatePreparationStatus" post-id="'.$eSale['id'].'" post-preparation-status="'.$status.'" class="sale-preparation-status-action '.$buttonsStyle[$status].'" title="'.self::p('preparationStatus')->values[$status].'" '.($confirm ? attr('data-confirm', $confirm) : '').'>'.($shortText ? self::p('preparationStatus')->shortValues[$status] : self::p('preparationStatus')->values[$status]).'</a>';
 
 		$wrapper = function($content) {
 			return ' '.\Asset::icon('caret-right-fill').$content;
@@ -825,6 +837,10 @@ class SaleUi {
 							$button(Sale::CONFIRMED).
 							$button(Sale::CANCELED)
 						);
+					} else {
+						$h .= '<span title="'.s("Il sera possible de modifier le statut lorsque la vente à la boutique sera terminée").'">'.$wrapper(
+							' '.\Asset::icon('lock-fill')
+						).'</span>';
 					}
 
 					break;
@@ -846,6 +862,12 @@ class SaleUi {
 					$h .= $wrapper(
 						$button(Sale::DELIVERED)
 					);
+					break;
+
+				case Sale::PROVISIONAL :
+					$h .= '<span title="'.s("Il sera possible de modifier le statut lorsque la vente à la boutique sera terminée").'">'.$wrapper(
+						' '.\Asset::icon('lock-fill')
+					).'</span>';
 					break;
 
 			};

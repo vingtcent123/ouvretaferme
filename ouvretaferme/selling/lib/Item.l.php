@@ -166,7 +166,7 @@ class ItemLib extends ItemCrud {
 
 		return Item::model()
 			->select([
-				'sale' => ['farm', 'shop', 'shopShared', 'hasVat', 'taxes', 'shippingVatRate', 'shippingVatFixed', 'document'],
+				'sale' => ['farm', 'shop', 'shopShared', 'shopMaster', 'hasVat', 'taxes', 'shippingVatRate', 'shippingVatFixed', 'document'],
 				'customer' => ['type', 'name'],
 				'quantity' => new \Sql('IF(packaging IS NULL, 1, packaging) * number', 'float'),
 				'unit' => ['fqn', 'by', 'singular', 'plural', 'short', 'type'],
@@ -197,7 +197,7 @@ class ItemLib extends ItemCrud {
 				'cItemIngredient' => SaleLib::delegateIngredients($eDate['deliveryDate'], 'product')
 			])
 			->whereFarm($eDate['farm'])
-			->whereStatus('IN', [Sale::CONFIRMED, Sale::PREPARED, Sale::DELIVERED])
+			->whereStatus('IN', [Sale::PROVISIONAL, Sale::CONFIRMED, Sale::PREPARED, Sale::DELIVERED])
 			->whereIngredientOf(NULL)
 			->whereShopDate($eDate)
 			->group(['product', 'productComposition', 'name', 'unit', 'quality'])
@@ -234,7 +234,7 @@ class ItemLib extends ItemCrud {
 			])
 			->whereFarm($eFarm)
 			->whereNumber('!=', NULL)
-			->whereStatus('IN', [Sale::CONFIRMED, Sale::PREPARED, Sale::DELIVERED])
+			->whereStatus('IN', [Sale::PROVISIONAL, Sale::CONFIRMED, Sale::PREPARED, Sale::DELIVERED])
 			->whereStats(TRUE)
 			->whereDeliveredAt('IN', [currentDate(), date('Y-m-d', strtotime('yesterday'))])
 			->group(['deliveredAt', 'product'])
@@ -250,7 +250,7 @@ class ItemLib extends ItemCrud {
 				'product'
 			])
 			->whereFarm($eFarm)
-			->whereStatus('IN', [Sale::CONFIRMED, Sale::PREPARED, Sale::DELIVERED])
+			->whereStatus('IN', [Sale::PROVISIONAL, Sale::CONFIRMED, Sale::PREPARED, Sale::DELIVERED])
 			->whereStats(TRUE)
 			->whereDeliveredAt('>', currentDate())
 			->group('product')
@@ -340,7 +340,7 @@ class ItemLib extends ItemCrud {
 
 			SaleLib::recalculate($eSale);
 
-			\shop\ProductLib::removeAvailable($c);
+			\shop\ProductLib::removeAvailable($eSale, $c);
 
 		Item::model()->commit();
 
@@ -530,13 +530,11 @@ class ItemLib extends ItemCrud {
 
 	}
 
-	public static function deleteCollection(\Collection $c): void {
+	public static function deleteCollection(Sale $eSale, \Collection $c): void {
 
 		$c->expects(['sale']);
 
 		Item::model()->beginTransaction();
-
-			$eSale = $c->first()['sale'];
 
 			foreach($c as $e) {
 
@@ -550,7 +548,7 @@ class ItemLib extends ItemCrud {
 
 			SaleLib::recalculate($eSale);
 
-			\shop\ProductLib::addAvailable($c);
+			\shop\ProductLib::addAvailable($eSale, $c);
 
 		Item::model()->commit();
 

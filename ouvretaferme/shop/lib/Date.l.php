@@ -90,21 +90,22 @@ class DateLib extends DateCrud {
 
 	public static function countSales(): \selling\SaleModel {
 
+		$isValid = 'preparationStatus IN (\''.\selling\Sale::CONFIRMED.'\', \''.\selling\Sale::PREPARED.'\', \''.\selling\Sale::DELIVERED.'\')';
+
 		return \selling\Sale::model()
 				->select([
 					'count' => new \Sql('COUNT(*)', 'int'),
-					'countValid' => new \Sql('SUM(preparationStatus != \''.\selling\Sale::BASKET.'\')', 'int'),
+					'countValid' => new \Sql('SUM('.$isValid.')', 'int'),
 					'amountIncludingVat' => new \Sql('SUM(priceIncludingVat)'),
-					'amountValidIncludingVat' => new \Sql('SUM(IF(preparationStatus != \''.\selling\Sale::BASKET.'\', priceIncludingVat, 0))'),
-					'amountValidExcludingVat' => new \Sql('SUM(IF(preparationStatus != \''.\selling\Sale::BASKET.'\', priceExcludingVat, 0))'),
-				])
-				->wherePreparationStatus('in', [\selling\Sale::BASKET, \selling\Sale::CONFIRMED, \selling\Sale::PREPARED, \selling\Sale::DELIVERED]);
+					'amountValidIncludingVat' => new \Sql('SUM(IF('.$isValid.', priceIncludingVat, 0))'),
+					'amountValidExcludingVat' => new \Sql('SUM(IF('.$isValid.', priceExcludingVat, 0))'),
+				]);
 
 	}
 
 	public static function getRelativeSales(Date $e, \selling\Sale $eSaleSelected): ?array {
 
-		$cSale = \selling\SaleLib::getByDate($e, select: [
+		$cSale = \selling\SaleLib::getByDate($e, [Sale::CONFIRMED, Sale::PREPARED, Sale::DELIVERED], select: [
 			'id', 'document',
 			'customer' => ['type', 'name']
 		]);
@@ -224,7 +225,6 @@ class DateLib extends DateCrud {
 	public static function delete(Date $eDate): void {
 
 		if(\selling\Sale::model()
-			->wherePreparationStatus('in', [\selling\Sale::BASKET, \selling\Sale::CONFIRMED, \selling\Sale::PREPARED, \selling\Sale::DELIVERED])
 			->whereShopDate($eDate)
 			->exists()) {
 			throw new \NotExpectedAction('Existing sales.');
@@ -232,35 +232,15 @@ class DateLib extends DateCrud {
 
 		Date::model()->beginTransaction();
 
-		if($eDate->isDirect()) {
+			if($eDate->isDirect()) {
 
-			Product::model()
-				->whereDate($eDate)
-				->delete();
+				Product::model()
+					->whereDate($eDate)
+					->delete();
 
-		}
+			}
 
-		$cSale = \selling\SaleLib::getByDate($eDate, NULL);
-
-		if($cSale->notEmpty()) {
-
-			\selling\Sale::model()
-				->whereId('IN', $cSale)
-				->update([
-					'shop' => new Shop(),
-					'shopDate' => new Date(),
-				]);
-
-			\selling\Item::model()
-				->whereSale('IN', $cSale)
-				->update([
-					'shop' => new Shop(),
-					'shopDate' => new Date(),
-				]);
-
-		}
-
-		Date::model()->delete($eDate);
+			Date::model()->delete($eDate);
 
 		Date::model()->commit();
 
@@ -395,11 +375,13 @@ class DateLib extends DateCrud {
 
 			Date::model()->beginTransaction();
 
-			if(false and Date::model()
-			->whereStatus('!=', Date::CLOSED)
-			->update($e, [
-				'status' => Date::CLOSED
-			]) === 0) {
+			$affected = Date::model()
+				->whereStatus('!=', Date::CLOSED)
+				->update($eDate, [
+					'status' => Date::CLOSED
+				]);
+
+			if($affected === 0) {
 				Date::model()->rollBack();
 				continue;
 			}
@@ -408,7 +390,8 @@ class DateLib extends DateCrud {
 				self::finishShared($eDate);
 			}
 
-			Date::model()->commit();
+			Date::model()->rollBack();
+		//	Date::model()->commit();
 
 		}
 
@@ -420,9 +403,21 @@ class DateLib extends DateCrud {
 
 		foreach($cSale as $eSale) {
 
-			$ccItem = $eSale['cItem']->reindex(['farm']);
+			$cSaleChildren = \selling\Sale::model()
+				->select('marketParent', 'preparationStatus', 'document', 'farm')
+				->whereShopParent($eSale)
+				->getCollection();
 
-			foreach($ccItem as $cItem) {
+			foreach($cSaleChildren as $eSaleChild) {
+
+				$eSaleChild['oldStatus'] = $eSaleChild['preparationStatus'];
+				$eSaleChild['preparationStatus'] = $eSale['preparationStatus'];
+
+				if($eSaleChild['document'] === NULL) {
+					$eSaleChild['document'] = ConfigurationLib::getNextDocumentSales($eSaleChild['farm']);
+				}
+
+				\selling\SaleLib::update($eSaleChild, ['preparationStatus', 'document']);
 
 			}
 

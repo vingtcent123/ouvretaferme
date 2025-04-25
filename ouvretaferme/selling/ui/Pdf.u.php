@@ -1147,7 +1147,7 @@ class PdfUi {
 
 						$entry .= '<div class="pdf-sales-label-detail">';
 							$entry .= '<div class="pdf-sales-label-detail-title">'.s("Commande").'</div>';
-							$entry .= '<div class="pdf-sales-label-detail-value">'.$eSale['document'].'</div>';
+							$entry .= '<div class="pdf-sales-label-detail-value">'.$eSale->getNumber().'</div>';
 						$entry .= '</div>';
 
 						if(in_array($eSale['preparationStatus'], [Sale::DRAFT, Sale::CANCELED, Sale::BASKET])) {

@@ -725,6 +725,10 @@ class DateUi {
 
 			$eDate['shop'] = $eShop;
 
+			if($eShop['shared']) {
+				$actions .= self::getSearchFarm($eFarm, $eShop, $eDate);
+			}
+
 			if(
 				$eDate->acceptOrder() and
 				$eDate->acceptNotShared()
@@ -743,7 +747,7 @@ class DateUi {
 					$h .= '<div class="util-title">';
 
 						$h .= '<div></div>';
-						$h .= '<div>';
+						$h .= '<div class="flex-align-center">';
 							$h .= $actions;
 						$h .= '</div>';
 
@@ -892,21 +896,13 @@ class DateUi {
 
 		if($eShop['shared']) {
 
-			$cShare = $eShop['cShare'];
+			$h .= '<div class="util-title">';
 
-			$h = '<div class="text-end mb-1">';
-				$h .= '<a data-dropdown="bottom-end" class="btn btn-outline-secondary dropdown-toggle">';
-					$h .= \Asset::icon('search').'  ';
-					$h .= $eShop['eFarmSelected']->empty() ? s("Producteur") : encode($eShop['eFarmSelected']['name']);
-				$h .= '</a>';
-				$h .= '<div class="dropdown-list">';
-					foreach($cShare as $eShare) {
-						$h .= '<a href="'.ShopUi::adminDateUrl($eFarm, $eDate).'?farm='.$eShare['farm']['id'].'" class="dropdown-item '.($eShare['farm']->is($eShop['eFarmSelected']) ? 'selected' : '').'">'.encode($eShare['farm']['name']).'</a>';
-					}
+				$h .= '<div></div>';
+				$h .= '<div>';
+					$h .= self::getSearchFarm($eFarm, $eShop, $eDate);
 				$h .= '</div>';
-				if($eShop['eFarmSelected']->notEmpty()) {
-				$h .= '<a href="'.ShopUi::adminDateUrl($eFarm, $eDate).'" class="btn btn-secondary ml-1">'.\Asset::icon('x-lg').'</a>';
-		}
+
 			$h .= '</div>';
 
 		}
@@ -916,6 +912,34 @@ class DateUi {
 		} else {
 			$h .= $this->getPendingProducts($eFarm, $eShop, $eDate);
 		}
+
+		return $h;
+
+	}
+
+	private static function getSearchFarm(\farm\Farm $eFarm, Shop $eShop, Date $eDate): string {
+
+		$eShop->expects(['cShare', 'eFarmSelected']);
+
+		$cShare = $eShop['cShare'];
+
+		$id = 'search-'.microtime(TRUE);
+
+		$h = '<div class="input-group">';
+			$h .= '<a data-dropdown="bottom-end" data-dropdown-id="'.$id.'" class="btn btn-outline-primary dropdown-toggle">';
+				$h .= \Asset::icon('search').'  ';
+				$h .= $eShop['eFarmSelected']->empty() ? s("Producteur") : encode($eShop['eFarmSelected']['name']);
+			$h .= '</a>';
+
+			if($eShop['eFarmSelected']->notEmpty()) {
+				$h .= '<a href="'.ShopUi::adminDateUrl($eFarm, $eDate).'" class="btn btn-primary">'.\Asset::icon('x-lg').'</a>';
+			}
+		$h .= '</div>';
+		$h .= '<div class="dropdown-list" data-dropdown-id="'.$id.'-list">';
+			foreach($cShare as $eShare) {
+				$h .= '<a href="'.ShopUi::adminDateUrl($eFarm, $eDate).'?farm='.$eShare['farm']['id'].'" class="dropdown-item '.($eShare['farm']->is($eShop['eFarmSelected']) ? 'selected' : '').'">'.encode($eShare['farm']['name']).'</a>';
+			}
+		$h .= '</div>';
 
 		return $h;
 

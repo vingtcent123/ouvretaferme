@@ -18,6 +18,7 @@ abstract class SaleElement extends \Element {
 
 	const COMPOSITION = 'composition';
 	const DRAFT = 'draft';
+	const PROVISIONAL = 'provisional';
 	const BASKET = 'basket';
 	const CONFIRMED = 'confirmed';
 	const SELLING = 'selling';
@@ -68,7 +69,7 @@ class SaleModel extends \ModuleModel {
 
 		$this->properties = array_merge($this->properties, [
 			'id' => ['serial32', 'cast' => 'int'],
-			'document' => ['int32', 'min' => 1, 'max' => NULL, 'cast' => 'int'],
+			'document' => ['int32', 'min' => 1, 'max' => NULL, 'null' => TRUE, 'cast' => 'int'],
 			'farm' => ['element32', 'farm\Farm', 'cast' => 'element'],
 			'customer' => ['element32', 'selling\Customer', 'null' => TRUE, 'cast' => 'element'],
 			'from' => ['enum', [\selling\Sale::USER, \selling\Sale::SHOP], 'cast' => 'enum'],
@@ -87,7 +88,7 @@ class SaleModel extends \ModuleModel {
 			'shippingVatFixed' => ['bool', 'cast' => 'bool'],
 			'shipping' => ['decimal', 'digits' => 8, 'decimal' => 2, 'min' => 0.01, 'max' => NULL, 'null' => TRUE, 'cast' => 'float'],
 			'shippingExcludingVat' => ['decimal', 'digits' => 8, 'decimal' => 2, 'null' => TRUE, 'cast' => 'float'],
-			'preparationStatus' => ['enum', [\selling\Sale::COMPOSITION, \selling\Sale::DRAFT, \selling\Sale::BASKET, \selling\Sale::CONFIRMED, \selling\Sale::SELLING, \selling\Sale::PREPARED, \selling\Sale::DELIVERED, \selling\Sale::CANCELED], 'cast' => 'enum'],
+			'preparationStatus' => ['enum', [\selling\Sale::COMPOSITION, \selling\Sale::DRAFT, \selling\Sale::PROVISIONAL, \selling\Sale::BASKET, \selling\Sale::CONFIRMED, \selling\Sale::SELLING, \selling\Sale::PREPARED, \selling\Sale::DELIVERED, \selling\Sale::CANCELED], 'cast' => 'enum'],
 			'paymentStatus' => ['enum', [\selling\Sale::UNDEFINED, \selling\Sale::WAITING, \selling\Sale::PROCESSING, \selling\Sale::PAID, \selling\Sale::FAILED], 'cast' => 'enum'],
 			'paymentMethod' => ['enum', [\selling\Sale::ONLINE_CARD, \selling\Sale::OFFLINE, \selling\Sale::TRANSFER, \selling\Sale::CASH, \selling\Sale::CARD, \selling\Sale::CHECK], 'null' => TRUE, 'cast' => 'enum'],
 			'compositionOf' => ['element32', 'selling\Product', 'null' => TRUE, 'cast' => 'element'],
@@ -101,6 +102,7 @@ class SaleModel extends \ModuleModel {
 			'shop' => ['element32', 'shop\Shop', 'null' => TRUE, 'cast' => 'element'],
 			'shopDate' => ['element32', 'shop\Date', 'null' => TRUE, 'cast' => 'element'],
 			'shopShared' => ['bool', 'cast' => 'bool'],
+			'shopMaster' => ['bool', 'cast' => 'bool'],
 			'shopParent' => ['element32', 'selling\Sale', 'null' => TRUE, 'cast' => 'element'],
 			'shopUpdated' => ['bool', 'cast' => 'bool'],
 			'shopPoint' => ['element32', 'shop\Point', 'null' => TRUE, 'cast' => 'element'],
@@ -118,7 +120,7 @@ class SaleModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'document', 'farm', 'customer', 'from', 'taxes', 'organic', 'conversion', 'type', 'discount', 'items', 'hasVat', 'vat', 'vatByRate', 'priceExcludingVat', 'priceIncludingVat', 'shippingVatRate', 'shippingVatFixed', 'shipping', 'shippingExcludingVat', 'preparationStatus', 'paymentStatus', 'paymentMethod', 'compositionOf', 'compositionEndAt', 'market', 'marketSales', 'marketParent', 'orderFormValidUntil', 'orderFormPaymentCondition', 'invoice', 'shop', 'shopDate', 'shopShared', 'shopParent', 'shopUpdated', 'shopPoint', 'shopComment', 'deliveryStreet1', 'deliveryStreet2', 'deliveryPostcode', 'deliveryCity', 'comment', 'stats', 'createdAt', 'createdBy', 'deliveredAt', 'statusDeliveredAt'
+			'id', 'document', 'farm', 'customer', 'from', 'taxes', 'organic', 'conversion', 'type', 'discount', 'items', 'hasVat', 'vat', 'vatByRate', 'priceExcludingVat', 'priceIncludingVat', 'shippingVatRate', 'shippingVatFixed', 'shipping', 'shippingExcludingVat', 'preparationStatus', 'paymentStatus', 'paymentMethod', 'compositionOf', 'compositionEndAt', 'market', 'marketSales', 'marketParent', 'orderFormValidUntil', 'orderFormPaymentCondition', 'invoice', 'shop', 'shopDate', 'shopShared', 'shopMaster', 'shopParent', 'shopUpdated', 'shopPoint', 'shopComment', 'deliveryStreet1', 'deliveryStreet2', 'deliveryPostcode', 'deliveryCity', 'comment', 'stats', 'createdAt', 'createdBy', 'deliveredAt', 'statusDeliveredAt'
 		]);
 
 		$this->propertiesToModule += [
@@ -137,13 +139,13 @@ class SaleModel extends \ModuleModel {
 		$this->indexConstraints = array_merge($this->indexConstraints, [
 			['customer'],
 			['shopDate'],
-			['shopParent'],
 			['shop']
 		]);
 
 		$this->uniqueConstraints = array_merge($this->uniqueConstraints, [
 			['compositionOf', 'deliveredAt'],
-			['farm', 'document']
+			['farm', 'document'],
+			['shopParent', 'farm']
 		]);
 
 	}
@@ -177,6 +179,9 @@ class SaleModel extends \ModuleModel {
 				return FALSE;
 
 			case 'shopShared' :
+				return FALSE;
+
+			case 'shopMaster' :
 				return FALSE;
 
 			case 'shopUpdated' :
@@ -386,6 +391,10 @@ class SaleModel extends \ModuleModel {
 
 	public function whereShopShared(...$data): SaleModel {
 		return $this->where('shopShared', ...$data);
+	}
+
+	public function whereShopMaster(...$data): SaleModel {
+		return $this->where('shopMaster', ...$data);
 	}
 
 	public function whereShopParent(...$data): SaleModel {
