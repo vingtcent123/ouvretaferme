@@ -617,7 +617,7 @@ class ProductUi {
 		$h .= '</div>';
 
 		foreach($cSale as $eSale) {
-			$h .= new \selling\ItemUi()->getBySale($eSale, $eSale['cItem']);
+			$h .= new \selling\ItemUi()->getBySale($eSale, $eSale['shop'], $eSale['cItem']);
 		}
 
 		return $h;

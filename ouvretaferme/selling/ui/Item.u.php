@@ -14,13 +14,12 @@ class ItemUi {
 		return p('{value} article', '{value} articles', $cItem->count());
 	}
 
-	public function getBySale(Sale $eSale, \Collection $cItem) {
+	public function getBySale(Sale $eSale, \shop\Shop $eShop, \Collection $cItem) {
 
 		$eItemCreate = new Item([
 			'sale' => $eSale,
 			'farm' => $eSale['farm']
 		]);
-
 
 		$h = '<div class="mb-2">';
 
@@ -196,19 +195,19 @@ class ItemUi {
 					$h .= '</thead>';
 
 					if(
-						$eSale['shop']->notEmpty() and
-						$eSale['shop']['shared'] and
+						$eShop->notEmpty() and
+						$eShop['shared'] and
 						$eSale['shopMaster']
 					) {
 
 						$ccItem = $cItem->reindex(['product', 'farm']);
 
 						foreach($ccItem as $cItem) {
-							$h .= $this->getItemsBody($eSale, $cItem, $columns, $withPackaging);
+							$h .= $this->getItemsBody($eSale, $eShop, $cItem, $columns, $withPackaging);
 						}
 
 					} else {
-						$h .= $this->getItemsBody($eSale, $cItem, $columns, $withPackaging);
+						$h .= $this->getItemsBody($eSale, $eShop, $cItem, $columns, $withPackaging);
 					}
 
 			$h .= '</table>';
@@ -232,11 +231,21 @@ class ItemUi {
 
 	}
 
-	protected function getItemsBody(Sale $eSale, \Collection $cItem, int $columns, bool $withPackaging): string {
+	protected function getItemsBody(Sale $eSale, \shop\Shop $eShop, \Collection $cItem, int $columns, bool $withPackaging): string {
 
 		$h = '';
 
 		foreach($cItem as $position => $eItem) {
+
+			if($eSale['preparationStatus'] === Sale::PROVISIONAL) {
+
+				$eItem = (clone $eItem)->merge([
+					'sale' => (clone $eSale['shopParent'])->merge([
+						'shop' => $eShop
+					])
+				]);
+
+			}
 
 			if($eItem['product']->notEmpty()) {
 				$vignette = ProductUi::getVignette($eItem['product'], '2.75rem');
@@ -273,8 +282,8 @@ class ItemUi {
 			$h .= '<tbody>';
 
 				if(
-					$eSale['shop']->notEmpty() and
-					$eSale['shop']['shared'] and
+					$eShop->notEmpty() and
+					$eShop['shared'] and
 					$eSale['shopMaster'] and
 					$position === 0
 				) {

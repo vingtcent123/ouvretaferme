@@ -389,10 +389,6 @@ a.sale-document-new .sale-document-status {
 	background-color: var(--selling);
 }
 
-.sale-shared-wrapper.sale-shared-provisional {
-	background-color: var(--provisional);
-}
-
 .sale-shared-wrapper a:not(.btn) {
 	color: white;
 	text-decoration: underline;

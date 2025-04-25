@@ -10,7 +10,7 @@ class Sale extends SaleElement {
 			'shop' => ['fqn', 'shared', 'name', 'email', 'emailNewSale', 'emailEndDate', 'hasPayment', 'paymentOfflineHow', 'paymentTransferHow', 'shipping', 'shippingUntil', 'orderMin', 'embedOnly', 'embedUrl'],
 			'shopDate' => ['status', 'deliveryDate', 'orderStartAt', 'orderEndAt'],
 			'shopPoint' => ['type', 'name'],
-			'shopParent' => ['preparationStatus'],
+			'shopParent' => SaleElement::getSelection(),
 			'farm' => ['name', 'url', 'vignette', 'banner', 'featureDocument', 'hasSales'],
 			'price' => fn($e) => $e['type'] === Sale::PRO ? $e['priceExcludingVat'] : $e['priceIncludingVat'],
 			'invoice' => ['name', 'emailedAt', 'createdAt', 'paymentStatus', 'priceExcludingVat', 'generation'],
@@ -523,7 +523,7 @@ class Sale extends SaleElement {
 	}
 
 	public function getNumber(): string {
-		return $this['document'] ?? str_repeat('#', strlen($this['farm']->getSelling('documentSales')));
+		return $this['document'] ?? s("PROVISOIRE");
 	}
 
 	public function getOrderForm(\farm\Farm $eFarm): string {

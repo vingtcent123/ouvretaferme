@@ -60,7 +60,10 @@ class Shop extends ShopElement {
 
 	public function canShareRead(\farm\Farm $e): bool {
 
-		return \shop\ShareLib::match($this, $e);
+		return (
+			$e->canWrite() and
+			\shop\ShareLib::match($this, $e)
+		);
 
 	}
 

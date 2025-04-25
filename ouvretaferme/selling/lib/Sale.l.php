@@ -953,11 +953,12 @@ class SaleLib extends SaleCrud {
 
 	}
 
-	public static function getItems(Sale $e, bool $withIngredients = FALSE, bool $public = FALSE, ?string $index = NULL): \Collection {
+	public static function getItems(Sale $e, bool $withIngredients = FALSE, bool $public = FALSE, \farm\Farm $eFarm = new \farm\Farm(), ?string $index = NULL): \Collection {
 
 		$cItem = Item::model()
 			->select(Item::getSelection())
 			->whereSale($e)
+			->whereFarm($eFarm, if: $eFarm->notEmpty())
 			->whereIngredientOf(NULL, if: $withIngredients === FALSE)
 			->sort([
 				new \Sql('ingredientOf IS NOT NULL'),
@@ -1204,7 +1205,7 @@ class SaleLib extends SaleCrud {
 		$cSaleOld = Sale::model()
 			->select(SaleElement::getSelection())
 			->whereShopParent($eSale)
-			->getCollection();
+			->getCollection(index: 'farm');
 
 		SaleLib::deleteCollection($cSaleOld);
 
@@ -1217,7 +1218,7 @@ class SaleLib extends SaleCrud {
 			$eFarm = $cFarm[$farmId];
 
 			$eSaleNew = (clone $eSale)->merge([
-				'id' => NULL,
+				'id' => $cSaleOld[$eFarm['id']]['id'] ?? NULL,
 				'farm' => $eFarm,
 				'shopMaster' => FALSE,
 				'shopParent' => $eSale,

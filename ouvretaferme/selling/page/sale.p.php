@@ -68,7 +68,9 @@ new \selling\SalePage()
 
 		\farm\FarmerLib::setView('viewSelling', $data->eFarm, \farm\Farmer::SALE);
 
-		$data->cItem = \selling\SaleLib::getItems($data->e, withIngredients: TRUE);
+		$data->cItem = ($data->e['preparationStatus'] === \selling\Sale::PROVISIONAL) ?
+			\selling\SaleLib::getItems($data->e['shopParent'], eFarm: $data->eFarm, withIngredients: TRUE) :
+			\selling\SaleLib::getItems($data->e, withIngredients: TRUE);
 		$data->ccSaleMarket = \selling\SaleLib::getByParent($data->e);
 		$data->cHistory = \selling\HistoryLib::getBySale($data->e);
 		$data->cPdf = \selling\PdfLib::getBySale($data->e);

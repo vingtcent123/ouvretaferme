@@ -1216,19 +1216,14 @@ class SaleUi {
 			return '';
 		}
 
-		$h = '<div class="sale-shared-wrapper util-action '.($e['preparationStatus'] === Sale::PROVISIONAL ? 'sale-shared-provisional' : '').' stick-xs">';
+		$h = '<div class="sale-shared-wrapper util-action stick-xs">';
 
 			$h .= '<div>';
 				$h .= s("Cette vente n'intègre que les articles de votre production.", ['customer' => CustomerUi::link($e['customer']), 'date' => '<a href="'.\shop\ShopUi::adminDateUrl($e['farm'], $e['shopDate']).'">'.\util\DateUi::numeric($e['shopDate']['deliveryDate']).'</a>', 'shop' => '<a href="'.\shop\ShopUi::adminUrl($e['farm'], $e['shop']).'">'.encode($e['shop']['name']).'</a>']);
-					if($e['preparationStatus'] === Sale::PROVISIONAL) {
-						$h .= '<br/>'.s("Il s'agit d'un document provisoire car les prises de commande sont encore ouvertes sur la boutique.");
-					}
 			$h .= '</div>';
 			$h .= '<a href="'.SaleUi::url($e['shopParent']).'" class="btn btn-outline-transparent">'.s("Voir la vente complète").'</a>';
 		$h .= '</div>';
 
-
-		dd('permettre de modifier les items en cheatant l\'ID');
 		return $h;
 
 	}
