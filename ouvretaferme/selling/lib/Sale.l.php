@@ -509,11 +509,7 @@ class SaleLib extends SaleCrud {
 			$e['paymentStatus'] = Sale::UNDEFINED;
 		}
 
-		if($e['preparationStatus'] !== Sale::PROVISIONAL) {
-			$e['document'] = ConfigurationLib::getNextDocumentSales($e['farm']);
-		} else {
-			$e['document'] = NULL;
-		}
+		$e['document'] = ConfigurationLib::getNextDocumentSales($e['farm']);
 
 		try {
 

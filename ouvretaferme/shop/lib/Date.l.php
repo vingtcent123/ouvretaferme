@@ -412,10 +412,6 @@ class DateLib extends DateCrud {
 				$eSaleChild['oldStatus'] = $eSaleChild['preparationStatus'];
 				$eSaleChild['preparationStatus'] = $eSale['preparationStatus'];
 
-				if($eSaleChild['document'] === NULL) {
-					$eSaleChild['document'] = \selling\ConfigurationLib::getNextDocumentSales($eSaleChild['farm']);
-				}
-
 				\selling\SaleLib::update($eSaleChild, ['preparationStatus', 'document']);
 
 			}

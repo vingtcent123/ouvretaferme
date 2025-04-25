@@ -523,7 +523,7 @@ class Sale extends SaleElement {
 	}
 
 	public function getNumber(): string {
-		return $this['document'] ?? s("PROVISOIRE");
+		return $this['document'];
 	}
 
 	public function getOrderForm(\farm\Farm $eFarm): string {
