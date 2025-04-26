@@ -32,12 +32,13 @@ class Item extends ItemElement {
 	public function canWrite(): bool {
 
 		$this->expects([
-			'sale' => ['preparationStatus', 'marketParent']
+			'sale' => ['preparationStatus', 'marketParent', 'shopMaster']
 		]);
 
 		if(
 			$this->canRead() === FALSE or
-			$this['sale']['marketParent']->notEmpty()
+			$this['sale']['marketParent']->notEmpty() or
+			$this['sale']['shopMaster']
 		) {
 			return FALSE;
 		}

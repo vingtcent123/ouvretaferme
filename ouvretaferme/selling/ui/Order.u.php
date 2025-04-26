@@ -425,7 +425,7 @@ class OrderUi {
 
 		\Asset::css('selling', 'item.css');
 
-		$h = '<div class="h-line">';
+		$h = '<div class="util-title">';
 			$h .= '<h3>'.s("Articles commandés").'</h3>';
 		$h .= '</div>';
 
@@ -465,20 +465,7 @@ class OrderUi {
 				$h .= '</tr>';
 			$h .= '</thead>';
 
-			if(
-				$eSale['shop']->notEmpty() and
-				$eSale['shop']['shared']
-			) {
-
-				$ccItem = $cItem->reindex(['product', 'farm']);
-
-				foreach($ccItem as $cItem) {
-					$h .= $this->getItemsBody($eSale, $cItem, $columns, $withPackaging);
-				}
-
-			} else {
-				$h .= $this->getItemsBody($eSale, $cItem, $columns, $withPackaging);
-			}
+			$h .= $this->getItemsBody($eSale, $cItem, $columns, $withPackaging);
 
 			if($eSale['shipping'] !== NULL) {
 
@@ -535,20 +522,6 @@ class OrderUi {
 			}
 
 			$h .= '<tbody>';
-
-				if(
-					$eSale['shop']->notEmpty() and
-					$eSale['shop']['shared'] and
-					$position === 0
-				) {
-
-					$h .= '<tr class="item-item-farm">';
-						$h .= '<td colspan="'.($columns + 1).'">';
-							$h .= $eItem['farm']['name'];
-						$h .= '</td>';
-					$h .= '</tr>';
-
-				}
 
 				$h .= '<tr>';
 

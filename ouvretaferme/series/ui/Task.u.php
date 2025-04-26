@@ -1553,7 +1553,7 @@ class TaskUi {
 
 		$h = '<div id="series-task-wrapper" data-series="'.$eSeries['id'].'">';
 
-			$h .= '<div class="h-line">';
+			$h .= '<div class="util-title">';
 				$h .= '<h3>'.s("Interventions").'</h3>';
 				$h .= $this->planTask($eSeries);
 			$h .= '</div>';
@@ -1648,11 +1648,11 @@ class TaskUi {
 	protected function getEmptyTimeline(Series $eSeries): string {
 
 		$h = '<div id="series-task-wrapper" data-series="'.$eSeries['id'].'">';
-			$h .= '<div class="h-line">';
+			$h .= '<div class="util-title">';
 				$h .= '<h3>'.s("Interventions").'</h3>';
 				$h .= $this->planTask($eSeries);
 			$h .= '</div>';
-			$h .= '<p class="util-info">';
+			$h .= '<p class="util-empty">';
 				$h .= s("Vous n'avez pas encore saisi d'intervention pour cette série.");
 			$h .= '</p>';
 		$h .= '</div>';
@@ -4379,7 +4379,7 @@ class TaskUi {
 
 		if($cCultivation->count() < 2) {
 
-			$h = '<div class="util-info">';
+			$h = '<div class="util-empty">';
 				$h .= s("Il n'y a aucune autre série compatible avec cette espèce.");
 			$h .= '</div>';
 

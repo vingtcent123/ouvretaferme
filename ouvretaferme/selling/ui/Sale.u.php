@@ -1217,9 +1217,8 @@ class SaleUi {
 		}
 
 		$h = '<div class="sale-shared-wrapper util-action stick-xs">';
-
 			$h .= '<div>';
-				$h .= s("Cette vente n'intègre que les articles de votre production.", ['customer' => CustomerUi::link($e['customer']), 'date' => '<a href="'.\shop\ShopUi::adminDateUrl($e['farm'], $e['shopDate']).'">'.\util\DateUi::numeric($e['shopDate']['deliveryDate']).'</a>', 'shop' => '<a href="'.\shop\ShopUi::adminUrl($e['farm'], $e['shop']).'">'.encode($e['shop']['name']).'</a>']);
+				$h .= s("Cette vente de la boutique collective n'intègre que les articles de votre production.", ['customer' => CustomerUi::link($e['customer']), 'date' => '<a href="'.\shop\ShopUi::adminDateUrl($e['farm'], $e['shopDate']).'">'.\util\DateUi::numeric($e['shopDate']['deliveryDate']).'</a>', 'shop' => '<a href="'.\shop\ShopUi::adminUrl($e['farm'], $e['shop']).'">'.encode($e['shop']['name']).'</a>']);
 			$h .= '</div>';
 			$h .= '<a href="'.SaleUi::url($e['shopParent']).'" class="btn btn-outline-transparent">'.s("Voir la vente complète").'</a>';
 		$h .= '</div>';

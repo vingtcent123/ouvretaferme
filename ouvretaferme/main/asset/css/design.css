@@ -629,40 +629,6 @@ div.footer-content-legal {
 
 }
 
-div.h-line {
-	width: 100%;
-	display: flex;
-	flex-wrap: wrap;
-	align-items: center;
-	justify-content: space-between;
-	margin-top: 0.25rem;
-	margin-bottom: 0.75rem;
-}
-
-div.h-line > *:not(:last-child) {
-    margin-right: .5rem;
-}
-
-div.h-line > * {
-    margin-top: .25rem;
-    margin-bottom: .25rem;
-}
-
-div.h-line > div.h-tabs {
-	display: flex;
-	flex-wrap: wrap;
-	align-items: center;
-	margin: .25rem 0;
-	font-size: 1rem;
-	text-align: right;
-}
-
-div.h-line > div.h-tabs > a.h-tab:not(:last-child) {
-	padding-right: .75rem;
-	border-right: 1px solid var(--primary);
-	margin-right: .75rem;
-}
-
 .text-secondary a {
 	color: inherit;
 	text-decoration: underline;

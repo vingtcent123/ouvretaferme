@@ -29,14 +29,14 @@ class AnalyzeUi {
 				$h .= '</div>';
 
 			} else {
-				$h .= '<p class="util-info">';
+				$h .= '<p class="util-empty">';
 					$h .= s("Il n'y a aucune intervention en {value}.", $year);
 				$h .= '</p>';
 			}
 
 		} else {
 
-			$h .= '<p class="util-info">';
+			$h .= '<p class="util-empty">';
 				if($eAction->empty()) {
 					$h .= s("Vous n'avez jamais utilisé cette catégorie.");
 				} else {

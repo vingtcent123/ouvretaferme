@@ -50,7 +50,7 @@ class AnalyzeUi {
 
 		if($cItemMonth->empty()) {
 
-			$h = '<div class="util-info">';
+			$h = '<div class="util-empty">';
 				$h .= s("Aucune vente n'a été enregistrée pour cette année.");
 			$h .= '</div>';
 
@@ -429,7 +429,7 @@ class AnalyzeUi {
 
 		if($ccItemCustomer->offsetExists($year) === FALSE) {
 
-			$h = '<div class="util-info">';
+			$h = '<div class="util-empty">';
 				$h .= s("Aucune vente n'a été enregistrée pour cette année.");
 			$h .= '</div>';
 
@@ -886,7 +886,7 @@ class AnalyzeUi {
 
 	public function getEmptyShop(): string {
 
-		$h = '<div class="util-info">';
+		$h = '<div class="util-empty">';
 			$h .= s("Vous n'avez pas ouvert de boutique en ligne sur {siteName}.");
 		$h .= '</div>';
 
@@ -922,7 +922,7 @@ class AnalyzeUi {
 
 		if($cItemProduct->empty() and $cPlant->empty()) {
 
-			$h .= '<div class="util-info">';
+			$h .= '<div class="util-empty">';
 				$h .= s("Aucune vente en ligne n'a été enregistrée pour cette année.");
 			$h .= '</div>';
 
@@ -940,7 +940,7 @@ class AnalyzeUi {
 
 				$h .= '<div class="tab-panel selected '.($monthly ? '' : 'analyze-chart-table').'" data-tab="analyze-product">';
 					if($cItemProduct->empty()) {
-						$h = '<div class="util-info">';
+						$h = '<div class="util-empty">';
 							$h .= s("Aucune vente de produit n'a été enregistrée pour cette année.");
 						$h .= '</div>';
 					} else {
@@ -957,7 +957,7 @@ class AnalyzeUi {
 
 				$h .= '<div class="tab-panel '.($monthly ? '' : 'analyze-chart-table').'" data-tab="analyze-plant">';
 					if($cPlant->empty()) {
-						$h = '<div class="util-info">';
+						$h = '<div class="util-empty">';
 							$h .= s("Aucune vente sur une espèce n'a été enregistrée pour cette année.");
 						$h .= '</div>';
 					} else {
@@ -970,8 +970,8 @@ class AnalyzeUi {
 
 				$h .= '<div class="tab-panel analyze-chart-table" data-tab="analyze-customer">';
 					if($ccItemCustomer->empty()) {
-						$h = '<div class="util-info">';
-							$h .= s("Aucune client n'a été enregistré pour cette année.");
+						$h = '<div class="util-empty">';
+							$h .= s("Aucun client n'a été trouvé pour cette année.");
 						$h .= '</div>';
 					} else {
 						$h .= $this->getBestCustomersPie($ccItemCustomer, $year);
@@ -1019,7 +1019,7 @@ class AnalyzeUi {
 
 		if($cItemProduct->empty() and $cPlant->empty()) {
 
-			$h = '<div class="util-info">';
+			$h = '<div class="util-empty">';
 				$h .= s("Aucune vente sur des cultures en production n'a été enregistrée pour cette année.");
 			$h .= '</div>';
 
@@ -1040,7 +1040,7 @@ class AnalyzeUi {
 
 					$h .= '<div class="tab-panel selected '.($monthly ? '' : 'analyze-chart-table').'" data-tab="analyze-product">';
 						if($cItemProduct->empty()) {
-							$h .= '<div class="util-info">';
+							$h .= '<div class="util-empty">';
 								$h .= s("Aucune vente de produit n'a été enregistrée pour cette année.");
 							$h .= '</div>';
 						} else {
@@ -1053,7 +1053,7 @@ class AnalyzeUi {
 
 					$h .= '<div class="tab-panel '.($monthly ? '' : 'analyze-chart-table').'" data-tab="analyze-plant">';
 						if($cPlant->empty()) {
-							$h .= '<div class="util-info">';
+							$h .= '<div class="util-empty">';
 								$h .= s("Aucune vente sur une espèce n'a été enregistrée pour cette année.");
 							$h .= '</div>';
 						} else {
@@ -1068,7 +1068,7 @@ class AnalyzeUi {
 
 					$h .= '<div class="tab-panel selected" data-tab="analyze-product">';
 						if($cItemProduct->empty()) {
-							$h .= '<div class="util-info">';
+							$h .= '<div class="util-empty">';
 								$h .= s("Aucune vente de produit n'a été enregistrée pour cette année.");
 							$h .= '</div>';
 						} else {
@@ -1078,7 +1078,7 @@ class AnalyzeUi {
 
 					$h .= '<div class="tab-panel selected" data-tab="analyze-plant">';
 						if($cPlant->empty()) {
-							$h .= '<div class="util-info">';
+							$h .= '<div class="util-empty">';
 								$h .= s("Aucune vente sur une espèce n'a été enregistrée pour cette année.");
 							$h .= '</div>';
 						} else {
@@ -1783,7 +1783,7 @@ class AnalyzeUi {
 
 		} else {
 
-			$h .= '<p class="util-info">';
+			$h .= '<p class="util-empty">';
 				$h .= s("Vous n'avez encore jamais vendu la production de cette plante.");
 			$h .= '</p>';
 

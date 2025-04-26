@@ -266,7 +266,7 @@ class FarmerUi {
 
 		} else {
 
-			$h .= '<div class="h-line">';
+			$h .= '<div class="util-title">';
 				$h .= '<h2>'.\Asset::icon('snapchat').' '.s("Les utilisateurs fantômes").'</h2>';
 				$h .= '<a href="/farm/farmer:createUser?farm='.$eFarm['id'].'" class="btn btn-outline-primary">'.\Asset::icon('plus-circle').' '.s("Créer un utilisateur fantôme").'</a>';
 			$h .= '</div>';

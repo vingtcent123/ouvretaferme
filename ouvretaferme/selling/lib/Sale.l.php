@@ -426,6 +426,7 @@ class SaleLib extends SaleCrud {
 		return Sale::model()
 			->select(Sale::getSelection())
 			->whereCustomer('IN', $cCustomer)
+			->whereStats(TRUE)
 			->sort([
 				'id' => SORT_DESC
 			])

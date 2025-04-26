@@ -191,7 +191,7 @@ class MarketUi {
 
 			if($cItemMarket->empty()) {
 
-				$h .= '<div class="util-info">';
+				$h .= '<div class="util-empty">';
 					$h .= s("Vous ne proposez pas encore d'article à la vente dans votre marché.");
 				$h .= '</div>';
 

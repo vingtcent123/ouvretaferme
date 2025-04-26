@@ -15,7 +15,7 @@ new AdaptativeView('display', function($data, FarmTemplate $t) {
 		echo new \production\SequenceUi()->getComment($data->e);
 	}
 
-	echo '<div class="h-line">';
+	echo '<div class="util-title">';
 		echo '<h3>'.s("Interventions").'</h3>';
 		echo new \production\FlowUi()->planTask($data->e);
 	echo '</div>';

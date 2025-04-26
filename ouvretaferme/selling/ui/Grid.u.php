@@ -15,7 +15,7 @@ class GridUi {
 			return '';
 		}
 
-		$h = '<div class="h-line">';
+		$h = '<div class="util-title">';
 			$h .= '<h3>'.s("Grille tarifaire personnalisée pour les professionnels").'</h3>';
 			$h .= '<div>';
 				$h .= '<a data-dropdown="bottom-end" class="dropdown-toggle btn btn-outline-primary">'.\Asset::icon('gear-fill').'</a>';
@@ -33,7 +33,7 @@ class GridUi {
 
 		if($cGrid->empty()) {
 
-			$h .= '<div class="util-info">'.s("Aucune personnalisation de prix pour ce produit.").'</div>';
+			$h .= '<div class="util-empty">'.s("Aucune personnalisation de prix pour ce produit.").'</div>';
 
 		} else {
 
@@ -94,11 +94,11 @@ class GridUi {
 			return '';
 		}
 
-		$h = '<div class="h-line">';
+		$h = '<div class="util-title">';
 
 			if($cGrid->empty()) {
 
-				$h .= '<div class="util-info">'.s("Aucune personnalisation de prix pour ce client.").'</div>';
+				$h .= '<div class="util-empty">'.s("Aucune personnalisation de prix pour ce client.").'</div>';
 
 			} else {
 

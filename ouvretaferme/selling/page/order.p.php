@@ -35,7 +35,6 @@ new \selling\SalePage()
 
 		$data->eFarm = $data->e['farm'];
 
-
 		$data->cItem = \selling\SaleLib::getItems($data->e, withIngredients: TRUE, public: TRUE);
 		$data->e['shopPoint'] = \shop\PointLib::getById($data->e['shopPoint']);
 

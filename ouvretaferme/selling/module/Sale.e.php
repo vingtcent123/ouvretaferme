@@ -189,9 +189,9 @@ class Sale extends SaleElement {
 
 	public function canAccess(): bool {
 
-		$this->expects(['customer', 'farm', 'marketParent']);
+		$this->expects(['customer', 'farm', 'stats']);
 
-		return $this['marketParent']->empty() and (
+		return $this['stats'] and (
 			// Ferme
 			$this->canRead() or
 			// Client
@@ -261,9 +261,12 @@ class Sale extends SaleElement {
 
 	public function acceptUpdateItems(): bool {
 
-		$this->expects(['market', 'marketParent', 'preparationStatus', 'deliveredAt']);
+		$this->expects(['market', 'marketParent', 'preparationStatus', 'deliveredAt', 'shopMaster']);
 
-		if($this['marketParent']->notEmpty()) {
+		if(
+			$this['marketParent']->notEmpty() or
+			$this['shopMaster']
+		) {
 			return FALSE;
 		}
 

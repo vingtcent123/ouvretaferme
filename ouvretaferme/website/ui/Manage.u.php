@@ -232,7 +232,7 @@ class ManageUi {
 	public function getPages(Website $eWebsite, \Collection $cWebpage): string {
 
 		if($cWebpage->empty()) {
-			return '<div class="util-info">'.s("Il n'y a aucune page à afficher.").'</div>';
+			return '<div class="util-empty">'.s("Il n'y a aucune page à afficher.").'</div>';
 		}
 
 		$h = '<div class="text-end" style="margin-bottom: 1rem;">';
@@ -312,7 +312,7 @@ class ManageUi {
 	public function getMenu(Website $eWebsite, \Collection $cWebpage, \Collection $cMenu): string {
 
 		if($cWebpage->empty()) {
-			return '<div class="util-info">'.s("Il n'y a aucune page à afficher.").'</div>';
+			return '<div class="util-empty">'.s("Il n'y a aucune page à afficher.").'</div>';
 		}
 
 		$h = '<div class="text-end" style="margin-bottom: 1rem;">';
@@ -412,7 +412,7 @@ class ManageUi {
 		$h.= '</div>';
 
 		if($cNews->empty()) {
-			$h .= '<div class="util-info">'.s("Il n'y a aucune actualité à afficher pour le moment.").'</div>';
+			$h .= '<div class="util-empty">'.s("Il n'y a aucune actualité à afficher pour le moment.").'</div>';
 		} else {
 
 			$h .= '<div class="website-news-wrapper stick-xs">';

@@ -16,7 +16,7 @@ class AnalyzeUi {
 	public function getPeriod(int $year, \Collection $cWorkingTimeMonth, \Collection $cWorkingTimeMonthBefore): string {
 
 		if($cWorkingTimeMonth->empty()) {
-			$h = '<div class="util-info">';
+			$h = '<div class="util-empty">';
 				$h .= s("La saisonnalité du travail sera disponible lorsque vous aurez renseigné du temps de travail réel cette année.");
 			$h .= '</div>';
 			return $h;
@@ -220,7 +220,7 @@ class AnalyzeUi {
 	public function getWorkingTime(\farm\Farm $eFarm, int $year, \Collection $ccWorkingTimeMonthly, array $workingTimeWeekly, \Collection $ccTimesheetAction): string {
 
 		if($ccWorkingTimeMonthly->empty()) {
-			$h = '<div class="util-info">';
+			$h = '<div class="util-empty">';
 				$h .= s("Le suivi du temps de travail en équipe sera disponible lorsque vous aurez renseigné du temps de travail réel cette année.");
 			$h .= '</div>';
 			return $h;
@@ -326,7 +326,7 @@ class AnalyzeUi {
 	public function getPace(\farm\Farm $eFarm, array $years, int $year, \Collection $cAction, \Collection $cPlant, \Collection $cPlantCompare, ?int $yearCompare): string {
 
 		if($cPlant->empty()) {
-			$h = '<div class="util-info">';
+			$h = '<div class="util-empty">';
 				$h .= s("Le suivi de la productivité sera disponible lorsque vous aurez saisi du temps de travail cette année sur les interventions pour lesquelles elle est mesurée, à savoir {value}.", implode(', ', array_map('encode', $cAction->getColumn('name'))));
 			$h .= '</div>';
 			return $h;
@@ -552,14 +552,14 @@ class AnalyzeUi {
 				$h .= '</div>';
 
 			} else {
-				$h .= '<p class="util-info">';
+				$h .= '<p class="util-empty">';
 					$h .= s("Il n'y a aucune intervention pour cette espèce en {value}.", $year);
 				$h .= '</p>';
 			}
 
 		} else {
 
-			$h .= '<p class="util-info">';
+			$h .= '<p class="util-empty">';
 				$h .= s("Vous n'avez pas travaillé sur une série sur cette espèce.");
 			$h .= '</p>';
 
@@ -744,7 +744,7 @@ class AnalyzeUi {
 			$cTimesheetSeries->empty() and
 			$cTimesheetAction->empty()
 		) {
-			$h = '<div class="util-info">';
+			$h = '<div class="util-empty">';
 				$h .= s("L'analyse du temps de travail sera disponible lorsque vous aurez saisi du temps de travail cette année.");
 			$h .= '</div>';
 			return $h;
@@ -781,7 +781,7 @@ class AnalyzeUi {
 
 			$h .= '<div class="tab-panel" data-tab="analyze-plant">';
 				if($cTimesheetPlant->empty()) {
-					$h .= '<div class="util-info">';
+					$h .= '<div class="util-empty">';
 						$h .= s("Vous n'avez pas encore travaillé sur des espèces cette année.");
 					$h .= '</div>';
 				} else {

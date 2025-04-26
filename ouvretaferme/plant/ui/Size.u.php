@@ -8,7 +8,7 @@ class SizeUi {
 		$h = '';
 
 		if($cSize->empty()) {
-			$h .= '<div class="util-info">';
+			$h .= '<div class="util-empty">';
 				$h .= s("Vous n'avez pas encore ajouté de calibre pour cette espèce.");
 			$h .= '</div>';
 			if($eFarm->canManage()) {

@@ -73,7 +73,7 @@ class InvoiceUi {
 	public function getList(\Collection $cInvoice, ?int $nInvoice = NULL, array $hide = [], ?int $page = NULL) {
 
 		if($cInvoice->empty()) {
-			return '<div class="util-info">'.s("Il n'y a aucune facture à afficher.").'</div>';
+			return '<div class="util-empty">'.s("Il n'y a aucune facture à afficher.").'</div>';
 		}
 
 		$h = '<div class="util-overflow-sm stick-xs">';

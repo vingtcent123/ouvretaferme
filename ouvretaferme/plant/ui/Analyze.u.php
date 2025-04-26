@@ -248,7 +248,7 @@ class AnalyzeUi {
 		$h = '';
 
 		if($ccCultivationPlant->offsetExists($season) === FALSE) {
-			$h = '<div class="util-info">';
+			$h = '<div class="util-empty">';
 				$h .= s("Aucune espèce n'a été cultivée dans une série cette année.");
 			$h .= '</div>';
 		} else {
@@ -271,7 +271,7 @@ class AnalyzeUi {
 		$h = '';
 
 		if($ccCultivationFamily->offsetExists($season) === FALSE) {
-			$h = '<div class="util-info">';
+			$h = '<div class="util-empty">';
 				$h .= s("Aucune famille botanique n'a été cultivée dans une série cette année.");
 			$h .= '</div>';
 		} else {
@@ -294,7 +294,7 @@ class AnalyzeUi {
 		$h = '';
 
 		if($cFamily->empty()) {
-			$h .= '<div class="util-info">';
+			$h .= '<div class="util-empty">';
 				$h .= s("Aucune famille botanique n'a été cultivée sur planche permanente cette année.");
 			$h .= '</div>';
 		} else {

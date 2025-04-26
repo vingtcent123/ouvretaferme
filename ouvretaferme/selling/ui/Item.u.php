@@ -24,7 +24,7 @@ class ItemUi {
 		$h = '<div class="mb-2">';
 
 		if($eSale->isComposition()) {
-			$h .= '<div class="h-line">';
+			$h .= '<div class="util-title">';
 				$h .= '<h3>';
 					if(
 						$eSale['compositionEndAt'] === NULL or
@@ -45,6 +45,7 @@ class ItemUi {
 		}
 
 		if(
+			$eSale['shopMaster'] === FALSE and
 			$eSale->acceptCreateItems() and
 			$eItemCreate->canCreate()
 		) {
@@ -91,13 +92,17 @@ class ItemUi {
 		}
 
 		if($eSale->isComposition() === FALSE) {
-			$h .= '<div class="h-line">';
+			$h .= '<div class="util-title">';
+
 				if($eSale->isMarketPreparing()) {
 					$h .= '<h3>'.s("Préparation du marché").'</h3>';
 				} else {
 					$h .= '<h3>'.s("Articles").'</h3>';
 				}
+
+
 				if(
+					$eSale['shopMaster'] === FALSE and
 					$eSale->acceptCreateItems() and
 					$eItemCreate->canCreate()
 				) {
@@ -105,6 +110,13 @@ class ItemUi {
 						$h .= \Asset::icon('plus-circle').' '.s("Ajouter plusieurs produits");
 					$h .= '</a>';
 				}
+
+			$h .= '</div>';
+		}
+
+		if($eSale['preparationStatus'] === Sale::PROVISIONAL) {
+			$h .= '<div class="util-info">';
+				$h .= s("Vous pourrez modifier les articles de cette vente lorsque la période de prise de commandes sera terminée.");
 			$h .= '</div>';
 		}
 
@@ -127,7 +139,7 @@ class ItemUi {
 				$h .= $new;
 
 			} else {
-				$h .= '<div class="util-info">';
+				$h .= '<div class="util-empty">';
 					$h .= s("Aucun article n'a été ajouté à cette vente.");
 				$h .= '</div>';
 			}
@@ -288,11 +300,18 @@ class ItemUi {
 					$position === 0
 				) {
 
-					$h .= '<tr class="tr-title">';
-						$h .= '<td colspan="'.($columns + 1).'">';
-							$h .= $eItem['farm']['name'];
+					// Bricolage affreux
+					$h .= '<tr class="item-item-separator">';
+						$h .= '<td colspan="'.($columns + 2).'">';
 						$h .= '</td>';
 					$h .= '</tr>';
+
+					$h .= '<tr class="item-item-farm">';
+						$h .= '<td colspan="'.($columns + 2).'">';
+							$h .= encode($eItem['farm']['name']);
+						$h .= '</td>';
+					$h .= '</tr>';
+
 
 				}
 

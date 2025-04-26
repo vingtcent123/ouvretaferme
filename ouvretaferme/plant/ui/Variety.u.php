@@ -36,7 +36,7 @@ class VarietyUi {
 		$h = '';
 
 		if($cVariety->empty()) {
-			$h .= '<div class="util-info">';
+			$h .= '<div class="util-empty">';
 				$h .= s("Vous n'avez pas encore ajouté de variété pour cette espèce.");
 			$h .= '</div>';
 			if($eFarm->canManage()) {

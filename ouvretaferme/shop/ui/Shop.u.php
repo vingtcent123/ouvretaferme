@@ -138,8 +138,14 @@ class ShopUi {
 				if($eShop['shared']) {
 
 					$content = '<h3>'.s("Démarrer une boutique collective").'</h3>';
-					$content .= '<p>'.s("Nous vous recommandons de bien réfléchir au mode de fonctionnement de votre collectif avant d'engager la création d'une boutique en commun, à la fois en termes organisationnels, logistiques et financiers afin que votre projet soit un succès.").'</p>';
-					$content .= '<p>'.s("Seul le producteur à l'origine d'une boutique collective peut administrer celle-ci. Pour <b>administrer une boutique collective à plusieurs, nous vous recommandons de <link>créer une ferme dédiée</link> pour créer cette boutique</b>, et d'ajouter chaque producteur comme membre de l'équipe de cette ferme.", ['link' => '<a href="/farm/farm:create">']).'</p>';
+					$content .= '<p>'.s("Une boutique collective permet à plusieurs producteurs de vendre sur la même boutique, et de partager ses créneaux de commercialisation.").'</p>';
+					$content .= '<p>'.s("Nous vous recommandons de bien travailler le mode de fonctionnement de votre collectif avant d'engager la création d'une boutique en commun, à la fois en termes organisationnels, logistiques et financiers afin que votre projet soit un succès.").'</p>';
+					$content .= '<p>'.s("Vous devez tenir compte des éléments suivants pour créer une boutique collective :").'</p>';
+					$content .= '<ul>';
+						$content .='<li>'.s("Une boutique collective est administrée uniquement par la ferme qui l'a créée").'</li>';
+						$content .='<li>'.s("La ferme à l'origine de la création d'une boutique collective ne peut pas y vendre sa production").'</li>';
+					$content .= '</ul>';
+					$content .= '<p>'.s("Nous vous recommandons donc de <link>créer une ferme dédiée</link> pour créer une boutique collective</b> !", ['link' => '<a href="/farm/farm:create">']).'</p>';
 
 					$h .= $form->group(content: '<div class="util-block-help">'.$content.'</div>');
 
@@ -149,9 +155,23 @@ class ShopUi {
 					'type*' => self::getTypeDescriber($eFarm, 'create')
 				]);
 
-			$h .= $form->group(
-					content: $form->submit(s("Créer la boutique"))
-			);
+				$submit = '';
+
+				if($eShop['shared']) {
+					$submit .= '<div class="util-block-help">';
+						$submit .= '<h3>'.s("J'ai bien noté que").'</h3>';
+						$submit .= '<ul>';
+							$submit .='<li>'.s("La ferme {farm} est à l'origine de cette boutique collective et que seuls les utilisateurs enregistrés comme exploitants de cette ferme pourront l'administrer", ['farm' => '<b>'.encode($eShop['farm']['name']).'</b>']).'</li>';
+							$submit .='<li>'.s("La ferme {farm} ne pourra pas vendre sa production dans cette boutique collective étant donné qu'elle en est à l'origine", ['farm' => '<b>'.encode($eShop['farm']['name']).'</b>']).'</li>';
+						$submit .= '</ul>';
+					$submit .= '</div>';
+				}
+
+				$submit .= $form->submit(s("Créer la boutique"));
+
+				$h .= $form->group(
+						content: $submit
+				);
 
 			$h .= $form->close();
 

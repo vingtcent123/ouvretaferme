@@ -35,8 +35,16 @@ td.item-item-price {
 	padding: 0;
 }
 
-.item-item-farm {
-	background-color: #00000005;
+tr.item-item-separator {
+	background-color: transparent !important;
+}
+
+tr.item-item-farm td {
+	border-bottom: 1px solid var(--border);
+	font-weight: bold;
+	border-top-left-radius: var(--radius);
+	border-top-right-radius: var(--radius);
+	background-color: var(--background);
 }
 
 .item-item-vignette {
