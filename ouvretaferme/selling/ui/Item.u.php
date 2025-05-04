@@ -1243,7 +1243,7 @@ class ItemUi {
 
 			case 'quality' :
 				$d->field = 'select';
-				$d->values = \farm\FarmUi::getQualities();;
+				$d->values = \farm\FarmUi::getQualities();
 				$d->placeholder = s("Aucun");
 				break;
 

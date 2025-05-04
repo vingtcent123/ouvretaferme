@@ -83,7 +83,7 @@ class Item extends ItemElement {
 
 					return (
 						Product::model()
-							->select('id', 'name', 'farm', 'composition')
+							->select('id', 'name', 'variety', 'farm', 'composition')
 							->whereStatus(Product::ACTIVE)
 							->get($eProduct) and
 						$eProduct->validateProperty('farm', $this['farm'])
@@ -110,7 +110,9 @@ class Item extends ItemElement {
 				if($p->for === 'create') {
 
 					if($this['product']->notEmpty()) {
-						$name = $this['product']['name'];
+
+						$name = $this['product']->getName();
+
 					}
 
 				}

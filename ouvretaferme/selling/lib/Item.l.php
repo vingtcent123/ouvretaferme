@@ -732,7 +732,7 @@ class ItemLib extends ItemCrud {
 				'customer' => $eSale['customer']
 			]);
 
-			$eItem->buildIndex(['product', 'quality', 'name', 'packaging', 'locked', 'discount', 'unit', 'unitPrice', 'number', 'price', 'vatRate'], $input, $position, new \Properties('create'));
+			$eItem->buildIndex(['product', 'quality', 'variety', 'name', 'packaging', 'locked', 'discount', 'unit', 'unitPrice', 'number', 'price', 'vatRate'], $input, $position, new \Properties('create'));
 
 			$cItem[] = $eItem;
 
