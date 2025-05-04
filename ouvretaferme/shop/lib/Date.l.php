@@ -371,7 +371,7 @@ class DateLib extends DateCrud {
 				->get()
 				->getArrayCopy();
 
-			$cItem = \selling\ItemLib::getSummaryByDate($eDate);
+			$cItem = \selling\ItemLib::getSummaryByDate($eFarm, $eDate);
 
 			new \mail\MailLib()
 				->addTo($to)

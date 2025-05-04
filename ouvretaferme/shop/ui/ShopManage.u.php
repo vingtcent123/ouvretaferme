@@ -310,8 +310,8 @@ class ShopManageUi {
 				$h .= '<li>'.s("Vous avez invité des producteurs sur la boutique ?").'</li>';
 				$h .= '<li>'.s("La configuration de la boutique est terminée ?").'</li>';
 			$h .= '</ul>';
-			$h .= '<p>'.s("Alors c'est le moment de configurer une première vente à destination de vos clients !").'</p>';
-			$h .= '<a href="/shop/date:create?shop='.$eShop['id'].'&farm='.$eFarm['id'].'" class="btn btn-secondary">'.s("Ajouter une première livraison").'</a>';
+			$h .= '<p>'.s("Alors c'est le moment de configurer une première livraison à destination de vos clients !").'</p>';
+			$h .= '<a href="/shop/date:create?shop='.$eShop['id'].'&farm='.$eFarm['id'].'" class="btn btn-secondary">'.s("Configurer une première livraison").'</a>';
 
 		} else {
 

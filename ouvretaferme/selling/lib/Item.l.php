@@ -180,7 +180,7 @@ class ItemLib extends ItemCrud {
 
 	}
 
-	public static function getSummaryByDate(\shop\Date $eDate): \Collection {
+	public static function getSummaryByDate(\farm\Farm $eFarm, \shop\Date $eDate): \Collection {
 
 		return Item::model()
 			->select([
@@ -194,7 +194,7 @@ class ItemLib extends ItemCrud {
 				'deliveredAt' => fn() => $eDate['deliveryDate'],
 				'cItemIngredient' => SaleLib::delegateIngredients($eDate['deliveryDate'], 'product')
 			])
-			->whereFarm($eDate['farm'])
+			->whereFarm($eFarm)
 			->whereStatus('IN', [Sale::CONFIRMED, Sale::PREPARED, Sale::DELIVERED])
 			->whereIngredientOf(NULL)
 			->whereShopDate($eDate)

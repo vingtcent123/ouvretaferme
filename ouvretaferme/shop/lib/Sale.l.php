@@ -124,6 +124,11 @@ class SaleLib {
 
 		\selling\Sale::model()->beginTransaction();
 
+		// Création du client sur la ferme à l'origine de la boutique partagée
+		if($eShop->isShared()) {
+			\selling\CustomerLib::getByUserAndFarm($eUser, $eShop['farm'], autoCreate: TRUE, autoCreateType: $eSaleReference['type']);
+		}
+
 		foreach($ccItem as $farm => $cItem) {
 
 			$eFarm = $cFarm[$farm];
@@ -195,7 +200,6 @@ class SaleLib {
 			'type' => $eSaleReference['shopDate']['type'],
 			'preparationStatus' => \selling\Sale::BASKET,
 			'deliveredAt' => $eSaleReference['shopDate']['deliveryDate'],
-			'stats' => ($eSaleReference['shop']['shared'] === FALSE),
 			'shopPoint' => PointLib::getById($eSaleReference['shopPoint'])
 		]);
 

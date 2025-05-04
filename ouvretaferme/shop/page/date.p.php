@@ -151,30 +151,37 @@ new \shop\DatePage()
 	}, validate: [])
 	->doDelete(fn($data) => throw new RedirectAction(\shop\ShopUi::adminUrl($data->e['farm'], $data->e['shop']).'&success=shop:Date::deleted'));
 
-new \shop\DatePage()
-	->applyElement(function($data, \shop\Date $eDate) {
-
-		$eDate['shop'] = \shop\ShopLib::getById($eDate['shop']);
-
-	})
-	->write('doUpdateCatalog', function($data) {
+new Page()
+	->post('doUpdateCatalog', function($data) {
 
 		$newStatus = POST('status', 'bool');
 
 		$data->eCatalog = \shop\CatalogLib::getById(POST('catalog'));
+		$data->eDate = \shop\DateLib::getById(POST('date'), \shop\Date::getSelection() + [
+			'shop' => \shop\ShopElement::getSelection()
+		]);
+
+		$data->eDate['shop']->validateShareRead($data->eCatalog['farm']);
 
 		// On ne vérifie l'existence du catalogue qu'en cas d'ajout à la vente
 		if($newStatus) {
-			$data->eCatalog->validateShop($data->e['shop']);
+			$data->eCatalog->validateShop($data->eDate['shop']);
 		}
 
 		$fw = new FailWatch();
 
-		\shop\DateLib::updateCatalog($data->e, $data->eCatalog, $newStatus);
+		\shop\DateLib::updateCatalog($data->eDate, $data->eCatalog, $newStatus);
 
 		$fw->validate();
 
 		throw new ViewAction($data);
+
+	});
+
+new \shop\DatePage()
+	->applyElement(function($data, \shop\Date $eDate) {
+
+		$eDate['shop'] = \shop\ShopLib::getById($eDate['shop']);
 
 	})
 	->update(function($data) {
@@ -205,7 +212,7 @@ new Page()
 		}
 
 		$data->cSale = \selling\SaleLib::getForLabelsByDate($data->eFarm, $data->e, selectItems: TRUE, selectPoint: TRUE);
-		$data->cItem = \selling\ItemLib::getSummaryByDate($data->e);
+		$data->cItem = \selling\ItemLib::getSummaryByDate($data->eFarm, $data->e);
 
 		throw new ViewAction($data);
 

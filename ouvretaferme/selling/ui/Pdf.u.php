@@ -942,9 +942,10 @@ class PdfUi {
 		$eConfiguration = $eFarm->selling();
 
 		$items = [];
+		$farms = array_count_values($cSale->getColumnCollection('farm')->getIds());
 
 		foreach($cSale as $eSale) {
-			$items = array_merge($items, $this->getSaleLabel($eSale));
+			$items = array_merge($items, $this->getSaleLabel($eSale, $farms));
 		}
 
 		$itemsPerPage = 4;
@@ -1080,7 +1081,7 @@ class PdfUi {
 
 	}
 
-	public function getSaleLabel(\selling\Sale $eSale): array {
+	public function getSaleLabel(\selling\Sale $eSale, array $farms): array {
 
 		$eCustomer = $eSale['customer'];
 
@@ -1115,12 +1116,12 @@ class PdfUi {
 
 		}
 
-		$itemsChunck = array_chunk($itemsList, 15);
-		$pages = count($itemsChunck);
+		$itemsChunk = array_chunk($itemsList, 15);
+		$pages = count($itemsChunk);
 
 		$entries = [];
 
-		foreach($itemsChunck as $position => $items) {
+		foreach($itemsChunk as $position => $items) {
 
 			$showComment = ($eSale['shopComment'] !== NULL and $position === 0);
 
@@ -1133,7 +1134,7 @@ class PdfUi {
 						$entry .= '<span class="pdf-sales-label-comment">&laquo; '.encode($eSale['shopComment']).' &raquo;</span>';
 					}
 
-					if(count($itemsChunck) > 1) {
+					if(count($itemsChunk) > 1) {
 						$entry .= '<span class="pdf-sales-label-page">'.($position + 1).' / '.$pages.'</span>';
 					} else {
 						$entry .= '<span></span>';
@@ -1142,6 +1143,15 @@ class PdfUi {
 				$entry.= '</div>';
 
 				$entry .= '<div class="pdf-sales-label-details '.($position > 0 ? 'pdf-sales-label-details-next' : '').'">';
+
+					if(count($farms) > 1) {
+
+						$entry .= '<div class="pdf-sales-label-detail">';
+							$entry .= '<div class="pdf-sales-label-detail-title">'.s("Producteur").'</div>';
+							$entry .= '<div class="pdf-sales-label-detail-value">'.encode($eSale['farm']['name']).'</div>';
+						$entry .= '</div>';
+
+					}
 
 					if($position === 0) {
 

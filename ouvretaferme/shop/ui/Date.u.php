@@ -715,7 +715,7 @@ class DateUi {
 			if($eShop['shared']) {
 
 				$h .= '<div class="tab-panel" data-tab="farms">';
-					$h .= $this->getFarms($eShop, $eDate, $eShop['cDepartment'], $eShop['ccRange']);
+					$h .= $this->getFarms($eFarm, $eShop, $eDate, $eShop['cDepartment'], $eShop['ccRange']);
 				$h .= '</div>';
 
 			}
@@ -787,7 +787,7 @@ class DateUi {
 		return $h;
 	}
 
-	public function getFarms(Shop $eShop, Date $eDate, \Collection $cDepartment, \Collection $ccRange): string {
+	public function getFarms(\farm\Farm $eFarm, Shop $eShop, Date $eDate, \Collection $cDepartment, \Collection $ccRange): string {
 
 		if($ccRange->empty()) {
 			return '<div class="util-empty">'.s("Aucun producteur n'a associé de catalogue à cette boutique.").'</div>';
@@ -838,7 +838,7 @@ class DateUi {
 
 					foreach($cRange as $eRange) {
 						$h .= '<tr>';
-							$h .= $this->getCatalog($eDate, $eShare, $eRange, $cDepartment);
+							$h .= $this->getCatalog($eFarm, $eDate, $eShare, $eRange, $cDepartment);
 						$h .= '</tr>';
 					}
 
@@ -852,15 +852,18 @@ class DateUi {
 
 	}
 
-	protected function getCatalog(Date $eDate, Share $eShare, Range $eRange, \Collection $cDepartment): string {
+	protected function getCatalog(\farm\Farm $eFarm, Date $eDate, Share $eShare, Range $eRange, \Collection $cDepartment): string {
 
 		$eRange->expects(['id', 'catalog', 'department']);
 
-		$selected = in_array($eRange['catalog']['id'], $eDate['catalogs']);
+		$isFarmSelected = ($eFarm['id'] === $eShare['farm']['id']);
 
 		$h = '<td>';
 			$h .= \farm\FarmUi::getVignette($eShare['farm'], '2rem').'  ';
 			$h .= encode($eShare['farm']['name']);
+			if($isFarmSelected) {
+				$h .= '  <span class="util-badge bg-primary">'.s("Votre ferme").'</span>';
+			}
 		$h .= '</td>';
 		$h .= '<td class="td-border highlight-stick-right">';
 			$h .= '<a href="/shop/catalog:show?id='.$eRange['catalog']['id'].'">'.encode($eRange['catalog']['name']).'</a>';
@@ -878,14 +881,19 @@ class DateUi {
 		}
 
 		$h .= '<td class="td-border highlight-stick-left">';
+
+			$isRangeSelected = in_array($eRange['catalog']['id'], $eDate['catalogs']);
+			$canUpdateRange = ($eDate->canWrite() or $isFarmSelected);
+
 			$h .= \util\TextUi::switch([
 				'id' => 'catalog-switch-'.$eRange['catalog']['id'],
-				'disabled' => $eDate->canWrite() === FALSE,
-				'data-ajax' => $eDate->canWrite() ? '/shop/date:doUpdateCatalog' : NULL,
-				'post-id' => $eDate['id'],
+				'disabled' => $canUpdateRange === FALSE,
+				'data-ajax' => $canUpdateRange ? '/shop/date:doUpdateCatalog' : NULL,
+				'post-date' => $eDate['id'],
 				'post-catalog' => $eRange['catalog']['id'],
-				'post-status' => $selected ? 0 : 1
-			], $selected, s("Activé"), ("Désactivé"));
+				'post-status' => $isRangeSelected ? 0 : 1
+			], $isRangeSelected, s("Activé"), ("Désactivé"));
+
 		$h .= '</td>';
 
 		return $h;
