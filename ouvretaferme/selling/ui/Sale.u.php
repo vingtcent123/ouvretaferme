@@ -386,7 +386,7 @@ class SaleUi {
 									$h .= encode($eSale['customer']->getName());
 								}
 								if($eSale['market']) {
-									$h .= ' <span class="util-badge bg-primary" title="'.s("Le logiciel de caisse est activé pour cette vente").'">'.\Asset::icon('cart4').'</span>';
+									$h .= ' <span class="util-badge bg-secondary" title="'.s("Le logiciel de caisse est activé pour cette vente").'">'.\Asset::icon('cart4').'</span>';
 								}
 								if($eSale['customer']->notEmpty()) {
 									$h .= '<div class="util-annotation">';
@@ -865,7 +865,7 @@ class SaleUi {
 
 				case Sale::CONFIRMED :
 					$h .= $wrapper(
-						$button(Sale::SELLING, s("Vous allez commencer votre marché ! Les quantités des produits que vous avez saisis pour préparer ce marché seront remises à zéro et vous pourrez commencer à enregistrer les commandes des clients. C'est parti ?"))
+						$button(Sale::SELLING, s("Vous allez commencer votre vente avec la caisse virtuelle ! Les quantités des produits que vous avez saisis pour préparer cette vente seront remises à zéro et vous pourrez commencer à enregistrer les commandes des clients. C'est parti ?"))
 					);
 					break;
 
@@ -1256,9 +1256,9 @@ class SaleUi {
 			if($eSale['preparationStatus'] === Sale::CONFIRMED) {
 
 				$h .= '<div class="util-block color-white bg-selling">';
-					$h .= '<h4>'.s("Votre marché est prêt à commencer ?").'</h4>';
-					$h .= '<p>'.s("Commencez la vente pour enregistrer les commandes de vos clients avec la caisse virtuelle. Les quantités des produits que vous avez saisis pour préparer ce marché seront remises à zéro.").'</p>';
-					$h .= '<a data-ajax="/selling/sale:doUpdatePreparationStatus" post-id="'.$eSale['id'].'" post-preparation-status="'.Sale::SELLING.'" class="btn btn-transparent" data-confirm="'.s("C'est parti ?").'">'.s("Commencer la vente").'</a>';
+					$h .= '<h4>'.s("Votre vente est prête à démarrer ?").'</h4>';
+					$h .= '<p>'.s("Vous pouvez commencer à prendre les commandes avec caisse virtuelle !").'<br/>'.s("Les quantités des produits que vous avez saisis pour préparer cette vente seront remises à zéro.").'</p>';
+					$h .= '<a data-ajax="/selling/sale:doUpdatePreparationStatus" post-id="'.$eSale['id'].'" post-preparation-status="'.Sale::SELLING.'" class="btn btn-transparent" data-confirm="'.s("C'est parti ?").'">'.\Asset::icon('cart4').'  '.s("Ouvrir la caisse virtuelle").'</a>';
 				$h .= '</div>';
 
 			} else if($eSale['preparationStatus'] !== Sale::DRAFT) {
@@ -1411,7 +1411,7 @@ class SaleUi {
 			}
 
 			if($eSale->isMarketClosed()) {
-				$primaryList = '<a data-ajax="/selling/sale:doUpdatePreparationStatus" post-id="'.$eSale['id'].'" post-preparation-status="'.Sale::SELLING.'" class="dropdown-item">'.s("Réouvrir le marché").'</a>';
+				$primaryList = '<a data-ajax="/selling/sale:doUpdatePreparationStatus" post-id="'.$eSale['id'].'" post-preparation-status="'.Sale::SELLING.'" class="dropdown-item">'.s("Réouvrir la vente").'</a>';
 			}
 
 		}

@@ -49,7 +49,7 @@ class AlertUi {
 			'Sale::address.check' => s("Nous avons besoin de votre adresse pour vous livrer à domicile !"),
 			'Sale::products.check' => s("Vous ne pouvez pas continuer car votre panier est vide !"),
 			'Sale::preparationStatus.checkOutOfDraft' => s("Il est nécessaire d'indiquer une date de vente pour sortir la vente de l'état de brouillon."),
-			'Sale::preparationStatus.market' => s("Vous ne pouvez pas changer l'état de ce marché car il y a des ventes en cours."),
+			'Sale::preparationStatus.market' => s("Vous ne pouvez pas changer l'état de cette vente car il y a des commandes en cours."),
 			'Sale::customer.market' => s("Le logiciel de caisse n'est disponible que pour les points de vente aux particuliers."),
 			'Sale::deliveredAt.check' => s("La date de vente est obligatoire."),
 			'Sale::deliveredAt.composition' => s("Vous avez déjà ajouté une composition pour cette même date."),
@@ -58,7 +58,7 @@ class AlertUi {
 			'Sale::shippingIncludedVat.check' => s("Les frais de livraison doivent être supérieurs à zéro ou laissés vide."),
 			'Sale::shippingExcludedVat.check' => s("Les frais de livraison doivent être supérieurs à zéro ou laissés vide."),
 			'Sale::downloadEmpty' => s("Sélectionnez au moins une vente pour générer des étiquettes"),
-			'Sale::canNotSell' => s("L'interface de vente n'est plus accessible pour ce marché !"),
+			'Sale::canNotSell' => s("La caisse virtuelle n'est plus accessible pour cette vente !"),
 			'Sale::orderFormValidUntil.check' => s("La date d'échéance doit être au plus tôt la date d'aujourd'hui."),
 			'Sale::sales.check' => s("Merci de sélectionner au moins une vente"),
 			'Sale::from.check' => s("Vous n'avez pas indiqué l'origine de la vente"),
@@ -86,8 +86,8 @@ class AlertUi {
 			'Item::number.division' => s("Lorsque le prix unitaire est verrouillée, la quantité vendue ne peut pas être égale à zéro !"),
 			'Item::unitPrice.division' => s("Lorsque la quantité vendue est verrouillée, le prix unitaire ne peut pas être égal à zéro !"),
 			'Item::createEmpty' => s("Ajoutez au moins un article à la vente !"),
-			'Item::createDuplicateNameMarket' => fn($name) => s("Vous avez déjà ajouté un article sans référence de produit portant le nom {value} à votre marché !", $name),
-			'Item::createDuplicateProductMarket' => fn($name) => s("Vous avez déjà ajouté le produit {value} à votre marché !", $name),
+			'Item::createDuplicateNameMarket' => fn($name) => s("Vous avez déjà ajouté un article sans référence de produit portant le nom {value} à votre vente !", $name),
+			'Item::createDuplicateProductMarket' => fn($name) => s("Vous avez déjà ajouté le produit {value} à votre vente !", $name),
 			'Item::canNotDelete' => s("Impossible de supprimer cet article"),
 
 			'Item::createCollectionError' => s("Il y a des erreurs à vérifier sur un ou plusieurs produits que vous souhaitez ajouter à la vente."),
@@ -111,7 +111,7 @@ class AlertUi {
 			'Customer::optInUpdated' => s("Vos préférences de communication par e-mail ont bien été mises à jour."),
 
 			'Market::pricesUpdated' => s("Les nouveaux prix des produits proposés à la vente ont bien été enregistrés."),
-			'Market::closed' => s("Le marché a bien été clôturé !"),
+			'Market::closed' => s("La vente a bien été clôturée !"),
 
 			'Category::created' => s("La catégorie a bien été créée."),
 			'Category::updated' => s("La catégorie a bien été mise à jour."),
