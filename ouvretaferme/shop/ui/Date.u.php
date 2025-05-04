@@ -330,15 +330,30 @@ class DateUi {
 				$h .= '</div>';
 
 			} else {
-				$h .= $form->dynamicGroup($e, 'catalogs*');
+
+				if($e['cCatalog']->empty()) {
+					$h .= $form->group(
+						self::p('catalogs')->label,
+						'<div class="util-block-help">'.s("Vos producteurs n'ont pas encore connecté de catalogue à cette boutique. Vous devez d'abord battre le rappel des troupes avant de créer une première livraison !").'</div>'
+					);
+				} else {
+					$h .= $form->dynamicGroup($e, 'catalogs*');
+				}
 			}
 
 			$h .= '<br/>';
 
-			$h .= $form->group(
-				content: '<p class="util-danger">'.s("Veuillez corriger les erreurs en rouge pour continuer.").'</p>'.
-				$form->submit(s("Créer la vente"))
-			);
+			if(
+				$e['shop']->isPersonal() or
+				$e['cCatalog']->notEmpty()
+			) {
+
+				$h .= $form->group(
+					content: '<p class="util-danger">'.s("Veuillez corriger les erreurs en rouge pour continuer.").'</p>'.
+					$form->submit(s("Ajouter la livraison"))
+				);
+
+			}
 
 		$h .= $form->close();
 

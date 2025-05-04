@@ -302,19 +302,31 @@ class ShopManageUi {
 
 		$h = '';
 		$h .= '<div class="util-block-help">';
-			$h .= '<h4>'.s("Ajouter une première livraison").'</h4>';
 
 		if($eShop['shared']) {
 
-			$h .= '<ul>';
-				$h .= '<li>'.s("Vous avez invité des producteurs sur la boutique ?").'</li>';
-				$h .= '<li>'.s("La configuration de la boutique est terminée ?").'</li>';
-			$h .= '</ul>';
-			$h .= '<p>'.s("Alors c'est le moment de configurer une première livraison à destination de vos clients !").'</p>';
-			$h .= '<a href="/shop/date:create?shop='.$eShop['id'].'&farm='.$eFarm['id'].'" class="btn btn-secondary">'.s("Configurer une première livraison").'</a>';
+			if($eShop['cShare']->empty()) {
+
+				$h .= '<h4>'.s("Il est trop tôt pour ajouter une première livraison !").'</h4>';
+
+				$h .= '<p>'.s("Vous devriez plutôt inviter des premiers producteurs et les inciter à associer un ou plusieurs de ses catalogues à la boutique.").'</p>';
+				$h .= '<a href="/shop/:invite?id='.$eShop['id'].'" class="btn btn-secondary">'.s("Envoyer des invitations").'</a>';
+
+			} else {
+
+				$h .= '<h4>'.s("Ajouter une première livraison").'</h4>';
+				$h .= '<ul>';
+					$h .= '<li>'.s("Vous avez invité des producteurs sur la boutique ?").'</li>';
+					$h .= '<li>'.s("La configuration de la boutique est terminée ?").'</li>';
+				$h .= '</ul>';
+				$h .= '<p>'.s("Alors c'est le moment de configurer une première livraison à destination de vos clients !").'</p>';
+				$h .= '<a href="/shop/date:create?shop='.$eShop['id'].'&farm='.$eFarm['id'].'" class="btn btn-secondary">'.s("Configurer une première livraison").'</a>';
+
+			}
 
 		} else {
 
+			$h .= '<h4>'.s("Ajouter une première livraison").'</h4>';
 			$h .= '<p>'.s("Vous êtes satisfait de la configuration de votre boutique ?<br/>Alors c'est le moment d'ajouter une première vente en choisissant une date et la liste des produits que vous avez en stock et que vous souhaitez proposer à vos clients !").'</p>';
 			$h .= '<a href="/shop/date:create?shop='.$eShop['id'].'&farm='.$eFarm['id'].'" class="btn btn-secondary">'.s("Ajouter une première livraison").'</a>';
 			$h .= '<br/><br/>';
