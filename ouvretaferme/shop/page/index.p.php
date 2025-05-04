@@ -77,7 +77,7 @@ new shop\ShopPage()
 
 		return new \shop\Shop([
 			'farm' => $data->eFarm,
-			'shared' => LIME_ENV === 'dev' ? INPUT('shared', '?bool') : FALSE
+			'shared' => INPUT('shared', '?bool')
 		]);
 
 	})

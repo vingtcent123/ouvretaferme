@@ -865,7 +865,7 @@ class SaleUi {
 
 				case Sale::CONFIRMED :
 					$h .= $wrapper(
-						$button(Sale::SELLING, s("Vous allez commencer votre vente avec la caisse virtuelle ! Les quantités des produits que vous avez saisis pour préparer cette vente seront remises à zéro et vous pourrez commencer à enregistrer les commandes des clients. C'est parti ?"))
+						$button(Sale::SELLING, s("Vous allez commencer votre vente avec la caisse virtuelle ! Les quantités des produits que vous avez saisies pour préparer cette vente seront remises à zéro et vous pourrez commencer à enregistrer les commandes des clients. C'est parti ?"))
 					);
 					break;
 
@@ -1257,7 +1257,7 @@ class SaleUi {
 
 				$h .= '<div class="util-block color-white bg-selling">';
 					$h .= '<h4>'.s("Votre vente est prête à démarrer ?").'</h4>';
-					$h .= '<p>'.s("Vous pouvez commencer à prendre les commandes avec caisse virtuelle !").'<br/>'.s("Les quantités des produits que vous avez saisis pour préparer cette vente seront remises à zéro.").'</p>';
+					$h .= '<p>'.s("Vous pouvez commencer à prendre les commandes avec caisse virtuelle !").'<br/>'.s("Les quantités des produits que vous avez saisies pour préparer cette vente seront remises à zéro.").'</p>';
 					$h .= '<a data-ajax="/selling/sale:doUpdatePreparationStatus" post-id="'.$eSale['id'].'" post-preparation-status="'.Sale::SELLING.'" class="btn btn-transparent" data-confirm="'.s("C'est parti ?").'">'.\Asset::icon('cart4').'  '.s("Ouvrir la caisse virtuelle").'</a>';
 				$h .= '</div>';
 
