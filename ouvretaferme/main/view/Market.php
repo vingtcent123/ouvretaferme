@@ -146,19 +146,19 @@ class MarketTemplate extends BaseTemplate {
 
 		if($this->data->e['preparationStatus'] === \selling\Sale::DELIVERED) {
 
-			$h .= '<span class="market-top-close market-top-close-disabled" title="'.s("Ce marché est clôturé").'">';
+			$h .= '<span class="market-top-close market-top-close-disabled" title="'.s("Cette vente est clôturée").'">';
 				$h .= Asset::icon('check');
 			$h .= '</span>';
 
 		} else if($this->data->ccSale->notEmpty() and $this->data->ccSale[\selling\Sale::DRAFT]->notEmpty()) {
 
-			$h .= '<a class="market-top-close market-top-close-disabled" title="'.s("Clôturer ce marché").'" data-alert="'.s("Le marché pourra être clôturé lorsqu'il n'y aura plus de vente en cours !").'">';
+			$h .= '<a class="market-top-close market-top-close-disabled" title="'.s("Clôturer cette vente").'" data-alert="'.s("La vente pourra être clôturée lorsqu'il n'y aura plus de vente en cours !").'">';
 				$h .= Asset::icon('check-circle-fill');
 			$h .= '</a>';
 
 		} else {
 
-			$h .= '<a data-ajax="/selling/market:doClose" post-id="'.$eSale['id'].'" class="market-top-close disabled" title="'.s("Clôturer ce marché").'" data-confirm="'.s("Voulez-vous vraiment clôturer ce marché ? Vous ne pourrez plus saisir de nouvelles ventes.").'">';
+			$h .= '<a data-ajax="/selling/market:doClose" post-id="'.$eSale['id'].'" class="market-top-close disabled" title="'.s("Clôturer cette vente").'" data-confirm="'.s("Voulez-vous vraiment clôturer cette vente ? Vous ne pourrez plus saisir de nouvelles commandes.").'">';
 				$h .= Asset::icon('check-circle-fill');
 			$h .= '</a>';
 

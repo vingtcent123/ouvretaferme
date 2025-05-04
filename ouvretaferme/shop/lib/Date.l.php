@@ -386,9 +386,8 @@ class DateLib extends DateCrud {
 			->select(Date::getSelection() + [
 				'shop' => ['shared']
 			])
-			->join(Shop::model()->select('shared'), 'm1.shop = m2.id')
-			->where('m2.shared = 0 and m1.deliveryDate < CURRENT_DATE')
-			->where('m1.status', '!=', Date::CLOSED)
+			->whereDeliveryDate('<', new \Sql('CURRENT_DATE'))
+			->whereStatus('!=', Date::CLOSED)
 			->getCollection();
 
 		foreach($cDate as $eDate) {
@@ -404,6 +403,7 @@ class DateLib extends DateCrud {
 				if($affected > 0) {
 
 					$cSale = \selling\Sale::model()
+						->select(\selling\Sale::getSelection())
 						->whereShopDate($eDate)
 						->wherePreparationStatus(\selling\Sale::BASKET)
 						->getCollection();

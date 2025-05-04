@@ -460,7 +460,14 @@ class SaleLib {
 			throw new \Exception('Invalid method');
 		}
 
-		$eSale->expects(['farm', 'shopDate', 'shop', 'customer']);
+		$eSale->expects([
+			'farm',
+			'shopDate',
+			'shop' => [
+				'farm' => ['name']
+			],
+			'customer'
+		]);
 
 		$eSale['oldPreparationStatus'] = $eSale['preparationStatus'];
 		$eSale['preparationStatus'] = \selling\Sale::CONFIRMED;
@@ -494,8 +501,10 @@ class SaleLib {
 				self::notify('saleCanceled', $eSale, $group);
 			}
 
-			$group = TRUE;
-			self::notify('saleCanceled', $eSale, $group);
+			if($eShop->isShared()) {
+				$group = TRUE;
+				self::notify('saleCanceled', $eSale, $group);
+			}
 
 		\selling\Sale::model()->commit();
 
@@ -524,7 +533,7 @@ class SaleLib {
 
 				\selling\HistoryLib::createBySale($eSale, 'shop-payment-failed', 'Stripe event id #'.$object['id'].' (event type '.$event['type'].')');
 
-				self::notify('saleFailed', $eSale);
+				self::notify('saleFailed', $eSale, $eSale['customer']['user']);
 
 			}
 
@@ -559,7 +568,7 @@ class SaleLib {
 
 	}
 
-	private static function completePaid(\selling\Sale $eSale, string $eventId): void {
+	public static function completePaid(\selling\Sale $eSale, string $eventId): void {
 
 		$eSale['oldPreparationStatus'] = $eSale['preparationStatus'];
 		$eSale['preparationStatus'] = \selling\Sale::CONFIRMED;
@@ -571,7 +580,7 @@ class SaleLib {
 
 		$cItem = \selling\SaleLib::getItems($eSale);
 
-		self::notify('salePaid', $eSale, $cItem);
+		self::notify('salePaid', $eSale, $eSale['customer']['user'], $cItem);
 
 	}
 

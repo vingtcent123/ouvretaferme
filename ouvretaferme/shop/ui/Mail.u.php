@@ -173,7 +173,7 @@ L'équipe {siteName}", $arguments);
 
 		if($eSale['shop']->isPersonal()) {
 
-		$title = s("Commande n°{id} annulée");
+		$title = s("Commande n°{id} annulée", ['id' => $eSale['document']]);
 
 		$content = s("Bonjour,
 
@@ -257,8 +257,6 @@ Merci et à bientôt,
 		if($sales['number'] === 0) {
 
 			$text = s("Vous n'avez pas reçu de commande cette fois-ci.
-
-Si vous avez besoin d'aide pour configurer ou déployer votre boutique, n'hésitez pas à vous rendre sur le salon de discussion Discord accessible depuis {siteName}.
 
 Bonne réception,
 {siteName}");

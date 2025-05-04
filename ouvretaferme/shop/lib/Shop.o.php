@@ -11,7 +11,7 @@ class ShopObserverLib {
 
 		if(
 			$eSale['shop']->isPersonal() or
-			$group
+			($eSale['shop']->isShared() and $group)
 		) {
 
 			$eUser = \user\UserLib::getById($eUser);
@@ -45,7 +45,7 @@ class ShopObserverLib {
 
 		if(
 			$eSale['shop']->isPersonal() or
-			$group
+			($eSale['shop']->isShared() and $group)
 		) {
 
 			$eUser = \user\UserLib::getById($eUser);
@@ -71,16 +71,19 @@ class ShopObserverLib {
 
 	}
 
-	public static function salePaid(\selling\Sale $eSale, \Collection $cItem): void {
+	public static function salePaid(\selling\Sale $eSale, \user\User $eUser, \Collection $cItem): void {
 
 		$eSale->expects([
-			'shop' => ['email'],
+			'shop' => [
+				'email',
+				'farm' => ['name']
+			],
 			'farm' => ['name'],
 			'customer' => ['user'],
 			'shopPoint'
 		]);
 
-		$eUser = \user\UserLib::getById($eSale['customer']['user']);
+		$eUser = \user\UserLib::getById($eUser);
 		$eSale['shopPoint'] = PointLib::getById($eSale['shopPoint']);
 
 		self::newSend($eSale)
@@ -99,15 +102,18 @@ class ShopObserverLib {
 
 	}
 
-	public static function saleFailed(\selling\Sale $eSale): void {
+	public static function saleFailed(\selling\Sale $eSale, \user\User $eUser): void {
 
 		$eSale->expects([
-			'shop' => ['email'],
+			'shop' => [
+				'email',
+				'farm' => ['name']
+			],
 			'farm' => ['name'],
 			'customer' => ['user']
 		]);
 
-		$eUser = \user\UserLib::getById($eSale['customer']['user']);
+		$eUser = \user\UserLib::getById($eUser);
 
 		switch($eSale['paymentMethod']) {
 
@@ -134,7 +140,7 @@ class ShopObserverLib {
 
 		if(
 			$eSale['shop']->isPersonal() or
-			$group
+			($eSale['shop']->isShared() and $group)
 		) {
 
 			self::newSend($eSale)
@@ -176,15 +182,12 @@ class ShopObserverLib {
 
 	private static function newSend(\selling\Sale $eSale): \mail\MailLib {
 
-		$eSale->expects([
-			'shop' => [
-				'farm' => ['name']
-			]
-		]);
+		$eShop = $eSale['shop'];
+		$eFarm = $eSale['shop']['farm'];
 
 		return new \mail\MailLib()
-			->setReplyTo(self::getReplyTo($eSale))
-			->setFromName($eSale['shop']['farm']['name']);
+			->setReplyTo(self::getReplyTo($eFarm, $eShop))
+			->setFromName($eFarm['name']);
 
 	}
 
@@ -203,16 +206,14 @@ class ShopObserverLib {
 
 	}
 
-	private static function getReplyTo(\selling\Sale $eSale): ?string {
+	private static function getReplyTo(\farm\Farm $eFarm, Shop $eShop): ?string {
 
-		$eSale->expects([
-			'shop' => ['shared', 'email'],
-		]);
+		$eShop->expects(['shared', 'email']);
 
-		if($eSale['shop']['shared']) {
-			return $eSale['shop']['email'];
+		if($eShop['shared']) {
+			return $eShop['email'];
 		} else {
-			return $eSale['shop']['email'] ?? $eSale['farm']->selling()['legalEmail'];
+			return $eShop['email'] ?? $eFarm->selling()['legalEmail'];
 		}
 
 	}

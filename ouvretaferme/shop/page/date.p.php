@@ -98,9 +98,13 @@ new \shop\DatePage()
 		// Si c'est une copie : récupérer également la liste des produits de la date en question
 		$data->eDateBase = \shop\DateLib::getById(GET('date'));
 
+
 		if($data->eDateBase->notEmpty()) {
-			$data->eDateBase->validate('canRead');
+
+			$data->eDateBase->validateProperty('shop', $data->eShop);
+
 			$data->eDateBase['cProduct'] = \shop\ProductLib::getForCopy($data->eShop, $data->eDateBase);
+
 		}
 
 

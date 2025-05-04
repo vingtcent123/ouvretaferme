@@ -76,31 +76,6 @@ class OrderUi {
 
 	}
 
-	public function getPrivate(\Collection $cCustomer): string {
-
-		$h = '<div class="order-private-grid">';
-
-		foreach($cCustomer as $eCustomer) {
-
-			if($eCustomer['farm']['url']) {
-				$h .= '<a href="'.encode($eCustomer['farm']['url']).'" class="order-private-item" target="_blank">';
-			} else {
-				$h .= '<div class="order-private-item">';
-			}
-
-				$h .= \farm\FarmUi::getVignette($eCustomer['farm'], '3rem').' ';
-				$h .= encode($eCustomer['farm']['name']);
-
-			$h .= $eCustomer['farm']['url'] ? '</a>' : '</div>';
-
-		}
-
-		$h .= '</div>';
-
-		return $h;
-
-	}
-
 	public function getSales(\Collection $cSale, string $type): string {
 
 		$h = '<div class="stick-xs">';

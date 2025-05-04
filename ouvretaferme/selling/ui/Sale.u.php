@@ -385,6 +385,9 @@ class SaleUi {
 								} else {
 									$h .= encode($eSale['customer']->getName());
 								}
+								if($eSale['market']) {
+									$h .= ' <span class="util-badge bg-primary" title="'.s("Le logiciel de caisse est activé pour cette vente").'">'.\Asset::icon('cart4').'</span>';
+								}
 								if($eSale['customer']->notEmpty()) {
 									$h .= '<div class="util-annotation">';
 										$h .= CustomerUi::getCategory($eSale['customer']);
@@ -431,9 +434,7 @@ class SaleUi {
 										$h .= '<a href="'.SaleUi::url($eSale['marketParent']).'">'.encode($eSale['marketParent']['customer']->getName()).'</a>';;
 									} else if($eSale['market']) {
 										if($eSale['marketSales'] > 0) {
-											$h .= \Asset::icon('cart4').' '.p("Marché à {value} vente", "Marché à {value} ventes", $eSale['marketSales']);
-										} else {
-											$h .= \Asset::icon('cart4').' '.s("Marché");
+											$h .= \Asset::icon('cart4').' '.p("{value} vente", "{value} ventes", $eSale['marketSales']);
 										}
 									}
 								$h .= '</div>';

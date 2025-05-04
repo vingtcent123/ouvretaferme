@@ -62,10 +62,6 @@ new AdaptativeView('logged', function($data, MainTemplate $t) {
 
 		$t->header .= '<div class="util-info">'.s("Vous êtes connecté sur l'espace client qui vous relie à tous les producteurs auxquels vous avez l'habitude de commander sur {value}.", '<a href="'.Lime::getUrl().'">'.s("{siteName}").'</a>').'</div>';
 
-		if($data->cCustomerPrivate->notEmpty()) {
-			$t->header .= new \selling\OrderUi()->getPrivate($data->cCustomerPrivate);
-		}
-
 	}
 
 	if(Privilege::can('farm\access')) {

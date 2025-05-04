@@ -438,6 +438,8 @@ new Page(function($data) {
 
 		$data->eSaleReference['cItem'] = $data->cItemExisting;
 
+		$data->eSaleReference['shop']['farm'] = $data->eSaleReference['farm'];
+
 		try {
 			$url = \shop\SaleLib::createPayment($data->payment, $data->eSaleReference);
 		} catch(Exception $e) {

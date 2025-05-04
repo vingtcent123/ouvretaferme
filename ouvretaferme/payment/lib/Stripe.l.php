@@ -52,6 +52,7 @@ class StripeLib {
 	public static function webhookPaymentIntent(StripeFarm $eStripeFarm, array $event): void {
 
 		$eSale = self::getSaleFromPaymentIntent($eStripeFarm, $event);
+		$eSale['shop']['farm'] = $eSale['farm']; // Uniquement sur les boutiques personnelles
 
 		if($eSale->empty()) {
 			return;
