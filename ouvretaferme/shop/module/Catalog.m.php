@@ -44,6 +44,7 @@ class CatalogModel extends \ModuleModel {
 		$this->properties = array_merge($this->properties, [
 			'id' => ['serial32', 'cast' => 'int'],
 			'name' => ['text8', 'min' => 1, 'max' => 50, 'null' => TRUE, 'cast' => 'string'],
+			'comment' => ['text24', 'null' => TRUE, 'cast' => 'string'],
 			'farm' => ['element32', 'farm\Farm', 'cast' => 'element'],
 			'type' => ['enum', [\shop\Catalog::PRIVATE, \shop\Catalog::PRO], 'cast' => 'enum'],
 			'products' => ['int16', 'min' => 0, 'max' => NULL, 'cast' => 'int'],
@@ -51,7 +52,7 @@ class CatalogModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'name', 'farm', 'type', 'products', 'status'
+			'id', 'name', 'comment', 'farm', 'type', 'products', 'status'
 		]);
 
 		$this->propertiesToModule += [
@@ -112,6 +113,10 @@ class CatalogModel extends \ModuleModel {
 
 	public function whereName(...$data): CatalogModel {
 		return $this->where('name', ...$data);
+	}
+
+	public function whereComment(...$data): CatalogModel {
+		return $this->where('comment', ...$data);
 	}
 
 	public function whereFarm(...$data): CatalogModel {

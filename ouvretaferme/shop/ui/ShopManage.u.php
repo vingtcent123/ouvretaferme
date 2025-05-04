@@ -302,7 +302,7 @@ class ShopManageUi {
 
 		$h = '';
 		$h .= '<div class="util-block-help">';
-			$h .= '<h4>'.s("Ajouter une première date de livraison").'</h4>';
+			$h .= '<h4>'.s("Ajouter une première livraison").'</h4>';
 
 		if($eShop['shared']) {
 
@@ -311,12 +311,12 @@ class ShopManageUi {
 				$h .= '<li>'.s("La configuration de la boutique est terminée ?").'</li>';
 			$h .= '</ul>';
 			$h .= '<p>'.s("Alors c'est le moment de configurer une première vente à destination de vos clients !").'</p>';
-			$h .= '<a href="/shop/date:create?shop='.$eShop['id'].'&farm='.$eFarm['id'].'" class="btn btn-secondary">'.s("Ajouter une première date de livraison").'</a>';
+			$h .= '<a href="/shop/date:create?shop='.$eShop['id'].'&farm='.$eFarm['id'].'" class="btn btn-secondary">'.s("Ajouter une première livraison").'</a>';
 
 		} else {
 
 			$h .= '<p>'.s("Vous êtes satisfait de la configuration de votre boutique ?<br/>Alors c'est le moment d'ajouter une première vente en choisissant une date et la liste des produits que vous avez en stock et que vous souhaitez proposer à vos clients !").'</p>';
-			$h .= '<a href="/shop/date:create?shop='.$eShop['id'].'&farm='.$eFarm['id'].'" class="btn btn-secondary">'.s("Ajouter une première date de livraison").'</a>';
+			$h .= '<a href="/shop/date:create?shop='.$eShop['id'].'&farm='.$eFarm['id'].'" class="btn btn-secondary">'.s("Ajouter une première livraison").'</a>';
 			$h .= '<br/><br/>';
 			$h .= '<p>'.s("Vous voulez continuer à personnaliser l'expérience de vos clients ?<br/>Activez par exemple le paiement en ligne ou personnalisez les e-mails envoyés automatiquement à vos clients lors de leurs commandes.").'</p>';
 			$h .= '<a href="/shop/configuration:update?id='.$eShop['id'].'" class="btn btn-outline-secondary">'.s("Continuer à personnaliser la boutique").'</a>';
@@ -344,9 +344,9 @@ class ShopManageUi {
 			$h .= '<div>';
 				if($eShop->canWrite()) {
 					if($cDate->empty()) {
-						$h .= '<a href="/shop/date:create?shop='.$eShop['id'].'&farm='.$eFarm['id'].'" class="btn btn-primary">'.\Asset::icon('plus-circle').' '.s("Nouvelle date de livraison").'</a>';
+						$h .= '<a href="/shop/date:create?shop='.$eShop['id'].'&farm='.$eFarm['id'].'" class="btn btn-primary">'.\Asset::icon('plus-circle').' '.s("Nouvelle livraison").'</a>';
 					} else {
-						$h .= '<a data-dropdown="bottom-end" class="btn btn-primary dropdown-toggle">'.\Asset::icon('plus-circle').' '.s("Nouvelle date de livraison").'</a>';
+						$h .= '<a data-dropdown="bottom-end" class="btn btn-primary dropdown-toggle">'.\Asset::icon('plus-circle').' '.s("Nouvelle livraison").'</a>';
 						$h .= '<div class="dropdown-list">';
 							$h .= '<a href="/shop/date:create?shop='.$eShop['id'].'&farm='.$eFarm['id'].'" class="dropdown-item">'.s("Créer une livraison de zéro").'</a>';
 							$h .= '<div class="dropdown-divider"></div>';

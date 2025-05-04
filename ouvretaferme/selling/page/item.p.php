@@ -125,7 +125,7 @@ new Page()
 			$ids = GET('ids', 'array');
 
 			$data->date = NULL;
-			$data->cSale = \selling\SaleLib::getByIds($ids, index: 'id')->validateProperty('farm', $data->eFarm);
+			$data->cSale = \selling\SaleLib::getByIds($ids, index: 'id')->validate('canRead');
 
 		} else {
 			throw new NotExpectedAction('Invalid parameters');

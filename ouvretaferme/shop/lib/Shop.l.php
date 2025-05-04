@@ -154,7 +154,10 @@ class ShopLib extends ShopCrud {
 		try {
 
 			if($e['shared']) {
+
 				$e['sharedGroup'] = Shop::PRODUCT;
+				$e['hasPayment'] = FALSE;
+				$e['paymentOffline'] = FALSE;
 			}
 
 			Shop::model()->insert($e);

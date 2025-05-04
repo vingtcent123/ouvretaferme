@@ -60,12 +60,9 @@ class ShareUi {
 								$h .= '<b>'.$eShare['position'].'.</b>';
 							$h .= '</td>';
 
-							$h .= '<td class="td-min-content">';
-								$h .= \farm\FarmUi::getVignette($eShare['farm'], '3rem');
-							$h .= '</td>';
-
 							$h .= '<td>';
-								$h .= encode($eShare['farm']['name']);
+								$h .= \farm\FarmUi::getVignette($eShare['farm'], '3rem');
+								$h .= '<span class="font-xl ml-1">'.encode($eShare['farm']['name']).'</span>';
 								if($eShare['label'] !== NULL) {
 									$h .= '  <small class="color-muted">'.$eShare->quick('label', ($eShare['label'] === NULL) ? '-' : encode($eShare['label'])).'</small>';
 								}
@@ -93,16 +90,21 @@ class ShareUi {
 
 									$h .= '<a class="btn btn-outline-secondary dropdown-toggle" data-dropdown="bottom-end">'.\Asset::icon('gear-fill').'</a>';
 									$h .= '<div class="dropdown-list bg-primary">';
-										$h .= '<a href="/shop/share:update?id='.$eShare['id'].'" class="dropdown-item">'.s("Configurer le producteur").'</a>';
+										$h .= '<a href="/shop/share:update?id='.$eShare['id'].'" class="dropdown-item">'.s("Paramétrer le producteur").'</a>';
 										$h .= '<div class="dropdown-divider"></div>';
 										$h .= '<a data-ajax="/shop/share:doDelete" post-id="'.$eShare['id'].'" data-confirm="'.s("Le producteur n'aura plus accès à la boutique et les clients ne pourront plus commander ses produits. Voulez-vous continuer ?").'" class="dropdown-item">'.s("Retirer le producteur de la boutique").'</a>';
 									$h .= '</div>';
 
 								} else {
 
-									if($eShare->canDelete()) {
+									if($eShare->isSelf()) {
 
-										$h .= '<a data-ajax="/shop/share:doDelete" post-id="'.$eShare['id'].'" data-confirm="'.s("Voulez-vous réellement quitter cette boutique collective ?").'" class="btn btn-outline-secondary" title="'.s("Quitter cette boutique collective").'">'.\Asset::icon('box-arrow-right').'</a>';
+										$h .= '<a class="btn btn-outline-secondary dropdown-toggle" data-dropdown="bottom-end">'.\Asset::icon('gear-fill').'</a>';
+										$h .= '<div class="dropdown-list bg-primary">';
+											$h .= '<a href="/shop/share:update?id='.$eShare['id'].'" class="dropdown-item">'.s("Paramétrer la boutique").'</a>';
+											$h .= '<div class="dropdown-divider"></div>';
+											$h .= '<a data-ajax="/shop/share:doDelete" post-id="'.$eShare['id'].'" data-confirm="'.s("Voulez-vous réellement quitter cette boutique collective ?").'" class="dropdown-item">'.s("Quitter cette boutique").'</a>';
+										$h .= '</div>';
 
 									}
 
@@ -239,7 +241,12 @@ class ShareUi {
 		$h .= $form->openAjax('/shop/share:doUpdate');
 
 		$h .= $form->hidden('id', $eShare['id']);
-		$h .= $form->dynamicGroup($eShare, 'label');
+
+		if($eShare->isSelf()) {
+			$h .= $form->dynamicGroup($eShare, 'paymentMethod');
+		} else {
+			$h .= $form->dynamicGroup($eShare, 'label');
+		}
 
 		$h .= $form->group(
 			content: $form->submit(s("Modifier"))
@@ -249,7 +256,7 @@ class ShareUi {
 
 		return new \Panel(
 			id: 'panel-share-update',
-			title: s("Configurer le producteur"),
+			title: $eShare->isSelf() ? s("Paramétrer la boutique") : s("Paramétrer le producteur"),
 			body: $h
 		);
 	}
@@ -258,6 +265,7 @@ class ShareUi {
 
 		$d = Share::model()->describer($property, [
 			'label' => s("Activité"),
+			'paymentMethod' => s("Moyen de paiement"),
 		]);
 
 		switch($property) {
@@ -265,6 +273,14 @@ class ShareUi {
 			case 'label' ;
 				$d->placeholder = s("Exemple : Maraîcher, Arboricultrice...");
 				$d->labelAfter = \util\FormUi::info(s("Si elle est défini, l'activité de ce producteur sera indiquée aux clients sur la boutique"));
+				break;
+
+			case 'paymentMethod' ;
+				$d->values = [
+					Share::TRANSFER => s("Virement bancaire"),
+				];
+				$d->placeholder = s("Ne pas renseigner de moyen de paiement");
+				$d->labelAfter = \util\FormUi::info(s("Vous pouvez choisir un moyen de paiement qui sera appliqué aux ventes que vous réaliserez dans cette boutique."));
 				break;
 
 		}

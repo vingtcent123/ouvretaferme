@@ -16,13 +16,12 @@ new \farm\FarmPage()
 			$data->eShop['cDepartment'] = \shop\DepartmentLib::getByShop($data->eShop);
 
 			if(get_exists('farm')) {
-
 				$eShareSelected = $data->eShop['cShare'][GET('farm', 'int')] ?? new \shop\Share();
-
-				$data->eShop['eFarmSelected'] = $eShareSelected->empty() ? new \farm\Farm() : $eShareSelected['farm'];
 			} else {
-				$data->eShop['eFarmSelected'] = new \farm\Farm();
+				$eShareSelected = $data->eShop['cShare'][$data->e['id']] ?? new \shop\Share();
 			}
+
+			$data->eShop['eFarmSelected'] = $eShareSelected->empty() ? new \farm\Farm() : $eShareSelected['farm'];
 
 		} else {
 			$data->eShop['eFarmSelected'] = new \farm\Farm();
@@ -131,18 +130,21 @@ new \shop\DatePage()
 	})
 	->read('downloadSales', function($data) {
 
-		$data->cSale = \selling\SaleLib::getForLabelsByDate($data->e);
+		$data->eFarm = \farm\FarmLib::getById(INPUT('farm'))->validate('canSelling');
+		$data->eShop = \shop\ShopLib::getById($data->e['shop'])->validateShareRead($data->eFarm);
+
+		$data->cSale = \selling\SaleLib::getForLabelsByDate($data->eFarm, $data->e);
 
 		if($data->cSale->empty()) {
 			throw new NotExpectedAction('No sale');
 		}
 
-		$content = \selling\PdfLib::build('/shop/date:getSales?id='.$data->e['id']);
+		$content = \selling\PdfLib::build('/shop/date:getSales?id='.$data->e['id'].'&farm='.$data->eFarm['id']);
 		$filename = 'sales-'.$data->e['id'].'.pdf';
 
 		throw new PdfAction($content, $filename);
 
-	})
+	}, validate: [])
 	->doDelete(fn($data) => throw new RedirectAction(\shop\ShopUi::adminUrl($data->e['farm'], $data->e['shop']).'&success=shop:Date::deleted'));
 
 new \shop\DatePage()
@@ -186,7 +188,19 @@ new Page()
 		$data->e = \shop\DateLib::getById(GET('id'))->validate('canRemote');
 		$data->e['shop'] = \shop\ShopLib::getById($data->e['shop']);
 
-		$data->cSale = \selling\SaleLib::getForLabelsByDate($data->e, selectItems: TRUE, selectPoint: TRUE);
+		if($data->e['shop']->isPersonal()) {
+			$data->eFarm = $data->e['farm'];
+		} else {
+
+			$data->eFarm = \farm\FarmLib::getById(INPUT('farm'));
+
+			if(\shop\ShareLib::match($data->e['shop'], $data->eFarm) === FALSE) {
+				throw new NotExpectedAction('Invalid match');
+			}
+
+		}
+
+		$data->cSale = \selling\SaleLib::getForLabelsByDate($data->eFarm, $data->e, selectItems: TRUE, selectPoint: TRUE);
 		$data->cItem = \selling\ItemLib::getSummaryByDate($data->e);
 
 		throw new ViewAction($data);

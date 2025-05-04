@@ -124,12 +124,12 @@ class PdfLib extends PdfCrud {
 		switch($type) {
 
 			case Pdf::ORDER_FORM :
-				$template = \mail\CustomizeLib::getTemplate($eFarm, \mail\Customize::SALE_ORDER_FORM);
+				$template = \mail\CustomizeLib::getTemplateByFarm($eFarm, \mail\Customize::SALE_ORDER_FORM);
 				$content = new PdfUi()->getOrderFormMail($eFarm, $eSale, $template);
 				break;
 
 			case Pdf::DELIVERY_NOTE :
-				$template = \mail\CustomizeLib::getTemplate($eFarm, \mail\Customize::SALE_DELIVERY_NOTE);
+				$template = \mail\CustomizeLib::getTemplateByFarm($eFarm, \mail\Customize::SALE_DELIVERY_NOTE);
 				$content = new PdfUi()->getDeliveryNoteMail($eFarm, $eSale, $template);
 				break;
 
@@ -201,7 +201,7 @@ class PdfLib extends PdfCrud {
 
 		$cSale = SaleLib::getByInvoice($eInvoice);
 
-		$template = \mail\CustomizeLib::getTemplate($eFarm, \mail\Customize::SALE_INVOICE);
+		$template = \mail\CustomizeLib::getTemplateByFarm($eFarm, \mail\Customize::SALE_INVOICE);
 		$content = new PdfUi()->getInvoiceMail($eFarm, $eInvoice, $cSale, $template);
 
 		$libMail = new \mail\MailLib();

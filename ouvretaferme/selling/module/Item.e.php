@@ -6,7 +6,7 @@ class Item extends ItemElement {
 	public static function getSelection(): array {
 
 		return parent::getSelection() + [
-			'sale' => ['farm', 'hasVat', 'type', 'taxes', 'shippingVatRate', 'shippingVatFixed', 'document', 'preparationStatus', 'shop', 'shopShared', 'shopMaster', 'market', 'marketParent', 'compositionOf', 'compositionEndAt', 'shipping', 'deliveredAt'],
+			'sale' => ['farm', 'hasVat', 'type', 'taxes', 'shippingVatRate', 'shippingVatFixed', 'document', 'preparationStatus', 'shop', 'shopShared', 'market', 'marketParent', 'compositionOf', 'compositionEndAt', 'shipping', 'deliveredAt'],
 			'customer' => ['name', 'type'],
 			'farm' => ['name'],
 			'unit' => ['fqn', 'by', 'singular', 'plural', 'short', 'type'],
@@ -32,13 +32,12 @@ class Item extends ItemElement {
 	public function canWrite(): bool {
 
 		$this->expects([
-			'sale' => ['preparationStatus', 'marketParent', 'shopMaster']
+			'sale' => ['preparationStatus', 'marketParent']
 		]);
 
 		if(
 			$this->canRead() === FALSE or
-			$this['sale']['marketParent']->notEmpty() or
-			$this['sale']['shopMaster']
+			$this['sale']['marketParent']->notEmpty()
 		) {
 			return FALSE;
 		}

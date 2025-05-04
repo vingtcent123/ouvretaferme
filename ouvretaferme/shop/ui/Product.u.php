@@ -21,7 +21,7 @@ class ProductUi {
 
 	}
 
-	public function getList(Shop $eShop, Date $eDate, \selling\Sale $eSale, \Collection $cCategory, ?array $basketProducts, bool $isModifying): string {
+	public function getList(Shop $eShop, Date $eDate, \Collection $cItem, \Collection $cCategory, ?array $basketProducts, bool $canBasket, bool $isModifying): string {
 
 		$eDate->expects(['productsIndex', 'productsEmpty']);
 
@@ -38,7 +38,7 @@ class ProductUi {
 
 		}
 
-		$callback = fn(\Collection $cProduct) => $this->getProducts($eShop, $eDate, $eSale, $isModifying, $cProduct);
+		$callback = fn(\Collection $cProduct) => $this->getProducts($eShop, $eDate, $canBasket, $isModifying, $cProduct);
 
 		$h .= '<div class="shop-product-wrapper shop-product-'.$eShop['type'].'">';
 
@@ -81,8 +81,8 @@ class ProductUi {
 
 		$h .= '</div>';
 
-		if($eDate['isOrderable'] and ($eSale->canBasket($eShop) or $isModifying)) {
-			$h .= $this->getOrderedProducts($eShop, $eDate, $eSale, $basketProducts, $isModifying);
+		if($eDate['isOrderable'] and ($canBasket or $isModifying)) {
+			$h .= $this->getOrderedProducts($eShop, $eDate, $cItem, $basketProducts, $isModifying);
 		}
 
 		return $h;
@@ -186,13 +186,12 @@ class ProductUi {
 
 	}
 
-	protected function getOrderedProducts(Shop $eShop, Date $eDate, \selling\Sale $eSale, ?array $basketProducts, bool $isModifying): string {
+	protected function getOrderedProducts(Shop $eShop, Date $eDate, \Collection $cItem, ?array $basketProducts, bool $isModifying): string {
 
-
-		if($eSale->notEmpty() and $isModifying) {
-			$defaultJson = new BasketUi()->getJsonBasket($eSale, $basketProducts);
+		if($cItem->notEmpty() and $isModifying) {
+			$defaultJson = new BasketUi()->getJsonBasket($cItem, $basketProducts);
 		} else if($basketProducts !== NULL) {
-			$defaultJson = new BasketUi()->getJsonBasket(new \selling\Sale(), $basketProducts);
+			$defaultJson = new BasketUi()->getJsonBasket(new \Collection(), $basketProducts);
 		} else {
 			$defaultJson = 'null';
 		}
@@ -254,17 +253,17 @@ class ProductUi {
 
 	}
 
-	public function getProducts(Shop $eShop, Date $eDate, \selling\Sale $eSale, bool $isModifying, \Collection $cProduct): string {
+	public function getProducts(Shop $eShop, Date $eDate, bool $canBasket, bool $isModifying, \Collection $cProduct): string {
 
 		$h = '<div class="shop-product-group">';
-			$h .= $cProduct->makeString(fn($eProduct) => $this->getProduct($eShop, $eDate, $eProduct, $eSale, $isModifying));
+			$h .= $cProduct->makeString(fn($eProduct) => $this->getProduct($eShop, $eDate, $eProduct, $canBasket, $isModifying));
 		$h .= '</div>';
 
 		return $h;
 
 	}
 
-	public function getProduct(Shop $eShop, Date $eDate, Product $eProduct, \selling\Sale $eSale, bool $isModifying): string {
+	public function getProduct(Shop $eShop, Date $eDate, Product $eProduct, bool $canBasket, bool $isModifying): string {
 
 		$eShop->expects(['shared']);
 		$eDate->expects(['productsIndex']);
@@ -276,7 +275,7 @@ class ProductUi {
 			$eDate['productsIndex'] !== 'farm'
 		);
 
-		$acceptOrder = ($eSale->canBasket($eShop) or $isModifying);
+		$acceptOrder = ($canBasket or $isModifying);
 
 		$eProductSelling = $eProduct['product'];
 

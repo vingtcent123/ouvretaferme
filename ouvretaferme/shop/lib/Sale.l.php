@@ -12,13 +12,12 @@ class SaleLib {
 	 * Récupère la liste des produits déjà réservés / vendus pour une date donnée.
 	 *
 	 * @param Date $eDate
-	 * @param Sale $eSaleExclude Exclure une vente du calcul des disponibilités
 	 * @return \Collection Collection de produits / quantités vendues
 	 */
-	public static function getProductsByDate(Date $eDate, \selling\Sale $eSaleExclude = new \selling\Sale()): \Collection {
+	public static function getProductsByDate(Date $eDate, \Collection $cSaleExclude = new \Collection()): \Collection {
 
-		if($eSaleExclude->notEmpty()) {
-			\selling\Sale::model()->whereId('!=', $eSaleExclude);
+		if($cSaleExclude->notEmpty()) {
+			\selling\Sale::model()->whereId('NOT IN', $cSaleExclude);
 		}
 
 		$cSale = \selling\Sale::model()
@@ -39,75 +38,68 @@ class SaleLib {
 
 	}
 
-	public static function getDiscount(Shop $eShop, \selling\Sale $eSale, \selling\Customer $eCustomer): int {
+	public static function getDiscounts(\Collection $cSale, \Collection $cCustomer): array {
 
-		if($eShop['shared']) {
-			return 0;
-		} else if($eSale->notEmpty()) {
-			return $eSale['discount'];
-		} else if($eCustomer->notEmpty()) {
-			return $eCustomer['discount'];
-		} else {
-			return 0;
+		$farms = [];
+
+		foreach($cSale as $eSale) {
+			$farms += [
+				$eSale['farm']['id'] => $eSale['discount']
+			];
 		}
+
+		foreach($cCustomer as $eCustomer) {
+			if($eCustomer->notEmpty()) {
+				$farms += [
+					$eCustomer['farm']['id'] => $eCustomer['discount']
+				];
+			}
+		}
+
+		return $farms;
 
 	}
 
-	public static function getByCustomerForDate(Date $eDate, \selling\Customer $eCustomer): \selling\Sale {
+	public static function getByCustomerForDate(Shop $eShop, Date $eDate, \selling\Customer $eCustomer): \Collection {
 
 		if($eCustomer->empty()) {
-			return new \selling\Sale();
+			return new \Collection();
+		}
+
+		if($eShop['shared']) {
+
+			$eShop->expects(['cShare']);
+
+			$cCustomer = \selling\Customer::model()
+				->select('id')
+				->whereUser($eCustomer['user'])
+				->whereFarm('IN', $eShop['cShare']->getColumn('farm'))
+				->getCollection();
+
+			if($cCustomer->empty()) {
+				return new \Collection();
+			}
+
+			\selling\Sale::model()->whereCustomer('IN', $cCustomer);
+
+		} else {
+			\selling\Sale::model()->whereCustomer($eCustomer);
 		}
 
 		return \selling\Sale::model()
-			->select(\selling\Sale::getSelection() + [
-				'cItem' => \selling\Item::model()
-					->select(\selling\Item::getSelection())
-					->whereIngredientOf(NULL)
-					->delegateCollection('sale')
-			])
+			->select(\selling\Sale::getSelection())
+			->whereShop($eShop)
 			->whereShopDate($eDate)
-			->whereShopParent(NULL)
-			->whereCustomer($eCustomer)
 			->wherePreparationStatus('NOT IN', [\selling\Sale::CANCELED, \selling\Sale::DRAFT])
-			->get();
+			->getCollection(index: 'farm');
 
 	}
 
-	public static function getConfirmedForDate(Date $eDate): \Collection {
+	public static function createForShop(\selling\Sale $eSaleReference, \user\User $eUser, array $discounts): string {
 
-		return \selling\Sale::model()
-			->select(\selling\Sale::getSelection() )
-			->whereShopDate($eDate)
-			->whereShopMaster(TRUE)
-			->wherePreparationStatus(\selling\Sale::CONFIRMED)
-			->getCollection();
-
-	}
-
-	public static function getShopCustomer(Shop $eShop, \user\User $eUser, bool $autocreate = FALSE): \selling\Customer {
-
-		if($eUser->empty()) {
-			return new \selling\Customer();
-		}
-
-		$eShop->expects(['farm']);
-
-		$eCustomer = \selling\CustomerLib::getByUserAndFarm($eUser, $eShop['farm']);
-
-		if($eCustomer->empty() and $autocreate) {
-			// Possible problème de DUPLICATE si le customer a été créé entre cette instruction et la précédente
-			$eCustomer = \selling\CustomerLib::createFromUser($eUser, $eShop['farm'], \selling\Customer::PRIVATE);
-		}
-
-		return $eCustomer;
-
-	}
-
-	public static function createForShop(\selling\Sale $eSale, \user\User $eUser): string {
-
-		$eSale->expects([
+		$eSaleReference->expects([
 			'shop' => [
+				'cFarm',
 				'farm' => ['name'],
 				'shared',
 				'hasPayment'
@@ -116,46 +108,119 @@ class SaleLib {
 			'basket'
 		]);
 
-		$eCustomer = self::getShopCustomer($eSale['shop'], $eUser, autocreate: TRUE);
-		$eDate = $eSale['shopDate'];
 
-		$eSale->merge([
-			'farm' => $eSale['shop']['farm'],
-			'customer' => $eCustomer,
+		$eShop = $eSaleReference['shop'];
+		$eDate = $eSaleReference['shopDate'];
+		$cFarm = $eShop['cFarm'];
+
+		self::buildReference($eSaleReference, $eUser);
+
+		// Création des produits
+		$total = 0.0;
+		$ccItem = self::buildItems($eSaleReference['basket'], $total);
+
+		self::applyShopOrderMin($eSaleReference, $total);
+		self::applyShopShipping($eSaleReference, $total);
+
+		\selling\Sale::model()->beginTransaction();
+
+		foreach($ccItem as $farm => $cItem) {
+
+			$eFarm = $cFarm[$farm];
+			$eCustomer = \selling\CustomerLib::getByUserAndFarm($eUser, $eFarm, autoCreate: TRUE, autoCreateType: $eSaleReference['type']);
+
+			$eSale = (clone $eSaleReference)->merge([
+				'farm' => $eFarm,
+				'customer' => $eCustomer,
+				'discount' => $discounts[$farm] ?? 0,
+				'hasVat' => \selling\ConfigurationLib::getByFarm($eFarm)['hasVat'],
+				'cItem' => $cItem
+			]);
+
+			$cItem->setColumn('sale', $eSale);
+			$cItem->setColumn('customer', $eCustomer);
+
+			\selling\SaleLib::create($eSale);
+			\selling\ItemLib::createCollection($eSale, $cItem);
+
+			// Récupération du montant de la commande à jour après l'ajout des produits
+			\selling\Sale::model()
+				->select(['priceIncludingVat', 'priceExcludingVat', 'vat'])
+				->get($eSale);
+
+			self::checkPayment($eFarm, $eShop, $eSale);
+
+		}
+
+		if($eShop->isShared()) {
+			$cItemLinearized = $ccItem->linearize();
+			$group = TRUE;
+			self::notify('saleConfirmed', $eSaleReference, $eUser, $cItemLinearized, $group);
+		}
+
+		\selling\Sale::model()->commit();
+
+		if($eShop['hasPayment'] === FALSE) {
+			return ShopUi::confirmationUrl($eShop, $eDate);
+		} else {
+			return ShopUi::paymentUrl($eShop, $eDate);
+		}
+
+	}
+
+	public static function checkPayment(\farm\Farm $eFarm, Shop $eShop, \selling\Sale $eSale): void {
+
+		if($eShop['hasPayment'] === FALSE) {
+
+			if($eShop->isShared()) {
+
+				$eShare = $eShop['cShare'][$eFarm['id']];
+				self::createDirectPayment($eShare['paymentMethod'], $eSale);
+
+			} else {
+				self::createDirectPayment(NULL, $eSale);
+			}
+
+		}
+
+	}
+
+	public static function buildReference(\selling\Sale $eSaleReference, \user\User $eUser): void {
+
+		$eSaleReference->merge([
 			'compositionOf' => new \selling\Product(),
-			'discount' => \shop\SaleLib::getDiscount($eSale['shop'], new \selling\Sale(), $eCustomer),
 			'from' => \selling\Sale::SHOP,
 			'market' => FALSE,
 			'marketParent' => new \selling\Sale(),
-			'type' => $eDate['type'],
+			'type' => $eSaleReference['shopDate']['type'],
 			'preparationStatus' => \selling\Sale::BASKET,
-			'deliveredAt' => $eSale['shopDate']['deliveryDate'],
-			'stats' => ($eSale['shop']['shared'] === FALSE),
-			'shopMaster' => $eSale['shop']['shared'],
+			'deliveredAt' => $eSaleReference['shopDate']['deliveryDate'],
+			'stats' => ($eSaleReference['shop']['shared'] === FALSE),
+			'shopPoint' => PointLib::getById($eSaleReference['shopPoint'])
 		]);
 
-		$eSale['taxes'] = $eSale->getTaxesFromType();
-		$eSale['hasVat'] = \selling\ConfigurationLib::getByFarm($eSale['farm'])['hasVat'];
+		$eSaleReference['taxes'] = $eSaleReference->getTaxesFromType();
 
 		if(
-			$eSale['shopPoint']->notEmpty() and
-			$eSale['shopPoint']['type'] === Point::HOME
+			$eSaleReference['shopPoint']->notEmpty() and
+			$eSaleReference['shopPoint']['type'] === Point::HOME
 		) {
-			$eSale->copyAddressFromUser($eUser);
+			$eSaleReference->copyAddressFromUser($eUser);
 		}
 
-		// Création des produits
-		$cItem = new \Collection();
-		$total = 0.0;
+	}
 
-		foreach($eSale['basket'] as ['product' => $eProduct, 'number' => $number]) {
+	public static function buildItems(array $basket, float &$total): \Collection {
+
+		$ccItem = new \Collection()->setDepth(2);
+
+		foreach($basket as ['product' => $eProduct, 'number' => $number]) {
 
 			$eProductSelling = $eProduct['product'];
+			$eFarm = $eProductSelling['farm'];
 
 			$eItem = new \selling\Item([
-				'sale' => $eSale,
-				'farm' => $eProductSelling['farm'],
-				'customer' => $eSale['customer'],
+				'farm' => $eFarm,
 				'shopProduct' => $eProduct,
 				'product' => $eProductSelling,
 				'name' => $eProductSelling->getName(),
@@ -170,51 +235,23 @@ class SaleLib {
 
 			$total += $number * ($eProduct['packaging'] ?? 1) * $eProduct['price'];
 
-			$cItem->append($eItem);
+			$ccItem[$eFarm['id']] ??= new \Collection();
+			$ccItem[$eFarm['id']]->append($eItem);
 
 		}
 
 		$total = round($total, 2);
 
-		if(self::applyShopOrderMin($eSale, $total) === FALSE) {
-			return new \selling\Sale();
-		}
-
-		self::applyShopShipping($eSale, $total);
-
-		\selling\Sale::model()->beginTransaction();
-
-		\selling\SaleLib::create($eSale);
-
-		\selling\ItemLib::createCollection($eSale, $cItem);
-
-		// Récupération du montant de la commande à jour après l'ajout des produits
-		\selling\Sale::model()
-			->select(['priceIncludingVat', 'priceExcludingVat', 'vat'])
-			->get($eSale);
-
-		\selling\Sale::model()->commit();
-
-		$eSale['cItem'] = $cItem;
-
-		if($eSale['shop']['hasPayment'] === FALSE) {
-			return self::createDirectPayment(NULL, $eSale);
-		} else {
-			return \shop\ShopUi::paymentUrl($eSale['shop'], $eSale['shopDate']);
-		}
-
+		return $ccItem;
 
 	}
 
-	private static function applyShopOrderMin(\selling\Sale $eSale, float $price): bool {
+	private static function applyShopOrderMin(\selling\Sale $eSale, float $price): void {
 
 		$orderMin = $eSale['shopPoint']['orderMin'] ?? $eSale['shop']['orderMin'];
 
 		if($orderMin > 0 and $price < $orderMin) {
-			\selling\Sale::fail('orderMin.check');
-			return FALSE;
-		} else {
-			return TRUE;
+			throw new \FailAction('selling\Sale::orderMin.check');
 		}
 
 	}
@@ -245,13 +282,17 @@ class SaleLib {
 
 	}
 
-	public static function updateForShop(\selling\Sale $eSale, Shop $eShop, \user\User $eUser): ?string {
+	public static function updateForShop(\selling\Sale $eSaleReference, \Collection $cSaleExisting, \user\User $eUser, array $discounts): ?string {
 
-		$eSale->expects(['basket', 'paymentMethod']);
+		$eSaleReference->expects(['basket', 'paymentMethod']);
 
-		if(self::canUpdateForShop($eSale) === FALSE) {
+		if(self::canUpdateForShop($eSaleReference) === FALSE) {
 			throw new \Exception('Payment security');
 		}
+
+		$eShop = $eSaleReference['shop'];
+		$eDate = $eSaleReference['shopDate'];
+		$cFarm = $eShop['cFarm'];
 
 		$properties = ['preparationStatus', 'shopPoint', 'shopUpdated', 'shipping'];
 
@@ -259,77 +300,98 @@ class SaleLib {
 			$properties[] = 'shopComment';
 		}
 
-		$eSale['shopPoint'] = PointLib::getById($eSale['shopPoint']);
-		$eSale['shopUpdated'] = TRUE;
-		$eSale['oldStatus'] = $eSale['preparationStatus'];
-		$eSale['preparationStatus'] = \selling\Sale::BASKET;
-
-		if(
-			$eSale['shopPoint']->notEmpty() and
-			$eSale['shopPoint']['type'] === Point::HOME
-		) {
-			$eSale->copyAddressFromUser($eUser, $properties);
-		}
+		self::buildReference($eSaleReference, $eUser);
 
 		// Ajout des produits
-		$cItem = new \Collection();
 		$total = 0.0;
+		$ccItem = self::buildItems($eSaleReference['basket'], $total);
 
-		foreach($eSale['basket'] as ['product' => $eProduct, 'number' => $number]) {
-
-			$eProductSelling = $eProduct['product'];
-
-			$eItem = new \selling\Item([
-				'sale' => $eSale,
-				'farm' => $eProductSelling['farm'],
-				'customer' => $eSale['customer'],
-				'shopProduct' => $eProduct,
-				'product' => $eProductSelling,
-				'name' => $eProductSelling->getName(),
-				'quality' => $eProductSelling['quality'],
-				'packaging' => $eProduct['packaging'],
-				'unit' => $eProductSelling['unit'],
-				'unitPrice' => $eProduct['price'],
-				'number' => $number,
-				'vatRate' => \Setting::get('selling\vatRates')[$eProductSelling['vat']],
-				'locked' => \selling\Item::PRICE
-			]);
-
-			$total += $number * ($eProduct['packaging'] ?? 1) * $eProduct['price'];
-
-			$cItem->append($eItem);
-
-		}
-
-		if(self::applyShopOrderMin($eSale, $total) === FALSE) {
-			return NULL;
-		}
-
-		self::applyShopShipping($eSale, $total);
+		self::applyShopOrderMin($eSaleReference, $total);
+		self::applyShopShipping($eSaleReference, $total);
 
 		\selling\Sale::model()->beginTransaction();
 
-			// Suppression des anciens items
-			\selling\ItemLib::deleteCollection($eSale, $eSale['cItem']);
+			foreach($cFarm as $eFarm) {
 
-			// Nouveaux items pour les mails de confirmation
-			$eSale['cItem'] = $cItem;
+				$eSaleExisting = $cSaleExisting[$eFarm['id']] ?? new \selling\Sale();
 
-			\selling\ItemLib::createCollection($eSale, $cItem);
+				if($ccItem->offsetExists($eFarm['id'])) {
 
-			\selling\SaleLib::update($eSale, $properties);
+					$cItem = $ccItem[$eFarm['id']];
+
+					if($eSaleExisting->notEmpty()) {
+
+						$eSaleExisting->merge([
+							'shopUpdated' => TRUE,
+							'cItem' => $cItem,
+							'oldPreparationStatus' => $eSaleExisting['preparationStatus']
+						] + $eSaleReference->extracts($properties));
+
+						$cItem->setColumn('sale', $eSaleExisting);
+						$cItem->setColumn('customer', $eSaleExisting['customer']);
+
+						\selling\SaleLib::update($eSaleExisting, $properties);
+						\selling\ItemLib::createCollection($eSaleExisting, $cItem, replace: TRUE);
+
+						self::checkPayment($eFarm, $eShop, $eSaleExisting);
+
+					} else {
+
+						$eCustomer = \selling\CustomerLib::getByUserAndFarm($eUser, $eFarm, autoCreate: TRUE, autoCreateType: $eSaleReference['type']);
+
+						$eSaleNew = (clone $eSaleReference)->merge([
+							'id' => NULL,
+							'farm' => $eFarm,
+							'customer' => $eCustomer,
+							'discount' => $discounts[$eFarm['id']] ?? 0,
+							'hasVat' => \selling\ConfigurationLib::getByFarm($eFarm)['hasVat'],
+							'cItem' => $cItem
+						]);
+
+						$cItem->setColumn('sale', $eSaleNew);
+						$cItem->setColumn('customer', $eCustomer);
+
+						\selling\SaleLib::create($eSaleNew);
+						\selling\ItemLib::createCollection($eSaleNew, $cItem);
+
+						self::checkPayment($eFarm, $eShop, $eSaleNew);
+
+					}
+
+				} else {
+
+					if($eSaleExisting->notEmpty()) {
+
+						// Annuler la vente
+						\selling\SaleLib::updatePreparationStatusCollection(new \Collection([$eSaleExisting]), \selling\Sale::CANCELED);
+
+						$group = FALSE;
+						self::notify('saleCanceled', $eSaleExisting, $group);
+
+					}
+
+				}
+
+			}
 
 		\selling\Sale::model()->commit();
 
-		if($eSale['shop']['hasPayment'] === FALSE) {
-			return self::createDirectPayment(NULL, $eSale);
+
+		if($eShop->isShared()) {
+			$cItemLinearized = $ccItem->linearize();
+			$group = TRUE;
+			self::notify('saleUpdated', $eSaleReference, $eUser, $cItemLinearized, $group);
+		}
+
+		if($eShop['hasPayment'] === FALSE) {
+			return ShopUi::confirmationUrl($eShop, $eDate);
 		} else {
-			return \shop\ShopUi::paymentUrl($eSale['shop'], $eSale['shopDate']);
+			return ShopUi::paymentUrl($eShop, $eDate);
 		}
 
 	}
 
-	public static function createPayment(string $payment, Date $eDate, \selling\Sale $eSale): string {
+	public static function createPayment(string $payment, \selling\Sale $eSale): string {
 
 		return match($payment) {
 			\selling\Sale::ONLINE_CARD => self::createCardPayment($eSale),
@@ -394,9 +456,13 @@ class SaleLib {
 
 	public static function createDirectPayment(?string $method, \selling\Sale $eSale): string {
 
+		if(in_array($method, [NULL, \selling\Sale::OFFLINE, \selling\Sale::TRANSFER]) === FALSE) {
+			throw new \Exception('Invalid method');
+		}
+
 		$eSale->expects(['farm', 'shopDate', 'shop', 'customer']);
 
-		$eSale['oldStatus'] = $eSale['preparationStatus'];
+		$eSale['oldPreparationStatus'] = $eSale['preparationStatus'];
 		$eSale['preparationStatus'] = \selling\Sale::CONFIRMED;
 		$eSale['paymentMethod'] = $method;
 
@@ -404,36 +470,32 @@ class SaleLib {
 
 		\selling\SaleLib::update($eSale, ['preparationStatus', 'paymentMethod']);
 
-		\selling\HistoryLib::createBySale($eSale, 'shop-payment-delivery');
-
-		self::notify($eSale['shopUpdated'] ? 'saleUpdated' : 'saleConfirmed', $eSale, $eSale['cItem']);
-
-		if($eSale['shop']['shared']) {
-			\selling\SaleLib::recalculateMaster($eSale, $eSale['cItem']);
-		}
+		$group = FALSE;
+		self::notify($eSale['shopUpdated'] ? 'saleUpdated' : 'saleConfirmed', $eSale, $eSale['customer']['user'], $eSale['cItem'], $group);
 
 		\selling\Sale::model()->commit();
 
-		return ShopUi::confirmationUrl($eSale['shop'], $eSale['shopDate'], $eSale);
+		return ShopUi::confirmationUrl($eSale['shop'], $eSale['shopDate']);
 
 	}
 
-	public static function cancel(\selling\Sale $eSale) {
-
-		if($eSale->acceptCustomerCancel() === FALSE) {
-			throw new \NotExpectedAction('Cannot cancel sale #'.$eSale['id']);
-		}
+	public static function cancelForShop(Shop $eShop, Date $eDate, \selling\Customer $eCustomer) {
 
 		\selling\Sale::model()->beginTransaction();
 
-			$eSale['oldStatus'] = $eSale['preparationStatus'];
-			$eSale['preparationStatus'] = \selling\Sale::CANCELED;
+			$cSale = \shop\SaleLib::getByCustomerForDate($eShop, $eDate, $eCustomer)->validate('acceptStatusCanceledByCustomer');
+			$cSale->setColumn('shop', $eShop);
+			$cSale->setColumn('shopDate', $eDate);
 
-			\selling\SaleLib::update($eSale, ['preparationStatus']);
+			\selling\SaleLib::updatePreparationStatusCollection($cSale, \selling\Sale::CANCELED);
 
-			\selling\HistoryLib::createBySale($eSale, 'sale-canceled');
+			foreach($cSale as $eSale) {
+				$group = FALSE;
+				self::notify('saleCanceled', $eSale, $group);
+			}
 
-			self::notify('saleCanceled', $eSale);
+			$group = TRUE;
+			self::notify('saleCanceled', $eSale, $group);
 
 		\selling\Sale::model()->commit();
 
@@ -499,7 +561,7 @@ class SaleLib {
 
 	private static function completePaid(\selling\Sale $eSale, string $eventId): void {
 
-		$eSale['oldStatus'] = $eSale['preparationStatus'];
+		$eSale['oldPreparationStatus'] = $eSale['preparationStatus'];
 		$eSale['preparationStatus'] = \selling\Sale::CONFIRMED;
 		$eSale['paymentStatus'] = \selling\Sale::PAID;
 
@@ -508,10 +570,6 @@ class SaleLib {
 		\selling\HistoryLib::createBySale($eSale, 'shop-payment-succeeded', 'Stripe event #'.$eventId);
 
 		$cItem = \selling\SaleLib::getItems($eSale);
-
-		if($eSale['shop']['shared']) {
-			\selling\SaleLib::recalculateMaster($eSale, $cItem);
-		}
 
 		self::notify('salePaid', $eSale, $cItem);
 

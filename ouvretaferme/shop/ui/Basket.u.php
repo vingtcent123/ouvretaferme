@@ -170,7 +170,7 @@ class BasketUi {
 
 	}
 
-	public function getSummary(Shop $eShop, Date $eDate, \selling\Sale $eSaleExisting, array $basket): string {
+	public function getSummary(Shop $eShop, Date $eDate, \Collection $cItem, array $basket): string {
 
 		\Asset::css('shop', 'product.css');
 
@@ -228,12 +228,12 @@ class BasketUi {
 								$h .= '<td colspan="'.$columns.'">'.encode($eFarm['name']).'</td>';
 							$h .= '</tr>';
 
-							$h .= $this->getProducts($eShop, $eDate, $eSaleExisting, $basket, $total);
+							$h .= $this->getProducts($eShop, $eDate, $cItem, $basket, $total);
 
 						}
 
 					} else {
-						$h .= $this->getProducts($eShop, $eDate, $eSaleExisting, $basket, $total);
+						$h .= $this->getProducts($eShop, $eDate, $cItem, $basket, $total);
 					}
 
 				$h .= '</tbody>';
@@ -257,7 +257,7 @@ class BasketUi {
 
 	}
 
-	public function getProducts(Shop $eShop, Date $eDate, \selling\Sale $eSaleExisting, array $basket, float &$total): string {
+	public function getProducts(Shop $eShop, Date $eDate, \Collection $cItem, array $basket, float &$total): string {
 
 		$h = '';
 
@@ -266,7 +266,7 @@ class BasketUi {
 			$eProduct = $product['product'];
 			$eProductSelling = $eProduct['product'];
 
-			$available = ProductLib::getReallyAvailable($eProduct, $eProductSelling, $eSaleExisting);
+			$available = ProductLib::getReallyAvailable($eProduct, $eProductSelling, $cItem);
 
 			$deleteAttributes = [
 				'data-confirm' => s("Souhaitez-vous réellement supprimer ce produit ?"),
@@ -683,12 +683,12 @@ class BasketUi {
 
 		$h .= '</div>';
 
-		if($eSale->acceptCustomerCancel()) {
+		if($eSale->acceptStatusCanceledByCustomer()) {
 			$h .= '<br/>';
 			$h .= '<br/>';
 			$h .= '<div class="util-block-gradient">';
 				$h .= '<h4>'.s("Vous ne souhaitez plus commander ?").'</h4>';
-				$h .= '<a '.attr('onclick', 'BasketManage.doCancel('.$eSale['id'].')').'" class="btn btn-outline-secondary" data-confirm="'.s("Êtes-vous sûr de vouloir annuler cette commande ?").'">'.s("Annuler la commande").'</a>';
+				$h .= '<a '.attr('onclick', 'BasketManage.doCancel('.$eDate['id'].')').'" class="btn btn-outline-secondary" data-confirm="'.s("Êtes-vous sûr de vouloir annuler cette commande ?").'">'.s("Annuler la commande").'</a>';
 			$h .= '</div>';
 		}
 
@@ -749,16 +749,16 @@ class BasketUi {
 
 	}
 
-	public function getPaymentStatus(Shop $eShop, Date $eDate, \selling\Sale $eSale): string {
+	public function getPaymentStatus(Shop $eShop, Date $eDate, \selling\Sale $eSaleReference): string {
 
 		$class = '';
 		$content = '';
 
-		switch($eSale['paymentMethod']) {
+		switch($eSaleReference['paymentMethod']) {
 
 			case \selling\Sale::ONLINE_CARD :
 
-				switch($eSale['paymentStatus']) {
+				switch($eSaleReference['paymentStatus']) {
 
 					case \selling\Sale::PAID :
 						$content .= '<h2>'.\Asset::icon('check').' '.s("Merci, votre commande est confirmée et payée !").'</h2>';
@@ -788,7 +788,7 @@ class BasketUi {
 
 				$content .= '<h2>'.\Asset::icon('check').' '.s("Merci, votre commande est confirmée !").'</h2>';
 				$content .= '<p>'.s("Vous avez reçu un e-mail de confirmation.").'</p>';
-				if($eSale['paymentMethod'] === \selling\Sale::OFFLINE) {
+				if($eSaleReference['paymentMethod'] === \selling\Sale::OFFLINE) {
 					$content .= '<p>';
 						$content .= s("Vous avez choisi de régler cette commande en direct avec votre producteur.");
 					$content .= '</p>';
@@ -800,12 +800,21 @@ class BasketUi {
 		$h = $this->getDeliveryTitle($eDate);
 		$h .= '<div class="basket-flow '.$class.'">';
 			$h .= $content;
-		$h .= '</div>';
 
 		if($eShop['embedOnly']) {
-			$h .= '<div class="mb-1">';
-				$h .= '<a href="'.encode($eShop['embedUrl']).'" class="btn btn-outline-secondary">'.s("Retourner sur le site du producteur").'</a>';
+			$h .= '<div class="mt-1">';
+				$h .= '<a href="'.encode($eShop['embedUrl']).'" class="color-white"><u>'.s("Retourner sur le site du producteur").'</u></a>';
 			$h .= '</div>';
+		}
+		$h .= '</div>';
+
+		if($eSaleReference->acceptStatusCanceledByCustomer()) {
+			$h .= '<div>';
+				$h .= '<a href="'.ShopUi::dateUrl($eDate['shop'], $eDate).'?modify=1" target="_parent" class="btn btn-secondary" title="'.s("Cette commande est modifiable jusqu'au {value}.", ['value' => \util\DateUi::textual($eDate['orderEndAt'], \util\DateUi::DATE_HOUR_MINUTE)]).'">'.s("Modifier ma commande").'</a>';
+				$h .= '&nbsp;';
+				$h .= '<a '.attr('onclick', 'BasketManage.doCancel('.$eDate['id'].')').'" class="btn btn-outline-secondary" data-confirm="'.s("Êtes-vous sûr de vouloir annuler cette commande ?").'" title="'.s("Cette commande est annulable jusqu'au {value}.", ['value' => \util\DateUi::textual($eDate['orderEndAt'], \util\DateUi::DATE_HOUR_MINUTE)]).'">'.s("Annuler ma commande").'</a>';
+			$h .= '</div>';
+			$h .= '<br/>';
 		}
 
 		$h .= '<br/>';
@@ -814,71 +823,78 @@ class BasketUi {
 
 	}
 
-	public function getConfirmation(Shop $eShop, Date $eDate, \selling\Sale $eSale): string {
+	public function getConfirmation(Shop $eShop, Date $eDate, \selling\Sale $eSaleReference, \Collection $cSale, \Collection $cItem): string {
 
 		$h = '<div class="sale-confirmation-container">';
 
-			$h .= '<h2>'.s("Résumé de votre commande du {value}", \util\DateUi::textual($eSale['createdAt'], \util\DateUi::DATE_HOUR_MINUTE)).'</h2>';
+			$h .= '<h2>'.s("Résumé de votre commande du {value}", \util\DateUi::textual($eSaleReference['createdAt'], \util\DateUi::DATE_HOUR_MINUTE)).'</h2>';
 
-			$h .= '<dl class="util-presentation util-presentation-2">';
-				$h .= '<dt>'.s("Montant").'</dt>';
-				$h .= '<dd>';
-					if($eSale['hasVat'] and $eSale['type'] === \selling\Sale::PRO) {
-						$h .= \util\TextUi::money($eSale['priceExcludingVat']).' '.$eSale->getTaxes();
-					} else {
-						$h .= \util\TextUi::money($eSale['priceIncludingVat']);
+			if($eShop->isPersonal()) {
+
+				$h .= '<dl class="util-presentation util-presentation-2">';
+
+					$h .= '<dt>'.s("Montant").'</dt>';
+					$h .= '<dd>';
+						if($eSaleReference['hasVat'] and $eSaleReference['type'] === \selling\Sale::PRO) {
+							$h .= \util\TextUi::money($eSaleReference['priceExcludingVat']).' '.$eSaleReference->getTaxes();
+						} else {
+							$h .= \util\TextUi::money($eSaleReference['priceIncludingVat']);
+						}
+					$h .= '</dd>';
+					$h .= '<dt>'.s("État de la commande").'</dt>';
+					$h .= '<dd>'.\selling\SaleUi::getPreparationStatusForCustomer($eSaleReference).'</dd>';
+
+					if($eSaleReference['paymentMethod'] !== NULL) {
+
+						$h .= '<dt>'.s("Paiement").'</dt>';
+						$h .= '<dd>';
+							$h .= \selling\SaleUi::p('paymentMethod')->values[$eSaleReference['paymentMethod']];
+						$h .= '</dd>';
+
+						if($eSaleReference->isPaymentOnline()) {
+							$h .= '<dt>'.s("État du paiement").'</dt>';
+							$h .= '<dd>'.\selling\SaleUi::getPaymentStatusForCustomer($eSaleReference).'</dd>';
+						}
+
 					}
-				$h .= '</dd>';
-				$h .= '<dt>'.s("État de la commande").'</dt>';
-				$h .= '<dd>'.\selling\SaleUi::getPreparationStatusForCustomer($eSale).'</dd>';
+				$h .= '</dl>';
 
-				$h .= '<dt>'.s("Paiement").'</dt>';
-				$h .= '<dd>';
-					if($eSale['paymentMethod'] !== NULL) {
-						$h .= \selling\SaleUi::p('paymentMethod')->values[$eSale['paymentMethod']];
-					} else {
-						$h .= \selling\SaleUi::p('paymentMethod')->values[\selling\Sale::OFFLINE];
-					}
-				$h .= '</dd>';
+				$h .= '<br/>';
 
-				if($eSale->isPaymentOnline()) {
-					$h .= '<dt>'.s("État du paiement").'</dt>';
-					$h .= '<dd>'.\selling\SaleUi::getPaymentStatusForCustomer($eSale).'</dd>';
-				}
-			$h .= '</dl>';
+			}
+
+			if($eSaleReference['shopPoint']->notEmpty()) {
+				$h .= '<h3>'.s("Mode de livraison").'</h3>';
+				$h .= new \selling\OrderUi()->getPointBySale($eSaleReference);
+			}
+
+			if($eSaleReference['shopComment'] !== NULL) {
+				$h .= '<h3>'.s("Commentaire").'</h3>';
+				$h .= '<div class="util-block">'.encode($eSaleReference['shopComment']).'</div>';
+			}
 
 			$h .= '<br/>';
 
-			if($eSale->acceptCustomerCancel()) {
-				$h .= '<div>';
-					$h .= '<a href="'.ShopUi::dateUrl($eDate['shop'], $eDate).'?modify=1" target="_parent" class="btn btn-secondary" title="'.s("Cette commande est modifiable jusqu'au {value}.", ['value' => \util\DateUi::textual($eDate['orderEndAt'], \util\DateUi::DATE_HOUR_MINUTE)]).'">'.s("Modifier ma commande").'</a>';
-					$h .= '&nbsp;';
-					$h .= '<a '.attr('onclick', 'BasketManage.doCancel('.$eSale['id'].')').'" class="btn btn-outline-secondary" data-confirm="'.s("Êtes-vous sûr de vouloir annuler cette commande ?").'" title="'.s("Cette commande est annulable jusqu'au {value}.", ['value' => \util\DateUi::textual($eDate['orderEndAt'], \util\DateUi::DATE_HOUR_MINUTE)]).'">'.s("Annuler ma commande").'</a>';
-				$h .= '</div>';
-				$h .= '<br/>';
+			$h .= '<div class="util-title">';
+				$h .= '<h3>'.s("Articles commandés").'</h3>';
+			$h .= '</div>';
+
+			$ccItemBySale = $cItem->reindex(['sale']);
+
+			foreach($cSale as $eSale) {
+
+				$h .= '<h5 class="mt-2">'.encode($eSale['farm']['name']).'</h5>';
+				$h .= new \selling\OrderUi()->getItemsBySale($eSale, $ccItemBySale[$eSale['id']]);
 			}
-
-			if($eSale['shopPoint']->notEmpty()) {
-				$h .= '<h3>'.s("Mode de livraison").'</h3>';
-				$h .= new \selling\OrderUi()->getPointBySale($eSale);
-			}
-
-			if($eSale['shopComment'] !== NULL) {
-				$h .= '<h3>'.s("Commentaire").'</h3>';
-				$h .= '<div class="util-block">'.encode($eSale['shopComment']).'</div>';
-			}
-
-
-			$h .= new \selling\OrderUi()->getItemsBySale($eSale, $eSale['cItem']);
 
 		$h .= '</div>';
 
 		return $h;
 	}
 
-	public function getJsonBasket(\selling\Sale $eSale, ?array $products = NULL): string {
+	public function getJsonBasket(\Collection $cItem, ?array $products = NULL): string {
 
-		if($eSale->empty() and $products === NULL) {
+		if($cItem->empty() and $products === NULL) {
 
 			return '{}';
 
@@ -886,16 +902,16 @@ class BasketUi {
 
 			$h = '{';
 				$h .= 'createdAt: '.time().',';
-				$h .= 'sale: '.($eSale->notEmpty() ? $eSale['id'] : 'null').',';
+				$h .= 'userId: '.($cItem->notEmpty() ? \user\ConnectionLib::getOnline()['id'] : 'null').',';
 				$h .= 'products: ';
 
 					if($products !== NULL) {
 						$h .= json_encode($products);
-					} else if($eSale->notEmpty()) {
+					} else if($cItem->notEmpty()) {
 
 						$h .= '{';
 
-							foreach ($eSale['cItem'] as $eItem) {
+							foreach ($cItem as $eItem) {
 								$h .= '"'.$eItem['product']['id'].'": {number: '.$eItem['number'].'},';
 							}
 

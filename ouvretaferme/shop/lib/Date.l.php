@@ -105,7 +105,7 @@ class DateLib extends DateCrud {
 
 	public static function getRelativeSales(Date $e, \selling\Sale $eSaleSelected): ?array {
 
-		$cSale = \selling\SaleLib::getByDate($e, [\selling\Sale::CONFIRMED, \selling\Sale::PREPARED, \selling\Sale::DELIVERED], select: [
+		$cSale = \selling\SaleLib::getByDate($e, [\selling\Sale::CONFIRMED, \selling\Sale::PREPARED, \selling\Sale::DELIVERED], eFarm: $eSaleSelected['farm'], select: [
 			'id', 'document',
 			'customer' => ['type', 'name']
 		]);
@@ -311,7 +311,7 @@ class DateLib extends DateCrud {
 
 	}
 
-	public static function sendEndEmail(): void {
+	public static function end(): void {
 
 		$cDate = Date::model()
 			->select(Date::getSelection() + [
@@ -333,6 +333,32 @@ class DateLib extends DateCrud {
 				continue;
 			}
 
+			if($eDate['shop']['shared']) {
+
+				self::sendEndEmail($eDate, new \farm\Farm(), $eDate['shop']['email']);
+
+				$cShare = \shop\ShareLib::getByShop($eDate['shop']);
+
+				foreach($cShare as $eShare) {
+
+					$to = $eShare['farm']->selling()['legalEmail'];
+					self::sendEndEmail($eDate, $eShare['farm'], $to);
+
+				}
+
+			} else {
+
+				$to = $eDate['shop']['email'] ?? $eDate['farm']->selling()['legalEmail'];
+				self::sendEndEmail($eDate, $eDate['farm'], $to);
+
+			}
+
+		}
+
+	}
+
+	public static function sendEndEmail(Date $eDate, \farm\Farm $eFarm, string $to): void {
+
 			$sales = \selling\Sale::model()
 				->select([
 					'number' => new \Sql('COUNT(*)', 'int'),
@@ -340,20 +366,17 @@ class DateLib extends DateCrud {
 					'priceIncludingVat' => new \Sql('SUM(priceIncludingVat)', 'float')
 				])
 				->whereShopDate($eDate)
+				->whereFarm($eFarm, if: $eFarm->notEmpty())
 				->wherePreparationStatus('IN', [\selling\Sale::CONFIRMED, \selling\Sale::PREPARED, \selling\Sale::DELIVERED])
 				->get()
 				->getArrayCopy();
 
 			$cItem = \selling\ItemLib::getSummaryByDate($eDate);
 
-			$email = $eDate['shop']['email'] ?? $eDate['farm']->selling()['legalEmail'];
-
 			new \mail\MailLib()
-				->addTo($email)
+				->addTo($to)
 				->setContent(...MailUi::getOrderEnd($eDate, $sales, $cItem))
 				->send('user');
-
-		}
 
 	}
 
@@ -364,10 +387,7 @@ class DateLib extends DateCrud {
 				'shop' => ['shared']
 			])
 			->join(Shop::model()->select('shared'), 'm1.shop = m2.id')
-			->or(
-				fn() => $this->where('m2.shared = 0 and m1.deliveryDate < CURRENT_DATE'),
-				fn() => $this->where('m2.shared = 1 and m1.orderEndAt < CURRENT_TIMESTAMP')
-			)
+			->where('m2.shared = 0 and m1.deliveryDate < CURRENT_DATE')
 			->where('m1.status', '!=', Date::CLOSED)
 			->getCollection();
 
@@ -375,46 +395,24 @@ class DateLib extends DateCrud {
 
 			Date::model()->beginTransaction();
 
-			$affected = Date::model()
-				->whereStatus('!=', Date::CLOSED)
-				->update($eDate, [
-					'status' => Date::CLOSED
-				]);
+				$affected = Date::model()
+					->whereStatus('!=', Date::CLOSED)
+					->update($eDate, [
+						'status' => Date::CLOSED
+					]);
 
-			if($affected === 0) {
-				Date::model()->rollBack();
-				continue;
-			}
+				if($affected > 0) {
 
-			if($eDate['shop']['shared']) {
-				self::finishShared($eDate);
-			}
+					$cSale = \selling\Sale::model()
+						->whereShopDate($eDate)
+						->wherePreparationStatus(\selling\Sale::BASKET)
+						->getCollection();
+
+					\selling\SaleLib::updatePreparationStatusCollection($cSale, \selling\Sale::CANCELED);
+
+				}
 
 			Date::model()->commit();
-
-		}
-
-	}
-
-	private static function finishShared(Date $e): void {
-
-		$cSale = SaleLib::getConfirmedForDate($e);
-
-		foreach($cSale as $eSale) {
-
-			$cSaleChildren = \selling\Sale::model()
-				->select('id', 'marketParent', 'preparationStatus', 'document', 'farm')
-				->whereShopParent($eSale)
-				->getCollection();
-
-			foreach($cSaleChildren as $eSaleChild) {
-
-				$eSaleChild['oldStatus'] = $eSaleChild['preparationStatus'];
-				$eSaleChild['preparationStatus'] = $eSale['preparationStatus'];
-
-				\selling\SaleLib::update($eSaleChild, ['preparationStatus', 'document']);
-
-			}
 
 		}
 

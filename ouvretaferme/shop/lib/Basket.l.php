@@ -38,7 +38,7 @@ class BasketLib {
 
 	}
 
-	public static function checkAvailableProducts(array $products, \Collection $cProduct, \selling\Sale $eSale): array {
+	public static function checkAvailableProducts(array $products, \Collection $cProduct, \Collection $cItem): array {
 
 		$cleanBasket = [];
 
@@ -50,7 +50,7 @@ class BasketLib {
 				continue;
 			}
 
-			$available = ProductLib::getReallyAvailable($eProduct, $eProductSelling, $eSale);
+			$available = ProductLib::getReallyAvailable($eProduct, $eProductSelling, $cItem);
 
 			$product = [
 				'product' => $eProduct,

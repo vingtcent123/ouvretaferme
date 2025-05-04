@@ -40,8 +40,7 @@ td.sale-item-price {
 	white-space: nowrap;
 }
 
-td.sale-item-basket,
-td.sale-item-provisional {
+td.sale-item-basket {
 	line-height: 1.2;
 	font-size: 0.9rem;
 	text-align: center;

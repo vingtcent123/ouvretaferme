@@ -3,7 +3,7 @@ new AdaptativeView('create', function($data, FarmTemplate $t) {
 
 	$t->tab = 'selling';
 	$t->subNav = new \farm\FarmUi()->getShopSubNav($data->eFarm);
-	$t->title = s("Ajouter une nouvelle date de livraison");
+	$t->title = s("Ajouter une nouvelle livraison");
 
 	\Asset::js('shop', 'manage.js');
 
@@ -52,7 +52,7 @@ new AdaptativeView('/ferme/{id}/date/{date}', function($data, FarmTemplate $t) {
 			$h .= $t->title;
 		$h .= '</h1>';
 		$h .= '<div>';
-			if($data->eDate->canWrite()) {
+			if($data->eDate->canWrite() or $data->eShop->canWrite()) {
 				$h .= new \shop\DateUi()->getMenu($data->eShop, $data->eDate, $data->eDate['sales']['count'], 'btn-primary');
 			}
 		$h .= '</div>';

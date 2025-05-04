@@ -27,7 +27,10 @@ class SaleLib extends SaleCrud {
 
 				$properties[] = 'deliveredAt';
 
-				if($e->isComposition() === FALSE) {
+				if(
+					$e->isComposition() === FALSE and
+					$e['shopShared'] === FALSE
+				) {
 
 					if($e->hasDiscount()) {
 						$properties[] = 'discount';
@@ -99,6 +102,7 @@ class SaleLib extends SaleCrud {
 			$eShop->expects(['hasPayment', 'paymentOfflineHow', 'paymentTransferHow']);
 
 			$eSale['shop'] = $eShop;
+			$eSale['shop']['farm'] = $eFarm;
 			$eSale['shopDate'] = new \shop\Date([
 				'id' => 123,
 				'deliveryDate' => currentDate(),
@@ -131,7 +135,7 @@ class SaleLib extends SaleCrud {
 		return self::getForLabels($eFarm, $selectItems);
 	}
 
-	public static function getForLabelsByDate(\shop\Date $eDate, bool $selectItems = FALSE, bool $selectPoint = FALSE): \Collection {
+	public static function getForLabelsByDate(\farm\Farm $eFarm, \shop\Date $eDate, bool $selectItems = FALSE, bool $selectPoint = FALSE): \Collection {
 
 		Sale::model()
 			->whereShopDate($eDate)
@@ -139,7 +143,7 @@ class SaleLib extends SaleCrud {
 			->sort(new \Sql('shopPoint, IF(lastName IS NULL, name, lastName), firstName, m1.id'));
 
 
-		return self::getForLabels($eDate['farm'], $selectItems, $selectPoint);
+		return self::getForLabels($eFarm, $selectItems, $selectPoint);
 
 	}
 
@@ -268,7 +272,7 @@ class SaleLib extends SaleCrud {
 			])
 			->whereFarm($eFarm)
 			->whereType($type, if: $type !== NULL)
-			->wherePreparationStatus('IN', [Sale::CONFIRMED, Sale::PREPARED, Sale::SELLING, Sale::DELIVERED, Sale::PROVISIONAL])
+			->wherePreparationStatus('IN', [Sale::CONFIRMED, Sale::PREPARED, Sale::SELLING, Sale::DELIVERED])
 			->whereDeliveredAt($sign, currentDate())
 			->whereStats(TRUE)
 			->group('deliveredAt')
@@ -314,7 +318,7 @@ class SaleLib extends SaleCrud {
 			->select(Sale::getSelection())
 			->whereFarm($eFarm)
 			->whereDeliveredAt($date)
-			->wherePreparationStatus('IN', [Sale::PROVISIONAL, Sale::CONFIRMED, Sale::PREPARED, Sale::DELIVERED])
+			->wherePreparationStatus('IN', [Sale::CONFIRMED, Sale::PREPARED, Sale::DELIVERED])
 			->whereStats(TRUE)
 			->sort('id')
 			->getCollection(NULL, NULL, 'id');
@@ -333,9 +337,7 @@ class SaleLib extends SaleCrud {
 			->join(Customer::model(), 'm1.customer = m2.id')
 			->select($select ?? Sale::getSelection())
 			->whereShopDate($eDate)
-			->whereShopParent(NULL, if: $eFarm->empty())
 			->where('m1.farm', $eFarm, if: $eFarm->notEmpty())
-			->where('m1.shopMaster', FALSE, if: $eFarm->notEmpty())
 			->wherePreparationStatus('IN', $preparationStatus, if: $preparationStatus !== NULL)
 			->sort($sort)
 			->getCollection(NULL, NULL, 'id');
@@ -543,8 +545,8 @@ class SaleLib extends SaleCrud {
 		}
 
 		// Ajouter des produits
-		if(($e['cItem'] ?? new \Collection())->notEmpty()) {
-			\selling\ItemLib::createCollection($e, $e['cItem']);
+		if(($e['cItemCreate'] ?? new \Collection())->notEmpty()) {
+			\selling\ItemLib::createCollection($e, $e['cItemCreate']);
 		}
 
 
@@ -732,7 +734,7 @@ class SaleLib extends SaleCrud {
 
 		if($e['preparationStatus'] === Sale::BASKET) {
 
-			$e['oldStatus'] = Sale::BASKET;
+			$e['oldPreparationStatus'] = Sale::BASKET;
 			$e['preparationStatus'] = Sale::DRAFT;
 
 			$properties[] = 'preparationStatus';
@@ -749,8 +751,8 @@ class SaleLib extends SaleCrud {
 
 		$updatePreparationStatus = (
 			in_array('preparationStatus', $properties) and
-			$e->expects(['oldStatus', 'marketParent']) and
-			($e['oldStatus'] !== $e['preparationStatus'])
+			$e->expects(['oldPreparationStatus', 'marketParent']) and
+			($e['oldPreparationStatus'] !== $e['preparationStatus'])
 		);
 
 		if(in_array('shippingVatRate', $properties)) {
@@ -785,7 +787,7 @@ class SaleLib extends SaleCrud {
 
 		if($updatePreparationStatus) {
 
-			if($e['oldStatus'] === Sale::DELIVERED) {
+			if($e['oldPreparationStatus'] === Sale::DELIVERED) {
 				HistoryLib::createBySale($e, 'sale-delivered-cancel');
 			} else {
 				HistoryLib::createBySale($e, 'sale-'.$e['preparationStatus']);
@@ -851,7 +853,7 @@ class SaleLib extends SaleCrud {
 				continue;
 			}
 
-			$e['oldStatus'] = $e['preparationStatus'];
+			$e['oldPreparationStatus'] = $e['preparationStatus'];
 			$e['preparationStatus'] = $newStatus;
 
 			self::update($e, ['preparationStatus']);
@@ -950,12 +952,15 @@ class SaleLib extends SaleCrud {
 
 	}
 
-	public static function getItems(Sale $e, bool $withIngredients = FALSE, bool $public = FALSE, \farm\Farm $eFarm = new \farm\Farm(), ?string $index = NULL): \Collection {
+	public static function getItems(Sale $e, bool $withIngredients = FALSE, bool $public = FALSE, ?string $index = NULL): \Collection {
+		return self::getItemsBySales(new \Collection([$e]), $withIngredients, $public, $index);
+	}
+
+	public static function getItemsBySales(\Collection $cSale, bool $withIngredients = FALSE, bool $public = FALSE, ?string $index = NULL): \Collection {
 
 		$cItem = Item::model()
 			->select(Item::getSelection())
-			->whereSale($e)
-			->whereFarm($eFarm, if: $eFarm->notEmpty())
+			->whereSale('IN', $cSale)
 			->whereIngredientOf(NULL, if: $withIngredients === FALSE)
 			->sort([
 				new \Sql('ingredientOf IS NOT NULL'),
@@ -969,7 +974,6 @@ class SaleLib extends SaleCrud {
 		} else {
 			return $cItem;
 		}
-
 
 	}
 
@@ -1048,7 +1052,7 @@ class SaleLib extends SaleCrud {
 	 */
 	public static function recalculate(Sale $e): void {
 
-		$e->expects(['farm', 'taxes', 'shippingVatRate', 'shippingVatFixed', 'shopMaster']);
+		$e->expects(['farm', 'taxes', 'shippingVatRate', 'shippingVatFixed']);
 
 		$cItem = Item::model()
 			->select(ItemElement::getSelection())
@@ -1072,11 +1076,11 @@ class SaleLib extends SaleCrud {
 				'priceExcludingVat' => NULL,
 			];
 
-			Sale::model()->update($e, $newValues);
+			$e->merge($newValues);
 
-			if($e['shopMaster']) {
-				self::recalculateMaster($e, $cItem);
-			}
+			Sale::model()
+				->select(array_keys($newValues))
+				->update($e);
 
 			return;
 
@@ -1179,66 +1183,11 @@ class SaleLib extends SaleCrud {
 
 		}
 
-		Sale::model()->update($e, $newValues);
+		$e->merge($newValues);
 
-		if($e['shopMaster']) {
-			self::recalculateMaster($e, $cItem);
-		}
-
-	}
-
-	public static function recalculateMaster(Sale $eSale, \Collection $cItem): void {
-
-		Item::model()
-			->select([
-				'product' => ['composition']
-			])
-			->get($cItem);
-
-		$ccItem = $cItem->reindex(['farm']);
-
-		$cFarm = \farm\FarmLib::getByIds($ccItem->getKeys(), index: 'id');
-
-		$cSaleOld = Sale::model()
-			->select(SaleElement::getSelection())
-			->whereShopParent($eSale)
-			->getCollection(index: 'farm');
-
-		SaleLib::deleteCollection($cSaleOld);
-
-		if($eSale['preparationStatus'] === Sale::BASKET) {
-			return;
-		}
-
-		foreach($ccItem as $farmId => $cItem) {
-
-			$eFarm = $cFarm[$farmId];
-
-			$eSaleNew = (clone $eSale)->merge([
-				'id' => $cSaleOld[$eFarm['id']]['id'] ?? NULL,
-				'farm' => $eFarm,
-				'shopMaster' => FALSE,
-				'shopParent' => $eSale,
-				'preparationStatus' => Sale::PROVISIONAL,
-				'stats' => TRUE
-			]);
-
-			$cItemNew = new \Collection();
-
-			foreach($cItem as $eItem) {
-
-				$cItemNew[] = (clone $eItem)->merge([
-					'id' => NULL,
-					'sale' => $eSaleNew,
-				]);
-
-			}
-
-			$eSaleNew['cItem'] = $cItemNew;
-
-			\selling\SaleLib::create($eSaleNew);
-
-		}
+		Sale::model()
+			->select(array_keys($newValues))
+			->update($e);
 
 	}
 

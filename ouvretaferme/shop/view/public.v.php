@@ -99,14 +99,17 @@ new AdaptativeView('shop', function($data, ShopTemplate $t) {
 		if($data->eDateSelected['isOrderable']) {
 
 			if(
-				$data->eSaleExisting->canBasket($data->eShop) === FALSE and
+				$data->canBasket === FALSE and
 				$data->isModifying === FALSE
 			) {
 
 				echo '<div class="util-block bg-success color-white">';
 					echo '<p>';
 						echo s("Merci, votre commande pour le {value} est enregistrée !", \util\DateUi::textual($data->eDateSelected['deliveryDate'], \util\DateUi::DATE_HOUR_MINUTE));
-						if($data->eSaleExisting->acceptCustomerCancel()) {
+						if(
+							$data->cSaleExisting->notEmpty() and
+							$data->cSaleExisting->first()->acceptStatusCanceledByCustomer()
+						) {
 							echo '<br/>'.s("Cette commande est modifiable et annulable jusqu'au {value}.", \util\DateUi::textual($data->eDateSelected['orderEndAt'], \util\DateUi::DATE_HOUR_MINUTE));
 						}
 					echo '</p>';
@@ -128,7 +131,7 @@ new AdaptativeView('shop', function($data, ShopTemplate $t) {
 
 		} else if(
 			$data->eDateSelected['isDeliverable'] and
-			$data->eSaleExisting->notEmpty()
+			$data->cSaleExisting->notEmpty()
 		) {
 
 			$details[] = Asset::icon('lock-fill').'  '.s("La vente est maintenant fermée, n'oubliez pas de venir chercher votre commande le {value} !", \util\DateUi::textual($data->eDateSelected['deliveryDate']));
@@ -143,8 +146,13 @@ new AdaptativeView('shop', function($data, ShopTemplate $t) {
 
 		}
 
-		if($data->discount > 0) {
-			$details[] = Asset::icon('check-lg').'  '.s("Les prix affichés incluent la remise commerciale de {value} % dont vous bénéficiez !", $data->discount);
+		if($data->discounts) {
+
+			if($data->eShop['shared']) {
+				$details[] = Asset::icon('check-lg').'  '.s("Les prix affichés incluent la remise commerciale dont vous bénéficiez chez certains producteurs !");
+			} else {
+				$details[] = Asset::icon('check-lg').'  '.s("Les prix affichés incluent la remise commerciale de {value} % dont vous bénéficiez !", $data->discounts[$data->eShop['farm']['id']]);
+			}
 		}
 
 		if($details) {
@@ -153,7 +161,7 @@ new AdaptativeView('shop', function($data, ShopTemplate $t) {
 			echo '</p>';
 		}
 
-		echo new \shop\ProductUi()->getList($data->eShop, $data->eDateSelected, $data->eSaleExisting, $data->cCategory, $data->basketProducts, $data->isModifying);
+		echo new \shop\ProductUi()->getList($data->eShop, $data->eDateSelected, $data->cItemExisting, $data->cCategory, $data->basketProducts, $data->canBasket, $data->isModifying);
 
 	}
 
@@ -176,7 +184,7 @@ new AdaptativeView('/shop/public/{fqn}/{date}/panier', function($data, ShopTempl
 
 	echo $uiBasket->getAccount($data->eUserOnline);
 
-	echo '<div id="shop-basket-summary" '.attr('onrender', 'BasketManage.loadSummary('.$data->eDate['id'].', '.($data->eSaleExisting->empty() ? 'null' : $data->eSaleExisting['id']).', '.($data->basketProducts === NULL ? 'null' : json_encode($data->basketProducts)).', '.($data->isModifying ? 'true' : 'false').');').'></div>';
+	echo '<div id="shop-basket-summary" '.attr('onrender', 'BasketManage.loadSummary('.$data->eDate['id'].', '.($data->cItemExisting->empty() ? 'null' : $data->eUserOnline['id']).', '.($data->basketProducts === NULL ? 'null' : json_encode($data->basketProducts)).', '.($data->isModifying ? 'true' : 'false').');').'></div>';
 
 	if($data->eUserOnline['phone'] === NULL) {
 		echo '<div id="shop-basket-phone">';
@@ -188,7 +196,7 @@ new AdaptativeView('/shop/public/{fqn}/{date}/panier', function($data, ShopTempl
 		if($data->hasPoint) {
 			echo $uiBasket->getDeliveryForm($data->eShop, $data->eDate, $data->eDate['ccPoint'], $data->eUserOnline, $data->ePointSelected);
 		}
-		echo $uiBasket->getComment($data->eShop, $data->eSaleExisting);
+		echo $uiBasket->getComment($data->eShop, $data->eSaleReference);
 		echo $uiBasket->getSubmitBasket($data->eShop, $data->eDate, $data->eUserOnline, $data->hasPoint, $data->ePointSelected);
 	echo '</div>';
 
@@ -197,7 +205,7 @@ new AdaptativeView('/shop/public/{fqn}/{date}/panier', function($data, ShopTempl
 
 new JsonView('/shop/public/{fqn}/{date}/:getBasket', function($data, AjaxTemplate $t) {
 
-	$t->push('basketSummary', new \shop\BasketUi()->getSummary($data->eShop, $data->eDate, $data->eSaleExisting, $data->basket));
+	$t->push('basketSummary', new \shop\BasketUi()->getSummary($data->eShop, $data->eDate, $data->cItemExisting, $data->basket));
 	$t->push('basketPrice', $data->price);
 
 });
@@ -241,8 +249,8 @@ new AdaptativeView('/shop/public/{fqn}/{date}/paiement', function($data, ShopTem
 	$t->header = $uiBasket->getHeader($data->eShop);
 
 	echo $uiBasket->getSteps($data->eShop, $data->eDate, $data->step);
-	echo $uiBasket->getOrder($data->eDate, $data->eSaleExisting);
-	echo $uiBasket->getPayment($data->eShop, $data->eDate, $data->eCustomer, $data->eSaleExisting, $data->eStripeFarm);
+	echo $uiBasket->getOrder($data->eDate, $data->eSaleReference);
+	echo $uiBasket->getPayment($data->eShop, $data->eDate, $data->eCustomer, $data->eSaleReference, $data->eStripeFarm);
 
 });
 
@@ -253,8 +261,8 @@ new AdaptativeView('/shop/public/{fqn}/{date}/confirmation', function($data, Sho
 	$t->title = encode($data->eShop['name']);
 	$t->header = $uiBasket->getHeader($data->eShop);
 
-	echo $uiBasket->getPaymentStatus($data->eShop, $data->eDate, $data->eSaleExisting);
-	echo $uiBasket->getConfirmation($data->eShop, $data->eDate, $data->eSaleExisting);
+	echo $uiBasket->getPaymentStatus($data->eShop, $data->eDate, $data->eSaleReference);
+	echo $uiBasket->getConfirmation($data->eShop, $data->eDate, $data->eSaleReference, $data->cSaleExisting, $data->cItemExisting);
 
 });
 
@@ -276,16 +284,16 @@ new AdaptativeView('confirmationEmpty', function($data, ShopTemplate $t) {
 new AdaptativeView('/shop/public/{fqn}/{date}/:doCreateSale', function($data, AjaxTemplate $t) {
 
 	if($data->created) {
-		$t->js()->eval('BasketManage.deleteBasket('.$data->eSaleExisting['shopDate']['id'].')');
+		$t->js()->eval('BasketManage.deleteBasket('.$data->eSaleReference['shopDate']['id'].')');
 	}
 
 	$t->redirect(\shop\ShopUi::paymentUrl($data->eShop, $data->eDate));
 
 });
 
-new AdaptativeView('/shop/public/{fqn}/{date}/:doCancelSale', function($data, AjaxTemplate $t) {
+new AdaptativeView('/shop/public/{fqn}/{date}/:doCancelCustomer', function($data, AjaxTemplate $t) {
 
-	$t->js()->eval('BasketManage.deleteBasket('.$data->eSaleExisting['shopDate']['id'].')');
+	$t->js()->eval('BasketManage.deleteBasket('.$data->eSaleReference['shopDate']['id'].')');
 	$t->redirect(\shop\ShopUi::paymentUrl($data->eShop, $data->eDate));
 
 });

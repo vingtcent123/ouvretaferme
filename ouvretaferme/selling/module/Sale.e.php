@@ -8,9 +8,8 @@ class Sale extends SaleElement {
 		return parent::getSelection() + [
 			'customer' => ['name', 'email', 'phone', 'color', 'user', 'type', 'destination', 'discount', 'legalName', 'invoiceStreet1', 'invoiceStreet2', 'invoicePostcode', 'invoiceCity', 'invoiceRegistration', 'invoiceVat'],
 			'shop' => ['fqn', 'shared', 'name', 'email', 'emailNewSale', 'emailEndDate', 'hasPayment', 'paymentOfflineHow', 'paymentTransferHow', 'shipping', 'shippingUntil', 'orderMin', 'embedOnly', 'embedUrl'],
-			'shopDate' => ['status', 'deliveryDate', 'orderStartAt', 'orderEndAt'],
+			'shopDate' => \shop\Date::getSelection(),
 			'shopPoint' => ['type', 'name'],
-			'shopParent' => SaleElement::getSelection(),
 			'farm' => ['name', 'url', 'vignette', 'banner', 'featureDocument', 'hasSales'],
 			'price' => fn($e) => $e['type'] === Sale::PRO ? $e['priceExcludingVat'] : $e['priceIncludingVat'],
 			'invoice' => ['name', 'emailedAt', 'createdAt', 'paymentStatus', 'priceExcludingVat', 'generation'],
@@ -26,17 +25,6 @@ class Sale extends SaleElement {
 
 		if($cSale->empty()) {
 			throw new \FailAction('selling\Sale::sales.check');
-		} else {
-
-			$eFarm = $cSale->first()['farm'];
-
-			foreach($cSale as $eSale) {
-
-				if($eSale['farm']['id'] !== $eFarm['id']) {
-					throw new \NotExpectedAction('Different farms');
-				}
-
-			}
 		}
 
 	}
@@ -156,20 +144,7 @@ class Sale extends SaleElement {
 
 		return (
 			$this->canWrite() and
-			$this['marketParent']->empty() and
-			$this['preparationStatus'] !== Sale::PROVISIONAL
-		);
-
-	}
-
-	public function canDelete(): bool {
-
-		$this->expects(['shopMaster', 'preparationStatus']);
-
-		return (
-			$this->canWrite() and
-			$this['shopMaster'] === FALSE and
-			$this['preparationStatus'] !== Sale::PROVISIONAL
+			$this['marketParent']->empty()
 		);
 
 	}
@@ -261,12 +236,9 @@ class Sale extends SaleElement {
 
 	public function acceptUpdateItems(): bool {
 
-		$this->expects(['market', 'marketParent', 'preparationStatus', 'deliveredAt', 'shopMaster']);
+		$this->expects(['market', 'marketParent', 'preparationStatus', 'deliveredAt']);
 
-		if(
-			$this['marketParent']->notEmpty() or
-			$this['shopMaster']
-		) {
+		if($this['marketParent']->notEmpty()) {
 			return FALSE;
 		}
 
@@ -325,7 +297,13 @@ class Sale extends SaleElement {
 
 	public function acceptWritePreparationStatus(): bool {
 
-		return $this['compositionOf']->empty();
+		return (
+			$this['compositionOf']->empty() and
+			(
+				$this['shopDate']->empty() or
+				$this['shopDate']['isOrderable'] === FALSE
+			)
+		);
 
 	}
 
@@ -378,9 +356,10 @@ class Sale extends SaleElement {
 
 	public function acceptCancelDelivered(): bool {
 
-		$this->expects(['deliveredAt', 'invoice']);
+		$this->expects(['preparationStatus', 'deliveredAt', 'invoice']);
 
 		return (
+			$this['preparationStatus'] === Sale::DELIVERED and
 			$this['invoice']->empty() and
 			time() - strtotime($this['deliveredAt']) < 86400 * 45
 		);
@@ -495,21 +474,6 @@ class Sale extends SaleElement {
 		);
 	}
 
-	public function acceptCustomerCancel(): bool {
-
-		return (
-			// Seulement certains types de paiement
-			(
-				in_array($this['paymentMethod'], [NULL, Sale::OFFLINE, Sale::TRANSFER]) or
-				($this['paymentMethod'] === Sale::ONLINE_CARD and in_array($this['paymentStatus'], [Sale::UNDEFINED, Sale::FAILED]))
-			) and
-			// Seulement pour les commandes en brouillon ou confirmées
-			in_array($this['preparationStatus'], [\selling\Sale::DRAFT, \selling\Sale::BASKET, \selling\Sale::CONFIRMED]) and
-			($this['shop'] === NULL or $this['shopDate']['orderEndAt'] > date('Y-m-d H:i:s'))
-		);
-
-	}
-
 	public function acceptDuplicate(): bool {
 
 		return (
@@ -522,7 +486,7 @@ class Sale extends SaleElement {
 	}
 
 	public function canRemote(): bool {
-		return $this->canRead() or GET('key') === \Setting::get('selling\remoteKey');
+		return GET('key') === \Setting::get('selling\remoteKey') or $this->canRead();
 	}
 
 	public function getNumber(): string {
@@ -597,7 +561,7 @@ class Sale extends SaleElement {
 	}
 
 	public function getDeleteStatuses(): array {
-		return [Sale::COMPOSITION, Sale::DRAFT, Sale::BASKET, Sale::CONFIRMED, Sale::CANCELED, Sale::PROVISIONAL];
+		return [Sale::COMPOSITION, Sale::DRAFT, Sale::BASKET, Sale::CONFIRMED, Sale::CANCELED];
 	}
 
 	public function acceptDeletePaymentStatus() {
@@ -645,9 +609,31 @@ class Sale extends SaleElement {
 
 	}
 
+	public function acceptStatusPrepared(): bool {
+
+		return (
+			$this->acceptWritePreparationStatus() and
+			$this['market'] === FALSE and
+			in_array($this['preparationStatus'], [Sale::CONFIRMED])
+		);
+
+	}
+
 	public function acceptStatusDelivered(): bool {
 
-		return in_array($this['preparationStatus'], $this['marketParent']->notEmpty() ? [Sale::DRAFT] : [Sale::CONFIRMED, Sale::PREPARED]);
+		return (
+			$this->acceptWritePreparationStatus() and
+			in_array($this['preparationStatus'], $this['marketParent']->notEmpty() ? [Sale::DRAFT] : [Sale::CONFIRMED, Sale::PREPARED])
+		);
+
+	}
+
+	public function acceptStatusSelling(): bool {
+
+		return (
+			$this['market'] and
+			$this['preparationStatus'] === Sale::CONFIRMED
+		);
 
 	}
 
@@ -672,7 +658,7 @@ class Sale extends SaleElement {
 
 	}
 
-	public function acceptStatusCancel(): bool {
+	public function acceptStatusCanceled(): bool {
 
 		if(in_array($this['preparationStatus'], $this['marketParent']->notEmpty() ? [Sale::DRAFT, Sale::DELIVERED] : [Sale::BASKET, Sale::CONFIRMED, Sale::PREPARED, Sale::DELIVERED, Sale::SELLING]) === FALSE) {
 			return FALSE;
@@ -683,6 +669,30 @@ class Sale extends SaleElement {
 		}
 
 		return TRUE;
+
+	}
+
+	public function acceptStatusCanceledByCustomer(): bool {
+
+		return (
+			// Seulement certains types de paiement
+			(
+				in_array($this['paymentMethod'], [NULL, Sale::OFFLINE, Sale::TRANSFER]) or
+				($this['paymentMethod'] === Sale::ONLINE_CARD and in_array($this['paymentStatus'], [Sale::UNDEFINED, Sale::FAILED]))
+			) and
+			// Seulement pour les commandes en brouillon ou confirmées
+			in_array($this['preparationStatus'], [\selling\Sale::DRAFT, \selling\Sale::BASKET, \selling\Sale::CONFIRMED]) and
+			($this['shop'] === NULL or $this['shopDate']['orderEndAt'] > date('Y-m-d H:i:s'))
+		);
+
+	}
+
+	public function acceptStatusDraft(): bool {
+
+		return (
+			$this->acceptWritePreparationStatus() and
+			in_array($this['preparationStatus'], $this['marketParent']->notEmpty() ? [Sale::CANCELED, Sale::DELIVERED] : [Sale::CONFIRMED, Sale::PREPARED, Sale::SELLING])
+		);
 
 	}
 
@@ -796,14 +806,14 @@ class Sale extends SaleElement {
 					return FALSE;
 				}
 
-				$this['oldStatus'] = $this['preparationStatus'];
+				$this['oldPreparationStatus'] = $this['preparationStatus'];
 
 				return match($preparationStatus) {
-					Sale::DRAFT => in_array($this['oldStatus'], $this['marketParent']->notEmpty() ? [Sale::CANCELED, Sale::DELIVERED] : [Sale::CONFIRMED, Sale::PREPARED, Sale::SELLING]),
+					Sale::DRAFT => in_array($this['oldPreparationStatus'], $this['marketParent']->notEmpty() ? [Sale::CANCELED, Sale::DELIVERED] : [Sale::CONFIRMED, Sale::PREPARED, Sale::SELLING]),
 					Sale::CONFIRMED => $this->acceptStatusConfirmed(),
-					Sale::SELLING => in_array($this['oldStatus'], $this['market'] ? [Sale::CONFIRMED, Sale::DELIVERED] : []),
-					Sale::PREPARED => in_array($this['oldStatus'], $this['marketParent']->notEmpty() ? [] : [Sale::CONFIRMED]),
-					Sale::CANCELED => $this->acceptStatusCancel(),
+					Sale::SELLING => in_array($this['oldPreparationStatus'], $this['market'] ? [Sale::CONFIRMED, Sale::DELIVERED] : []),
+					Sale::PREPARED => in_array($this['oldPreparationStatus'], $this['marketParent']->notEmpty() ? [] : [Sale::CONFIRMED]),
+					Sale::CANCELED => $this->acceptStatusCanceled(),
 					Sale::DELIVERED => $this->acceptStatusDelivered(),
 				};
 
@@ -824,7 +834,7 @@ class Sale extends SaleElement {
 
 				// On vérifie qu'il n'y a pas de vente active pour autoriser à revenir en arrière dans le statut
 				if(
-					$this['oldStatus'] === Sale::SELLING and
+					$this['oldPreparationStatus'] === Sale::SELLING and
 					in_array($preparationStatus, [Sale::CANCELED, Sale::DRAFT, Sale::CONFIRMED])
 				) {
 
@@ -1010,7 +1020,7 @@ class Sale extends SaleElement {
 
 				$fw = new \FailWatch();
 
-				$this['cItem'] = \selling\ItemLib::build($this, $_POST, FALSE);
+				$this['cItemCreate'] = \selling\ItemLib::build($this, $_POST, FALSE);
 
 				if($fw->ko()) {
 					Item::fail('createCollectionError');
@@ -1028,10 +1038,11 @@ class Sale extends SaleElement {
 				}
 
 				$this->expects([
-					'shopDate' => ['cProduct']
+					'shopDate' => ['cProduct'],
+					'cItem'
 				]);
 
-				$this['basket'] = \shop\BasketLib::checkAvailableProducts($products, $this['shopDate']['cProduct'], $this);
+				$this['basket'] = \shop\BasketLib::checkAvailableProducts($products, $this['shopDate']['cProduct'], $this['cItem']);
 
 				return ($this['basket'] !== []);
 

@@ -37,15 +37,7 @@ new Page(function($data) {
 
 	})
 	->get( 'join', function($data) {
-
-		if(post_exists('key')) {
-			$data->eShop = \shop\ShopLib::getByKey(POST('key'));
-		} else {
-			$data->eShop = new \shop\Shop();
-		}
-
 		throw new ViewAction($data);
-
 	})
 	->post( 'doJoin', function($data) {
 
@@ -53,6 +45,10 @@ new Page(function($data) {
 
 		if($data->eShop->empty()) {
 			throw new FailAction('shop\Shop::invalidKey');
+		}
+
+		if($data->eShop['farm']['id'] === $data->eFarm['id']) {
+			throw new FailAction('shop\Shop::invalidFarm');
 		}
 
 		$data->hasJoin = \shop\ShareLib::match($data->eShop, $data->eFarm);
@@ -139,7 +135,7 @@ new shop\ShopPage()
 	})
 	->doUpdateProperties('doUpdatePayment', ['hasPayment'], function($data) {
 		throw new ReloadAction('shop', $data->e['hasPayment'] ? 'Shop::paymentOn' : 'Shop::paymentOff');
-	})
+	}, validate: ['canUpdate', 'isPersonal'])
 	->doUpdateProperties('doUpdatePoint', ['hasPoint'], function($data) {
 		throw new ReloadAction('shop', $data->e['hasPoint'] ? 'Shop::pointOn' : 'Shop::pointOff');
 	})

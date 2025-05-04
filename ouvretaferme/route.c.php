@@ -692,10 +692,10 @@ Route::register([
 			'priority' => 5,
 			'route' => ['@module', 'website', 'News', 'quick'],
 		],
-		'/shop/public/{fqn}/{date}/:doCancelSale' => [
+		'/shop/public/{fqn}/{date}/:doCancelCustomer' => [
 			'request' => 'shop/public',
 			'priority' => 5,
-			'route' => ['shop', 'public', '{fqn}', '{date}', ':doCancelSale'],
+			'route' => ['shop', 'public', '{fqn}', '{date}', ':doCancelCustomer'],
 		],
 		'/shop/public/{fqn}/{date}/:doCreatePayment' => [
 			'request' => 'shop/public',

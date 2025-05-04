@@ -30,6 +30,13 @@ class CatalogUi {
 			$h .= '</div>';
 		$h .= '</div>';
 
+		if($eCatalogSelected['comment']) {
+			$h .= '<div class="util-block">';
+				$h .= '<h4>'.s("Commentaire").'</h4>';
+				$h .= encode($eCatalogSelected['comment']).' &raquo;';
+			$h .= '</div>';
+		}
+
 		if($cProduct->empty()) {
 
 			$h .= '<div class="util-block-help">';
@@ -122,7 +129,7 @@ class CatalogUi {
 		$h = $form->openAjax('/shop/catalog:doUpdate');
 
 			$h .= $form->hidden('id', $eCatalog['id']);
-			$h .= $form->dynamicGroups($eCatalog, ['name']);
+			$h .= $form->dynamicGroups($eCatalog, ['name', 'comment']);
 			$h .= $form->group(
 				content: $form->submit(s("Modifier"))
 			);

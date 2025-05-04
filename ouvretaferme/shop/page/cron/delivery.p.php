@@ -2,7 +2,7 @@
 new Page()
 	->cron('email', function($data) {
 
-		\shop\DateLib::sendEndEmail();
+		\shop\DateLib::end();
 
 	}, interval: '15 * * * *')
 	->cron('finish', function($data) {

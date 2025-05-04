@@ -27,7 +27,7 @@ class Share extends ShareElement {
 
 	}
 
-	public function canDelete(): bool {
+	public function canWrite(): bool {
 
 		$this->expects(['farm', 'shop']);
 

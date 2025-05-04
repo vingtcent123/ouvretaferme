@@ -7,6 +7,8 @@ abstract class ShareElement extends \Element {
 
 	private static ?ShareModel $model = NULL;
 
+	const TRANSFER = 'transfer';
+
 	public static function getSelection(): array {
 		return Share::model()->getProperties();
 	}
@@ -40,13 +42,14 @@ class ShareModel extends \ModuleModel {
 			'shop' => ['element32', 'shop\Shop', 'cast' => 'element'],
 			'farm' => ['element32', 'farm\Farm', 'cast' => 'element'],
 			'label' => ['text8', 'min' => 1, 'max' => 50, 'null' => TRUE, 'cast' => 'string'],
+			'paymentMethod' => ['enum', [\shop\Share::TRANSFER], 'null' => TRUE, 'cast' => 'enum'],
 			'position' => ['int8', 'min' => 0, 'max' => NULL, 'cast' => 'int'],
 			'createdAt' => ['datetime', 'cast' => 'string'],
 			'createdBy' => ['element32', 'user\User', 'cast' => 'element'],
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'shop', 'farm', 'label', 'position', 'createdAt', 'createdBy'
+			'id', 'shop', 'farm', 'label', 'paymentMethod', 'position', 'createdAt', 'createdBy'
 		]);
 
 		$this->propertiesToModule += [
@@ -78,6 +81,20 @@ class ShareModel extends \ModuleModel {
 
 	}
 
+	public function encode(string $property, $value) {
+
+		switch($property) {
+
+			case 'paymentMethod' :
+				return ($value === NULL) ? NULL : (string)$value;
+
+			default :
+				return parent::encode($property, $value);
+
+		}
+
+	}
+
 	public function select(...$fields): ShareModel {
 		return parent::select(...$fields);
 	}
@@ -100,6 +117,10 @@ class ShareModel extends \ModuleModel {
 
 	public function whereLabel(...$data): ShareModel {
 		return $this->where('label', ...$data);
+	}
+
+	public function wherePaymentMethod(...$data): ShareModel {
+		return $this->where('paymentMethod', ...$data);
 	}
 
 	public function wherePosition(...$data): ShareModel {

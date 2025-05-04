@@ -68,9 +68,7 @@ new \selling\SalePage()
 
 		\farm\FarmerLib::setView('viewSelling', $data->eFarm, \farm\Farmer::SALE);
 
-		$data->cItem = ($data->e['preparationStatus'] === \selling\Sale::PROVISIONAL) ?
-			\selling\SaleLib::getItems($data->e['shopParent'], eFarm: $data->eFarm, withIngredients: TRUE) :
-			\selling\SaleLib::getItems($data->e, withIngredients: TRUE);
+		$data->cItem = \selling\SaleLib::getItems($data->e, withIngredients: TRUE);
 		$data->ccSaleMarket = \selling\SaleLib::getByParent($data->e);
 		$data->cHistory = \selling\HistoryLib::getBySale($data->e);
 		$data->cPdf = \selling\PdfLib::getBySale($data->e);
@@ -260,7 +258,7 @@ new \selling\SalePage()
 
 	}, validate: ['canUpdateCustomer', 'acceptUpdateCustomer'])
 	->doUpdateProperties('doUpdatePaymentMethod', ['paymentMethod'], fn() => throw new ReloadAction(), validate: ['canWrite'])
-	->doUpdateProperties('doUpdatePreparationStatus', ['preparationStatus'], fn($data) => throw new ViewAction($data), validate: ['acceptWritePreparationStatus'])
+	->doUpdateProperties('doUpdatePreparationStatus', ['preparationStatus'], fn($data) => throw new ViewAction($data))
 	->read('duplicate', function($data) {
 
 		if($data->e->acceptDuplicate() === FALSE) {
@@ -343,9 +341,9 @@ new \selling\SalePage()
 		throw new ViewAction($data);
 
 	})
-	->post('doUpdateCancelCollection', function($data) {
+	->post('doUpdateCanceledCollection', function($data) {
 
-		$data->c->validate('canWrite', 'acceptStatusCancel');
+		$data->c->validate('canWrite', 'acceptStatusCanceled');
 
 		\selling\SaleLib::updatePreparationStatusCollection($data->c, \selling\Sale::CANCELED);
 
@@ -361,11 +359,38 @@ new \selling\SalePage()
 		throw new ReloadAction();
 
 	})
+	->post('doUpdatePreparedCollection', function($data) {
+
+		$data->c->validate('canWrite', 'acceptStatusPrepared');
+
+		\selling\SaleLib::updatePreparationStatusCollection($data->c, \selling\Sale::PREPARED);
+
+		throw new ReloadAction();
+
+	})
 	->post('doUpdateConfirmedCollection', function($data) {
 
 		$data->c->validate('canWrite', 'acceptStatusConfirmed');
 
 		\selling\SaleLib::updatePreparationStatusCollection($data->c, \selling\Sale::CONFIRMED);
+
+		throw new ReloadAction();
+
+	})
+	->post('doUpdateSellingCollection', function($data) {
+
+		$data->c->validate('canWrite', 'acceptStatusSelling');
+
+		\selling\SaleLib::updatePreparationStatusCollection($data->c, \selling\Sale::SELLING);
+
+		throw new ReloadAction();
+
+	})
+	->post('doUpdateDraftCollection', function($data) {
+
+		$data->c->validate('canWrite', 'acceptStatusDraft');
+
+		\selling\SaleLib::updatePreparationStatusCollection($data->c, \selling\Sale::DRAFT);
 
 		throw new ReloadAction();
 

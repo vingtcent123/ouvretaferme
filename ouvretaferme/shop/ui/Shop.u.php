@@ -191,7 +191,12 @@ class ShopUi {
 
 			$h .= '<div class="tabs-item">';
 				$h .= '<a class="tab-item selected" data-tab="settings" onclick="Lime.Tab.select(this)">'.s("Général").'</a>';
-				$h .= '<a class="tab-item" data-tab="payment" onclick="Lime.Tab.select(this)">'.s("Moyens de paiement").' <span class="tab-item-count">'.$eShop->countPayments().'</span></a>';
+				$h .= '<a class="tab-item" data-tab="payment" onclick="Lime.Tab.select(this)">';
+					$h .= s("Moyens de paiement");
+					if($eShop['shared'] === FALSE) {
+						$h .= ' <span class="tab-item-count">'.$eShop->countPayments().'</span>';
+					}
+				$h .= '</a>';
 				$h .= '<a class="tab-item" data-tab="terms" onclick="Lime.Tab.select(this)">'.s("Conditions de vente").'</a>';
 				$h .= '<a class="tab-item" data-tab="mail" onclick="Lime.Tab.select(this)">'.s("E-mails").'</a>';
 				$h .= '<a class="tab-item" data-tab="customize" onclick="Lime.Tab.select(this)">'.s("Personnalisation").'</a>';
@@ -319,15 +324,6 @@ class ShopUi {
 
 		$h .= $form->group(content: '<div class="util-block-help">'.$content.'</div>');
 
-		if($eShop['shared']) {
-			$alert = '<div class="util-block util-block-dark bg-danger">';
-				$alert .= '<h4>'.s("Attention !").'</h4>';
-				$alert .= '<p>'.s("Chaque membre du collectif devra éditer ses propres factures à destination des clients qui lui auront passé commande pendant le mois écoulé.").'</p>';
-			$alert .= '</div>';
-
-			$h .= $form->group(content: $alert);
-		}
-
 		$h .= $form->dynamicGroup($eShop, 'paymentTransfer');
 		$h .= $form->dynamicGroup($eShop, 'paymentTransferHow', function(\PropertyDescriber $d) use($eShop) {
 			$d->group['class'] = $eShop['paymentTransfer'] ? '' : 'hide';
@@ -382,9 +378,14 @@ class ShopUi {
 	protected function updateInactivePayment(Shop $eShop): string {
 
 		$h = '<div class="util-block-help">';
-			$h .= '<h4>'.s("Le choix du moyen de paiement est désactivé sur votre boutique").'</h4>';
-			$h .= '<p>'.s("Vos clients n'ont actuellement pas besoin de choisir de moyen de paiement lorsqu'ils commandent sur la boutique, c'est à vous de les informer de la façon dont ils peuvent régler leurs commandes.").'</p>';
-			$h .= '<a data-ajax="/shop/:doUpdatePayment" post-id="'.$eShop['id'].'" post-has-payment="1" data-confirm="'.s("Souhaitez-vous réellement réactiver la page de choix du moyen de paiement sur votre boutique ?").'" class="btn btn-secondary">'.s("Réactiver le choix du moyen de paiement").'</a>';
+			if($eShop->isPersonal()) {
+				$h .= '<h4>'.s("Le choix du moyen de paiement est désactivé sur votre boutique").'</h4>';
+				$h .= '<p>'.s("Vos clients n'ont actuellement pas besoin de choisir de moyen de paiement lorsqu'ils commandent sur la boutique, c'est à vous de les informer de la façon dont ils peuvent régler leurs commandes.").'</p>';
+				$h .= '<a data-ajax="/shop/:doUpdatePayment" post-id="'.$eShop['id'].'" post-has-payment="1" data-confirm="'.s("Souhaitez-vous réellement réactiver la page de choix du moyen de paiement sur votre boutique ?").'" class="btn btn-secondary">'.s("Réactiver le choix du moyen de paiement").'</a>';
+			} else {
+				$h .= '<h4>'.s("Le choix du moyen de paiement n'est pas activable sur les boutiques collectives").'</h4>';
+				$h .= '<p>'.s("C'est à vous d'informer vos clients de la façon dont ils peuvent régler leurs commandes.").'</p>';
+			}
 		$h .= '</div>';
 
 		return $h;
@@ -442,12 +443,7 @@ class ShopUi {
 		$h .= $form->openAjax('/shop/configuration:doUpdateEmail');
 
 		$h .= $form->hidden('id', $eShop['id']);
-
-		if($eShop['shared'] === FALSE) {
-			$h .= $form->dynamicGroup($eShop, 'emailNewSale');
-		}
-
-		$h .= $form->dynamicGroup($eShop, 'emailEndDate');
+		$h .= $form->dynamicGroups($eShop, ['emailNewSale', 'emailEndDate']);
 
 		$h .= $form->group(
 			content: $form->submit(s("Enregistrer les modifications"))
@@ -495,7 +491,7 @@ class ShopUi {
 
 			$eSaleExample['shopPoint'] = $eSaleExample['shopPoints'][Point::PLACE];
 
-			[$title, , $html] = new MailUi()->getSaleConfirmed($eSaleExample, $eSaleExample['cItem'], $cCustomize[\mail\Customize::SHOP_CONFIRMED_PLACE]['template'] ?? NULL);
+			[$title, , $html] = new MailUi()->getSaleConfirmed($eSaleExample, $eSaleExample['cItem'], $eShop->isShared(), $cCustomize[\mail\Customize::SHOP_CONFIRMED_PLACE]['template'] ?? NULL);
 			$h .= new \mail\CustomizeUi()->getMailExample($title, $html);
 
 			$h .= '<div class="util-title">';
@@ -505,7 +501,7 @@ class ShopUi {
 
 			$eSaleExample['shopPoint'] = $eSaleExample['shopPoints'][Point::HOME];
 
-			[$title, , $html] = new MailUi()->getSaleConfirmed($eSaleExample, $eSaleExample['cItem'], $cCustomize[\mail\Customize::SHOP_CONFIRMED_HOME]['template'] ?? NULL);
+			[$title, , $html] = new MailUi()->getSaleConfirmed($eSaleExample, $eSaleExample['cItem'], $eShop->isShared(), $cCustomize[\mail\Customize::SHOP_CONFIRMED_HOME]['template'] ?? NULL);
 			$h .= new \mail\CustomizeUi()->getMailExample($title, $html);
 
 		$h .= '</div>';
@@ -518,7 +514,7 @@ class ShopUi {
 
 			$eSaleExample['shopPoint'] = new Point();
 
-			[$title, , $html] = new MailUi()->getSaleConfirmed($eSaleExample, $eSaleExample['cItem'], $cCustomize[\mail\Customize::SHOP_CONFIRMED_NONE]['template'] ?? NULL);
+			[$title, , $html] = new MailUi()->getSaleConfirmed($eSaleExample, $eSaleExample['cItem'], $eShop->isShared(),$cCustomize[\mail\Customize::SHOP_CONFIRMED_NONE]['template'] ?? NULL);
 			$h .= new \mail\CustomizeUi()->getMailExample($title, $html);
 
 		$h .= '</div>';
@@ -1099,32 +1095,36 @@ class ShopUi {
 					$h .= self::p('frequency')->values[$eShop['frequency']];
 				$h .= '</dd>';
 
-				$h .= '<dt>';
-					$h .= s("Moyens de paiement");
-				$h .= '</dt>';
-				$h .= '<dd>';
+				if($eShop['shared'] === FALSE) {
 
-					if($eShop['hasPayment']) {
+					$h .= '<dt>';
+						$h .= s("Moyens de paiement");
+					$h .= '</dt>';
+					$h .= '<dd>';
 
-						$modes = [];
+						if($eShop['hasPayment']) {
 
-						if($eShop['paymentOffline']) {
-							$modes[] = s("En direct");
+							$modes = [];
+
+							if($eShop['paymentOffline']) {
+								$modes[] = s("En direct");
+							}
+
+							if($eShop['paymentTransfer']) {
+								$modes[] = s("Virement bancaire");
+							}
+
+							if($eShop['paymentCard']) {
+								$modes[] = s("Carte bancaire");
+							}
+
+							$h .= implode(' / ', $modes);
+
 						}
 
-						if($eShop['paymentTransfer']) {
-							$modes[] = s("Virement bancaire");
-						}
+					$h .= '</dd>';
 
-						if($eShop['paymentCard']) {
-							$modes[] = s("Carte bancaire");
-						}
-
-						$h .= implode(' / ', $modes);
-
-					}
-
-				$h .= '</dd>';
+				}
 
 				if($eShop['cCustomer']->notEmpty()) {
 
@@ -1177,8 +1177,8 @@ class ShopUi {
 			'customColor' => s("Couleur contrastante"),
 			'customFont' => s("Police pour le texte"),
 			'customTitleFont' => s("Police pour le titre principal des pages"),
-			'emailNewSale' => s("Recevoir une copie des e-mails envoyés à chaque nouvelle commande ou modification de commande d'un de vos clients"),
-			'emailEndDate' => s("Recevoir un e-mail de synthèse lorsqu'une vente se termine")
+			'emailNewSale' => fn($eShop) => $eShop->isShared() ? s("Envoyer à chaque producteur un e-mail à chaque nouvelle commande ou modification de commande d'un client") : s("Recevoir un e-mail à chaque nouvelle commande ou modification de commande d'un de vos clients"),
+			'emailEndDate' => fn($eShop) => $eShop->isShared() ? s("Envoyer à chaque producteur un e-mail de synthèse lorsque les prises de commande d'une livraison se terminent") : s("Recevoir un e-mail de synthèse lorsque les prises de commande d'une livraison se terminent")
 		]);
 
 		switch($property) {

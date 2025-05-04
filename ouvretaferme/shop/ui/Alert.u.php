@@ -37,6 +37,7 @@ class AlertUi {
 			'Shop::customColor.light' => s("La couleur constrante est trop claire, merci de choisir une teinte plus foncée pour préserer la lisibilité de votre boutique."),
 			'Shop::customBackground.light' => s("La couleur d'arrière plan est trop foncée, merci de choisir une teinte plus claire pour préserer la lisibilité de votre boutique."),
 			'Shop::invalidKey' => s("Le code d'invitation que vous avez saisi n'est pas reconnu ou a expiré."),
+			'Shop::invalidFarm' => s("Votre ferme ne peut pas rejoindre comme producteur une ferme qu'elle administre."),
 
 			default => NULL
 
@@ -48,8 +49,8 @@ class AlertUi {
 
 		return match($fqn) {
 
-			'Date::copied' => s("La nouvelle livraison a bien été copiée à partir d'une date précédente !"),
-			'Date::created' => s("La nouvelle livraison a bien été créée !"),
+			'Date::copied' => s("La livraison a bien été copiée à partir d'une précédente !"),
+			'Date::created' => s("La livraison a bien été créée !"),
 			'Date::deleted' => s("La livraison a bien été supprimée"),
 			'Date::updated' => s("Le paramétrage a bien été enregistré."),
 

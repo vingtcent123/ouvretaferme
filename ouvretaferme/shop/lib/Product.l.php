@@ -178,7 +178,7 @@ class ProductLib extends ProductCrud {
 
 	}
 
-	public static function getByDate(Date $eDate, \selling\Customer $eCustomer = new \selling\Customer(), \selling\Sale $eSaleExclude = new \selling\Sale(), bool $withIngredients = FALSE, bool $public = FALSE): \Collection {
+	public static function getByDate(Date $eDate, \selling\Customer $eCustomer = new \selling\Customer(), \Collection $cSaleExclude = new \Collection(), bool $withIngredients = FALSE, bool $public = FALSE): \Collection {
 
 		$ids = self::getColumnByDate($eDate, 'id', function(ProductModel $m) use($eDate, $eCustomer, $public) {
 
@@ -249,7 +249,7 @@ class ProductLib extends ProductCrud {
 		$order['product'] = ['name'];
 
 		$cProduct->sort($order, natural: TRUE);
-		self::applySold($eDate, $cProduct, $cGrid, $eSaleExclude);
+		self::applySold($eDate, $cProduct, $cGrid, $cSaleExclude);
 
 		return $cProduct;
 
@@ -279,21 +279,27 @@ class ProductLib extends ProductCrud {
 
 	}
 
-	public static function applyDiscount(\Collection $cProduct, int $discount): void {
+	public static function applyDiscounts(\Collection $cProduct, array $discounts): void {
 
-		if($discount === 0) {
+		if($discounts === []) {
 			return;
 		}
 
 		foreach($cProduct as $eProduct) {
-			$eProduct['price'] = round($eProduct['price'] * (1 - $discount / 100), 2);
+
+			$discount = $discounts[$eProduct['farm']['id']] ?? 0;
+
+			if($discount > 0) {
+				$eProduct['price'] = round($eProduct['price'] * (1 - $discount / 100), 2);
+			}
+
 		}
 
 	}
 
-	public static function applySold(Date $eDate, \Collection $cProduct, \Collection $cGrid, \selling\Sale $eSaleExclude = new \selling\Sale()): \Collection {
+	public static function applySold(Date $eDate, \Collection $cProduct, \Collection $cGrid, \Collection $cSaleExclude = new \Collection()): \Collection {
 
-		$cItem = SaleLib::getProductsByDate($eDate, $eSaleExclude);
+		$cItem = SaleLib::getProductsByDate($eDate, $cSaleExclude);
 
 		foreach($cProduct as $eProduct) {
 
@@ -465,13 +471,10 @@ class ProductLib extends ProductCrud {
 
 	}
 
-	public static function getReallyAvailable(Product $eProduct, \selling\Product $eProductSelling, \selling\Sale $eSale): ?float {
+	public static function getReallyAvailable(Product $eProduct, \selling\Product $eProductSelling, \Collection $cItem): ?float {
 
-		if($eSale->exists()) {
-
-			$eSale->expects(['cItem']);
-
-			$eItem = $eSale['cItem']->find(fn($eItem) => $eItem['product']['id'] === $eProductSelling['id'], limit: 1);
+		if($cItem->notEmpty()) {
+			$eItem = $cItem->find(fn($eItem) => $eItem['product']['id'] === $eProductSelling['id'], limit: 1);
 			$number = $eItem->empty() ? 0 : $eItem['number'];
 		} else {
 			$number = 0;
@@ -507,8 +510,6 @@ class ProductLib extends ProductCrud {
 
 	private static function setAvailable(\selling\Sale $eSale, \Collection $cItem, string $sign): void {
 
-		$eSale->expects(['shopParent']);
-
 		$cItem->expects([
 			'shopProduct',
 			'number'
@@ -518,10 +519,7 @@ class ProductLib extends ProductCrud {
 
 			$eProduct = $eItem['shopProduct'];
 
-			if(
-				$eProduct->notEmpty() and
-				$eSale['shopParent']->empty()
-			) {
+			if($eProduct->notEmpty()) {
 
 				Product::model()
 					->whereAvailable('!=', NULL)

@@ -8,7 +8,7 @@ class CatalogLib extends CatalogCrud {
 	}
 
 	public static function getPropertiesUpdate(): array {
-		return ['name'];
+		return ['name', 'comment'];
 	}
 
 	public static function getByFarm(\farm\Farm $eFarm, ?string $type = NULL, mixed $index = NULL, array $onlyIds = []): \Collection {

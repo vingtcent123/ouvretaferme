@@ -177,7 +177,7 @@ class Farm extends FarmElement {
 	}
 
 	public function canRemote(): bool {
-		return $this->canRead() or GET('key') === \Setting::get('selling\remoteKey');
+		return GET('key') === \Setting::get('selling\remoteKey') or $this->canRead();
 	}
 
 	public function canShop(): bool {

@@ -425,14 +425,10 @@ class OrderUi {
 
 		\Asset::css('selling', 'item.css');
 
-		$h = '<div class="util-title">';
-			$h .= '<h3>'.s("Articles commandés").'</h3>';
-		$h .= '</div>';
-
 		$withPackaging = $cItem->reduce(fn($eItem, $n) => $n + (int)($eItem['packaging'] !== NULL), 0);
 		$columns = 0;
 
-		$h .= '<table class="stick-xs tr-bordered">';
+		$h = '<table class="stick-xs tr-bordered">';
 
 			$h .= '<thead>';
 				$h .= '<tr>';

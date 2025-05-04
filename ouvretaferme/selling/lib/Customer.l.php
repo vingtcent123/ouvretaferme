@@ -227,13 +227,34 @@ class CustomerLib extends CustomerCrud {
 
 	}
 
-	public static function getByUserAndFarm(\user\User $eUser, \farm\Farm $eFarm): Customer {
+	public static function getByUserAndFarm(\user\User $eUser, \farm\Farm $eFarm, bool $autoCreate = FALSE, ?string $autoCreateType = NULL): Customer {
 
-		return Customer::model()
+		if($eUser->empty()) {
+			return new \selling\Customer();
+		}
+
+		$eCustomer = Customer::model()
 			->select(Customer::getSelection())
 			->whereUser($eUser)
 			->whereFarm($eFarm)
 			->get();
+
+		if($eCustomer->empty() and $autoCreate) {
+			// Possible problème de DUPLICATE si le customer a été créé entre cette instruction et la précédente
+			$eCustomer = \selling\CustomerLib::createFromUser($eUser, $eFarm, $autoCreateType ?? throw new \Exception('Missing type'));
+		}
+
+		return $eCustomer;
+
+	}
+
+	public static function getByUserAndFarms(\user\User $eUser, \Collection $cFarm): \Collection {
+
+		return Customer::model()
+			->select(Customer::getSelection())
+			->whereUser($eUser)
+			->whereFarm('IN', $cFarm)
+			->getCollection(index: 'farm');
 
 	}
 

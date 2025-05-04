@@ -171,6 +171,8 @@ class SaleUi {
 			);
 		}
 
+		$hasFarm = count(array_count_values($cSale->getColumnCollection('farm')->getIds())) > 1;
+
 		$previousSubtitle = NULL;
 
 		$h .= '<table class="tr-even">';
@@ -197,6 +199,10 @@ class SaleUi {
 							$label = s("Nom");
 							$h .= ($search ? $search->linkSort('lastName', $label) : $label);
 						$h .= '</th>';
+						$columns++;
+					}
+					if($hasFarm) {
+						$h .= '<th>'.s("Producteur").'</th>';
 						$columns++;
 					}
 					if(in_array('preparationStatus', $hide) === FALSE) {
@@ -246,12 +252,6 @@ class SaleUi {
 				}
 
 				foreach($cSale as $eSale) {
-
-					if($eSale['shopParent']->notEmpty()) {
-						$saleStatus = $eSale['shopParent']['preparationStatus'];
-					} else {
-						$saleStatus = $eSale['preparationStatus'];
-					}
 
 					if($hasSubtitles) {
 
@@ -318,36 +318,60 @@ class SaleUi {
 
 					$batch = [];
 
-					if($eSale->acceptStatusConfirmed() === FALSE) {
+					if(
+						$eSale->canWrite() === FALSE or
+						$eSale->acceptStatusPrepared() === FALSE
+					) {
+						$batch[] = 'not-prepared';
+					}
+
+					if(
+						$eSale->canWrite() === FALSE or
+						$eSale->acceptStatusConfirmed() === FALSE
+					) {
 						$batch[] = 'not-confirmed';
 					}
 
-					if($eSale->acceptStatusCancel() === FALSE) {
+					if(
+						$eSale->canWrite() === FALSE or
+						$eSale->acceptStatusCanceled() === FALSE
+					) {
 						$batch[] = 'not-canceled';
 					}
 
-					if($eSale->acceptStatusDelivered() === FALSE) {
+					if(
+						$eSale->canWrite() === FALSE or
+						$eSale->acceptStatusDelivered() === FALSE
+					) {
 						$batch[] = 'not-delivered';
 					}
 
-					if($eSale->acceptDelete() === FALSE) {
+					if(
+						$eSale->canWrite() === FALSE or
+						$eSale->acceptDelete() === FALSE
+					) {
 						$batch[] = 'not-delete';
 					}
 
 					$h .= '<tr';
-						if($saleStatus === Sale::CANCELED) {
+						if($eSale['preparationStatus'] === Sale::CANCELED) {
 							$h .= ' style="opacity: 0.5"';
 						}
 					$h .= '>';
 
 						$h .= '<td class="td-checkbox">';
-							$h .= '<label>';
-								$h .= '<input type="checkbox" name="batch[]" value="'.$eSale['id'].'" oninput="Sale.changeSelection()" data-batch-amount-excluding="'.($eSale['priceExcludingVat'] ?? 0.0).'" data-batch-amount-including="'.($eSale['priceIncludingVat'] ?? 0.0).'" data-batch-taxes="'.($eSale['hasVat'] ? $eSale['taxes'] : '').'" data-batch="'.implode(' ', $batch).'"/>';
-							$h .= '</label>';
+							if($eSale->canRead()) {
+								$h .= '<label>';
+									$h .= '<input type="checkbox" name="batch[]" value="'.$eSale['id'].'" oninput="Sale.changeSelection()" data-batch-amount-excluding="'.($eSale['priceExcludingVat'] ?? 0.0).'" data-batch-amount-including="'.($eSale['priceIncludingVat'] ?? 0.0).'" data-batch-taxes="'.($eSale['hasVat'] ? $eSale['taxes'] : '').'" data-batch="'.implode(' ', $batch).'"/>';
+								$h .= '</label>';
+							}
 						$h .= '</td>';
 
 						$h .= '<td class="td-min-content text-center">';
-							if($eSale['marketParent']->notEmpty()) {
+							if(
+								$eSale->canRead() === FALSE or
+								$eSale['marketParent']->notEmpty()
+							) {
 								$h .= '<span class="btn btn-sm disabled">'.$eSale->getNumber().'</span>';
 							} else {
 								$h .= '<a href="'.$link($eSale).'" class="btn btn-sm '.($eSale['deliveredAt'] === currentDate() ? 'btn-primary' : 'btn-outline-primary').'">'.$eSale->getNumber().'</a>';
@@ -356,12 +380,22 @@ class SaleUi {
 
 						if(in_array('customer', $hide) === FALSE) {
 							$h .= '<td class="sale-item-name">';
-								$h .= CustomerUi::link($eSale['customer']);
+								if($eSale->canRead()) {
+									$h .= CustomerUi::link($eSale['customer']);
+								} else {
+									$h .= encode($eSale['customer']->getName());
+								}
 								if($eSale['customer']->notEmpty()) {
 									$h .= '<div class="util-annotation">';
 										$h .= CustomerUi::getCategory($eSale['customer']);
 									$h .= '</div>';
 								}
+							$h .= '</td>';
+						}
+
+						if($hasFarm) {
+							$h .= '<td class="font-sm color-muted">';
+								$h .= encode($eSale['farm']['name']);
 							$h .= '</td>';
 						}
 
@@ -538,12 +572,17 @@ class SaleUi {
 			$menu .= '<span>'.s("Confirmé").'</span>';
 		$menu .= '</a>';
 
+		$menu .= '<a data-ajax-submit="/selling/sale:doUpdatePreparedCollection" data-confirm="'.s("Marquer ces ventes comme confirmées ?").'" class="batch-menu-prepared batch-menu-item">';
+			$menu .= '<span class="sale-preparation-status-label sale-preparation-status-batch sale-preparation-status-prepared">'.self::p('preparationStatus')->shortValues[Sale::PREPARED].'</span>';
+			$menu .= '<span>'.s("Préparé").'</span>';
+		$menu .= '</a>';
+
 		$menu .= '<a data-ajax-submit="/selling/sale:doUpdateDeliveredCollection" data-confirm="'.s("Marquer ces ventes comme livrées ?").'" class="batch-menu-delivered batch-menu-item">';
 			$menu .= '<span class="sale-preparation-status-label sale-preparation-status-batch sale-preparation-status-delivered">'.self::p('preparationStatus')->shortValues[Sale::DELIVERED].'</span>';
 			$menu .= '<span>'.s("Livré").'</span>';
 		$menu .= '</a>';
 
-		$menu .= '<a data-ajax-submit="/selling/sale:doUpdateCancelCollection" data-confirm="'.s("Annuler ces ventes ?").'" class="batch-menu-cancel batch-menu-item">';
+		$menu .= '<a data-ajax-submit="/selling/sale:doUpdateCanceledCollection" data-confirm="'.s("Annuler ces ventes ?").'" class="batch-menu-cancel batch-menu-item">';
 			$menu .= '<span class="sale-preparation-status-label sale-preparation-status-batch sale-preparation-status-draft">'.self::p('preparationStatus')->shortValues[Sale::CANCELED].'</span>';
 			$menu .= '<span>'.s("Annuler").'</span>';
 		$menu .= '</a>';
@@ -777,31 +816,41 @@ class SaleUi {
 
 	public function getPreparationStatusForUpdate(Sale $eSale, bool $shortText = TRUE): string {
 
-		if($eSale['shopParent']->notEmpty()) {
-			$saleStatus = $eSale['shopParent']['preparationStatus'];
-		} else {
-			$saleStatus = $eSale['preparationStatus'];
-		}
+		$text = $shortText ? self::p('preparationStatus')->shortValues[$eSale['preparationStatus']] : self::p('preparationStatus')->values[$eSale['preparationStatus']];
 
-		$text = $shortText ? self::p('preparationStatus')->shortValues[$saleStatus] : self::p('preparationStatus')->values[$saleStatus];
-
-		$h = '<span class="sale-preparation-status-label sale-preparation-status-'.$saleStatus.'" title="'.self::p('preparationStatus')->values[$saleStatus].'">'.$text.'</span>';
+		$h = '<span class="sale-preparation-status-label sale-preparation-status-'.$eSale['preparationStatus'].'" title="'.self::p('preparationStatus')->values[$eSale['preparationStatus']].'">'.$text.'</span>';
 
 		if(
 			$eSale->canWrite() === FALSE or
-			$eSale->acceptWritePreparationStatus() === FALSE or
 			$eSale['marketParent']->notEmpty()
 		) {
 			return $h;
 		}
 
+		$wrapper = function($content) {
+			if($content) {
+				return ' '.\Asset::icon('caret-right-fill').$content;
+			} else {
+				return '';
+			}
+		};
+
+		if(
+			$eSale['shopDate']->notEmpty() and
+			$eSale['shopDate']->acceptOrder()
+		) {
+
+			$h .= '<span title="'.s("Il sera possible de modifier le statut lorsque la période de prise des commandes sera close").'">'.$wrapper(
+					' '.\Asset::icon('lock-fill')
+			).'</span>';
+
+			return $h;
+
+		}
+
 		$buttonsStyle = self::getPreparationStatusButtons();
 
-		$button = fn(string $status, ?string $confirm = NULL) => ' <a data-ajax="/selling/sale:doUpdatePreparationStatus" post-id="'.$eSale['id'].'" post-preparation-status="'.$status.'" class="sale-preparation-status-action '.$buttonsStyle[$status].'" title="'.self::p('preparationStatus')->values[$status].'" '.($confirm ? attr('data-confirm', $confirm) : '').'>'.($shortText ? self::p('preparationStatus')->shortValues[$status] : self::p('preparationStatus')->values[$status]).'</a>';
-
-		$wrapper = function($content) {
-			return ' '.\Asset::icon('caret-right-fill').$content;
-		};
+		$button = fn(string $status, ?string $confirm = NULL) => ' <a data-ajax="/selling/sale:doUpdate'.ucfirst($status).'Collection" post-ids="'.$eSale['id'].'" class="sale-preparation-status-action '.$buttonsStyle[$status].'" title="'.self::p('preparationStatus')->values[$status].'" '.($confirm ? attr('data-confirm', $confirm) : '').'>'.($shortText ? self::p('preparationStatus')->shortValues[$status] : self::p('preparationStatus')->values[$status]).'</a>';
 
 		if($eSale['market']) {
 
@@ -832,42 +881,30 @@ class SaleUi {
 			switch($eSale['preparationStatus']) {
 
 				case Sale::BASKET :
-					if($eSale['shopDate']->acceptOrder() === FALSE) {
-						$h .= $wrapper(
-							$button(Sale::CONFIRMED).
-							$button(Sale::CANCELED)
-						);
-					} else {
-						$h .= '<span title="'.s("Il sera possible de modifier le statut lorsque la vente à la boutique sera terminée").'">'.$wrapper(
-							' '.\Asset::icon('lock-fill')
-						).'</span>';
-					}
-
+					$h .= $wrapper(
+						($eSale->acceptStatusConfirmed() ? $button(Sale::CONFIRMED) : '').
+						($eSale->acceptStatusCanceled() ? $button(Sale::CANCELED) : '')
+					);
 					break;
 
 				case Sale::DRAFT :
 					$h .= $wrapper(
-						$button(Sale::CONFIRMED)
+						$eSale->acceptStatusConfirmed() ? $button(Sale::CONFIRMED) : ''
 					);
 					break;
 
 				case Sale::CONFIRMED :
+
 					$h .= $wrapper(
-						$button(Sale::PREPARED).
-						$button(Sale::DELIVERED)
+						($eSale->acceptStatusPrepared() ? $button(Sale::PREPARED) : '').
+						($eSale->acceptStatusDelivered() ? $button(Sale::DELIVERED) : '')
 					);
 					break;
 
 				case Sale::PREPARED :
 					$h .= $wrapper(
-						$button(Sale::DELIVERED)
+						($eSale->acceptStatusDelivered() ? $button(Sale::DELIVERED) : '')
 					);
-					break;
-
-				case Sale::PROVISIONAL :
-					$h .= '<span title="'.s("Il sera possible de modifier le statut lorsque la vente à la boutique sera terminée").'">'.$wrapper(
-						' '.\Asset::icon('lock-fill')
-					).'</span>';
 					break;
 
 			};
@@ -1203,40 +1240,6 @@ class SaleUi {
 			$h .= '</dl>';
 		$h .= '</div>';
 
-		$h .= $this->getShopParent($eSale);
-		$h .= $this->getShopChild($eSale);
-
-		return $h;
-
-	}
-
-	public function getShopParent(Sale $e): string {
-
-		if($e['shopParent']->empty()) {
-			return '';
-		}
-
-		$h = '<div class="sale-shared-wrapper util-action stick-xs">';
-			$h .= '<div>';
-				$h .= s("Cette vente de la boutique collective n'intègre que les articles de votre production.", ['customer' => CustomerUi::link($e['customer']), 'date' => '<a href="'.\shop\ShopUi::adminDateUrl($e['farm'], $e['shopDate']).'">'.\util\DateUi::numeric($e['shopDate']['deliveryDate']).'</a>', 'shop' => '<a href="'.\shop\ShopUi::adminUrl($e['farm'], $e['shop']).'">'.encode($e['shop']['name']).'</a>']);
-			$h .= '</div>';
-			$h .= '<a href="'.SaleUi::url($e['shopParent']).'" class="btn btn-outline-transparent">'.s("Voir la vente complète").'</a>';
-		$h .= '</div>';
-
-		return $h;
-
-	}
-
-	public function getShopChild(Sale $e): string {
-
-		if($e['shopMaster'] === FALSE) {
-			return '';
-		}
-
-		$h = '<div class="sale-shared-wrapper text-center stick-xs">';
-			$h .= s("Cette vente intègre les articles vendus par tous les producteurs.");
-		$h .= '</div>';
-
 		return $h;
 
 	}
@@ -1431,23 +1434,29 @@ class SaleUi {
 
 		if(
 			$eSale->canWrite() and
-			$eSale->acceptWritePreparationStatus() and
 			$eSale['marketParent']->empty()
 		) {
 
-			$draft = '<a data-ajax="/selling/sale:doUpdatePreparationStatus" post-id="'.$eSale['id'].'" post-preparation-status="'.Sale::DRAFT.'" class="dropdown-item">'.s("Repasser en brouillon").'</a>';
+			$statusList = '';
 
-			$statusList = match($eSale['preparationStatus']) {
+			if(in_array($eSale['preparationStatus'], [Sale::PREPARED, Sale::SELLING]) and $eSale->acceptStatusConfirmed()) {
+				$statusList .= '<a data-ajax="/selling/sale:doUpdateConfirmedCollection" post-ids="'.$eSale['id'].'" class="dropdown-item">'.s("Remettre à préparer").'</a>';
+			}
 
-				Sale::CONFIRMED => $draft,
-				Sale::PREPARED, Sale::SELLING => '<a data-ajax="/selling/sale:doUpdatePreparationStatus" post-id="'.$eSale['id'].'" post-preparation-status="'.Sale::CONFIRMED.'" class="dropdown-item">'.s("Remettre à préparer").'</a>'.$draft,
-				Sale::DELIVERED => $eSale->acceptCancelDelivered() ? '<a data-ajax="/selling/sale:doUpdatePreparationStatus" post-id="'.$eSale['id'].'" post-preparation-status="'.Sale::CONFIRMED.'" class="dropdown-item">'.s("Annuler la livraison").'</a>' : '',
-				Sale::CANCELED => '<a data-ajax="/selling/sale:doUpdatePreparationStatus" post-id="'.$eSale['id'].'" post-preparation-status="'.Sale::CONFIRMED.'" class="dropdown-item">'.s("Revalider la vente").'</a>',
-				default => ''
-			};
+			if($eSale->acceptStatusDraft()) {
+				$statusList .= '<a data-ajax="/selling/sale:doUpdateDraftCollection" post-ids="'.$eSale['id'].'" class="dropdown-item">'.s("Repasser en brouillon").'</a>';
+			}
 
-			if($eSale->acceptStatusCancel()) {
-				$statusList .= '<a data-ajax="/selling/sale:doUpdatePreparationStatus" post-id="'.$eSale['id'].'" post-preparation-status="'.Sale::CANCELED.'" class="dropdown-item">'.s("Annuler la vente").'</a>';
+			if($eSale->acceptCancelDelivered()) {
+				$statusList .= '<a data-ajax="/selling/sale:doUpdateConfirmedCollection" post-ids="'.$eSale['id'].'" class="dropdown-item">'.s("Annuler la livraison").'</a>';
+			}
+
+			if($eSale['preparationStatus'] === Sale::CANCELED and $eSale->acceptStatusConfirmed()) {
+				$statusList .= '<a data-ajax="/selling/sale:doUpdateConfirmedCollection" post-ids="'.$eSale['id'].'" class="dropdown-item">'.s("Revalider la vente").'</a>';
+			}
+
+			if($eSale->acceptStatusCanceled()) {
+				$statusList .= '<a data-ajax="/selling/sale:doUpdateCanceledCollection" post-ids="'.$eSale['id'].'" class="dropdown-item">'.s("Annuler la vente").'</a>';
 			}
 
 		} else {
@@ -1545,7 +1554,6 @@ class SaleUi {
 
 		if(
 			$eSale->isComposition() or
-			$eSale['preparationStatus'] === Sale::PROVISIONAL or
 			$cHistory->empty()
 		) {
 			return '';
@@ -1805,7 +1813,10 @@ class SaleUi {
 
 				$h .= $form->dynamicGroup($eSale, 'deliveredAt');
 
-				if($eSale->isComposition() === FALSE) {
+				if(
+					$eSale->isComposition() === FALSE and
+					$eSale['shopShared'] === FALSE
+				) {
 
 					if($eSale->hasDiscount()) {
 						$h .= $form->dynamicGroup($eSale, 'discount');

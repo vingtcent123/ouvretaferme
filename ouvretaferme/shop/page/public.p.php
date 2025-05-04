@@ -152,7 +152,7 @@ END;
 		'/shop/public/{fqn}/{date}',
 	], function($data) {
 
-		$data->eCustomer = \shop\SaleLib::getShopCustomer($data->eShop, $data->eUserOnline);
+		$data->eCustomer = \selling\CustomerLib::getByUserAndFarm($data->eUserOnline, $data->eShop['farm']);
 
 		if($data->eShop->canCustomerRead($data->eCustomer) === FALSE) {
 			throw new ViewAction($data, path: ':denied');
@@ -164,16 +164,34 @@ END;
 			$data->eShop->validateEmbed();
 		}
 
+		if($data->eShop['shared']) {
+
+			$data->eShop['cShare'] = \shop\ShareLib::getByShop($data->eShop);
+			$data->eShop['ccRange'] = \shop\RangeLib::getByShop($data->eShop);
+			$data->eShop['cDepartment'] = \shop\DepartmentLib::getByShop($data->eShop);
+
+			$data->cCustomerExisting = \selling\CustomerLib::getByUserAndFarms($data->eUserOnline, $data->eShop['cShare']->getColumnCollection('farm'));
+
+		} else {
+			$data->cCustomerExisting = new Collection([
+				$data->eShop['farm']['id'] => $data->eCustomer
+			]);
+		}
+
 		$data->cDate = \shop\DateLib::getMostRelevantByShop($data->eShop);
 
 		if($data->cDate->notEmpty()) {
 
 			$data->eDateSelected = $data->cDate[GET('date', 'int')] ?? $data->cDate->first();
-			$data->eSaleExisting = \shop\SaleLib::getByCustomerForDate($data->eDateSelected, $data->eCustomer);
+
+			$data->cSaleExisting = \shop\SaleLib::getByCustomerForDate($data->eShop, $data->eDateSelected, $data->eCustomer);
+			$data->eSaleReference = $data->cSaleExisting->notEmpty() ? $data->cSaleExisting->first() : new \selling\Sale();
+			
+			$data->cItemExisting = \selling\SaleLib::getItemsBySales($data->cSaleExisting);
 
 			if(
 				$data->isModifying and
-				$data->eSaleExisting->empty()
+				$data->cSaleExisting->empty()
 			) {
 				$data->isModifying = FALSE;
 			}
@@ -187,31 +205,23 @@ END;
 				if(
 					$data->isModifying === FALSE and
 					$data->eDateSelected['isOrderable'] and
-					$data->eSaleExisting->notEmpty() and
-					$data->eSaleExisting['preparationStatus'] === \selling\Sale::BASKET
+					$data->cSaleExisting->notEmpty() and
+					$data->cSaleExisting->first()['preparationStatus'] === \selling\Sale::BASKET
 				) {
 					throw new RedirectAction(\shop\ShopUi::confirmationUrl($data->eShop, $data->eDateSelected));
 				}
 
 			}
 
-			$data->discount = \shop\SaleLib::getDiscount($data->eShop, $data->eSaleExisting, $data->eCustomer);
+			$data->discounts = \shop\SaleLib::getDiscounts($data->cSaleExisting, $data->cCustomerExisting);
 
-			$cProduct = \shop\ProductLib::getByDate($data->eDateSelected, $data->eCustomer, eSaleExclude: $data->isModifying ? $data->eSaleExisting : new \selling\Sale(), withIngredients: TRUE, public: TRUE);
+			$cProduct = \shop\ProductLib::getByDate($data->eDateSelected, $data->eCustomer, cSaleExclude: $data->isModifying ? $data->cSaleExisting : new Collection(), withIngredients: TRUE, public: TRUE);
 
 			foreach($cProduct as $eProduct) {
-				$eProduct['reallyAvailable'] = \shop\ProductLib::getReallyAvailable($eProduct, $eProduct['product'], $data->eSaleExisting);
+				$eProduct['reallyAvailable'] = \shop\ProductLib::getReallyAvailable($eProduct, $eProduct['product'], $data->cItemExisting);
 			}
 
-			if($data->eShop['shared']) {
-
-				$data->eShop['cShare'] = \shop\ShareLib::getByShop($data->eShop);
-				$data->eShop['ccRange'] = \shop\RangeLib::getByShop($data->eShop);
-				$data->eShop['cDepartment'] = \shop\DepartmentLib::getByShop($data->eShop);
-
-			}
-
-			\shop\ProductLib::applyDiscount($cProduct, $data->discount);
+			\shop\ProductLib::applyDiscounts($cProduct, $data->discounts);
 			\shop\ProductLib::applyIndexing($data->eShop, $data->eDateSelected, $cProduct);
 
 			$data->eDateSelected['farm'] = $data->eShop['farm'];
@@ -222,10 +232,12 @@ END;
 			$data->cCategory = \selling\CategoryLib::getByFarm($data->eShop['farm']);
 
 			if($data->isModifying) {
-				$data->basketProducts = \shop\BasketLib::getFromItem($data->eSaleExisting['cItem']);
+				$data->basketProducts = \shop\BasketLib::getFromItem($data->cItemExisting);
 			} else {
 				$data->basketProducts = \shop\BasketLib::getFromQuery();
 			}
+
+			$data->canBasket = $data->eSaleReference->canBasket($data->eShop);
 
 		} else {
 			$data->eDateSelected = new \shop\Date();
@@ -245,27 +257,51 @@ new Page(function($data) {
 
 		$data->eDate = \shop\DateLib::getById(GET('date'))->validateProperty('shop', $data->eShop);
 
-		$data->eCustomer = \shop\SaleLib::getShopCustomer($data->eShop, $data->eUserOnline);
+		$data->eCustomer = \selling\CustomerLib::getByUserAndFarm($data->eUserOnline, $data->eShop['farm']);
 
 		if($data->eShop->canCustomerRead($data->eCustomer) === FALSE) {
 			throw new ViewAction($data, path: ':denied');
 		}
 
-		$data->eSaleExisting = \shop\SaleLib::getByCustomerForDate($data->eDate, $data->eCustomer);
+		if($data->eShop['shared']) {
 
-		$data->discount = \shop\SaleLib::getDiscount($data->eShop, $data->eSaleExisting, $data->eCustomer);
+			$data->eShop['cShare'] = \shop\ShareLib::getByShop($data->eShop);
+			$data->eShop['cFarm'] = $data->eShop['cShare']->getColumnCollection('farm', index: 'farm');
+
+			$data->cCustomerExisting = \selling\CustomerLib::getByUserAndFarms($data->eUserOnline, $data->eShop['cFarm']);
+
+		} else {
+
+			$data->eShop['cFarm'] = new Collection([
+				$data->eShop['farm']['id'] => $data->eShop['farm']
+			]);
+
+			$data->cCustomerExisting = new Collection([
+				$data->eShop['farm']['id'] => $data->eCustomer
+			]);
+
+		}
+
+		$data->cSaleExisting = \shop\SaleLib::getByCustomerForDate($data->eShop, $data->eDate, $data->eCustomer);
+		$data->eSaleReference = $data->cSaleExisting->notEmpty() ? $data->cSaleExisting->first() : new \selling\Sale();
+
+		$data->cItemExisting = \selling\SaleLib::getItemsBySales($data->cSaleExisting, withIngredients: TRUE, public: TRUE);
+
+		$data->discounts = \shop\SaleLib::getDiscounts($data->cSaleExisting, $data->cCustomerExisting);
 
 		$data->eDate['shop'] = $data->eShop;
 
-		$data->eDate['cProduct'] = \shop\ProductLib::getByDate($data->eDate, $data->eCustomer, eSaleExclude: $data->eSaleExisting, public: TRUE);
-		\shop\ProductLib::applyDiscount($data->eDate['cProduct'], $data->discount);
+		$data->eDate['cProduct'] = \shop\ProductLib::getByDate($data->eDate, $data->eCustomer, cSaleExclude: $data->cSaleExisting, public: TRUE);
+		\shop\ProductLib::applyDiscounts($data->eDate['cProduct'], $data->discounts);
 
 		$data->eDate['ccPoint'] = $data->eShop['ccPoint'];
 		$data->eDate['ccPoint']->filter(fn($ePoint) => in_array($ePoint['id'], $data->eDate['points']), depth: 2);
 
-		if($data->eSaleExisting->notEmpty()) {
-			$data->eSaleExisting['shopDate'] = $data->eDate;
+		if($data->cSaleExisting->notEmpty()) {
+			$data->cSaleExisting->setColumn('shopDate', $data->eDate);
 		}
+
+		$data->canBasket = $data->eSaleReference->canBasket($data->eShop);
 
 		$data->isModifying = GET('modify', 'bool', FALSE);
 
@@ -293,10 +329,7 @@ new Page(function($data) {
 
 		$data->validateSale = function() use($data) {
 
-			if(
-				$data->eSaleExisting->empty() or
-				$data->eSaleExisting['shop']['id'] !== $data->eShop['id']
-			) {
+			if($data->cSaleExisting->empty()) {
 				throw new RedirectAction(\shop\ShopUi::url($data->eShop));
 			}
 
@@ -305,8 +338,8 @@ new Page(function($data) {
 		$data->validatePayment = function() use($data) {
 
 			if(
-				($data->eSaleExisting['preparationStatus'] === \selling\Sale::BASKET and $data->eSaleExisting['paymentMethod'] === NULL) or
-				($data->eSaleExisting['paymentMethod'] === \selling\Sale::ONLINE_CARD and $data->eSaleExisting['paymentStatus'] === \selling\Sale::UNDEFINED)
+				($data->eSaleReference['preparationStatus'] === \selling\Sale::BASKET and $data->eSaleReference['paymentMethod'] === NULL) or
+				($data->eSaleReference['paymentMethod'] === \selling\Sale::ONLINE_CARD and $data->eSaleReference['paymentStatus'] === \selling\Sale::UNDEFINED)
 			) {
 				throw new RedirectAction(\shop\ShopUi::paymentUrl($data->eShop, $data->eDate));
 			}
@@ -322,7 +355,7 @@ new Page(function($data) {
 		($data->validateLogged)();
 
 		if(
-			$data->eSaleExisting->canBasket($data->eShop) === FALSE and
+			$data->canBasket === FALSE and
 			$data->isModifying === FALSE
 		) {
 			throw new ViewAction($data, ':basketExisting');
@@ -332,7 +365,7 @@ new Page(function($data) {
 			$data->eShop['hasPoint'] and
 			$data->eDate['ccPoint']->notEmpty()
 		);
-		$data->ePointSelected = \shop\PointLib::getSelected($data->eShop, $data->eDate['ccPoint'], $data->eCustomer, $data->eSaleExisting);
+		$data->ePointSelected = \shop\PointLib::getSelected($data->eShop, $data->eDate['ccPoint'], $data->eCustomer, $data->eSaleReference);
 
 		$data->basketProducts = \shop\BasketLib::getFromQuery();
 
@@ -347,7 +380,7 @@ new Page(function($data) {
 		($data->validateSale)();
 
 		// Si la vente est déjà payée, on ne peut pas changer de moyen de paiement
-		if($data->eSaleExisting['paymentStatus'] === \selling\Sale::PAID) {
+		if($data->eSaleReference['paymentStatus'] === \selling\Sale::PAID) {
 			throw new RedirectAction(\shop\ShopUi::confirmationUrl($data->eShop, $data->eDate));
 		}
 
@@ -378,8 +411,7 @@ new Page(function($data) {
 
 		($data->validatePayment)();
 
-		$data->eSaleExisting['cItem'] = \selling\SaleLib::getItems($data->eSaleExisting, withIngredients: TRUE, public: TRUE);
-		$data->eSaleExisting['shopPoint'] = \shop\PointLib::getById($data->eSaleExisting['shopPoint']);
+		$data->eSaleReference['shopPoint'] = \shop\PointLib::getById($data->eSaleReference['shopPoint']);
 
 		throw new ViewAction($data);
 
@@ -390,22 +422,24 @@ new Page(function($data) {
 		($data->validateSale)();
 
 		// Si la vente est déjà payée, on ne peut pas changer de moyen de paiement
-		if($data->eSaleExisting['paymentStatus'] === \selling\Sale::PAID) {
+		if($data->eSaleReference['paymentStatus'] === \selling\Sale::PAID) {
 			throw new RedirectAction(\shop\ShopUi::confirmationUrl($data->eShop, $data->eDate));
 		}
 
-		if($data->eSaleExisting['shopPoint']->notEmpty()) {
-			$data->eSaleExisting['shopPoint'] = $data->eShop['ccPoint']->find(fn($ePoint) => $ePoint['id'] === $data->eSaleExisting['shopPoint']['id'], depth: 2, limit: 1, default: new \shop\Point());
+		if($data->eSaleReference['shopPoint']->notEmpty()) {
+			$data->eSaleReference['shopPoint'] = $data->eShop['ccPoint']->find(fn($ePoint) => $ePoint['id'] === $data->eSaleReference['shopPoint']['id'], depth: 2, limit: 1, default: new \shop\Point());
 		}
 
 		$data->payment = POST('payment');
 
-		if(in_array($data->payment, $data->eShop->getPayments($data->eSaleExisting['shopPoint'])) === FALSE) {
+		if(in_array($data->payment, $data->eShop->getPayments($data->eSaleReference['shopPoint'])) === FALSE) {
 			throw new NotExpectedAction('Invalid payment for shop');
 		}
 
+		$data->eSaleReference['cItem'] = $data->cItemExisting;
+
 		try {
-			$url = \shop\SaleLib::createPayment($data->payment, $data->eDate, $data->eSaleExisting);
+			$url = \shop\SaleLib::createPayment($data->payment, $data->eSaleReference);
 		} catch(Exception $e) {
 			throw new FailAction($data->eDate->canWrite() ? 'shop\Shop::payment.createOwner' : 'shop\Shop::payment.create', ['message' => $e->getMessage()]);
 		}
@@ -418,13 +452,13 @@ new Page(function($data) {
 		($data->validateOrder)();
 
 		if(
-			$data->eSaleExisting->canBasket($data->eShop) === FALSE and
+			$data->eSaleReference->canBasket($data->eShop) === FALSE and
 			$data->isModifying === FALSE
 		) {
 			throw new RedirectAction(\shop\ShopUi::url($data->eShop));
 		}
 
-		$data->basket = \shop\BasketLib::checkAvailableProducts(POST('products', 'array', []), $data->eDate['cProduct'], $data->eSaleExisting);
+		$data->basket = \shop\BasketLib::checkAvailableProducts(POST('products', 'array', []), $data->eDate['cProduct'], $data->cItemExisting);
 
 		if($data->basket === []) {
 			throw new RedirectAction(\shop\ShopUi::url($data->eShop));
@@ -441,54 +475,53 @@ new Page(function($data) {
 
 		\user\ConnectionLib::checkLogged();
 
-		if($data->eSaleExisting->empty()) {
-
-			if(
-				$data->eShop['terms'] and
-				$data->eShop['termsField'] and
-				POST('terms', 'bool') === FALSE
-			) {
-				throw new FailAction('shop\Sale::terms');
-			}
-
-			$eSale = new \selling\Sale([
-				'shop' => $data->eShop,
-				'shopDate' => $data->eDate,
-				'shopShared' => $data->eShop['shared'],
-			]);
-
-			$fw = new FailWatch();
-
-			if($data->eUserOnline['phone'] === NULL) {
-				\selling\Sale::fail('phone.check');
-			}
-
-			$properties = ['productsBasket', 'shopPoint'];
-			if($data->eShop['comment']) {
-				$properties[] = 'shopComment';
-			}
-
-			$eSale->build($properties, $_POST);
-
-			$fw->validate();
-
-			if(
-				$eSale['shopPoint']->notEmpty() and
-				$eSale['shopPoint']['type'] === \shop\Point::HOME and
-				$data->eUserOnline->hasAddress() === FALSE
-			) {
-				\selling\Sale::fail('address.check');
-			}
-
-			$fw->validate();
-
-			$url = \shop\SaleLib::createForShop($eSale, $data->eUserOnline);
-
-			$fw->validate();
-
-		} else {
-			$url = \shop\ShopUi::paymentUrl($data->eShop, $data->eDate);
+		if($data->cSaleExisting->notEmpty()) {
+			throw new RedirectAction(\shop\ShopUi::paymentUrl($data->eShop, $data->eDate));
 		}
+
+		if(
+			$data->eShop['terms'] and
+			$data->eShop['termsField'] and
+			POST('terms', 'bool') === FALSE
+		) {
+			throw new FailAction('shop\Sale::terms');
+		}
+
+		$eSaleReference = new \selling\Sale([
+			'shop' => $data->eShop,
+			'shopDate' => $data->eDate,
+			'shopShared' => $data->eShop['shared'],
+			'cItem' => new Collection()
+		]);
+
+		$fw = new FailWatch();
+
+		if($data->eUserOnline['phone'] === NULL) {
+			\selling\Sale::fail('phone.check');
+		}
+
+		$properties = ['productsBasket', 'shopPoint'];
+		if($data->eShop['comment']) {
+			$properties[] = 'shopComment';
+		}
+
+		$eSaleReference->build($properties, $_POST);
+
+		$fw->validate();
+
+		if(
+			$eSaleReference['shopPoint']->notEmpty() and
+			$eSaleReference['shopPoint']['type'] === \shop\Point::HOME and
+			$data->eUserOnline->hasAddress() === FALSE
+		) {
+			\selling\Sale::fail('address.check');
+		}
+
+		$fw->validate();
+
+		$url = \shop\SaleLib::createForShop($eSaleReference, $data->eUserOnline, $data->discounts);
+
+		$fw->validate();
 
 		throw new RedirectAction($url);
 
@@ -500,7 +533,7 @@ new Page(function($data) {
 
 		$fw = new FailWatch();
 
-		if(\shop\SaleLib::canUpdateForShop($data->eSaleExisting) === FALSE) {
+		if(\shop\SaleLib::canUpdateForShop($data->eSaleReference) === FALSE) {
 			throw new FailAction('shop\Sale::update.payment');
 		}
 
@@ -512,21 +545,24 @@ new Page(function($data) {
 			throw new FailAction('shop\Sale::terms');
 		}
 
-		$data->eSaleExisting['shop'] = $data->eShop;
-		$data->eSaleExisting['shopDate'] = $data->eDate;
-
 		$properties = ['productsBasket', 'shopPoint'];
 		if($data->eShop['comment']) {
 			$properties[] = 'shopComment';
 		}
 
-		$data->eSaleExisting->build($properties, $_POST);
+		$data->eSaleReference->merge([
+			'shop' => $data->eShop,
+			'shopDate' => $data->eDate,
+			'cItem' => $data->cItemExisting
+		]);
+
+		$data->eSaleReference->build($properties, $_POST);
 
 		$fw->validate();
 
 		if(
-			$data->eSaleExisting['shopPoint']->notEmpty() and
-			$data->eSaleExisting['shopPoint']['type'] === \shop\Point::HOME and
+			$data->eSaleReference['shopPoint']->notEmpty() and
+			$data->eSaleReference['shopPoint']['type'] === \shop\Point::HOME and
 			$data->eUserOnline->hasAddress() === FALSE
 		) {
 			\selling\Sale::fail('address.check');
@@ -534,18 +570,16 @@ new Page(function($data) {
 
 		$fw->validate();
 
-		$url = \shop\SaleLib::updateForShop($data->eSaleExisting, $data->eShop, $data->eUserOnline);
+		$url = \shop\SaleLib::updateForShop($data->eSaleReference, $data->cSaleExisting, $data->eUserOnline, $data->discounts);
 
 		$fw->validate();
 
 		throw new RedirectAction($url);
 
 	})
-	->post('/shop/public/{fqn}/{date}/:doCancelSale', function($data) {
+	->post('/shop/public/{fqn}/{date}/:doCancelCustomer', function($data) {
 
-		($data->validateSale)();
-
-		\shop\SaleLib::cancel($data->eSaleExisting);
+		\shop\SaleLib::cancelForShop($data->eShop, $data->eDate, $data->eCustomer);
 
 		throw new ViewAction($data);
 

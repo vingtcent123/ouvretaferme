@@ -89,7 +89,7 @@ class DateUi {
 			// Reconstruction du jour de livraison recherché.
 			$eDate['deliveryDate'] = $referenceDate->format('Y-m-d');
 
-			// L'intervalle entre la précédente date de livraison et toutes les autres dates est appliqué sur la nouvelle date de livraison.
+			// L'intervalle entre la précédente livraison et toutes les autres dates est appliqué sur la nouvelle livraison.
 			foreach(['orderStartAt', 'orderEndAt'] as $dateField) {
 				$newDeliveryDate = new \DateTime($eDate['deliveryDate']);
 				if(\util\DateLib::compare($eDateBase['deliveryDate'], $eDateBase[$dateField]) < 0) {
@@ -580,10 +580,7 @@ class DateUi {
 								}
 
 
-								if(
-									$eDate->canWrite() or
-									$eDate['sales']['count'] > 0
-								) {
+								if($eDate->canWrite() or $eShop->canWrite()) {
 
 									$h .= $this->getMenu($eShop, $eDate, $eDate['sales']['count'], 'btn-outline-secondary');
 
@@ -609,30 +606,30 @@ class DateUi {
 
 		$eDate->expects(['farm']);
 
-			$h = '<a data-dropdown="bottom-end" class="dropdown-toggle btn '.$btn.'">'.\Asset::icon('gear-fill').'</a>';
-			$h .= '<div class="dropdown-list">';
+		$h = '<a data-dropdown="bottom-end" class="dropdown-toggle btn '.$btn.'">'.\Asset::icon('gear-fill').'</a>';
+		$h .= '<div class="dropdown-list">';
 
-				$h .= '<div class="dropdown-title">'.\util\DateUi::textual($eDate['deliveryDate']).'</div>';
+			$h .= '<div class="dropdown-title">'.\util\DateUi::textual($eDate['deliveryDate']).'</div>';
 
-				if($eDate->canWrite()) {
+			if($eDate->canWrite()) {
 
-					$h .= '<a href="/shop/date:update?id='.$eDate['id'].'" class="dropdown-item">'.s("Paramétrer la livraison").'</a>';
-					if($eDate->isDirect()) {
-						$h .= '<a href="/shop/product:createCollection?date='.$eDate['id'].'" class="dropdown-item">'.s("Ajouter des produits à la livraison").'</a>';
-					}
-
+				$h .= '<a href="/shop/date:update?id='.$eDate['id'].'" class="dropdown-item">'.s("Paramétrer la livraison").'</a>';
+				if($eDate->isDirect()) {
+					$h .= '<a href="/shop/product:createCollection?date='.$eDate['id'].'" class="dropdown-item">'.s("Ajouter des produits à la livraison").'</a>';
 				}
 
-				if($eShop->canWrite()) {
-					$h .= '<a href="/shop/date:create?shop='.$eShop['id'].'&farm='.$eDate['farm']['id'].'&date='.$eDate['id'].'" class="dropdown-item">'.s("Nouvelle livraison à partir de celle-ci").'</a>';
-				}
+			}
 
-				if($eDate->canWrite() and $sales === 0) {
-					$h .= '<div class="dropdown-divider"></div>';
-					$h .= '<a data-ajax="/shop/date:doDelete" post-id="'.$eDate['id'].'" post-farm="'.$eDate['farm']['id'].'" post-shop="'.$eShop['id'].'" class="dropdown-item" data-confirm="'.s("Êtes-vous sûr de vouloir supprimer cette livraison ?").'">'.s("Supprimer la livraison").'</a>';
-				}
+			if($eShop->canWrite()) {
+				$h .= '<a href="/shop/date:create?shop='.$eShop['id'].'&farm='.$eDate['farm']['id'].'&date='.$eDate['id'].'" class="dropdown-item">'.s("Nouvelle livraison à partir de celle-ci").'</a>';
+			}
 
-			$h .= '</div>';
+			if($eDate->canWrite() and $sales === 0) {
+				$h .= '<div class="dropdown-divider"></div>';
+				$h .= '<a data-ajax="/shop/date:doDelete" post-id="'.$eDate['id'].'" post-farm="'.$eDate['farm']['id'].'" post-shop="'.$eShop['id'].'" class="dropdown-item" data-confirm="'.s("Êtes-vous sûr de vouloir supprimer cette livraison ?").'">'.s("Supprimer la livraison").'</a>';
+			}
+
+		$h .= '</div>';
 
 		return $h;
 
@@ -643,19 +640,23 @@ class DateUi {
 		$h = '';
 		$now = currentDatetime();
 
+		$textDelivered = '<div class="color-success">'.\Asset::icon('check-lg').' '.s("Livré").'</div>';
+
 		if($eShop['status'] === Shop::CLOSED) {
 			$h .= '<div class="color-danger">'.\Asset::icon('exclamation-triangle-fill').' '.s("Boutique fermée").'</div>';
 		} else if($eDate['status'] === Date::CLOSED) {
-			$h .= '<div class="color-success">'.\Asset::icon('check-lg').' '.s("Livré").'</div>';
+			$h .= $textDelivered;
 		} else {
 
 			if($eDate['orderStartAt'] < $now and $eDate['orderEndAt'] > $now) {
 				$h .= '<span class="color-order">'.s("Prises de commande ouvertes encore {value}", \util\DateUi::secondToDuration(strtotime($eDate['orderEndAt']) - time(), \util\DateUi::AGO, maxNumber: 1)).'</span>';
 			} else if($eDate['orderEndAt'] < $now) {
 				if(currentDate() === $eDate['deliveryDate']) {
-					$h .= s("En attente de livraison aujourd'hui");
+					$h .= s("Livraison aujourd'hui");
 				} else if(currentDate() < $eDate['deliveryDate']) {
 					$h .= s("En attente de livraison le {value}", \util\DateUi::numeric($eDate['deliveryDate']));
+				} else {
+					$h .= $textDelivered;
 				}
 			} else {
 				$h .= s("Ouverture des ventes dans {value}", \util\DateUi::secondToDuration(strtotime($eDate['orderStartAt']) - time(), \util\DateUi::AGO, maxNumber: 1));
@@ -695,8 +696,8 @@ class DateUi {
 					$h .= s("Ventes");
 					if($cSale->notEmpty()) {
 						$h .= '<span class="tab-item-count">'.$cSale
-								->find(fn($eSale) => in_array($eSale['preparationStatus'], [\selling\Sale::CONFIRMED, \selling\Sale::PREPARED, \selling\Sale::DELIVERED, \selling\Sale::PROVISIONAL]))
-								->count().'</span>';
+							->find(fn($eSale) => in_array($eSale['preparationStatus'], [\selling\Sale::CONFIRMED, \selling\Sale::PREPARED, \selling\Sale::DELIVERED]))
+							->count().'</span>';
 					}
 				$h .= '</a>';
 				$h .= '<a class="tab-item" data-tab="points" onclick="Lime.Tab.select(this)">';
@@ -734,8 +735,11 @@ class DateUi {
 				$actions .= '<a href="/selling/sale:create?farm='.$eDate['farm']['id'].'&shopDate='.$eDate['id'].'" data-ajax-navigation="never" class="btn btn-primary">'.\Asset::icon('plus-circle').' '.s("Ajouter une commande").'</a> ';
 			}
 
-			if($cSale->notEmpty()) {
-				$actions .= '<a href="/shop/date:downloadSales?id='.$eDate['id'].'&farm='.$eDate['farm']['id'].'" data-ajax-navigation="never" class="btn btn-primary">'.\Asset::icon('download').' '.s("Télécharger en PDF").'</a>';
+			if(
+				$cSale->notEmpty() and
+				($eShop->isPersonal() or $eShop->canWrite() === FALSE) // L'administrateur ne peut pas télécharger de PDF
+			) {
+				$actions .= '<a href="/shop/date:downloadSales?id='.$eDate['id'].'&farm='.$eFarm['id'].'" data-ajax-navigation="never" class="btn btn-primary">'.\Asset::icon('download').' '.s("Télécharger en PDF").'</a>';
 			}
 
 			$h .= '<div class="tab-panel" data-tab="sales">';
@@ -796,13 +800,13 @@ class DateUi {
 
 					$h .= '<tr>';
 						$h .= '<th>'.s("Producteur").'</th>';
-						$h .= '<th>'.s("Catalogue").'</th>';
+						$h .= '<th class="highlight-stick-right">'.s("Catalogue").'</th>';
 						if($cDepartment->notEmpty()) {
-							$h .= '<th>';
+							$h .= '<th class="highlight-stick-both">';
 								$h .= s("Rayon");
 							$h .= '</th>';
 						}
-						$h .= '<th class="text-center">'.s("État").'</th>';
+						$h .= '<th class="highlight-stick-left"></th>';
 					$h .= '</tr>';
 
 				$h .= '</thead>';
@@ -854,17 +858,17 @@ class DateUi {
 
 		$selected = in_array($eRange['catalog']['id'], $eDate['catalogs']);
 
-		$h = '<td >';
+		$h = '<td>';
 			$h .= \farm\FarmUi::getVignette($eShare['farm'], '2rem').'  ';
 			$h .= encode($eShare['farm']['name']);
 		$h .= '</td>';
-		$h .= '<td class="td-border">';
+		$h .= '<td class="td-border highlight-stick-right">';
 			$h .= '<a href="/shop/catalog:show?id='.$eRange['catalog']['id'].'">'.encode($eRange['catalog']['name']).'</a>';
 			$h .= ' <small class="color-muted">/ '.p("{value} produit", "{value} produits", $eRange['catalog']['products']).'</small>';
 		$h .= '</td>';
 
 		if($cDepartment->notEmpty()) {
-			$h .= '<td class="td-border">';
+			$h .= '<td class="td-border highlight-stick-both">';
 				if($eRange['department']->notEmpty()) {
 					$h .= DepartmentUi::getVignette($cDepartment[$eRange['department']['id']], '1.75rem').'  '.encode($cDepartment[$eRange['department']['id']]['name']);
 				} else {
@@ -873,7 +877,7 @@ class DateUi {
 			$h .= '</td>';
 		}
 
-		$h .= '<td class="td-border text-center">';
+		$h .= '<td class="td-border highlight-stick-left">';
 			$h .= \util\TextUi::switch([
 				'id' => 'catalog-switch-'.$eRange['catalog']['id'],
 				'disabled' => $eDate->canWrite() === FALSE,
@@ -930,7 +934,7 @@ class DateUi {
 			$h .= '</a>';
 
 			if($eShop['eFarmSelected']->notEmpty()) {
-				$h .= '<a href="'.ShopUi::adminDateUrl($eFarm, $eDate).'" class="btn btn-primary">'.\Asset::icon('x-lg').'</a>';
+				$h .= '<a href="'.ShopUi::adminDateUrl($eFarm, $eDate).'?farm=" class="btn btn-primary">'.\Asset::icon('x-lg').'</a>';
 			}
 		$h .= '</div>';
 		$h .= '<div class="dropdown-list" data-dropdown-id="'.$id.'-list">';
@@ -1091,7 +1095,7 @@ class DateUi {
 		$d = Date::model()->describer($property, [
 			'orderStartAt' => s("Ouverture des commandes"),
 			'orderEndAt' => s("Fin des commandes"),
-			'deliveryDate' => s("Date de livraison des commandes"),
+			'deliveryDate' => s("Livraison des commandes"),
 			'source' => s("Gamme de produits proposée à la vente"),
 			'catalogs' => s("Choisir les catalogues proposés à la vente"),
 			'description' => s("Complément d'information"),

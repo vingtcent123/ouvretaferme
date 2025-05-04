@@ -1123,7 +1123,7 @@ class FarmUi {
 
 			$categories += [
 				Farmer::CATALOG => s("Catalogues"),
-				Farmer::POINT => s("Livraisons"),
+				Farmer::POINT => s("Modes de livraison"),
 			];
 
 		}

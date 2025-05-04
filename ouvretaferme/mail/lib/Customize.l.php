@@ -7,11 +7,19 @@ class CustomizeLib extends CustomizeCrud {
 		return ['template'];
 	}
 
-	public static function getTemplate(\farm\Farm $eFarm, string $type, \shop\Shop $eShop = new \shop\Shop()): ?string {
+	public static function getTemplateByFarm(\farm\Farm $eFarm, string $type): ?string {
 
 		return Customize::model()
 			->whereType($type)
 			->whereFarm($eFarm)
+			->getValue('template');
+
+	}
+
+	public static function getTemplateByShop(\shop\Shop $eShop, string $type): ?string {
+
+		return Customize::model()
+			->whereType($type)
 			->whereShop($eShop)
 			->getValue('template');
 

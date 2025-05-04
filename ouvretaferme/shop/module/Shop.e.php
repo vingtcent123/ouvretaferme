@@ -44,6 +44,20 @@ class Shop extends ShopElement {
 
 	}
 
+	public function isShared(): bool {
+
+		$this->expects(['shared']);
+		return $this['shared'];
+
+	}
+
+	public function isPersonal(): bool {
+
+		$this->expects(['shared']);
+		return $this['shared'] === FALSE;
+
+	}
+
 	public function isOpen(): bool {
 
 		$this->expects(['status']);

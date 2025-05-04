@@ -137,6 +137,16 @@ class Sale {
 			);
 
 			qs(
+				'.batch-menu-prepared',
+				selection.filter('[data-batch~="not-prepared"]').length > 0 ?
+					node => node.hide() :
+					node => {
+						node.removeHide();
+						actions++;
+					}
+			);
+
+			qs(
 				'.batch-menu-delivered',
 				selection.filter('[data-batch~="not-delivered"]').length > 0 ?
 					node => node.hide() :

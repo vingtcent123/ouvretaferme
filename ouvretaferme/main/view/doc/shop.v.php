@@ -57,7 +57,6 @@ new AdaptativeView('shared', function($data, DocTemplate $t) {
 		echo '<ul>';
 			echo '<li>'.s("Inviter ou exclure des producteurs de la boutique").'</li>';
 			echo '<li>'.s("Configurer la boutique et le rayonnage").'</li>';
-			echo '<li>'.s("Créer, modifier et supprimer les ventes").'</li>';
 			echo '<li>'.s("Modifier les catalogues des producteurs proposés à la vente").'</li>';
 			echo '<li>'.s("Annuler des commandes").'</li>';
 		echo '</ul>';
@@ -79,10 +78,10 @@ new AdaptativeView('shared', function($data, DocTemplate $t) {
 		echo '<p>'.s("Quelques limites ont été introduites dans les boutiques collectives par rapport aux boutiques personnelles :").'</p>';
 		echo '<ul>';
 			echo '<li>'.s("Une fois qu'une vente est terminée, il n'est plus possible de réouvrir les ventes en modifiant les dates de prise de commande").'</li>';
+			echo '<li>'.s("Le choix du moyen de paiement est désactivé et c'est à vous d'informer les clients sur la façon dont ils peuvent régler leurs commandes").'</li>';
 			echo '<li>'.s("Il n'est pas possible de configurer des frais de livraison").'</li>';
 			echo '<li>'.s("Il n'est pas possible d'ajouter des commandes manuellement").'</li>';
 			echo '<li>'.s("Il n'est pas possible d'activer l'option qui permet de recevoir un e-mail à chaque commande").'</li>';
-			echo '<li>'.s("Les remises commerciales appliquées par les fermes aux clients ne sont <b>pas prises en compte</b> dans les boutiques collectives").'</li>';
 		echo '</ul>';
 
 	echo '</div>';

@@ -40,6 +40,11 @@ new AdaptativeView('/commande/{id}', function($data, MainTemplate $t) {
 	if($data->cItem->empty()) {
 		echo '<div class="util-empty">'.s("Il n'y a aucun article dans cette commande.").'</div>';
 	} else {
+
+		echo '<div class="util-title">';
+			echo '<h3>'.s("Articles commandés").'</h3>';
+		echo '</div>';
+
 		echo new \selling\OrderUi()->getItemsBySale($data->e, $data->cItem);
 	}
 

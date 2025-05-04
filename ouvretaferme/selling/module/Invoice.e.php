@@ -25,7 +25,7 @@ class Invoice extends InvoiceElement {
 	}
 
 	public function canRemote(): bool {
-		return $this->canRead() or GET('key') === \Setting::get('selling\remoteKey');
+		return GET('key') === \Setting::get('selling\remoteKey') or $this->canRead();
 	}
 
 	public function acceptSend(): bool {

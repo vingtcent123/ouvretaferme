@@ -6,8 +6,17 @@ class ShareLib extends ShareCrud {
 	private static array $cacheList = [];
 	private static array $cacheMatch = [];
 
-	public static function getPropertiesUpdate(): array {
-		return ['label'];
+	public static function getPropertiesUpdate(): \Closure {
+
+		return function(Share $e) {
+
+			if($e->isSelf()) {
+				return ['paymentMethod'];
+			} else {
+				return ['label'];
+			}
+
+		};
 	}
 
 	public static function getByShop(Shop $eShop): \Collection {

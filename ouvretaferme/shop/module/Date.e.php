@@ -17,8 +17,8 @@ class Date extends DateElement {
 
 	public function canRead(): bool {
 
-		$this->expects(['farm']);
-		return $this['farm']->canSelling();
+		$this->expects(['shop']);
+		return $this['shop']->canRead();
 
 	}
 
@@ -42,7 +42,7 @@ class Date extends DateElement {
 	}
 
 	public function canRemote(): bool {
-		return $this->canRead() or GET('key') === \Setting::get('selling\remoteKey');
+		return GET('key') === \Setting::get('selling\remoteKey') or $this->canRead();
 	}
 
 	public function acceptNotShared(): bool {

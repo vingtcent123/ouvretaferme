@@ -19,7 +19,7 @@ document.addEventListener('scroll', function() {
 class BasketManage {
 
 	static prefix = 'basket-';
-	static version = 'v3';
+	static version = 'v4';
 	static json = null;
 
 	static clickDepartment(target) {
@@ -149,7 +149,7 @@ class BasketManage {
 		const basketJson = JSON.parse(basket);
 
 		if(
-			basketJson.sale === null &&
+			basketJson.userId === null &&
 			defaultJson !== null
 		) {
 			return defaultJson;
@@ -200,16 +200,13 @@ class BasketManage {
 			.fetch();
 	}
 
-	static doCancel(saleId) {
+	static doCancel(dateId) {
 
 		const pathname = location.pathname;
 		const shopAndDatePathname = pathname.substr(1, pathname.lastIndexOf('/') - 1);
 
 		new Ajax.Query()
-			.url('/'+ shopAndDatePathname +'/:doCancelSale')
-			.body({
-				sale: saleId
-			})
+			.url('/'+ shopAndDatePathname +'/:doCancelCustomer')
 			.fetch()
 			.then(() => {
 				this.deleteBasket(dateId);
@@ -220,7 +217,7 @@ class BasketManage {
 
 		const basket = this.getBasket(dateId);
 
-		if(basket.sale !== null) {
+		if(basket.userId !== null) {
 			ref('basket-update', node => node.removeHide());
 			qs('#shop-basket-submit input[name="terms"]', node => node.checked = true);
 		} else {
@@ -300,7 +297,7 @@ class BasketManage {
 
 		let basket = this.getBasket(dateId);
 
-		const isModifying = basket.sale !== null;
+		const isModifying = basket.userId !== null;
 
 		if(parseFloat(newNumber) === 0.0) {
 			delete basket.products[productId];
@@ -315,7 +312,7 @@ class BasketManage {
 		// Quand on est sur le résumé du panier, on reload le panier pour tout mettre à jour.
 		if(qs('#shop-basket-summary')) {
 
-			this.loadSummary(dateId, basket.sale, null, isModifying);
+			this.loadSummary(dateId, basket.userId, null, isModifying);
 
 		} else {
 
@@ -426,7 +423,7 @@ class BasketManage {
 	}
 
 	/* Fonctions appelées sur la page de résumé du panier */
-	static loadSummary(dateId, saleId, products = null, isModifying = false) {
+	static loadSummary(dateId, userId, products = null, isModifying = false) {
 
 		const pathname = location.pathname;
 		const shopAndDatePathname = pathname.substring(0, pathname.lastIndexOf('/'));
@@ -436,12 +433,12 @@ class BasketManage {
 		if(products === null) {
 			basket = this.getBasket(dateId);
 		} else {
-			basket = this.newBasket(saleId, products);
+			basket = this.newBasket(userId, products);
 			this.setBasket(dateId, basket);
 			history.removeArgument('products');
 		}
 
-		if(saleId !== basket.sale) { // Problème de consistence
+		if(userId !== basket.userId) { // Problème de consistence
 			basket = this.emptyBasket(dateId);
 		}
 
@@ -547,7 +544,7 @@ class BasketManage {
 		this.deleteBasketProduct(dateId, productId);
 
 		const basket = this.getBasket(dateId);
-		this.loadSummary(dateId, basket.sale);
+		this.loadSummary(dateId, basket.userId);
 
 		return false;
 
@@ -563,11 +560,11 @@ class BasketManage {
 
 	}
 
-	static newBasket(saleId = null, products = {}) {
+	static newBasket(userId = null, products = {}) {
 		return {
 			products: products,
 			createdAt: Date.now() / 1000,
-			sale: saleId
+			userId: userId
 		};
 
 	}

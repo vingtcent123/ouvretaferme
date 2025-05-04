@@ -32,13 +32,17 @@ class CustomizeUi {
 
 							$variables = self::getExampleVariables($e['type'], $e['farm'], $eSaleExample);
 
-							foreach($this->getCreateVariables($e, $eSaleExample) as $name => $title) {
+							foreach($this->getCreateVariables($e) as $name => $title) {
 
-								$h .= '<tr>';
-									$h .= '<td><b>@'.$name.'</b></td>';
-									$h .= '<td>'.$title.'</td>';
-									$h .= '<td>'.nl2br($variables[$name]).'</td>';
-								$h .= '</tr>';
+								if(isset($variables[$name])) {
+
+									$h .= '<tr>';
+										$h .= '<td><b>@'.$name.'</b></td>';
+										$h .= '<td>'.$title.'</td>';
+										$h .= '<td>'.nl2br($variables[$name]).'</td>';
+									$h .= '</tr>';
+
+								}
 
 							}
 
@@ -47,7 +51,10 @@ class CustomizeUi {
 				$h .= '</div>';
 			$h .= '</div>';
 
-			if(in_array($e['type'], [Customize::SHOP_CONFIRMED_HOME, Customize::SHOP_CONFIRMED_PLACE])) {
+			if(
+				in_array($e['type'], [Customize::SHOP_CONFIRMED_HOME, Customize::SHOP_CONFIRMED_PLACE]) and
+				$eSaleExample['shop']->isPersonal()
+			) {
 
 				$h .= '<div class="util-block-help">';
 					$h .= s("L'e-mail de confirmation de commande est le même pour toutes les commandes, quel que soit le moyen de paiement utilisé. Vous devez en tenir compte lorsque vous le rédigez. Pensez à utiliser la variable <i>@payment</i> pour rappeler à votre client le moyen de paiement qu'il a sélectionné. Notez que dans le cas où vous désactivez le choix du moyen de paiement, la variable <i>@payment</i> sera vide.");
@@ -87,7 +94,7 @@ class CustomizeUi {
 
 	}
 
-	protected function getCreateVariables(Customize $e, \selling\Sale $eSaleExample): array {
+	protected function getCreateVariables(Customize $e): array {
 
 		return match($e['type']) {
 
@@ -225,7 +232,7 @@ class CustomizeUi {
 
 	}
 
-	public static function getShopVariables(string $type, \selling\Sale $eSale, \Collection $cItem): array {
+	public static function getShopVariables(string $type, \selling\Sale $eSale, \Collection $cItem, bool $group = TRUE): array {
 
 		switch($type) {
 
@@ -235,41 +242,13 @@ class CustomizeUi {
 
 				$ePoint = $eSale['shopPoint'];
 
-				switch($eSale['paymentMethod']) {
+				if($eSale['shop']['shared'] and $group) {
 
-					case \selling\Sale::TRANSFER :
-						$payment = s("Vous avez choisi de régler cette commande par virement bancaire.");
-						if($eSale['shop']['paymentTransferHow']) {
-							$payment .= "\n".encode($eSale['shop']['paymentTransferHow']);
-						}
-						break;
-
-					case \selling\Sale::ONLINE_CARD :
-						$payment = s("Vous avez choisi de régler cette commande par carte bancaire.")."\n";
-						$payment .= s("Votre paiement a bien été accepté.");
-						break;
-
-					case \selling\Sale::OFFLINE :
-						if($eSale['shop']['shared']) {
-							$payment = s("Vous avez choisi de régler cette commande en direct avec vos producteurs.");
-						} else {
-							$payment = s("Vous avez choisi de régler cette commande en direct avec votre producteur.");
-						}
-						if($eSale['shop']['paymentOfflineHow']) {
-							$payment .= "\n".encode($eSale['shop']['paymentOfflineHow']);
-						}
-						break;
-
-					case NULL :
-						$payment = '';
-						break;
-
-					default :
-						throw new \Exception('Not compatible');
-
-				}
-
-				if($eSale['shop']['shared']) {
+					$payment = NULL;
+					$amount = NULL;
+					$farm = NULL;
+					$number = NULL;
+					$customer = NULL;
 
 					$products = '';
 
@@ -278,39 +257,79 @@ class CustomizeUi {
 						$products .= '<u>'.encode($cItemFarm->first()['farm']['name']).'</u>';
 						$products .= "\n";
 						$products .= self::getShopProducts($cItemFarm);
+						$products .= "\n";
 
 					}
 
 				} else {
 
+					switch($eSale['paymentMethod']) {
+
+						case \selling\Sale::TRANSFER :
+							$payment = s("Vous avez choisi de régler cette commande par virement bancaire.");
+							if($eSale['shop']['paymentTransferHow']) {
+								$payment .= "\n".encode($eSale['shop']['paymentTransferHow']);
+							}
+							break;
+
+						case \selling\Sale::ONLINE_CARD :
+							$payment = s("Vous avez choisi de régler cette commande par carte bancaire.")."\n";
+							$payment .= s("Votre paiement a bien été accepté.");
+							break;
+
+						case \selling\Sale::OFFLINE :
+							if($eSale['shop']['shared']) {
+								$payment = s("Vous avez choisi de régler cette commande en direct avec vos producteurs.");
+							} else {
+								$payment = s("Vous avez choisi de régler cette commande en direct avec votre producteur.");
+							}
+							if($eSale['shop']['paymentOfflineHow']) {
+								$payment .= "\n".encode($eSale['shop']['paymentOfflineHow']);
+							}
+							break;
+
+						case NULL :
+							$payment = '';
+							break;
+
+						default :
+							throw new \Exception('Not compatible');
+
+					}
+
+					if($eSale['hasVat'] and $eSale['type'] === \selling\Sale::PRO) {
+						$amount = \util\TextUi::money($eSale['priceExcludingVat']).' '.$eSale->getTaxes();
+					} else {
+						$amount = \util\TextUi::money($eSale['priceIncludingVat']);
+					}
+
 					$products = self::getShopProducts($cItem);
-					$products = rtrim($products);
+
+					$farm = encode($eSale['farm']['name']);
+					$number = $eSale['document'];
+					$customer = encode($eSale['customer']->getName());
 
 				}
 
-				if($eSale['hasVat'] and $eSale['type'] === \selling\Sale::PRO) {
-					$amount = \util\TextUi::money($eSale['priceExcludingVat']).' '.$eSale->getTaxes();
-				} else {
-					$amount = \util\TextUi::money($eSale['priceIncludingVat']);
-				}
+				$products = rtrim($products);
 
-				if($eSale['paymentMethod'] === \selling\Sale::ONLINE_CARD) {
+				if($eSale['shop']->isPersonal() and $eSale['paymentMethod'] === \selling\Sale::ONLINE_CARD) {
 					$link = s("Vous pouvez consulter votre commande avec le lien suivant :")."\n";
 				} else {
 					$link = s("Vous pouvez consulter et modifier votre commande avec le lien suivant :")."\n";
 				}
 				$link .= \shop\ShopUi::confirmationUrl($eSale['shop'], $eSale['shopDate']);
 
-				$variables = [
-					'number' => $eSale['document'],
-					'farm' => encode($eSale['farm']['name']),
-					'customer' => encode($eSale['customer']->getName()),
+				$variables = array_filter([
+					'number' => $number,
+					'farm' => $farm,
+					'customer' => $customer,
 					'amount' => $amount,
 					'products' => $products,
 					'payment' => $payment,
 					'link' => $link,
 					'delivery' => \util\DateUi::numeric($eSale['shopDate']['deliveryDate']),
-				];
+				]);
 
 				if($type !== Customize::SHOP_CONFIRMED_NONE) {
 
@@ -418,18 +437,16 @@ Cordialement,
 
 					return s("Bonjour,
 
-Votre commande n°@number d'un montant de @amount pour le @delivery a bien été enregistrée.
+Votre commande pour le @delivery a bien été enregistrée.
 
 Vous avez commandé auprès des producteurs suivants :
 
 @products
 
-@payment
-
 @link
 
 Merci et à bientôt,
-@farm");
+Vos producteurs");
 
 				} else {
 
@@ -455,13 +472,11 @@ Merci et à bientôt,
 
 					return s("Bonjour,
 
-Votre commande n°@number d'un montant de @amount a bien été enregistrée.
+Votre commande a bien été enregistrée.
 
 Vous avez commandé auprès des producteurs suivants :
 
 @products
-
-@payment
 
 Vous pourrez venir retirer votre commande le @delivery au point de retrait suivant :
 @address
@@ -469,7 +484,7 @@ Vous pourrez venir retirer votre commande le @delivery au point de retrait suiva
 @link
 
 Merci et à bientôt,
-@farm");
+Vos producteurs");
 
 				} else {
 
@@ -498,13 +513,11 @@ Merci et à bientôt,
 
 					return s("Bonjour,
 
-Votre commande n°@number d'un montant de @amount a bien été enregistrée.
+Votre commande a bien été enregistrée.
 
 Vous avez commandé auprès des producteurs suivants :
 
 @products
-
-@payment
 
 Votre commande vous sera livrée le @delivery à l'adresse suivante :
 @address
@@ -512,7 +525,7 @@ Votre commande vous sera livrée le @delivery à l'adresse suivante :
 @link
 
 Merci et à bientôt,
-@farm");
+Vos producteurs");
 
 				} else {
 

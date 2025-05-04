@@ -3,22 +3,30 @@ namespace shop;
 
 class ShopObserverLib {
 
-	public static function saleConfirmed(\selling\Sale $eSale, \Collection $cItem): void {
+	public static function saleConfirmed(\selling\Sale $eSale, \user\User $eUser, \Collection $cItem, bool $group): void {
 
 		$eSale->expects([
 			'shop' => ['shared', 'email', 'emailNewSale'],
-			'farm' => ['name'],
-			'customer' => ['user']
 		]);
 
-		$eUser = \user\UserLib::getById($eSale['customer']['user']);
+		if(
+			$eSale['shop']->isPersonal() or
+			$group
+		) {
 
-		self::newSend($eSale)
-			->addTo($eUser['email'])
-			->setContent(...MailUi::getSaleConfirmed($eSale, $cItem, self::getTemplate($eSale)))
-			->send('shop');
+			$eUser = \user\UserLib::getById($eUser);
 
-		if($eSale['shop']['emailNewSale']) {
+			self::newSend($eSale)
+				->addTo($eUser['email'])
+				->setContent(...MailUi::getSaleConfirmed($eSale, $cItem, $group, self::getTemplate($eSale)))
+				->send('shop');
+
+		}
+
+		if(
+			$eSale['shop']['emailNewSale'] and
+			$group === FALSE
+		) {
 
 			new \mail\MailLib()
 				->addTo(self::getEmail($eSale))
@@ -29,22 +37,30 @@ class ShopObserverLib {
 
 	}
 
-	public static function saleUpdated(\selling\Sale $eSale, \Collection $cItem): void {
+	public static function saleUpdated(\selling\Sale $eSale, \user\User $eUser, \Collection $cItem, bool $group): void {
 
 		$eSale->expects([
-			'shop' => ['email'],
-			'farm' => ['name'],
-			'customer' => ['user']
+			'shop' => ['email', 'shared'],
 		]);
 
-		$eUser = \user\UserLib::getById($eSale['customer']['user']);
+		if(
+			$eSale['shop']->isPersonal() or
+			$group
+		) {
 
-		self::newSend($eSale)
-			->addTo($eUser['email'])
-			->setContent(...MailUi::getSaleUpdated($eSale, $cItem, self::getTemplate($eSale)))
-			->send('shop');
+			$eUser = \user\UserLib::getById($eUser);
 
-		if($eSale['shop']['emailNewSale']) {
+			self::newSend($eSale)
+				->addTo($eUser['email'])
+				->setContent(...MailUi::getSaleUpdated($eSale, $cItem, $group, self::getTemplate($eSale)))
+				->send('shop');
+
+		}
+
+		if(
+			$eSale['shop']['emailNewSale'] and
+			$group === FALSE
+		) {
 
 			new \mail\MailLib()
 				->addTo(self::getEmail($eSale))
@@ -69,17 +85,17 @@ class ShopObserverLib {
 
 		self::newSend($eSale)
 			->addTo($eUser['email'])
-			->setContent(...MailUi::getSaleConfirmed($eSale, $cItem, self::getTemplate($eSale)))
+			->setContent(...MailUi::getSaleConfirmed($eSale, $cItem, FALSE, self::getTemplate($eSale)))
 			->send('shop');
 
 	}
 
 	private static function getTemplate(\selling\Sale $eSale): ?string {
 
-		return \mail\CustomizeLib::getTemplate($eSale['farm'], $eSale['shopPoint']->notEmpty() ? match($eSale['shopPoint']['type']) {
+		return \mail\CustomizeLib::getTemplateByShop($eSale['shop'], $eSale['shopPoint']->notEmpty() ? match($eSale['shopPoint']['type']) {
 			Point::PLACE => \mail\Customize::SHOP_CONFIRMED_PLACE,
 			Point::HOME => \mail\Customize::SHOP_CONFIRMED_HOME,
-		} : \mail\Customize::SHOP_CONFIRMED_PLACE, $eSale['shop']);
+		} : \mail\Customize::SHOP_CONFIRMED_PLACE);
 
 	}
 
@@ -106,7 +122,7 @@ class ShopObserverLib {
 
 	}
 
-	public static function saleCanceled(\selling\Sale $eSale): void {
+	public static function saleCanceled(\selling\Sale $eSale, bool $group): void {
 
 		$eSale->expects([
 			'shop' => ['email'],
@@ -116,12 +132,22 @@ class ShopObserverLib {
 
 		$eUser = \user\UserLib::getById($eSale['customer']['user']);
 
-		self::newSend($eSale)
-			->addTo($eUser['email'])
-			->setContent(...MailUi::getSaleCanceled($eSale))
-			->send('shop');
+		if(
+			$eSale['shop']->isPersonal() or
+			$group
+		) {
 
-		if($eSale['shop']['emailNewSale']) {
+			self::newSend($eSale)
+				->addTo($eUser['email'])
+				->setContent(...MailUi::getSaleCanceled($eSale))
+				->send('shop');
+
+		}
+
+		if(
+			$eSale['shop']['emailNewSale'] and
+			$group === FALSE
+		) {
 
 			new \mail\MailLib()
 				->addTo(self::getEmail($eSale))
@@ -131,28 +157,34 @@ class ShopObserverLib {
 		}
 
 		// On remet en circuit les produits en stock
-		$cItem = \selling\Item::model()
-			->select([
-				'shopProduct',
-				'number'
-			])
-			->whereSale($eSale)
-			->whereIngredientOf(NULL)
-			->getCollection();
+		if($group === FALSE) {
 
-		ProductLib::addAvailable($eSale, $cItem);
+			$cItem = \selling\Item::model()
+				->select([
+					'shopProduct',
+					'number'
+				])
+				->whereSale($eSale)
+				->whereIngredientOf(NULL)
+				->getCollection();
+
+			ProductLib::addAvailable($eSale, $cItem);
+
+		}
 
 	}
 
 	private static function newSend(\selling\Sale $eSale): \mail\MailLib {
 
 		$eSale->expects([
-			'farm'
+			'shop' => [
+				'farm' => ['name']
+			]
 		]);
 
 		return new \mail\MailLib()
-			->setReplyTo(self::getEmail($eSale))
-			->setFromName($eSale['farm']['name']);
+			->setReplyTo(self::getReplyTo($eSale))
+			->setFromName($eSale['shop']['farm']['name']);
 
 	}
 
@@ -161,6 +193,20 @@ class ShopObserverLib {
 		$eSale->expects([
 			'shop' => ['shared', 'email'],
 			'farm'
+		]);
+
+		if($eSale['shop']['shared']) {
+			return $eSale['farm']->selling()['legalEmail'];
+		} else {
+			return $eSale['shop']['email'] ?? $eSale['farm']->selling()['legalEmail'];
+		}
+
+	}
+
+	private static function getReplyTo(\selling\Sale $eSale): ?string {
+
+		$eSale->expects([
+			'shop' => ['shared', 'email'],
 		]);
 
 		if($eSale['shop']['shared']) {

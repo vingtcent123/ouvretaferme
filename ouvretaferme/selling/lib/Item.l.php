@@ -36,7 +36,6 @@ class ItemLib extends ItemCrud {
 				'containsIngredient' => new \Sql('ingredientOf IS NOT NULL', 'bool')
 			])
 			->join(Product::model(), 'm2.id = m1.product')
-			->where('m1.farm', $eFarm)
 			->where('sale', 'IN', $cSale)
 			->sort('sale')
 			->getCollection(NULL, NULL, ['product', NULL]);
@@ -140,7 +139,6 @@ class ItemLib extends ItemCrud {
 			->select(Item::getSelection() + [
 				'customer' => ['type', 'name']
 			])
-			->whereFarm($eFarm)
 			->where('sale', 'IN', $cSale)
 			->sort('sale')
 			->getCollection(NULL, NULL, ['sale', NULL]);
@@ -166,7 +164,7 @@ class ItemLib extends ItemCrud {
 
 		return Item::model()
 			->select([
-				'sale' => ['farm', 'shop', 'shopShared', 'shopMaster', 'hasVat', 'taxes', 'shippingVatRate', 'shippingVatFixed', 'document'],
+				'sale' => ['farm', 'shop', 'shopShared', 'hasVat', 'taxes', 'shippingVatRate', 'shippingVatFixed', 'document'],
 				'customer' => ['type', 'name'],
 				'quantity' => new \Sql('IF(packaging IS NULL, 1, packaging) * number', 'float'),
 				'unit' => ['fqn', 'by', 'singular', 'plural', 'short', 'type'],
@@ -197,7 +195,7 @@ class ItemLib extends ItemCrud {
 				'cItemIngredient' => SaleLib::delegateIngredients($eDate['deliveryDate'], 'product')
 			])
 			->whereFarm($eDate['farm'])
-			->whereStatus('IN', [Sale::PROVISIONAL, Sale::CONFIRMED, Sale::PREPARED, Sale::DELIVERED])
+			->whereStatus('IN', [Sale::CONFIRMED, Sale::PREPARED, Sale::DELIVERED])
 			->whereIngredientOf(NULL)
 			->whereShopDate($eDate)
 			->group(['product', 'productComposition', 'name', 'unit', 'quality'])
@@ -234,7 +232,7 @@ class ItemLib extends ItemCrud {
 			])
 			->whereFarm($eFarm)
 			->whereNumber('!=', NULL)
-			->whereStatus('IN', [Sale::PROVISIONAL, Sale::CONFIRMED, Sale::PREPARED, Sale::DELIVERED])
+			->whereStatus('IN', [Sale::CONFIRMED, Sale::PREPARED, Sale::DELIVERED])
 			->whereStats(TRUE)
 			->whereDeliveredAt('IN', [currentDate(), date('Y-m-d', strtotime('yesterday'))])
 			->group(['deliveredAt', 'product'])
@@ -250,7 +248,7 @@ class ItemLib extends ItemCrud {
 				'product'
 			])
 			->whereFarm($eFarm)
-			->whereStatus('IN', [Sale::PROVISIONAL, Sale::CONFIRMED, Sale::PREPARED, Sale::DELIVERED])
+			->whereStatus('IN', [Sale::CONFIRMED, Sale::PREPARED, Sale::DELIVERED])
 			->whereStats(TRUE)
 			->whereDeliveredAt('>', currentDate())
 			->group('product')
@@ -318,7 +316,7 @@ class ItemLib extends ItemCrud {
 
 	}
 
-	public static function createCollection(Sale $eSale, \Collection $c): void {
+	public static function createCollection(Sale $eSale, \Collection $c, bool $replace = FALSE): void {
 
 		if($c->empty()) {
 			throw new \Exception('Collection must not be empty');
@@ -327,6 +325,14 @@ class ItemLib extends ItemCrud {
 		$c->map(fn($e) => self::prepareCreate($e));
 
 		Item::model()->beginTransaction();
+
+			if($replace) {
+
+				Item::model()
+					->whereSale($eSale)
+					->delete();
+
+			}
 
 			foreach($c as $e) {
 
