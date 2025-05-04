@@ -206,7 +206,13 @@ new \selling\SalePage()
 		});
 	})
 	->quick(['deliveredAt', 'shipping'], validate: ['canUpdate', 'isOpen'])
-	->update()
+	->update(function($data) {
+
+		$data->e['cPoint'] = \shop\PointLib::getAlphabeticalByFarm($data->e['farm']);
+
+		throw new ViewAction($data);
+
+	})
 	->doUpdate(function($data) {
 		throw new ReloadAction('selling', $data->e->isComposition() ? 'Product::updatedComposition' : 'Sale::updated');
 	})

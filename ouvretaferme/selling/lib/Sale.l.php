@@ -48,6 +48,10 @@ class SaleLib extends SaleCrud {
 
 			}
 
+			if($e['shop']->notEmpty()) {
+				$properties[] = 'shopPointPermissive';
+			}
+
 			return $properties;
 
 		};
@@ -759,6 +763,27 @@ class SaleLib extends SaleCrud {
 
 			$e['shippingVatFixed'] = ($e['shippingVatRate'] !== NULL);
 			$properties[] = 'shippingVatFixed';
+
+		}
+
+		if(in_array('shopPointPermissive', $properties)) {
+
+			$properties[] = 'shopPoint';
+			array_delete($properties, 'shopPointPermissive');
+			$e['shopPoint'] = $e['shopPointPermissive'];
+
+			if($e['shopPoint']['type'] === \shop\Point::HOME) {
+
+				$eUser = \user\UserLib::getById($e['customer']['user']);
+
+				$e->copyAddressFromUser($eUser, $properties);
+
+			} else {
+
+				$e->emptyAddress($properties);
+
+			}
+
 
 		}
 

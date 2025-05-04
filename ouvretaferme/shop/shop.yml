@@ -42,10 +42,10 @@ Date:
 
 Point:
   id: serial32
+  name: text8(1, null)
   farm: farm\Farm
   type: enum(HOME, PLACE)
   zone: ?text16(1, null)
-  name: text8(1, null)
   description: ?text8(1, null)
   place: ?text8(1, null)
   address: ?text16

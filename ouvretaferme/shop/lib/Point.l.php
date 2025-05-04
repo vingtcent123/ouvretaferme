@@ -108,6 +108,19 @@ class PointLib extends PointCrud {
 
 	}
 
+	public static function getAlphabeticalByFarm(\farm\Farm $eFarm): \Collection {
+
+		return Point::model()
+			->select(Point::getSelection())
+			->whereStatus(Point::ACTIVE)
+			->whereFarm($eFarm)
+			->sort([
+				'name' => SORT_ASC,
+			])
+			->getCollection();
+
+	}
+
 	public static function getUsedByFarm(\farm\Farm $eFarm): array {
 
 		$cDate = Date::model()

@@ -1837,6 +1837,10 @@ class SaleUi {
 
 			}
 
+			if($eSale['shop']->notEmpty()) {
+				$h .= $form->dynamicGroup($eSale, 'shopPointPermissive');
+			}
+
 			$h .= $form->dynamicGroup($eSale, 'comment');
 
 			$h .= $form->group(
@@ -1989,6 +1993,7 @@ class SaleUi {
 			'shippingVatRate' => s("Taux de TVA sur les frais de livraison"),
 			'shop' => s("Boutique"),
 			'shopDate' => s("Associer à"),
+			'shopPointPermissive' => s("Mode de livraison"),
 			'comment' => s("Commentaire interne"),
 			'productsList' => s("Choisir les produits proposés à la vente"),
 		]);
@@ -2048,6 +2053,18 @@ class SaleUi {
 					];
 
 				};
+				break;
+
+			case 'shopPointPermissive' :
+				$d->field = 'select';
+				$d->values = fn(Sale $e) => $e['cPoint']->toArray(function($ePoint) {
+					return [
+						'value' => $ePoint['id'],
+						'label' => $ePoint['name'].' / '.\shop\PointUi::p('type')->values[$ePoint['type']]
+					];
+				}) ?? $e->expects(['cPoint']);
+				$d->default = fn(Sale $e) => $e['shopPoint'];
+				$d->placeholder = s("Non défini");
 				break;
 
 			case 'discount' :

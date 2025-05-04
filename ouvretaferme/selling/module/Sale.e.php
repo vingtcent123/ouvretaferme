@@ -80,6 +80,19 @@ class Sale extends SaleElement {
 
 	}
 
+	public function emptyAddress(&$properties = []): void {
+
+		$this->merge([
+			'deliveryStreet1' => NULL,
+			'deliveryStreet2' => NULL,
+			'deliveryPostcode' => NULL,
+			'deliveryCity' => NULL,
+		]);
+
+		$properties = array_merge($properties, ['deliveryStreet1', 'deliveryStreet2', 'deliveryPostcode', 'deliveryCity']);
+
+	}
+
 	public function canRead(): bool {
 
 		$this->expects(['farm', 'shop', 'shopShared']);
@@ -936,6 +949,19 @@ class Sale extends SaleElement {
 					$this['shopDate'] = new \shop\Date();
 					return TRUE;
 				}
+
+			})
+			->setCallback('shopPointPermissive.check', function(mixed $point): bool {
+
+				$this->expects(['farm']);
+
+				$this['shopPointPermissive'] = \shop\Point::model()
+					->select(\shop\Point::getSelection())
+					->whereId($point)
+					->whereFarm($this['farm'])
+					->get();
+
+				return $this['shopPointPermissive']->notEmpty();
 
 			})
 			->setCallback('shopPoint.check', function(\shop\Point &$ePoint): bool {

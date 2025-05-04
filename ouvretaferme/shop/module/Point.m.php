@@ -43,10 +43,10 @@ class PointModel extends \ModuleModel {
 
 		$this->properties = array_merge($this->properties, [
 			'id' => ['serial32', 'cast' => 'int'],
+			'name' => ['text8', 'min' => 1, 'max' => NULL, 'cast' => 'string'],
 			'farm' => ['element32', 'farm\Farm', 'cast' => 'element'],
 			'type' => ['enum', [\shop\Point::HOME, \shop\Point::PLACE], 'cast' => 'enum'],
 			'zone' => ['text16', 'min' => 1, 'max' => NULL, 'null' => TRUE, 'cast' => 'string'],
-			'name' => ['text8', 'min' => 1, 'max' => NULL, 'cast' => 'string'],
 			'description' => ['text8', 'min' => 1, 'max' => NULL, 'null' => TRUE, 'cast' => 'string'],
 			'place' => ['text8', 'min' => 1, 'max' => NULL, 'null' => TRUE, 'cast' => 'string'],
 			'address' => ['text16', 'null' => TRUE, 'cast' => 'string'],
@@ -61,7 +61,7 @@ class PointModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'farm', 'type', 'zone', 'name', 'description', 'place', 'address', 'paymentCard', 'paymentTransfer', 'paymentOffline', 'orderMin', 'shipping', 'shippingUntil', 'status', 'createdAt'
+			'id', 'name', 'farm', 'type', 'zone', 'description', 'place', 'address', 'paymentCard', 'paymentTransfer', 'paymentOffline', 'orderMin', 'shipping', 'shippingUntil', 'status', 'createdAt'
 		]);
 
 		$this->propertiesToModule += [
@@ -120,6 +120,10 @@ class PointModel extends \ModuleModel {
 		return $this->where('id', ...$data);
 	}
 
+	public function whereName(...$data): PointModel {
+		return $this->where('name', ...$data);
+	}
+
 	public function whereFarm(...$data): PointModel {
 		return $this->where('farm', ...$data);
 	}
@@ -130,10 +134,6 @@ class PointModel extends \ModuleModel {
 
 	public function whereZone(...$data): PointModel {
 		return $this->where('zone', ...$data);
-	}
-
-	public function whereName(...$data): PointModel {
-		return $this->where('name', ...$data);
 	}
 
 	public function whereDescription(...$data): PointModel {
