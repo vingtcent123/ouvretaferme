@@ -30,6 +30,15 @@ new Page()
 
 		throw new ViewAction($data);
 
+	})
+	->post('become', function($data) {
+
+		if($data->eUserOnline['role']['fqn'] === 'customer') {
+			\user\UserLib::updateRole($data->eUserOnline, 'farmer');
+		}
+
+		throw new RedirectAction('/?success=farm:Farmer::welcome');
+
 	});
 
 (new Page(function($data) {

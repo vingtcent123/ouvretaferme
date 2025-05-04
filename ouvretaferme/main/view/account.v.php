@@ -108,6 +108,17 @@ new AdaptativeView('index', function($data, MainTemplate $t) {
 
 	$h .= '</div>';
 
+	if($data->eUserOnline['role']['fqn'] === 'customer') {
+
+		$h .= '<h3>'.s("Vous voulez créer votre ferme ?").'</h3>';
+
+		$h .= '<div class="util-block">';
+			$h .= '<p>'.s("Vous avez actuellement un compte <i>client</i> que vous pouvez convertir en compte <i>producteur</i> pour créer votre ferme et vous lancer dans l'aventure de la production.<br/>Vous pourrez toujours bien sûr passer commande auprès de vos producteurs préférés.").'</p>';
+			$h .= '<a data-ajax="/farm/farmer:become" class="btn btn-secondary" data-confirm="'.s("Passer d'un compte client à un compte producteur ?").'">'.s("Devenir producteur / productrice").'</a>';
+		$h .= '</div>';
+
+	}
+
 	echo $h;
 
 });
