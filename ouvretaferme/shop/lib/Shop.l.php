@@ -160,6 +160,10 @@ class ShopLib extends ShopCrud {
 				$e['paymentOffline'] = FALSE;
 			}
 
+			Redirect::model()
+				->whereFqn($e['fqn'])
+				->delete();
+
 			Shop::model()->insert($e);
 
 			if($e['farm']['hasShops'] === FALSE) {
