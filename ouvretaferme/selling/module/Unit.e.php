@@ -22,14 +22,6 @@ class Unit extends UnitElement {
 
 	}
 
-	public function isWeight(): bool {
-
-		$this->expects(['fqn']);
-
-		return in_array($this['fqn'], [NULL, 'bunch', 'unit']) === FALSE;
-
-	}
-
 	public function isInteger(): bool {
 
 		return (

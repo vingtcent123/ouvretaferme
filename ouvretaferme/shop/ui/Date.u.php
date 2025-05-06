@@ -187,15 +187,15 @@ class DateUi {
 		$h = '';
 
 		if($eDate->acceptOrder()) {
-			$h .= s("Les prises de commande en ligne sont possibles jusqu'au {date} !", ['date' => lcfirst(\util\DateUi::getDayName(date('N', strtotime($eDate['orderEndAt'])))).' '.\util\DateUi::textual($eDate['orderEndAt'], \util\DateUi::DATE_HOUR_MINUTE)]);
+			$h .= s("Commande possible jusqu'au {date}", ['date' => lcfirst(\util\DateUi::getDayName(date('N', strtotime($eDate['orderEndAt'])))).' '.\util\DateUi::textual($eDate['orderEndAt'], \util\DateUi::DATE_HOUR_MINUTE)]);
 		} else if($eDate->acceptOrderSoon()) {
-			$h .= s("Les prises de commande en ligne seront possibles du {from} jusqu'au {to} !", ['from' => lcfirst(\util\DateUi::getDayName(date('N', strtotime($eDate['orderStartAt'])))).' '.\util\DateUi::textual($eDate['orderStartAt'], \util\DateUi::DAY_MONTH | \util\DateUi::TIME_HOUR_MINUTE), 'to' => lcfirst(\util\DateUi::getDayName(date('N', strtotime($eDate['orderEndAt'])))).' '.\util\DateUi::textual($eDate['orderEndAt'], \util\DateUi::DAY_MONTH | \util\DateUi::TIME_HOUR_MINUTE)]);
+			$h .= s("Commandes ouvertes du {from} jusqu'au {to}", ['from' => lcfirst(\util\DateUi::getDayName(date('N', strtotime($eDate['orderStartAt'])))).' '.\util\DateUi::textual($eDate['orderStartAt'], \util\DateUi::DAY_MONTH | \util\DateUi::TIME_HOUR_MINUTE), 'to' => lcfirst(\util\DateUi::getDayName(date('N', strtotime($eDate['orderEndAt'])))).' '.\util\DateUi::textual($eDate['orderEndAt'], \util\DateUi::DAY_MONTH | \util\DateUi::TIME_HOUR_MINUTE)]);
 		} else if($eDate->isExpired()) {
-			$h .= s("Cette vente est terminée, et il n'y a pas encore d'autre vente ouverte.");
+			$h .= s("Vente est terminée, et il n'y a pas encore d'autre vente ouverte");
 		}
 
 		if($eDate->isOrderSoonExpired()) {
-			$h .= '<br/>'.\Asset::icon('exclamation-circle').' '.s("Attention, il ne vous reste plus que quelques minutes pour finaliser votre commande, ne tardez pas.");
+			$h .= '<br/>'.\Asset::icon('exclamation-circle').'  '.s("Attention, il ne reste plus que quelques minutes pour finaliser votre commande, ne tardez pas !");
 		}
 
 		return $h;
@@ -220,7 +220,7 @@ class DateUi {
 			$value = $orderMin[0];
 
 			if($value > 0) {
-				$h .= s("Un minimum de commande de {value} € est demandé.", $value);
+				$h .= s("Minimum de commande de {value} €", $value);
 			}
 
 		} else {
@@ -231,9 +231,7 @@ class DateUi {
 			if($max > 0) {
 
 				if($min > 0) {
-					$h .= s("En fonction du mode de retrait, un minimum de commande compris entre {min} € et {max} € sera demandé.", ['min' => $min, 'max' => $max]);
-				} else {
-					$h .= s("En fonction du mode de retrait, un minimum de commande pourra être demandé.");
+					$h .= s("Minimum de commande compris entre {min} € et {max} € selon le mode de retrait", ['min' => $min, 'max' => $max]);
 				}
 
 			}

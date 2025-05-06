@@ -44,6 +44,18 @@ class Shop extends ShopElement {
 
 	}
 
+	public function isApproximate(): bool {
+
+		$this->expects(['approximate', 'paymentCard']);
+
+		return (
+			$this['approximate'] and
+			$this['paymentCard'] === FALSE
+		);
+
+
+	}
+
 	public function isShared(): bool {
 
 		$this->expects(['shared']);

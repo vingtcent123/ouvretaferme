@@ -420,6 +420,18 @@ class BasketManage {
 			qsa('.shop-basket-empty', node => node.classList.remove('disabled'));
 		}
 
+		const around = qs('#shop-product-ordered-around');
+
+		if(around !== null) {
+
+			if(qs('.shop-product[data-has="1"][data-approximate="1"]') !== null) {
+				around.removeHide();
+			} else {
+				around.hide();
+			}
+
+		}
+
 	}
 
 	/* Fonctions appelées sur la page de résumé du panier */
@@ -494,6 +506,12 @@ class BasketManage {
 
 					});
 
+				}
+
+				if(json.basketApproximate) {
+					qs('#shop-basket-submit-approximate').removeHide();
+				} else {
+					qs('#shop-basket-submit-approximate').hide();
 				}
 
 				this.loadPrice();

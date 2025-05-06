@@ -9,17 +9,21 @@ class Item extends ItemElement {
 			'sale' => ['farm', 'hasVat', 'type', 'taxes', 'shippingVatRate', 'shippingVatFixed', 'document', 'preparationStatus', 'shop', 'shopShared', 'market', 'marketParent', 'compositionOf', 'compositionEndAt', 'shipping', 'deliveredAt'],
 			'customer' => ['name', 'type'],
 			'farm' => ['name'],
-			'unit' => ['fqn', 'by', 'singular', 'plural', 'short', 'type'],
+			'unit' => \selling\Unit::getSelection(),
 			'product' => [
 				'name', 'farm', 'variety', 'description', 'vignette', 'size', 'origin', 'plant',
 				'composition', 'compositionVisibility',
-				'unit' => ['fqn', 'by', 'singular', 'plural', 'short', 'type'],
+				'unit' => \selling\Unit::getSelection(),
 				'privatePrice',
 				'quality' => ['name', 'logo']
 			],
 			'quality' => ['name', 'fqn', 'logo']
 		];
 
+	}
+
+	public static function containsApproximate(\Collection $cItem) {
+		return $cItem->contains(fn($eItem) => ($eItem['product']['unit']->notEmpty() and $eItem['product']['unit']['approximate']));
 	}
 
 	public function canRead(): bool {

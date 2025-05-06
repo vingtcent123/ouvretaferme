@@ -163,7 +163,7 @@ class LegalUi {
 
 		$h .= '<div class="home-category">';
 
-			$h .= '<p>'.s("Il existe plusieurs façon de vendre votre production avec {siteName} :").'</p>';
+			$h .= '<p>'.s("Il existe plusieurs façons de vendre votre production avec {siteName} :").'</p>';
 			$h .= '<ul>';
 				$h .= '<li>'.s("Vous pouvez créer des ventes pour des clients particuliers et professionnels et éditer des devis, des bons de livraison et des factures").'</li>';
 				$h .= '<li>'.s("Un logiciel de caisse permet d'enregistrer directement vos ventes (avec une tablette de préférence) lorsque vous vendez sur un marché ou à la ferme").'</li>';

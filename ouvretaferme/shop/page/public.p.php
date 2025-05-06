@@ -396,6 +396,11 @@ new Page(function($data) {
 
 		$data->eStripeFarm = \payment\StripeLib::getByFarm($eFarm);
 
+		$data->eSaleReference['isApproximate'] = (
+			$data->eShop->isApproximate() and
+			\selling\Item::containsApproximate($data->cItemExisting)
+		);
+
 		throw new ViewAction($data);
 
 	})
@@ -414,6 +419,11 @@ new Page(function($data) {
 		($data->validatePayment)();
 
 		$data->eSaleReference['shopPoint'] = \shop\PointLib::getById($data->eSaleReference['shopPoint']);
+
+		$data->eSaleReference['isApproximate'] = (
+			$data->eShop->isApproximate() and
+			\selling\Item::containsApproximate($data->cItemExisting)
+		);
 
 		throw new ViewAction($data);
 
@@ -468,8 +478,20 @@ new Page(function($data) {
 			throw new RedirectAction(\shop\ShopUi::url($data->eShop));
 		}
 
-		$data->price = round(array_reduce($data->basket, function($total, $item) {
+		$data->approximate = FALSE;
+
+		$data->price = round(array_reduce($data->basket, function($total, $item) use ($data) {
+
+			if(
+				$data->eShop->isApproximate() and
+				$item['product']['product']['unit']->notEmpty() and
+				$item['product']['product']['unit']['approximate']
+			) {
+				$data->approximate = TRUE;
+			}
+
 			return $total + round($item['product']['price'] * $item['number'] * ($item['product']['packaging'] ?? 1), 2);
+
 		}, 0), 2);
 
 		throw new ViewAction($data);

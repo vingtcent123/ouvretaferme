@@ -875,7 +875,7 @@ class ProductUi {
 
 			$h .= $form->group(
 				self::p('unit')->label,
-				($eProduct['unit']->empty() or $eProduct['unit']->isWeight() === FALSE) ?
+				($eProduct['unit']->empty() or $eProduct['unit']['approximate'] === FALSE) ?
 					$form->dynamicField($eProduct, 'unit') :
 					$form->fake(mb_ucfirst($eProduct['unit'] ? \selling\UnitUi::getSingular($eProduct['unit']) : self::p('unit')->placeholder))
 			);

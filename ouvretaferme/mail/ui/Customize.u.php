@@ -321,7 +321,14 @@ class CustomizeUi {
 
 				$products = rtrim($products);
 
-				if($eSale['shop']->isPersonal() and ($ePayment['method']['fqn'] ?? NULL) === \payment\MethodLib::ONLINE_CARD) {
+				if(
+					$eSale['shop']->isApproximate() and
+					\selling\Item::containsApproximate($cItem)
+				) {
+					$products .= "\n\n".s("Certains produits de cette commande nécessitent une pesée, et que le montant définitif pourra être légèrement.");
+				}
+
+			if($eSale['shop']->isPersonal() and ($ePayment['method']['fqn'] ?? NULL) === \payment\MethodLib::ONLINE_CARD) {
 					$link = s("Vous pouvez consulter votre commande avec le lien suivant :")."\n";
 				} else {
 					$link = s("Vous pouvez consulter et modifier votre commande avec le lien suivant :")."\n";

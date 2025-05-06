@@ -238,7 +238,7 @@ class ShopUi {
 
 		$h .= $form->hidden('id', $eShop['id']);
 
-		$update = ['name', 'type', 'fqn', 'email', 'frequency', 'orderMin', 'shipping', 'shippingUntil', 'limitCustomers', 'hasPoint', 'comment', 'commentCaption', 'description'];
+		$update = ['name', 'type', 'fqn', 'email', 'frequency', 'approximate', 'orderMin', 'shipping', 'shippingUntil', 'limitCustomers', 'hasPoint', 'comment', 'commentCaption', 'description'];
 
 		if($eShop['shared']) {
 			array_delete($update, 'shipping');
@@ -1171,7 +1171,7 @@ class ShopUi {
 			'embedOnly' => s("Comment vos clients peuvent-ils accéder à votre boutique pour commander ?"),
 			'terms' => s("Vos conditions générales de vente"),
 			'termsField' => s("Demander à vos clients d'accepter explicitement les conditions générales de vente avec une case à cocher"),
-			'approximate' => s("Indiquer aux clients que le montant de leur commande est approximatif s'il y a des produits qui nécessitent une pesée"),
+			'approximate' => s("Indiquer aux clients que le montant de leur commande affiché sur le site est approximatif s'il y a des produits qui nécessitent une pesée"),
 			'comment' => s("Permettre à vos clients de laisser un commentaire lors d'une commande"),
 			'commentCaption' => s("Instructions à communiquer à vos clients pour remplir le commentaire"),
 			'customBackground' => s("Couleur d'arrière plan"),
@@ -1323,8 +1323,8 @@ class ShopUi {
 				break;
 
 			case 'approximate' :
-				$d->field = fn(\util\FormUi $form, Shop $e, string $field) => $form->yesNo($field, $e['approximate']);
-				$d->after = \util\FormUi::info(s("Les clients seront informés que le montant que vous leur facturerez sera probablement différent de celui affiché sur la boutique si des produits nécessitent une pesée, c'est-à-dire dont l'unité de vente est le kg ou le gramme."));
+				$d->field = fn(\util\FormUi $form, Shop $e, string $field) => $e['paymentCard'] ? '<div class="util-info">'.s("Ce paramètre est configurable uniquement si vous avez désactivé le paiement par carte bancaire sur votre boutique.").'</div>' : $form->yesNo($field, $e['approximate']);
+				$d->after = fn(\util\FormUi $form, Shop $e) => $e['paymentCard'] ? '' : \util\FormUi::info(s("Les clients seront informés que le montant que vous leur facturerez sera probablement différent de celui affiché sur la boutique si des produits nécessitent une pesée, c'est-à-dire dont l'unité de vente est le kg ou le gramme."));
 				break;
 
 			case 'limitCustomers' :

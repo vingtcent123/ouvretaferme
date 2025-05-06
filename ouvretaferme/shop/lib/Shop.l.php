@@ -12,7 +12,7 @@ class ShopLib extends ShopCrud {
 
 			$properties = ['fqn', 'name', 'type', 'email', 'description', 'frequency', 'orderMin', 'shipping', 'shippingUntil', 'limitCustomers', 'hasPoint', 'comment', 'commentCaption'];
 
-			if($eShop['hasPayment'] === FALSE) {
+			if($eShop['paymentCard'] === FALSE) {
 				$properties[] = 'approximate';
 			}
 

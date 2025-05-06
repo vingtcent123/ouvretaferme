@@ -149,11 +149,15 @@ new AdaptativeView('shop', function($data, ShopTemplate $t) {
 		if(array_sum($data->discounts) > 0) {
 
 			if($data->eShop['shared']) {
-				$details[] = Asset::icon('check-lg').'  '.s("Les prix affichés incluent la remise commerciale dont vous bénéficiez chez certains producteurs !");
+				$details[] = Asset::icon('check-lg').'  '.s("Les prix affichés incluent vos remises commerciales chez certains producteurs");
 			} else {
 				$discount = $data->discounts[$data->eShop['farm']['id']];
-				$details[] = Asset::icon('check-lg').'  '.s("Les prix affichés incluent la remise commerciale de {value} % dont vous bénéficiez !", $discount);
+				$details[] = Asset::icon('check-lg').'  '.s("Les prix affichés incluent votre remise commerciale de {value} %", $discount);
 			}
+		}
+
+		if($data->eDateSelected['productsApproximate']) {
+			$details[] = Asset::icon('pen').'  '.s("Certains produits en vente nécessitent une pesée et le montant de votre commande est donc approximatif");
 		}
 
 		if($details) {
@@ -208,6 +212,7 @@ new JsonView('/shop/public/{fqn}/{date}/:getBasket', function($data, AjaxTemplat
 
 	$t->push('basketSummary', new \shop\BasketUi()->getSummary($data->eShop, $data->eDate, $data->cItemExisting, $data->basket));
 	$t->push('basketPrice', $data->price);
+	$t->push('basketApproximate', $data->approximate);
 
 });
 
@@ -250,7 +255,7 @@ new AdaptativeView('/shop/public/{fqn}/{date}/paiement', function($data, ShopTem
 	$t->header = $uiBasket->getHeader($data->eShop);
 
 	echo $uiBasket->getSteps($data->eShop, $data->eDate, $data->step);
-	echo $uiBasket->getOrder($data->eDate, $data->eSaleReference);
+	echo $uiBasket->getOrder($data->eShop, $data->eDate, $data->eSaleReference);
 	echo $uiBasket->getPayment($data->eShop, $data->eDate, $data->eCustomer, $data->eSaleReference, $data->eStripeFarm);
 
 });
