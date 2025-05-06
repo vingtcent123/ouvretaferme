@@ -190,7 +190,7 @@ class UnitUi {
 									$h .= \Asset::icon('gear-fill');
 								$h .= '</a> ';
 
-								$h .= '<a data-ajax="/selling/unit:doDelete" data-confirm="'.s("Supprimer ce matériel ?").'" post-id="'.$eUnit['id'].'" class="btn btn-outline-secondary">';
+								$h .= '<a data-ajax="/selling/unit:doDelete" data-confirm="'.s("Supprimer cette unité de vente ?").'" post-id="'.$eUnit['id'].'" class="btn btn-outline-secondary">';
 									$h .= \Asset::icon('trash-fill');
 								$h .= '</a>';
 
