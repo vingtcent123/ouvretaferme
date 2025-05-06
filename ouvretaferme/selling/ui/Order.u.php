@@ -396,7 +396,7 @@ class OrderUi {
 
 	}
 
-	public function getItemsBySale(Sale $eSale, \Collection $cItem) {
+	public function getItemsBySale(Sale $eSale, \Collection $cItem, bool $withApproximate = FALSE) {
 
 		\Asset::css('selling', 'item.css');
 
@@ -436,7 +436,7 @@ class OrderUi {
 				$h .= '</tr>';
 			$h .= '</thead>';
 
-			$h .= $this->getItemsBody($eSale, $cItem, $columns, $withPackaging);
+			$h .= $this->getItemsBody($eSale, $cItem, $columns, $withPackaging, $withApproximate);
 
 			if($eSale['shipping'] !== NULL) {
 
@@ -480,7 +480,7 @@ class OrderUi {
 
 	}
 
-	protected function getItemsBody(Sale $eSale, \Collection $cItem, int $columns, bool $withPackaging): string {
+	protected function getItemsBody(Sale $eSale, \Collection $cItem, int $columns, bool $withPackaging, bool $withApproximate = FALSE): string {
 
 		$h = '';
 
@@ -541,6 +541,13 @@ class OrderUi {
 					$h .= '</td>';
 
 					$h .= '<td class="item-item-price text-end">';
+						if(
+							$withApproximate and
+							$eItem['product']['unit']->notEmpty() and
+							$eItem['product']['unit']['approximate']
+						) {
+							$h .= s("environ").' ';
+						}
 						$h .= \util\TextUi::money($eItem['price']);
 						if($eSale['hasVat'] and $eSale['type'] === Customer::PRO) {
 							$h .= ' '.$eSale->getTaxes();

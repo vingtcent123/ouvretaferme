@@ -31,7 +31,7 @@ class ItemLib extends ItemCrud {
 				'product' => ['name', 'variety', 'vignette', 'farm', 'composition', 'size'],
 				'customer' => ['type', 'name'],
 				'packaging', 'number',
-				'unit' => ['fqn', 'by', 'singular', 'plural', 'short', 'type'],
+				'unit' => \selling\Unit::getSelection(),
 				'containsComposition' => new \Sql('productComposition', 'bool'),
 				'containsIngredient' => new \Sql('ingredientOf IS NOT NULL', 'bool')
 			])
@@ -167,7 +167,7 @@ class ItemLib extends ItemCrud {
 				'sale' => ['farm', 'shop', 'shopShared', 'hasVat', 'taxes', 'shippingVatRate', 'shippingVatFixed', 'document'],
 				'customer' => ['type', 'name'],
 				'quantity' => new \Sql('IF(packaging IS NULL, 1, packaging) * number', 'float'),
-				'unit' => ['fqn', 'by', 'singular', 'plural', 'short', 'type'],
+				'unit' => \selling\Unit::getSelection(),
 				'unitPrice',
 				'price',
 				'deliveredAt'
@@ -185,7 +185,7 @@ class ItemLib extends ItemCrud {
 		return Item::model()
 			->select([
 				'name', 'quality',
-				'unit' => ['fqn', 'by', 'singular', 'plural', 'short', 'type'],
+				'unit' => \selling\Unit::getSelection(),
 				'price' => new \Sql('SUM(price)', 'float'),
 				'number' => new \Sql('SUM(number)', 'float'),
 				'quantity' => new \Sql('SUM(IF(packaging IS NULL, 1, packaging) * number)', 'float'),
@@ -209,7 +209,7 @@ class ItemLib extends ItemCrud {
 		return Item::model()
 			->select([
 				'name', 'quality',
-				'unit' => ['fqn', 'by', 'singular', 'plural', 'short', 'type'],
+				'unit' => \selling\Unit::getSelection(),
 				'price' => new \Sql('SUM(price)', 'float'),
 				'quantity' => new \Sql('SUM(IF(packaging IS NULL, 1, packaging) * number)', 'float'),
 				'product' => ['vignette', 'farm', 'composition'],

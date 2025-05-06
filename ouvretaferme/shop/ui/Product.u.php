@@ -197,16 +197,21 @@ class ProductUi {
 		}
 
 		$h = '<div class="shop-product-ordered hide" id="shop-basket" '.attr('onrender', 'BasketManage.init('.$eDate['id'].', '.$defaultJson.')').'>';
-			$h .= '<div>';
+			$h .= '<div class="shop-product-ordered-item">';
 				$h .= '<div class="shop-product-ordered-icon">'.\Asset::icon('basket').'</div>';
 				$h .= '<span id="shop-basket-articles"></span>';
 			$h .= '</div>';
-			$h .= '<div>';
+			$h .= '<div class="shop-product-ordered-item '.($eShop->isApproximate() ? 'shop-product-ordered-approximate' : '').'">';
 				$h .= '<div class="shop-product-ordered-icon">'.\Asset::icon('currency-euro').'</div>';
-				$h .= '<span id="shop-basket-price"></span>';
+				$h .= '<div>';
+					if($eShop->isApproximate()) {
+						$h .= '<div id="shop-product-ordered-around" class="shop-product-around hide">'.s("Environ").'</div>';
+					}
+					$h .= '<span id="shop-basket-price"></span>';
+				$h .= '</div>';
 				$h .= ' '.$this->getTaxes($eDate);
 			$h .= '</div>';
-			$h .= '<div style="display: flex;">';
+			$h .= '<div class="shop-product-ordered-item">';
 
 				if(Shop::isEmbed()) {
 
@@ -296,7 +301,7 @@ class ProductUi {
 
 		$eFarm = $eProduct['product']['farm'];
 
-		$h = '<div class="shop-product '.(($eProductSelling['compositionVisibility'] === \selling\Product::PUBLIC and $eProductSelling['cItemIngredient']->notEmpty()) ? 'shop-product-composition' : '').'" data-id="'.$eProductSelling['id'].'" data-price="'.$price.'" data-has="0" '.($showFarm ? 'data-filter-farm="'.$eFarm['id'].'"' : '').'>';
+		$h = '<div class="shop-product '.(($eProductSelling['compositionVisibility'] === \selling\Product::PUBLIC and $eProductSelling['cItemIngredient']->notEmpty()) ? 'shop-product-composition' : '').'" data-id="'.$eProductSelling['id'].'" data-price="'.$price.'" data-approximate="'.($eProductSelling['unit']->notEmpty() and $eProductSelling['unit']['approximate'] ? 1 : 0).'" data-has="0" '.($showFarm ? 'data-filter-farm="'.$eFarm['id'].'"' : '').'>';
 
 			if($eProductSelling['vignette'] !== NULL) {
 				$url = new \media\ProductVignetteUi()->getUrlByElement($eProductSelling, 'l');

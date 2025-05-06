@@ -101,7 +101,7 @@ class ProductLib extends ProductCrud {
 			->select([
 				'product' => [
 					'name', 'vignette', 'category', 'variety', 'quality', 'size', 'origin', 'farm', 'composition', 'status',
-					'unit' => ['fqn', 'by', 'singular', 'plural', 'short', 'type'],
+					'unit' => \selling\Unit::getSelection(),
 					'stock', 'stockUpdatedAt',
 					'stockExpired' => new \Sql('stockUpdatedAt IS NOT NULL AND stockUpdatedAt < NOW() - INTERVAL 7 DAY', 'bool'),
 					'plant' => ['name', 'fqn', 'vignette']
@@ -322,6 +322,8 @@ class ProductLib extends ProductCrud {
 	}
 
 	public static function applyIndexing(Shop $eShop, Date $eDate, \Collection $cProduct): void {
+
+		$eDate['productsApproximate'] = $eShop->isApproximate() ? $cProduct->contains(fn($eProduct) => ($eProduct['product']['unit']->notEmpty() and $eProduct['product']['unit']['approximate'])) : FALSE;
 
 		if($eShop['shared']) {
 

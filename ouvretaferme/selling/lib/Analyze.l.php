@@ -53,7 +53,7 @@ class AnalyzeLib {
 				'month' => new \Sql('EXTRACT(MONTH FROM deliveredAt)', 'int'),
 				'quantity' => new \Sql('SUM(IF(packaging IS NULL, 1, packaging) * number)', 'float'),
 				'turnover' => new \Sql('SUM(priceExcludingVat)', 'float'),
-				'unit' => ['fqn', 'by', 'singular', 'plural', 'short', 'type'],
+				'unit' => \selling\Unit::getSelection(),
 				'average' => new \Sql('SUM(priceExcludingVat) / SUM(IF(packaging IS NULL, 1, packaging) * number)', 'float')
 			])
 			->join(Customer::model(), 'm1.customer = m2.id')
@@ -526,7 +526,7 @@ class AnalyzeLib {
 			->select([
 				'product' => ['vignette', 'farm', 'composition', 'name', 'variety'],
 				'quantity' => new \Sql('SUM(IF(packaging IS NULL, 1, packaging) * number)', 'float'),
-				'unit' => ['fqn', 'by', 'singular', 'plural', 'short', 'type'],
+				'unit' => \selling\Unit::getSelection(),
 				'turnover' => new \Sql('SUM('.$field.')', 'float'),
 				'average' => new \Sql('SUM('.$field.') / SUM(IF(packaging IS NULL, 1, packaging) * number)', 'float'),
 				'containsComposition' => new \Sql('SUM(productComposition) > 0', 'bool'),
@@ -671,7 +671,7 @@ class AnalyzeLib {
 			->join(Product::model()
 				->select([
 					'plant' => ['vignette', 'fqn', 'name'],
-					'unit' => ['fqn', 'by', 'singular', 'plural', 'short', 'type'],
+					'unit' => \selling\Unit::getSelection(),
 				]), 'm1.product = m2.id')
 			->join(Customer::model(), 'm1.customer = m3.id')
 			->where('number != 0')
@@ -736,7 +736,7 @@ class AnalyzeLib {
 			->join(Product::model()
 				->select([
 					'plant',
-					'unit' => ['fqn', 'by', 'singular', 'plural', 'short', 'type'],
+					'unit' => \selling\Unit::getSelection(),
 				]), 'm1.product = m2.id')
 			->join(Customer::model(), 'm1.customer = m3.id')
 			->where('number != 0')
@@ -840,7 +840,7 @@ class AnalyzeLib {
 				'customer' => ['type', 'name'],
 				'quantity' => new \Sql('IF(packaging IS NULL, 1, packaging) * number', 'float'),
 				'type', 'price', 'priceExcludingVat', 'vatRate',
-				'unit' => ['fqn', 'by', 'singular', 'plural', 'short', 'type'],
+				'unit' => \selling\Unit::getSelection(),
 				'deliveredAt'
 			])
 			->whereFarm($eFarm)
@@ -927,7 +927,7 @@ class AnalyzeLib {
 				'plant' => ['name'],
 				'category' => ['name'],
 				'variety', 'size', 'origin',
-				'unit' => ['fqn', 'by', 'singular', 'plural', 'short', 'type'],
+				'unit' => \selling\Unit::getSelection(),
 				'quality',
 				'privatePrice', 'proPrice',
 				'vat'

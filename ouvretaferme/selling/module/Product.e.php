@@ -8,7 +8,7 @@ class Product extends ProductElement {
 		return parent::getSelection() + [
 			'farm' => ['name', 'vignette'],
 			'plant' => ['name', 'fqn', 'vignette'],
-			'unit' => ['fqn', 'by', 'singular', 'plural', 'short', 'type'],
+			'unit' => \selling\Unit::getSelection(),
 			'quality' => ['name', 'shortName', 'logo'],
 			'stockExpired' => new \Sql('stockUpdatedAt IS NOT NULL AND stockUpdatedAt < NOW() - INTERVAL 7 DAY', 'bool')
 		];
@@ -167,7 +167,7 @@ class Product extends ProductElement {
 
 				if(
 					Unit::model()
-						->select('farm', 'fqn')
+						->select('farm', 'fqn', 'approximate')
 						->get($eUnit) and
 					$eUnit->canRead()
 				) {
@@ -175,7 +175,7 @@ class Product extends ProductElement {
 					if($p->for === 'create') {
 						return TRUE;
 					} else {
-						return $eUnit->isWeight() === FALSE;
+						return ($eUnit['approximate'] === FALSE);
 					}
 
 				} else {

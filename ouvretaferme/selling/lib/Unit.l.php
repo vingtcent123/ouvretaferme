@@ -4,7 +4,7 @@ namespace selling;
 class UnitLib extends UnitCrud {
 
 	public static function getPropertiesCreate(): array {
-		return ['singular', 'plural', 'short', 'type'];
+		return ['singular', 'plural', 'short', 'type', 'approximate'];
 	}
 
 	public static function getPropertiesUpdate(): array {
@@ -26,10 +26,7 @@ class UnitLib extends UnitCrud {
 
 	public static function getByFarmWithoutWeight(\farm\Farm $eFarm): \Collection {
 
-		Unit::model()->or(
-			fn() => $this->whereFqn(NULL),
-			fn() => $this->whereFqn('IN', ['bunch', 'unit']),
-		);
+		Unit::model()->whereApproximate(FALSE);
 
 		return self::getByFarm($eFarm);
 

@@ -17,7 +17,7 @@ class ProductLib extends ProductCrud {
 
 			if(
 				$eProduct['unit']->empty() or
-				$eProduct['unit']->isWeight() === FALSE
+				$eProduct['unit']['approximate'] === FALSE
 			) {
 				$properties[] = 'unit';
 			}
@@ -241,7 +241,7 @@ class ProductLib extends ProductCrud {
 		$cProduct = Product::model()
 			->select([
 				'id', 'name', 'variety', 'vignette', 'farm', 'composition', 'size', 'origin',
-				'unit' => ['fqn', 'by', 'singular', 'plural', 'short', 'type'],
+				'unit' => \selling\Unit::getSelection(),
 				'privatePrice', 'privateStep',
 				'proPrice', 'proPackaging', 'proStep',
 				'vat',

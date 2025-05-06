@@ -46,11 +46,12 @@ class UnitModel extends \ModuleModel {
 			'farm' => ['element32', 'farm\Farm', 'null' => TRUE, 'cast' => 'element'],
 			'fqn' => ['fqn', 'null' => TRUE, 'cast' => 'string'],
 			'by' => ['bool', 'cast' => 'bool'],
+			'approximate' => ['bool', 'cast' => 'bool'],
 			'type' => ['enum', [\selling\Unit::INTEGER, \selling\Unit::DECIMAL], 'cast' => 'enum'],
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'singular', 'plural', 'short', 'farm', 'fqn', 'by', 'type'
+			'id', 'singular', 'plural', 'short', 'farm', 'fqn', 'by', 'approximate', 'type'
 		]);
 
 		$this->propertiesToModule += [
@@ -68,6 +69,9 @@ class UnitModel extends \ModuleModel {
 		switch($property) {
 
 			case 'by' :
+				return FALSE;
+
+			case 'approximate' :
 				return FALSE;
 
 			default :
@@ -125,6 +129,10 @@ class UnitModel extends \ModuleModel {
 
 	public function whereBy(...$data): UnitModel {
 		return $this->where('by', ...$data);
+	}
+
+	public function whereApproximate(...$data): UnitModel {
+		return $this->where('approximate', ...$data);
 	}
 
 	public function whereType(...$data): UnitModel {

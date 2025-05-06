@@ -219,7 +219,7 @@ class UnitUi {
 			$h .= $form->asteriskInfo();
 
 			$h .= $form->hidden('farm', $eUnit['farm']['id']);
-			$h .= $form->dynamicGroups($eUnit, ['singular*', 'plural*', 'short*', 'type*']);
+			$h .= $form->dynamicGroups($eUnit, ['singular*', 'plural*', 'short*', 'type*', 'approximate*']);
 			$h .= $form->group(
 				content: $form->submit(s("Ajouter"))
 			);
@@ -241,7 +241,7 @@ class UnitUi {
 		$h = $form->openAjax('/selling/unit:doUpdate');
 
 			$h .= $form->hidden('id', $eUnit['id']);
-			$h .= $form->dynamicGroups($eUnit, ['singular', 'plural', 'short', 'type']);
+			$h .= $form->dynamicGroups($eUnit, ['singular', 'plural', 'short', 'type', 'approximate']);
 			$h .= $form->group(
 				content: $form->submit(s("Modifier"))
 			);
@@ -258,13 +258,13 @@ class UnitUi {
 
 	public static function getField(\Collection $cUnit): array {
 
-		$cUnitWeight = new \Collection();
+		$cUnitApproximate = new \Collection();
 		$cUnitOthers = new \Collection();
 
 		foreach($cUnit as $eUnit) {
 
-			if($eUnit->isWeight()) {
-				$cUnitWeight[] = $eUnit;
+			if($eUnit['approximate']) {
+				$cUnitApproximate[] = $eUnit;
 			} else {
 				$cUnitOthers[] = $eUnit;
 			}
@@ -273,11 +273,11 @@ class UnitUi {
 
 		$values = [];
 
-		if($cUnitWeight->notEmpty()) {
+		if($cUnitApproximate->notEmpty()) {
 
 			$values[] = [
-				'label' => s("Vente au poids"),
-				'values' => $cUnitWeight
+				'label' => s("Vente à la quantité"),
+				'values' => $cUnitApproximate
 			];
 
 		}
@@ -302,6 +302,7 @@ class UnitUi {
 			'plural' => s("Nom de l'unité au pluriel"),
 			'short' => s("Version courte"),
 			'type' => s("Avec quelles quantités est utilisée l'unité ?"),
+			'approximate' => s("Cette unité est-elle une unité de poids ?"),
 		]);
 
 		switch($property) {
@@ -317,6 +318,10 @@ class UnitUi {
 			case 'short' :
 				$d->placeholder = s("b.");
 				$d->after = \util\FormUi::info(s("Maximum {value} caractères", Unit::model()->getPropertyRange('short')[1]));
+				break;
+
+			case 'approximate' :
+				$d->field = 'yesNo';
 				break;
 
 			case 'type' :

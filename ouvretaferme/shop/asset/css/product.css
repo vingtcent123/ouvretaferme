@@ -581,6 +581,32 @@ body:not([data-template~="shop-embedded"]) {
 
 }
 
+.shop-product-ordered-item {
+	display: flex;
+	align-items: center;
+}
+
+.shop-product-ordered-approximate {
+	line-height: 1.4;
+}
+
+@media (min-width: 576px) {
+
+	.shop-product-around {
+		display: inline-block;
+		margin-right: 0.375rem;
+	}
+
+}
+
+@media (max-width: 575px) {
+
+	.shop-product-around {
+		font-size: 0.9rem;
+	}
+
+}
+
 .shop-product-ordered-icon {
 	display: inline-flex;
 	justify-content: center;

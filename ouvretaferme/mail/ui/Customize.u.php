@@ -313,6 +313,13 @@ class CustomizeUi {
 
 				$products = rtrim($products);
 
+				if(
+					$eSale['shop']->isApproximate() and
+					\selling\Item::containsApproximate($cItem)
+				) {
+					$products .= "\n\n".s("Certains produits de cette commande nécessitent une pesée, et que le montant définitif pourra être légèrement.");
+				}
+
 				if($eSale['shop']->isPersonal() and $eSale['paymentMethod'] === \selling\Sale::ONLINE_CARD) {
 					$link = s("Vous pouvez consulter votre commande avec le lien suivant :")."\n";
 				} else {

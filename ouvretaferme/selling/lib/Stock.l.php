@@ -49,7 +49,7 @@ class StockLib extends StockCrud {
 			->select([
 				'id',
 				'plant', 'name', 'variety', 'size', 'origin',
-				'unit' => ['fqn', 'by', 'singular', 'plural', 'short', 'type'],
+				'unit' => \selling\Unit::getSelection(),
 			])
 			->whereFarm($eFarm)
 			->whereId('NOT IN', $cProduct)
@@ -94,7 +94,7 @@ class StockLib extends StockCrud {
 		return Product::model()
 			->select([
 				'id', 'name', 'farm', 'variety', 'size', 'origin',
-				'unit' => ['fqn', 'by', 'singular', 'plural', 'short', 'type'],
+				'unit' => \selling\Unit::getSelection(),
 				'vignette', 'composition', 'stock'
 			])
 			->wherePlant($eTask['plant'])

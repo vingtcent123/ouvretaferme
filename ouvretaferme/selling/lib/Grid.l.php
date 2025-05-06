@@ -51,7 +51,7 @@ class GridLib extends GridCrud {
 			->select([
 				'product' => [
 					'farm', 'name', 'variety', 'vignette', 'composition', 'size', 'origin',
-					'unit' => ['fqn', 'by', 'singular', 'plural', 'short', 'type'],
+					'unit' => \selling\Unit::getSelection(),
 					'proPrice', 'proPackaging',
 					'privatePrice',
 				]

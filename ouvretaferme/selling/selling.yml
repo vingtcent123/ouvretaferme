@@ -347,6 +347,7 @@ Unit:
   farm: ?farm\Farm
   fqn: ?fqn
   by: bool = false
+  approximate: bool = false
   type: enum(INTEGER, DECIMAL)
   UNIQUE: [
     ["farm", "singular"]

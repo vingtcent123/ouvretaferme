@@ -184,6 +184,7 @@ class BasketUi {
 		$h .= '</div>';
 
 		$total = 0.0;
+		$approximate = FALSE;
 
 		$h .= '<div id="shop-basket-summary-list" class="mb-2">';
 
@@ -228,12 +229,12 @@ class BasketUi {
 								$h .= '<td colspan="'.$columns.'">'.encode($eFarm['name']).'</td>';
 							$h .= '</tr>';
 
-							$h .= $this->getProducts($eShop, $eDate, $cItem, $basket, $total);
+							$h .= $this->getProducts($eShop, $eDate, $cItem, $basket, $total, $approximate);
 
 						}
 
 					} else {
-						$h .= $this->getProducts($eShop, $eDate, $cItem, $basket, $total);
+						$h .= $this->getProducts($eShop, $eDate, $cItem, $basket, $total, $approximate);
 					}
 
 				$h .= '</tbody>';
@@ -244,7 +245,12 @@ class BasketUi {
 							$h .= '<td class="hide-sm-down"></td>';
 						}
 						$h .= '<td class="text-end" colspan="3"><b>'.s("Total").'</b></td>';
-						$h .= '<td class="text-end"><b>'.\util\TextUi::money($total).' '.ProductUi::getTaxes($eDate).'</b></td>';
+						$h .= '<td class="text-end" style="font-weight: bold">';
+							if($approximate) {
+								$h .= '<div class="shop-product-around">'.s("environ").'</div>';
+							}
+							$h .= \util\TextUi::money($total).' '.ProductUi::getTaxes($eDate);
+						$h .= '</td>';
 						$h .= '<td class="hide-xs-down"></td>';
 					$h .= '</tr>';
 				$h .= '</tfoot>';
@@ -257,7 +263,7 @@ class BasketUi {
 
 	}
 
-	public function getProducts(Shop $eShop, Date $eDate, \Collection $cItem, array $basket, float &$total): string {
+	public function getProducts(Shop $eShop, Date $eDate, \Collection $cItem, array $basket, float &$total, bool &$approximate): string {
 
 		$h = '';
 
@@ -313,7 +319,20 @@ class BasketUi {
 						$h .= '<div class="hide-md-up">'.s("Colis de {value}", \selling\UnitUi::getValue($eProduct['packaging'], $eProductSelling['unit'], TRUE)).'</div>';
 					}
 				$h .= '</td>';
-				$h .= '<td class="text-end">'.\util\TextUi::money($price).' '.ProductUi::getTaxes($eProduct).'</td>';
+				$h .= '<td class="text-end">';
+
+					if(
+						$eShop->isApproximate() and
+						$eProductSelling['unit']->notEmpty() and
+						$eProductSelling['unit']['approximate']
+					) {
+						$h .= '<div class="shop-product-around">'.s("environ").'</div>';
+						$approximate = TRUE;
+					}
+
+					$h .= \util\TextUi::money($price).' '.ProductUi::getTaxes($eProduct);
+
+				$h .= '</td>';
 				$h .= '<td class="hide-xs-down text-center">';
 					$h .= '<a '.attrs($deleteAttributes).'>'.\Asset::icon('trash').'</a>';
 				$h .= '</td>';
@@ -370,7 +389,9 @@ class BasketUi {
 
 	}
 
-	public function getOrder(Date $eDate, \selling\Sale $eSale): string {
+	public function getOrder(Shop $eShop, Date $eDate, \selling\Sale $eSale): string {
+
+		$eSale->expects(['isApproximate']);
 
 		$h = '<div class="util-title">';
 			$h .= '<h2>'.s("Ma commande").'</h2>';
@@ -382,6 +403,9 @@ class BasketUi {
 				$h .= '<dd>'.encode($eSale['customer']->getName()).'</dd>';
 				$h .= '<dt>'.s("Montant").'</dt>';
 				$h .= '<dd>';
+					if($eSale['isApproximate']) {
+						$h .= s("environ").' ';
+					}
 					if($eSale['hasVat'] and $eSale['type'] === \selling\Sale::PRO) {
 						$h .= \util\TextUi::money($eSale['priceExcludingVat']).' '.$eSale->getTaxes();
 					} else {
@@ -461,6 +485,7 @@ class BasketUi {
 			$h .= '</h2>';
 
 			$h .= '<div class="shop-basket-submit-order-error color-danger hide">'.s("Vous n'avez pas atteint le minimum de commande pour ce mode de livraison, nous vous remercions de bien vouloir compléter vos achats !").'</div>';
+			$h .= '<div id="shop-basket-submit-approximate" class="util-info hide">'.s("J'ai bien noté que certains produits de ma commande nécessitent une pesée, et que le montant communiqué par le producteur pourra être légèrement différent de celui affiché sur cette page.").'</div>';
 			$h .= '<div class="shop-basket-submit-order-valid">';
 
 				$h .= $this->getTermsBasket($eShop);
@@ -835,6 +860,9 @@ class BasketUi {
 
 					$h .= '<dt>'.s("Montant").'</dt>';
 					$h .= '<dd>';
+						if($eSaleReference['isApproximate']) {
+							$h .= s("environ").' ';
+						}
 						if($eSaleReference['hasVat'] and $eSaleReference['type'] === \selling\Sale::PRO) {
 							$h .= \util\TextUi::money($eSaleReference['priceExcludingVat']).' '.$eSaleReference->getTaxes();
 						} else {
@@ -884,7 +912,7 @@ class BasketUi {
 			foreach($cSale as $eSale) {
 
 				$h .= '<h5 class="mt-2">'.encode($eSale['farm']['name']).'</h5>';
-				$h .= new \selling\OrderUi()->getItemsBySale($eSale, $ccItemBySale[$eSale['id']]);
+				$h .= new \selling\OrderUi()->getItemsBySale($eSale, $ccItemBySale[$eSale['id']], $eShop->isApproximate());
 			}
 
 		$h .= '</div>';
