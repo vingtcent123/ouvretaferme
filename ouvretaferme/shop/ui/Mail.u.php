@@ -155,20 +155,12 @@ L'équipe {siteName}", $arguments);
 
 	public static function getSaleCanceled(\selling\Sale $eSale): array {
 
-		switch($eSale['paymentMethod']) {
+		$ePayment = $eSale['cPayment']->first();
 
-			case \selling\Sale::TRANSFER :
+		if($ePayment['method']->exists() and $ePayment['method']['fqn'] === \payment\MethodLib::TRANSFER) {
 				$payment = s("Vous ne serez donc pas facturé du montant de cette commande.")."\n";
-				break;
-
-			case \selling\Sale::OFFLINE :
+		} else {
 				$payment = '';
-				break;
-
-			default :
-				$payment = '';
-				break;
-
 		}
 
 		if($eSale['shop']->isPersonal()) {

@@ -289,10 +289,25 @@ class Sale extends SaleElement {
 
 	public function acceptWritePaymentMethod(): bool {
 
-		return (
-			$this['marketParent']->notEmpty() and
-			$this['paymentMethod'] !== Sale::ONLINE_CARD
-		);
+		if($this['marketParent']->isEmpty()) {
+			return FALSE;
+		}
+
+		$this->expects(['cPayment']);
+
+		if($this['cPayment']->empty()) {
+			return TRUE;
+		}
+
+		$ePayment = $this['cPayment']->first();
+
+		if($ePayment['method']->exists() === FALSE) {
+			return TRUE;
+		}
+
+		$ePayment->expects(['method' => ['fqn']]);
+
+		return ($ePayment['method']['fqn'] !== \payment\MethodLib::ONLINE_CARD);
 
 	}
 
@@ -361,9 +376,21 @@ class Sale extends SaleElement {
 
 	public function isPaymentOnline(): bool {
 
-		$this->expects(['paymentMethod']);
+		$this->expects(['cPayment']);
 
-		return ($this['paymentMethod'] === Sale::ONLINE_CARD);
+		if($this['cPayment']->empty()) {
+			return FALSE;
+		}
+
+		$ePayment = $this['cPayment']->first();
+
+		if($ePayment['method']->exists() === FALSE) {
+			return FALSE;
+		}
+
+		$ePayment->expects(['method' => ['fqn']]);
+
+		return ($ePayment['method']['fqn'] === \payment\MethodLib::TRANSFER);
 
 	}
 
@@ -687,16 +714,40 @@ class Sale extends SaleElement {
 
 	public function acceptStatusCanceledByCustomer(): bool {
 
-		return (
-			// Seulement certains types de paiement
-			(
-				in_array($this['paymentMethod'], [NULL, Sale::OFFLINE, Sale::TRANSFER]) or
-				($this['paymentMethod'] === Sale::ONLINE_CARD and in_array($this['paymentStatus'], [Sale::UNDEFINED, Sale::FAILED]))
-			) and
-			// Seulement pour les commandes en brouillon ou confirmées
-			in_array($this['preparationStatus'], [\selling\Sale::DRAFT, \selling\Sale::BASKET, \selling\Sale::CONFIRMED]) and
-			($this['shop'] === NULL or $this['shopDate']['orderEndAt'] > date('Y-m-d H:i:s'))
-		);
+		// Autres que les commandes en brouillon ou confirmées => NON
+		if(
+			in_array($this['preparationStatus'], [\selling\Sale::DRAFT, \selling\Sale::BASKET, \selling\Sale::CONFIRMED]) === FALSE
+			or ($this['shop'] !== NULL and $this['shopDate']['orderEndAt'] <= date('Y-m-d H:i:s'))
+		) {
+			return FALSE;
+		}
+
+		// Pas de paiement enregistré => OUI
+		if($this['cPayment']->count() === 0) {
+			return TRUE;
+		}
+
+		// Plus d'un seul paiement => NON
+		if($this['cPayment']->count() > 1) {
+			return FALSE;
+		}
+
+		$ePayment = $this['cPayment']->first();
+		if($ePayment['method']->exists() === FALSE) {
+			return TRUE;
+		}
+		if($ePayment['method']['fqn'] === \payment\MethodLib::TRANSFER) {
+			return TRUE;
+		}
+
+		if(
+			$ePayment['method']['fqn'] === \payment\MethodLib::ONLINE_CARD
+			and in_array($this['paymentStatus'], [Sale::UNDEFINED, Sale::FAILED])
+		) {
+			return TRUE;
+		}
+
+		return FALSE;
 
 	}
 
@@ -797,18 +848,6 @@ class Sale extends SaleElement {
 				} else {
 					return TRUE;
 				}
-
-			})
-			->setCallback('paymentMethod.check', function(?string $paymentMethod): bool {
-
-				if($this->acceptWritePaymentMethod() === FALSE) {
-					return FALSE;
-				}
-
-				return (
-					$paymentMethod === NULL or
-					in_array($paymentMethod, [Sale::CARD, Sale::CHECK, Sale::CASH, Sale::TRANSFER])
-				);
 
 			})
 			->setCallback('preparationStatus.check', function(string $preparationStatus): bool {

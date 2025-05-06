@@ -4,6 +4,7 @@ namespace payment;
 class MethodLib extends MethodCrud {
 
 	const CARD = 'card';
+	const ONLINE_CARD = 'online-card';
 	const CASH = 'cash';
 	const CHECK = 'check';
 	const TRANSFER = 'transfer';
@@ -25,8 +26,9 @@ class MethodLib extends MethodCrud {
 	       fn() => $this->whereFarm(NULL)
        )
 			->sort(['name' => SORT_ASC])
-       ->getCollection();
+       ->getCollection(NULL, NULL, 'id');
 
 	}
+
 }
 

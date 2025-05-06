@@ -89,10 +89,13 @@ class InvoiceLib extends InvoiceCrud {
 
 	public static function getPendingTransfer(\farm\Farm $eFarm, string $month): int {
 
+		$ePaymentMethod = \payment\MethodLib::getByFqn(\payment\MethodLib::TRANSFER);
+
 		return Sale::model()
-			->whereFarm($eFarm)
+			->join(Payment::model(), 'm1.id = m2.sale')
+			->where('m2.method IS NOT NULL AND m2.method = '.$ePaymentMethod['id'])
+			->where('m1.farm', $eFarm)
 			->whereShop('!=', NULL)
-			->wherePaymentMethod(Sale::TRANSFER)
 			->wherePreparationStatus(Sale::DELIVERED)
 			->whereDeliveredAt('LIKE', $month.'%')
 			->whereInvoice(NULL)
