@@ -83,6 +83,7 @@ class ShopModel extends \ModuleModel {
 			'customFont' => ['text8', 'null' => TRUE, 'cast' => 'string'],
 			'embedOnly' => ['bool', 'cast' => 'bool'],
 			'embedUrl' => ['url', 'null' => TRUE, 'cast' => 'string'],
+			'approximate' => ['bool', 'cast' => 'bool'],
 			'comment' => ['bool', 'cast' => 'bool'],
 			'commentCaption' => ['text8', 'null' => TRUE, 'cast' => 'string'],
 			'emailNewSale' => ['bool', 'cast' => 'bool'],
@@ -93,7 +94,7 @@ class ShopModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'fqn', 'farm', 'logo', 'name', 'email', 'type', 'shared', 'sharedGroup', 'sharedHash', 'sharedHashExpiresAt', 'frequency', 'hasPoint', 'hasPayment', 'paymentCard', 'paymentTransfer', 'paymentTransferHow', 'paymentOffline', 'paymentOfflineHow', 'description', 'terms', 'termsField', 'limitCustomers', 'orderMin', 'shipping', 'shippingUntil', 'customColor', 'customBackground', 'customTitleFont', 'customFont', 'embedOnly', 'embedUrl', 'comment', 'commentCaption', 'emailNewSale', 'emailEndDate', 'status', 'createdAt', 'createdBy'
+			'id', 'fqn', 'farm', 'logo', 'name', 'email', 'type', 'shared', 'sharedGroup', 'sharedHash', 'sharedHashExpiresAt', 'frequency', 'hasPoint', 'hasPayment', 'paymentCard', 'paymentTransfer', 'paymentTransferHow', 'paymentOffline', 'paymentOfflineHow', 'description', 'terms', 'termsField', 'limitCustomers', 'orderMin', 'shipping', 'shippingUntil', 'customColor', 'customBackground', 'customTitleFont', 'customFont', 'embedOnly', 'embedUrl', 'approximate', 'comment', 'commentCaption', 'emailNewSale', 'emailEndDate', 'status', 'createdAt', 'createdBy'
 		]);
 
 		$this->propertiesToModule += [
@@ -137,6 +138,9 @@ class ShopModel extends \ModuleModel {
 				return [];
 
 			case 'embedOnly' :
+				return FALSE;
+
+			case 'approximate' :
 				return FALSE;
 
 			case 'comment' :
@@ -338,6 +342,10 @@ class ShopModel extends \ModuleModel {
 
 	public function whereEmbedUrl(...$data): ShopModel {
 		return $this->where('embedUrl', ...$data);
+	}
+
+	public function whereApproximate(...$data): ShopModel {
+		return $this->where('approximate', ...$data);
 	}
 
 	public function whereComment(...$data): ShopModel {

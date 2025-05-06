@@ -12,6 +12,10 @@ class ShopLib extends ShopCrud {
 
 			$properties = ['fqn', 'name', 'type', 'email', 'description', 'frequency', 'orderMin', 'shipping', 'shippingUntil', 'limitCustomers', 'hasPoint', 'comment', 'commentCaption'];
 
+			if($eShop['hasPayment'] === FALSE) {
+				$properties[] = 'approximate';
+			}
+
 			if($eShop['shared']) {
 				$properties[] = 'sharedGroup';
 				array_delete($properties, 'shipping');

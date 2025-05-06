@@ -146,12 +146,13 @@ new AdaptativeView('shop', function($data, ShopTemplate $t) {
 
 		}
 
-		if($data->discounts) {
+		if(array_sum($data->discounts) > 0) {
 
 			if($data->eShop['shared']) {
 				$details[] = Asset::icon('check-lg').'  '.s("Les prix affichés incluent la remise commerciale dont vous bénéficiez chez certains producteurs !");
 			} else {
-				$details[] = Asset::icon('check-lg').'  '.s("Les prix affichés incluent la remise commerciale de {value} % dont vous bénéficiez !", $data->discounts[$data->eShop['farm']['id']]);
+				$discount = $data->discounts[$data->eShop['farm']['id']];
+				$details[] = Asset::icon('check-lg').'  '.s("Les prix affichés incluent la remise commerciale de {value} % dont vous bénéficiez !", $discount);
 			}
 		}
 
