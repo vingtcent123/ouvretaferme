@@ -162,6 +162,12 @@ class Sale extends SaleElement {
 
 	}
 
+	public function canUpdatePreparationStatus(): bool {
+
+		return $this->canWrite();
+
+	}
+
 	public function acceptUpdateCustomer(): bool {
 		return (
 			$this['compositionOf']->empty() and

@@ -264,7 +264,7 @@ new \selling\SalePage()
 
 	}, validate: ['canUpdateCustomer', 'acceptUpdateCustomer'])
 	->doUpdateProperties('doUpdatePaymentMethod', ['paymentMethod'], fn() => throw new ReloadAction(), validate: ['canWrite'])
-	->doUpdateProperties('doUpdatePreparationStatus', ['preparationStatus'], fn($data) => throw new ViewAction($data))
+	->doUpdateProperties('doUpdatePreparationStatus', ['preparationStatus'], fn($data) => throw new ViewAction($data), validate: ['canUpdatePreparationStatus'])
 	->read('duplicate', function($data) {
 
 		if($data->e->acceptDuplicate() === FALSE) {
