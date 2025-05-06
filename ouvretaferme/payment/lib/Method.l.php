@@ -1,0 +1,31 @@
+<?php
+namespace payment;
+
+class MethodLib extends MethodCrud {
+
+	const CREDIT_CARD = 'credit-card';
+	const CASH = 'cash';
+	const CHECK = 'check';
+
+	public static function getPropertiesCreate(): array {
+		return ['name'];
+	}
+
+	public static function getPropertiesUpdate(): array {
+		return self::getPropertiesCreate();
+	}
+
+	public static function getByFarm(\farm\Farm $eFarm): \Collection {
+
+		return Method::model()
+       ->select(Method::getSelection())
+       ->or(
+	       fn() => $this->whereFarm($eFarm),
+	       fn() => $this->whereFarm(NULL)
+       )
+			->sort(['name' => SORT_ASC])
+       ->getCollection();
+
+	}
+}
+
