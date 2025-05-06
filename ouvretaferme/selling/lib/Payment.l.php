@@ -100,5 +100,14 @@ class PaymentLib extends PaymentCrud {
 
 	}
 
+	public static function getBySale(Sale $eSale): \Collection {
+
+		return Payment::model()
+			->select(Payment::getSelection() + ['method' => \payment\Method::getSelection()])
+			->whereSale($eSale)
+			->getCollection();
+
+	}
+
 }
 ?>

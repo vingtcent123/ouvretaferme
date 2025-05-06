@@ -144,6 +144,12 @@ class MethodUi {
 
 	}
 
+	public static function getOnlineCardText(): string {
+
+		return \Asset::icon('stripe', ['title' => 'Stripe']).' '.s("Carte bancaire");
+
+	}
+
 	public static function p(string $property): \PropertyDescriber {
 
 		return Method::model()->describer(

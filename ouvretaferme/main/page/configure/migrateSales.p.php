@@ -14,7 +14,7 @@ new Page()
 
 		\selling\Payment::model()->beginTransaction();
 
-		$ePayment = new \selling\Payment(['method' => $cMethod[\payment\MethodLib::CARD]]);
+		$ePayment = new \selling\Payment(['method' => $cMethod[\payment\MethodLib::ONLINE_CARD]]);
 
 		\selling\Payment::model()
 			->select(['method'])
@@ -23,11 +23,15 @@ new Page()
 
 		foreach($cSale as $eSale) {
 
+			if($eSale['paymentMethod'] === 'online-card') {
+				continue;
+			}
+
 			$method = match($eSale['paymentMethod']) {
-				\selling\Sale::CARD, \selling\Sale::ONLINE_CARD => \payment\MethodLib::CARD,
-				\selling\Sale::CHECK => \payment\MethodLib::CHECK,
-				\selling\Sale::TRANSFER => \payment\MethodLib::TRANSFER,
-				\selling\Sale::CASH => \payment\MethodLib::CASH,
+				'card' => \payment\MethodLib::CARD,
+				'check' => \payment\MethodLib::CHECK,
+				'transfer' => \payment\MethodLib::TRANSFER,
+				'cash' => \payment\MethodLib::CASH,
 				default => NULL,
 			};
 

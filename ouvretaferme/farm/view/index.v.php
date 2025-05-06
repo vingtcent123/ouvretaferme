@@ -358,7 +358,7 @@ new AdaptativeView('sellingSales', function($data, FarmTemplate $t) {
 
 		$t->mainTitle = new \farm\FarmUi()->getSellingSalesTitle($data->eFarm, $data->eFarm->getView('viewSellingSales'));
 
-		echo new \selling\SaleUi()->getSearch($data->search);
+		echo new \selling\SaleUi()->getSearch($data->search, $data->cPaymentMethod);
 
 		if($data->search->empty()) {
 			echo new \selling\SaleUi()->getNextSales($data->eFarm, $data->type, $data->nextSales);
@@ -681,7 +681,7 @@ new AdaptativeView('/ferme/{id}/factures', function($data, FarmTemplate $t) {
 
 		echo '<div class="util-block-help">';
 			echo '<p>'.s("Vous pouvez maintenant générer les factures des ventes qui ont été réglées par virement bancaire dans vos boutiques en ligne au mois de {value}.", '<b>'.\util\DateUi::textual($data->transferMonth, \util\DateUi::MONTH_YEAR).'</b>').'</p>';
-			echo '<a href="/selling/invoice:createCollection?farm='.$data->eFarm['id'].'&month='.$data->transferMonth.'&type='.\selling\Sale::TRANSFER.'" class="btn btn-secondary">'.s("Générer les factures").'</a>';
+			echo '<a href="/selling/invoice:createCollection?farm='.$data->eFarm['id'].'&month='.$data->transferMonth.'&type='.\payment\MethodLib::TRANSFER.'" class="btn btn-secondary">'.s("Générer les factures").'</a>';
 		echo '</div>';
 
 	}
