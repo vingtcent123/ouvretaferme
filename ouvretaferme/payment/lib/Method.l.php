@@ -26,7 +26,7 @@ class MethodLib extends MethodCrud {
 	       fn() => $this->whereFarm(NULL)
        )
 			->sort(['name' => SORT_ASC])
-       ->getCollection(NULL, NULL, 'id');
+			->getCollection(NULL, NULL, 'id');
 
 	}
 
