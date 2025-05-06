@@ -184,8 +184,10 @@ Item:
 Payment:
   id: serial32
   sale: selling\Sale
-  customer: selling\Customer
+  customer: ?selling\Customer
   farm: farm\Farm
+  amountIncludingVat: ?decimal(8, 2)
+  method: ?payment\Method
   checkoutId: ?text8
   paymentIntentId: ?text8
   status: enum(PENDING, SUCCESS, FAILURE) = PENDING

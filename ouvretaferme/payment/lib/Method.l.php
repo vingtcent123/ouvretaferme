@@ -3,9 +3,10 @@ namespace payment;
 
 class MethodLib extends MethodCrud {
 
-	const CREDIT_CARD = 'credit-card';
+	const CARD = 'card';
 	const CASH = 'cash';
 	const CHECK = 'check';
+	const TRANSFER = 'transfer';
 
 	public static function getPropertiesCreate(): array {
 		return ['name'];

@@ -5,19 +5,25 @@ class PaymentLib extends PaymentCrud {
 
 	public static function getByCheckoutId(string $id): Payment {
 
-		return Payment::model()
+		$ePayment = new Payment();
+
+		Payment::model()
 			->select(Payment::getSelection())
 			->whereCheckoutId($id)
-			->get();
+			->get($ePayment);
+
+		return $ePayment;
 
 	}
 
 	public static function getByPaymentIntentId(\payment\StripeFarm $eStripeFarm, string $id): Payment {
 
-		$ePayment = Payment::model()
+		$ePayment = new Payment();
+
+		Payment::model()
 			->select(Payment::getSelection())
 			->wherePaymentIntentId($id)
-			->get();
+			->get($ePayment);
 
 		if($ePayment->notEmpty()) {
 			return $ePayment;
@@ -25,10 +31,12 @@ class PaymentLib extends PaymentCrud {
 
 		self::associatePaymentIntentId($eStripeFarm, $id);
 
-		return Payment::model()
+		Payment::model()
 			->select(Payment::getSelection())
 			->wherePaymentIntentId($id)
-			->get();
+			->get($ePayment);
+
+		return $ePayment;
 
 	}
 
@@ -82,7 +90,8 @@ class PaymentLib extends PaymentCrud {
 			'sale' => $eSale,
 			'customer' => $eSale['customer'],
 			'farm' => $eSale['farm'],
-			'checkoutId' => $providerId
+			'checkoutId' => $providerId,
+			'method' => \payment\MethodLib::getByFqn(\payment\MethodLib::CARD),
 		]);
 
 		Payment::model()->insert($e);
