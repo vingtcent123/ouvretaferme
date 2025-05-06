@@ -1535,6 +1535,11 @@ class FarmUi {
 					$h .= \Asset::icon('receipt');
 				$h .= '</a>';
 
+				$h .= '<a href="/payment/method:manage?farm='.$eFarm['id'].'" class="bg-secondary util-button">';
+					$h .= '<h4>'.s("Les moyens de paiement").'</h4>';
+					$h .= \Asset::icon('cash-coin');
+				$h .= '</a>';
+
 				$h .= '<a href="/payment/stripe:manage?farm='.$eFarm['id'].'" class="bg-secondary util-button">';
 					$h .= '<h4>'.s("Le paiement en ligne").'</h4>';
 					$h .= \Asset::icon('stripe');

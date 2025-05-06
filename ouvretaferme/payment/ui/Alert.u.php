@@ -25,6 +25,9 @@ class AlertUi {
 
 		return match($fqn) {
 
+			'Method::created' => s("Le moyen de paiement a bien été créé."),
+			'Method::updated' => s("Le moyen de paiement a bien été mis à jour."),
+			'Method::deleted' => s("Le moyen de paiement a bien été supprimé."),
 			'StripeFarm::created' => s("Votre compte Stripe a bien été paramétré."),
 			'StripeFarm::deleted' => s("Les données de votre compte Stripe ont bien été supprimées."),
 

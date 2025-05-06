@@ -11,3 +11,11 @@ StripeFarm:
     ["farm"]
   ]
 
+Method:
+  id: serial32
+  fqn: ?fqn
+  name: text8(1, null)
+  farm: ?farm\Farm
+  UNIQUE: [
+    ["farm", "fqn"]
+  ]
