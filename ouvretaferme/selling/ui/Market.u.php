@@ -292,7 +292,7 @@ class MarketUi {
 								$h .= '</div>';
 							} else {
 								$h .= '<div>';
-									$h .= '<a data-ajax="/selling/sale:doUpdatePreparationStatus" post-id="'.$eSale['id'].'" post-preparation-status="'.Sale::DELIVERED.'" post-id="'.$eSale['id'].'" class="btn btn-success" data-confirm="'.s("Voulez-vous réellement terminer cette vente ?").'">'.s("Terminer la vente").'</a> ';
+									$h .= '<a data-ajax="/selling/sale:doUpdatePreparationStatus" post-id="'.$eSale['id'].'" post-preparation-status="'.Sale::DELIVERED.'" class="btn btn-success" data-confirm="'.s("Voulez-vous réellement terminer cette vente ?").'">'.s("Terminer la vente").'</a> ';
 									$h .= '<a data-ajax="/selling/sale:doUpdatePreparationStatus" post-id="'.$eSale['id'].'" post-preparation-status="'.Sale::CANCELED.'" class="btn btn-muted" data-confirm="'.s("Voulez-vous réellement annuler cette vente ?").'">'.s("Annuler la vente").'</a>';
 								$h .= '</div>';
 							}
@@ -301,7 +301,7 @@ class MarketUi {
 
 						case Sale::CANCELED :
 						case Sale::DELIVERED :
-							$h .= '<a data-ajax="/selling/sale:doUpdatePreparationStatus" post-id="'.$eSale['id'].'" post-preparation-status="'.Sale::DRAFT.'" post-id="'.$eSale['id'].'" class="btn btn-outline-primary" data-confirm="'.s("Voulez-vous réellement remettre cette vente en cours ?").'">'.s("Repasser en cours").'</a> ';
+							$h .= '<a data-ajax="/selling/sale:doUpdatePreparationStatus" post-id="'.$eSale['id'].'" post-preparation-status="'.Sale::DRAFT.'" class="btn btn-outline-primary" data-confirm="'.s("Voulez-vous réellement remettre cette vente en cours ?").'">'.s("Repasser en cours").'</a> ';
 
 							break;
 
