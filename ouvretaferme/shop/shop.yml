@@ -155,6 +155,7 @@ Shop:
   customFont: ?text8
   embedOnly: bool = FALSE
   embedUrl: ?url
+  approximate: bool = FALSE
   comment: bool = FALSE
   commentCaption: ?text8
   emailNewSale: bool = FALSE
