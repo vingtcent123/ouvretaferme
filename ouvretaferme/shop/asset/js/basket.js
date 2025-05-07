@@ -470,6 +470,9 @@ class BasketManage {
 				summary.renderInner(json.basketSummary);
 				summary.dataset.price = json.basketPrice;
 
+				basket.products = json.basketJson;
+				this.setBasket(dateId, basket);
+
 				if(json.basketPrice > 0) {
 
 					qsa('.point-list .point-element', point => {

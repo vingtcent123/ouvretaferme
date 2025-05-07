@@ -1074,9 +1074,10 @@ class Sale extends SaleElement {
 					'cItem'
 				]);
 
-				$this['basket'] = \shop\BasketLib::checkAvailableProducts($products, $this['shopDate']['cProduct'], $this['cItem']);
+				$warning = FALSE;
+				$this['basket'] = \shop\BasketLib::checkAvailableProducts($products, $this['shopDate']['cProduct'], $this['cItem'], $warning);
 
-				return ($this['basket'] !== []);
+				return ($this['basket'] !== [] and $warning === FALSE);
 
 
 			});

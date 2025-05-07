@@ -328,9 +328,12 @@ class ItemLib extends ItemCrud {
 
 			if($replace) {
 
-				Item::model()
+				$cOld = Item::model()
+					->select(Item::getSelection())
 					->whereSale($eSale)
-					->delete();
+					->getCollection();
+
+				self::deleteCollection($eSale, $cOld);
 
 			}
 
