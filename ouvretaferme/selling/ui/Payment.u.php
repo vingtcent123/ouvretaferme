@@ -63,10 +63,10 @@ class PaymentUi {
 						.'<div>'.InvoiceUi::getPaymentStatus($eSale['invoice']).'</div>';
 				}
 
-			} else if(in_array($paymentMethodFqn, [\payment\MethodLib::CASH, \payment\MethodLib::CHECK, \payment\MethodLib::CARD])) {
+			} else {
 
 				$payment = '<div>';
-					$payment .= self::statusIcon($ePayment).' '.encode($ePayment['method']['name']);
+					$payment .= self::statusIcon($ePayment).' '.encode($ePayment['method']['name'] ?? '?');
 
 					if($ePayment['amountIncludingVat'] and $ePayment['status'] === Payment::SUCCESS) {
 						$payment .= ' ('.\util\TextUi::money($ePayment['amountIncludingVat']).')';

@@ -17,7 +17,7 @@ class MethodLib extends MethodCrud {
 		return self::getPropertiesCreate();
 	}
 
-	public static function getByFarm(\farm\Farm $eFarm): \Collection {
+	public static function getByFarm(\farm\Farm $eFarm, ?bool $online, ?bool $onlyActive = TRUE): \Collection {
 
 		return Method::model()
        ->select(Method::getSelection())
@@ -25,6 +25,8 @@ class MethodLib extends MethodCrud {
 	       fn() => $this->whereFarm($eFarm),
 	       fn() => $this->whereFarm(NULL)
        )
+			->whereOnline($online, if: $online !== NULL)
+			->whereStatus(Method::ACTIVE, if: $onlyActive !== NULL)
 			->sort(['name' => SORT_ASC])
 			->getCollection(NULL, NULL, 'id');
 

@@ -49,6 +49,7 @@ class MethodUi {
 					$h .= '<tr>';
 					$h .= '<th></th>';
 					$h .= '<th>'.s("Nom").'</th>';
+					$h .= '<th>'.s("Activé").'</th>';
 					$h .= '<th></th>';
 					$h .= '</tr>';
 				$h .= '</thead>';
@@ -70,6 +71,22 @@ class MethodUi {
 							$h .= '<td>';
 								$h .= $eMethod['farm']->empty() ? encode($eMethod['name']) : $eMethod->quick('name', encode($eMethod['name']));
 							$h .= '</td>';
+
+
+							$h .= '<td class="td-min-content">';
+							if($eMethod['farm']->exists() === FALSE) {
+								$h .= s("Oui (par défaut)");
+							} else {
+								$h .= \util\TextUi::switch([
+									'id' => 'method-switch-'.$eMethod['id'],
+									'disabled' => $eMethod->canWrite() === FALSE,
+									'data-ajax' => $eMethod->canWrite() ? '/payment/method:doUpdateStatus' : NULL,
+									'post-id' => $eMethod['id'],
+									'post-status' => ($eMethod['status'] === Method::ACTIVE) ? Method::INACTIVE : Method::ACTIVE
+								], $eMethod['status'] === Method::ACTIVE);
+							}
+							$h .= '</td>';
+
 							$h .= '<td class="text-end">';
 
 							if($eMethod['farm']->notEmpty()) {
@@ -77,10 +94,6 @@ class MethodUi {
 								$h .= '<a href="/payment/method:update?id='.$eMethod['id'].'" class="btn btn-outline-secondary">';
 									$h .= \Asset::icon('gear-fill');
 								$h .= '</a> ';
-
-								$h .= '<a data-ajax="/payment/method:doDelete" data-confirm="'.s("Supprimer ce moyen de paiement ?").'" post-id="'.$eMethod['id'].'" class="btn btn-outline-secondary">';
-									$h .= \Asset::icon('trash-fill');
-								$h .= '</a>';
 
 							}
 
@@ -152,10 +165,9 @@ class MethodUi {
 
 	public static function p(string $property): \PropertyDescriber {
 
-		return Method::model()->describer(
-			$property, [
+		return Method::model()->describer($property, [
 			'name' => s("Nom du moyen de paiement"),
 		]);
-	}
 
 	}
+}

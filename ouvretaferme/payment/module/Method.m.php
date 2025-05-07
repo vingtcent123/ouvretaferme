@@ -7,6 +7,10 @@ abstract class MethodElement extends \Element {
 
 	private static ?MethodModel $model = NULL;
 
+	const ACTIVE = 'active';
+	const INACTIVE = 'inactive';
+	const DELETED = 'deleted';
+
 	public static function getSelection(): array {
 		return Method::model()->getProperties();
 	}
@@ -40,10 +44,12 @@ class MethodModel extends \ModuleModel {
 			'fqn' => ['fqn', 'null' => TRUE, 'cast' => 'string'],
 			'name' => ['text8', 'min' => 1, 'max' => NULL, 'cast' => 'string'],
 			'farm' => ['element32', 'farm\Farm', 'null' => TRUE, 'cast' => 'element'],
+			'online' => ['bool', 'cast' => 'bool'],
+			'status' => ['enum', [\payment\Method::ACTIVE, \payment\Method::INACTIVE, \payment\Method::DELETED], 'cast' => 'enum'],
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'fqn', 'name', 'farm'
+			'id', 'fqn', 'name', 'farm', 'online', 'status'
 		]);
 
 		$this->propertiesToModule += [
@@ -53,6 +59,37 @@ class MethodModel extends \ModuleModel {
 		$this->uniqueConstraints = array_merge($this->uniqueConstraints, [
 			['farm', 'fqn']
 		]);
+
+	}
+
+	public function getDefaultValue(string $property) {
+
+		switch($property) {
+
+			case 'online' :
+				return FALSE;
+
+			case 'status' :
+				return Method::ACTIVE;
+
+			default :
+				return parent::getDefaultValue($property);
+
+		}
+
+	}
+
+	public function encode(string $property, $value) {
+
+		switch($property) {
+
+			case 'status' :
+				return ($value === NULL) ? NULL : (string)$value;
+
+			default :
+				return parent::encode($property, $value);
+
+		}
 
 	}
 
@@ -78,6 +115,14 @@ class MethodModel extends \ModuleModel {
 
 	public function whereFarm(...$data): MethodModel {
 		return $this->where('farm', ...$data);
+	}
+
+	public function whereOnline(...$data): MethodModel {
+		return $this->where('online', ...$data);
+	}
+
+	public function whereStatus(...$data): MethodModel {
+		return $this->where('status', ...$data);
 	}
 
 

@@ -82,7 +82,7 @@ class PaymentLib extends PaymentCrud {
 
 	}
 
-	public static function createBySale(Sale $eSale, ?string $providerId = NULL): Payment {
+	public static function createBySale(Sale $eSale, ?\payment\Method $eMethod, ?string $providerId = NULL): Payment {
 
 		$eSale->expects(['customer', 'farm']);
 
@@ -91,7 +91,7 @@ class PaymentLib extends PaymentCrud {
 			'customer' => $eSale['customer'],
 			'farm' => $eSale['farm'],
 			'checkoutId' => $providerId,
-			'method' => \payment\MethodLib::getByFqn(\payment\MethodLib::CARD),
+			'method' => $eMethod,
 		]);
 
 		Payment::model()->insert($e);
@@ -126,6 +126,54 @@ class PaymentLib extends PaymentCrud {
 			->get($ePayment);
 
 		return $ePayment;
+	}
+
+	public static function updateOrCreateBySale(Sale $eSale, \payment\Method $eMethod, string $status = Payment::PENDING): void {
+
+		$eSale->expects(['customer', 'farm', 'priceIncludingVat']);
+
+		$ePayment = new Payment([
+			'customer' => $eSale['customer'],
+			'farm' => $eSale['farm'],
+			'sale' => $eSale,
+			'method' => $eMethod,
+			'status' => $status,
+			'amountIncludingVat' => $eSale['priceIncludingVat'],
+		]);
+
+		$affected = Payment::model()
+			->select(['method', 'status', 'amountIncludingVat'])
+			->whereSale($eSale)
+			->whereCustomer($eSale['customer'])
+			->update($ePayment);
+
+		if($affected === 0) {
+			self::createBySale($eSale, $eMethod);
+		}
+
+	}
+
+	public static function updateBySaleStatus(Sale $eSale): void {
+
+		$eSale->expects(['customer', 'farm', 'priceIncludingVat', 'preparationStatus']);
+
+		$ePayment = new Payment([
+			'customer' => $eSale['customer'],
+			'farm' => $eSale['farm'],
+			'sale' => $eSale,
+			'status' => match($eSale['preparationStatus']) {
+				Sale::DELIVERED => Payment::SUCCESS,
+				Sale::DRAFT => Payment::PENDING,
+			},
+			'amountIncludingVat' => $eSale['priceIncludingVat'],
+		]);
+
+		Payment::model()
+       ->select(['status', 'amountIncludingVat'])
+       ->whereSale($eSale)
+       ->whereFarm($eSale['farm'])
+       ->whereCustomer($eSale['customer'])
+       ->update($ePayment);
 	}
 
 }

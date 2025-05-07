@@ -451,7 +451,9 @@ class SaleLib {
 
 		\selling\Sale::model()->beginTransaction();
 
-		$ePayment = \selling\PaymentLib::createBySale($eSale, $stripeSession['id']);
+		$eMethod = \payment\MethodLib::getByFqn(\payment\MethodLib::ONLINE_CARD);
+
+		$ePayment = \selling\PaymentLib::createBySale($eSale, $eMethod, $stripeSession['id']);
 		$eSale['cPayment'] = new \Collection([$ePayment]);
 
 		\selling\HistoryLib::createBySale($eSale, 'shop-payment-initiated', 'Stripe checkout id #'.$stripeSession['id'], ePayment: $ePayment);
