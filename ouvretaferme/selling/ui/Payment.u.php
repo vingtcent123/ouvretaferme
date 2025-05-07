@@ -8,6 +8,34 @@ class PaymentUi {
 
 	}
 
+	public static function getList(\Collection $cPayment): array {
+
+		$payments = [];
+
+		foreach($cPayment as $ePayment) {
+
+			if($ePayment['method']->exists() === FALSE) {
+				continue;
+			}
+
+			$payments[] = encode($ePayment['method']['name']);
+
+		}
+
+		return $payments;
+
+	}
+
+	public static function statusIcon(Payment $ePayment): string {
+
+		return match($ePayment['status']) {
+			Payment::SUCCESS => \Asset::icon('check-lg', ['title' => s("Succès"), 'class' => 'color-success']),
+			Payment::FAILURE => \Asset::icon('x-lg', ['title' => s("Échec"), 'class' => 'color-info']),
+			Payment::PENDING => \Asset::icon('pause', ['title' => s("En attente"), 'class' => 'color-danger']),
+		};
+
+	}
+
 	public static function getListDisplay(Sale $eSale, \Collection $cPayment): string {
 
 		$paymentList = [];
@@ -18,16 +46,16 @@ class PaymentUi {
 			if($ePayment->isPaymentOnline()) {
 
 				$payment = '<div>';
-				$payment .= \payment\MethodUi::getOnlineCardText();
-				if($ePayment['amountIncludingVat']) {
+				$payment .= self::statusIcon($ePayment).' '.\payment\MethodUi::getOnlineCardText();
+				if($ePayment['amountIncludingVat'] and $ePayment['status'] === Payment::SUCCESS) {
 					$payment .= ' ('.\util\TextUi::money($ePayment['amountIncludingVat']).')';
 				}
 				$payment .= '</div>';
-				$payment .= '<div>'.SaleUi::getPaymentStatus($eSale, $ePayment).'</div>';
 
 				$paymentList[] = $payment;
 
 			} else if($eSale['invoice']->notEmpty()) {
+
 				if($eSale['invoice']->isCreditNote()) {
 					$paymentList[] = '<div>'.s("Avoir").'</div>';
 				} else {
@@ -35,11 +63,18 @@ class PaymentUi {
 						.'<div>'.InvoiceUi::getPaymentStatus($eSale['invoice']).'</div>';
 				}
 
-			} else if($paymentMethodFqn === \payment\MethodLib::TRANSFER) {
-				$paymentList[] = '<div>'.s("Virement bancaire").'</div>'
-					.'<div>'.SaleUi::getPaymentStatus($eSale, $ePayment).'</span></div>';
 			} else if(in_array($paymentMethodFqn, [\payment\MethodLib::CASH, \payment\MethodLib::CHECK, \payment\MethodLib::CARD])) {
-				$paymentList[] = encode($ePayment['method']['name']);
+
+				$payment = '<div>';
+					$payment .= self::statusIcon($ePayment).' '.encode($ePayment['method']['name']);
+
+					if($ePayment['amountIncludingVat'] and $ePayment['status'] === Payment::SUCCESS) {
+						$payment .= ' ('.\util\TextUi::money($ePayment['amountIncludingVat']).')';
+					}
+				$payment .= '</div>';
+
+				$paymentList[] = $payment;
+
 			}
 
 		}

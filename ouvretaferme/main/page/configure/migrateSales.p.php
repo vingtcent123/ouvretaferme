@@ -3,8 +3,7 @@ new Page()
 	->cli('index', function($data) {
 
 		$cSale = \selling\Sale::model()
-			->select(\selling\Sale::getSelection())
-			->where('paymentMethod IS NOT NULL')
+			->select(\selling\Sale::getSelection() + ['paymentMethod'])
 			->getCollection();
 
 		$cMethod = \payment\Method::model()
@@ -14,28 +13,18 @@ new Page()
 
 		\selling\Payment::model()->beginTransaction();
 
-		$ePayment = new \selling\Payment(['method' => $cMethod[\payment\MethodLib::ONLINE_CARD]]);
-
-		\selling\Payment::model()
-			->select(['method'])
-			->where('checkoutId IS NOT NULL')
-			->update($ePayment);
-
 		foreach($cSale as $eSale) {
-
-			if($eSale['paymentMethod'] === 'online-card') {
-				continue;
-			}
 
 			$method = match($eSale['paymentMethod']) {
 				'card' => \payment\MethodLib::CARD,
 				'check' => \payment\MethodLib::CHECK,
 				'transfer' => \payment\MethodLib::TRANSFER,
 				'cash' => \payment\MethodLib::CASH,
+				'online-card' => \payment\MethodLib::ONLINE_CARD,
 				default => NULL,
 			};
 
-			$eMethod = $cMethod[$method] ?? NULL;
+			$eMethod = $cMethod[$method] ?? new \payment\Method();
 
 			$ePayment = new \selling\Payment([
 				'sale' => $eSale,
@@ -46,7 +35,19 @@ new Page()
 				'status' => \selling\Payment::SUCCESS,
 			]);
 
-			\selling\Payment::model()->insert($ePayment);
+			if($eSale['paymentMethod'] === 'online-card') {
+
+				\selling\Payment::model()
+					->select(['amountIncludingVat', 'method'])
+					->whereSale($eSale)
+					->whereCustomer($eSale['customer'])
+					->update($ePayment);
+
+			} else {
+
+				\selling\Payment::model()->insert($ePayment);
+
+			}
 
 		}
 

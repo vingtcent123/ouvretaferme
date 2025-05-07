@@ -2142,17 +2142,6 @@ class SaleUi {
 				};
 				break;
 
-			/*case 'paymentMethod' :
-				$d->values = [
-					Sale::OFFLINE => s("Direct avec le producteur"),
-					Sale::TRANSFER => s("Virement bancaire"),
-					Sale::CHECK => s("Chèque"),
-					Sale::CASH => s("Espèces"),
-					Sale::CARD => s("Carte bancaire"),
-					Sale::ONLINE_CARD => \Asset::icon('stripe', ['title' => 'Stripe']).' '.s("Carte bancaire")
-				];
-				break;*/
-
 			case 'orderFormPaymentCondition' :
 				$d->placeholder = s("Exemple : Acompte de 20 % à la signature du devis, et solde à la livraison.");
 				$d->after = \util\FormUi::info(s("Facultatif, indiquez ici les conditions de paiement après acceptation du devis."));

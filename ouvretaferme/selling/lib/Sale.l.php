@@ -226,11 +226,6 @@ class SaleLib extends SaleCrud {
 					->select(Pdf::getSelection())
 					->delegateCollection('sale', 'type'),
 			])
-			->select([
-				'cPayment' => Payment::model()
-				->select(Payment::getSelection() + ['method' => ['id', 'fqn', 'name']])
-				->delegateCollection('sale', 'id'),
-			])
 			->option('count')
 			->where('m1.id', 'NOT IN', $search->get('notId'), if: $search->get('notId')?->notEmpty())
 			->whereDocument($search->get('document'), if: $search->get('document'))
@@ -366,11 +361,6 @@ class SaleLib extends SaleCrud {
 				'cPdf' => Pdf::model()
 					->select(Pdf::getSelection())
 					->delegateCollection('sale', 'type')
-			])
-			->select([
-				'cPayment' => Payment::model()
-					->select(Payment::getSelection() + ['method' => ['id', 'fqn', 'name']])
-					->delegateCollection('sale', 'id'),
 			])
 			->whereCustomer($eCustomer)
 			->sort(new \Sql('FIELD(preparationStatus, "'.Sale::DRAFT.'", "'.Sale::CONFIRMED.'", "'.Sale::PREPARED.'", "other") DESC, id DESC'))
@@ -698,7 +688,6 @@ class SaleLib extends SaleCrud {
 		$eSaleNew = new Sale($eSale->extracts($properties));
 		$eSaleNew['preparationStatus'] = Sale::DRAFT;
 		$eSaleNew['paymentStatus'] = Sale::UNDEFINED;
-		$eSaleNew['paymentMethod'] = NULL;
 
 		if($eSaleNew['market']) {
 			$eSaleNew['marketSales'] = 0;

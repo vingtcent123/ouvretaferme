@@ -88,11 +88,6 @@ class SaleLib {
 
 		return \selling\Sale::model()
 			->select(\selling\Sale::getSelection())
-			->select([
-				'cPayment' => \selling\Payment::model()
-					->select(\selling\Payment::getSelection() + ['method' => ['id', 'fqn', 'name']])
-					->delegateCollection('sale', 'id'),
-			])
 			->whereShop($eShop)
 			->whereShopDate($eDate)
 			->wherePreparationStatus('NOT IN', [\selling\Sale::CANCELED, \selling\Sale::DRAFT])
