@@ -19,7 +19,7 @@ document.addEventListener('scroll', function() {
 class BasketManage {
 
 	static prefix = 'basket-';
-	static version = 'v4';
+	static version = 'v5';
 	static json = null;
 
 	static clickDepartment(target) {
