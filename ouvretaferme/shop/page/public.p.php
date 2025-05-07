@@ -534,7 +534,7 @@ new Page(function($data) {
 		$eSaleReference->build($properties, $_POST);
 
 		if($fw->has('Sale::productsBasket.check')) {
-			throw new RedirectAction(\shop\ShopUi::basketUrl($data->eShop, $data->eDate).'?'.($data->isModifying ? 'modify=1&' : '').'error=selling:Sale::productsBasket.check');
+			throw new RedirectAction(\shop\ShopUi::basketUrl($data->eShop, $data->eDate).'?error=selling:Sale::productsBasket.check');
 		}
 
 		$fw->validate();
@@ -589,7 +589,7 @@ new Page(function($data) {
 		$data->eSaleReference->build($properties, $_POST);
 
 		if($fw->has('Sale::productsBasket.check')) {
-			throw new RedirectAction(\shop\ShopUi::basketUrl($data->eShop, $data->eDate).'?'.($data->isModifying ? 'modify=1&' : '').'error=selling:Sale::productsBasket.check');
+			throw new RedirectAction(\shop\ShopUi::basketUrl($data->eShop, $data->eDate).'?modify=1&error=selling:Sale::productsBasket.check');
 		}
 
 		$fw->validate();
