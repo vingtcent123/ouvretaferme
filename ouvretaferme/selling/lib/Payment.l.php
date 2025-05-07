@@ -109,5 +109,24 @@ class PaymentLib extends PaymentCrud {
 
 	}
 
+	public static function getBySaleAndMethod(Sale $eSale, ?string $methodFqn): Payment {
+
+		$ePayment = new Payment();
+
+		if($methodFqn !== NULL) {
+			$eMethod = \payment\MethodLib::getByFqn($methodFqn);
+		} else {
+			$eMethod = new \payment\Method();
+		}
+
+		Payment::model()
+			->select(Payment::getSelection() + ['method' => \payment\Method::getSelection()])
+			->whereSale($eSale)
+			->whereMethod($eMethod)
+			->get($ePayment);
+
+		return $ePayment;
+	}
+
 }
 ?>

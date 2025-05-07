@@ -17,6 +17,10 @@ class Sale extends SaleElement {
 			'marketParent' => [
 				'customer' => ['type', 'name']
 			],
+			'cPayment' => Payment::model()
+				->select(Payment::getSelection() + ['method' => ['id', 'fqn', 'name']])
+				->whereStatus(Payment::SUCCESS)
+				->delegateCollection('sale', 'id'),
 		];
 
 	}
@@ -369,7 +373,7 @@ class Sale extends SaleElement {
 
 	public function hasPaymentStatus(): bool {
 
-		$this->expects(['market', 'paymentMethod', 'invoice']);
+		$this->expects(['market', 'invoice']);
 
 		return (
 			$this['market'] === FALSE and (
@@ -396,7 +400,7 @@ class Sale extends SaleElement {
 
 		$ePayment->expects(['method' => ['fqn']]);
 
-		return ($ePayment['method']['fqn'] === \payment\MethodLib::TRANSFER);
+		return ($ePayment['method']['fqn'] === \payment\MethodLib::ONLINE_CARD);
 
 	}
 

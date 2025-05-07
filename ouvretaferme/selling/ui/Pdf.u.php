@@ -1186,11 +1186,12 @@ class PdfUi {
 							$entry .= '<div class="pdf-sales-label-detail-value">'.\util\TextUi::money($eSale['priceIncludingVat']).'</div>';
 						$entry .= '</div>';
 
-						if($eSale['paymentMethod']) {
+						$payments = PaymentUi::getList($eSale['cPayment']);
+						if(count($payments) > 0) {
 							$entry .= '<div class="pdf-sales-label-detail">';
-								$entry .= '<div class="pdf-sales-label-detail-title">'.s("Moyen de paiement").'</div>';
+								$entry .= '<div class="pdf-sales-label-detail-title">'.p("Moyen de paiement", "Moyens de paiement", count($payments)).'</div>';
 								$entry .= '<div class="pdf-sales-label-detail-value">';
-									$entry .= \selling\SaleUi::p('paymentMethod')->values[$eSale['paymentMethod']];
+									$entry .= $payments;
 								$entry .= '</div>';
 							$entry .= '</div>';
 						}

@@ -264,7 +264,7 @@ new \selling\SalePage()
 		throw new ReloadAction('selling', 'Sale::customerUpdated');
 
 	}, validate: ['canUpdateCustomer', 'acceptUpdateCustomer'])
-	->doUpdateProperties('doUpdatePaymentMethod', ['paymentMethod'], fn() => throw new ReloadAction(), validate: ['canWrite'])
+	//TODO ->doUpdateProperties('doUpdatePaymentMethod', ['paymentMethod'], fn() => throw new ReloadAction(), validate: ['canWrite'])
 	->doUpdateProperties('doUpdatePreparationStatus', ['preparationStatus'], fn($data) => throw new ViewAction($data), validate: ['canUpdatePreparationStatus'])
 	->read('duplicate', function($data) {
 

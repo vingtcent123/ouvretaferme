@@ -69,8 +69,7 @@ class PaymentModel extends \ModuleModel {
 
 		$this->uniqueConstraints = array_merge($this->uniqueConstraints, [
 			['checkoutId'],
-			['paymentIntentId'],
-			['sale', 'customer', 'checkoutId', 'method']
+			['paymentIntentId']
 		]);
 
 	}

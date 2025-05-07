@@ -157,7 +157,7 @@ L'équipe {siteName}", $arguments);
 
 		$ePayment = $eSale['cPayment']->first();
 
-		if($ePayment['method']->exists() and $ePayment['method']['fqn'] === \payment\MethodLib::TRANSFER) {
+		if($ePayment !== NULL and $ePayment['method']->exists() and $ePayment['method']['fqn'] === \payment\MethodLib::TRANSFER) {
 				$payment = s("Vous ne serez donc pas facturé du montant de cette commande.")."\n";
 		} else {
 				$payment = '';

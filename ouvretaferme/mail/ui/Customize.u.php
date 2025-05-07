@@ -270,39 +270,45 @@ class CustomizeUi {
 
 					}
 
-				} else if($eSale['cPayment']->count() === 1) {
+				} else {
 
-					if($ePayment['method']->exists() === FALSE) {
+					$payment = '';
 
-						if($eSale['shop']['shared']) {
-							$payment = s("Vous avez choisi de régler cette commande en direct avec vos producteurs.");
+					if($eSale['cPayment']->count() === 1) {
+
+						if($ePayment['method']->exists() === FALSE) {
+
+							if($eSale['shop']['shared']) {
+								$payment = s("Vous avez choisi de régler cette commande en direct avec vos producteurs.");
+							} else {
+								$payment = s("Vous avez choisi de régler cette commande en direct avec votre producteur.");
+							}
+							if($eSale['shop']['paymentOfflineHow']) {
+								$payment .= "\n".encode($eSale['shop']['paymentOfflineHow']);
+							}
+
 						} else {
-							$payment = s("Vous avez choisi de régler cette commande en direct avec votre producteur.");
+
+							switch($ePayment['method']['fqn']) {
+
+								case \payment\MethodLib::TRANSFER :
+									$payment = s("Vous avez choisi de régler cette commande par virement bancaire.");
+									if($eSale['shop']['paymentTransferHow']) {
+										$payment .= "\n".encode($eSale['shop']['paymentTransferHow']);
+									}
+									break;
+
+								case \payment\MethodLib::ONLINE_CARD :
+									$payment = s("Vous avez choisi de régler cette commande par carte bancaire.")."\n";
+									$payment .= s("Votre paiement a bien été accepté.");
+									break;
+
+								default :
+									throw new \Exception('Not compatible');
+
+							}
 						}
-						if($eSale['shop']['paymentOfflineHow']) {
-							$payment .= "\n".encode($eSale['shop']['paymentOfflineHow']);
-						}
 
-					} else {
-
-						switch($ePayment['method']['fqn']) {
-
-							case \payment\MethodLib::TRANSFER :
-								$payment = s("Vous avez choisi de régler cette commande par virement bancaire.");
-								if($eSale['shop']['paymentTransferHow']) {
-									$payment .= "\n".encode($eSale['shop']['paymentTransferHow']);
-								}
-								break;
-
-							case \payment\MethodLib::ONLINE_CARD :
-								$payment = s("Vous avez choisi de régler cette commande par carte bancaire.")."\n";
-								$payment .= s("Votre paiement a bien été accepté.");
-								break;
-
-							default :
-								throw new \Exception('Not compatible');
-
-						}
 					}
 
 					if($eSale['hasVat'] and $eSale['type'] === \selling\Sale::PRO) {
