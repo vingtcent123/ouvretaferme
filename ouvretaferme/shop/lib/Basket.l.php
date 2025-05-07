@@ -6,7 +6,7 @@ namespace shop;
  */
 class BasketLib {
 
-	public static function getFromQuery(): ?array {
+	public static function getProductsFromQuery(): ?array {
 
 		try {
 			if(get_exists('products')) {
@@ -26,19 +26,19 @@ class BasketLib {
 
 	}
 
-	public static function getFromBasket(array $basket): ?array {
+	public static function getProductsFromBasket(array $basket): ?array {
 
 		$products = [];
 		foreach($basket as ['product' => $eProduct, 'number' => $number]) {
 			if($number !== 0.0) {
-				$products[(int)$eProduct['product']['id']] = ['number' => $number];
+				$products[$eProduct['product']['id']] = ['number' => $number];
 			}
 		}
 		return $products;
 
 	}
 
-	public static function getFromItem(\Collection $cItem): ?array {
+	public static function getProductsFromItem(\Collection $cItem): ?array {
 
 		$products = [];
 
@@ -64,7 +64,7 @@ class BasketLib {
 			}
 
 			$available = ProductLib::getReallyAvailable($eProduct, $eProductSelling, $cItem);
-			
+
 			$product = [
 				'product' => $eProduct,
 				'warning' => NULL

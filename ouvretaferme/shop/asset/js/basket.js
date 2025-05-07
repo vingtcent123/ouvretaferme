@@ -465,12 +465,16 @@ class BasketManage {
 			.fetch()
 			.then((json) => {
 
+				if(json.__redirect) {
+					return;
+				}
+
 				const summary = qs('#shop-basket-summary');
 
 				summary.renderInner(json.basketSummary);
 				summary.dataset.price = json.basketPrice;
 
-				basket.products = json.basketJson;
+				basket.products = json.basketProducts;
 				this.setBasket(dateId, basket);
 
 				if(json.basketPrice > 0) {
