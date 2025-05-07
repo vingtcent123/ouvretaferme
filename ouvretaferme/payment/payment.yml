@@ -16,6 +16,8 @@ Method:
   fqn: ?fqn
   name: text8(1, null)
   farm: ?farm\Farm
+  online: bool = FALSE
+  status: enum(ACTIVE, INACTIVE, DELETED) = ACTIVE
   UNIQUE: [
     ["farm", "fqn"]
   ]

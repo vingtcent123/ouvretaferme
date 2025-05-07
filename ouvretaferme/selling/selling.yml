@@ -277,7 +277,6 @@ Sale:
   shippingExcludingVat: ?decimal(8, 2)
   preparationStatus: enum(COMPOSITION, DRAFT, BASKET, CONFIRMED, SELLING, PREPARED, DELIVERED, CANCELED) = DRAFT
   paymentStatus: enum(UNDEFINED, WAITING, PROCESSING, PAID, FAILED) = UNDEFINED
-  paymentMethod: ?enum(ONLINE_CARD, OFFLINE, TRANSFER, CASH, CARD, CHECK)
   compositionOf: ?selling\Product
   compositionEndAt: ?date
   market: bool = FALSE

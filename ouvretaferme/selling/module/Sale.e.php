@@ -18,8 +18,7 @@ class Sale extends SaleElement {
 				'customer' => ['type', 'name']
 			],
 			'cPayment' => Payment::model()
-				->select(Payment::getSelection() + ['method' => ['id', 'fqn', 'name']])
-				->whereStatus(Payment::SUCCESS)
+				->select(Payment::getSelection() + ['method' => ['id', 'fqn', 'name', 'status']])
 				->delegateCollection('sale', 'id'),
 		];
 

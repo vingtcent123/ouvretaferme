@@ -271,7 +271,7 @@ class MarketUi {
 
 	}
 
-	public function displaySale(Sale $eSale, \Collection $cItemSale, Sale $eSaleMarket, \Collection $cItemMarket): string {
+	public function displaySale(Sale $eSale, \Collection $cItemSale, Sale $eSaleMarket, \Collection $cItemMarket, \Collection $cMethod): string {
 
 		$eSaleMarket->expects(['preparationStatus']);
 
@@ -332,16 +332,16 @@ class MarketUi {
 					$h .= '<dt>'.s("Moyen de paiement").'</dt>';
 					$h .= '<dd>';
 						$h .= '<a data-dropdown="bottom-start" class="dropdown-toggle">';
-							if($eSale['paymentMethod']) {
-								$h .= SaleUi::p('paymentMethod')->values[$eSale['paymentMethod']];
+							if($eSale['cPayment']->count() > 0) {
+								$h .= $eSale['cPayment']->first()['method']['name'];
 							} else {
 								$h .= '<span style="font-weight: normal">...</span>';
 							}
 						$h .= '</a>';
 						$h .= '<div class="dropdown-list bg-secondary">';
 							$h .= '<div class="dropdown-title">'.s("Moyen de paiement").'</div>';
-							foreach([Sale::CASH, Sale::CARD, Sale::CHECK, Sale::TRANSFER] as $paymentMethod) {
-								$h .= '<a data-ajax="/selling/sale:doUpdatePaymentMethod" post-id="'.$eSale['id'].'" post-payment-method="'.$paymentMethod.'" class="dropdown-item">'.SaleUi::p('paymentMethod')->values[$paymentMethod].'</a>';
+							foreach($cMethod as $eMethod) {
+								$h .= '<a data-ajax="/selling/sale:doUpdatePaymentMethod" post-id="'.$eSale['id'].'" post-payment-method="'.$eMethod['id'].'" class="dropdown-item">'.encode($eMethod['name']).'</a>';
 							}
 						$h .= '</div>';
 					$h .= '</dd>';
@@ -364,7 +364,7 @@ class MarketUi {
 
 			$money = (
 				$eSale['preparationStatus'] !== Sale::CANCELED and
-				($eSale['paymentMethod'] === NULL or $eSale['paymentMethod'] === Sale::CASH)
+				($eSale['cPayment']->count() === 0 or count($eSale['cPayment']->filter(fn($ePayment) => $ePayment['method']['fqn'] === \payment\MethodLib::CASH)) > 0)
 			);
 
 			$h .= new SaleUi()->getSummary($eSale, onlyIncludingVat: TRUE, includeMoney: $money);

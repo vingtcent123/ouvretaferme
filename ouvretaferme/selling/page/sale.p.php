@@ -264,8 +264,24 @@ new \selling\SalePage()
 		throw new ReloadAction('selling', 'Sale::customerUpdated');
 
 	}, validate: ['canUpdateCustomer', 'acceptUpdateCustomer'])
-	//TODO ->doUpdateProperties('doUpdatePaymentMethod', ['paymentMethod'], fn() => throw new ReloadAction(), validate: ['canWrite'])
-	->doUpdateProperties('doUpdatePreparationStatus', ['preparationStatus'], fn($data) => throw new ViewAction($data), validate: ['canUpdatePreparationStatus'])
+	->write('doUpdatePaymentMethod', function($data) {
+
+		$paymentMethodId = \payment\Method::POST('paymentMethod', 'id', NULL);
+		$eMethod = \payment\MethodLib::getById($paymentMethodId);
+
+		\selling\PaymentLib::updateOrCreateBySale($data->e, eMethod: $eMethod);
+
+		throw new ReloadAction();
+	})
+	->doUpdateProperties('doUpdatePreparationStatus', ['preparationStatus'], function($data) {
+
+		if($data->e['market'] === FALSE) {
+			\selling\PaymentLib::updateBySaleStatus($data->e);
+		}
+
+		throw new ViewAction($data);
+
+		}, validate: ['canUpdatePreparationStatus'])
 	->read('duplicate', function($data) {
 
 		if($data->e->acceptDuplicate() === FALSE) {
@@ -318,7 +334,7 @@ new \selling\SalePage()
 
 	});
 
-(new Page(function($data) {
+new Page(function($data) {
 
 		$data->c = \selling\SaleLib::getByIds(REQUEST('ids', 'array'));
 
@@ -326,7 +342,7 @@ new \selling\SalePage()
 
 		$data->eFarm = $data->c->first()['farm'];
 
-	}))
+	})
 	->post('doExportCollection', function($data) {
 
 		$data->c->validate('canRead');

@@ -17,4 +17,9 @@ new AdaptativeView('create', function($data, PanelTemplate $t) {
 new AdaptativeView('update', function($data, PanelTemplate $t) {
 	return new \payment\MethodUi()->update($data->e);
 });
+
+new JsonView('doUpdateStatus', function($data, AjaxTemplate $t) {
+	$t->js()->success('payment', 'Method::updated'.ucfirst($data->e['status']));
+	$t->qs('#method-switch-'.$data->e['id'])->toggleSwitch('post-status', [\payment\Method::ACTIVE, \payment\Method::INACTIVE]);
+});
 ?>

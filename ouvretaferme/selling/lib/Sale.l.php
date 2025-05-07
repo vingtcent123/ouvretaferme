@@ -1116,6 +1116,13 @@ class SaleLib extends SaleCrud {
 				->select(array_keys($newValues))
 				->update($e);
 
+			$ePayment = new Payment(['amountIncludingVat' => 0]);
+
+			Payment::model()
+				->select('amountIncludingVat')
+				->whereSale($e)
+				->update($ePayment);
+
 			return;
 
 		}
@@ -1222,6 +1229,13 @@ class SaleLib extends SaleCrud {
 		Sale::model()
 			->select(array_keys($newValues))
 			->update($e);
+
+		$ePayment = new Payment(['amountIncludingVat' => $newValues['priceIncludingVat']]);
+
+		Payment::model()
+			->select('amountIncludingVat')
+			->whereSale($e)
+			->update($ePayment);
 
 	}
 
