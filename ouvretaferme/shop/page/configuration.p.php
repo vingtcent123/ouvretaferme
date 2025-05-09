@@ -9,7 +9,7 @@ new \shop\ShopPage()
 
 		$data->cCustomize = \mail\CustomizeLib::getByFarm($data->eFarm, $data->e);
 		$data->eSaleExample = \selling\SaleLib::getExample($data->eFarm, \selling\Customer::PRIVATE, $data->e);
-		$data->eSaleExample['paymentMethod'] = $data->e['hasPayment'] ? \selling\Sale::GET('paymentMethod', 'paymentMethod', \selling\Sale::OFFLINE) : NULL;
+		$data->eSaleExample['cPayment'] = $data->e['hasPayment']  ? new Collection([new \selling\Payment(['method' => \payment\MethodLib::getByFqn(GET('paymentMethod', 'string', \payment\MethodLib::ONLINE_CARD))])]) : new Collection();
 
 		throw new ViewAction($data);
 

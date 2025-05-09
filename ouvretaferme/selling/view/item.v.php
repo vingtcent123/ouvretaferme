@@ -22,7 +22,7 @@ new AdaptativeView('summary', function($data, PanelTemplate $t) {
 // TODO : refactoriser
 new AdaptativeView('doDelete', function($data, AjaxTemplate $t) {
 
-	$t->qs('.market-main')->innerHtml(new \selling\MarketUi()->displaySale($data->e['sale'], $data->cItemSale, $data->e['sale']['marketParent'], $data->cItemMarket));
+	$t->qs('.market-main')->innerHtml(new \selling\MarketUi()->displaySale($data->e['sale'], $data->cItemSale, $data->e['sale']['marketParent'], $data->cItemMarket, $data->cPaymentMethod));
 	$t->qs('#market-sale-'.$data->e['sale']['id'].'-price')->innerHtml(\util\TextUi::money($data->e['sale']['priceIncludingVat'] ?? 0));
 
 	$t->js()->success('selling', 'Item::deleted');

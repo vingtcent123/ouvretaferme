@@ -36,6 +36,8 @@ new \selling\SalePage()
 
 		$data->cItemSale = \selling\SaleLib::getItems($data->eSale, index: 'product');
 
+		$data->cPaymentMethod = \payment\MethodLib::getByFarm($data->e['farm'], FALSE);
+
 		throw new ViewAction($data);
 
 	}, validate: ['canWrite'])
@@ -98,6 +100,8 @@ new \selling\SalePage()
 
 		$data->cItemMarket = \selling\SaleLib::getItems($data->eSaleMarket);
 		$data->cItemSale = \selling\SaleLib::getItems($data->e, index: 'product');
+
+		$data->cPaymentMethod = \payment\MethodLib::getByFarm($data->e['farm'], FALSE);
 
 		throw new ViewAction($data);
 

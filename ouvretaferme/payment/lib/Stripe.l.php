@@ -63,7 +63,9 @@ class StripeLib {
 		$error = FALSE;
 		$stripePaymentMethods = $object['payment_method_types'];
 
-		if($eSale['paymentMethod'] === \selling\Sale::ONLINE_CARD) {
+		$ePayment = \selling\PaymentLib::getBySaleAndMethod($eSale, MethodLib::ONLINE_CARD);
+
+		if($ePayment->exists() === FALSE) {
 
 			if(in_array('card', $object['payment_method_types']) === FALSE) {
 				$error = TRUE;
@@ -74,7 +76,7 @@ class StripeLib {
 		}
 
 		if($error) {
-			trigger_error('Sale::'.$eSale['paymentMethod'].' found, Stripe '.implode(', ', $stripePaymentMethods).' expected in sale #'.$eSale['id'].' (event #'.$event['id'].')', E_USER_WARNING);
+			trigger_error('Sale #'.$eSale['id'].' found, Stripe '.implode(', ', $stripePaymentMethods).' expected in sale #'.$eSale['id'].' (event #'.$event['id'].')', E_USER_WARNING);
 			return;
 		}
 

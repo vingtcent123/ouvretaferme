@@ -661,7 +661,7 @@ class BasketUi {
 
 			if(
 				$eStripeFarm->empty() and
-				$payment === \selling\Sale::ONLINE_CARD
+				$payment === \payment\MethodLib::ONLINE_CARD
 			) {
 				unset($payments[$key]);
 			}
@@ -722,16 +722,16 @@ class BasketUi {
 
 	}
 
-	public function getPaymentBlock(Shop $eShop, Date $eDate, \selling\Customer $eCustomer, string $payment): string {
+	public function getPaymentBlock(Shop $eShop, Date $eDate, \selling\Customer $eCustomer, ?string $payment): string {
 
 		$eDate->expects(['orderEndAt']);
 
 		$h = '<div>';
 			$h .= '<h4>';
 				$h .= match($payment) {
-					\selling\Sale::OFFLINE => s("Paiement avec le producteur"),
-					\selling\Sale::ONLINE_CARD => s("Carte Bancaire"),
-					\selling\Sale::TRANSFER => s("Virement bancaire"),
+					\payment\MethodLib::ONLINE_CARD => s("Carte Bancaire"),
+					\payment\MethodLib::TRANSFER => s("Virement bancaire"),
+					default => s("Paiement avec le producteur"),
 				};
 			$h .= '</h4>';
 
@@ -739,9 +739,9 @@ class BasketUi {
 
 				$h .= '<b>';
 					$h .= match($payment) {
-						\selling\Sale::OFFLINE => $eShop['paymentOfflineHow'] ? encode($eShop['paymentOfflineHow']) : s("Vous gérez le paiement de votre commande directement avec votre producteur."),
-						\selling\Sale::ONLINE_CARD => s("Payez maintenant votre commande en ligne avec votre carte bancaire."),
-						\selling\Sale::TRANSFER => $eShop['paymentTransferHow'] ? encode($eShop['paymentTransferHow']) : s("Vous paierez plus tard votre commande par virement bancaire à réception de facture.")
+						\payment\MethodLib::ONLINE_CARD => s("Payez maintenant votre commande en ligne avec votre carte bancaire."),
+						\payment\MethodLib::TRANSFER => $eShop['paymentTransferHow'] ? encode($eShop['paymentTransferHow']) : s("Vous paierez plus tard votre commande par virement bancaire à réception de facture."),
+						default => $eShop['paymentOfflineHow'] ? encode($eShop['paymentOfflineHow']) : s("Vous gérez le paiement de votre commande directement avec votre producteur."),
 					};
 				$h .= '</b>';
 
@@ -754,18 +754,18 @@ class BasketUi {
 
 		$h .= '<div class="shop-payment-cancel">';
 			$h .= match($payment) {
-				\selling\Sale::OFFLINE => $editCancel,
-				\selling\Sale::ONLINE_CARD => $notEditCancel,
-				\selling\Sale::TRANSFER => $editCancel
+				\payment\MethodLib::ONLINE_CARD => $notEditCancel,
+				\payment\MethodLib::TRANSFER => $editCancel,
+				default => $editCancel,
 			};
 		$h .= '</div>';
 
 		$h .= '<span class="btn btn-secondary">';
 
 			$h .= match($payment) {
-				\selling\Sale::OFFLINE => s("Choisir le paiement avec le producteur").' ',
-				\selling\Sale::ONLINE_CARD => s("Payer maintenant par carte bancaire").' ',
-				\selling\Sale::TRANSFER => s("Choisir le paiement par virement bancaire").' '
+				\payment\MethodLib::ONLINE_CARD => s("Payer maintenant par carte bancaire").' ',
+				\payment\MethodLib::TRANSFER => s("Choisir le paiement par virement bancaire").' ',
+				default => s("Choisir le paiement avec le producteur").' ',
 			};
 
 		$h .= '</span>';
@@ -779,9 +779,11 @@ class BasketUi {
 		$class = '';
 		$content = '';
 
-		switch($eSaleReference['paymentMethod']) {
+		$ePayment = $eSaleReference['cPayment']->first();
 
-			case \selling\Sale::ONLINE_CARD :
+		switch($ePayment['method']['fqn'] ?? NULL) {
+
+			case \payment\MethodLib::ONLINE_CARD :
 
 				switch($eSaleReference['paymentStatus']) {
 
@@ -799,7 +801,7 @@ class BasketUi {
 				};
 				break;
 
-			case \selling\Sale::TRANSFER :
+			case \payment\MethodLib::TRANSFER :
 
 				$content .= '<h2>'.\Asset::icon('check').' '.s("Merci, votre commande est confirmée !").'</h2>';
 				$content .= '<p>'.s("Vous avez reçu un e-mail de confirmation.").'</p>';
@@ -808,16 +810,13 @@ class BasketUi {
 				$content .= '</p>';
 				break;
 
-			case \selling\Sale::OFFLINE :
 			case NULL :
 
 				$content .= '<h2>'.\Asset::icon('check').' '.s("Merci, votre commande est confirmée !").'</h2>';
 				$content .= '<p>'.s("Vous avez reçu un e-mail de confirmation.").'</p>';
-				if($eSaleReference['paymentMethod'] === \selling\Sale::OFFLINE) {
-					$content .= '<p>';
-						$content .= s("Vous avez choisi de régler cette commande en direct avec votre producteur.");
-					$content .= '</p>';
-				}
+				$content .= '<p>';
+					$content .= s("Vous avez choisi de régler cette commande en direct avec votre producteur.");
+				$content .= '</p>';
 				break;
 
 		}
@@ -872,19 +871,16 @@ class BasketUi {
 					$h .= '<dt>'.s("État de la commande").'</dt>';
 					$h .= '<dd>'.\selling\SaleUi::getPreparationStatusForCustomer($eSaleReference).'</dd>';
 
-					if($eSaleReference['paymentMethod'] !== NULL) {
+					$h .= '<dt>'.s("Paiement").'</dt>';
+					$h .= '<dd>';
+						$h .= \selling\PaymentUi::getListDisplay($eSaleReference, $eSaleReference['cPayment']);
+					$h .= '</dd>';
 
-						$h .= '<dt>'.s("Paiement").'</dt>';
-						$h .= '<dd>';
-							$h .= \selling\SaleUi::p('paymentMethod')->values[$eSaleReference['paymentMethod']];
-						$h .= '</dd>';
-
-						if($eSaleReference->isPaymentOnline()) {
-							$h .= '<dt>'.s("État du paiement").'</dt>';
-							$h .= '<dd>'.\selling\SaleUi::getPaymentStatusForCustomer($eSaleReference).'</dd>';
-						}
-
+					if($eSaleReference->isPaymentOnline()) {
+						$h .= '<dt>'.s("État du paiement").'</dt>';
+						$h .= '<dd>'.\selling\SaleUi::getPaymentStatusForCustomer($eSaleReference).'</dd>';
 					}
+
 				$h .= '</dl>';
 
 				$h .= '<br/>';

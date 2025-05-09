@@ -470,10 +470,10 @@ class ShopUi {
 					$h .= $form->inputGroup(
 						$form->addon(s("Moyen de paiement")).
 						$form->select('paymentMethod', [
-							\selling\Sale::OFFLINE => s("Direct avec le producteur"),
-							\selling\Sale::ONLINE_CARD => s("Carte bancaire"),
-							\selling\Sale::TRANSFER => s("Virement bancaire")
-						], $eSaleExample['paymentMethod'], attributes: ['mandatory' => TRUE]).
+							NULL => s("Direct avec le producteur"),
+							\payment\MethodLib::ONLINE_CARD => s("Carte bancaire"),
+							\payment\MethodLib::TRANSFER => s("Virement bancaire")
+						], $eSaleExample['cPayment']->first()['method']['fqn'] ?? NULL, attributes: ['mandatory' => TRUE]).
 						$form->submit(s("Afficher"))
 					);
 				$h .= $form->close();
@@ -528,7 +528,7 @@ class ShopUi {
 		[$title, , $html] = new MailUi()->getSaleCanceled($eSaleExample);
 		$h .= new \mail\CustomizeUi()->getMailExample($title, $html);
 
-		if($eSaleExample['paymentMethod'] === \selling\Sale::ONLINE_CARD) {
+		if($eSaleExample->isPaymentOnline()) {
 
 			$h .= '<div class="util-title">';
 				$h .= '<h3>'.s("Paiement par carte bancaire échoué").'</h3>';

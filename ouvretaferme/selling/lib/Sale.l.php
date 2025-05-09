@@ -209,8 +209,14 @@ class SaleLib extends SaleCrud {
 
 		$sort = 'FIELD(preparationStatus, "'.Sale::SELLING.'", "'.Sale::DRAFT.'", "'.Sale::CONFIRMED.'", "'.Sale::PREPARED.'", "'.Sale::DELIVERED.'", "'.Sale::CANCELED.'")';
 
+		Sale::model()->join(Payment::model(), 'm1.id = m2.sale');
+
 		if(str_starts_with($search->getSort(), 'firstName') or str_starts_with($search->getSort(), 'lastName')) {
-			Sale::model()->join(Customer::model(), 'm1.customer = m2.id');
+			Sale::model()->join(Customer::model(), 'm1.customer = m3.id');
+		}
+
+		if($search->get('paymentMethod')) {
+			Sale::model()->where('m2.method', $search->get('paymentMethod'));
 		}
 
 		$cSale = Sale::model()
@@ -218,7 +224,7 @@ class SaleLib extends SaleCrud {
 			->select([
 				'cPdf' => Pdf::model()
 					->select(Pdf::getSelection())
-					->delegateCollection('sale', 'type')
+					->delegateCollection('sale', 'type'),
 			])
 			->option('count')
 			->where('m1.id', 'NOT IN', $search->get('notId'), if: $search->get('notId')?->notEmpty())
@@ -226,12 +232,11 @@ class SaleLib extends SaleCrud {
 			->where('m1.id', 'IN', fn() => explode(',', $search->get('ids')), if: $search->get('ids'))
 			->where('m1.farm', $eFarm)
 			->whereType($type, if: $type !== NULL)
-			->whereCustomer($search->get('customer'), if: $search->get('customer'))
+			->where('m1.customer', $search->get('customer'), if: $search->get('customer'))
 			->whereDeliveredAt('LIKE', '%'.$search->get('deliveredAt').'%', if: $search->get('deliveredAt'))
 			->whereDeliveredAt('>', new \Sql('CURDATE() - INTERVAL '.Sale::model()->format($search->get('delivered')).' DAY'), if: $search->get('delivered'))
 			->wherePreparationStatus($search->get('preparationStatus'), if: $search->get('preparationStatus'))
 			->wherePreparationStatus('!=', Sale::COMPOSITION)
-			->wherePaymentMethod($search->get('paymentMethod'), if: $search->get('paymentMethod'))
 			->where('m1.stats', TRUE)
 			->sort($search->buildSort([
 				'firstName' => fn($direction) => match($direction) {
@@ -400,6 +405,11 @@ class SaleLib extends SaleCrud {
 
 	public static function getForMonthlyInvoice(\farm\Farm $eFarm, string $month, ?string $type): \Collection {
 
+		if($type === \payment\MethodLib::TRANSFER) {
+			$ePaymentMethod = \payment\MethodLib::getByFqn(\payment\MethodLib::TRANSFER);
+			Sale::model()
+				->where('m2.method', $ePaymentMethod);
+		}
 		return Sale::model()
 			->select([
 				'customer' => ['type', 'name'],
@@ -407,19 +417,19 @@ class SaleLib extends SaleCrud {
 				'priceExcludingVat' => new \Sql('SUM(priceExcludingVat)', 'float'),
 				'priceIncludingVat' => new \Sql('SUM(priceIncludingVat)', 'float'),
 				'number' => new \Sql('COUNT(*)'),
-				'list' => new \Sql('GROUP_CONCAT(id ORDER BY id SEPARATOR ",")')
+				'list' => new \Sql('GROUP_CONCAT(m1.id ORDER BY m1.id SEPARATOR ",")')
 			])
-			->whereFarm($eFarm)
+			->join(Payment::model(), 'm1.id = m2.sale')
+			->where('m1.farm', $eFarm)
 			->whereType($type, if: in_array($type, [Customer::PRIVATE, Customer::PRO]))
-			->wherePaymentMethod(Sale::TRANSFER, if: $type === Sale::TRANSFER)
 			->whereDeliveredAt('LIKE', $month.'%')
 			->whereInvoice(NULL)
 			->whereMarket(FALSE)
 			->whereMarketParent(NULL)
 			->wherePreparationStatus(Sale::DELIVERED)
-			->group(['customer', 'taxes', 'hasVat'])
+			->group(['m1.customer', 'taxes', 'hasVat'])
 			->getCollection()
-			->sort(['customer' => ['name']]);
+			->sort(['m1.customer' => ['name']]);
 
 	}
 
@@ -669,7 +679,7 @@ class SaleLib extends SaleCrud {
 		$eSale->expects($properties);
 
 		if($eSale->acceptDuplicate() === FALSE) {
-			throw new NotExpectedAction('Can duplicate');
+			throw new \NotExpectedAction('Can duplicate');
 		}
 
 		Sale::model()->beginTransaction();
@@ -678,7 +688,6 @@ class SaleLib extends SaleCrud {
 		$eSaleNew = new Sale($eSale->extracts($properties));
 		$eSaleNew['preparationStatus'] = Sale::DRAFT;
 		$eSaleNew['paymentStatus'] = Sale::UNDEFINED;
-		$eSaleNew['paymentMethod'] = NULL;
 
 		if($eSaleNew['market']) {
 			$eSaleNew['marketSales'] = 0;
@@ -1107,6 +1116,13 @@ class SaleLib extends SaleCrud {
 				->select(array_keys($newValues))
 				->update($e);
 
+			$ePayment = new Payment(['amountIncludingVat' => 0]);
+
+			Payment::model()
+				->select('amountIncludingVat')
+				->whereSale($e)
+				->update($ePayment);
+
 			return;
 
 		}
@@ -1213,6 +1229,17 @@ class SaleLib extends SaleCrud {
 		Sale::model()
 			->select(array_keys($newValues))
 			->update($e);
+
+		$ePayment = new Payment(['amountIncludingVat' => $newValues['priceIncludingVat']]);
+
+		$nPayment = Payment::model()->whereSale($e)->count();
+
+		if($nPayment === 1) {
+			Payment::model()
+				->select('amountIncludingVat')
+				->whereSale($e)
+				->update($ePayment);
+		}
 
 	}
 

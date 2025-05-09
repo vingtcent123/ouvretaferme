@@ -115,14 +115,12 @@ class ShopObserverLib {
 
 		$eUser = \user\UserLib::getById($eUser);
 
-		switch($eSale['paymentMethod']) {
+		if($eSale->isPaymentOnline()) {
 
-			case \selling\Sale::ONLINE_CARD :
 				self::newSend($eSale)
 					->addTo($eUser['email'])
 					->setContent(...MailUi::getCardSaleFailed($eSale))
 					->send('shop');
-				break;
 
 		}
 

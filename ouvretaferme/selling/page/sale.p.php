@@ -72,6 +72,7 @@ new \selling\SalePage()
 		$data->ccSaleMarket = \selling\SaleLib::getByParent($data->e);
 		$data->cHistory = \selling\HistoryLib::getBySale($data->e);
 		$data->cPdf = \selling\PdfLib::getBySale($data->e);
+		$data->e['cPayment'] = \selling\PaymentLib::getBySale($data->e);
 
 		$data->e['invoice'] = \selling\InvoiceLib::getById($data->e['invoice'], properties: \selling\InvoiceElement::getSelection());
 		$data->e['shopPoint'] = \shop\PointLib::getById($data->e['shopPoint']);
@@ -81,6 +82,8 @@ new \selling\SalePage()
 		} else {
 			$data->relativeSales = NULL;
 		}
+
+		$data->cPaymentMethod = \payment\MethodLib::getByFarm($data->eFarm, NULL);
 
 		throw new ViewAction($data, $data->eFarm->canSelling() ? ':salePlain' :  ':salePanel');
 
@@ -263,8 +266,50 @@ new \selling\SalePage()
 		throw new ReloadAction('selling', 'Sale::customerUpdated');
 
 	}, validate: ['canUpdateCustomer', 'acceptUpdateCustomer'])
-	->doUpdateProperties('doUpdatePaymentMethod', ['paymentMethod'], fn() => throw new ReloadAction(), validate: ['canWrite'])
-	->doUpdateProperties('doUpdatePreparationStatus', ['preparationStatus'], fn($data) => throw new ViewAction($data), validate: ['canUpdatePreparationStatus'])
+	->write('doUpdatePaymentMethod', function($data) {
+
+		$paymentMethodId = \payment\Method::POST('paymentMethod', 'id', NULL);
+		$data->e->validate('acceptWritePaymentMethod');
+		$action = POST('action', 'string', 'update');
+		$eMethod = \payment\MethodLib::getById($paymentMethodId)->validate('canUse');
+
+		switch($action) {
+			case 'remove':
+				\selling\PaymentLib::deleteBySaleAndMethod($data->e, eMethod: $eMethod);
+				break;
+
+			case 'update':
+				$status = POST('status', 'string', \selling\Payment::PENDING);
+				\selling\PaymentLib::updateOrCreateBySale($data->e, eMethod: $eMethod, status: $status);
+				break;
+
+			case 'add':
+				\selling\PaymentLib::createBySale($data->e, eMethod: $eMethod);
+				break;
+
+		}
+
+		throw new ReloadAction();
+	})
+	->write('doFillPaymentMethod', function($data) {
+
+		$paymentMethodId = \payment\Method::POST('paymentMethod', 'id', NULL);
+		$data->e->validate('acceptWritePaymentMethod');
+		$eMethod = \payment\MethodLib::getById($paymentMethodId)->validate('canUse');
+
+		\selling\PaymentLib::fill($data->e, eMethod: $eMethod);
+
+		throw new ReloadAction();
+	})
+	->doUpdateProperties('doUpdatePreparationStatus', ['preparationStatus'], function($data) {
+
+		if($data->e['market'] === FALSE) {
+			\selling\PaymentLib::updateBySaleStatus($data->e);
+		}
+
+		throw new ViewAction($data);
+
+		}, validate: ['canUpdatePreparationStatus'])
 	->read('duplicate', function($data) {
 
 		if($data->e->acceptDuplicate() === FALSE) {
@@ -317,7 +362,7 @@ new \selling\SalePage()
 
 	});
 
-(new Page(function($data) {
+new Page(function($data) {
 
 		$data->c = \selling\SaleLib::getByIds(REQUEST('ids', 'array'));
 
@@ -325,7 +370,7 @@ new \selling\SalePage()
 
 		$data->eFarm = $data->c->first()['farm'];
 
-	}))
+	})
 	->post('doExportCollection', function($data) {
 
 		$data->c->validate('canRead');

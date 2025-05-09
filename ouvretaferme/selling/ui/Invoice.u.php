@@ -498,7 +498,7 @@ class InvoiceUi {
 		return [
 			Customer::PRO => s("Ventes aux clients professionnels"),
 			Customer::PRIVATE => s("Ventes aux clients particuliers"),
-			Sale::TRANSFER => s("Ventes payées par virement bancaire dans vos boutiques"),
+			\payment\MethodLib::TRANSFER => s("Ventes payées par virement bancaire dans vos boutiques"),
 		];
 
 	}

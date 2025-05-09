@@ -80,7 +80,7 @@ class SaleUi {
 
 	}
 
-	public function getSearch(\Search $search): string {
+	public function getSearch(\Search $search, \Collection $cPaymentMethod): string {
 
 		$h = '<div id="sale-search" class="util-block-search stick-xs '.($search->empty(['ids']) ? 'hide' : '').'">';
 
@@ -90,8 +90,7 @@ class SaleUi {
 			$statuses = SaleUi::p('preparationStatus')->values;
 			unset($statuses[Sale::BASKET], $statuses[Sale::SELLING]);
 
-			$paymentMethods = SaleUi::p('paymentMethod')->values;
-			$paymentMethods[Sale::ONLINE_CARD] = s("Carte bancaire avec Stripe");
+			$paymentMethods = $cPaymentMethod->toArray(fn($ePaymentMethod) => ['label' => $ePaymentMethod['name'], 'value' => $ePaymentMethod['id']]);
 
 			$h .= $form->openAjax($url, ['method' => 'get', 'id' => 'form-search']);
 
@@ -146,7 +145,7 @@ class SaleUi {
 
 	}
 
-	public function getList(\farm\Farm $eFarm, \Collection $cSale, ?int $nSale = NULL, ?\Search $search = NULL, array $hide = [], array $dynamicHide = [], array $show = [], ?int $page = NULL, ?\Closure $link = NULL, ?bool $hasSubtitles = NULL, ?string $segment = NULL): string {
+	public function getList(\farm\Farm $eFarm, \Collection $cSale, ?int $nSale = NULL, ?\Search $search = NULL, array $hide = [], array $dynamicHide = [], array $show = [], ?int $page = NULL, ?\Closure $link = NULL, ?bool $hasSubtitles = NULL, ?string $segment = NULL, ?\Collection $cPaymentMethod = NULL): string {
 
 		if($cSale->empty()) {
 
@@ -505,28 +504,7 @@ class SaleUi {
 						if(in_array('paymentMethod', $hide) === FALSE) {
 
 							$h .= '<td class="sale-item-payment-type '.($dynamicHide['paymentMethod'] ?? 'hide-sm-down').'">';
-
-								if($eSale->isPaymentOnline()) {
-									$h .= '<div>'.SaleUi::p('paymentMethod')->values[$eSale['paymentMethod']].'</div>';
-									$h .= '<div>'.SaleUi::getPaymentStatus($eSale).'</div>';
-								} else if($eSale['invoice']->notEmpty()) {
-									if($eSale['invoice']->isCreditNote()) {
-										$h .= '<div>'.s("Avoir").'</div>';
-									} else {
-										$h .= '<div>'.s("Facture").'</div>';
-										$h .= '<div>'.InvoiceUi::getPaymentStatus($eSale['invoice']).'</div>';
-									}
-								} else if($eSale['paymentMethod'] === Sale::TRANSFER) {
-									$h .= '<div>'.s("Virement bancaire").'</div>';
-									$h .= '<div>'.SaleUi::getPaymentStatus($eSale).'</span></div>';
-								} else if(in_array($eSale['paymentMethod'], [Sale::CASH, Sale::CHECK, Sale::CARD])) {
-									$h .= self::p('paymentMethod')->values[$eSale['paymentMethod']];
-								} else if($eSale['paymentMethod'] === Sale::OFFLINE) {
-									$h .= s("En direct");
-								} else {
-									$h .= '/';
-								}
-
+								$h .= PaymentUi::getListDisplay($eSale, $eSale['cPayment'], $cPaymentMethod);
 							$h .= '</td>';
 
 						}
@@ -947,9 +925,9 @@ class SaleUi {
 
 	}
 
-	public static function getPaymentStatus(Sale $eSale): string {
+	public static function getPaymentStatus(Sale $eSale, Payment $ePayment): string {
 
-		if($eSale['paymentMethod'] === Sale::TRANSFER and $eSale['invoice']->empty()) {
+		if($ePayment['method']['fqn'] === \payment\MethodLib::TRANSFER and $eSale['invoice']->empty()) {
 			return '<span class="util-badge sale-payment-status sale-payment-status-not-paid">'.s("Facture à éditer").'</span>';
 		}
 
@@ -1140,7 +1118,7 @@ class SaleUi {
 
 	}
 
-	public function getContent(Sale $eSale, \Collection $cPdf): string {
+	public function getContent(Sale $eSale, \Collection $cPdf, \Collection $cPaymentMethod): string {
 
 		if($eSale->isComposition()) {
 			return '';
@@ -1151,15 +1129,9 @@ class SaleUi {
 				$h .= '<dt>'.s("Client").'</dt>';
 				$h .= '<dd>'.CustomerUi::link($eSale['customer']).'</dd>';
 				if($eSale['market'] === FALSE) {
-					$h .= '<dt>'.s("Moyen de paiement").'</dt>';
+					$h .= '<dt>'.s("Moyen(s) de paiement").'</dt>';
 					$h .= '<dd>';
-						if(in_array($eSale['paymentMethod'], [Sale::TRANSFER, Sale::ONLINE_CARD])) {
-							$h .= \selling\SaleUi::p('paymentMethod')->values[$eSale['paymentMethod']];
-							$h .= ' '.\selling\SaleUi::getPaymentStatus($eSale);
-						} else if(in_array($eSale['paymentMethod'], [Sale::TRANSFER, Sale::ONLINE_CARD])) {
-							$h .= \selling\SaleUi::p('paymentMethod')->values[$eSale['paymentMethod']];
-							$h .= ' '.\selling\SaleUi::getPaymentStatus($eSale);
-						}
+						$h .= PaymentUi::getListDisplay($eSale, $eSale['cPayment'], $cPaymentMethod);
 					$h .= '</dd>';
 				}
 
@@ -1521,7 +1493,7 @@ class SaleUi {
 
 	}
 
-	public function getMarket(\farm\Farm $eFarm, \Collection $ccSale) {
+	public function getMarket(\farm\Farm $eFarm, \Collection $ccSale, \Collection $cPaymentMethod) {
 
 		if($ccSale->empty()) {
 			return '';
@@ -1541,7 +1513,7 @@ class SaleUi {
 				\selling\Sale::CANCELED => s("Ventes annulés")
 			}.'</h3>';
 
-			$h .= $this->getList($eFarm, $cSale, hide: ['deliveredAt', 'actions', 'documents'], show: ['createdAt']);
+			$h .= $this->getList($eFarm, $cSale, hide: ['deliveredAt', 'actions', 'documents'], show: ['createdAt'], cPaymentMethod: $cPaymentMethod);
 
 		}
 
@@ -2168,17 +2140,6 @@ class SaleUi {
 						Sale::UNDEFINED => s("Non payé"),
 					], $eSale['paymentStatus'], ['mandatory' => TRUE]);
 				};
-				break;
-
-			case 'paymentMethod' :
-				$d->values = [
-					Sale::OFFLINE => s("Direct avec le producteur"),
-					Sale::TRANSFER => s("Virement bancaire"),
-					Sale::CHECK => s("Chèque"),
-					Sale::CASH => s("Espèces"),
-					Sale::CARD => s("Carte bancaire"),
-					Sale::ONLINE_CARD => \Asset::icon('stripe', ['title' => 'Stripe']).' '.s("Carte bancaire")
-				];
 				break;
 
 			case 'orderFormPaymentCondition' :

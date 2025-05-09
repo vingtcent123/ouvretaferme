@@ -85,6 +85,7 @@
 			'paymentMethod' => GET('paymentMethod'),
 		], GET('sort'));
 
+		$data->cPaymentMethod = \payment\MethodLib::getByFarm($data->eFarm, NULL);
 		[$data->cSale, $data->nSale] = \selling\SaleLib::getByFarm($data->eFarm, $data->type, $data->page * 100, 100, $data->search);
 
 		throw new ViewAction($data, ':sellingSales');

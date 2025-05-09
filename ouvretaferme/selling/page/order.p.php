@@ -1,7 +1,7 @@
 <?php
-(new Page(function($data) {
+new Page(function($data) {
 		\user\ConnectionLib::checkLogged();
-	}))
+	})
 	->get('/commandes/particuliers', function($data) {
 
 		$data->ccCustomer = \selling\CustomerLib::getPrivateByUser($data->eUserOnline);
@@ -37,6 +37,7 @@ new \selling\SalePage()
 
 		$data->cItem = \selling\SaleLib::getItems($data->e, withIngredients: TRUE, public: TRUE);
 		$data->e['shopPoint'] = \shop\PointLib::getById($data->e['shopPoint']);
+		$data->e['cPayment'] = \selling\PaymentLib::getBySale($data->e);
 
 		throw new ViewAction($data);
 
