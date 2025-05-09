@@ -83,6 +83,8 @@ new \selling\SalePage()
 			$data->relativeSales = NULL;
 		}
 
+		$data->cPaymentMethod = \payment\MethodLib::getByFarm($data->eFarm, NULL);
+
 		throw new ViewAction($data, $data->eFarm->canSelling() ? ':salePlain' :  ':salePanel');
 
 	})
@@ -267,9 +269,11 @@ new \selling\SalePage()
 	->write('doUpdatePaymentMethod', function($data) {
 
 		$paymentMethodId = \payment\Method::POST('paymentMethod', 'id', NULL);
-		$eMethod = \payment\MethodLib::getById($paymentMethodId);
+		$eMethod = \payment\MethodLib::getById($paymentMethodId)->validate('canUse');
+		$status = POST('status', 'string', \selling\Payment::PENDING);
+		$data->e->validate('acceptWritePaymentMethod');
 
-		\selling\PaymentLib::updateOrCreateBySale($data->e, eMethod: $eMethod);
+		\selling\PaymentLib::updateOrCreateBySale($data->e, eMethod: $eMethod, status: $status);
 
 		throw new ReloadAction();
 	})

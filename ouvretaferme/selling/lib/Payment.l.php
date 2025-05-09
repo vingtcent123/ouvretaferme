@@ -141,6 +141,8 @@ class PaymentLib extends PaymentCrud {
 			'amountIncludingVat' => $eSale['priceIncludingVat'],
 		]);
 
+		Payment::model()->beginTransaction();
+
 		$affected = Payment::model()
 			->select(['method', 'status', 'amountIncludingVat'])
 			->whereSale($eSale)
@@ -150,6 +152,7 @@ class PaymentLib extends PaymentCrud {
 		if($affected === 0) {
 			self::createBySale($eSale, $eMethod);
 		}
+		Payment::model()->commit();
 
 	}
 

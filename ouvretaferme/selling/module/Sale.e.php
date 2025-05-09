@@ -21,9 +21,9 @@ class Sale extends SaleElement {
 				->select(Payment::getSelection() + ['method' => ['id', 'fqn', 'name', 'status']])
 				->delegateCollection('sale', 'id', function(\Collection $cPayment) {
 					foreach([Payment::SUCCESS, Payment::PENDING, Payment::FAILURE] as $status) {
-						$cPaymentFiltered = $cPayment->filter(fn($ePayment) => $ePayment['status'] === $status);
-						if($cPaymentFiltered->count() > 0) {
-							return $cPaymentFiltered;
+						$hasStatus = $cPayment->contains(fn($ePayment) => $ePayment['status'] === $status);
+						if($hasStatus) {
+							return $cPayment->filter(fn($ePayment) => $ePayment['status'] === $status);
 						}
 					}
 					return new \Collection();
@@ -306,25 +306,10 @@ class Sale extends SaleElement {
 
 	public function acceptWritePaymentMethod(): bool {
 
-		if($this['marketParent']->isEmpty()) {
-			return FALSE;
-		}
-
-		$this->expects(['cPayment']);
-
-		if($this['cPayment']->empty()) {
-			return TRUE;
-		}
-
-		$ePayment = $this['cPayment']->first();
-
-		if($ePayment['method']->exists() === FALSE) {
-			return TRUE;
-		}
-
-		$ePayment->expects(['method' => ['fqn']]);
-
-		return ($ePayment['method']['fqn'] !== \payment\MethodLib::ONLINE_CARD);
+		return (
+			$this['market'] === FALSE and
+			$this['preparationStatus'] !== Sale::CANCELED
+		);
 
 	}
 
