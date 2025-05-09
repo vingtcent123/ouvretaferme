@@ -269,11 +269,35 @@ new \selling\SalePage()
 	->write('doUpdatePaymentMethod', function($data) {
 
 		$paymentMethodId = \payment\Method::POST('paymentMethod', 'id', NULL);
-		$eMethod = \payment\MethodLib::getById($paymentMethodId)->validate('canUse');
-		$status = POST('status', 'string', \selling\Payment::PENDING);
 		$data->e->validate('acceptWritePaymentMethod');
+		$action = POST('action', 'string', 'update');
+		$eMethod = \payment\MethodLib::getById($paymentMethodId)->validate('canUse');
 
-		\selling\PaymentLib::updateOrCreateBySale($data->e, eMethod: $eMethod, status: $status);
+		switch($action) {
+			case 'remove':
+				\selling\PaymentLib::deleteBySaleAndMethod($data->e, eMethod: $eMethod);
+				break;
+
+			case 'update':
+				$status = POST('status', 'string', \selling\Payment::PENDING);
+				\selling\PaymentLib::updateOrCreateBySale($data->e, eMethod: $eMethod, status: $status);
+				break;
+
+			case 'add':
+				\selling\PaymentLib::createBySale($data->e, eMethod: $eMethod);
+				break;
+
+		}
+
+		throw new ReloadAction();
+	})
+	->write('doFillPaymentMethod', function($data) {
+
+		$paymentMethodId = \payment\Method::POST('paymentMethod', 'id', NULL);
+		$data->e->validate('acceptWritePaymentMethod');
+		$eMethod = \payment\MethodLib::getById($paymentMethodId)->validate('canUse');
+
+		\selling\PaymentLib::fill($data->e, eMethod: $eMethod);
 
 		throw new ReloadAction();
 	})

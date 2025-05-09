@@ -1232,10 +1232,14 @@ class SaleLib extends SaleCrud {
 
 		$ePayment = new Payment(['amountIncludingVat' => $newValues['priceIncludingVat']]);
 
-		Payment::model()
-			->select('amountIncludingVat')
-			->whereSale($e)
-			->update($ePayment);
+		$nPayment = Payment::model()->whereSale($e)->count();
+
+		if($nPayment === 1) {
+			Payment::model()
+				->select('amountIncludingVat')
+				->whereSale($e)
+				->update($ePayment);
+		}
 
 	}
 

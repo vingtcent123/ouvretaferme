@@ -592,6 +592,16 @@ Route::register([
 			'priority' => 5,
 			'route' => ['@module', 'selling', 'Item', 'quick'],
 		],
+		'/@module/selling/Payment/doQuick' => [
+			'request' => 'selling/payment',
+			'priority' => 5,
+			'route' => ['@module', 'selling', 'Payment', 'doQuick'],
+		],
+		'/@module/selling/Payment/quick' => [
+			'request' => 'selling/payment',
+			'priority' => 5,
+			'route' => ['@module', 'selling', 'Payment', 'quick'],
+		],
 		'/@module/selling/Product/doQuick' => [
 			'request' => 'selling/product',
 			'priority' => 5,

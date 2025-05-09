@@ -68,6 +68,8 @@ class PaymentUi {
 
 		$totalPayments = $cPayment->reduce(fn($ePayment, $value) => $value + ($ePayment['amountIncludingVat'] ?? 0), 0);
 
+		$hasMoreThanOnePayment = $cPayment->find(fn($ePayment) => $ePayment['method']->exists())->count() > 1;
+
 		$paymentList = [];
 
 		if($eSale['invoice']->notEmpty()) {
@@ -95,7 +97,7 @@ class PaymentUi {
 
 				}
 
-				if($totalPayments !== $eSale['priceIncludingVat'] and $ePayment['amountIncludingVat'] !== NULL) {
+				if(($hasMoreThanOnePayment or $totalPayments !== $eSale['priceIncludingVat']) and $ePayment['amountIncludingVat'] !== NULL) {
 					$payment .= ' ('.\util\TextUi::money($ePayment['amountIncludingVat']).')';
 				}
 			$payment .= '</div>';
@@ -114,4 +116,22 @@ class PaymentUi {
 		return implode('<br />', $paymentList);
 	}
 
+	public static function p(string $property): \PropertyDescriber {
+
+		$d = Customer::model()->describer(
+			$property, [
+				'amountIncludingVat' => s("Montant (TTC)"),
+			]
+		);
+
+		switch($property) {
+
+			case 'amountIncludingVat' :
+				$d->type = 'float';
+				break;
+
+		}
+
+		return $d;
+	}
 }
