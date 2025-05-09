@@ -19,7 +19,15 @@ class Sale extends SaleElement {
 			],
 			'cPayment' => Payment::model()
 				->select(Payment::getSelection() + ['method' => ['id', 'fqn', 'name', 'status']])
-				->delegateCollection('sale', 'id'),
+				->delegateCollection('sale', 'id', function(\Collection $cPayment) {
+					foreach([Payment::SUCCESS, Payment::PENDING, Payment::FAILURE] as $status) {
+						$cPaymentFiltered = $cPayment->filter(fn($ePayment) => $ePayment['status'] === $status);
+						if($cPaymentFiltered->count() > 0) {
+							return $cPaymentFiltered;
+						}
+					}
+					return new \Collection();
+				}),
 		];
 
 	}

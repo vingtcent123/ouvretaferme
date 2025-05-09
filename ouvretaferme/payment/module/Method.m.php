@@ -191,12 +191,10 @@ abstract class MethodCrud extends \ModuleCrud {
 			$properties = Method::getSelection();
 		}
 
-		if(Method::model()
+		Method::model()
 			->select($properties)
 			->whereFqn($fqn)
-			->get($e) === FALSE) {
-				$e->setGhost($fqn);
-		}
+			->get($e);
 
 		return $e;
 

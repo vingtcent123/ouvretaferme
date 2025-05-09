@@ -30,24 +30,26 @@ class PaymentUi {
 
 		return match($ePayment['status']) {
 			Payment::SUCCESS => \Asset::icon('check-lg', ['title' => s("Succès"), 'class' => 'color-success']),
-			Payment::FAILURE => \Asset::icon('x-lg', ['title' => s("Échec"), 'class' => 'color-info']),
-			Payment::PENDING => \Asset::icon('pause', ['title' => s("En attente"), 'class' => 'color-danger']),
+			Payment::FAILURE => \Asset::icon('x-lg', ['title' => s("Échec"), 'class' => 'color-danger']),
+			Payment::PENDING => \Asset::icon('pause', ['title' => s("En attente"), 'class' => 'color-info']),
 		};
 
 	}
 
 	public static function getListDisplay(Sale $eSale, \Collection $cPayment): string {
 
+		$totalPayments = $cPayment->reduce(fn($ePayment, $value) => $value + ($ePayment['amountIncludingVat'] ?? 0), 0);
+
 		$paymentList = [];
 		foreach($cPayment as $ePayment) {
 
-			$paymentMethodFqn = $ePayment['method']['fqn'] ?? NULL;
+			$displayAmount = ($totalPayments !== $eSale['priceIncludingVat'] and $ePayment['amountIncludingVat'] !== NULL);
 
 			if($ePayment->isPaymentOnline()) {
 
 				$payment = '<div>';
 				$payment .= self::statusIcon($ePayment).' '.\payment\MethodUi::getOnlineCardText();
-				if($ePayment['amountIncludingVat'] and $ePayment['status'] === Payment::SUCCESS) {
+				if($displayAmount) {
 					$payment .= ' ('.\util\TextUi::money($ePayment['amountIncludingVat']).')';
 				}
 				$payment .= '</div>';
@@ -68,7 +70,7 @@ class PaymentUi {
 				$payment = '<div>';
 					$payment .= self::statusIcon($ePayment).' '.encode($ePayment['method']['name'] ?? '?');
 
-					if($ePayment['amountIncludingVat'] and $ePayment['status'] === Payment::SUCCESS) {
+					if($displayAmount) {
 						$payment .= ' ('.\util\TextUi::money($ePayment['amountIncludingVat']).')';
 					}
 				$payment .= '</div>';
