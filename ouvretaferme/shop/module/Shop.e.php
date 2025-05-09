@@ -229,6 +229,16 @@ class Shop extends ShopElement {
 				}
 
 			})
+			->setCallback('email.empty', function(?string $email) {
+
+				if($this['shared']) {
+					return ($email !== NULL);
+				} else {
+					return TRUE;
+				}
+
+
+			})
 			->setCallback('terms.check', function(?string $terms) {
 
 				return (

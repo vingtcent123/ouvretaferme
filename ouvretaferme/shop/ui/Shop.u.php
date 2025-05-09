@@ -151,7 +151,7 @@ class ShopUi {
 
 				}
 
-				$h .= $form->dynamicGroups($eShop, ['name*', 'type*', 'fqn*', 'email', 'frequency', 'description'], [
+				$h .= $form->dynamicGroups($eShop, ['name*', 'type*', 'fqn*', 'email'.($eShop['shared'] ? '*' : ''), 'frequency', 'description'], [
 					'type*' => self::getTypeDescriber($eFarm, 'create')
 				]);
 
