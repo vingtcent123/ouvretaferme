@@ -259,6 +259,40 @@ a.sale-preparation-status-action {
 	color: white;
 }
 
+.sale-payment-labels {
+	display: flex;
+	align-items: center;
+	gap: 0.25rem;
+}
+.sale-payment-label {
+	padding: 0.25rem 0.5rem;
+	border-radius: var(--radius);
+	border: 1px solid transparent;
+}
+.sale-payment-label.sale-payment-online.sale-payment-action:hover,
+.sale-payment-label.sale-payment-online:not(.sale-payment-action) {
+	background-color: var(--harvest);
+	color: white;
+	text-decoration: none;
+}
+.sale-payment-label.sale-payment-not-online.sale-payment-action:hover,
+.sale-payment-label.sale-payment-not-online:not(.sale-payment-action) {
+	background-color: var(--selling);
+	color: white;
+	text-decoration: none;
+}
+dl.util-presentation dd a.sale-payment-action.sale-payment-online,
+a.sale-payment-action.sale-payment-online {
+	border: 1px solid var(--harvest);
+	color: var(--harvest);
+	font-weight: normal;
+}
+dl.util-presentation dd a.sale-payment-action.sale-payment-not-online,
+a.sale-payment-action.sale-payment-not-online {
+	border: 1px solid var(--selling);
+	color: var(--selling);
+	font-weight: normal;
+}
 div.sale-documents {
 	display: flex;
 	flex-wrap: wrap;
@@ -385,7 +419,6 @@ a.sale-document-new .sale-document-status {
 	padding: 1rem;
 	color: white;
 	margin-bottom: 1rem;
-	background-color: var(--selling);
 }
 
 .sale-shared-wrapper a:not(.btn) {

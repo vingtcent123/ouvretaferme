@@ -145,7 +145,7 @@ class SaleUi {
 
 	}
 
-	public function getList(\farm\Farm $eFarm, \Collection $cSale, ?int $nSale = NULL, ?\Search $search = NULL, array $hide = [], array $dynamicHide = [], array $show = [], ?int $page = NULL, ?\Closure $link = NULL, ?bool $hasSubtitles = NULL, ?string $segment = NULL): string {
+	public function getList(\farm\Farm $eFarm, \Collection $cSale, ?int $nSale = NULL, ?\Search $search = NULL, array $hide = [], array $dynamicHide = [], array $show = [], ?int $page = NULL, ?\Closure $link = NULL, ?bool $hasSubtitles = NULL, ?string $segment = NULL, ?\Collection $cPaymentMethod = NULL): string {
 
 		if($cSale->empty()) {
 
@@ -504,7 +504,7 @@ class SaleUi {
 						if(in_array('paymentMethod', $hide) === FALSE) {
 
 							$h .= '<td class="sale-item-payment-type '.($dynamicHide['paymentMethod'] ?? 'hide-sm-down').'">';
-								$h .= PaymentUi::getListDisplay($eSale, $eSale['cPayment']);
+								$h .= PaymentUi::getListDisplay($eSale, $eSale['cPayment'], $cPaymentMethod);
 							$h .= '</td>';
 
 						}
@@ -1118,7 +1118,7 @@ class SaleUi {
 
 	}
 
-	public function getContent(Sale $eSale, \Collection $cPdf): string {
+	public function getContent(Sale $eSale, \Collection $cPdf, \Collection $cPaymentMethod): string {
 
 		if($eSale->isComposition()) {
 			return '';
@@ -1131,7 +1131,7 @@ class SaleUi {
 				if($eSale['market'] === FALSE) {
 					$h .= '<dt>'.s("Moyen(s) de paiement").'</dt>';
 					$h .= '<dd>';
-						$h .= PaymentUi::getListDisplay($eSale, $eSale['cPayment']);
+						$h .= PaymentUi::getListDisplay($eSale, $eSale['cPayment'], $cPaymentMethod);
 					$h .= '</dd>';
 				}
 
@@ -1493,7 +1493,7 @@ class SaleUi {
 
 	}
 
-	public function getMarket(\farm\Farm $eFarm, \Collection $ccSale) {
+	public function getMarket(\farm\Farm $eFarm, \Collection $ccSale, \Collection $cPaymentMethod) {
 
 		if($ccSale->empty()) {
 			return '';
@@ -1513,7 +1513,7 @@ class SaleUi {
 				\selling\Sale::CANCELED => s("Ventes annulés")
 			}.'</h3>';
 
-			$h .= $this->getList($eFarm, $cSale, hide: ['deliveredAt', 'actions', 'documents'], show: ['createdAt']);
+			$h .= $this->getList($eFarm, $cSale, hide: ['deliveredAt', 'actions', 'documents'], show: ['createdAt'], cPaymentMethod: $cPaymentMethod);
 
 		}
 

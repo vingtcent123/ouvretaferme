@@ -163,6 +163,17 @@ class MethodUi {
 
 	}
 
+	public static function getShortValues(Method $eMethod): string {
+
+		$methodElements = explode(' ', $eMethod['name']);
+		$value = '';
+		foreach($methodElements as $element) {
+			$value .= substr($element, 0, 1);
+		}
+		return mb_strtoupper($value);
+
+	}
+
 	public static function p(string $property): \PropertyDescriber {
 
 		return Method::model()->describer($property, [
@@ -170,4 +181,5 @@ class MethodUi {
 		]);
 
 	}
+
 }

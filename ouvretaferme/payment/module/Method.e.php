@@ -13,6 +13,14 @@ class Method extends MethodElement {
 		);
 
 	}
+	public function canUse(): bool {
+
+		return (
+			($this['farm']->empty() or $this['farm']->canWrite())
+			and $this['status'] === Method::ACTIVE
+		);
+
+	}
 
 }
 ?>
