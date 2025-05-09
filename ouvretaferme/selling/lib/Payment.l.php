@@ -86,17 +86,58 @@ class PaymentLib extends PaymentCrud {
 
 		$eSale->expects(['customer', 'farm']);
 
+		$amount = $eSale['priceIncludingVat'] - self::sumTotalBySale($eSale);
+
 		$e = new Payment([
 			'sale' => $eSale,
 			'customer' => $eSale['customer'],
 			'farm' => $eSale['farm'],
 			'checkoutId' => $providerId,
 			'method' => $eMethod,
+			'amountIncludingVat' => $amount,
 		]);
 
 		Payment::model()->insert($e);
 
 		return $e;
+
+	}
+
+	public static function sumTotalBySale(Sale $eSale): float {
+
+		$ePayment = new Payment();
+		Payment::model()
+			->select(['sum' => new \Sql('SUM(amountIncludingVat)')])
+			->whereSale($eSale)
+			->whereStatus('!=', Payment::FAILURE)
+			->get($ePayment);
+
+		return $ePayment['sum'] ?? 0;
+
+	}
+
+	public static function fill(Sale $eSale, \payment\Method $eMethod): void {
+
+		$cPayment = Payment::model()
+			->select(Payment::getSelection())
+			->whereSale($eSale)
+			->getCollection();
+
+		// Paiement non trouvé
+		$cPaymentFound = $cPayment->find(fn($ePayment) => (($ePayment['method']['id']) ?? NULL) === $eMethod['id']);
+		if($cPaymentFound->count() === 0) {
+			return;
+		}
+
+		$ePayment = $cPaymentFound->first();
+
+		$total = $cPayment->reduce(fn($e, $value) => ($e['id'] !== $ePayment['id']) ? ($e['amountIncludingVat'] + $value) : $value, 0);
+
+		$ePayment['amountIncludingVat'] = $eSale['priceIncludingVat'] - $total;
+
+		Payment::model()
+			->select('amountIncludingVat')
+			->update($ePayment);
 
 	}
 
@@ -128,6 +169,14 @@ class PaymentLib extends PaymentCrud {
 		return $ePayment;
 	}
 
+	public static function deleteBySaleAndMethod(Sale $eSale, \payment\Method $eMethod): void {
+
+		Payment::model()
+			->whereSale($eSale)
+			->whereMethod($eMethod)
+			->delete();
+
+	}
 	public static function updateOrCreateBySale(Sale $eSale, \payment\Method $eMethod, string $status = Payment::PENDING): void {
 
 		$eSale->expects(['customer', 'farm', 'priceIncludingVat']);
@@ -158,25 +207,17 @@ class PaymentLib extends PaymentCrud {
 
 	public static function updateBySaleStatus(Sale $eSale): void {
 
-		$eSale->expects(['customer', 'farm', 'priceIncludingVat', 'preparationStatus']);
-
-		$ePayment = new Payment([
-			'customer' => $eSale['customer'],
-			'farm' => $eSale['farm'],
-			'sale' => $eSale,
-			'status' => match($eSale['preparationStatus']) {
-				Sale::DELIVERED => Payment::SUCCESS,
-				Sale::DRAFT => Payment::PENDING,
-			},
-			'amountIncludingVat' => $eSale['priceIncludingVat'],
-		]);
+		$eSale->expects(['customer', 'farm', 'preparationStatus']);
 
 		Payment::model()
-       ->select(['status', 'amountIncludingVat'])
+       ->select(['status'])
        ->whereSale($eSale)
        ->whereFarm($eSale['farm'])
        ->whereCustomer($eSale['customer'])
-       ->update($ePayment);
+       ->update(['status' => match($eSale['preparationStatus']) {
+	       Sale::DELIVERED => Payment::SUCCESS,
+	       Sale::DRAFT => Payment::PENDING,
+       }]);
 	}
 
 }

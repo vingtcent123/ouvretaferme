@@ -331,21 +331,48 @@ class MarketUi {
 					$h .= '<dd>'.$this->getCircle($eSale).' '.$this->getStatus($eSale).'</dd>';
 					$h .= '<dt>'.s("Moyen de paiement").'</dt>';
 					$h .= '<dd>';
-						$h .= '<a data-dropdown="bottom-start" class="dropdown-toggle">';
-							if($eSale['cPayment']->count() > 0) {
-								$h .= $eSale['cPayment']->first()['method']['name'];
-							} else {
-								$h .= '<span style="font-weight: normal">...</span>';
+						$hasAtLeastOnePaymentMethod = ($eSale['cPayment']->count() > 0 and $eSale['cPayment']->first()['method']->exists());
+						if($hasAtLeastOnePaymentMethod) {
+							$h .= '<div>';
+							foreach($eSale['cPayment'] as $ePayment) {
+								$h .= '<div>';
+									$h .= encode($ePayment['method']['name']);
+									if($ePayment['amountIncludingVat'] !== NULL) {
+										$amount = \util\TextUi::money($ePayment['amountIncludingVat']);
+									} else {
+										$amount = s("Non calculé");
+									}
+									$h .= ' : '.$ePayment->quick('amountIncludingVat', $amount);
+									$h .= '<a data-ajax="/selling/sale:doFillPaymentMethod" post-id="'.$eSale['id'].'" post-payment-method="'.$ePayment['method']['id'].'" class="btn btn-outline-border ml-1" title="'.s("Compléter automatiquement").'">'.\Asset::icon('magic').'</a>';
+								$h .= '</div>';
 							}
-						$h .= '</a>';
+							$h .= '</div>';
+							$h .= '<a data-dropdown="bottom-start" class="dropdown-toggle">';
+								$h .= '<span style="font-weight: normal">'.s("Changer les moyens de paiement").'</span>';
+							$h .= '</a>';
+						} else {
+							$h .= '<a data-dropdown="bottom-start" class="dropdown-toggle">';
+								if($eSale['cPayment']->count() > 0 and $eSale['cPayment']->first()['method']->exists()) {
+									$h .= $eSale['cPayment']->first()['method']['name'];
+								} else {
+									$h .= '<span style="font-weight: normal">...</span>';
+								}
+							$h .= '</a>';
+						}
 						$h .= '<div class="dropdown-list bg-secondary">';
 							$h .= '<div class="dropdown-title">'.s("Moyen de paiement").'</div>';
 							foreach($cMethod as $eMethod) {
-								$h .= '<a data-ajax="/selling/sale:doUpdatePaymentMethod" post-id="'.$eSale['id'].'" post-payment-method="'.$eMethod['id'].'" class="dropdown-item">'.encode($eMethod['name']).'</a>';
+								$has = $eSale['cPayment']->find(fn($ePayment) => (($ePayment['method']['id'] ?? NULL) === $eMethod['id']))->count() > 0;
+								$h .= '<a data-ajax="/selling/sale:doUpdatePaymentMethod" post-id="'.$eSale['id'].'" post-payment-method="'.$eMethod['id'].'" class="dropdown-item" post-action="'.($has ? 'remove' : 'add').'">';
+									if($hasAtLeastOnePaymentMethod) {
+										$h .= $has ? \Asset::icon('x-lg') : \Asset::icon('plus-lg');
+										$h .= '  ';
+									}
+									$h .= encode($eMethod['name']);
+								$h .= '</a>';
 							}
 						$h .= '</div>';
 					$h .= '</dd>';
-
 					if(
 						$eSale['customer']->notEmpty() and
 						$eSale['customer']['discount'] > 0
