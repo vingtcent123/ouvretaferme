@@ -20,11 +20,11 @@ class MethodLib extends MethodCrud {
 	public static function getByFarm(\farm\Farm $eFarm, ?bool $online, ?bool $onlyActive = TRUE): \Collection {
 
 		return Method::model()
-       ->select(Method::getSelection())
-       ->or(
-	       fn() => $this->whereFarm($eFarm),
-	       fn() => $this->whereFarm(NULL)
-       )
+			->select(Method::getSelection())
+			->or(
+				fn() => $this->whereFarm($eFarm),
+				fn() => $this->whereFarm(NULL)
+			)
 			->whereOnline($online, if: $online !== NULL)
 			->whereStatus(Method::ACTIVE, if: $onlyActive !== NULL)
 			->sort(['name' => SORT_ASC])
