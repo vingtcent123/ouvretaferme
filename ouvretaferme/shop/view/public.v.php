@@ -213,6 +213,7 @@ new JsonView('/shop/public/{fqn}/{date}/:getBasket', function($data, AjaxTemplat
 	$t->push('basketSummary', new \shop\BasketUi()->getSummary($data->eShop, $data->eDate, $data->cItemExisting, $data->basket));
 	$t->push('basketPrice', $data->price);
 	$t->push('basketApproximate', $data->approximate);
+	$t->push('basketProducts', $data->basketProducts);
 
 });
 

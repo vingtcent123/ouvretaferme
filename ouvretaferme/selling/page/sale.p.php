@@ -276,7 +276,7 @@ new \selling\SalePage()
 		\selling\PaymentLib::updateOrCreateBySale($data->e, eMethod: $eMethod, status: $status);
 
 		throw new ReloadAction();
-	})
+	}, validate: ['canWrite'])
 	->doUpdateProperties('doUpdatePreparationStatus', ['preparationStatus'], function($data) {
 
 		if($data->e['market'] === FALSE) {

@@ -6,7 +6,7 @@ namespace shop;
  */
 class BasketLib {
 
-	public static function getFromQuery(): ?array {
+	public static function getProductsFromQuery(): ?array {
 
 		try {
 			if(get_exists('products')) {
@@ -26,7 +26,19 @@ class BasketLib {
 
 	}
 
-	public static function getFromItem(\Collection $cItem): ?array {
+	public static function getProductsFromBasket(array $basket): ?array {
+
+		$products = [];
+		foreach($basket as ['product' => $eProduct, 'number' => $number]) {
+			if($number !== 0.0) {
+				$products[$eProduct['product']['id']] = ['number' => $number];
+			}
+		}
+		return $products;
+
+	}
+
+	public static function getProductsFromItem(\Collection $cItem): ?array {
 
 		$products = [];
 
@@ -38,15 +50,16 @@ class BasketLib {
 
 	}
 
-	public static function checkAvailableProducts(array $products, \Collection $cProduct, \Collection $cItem): array {
+	public static function checkAvailableProducts(array $products, \Collection $cProduct, \Collection $cItem, bool &$warning = FALSE): array {
 
 		$cleanBasket = [];
 
 		foreach($cProduct as $eProduct) {
 
 			$eProductSelling = $eProduct['product'];
+			$numberOrdered = round($products[$eProductSelling['id']]['number'] ?? 0.0, 2);
 
-			if((float)($products[$eProductSelling['id']]['number'] ?? 0.0) === 0.0) {
+			if($numberOrdered === 0.0) {
 				continue;
 			}
 
@@ -57,8 +70,6 @@ class BasketLib {
 				'warning' => NULL
 			];
 
-			$numberOrdered = round($products[$eProductSelling['id']]['number'] ?? 0.0, 2);
-
 			if($available === NULL or $numberOrdered <= $available) {
 				$product['number'] = $numberOrdered;
 			} else {
@@ -67,6 +78,7 @@ class BasketLib {
 
 			if($available !== NULL and $numberOrdered > $available) {
 				$product['warning'] = 'number';
+				$warning = TRUE;
 			}
 
 			if(
@@ -82,6 +94,7 @@ class BasketLib {
 				} else {
 					$product['number'] = $eProduct['limitMin'];
 					$product['warning'] = 'min';
+					$warning = TRUE;
 				}
 			}
 

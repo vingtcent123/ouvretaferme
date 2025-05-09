@@ -232,9 +232,9 @@ END;
 			$data->cCategory = \selling\CategoryLib::getByFarm($data->eShop['farm']);
 
 			if($data->isModifying) {
-				$data->basketProducts = \shop\BasketLib::getFromItem($data->cItemExisting);
+				$data->basketProducts = \shop\BasketLib::getProductsFromItem($data->cItemExisting);
 			} else {
-				$data->basketProducts = \shop\BasketLib::getFromQuery();
+				$data->basketProducts = \shop\BasketLib::getProductsFromQuery();
 			}
 
 			$data->canBasket = $data->eSaleReference->canBasket($data->eShop);
@@ -369,7 +369,7 @@ new Page(function($data) {
 		);
 		$data->ePointSelected = \shop\PointLib::getSelected($data->eShop, $data->eDate['ccPoint'], $data->eCustomer, $data->eSaleReference);
 
-		$data->basketProducts = \shop\BasketLib::getFromQuery();
+		$data->basketProducts = \shop\BasketLib::getProductsFromQuery();
 
 		throw new ViewAction($data);
 
@@ -494,6 +494,8 @@ new Page(function($data) {
 
 		}, 0), 2);
 
+		$data->basketProducts = \shop\BasketLib::getProductsFromBasket($data->basket);
+
 		throw new ViewAction($data);
 
 	})
@@ -532,6 +534,10 @@ new Page(function($data) {
 		}
 
 		$eSaleReference->build($properties, $_POST);
+
+		if($fw->has('Sale::productsBasket.check')) {
+			throw new RedirectAction(\shop\ShopUi::basketUrl($data->eShop, $data->eDate).'?error=selling:Sale::productsBasket.check');
+		}
 
 		$fw->validate();
 
@@ -583,6 +589,10 @@ new Page(function($data) {
 		]);
 
 		$data->eSaleReference->build($properties, $_POST);
+
+		if($fw->has('Sale::productsBasket.check')) {
+			throw new RedirectAction(\shop\ShopUi::basketUrl($data->eShop, $data->eDate).'?modify=1&error=selling:Sale::productsBasket.check');
+		}
 
 		$fw->validate();
 

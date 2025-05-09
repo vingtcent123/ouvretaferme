@@ -63,6 +63,7 @@ class AlertUi {
 			'Sale::sales.check' => s("Merci de sélectionner au moins une vente"),
 			'Sale::from.check' => s("Vous n'avez pas indiqué l'origine de la vente"),
 			'Sale::market.status' => s("Vous ne pouvez pas mettre à jour une vente terminée ou annulée."),
+			'Sale::productsBasket.check' => s("Un produit n'est plus disponible dans la quantité que vous avez demandée, veuillez vérifier votre panier et revalider votre commande."),
 
 
 			'Sale::generateDeliveryNote' => s("Vous ne pouvez générer de bon de livraison que pour les ventes livrées !"),

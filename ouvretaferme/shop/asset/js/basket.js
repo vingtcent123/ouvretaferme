@@ -19,7 +19,7 @@ document.addEventListener('scroll', function() {
 class BasketManage {
 
 	static prefix = 'basket-';
-	static version = 'v4';
+	static version = 'v5';
 	static json = null;
 
 	static clickDepartment(target) {
@@ -465,10 +465,17 @@ class BasketManage {
 			.fetch()
 			.then((json) => {
 
+				if(json.__redirect) {
+					return;
+				}
+
 				const summary = qs('#shop-basket-summary');
 
 				summary.renderInner(json.basketSummary);
 				summary.dataset.price = json.basketPrice;
+
+				basket.products = json.basketProducts;
+				this.setBasket(dateId, basket);
 
 				if(json.basketPrice > 0) {
 
