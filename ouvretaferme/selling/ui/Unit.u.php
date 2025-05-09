@@ -3,12 +3,16 @@ namespace selling;
 
 class UnitUi {
 
-	public static function getValue(?float $value, string|\selling\Unit $unit, bool $short = FALSE, bool $noWrap = TRUE, ?\Closure $callback = NULL): string {
+	public static function getValue(?float $value, string|\selling\Unit|null $unit, bool $short = FALSE, bool $noWrap = TRUE, ?\Closure $callback = NULL): string {
 
 		if($value === NULL) {
 			$value = '?';
 		} else {
 			$value = round($value, 2);
+		}
+
+		if($unit === NULL) {
+			return $value;
 		}
 
 		$callback ??= fn($value, $unit) => $value.' '.$unit;
