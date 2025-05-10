@@ -317,7 +317,7 @@ class CustomizeUi {
 					$eSale['shop']->isApproximate() and
 					\selling\Item::containsApproximate($cItem)
 				) {
-					$products .= "\n\n".s("Certains produits de cette commande nécessitent une pesée, et que le montant définitif pourra être légèrement.");
+					$products .= "\n\n".s("Certains produits de cette commande nécessitent une pesée, et que le montant définitif pourra être légèrement différent.");
 				}
 
 				if($eSale['shop']->isPersonal() and $eSale['paymentMethod'] === \selling\Sale::ONLINE_CARD) {
