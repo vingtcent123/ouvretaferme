@@ -197,13 +197,19 @@ class InvoiceLib extends InvoiceCrud {
 
 			});
 
-		$totalVat = round($totalVat, 2);
+			$totalVat = round($totalVat, 2);
 
 			$e->merge([
 				'vatByRate' => $vatByRate,
 				'vat' => $totalVat,
-				'priceExcludingVat' => $priceExcludingVat,
-				'priceIncludingVat' => $priceIncludingVat,
+				'priceExcludingVat' => match($e['taxes']) {
+					Invoice::INCLUDING => $priceIncludingVat - $totalVat,
+					Invoice::EXCLUDING => $priceExcludingVat,
+				},
+				'priceIncludingVat' => match($e['taxes']) {
+					Invoice::INCLUDING => $priceIncludingVat,
+					Invoice::EXCLUDING => $priceExcludingVat + $totalVat,
+				},
 			]);
 
 			$e['name'] = $e->getInvoice($e['farm']);
