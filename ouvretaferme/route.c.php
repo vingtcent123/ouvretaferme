@@ -512,6 +512,16 @@ Route::register([
 			'priority' => 5,
 			'route' => ['@module', 'map', 'Bed', 'quick'],
 		],
+		'/@module/payment/Method/doQuick' => [
+			'request' => 'payment/method',
+			'priority' => 5,
+			'route' => ['@module', 'payment', 'Method', 'doQuick'],
+		],
+		'/@module/payment/Method/quick' => [
+			'request' => 'payment/method',
+			'priority' => 5,
+			'route' => ['@module', 'payment', 'Method', 'quick'],
+		],
 		'/@module/plant/Forecast/doQuick' => [
 			'request' => 'plant/forecast',
 			'priority' => 5,
@@ -581,6 +591,16 @@ Route::register([
 			'request' => 'selling/item',
 			'priority' => 5,
 			'route' => ['@module', 'selling', 'Item', 'quick'],
+		],
+		'/@module/selling/Payment/doQuick' => [
+			'request' => 'selling/payment',
+			'priority' => 5,
+			'route' => ['@module', 'selling', 'Payment', 'doQuick'],
+		],
+		'/@module/selling/Payment/quick' => [
+			'request' => 'selling/payment',
+			'priority' => 5,
+			'route' => ['@module', 'selling', 'Payment', 'quick'],
 		],
 		'/@module/selling/Product/doQuick' => [
 			'request' => 'selling/product',

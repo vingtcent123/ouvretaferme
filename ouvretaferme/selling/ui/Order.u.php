@@ -283,7 +283,7 @@ class OrderUi {
 
 	}
 
-	public function displaySale(Sale $eSale): string {
+	public function displaySale(Sale $eSale, \Collection $cPaymentMethod): string {
 
 		$h = '';
 		
@@ -304,9 +304,9 @@ class OrderUi {
 				$h .= '<dt>'.s("État de la commande").'</dt>';
 				$h .= '<dd>'.SaleUi::getPreparationStatusForCustomer($eSale).'</dd>';
 
-				if($eSale['paymentMethod'] !== NULL) {
+				if($eSale['cPayment']->empty() === FALSE) {
 					$h .= '<dt>'.s("Moyen de paiement").'</dt>';
-					$h .= '<dd>'.\selling\SaleUi::p('paymentMethod')->values[$eSale['paymentMethod']].'</dd>';
+					$h .= '<dd>'.PaymentUi::getListDisplay($eSale, $eSale['cPayment'], cPaymentMethod: $cPaymentMethod).'</dd>';
 				}
 
 				if($eSale->isPaymentOnline()) {

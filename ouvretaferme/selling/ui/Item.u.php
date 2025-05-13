@@ -517,7 +517,7 @@ class ItemUi {
 
 	}
 
-	public function getSummary(\farm\Farm $eFarm, ?string $date, \Collection $cSale, \Collection $ccItemProduct, \Collection $ccItemSale) {
+	public function getSummary(\farm\Farm $eFarm, ?string $date, \Collection $cSale, \Collection $ccItemProduct, \Collection $ccItemSale, \Collection $cPaymentMethod) {
 
 		if($cSale->empty()) {
 			$h = '<div class="util-info">'.s("Il n'y a aucune commande à préparer pour ce jour").'</div>';
@@ -543,7 +543,7 @@ class ItemUi {
 					$h .= '<div data-tab="summary" class="tab-panel selected">';
 						$h .= $this->getItemsBySummary($cSale, $ccItemProduct);
 						$h .= '<h3>'.s("État des ventes").'</h3>';
-						$h .= new SaleUi()->getList($eFarm, $cSale);
+						$h .= new SaleUi()->getList($eFarm, $cSale, cPaymentMethod: $cPaymentMethod);
 					$h .= '</div>';
 					$h .= '<div data-tab="product" class="tab-panel">';
 						$h .= $this->getItemsByProduct($cSale, $ccItemProduct);

@@ -27,13 +27,13 @@ new AdaptativeView('/vente/{id}/marche/vente/{subId}', function($data, MarketTem
 
 	$t->eSaleSelected = $data->eSale;
 
-	echo new \selling\MarketUi()->displaySale($data->eSale, $data->cItemSale, $data->e, $data->cItemMarket);
+	echo new \selling\MarketUi()->displaySale($data->eSale, $data->cItemSale, $data->e, $data->cItemMarket, $data->cPaymentMethod);
 
 });
 
 new AdaptativeView('doUpdateSale', function($data, AjaxTemplate $t) {
 
-	$t->qs('.market-main')->innerHtml(new \selling\MarketUi()->displaySale($data->e, $data->cItemSale, $data->eSaleMarket, $data->cItemMarket));
+	$t->qs('.market-main')->innerHtml(new \selling\MarketUi()->displaySale($data->e, $data->cItemSale, $data->eSaleMarket, $data->cItemMarket, $data->cPaymentMethod));
 	$t->qs('#market-sale-'.$data->e['id'].'-price')->innerHtml(\util\TextUi::money($data->e['priceIncludingVat'] ?? 0));
 
 });
@@ -64,7 +64,7 @@ new AdaptativeView('/vente/{id}/marche/ventes', function($data, MarketTemplate $
 
 		echo '<h2>'.s("Liste des ventes").'</h2>';
 
-		echo new \selling\SaleUi()->getList($data->e['farm'], $data->cSale, hide: ['deliveredAt', 'actions', 'documents'], show: ['createdAt'], link: fn($eSale) => \selling\SaleUi::urlMarket($data->e).'/vente/'.$eSale['id']);
+		echo new \selling\SaleUi()->getList($data->e['farm'], $data->cSale, hide: ['deliveredAt', 'actions', 'documents'], show: ['createdAt'], link: fn($eSale) => \selling\SaleUi::urlMarket($data->e).'/vente/'.$eSale['id'], cPaymentMethod: $data->cPaymentMethod);
 
 	}
 

@@ -278,17 +278,25 @@ class SaleLib {
 
 	public static function canUpdateForShop(\selling\Sale $eSale): bool {
 
+		if($eSale['cPayment']->count() > 1) {
+			return FALSE;
+		}
+
+		if($eSale['cPayment']->count() === 0) {
+			return TRUE;
+		}
+
+		$ePayment = $eSale['cPayment']->first();
 		return (
-			$eSale['paymentMethod'] === \selling\Sale::TRANSFER or
-			$eSale['paymentMethod'] === \selling\Sale::OFFLINE or
-			$eSale['paymentMethod'] === NULL
+			$ePayment['method']->exists() === FALSE or
+			$ePayment['method']['fqn'] === \payment\MethodLib::TRANSFER
 		);
 
 	}
 
 	public static function updateForShop(\selling\Sale $eSaleReference, \Collection $cSaleExisting, \user\User $eUser, array $discounts): ?string {
 
-		$eSaleReference->expects(['basket', 'paymentMethod']);
+		$eSaleReference->expects(['basket', 'cPayment']);
 
 		if(self::canUpdateForShop($eSaleReference) === FALSE) {
 			throw new \Exception('Payment security');
@@ -395,12 +403,12 @@ class SaleLib {
 
 	}
 
-	public static function createPayment(string $payment, \selling\Sale $eSale): string {
+	public static function createPayment(?string $payment, \selling\Sale $eSale): string {
 
 		return match($payment) {
-			\selling\Sale::ONLINE_CARD => self::createCardPayment($eSale),
-			\selling\Sale::OFFLINE => self::createDirectPayment(\selling\Sale::OFFLINE, $eSale),
-			\selling\Sale::TRANSFER => self::createDirectPayment(\selling\Sale::TRANSFER, $eSale)
+			\payment\MethodLib::ONLINE_CARD => self::createCardPayment($eSale),
+			\payment\MethodLib::TRANSFER => self::createDirectPayment(\payment\MethodLib::TRANSFER, $eSale),
+			default => self::createDirectPayment(NULL, $eSale),
 		};
 
 	}
@@ -429,7 +437,6 @@ class SaleLib {
 			]
 		];
 
-
 		$successUrl = ShopUi::confirmationUrl($eSale['shop'], $eSale['shopDate']);
 		$cancelUrl = ShopUi::paymentUrl($eSale['shop'], $eSale['shopDate']);
 
@@ -444,11 +451,10 @@ class SaleLib {
 
 		\selling\Sale::model()->beginTransaction();
 
-		$eSale['paymentMethod'] = \selling\Sale::ONLINE_CARD;
+		$eMethod = \payment\MethodLib::getByFqn(\payment\MethodLib::ONLINE_CARD);
 
-		\selling\SaleLib::update($eSale, ['paymentMethod']);
-
-		$ePayment = \selling\PaymentLib::createBySale($eSale, $stripeSession['id']);
+		$ePayment = \selling\PaymentLib::createBySale($eSale, $eMethod, $stripeSession['id']);
+		$eSale['cPayment'] = new \Collection([$ePayment]);
 
 		\selling\HistoryLib::createBySale($eSale, 'shop-payment-initiated', 'Stripe checkout id #'.$stripeSession['id'], ePayment: $ePayment);
 
@@ -460,7 +466,7 @@ class SaleLib {
 
 	public static function createDirectPayment(?string $method, \selling\Sale $eSale): string {
 
-		if(in_array($method, [NULL, \selling\Sale::OFFLINE, \selling\Sale::TRANSFER]) === FALSE) {
+		if(in_array($method, [NULL, \payment\MethodLib::TRANSFER]) === FALSE) {
 			throw new \Exception('Invalid method');
 		}
 
@@ -475,11 +481,32 @@ class SaleLib {
 
 		$eSale['oldPreparationStatus'] = $eSale['preparationStatus'];
 		$eSale['preparationStatus'] = \selling\Sale::CONFIRMED;
-		$eSale['paymentMethod'] = $method;
+
+		$ePayment = new \selling\Payment([
+			'sale' => $eSale,
+			'method' => $method !== NULL ? \payment\MethodLib::getByFqn($method) : new \payment\Method(),
+			'customer' => $eSale['customer'],
+			'farm' => $eSale['farm'],
+			'amountIncludingVat' => $eSale['priceIncludingVat'],
+			'checkoutId' => NULL,
+		]);
 
 		\selling\Sale::model()->beginTransaction();
 
-		\selling\SaleLib::update($eSale, ['preparationStatus', 'paymentMethod']);
+		\selling\SaleLib::update($eSale, ['preparationStatus']);
+
+		$affected = \selling\Payment::model()
+      ->select(['method', 'amountIncludingVat'])
+      ->whereSale($ePayment['sale'])
+      ->whereCustomer($ePayment['customer'])
+      ->whereCheckoutId($ePayment['checkoutId'])
+      ->update($ePayment);
+
+		if($affected === 0) {
+			\selling\Payment::model()->insert($ePayment);
+		}
+
+		$eSale['cPayment'] = new \Collection([$ePayment]);
 
 		$group = FALSE;
 		self::notify($eSale['shopUpdated'] ? 'saleUpdated' : 'saleConfirmed', $eSale, $eSale['customer']['user'], $eSale['cItem'], $group);

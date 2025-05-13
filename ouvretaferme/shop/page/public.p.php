@@ -337,9 +337,11 @@ new Page(function($data) {
 
 		$data->validatePayment = function() use($data) {
 
+			$ePayment = $data->eSaleReference['cPayment']->first();
+
 			if(
-				($data->eSaleReference['preparationStatus'] === \selling\Sale::BASKET and $data->eSaleReference['paymentMethod'] === NULL) or
-				($data->eSaleReference['paymentMethod'] === \selling\Sale::ONLINE_CARD and $data->eSaleReference['paymentStatus'] === \selling\Sale::UNDEFINED)
+				($data->eSaleReference['preparationStatus'] === \selling\Sale::BASKET and $data->eSaleReference['cPayment']->count() === 0) or
+				($ePayment['method']->exists() and $ePayment['method']['fqn'] === \payment\MethodLib::ONLINE_CARD and $data->eSaleReference['paymentStatus'] === \selling\Sale::UNDEFINED)
 			) {
 				throw new RedirectAction(\shop\ShopUi::paymentUrl($data->eShop, $data->eDate));
 			}

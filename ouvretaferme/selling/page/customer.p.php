@@ -30,6 +30,8 @@ new \selling\CustomerPage()
 
 		$data->cSaleTurnover = \selling\AnalyzeLib::getCustomerTurnover($data->e);
 
+		$data->cPaymentMethod = \payment\MethodLib::getByFarm($data->eFarm, NULL);
+
 		throw new ViewAction($data);
 
 	})

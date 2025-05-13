@@ -271,7 +271,7 @@ class MarketUi {
 
 	}
 
-	public function displaySale(Sale $eSale, \Collection $cItemSale, Sale $eSaleMarket, \Collection $cItemMarket): string {
+	public function displaySale(Sale $eSale, \Collection $cItemSale, Sale $eSaleMarket, \Collection $cItemMarket, \Collection $cMethod): string {
 
 		$eSaleMarket->expects(['preparationStatus']);
 
@@ -331,21 +331,48 @@ class MarketUi {
 					$h .= '<dd>'.$this->getCircle($eSale).' '.$this->getStatus($eSale).'</dd>';
 					$h .= '<dt>'.s("Moyen de paiement").'</dt>';
 					$h .= '<dd>';
-						$h .= '<a data-dropdown="bottom-start" class="dropdown-toggle">';
-							if($eSale['paymentMethod']) {
-								$h .= SaleUi::p('paymentMethod')->values[$eSale['paymentMethod']];
-							} else {
-								$h .= '<span style="font-weight: normal">...</span>';
+						$hasAtLeastOnePaymentMethod = ($eSale['cPayment']->count() > 0 and $eSale['cPayment']->first()['method']->exists());
+						if($hasAtLeastOnePaymentMethod) {
+							$h .= '<div>';
+							foreach($eSale['cPayment'] as $ePayment) {
+								$h .= '<div>';
+									$h .= encode($ePayment['method']['name']);
+									if($ePayment['amountIncludingVat'] !== NULL) {
+										$amount = \util\TextUi::money($ePayment['amountIncludingVat']);
+									} else {
+										$amount = s("Non calculé");
+									}
+									$h .= ' : '.$ePayment->quick('amountIncludingVat', $amount);
+									$h .= '<a data-ajax="/selling/sale:doFillPaymentMethod" post-id="'.$eSale['id'].'" post-payment-method="'.$ePayment['method']['id'].'" class="btn btn-outline-border ml-1" title="'.s("Compléter automatiquement").'">'.\Asset::icon('magic').'</a>';
+								$h .= '</div>';
 							}
-						$h .= '</a>';
+							$h .= '</div>';
+							$h .= '<a data-dropdown="bottom-start" class="dropdown-toggle">';
+								$h .= '<span style="font-weight: normal">'.s("Changer les moyens de paiement").'</span>';
+							$h .= '</a>';
+						} else {
+							$h .= '<a data-dropdown="bottom-start" class="dropdown-toggle">';
+								if($eSale['cPayment']->count() > 0 and $eSale['cPayment']->first()['method']->exists()) {
+									$h .= $eSale['cPayment']->first()['method']['name'];
+								} else {
+									$h .= '<span style="font-weight: normal">...</span>';
+								}
+							$h .= '</a>';
+						}
 						$h .= '<div class="dropdown-list bg-secondary">';
 							$h .= '<div class="dropdown-title">'.s("Moyen de paiement").'</div>';
-							foreach([Sale::CASH, Sale::CARD, Sale::CHECK, Sale::TRANSFER] as $paymentMethod) {
-								$h .= '<a data-ajax="/selling/sale:doUpdatePaymentMethod" post-id="'.$eSale['id'].'" post-payment-method="'.$paymentMethod.'" class="dropdown-item">'.SaleUi::p('paymentMethod')->values[$paymentMethod].'</a>';
+							foreach($cMethod as $eMethod) {
+								$has = $eSale['cPayment']->find(fn($ePayment) => (($ePayment['method']['id'] ?? NULL) === $eMethod['id']))->count() > 0;
+								$h .= '<a data-ajax="/selling/sale:doUpdatePaymentMethod" post-id="'.$eSale['id'].'" post-payment-method="'.$eMethod['id'].'" class="dropdown-item" post-action="'.($has ? 'remove' : 'add').'">';
+									if($hasAtLeastOnePaymentMethod) {
+										$h .= $has ? \Asset::icon('x-lg') : \Asset::icon('plus-lg');
+										$h .= '  ';
+									}
+									$h .= encode($eMethod['name']);
+								$h .= '</a>';
 							}
 						$h .= '</div>';
 					$h .= '</dd>';
-
 					if(
 						$eSale['customer']->notEmpty() and
 						$eSale['customer']['discount'] > 0
@@ -364,7 +391,7 @@ class MarketUi {
 
 			$money = (
 				$eSale['preparationStatus'] !== Sale::CANCELED and
-				($eSale['paymentMethod'] === NULL or $eSale['paymentMethod'] === Sale::CASH)
+				($eSale['cPayment']->count() === 0 or count($eSale['cPayment']->filter(fn($ePayment) => $ePayment['method']['fqn'] === \payment\MethodLib::CASH)) > 0)
 			);
 
 			$h .= new SaleUi()->getSummary($eSale, onlyIncludingVat: TRUE, includeMoney: $money);

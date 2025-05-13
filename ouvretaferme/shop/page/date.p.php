@@ -73,6 +73,8 @@ new \farm\FarmPage()
 
 		$data->eFarm = $data->e;
 
+		$data->cPaymentMethod = \payment\MethodLib::getByFarm($data->eFarm, NULL);
+
 		throw new \ViewAction($data);
 
 	});

@@ -1,9 +1,9 @@
 <?php
-(new Page(function($data) {
+new Page(function($data) {
 
 		$data->eSale = \selling\SaleLib::getById(INPUT('sale'))->validate('acceptUpdateItems', 'canWrite');
 
-	}))
+	})
 	->get('select', function($data) {
 
 		throw new ViewAction($data);
@@ -102,6 +102,8 @@ new \selling\ItemPage()
 			$data->cItemMarket = \selling\SaleLib::getItems($data->e['sale']['marketParent']);
 			$data->cItemSale = \selling\SaleLib::getItems($data->e['sale'], index: 'product');
 
+			$data->cPaymentMethod = \payment\MethodLib::getByFarm($data->e['farm'], NULL);
+
 			throw new ViewAction($data);
 
 		}
@@ -133,6 +135,8 @@ new Page()
 
 		$data->ccItemProduct = \selling\ItemLib::getProductsBySales($data->eFarm, $data->cSale);
 		$data->ccItemSale = \selling\ItemLib::getBySales($data->eFarm, $data->cSale);
+
+		$data->cPaymentMethod = \payment\MethodLib::getByFarm($data->e['farm'], NULL);
 
 		throw new ViewAction($data);
 

@@ -681,7 +681,7 @@ class DateUi {
 
 	}
 	
-	public function getContent(\farm\Farm $eFarm, Shop $eShop, Date $eDate, \Collection $cSale): string {
+	public function getContent(\farm\Farm $eFarm, Shop $eShop, Date $eDate, \Collection $cSale, \Collection $cPaymentMethod): string {
 
 		$h = '<div class="tabs-h" id="shop-date-tabs" onrender="'.encode('Lime.Tab.restore(this, "products"'.(get_exists('tab') ? ', "'.GET('tab', ['products', 'sales'], 'products').'"' : '').')').'">';
 
@@ -777,11 +777,12 @@ class DateUi {
 					$h .= new \selling\SaleUi()->getList(
 						$eFarm,
 						$cSale,
-						hide: array_merge(['deliveredAt', 'documents', 'items'], $cSale->match(fn($eSale) => $eSale['paymentMethod'] !== NULL) ? [] : ['paymentMethod']),
+						hide: array_merge(['deliveredAt', 'documents', 'items'], $cSale->match(fn($eSale) => $eSale['cPayment']->empty() === FALSE and $eSale['cPayment']->first()['method']->exists()) ? [] : ['paymentMethod']),
 						dynamicHide: ['paymentMethod' => ''],
 						show: ['point'],
 						hasSubtitles: FALSE,
-						segment: ($eDate['ccPoint']->reduce(fn($c, $n) => $n + $c->count(), 0) > 1) ? 'point' : NULL
+						segment: ($eDate['ccPoint']->reduce(fn($c, $n) => $n + $c->count(), 0) > 1) ? 'point' : NULL,
+						cPaymentMethod: $cPaymentMethod,
 					);
 
 				}

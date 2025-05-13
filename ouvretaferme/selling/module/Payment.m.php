@@ -42,21 +42,24 @@ class PaymentModel extends \ModuleModel {
 		$this->properties = array_merge($this->properties, [
 			'id' => ['serial32', 'cast' => 'int'],
 			'sale' => ['element32', 'selling\Sale', 'cast' => 'element'],
-			'customer' => ['element32', 'selling\Customer', 'cast' => 'element'],
+			'customer' => ['element32', 'selling\Customer', 'null' => TRUE, 'cast' => 'element'],
 			'farm' => ['element32', 'farm\Farm', 'cast' => 'element'],
+			'amountIncludingVat' => ['decimal', 'digits' => 8, 'decimal' => 2, 'null' => TRUE, 'cast' => 'float'],
+			'method' => ['element32', 'payment\Method', 'null' => TRUE, 'cast' => 'element'],
 			'checkoutId' => ['text8', 'null' => TRUE, 'unique' => TRUE, 'cast' => 'string'],
 			'paymentIntentId' => ['text8', 'null' => TRUE, 'unique' => TRUE, 'cast' => 'string'],
 			'status' => ['enum', [\selling\Payment::PENDING, \selling\Payment::SUCCESS, \selling\Payment::FAILURE], 'cast' => 'enum'],
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'sale', 'customer', 'farm', 'checkoutId', 'paymentIntentId', 'status'
+			'id', 'sale', 'customer', 'farm', 'amountIncludingVat', 'method', 'checkoutId', 'paymentIntentId', 'status'
 		]);
 
 		$this->propertiesToModule += [
 			'sale' => 'selling\Sale',
 			'customer' => 'selling\Customer',
 			'farm' => 'farm\Farm',
+			'method' => 'payment\Method',
 		];
 
 		$this->indexConstraints = array_merge($this->indexConstraints, [
@@ -121,6 +124,14 @@ class PaymentModel extends \ModuleModel {
 
 	public function whereFarm(...$data): PaymentModel {
 		return $this->where('farm', ...$data);
+	}
+
+	public function whereAmountIncludingVat(...$data): PaymentModel {
+		return $this->where('amountIncludingVat', ...$data);
+	}
+
+	public function whereMethod(...$data): PaymentModel {
+		return $this->where('method', ...$data);
 	}
 
 	public function whereCheckoutId(...$data): PaymentModel {

@@ -4,9 +4,9 @@ new AdaptativeView('salePanel', function($data, PanelTemplate $t) {
 		$h = '';
 
 		$h .= new \selling\SaleUi()->getRelativeSales($data->e, $data->relativeSales);
-		$h .= new \selling\SaleUi()->getContent($data->e, $data->cPdf);
+		$h .= new \selling\SaleUi()->getContent($data->e, $data->cPdf, $data->cPaymentMethod);
 		$h .= new \selling\ItemUi()->getBySale($data->e, $data->e['shop'], $data->cItem);
-		$h .= new \selling\SaleUi()->getMarket($data->eFarm, $data->ccSaleMarket);
+		$h .= new \selling\SaleUi()->getMarket($data->eFarm, $data->ccSaleMarket, $data->cPaymentMethod);
 		$h .= new \selling\SaleUi()->getHistory($data->e, $data->cHistory);
 
 		return new \Panel(
@@ -28,9 +28,9 @@ new AdaptativeView('salePlain', function($data, FarmTemplate $t) {
 	$t->mainTitle = new \selling\SaleUi()->getHeader($data->e);
 
 	echo new \selling\SaleUi()->getRelativeSales($data->e, $data->relativeSales);
-	echo new \selling\SaleUi()->getContent($data->e, $data->cPdf);
+	echo new \selling\SaleUi()->getContent($data->e, $data->cPdf, $data->cPaymentMethod);
 	echo new \selling\ItemUi()->getBySale($data->e, $data->e['shop'], $data->cItem);
-	echo new \selling\SaleUi()->getMarket($data->eFarm, $data->ccSaleMarket);
+	echo new \selling\SaleUi()->getMarket($data->eFarm, $data->ccSaleMarket, $data->cPaymentMethod);
 	echo new \selling\SaleUi()->getHistory($data->e, $data->cHistory);
 
 });

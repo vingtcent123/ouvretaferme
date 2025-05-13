@@ -152,7 +152,14 @@ class CustomizeUi {
 			case Customize::SHOP_CONFIRMED_HOME :
 			case Customize::SHOP_CONFIRMED_PLACE :
 
-				$eSaleExample['paymentMethod'] = $eSaleExample['shop']['hasPayment'] ? \selling\Sale::OFFLINE : NULL;
+				if($eSaleExample['shop']['hasPayment']) {
+					$eSaleExample['cPayment'] = new \selling\Payment([
+						'sale' => $eSaleExample,
+						'method' => new \payment\Method()
+					]);
+				} else {
+					$eSaleExample['cPayment'] = new \Collection();
+				}
 
 				if($type !== Customize::SHOP_CONFIRMED_NONE) {
 
@@ -234,6 +241,8 @@ class CustomizeUi {
 
 	public static function getShopVariables(string $type, \selling\Sale $eSale, \Collection $cItem, bool $group = TRUE): array {
 
+		$ePayment = $eSale['cPayment']->first();
+
 		switch($type) {
 
 			case Customize::SHOP_CONFIRMED_HOME :
@@ -263,21 +272,12 @@ class CustomizeUi {
 
 				} else {
 
-					switch($eSale['paymentMethod']) {
+					$payment = '';
 
-						case \selling\Sale::TRANSFER :
-							$payment = s("Vous avez choisi de régler cette commande par virement bancaire.");
-							if($eSale['shop']['paymentTransferHow']) {
-								$payment .= "\n".encode($eSale['shop']['paymentTransferHow']);
-							}
-							break;
+					if($eSale['cPayment']->count() === 1) {
 
-						case \selling\Sale::ONLINE_CARD :
-							$payment = s("Vous avez choisi de régler cette commande par carte bancaire.")."\n";
-							$payment .= s("Votre paiement a bien été accepté.");
-							break;
+						if($ePayment['method']->exists() === FALSE) {
 
-						case \selling\Sale::OFFLINE :
 							if($eSale['shop']['shared']) {
 								$payment = s("Vous avez choisi de régler cette commande en direct avec vos producteurs.");
 							} else {
@@ -286,14 +286,28 @@ class CustomizeUi {
 							if($eSale['shop']['paymentOfflineHow']) {
 								$payment .= "\n".encode($eSale['shop']['paymentOfflineHow']);
 							}
-							break;
 
-						case NULL :
-							$payment = '';
-							break;
+						} else {
 
-						default :
-							throw new \Exception('Not compatible');
+							switch($ePayment['method']['fqn']) {
+
+								case \payment\MethodLib::TRANSFER :
+									$payment = s("Vous avez choisi de régler cette commande par virement bancaire.");
+									if($eSale['shop']['paymentTransferHow']) {
+										$payment .= "\n".encode($eSale['shop']['paymentTransferHow']);
+									}
+									break;
+
+								case \payment\MethodLib::ONLINE_CARD :
+									$payment = s("Vous avez choisi de régler cette commande par carte bancaire.")."\n";
+									$payment .= s("Votre paiement a bien été accepté.");
+									break;
+
+								default :
+									throw new \Exception('Not compatible');
+
+							}
+						}
 
 					}
 
@@ -320,7 +334,7 @@ class CustomizeUi {
 					$products .= "\n\n".s("Certains produits de cette commande nécessitent une pesée, et que le montant définitif pourra être légèrement différent.");
 				}
 
-				if($eSale['shop']->isPersonal() and $eSale['paymentMethod'] === \selling\Sale::ONLINE_CARD) {
+				if($eSale['shop']->isPersonal() and ($ePayment['method']['fqn'] ?? NULL) === \payment\MethodLib::ONLINE_CARD) {
 					$link = s("Vous pouvez consulter votre commande avec le lien suivant :")."\n";
 				} else {
 					$link = s("Vous pouvez consulter et modifier votre commande avec le lien suivant :")."\n";

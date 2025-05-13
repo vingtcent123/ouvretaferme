@@ -323,7 +323,7 @@ class CustomerUi {
 
 	}
 
-	public function display(Customer $eCustomer, \Collection $cSaleTurnover, \Collection $cGrid, \Collection $cSale, \Collection $cInvoice): string {
+	public function display(Customer $eCustomer, \Collection $cSaleTurnover, \Collection $cGrid, \Collection $cSale, \Collection $cInvoice, \Collection $cPaymentMethod): string {
 
 		$eCustomer->expects(['invite']);
 
@@ -425,7 +425,7 @@ class CustomerUi {
 						$h .= new AnalyzeUi()->getCustomerTurnover($cSaleTurnover, NULL, $eCustomer);
 					}
 
-					$h .= new \selling\SaleUi()->getList($eCustomer['farm'], $cSale, hide: ['customer']);
+					$h .= new \selling\SaleUi()->getList($eCustomer['farm'], $cSale, hide: ['customer'], cPaymentMethod: $cPaymentMethod);
 				$h .= '</div>';
 
 				if($cInvoice->notEmpty()) {
