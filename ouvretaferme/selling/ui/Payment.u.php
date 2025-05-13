@@ -93,7 +93,7 @@ class PaymentUi {
 				} else {
 
 					$payment .= self::getPaymentMethodName($ePayment);
-					$payment .= '<br />'.self::statusIcon($eSale, $ePayment);
+					$payment .= ' '.self::statusIcon($eSale, $ePayment);
 
 				}
 
