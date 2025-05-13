@@ -269,7 +269,6 @@ new \selling\SalePage()
 	->write('doUpdatePaymentMethod', function($data) {
 
 		$paymentMethodId = \payment\Method::POST('paymentMethod', 'id', NULL);
-		$data->e->validate('acceptWritePaymentMethod');
 		$action = POST('action', 'string', 'update');
 		$eMethod = \payment\MethodLib::getById($paymentMethodId)->validate('canUse');
 
@@ -290,17 +289,16 @@ new \selling\SalePage()
 		}
 
 		throw new ReloadAction();
-	})
+	}, validate: ['canWrite', 'acceptWritePaymentMethod'])
 	->write('doFillPaymentMethod', function($data) {
 
 		$paymentMethodId = \payment\Method::POST('paymentMethod', 'id', NULL);
-		$data->e->validate('acceptWritePaymentMethod');
 		$eMethod = \payment\MethodLib::getById($paymentMethodId)->validate('canUse');
 
 		\selling\PaymentLib::fill($data->e, eMethod: $eMethod);
 
 		throw new ReloadAction();
-	})
+	}, validate: ['canWrite', 'acceptWritePaymentMethod'])
 	->doUpdateProperties('doUpdatePreparationStatus', ['preparationStatus'], function($data) {
 
 		if($data->e['market'] === FALSE) {

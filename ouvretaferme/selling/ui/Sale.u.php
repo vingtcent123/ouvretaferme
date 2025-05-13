@@ -1129,7 +1129,7 @@ class SaleUi {
 				$h .= '<dt>'.s("Client").'</dt>';
 				$h .= '<dd>'.CustomerUi::link($eSale['customer']).'</dd>';
 				if($eSale['market'] === FALSE) {
-					$h .= '<dt>'.s("Moyen(s) de paiement").'</dt>';
+					$h .= '<dt>'.s("Moyen de paiement").'</dt>';
 					$h .= '<dd>';
 						$h .= PaymentUi::getListDisplay($eSale, $eSale['cPayment'], $cPaymentMethod);
 					$h .= '</dd>';
