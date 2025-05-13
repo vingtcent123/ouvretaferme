@@ -276,7 +276,7 @@ Sale:
   shipping: ?decimal(8, 2, 0.01, null)
   shippingExcludingVat: ?decimal(8, 2)
   preparationStatus: enum(COMPOSITION, DRAFT, BASKET, CONFIRMED, SELLING, PREPARED, DELIVERED, CANCELED) = DRAFT
-  paymentStatus: ?enum(WAITING, PAID, FAILED)
+  paymentStatus: ?enum(WAITING, NOT_PAID, PAID, FAILED)
   compositionOf: ?selling\Product
   compositionEndAt: ?date
   market: bool = FALSE
