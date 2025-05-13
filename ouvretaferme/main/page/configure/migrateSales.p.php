@@ -3,7 +3,7 @@ new Page()
 	->cli('index', function($data) {
 
 		$cSale = \selling\Sale::model()
-			->select(\selling\Sale::getSelection() + ['paymentMethod'])
+			->select(\selling\Sale::getSelection() + ['paymentMethod' => new Sql('paymentMethod')])
 			->getCollection();
 
 		$cMethod = \payment\Method::model()
