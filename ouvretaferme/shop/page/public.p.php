@@ -341,7 +341,7 @@ new Page(function($data) {
 
 			if(
 				($data->eSaleReference['preparationStatus'] === \selling\Sale::BASKET and $data->eSaleReference['cPayment']->count() === 0) or
-				($ePayment['method']->exists() and $ePayment['method']['fqn'] === \payment\MethodLib::ONLINE_CARD and $data->eSaleReference['paymentStatus'] === \selling\Sale::UNDEFINED)
+				($ePayment['method']->exists() and $ePayment['method']['fqn'] === \payment\MethodLib::ONLINE_CARD and $data->eSaleReference['paymentStatus'] !== \selling\Sale::PAID)
 			) {
 				throw new RedirectAction(\shop\ShopUi::paymentUrl($data->eShop, $data->eDate));
 			}

@@ -521,7 +521,7 @@ class SaleLib extends SaleCrud {
 
 		if($e['market']) {
 			$e['marketSales'] = 0;
-			$e['paymentStatus'] = Sale::UNDEFINED;
+			$e['paymentStatus'] = NULL;
 		}
 
 		$e['document'] = ConfigurationLib::getNextDocumentSales($e['farm']);
@@ -685,7 +685,7 @@ class SaleLib extends SaleCrud {
 		// Ajouter une nouvelle vente
 		$eSaleNew = new Sale($eSale->extracts($properties));
 		$eSaleNew['preparationStatus'] = Sale::DRAFT;
-		$eSaleNew['paymentStatus'] = Sale::UNDEFINED;
+		$eSaleNew['paymentStatus'] = NULL;
 
 		if($eSaleNew['market']) {
 			$eSaleNew['marketSales'] = 0;

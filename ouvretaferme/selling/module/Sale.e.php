@@ -602,7 +602,7 @@ class Sale extends SaleElement {
 	}
 
 	public function getDeletePaymentStatuses() {
-		return [Sale::UNDEFINED];
+		return [NULL];
 	}
 
 	public function checkMarketSelling() {
@@ -734,7 +734,7 @@ class Sale extends SaleElement {
 
 		if(
 			$ePayment['method']['fqn'] === \payment\MethodLib::ONLINE_CARD
-			and in_array($this['paymentStatus'], [Sale::UNDEFINED, Sale::FAILED])
+			and in_array($this['paymentStatus'], [NULL, Sale::FAILED])
 		) {
 			return TRUE;
 		}

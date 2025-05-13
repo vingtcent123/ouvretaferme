@@ -31,7 +31,7 @@ class PaymentUi {
 		return match($ePayment['status']) {
 			Payment::SUCCESS => SaleUi::getPaymentStatus(new Sale(['paymentStatus' => Sale::PAID, 'invoice' => $eSale['invoice']]), $ePayment),
 			Payment::FAILURE => SaleUi::getPaymentStatus(new Sale(['paymentStatus' => Sale::FAILED, 'invoice' => $eSale['invoice']]), $ePayment),
-			Payment::PENDING => SaleUi::getPaymentStatus(new Sale(['paymentStatus' => Sale::PROCESSING, 'invoice' => $eSale['invoice']]), $ePayment),
+			Payment::PENDING => SaleUi::getPaymentStatus(new Sale(['paymentStatus' => Sale::WAITING, 'invoice' => $eSale['invoice']]), $ePayment),
 		};
 
 	}

@@ -939,17 +939,12 @@ class SaleUi {
 
 		switch($eSale['paymentStatus']) {
 
-			case Sale::UNDEFINED :
+			case Sale::NOT_PAID :
 				$color = '--text';
 				$text = s("Non payé");
 				break;
 
 			case Sale::WAITING :
-				$color = '--warning';
-				$text = s("En cours de validation");
-				break;
-
-			case Sale::PROCESSING :
 				$color = '--warning';
 				$text = s("En cours de paiement");
 				break;
@@ -2130,14 +2125,12 @@ class SaleUi {
 				$d->values = [
 					Sale::FAILED => s("En échec"),
 					Sale::PAID => s("Payé"),
-					Sale::UNDEFINED => s("Non payé"),
-					Sale::PROCESSING => s("En cours de paiement"),
 					Sale::WAITING => s("En cours de validation"),
 				];
 				$d->field = function(\util\FormUi $form, Sale $eSale) {
 					return $form->radios('paymentStatus', [
 						Sale::PAID => s("Payé"),
-						Sale::UNDEFINED => s("Non payé"),
+						Sale::NOT_PAID => s("Non payé"),
 					], $eSale['paymentStatus'], ['mandatory' => TRUE]);
 				};
 				break;
