@@ -27,7 +27,6 @@ abstract class SaleElement extends \Element {
 
 	const UNDEFINED = 'undefined';
 	const WAITING = 'waiting';
-	const PROCESSING = 'processing';
 	const PAID = 'paid';
 	const FAILED = 'failed';
 
@@ -81,7 +80,7 @@ class SaleModel extends \ModuleModel {
 			'shipping' => ['decimal', 'digits' => 8, 'decimal' => 2, 'min' => 0.01, 'max' => NULL, 'null' => TRUE, 'cast' => 'float'],
 			'shippingExcludingVat' => ['decimal', 'digits' => 8, 'decimal' => 2, 'null' => TRUE, 'cast' => 'float'],
 			'preparationStatus' => ['enum', [\selling\Sale::COMPOSITION, \selling\Sale::DRAFT, \selling\Sale::BASKET, \selling\Sale::CONFIRMED, \selling\Sale::SELLING, \selling\Sale::PREPARED, \selling\Sale::DELIVERED, \selling\Sale::CANCELED], 'cast' => 'enum'],
-			'paymentStatus' => ['enum', [\selling\Sale::UNDEFINED, \selling\Sale::WAITING, \selling\Sale::PROCESSING, \selling\Sale::PAID, \selling\Sale::FAILED], 'cast' => 'enum'],
+			'paymentStatus' => ['enum', [\selling\Sale::UNDEFINED, \selling\Sale::WAITING, \selling\Sale::PAID, \selling\Sale::FAILED], 'cast' => 'enum'],
 			'compositionOf' => ['element32', 'selling\Product', 'null' => TRUE, 'cast' => 'element'],
 			'compositionEndAt' => ['date', 'null' => TRUE, 'cast' => 'string'],
 			'market' => ['bool', 'cast' => 'bool'],

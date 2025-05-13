@@ -333,7 +333,7 @@ class CultivationModel extends \ModuleModel {
 		return $this->where('mainUnit', ...$data);
 	}
 
-	public function whereUnitApproximate(...$data): CultivationModel {
+	public function whereUnitWeight(...$data): CultivationModel {
 		return $this->where('unitWeight', ...$data);
 	}
 
