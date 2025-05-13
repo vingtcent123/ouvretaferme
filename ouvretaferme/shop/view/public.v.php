@@ -269,7 +269,7 @@ new AdaptativeView('/shop/public/{fqn}/{date}/confirmation', function($data, Sho
 	$t->header = $uiBasket->getHeader($data->eShop);
 
 	echo $uiBasket->getPaymentStatus($data->eShop, $data->eDate, $data->eSaleReference);
-	echo $uiBasket->getConfirmation($data->eShop, $data->eDate, $data->eSaleReference, $data->cSaleExisting, $data->cItemExisting);
+	echo $uiBasket->getConfirmation($data->eShop, $data->eDate, $data->eSaleReference, $data->cSaleExisting, $data->cItemExisting, $data->cPaymentMethod);
 
 });
 

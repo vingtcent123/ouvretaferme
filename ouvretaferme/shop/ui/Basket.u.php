@@ -847,7 +847,7 @@ class BasketUi {
 
 	}
 
-	public function getConfirmation(Shop $eShop, Date $eDate, \selling\Sale $eSaleReference, \Collection $cSale, \Collection $cItem): string {
+	public function getConfirmation(Shop $eShop, Date $eDate, \selling\Sale $eSaleReference, \Collection $cSale, \Collection $cItem, \Collection $cPaymentMethod): string {
 
 		$h = '<div class="sale-confirmation-container">';
 
@@ -873,7 +873,7 @@ class BasketUi {
 
 					$h .= '<dt>'.s("Paiement").'</dt>';
 					$h .= '<dd>';
-						$h .= \selling\PaymentUi::getListDisplay($eSaleReference, $eSaleReference['cPayment']);
+						$h .= \selling\PaymentUi::getListDisplay($eSaleReference, $eSaleReference['cPayment'], $cPaymentMethod);
 					$h .= '</dd>';
 
 					if($eSaleReference->isPaymentOnline()) {

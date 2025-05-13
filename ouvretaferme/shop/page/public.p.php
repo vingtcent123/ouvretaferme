@@ -425,6 +425,8 @@ new Page(function($data) {
 			\selling\Item::containsApproximate($data->cItemExisting)
 		);
 
+		$data->cPaymentMethod = \payment\MethodLib::getByFarm($data->eShop['farm'], NULL);
+
 		throw new ViewAction($data);
 
 	})
