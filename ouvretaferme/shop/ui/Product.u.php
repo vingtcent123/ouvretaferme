@@ -454,7 +454,7 @@ class ProductUi {
 							$h .= \selling\ProductUi::getVignette($eItemIngredient['product'], $vignetteSize.'rem');
 							$h .= '<div>';
 								$h .= encode($eItemIngredient['name']).' ';
-								$h .= '<b>'.\selling\UnitUi::getValue($eItemIngredient['number'] * ($eItemIngredient['packaging'] ?? 1), $eProductSelling['unit'], short: TRUE).'</b>';
+								$h .= '<b>'.\selling\UnitUi::getValue($eItemIngredient['number'] * ($eItemIngredient['packaging'] ?? 1), $eItemIngredient['unit'], short: TRUE).'</b>';
 							$h .= '</div>';
 
 
