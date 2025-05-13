@@ -6,6 +6,11 @@ class PdfTemplate extends Template {
 
 	protected $lang = 'fr';
 
+	/**
+	 * Page title
+	 */
+	public ?string $title = NULL;
+
 	public function __construct() {
 
 		parent::__construct();
@@ -32,6 +37,7 @@ class PdfTemplate extends Template {
 		$h .= '<html lang="'.$this->lang.'">';
 
 		$h .= '<head>';
+			$h .= '<title>'.encode($this->title).'</title>';
 			$h .= '<base href="'.\Lime::getProtocol().'://'.SERVER('HTTP_HOST').'">';
 			$h .= '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">';
 			$h .= '<meta name="viewport" content="width=device-width, initial-scale=1.0" />';

@@ -95,7 +95,7 @@ new \selling\SalePage()
 			throw new NotExistsAction();
 		}
 
-		$filename = $data->e->getOrderForm($data->e['farm']).'-'.str_replace('-', '', $data->e['deliveredAt']).'-'.$data->e['customer']->getName().'.pdf';
+		$filename = new \selling\PdfUi()->getFilename(\selling\Pdf::ORDER_FORM, $data->eFarm, $data->e);
 
 		throw new PdfAction($content, $filename);
 
@@ -111,7 +111,7 @@ new \selling\SalePage()
 			throw new NotExistsAction();
 		}
 
-		$filename = $data->e->getDeliveryNote($data->e['farm']).'-'.str_replace('-', '', $data->e['deliveredAt']).'-'.$data->e['customer']->getName().'.pdf';
+		$filename = new \selling\PdfUi()->getFilename(\selling\Pdf::DELIVERY_NOTE, $data->e['farm'], $data->e);
 
 		throw new PdfAction($content, $filename);
 
@@ -330,8 +330,8 @@ new \selling\SalePage()
 
 		$data->c->validate('canRead');
 
-		$content = \selling\PdfLib::build('/selling/sale:getExport?ids[]='.implode('&ids[]=', $data->c->getIds()));
 		$filename = 'sales.pdf';
+		$content = \selling\PdfLib::build('/selling/sale:getExport?ids[]='.implode('&ids[]=', $data->c->getIds()), $filename);
 
 		throw new PdfAction($content, $filename);
 
@@ -431,11 +431,12 @@ new \farm\FarmPage()
 			$data->cSale = new Collection();
 		}
 
-		$data->content = \selling\PdfLib::buildLabels($data->e, $data->cSale);
 
 		$filename = $data->cSale->empty() ?
 			'labels-empty.pdf' :
 			'labels-'.implode('-', $data->cSale->getIds()).'.pdf';
+
+		$data->content = \selling\PdfLib::buildLabels($data->e, $data->cSale, $filename);
 
 		throw new PdfAction($data->content, $filename);
 

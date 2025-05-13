@@ -105,7 +105,7 @@ new \selling\InvoicePage()
 		}
 
 		$content = \selling\PdfLib::getContentByInvoice($data->e);
-		$filename = $data->e['name'].'-'.str_replace('-', '', $data->e['date']).'-'.$data->e['customer']->getName().'.pdf';
+		$filename = new \selling\PdfUi()->getFilename(\selling\Pdf::INVOICE, $data->e['farm'], $data->e);
 
 		throw new PdfAction($content, $filename);
 

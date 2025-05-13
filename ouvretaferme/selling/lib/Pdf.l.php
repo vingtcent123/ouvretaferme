@@ -295,21 +295,21 @@ class PdfLib extends PdfCrud {
 
 	}
 
-	public static function buildLabels(\farm\Farm $eFarm, \Collection $cSale): string {
+	public static function buildLabels(\farm\Farm $eFarm, \Collection $cSale, string $filename): string {
 
-		$queryString = implode('&', $cSale->toArray(fn($eSale) => 'sales[]='.$eSale['id']));
+		$queryString = implode('&', $cSale->toArray(fn($eSale) => 'sales[]='.$eSale['id'])).'&filename='.$filename;
 
 		return self::build('/selling/pdf:getLabels?id='.$eFarm['id'].'&'.$queryString);
 
 	}
 
-	public static function build($url): string {
+	public static function build($url, ?string $filename = NULL): string {
 
 		if(OTF_DEMO) {
 			return '';
 		}
 
-		return \Cache::redis()->lock('pdf-'.$url, function() use($url) {
+		return \Cache::redis()->lock('pdf-'.$url, function() use($filename, $url) {
 
 			$file = tempnam('/tmp', 'pdf-').'.pdf';
 
@@ -318,6 +318,7 @@ class PdfLib extends PdfCrud {
 
 			$args = '"--url='.\Lime::getUrl().$url.'"';
 			$args .= ' "--destination='.$file.'"';
+			$args .= ' "--filename='.$filename.'"';
 
 			exec('node '.LIME_DIRECTORY.'/ouvretaferme/main/nodejs/pdf.js '.$args.' 2>&1');
 

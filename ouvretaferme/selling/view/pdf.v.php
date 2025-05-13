@@ -4,6 +4,7 @@ new HtmlView('getLabels', function($data, PdfTemplate $t) {
 });
 
 new HtmlView('getDocument', function($data, PdfTemplate $t) {
+	$t->title = new \selling\PdfUi()->getFilename($data->type, $data->eFarm, $data->type === \selling\Pdf::INVOICE ? $data->e['invoice'] : $data->e);
 	echo new \selling\PdfUi()->getDocument($data->e, $data->type, $data->eFarm, $data->cItem);
 });
 

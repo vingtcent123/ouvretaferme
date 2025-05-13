@@ -1241,5 +1241,22 @@ class PdfUi {
 
 	}
 
+	public function getFilename(string $type, \farm\Farm $eFarm, \Element $e): string {
+
+		switch($type) {
+			case \selling\Pdf::ORDER_FORM:
+				return $e->getOrderForm($eFarm).'-'.str_replace('-', '', $e['deliveredAt']).'-'.$e['customer']->getName().'.pdf';
+
+			case \selling\Pdf::DELIVERY_NOTE:
+				return $e->getDeliveryNote($eFarm).'-'.str_replace('-', '', $e['deliveredAt']).'-'.$e['customer']->getName().'.pdf';
+
+			case \selling\Pdf::INVOICE:
+				return $e['name'].'-'.str_replace('-', '', $e['date']).'-'.$e['customer']->getName().'.pdf';
+
+			default:
+				return '';
+		}
+	}
+
 }
 ?>

@@ -143,8 +143,8 @@ new \shop\DatePage()
 			throw new NotExpectedAction('No sale');
 		}
 
-		$content = \selling\PdfLib::build('/shop/date:getSales?id='.$data->e['id'].'&farm='.$data->eFarm['id']);
 		$filename = 'sales-'.$data->e['id'].'.pdf';
+		$content = \selling\PdfLib::build('/shop/date:getSales?id='.$data->e['id'].'&farm='.$data->eFarm['id'], $filename);
 
 		throw new PdfAction($content, $filename);
 

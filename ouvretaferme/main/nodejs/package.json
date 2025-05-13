@@ -1,6 +1,7 @@
 {
   "dependencies": {
     "minimist": "^1.2.8",
+    "pdf-lib": "^1.17.1",
     "puppeteer-core": "^21.5.2"
   }
 }
