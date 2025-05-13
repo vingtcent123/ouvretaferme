@@ -17,7 +17,6 @@ class PaymentLib extends PaymentCrud {
 					if(
 						$ePayment['method']->exists() === FALSE
 						or $cPaymentFiltered->contains(fn($e) => $e['method']['id'] === $ePayment['method']['id'])
-						or $ePayment['amountIncludingVat'] === 0.0
 					) {
 						continue;
 					}

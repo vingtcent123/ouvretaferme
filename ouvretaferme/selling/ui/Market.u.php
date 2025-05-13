@@ -371,7 +371,7 @@ class MarketUi {
 													$amount = s("Non calculé");
 												}
 
-												$h .= ' : '.$ePayment->quick('amountIncludingVat', $amount);
+												$h .= $ePayment->quick('amountIncludingVat', $amount);
 
 												$h .= '<a data-ajax="/selling/sale:doFillPaymentMethod" post-id="'.$eSale['id'].'" post-payment-method="'.$ePayment['method']['id'].'" class="'.($magicIsNeeded ? '' : 'not-visible').' btn btn-sm btn-outline-border ml-1" title="'.s("Compléter automatiquement").'">'.\Asset::icon('magic').'</a>';
 
