@@ -235,7 +235,7 @@ class SaleUi {
 						$columns++;
 					}
 					if(in_array('paymentMethod', $hide) === FALSE) {
-						$h .= '<th class="'.($dynamicHide['paymentMethod'] ?? 'hide-sm-down').'">'.s("Paiement").'</th>';
+						$h .= '<th class="'.($dynamicHide['paymentMethod'] ?? 'hide-md-down').'">'.s("Paiement").'</th>';
 						$columns++;
 					}
 					if(in_array('actions', $hide) === FALSE) {
@@ -503,7 +503,7 @@ class SaleUi {
 
 						if(in_array('paymentMethod', $hide) === FALSE) {
 
-							$h .= '<td class="sale-item-payment-type '.($dynamicHide['paymentMethod'] ?? 'hide-sm-down').'">';
+							$h .= '<td class="sale-item-payment-type '.($dynamicHide['paymentMethod'] ?? 'hide-md-down').'">';
 								$h .= PaymentUi::getListDisplay($eSale, $eSale['cPayment'], $cPaymentMethod);
 							$h .= '</td>';
 
@@ -637,7 +637,7 @@ class SaleUi {
 						$eSale->canDocument($type)
 					) {
 
-						$document = '<a '.$urlGenerate.' class="btn sale-document sale-document-new" title="'.$texts['generate'].'" '.attr('data-confirm', $texts['generateConfirm']).'>';
+						$document = '<a '.$urlGenerate.' class="btn btn-sm sale-document sale-document-new" title="'.$texts['generate'].'" '.attr('data-confirm', $texts['generateConfirm']).'>';
 							$document .= '<div class="sale-document-name">'.$shortLabel.'</div>';
 							$document .= '<div class="sale-document-status">';
 								$document .= \Asset::icon('plus');
@@ -849,7 +849,7 @@ class SaleUi {
 
 				case Sale::SELLING :
 					$h .= $wrapper(
-						' <a href="'.SaleUi::urlMarket($eSale).'" class="sale-preparation-status-action btn-outline-selling">'.\Asset::icon('cart4').'  '.s("Caisse virtuelle").'</a>'
+						' <a href="'.SaleUi::urlMarket($eSale).'" class="sale-preparation-status-action btn-outline-selling">'.\Asset::icon('cart4').'  '.s("Caisse").'</a>'
 					);
 					break;
 
