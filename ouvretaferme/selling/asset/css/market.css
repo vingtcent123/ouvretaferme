@@ -516,6 +516,18 @@ a.market-sales-item > svg {
 	content: ' *';
 }
 
+.market-customer-details .payment-methods {
+	display: grid;
+	grid-template-columns: 2fr 1fr;
+	grid-gap: 1rem;
+	align-items: start;
+}
+.market-customer-details .payment-methods .payment-method {
+	display: grid;
+	grid-template-columns: 1fr auto auto;
+	align-items: center;
+}
+
 @media (max-width: 991px) {
 
 	.market-customer-details {
