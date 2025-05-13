@@ -209,8 +209,6 @@ class SaleLib extends SaleCrud {
 
 		$sort = 'FIELD(preparationStatus, "'.Sale::SELLING.'", "'.Sale::DRAFT.'", "'.Sale::CONFIRMED.'", "'.Sale::PREPARED.'", "'.Sale::DELIVERED.'", "'.Sale::CANCELED.'")';
 
-		Sale::model()->join(Payment::model(), 'm1.id = m2.sale');
-
 		if(str_starts_with($search->getSort(), 'firstName') or str_starts_with($search->getSort(), 'lastName')) {
 			Sale::model()->join(Customer::model(), 'm1.customer = m3.id');
 		}
