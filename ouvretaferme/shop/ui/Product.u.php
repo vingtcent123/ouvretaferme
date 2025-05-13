@@ -789,7 +789,7 @@ class ProductUi {
 					);
 
 					if($showFarm) {
-						$eProduct['farm'] = $eDate['cFarm'][$eProduct['farm']['id']];
+						$eProduct['farm'] = $eDate['cFarm'][$eProduct['farm']['id']] ?? new \farm\Farm();
 					}
 
 
@@ -814,7 +814,11 @@ class ProductUi {
 
 							if($showFarm) {
 								$h .= '<td class="font-sm color-muted">';
-									$h .= encode($eProduct['farm']['name']);
+									if($eProduct['farm']->empty()) {
+										$h .= '<i>'.s("Ancien producteur").'</i>';
+									} else {
+										$h .= encode($eProduct['farm']['name']);
+									}
 								$h .= '</td>';
 							}
 
