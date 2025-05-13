@@ -381,7 +381,7 @@ class MarketUi {
 
 									$h .= '</div>';
 
-									$h .= '<a data-dropdown="bottom-start" class="dropdown-toggle" data-dropdown-hover="true">';
+									$h .= '<a data-dropdown="bottom-start" class="dropdown-toggle btn btn-sm" data-dropdown-hover="true">';
 										$h .= '<span style="font-weight: normal">'.s("Modifier").'</span>';
 									$h .= '</a>';
 									$h .= $paymentMethodDropdown;

@@ -522,6 +522,9 @@ a.market-sales-item > svg {
 	grid-gap: 1rem;
 	align-items: start;
 }
+.market-customer-details .payment-methods a.dropdown-toggle {
+	text-align: inherit;
+}
 .market-customer-details .payment-methods .payment-method {
 	display: grid;
 	grid-template-columns: 1fr auto auto;
