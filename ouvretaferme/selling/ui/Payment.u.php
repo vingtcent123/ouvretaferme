@@ -29,9 +29,9 @@ class PaymentUi {
 	public static function statusIcon(Payment $ePayment): string {
 
 		return match($ePayment['status']) {
-			Payment::SUCCESS => \Asset::icon('check-lg', ['title' => s("Succès"), 'class' => 'color-success']),
-			Payment::FAILURE => \Asset::icon('x-lg', ['title' => s("Échec"), 'class' => 'color-danger']),
-			Payment::PENDING => \Asset::icon('pause', ['title' => s("En attente"), 'class' => 'color-info']),
+			Payment::SUCCESS => SaleUi::getPaymentStatus(new Sale(['paymentStatus' => Sale::PAID, 'invoice' => new Invoice()]), $ePayment),
+			Payment::FAILURE => SaleUi::getPaymentStatus(new Sale(['paymentStatus' => Sale::FAILED, 'invoice' => new Invoice()]), $ePayment),
+			Payment::PENDING => SaleUi::getPaymentStatus(new Sale(['paymentStatus' => Sale::PROCESSING, 'invoice' => new Invoice()]), $ePayment),
 		};
 
 	}
@@ -92,8 +92,8 @@ class PaymentUi {
 
 				} else {
 
-					$payment .= self::statusIcon($ePayment).' ';
 					$payment .= self::getPaymentMethodName($ePayment);
+					$payment .= '<br />'.self::statusIcon($ePayment);
 
 				}
 

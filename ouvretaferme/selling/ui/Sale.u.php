@@ -927,7 +927,7 @@ class SaleUi {
 
 	public static function getPaymentStatus(Sale $eSale, Payment $ePayment): string {
 
-		if($ePayment['method']['fqn'] === \payment\MethodLib::TRANSFER and $eSale['invoice']->empty()) {
+		if(($ePayment['method']['fqn'] ?? NULL) === \payment\MethodLib::TRANSFER and $eSale['invoice']->empty()) {
 			return '<span class="util-badge sale-payment-status sale-payment-status-not-paid">'.s("Facture à éditer").'</span>';
 		}
 

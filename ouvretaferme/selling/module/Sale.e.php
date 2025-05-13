@@ -17,17 +17,7 @@ class Sale extends SaleElement {
 			'marketParent' => [
 				'customer' => ['type', 'name']
 			],
-			'cPayment' => Payment::model()
-				->select(Payment::getSelection() + ['method' => ['id', 'fqn', 'name', 'status']])
-				->delegateCollection('sale', 'id', function(\Collection $cPayment) {
-					foreach([Payment::SUCCESS, Payment::PENDING, Payment::FAILURE] as $status) {
-						$hasStatus = $cPayment->contains(fn($ePayment) => $ePayment['status'] === $status);
-						if($hasStatus) {
-							return $cPayment->filter(fn($ePayment) => $ePayment['status'] === $status);
-						}
-					}
-					return new \Collection();
-				}),
+			'cPayment' => PaymentLib::delegateBySale(),
 		];
 
 	}

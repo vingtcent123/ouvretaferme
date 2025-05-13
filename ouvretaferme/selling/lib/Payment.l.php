@@ -3,6 +3,33 @@ namespace selling;
 
 class PaymentLib extends PaymentCrud {
 
+	public static function delegateBySale(): PaymentModel {
+
+		return Payment::model()
+      ->select(Payment::getSelection() + ['method' => ['id', 'fqn', 'name', 'status']])
+			->sort(['id' => SORT_DESC])
+      ->delegateCollection('sale', 'id', function(\Collection $cPayment) {
+
+				$cPaymentFiltered = new \Collection();
+
+				foreach($cPayment as $ePayment) {
+
+					if(
+						$ePayment['method']->exists() === FALSE
+						or $cPaymentFiltered->contains(fn($e) => $e['method']['id'] === $ePayment['method']['id'])
+						or $ePayment['amountIncludingVat'] === 0.0
+					) {
+						continue;
+					}
+
+					$cPaymentFiltered->append($ePayment);
+
+				}
+
+				return $cPaymentFiltered;
+      });
+	}
+
 	public static function getByCheckoutId(string $id): Payment {
 
 		$ePayment = new Payment();
