@@ -774,7 +774,7 @@ class SaleUi {
 			$h = '';
 
 			foreach($list as $position => $document) {
-				$h .= '<td class="text-center td-min-content sale-document-cell-'.$position.'">'.($document ?? '').'</td>';
+				$h .= '<td class="text-center td-min-content sale-document-cell sale-document-cell-'.$position.'">'.($document ?? '').'</td>';
 			}
 
 		} else {

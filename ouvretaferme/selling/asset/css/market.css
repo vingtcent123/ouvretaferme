@@ -516,6 +516,22 @@ a.market-sales-item > svg {
 	content: ' *';
 }
 
+@media (max-width: 991px) {
+
+	.market-customer-details {
+		grid-template-columns: auto 1fr !important;
+	}
+
+}
+
+@media (min-width: 992px) {
+
+	.market-customer-details {
+		grid-template-columns: auto 2fr auto 3fr !important;
+	}
+
+}
+
 .market-banner {
 	position: fixed;
 	bottom: 0;

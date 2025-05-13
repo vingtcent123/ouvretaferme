@@ -312,7 +312,7 @@ class MarketUi {
 			$h .= '</div>';
 
 			$h .= '<div class="util-block stick-xs">';
-				$h .= '<dl class="util-presentation util-presentation-2">';
+				$h .= '<dl class="market-customer-details util-presentation util-presentation-2">';
 					$h .= '<dt>'.s("Client").'</dt>';
 					$h .= '<dd>';
 						if($eSale['customer']->empty()) {

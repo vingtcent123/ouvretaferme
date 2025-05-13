@@ -34,6 +34,7 @@ td.sale-item-status {
 
 .sale-item-delivery-source {
 	letter-spacing: -0.2px;
+	font-size: 0.8rem;
 }
 
 td.sale-item-price {
@@ -302,6 +303,10 @@ div.sale-documents {
 
 div.sale-documents-list {
 	justify-content: center;
+}
+
+.sale-document-cell {
+	padding: 0.375rem;
 }
 
 @media (min-width: 992px) {
