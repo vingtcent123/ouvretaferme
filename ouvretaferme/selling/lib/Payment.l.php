@@ -98,6 +98,14 @@ class PaymentLib extends PaymentCrud {
 
 	}
 
+	public static function updateByPaymentIntentId(string $id, array $properties): int {
+
+		return Payment::model()
+			->wherePaymentIntentId($id)
+			->update($properties);
+
+	}
+
 	public static function updateStatus(string $id, string $newStatus): int {
 
 		return Payment::model()
