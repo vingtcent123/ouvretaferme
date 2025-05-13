@@ -222,6 +222,21 @@ class DateLib extends DateCrud {
 
 	}
 
+	public static function deleteCatalogsByShop(Shop $eShop, \Collection $cCatalog): void {
+
+		foreach($cCatalog as $eCatalog) {
+
+			Date::model()
+				->whereShop($eShop)
+				->where('JSON_CONTAINS(catalogs, \''.$eCatalog['id'].'\')')
+				->update([
+					'catalogs' => new \Sql(\series\Task::model()->pdo()->api->jsonRemove('catalogs', $eCatalog['id']))
+				]);
+
+		}
+
+	}
+
 	public static function delete(Date $eDate): void {
 
 		if(\selling\Sale::model()

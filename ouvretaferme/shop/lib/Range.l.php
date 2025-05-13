@@ -93,9 +93,9 @@ class RangeLib extends RangeCrud {
 
 				Date::model()
 					->whereShop($eRange['shop'])
-					->where('JSON_CONTAINS(catalogs, \''.$eRange['id'].'\')')
+					->where('JSON_CONTAINS(catalogs, \''.$eRange['catalog']['id'].'\')')
 					->update([
-						'catalogs' => new \Sql(\series\Task::model()->pdo()->api->jsonRemove('catalogs', $eRange['id']))
+						'catalogs' => new \Sql(\series\Task::model()->pdo()->api->jsonRemove('catalogs', $eRange['catalog']['id']))
 					]);
 
 			}

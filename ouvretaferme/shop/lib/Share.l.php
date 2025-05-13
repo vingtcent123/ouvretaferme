@@ -135,8 +135,16 @@ class ShareLib extends ShareCrud {
 				->getCollection();
 
 			foreach($cRange as $eRange) {
-				RangeLib::dissociate($eRange, TRUE);
+				RangeLib::dissociate($eRange, FALSE);
 			}
+
+			$cCatalog = Catalog::model()
+				->select('id')
+				->whereFarm($eFarm)
+				->getCollection();
+
+
+			DateLib::deleteCatalogsByShop($eShop, $cCatalog);
 
 			parent::delete($e);
 
