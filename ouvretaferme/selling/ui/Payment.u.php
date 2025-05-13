@@ -26,12 +26,12 @@ class PaymentUi {
 
 	}
 
-	public static function statusIcon(Payment $ePayment): string {
+	public static function statusIcon(Sale $eSale, Payment $ePayment): string {
 
 		return match($ePayment['status']) {
-			Payment::SUCCESS => SaleUi::getPaymentStatus(new Sale(['paymentStatus' => Sale::PAID, 'invoice' => new Invoice()]), $ePayment),
-			Payment::FAILURE => SaleUi::getPaymentStatus(new Sale(['paymentStatus' => Sale::FAILED, 'invoice' => new Invoice()]), $ePayment),
-			Payment::PENDING => SaleUi::getPaymentStatus(new Sale(['paymentStatus' => Sale::PROCESSING, 'invoice' => new Invoice()]), $ePayment),
+			Payment::SUCCESS => SaleUi::getPaymentStatus(new Sale(['paymentStatus' => Sale::PAID, 'invoice' => $eSale['invoice']]), $ePayment),
+			Payment::FAILURE => SaleUi::getPaymentStatus(new Sale(['paymentStatus' => Sale::FAILED, 'invoice' => $eSale['invoice']]), $ePayment),
+			Payment::PENDING => SaleUi::getPaymentStatus(new Sale(['paymentStatus' => Sale::PROCESSING, 'invoice' => $eSale['invoice']]), $ePayment),
 		};
 
 	}
@@ -93,7 +93,7 @@ class PaymentUi {
 				} else {
 
 					$payment .= self::getPaymentMethodName($ePayment);
-					$payment .= '<br />'.self::statusIcon($ePayment);
+					$payment .= '<br />'.self::statusIcon($eSale, $ePayment);
 
 				}
 
