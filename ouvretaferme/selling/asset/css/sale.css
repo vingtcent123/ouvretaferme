@@ -263,6 +263,7 @@ a.sale-preparation-status-action {
 	display: flex;
 	align-items: center;
 	gap: 0.25rem;
+	flex-wrap: wrap;
 }
 .sale-payment-label {
 	padding: 0.25rem 0.5rem;
