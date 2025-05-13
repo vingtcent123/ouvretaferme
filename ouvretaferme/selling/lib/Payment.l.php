@@ -135,7 +135,7 @@ class PaymentLib extends PaymentCrud {
 		Payment::model()
 			->select(['sum' => new \Sql('SUM(amountIncludingVat)')])
 			->whereSale($eSale)
-			->whereStatus('!=', Payment::FAILURE)
+			->whereStatus('=', Payment::SUCCESS)
 			->get($ePayment);
 
 		return $ePayment['sum'] ?? 0;

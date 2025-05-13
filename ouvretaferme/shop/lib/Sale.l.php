@@ -591,7 +591,12 @@ class SaleLib {
 			return;
 		}
 
-		\selling\PaymentLib::updateStatus($object['id'], \selling\Payment::SUCCESS);
+		$ePayment = new \selling\Payment([
+			'id' => $object['id'],
+			'status' => \selling\Payment::SUCCESS,
+			'amountIncludingVat' => $eSale['priceIncludingVat'],
+		]);
+		\selling\PaymentLib::update($ePayment, ['status', 'amountIncludingVat']);
 
 		self::completePaid($eSale, $object['id']);
 
