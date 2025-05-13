@@ -215,7 +215,7 @@ class DateLib extends DateCrud {
 		if($catalogs !== $eDate['catalogs']) {
 
 			Date::model()->update($eDate, [
-				'catalogs' => $catalogs,
+				'catalogs' => array_merge($catalogs),
 			]);
 
 		}
