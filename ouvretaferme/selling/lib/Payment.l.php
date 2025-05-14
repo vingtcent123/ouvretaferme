@@ -216,7 +216,14 @@ class PaymentLib extends PaymentCrud {
 
 		$eSale->expects(['customer', 'farm', 'preparationStatus']);
 
-		Payment::model()->beginTransaction();
+		if($eSale['preparationStatus'] === Sale::CANCELED) {
+			PaymentLib::deleteBySale($eSale);
+			return;
+		}
+
+		if(in_array($eSale['preparationStatus'], [Sale::DELIVERED, Sale::DRAFT]) === FALSE) {
+			return;
+		}
 
 		Payment::model()
        ->select(['status'])
@@ -247,8 +254,6 @@ class PaymentLib extends PaymentCrud {
 
 		SaleLib::update($eSale, ['paymentMethod', 'paymentStatus']);
 
-		Payment::model()->commit();
-
 	}
 
 	public static function deleteBySale(Sale $eSale): void {
@@ -260,6 +265,27 @@ class PaymentLib extends PaymentCrud {
 			->whereFarm($eSale['farm'])
 			->whereCustomer($eSale['customer'])
 			->delete();
+	}
+
+	public static function updateBySale(Sale $eSale): void {
+
+		self::deleteBySale($eSale);
+
+		if($eSale['paymentStatus'] === Sale::NOT_PAID) {
+			return;
+		}
+
+		$ePayment = new Payment([
+			'sale' => $eSale,
+			'customer' => $eSale['customer'],
+			'farm' => $eSale['farm'],
+			'amountIncludingVat' => $eSale['priceIncludingVat'],
+			'method' => $eSale['paymentMethod'],
+			'status' => Payment::SUCCESS,
+		]);
+
+		Payment::model()->insert($ePayment);
+
 	}
 
 }

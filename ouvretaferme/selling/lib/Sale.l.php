@@ -52,6 +52,11 @@ class SaleLib extends SaleCrud {
 				$properties[] = 'shopPointPermissive';
 			}
 
+			if($e['market'] === FALSE and ($e['paymentMethod']->exists() === FALSE or $e['paymentMethod']['online'] === FALSE)) {
+				$properties[] = 'paymentMethod';
+				$properties[] = 'paymentStatus';
+			}
+
 			return $properties;
 
 		};

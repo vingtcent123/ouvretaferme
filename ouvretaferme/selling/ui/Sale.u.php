@@ -1840,6 +1840,14 @@ class SaleUi {
 				$h .= $form->dynamicGroup($eSale, 'shopPointPermissive');
 			}
 
+			if(
+				$eSale['market'] === FALSE
+				and ($eSale['paymentMethod']->exists() === FALSE
+				or $eSale['paymentMethod']['fqn'] !== \payment\MethodLib::ONLINE_CARD)
+			) {
+				$h .= $form->dynamicGroups($eSale, ['paymentStatus', 'paymentMethod']);
+			}
+
 			$h .= $form->dynamicGroup($eSale, 'comment');
 
 			$h .= $form->group(
@@ -1985,6 +1993,7 @@ class SaleUi {
 			'market' => s("Utiliser le logiciel de caisse<br/>pour cette vente"),
 			'preparationStatus' => s("Statut de préparation"),
 			'paymentStatus' => s("État du paiement"),
+			'paymentMethod' => s("Moyen de paiement"),
 			'orderFormValidUntil' => s("Date d'échéance du devis"),
 			'orderFormPaymentCondition' => s("Conditions de paiement"),
 			'discount' => s("Remise commerciale"),
@@ -2128,6 +2137,14 @@ class SaleUi {
 					return $form->select('shippingVatRate', $values, $e['shippingVatFixed'] ? $e['shippingVatRate'] : NULL, [
 						'placeholder' => $calculatedVatRate ? s("Par défaut - {value} %", $calculatedVatRate) : s("Par défaut")
 					]);
+
+				};
+				break;
+
+			case 'paymentMethod' :
+				$d->field = function(\util\FormUi $form, Sale $e) {
+
+					return $form->select('paymentMethod', $e['cPaymentMethod']->toArray(fn($ePaymentMethod) => [$ePaymentMethod['id'], $ePaymentMethod['name']], keys: TRUE), $e['paymentMethod']);
 
 				};
 				break;

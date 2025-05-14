@@ -57,7 +57,11 @@ new \selling\SalePage()
 		);
 	});
 
-new \selling\SalePage()
+new \selling\SalePage(function($data) {
+	if(post_exists('id')) {
+		$data->eSaleOrigin = \selling\SaleLib::getById(POST('id'));
+	}
+})
 	->read('/vente/{id}', function($data) {
 
 		$data->eFarm = \farm\FarmLib::getById($data->e['farm']);
@@ -211,11 +215,21 @@ new \selling\SalePage()
 	->update(function($data) {
 
 		$data->e['cPoint'] = \shop\PointLib::getAlphabeticalByFarm($data->e['farm']);
+		$data->e['cPaymentMethod'] = \payment\MethodLib::getByFarm($data->e['farm'], FALSE);
 
 		throw new ViewAction($data);
 
 	})
 	->doUpdate(function($data) {
+
+		// Uniquement en cas de changement dans les moyens de paiement
+		if(
+			$data->eSaleOrigin['paymentStatus'] !== $data->e['paymentStatus']
+			or ($data->eSaleOrigin['paymentMethod']['id'] ?? NULL) !== ($data->e['paymentMethod']['id'] ?? NULL)
+		) {
+			\selling\PaymentLib::updateBySale($data->e);
+		}
+
 		throw new ReloadAction('selling', $data->e->isComposition() ? 'Product::updatedComposition' : 'Sale::updated');
 	})
 	->read('updateShop', function($data) {
