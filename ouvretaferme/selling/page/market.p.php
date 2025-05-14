@@ -96,7 +96,8 @@ new \selling\SalePage()
 		\selling\ItemLib::updateSaleCollection($data->e, $cItemSale);
 
 		$data->e = \selling\SaleLib::getById($data->e, \selling\Sale::getSelection() + [
-			'createdBy' => ['firstName', 'lastName', 'vignette']
+			'createdBy' => ['firstName', 'lastName', 'vignette'],
+			'cPayment' => \selling\PaymentLib::delegateBySale(),
 		]);
 
 		$data->cItemMarket = \selling\SaleLib::getItems($data->eSaleMarket);
