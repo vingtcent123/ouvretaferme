@@ -31,17 +31,17 @@ class SaleLib extends SaleCrud {
 					$properties[] = 'discount';
 				}
 
-				if($e->acceptShipping()) {
-					$properties[] = 'shipping';
-
-					if($e['hasVat']) {
-						$properties[] = 'shippingVatRate';
-					}
-				}
-
 			}
 
-			if($e['shop']->notEmpty()) {
+			if($e->acceptUpdateShipping()) {
+				$properties[] = 'shipping';
+
+				if($e['hasVat']) {
+					$properties[] = 'shippingVatRate';
+				}
+			}
+
+			if($e->acceptUpdateShopPoint()) {
 				$properties[] = 'shopPointPermissive';
 			}
 
@@ -377,7 +377,7 @@ class SaleLib extends SaleCrud {
 	public static function getForInvoice(Customer $eCustomer, array $ids, bool $checkInvoice = TRUE): Sale|\Collection {
 
 		$cSale = Sale::model()
-			->select(SaleElement::getSelection())
+			->select(Sale::getSelection())
 			->select([
 				'cPdf' => Pdf::model()
 					->select(Pdf::getSelection())
@@ -401,11 +401,6 @@ class SaleLib extends SaleCrud {
 
 	public static function getForMonthlyInvoice(\farm\Farm $eFarm, string $month, ?string $type): \Collection {
 
-		if($type === \payment\MethodLib::TRANSFER) {
-			$ePaymentMethod = \payment\MethodLib::getByFqn(\payment\MethodLib::TRANSFER);
-			Sale::model()
-				->where('m2.method', $ePaymentMethod);
-		}
 		return Sale::model()
 			->select([
 				'customer' => ['type', 'name'],
@@ -413,16 +408,17 @@ class SaleLib extends SaleCrud {
 				'priceExcludingVat' => new \Sql('SUM(priceExcludingVat)', 'float'),
 				'priceIncludingVat' => new \Sql('SUM(priceIncludingVat)', 'float'),
 				'number' => new \Sql('COUNT(*)'),
-				'list' => new \Sql('GROUP_CONCAT(m1.id ORDER BY m1.id SEPARATOR ",")')
+				'list' => new \Sql('GROUP_CONCAT(id ORDER BY id SEPARATOR ",")')
 			])
-			->join(Payment::model(), 'm1.id = m2.sale')
-			->where('m1.farm', $eFarm)
+			->whereFarm($eFarm)
 			->whereType($type, if: in_array($type, [Customer::PRIVATE, Customer::PRO]))
 			->whereDeliveredAt('LIKE', $month.'%')
 			->whereInvoice(NULL)
 			->whereMarket(FALSE)
 			->whereMarketParent(NULL)
 			->wherePreparationStatus(Sale::DELIVERED)
+			->wherePaymentMethod(fn() => \payment\MethodLib::getByFqn(\payment\MethodLib::TRANSFER), if: $type === \payment\MethodLib::TRANSFER)
+			->wherePaymentStatus('!=', Sale::PAID)
 			->group(['m1.customer', 'taxes', 'hasVat'])
 			->getCollection()
 			->sort(['m1.customer' => ['name']]);
@@ -497,7 +493,7 @@ class SaleLib extends SaleCrud {
 
 		$e->expects([
 			'farm' => ['hasSales'],
-			'type', 'taxes', 'hasVat', 'from', 'compositionOf',
+			'type', 'taxes', 'hasVat', 'compositionOf',
 			'customer',
 		]);
 
@@ -645,7 +641,6 @@ class SaleLib extends SaleCrud {
 		$e['customer'] = new Customer();
 		$e['compositionOf'] = new Product();
 		$e['farm'] = $eSale['farm'];
-		$e['from'] = Sale::USER;
 		$e['type'] = Customer::PRIVATE;
 		$e['taxes'] = $e->getTaxesFromType();
 		$e['hasVat'] = $e['farm']->getSelling('hasVat');
@@ -732,7 +727,7 @@ class SaleLib extends SaleCrud {
 			return;
 		}
 
-		self::update($e, ['from', 'shop', 'shopDate']);
+		self::update($e, ['shop', 'shopDate']);
 
 	}
 
@@ -740,7 +735,7 @@ class SaleLib extends SaleCrud {
 
 		$e->build(['shopDate'], [], new \Properties('update'));
 
-		$properties = ['from', 'shop', 'shopDate'];
+		$properties = ['shop', 'shopDate'];
 
 		if($e['preparationStatus'] === Sale::BASKET) {
 

@@ -47,7 +47,7 @@ class Item extends ItemElement {
 		}
 
 		if($this['sale']->isComposition()) {
-			return $this['sale']->acceptWriteComposition();
+			return $this['sale']->acceptUpdateComposition();
 		} else {
 			return in_array($this['sale']['preparationStatus'], [Sale::DRAFT, Sale::CONFIRMED, Sale::PREPARED]);
 		}

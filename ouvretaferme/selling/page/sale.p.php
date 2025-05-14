@@ -5,7 +5,6 @@ new \selling\SalePage()
 		$data->eFarm = \farm\FarmLib::getById(INPUT('farm'));
 
 		return new \selling\Sale([
-			'from' => \selling\Sale::USER,
 			'farm' => $data->eFarm,
 			'compositionOf' => input_exists('compositionOf') ? \selling\ProductLib::getCompositionById(INPUT('compositionOf'))->validateProperty('farm', $data->eFarm) : new \selling\Product(),
 			'marketParent' => new \selling\Sale(),
@@ -98,7 +97,6 @@ new \selling\SalePage()
 		} else {
 			$data->relativeSales = NULL;
 		}
-
 		$data->cPaymentMethod = \payment\MethodLib::getByFarm($data->eFarm, NULL);
 
 		throw new ViewAction($data, $data->eFarm->canSelling() ? ':salePlain' :  ':salePanel');
@@ -240,24 +238,18 @@ new \selling\SalePage()
 		throw new ViewAction($data);
 
 	}, validate: ['canWrite', 'acceptAssociateShop'])
-	->write('doUpdateShop', function($data) {
+	->write('doAssociateShop', function($data) {
 		
-		$from = POST('from', [\selling\Sale::SHOP, \selling\Sale::USER], fn() => throw new FailAction('selling\Sale::from.check'));
+		$data->e->validate('acceptAssociateShop');
+		\selling\SaleLib::associateShop($data->e, $_POST);
 
-		$data->e['from'] = $from;
+		throw new ReloadAction('selling', 'Sale::updated');
 
-		switch($from) {
+	})
+	->write('doDissociateShop', function($data) {
 
-			case \selling\Sale::USER :
-				$data->e->validate('acceptDissociateShop');
-				\selling\SaleLib::dissociateShop($data->e);
-				break;
-
-			case \selling\Sale::SHOP :
-				$data->e->validate('acceptAssociateShop');
-				\selling\SaleLib::associateShop($data->e, $_POST);
-				break;
-		};
+		$data->e->validate('acceptDissociateShop');
+		\selling\SaleLib::dissociateShop($data->e);
 
 		throw new ReloadAction('selling', 'Sale::updated');
 

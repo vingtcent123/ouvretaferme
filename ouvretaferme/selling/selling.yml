@@ -259,7 +259,6 @@ Sale:
   document: ?int32(1, null)
   farm: farm\Farm
   customer: ?selling\Customer
-  from: enum(USER, SHOP)
   taxes: enum(INCLUDING, EXCLUDING)
   organic: bool = FALSE
   conversion: bool = FALSE

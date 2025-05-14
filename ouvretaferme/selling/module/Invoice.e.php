@@ -122,6 +122,17 @@ class Invoice extends InvoiceElement {
 				return (count(array_unique($taxes)) === 1);
 
 			})
+			->setCallback('sales.paid', function(): bool {
+
+				$this->expects(['cSale']);
+
+				if($this['cSale']->count() < 2) {
+					return TRUE;
+				} else {
+					return $this['cSale']->contains(fn($eSale) => $eSale['paymentStatus'] === Sale::PAID) === FALSE;
+				}
+
+			})
 			->setCallback('sales.hasVat', function(): bool {
 
 				$this->expects(['cSale']);

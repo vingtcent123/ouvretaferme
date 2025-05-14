@@ -235,7 +235,7 @@ class SaleUi {
 						$columns++;
 					}
 					if(in_array('paymentMethod', $hide) === FALSE) {
-						$h .= '<th class="'.($dynamicHide['paymentMethod'] ?? 'hide-md-down').'">'.s("Paiement").'</th>';
+						$h .= '<th class="'.($dynamicHide['paymentMethod'] ?? 'hide-md-down').'">'.s("Moyen de paiement").'</th>';
 						$columns++;
 					}
 					if(in_array('actions', $hide) === FALSE) {
@@ -413,7 +413,7 @@ class SaleUi {
 
 							$h .= '<td class="sale-item-delivery">';
 								$h .= '<div>';
-									if($eSale->acceptWriteDeliveredAt() === FALSE) {
+									if($eSale->acceptUpdateDeliveredAt() === FALSE) {
 										$h .= $eSale['deliveredAt'] ? \util\DateUi::numeric($eSale['deliveredAt']) : s("Non planifiée");
 									} else {
 										if($eSale['deliveredAt'] !== NULL) {
@@ -1136,8 +1136,9 @@ class SaleUi {
 			if($eSale['invoice']->isCreditNote()) {
 				$paymentList[] = '<div>'.s("Avoir").'</div>';
 			} else {
-				$paymentList[] = '<div>'.s("Facture").'</div>'
-					.'<div>'.InvoiceUi::getPaymentStatus($eSale['invoice']).'</div>';
+				$paymentList[] =
+					'<div>'.s("Facture").'</div>'.
+					'<div>'.InvoiceUi::getPaymentStatus($eSale['invoice']).'</div>';
 			}
 		}
 
@@ -1146,7 +1147,7 @@ class SaleUi {
 		return implode('<br />', $paymentList);
 	}
 
-	public function getContent(Sale $eSale, \Collection $cPdf, \Collection $cPaymentMethod): string {
+	public function getContent(Sale $eSale, \Collection $cPdf): string {
 
 		if($eSale->isComposition()) {
 			return '';
@@ -1163,13 +1164,11 @@ class SaleUi {
 					$h .= '</dd>';
 				}
 
-				if($eSale['from'] === Sale::SHOP) {
+				if($eSale['shop']->notEmpty()) {
 
 					$h .= '<dt>'.s("Origine").'</dt>';
 					$h .= '<dd>';
-						if($eSale['shop']->notEmpty()) {
-							$h .= \shop\ShopUi::link($eSale['shop']);
-						}
+						$h .= \shop\ShopUi::link($eSale['shop']);
 					$h .= '</dd>';
 
 					$h .= '<dt>'.s("Mode de livraison").'</dt>';
@@ -1190,7 +1189,7 @@ class SaleUi {
 				$h .= '<dt>'.s("Date de vente").'</dt>';
 				$h .= '<dd>';
 
-				$update = fn($content) => $eSale->acceptWriteDeliveredAt() ? $eSale->quick('deliveredAt', $content) : $content;
+				$update = fn($content) => $eSale->acceptUpdateDeliveredAt() ? $eSale->quick('deliveredAt', $content) : $content;
 
 				$h .= $eSale['preparationStatus'] === Sale::DELIVERED ?
 					$update(\util\DateUi::numeric($eSale['deliveredAt'], \util\DateUi::DATE)) :
@@ -1430,7 +1429,7 @@ class SaleUi {
 		}
 
 		if($eSale->acceptDissociateShop()) {
-			$primaryList .= '<a data-ajax="/selling/sale:doUpdateShop" post-id="'.$eSale['id'].'" post-from="'.Sale::USER.'" class="dropdown-item">'.s("Dissocier la vente de la boutique").'</a>';
+			$primaryList .= '<a data-ajax="/selling/sale:doDissociateShop" post-id="'.$eSale['id'].'" class="dropdown-item">'.s("Dissocier la vente de la boutique").'</a>';
 		}
 
 		if(
@@ -1631,7 +1630,6 @@ class SaleUi {
 		$h .= $form->asteriskInfo();
 
 		$h .= $form->hidden('farm', $eSale['farm']['id']);
-		$h .= $form->hidden('from', Sale::USER);
 		$h .= $form->hidden('compositionOf', $eSale['compositionOf']['id']);
 
 		$h .= $form->dynamicGroup($eSale, 'deliveredAt');
@@ -1686,14 +1684,11 @@ class SaleUi {
 
 		$form = new \util\FormUi();
 
-		$eSale['from'] = Sale::USER;
-
 		$h = '';
 
 		$h .= $form->asteriskInfo();
 
 		$h .= $form->hidden('farm', $eSale['farm']['id']);
-		$h .= $form->hidden('from', $eSale['shopDate']->empty() ? Sale::USER : Sale::SHOP);
 		if($eSale['shopDate']->notEmpty()) {
 			$h .= $form->hidden('shopDate', $eSale['shopDate']['id']);
 		}
@@ -1829,36 +1824,32 @@ class SaleUi {
 
 			}
 
-			if($eSale->isClosed() === FALSE) {
+			if(
+				$eSale->acceptUpdateShipping() or
+				$eSale->acceptUpdateShopPoint()
+			) {
 
-				if(
-					$eSale->acceptShipping() or
-					$eSale['shop']->notEmpty()
-				) {
+				$h .= '<div class="util-block bg-background-light">';
 
-					$h .= '<div class="util-block bg-background-light">';
+					$h .= $form->group(content: '<h4>'.s("Livraison").'</h4>');
 
-						$h .= $form->group(content: '<h4>'.s("Livraison").'</h4>');
+					if($eSale->acceptUpdateShopPoint()) {
+						$h .= $form->dynamicGroup($eSale, 'shopPointPermissive');
+					}
 
-						if($eSale['shop']->notEmpty()) {
-							$h .= $form->dynamicGroup($eSale, 'shopPointPermissive');
+					if($eSale->acceptShipping()) {
+
+						$h .= $form->dynamicGroup($eSale, 'shipping');
+
+						if($eSale['hasVat']) {
+							$h .= $form->dynamicGroup($eSale, 'shippingVatRate');
 						}
 
-						if($eSale->acceptShipping()) {
-
-							$h .= $form->dynamicGroup($eSale, 'shipping');
-
-							if($eSale['hasVat']) {
-								$h .= $form->dynamicGroup($eSale, 'shippingVatRate');
-							}
-
-						}
+					}
 
 
 
-					$h .= '</div>';
-
-				}
+				$h .= '</div>';
 
 			}
 
@@ -1882,16 +1873,13 @@ class SaleUi {
 
 		$eSale->expects(['cShop']);
 
-		$eSale['from'] = Sale::SHOP;
-
 		$form = new \util\FormUi();
 
 		$h = '';
 
-		$h .= $form->openAjax('/selling/sale:doUpdateShop');
+		$h .= $form->openAjax('/selling/sale:doAssociateShop');
 
 			$h .= $form->hidden('id', $eSale['id']);
-			$h .= $form->hidden('from', Sale::SHOP);
 
 			$h .= $form->group(
 				s("Vente"),
@@ -2003,7 +1991,6 @@ class SaleUi {
 		$d = Sale::model()->describer($property, [
 			'customer' => s("Client"),
 			'deliveredAt' => fn($e) => $e->isComposition() ? s("Pour les livraisons à partir du") : s("Date de vente"),
-			'from' => s("Origine de la vente"),
 			'market' => s("Utiliser le logiciel de caisse<br/>pour cette vente"),
 			'preparationStatus' => s("Statut de préparation"),
 			'paymentStatus' => s("État du paiement"),
@@ -2064,10 +2051,9 @@ class SaleUi {
 				};
 				$d->group = function(Sale $e) {
 
-					$e->expects(['from']);
+					$e->expects(['shop']);
 
-
-					$hide = ($e['from'] === Sale::SHOP) ? '' : 'hide';
+					$hide = $e['shop']->notEmpty() ? '' : 'hide';
 
 					return [
 						'id' => 'sale-write-date',
@@ -2101,9 +2087,9 @@ class SaleUi {
 				$d->default = currentDate();
 				$d->group = function(Sale $e) {
 
-					$e->expects(['from']);
+					$e->expects(['shop']);
 
-					$hide = ($e['from'] === Sale::USER) ? '' : 'hide';
+					$hide = $e['shop']->empty() ? '' : 'hide';
 
 					return [
 						'id' => 'sale-write-delivered-at',

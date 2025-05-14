@@ -498,7 +498,7 @@ class InvoiceUi {
 		return [
 			Customer::PRO => s("Ventes aux clients professionnels"),
 			Customer::PRIVATE => s("Ventes aux clients particuliers"),
-			\payment\MethodLib::TRANSFER => s("Ventes payées par virement bancaire dans vos boutiques"),
+			\payment\MethodLib::TRANSFER => s("Ventes non payées par virement bancaire dans vos boutiques"),
 		];
 
 	}
@@ -621,7 +621,7 @@ class InvoiceUi {
 				$h .= '</th>';
 				$h .= '<th class="text-center">#</th>';
 				$h .= '<th>'.s("Date").'</th>';
-				$h .= '<th>'.s("Paiement").'</th>';
+				$h .= '<th>'.s("Moyen de paiement").'</th>';
 				$h .= '<th class="text-end">'.s("Montant").'</th>';
 			$h .= '</tr>';
 
@@ -632,8 +632,13 @@ class InvoiceUi {
 				$h .= '<td class="td-min-content text-center">'.SaleUi::link($eSale, newTab: TRUE).'</td>';
 				$h .= '<td>'.\util\DateUi::numeric($eSale['deliveredAt']).'</td>';
 				$h .= '<td>';
+
 					$h .= SaleUi::getPaymentMethodName($eSale);
-					$h .= SaleUi::getPaymentStatus($eSale);
+
+					if($eSale['paymentStatus'] === Sale::PAID) {
+						$h .= ' '.SaleUi::getPaymentStatus($eSale);
+					}
+
 				$h .= '</td>';
 				$h .= '<td class="text-end">';
 				$h .= SaleUi::getTotal($eSale);

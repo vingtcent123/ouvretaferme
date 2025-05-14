@@ -74,7 +74,7 @@ body[data-template~="shop-embedded"] > footer {
 }
 
 .shop-header-image:not(:empty) {
-	width: 10rem;
+	width: 8rem;
 }
 
 @media (max-width: 575px) {
@@ -89,6 +89,14 @@ body[data-template~="shop-embedded"] > footer {
 
 	.shop-header-content {
 		text-align: center;
+	}
+
+}
+
+@media (min-width: 576px) {
+
+	.shop-header-content {
+		align-self: center;
 	}
 
 }

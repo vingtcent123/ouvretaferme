@@ -359,7 +359,7 @@ class OrderUi {
 		}
 
 		if(
-			$eSale['from'] === Sale::SHOP and
+			$eSale['shop']->notEmpty() and
 			$eSale['shopPoint']->notEmpty() and
 			$eSale->isClosed() === FALSE
 		) {

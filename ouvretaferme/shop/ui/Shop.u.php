@@ -966,7 +966,7 @@ class ShopUi {
 
 			if($eShop['logo']) {
 				$h .= '<div class="shop-header-image">';
-					$h .= self::getLogo($eShop, '10rem');
+					$h .= self::getLogo($eShop, '8rem');
 				$h .= '</div>';
 			}
 

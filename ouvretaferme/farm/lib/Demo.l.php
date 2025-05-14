@@ -342,12 +342,6 @@ class DemoLib {
 
 	public static function anonymizeSales(): void {
 
-		new \selling\SaleModel()
-			->whereFrom(\selling\Sale::SHOP)
-			->update([
-				'from' => \selling\Sale::USER,
-			]);
-
 		new \selling\CustomerModel()
 			->whereUser(\farm\DemoLib::USER)
 			->update([

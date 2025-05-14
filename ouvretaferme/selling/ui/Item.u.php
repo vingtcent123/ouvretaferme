@@ -34,11 +34,11 @@ class ItemUi {
 					} else {
 						$h .= s("Composition du {from}<small> au {to}</small>", ['from' => \util\DateUi::numeric($eSale['deliveredAt']), 'to' => \util\DateUi::numeric($eSale['compositionEndAt']), 'small' => '<small class="color-muted" style="font-weight: normal">']);
 					}
-					if($eSale->acceptWriteComposition() === FALSE) {
+					if($eSale->acceptUpdateComposition() === FALSE) {
 						$h .= ' '.\Asset::icon('lock-fill');
 					}
 				$h .= '</h3>';
-				if($eSale->acceptWriteComposition()) {
+				if($eSale->acceptUpdateComposition()) {
 					$h .= new SaleUi()->getUpdate($eSale, 'btn-outline-primary');
 				}
 			$h .= '</div>';

@@ -7,9 +7,6 @@ abstract class SaleElement extends \Element {
 
 	private static ?SaleModel $model = NULL;
 
-	const USER = 'user';
-	const SHOP = 'shop';
-
 	const INCLUDING = 'including';
 	const EXCLUDING = 'excluding';
 
@@ -65,7 +62,6 @@ class SaleModel extends \ModuleModel {
 			'document' => ['int32', 'min' => 1, 'max' => NULL, 'null' => TRUE, 'cast' => 'int'],
 			'farm' => ['element32', 'farm\Farm', 'cast' => 'element'],
 			'customer' => ['element32', 'selling\Customer', 'null' => TRUE, 'cast' => 'element'],
-			'from' => ['enum', [\selling\Sale::USER, \selling\Sale::SHOP], 'cast' => 'enum'],
 			'taxes' => ['enum', [\selling\Sale::INCLUDING, \selling\Sale::EXCLUDING], 'cast' => 'enum'],
 			'organic' => ['bool', 'cast' => 'bool'],
 			'conversion' => ['bool', 'cast' => 'bool'],
@@ -113,7 +109,7 @@ class SaleModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'document', 'farm', 'customer', 'from', 'taxes', 'organic', 'conversion', 'type', 'discount', 'items', 'hasVat', 'vat', 'vatByRate', 'priceExcludingVat', 'priceIncludingVat', 'shippingVatRate', 'shippingVatFixed', 'shipping', 'shippingExcludingVat', 'preparationStatus', 'paymentMethod', 'paymentStatus', 'onlinePaymentStatus', 'compositionOf', 'compositionEndAt', 'market', 'marketSales', 'marketParent', 'orderFormValidUntil', 'orderFormPaymentCondition', 'invoice', 'shop', 'shopDate', 'shopLocked', 'shopShared', 'shopUpdated', 'shopPoint', 'shopComment', 'deliveryStreet1', 'deliveryStreet2', 'deliveryPostcode', 'deliveryCity', 'comment', 'stats', 'createdAt', 'createdBy', 'deliveredAt', 'statusDeliveredAt'
+			'id', 'document', 'farm', 'customer', 'taxes', 'organic', 'conversion', 'type', 'discount', 'items', 'hasVat', 'vat', 'vatByRate', 'priceExcludingVat', 'priceIncludingVat', 'shippingVatRate', 'shippingVatFixed', 'shipping', 'shippingExcludingVat', 'preparationStatus', 'paymentMethod', 'paymentStatus', 'onlinePaymentStatus', 'compositionOf', 'compositionEndAt', 'market', 'marketSales', 'marketParent', 'orderFormValidUntil', 'orderFormPaymentCondition', 'invoice', 'shop', 'shopDate', 'shopLocked', 'shopShared', 'shopUpdated', 'shopPoint', 'shopComment', 'deliveryStreet1', 'deliveryStreet2', 'deliveryPostcode', 'deliveryCity', 'comment', 'stats', 'createdAt', 'createdBy', 'deliveredAt', 'statusDeliveredAt'
 		]);
 
 		$this->propertiesToModule += [
@@ -196,9 +192,6 @@ class SaleModel extends \ModuleModel {
 
 		switch($property) {
 
-			case 'from' :
-				return ($value === NULL) ? NULL : (string)$value;
-
 			case 'taxes' :
 				return ($value === NULL) ? NULL : (string)$value;
 
@@ -260,10 +253,6 @@ class SaleModel extends \ModuleModel {
 
 	public function whereCustomer(...$data): SaleModel {
 		return $this->where('customer', ...$data);
-	}
-
-	public function whereFrom(...$data): SaleModel {
-		return $this->where('from', ...$data);
 	}
 
 	public function whereTaxes(...$data): SaleModel {

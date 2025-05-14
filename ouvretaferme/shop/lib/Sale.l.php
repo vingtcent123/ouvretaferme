@@ -194,7 +194,6 @@ class SaleLib {
 
 		$eSaleReference->merge([
 			'compositionOf' => new \selling\Product(),
-			'from' => \selling\Sale::SHOP,
 			'market' => FALSE,
 			'marketParent' => new \selling\Sale(),
 			'type' => $eSaleReference['shopDate']['type'],

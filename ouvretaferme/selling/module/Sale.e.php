@@ -256,7 +256,7 @@ class Sale extends SaleElement {
 
 	public function isClosed(): bool {
 		if($this->isComposition()) {
-			return $this->acceptWriteComposition() === FALSE;
+			return $this->acceptUpdateComposition() === FALSE;
 		} else {
 			return in_array($this['preparationStatus'], [Sale::CANCELED, Sale::DELIVERED, Sale::BASKET]);
 		}
@@ -279,14 +279,14 @@ class Sale extends SaleElement {
 		}
 
 		if($this->isComposition()) {
-			return $this->acceptWriteComposition();
+			return $this->acceptUpdateComposition();
 		} else {
 			return TRUE;
 		}
 
 	}
 
-	public function acceptWriteComposition(): bool {
+	public function acceptUpdateComposition(): bool {
 
 		if($this->isComposition()) {
 			return self::testWriteComposition($this['deliveredAt']);
@@ -306,19 +306,19 @@ class Sale extends SaleElement {
 
 	}
 
-	public function acceptWriteDeliveredAt(): bool {
+	public function acceptUpdateDeliveredAt(): bool {
 
-		$this->expects(['preparationStatus', 'from', 'marketParent']);
+		$this->expects(['preparationStatus', 'shop', 'marketParent']);
 
 		return (
 			$this['preparationStatus'] !== Sale::DELIVERED and
-			$this['from'] === Sale::USER and
+			$this['shop']->empty() and
 			$this['marketParent']->empty()
 		);
 
 	}
 
-	public function acceptWritePreparationStatus(): bool {
+	public function acceptUpdatePreparationStatus(): bool {
 
 		return (
 			$this['compositionOf']->empty() and
@@ -326,6 +326,15 @@ class Sale extends SaleElement {
 				$this['shopDate']->empty() or
 				$this['shopDate']['isOrderable'] === FALSE
 			)
+		);
+
+	}
+
+	public function acceptUpdateShopPoint(): bool {
+
+		return (
+			$this->isClosed() === FALSE and
+			$this['shop']->notEmpty()
 		);
 
 	}
@@ -350,6 +359,15 @@ class Sale extends SaleElement {
 			$this['marketParent']->empty() and
 			$this->isComposition() === FALSE and
 			$this['shopShared'] === FALSE
+		);
+
+	}
+
+	public function acceptUpdateShipping(): bool {
+
+		return (
+			$this->isClosed() === FALSE and
+			$this->acceptShipping()
 		);
 
 	}
@@ -507,7 +525,7 @@ class Sale extends SaleElement {
 
 		return (
 			// Il n'est pas possible de dupliquer une vente d'une boutique pour éviter de créer des incohérence au seins des boutiques et des disponibilités
-			$this['from'] === self::USER and
+			$this['shop']->empty() and
 			$this['compositionOf']->empty() and
 			$this['marketParent']->empty()
 		);
@@ -548,7 +566,7 @@ class Sale extends SaleElement {
 			$this->acceptDeleteStatus() and
 			$this->acceptDeletePaymentStatus() and
 			$this->acceptDeleteMarket() and
-			$this->acceptWriteComposition()
+			$this->acceptUpdateComposition()
 		);
 
 	}
@@ -641,7 +659,7 @@ class Sale extends SaleElement {
 	public function acceptStatusPrepared(): bool {
 
 		return (
-			$this->acceptWritePreparationStatus() and
+			$this->acceptUpdatePreparationStatus() and
 			$this['market'] === FALSE and
 			in_array($this['preparationStatus'], [Sale::CONFIRMED])
 		);
@@ -651,7 +669,7 @@ class Sale extends SaleElement {
 	public function acceptStatusDelivered(): bool {
 
 		return (
-			$this->acceptWritePreparationStatus() and
+			$this->acceptUpdatePreparationStatus() and
 			in_array($this['preparationStatus'], $this['marketParent']->notEmpty() ? [Sale::DRAFT] : [Sale::CONFIRMED, Sale::PREPARED])
 		);
 
@@ -740,7 +758,7 @@ class Sale extends SaleElement {
 	public function acceptStatusDraft(): bool {
 
 		return (
-			$this->acceptWritePreparationStatus() and
+			$this->acceptUpdatePreparationStatus() and
 			in_array($this['preparationStatus'], $this['marketParent']->notEmpty() ? [Sale::CANCELED, Sale::DELIVERED] : [Sale::CONFIRMED, Sale::PREPARED, Sale::SELLING])
 		);
 
@@ -840,7 +858,7 @@ class Sale extends SaleElement {
 
 				$this->expects(['preparationStatus', 'deliveredAt', 'market', 'marketParent']);
 
-				if($this->acceptWritePreparationStatus() === FALSE) {
+				if($this->acceptUpdatePreparationStatus() === FALSE) {
 					return FALSE;
 				}
 
@@ -889,13 +907,6 @@ class Sale extends SaleElement {
 			})
 			->setCallback('deliveredAt.check', function(string &$date) use($p): bool {
 
-				try {
-					$this->expects(['from']);
-				}
-				catch(\Exception) {
-					return FALSE;
-				}
-
 				// La date est gérée directement dans la boutique
 				if(
 					$this['compositionOf']->empty() and
@@ -914,7 +925,7 @@ class Sale extends SaleElement {
 
 					if(
 						($p->for === 'create') or
-						($p->for === 'update' and $this->acceptWriteDeliveredAt())
+						($p->for === 'update' and $this->acceptUpdateDeliveredAt())
 					) {
 
 						return \Filter::check('date', $date);
