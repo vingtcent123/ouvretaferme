@@ -29,10 +29,16 @@ class PaymentUi {
 	public static function statusIcon(Sale $eSale, Payment $ePayment): string {
 
 		return match($ePayment['status']) {
-			Payment::SUCCESS => SaleUi::getPaymentStatus(new Sale(['paymentStatus' => Sale::PAID, 'invoice' => $eSale['invoice']]), $ePayment),
-			Payment::FAILURE => SaleUi::getPaymentStatus(new Sale(['paymentStatus' => Sale::FAILED, 'invoice' => $eSale['invoice']]), $ePayment),
-			Payment::PENDING => SaleUi::getPaymentStatus(new Sale(['paymentStatus' => Sale::WAITING, 'invoice' => $eSale['invoice']]), $ePayment),
+			Payment::SUCCESS => SaleUi::getPaymentStatus(new Sale(['paymentStatus' => Sale::PAID, 'invoice' => $eSale['invoice']])),
+			Payment::FAILURE => SaleUi::getPaymentStatus(new Sale(['paymentStatus' => Sale::FAILED, 'invoice' => $eSale['invoice']])),
+			Payment::INITIALIZED => SaleUi::getPaymentStatus(new Sale(['paymentStatus' => Sale::NOT_PAID, 'invoice' => $eSale['invoice']])),
 		};
+
+	}
+
+	public static function getPaymentDisplay(Sale $eSale, Payment $ePayment): string {
+
+		return self::getPaymentMethodName($ePayment).' '.self::statusIcon($eSale, $ePayment);
 
 	}
 
@@ -52,7 +58,7 @@ class PaymentUi {
 
 		$payment = '<div class="sale-payment-labels">';
 		foreach($cPaymentMethod as $ePaymentMethod) {
-			$payment .= '<a data-ajax="/selling/sale:doUpdatePaymentMethod" post-id="'.$eSale['id'].'" post-status="'.Payment::SUCCESS.'" post-payment-method="'.$ePaymentMethod['id'].'" class="sale-payment-action sale-payment-label sale-payment-'.($ePaymentMethod['online'] ? '' : 'not-').'online" title="'.encode($ePaymentMethod['name']).'">'.\payment\MethodUi::getShortValues($ePaymentMethod).'</a>';
+			$payment .= '<a data-ajax="/selling/sale:doUpdatePaymentMethod" post-id="'.$eSale['id'].'" post-status="'.Payment::SUCCESS.'" post-action="add" post-payment-method="'.$ePaymentMethod['id'].'" class="sale-payment-action sale-payment-label sale-payment-'.($ePaymentMethod['online'] ? '' : 'not-').'online" title="'.encode($ePaymentMethod['name']).'">'.\payment\MethodUi::getShortValues($ePaymentMethod).'</a>';
 		}
 		$payment .= '</div>';
 
@@ -92,8 +98,7 @@ class PaymentUi {
 
 				} else {
 
-					$payment .= self::getPaymentMethodName($ePayment);
-					$payment .= ' '.self::statusIcon($eSale, $ePayment);
+					$payment .= self::getPaymentDisplay($eSale, $ePayment);
 
 				}
 

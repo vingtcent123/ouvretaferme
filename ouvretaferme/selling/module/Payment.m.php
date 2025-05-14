@@ -7,7 +7,7 @@ abstract class PaymentElement extends \Element {
 
 	private static ?PaymentModel $model = NULL;
 
-	const PENDING = 'pending';
+	const INITIALIZED = 'initialized';
 	const SUCCESS = 'success';
 	const FAILURE = 'failure';
 
@@ -48,7 +48,7 @@ class PaymentModel extends \ModuleModel {
 			'method' => ['element32', 'payment\Method', 'null' => TRUE, 'cast' => 'element'],
 			'checkoutId' => ['text8', 'null' => TRUE, 'unique' => TRUE, 'cast' => 'string'],
 			'paymentIntentId' => ['text8', 'null' => TRUE, 'unique' => TRUE, 'cast' => 'string'],
-			'status' => ['enum', [\selling\Payment::PENDING, \selling\Payment::SUCCESS, \selling\Payment::FAILURE], 'cast' => 'enum'],
+			'status' => ['enum', [\selling\Payment::INITIALIZED, \selling\Payment::SUCCESS, \selling\Payment::FAILURE], 'cast' => 'enum'],
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
@@ -79,7 +79,7 @@ class PaymentModel extends \ModuleModel {
 		switch($property) {
 
 			case 'status' :
-				return Payment::PENDING;
+				return Payment::INITIALIZED;
 
 			default :
 				return parent::getDefaultValue($property);

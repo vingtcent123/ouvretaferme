@@ -143,7 +143,7 @@ class PaymentLib extends PaymentCrud {
 		Payment::model()
 			->select(['sum' => new \Sql('SUM(amountIncludingVat)')])
 			->whereSale($eSale)
-			->whereStatus('=', Payment::SUCCESS)
+			->whereStatus('!=', Payment::FAILURE)
 			->get($ePayment);
 
 		return $ePayment['sum'] ?? 0;
@@ -211,37 +211,12 @@ class PaymentLib extends PaymentCrud {
 			->delete();
 
 	}
-	public static function updateOrCreateBySale(Sale $eSale, \payment\Method $eMethod, string $status = Payment::PENDING): void {
-
-		$eSale->expects(['customer', 'farm', 'priceIncludingVat']);
-
-		$ePayment = new Payment([
-			'customer' => $eSale['customer'],
-			'farm' => $eSale['farm'],
-			'sale' => $eSale,
-			'method' => $eMethod,
-			'status' => $status,
-			'amountIncludingVat' => $eSale['priceIncludingVat'],
-		]);
-
-		Payment::model()->beginTransaction();
-
-		$affected = Payment::model()
-			->select(['method', 'status', 'amountIncludingVat'])
-			->whereSale($eSale)
-			->whereCustomer($eSale['customer'])
-			->update($ePayment);
-
-		if($affected === 0) {
-			self::createBySale($eSale, $eMethod);
-		}
-		Payment::model()->commit();
-
-	}
 
 	public static function updateBySaleStatus(Sale $eSale): void {
 
 		$eSale->expects(['customer', 'farm', 'preparationStatus']);
+
+		Payment::model()->beginTransaction();
 
 		Payment::model()
        ->select(['status'])
@@ -250,8 +225,30 @@ class PaymentLib extends PaymentCrud {
        ->whereCustomer($eSale['customer'])
        ->update(['status' => match($eSale['preparationStatus']) {
 	       Sale::DELIVERED => Payment::SUCCESS,
-	       Sale::DRAFT => Payment::PENDING,
+	       Sale::DRAFT => Payment::INITIALIZED,
        }]);
+
+		if($eSale['preparationStatus'] === Sale::DRAFT) {
+
+			$eSale['paymentStatus'] = NULL;
+			$eSale['paymentMethod'] = NULL;
+
+		} else {
+
+			$eSale['paymentStatus'] = Sale::PAID;
+			$eSale['paymentMethod'] = Payment::model()
+				->select('method')
+				->whereSale($eSale)
+				->whereStatus(Payment::SUCCESS)
+				->sort(['id' => SORT_DESC])
+				->getValue('method');
+
+		}
+
+		SaleLib::update($eSale, ['paymentMethod', 'paymentStatus']);
+
+		Payment::model()->commit();
+
 	}
 
 }

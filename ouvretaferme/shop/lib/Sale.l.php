@@ -278,25 +278,16 @@ class SaleLib {
 
 	public static function canUpdateForShop(\selling\Sale $eSale): bool {
 
-		if($eSale['cPayment']->count() > 1) {
-			return FALSE;
-		}
-
-		if($eSale['cPayment']->count() === 0) {
-			return TRUE;
-		}
-
-		$ePayment = $eSale['cPayment']->first();
 		return (
-			$ePayment['method']->exists() === FALSE or
-			$ePayment['method']['fqn'] === \payment\MethodLib::TRANSFER
+			$eSale['paymentMethod']->exists() === FALSE or
+			$eSale['paymentMethod']['fqn'] === \payment\MethodLib::TRANSFER
 		);
 
 	}
 
 	public static function updateForShop(\selling\Sale $eSaleReference, \Collection $cSaleExisting, \user\User $eUser, array $discounts): ?string {
 
-		$eSaleReference->expects(['basket', 'cPayment']);
+		$eSaleReference->expects(['basket']);
 
 		if(self::canUpdateForShop($eSaleReference) === FALSE) {
 			throw new \Exception('Payment security');
@@ -456,6 +447,12 @@ class SaleLib {
 		$ePayment = \selling\PaymentLib::createBySale($eSale, $eMethod, $stripeSession['id']);
 		$eSale['cPayment'] = new \Collection([$ePayment]);
 
+		$eSale['paymentMethod'] = $eMethod;
+		$eSale['paymentStatus'] = \selling\Sale::NOT_PAID;
+		$eSale['onlinePaymentStatus'] = \selling\Sale::PENDING;
+
+		\selling\SaleLib::update($eSale, ['paymentMethod', 'paymentStatus', 'onlinePaymentStatus']);
+
 		\selling\HistoryLib::createBySale($eSale, 'shop-payment-initiated', 'Stripe checkout id #'.$stripeSession['id'], ePayment: $ePayment);
 
 		\selling\Sale::model()->commit();
@@ -479,8 +476,12 @@ class SaleLib {
 			'customer'
 		]);
 
+		$eMethod = $method !== NULL ? \payment\MethodLib::getByFqn($method) : new \payment\Method();
+
 		$eSale['oldPreparationStatus'] = $eSale['preparationStatus'];
 		$eSale['preparationStatus'] = \selling\Sale::CONFIRMED;
+		$eSale['paymentMethod'] = $eMethod;
+		$eSale['paymentStatus'] = \selling\Sale::NOT_PAID;
 
 		$ePayment = new \selling\Payment([
 			'sale' => $eSale,
@@ -493,7 +494,7 @@ class SaleLib {
 
 		\selling\Sale::model()->beginTransaction();
 
-		\selling\SaleLib::update($eSale, ['preparationStatus']);
+		\selling\SaleLib::update($eSale, ['preparationStatus', 'paymentMethod', 'paymentStatus']);
 
 		$affected = \selling\Payment::model()
       ->select(['method', 'amountIncludingVat'])
@@ -505,8 +506,6 @@ class SaleLib {
 		if($affected === 0) {
 			\selling\Payment::model()->insert($ePayment);
 		}
-
-		$eSale['cPayment'] = new \Collection([$ePayment]);
 
 		$group = FALSE;
 		self::notify($eSale['shopUpdated'] ? 'saleUpdated' : 'saleConfirmed', $eSale, $eSale['customer']['user'], $eSale['cItem'], $group);
@@ -554,19 +553,18 @@ class SaleLib {
 			\selling\PaymentLib::hasSuccess($eSale) === FALSE
 		) {
 
+			$newValues = [
+				'paymentStatus' => \selling\Sale::FAILED,
+				'onlinePaymentStatus' => \selling\Sale::FAILURE,
+				'paymentMethod' => \payment\MethodLib::getByFqn('online-card'),
+			];
 			\selling\Sale::model()
-				->wherePaymentStatus('NOT IN', [\selling\Sale::PAID])
-				->update($eSale, [
-					'paymentStatus' => \selling\Sale::FAILED
-				]);
+				->wherePaymentStatus('NOT IN', [\selling\Sale::PAID]) // En cas de concurrence (si le client a réussi entre temps)
+				->update($eSale, $newValues);
 
-			if($affected > 0) {
+			\selling\HistoryLib::createBySale($eSale, 'shop-payment-failed', 'Stripe event id #'.$object['id'].' (event type '.$event['type'].')');
 
-				\selling\HistoryLib::createBySale($eSale, 'shop-payment-failed', 'Stripe event id #'.$object['id'].' (event type '.$event['type'].')');
-
-				self::notify('saleFailed', $eSale, $eSale['customer']['user']);
-
-			}
+			self::notify('saleFailed', $eSale, $eSale['customer']['user']);
 
 		}
 
@@ -607,6 +605,8 @@ class SaleLib {
 		$eSale['oldPreparationStatus'] = $eSale['preparationStatus'];
 		$eSale['preparationStatus'] = \selling\Sale::CONFIRMED;
 		$eSale['paymentStatus'] = \selling\Sale::PAID;
+		$eSale['paymentMethod'] = \payment\MethodLib::getByFqn('online-card');
+		$eSale['onlinePaymentStatus'] = \selling\Sale::SUCCESS;
 
 		\selling\SaleLib::update($eSale, ['preparationStatus', 'paymentStatus']);
 

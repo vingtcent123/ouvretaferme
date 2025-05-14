@@ -504,7 +504,13 @@ class SaleUi {
 						if(in_array('paymentMethod', $hide) === FALSE) {
 
 							$h .= '<td class="sale-item-payment-type '.($dynamicHide['paymentMethod'] ?? 'hide-md-down').'">';
-								$h .= PaymentUi::getListDisplay($eSale, $eSale['cPayment'], $cPaymentMethod);
+
+								if($eSale['marketParent']->exists()) {
+									$h .= PaymentUi::getListDisplay($eSale, $eSale['cPayment'], $cPaymentMethod);
+								} else {
+									$h .= self::getPaymentMethodName($eSale).' '.self::getPaymentStatus($eSale);
+								}
+
 							$h .= '</td>';
 
 						}
@@ -925,10 +931,14 @@ class SaleUi {
 
 	}
 
-	public static function getPaymentStatus(Sale $eSale, Payment $ePayment): string {
+	public static function getPaymentStatus(Sale $eSale): string {
 
-		if(($ePayment['method']['fqn'] ?? NULL) === \payment\MethodLib::TRANSFER and $eSale['invoice']->empty()) {
+		if(($eSale['paymentMethod']['fqn'] ?? NULL) === \payment\MethodLib::TRANSFER and $eSale['invoice']->empty()) {
 			return '<span class="util-badge sale-payment-status sale-payment-status-not-paid">'.s("Facture à éditer").'</span>';
+		}
+
+		if($eSale['paymentStatus'] === NULL and $eSale['paymentMethod']->exists() === FALSE) {
+			return '';
 		}
 
 		return '<span class="util-badge sale-payment-status sale-payment-status-'.$eSale['paymentStatus'].'">'.self::p('paymentStatus')->values[$eSale['paymentStatus']].'</span>';
@@ -1113,6 +1123,38 @@ class SaleUi {
 
 	}
 
+	public static function getPaymentMethodName(Sale $eSale): string {
+
+		if($eSale->isPaymentOnline()) {
+			return \payment\MethodUi::getOnlineCardText();
+		}
+
+		return encode($eSale['paymentMethod']['name'] ?? '?');
+
+	}
+	public static function getPayment(Sale $eSale): string {
+
+		if($eSale['market']) {
+			return '';
+		}
+
+		$paymentList = [];
+
+		if($eSale['invoice']->notEmpty()) {
+
+			if($eSale['invoice']->isCreditNote()) {
+				$paymentList[] = '<div>'.s("Avoir").'</div>';
+			} else {
+				$paymentList[] = '<div>'.s("Facture").'</div>'
+					.'<div>'.InvoiceUi::getPaymentStatus($eSale['invoice']).'</div>';
+			}
+		}
+
+		$paymentList[] = self::getPaymentMethodName($eSale).' '.self::getPaymentStatus($eSale);
+
+		return implode('<br />', $paymentList);
+	}
+
 	public function getContent(Sale $eSale, \Collection $cPdf, \Collection $cPaymentMethod): string {
 
 		if($eSale->isComposition()) {
@@ -1126,7 +1168,7 @@ class SaleUi {
 				if($eSale['market'] === FALSE) {
 					$h .= '<dt>'.s("Moyen de paiement").'</dt>';
 					$h .= '<dd>';
-						$h .= PaymentUi::getListDisplay($eSale, $eSale['cPayment'], $cPaymentMethod);
+						$h .= self::getPayment($eSale);
 					$h .= '</dd>';
 				}
 
@@ -2126,6 +2168,7 @@ class SaleUi {
 					Sale::FAILED => s("En échec"),
 					Sale::PAID => s("Payé"),
 					Sale::WAITING => s("En cours de validation"),
+					Sale::NOT_PAID => s("Non payé"),
 				];
 				$d->field = function(\util\FormUi $form, Sale $eSale) {
 					return $form->radios('paymentStatus', [

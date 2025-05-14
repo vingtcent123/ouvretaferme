@@ -18,7 +18,8 @@ new \selling\SalePage()
 		$data->cItemMarket = \selling\SaleLib::getItems($data->e);
 
 		$data->eSale = \selling\SaleLib::getById(GET('subId'), \selling\Sale::getSelection() + [
-			'createdBy' => ['firstName', 'lastName', 'vignette']
+			'createdBy' => ['firstName', 'lastName', 'vignette'],
+			'cPayment' => \selling\PaymentLib::delegateBySale(),
 		]);
 
 		if($data->eSale->empty()) {

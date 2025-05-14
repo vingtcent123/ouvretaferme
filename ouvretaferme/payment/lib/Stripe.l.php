@@ -109,7 +109,7 @@ class StripeLib {
 			return new \selling\Sale();
 		}
 
-		$eSale = \selling\SaleLib::getById($ePayment['sale']);
+		$eSale = \selling\SaleLib::getById($ePayment['sale']['id']);
 
 		if($eSale->empty()) {
 			throw new \Exception('Unknown sale #'.$ePayment['sale']['id']);

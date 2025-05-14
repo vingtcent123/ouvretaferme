@@ -72,7 +72,6 @@ new \selling\SalePage()
 		$data->ccSaleMarket = \selling\SaleLib::getByParent($data->e);
 		$data->cHistory = \selling\HistoryLib::getBySale($data->e);
 		$data->cPdf = \selling\PdfLib::getBySale($data->e);
-		$data->e['cPayment'] = \selling\PaymentLib::getBySale($data->e);
 
 		$data->e['invoice'] = \selling\InvoiceLib::getById($data->e['invoice'], properties: \selling\InvoiceElement::getSelection());
 		$data->e['shopPoint'] = \shop\PointLib::getById($data->e['shopPoint']);
@@ -268,7 +267,7 @@ new \selling\SalePage()
 	}, validate: ['canUpdateCustomer', 'acceptUpdateCustomer'])
 	->write('doUpdatePaymentMethod', function($data) {
 
-		$paymentMethodId = \payment\Method::POST('paymentMethod', 'id', NULL);
+		$paymentMethodId = \payment\Method::POST('paymentMethod', 'id');
 		$action = POST('action', 'string', 'update');
 		$eMethod = \payment\MethodLib::getById($paymentMethodId)->validate('canUse');
 
@@ -277,14 +276,12 @@ new \selling\SalePage()
 				\selling\PaymentLib::deleteBySaleAndMethod($data->e, eMethod: $eMethod);
 				break;
 
-			case 'update':
-				$status = POST('status', 'string', \selling\Payment::PENDING);
-				\selling\PaymentLib::updateOrCreateBySale($data->e, eMethod: $eMethod, status: $status);
-				break;
-
 			case 'add':
 				\selling\PaymentLib::createBySale($data->e, eMethod: $eMethod);
 				break;
+
+			default:
+				throw new NotExpectedAction('Unknown action "'.$action.'"');
 
 		}
 

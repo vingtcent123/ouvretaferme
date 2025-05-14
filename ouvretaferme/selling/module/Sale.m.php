@@ -30,6 +30,10 @@ abstract class SaleElement extends \Element {
 	const PAID = 'paid';
 	const FAILED = 'failed';
 
+	const PENDING = 'pending';
+	const SUCCESS = 'success';
+	const FAILURE = 'failure';
+
 	public static function getSelection(): array {
 		return Sale::model()->getProperties();
 	}
@@ -80,7 +84,9 @@ class SaleModel extends \ModuleModel {
 			'shipping' => ['decimal', 'digits' => 8, 'decimal' => 2, 'min' => 0.01, 'max' => NULL, 'null' => TRUE, 'cast' => 'float'],
 			'shippingExcludingVat' => ['decimal', 'digits' => 8, 'decimal' => 2, 'null' => TRUE, 'cast' => 'float'],
 			'preparationStatus' => ['enum', [\selling\Sale::COMPOSITION, \selling\Sale::DRAFT, \selling\Sale::BASKET, \selling\Sale::CONFIRMED, \selling\Sale::SELLING, \selling\Sale::PREPARED, \selling\Sale::DELIVERED, \selling\Sale::CANCELED], 'cast' => 'enum'],
+			'paymentMethod' => ['element32', 'payment\Method', 'null' => TRUE, 'cast' => 'element'],
 			'paymentStatus' => ['enum', [\selling\Sale::WAITING, \selling\Sale::NOT_PAID, \selling\Sale::PAID, \selling\Sale::FAILED], 'null' => TRUE, 'cast' => 'enum'],
+			'onlinePaymentStatus' => ['enum', [\selling\Sale::PENDING, \selling\Sale::SUCCESS, \selling\Sale::FAILURE], 'null' => TRUE, 'cast' => 'enum'],
 			'compositionOf' => ['element32', 'selling\Product', 'null' => TRUE, 'cast' => 'element'],
 			'compositionEndAt' => ['date', 'null' => TRUE, 'cast' => 'string'],
 			'market' => ['bool', 'cast' => 'bool'],
@@ -109,12 +115,13 @@ class SaleModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'document', 'farm', 'customer', 'from', 'taxes', 'organic', 'conversion', 'type', 'discount', 'items', 'hasVat', 'vat', 'vatByRate', 'priceExcludingVat', 'priceIncludingVat', 'shippingVatRate', 'shippingVatFixed', 'shipping', 'shippingExcludingVat', 'preparationStatus', 'paymentStatus', 'compositionOf', 'compositionEndAt', 'market', 'marketSales', 'marketParent', 'orderFormValidUntil', 'orderFormPaymentCondition', 'invoice', 'shop', 'shopDate', 'shopLocked', 'shopShared', 'shopUpdated', 'shopPoint', 'shopComment', 'deliveryStreet1', 'deliveryStreet2', 'deliveryPostcode', 'deliveryCity', 'comment', 'stats', 'createdAt', 'createdBy', 'deliveredAt', 'statusDeliveredAt'
+			'id', 'document', 'farm', 'customer', 'from', 'taxes', 'organic', 'conversion', 'type', 'discount', 'items', 'hasVat', 'vat', 'vatByRate', 'priceExcludingVat', 'priceIncludingVat', 'shippingVatRate', 'shippingVatFixed', 'shipping', 'shippingExcludingVat', 'preparationStatus', 'paymentMethod', 'paymentStatus', 'onlinePaymentStatus', 'compositionOf', 'compositionEndAt', 'market', 'marketSales', 'marketParent', 'orderFormValidUntil', 'orderFormPaymentCondition', 'invoice', 'shop', 'shopDate', 'shopLocked', 'shopShared', 'shopUpdated', 'shopPoint', 'shopComment', 'deliveryStreet1', 'deliveryStreet2', 'deliveryPostcode', 'deliveryCity', 'comment', 'stats', 'createdAt', 'createdBy', 'deliveredAt', 'statusDeliveredAt'
 		]);
 
 		$this->propertiesToModule += [
 			'farm' => 'farm\Farm',
 			'customer' => 'selling\Customer',
+			'paymentMethod' => 'payment\Method',
 			'compositionOf' => 'selling\Product',
 			'marketParent' => 'selling\Sale',
 			'invoice' => 'selling\Invoice',
@@ -207,6 +214,9 @@ class SaleModel extends \ModuleModel {
 				return ($value === NULL) ? NULL : (string)$value;
 
 			case 'paymentStatus' :
+				return ($value === NULL) ? NULL : (string)$value;
+
+			case 'onlinePaymentStatus' :
 				return ($value === NULL) ? NULL : (string)$value;
 
 			default :
@@ -322,8 +332,16 @@ class SaleModel extends \ModuleModel {
 		return $this->where('preparationStatus', ...$data);
 	}
 
+	public function wherePaymentMethod(...$data): SaleModel {
+		return $this->where('paymentMethod', ...$data);
+	}
+
 	public function wherePaymentStatus(...$data): SaleModel {
 		return $this->where('paymentStatus', ...$data);
+	}
+
+	public function whereOnlinePaymentStatus(...$data): SaleModel {
+		return $this->where('onlinePaymentStatus', ...$data);
 	}
 
 	public function whereCompositionOf(...$data): SaleModel {

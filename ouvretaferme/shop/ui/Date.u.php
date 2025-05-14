@@ -777,7 +777,7 @@ class DateUi {
 					$h .= new \selling\SaleUi()->getList(
 						$eFarm,
 						$cSale,
-						hide: array_merge(['deliveredAt', 'documents', 'items'], $cSale->match(fn($eSale) => $eSale['cPayment']->empty() === FALSE and $eSale['cPayment']->first()['method']->exists()) ? [] : ['paymentMethod']),
+						hide: ['deliveredAt', 'documents', 'items'],
 						dynamicHide: ['paymentMethod' => ''],
 						show: ['point'],
 						hasSubtitles: FALSE,

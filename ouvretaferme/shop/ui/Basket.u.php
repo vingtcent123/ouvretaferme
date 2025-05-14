@@ -779,9 +779,7 @@ class BasketUi {
 		$class = '';
 		$content = '';
 
-		$ePayment = $eSaleReference['cPayment']->first();
-
-		switch($ePayment['method']['fqn'] ?? NULL) {
+		switch($eSaleReference['paymentMethod']['fqn'] ?? NULL) {
 
 			case \payment\MethodLib::ONLINE_CARD :
 
@@ -873,7 +871,7 @@ class BasketUi {
 
 					$h .= '<dt>'.s("Paiement").'</dt>';
 					$h .= '<dd>';
-						$h .= \selling\PaymentUi::getListDisplay($eSaleReference, $eSaleReference['cPayment'], $cPaymentMethod);
+						$h .= \selling\SaleUi::getPayment($eSaleReference);
 					$h .= '</dd>';
 
 					if($eSaleReference->isPaymentOnline()) {

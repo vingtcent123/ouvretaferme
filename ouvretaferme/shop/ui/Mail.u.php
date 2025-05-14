@@ -155,9 +155,7 @@ L'équipe {siteName}", $arguments);
 
 	public static function getSaleCanceled(\selling\Sale $eSale): array {
 
-		$ePayment = $eSale['cPayment']->first();
-
-		if($ePayment !== NULL and $ePayment['method']->exists() and $ePayment['method']['fqn'] === \payment\MethodLib::TRANSFER) {
+		if($eSale['paymentMethod']->exists() and $eSale['paymentMethod']['fqn'] === \payment\MethodLib::TRANSFER) {
 				$payment = s("Vous ne serez donc pas facturé du montant de cette commande.")."\n";
 		} else {
 				$payment = '';

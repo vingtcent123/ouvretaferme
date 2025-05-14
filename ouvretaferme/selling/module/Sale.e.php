@@ -12,12 +12,13 @@ class Sale extends SaleElement {
 			'shopPoint' => ['type', 'name'],
 			'farm' => ['name', 'url', 'vignette', 'banner', 'featureDocument', 'hasSales'],
 			'price' => fn($e) => $e['type'] === Sale::PRO ? $e['priceExcludingVat'] : $e['priceIncludingVat'],
-			'invoice' => ['name', 'emailedAt', 'createdAt', 'paymentStatus', 'priceExcludingVat', 'generation'],
+			'invoice' => ['name', 'emailedAt', 'createdAt', 'priceExcludingVat', 'generation'],
 			'compositionOf' => ['name'],
 			'marketParent' => [
 				'customer' => ['type', 'name']
 			],
-			'cPayment' => PaymentLib::delegateBySale(),
+			'paymentStatus',
+			'paymentMethod' => \payment\Method::getSelection(),
 		];
 
 	}
@@ -368,21 +369,13 @@ class Sale extends SaleElement {
 
 	public function isPaymentOnline(): bool {
 
-		$this->expects(['cPayment']);
-
-		if($this['cPayment']->empty()) {
+		if($this['paymentMethod']->exists() === FALSE) {
 			return FALSE;
 		}
 
-		$ePayment = $this['cPayment']->first();
+		$this->expects(['paymentMethod' => ['fqn']]);
 
-		if($ePayment['method']->exists() === FALSE) {
-			return FALSE;
-		}
-
-		$ePayment->expects(['method' => ['fqn']]);
-
-		return ($ePayment['method']['fqn'] === \payment\MethodLib::ONLINE_CARD);
+		return ($this['paymentMethod']['fqn'] === \payment\MethodLib::ONLINE_CARD);
 
 	}
 
@@ -715,27 +708,24 @@ class Sale extends SaleElement {
 		}
 
 		// Pas de paiement enregistré => OUI
-		if($this['cPayment']->count() === 0) {
+		if($this['paymentMethod']->exists() === FALSE) {
 			return TRUE;
 		}
 
-		// Plus d'un seul paiement => NON
-		if($this['cPayment']->count() > 1) {
-			return FALSE;
-		}
-
-		$ePayment = $this['cPayment']->first();
-		if($ePayment['method']->exists() === FALSE) {
-			return TRUE;
-		}
-		if($ePayment['method']['fqn'] === \payment\MethodLib::TRANSFER) {
+		// Non payé
+		if($this['paymentStatus'] !== Sale::PAID) {
 			return TRUE;
 		}
 
+		// Paiement en ligne
 		if(
-			$ePayment['method']['fqn'] === \payment\MethodLib::ONLINE_CARD
+			$this['paymentMethod']['fqn'] === \payment\MethodLib::ONLINE_CARD
 			and in_array($this['paymentStatus'], [NULL, Sale::FAILED])
 		) {
+			return TRUE;
+		}
+
+		if($this['paymentMethod']['fqn'] === \payment\MethodLib::TRANSFER) {
 			return TRUE;
 		}
 

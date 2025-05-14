@@ -473,7 +473,7 @@ class ShopUi {
 							NULL => s("Direct avec le producteur"),
 							\payment\MethodLib::ONLINE_CARD => s("Carte bancaire"),
 							\payment\MethodLib::TRANSFER => s("Virement bancaire")
-						], $eSaleExample['cPayment']->first()['method']['fqn'] ?? NULL, attributes: ['mandatory' => TRUE]).
+						], $eSaleExample['paymentMethod'], attributes: ['mandatory' => TRUE]).
 						$form->submit(s("Afficher"))
 					);
 				$h .= $form->close();

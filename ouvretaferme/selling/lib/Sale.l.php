@@ -452,7 +452,8 @@ class SaleLib extends SaleCrud {
 
 		$ccSale = Sale::model()
 			->select(Sale::getSelection() + [
-				'createdBy' => ['firstName', 'lastName', 'vignette']
+				'createdBy' => ['firstName', 'lastName', 'vignette'],
+				'cPayment' => PaymentLib::delegateBySale()
 			])
 			->whereFarm($eSale['farm']['id'])
 			->whereMarketParent($eSale)
