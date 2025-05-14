@@ -733,7 +733,7 @@ class Sale extends SaleElement {
 		// Paiement en ligne
 		if(
 			$this['paymentMethod']['fqn'] === \payment\MethodLib::ONLINE_CARD
-			and in_array($this['paymentStatus'], [NULL, Sale::FAILED])
+			and in_array($this['paymentStatus'], [NULL, Sale::NOT_PAID])
 		) {
 			return TRUE;
 		}

@@ -30,7 +30,7 @@ class PaymentUi {
 
 		return match($ePayment['status']) {
 			Payment::SUCCESS => SaleUi::getPaymentStatus(new Sale(['paymentStatus' => Sale::PAID, 'invoice' => $eSale['invoice']])),
-			Payment::FAILURE => SaleUi::getPaymentStatus(new Sale(['paymentStatus' => Sale::FAILED, 'invoice' => $eSale['invoice']])),
+			Payment::FAILURE => SaleUi::getPaymentStatus(new Sale(['paymentStatus' => Sale::NOT_PAID, 'invoice' => $eSale['invoice']])),
 			Payment::INITIALIZED => SaleUi::getPaymentStatus(new Sale(['paymentStatus' => Sale::NOT_PAID, 'invoice' => $eSale['invoice']])),
 		};
 

@@ -790,7 +790,7 @@ class BasketUi {
 						$content .= '<p>'.s("Vous avez reçu un e-mail de confirmation.").'</p>';
 						break;
 
-					case \selling\Sale::FAILED :
+					case \selling\Sale::NOT_PAID :
 						$content .= '<h2>'.\Asset::icon('exclamation-triangle-fill').' '.s("Le paiement de votre commande a échoué !").'</h2>';
 						$content .= '<p>'.s("Votre compte n'a pas été débité et votre commande n'est pas encore confirmée. Pour confirmer votre commande, veuillez retenter un paiement.").'</p>';
 						$content .= '<a href="'.\shop\ShopUi::paymentUrl($eShop, $eDate).'" class="btn btn-transparent">'.s("Retenter un paiement").'</a> ';
