@@ -510,7 +510,7 @@ class SaleUi {
 									$eSale['paymentMethod']->notEmpty() and
 									$eSale['marketParent']->empty()
 								) {
-									$h .= ' '.self::getPaymentStatus($eSale);
+									$h .= '<div style="margin-top: 0.25rem">'.self::getPaymentStatus($eSale).'</div>';
 								}
 
 							$h .= '</td>';

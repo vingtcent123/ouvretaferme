@@ -310,7 +310,10 @@ class OrderUi {
 
 						$h .= SaleUi::getPaymentMethodName($eSale);
 
-						if($eSale['paymentMethod']['online']) {
+						if(
+							$eSale['paymentMethod']->notEmpty() and
+							$eSale['paymentMethod']['online']
+						) {
 							$h .= ' '.self::getPaymentStatus($eSale);
 						}
 
