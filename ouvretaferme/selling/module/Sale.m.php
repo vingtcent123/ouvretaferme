@@ -25,10 +25,8 @@ abstract class SaleElement extends \Element {
 	const DELIVERED = 'delivered';
 	const CANCELED = 'canceled';
 
-	const WAITING = 'waiting';
 	const NOT_PAID = 'not-paid';
 	const PAID = 'paid';
-	const FAILED = 'failed';
 
 	const PENDING = 'pending';
 	const SUCCESS = 'success';
@@ -85,7 +83,7 @@ class SaleModel extends \ModuleModel {
 			'shippingExcludingVat' => ['decimal', 'digits' => 8, 'decimal' => 2, 'null' => TRUE, 'cast' => 'float'],
 			'preparationStatus' => ['enum', [\selling\Sale::COMPOSITION, \selling\Sale::DRAFT, \selling\Sale::BASKET, \selling\Sale::CONFIRMED, \selling\Sale::SELLING, \selling\Sale::PREPARED, \selling\Sale::DELIVERED, \selling\Sale::CANCELED], 'cast' => 'enum'],
 			'paymentMethod' => ['element32', 'payment\Method', 'null' => TRUE, 'cast' => 'element'],
-			'paymentStatus' => ['enum', [\selling\Sale::WAITING, \selling\Sale::NOT_PAID, \selling\Sale::PAID, \selling\Sale::FAILED], 'null' => TRUE, 'cast' => 'enum'],
+			'paymentStatus' => ['enum', [\selling\Sale::NOT_PAID, \selling\Sale::PAID], 'null' => TRUE, 'cast' => 'enum'],
 			'onlinePaymentStatus' => ['enum', [\selling\Sale::PENDING, \selling\Sale::SUCCESS, \selling\Sale::FAILURE], 'null' => TRUE, 'cast' => 'enum'],
 			'compositionOf' => ['element32', 'selling\Product', 'null' => TRUE, 'cast' => 'element'],
 			'compositionEndAt' => ['date', 'null' => TRUE, 'cast' => 'string'],

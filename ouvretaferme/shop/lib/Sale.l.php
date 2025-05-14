@@ -377,6 +377,9 @@ class SaleLib {
 
 			}
 
+			// Supprimer les paiements liés
+			\selling\PaymentLib::deleteBySale($eSaleReference);
+
 		\selling\Sale::model()->commit();
 
 
@@ -485,7 +488,7 @@ class SaleLib {
 
 		$ePayment = new \selling\Payment([
 			'sale' => $eSale,
-			'method' => $method !== NULL ? \payment\MethodLib::getByFqn($method) : new \payment\Method(),
+			'method' => $eMethod,
 			'customer' => $eSale['customer'],
 			'farm' => $eSale['farm'],
 			'amountIncludingVat' => $eSale['priceIncludingVat'],
@@ -496,16 +499,7 @@ class SaleLib {
 
 		\selling\SaleLib::update($eSale, ['preparationStatus', 'paymentMethod', 'paymentStatus']);
 
-		$affected = \selling\Payment::model()
-      ->select(['method', 'amountIncludingVat'])
-      ->whereSale($ePayment['sale'])
-      ->whereCustomer($ePayment['customer'])
-      ->whereCheckoutId($ePayment['checkoutId'])
-      ->update($ePayment);
-
-		if($affected === 0) {
-			\selling\Payment::model()->insert($ePayment);
-		}
+		\selling\Payment::model()->insert($ePayment);
 
 		$group = FALSE;
 		self::notify($eSale['shopUpdated'] ? 'saleUpdated' : 'saleConfirmed', $eSale, $eSale['customer']['user'], $eSale['cItem'], $group);
@@ -554,7 +548,7 @@ class SaleLib {
 		) {
 
 			$newValues = [
-				'paymentStatus' => \selling\Sale::FAILED,
+				'paymentStatus' => \selling\Sale::NOT_PAID,
 				'onlinePaymentStatus' => \selling\Sale::FAILURE,
 				'paymentMethod' => \payment\MethodLib::getByFqn('online-card'),
 			];

@@ -954,19 +954,9 @@ class SaleUi {
 				$text = s("Non payé");
 				break;
 
-			case Sale::WAITING :
-				$color = '--warning';
-				$text = s("En cours de paiement");
-				break;
-
 			case Sale::PAID :
 				$color = '--success';
 				$text = \Asset::icon('check').' '.s("Payé");
-				break;
-
-			case Sale::FAILED :
-				$color = '--danger';
-				$text = \Asset::icon('exclamation-triangle-fill').' '.s("Échec");
 				break;
 
 		};
@@ -2165,9 +2155,7 @@ class SaleUi {
 
 			case 'paymentStatus' :
 				$d->values = [
-					Sale::FAILED => s("En échec"),
 					Sale::PAID => s("Payé"),
-					Sale::WAITING => s("En cours de validation"),
 					Sale::NOT_PAID => s("Non payé"),
 				];
 				$d->field = function(\util\FormUi $form, Sale $eSale) {

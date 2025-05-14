@@ -3,7 +3,7 @@ new Page()
 	->cli('index', function($data) {
 
 		$cSale = \selling\Sale::model()
-			->select(\selling\Sale::getSelection() + ['paymentMethod' => new Sql('paymentMethod')])
+			->select(['id', 'oldPaymentMethod' => new Sql('oldPaymentMethod'), 'paymentStatus', 'preparationStatus', 'marketParent', 'customer', 'farm', 'priceIncludingVat'])
 			->getCollection();
 
 		$cMethod = \payment\Method::model()
@@ -15,7 +15,7 @@ new Page()
 
 		foreach($cSale as $eSale) {
 
-			$method = match($eSale['paymentMethod']) {
+			$method = match($eSale['oldPaymentMethod']) {
 				'card' => \payment\MethodLib::CARD,
 				'check' => \payment\MethodLib::CHECK,
 				'transfer' => \payment\MethodLib::TRANSFER,
@@ -26,16 +26,26 @@ new Page()
 
 			$eMethod = $cMethod[$method] ?? new \payment\Method();
 
+			if(
+				// Marché = OK
+				$eSale['marketParent']->exists()
+				or $eSale['paymentStatus'] === \selling\Sale::PAID
+				or $eSale['preparationStatus'] === \selling\Sale::DELIVERED
+			) {
+				$status = \selling\Payment::SUCCESS;
+			} else {
+				$status = \selling\Payment::INITIALIZED;
+			}
 			$ePayment = new \selling\Payment([
 				'sale' => $eSale,
 				'customer' => $eSale['customer'],
 				'farm' => $eSale['farm'],
 				'amountIncludingVat' => $eSale['priceIncludingVat'],
 				'method' => $eMethod,
-				'status' => \selling\Payment::SUCCESS,
+				'status' => $status,
 			]);
 
-			if($eSale['paymentMethod'] === 'online-card') {
+			if($eSale['oldPaymentMethod'] === 'online-card') {
 
 				\selling\Payment::model()
 					->select(['amountIncludingVat', 'method'])
@@ -43,11 +53,31 @@ new Page()
 					->whereCustomer($eSale['customer'])
 					->update($ePayment);
 
+					$eSale['onlinePaymentStatus'] = match($ePayment['status']) {
+						\selling\Payment::SUCCESS => \selling\Sale::SUCCESS,
+						\selling\Payment::FAILURE => \selling\Sale::FAILURE,
+						default => \selling\Sale::PENDING,
+					};
+
 			} else {
 
 				\selling\Payment::model()->insert($ePayment);
+				$eSale['onlinePaymentStatus'] = NULL;
 
 			}
+
+			if($eSale['marketParent']->exists()) {
+
+				$eSale['paymentStatus'] = \selling\Sale::PAID;
+
+			} else if($eSale['paymentStatus'] === NULL and $eMethod->exists()) {
+
+				$eSale['paymentStatus'] = \selling\Sale::NOT_PAID;
+
+			}
+
+			$eSale['paymentMethod'] = $eMethod;
+			\selling\SaleLib::update($eSale, ['paymentMethod', 'paymentStatus', 'onlinePaymentStatus']);
 
 		}
 

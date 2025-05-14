@@ -136,7 +136,7 @@ new Page()
 		$data->ccItemProduct = \selling\ItemLib::getProductsBySales($data->eFarm, $data->cSale);
 		$data->ccItemSale = \selling\ItemLib::getBySales($data->eFarm, $data->cSale);
 
-		$data->cPaymentMethod = \payment\MethodLib::getByFarm($data->e['farm'], NULL);
+		$data->cPaymentMethod = \payment\MethodLib::getByFarm($data->eFarm, NULL);
 
 		throw new ViewAction($data);
 
