@@ -41,15 +41,15 @@ class MethodModel extends \ModuleModel {
 
 		$this->properties = array_merge($this->properties, [
 			'id' => ['serial32', 'cast' => 'int'],
-			'fqn' => ['fqn', 'null' => TRUE, 'cast' => 'string'],
 			'name' => ['text8', 'min' => 1, 'max' => NULL, 'cast' => 'string'],
+			'fqn' => ['fqn', 'null' => TRUE, 'cast' => 'string'],
 			'farm' => ['element32', 'farm\Farm', 'null' => TRUE, 'cast' => 'element'],
 			'online' => ['bool', 'cast' => 'bool'],
 			'status' => ['enum', [\payment\Method::ACTIVE, \payment\Method::INACTIVE, \payment\Method::DELETED], 'cast' => 'enum'],
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'fqn', 'name', 'farm', 'online', 'status'
+			'id', 'name', 'fqn', 'farm', 'online', 'status'
 		]);
 
 		$this->propertiesToModule += [
@@ -105,12 +105,12 @@ class MethodModel extends \ModuleModel {
 		return $this->where('id', ...$data);
 	}
 
-	public function whereFqn(...$data): MethodModel {
-		return $this->where('fqn', ...$data);
-	}
-
 	public function whereName(...$data): MethodModel {
 		return $this->where('name', ...$data);
+	}
+
+	public function whereFqn(...$data): MethodModel {
+		return $this->where('fqn', ...$data);
 	}
 
 	public function whereFarm(...$data): MethodModel {

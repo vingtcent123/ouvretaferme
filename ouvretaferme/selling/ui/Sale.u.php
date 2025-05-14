@@ -2156,11 +2156,8 @@ class SaleUi {
 				break;
 
 			case 'paymentMethod' :
-				$d->field = function(\util\FormUi $form, Sale $e) {
-
-					return $form->select('paymentMethod', $e['cPaymentMethod']->toArray(fn($ePaymentMethod) => [$ePaymentMethod['id'], $ePaymentMethod['name']], keys: TRUE), $e['paymentMethod']);
-
-				};
+				$d->values = fn(Sale $e) => $e['cPaymentMethod'] ?? $e->expects(['cPaymentMethod']);
+				$d->placeholder = s("Non défini");
 				break;
 
 			case 'preparationStatus' :
