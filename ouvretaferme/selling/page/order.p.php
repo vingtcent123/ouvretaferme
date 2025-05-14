@@ -39,8 +39,6 @@ new \selling\SalePage()
 		$data->e['shopPoint'] = \shop\PointLib::getById($data->e['shopPoint']);
 		$data->e['cPayment'] = \selling\PaymentLib::getBySale($data->e);
 
-		$data->cPaymentMethod = \payment\MethodLib::getByFarm($data->eFarm, NULL);
-
 		throw new ViewAction($data);
 
 	}, validate: ['canAccess']);

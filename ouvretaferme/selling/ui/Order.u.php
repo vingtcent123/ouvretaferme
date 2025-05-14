@@ -283,10 +283,10 @@ class OrderUi {
 
 	}
 
-	public function displaySale(Sale $eSale, \Collection $cPaymentMethod): string {
+	public function displaySale(Sale $eSale): string {
 
 		$h = '';
-		
+
 		if($eSale['shop']->notEmpty()) {
 			$h .= '<h4 style="margin-bottom: 0.5rem">'.\shop\ShopUi::link($eSale['shop']).'</h4>';
 		}
@@ -306,7 +306,15 @@ class OrderUi {
 
 				if($eSale['cPayment']->empty() === FALSE) {
 					$h .= '<dt>'.s("Moyen de paiement").'</dt>';
-					$h .= '<dd>'.PaymentUi::getListDisplay($eSale, $eSale['cPayment'], cPaymentMethod: $cPaymentMethod).'</dd>';
+					$h .= '<dd>';
+
+						$h .= SaleUi::getPaymentMethodName($eSale);
+
+						if($eSale['paymentMethod']['online']) {
+							$h .= ' '.self::getPaymentStatus($eSale);
+						}
+
+					$h .= '</dd>';
 				}
 
 				if($eSale->isPaymentOnline()) {

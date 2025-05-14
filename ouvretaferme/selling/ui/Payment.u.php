@@ -36,12 +36,6 @@ class PaymentUi {
 
 	}
 
-	public static function getPaymentDisplay(Sale $eSale, Payment $ePayment): string {
-
-		return self::getPaymentMethodName($ePayment).' '.self::statusIcon($eSale, $ePayment);
-
-	}
-
 	public static function getPaymentMethodName($ePayment): string {
 
 		$ePayment->expects(['method']);
@@ -52,73 +46,6 @@ class PaymentUi {
 
 		return encode($ePayment['method']['name'] ?? '?');
 
-	}
-
-	public static function getPaymentForm(Sale $eSale, \Collection $cPaymentMethod): string {
-
-		$payment = '<div class="sale-payment-labels">';
-		foreach($cPaymentMethod as $ePaymentMethod) {
-			$payment .= '<a data-ajax="/selling/sale:doUpdatePaymentMethod" post-id="'.$eSale['id'].'" post-status="'.Payment::SUCCESS.'" post-action="add" post-payment-method="'.$ePaymentMethod['id'].'" class="sale-payment-action sale-payment-label sale-payment-'.($ePaymentMethod['online'] ? '' : 'not-').'online" title="'.encode($ePaymentMethod['name']).'">'.\payment\MethodUi::getShortValues($ePaymentMethod).'</a>';
-		}
-		$payment .= '</div>';
-
-		return $payment;
-
-	}
-
-	public static function getListDisplay(Sale $eSale, \Collection $cPayment, \Collection $cPaymentMethod): string {
-
-		if($eSale['market']) {
-			return '';
-		}
-
-		$totalPayments = $cPayment->reduce(fn($ePayment, $value) => $value + ($ePayment['amountIncludingVat'] ?? 0), 0);
-
-		$hasMoreThanOnePayment = $cPayment->find(fn($ePayment) => $ePayment['method']->notEmpty())->count() > 1;
-
-		$paymentList = [];
-
-		if($eSale['invoice']->notEmpty()) {
-
-			if($eSale['invoice']->isCreditNote()) {
-				$paymentList[] = '<div>'.s("Avoir").'</div>';
-			} else {
-				$paymentList[] = '<div>'.s("Facture").'</div>'
-					.'<div>'.InvoiceUi::getPaymentStatus($eSale['invoice']).'</div>';
-			}
-		}
-
-		foreach($cPayment as $ePayment) {
-
-			$payment = '<div>';
-
-				if($ePayment['method']->empty() and $eSale->acceptWritePaymentMethod()) {
-
-					$payment .= self::getPaymentForm($eSale, $cPaymentMethod);
-
-				} else {
-
-					$payment .= self::getPaymentDisplay($eSale, $ePayment);
-
-				}
-
-				if(($hasMoreThanOnePayment or $totalPayments !== $eSale['priceIncludingVat']) and $ePayment['amountIncludingVat'] !== NULL) {
-					$payment .= ' ('.\util\TextUi::money($ePayment['amountIncludingVat']).')';
-				}
-			$payment .= '</div>';
-
-			$paymentList[] = $payment;
-
-		}
-
-		if(empty($paymentList)) {
-			if($eSale->acceptWritePaymentMethod()) {
-				return self::getPaymentForm($eSale, $cPaymentMethod);
-			}
-			return '/';
-		}
-
-		return implode('<br />', $paymentList);
 	}
 
 	public static function p(string $property): \PropertyDescriber {

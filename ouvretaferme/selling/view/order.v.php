@@ -35,7 +35,7 @@ new AdaptativeView('/commande/{id}', function($data, MainTemplate $t) {
 
 	$t->header = new \selling\OrderUi()->getFarmHeader($data->eFarm, $data->e['customer'], $back);
 
-	echo new \selling\OrderUi()->displaySale($data->e, $data->cPaymentMethod);
+	echo new \selling\OrderUi()->displaySale($data->e);
 
 	if($data->cItem->empty()) {
 		echo '<div class="util-empty">'.s("Il n'y a aucun article dans cette commande.").'</div>';

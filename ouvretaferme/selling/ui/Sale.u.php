@@ -504,11 +504,13 @@ class SaleUi {
 						if(in_array('paymentMethod', $hide) === FALSE) {
 
 							$h .= '<td class="sale-item-payment-type '.($dynamicHide['paymentMethod'] ?? 'hide-md-down').'">';
+								$h .= self::getPaymentMethodName($eSale);
 
-								if($eSale['marketParent']->notEmpty()) {
-									$h .= PaymentUi::getListDisplay($eSale, $eSale['cPayment'], $cPaymentMethod);
-								} else {
-									$h .= self::getPaymentMethodName($eSale).' '.self::getPaymentStatus($eSale);
+								if(
+									$eSale['paymentMethod']->notEmpty() and
+									$eSale['marketParent']->empty()
+								) {
+									$h .= ' '.self::getPaymentStatus($eSale);
 								}
 
 							$h .= '</td>';

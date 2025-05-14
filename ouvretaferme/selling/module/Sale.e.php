@@ -306,15 +306,6 @@ class Sale extends SaleElement {
 
 	}
 
-	public function acceptWritePaymentMethod(): bool {
-
-		return (
-			$this['market'] === FALSE and
-			$this['preparationStatus'] !== Sale::CANCELED
-		);
-
-	}
-
 	public function acceptWriteDeliveredAt(): bool {
 
 		$this->expects(['preparationStatus', 'from', 'marketParent']);
