@@ -14,7 +14,7 @@ class PaymentUi {
 
 		foreach($cPayment as $ePayment) {
 
-			if($ePayment['method']->exists() === FALSE) {
+			if($ePayment['method']->empty()) {
 				continue;
 			}
 
@@ -74,7 +74,7 @@ class PaymentUi {
 
 		$totalPayments = $cPayment->reduce(fn($ePayment, $value) => $value + ($ePayment['amountIncludingVat'] ?? 0), 0);
 
-		$hasMoreThanOnePayment = $cPayment->find(fn($ePayment) => $ePayment['method']->exists())->count() > 1;
+		$hasMoreThanOnePayment = $cPayment->find(fn($ePayment) => $ePayment['method']->notEmpty())->count() > 1;
 
 		$paymentList = [];
 
@@ -92,7 +92,7 @@ class PaymentUi {
 
 			$payment = '<div>';
 
-				if($ePayment['method']->exists() === FALSE and $eSale->acceptWritePaymentMethod()) {
+				if($ePayment['method']->empty() and $eSale->acceptWritePaymentMethod()) {
 
 					$payment .= self::getPaymentForm($eSale, $cPaymentMethod);
 

@@ -101,7 +101,7 @@ new \selling\SalePage(function($data) {
 			throw new NotExistsAction();
 		}
 
-		$filename = new \selling\PdfUi()->getFilename(\selling\Pdf::ORDER_FORM, $data->eFarm, $data->e);
+		$filename = new \selling\PdfUi()->getFilename(\selling\Pdf::ORDER_FORM, $data->e['farm'], $data->e);
 
 		throw new PdfAction($content, $filename);
 

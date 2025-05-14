@@ -270,7 +270,7 @@ class CustomizeUi {
 
 				} else {
 
-					if($eSale['paymentMethod']->exists() === FALSE) {
+					if($eSale['paymentMethod']->empty()) {
 
 						if($eSale['shop']['shared']) {
 							$payment = s("Vous avez choisi de régler cette commande en direct avec vos producteurs.");

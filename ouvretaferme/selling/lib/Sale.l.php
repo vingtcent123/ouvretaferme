@@ -27,23 +27,16 @@ class SaleLib extends SaleCrud {
 
 				$properties[] = 'deliveredAt';
 
-				if(
-					$e->isComposition() === FALSE and
-					$e['shopShared'] === FALSE
-				) {
+				if($e->acceptDiscount()) {
+					$properties[] = 'discount';
+				}
 
-					if($e->hasDiscount()) {
-						$properties[] = 'discount';
+				if($e->acceptShipping()) {
+					$properties[] = 'shipping';
+
+					if($e['hasVat']) {
+						$properties[] = 'shippingVatRate';
 					}
-
-					if($e->hasShipping()) {
-						$properties[] = 'shipping';
-
-						if($e['hasVat']) {
-							$properties[] = 'shippingVatRate';
-						}
-					}
-
 				}
 
 			}
@@ -52,7 +45,7 @@ class SaleLib extends SaleCrud {
 				$properties[] = 'shopPointPermissive';
 			}
 
-			if($e['market'] === FALSE and ($e['paymentMethod']->exists() === FALSE or $e['paymentMethod']['online'] === FALSE)) {
+			if($e->acceptUpdatePayment()) {
 				$properties[] = 'paymentMethod';
 				$properties[] = 'paymentStatus';
 			}

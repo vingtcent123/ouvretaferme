@@ -183,6 +183,17 @@ class Sale extends SaleElement {
 
 	}
 
+	public function acceptUpdatePayment(): bool {
+
+		$this->expects(['market', 'paymentMethod']);
+		
+		return (
+			$this['market'] === FALSE and
+			($this['paymentMethod']->empty() or $this['paymentMethod']['online'] === FALSE)
+		);
+
+	}
+
 	public function canAccess(): bool {
 
 		$this->expects(['customer', 'farm', 'stats']);
@@ -328,7 +339,7 @@ class Sale extends SaleElement {
 
 	}
 
-	public function hasDiscount(): bool {
+	public function acceptDiscount(): bool {
 
 		$this->expects(['market', 'marketParent']);
 
@@ -339,13 +350,15 @@ class Sale extends SaleElement {
 
 	}
 
-	public function hasShipping(): bool {
+	public function acceptShipping(): bool {
 
 		$this->expects(['market', 'marketParent']);
 
 		return (
 			$this['market'] === FALSE and
-			$this['marketParent']->empty()
+			$this['marketParent']->empty() and
+			$this->isComposition() === FALSE and
+			$this['shopShared'] === FALSE
 		);
 
 	}
@@ -369,7 +382,7 @@ class Sale extends SaleElement {
 
 	public function isPaymentOnline(): bool {
 
-		if($this['paymentMethod']->exists() === FALSE) {
+		if($this['paymentMethod']->empty()) {
 			return FALSE;
 		}
 
@@ -708,7 +721,7 @@ class Sale extends SaleElement {
 		}
 
 		// Pas de paiement enregistré => OUI
-		if($this['paymentMethod']->exists() === FALSE) {
+		if($this['paymentMethod']->empty()) {
 			return TRUE;
 		}
 

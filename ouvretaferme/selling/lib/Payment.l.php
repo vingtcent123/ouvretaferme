@@ -15,7 +15,7 @@ class PaymentLib extends PaymentCrud {
 				foreach($cPayment as $ePayment) {
 
 					if(
-						$ePayment['method']->exists() === FALSE
+						$ePayment['method']->empty()
 						or $cPaymentFiltered->contains(fn($e) => $e['method']['id'] === $ePayment['method']['id'])
 					) {
 						continue;
@@ -238,7 +238,7 @@ class PaymentLib extends PaymentCrud {
 		if($eSale['preparationStatus'] === Sale::DRAFT) {
 
 			$eSale['paymentStatus'] = NULL;
-			$eSale['paymentMethod'] = NULL;
+			$eSale['paymentMethod'] = new \payment\Method();
 
 		} else {
 

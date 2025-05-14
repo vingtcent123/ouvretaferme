@@ -74,7 +74,7 @@ class MethodUi {
 
 
 							$h .= '<td class="td-min-content">';
-							if($eMethod['farm']->exists() === FALSE) {
+							if($eMethod['farm']->empty()) {
 								$h .= s("Oui (par défaut)");
 							} else {
 								$h .= \util\TextUi::switch([

@@ -66,11 +66,11 @@ new Page()
 
 			}
 
-			if($eSale['marketParent']->exists()) {
+			if($eSale['marketParent']->notEmpty()) {
 
 				$eSale['paymentStatus'] = \selling\Sale::PAID;
 
-			} else if($eSale['paymentStatus'] === NULL and $eMethod->exists()) {
+			} else if($eSale['paymentStatus'] === NULL and $eMethod->notEmpty()) {
 
 				$eSale['paymentStatus'] = \selling\Sale::NOT_PAID;
 

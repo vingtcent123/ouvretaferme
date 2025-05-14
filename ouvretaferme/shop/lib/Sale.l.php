@@ -279,7 +279,7 @@ class SaleLib {
 	public static function canUpdateForShop(\selling\Sale $eSale): bool {
 
 		return (
-			$eSale['paymentMethod']->exists() === FALSE or
+			$eSale['paymentMethod']->empty() or
 			$eSale['paymentMethod']['fqn'] === \payment\MethodLib::TRANSFER
 		);
 

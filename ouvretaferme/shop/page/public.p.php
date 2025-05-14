@@ -340,7 +340,7 @@ new Page(function($data) {
 			if(
 				$data->eSaleReference['paymentStatus'] !== \selling\Sale::PAID and
 				($data->eSaleReference['preparationStatus'] === \selling\Sale::BASKET or
-				($data->eSaleReference['paymentMethod']->exists() and $data->eSaleReference['paymentMethod']['fqn'] === \payment\MethodLib::ONLINE_CARD))
+				($data->eSaleReference['paymentMethod']->notEmpty() and $data->eSaleReference['paymentMethod']['fqn'] === \payment\MethodLib::ONLINE_CARD))
 			) {
 				throw new RedirectAction(\shop\ShopUi::paymentUrl($data->eShop, $data->eDate));
 			}

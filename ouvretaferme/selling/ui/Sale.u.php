@@ -505,7 +505,7 @@ class SaleUi {
 
 							$h .= '<td class="sale-item-payment-type '.($dynamicHide['paymentMethod'] ?? 'hide-md-down').'">';
 
-								if($eSale['marketParent']->exists()) {
+								if($eSale['marketParent']->notEmpty()) {
 									$h .= PaymentUi::getListDisplay($eSale, $eSale['cPayment'], $cPaymentMethod);
 								} else {
 									$h .= self::getPaymentMethodName($eSale).' '.self::getPaymentStatus($eSale);
@@ -933,11 +933,10 @@ class SaleUi {
 
 	public static function getPaymentStatus(Sale $eSale): string {
 
-		if(($eSale['paymentMethod']['fqn'] ?? NULL) === \payment\MethodLib::TRANSFER and $eSale['invoice']->empty()) {
-			return '<span class="util-badge sale-payment-status sale-payment-status-not-paid">'.s("Facture à éditer").'</span>';
-		}
-
-		if($eSale['paymentStatus'] === NULL and $eSale['paymentMethod']->exists() === FALSE) {
+		if(
+			$eSale['paymentStatus'] === NULL and
+			$eSale['paymentMethod']->empty()
+		) {
 			return '';
 		}
 
@@ -1119,7 +1118,7 @@ class SaleUi {
 			return \payment\MethodUi::getOnlineCardText();
 		}
 
-		return encode($eSale['paymentMethod']['name'] ?? '?');
+		return encode($eSale['paymentMethod']['name'] ?? '/');
 
 	}
 	public static function getPayment(Sale $eSale): string {
@@ -1196,7 +1195,7 @@ class SaleUi {
 					$update($eSale['deliveredAt'] ? s("Planifié le {value}", \util\DateUi::numeric($eSale['deliveredAt'], \util\DateUi::DATE)) : s("Non planifié"));
 				$h .= '</dd>';
 
-				if($eSale->hasDiscount()) {
+				if($eSale->acceptDiscount()) {
 					$h .= '<dt>'.s("Remise commerciale").'</dt>';
 					$h .= '<dd>'.($eSale['discount'] > 0 ? s("{value} %", $eSale['discount']) : '').'</dd>';
 				}
@@ -1210,7 +1209,7 @@ class SaleUi {
 
 				}
 
-				if($eSale->hasShipping()) {
+				if($eSale->acceptShipping()) {
 
 					if($eSale['hasVat'] and $eSale['items'] > 0) {
 						$vatRate = 'title="'.s("Taux de TVA appliqué de {value} %", $eSale['shippingVatRate']).'"';
@@ -1813,39 +1812,52 @@ class SaleUi {
 
 				$h .= $form->dynamicGroup($eSale, 'deliveredAt');
 
-				if(
-					$eSale->isComposition() === FALSE and
-					$eSale['shopShared'] === FALSE
-				) {
-
-					if($eSale->hasDiscount()) {
-						$h .= $form->dynamicGroup($eSale, 'discount');
-					}
-
-					if($eSale->hasShipping()) {
-
-						$h .= $form->dynamicGroup($eSale, 'shipping');
-
-						if($eSale['hasVat']) {
-							$h .= $form->dynamicGroup($eSale, 'shippingVatRate');
-						}
-
-					}
-
+				if($eSale->acceptDiscount()) {
+					$h .= $form->dynamicGroup($eSale, 'discount');
 				}
 
 			}
 
-			if($eSale['shop']->notEmpty()) {
-				$h .= $form->dynamicGroup($eSale, 'shopPointPermissive');
+			if($eSale->acceptUpdatePayment()) {
+
+				$h .= '<div class="util-block bg-background-light">';
+					$h .= $form->group(content: '<h4>'.s("Paiement").'</h4>');
+					$h .= $form->dynamicGroups($eSale, ['paymentMethod', 'paymentStatus']);
+				$h .= '</div>';
+
 			}
 
-			if(
-				$eSale['market'] === FALSE
-				and ($eSale['paymentMethod']->exists() === FALSE
-				or $eSale['paymentMethod']['fqn'] !== \payment\MethodLib::ONLINE_CARD)
-			) {
-				$h .= $form->dynamicGroups($eSale, ['paymentStatus', 'paymentMethod']);
+			if($eSale->isClosed() === FALSE) {
+
+				if(
+					$eSale->acceptShipping() or
+					$eSale['shop']->notEmpty()
+				) {
+
+					$h .= '<div class="util-block bg-background-light">';
+
+						$h .= $form->group(content: '<h4>'.s("Livraison").'</h4>');
+
+						if($eSale['shop']->notEmpty()) {
+							$h .= $form->dynamicGroup($eSale, 'shopPointPermissive');
+						}
+
+						if($eSale->acceptShipping()) {
+
+							$h .= $form->dynamicGroup($eSale, 'shipping');
+
+							if($eSale['hasVat']) {
+								$h .= $form->dynamicGroup($eSale, 'shippingVatRate');
+							}
+
+						}
+
+
+
+					$h .= '</div>';
+
+				}
+
 			}
 
 			$h .= $form->dynamicGroup($eSale, 'comment');
@@ -2175,12 +2187,13 @@ class SaleUi {
 					Sale::PAID => s("Payé"),
 					Sale::NOT_PAID => s("Non payé"),
 				];
-				$d->field = function(\util\FormUi $form, Sale $eSale) {
-					return $form->radios('paymentStatus', [
-						Sale::PAID => s("Payé"),
-						Sale::NOT_PAID => s("Non payé"),
-					], $eSale['paymentStatus'], ['mandatory' => TRUE]);
-				};
+				$d->field = 'switch';
+				$d->attributes = [
+					'labelOn' => $d->values[Sale::PAID],
+					'labelOff' => $d->values[Sale::NOT_PAID],
+					'valueOn' => Sale::PAID,
+					'valueOff' => Sale::NOT_PAID,
+				];
 				break;
 
 			case 'orderFormPaymentCondition' :

@@ -65,7 +65,7 @@ class StripeLib {
 
 		$ePayment = \selling\PaymentLib::getBySaleAndMethod($eSale, MethodLib::ONLINE_CARD);
 
-		if($ePayment->exists()) {
+		if($ePayment->notEmpty()) {
 
 			if(in_array('card', $object['payment_method_types']) === FALSE) {
 				$error = TRUE;

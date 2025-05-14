@@ -58,7 +58,7 @@ class InvoiceUi {
 					$h .= $form->text('document', $search->get('document'), ['placeholder' => s("Numéro")]);
 					$h .= $form->text('customer', $search->get('customer'), ['placeholder' => s("Client")]);
 					$h .= $form->text('date', $search->get('date'), ['placeholder' => s("Date de facturation")]);
-					$h .= $form->select('paymentStatus', self::p('paymentStatus')->values, $search->get('paymentStatus'), ['placeholder' => s("Réglée ?")]);
+					$h .= $form->select('paymentStatus', self::p('paymentStatus')->values, $search->get('paymentStatus'), ['placeholder' => s("Payée ?")]);
 					$h .= $form->submit(s("Chercher"), ['class' => 'btn btn-secondary']);
 					$h .= '<a href="'.$url.'" class="btn btn-secondary">'.\Asset::icon('x-lg').'</a>';
 				$h .= '</div>';
@@ -94,7 +94,7 @@ class InvoiceUi {
 						$h .= '<th class="text-center">'.s("Date de facturation").'</th>';
 						$h .= '<th class="text-end invoice-item-amount">'.s("Montant").'</th>';
 						$h .= '<th class="td-min-content">'.s("Envoyée<br/>par e-mail").'</th>';
-						$h .= '<th>'.s("Réglée").'</th>';
+						$h .= '<th>'.s("Payée").'</th>';
 						$h .= '<th class="invoice-item-list hide-sm-down">'.s("Ventes").'</th>';
 						$h .= '<th></th>';
 					$h .= '</tr>';
@@ -621,6 +621,7 @@ class InvoiceUi {
 				$h .= '</th>';
 				$h .= '<th class="text-center">#</th>';
 				$h .= '<th>'.s("Date").'</th>';
+				$h .= '<th>'.s("Paiement").'</th>';
 				$h .= '<th class="text-end">'.s("Montant").'</th>';
 			$h .= '</tr>';
 
@@ -630,6 +631,10 @@ class InvoiceUi {
 				$h .= '<td class="td-min-content">'.$form->inputCheckbox('sales[]', $eSale['id'], ['checked' => $checked, 'data-invoice-checked' => (int)$checked]).'</td>';
 				$h .= '<td class="td-min-content text-center">'.SaleUi::link($eSale, newTab: TRUE).'</td>';
 				$h .= '<td>'.\util\DateUi::numeric($eSale['deliveredAt']).'</td>';
+				$h .= '<td>';
+					$h .= SaleUi::getPaymentMethodName($eSale);
+					$h .= SaleUi::getPaymentStatus($eSale);
+				$h .= '</td>';
 				$h .= '<td class="text-end">';
 				$h .= SaleUi::getTotal($eSale);
 				$h .= '</td>';
@@ -710,7 +715,7 @@ class InvoiceUi {
 			'paymentCondition' => s("Conditions de paiement"),
 			'header' => s("Texte personnalisé affiché en haut de facture"),
 			'footer' => s("Texte personnalisé affiché en bas de facture"),
-			'paymentStatus' => s("Facturée réglée ?"),
+			'paymentStatus' => s("État du paiement"),
 			'description' => s("Commentaire interne"),
 		]);
 
@@ -734,12 +739,15 @@ class InvoiceUi {
 
 			case 'paymentStatus' :
 				$d->values = [
-					Invoice::PAID => s("Réglée"),
-					Invoice::NOT_PAID => s("Non réglée"),
+					Invoice::PAID => s("Payée"),
+					Invoice::NOT_PAID => s("Non payée"),
 				];
+				$d->field = 'switch';
 				$d->attributes = [
-					'columns' => 2,
-					'mandatory' => TRUE
+					'labelOn' => $d->values[Sale::PAID],
+					'labelOff' => $d->values[Sale::NOT_PAID],
+					'valueOn' => Sale::PAID,
+					'valueOff' => Sale::NOT_PAID,
 				];
 				break;
 

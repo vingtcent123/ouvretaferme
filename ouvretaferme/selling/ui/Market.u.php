@@ -332,7 +332,7 @@ class MarketUi {
 					$h .= '<dt>'.s("Moyen de paiement").'</dt>';
 					$h .= '<dd>';
 
-						$hasAtLeastOnePaymentMethod = ($eSale['cPayment']->count() > 0 and $eSale['cPayment']->first()['method']->exists());
+						$hasAtLeastOnePaymentMethod = ($eSale['cPayment']->count() > 0 and $eSale['cPayment']->first()['method']->notEmpty());
 
 						$paymentMethodDropdown = '<div class="dropdown-list bg-secondary">';
 							$paymentMethodDropdown .= '<div class="dropdown-title">'.s("Moyen de paiement").'</div>';
@@ -390,7 +390,7 @@ class MarketUi {
 
 								$h .= '<a data-dropdown="bottom-start" class="dropdown-toggle" data-dropdown-hover="true">';
 
-									if($eSale['cPayment']->count() > 0 and $eSale['cPayment']->first()['method']->exists()) {
+									if($eSale['cPayment']->count() > 0 and $eSale['cPayment']->first()['method']->notEmpty()) {
 										$h .= $eSale['cPayment']->first()['method']['name'];
 									} else {
 										$h .= '<span style="font-weight: normal">...</span>';
