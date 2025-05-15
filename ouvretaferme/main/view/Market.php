@@ -125,7 +125,7 @@ class MarketTemplate extends BaseTemplate {
 
 		$eSale = $this->data->e;
 
-		$h = '<a href="'.\selling\SaleUi::url($eSale).'" class="market-top-back">';
+		$h = '<a onclick="Lime.History.go(-1)" class="market-top-back">';
 			$h .= Asset::icon('arrow-left');
 		$h .= '</a>';
 
