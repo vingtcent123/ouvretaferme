@@ -1099,19 +1099,29 @@ class Sale extends SaleElement {
 					return TRUE;
 				}
 
-				$eMethod->expects(['id']);
-
 				$this->expects(['farm']);
+
 				$eFarm = $this['farm'];
 
-				return (\payment\Method::model()
+				return \payment\Method::model()
 					->or(
 						fn() => $this->whereFarm(NULL),
 						fn() => $this->whereFarm($eFarm)
 					)
-					->whereId($eMethod['id'])
 					->whereOnline(FALSE)
-					->count() === 1);
+					->exists($eMethod);
+
+			})
+			->setCallback('paymentStatus.check', function(?string &$status) use($p): bool {
+
+				$p->expectsBuilt('paymentMethod');
+
+				if($this['paymentMethod']->empty()) {
+					$status = NULL;
+					return TRUE;
+				} else {
+					return in_array($status, [Sale::PAID, Sale::NOT_PAID]);
+				}
 
 			});
 		

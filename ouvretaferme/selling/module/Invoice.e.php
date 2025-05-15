@@ -141,6 +141,37 @@ class Invoice extends InvoiceElement {
 
 				return (count(array_unique($hasVat)) === 1);
 
+			})
+			->setCallback('paymentMethod.check', function(\payment\Method $eMethod): bool {
+
+				if($eMethod->empty()) {
+					return TRUE;
+				}
+
+				$this->expects(['farm']);
+
+				$eFarm = $this['farm'];
+
+				return \payment\Method::model()
+					->or(
+						fn() => $this->whereFarm(NULL),
+						fn() => $this->whereFarm($eFarm)
+					)
+					->whereOnline(FALSE)
+					->exists($eMethod);
+
+			})
+			->setCallback('paymentStatus.check', function(string &$status) use($p): bool {
+
+				$p->expectsBuilt('paymentMethod');
+
+				if($this['paymentMethod']->empty()) {
+					$status = Sale::NOT_PAID;
+					return TRUE;
+				} else {
+					return in_array($status, [Sale::PAID, Sale::NOT_PAID]);
+				}
+
 			});
 		
 		parent::build($properties, $input, $p);

@@ -8,7 +8,7 @@ class InvoiceLib extends InvoiceCrud {
 	}
 
 	public static function getPropertiesUpdate(): array {
-		return ['description', 'paymentStatus'];
+		return ['description', 'paymentMethod', 'paymentStatus'];
 	}
 
 	public static function getByFarm(\farm\Farm $eFarm, bool $selectSales = FALSE, int $page = 0, \Search $search = new \Search()): array {

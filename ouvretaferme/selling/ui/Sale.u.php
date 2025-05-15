@@ -1817,12 +1817,11 @@ class SaleUi {
 			if($eSale->acceptUpdatePayment()) {
 
 				$h .= '<div class="util-block bg-background-light">';
-					$h .= $form->group(content: '<h4>'.s("Paiement").'</h4>');
+					$h .= $form->group(content: '<h4>'.s("Règlement").'</h4>');
 					$h .= $form->dynamicGroup($eSale, 'paymentMethod');
-					if($eSale['paymentStatus'] === NULL) {
-						$eSale['paymentStatus'] = Sale::NOT_PAID;
-					}
-					$h .= $form->dynamicGroup($eSale, 'paymentStatus');
+					$h .= $form->dynamicGroup($eSale, 'paymentStatus', function($d) {
+						$d->default = fn(Sale $eSale) => $eSale['paymentStatus'] ?? Sale::NOT_PAID;
+					});
 				$h .= '</div>';
 
 			}

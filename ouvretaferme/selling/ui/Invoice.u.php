@@ -663,17 +663,14 @@ class InvoiceUi {
 			$h .= $form->hidden('id', $eInvoice['id']);
 
 			$h .= '<div class="util-block bg-background-light">';
-				$h .= $form->group(content: '<h4>'.s("Paiement").'</h4>');
-				$h .= $form->dynamicGroup($eInvoice, 'paymentMethod', function(\PropertyDescriber $d) use($eSale) {
-					$d->attributes['onchange'] = 'Sale.changePaymentMethod(this)';
+				$h .= $form->group(content: '<h4>'.s("Règlement").'</h4>');
+				$h .= $form->dynamicGroup($eInvoice, 'paymentMethod');
+				$h .= $form->dynamicGroup($eInvoice, 'paymentStatus', function($d) {
+					$d->default = fn(Invoice $eInvoice) => $eInvoice['paymentStatus'] ?? Sale::NOT_PAID;
 				});
-				if($eSale['paymentStatus'] === NULL) {
-					$eSale['paymentStatus'] = Sale::NOT_PAID;
-				}
-				$h .= $form->dynamicGroup($eSale, 'paymentStatus');
 			$h .= '</div>';
 
-			$h .= $form->dynamicGroups($eInvoice, ['paymentStatus', 'description']);
+			$h .= $form->dynamicGroups($eInvoice, ['description']);
 
 
 			$h .= $form->group(
@@ -731,6 +728,7 @@ class InvoiceUi {
 			'paymentCondition' => s("Conditions de paiement"),
 			'header' => s("Texte personnalisé affiché en haut de facture"),
 			'footer' => s("Texte personnalisé affiché en bas de facture"),
+			'paymentMethod' => s("Moyen de paiement"),
 			'paymentStatus' => s("État du paiement"),
 			'description' => s("Commentaire interne"),
 		]);
