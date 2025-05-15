@@ -205,7 +205,8 @@ class Sale extends SaleElement {
 		
 		return (
 			$this->isMarket() === FALSE and
-			($this['paymentMethod']->empty() or $this['paymentMethod']['online'] === FALSE)
+			($this['paymentMethod']->empty() or $this['paymentMethod']['online'] === FALSE) and
+			$this['preparationStatus'] !== Sale::CANCELED
 		);
 
 	}
