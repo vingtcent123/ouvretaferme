@@ -617,12 +617,7 @@ class Sale extends SaleElement {
 	}
 
 	public function acceptDeletePaymentStatus() {
-		$this->expects(['paymentStatus']);
-		return in_array($this['paymentStatus'], $this->getDeletePaymentStatuses());
-	}
-
-	public function getDeletePaymentStatuses() {
-		return [NULL];
+		return in_array($this['paymentStatus'], [NULL, Sale::NOT_PAID]);
 	}
 
 	public function checkMarketSelling() {

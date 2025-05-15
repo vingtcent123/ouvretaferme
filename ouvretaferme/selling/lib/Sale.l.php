@@ -957,7 +957,10 @@ class SaleLib extends SaleCrud {
 
 		$deleted = Sale::model()
 			->wherePreparationStatus('IN', $e->getDeleteStatuses())
-			->wherePaymentStatus('IN', $e->getDeletePaymentStatuses())
+			->or(
+				fn() => $this->wherePaymentStatus(Sale::NOT_PAID),
+				fn() => $this->wherePaymentStatus(NULL)
+			)
 			->delete($e);
 
 		if($deleted > 0) {
