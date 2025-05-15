@@ -662,6 +662,17 @@ class InvoiceUi {
 
 			$h .= $form->hidden('id', $eInvoice['id']);
 
+			$h .= '<div class="util-block bg-background-light">';
+				$h .= $form->group(content: '<h4>'.s("Paiement").'</h4>');
+				$h .= $form->dynamicGroup($eInvoice, 'paymentMethod', function(\PropertyDescriber $d) use($eSale) {
+					$d->attributes['onchange'] = 'Sale.changePaymentMethod(this)';
+				});
+				if($eSale['paymentStatus'] === NULL) {
+					$eSale['paymentStatus'] = Sale::NOT_PAID;
+				}
+				$h .= $form->dynamicGroup($eSale, 'paymentStatus');
+			$h .= '</div>';
+
 			$h .= $form->dynamicGroups($eInvoice, ['paymentStatus', 'description']);
 
 
@@ -740,6 +751,13 @@ class InvoiceUi {
 			case 'paymentCondition' :
 				$d->placeholder = s("Exemple : Paiement à réception de facture.");
 				$d->after = \util\FormUi::info(s("Indiquez ici les conditions de paiement pour régler cette facture ou si cette facture est acquittée."));
+				break;
+
+			case 'paymentMethod' :
+				$d->values = fn(Invoice $e) => $e['cPaymentMethod'] ?? $e->expects(['cPaymentMethod']);
+				$d->attributes['onrender'] = 'Invoice.changePaymentMethod(this)';
+				$d->attributes['onchange'] = 'Invoice.changePaymentMethod(this)';
+				$d->placeholder = s("Non défini");
 				break;
 
 			case 'paymentStatus' :

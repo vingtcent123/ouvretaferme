@@ -108,7 +108,7 @@ class ManageUi {
 
 		$h = '';
 
-		if(
+		if( true or
 			$eWebsite['domain'] !== NULL and
 			$eWebsite['domainStatus'] !== Website::PINGED_SECURED
 		) {

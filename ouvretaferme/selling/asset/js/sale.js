@@ -173,17 +173,7 @@ class Sale {
 	}
 
 	static changePaymentMethod(paymentMethodElement) {
-
-		if(paymentMethodElement.value.length === 0) {
-
-			qs('[data-wrapper="paymentStatus"]').hide();
-
-		} else {
-
-			qs('[data-wrapper="paymentStatus"]').removeHide();
-
-		}
-
+		qs('[data-wrapper="paymentStatus"]').display(paymentMethodElement.value !== '');
 	}
 
 }

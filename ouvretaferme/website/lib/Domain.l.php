@@ -130,7 +130,7 @@ class DomainLib {
 ';
 
 			if(str_starts_with($url, 'www.')) {
-
+/*
 				$certificate = $ssl ? 'ssl_certificate /etc/letsencrypt/live/'.substr($url, 4).'/fullchain.pem;
 	ssl_certificate_key /etc/letsencrypt/live/'.substr($url, 4).'/privkey.pem;
 	include /etc/letsencrypt/options-ssl-nginx.conf;
@@ -159,7 +159,19 @@ server {
 }
 
 ';
+*/
+				$rewrite .=
 
+'server {
+
+	listen 80;
+	server_name '.substr($url, 4).';
+
+	return 301 https://'.$url.'$request_uri;
+
+}
+
+';
 			}
 
 		}
@@ -233,8 +245,8 @@ server {
 			}
 
 			if(
-				is_file('/etc/letsencrypt/renewal/'.$domain.'.conf') and
-				(str_starts_with($domain, 'www.') === FALSE or is_file('/etc/letsencrypt/renewal/'.substr($domain, 4).'.conf'))
+				is_file('/etc/letsencrypt/renewal/'.$domain.'.conf')/* and
+				(str_starts_with($domain, 'www.') === FALSE or is_file('/etc/letsencrypt/renewal/'.substr($domain, 4).'.conf'))*/
 			) {
 
 				Website::model()->update($eWebsite, [

@@ -110,7 +110,13 @@ new \selling\InvoicePage()
 		throw new PdfAction($content, $filename);
 
 	})
-	->update()
+	->update(function($data) {
+
+		$data->e['cPaymentMethod'] = \payment\MethodLib::getByFarm($data->e['farm'], FALSE);
+
+		throw new ViewAction($data);
+
+	})
 	->doUpdateProperties('doUpdatePaymentStatus', ['paymentStatus'], fn($data) => throw new ViewAction($data))
 	->quick(['description'])
 	->doUpdate(fn() => throw new ReloadAction('selling', 'Invoice::updated'))

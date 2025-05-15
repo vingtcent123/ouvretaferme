@@ -42,4 +42,8 @@ class Invoice {
 
 	}
 
+	static changePaymentMethod(paymentMethodElement) {
+		qs('[data-wrapper="paymentStatus"]').display(paymentMethodElement.value !== '');
+	}
+
 }

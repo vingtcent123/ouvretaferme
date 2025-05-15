@@ -65,6 +65,7 @@ class InvoiceModel extends \ModuleModel {
 			'priceExcludingVat' => ['decimal', 'digits' => 8, 'decimal' => 2, 'cast' => 'float'],
 			'priceIncludingVat' => ['decimal', 'digits' => 8, 'decimal' => 2, 'cast' => 'float'],
 			'date' => ['date', 'cast' => 'string'],
+			'paymentMethod' => ['element32', 'payment\Method', 'null' => TRUE, 'cast' => 'element'],
 			'paymentStatus' => ['enum', [\selling\Invoice::PAID, \selling\Invoice::NOT_PAID], 'cast' => 'enum'],
 			'paymentCondition' => ['editor16', 'min' => 1, 'max' => 400, 'null' => TRUE, 'cast' => 'string'],
 			'header' => ['editor16', 'min' => 1, 'max' => 400, 'null' => TRUE, 'cast' => 'string'],
@@ -75,13 +76,14 @@ class InvoiceModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'document', 'name', 'customer', 'sales', 'taxes', 'organic', 'conversion', 'description', 'content', 'farm', 'hasVat', 'vatByRate', 'vat', 'priceExcludingVat', 'priceIncludingVat', 'date', 'paymentStatus', 'paymentCondition', 'header', 'footer', 'generation', 'emailedAt', 'createdAt'
+			'id', 'document', 'name', 'customer', 'sales', 'taxes', 'organic', 'conversion', 'description', 'content', 'farm', 'hasVat', 'vatByRate', 'vat', 'priceExcludingVat', 'priceIncludingVat', 'date', 'paymentMethod', 'paymentStatus', 'paymentCondition', 'header', 'footer', 'generation', 'emailedAt', 'createdAt'
 		]);
 
 		$this->propertiesToModule += [
 			'customer' => 'selling\Customer',
 			'content' => 'selling\PdfContent',
 			'farm' => 'farm\Farm',
+			'paymentMethod' => 'payment\Method',
 		];
 
 		$this->indexConstraints = array_merge($this->indexConstraints, [
@@ -228,6 +230,10 @@ class InvoiceModel extends \ModuleModel {
 
 	public function whereDate(...$data): InvoiceModel {
 		return $this->where('date', ...$data);
+	}
+
+	public function wherePaymentMethod(...$data): InvoiceModel {
+		return $this->where('paymentMethod', ...$data);
 	}
 
 	public function wherePaymentStatus(...$data): InvoiceModel {
