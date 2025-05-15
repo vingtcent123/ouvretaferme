@@ -304,17 +304,16 @@ class OrderUi {
 				$h .= '<dt>'.s("État de la commande").'</dt>';
 				$h .= '<dd>'.SaleUi::getPreparationStatusForCustomer($eSale).'</dd>';
 
-				if($eSale['cPayment']->empty() === FALSE) {
+				if($eSale['paymentMethod']->notEmpty()) {
 					$h .= '<dt>'.s("Moyen de paiement").'</dt>';
 					$h .= '<dd>';
 
 						$h .= SaleUi::getPaymentMethodName($eSale);
 
 						if(
-							$eSale['paymentMethod']->notEmpty() and
 							$eSale['paymentMethod']['online']
 						) {
-							$h .= ' '.self::getPaymentStatus($eSale);
+							$h .= ' '.SaleUi::getPaymentStatus($eSale);
 						}
 
 					$h .= '</dd>';

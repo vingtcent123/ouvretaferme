@@ -93,6 +93,7 @@ class SaleLib extends SaleCrud {
 		$eSale['invoice']['footer'] = $eFarm->getSelling('invoiceFooter');
 		$eSale['invoice']['customer'] = $eSale['customer'];
 		$eSale['cItem'] = self::getItems($eSale);
+		$eSale['paymentMethod'] = \payment\MethodLib::getByFqn(\payment\MethodLib::CARD);
 
 		$position = 0;
 		foreach($eSale['cItem'] as $eItem) {

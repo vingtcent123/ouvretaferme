@@ -152,15 +152,6 @@ class CustomizeUi {
 			case Customize::SHOP_CONFIRMED_HOME :
 			case Customize::SHOP_CONFIRMED_PLACE :
 
-				if($eSaleExample['shop']['hasPayment']) {
-					$eSaleExample['cPayment'] = new \selling\Payment([
-						'sale' => $eSaleExample,
-						'method' => new \payment\Method()
-					]);
-				} else {
-					$eSaleExample['cPayment'] = new \Collection();
-				}
-
 				if($type !== Customize::SHOP_CONFIRMED_NONE) {
 
 					$eSaleExample['shopPoint'] = $eSaleExample['shopPoints'][match($type) {
@@ -176,6 +167,8 @@ class CustomizeUi {
 
 				if($eSaleExample['shop']['hasPayment'] === FALSE) {
 					$variables['payment'] = '<i>'.s("Vide car le choix du moyen de paiement est désactivé sur la boutique").'</i>';
+				} else {
+					$variables['payment'] = $eSaleExample['paymentMethod']['name'];
 				}
 
 				return $variables;

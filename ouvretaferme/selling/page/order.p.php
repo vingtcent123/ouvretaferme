@@ -37,7 +37,6 @@ new \selling\SalePage()
 
 		$data->cItem = \selling\SaleLib::getItems($data->e, withIngredients: TRUE, public: TRUE);
 		$data->e['shopPoint'] = \shop\PointLib::getById($data->e['shopPoint']);
-		$data->e['cPayment'] = \selling\PaymentLib::getBySale($data->e);
 
 		throw new ViewAction($data);
 
