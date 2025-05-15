@@ -793,25 +793,14 @@ class AnalyzeLib {
 				'customer' => ['name'],
 				'priceIncludingVat', 'priceExcludingVat', 'vat',
 				'shop' => ['name'],
-				'deliveredAt'
-			])
-			->select([
-				'cPayment' => Payment::model()
-					->select(Payment::getSelection() + ['method' => ['id', 'fqn', 'name']])
-					->whereStatus(Payment::SUCCESS)
-					->delegateCollection('sale', 'id'),
+				'deliveredAt',
+				'paymentMethod' => \payment\Method::getSelection()
 			])
 			->whereFarm($eFarm)
 			->where('EXTRACT(YEAR FROM deliveredAt) = '.$year)
 			->sort('id')
 			->getCollection()
 			->toArray(function($eSale) use($eFarm) {
-
-				if($eSale['cPayment']->count() > 0) {
-					$paymentMethod = implode(', ', $eSale['cPayment']->toArray(fn($ePayment) => $ePayment['name']));
-				} else {
-					$paymentMethod = '';
-				}
 
 				$data = [
 					$eSale['document'],
@@ -820,7 +809,7 @@ class AnalyzeLib {
 					\util\DateUi::numeric($eSale['deliveredAt']),
 					$eSale['items'],
 					$eSale['shop']->empty() ? '' : $eSale['shop']['name'],
-					$paymentMethod,
+					$eSale['paymentMethod']->empty() ? '' : $eSale['paymentMethod']['name'],
 					\util\TextUi::csvNumber($eSale['priceExcludingVat']),
 				];
 
