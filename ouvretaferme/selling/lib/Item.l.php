@@ -393,7 +393,7 @@ class ItemLib extends ItemCrud {
 				)
 				->delete();
 
-			if($eSale->isMarket()) {
+			if($eSale->isMarketSale()) {
 
 				// On n'enregistre pas les ventes à 0.0 sur le logiciel de caisse
 				$cItemFiltered = $cItem->find(fn($eItem) => (

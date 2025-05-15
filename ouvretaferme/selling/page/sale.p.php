@@ -88,7 +88,7 @@ new \selling\SalePage()
 
 		$data->eFarm = \farm\FarmLib::getById($data->e['farm']);
 
-		if($data->e->isMarket()) {
+		if($data->e->isMarketSale()) {
 			throw new NotExpectedAction('Market sale');
 		}
 
@@ -315,7 +315,7 @@ new \selling\SalePage()
 	}, validate: ['canWrite', 'acceptUpdatePayment'])
 	->doUpdateProperties('doUpdatePreparationStatus', ['preparationStatus'], function($data) {
 
-		if($data->e['origin'] !== \selling\Sale::MARKET) {
+		if($data->e->isMarket() === FALSE) {
 			\selling\PaymentLib::updateBySaleStatus($data->e);
 		}
 

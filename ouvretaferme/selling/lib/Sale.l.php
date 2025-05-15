@@ -986,7 +986,7 @@ class SaleLib extends SaleCrud {
 
 			}
 
-			if($e->isMarket()) {
+			if($e->isMarketSale()) {
 				MarketLib::updateSaleMarket($e['marketParent']);
 			}
 

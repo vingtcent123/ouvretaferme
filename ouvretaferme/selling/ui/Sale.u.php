@@ -282,7 +282,6 @@ class SaleUi {
 
 							$previousSubtitle = $currentSubtitle;
 
-
 						}
 
 					}
@@ -369,7 +368,7 @@ class SaleUi {
 						$h .= '<td class="td-min-content text-center">';
 							if(
 								$eSale->canRead() === FALSE or
-								$eSale->isMarket()
+								$eSale->isMarketSale()
 							) {
 								$h .= '<span class="btn btn-sm disabled">'.$eSale->getNumber().'</span>';
 							} else {
@@ -809,7 +808,7 @@ class SaleUi {
 
 		if(
 			$eSale->canWrite() === FALSE or
-			$eSale->isMarket()
+			$eSale->isMarketSale()
 		) {
 			return $h;
 		}
