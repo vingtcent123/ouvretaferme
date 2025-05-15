@@ -595,7 +595,7 @@ class SaleLib {
 
 	}
 
-	public static function completePaid(\selling\Sale $eSale, string $eventId): void {
+	protected static function completePaid(\selling\Sale $eSale, string $eventId): void {
 
 		$eSale['oldPreparationStatus'] = $eSale['preparationStatus'];
 		$eSale['preparationStatus'] = \selling\Sale::CONFIRMED;
