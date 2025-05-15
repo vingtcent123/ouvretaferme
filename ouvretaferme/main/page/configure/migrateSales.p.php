@@ -28,7 +28,7 @@ new Page()
 
 			if(
 				// Marché = OK
-				$eSale->isMarketParent()
+				$eSale->isMarketSale()
 				or $eSale['paymentStatus'] === \selling\Sale::PAID
 				or $eSale['preparationStatus'] === \selling\Sale::DELIVERED
 			) {
@@ -66,7 +66,7 @@ new Page()
 
 			}
 
-			if($eSale->isMarketParent()) {
+			if($eSale->isMarketSale()) {
 
 				$eSale['paymentStatus'] = \selling\Sale::PAID;
 

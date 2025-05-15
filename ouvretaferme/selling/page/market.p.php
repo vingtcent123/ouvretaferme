@@ -29,7 +29,7 @@ new \selling\SalePage()
 		$data->eSale->validate('canWrite');
 
 		if(
-			$data->eSale->isMarketParent() === FALSE or
+			$data->eSale->isMarketSale() === FALSE or
 			$data->eSale['marketParent']['id'] !== $data->e['id']
 		) {
 			throw new NotExpectedAction('Parent mismatch');

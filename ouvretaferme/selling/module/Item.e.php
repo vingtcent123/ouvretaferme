@@ -60,7 +60,7 @@ class Item extends ItemElement {
 			'sale' => ['origin']
 		]);
 
-		if($this['sale']->isMarketParent() === FALSE) {
+		if($this['sale']->isMarketSale() === FALSE) {
 			return $this->canWrite();
 		} else {
 
