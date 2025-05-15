@@ -74,19 +74,13 @@ new \selling\SalePage()
 
 new \selling\SalePage()
 	->applyElement(function($data, \selling\Sale $e) {
-		$data->eSaleOrigin = clone $e;
+		$e['oldPaymentStatus'] = $e['paymentStatus'];
+		$e['paymentMethod'] = $e['paymentMethod'];
 	})
 	->doUpdate(function($data) {
 
-		// Uniquement en cas de changement dans les moyens de paiement
-		if(
-			$data->eSaleOrigin['paymentStatus'] !== $data->e['paymentStatus'] or
-			($data->eSaleOrigin['paymentMethod']['id'] ?? NULL) !== ($data->e['paymentMethod']['id'] ?? NULL)
-		) {
-			\selling\PaymentLib::updateBySale($data->e);
-		}
-
 		throw new ReloadAction('selling', $data->e->isComposition() ? 'Product::updatedComposition' : 'Sale::updated');
+
 	});
 
 new \selling\SalePage()

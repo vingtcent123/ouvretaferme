@@ -1099,6 +1099,10 @@ class Sale extends SaleElement {
 			})
 			->setCallback('paymentMethod.check', function(\payment\Method $eMethod): bool {
 
+				if($eMethod->empty()) {
+					return TRUE;
+				}
+
 				$eMethod->expects(['id']);
 
 				$this->expects(['farm']);

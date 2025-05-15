@@ -757,6 +757,9 @@ class SaleLib extends SaleCrud {
 			($e['oldPreparationStatus'] !== $e['preparationStatus'])
 		);
 
+		$emptyPaymentMethod = (in_array('paymentMethod', $properties) and
+			$e['paymentMethod']->empty());
+
 		if(in_array('shippingVatRate', $properties)) {
 
 			$e['shippingVatFixed'] = ($e['shippingVatRate'] !== NULL);
@@ -801,6 +804,13 @@ class SaleLib extends SaleCrud {
 
 			$properties[] = 'statusDeliveredAt';
 			$e['statusDeliveredAt'] = ($e['preparationStatus'] === Sale::DELIVERED) ? new \Sql('NOW()') : NULL;
+
+		}
+
+		if($emptyPaymentMethod) {
+
+			$e['paymentStatus'] = NULL;
+			$properties[] = 'paymentStatus';
 
 		}
 
@@ -850,6 +860,20 @@ class SaleLib extends SaleCrud {
 			if($e['origin'] === Sale::SALE_MARKET) {
 				MarketLib::updateSaleMarket($e['marketParent']);
 			}
+
+		}
+
+		// Uniquement en cas de changement dans les moyens de paiement
+		if($emptyPaymentMethod) {
+
+			\selling\PaymentLib::deleteBySale($e);
+
+		} else if(
+			$e['oldPaymentStatus'] !== $e['paymentStatus'] or
+			($e['oldPaymentMethod']['id'] ?? NULL) !== ($e['paymentMethod']['id'] ?? NULL)
+		) {
+
+			\selling\PaymentLib::updateBySale($e);
 
 		}
 

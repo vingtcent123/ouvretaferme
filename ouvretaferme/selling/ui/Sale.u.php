@@ -1819,7 +1819,14 @@ class SaleUi {
 
 				$h .= '<div class="util-block bg-background-light">';
 					$h .= $form->group(content: '<h4>'.s("Paiement").'</h4>');
-					$h .= $form->dynamicGroups($eSale, ['paymentMethod', 'paymentStatus']);
+					$h .= $form->dynamicGroup($eSale, 'paymentMethod', function(\PropertyDescriber $d) use($eSale) {
+						$d->attributes['onrender'] = 'Sale.changePaymentMethod(this)';
+						$d->attributes['onchange'] = 'Sale.changePaymentMethod(this)';
+					});
+					if($eSale['paymentStatus'] === NULL) {
+						$eSale['paymentStatus'] = Sale::NOT_PAID;
+					}
+					$h .= $form->dynamicGroup($eSale, 'paymentStatus');
 				$h .= '</div>';
 
 			}
