@@ -29,19 +29,6 @@ class PaymentLib extends PaymentCrud {
       });
 	}
 
-	public static function getByCheckoutId(string $id): Payment {
-
-		$ePayment = new Payment();
-
-		Payment::model()
-			->select(Payment::getSelection())
-			->whereCheckoutId($id)
-			->get($ePayment);
-
-		return $ePayment;
-
-	}
-
 	public static function getByPaymentIntentId(\payment\StripeFarm $eStripeFarm, string $id): Payment {
 
 		$ePayment = new Payment();
@@ -117,6 +104,10 @@ class PaymentLib extends PaymentCrud {
 	}
 
 	public static function createBySale(Sale $eSale, ?\payment\Method $eMethod, ?string $providerId = NULL): Payment {
+
+		if($eMethod->empty()) {
+			return new Payment();
+		}
 
 		$eSale->expects(['customer', 'farm']);
 

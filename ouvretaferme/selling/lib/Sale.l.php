@@ -864,7 +864,7 @@ class SaleLib extends SaleCrud {
 		}
 
 		// Uniquement en cas de changement dans les moyens de paiement
-		if($emptyPaymentMethod) {
+		if($emptyPaymentMethod or $e['preparationStatus'] === Sale::CANCELED) {
 
 			\selling\PaymentLib::deleteBySale($e);
 

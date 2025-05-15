@@ -324,7 +324,9 @@ class SaleLib {
 						$eSaleExisting->merge([
 							'shopUpdated' => TRUE,
 							'cItem' => $cItem,
-							'oldPreparationStatus' => $eSaleExisting['preparationStatus']
+							'oldPreparationStatus' => $eSaleExisting['preparationStatus'],
+							'oldPaymentMethod' => $eSaleExisting['paymentMethod'],
+							'oldPaymentStatus' => $eSaleExisting['paymentStatus'],
 						] + $eSaleReference->extracts($properties));
 
 						$cItem->setColumn('sale', $eSaleExisting);
@@ -445,7 +447,6 @@ class SaleLib {
 		$eMethod = \payment\MethodLib::getByFqn(\payment\MethodLib::ONLINE_CARD);
 
 		$ePayment = \selling\PaymentLib::createBySale($eSale, $eMethod, $stripeSession['id']);
-		$eSale['cPayment'] = new \Collection([$ePayment]);
 
 		$eSale['paymentMethod'] = $eMethod;
 		$eSale['paymentStatus'] = \selling\Sale::NOT_PAID;
@@ -483,20 +484,23 @@ class SaleLib {
 		$eSale['paymentMethod'] = $eMethod;
 		$eSale['paymentStatus'] = \selling\Sale::NOT_PAID;
 
-		$ePayment = new \selling\Payment([
-			'sale' => $eSale,
-			'method' => $eMethod,
-			'customer' => $eSale['customer'],
-			'farm' => $eSale['farm'],
-			'amountIncludingVat' => $eSale['priceIncludingVat'],
-			'checkoutId' => NULL,
-		]);
-
 		\selling\Sale::model()->beginTransaction();
 
 		\selling\SaleLib::update($eSale, ['preparationStatus', 'paymentMethod', 'paymentStatus']);
 
-		\selling\Payment::model()->insert($ePayment);
+		if($method !== NULL) {
+
+			$ePayment = new \selling\Payment([
+				'sale' => $eSale,
+				'method' => $eMethod,
+				'customer' => $eSale['customer'],
+				'farm' => $eSale['farm'],
+				'amountIncludingVat' => $eSale['priceIncludingVat'],
+				'checkoutId' => NULL,
+			]);
+
+			\selling\Payment::model()->insert($ePayment);
+		}
 
 		$group = FALSE;
 		self::notify($eSale['shopUpdated'] ? 'saleUpdated' : 'saleConfirmed', $eSale, $eSale['customer']['user'], $eSale['cItem'], $group);
