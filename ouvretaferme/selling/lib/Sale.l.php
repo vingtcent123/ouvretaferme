@@ -865,17 +865,20 @@ class SaleLib extends SaleCrud {
 		}
 
 		// Uniquement en cas de changement dans les moyens de paiement
-		if($emptyPaymentMethod or $e['preparationStatus'] === Sale::CANCELED) {
+		if(in_array('paymentStatus', $properties) or in_array('paymentMethod', $properties)) {
 
-			\selling\PaymentLib::deleteBySale($e);
+			if($emptyPaymentMethod or $e['preparationStatus'] === Sale::CANCELED) {
 
-		} else if(
-			$e['oldPaymentStatus'] !== $e['paymentStatus'] or
-			($e['oldPaymentMethod']['id'] ?? NULL) !== ($e['paymentMethod']['id'] ?? NULL)
-		) {
+				\selling\PaymentLib::deleteBySale($e);
 
-			\selling\PaymentLib::updateBySale($e);
+			} else if(
+				$e['oldPaymentStatus'] !== $e['paymentStatus'] or
+				($e['oldPaymentMethod']['id'] ?? NULL) !== ($e['paymentMethod']['id'] ?? NULL)
+			) {
 
+				\selling\PaymentLib::updateBySale($e);
+
+			}
 		}
 
 		if(in_array('shipping', $properties)) {
