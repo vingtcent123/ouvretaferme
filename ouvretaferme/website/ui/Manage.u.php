@@ -117,7 +117,7 @@ class ManageUi {
 				$h .= '<h4>'.s("Configurer votre nom de domaine {value}", encode($eWebsite['domain'])).'</h4>';
 				$h .= '<p>'.s("Pour démarrer l'activation de votre nom de domaine, configurez les enregistrements DNS de votre nom de domaine pour qu'ils pointent vers :").'</p>';
 				$h .= '<pre class="mb-1">';
-					$h .= s("<b>www.{siteName}.</b> <-- Le point (.) final est important");
+					$h .= s("<b>www.{siteName}.org</b> <-- Le point (.) final est important");
 				$h .= '</pre>';
 				$h .= '<p>'.s("Vous devez utiliser un type <b>CNAME</b> pour configurer un sous-domaine comme <b>www</b> et / ou un type <b>ALIAS</b> pour configurer le domaine principal. Si vous n'êtes pas à l'aise avec ces instructions, nous vous conseillons de vous faire aider. Une fois les DNS modifiés et propagés, la configuration de votre nom de domaine se terminera automatiquement. Cette étape peut prendre plusieurs heures.").'</p>';
 			$h .= '</div>';
