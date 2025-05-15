@@ -7,9 +7,9 @@ class SaleLib extends SaleCrud {
 
 		return function(Sale $e) {
 
-			return $e['compositionOf']->empty() ?
-				['market', 'customer', 'shopDate', 'deliveredAt', 'productsList', 'shipping'] :
-				['market', 'customer', 'deliveredAt', 'productsList'];
+			return $e->isComposition() ?
+				['market', 'customer', 'deliveredAt', 'productsList'] :
+				['market', 'customer', 'shopDate', 'deliveredAt', 'productsList', 'shipping'];
 
 		};
 
@@ -493,7 +493,8 @@ class SaleLib extends SaleCrud {
 
 		$e->expects([
 			'farm' => ['hasSales'],
-			'type', 'taxes', 'hasVat', 'compositionOf',
+			'origin',
+			'type', 'taxes', 'hasVat',
 			'customer',
 		]);
 
@@ -502,19 +503,16 @@ class SaleLib extends SaleCrud {
 		// Nouvelle composition de produit
 		if($e->isComposition()) {
 
+			$e->expects(['compositionOf']);
+
 			$e['preparationStatus'] = Sale::COMPOSITION;
-			$e['market'] = FALSE;
 			$e['stats'] = FALSE;
 
 		} else {
-
-			$e->expects(['market']);
-
 			$e['preparationStatus'] ??= Sale::DRAFT;
-
 		}
 
-		if($e['market']) {
+		if($e->isMarket()) {
 			$e['marketSales'] = 0;
 			$e['paymentStatus'] = NULL;
 		}
@@ -632,20 +630,19 @@ class SaleLib extends SaleCrud {
 
 		$eSale->expects(['id', 'farm', 'market']);
 
-		if($eSale['market'] === FALSE) {
+		if($eSale->isMarket() === FALSE) {
 			throw new \Exception('Invalid sale');
 		}
 
 		$e = new Sale();
 
 		$e['customer'] = new Customer();
-		$e['compositionOf'] = new Product();
 		$e['farm'] = $eSale['farm'];
+		$e['origin'] = Sale::SALE_MARKET;
 		$e['type'] = Customer::PRIVATE;
 		$e['taxes'] = $e->getTaxesFromType();
 		$e['hasVat'] = $e['farm']->getSelling('hasVat');
 		$e['deliveredAt'] = $eSale['deliveredAt'];
-		$e['market'] = FALSE;
 		$e['marketParent'] = $eSale;
 		$e['stats'] = FALSE;
 
@@ -681,7 +678,7 @@ class SaleLib extends SaleCrud {
 		$eSaleNew['preparationStatus'] = Sale::DRAFT;
 		$eSaleNew['paymentStatus'] = NULL;
 
-		if($eSaleNew['market']) {
+		if($eSaleNew->isMarket()) {
 			$eSaleNew['marketSales'] = 0;
 			$eSaleNew['priceExcludingVat'] = 0;
 			$eSaleNew['priceIncludingVat'] = 0;
@@ -697,7 +694,7 @@ class SaleLib extends SaleCrud {
 			$eItem['sale'] = $eSaleNew;
 			$eItem['deliveredAt'] = $eSaleNew['deliveredAt'];
 
-			if($eSaleNew['market']) {
+			if($eSaleNew->isMarket()) {
 
 				unset($eItem['price'], $eItem['priceExcludingVat']);
 
@@ -756,7 +753,7 @@ class SaleLib extends SaleCrud {
 
 		$updatePreparationStatus = (
 			in_array('preparationStatus', $properties) and
-			$e->expects(['oldPreparationStatus', 'marketParent']) and
+			$e->expects(['oldPreparationStatus']) and
 			($e['oldPreparationStatus'] !== $e['preparationStatus'])
 		);
 
@@ -850,7 +847,7 @@ class SaleLib extends SaleCrud {
 				MarketLib::updateSaleMarket($e);
 			}
 
-			if($e['marketParent']->notEmpty()) {
+			if($e['origin'] === Sale::SALE_MARKET) {
 				MarketLib::updateSaleMarket($e['marketParent']);
 			}
 
@@ -923,10 +920,9 @@ class SaleLib extends SaleCrud {
 	public static function delete(Sale $e): void {
 
 		$e->expects([
-			'id',
+			'id', 'origin',
 			'shopDate',
 			'preparationStatus',
-			'market', 'marketParent'
 		]);
 
 		Sale::model()->beginTransaction();
@@ -942,7 +938,7 @@ class SaleLib extends SaleCrud {
 				->whereSale($e)
 				->delete();
 
-			if($e['market']) {
+			if($e->isMarket()) {
 
 				$cSaleMarket = Sale::model()
 					->select('id')
@@ -953,6 +949,7 @@ class SaleLib extends SaleCrud {
 				Sale::model()
 					->whereId('IN', $cSaleMarket)
 					->update([
+						'origin' => Sale::SALE,
 						'marketParent' => NULL
 					]);
 
@@ -964,7 +961,7 @@ class SaleLib extends SaleCrud {
 
 			}
 
-			if($e['marketParent']->notEmpty()) {
+			if($e->isMarket()) {
 				MarketLib::updateSaleMarket($e['marketParent']);
 			}
 
@@ -1086,7 +1083,7 @@ class SaleLib extends SaleCrud {
 			->whereIngredientOf(NULL)
 			->getCollection();
 
-		if($e['compositionOf']->notEmpty()) {
+		if($e->isComposition()) {
 			self::recalculateComposition($e, $cItem);
 		}
 

@@ -4,27 +4,43 @@ new \selling\SalePage()
 
 		$data->eFarm = \farm\FarmLib::getById(INPUT('farm'));
 
-		return new \selling\Sale([
+		if(input_exists('compositionOf')) {
+			$origin = \selling\Sale::COMPOSITION;
+		} else {
+			$origin = \selling\Sale::SALE;
+		}
+
+		$eSale = new \selling\Sale([
 			'farm' => $data->eFarm,
-			'compositionOf' => input_exists('compositionOf') ? \selling\ProductLib::getCompositionById(INPUT('compositionOf'))->validateProperty('farm', $data->eFarm) : new \selling\Product(),
-			'marketParent' => new \selling\Sale(),
+			'origin' => $origin,
 		]);
+
+		if($eSale->isComposition()) {
+			$eSale['compositionOf'] = \selling\ProductLib::getCompositionById(INPUT('compositionOf'))->validateProperty('farm', $data->eFarm);
+		}
+
+		return $eSale;
 
 	})
 	->create(function($data) {
 
+		$eDate = get_exists('shopDate') ? \shop\DateLib::getById(GET('shopDate'), \shop\Date::getSelection() + ['shop' => ['shared']])->validateProperty('farm', $data->eFarm)->validate('acceptOrder', 'acceptNotShared') : new \shop\Date();
+
 		$data->e->merge([
-			'shopDate' => get_exists('shopDate') ? \shop\DateLib::getById(GET('shopDate'), \shop\Date::getSelection() + ['shop' => ['shared']])->validateProperty('farm', $data->eFarm)->validate('acceptOrder', 'acceptNotShared') : new \shop\Date(),
+			'shopDate' => $eDate,
+			'shop' => $eDate->empty() ? new \shop\Shop() : $eDate['shop'],
 			'market' => GET('market', 'bool'),
 			'customer' => get_exists('customer') ? \selling\CustomerLib::getById(GET('customer'))->validateProperty('farm', $data->eFarm) : new \selling\Customer()
 		]);
 
+
+
 		if(
 			$data->e['customer']->notEmpty() or
-			$data->e['compositionOf']->notEmpty()
+			$data->e->isComposition()
 		) {
 
-			if($data->e['compositionOf']->notEmpty()) {
+			if($data->e->isComposition()) {
 				$data->e['type'] = $data->e['compositionOf']['private'] ? \selling\Sale::PRIVATE : \selling\Sale::PRO;
 				$data->e['discount'] = 0;
 			} else {
@@ -78,7 +94,7 @@ new \selling\SalePage()
 
 		$data->eFarm = \farm\FarmLib::getById($data->e['farm']);
 
-		if($data->e['marketParent']->notEmpty()) {
+		if($data->e->isMarket()) {
 			throw new NotExpectedAction('Market sale');
 		}
 
@@ -305,7 +321,7 @@ new \selling\SalePage()
 	}, validate: ['canWrite', 'acceptUpdatePayment'])
 	->doUpdateProperties('doUpdatePreparationStatus', ['preparationStatus'], function($data) {
 
-		if($data->e['market'] === FALSE) {
+		if($data->e['origin'] !== \selling\Sale::MARKET) {
 			\selling\PaymentLib::updateBySaleStatus($data->e);
 		}
 

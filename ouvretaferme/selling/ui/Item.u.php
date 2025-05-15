@@ -118,7 +118,7 @@ class ItemUi {
 
 				$h .= '<p class="util-empty">';
 
-					if($eSale['market']) {
+					if($eSale->isMarket()) {
 						$h .= s("Il n'y a pas encore d'article à vendre !");
 					} if($eSale->isComposition()) {
 						$h .= s("Il n'y a pas encore d'article !");
@@ -178,7 +178,7 @@ class ItemUi {
 							$h .= '</th>';
 
 							if(
-								$eSale['market'] === FALSE or
+								$eSale->isMarket() === FALSE or
 								$eSale->isMarketPreparing() === FALSE
 							) {
 								$columns++;
@@ -367,7 +367,7 @@ class ItemUi {
 					$h .= '</td>';
 
 					if(
-						$eSale['market'] === FALSE or
+						$eSale->isMarket() === FALSE or
 						$eSale->isMarketPreparing() === FALSE
 					) {
 						$h .= '<td class="item-item-price text-end">';
@@ -848,8 +848,8 @@ class ItemUi {
 	public static function getCreateByCategory(\util\FormUi $form, Sale $eSale, \Collection $cProduct): string {
 
 		$hasPackaging = ($eSale['type'] === Sale::PRO);
-		$hasQuantity = ($eSale['market'] === FALSE or $eSale['preparationStatus'] !== Sale::SELLING);
-		$hasPrice = ($eSale['market'] === FALSE);
+		$hasQuantity = ($eSale->isMarket() === FALSE or $eSale['preparationStatus'] !== Sale::SELLING);
+		$hasPrice = ($eSale->isMarket() === FALSE);
 
 		$class = 'items-products items-products-'.((int)$hasQuantity + (int)$hasPackaging + (int)$hasPrice).'';
 
@@ -941,7 +941,7 @@ class ItemUi {
 					if($hasQuantity) {
 						$h .= '<div data-wrapper="number['.$eProduct['id'].']">';
 							$h .= '<h4>'.s("Quantité vendue").'</h4>';
-							$h .= $form->dynamicField($eItem, $eSale['market'] ? 'number['.$eProduct['id'].']' : 'number['.$eProduct['id'].']*');
+							$h .= $form->dynamicField($eItem, $eSale->isMarket() ? 'number['.$eProduct['id'].']' : 'number['.$eProduct['id'].']*');
 						$h .= '</div>';
 					}
 
@@ -1069,7 +1069,7 @@ class ItemUi {
 						$h .= $form->hidden('packaging[0]', '');
 					}
 
-					$h .= $form->dynamicGroups($eItem, $eItem['sale']['market'] ?
+					$h .= $form->dynamicGroups($eItem, $eItem['sale']->isMarket() ?
 						($eItem['sale']['preparationStatus'] !== Sale::SELLING ? ['unitPrice[0]*', 'number[0]'] : ['unitPrice[0]*']) :
 						['unitPrice[0]*', 'number[0]*', 'price[0]*'], [
 							'unitPrice[]' => function(\PropertyDescriber $d) use($eItem) {
@@ -1101,7 +1101,7 @@ class ItemUi {
 						$h .= $form->hidden('packaging[0]', '');
 					}
 
-					$h .= $form->dynamicGroups($eItem, $eItem['sale']['market'] ?
+					$h .= $form->dynamicGroups($eItem, $eItem['sale']->isMarket() ?
 						($eItem['sale']['preparationStatus'] !== Sale::SELLING ? ['unit[0]', 'unitPrice[0]*', 'number[0]'] : ['unit[0]', 'unitPrice[0]*']) :
 						['unit[0]', 'unitPrice[0]*', 'number[0]*', 'price[0]*']);
 
@@ -1157,7 +1157,7 @@ class ItemUi {
 				$h .= self::getPackagingGroup($form, 'packaging', $eItem);
 			}
 
-			$h .= $form->dynamicGroups($eItem, $eItem['sale']['market'] ?
+			$h .= $form->dynamicGroups($eItem, $eItem['sale']->isMarket() ?
 				['number', 'unitPrice'] :
 				['number', 'unitPrice', 'price']
 			);
@@ -1250,7 +1250,7 @@ class ItemUi {
 			case 'packaging' :
 				$d->attributes = function(\util\FormUi $form, Item $eItem) use($property) {
 
-					if($eItem['sale']['market']) {
+					if($eItem['sale']->isMarket()) {
 						return [];
 					} else {
 						return [
@@ -1313,7 +1313,7 @@ class ItemUi {
 
 			if(
 				$eItem->isQuick() or
-				$eItem['sale']['market']
+				$eItem['sale']->isMarket()
 			) {
 				return NULL;
 			}
@@ -1325,7 +1325,7 @@ class ItemUi {
 
 			if(
 				$eItem->isQuick() or
-				$eItem['sale']['market']
+				$eItem['sale']->isMarket()
 			) {
 				return [];
 			}

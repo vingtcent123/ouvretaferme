@@ -32,11 +32,11 @@ class SaleUi {
 
 	public static function getName(Sale $eSale): string {
 
-		$eSale->expects(['id', 'priceExcludingVat', 'market', 'compositionOf', 'compositionEndAt']);
+		$eSale->expects(['id', 'origin', 'priceExcludingVat', 'market', 'compositionEndAt']);
 
 		if($eSale->isComposition()) {
 			return s("Composition du {value}", \util\DateUi::numeric($eSale['deliveredAt']));
-		} else if($eSale['market']) {
+		} else if($eSale->isMarket()) {
 			return s("Marché #{value}", $eSale->getNumber());
 		} else if($eSale['priceExcludingVat'] < 0) {
 			return s("Avoir #{value}", $eSale->getNumber());
@@ -369,7 +369,7 @@ class SaleUi {
 						$h .= '<td class="td-min-content text-center">';
 							if(
 								$eSale->canRead() === FALSE or
-								$eSale['marketParent']->notEmpty()
+								$eSale->isMarket()
 							) {
 								$h .= '<span class="btn btn-sm disabled">'.$eSale->getNumber().'</span>';
 							} else {
@@ -384,7 +384,7 @@ class SaleUi {
 								} else {
 									$h .= encode($eSale['customer']->getName());
 								}
-								if($eSale['market']) {
+								if($eSale->isMarket()) {
 									$h .= ' <span class="util-badge bg-secondary" title="'.s("Le logiciel de caisse est activé pour cette vente").'">'.\Asset::icon('cart4').'</span>';
 								}
 								if($eSale['customer']->notEmpty()) {
@@ -429,9 +429,9 @@ class SaleUi {
 										if($eSale['shopShared']) {
 											$h .= '  <span class="util-badge bg-secondary">'.\Asset::icon('people-fill').'</span>';
 										}
-									} else if($eSale['marketParent']->notEmpty()) {
+									} else if($eSale->isMarketSale()) {
 										$h .= '<a href="'.SaleUi::url($eSale['marketParent']).'">'.encode($eSale['marketParent']['customer']->getName()).'</a>';;
-									} else if($eSale['market']) {
+									} else if($eSale->isMarket()) {
 										if($eSale['marketSales'] > 0) {
 											$h .= \Asset::icon('cart4').' '.p("{value} vente", "{value} ventes", $eSale['marketSales']);
 										}
@@ -508,7 +508,7 @@ class SaleUi {
 
 								if(
 									$eSale['paymentMethod']->notEmpty() and
-									$eSale['marketParent']->empty()
+									$eSale->isMarketSale() === FALSE
 								) {
 									$h .= '<div style="margin-top: 0.25rem">'.self::getPaymentStatus($eSale).'</div>';
 								}
@@ -809,7 +809,7 @@ class SaleUi {
 
 		if(
 			$eSale->canWrite() === FALSE or
-			$eSale['marketParent']->notEmpty()
+			$eSale->isMarket()
 		) {
 			return $h;
 		}
@@ -839,7 +839,7 @@ class SaleUi {
 
 		$button = fn(string $status, ?string $confirm = NULL) => ' <a data-ajax="/selling/sale:doUpdate'.ucfirst($status).'Collection" post-ids="'.$eSale['id'].'" class="sale-preparation-status-action '.$buttonsStyle[$status].'" title="'.self::p('preparationStatus')->values[$status].'" '.($confirm ? attr('data-confirm', $confirm) : '').'>'.($shortText ? self::p('preparationStatus')->shortValues[$status] : self::p('preparationStatus')->values[$status]).'</a>';
 
-		if($eSale['market']) {
+		if($eSale->isMarket()) {
 
 			switch($eSale['preparationStatus']) {
 
@@ -1125,7 +1125,7 @@ class SaleUi {
 	}
 	public static function getPayment(Sale $eSale): string {
 
-		if($eSale['market']) {
+		if($eSale->isMarket()) {
 			return '';
 		}
 
@@ -1157,7 +1157,7 @@ class SaleUi {
 			$h .= '<dl class="util-presentation util-presentation-2">';
 				$h .= '<dt>'.s("Client").'</dt>';
 				$h .= '<dd>'.CustomerUi::link($eSale['customer']).'</dd>';
-				if($eSale['market'] === FALSE) {
+				if($eSale->isMarket() === FALSE) {
 					$h .= '<dt>'.s("Moyen de paiement").'</dt>';
 					$h .= '<dd>';
 						$h .= self::getPayment($eSale);
@@ -1266,8 +1266,8 @@ class SaleUi {
 		}
 
 		if(
-			($eSale['market'] === TRUE and $eSale->isMarketPreparing() === FALSE) or
-			($eSale['market'] === FALSE and $eSale['items'] > 0)
+			($eSale->isMarket() and $eSale->isMarketPreparing() === FALSE) or
+			($eSale->isMarket() === FALSE and $eSale['items'] > 0)
 		) {
 			$h .= $this->getSummary($eSale);
 		}
@@ -1284,7 +1284,7 @@ class SaleUi {
 					$h .= '<h5>'.s("Articles").'</h5>';
 					$h .= $eSale['items'];
 				$h .= '</li>';
-				if($eSale['market']) {
+				if($eSale->isMarket()) {
 					$h .= '<li>';
 						$h .= '<h5>'.s("Ventes").'</h5>';
 						$h .= $eSale['marketSales'];
@@ -1434,7 +1434,7 @@ class SaleUi {
 
 		if(
 			$eSale->canWrite() and
-			$eSale['marketParent']->empty()
+			$eSale->isMarketSale() === FALSE
 		) {
 
 			$statusList = '';
@@ -1611,17 +1611,17 @@ class SaleUi {
 
 	public function create(Sale $eSale): \Panel {
 
-		if($eSale['compositionOf']->empty()) {
-			return $this->createCustomer($eSale);
-		} else {
+		if($eSale['origin'] === Sale::COMPOSITION) {
 			return $this->createComposition($eSale);
+		} else {
+			return $this->createCustomer($eSale);
 		}
 
 	}
 
 	public function createComposition(Sale $eSale): \Panel {
 
-		$eSale->expects(['farm', 'market']);
+		$eSale->expects(['farm']);
 
 		$form = new \util\FormUi();
 
@@ -1680,7 +1680,7 @@ class SaleUi {
 
 	public function createCustomer(Sale $eSale): \Panel {
 
-		$eSale->expects(['farm', 'market', 'shopDate']);
+		$eSale->expects(['farm', 'shopDate']);
 
 		$form = new \util\FormUi();
 
@@ -1692,7 +1692,7 @@ class SaleUi {
 		if($eSale['shopDate']->notEmpty()) {
 			$h .= $form->hidden('shopDate', $eSale['shopDate']['id']);
 		}
-		$h .= $form->hidden('market', $eSale['market']);
+		$h .= $form->hidden('market', $eSale->isMarket());
 
 		$h .= $form->dynamicGroup($eSale, 'customer*', function($d) use($form, $eSale) {
 

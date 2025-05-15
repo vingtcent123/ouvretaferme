@@ -31,11 +31,27 @@ class Sale extends SaleElement {
 
 	}
 
+	public function isMarket(): bool {
+
+		$this->expects(['origin']);
+
+		return $this['origin'] === Sale::MARKET;
+
+	}
+
+	public function isMarketSale(): bool {
+
+		$this->expects(['origin']);
+
+		return $this['origin'] === Sale::SALE_MARKET;
+
+	}
+
 	public function isComposition(): bool {
 
-		$this->expects(['compositionOf']);
+		$this->expects(['origin']);
 
-		return $this['compositionOf']->notEmpty();
+		return $this['origin'] === Sale::COMPOSITION;
 
 	}
 
@@ -155,11 +171,11 @@ class Sale extends SaleElement {
 
 	public function canUpdate(): bool {
 
-		$this->expects(['marketParent', 'preparationStatus']);
+		$this->expects(['preparationStatus']);
 
 		return (
 			$this->canWrite() and
-			$this['marketParent']->empty()
+			$this->isMarketSale() === FALSE
 		);
 
 	}
@@ -172,7 +188,7 @@ class Sale extends SaleElement {
 
 	public function acceptUpdateCustomer(): bool {
 		return (
-			$this['compositionOf']->empty() and
+			$this->isComposition() === FALSE and
 			$this['shopShared'] === FALSE
 		);
 	}
@@ -185,10 +201,10 @@ class Sale extends SaleElement {
 
 	public function acceptUpdatePayment(): bool {
 
-		$this->expects(['market', 'paymentMethod']);
+		$this->expects(['paymentMethod']);
 		
 		return (
-			$this['market'] === FALSE and
+			$this->isMarket() === FALSE and
 			($this['paymentMethod']->empty() or $this['paymentMethod']['online'] === FALSE)
 		);
 
@@ -224,22 +240,16 @@ class Sale extends SaleElement {
 	public function isMarketPreparing(): bool {
 
 		return (
-			$this['market'] and
+			$this->isMarket() and
 			in_array($this['preparationStatus'], [Sale::DRAFT, Sale::CONFIRMED])
 		);
-
-	}
-
-	public function isMarket(): bool {
-
-		return $this['market'];
 
 	}
 
 	public function isMarketSelling(): bool {
 
 		return (
-			$this['market'] and
+			$this->isMarket() and
 			in_array($this['preparationStatus'], [Sale::SELLING])
 		);
 
@@ -248,7 +258,7 @@ class Sale extends SaleElement {
 	public function isMarketClosed(): bool {
 
 		return (
-			$this['market'] and
+			$this->isMarket() and
 			$this->isClosed()
 		);
 
@@ -268,9 +278,9 @@ class Sale extends SaleElement {
 
 	public function acceptUpdateItems(): bool {
 
-		$this->expects(['market', 'marketParent', 'preparationStatus', 'deliveredAt']);
+		$this->expects(['preparationStatus', 'deliveredAt']);
 
-		if($this['marketParent']->notEmpty()) {
+		if($this->isMarketSale()) {
 			return FALSE;
 		}
 
@@ -308,12 +318,12 @@ class Sale extends SaleElement {
 
 	public function acceptUpdateDeliveredAt(): bool {
 
-		$this->expects(['preparationStatus', 'shop', 'marketParent']);
+		$this->expects(['preparationStatus', 'shop']);
 
 		return (
 			$this['preparationStatus'] !== Sale::DELIVERED and
 			$this['shop']->empty() and
-			$this['marketParent']->empty()
+			$this->isMarketSale() === FALSE
 		);
 
 	}
@@ -321,7 +331,7 @@ class Sale extends SaleElement {
 	public function acceptUpdatePreparationStatus(): bool {
 
 		return (
-			$this['compositionOf']->empty() and
+			$this->isComposition() === FALSE and
 			(
 				$this['shopDate']->empty() or
 				$this['shopDate']['isOrderable'] === FALSE
@@ -341,22 +351,18 @@ class Sale extends SaleElement {
 
 	public function acceptDiscount(): bool {
 
-		$this->expects(['market', 'marketParent']);
-
 		return (
-			$this['market'] === FALSE and
-			$this['marketParent']->empty()
+			$this->isMarket() === FALSE and
+			$this->isMarketSale() === FALSE
 		);
 
 	}
 
 	public function acceptShipping(): bool {
 
-		$this->expects(['market', 'marketParent']);
-
 		return (
-			$this['market'] === FALSE and
-			$this['marketParent']->empty() and
+			$this->isMarket() === FALSE and
+			$this->isMarketSale() === FALSE and
 			$this->isComposition() === FALSE and
 			$this['shopShared'] === FALSE
 		);
@@ -378,10 +384,10 @@ class Sale extends SaleElement {
 
 	public function hasPaymentStatus(): bool {
 
-		$this->expects(['market', 'invoice']);
+		$this->expects(['invoice']);
 
 		return (
-			$this['market'] === FALSE and (
+			$this->isMarket() === FALSE and (
 				$this['invoice']->notEmpty() or // Paiement par facturation
 				$this->isPaymentOnline() // Ou paiement CB
 			)
@@ -474,8 +480,8 @@ class Sale extends SaleElement {
 		return (
 			$this['customer']->notEmpty() and
 			$this['customer']['destination'] !== Customer::COLLECTIVE and
-			$this['market'] === FALSE and
-			$this['marketParent']->empty()
+			$this->isMarket() === FALSE and
+			$this->isMarketSale() === FALSE
 		);
 
 	}
@@ -492,8 +498,8 @@ class Sale extends SaleElement {
 		return (
 			$this['customer']->notEmpty() and
 			$this['customer']['destination'] !== Customer::COLLECTIVE and
-			$this['market'] === FALSE and
-			$this['marketParent']->empty() and
+			$this->isMarket() === FALSE and
+			$this->isMarketSale() === FALSE and
 			$this['farm']->hasFeatureDocument($this['type'])
 		);
 
@@ -509,7 +515,7 @@ class Sale extends SaleElement {
 		return (
 			$this->isComposition() === FALSE and
 			$this->isMarket() === FALSE and
-			$this['marketParent']->empty() and
+			$this->isMarketSale() === FALSE and
 			$this['shop']->empty()
 		);
 	}
@@ -526,8 +532,8 @@ class Sale extends SaleElement {
 		return (
 			// Il n'est pas possible de dupliquer une vente d'une boutique pour éviter de créer des incohérence au seins des boutiques et des disponibilités
 			$this['shop']->empty() and
-			$this['compositionOf']->empty() and
-			$this['marketParent']->empty()
+			$this->isComposition() === FALSE and
+			$this->isMarketSale() === FALSE
 		);
 
 	}
@@ -573,17 +579,15 @@ class Sale extends SaleElement {
 
 	public function acceptDeleteMarket(): bool {
 
-		$this->expects(['market', 'marketSales']);
+		$this->expects(['marketSales']);
 
-		return ($this['market'] === FALSE or $this['marketSales'] === 0);
+		return ($this->isMarket() === FALSE or $this['marketSales'] === 0);
 
 	}
 
 	public function acceptDeleteMarketSale(): bool {
 
-		$this->expects(['marketParent']);
-
-		if($this['marketParent']->notEmpty()) {
+		if($this->isMarketSale()) {
 
 			// On ne peut pas supprimer une vente qui contient des articles
 			return Item::model()
@@ -598,7 +602,7 @@ class Sale extends SaleElement {
 
 	public function acceptDeleteStatus(): bool {
 
-		$this->expects(['preparationStatus', 'marketParent']);
+		$this->expects(['preparationStatus']);
 
 		return (
 			in_array($this['preparationStatus'], $this->getDeleteStatuses()) and
@@ -626,7 +630,7 @@ class Sale extends SaleElement {
 			$this->isMarketSelling() === FALSE and
 			$this->isMarketClosed() === FALSE
 		) {
-			if($this['market']) {
+			if($this->isMarket()) {
 				throw new \RedirectAction(\selling\SaleUi::url($this).'?error=selling:Sale::canNotSell');
 			} else {
 				throw new \NotExpectedAction('Not a market sale');
@@ -660,7 +664,7 @@ class Sale extends SaleElement {
 
 		return (
 			$this->acceptUpdatePreparationStatus() and
-			$this['market'] === FALSE and
+			$this->isMarket() === FALSE and
 			in_array($this['preparationStatus'], [Sale::CONFIRMED])
 		);
 
@@ -670,7 +674,7 @@ class Sale extends SaleElement {
 
 		return (
 			$this->acceptUpdatePreparationStatus() and
-			in_array($this['preparationStatus'], $this['marketParent']->notEmpty() ? [Sale::DRAFT] : [Sale::CONFIRMED, Sale::PREPARED])
+			in_array($this['preparationStatus'], $this->isMarketSale() ? [Sale::DRAFT] : [Sale::CONFIRMED, Sale::PREPARED])
 		);
 
 	}
@@ -678,7 +682,7 @@ class Sale extends SaleElement {
 	public function acceptStatusSelling(): bool {
 
 		return (
-			$this['market'] and
+			$this->isMarket() and
 			$this['preparationStatus'] === Sale::CONFIRMED
 		);
 
@@ -686,7 +690,7 @@ class Sale extends SaleElement {
 
 	public function acceptStatusConfirmed(): bool {
 
-		if(in_array($this['preparationStatus'], $this['marketParent']->notEmpty() ? [] : [Sale::BASKET, Sale::DRAFT, Sale::PREPARED, Sale::DELIVERED, Sale::SELLING, Sale::CANCELED]) === FALSE) {
+		if(in_array($this['preparationStatus'], $this->isMarketSale() ? [] : [Sale::BASKET, Sale::DRAFT, Sale::PREPARED, Sale::DELIVERED, Sale::SELLING, Sale::CANCELED]) === FALSE) {
 			return FALSE;
 		}
 
@@ -707,7 +711,7 @@ class Sale extends SaleElement {
 
 	public function acceptStatusCanceled(): bool {
 
-		if(in_array($this['preparationStatus'], $this['marketParent']->notEmpty() ? [Sale::DRAFT, Sale::DELIVERED] : [Sale::BASKET, Sale::CONFIRMED, Sale::PREPARED, Sale::DELIVERED, Sale::SELLING]) === FALSE) {
+		if(in_array($this['preparationStatus'], $this->isMarketSale() ? [Sale::DRAFT, Sale::DELIVERED] : [Sale::BASKET, Sale::CONFIRMED, Sale::PREPARED, Sale::DELIVERED, Sale::SELLING]) === FALSE) {
 			return FALSE;
 		}
 
@@ -759,7 +763,7 @@ class Sale extends SaleElement {
 
 		return (
 			$this->acceptUpdatePreparationStatus() and
-			in_array($this['preparationStatus'], $this['marketParent']->notEmpty() ? [Sale::CANCELED, Sale::DELIVERED] : [Sale::CONFIRMED, Sale::PREPARED, Sale::SELLING])
+			in_array($this['preparationStatus'], $this->isMarketSale() ? [Sale::CANCELED, Sale::DELIVERED] : [Sale::CONFIRMED, Sale::PREPARED, Sale::SELLING])
 		);
 
 	}
@@ -769,26 +773,15 @@ class Sale extends SaleElement {
 		$fw = new \FailWatch();
 
 		$p
-			->setCallback('market.prepare', function(bool &$market): bool {
-
-				if($this['compositionOf']->notEmpty()) {
-					$this['market'] = FALSE;
-				}
-
-				return TRUE;
-
-			})
 			->setCallback('customer.check', function(Customer $eCustomer) use($p): bool {
 
 				$this->expects(['farm']);
 
 				if($p->for === 'update') {
 
-					$this->expects(['marketParent']);
-
 					if($eCustomer->empty()) {
 
-						if($this['marketParent']->notEmpty()) {
+						if($this->isMarketSale()) {
 							return TRUE;
 						} else {
 							return FALSE;
@@ -800,7 +793,7 @@ class Sale extends SaleElement {
 
 					if($eCustomer->empty()) {
 
-						if($this['compositionOf']->empty()) {
+						if($this->isComposition() === FALSE) {
 							return FALSE;
 						} else {
 
@@ -837,17 +830,17 @@ class Sale extends SaleElement {
 			})
 			->setCallback('customer.market', function(Customer $eCustomer) use($fw): bool {
 
-				if($this['compositionOf']->notEmpty()) {
+				if($this->isComposition()) {
 					return TRUE;
 				}
 
-				$this->expects(['market']);
+				$this->expects(['origin']);
 
 				if($fw->has('Sale::customer.check')) { // L'action génère déjà une erreur
 					return TRUE;
 				}
 
-				if($this['market']) {
+				if($this->isMarket()) {
 					return ($eCustomer['destination'] === Customer::COLLECTIVE);
 				} else {
 					return TRUE;
@@ -865,10 +858,10 @@ class Sale extends SaleElement {
 				$this['oldPreparationStatus'] = $this['preparationStatus'];
 
 				return match($preparationStatus) {
-					Sale::DRAFT => in_array($this['oldPreparationStatus'], $this['marketParent']->notEmpty() ? [Sale::CANCELED, Sale::DELIVERED] : [Sale::CONFIRMED, Sale::PREPARED, Sale::SELLING]),
+					Sale::DRAFT => in_array($this['oldPreparationStatus'], $this->isMarketSale() ? [Sale::CANCELED, Sale::DELIVERED] : [Sale::CONFIRMED, Sale::PREPARED, Sale::SELLING]),
 					Sale::CONFIRMED => $this->acceptStatusConfirmed(),
-					Sale::SELLING => in_array($this['oldPreparationStatus'], $this['market'] ? [Sale::CONFIRMED, Sale::DELIVERED] : []),
-					Sale::PREPARED => in_array($this['oldPreparationStatus'], $this['marketParent']->notEmpty() ? [] : [Sale::CONFIRMED]),
+					Sale::SELLING => in_array($this['oldPreparationStatus'], $this->isMarket() ? [Sale::CONFIRMED, Sale::DELIVERED] : []),
+					Sale::PREPARED => in_array($this['oldPreparationStatus'], $this->isMarketSale() ? [] : [Sale::CONFIRMED]),
 					Sale::CANCELED => $this->acceptStatusCanceled(),
 					Sale::DELIVERED => $this->acceptStatusDelivered(),
 				};
@@ -878,7 +871,7 @@ class Sale extends SaleElement {
 
 				$this->expects(['farm', 'market']);
 
-				if($this['market'] === FALSE) {
+				if($this->isMarket() === FALSE) {
 					return TRUE;
 				}
 
@@ -903,7 +896,7 @@ class Sale extends SaleElement {
 
 				// La date est gérée directement dans la boutique
 				if(
-					$this['compositionOf']->empty() and
+					$this->isComposition() === FALSE and
 					$this['shopDate']->notEmpty()
 				) {
 
@@ -933,7 +926,7 @@ class Sale extends SaleElement {
 			})
 			->setCallback('deliveredAt.composition', function(string $date) use($p): bool {
 
-				if($this['compositionOf']->empty()) {
+				if($this->isComposition() === FALSE) {
 					return TRUE;
 				} else {
 					return Sale::model()
@@ -947,7 +940,7 @@ class Sale extends SaleElement {
 			})
 			->setCallback('deliveredAt.compositionTooLate', function(string $date) use($p): bool {
 
-				if($this['compositionOf']->empty()) {
+				if($this->isComposition() === FALSE) {
 					return TRUE;
 				} else {
 					return Sale::testWriteComposition($date);

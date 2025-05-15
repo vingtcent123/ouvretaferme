@@ -96,7 +96,7 @@ class MarketLib {
 
 	public static function checkNewPrices(Sale $eSale, array $post): \Collection {
 
-		if($eSale['market'] === FALSE) {
+		if($eSale->isMarket() === FALSE) {
 			throw new \NotExpectedAction('Not a market');
 		}
 

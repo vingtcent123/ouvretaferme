@@ -259,6 +259,7 @@ Sale:
   document: ?int32(1, null)
   farm: farm\Farm
   customer: ?selling\Customer
+  origin: enum(SALE, SALE_MARKET, MARKET, COMPOSITION) = SALE
   taxes: enum(INCLUDING, EXCLUDING)
   organic: bool = FALSE
   conversion: bool = FALSE

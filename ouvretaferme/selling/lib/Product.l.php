@@ -222,7 +222,7 @@ class ProductLib extends ProductCrud {
 
 		$eSale->expects(['farm', 'type', 'customer', 'discount']);
 
-		if($eSale['compositionOf']->empty()) {
+		if($eSale->isComposition() === FALSE) {
 			$cGrid = \selling\GridLib::getByCustomer($eSale['customer'], index: 'product');
 		} else {
 			$cGrid = new \Collection();

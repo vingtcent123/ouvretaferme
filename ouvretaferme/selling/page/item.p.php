@@ -87,7 +87,7 @@ new \selling\ItemPage()
 	})
 	->doDelete(function($data) {
 
-		if($data->e['sale']['marketParent']->empty()) {
+		if($data->e['sale']->isMarketParent() === FALSE) {
 			throw new ReloadLayerAction('selling', 'Item::deleted');
 		} else {
 

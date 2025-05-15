@@ -193,9 +193,7 @@ class SaleLib {
 	public static function buildReference(\selling\Sale $eSaleReference, \user\User $eUser): void {
 
 		$eSaleReference->merge([
-			'compositionOf' => new \selling\Product(),
-			'market' => FALSE,
-			'marketParent' => new \selling\Sale(),
+			'origin' => \selling\Sale::SALE,
 			'type' => $eSaleReference['shopDate']['type'],
 			'preparationStatus' => \selling\Sale::BASKET,
 			'deliveredAt' => $eSaleReference['shopDate']['deliveryDate'],

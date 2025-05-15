@@ -6,7 +6,7 @@ class Item extends ItemElement {
 	public static function getSelection(): array {
 
 		return parent::getSelection() + [
-			'sale' => ['farm', 'hasVat', 'type', 'taxes', 'shippingVatRate', 'shippingVatFixed', 'document', 'preparationStatus', 'shop', 'shopShared', 'market', 'marketParent', 'compositionOf', 'compositionEndAt', 'shipping', 'deliveredAt'],
+			'sale' => ['farm', 'hasVat', 'origin', 'type', 'taxes', 'shippingVatRate', 'shippingVatFixed', 'document', 'preparationStatus', 'shop', 'shopShared', 'marketParent', 'compositionOf', 'compositionEndAt', 'shipping', 'deliveredAt'],
 			'customer' => ['name', 'type'],
 			'farm' => ['name'],
 			'unit' => \selling\Unit::getSelection(),
@@ -36,12 +36,12 @@ class Item extends ItemElement {
 	public function canWrite(): bool {
 
 		$this->expects([
-			'sale' => ['preparationStatus', 'marketParent']
+			'sale' => ['preparationStatus']
 		]);
 
 		if(
 			$this->canRead() === FALSE or
-			$this['sale']['marketParent']->notEmpty()
+			$this['sale']->isMarketSale()
 		) {
 			return FALSE;
 		}
@@ -57,10 +57,10 @@ class Item extends ItemElement {
 	public function canDelete(): bool {
 
 		$this->expects([
-			'sale' => ['marketParent']
+			'sale' => ['origin']
 		]);
 
-		if($this['sale']['marketParent']->empty()) {
+		if($this['sale']->isMarketParent() === FALSE) {
 			return $this->canWrite();
 		} else {
 
@@ -130,7 +130,7 @@ class Item extends ItemElement {
 					'sale' => ['market'],
 				]);
 
-				if(($p->isBuilt('locked') and $this['locked'] === Item::NUMBER) or $this['sale']['market']) {
+				if(($p->isBuilt('locked') and $this['locked'] === Item::NUMBER) or $this['sale']->isMarket()) {
 					return TRUE;
 				} else {
 					return ($number !== NULL);

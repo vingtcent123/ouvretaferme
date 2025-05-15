@@ -277,7 +277,7 @@ class ItemLib extends ItemCrud {
 			if($type === 'parent') {
 
 				if(
-					$eSale['marketParent']->empty() or
+					$eSale->isMarketSale() === FALSE or
 					$eItem['sale']['id'] !== $eSale['marketParent']['id']
 				) {
 					continue;
@@ -380,7 +380,6 @@ class ItemLib extends ItemCrud {
 		}
 
 		// La même vente pour tout le monde
-		$eSale->expects(['marketParent']);
 		$cItem->validateProperty('sale', $eSale);
 
 		Item::model()->beginTransaction();
@@ -394,7 +393,7 @@ class ItemLib extends ItemCrud {
 				)
 				->delete();
 
-			if($eSale['marketParent']->notEmpty()) {
+			if($eSale->isMarket()) {
 
 				// On n'enregistre pas les ventes à 0.0 sur le logiciel de caisse
 				$cItemFiltered = $cItem->find(fn($eItem) => (
@@ -614,7 +613,7 @@ class ItemLib extends ItemCrud {
 			'unitPrice', 'number', 'packaging', 'vatRate'
 		]);
 
-		if($e['sale']['market']) {
+		if($e['sale']->isMarket()) {
 
 			// Marché en cours, à priori zéro vente à la création
 			if($e['sale']['preparationStatus'] === Sale::SELLING) {
@@ -708,7 +707,7 @@ class ItemLib extends ItemCrud {
 
 	public static function build(Sale $eSale, array $input, bool $errorIfEmpty): \Collection {
 
-		$eSale->expects(['id', 'customer', 'farm', 'marketParent']);
+		$eSale->expects(['id', 'customer', 'farm']);
 
 		$count = count((array)($input['product'] ?? []));
 
@@ -751,9 +750,9 @@ class ItemLib extends ItemCrud {
 
 	protected static function checkMarketDuplicate(Sale $eSale, \Collection $cItem) {
 
-		$eSale->expects(['market']);
+		$eSale->expects(['origin']);
 
-		if($eSale['market'] === FALSE) {
+		if($eSale->isMarket() === FALSE) {
 			return;
 		}
 

@@ -42,7 +42,7 @@ class MerchantUi {
 					$h .= $form->openAjax($url);
 
 						$h .= $form->hidden('id', $eSale['id']);
-						$h .= $form->hidden('type['.$eItem['id'].']', ($eSale['marketParent']->empty() or $eItem['number'] !== NULL) ? 'standalone' : 'parent');
+						$h .= $form->hidden('type['.$eItem['id'].']', ($eSale->isMarketSale() === FALSE or $eItem['number'] !== NULL) ? 'standalone' : 'parent');
 						$h .= $form->hidden('locked['.$eItem['id'].']', $eItem['locked']);
 
 						$h .= '<div class="merchant-title">';
