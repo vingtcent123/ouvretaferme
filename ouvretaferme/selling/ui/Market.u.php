@@ -353,38 +353,41 @@ class MarketUi {
 							if($hasAtLeastOnePaymentMethod) {
 
 								$magicIsNeeded = ($eSale['cPayment']->reduce(fn($e, $n) => $e['amountIncludingVat'] + $n, 0) !== $eSale['priceIncludingVat']);
-									$h .= '<div>';
 
-										foreach($eSale['cPayment'] as $ePayment) {
+								$h .= '<div>';
 
-											$h .= '<div class="payment-method">';
+									foreach($eSale['cPayment'] as $ePayment) {
 
-												$h .= encode($ePayment['method']['name']);
+										$h .= '<div class="payment-method">';
 
-												if($ePayment['amountIncludingVat'] !== NULL) {
-													if($ePayment['amountIncludingVat'] === 0.0) {
-														$amount = '-,-- €';
-													} else {
-														$amount = \util\TextUi::money($ePayment['amountIncludingVat']);
-													}
+											$h .= encode($ePayment['method']['name']);
+
+											if($ePayment['amountIncludingVat'] !== NULL) {
+												if($ePayment['amountIncludingVat'] === 0.0) {
+													$amount = '-,-- €';
 												} else {
-													$amount = s("Non calculé");
+													$amount = \util\TextUi::money($ePayment['amountIncludingVat']);
 												}
+											} else {
+												$amount = s("Non calculé");
+											}
 
-												$h .= $ePayment->quick('amountIncludingVat', $amount);
+											$h .= $ePayment->quick('amountIncludingVat', $amount);
 
-												$h .= '<a data-ajax="/selling/sale:doFillPaymentMethod" post-id="'.$eSale['id'].'" post-payment-method="'.$ePayment['method']['id'].'" class="'.($magicIsNeeded ? '' : 'not-visible').' btn btn-sm btn-outline-border ml-1" title="'.s("Compléter automatiquement").'">'.\Asset::icon('magic').'</a>';
+											$h .= '<a data-ajax="/selling/sale:doFillPaymentMethod" post-id="'.$eSale['id'].'" post-payment-method="'.$ePayment['method']['id'].'" class="'.($magicIsNeeded ? '' : 'not-visible').' btn btn-sm btn-outline-border ml-1" title="'.s("Compléter automatiquement").'">'.\Asset::icon('magic').'</a>';
 
-											$h .= '</div>';
+										$h .= '</div>';
 
-										}
+									}
 
-									$h .= '</div>';
+								$h .= '</div>';
 
-									$h .= '<a data-dropdown="bottom-start" class="dropdown-toggle btn btn-sm" data-dropdown-hover="true">';
+								$h .= '<div class="text-end">';
+									$h .= '<a data-dropdown="bottom-start" class="dropdown-toggle btn btn-outline-secondary btn-sm" data-dropdown-hover="true">';
 										$h .= '<span style="font-weight: normal">'.s("Modifier").'</span>';
 									$h .= '</a>';
 									$h .= $paymentMethodDropdown;
+								$h .= '</div>';
 
 							} else {
 

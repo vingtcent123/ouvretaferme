@@ -518,7 +518,7 @@ a.market-sales-item > svg {
 
 .market-customer-details .payment-methods {
 	display: grid;
-	grid-template-columns: 2fr 1fr;
+	grid-template-columns: auto auto;
 	grid-gap: 1rem;
 	align-items: start;
 }
@@ -529,6 +529,9 @@ a.market-sales-item > svg {
 	display: grid;
 	grid-template-columns: 1fr auto auto;
 	align-items: center;
+}
+.market-customer-details .payment-methods .payment-method:not(:last-child) {
+	margin-bottom: 0.25rem;
 }
 
 @media (max-width: 991px) {
