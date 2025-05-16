@@ -150,15 +150,17 @@ a.sale-preparation-status-action {
 	font-size: 0.8rem;
 }
 
-.sale-payment-status-paid {
+.sale-payment-status-paid,
+.sale-payment-status-success {
 	background-color: var(--success);
 }
 
-.sale-payment-status-not-paid {
+.sale-payment-status-not-paid,
+.sale-payment-status-initialized {
 	background-color: var(--muted);
 }
 
-.sale-payment-status-failed {
+.sale-payment-status-failure {
 	background-color: var(--danger);
 }
 

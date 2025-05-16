@@ -553,6 +553,7 @@ class SaleLib {
 				'onlinePaymentStatus' => \selling\Sale::FAILURE,
 				'paymentMethod' => \payment\MethodLib::getByFqn('online-card'),
 			];
+
 			\selling\Sale::model()
 				->wherePaymentStatus('NOT IN', [\selling\Sale::PAID]) // En cas de concurrence (si le client a réussi entre temps)
 				->update($eSale, $newValues);

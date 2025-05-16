@@ -969,11 +969,14 @@ class SaleUi {
 
 	public static function getPaymentStatus(Sale $eSale): string {
 
-		if($eSale['paymentStatus'] === NULL) {
+		if($eSale['onlinePaymentStatus'] !== NULL) {
+			return '<span class="util-badge sale-payment-status sale-payment-status-'.$eSale['onlinePaymentStatus'].'">'.self::p('onlinePaymentStatus')->values[$eSale['onlinePaymentStatus']].'</span>';
+		} else if($eSale['paymentStatus'] !== NULL) {
+			return '<span class="util-badge sale-payment-status sale-payment-status-'.$eSale['paymentStatus'].'">'.self::p('paymentStatus')->values[$eSale['paymentStatus']].'</span>';
+		} else {
 			return '';
 		}
 
-		return '<span class="util-badge sale-payment-status sale-payment-status-'.$eSale['paymentStatus'].'">'.self::p('paymentStatus')->values[$eSale['paymentStatus']].'</span>';
 
 	}
 
@@ -2233,6 +2236,14 @@ class SaleUi {
 					'labelOff' => $d->values[Sale::NOT_PAID],
 					'valueOn' => Sale::PAID,
 					'valueOff' => Sale::NOT_PAID,
+				];
+				break;
+
+			case 'onlinePaymentStatus' :
+				$d->values = [
+					Sale::INITIALIZED => s("Non payé"),
+					Sale::SUCCESS => s("Payé"),
+					Sale::FAILURE => s("Échec"),
 				];
 				break;
 
