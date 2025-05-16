@@ -7,7 +7,7 @@ class Sale extends SaleElement {
 
 		return parent::getSelection() + [
 			'customer' => CustomerElement::getSelection(),
-			'shop' => ['fqn', 'shared', 'name', 'email', 'emailNewSale', 'emailEndDate', 'approximate', 'paymentCard', 'hasPayment', 'paymentOfflineHow', 'paymentTransferHow', 'shipping', 'shippingUntil', 'orderMin', 'embedOnly', 'embedUrl'],
+			'shop' => ['fqn', 'shared', 'name', 'email', 'emailNewSale', 'emailEndDate', 'approximate', 'paymentCard', 'hasPayment', 'paymentOfflineHow', 'paymentTransferHow', 'shipping', 'shippingUntil', 'orderMin', 'embedOnly', 'embedUrl', 'farm' => ['name']],
 			'shopDate' => \shop\Date::getSelection(),
 			'shopPoint' => ['type', 'name'],
 			'farm' => ['name', 'url', 'vignette', 'banner', 'featureDocument', 'hasSales'],

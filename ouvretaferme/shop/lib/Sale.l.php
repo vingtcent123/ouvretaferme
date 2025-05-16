@@ -387,9 +387,6 @@ class SaleLib {
 
 			}
 
-			// Supprimer les paiements liés
-			\selling\PaymentLib::deleteBySale($eSaleReference);
-
 		\selling\Sale::model()->commit();
 
 
