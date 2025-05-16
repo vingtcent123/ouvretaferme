@@ -214,6 +214,7 @@ class InvoiceUi {
 												$h .= \util\TextUi::switch([
 													'id' => 'invoice-switch-'.$eInvoice['id'],
 													'class' => 'field-switch-sm',
+													'disabled' => $eInvoice->isPaymentOnline(),
 													'data-ajax' => $eInvoice->canWrite() ? '/selling/invoice:doUpdatePaymentStatus' : NULL,
 													'post-id' => $eInvoice['id'],
 													'post-payment-status' => ($eInvoice['paymentStatus'] === Invoice::PAID) ? Invoice::NOT_PAID : Invoice::PAID
@@ -675,13 +676,17 @@ class InvoiceUi {
 
 			$h .= $form->hidden('id', $eInvoice['id']);
 
-			$h .= '<div class="util-block bg-background-light">';
-				$h .= $form->group(content: '<h4>'.s("Règlement").'</h4>');
-				$h .= $form->dynamicGroup($eInvoice, 'paymentMethod');
-				$h .= $form->dynamicGroup($eInvoice, 'paymentStatus', function($d) {
-					$d->default = fn(Invoice $eInvoice) => $eInvoice['paymentStatus'] ?? Sale::NOT_PAID;
-				});
-			$h .= '</div>';
+			if($eInvoice->isPaymentOnline() === FALSE) {
+
+				$h .= '<div class="util-block bg-background-light">';
+					$h .= $form->group(content: '<h4>'.s("Règlement").'</h4>');
+					$h .= $form->dynamicGroup($eInvoice, 'paymentMethod');
+					$h .= $form->dynamicGroup($eInvoice, 'paymentStatus', function($d) {
+						$d->default = fn(Invoice $eInvoice) => $eInvoice['paymentStatus'] ?? Sale::NOT_PAID;
+					});
+				$h .= '</div>';
+
+			}
 
 			$h .= $form->dynamicGroups($eInvoice, ['description']);
 

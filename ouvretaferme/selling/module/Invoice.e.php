@@ -63,6 +63,18 @@ class Invoice extends InvoiceElement {
 
 	}
 
+	public function isPaymentOnline(): bool {
+
+		if($this['paymentMethod']->empty()) {
+			return FALSE;
+		}
+
+		$this->expects(['paymentMethod' => ['fqn']]);
+
+		return ($this['paymentMethod']['fqn'] === \payment\MethodLib::ONLINE_CARD);
+
+	}
+
 	public function isCreditNote(): bool {
 		return ($this['priceExcludingVat'] < 0.0);
 	}

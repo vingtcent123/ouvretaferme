@@ -7,8 +7,20 @@ class InvoiceLib extends InvoiceCrud {
 		return ['customer', 'sales', 'date', 'paymentCondition', 'header', 'footer'];
 	}
 
-	public static function getPropertiesUpdate(): array {
-		return ['description', 'paymentMethod', 'paymentStatus'];
+	public static function getPropertiesUpdate(): \Closure {
+
+		return function(Invoice $e) {
+
+			$properties = ['description'];
+
+			if($e->isPaymentOnline() === FALSE) {
+				$properties[] = 'paymentMethod';
+				$properties[] = 'paymentStatus';
+			}
+
+			return $properties;
+
+		};
 	}
 
 	public static function getByFarm(\farm\Farm $eFarm, bool $selectSales = FALSE, int $page = 0, \Search $search = new \Search()): array {
@@ -151,9 +163,6 @@ class InvoiceLib extends InvoiceCrud {
 			$priceExcludingVat = 0.0;
 			$priceIncludingVat = 0.0;
 
-			$eMethod = $cSale->first()['paymentMethod'];
-			$differentMethods = FALSE;
-
 			foreach($cSale as $eSale) {
 
 				if($eSale['organic']) {
@@ -162,10 +171,6 @@ class InvoiceLib extends InvoiceCrud {
 
 				if($eSale['conversion']) {
 					$e['conversion'] = TRUE;
-				}
-
-				if($eMethod->is($eSale['paymentMethod']) === FALSE) {
-					$differentMethods = TRUE;
 				}
 
 				// Calcul de la somme de TVA sur les différentes ventes
@@ -227,15 +232,8 @@ class InvoiceLib extends InvoiceCrud {
 
 			$e['name'] = $e->getInvoice($e['farm']);
 
-			if($differentMethods === FALSE) {
-
-				$e['paymentMethod'] = $eMethod;
-
-				if($eMethod->notEmpty()) {
-					$e['paymentStatus'] = $cSale->first()['paymentStatus'];
-				}
-
-			}
+			$e['paymentMethod'] = $cSale->first()['paymentMethod'];
+			$e['paymentStatus'] = $cSale->first()['paymentStatus'];
 
 			parent::create($e);
 
@@ -250,6 +248,38 @@ class InvoiceLib extends InvoiceCrud {
 		if($e['generation'] === Invoice::NOW) {
 			self::generate($e);
 		}
+
+	}
+
+	public static function update(Invoice $e, array $properties): void {
+
+		Invoice::model()->beginTransaction();
+
+			parent::update($e, $properties);
+
+			$updateValues = [];
+
+			if(in_array('paymentMethod', $properties)) {
+				$updateValues['paymentMethod'] = $e['paymentMethod'];
+			}
+
+			if(in_array('paymentStatus', $properties)) {
+				$updateValues['paymentStatus'] = $e['paymentStatus'];
+			}
+
+			if($updateValues) {
+
+				$updateProperties = array_keys($updateValues);
+
+				$cSale = SaleLib::getByIds($e['sales']);
+
+				foreach($cSale as $eSale) {
+					SaleLib::update($eSale->merge($updateValues), $updateProperties);
+				}
+
+			}
+
+		Invoice::model()->commit();
 
 	}
 
