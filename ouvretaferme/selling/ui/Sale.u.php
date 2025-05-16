@@ -1840,7 +1840,28 @@ class SaleUi {
 
 			}
 
-			if($eSale->acceptUpdatePayment()) {
+			if($eSale['invoice']->notEmpty()) {
+
+				$paymentInfo = '<div class="util-info">';
+					$paymentInfo .= '<p>';
+						$paymentInfo .= s("Cette vente est incluse dans la facture <b>{invoiceNumber}</b>. Vous pouvez modifier le moyen de paiement et l'état du paiement directement dans la facture.", [
+						'invoiceNumber' => encode($eSale['invoice']['name']),
+					]);
+					$paymentInfo .= '</p>';
+					$paymentInfo .= '<a href="'.\farm\FarmUi::urlSellingInvoice($eSale['farm']).'?invoice='.$eSale['invoice']['id'].'" class="btn btn-secondary">';
+						$paymentInfo .= s("Consulter la facture");
+					$paymentInfo .= '</a>';
+				$paymentInfo .= '</div>';
+
+				$h .= '<div class="util-block bg-background-light">';
+					$h .= $form->group(content: '<h4>'.s("Règlement").'</h4>');
+					$h .= $form->group(SaleUi::p('paymentMethod')->label, SaleUi::getPaymentMethodName($eSale));
+					$h .= $form->group(SaleUi::p('paymentStatus')->label, SaleUi::getPaymentStatus($eSale));
+					$h .= $form->group(content: $paymentInfo);
+				$h .= '</div>';
+
+			} else if($eSale->acceptUpdatePayment()) {
+
 
 				$h .= '<div class="util-block bg-background-light">';
 					$h .= $form->group(content: '<h4>'.s("Règlement").'</h4>');

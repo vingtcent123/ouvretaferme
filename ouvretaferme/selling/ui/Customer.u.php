@@ -862,7 +862,7 @@ class CustomerUi {
 			case 'defaultPaymentMethod' :
 				$d->values = fn(Customer $e) => $e['cPaymentMethod'] ?? $e->expects(['cPaymentMethod']);
 				$d->placeholder = s("Non défini");
-				$d->labelAfter = \util\FormUi::info(s("Ce moyen de paiement sera associé par défaut aux ventes crées pour ce client"));
+				$d->labelAfter = \util\FormUi::info(s("Ce moyen de paiement sera associé par défaut aux ventes créées pour ce client"));
 				break;
 
 		}

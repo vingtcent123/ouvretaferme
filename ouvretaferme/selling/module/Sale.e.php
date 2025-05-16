@@ -220,12 +220,13 @@ class Sale extends SaleElement {
 
 	public function acceptUpdatePayment(): bool {
 
-		$this->expects(['paymentMethod']);
+		$this->expects(['paymentMethod', 'invoice']);
 
 		return (
 			$this->isMarket() === FALSE and
 			($this['paymentMethod']->empty() or $this['paymentMethod']['online'] === FALSE) and
-			$this['preparationStatus'] !== Sale::CANCELED
+			$this['preparationStatus'] !== Sale::CANCELED and
+			$this['invoice']->empty()
 		);
 
 	}

@@ -46,6 +46,7 @@ class InvoiceLib extends InvoiceCrud {
 		$cInvoice = Invoice::model()
 			->select(Invoice::getSelection())
 			->option('count')
+			->whereId('=', $search->get('invoice'), if: $search->get('invoice'))
 			->whereFarm($eFarm)
 			->wherePaymentStatus('LIKE', $search->get('paymentStatus'), if: $search->get('paymentStatus'))
 			->whereDate('LIKE', '%'.$search->get('date').'%', if: $search->get('date'))

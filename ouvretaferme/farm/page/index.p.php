@@ -254,6 +254,7 @@
 		$data->page = GET('page', 'int');
 
 		$data->search = new Search([
+			'invoice' => GET('invoice'),
 			'document' => GET('document'),
 			'customer' => GET('customer'),
 			'date' => GET('date'),
