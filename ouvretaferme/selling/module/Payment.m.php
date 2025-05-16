@@ -49,10 +49,11 @@ class PaymentModel extends \ModuleModel {
 			'checkoutId' => ['text8', 'null' => TRUE, 'unique' => TRUE, 'cast' => 'string'],
 			'paymentIntentId' => ['text8', 'null' => TRUE, 'unique' => TRUE, 'cast' => 'string'],
 			'onlineStatus' => ['enum', [\selling\Payment::INITIALIZED, \selling\Payment::SUCCESS, \selling\Payment::FAILURE], 'null' => TRUE, 'cast' => 'enum'],
+			'createdAt' => ['datetime', 'cast' => 'string'],
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'sale', 'customer', 'farm', 'amountIncludingVat', 'method', 'checkoutId', 'paymentIntentId', 'onlineStatus'
+			'id', 'sale', 'customer', 'farm', 'amountIncludingVat', 'method', 'checkoutId', 'paymentIntentId', 'onlineStatus', 'createdAt'
 		]);
 
 		$this->propertiesToModule += [
@@ -71,6 +72,20 @@ class PaymentModel extends \ModuleModel {
 			['checkoutId'],
 			['paymentIntentId']
 		]);
+
+	}
+
+	public function getDefaultValue(string $property) {
+
+		switch($property) {
+
+			case 'createdAt' :
+				return new \Sql('NOW()');
+
+			default :
+				return parent::getDefaultValue($property);
+
+		}
 
 	}
 
@@ -130,6 +145,10 @@ class PaymentModel extends \ModuleModel {
 
 	public function whereOnlineStatus(...$data): PaymentModel {
 		return $this->where('onlineStatus', ...$data);
+	}
+
+	public function whereCreatedAt(...$data): PaymentModel {
+		return $this->where('createdAt', ...$data);
 	}
 
 

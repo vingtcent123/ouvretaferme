@@ -193,6 +193,7 @@ Payment:
   checkoutId: ?text8
   paymentIntentId: ?text8
   onlineStatus: ?enum(INITIALIZED, SUCCESS, FAILURE)
+  createdAt: datetime = SPECIAL(now)
   INDEX: [
     ["farm"],
     ["sale"]
