@@ -163,14 +163,19 @@ class MethodUi {
 
 	}
 
-	public static function getShortValues(Method $eMethod): string {
+	public static function getName(\payment\Method $eMethod): string {
 
-		$methodElements = explode(' ', $eMethod['name']);
-		$value = '';
-		foreach($methodElements as $element) {
-			$value .= substr($element, 0, 1);
+		if($eMethod->empty()) {
+			return '/';
 		}
-		return mb_strtoupper($value);
+
+		$eMethod->expects(['fqn', 'name']);
+
+		if($eMethod['fqn'] === \payment\MethodLib::ONLINE_CARD) {
+			return \payment\MethodUi::getOnlineCardText();
+		}
+
+		return encode($eMethod['name']);
 
 	}
 

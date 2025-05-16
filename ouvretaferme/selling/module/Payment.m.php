@@ -48,11 +48,11 @@ class PaymentModel extends \ModuleModel {
 			'method' => ['element32', 'payment\Method', 'null' => TRUE, 'cast' => 'element'],
 			'checkoutId' => ['text8', 'null' => TRUE, 'unique' => TRUE, 'cast' => 'string'],
 			'paymentIntentId' => ['text8', 'null' => TRUE, 'unique' => TRUE, 'cast' => 'string'],
-			'status' => ['enum', [\selling\Payment::INITIALIZED, \selling\Payment::SUCCESS, \selling\Payment::FAILURE], 'cast' => 'enum'],
+			'onlineStatus' => ['enum', [\selling\Payment::INITIALIZED, \selling\Payment::SUCCESS, \selling\Payment::FAILURE], 'null' => TRUE, 'cast' => 'enum'],
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'sale', 'customer', 'farm', 'amountIncludingVat', 'method', 'checkoutId', 'paymentIntentId', 'status'
+			'id', 'sale', 'customer', 'farm', 'amountIncludingVat', 'method', 'checkoutId', 'paymentIntentId', 'onlineStatus'
 		]);
 
 		$this->propertiesToModule += [
@@ -74,25 +74,11 @@ class PaymentModel extends \ModuleModel {
 
 	}
 
-	public function getDefaultValue(string $property) {
-
-		switch($property) {
-
-			case 'status' :
-				return Payment::INITIALIZED;
-
-			default :
-				return parent::getDefaultValue($property);
-
-		}
-
-	}
-
 	public function encode(string $property, $value) {
 
 		switch($property) {
 
-			case 'status' :
+			case 'onlineStatus' :
 				return ($value === NULL) ? NULL : (string)$value;
 
 			default :
@@ -142,8 +128,8 @@ class PaymentModel extends \ModuleModel {
 		return $this->where('paymentIntentId', ...$data);
 	}
 
-	public function whereStatus(...$data): PaymentModel {
-		return $this->where('status', ...$data);
+	public function whereOnlineStatus(...$data): PaymentModel {
+		return $this->where('onlineStatus', ...$data);
 	}
 
 

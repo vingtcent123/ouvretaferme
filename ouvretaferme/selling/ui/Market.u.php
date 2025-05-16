@@ -292,7 +292,7 @@ class MarketUi {
 								$h .= '</div>';
 							} else {
 								$h .= '<div>';
-									$h .= '<a data-ajax="/selling/sale:doUpdatePreparationStatus" post-id="'.$eSale['id'].'" post-preparation-status="'.Sale::DELIVERED.'" class="btn btn-success" data-confirm="'.s("Voulez-vous réellement terminer cette vente ?").'">'.s("Terminer la vente").'</a> ';
+									$h .= '<a data-ajax="/selling/market:doCloseMarketSale" post-id="'.$eSale['id'].'" class="btn btn-success" data-confirm="'.s("Voulez-vous réellement terminer cette vente ?").'">'.s("Terminer la vente").'</a> ';
 									$h .= '<a data-ajax="/selling/sale:doUpdatePreparationStatus" post-id="'.$eSale['id'].'" post-preparation-status="'.Sale::CANCELED.'" class="btn btn-muted" data-confirm="'.s("Voulez-vous réellement annuler cette vente ?").'">'.s("Annuler la vente").'</a>';
 								$h .= '</div>';
 							}
@@ -352,7 +352,7 @@ class MarketUi {
 
 							if($hasAtLeastOnePaymentMethod) {
 
-								$magicIsNeeded = ($eSale['cPayment']->reduce(fn($e, $n) => $e['amountIncludingVat'] + $n, 0) !== $eSale['priceIncludingVat']);
+								$magicIsNeeded = ($eSale['cPayment']->reduce(fn($e, $n) => $e['amountIncludingVat'] + $n, 0) !== ($eSale['priceIncludingVat'] ?? 0.0));
 
 								$h .= '<div>';
 

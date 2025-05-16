@@ -92,7 +92,8 @@ new \selling\ItemPage()
 		} else {
 
 			$data->e['sale'] = \selling\SaleLib::getById($data->e['sale'], \selling\Sale::getSelection() + [
-				'createdBy' => ['firstName', 'lastName', 'vignette']
+				'createdBy' => ['firstName', 'lastName', 'vignette'],
+				'cPayment' => \selling\PaymentLib::delegateBySale(),
 			]);
 
 			\selling\Sale::model()

@@ -29,7 +29,7 @@ abstract class SaleElement extends \Element {
 	const NOT_PAID = 'not-paid';
 	const PAID = 'paid';
 
-	const PENDING = 'pending';
+	const INITIALIZED = 'initialized';
 	const SUCCESS = 'success';
 	const FAILURE = 'failure';
 
@@ -85,7 +85,7 @@ class SaleModel extends \ModuleModel {
 			'preparationStatus' => ['enum', [\selling\Sale::COMPOSITION, \selling\Sale::DRAFT, \selling\Sale::BASKET, \selling\Sale::CONFIRMED, \selling\Sale::SELLING, \selling\Sale::PREPARED, \selling\Sale::DELIVERED, \selling\Sale::CANCELED], 'cast' => 'enum'],
 			'paymentMethod' => ['element32', 'payment\Method', 'null' => TRUE, 'cast' => 'element'],
 			'paymentStatus' => ['enum', [\selling\Sale::NOT_PAID, \selling\Sale::PAID], 'null' => TRUE, 'cast' => 'enum'],
-			'onlinePaymentStatus' => ['enum', [\selling\Sale::PENDING, \selling\Sale::SUCCESS, \selling\Sale::FAILURE], 'null' => TRUE, 'cast' => 'enum'],
+			'onlinePaymentStatus' => ['enum', [\selling\Sale::INITIALIZED, \selling\Sale::SUCCESS, \selling\Sale::FAILURE], 'null' => TRUE, 'cast' => 'enum'],
 			'compositionOf' => ['element32', 'selling\Product', 'null' => TRUE, 'cast' => 'element'],
 			'compositionEndAt' => ['date', 'null' => TRUE, 'cast' => 'string'],
 			'market' => ['bool', 'cast' => 'bool'],

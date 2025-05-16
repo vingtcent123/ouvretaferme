@@ -222,5 +222,49 @@ class MarketLib {
 
 	}
 
+	public static function checkPaymentsConsistency(Sale $eSale): void {
+
+		$eSale['cPayment'] = PaymentLib::getBySale($eSale);
+
+		$totalPayments = $eSale['cPayment']->reduce(fn($e, $v) => $v + $e['amountIncludingVat'], 0);
+
+		if($totalPayments !== $eSale['priceIncludingVat']) {
+			\Fail::log('Market::inconsistencyTotal');
+		}
+
+	}
+
+	public static function doCloseMarketSale(Sale $eSale): void {
+
+		Sale::model()->beginTransaction();
+
+		$eSale['oldPaymentMethod'] = $eSale['paymentMethod'];
+		$eSale['oldPaymentStatus'] = $eSale['paymentStatus'];
+
+		$newSalePaymentStatus = match($eSale['preparationStatus']) {
+			Sale::DELIVERED => Sale::PAID,
+			default => Sale::NOT_PAID,
+		};
+
+		$ePaymentMethodLast = Payment::model()
+			->select('method')
+			->whereSale($eSale)
+			->sort(['id' => SORT_DESC])
+			->get();
+
+		$inputValues = [
+			'paymentMethod' => ($ePaymentMethodLast['method']['id'] ?? NULL),
+			'paymentStatus' => $newSalePaymentStatus,
+			'preparationStatus' => Sale::DELIVERED,
+		];
+		$properties = array_keys($inputValues);
+
+		$eSale->build($properties, $inputValues, new \Properties('update'));
+
+		SaleLib::update($eSale, $properties);
+
+		Sale::model()->commit();
+	}
+
 }
 ?>

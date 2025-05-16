@@ -315,10 +315,6 @@ new \selling\SalePage()
 	}, validate: ['canWrite', 'acceptUpdatePayment'])
 	->doUpdateProperties('doUpdatePreparationStatus', ['preparationStatus'], function($data) {
 
-		if($data->e->isMarket() === FALSE) {
-			\selling\PaymentLib::updateBySaleStatus($data->e);
-		}
-
 		throw new ViewAction($data);
 
 		}, validate: ['canUpdatePreparationStatus'])

@@ -191,7 +191,7 @@ Payment:
   method: ?payment\Method
   checkoutId: ?text8
   paymentIntentId: ?text8
-  status: enum(INITIALIZED, SUCCESS, FAILURE) = INITIALIZED
+  onlineStatus: ?enum(INITIALIZED, SUCCESS, FAILURE)
   INDEX: [
     ["farm"],
     ["sale"]
@@ -279,7 +279,7 @@ Sale:
   preparationStatus: enum(COMPOSITION, DRAFT, BASKET, CONFIRMED, SELLING, PREPARED, DELIVERED, CANCELED) = DRAFT
   paymentMethod: ?payment\Method
   paymentStatus: ?enum(NOT_PAID, PAID)
-  onlinePaymentStatus: ?enum(PENDING, SUCCESS, FAILURE)
+  onlinePaymentStatus: ?enum(INITIALIZED, SUCCESS, FAILURE)
   compositionOf: ?selling\Product
   compositionEndAt: ?date
   market: bool = FALSE

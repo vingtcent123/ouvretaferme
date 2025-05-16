@@ -758,8 +758,10 @@ class SaleLib extends SaleCrud {
 			($e['oldPreparationStatus'] !== $e['preparationStatus'])
 		);
 
-		$emptyPaymentMethod = (in_array('paymentMethod', $properties) and
-			$e['paymentMethod']->empty());
+		$emptyPaymentMethod = (
+			in_array('paymentMethod', $properties) and
+			$e['paymentMethod']->empty()
+		);
 
 		if(in_array('shippingVatRate', $properties)) {
 
@@ -864,21 +866,15 @@ class SaleLib extends SaleCrud {
 
 		}
 
-		// Uniquement en cas de changement dans les moyens de paiement
-		if(in_array('paymentStatus', $properties) or in_array('paymentMethod', $properties)) {
+		if($emptyPaymentMethod) {
 
-			if($emptyPaymentMethod or $e['preparationStatus'] === Sale::CANCELED) {
+			\selling\PaymentLib::deleteBySale($e);
 
-				\selling\PaymentLib::deleteBySale($e);
+		} else if(in_array('paymentMethod', $properties) and $e->isMarketSale() === FALSE) {
 
-			} else if(
-				$e['oldPaymentStatus'] !== $e['paymentStatus'] or
-				($e['oldPaymentMethod']['id'] ?? NULL) !== ($e['paymentMethod']['id'] ?? NULL)
-			) {
+			\selling\PaymentLib::deleteBySale($e);
+			\selling\PaymentLib::createBySale($e, $e['paymentMethod']);
 
-				\selling\PaymentLib::updateBySale($e);
-
-			}
 		}
 
 		if(in_array('shipping', $properties)) {

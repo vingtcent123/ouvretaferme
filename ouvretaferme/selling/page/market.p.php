@@ -60,6 +60,19 @@ new \selling\SalePage()
 		throw new RedirectAction(\selling\SaleUi::urlMarket($data->e).'?success=selling:Market::closed');
 
 	})
+	->write('doCloseMarketSale', function($data) {
+
+		$fw = new FailWatch();
+
+		\selling\MarketLib::checkPaymentsConsistency($data->e);
+
+		$fw->validate();
+
+		\selling\MarketLib::doCloseMarketSale($data->e);
+
+		throw new ViewAction($data);
+
+	}, validate: ['isMarketSale', 'acceptUpdatePayment'])
 	->write('doUpdatePrices', function($data) {
 
 		$cItem = \selling\MarketLib::checkNewPrices($data->e, POST('unitPrice', 'array', []));

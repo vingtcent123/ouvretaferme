@@ -69,4 +69,11 @@ new AdaptativeView('/vente/{id}/marche/ventes', function($data, MarketTemplate $
 	}
 
 });
+
+new JsonView('doCloseMarketSale', function($data, AjaxTemplate $t) {
+
+	$t->ajaxReload();
+
+});
+
 ?>

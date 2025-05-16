@@ -448,9 +448,11 @@ class SaleLib {
 
 		$ePayment = \selling\PaymentLib::createBySale($eSale, $eMethod, $stripeSession['id']);
 
+		$eSale['oldPaymentMethod'] = $eSale['paymentMethod'];
+		$eSale['oldPaymentStatus'] = $eSale['paymentStatus'];
 		$eSale['paymentMethod'] = $eMethod;
 		$eSale['paymentStatus'] = \selling\Sale::NOT_PAID;
-		$eSale['onlinePaymentStatus'] = \selling\Sale::PENDING;
+		$eSale['onlinePaymentStatus'] = \selling\Sale::INITIALIZED;
 
 		\selling\SaleLib::update($eSale, ['paymentMethod', 'paymentStatus', 'onlinePaymentStatus']);
 
@@ -481,26 +483,15 @@ class SaleLib {
 
 		$eSale['oldPreparationStatus'] = $eSale['preparationStatus'];
 		$eSale['preparationStatus'] = \selling\Sale::CONFIRMED;
+
+		$eSale['oldPaymentMethod'] = $eSale['paymentMethod'];
+		$eSale['oldPaymentStatus'] = $eSale['paymentStatus'];
 		$eSale['paymentMethod'] = $eMethod;
 		$eSale['paymentStatus'] = \selling\Sale::NOT_PAID;
 
 		\selling\Sale::model()->beginTransaction();
 
 		\selling\SaleLib::update($eSale, ['preparationStatus', 'paymentMethod', 'paymentStatus']);
-
-		if($method !== NULL) {
-
-			$ePayment = new \selling\Payment([
-				'sale' => $eSale,
-				'method' => $eMethod,
-				'customer' => $eSale['customer'],
-				'farm' => $eSale['farm'],
-				'amountIncludingVat' => $eSale['priceIncludingVat'],
-				'checkoutId' => NULL,
-			]);
-
-			\selling\Payment::model()->insert($ePayment);
-		}
 
 		$group = FALSE;
 		self::notify($eSale['shopUpdated'] ? 'saleUpdated' : 'saleConfirmed', $eSale, $eSale['customer']['user'], $eSale['cItem'], $group);
@@ -599,8 +590,9 @@ class SaleLib {
 
 		$eSale['oldPreparationStatus'] = $eSale['preparationStatus'];
 		$eSale['preparationStatus'] = \selling\Sale::CONFIRMED;
+
+		$eSale['oldPaymentStatus'] = $eSale['paymentStatus'];
 		$eSale['paymentStatus'] = \selling\Sale::PAID;
-		$eSale['paymentMethod'] = \payment\MethodLib::getByFqn('online-card');
 		$eSale['onlinePaymentStatus'] = \selling\Sale::SUCCESS;
 
 		\selling\SaleLib::update($eSale, ['preparationStatus', 'paymentStatus']);

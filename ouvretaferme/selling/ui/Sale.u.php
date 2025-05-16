@@ -503,15 +503,46 @@ class SaleUi {
 						if(in_array('paymentMethod', $hide) === FALSE) {
 
 							$h .= '<td class="sale-item-payment-type '.($dynamicHide['paymentMethod'] ?? 'hide-md-down').'">';
-								$h .= self::getPaymentMethodName($eSale);
 
-								if(
-									$eSale['paymentMethod']->notEmpty() and
-									$eSale->isMarketSale() === FALSE
-								) {
-									$h .= '<div style="margin-top: 0.25rem">'.self::getPaymentStatus($eSale).'</div>';
+								if($eSale->isMarketSale()) {
+
+									$paymentList = [];
+									foreach($eSale['cPayment'] as $ePayment) {
+
+										$payment = \payment\MethodUi::getName($ePayment['method']);
+
+										if(
+											$eSale['paymentMethod']->notEmpty() and
+											$eSale->isMarketSale() === FALSE
+										) {
+
+											$payment .= '<div style="margin-top: 0.25rem">'.self::getPaymentStatus($eSale).'</div>';
+
+										} else if(
+											$eSale->isMarketSale() and
+											$eSale['cPayment']->count() > 1
+										) {
+
+											$payment .= ' ('.\util\TextUi::money($ePayment['amountIncludingVat']).')';
+
+										}
+
+										$paymentList[] = $payment;
+
+									}
+									$h .= join('<br />', $paymentList);
+
+								} else {
+
+									$h .= self::getPaymentMethodName($eSale);
+
+									if($eSale['paymentMethod']->notEmpty()) {
+
+										$h .= '<div style="margin-top: 0.25rem">'.self::getPaymentStatus($eSale).'</div>';
+
+									}
+
 								}
-
 							$h .= '</td>';
 
 						}
@@ -1115,11 +1146,9 @@ class SaleUi {
 
 	public static function getPaymentMethodName(Sale $eSale): string {
 
-		if($eSale->isPaymentOnline()) {
-			return \payment\MethodUi::getOnlineCardText();
-		}
+		$eSale->expects(['paymentMethod']);
 
-		return encode($eSale['paymentMethod']['name'] ?? '/');
+		return \payment\MethodUi::getName($eSale['paymentMethod']);
 
 	}
 	public static function getPayment(Sale $eSale): string {

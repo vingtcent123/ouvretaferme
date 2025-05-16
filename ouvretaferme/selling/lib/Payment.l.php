@@ -80,7 +80,7 @@ class PaymentLib extends PaymentCrud {
 		return Payment::model()
 			->select(Payment::getSelection())
 			->whereSale($eSale)
-			->whereStatus(Payment::SUCCESS)
+			->whereOnlineStatus(Payment::SUCCESS)
 			->exists();
 
 	}
@@ -112,6 +112,7 @@ class PaymentLib extends PaymentCrud {
 		$eSale->expects(['customer', 'farm']);
 
 		$amount = $eSale['priceIncludingVat'] - self::sumTotalBySale($eSale);
+		$onlineStatus = ($eMethod['fqn'] ?? NULL) === \payment\MethodLib::ONLINE_CARD ? Payment::INITIALIZED : NULL;
 
 		$e = new Payment([
 			'sale' => $eSale,
@@ -120,6 +121,7 @@ class PaymentLib extends PaymentCrud {
 			'checkoutId' => $providerId,
 			'method' => $eMethod,
 			'amountIncludingVat' => $amount,
+			'onlineStatus' => $onlineStatus,
 		]);
 
 		Payment::model()->insert($e);
@@ -134,7 +136,6 @@ class PaymentLib extends PaymentCrud {
 		Payment::model()
 			->select(['sum' => new \Sql('SUM(amountIncludingVat)')])
 			->whereSale($eSale)
-			->whereStatus('!=', Payment::FAILURE)
 			->get($ePayment);
 
 		return $ePayment['sum'] ?? 0;
@@ -203,50 +204,6 @@ class PaymentLib extends PaymentCrud {
 
 	}
 
-	public static function updateBySaleStatus(Sale $eSale): void {
-
-		$eSale->expects(['customer', 'farm', 'preparationStatus']);
-
-		if($eSale['preparationStatus'] === Sale::CANCELED) {
-			PaymentLib::deleteBySale($eSale);
-			return;
-		}
-
-		if(in_array($eSale['preparationStatus'], [Sale::DELIVERED, Sale::DRAFT]) === FALSE) {
-			return;
-		}
-
-		Payment::model()
-       ->select(['status'])
-       ->whereSale($eSale)
-       ->whereFarm($eSale['farm'])
-       ->whereCustomer($eSale['customer'])
-       ->update(['status' => match($eSale['preparationStatus']) {
-	       Sale::DELIVERED => Payment::SUCCESS,
-	       Sale::DRAFT => Payment::INITIALIZED,
-       }]);
-
-		if($eSale['preparationStatus'] === Sale::DRAFT) {
-
-			$eSale['paymentStatus'] = NULL;
-			$eSale['paymentMethod'] = new \payment\Method();
-
-		} else {
-
-			$eSale['paymentStatus'] = Sale::PAID;
-			$eSale['paymentMethod'] = Payment::model()
-				->select('method')
-				->whereSale($eSale)
-				->whereStatus(Payment::SUCCESS)
-				->sort(['id' => SORT_DESC])
-				->getValue('method');
-
-		}
-
-		SaleLib::update($eSale, ['paymentMethod', 'paymentStatus']);
-
-	}
-
 	public static function deleteBySale(Sale $eSale): void {
 
 		$eSale->expects(['id', 'farm', 'customer']);
@@ -256,27 +213,6 @@ class PaymentLib extends PaymentCrud {
 			->whereFarm($eSale['farm'])
 			->whereCustomer($eSale['customer'])
 			->delete();
-	}
-
-	public static function updateBySale(Sale $eSale): void {
-
-		self::deleteBySale($eSale);
-
-		if($eSale['paymentStatus'] === Sale::NOT_PAID) {
-			return;
-		}
-
-		$ePayment = new Payment([
-			'sale' => $eSale,
-			'customer' => $eSale['customer'],
-			'farm' => $eSale['farm'],
-			'amountIncludingVat' => $eSale['priceIncludingVat'],
-			'method' => $eSale['paymentMethod'],
-			'status' => Payment::SUCCESS,
-		]);
-
-		Payment::model()->insert($ePayment);
-
 	}
 
 }
