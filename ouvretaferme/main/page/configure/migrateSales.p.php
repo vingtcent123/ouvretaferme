@@ -3,7 +3,7 @@ new Page()
 	->cli('index', function($data) {
 
 		$cSale = \selling\Sale::model()
-			->select(['id', 'oldPaymentMethod' => new Sql('oldPaymentMethod'), 'paymentStatus', 'preparationStatus', 'marketParent', 'customer', 'farm', 'priceIncludingVat'])
+			->select(['id', 'origin', 'oldPaymentMethod' => new Sql('oldPaymentMethod'), 'paymentStatus', 'preparationStatus', 'marketParent', 'customer', 'farm', 'priceIncludingVat'])
 			->getCollection();
 
 		$cMethod = \payment\Method::model()
@@ -26,23 +26,12 @@ new Page()
 
 			$eMethod = $cMethod[$method] ?? new \payment\Method();
 
-			if(
-				// Marché = OK
-				$eSale->isMarketSale()
-				or $eSale['paymentStatus'] === \selling\Sale::PAID
-				or $eSale['preparationStatus'] === \selling\Sale::DELIVERED
-			) {
-				$status = \selling\Payment::SUCCESS;
-			} else {
-				$status = \selling\Payment::INITIALIZED;
-			}
 			$ePayment = new \selling\Payment([
 				'sale' => $eSale,
 				'customer' => $eSale['customer'],
 				'farm' => $eSale['farm'],
 				'amountIncludingVat' => $eSale['priceIncludingVat'],
 				'method' => $eMethod,
-				'status' => $status,
 			]);
 
 			if($eSale['oldPaymentMethod'] === 'online-card') {
@@ -53,12 +42,6 @@ new Page()
 					->whereCustomer($eSale['customer'])
 					->update($ePayment);
 
-					$eSale['onlinePaymentStatus'] = match($ePayment['status']) {
-						\selling\Payment::SUCCESS => \selling\Sale::SUCCESS,
-						\selling\Payment::FAILURE => \selling\Sale::FAILURE,
-						default => \selling\Sale::PENDING,
-					};
-
 			} else {
 
 				\selling\Payment::model()->insert($ePayment);
@@ -66,7 +49,7 @@ new Page()
 
 			}
 
-			if($eSale->isMarketSale()) {
+			if($eSale['marketParent']->notEmpty()) {
 
 				$eSale['paymentStatus'] = \selling\Sale::PAID;
 
