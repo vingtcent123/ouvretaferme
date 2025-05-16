@@ -153,7 +153,7 @@ class SaleLib {
 				->select(['priceIncludingVat', 'priceExcludingVat', 'vat'])
 				->get($eSale);
 
-			self::checkPayment($eFarm, $eShop, $eSale);
+			self::autoCreatePayment($eFarm, $eShop, $eSale);
 
 		}
 
@@ -173,7 +173,7 @@ class SaleLib {
 
 	}
 
-	public static function checkPayment(\farm\Farm $eFarm, Shop $eShop, \selling\Sale $eSale): void {
+	public static function autoCreatePayment(\farm\Farm $eFarm, Shop $eShop, \selling\Sale $eSale): void {
 
 		$eSale->expects([
 			'customer' => ['defaultPaymentMethod']
@@ -346,7 +346,7 @@ class SaleLib {
 						\selling\SaleLib::update($eSaleExisting, $properties);
 						\selling\ItemLib::createCollection($eSaleExisting, $cItem, replace: TRUE);
 
-						self::checkPayment($eFarm, $eShop, $eSaleExisting);
+						self::autoCreatePayment($eFarm, $eShop, $eSaleExisting);
 
 					} else {
 
@@ -367,7 +367,7 @@ class SaleLib {
 						\selling\SaleLib::create($eSaleNew);
 						\selling\ItemLib::createCollection($eSaleNew, $cItem);
 
-						self::checkPayment($eFarm, $eShop, $eSaleNew);
+						self::autoCreatePayment($eFarm, $eShop, $eSaleNew);
 
 					}
 
