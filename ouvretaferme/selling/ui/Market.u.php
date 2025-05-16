@@ -417,6 +417,10 @@ class MarketUi {
 								$h .= '</a>';
 								$h .= $paymentMethodDropdown;
 
+							} else {
+
+								$h .= '/';
+
 							}
 						$h .= '</div>';
 					$h .= '</dd>';
