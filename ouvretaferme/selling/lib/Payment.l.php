@@ -159,7 +159,7 @@ class PaymentLib extends PaymentCrud {
 
 		$total = $cPayment->reduce(fn($e, $value) => ($e['id'] !== $ePayment['id']) ? ($e['amountIncludingVat'] + $value) : $value, 0);
 
-		$ePayment['amountIncludingVat'] = $eSale['priceIncludingVat'] - $total;
+		$ePayment['amountIncludingVat'] = max(0, $eSale['priceIncludingVat'] - $total);
 
 		Payment::model()
 			->select('amountIncludingVat')

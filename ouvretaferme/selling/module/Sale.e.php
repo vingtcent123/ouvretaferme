@@ -199,10 +199,21 @@ class Sale extends SaleElement {
 
 	}
 
+	public function acceptUpdateMarketSalePayment(): bool {
+
+		$this->expects(['paymentMethod', 'origin']);
+
+		return (
+			$this->isMarketSale() and
+			$this['preparationStatus'] === Sale::DRAFT
+		);
+
+	}
+
 	public function acceptUpdatePayment(): bool {
 
 		$this->expects(['paymentMethod']);
-		
+
 		return (
 			$this->isMarket() === FALSE and
 			($this['paymentMethod']->empty() or $this['paymentMethod']['online'] === FALSE) and

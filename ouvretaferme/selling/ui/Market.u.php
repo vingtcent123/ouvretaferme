@@ -333,6 +333,7 @@ class MarketUi {
 					$h .= '<dd>';
 
 						$hasAtLeastOnePaymentMethod = ($eSale['cPayment']->count() > 0 and $eSale['cPayment']->first()['method']->notEmpty());
+						$canUpdatePayments = in_array($eSale['preparationStatus'], [Sale::DRAFT]);
 
 						$paymentMethodDropdown = '<div class="dropdown-list bg-secondary">';
 							$paymentMethodDropdown .= '<div class="dropdown-title">'.s("Moyen de paiement").'</div>';
@@ -372,9 +373,17 @@ class MarketUi {
 												$amount = s("Non calculé");
 											}
 
+											if($canUpdatePayments) {
+
 											$h .= $ePayment->quick('amountIncludingVat', $amount);
 
 											$h .= '<a data-ajax="/selling/sale:doFillPaymentMethod" post-id="'.$eSale['id'].'" post-payment-method="'.$ePayment['method']['id'].'" class="'.($magicIsNeeded ? '' : 'not-visible').' btn btn-sm btn-outline-border ml-1" title="'.s("Compléter automatiquement").'">'.\Asset::icon('magic').'</a>';
+
+											} else {
+
+												$h .= '<span>'.$amount.'</span>';
+
+											}
 
 										$h .= '</div>';
 
@@ -383,13 +392,19 @@ class MarketUi {
 								$h .= '</div>';
 
 								$h .= '<div class="text-end">';
-									$h .= '<a data-dropdown="bottom-start" class="dropdown-toggle btn btn-outline-secondary btn-sm" data-dropdown-hover="true">';
-										$h .= '<span style="font-weight: normal">'.s("Modifier").'</span>';
-									$h .= '</a>';
-									$h .= $paymentMethodDropdown;
+
+									if($canUpdatePayments) {
+
+										$h .= '<a data-dropdown="bottom-start" class="dropdown-toggle btn btn-outline-secondary btn-sm" data-dropdown-hover="true">';
+											$h .= '<span style="font-weight: normal">'.s("Modifier").'</span>';
+										$h .= '</a>';
+										$h .= $paymentMethodDropdown;
+
+									}
+
 								$h .= '</div>';
 
-							} else {
+							} else if($canUpdatePayments) {
 
 								$h .= '<a data-dropdown="bottom-start" class="dropdown-toggle" data-dropdown-hover="true">';
 

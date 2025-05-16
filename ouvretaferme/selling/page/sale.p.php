@@ -303,7 +303,7 @@ new \selling\SalePage()
 		}
 
 		throw new ReloadAction();
-	}, validate: ['canWrite', 'acceptUpdatePayment'])
+	}, validate: ['canWrite', 'acceptUpdateMarketSalePayment'])
 	->write('doFillPaymentMethod', function($data) {
 
 		$paymentMethodId = \payment\Method::POST('paymentMethod', 'id', NULL);
@@ -312,7 +312,7 @@ new \selling\SalePage()
 		\selling\PaymentLib::fill($data->e, eMethod: $eMethod);
 
 		throw new ReloadAction();
-	}, validate: ['canWrite', 'acceptUpdatePayment'])
+	}, validate: ['canWrite', 'acceptUpdateMarketSalePayment'])
 	->doUpdateProperties('doUpdatePreparationStatus', ['preparationStatus'], function($data) {
 
 		throw new ViewAction($data);
