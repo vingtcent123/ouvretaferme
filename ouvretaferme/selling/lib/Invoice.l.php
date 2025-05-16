@@ -142,13 +142,18 @@ class InvoiceLib extends InvoiceCrud {
 			$e['conversion'] = FALSE;
 			$e['createdAt'] = Invoice::model()->now(); // Besoin de la date pour pouvoir envoyer le PDF par e-mail dans la foulée
 
+			$cSale = $e['cSale'];
+
 			$vatByRate = [];
 			$rates = [];
 
 			$priceExcludingVat = 0.0;
 			$priceIncludingVat = 0.0;
 
-			foreach($e['cSale'] as $eSale) {
+			$eMethod = $cSale->first()['paymentMethod'];
+			$differentMethods = FALSE;
+
+			foreach($cSale as $eSale) {
 
 				if($eSale['organic']) {
 					$e['organic'] = TRUE;
@@ -156,6 +161,10 @@ class InvoiceLib extends InvoiceCrud {
 
 				if($eSale['conversion']) {
 					$e['conversion'] = TRUE;
+				}
+
+				if($eMethod->is($eSale['paymentMethod']) === FALSE) {
+					$differentMethods = TRUE;
 				}
 
 				// Calcul de la somme de TVA sur les différentes ventes
@@ -216,6 +225,16 @@ class InvoiceLib extends InvoiceCrud {
 			]);
 
 			$e['name'] = $e->getInvoice($e['farm']);
+
+			if($differentMethods === FALSE) {
+
+				$e['paymentMethod'] = $eMethod;
+
+				if($eMethod->notEmpty()) {
+					$e['paymentStatus'] = $cSale->first()['paymentStatus'];
+				}
+
+			}
 
 			parent::create($e);
 
