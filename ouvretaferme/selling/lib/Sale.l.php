@@ -465,7 +465,6 @@ class SaleLib extends SaleCrud {
 			$ccSale[Sale::CANCELED] ??= new \Collection();
 		}
 
-
 		return $ccSale;
 
 	}

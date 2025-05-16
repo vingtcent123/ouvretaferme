@@ -100,7 +100,7 @@ class MarketTemplate extends BaseTemplate {
 						$h .= '</div>';
 					}
 					if($cSaleCanceled->notEmpty()) {
-						$h .= '<h3>'.s("Ventes annulées ({value})", $cSaleDraft->count()).'</h3>';
+						$h .= '<h3>'.s("Ventes annulées ({value})", $cSaleCanceled->count()).'</h3>';
 						$h .= '<div class="market-sales-list">';
 							$h .= new \selling\MarketUi()->getList($this->data->e, $cSaleCanceled, $this->eSaleSelected);
 						$h .= '</div>';
