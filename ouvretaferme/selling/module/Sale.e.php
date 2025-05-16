@@ -865,7 +865,7 @@ class Sale extends SaleElement {
 			})
 			->setCallback('preparationStatus.check', function(string $preparationStatus): bool {
 
-				$this->expects(['preparationStatus', 'deliveredAt', 'market', 'marketParent']);
+				$this->expects(['preparationStatus', 'deliveredAt', 'origin', 'marketParent']);
 
 				if($this->acceptUpdatePreparationStatus() === FALSE) {
 					return FALSE;
