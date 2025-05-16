@@ -121,7 +121,7 @@ class InvoiceLib extends InvoiceCrud {
 		return Sale::model()
 			->whereFarm($eFarm)
 			->wherePreparationStatus(Sale::DELIVERED)
-			->whereMarket(FALSE)
+			->whereOrigin('!=', Sale::MARKET)
 			->whereMarketParent(NULL)
 			->exists();
 

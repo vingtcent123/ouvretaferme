@@ -15,7 +15,7 @@ class MarketLib {
 				'hasVat', 'taxes',
 				'deliveredAt'
 			])
-			->whereMarket(TRUE)
+			->whereOrigin(Sale::MARKET)
 			->wherePriceIncludingVat('!=', NULL)
 			->wherePreparationStatus('IN', [Sale::DELIVERED, Sale::SELLING])
 			->whereDeliveredAt($comparator, $eSale['deliveredAt'])
@@ -226,10 +226,16 @@ class MarketLib {
 
 		$eSale['cPayment'] = PaymentLib::getBySale($eSale);
 
-		$totalPayments = $eSale['cPayment']->reduce(fn($e, $v) => $v + $e['amountIncludingVat'], 0);
+		if($eSale['cPayment']->empty()) {
+			\Fail::log('Market::emptyPayment');
+		} else {
 
-		if($totalPayments !== $eSale['priceIncludingVat']) {
-			\Fail::log('Market::inconsistencyTotal');
+			$totalPayments = $eSale['cPayment']->reduce(fn($e, $v) => $v + $e['amountIncludingVat'], 0);
+
+			if($totalPayments !== $eSale['priceIncludingVat']) {
+				\Fail::log('Market::inconsistencyTotal');
+			}
+
 		}
 
 	}

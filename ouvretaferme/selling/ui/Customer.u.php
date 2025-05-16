@@ -753,7 +753,6 @@ class CustomerUi {
 			'lastName' => s("Nom"),
 			'email' => s("Adresse e-mail"),
 			'category' => s("Catégorie"),
-			'market' => s("Marché"),
 			'farm' => s("Ferme"),
 			'discount' => s("Remise commerciale"),
 			'defaultPaymentMethod' => s("Moyen de paiement par défaut"),

@@ -885,7 +885,7 @@ class Sale extends SaleElement {
 			})
 			->setCallback('preparationStatus.market', function(string $preparationStatus): bool {
 
-				$this->expects(['farm', 'market']);
+				$this->expects(['farm', 'origin']);
 
 				if($this->isMarket() === FALSE) {
 					return TRUE;

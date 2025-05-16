@@ -292,7 +292,7 @@ class MarketUi {
 								$h .= '</div>';
 							} else {
 								$h .= '<div>';
-									$h .= '<a data-ajax="/selling/market:doCloseMarketSale" post-id="'.$eSale['id'].'" class="btn btn-success" data-confirm="'.s("Voulez-vous réellement terminer cette vente ?").'">'.s("Terminer la vente").'</a> ';
+									$h .= '<a data-ajax="/selling/market:doCloseMarketSale" post-id="'.$eSale['id'].'" class="btn btn-success">'.s("Terminer la vente").'</a> ';
 									$h .= '<a data-ajax="/selling/sale:doUpdatePreparationStatus" post-id="'.$eSale['id'].'" post-preparation-status="'.Sale::CANCELED.'" class="btn btn-muted" data-confirm="'.s("Voulez-vous réellement annuler cette vente ?").'">'.s("Annuler la vente").'</a>';
 								$h .= '</div>';
 							}
@@ -395,7 +395,7 @@ class MarketUi {
 
 									if($canUpdatePayments) {
 
-										$h .= '<a data-dropdown="bottom-start" class="dropdown-toggle btn btn-outline-secondary btn-sm" data-dropdown-hover="true">';
+										$h .= '<a data-dropdown="bottom-end" class="dropdown-toggle btn btn-outline-secondary btn-sm" data-dropdown-hover="true">';
 											$h .= '<span style="font-weight: normal">'.s("Modifier").'</span>';
 										$h .= '</a>';
 										$h .= $paymentMethodDropdown;
@@ -406,7 +406,7 @@ class MarketUi {
 
 							} else if($canUpdatePayments) {
 
-								$h .= '<a data-dropdown="bottom-end" class="dropdown-toggle" data-dropdown-hover="true">';
+								$h .= '<a data-dropdown="bottom-start" class="dropdown-toggle" data-dropdown-hover="true">';
 
 									if($eSale['cPayment']->count() > 0 and $eSale['cPayment']->first()['method']->notEmpty()) {
 										$h .= $eSale['cPayment']->first()['method']['name'];

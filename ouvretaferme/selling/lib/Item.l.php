@@ -608,7 +608,7 @@ class ItemLib extends ItemCrud {
 	private static function preparePricing(Item $e, array &$properties = []): void {
 
 		$e->expects([
-			'sale' => ['farm', 'taxes', 'market'],
+			'sale' => ['farm', 'taxes', 'origin'],
 			'locked',
 			'unitPrice', 'number', 'packaging', 'vatRate'
 		]);

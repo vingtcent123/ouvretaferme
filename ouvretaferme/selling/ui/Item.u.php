@@ -208,7 +208,7 @@ class ItemUi {
 
 		}
 
-		if($eSale['market'] and $eSale['preparationStatus'] === Sale::DRAFT) {
+		if($eSale->isMarket() and $eSale['preparationStatus'] === Sale::DRAFT) {
 			$h .= '<div class="util-block bg-order color-white mt-1 " style="display: flex; align-items: center; justify-content: space-between">';
 				$h .= '<h4 class="mb-0">'.s("Votre préparation est complète ?").'</h4>';
 				$h .= '<a data-ajax="/selling/sale:doUpdatePreparationStatus" post-id="'.$eSale['id'].'" post-preparation-status="'.Sale::CONFIRMED.'" class="btn btn-transparent">'.s("Confirmer la vente").'</a>';
@@ -351,7 +351,7 @@ class ItemUi {
 						}
 
 						if(
-							$eSale['market'] and
+							$eSale->isMarket() and
 							$eItem['number'] and
 							$eItem['price']
 						) {

@@ -199,7 +199,7 @@ class SaleLib extends SaleCrud {
 		if($search->get('invoicing')) {
 			Sale::model()
 				->whereInvoice(NULL)
-				->whereMarket(FALSE)
+				->whereOrigin('!=', Sale::MARKET)
 				->whereItems('>', 0)
 				->wherePreparationStatus(Sale::DELIVERED);
 		}
@@ -388,7 +388,7 @@ class SaleLib extends SaleCrud {
 			->whereId('IN', $ids)
 			->whereItems('>', 0)
 			->whereInvoice(NULL, if: $checkInvoice)
-			->whereMarket(FALSE)
+			->whereOrigin('!=', Sale::MARKET)
 			->whereMarketParent(NULL)
 			->wherePreparationStatus(Sale::DELIVERED)
 			->sort(['id' => SORT_ASC])
@@ -415,7 +415,7 @@ class SaleLib extends SaleCrud {
 			->whereType($type, if: in_array($type, [Customer::PRIVATE, Customer::PRO]))
 			->whereDeliveredAt('LIKE', $month.'%')
 			->whereInvoice(NULL)
-			->whereMarket(FALSE)
+			->whereOrigin('!=', Sale::MARKET)
 			->whereMarketParent(NULL)
 			->wherePreparationStatus(Sale::DELIVERED)
 			->wherePaymentMethod(fn() => \payment\MethodLib::getByFqn(\payment\MethodLib::TRANSFER), if: $type === \payment\MethodLib::TRANSFER)
@@ -635,7 +635,7 @@ class SaleLib extends SaleCrud {
 
 	public static function createFromMarket(Sale $eSale): Sale {
 
-		$eSale->expects(['id', 'farm', 'market']);
+		$eSale->expects(['id', 'farm', 'origin']);
 
 		if($eSale->isMarket() === FALSE) {
 			throw new \Exception('Invalid sale');

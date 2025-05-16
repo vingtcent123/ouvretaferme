@@ -127,7 +127,7 @@ class Item extends ItemElement {
 			->setCallback('number.empty', function(?float $number) use($p): bool {
 
 				$this->expects([
-					'sale' => ['market'],
+					'sale' => ['origin'],
 				]);
 
 				if(($p->isBuilt('locked') and $this['locked'] === Item::NUMBER) or $this['sale']->isMarket()) {
