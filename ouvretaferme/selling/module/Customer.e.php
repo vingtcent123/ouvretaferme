@@ -266,6 +266,17 @@ class Customer extends CustomerElement {
 				);
 
 			})
+			->setCallback('defaultPaymentMethod.check', function(\payment\Method $eMethod): bool {
+
+				if($eMethod->empty()) {
+					return TRUE;
+				}
+
+				$this->expects(['farm']);
+
+				return \payment\MethodLib::isSelectable($this['farm']);
+
+			})
 			->setCallback('category.set', function(?string $category) use($p): bool {
 
 				$this['category'] = $category;

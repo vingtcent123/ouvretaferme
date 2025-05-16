@@ -114,7 +114,7 @@ Share:
   shop: shop\Shop
   farm: farm\Farm
   label: ?text8(1, 50)
-  paymentMethod: ?enum(TRANSFER)
+  paymentMethod: ?payment\Method
   position: int8(0, null)
   createdAt: datetime = SPECIAL(now)
   createdBy: user\User = SPECIAL(user)

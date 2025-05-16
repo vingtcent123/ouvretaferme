@@ -7,8 +7,6 @@ abstract class ShareElement extends \Element {
 
 	private static ?ShareModel $model = NULL;
 
-	const TRANSFER = 'transfer';
-
 	public static function getSelection(): array {
 		return Share::model()->getProperties();
 	}
@@ -42,7 +40,7 @@ class ShareModel extends \ModuleModel {
 			'shop' => ['element32', 'shop\Shop', 'cast' => 'element'],
 			'farm' => ['element32', 'farm\Farm', 'cast' => 'element'],
 			'label' => ['text8', 'min' => 1, 'max' => 50, 'null' => TRUE, 'cast' => 'string'],
-			'paymentMethod' => ['enum', [\shop\Share::TRANSFER], 'null' => TRUE, 'cast' => 'enum'],
+			'paymentMethod' => ['element32', 'payment\Method', 'null' => TRUE, 'cast' => 'element'],
 			'position' => ['int8', 'min' => 0, 'max' => NULL, 'cast' => 'int'],
 			'createdAt' => ['datetime', 'cast' => 'string'],
 			'createdBy' => ['element32', 'user\User', 'cast' => 'element'],
@@ -55,6 +53,7 @@ class ShareModel extends \ModuleModel {
 		$this->propertiesToModule += [
 			'shop' => 'shop\Shop',
 			'farm' => 'farm\Farm',
+			'paymentMethod' => 'payment\Method',
 			'createdBy' => 'user\User',
 		];
 
@@ -76,20 +75,6 @@ class ShareModel extends \ModuleModel {
 
 			default :
 				return parent::getDefaultValue($property);
-
-		}
-
-	}
-
-	public function encode(string $property, $value) {
-
-		switch($property) {
-
-			case 'paymentMethod' :
-				return ($value === NULL) ? NULL : (string)$value;
-
-			default :
-				return parent::encode($property, $value);
 
 		}
 

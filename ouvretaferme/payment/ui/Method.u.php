@@ -159,7 +159,7 @@ class MethodUi {
 
 	public static function getOnlineCardText(): string {
 
-		return \Asset::icon('stripe', ['title' => 'Stripe']).' '.s("Carte bancaire");
+		return \Asset::icon('stripe', ['title' => 'Stripe']).' '.s("Stripe");
 
 	}
 

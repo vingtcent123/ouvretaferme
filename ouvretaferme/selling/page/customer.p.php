@@ -81,7 +81,13 @@ new \selling\CustomerPage()
 		throw new ReloadLayerAction();
 
 	}, validate: ['canManage'])
-	->update()
+	->update(function($data) {
+
+		$data->e['cPaymentMethod'] = \payment\MethodLib::getByFarm($data->e['farm'], FALSE);
+
+		throw new ViewAction($data);
+
+	})
 	->doUpdate(function($data) {
 		throw new ReloadAction('selling', 'Customer::updated');
 	})

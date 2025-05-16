@@ -512,6 +512,13 @@ class SaleLib extends SaleCrud {
 			$e['preparationStatus'] ??= Sale::DRAFT;
 		}
 
+		if(
+			$e->isSale() and
+			$e['shop']->empty()
+		) {
+			$e['paymentMethod'] = $e['customer']['defaultPaymentMethod'];
+		}
+
 		if($e->isMarket()) {
 			$e['marketSales'] = 0;
 			$e['paymentStatus'] = NULL;

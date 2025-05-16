@@ -66,6 +66,7 @@ class CustomerModel extends \ModuleModel {
 			'deliveryStreet2' => ['text8', 'null' => TRUE, 'cast' => 'string'],
 			'deliveryPostcode' => ['text8', 'null' => TRUE, 'cast' => 'string'],
 			'deliveryCity' => ['text8', 'null' => TRUE, 'cast' => 'string'],
+			'defaultPaymentMethod' => ['element32', 'payment\Method', 'null' => TRUE, 'cast' => 'element'],
 			'phone' => ['text8', 'null' => TRUE, 'cast' => 'string'],
 			'color' => ['color', 'null' => TRUE, 'cast' => 'string'],
 			'emailOptIn' => ['bool', 'null' => TRUE, 'cast' => 'bool'],
@@ -75,12 +76,13 @@ class CustomerModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'name', 'firstName', 'lastName', 'legalName', 'email', 'farm', 'user', 'type', 'destination', 'discount', 'invoiceStreet1', 'invoiceStreet2', 'invoicePostcode', 'invoiceCity', 'invoiceRegistration', 'invoiceVat', 'deliveryStreet1', 'deliveryStreet2', 'deliveryPostcode', 'deliveryCity', 'phone', 'color', 'emailOptIn', 'emailOptOut', 'createdAt', 'status'
+			'id', 'name', 'firstName', 'lastName', 'legalName', 'email', 'farm', 'user', 'type', 'destination', 'discount', 'invoiceStreet1', 'invoiceStreet2', 'invoicePostcode', 'invoiceCity', 'invoiceRegistration', 'invoiceVat', 'deliveryStreet1', 'deliveryStreet2', 'deliveryPostcode', 'deliveryCity', 'defaultPaymentMethod', 'phone', 'color', 'emailOptIn', 'emailOptOut', 'createdAt', 'status'
 		]);
 
 		$this->propertiesToModule += [
 			'farm' => 'farm\Farm',
 			'user' => 'user\User',
+			'defaultPaymentMethod' => 'payment\Method',
 		];
 
 		$this->uniqueConstraints = array_merge($this->uniqueConstraints, [
@@ -222,6 +224,10 @@ class CustomerModel extends \ModuleModel {
 
 	public function whereDeliveryCity(...$data): CustomerModel {
 		return $this->where('deliveryCity', ...$data);
+	}
+
+	public function whereDefaultPaymentMethod(...$data): CustomerModel {
+		return $this->where('defaultPaymentMethod', ...$data);
 	}
 
 	public function wherePhone(...$data): CustomerModel {

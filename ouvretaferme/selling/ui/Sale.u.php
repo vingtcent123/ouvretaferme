@@ -965,10 +965,7 @@ class SaleUi {
 
 	public static function getPaymentStatus(Sale $eSale): string {
 
-		if(
-			$eSale['paymentStatus'] === NULL and
-			$eSale['paymentMethod']->empty()
-		) {
+		if($eSale['paymentStatus'] === NULL) {
 			return '';
 		}
 

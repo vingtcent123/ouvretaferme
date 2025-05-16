@@ -38,5 +38,24 @@ class Share extends ShareElement {
 
 	}
 
+	public function build(array $properties, array $input, \Properties $p = new \Properties()): void {
+
+		$p
+			->setCallback('paymentMethod.check', function(\payment\Method $eMethod): bool {
+
+				if($eMethod->empty()) {
+					return TRUE;
+				}
+
+				$this->expects(['farm']);
+
+				return \payment\MethodLib::isSelectable($this['farm']);
+
+			});
+
+		parent::build($properties, $input, $p);
+
+	}
+
 }
 ?>

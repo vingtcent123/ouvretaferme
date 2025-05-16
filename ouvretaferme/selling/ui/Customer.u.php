@@ -692,6 +692,9 @@ class CustomerUi {
 				$h .= '<div class="customer-form-category customer-form-private customer-form-pro">';
 					$h .= $form->dynamicGroup($eCustomer, 'discount');
 				$h .= '</div>';
+				$h .= '<div class="customer-form-category customer-form-pro">';
+					$h .= $form->dynamicGroup($eCustomer, 'defaultPaymentMethod');
+				$h .= '</div>';
 				$h .= '<div class="customer-form-category customer-form-collective customer-form-pro">';
 					$h .= $form->dynamicGroup($eCustomer, 'color');
 				$h .= '</div>';
@@ -753,6 +756,7 @@ class CustomerUi {
 			'market' => s("Marché"),
 			'farm' => s("Ferme"),
 			'discount' => s("Remise commerciale"),
+			'defaultPaymentMethod' => s("Moyen de paiement par défaut"),
 			'legalName' => s("Raison sociale"),
 			'phone' => s("Numéro de téléphone"),
 			'color' => s("Couleur de représentation"),
@@ -853,6 +857,12 @@ class CustomerUi {
 
 			case 'emailOptIn' :
 				$d->labelAfter = \util\FormUi::info(s("Consentement du client pour recevoir des communications par e-mail"));
+				break;
+
+			case 'defaultPaymentMethod' :
+				$d->values = fn(Customer $e) => $e['cPaymentMethod'] ?? $e->expects(['cPaymentMethod']);
+				$d->placeholder = s("Non défini");
+				$d->labelAfter = \util\FormUi::info(s("Ce moyen de paiement sera associé par défaut aux ventes crées pour ce client"));
 				break;
 
 		}

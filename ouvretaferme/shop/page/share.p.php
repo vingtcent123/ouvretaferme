@@ -1,7 +1,11 @@
 <?php
 new \shop\SharePage()
 	->update(function($data) {
+		
+		$data->e['cPaymentMethod'] = \payment\MethodLib::getByFarm($data->e['farm'], FALSE);
+
 		throw new \ViewAction($data);
+
 	})
 	->write('doIncrementPosition', function($data) {
 

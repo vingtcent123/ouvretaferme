@@ -64,6 +64,7 @@ Customer:
   deliveryStreet2: ?text8
   deliveryPostcode: ?text8
   deliveryCity: ?text8
+  defaultPaymentMethod: ?payment\Method
   phone: ?text8
   color: ?color
   emailOptIn: ?bool

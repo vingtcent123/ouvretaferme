@@ -6,7 +6,7 @@ class Sale extends SaleElement {
 	public static function getSelection(): array {
 
 		return parent::getSelection() + [
-			'customer' => ['name', 'email', 'phone', 'color', 'user', 'type', 'destination', 'discount', 'legalName', 'invoiceStreet1', 'invoiceStreet2', 'invoicePostcode', 'invoiceCity', 'invoiceRegistration', 'invoiceVat'],
+			'customer' => CustomerElement::getSelection(),
 			'shop' => ['fqn', 'shared', 'name', 'email', 'emailNewSale', 'emailEndDate', 'approximate', 'paymentCard', 'hasPayment', 'paymentOfflineHow', 'paymentTransferHow', 'shipping', 'shippingUntil', 'orderMin', 'embedOnly', 'embedUrl'],
 			'shopDate' => \shop\Date::getSelection(),
 			'shopPoint' => ['type', 'name'],
@@ -28,6 +28,14 @@ class Sale extends SaleElement {
 		if($cSale->empty()) {
 			throw new \FailAction('selling\Sale::sales.check');
 		}
+
+	}
+
+	public function isSale(): bool {
+
+		$this->expects(['origin']);
+
+		return $this['origin'] === Sale::SALE;
 
 	}
 
@@ -818,7 +826,7 @@ class Sale extends SaleElement {
 
 				if(
 					Customer::model()
-						->select(['id', 'type', 'destination', 'discount'])
+						->select(['id', 'type', 'destination', 'discount', 'defaultPaymentMethod'])
 						->whereFarm($this['farm'])
 						->whereStatus(Customer::ACTIVE)
 						->get($eCustomer)
@@ -1112,15 +1120,7 @@ class Sale extends SaleElement {
 
 				$this->expects(['farm']);
 
-				$eFarm = $this['farm'];
-
-				return \payment\Method::model()
-					->or(
-						fn() => $this->whereFarm(NULL),
-						fn() => $this->whereFarm($eFarm)
-					)
-					->whereOnline(FALSE)
-					->exists($eMethod);
+				return \payment\MethodLib::isSelectable($this['farm']);
 
 			})
 			->setCallback('paymentStatus.check', function(?string &$status) use($p): bool {

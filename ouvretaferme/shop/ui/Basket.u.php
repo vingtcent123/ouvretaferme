@@ -779,43 +779,52 @@ class BasketUi {
 		$class = '';
 		$content = '';
 
-		switch($eSaleReference['paymentMethod']['fqn'] ?? NULL) {
+		if($eShop['hasPayment']) {
 
-			case \payment\MethodLib::ONLINE_CARD :
+			switch($eSaleReference['paymentMethod']['fqn'] ?? NULL) {
 
-				switch($eSaleReference['paymentStatus']) {
+				case \payment\MethodLib::ONLINE_CARD :
 
-					case \selling\Sale::PAID :
-						$content .= '<h2>'.\Asset::icon('check').' '.s("Merci, votre commande est confirmée et payée !").'</h2>';
-						$content .= '<p>'.s("Vous avez reçu un e-mail de confirmation.").'</p>';
-						break;
+					switch($eSaleReference['paymentStatus']) {
 
-					case \selling\Sale::NOT_PAID :
-						$content .= '<h2>'.\Asset::icon('exclamation-triangle-fill').' '.s("Le paiement de votre commande a échoué !").'</h2>';
-						$content .= '<p>'.s("Votre compte n'a pas été débité et votre commande n'est pas encore confirmée. Pour confirmer votre commande, veuillez retenter un paiement.").'</p>';
-						$content .= '<a href="'.\shop\ShopUi::paymentUrl($eShop, $eDate).'" class="btn btn-transparent">'.s("Retenter un paiement").'</a> ';
-						break;
+						case \selling\Sale::PAID :
+							$content .= '<h2>'.\Asset::icon('check').' '.s("Merci, votre commande est confirmée et payée !").'</h2>';
+							$content .= '<p>'.s("Vous avez reçu un e-mail de confirmation.").'</p>';
+							break;
 
-				};
-				break;
+						case \selling\Sale::NOT_PAID :
+							$content .= '<h2>'.\Asset::icon('exclamation-triangle-fill').' '.s("Le paiement de votre commande a échoué !").'</h2>';
+							$content .= '<p>'.s("Votre compte n'a pas été débité et votre commande n'est pas encore confirmée. Pour confirmer votre commande, veuillez retenter un paiement.").'</p>';
+							$content .= '<a href="'.\shop\ShopUi::paymentUrl($eShop, $eDate).'" class="btn btn-transparent">'.s("Retenter un paiement").'</a> ';
+							break;
 
-			case \payment\MethodLib::TRANSFER :
+					};
+					break;
 
-				$content .= '<h2>'.\Asset::icon('check').' '.s("Merci, votre commande est confirmée !").'</h2>';
-				$content .= '<p>'.s("Vous avez reçu un e-mail de confirmation.").'</p>';
-				$content .= '<p>';
-					$content .= s("Vous avez choisi de régler cette commande par virement bancaire.<br/>Vous recevrez ultérieurement une facture de votre producteur afin de procéder au règlement.");
-				$content .= '</p>';
-				break;
+				case \payment\MethodLib::TRANSFER :
 
-			case NULL :
+					$content .= '<h2>'.\Asset::icon('check').' '.s("Merci, votre commande est confirmée !").'</h2>';
+					$content .= '<p>'.s("Vous avez reçu un e-mail de confirmation.").'</p>';
+					$content .= '<p>';
+						$content .= s("Vous avez choisi de régler cette commande par virement bancaire.<br/>Vous recevrez ultérieurement une facture de votre producteur afin de procéder au règlement.");
+					$content .= '</p>';
+					break;
 
-				$content .= '<h2>'.\Asset::icon('check').' '.s("Merci, votre commande est confirmée !").'</h2>';
-				$content .= '<p>'.s("Vous avez reçu un e-mail de confirmation.").'</p>';
-				$content .= '<p>';
-					$content .= s("Vous avez choisi de régler cette commande en direct avec votre producteur.");
-				$content .= '</p>';
-				break;
+				case NULL :
+
+					$content .= '<h2>'.\Asset::icon('check').' '.s("Merci, votre commande est confirmée !").'</h2>';
+					$content .= '<p>'.s("Vous avez reçu un e-mail de confirmation.").'</p>';
+					$content .= '<p>';
+						$content .= s("Vous avez choisi de régler cette commande en direct avec votre producteur.");
+					$content .= '</p>';
+					break;
+
+			}
+
+		} else {
+
+			$content .= '<h2>'.\Asset::icon('check').' '.s("Merci, votre commande est confirmée !").'</h2>';
+			$content .= '<p>'.s("Vous avez reçu un e-mail de confirmation.").'</p>';
 
 		}
 
@@ -869,14 +878,18 @@ class BasketUi {
 					$h .= '<dt>'.s("État de la commande").'</dt>';
 					$h .= '<dd>'.\selling\SaleUi::getPreparationStatusForCustomer($eSaleReference).'</dd>';
 
-					$h .= '<dt>'.s("Paiement").'</dt>';
-					$h .= '<dd>';
-						$h .= \selling\SaleUi::getPayment($eSaleReference);
-					$h .= '</dd>';
+					if($eShop['hasPayment']) {
 
-					if($eSaleReference->isPaymentOnline()) {
-						$h .= '<dt>'.s("État du paiement").'</dt>';
-						$h .= '<dd>'.\selling\SaleUi::getPaymentStatusForCustomer($eSaleReference).'</dd>';
+						$h .= '<dt>'.s("Paiement").'</dt>';
+						$h .= '<dd>';
+							$h .= \selling\SaleUi::getPaymentMethodName($eSaleReference);
+						$h .= '</dd>';
+
+						if($eSaleReference->isPaymentOnline()) {
+							$h .= '<dt>'.s("État du paiement").'</dt>';
+							$h .= '<dd>'.\selling\SaleUi::getPaymentStatusForCustomer($eSaleReference).'</dd>';
+						}
+
 					}
 
 				$h .= '</dl>';

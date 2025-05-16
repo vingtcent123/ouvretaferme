@@ -467,7 +467,7 @@ class PointUi {
 			'shippingUntil' => s("Montant minimal de commande au delà duquel les frais de livraison sont offerts"),
 			'paymentOffline' => s("Activer le choix du paiement en direct"),
 			'paymentTransfer' => s("Activer le choix du paiement par virement bancaire"),
-			'paymentCard' => s("Activer le choix du paiement en ligne par carte bancaire"),
+			'paymentCard' => s("Activer le choix du paiement en ligne avec {icon} Stripe", ['icon' => \Asset::icon('stripe')]),
 		]);
 
 		switch($property) {

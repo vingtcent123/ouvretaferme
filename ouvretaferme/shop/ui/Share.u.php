@@ -276,10 +276,8 @@ class ShareUi {
 				break;
 
 			case 'paymentMethod' ;
-				$d->values = [
-					Share::TRANSFER => s("Virement bancaire"),
-				];
-				$d->placeholder = s("Ne pas renseigner de moyen de paiement");
+				$d->values = fn(Share $e) => $e['cPaymentMethod'] ?? $e->expects(['cPaymentMethod']);
+				$d->placeholder = s("Non défini");
 				$d->labelAfter = \util\FormUi::info(s("Vous pouvez choisir un moyen de paiement qui sera appliqué aux ventes que vous réaliserez dans cette boutique."));
 				break;
 

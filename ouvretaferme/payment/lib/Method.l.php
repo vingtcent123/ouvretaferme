@@ -17,6 +17,17 @@ class MethodLib extends MethodCrud {
 		return self::getPropertiesCreate();
 	}
 
+	public static function isSelectable(\farm\Farm $eFarm): bool {
+
+		return Method::model()
+			->or(
+				fn() => $this->whereFarm(NULL),
+				fn() => $this->whereFarm($eFarm)
+			)
+			->whereOnline(FALSE)
+			->exists($eMethod);
+	}
+
 	public static function getByFarm(\farm\Farm $eFarm, ?bool $online, ?bool $onlyActive = TRUE): \Collection {
 
 		return Method::model()

@@ -471,9 +471,9 @@ class ShopUi {
 						$form->addon(s("Moyen de paiement")).
 						$form->select('paymentMethod', [
 							NULL => s("Direct avec le producteur"),
-							\payment\MethodLib::ONLINE_CARD => s("Carte bancaire"),
+							\payment\MethodLib::ONLINE_CARD => s("Carte bancaire avec Stripe"),
 							\payment\MethodLib::TRANSFER => s("Virement bancaire")
-						], $eSaleExample['paymentMethod'], attributes: ['mandatory' => TRUE]).
+						], $eSaleExample['paymentMethod']->notEmpty() ? $eSaleExample['paymentMethod']['fqn'] : NULL, attributes: ['mandatory' => TRUE]).
 						$form->submit(s("Afficher"))
 					);
 				$h .= $form->close();
@@ -1115,7 +1115,7 @@ class ShopUi {
 							}
 
 							if($eShop['paymentCard']) {
-								$modes[] = s("Carte bancaire");
+								$modes[] = \Asset::icon('stripe').' '.s("Stripe");
 							}
 
 							$h .= implode(' / ', $modes);
@@ -1157,7 +1157,7 @@ class ShopUi {
 			'frequency' => s("Fréquence d'ouverture des ventes"),
 			'name' => s("Nom de la boutique"),
 			'logo' => s("Image de présentation"),
-			'paymentCard' => s("Activer le choix du paiement en ligne par carte bancaire"),
+			'paymentCard' => s("Activer le choix du paiement en ligne avec {icon} Stripe", ['icon' => \Asset::icon('stripe')]),
 			'paymentOffline' => s("Activer le choix du paiement en direct"),
 			'paymentOfflineHow' => s("Modalités du paiement en direct"),
 			'paymentTransfer' => s("Activer le choix du paiement par virement bancaire"),

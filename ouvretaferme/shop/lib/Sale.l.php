@@ -175,15 +175,26 @@ class SaleLib {
 
 	public static function checkPayment(\farm\Farm $eFarm, Shop $eShop, \selling\Sale $eSale): void {
 
+		$eSale->expects([
+			'customer' => ['defaultPaymentMethod']
+		]);
+
 		if($eShop['hasPayment'] === FALSE) {
 
 			if($eShop->isShared()) {
 
 				$eShare = $eShop['cShare'][$eFarm['id']];
-				self::createDirectPayment($eShare['paymentMethod'], $eSale);
+
+				if($eShare['paymentMethod']->notEmpty()) {
+					$eMethod = $eShare['paymentMethod'];
+				} else {
+					$eMethod = $eSale['customer']['defaultPaymentMethod'];
+				}
+
+				self::createDirectPayment($eMethod, $eSale);
 
 			} else {
-				self::createDirectPayment(NULL, $eSale);
+				self::createDirectPayment($eSale['customer']['defaultPaymentMethod'], $eSale);
 			}
 
 		}
@@ -277,7 +288,7 @@ class SaleLib {
 
 		return (
 			$eSale['paymentMethod']->empty() or
-			$eSale['paymentMethod']['fqn'] === \payment\MethodLib::TRANSFER
+			$eSale['paymentMethod']['fqn'] !== \payment\MethodLib::ONLINE_CARD
 		);
 
 	}
@@ -400,7 +411,7 @@ class SaleLib {
 
 		return match($payment) {
 			\payment\MethodLib::ONLINE_CARD => self::createCardPayment($eSale),
-			\payment\MethodLib::TRANSFER => self::createDirectPayment(\payment\MethodLib::TRANSFER, $eSale),
+			\payment\MethodLib::TRANSFER => self::createDirectPayment(\payment\MethodLib::getByFqn(\payment\MethodLib::TRANSFER), $eSale),
 			default => self::createDirectPayment(NULL, $eSale),
 		};
 
@@ -464,11 +475,7 @@ class SaleLib {
 
 	}
 
-	public static function createDirectPayment(?string $method, \selling\Sale $eSale): string {
-
-		if(in_array($method, [NULL, \payment\MethodLib::TRANSFER]) === FALSE) {
-			throw new \Exception('Invalid method');
-		}
+	public static function createDirectPayment(\payment\Method $eMethod, \selling\Sale $eSale): string {
 
 		$eSale->expects([
 			'farm',
@@ -478,8 +485,6 @@ class SaleLib {
 			],
 			'customer'
 		]);
-
-		$eMethod = $method !== NULL ? \payment\MethodLib::getByFqn($method) : new \payment\Method();
 
 		$eSale['oldPreparationStatus'] = $eSale['preparationStatus'];
 		$eSale['preparationStatus'] = \selling\Sale::CONFIRMED;

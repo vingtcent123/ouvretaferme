@@ -151,15 +151,7 @@ class Invoice extends InvoiceElement {
 
 				$this->expects(['farm']);
 
-				$eFarm = $this['farm'];
-
-				return \payment\Method::model()
-					->or(
-						fn() => $this->whereFarm(NULL),
-						fn() => $this->whereFarm($eFarm)
-					)
-					->whereOnline(FALSE)
-					->exists($eMethod);
+				return \payment\MethodLib::isSelectable($this['farm']);
 
 			})
 			->setCallback('paymentStatus.check', function(string &$status) use($p): bool {
