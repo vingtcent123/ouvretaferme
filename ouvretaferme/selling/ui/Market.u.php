@@ -406,7 +406,7 @@ class MarketUi {
 
 							} else if($canUpdatePayments) {
 
-								$h .= '<a data-dropdown="bottom-start" class="dropdown-toggle" data-dropdown-hover="true">';
+								$h .= '<a data-dropdown="bottom-end" class="dropdown-toggle" data-dropdown-hover="true">';
 
 									if($eSale['cPayment']->count() > 0 and $eSale['cPayment']->first()['method']->notEmpty()) {
 										$h .= $eSale['cPayment']->first()['method']['name'];
