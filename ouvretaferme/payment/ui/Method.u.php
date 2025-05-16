@@ -7,11 +7,6 @@ namespace payment;
  */
 class MethodUi {
 
-	public function __construct() {
-
-
-	}
-
 	public function getManageTitle(\farm\Farm $eFarm): string {
 
 		$h = '<div class="util-action">';
