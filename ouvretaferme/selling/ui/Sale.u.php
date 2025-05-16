@@ -727,12 +727,16 @@ class SaleUi {
 							$document .= '</small>';
 						$document .= '</div>';
 
+						if($type === Pdf::INVOICE) {
+							$document .= '<a href="'.\farm\FarmUi::urlSellingInvoice($eSale['farm']).'?invoice='.$eSale['invoice']['id'].'" data-ajax-navigation="never" class="dropdown-item">'.s("Consulter la facture").'</a>';
+						}
+
 						if($ePdf['content']->notEmpty()) {
 
 							if($type === Pdf::INVOICE) {
-								$document .= '<a href="'.InvoiceUi::url($eSale['invoice']).'" data-ajax-navigation="never" class="dropdown-item">'.s("Télécharger").'</a>';
+								$document .= '<a href="'.InvoiceUi::url($eSale['invoice']).'" data-ajax-navigation="never" class="dropdown-item">'.s("Télécharger le PDF").'</a>';
 							} else {
-								$document .= '<a href="'.PdfUi::url($ePdf).'" data-ajax-navigation="never" class="dropdown-item">'.s("Télécharger").'</a>';
+								$document .= '<a href="'.PdfUi::url($ePdf).'" data-ajax-navigation="never" class="dropdown-item">'.s("Télécharger le PDF").'</a>';
 							}
 
 						} else {
