@@ -146,6 +146,26 @@ class Invoice extends InvoiceElement {
 				}
 
 			})
+			->setCallback('sales.methods', function(): bool {
+
+				$this->expects(['cSale']);
+
+				if($this['cSale']->count() < 2) {
+					return TRUE;
+				} else {
+
+					$eMethod = $this['cSale']->first()['paymentMethod'];
+
+					foreach($this['cSale'] as $eSale) {
+						if($eSale['paymentMethod']->is($eMethod) === FALSE) {
+							return FALSE;
+						}
+					}
+
+					return TRUE;
+				}
+
+			})
 			->setCallback('sales.hasVat', function(): bool {
 
 				$this->expects(['cSale']);

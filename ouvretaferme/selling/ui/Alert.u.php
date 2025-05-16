@@ -33,6 +33,7 @@ class AlertUi {
 			'Invoice::sales.taxes' => s("Vous ne pouvez pas mixer des ventes hors taxes et toutes taxes comprises au sein d'une même facture."),
 			'Invoice::sales.hasVat' => s("Vous ne pouvez pas mixer des ventes assujetties et non assujetties à la TVA au sein d'une même facture."),
 			'Invoice::sales.paid' => s("Il n'est pas possible de créer une facture contenant plusieurs ventes dont au moins l'une a déjà été payée. Vous devez créer des factures individuelles pour les ventes déjà payées."),
+			'Invoice::sales.methods' => s("Il n'est pas possible de créer une facture contenant des ventes avec des moyens de paiement différents."),
 			'Invoice::emptySales' => s("Vous devez ajouter au moins une vente à votre facture !"),
 			'Invoice::invoices.check' => s("Merci de sélectionner au moins une facture."),
 			'Invoice::inconsistencySales' => s("Vous ne pouvez pas regénérer cette facture car une ou plusieurs ventes ne sont plus éligibles à la facturation !"),
