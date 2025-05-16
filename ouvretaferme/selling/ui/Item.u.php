@@ -110,6 +110,7 @@ class ItemUi {
 				}
 
 			$h .= '</div>';
+
 		}
 
 		if($cItem->empty()) {
@@ -120,7 +121,7 @@ class ItemUi {
 
 					if($eSale->isMarket()) {
 						$h .= s("Il n'y a pas encore d'article à vendre !");
-					} if($eSale->isComposition()) {
+					} else if($eSale->isComposition()) {
 						$h .= s("Il n'y a pas encore d'article !");
 					} else {
 						$h .= s("Il n'y a pas encore d'article dans cette vente !");
@@ -206,13 +207,6 @@ class ItemUi {
 
 			$h .= $new;
 
-		}
-
-		if($eSale->isMarket() and $eSale['preparationStatus'] === Sale::DRAFT) {
-			$h .= '<div class="util-block bg-order color-white mt-1 " style="display: flex; align-items: center; justify-content: space-between">';
-				$h .= '<h4 class="mb-0">'.s("Votre préparation est complète ?").'</h4>';
-				$h .= '<a data-ajax="/selling/sale:doUpdatePreparationStatus" post-id="'.$eSale['id'].'" post-preparation-status="'.Sale::CONFIRMED.'" class="btn btn-transparent">'.s("Confirmer la vente").'</a>';
-			$h .= '</div>';
 		}
 
 		$h .= '</div>';

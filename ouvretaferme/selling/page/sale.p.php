@@ -6,6 +6,8 @@ new \selling\SalePage()
 
 		if(input_exists('compositionOf')) {
 			$origin = \selling\Sale::COMPOSITION;
+		} else if(INPUT('market', 'bool')) {
+			$origin = \selling\Sale::MARKET;
 		} else {
 			$origin = \selling\Sale::SALE;
 		}

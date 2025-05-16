@@ -1294,6 +1294,10 @@ class SaleUi {
 
 			} else if($eSale['preparationStatus'] !== Sale::DRAFT) {
 				$h .= '<a href="'.SaleUi::urlMarket($eSale).'" class="btn btn-xl btn-selling" style="width: 100%">'.\Asset::icon('cart4').'  '.s("Ouvrir la caisse virtuelle").'</a>';
+			} else if($eSale['preparationStatus'] === Sale::DRAFT) {
+				$h .= '<div class="util-block color-white bg-selling">';
+					$h .= s("Le logiciel de caisse est activé pour cette vente et sera disponible lorsque vous aurez confirmé la vente.");
+				$h .= '</div>';
 			}
 		}
 

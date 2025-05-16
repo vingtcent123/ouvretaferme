@@ -590,14 +590,6 @@ class SaleLib {
 			'amountIncludingVat' => $eSale['priceIncludingVat'],
 		]);
 
-		self::completePaid($eSale, $object['id']);
-
-		\selling\Sale::model()->commit();
-
-	}
-
-	protected static function completePaid(\selling\Sale $eSale, string $eventId): void {
-
 		$eSale['oldPreparationStatus'] = $eSale['preparationStatus'];
 		$eSale['preparationStatus'] = \selling\Sale::CONFIRMED;
 
@@ -605,13 +597,15 @@ class SaleLib {
 		$eSale['paymentStatus'] = \selling\Sale::PAID;
 		$eSale['onlinePaymentStatus'] = \selling\Sale::SUCCESS;
 
-		\selling\SaleLib::update($eSale, ['preparationStatus', 'paymentStatus']);
+		\selling\SaleLib::update($eSale, ['preparationStatus', 'paymentStatus', 'onlinePaymentStatus']);
 
-		\selling\HistoryLib::createBySale($eSale, 'shop-payment-succeeded', 'Stripe event #'.$eventId);
+		\selling\HistoryLib::createBySale($eSale, 'shop-payment-succeeded', 'Stripe event #'.$object['id']);
 
 		$cItem = \selling\SaleLib::getItems($eSale);
 
 		self::notify('salePaid', $eSale, $eSale['customer']['user'], $cItem);
+
+		\selling\Sale::model()->commit();
 
 	}
 
