@@ -198,7 +198,29 @@ class Product extends ProductElement {
 			->setCallback('vat.check', function(int $vat): bool {
 				return array_key_exists($vat, SaleLib::getVatRates($this['farm']));
 			})
-			->setCallback('proOrPrivate.check', fn() => ((int)$this['pro'] + (int)$this['private']) === 1);
+			->setCallback('proOrPrivate.check', fn() => ((int)$this['pro'] + (int)$this['private']) === 1)
+			->setCallback('privatePrice.empty', function(?float &$value) use ($p) {
+
+				$p->expectsBuilt('private');
+
+				if($this['private']) {
+					return ($value !== NULL);
+				} else {
+					$value = NULL;
+				}
+
+			})
+			->setCallback('proPrice.empty', function(?float &$value) use ($p) {
+
+				$p->expectsBuilt('pro');
+
+				if($this['pro']) {
+					return ($value !== NULL);
+				} else {
+					$value = NULL;
+				}
+
+			});
 		
 		parent::build($properties, $input, $p);
 

@@ -2106,7 +2106,7 @@ class SaleUi {
 
 					$e->expects(['shop']);
 
-					$hide = $e['shop']->notEmpty() ? '' : 'hide';
+					$hide = $e['shop']->empty() ? '' : 'hide';
 
 					return [
 						'id' => 'sale-write-date',

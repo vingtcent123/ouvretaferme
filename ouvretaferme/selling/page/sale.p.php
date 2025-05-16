@@ -29,7 +29,6 @@ new \selling\SalePage()
 		$data->e->merge([
 			'shopDate' => $eDate,
 			'shop' => $eDate->empty() ? new \shop\Shop() : $eDate['shop'],
-			'market' => GET('market', 'bool'),
 			'customer' => get_exists('customer') ? \selling\CustomerLib::getById(GET('customer'))->validateProperty('farm', $data->eFarm) : new \selling\Customer()
 		]);
 

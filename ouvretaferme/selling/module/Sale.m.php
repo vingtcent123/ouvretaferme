@@ -88,7 +88,6 @@ class SaleModel extends \ModuleModel {
 			'onlinePaymentStatus' => ['enum', [\selling\Sale::INITIALIZED, \selling\Sale::SUCCESS, \selling\Sale::FAILURE], 'null' => TRUE, 'cast' => 'enum'],
 			'compositionOf' => ['element32', 'selling\Product', 'null' => TRUE, 'cast' => 'element'],
 			'compositionEndAt' => ['date', 'null' => TRUE, 'cast' => 'string'],
-			'market' => ['bool', 'cast' => 'bool'],
 			'marketSales' => ['int32', 'min' => 0, 'max' => NULL, 'null' => TRUE, 'cast' => 'int'],
 			'marketParent' => ['element32', 'selling\Sale', 'null' => TRUE, 'cast' => 'element'],
 			'orderFormValidUntil' => ['date', 'null' => TRUE, 'cast' => 'string'],
@@ -114,7 +113,7 @@ class SaleModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'document', 'farm', 'customer', 'origin', 'taxes', 'organic', 'conversion', 'type', 'discount', 'items', 'hasVat', 'vat', 'vatByRate', 'priceExcludingVat', 'priceIncludingVat', 'shippingVatRate', 'shippingVatFixed', 'shipping', 'shippingExcludingVat', 'preparationStatus', 'paymentMethod', 'paymentStatus', 'onlinePaymentStatus', 'compositionOf', 'compositionEndAt', 'market', 'marketSales', 'marketParent', 'orderFormValidUntil', 'orderFormPaymentCondition', 'invoice', 'shop', 'shopDate', 'shopLocked', 'shopShared', 'shopUpdated', 'shopPoint', 'shopComment', 'deliveryStreet1', 'deliveryStreet2', 'deliveryPostcode', 'deliveryCity', 'comment', 'stats', 'createdAt', 'createdBy', 'deliveredAt', 'statusDeliveredAt'
+			'id', 'document', 'farm', 'customer', 'origin', 'taxes', 'organic', 'conversion', 'type', 'discount', 'items', 'hasVat', 'vat', 'vatByRate', 'priceExcludingVat', 'priceIncludingVat', 'shippingVatRate', 'shippingVatFixed', 'shipping', 'shippingExcludingVat', 'preparationStatus', 'paymentMethod', 'paymentStatus', 'onlinePaymentStatus', 'compositionOf', 'compositionEndAt', 'marketSales', 'marketParent', 'orderFormValidUntil', 'orderFormPaymentCondition', 'invoice', 'shop', 'shopDate', 'shopLocked', 'shopShared', 'shopUpdated', 'shopPoint', 'shopComment', 'deliveryStreet1', 'deliveryStreet2', 'deliveryPostcode', 'deliveryCity', 'comment', 'stats', 'createdAt', 'createdBy', 'deliveredAt', 'statusDeliveredAt'
 		]);
 
 		$this->propertiesToModule += [
@@ -167,9 +166,6 @@ class SaleModel extends \ModuleModel {
 
 			case 'preparationStatus' :
 				return Sale::DRAFT;
-
-			case 'market' :
-				return FALSE;
 
 			case 'shopLocked' :
 				return FALSE;
@@ -352,10 +348,6 @@ class SaleModel extends \ModuleModel {
 
 	public function whereCompositionEndAt(...$data): SaleModel {
 		return $this->where('compositionEndAt', ...$data);
-	}
-
-	public function whereMarket(...$data): SaleModel {
-		return $this->where('market', ...$data);
 	}
 
 	public function whereMarketSales(...$data): SaleModel {

@@ -93,16 +93,6 @@ class PaymentLib extends PaymentCrud {
 
 	}
 
-	public static function updateStatus(string $id, string $newStatus): int {
-
-		return Payment::model()
-			->wherePaymentIntentId($id)
-			->update([
-				'status' => $newStatus
-			]);
-
-	}
-
 	public static function createBySale(Sale $eSale, ?\payment\Method $eMethod, ?string $providerId = NULL): Payment {
 
 		if($eMethod->empty()) {

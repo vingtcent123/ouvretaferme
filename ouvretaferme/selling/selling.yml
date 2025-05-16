@@ -284,7 +284,6 @@ Sale:
   onlinePaymentStatus: ?enum(INITIALIZED, SUCCESS, FAILURE)
   compositionOf: ?selling\Product
   compositionEndAt: ?date
-  market: bool = FALSE
   marketSales: ?int(0, null)
   marketParent: ?selling\Sale
   orderFormValidUntil: ?date

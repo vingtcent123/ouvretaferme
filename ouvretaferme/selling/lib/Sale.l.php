@@ -8,7 +8,7 @@ class SaleLib extends SaleCrud {
 		return function(Sale $e) {
 
 			return $e->isComposition() ?
-				['market', 'customer', 'deliveredAt', 'productsList'] :
+				['customer', 'deliveredAt', 'productsList'] :
 				['market', 'customer', 'shopDate', 'deliveredAt', 'productsList', 'shipping'];
 
 		};

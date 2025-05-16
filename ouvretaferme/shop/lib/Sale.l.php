@@ -454,8 +454,6 @@ class SaleLib {
 
 		$eMethod = \payment\MethodLib::getByFqn(\payment\MethodLib::ONLINE_CARD);
 
-		$ePayment = \selling\PaymentLib::createBySale($eSale, $eMethod, $stripeSession['id']);
-
 		$eSale['oldPaymentMethod'] = $eSale['paymentMethod'];
 		$eSale['oldPaymentStatus'] = $eSale['paymentStatus'];
 		$eSale['paymentMethod'] = $eMethod;
@@ -463,6 +461,13 @@ class SaleLib {
 		$eSale['onlinePaymentStatus'] = \selling\Sale::INITIALIZED;
 
 		\selling\SaleLib::update($eSale, ['paymentMethod', 'paymentStatus', 'onlinePaymentStatus']);
+
+		$ePayment = \selling\PaymentLib::getBySale($eSale)->first();
+		$ePayment['checkoutId'] = $stripeSession['id'];
+
+		\selling\Payment::model()
+			->select('checkoutId')
+			->update($ePayment);
 
 		\selling\HistoryLib::createBySale($eSale, 'shop-payment-initiated', 'Stripe checkout id #'.$stripeSession['id'], ePayment: $ePayment);
 
@@ -534,7 +539,9 @@ class SaleLib {
 
 		\selling\Sale::model()->beginTransaction();
 
-		$affected = \selling\PaymentLib::updateStatus($object['id'], \selling\Payment::FAILURE);
+		$affected = \selling\PaymentLib::updateByPaymentIntentId($object['id'], [
+			'onlineStatus' => \selling\Payment::FAILURE
+		]);
 
 		if(
 			$affected > 0 and
@@ -578,7 +585,7 @@ class SaleLib {
 		}
 
 		\selling\PaymentLib::updateByPaymentIntentId($object['id'], [
-			'status' => \selling\Payment::SUCCESS,
+			'onlineStatus' => \selling\Payment::SUCCESS,
 			'amountIncludingVat' => $eSale['priceIncludingVat'],
 		]);
 

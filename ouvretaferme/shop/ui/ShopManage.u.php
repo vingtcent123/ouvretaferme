@@ -327,7 +327,7 @@ class ShopManageUi {
 		} else {
 
 			$h .= '<h4>'.s("Ajouter une première livraison").'</h4>';
-			$h .= '<p>'.s("Vous êtes satisfait de la configuration de votre boutique ?<br/>Alors c'est le moment d'ajouter une première vente en choisissant une date et la liste des produits que vous avez en stock et que vous souhaitez proposer à vos clients !").'</p>';
+			$h .= '<p>'.s("Vous êtes satisfait de la configuration de votre boutique ?<br/>Alors c'est le moment de configurer une première livraison en choisissant une date et la liste des produits que vous avez en stock et que vous souhaitez proposer à vos clients !").'</p>';
 			$h .= '<a href="/shop/date:create?shop='.$eShop['id'].'&farm='.$eFarm['id'].'" class="btn btn-secondary">'.s("Ajouter une première livraison").'</a>';
 			$h .= '<br/><br/>';
 			$h .= '<p>'.s("Vous voulez continuer à personnaliser l'expérience de vos clients ?<br/>Activez par exemple le paiement en ligne ou personnalisez les e-mails envoyés automatiquement à vos clients lors de leurs commandes.").'</p>';
