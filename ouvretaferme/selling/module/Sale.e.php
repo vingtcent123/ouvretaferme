@@ -690,7 +690,7 @@ class Sale extends SaleElement {
 
 		return (
 			$this->isMarket() and
-			$this['preparationStatus'] === Sale::CONFIRMED
+			in_array($this['preparationStatus'], [Sale::CONFIRMED, Sale::DELIVERED])
 		);
 
 	}

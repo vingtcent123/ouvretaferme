@@ -33,7 +33,3 @@ td.invoice-item-amount {
 	text-transform: uppercase;
 	margin-right: 1rem;
 }
-
-td.invoice-item-list {
-	max-width: 25rem;
-}

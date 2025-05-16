@@ -93,9 +93,9 @@ class InvoiceUi {
 						}
 						$h .= '<th class="text-center">'.s("Date de facturation").'</th>';
 						$h .= '<th class="text-end invoice-item-amount">'.s("Montant").'</th>';
-						$h .= '<th class="td-min-content">'.s("Envoyée<br/>par e-mail").'</th>';
-						$h .= '<th>'.s("Payée").'</th>';
-						$h .= '<th class="invoice-item-list hide-sm-down">'.s("Ventes").'</th>';
+						$h .= '<th class="td-min-content text-center">'.s("Envoyée<br/>par e-mail").'</th>';
+						$h .= '<th>'.s("Règlement").'</th>';
+						$h .= '<th class="hide-sm-down">'.s("Ventes").'</th>';
 						$h .= '<th></th>';
 					$h .= '</tr>';
 				$h .= '</thead>';
@@ -196,25 +196,38 @@ class InvoiceUi {
 
 							case Invoice::SUCCESS :
 
-								$h .= '<td>';
+								$h .= '<td class="text-center">';
 									$h .= $this->getIconEmail($eInvoice);
 								$h .= '</td>';
 
 								$h .= '<td>';
-									if($eInvoice->isCreditNote() === FALSE) {
-										$h .= \util\TextUi::switch([
-											'id' => 'invoice-switch-'.$eInvoice['id'],
-											'data-ajax' => $eInvoice->canWrite() ? '/selling/invoice:doUpdatePaymentStatus' : NULL,
-											'post-id' => $eInvoice['id'],
-											'post-payment-status' => ($eInvoice['paymentStatus'] === Invoice::PAID) ? Invoice::NOT_PAID : Invoice::PAID
-										], $eInvoice['paymentStatus'] === Invoice::PAID);
+
+									if($eInvoice['paymentMethod']->empty()) {
+
+										$h .= '<a href="/selling/invoice:update?id='.$eInvoice['id'].'" class="btn btn-outline-primary">'.s("Choisir").'</a>';
+
+									} else {
+										$h .= '<div>'.\payment\MethodUi::getName($eInvoice['paymentMethod']).'</div>';
+
+										if($eInvoice->isCreditNote() === FALSE) {
+											$h .= '<div>';
+												$h .= \util\TextUi::switch([
+													'id' => 'invoice-switch-'.$eInvoice['id'],
+													'class' => 'field-switch-sm',
+													'data-ajax' => $eInvoice->canWrite() ? '/selling/invoice:doUpdatePaymentStatus' : NULL,
+													'post-id' => $eInvoice['id'],
+													'post-payment-status' => ($eInvoice['paymentStatus'] === Invoice::PAID) ? Invoice::NOT_PAID : Invoice::PAID
+												], $eInvoice['paymentStatus'] === Invoice::PAID, textOn: self::p('paymentStatus')->values[Sale::PAID],textOff: self::p('paymentStatus')->values[Sale::NOT_PAID]);
+											$h .= '</div>';
+										}
 									}
 								$h .= '</td>';
 
-								$h .= '<td class="invoice-item-list hide-sm-down">';
-									foreach($eInvoice['cSale'] as $eSale) {
-										$h .= SaleUi::link($eSale).' ';
-									}
+								$h .= '<td class="hide-sm-down">';
+
+									$cSale = $eInvoice['cSale'];
+
+									$h .= '<a href="'.\farm\FarmUi::urlSellingSales($eInvoice['farm']).'?ids='.implode(',', $cSale->getIds()).'">'.p("{value} vente", "{value} ventes", $cSale->count()).'</a>';
 
 									if($eInvoice['description']) {
 										$h .= '<div class="invoice-item-description util-info">';
@@ -621,7 +634,7 @@ class InvoiceUi {
 				$h .= '</th>';
 				$h .= '<th class="text-center">#</th>';
 				$h .= '<th>'.s("Date").'</th>';
-				$h .= '<th>'.s("Moyen de paiement").'</th>';
+				$h .= '<th>'.s("Règlement").'</th>';
 				$h .= '<th class="text-end">'.s("Montant").'</th>';
 			$h .= '</tr>';
 
@@ -760,8 +773,8 @@ class InvoiceUi {
 
 			case 'paymentStatus' :
 				$d->values = [
-					Invoice::PAID => s("Payée"),
-					Invoice::NOT_PAID => s("Non payée"),
+					Invoice::PAID => s("Payé"),
+					Invoice::NOT_PAID => s("Non payé"),
 				];
 				$d->field = 'switch';
 				$d->attributes = [

@@ -7,6 +7,7 @@ class Invoice extends InvoiceElement {
 
 		return parent::getSelection() + [
 			'customer' => CustomerElement::getSelection(),
+			'paymentMethod' => ['name', 'fqn'],
 			'expiresAt' => new \Sql('IF(content IS NULL, NULL, createdAt + INTERVAL '.\Setting::get('selling\documentExpires').' MONTH)')
 		];
 
@@ -163,13 +164,13 @@ class Invoice extends InvoiceElement {
 			})
 			->setCallback('paymentStatus.check', function(string &$status) use($p): bool {
 
-				$p->expectsBuilt('paymentMethod');
+				$this->expects(['paymentMethod']);
 
 				if($this['paymentMethod']->empty()) {
-					$status = Sale::NOT_PAID;
+					$status = Invoice::NOT_PAID;
 					return TRUE;
 				} else {
-					return in_array($status, [Sale::PAID, Sale::NOT_PAID]);
+					return in_array($status, [Invoice::PAID, Invoice::NOT_PAID]);
 				}
 
 			});

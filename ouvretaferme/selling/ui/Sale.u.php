@@ -235,7 +235,7 @@ class SaleUi {
 						$columns++;
 					}
 					if(in_array('paymentMethod', $hide) === FALSE) {
-						$h .= '<th class="'.($dynamicHide['paymentMethod'] ?? 'hide-md-down').'">'.s("Moyen de paiement").'</th>';
+						$h .= '<th class="'.($dynamicHide['paymentMethod'] ?? 'hide-md-down').'">'.s("Règlement").'</th>';
 						$columns++;
 					}
 					if(in_array('actions', $hide) === FALSE) {
@@ -1437,7 +1437,7 @@ class SaleUi {
 				$primaryList .= ' <a href="'.SaleUi::urlMarket($eSale).'" class="dropdown-item">'.s("Ouvrir le logiciel de caisse").'</a>';
 			}
 
-			if($eSale->isMarketClosed()) {
+			if($eSale->acceptStatusSelling()) {
 				$primaryList = '<a data-ajax="/selling/sale:doUpdatePreparationStatus" post-id="'.$eSale['id'].'" post-preparation-status="'.Sale::SELLING.'" class="dropdown-item">'.s("Réouvrir la vente").'</a>';
 			}
 
