@@ -9,8 +9,6 @@ class MethodUi {
 
 	public function __construct() {
 
-		\Asset::css('payment', 'method.css');
-		\Asset::js('payment', 'method.js');
 
 	}
 
