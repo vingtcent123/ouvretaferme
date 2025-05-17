@@ -295,6 +295,13 @@ class AnalyzeUi {
 					'category' => new \farm\Category()
 				]);
 
+				$this->addDeadTime($cTimesheetCategory, $globalTime, [
+					'category' => new \farm\Category([
+						'id' => NULL,
+						'name' => s("Temps mort")
+					])
+				]);
+
 				$h .= '<div class="analyze-working-time-wrapper">';
 
 					$h .= '<div class="analyze-working-time-user">';
@@ -525,7 +532,7 @@ class AnalyzeUi {
 
 				foreach($cTimesheet as $eTimesheet) {
 
-					if($position++ === 15) {
+					if($position++ === 20) {
 						break;
 					}
 
