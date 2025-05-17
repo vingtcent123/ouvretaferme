@@ -20,6 +20,23 @@ class AnalyzeLib {
 
 	}
 
+	public static function getFarmWeeks(\farm\Farm $eFarm, int $year): \Collection {
+
+		$cWorkingTimeWeek = \hr\WorkingTime::model()
+			->select([
+				'week' => new \Sql('WEEK(date, 1)', 'int'),
+				'time' => new \Sql('SUM(time)', 'float')
+			])
+			->whereFarm($eFarm)
+			->where(new \Sql('EXTRACT(YEAR FROM date)'), $year)
+			->group(new \Sql('week'))
+			->sort(new \Sql('week DESC'))
+			->getCollection(NULL, NULL, ['week']);
+
+		return $cWorkingTimeWeek;
+
+	}
+
 	public static function getGlobalWorkingTime(\farm\Farm $eFarm, int $year, ?int $month, ?string $week): ?float {
 
 		$workingTime = \hr\WorkingTime::model()

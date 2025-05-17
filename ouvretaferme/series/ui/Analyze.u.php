@@ -13,7 +13,7 @@ class AnalyzeUi {
 
 	}
 
-	public function getPeriod(int $year, \Collection $cWorkingTimeMonth, \Collection $cWorkingTimeMonthBefore): string {
+	public function getPeriod(int $year, \Collection $cWorkingTimeMonth, \Collection $cWorkingTimeMonthBefore, \Collection $cWorkingTimeWeek, \Collection $cWorkingTimeWeekBefore): string {
 
 		if($cWorkingTimeMonth->empty()) {
 			$h = '<div class="util-empty">';
@@ -24,6 +24,9 @@ class AnalyzeUi {
 
 		$h = '<h2>'.s("Temps de travail mensuel").'</h2>';
 		$h .= $this->getPeriodMonthChart($cWorkingTimeMonth, $year, $cWorkingTimeMonthBefore, $year - 1);
+
+		$h .= '<h2>'.s("Temps de travail hebdomadaire").'</h2>';
+		$h .= $this->getPeriodWeekChart($cWorkingTimeWeek, $year, $cWorkingTimeWeekBefore, $year - 1);
 
 		return $h;
 
@@ -177,6 +180,46 @@ class AnalyzeUi {
 
 	}
 
+	public function getPeriodWeekChart(\Collection $cWorkingTimeWeek, int $yearNow, \Collection $cWorkingTimeWeekBefore, int $yearBefore): string {
+
+		\Asset::jsUrl('https://cdn.jsdelivr.net/npm/chart.js');
+
+		[$timesNow, $labelsNow] = $this->extractWeekChartValues($cWorkingTimeWeek);
+		[$timesBefore] = $this->extractWeekChartValues($cWorkingTimeWeekBefore);
+
+		$h = '<div class="analyze-bar">';
+			$h .= '<canvas '.attr('onrender', 'Analyze.createDoubleBar(this, "'.s("Temps de travail {value}", $yearNow).'", '.json_encode($timesNow).', "'.s("Temps de travail {value}", $yearBefore).'", '.json_encode($timesBefore).', '.json_encode($labelsNow).', undefined, "h")').'</canvas>';
+		$h .= '</div>';
+
+		return $h;
+
+	}
+
+	protected function extractWeekChartValues(\Collection $cWorkingTimeWeek, Product|\plant\Plant|null $e = NULL): array {
+
+		$times = [];
+		$labels = [];
+
+		for($week = 1; $week <= 52; $week++) {
+
+			if($cWorkingTimeWeek->offsetExists($week)) {
+
+				$eWorkingTimeWeek = $cWorkingTimeWeek[$week];
+
+				$times[] = round($eWorkingTimeWeek['time'], 2);
+
+			} else {
+				$times[] = 0;
+			}
+
+			$labels[] = $week;
+
+		}
+
+		return [$times, $labels];
+
+	}
+
 	public function getPeriodMonthChart(\Collection $cWorkingTimeMonth, int $yearNow, \Collection $cWorkingTimeMonthBefore, int $yearBefore): string {
 
 		\Asset::jsUrl('https://cdn.jsdelivr.net/npm/chart.js');
@@ -201,9 +244,9 @@ class AnalyzeUi {
 
 			if($cWorkingTimeMonth->offsetExists($month)) {
 
-				$eItemMonth = $cWorkingTimeMonth[$month];
+				$eWorkingTimeMonth = $cWorkingTimeMonth[$month];
 
-				$times[] = round($eItemMonth['time'], 2);
+				$times[] = round($eWorkingTimeMonth['time'], 2);
 
 			} else {
 				$times[] = 0;
