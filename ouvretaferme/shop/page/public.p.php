@@ -339,6 +339,7 @@ new Page(function($data) {
 
 			if(
 				$data->eSaleReference['paymentStatus'] !== \selling\Sale::PAID and
+				$data->eSaleReference['onlinePaymentStatus'] !== \selling\Sale::FAILURE and // On affiche la page de confirmation si le paiement est en échec
 				($data->eSaleReference['preparationStatus'] === \selling\Sale::BASKET or
 				($data->eSaleReference['paymentMethod']->notEmpty() and $data->eSaleReference['paymentMethod']['fqn'] === \payment\MethodLib::ONLINE_CARD))
 			) {
