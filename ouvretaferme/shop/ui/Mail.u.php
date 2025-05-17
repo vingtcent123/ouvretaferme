@@ -273,10 +273,13 @@ Bonne réception,
 
 		foreach($cItem as $eItem) {
 
+			if($eItem['packaging'] === NULL) {
+				$number = \selling\UnitUi::getValue($eItem['number'], $eItem['unit']);
+			} else {
+				$number = p("{value} colis de {quantity}", "{value} colis de {quantity}", $eItem['number'], ['quantity' => \selling\UnitUi::getValue($eItem['packaging'], $eItem['unit'])]);
+			}
 
-			$quantity = \selling\UnitUi::getValue($eItem['number'], $eItem['unit'], short: TRUE);
-
-			$items .= '- '.s("{item} : {quantity}", ['item' => $eItem['name'], 'quantity' => $quantity])."\n";
+			$items .= '- '.s("{item} : {number}", ['item' => $eItem['name'], 'number' => $number])."\n";
 
 		}
 

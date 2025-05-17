@@ -188,6 +188,7 @@ class ItemLib extends ItemCrud {
 				'unit' => \selling\Unit::getSelection(),
 				'price' => new \Sql('SUM(price)', 'float'),
 				'number' => new \Sql('SUM(number)', 'float'),
+				'packaging',
 				'quantity' => new \Sql('SUM(IF(packaging IS NULL, 1, packaging) * number)', 'float'),
 				'product' => ['vignette', 'farm', 'composition'],
 				'productComposition',
@@ -198,7 +199,7 @@ class ItemLib extends ItemCrud {
 			->whereStatus('IN', [Sale::CONFIRMED, Sale::PREPARED, Sale::DELIVERED])
 			->whereIngredientOf(NULL)
 			->whereShopDate($eDate)
-			->group(['product', 'productComposition', 'name', 'unit', 'quality'])
+			->group(['product', 'productComposition', 'name', 'unit', 'packaging', 'quality'])
 			->sort('name')
 			->getCollection();
 
