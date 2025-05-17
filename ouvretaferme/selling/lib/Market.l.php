@@ -247,11 +247,6 @@ class MarketLib {
 		$eSale['oldPaymentMethod'] = $eSale['paymentMethod'];
 		$eSale['oldPaymentStatus'] = $eSale['paymentStatus'];
 
-		$newSalePaymentStatus = match($eSale['preparationStatus']) {
-			Sale::DELIVERED => Sale::PAID,
-			default => Sale::NOT_PAID,
-		};
-
 		$ePaymentMethodLast = Payment::model()
 			->select('method')
 			->whereSale($eSale)
@@ -260,7 +255,7 @@ class MarketLib {
 
 		$inputValues = [
 			'paymentMethod' => ($ePaymentMethodLast['method']['id'] ?? NULL),
-			'paymentStatus' => $newSalePaymentStatus,
+			'paymentStatus' => Sale::PAID,
 			'preparationStatus' => Sale::DELIVERED,
 		];
 		$properties = array_keys($inputValues);
