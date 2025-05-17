@@ -289,7 +289,7 @@ class ShopLib extends ShopCrud {
 
 	public static function getAroundByFarm(\farm\Farm $eFarm, ?string $type = NULL, string $period = '1 MONTH'): \Collection {
 
-		$cShop = self::getByFarm($eFarm, $type);
+		$cShop = self::getList($eFarm)['selling'];
 
 		Shop::model()
 			->select([

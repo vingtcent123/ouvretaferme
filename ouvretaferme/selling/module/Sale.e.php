@@ -978,7 +978,11 @@ class Sale extends SaleElement {
 						$this['shop'] = $eShop;
 						$this['shopShared'] = $eShop['shared'];
 
-						return $eShop->canWrite();
+						if($eShop['shared']) {
+							return $eShop->canShareRead($this['farm']);
+						} else {
+							return $eShop->canWrite();
+						}
 
 					}
 
