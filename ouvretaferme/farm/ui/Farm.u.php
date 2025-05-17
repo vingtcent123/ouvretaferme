@@ -1246,9 +1246,9 @@ class FarmUi {
 
 	protected static function getAnalyzeWorkingTimeCategories(): array {
 		return [
-			Farmer::TIME => s("Suivi du temps de travail"),
-			Farmer::PACE => s("Suivi de la productivité"),
+			Farmer::TIME => s("Temps de travail à la ferme"),
 			Farmer::TEAM => s("Temps de travail de l'équipe"),
+			Farmer::PACE => s("Productivité à la ferme"),
 			Farmer::PERIOD => s("Saisonnalité du travail"),
 		];
 	}
