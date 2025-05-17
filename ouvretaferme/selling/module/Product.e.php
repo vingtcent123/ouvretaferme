@@ -201,7 +201,11 @@ class Product extends ProductElement {
 			->setCallback('proOrPrivate.check', fn() => ((int)$this['pro'] + (int)$this['private']) === 1)
 			->setCallback('privatePrice.empty', function(?float &$value) use ($p) {
 
-				$p->expectsBuilt('private');
+				if($p->for === 'create') {
+					$p->expectsBuilt('private');
+				} else {
+					$this->expects(['private']);
+				}
 
 				if($this['private']) {
 					return ($value !== NULL);
@@ -212,7 +216,11 @@ class Product extends ProductElement {
 			})
 			->setCallback('proPrice.empty', function(?float &$value) use ($p) {
 
-				$p->expectsBuilt('pro');
+				if($p->for === 'create') {
+					$p->expectsBuilt('pro');
+				} else {
+					$this->expects(['pro']);
+				}
 
 				if($this['pro']) {
 					return ($value !== NULL);
