@@ -409,7 +409,7 @@ class SaleLib {
 		return match($payment) {
 			\payment\MethodLib::ONLINE_CARD => self::createCardPayment($eSale),
 			\payment\MethodLib::TRANSFER => self::createDirectPayment(\payment\MethodLib::getByFqn(\payment\MethodLib::TRANSFER), $eSale),
-			default => self::createDirectPayment(NULL, $eSale),
+			default => self::createDirectPayment(new \payment\Method(), $eSale),
 		};
 
 	}
@@ -477,7 +477,7 @@ class SaleLib {
 
 	}
 
-	public static function createDirectPayment(?\payment\Method $eMethod, \selling\Sale $eSale): string {
+	public static function createDirectPayment(\payment\Method $eMethod, \selling\Sale $eSale): string {
 
 		$eSale->expects([
 			'farm',
