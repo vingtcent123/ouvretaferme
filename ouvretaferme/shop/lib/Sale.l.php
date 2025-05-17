@@ -477,7 +477,7 @@ class SaleLib {
 
 	}
 
-	public static function createDirectPayment(\payment\Method $eMethod, \selling\Sale $eSale): string {
+	public static function createDirectPayment(?\payment\Method $eMethod, \selling\Sale $eSale): string {
 
 		$eSale->expects([
 			'farm',
