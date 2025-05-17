@@ -715,6 +715,7 @@
 					$data->ccWorkingTimeMonthly = \series\AnalyzeLib::getMonthlyWorkingTime($data->eFarm, $data->year);
 					$data->workingTimeWeekly = \series\AnalyzeLib::getWeeklyWorkingTime($data->eFarm, $data->year);
 					$data->ccTimesheetAction = \series\AnalyzeLib::getActionTimesheetByUser($data->eFarm, $data->year);
+					$data->ccTimesheetCategory = \series\AnalyzeLib::getCategoryTimesheetByUser($data->eFarm, $data->year);
 					break;
 
 				case \farm\Farmer::PACE :

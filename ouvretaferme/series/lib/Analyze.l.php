@@ -149,9 +149,30 @@ class AnalyzeLib {
 					'action' => ['name', 'color'],
 					'category' => ['name'],
 				]), 'm2.id = m1.task')
+			->where('m1.time > 0')
 			->where('m1.farm', $eFarm)
 			->where('EXTRACT(YEAR FROM date) = '.$year)
 			->group(['user', 'action', 'category'])
+			->sort(new \Sql('m1_time DESC'))
+			->getCollection(index: ['user', NULL]);
+
+	}
+
+	public static function getCategoryTimesheetByUser(\farm\Farm $eFarm, int $year): \Collection {
+
+		return Timesheet::model()
+			->select([
+				'user',
+				'time' => new \Sql('SUM(m1.time)', 'float'),
+			])
+			->join(Task::model()
+				->select([
+					'category' => ['name'],
+				]), 'm2.id = m1.task')
+			->where('m1.farm', $eFarm)
+			->where('m1.time > 0')
+			->where('EXTRACT(YEAR FROM date) = '.$year)
+			->group(['user', 'category'])
 			->sort(new \Sql('m1_time DESC'))
 			->getCollection(index: ['user', NULL]);
 

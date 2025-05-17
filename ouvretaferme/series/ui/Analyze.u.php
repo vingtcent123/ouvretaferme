@@ -260,7 +260,7 @@ class AnalyzeUi {
 
 	}
 
-	public function getWorkingTime(\farm\Farm $eFarm, int $year, \Collection $ccWorkingTimeMonthly, array $workingTimeWeekly, \Collection $ccTimesheetAction): string {
+	public function getWorkingTime(\farm\Farm $eFarm, int $year, \Collection $ccWorkingTimeMonthly, array $workingTimeWeekly, \Collection $ccTimesheetAction, \Collection $ccTimesheetCategory): string {
 
 		if($ccWorkingTimeMonthly->empty()) {
 			$h = '<div class="util-empty">';
@@ -275,6 +275,7 @@ class AnalyzeUi {
 				$h .= '<a class="tab-item selected" data-tab="analyze-month" onclick="Lime.Tab.select(this)">'.s("Par mois").'</a>';
 				$h .= '<a class="tab-item" data-tab="analyze-week" onclick="Lime.Tab.select(this)">'.s("Par semaine").'</a>';
 				$h .= '<a class="tab-item" data-tab="analyze-action" onclick="Lime.Tab.select(this)">'.s("Par intervention").'</a>';
+				$h .= '<a class="tab-item" data-tab="analyze-category" onclick="Lime.Tab.select(this)">'.s("Par catégorie").'</a>';
 			$h .= '</div>';
 
 			foreach($ccWorkingTimeMonthly as $cWorkingTimeMonthly) {
@@ -283,6 +284,7 @@ class AnalyzeUi {
 				$eUser = $cWorkingTimeMonthly->first()['user'];
 
 				$cTimesheetAction = $ccTimesheetAction[$eUser['id']] ??  new \Collection();
+				$cTimesheetCategory = $ccTimesheetCategory[$eUser['id']] ??  new \Collection();
 
 				$this->addDeadTime($cTimesheetAction, $globalTime, [
 					'action' => new \farm\Action([
@@ -353,7 +355,14 @@ class AnalyzeUi {
 					$h .= '<div class="tab-panel" data-tab="analyze-action">';
 						$h .= '<div class="analyze-working-time-actions analyze-chart-table">';
 							$h .= $this->getActionTimesheetTable($eFarm, $year, $eUser, $cTimesheetAction);
-							$h .= $this->getActionTimesheetPie($cTimesheetAction);
+							$h .= $this->getActionPie($cTimesheetAction);
+						$h .= '</div>';
+					$h .= '</div>';
+
+					$h .= '<div class="tab-panel" data-tab="analyze-category">';
+						$h .= '<div class="analyze-working-time-categorys analyze-chart-table">';
+							$h .= $this->getCategoryTimesheetTable($eFarm, $year, $eUser, $cTimesheetCategory);
+							$h .= $this->getCategoryPie($cTimesheetCategory);
 						$h .= '</div>';
 					$h .= '</div>';
 
@@ -496,18 +505,6 @@ class AnalyzeUi {
 
 	}
 
-	public function getActionTimesheetPie(\Collection $cTimesheet): string {
-
-		return new \analyze\ChartUi()->buildPie(
-			s("Répartition par intervention"),
-			$cTimesheet,
-			'time',
-			fn($eTimesheet) => encode($eTimesheet['action']['name']),
-			fn($eTimesheet) => encode($eTimesheet['action']['color'])
-		);
-
-	}
-
 	protected function getActionTimesheetTable(\farm\Farm $eFarm, int $year, \user\User $eUser, \Collection $cTimesheet): string {
 
 		$globalTime = $cTimesheet->sum('time');
@@ -570,6 +567,62 @@ class AnalyzeUi {
 
 	}
 
+	protected function getCategoryTimesheetTable(\farm\Farm $eFarm, int $year, \user\User $eUser, \Collection $cTimesheet): string {
+
+		$globalTime = $cTimesheet->sum('time');
+
+		$h = '<table class="tr-even analyze-values stick-xs">';
+
+			$h .= '<thead>';
+				$h .= '<tr>';
+					$h .= '<th>'.s("Catégorie").'</th>';
+					$h .= '<th class="text-center" colspan="2">'.s("Temps passé").'</th>';
+					$h .= '<th></th>';
+				$h .= '</tr>';
+			$h .= '</thead>';
+			$h .= '<tbody>';
+
+				$position = 0;
+
+				foreach($cTimesheet as $eTimesheet) {
+
+					if($position++ === 15) {
+						break;
+					}
+
+					$isLost = ($eTimesheet['category']->notEmpty() and $eTimesheet['category']['id'] === NULL);
+
+					$h .= '<tr class="'.($isLost ? 'analyze-lost' : '').'">';
+
+						$h .= '<td>';
+							$h .= encode($eTimesheet['category']['name']);
+						$h .= '</td>';
+						$h .= '<td class="text-end">';
+							$h .= TaskUi::convertTime($eTimesheet['time']);
+						$h .= '</td>';
+						$h .= '<td class="util-annotation">';
+							$h .= \util\TextUi::pc($eTimesheet['time'] / $globalTime * 100);
+						$h .= '</td>';
+						$h .= '<td class="text-end">';
+							if(
+								$eFarm->canPersonalData() and
+								$eTimesheet['category']['id'] !== NULL
+							) {
+								$h .= '<a href="/series/analyze:tasks?id='.$eFarm['id'].'&category='.$eTimesheet['category']['id'].'&status='.Task::DONE.'&year='.$year.'&category='.$eTimesheet['category']['id'].'&user='.$eUser['id'].'" class="btn btn-sm btn-outline-primary">'.\Asset::icon('calendar3').'</a> ';
+							}
+						$h .= '</td>';
+
+					$h .= '</tr>';
+
+				}
+
+			$h .= '</tbody>';
+		$h .= '</table>';
+
+		return $h;
+
+	}
+
 	public function getPlantTime(\plant\Plant $ePlant, int $year, \Collection $cPlantTimesheet, \Collection $cTimesheetByAction, \Collection $cTimesheetByUser, \Collection $cPlantMonth, \Collection $cPlantMonthBefore): \Panel {
 
 		$h = '';
@@ -582,7 +635,7 @@ class AnalyzeUi {
 
 				$h .= '<h3>'.s("Temps de travail par intervention").'</h3>';
 				$h .= '<div class="analyze-chart-table">';
-					$h .= $this->getPlantActionsPie($cTimesheetByAction);
+					$h .= $this->getActionPie($cTimesheetByAction);
 					$h .= $this->getPlantActionsTable($ePlant, $year, $cTimesheetByAction, $cTimesheetByUser);
 				$h .= '</div>';
 
@@ -640,7 +693,7 @@ class AnalyzeUi {
 
 	}
 
-	public function getPlantActionsPie($cTimesheetByAction): string {
+	public function getActionPie($cTimesheetByAction): string {
 
 		return new \analyze\ChartUi()->buildPie(
 			s("Répartition par intervention"),
