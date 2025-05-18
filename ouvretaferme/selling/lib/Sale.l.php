@@ -782,7 +782,10 @@ class SaleLib extends SaleCrud {
 			array_delete($properties, 'shopPointPermissive');
 			$e['shopPoint'] = $e['shopPointPermissive'];
 
-			if($e['shopPoint']['type'] === \shop\Point::HOME) {
+			if(
+				$e['shopPoint']->notEmpty() and
+				$e['shopPoint']['type'] === \shop\Point::HOME
+			) {
 
 				$eUser = \user\UserLib::getById($e['customer']['user']);
 

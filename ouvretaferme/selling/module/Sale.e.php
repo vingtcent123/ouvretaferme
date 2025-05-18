@@ -998,6 +998,11 @@ class Sale extends SaleElement {
 
 				$this->expects(['farm']);
 
+				if($point === '') {
+					$this['shopPointPermissive'] = new \shop\Point();
+					return TRUE;
+				}
+
 				$this['shopPointPermissive'] = \shop\Point::model()
 					->select(\shop\Point::getSelection())
 					->whereId($point)
