@@ -1660,7 +1660,7 @@ class AnalyzeUi {
 			$h .= '</div>';
 		$h .= '</div>';
 		$h .= '<div class="analyze-chart-table">';
-			$h .= $this->getBestProductsTable($cItemProduct, $year, limit: 30);
+			$h .= $this->getBestProductsTable($cItemProduct, $year, limit: 30, expand: FALSE);
 			$h .= $this->getBestProductsPie($cItemProduct);
 		$h .= '</div>';
 
