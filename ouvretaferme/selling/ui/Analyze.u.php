@@ -62,9 +62,9 @@ class AnalyzeUi {
 		$h .= '<div class="analyze-chart-table">';
 			$h .= $this->getPeriodMonthTable($cItemMonth);
 			if($cItemMonthBefore->notEmpty()) {
-				$h .= $this->getDoublePeriodMonthChart($cItemMonth, $year, $cItemMonthBefore, $year - 1);
+				$h .= $this->getDoublePeriodMonthChart('turnover', $cItemMonth, $year, $cItemMonthBefore, $year - 1);
 			} else {
-				$h .= $this->getPeriodMonthChart($cItemMonth);
+				$h .= $this->getPeriodMonthChart('turnover', $cItemMonth);
 			}
 		$h .= '</div>';
 
@@ -72,9 +72,9 @@ class AnalyzeUi {
 
 		$h .= '<'.$tag.'>'.s("Ventes hebdomadaires").'</'.$tag.'>';
 		if($cItemMonthBefore->notEmpty()) {
-			$h .= $this->getDoublePeriodWeekChart($cItemWeek, $year, $cItemWeekBefore, $year - 1);
+			$h .= $this->getDoublePeriodWeekChart('turnover', $cItemWeek, $year, $cItemWeekBefore, $year - 1);
 		} else {
-			$h .= $this->getPeriodWeekChart($cItemWeek);
+			$h .= $this->getPeriodWeekChart('turnover', $cItemWeek);
 		}
 
 		return $h;
@@ -310,38 +310,83 @@ class AnalyzeUi {
 
 	}
 
-	public function getPeriodMonthChart(\Collection $cItemMonth): string {
+	public function getPeriodMonthChart(string $chart, \Collection $cItemMonth, \farm\Farm $eFarmChart = new \farm\Farm()): string {
 
 		\Asset::jsUrl('https://cdn.jsdelivr.net/npm/chart.js');
 
-		[$turnovers, $labels] = $this->extractMonthChartValues($cItemMonth);
+		[$values, $labels] = $this->extractMonthChartValues($cItemMonth, $chart);
 
-		$h = '<div class="analyze-bar">';
-			$h .= '<canvas '.attr('onrender', 'Analyze.createBar(this, "'.s("Ventes").'", '.json_encode($turnovers).', '.json_encode($labels).')').'</canvas>';
+		$title = match($chart) {
+			\farm\Farmer::TURNOVER => s("Ventes"),
+			\farm\Farmer::QUANTITY => s("Volumes")
+		};
+
+		$suffix = match($chart) {
+			\farm\Farmer::TURNOVER => '€',
+			\farm\Farmer::QUANTITY => ''
+		};
+
+		$h = '<div>';
+			$h .= '<div class="analyze-bar">';
+				$h .= '<canvas '.attr('onrender', 'Analyze.createBar(this, "'.$title.'", '.json_encode($values).', '.json_encode($labels).', "'.$suffix.'")').'</canvas>';
+			$h .= '</div>';
+			$h .= $this->getChartLink($chart, $eFarmChart);
 		$h .= '</div>';
 
 		return $h;
 
 	}
 
-	public function getDoublePeriodMonthChart(\Collection $cItemMonthNow, int $yearNow, \Collection $cItemMonthBefore, int $yearBefore): string {
+	public function getDoublePeriodMonthChart(?string $chart, \Collection $cItemMonthNow, int $yearNow, \Collection $cItemMonthBefore, int $yearBefore, \farm\Farm $eFarmChart = new \farm\Farm()): string {
 
 		\Asset::jsUrl('https://cdn.jsdelivr.net/npm/chart.js');
 
-		[$turnoversNow, $labelsNow] = $this->extractMonthChartValues($cItemMonthNow);
-		[$turnoversBefore] = $this->extractMonthChartValues($cItemMonthBefore);
+		$chart ??= $eFarmChart->getView('viewAnalyzeChart');
 
-		$h = '<div class="analyze-bar">';
-			$h .= '<canvas '.attr('onrender', 'Analyze.createDoubleBar(this, "'.s("Ventes {value}", $yearNow).'", '.json_encode($turnoversNow).', "'.s("Ventes {value}", $yearBefore).'", '.json_encode($turnoversBefore).', '.json_encode($labelsNow).')').'</canvas>';
-		$h .= '</div>';
+		[$turnoversNow, $labelsNow] = $this->extractMonthChartValues($cItemMonthNow, $chart);
+		[$turnoversBefore] = $this->extractMonthChartValues($cItemMonthBefore, $chart);
+
+		$title = fn($year) => match($chart) {
+			\farm\Farmer::TURNOVER => s("Ventes {value}", $year),
+			\farm\Farmer::QUANTITY => s("Volumes {value}", $year)
+		};
+
+		$suffix = match($chart) {
+			\farm\Farmer::TURNOVER => '€',
+			\farm\Farmer::QUANTITY => ''
+		};
+
+		$h = '<div>';
+			$h .= '<div class="analyze-bar">';
+				$h .= '<canvas '.attr('onrender', 'Analyze.createDoubleBar(this, "'.$title($yearNow).'", '.json_encode($turnoversNow).', "'.$title($yearBefore).'", '.json_encode($turnoversBefore).', '.json_encode($labelsNow).', "'.$suffix.'")').'</canvas>';
+			$h .= '</div>';
+			$h .= $this->getChartLink($chart, $eFarmChart);
+		$h.= '</div>';
 
 		return $h;
 
 	}
 
-	protected function extractMonthChartValues(\Collection $cItemMonth): array {
+	protected function getChartLink(string $chart, \farm\Farm $eFarm): string {
 
-		$turnovers = [];
+		if($eFarm->empty()) {
+			return '';
+		}
+
+		$h = '<div class="text-center mt-1">';
+			$h .= match($chart) {
+				\farm\Farmer::TURNOVER => '<a data-ajax="'.\util\HttpUi::setArgument(LIME_REQUEST, 'chart', \farm\Farmer::QUANTITY).'" data-ajax-method="get" style="text-decoration: underline; color: var(--muted)">'.s("Voir les volumes").'</a>',
+				\farm\Farmer::QUANTITY => '<a data-ajax="'.\util\HttpUi::setArgument(LIME_REQUEST, 'chart', \farm\Farmer::TURNOVER).'" data-ajax-method="get" style="text-decoration: underline; color: var(--muted)">'.s("Voir les ventes").'</a>'
+			};
+		$h.= '</div>';
+
+		return $h;
+
+	}
+
+	protected function extractMonthChartValues(\Collection $cItemMonth, string $chart): array {
+
+		$values = [];
 		$labels = [];
 
 		for($month = 1; $month <= 12; $month++) {
@@ -350,57 +395,65 @@ class AnalyzeUi {
 
 				$eItemMonth = $cItemMonth[$month];
 
-				$turnovers[] = round($eItemMonth['turnover']);
+				$values[] = round($eItemMonth[$chart]);
 
 			} else {
-				$turnovers[] = 0;
+				$values[] = 0;
 			}
 
 			$labels[] = \util\DateUi::getMonthName($month, type: 'short');
 
 		}
 
-		return [$turnovers, $labels];
+		return [$values, $labels];
 
 	}
 
-	public function getPeriodWeekChart(\Collection $cItemWeek, Product|\plant\Plant|null $e = NULL): string {
+	public function getPeriodWeekChart(?string $chart, \Collection $cItemWeek, \farm\Farm $eFarmChart = new \farm\Farm()): string {
 
 		\Asset::jsUrl('https://cdn.jsdelivr.net/npm/chart.js');
 
-		[$turnovers, $labels, $quantities] = $this->extractWeekChartValues($cItemWeek, $e);
+		[$values, $labels] = $this->extractWeekChartValues($cItemWeek, $chart);
+
+		$title = fn($year) => match($chart) {
+			\farm\Farmer::TURNOVER => s("Ventes"),
+			\farm\Farmer::QUANTITY => s("Volumes")
+		};
 
 		$h = '<div class="analyze-bar">';
-			if($e instanceof Product) {
-				$h .= '<canvas '.attr('onrender', 'Analyze.createBarLine(this, "'.s("Ventes").'", '.json_encode($turnovers).', "'.s("Volume").'", '.json_encode($quantities).', '.json_encode($labels).')').'</canvas>';
-			} else {
-				$h .= '<canvas '.attr('onrender', 'Analyze.createBar(this, "'.s("Ventes").'", '.json_encode($turnovers).', '.json_encode($labels).')').'</canvas>';
-			}
+			$h .= '<canvas '.attr('onrender', 'Analyze.createBar(this, "'.$title.'", '.json_encode($values).', '.json_encode($labels).')').'</canvas>';
 		$h .= '</div>';
 
 		return $h;
 
 	}
 
-	public function getDoublePeriodWeekChart(\Collection $cItemWeekNow, int $yearNow, \Collection $cItemWeekBefore, int $yearBefore): string {
+	public function getDoublePeriodWeekChart(?string $chart, \Collection $cItemWeekNow, int $yearNow, \Collection $cItemWeekBefore, int $yearBefore, \farm\Farm $eFarmChart = new \farm\Farm()): string {
 
 		\Asset::jsUrl('https://cdn.jsdelivr.net/npm/chart.js');
 
-		[$turnoversNow, $labelsNow] = $this->extractWeekChartValues($cItemWeekNow);
-		[$turnoversBefore] = $this->extractWeekChartValues($cItemWeekBefore);
+		[$valuesNow, $labelsNow] = $this->extractWeekChartValues($cItemWeekNow, $chart);
+		[$valuesBefore] = $this->extractWeekChartValues($cItemWeekBefore, $chart);
 
-		$h = '<div class="analyze-bar">';
-			$h .= '<canvas '.attr('onrender', 'Analyze.createDoubleBar(this, "'.s("Ventes {value}", $yearNow).'", '.json_encode($turnoversNow).', "'.s("Ventes {value}", $yearBefore).'", '.json_encode($turnoversBefore).', '.json_encode($labelsNow).')').'</canvas>';
+		$title = fn($year) => match($chart) {
+			\farm\Farmer::TURNOVER => s("Ventes {value}", $year),
+			\farm\Farmer::QUANTITY => s("Volumes {value}", $year)
+		};
+
+		$h = '<div>';
+			$h .= '<div class="analyze-bar">';
+				$h .= '<canvas '.attr('onrender', 'Analyze.createDoubleBar(this, "'.$title($yearNow).'", '.json_encode($valuesNow).', "'.$title($yearBefore).'", '.json_encode($valuesBefore).', '.json_encode($labelsNow).')').'</canvas>';
+			$h .= '</div>';
+			$h .= $this->getChartLink($chart, $eFarmChart);
 		$h .= '</div>';
 
 		return $h;
 
 	}
 
-	protected function extractWeekChartValues(\Collection $cItemWeek, Product|\plant\Plant|null $e = NULL): array {
+	protected function extractWeekChartValues(\Collection $cItemWeek, string $chart): array {
 
-		$turnovers = [];
-		$quantities = [];
+		$values = [];
 		$labels = [];
 
 		for($week = 1; $week <= 52; $week++) {
@@ -408,20 +461,17 @@ class AnalyzeUi {
 			if($cItemWeek->offsetExists($week)) {
 
 				$eItemWeek = $cItemWeek[$week];
-
-				$turnovers[] = round($eItemWeek['turnover']);
-				$quantities[] = ($e instanceof Product) ? $eItemWeek['quantity'] : NULL;
+				$values[] = round($eItemWeek[$chart]);
 
 			} else {
-				$turnovers[] = 0;
-				$quantities[] = NULL;
+				$values[] = 0;
 			}
 
 			$labels[] = $week;
 
 		}
 
-		return [$turnovers, $labels, $quantities];
+		return [$values, $labels];
 
 	}
 
@@ -1668,9 +1718,9 @@ class AnalyzeUi {
 		$h .= '<div class="analyze-chart-table">';
 			$h .= $this->getPeriodMonthTable($cItemMonth, $e);
 			if($cItemMonthBefore->notEmpty()) {
-				$h .= $this->getDoublePeriodMonthChart($cItemMonth, $year, $cItemMonthBefore, $year - 1);
+				$h .= $this->getDoublePeriodMonthChart('turnover', $cItemMonth, $year, $cItemMonthBefore, $year - 1);
 			} else {
-				$h .= $this->getPeriodMonthChart($cItemMonth);
+				$h .= $this->getPeriodMonthChart('turnover', $cItemMonth);
 			}
 		$h .= '</div>';
 
@@ -1678,9 +1728,9 @@ class AnalyzeUi {
 
 		$h .= '<h3>'.s("Ventes hebdomadaires").'</h3>';;
 		if($cItemMonthBefore->notEmpty()) {
-			$h .= $this->getDoublePeriodWeekChart($cItemWeek, $year, $cItemWeekBefore, $year - 1);
+			$h .= $this->getDoublePeriodWeekChart('turnover', $cItemWeek, $year, $cItemWeekBefore, $year - 1);
 		} else {
-			$h .= $this->getPeriodWeekChart($cItemWeek);
+			$h .= $this->getPeriodWeekChart('turnover', $cItemWeek);
 		}
 
 		return new \Panel(
@@ -1729,7 +1779,7 @@ class AnalyzeUi {
 
 				if($e['farm']->canPersonalData()) {
 
-					$h .= '<h3>'.s("Meilleurs clients").'</h3>';
+					$h .= '<h3>'.s("Ventes par client").'</h3>';
 					$h .= '<div class="analyze-chart-table">';
 						$h .= $this->getBestCustomersPie($cItemCustomer, $year);
 						$h .= $this->getBestCustomersByPlantTable($e, $cItemCustomer, $search->isFiltered('type') ? new \Collection() : $cItemType, $year, 10);
@@ -1755,9 +1805,9 @@ class AnalyzeUi {
 				$h .= '<div class="analyze-chart-table">';
 					$h .= $this->getPeriodMonthTable($cItemMonth, $e);
 					if($cItemMonthBefore->notEmpty()) {
-						$h .= $this->getDoublePeriodMonthChart($cItemMonth, $year, $cItemMonthBefore, $year - 1);
+						$h .= $this->getDoublePeriodMonthChart('turnover', $cItemMonth, $year, $cItemMonthBefore, $year - 1);
 					} else {
-						$h .= $this->getPeriodMonthChart($cItemMonth);
+						$h .= $this->getPeriodMonthChart('turnover', $cItemMonth);
 					}
 				$h .= '</div>';
 
@@ -1765,9 +1815,9 @@ class AnalyzeUi {
 
 				$h .= '<h3>'.s("Ventes hebdomadaires").'</h3>';
 				if($cItemMonthBefore->notEmpty()) {
-					$h .= $this->getDoublePeriodWeekChart($cItemWeek, $year, $cItemWeekBefore, $year - 1);
+					$h .= $this->getDoublePeriodWeekChart('turnover', $cItemWeek, $year, $cItemWeekBefore, $year - 1);
 				} else {
-					$h .= $this->getPeriodWeekChart($cItemWeek, $e);
+					$h .= $this->getPeriodWeekChart('turnover', $cItemWeek, $e);
 				}
 
 			} else {
@@ -1864,7 +1914,7 @@ class AnalyzeUi {
 
 				if($e['farm']->canPersonalData()) {
 
-					$h .= '<h3>'.s("Meilleurs clients").'</h3>';
+					$h .= '<h3>'.s("Ventes par client").'</h3>';
 					$h .= '<div class="analyze-chart-table">';
 						$h .= $this->getBestCustomersPie($cItemCustomer, $year);
 						$h .= $this->getBestCustomersByProductTable($e, $cItemCustomer, $search->isFiltered('type') ? new \Collection() : $cItemType, $year, 10);
@@ -1876,9 +1926,9 @@ class AnalyzeUi {
 				$h .= '<div class="analyze-chart-table">';
 					$h .= $this->getPeriodMonthTable($cItemMonth, $e);
 					if($cItemMonthBefore->notEmpty()) {
-						$h .= $this->getDoublePeriodMonthChart($cItemMonth, $year, $cItemMonthBefore, $year - 1);
+						$h .= $this->getDoublePeriodMonthChart($e['farm']->getView('viewAnalyzeChart'), $cItemMonth, $year, $cItemMonthBefore, $year - 1, $e['farm']);
 					} else {
-						$h .= $this->getPeriodMonthChart($cItemMonth);
+						$h .= $this->getPeriodMonthChart($e['farm']->getView('viewAnalyzeChart'), $cItemMonth, $e['farm']);
 					}
 				$h .= '</div>';
 
@@ -1886,9 +1936,9 @@ class AnalyzeUi {
 
 				$h .= '<h3>'.s("Ventes hebdomadaires").'</h3>';
 				if($cItemMonthBefore->notEmpty()) {
-					$h .= $this->getDoublePeriodWeekChart($cItemWeek, $year, $cItemWeekBefore, $year - 1);
+					$h .= $this->getDoublePeriodWeekChart($e['farm']->getView('viewAnalyzeChart'), $cItemWeek, $year, $cItemWeekBefore, $year - 1, $e['farm']);
 				} else {
-					$h .= $this->getPeriodWeekChart($cItemWeek, $e);
+					$h .= $this->getPeriodWeekChart($e['farm']->getView('viewAnalyzeChart'), $cItemWeek, $e, $e['farm']);
 				}
 
 			} else {

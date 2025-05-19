@@ -1,8 +1,8 @@
 class Analyze {
 
-	static createBar(target, labelBar, valuesBar, labels, config, labelSuffix = '€') {
+	static createBar(target, labelBar, valuesBar, labels, labelSuffix = '€') {
 
-		new Chart(target, objectMerge({
+		new Chart(target, {
 			type: 'bar',
 			data: {
 				labels: labels,
@@ -39,13 +39,13 @@ class Analyze {
 				},
 				maintainAspectRatio: false
 			}
-		}, config));
+		});
 
 	}
 
-	static createDoubleBar(target, labelBar, valuesBar, label2Bar, values2Bar, labels, config, labelSuffix = '€') {
+	static createDoubleBar(target, labelBar, valuesBar, label2Bar, values2Bar, labels, labelSuffix = '€') {
 
-		new Chart(target, objectMerge({
+		new Chart(target, {
 			type: 'bar',
 			plugins: [{
 			 afterUpdate: function(chart) {
@@ -100,11 +100,11 @@ class Analyze {
 				},
 				maintainAspectRatio: false
 			}
-		}, config));
+		});
 
 	}
 
-	static createMonthly(target, values, labels, legends, colors, config, labelSuffix = '€') {
+	static createMonthly(target, values, labels, legends, colors, labelSuffix = '€') {
 
 		if(colors === undefined) {
 			colors = this.getDefaultColors();
@@ -129,7 +129,7 @@ class Analyze {
 			}
 		});
 
-		new Chart(target, objectMerge({
+		new Chart(target, {
 			type: 'line',
 			data: {
 				labels: labels,
@@ -165,13 +165,13 @@ class Analyze {
 				},
 				maintainAspectRatio: false
 			}
-		}, config));
+		});
 
 	}
 
-	static createBarLine(target, labelBar, valuesBar, labelLine, valuesLine, labels, config) {
+	static createBarLine(target, labelBar, valuesBar, labelLine, valuesLine, labels) {
 
-		new Chart(target, objectMerge({
+		new Chart(target, {
 			type: 'line',
 			data: {
 				labels: labels,
@@ -221,21 +221,17 @@ class Analyze {
 				},
 				maintainAspectRatio: false
 			}
-		}, config));
+		});
 
 	}
 
-	static createPie(target, values, labels, colors, config) {
+	static createPie(target, values, labels, colors) {
 
 		if(colors === undefined) {
 			colors = this.getDefaultColors();
 		}
 
-		if(config === undefined) {
-			config = {};
-		}
-
-		new Chart(target, objectMerge({
+		new Chart(target, {
 			type: 'pie',
 			data: {
 				labels: labels,
@@ -265,7 +261,7 @@ class Analyze {
 				},
 				maintainAspectRatio: false
 			}
-		}, config));
+		});
 
 	}
 

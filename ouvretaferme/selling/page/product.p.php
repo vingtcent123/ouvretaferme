@@ -66,6 +66,10 @@ new \selling\ProductPage()
 
 		$data->year = GET('year', 'int', date('Y'));
 
+		if(in_array(GET('chart'), [\farm\Farmer::TURNOVER, \farm\Farmer::QUANTITY])) {
+			\farm\FarmerLib::setView('viewAnalyzeChart', $data->e['farm'], GET('chart'));
+		}
+
 		$data->switchComposition = \selling\ItemLib::containsProductIngredient($data->e);
 
 		$data->cItemYear = \selling\AnalyzeLib::getProductYear($data->e['farm'], $data->e, $data->year, $data->search);

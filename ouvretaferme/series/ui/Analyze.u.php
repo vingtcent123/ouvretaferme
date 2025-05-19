@@ -188,7 +188,7 @@ class AnalyzeUi {
 		[$timesBefore] = $this->extractWeekChartValues($cWorkingTimeWeekBefore);
 
 		$h = '<div class="analyze-bar">';
-			$h .= '<canvas '.attr('onrender', 'Analyze.createDoubleBar(this, "'.s("Temps de travail {value}", $yearNow).'", '.json_encode($timesNow).', "'.s("Temps de travail {value}", $yearBefore).'", '.json_encode($timesBefore).', '.json_encode($labelsNow).', undefined, "h")').'</canvas>';
+			$h .= '<canvas '.attr('onrender', 'Analyze.createDoubleBar(this, "'.s("Temps de travail {value}", $yearNow).'", '.json_encode($timesNow).', "'.s("Temps de travail {value}", $yearBefore).'", '.json_encode($timesBefore).', '.json_encode($labelsNow).', "h")').'</canvas>';
 		$h .= '</div>';
 
 		return $h;
@@ -228,7 +228,7 @@ class AnalyzeUi {
 		[$timesBefore] = $this->extractMonthChartValues($cWorkingTimeMonthBefore);
 
 		$h = '<div class="analyze-bar">';
-			$h .= '<canvas '.attr('onrender', 'Analyze.createDoubleBar(this, "'.s("Temps de travail {value}", $yearNow).'", '.json_encode($timesNow).', "'.s("Temps de travail {value}", $yearBefore).'", '.json_encode($timesBefore).', '.json_encode($labelsNow).', undefined, "h")').'</canvas>';
+			$h .= '<canvas '.attr('onrender', 'Analyze.createDoubleBar(this, "'.s("Temps de travail {value}", $yearNow).'", '.json_encode($timesNow).', "'.s("Temps de travail {value}", $yearBefore).'", '.json_encode($timesBefore).', '.json_encode($labelsNow).', "h")').'</canvas>';
 		$h .= '</div>';
 
 		return $h;

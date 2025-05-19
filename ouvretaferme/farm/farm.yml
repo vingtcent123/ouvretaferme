@@ -83,6 +83,7 @@ Farmer:
   viewShop: enum(SHOP, CATALOG, POINT) = SHOP
   viewShopCatalogCurrent: ?shop\Catalog
   viewAnalyze: enum(WORKING_TIME, REPORT, SALES, CULTIVATION) = WORKING_TIME
+  viewAnalyzeChart: enum(TURNOVER, QUANTITY) = TURNOVER
   viewAnalyzeComposition: enum(COMPOSITION, INGREDIENT) = COMPOSITION
   viewAnalyzeYear: ?int16(0, null)
   viewSettings: enum(SETTINGS, WEBSITE) = SETTINGS

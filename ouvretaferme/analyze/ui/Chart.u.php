@@ -117,7 +117,7 @@ class ChartUi {
 		}
 
 		$h = '<div class="analyze-pie">';
-			$h .= '<div class="analyze-pie-canvas"><canvas '.attr('onrender', 'Analyze.createMonthly(this, '.json_encode($values).', '.json_encode($labels).', '.json_encode($legends).', '.($colors ? json_encode($colors) : 'undefined').', {}, "h")').'</canvas></div>';
+			$h .= '<div class="analyze-pie-canvas"><canvas '.attr('onrender', 'Analyze.createMonthly(this, '.json_encode($values).', '.json_encode($labels).', '.json_encode($legends).', '.($colors ? json_encode($colors) : 'undefined').', "h")').'</canvas></div>';
 		$h .= '</div>';
 
 		return $h;

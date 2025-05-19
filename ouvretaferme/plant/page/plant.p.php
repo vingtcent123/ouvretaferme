@@ -64,6 +64,7 @@ new \plant\PlantPage()
 
 		$data->search = new Search([
 			'type' => \selling\Customer::GET('type', 'type'),
+			'type' => \selling\Customer::GET('type', 'type'),
 		], REQUEST('sort'));
 
 		$data->year = GET('year', 'int', date('Y'));
