@@ -1721,12 +1721,7 @@ class AnalyzeUi {
 
 		if($cItemYear->notEmpty()) {
 
-			if($search->isFiltered('type')) {
-				$h .= match($search->get('type')) {
-					Customer::PRIVATE => '<h3>'.s("Clients particuliers").'</h3>',
-					Customer::PRO => '<h3>'.s("Clients professionnels").'</h3>'
-				};
-			}
+			$h .= $this->getCustomerTitle($search);
 
 			$h .= $this->getPlantTurnover($cItemYear, $year, $e);
 
@@ -1734,7 +1729,7 @@ class AnalyzeUi {
 
 				if($e['farm']->canPersonalData()) {
 
-					$h .= '<h3>'.s("Clients principaux").'</h3>';
+					$h .= '<h3>'.s("Meilleurs clients").'</h3>';
 					$h .= '<div class="analyze-chart-table">';
 						$h .= $this->getBestCustomersPie($cItemCustomer, $year);
 						$h .= $this->getBestCustomersByPlantTable($e, $cItemCustomer, $search->isFiltered('type') ? new \Collection() : $cItemType, $year, 10);
@@ -1810,9 +1805,30 @@ class AnalyzeUi {
 
 	}
 
+	public function getCustomerTitle(\Search $search): string {
+
+			$types = [
+				NULL => s("Clients particuliers et professionnels"),
+				Customer::PRIVATE => s("Clients particuliers"),
+				Customer::PRO => s("Clients professionnels")
+			];
+
+			$h = '<h3 class="mb-1">';
+				$h .= '<a data-dropdown="bottom-start" style="color: var(--text)" class="dropdown-toggle">'.$types[$search->get('type')].'</a>';
+				$h .= '<div class="dropdown-list bg-primary">';
+					foreach($types as $type => $label) {
+						$h .= '<a href="'.\util\HttpUi::setArgument(LIME_REQUEST, 'type', $type, FALSE).'" class="dropdown-item">'.$label.'</a>';
+					}
+				$h .= '</div>';
+			$h .= '</h3>';
+
+			return $h;
+
+	}
+
 	public function getPlantTurnover(\Collection $cItemYear, ?int $year, ?\plant\Plant $ePlantLink): string {
 
-		$h = '<ul class="util-summarize mb-2">';
+		$h = '<ul class="util-summarize mb-3">';
 
 			foreach($cItemYear as $eItemYear) {
 				$h .= '<li '.($eItemYear['year'] === $year ? 'class="selected"' : '').'>';
@@ -1840,12 +1856,7 @@ class AnalyzeUi {
 
 		if($cItemYear->notEmpty()) {
 
-			if($search->isFiltered('type')) {
-				$h .= match($search->get('type')) {
-					Customer::PRIVATE => '<h3>'.s("Clients particuliers").'</h3>',
-					Customer::PRO => '<h3>'.s("Clients professionnels").'</h3>'
-				};
-			}
+			$h .= $this->getCustomerTitle($search);
 
 			$h .= $this->getProductYear($cItemYear, $year, $e);
 
@@ -1853,7 +1864,7 @@ class AnalyzeUi {
 
 				if($e['farm']->canPersonalData()) {
 
-					$h .= '<h3>'.s("Clients principaux").'</h3>';
+					$h .= '<h3>'.s("Meilleurs clients").'</h3>';
 					$h .= '<div class="analyze-chart-table">';
 						$h .= $this->getBestCustomersPie($cItemCustomer, $year);
 						$h .= $this->getBestCustomersByProductTable($e, $cItemCustomer, $search->isFiltered('type') ? new \Collection() : $cItemType, $year, 10);
@@ -1917,7 +1928,7 @@ class AnalyzeUi {
 
 	public function getProductYear(\Collection $cItemYear, ?int $year, ?Product $eProductLink): string {
 
-		$h = '<ul class="util-summarize mb-2">';
+		$h = '<ul class="util-summarize mb-3">';
 
 			foreach($cItemYear as $eItemYear) {
 				$h .= '<li '.($eItemYear['year'] === $year ? 'class="selected"' : '').'>';
