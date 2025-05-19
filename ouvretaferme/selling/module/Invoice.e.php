@@ -183,7 +183,7 @@ class Invoice extends InvoiceElement {
 
 				$this->expects(['farm']);
 
-				return \payment\MethodLib::isSelectable($this['farm']);
+				return \payment\MethodLib::isSelectable($this['farm'], $eMethod);
 
 			})
 			->setCallback('paymentStatus.check', function(string &$status) use($p): bool {

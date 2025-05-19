@@ -274,7 +274,7 @@ class Customer extends CustomerElement {
 
 				$this->expects(['farm']);
 
-				return \payment\MethodLib::isSelectable($this['farm']);
+				return \payment\MethodLib::isSelectable($this['farm'], $eMethod);
 
 			})
 			->setCallback('category.set', function(?string $category) use($p): bool {

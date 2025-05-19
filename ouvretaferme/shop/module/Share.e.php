@@ -49,7 +49,7 @@ class Share extends ShareElement {
 
 				$this->expects(['farm']);
 
-				return \payment\MethodLib::isSelectable($this['farm']);
+				return \payment\MethodLib::isSelectable($this['farm'], $eMethod);
 
 			});
 
