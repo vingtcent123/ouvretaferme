@@ -93,7 +93,7 @@ class Sale extends SaleElement {
 		return ($this['deliveryCity'] !== NULL);
 	}
 
-	public function copyAddressFromUser(\user\User $eUser, &$properties = []): void {
+	public function copyAddressFromUser(\user\User $eUser, array &$properties = []): void {
 
 		$this->merge([
 			'deliveryStreet1' => $eUser['street1'],

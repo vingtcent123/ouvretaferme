@@ -201,7 +201,7 @@ class SaleLib {
 
 	}
 
-	public static function buildReference(\selling\Sale $eSaleReference, \user\User $eUser): void {
+	public static function buildReference(\selling\Sale $eSaleReference, \user\User $eUser, array &$properties = []): void {
 
 		$eSaleReference->merge([
 			'origin' => \selling\Sale::SALE,
@@ -217,7 +217,7 @@ class SaleLib {
 			$eSaleReference['shopPoint']->notEmpty() and
 			$eSaleReference['shopPoint']['type'] === Point::HOME
 		) {
-			$eSaleReference->copyAddressFromUser($eUser);
+			$eSaleReference->copyAddressFromUser($eUser, $properties);
 		}
 
 	}
@@ -311,7 +311,7 @@ class SaleLib {
 			$properties[] = 'shopComment';
 		}
 
-		self::buildReference($eSaleReference, $eUser);
+		self::buildReference($eSaleReference, $eUser, $properties);
 
 		// Ajout des produits
 		$total = 0.0;

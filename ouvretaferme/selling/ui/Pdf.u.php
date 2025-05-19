@@ -1209,7 +1209,7 @@ class PdfUi {
 								$entry .= '<div class="pdf-sales-label-detail-title">'.\shop\PointUi::p('type')->values[$eSale['shopPoint']['type']].'</div>';
 								$entry .= '<div class="pdf-sales-label-detail-value">';
 									$entry .= match($eSale['shopPoint']['type']) {
-										\shop\Point::HOME => '<div class="pdf-sales-label-address">'.nl2br(encode($eSale->getDeliveryAddress())).'</div>',
+										\shop\Point::HOME => '<div class="pdf-sales-label-address">'.encode($eSale->getDeliveryAddress('<br/>')).'</div>',
 										\shop\Point::PLACE => encode($eSale['shopPoint']['name'])
 									};
 								$entry .= '</div>';
