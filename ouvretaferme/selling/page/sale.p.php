@@ -467,7 +467,10 @@ new Page(function($data) {
 		$data->c->validate('canWrite', 'acceptUpdatePayment');
 
 		$methodId = \payment\Method::POST('paymentMethod', 'id');
-		$eMethod = \payment\MethodLib::getById($methodId)->validate('canUse', 'acceptManualUpdate');
+		$eMethod = \payment\MethodLib::getById($methodId);
+		if($eMethod->notEmpty()) {
+			$eMethod->validate('canUse', 'acceptManualUpdate');
+		}
 
 		\selling\SaleLib::updatePaymentMethodCollection($data->c, $eMethod);
 
