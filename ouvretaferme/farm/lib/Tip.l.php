@@ -58,7 +58,7 @@ class TipLib extends TipCrud {
 				'minSeniority' => 15,
 				'match' => fn(\user\User $eUser, Farm $eFarm) => \selling\Sale::model()
 						->whereFarm($eFarm)
-						->whereOrigin(Sale::MARKET)
+						->whereOrigin(\selling\Sale::MARKET)
 						->exists() === FALSE
 			],
 			'selling-pdf' => [
