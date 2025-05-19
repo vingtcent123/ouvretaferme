@@ -17,7 +17,7 @@ class MethodLib extends MethodCrud {
 		return self::getPropertiesCreate();
 	}
 
-	public static function isSelectable(\farm\Farm $eFarm): bool {
+	public static function isSelectable(\farm\Farm $eFarm, Method $eMethod): bool {
 
 		return Method::model()
 			->or(
