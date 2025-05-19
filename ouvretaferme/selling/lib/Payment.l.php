@@ -59,7 +59,7 @@ class PaymentLib extends PaymentCrud {
 			$checkout = \payment\StripeLib::getStripeCheckoutSessionFromPaymentIntent($eStripeFarm, $id);
 		}
 		catch(\Exception $e) {
-			trigger_error("Stripe: ", $e->getMessage());
+			trigger_error("Stripe: ".$e->getMessage());
 			return;
 		}
 
