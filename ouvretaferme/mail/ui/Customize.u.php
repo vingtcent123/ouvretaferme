@@ -289,6 +289,10 @@ class CustomizeUi {
 
 								case \payment\MethodLib::CARD :
 									$payment = s("Vous avez choisi de régler cette commande par carte bancaire.")."\n";
+									break;
+
+								case \payment\MethodLib::ONLINE_CARD :
+									$payment = s("Vous avez choisi de régler cette commande par carte bancaire.")."\n";
 									$payment .= s("Votre paiement a bien été accepté.");
 									break;
 
