@@ -162,6 +162,7 @@ class PaymentLib extends PaymentCrud {
 		return Payment::model()
 			->select(Payment::getSelection() + ['method' => \payment\Method::getSelection()])
 			->whereSale($eSale)
+			->sort(['createdAt' => SORT_DESC])
 			->getCollection();
 
 	}
@@ -180,6 +181,7 @@ class PaymentLib extends PaymentCrud {
 			->select(Payment::getSelection() + ['method' => \payment\Method::getSelection()])
 			->whereSale($eSale)
 			->whereMethod($eMethod)
+			->sort(['createdAt' => SORT_DESC])
 			->get($ePayment);
 
 		return $ePayment;
