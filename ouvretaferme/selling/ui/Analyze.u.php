@@ -420,8 +420,13 @@ class AnalyzeUi {
 			\farm\Farmer::QUANTITY => s("Volumes")
 		};
 
+		$suffix = match($chart) {
+			\farm\Farmer::TURNOVER => '€',
+			\farm\Farmer::QUANTITY => ''
+		};
+
 		$h = '<div class="analyze-bar">';
-			$h .= '<canvas '.attr('onrender', 'Analyze.createBar(this, "'.$title.'", '.json_encode($values).', '.json_encode($labels).')').'</canvas>';
+			$h .= '<canvas '.attr('onrender', 'Analyze.createBar(this, "'.$title.'", '.json_encode($values).', '.json_encode($labels).', "'.$suffix.'")').'</canvas>';
 		$h .= '</div>';
 
 		return $h;
@@ -440,9 +445,14 @@ class AnalyzeUi {
 			\farm\Farmer::QUANTITY => s("Volumes {value}", $year)
 		};
 
+		$suffix = match($chart) {
+			\farm\Farmer::TURNOVER => '€',
+			\farm\Farmer::QUANTITY => ''
+		};
+
 		$h = '<div>';
 			$h .= '<div class="analyze-bar">';
-				$h .= '<canvas '.attr('onrender', 'Analyze.createDoubleBar(this, "'.$title($yearNow).'", '.json_encode($valuesNow).', "'.$title($yearBefore).'", '.json_encode($valuesBefore).', '.json_encode($labelsNow).')').'</canvas>';
+				$h .= '<canvas '.attr('onrender', 'Analyze.createDoubleBar(this, "'.$title($yearNow).'", '.json_encode($valuesNow).', "'.$title($yearBefore).'", '.json_encode($valuesBefore).', '.json_encode($labelsNow).', "'.$suffix.'")').'</canvas>';
 			$h .= '</div>';
 			$h .= $this->getChartLink($chart, $eFarmChart);
 		$h .= '</div>';
