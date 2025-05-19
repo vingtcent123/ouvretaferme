@@ -351,6 +351,13 @@ class SaleUi {
 						$batch[] = 'not-delete';
 					}
 
+					if(
+						$eSale->canWrite() === FALSE or
+						$eSale->acceptUpdatePayment() === FALSE
+					) {
+						$batch[] = 'not-update-payment';
+					}
+
 					$h .= '<tr';
 						if($eSale['preparationStatus'] === Sale::CANCELED) {
 							$h .= ' style="opacity: 0.5"';
