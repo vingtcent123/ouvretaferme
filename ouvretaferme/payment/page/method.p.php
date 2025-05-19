@@ -31,9 +31,8 @@ new \payment\MethodPage(function($data) {
 	->quick(['name'])
 	->update()
 	->doUpdate(fn() => throw new ReloadAction('payment', 'Method::updated'))
-	->doUpdateProperties('doUpdateStatus', ['status'], function($data) {
-		throw new ViewAction($data);
-	});
+	->doUpdateProperties('doUpdateStatus', ['status'], fn($data) => throw new ViewAction($data))
+	->doDelete(fn() => throw new ReloadAction('payment', 'Method::deleted'));
 
 new Page(function($data) {
 

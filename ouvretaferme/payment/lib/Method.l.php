@@ -43,5 +43,26 @@ class MethodLib extends MethodCrud {
 
 	}
 
+	public static function delete(Method $e): void {
+
+		$e->expects(['id', 'farm']);
+
+		if(
+			\selling\Sale::model()
+       ->whereFarm($e['farm'])
+       ->wherePaymentMethod($e)
+       ->exists() or
+			\selling\Payment::model()
+	      ->whereFarm($e['farm'])
+	      ->whereMethod($e)
+	      ->exists()
+		) {
+			Method::fail('deleteUsed');
+			return;
+		}
+
+		parent::delete($e);
+
+	}
 }
 

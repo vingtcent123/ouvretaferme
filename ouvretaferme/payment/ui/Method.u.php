@@ -68,7 +68,7 @@ class MethodUi {
 
 							$h .= '<td class="td-min-content">';
 							if($eMethod['farm']->empty()) {
-								$h .= s("Oui (par défaut)");
+								$h .= '-';
 							} else {
 								$h .= \util\TextUi::switch([
 									'id' => 'method-switch-'.$eMethod['id'],
@@ -86,6 +86,9 @@ class MethodUi {
 
 								$h .= '<a href="/payment/method:update?id='.$eMethod['id'].'" class="btn btn-outline-secondary">';
 									$h .= \Asset::icon('gear-fill');
+								$h .= '</a> ';
+								$h .= '<a data-ajax="/payment/method:doDelete" post-id="'.$eMethod['id'].'" class="btn btn-outline-secondary">';
+									$h .= \Asset::icon('trash-fill');
 								$h .= '</a> ';
 
 							}
@@ -113,7 +116,7 @@ class MethodUi {
 		$h .= $form->asteriskInfo();
 
 		$h .= $form->hidden('farm', $eMethod['farm']['id']);
-		$h .= $form->dynamicGroups($eMethod, ['name*']);
+		$h .= $form->dynamicGroups($eMethod, ['name*', 'status']);
 		$h .= $form->group(
 			content: $form->submit(s("Ajouter"))
 		);
@@ -135,7 +138,7 @@ class MethodUi {
 		$h = $form->openAjax('/payment/method:doUpdate');
 
 		$h .= $form->hidden('id', $eMethod['id']);
-		$h .= $form->dynamicGroups($eMethod, ['name']);
+		$h .= $form->dynamicGroups($eMethod, ['name', 'status']);
 		$h .= $form->group(
 			content: $form->submit(s("Modifier"))
 		);
@@ -174,10 +177,30 @@ class MethodUi {
 
 	public static function p(string $property): \PropertyDescriber {
 
-		return Method::model()->describer($property, [
+		$d = Method::model()->describer($property, [
 			'name' => s("Nom du moyen de paiement"),
+			'status' => s("Statut"),
 		]);
 
+		switch($property) {
+
+			case 'status' :
+				$d->values = [
+					Method::ACTIVE => s("Activé"),
+					Method::INACTIVE => s("Désactivé"),
+				];
+				$d->field = 'switch';
+				$d->attributes = [
+					'labelOn' => $d->values[Method::ACTIVE],
+					'labelOff' => $d->values[Method::INACTIVE],
+					'valueOn' => Method::ACTIVE,
+					'valueOff' => Method::INACTIVE,
+				];
+				break;
+
+		}
+
+		return $d;
 	}
 
 }
