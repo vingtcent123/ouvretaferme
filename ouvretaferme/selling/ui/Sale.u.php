@@ -618,7 +618,7 @@ class SaleUi {
 
 		$menu .= '<a data-dropdown="top-start" class="batch-menu-payment-method batch-menu-item">';
 			$menu .= \Asset::icon('cash-coin');
-			$menu .= '<span><small>'.s("Moyen de<br />paiement").'</small></span>';
+			$menu .= '<span style="letter-spacing: -0.2px">'.s("Moyen de paiement").'</span>';
 		$menu .= '</a>';
 
 		$menu .= '<div class="dropdown-list bg-secondary">';
