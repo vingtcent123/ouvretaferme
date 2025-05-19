@@ -43,6 +43,15 @@ class MethodLib extends MethodCrud {
 
 	}
 
+	public static function getOnline(): \Collection {
+
+		return Method::model()
+			->select(Method::getSelection())
+			->whereOnline(TRUE)
+			->getCollection();
+
+	}
+
 	public static function delete(Method $e): void {
 
 		$e->expects(['id', 'farm']);

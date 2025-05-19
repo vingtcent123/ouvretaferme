@@ -285,7 +285,7 @@ new \selling\SalePage()
 
 		$paymentMethodId = \payment\Method::POST('paymentMethod', 'id');
 		$action = POST('action', 'string', 'update');
-		$eMethod = \payment\MethodLib::getById($paymentMethodId)->validate('canUse');
+		$eMethod = \payment\MethodLib::getById($paymentMethodId)->validate('canUse', 'acceptManualUpdate');
 
 		switch($action) {
 			case 'remove':
