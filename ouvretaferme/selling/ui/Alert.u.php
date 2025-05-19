@@ -143,7 +143,7 @@ class AlertUi {
 				Pdf::DELIVERY_NOTE => s("Le bon de livraison a été généré au format PDF !"),
 			][$options['type']].$options['actions'],
 			'Sale::customerUpdated' => s("Le client a bien été mis à jour."),
-
+			'Sale::paymentMethodUpdated' => s("Le moyen de paiement a bien été modifié."),
 			'Stock::updated' => s("Le stock a bien été mis à jour pour ce produit."),
 
 			'Pdf::orderFormSent' => s("Le devis a bien été envoyé par e-mail au client."),

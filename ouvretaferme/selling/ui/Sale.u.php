@@ -568,13 +568,13 @@ class SaleUi {
 			$h .= \util\TextUi::pagination($page, $nSale / 100);
 		}
 
-		$h .= $this->getBatch($eFarm);
+		$h .= $this->getBatch($eFarm, $cPaymentMethod);
 
 		return $h;
 
 	}
 
-	public function getBatch(\farm\Farm $eFarm): string {
+	public function getBatch(\farm\Farm $eFarm, \Collection $cPaymentMethod): string {
 
 		$menu = '<a data-url="/selling/item:summary?farm='.$eFarm['id'].'" class="batch-menu-amount batch-menu-item">';
 			$menu .= '<span>';
@@ -608,6 +608,21 @@ class SaleUi {
 			$menu .= \Asset::icon('filetype-pdf');
 			$menu .= '<span>'.s("Exporter").'</span>';
 		$menu .= '</a>';
+
+		$menu .= '<a data-dropdown="top-start" class="batch-menu-payment-method batch-menu-item">';
+			$menu .= \Asset::icon('cash-coin');
+			$menu .= '<span><small>'.s("Moyen de<br />paiement").'</small></span>';
+		$menu .= '</a>';
+
+		$menu .= '<div class="dropdown-list bg-secondary">';
+			$menu .= '<div class="dropdown-title">'.s("Changer de moyen de paiement").'</div>';
+			foreach($cPaymentMethod as $ePaymentMethod) {
+				if($ePaymentMethod['online'] === FALSE) {
+					$menu .= '<a data-ajax-submit="/selling/sale:doUpdatePaymentMethodCollection" data-ajax-target="#batch-group-form" post-payment-method="'.$ePaymentMethod['id'].'" class="dropdown-item">'.\payment\MethodUi::getName($ePaymentMethod).'</a>';
+				}
+			}
+			$menu .= '<a data-ajax-submit="/selling/product:doUpdateCategoryCollection" data-ajax-target="#batch-group-form" post-payment-method="" class="dropdown-item"><i>'.s("Pas de moyen de paiement").'</i></a>';
+		$menu .= '</div>';
 
 		$danger = '<a data-ajax-submit="/selling/sale:doDeleteCollection" data-confirm="'.s("Confirmer la suppression de ces ventes ?").'" class="batch-menu-delete batch-menu-item batch-menu-item-danger">';
 			$danger .= \Asset::icon('trash');
@@ -1872,7 +1887,6 @@ class SaleUi {
 				$h .= '</div>';
 
 			} else if($eSale->acceptUpdatePayment()) {
-
 
 				$h .= '<div class="util-block bg-background-light">';
 					$h .= $form->group(content: '<h4>'.s("Règlement").'</h4>');

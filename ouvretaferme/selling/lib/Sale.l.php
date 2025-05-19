@@ -920,6 +920,34 @@ class SaleLib extends SaleCrud {
 
 	}
 
+	public static function updatePaymentMethodCollection(\Collection $c, \payment\Method $eMethod): void {
+
+		Sale::model()->beginTransaction();
+
+		$methodId = ($eMethod['id'] ?? NULL);
+
+		foreach($c as $e) {
+
+			if(
+				($e['paymentMethod']->empty() and $methodId === NULL) or
+				($e['paymentMethod']->notEmpty() and $e['paymentMethod']['id'] === $methodId)
+			) {
+				continue;
+			}
+
+			$e['paymentMethod'] = $eMethod;
+			if($methodId !== NULL and $e['paymentStatus'] === NULL) {
+				$e['paymentStatus'] = Sale::NOT_PAID;
+			}
+
+			self::update($e, ['paymentMethod', 'paymentStatus']);
+
+		}
+
+		Sale::model()->commit();
+
+	}
+
 	public static function updateCustomer(Sale $e, Customer $eCustomer): void {
 
 		Sale::model()->beginTransaction();

@@ -305,7 +305,7 @@ new \selling\SalePage()
 	}, validate: ['canWrite', 'acceptUpdateMarketSalePayment'])
 	->write('doFillPaymentMethod', function($data) {
 
-		$paymentMethodId = \payment\Method::POST('paymentMethod', 'id', NULL);
+		$paymentMethodId = \payment\Method::POST('paymentMethod', 'id');
 		$eMethod = \payment\MethodLib::getById($paymentMethodId)->validate('canUse');
 
 		\selling\PaymentLib::fill($data->e, eMethod: $eMethod);
@@ -460,6 +460,18 @@ new Page(function($data) {
 		\selling\SaleLib::deleteCollection($data->c);
 
 		throw new ReloadAction();
+
+	})
+	->post('doUpdatePaymentMethodCollection', function($data) {
+
+		$data->c->validate('canWrite', 'acceptUpdatePayment');
+
+		$methodId = \payment\Method::POST('paymentMethod', 'id');
+		$eMethod = \payment\MethodLib::getById($methodId)->validate('canUse', 'acceptManualUpdate');
+
+		\selling\SaleLib::updatePaymentMethodCollection($data->c, $eMethod);
+
+		throw new ReloadAction('selling', 'Sale::paymentMethodUpdated');
 
 	});
 

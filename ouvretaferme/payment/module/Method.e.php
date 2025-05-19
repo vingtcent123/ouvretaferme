@@ -21,6 +21,20 @@ class Method extends MethodElement {
 		);
 
 	}
+	public function acceptManualUpdate(): bool {
+
+		if($this->empty()) {
+			return TRUE;
+		}
+
+		$this->expects(['status', 'fqn']);
+
+		return (
+			$this['status'] === Method::ACTIVE and
+			$this['fqn'] !== \payment\MethodLib::ONLINE_CARD
+		);
+
+	}
 
 }
 ?>
