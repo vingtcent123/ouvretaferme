@@ -63,19 +63,19 @@ class Sale extends SaleElement {
 
 	}
 
-	public function getDeliveryAddress(string $separator = "\n"): ?string {
+	public function getDeliveryAddress(string $type = 'text'): ?string {
 
 		if($this->hasDeliveryAddress() === FALSE) {
 			return NULL;
 		}
 
-		$address = $this['deliveryStreet1'].$separator;
+		$address = $this['deliveryStreet1']."\n";
 		if($this['deliveryStreet2'] !== NULL) {
-			$address .= $this['deliveryStreet2'].$separator;
+			$address .= $this['deliveryStreet2']."\n";
 		}
 		$address .= $this['deliveryPostcode'].' '.$this['deliveryCity'];
 
-		return $address;
+		return ($type === 'text') ? $address : nl2br(encode($address));
 
 	}
 

@@ -137,7 +137,7 @@ class PdfUi {
 				}
 				$h .= '<div class="pdf-label-address">';
 					$h .= encode($eFarm->getSelling('legalName')).'<br/>';
-					$h .= nl2br(encode($eFarm->selling()->getInvoiceAddress()));
+					$h .= $eFarm->selling()->getInvoiceAddress('html');
 				$h .= '</div>';
 				$h .= '<div class="pdf-label-quality">';
 					if($quality) {
@@ -586,7 +586,7 @@ class PdfUi {
 					$h .= encode($eFarm->getSelling('legalName')).'<br/>';
 				$h .= '</div>';
 				$h .= '<div class="pdf-document-vendor-address">';
-					$h .= nl2br(encode($eFarm->selling()->getInvoiceAddress()));
+					$h .= $eFarm->selling()->getInvoiceAddress('html');
 				$h .= '</div>';
 				if($eFarm->getSelling('invoiceRegistration')) {
 					$h .= '<div class="pdf-document-vendor-registration">';
@@ -621,7 +621,7 @@ class PdfUi {
 
 					if($eCustomer->hasInvoiceAddress()) {
 						$h .= '<div class="pdf-document-customer-address">';
-							$h .= nl2br(encode($eCustomer->getInvoiceAddress()));
+							$h .= $eCustomer->getInvoiceAddress('html');
 						$h .= '</div>';
 					}
 
@@ -1209,7 +1209,7 @@ class PdfUi {
 								$entry .= '<div class="pdf-sales-label-detail-title">'.\shop\PointUi::p('type')->values[$eSale['shopPoint']['type']].'</div>';
 								$entry .= '<div class="pdf-sales-label-detail-value">';
 									$entry .= match($eSale['shopPoint']['type']) {
-										\shop\Point::HOME => '<div class="pdf-sales-label-address">'.encode($eSale->getDeliveryAddress('<br/>')).'</div>',
+										\shop\Point::HOME => '<div class="pdf-sales-label-address">'.$eSale->getDeliveryAddress('html').'</div>',
 										\shop\Point::PLACE => encode($eSale['shopPoint']['name'])
 									};
 								$entry .= '</div>';

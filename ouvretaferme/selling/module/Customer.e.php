@@ -125,7 +125,7 @@ class Customer extends CustomerElement {
 
 	}
 
-	public function getInvoiceAddress(): ?string {
+	public function getInvoiceAddress(string $type = 'text'): ?string {
 
 		if($this->hasInvoiceAddress() === FALSE) {
 			return NULL;
@@ -134,7 +134,7 @@ class Customer extends CustomerElement {
 		$address = $this->getInvoiceStreet()."\n";
 		$address .= $this['invoicePostcode'].' '.$this['invoiceCity'];
 
-		return $address;
+		return ($type === 'text') ? $address : nl2br(encode($address));
 
 	}
 

@@ -32,7 +32,7 @@ class Configuration extends ConfigurationElement {
 
 	}
 
-	public function getInvoiceAddress(): ?string {
+	public function getInvoiceAddress(string $type = 'text'): ?string {
 
 		if($this->hasInvoiceAddress() === FALSE) {
 			return NULL;
@@ -44,7 +44,7 @@ class Configuration extends ConfigurationElement {
 		}
 		$address .= $this['invoicePostcode'].' '.$this['invoiceCity'];
 
-		return $address;
+		return ($type === 'text') ? $address : nl2br(encode($address));
 
 	}
 

@@ -376,7 +376,7 @@ class CustomerUi {
 							if($eCustomer->hasInvoiceAddress()) {
 								$h .= '<address>';
 									$h .= encode($eCustomer->getLegalName()).'<br/>';
-									$h .= nl2br(encode($eCustomer->getInvoiceAddress()));
+									$h .= $eCustomer->getInvoiceAddress('html');
 								$h .= '</address>';
 							}
 

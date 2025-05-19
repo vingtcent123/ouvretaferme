@@ -271,7 +271,7 @@ class OrderUi {
 				$h .= '<dd>'.encode($eCustomer->getLegalName()).'</dd>';
 
 				$h .= '<dt>'.s("Adresse").'</dt>';
-				$h .= '<dd>'.nl2br(encode($eCustomer->getInvoiceAddress() ?? '/')).'</dd>';
+				$h .= '<dd>'.($eCustomer->getInvoiceAddress('html') ?? '/').'</dd>';
 
 				$h .= '<dt>'.s("E-mail").'</dt>';
 				$h .= '<dd>'.encode($eCustomer['email'] ?? '/').'</dd>';
@@ -384,7 +384,7 @@ class OrderUi {
 						$h .= '<dt>'.s("Nom").'</dt>';
 						$h .= '<dd>'.$eSale['customer']->getName().'</dd>';
 						$h .= '<dt>'.s("Adresse").'</dt>';
-						$h .= '<dd style="line-height: 1.2">'.$eSale->getDeliveryAddress('<br/>').'</dd>';
+						$h .= '<dd style="line-height: 1.2">'.$eSale->getDeliveryAddress('html').'</dd>';
 						if($eSale['customer']['phone'] !== NULL) {
 							$h .= '<dt>'.s("Téléphone").'</dt>';
 							$h .= '<dd>'.encode($eSale['customer']['phone']).'</dd>';
