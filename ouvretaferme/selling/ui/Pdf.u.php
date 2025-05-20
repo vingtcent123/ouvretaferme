@@ -170,9 +170,25 @@ class PdfUi {
 
 	}
 
+	public function getWatermark(): string {
+
+		if(!OTF_DEMO) {
+			return '';
+		}
+
+		$h = '<div class="pdf-document-watermark">';
+			$h .= s("Démo");
+		$h .= '</div>';
+
+		return $h;
+
+	}
+
 	public function getDocument(Sale $eSale, string $type, \farm\Farm $eFarm, \Collection $cItem): string {
 
 		$h = '<style>@page {	size: A4; margin: 1cm; }</style>';
+
+		$h .= $this->getWatermark();
 
 		$h .= '<div class="pdf-document-wrapper">';
 
@@ -310,6 +326,8 @@ class PdfUi {
 	public function getDocumentInvoice(Invoice $eInvoice, \farm\Farm $eFarm, \Collection $cSale): string {
 
 		$h = '<style>@page {	size: A4; margin: 1cm; }</style>';
+
+		$h .= $this->getWatermark();
 
 		$h .= '<div class="pdf-document-wrapper">';
 
@@ -904,6 +922,8 @@ class PdfUi {
 
 		$h = '<style>@page {	size: A4 landscape; margin: 0.5cm; }</style>';
 
+		$h .= $this->getWatermark();
+
 		$h .= '<div class="pdf-sales-summary-wrapper">';
 
 			$h .= '<h1>'.encode($eDate['shop']['name']).'</h1>';
@@ -922,6 +942,8 @@ class PdfUi {
 	public function getSales(\farm\Farm $eFarm, \Collection $cSale, \Collection $cItem): string {
 
 		$h = '<style>@page {	size: A4 landscape; margin: 0.5cm; }</style>';
+
+		$h .= $this->getWatermark();
 
 		$h .= '<div class="pdf-sales-summary-wrapper">';
 
@@ -1034,7 +1056,6 @@ class PdfUi {
 	}
 
 	protected function getItemComposition(Item $eItem): string {
-
 
 		$h = '';
 

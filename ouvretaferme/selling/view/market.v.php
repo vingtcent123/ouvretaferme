@@ -5,7 +5,7 @@ new AdaptativeView('/vente/{id}/marche', function($data, MarketTemplate $t) {
 
 		echo match($data->e['preparationStatus']) {
 			\selling\Sale::DELIVERED => s("Cette vente est clôturée !"),
-			default => s("Bienvenue sur la caisse virtuelle, à vous de jouer !")
+			default => OTF_DEMO ? s("Bienvenue sur la caisse virtuelle de démonstration, à vous de jouer !") : s("Bienvenue sur la caisse virtuelle, à vous de jouer !")
 		};
 
 	echo '</h2>';

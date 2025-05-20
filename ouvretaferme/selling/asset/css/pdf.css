@@ -1,3 +1,13 @@
+.pdf-document-watermark {
+	position: absolute;
+	top: 40%;
+	left: 25%;
+	transform: rotate(-45deg);
+	font-size: 10rem;
+	z-index: 10;
+	color: var(--primary);
+	opacity: 0.4;
+}
 .pdf-document-wrapper {
 	display: grid;
 	grid-template-rows: auto 1fr auto;

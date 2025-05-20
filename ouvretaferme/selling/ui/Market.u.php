@@ -278,7 +278,13 @@ class MarketUi {
 		$h = '<div class="market-customer">';
 			$h .= '<div class="util-title">';
 
-				$h .= '<h2>'.s("Vente de {date}", ['date' => \util\DateUi::numeric($eSale['createdAt'], \util\DateUi::TIME)]).'</h2>';
+				$h .= '<h2>';
+					if(OTF_DEMO) {
+						$h .= s("Vente de démonstration de {date}", ['date' => \util\DateUi::numeric($eSale['createdAt'], \util\DateUi::TIME)]);
+					} else {
+						$h .= s("Vente de {date}", ['date' => \util\DateUi::numeric($eSale['createdAt'], \util\DateUi::TIME)]);
+					}
+				$h .= '</h2>';
 
 				if($eSaleMarket['preparationStatus'] !== \selling\Sale::DELIVERED) {
 
