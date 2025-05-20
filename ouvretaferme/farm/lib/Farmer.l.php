@@ -388,11 +388,9 @@ class FarmerLib extends FarmerCrud {
 				->select($field)
 				->update($eFarmer);
 
-
 		}
 
 		return $eFarmer[$field];
-
 
 	}
 

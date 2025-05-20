@@ -593,3 +593,8 @@ a.market-sales-item > svg {
 	}
 
 }
+
+.payment-method-element {
+	display: grid;
+	grid-template-columns: 1fr auto;
+}

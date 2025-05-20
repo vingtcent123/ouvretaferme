@@ -89,6 +89,7 @@ Farmer:
   viewSettings: enum(SETTINGS, WEBSITE) = SETTINGS
   viewSeason: ?int16(0, null)
   viewShopCurrent: ?shop\Shop
+  defaultMarketSalePaymentMethod: ?payment\Method
   createdAt: datetime = SPECIAL(now)
   UNIQUE: [
     ["user", "farm"]

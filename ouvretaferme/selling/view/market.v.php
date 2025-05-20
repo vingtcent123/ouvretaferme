@@ -27,13 +27,13 @@ new AdaptativeView('/vente/{id}/marche/vente/{subId}', function($data, MarketTem
 
 	$t->eSaleSelected = $data->eSale;
 
-	echo new \selling\MarketUi()->displaySale($data->eSale, $data->cItemSale, $data->e, $data->cItemMarket, $data->cPaymentMethod);
+	echo new \selling\MarketUi()->displaySale($data->eFarmer, $data->eSale, $data->cItemSale, $data->e, $data->cItemMarket, $data->cPaymentMethod);
 
 });
 
 new AdaptativeView('doUpdateSale', function($data, AjaxTemplate $t) {
 
-	$t->qs('.market-main')->innerHtml(new \selling\MarketUi()->displaySale($data->e, $data->cItemSale, $data->eSaleMarket, $data->cItemMarket, $data->cPaymentMethod));
+	$t->qs('.market-main')->innerHtml(new \selling\MarketUi()->displaySale($data->eFarmer, $data->e, $data->cItemSale, $data->eSaleMarket, $data->cItemMarket, $data->cPaymentMethod));
 	$t->qs('#market-sale-'.$data->e['id'].'-price')->innerHtml(\util\TextUi::money($data->e['priceIncludingVat'] ?? 0));
 
 });

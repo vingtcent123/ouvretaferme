@@ -108,6 +108,7 @@ new \selling\ItemPage()
 			$data->cItemSale = \selling\SaleLib::getItems($data->e['sale'], index: 'product');
 
 			$data->cPaymentMethod = \payment\MethodLib::getByFarm($data->e['farm'], FALSE);
+			$data->eFarmer = $data->e['farm']->getFarmer();
 
 			throw new ViewAction($data);
 

@@ -141,11 +141,12 @@ class FarmerModel extends \ModuleModel {
 			'viewSettings' => ['enum', [\farm\Farmer::SETTINGS, \farm\Farmer::WEBSITE], 'cast' => 'enum'],
 			'viewSeason' => ['int16', 'min' => 0, 'max' => NULL, 'null' => TRUE, 'cast' => 'int'],
 			'viewShopCurrent' => ['element32', 'shop\Shop', 'null' => TRUE, 'cast' => 'element'],
+			'defaultMarketSalePaymentMethod' => ['element32', 'payment\Method', 'null' => TRUE, 'cast' => 'element'],
 			'createdAt' => ['datetime', 'cast' => 'string'],
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'user', 'farm', 'farmGhost', 'farmStatus', 'status', 'role', 'viewPlanning', 'viewPlanningYear', 'viewPlanningCategory', 'viewPlanningHarvestExpected', 'viewPlanningField', 'viewPlanningArea', 'viewPlanningSearch', 'viewPlanningUser', 'viewCultivation', 'viewCultivationCategory', 'viewSeries', 'viewSoil', 'viewSelling', 'viewSellingSales', 'viewSellingCategory', 'viewSellingCategoryCurrent', 'viewShop', 'viewShopCatalogCurrent', 'viewAnalyze', 'viewAnalyzeChart', 'viewAnalyzeComposition', 'viewAnalyzeYear', 'viewSettings', 'viewSeason', 'viewShopCurrent', 'createdAt'
+			'id', 'user', 'farm', 'farmGhost', 'farmStatus', 'status', 'role', 'viewPlanning', 'viewPlanningYear', 'viewPlanningCategory', 'viewPlanningHarvestExpected', 'viewPlanningField', 'viewPlanningArea', 'viewPlanningSearch', 'viewPlanningUser', 'viewCultivation', 'viewCultivationCategory', 'viewSeries', 'viewSoil', 'viewSelling', 'viewSellingSales', 'viewSellingCategory', 'viewSellingCategoryCurrent', 'viewShop', 'viewShopCatalogCurrent', 'viewAnalyze', 'viewAnalyzeChart', 'viewAnalyzeComposition', 'viewAnalyzeYear', 'viewSettings', 'viewSeason', 'viewShopCurrent', 'defaultMarketSalePaymentMethod', 'createdAt'
 		]);
 
 		$this->propertiesToModule += [
@@ -155,6 +156,7 @@ class FarmerModel extends \ModuleModel {
 			'viewSellingCategoryCurrent' => 'selling\Category',
 			'viewShopCatalogCurrent' => 'shop\Catalog',
 			'viewShopCurrent' => 'shop\Shop',
+			'defaultMarketSalePaymentMethod' => 'payment\Method',
 		];
 
 		$this->uniqueConstraints = array_merge($this->uniqueConstraints, [
@@ -459,6 +461,10 @@ class FarmerModel extends \ModuleModel {
 
 	public function whereViewShopCurrent(...$data): FarmerModel {
 		return $this->where('viewShopCurrent', ...$data);
+	}
+
+	public function whereDefaultMarketSalePaymentMethod(...$data): FarmerModel {
+		return $this->where('defaultMarketSalePaymentMethod', ...$data);
 	}
 
 	public function whereCreatedAt(...$data): FarmerModel {

@@ -271,7 +271,7 @@ class MarketUi {
 
 	}
 
-	public function displaySale(Sale $eSale, \Collection $cItemSale, Sale $eSaleMarket, \Collection $cItemMarket, \Collection $cMethod): string {
+	public function displaySale(\farm\Farmer $eFarmer, Sale $eSale, \Collection $cItemSale, Sale $eSaleMarket, \Collection $cItemMarket, \Collection $cMethod): string {
 
 		$eSaleMarket->expects(['preparationStatus']);
 
@@ -336,17 +336,43 @@ class MarketUi {
 						$canUpdatePayments = in_array($eSale['preparationStatus'], [Sale::DRAFT]);
 
 						$paymentMethodDropdown = '<div class="dropdown-list bg-secondary">';
+
 							$paymentMethodDropdown .= '<div class="dropdown-title">'.s("Moyen de paiement").'</div>';
-							foreach($cMethod as $eMethod) {
-								$has = $eSale['cPayment']->find(fn($ePayment) => (($ePayment['method']['id'] ?? NULL) === $eMethod['id']))->count() > 0;
-								$paymentMethodDropdown .= '<a data-ajax="/selling/sale:doUpdatePaymentMethod" post-id="'.$eSale['id'].'" post-payment-method="'.$eMethod['id'].'" class="dropdown-item" post-action="'.($has ? 'remove' : 'add').'">';
-									if($hasAtLeastOnePaymentMethod) {
-										$paymentMethodDropdown .= $has ? \Asset::icon('x-lg') : \Asset::icon('plus-lg');
-										$paymentMethodDropdown .= '  ';
+
+								$paymentMethodDropdown .= '<div class="payment-method-container">';
+
+								$eMethodDefault = $eSale['farm']->getView('defaultMarketSalePaymentMethod');
+
+									foreach($cMethod as $eMethod) {
+
+										$has = $eSale['cPayment']->find(fn($ePayment) => (($ePayment['method']['id'] ?? NULL) === $eMethod['id']))->count() > 0;
+										$isFavorite = ($eMethodDefault->notEmpty() and $eMethodDefault['id'] === $eMethod['id']);
+
+										$paymentMethodDropdown .= '<div class="payment-method-element">';
+
+											$paymentMethodDropdown .= '<div class="payment-method-action">';
+												$paymentMethodDropdown .= '<a data-ajax="/selling/sale:doUpdatePaymentMethod" post-id="'.$eSale['id'].'" post-payment-method="'.$eMethod['id'].'" class="dropdown-item" post-action="'.($has ? 'remove' : 'add').'">';
+
+													if($hasAtLeastOnePaymentMethod) {
+														$paymentMethodDropdown .= $has ? \Asset::icon('x-lg') : \Asset::icon('plus-lg');
+														$paymentMethodDropdown .= '  ';
+													}
+													$paymentMethodDropdown .= encode($eMethod['name']);
+												$paymentMethodDropdown .= '</a>';
+											$paymentMethodDropdown .= '</div>';
+
+											$paymentMethodDropdown .= '<div class="payment-method-favorite">';
+												$paymentMethodDropdown .= '<a data-ajax="/farm/farmer:doUpdateDefaultPaymentMethod" post-payment-method="'.$eMethod['id'].'" class="dropdown-item" post-id="'.$eFarmer['id'].'" post-action="'.($isFavorite ? 'remove' : 'add').'">';
+													$paymentMethodDropdown .= \Asset::icon('star'.($isFavorite ? '-fill' : ''), ['title' => s("Ajouter comme paiement par défaut pour mes ventes")]);
+												$paymentMethodDropdown .= '</a>';
+											$paymentMethodDropdown .= '</div>';
+
+										$paymentMethodDropdown .= '</div>';
+
 									}
-									$paymentMethodDropdown .= encode($eMethod['name']);
-								$paymentMethodDropdown .= '</a>';
-							}
+
+							$paymentMethodDropdown .= '</div>';
+
 						$paymentMethodDropdown .= '</div>';
 
 						$h .= '<div class="payment-methods">';

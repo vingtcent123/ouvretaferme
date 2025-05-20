@@ -155,5 +155,24 @@ new \farm\FarmerPage(function($data) {
 	])
 	->update()
 	->doUpdate(fn($data) => throw new ViewAction($data))
-	->doDelete(fn($data) => throw new RedirectAction('/farm/farmer:manage?farm='.$data->e['farm']['id'].'&success=farm:Farmer::deleted'));
+	->doDelete(fn($data) => throw new RedirectAction('/farm/farmer:manage?farm='.$data->e['farm']['id'].'&success=farm:Farmer::deleted'))
+	->write('doUpdateDefaultPaymentMethod', function($data) {
+
+		$action = POST('action', 'string', 'add');
+		$paymentMethodId = \payment\Method::POST('paymentMethod', 'id');
+		$eMethod = \payment\MethodLib::getById($paymentMethodId)->validate('canUse');
+
+		if($action === 'add') {
+
+			\farm\FarmerLib::setView('defaultMarketSalePaymentMethod', $data->e['farm'], $eMethod);
+
+		} else {
+
+			\farm\FarmerLib::setView('defaultMarketSalePaymentMethod', $data->e['farm'], new \payment\Method());
+
+		}
+
+		throw new ReloadAction();
+
+	});
 ?>
