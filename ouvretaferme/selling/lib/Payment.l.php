@@ -132,12 +132,23 @@ class PaymentLib extends PaymentCrud {
 
 	}
 
+	public static function fillOnlyPayment(Sale $eSale): void {
+
+		$cPayment = self::getBySale($eSale);
+
+		if($cPayment->count() !== 1) {
+			return;
+		}
+
+		$ePayment = $cPayment->first();
+
+		self::doFill($eSale, $ePayment, $cPayment);
+
+	}
+
 	public static function fill(Sale $eSale, \payment\Method $eMethod): void {
 
-		$cPayment = Payment::model()
-			->select(Payment::getSelection())
-			->whereSale($eSale)
-			->getCollection();
+		$cPayment = self::getBySale($eSale);
 
 		// Paiement non trouvé
 		$cPaymentFound = $cPayment->find(fn($ePayment) => (($ePayment['method']['id']) ?? NULL) === $eMethod['id']);
@@ -146,6 +157,11 @@ class PaymentLib extends PaymentCrud {
 		}
 
 		$ePayment = $cPaymentFound->first();
+
+		self::doFill($eSale, $ePayment, $cPayment);
+	}
+
+	private static function doFill(Sale $eSale, Payment $ePayment, \Collection $cPayment): void {
 
 		$total = $cPayment->reduce(fn($e, $value) => ($e['id'] !== $ePayment['id']) ? ($e['amountIncludingVat'] + $value) : $value, 0);
 
@@ -193,6 +209,8 @@ class PaymentLib extends PaymentCrud {
 			->whereSale($eSale)
 			->whereMethod($eMethod)
 			->delete();
+
+		\selling\PaymentLib::fillOnlyPayment($eSale);
 
 	}
 

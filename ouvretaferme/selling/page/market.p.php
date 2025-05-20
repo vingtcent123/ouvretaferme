@@ -85,13 +85,7 @@ new \selling\SalePage()
 	})
 	->write('doUpdateSale', function($data) {
 
-		if($data->e['marketParent']->empty()) {
-			throw new NotExpectedAction('Not a market sale');
-		}
-
-		if($data->e->empty()) {
-			throw new \FailAction('selling\Sale::market.notExists');
-		}
+		$data->e->validate('isMarketSale');
 
 		if($data->e['preparationStatus'] !== \selling\Sale::DRAFT) {
 			throw new \FailAction('selling\Sale::market.status');
@@ -108,6 +102,8 @@ new \selling\SalePage()
 
 		\selling\ItemLib::updateSaleCollection($data->e, $cItemSale);
 
+		\selling\PaymentLib::fillOnlyPayment($data->e);
+
 		$data->e = \selling\SaleLib::getById($data->e, \selling\Sale::getSelection() + [
 			'createdBy' => ['firstName', 'lastName', 'vignette'],
 			'cPayment' => \selling\PaymentLib::delegateBySale(),
@@ -119,7 +115,6 @@ new \selling\SalePage()
 		$data->cPaymentMethod = \payment\MethodLib::getByFarm($data->e['farm'], FALSE);
 
 		throw new ViewAction($data);
-
 
 	})
 	->read('/vente/{id}/marche/ventes', function($data) {

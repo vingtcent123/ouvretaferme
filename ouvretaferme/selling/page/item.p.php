@@ -88,8 +88,12 @@ new \selling\ItemPage()
 	->doDelete(function($data) {
 
 		if($data->e['sale']->isMarketSale() === FALSE) {
+
 			throw new ReloadLayerAction('selling', 'Item::deleted');
+
 		} else {
+
+			\selling\PaymentLib::fillOnlyPayment($data->e['sale']);
 
 			$data->e['sale'] = \selling\SaleLib::getById($data->e['sale'], \selling\Sale::getSelection() + [
 				'createdBy' => ['firstName', 'lastName', 'vignette'],
@@ -103,7 +107,7 @@ new \selling\ItemPage()
 			$data->cItemMarket = \selling\SaleLib::getItems($data->e['sale']['marketParent']);
 			$data->cItemSale = \selling\SaleLib::getItems($data->e['sale'], index: 'product');
 
-			$data->cPaymentMethod = \payment\MethodLib::getByFarm($data->e['farm'], NULL);
+			$data->cPaymentMethod = \payment\MethodLib::getByFarm($data->e['farm'], FALSE);
 
 			throw new ViewAction($data);
 
