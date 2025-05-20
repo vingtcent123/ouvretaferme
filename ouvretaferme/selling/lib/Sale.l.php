@@ -655,6 +655,8 @@ class SaleLib extends SaleCrud {
 
 		self::create($e);
 
+		\selling\PaymentLib::fillDefaultMarketPayment($e);
+
 		return $e;
 
 	}

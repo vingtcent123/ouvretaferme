@@ -132,24 +132,13 @@ class PaymentLib extends PaymentCrud {
 
 	}
 
-	public static function fillOnlyPayment(Sale $eSale): void {
+	public static function fillDefaultMarketPayment(Sale $eSale): void {
 
-		$cPayment = self::getBySale($eSale);
-		$nPayment = $cPayment->count();
+		$eMethod = $eSale['farm']->getSelling('marketSalePaymentMethod');
 
-		if($nPayment === 0) {
-
-			$eMethod = $eSale['farm']->getView('defaultMarketSalePaymentMethod');
-			if($eMethod->notEmpty()) {
-				$eMethod = \payment\MethodLib::getById($eMethod['id']);
-				self::createBySale($eSale, $eMethod);
-			}
-
-		} else if($nPayment === 1) {
-
-			$ePayment = $cPayment->first();
-			self::doFill($eSale, $ePayment, $cPayment);
-
+		if($eMethod->notEmpty()) {
+			$eMethod = \payment\MethodLib::getById($eMethod['id']);
+			self::createBySale($eSale, $eMethod);
 		}
 
 	}
@@ -217,12 +206,6 @@ class PaymentLib extends PaymentCrud {
 			->whereSale($eSale)
 			->whereMethod($eMethod)
 			->delete();
-
-		$eMethodDefault = $eSale['farm']->getView('defaultMarketSalePaymentMethod');
-
-		if($eMethodDefault->notEmpty() and $eMethodDefault['id'] !== $eMethod['id']) {
-			\selling\PaymentLib::fillOnlyPayment($eSale);
-		}
 
 	}
 

@@ -65,15 +65,17 @@ class ConfigurationModel extends \ModuleModel {
 			'invoicePaymentCondition' => ['editor16', 'min' => 1, 'max' => 400, 'null' => TRUE, 'cast' => 'string'],
 			'invoiceHeader' => ['editor16', 'min' => 1, 'max' => 400, 'null' => TRUE, 'cast' => 'string'],
 			'invoiceFooter' => ['editor16', 'min' => 1, 'max' => 400, 'null' => TRUE, 'cast' => 'string'],
+			'marketSalePaymentMethod' => ['element32', 'payment\Method', 'null' => TRUE, 'cast' => 'element'],
 			'pdfNaturalOrder' => ['bool', 'cast' => 'bool'],
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'farm', 'documentSales', 'documentInvoices', 'hasVat', 'defaultVat', 'defaultVatShipping', 'legalEmail', 'legalName', 'invoiceStreet1', 'invoiceStreet2', 'invoicePostcode', 'invoiceCity', 'invoiceRegistration', 'invoiceVat', 'organicCertifier', 'paymentMode', 'documentCopy', 'orderFormPrefix', 'orderFormDelivery', 'orderFormPaymentCondition', 'orderFormHeader', 'orderFormFooter', 'deliveryNotePrefix', 'creditPrefix', 'invoicePrefix', 'invoicePaymentCondition', 'invoiceHeader', 'invoiceFooter', 'pdfNaturalOrder'
+			'id', 'farm', 'documentSales', 'documentInvoices', 'hasVat', 'defaultVat', 'defaultVatShipping', 'legalEmail', 'legalName', 'invoiceStreet1', 'invoiceStreet2', 'invoicePostcode', 'invoiceCity', 'invoiceRegistration', 'invoiceVat', 'organicCertifier', 'paymentMode', 'documentCopy', 'orderFormPrefix', 'orderFormDelivery', 'orderFormPaymentCondition', 'orderFormHeader', 'orderFormFooter', 'deliveryNotePrefix', 'creditPrefix', 'invoicePrefix', 'invoicePaymentCondition', 'invoiceHeader', 'invoiceFooter', 'marketSalePaymentMethod', 'pdfNaturalOrder'
 		]);
 
 		$this->propertiesToModule += [
 			'farm' => 'farm\Farm',
+			'marketSalePaymentMethod' => 'payment\Method',
 		];
 
 		$this->uniqueConstraints = array_merge($this->uniqueConstraints, [
@@ -245,6 +247,10 @@ class ConfigurationModel extends \ModuleModel {
 
 	public function whereInvoiceFooter(...$data): ConfigurationModel {
 		return $this->where('invoiceFooter', ...$data);
+	}
+
+	public function whereMarketSalePaymentMethod(...$data): ConfigurationModel {
+		return $this->where('marketSalePaymentMethod', ...$data);
 	}
 
 	public function wherePdfNaturalOrder(...$data): ConfigurationModel {

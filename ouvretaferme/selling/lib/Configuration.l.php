@@ -27,6 +27,16 @@ class ConfigurationLib extends ConfigurationCrud {
 
 	}
 
+	public static function updateProperty(\farm\Farm $eFarm, string $property, mixed $value): void {
+
+		Configuration::model()
+			->whereFarm($eFarm)
+			->update([
+				$property => $value
+			]);
+
+	}
+
 	public static function getNextDocumentSales(\farm\Farm $eFarm): int {
 
 		Configuration::model()->beginTransaction();
