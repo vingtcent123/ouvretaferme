@@ -409,7 +409,7 @@ class AnalyzeUi {
 
 	}
 
-	public function getPeriodWeekChart(?string $chart, \Collection $cItemWeek, \farm\Farm $eFarmChart = new \farm\Farm()): string {
+	public function getPeriodWeekChart(?string $chart, \Collection $cItemWeek): string {
 
 		\Asset::jsUrl('https://cdn.jsdelivr.net/npm/chart.js');
 
@@ -1827,7 +1827,7 @@ class AnalyzeUi {
 				if($cItemMonthBefore->notEmpty()) {
 					$h .= $this->getDoublePeriodWeekChart('turnover', $cItemWeek, $year, $cItemWeekBefore, $year - 1);
 				} else {
-					$h .= $this->getPeriodWeekChart('turnover', $cItemWeek, $e);
+					$h .= $this->getPeriodWeekChart('turnover', $cItemWeek);
 				}
 
 			} else {
@@ -1948,7 +1948,7 @@ class AnalyzeUi {
 				if($cItemMonthBefore->notEmpty()) {
 					$h .= $this->getDoublePeriodWeekChart($e['farm']->getView('viewAnalyzeChart'), $cItemWeek, $year, $cItemWeekBefore, $year - 1, $e['farm']);
 				} else {
-					$h .= $this->getPeriodWeekChart($e['farm']->getView('viewAnalyzeChart'), $cItemWeek, $e, $e['farm']);
+					$h .= $this->getPeriodWeekChart($e['farm']->getView('viewAnalyzeChart'), $cItemWeek);
 				}
 
 			} else {
