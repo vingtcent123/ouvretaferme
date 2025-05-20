@@ -415,7 +415,7 @@ class AnalyzeUi {
 
 		[$values, $labels] = $this->extractWeekChartValues($cItemWeek, $chart);
 
-		$title = fn($year) => match($chart) {
+		$title = match($chart) {
 			\farm\Farmer::TURNOVER => s("Ventes"),
 			\farm\Farmer::QUANTITY => s("Volumes")
 		};
