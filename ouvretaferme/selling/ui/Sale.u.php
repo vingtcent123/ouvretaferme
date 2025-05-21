@@ -1595,7 +1595,7 @@ class SaleUi {
 			$h .= '<h3>'.match($cSale->first()['preparationStatus']) {
 				\selling\Sale::DELIVERED => s("Ventes terminées"),
 				\selling\Sale::DRAFT => s("Ventes en cours"),
-				\selling\Sale::CANCELED => s("Ventes annulés")
+				\selling\Sale::CANCELED => s("Ventes annulées")
 			}.'</h3>';
 
 			$h .= $this->getList($eFarm, $cSale, hide: ['deliveredAt', 'actions', 'documents'], show: ['createdAt'], cPaymentMethod: $cPaymentMethod);
