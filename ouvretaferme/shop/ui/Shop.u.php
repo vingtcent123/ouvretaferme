@@ -238,7 +238,7 @@ class ShopUi {
 
 		$h .= $form->hidden('id', $eShop['id']);
 
-		$update = ['name', 'type', 'fqn', 'email', 'frequency', 'approximate', 'orderMin', 'shipping', 'shippingUntil', 'limitCustomers', 'hasPoint', 'comment', 'commentCaption', 'description'];
+		$update = ['name', 'type', 'fqn', 'email', 'frequency', 'approximate', 'outOfStock', 'orderMin', 'shipping', 'shippingUntil', 'limitCustomers', 'hasPoint', 'comment', 'commentCaption', 'description'];
 
 		if($eShop['shared']) {
 			array_delete($update, 'shipping');
@@ -1172,6 +1172,7 @@ class ShopUi {
 			'terms' => s("Vos conditions générales de vente"),
 			'termsField' => s("Demander à vos clients d'accepter explicitement les conditions générales de vente avec une case à cocher"),
 			'approximate' => s("Indiquer aux clients que le montant de leur commande affiché sur le site est approximatif s'il y a des produits qui nécessitent une pesée"),
+			'outOfStock' => s("Affichage des produits en rupture de stock"),
 			'comment' => s("Permettre à vos clients de laisser un commentaire lors d'une commande"),
 			'commentCaption' => s("Instructions à communiquer à vos clients pour remplir le commentaire"),
 			'customBackground' => s("Couleur d'arrière plan"),
@@ -1320,6 +1321,13 @@ class ShopUi {
 
 			case 'termsField' :
 				$d->field = 'yesNo';
+				break;
+
+			case 'outOfStock' :
+				$d->values = [
+					Shop::SHOW => s("Montrer ces produits aux clients assortis d'une mention <i>Rupture de stock</i>"),
+					Shop::HIDE => s("Cacher ces produits aux clients")
+				];
 				break;
 
 			case 'approximate' :

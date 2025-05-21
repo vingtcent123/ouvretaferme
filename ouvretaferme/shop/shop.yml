@@ -156,6 +156,7 @@ Shop:
   embedOnly: bool = FALSE
   embedUrl: ?url
   approximate: bool = FALSE
+  outOfStock: enum(SHOW, HIDE) = SHOW
   comment: bool = FALSE
   commentCaption: ?text8
   emailNewSale: bool = FALSE

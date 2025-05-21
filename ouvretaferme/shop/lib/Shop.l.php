@@ -16,6 +16,8 @@ class ShopLib extends ShopCrud {
 				$properties[] = 'approximate';
 			}
 
+			$properties[] = 'outOfStock';
+
 			if($eShop['shared']) {
 				$properties[] = 'sharedGroup';
 				array_delete($properties, 'shipping');

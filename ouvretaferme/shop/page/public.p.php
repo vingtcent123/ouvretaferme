@@ -217,12 +217,25 @@ END;
 
 			$cProduct = \shop\ProductLib::getByDate($data->eDateSelected, $data->eCustomer, cSaleExclude: $data->isModifying ? $data->cSaleExisting : new Collection(), withIngredients: TRUE, public: TRUE);
 
-			foreach($cProduct as $eProduct) {
-				$eProduct['reallyAvailable'] = \shop\ProductLib::getReallyAvailable($eProduct, $eProduct['product'], $data->cItemExisting);
+			$cProductAvailable = new Collection();
+
+			foreach($cProduct as $key => $eProduct) {
+
+				$reallyAvailable = \shop\ProductLib::getReallyAvailable($eProduct, $eProduct['product'], $data->cItemExisting);
+
+				if(
+					($data->eShop['outOfStock'] === \shop\Shop::SHOW) or
+					($data->eShop['outOfStock'] === \shop\Shop::HIDE and $reallyAvailable !== 0.0)
+				) {
+					$cProductAvailable[] = $eProduct->merge([
+						'reallyAvailable' => $reallyAvailable
+					]);
+				}
+
 			}
 
-			\shop\ProductLib::applyDiscounts($cProduct, $data->discounts);
-			\shop\ProductLib::applyIndexing($data->eShop, $data->eDateSelected, $cProduct);
+			\shop\ProductLib::applyDiscounts($cProductAvailable, $data->discounts);
+			\shop\ProductLib::applyIndexing($data->eShop, $data->eDateSelected, $cProductAvailable);
 
 			$data->eDateSelected['farm'] = $data->eShop['farm'];
 
