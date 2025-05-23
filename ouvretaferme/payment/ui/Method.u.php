@@ -159,6 +159,22 @@ class MethodUi {
 
 	}
 
+	public static function getTextName(\payment\Method $eMethod): string {
+
+		if($eMethod->empty()) {
+			return '';
+		}
+
+		$eMethod->expects(['fqn', 'name']);
+
+		if($eMethod['fqn'] === \payment\MethodLib::ONLINE_CARD) {
+			return s('Stripe');
+		}
+
+		return encode($eMethod['name']);
+
+	}
+
 	public static function getName(\payment\Method $eMethod): string {
 
 		if($eMethod->empty()) {

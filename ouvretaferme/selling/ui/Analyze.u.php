@@ -2062,6 +2062,16 @@ class AnalyzeUi {
 			$header[] = 'amount';
 		}
 
+		$header[] = 'product';
+		$header[] = 'number';
+		$header[] = 'unit_price';
+		if($eFarm->getSelling('hasVat')) {
+			$header[] = 'price_excluding_vat';
+			$header[] = 'vat_rate';
+		} else {
+			$header[] = 'price';
+		}
+
 		return $header;
 
 	}

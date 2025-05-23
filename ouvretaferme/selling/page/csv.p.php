@@ -6,8 +6,7 @@ new \farm\FarmPage()
 
 		$year = GET('year', 'int');
 
-		$export = \selling\AnalyzeLib::getExportSales($data->e, $year);
-		array_unshift($export, new \selling\AnalyzeUi()->getExportSalesHeader($data->e));
+		$export = \farm\ArchiveLib::getArchive($data->e, $year);
 
 		throw new CsvAction($export, 'ventes-'.$year.'.csv');
 

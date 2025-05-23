@@ -11,7 +11,18 @@ Action:
   INDEX: [
     ["farm"]
   ]
-  
+
+Archive:
+  id: serial32
+  farm: farm\Farm
+  season: int16(0, null)
+  hash: ?textFixed(66, 66) @charset(ascii)
+  requestedBy: user\User = SPECIAL(user)
+  createdAt: datetime = SPECIAL(now)
+  INDEX: [
+    [ "farm", "season" ]
+  ]
+
 Category:
   id: serial32
   name: text8(1, null) @collate(general)

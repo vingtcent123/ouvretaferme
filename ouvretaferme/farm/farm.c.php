@@ -9,6 +9,7 @@ Setting::register('farm', [
 	'inviteDelay' => 7,
 	'categoriesLimit' => 5,
 	'newSeason' => 10,
-	'calendarLimit' => 20
+	'calendarLimit' => 20,
+	'archiveSalt' => 'Rand0mArchiVeSaltToChange',
 ]);
 ?>

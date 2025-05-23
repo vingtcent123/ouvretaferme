@@ -794,7 +794,11 @@ class AnalyzeLib {
 				'priceIncludingVat', 'priceExcludingVat', 'vat',
 				'shop' => ['name'],
 				'deliveredAt',
-				'paymentMethod' => \payment\Method::getSelection()
+				'paymentMethod' => \payment\Method::getSelection(),
+				'cItem' => Item::model()
+           ->select(Item::getSelection())
+           ->delegateCollection('sale', 'id'),
+				'cPaymentMethod' => PaymentLib::delegateBySale(),
 			])
 			->whereFarm($eFarm)
 			->where('EXTRACT(YEAR FROM deliveredAt) = '.$year)
@@ -802,27 +806,78 @@ class AnalyzeLib {
 			->getCollection()
 			->toArray(function($eSale) use($eFarm) {
 
-				$data = [
+				$itemColumns = 4;
+
+				$saleColumns = [
 					$eSale['document'],
 					$eSale['customer']->notEmpty() ? $eSale['customer']->getName() : '',
 					CustomerUi::getType($eSale),
 					\util\DateUi::numeric($eSale['deliveredAt']),
 					$eSale['items'],
 					$eSale['shop']->empty() ? '' : $eSale['shop']['name'],
-					$eSale['paymentMethod']->empty() ? '' : $eSale['paymentMethod']['name'],
-					\util\TextUi::csvNumber($eSale['priceExcludingVat']),
 				];
 
-				if($eFarm->getSelling('hasVat')) {
-					$data[] = \util\TextUi::csvNumber($eSale['vat']);
-					$data[] = \util\TextUi::csvNumber($eSale['priceIncludingVat']);
+				if($eSale['cPaymentMethod']->notEmpty()) {
+
+					$saleColumns[] = join(', ', $eSale['cPaymentMethod']->toArray(function($ePayment) {
+						return \payment\MethodUi::getTextName($ePayment['method']).' ('.\util\TextUi::csvNumber($ePayment['amountIncludingVat']).')';
+					}));
+
+				} else {
+
+					$saleColumns[] = \payment\MethodUi::getTextName($eSale['paymentMethod']);
+
 				}
 
+				$saleColumns[] = \util\TextUi::csvNumber($eSale['priceExcludingVat']);
+				if($eFarm->getSelling('hasVat')) {
+					$saleColumns[] = \util\TextUi::csvNumber($eSale['vat']);
+					$saleColumns[] = \util\TextUi::csvNumber($eSale['priceIncludingVat']);
+					$itemColumns++;
+				}
+
+				$data= $saleColumns;
+
+				for($i = 0; $i < $itemColumns; $i++) {
+					$data[] = '';
+				}
+
+				$items = array_map(function($eItem) use($eFarm, $eSale, $saleColumns) {
+
+					$item = [$eSale['document']];
+					for($i = 0; $i < count($saleColumns) - 1; $i++) {
+						$item[] = '';
+					}
+
+					$item = array_merge($item, [
+						$eItem['name'],
+						\util\TextUi::csvNumber($eItem['number']),
+						\util\TextUi::csvNumber($eItem['unitPrice']),
+						\util\TextUi::csvNumber($eItem['priceExcludingVat']),
+					]);
+
+					if($eFarm->getSelling('hasVat')) {
+						$item[] = \util\TextUi::csvNumber($eItem['vatRate']);
+					}
+
+					return $item;
+
+				}, $eSale['cItem']->getArrayCopy());
+
+				$data['cItem'] = $items;
 				return $data;
 			});
 
-		return $data;
+		$flattenData = [];
 
+		foreach($data as $line) {
+			$cItems = $line['cItem'];
+			unset($line['cItem']);
+			$flattenData[] = $line;
+			$flattenData = array_merge($flattenData, $cItems);
+		}
+
+		return $flattenData;
 	}
 
 	public static function getExportItems(\farm\Farm $eFarm, int $year): array {
