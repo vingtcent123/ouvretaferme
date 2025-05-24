@@ -817,8 +817,11 @@ class SaleLib extends SaleCrud {
 
 		if($updatePreparationStatus) {
 
-			$properties[] = 'statusDeliveredAt';
-			$e['statusDeliveredAt'] = ($e['preparationStatus'] === Sale::DELIVERED) ? new \Sql('NOW()') : NULL;
+			$properties[] = 'statusAt';
+			$properties[] = 'statusBy';
+
+			$e['statusAt'] = new \Sql('NOW()');
+			$e['statusBy'] = \user\ConnectionLib::getOnline();
 
 		}
 

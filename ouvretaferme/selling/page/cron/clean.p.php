@@ -1,7 +1,7 @@
 <?php
 
 new Page()
-	->cron('index', function($data) {
+	->cron('pdf', function($data) {
 
 		\selling\PdfLib::clean();
 

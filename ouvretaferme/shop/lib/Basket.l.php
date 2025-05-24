@@ -105,5 +105,9 @@ class BasketLib {
 		return $cleanBasket;
 	}
 
+	public static function clean(): void {
+
+	}
+
 }
 ?>
