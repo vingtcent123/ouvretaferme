@@ -19,7 +19,7 @@ class Customer extends CustomerElement {
 	public function getName(): ?string {
 
 		if($this->empty()) {
-			return s("Client anonyme");
+			return s("Anonyme");
 		} else {
 			return $this['name'];
 		}

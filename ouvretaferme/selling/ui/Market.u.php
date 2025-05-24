@@ -276,7 +276,8 @@ class MarketUi {
 		$h = '<div class="market-customer">';
 			$h .= '<div class="util-title">';
 
-				$h .= '<h2>';
+				$h .= '<h2 style="margin-bottom: 0.25rem">';
+					$h .= $this->getCircle($eSale).'  ';
 					if(OTF_DEMO) {
 						$h .= s("Vente de démonstration de {date}", ['date' => \util\DateUi::numeric($eSale['createdAt'], \util\DateUi::TIME)]);
 					} else {
@@ -329,12 +330,11 @@ class MarketUi {
 							$h .= '</div>';
 						}
 					$h .= '</dd>';
-					$h .= '<dt>'.s("Créée par").'</dt>';
-					$h .= '<dd>'.\user\UserUi::getVignette($eSale['createdBy'], '1.5rem').' '.$eSale['createdBy']->getName().'</dd>';
-					$h .= '<dt>'.s("État").'</dt>';
-					$h .= '<dd>'.$this->getCircle($eSale).' '.$this->getStatus($eSale).'</dd>';
-					$h .= '<dt class="market-customer-details-payment">'.s("Moyen de paiement").'</dt>';
-					$h .= '<dd class="market-customer-details-payment">';
+					$h .= '<dt>';
+						$h .= '<span class="hide-xs-down">'.s("Moyen de paiement").'</span>';
+						$h .= '<span class="hide-sm-up">'.s("Paiement").'</span>';
+					$h .= '</dt>';
+					$h .= '<dd>';
 
 						$hasAtLeastOnePaymentMethod = ($eSale['cPayment']->count() > 0 and $eSale['cPayment']->first()['method']->notEmpty());
 						$canUpdatePayments = in_array($eSale['preparationStatus'], [Sale::DRAFT]);
@@ -400,7 +400,7 @@ class MarketUi {
 
 											$h .= $ePayment->quick('amountIncludingVat', $amount);
 
-											$h .= '<a data-ajax="/selling/sale:doFillPaymentMethod" post-id="'.$eSale['id'].'" post-payment-method="'.$ePayment['method']['id'].'" class="'.($magicIsNeeded ? '' : 'not-visible').' btn btn-sm btn-outline-border ml-1" title="'.s("Compléter automatiquement").'">'.\Asset::icon('magic').'</a>';
+											$h .= '<a data-ajax="/selling/sale:doFillPaymentMethod" post-id="'.$eSale['id'].'" post-payment-method="'.$ePayment['method']['id'].'" class="'.($magicIsNeeded ? '' : 'not-visible').' btn btn-sm btn-outline-border payment-method-complete" title="'.s("Compléter automatiquement").'">'.\Asset::icon('magic').'</a>';
 
 											} else {
 
