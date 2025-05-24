@@ -680,7 +680,7 @@ class BasketUi {
 
 			case 1 :
 				$h .= '<p class="util-info">';
-					$h .= s("Votre commande n'est pas encore confirmée, veuillez confirmer votre moyen de paiement :");
+					$h .= s("Votre panier est enregistré pendant 30 minutes.<br/>Veuillez sélectionner votre moyen de paiement pour confirmer votre commande :");
 				$h .= '</p>';
 				break;
 
@@ -689,7 +689,7 @@ class BasketUi {
 					if(get_exists('modify')) {
 						$h .= s("Vous commande est toujours confirmée, mais vous pouvoir choisir un autre moyen de paiement :");
 					} else {
-						$h .= s("Votre commande n'est pas encore confirmée, veuillez choisir votre moyen de paiement :");
+						$h .= s("Votre panier est enregistré pendant 30 minutes.<br/>Veuillez choisir votre moyen de paiement pour confirmer votre commande :");
 					}
 				$h .= '</h4>';
 				break;

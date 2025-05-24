@@ -109,12 +109,13 @@ class SaleModel extends \ModuleModel {
 			'createdAt' => ['datetime', 'cast' => 'string'],
 			'createdBy' => ['element32', 'user\User', 'null' => TRUE, 'cast' => 'element'],
 			'deliveredAt' => ['date', 'cast' => 'string'],
+			'expiresAt' => ['datetime', 'null' => TRUE, 'cast' => 'string'],
 			'statusAt' => ['datetime', 'null' => TRUE, 'cast' => 'string'],
 			'statusBy' => ['element32', 'user\User', 'null' => TRUE, 'cast' => 'element'],
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'document', 'farm', 'customer', 'origin', 'taxes', 'organic', 'conversion', 'type', 'discount', 'items', 'hasVat', 'vat', 'vatByRate', 'priceExcludingVat', 'priceIncludingVat', 'shippingVatRate', 'shippingVatFixed', 'shipping', 'shippingExcludingVat', 'preparationStatus', 'paymentMethod', 'paymentStatus', 'onlinePaymentStatus', 'compositionOf', 'compositionEndAt', 'marketSales', 'marketParent', 'orderFormValidUntil', 'orderFormPaymentCondition', 'invoice', 'shop', 'shopDate', 'shopLocked', 'shopShared', 'shopUpdated', 'shopPoint', 'shopComment', 'deliveryStreet1', 'deliveryStreet2', 'deliveryPostcode', 'deliveryCity', 'comment', 'stats', 'createdAt', 'createdBy', 'deliveredAt', 'statusAt', 'statusBy'
+			'id', 'document', 'farm', 'customer', 'origin', 'taxes', 'organic', 'conversion', 'type', 'discount', 'items', 'hasVat', 'vat', 'vatByRate', 'priceExcludingVat', 'priceIncludingVat', 'shippingVatRate', 'shippingVatFixed', 'shipping', 'shippingExcludingVat', 'preparationStatus', 'paymentMethod', 'paymentStatus', 'onlinePaymentStatus', 'compositionOf', 'compositionEndAt', 'marketSales', 'marketParent', 'orderFormValidUntil', 'orderFormPaymentCondition', 'invoice', 'shop', 'shopDate', 'shopLocked', 'shopShared', 'shopUpdated', 'shopPoint', 'shopComment', 'deliveryStreet1', 'deliveryStreet2', 'deliveryPostcode', 'deliveryCity', 'comment', 'stats', 'createdAt', 'createdBy', 'deliveredAt', 'expiresAt', 'statusAt', 'statusBy'
 		]);
 
 		$this->propertiesToModule += [
@@ -185,12 +186,6 @@ class SaleModel extends \ModuleModel {
 				return new \Sql('NOW()');
 
 			case 'createdBy' :
-				return \user\ConnectionLib::getOnline();
-
-			case 'statusAt' :
-				return new \Sql('NOW()');
-
-			case 'statusBy' :
 				return \user\ConnectionLib::getOnline();
 
 			default :
@@ -440,6 +435,10 @@ class SaleModel extends \ModuleModel {
 
 	public function whereDeliveredAt(...$data): SaleModel {
 		return $this->where('deliveredAt', ...$data);
+	}
+
+	public function whereExpiresAt(...$data): SaleModel {
+		return $this->where('expiresAt', ...$data);
 	}
 
 	public function whereStatusAt(...$data): SaleModel {

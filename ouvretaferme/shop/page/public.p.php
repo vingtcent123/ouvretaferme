@@ -453,6 +453,11 @@ new Page(function($data) {
 			throw new RedirectAction(\shop\ShopUi::confirmationUrl($data->eShop, $data->eDate));
 		}
 
+		// Si la vente est déjà payée, on ne peut pas changer de moyen de paiement
+		if($data->eSaleReference['paymentStatus'] === \selling\Sale::PAID) {
+			throw new RedirectAction(\shop\ShopUi::confirmationUrl($data->eShop, $data->eDate));
+		}
+
 		if($data->eSaleReference['shopPoint']->notEmpty()) {
 			$data->eSaleReference['shopPoint'] = $data->eShop['ccPoint']->find(fn($ePoint) => $ePoint['id'] === $data->eSaleReference['shopPoint']['id'], depth: 2, limit: 1, default: new \shop\Point());
 		}

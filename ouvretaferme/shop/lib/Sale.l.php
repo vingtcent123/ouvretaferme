@@ -445,6 +445,7 @@ class SaleLib {
 			'payment_intent_data' => [
 				'metadata' => ['source' => 'otf']
 			],
+			'expires_at' => time() + 60 * 45,
 			'client_reference_id' => $eCustomer['id'],
 			'line_items' => $items,
 			'success_url' => $successUrl,
@@ -457,13 +458,21 @@ class SaleLib {
 
 		$eMethod = \payment\MethodLib::getByFqn(\payment\MethodLib::ONLINE_CARD);
 
+		$properties = ['paymentMethod', 'paymentStatus', 'onlinePaymentStatus'];
+
 		$eSale['oldPaymentMethod'] = $eSale['paymentMethod'];
 		$eSale['oldPaymentStatus'] = $eSale['paymentStatus'];
 		$eSale['paymentMethod'] = $eMethod;
 		$eSale['paymentStatus'] = \selling\Sale::NOT_PAID;
 		$eSale['onlinePaymentStatus'] = \selling\Sale::INITIALIZED;
 
-		\selling\SaleLib::update($eSale, ['paymentMethod', 'paymentStatus', 'onlinePaymentStatus']);
+		// On prolonge le délai d'expiration de la vante
+		if($eSale['preparationStatus'] === \selling\Sale::BASKET) {
+			$eSale['expiresAt'] = new \Sql('NOW() + INTERVAL 1 HOUR');
+			$properties[] = 'expiresAt';
+		}
+
+		\selling\SaleLib::update($eSale, $properties);
 
 		$ePayment = \selling\PaymentLib::getBySale($eSale)->first();
 		$ePayment['checkoutId'] = $stripeSession['id'];

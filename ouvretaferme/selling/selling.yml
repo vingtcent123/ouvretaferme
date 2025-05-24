@@ -306,8 +306,9 @@ Sale:
   createdAt: datetime = SPECIAL(now)
   createdBy: ?user\User = SPECIAL(user)
   deliveredAt: date
-  statusAt: ?datetime = SPECIAL(now)
-  statusBy: ?user\User = SPECIAL(user)
+  expiresAt: ?datetime
+  statusAt: ?datetime
+  statusBy: ?user\User
   INDEX: [
     ["customer"],
     ["shopDate"],

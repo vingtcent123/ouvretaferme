@@ -823,6 +823,11 @@ class SaleLib extends SaleCrud {
 			$e['statusAt'] = new \Sql('NOW()');
 			$e['statusBy'] = \user\ConnectionLib::getOnline();
 
+			if($e['preparationStatus'] === Sale::BASKET) {
+				$properties[] = 'expiresAt';
+				$e['expiresAt'] = new \Sql('NOW() + INTERVAL 1 HOUR');
+			}
+
 		}
 
 		if($emptyPaymentMethod) {
@@ -905,21 +910,25 @@ class SaleLib extends SaleCrud {
 
 	}
 
+	public static function updatePreparationStatus(Sale $e, string $newStatus): void {
+
+		if($e['preparationStatus'] === $newStatus) {
+			return;
+		}
+
+		$e['oldPreparationStatus'] = $e['preparationStatus'];
+		$e['preparationStatus'] = $newStatus;
+
+		self::update($e, ['preparationStatus']);
+
+	}
+
 	public static function updatePreparationStatusCollection(\Collection $c, string $newStatus): void {
 
 		Sale::model()->beginTransaction();
 
 		foreach($c as $e) {
-
-			if($e['preparationStatus'] === $newStatus) {
-				continue;
-			}
-
-			$e['oldPreparationStatus'] = $e['preparationStatus'];
-			$e['preparationStatus'] = $newStatus;
-
-			self::update($e, ['preparationStatus']);
-
+			self::updatePreparationStatus($e, $newStatus);
 		}
 
 		Sale::model()->commit();
@@ -1288,15 +1297,25 @@ class SaleLib extends SaleCrud {
 		return 2;
 	}
 
-	public static function getVatRate(int $vat): int {
-		return \Setting::get('selling\vatRates')[$vat];
-	}
-
 	public static function getVatRates(\farm\Farm $eFarm): array {
 
 		// A filtrer selon les pays le cas échéant
 
 		return \Setting::get('selling\vatRates');
+
+	}
+
+	public static function cancelExpired(): void {
+
+		$cSale = \selling\Sale::model()
+			->select(\selling\Sale::getSelection())
+			->wherePreparationStatus(Sale::BASKET)
+			->whereExpiresAt('<', new \Sql('NOW()'))
+			->getCollection();
+
+		foreach($cSale as $eSale) {
+			\selling\SaleLib::updatePreparationStatus($eSale, \selling\Sale::CANCELED);
+		}
 
 	}
 
