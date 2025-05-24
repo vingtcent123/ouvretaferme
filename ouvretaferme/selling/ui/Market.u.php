@@ -150,18 +150,16 @@ class MarketUi {
 
 			$h .= '<a href="'.\selling\SaleUi::urlMarket($eSaleParent).'/vente/'.$eSale['id'].'" class="market-sales-item market-sales-item-'.$eSale['preparationStatus'].' '.(($eSaleSelected and $eSaleSelected['id'] === $eSale['id']) ? 'selected' : '').'">';
 
-				$h .= $this->getCircle($eSale);
-
+				$h .= '<div class="market-sales-owner" title="'.s("Vente créée par {value}", $eSale['createdBy']->getName()).'">';
+					$h .= \user\UserUi::getVignette($eSale['createdBy'], '1.5rem');
+				$h .= '</div>';
 				$h .= '<div>';
 					if($eSale['customer']->empty()) {
-						$h .= s("Anonyme à {time}", ['time' => \util\DateUi::numeric($eSale['createdAt'], \util\DateUi::TIME)]);
+						$h .= s("Vente de {time}", ['time' => \util\DateUi::numeric($eSale['createdAt'], \util\DateUi::TIME)]);
 					} else {
 						$h .= s("{user} à {time}", ['user' => encode($eSale['customer']->getName()), 'time' => \util\DateUi::numeric($eSale['createdAt'], \util\DateUi::TIME)]);
 					}
 					$h .= '<br/><small id="market-sale-'.$eSale['id'].'-price">'.\util\TextUi::money($eSale['priceIncludingVat'] ?? 0).'</small>';
-				$h .= '</div>';
-				$h .= '<div class="market-sales-owner" title="'.s("Vente créée par {value}", $eSale['createdBy']->getName()).'">';
-					$h .= \user\UserUi::getVignette($eSale['createdBy'], '1.5rem');
 				$h .= '</div>';
 
 			$h .= '</a>';
@@ -298,8 +296,8 @@ class MarketUi {
 								$h .= '</div>';
 							} else {
 								$h .= '<div>';
-									$h .= '<a data-ajax="/selling/market:doCloseMarketSale" post-id="'.$eSale['id'].'" class="btn btn-success">'.s("Terminer la vente").'</a> ';
-									$h .= '<a data-ajax="/selling/sale:doUpdatePreparationStatus" post-id="'.$eSale['id'].'" post-preparation-status="'.Sale::CANCELED.'" class="btn btn-muted" data-confirm="'.s("Voulez-vous réellement annuler cette vente ?").'">'.s("Annuler la vente").'</a>';
+									$h .= '<a data-ajax="/selling/market:doCloseMarketSale" post-id="'.$eSale['id'].'" class="btn btn-success">'.s("Terminer<span> la vente</span>", ['span' => '<span class="hide-xs-down">']).'</a> ';
+									$h .= '<a data-ajax="/selling/sale:doUpdatePreparationStatus" post-id="'.$eSale['id'].'" post-preparation-status="'.Sale::CANCELED.'" class="btn btn-muted" data-confirm="'.s("Voulez-vous réellement annuler cette vente ?").'">'.s("Annuler<span> la vente</span>", ['span' => '<span class="hide-xs-down">']).'</a>';
 								$h .= '</div>';
 							}
 
@@ -335,8 +333,8 @@ class MarketUi {
 					$h .= '<dd>'.\user\UserUi::getVignette($eSale['createdBy'], '1.5rem').' '.$eSale['createdBy']->getName().'</dd>';
 					$h .= '<dt>'.s("État").'</dt>';
 					$h .= '<dd>'.$this->getCircle($eSale).' '.$this->getStatus($eSale).'</dd>';
-					$h .= '<dt>'.s("Moyen de paiement").'</dt>';
-					$h .= '<dd>';
+					$h .= '<dt class="market-customer-details-payment">'.s("Moyen de paiement").'</dt>';
+					$h .= '<dd class="market-customer-details-payment">';
 
 						$hasAtLeastOnePaymentMethod = ($eSale['cPayment']->count() > 0 and $eSale['cPayment']->first()['method']->notEmpty());
 						$canUpdatePayments = in_array($eSale['preparationStatus'], [Sale::DRAFT]);
@@ -416,7 +414,7 @@ class MarketUi {
 
 								$h .= '</div>';
 
-								$h .= '<div class="text-end">';
+								$h .= '<div>';
 
 									if($canUpdatePayments) {
 

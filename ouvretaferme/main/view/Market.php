@@ -85,8 +85,10 @@ class MarketTemplate extends BaseTemplate {
 						$h .= '<div class="market-sales-list">';
 							$h .= new \selling\MarketUi()->getList($this->data->e, $cSaleDraft, $this->eSaleSelected);
 							$h .= '<a data-ajax="/selling/market:doCreateSale" post-id="'.$this->data->e['id'].'" class="market-sales-item market-sales-item-new">';
-								$h .= Asset::icon('plus-circle');
-								$h .= '<div>'.s("Nouvelle vente").'</div>';
+								$h .= '<div class="market-sales-svg">'.Asset::icon('plus-circle').'</div>';
+								$h .= '<div>';
+									$h .= s("Nouvelle vente");
+								$h .= '</div>';
 							$h .= '</a>';
 						$h .= '</div>';
 
