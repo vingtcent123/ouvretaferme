@@ -103,6 +103,8 @@ new \selling\SalePage()
 
 		\selling\ItemLib::updateSaleCollection($data->e, $cItemSale);
 
+		\selling\PaymentLib::fillOnlyMarketPayment($data->e);
+
 		$data->e = \selling\SaleLib::getById($data->e, \selling\Sale::getSelection() + [
 			'createdBy' => ['firstName', 'lastName', 'vignette'],
 			'cPayment' => \selling\PaymentLib::delegateBySale(),

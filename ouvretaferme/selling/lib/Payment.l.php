@@ -93,18 +93,30 @@ class PaymentLib extends PaymentCrud {
 
 	}
 
-	public static function createBySale(Sale $eSale, ?\payment\Method $eMethod, ?string $providerId = NULL): Payment {
+	public static function createBySale(Sale $eSale, ?\payment\Method $eMethod, ?string $providerId = NULL): void {
 
 		if($eMethod->empty()) {
-			return new Payment();
+			return;
 		}
 
 		$eSale->expects(['customer', 'farm']);
 
+		$ePayment = Payment::model()
+			->select(Payment::getSelection())
+			->whereFarm($eSale['farm'])
+			->whereSale($eSale)
+			->whereMethod($eMethod)
+			->get();
+
+		if($ePayment->notEmpty()) {
+			self::fill($eSale, $eMethod);
+			return;
+		}
+
 		$amount = $eSale['priceIncludingVat'] - self::sumTotalBySale($eSale);
 		$onlineStatus = ($eMethod['fqn'] ?? NULL) === \payment\MethodLib::ONLINE_CARD ? Payment::INITIALIZED : NULL;
 
-		$e = new Payment([
+		$ePayment = new Payment([
 			'sale' => $eSale,
 			'customer' => $eSale['customer'],
 			'farm' => $eSale['farm'],
@@ -114,9 +126,7 @@ class PaymentLib extends PaymentCrud {
 			'onlineStatus' => $onlineStatus,
 		]);
 
-		Payment::model()->insert($e);
-
-		return $e;
+		Payment::model()->insert($ePayment);
 
 	}
 
@@ -129,6 +139,18 @@ class PaymentLib extends PaymentCrud {
 			->get($ePayment);
 
 		return $ePayment['sum'] ?? 0;
+
+	}
+
+	public static function fillOnlyMarketPayment(Sale $eSale): void {
+
+		$cPayment = self::getBySale($eSale);
+
+		if($cPayment->count() !== 1) {
+			return;
+		}
+
+		self::doFill($eSale, $cPayment->first(), $cPayment);
 
 	}
 
