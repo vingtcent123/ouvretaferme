@@ -184,7 +184,7 @@ END;
 
 			$data->eDateSelected = $data->cDate[GET('date', 'int')] ?? $data->cDate->first();
 
-			$data->cSaleExisting = \shop\SaleLib::getByCustomerForDate($data->eShop, $data->eDateSelected, $data->eCustomer);
+			$data->cSaleExisting = \shop\SaleLib::getByCustomersForDate($data->eShop, $data->eDateSelected, $data->cCustomerExisting);
 			$data->eSaleReference = $data->cSaleExisting->notEmpty() ? $data->cSaleExisting->first() : new \selling\Sale();
 			
 			$data->cItemExisting = \selling\SaleLib::getItemsBySales($data->cSaleExisting);
@@ -295,7 +295,7 @@ new Page(function($data) {
 
 		}
 
-		$data->cSaleExisting = \shop\SaleLib::getByCustomerForDate($data->eShop, $data->eDate, $data->eCustomer);
+		$data->cSaleExisting = \shop\SaleLib::getByCustomersForDate($data->eShop, $data->eDate, $data->cCustomerExisting);
 		$data->eSaleReference = $data->cSaleExisting->notEmpty() ? $data->cSaleExisting->first() : new \selling\Sale();
 
 		$data->cItemExisting = \selling\SaleLib::getItemsBySales($data->cSaleExisting, withIngredients: TRUE, public: TRUE);
@@ -340,10 +340,16 @@ new Page(function($data) {
 
 		};
 
-		$data->validateSale = function() use($data) {
+		$data->validateSale = function(?Action $action = NULL) use($data) {
 
 			if($data->cSaleExisting->empty()) {
-				throw new RedirectAction(\shop\ShopUi::url($data->eShop));
+
+				if(\shop\SaleLib::hasExpired($data->eShop, $data->eDate, $data->cCustomerExisting)) {
+					throw new RedirectAction(\shop\ShopUi::dateUrl($data->eShop, $data->eDate).'?error=selling:Sale::productsBasket.expired');
+				} else {
+					throw $action ?? new RedirectAction(\shop\ShopUi::url($data->eShop));
+				}
+
 			}
 
 		};
@@ -422,12 +428,7 @@ new Page(function($data) {
 		$data->step = \shop\BasketUi::STEP_CONFIRMATION;
 
 		($data->validateLogged)();
-
-		try {
-			($data->validateSale)();
-		} catch(Action) {
-			throw new ViewAction($data, ':confirmationEmpty');
-		}
+		($data->validateSale)(new ViewAction($data, ':confirmationEmpty'));
 
 		($data->validatePayment)();
 
@@ -447,11 +448,6 @@ new Page(function($data) {
 
 		($data->validateLogged)();
 		($data->validateSale)();
-
-		// Si la vente est déjà payée, on ne peut pas changer de moyen de paiement
-		if($data->eSaleReference['paymentStatus'] === \selling\Sale::PAID) {
-			throw new RedirectAction(\shop\ShopUi::confirmationUrl($data->eShop, $data->eDate));
-		}
 
 		// Si la vente est déjà payée, on ne peut pas changer de moyen de paiement
 		if($data->eSaleReference['paymentStatus'] === \selling\Sale::PAID) {

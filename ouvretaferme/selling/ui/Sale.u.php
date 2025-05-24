@@ -359,7 +359,7 @@ class SaleUi {
 					}
 
 					$h .= '<tr';
-						if($eSale['preparationStatus'] === Sale::CANCELED) {
+						if(in_array($eSale['preparationStatus'], [Sale::CANCELED, Sale::EXPIRED])) {
 							$h .= ' style="opacity: 0.5"';
 						}
 					$h .= '>';
@@ -475,6 +475,12 @@ class SaleUi {
 									} else {
 										$h .= s("Commande restée à l'état de panier et non confirmée par le client.");
 									}
+								$h .= '</td>';
+
+							} else if($eSale['preparationStatus'] === Sale::EXPIRED) {
+
+								$h .= '<td class="sale-item-basket" colspan="3">';
+									$h .= s("Commande non confirmée par le client dont le panier a expiré.");
 								$h .= '</td>';
 
 							} else {
@@ -1509,7 +1515,7 @@ class SaleUi {
 				$statusList .= '<a data-ajax="/selling/sale:doUpdateConfirmedCollection" post-ids="'.$eSale['id'].'" class="dropdown-item">'.s("Annuler la livraison").'</a>';
 			}
 
-			if($eSale['preparationStatus'] === Sale::CANCELED and $eSale->acceptStatusConfirmed()) {
+			if(in_array($eSale['preparationStatus'], [Sale::CANCELED, Sale::EXPIRED]) and $eSale->acceptStatusConfirmed()) {
 				$statusList .= '<a data-ajax="/selling/sale:doUpdateConfirmedCollection" post-ids="'.$eSale['id'].'" class="dropdown-item">'.s("Revalider la vente").'</a>';
 			}
 
@@ -2233,20 +2239,24 @@ class SaleUi {
 				$d->values = [
 					Sale::DRAFT => s("Brouillon"),
 					Sale::BASKET => s("Panier"),
+					Sale::EXPIRED => s("Expiré"),
 					Sale::CONFIRMED => s("Confirmé"),
 					Sale::SELLING => s("En vente"),
 					Sale::PREPARED => s("Préparé"),
 					Sale::DELIVERED => s("Livré"),
 					Sale::CANCELED => s("Annulé"),
+					Sale::CLOSED => \Asset::icon('lock-fill').' '.s("ClôturéF"),
 				];
 				$d->shortValues = [
 					Sale::DRAFT => s("B"),
 					Sale::BASKET => s("P"),
+					Sale::EXPIRED => s("E"),
 					Sale::CONFIRMED => s("C"),
 					Sale::SELLING => s("V"),
 					Sale::PREPARED => s("P"),
 					Sale::DELIVERED => s("L"),
 					Sale::CANCELED => s("A"),
+					Sale::CLOSED => \Asset::icon('lock-fill'),
 				];
 				break;
 

@@ -279,7 +279,7 @@ Sale:
   shippingVatFixed: bool = FALSE
   shipping: ?decimal(8, 2, 0.01, null)
   shippingExcludingVat: ?decimal(8, 2)
-  preparationStatus: enum(COMPOSITION, DRAFT, BASKET, CONFIRMED, SELLING, PREPARED, DELIVERED, CANCELED) = DRAFT
+  preparationStatus: enum(COMPOSITION, DRAFT, BASKET, CONFIRMED, SELLING, PREPARED, DELIVERED, CANCELED, EXPIRED, CLOSED) = DRAFT
   paymentMethod: ?payment\Method
   paymentStatus: ?enum(NOT_PAID, PAID)
   onlinePaymentStatus: ?enum(INITIALIZED, SUCCESS, FAILURE)

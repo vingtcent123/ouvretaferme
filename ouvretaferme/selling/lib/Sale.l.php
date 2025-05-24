@@ -206,7 +206,7 @@ class SaleLib extends SaleCrud {
 
 		$search->validateSort(['id', 'firstName', 'lastName', 'deliveredAt', 'items', 'priceExcludingVat', 'preparationStatus'], 'preparationStatus-');
 
-		$sort = 'FIELD(preparationStatus, "'.Sale::SELLING.'", "'.Sale::DRAFT.'", "'.Sale::CONFIRMED.'", "'.Sale::PREPARED.'", "'.Sale::DELIVERED.'", "'.Sale::CANCELED.'")';
+		$sort = 'FIELD(preparationStatus, "'.Sale::SELLING.'", "'.Sale::DRAFT.'", "'.Sale::CONFIRMED.'", "'.Sale::PREPARED.'", "'.Sale::DELIVERED.'", "'.Sale::EXPIRED.'", "'.Sale::CANCELED.'")';
 
 		if(str_starts_with($search->getSort(), 'firstName') or str_starts_with($search->getSort(), 'lastName')) {
 			Sale::model()->join(Customer::model(), 'm1.customer = m3.id');
@@ -525,6 +525,10 @@ class SaleLib extends SaleCrud {
 			$e['paymentStatus'] = NULL;
 		}
 
+		if($e['preparationStatus'] === Sale::BASKET) {
+			$e['expiresAt'] = new \Sql('NOW() + INTERVAL 1 HOUR');
+		}
+
 		$e['document'] = ConfigurationLib::getNextDocumentSales($e['farm']);
 
 		try {
@@ -823,9 +827,16 @@ class SaleLib extends SaleCrud {
 			$e['statusAt'] = new \Sql('NOW()');
 			$e['statusBy'] = \user\ConnectionLib::getOnline();
 
-			if($e['preparationStatus'] === Sale::BASKET) {
+			if($e['preparationStatus'] !== Sale::CANCELED) {
+
 				$properties[] = 'expiresAt';
-				$e['expiresAt'] = new \Sql('NOW() + INTERVAL 1 HOUR');
+
+				if($e['preparationStatus'] === Sale::BASKET) {
+					$e['expiresAt'] = new \Sql('NOW() + INTERVAL 1 HOUR');
+				} else {
+					$e['expiresAt'] = NULL;
+				}
+
 			}
 
 		}
@@ -880,7 +891,7 @@ class SaleLib extends SaleCrud {
 				MarketLib::updateSaleMarket($e);
 			}
 
-			if($e['origin'] === Sale::SALE_MARKET) {
+			if($e->isMarketSale()) {
 				MarketLib::updateSaleMarket($e['marketParent']);
 			}
 
@@ -1302,20 +1313,6 @@ class SaleLib extends SaleCrud {
 		// A filtrer selon les pays le cas échéant
 
 		return \Setting::get('selling\vatRates');
-
-	}
-
-	public static function cancelExpired(): void {
-
-		$cSale = \selling\Sale::model()
-			->select(\selling\Sale::getSelection())
-			->wherePreparationStatus(Sale::BASKET)
-			->whereExpiresAt('<', new \Sql('NOW()'))
-			->getCollection();
-
-		foreach($cSale as $eSale) {
-			\selling\SaleLib::updatePreparationStatus($eSale, \selling\Sale::CANCELED);
-		}
 
 	}
 

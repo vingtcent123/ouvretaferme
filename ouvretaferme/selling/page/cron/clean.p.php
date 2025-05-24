@@ -5,10 +5,5 @@ new Page()
 
 		\selling\PdfLib::clean();
 
-	}, interval: '19 5 * * *')
-	->cron('expired', function($data) {
-
-		\selling\SaleLib::cancelExpired();
-
-	}, interval: '15 * * * *');
+	}, interval: '19 5 * * *');
 ?>

@@ -60,11 +60,7 @@ class SaleLib {
 
 	}
 
-	public static function getByCustomerForDate(Shop $eShop, Date $eDate, \selling\Customer $eCustomer): \Collection {
-
-		if($eCustomer->empty()) {
-			return new \Collection();
-		}
+	public static function getCustomersByShop(Shop $eShop, \selling\Customer $eCustomer): \Collection {
 
 		if($eShop['shared']) {
 
@@ -76,22 +72,42 @@ class SaleLib {
 				->whereFarm('IN', $eShop['cShare']->getColumn('farm'))
 				->getCollection();
 
-			if($cCustomer->empty()) {
-				return new \Collection();
-			}
-
-			\selling\Sale::model()->whereCustomer('IN', $cCustomer);
+			return $cCustomer;
 
 		} else {
-			\selling\Sale::model()->whereCustomer($eCustomer);
+			return new \Collection([$eCustomer]);
+		}
+
+	}
+
+	public static function getByCustomersForDate(Shop $eShop, Date $eDate, \Collection $cCustomer): \Collection {
+
+		if($cCustomer->empty()) {
+			return new \Collection();
 		}
 
 		return \selling\Sale::model()
 			->select(\selling\Sale::getSelection())
 			->whereShop($eShop)
 			->whereShopDate($eDate)
-			->wherePreparationStatus('NOT IN', [\selling\Sale::CANCELED, \selling\Sale::DRAFT])
+			->whereCustomer('IN', $cCustomer)
+			->wherePreparationStatus('NOT IN', [\selling\Sale::CANCELED, \selling\Sale::EXPIRED, \selling\Sale::DRAFT])
 			->getCollection(index: 'farm');
+
+	}
+
+	public static function hasExpired(Shop $eShop, Date $eDate, \Collection $cCustomer): bool {
+
+		if($cCustomer->empty()) {
+			return FALSE;
+		}
+
+		return \selling\Sale::model()
+			->whereShop($eShop)
+			->whereShopDate($eDate)
+			->whereCustomer('IN', $cCustomer)
+			->wherePreparationStatus(\selling\Sale::EXPIRED)
+			->exists();
 
 	}
 
@@ -525,7 +541,8 @@ class SaleLib {
 
 		\selling\Sale::model()->beginTransaction();
 
-			$cSale = \shop\SaleLib::getByCustomerForDate($eShop, $eDate, $eCustomer)->validate('acceptStatusCanceledByCustomer');
+			$cCustomer = \shop\SaleLib::getCustomersByShop($eShop, $eCustomer);
+			$cSale = \shop\SaleLib::getByCustomersForDate($eShop, $eDate, $cCustomer)->validate('acceptStatusCanceledByCustomer');
 			$cSale->setColumn('shop', $eShop);
 			$cSale->setColumn('shopDate', $eDate);
 
@@ -618,6 +635,26 @@ class SaleLib {
 		self::notify('salePaid', $eSale, $eSale['customer']['user'], $cItem);
 
 		\selling\Sale::model()->commit();
+
+	}
+
+	public static function cancelExpired(): void {
+
+		$cSale = \selling\Sale::model()
+			->select(\selling\Sale::getSelection())
+			->wherePreparationStatus(\selling\Sale::BASKET)
+			->whereExpiresAt('<', new \Sql('NOW()'))
+			->getCollection();
+
+		foreach($cSale as $eSale) {
+
+			$cItem = \selling\SaleLib::getItems($eSale);
+
+			\selling\SaleLib::updatePreparationStatus($eSale, \selling\Sale::EXPIRED);
+
+			ProductLib::addAvailable($eSale, $cItem);
+
+		}
 
 	}
 

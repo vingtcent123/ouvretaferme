@@ -68,6 +68,7 @@ class AlertUi {
 			'Sale::from.check' => s("Vous n'avez pas indiqué l'origine de la vente"),
 			'Sale::market.status' => s("Vous ne pouvez pas mettre à jour une vente terminée ou annulée."),
 			'Sale::productsBasket.check' => s("Un produit n'est plus disponible dans la quantité que vous avez demandée, veuillez vérifier votre panier et revalider votre commande."),
+			'Sale::productsBasket.expired' => s("Votre panier a expiré, mais vous pouvez reprendre votre commande si les ventes sont encore ouvertes."),
 
 
 			'Sale::generateDeliveryNote' => s("Vous ne pouvez générer de bon de livraison que pour les ventes livrées !"),
@@ -144,6 +145,7 @@ class AlertUi {
 			][$options['type']].$options['actions'],
 			'Sale::customerUpdated' => s("Le client a bien été mis à jour."),
 			'Sale::paymentMethodUpdated' => s("Le moyen de paiement a bien été modifié."),
+			'Sale::userCanceled' => s("La commande a bien été annulée."),
 			'Stock::updated' => s("Le stock a bien été mis à jour pour ce produit."),
 
 			'Pdf::orderFormSent' => s("Le devis a bien été envoyé par e-mail au client."),

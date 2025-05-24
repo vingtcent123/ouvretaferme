@@ -47,10 +47,6 @@ td.sale-item-basket {
 	text-align: center;
 }
 
-td.sale-item-basket {
-	color: var(--basket);
-}
-
 td.sale-item-payment-type {
 	line-height: 1.2;
 }
@@ -249,14 +245,17 @@ a.sale-preparation-status-action {
 	color: white;
 }
 
+.sale-preparation-status-expired,
 .sale-preparation-status-canceled {
 	color: var(--muted);
 }
 
+.sale-preparation-status-outline.sale-preparation-status-expired,
 .sale-preparation-status-outline.sale-preparation-status-canceled {
 	border-color: var(--muted);
 }
 
+.sale-preparation-status-label.sale-preparation-status-expired,
 .sale-preparation-status-label.sale-preparation-status-canceled {
 	background-color: var(--muted);
 	color: white;

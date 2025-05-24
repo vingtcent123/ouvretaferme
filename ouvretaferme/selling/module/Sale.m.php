@@ -25,6 +25,8 @@ abstract class SaleElement extends \Element {
 	const PREPARED = 'prepared';
 	const DELIVERED = 'delivered';
 	const CANCELED = 'canceled';
+	const EXPIRED = 'expired';
+	const CLOSED = 'closed';
 
 	const NOT_PAID = 'not-paid';
 	const PAID = 'paid';
@@ -82,7 +84,7 @@ class SaleModel extends \ModuleModel {
 			'shippingVatFixed' => ['bool', 'cast' => 'bool'],
 			'shipping' => ['decimal', 'digits' => 8, 'decimal' => 2, 'min' => 0.01, 'max' => NULL, 'null' => TRUE, 'cast' => 'float'],
 			'shippingExcludingVat' => ['decimal', 'digits' => 8, 'decimal' => 2, 'null' => TRUE, 'cast' => 'float'],
-			'preparationStatus' => ['enum', [\selling\Sale::COMPOSITION, \selling\Sale::DRAFT, \selling\Sale::BASKET, \selling\Sale::CONFIRMED, \selling\Sale::SELLING, \selling\Sale::PREPARED, \selling\Sale::DELIVERED, \selling\Sale::CANCELED], 'cast' => 'enum'],
+			'preparationStatus' => ['enum', [\selling\Sale::COMPOSITION, \selling\Sale::DRAFT, \selling\Sale::BASKET, \selling\Sale::CONFIRMED, \selling\Sale::SELLING, \selling\Sale::PREPARED, \selling\Sale::DELIVERED, \selling\Sale::CANCELED, \selling\Sale::EXPIRED, \selling\Sale::CLOSED], 'cast' => 'enum'],
 			'paymentMethod' => ['element32', 'payment\Method', 'null' => TRUE, 'cast' => 'element'],
 			'paymentStatus' => ['enum', [\selling\Sale::NOT_PAID, \selling\Sale::PAID], 'null' => TRUE, 'cast' => 'enum'],
 			'onlinePaymentStatus' => ['enum', [\selling\Sale::INITIALIZED, \selling\Sale::SUCCESS, \selling\Sale::FAILURE], 'null' => TRUE, 'cast' => 'enum'],
