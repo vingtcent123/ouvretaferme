@@ -359,6 +359,7 @@ class SaleLib extends SaleCrud {
 					->select(Pdf::getSelection())
 					->delegateCollection('sale', 'type')
 			])
+			->select(['cPayment' => PaymentLib::delegateBySale()])
 			->whereCustomer($eCustomer)
 			->sort(new \Sql('FIELD(preparationStatus, "'.Sale::DRAFT.'", "'.Sale::CONFIRMED.'", "'.Sale::PREPARED.'", "other") DESC, id DESC'))
 			->getCollection();
