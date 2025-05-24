@@ -16,6 +16,22 @@ new \selling\ProductPage()
 		$data->e['cCategory'] = \selling\CategoryLib::getByFarm($data->e['farm']);
 		$data->e['cUnit'] = \selling\UnitLib::getByFarm($data->e['farm']);
 
+		if(get_exists('from')) {
+
+			$data->e->merge(\selling\ProductLib::getById(GET('from'))->validateProperty('farm', $data->eFarm));
+			$data->e['status'] = \shop\Product::ACTIVE;
+
+		} else {
+			$data->e->merge([
+				'quality' => $data->eFarm['quality'],
+				'vat' => $data->eFarm->getSelling('defaultVat'),
+				// L'utilisateur doit explicitement choisir la clientèle pour les produits composés
+				'private' => $data->e['composition'] === FALSE,
+				'pro' => $data->e['composition'] === FALSE,
+				'unit' => $data->e['cUnit']->find(fn($eUnit) => $eUnit['fqn'] === ($data->e['composition'] ? 'unit' : 'kg'), limit: 1),
+			]);
+		}
+
 		throw new ViewAction($data);
 
 	})

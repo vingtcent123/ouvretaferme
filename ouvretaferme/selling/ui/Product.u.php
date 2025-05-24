@@ -737,6 +737,8 @@ class ProductUi {
 			if($eProduct['composition']) {
 				$h .= '<a href="/selling/sale:create?farm='.$eProduct['farm']['id'].'&compositionOf='.$eProduct['id'].'" class="dropdown-item">'.s("Nouvelle composition").'</a>';
 			}
+			$h .= '<div class="dropdown-divider"></div>';
+			$h .= '<a href="/selling/product:create?farm='.$eProduct['farm']['id'].'&from='.$eProduct['id'].'" class="dropdown-item">'.s("Dupliquer le produit").'</a>';
 			$h .= '<a data-ajax="/selling/product:doDelete" post-id="'.$eProduct['id'].'" class="dropdown-item" data-confirm="'.s("Confirmer la suppression du produit ?").'">'.s("Supprimer le produit").'</a>';
 			if($eProduct->acceptEnableStock() or $eProduct->acceptDisableStock()) {
 				$h .= '<div class="dropdown-divider"></div>';
@@ -761,23 +763,18 @@ class ProductUi {
 
 		$form = new \util\FormUi();
 
-		$eProduct->merge([
-			'quality' => $eFarm['quality'],
-			'vat' => $eFarm->getSelling('defaultVat'),
-			// L'utilisateur doit explicitement choisir la clientèle pour les produits composés
-			'private' => $eProduct['composition'] === FALSE,
-			'pro' => $eProduct['composition'] === FALSE,
-			'unit' => $eProduct['cUnit']->find(fn($eUnit) => $eUnit['fqn'] === ($eProduct['composition'] ? 'unit' : 'kg'), limit: 1),
-		]);
-
-		$h = '';
-
-		$h .= $form->openAjax('/selling/product:doCreate', ['id' => 'product-create']);
+		$h = $form->openAjax('/selling/product:doCreate', ['id' => 'product-create']);
 
 			$h .= $form->asteriskInfo();
 
 			$h .= $form->hidden('farm', $eFarm['id']);
 			$h .= $form->hidden('composition', $eProduct['composition']);
+
+			if($eProduct->exists()) {
+				$h .= '<div class="util-block-help">';
+					$h .= s("Vous pouvez maintenant paramétrer le nouveau produit que vous vous apprêtez à créer sur la base de <u>{product}</u>.", ['product' => encode($eProduct['name'])]);
+				$h .= '</div>';
+			}
 
 			if($createFirst === FALSE) {
 
@@ -844,7 +841,7 @@ class ProductUi {
 
 		return new \Panel(
 			id: 'panel-product-create',
-			title: s("Ajouter un produit"),
+			title: $eProduct->exists() ? s("Dupliquer un produit") : s("Ajouter un produit"),
 			body: $h
 		);
 

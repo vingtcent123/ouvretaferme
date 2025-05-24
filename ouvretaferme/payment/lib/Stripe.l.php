@@ -51,6 +51,11 @@ class StripeLib {
 
 	public static function webhookPaymentIntent(StripeFarm $eStripeFarm, array $event): void {
 
+		if(($event['data']['object']['metadata']['source'] ?? NULL) !== 'otf') {
+			trigger_error('OTF source not found for event #'.$event['id'], E_USER_WARNING);
+			return;
+		}
+
 		$eSale = self::getSaleFromPaymentIntent($eStripeFarm, $event);
 		$eSale['shop']['farm'] = $eSale['farm']; // Uniquement sur les boutiques personnelles
 

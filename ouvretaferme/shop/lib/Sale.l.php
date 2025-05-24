@@ -442,6 +442,9 @@ class SaleLib {
 		$cancelUrl = ShopUi::paymentUrl($eSale['shop'], $eSale['shopDate']);
 
 		$arguments = [
+			'payment_intent_data' => [
+				'metadata' => ['source' => 'otf']
+			],
 			'client_reference_id' => $eCustomer['id'],
 			'line_items' => $items,
 			'success_url' => $successUrl,
