@@ -420,7 +420,7 @@ class DateLib extends DateCrud {
 					$cSale = \selling\Sale::model()
 						->select(\selling\Sale::getSelection())
 						->whereShopDate($eDate)
-						->wherePreparationStatus(\selling\Sale::BASKET)
+						->wherePreparationStatus('IN', [\selling\Sale::BASKET, \selling\Sale::EXPIRED])
 						->getCollection();
 
 					\selling\SaleLib::updatePreparationStatusCollection($cSale, \selling\Sale::CANCELED);
