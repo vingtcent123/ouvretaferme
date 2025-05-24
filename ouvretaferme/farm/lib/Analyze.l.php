@@ -4,10 +4,21 @@ namespace farm;
 class AnalyzeLib {
 
 	public static function getActionMonths(\farm\Action $eAction, Category $eCategory, int $year): array {
+		return self::getActionPeriod('month', $eAction, $eCategory, $year);
+	}
+
+	public static function getActionWeeks(\farm\Action $eAction, Category $eCategory, int $year): array {
+		return self::getActionPeriod('week', $eAction, $eCategory, $year);
+	}
+
+	protected static function getActionPeriod(string $period, \farm\Action $eAction, Category $eCategory, int $year): array {
 
 		$ccTimesheet = \series\Timesheet::model()
 			->select([
-				'month' => new \Sql('EXTRACT(MONTH FROM date)', 'int'),
+				$period => match($period) {
+					'week' => new \Sql('WEEK(date, 1)', 'int'),
+					'month' => new \Sql('EXTRACT(MONTH FROM date)', 'int')
+				},
 				'time' => new \Sql('SUM(m1.time)'),
 				'user' => ['firstName', 'lastName', 'vignette']
 			])
@@ -15,17 +26,17 @@ class AnalyzeLib {
 			->where('m2.action', $eAction, if: $eAction->notEmpty())
 			->where('m2.category', $eCategory)
 			->where(new \Sql('EXTRACT(YEAR FROM date)'), $year)
-			->group(new \Sql('m1_month, m1_user'))
+			->group(new \Sql('m1_'.$period.', m1_user'))
 			->sort(new \Sql('m1_time DESC'))
-			->getCollection(NULL, NULL, ['month', 'user']);
+			->getCollection(NULL, NULL, [$period, 'user']);
 
-		$cTimesheetMonth = new \Collection();
+		$cTimesheetPeriod = new \Collection();
 		$cTimesheetUser = new \Collection();
 
-		foreach($ccTimesheet as $month => $cTimesheet) {
+		foreach($ccTimesheet as $value => $cTimesheet) {
 
-			$cTimesheetMonth[$month] = new \series\Timesheet([
-				'month' => $month,
+			$cTimesheetPeriod[$value] = new \series\Timesheet([
+				$period => $value,
 				'time' => $cTimesheet->sum('time'),
 				'cTimesheetUser' => $cTimesheet
 			]);
@@ -47,7 +58,7 @@ class AnalyzeLib {
 
 		$cTimesheetUser->sort(['time' => SORT_DESC]);
 
-		return [$cTimesheetMonth, $cTimesheetUser];
+		return [$cTimesheetPeriod, $cTimesheetUser];
 
 	}
 

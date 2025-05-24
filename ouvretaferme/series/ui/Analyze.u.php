@@ -630,7 +630,7 @@ class AnalyzeUi {
 
 	}
 
-	public function getPlantTime(\plant\Plant $ePlant, int $year, \Collection $cPlantTimesheet, \Collection $cTimesheetByAction, \Collection $cTimesheetByUser, \Collection $cPlantMonth, \Collection $cPlantMonthBefore): \Panel {
+	public function getPlantTime(\plant\Plant $ePlant, int $year, \Collection $cPlantTimesheet, \Collection $cTimesheetByAction, \Collection $cTimesheetByUser, \Collection $cPlantMonth, \Collection $cPlantMonthBefore, \Collection $cPlantWeek, \Collection $cPlantWeekBefore): \Panel {
 
 		$h = '';
 
@@ -653,6 +653,11 @@ class AnalyzeUi {
 					$h .= $this->getPeriodMonthTable($cPlantMonth);
 					$h .= $this->getPeriodMonthChart($cPlantMonth, $year, $cPlantMonthBefore, $year - 1);
 				$h .= '</div>';
+
+				$h .= '<br/>';
+
+				$h .= '<h3>'.s("Temps de travail hebdomadaire").'</h3>';
+				$h .= $this->getPeriodWeekChart($cPlantWeek, $year, $cPlantWeekBefore, $year - 1);
 
 			} else {
 				$h .= '<p class="util-empty">';

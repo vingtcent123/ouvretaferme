@@ -218,7 +218,7 @@ class AnalyzeLib {
 
 	}
 
-	public static function getPlantMonths(\plant\Plant $ePlant, int $year): \Collection {
+	public static function getPlantCultivations(\plant\Plant $ePlant, int $year): \Collection {
 
 		// On récupère les séries potentiellement concernées par l'année
 		$cCultivation = Cultivation::model()
@@ -226,6 +226,20 @@ class AnalyzeLib {
 			->wherePlant($ePlant)
 			->whereSeason('IN', [$year - 1, $year, $year + 1])
 			->getCollection();
+
+		return $cCultivation;
+
+	}
+
+	public static function getPlantMonths(\plant\Plant $ePlant, \Collection $cCultivation, int $year): \Collection {
+		return self::getPlantPeriod('month', $ePlant, $cCultivation, $year);
+	}
+
+	public static function getPlantWeeks(\plant\Plant $ePlant, \Collection $cCultivation, int $year): \Collection {
+		return self::getPlantPeriod('week', $ePlant, $cCultivation, $year);
+	}
+
+	public static function getPlantPeriod(string $period, \plant\Plant $ePlant, \Collection $cCultivation, int $year): \Collection {
 
 		if($cCultivation->empty()) {
 			return new \Collection();
@@ -235,7 +249,10 @@ class AnalyzeLib {
 
 		return Timesheet::model()
 			->select([
-				'month' => new \Sql('EXTRACT(MONTH FROM date)', 'int'),
+				$period => match($period) {
+					'week' => new \Sql('WEEK(date, 1)', 'int'),
+					'month' => new \Sql('EXTRACT(MONTH FROM date)', 'int')
+				},
 				'time' => new \Sql('SUM(IF(m1.series IS NOT NULL AND m1.cultivation IS NULL, m1.time / m2.plants, m1.time))')
 			])
 			->join(Series::model(), 'm2.id = m1.series', 'LEFT')
@@ -248,8 +265,8 @@ class AnalyzeLib {
 				fn() => $this->where('m1.cultivation', 'IN', $cCultivation),
 			)
 			->where(new \Sql('EXTRACT(YEAR FROM date)'), $year)
-			->group(new \Sql('m1_month'))
-			->getCollection(NULL, NULL, 'month');
+			->group(new \Sql('m1_'.$period))
+			->getCollection(NULL, NULL, $period);
 
 	}
 

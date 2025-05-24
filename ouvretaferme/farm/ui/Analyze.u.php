@@ -10,7 +10,7 @@ class AnalyzeUi {
 
 	}
 
-	public function getTime(\farm\Action $eAction, Category $eCategory, int $year, \Collection $cTimesheetTarget, \Collection $cTimesheetMonth, \Collection $cTimesheetMonthBefore, \Collection $cTimesheetUser): \Panel {
+	public function getTime(\farm\Action $eAction, Category $eCategory, int $year, \Collection $cTimesheetTarget, \Collection $cTimesheetMonth, \Collection $cTimesheetMonthBefore, \Collection $cTimesheetWeek, \Collection $cTimesheetWeekBefore, \Collection $cTimesheetUser): \Panel {
 
 		$h = '';
 
@@ -21,7 +21,6 @@ class AnalyzeUi {
 			if($cTimesheetMonth->notEmpty()) {
 
 				$h .= '<br/>';
-
 				$h .= '<h3>'.s("Temps de travail mensuel").'</h3>';
 				$h .= '<div class="analyze-chart-table">';
 					$h .= new \series\AnalyzeUi()->getPeriodMonthTable($cTimesheetMonth, $eCategory['farm']->canPersonalData() ? $cTimesheetUser : new \Collection());
@@ -32,6 +31,13 @@ class AnalyzeUi {
 				$h .= '<p class="util-empty">';
 					$h .= s("Il n'y a aucune intervention en {value}.", $year);
 				$h .= '</p>';
+			}
+
+			if($cTimesheetWeek->notEmpty()) {
+
+				$h .= '<br/>';
+				$h .= '<h3>'.s("Temps de travail hebdomadaire").'</h3>';
+				$h .= new \series\AnalyzeUi()->getPeriodWeekChart($cTimesheetWeek, $year, $cTimesheetWeekBefore, $year - 1);
 			}
 
 		} else {

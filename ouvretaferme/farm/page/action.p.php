@@ -59,6 +59,9 @@ new Page()
 		$data->cTimesheetTarget = \farm\AnalyzeLib::getActionTimesheet($data->eAction, $data->eCategory, $data->year);
 		[$data->cTimesheetMonth, $data->cTimesheetUser] = \farm\AnalyzeLib::getActionMonths($data->eAction, $data->eCategory, $data->year);
 		[$data->cTimesheetMonthBefore] = \farm\AnalyzeLib::getActionMonths($data->eAction, $data->eCategory, $data->year - 1);
+		
+		[$data->cTimesheetWeek] = \farm\AnalyzeLib::getActionWeeks($data->eAction, $data->eCategory, $data->year);
+		[$data->cTimesheetWeekBefore] = \farm\AnalyzeLib::getActionWeeks($data->eAction, $data->eCategory, $data->year - 1);
 
 		throw new ViewAction($data);
 

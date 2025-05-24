@@ -40,7 +40,7 @@ new AdaptativeView('analyzeSales', function($data, PanelTemplate $t) {
 });
 
 new AdaptativeView('analyzeTime', function($data, PanelTemplate $t) {
-	return new \series\AnalyzeUi()->getPlantTime($data->e, $data->year, $data->cPlantTimesheet, $data->cTimesheetByAction, $data->cTimesheetByUser, $data->cPlantMonth, $data->cPlantMonthBefore);
+	return new \series\AnalyzeUi()->getPlantTime($data->e, $data->year, $data->cPlantTimesheet, $data->cTimesheetByAction, $data->cTimesheetByUser, $data->cPlantMonth, $data->cPlantMonthBefore, $data->cPlantWeek, $data->cPlantWeekBefore);
 });
 
 new AdaptativeView('create', function($data, PanelTemplate $t) {

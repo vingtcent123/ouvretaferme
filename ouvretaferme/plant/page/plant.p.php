@@ -108,8 +108,14 @@ new \plant\PlantPage()
 		$data->cPlantTimesheet = \series\AnalyzeLib::getPlantTimesheet($data->e, $data->year);
 		[$data->cTimesheetByAction, $data->cTimesheetByUser] = \series\AnalyzeLib::getActionTimesheetByPlant($data->e, $data->year);
 
-		$data->cPlantMonth = \series\AnalyzeLib::getPlantMonths($data->e, $data->year);
-		$data->cPlantMonthBefore = \series\AnalyzeLib::getPlantMonths($data->e, $data->year - 1);
+		$cCultivationYear = \series\AnalyzeLib::getPlantCultivations($data->e, $data->year);
+		$cCultivationYearBefore = \series\AnalyzeLib::getPlantCultivations($data->e, $data->year - 1);
+
+		$data->cPlantMonth = \series\AnalyzeLib::getPlantMonths($data->e, $cCultivationYear, $data->year);
+		$data->cPlantMonthBefore = \series\AnalyzeLib::getPlantMonths($data->e, $cCultivationYearBefore, $data->year - 1);
+
+		$data->cPlantWeek = \series\AnalyzeLib::getPlantWeeks($data->e, $cCultivationYear, $data->year);
+		$data->cPlantWeekBefore = \series\AnalyzeLib::getPlantWeeks($data->e, $cCultivationYearBefore, $data->year - 1);
 
 		throw new ViewAction($data);
 

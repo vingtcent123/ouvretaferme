@@ -44,6 +44,6 @@ new JsonView('doDelete', function($data, AjaxTemplate $t) {
 });
 
 new AdaptativeView('analyzeTime', function($data, PanelTemplate $t) {
-	return new \farm\AnalyzeUi()->getTime($data->eAction, $data->eCategory, $data->year, $data->cTimesheetTarget, $data->cTimesheetMonth, $data->cTimesheetMonthBefore, $data->cTimesheetUser);
+	return new \farm\AnalyzeUi()->getTime($data->eAction, $data->eCategory, $data->year, $data->cTimesheetTarget, $data->cTimesheetMonth, $data->cTimesheetMonthBefore, $data->cTimesheetWeek, $data->cTimesheetWeekBefore, $data->cTimesheetUser);
 });
 ?>
