@@ -449,7 +449,10 @@ new AdaptativeView('/ferme/{id}/produits', function($data, FarmTemplate $t) {
 			'farm' => $data->eFarm,
 			'composition' => FALSE,
 			'cCategory' => $data->cCategory,
-			'cUnit' => $data->cUnit
+			'cUnit' => $data->cUnit,
+			'unit' => new \selling\Unit(),
+			'private' => TRUE,
+			'pro' => FALSE
 		]), TRUE)->body;
 
 	} else {
