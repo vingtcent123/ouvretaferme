@@ -492,8 +492,8 @@ class CultivationLib extends CultivationCrud {
 
 		return match($eCultivation['sliceUnit']) {
 			Cultivation::PERCENT => (int)($eSlice['partPercent'] / 100 * $area),
-			Cultivation::LENGTH => ($eSeries['use'] === Cultivation::LENGTH) ? (int)($eSlice['partLength'] / ($eSeries['length'] ?? $eSeries['lengthTarget']) * $area) : NULL,
-			Cultivation::AREA => ($eSeries['use'] === Cultivation::AREA) ? (int)($eSlice['partArea']) : NULL,
+			Cultivation::LENGTH => ($eSeries['use'] === Series::BED) ? (int)($eSlice['partLength'] / ($eSeries['length'] ?? $eSeries['lengthTarget']) * $area) : NULL,
+			Cultivation::AREA => ($eSeries['use'] === Series::BLOCK) ? (int)($eSlice['partArea']) : NULL,
 		};
 
 	}
