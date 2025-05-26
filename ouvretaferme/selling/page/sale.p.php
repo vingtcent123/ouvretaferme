@@ -72,10 +72,6 @@ new \selling\SalePage()
 	});
 
 new \selling\SalePage()
-	->applyElement(function($data, \selling\Sale $e) {
-		$e['oldPaymentStatus'] = $e['paymentStatus'];
-		$e['paymentMethod'] = $e['paymentMethod'];
-	})
 	->doUpdate(function($data) {
 
 		throw new ReloadAction('selling', $data->e->isComposition() ? 'Product::updatedComposition' : 'Sale::updated');

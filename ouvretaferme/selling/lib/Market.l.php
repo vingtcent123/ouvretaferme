@@ -247,9 +247,6 @@ class MarketLib {
 		// Supprime les moyens de paiement vide / à 0€
 		PaymentLib::cleanBySale($eSale);
 
-		$eSale['oldPaymentMethod'] = $eSale['paymentMethod'];
-		$eSale['oldPaymentStatus'] = $eSale['paymentStatus'];
-
 		$ePaymentMethodLast = Payment::model()
 			->select('method')
 			->whereSale($eSale)
@@ -265,7 +262,7 @@ class MarketLib {
 
 		$eSale->build($properties, $inputValues, new \Properties('update'));
 
-		SaleLib::update($eSale, $properties);
+		SaleLib::	update($eSale, $properties);
 
 		Sale::model()->commit();
 	}

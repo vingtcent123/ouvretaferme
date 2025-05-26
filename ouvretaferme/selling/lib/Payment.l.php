@@ -101,19 +101,27 @@ class PaymentLib extends PaymentCrud {
 
 		$eSale->expects(['customer', 'farm']);
 
-		$ePayment = Payment::model()
-			->select(Payment::getSelection())
-			->whereFarm($eSale['farm'])
-			->whereSale($eSale)
-			->whereMethod($eMethod)
-			->get();
+		// Dans le cas des paiements hors ligne, on tente de récupérer le paiement existant (pas de doublon)
+		if($eMethod['online'] === FALSE) {
 
-		if($ePayment->notEmpty()) {
-			self::fill($eSale, $eMethod);
-			return;
+			$ePayment = Payment::model()
+				->select(Payment::getSelection())
+				->whereFarm($eSale['farm'])
+				->whereSale($eSale)
+				->whereMethod($eMethod)
+				->get();
+
+			if($ePayment->notEmpty()) {
+				self::fill($eSale, $eMethod);
+				return;
+			}
+
+			$amount = $eSale['priceIncludingVat'] - self::sumTotalBySale($eSale);
+
+		} else {
+			$amount = $eSale['priceIncludingVat'];
 		}
 
-		$amount = $eSale['priceIncludingVat'] - self::sumTotalBySale($eSale);
 		$onlineStatus = ($eMethod['fqn'] ?? NULL) === \payment\MethodLib::ONLINE_CARD ? Payment::INITIALIZED : NULL;
 
 		$ePayment = new Payment([
@@ -228,6 +236,13 @@ class PaymentLib extends PaymentCrud {
 			->whereSale($eSale)
 			->whereMethod($eMethod)
 			->delete();
+
+	}
+
+	public static function putBySale(Sale $eSale, \payment\Method $eMethod): void {
+
+		self::deleteBySale($eSale);
+		self::createBySale($eSale, $eMethod);
 
 	}
 

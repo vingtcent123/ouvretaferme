@@ -1130,6 +1130,8 @@ class Sale extends SaleElement {
 
 				$this->expects(['farm']);
 
+				$this['paymentMethodBuilt'] = TRUE;
+
 				return \payment\MethodLib::isSelectable($this['farm'], $eMethod);
 
 			})

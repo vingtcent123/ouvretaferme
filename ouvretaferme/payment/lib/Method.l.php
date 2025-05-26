@@ -20,12 +20,13 @@ class MethodLib extends MethodCrud {
 	public static function isSelectable(\farm\Farm $eFarm, Method $eMethod): bool {
 
 		return Method::model()
+			->select(Method::getSelection())
 			->or(
 				fn() => $this->whereFarm(NULL),
 				fn() => $this->whereFarm($eFarm)
 			)
 			->whereOnline(FALSE)
-			->exists($eMethod);
+			->get($eMethod);
 	}
 
 	public static function getByFarm(\farm\Farm $eFarm, ?bool $online, ?bool $onlyActive = TRUE): \Collection {
