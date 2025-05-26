@@ -57,7 +57,7 @@ class BasketLib {
 		foreach($cProduct as $eProduct) {
 
 			$eProductSelling = $eProduct['product'];
-			$numberOrdered = round($products[$eProductSelling['id']]['number'] ?? 0.0, 2);
+			$numberOrdered = round((float)($products[$eProductSelling['id']]['number'] ?? 0.0), 2);
 
 			if($numberOrdered === 0.0) {
 				continue;
