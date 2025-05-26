@@ -244,6 +244,9 @@ class MarketLib {
 
 		Sale::model()->beginTransaction();
 
+		// Supprime les moyens de paiement vide / à 0€
+		PaymentLib::cleanBySale($eSale);
+
 		$eSale['oldPaymentMethod'] = $eSale['paymentMethod'];
 		$eSale['oldPaymentStatus'] = $eSale['paymentStatus'];
 

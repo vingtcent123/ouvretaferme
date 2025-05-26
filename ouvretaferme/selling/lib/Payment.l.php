@@ -245,5 +245,17 @@ class PaymentLib extends PaymentCrud {
 			->delete();
 	}
 
+	public static function cleanBySale(Sale $eSale): void {
+
+		$eSale->expects(['id', 'farm']);
+
+		Payment::model()
+			->whereSale($eSale)
+			->whereFarm($eSale['farm'])
+			->where('amountIncludingVat IS NULL OR amountIncludingVat = 0')
+			->delete();
+
+	}
+
 }
 ?>
