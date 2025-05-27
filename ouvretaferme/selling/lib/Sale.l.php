@@ -898,12 +898,19 @@ class SaleLib extends SaleCrud {
 		}
 
 		if($emptyPaymentMethod) {
+
 			\selling\PaymentLib::deleteBySale($e);
+
 		} else if(
+
 			in_array('paymentMethod', $properties) and
-			isset($e['paymentMethodBuilt'])
+			isset($e['paymentMethodBuilt']) and
+			$e->isMarketSale() === FALSE
+
 		) {
+
 			\selling\PaymentLib::putBySale($e, $e['paymentMethod']);
+
 		}
 
 		if(in_array('shipping', $properties)) {

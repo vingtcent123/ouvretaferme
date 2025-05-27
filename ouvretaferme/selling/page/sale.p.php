@@ -289,7 +289,7 @@ new \selling\SalePage()
 				break;
 
 			case 'add':
-				\selling\PaymentLib::createBySale($data->e, eMethod: $eMethod);
+				\selling\PaymentLib::createByMarketSale($data->e, eMethod: $eMethod);
 				break;
 
 			default:

@@ -262,7 +262,7 @@ class MarketLib {
 
 		$eSale->build($properties, $inputValues, new \Properties('update'));
 
-		SaleLib::	update($eSale, $properties);
+		SaleLib::update($eSale, $properties);
 
 		Sale::model()->commit();
 	}

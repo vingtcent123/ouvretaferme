@@ -102,7 +102,7 @@ class AlertUi {
 			'Unit::deleteUsed' => s("Cette unité ne peut pas être supprimée car elle est utilisée dans une vente ou pour un produit"),
 
 			'Market::emptyPayment' => s("Veuillez indiquer un moyen de paiement pour terminer cette vente"),
-			'Market::inconsistencyTotal' => s("La somme des moyens de paiement doit être égale au montant de la vente"),
+			'Market::inconsistencyTotal' => s("Le montant total par moyen de paiement est différent du montant total de la vente"),
 
 			default => NULL
 

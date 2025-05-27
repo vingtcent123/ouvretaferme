@@ -93,6 +93,40 @@ class PaymentLib extends PaymentCrud {
 
 	}
 
+	public static function createByMarketSale(Sale $eSale, \payment\Method $eMethod): void {
+
+		if($eMethod->empty() or $eSale->isMarketSale() === FALSE) {
+			return;
+		}
+
+		$eSale->expects(['customer', 'farm']);
+
+		$ePayment = Payment::model()
+			->select(Payment::getSelection())
+			->whereFarm($eSale['farm'])
+			->whereSale($eSale)
+			->whereMethod($eMethod)
+			->get();
+
+		if($ePayment->notEmpty()) {
+			self::fill($eSale, $eMethod);
+			return;
+		}
+
+		$amount = $eSale['priceIncludingVat'] - self::sumTotalBySale($eSale);
+
+		$ePayment = new Payment([
+			'sale' => $eSale,
+			'customer' => $eSale['customer'],
+			'farm' => $eSale['farm'],
+			'method' => $eMethod,
+			'amountIncludingVat' => $amount,
+		]);
+
+		Payment::model()->insert($ePayment);
+
+	}
+
 	public static function createBySale(Sale $eSale, ?\payment\Method $eMethod, ?string $providerId = NULL): void {
 
 		if($eMethod->empty()) {
@@ -100,27 +134,6 @@ class PaymentLib extends PaymentCrud {
 		}
 
 		$eSale->expects(['customer', 'farm']);
-
-		// Dans le cas des paiements hors ligne, on tente de récupérer le paiement existant (pas de doublon)
-		if($eMethod['online'] === FALSE) {
-
-			$ePayment = Payment::model()
-				->select(Payment::getSelection())
-				->whereFarm($eSale['farm'])
-				->whereSale($eSale)
-				->whereMethod($eMethod)
-				->get();
-
-			if($ePayment->notEmpty()) {
-				self::fill($eSale, $eMethod);
-				return;
-			}
-
-			$amount = $eSale['priceIncludingVat'] - self::sumTotalBySale($eSale);
-
-		} else {
-			$amount = $eSale['priceIncludingVat'];
-		}
 
 		$onlineStatus = ($eMethod['fqn'] ?? NULL) === \payment\MethodLib::ONLINE_CARD ? Payment::INITIALIZED : NULL;
 
@@ -130,7 +143,7 @@ class PaymentLib extends PaymentCrud {
 			'farm' => $eSale['farm'],
 			'checkoutId' => $providerId,
 			'method' => $eMethod,
-			'amountIncludingVat' => $amount,
+			'amountIncludingVat' => $eSale['priceIncludingVat'],
 			'onlineStatus' => $onlineStatus,
 		]);
 
@@ -144,6 +157,10 @@ class PaymentLib extends PaymentCrud {
 		Payment::model()
 			->select(['sum' => new \Sql('SUM(amountIncludingVat)')])
 			->whereSale($eSale)
+			->or(
+				fn() => $this->whereOnlineStatus(NULL),
+				fn() => $this->whereOnlineStatus(Payment::SUCCESS),
+			)
 			->get($ePayment);
 
 		return $ePayment['sum'] ?? 0;
