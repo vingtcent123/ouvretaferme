@@ -189,15 +189,33 @@ class ReportLib extends ReportCrud {
 				Product::KG => 0
 			];
 
+			// On traite les unités de vente pour lesquelles il y a une récolte
 			foreach($turnoverByUnit as $unit => $turnover) {
 
-				if($turnover > 0) {
+				if($turnover > 0 and $harvestedByUnit[$unit] > 0) {
 
-					// Calcul du chiffre d'affaires par unité pour la culture
-					if($harvestedByUnit[$unit] > 0) {
-						if(isset($eCultivation['harvestedByUnit'][$unit])) {
-							$eCultivation['turnoverByUnit'][$unit] = (int)(($eCultivation['harvestedByUnit'][$unit] / $harvestedByUnit[$unit]) * $turnover);
-						}
+					if(isset($eCultivation['harvestedByUnit'][$unit])) {
+						$eCultivation['turnoverByUnit'][$unit] = (int)(($eCultivation['harvestedByUnit'][$unit] / $harvestedByUnit[$unit]) * $turnover);
+					}
+				}
+
+			}
+
+		}
+
+		self::populateTurnover($cCultivation);
+
+		$turnoverSaved = $cCultivation->sum('turnover');
+
+		foreach($cCultivation as $eCultivation) {
+
+			foreach($turnoverByUnit as $unit => $turnover) {
+
+				// On traite les unités de vente pour lesquelles il n'y a pas de récolte
+				if($turnover > 0 and $harvestedByUnit[$unit] === 0) {
+
+					if($turnoverSaved > 0) {
+						$eCultivation['turnoverByUnit'][$unit] = (int)($turnover * ($eCultivation['turnover'] / $turnoverSaved));
 					} else {
 						$eCultivation['turnoverByUnit'][$unit] = (int)($turnover / $cCultivation->count());
 					}
@@ -219,10 +237,7 @@ class ReportLib extends ReportCrud {
 
 		}
 
-		$cCultivation->map(function($eCultivation) {
-			$eCultivation['turnover'] = array_sum($eCultivation['turnoverByUnit']);
-			$eCultivation['turnoverByUnit'] = array_filter($eCultivation['turnoverByUnit'], fn($turnover) => ($turnover > 0));
-		});
+		self::populateTurnover($cCultivation);
 
 		$e->add([
 			'turnover' => $cCultivation->sum('turnover'),
@@ -256,6 +271,15 @@ class ReportLib extends ReportCrud {
 			Report::fail('name.duplicate');
 
 		}
+
+	}
+
+	private static function populateTurnover(\Collection $cCultivation): void {
+
+		$cCultivation->map(function($eCultivation) {
+			$eCultivation['turnover'] = array_sum($eCultivation['turnoverByUnit']);
+			$eCultivation['turnoverByUnit'] = array_filter($eCultivation['turnoverByUnit'], fn($turnover) => ($turnover > 0));
+		});
 
 	}
 
