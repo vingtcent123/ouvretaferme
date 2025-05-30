@@ -520,6 +520,7 @@ class SaleUi {
 								if($eSale->isMarketSale()) {
 
 									$paymentList = [];
+
 									foreach($eSale['cPayment'] as $ePayment) {
 
 										$payment = \payment\MethodUi::getName($ePayment['method']);

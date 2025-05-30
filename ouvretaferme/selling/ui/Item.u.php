@@ -537,7 +537,7 @@ class ItemUi {
 					$h .= '<div data-tab="summary" class="tab-panel selected">';
 						$h .= $this->getItemsBySummary($cSale, $ccItemProduct);
 						$h .= '<h3>'.s("État des ventes").'</h3>';
-						$h .= new SaleUi()->getList($eFarm, $cSale, cPaymentMethod: $cPaymentMethod);
+						$h .= new SaleUi()->getList($eFarm, $cSale, hide: ['paymentMethod'], cPaymentMethod: $cPaymentMethod);
 					$h .= '</div>';
 					$h .= '<div data-tab="product" class="tab-panel">';
 						$h .= $this->getItemsByProduct($cSale, $ccItemProduct);
