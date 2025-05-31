@@ -668,7 +668,7 @@ class ReportUi {
 				if($e['cCultivation']->empty()) {
 
 					$h .= $form->group(
-						content: '<p class="util-warning">'.s("Il n'y a aucune série sur laquelle faire un rapport pour cette espèce et pour la saison {season}.", ['season' => $e['season']]).'</p>'
+						content: '<p class="util-warning">'.s("Il n'y a aucune série sur laquelle faire un rapport pour cette espèce sur la saison {season}.", ['season' => $e['season']]).'</p>'
 					);
 
 				} else {
@@ -922,19 +922,19 @@ class ReportUi {
 		$h .= '<ul class="util-summarize">';
 			$h .= '<li>';
 				$h .= '<h5>'.s("Ventes").'</h5>';
-				$h .= '<div>'.s("{value} €", '<span id="report-create-turnover"></span>').'</div>';
+				$h .= '<div>'.s("{value} €", '<span id="report-create-turnover">0</span>').'</div>';
 			$h .= '</li>';
 			$h .= '<li>';
 				$h .= '<h5>'.s("Coûts directs").'</h5>';
-				$h .= '<div>'.s("{value} €", '<span id="report-create-costs"></span>').'</div>';
+				$h .= '<div>'.s("{value} €", '<span id="report-create-costs">0</span>').'</div>';
 			$h .= '</li>';
 			$h .= '<li>';
 				$h .= '<h5>'.s("Surface").'</h5>';
-				$h .= '<div>'.s("{value} m²", '<span id="report-create-area"></span>').'</div>';
+				$h .= '<div>'.s("{value} m²", '<span id="report-create-area">0</span>').'</div>';
 			$h .= '</li>';
 			$h .= '<li>';
 				$h .= '<h5>'.s("Temps de travail").'</h5>';
-				$h .= '<div>'.s("{value} h", '<span id="report-create-working-time"></span>').'</div>';
+				$h .= '<div>'.s("{value} h", '<span id="report-create-working-time">0</span>').'</div>';
 			$h .= '</li>';
 		$h .= '</ul>';
 		$h .= $form->submit(s("Créer le rapport"));

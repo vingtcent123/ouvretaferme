@@ -150,7 +150,8 @@ class Report extends ReportElement {
 				$cProductSeries = \selling\ProductLib::getByIds($ids)->filter(fn($e) => $e['farm']['id'] === $this['farm']['id']);
 
 				if($cProductSeries->empty()) {
-					return FALSE;
+					$this['cProduct'] = new \Collection();
+					return TRUE;
 				}
 
 				$cProductAnalyze = new \Collection();
