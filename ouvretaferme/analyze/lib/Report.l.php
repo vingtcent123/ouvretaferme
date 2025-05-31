@@ -153,14 +153,14 @@ class ReportLib extends ReportCrud {
 		] = $e;
 
 		// Chiffre d'affaires total par unité
-		$turnoverByUnit = $cProduct->reduce(function($eProduct, $v) {
+		$turnoverByUnit = array_filter($cProduct->reduce(function($eProduct, $v) {
 			$v[$eProduct['unit']] += $eProduct['turnover'];
 			return $v;
 		}, [
 			Product::UNIT => 0,
 			Product::BUNCH => 0,
 			Product::KG => 0
-		]);
+		]), fn($value) => $value > 0);
 
 		// Récoltes totales par unité
 		$harvestedByUnit = $cCultivation->reduce(function($eCultivation, $v) {
@@ -192,7 +192,7 @@ class ReportLib extends ReportCrud {
 			// On traite les unités de vente pour lesquelles il y a une récolte
 			foreach($turnoverByUnit as $unit => $turnover) {
 
-				if($turnover > 0 and $harvestedByUnit[$unit] > 0) {
+				if($harvestedByUnit[$unit] > 0) {
 
 					if(isset($eCultivation['harvestedByUnit'][$unit])) {
 						$eCultivation['turnoverByUnit'][$unit] = (int)(($eCultivation['harvestedByUnit'][$unit] / $harvestedByUnit[$unit]) * $turnover);
@@ -212,7 +212,7 @@ class ReportLib extends ReportCrud {
 			foreach($turnoverByUnit as $unit => $turnover) {
 
 				// On traite les unités de vente pour lesquelles il n'y a pas de récolte
-				if($turnover > 0 and $harvestedByUnit[$unit] === 0) {
+				if($harvestedByUnit[$unit] === 0) {
 
 					if($turnoverSaved > 0) {
 						$eCultivation['turnoverByUnit'][$unit] = (int)($turnover * ($eCultivation['turnover'] / $turnoverSaved));
@@ -232,12 +232,16 @@ class ReportLib extends ReportCrud {
 			$missing = $turnover - array_sum(array_column($cCultivation->getColumn('turnoverByUnit'), $unit));
 
 			for($i = 0; $i < $missing; $i++) {
-				$cCultivation->offsetGet($i)['turnoverByUnit'][$unit]++;
+				$cCultivation[$i]['turnoverByUnit'][$unit]++;
 			}
 
 		}
 
 		self::populateTurnover($cCultivation);
+
+		$cCultivation->map(function($eCultivation) {
+			$eCultivation['turnoverByUnit'] = array_filter($eCultivation['turnoverByUnit'], fn($turnover) => ($turnover > 0));
+		});
 
 		$e->add([
 			'turnover' => $cCultivation->sum('turnover'),
@@ -278,7 +282,6 @@ class ReportLib extends ReportCrud {
 
 		$cCultivation->map(function($eCultivation) {
 			$eCultivation['turnover'] = array_sum($eCultivation['turnoverByUnit']);
-			$eCultivation['turnoverByUnit'] = array_filter($eCultivation['turnoverByUnit'], fn($turnover) => ($turnover > 0));
 		});
 
 	}

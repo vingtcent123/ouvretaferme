@@ -105,7 +105,7 @@ label.report-create-checkbox {
 	max-width: 50rem;
 }
 
-@media (min-width: 768px) {
+@media (min-width: 992px) {
 
 	.report-item-table thead {
 		position: sticky;

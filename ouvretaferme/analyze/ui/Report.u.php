@@ -45,16 +45,7 @@ class ReportUi {
 						$h .= \analyze\ReportUi::getName($eReport);
 					$h .= '</h1>';
 					$h .= '<div>';
-						if($eReport->canWrite()) {
-							$h .= '<a data-dropdown="bottom-end" class="dropdown-toggle btn btn-primary">'.\Asset::icon('gear-fill').'</a>';
-							$h .= '<div class="dropdown-list bg-primary">';
-								$h .= '<div class="dropdown-title">'.\analyze\ReportUi::getName($eReport).'</div>';
-								$h .= '<a href="/analyze/report:update?id='.$eReport['id'].'" class="dropdown-item">'.s("Modifier le rapport").'</a>';
-								$h .= '<a href="/analyze/report:create?farm='.$eReport['farm']['id'].'&season='.$eReport['season'].'&from='.$eReport['id'].'" class="dropdown-item">'.s("Actualiser le rapport").'</a>';
-								$h .= '<div class="dropdown-divider"></div>';
-								$h .= '<a data-ajax="/analyze/report:doDelete" post-id="'.$eReport['id'].'" class="dropdown-item">'.s("Supprimer le rapport").'</a>';
-							$h .= '</div>';
-						}
+						$h .= $this->getUpdate($eReport, 'btn-primary');
 					$h .= '</div>';
 				$h .= '</div>';
 				$h .= '<div class="util-subtitle color-muted">';
@@ -62,6 +53,25 @@ class ReportUi {
 				$h .= '</div>';
 			$h .= '</div>';
 		$h .= '</div>';
+
+		return $h;
+
+	}
+
+	public function getUpdate(Report $eReport, string $btn): string {
+
+		$h = '';
+
+		if($eReport->canWrite()) {
+			$h .= '<a data-dropdown="bottom-end" class="dropdown-toggle btn '.$btn.'">'.\Asset::icon('gear-fill').'</a>';
+			$h .= '<div class="dropdown-list bg-primary">';
+				$h .= '<div class="dropdown-title">'.\analyze\ReportUi::getName($eReport).'</div>';
+				$h .= '<a href="/analyze/report:update?id='.$eReport['id'].'" class="dropdown-item">'.s("Modifier le rapport").'</a>';
+				$h .= '<a href="/analyze/report:create?farm='.$eReport['farm']['id'].'&season='.$eReport['season'].'&from='.$eReport['id'].'" class="dropdown-item">'.s("Actualiser le rapport").'</a>';
+				$h .= '<div class="dropdown-divider"></div>';
+				$h .= '<a data-ajax="/analyze/report:doDelete" post-id="'.$eReport['id'].'" class="dropdown-item">'.s("Supprimer le rapport").'</a>';
+			$h .= '</div>';
+		}
 
 		return $h;
 
@@ -338,7 +348,7 @@ class ReportUi {
 			return $h;
 		}
 
-		$h = '<div class="util-overflow-md stick-xs">';
+		$h = '<div class="util-overflow-lg stick-xs">';
 
 			$h .= '<table class="report-item-table tbody-even">';
 
@@ -358,6 +368,7 @@ class ReportUi {
 						$h .= '<th class="text-end">'.$search->linkSort('grossMargin', s("Valeur ajoutée", SORT_DESC)).'</th>';
 						$h .= '<th class="text-end report-item-ratio">'.$search->linkSort('grossMarginByArea', s("/ m²", SORT_DESC)).'</th>';
 						$h .= '<th class="text-end report-item-ratio">'.$search->linkSort('grossMarginByWorkingTime', s("/ heure travaillée"), SORT_DESC).'</th>';
+						$h .= '<th class="text-end"></th>';
 					$h .= '</tr>';
 				$h .= '</thead>';
 
@@ -393,6 +404,10 @@ class ReportUi {
 							$h .= '</td>';
 
 							$h .= $this->getStats($eReport);
+
+							$h .= '<td class="text-end" rowspan="'.(1 + ($cCultivation->count() > 1 ? $cCultivation->count() : 0)).'">';
+								$h .= $this->getUpdate($eReport, 'btn-outline-secondary');
+							$h .= '</td>';
 
 						$h .= '</tr>';
 
@@ -607,7 +622,7 @@ class ReportUi {
 		
 	}
 
-	public function create(Report $e, ?float $workingTimeNoSeries, \Collection $cProduct, bool $switchComposition): \Panel {
+	public function create(Report $e, ?float $workingTimeNoSeries, \Collection $cProduct, bool $switchComposition): string {
 
 		$form = new \util\FormUi();
 
@@ -694,11 +709,7 @@ class ReportUi {
 
 		$h .= $form->close();
 
-		return new \Panel(
-			id: 'panel-report-create',
-			title: s("Créer un rapport"),
-			body: $h
-		);
+		return $h;
 
 	}
 

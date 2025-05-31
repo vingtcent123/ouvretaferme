@@ -15,8 +15,27 @@ new AdaptativeView('/rapport/{id}', function($data, FarmTemplate $t) {
 
 });
 
-new AdaptativeView('create', function($data, PanelTemplate $t) {
-	return new \analyze\ReportUi()->create($data->e, $data->workingTimeNoSeries, $data->cProduct, $data->switchComposition);
+new AdaptativeView('create', function($data, FarmTemplate $t) {
+
+	$t->tab = 'analyze';
+	$t->subNav = new \farm\FarmUi()->getAnalyzeSubNav($data->eFarm);
+
+	if($data->e['from']->notEmpty()) {
+		$url = \analyze\ReportUi::url($data->e['from']);
+		$title = s("Actualiser un rapport");
+	} else {
+		$url = \farm\FarmUi::urlAnalyzeReport($data->eFarm);
+		$title = s("Créer un rapport");
+	}
+
+	$h = '<h1>';
+		$h .= '<a href="'.$url.'"  class="h-back">'.\Asset::icon('arrow-left').'</a>';
+		$h .= $title;
+	$h .= '</h1>';
+
+	$t->mainTitle = $h;
+
+	echo new \analyze\ReportUi()->create($data->e, $data->workingTimeNoSeries, $data->cProduct, $data->switchComposition);
 });
 
 new AdaptativeView('products', function($data, AjaxTemplate $t) {
