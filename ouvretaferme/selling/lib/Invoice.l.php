@@ -109,7 +109,7 @@ class InvoiceLib extends InvoiceCrud {
 			->where('m2.method IS NOT NULL AND m2.method = '.$ePaymentMethod['id'])
 			->where('m1.farm', $eFarm)
 			->whereShop('!=', NULL)
-			->wherePreparationStatus(Sale::DELIVERED)
+			->wherePreparationStatus('IN', [Sale::DELIVERED, Sale::CLOSED])
 			->whereDeliveredAt('LIKE', $month.'%')
 			->whereInvoice(NULL)
 			->getValue(new \Sql('COUNT(*)'));
@@ -120,7 +120,7 @@ class InvoiceLib extends InvoiceCrud {
 
 		return Sale::model()
 			->whereFarm($eFarm)
-			->wherePreparationStatus(Sale::DELIVERED)
+			->wherePreparationStatus('IN', [Sale::DELIVERED, Sale::CLOSED])
 			->whereOrigin('!=', Sale::MARKET)
 			->whereMarketParent(NULL)
 			->exists();

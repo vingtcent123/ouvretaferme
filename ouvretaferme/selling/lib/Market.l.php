@@ -17,7 +17,7 @@ class MarketLib {
 			])
 			->whereOrigin(Sale::MARKET)
 			->wherePriceIncludingVat('!=', NULL)
-			->wherePreparationStatus('IN', [Sale::DELIVERED, Sale::SELLING])
+			->wherePreparationStatus('IN', [Sale::CLOSED, Sale::SELLING])
 			->whereDeliveredAt($comparator, $eSale['deliveredAt'])
 			->whereFarm($eSale['farm'])
 			->whereCustomer($eSale['customer'])

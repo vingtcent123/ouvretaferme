@@ -562,14 +562,14 @@ class AnalyzeLib {
 		if($join) {
 
 			$mItem
-				->where('m1.status', Sale::DELIVERED)
+				->where('m1.status', 'IN', [Sale::DELIVERED, Sale::CLOSED])
 				->where('m1.stats', TRUE)
 				->where('m1.priceExcludingVat', '!=', NULL);
 
 		} else {
 
 			$mItem
-				->whereStatus(Sale::DELIVERED)
+				->whereStatus('IN', [Sale::DELIVERED, Sale::CLOSED])
 				->whereStats(TRUE)
 				->wherePriceExcludingVat('!=', NULL);
 
@@ -583,7 +583,7 @@ class AnalyzeLib {
 		$mSale ??= Sale::model();
 
 		$mSale
-			->wherePreparationStatus(Sale::DELIVERED)
+			->wherePreparationStatus('IN', [Sale::DELIVERED, Sale::CLOSED])
 			->whereStats(TRUE)
 			->wherePriceExcludingVat('!=', NULL);
 
