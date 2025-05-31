@@ -36,7 +36,7 @@ Cultivation:
   cultivation: series\Cultivation
   harvestedByUnit: ?json
   turnoverByUnit: ?json
-  area: int(0, null) = 0
+  area: ?int(0, null)
   workingTime: float(0.0, null) = 0.0
   costs: int(0, null) = 0
   turnover: int(0, null) = 0

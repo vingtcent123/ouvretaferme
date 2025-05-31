@@ -104,6 +104,12 @@ class ReportUi {
 
 	public function getHarvested(Report $eReport, \Collection $cCultivation): string {
 
+		$hasHarvested = $cCultivation->contains(fn($eCultivation) => $eCultivation['harvestedByUnit']);
+
+		if($hasHarvested === FALSE) {
+			return '';
+		}
+
 		$h = '<h2>'.s("Rendements").'</h2>';
 
 		$h .= '<div class="util-overflow-xs stick-xs">';
@@ -594,6 +600,8 @@ class ReportUi {
 		$h .= '<td class="text-end  report-item-ratio">';
 			if($e['turnoverByArea'] !== NULL) {
 				$h .= \util\TextUi::money($e['turnoverByArea'], precision: 1);
+			} else {
+				$h .= '-';
 			}
 		$h .= '</td>';
 
@@ -609,6 +617,8 @@ class ReportUi {
 		$h .= '<td class="text-end  report-item-ratio">';
 			if($e['grossMarginByArea'] !== NULL) {
 				$h .= \util\TextUi::money($e['grossMarginByArea'], precision: 1);
+			} else {
+				$h .= '-';
 			}
 		$h .= '</td>';
 

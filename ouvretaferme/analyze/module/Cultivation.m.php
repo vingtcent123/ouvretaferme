@@ -43,7 +43,7 @@ class CultivationModel extends \ModuleModel {
 			'cultivation' => ['element32', 'series\Cultivation', 'cast' => 'element'],
 			'harvestedByUnit' => ['json', 'null' => TRUE, 'cast' => 'array'],
 			'turnoverByUnit' => ['json', 'null' => TRUE, 'cast' => 'array'],
-			'area' => ['int32', 'min' => 0, 'max' => NULL, 'cast' => 'int'],
+			'area' => ['int32', 'min' => 0, 'max' => NULL, 'null' => TRUE, 'cast' => 'int'],
 			'workingTime' => ['float32', 'min' => 0.0, 'max' => NULL, 'cast' => 'float'],
 			'costs' => ['int32', 'min' => 0, 'max' => NULL, 'cast' => 'int'],
 			'turnover' => ['int32', 'min' => 0, 'max' => NULL, 'cast' => 'int'],
@@ -69,9 +69,6 @@ class CultivationModel extends \ModuleModel {
 	public function getDefaultValue(string $property) {
 
 		switch($property) {
-
-			case 'area' :
-				return 0;
 
 			case 'workingTime' :
 				return 0;
