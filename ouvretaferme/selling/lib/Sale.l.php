@@ -23,7 +23,7 @@ class SaleLib extends SaleCrud {
 
 			$properties = ['comment'];
 
-			if($e->isClosed() === FALSE) {
+			if($e->isLocked() === FALSE) {
 
 				$properties[] = 'deliveredAt';
 

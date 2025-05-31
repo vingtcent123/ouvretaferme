@@ -360,7 +360,7 @@ class OrderUi {
 		if(
 			$eSale['shop']->notEmpty() and
 			$eSale['shopPoint']->notEmpty() and
-			$eSale->isClosed() === FALSE
+			$eSale->isLocked() === FALSE
 		) {
 			$h .= '<h3>'.encode($eSale['shop']['name']).'</h3>';
 			$h .= $this->getPointBySale($eSale);

@@ -1284,7 +1284,7 @@ class SaleUi {
 
 							$shipping = \util\TextUi::money($eSale['shipping']).' '.$eSale->getTaxes();
 
-							if($eSale->isClosed() === FALSE) {
+							if($eSale->isLocked() === FALSE) {
 								$h .= $eSale->quick('shipping', $shipping);
 							} else {
 								$h .= $shipping;
@@ -1316,6 +1316,17 @@ class SaleUi {
 
 		$h = '';
 
+		if($eSale->isClosed()) {
+			$h .= '<div class="sale-closed">';
+				$h .= \Asset::icon('lock-fill').' ';
+				if($eSale->isMarket()) {
+					$h .= s("Cette vente est clôturée et n'est plus modifiable, mais vous pouvez toujours <link>consulter le logiciel de caisse</link> en lecture seule.", ['link' => '<a href="'.SaleUi::urlMarket($eSale).'">']);
+				} else {
+					$h .= s("Cette vente est clôturée, elle n'est plus modifiable.");
+				}
+			$h .= '</div>';
+		}
+
 		if(
 			$eSale->isMarket() and
 			$eSale->canWrite()
@@ -1328,7 +1339,7 @@ class SaleUi {
 					$h .= '<a data-ajax="/selling/sale:doUpdatePreparationStatus" post-id="'.$eSale['id'].'" post-preparation-status="'.Sale::SELLING.'" class="btn btn-transparent" data-confirm="'.s("C'est parti ?").'">'.\Asset::icon('cart4').'  '.s("Ouvrir le logiciel de caisse").'</a>';
 				$h .= '</div>';
 
-			} else if($eSale['preparationStatus'] !== Sale::DRAFT) {
+			} else if($eSale['preparationStatus'] === Sale::SELLING) {
 				$h .= '<a href="'.SaleUi::urlMarket($eSale).'" class="btn btn-xl btn-selling" style="width: 100%">'.\Asset::icon('cart4').'  '.s("Ouvrir le logiciel de caisse").'</a>';
 			}
 		}
@@ -1468,26 +1479,11 @@ class SaleUi {
 
 		$primaryList = '';
 
-		if(
-			$eSale->isMarket() and
-			$eSale->canWrite()
-		) {
-
-			if($eSale->isMarketPreparing() === FALSE) {
-				$primaryList .= ' <a href="'.SaleUi::urlMarket($eSale).'" class="dropdown-item">'.s("Ouvrir le logiciel de caisse").'</a>';
-			}
-
-			if($eSale->acceptStatusSelling()) {
-				$primaryList = '<a data-ajax="/selling/sale:doUpdatePreparationStatus" post-id="'.$eSale['id'].'" post-preparation-status="'.Sale::SELLING.'" class="dropdown-item">'.s("Réouvrir la vente").'</a>';
-			}
-
-		}
-
 		if($eSale->canUpdate()) {
 			$primaryList .= '<a href="/selling/sale:update?id='.$eSale['id'].'" class="dropdown-item">';
 				$primaryList .= match($eSale->isComposition()) {
 					TRUE => s("Modifier la composition"),
-					FALSE => s("Modifier la vente"),
+					FALSE => $eSale->isClosed() ? s("Commenter la vente") : s("Modifier la vente"),
 				};
 			$primaryList .= '</a>';
 		}
@@ -1873,7 +1869,7 @@ class SaleUi {
 
 			$h .= $form->hidden('id', $eSale['id']);
 
-			if($eSale->isClosed() === FALSE) {
+			if($eSale->isLocked() === FALSE) {
 
 				$h .= $form->dynamicGroup($eSale, 'deliveredAt');
 

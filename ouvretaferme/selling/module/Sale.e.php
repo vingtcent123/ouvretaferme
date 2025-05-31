@@ -197,6 +197,7 @@ class Sale extends SaleElement {
 	public function acceptUpdateCustomer(): bool {
 		return (
 			$this->isComposition() === FALSE and
+			$this->isClosed() === FALSE and
 			$this['shopShared'] === FALSE
 		);
 	}
@@ -280,12 +281,12 @@ class Sale extends SaleElement {
 
 		return (
 			$this->isMarket() and
-			$this->isClosed()
+			$this->isLocked()
 		);
 
 	}
 
-	public function isClosed(): bool {
+	public function isLocked(): bool {
 		if($this->isComposition()) {
 			return $this->acceptUpdateComposition() === FALSE;
 		} else {
@@ -294,7 +295,11 @@ class Sale extends SaleElement {
 	}
 
 	public function isOpen(): bool {
-		return $this->isClosed() === FALSE;
+		return $this->isLocked() === FALSE;
+	}
+
+	public function isClosed(): bool {
+		return $this['preparationStatus'] === Sale::CLOSED;
 	}
 
 	public function acceptUpdateItems(): bool {
@@ -364,7 +369,7 @@ class Sale extends SaleElement {
 	public function acceptUpdateShopPoint(): bool {
 
 		return (
-			$this->isClosed() === FALSE and
+			$this->isLocked() === FALSE and
 			$this['shop']->notEmpty()
 		);
 
@@ -393,7 +398,7 @@ class Sale extends SaleElement {
 	public function acceptUpdateShipping(): bool {
 
 		return (
-			$this->isClosed() === FALSE and
+			$this->isLocked() === FALSE and
 			$this->acceptShipping()
 		);
 

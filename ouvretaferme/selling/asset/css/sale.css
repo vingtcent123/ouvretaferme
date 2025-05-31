@@ -558,3 +558,15 @@ a.sale-relative-after:hover .sale-relative-customer {
 .sale-composition-switch .field-switch {
 	background-color: var(--secondary);
 }
+
+.sale-closed {
+	text-align: center;
+	color: var(--muted);
+	margin-top: 0.5rem;
+	margin-bottom: 2rem;
+}
+
+.sale-closed a {
+	color: var(--muted);
+	text-decoration: underline;
+}
