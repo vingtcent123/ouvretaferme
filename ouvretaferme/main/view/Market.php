@@ -25,7 +25,7 @@ class MarketTemplate extends BaseTemplate {
 
 	protected function buildHtml(string $main): string {
 
-		$this->title = s("Marché du {date}", ['date' => \util\DateUi::textual($this->data->e['deliveredAt'])]);
+		$this->title = s("Vente du {date}", ['date' => \util\DateUi::textual($this->data->e['deliveredAt'])]);
 
 		$h = '<!DOCTYPE html>';
 		$h .= '<html lang="'.$this->lang.'">';
@@ -62,7 +62,7 @@ class MarketTemplate extends BaseTemplate {
 
 				if($this->data->ccSale->empty()) {
 
-					if($this->data->e['preparationStatus'] !== \selling\Sale::DELIVERED) {
+					if($this->data->e->isMarketSelling()) {
 
 						$h .= '<div class="market-sales-list">';
 							$h .= '<a data-ajax="/selling/market:doCreateSale" post-id="'.$this->data->e['id'].'" class="market-sales-item market-sales-item-new">';
@@ -79,7 +79,7 @@ class MarketTemplate extends BaseTemplate {
 					$cSaleDelivered = $this->data->ccSale[\selling\Sale::DELIVERED];
 					$cSaleCanceled = $this->data->ccSale[\selling\Sale::CANCELED];
 
-					if($this->data->e['preparationStatus'] !== \selling\Sale::DELIVERED) {
+					if($this->data->e->isMarketSelling()) {
 
 						$h .= '<h3>'.s("Ventes en cours ({value})", $cSaleDraft->count()).'</h3>';
 						$h .= '<div class="market-sales-list">';
@@ -146,7 +146,7 @@ class MarketTemplate extends BaseTemplate {
 			$h .= '<div>'.$eSale['marketSales'].'</div>';
 		$h .= '</a>';
 
-		if($this->data->e['preparationStatus'] === \selling\Sale::DELIVERED) {
+		if($this->data->e['preparationStatus'] === \selling\Sale::CLOSED) {
 
 			$h .= '<span class="market-top-close market-top-close-disabled" title="'.s("Cette vente est clôturée").'">';
 				$h .= Asset::icon('check');

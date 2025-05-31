@@ -289,7 +289,7 @@ class Sale extends SaleElement {
 		if($this->isComposition()) {
 			return $this->acceptUpdateComposition() === FALSE;
 		} else {
-			return in_array($this['preparationStatus'], [Sale::CANCELED, Sale::DELIVERED, Sale::BASKET]);
+			return in_array($this['preparationStatus'], [Sale::CANCELED, Sale::DELIVERED, Sale::BASKET, Sale::CLOSED]);
 		}
 	}
 

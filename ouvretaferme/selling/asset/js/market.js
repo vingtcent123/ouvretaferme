@@ -47,6 +47,10 @@ class Market {
 
 			const input = node.qs('input[name^="unitPrice"]');
 
+			if(input === null) {
+				return;
+			}
+
 			node.classList.remove('market-item-highlight');
 			node.classList.remove('market-item-error');
 

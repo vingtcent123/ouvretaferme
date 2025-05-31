@@ -83,7 +83,7 @@ new \selling\SalePage()
 		throw new RedirectAction(\selling\SaleUi::urlMarket($data->e).'/articles?success=selling:Market::pricesUpdated');
 
 
-	})
+	}, validate: ['canWrite', 'isMarketSelling'])
 	->write('doUpdateSale', function($data) {
 
 		$data->e->validate('isMarketSale');
@@ -149,7 +149,7 @@ new \selling\SalePage()
 		throw new RedirectAction(\selling\SaleUi::urlMarket($data->e).'/vente/'.$data->eSale['id']);
 
 
-	})
+	}, validate: ['canWrite', 'isMarketSelling'])
 	->doDelete(function($data) {
 		throw new RedirectAction(\selling\SaleUi::urlMarket($data->e['marketParent']).'?success=selling:Sale::deleted');
 	});

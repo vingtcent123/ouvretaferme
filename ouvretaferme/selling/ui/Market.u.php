@@ -198,7 +198,7 @@ class MarketUi {
 				$h .= '<div id="market-item-list" class="market-item-wrapper">';
 
 					foreach($cItemMarket as $eItemMarket) {
-						$h .= $this->getItemMarket($eItemMarket, $form);
+						$h .= $this->getItemMarket($eSale, $eItemMarket, $form);
 					}
 
 				$h .= '</div>';
@@ -213,7 +213,7 @@ class MarketUi {
 
 	}
 
-	public function getItemMarket(Item $eItem, \util\FormUi $form): string {
+	public function getItemMarket(Sale $eSale, Item $eItem, \util\FormUi $form): string {
 
 		$h = '<div class="market-item">';
 
@@ -221,23 +221,31 @@ class MarketUi {
 
 			$h .= '<div class="market-item-text">';
 
+				if($eSale->isMarketSelling()) {
 					$h .= '<div style="margin-bottom: 0.25rem">'.s("Prix unitaire").'</div>';
-					$h .= '<div>';
-						$h .= $form->inputGroup(
-							$form->number('unitPrice['.$eItem['id'].']', attributes: ['placeholder' => $eItem['unitPrice'], 'step' => 0.01, 'class' => 'text-end']).
-							$form->addon('<small>€ '.\selling\UnitUi::getBy($eItem['unit'], short: TRUE).'</small>')
-						);
-				$h .= '</div>';
+					$h .= '<div style="margin-bottom: 0.5rem">';
+					$h .= $form->inputGroup(
+						$form->number('unitPrice['.$eItem['id'].']', attributes: ['placeholder' => $eItem['unitPrice'], 'step' => 0.01, 'class' => 'text-end']).
+						$form->addon('<small>€ '.\selling\UnitUi::getBy($eItem['unit'], short: TRUE).'</small>')
+					);
+					$h .= '</div>';
+				}
 
 				$h .= '<div class="market-item-fields">';
-						$h .= '<div>'.s("Vendu").'</div>';
+					if($eSale->isMarketSelling() === FALSE) {
+						$h .= '<div>'.s("Prix unitaire").'</div>';
 						$h .= '<div>';
-							$h .= \selling\UnitUi::getValue($eItem['number'], $eItem['unit'], short: TRUE);
+							$h .= \util\TextUi::money($eItem['unitPrice']);
 						$h .= '</div>';
-						$h .= '<div>'.s("Montant").'</div>';
-						$h .= '<div>';
-							$h .= \util\TextUi::money($eItem['price']);
-						$h .= '</div>';
+					}
+					$h .= '<div>'.s("Vendu").'</div>';
+					$h .= '<div>';
+						$h .= \selling\UnitUi::getValue($eItem['number'], $eItem['unit'], short: TRUE);
+					$h .= '</div>';
+					$h .= '<div>'.s("Montant").'</div>';
+					$h .= '<div>';
+						$h .= \util\TextUi::money($eItem['price']);
+					$h .= '</div>';
 				$h .= '</div>';
 
 			$h .= '</div>';
@@ -285,7 +293,7 @@ class MarketUi {
 					}
 				$h .= '</h2>';
 
-				if($eSaleMarket['preparationStatus'] !== \selling\Sale::DELIVERED) {
+				if($eSaleMarket->isMarketSelling()) {
 
 					switch($eSale['preparationStatus']) {
 

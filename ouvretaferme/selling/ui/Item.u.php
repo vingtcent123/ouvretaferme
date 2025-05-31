@@ -94,7 +94,7 @@ class ItemUi {
 			$h .= '<div class="util-title">';
 
 				if($eSale->isMarketPreparing()) {
-					$h .= '<h3>'.s("Préparation de la vente").'</h3>';
+					$h .= '<h3>'.s("Articles disponibles dans la caisse").'</h3>';
 				} else {
 					$h .= '<h3>'.s("Articles").'</h3>';
 				}

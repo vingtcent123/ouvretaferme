@@ -232,6 +232,19 @@ a.sale-preparation-status-action {
 	color: white;
 }
 
+.sale-preparation-status-closed {
+	color: var(--primary);
+}
+
+.sale-preparation-status-outline.sale-preparation-status-closed {
+	border-color: var(--primary);
+}
+
+.sale-preparation-status-label.sale-preparation-status-closed {
+	background-color: var(--primary);
+	color: white;
+}
+
 .sale-preparation-status-basket {
 	color: var(--basket);
 }

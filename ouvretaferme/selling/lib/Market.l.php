@@ -216,7 +216,7 @@ class MarketLib {
 		}
 
 		$eSale['oldPreparationStatus'] = Sale::SELLING;
-		$eSale['preparationStatus'] = Sale::DELIVERED;
+		$eSale['preparationStatus'] = Sale::CLOSED;
 
 		SaleLib::update($eSale, ['preparationStatus']);
 
