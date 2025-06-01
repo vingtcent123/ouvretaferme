@@ -419,7 +419,10 @@ class SaleLib extends SaleCrud {
 			->whereOrigin('IN', [Sale::SALE, Sale::SALE_MARKET])
 			->wherePreparationStatus('IN', [Sale::DELIVERED, Sale::CLOSED])
 			->wherePaymentMethod(fn() => \payment\MethodLib::getByFqn(\payment\MethodLib::TRANSFER), if: $type === \payment\MethodLib::TRANSFER)
-			->wherePaymentStatus('!=', Sale::PAID)
+			->or(
+				fn() => $this->wherePaymentStatus(Sale::NOT_PAID),
+				fn() => $this->wherePaymentStatus(NULL)
+			)
 			->group(['m1.customer', 'taxes', 'hasVat'])
 			->getCollection()
 			->sort(['m1.customer' => ['name']]);
