@@ -101,7 +101,7 @@ new \selling\ItemPage()
 			]);
 
 			\selling\Sale::model()
-				->select('preparationStatus')
+				->select(['preparationStatus', 'origin'])
 				->get($data->e['sale']['marketParent']);
 
 			$data->cItemMarket = \selling\SaleLib::getItems($data->e['sale']['marketParent']);
