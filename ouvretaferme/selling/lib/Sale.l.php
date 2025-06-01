@@ -212,10 +212,6 @@ class SaleLib extends SaleCrud {
 			Sale::model()->join(Customer::model(), 'm1.customer = m2.id');
 		}
 
-		if($search->get('paymentMethod')) {
-			Sale::model()->where('m2.method', $search->get('paymentMethod'));
-		}
-
 		$cSale = Sale::model()
 			->select(Sale::getSelection())
 			->select([
@@ -234,6 +230,7 @@ class SaleLib extends SaleCrud {
 			->whereDeliveredAt('>', new \Sql('CURDATE() - INTERVAL '.Sale::model()->format($search->get('delivered')).' DAY'), if: $search->get('delivered'))
 			->wherePreparationStatus($search->get('preparationStatus'), if: $search->get('preparationStatus'))
 			->wherePreparationStatus('!=', Sale::COMPOSITION)
+			->where('paymentMethod', $search->get('paymentMethod'), if: $search->get('paymentMethod'))
 			->where('m1.stats', TRUE)
 			->sort($search->buildSort([
 				'firstName' => fn($direction) => match($direction) {
