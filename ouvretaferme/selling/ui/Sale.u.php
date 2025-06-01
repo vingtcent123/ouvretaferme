@@ -408,7 +408,7 @@ class SaleUi {
 						if(in_array('status', $hide) === FALSE) {
 
 							$h .= '<td class="sale-item-status">';
-								$h .= $this->getPreparationStatusForUpdate($eSale, 'btn-sm');
+								$h .= $this->getPreparationStatusForUpdate($eSale, 'btn-xs');
 							$h .= '</td>';
 
 						}
@@ -864,24 +864,15 @@ class SaleUi {
 
 	public function getPreparationStatusForUpdate(Sale $eSale, string $btn = ''): string {
 
-		$status = function($tag, string $status, array $attributes = []) use ($eSale, $btn) {
-
-			$text = self::p('preparationStatus')->values[$status];
-			$attributes['class'] = ($attributes['class'] ?? '').' btn '.$btn.' sale-preparation-status-'.$status.'-button';
-
-			return '<'.$tag.' '.attrs($attributes).'>'.$text.'</'.$tag.'>';
-
-		};
-
 		if(
 			$eSale->canWrite() === FALSE or
 			$eSale->isMarketSale()
 		) {
-			return '<span class="btn btn btn-readonly '.$btn.' sale-preparation-status-'.$eSale['preparationStatus'].'-button">'.self::p('preparationStatus')->values[$eSale['preparationStatus']].'</span>';
+			return '<span class="btn btn-readonly '.$btn.' sale-preparation-status-'.$eSale['preparationStatus'].'-button">'.self::p('preparationStatus')->values[$eSale['preparationStatus']].'</span>';
 		}
 
 		if($eSale['preparationStatus'] === Sale::CLOSED) {
-			return '<span class="btn btn btn-readonly '.$btn.' sale-preparation-status-'.$eSale['preparationStatus'].'-button" title="'.s("Il n'est pas possible de modifier une vente clôturée.").'">'.self::p('preparationStatus')->values[$eSale['preparationStatus']].'  '.\Asset::icon('lock-fill').'</span>';
+			return '<span class="btn btn-readonly '.$btn.' sale-preparation-status-'.$eSale['preparationStatus'].'-button" title="'.s("Il n'est pas possible de modifier une vente clôturée.").'">'.self::p('preparationStatus')->values[$eSale['preparationStatus']].'  '.\Asset::icon('lock-fill').'</span>';
 		}
 
 		if(
@@ -894,18 +885,16 @@ class SaleUi {
 		$button = function(string $preparationStatus, ?string $confirm = NULL) use ($eSale) {
 
 			$h = '<a data-ajax="/selling/sale:doUpdate'.ucfirst($preparationStatus).'Collection" post-ids="'.$eSale['id'].'" class="dropdown-item" '.($confirm ? attr('data-confirm', $confirm) : '').'>';
-				$h .= \Asset::icon('arrow-right').'  <span class="btn sale-preparation-status-'.$preparationStatus.'-button">'.self::p('preparationStatus')->values[$preparationStatus].'</span>';
+				$h .= \Asset::icon('arrow-right').'  <span class="btn btn-sm sale-preparation-status-'.$preparationStatus.'-button">'.self::p('preparationStatus')->values[$preparationStatus].'</span>';
 			$h .= '</a>';
 
 			return $h;
 
 		};
 
-		$link = function(string $to) use ($eSale, $btn, $status) {
+		$link = function(string $to) use ($eSale, $btn) {
 
-			$h = '<div class="btn-group">';
-				$h .= $status('a', $eSale['preparationStatus'], ['class' => 'dropdown-toggle', 'data-dropdown' => 'bottom-start', 'data-dropdown-id' => 'sale-dropdown-'.$eSale['id'], 'data-dropdown-hover' => 'true']);
-			$h .= '</div>';
+			$h = '<a data-dropdown="bottom-start" data-dropdown-id="sale-dropdown-'.$eSale['id'].'" data-dropdown-hover="true" class="btn '.$btn.' sale-preparation-status-'.$eSale['preparationStatus'].'-button dropdown-toggle">'.self::p('preparationStatus')->values[$eSale['preparationStatus']].'</a>';
 			$h .= '<div data-dropdown-id="sale-dropdown-'.$eSale['id'].'-list" class="dropdown-list bg-primary">';
 				$h .= $to;
 			$h .= '</div>';
