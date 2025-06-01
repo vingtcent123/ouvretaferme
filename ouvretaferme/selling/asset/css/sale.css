@@ -108,27 +108,9 @@ div.selling-label-example > * {
 	height: calc((21cm - 2.25rem) / 2 / 2.16);
 }
 
-a.sale-preparation-status-action,
-.sale-preparation-status-label {
-	padding: 0.25rem 0.75rem;
-	border-radius: var(--radius);
-	display: inline-block;
-}
-
-.sale-preparation-status-label {
-	color: white;
-	font-weight: bold;
-}
-
 .sale-preparation-status-batch {
 	text-decoration: none;
 	margin-bottom: 0.25rem;
-}
-
-a.sale-preparation-status-action {
-	text-decoration: none;
-	border-width: 1px;
-	border-style: solid;
 }
 
 @media (max-width: 767px) {
@@ -168,110 +150,91 @@ a.sale-preparation-status-action {
 
 .sale-preparation-status-draft {
 	color: var(--todo);
+	border: 1px solid var(--todo);
 }
 
-.sale-preparation-status-outline.sale-preparation-status-draft {
-	border-color: var(--todo);
-}
-
-.sale-preparation-status-label.sale-preparation-status-draft {
+.sale-preparation-status-draft-button {
+	color: white !important;
 	background-color: var(--todo);
-	color: white;
+	font-weight: bold;
 }
 
 .sale-preparation-status-confirmed {
 	color: var(--order);
+	border: 1px solid var(--order);
 }
 
-.sale-preparation-status-outline.sale-preparation-status-confirmed {
-	border-color: var(--order);
-}
-
-.sale-preparation-status-label.sale-preparation-status-confirmed {
+.sale-preparation-status-confirmed-button {
 	background-color: var(--order);
-	color: white;
+	color: white !important;
+	font-weight: bold;
 }
 
 .sale-preparation-status-selling {
-	color: var(--selling);
+	color: var(--selling) !important;
+	border: 1px solid var(--selling);
 }
 
-.sale-preparation-status-outline.sale-preparation-status-selling {
-	border-color: var(--selling);
-}
-
-.sale-preparation-status-label.sale-preparation-status-selling {
+.sale-preparation-status-selling-button {
 	background-color: var(--selling);
-	color: white;
+	color: white !important;
+	font-weight: bold;
 }
-
 
 .sale-preparation-status-prepared {
 	color: var(--done);
+	border: 1px solid var(--done);
 }
 
-.sale-preparation-status-outline.sale-preparation-status-prepared {
-	border-color: var(--done);
-}
-
-.sale-preparation-status-label.sale-preparation-status-prepared {
+.sale-preparation-status-prepared-button {
 	background-color: var(--done);
-	color: white;
+	color: white !important;
+	font-weight: bold;
 }
 
 .sale-preparation-status-delivered {
 	color: var(--success);
+	border: 1px solid var(--success);
 }
 
-.sale-preparation-status-outline.sale-preparation-status-delivered {
-	border-color: var(--success);
-}
-
-.sale-preparation-status-label.sale-preparation-status-delivered {
+.sale-preparation-status-delivered-button {
 	background-color: var(--success);
-	color: white;
+	color: white !important;
+	font-weight: bold;
 }
 
 .sale-preparation-status-closed {
 	color: var(--primary);
+	border: 1px solid var(--primary);
 }
 
-.sale-preparation-status-outline.sale-preparation-status-closed {
-	border-color: var(--primary);
-}
-
-.sale-preparation-status-label.sale-preparation-status-closed {
+.sale-preparation-status-closed-button {
 	background-color: var(--primary);
-	color: white;
+	color: white !important;
+	font-weight: bold;
 }
 
 .sale-preparation-status-basket {
 	color: var(--basket);
+	border: 1px solid var(--basket);
 }
 
-.sale-preparation-status-outline.sale-preparation-status-basket {
-	border-color: var(--basket);
-}
-
-.sale-preparation-status-label.sale-preparation-status-basket {
+.sale-preparation-status-basket-button {
 	background-color: var(--basket);
-	color: white;
+	color: white !important;
+	font-weight: bold;
 }
 
 .sale-preparation-status-expired,
 .sale-preparation-status-canceled {
 	color: var(--muted);
+	border: 1px solid var(--muted);
 }
 
-.sale-preparation-status-outline.sale-preparation-status-expired,
-.sale-preparation-status-outline.sale-preparation-status-canceled {
-	border-color: var(--muted);
-}
-
-.sale-preparation-status-label.sale-preparation-status-expired,
-.sale-preparation-status-label.sale-preparation-status-canceled {
+.sale-preparation-status-expired-button,
+.sale-preparation-status-canceled-button {
 	background-color: var(--muted);
-	color: white;
+	color: white !important;
 }
 
 div.sale-documents {

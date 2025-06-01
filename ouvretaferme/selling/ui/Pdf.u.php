@@ -1188,7 +1188,7 @@ class PdfUi {
 							$entry .= '<div class="pdf-sales-label-detail">';
 								$entry .= '<div class="pdf-sales-label-detail-title">'.s("État").'</div>';
 								$entry .= '<div class="pdf-sales-label-detail-value">';
-									$entry .= '<span class="sale-preparation-status-label sale-preparation-status-'.$eSale['preparationStatus'].'">'.SaleUi::p('preparationStatus')->values[$eSale['preparationStatus']].'</span>';
+									$entry .= '<span class="btn sale-preparation-status-'.$eSale['preparationStatus'].'-button">'.SaleUi::p('preparationStatus')->values[$eSale['preparationStatus']].'</span>';
 								$entry .= '</div>';
 							$entry .= '</div>';
 

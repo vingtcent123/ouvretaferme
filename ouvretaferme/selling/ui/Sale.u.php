@@ -408,7 +408,7 @@ class SaleUi {
 						if(in_array('status', $hide) === FALSE) {
 
 							$h .= '<td class="sale-item-status">';
-								$h .= $this->getPreparationStatusForUpdate($eSale);
+								$h .= $this->getPreparationStatusForUpdate($eSale, 'btn-sm');
 							$h .= '</td>';
 
 						}
@@ -597,22 +597,22 @@ class SaleUi {
 		$menu .= '</a>';
 
 		$menu .= '<a data-ajax-submit="/selling/sale:doUpdateConfirmedCollection" data-confirm="'.s("Marquer ces ventes comme confirmées ?").'" class="batch-menu-confirmed batch-menu-item">';
-			$menu .= '<span class="sale-preparation-status-label sale-preparation-status-batch sale-preparation-status-confirmed">'.self::p('preparationStatus')->shortValues[Sale::CONFIRMED].'</span>';
+			$menu .= '<span class="btn btn-sm sale-preparation-status-batch sale-preparation-status-confirmed-button">'.self::p('preparationStatus')->shortValues[Sale::CONFIRMED].'</span>';
 			$menu .= '<span>'.s("Confirmé").'</span>';
 		$menu .= '</a>';
 
 		$menu .= '<a data-ajax-submit="/selling/sale:doUpdatePreparedCollection" data-confirm="'.s("Marquer ces ventes comme confirmées ?").'" class="batch-menu-prepared batch-menu-item">';
-			$menu .= '<span class="sale-preparation-status-label sale-preparation-status-batch sale-preparation-status-prepared">'.self::p('preparationStatus')->shortValues[Sale::PREPARED].'</span>';
+			$menu .= '<span class="btn btn-sm sale-preparation-status-batch sale-preparation-status-prepared-button">'.self::p('preparationStatus')->shortValues[Sale::PREPARED].'</span>';
 			$menu .= '<span>'.s("Préparé").'</span>';
 		$menu .= '</a>';
 
 		$menu .= '<a data-ajax-submit="/selling/sale:doUpdateDeliveredCollection" data-confirm="'.s("Marquer ces ventes comme livrées ?").'" class="batch-menu-delivered batch-menu-item">';
-			$menu .= '<span class="sale-preparation-status-label sale-preparation-status-batch sale-preparation-status-delivered">'.self::p('preparationStatus')->shortValues[Sale::DELIVERED].'</span>';
+			$menu .= '<span class="btn btn-sm sale-preparation-status-batch sale-preparation-status-delivered-button">'.self::p('preparationStatus')->shortValues[Sale::DELIVERED].'</span>';
 			$menu .= '<span>'.s("Livré").'</span>';
 		$menu .= '</a>';
 
 		$menu .= '<a data-ajax-submit="/selling/sale:doUpdateCanceledCollection" data-confirm="'.s("Annuler ces ventes ?").'" class="batch-menu-cancel batch-menu-item">';
-			$menu .= '<span class="sale-preparation-status-label sale-preparation-status-batch sale-preparation-status-draft">'.self::p('preparationStatus')->shortValues[Sale::CANCELED].'</span>';
+			$menu .= '<span class="btn btn-sm sale-preparation-status-batch sale-preparation-status-draft-button">'.self::p('preparationStatus')->shortValues[Sale::CANCELED].'</span>';
 			$menu .= '<span>'.s("Annuler").'</span>';
 		$menu .= '</a>';
 
@@ -862,117 +862,111 @@ class SaleUi {
 
 	}
 
-	public function getPreparationStatusForUpdate(Sale $eSale, bool $shortText = TRUE): string {
+	public function getPreparationStatusForUpdate(Sale $eSale, string $btn = ''): string {
 
-		$text = $shortText ? self::p('preparationStatus')->shortValues[$eSale['preparationStatus']] : self::p('preparationStatus')->values[$eSale['preparationStatus']];
+		$status = function($tag, string $status, array $attributes = []) use ($eSale, $btn) {
 
-		$h = '<span class="sale-preparation-status-label sale-preparation-status-'.$eSale['preparationStatus'].'" title="'.self::p('preparationStatus')->values[$eSale['preparationStatus']].'">'.$text.'</span>';
+			$text = self::p('preparationStatus')->values[$status];
+			$attributes['class'] = ($attributes['class'] ?? '').' btn '.$btn.' sale-preparation-status-'.$status.'-button';
+
+			return '<'.$tag.' '.attrs($attributes).'>'.$text.'</'.$tag.'>';
+
+		};
 
 		if(
 			$eSale->canWrite() === FALSE or
 			$eSale->isMarketSale()
 		) {
-			return $h;
+			return '<span class="btn btn btn-readonly '.$btn.' sale-preparation-status-'.$eSale['preparationStatus'].'-button">'.self::p('preparationStatus')->values[$eSale['preparationStatus']].'</span>';
 		}
 
-		$wrapper = function($content) {
-			if($content) {
-				return ' '.\Asset::icon('caret-right-fill').$content;
-			} else {
-				return '';
-			}
-		};
+		if($eSale['preparationStatus'] === Sale::CLOSED) {
+			return '<span class="btn btn btn-readonly '.$btn.' sale-preparation-status-'.$eSale['preparationStatus'].'-button" title="'.s("Il n'est pas possible de modifier une vente clôturée.").'">'.self::p('preparationStatus')->values[$eSale['preparationStatus']].'  '.\Asset::icon('lock-fill').'</span>';
+		}
 
 		if(
 			$eSale['shopDate']->notEmpty() and
 			$eSale['shopDate']->acceptOrder()
 		) {
+			return '<span class="btn btn-readonly '.$btn.' sale-preparation-status-'.$eSale['preparationStatus'].'-button" title="'.s("Il sera possible de modifier le statut lorsque la période de prise des commandes sera close.").'">'.self::p('preparationStatus')->values[$eSale['preparationStatus']].'  '.\Asset::icon('lock-fill').'</span>';
+		}
 
-			$h .= '<span title="'.s("Il sera possible de modifier le statut lorsque la période de prise des commandes sera close").'">'.$wrapper(
-					' '.\Asset::icon('lock-fill')
-			).'</span>';
+		$button = function(string $preparationStatus, ?string $confirm = NULL) use ($eSale) {
+
+			$h = '<a data-ajax="/selling/sale:doUpdate'.ucfirst($preparationStatus).'Collection" post-ids="'.$eSale['id'].'" class="dropdown-item" '.($confirm ? attr('data-confirm', $confirm) : '').'>';
+				$h .= \Asset::icon('arrow-right').'  <span class="btn sale-preparation-status-'.$preparationStatus.'-button">'.self::p('preparationStatus')->values[$preparationStatus].'</span>';
+			$h .= '</a>';
 
 			return $h;
 
-		}
+		};
 
-		$buttonsStyle = self::getPreparationStatusButtons();
+		$link = function(string $to) use ($eSale, $btn, $status) {
 
-		$button = fn(string $status, ?string $confirm = NULL) => ' <a data-ajax="/selling/sale:doUpdate'.ucfirst($status).'Collection" post-ids="'.$eSale['id'].'" class="sale-preparation-status-action '.$buttonsStyle[$status].'" title="'.self::p('preparationStatus')->values[$status].'" '.($confirm ? attr('data-confirm', $confirm) : '').'>'.($shortText ? self::p('preparationStatus')->shortValues[$status] : self::p('preparationStatus')->values[$status]).'</a>';
+			$h = '<div class="btn-group">';
+				$h .= $status('a', $eSale['preparationStatus'], ['class' => 'dropdown-toggle', 'data-dropdown' => 'bottom-start', 'data-dropdown-id' => 'sale-dropdown-'.$eSale['id'], 'data-dropdown-hover' => 'true']);
+			$h .= '</div>';
+			$h .= '<div data-dropdown-id="sale-dropdown-'.$eSale['id'].'-list" class="dropdown-list bg-primary">';
+				$h .= $to;
+			$h .= '</div>';
+
+			return $h;
+
+		};
+
+		$h = '';
 
 		if($eSale->isMarket()) {
 
 			switch($eSale['preparationStatus']) {
 
 				case Sale::DRAFT :
-					$h .= $wrapper(
+					$h = $link(
 						$button(Sale::CONFIRMED)
 					);
 					break;
 
 				case Sale::CONFIRMED :
-					$h .= $wrapper(
+					$h = $link(
 						$button(Sale::SELLING, s("Vous allez commencer votre vente avec le logiciel de caisse ! Les quantités des produits que vous avez saisies pour préparer cette vente seront remises à zéro et vous pourrez commencer à enregistrer les commandes des clients. C'est parti ?"))
 					);
 					break;
 
 				case Sale::SELLING :
-					$h .= $wrapper(
-						' <a href="'.SaleUi::urlMarket($eSale).'" class="sale-preparation-status-action btn-outline-selling">'.\Asset::icon('cart4').'  '.s("Caisse").'</a>'
+					$h = $link(
+						$button(Sale::CONFIRMED)
 					);
+					$h .= ' '.\Asset::icon('arrow-right').' <a href="'.SaleUi::urlMarket($eSale).'" class="btn '.$btn.' sale-preparation-status-'.$eSale['preparationStatus'].'">'.\Asset::icon('cart4').' '.s("Caisse").'</a>';
 					break;
 
 			};
 
 		} else {
 
-			switch($eSale['preparationStatus']) {
+			$to = '';
 
-				case Sale::BASKET :
-					$h .= $wrapper(
-						($eSale->acceptStatusConfirmed() ? $button(Sale::CONFIRMED) : '').
-						($eSale->acceptStatusCanceled() ? $button(Sale::CANCELED) : '')
-					);
-					break;
+			if($eSale->acceptStatusDelivered()) {
+				$to .= $button(Sale::DELIVERED);
+			}
 
-				case Sale::DRAFT :
-					$h .= $wrapper(
-						$eSale->acceptStatusConfirmed() ? $button(Sale::CONFIRMED) : ''
-					);
-					break;
+			if($eSale->acceptStatusConfirmed()) {
+				$to .= $button(Sale::CONFIRMED);
+			}
 
-				case Sale::CONFIRMED :
+			if($eSale->acceptStatusPrepared()) {
+				$to .= $button(Sale::PREPARED);
+			}
 
-					$h .= $wrapper(
-						($eSale->acceptStatusPrepared() ? $button(Sale::PREPARED) : '').
-						($eSale->acceptStatusDelivered() ? $button(Sale::DELIVERED) : '')
-					);
-					break;
+			if($eSale->acceptStatusCanceled()) {
+				$to .= '<div class="dropdown-divider"></div>';
+				$to .= $button(Sale::CANCELED);
+			}
 
-				case Sale::PREPARED :
-					$h .= $wrapper(
-						($eSale->acceptStatusDelivered() ? $button(Sale::DELIVERED) : '')
-					);
-					break;
-
-			};
+			$h .= $link($to);
 
 		}
 
 		return $h;
-
-	}
-
-	public static function getPreparationStatusButtons(): array {
-
-		return [
-			Sale::DRAFT => 'btn-outline-todo',
-			Sale::CANCELED => 'btn-outline-muted',
-			Sale::CONFIRMED => 'btn-outline-order',
-			Sale::PREPARED => 'btn-outline-done',
-			Sale::SELLING => 'btn-outline-selling',
-			Sale::DELIVERED => 'btn-outline-success',
-		];
 
 	}
 
@@ -1107,7 +1101,7 @@ class SaleUi {
 			$h .= '<div>';
 				if($eSale->isComposition() === FALSE) {
 					$h .= '<h1 style="margin-bottom: 0.5rem">'.SaleUi::getName($eSale).'</h1>';
-					$h .= $this->getPreparationStatusForUpdate($eSale, shortText: FALSE);
+					$h .= $this->getPreparationStatusForUpdate($eSale);
 				} else {
 					$h .= '<h1 class="mb-0">'.encode($eSale['compositionOf']['name']).'</h1>';
 				}
@@ -1496,37 +1490,6 @@ class SaleUi {
 			$primaryList .= '<a data-ajax="/selling/sale:doDissociateShop" post-id="'.$eSale['id'].'" class="dropdown-item">'.s("Dissocier la vente de la boutique").'</a>';
 		}
 
-		if(
-			$eSale->canWrite() and
-			$eSale->isMarketSale() === FALSE
-		) {
-
-			$statusList = '';
-
-			if(in_array($eSale['preparationStatus'], [Sale::PREPARED, Sale::SELLING]) and $eSale->acceptStatusConfirmed()) {
-				$statusList .= '<a data-ajax="/selling/sale:doUpdateConfirmedCollection" post-ids="'.$eSale['id'].'" class="dropdown-item">'.s("Remettre à préparer").'</a>';
-			}
-
-			if($eSale->acceptStatusDraft()) {
-				$statusList .= '<a data-ajax="/selling/sale:doUpdateDraftCollection" post-ids="'.$eSale['id'].'" class="dropdown-item">'.s("Repasser en brouillon").'</a>';
-			}
-
-			if($eSale->acceptCancelDelivered()) {
-				$statusList .= '<a data-ajax="/selling/sale:doUpdateConfirmedCollection" post-ids="'.$eSale['id'].'" class="dropdown-item">'.s("Annuler la livraison").'</a>';
-			}
-
-			if(in_array($eSale['preparationStatus'], [Sale::CANCELED, Sale::EXPIRED]) and $eSale->acceptStatusConfirmed()) {
-				$statusList .= '<a data-ajax="/selling/sale:doUpdateConfirmedCollection" post-ids="'.$eSale['id'].'" class="dropdown-item">'.s("Revalider la vente").'</a>';
-			}
-
-			if($eSale->acceptStatusCanceled()) {
-				$statusList .= '<a data-ajax="/selling/sale:doUpdateCanceledCollection" post-ids="'.$eSale['id'].'" class="dropdown-item">'.s("Annuler la vente").'</a>';
-			}
-
-		} else {
-			$statusList = '';
-		}
-
 		$secondaryList = '';
 
 		if(
@@ -1563,13 +1526,6 @@ class SaleUi {
 			$h .= '<div class="dropdown-title">'.self::getName($eSale).'</div>';
 
 			$h .= $primaryList;
-
-			if($statusList) {
-
-				$h .= '<div class="dropdown-divider"></div>';
-				$h .= $statusList;
-
-			}
 
 			if($secondaryList) {
 
