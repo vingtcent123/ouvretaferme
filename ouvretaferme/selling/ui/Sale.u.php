@@ -922,9 +922,7 @@ class SaleUi {
 					break;
 
 				case Sale::SELLING :
-					$h = $link(
-						$button(Sale::CONFIRMED)
-					);
+					$h = '<span class="btn btn-readonly '.$btn.' sale-preparation-status-'.$eSale['preparationStatus'].'-button">'.self::p('preparationStatus')->values[$eSale['preparationStatus']].'</span>';
 					$h .= ' '.\Asset::icon('arrow-right').' <a href="'.SaleUi::urlMarket($eSale).'" class="btn '.$btn.' sale-preparation-status-'.$eSale['preparationStatus'].'">'.\Asset::icon('cart4').' '.s("Caisse").'</a>';
 					break;
 
@@ -1515,6 +1513,17 @@ class SaleUi {
 			$h .= '<div class="dropdown-title">'.self::getName($eSale).'</div>';
 
 			$h .= $primaryList;
+
+			if(
+				$eSale->isMarket() and
+				$eSale['preparationStatus'] === Sale::SELLING
+			) {
+
+				$h .= '<div class="dropdown-divider"></div>';
+				$h .= '<a data-ajax="/selling/sale:doUpdateConfirmedCollection" post-ids="'.$eSale['id'].'" class="dropdown-item">';
+					$h .= s("Remettre à préparer");
+				$h .= '</a>';
+			}
 
 			if($secondaryList) {
 
@@ -2201,7 +2210,7 @@ class SaleUi {
 					Sale::PREPARED => s("P"),
 					Sale::DELIVERED => s("L"),
 					Sale::CANCELED => s("A"),
-					Sale::CLOSED => s("Clôturé"),
+					Sale::CLOSED => s("C"),
 				];
 				break;
 
