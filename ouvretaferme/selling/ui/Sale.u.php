@@ -945,6 +945,10 @@ class SaleUi {
 				$to .= $button(Sale::PREPARED);
 			}
 
+			if($eSale->acceptStatusDraft()) {
+				$to .= $button(Sale::DRAFT);
+			}
+
 			if($eSale->acceptStatusCanceled()) {
 				$to .= '<div class="dropdown-divider"></div>';
 				$to .= $button(Sale::CANCELED);
