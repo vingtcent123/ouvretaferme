@@ -91,6 +91,15 @@ class ShopObserverLib {
 			->setContent(...MailUi::getSaleConfirmed($eSale, $cItem, FALSE, self::getTemplate($eSale)))
 			->send('shop');
 
+		if($eSale['shop']['emailNewSale']) {
+
+			new \mail\MailLib()
+				->addTo(self::getEmail($eSale))
+				->setContent(...MailUi::getNewFarmSale('confirmed', $eSale, $cItem))
+				->send('shop');
+
+		}
+
 	}
 
 	private static function getTemplate(\selling\Sale $eSale): ?string {
