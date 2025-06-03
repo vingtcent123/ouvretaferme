@@ -360,7 +360,7 @@ class Sale extends SaleElement {
 			$this->isComposition() === FALSE and
 			(
 				$this['shopDate']->empty() or
-				$this['customer']['user']->is(\user\ConnectionLib::getOnline()) === FALSE or
+				$this['customer']['user']->is($this['createdBy']) === FALSE or
 				$this['shopDate']['isOrderable'] === FALSE
 			)
 		);

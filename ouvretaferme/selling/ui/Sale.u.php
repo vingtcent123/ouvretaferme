@@ -877,7 +877,7 @@ class SaleUi {
 
 		if(
 			$eSale['shopDate']->notEmpty() and
-			$eSale['customer']['user']->is(\user\ConnectionLib::getOnline()) and
+			$eSale['customer']['user']->is($eSale['createdBy']) and
 			$eSale['shopDate']->acceptOrder()
 		) {
 			return '<span class="btn btn-readonly '.$btn.' sale-preparation-status-'.$eSale['preparationStatus'].'-button" title="'.s("Il sera possible de modifier le statut lorsque la période de prise des commandes sera close.").'">'.self::p('preparationStatus')->values[$eSale['preparationStatus']].'  '.\Asset::icon('lock-fill').'</span>';
