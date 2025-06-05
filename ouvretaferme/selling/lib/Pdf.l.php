@@ -222,15 +222,13 @@ class PdfLib extends PdfCrud {
 
 	}
 
-	public static function generate(string $type, Sale $eSale, ?Invoice $eInvoice): Pdf {
+	public static function generate(string $type, Sale $eSale, ?\Closure $callback = NULL): Pdf {
 
 		$eSale->expects(['farm']);
 
-		if($type === Pdf::INVOICE and $eInvoice !== NULL) {
-			$content = FacturXLib::generate($eInvoice, self::build('/selling/pdf:getDocument?id='.$eSale['id'].'&type='.$type));
-		} else {
-			$content = self::build('/selling/pdf:getDocument?id='.$eSale['id'].'&type='.$type);
-		}
+		$callback ??= self::build('/selling/pdf:getDocument?id='.$eSale['id'].'&type='.$type);
+
+		$content = $callback();
 
 		Pdf::model()->beginTransaction();
 

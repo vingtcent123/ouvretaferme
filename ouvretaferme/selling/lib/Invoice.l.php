@@ -334,7 +334,8 @@ class InvoiceLib extends InvoiceCrud {
 
 		if($e['cSale']->count() === 1) {
 
-			$ePdf = \selling\PdfLib::generate(Pdf::INVOICE, $e['cSale']->first(), $e);
+			$callback = fn() => FacturXLib::generate($e, PdfLib::build('/selling/pdf:getDocument?id='.$e['cSale']->first()['id'].'&type='.Pdf::INVOICE));
+			$ePdf = \selling\PdfLib::generate(Pdf::INVOICE, $e['cSale']->first(), $callback);
 
 			$e['content'] = $ePdf['content'];
 
