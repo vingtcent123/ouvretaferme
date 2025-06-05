@@ -334,7 +334,7 @@ class InvoiceLib extends InvoiceCrud {
 
 		if($e['cSale']->count() === 1) {
 
-			$ePdf = \selling\PdfLib::generate(Pdf::INVOICE, $e['cSale']->first());
+			$ePdf = \selling\PdfLib::generate(Pdf::INVOICE, $e['cSale']->first(), $e);
 
 			$e['content'] = $ePdf['content'];
 

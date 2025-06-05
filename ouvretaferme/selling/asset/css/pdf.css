@@ -16,7 +16,7 @@
 .pdf-document-header {
 	display: grid;
 	grid-column-gap: 1rem;
-	grid-template-columns: 6cm 1fr;
+	grid-template-columns: 6cm 1fr 3cm;
 	height: 8cm;
 	overflow: hidden;
 	margin-bottom: 0.75cm;
@@ -80,6 +80,9 @@
 	justify-content: center;
 }
 
+.pdf-document-facturx img {
+	width: 2cm;
+}
 h2.pdf-document-title {
 	font-weight: bold;
 	text-align: center;

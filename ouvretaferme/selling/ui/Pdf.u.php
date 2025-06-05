@@ -669,6 +669,10 @@ class PdfUi {
 				$h .= '</div>';
 			$h .= '</div>';
 
+			$h .= '<div class="pdf-document-facturx">';
+				$h .= \Asset::image('selling', 'facturx-minimum.png');
+			$h .= '</div>';
+
 		$h .= '</div>';
 
 		$h .= $dateDelivered;

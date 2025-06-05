@@ -222,11 +222,15 @@ class PdfLib extends PdfCrud {
 
 	}
 
-	public static function generate(string $type, Sale $eSale): Pdf {
+	public static function generate(string $type, Sale $eSale, ?Invoice $eInvoice): Pdf {
 
 		$eSale->expects(['farm']);
 
-		$content = self::build('/selling/pdf:getDocument?id='.$eSale['id'].'&type='.$type);
+		if($type === Pdf::INVOICE and $eInvoice !== NULL) {
+			$content = FacturXLib::generate($eInvoice, self::build('/selling/pdf:getDocument?id='.$eSale['id'].'&type='.$type));
+		} else {
+			$content = self::build('/selling/pdf:getDocument?id='.$eSale['id'].'&type='.$type);
+		}
 
 		Pdf::model()->beginTransaction();
 
@@ -258,7 +262,7 @@ class PdfLib extends PdfCrud {
 
 		$eInvoice->expects(['farm', 'sales']);
 
-		$content = self::build('/selling/pdf:getDocumentInvoice?id='.$eInvoice['id']);
+		$content = FacturXLib::generate($eInvoice, self::build('/selling/pdf:getDocumentInvoice?id='.$eInvoice['id']));
 
 		Pdf::model()->beginTransaction();
 
