@@ -1783,7 +1783,7 @@ class AnalyzeUi {
 
 			$h .= $this->getCustomerTitle($search);
 
-			$h .= $this->getPlantTurnover($cItemYear, $year, $e);
+			$h .= $this->getPlantTurnover($cItemYear, $year, $e, $search);
 
 			if($cItemCustomer->offsetExists($year)) {
 
@@ -1886,13 +1886,13 @@ class AnalyzeUi {
 
 	}
 
-	public function getPlantTurnover(\Collection $cItemYear, ?int $year, ?\plant\Plant $ePlantLink): string {
+	public function getPlantTurnover(\Collection $cItemYear, ?int $year, ?\plant\Plant $ePlantLink, \Search $search = new \Search()): string {
 
 		$h = '<ul class="util-summarize mb-3">';
 
 			foreach($cItemYear as $eItemYear) {
 				$h .= '<li '.($eItemYear['year'] === $year ? 'class="selected"' : '').'>';
-					$h .= '<a href="/plant/plant:analyzeSales?id='.$ePlantLink['id'].'&year='.$eItemYear['year'].'" data-ajax-method="get">';
+					$h .= '<a href="/plant/plant:analyzeSales?id='.$ePlantLink['id'].'&year='.$eItemYear['year'].''.($search->get('type') ? '&type='.encode($search->get('type')) : '').'" data-ajax-method="get">';
 						$h .= '<h5>'.$eItemYear['year'].'</h5>';
 						$h .= '<div>'.\util\TextUi::money($eItemYear['turnover'], precision: 0).'</div>';
 						$h .= '<div class="util-summarize-muted">('.\util\TextUi::pc($eItemYear['turnover'] / $eItemYear['turnoverGlobal'] * 100, 0).')</div>';
@@ -1918,7 +1918,7 @@ class AnalyzeUi {
 
 			$h .= $this->getCustomerTitle($search);
 
-			$h .= $this->getProductYear($cItemYear, $year, $e);
+			$h .= $this->getProductYear($cItemYear, $year, $e, $search);
 
 			if($cItemCustomer->offsetExists($year)) {
 
@@ -1986,13 +1986,13 @@ class AnalyzeUi {
 
 	}
 
-	public function getProductYear(\Collection $cItemYear, ?int $year, ?Product $eProductLink): string {
+	public function getProductYear(\Collection $cItemYear, ?int $year, ?Product $eProductLink, \Search $search = new \Search()): string {
 
 		$h = '<ul class="util-summarize mb-3">';
 
 			foreach($cItemYear as $eItemYear) {
 				$h .= '<li '.($eItemYear['year'] === $year ? 'class="selected"' : '').'>';
-					$h .= '<a href="/selling/product:analyze?id='.$eProductLink['id'].'&year='.$eItemYear['year'].'">';
+					$h .= '<a href="/selling/product:analyze?id='.$eProductLink['id'].'&year='.$eItemYear['year'].''.($search->get('type') ? '&type='.encode($search->get('type')) : '').'">';
 						$h .= '<h5>'.$eItemYear['year'].'</h5>';
 						$h .= '<div>'.\util\TextUi::money($eItemYear['turnover'], precision: 0).'</div>';
 						$h .= '<div class="util-summarize-muted">('.\util\TextUi::pc($eItemYear['turnover'] / $eItemYear['turnoverGlobal'] * 100, 0).')</div>';
