@@ -226,7 +226,7 @@ class PdfLib extends PdfCrud {
 
 		$eSale->expects(['farm']);
 
-		$callback ??= self::build('/selling/pdf:getDocument?id='.$eSale['id'].'&type='.$type);
+		$callback ??= fn() => self::build('/selling/pdf:getDocument?id='.$eSale['id'].'&type='.$type);
 
 		$content = $callback();
 
