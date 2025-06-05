@@ -22,7 +22,6 @@ Package::setList([
 	'production' => 'ouvretaferme',
 	'selling' => 'ouvretaferme',
 	'series' => 'ouvretaferme',
-	'setasign' => 'ouvretaferme',
 	'shop' => 'ouvretaferme',
 	'website' => 'ouvretaferme',
 ]);
