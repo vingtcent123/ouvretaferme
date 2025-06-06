@@ -246,6 +246,7 @@ class InvoiceLib extends InvoiceCrud {
 		Invoice::model()->commit();
 
 		if($e['generation'] === Invoice::NOW) {
+			$e['customer'] = CustomerLib::getById($e['customer']['id']);
 			self::generate($e);
 		}
 
