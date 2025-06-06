@@ -16,7 +16,7 @@ class FacturXLib {
 
 		// minimum : 'urn:factur-x.eu:1p0:minimum'
 		// basic wl : 'urn:factur-x.eu:1p0:basicwl'
-		$dataProfile = 'urn:factur-x.eu:1p0:minimum';
+		$dataProfile = 'urn:factur-x.eu:1p0:basicwl';
 
 		if($eInvoice->isCreditNote()) {
 			$typeCode = '381';
@@ -24,8 +24,12 @@ class FacturXLib {
 			$typeCode = '380';
 		}
 
-		return '<?xml version="1.0" encoding="utf-8"?>
-<rsm:CrossIndustryInvoice xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:qdt="urn:un:unece:uncefact:data:standard:QualifiedDataType:100" xmlns:udt="urn:un:unece:uncefact:data:standard:UnqualifiedDataType:100" xmlns:rsm="urn:un:unece:uncefact:data:standard:CrossIndustryInvoice:100" xmlns:ram="urn:un:unece:uncefact:data:standard:ReusableAggregateBusinessInformationEntity:100" xsi:schemaLocation="urn:gs1:uncefact:data:standard:CrossIndustryInvoice:1 ./data/standard/CrossIndustryInvoice_1p0.xsd">
+		$xml = '<?xml version="1.0" encoding="utf-8"?>
+<rsm:CrossIndustryInvoice xmlns:qdt="urn:un:unece:uncefact:data:standard:QualifiedDataType:100"
+xmlns:ram="urn:un:unece:uncefact:data:standard:ReusableAggregateBusinessInformationEntity:100"
+xmlns:rsm="urn:un:unece:uncefact:data:standard:CrossIndustryInvoice:100"
+xmlns:udt="urn:un:unece:uncefact:data:standard:UnqualifiedDataType:100"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<rsm:ExchangedDocumentContext><!--BG-2-->
 		<ram:GuidelineSpecifiedDocumentContextParameter><!--BT-24-00-->
 			<ram:ID>'.$dataProfile.'</ram:ID><!--BT-24-->
@@ -64,8 +68,21 @@ class FacturXLib {
 		</ram:ApplicableHeaderTradeAgreement>
 		<ram:ApplicableHeaderTradeDelivery/><!--BG-13-00-->
 		<ram:ApplicableHeaderTradeSettlement><!--BG-19-00-->
-			<ram:InvoiceCurrencyCode>EUR</ram:InvoiceCurrencyCode><!--BT-5-->
+			<ram:InvoiceCurrencyCode>EUR</ram:InvoiceCurrencyCode><!--BT-5-->';
+			foreach($eInvoice['vatByRate'] as $vatByRate) {
+				$xml .= '
+				<ram:ApplicableTradeTax><!--BG-23-->
+					<ram:CalculatedAmount>'.$vatByRate['vat'].'</ram:CalculatedAmount>
+					<ram:TypeCode>VAT</ram:TypeCode>
+					<ram:BasisAmount>'.$vatByRate['amount'].'</ram:BasisAmount>
+					<ram:CategoryCode>S</ram:CategoryCode>
+					<ram:RateApplicablePercent>'.$vatByRate['vatRate'].'</ram:RateApplicablePercent>
+				</ram:ApplicableTradeTax>
+			';
+			}
+		$xml .= '
 			<ram:SpecifiedTradeSettlementHeaderMonetarySummation><!--BG-22-->
+        <ram:LineTotalAmount>'.$eInvoice['priceExcludingVat'].'</ram:LineTotalAmount>
 				<ram:TaxBasisTotalAmount>'.$eInvoice['priceExcludingVat'].'</ram:TaxBasisTotalAmount><!--BT-109-->
 				<ram:TaxTotalAmount currencyID="EUR">'.$eInvoice['vat'].'</ram:TaxTotalAmount><!--BT-110-->
 				<ram:GrandTotalAmount>'.$eInvoice['priceIncludingVat'].'</ram:GrandTotalAmount><!--BT-112-->
@@ -75,6 +92,7 @@ class FacturXLib {
 	</rsm:SupplyChainTradeTransaction>
 </rsm:CrossIndustryInvoice>';
 
+		return $xml;
 	}
 
 	/**
