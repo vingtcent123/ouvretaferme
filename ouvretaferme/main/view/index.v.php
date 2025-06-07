@@ -64,11 +64,12 @@ new AdaptativeView('anonymous', function($data, MainTemplate $t) {
 				echo '<li>'.s("Éditez des devis, bons de livraison et factures").'</li>';
 				echo '<li>'.s("Utilisez un logiciel de caisse pour vos marchés").'</li>';
 				echo '<li>'.s("Créez le site internet de votre ferme").'</li>';
-				echo '<li>'.s("Travaillez en équipe").'</li>';
-				echo '<li>'.s("...").'</li>';
 			echo '</ul>';
+			echo '<div class="home-feature-for">';
+				echo s("Envie d'essayer Ouvretaferme ?");
+			echo '</div>';
 			echo '<div class="home-feature-buttons">';
-				echo '<a href="/presentation/producteur" class="btn btn-primary">'.s("Toutes les fonctionnalités").'</a>';
+				echo '<a href="/user/signUp" class="btn btn-primary">'.Asset::icon('person-fill').' '.s("Créer un compte").'</a>';
 			echo '</div>';
 
 		echo '</div>';
