@@ -87,8 +87,6 @@ class HomeUi {
 
 	public function getBlog(\website\News $eNews, bool $displayFallback): string {
 
-		\Asset::css('main', 'font-oswald.css');
-
 		if($eNews->empty()) {
 
 			if($displayFallback === FALSE) {
@@ -158,9 +156,7 @@ class HomeUi {
 	
 	public function getPoints(): string {
 
-		\Asset::css('main', 'font-oswald.css');
-
-		$h = '<h2>'.s("Principes de conception de {siteName}").'</h2>';
+		$h = '<h3>'.s("Principes de conception").'</h3>';
 		
 		$h .= '<div class="home-points">';
 			$h .= '<div class="home-point" style="grid-column: span 2">';
@@ -176,19 +172,19 @@ class HomeUi {
 		$h .= '<div class="home-points">';
 			$h .= '<div class="home-point">';
 				$h .= \Asset::icon('lock');
-				$h .= '<h4>'.s("Vos données ne sont<br/>ni vendues, ni partagées").'</h4>';
+				$h .= '<h4>'.s("Vos données vous appartiennent<br/>et ne sont ni vendues, ni partagées").'</h4>';
 			$h .= '</div>';
 			$h .= '<div class="home-point">';
 				$h .= \Asset::icon('cup-hot');
 				$h .= '<h4>'.s("Conçu pour réduire la charge mentale<br/>sans décider à votre place").'</h4>';
 			$h .= '</div>';
 			$h .= '<div class="home-point">';
-				$h .= \Asset::icon('people');
-				$h .= '<h4>'.s("Développé par et pour<br/>des producteurs").'</h4>';
-			$h .= '</div>';
-			$h .= '<div class="home-point">';
 				$h .= \Asset::icon('phone');
 				$h .= '<h4>'.s("Accessible facilement<br/>sur ordinateur et téléphone").'</h4>';
+			$h .= '</div>';
+			$h .= '<div class="home-point">';
+				$h .= \Asset::icon('code-slash');
+				$h .= '<h4>'.s("Logiciel libre dont<br/>le code source est public").'</h4>';
 			$h .= '</div>';
 		$h .= '</div>';
 

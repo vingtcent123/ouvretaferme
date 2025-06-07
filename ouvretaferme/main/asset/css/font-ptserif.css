@@ -1,0 +1,19 @@
+@font-face {
+  font-family: 'PT Serif';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(/asset/ouvretaferme/main/fonts/PTSerif.woff2) format('woff2');
+}
+
+@font-face {
+  font-family: 'PT Serif';
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: url(/asset/ouvretaferme/main/fonts/PTSerif-italic.woff2) format('woff2');
+}
+
+.font-ptserif {
+	font-family: 'PT Serif', serif;
+}

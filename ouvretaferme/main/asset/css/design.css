@@ -22,6 +22,7 @@
 	--dark: #212529;
 	--pro: #008874;
 	--private: #527a00;
+	--production: #446b0e;
 }
 
 ::selection {
@@ -74,6 +75,10 @@
 	color: var(--selling);
 }
 
+.color-production {
+	color: var(--production);
+}
+
 .color-todo {
 	color: var(--todo);
 }
@@ -103,6 +108,9 @@
 }
 .bg-selling {
 	background-color: var(--selling) !important;
+}
+.bg-production {
+	background-color: var(--production) !important;
 }
 
 .bg-pro {
@@ -607,8 +615,7 @@ div.footer-content {
 }
 
 div.footer-content-text {
-	border-top: 1px solid var(--border);
-	padding: 1rem 2rem 0;
+	padding: 1rem 2rem;
 	color: var(--secondary);
 	text-align: center;
 }
@@ -715,6 +722,23 @@ address {
 	margin: 0.5rem 0 0.5rem 1rem;
 	border-left: 2px solid var(--border);
 	padding-left: 1rem;
+}
+
+.btn-production,
+.btn-outline-production:not(.btn-readonly):hover {
+	color: white;
+	background-color: var(--production);
+	border-color: var(--production);
+}
+
+.btn-production:not(.btn-readonly):hover {
+	color: white;
+	box-shadow: inset 0px 0px 0 100px rgba(0, 0, 0, .1);
+}
+
+.btn-outline-production {
+	color: var(--production);
+	border-color: var(--production);
 }
 
 
