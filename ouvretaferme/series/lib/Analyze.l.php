@@ -54,7 +54,7 @@ class AnalyzeLib {
 
 	}
 
-	public static function getMonthlyWorkingTime(\farm\Farm $eFarm, int $year): \Collection {
+	public static function getMonthlyWorkingTime(\farm\Farm $eFarm, int $year, ?int $month, ?string $week): \Collection {
 
 		$eUserOnline = \user\ConnectionLib::getOnline();
 
@@ -66,13 +66,15 @@ class AnalyzeLib {
 			])
 			->whereFarm($eFarm)
 			->where('EXTRACT(YEAR from date) = '.\hr\WorkingTime::model()->format($year))
+			->where($month ? 'EXTRACT(MONTH FROM date) = '.$month : NULL)
+			->where($week ? 'WEEK(date, 1) = '.week_number($week) : NULL)
 			->group(['user', 'month'])
 			->sort(new \Sql('IF(user = '.$eUserOnline['id'].', 0, user) ASC'))
 			->getCollection(NULL, NULL, ['user', 'month']);
 
 	}
 
-	public static function getWeeklyWorkingTime(\farm\Farm $eFarm, int $year): array {
+	public static function getWeeklyWorkingTime(\farm\Farm $eFarm, int $year, ?int $month, ?string $week): array {
 
 		$start = new \DateTime()->setISODate($year, 1)->format('Y-m-d');
 		$stop = new \DateTime()->setISODate($year, 52, 7)->format('Y-m-d');
@@ -122,6 +124,8 @@ class AnalyzeLib {
 				->whereUser($user)
 				->or(...$dates)
 				->where('EXTRACT(YEAR from date) = '.\hr\WorkingTime::model()->format($year))
+				->where($month ? 'EXTRACT(MONTH FROM date) = '.$month : NULL)
+				->where($week ? 'WEEK(date, 1) = '.week_number($week) : NULL)
 				->group(['week'])
 				->getCollection()
 				->reduce(function($eWorkingTime, $list) {
@@ -137,7 +141,7 @@ class AnalyzeLib {
 
 	}
 
-	public static function getActionTimesheetByUser(\farm\Farm $eFarm, int $year): \Collection {
+	public static function getActionTimesheetByUser(\farm\Farm $eFarm, int $year, ?int $month, ?string $week): \Collection {
 
 		return Timesheet::model()
 			->select([
@@ -152,13 +156,15 @@ class AnalyzeLib {
 			->where('m1.time > 0')
 			->where('m1.farm', $eFarm)
 			->where('EXTRACT(YEAR FROM date) = '.$year)
+			->where($month ? 'EXTRACT(MONTH FROM date) = '.$month : NULL)
+			->where($week ? 'WEEK(date, 1) = '.week_number($week) : NULL)
 			->group(['user', 'action', 'category'])
 			->sort(new \Sql('m1_time DESC'))
 			->getCollection(index: ['user', NULL]);
 
 	}
 
-	public static function getCategoryTimesheetByUser(\farm\Farm $eFarm, int $year): \Collection {
+	public static function getCategoryTimesheetByUser(\farm\Farm $eFarm, int $year, ?int $month, ?string $week): \Collection {
 
 		return Timesheet::model()
 			->select([
@@ -172,6 +178,8 @@ class AnalyzeLib {
 			->where('m1.farm', $eFarm)
 			->where('m1.time > 0')
 			->where('EXTRACT(YEAR FROM date) = '.$year)
+			->where($month ? 'EXTRACT(MONTH FROM date) = '.$month : NULL)
+			->where($week ? 'WEEK(date, 1) = '.week_number($week) : NULL)
 			->group(['user', 'category'])
 			->sort(new \Sql('m1_time DESC'))
 			->getCollection(index: ['user', NULL]);

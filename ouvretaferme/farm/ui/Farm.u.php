@@ -1222,7 +1222,7 @@ class FarmUi {
 				$h .= '</div>';
 			$h .= '</h1>';
 
-			if($selectedView === Farmer::TIME) {
+			if($selectedView === Farmer::TIME or $selectedView === Farmer::TEAM) {
 
 				$h .= '<a class="dropdown-toggle btn btn-primary" data-dropdown="bottom-end">';
 					$h .= \Asset::icon('calendar2-week-fill').'<span class="hide-sm-down"> '.s("Calendrier").'</span>';

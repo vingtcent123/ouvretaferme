@@ -712,10 +712,11 @@
 					break;
 
 				case \farm\Farmer::TEAM :
-					$data->ccWorkingTimeMonthly = \series\AnalyzeLib::getMonthlyWorkingTime($data->eFarm, $data->year);
-					$data->workingTimeWeekly = \series\AnalyzeLib::getWeeklyWorkingTime($data->eFarm, $data->year);
-					$data->ccTimesheetAction = \series\AnalyzeLib::getActionTimesheetByUser($data->eFarm, $data->year);
-					$data->ccTimesheetCategory = \series\AnalyzeLib::getCategoryTimesheetByUser($data->eFarm, $data->year);
+
+					$data->ccWorkingTimeMonthly = \series\AnalyzeLib::getMonthlyWorkingTime($data->eFarm, $data->year, $data->month, $data->week);
+					$data->workingTimeWeekly = \series\AnalyzeLib::getWeeklyWorkingTime($data->eFarm, $data->year, $data->month, $data->week);
+					$data->ccTimesheetAction = \series\AnalyzeLib::getActionTimesheetByUser($data->eFarm, $data->year, $data->month, $data->week);
+					$data->ccTimesheetCategory = \series\AnalyzeLib::getCategoryTimesheetByUser($data->eFarm, $data->year, $data->month, $data->week);
 					break;
 
 				case \farm\Farmer::PACE :

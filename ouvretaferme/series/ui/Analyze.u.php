@@ -260,7 +260,7 @@ class AnalyzeUi {
 
 	}
 
-	public function getWorkingTime(\farm\Farm $eFarm, int $year, \Collection $ccWorkingTimeMonthly, array $workingTimeWeekly, \Collection $ccTimesheetAction, \Collection $ccTimesheetCategory): string {
+	public function getWorkingTime(\farm\Farm $eFarm, int $year, ?int $month, ?string $week, \Collection $ccWorkingTimeMonthly, array $workingTimeWeekly, \Collection $ccTimesheetAction, \Collection $ccTimesheetCategory): string {
 
 		if($ccWorkingTimeMonthly->empty()) {
 			$h = '<div class="util-empty">';
@@ -272,8 +272,10 @@ class AnalyzeUi {
 		$h = '<div class="tabs-h" id="series-analyze-team" onrender="'.encode('Lime.Tab.restore(this, "analyze-month")').'">';
 
 			$h .= '<div class="tabs-item">';
-				$h .= '<a class="tab-item selected" data-tab="analyze-month" onclick="Lime.Tab.select(this)">'.s("Par mois").'</a>';
-				$h .= '<a class="tab-item" data-tab="analyze-week" onclick="Lime.Tab.select(this)">'.s("Par semaine").'</a>';
+				if($month === NULL and $week === NULL) {
+					$h .= '<a class="tab-item selected" data-tab="analyze-month" onclick="Lime.Tab.select(this)">'.s("Par mois").'</a>';
+					$h .= '<a class="tab-item" data-tab="analyze-week" onclick="Lime.Tab.select(this)">'.s("Par semaine").'</a>';
+				}
 				$h .= '<a class="tab-item" data-tab="analyze-action" onclick="Lime.Tab.select(this)">'.s("Par intervention").'</a>';
 				$h .= '<a class="tab-item" data-tab="analyze-category" onclick="Lime.Tab.select(this)">'.s("Par catégorie").'</a>';
 			$h .= '</div>';

@@ -777,7 +777,7 @@ new AdaptativeView('analyzeWorkingTime', function($data, FarmTemplate $t) {
 
 		echo match($data->category) {
 			\farm\Farmer::TIME => $uiAnalyze->getBestActions($data->eFarm, $data->year, $data->month, $data->week, $data->globalTime, $data->cTimesheetAction, $data->cccTimesheetActionMonthly, $data->cTimesheetCategory, $data->ccTimesheetCategoryMonthly, $data->cTimesheetPlant, $data->ccTimesheetPlantMonthly, $data->cTimesheetSeries, $data->ccTimesheetSeriesMonthly, $data->monthly),
-			\farm\Farmer::TEAM => $uiAnalyze->getWorkingTime($data->eFarm, $data->year, $data->ccWorkingTimeMonthly, $data->workingTimeWeekly, $data->ccTimesheetAction, $data->ccTimesheetCategory),
+			\farm\Farmer::TEAM => $uiAnalyze->getWorkingTime($data->eFarm, $data->year, $data->month, $data->week, $data->ccWorkingTimeMonthly, $data->workingTimeWeekly, $data->ccTimesheetAction, $data->ccTimesheetCategory),
 			\farm\Farmer::PACE => $uiAnalyze->getPace($data->eFarm, $data->years, $data->year, $data->cAction, $data->ccPlant, $data->ccPlantCompare, $data->yearCompare),
 			\farm\Farmer::PERIOD => $uiAnalyze->getPeriod($data->year, $data->cWorkingTimeMonth, $data->cWorkingTimeMonthBefore, $data->cWorkingTimeWeek, $data->cWorkingTimeWeekBefore),
 		};
