@@ -14,7 +14,7 @@ new AdaptativeView('anonymous', function($data, MainTemplate $t) {
 
 	echo '<div class="home-features">';
 
-		echo '<h3 class="home-feature-title">'.s("Ouvretaferme est le logiciel libre et gratuit qui rend leur autonomie aux producteurs").'</h3>';
+		echo '<h3 class="home-feature-title">'.s("Ouvretaferme est le logiciel libre et gratuit qui rend les producteurs autonomes sur leur ferme").'</h3>';
 
 		echo '<div class="home-feature">';
 
