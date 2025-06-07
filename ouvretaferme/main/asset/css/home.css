@@ -330,7 +330,7 @@ div.home-feature-buttons {
 		grid-column: span 2;
 		display: grid;
 		align-items: center;
-		grid-template-columns: auto 1fr;
+		grid-template-columns: auto 1fr auto;
 		grid-column-gap: 1rem;
 		border-top: 1px solid var(--border);
 		padding-top: 1.5rem;
@@ -338,14 +338,12 @@ div.home-feature-buttons {
 
 	.home-feature.home-feature-other ul {
 		margin-bottom: 0;
+		grid-row: span 2;
 	}
 
 	.home-feature.home-feature-other h2 {
 		margin: 0 2rem;
-	}
-
-	.home-feature.home-feature-other .home-feature-buttons {
-		display: none;
+		grid-row: span 2;
 	}
 
 }
