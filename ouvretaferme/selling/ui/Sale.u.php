@@ -1543,7 +1543,7 @@ class SaleUi {
 
 	}
 
-	public function getMarket(\farm\Farm $eFarm, \Collection $ccSale, \Collection $cPaymentMethod) {
+	public function getMarket(Sale $eSaleMarket, \farm\Farm $eFarm, \Collection $ccSale, \Collection $cPaymentMethod) {
 
 		if($ccSale->empty()) {
 			return '';
@@ -1557,17 +1557,62 @@ class SaleUi {
 				continue;
 			}
 
-			$h .= '<h3>'.match($cSale->first()['preparationStatus']) {
+			$preparationStatus = $cSale->first()['preparationStatus'];
+
+			$h .= '<h3>'.match($preparationStatus) {
 				\selling\Sale::DELIVERED => s("Ventes terminées"),
 				\selling\Sale::DRAFT => s("Ventes en cours"),
 				\selling\Sale::CANCELED => s("Ventes annulées")
 			}.'</h3>';
+
+			if($preparationStatus === Sale::DELIVERED) {
+				$h .= $this->getPaymentMethods($eSaleMarket, $cSale, $cPaymentMethod);
+			}
 
 			$h .= $this->getList($eFarm, $cSale, hide: ['deliveredAt', 'actions', 'documents'], show: ['createdAt'], cPaymentMethod: $cPaymentMethod);
 
 		}
 
 		$h .= '<br/>';
+
+		return $h;
+
+	}
+
+	protected function getPaymentMethods(Sale $eSaleMarket, \Collection $cSale, \Collection $cPaymentMethod): string {
+
+		$methods = [];
+
+		$cSale->map(function($eSale) use(&$methods) {
+
+			foreach($eSale['cPayment'] as $ePayment) {
+
+				$methods[$ePayment['method']['id']] ??= [
+					'sales' => 0,
+					'amountIncludingVat' => 0.0
+				];
+				$methods[$ePayment['method']['id']]['sales']++;
+				$methods[$ePayment['method']['id']]['amountIncludingVat'] += $ePayment['amountIncludingVat'];
+
+			}
+
+		});
+
+		$h = '<ul class="util-summarize">';
+
+			foreach($methods as $method => ['sales' => $sales, 'amountIncludingVat' => $amountIncludingVat]) {
+
+				$h .= '<li>';
+
+					$h .= '<h5>'.encode($cPaymentMethod[$method]['name']).'</h5>';
+					$h .= '<div>'.\util\TextUi::money($amountIncludingVat).'</div>';
+					$h .= '<div class="util-summarize-muted">'.p("{value} vente", "{value} ventes", $sales).'</div>';
+
+				$h .= '</li>';
+
+			}
+
+		$h .= '</ul>';
 
 		return $h;
 
