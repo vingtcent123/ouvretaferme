@@ -381,12 +381,20 @@ div.home-profile {
 	font-family: 'PT Serif', serif;
 }
 
+@media (min-width: 576px) {
+
+	div.home-profile-extended {
+		grid-column: span 2;
+	}
+
+}
+
 div.home-profile-header {
 	display: grid;
 	align-items: center;
-	height: 5rem;
 	margin-bottom: 1rem;
 }
+
 
 div.home-profile-header:not(.home-profile-header-text) {
 	grid-template-columns: auto 1fr;
@@ -397,6 +405,7 @@ div.home-profile-header .home-profile-image {
 	display: block;
 	width: 6rem;
 	height: 4.5rem;
+	border-radius: var(--radius);
 }
 
 div.home-profile-header h4 {
