@@ -621,8 +621,6 @@ class ShopUi {
 			} else {
 
 				$h .= '<dl class="util-presentation util-presentation-1">';
-					$h .= '<dt>'.s("Ferme").'</dt>';
-					$h .= '<dd>'.encode($eFarm['name']).'</dd>';
 					$h .= '<dt>'.s("Site internet").'</dt>';
 					$h .= '<dd>'.\website\WebsiteUi::link($eWebsite).'</dd>';
 				$h .= '</dl>';
@@ -710,8 +708,6 @@ class ShopUi {
 					} else {
 
 						$h .= '<dl class="util-presentation util-presentation-1">';
-							$h .= '<dt>'.s("Ferme").'</dt>';
-							$h .= '<dd>'.encode($eFarm['name']).'</dd>';
 							$h .= '<dt>'.s("Site internet").'</dt>';
 							$h .= '<dd>'.\website\WebsiteUi::link($eWebsite).'</dd>';
 						$h .= '</dl>';
