@@ -608,9 +608,7 @@ class ShopUi {
 
 		$h .= '<h3>'.s("Intégration").'</h3>';
 
-		$h .= '<p>'.s("En fonction de votre situation, vous devez copiez le morceau de code ci-dessous sur la page de votre site où vous souhaitez faire apparaître votre boutique.").'</p>';
-
-		$h .= '<h4>'.s("Code à copier pour un site internet créé avec Ouvretaferme").'</h4>';
+		$h .= '<h4>'.s("Code à copier sur un site internet créé avec Ouvretaferme").'</h4>';
 
 		$h .= '<div class="website-code">';
 
@@ -637,7 +635,7 @@ class ShopUi {
 
 		$h .= '</div>';
 
-		$h .= '<h4>'.s("Code à copier pour un autre site internet").'</h4>';
+		$h .= '<h4>'.s("Code à copier sur un autre site internet").'</h4>';
 
 		$h .= '<div class="website-code">';
 			$h .= '<code>';
@@ -699,7 +697,7 @@ class ShopUi {
 
 				$h .= '<br/>';
 
-				$h .= '<h4>'.s("Code à copier pour un site internet créé avec Ouvretaferme").'</h4>';
+				$h .= '<h4>'.s("Code à copier sur un site internet créé avec Ouvretaferme").'</h4>';
 
 				$h .= '<div class="website-code">';
 
@@ -726,7 +724,7 @@ class ShopUi {
 
 				$h .= '</div>';
 
-				$h .= '<h4>'.s("Code à copier pour un autre site internet").'</h4>';
+				$h .= '<h4>'.s("Code à copier sur un autre site internet").'</h4>';
 
 				$h .= '<div class="website-code">';
 					$h .= '<code>';
