@@ -24,6 +24,7 @@ new AdaptativeView('anonymous', function($data, MainTemplate $t) {
 			echo '</h2>';
 			echo '<ul>';
 				echo '<li>'.s("Créez des boutiques en ligne sans commission").'</li>';
+				echo '<li>'.s("Mutualisez vos boutiques entre producteurs").'</li>';
 				echo '<li>'.s("Vendez à plusieurs producteurs").'</li>';
 				echo '<li>'.s("Produits et catalogues de vente illimités").'</li>';
 			echo '</ul>';
@@ -260,7 +261,7 @@ new AdaptativeView('/presentation/producteur', function($data, MainTemplate $t) 
 			echo '<h2 class="color-production">'.Asset::icon('leaf').'<br/>'.s("Un logiciel pour produire").'</h2>';
 			echo '<div class="home-presentation-description">';
 				echo '<ul>';
-					echo '<li>'.s("<b>Planifiez votre saison de culture en concevant vos plans de culture et plans d'assolement.</b><br/><small>Gérez les variétés, la longueur des planches, les surfaces, les densités, les objectifs de récolte et les associations de cultures. Enregistrez et retrouvez facilement toutes les informations liées à vos séries de cultures. De plus, un prévisionnel financier vous aide à estimer vos ventes en fonction de votre plan de culture et de vos prévisions !</small>").'</li>';
+					echo '<li>'.s("<b>Planifiez votre saison de culture en concevant vos plan de culture et plan d'assolement.</b><br/><small>Gérez les variétés, la longueur des planches, les surfaces, les densités, les objectifs de récolte et les associations de cultures. Enregistrez et retrouvez facilement toutes les informations liées à vos séries de cultures. De plus, un prévisionnel financier vous aide à estimer vos ventes en fonction de votre plan de culture et de vos prévisions !</small>").'</li>';
 					echo '<li>'.s("<b>Maîtrisez votre temps de travail.</b><br/><small>Que ce soit à la ferme avec votre téléphone ou le soir sur l'ordinateur, un planning hebdomadaire ou quotidien vous permet de faire le suivi des interventions planifiées et réalisées sur la semaine. Renseignez facilement votre temps de travail pour comprendre là où passe votre temps.</small>").'</li>';
 					echo '<li>'.s("<b>Suivez précisément vos rotations sur votre parcellaire.</b><br/><small>Choisissez vos critères pour les rotations et vérifiez en un coup d'oeil les planches qui correspondent à ces critères. Pratique pour éviter de mettre vos cultures aux mêmes emplacements trop souvent !</small>").'</li>';
 					echo '<li>'.s("<b>Collaborez avec votre équipe.</b><br/><small>Invitez votre équipe sur l'espace de votre ferme et gérez les droits de chaque personne.</small>").'</li>';
