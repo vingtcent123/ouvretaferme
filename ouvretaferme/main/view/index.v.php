@@ -121,7 +121,7 @@ new AdaptativeView('anonymous', function($data, MainTemplate $t) {
 			echo '<div class="home-profile-header">';
 				echo '<div>'.Asset::image('main', 'profile/jardindesmurmures.jpg', ['class' => 'home-profile-image']).'</div>';
 				echo '<div>';
-					echo '<h4>'.s("Bloye (74)").'</h4>';
+					echo '<h4>'.s("Le Jardin des Murmures (74)").'</h4>';
 					echo '<h3>'.s("Maraichage").'</h3>';
 				echo '</div>';
 			echo '</div>';
