@@ -132,7 +132,10 @@ class Sale extends SaleElement {
 			$this['shopShared']
 		) {
 
-			return \shop\ShareLib::match($this['shop'], $this['farm']);
+			return (
+				$this['shop']->canRead() and
+				\shop\ShareLib::match($this['shop'], $this['farm'])
+			);
 
 		}
 
