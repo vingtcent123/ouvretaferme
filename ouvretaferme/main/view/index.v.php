@@ -2,7 +2,7 @@
 new AdaptativeView('anonymous', function($data, MainTemplate $t) {
 
 	$t->title = s("Organisez le travail à la ferme de la production à la vente");
-	$t->metaDescription = s("Logiciel gratuit et en ligne dédié à tous les producteurs en agriculture biologique. C'est adapté à toutes les productions.");
+	$t->metaDescription = s("Logiciel gratuit pour les producteurs pour vendre en ligne, éditer des factures, concevoir votre plan de culture et gérer votre planning. C'est adapté à toutes les productions.");
 	$t->template = 'home-main';
 
 	Asset::css('main', 'font-ptserif.css');
