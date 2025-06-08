@@ -49,6 +49,12 @@ body[data-template~="shop-embedded"] > footer {
 	display: none;
 }
 
+body[data-template~="shop-embedded"] > main > div.container {
+	margin-top: 0.5rem;
+	padding-left: 0.5rem;
+	padding-right: 0.5rem;
+}
+
 .shop-title {
 	display: flex;
 	align-items: center;

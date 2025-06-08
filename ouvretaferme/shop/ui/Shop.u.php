@@ -598,21 +598,29 @@ class ShopUi {
 
 	}
 
-	public function displayWebsiteInternal(Shop $eShop, Date $eDate, \farm\Farm $eFarm, \website\Website $eWebsite): string {
+	public function displayWebsiteLimited(Shop $eShop, Date $eDate, \farm\Farm $eFarm, \website\Website $eWebsite): string {
+
+		\Asset::css('website', 'manage.css');
 
 		$h = '<h2>'.s("Option 1").'</h2>';
-		$h .= '<h3 style="text-transform: uppercase">'.s("Intégration simple sur un site internet créé avec {siteName}").'</h3>';
+		$h .= '<h3 style="text-transform: uppercase">'.s("Intégration simple").'</h3>';
 		$h .= '<div class="util-block mb-3">';
 
-		if($eWebsite->empty()) {
+		$h .= '<h3>'.s("Intégration").'</h3>';
 
-			$h .= '<p class="util-empty">'.s("Vous n'avez pas encore créé votre site internet avec {siteName} !").'</p>';
+		$h .= '<p>'.s("En fonction de votre situation, vous devez copiez le morceau de code ci-dessous sur la page de votre site où vous souhaitez faire apparaître votre boutique.").'</p>';
 
-			$h .= '<a href="/website/manage?id='.$eFarm['id'].'" class="btn btn-primary">'.s("Créer mon site internet").'</a>';
+		$h .= '<h4>'.s("Code à copier pour un site internet créé avec Ouvretaferme").'</h4>';
 
-		} else {
+		$h .= '<div class="website-code">';
 
-				$h .= '<p>'.s("Vous souhaitez mettre en avant cette boutique sur le site internet de votre ferme afin de permettre à vos clients de passer facilement leurs commandes :").'</p>';
+			if($eWebsite->empty()) {
+
+				$h .= '<p class="util-empty">'.s("Vous n'avez pas encore créé votre site internet avec {siteName} !").'</p>';
+
+				$h .= '<a href="/website/manage?id='.$eFarm['id'].'" class="btn btn-primary">'.s("Créer mon site internet").'</a>';
+
+			} else {
 
 				$h .= '<dl class="util-presentation util-presentation-1">';
 					$h .= '<dt>'.s("Ferme").'</dt>';
@@ -621,30 +629,35 @@ class ShopUi {
 					$h .= '<dd>'.\website\WebsiteUi::link($eWebsite).'</dd>';
 				$h .= '</dl>';
 
-			$h .= '<br/>';
+				$h .= '<br/>';
 
-			$h .= '<h3>'.s("Intégration").'</h3>';
-			$h .= '<p>'.s("Copiez ce morceau de code sur n'importe quelle page de votre site :").'</p>';
-			$h .= '<code>@shop='.$eShop['id'].'</code>';
-			$h .= '<br/>';
+				$h .= '<code>@shop='.$eShop['id'].'</code>';
 
-			$h .= '<h3>'.s("Comportement").'</h3>';
-			$h .= '<p>'.s("Un bloc contenant le nom de votre boutique et la date de la prochaine vente sera affiché sur votre site internet. Si une vente est ouverte, un lien pour commander en ligne sera affiché à votre client.").'</p>';
-
-			$h .= '<br/>';
-
-			$h .= '<h3>'.s("Rendu").'</h3>';
-
-			if($eDate->notEmpty()) {
-
-				$h .= '<div>';
-					$h .= new \website\WidgetUi()->getShop($eShop, $eDate);
-				$h .= '</div>';
-
-			} else {
-				$h .= '<p>'.s("Créez une première vente pour visualiser le rendu.").'</p>';
 			}
 
+		$h .= '</div>';
+
+		$h .= '<h4>'.s("Code à copier pour un autre site internet").'</h4>';
+
+		$h .= '<div class="website-code">';
+			$h .= '<code>';
+				$h .= encode($this->getEmbedScript($eShop, 'limited'));
+			$h .= '</code>';
+		$h .= '</div>';
+
+		$h .= '<h3>'.s("Comportement").'</h3>';
+		$h .= '<p>'.s("Un bloc contenant le nom de votre boutique et la date de la prochaine vente sera affiché sur votre site internet. Si une vente est ouverte, un lien pour commander en ligne sera affiché à votre client.").'</p>';
+
+		$h .= '<h3>'.s("Rendu").'</h3>';
+
+		if($eDate->notEmpty()) {
+
+			$h .= '<div>';
+				$h .= $this->getEmbedScript($eShop, 'limited');
+			$h .= '</div>';
+
+		} else {
+			$h .= '<p>'.s("Créez une première vente pour visualiser le rendu.").'</p>';
 		}
 
 		$h .= '</div>';
@@ -653,40 +666,12 @@ class ShopUi {
 
 	}
 
-	public function displayWebsiteExternal(Shop $eShop, Date $eDate, \farm\Farm $eFarm): string {
+	public function displayWebsiteFull(Shop $eShop, Date $eDate, \farm\Farm $eFarm, \website\Website $eWebsite): string {
+
+		\Asset::css('website', 'manage.css');
 
 		$h = '<h2>'.s("Option 2").'</h2>';
-		$h .= '<h3 style="text-transform: uppercase">'.s("Intégration simple sur un autre site internet").'</h3>';
-		$h .= '<div class="util-block mb-3">';
-
-			$h .= '<h3>'.s("Intégration").'</h3>';
-			$h .= '<p>'.s("Copiez ce morceau de code sur n'importe quelle page de votre site :").'</p>';
-			$h .= '<code>';
-				$h .= encode($this->getEmbedScript($eShop, 'limited'));
-			$h .= '</code>';
-
-			$h .= '<br/>';
-
-			$h .= '<h3>'.s("Comportement").'</h3>';
-			$h .= '<p>'.s("Un bloc contenant le nom de votre boutique et la date de la prochaine vente sera affiché sur votre site internet. Si une vente est ouverte, un lien pour commander en ligne sera affiché à votre client.").'</p>';
-
-			$h .= '<br/>';
-
-			$h .= '<h3>'.s("Rendu").'</h3>';
-
-			if($eDate->notEmpty()) {
-
-				$h .= '<div>';
-					$h .= $this->getEmbedScript($eShop, 'limited');
-				$h .= '</div>';
-
-			} else {
-				$h .= '<p>'.s("Créez une première vente pour visualiser le rendu.").'</p>';
-			}
-		$h .= '</div>';
-
-		$h .= '<h2>'.s("Option 3").'</h2>';
-		$h .= '<h3 style="text-transform: uppercase">'.s("Intégration complète sur un autre site internet").'</h3>';
+		$h .= '<h3 style="text-transform: uppercase">'.s("Intégration complète").'</h3>';
 
 		$h .= '<div class="util-block mb-3">';
 			$h .= '<h3>'.s("Intégration").'</h3>';
@@ -714,10 +699,40 @@ class ShopUi {
 
 				$h .= '<br/>';
 
-				$h .= '<p>'.s("Copiez ce morceau de code sur votre site :").'</p>';
-				$h .= '<code>';
-					$h .= encode($this->getEmbedScript($eShop, 'full'));
-				$h .= '</code>';
+				$h .= '<h4>'.s("Code à copier pour un site internet créé avec Ouvretaferme").'</h4>';
+
+				$h .= '<div class="website-code">';
+
+					if($eWebsite->empty()) {
+
+						$h .= '<p class="util-empty">'.s("Vous n'avez pas encore créé votre site internet avec {siteName} !").'</p>';
+
+						$h .= '<a href="/website/manage?id='.$eFarm['id'].'" class="btn btn-primary">'.s("Créer mon site internet").'</a>';
+
+					} else {
+
+						$h .= '<dl class="util-presentation util-presentation-1">';
+							$h .= '<dt>'.s("Ferme").'</dt>';
+							$h .= '<dd>'.encode($eFarm['name']).'</dd>';
+							$h .= '<dt>'.s("Site internet").'</dt>';
+							$h .= '<dd>'.\website\WebsiteUi::link($eWebsite).'</dd>';
+						$h .= '</dl>';
+
+						$h .= '<br/>';
+
+						$h .= '<code>@fullShop='.$eShop['id'].'</code>';
+
+					}
+
+				$h .= '</div>';
+
+				$h .= '<h4>'.s("Code à copier pour un autre site internet").'</h4>';
+
+				$h .= '<div class="website-code">';
+					$h .= '<code>';
+						$h .= encode($this->getEmbedScript($eShop, 'full'));
+					$h .= '</code>';
+				$h .= '</div>';
 
 			}
 

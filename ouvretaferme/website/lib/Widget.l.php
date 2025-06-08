@@ -29,7 +29,8 @@ class WidgetLib {
 				$value = $matches[2][$i];
 
 				$eWebpage['widgets'][$original] = match($app) {
-					'shop' => self::getShop($eFarm, (int)$value)
+					'shop' => self::getShop($eFarm, (int)$value, 'limited'),
+					'fullShop' => self::getShop($eFarm, (int)$value, 'full'),
 				} ?? $original;
 
 			}
@@ -38,7 +39,7 @@ class WidgetLib {
 
 	}
 
-	public static function getShop(\farm\Farm $eFarm, int $id): ?\Closure {
+	public static function getShop(\farm\Farm $eFarm, int $id, string $mode): ?\Closure {
 
 		$eShop = \shop\ShopLib::getById($id);
 
@@ -51,19 +52,12 @@ class WidgetLib {
 			return fn() => '';
 		}
 
-		$eDate = \shop\DateLib::getMostRelevantByShop($eShop, one: TRUE);
-
-		if($eDate->empty()) {
-			return fn() => '';
-		} else {
-			return fn() => new WidgetUi()->getShop($eShop, $eDate);
-		}
-
+		return fn() => new \shop\ShopUi()->getEmbedScript($eShop, $mode);
 
 	}
 
 	public static function getList(): array {
-		return ['shop'];
+		return ['shop', 'fullShop'];
 	}
 
 }

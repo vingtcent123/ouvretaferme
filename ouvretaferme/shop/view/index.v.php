@@ -57,8 +57,8 @@ new AdaptativeView('website', function($data, FarmTemplate $t) {
 
 	$t->mainTitle = $h;
 
-	echo  new \shop\ShopUi()->displayWebsiteInternal($data->e, $data->eDate, $data->eFarm, $data->eWebsite);
-	echo  new \shop\ShopUi()->displayWebsiteExternal($data->e, $data->eDate, $data->eFarm);
+	echo  new \shop\ShopUi()->displayWebsiteLimited($data->e, $data->eDate, $data->eFarm, $data->eWebsite);
+	echo  new \shop\ShopUi()->displayWebsiteFull($data->e, $data->eDate, $data->eFarm, $data->eWebsite);
 
 });
 

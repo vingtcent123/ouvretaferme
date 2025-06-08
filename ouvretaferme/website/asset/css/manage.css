@@ -58,3 +58,10 @@ div.webpage-write-url label {
 	text-align: right;
 	white-space: nowrap;
 }
+
+div.website-code {
+	margin-left: 1rem;
+	padding-left: 1rem;
+	border-left: 2px solid var(--primary);
+	margin-bottom: 2rem;
+}
