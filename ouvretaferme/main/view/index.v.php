@@ -174,7 +174,7 @@ new AdaptativeView('logged', function($data, MainTemplate $t) {
 new AdaptativeView('signUp', function($data, MainTemplate $t) {
 
 	$t->title = s("Inscription sur {siteName}");
-	$t->metaDescription = s("Inscrivez-vous comme producteur sur {siteName} pour profiter de fonctionnalités de la plateforme !");
+	$t->metaDescription = s("Inscrivez-vous comme producteur sur {siteName} pour profiter de fonctionnalités de vente en ligne et de production du logiciel !");
 	$t->template = 'home-legal';
 
 	Asset::css('main', 'font-ptserif.css');
