@@ -25,7 +25,6 @@ new AdaptativeView('anonymous', function($data, MainTemplate $t) {
 			echo '<ul>';
 				echo '<li>'.s("Créez des boutiques en ligne sans commission").'</li>';
 				echo '<li>'.s("Mutualisez vos boutiques entre producteurs").'</li>';
-				echo '<li>'.s("Vendez à plusieurs producteurs").'</li>';
 				echo '<li>'.s("Produits et catalogues de vente illimités").'</li>';
 			echo '</ul>';
 			echo '<div class="home-feature-for">';
