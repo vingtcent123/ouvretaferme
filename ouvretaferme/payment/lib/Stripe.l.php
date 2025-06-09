@@ -51,8 +51,8 @@ class StripeLib {
 
 	public static function webhookPaymentIntent(StripeFarm $eStripeFarm, array $event): void {
 
+		// Les utilisateurs qui partagent leur compte stripe avec d'autres services
 		if(($event['data']['object']['metadata']['source'] ?? NULL) !== 'otf') {
-			trigger_error('OTF source not found for event #'.$event['id'], E_USER_WARNING);
 			return;
 		}
 

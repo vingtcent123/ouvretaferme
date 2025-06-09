@@ -784,6 +784,7 @@ class ProductUi {
 
 					$hasLimits = (
 						$eProduct['limitCustomers'] or
+						$eProduct['excludeCustomers'] or
 						$eProduct['limitMax'] or
 						$outCatalog
 					);
@@ -927,6 +928,7 @@ class ProductUi {
 
 					$hasLimits = (
 						$eProduct['limitCustomers'] or
+						$eProduct['excludeCustomers'] or
 						$eProduct['limitMax'] or
 						$eProduct['limitStartAt'] or
 						$eProduct['limitEndAt']
@@ -1033,6 +1035,21 @@ class ProductUi {
 						$customers = [];
 
 						foreach($eProduct['limitCustomers'] as $customer) {
+
+							if($cCustomer->offsetExists($customer)) {
+								$customers[] = '<u>'.encode($cCustomer[$customer]->getName()).'</u>';
+							}
+
+						}
+
+						$h .= '<span>'.s("Uniquement pour {value}", implode(', ', $customers)).'</span>';
+					}
+
+					if($eProduct['excludeCustomers']) {
+
+						$customers = [];
+
+						foreach($eProduct['excludeCustomers'] as $customer) {
 
 							if($cCustomer->offsetExists($customer)) {
 								$customers[] = '<u>'.encode($cCustomer[$customer]->getName()).'</u>';
@@ -1187,7 +1204,9 @@ class ProductUi {
 					$h .= $this->getLimitAtField($form, $e);
 				}
 
-				$h .= $form->dynamicGroups($e, ['limitMin', 'limitMax', 'limitCustomers']);
+				$h .= $form->dynamicGroups($e, ['limitMin', 'limitMax']);
+
+				$h .= $form->dynamicGroups($e, ['limitCustomers', 'excludeCustomers']);
 
 			$h .= '</div>';
 
@@ -1234,7 +1253,8 @@ class ProductUi {
 			'limitEndAt' => s("Proposer pour les commandes livrées jusqu'au"),
 			'limitMin' => s("Quantité minimale demandée en cas de commande"),
 			'limitMax' => s("Quantité maximale autorisée par commande"),
-			'limitCustomers' => s("Limiter les commandes de ce produit à certains clients"),
+			'limitCustomers' => s("N'autoriser les commandes de ce produit qu'à certains clients"),
+			'excludeCustomers' => s("Interdire les commandes de ce produit à certains clients"),
 		]);
 
 		switch($property) {
@@ -1262,8 +1282,8 @@ class ProductUi {
 				break;
 
 			case 'limitCustomers' :
-				$d->after = \util\FormUi::info(s("Seuls les clients que vous aurez choisis pourront acheter ce produit dans vos boutiques."));
-				$d->autocompleteDefault = fn(Product $e) => $e['cCustomer'] ?? $e->expects(['cCustomer']);
+				$d->autocompleteDefault = fn(Product $e) => $e['cCustomerLimit'] ?? $e->expects(['cCustomerLimit']);
+				$d->placeholder = s("Taper un nom de client à autoriser");
 				$d->autocompleteBody = function(\util\FormUi $form, Product $e) {
 					return [
 						'farm' => $e['farm']['id']
@@ -1271,6 +1291,21 @@ class ProductUi {
 				};
 				new \selling\CustomerUi()->query($d, TRUE);
 				$d->group = ['wrapper' => 'limitCustomers'];
+				$d->labelAfter = \util\FormUi::info(s("Incompatible avec l'interdiction à certains clients"));
+				break;
+
+			case 'excludeCustomers' :
+				$d->autocompleteDefault = fn(Product $e) => $e['cCustomerExclude'] ?? $e->expects(['cCustomerExclude']);
+				$d->placeholder = s("Taper un nom de client à interdire");
+				$d->autocompleteBody = function(\util\FormUi $form, Product $e) {
+					return [
+						'farm' => $e['farm']['id']
+					];
+				};
+				new \selling\CustomerUi()->query($d, TRUE);
+				$d->group = ['wrapper' => 'excludeCustomers'];
+				$d->labelAfter = \util\FormUi::info(s("Incompatible avec l'autorisation à certains clients"));
+				$d->after = \util\FormUi::info(s("Nous vous recommandons d'utiliser l'interdiction avec précaution car vos clients pourraient voir qu'ils ne peuvent pas acheter ce produit s'ils consultent votre boutique sans être connecté."));
 				break;
 
 			case 'available' :

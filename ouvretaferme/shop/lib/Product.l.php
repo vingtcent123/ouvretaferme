@@ -7,7 +7,7 @@ class ProductLib extends ProductCrud {
 
 		return function(Product $eProduct) {
 
-			$properties = ['price', 'available', 'limitCustomers', 'limitMin', 'limitMax'];
+			$properties = ['price', 'available', 'limitCustomers', 'excludeCustomers', 'limitMin', 'limitMax'];
 
 			if($eProduct['catalog']->notEmpty()) {
 				$properties[] = 'limitStartAt';
@@ -134,6 +134,7 @@ class ProductLib extends ProductCrud {
 				'limitCustomers' => [],
 				'limitStartAt' => NULL,
 				'limitEndAt' => NULL,
+				'excludeCustomers' => NULL,
 				'available' => NULL,
 				'status' => Product::INACTIVE,
 			]);
@@ -186,6 +187,7 @@ class ProductLib extends ProductCrud {
 				->whereStatus(Product::ACTIVE, if: $public)
 				->where(fn() => 'JSON_LENGTH(limitCustomers) = 0 OR JSON_CONTAINS(limitCustomers, \''.$eCustomer['id'].'\')', if: ($public and $eCustomer->notEmpty()))
 				->where(fn() => 'JSON_LENGTH(limitCustomers) = 0', if: ($public and $eCustomer->empty()))
+				->where(fn() => 'JSON_LENGTH(excludeCustomers) = 0 OR JSON_CONTAINS(excludeCustomers, \''.$eCustomer['id'].'\') = 0', if: ($public and $eCustomer->notEmpty()))
 				->where('limitStartAt IS NULL OR '.$m->format($eDate['deliveryDate']).' >= limitStartAt')
 				->where('limitEndAt IS NULL OR '.$m->format($eDate['deliveryDate']).' <= limitEndAt');
 

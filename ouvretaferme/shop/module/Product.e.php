@@ -54,6 +54,34 @@ class Product extends ProductElement {
 				return TRUE;
 
 			})
+			->setCallback('excludeCustomers.prepare', function(mixed &$customers): bool {
+
+				$this->expects(['farm']);
+
+				$customers = (array)($customers ?? []);
+
+				$customers = \selling\Customer::model()
+					->select('id')
+					->whereId('IN', $customers)
+					->whereFarm($this['farm'])
+					->getColumn('id');
+
+				return TRUE;
+
+			})
+			->setCallback('excludeCustomers.consistency', function($customers): bool {
+
+				if(
+					($this['limitCustomers'] === [] and $customers === []) or
+					$this['limitCustomers'] xor $customers
+				) {
+					return TRUE;
+				} else {
+					\Fail::log('limitCustomers.consistency');
+					return FALSE;
+				}
+
+			})
 			->setCallback('limitMax.consistency', function(?float $limitMax) use($p): bool {
 
 				if($p->isBuilt('limitMin') === FALSE) {

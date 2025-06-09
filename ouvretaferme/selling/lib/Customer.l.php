@@ -174,7 +174,7 @@ class CustomerLib extends CustomerCrud {
 
 	public static function getLimitedByProducts(\Collection $cProduct): \Collection {
 
-		$customers = array_merge(...$cProduct->getColumn('limitCustomers'));
+		$customers = array_merge(...$cProduct->getColumn('limitCustomers'), ...$cProduct->getColumn('excludeCustomers'));
 
 		return Customer::model()
 			->select(Customer::getSelection())

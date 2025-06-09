@@ -56,12 +56,13 @@ class ProductModel extends \ModuleModel {
 			'limitCustomers' => ['json', 'cast' => 'array'],
 			'limitStartAt' => ['date', 'null' => TRUE, 'cast' => 'string'],
 			'limitEndAt' => ['date', 'null' => TRUE, 'cast' => 'string'],
+			'excludeCustomers' => ['json', 'cast' => 'array'],
 			'available' => ['decimal', 'digits' => 8, 'decimal' => 2, 'min' => 0.0, 'max' => NULL, 'null' => TRUE, 'cast' => 'float'],
 			'status' => ['enum', [\shop\Product::ACTIVE, \shop\Product::INACTIVE], 'cast' => 'enum'],
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'shop', 'date', 'type', 'farm', 'catalog', 'product', 'packaging', 'price', 'limitMin', 'limitMax', 'limitCustomers', 'limitStartAt', 'limitEndAt', 'available', 'status'
+			'id', 'shop', 'date', 'type', 'farm', 'catalog', 'product', 'packaging', 'price', 'limitMin', 'limitMax', 'limitCustomers', 'limitStartAt', 'limitEndAt', 'excludeCustomers', 'available', 'status'
 		]);
 
 		$this->propertiesToModule += [
@@ -92,6 +93,9 @@ class ProductModel extends \ModuleModel {
 			case 'limitCustomers' :
 				return [];
 
+			case 'excludeCustomers' :
+				return [];
+
 			case 'status' :
 				return Product::ACTIVE;
 
@@ -112,6 +116,9 @@ class ProductModel extends \ModuleModel {
 			case 'limitCustomers' :
 				return $value === NULL ? NULL : json_encode($value, JSON_UNESCAPED_UNICODE);
 
+			case 'excludeCustomers' :
+				return $value === NULL ? NULL : json_encode($value, JSON_UNESCAPED_UNICODE);
+
 			case 'status' :
 				return ($value === NULL) ? NULL : (string)$value;
 
@@ -127,6 +134,9 @@ class ProductModel extends \ModuleModel {
 		switch($property) {
 
 			case 'limitCustomers' :
+				return $value === NULL ? NULL : json_decode($value, TRUE);
+
+			case 'excludeCustomers' :
 				return $value === NULL ? NULL : json_decode($value, TRUE);
 
 			default :
@@ -198,6 +208,10 @@ class ProductModel extends \ModuleModel {
 
 	public function whereLimitEndAt(...$data): ProductModel {
 		return $this->where('limitEndAt', ...$data);
+	}
+
+	public function whereExcludeCustomers(...$data): ProductModel {
+		return $this->where('excludeCustomers', ...$data);
 	}
 
 	public function whereAvailable(...$data): ProductModel {
