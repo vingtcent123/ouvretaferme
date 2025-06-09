@@ -1057,7 +1057,7 @@ class ProductUi {
 
 						}
 
-						$h .= '<span>'.s("Uniquement pour {value}", implode(', ', $customers)).'</span>';
+						$h .= '<span>'.s("Non vendu à {value}", implode(', ', $customers)).'</span>';
 					}
 
 					if($excludeAt === FALSE) {
