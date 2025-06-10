@@ -165,7 +165,7 @@ class MailLib {
 			\mail\Email::model()->insert($eEmail);
 
 			if(LIME_ENV === 'dev') {
-				$this->doSend($eEmail);
+			//	$this->doSend($eEmail);
 			}
 		}
 
@@ -245,6 +245,7 @@ class MailLib {
 				$mail->Body = $eEmail['html'];
 				$mail->AltBody = $eEmail['text'];
 			} else {
+				$mail->isHTML(FALSE);
 				$mail->Subject = $eEmail['subject'];
 				$mail->Body = $eEmail['text'];
 			}
