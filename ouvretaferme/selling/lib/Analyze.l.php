@@ -3,11 +3,11 @@ namespace selling;
 
 class AnalyzeLib {
 
-	public static function getFarmMonths(\farm\Farm $eFarm, int $year): \Collection {
+	public static function getFarmMonths(\farm\Farm $eFarm, int $year, \Search $search): \Collection {
 
 		Item::model()->whereFarm($eFarm);
 
-		return self::getMonths($eFarm, $year);
+		return self::getMonths($eFarm, $year, $search);
 
 	}
 
@@ -105,11 +105,11 @@ class AnalyzeLib {
 
 	}
 
-	public static function getFarmWeeks(\farm\Farm $eFarm, int $year): \Collection {
+	public static function getFarmWeeks(\farm\Farm $eFarm, int $year, \Search $search): \Collection {
 
 		Item::model()->whereFarm($eFarm);
 
-		return self::getWeeks($eFarm, $year);
+		return self::getWeeks($eFarm, $year, $search);
 
 	}
 

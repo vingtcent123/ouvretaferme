@@ -46,11 +46,13 @@ class AnalyzeUi {
 		return $h;
 	}
 
-	public function getPeriod(int $year, \Collection $cItemMonth, \Collection $cItemMonthBefore, \Collection $cItemWeek, \Collection $cItemWeekBefore, string $tag = 'h2'): string {
+	public function getPeriod(int $year, \Collection $cItemMonth, \Collection $cItemMonthBefore, \Collection $cItemWeek, \Collection $cItemWeekBefore, \Search $search): string {
+
+		$h = $this->getSearch($search);
 
 		if($cItemMonth->empty()) {
 
-			$h = '<div class="util-empty">';
+			$h .= '<div class="util-empty">';
 				$h .= s("Aucune vente n'a été enregistrée pour cette année.");
 			$h .= '</div>';
 
@@ -58,9 +60,9 @@ class AnalyzeUi {
 
 		}
 
-		$h = '<h2>'.s("Ventes mensuelles").'</h2>';
+		$h .= '<h2>'.s("Ventes mensuelles").'</h2>';
 		$h .= '<div class="analyze-chart-table">';
-			$h .= $this->getPeriodMonthTable($cItemMonth);
+			$h .= $this->getPeriodMonthTable($cItemMonth, search: $search);
 			if($cItemMonthBefore->notEmpty()) {
 				$h .= $this->getDoublePeriodMonthChart('turnover', $cItemMonth, $year, $cItemMonthBefore, $year - 1);
 			} else {
@@ -70,7 +72,7 @@ class AnalyzeUi {
 
 		$h .= '<br/>';
 
-		$h .= '<'.$tag.'>'.s("Ventes hebdomadaires").'</'.$tag.'>';
+		$h .= '<h2>'.s("Ventes hebdomadaires").'</h2>';
 		if($cItemMonthBefore->notEmpty()) {
 			$h .= $this->getDoublePeriodWeekChart('turnover', $cItemWeek, $year, $cItemWeekBefore, $year - 1);
 		} else {
@@ -81,7 +83,7 @@ class AnalyzeUi {
 
 	}
 
-	protected function getPeriodMonthTable(\Collection $cItemMonth, Product|\plant\Plant|Customer|null $e = NULL): string {
+	protected function getPeriodMonthTable(\Collection $cItemMonth, Product|\plant\Plant|Customer|null $e = NULL, \Search $search = new \Search()): string {
 
 		$totalTurnover = $cItemMonth->sum('turnover');
 
@@ -99,7 +101,7 @@ class AnalyzeUi {
 						$h .= '<th>'.s("Mois").'</th>';
 						$h .= '<th class="text-end">'.s("Ventes").'</th>';
 						$h .= '<th></th>';
-						if($e === NULL) {
+						if($e === NULL and $search->isFiltered('type') === FALSE) {
 							$h .= '<th class="text-end color-private">'.s("Dont<br/>particuliers").'</th>';
 							$h .= '<th></th>';
 							$h .= '<th class="color-pro">'.s("Dont<br/>professionnels").'</th>';
@@ -160,7 +162,7 @@ class AnalyzeUi {
 								}
 							$h .= '</td>';
 
-							if($e === NULL) {
+							if($e === NULL and $search->isFiltered('type') === FALSE) {
 
 								$h .= '<td class="text-end color-private">';
 									if($turnoverPrivate !== NULL) {
@@ -246,7 +248,7 @@ class AnalyzeUi {
 							}
 						$h .= '</td>';
 
-						if($e === NULL) {
+						if($e === NULL and $search->isFiltered('type') === FALSE) {
 
 							$h .= '<td class="text-end color-private">';
 								if($totalTurnoverPrivate > 0) {
@@ -2008,7 +2010,7 @@ class AnalyzeUi {
 
 	public function getSearch(\Search $search): string {
 
-		$h = '<div id="analyze-selling-search" class="util-block-search stick-xs '.($search->empty() ? 'hide' : '').' mt-1">';
+		$h = '<div id="analyze-selling-search" class="util-block-search stick-xs '.($search->empty() ? 'hide' : '').'">';
 
 			$form = new \util\FormUi();
 			$url = LIME_REQUEST_PATH;

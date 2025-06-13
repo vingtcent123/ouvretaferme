@@ -914,10 +914,10 @@
 					break;
 
 				case \farm\Farmer::PERIOD :
-					$data->cItemMonth = \selling\AnalyzeLib::getFarmMonths($data->eFarm, $data->year);
-					$data->cItemMonthBefore = \selling\AnalyzeLib::getFarmMonths($data->eFarm, $data->year - 1);
-					$data->cItemWeek = \selling\AnalyzeLib::getFarmWeeks($data->eFarm, $data->year);
-					$data->cItemWeekBefore = \selling\AnalyzeLib::getFarmWeeks($data->eFarm, $data->year - 1);
+					$data->cItemMonth = \selling\AnalyzeLib::getFarmMonths($data->eFarm, $data->year, $data->search);
+					$data->cItemMonthBefore = \selling\AnalyzeLib::getFarmMonths($data->eFarm, $data->year - 1, $data->search);
+					$data->cItemWeek = \selling\AnalyzeLib::getFarmWeeks($data->eFarm, $data->year, $data->search);
+					$data->cItemWeekBefore = \selling\AnalyzeLib::getFarmWeeks($data->eFarm, $data->year - 1, $data->search);
 					break;
 
 				default :

@@ -1238,6 +1238,7 @@ class FarmUi {
 				$h .= '</div>';
 
 			}
+
 		$h .= '</div>';
 
 		return $h;
@@ -1283,6 +1284,12 @@ class FarmUi {
 						showYear: FALSE
 					);
 				$h .= '</div>';
+
+			} else {
+
+				$h .= '<a '.attr('onclick', 'Lime.Search.toggle("#analyze-selling-search")').' class="btn btn-primary">';
+					$h .= \Asset::icon('search').' '.s("Filtrer");
+				$h .= '</a>';
 
 			}
 

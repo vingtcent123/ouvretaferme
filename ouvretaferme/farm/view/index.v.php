@@ -841,7 +841,7 @@ new AdaptativeView('analyzeSelling', function($data, FarmTemplate $t) {
 			\farm\Farmer::ITEM => $uiAnalyze->getBestSeller($data->eFarm, $data->cItemProduct, $data->cItemProductMonthly, $data->cPlant, $data->cccItemPlantMonthly, $data->year, $data->cItemProductCompare, $data->cPlantCompare, $data->yearCompare, $data->salesByYear, $data->monthly, $data->month, $data->week, $data->search),
 			\farm\Farmer::CUSTOMER => $uiAnalyze->getBestCustomers($data->ccItemCustomer, $data->ccItemCustomerMonthly, $data->year, $data->month, $data->week, $data->monthly, $data->search),
 			\farm\Farmer::SHOP => $data->cShop->empty() ? $uiAnalyze->getEmptyShop() : $uiAnalyze->getShop($data->eFarm, $data->cShop, $data->eShop, $data->cSaleTurnover, $data->cItemProduct, $data->cItemProductMonthly, $data->cPlant, $data->cccItemPlantMonthly, $data->ccItemCustomer, $data->year, $data->monthly),
-			\farm\Farmer::PERIOD => $uiAnalyze->getPeriod($data->year, $data->cItemMonth, $data->cItemMonthBefore, $data->cItemWeek, $data->cItemWeekBefore),
+			\farm\Farmer::PERIOD => $uiAnalyze->getPeriod($data->year, $data->cItemMonth, $data->cItemMonthBefore, $data->cItemWeek, $data->cItemWeekBefore, $data->search),
 		};
 
 	}
