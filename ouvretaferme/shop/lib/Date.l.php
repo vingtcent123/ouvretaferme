@@ -389,7 +389,7 @@ class DateLib extends DateCrud {
 			$cItem = \selling\ItemLib::getSummaryByDate($eFarm, $eDate);
 
 			new \mail\MailLib()
-				->addTo($to)
+				->setTo($to)
 				->setContent(...MailUi::getOrderEnd($eDate, $sales, $cItem))
 				->send('user');
 

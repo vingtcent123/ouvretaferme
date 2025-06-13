@@ -9,9 +9,8 @@ class MailLib {
 
 	protected ?string $fromEmail = NULL;
 	protected ?string $fromName = NULL;
-	protected array $to = [];
-	protected array $cc = [];
-	protected array $bcc = [];
+	protected ?string $to = NULL;
+	protected ?string $bcc = NULL;
 	protected ?string $replyTo = NULL;
 	protected ?string $bodyText = NULL;
 	protected ?string $bodyHtml = NULL;
@@ -51,18 +50,13 @@ class MailLib {
 		return $this;
 	}
 
-	public function addTo(string $to): MailLib {
-		$this->to[] = $to;
+	public function setTo(string $to): MailLib {
+		$this->to = $to;
 		return $this;
 	}
 
-	public function addCc(string $email): MailLib {
-		$this->cc[] = $email;
-		return $this;
-	}
-
-	public function addBcc(string $email): MailLib {
-		$this->bcc[] = $email;
+	public function setBcc(string $email): MailLib {
+		$this->bcc = $email;
 		return $this;
 	}
 
@@ -97,9 +91,8 @@ class MailLib {
 	public function reset() {
 		$this->fromEmail = NULL;
 		$this->fromName = NULL;
-		$this->to = [];
-		$this->cc = [];
-		$this->bcc = [];
+		$this->to = NULL;
+		$this->bcc = NULL;
 		$this->replyTo = NULL;
 		$this->bodyText = '';
 		$this->bodyHtml = '';
@@ -113,7 +106,7 @@ class MailLib {
 	public function send(string $server): MailLib {
 
 		if(
-			empty($this->to) or
+			$this->to === NULL or
 			(empty($this->bodyText) and empty($this->bodyHtml)) or
 			empty($this->subject)
 		) {
@@ -123,24 +116,9 @@ class MailLib {
 		} else {
 
 			// /!\ Do not touch
-			if(LIME_ENV === 'prod') {
+			if(LIME_ENV === 'dev') {
 
-				$toSelected = $this->to;
-
-			// Can't send all mails
-			} else {
-
-				$toSelected = [];
-
-				foreach($this->to as $to) {
-
-					if(in_array($to, \Setting::get('mail\devSendOnly'))) {
-						$toSelected[] = $to;
-					}
-
-				}
-
-				if($toSelected === []) {
+				if(in_array($this->to, \Setting::get('mail\devSendOnly')) === FALSE) {
 					return $this;
 				}
 
@@ -155,8 +133,7 @@ class MailLib {
 				'server' => $server,
 				'fromEmail' => $this->fromEmail,
 				'fromName' => $this->fromName ?? \Setting::get('mail\emailName'),
-				'to' => $toSelected,
-				'cc' => $this->cc,
+				'to' => $this->to,
 				'bcc' => $this->bcc,
 				'replyTo' => $this->replyTo,
 				'attachments' => serialize($this->attachments)
@@ -165,8 +142,9 @@ class MailLib {
 			\mail\Email::model()->insert($eEmail);
 
 			if(LIME_ENV === 'dev') {
-			//	$this->doSend($eEmail);
+				$this->doSend($eEmail);
 			}
+
 		}
 
 		$this->reset();
@@ -183,7 +161,7 @@ class MailLib {
 	public static function sendWaiting(): void {
 
 		$cEmail = \mail\Email::model()
-			->select('id', 'html', 'text', 'subject', 'server', 'fromEmail', 'fromName', 'to', 'cc', 'bcc', 'replyTo', 'attachments')
+			->select('id', 'html', 'text', 'subject', 'server', 'fromEmail', 'fromName', 'to', 'bcc', 'replyTo', 'attachments')
 			->whereStatus(\mail\Email::WAITING)
 			->getCollection();
 
@@ -203,56 +181,48 @@ class MailLib {
 
 	private static function doSend(Email $eEmail): void {
 
-		foreach($eEmail['to'] as $to) {
+		$server = \Setting::get('mail\smtpServers')[$eEmail['server']];
 
-			$server = \Setting::get('mail\smtpServers')[$eEmail['server']];
+		$mail = new \PHPMailer\PHPMailer\PHPMailer();
+		$mail->isSMTP();
+		$mail->Host = $server['host'];
+		$mail->Port = $server['port'];
+		$mail->CharSet = 'UTF-8';
+		$mail->SMTPAuth = TRUE;
+		$mail->Username = $server['user'];
+		$mail->Password = $server['password'];
+		$mail->SMTPSecure = $server['secure'];
 
-			$mail = new \PHPMailer\PHPMailer\PHPMailer();
-			$mail->isSMTP();
-			$mail->Host = $server['host'];
-			$mail->Port = $server['port'];
-			$mail->CharSet = 'UTF-8';
-			$mail->SMTPAuth = TRUE;
-			$mail->Username = $server['user'];
-			$mail->Password = $server['password'];
-			$mail->SMTPSecure = $server['secure'];
+		$mail->setFrom($eEmail['fromEmail'] ?? $server['from'], $eEmail['fromName']);
+		$mail->addAddress($eEmail['to']);
 
-			$mail->setFrom($eEmail['fromEmail'] ?? $server['from'], $eEmail['fromName']);
-			$mail->addAddress($to);
-
-			if($eEmail['replyTo'] !== NULL) {
-				$mail->addReplyTo($eEmail['replyTo']);
-			}
-
-			foreach($eEmail['cc'] as $email) {
-				$mail->addCC($email);
-			}
-
-			foreach($eEmail['bcc'] as $email) {
-				$mail->addBCC($email);
-			}
-
-			$attachments = unserialize($eEmail['attachments']);
-
-			foreach($attachments as $attachment) {
-				$mail->addStringAttachment($attachment['content'], $attachment['name'], type: $attachment['type']);
-			}
-
-			//Content
-			if($eEmail['html']) {
-				$mail->isHTML(TRUE);
-				$mail->Subject = $eEmail['subject'];
-				$mail->Body = $eEmail['html'];
-				$mail->AltBody = $eEmail['text'];
-			} else {
-				$mail->isHTML(FALSE);
-				$mail->Subject = $eEmail['subject'];
-				$mail->Body = $eEmail['text'];
-			}
-
-			$mail->send();
-
+		if($eEmail['replyTo'] !== NULL) {
+			$mail->addReplyTo($eEmail['replyTo']);
 		}
+
+		if($eEmail['bcc'] !== NULL) {
+			$mail->addBCC($eEmail['bcc']);
+		}
+
+		$attachments = unserialize($eEmail['attachments']);
+
+		foreach($attachments as $attachment) {
+			$mail->addStringAttachment($attachment['content'], $attachment['name'], type: $attachment['type']);
+		}
+
+		//Content
+		if($eEmail['html']) {
+			$mail->isHTML(TRUE);
+			$mail->Subject = $eEmail['subject'];
+			$mail->Body = $eEmail['html'];
+			$mail->AltBody = $eEmail['text'];
+		} else {
+			$mail->isHTML(FALSE);
+			$mail->Subject = $eEmail['subject'];
+			$mail->Body = $eEmail['text'];
+		}
+
+		$mail->send();
 
 		$eEmail['sentAt'] = new \Sql('NOW()');
 

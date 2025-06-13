@@ -138,14 +138,14 @@ class PdfLib extends PdfCrud {
 		$libMail = new \mail\MailLib();
 
 		if($eFarm->getSelling('documentCopy')) {
-			$libMail->addBcc($eFarm->getSelling('legalEmail'));
+			$libMail->setBcc($eFarm->getSelling('legalEmail'));
 		}
 
 		$pdf = self::getContentByPdf($ePdf['content']);
 
 		$libMail
 			->setFromName($eFarm['name'])
-			->addTo($customerEmail)
+			->setTo($customerEmail)
 			->setReplyTo($eFarm->getSelling('legalEmail'))
 			->setContent(...$content)
 			->addAttachment($pdf, $eSale->getDeliveryNote($eFarm).'.pdf', 'application/pdf')
@@ -207,14 +207,14 @@ class PdfLib extends PdfCrud {
 		$libMail = new \mail\MailLib();
 
 		if($eFarm->getSelling('documentCopy')) {
-			$libMail->addBcc($eFarm->getSelling('legalEmail'));
+			$libMail->setBcc($eFarm->getSelling('legalEmail'));
 		}
 
 		$pdf = self::getContentByPdf($ePdfContent);
 
 		$libMail
 			->setFromName($eFarm['name'])
-			->addTo($eCustomer['email'])
+			->setTo($eCustomer['email'])
 			->setReplyTo($eFarm->getSelling('legalEmail'))
 			->setContent(...$content)
 			->addAttachment($pdf, $eInvoice['name'].'.pdf', 'application/pdf')

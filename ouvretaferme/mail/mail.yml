@@ -17,9 +17,8 @@ Email:
   server: text8(1, null)
   fromEmail: ?text8(0, null)
   fromName: text8(0, null)
-  to: json
-  cc: json
-  bcc: json
+  to: text8(0, null)
+  bcc: ?text8(0, null)
   replyTo: ?text8
   attachments: binary32
   status: enum(WAITING, SENDING, FAIL, SUCCESS) = WAITING

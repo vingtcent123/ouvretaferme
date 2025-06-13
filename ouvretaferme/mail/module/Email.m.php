@@ -48,9 +48,8 @@ class EmailModel extends \ModuleModel {
 			'server' => ['text8', 'min' => 1, 'max' => NULL, 'cast' => 'string'],
 			'fromEmail' => ['text8', 'min' => 0, 'max' => NULL, 'null' => TRUE, 'cast' => 'string'],
 			'fromName' => ['text8', 'min' => 0, 'max' => NULL, 'cast' => 'string'],
-			'to' => ['json', 'cast' => 'array'],
-			'cc' => ['json', 'cast' => 'array'],
-			'bcc' => ['json', 'cast' => 'array'],
+			'to' => ['text8', 'min' => 0, 'max' => NULL, 'cast' => 'string'],
+			'bcc' => ['text8', 'min' => 0, 'max' => NULL, 'null' => TRUE, 'cast' => 'string'],
 			'replyTo' => ['text8', 'null' => TRUE, 'cast' => 'string'],
 			'attachments' => ['binary32', 'cast' => 'binary'],
 			'status' => ['enum', [\mail\Email::WAITING, \mail\Email::SENDING, \mail\Email::FAIL, \mail\Email::SUCCESS], 'cast' => 'enum'],
@@ -59,7 +58,7 @@ class EmailModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'html', 'text', 'subject', 'server', 'fromEmail', 'fromName', 'to', 'cc', 'bcc', 'replyTo', 'attachments', 'status', 'createdAt', 'sentAt'
+			'id', 'html', 'text', 'subject', 'server', 'fromEmail', 'fromName', 'to', 'bcc', 'replyTo', 'attachments', 'status', 'createdAt', 'sentAt'
 		]);
 
 		$this->indexConstraints = array_merge($this->indexConstraints, [
@@ -89,40 +88,11 @@ class EmailModel extends \ModuleModel {
 
 		switch($property) {
 
-			case 'to' :
-				return $value === NULL ? NULL : json_encode($value, JSON_UNESCAPED_UNICODE);
-
-			case 'cc' :
-				return $value === NULL ? NULL : json_encode($value, JSON_UNESCAPED_UNICODE);
-
-			case 'bcc' :
-				return $value === NULL ? NULL : json_encode($value, JSON_UNESCAPED_UNICODE);
-
 			case 'status' :
 				return ($value === NULL) ? NULL : (string)$value;
 
 			default :
 				return parent::encode($property, $value);
-
-		}
-
-	}
-
-	public function decode(string $property, $value) {
-
-		switch($property) {
-
-			case 'to' :
-				return $value === NULL ? NULL : json_decode($value, TRUE);
-
-			case 'cc' :
-				return $value === NULL ? NULL : json_decode($value, TRUE);
-
-			case 'bcc' :
-				return $value === NULL ? NULL : json_decode($value, TRUE);
-
-			default :
-				return parent::decode($property, $value);
 
 		}
 
@@ -166,10 +136,6 @@ class EmailModel extends \ModuleModel {
 
 	public function whereTo(...$data): EmailModel {
 		return $this->where('to', ...$data);
-	}
-
-	public function whereCc(...$data): EmailModel {
-		return $this->where('cc', ...$data);
 	}
 
 	public function whereBcc(...$data): EmailModel {
