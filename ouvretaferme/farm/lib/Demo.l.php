@@ -11,12 +11,13 @@ class DemoLib {
 
 	const COPY_PACKAGE_EXCLUDE = [
 		'dev', 'session', 'storage', 'mail',
-		'analyze', 'payment', 'shop', 'website'
+		'analyze', 'shop', 'website'
 	];
 
 	const COPY_MODULE_EXCLUDE = [
 		'farm\Invite',
 		'farm\Tip',
+		'payment\StripeFarm',
 		'selling\Grid',
 		'selling\History',
 		'selling\Invoice',
