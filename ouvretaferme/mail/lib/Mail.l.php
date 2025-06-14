@@ -164,7 +164,7 @@ class MailLib {
 	public static function sendWaiting(): void {
 
 		$cEmail = \mail\Email::model()
-			->select('id', 'html', 'text', 'subject', 'fromEmail', 'fromName', 'to', 'bcc', 'replyTo', 'attachments')
+			->select(Email::getSelection())
 			->whereStatus(\mail\Email::WAITING)
 			->getCollection();
 
@@ -188,7 +188,6 @@ class MailLib {
 
 		$eEmail['sentAt'] = new \Sql('NOW()');
 		$eEmail['status'] = Email::SENT;
-
 
 		\mail\Email::model()
 			->select('sentAt', 'status')
