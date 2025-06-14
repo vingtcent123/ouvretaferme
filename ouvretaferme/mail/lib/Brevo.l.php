@@ -6,6 +6,89 @@ namespace mail;
  */
 class BrevoLib {
 
+	const API_URL = 'https://api.brevo.com/v3/smtp/email';
+
+	public static function send(Email $eEmail): ?array {
+
+		$object = [
+			'subject' => $eEmail['subject'],
+			'htmlContent' => $eEmail['html'] ?? nl2br($eEmail['text']),
+			'textContent' => $eEmail['text'],
+			'sender' => [
+				'name' => $eEmail['fromName'],
+				'email' => $eEmail['fromEmail']
+			],
+			'tags' => [
+				LIME_ENV,
+				(string)$eEmail['id']
+			],
+			'to' => [
+				[
+					'email' => $eEmail['to'],
+				]
+			]
+		];
+
+		if($eEmail['bcc'] !== NULL) {
+
+			$object['bcc'] = [
+				[
+					'email' => $eEmail['bcc'],
+				]
+			];
+
+		}
+
+		if($eEmail['replyTo'] !== NULL) {
+
+			$object['replyTo'] = [
+				'email' => $eEmail['replyTo'],
+			];
+
+		}
+
+		$attachments = unserialize($eEmail['attachments']);
+
+		if($attachments) {
+
+			$object['attachment'] = [];
+
+			foreach($attachments as $attachment) {
+				$object['attachment'][] = [
+					'content' => base64_encode($attachment['content']),
+					'name' => $attachment['name']
+				];
+			}
+
+		}
+
+		$data = json_encode($object);
+
+		$header = [
+			'api-key: '.\Setting::get('mail\brevoApiKey'),
+			'accept: application/json',
+			'Content-Type: application/json',
+			'Content-Length: '.strlen($data)
+		];
+
+		$options = [
+			CURLOPT_HTTPHEADER => $header,
+			CURLOPT_VERBOSE => TRUE,
+		];
+
+		$curl = new \util\CurlLib();
+
+		$data = $curl->exec(self::API_URL, $data, 'POST', $options);
+		$httpCode = $curl->getLastInfos()['httpCode'];
+
+		if($httpCode === 201 or $httpCode === 202) {
+			return json_decode($data, TRUE);
+		} else {
+			throw new \Exception('Brevo error (HTTP code is '.$httpCode.')');
+		}
+
+	}
+
 	public static function webhook(array $payload): void {
 
 		file_put_contents('/tmp/webhook'.time(), var_export($payload, true));

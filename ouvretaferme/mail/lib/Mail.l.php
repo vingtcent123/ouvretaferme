@@ -1,10 +1,6 @@
 <?php
 namespace mail;
 
-require_once __DIR__.'/PHPMailer-6.5.1/src/PHPMailer.php';
-require_once __DIR__.'/PHPMailer-6.5.1/src/SMTP.php';
-require_once __DIR__.'/PHPMailer-6.5.1/src/Exception.php';
-
 class MailLib {
 
 	protected ?string $fromEmail = NULL;
@@ -103,7 +99,7 @@ class MailLib {
 	/**
 	 * Send the mail.
 	 */
-	public function send(string $server): MailLib {
+	public function send(): MailLib {
 
 		if(
 			$this->to === NULL or
@@ -130,8 +126,7 @@ class MailLib {
 				'html' => $this->bodyHtml,
 				'text' => $this->bodyText,
 				'subject' => $this->subject,
-				'server' => $server,
-				'fromEmail' => $this->fromEmail,
+				'fromEmail' => $this->fromEmail ?? \Setting::get('mail\emailFrom'),
 				'fromName' => $this->fromName ?? \Setting::get('mail\emailName'),
 				'to' => $this->to,
 				'bcc' => $this->bcc,
@@ -181,52 +176,7 @@ class MailLib {
 
 	private static function doSend(Email $eEmail): void {
 
-		$server = \Setting::get('mail\smtpServers')[$eEmail['server']];
-
-		$mail = new \PHPMailer\PHPMailer\PHPMailer();
-		$mail->isSMTP();
-		$mail->Host = $server['host'];
-		$mail->Port = $server['port'];
-		$mail->CharSet = 'UTF-8';
-		$mail->SMTPAuth = TRUE;
-		$mail->Username = $server['user'];
-		$mail->Password = $server['password'];
-		$mail->SMTPSecure = $server['secure'];
-
-		$mail->setFrom($eEmail['fromEmail'] ?? $server['from'], $eEmail['fromName']);
-		$mail->addAddress($eEmail['to']);
-		$mail->addCustomHeader('tags', json_encode([
-			'id' => $eEmail['id'],
-			'env' => LIME_ENV
-		]));
-
-		if($eEmail['replyTo'] !== NULL) {
-			$mail->addReplyTo($eEmail['replyTo']);
-		}
-
-		if($eEmail['bcc'] !== NULL) {
-			$mail->addBCC($eEmail['bcc']);
-		}
-
-		$attachments = unserialize($eEmail['attachments']);
-
-		foreach($attachments as $attachment) {
-			$mail->addStringAttachment($attachment['content'], $attachment['name'], type: $attachment['type']);
-		}
-
-		//Content
-		if($eEmail['html']) {
-			$mail->isHTML(TRUE);
-			$mail->Subject = $eEmail['subject'];
-			$mail->Body = $eEmail['html'];
-			$mail->AltBody = $eEmail['text'];
-		} else {
-			$mail->isHTML(FALSE);
-			$mail->Subject = $eEmail['subject'];
-			$mail->Body = $eEmail['text'];
-		}
-
-		$mail->send();
+		BrevoLib::send($eEmail);
 
 		$eEmail['sentAt'] = new \Sql('NOW()');
 

@@ -14,14 +14,13 @@ Email:
   html: ?text24(0, null)
   text: ?text24(0, null)
   subject: text24(0, null)
-  server: text8(1, null)
-  fromEmail: ?text8(0, null)
+  fromEmail: text8(0, null)
   fromName: text8(0, null)
   to: text8(0, null)
   bcc: ?text8(0, null)
   replyTo: ?text8
   attachments: binary32
-  status: enum(WAITING, SENDING, FAIL, SUCCESS) = WAITING
+  status: enum(WAITING, SENDING, SUCCESS) = WAITING
   createdAt: datetime = SPECIAL(now)
   sentAt: ?datetime
   INDEX: [

@@ -9,7 +9,6 @@ abstract class EmailElement extends \Element {
 
 	const WAITING = 'waiting';
 	const SENDING = 'sending';
-	const FAIL = 'fail';
 	const SUCCESS = 'success';
 
 	public static function getSelection(): array {
@@ -45,20 +44,19 @@ class EmailModel extends \ModuleModel {
 			'html' => ['text24', 'min' => 0, 'max' => NULL, 'null' => TRUE, 'cast' => 'string'],
 			'text' => ['text24', 'min' => 0, 'max' => NULL, 'null' => TRUE, 'cast' => 'string'],
 			'subject' => ['text24', 'min' => 0, 'max' => NULL, 'cast' => 'string'],
-			'server' => ['text8', 'min' => 1, 'max' => NULL, 'cast' => 'string'],
-			'fromEmail' => ['text8', 'min' => 0, 'max' => NULL, 'null' => TRUE, 'cast' => 'string'],
+			'fromEmail' => ['text8', 'min' => 0, 'max' => NULL, 'cast' => 'string'],
 			'fromName' => ['text8', 'min' => 0, 'max' => NULL, 'cast' => 'string'],
 			'to' => ['text8', 'min' => 0, 'max' => NULL, 'cast' => 'string'],
 			'bcc' => ['text8', 'min' => 0, 'max' => NULL, 'null' => TRUE, 'cast' => 'string'],
 			'replyTo' => ['text8', 'null' => TRUE, 'cast' => 'string'],
 			'attachments' => ['binary32', 'cast' => 'binary'],
-			'status' => ['enum', [\mail\Email::WAITING, \mail\Email::SENDING, \mail\Email::FAIL, \mail\Email::SUCCESS], 'cast' => 'enum'],
+			'status' => ['enum', [\mail\Email::WAITING, \mail\Email::SENDING, \mail\Email::SUCCESS], 'cast' => 'enum'],
 			'createdAt' => ['datetime', 'cast' => 'string'],
 			'sentAt' => ['datetime', 'null' => TRUE, 'cast' => 'string'],
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'html', 'text', 'subject', 'server', 'fromEmail', 'fromName', 'to', 'bcc', 'replyTo', 'attachments', 'status', 'createdAt', 'sentAt'
+			'id', 'html', 'text', 'subject', 'fromEmail', 'fromName', 'to', 'bcc', 'replyTo', 'attachments', 'status', 'createdAt', 'sentAt'
 		]);
 
 		$this->indexConstraints = array_merge($this->indexConstraints, [
@@ -120,10 +118,6 @@ class EmailModel extends \ModuleModel {
 
 	public function whereSubject(...$data): EmailModel {
 		return $this->where('subject', ...$data);
-	}
-
-	public function whereServer(...$data): EmailModel {
-		return $this->where('server', ...$data);
 	}
 
 	public function whereFromEmail(...$data): EmailModel {

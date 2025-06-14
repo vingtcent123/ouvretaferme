@@ -19,7 +19,7 @@ class ShopObserverLib {
 			self::newSend($eSale)
 				->setTo($eUser['email'])
 				->setContent(...MailUi::getSaleConfirmed($eSale, $cItem, $group, self::getTemplate($eSale)))
-				->send('shop');
+				->send();
 
 		}
 
@@ -31,7 +31,7 @@ class ShopObserverLib {
 			new \mail\MailLib()
 				->setTo(self::getEmail($eSale))
 				->setContent(...MailUi::getNewFarmSale('confirmed', $eSale, $cItem))
-				->send('shop');
+				->send();
 
 		}
 
@@ -53,7 +53,7 @@ class ShopObserverLib {
 			self::newSend($eSale)
 				->setTo($eUser['email'])
 				->setContent(...MailUi::getSaleUpdated($eSale, $cItem, $group, self::getTemplate($eSale)))
-				->send('shop');
+				->send();
 
 		}
 
@@ -65,7 +65,7 @@ class ShopObserverLib {
 			new \mail\MailLib()
 				->setTo(self::getEmail($eSale))
 				->setContent(...MailUi::getNewFarmSale('updated', $eSale, $cItem))
-				->send('shop');
+				->send();
 
 		}
 
@@ -89,14 +89,14 @@ class ShopObserverLib {
 		self::newSend($eSale)
 			->setTo($eUser['email'])
 			->setContent(...MailUi::getSaleConfirmed($eSale, $cItem, FALSE, self::getTemplate($eSale)))
-			->send('shop');
+			->send();
 
 		if($eSale['shop']['emailNewSale']) {
 
 			new \mail\MailLib()
 				->setTo(self::getEmail($eSale))
 				->setContent(...MailUi::getNewFarmSale('confirmed', $eSale, $cItem))
-				->send('shop');
+				->send();
 
 		}
 
@@ -129,7 +129,7 @@ class ShopObserverLib {
 				self::newSend($eSale)
 					->setTo($eUser['email'])
 					->setContent(...MailUi::getCardSaleFailed($eSale))
-					->send('shop');
+					->send();
 
 		}
 
@@ -153,7 +153,7 @@ class ShopObserverLib {
 			self::newSend($eSale)
 				->setTo($eUser['email'])
 				->setContent(...MailUi::getSaleCanceled($eSale))
-				->send('shop');
+				->send();
 
 		}
 
@@ -165,7 +165,7 @@ class ShopObserverLib {
 			new \mail\MailLib()
 				->setTo(self::getEmail($eSale))
 				->setContent(...MailUi::getCancelFarmSale($eSale))
-				->send('shop');
+				->send();
 
 		}
 

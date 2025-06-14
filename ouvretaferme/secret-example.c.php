@@ -15,30 +15,6 @@ RedisCache::addServer('default', 'redis-otf', 6379, ['timeout' => 2]);
 
 Setting::register('mail', [
 
-	'smtpServers' => [
-		'user' => [
-			'host' => '[HOST]',
-			'port' => 465,
-			'from' => '[FROM]',
-			'user' => '[USER]',
-			'password' => '[PASSWORD]',
-		],
-		'shop' =>[
-			'host' => '[HOST]',
-			'port' => 465,
-			'from' => '[FROM]',
-			'user' => '[USER]',
-			'password' => '[PASSWORD]',
-		],
-		'document' =>[
-			'host' => '[HOST]',
-			'port' => 465,
-			'from' => '[FROM]',
-			'user' => '[USER]',
-			'password' => '[PASSWORD]',
-		]
-	],
-
 	'devSendOnly' => ['[EMAIL]'],
 
 ]);

@@ -391,7 +391,7 @@ class DateLib extends DateCrud {
 			new \mail\MailLib()
 				->setTo($to)
 				->setContent(...MailUi::getOrderEnd($eDate, $sales, $cItem))
-				->send('user');
+				->send();
 
 	}
 
