@@ -195,6 +195,7 @@ class MailLib {
 
 		$mail->setFrom($eEmail['fromEmail'] ?? $server['from'], $eEmail['fromName']);
 		$mail->addAddress($eEmail['to']);
+		$mail->addCustomHeader('tags', json_encode(['id' => $eEmail['id']]));
 
 		if($eEmail['replyTo'] !== NULL) {
 			$mail->addReplyTo($eEmail['replyTo']);
