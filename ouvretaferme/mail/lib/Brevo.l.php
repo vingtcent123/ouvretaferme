@@ -16,20 +16,22 @@ class BrevoLib {
 
 		$payload = @file_get_contents('php://input');
 
-		self::checkSignature();
+		if(self::checkIp() === FALSE) {
+			throw new \Exception('Invalid Brevo IP');
+		}
 
 		return json_decode($payload, TRUE);
 
 	}
 
-	private static function checkSignature() {
+	private static function checkIp() {
 
-		$apiKey = \Setting::get('mail\brevoApiKey');
-		$apiKeyReceived = \SERVER('HTTP_API_KEY');
+		$ip = ip2long(getIp());
 
-		if($apiKey !== $apiKeyReceived) {
-			throw new \Exception('Brevo webhook: API key does not match');
-		}
+		return (
+			$ip >= ip2long('1.179.112.0') and $ip <= ip2long('1.179.127.255') or
+			$ip >= ip2long('172.246.240.0') and $ip <= ip2long('172.246.255.255')
+		);
 
 	}
 
