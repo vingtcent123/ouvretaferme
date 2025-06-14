@@ -144,6 +144,7 @@ class PdfLib extends PdfCrud {
 		$pdf = self::getContentByPdf($ePdf['content']);
 
 		$libMail
+			->setFarm($eFarm)
 			->setFromName($eFarm['name'])
 			->setTo($customerEmail)
 			->setReplyTo($eFarm->getSelling('legalEmail'))
@@ -213,6 +214,7 @@ class PdfLib extends PdfCrud {
 		$pdf = self::getContentByPdf($ePdfContent);
 
 		$libMail
+			->setFarm($eFarm)
 			->setFromName($eFarm['name'])
 			->setTo($eCustomer['email'])
 			->setReplyTo($eFarm->getSelling('legalEmail'))

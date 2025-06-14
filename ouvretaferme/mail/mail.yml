@@ -11,9 +11,10 @@ Customize:
   
 Email:
   id: serial32
+  farm: ?farm\Farm
+  subject: text24(0, null)
   html: ?text24(0, null)
   text: ?text24(0, null)
-  subject: text24(0, null)
   fromEmail: text8(0, null)
   fromName: text8(0, null)
   to: text8(0, null)

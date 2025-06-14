@@ -3,6 +3,7 @@ namespace mail;
 
 class MailLib {
 
+	protected \farm\Farm|null $eFarm = NULL;
 	protected ?string $fromEmail = NULL;
 	protected ?string $fromName = NULL;
 	protected ?string $to = NULL;
@@ -15,6 +16,11 @@ class MailLib {
 	protected array $attachments = [];
 
 	public function __construct() {
+	}
+
+	public function setFarm(\farm\Farm $eFarm): MailLib {
+		$this->eFarm = $eFarm;
+		return $this;
 	}
 
 	public function setFromEmail(?string $fromEmail): MailLib {
@@ -85,6 +91,7 @@ class MailLib {
 	 * Reset mail parameters.
 	 */
 	public function reset() {
+		$this->eFarm = NULL;
 		$this->fromEmail = NULL;
 		$this->fromName = NULL;
 		$this->to = NULL;
@@ -123,6 +130,7 @@ class MailLib {
 			}
 
 			$eEmail = new \mail\Email([
+				'farm' => $this->eFarm ?? new \farm\Farm(),
 				'html' => $this->bodyHtml,
 				'text' => $this->bodyText,
 				'subject' => $this->subject,
@@ -192,7 +200,7 @@ class MailLib {
 
 		\mail\Email::model()
 			->whereStatus(\mail\Email::SUCCESS)
-			->where('sentAt < NOW() - INTERVAL 1 WEEK')
+			->where('sentAt < NOW() - INTERVAL 2 WEEK')
 			->delete();
 
 	}
