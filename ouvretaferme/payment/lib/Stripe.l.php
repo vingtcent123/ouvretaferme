@@ -190,7 +190,6 @@ class StripeLib {
 
 		$options = [
 			CURLOPT_HTTPHEADER => $header,
-			CURLOPT_VERBOSE => TRUE,
 		];
 
 		$curl = new \util\CurlLib();

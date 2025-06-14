@@ -72,8 +72,7 @@ class BrevoLib {
 		];
 
 		$options = [
-			CURLOPT_HTTPHEADER => $header,
-			CURLOPT_VERBOSE => TRUE,
+			CURLOPT_HTTPHEADER => $header
 		];
 
 		$curl = new \util\CurlLib();
