@@ -272,6 +272,7 @@ class CustomizeUi {
 							} else {
 								$payment = s("Vous avez choisi de régler cette commande en direct avec votre producteur.");
 							}
+
 							if($eSale['shop']['paymentOfflineHow']) {
 								$payment .= "\n".encode($eSale['shop']['paymentOfflineHow']);
 							}
@@ -336,7 +337,7 @@ class CustomizeUi {
 				}
 				$link .= \shop\ShopUi::confirmationUrl($eSale['shop'], $eSale['shopDate']);
 
-				$variables = array_filter([
+				$variables = [
 					'number' => $number,
 					'farm' => $farm,
 					'customer' => $customer,
@@ -345,7 +346,7 @@ class CustomizeUi {
 					'payment' => $payment,
 					'link' => $link,
 					'delivery' => \util\DateUi::numeric($eSale['shopDate']['deliveryDate']),
-				]);
+				];
 
 				if($type !== Customize::SHOP_CONFIRMED_NONE) {
 
