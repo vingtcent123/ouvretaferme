@@ -187,20 +187,22 @@ class MailLib {
 		BrevoLib::send($eEmail);
 
 		$eEmail['sentAt'] = new \Sql('NOW()');
+		$eEmail['status'] = Email::SENT;
+
 
 		\mail\Email::model()
-			->update($eEmail, [
-				'status' => Email::SUCCESS,
-				'sentAt' => new \Sql('NOW()')
-			]);
+			->select('sentAt', 'status')
+			->update($eEmail);
+
+		ContactLib::updateContact($eEmail);
 
 	}
 
 	public static function clean(): void {
 
 		\mail\Email::model()
-			->whereStatus(\mail\Email::SUCCESS)
-			->where('sentAt < NOW() - INTERVAL 2 WEEK')
+			->whereStatus(\mail\Email::SENT)
+			->where('sentAt < NOW() - INTERVAL 1 MONTH')
 			->delete();
 
 	}

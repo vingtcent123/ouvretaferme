@@ -193,6 +193,7 @@ class ShopObserverLib {
 		$eFarm = $eSale['shop']['farm'];
 
 		return new \mail\MailLib()
+			->setFarm($eFarm)
 			->setReplyTo(self::getReplyTo($eFarm, $eShop))
 			->setFromName($eFarm['name']);
 

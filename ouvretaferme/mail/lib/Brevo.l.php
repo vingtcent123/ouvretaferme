@@ -90,7 +90,68 @@ class BrevoLib {
 
 	public static function webhook(array $payload): void {
 
-		file_put_contents('/tmp/webhook'.time(), var_export($payload, true));
+		if($payload['tag']) {
+
+			[$mode, $id] = $payload['tag'];
+
+			if($mode === 'prod') {
+
+				$eEmail = Email::model()
+					->select(Email::getSelection())
+					->whereId($id)
+					->get();
+
+				if($eEmail->notEmpty()) {
+					self::updateEmail($eEmail, $payload);
+				}
+
+			}
+
+		}
+
+	}
+
+	public static function updateEmail(Email $eEmail, array $payload): void {
+
+		switch($payload['event']) {
+
+			case 'delivered' :
+				$eEmail['status'] = Email::DELIVERED;
+				break;
+
+			case 'unique_opened' :
+				$eEmail['status'] = Email::OPENED;
+				break;
+
+			case 'spam' :
+				$eEmail['status'] = Email::ERROR_SPAM;
+				break;
+
+			case 'soft_bounce' :
+			case 'hard_bounce' :
+				$eEmail['status'] = Email::ERROR_BOUNCE;
+				break;
+
+			case 'invalid_email' :
+				$eEmail['status'] = Email::ERROR_INVALID;
+				break;
+
+			case 'blocked' :
+			case 'error' :
+			case 'unsubscribed' :
+				$eEmail['status'] = Email::ERROR_BLOCKED;
+				break;
+
+			default :
+				return;
+
+		}
+
+		Email::model()
+			->select('status')
+			->update($eEmail);
+
+		ContactLib::updateContact($eEmail);
 
 	}
 

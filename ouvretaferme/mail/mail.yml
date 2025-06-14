@@ -1,3 +1,26 @@
+Contact:
+  id: serial32
+  farm: farm\Farm
+  email: email
+  lastEmail: ?mail\Email
+  sent: int(0, null) = 0
+  lastSent: ?datetime
+  delivered: int(0, null) = 0
+  lastDelivered: ?datetime
+  opened: int(0, null) = 0
+  lastOpened: ?datetime
+  failed: int(0, null) = 0
+  lastFailed: ?datetime
+  spam: int(0, null) = 0
+  lastSpam: ?datetime
+  optIn: ?bool
+  optOut: bool = TRUE
+  createdAt: datetime = SPECIAL(now)
+  INDEX: [
+    ["farm", "email"],
+    ["email"]
+  ]
+
 Customize:
   id: serial32
   farm: farm\Farm
@@ -21,7 +44,7 @@ Email:
   bcc: ?text8(0, null)
   replyTo: ?text8
   attachments: binary32
-  status: enum(WAITING, SENDING, SUCCESS) = WAITING
+  status: enum(WAITING, SENDING, SENT, DELIVERED, OPENED, ERROR_SPAM, ERROR_BOUNCE, ERROR_INVALID, ERROR_BLOCKED) = WAITING
   createdAt: datetime = SPECIAL(now)
   sentAt: ?datetime
   INDEX: [
