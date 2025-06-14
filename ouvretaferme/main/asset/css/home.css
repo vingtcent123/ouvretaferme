@@ -414,6 +414,10 @@ div.home-profile-header h4 {
 	font-size: 1rem;
 }
 
+div.home-profile-header h4 a {
+	color: var(--muted);
+}
+
 div.home-profile-header h3 {
 	font-size: 1.75rem;
 	font-weight: normal;
@@ -422,6 +426,10 @@ div.home-profile-header h3 {
 
 div.home-profile p {
 	line-height: 1.4;
+}
+
+div.home-profile p a {
+	color: var(--text);
 }
 
 div.home-profile.home-profile-dark {

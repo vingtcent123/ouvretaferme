@@ -1,3 +1,7 @@
+Campaign:
+  id: serial32
+  farm: farm\Farm
+
 Contact:
   id: serial32
   farm: farm\Farm
@@ -35,6 +39,7 @@ Customize:
 Email:
   id: serial32
   farm: ?farm\Farm
+  campaign: ?mail\Campaign
   subject: text24(0, null)
   html: ?text24(0, null)
   text: ?text24(0, null)

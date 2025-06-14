@@ -133,9 +133,20 @@ new AdaptativeView('anonymous', function($data, MainTemplate $t) {
 				echo '<div>'.Asset::image('main', 'profile/fleur.jpg', ['class' => 'home-profile-image']).'</div>';
 				echo '<div>';
 					echo '<h3>'.s("Floriculture").'</h3>';
-					echo '</div>';
+				echo '</div>';
 			echo '</div>';
 			echo '<p>'.s("Marie et Luc sont des floriculteurs qui gèrent avec Ouvretaferme la diversité de leur production sur petite surface. Ils vendent aussi sur une boutique en ligne destinée aux fleuristes leur gamme de fleurs coupées. Ils envoient leurs bons de livraison par e-mail et génèrent chaque mois en un clic les factures de leurs ventes.").'</p>';
+		echo '</div>';
+
+		echo '<div class="home-profile">';
+			echo '<div class="home-profile-header">';
+				echo '<div>'.Asset::image('main', 'profile/cfppacourcelles.png', ['class' => 'home-profile-image']).'</div>';
+				echo '<div>';
+					echo '<h4><a href="https://campus-courcelles.fr/">'.s("CFPPA de Courcelles-Chaussy (57)").'</a></h4>';
+					echo '<h3>'.s("Centre de formation").'</h3>';
+				echo '</div>';
+			echo '</div>';
+			echo '<p>'.s("Le <link>CFPPA de Courcelles-Chaussy</link> utilise Ouvretaferme non seulement pour gérer son atelier pédagogique mais aussi pour permettre aux stagiaires de mieux appréhender le travail à réaliser sur une ferme, les itinéraires techniques et tout ce qui concerne le plan de culture.", ['link' => '<a href="https://campus-courcelles.fr/">']).'</p>';
 		echo '</div>';
 
 		echo '<div class="home-profile">';
