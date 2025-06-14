@@ -3,7 +3,7 @@ new Page()
 	->post('webhook', function($data) {
 
 		$payload = \mail\BrevoLib::getPayload();
-		\payment\StripeLib::webhook($payload);
+		\mail\BrevoLib::webhook($payload);
 
 		throw new VoidAction();
 
