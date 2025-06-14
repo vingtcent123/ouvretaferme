@@ -24,7 +24,7 @@ class BrevoLib {
 
 	}
 
-	private static function checkIp() {
+	private static function checkIp(): bool {
 
 		$ip = ip2long(getIp());
 
