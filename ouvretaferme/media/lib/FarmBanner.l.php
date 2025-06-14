@@ -10,7 +10,7 @@ class FarmBannerLib extends MediaLib {
 		if(
 			$eFarm->empty() or
 			\farm\Farm::model()
-				->select('banner')
+				->select('emailBanner')
 				->get($eFarm) === FALSE
 		) {
 			throw new \NotExistsAction('Farm');

@@ -260,7 +260,7 @@ class DemoLib {
 				'name' => 'Ferme des Mots',
 				'description' => 'Ferme de démonstration pour présenter {siteName} !',
 				'logo' => NULL,
-				'banner' => NULL,
+				'emailBanner' => NULL,
 				'url' => NULL,
 			]);
 

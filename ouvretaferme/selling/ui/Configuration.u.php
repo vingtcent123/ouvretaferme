@@ -101,11 +101,6 @@ class ConfigurationUi {
 					new \media\FarmLogoUi()->getCamera($eFarm, size: '15rem')
 				);
 				$h .= '<br/>';
-				$h .= $form->group(
-					\farm\FarmUi::p('banner')->label,
-					new \media\FarmBannerUi()->getCamera($eFarm, width: '500px', height: 'auto')
-				);
-				$h .= '<br/>';
 				$h .= $form->group(content: '<h3>'.s("TVA").'</h3>');
 				$h .= $form->dynamicGroup($eConfiguration, 'hasVat', function(\PropertyDescriber $d) {
 					$d->attributes['callbackRadioAttributes'] = fn() => ['onclick' => 'Configuration.changeHasVat(this)'];

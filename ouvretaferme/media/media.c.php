@@ -117,7 +117,7 @@ Setting::register('media', [
 	'farm-banner' => [
 		'class' => 'FarmBanner',
 		'element' => 'farm\Farm',
-		'field' => 'banner',
+		'field' => 'emailBanner',
 		'imageFormat' => [
 			'm' => [500, 100]
 		],

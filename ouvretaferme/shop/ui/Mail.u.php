@@ -23,8 +23,12 @@ class MailUi {
 		}
 
 		$template = match($type) {
-			'confirmed' => s("Vous avez reçu une commande de @customer."),
-			'updated' => s("Vous avez reçu une modification de commande de @customer.")
+			'confirmed' => s("Bonjour,
+
+Vous avez reçu une commande de @customer."),
+			'updated' => s("Bonjour,
+
+Vous avez reçu une modification de commande de @customer.")
 		};
 		$template .= "\n\n";
 		$template .= s("- Boutique : {shop}
@@ -39,7 +43,7 @@ Bonne réception,
 L'équipe {siteName}", ['shop' => encode($eSale['shop']['name']), 'comment' => $comment]);
 		$content = \mail\CustomizeUi::convertTemplate($template, $variables);
 
-		return \mail\DesignUi::format($eSale['farm'], $title, $content);
+		return \mail\DesignUi::format($eSale['farm'], $title, $content, encapsulate: FALSE);
 
 	}
 
@@ -53,7 +57,9 @@ L'équipe {siteName}", ['shop' => encode($eSale['shop']['name']), 'comment' => $
 
 		$title = s("Commande annulée de {customer} pour une livraison le {date}", $arguments);
 
-		$content = s("Votre client {customer} a annulé une commande.
+		$content = s("Bonjour,
+
+Votre client {customer} a annulé une commande.
 
 - Boutique : {shop}
 - Date de livraison : {date}
@@ -61,7 +67,7 @@ L'équipe {siteName}", ['shop' => encode($eSale['shop']['name']), 'comment' => $
 Bonne réception,
 L'équipe {siteName}", $arguments);
 
-		return \mail\DesignUi::format($eSale['farm'], $title, $content);
+		return \mail\DesignUi::format($eSale['farm'], $title, $content, encapsulate: FALSE);
 
 	}
 
@@ -224,14 +230,12 @@ Merci et à bientôt,
 			]);
 
 		$text = $get(s("Vous pouvez tenter de payer à nouveau cette commande en cliquant sur ce lien :")."\n".$link);
-
-		$html = \mail\DesignUi::getBanner($eSale['farm']);
-		$html .= nl2br($get(\mail\DesignUi::getButton($link, s("Retenter un paiement")))."\n");
+		$html = nl2br($get(\mail\DesignUi::getButton($link, s("Retenter un paiement")))."\n");
 
 		return [
 			$title,
-			$text,
-			$html
+			\mail\DesignUi::encapsulateText($eSale['farm'], $text),
+			\mail\DesignUi::encapsulateHtml($eSale['farm'], $html)
 		];
 	}
 
@@ -253,8 +257,8 @@ Bonne réception,
 
 			return [
 				s("Pas de commande pour le {date} sur {shop}", $arguments),
-				$text,
-				\mail\DesignUi::getBanner($eDate['farm']).nl2br($text)
+				\mail\DesignUi::encapsulateText($eDate['farm'], $text),
+				\mail\DesignUi::encapsulateHtml($eDate['farm'], nl2br($text))
 			];
 
 		}
@@ -297,12 +301,10 @@ Bonne réception,
 		$content .= \mail\DesignUi::getButton(\Lime::getUrl().ShopUi::adminDateUrl($eDate['farm'], $eDate).'/', s("Voir la vente"))."\n\n";
 		$content .= $products;
 
-		$html = \mail\DesignUi::getBanner($eDate['farm']).nl2br($content);
-
 		return [
 			$title,
-			$text,
-			$html
+			\mail\DesignUi::encapsulateText($eDate['farm'], $content),
+			\mail\DesignUi::encapsulateHtml($eDate['farm'], nl2br($content))
 		];
 	}
 

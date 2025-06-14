@@ -435,6 +435,32 @@ class FarmUi {
 
 	}
 
+	public function updateEmail(Farm $eFarm): string {
+
+		$form = new \util\FormUi();
+
+		$h = $form->openAjax('/farm/farm:doUpdateEmail');
+
+			$h .= $form->hidden('id', $eFarm);
+
+			$h .= $form->group(
+				\farm\FarmUi::p('emailBanner')->label,
+				new \media\FarmBannerUi()->getCamera($eFarm, width: '500px', height: 'auto')
+			);
+			$h .= '<br/>';
+
+			$h .= $form->dynamicGroups($eFarm, ['emailFooter']);
+
+			$h .= $form->group(
+				content: $form->submit(s("Enregistrer"))
+			);
+
+		$h .= $form->close();
+
+		return $h;
+
+	}
+
 	public function updateFeature(Farm $eFarm): string {
 
 		$form = new \util\FormUi();
@@ -1537,6 +1563,11 @@ class FarmUi {
 					$h .= \Asset::icon('gear-fill');
 				$h .= '</a>';
 
+				$h .= '<a href="/farm/farm:updateEmail?id='.$eFarm['id'].'" class="bg-secondary util-button">';
+					$h .= '<h4>'.s("Les e-mails").'</h4>';
+					$h .= \Asset::icon('envelope');
+				$h .= '</a>';
+
 				$h .= '<a href="/selling/unit:manage?farm='.$eFarm['id'].'" class="bg-secondary util-button">';
 					$h .= '<h4>'.s("Les unités de vente").'</h4>';
 					$h .= \Asset::icon('receipt');
@@ -1722,14 +1753,14 @@ class FarmUi {
 
 	public static function getBanner(Farm $eFarm, string $width): string {
 
-		$eFarm->expects(['id', 'banner']);
+		$eFarm->expects(['id', 'emailBanner']);
 
 		$ui = new \media\FarmBannerUi();
 
 		$class = 'farm-banner-view media-rectangle-view'.' ';
 		$style = '';
 
-		if($eFarm['banner'] === NULL) {
+		if($eFarm['emailBanner'] === NULL) {
 
 			$class .= ' media-banner-default';
 			$style .= '';
@@ -1762,7 +1793,8 @@ class FarmUi {
 			'featureTime' => s("Activer le suivi du temps de travail"),
 			'featureDocument' => s("Permettre l'édition de devis et de bons de livraison"),
 			'logo' => s("Logo de la ferme"),
-			'banner' => s("Bandeau à afficher en haut des e-mails envoyés à vos clients"),
+			'emailBanner' => s("Bandeau à afficher en haut des e-mails envoyés à vos clients"),
+			'emailFooter' => s("Pied de page à afficher en bas des e-mails envoyés à vos clients"),
 			'defaultBedLength' => s("Longueur des planches par défaut"),
 			'defaultBedWidth' => s("Largeur travaillée des planches par défaut"),
 			'defaultAlleyWidth' => s("Largeur de passe-pied entre les planches par défaut"),
@@ -1777,6 +1809,11 @@ class FarmUi {
 
 			case 'placeLngLat' :
 				$d->field = NULL;
+				break;
+
+			case 'emailFooter' :
+				$d->field = 'textarea';
+				$d->attributes = ['data-limit' => Farm::model()->getPropertyRange('emailFooter')[1]];
 				break;
 
 			case 'rotationYears' :

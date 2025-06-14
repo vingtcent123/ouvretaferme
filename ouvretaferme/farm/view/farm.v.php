@@ -39,6 +39,23 @@ new AdaptativeView('updateSeries', function($data, FarmTemplate $t) {
 
 });
 
+new AdaptativeView('updateEmail', function($data, FarmTemplate $t) {
+
+	$t->title = s("Configurer les e-mails envoyés par {value}", $data->e['name']);
+	$t->tab = 'settings';
+	$t->subNav = new \farm\FarmUi()->getSettingsSubNav($data->e);
+
+	$h = '<h1>';
+		$h .= '<a href="'.\farm\FarmUi::urlSettings($data->e).'"  class="h-back">'.\Asset::icon('arrow-left').'</a>';
+		$h .= s("Configurer les e-mails");
+	$h .= '</h1>';
+
+	$t->mainTitle = $h;
+
+	echo new \farm\FarmUi()->updateEmail($data->e);
+
+});
+
 new AdaptativeView('updateFeature', function($data, FarmTemplate $t) {
 
 	$t->title = s("Configurer les fonctionnalités de {value}", $data->e['name']);

@@ -56,7 +56,8 @@ class FarmModel extends \ModuleModel {
 			'url' => ['url', 'null' => TRUE, 'cast' => 'string'],
 			'description' => ['editor24', 'null' => TRUE, 'cast' => 'string'],
 			'logo' => ['textFixed', 'min' => 30, 'max' => 30, 'charset' => 'ascii', 'null' => TRUE, 'cast' => 'string'],
-			'banner' => ['textFixed', 'min' => 30, 'max' => 30, 'charset' => 'ascii', 'null' => TRUE, 'cast' => 'string'],
+			'emailBanner' => ['textFixed', 'min' => 30, 'max' => 30, 'charset' => 'ascii', 'null' => TRUE, 'cast' => 'string'],
+			'emailFooter' => ['text16', 'min' => 1, 'max' => 400, 'null' => TRUE, 'cast' => 'string'],
 			'seasonFirst' => ['int16', 'min' => 0, 'max' => NULL, 'cast' => 'int'],
 			'seasonLast' => ['int16', 'min' => 0, 'max' => NULL, 'cast' => 'int'],
 			'rotationYears' => ['int8', 'min' => 2, 'max' => 5, 'cast' => 'int'],
@@ -83,7 +84,7 @@ class FarmModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'name', 'vignette', 'place', 'placeLngLat', 'url', 'description', 'logo', 'banner', 'seasonFirst', 'seasonLast', 'rotationYears', 'rotationExclude', 'quality', 'defaultBedLength', 'defaultBedWidth', 'defaultAlleyWidth', 'calendarMonthStart', 'calendarMonthStop', 'planningDelayedMax', 'featureTime', 'featureStock', 'featureDocument', 'stockNotes', 'stockNotesUpdatedAt', 'stockNotesUpdatedBy', 'hasShops', 'hasSales', 'hasCultivations', 'startedAt', 'createdAt', 'status'
+			'id', 'name', 'vignette', 'place', 'placeLngLat', 'url', 'description', 'logo', 'emailBanner', 'emailFooter', 'seasonFirst', 'seasonLast', 'rotationYears', 'rotationExclude', 'quality', 'defaultBedLength', 'defaultBedWidth', 'defaultAlleyWidth', 'calendarMonthStart', 'calendarMonthStop', 'planningDelayedMax', 'featureTime', 'featureStock', 'featureDocument', 'stockNotes', 'stockNotesUpdatedAt', 'stockNotesUpdatedBy', 'hasShops', 'hasSales', 'hasCultivations', 'startedAt', 'createdAt', 'status'
 		]);
 
 		$this->propertiesToModule += [
@@ -228,8 +229,12 @@ class FarmModel extends \ModuleModel {
 		return $this->where('logo', ...$data);
 	}
 
-	public function whereBanner(...$data): FarmModel {
-		return $this->where('banner', ...$data);
+	public function whereEmailBanner(...$data): FarmModel {
+		return $this->where('emailBanner', ...$data);
+	}
+
+	public function whereEmailFooter(...$data): FarmModel {
+		return $this->where('emailFooter', ...$data);
 	}
 
 	public function whereSeasonFirst(...$data): FarmModel {

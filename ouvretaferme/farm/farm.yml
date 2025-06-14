@@ -31,7 +31,8 @@ Farm:
   url: ?url
   description: ?editor24
   logo: ?textFixed(30, 30) @charset(ascii)
-  banner: ?textFixed(30, 30) @charset(ascii)
+  emailBanner: ?textFixed(30, 30) @charset(ascii)
+  emailFooter: ?text16(1, 400)
   seasonFirst: int16(0, null)
   seasonLast: int16(0, null)
   rotationYears: int8(2, 5) = 4

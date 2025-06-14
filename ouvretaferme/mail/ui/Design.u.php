@@ -3,26 +3,55 @@ namespace mail;
 
 class DesignUi {
 
-	public static function format(\farm\Farm $eFarm, string $title, string $content): array {
+	public static function format(\farm\Farm $eFarm, string $title, string $content, bool $encapsulate = TRUE): array {
 
-		$html = \mail\DesignUi::getBanner($eFarm).nl2br($content);
+		$html = nl2br($content);
 		$text = decode(strip_tags($html));
 
 		return [
 			$title,
-			$text,
-			$html
+			$encapsulate ? \mail\DesignUi::encapsulateText($eFarm, $text) : $text,
+			$encapsulate ? \mail\DesignUi::encapsulateHtml($eFarm, $html) : $html
 		];
+
+	}
+
+	public static function encapsulateText(\farm\Farm $eFarm, string $content): string {
+
+		$eFarm->expects(['emailBanner', 'emailFooter']);
+
+		$html = $content;
+
+		if($eFarm['emailFooter'] !== NULL) {
+			$html .= "\n\n".$eFarm['emailFooter'];
+		}
+
+		return $html;
+
+	}
+
+	public static function encapsulateHtml(\farm\Farm $eFarm, string $content): string {
+
+		$eFarm->expects(['emailBanner', 'emailFooter']);
+
+		$html = self::getBanner($eFarm);
+		$html .= $content;
+
+		if($eFarm['emailFooter'] !== NULL) {
+			$html .= nl2br("\n\n".encode($eFarm['emailFooter']));
+		}
+
+		return $html;
 
 	}
 
 	public static function getBanner(\farm\Farm $eFarm): string {
 
-		$eFarm->expects(['banner']);
+		$eFarm->expects(['emailBanner']);
 
 		$html = '';
 
-		if($eFarm['banner'] !== NULL) {
+		if($eFarm['emailBanner'] !== NULL) {
 
 			$url = (\LIME_ENV === 'dev') ? 'https://media.ouvretaferme.org/farm-banner/500x100/659ff8c45b5dfde6eacp.png?6' : new \media\FarmBannerUi()->getUrlByElement($eFarm, 'm');
 

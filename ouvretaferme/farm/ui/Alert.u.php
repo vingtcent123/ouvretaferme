@@ -72,6 +72,7 @@ class AlertUi {
 			'Farm::created' => s("La ferme a bien été créée, à vous de jouer !"),
 			'Farm::updated' => s("La ferme a bien été mise à jour !"),
 			'Farm::updatedRotation' => s("La configuration des rotations de culture a bien été mise à jour !"),
+			'Farm::updatedEmail' => s("La configuration des rotations de culture a bien été mise à jour !"),
 			'Farm::updatedFeatures' => s("Les fonctionnalités activées et désactivées pour votre fermes ont bien été mises à jour !"),
 			'Farm::closed' => s("La ferme a bien été supprimée !"),
 
