@@ -8,4 +8,3 @@ new Page()
 		throw new VoidAction();
 
 	});
-?>

@@ -1,9 +1,8 @@
 <?php
 namespace mail;
 
-
 /**
- * Stripe management
+ * Brevo management
  */
 class BrevoLib {
 
