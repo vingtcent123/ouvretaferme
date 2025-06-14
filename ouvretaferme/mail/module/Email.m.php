@@ -41,9 +41,10 @@ class EmailModel extends \ModuleModel {
 
 		$this->properties = array_merge($this->properties, [
 			'id' => ['serial32', 'cast' => 'int'],
+			'farm' => ['element32', 'farm\Farm', 'null' => TRUE, 'cast' => 'element'],
+			'subject' => ['text24', 'min' => 0, 'max' => NULL, 'cast' => 'string'],
 			'html' => ['text24', 'min' => 0, 'max' => NULL, 'null' => TRUE, 'cast' => 'string'],
 			'text' => ['text24', 'min' => 0, 'max' => NULL, 'null' => TRUE, 'cast' => 'string'],
-			'subject' => ['text24', 'min' => 0, 'max' => NULL, 'cast' => 'string'],
 			'fromEmail' => ['text8', 'min' => 0, 'max' => NULL, 'cast' => 'string'],
 			'fromName' => ['text8', 'min' => 0, 'max' => NULL, 'cast' => 'string'],
 			'to' => ['text8', 'min' => 0, 'max' => NULL, 'cast' => 'string'],
@@ -56,8 +57,12 @@ class EmailModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'html', 'text', 'subject', 'fromEmail', 'fromName', 'to', 'bcc', 'replyTo', 'attachments', 'status', 'createdAt', 'sentAt'
+			'id', 'farm', 'subject', 'html', 'text', 'fromEmail', 'fromName', 'to', 'bcc', 'replyTo', 'attachments', 'status', 'createdAt', 'sentAt'
 		]);
+
+		$this->propertiesToModule += [
+			'farm' => 'farm\Farm',
+		];
 
 		$this->indexConstraints = array_merge($this->indexConstraints, [
 			['status']
@@ -108,16 +113,20 @@ class EmailModel extends \ModuleModel {
 		return $this->where('id', ...$data);
 	}
 
+	public function whereFarm(...$data): EmailModel {
+		return $this->where('farm', ...$data);
+	}
+
+	public function whereSubject(...$data): EmailModel {
+		return $this->where('subject', ...$data);
+	}
+
 	public function whereHtml(...$data): EmailModel {
 		return $this->where('html', ...$data);
 	}
 
 	public function whereText(...$data): EmailModel {
 		return $this->where('text', ...$data);
-	}
-
-	public function whereSubject(...$data): EmailModel {
-		return $this->where('subject', ...$data);
 	}
 
 	public function whereFromEmail(...$data): EmailModel {
