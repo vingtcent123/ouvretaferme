@@ -2,7 +2,8 @@
 new Page()
 	->post('webhook', function($data) {
 
-		file_put_contents('/tmp/webhook'.time(), var_export($_POST, true));
+		$payload = \mail\BrevoLib::getPayload();
+		\payment\StripeLib::webhook($payload);
 
 		throw new VoidAction();
 
