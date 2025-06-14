@@ -156,7 +156,7 @@ class MailLib {
 	public static function sendWaiting(): void {
 
 		$cEmail = \mail\Email::model()
-			->select('id', 'html', 'text', 'subject', 'server', 'fromEmail', 'fromName', 'to', 'bcc', 'replyTo', 'attachments')
+			->select('id', 'html', 'text', 'subject', 'fromEmail', 'fromName', 'to', 'bcc', 'replyTo', 'attachments')
 			->whereStatus(\mail\Email::WAITING)
 			->getCollection();
 
