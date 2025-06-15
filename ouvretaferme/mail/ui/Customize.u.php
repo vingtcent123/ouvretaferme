@@ -412,7 +412,7 @@ class CustomizeUi {
 		$template = encode($template);
 
 		foreach($variables as $key => $value) {
-			$template = str_ireplace('@'.$key, $value, $template);
+			$template = str_ireplace('@'.$key, $value ?? '', $template);
 		}
 
 		return $template;
