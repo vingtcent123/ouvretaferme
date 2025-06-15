@@ -752,31 +752,43 @@ class AnalyzeLib {
 
 	public static function getYears(\farm\Farm $eFarm): array {
 
-		return \Cache::redis()->query(
-			'farm-sales-'.$eFarm['id'].'-'.date('Y-m-d'),
-			function() use($eFarm) {
+		$key = 'farm-sales-'.$eFarm['id'].'-'.date('Y-m-d');
 
-				self::filterSaleStats();
+		$output = \Cache::redis()->get($key);
 
-				$cSale = Sale::model()
-					->select([
-						'year' => new \Sql('EXTRACT(YEAR FROM deliveredAt)', 'int'),
-						'sales' => new \Sql('COUNT(*)', 'int')
-					])
-					->whereFarm($eFarm)
-					->group(new \Sql('year'))
-					->sort(new \Sql('year DESC'))
-					->getCollection();
+		if($output === FALSE) {
 
+			self::filterSaleStats();
+
+			$cSale = Sale::model()
+				->select([
+					'year' => new \Sql('EXTRACT(YEAR FROM deliveredAt)', 'int'),
+					'sales' => new \Sql('COUNT(*)', 'int')
+				])
+				->whereFarm($eFarm)
+				->group(new \Sql('year'))
+				->sort(new \Sql('year DESC'))
+				->getCollection();
+
+			if($cSale->empty()) {
 				return [
-					$cSale->getColumn('year'),
-					$cSale->toArray(function($eSale) {
-						return [$eSale['year'], $eSale['sales']];
-					}, keys: TRUE)
+					[],
+					[]
 				];
-			},
-			86400
-		);
+			}
+
+			$output = [
+				$cSale->getColumn('year'),
+				$cSale->toArray(function($eSale) {
+					return [$eSale['year'], $eSale['sales']];
+				}, keys: TRUE)
+			];
+
+			\Cache::redis()->set($key, $output, 86400);
+
+		}
+
+		return $output;
 
 	}
 
