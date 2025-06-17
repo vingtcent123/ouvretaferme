@@ -655,7 +655,7 @@ class SeriesUi {
 
 	}
 
-	public function createFromSequence(\farm\Farm $eFarm, int $season, \production\Sequence $eSequence, \Collection $cCultivation, \Collection $cFlow, array $events): \Panel {
+	public function createFromSequence(\farm\Farm $eFarm, int $season, \sequence\Sequence $eSequence, \Collection $cCultivation, \Collection $cFlow, array $events): \Panel {
 
 		$eSeries = $cCultivation->first()['series']->merge([
 			'name' => $eSequence['name'],
@@ -674,7 +674,7 @@ class SeriesUi {
 		$h .= $form->hidden('farm', $eFarm['id']);
 		$h .= $form->hidden('sequence', $eSequence['id']);
 
-		$h .= '<p class="util-info">'.s("Cette série a été initialisée à partir des données de l'itinéraire technique {name}.", ['name' => \production\SequenceUi::link($eSequence)]).'</p>';
+		$h .= '<p class="util-info">'.s("Cette série a été initialisée à partir des données de l'itinéraire technique {name}.", ['name' => \sequence\SequenceUi::link($eSequence)]).'</p>';
 
 		$h .= '<div class="series-create-use">';
 
@@ -726,7 +726,7 @@ class SeriesUi {
 
 			$h .= '<h3>'.s("Rappel des interventions").'</h3>';
 
-			if($eSequence['cycle'] === \production\Sequence::ANNUAL) {
+			if($eSequence['cycle'] === \sequence\Sequence::ANNUAL) {
 
 				$eFlowFirst = $cFlow->first();
 				$startYear = ($eFlowFirst['yearOnly'] ?? $eFlowFirst['yearStart']);
@@ -737,7 +737,7 @@ class SeriesUi {
 				$h .= '</div>';
 
 			} else {
-				$h .= new \production\FlowUi()->getTimeline($eSequence, $events, FALSE);
+				$h .= new \sequence\FlowUi()->getTimeline($eSequence, $events, FALSE);
 			}
 
 		}
@@ -759,13 +759,13 @@ class SeriesUi {
 
 	}
 
-	public function getTasksFromSequence(int $season, \production\Sequence $eSequence, array $events, int $startYear, int $startWeek): string {
+	public function getTasksFromSequence(int $season, \sequence\Sequence $eSequence, array $events, int $startYear, int $startWeek): string {
 
 		$form = new \util\FormUi();
 
 		$h = '';
 
-		if($eSequence['cycle'] === \production\Sequence::ANNUAL) {
+		if($eSequence['cycle'] === \sequence\Sequence::ANNUAL) {
 
 			$h .= '<div class="task-select-start">';
 
@@ -788,7 +788,7 @@ class SeriesUi {
 
 		}
 
-		$h .= new \production\FlowUi()->getTimeline($eSequence, $events, FALSE, $startYear + $season);
+		$h .= new \sequence\FlowUi()->getTimeline($eSequence, $events, FALSE, $startYear + $season);
 
 		return $h;
 
@@ -1420,7 +1420,7 @@ class SeriesUi {
 
 					return [
 						'id' => 'series-write-perennial-lifetime',
-						'style' => ($e['cycle'] === \production\Sequence::PERENNIAL) ? '' : 'display: none'
+						'style' => ($e['cycle'] === \sequence\Sequence::PERENNIAL) ? '' : 'display: none'
 					];
 
 				};

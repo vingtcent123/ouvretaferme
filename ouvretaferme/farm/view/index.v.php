@@ -105,7 +105,7 @@ new AdaptativeView('sequence', function($data, FarmTemplate $t) {
 		$h .=  '<div>';
 			$h .= '<a '.attr('onclick', 'Lime.Search.toggle("#sequence-search")').' class="btn btn-primary">'.\Asset::icon('search').'</a>';
 			if($data->eFarm->canManage()) {
-				$h .= ' <a href="/production/sequence:create?farm='.$data->eFarm['id'].'" class="btn btn-primary">'.\Asset::icon('plus-circle').'<span class="hide-xs-down"> '.s("Nouvel itinéraire").'</span></a>';
+				$h .= ' <a href="/sequence/sequence:create?farm='.$data->eFarm['id'].'" class="btn btn-primary">'.\Asset::icon('plus-circle').'<span class="hide-xs-down"> '.s("Nouvel itinéraire").'</span></a>';
 			}
 		$h .=  '</div>';
 	$h .=  '</div>';
@@ -114,9 +114,9 @@ new AdaptativeView('sequence', function($data, FarmTemplate $t) {
 
 	if($data->ccCrop->notEmpty() or $data->emptySearch === FALSE) {
 
-		echo new \production\SequenceUi()->getSearch($data->eFarm, $data->search, $data->emptySearch);
-		echo new \production\SequenceUi()->getTabs($data->eFarm, $data->search, $data->sequences);
-		echo new \production\SequenceUi()->getListByPlants($data->eFarm, $data->ccCrop, $data->cActionMain, $data->search);
+		echo new \sequence\SequenceUi()->getSearch($data->eFarm, $data->search, $data->emptySearch);
+		echo new \sequence\SequenceUi()->getTabs($data->eFarm, $data->search, $data->sequences);
+		echo new \sequence\SequenceUi()->getListByPlants($data->eFarm, $data->ccCrop, $data->cActionMain, $data->search);
 
 	} else {
 		echo '<div class="util-block-help">';
@@ -124,7 +124,7 @@ new AdaptativeView('sequence', function($data, FarmTemplate $t) {
 			echo '<p>'.s("Un itinéraire technique contient la liste des interventions à réaliser pour une culture donnée. L'utilisation de cette fonctionnalité est facultative, mais elle permet de créer plus facilement vos séries d'une saison sur l'autre sans avoir à resaisir l'ensemble des interventions !").'</p>';
 			echo '<p><b>'.s("Si vous débutez avec {siteName}, il est recommandé de ne pas utiliser cette fonctionnalité immédiatement pour vous laisser le temps de bien prendre en main le reste du site. Vous pourrez y revenir ultérieurement !").'</b></p>';
 			if($data->eFarm->canManage()) {
-				echo '<a href="/production/sequence:create?farm='.$data->eFarm['id'].'" class="btn btn-secondary">'.s("Créer un premier itinéraire technique").'</a>';
+				echo '<a href="/sequence/sequence:create?farm='.$data->eFarm['id'].'" class="btn btn-secondary">'.s("Créer un premier itinéraire technique").'</a>';
 			}
 		echo '</div>';
 	}

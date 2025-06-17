@@ -19,9 +19,9 @@ class CategoryUi {
 
 	}
 
-	public static function text(\production\Flow|series\Task $e): string {
+	public static function text(\sequence\Flow|series\Task $e): string {
 
-		if($e instanceof \production\Flow) {
+		if($e instanceof \sequence\Flow) {
 
 			$e['variety'] = new \plant\Variety();
 
@@ -53,7 +53,7 @@ class CategoryUi {
 
 			if(
 				($e instanceof series\Task and $e['series']->notEmpty()) or
-				($e instanceof \production\Flow and $e['sequence']->notEmpty())
+				($e instanceof \sequence\Flow and $e['sequence']->notEmpty())
 			) {
 				$h .= ' <span class="category-name">'.s("PARTAGÉ").'</span>';
 			}

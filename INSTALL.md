@@ -51,7 +51,7 @@ Chaque dossier dans le code correspond à un package :
   - media : le téléversement des fichiers des utilisateurs (Image, Pdf...)
   - payment : le paiement sur les boutiques en ligne
   - plant : les espèces et les variétés de plantes
-  - production : les itinéraires techniques
+  - sequence : les itinéraires techniques
   - selling : la commercialisation
   - series : les séries culturales
   - shop : les boutiques en ligne

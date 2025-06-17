@@ -38,7 +38,7 @@ class PhotoModel extends \ModuleModel {
 		$this->properties = array_merge($this->properties, [
 			'id' => ['serial32', 'cast' => 'int'],
 			'farm' => ['element32', 'farm\Farm', 'cast' => 'element'],
-			'sequence' => ['element32', 'production\Sequence', 'null' => TRUE, 'cast' => 'element'],
+			'sequence' => ['element32', 'sequence\Sequence', 'null' => TRUE, 'cast' => 'element'],
 			'series' => ['element32', 'series\Series', 'null' => TRUE, 'cast' => 'element'],
 			'task' => ['element32', 'series\Task', 'null' => TRUE, 'cast' => 'element'],
 			'author' => ['element32', 'user\User', 'cast' => 'element'],
@@ -56,7 +56,7 @@ class PhotoModel extends \ModuleModel {
 
 		$this->propertiesToModule += [
 			'farm' => 'farm\Farm',
-			'sequence' => 'production\Sequence',
+			'sequence' => 'sequence\Sequence',
 			'series' => 'series\Series',
 			'task' => 'series\Task',
 			'author' => 'user\User',

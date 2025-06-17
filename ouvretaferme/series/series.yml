@@ -18,8 +18,8 @@ Cultivation:
   farm: farm\Farm
   season: int16(0, null)
   series: series\Series
-  sequence: ?production\Sequence
-  crop: ?production\Crop
+  sequence: ?sequence\Sequence
+  crop: ?sequence\Crop
   plant: plant\Plant
   startWeek: ?int16
   startAction: ?enum(SOWING, PLANTING)
@@ -151,7 +151,7 @@ Series:
   bedStopUser: ?int16
   alleyWidth: ?int16(1, null)
   comment: ?editor16
-  sequence: ?production\Sequence
+  sequence: ?sequence\Sequence
   cycle: enum(ANNUAL, PERENNIAL)
   perennialLifetime: ?int8(2, null)
   perennialSeason: ?int8(1, null)

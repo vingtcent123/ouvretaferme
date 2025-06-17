@@ -22,7 +22,7 @@ class CultivationLib extends CultivationCrud {
 			'cSlice' => new \Collection(),
 			'series' => $eSeries,
 			'season' => $eSeries['season'],
-			'sequence' => new \production\Sequence(),
+			'sequence' => new \sequence\Sequence(),
 			'sliceUnit' => Cultivation::PERCENT,
 			'sliceTool' => new \farm\Tool(),
 			'seedling' => NULL,
@@ -794,12 +794,12 @@ class CultivationLib extends CultivationCrud {
 
 		Cultivation::model()->beginTransaction();
 
-		\production\SliceLib::createVariety($e['cSlice']);
+		\sequence\SliceLib::createVariety($e['cSlice']);
 
 		$e['area'] = $e['series']['area'];
 		$e['length'] = $e['series']['length'];
 
-		\production\CropLib::calculateDistance($e, $e['series']);
+		\sequence\CropLib::calculateDistance($e, $e['series']);
 
 		try {
 
@@ -875,7 +875,7 @@ class CultivationLib extends CultivationCrud {
 
 	}
 
-	public static function buildFromSequence(\production\Sequence $eSequence, \farm\Farm $eFarm, int $season): \Collection {
+	public static function buildFromSequence(\sequence\Sequence $eSequence, \farm\Farm $eFarm, int $season): \Collection {
 
 		$eSequence->expects([
 			'id', 'cycle', 'cCrop'
@@ -931,7 +931,7 @@ class CultivationLib extends CultivationCrud {
 
 	public static function buildHarvestsFromSequence(\Collection $cCultivation, \Collection $cFlow, int $referenceYear): \Collection {
 
-		$harvests = \production\CropLib::getHarvestsFromFlow($cFlow, $referenceYear);
+		$harvests = \sequence\CropLib::getHarvestsFromFlow($cFlow, $referenceYear);
 
 		foreach($cCultivation as $eCultivation) {
 
@@ -961,7 +961,7 @@ class CultivationLib extends CultivationCrud {
 
 		if($key !== FALSE) {
 
-			\production\SliceLib::createVariety($e['cSlice']);
+			\sequence\SliceLib::createVariety($e['cSlice']);
 
 			SliceLib::deleteByCultivation($e);
 			SliceLib::createCollection($e['cSlice']);
@@ -980,7 +980,7 @@ class CultivationLib extends CultivationCrud {
 		$distanceUpdate = array_intersect(['distance', 'density', 'rows', 'rowSpacing', 'plantSpacing'], $properties);
 
 		if(count($distanceUpdate) === 5) {
-			\production\CropLib::calculateDistance($e, $e['series']);
+			\sequence\CropLib::calculateDistance($e, $e['series']);
 		} else if(count($distanceUpdate) > 0) {
 			throw new \Exception('Properties must be updated together');
 		}

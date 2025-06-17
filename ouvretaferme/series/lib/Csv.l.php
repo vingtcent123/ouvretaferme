@@ -751,7 +751,7 @@ class CsvLib {
 				'cycle' => Series::ANNUAL,
 				'mode' => $series['mode'],
 				'season' => $series['season'],
-				'sequence' => new \production\Sequence(),
+				'sequence' => new \sequence\Sequence(),
 				'areaTarget' => ($series['block_area'] <= 0) ? NULL : $series['block_area'],
 				'lengthTarget' => ($series['bed_length'] <= 0) ? NULL : $series['bed_length'],
 				'bedWidth' => $series['use'] === Series::BED ? $eFarm['defaultBedWidth'] : NULL,

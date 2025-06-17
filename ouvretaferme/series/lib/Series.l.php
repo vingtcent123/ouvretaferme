@@ -121,7 +121,7 @@ class SeriesLib extends SeriesCrud {
 
 	}
 
-	public static function getBySequence(\production\Sequence $eSequence): \Collection {
+	public static function getBySequence(\sequence\Sequence $eSequence): \Collection {
 
 		return Series::model()
 			->select(Series::getSelection())
@@ -275,7 +275,7 @@ class SeriesLib extends SeriesCrud {
 			if($eSeries['sequence']->notEmpty()) {
 				$eCultivation->buildIndex(['crop'], $input, $index);
 			} else {
-				$eCultivation['crop'] = new \production\Crop();
+				$eCultivation['crop'] = new \sequence\Crop();
 			}
 
 			$eCultivation->buildIndex(['plant', 'sliceUnit', 'sliceTool', 'variety'], $input, $index);
@@ -324,11 +324,11 @@ class SeriesLib extends SeriesCrud {
 		// Créer les nouvelles variétés
 		foreach($cCultivation as $eCultivation) {
 
-			\production\SliceLib::createVariety($eCultivation['cSlice']);
+			\sequence\SliceLib::createVariety($eCultivation['cSlice']);
 
 			$eCultivation['series'] = $e;
 
-			\production\CropLib::calculateDistance($eCultivation, $e);
+			\sequence\CropLib::calculateDistance($eCultivation, $e);
 
 		}
 
@@ -637,7 +637,7 @@ class SeriesLib extends SeriesCrud {
 		if($cCrop->empty()) {
 			$cFlow = new \Collection();
 		} else {
-			$cFlow = \production\FlowLib::getByCrops($cCrop, $eSeriesNew['perennialSeason']);
+			$cFlow = \sequence\FlowLib::getByCrops($cCrop, $eSeriesNew['perennialSeason']);
 		}
 
 		// Ajustements les cultures
@@ -699,7 +699,7 @@ class SeriesLib extends SeriesCrud {
 
 	private static function buildDuplicateCultivations(Series $eSeriesNew, \Collection $cCultivation, \Collection $cFlow) {
 
-		$harvests = \production\CropLib::getHarvestsFromFlow($cFlow, $eSeriesNew['season']);
+		$harvests = \sequence\CropLib::getHarvestsFromFlow($cFlow, $eSeriesNew['season']);
 
 		foreach($cCultivation as $eCultivation) {
 
@@ -1134,7 +1134,7 @@ class SeriesLib extends SeriesCrud {
 		$min = new \Sql('MIN(IF(doneWeek IS NOT NULL, CAST(SUBSTRING(doneWeek, 7, 2) AS SIGNED) + (CAST(SUBSTRING(doneWeek, 1, 4) AS SIGNED) - '.$e['season'].') * 100, CAST(SUBSTRING(plannedWeek, 7, 2) AS SIGNED) + (CAST(SUBSTRING(plannedWeek, 1, 4) AS SIGNED) - '.$e['season'].') * 100))', 'int');
 		$max = new \Sql('MAX(IF(doneWeek IS NOT NULL, CAST(SUBSTRING(doneWeek, 7, 2) AS SIGNED) + (CAST(SUBSTRING(doneWeek, 1, 4) AS SIGNED) - '.$e['season'].') * 100, CAST(SUBSTRING(plannedWeek, 7, 2) AS SIGNED) + (CAST(SUBSTRING(plannedWeek, 1, 4) AS SIGNED) - '.$e['season'].') * 100))', 'int');
 
-		$cCrop = \production\SequenceLib::doRecalculate(
+		$cCrop = \sequence\SequenceLib::doRecalculate(
 			Cultivation::model(),
 			Task::model(),
 			'series',

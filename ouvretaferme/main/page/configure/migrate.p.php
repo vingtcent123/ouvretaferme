@@ -2,7 +2,7 @@
 new Page()
 	->cli('index', function($data) {
 
-		foreach(\production\Requirement::model()
+		foreach(\sequence\Requirement::model()
 		        ->select([
 					  'flow',
 			        'tools' => new Sql('GROUP_CONCAT(tool ORDER BY tool SEPARATOR ",")')
@@ -10,7 +10,7 @@ new Page()
 					->group('flow')
 		        ->getCollection( ) as $e) {
 
-			\production\Flow::model()->update($e['flow'], [
+			\sequence\Flow::model()->update($e['flow'], [
 				'tools' => array_map(fn($v) => (int)$v, explode(',', $e['tools'])),
 			]);
 

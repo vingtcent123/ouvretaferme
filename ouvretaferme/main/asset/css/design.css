@@ -668,7 +668,7 @@ div.footer-content-legal {
 div.soil-icon {
 	display: inline-block;
 	vertical-align: middle;
-	background-image: url(/asset/ouvretaferme/production/image/soil.jpg);
+	background-image: url(/asset/ouvretaferme/sequence/image/soil.jpg);
 	background-size: cover;
 	border-radius: 50%;
 }

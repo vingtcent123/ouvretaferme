@@ -11,8 +11,8 @@ class CultivationUi {
 		\Asset::js('series', 'cultivation.js');
 		\Asset::css('series', 'cultivation.css');
 
-		\Asset::js('production', 'crop.js');
-		\Asset::css('production', 'crop.css');
+		\Asset::js('sequence', 'crop.js');
+		\Asset::css('sequence', 'crop.css');
 
 	}
 
@@ -220,7 +220,7 @@ class CultivationUi {
 							$cultivations .= '<a href="/serie/'.$eSeries['id'].'" class="series-item-planning-details '.($viewField === \farm\Farmer::VARIETY ? 'series-item-planning-details-with-variety' : '').'">';
 								$cultivations .= $this->getSeriesForDisplay($eSeries, $eCultivation, tag: 'span');
 								if($viewField === \farm\Farmer::VARIETY) {
-									$cultivations .= '<span class="series-item-planning-details-variety">'.new \production\SliceUi()->getLine($eCultivation, $eCultivation['cSlice']).'</span>';
+									$cultivations .= '<span class="series-item-planning-details-variety">'.new \sequence\SliceUi()->getLine($eCultivation, $eCultivation['cSlice']).'</span>';
 								}
 							$cultivations .= '</a>';
 
@@ -687,7 +687,7 @@ class CultivationUi {
 							$h .= '<div class="series-item series-item-forecast">';
 								$h .= '<div class="series-item-forecast-series series-item-forecast-series-gap" style="grid-column: span 3">';
 									$h .= SeriesUi::link($eSeries);
-									$h .= \production\CropUi::start($eCultivation, \Setting::get('farm\mainActions'));
+									$h .= \sequence\CropUi::start($eCultivation, \Setting::get('farm\mainActions'));
 									if($area === NULL) {
 										$h .= '  <a href="/series/series:update?id='.$eSeries['id'].'" class="series-item-forecast-missing">'.\Asset::icon('exclamation-triangle-fill').' '.s("Définir l'objectif de surface").'</a>';
 									}
@@ -965,7 +965,7 @@ class CultivationUi {
 
 								$h .= '<div class="series-item-seeds-series">';
 									$h .= SeriesUi::link($eSeries);
-									$h .= \production\CropUi::start($eCultivation, \Setting::get('farm\mainActions'));
+									$h .= \sequence\CropUi::start($eCultivation, \Setting::get('farm\mainActions'));
 								$h  .= '</div>';
 								$h .= '<div>';
 
@@ -1064,7 +1064,7 @@ class CultivationUi {
 						$cultivations .= '<div class="series-item series-item-working-time series-item-status-'.$eCultivation['series']['status'].'" id="series-item-'.$eCultivation['id'].'">';
 							$cultivations .= '<div class="series-item-planning-details">';
 								$cultivations .= $this->getSeriesForDisplay($eCultivation['series'], $eCultivation);
-								$cultivations .= '<span class="series-item-planning-details-variety">'.new \production\SliceUi()->getLine($eCultivation, $eCultivation['cSlice']).'</span>';
+								$cultivations .= '<span class="series-item-planning-details-variety">'.new \sequence\SliceUi()->getLine($eCultivation, $eCultivation['cSlice']).'</span>';
 							$cultivations .= '</div>';
 							$cultivations .= '<div class="text-end">';
 								if($eCultivation['area'] !== NULL) {
@@ -1218,7 +1218,7 @@ class CultivationUi {
 
 									if($position === 1) {
 										$cultivations .= $this->getSeriesForDisplay($eCultivation['series'], $eCultivation);
-										$cultivations .= '<span class="series-item-planning-details-variety">'.new \production\SliceUi()->getLine($eCultivation, $eCultivation['cSlice']).'</span>';
+										$cultivations .= '<span class="series-item-planning-details-variety">'.new \sequence\SliceUi()->getLine($eCultivation, $eCultivation['cSlice']).'</span>';
 									}
 
 								$cultivations .= '</div>';
@@ -1379,7 +1379,7 @@ class CultivationUi {
 		$h = '<'.$tag.' href="/serie/'.$eSeries['id'].'" class="series-item-planning-details-name">'.SeriesUi::name($eSeries).'</'.$tag.'> ';
 
 		if($eCultivation->notEmpty()) {
-			$h .= \production\CropUi::start($eCultivation, \Setting::get('farm\mainActions'));
+			$h .= \sequence\CropUi::start($eCultivation, \Setting::get('farm\mainActions'));
 		}
 
 		if($eSeries->isClosed()) {
@@ -1743,7 +1743,7 @@ class CultivationUi {
 				$infos[] = $perennial;
 
 				if($eSeries['sequence']->notEmpty()) {
-					$infos[] = s("Itinéraire technique {value}", '<u>'.\production\SequenceUi::link($eSeries['sequence']).'</u>');
+					$infos[] = s("Itinéraire technique {value}", '<u>'.\sequence\SequenceUi::link($eSeries['sequence']).'</u>');
 				}
 
 				$h .= '<div>';
@@ -1865,7 +1865,7 @@ class CultivationUi {
 				$h .= \plant\PlantUi::getVignette($ePlant, '3rem').' ';
 				$h .= '<h2>';
 					$h .= \plant\PlantUi::link($ePlant);
-					$h .= \production\CropUi::start($eCultivation, $cActionMain, fontSize: '0.7em');
+					$h .= \sequence\CropUi::start($eCultivation, $cActionMain, fontSize: '0.7em');
 				$h .= '</h2>';
 
 				if(
@@ -1895,7 +1895,7 @@ class CultivationUi {
 
 			$h .= '</div>';
 
-			$h .= new \production\CropUi()->getVarieties($eCultivation, $eCultivation['cSlice']);
+			$h .= new \sequence\CropUi()->getVarieties($eCultivation, $eCultivation['cSlice']);
 
 		$h .= '</div>';
 
@@ -2064,7 +2064,7 @@ class CultivationUi {
 
 	protected function getPresentation(Series $eSeries, Cultivation $eCultivation, int &$filled): string {
 
-		$uiCrop = new \production\CropUi();
+		$uiCrop = new \sequence\CropUi();
 
 		$h = '<dl class="util-presentation util-presentation-max-content util-presentation-2">';
 
@@ -2453,8 +2453,8 @@ class CultivationUi {
 
 		$h = '<div class="cultivation-write">';
 
-			$h .= new \production\CropUi()->getVarietyGroup($form, $eCultivation, $eCultivation['ccVariety'], $eCultivation['cSlice'], $suffix);
-			$h .= new \production\CropUi()->getDistanceField($form, $eCultivation, $use, $suffix);
+			$h .= new \sequence\CropUi()->getVarietyGroup($form, $eCultivation, $eCultivation['ccVariety'], $eCultivation['cSlice'], $suffix);
+			$h .= new \sequence\CropUi()->getDistanceField($form, $eCultivation, $use, $suffix);
 
 			$h .= $form->dynamicGroup($eCultivation, 'seedling'.$suffix);
 			$h .= $form->dynamicGroup($eCultivation, 'seedlingSeeds'.$suffix);
@@ -2497,8 +2497,8 @@ class CultivationUi {
 					];
 				});
 
-				$h .= new \production\CropUi()->getVarietyGroup($form, $eCultivation, $eCultivation['ccVariety'], $eCultivation['cSlice']);
-				$h .= new \production\CropUi()->getDistanceField($form, $eCultivation, $eCultivation['series']['use']);
+				$h .= new \sequence\CropUi()->getVarietyGroup($form, $eCultivation, $eCultivation['ccVariety'], $eCultivation['cSlice']);
+				$h .= new \sequence\CropUi()->getDistanceField($form, $eCultivation, $eCultivation['series']['use']);
 
 				$h .= $form->dynamicGroup($eCultivation, 'seedling');
 				$h .= $form->dynamicGroup($eCultivation, 'seedlingSeeds');
@@ -2672,7 +2672,7 @@ class CultivationUi {
 				break;
 
 			case 'sequence' :
-				new \production\SequenceUi()->query($d);
+				new \sequence\SequenceUi()->query($d);
 				break;
 
 			case 'seedling' :

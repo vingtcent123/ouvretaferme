@@ -161,7 +161,7 @@ class ActionLib extends ActionCrud {
 
 		if(\series\Task::model()
 				->whereAction($e)
-				->exists() or \production\Flow::model()
+				->exists() or \sequence\Flow::model()
 				->whereAction($e)
 				->exists()) {
 			Action::fail('deleteUsed');

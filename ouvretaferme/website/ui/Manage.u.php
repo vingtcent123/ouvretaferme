@@ -104,7 +104,7 @@ class ManageUi {
 
 	public function display(Website $eWebsite): string {
 
-		\Asset::css('production', 'crop.css');
+		\Asset::css('sequence', 'crop.css');
 
 		$h = '';
 

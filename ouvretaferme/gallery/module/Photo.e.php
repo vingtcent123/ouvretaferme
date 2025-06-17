@@ -66,13 +66,13 @@ class Photo extends PhotoElement {
 				return $eFarm->canWrite();
 
 			})
-			->setCallback('sequence.check', function(\production\Sequence $eSequence): bool {
+			->setCallback('sequence.check', function(\sequence\Sequence $eSequence): bool {
 
 				if($eSequence->empty()) {
 					return TRUE;
 				}
 
-				if(\production\Sequence::model()
+				if(\sequence\Sequence::model()
 					->select('id', 'farm')
 					->get($eSequence) === FALSE) {
 					return FALSE;

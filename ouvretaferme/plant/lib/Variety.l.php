@@ -82,7 +82,7 @@ class VarietyLib extends VarietyCrud {
 		if(\series\Slice::model()
 				->whereVariety($e)
 				->exists() or
-			\production\Slice::model()
+			\sequence\Slice::model()
 				->whereVariety($e)
 				->exists()) {
 			Variety::fail('deleteUsed');

@@ -209,7 +209,7 @@ class ToolLib extends ToolCrud {
 				->whereFarm($e['farm'])
 				->where('JSON_CONTAINS(tools, \''.$e['id'].'\')')
 				->exists() or
-			\production\Flow::model()
+			\sequence\Flow::model()
 				->whereFarm($e['farm'])
 				->where('JSON_CONTAINS(tools, \''.$e['id'].'\')')
 				->exists() or

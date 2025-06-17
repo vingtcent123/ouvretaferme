@@ -326,7 +326,7 @@ class Cultivation extends CultivationElement {
 			case 'harvested' :
 			case 'harvestExpected' :
 			case 'harvestExpectedTarget' :
-				return \production\CropUi::getYield($this, $property, 'mainUnit', $options);
+				return \sequence\CropUi::getYield($this, $property, 'mainUnit', $options);
 
 			default :
 				return parent::format($property, $options);
@@ -342,11 +342,11 @@ class Cultivation extends CultivationElement {
 		]);
 		
 		$p
-			->setCallback('crop.check', function(\production\Crop $eCrop): bool {
+			->setCallback('crop.check', function(\sequence\Crop $eCrop): bool {
 
 				return (
 					$eCrop->empty() or
-					\production\Crop::model()
+					\sequence\Crop::model()
 						->select([
 							'id'
 						])
@@ -447,7 +447,7 @@ class Cultivation extends CultivationElement {
 
 				$p->expectsBuilt(['sliceUnit', 'sliceTray']);
 
-				$this['cSlice'] = \production\SliceLib::prepare($this, $varieties, $wrapper);
+				$this['cSlice'] = \sequence\SliceLib::prepare($this, $varieties, $wrapper);
 
 				if($this['cSlice']->empty()) {
 					$this['sliceUnit'] = Cultivation::PERCENT;

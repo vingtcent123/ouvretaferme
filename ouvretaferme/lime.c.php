@@ -34,7 +34,7 @@ switch(LIME_ENV) {
 			'storage' => 'ouvretaferme',
 			'plant' => 'ouvretaferme',
 			'gallery' => 'ouvretaferme',
-			'production' => 'ouvretaferme',
+			'sequence' => 'ouvretaferme',
 			'farm' => 'ouvretaferme',
 			'map' => 'ouvretaferme',
 			'series' => 'ouvretaferme',
@@ -63,7 +63,7 @@ switch(LIME_ENV) {
 			'storage' => 'dev_ouvretaferme',
 			'plant' => 'dev_ouvretaferme',
 			'gallery' => 'dev_ouvretaferme',
-			'production' => 'dev_ouvretaferme',
+			'sequence' => 'dev_ouvretaferme',
 			'farm' => 'dev_ouvretaferme',
 			'map' => 'dev_ouvretaferme',
 			'series' => 'dev_ouvretaferme',
@@ -102,6 +102,7 @@ define('OTF_DEMO_HOST', 'demo.'.Lime::getDomain());
 define('OTF_DEMO_URL', \Lime::getProtocol().'://'.OTF_DEMO_HOST);
 
 define('CATEGORIE_CULTURE', 'culture');
+define('CATEGORIE_PRODUCTION', 'production');
 
 define('ACTION_FERTILISATION', 'fertilisation');
 define('ACTION_RECOLTE', 'recolte');

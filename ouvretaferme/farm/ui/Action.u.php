@@ -31,9 +31,9 @@ class ActionUi {
 
 	}
 
-	public static function text(\production\Flow|\series\Task $e, \Collection $cActionMain = new \Collection()): string {
+	public static function text(\sequence\Flow|\series\Task $e, \Collection $cActionMain = new \Collection()): string {
 
-		if($e instanceof \production\Flow) {
+		if($e instanceof \sequence\Flow) {
 
 			$e['variety'] = new \plant\Variety();
 
@@ -65,7 +65,7 @@ class ActionUi {
 
 			if(
 				($e instanceof \series\Task and $e['series']->notEmpty()) or
-				($e instanceof \production\Flow and $e['sequence']->notEmpty())
+				($e instanceof \sequence\Flow and $e['sequence']->notEmpty())
 			) {
 				$h .= ' <span class="action-name">'.s("PARTAGÉ").'</span>';
 			}
@@ -77,7 +77,7 @@ class ActionUi {
 			$plant = '<span class="action-name">'.encode($ePlant['name']).'</span>';
 
 			if($cActionMain->notEmpty()) {
-				$plant .= ' '.\production\CropUi::start($e instanceof \series\Task ? $e['cultivation'] : $e['crop'], $cActionMain).' ';
+				$plant .= ' '.\sequence\CropUi::start($e instanceof \series\Task ? $e['cultivation'] : $e['crop'], $cActionMain).' ';
 			}
 
 			$arguments = [

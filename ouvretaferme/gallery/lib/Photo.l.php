@@ -11,7 +11,7 @@ class PhotoLib extends PhotoCrud {
 		return ['title', 'takenAt'];
 	}
 
-	public static function getBySequence(\production\Sequence $eSequence): \Collection {
+	public static function getBySequence(\sequence\Sequence $eSequence): \Collection {
 
 		return Photo::model()
 			->select(Photo::model()->getProperties())
@@ -57,7 +57,7 @@ class PhotoLib extends PhotoCrud {
 	public static function create(Photo $e): void {
 
 		$e->add([
-			'sequence' => new \production\Sequence(),
+			'sequence' => new \sequence\Sequence(),
 			'series' => new \series\Series(),
 			'task' => new \series\Task()
 		]);

@@ -226,7 +226,7 @@ class PlantUi {
 
 		if($cCrop->notEmpty()) {
 			$h .= '<h3>'.s("Itinéraires techniques").'</h3>';
-			$h .= new \production\SequenceUi()->getList($eFarm, $cCrop, $cActionMain);
+			$h .= new \sequence\SequenceUi()->getList($eFarm, $cCrop, $cActionMain);
 		}
 
 		return new \Panel(

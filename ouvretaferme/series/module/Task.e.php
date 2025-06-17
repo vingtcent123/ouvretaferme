@@ -143,7 +143,7 @@ class Task extends TaskElement {
 
 		return (
 			$this['series']->empty() and
-			in_array($this['category']['fqn'], ['culture', 'production'])
+			in_array($this['category']['fqn'], [CATEGORIE_CULTURE, CATEGORIE_PRODUCTION])
 		);
 
 	}
@@ -154,7 +154,7 @@ class Task extends TaskElement {
 
 			case 'harvest' :
 				if($this[$property] > 0) {
-					return \production\CropUi::getYield($this, $property, 'harvestUnit', $options);
+					return \sequence\CropUi::getYield($this, $property, 'harvestUnit', $options);
 				} else {
 					return NULL;
 				}
@@ -162,7 +162,7 @@ class Task extends TaskElement {
 			case 'fertilizer' :
 				if($this[$property] !== NULL) {
 
-					[$major, $minor] = new \production\FlowUi()->getFertilizer($this);
+					[$major, $minor] = new \sequence\FlowUi()->getFertilizer($this);
 
 					$h = implode('&nbsp;&nbsp;', $major);
 					if($major and $minor) {

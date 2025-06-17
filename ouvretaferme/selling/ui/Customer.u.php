@@ -8,7 +8,7 @@ class CustomerUi {
 		\Asset::css('selling', 'customer.css');
 		\Asset::js('selling', 'customer.js');
 
-		\Asset::css('production', 'crop.css');
+		\Asset::css('sequence', 'crop.css');
 
 	}
 

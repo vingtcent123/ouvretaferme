@@ -73,7 +73,7 @@ class SeriesModel extends \ModuleModel {
 			'bedStopUser' => ['int16', 'null' => TRUE, 'cast' => 'int'],
 			'alleyWidth' => ['int16', 'min' => 1, 'max' => NULL, 'null' => TRUE, 'cast' => 'int'],
 			'comment' => ['editor16', 'null' => TRUE, 'cast' => 'string'],
-			'sequence' => ['element32', 'production\Sequence', 'null' => TRUE, 'cast' => 'element'],
+			'sequence' => ['element32', 'sequence\Sequence', 'null' => TRUE, 'cast' => 'element'],
 			'cycle' => ['enum', [\series\Series::ANNUAL, \series\Series::PERENNIAL], 'cast' => 'enum'],
 			'perennialLifetime' => ['int8', 'min' => 2, 'max' => NULL, 'null' => TRUE, 'cast' => 'int'],
 			'perennialSeason' => ['int8', 'min' => 1, 'max' => NULL, 'null' => TRUE, 'cast' => 'int'],
@@ -91,7 +91,7 @@ class SeriesModel extends \ModuleModel {
 
 		$this->propertiesToModule += [
 			'farm' => 'farm\Farm',
-			'sequence' => 'production\Sequence',
+			'sequence' => 'sequence\Sequence',
 			'perennialFirst' => 'series\Series',
 			'duplicateOf' => 'series\Series',
 			'createdBy' => 'user\User',

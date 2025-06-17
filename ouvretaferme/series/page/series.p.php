@@ -34,7 +34,7 @@ new \series\CultivationPage(function($data) {
 
 			if($eSeries['sequence']->notEmpty()) {
 
-				$cFlow = \production\FlowLib::getBySequence($eSeries['sequence'], $season, ['plant' => ['name']]);
+				$cFlow = \sequence\FlowLib::getBySequence($eSeries['sequence'], $season, ['plant' => ['name']]);
 
 				if($eSeries['cycle'] === \series\Series::ANNUAL) {
 
@@ -43,7 +43,7 @@ new \series\CultivationPage(function($data) {
 						$startYear = (int)POST('startYear', [0, -1], 'int');
 						$startWeek = (int)POST('startWeek', fn($value) => ($value >= 1 and $value <= 52), 1);
 
-						\production\FlowLib::changeWeekStart($cFlow, $startWeek);
+						\sequence\FlowLib::changeWeekStart($cFlow, $startWeek);
 
 						$firstYear = ($cFlow->first()['yearOnly'] ?? $cFlow->first()['yearStart']);
 						$selectedYear = $startYear + $eSeries['season'];
@@ -51,9 +51,9 @@ new \series\CultivationPage(function($data) {
 
 						if(
 							$selectedYear < $eSeries['season'] and
-							($cFlow->first()['weekOnly'] ?? $cFlow->first()['weekStart']) < \Setting::get('production\minWeekN-1')
+							($cFlow->first()['weekOnly'] ?? $cFlow->first()['weekStart']) < \Setting::get('sequence\minWeekN-1')
 						) {
-							\production\Flow::fail('weekTooSoonAnnualNeutral', ['season' => $eSeries['season']]);
+							\sequence\Flow::fail('weekTooSoonAnnualNeutral', ['season' => $eSeries['season']]);
 							$fw->validate();
 						}
 
@@ -148,42 +148,42 @@ new \series\CultivationPage(function($data) {
 	})
 	->get('createFromSequence', function($data) {
 
-		$data->eSequence = \production\SequenceLib::getById(GET('sequence'))->validate('canRead');
+		$data->eSequence = \sequence\SequenceLib::getById(GET('sequence'))->validate('canRead');
 
-		if($data->eSequence['cycle'] === \production\Sequence::PERENNIAL) {
+		if($data->eSequence['cycle'] === \sequence\Sequence::PERENNIAL) {
 			$season = 1;
 		} else {
 			$season = NULL;
 		}
 
-		$data->cFlow = \production\FlowLib::getBySequence($data->eSequence, $season, ['plant' => ['name']]);
+		$data->cFlow = \sequence\FlowLib::getBySequence($data->eSequence, $season, ['plant' => ['name']]);
 		$data->cCultivation = \series\CultivationLib::buildFromSequence($data->eSequence, $data->eFarm, $data->season);
 
 		$cTray = \farm\ToolLib::getTraysByFarm($data->eFarm);
 		$data->cCultivation->setColumn('cTray', $cTray);
 
-		$data->events = \production\FlowLib::reorder($data->eSequence, $data->cFlow);
+		$data->events = \sequence\FlowLib::reorder($data->eSequence, $data->cFlow);
 
 		throw new ViewAction($data);
 
 	})
 	->post('getTasksFromSequence', function($data) {
 
-		$data->eSequence = \production\SequenceLib::getById(POST('sequence'))->validate('canRead');
+		$data->eSequence = \sequence\SequenceLib::getById(POST('sequence'))->validate('canRead');
 
 		$data->startYear = (int)POST('startYear', [0, -1], 'int');
 		$data->startWeek = (int)POST('startWeek', fn($value) => ($value >= 1 and $value <= 52), 1);
 
-		if($data->eSequence['cycle'] === \production\Sequence::PERENNIAL) {
+		if($data->eSequence['cycle'] === \sequence\Sequence::PERENNIAL) {
 			$season = 1;
 		} else {
 			$season = NULL;
 		}
 
-		$data->cFlow = \production\FlowLib::getBySequence($data->eSequence, $season, ['plant' => ['name']]);
-		\production\FlowLib::changeWeekStart($data->cFlow, $data->startWeek);
+		$data->cFlow = \sequence\FlowLib::getBySequence($data->eSequence, $season, ['plant' => ['name']]);
+		\sequence\FlowLib::changeWeekStart($data->cFlow, $data->startWeek);
 
-		$data->events = \production\FlowLib::reorder($data->eSequence, $data->cFlow);
+		$data->events = \sequence\FlowLib::reorder($data->eSequence, $data->cFlow);
 
 		throw new ViewAction($data);
 
@@ -210,7 +210,7 @@ new \series\SeriesPage()
 		$data->ccTask = \series\TaskLib::getWorkingTimeBySeries($data->e);
 		$data->ccTaskHarvested = \series\TaskLib::getHarvestedBySeries($data->e);
 
-		$data->e['sequence'] = \production\SequenceLib::getById($data->e['sequence']);
+		$data->e['sequence'] = \sequence\SequenceLib::getById($data->e['sequence']);
 
 		$data->cActionMain = \farm\ActionLib::getMainByFarm($data->eFarm);
 
@@ -267,8 +267,8 @@ new \series\SeriesPage()
 
 		$data->e['cPlace'] = \series\PlaceLib::getByElement($data->e);
 		$data->e['cCultivation'] = \series\CultivationLib::getBySeries($data->e);
-		$data->e['cSequence'] = \production\SequenceLib::getForSeries($data->e, $cCultivation);
-		$data->e['sequence'] = \production\SequenceLib::getById($data->e['sequence']);
+		$data->e['cSequence'] = \sequence\SequenceLib::getForSeries($data->e, $cCultivation);
+		$data->e['sequence'] = \sequence\SequenceLib::getById($data->e['sequence']);
 
 		throw new ViewAction($data);
 

@@ -8,7 +8,7 @@ class TaskUi {
 
 	public function __construct() {
 
-		\Asset::css('production', 'flow.css');
+		\Asset::css('sequence', 'flow.css');
 
 		\Asset::css('series', 'task.css');
 		\Asset::js('series', 'task.js');
@@ -1125,7 +1125,7 @@ class TaskUi {
 
 	protected function getPlanningTasks(\util\FormUi $form, \farm\Farm $eFarm, \Collection $cTask, bool $first, bool $last, ?string $date, string $week, bool $displayTime = FALSE): string {
 
-		\Asset::css('production', 'flow.css');
+		\Asset::css('sequence', 'flow.css');
 
 		$eAction = $cTask->first()['action'];
 
@@ -1408,7 +1408,7 @@ class TaskUi {
 		if($eTask['series']->empty() === FALSE) {
 			$name = '<span class="tasks-planning-item-series-name">'.SeriesUi::name($eTask['series']).'</span>';
 			$place .= s("Série {value}", $name);
-			$place .= \production\CropUi::start($eTask['cultivation'], \Setting::get('farm\mainActions'));
+			$place .= \sequence\CropUi::start($eTask['cultivation'], \Setting::get('farm\mainActions'));
 			if($eTask['series']['cccPlace']->notEmpty()) {
 				$place .= ' - <div class="tasks-planning-item-series-places">'.new CultivationUi()->displayPlaces($eTask['series']['use'], $eTask['series']['cccPlace']).'</div>';
 			}
@@ -1503,7 +1503,7 @@ class TaskUi {
 	public function getMore(Task $eTask): string {
 
 		$h = $this->getTaskComplement($eTask);
-		$h .= new \production\FlowUi()->getMore($eTask);
+		$h .= new \sequence\FlowUi()->getMore($eTask);
 
 		return $h;
 
@@ -1543,7 +1543,7 @@ class TaskUi {
 
 	public function getTimeline(\farm\Farm $eFarm, Series $eSeries, \Collection $cCultivation, \Collection $cTask): string {
 
-		\Asset::css('production', 'flow.css');
+		\Asset::css('sequence', 'flow.css');
 
 		if($cTask->empty()) {
 			return $this->getEmptyTimeline($eSeries);
@@ -1603,7 +1603,7 @@ class TaskUi {
 								$h .= '<a href="/tache/'.$eTask['id'].'" class="flow-timeline-text">'.$this->getAction($eTask).'</a>';
 								$h .= $this->getDescription($eTask);
 								$h .= $this->getComments($eTask);
-								$h .= new \production\FlowUi()->getTools($eTask);
+								$h .= new \sequence\FlowUi()->getTools($eTask);
 							$h .= '</div>';
 
 
@@ -1686,7 +1686,7 @@ class TaskUi {
 
 	protected function getDone(Task $eTask, string $week, array $onUpdate = []): string {
 
-		\Asset::css('production', 'flow.css');
+		\Asset::css('sequence', 'flow.css');
 
 		$h = '<div class="flow-timeline-done" id="series-task-done-'.$eTask['id'].'">';
 
@@ -2944,7 +2944,7 @@ class TaskUi {
 		$eCultivation = $eTask['cultivation'];
 		$eSeries = $eCultivation['series'];
 
-		$uiCrop = new \production\CropUi();
+		$uiCrop = new \sequence\CropUi();
 
 		$h = $uiCrop->getPresentationDistance($eSeries, $eCultivation);
 		$h .= $this->getPresentationSize($eSeries);
@@ -3260,7 +3260,7 @@ class TaskUi {
 		$eCultivation = $eTask['cultivation'];
 		$eSeries = $eCultivation['series'];
 
-		$uiCrop = new \production\CropUi();
+		$uiCrop = new \sequence\CropUi();
 
 		$h = $uiCrop->getPresentationDistance($eSeries, $eCultivation);
 		$h .= $this->getPresentationSize($eSeries);
@@ -3536,7 +3536,7 @@ class TaskUi {
 							$h .= '<div class="task-field-link">';
 								$h .= SeriesUi::link($eSeries, newTab: TRUE);
 								if($association === FALSE) {
-									$h .= ' '.\production\CropUi::start($cCultivation->first(), \Setting::get('farm\mainActions'));
+									$h .= ' '.\sequence\CropUi::start($cCultivation->first(), \Setting::get('farm\mainActions'));
 								}
 							$h .= '</div>';
 							$h .= '<div class="task-field-place">';
@@ -3579,7 +3579,7 @@ class TaskUi {
 								foreach($eSeries['cCultivation'] as $eCultivation) {
 
 									$label = \plant\PlantUi::getVignette($eCultivation['plant'], '2rem').' '.encode($eCultivation['plant']['name']);
-									$label .= ' '.\production\CropUi::start($eCultivation, \Setting::get('farm\mainActions'));
+									$label .= ' '.\sequence\CropUi::start($eCultivation, \Setting::get('farm\mainActions'));
 
 									$h .= '<label class="series-field-cultivation">';
 										$h .= $form->inputRadio('cultivation['.$eSeries['id'].']', $eCultivation['id'], $label, attributes: [
@@ -4397,7 +4397,7 @@ class TaskUi {
 
 						$d->values = $cCultivation->makeArray(function($eCultivation, &$key) {
 							$key = $eCultivation['id'];
-							return $eCultivation['series']['name'].' / '.\production\CropUi::startText($eCultivation);
+							return $eCultivation['series']['name'].' / '.\sequence\CropUi::startText($eCultivation);
 						});
 						asort($d->values);
 

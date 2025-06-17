@@ -161,13 +161,13 @@ class Series extends SeriesElement {
 				return TRUE;
 
 			})
-			->setCallback('sequence.check', function(\production\Sequence $eSequence): bool {
+			->setCallback('sequence.check', function(\sequence\Sequence $eSequence): bool {
 
 				if($eSequence->empty()) {
 					return TRUE;
 				}
 
-				if(\production\Sequence::model()
+				if(\sequence\Sequence::model()
 						->select('id', 'farm', 'cycle', 'name')
 						->get($eSequence) === FALSE) {
 					return FALSE;

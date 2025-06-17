@@ -200,7 +200,7 @@ class PlantLib extends PlantCrud {
 		$e->expects(['id', 'farm']);
 
 		if(
-			\production\Crop::model()
+			\sequence\Crop::model()
 				->whereFarm($e['farm'])
 				->wherePlant($e)
 				->exists() or

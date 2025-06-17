@@ -254,7 +254,7 @@ Route::register([
 			'route' => ['in', '{key}'],
 		],
 		'/itineraire/{id}' => [
-			'request' => 'production/sequence',
+			'request' => 'sequence/sequence',
 			'priority' => 5,
 			'route' => ['itineraire', '{id}'],
 		],
@@ -542,26 +542,6 @@ Route::register([
 			'priority' => 5,
 			'route' => ['@module', 'plant', 'Variety', 'quick'],
 		],
-		'/@module/production/Crop/doQuick' => [
-			'request' => 'production/crop',
-			'priority' => 5,
-			'route' => ['@module', 'production', 'Crop', 'doQuick'],
-		],
-		'/@module/production/Crop/quick' => [
-			'request' => 'production/crop',
-			'priority' => 5,
-			'route' => ['@module', 'production', 'Crop', 'quick'],
-		],
-		'/@module/production/Sequence/doQuick' => [
-			'request' => 'production/sequence',
-			'priority' => 5,
-			'route' => ['@module', 'production', 'Sequence', 'doQuick'],
-		],
-		'/@module/production/Sequence/quick' => [
-			'request' => 'production/sequence',
-			'priority' => 5,
-			'route' => ['@module', 'production', 'Sequence', 'quick'],
-		],
 		'/@module/selling/Grid/doQuick' => [
 			'request' => 'selling/grid',
 			'priority' => 5,
@@ -631,6 +611,26 @@ Route::register([
 			'request' => 'selling/unit',
 			'priority' => 5,
 			'route' => ['@module', 'selling', 'Unit', 'quick'],
+		],
+		'/@module/sequence/Crop/doQuick' => [
+			'request' => 'sequence/crop',
+			'priority' => 5,
+			'route' => ['@module', 'sequence', 'Crop', 'doQuick'],
+		],
+		'/@module/sequence/Crop/quick' => [
+			'request' => 'sequence/crop',
+			'priority' => 5,
+			'route' => ['@module', 'sequence', 'Crop', 'quick'],
+		],
+		'/@module/sequence/Sequence/doQuick' => [
+			'request' => 'sequence/sequence',
+			'priority' => 5,
+			'route' => ['@module', 'sequence', 'Sequence', 'doQuick'],
+		],
+		'/@module/sequence/Sequence/quick' => [
+			'request' => 'sequence/sequence',
+			'priority' => 5,
+			'route' => ['@module', 'sequence', 'Sequence', 'quick'],
 		],
 		'/@module/series/Cultivation/doQuick' => [
 			'request' => 'series/cultivation',

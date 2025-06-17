@@ -18,7 +18,7 @@ new AdaptativeView('harvest', function($data, PanelTemplate $t) {
 new JsonView('changePlant', function($data, AjaxTemplate $t) {
 
 	$form = new \util\FormUi();
-	$t->ref('crop-field-variety')->outerHtml(new \production\CropUi()->getVarietyGroup($form, $data->e, $data->ccVariety, $data->cSlice));
+	$t->ref('crop-field-variety')->outerHtml(new \sequence\CropUi()->getVarietyGroup($form, $data->e, $data->ccVariety, $data->cSlice));
 
 });
 ?>

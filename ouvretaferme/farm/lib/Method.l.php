@@ -74,12 +74,12 @@ class MethodLib extends MethodCrud {
 					'methods' => new \Sql(\series\Task::model()->pdo()->api->jsonRemove('methods', $e['id']))
 				]);
 
-			\production\Flow::model()
+			\sequence\Flow::model()
 				->whereFarm($e['farm'])
 				->whereAction($e['action'])
 				->where('JSON_CONTAINS(methods, \''.$e['id'].'\')')
 				->update([
-					'methods' => new \Sql(\production\Flow::model()->pdo()->api->jsonRemove('methods', $e['id']))
+					'methods' => new \Sql(\sequence\Flow::model()->pdo()->api->jsonRemove('methods', $e['id']))
 				]);
 
 		Method::model()->commit();
