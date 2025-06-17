@@ -184,14 +184,29 @@ class MailLib {
 
 	private static function doSend(Email $eEmail): void {
 
-		BrevoLib::send($eEmail);
+		try {
 
-		$eEmail['sentAt'] = new \Sql('NOW()');
-		$eEmail['status'] = Email::SENT;
+			BrevoLib::send($eEmail);
 
-		\mail\Email::model()
-			->select('sentAt', 'status')
-			->update($eEmail);
+			$eEmail['sentAt'] = new \Sql('NOW()');
+			$eEmail['status'] = Email::SENT;
+
+			\mail\Email::model()
+				->select('sentAt', 'status')
+				->update($eEmail);
+
+		}
+		catch(\Exception $e) {
+
+			trigger_error("Brevo error with mail #".$eEmail['id'].' ('.$e->getMessage().')');
+
+			$eEmail['status'] = Email::ERROR_PROVIDER;
+
+			\mail\Email::model()
+				->select('status')
+				->update($eEmail);
+
+		}
 
 		ContactLib::updateContact($eEmail);
 

@@ -12,6 +12,7 @@ abstract class EmailElement extends \Element {
 	const SENT = 'sent';
 	const DELIVERED = 'delivered';
 	const OPENED = 'opened';
+	const ERROR_PROVIDER = 'error-provider';
 	const ERROR_SPAM = 'error-spam';
 	const ERROR_BOUNCE = 'error-bounce';
 	const ERROR_INVALID = 'error-invalid';
@@ -58,7 +59,7 @@ class EmailModel extends \ModuleModel {
 			'bcc' => ['text8', 'min' => 0, 'max' => NULL, 'null' => TRUE, 'cast' => 'string'],
 			'replyTo' => ['text8', 'null' => TRUE, 'cast' => 'string'],
 			'attachments' => ['binary32', 'cast' => 'binary'],
-			'status' => ['enum', [\mail\Email::WAITING, \mail\Email::SENDING, \mail\Email::SENT, \mail\Email::DELIVERED, \mail\Email::OPENED, \mail\Email::ERROR_SPAM, \mail\Email::ERROR_BOUNCE, \mail\Email::ERROR_INVALID, \mail\Email::ERROR_BLOCKED], 'cast' => 'enum'],
+			'status' => ['enum', [\mail\Email::WAITING, \mail\Email::SENDING, \mail\Email::SENT, \mail\Email::DELIVERED, \mail\Email::OPENED, \mail\Email::ERROR_PROVIDER, \mail\Email::ERROR_SPAM, \mail\Email::ERROR_BOUNCE, \mail\Email::ERROR_INVALID, \mail\Email::ERROR_BLOCKED], 'cast' => 'enum'],
 			'createdAt' => ['datetime', 'cast' => 'string'],
 			'sentAt' => ['datetime', 'null' => TRUE, 'cast' => 'string'],
 		]);

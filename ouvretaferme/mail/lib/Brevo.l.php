@@ -90,7 +90,7 @@ class BrevoLib {
 
 	public static function webhook(array $payload): void {
 
-		if($payload['tags']) {
+		if($payload['tags'] ?? []) {
 
 			[$mode, $id] = $payload['tags'];
 
