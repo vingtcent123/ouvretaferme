@@ -1,0 +1,8 @@
+Cache:
+  key: ?text8 @charset(ascii)
+  value: binary32
+  expireAt: ?datetime
+  UNIQUE: [
+    ["key"]
+  ]
+

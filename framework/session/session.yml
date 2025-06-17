@@ -1,0 +1,10 @@
+Session:
+  sid: sid
+  content: binary8(0, PHP(SessionLib::MAX_LENGTH))
+  updatedAt: datetime = SPECIAL(now)
+  user: ?user\User
+  SPLIT: ["sid", "SETTING(split)"]
+  UNIQUE: [
+    ["sid"]
+  ]
+

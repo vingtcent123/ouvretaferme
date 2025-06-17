@@ -1,0 +1,15 @@
+.columns {
+	display: flex;
+	align-items: flex-start; /* Fit columns to content */
+}
+
+.columns:before {
+	display: block;
+	visibility: hidden;
+	position: absolute;
+	font-size: 1px;
+}
+
+.columns > .column-item {
+	display: none;
+}
