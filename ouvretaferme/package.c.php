@@ -11,10 +11,7 @@ Package::setList([
 	'user' => 'framework',
 	'util' => 'framework',
 	'analyze' => 'ouvretaferme',
-	'farm' => 'ouvretaferme',
 	'gallery' => 'ouvretaferme',
-	'hr' => 'ouvretaferme',
-	'mail' => 'ouvretaferme',
 	'map' => 'ouvretaferme',
 	'media' => 'ouvretaferme',
 	'payment' => 'ouvretaferme',
@@ -24,6 +21,9 @@ Package::setList([
 	'series' => 'ouvretaferme',
 	'shop' => 'ouvretaferme',
 	'website' => 'ouvretaferme',
+	'farm' => 'base',
+	'hr' => 'base',
+	'mail' => 'base',
 ]);
 
 Package::setObservers([
@@ -35,9 +35,9 @@ Package::setObservers([
 			'close' => ['main'],
 			'logIn' => ['session', 'farm'],
 			'logOut' => ['session'],
+			'update' => ['selling'],
 			'formLog' => ['farm'],
 			'formSignUp' => ['farm'],
-			'update' => ['selling'],
 		],
 		'lime' => [
 			'loadConf' => ['media'],

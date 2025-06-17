@@ -9,6 +9,7 @@ class MailLib {
 	protected ?string $to = NULL;
 	protected ?string $bcc = NULL;
 	protected ?string $replyTo = NULL;
+	protected ?string $template = NULL;
 	protected ?string $bodyText = NULL;
 	protected ?string $bodyHtml = NULL;
 	protected ?string $subject = NULL;
