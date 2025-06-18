@@ -1,0 +1,15 @@
+.account-title {
+    display: flex;
+    padding: 1rem 0;
+    align-items: center;
+}
+.account-title .title {
+    margin-right: 1rem;
+}
+.account-title .label {
+    font-weight: bold;
+    text-transform: uppercase;
+    border: 1px solid var(--secondary);
+    padding: 0.5rem;
+    border-radius: 5px;
+}

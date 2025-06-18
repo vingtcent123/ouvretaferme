@@ -1,0 +1,14 @@
+div.tool-list {
+	display: flex;
+	align-items: start;
+	flex-wrap: wrap;
+	line-height: 1.2;
+	gap: 0.5rem 1rem;
+}
+
+a.tool-list-item {
+	display: inline-grid;
+	align-items: center;
+	grid-auto-flow: column;
+	grid-column-gap: 0.5rem;
+}

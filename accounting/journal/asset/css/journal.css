@@ -1,0 +1,27 @@
+ul.list-unstyled {
+    padding-left: 0;
+    list-style: none;
+}
+
+table.td-vertical-top td {
+    vertical-align: top;
+}
+
+.operation-info {
+    font-size: .9rem;
+    font-weight: normal;
+    color: var(--muted);
+    margin-top: .25rem;
+}
+table.no-background tbody {
+    background-color: white;
+}
+
+form[data-ajax-form="/@module/journal/Operation/doQuick"] {
+    min-width: 25rem;
+}
+
+.journal-title-buttons {
+    display: flex;
+    gap: 0.25rem;
+}

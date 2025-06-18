@@ -1,0 +1,75 @@
+div.doc-wrapper {
+	display: grid;
+	grid-template:
+		"menu header" auto
+		"menu content" auto / 15rem 1fr;
+}
+
+div.doc-menu {
+	grid-area: menu;
+	background: repeating-linear-gradient(135deg, white 0, var(--background-light) 100%);
+	box-shadow: 0 0 1rem #0003;
+}
+
+div.doc-header {
+   background-position: center center;
+   background-size: cover;
+   min-height: 20rem;
+	padding: 5rem 0;
+   display: flex;
+	flex-direction: column;
+   align-items: center;
+   justify-content: center;
+	background: linear-gradient(145deg, var(--secondary) 0, var(--primary) 100%);
+	color: white;
+	margin-bottom: 2rem;
+}
+
+div.doc-header h1 {
+   color: white;
+   text-align: center;
+   font-family: 'Itim', cursive;
+   font-size: 4rem;
+	max-width: 80rem;
+	margin: auto;
+}
+
+@media (max-width: 767px) {
+
+	div.doc-header h1 {
+      font-size: 3rem;
+   }
+
+}
+
+div.doc-header h4 {
+	color: white;
+	text-align: center;
+	max-width: 40rem;
+	margin: 1rem auto 0 auto;
+	padding: 1rem;
+}
+
+
+div.doc-content {
+	grid-area: content;
+}
+
+div.doc-content h2 {
+	font-family: 'Itim', cursive;
+	font-size: 1.9rem;
+	color: var(--secondary);
+}
+
+div.doc-content pre {
+	margin: 0;
+	display: inline-block;
+}
+
+div.doc-example {
+	display: inline-block;
+	background-color: var(--background-light);
+	font-size: 0.9rem;
+	padding: 0.125rem 0.5rem;
+	border-radius: var(--radius);
+}

@@ -1,0 +1,20 @@
+############################
+#   www.mapetiteferme.fr   #
+############################
+
+*/5 * * * * php /var/www/mpf/framework/lime.php -e preprod -a mapetiteferme session/cron/sessionClean
+0 * * * * php /var/www/mpf/framework/lime.php -e preprod -a mapetiteferme mail/cron/mail
+0 * * * * php /var/www/mpf/framework/lime.php -e preprod -a mapetiteferme selling/cron/invoice
+0 * * * * php /var/www/mpf/framework/lime.php -e preprod -a mapetiteferme storage/cron/buffer
+0 0 * * * php /var/www/mpf/framework/lime.php -e preprod -a mapetiteferme user/cron/seniority
+0 0 1 10 * php /var/www/mpf/framework/lime.php -e preprod -a mapetiteferme company/cron/newSeason
+0 12 * * * php /var/www/mpf/framework/lime.php -e preprod -a mapetiteferme mail/cron/clean
+0 2 * * * php /var/www/mpf/framework/lime.php -e preprod -a mapetiteferme media/cron/clean
+0 3 * * * php /var/www/mpf/framework/lime.php -e preprod -a mapetiteferme hr/cron/calculate
+0 4 * * * php /var/www/mpf/framework/lime.php -e preprod -a mapetiteferme company/cron/demo
+0 6 * * * php /var/www/mpf/framework/lime.php -e preprod -a mapetiteferme cron/sitemap
+0 6 * * * php /var/www/mpf/framework/lime.php -e preprod -a mapetiteferme user/cron/close
+0 6 * * * php /var/www/mpf/framework/lime.php -e preprod -a mapetiteferme user/cron/log
+17 7 * * * php /var/www/mpf/framework/lime.php -e preprod -a mapetiteferme dev/cron/minifyClean
+19 5 * * * php /var/www/mpf/framework/lime.php -e preprod -a mapetiteferme selling/cron/clean
+47 5 * * * php /var/www/mpf/framework/lime.php -e preprod -a mapetiteferme dev/cron/error

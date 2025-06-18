@@ -1,0 +1,40 @@
+Account:
+  id: serial32
+  bankId: text8(1, null)
+  accountId: text8(1, null)
+  label: ?text8(1, null)
+  isDefault: bool = FALSE
+  UNIQUE: [
+    ["accountId"]
+  ]
+
+Cashflow:
+  id: serial32
+  date: ?date(PHP(toDate('NOW - 2 YEARS')), PHP(toDate('NOW + 1 YEARS')))
+  type: enum(DEBIT, CREDIT, OTHER)
+  amount: decimal(8, 2)
+  fitid: ?text8(1, null)
+  name: ?text24(1, null)
+  memo: ?text8(1, null) @collate(general)
+  account: bank\Account
+  import: bank\Import
+  status: enum(WAITING, ALLOCATED) = WAITING
+  document: ?text8(1, null) @collate(general)
+  createdAt: datetime = SPECIAL(now)
+  updatedAt: datetime = SPECIAL(now)
+  createdBy: user\User = SPECIAL(user)
+  UNIQUE: [
+    ["fitid"]
+  ]
+
+Import:
+  id: serial32
+  filename: text8(1, null)
+  startDate: datetime
+  endDate: datetime
+  result: json = PHP([])
+  status: enum(PROCESSING, FULL, PARTIAL, NONE, ERROR)
+  account: bank\Account
+  createdAt: datetime = SPECIAL(now)
+  processedAt: ?datetime
+  createdBy: user\User = SPECIAL(user)

@@ -1,0 +1,22 @@
+div.admin-navigation > * {
+	padding: 0.75rem;
+	border-left: 1px solid #f0f0f0;
+	border-right: 1px solid #f0f0f0;
+	border-top: 1px solid #f0f0f0;
+}
+
+div.admin-navigation > *:first-child {
+	background-color: #fafafa;
+	border-top-left-radius: 3px;
+	border-top-right-radius: 3px;
+}
+
+div.admin-navigation > *:not(:first-child) {
+	background-color: white;
+}
+
+div.admin-navigation > *:last-child {
+	border-bottom-left-radius: 3px;
+	border-bottom-right-radius: 3px;
+	border-bottom: 1px solid #f0f0f0;
+}

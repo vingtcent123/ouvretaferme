@@ -1,0 +1,7 @@
+.lettering-details {
+	width: calc(100vw - 2rem);
+	max-width: 400px;
+	background: linear-gradient(to bottom, var(--background) 0%, #fff 50%, #fff 100%);
+	border-radius: var(--radius);
+	padding: 1rem;
+}

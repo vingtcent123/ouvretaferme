@@ -1,0 +1,14 @@
+Media:
+  id: serial32
+  user: ?user\User = SPECIAL(user)
+  updatedAt: datetime = SPECIAL(now)
+  type: enum(PHP(\Setting::get('media\images')))
+  status: enum(ACTIVE, SEARCHING, DELETED) = ACTIVE
+  hash: textFixed(20, 20) @charset(ascii)
+  INDEX: [
+    ["status", "updatedAt"]
+  ]
+  UNIQUE: [
+    ["type", "hash"]
+  ]
+

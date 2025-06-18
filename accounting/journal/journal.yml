@@ -1,0 +1,56 @@
+Lettering:
+  id: serial32
+  credit: journal\Operation
+  debit: journal\Operation
+  code: text8(1, null)
+  amount: decimal(8, 2)
+  createdAt: datetime = SPECIAL(now)
+  INDEX: [
+    ["credit"],
+    ["debit"]
+  ]
+
+Operation:
+  id: serial32
+  number: ?int32(0, null)
+  journalCode: ?enum(ACH, VEN, BAN, OD)
+  # Compte concerné par l'opération
+  account: accounting\Account
+  accountLabel: text8(1, null) @collate(general)
+  thirdParty: ?journal\ThirdParty
+  date: date(PHP(toDate('NOW - 2 YEARS')), PHP(toDate('NOW + 1 YEARS')))
+  # Libellé de l'opération
+  description: text8(1, null) @collate(general)
+  document: ?text8(1, null) @collate(general)
+  documentDate: ?date
+  # Une opération est toujours HT
+  amount: decimal(8, 2)
+  type: enum(DEBIT, CREDIT)
+  cashflow: ?bank\Cashflow
+  vatRate: decimal(5, 2) = 0.00
+  vatAccount: ?accounting\Account
+  # Opération à laquelle celle-ci est liée (ex: opération de TVA reliée à une autre opération)
+  operation: ?journal\Operation
+  # Immobilisation à laquelle cette opération est liée (obligatoire pour une classe 2)
+  asset: ?asset\Asset
+  comment: ?text8(1, null)
+  paymentDate: ?date
+  paymentMode: ?enum(TRANSFER, CHEQUE, CASH, CREDIT_CARD, DIRECT_DEBIT)
+  # Lettrage : null = non lettrée, partial = partiellement lettrée, total = soldée
+  letteringStatus: ?enum(PARTIAL, TOTAL)
+  createdAt: datetime = SPECIAL(now)
+  updatedAt: datetime = SPECIAL(now)
+  createdBy: ?user\User = SPECIAL(user)
+  INDEX: [
+    ["document"],
+    ["cashflow"]
+  ]
+
+ThirdParty:
+  id: serial32
+  name: text8(1, null) @collate(general)
+  clientAccountLabel: ?text8(1, null) @collate(general)
+  supplierAccountLabel: ?text8(1, null) @collate(general)
+  UNIQUE: [
+    ["name"]
+  ]

@@ -1,0 +1,29 @@
+Asset:
+  id: serial32
+  account: accounting\Account
+  accountLabel: text8(1, null) @collate(general)
+  # Valeur d'acquisition
+  value: decimal(8, 2)
+  description: text8(1, null) @collate(general)
+  type: enum(LINEAR, WITHOUT, DEGRESSIVE)
+  # Date d'achat
+  acquisitionDate: date
+  # Date de mise en service (= début de l'amortissement)
+  startDate: date
+  # Date de fin d'amortissement (calculé)
+  endDate: date
+  # Durée en années
+  duration: int8(0, null)
+  status: enum(ONGOING, SOLD, SCRAPPED, ENDED) = ONGOING
+  createdAt: datetime = SPECIAL(now)
+  updatedAt: datetime = SPECIAL(now)
+  createdBy: user\User = SPECIAL(user)
+
+Depreciation:
+  id: serial32
+  asset: asset\Asset
+  amount: decimal(8, 2)
+  type: enum(ECONOMIC, EXCESS)
+  date: date = SPECIAL(now)
+  financialYear: accounting\FinancialYear
+  createdAt: datetime = SPECIAL(now)

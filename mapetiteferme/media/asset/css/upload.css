@@ -1,0 +1,196 @@
+body[data-touch="no"] .media-upload-capture {
+	display: none;
+}
+
+.media-image-upload {
+	width: 100%;
+	height: 100%;
+	font-size: 2rem;
+	border-radius: inherit;
+	color: white;
+	position: relative;
+}
+
+.media-image-content {
+	width: 100%;
+	height: 100%;
+}
+
+.media-image-action {
+	position: absolute;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	border-radius: inherit;
+}
+
+.media-image-action > a {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	line-height: 1;
+	width: 100%;
+	height: 100%;
+	position: relative;
+	background-color: rgba(0, 0, 0, 0.25);
+	border-radius: inherit;
+	transition: all 0.5s;
+	color: white;
+}
+
+.media-image-action:hover > a {
+	background-color: rgba(0, 0, 0, 0.5);
+}
+
+.media-image-upload:not(.media-image-upload-empty) .media-image-action:not(:hover) > a {
+	opacity: 0;
+}
+
+
+.disabled {
+	color: #bbb;
+}
+
+.message-info {
+	color: #bbb;
+}
+
+div.progress-container {
+	width: 200px;
+	height: 2rem;
+	position: relative;
+}
+
+div.progress-container + div.progress-container {
+	margin-top: 1rem;
+}
+
+div.progress-container div.progress {
+	position: absolute;
+	left: 0;
+	bottom: 0;
+	right: 0;
+	top: 0;
+	border-radius: var(--radius);
+	background-color: rgba(0, 0, 0, 0.1);
+}
+
+div.progress-container div.progress-bar {
+	height: 100%;
+	width: 0;
+	background: var(--secondary);
+	transition: width 0.5s;
+	border-radius: var(--radius);
+}
+
+div.progress-container div.progress-state {
+	color: white;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	line-height: 1;
+	position: absolute;
+	left: 0;
+	bottom: 0;
+	right: 0;
+	top: 0;
+	font-weight: bold;
+}
+
+#progress-media {
+	position: fixed;
+	background-color: rgba(0, 0, 0, 0.5);
+	top: 0;
+	bottom: 0;
+	right: 0;
+	left: 0;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	z-index: 10000;
+}
+
+/* Image resizing */
+div.resize-preview {
+	overflow: hidden;
+	position: relative;
+	margin: 0 auto;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+div.resize-window {
+	position: absolute;
+	border: 2px solid white;
+	box-shadow: 0 0 0 1000px rgba(240, 240, 240, 0.66);
+	z-index: 5;
+	pointer-events: none;
+}
+
+div.resize-window-circle {
+	border-radius: 50%;
+}
+
+div.resize-drag-container {
+	z-index: 10;
+	position: absolute;
+	pointer-events: none;
+}
+
+div.resize-zoom {
+	max-width: 500px;
+	display: none;
+	margin: 1rem auto 0.5rem auto;
+	align-items: center;
+}
+
+div.resize-zoom > div {
+	margin: 0 0.6rem;
+}
+
+div.resize-zoom > div.resize-icon {
+	color: var(--muted);
+	font-size: 1.2rem;
+}
+
+div.resize-zoom > div.resize-slider {
+	flex-grow: 1;
+}
+
+div.resize-warning {
+	color: var(--warning);
+	font-size: 0.95rem;
+	text-align: center;
+	margin-top: 1rem;
+}
+
+canvas.resize-canvas {
+	position: absolute;
+	display: none;
+}
+
+#upload-progress {
+	position: fixed;
+	padding: 0.5rem 1rem;
+	top: 1rem;
+	left: 1rem;
+	background: #008bc0;
+	color: white;
+	font-weight: bold;
+	z-index: 10000;
+}
+
+#upload-progress[data-n="1"] {
+	display: none;
+}
+
+#upload-progress a {
+	text-decoration: underline;
+	color: inherit;
+}
