@@ -410,7 +410,11 @@ class CustomerLib extends CustomerCrud {
 
 		Customer::model()->beginTransaction();
 
-		Customer::model()->delete($e);
+			Grid::model()
+				->whereCustomer($e)
+				->delete();
+
+			Customer::model()->delete($e);
 
 		Customer::model()->commit();
 
