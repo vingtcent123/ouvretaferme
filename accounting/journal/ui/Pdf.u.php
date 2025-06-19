@@ -153,7 +153,7 @@ class PdfUi {
 	public function getBook(
 		\company\Company $eCompany,
 		\Collection $cOperation,
-		\accounting\FinancialYear $eFinancialYear,
+		\account\FinancialYear $eFinancialYear,
 	): string {
 
 
@@ -191,7 +191,7 @@ class PdfUi {
 	public function getVat(
 		\company\Company $eCompany,
 		\Collection $cccOperation,
-		\accounting\FinancialYear $eFinancialYear,
+		\account\FinancialYear $eFinancialYear,
 	): string {
 
 

@@ -5,7 +5,7 @@ Account:
   description: text8(1, null) @collate(general)
   visible: bool = TRUE
   custom: bool = FALSE
-  vatAccount: ?accounting\Account
+  vatAccount: ?account\Account
   vatRate: ?decimal(5, 2) = 0.00
   createdAt: datetime = SPECIAL(now)
   createdBy: user\User = SPECIAL(user)

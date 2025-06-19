@@ -163,7 +163,7 @@ class OperationUi {
 
 	}
 
-	public function create(\company\Company $eCompany, Operation $eOperation, \accounting\FinancialYear $eFinancialYear): \Panel {
+	public function create(\company\Company $eCompany, Operation $eOperation, \account\FinancialYear $eFinancialYear): \Panel {
 
 		\Asset::css('journal', 'operation.css');
 		\Asset::js('journal', 'operation.js');
@@ -280,7 +280,7 @@ class OperationUi {
 		\company\Company $eCompany,
 		\util\FormUi $form,
 		Operation $eOperation,
-		\accounting\FinancialYear $eFinancialYear,
+		\account\FinancialYear $eFinancialYear,
 		?string $suffix,
 		array $defaultValues,
 		array $disabled,
@@ -557,7 +557,7 @@ class OperationUi {
 	public static function getCreateGrid(
 		\company\Company $eCompany,
 		Operation $eOperation,
-		\accounting\FinancialYear $eFinancialYear,
+		\account\FinancialYear $eFinancialYear,
 		int $index,
 		\util\FormUi $form,
 		array $defaultValues,
@@ -642,7 +642,7 @@ class OperationUi {
 					];
 				};
 				$d->group += ['wrapper' => 'account'];
-				new \accounting\AccountUi()->query($d, GET('company', '?int'));
+				new \account\AccountUi()->query($d, GET('company', '?int'));
 				break;
 
 			case 'accountLabel':
@@ -651,7 +651,7 @@ class OperationUi {
 					];
 				};
 				$d->group += ['wrapper' => 'accountLabel'];
-				new \accounting\AccountUi()->queryLabel($d, GET('company', '?int'), query: GET('query'));
+				new \account\AccountUi()->queryLabel($d, GET('company', '?int'), query: GET('query'));
 				break;
 
 			case 'vatValue' :
@@ -666,7 +666,7 @@ class OperationUi {
 				$d->append = function(\util\FormUi $form, Operation $e) {
 					return $form->addon(s("€"));
 				};
-				$d->before = fn(\util\FormUi $form, $e) => $e->isQuick() && (int)substr($e['accountLabel'], 0, 3) !== \Setting::get('accounting\vatClass') ? \util\FormUi::info(s("Attention, pensez à répercuter ce changement sur la ligne de TVA si elle existe")) : '';
+				$d->before = fn(\util\FormUi $form, $e) => $e->isQuick() && (int)substr($e['accountLabel'], 0, 3) !== \Setting::get('account\vatClass') ? \util\FormUi::info(s("Attention, pensez à répercuter ce changement sur la ligne de TVA si elle existe")) : '';
 				break;
 
 

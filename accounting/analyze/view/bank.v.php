@@ -7,8 +7,8 @@ new AdaptativeView('index', function($data, CompanyTemplate $t) {
 
 	$t->mainTitle = new \analyze\AnalyzeUi()->getTitle($data->eCompany);
 
-	$t->mainYear = new \accounting\FinancialYearUi()->getFinancialYearTabs(
-		function(\accounting\FinancialYear $eFinancialYear) use ($data) {
+	$t->mainYear = new \account\FinancialYearUi()->getFinancialYearTabs(
+		function(\account\FinancialYear $eFinancialYear) use ($data) {
 			return \company\CompanyUi::urlAnalyze($data->eCompany).'/bank?financialYear='.$eFinancialYear['id'];
 		},
 		$data->cFinancialYear,

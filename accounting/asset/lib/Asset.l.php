@@ -12,8 +12,8 @@ class AssetLib extends \asset\AssetCrud {
 
 	public static function isTangibleAsset(string $account): bool {
 
-		foreach(\Setting::get('accounting\tangibleAssetsClasses') as $tangibleAssetsClass) {
-			if(\accounting\ClassLib::isFromClass($account, $tangibleAssetsClass) === TRUE) {
+		foreach(\Setting::get('account\tangibleAssetsClasses') as $tangibleAssetsClass) {
+			if(\account\ClassLib::isFromClass($account, $tangibleAssetsClass) === TRUE) {
 				return TRUE;
 			};
 		}
@@ -24,20 +24,20 @@ class AssetLib extends \asset\AssetCrud {
 
 	public static function isIntangibleAsset(string $account): bool {
 
-		return \accounting\ClassLib::isFromClass($account, \Setting::get('accounting\intangibleAssetsClass'));
+		return \account\ClassLib::isFromClass($account, \Setting::get('account\intangibleAssetsClass'));
 
 	}
 
 	public static function isSubventionAsset(string $account): bool {
 
-		return \accounting\ClassLib::isFromClass($account, \Setting::get('accounting\subventionAssetClass'));
+		return \account\ClassLib::isFromClass($account, \Setting::get('account\subventionAssetClass'));
 
 	}
 
 	public static function depreciationClassByAssetClass(string $class): string {
 
 		if(self::isSubventionAsset($class) === TRUE) {
-			return \Setting::get('accounting\subventionDepreciationAssetClass');
+			return \Setting::get('account\subventionDepreciationAssetClass');
 		}
 
 		return mb_substr($class, 0, 1).'8'.mb_substr($class, 1);
@@ -50,44 +50,44 @@ class AssetLib extends \asset\AssetCrud {
 
 	}
 
-	public static function getAcquisitions(\accounting\FinancialYear $eFinancialYear, string $type): \Collection {
+	public static function getAcquisitions(\account\FinancialYear $eFinancialYear, string $type): \Collection {
 
 		return Asset::model()
 			->select(Asset::getSelection())
 			->whereAcquisitionDate('>=', $eFinancialYear['startDate'])
 			->whereAcquisitionDate('<=', $eFinancialYear['endDate'])
 			->whereAccountLabel('LIKE', match($type) {
-				'asset' => \Setting::get('accounting\assetClass').'%',
-				'subvention' => \Setting::get('accounting\subventionAssetClass').'%',
+				'asset' => \Setting::get('account\assetClass').'%',
+				'subvention' => \Setting::get('account\subventionAssetClass').'%',
 			})
 			->sort(['accountLabel' => SORT_ASC, 'startDate' => SORT_ASC])
 			->getCollection();
 
 	}
 
-	public static function getSubventionsByFinancialYear(\accounting\FinancialYear $eFinancialYear): \Collection {
+	public static function getSubventionsByFinancialYear(\account\FinancialYear $eFinancialYear): \Collection {
 
 		return Asset::model()
       ->select(
         Asset::getSelection()
-        + ['account' => \accounting\Account::getSelection()]
+        + ['account' => \account\Account::getSelection()]
       )
       ->whereStartDate('<=', $eFinancialYear['endDate'])
-			->whereAccountLabel('LIKE', \Setting::get('accounting\subventionAssetClass').'%')
+			->whereAccountLabel('LIKE', \Setting::get('account\subventionAssetClass').'%')
       ->sort(['accountLabel' => SORT_ASC, 'startDate' => SORT_ASC])
       ->getCollection();
 	}
 
-	public static function getAssetsByFinancialYear(\accounting\FinancialYear $eFinancialYear): \Collection {
+	public static function getAssetsByFinancialYear(\account\FinancialYear $eFinancialYear): \Collection {
 
 		return Asset::model()
 			->select(
 				Asset::getSelection()
-				+ ['account' => \accounting\Account::getSelection()]
+				+ ['account' => \account\Account::getSelection()]
 			)
 			->whereStartDate('<=', $eFinancialYear['endDate'])
 			->whereEndDate('>=', $eFinancialYear['startDate'])
-			->whereAccountLabel('LIKE', \Setting::get('accounting\assetClass').'%')
+			->whereAccountLabel('LIKE', \Setting::get('account\assetClass').'%')
 			->sort(['accountLabel' => SORT_ASC, 'startDate' => SORT_ASC])
 			->getCollection();
 
@@ -98,9 +98,9 @@ class AssetLib extends \asset\AssetCrud {
 		$eOperation->expects(['accountLabel']);
 
 		if(
-			(int)mb_substr($eOperation['accountLabel'], 0, 1) !== \Setting::get('accounting\assetClass')
+			(int)mb_substr($eOperation['accountLabel'], 0, 1) !== \Setting::get('account\assetClass')
 			and
-			(int)mb_substr($eOperation['accountLabel'], 0, 2) !== \Setting::get('accounting\subventionAssetClass')
+			(int)mb_substr($eOperation['accountLabel'], 0, 2) !== \Setting::get('account\subventionAssetClass')
 		) {
 			return NULL;
 		}
@@ -147,7 +147,7 @@ class AssetLib extends \asset\AssetCrud {
 				Asset::getSelection()
 				+ [
 					'cDepreciation' => Depreciation::model()
-						->select(['amount', 'date', 'type', 'financialYear' => \accounting\FinancialYear::getSelection()])
+						->select(['amount', 'date', 'type', 'financialYear' => \account\FinancialYear::getSelection()])
 						->sort(['date' => SORT_ASC])
 						->delegateCollection('asset'),
 				]
@@ -159,13 +159,13 @@ class AssetLib extends \asset\AssetCrud {
 
 	}
 
-	public static function subventionReversal(\accounting\FinancialYear $eFinancialYear): void {
+	public static function subventionReversal(\account\FinancialYear $eFinancialYear): void {
 
 		\journal\Operation::model()->beginTransaction();
 
 		$cAsset = self::getSubventionsByFinancialYear($eFinancialYear);
 
-		$eAccountSubventionAssetDepreciation = \accounting\AccountLib::getByClass(\Setting::get('accounting\subventionAssetsDepreciationChargeClass'));
+		$eAccountSubventionAssetDepreciation = \account\AccountLib::getByClass(\Setting::get('account\subventionAssetsDepreciationChargeClass'));
 
 		foreach($cAsset as $eAsset) {
 
@@ -196,7 +196,7 @@ class AssetLib extends \asset\AssetCrud {
 				'type' => \journal\OperationElement::CREDIT,
 				'amount' => $eAsset['value'],
 				'account' => $eAccountSubventionAssetDepreciation,
-				'accountLabel' => \accounting\ClassLib::pad($eAccountSubventionAssetDepreciation['class']),
+				'accountLabel' => \account\ClassLib::pad($eAccountSubventionAssetDepreciation['class']),
 				'description' => $eAsset['description'],
 				'document' => new AssetUi()->getAssetShortTranslation(),
 				'documentDate' => new \Sql('NOW()'),
@@ -218,7 +218,7 @@ class AssetLib extends \asset\AssetCrud {
 
 	}
 
-	public static function depreciateAll(\accounting\FinancialYear $eFinancialYear): void {
+	public static function depreciateAll(\account\FinancialYear $eFinancialYear): void {
 
 		Asset::model()->beginTransaction();
 
@@ -240,7 +240,7 @@ class AssetLib extends \asset\AssetCrud {
 	 * @param Asset $eAsset
 	 * @return void
 	 */
-	public static function depreciate(\accounting\FinancialYear $eFinancialYear, Asset $eAsset, ?string $endDate): void {
+	public static function depreciate(\account\FinancialYear $eFinancialYear, Asset $eAsset, ?string $endDate): void {
 
 		if($endDate === NULL) {
 			$endDate = $eFinancialYear['endDate'];
@@ -250,17 +250,17 @@ class AssetLib extends \asset\AssetCrud {
 
 		// Dotation aux amortissements
 		if(self::isSubventionAsset($eAsset['accountLabel'])) {
-			$depreciationChargeClass = \Setting::get('accounting\subventionAssetsDepreciationChargeClass');
+			$depreciationChargeClass = \Setting::get('account\subventionAssetsDepreciationChargeClass');
 		} else if(self::isIntangibleAsset($eAsset['accountLabel'])) {
-			$depreciationChargeClass = \Setting::get('accounting\intangibleAssetsDepreciationChargeClass');
+			$depreciationChargeClass = \Setting::get('account\intangibleAssetsDepreciationChargeClass');
 		} else {
-			$depreciationChargeClass = \Setting::get('accounting\tangibleAssetsDepreciationChargeClass');
+			$depreciationChargeClass = \Setting::get('account\tangibleAssetsDepreciationChargeClass');
 		}
 
-		$eAccountDepreciationCharge = \accounting\AccountLib::getByClass($depreciationChargeClass);
+		$eAccountDepreciationCharge = \account\AccountLib::getByClass($depreciationChargeClass);
 		$values = [
 			'account' => $eAccountDepreciationCharge['id'],
-			'accountLabel' => \accounting\ClassLib::pad($eAccountDepreciationCharge['class']),
+			'accountLabel' => \account\ClassLib::pad($eAccountDepreciationCharge['class']),
 			'date' => $endDate,
 			'description' => $eAccountDepreciationCharge['description'],
 			'amount' => $depreciationValue,
@@ -301,11 +301,11 @@ class AssetLib extends \asset\AssetCrud {
 	private static function getDepreciationOperationValues(Asset $eAsset, string $date, float $amount): array {
 
 		$depreciationClass = self::depreciationClassByAssetClass(substr($eAsset['accountLabel'], 0, 3));
-		$eAccountDepreciation = \accounting\AccountLib::getByClass(trim($depreciationClass, '0'));
+		$eAccountDepreciation = \account\AccountLib::getByClass(trim($depreciationClass, '0'));
 
 		return [
 			'account' => $eAccountDepreciation['id'],
-			'accountLabel' => \accounting\ClassLib::pad($eAccountDepreciation['class']),
+			'accountLabel' => \account\ClassLib::pad($eAccountDepreciation['class']),
 			'date' => $date,
 			'description' => $eAccountDepreciation['description'],
 			'amount' => $amount,
@@ -317,7 +317,7 @@ class AssetLib extends \asset\AssetCrud {
 
 	public static function isDepreciable(Asset $eAsset): bool {
 
-		return substr($eAsset['accountLabel'], 0, mb_strlen(\Setting::get('accounting\nonDepreciableAssetClass'))) !== \Setting::get('accounting\nonDepreciableAssetClass');
+		return substr($eAsset['accountLabel'], 0, mb_strlen(\Setting::get('account\nonDepreciableAssetClass'))) !== \Setting::get('account\nonDepreciableAssetClass');
 
 	}
 
@@ -348,7 +348,7 @@ class AssetLib extends \asset\AssetCrud {
 			Asset::fail('date.check');
 		}
 
-		$eFinancialYear = \accounting\FinancialYearLib::getOpenFinancialYearByDate($date);
+		$eFinancialYear = \account\FinancialYearLib::getOpenFinancialYearByDate($date);
 		if($eFinancialYear->exists() === FALSE) {
 			throw new \NotExpectedAction('Open FinancialYear has not been found according to date "'.$date.'"');
 		}
@@ -371,10 +371,10 @@ class AssetLib extends \asset\AssetCrud {
 			Asset::model()
 				->select(Asset::getSelection() + [
 						'cDepreciation' => Depreciation::model()
-							->select(['amount', 'date', 'type', 'financialYear' => \accounting\FinancialYear::getSelection()])
+							->select(['amount', 'date', 'type', 'financialYear' => \account\FinancialYear::getSelection()])
 							->sort(['date' => SORT_ASC])
 							->delegateCollection('asset'),
-						'account' => \accounting\Account::getSelection(),
+						'account' => \account\Account::getSelection(),
 					])
 				->whereId($eAsset['id'])
 				->get($eAsset);
@@ -392,7 +392,7 @@ class AssetLib extends \asset\AssetCrud {
 		// Sortir l'actif (immo : 2x)
 		$values = [
 			'account' => $eAsset['account']['id'],
-			'accountLabel' => \accounting\ClassLib::pad($eAsset['accountLabel']),
+			'accountLabel' => \account\ClassLib::pad($eAsset['accountLabel']),
 			'date' => $date,
 			'description' => $eAsset['description'],
 			'amount' => $eAsset['value'],
@@ -411,10 +411,10 @@ class AssetLib extends \asset\AssetCrud {
 		}
 
 		// Sortir l'actif (charge exc. de la VNC 675) : perte de l'actif
-		$eAccountDisposal = \accounting\AccountLib::getByClass(\Setting::get('accounting\disposalAssetValueClass'));
+		$eAccountDisposal = \account\AccountLib::getByClass(\Setting::get('account\disposalAssetValueClass'));
 		$values = [
 			'account' => $eAccountDisposal['id'],
-			'accountLabel' => \accounting\ClassLib::pad($eAccountDisposal['class']),
+			'accountLabel' => \account\ClassLib::pad($eAccountDisposal['class']),
 			'date' => $date,
 			'description' => $eAccountDisposal['description'],
 			'amount' => $netAccountingValue,
@@ -427,10 +427,10 @@ class AssetLib extends \asset\AssetCrud {
 		if($eAsset['status'] === AssetElement::SOLD) {
 
 			// b. Création de l'écriture de la vente 775
-			$eAccountProduct = \accounting\AccountLib::getByClass(\Setting::get('accounting\productAssetValueClass'));
+			$eAccountProduct = \account\AccountLib::getByClass(\Setting::get('account\productAssetValueClass'));
 			$values = [
 				'account' => $eAccountProduct['id'],
-				'accountLabel' => \accounting\ClassLib::pad($eAccountProduct['class']),
+				'accountLabel' => \account\ClassLib::pad($eAccountProduct['class']),
 				'date' => $date,
 				'description' => $eAccountProduct['description'],
 				'amount' => $amount,
@@ -442,15 +442,15 @@ class AssetLib extends \asset\AssetCrud {
 			// c. Créer l'écriture débit compte banque (512) OU le débit créance sur cession (462)
 			if($createReceivable === TRUE) {
 
-				$receivablesOnAssetDisposalClass = \Setting::get('accounting\receivablesOnAssetDisposalClass');
-				$debitAccountLabel = \accounting\ClassLib::pad($receivablesOnAssetDisposalClass);
-				$eAccountDebit = \accounting\AccountLib::getByClass($receivablesOnAssetDisposalClass);
+				$receivablesOnAssetDisposalClass = \Setting::get('account\receivablesOnAssetDisposalClass');
+				$debitAccountLabel = \account\ClassLib::pad($receivablesOnAssetDisposalClass);
+				$eAccountDebit = \account\AccountLib::getByClass($receivablesOnAssetDisposalClass);
 
 			} else {
 
-				$bankClass = \Setting::get('accounting\bankAccountClass');
-				$debitAccountLabel = \accounting\ClassLib::pad($bankClass);
-				$eAccountDebit = \accounting\AccountLib::getByClass($bankClass);
+				$bankClass = \Setting::get('account\bankAccountClass');
+				$debitAccountLabel = \account\ClassLib::pad($bankClass);
+				$eAccountDebit = \account\AccountLib::getByClass($bankClass);
 
 			}
 

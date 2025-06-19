@@ -15,7 +15,7 @@ Operation:
   number: ?int32(0, null)
   journalCode: ?enum(ACH, VEN, BAN, OD)
   # Compte concerné par l'opération
-  account: accounting\Account
+  account: account\Account
   accountLabel: text8(1, null) @collate(general)
   thirdParty: ?journal\ThirdParty
   date: date(PHP(toDate('NOW - 2 YEARS')), PHP(toDate('NOW + 1 YEARS')))
@@ -28,7 +28,7 @@ Operation:
   type: enum(DEBIT, CREDIT)
   cashflow: ?bank\Cashflow
   vatRate: decimal(5, 2) = 0.00
-  vatAccount: ?accounting\Account
+  vatAccount: ?account\Account
   # Opération à laquelle celle-ci est liée (ex: opération de TVA reliée à une autre opération)
   operation: ?journal\Operation
   # Immobilisation à laquelle cette opération est liée (obligatoire pour une classe 2)

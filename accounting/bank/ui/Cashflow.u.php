@@ -7,7 +7,7 @@ class CashflowUi {
 		\Asset::js('bank', 'cashflow.js');
 	}
 
-	public function getSearch(\Search $search, \accounting\FinancialYear $eFinancialYearSelected): string {
+	public function getSearch(\Search $search, \account\FinancialYear $eFinancialYearSelected): string {
 
 		$h = '<div id="cashflow-search" class="util-block-search stick-xs '.($search->empty(['ids', 'status']) ? 'hide' : '').'">';
 
@@ -73,7 +73,7 @@ class CashflowUi {
 	public function getCashflow(
 		\company\Company $eCompany,
 		\Collection $cCashflow,
-		\accounting\FinancialYear $eFinancialYearSelected,
+		\account\FinancialYear $eFinancialYearSelected,
 		Import $eImport,
 		\Search $search,
 	): string {
@@ -89,7 +89,7 @@ class CashflowUi {
 			}
 			return '<div class="util-info">'.
 				s("Aucun import bancaire n'a été réalisé pour l'exercice {year} (<link>importer</link>)", [
-					'year' => \accounting\FinancialYearUi::getYear($eFinancialYearSelected),
+					'year' => \account\FinancialYearUi::getYear($eFinancialYearSelected),
 					'link' => '<a href="'.\company\CompanyUi::urlBank($eCompany).'/import">',
 				]).
 			'</div>';
@@ -197,7 +197,7 @@ class CashflowUi {
 
 					$h .= '<td>';
 							if(
-								$eFinancialYearSelected['status'] === \accounting\FinancialYear::OPEN
+								$eFinancialYearSelected['status'] === \account\FinancialYear::OPEN
 								&& $eCashflow['date'] <= $eFinancialYearSelected['endDate']
 								&& $eCashflow['date'] >= $eFinancialYearSelected['startDate']
 							) {
@@ -313,7 +313,7 @@ class CashflowUi {
 
 	}
 
-	public static function getAllocate(\company\Company $eCompany, \accounting\FinancialYear $eFinancialYear, Cashflow $eCashflow): \Panel {
+	public static function getAllocate(\company\Company $eCompany, \account\FinancialYear $eFinancialYear, Cashflow $eCashflow): \Panel {
 
 		\Asset::js('journal', 'operation.js');
 		\Asset::js('bank', 'cashflow.js');
@@ -334,7 +334,7 @@ class CashflowUi {
 			]
 		);
 
-		$eOperation = new \journal\Operation(['account' => new \accounting\Account()]);
+		$eOperation = new \journal\Operation(['account' => new \account\Account()]);
 		$index = 0;
 		$defaultValues = [
 			'date' => $eCashflow['date'],
@@ -417,7 +417,7 @@ class CashflowUi {
 
 	}
 
-	public static function addAllocate(\company\Company $eCompany, \journal\Operation $eOperation, \accounting\FinancialYear $eFinancialYear, Cashflow $eCashflow, int $index): string {
+	public static function addAllocate(\company\Company $eCompany, \journal\Operation $eOperation, \account\FinancialYear $eFinancialYear, Cashflow $eCashflow, int $index): string {
 
 		$form = new \util\FormUi();
 		$form->open('bank-cashflow-allocate');
@@ -460,7 +460,7 @@ class CashflowUi {
 		);
 	}
 
-	public function getAttach(\company\Company $eCompany, \accounting\FinancialYear $eFinancialYear, Cashflow $eCashflow, \Collection $cOperation): \Panel {
+	public function getAttach(\company\Company $eCompany, \account\FinancialYear $eFinancialYear, Cashflow $eCashflow, \Collection $cOperation): \Panel {
 
 		\Asset::js('bank', 'cashflow.js');
 		$h = CashflowUi::getCashflowHeader($eCashflow);

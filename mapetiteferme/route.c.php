@@ -57,15 +57,15 @@ Route::register([
 	'HEAD' => [
 	],
 	'POST' => [
-		'/@module/accounting/Account/doQuick' => [
-			'request' => 'accounting/account',
+		'/@module/account/Account/doQuick' => [
+			'request' => 'account/account',
 			'priority' => 5,
-			'route' => ['@module', 'accounting', 'Account', 'doQuick'],
+			'route' => ['@module', 'account', 'Account', 'doQuick'],
 		],
-		'/@module/accounting/Account/quick' => [
-			'request' => 'accounting/account',
+		'/@module/account/Account/quick' => [
+			'request' => 'account/account',
 			'priority' => 5,
-			'route' => ['@module', 'accounting', 'Account', 'quick'],
+			'route' => ['@module', 'account', 'Account', 'quick'],
 		],
 		'/@module/bank/BankAccount/doQuick' => [
 			'request' => 'bank/account',

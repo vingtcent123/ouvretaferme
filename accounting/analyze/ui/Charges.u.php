@@ -8,7 +8,7 @@ class ChargesUi {
 		\Asset::js('analyze', 'analyze.js');
 	}
 
-	public function get(\company\Company $eCompany, \accounting\FinancialYear $eFinancialYear, \Collection $cOperation, \Collection $cAccount): string {
+	public function get(\company\Company $eCompany, \account\FinancialYear $eFinancialYear, \Collection $cOperation, \Collection $cAccount): string {
 
 		if($cOperation->empty() === TRUE) {
 
@@ -53,7 +53,7 @@ class ChargesUi {
 		return $h;
 	}
 
-	protected  function formatAccountLabel(\accounting\Account $eAccount): string {
+	protected  function formatAccountLabel(\account\Account $eAccount): string {
 		return encode(mb_ucfirst(mb_strtolower($eAccount['description'])));
 	}
 

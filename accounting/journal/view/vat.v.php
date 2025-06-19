@@ -8,8 +8,8 @@ new AdaptativeView('index', function($data, CompanyTemplate $t) {
 
 	$t->mainTitle = new \journal\VatUi()->getTitle($data->eCompany, $data->eFinancialYear);
 
-	$t->mainYear = new \accounting\FinancialYearUi()->getFinancialYearTabs(
-		function(\accounting\FinancialYear $eFinancialYear) use ($data) {
+	$t->mainYear = new \account\FinancialYearUi()->getFinancialYearTabs(
+		function(\account\FinancialYear $eFinancialYear) use ($data) {
 			return \company\CompanyUi::urlJournal($data->eCompany).'/vat?financialYear='.$eFinancialYear['id'].'&'.http_build_query($data->search->getFiltered(['financialYear']));
 		},
 		$data->cFinancialYear,

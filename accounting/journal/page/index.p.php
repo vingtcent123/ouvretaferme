@@ -48,7 +48,7 @@ new Page(function($data) {
 		}
 
 		$data->cOperation = \journal\OperationLib::getAllForJournal($search, $hasSort);
-		$data->cAccount = \accounting\AccountLib::getAll();
+		$data->cAccount = \account\AccountLib::getAll();
 
 		throw new ViewAction($data);
 

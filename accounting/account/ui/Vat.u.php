@@ -1,5 +1,5 @@
 <?php
-namespace accounting;
+namespace account;
 
 /**
  * Alert messages
@@ -16,8 +16,8 @@ class VatUi {
 	public function getVatLabel(string $account): string {
 
 		return match($account) {
-			\Setting::get('accounting\vatBuyClassPrefix') => s("TVA versée"),
-			\Setting::get('accounting\vatSellClassPrefix') => s("TVA / ventes"),
+			\Setting::get('account\vatBuyClassPrefix') => s("TVA versée"),
+			\Setting::get('account\vatSellClassPrefix') => s("TVA / ventes"),
 			default => throw new \NotExpectedAction('Unknown account for Vat Label'),
 		};
 

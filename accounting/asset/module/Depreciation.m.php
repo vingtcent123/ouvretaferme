@@ -44,7 +44,7 @@ class DepreciationModel extends \ModuleModel {
 			'amount' => ['decimal', 'digits' => 8, 'decimal' => 2, 'cast' => 'float'],
 			'type' => ['enum', [\asset\Depreciation::ECONOMIC, \asset\Depreciation::EXCESS], 'cast' => 'enum'],
 			'date' => ['date', 'cast' => 'string'],
-			'financialYear' => ['element32', 'accounting\FinancialYear', 'cast' => 'element'],
+			'financialYear' => ['element32', 'account\FinancialYear', 'cast' => 'element'],
 			'createdAt' => ['datetime', 'cast' => 'string'],
 		]);
 
@@ -54,7 +54,7 @@ class DepreciationModel extends \ModuleModel {
 
 		$this->propertiesToModule += [
 			'asset' => 'asset\Asset',
-			'financialYear' => 'accounting\FinancialYear',
+			'financialYear' => 'account\FinancialYear',
 		];
 
 	}

@@ -73,7 +73,7 @@ Class BalanceLib {
 
 					$formattedData[] = [
 						'type' => 'line',
-						'label' => \accounting\AccountUi::getLabelByAccount($account),
+						'label' => \account\AccountUi::getLabelByAccount($account),
 						'value' => $value,
 						'valueAmort' => $valueAmort,
 						'net' => $net,
@@ -120,9 +120,9 @@ Class BalanceLib {
 
 	}
 
-	public static function getOpeningBalance(\accounting\FinancialYear $eFinancialYear): array {
+	public static function getOpeningBalance(\account\FinancialYear $eFinancialYear): array {
 
-		$eFinancialYearPrevious = \accounting\FinancialYearLib::getPreviousFinancialYear($eFinancialYear);
+		$eFinancialYearPrevious = \account\FinancialYearLib::getPreviousFinancialYear($eFinancialYear);
 
 		if($eFinancialYearPrevious->exists() === FALSE) {
 			return [];
@@ -131,10 +131,10 @@ Class BalanceLib {
 		return self::getSummarizedBalance($eFinancialYearPrevious);
 	}
 
-	public static function getSummarizedBalance(\accounting\FinancialYear $eFinancialYear): array {
+	public static function getSummarizedBalance(\account\FinancialYear $eFinancialYear): array {
 
-		$balanceAssetCategories = \Setting::get('accounting\balanceAssetCategories');
-		$balanceLiabilityCategories = \Setting::get('accounting\balanceLiabilityCategories');
+		$balanceAssetCategories = \Setting::get('account\balanceAssetCategories');
+		$balanceLiabilityCategories = \Setting::get('account\balanceLiabilityCategories');
 
 		$accountLabels = new BalanceUi()->extractLabelsFromCategories($balanceAssetCategories + $balanceLiabilityCategories);
 		$accountLabelsWithDepreciation = self::getAccountLabelsWithDepreciation($accountLabels);
@@ -247,7 +247,7 @@ Class BalanceLib {
 
 					foreach($balanceLines as $balanceLine) {
 
-						$label = $cOperationLabel[$balanceLine['accountLabel']]['account']['description'] ?? \accounting\AccountUi::getLabelByAccount($account);
+						$label = $cOperationLabel[$balanceLine['accountLabel']]['account']['description'] ?? \account\AccountUi::getLabelByAccount($account);
 
 						$value += $balanceLine['amount'];
 						$formattedData[] = [
@@ -265,7 +265,7 @@ Class BalanceLib {
 						$formattedData[] = [
 							'type' => 'line',
 							'accountClass' => $balanceAmortLine['accountLabel'],
-							'label' => \accounting\AccountUi::getLabelByAccount($account),
+							'label' => \account\AccountUi::getLabelByAccount($account),
 							'value' => 0,
 							'valueAmort' => $balanceAmortLine['amount'],
 							'net' => $balanceAmortLine['amount'],
@@ -279,7 +279,7 @@ Class BalanceLib {
 
 						$formattedData[] = [
 							'type' => 'subcategory',
-							'label' => \accounting\AccountUi::getLabelByAccount($account),
+							'label' => \account\AccountUi::getLabelByAccount($account),
 							'value' => $value,
 							'valueAmort' => $amort,
 							'net' => $net,
@@ -329,10 +329,10 @@ Class BalanceLib {
 		return $formattedData;
 	}
 
-	public static function getDetailedBalance(\accounting\FinancialYear $eFinancialYear): array {
+	public static function getDetailedBalance(\account\FinancialYear $eFinancialYear): array {
 
-		$balanceAssetCategories = \Setting::get('accounting\balanceAssetCategories');
-		$balanceLiabilityCategories = \Setting::get('accounting\balanceLiabilityCategories');
+		$balanceAssetCategories = \Setting::get('account\balanceAssetCategories');
+		$balanceLiabilityCategories = \Setting::get('account\balanceLiabilityCategories');
 
 		$accountLabels = new BalanceUi()->extractLabelsFromCategories($balanceAssetCategories + $balanceLiabilityCategories);
 		$accountLabelsWithDepreciation = self::getAccountLabelsWithDepreciation($accountLabels);

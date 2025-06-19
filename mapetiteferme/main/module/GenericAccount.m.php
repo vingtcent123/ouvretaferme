@@ -40,7 +40,7 @@ class GenericAccountModel extends \ModuleModel {
 			'class' => ['text8', 'min' => 1, 'max' => NULL, 'cast' => 'string'],
 			'description' => ['text8', 'min' => 1, 'max' => NULL, 'collate' => 'general', 'cast' => 'string'],
 			'visible' => ['bool', 'cast' => 'bool'],
-			'vatAccount' => ['element32', 'accounting\Account', 'null' => TRUE, 'cast' => 'element'],
+			'vatAccount' => ['element32', 'account\Account', 'null' => TRUE, 'cast' => 'element'],
 			'vatRate' => ['decimal', 'digits' => 5, 'decimal' => 2, 'null' => TRUE, 'cast' => 'float'],
 		]);
 
@@ -49,7 +49,7 @@ class GenericAccountModel extends \ModuleModel {
 		]);
 
 		$this->propertiesToModule += [
-			'vatAccount' => 'accounting\Account',
+			'vatAccount' => 'account\Account',
 		];
 
 		$this->indexConstraints = array_merge($this->indexConstraints, [

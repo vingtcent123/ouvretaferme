@@ -7,7 +7,7 @@ class OverviewUi {
 		\Asset::css('journal', 'journal.css');
 	}
 
-	public function getTitle(\company\Company $eCompany, \accounting\FinancialYear $eFinancialYear): string {
+	public function getTitle(\company\Company $eCompany, \account\FinancialYear $eFinancialYear): string {
 
 		$categories = \company\CompanyUi::getOverviewCategories($eCompany);
 		$selectedView = \Setting::get('main\viewOverview');

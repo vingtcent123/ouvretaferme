@@ -56,7 +56,7 @@ class OperationModel extends \ModuleModel {
 			'id' => ['serial32', 'cast' => 'int'],
 			'number' => ['int32', 'min' => 0, 'max' => NULL, 'null' => TRUE, 'cast' => 'int'],
 			'journalCode' => ['enum', [\journal\Operation::ACH, \journal\Operation::VEN, \journal\Operation::BAN, \journal\Operation::OD], 'null' => TRUE, 'cast' => 'enum'],
-			'account' => ['element32', 'accounting\Account', 'cast' => 'element'],
+			'account' => ['element32', 'account\Account', 'cast' => 'element'],
 			'accountLabel' => ['text8', 'min' => 1, 'max' => NULL, 'collate' => 'general', 'cast' => 'string'],
 			'thirdParty' => ['element32', 'journal\ThirdParty', 'null' => TRUE, 'cast' => 'element'],
 			'date' => ['date', 'min' => toDate('NOW - 2 YEARS'), 'max' => toDate('NOW + 1 YEARS'), 'cast' => 'string'],
@@ -67,7 +67,7 @@ class OperationModel extends \ModuleModel {
 			'type' => ['enum', [\journal\Operation::DEBIT, \journal\Operation::CREDIT], 'cast' => 'enum'],
 			'cashflow' => ['element32', 'bank\Cashflow', 'null' => TRUE, 'cast' => 'element'],
 			'vatRate' => ['decimal', 'digits' => 5, 'decimal' => 2, 'cast' => 'float'],
-			'vatAccount' => ['element32', 'accounting\Account', 'null' => TRUE, 'cast' => 'element'],
+			'vatAccount' => ['element32', 'account\Account', 'null' => TRUE, 'cast' => 'element'],
 			'operation' => ['element32', 'journal\Operation', 'null' => TRUE, 'cast' => 'element'],
 			'asset' => ['element32', 'asset\Asset', 'null' => TRUE, 'cast' => 'element'],
 			'comment' => ['text8', 'min' => 1, 'max' => NULL, 'null' => TRUE, 'cast' => 'string'],
@@ -84,10 +84,10 @@ class OperationModel extends \ModuleModel {
 		]);
 
 		$this->propertiesToModule += [
-			'account' => 'accounting\Account',
+			'account' => 'account\Account',
 			'thirdParty' => 'journal\ThirdParty',
 			'cashflow' => 'bank\Cashflow',
-			'vatAccount' => 'accounting\Account',
+			'vatAccount' => 'account\Account',
 			'operation' => 'journal\Operation',
 			'asset' => 'asset\Asset',
 			'createdBy' => 'user\User',

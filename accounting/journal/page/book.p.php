@@ -13,7 +13,7 @@ new Page(function($data) {
 		$search = new Search(['financialYear' => $data->eFinancialYear]);
 
 		$data->cOperation = \journal\OperationLib::getAllForBook($search);
-		$data->cAccount = \accounting\AccountLib::getAll();
+		$data->cAccount = \account\AccountLib::getAll();
 
 		throw new ViewAction($data);
 

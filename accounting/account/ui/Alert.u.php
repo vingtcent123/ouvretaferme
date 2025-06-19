@@ -1,5 +1,5 @@
 <?php
-namespace accounting;
+namespace account;
 
 /**
  * Alert messages

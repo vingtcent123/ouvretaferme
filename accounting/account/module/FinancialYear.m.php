@@ -1,5 +1,5 @@
 <?php
-namespace accounting;
+namespace account;
 
 abstract class FinancialYearElement extends \Element {
 
@@ -30,9 +30,9 @@ abstract class FinancialYearElement extends \Element {
 
 class FinancialYearModel extends \ModuleModel {
 
-	protected string $module = 'accounting\FinancialYear';
-	protected string $package = 'accounting';
-	protected string $table = 'accountingFinancialYear';
+	protected string $module = 'account\FinancialYear';
+	protected string $package = 'account';
+	protected string $table = 'accountFinancialYear';
 
 	public function __construct() {
 
@@ -42,7 +42,7 @@ class FinancialYearModel extends \ModuleModel {
 			'id' => ['serial32', 'cast' => 'int'],
 			'startDate' => ['date', 'cast' => 'string'],
 			'endDate' => ['date', 'cast' => 'string'],
-			'status' => ['enum', [\accounting\FinancialYear::OPEN, \accounting\FinancialYear::CLOSE], 'cast' => 'enum'],
+			'status' => ['enum', [\account\FinancialYear::OPEN, \account\FinancialYear::CLOSE], 'cast' => 'enum'],
 			'balanceSheetOpen' => ['bool', 'cast' => 'bool'],
 			'balanceSheetClose' => ['bool', 'cast' => 'bool'],
 			'closeDate' => ['date', 'null' => TRUE, 'cast' => 'string'],
@@ -248,7 +248,7 @@ abstract class FinancialYearCrud extends \ModuleCrud {
 
 class FinancialYearPage extends \ModulePage {
 
-	protected string $module = 'accounting\FinancialYear';
+	protected string $module = 'account\FinancialYear';
 
 	public function __construct(
 	   ?\Closure $start = NULL,

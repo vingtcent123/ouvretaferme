@@ -1,5 +1,5 @@
 <?php
-namespace accounting;
+namespace account;
 
 class AccountUi {
 
@@ -17,7 +17,7 @@ class AccountUi {
 
 			$h .= '<div>';
 				$h .= '<a '.attr('onclick', 'Lime.Search.toggle("#account-search")').' class="btn btn-primary">'.\Asset::icon('search').'</a> ';
-				$h .= '<a href="'.\company\CompanyUi::urlAccounting($eCompany).'/account:create" class="btn btn-primary">'.\Asset::icon('plus-circle').' '.s("Créer un compte personnalisé").'</a>';
+				$h .= '<a href="'.\company\CompanyUi::urlAccount($eCompany).'/account:create" class="btn btn-primary">'.\Asset::icon('plus-circle').' '.s("Créer un compte personnalisé").'</a>';
 			$h .= '</div>';
 
 		$h .= '</div>';
@@ -138,7 +138,7 @@ class AccountUi {
 						$h .= '<td>';
 							if($eAccount['custom'] === TRUE and $eAccount['nOperation'] === 0) {
 								$message = s("Confirmez-vous la suppression de cette classe de compte ?");
-								$h .= '<a data-ajax="'.\company\CompanyUi::urlAccounting($eCompany).'/account:doDelete" post-id="'.$eAccount['id'].'" data-confirm="'.$message.'" class="btn btn-outline-secondary btn-outline-danger">'.\Asset::icon('trash').'</a>';
+								$h .= '<a data-ajax="'.\company\CompanyUi::urlAccount($eCompany).'/account:doDelete" post-id="'.$eAccount['id'].'" data-confirm="'.$message.'" class="btn btn-outline-secondary btn-outline-danger">'.\Asset::icon('trash').'</a>';
 							}
 						$h .= '</td>';
 
@@ -168,7 +168,7 @@ class AccountUi {
 		$itemHtml = encode($eAccount['class'].' '.$eAccount['description']);
 		if(
 			$search->get('classPrefix')
-			and $search->get('classPrefix') === (string)\Setting::get('accounting\vatClass')
+			and $search->get('classPrefix') === (string)\Setting::get('account\vatClass')
 			and $eAccount['vatRate'] !== NULL
 		) {
 			$itemHtml .= ' ('.$eAccount['vatRate'].'%)';
@@ -192,7 +192,7 @@ class AccountUi {
 
 		return [
 			'type' => 'link',
-			'link' => \company\CompanyUi::urlAccounting($eCompany).'/account:create',
+			'link' => \company\CompanyUi::urlAccount($eCompany).'/account:create',
 			'itemHtml' => $item
 		];
 
@@ -206,7 +206,7 @@ class AccountUi {
 		$d->placeholder ??= s("Commencez à saisir la classe...");
 		$d->multiple = $multiple;
 
-		$d->autocompleteUrl = \company\CompanyUi::urlAccounting($company).'/account:query?'.http_build_query($query);
+		$d->autocompleteUrl = \company\CompanyUi::urlAccount($company).'/account:query?'.http_build_query($query);
 		$d->autocompleteResults = function(Account $e) use ($company) {
 			return self::getAutocomplete($company, $e);
 		};
@@ -234,7 +234,7 @@ class AccountUi {
 		$d->placeholder ??= s("Commencez à saisir le compte...");
 		$d->multiple = $multiple;
 
-		$d->autocompleteUrl = \company\CompanyUi::urlAccounting($company).'/account:queryLabel';
+		$d->autocompleteUrl = \company\CompanyUi::urlAccount($company).'/account:queryLabel';
 		$d->autocompleteResults = function(string $label) use ($company, $query) {
 			return self::getAutocompleteLabel($query, $company, $label);
 		};
@@ -247,7 +247,7 @@ class AccountUi {
 
 		$h = '';
 
-		$h .= $form->openAjax(\company\CompanyUi::urlAccounting($eCompany).'/account:doCreate', ['id' => 'accounting-account-create', 'autocomplete' => 'off']);
+		$h .= $form->openAjax(\company\CompanyUi::urlAccount($eCompany).'/account:doCreate', ['id' => 'account-account-create', 'autocomplete' => 'off']);
 
 		$h .= $form->asteriskInfo();
 
@@ -267,7 +267,7 @@ class AccountUi {
 		$h .= $form->close();
 
 		return new \Panel(
-			id: 'panel-accounting-account-create',
+			id: 'panel-account-create',
 			title: s("Ajouter une classe de compte personnalisée"),
 			body: $h
 		);
@@ -629,7 +629,7 @@ class AccountUi {
 					];
 				};
 				$d->group += ['wrapper' => 'vatAccount'];
-				new \accounting\AccountUi()->query($d, GET('company', '?int'), query: ['classPrefix' => \Setting::get('accounting\vatClass')]);
+				new \account\AccountUi()->query($d, GET('company', '?int'), query: ['classPrefix' => \Setting::get('account\vatClass')]);
 				break;
 
 			case 'class':

@@ -83,7 +83,7 @@ class LetteringLib extends LetteringCrud {
 				fn() => $this->whereLetteringStatus('!=', Operation::TOTAL)
 			)
 			->whereThirdParty($eOperationToLetter['thirdParty'])
-			->where('accountLabel LIKE "'.\Setting::get('accounting\thirdAccountSupplierDebtClass').'%" OR accountLabel LIKE "'.\Setting::get('accounting\thirdAccountClientReceivableClass').'%"')
+			->where('accountLabel LIKE "'.\Setting::get('account\thirdAccountSupplierDebtClass').'%" OR accountLabel LIKE "'.\Setting::get('account\thirdAccountClientReceivableClass').'%"')
 			->sort(['date' => SORT_ASC])
 			->getCollection();
 

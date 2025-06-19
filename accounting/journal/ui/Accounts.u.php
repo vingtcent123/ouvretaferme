@@ -7,7 +7,7 @@ class AccountsUi {
 		\Asset::css('journal', 'journal.css');
 	}
 
-	public function getAccountsTitle(\accounting\FinancialYear $eFinancialYear): string {
+	public function getAccountsTitle(\account\FinancialYear $eFinancialYear): string {
 
 		$h = '<div class="util-action">';
 
@@ -29,7 +29,7 @@ class AccountsUi {
 
 	}
 
-	public function getSearch(\Search $search, \accounting\FinancialYear $eFinancialYearSelected, ?ThirdParty $eThirdParty): string {
+	public function getSearch(\Search $search, \account\FinancialYear $eFinancialYearSelected, ?ThirdParty $eThirdParty): string {
 
 		\Asset::js('journal', 'operation.js');
 
@@ -71,7 +71,7 @@ class AccountsUi {
 	public function getJournal(
 		\company\Company $eCompany,
 		\Collection $cOperation,
-		\accounting\FinancialYear $eFinancialYearSelected,
+		\account\FinancialYear $eFinancialYearSelected,
 		\Search $search = new \Search()
 	): string {
 
@@ -107,7 +107,7 @@ class AccountsUi {
 	public function getTableContainer(
 		\company\Company $eCompany,
 		\Collection $cOperation,
-		\accounting\FinancialYear $eFinancialYearSelected,
+		\account\FinancialYear $eFinancialYearSelected,
 		\Search $search = new \Search()
 	): string {
 
@@ -159,7 +159,7 @@ class AccountsUi {
 
 		foreach($cOperation as $eOperation) {
 
-			$canUpdate = ($eFinancialYearSelected['status'] === \accounting\FinancialYear::OPEN
+			$canUpdate = ($eFinancialYearSelected['status'] === \account\FinancialYear::OPEN
 				and $eOperation['date'] <= $eFinancialYearSelected['endDate']
 				and $eOperation['date'] >= $eFinancialYearSelected['startDate']
 				and $eCompany->canWrite() === TRUE);

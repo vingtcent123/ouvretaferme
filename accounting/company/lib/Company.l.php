@@ -4,7 +4,7 @@ namespace company;
 class CompanyLib extends CompanyCrud {
 
 	private static ?\Collection $cCompanyOnline = NULL;
-	public static array $specificPackages = ['accounting', 'asset', 'bank', 'journal', 'pdf'];
+	public static array $specificPackages = ['account', 'asset', 'bank', 'journal', 'pdf'];
 
 	public static function getPropertiesCreate(): array {
 		return ['name', 'nafCode', 'siret', 'addressLine1', 'addressLine2', 'postalCode', 'city'];
@@ -205,7 +205,7 @@ class CompanyLib extends CompanyCrud {
 			->select(\main\GenericAccount::getSelection())
 			->getCollection();
 		foreach($cAccount as $eAccount) {
-			\accounting\Account::model()->insert($eAccount);
+			\account\Account::model()->insert($eAccount);
 		}
 	}
 

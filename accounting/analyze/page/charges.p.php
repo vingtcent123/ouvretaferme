@@ -5,7 +5,7 @@ new Page(
 		$data->eCompany = \company\CompanyLib::getById(REQUEST('company'))->validate('canView');
 
 		[$data->cFinancialYear, $data->eFinancialYear] = \company\EmployeeLib::getDynamicFinancialYear($data->eCompany, GET('financialYear', 'int'));
-		\accounting\FinancialYearLib::checkHasAtLeastOne($data->cFinancialYear, $data->eCompany);
+		\account\FinancialYearLib::checkHasAtLeastOne($data->cFinancialYear, $data->eCompany);
 
 	}
 )

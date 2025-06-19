@@ -1,5 +1,5 @@
 <?php
-namespace accounting;
+namespace account;
 
 class AccountLib extends AccountCrud {
 
@@ -150,11 +150,11 @@ class AccountLib extends AccountCrud {
 
 					switch((int)mb_substr($eAccount['class'], 0, 1)) {
 
-						case \Setting::get('accounting\thirdAccountGeneralClass'):
+						case \Setting::get('account\thirdAccountGeneralClass'):
 							$cAccountClassThird->append($eAccount);
 							break;
 
-						case \Setting::get('accounting\bankAccountGeneralClass'):
+						case \Setting::get('account\bankAccountGeneralClass'):
 							$cAccountClassAfter->append($eAccount);
 							break;
 
@@ -214,7 +214,7 @@ class AccountLib extends AccountCrud {
 
 	public static function getJournalCodeByClass(string $searchClass): ?string {
 
-		foreach(\Setting::get('accounting\classesByJournal') as $journal => $classes) {
+		foreach(\Setting::get('account\classesByJournal') as $journal => $classes) {
 
 			foreach($classes as $class) {
 

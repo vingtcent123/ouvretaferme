@@ -1,5 +1,5 @@
 <?php
-namespace accounting;
+namespace account;
 
 /**
  * https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000027804775

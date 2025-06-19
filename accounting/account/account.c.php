@@ -1,10 +1,10 @@
 <?php
-Privilege::register('accounting', [
+Privilege::register('account', [
 	'admin' => FALSE,
 	'access' => FALSE,
 ]);
 
-Setting::register('accounting', [
+Setting::register('account', [
 	'assetClass' => 2,
 	'subventionAssetClass' => '13',
 	'subventionDepreciationAssetClass' => '777',
@@ -39,9 +39,9 @@ Setting::register('accounting', [
 
 	'receivablesOnAssetDisposalClass' => '462', // Créances sur cessions d'immobilisations
 
-	'summaryAccountingBalanceCategories' => accounting\AccountUi::getSummaryBalanceCategories(),
-	'balanceAssetCategories' => accounting\AccountUi::getAssetBalanceCategories(),
-	'balanceLiabilityCategories' => accounting\AccountUi::getLiabilityBalanceCategories(),
+	'summaryAccountingBalanceCategories' => account\AccountUi::getSummaryBalanceCategories(),
+	'balanceAssetCategories' => account\AccountUi::getAssetBalanceCategories(),
+	'balanceLiabilityCategories' => account\AccountUi::getLiabilityBalanceCategories(),
 
 	'vatBuyVatClasses' => ['44562', '44566'],
 	'vatBuyClassPrefix' => '4456',

@@ -1,6 +1,6 @@
 Asset:
   id: serial32
-  account: accounting\Account
+  account: account\Account
   accountLabel: text8(1, null) @collate(general)
   # Valeur d'acquisition
   value: decimal(8, 2)
@@ -25,5 +25,5 @@ Depreciation:
   amount: decimal(8, 2)
   type: enum(ECONOMIC, EXCESS)
   date: date = SPECIAL(now)
-  financialYear: accounting\FinancialYear
+  financialYear: account\FinancialYear
   createdAt: datetime = SPECIAL(now)

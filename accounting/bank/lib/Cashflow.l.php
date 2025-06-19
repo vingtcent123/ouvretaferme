@@ -40,7 +40,7 @@ class CashflowLib extends CashflowCrud {
 		$noFinancialYear = [];
 		$imported = [];
 		$invalidDate = [];
-		$cFinancialYear = \accounting\FinancialYearLib::getAll();
+		$cFinancialYear = \account\FinancialYearLib::getAll();
 
 		foreach($cashflows as $cashflow) {
 
@@ -60,7 +60,7 @@ class CashflowLib extends CashflowCrud {
 
 			if(
 				$eCompany['accountingType'] === \company\Company::CASH
-				and \accounting\FinancialYearLib::isDateLinkedToFinancialYear($date, $cFinancialYear) === FALSE
+				and \account\FinancialYearLib::isDateLinkedToFinancialYear($date, $cFinancialYear) === FALSE
 			) {
 				$noFinancialYear[] = $cashflow['fitid'];
 				continue;

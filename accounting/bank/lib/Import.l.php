@@ -3,7 +3,7 @@ namespace bank;
 
 class ImportLib extends ImportCrud {
 
-	public static function formatCurrentFinancialYearImports(\accounting\FinancialYear $eFinancialYear): array {
+	public static function formatCurrentFinancialYearImports(\account\FinancialYear $eFinancialYear): array {
 
 		$cImport = self::getAll($eFinancialYear);
 		$startDate = $eFinancialYear['startDate'];
@@ -93,7 +93,7 @@ class ImportLib extends ImportCrud {
 		return new Import();
 	}
 
-	public static function getAll(\accounting\FinancialYear $eFinancialYear): \Collection {
+	public static function getAll(\account\FinancialYear $eFinancialYear): \Collection {
 		return Import::model()
 			->select(Import::getSelection() + ['account' => BankAccount::getSelection()])
 			->whereStartDate('>=', $eFinancialYear['startDate'].' 00:00:00')

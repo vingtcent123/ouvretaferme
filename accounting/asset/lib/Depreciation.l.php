@@ -31,7 +31,7 @@ class DepreciationLib extends \asset\DepreciationCrud {
 
 	}
 
-	private static function computeCurrentFinancialYearExcessDepreciation(Asset $eAsset, float $alreadyDepreciated, \accounting\FinancialYear $eFinancialYear): float {
+	private static function computeCurrentFinancialYearExcessDepreciation(Asset $eAsset, float $alreadyDepreciated, \account\FinancialYear $eFinancialYear): float {
 
 		return 0.0;
 
@@ -47,7 +47,7 @@ class DepreciationLib extends \asset\DepreciationCrud {
 
 	}
 
-	protected static function calculateDepreciationForFinancialYear(\accounting\FinancialYear $eFinancialYear, Asset $eAsset): float {
+	protected static function calculateDepreciationForFinancialYear(\account\FinancialYear $eFinancialYear, Asset $eAsset): float {
 
 		if($eAsset['type'] === AssetElement::WITHOUT) {
 			return 0;
@@ -136,7 +136,7 @@ class DepreciationLib extends \asset\DepreciationCrud {
 		throw new \NotExpectedAction('Unable to calculate depreciation for asset '.$eAsset['id']);
 	}
 
-	public static function getSummary(\accounting\FinancialYear $eFinancialYear): array {
+	public static function getSummary(\account\FinancialYear $eFinancialYear): array {
 
 		$depreciations = self::getByFinancialYear($eFinancialYear, 'asset');
 
@@ -198,7 +198,7 @@ class DepreciationLib extends \asset\DepreciationCrud {
 
 	}
 
-	public static function getByFinancialYear(\accounting\FinancialYear $eFinancialYear, string $type): array {
+	public static function getByFinancialYear(\account\FinancialYear $eFinancialYear, string $type): array {
 
 		$cAsset = match($type) {
 			'asset' => AssetLib::getAssetsByFinancialYear($eFinancialYear),
@@ -230,7 +230,7 @@ class DepreciationLib extends \asset\DepreciationCrud {
 			);
 
 			// This financial year depreciation
-			if($eFinancialYear['status'] === \accounting\FinancialYearElement::CLOSE) {
+			if($eFinancialYear['status'] === \account\FinancialYearElement::CLOSE) {
 
 				$currentDepreciation = ($cDepreciation->offsetExists($eFinancialYear['id']) and $cDepreciation[$eFinancialYear['id']]['type'] === DepreciationElement::ECONOMIC) ? $cDepreciation[$eFinancialYear['id']]['amount'] : 0;
 				$currentExcessDepreciation = ($cDepreciation->offsetExists($eFinancialYear['id']) and $cDepreciation[$eFinancialYear['id']]['type'] === DepreciationElement::EXCESS) ? $cDepreciation[$eFinancialYear['id']]['amount'] : 0;

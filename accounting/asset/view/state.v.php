@@ -8,8 +8,8 @@ new AdaptativeView('index', function($data, CompanyTemplate $t) {
 
 	$t->mainTitle = new asset\AssetUi()->getTitle();
 
-	$t->mainYear = new \accounting\FinancialYearUi()->getFinancialYearTabs(
-		function(\accounting\FinancialYear $eFinancialYear) use ($data) {
+	$t->mainYear = new \account\FinancialYearUi()->getFinancialYearTabs(
+		function(\account\FinancialYear $eFinancialYear) use ($data) {
 			return \company\CompanyUi::urlAsset($data->eCompany).'/state?financialYear='.$eFinancialYear['id'];
 		},
 		$data->cFinancialYear,

@@ -26,7 +26,7 @@ class PdfUi {
 		return s("{date}-{company}-bilan-comptable", ['date' => date('Y-m-d'), 'company' => $eCompany['siret']]);
 
 	}
-	public static function urlBalance(\company\Company $eCompany, \accounting\FinancialYear $eFinancialYear): string {
+	public static function urlBalance(\company\Company $eCompany, \account\FinancialYear $eFinancialYear): string {
 
 		return \company\CompanyUi::urlOverview($eCompany).'/balance:pdf';
 

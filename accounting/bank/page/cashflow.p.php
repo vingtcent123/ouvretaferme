@@ -59,7 +59,7 @@ new \bank\CashflowPage(
 
 		$data->index = POST('index');
 		$eThirdParty = post_exists('thirdParty') ? \journal\ThirdPartyLib::getById(POST('thirdParty')) : new \journal\ThirdParty();
-		$data->eOperation = new \journal\Operation(['account' => new \accounting\Account(), 'thirdParty' => $eThirdParty]);
+		$data->eOperation = new \journal\Operation(['account' => new \account\Account(), 'thirdParty' => $eThirdParty]);
 
 		throw new ViewAction($data);
 

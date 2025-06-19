@@ -47,7 +47,7 @@ class PdfModel extends \ModuleModel {
 			'used' => ['int16', 'min' => 0, 'max' => NULL, 'cast' => 'int'],
 			'content' => ['element32', 'pdf\Content', 'null' => TRUE, 'cast' => 'element'],
 			'type' => ['enum', [\pdf\Pdf::OVERVIEW_BALANCE_SUMMARY, \pdf\Pdf::OVERVIEW_BALANCE_OPENING, \pdf\Pdf::JOURNAL_INDEX, \pdf\Pdf::JOURNAL_BOOK, \pdf\Pdf::JOURNAL_TVA_BUY, \pdf\Pdf::JOURNAL_TVA_SELL], 'cast' => 'enum'],
-			'financialYear' => ['element32', 'accounting\FinancialYear', 'cast' => 'element'],
+			'financialYear' => ['element32', 'account\FinancialYear', 'cast' => 'element'],
 			'emailedAt' => ['datetime', 'null' => TRUE, 'cast' => 'string'],
 			'createdAt' => ['datetime', 'cast' => 'string'],
 		]);
@@ -58,7 +58,7 @@ class PdfModel extends \ModuleModel {
 
 		$this->propertiesToModule += [
 			'content' => 'pdf\Content',
-			'financialYear' => 'accounting\FinancialYear',
+			'financialYear' => 'account\FinancialYear',
 		];
 
 		$this->indexConstraints = array_merge($this->indexConstraints, [

@@ -46,7 +46,7 @@ class AssetModel extends \ModuleModel {
 
 		$this->properties = array_merge($this->properties, [
 			'id' => ['serial32', 'cast' => 'int'],
-			'account' => ['element32', 'accounting\Account', 'cast' => 'element'],
+			'account' => ['element32', 'account\Account', 'cast' => 'element'],
 			'accountLabel' => ['text8', 'min' => 1, 'max' => NULL, 'collate' => 'general', 'cast' => 'string'],
 			'value' => ['decimal', 'digits' => 8, 'decimal' => 2, 'cast' => 'float'],
 			'description' => ['text8', 'min' => 1, 'max' => NULL, 'collate' => 'general', 'cast' => 'string'],
@@ -66,7 +66,7 @@ class AssetModel extends \ModuleModel {
 		]);
 
 		$this->propertiesToModule += [
-			'account' => 'accounting\Account',
+			'account' => 'account\Account',
 			'createdBy' => 'user\User',
 		];
 

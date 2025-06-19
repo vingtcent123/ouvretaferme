@@ -5,7 +5,7 @@ class Operation extends OperationElement {
 
 	public function canQuickUpdate(): bool {
 
-		return \accounting\FinancialYearLib::isDateInOpenFinancialYear($this['date']);
+		return \account\FinancialYearLib::isDateInOpenFinancialYear($this['date']);
 
 	}
 
@@ -25,7 +25,7 @@ class Operation extends OperationElement {
 	public function build(array $properties, array $input, \Properties $p = new \Properties()): void {
 
 		$p
-			->setCallback('account.empty', function(?\accounting\Account $account): bool {
+			->setCallback('account.empty', function(?\account\Account $account): bool {
 
 				return $account !== NULL;
 
@@ -34,7 +34,7 @@ class Operation extends OperationElement {
 
 				$this->expects(['account']);
 
-				$eAccount = \accounting\AccountLib::getById($this['account']['id']);
+				$eAccount = \account\AccountLib::getById($this['account']['id']);
 
 				return str_starts_with($accountLabel, $eAccount['class']) === true;
 
@@ -61,7 +61,7 @@ class Operation extends OperationElement {
 			})
 			->setCallback('date.check', function(string $date): bool {
 
-				$cFinancialYear = \accounting\FinancialYearLib::getOpenFinancialYears();
+				$cFinancialYear = \account\FinancialYearLib::getOpenFinancialYears();
 
 				foreach($cFinancialYear as $eFinancialYear) {
 

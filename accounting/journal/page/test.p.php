@@ -12,7 +12,7 @@ new Page(
 	})
 	->get('index', function($data) {
 
-		$eFinancialYear = \accounting\FinancialYearLib::getLastClosedFinancialYear();
+		$eFinancialYear = \account\FinancialYearLib::getLastClosedFinancialYear();
 		pdf\PdfLib::generate($data->eCompany, $eFinancialYear, 'overview-balance-summary');
 		throw new ViewAction($data);
 

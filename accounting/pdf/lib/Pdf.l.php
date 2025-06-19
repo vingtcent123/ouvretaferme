@@ -42,7 +42,7 @@ class PdfLib extends \pdf\PdfCrud {
 
 	}
 
-	private static function generateContent(\company\Company $eCompany, \accounting\FinancialYear $eFinancialYear, string $type): string {
+	private static function generateContent(\company\Company $eCompany, \account\FinancialYear $eFinancialYear, string $type): string {
 
 		switch($type) {
 			case PdfElement::OVERVIEW_BALANCE_SUMMARY;
@@ -85,9 +85,9 @@ class PdfLib extends \pdf\PdfCrud {
 
 	}
 
-	public static function generate(\company\Company $eCompany, \accounting\FinancialYear $eFinancialYear, string $type): ?string {
+	public static function generate(\company\Company $eCompany, \account\FinancialYear $eFinancialYear, string $type): ?string {
 
-		if($eFinancialYear['status'] === \accounting\FinancialYearElement::CLOSE) {
+		if($eFinancialYear['status'] === \account\FinancialYearElement::CLOSE) {
 
 			$ePdf = Pdf::model()
 				->select(Pdf::getSelection() + ['content' => Content::getSelection()])
@@ -120,7 +120,7 @@ class PdfLib extends \pdf\PdfCrud {
 
 		}
 
-		if($eFinancialYear['status'] === \accounting\FinancialYearElement::CLOSE) {
+		if($eFinancialYear['status'] === \account\FinancialYearElement::CLOSE) {
 
 			\pdf\Pdf::model()->beginTransaction();
 

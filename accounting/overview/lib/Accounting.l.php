@@ -14,8 +14,8 @@ Class AccountingLib {
 		}
 
 		// cash
-		if(str_starts_with($balance['accountLabel'], \Setting::get('accounting\cashAccountClass')) === TRUE) {
-			$number = (int)rtrim(mb_substr($balance['accountLabel'], strlen(\Setting::get('accounting\cashAccountClass'))), '0');
+		if(str_starts_with($balance['accountLabel'], \Setting::get('account\cashAccountClass')) === TRUE) {
+			$number = (int)rtrim(mb_substr($balance['accountLabel'], strlen(\Setting::get('account\cashAccountClass'))), '0');
 			return s("{name} {number}", ['name' => new \bank\BankUi()->cashLabel(), 'number' => $number + 1]);
 		}
 
@@ -54,7 +54,7 @@ Class AccountingLib {
 			return [];
 		}
 
-		$categories = \Setting::get('accounting\summaryAccountingBalanceCategories');
+		$categories = \Setting::get('account\summaryAccountingBalanceCategories');
 		$emptyBalance = [
 			'startCredit' => 0,
 			'startDebit' => 0,
@@ -118,7 +118,7 @@ Class AccountingLib {
 
 	}
 
-	public static function getAccountingBalanceSheet(\accounting\FinancialYear $eFinancialYear): array {
+	public static function getAccountingBalanceSheet(\account\FinancialYear $eFinancialYear): array {
 
 		$cOperation = \journal\Operation::model()
 			->select([
@@ -143,7 +143,7 @@ Class AccountingLib {
 
 		$accountingBalanceSheet = $cOperation->getArrayCopy();
 
-		$cAccount = \accounting\AccountLib::getByIds($cOperation->getColumn('accountId'));
+		$cAccount = \account\AccountLib::getByIds($cOperation->getColumn('accountId'));
 
 		$cOperationLastFinancialYear = self::getLastYearBalance($eFinancialYear);
 		$cAccountBank = \bank\BankAccountLib::getAll();
@@ -175,7 +175,7 @@ Class AccountingLib {
 
 	}
 
-	public static function getLastYearBalance(\accounting\FinancialYear $eFinancialYear): \Collection {
+	public static function getLastYearBalance(\account\FinancialYear $eFinancialYear): \Collection {
 
 		$startDate = date('Y-m-d', strtotime($eFinancialYear['startDate'].' - 1 year'));
 		$endDate = date('Y-m-d', strtotime($eFinancialYear['endDate']. ' - 1 year'));

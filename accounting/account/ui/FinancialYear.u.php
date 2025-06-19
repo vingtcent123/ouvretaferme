@@ -1,5 +1,5 @@
 <?php
-namespace accounting;
+namespace account;
 
 class FinancialYearUi {
 
@@ -17,7 +17,7 @@ class FinancialYearUi {
 
 			$h .= '<div>';
 			if($cFinancialYearOpen->count() < 2) {
-				$h .= '<a href="'.\company\CompanyUi::urlAccounting($eCompany).'/financialYear/:create" class="btn btn-primary">'.\Asset::icon('plus-circle').' '.s("Créer un exercice comptable").'</a> ';
+				$h .= '<a href="'.\company\CompanyUi::urlAccount($eCompany).'/financialYear/:create" class="btn btn-primary">'.\Asset::icon('plus-circle').' '.s("Créer un exercice comptable").'</a> ';
 			}
 			$h .= '</div>';
 
@@ -32,13 +32,13 @@ class FinancialYearUi {
 		$h = '<a data-dropdown="bottom-end" class="dropdown-toggle btn '.$btn.'">'.\Asset::icon('gear-fill').'</a>';
 		$h .= '<div class="dropdown-list">';
 			$h .= '<div class="dropdown-title">'.s("Exercice {year}", ['year' => self::getYear($eFinancialYear)]).'</div>';
-			$h .= '<a data-ajax="'.\company\CompanyUi::urlAccounting($eCompany).'/financialYear/document:opening" post-id="'.$eFinancialYear['id'].'" class="dropdown-item">'.s("Télécharger le Bilan d'Ouverture (Bientôt disponible !)").'</a>';
+			$h .= '<a data-ajax="'.\company\CompanyUi::urlAccount($eCompany).'/financialYear/document:opening" post-id="'.$eFinancialYear['id'].'" class="dropdown-item">'.s("Télécharger le Bilan d'Ouverture (Bientôt disponible !)").'</a>';
 			$h .= '<div class="dropdown-divider"></div>';
-			$h .= '<a href="'.\company\CompanyUi::urlAccounting($eCompany).'/financialYear/:update?id='.$eFinancialYear['id'].'" class="dropdown-item">';
+			$h .= '<a href="'.\company\CompanyUi::urlAccount($eCompany).'/financialYear/:update?id='.$eFinancialYear['id'].'" class="dropdown-item">';
 				$h .= s("Modifier les dates");
 			$h .= '</a>';
-			$h .= '<a data-ajax="'.\company\CompanyUi::urlAccounting($eCompany).'/financialYear/:close" post-id="'.$eFinancialYear['id'].'" class="dropdown-item" data-confirm="'.s("Action irréversible ! Souhaitez-vous confirmer la clôture de cet exercice comptable ?").'">'.s("Clôturer").'</a>';;
-			$h .= '<a data-ajax="'.\company\CompanyUi::urlAccounting($eCompany).'/financialYear/:close" post-id="'.$eFinancialYear['id'].'" class="dropdown-item" data-confirm="'.s("Action irréversible ! Souhaitez-vous confirmer la clôture de cet exercice comptable ? Le suivant sera créé automatiquement.").'">'.s("Clôturer et créer l'exercice suivant").'</a>';;
+			$h .= '<a data-ajax="'.\company\CompanyUi::urlAccount($eCompany).'/financialYear/:close" post-id="'.$eFinancialYear['id'].'" class="dropdown-item" data-confirm="'.s("Action irréversible ! Souhaitez-vous confirmer la clôture de cet exercice comptable ?").'">'.s("Clôturer").'</a>';;
+			$h .= '<a data-ajax="'.\company\CompanyUi::urlAccount($eCompany).'/financialYear/:close" post-id="'.$eFinancialYear['id'].'" class="dropdown-item" data-confirm="'.s("Action irréversible ! Souhaitez-vous confirmer la clôture de cet exercice comptable ? Le suivant sera créé automatiquement.").'">'.s("Clôturer et créer l'exercice suivant").'</a>';;
 		$h .= '</div>';
 
 		return $h;
@@ -51,11 +51,11 @@ class FinancialYearUi {
 		$h .= '<div class="dropdown-list">';
 			$h .= '<div class="dropdown-title">'.s("Exercice {year}", ['year' => self::getYear($eFinancialYear)]).'</div>';
 			//$h .= '<a href="'.\company\CompanyUi::urlJournal($eCompany).'/vat:pdf?type='.$type.'&financialYear='.$eFinancialYear['id'].'" data-ajax-navigation="never" class="btn btn-primary">'.\Asset::icon('download').'&nbsp;'.s("Télécharger en PDF").'</a>';
-			$h .= '<a href="'.\company\CompanyUi::urlAccounting($eCompany).'/financialYear/document:fec?id='.$eFinancialYear['id'].'" data-ajax-navigation="never" class="dropdown-item">';
+			$h .= '<a href="'.\company\CompanyUi::urlAccount($eCompany).'/financialYear/document:fec?id='.$eFinancialYear['id'].'" data-ajax-navigation="never" class="dropdown-item">';
 				$h .= s("Télécharger le FEC");
 			$h .= '</a>';
-			$h .= '<a data-ajax="'.\company\CompanyUi::urlAccounting($eCompany).'/financialYear/document:opening" post-id="'.$eFinancialYear['id'].'" class="dropdown-item">'.s("Télécharger le Bilan d'Ouverture (Bientôt disponible !)").'</a>';;
-			$h .= '<a data-ajax="'.\company\CompanyUi::urlAccounting($eCompany).'/financialYear/document:closing" post-id="'.$eFinancialYear['id'].'" class="dropdown-item">'.s("Télécharger le Bilan de Clôture (Bientôt disponible !)").'</a>';;
+			$h .= '<a data-ajax="'.\company\CompanyUi::urlAccount($eCompany).'/financialYear/document:opening" post-id="'.$eFinancialYear['id'].'" class="dropdown-item">'.s("Télécharger le Bilan d'Ouverture (Bientôt disponible !)").'</a>';;
+			$h .= '<a data-ajax="'.\company\CompanyUi::urlAccount($eCompany).'/financialYear/document:closing" post-id="'.$eFinancialYear['id'].'" class="dropdown-item">'.s("Télécharger le Bilan de Clôture (Bientôt disponible !)").'</a>';;
 		$h .= '</div>';
 
 		return $h;
@@ -69,7 +69,7 @@ class FinancialYearUi {
 			return '<div class="util-info">'
 				.s("Aucun exercice comptable n'a encore été enregistré, créez-en un maintenant pour pouvoir démarrer !")
 			.'</div>'
-			.(new \accounting\FinancialYearUi()->create($eCompany, new FinancialYear()))->body;
+			.(new \account\FinancialYearUi()->create($eCompany, new FinancialYear()))->body;
 		}
 
 		$h = '';
@@ -99,7 +99,7 @@ class FinancialYearUi {
 							if($eFinancialYear['status'] === FinancialYear::CLOSE) {
 								$h .= $eFinancialYear['id'];
 							} else {
-								$h .= '<a href="'.\company\CompanyUi::urlAccounting($eCompany).'/financialYear/:update?id='.$eFinancialYear['id'].'" class="btn btn-sm btn-outline-primary">'.$eFinancialYear['id'].'</a>';
+								$h .= '<a href="'.\company\CompanyUi::urlAccount($eCompany).'/financialYear/:update?id='.$eFinancialYear['id'].'" class="btn btn-sm btn-outline-primary">'.$eFinancialYear['id'].'</a>';
 							}
 						$h .= '</td>';
 
@@ -150,7 +150,7 @@ class FinancialYearUi {
 			$h .= '</div>';
 		}
 
-		$h .= $form->openAjax(\company\CompanyUi::urlAccounting($eCompany).'/financialYear/:doCreate', ['id' => 'accounting-financialYear-create', 'autocomplete' => 'off']);
+		$h .= $form->openAjax(\company\CompanyUi::urlAccount($eCompany).'/financialYear/:doCreate', ['id' => 'account-financialYear-create', 'autocomplete' => 'off']);
 
 			$h .= $form->asteriskInfo();
 
@@ -165,7 +165,7 @@ class FinancialYearUi {
 		$h .= $form->close();
 
 		return new \Panel(
-			id: 'panel-accounting-financialYear-create',
+			id: 'panel-account-financialYear-create',
 			title: s("Créer un exercice comptable"),
 			body: $h
 		);
@@ -178,7 +178,7 @@ class FinancialYearUi {
 
 		$h = '';
 
-		$h .= $form->openAjax(\company\CompanyUi::urlAccounting($eCompany).'/financialYear/:doUpdate', ['id' => 'accounting-financialYear-update', 'autocomplete' => 'off']);
+		$h .= $form->openAjax(\company\CompanyUi::urlAccount($eCompany).'/financialYear/:doUpdate', ['id' => 'account-financialYear-update', 'autocomplete' => 'off']);
 
 			$h .= $form->asteriskInfo();
 
@@ -194,14 +194,14 @@ class FinancialYearUi {
 		$h .= $form->close();
 
 		return new \Panel(
-			id: 'panel-accounting-financialYear-update',
+			id: 'panel-account-financialYear-update',
 			title: s("Modifier un exercice comptable"),
 			body: $h
 		);
 
 	}
 
-	public static function getYear(\accounting\FinancialYear $eFinancialYear): string {
+	public static function getYear(\account\FinancialYear $eFinancialYear): string {
 
 		if($eFinancialYear->empty()) {
 			return '';
@@ -215,7 +215,7 @@ class FinancialYearUi {
 
 	}
 
-	public function getFinancialYearTabs(\Closure $url, \Collection $cFinancialYear, \accounting\FinancialYear $eFinancialYearSelected): string {
+	public function getFinancialYearTabs(\Closure $url, \Collection $cFinancialYear, \account\FinancialYear $eFinancialYearSelected): string {
 
 		$h = ' <a data-dropdown="bottom-start" data-dropdown-hover="TRUE" data-dropdown-offset-x="2" class="nav-year">';
 			$h .= s("Exercice {year}", ['year' => self::getYear($eFinancialYearSelected).'  '.\Asset::icon('chevron-down')]);

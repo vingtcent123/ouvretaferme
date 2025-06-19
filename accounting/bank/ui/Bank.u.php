@@ -6,7 +6,7 @@ class BankUi {
 	public function __construct() {
 	}
 
-	public function getBankTitle(\accounting\FinancialYear $eFinancialYear): string {
+	public function getBankTitle(\account\FinancialYear $eFinancialYear): string {
 
 		$h = '<div class="util-action">';
 

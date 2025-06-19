@@ -1,5 +1,5 @@
 <?php
-new \accounting\FinancialYearPage(
+new \account\FinancialYearPage(
 	function($data) {
 		\user\ConnectionLib::checkLogged();
 		$company = GET('company');
@@ -11,18 +11,18 @@ new \accounting\FinancialYearPage(
 
 	});
 
-new \accounting\FinancialYearPage(
+new \account\FinancialYearPage(
 	function($data) {
 		\user\ConnectionLib::checkLogged();
 		$company = GET('company');
 
 		$data->eCompany = \company\CompanyLib::getById($company)->validate('canWrite');
-		$data->eFinancialYear = \accounting\FinancialYearLib::getById(GET('id'))->validate('canReadDocument');
+		$data->eFinancialYear = \account\FinancialYearLib::getById(GET('id'))->validate('canReadDocument');
 	}
 )
 	->get('fec', function($data) {
 
-		$fecData = \accounting\FecLib::generate($data->eFinancialYear);
+		$fecData = \account\FecLib::generate($data->eFinancialYear);
 
 		throw new DataAction(
 			$fecData,

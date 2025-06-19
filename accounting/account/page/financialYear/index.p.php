@@ -5,14 +5,14 @@ new Page()
 		$company = GET('company');
 
 		$data->eCompany = \company\CompanyLib::getById($company)->validate('canWrite');
-		$data->cFinancialYear = \accounting\FinancialYearLib::getAll();
-		$data->cFinancialYearOpen = \accounting\FinancialYearLib::getOpenFinancialYears();
+		$data->cFinancialYear = \account\FinancialYearLib::getAll();
+		$data->cFinancialYearOpen = \account\FinancialYearLib::getOpenFinancialYears();
 
 		throw new ViewAction($data);
 
 	});
 
-new \accounting\FinancialYearPage(
+new \account\FinancialYearPage(
 	function($data) {
 		\user\ConnectionLib::checkLogged();
 		$company = GET('company');
@@ -22,12 +22,12 @@ new \accounting\FinancialYearPage(
 )
 	->create(function($data) {
 
-		$data->cFinancialYearOpen = \accounting\FinancialYearLib::getOpenFinancialYears();
+		$data->cFinancialYearOpen = \account\FinancialYearLib::getOpenFinancialYears();
 		if($data->cFinancialYearOpen->count() >= 2) {
 			throw new NotExpectedAction('Cannot create a new financial year as there are already '.$data->cFinancialYearOpen->count().' financial years open');
 		}
 
-		$nextDates = \accounting\FinancialYearLib::getNextFinancialYearDates();
+		$nextDates = \account\FinancialYearLib::getNextFinancialYearDates();
 		$data->e['startDate'] = $nextDates['startDate'];
 		$data->e['endDate'] = $nextDates['endDate'];
 
@@ -36,12 +36,12 @@ new \accounting\FinancialYearPage(
 	})
 	->doCreate(function($data) {
 
-		$data->cFinancialYearOpen = \accounting\FinancialYearLib::getOpenFinancialYears();
+		$data->cFinancialYearOpen = \account\FinancialYearLib::getOpenFinancialYears();
 		if($data->cFinancialYearOpen->count() >= 2) {
 			throw new NotExpectedAction('Cannot create a new financial year as there are already '.$data->cFinancialYearOpen->count().' financial years open');
 		}
 
-		throw new ReloadAction('accounting', 'FinancialYear::created');
+		throw new ReloadAction('account', 'FinancialYear::created');
 
 	})
 	->update(function($data) {
@@ -51,19 +51,19 @@ new \accounting\FinancialYearPage(
 	})
 	->doUpdate(function($data) {
 
-		throw new ReloadAction('accounting', 'FinancialYear::updated');
+		throw new ReloadAction('account', 'FinancialYear::updated');
 
 	})
 	->write('close', function($data) {
 
-		\accounting\FinancialYearLib::closeFinancialYear($data->e, createNew: FALSE);
+		\account\FinancialYearLib::closeFinancialYear($data->e, createNew: FALSE);
 
-		throw new RedirectAction(\company\CompanyUi::urlAccounting($data->eCompany).'/financialYear/?success=accounting:FinancialYear::closed');
+		throw new RedirectAction(\company\CompanyUi::urlAccount($data->eCompany).'/financialYear/?success=account:FinancialYear::closed');
 	})
 	->write('closeAndCreateNew', function($data) {
 
-		\accounting\FinancialYearLib::closeFinancialYear($data->e, createNew: TRUE);
+		\account\FinancialYearLib::closeFinancialYear($data->e, createNew: TRUE);
 
-		throw new RedirectAction(\company\CompanyUi::urlAccounting($data->eCompany).'/financialYear/?success=accounting:FinancialYear::closedAndCreated');
+		throw new RedirectAction(\company\CompanyUi::urlAccount($data->eCompany).'/financialYear/?success=account:FinancialYear::closedAndCreated');
 	});
 ?>

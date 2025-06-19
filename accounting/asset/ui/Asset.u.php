@@ -140,11 +140,11 @@ Class AssetUi {
 		return $h;
 
 	}
-	public static function getSummary(\accounting\FinancialYear $eFinancialYear, array $assetSummary): string {
+	public static function getSummary(\account\FinancialYear $eFinancialYear, array $assetSummary): string {
 
 		$h = '';
 
-		if($eFinancialYear['status'] === \accounting\FinancialYearElement::OPEN) {
+		if($eFinancialYear['status'] === \account\FinancialYearElement::OPEN) {
 
 			$h .= '<div class="util-warning">';
 				$h .= s("L'exercice comptable n'étant pas terminé, les données affichées sont une projection de l'actuel à la fin de l'exercice.");
@@ -253,7 +253,7 @@ Class AssetUi {
 
 	}
 
-	public static function dispose(\company\Company $eCompany, \accounting\FinancialYear $eFinancialYear, Asset $eAsset): \Panel {
+	public static function dispose(\company\Company $eCompany, \account\FinancialYear $eFinancialYear, Asset $eAsset): \Panel {
 
 		\Asset::js('asset', 'asset.js');
 
@@ -374,7 +374,7 @@ Class AssetUi {
 								$h .= '<td>'.\util\DateUi::numeric($eDepreciation['date'], \util\DateUi::DATE).'</td>';
 								$h .= '<td>'.DepreciationUi::p('type')->values[$eDepreciation['type']].'</td>';
 								$h .= '<td>'.\util\TextUi::money($eDepreciation['amount']).'</td>';
-								$h .= '<td>'.\accounting\FinancialYearUi::getYear($eDepreciation['financialYear']).'</td>';
+								$h .= '<td>'.\account\FinancialYearUi::getYear($eDepreciation['financialYear']).'</td>';
 							$h .= '</tr>';
 
 						}

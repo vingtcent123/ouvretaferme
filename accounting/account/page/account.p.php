@@ -13,7 +13,7 @@ new Page(function($data) {
 		'vatFilter' => GET('vatFilter', 'bool', FALSE),
 		'customFilter' => GET('customFilter', 'bool', FALSE),
 	]);
-	$data->cAccount = \accounting\AccountLib::getAll(search: $data->search);
+	$data->cAccount = \account\AccountLib::getAll(search: $data->search);
 
 	$cOperation = \journal\OperationLib::countByAccounts($data->cAccount);
 	foreach($data->cAccount as &$eAccount) {
@@ -31,9 +31,9 @@ new Page(function($data) {
 	$accountsAlreadyUsed = POST('accountAlready', 'array', []);
 
 	$data->search = new Search(['classPrefix' => $classPrefix]);
-	$data->cAccount = \accounting\AccountLib::getAll(query: $query, search: $data->search);
+	$data->cAccount = \account\AccountLib::getAll(query: $query, search: $data->search);
 
-	$data->cAccount = \accounting\AccountLib::orderAccounts($data->cAccount, $thirdParty, $accountsAlreadyUsed);
+	$data->cAccount = \account\AccountLib::orderAccounts($data->cAccount, $thirdParty, $accountsAlreadyUsed);
 
 	throw new \ViewAction($data);
 
@@ -47,7 +47,7 @@ new Page(function($data) {
 	$labels = \journal\OperationLib::getLabels($query, $thirdParty, $account);
 
 	if(post_exists('account')) {
-		$eAccount = \accounting\AccountLib::getById($account);
+		$eAccount = \account\AccountLib::getById($account);
 		$accountClass = str_pad($eAccount['class'], 8, '0');
 		if($eAccount->exists() === TRUE and in_array($accountClass, $labels) === FALSE) {
 			$labels[] = $accountClass;
@@ -65,7 +65,7 @@ new Page(function($data) {
 
 });
 
-new \accounting\AccountPage(function($data) {
+new \account\AccountPage(function($data) {
 
 	\user\ConnectionLib::checkLogged();
 
@@ -81,23 +81,23 @@ new \accounting\AccountPage(function($data) {
 
 	$fw = new FailWatch();
 
-	\accounting\AccountLib::createCustomClass($_POST);
+	\account\AccountLib::createCustomClass($_POST);
 
 	$fw->validate();
 
-	throw new ReloadAction('accounting', 'Account::created');
+	throw new ReloadAction('account', 'Account::created');
 })
 ->post('doDelete', function($data) {
 
 	$fw = new FailWatch();
 
-	$eAccount = \accounting\AccountLib::getById(POST('id', 'int'));
+	$eAccount = \account\AccountLib::getById(POST('id', 'int'));
 
-	\accounting\AccountLib::delete($eAccount);
+	\account\AccountLib::delete($eAccount);
 
 	$fw->validate();
 
-	throw new ReloadAction('accounting', 'Account::deleted');
+	throw new ReloadAction('account', 'Account::deleted');
 
 });
 

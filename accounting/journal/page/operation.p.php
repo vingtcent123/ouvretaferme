@@ -12,11 +12,11 @@ new \journal\OperationPage(
 	->create(function($data) {
 
 		if(get_exists('account') === TRUE) {
-			$eAccount = \accounting\AccountLib::getByIdWithVatAccount(GET('account', 'int'));
+			$eAccount = \account\AccountLib::getByIdWithVatAccount(GET('account', 'int'));
 		} elseif(get_exists('accountPrefix') === TRUE) {
-			$eAccount = \accounting\AccountLib::getByPrefixWithVatAccount(GET('accountPrefix', 'int'));
+			$eAccount = \account\AccountLib::getByPrefixWithVatAccount(GET('accountPrefix', 'int'));
 		} else {
-			$eAccount = new \accounting\Account();
+			$eAccount = new \account\Account();
 		}
 
 		if(get_exists('cashflow') === TRUE) {
@@ -28,7 +28,7 @@ new \journal\OperationPage(
 		$label = '';
 		if(get_exists('accountLabel') and mb_strlen(GET('accountLabel') > 0)) {
 			$label = GET('accountLabel');
-		} elseif($eAccount->exists() === TRUE and $eAccount['class'] === \Setting::get('accounting\bankAccountClass')) {
+		} elseif($eAccount->exists() === TRUE and $eAccount['class'] === \Setting::get('account\bankAccountClass')) {
 			$eAccountBank = \bank\BankAccountLib::getDefaultAccount();
 			if($eAccountBank->exists() === TRUE) {
 				$label = $eAccountBank['accountLabel'];
@@ -52,7 +52,7 @@ new \journal\OperationPage(
 			'cashflow' => $eCashflow,
 		]);
 
-		$data->eFinancialYear = \accounting\FinancialYearLib::selectDefaultFinancialYear();
+		$data->eFinancialYear = \account\FinancialYearLib::selectDefaultFinancialYear();
 
 		throw new ViewAction($data);
 
@@ -60,10 +60,10 @@ new \journal\OperationPage(
 	->post('addOperation', function($data) {
 
 		$data->index = POST('index');
-		$data->eFinancialYear = \accounting\FinancialYearLib::selectDefaultFinancialYear();
+		$data->eFinancialYear = \account\FinancialYearLib::selectDefaultFinancialYear();
 
 		$eThirdParty = post_exists('thirdParty') ? \journal\ThirdPartyLib::getById(POST('thirdParty')) : new \journal\ThirdParty();
-		$data->eOperation = new \journal\Operation(['account' => new \accounting\Account(), 'thirdParty' => $eThirdParty]);
+		$data->eOperation = new \journal\Operation(['account' => new \account\Account(), 'thirdParty' => $eThirdParty]);
 
 		throw new ViewAction($data);
 
@@ -108,7 +108,7 @@ new \journal\OperationPage(
 			'amount' => GET('amount', 'float'),
 		]);
 
-		$data->eFinancialYear = \accounting\FinancialYearLib::selectDefaultFinancialYear();
+		$data->eFinancialYear = \account\FinancialYearLib::selectDefaultFinancialYear();
 
 		$data->cBankAccount = \bank\BankAccountLib::getAll();
 

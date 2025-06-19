@@ -7,7 +7,7 @@ class JournalUi {
 		\Asset::css('journal', 'journal.css');
 	}
 
-	public function getJournalTitle(\company\Company $eCompany, \accounting\FinancialYear $eFinancialYear): string {
+	public function getJournalTitle(\company\Company $eCompany, \account\FinancialYear $eFinancialYear): string {
 
 		$h = '<div class="util-action">';
 
@@ -28,7 +28,7 @@ class JournalUi {
 
 					if(
 						get_exists('cashflow') === FALSE
-						and $eFinancialYear['status'] === \accounting\FinancialYearElement::OPEN
+						and $eFinancialYear['status'] === \account\FinancialYearElement::OPEN
 						and $eCompany->canWrite() === TRUE
 					) {
 						if($eCompany->isCashAccounting()) {
@@ -63,7 +63,7 @@ class JournalUi {
 
 	}
 
-	public function getSearch(\Search $search, \accounting\FinancialYear $eFinancialYearSelected, \bank\Cashflow $eCashflow, ?ThirdParty $eThirdParty): string {
+	public function getSearch(\Search $search, \account\FinancialYear $eFinancialYearSelected, \bank\Cashflow $eCashflow, ?ThirdParty $eThirdParty): string {
 
 		\Asset::js('journal', 'operation.js');
 
@@ -119,7 +119,7 @@ class JournalUi {
 	public function getJournal(
 		\company\Company $eCompany,
 		\Collection $cOperation,
-		\accounting\FinancialYear $eFinancialYearSelected,
+		\account\FinancialYear $eFinancialYearSelected,
 		\Search $search = new \Search()
 	): string {
 
@@ -164,7 +164,7 @@ class JournalUi {
 	public function getTableContainer(
 		\company\Company $eCompany,
 		\Collection $cOperation,
-		\accounting\FinancialYear $eFinancialYearSelected,
+		\account\FinancialYear $eFinancialYearSelected,
 		\Search $search = new \Search(),
 		?string $selectedJournalCode = NULL
 	): string {
@@ -225,7 +225,7 @@ class JournalUi {
 
 					foreach($cOperation as $eOperation) {
 
-						$canUpdate = ($eFinancialYearSelected['status'] === \accounting\FinancialYear::OPEN
+						$canUpdate = ($eFinancialYearSelected['status'] === \account\FinancialYear::OPEN
 							and $eOperation['date'] <= $eFinancialYearSelected['endDate']
 							and $eOperation['date'] >= $eFinancialYearSelected['startDate']
 							and $eCompany->canWrite() === TRUE);
@@ -392,14 +392,14 @@ class JournalUi {
 		$h .= '&nbsp;';
 
 		if(
-			$eOperation->isClassAccount(\Setting::get('accounting\chargeAccountClass')) === TRUE
+			$eOperation->isClassAccount(\Setting::get('account\chargeAccountClass')) === TRUE
 			// On ne rajoute pas des frais de port sur des frais de port
-			and mb_substr($eOperation['accountLabel'], 0, strlen((string)\Setting::get('accounting\shippingChargeAccountClass'))) !== (string)\Setting::get('accounting\shippingChargeAccountClass')
+			and mb_substr($eOperation['accountLabel'], 0, strlen((string)\Setting::get('account\shippingChargeAccountClass'))) !== (string)\Setting::get('account\shippingChargeAccountClass')
 		) {
 
 			$args = [
-				'accountPrefix' => \Setting::get('accounting\shippingChargeAccountClass'),
-				'accountLabel' => encode(OperationUi::getAccountLabelFromAccountPrefix(\Setting::get('accounting\shippingChargeAccountClass'))),
+				'accountPrefix' => \Setting::get('account\shippingChargeAccountClass'),
+				'accountLabel' => encode(OperationUi::getAccountLabelFromAccountPrefix(\Setting::get('account\shippingChargeAccountClass'))),
 				'document' => $eOperation['document'],
 				'type' => $eOperation['type'],
 				'date' => $eOperation['date'],

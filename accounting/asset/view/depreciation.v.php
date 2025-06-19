@@ -8,8 +8,8 @@ new AdaptativeView('index', function($data, CompanyTemplate $t) {
 
 	$t->mainTitle = new asset\DepreciationUi()->getTitle();
 
-	$t->mainYear = new \accounting\FinancialYearUi()->getFinancialYearTabs(
-		function(\accounting\FinancialYear $eFinancialYear) use ($data) {
+	$t->mainYear = new \account\FinancialYearUi()->getFinancialYearTabs(
+		function(\account\FinancialYear $eFinancialYear) use ($data) {
 			return \company\CompanyUi::urlAsset($data->eCompany).'/depreciation?financialYear='.$eFinancialYear['id'];
 		},
 		$data->cFinancialYear,
@@ -24,7 +24,7 @@ new AdaptativeView('index', function($data, CompanyTemplate $t) {
 
 	} else {
 
-		if($data->eFinancialYear['status'] !== \accounting\FinancialYearElement::CLOSE) {
+		if($data->eFinancialYear['status'] !== \account\FinancialYearElement::CLOSE) {
 
 			echo '<div class="util-warning">';
 				echo s("Vous visualisez actuellement les immobilisations d'un exercice comptable encore ouvert : il s'agit donc d'une projection à la fin de l'exercice dans le cas où les immobilisations ne changent pas dans le courant de l'exercice.");

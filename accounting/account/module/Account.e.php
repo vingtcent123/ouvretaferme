@@ -1,5 +1,5 @@
 <?php
-namespace accounting;
+namespace account;
 
 class Account extends AccountElement {
 
@@ -43,7 +43,7 @@ class Account extends AccountElement {
 
 				$eAccountVatDb = AccountLib::getById($eAccountVat['id']);
 
-				return str_starts_with($eAccountVatDb['class'], \Setting::get('accounting\vatClass'));
+				return str_starts_with($eAccountVatDb['class'], \Setting::get('account\vatClass'));
 
 			});
 

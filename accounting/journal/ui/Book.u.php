@@ -41,7 +41,7 @@ class BookUi {
 	public static function getBookTbody(
 		\company\Company $eCompany,
 		\Collection $cOperation,
-		\accounting\FinancialYear $eFinancialYear,
+		\account\FinancialYear $eFinancialYear,
 	): string {
 
 		$h = '';
@@ -134,7 +134,7 @@ class BookUi {
 	public function getBook(
 		\company\Company $eCompany,
 		\Collection $cOperation,
-		\accounting\FinancialYear $eFinancialYear,
+		\account\FinancialYear $eFinancialYear,
 	): string {
 
 		if($cOperation->empty() === TRUE) {

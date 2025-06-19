@@ -6,7 +6,7 @@ class BankAccountUi {
 	public function __construct() {
 	}
 
-	public function getAccountTitle(\accounting\FinancialYear $eFinancialYear): string {
+	public function getAccountTitle(\account\FinancialYear $eFinancialYear): string {
 
 		$h = '<div class="util-action">';
 
@@ -72,7 +72,7 @@ class BankAccountUi {
 						$h .= '<td>';
 							if($canUpdate === TRUE) {
 								$eBankAccount->setQuickAttribute('company', $eCompany['id']);
-								$h .= $eBankAccount->quick('label', $eBankAccount['label'] ? encode($eBankAccount['label']) : '<i>'.\Setting::get('accounting\defaultBankAccountLabel').'&nbsp;'.s("(Par défaut)").'</i>');
+								$h .= $eBankAccount->quick('label', $eBankAccount['label'] ? encode($eBankAccount['label']) : '<i>'.\Setting::get('account\defaultBankAccountLabel').'&nbsp;'.s("(Par défaut)").'</i>');
 							} else {
 								$h .= encode($eBankAccount['label']);
 							}

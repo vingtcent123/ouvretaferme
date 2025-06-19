@@ -7,7 +7,7 @@ Class VatUi {
 		\Asset::css('journal', 'vat.css');
 	}
 
-	public function getTitle(\company\Company $eCompany, \accounting\FinancialYear $eFinancialYear): string {
+	public function getTitle(\company\Company $eCompany, \account\FinancialYear $eFinancialYear): string {
 
 		$h = '<div class="util-action">';
 
@@ -25,7 +25,7 @@ Class VatUi {
 
 	}
 
-	public function getSearch(\Search $search, \accounting\FinancialYear $eFinancialYearSelected, ?ThirdParty $eThirdParty): string {
+	public function getSearch(\Search $search, \account\FinancialYear $eFinancialYearSelected, ?ThirdParty $eThirdParty): string {
 
 		$h = '<div id="vat-search" class="util-block-search stick-xs '.($search->empty(['ids']) === TRUE ? 'hide' : '').'">';
 
@@ -109,9 +109,9 @@ Class VatUi {
 
 	public function getJournal(
 		\company\Company $eCompany,
-		\accounting\FinancialYear $eFinancialYear,
+		\account\FinancialYear $eFinancialYear,
 		array $operations,
-		\accounting\FinancialYear $eFinancialYearSelected,
+		\account\FinancialYear $eFinancialYearSelected,
 		\Search $search = new \Search(),
 	): string {
 
@@ -146,7 +146,7 @@ Class VatUi {
 
 	private function getTableContainer(
 		\company\Company $eCompany,
-		\accounting\FinancialYear $eFinancialYear,
+		\account\FinancialYear $eFinancialYear,
 		\Collection $cccOperation,
 		string $type,
 		\Search $search = new \Search(),
@@ -254,7 +254,7 @@ Class VatUi {
 
 							$eOperationInitial = $eOperation['operation'];
 							if(
-								str_starts_with($eOperation['accountLabel'], \Setting::get('accounting\vatBuyClassPrefix'))
+								str_starts_with($eOperation['accountLabel'], \Setting::get('account\vatBuyClassPrefix'))
 							and $eOperationInitial['type'] === OperationElement::CREDIT) {
 								$multiplyer = -1;
 							} else {

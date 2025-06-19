@@ -186,18 +186,18 @@ class EmployeeLib extends EmployeeCrud {
 	 */
 	public static function getDynamicFinancialYear(Company $eCompany, int $financialYear): array {
 
-		$cFinancialYear = \accounting\FinancialYearLib::getAll();
+		$cFinancialYear = \account\FinancialYearLib::getAll();
 
 		if($cFinancialYear->empty()) {
-			throw new \RedirectAction(CompanyUi::urlAccounting($eCompany).'/financialYear/?redirect=1');
+			throw new \RedirectAction(CompanyUi::urlAccount($eCompany).'/financialYear/?redirect=1');
 		}
 
 		if($financialYear) {
 
-			$eFinancialYear = \accounting\FinancialYearLib::getById($financialYear);
+			$eFinancialYear = \account\FinancialYearLib::getById($financialYear);
 
 			if($eFinancialYear->exists() === FALSE) {
-				$eFinancialYear = \accounting\FinancialYearLib::selectDefaultFinancialYear();
+				$eFinancialYear = \account\FinancialYearLib::selectDefaultFinancialYear();
 				$financialYear = $eFinancialYear['id'];
 			}
 
@@ -211,7 +211,7 @@ class EmployeeLib extends EmployeeCrud {
 				return [$cFinancialYear, $cFinancialYear->first()];
 			}
 
-			return [$cFinancialYear, \accounting\FinancialYearLib::getById($eCompany->getView('viewFinancialYear'))];
+			return [$cFinancialYear, \account\FinancialYearLib::getById($eCompany->getView('viewFinancialYear'))];
 
 		}
 

@@ -40,8 +40,8 @@ class CompanyUi {
 		return \Lime::getUrl().'/'.(is_int($company) ? $company : $company['id']).'/bank';
 	}
 
-	public static function urlAccounting(int|Company $company): string {
-		return \Lime::getUrl().'/'.(is_int($company) ? $company : $company['id']).'/accounting';
+	public static function urlAccount(int|Company $company): string {
+		return \Lime::getUrl().'/'.(is_int($company) ? $company : $company['id']).'/account';
 	}
 
 	/**
@@ -86,7 +86,7 @@ class CompanyUi {
 		}
 
 		$h = '<div class="util-info">';
-			$h .= \Asset::icon('leaf').' '.s("Avant de démarrer, rendez-vous <link>dans les paramètres de votre exploitation</link> pour créer votre premier exercice comptable !", ['link' => '<a href="'.CompanyUi::urlAccounting($eCompany).'/financialYear/">']);
+			$h .= \Asset::icon('leaf').' '.s("Avant de démarrer, rendez-vous <link>dans les paramètres de votre exploitation</link> pour créer votre premier exercice comptable !", ['link' => '<a href="'.CompanyUi::urlAccount($eCompany).'/financialYear/">']);
 		$h .= '</div>';
 
 		return $h;
@@ -355,12 +355,12 @@ class CompanyUi {
 
 			$h .= '<div class="util-buttons">';
 
-				$h .= '<a href="'.CompanyUi::urlAccounting($eCompany).'/account" class="bg-secondary util-button">';
+				$h .= '<a href="'.CompanyUi::urlAccount($eCompany).'/account" class="bg-secondary util-button">';
 					$h .= '<h4>'.s("Les classes de compte").'</h4>';
 					$h .= \Asset::icon('gear-fill');
 				$h .= '</a>';
 
-				$h .= '<a href="'.CompanyUi::urlAccounting($eCompany).'/financialYear/" class="bg-secondary util-button">';
+				$h .= '<a href="'.CompanyUi::urlAccount($eCompany).'/financialYear/" class="bg-secondary util-button">';
 					$h .= '<h4>'.s("Les exercices comptables").'</h4>';
 					$h .= \Asset::icon('calendar3');
 				$h .= '</a>';

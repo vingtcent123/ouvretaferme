@@ -23,7 +23,7 @@ new Page()
 	 * Là tu peux faire ce que tu veux
 	 */
 
-	$eFinancialYear = \accounting\FinancialYearLib::getById(1);
+	$eFinancialYear = \account\FinancialYearLib::getById(1);
 	\journal\VatLib::balance($eFinancialYear);
 
 });

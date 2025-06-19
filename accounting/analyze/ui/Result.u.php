@@ -34,8 +34,8 @@ Class ResultUi {
 		
 				$h .= '<tbody>';
 		
-					$h .= $this->getByClass(\Setting::get('accounting\productAccountClass'), $result, $cAccount);
-					$h .= $this->getByClass(\Setting::get('accounting\chargeAccountClass'), $result, $cAccount);
+					$h .= $this->getByClass(\Setting::get('account\productAccountClass'), $result, $cAccount);
+					$h .= $this->getByClass(\Setting::get('account\chargeAccountClass'), $result, $cAccount);
 					$h .= $this->getTotalLine(array_sum(array_column($result, 'credit')) - array_sum(array_column($result, 'debit')));
 		
 				$h .= '</tbody>';
@@ -97,8 +97,8 @@ Class ResultUi {
 		$h = '<tr class="row-highlight row-bold">';
 		$h .= '<td></td>';
 		$h .= '<td class="text-end">'.match($class) {
-				\Setting::get('accounting\chargeAccountClass') => s("Total Charges"),
-				\Setting::get('accounting\productAccountClass') => s("Total Produits")
+				\Setting::get('account\chargeAccountClass') => s("Total Charges"),
+				\Setting::get('account\productAccountClass') => s("Total Produits")
 			}.'</td>';
 		$h .= '<td class="text-end">'.number_format(abs($credit - $debit), thousands_separator: ' ').'</td>';
 		$h .= '</tr>';
@@ -107,7 +107,7 @@ Class ResultUi {
 
 	}
 
-	public function getByMonth(\company\Company $eCompany, \accounting\FinancialYear $eFinancialYear, \Collection $cOperation): string {
+	public function getByMonth(\company\Company $eCompany, \account\FinancialYear $eFinancialYear, \Collection $cOperation): string {
 
 		if($cOperation->empty() === TRUE) {
 
@@ -127,7 +127,7 @@ Class ResultUi {
 	}
 
 
-	protected function getChart(\accounting\FinancialYear $eFinancialYear, \Collection $cOperation): string {
+	protected function getChart(\account\FinancialYear $eFinancialYear, \Collection $cOperation): string {
 
 		\Asset::jsUrl('https://cdn.jsdelivr.net/npm/chart.js');
 
@@ -152,7 +152,7 @@ Class ResultUi {
 		return $h;
 	}
 
-	protected function getTable(\accounting\FinancialYear $eFinancialYear, \Collection $cOperation): string {
+	protected function getTable(\account\FinancialYear $eFinancialYear, \Collection $cOperation): string {
 
 		$h = '<div class="util-overflow-sm">';
 

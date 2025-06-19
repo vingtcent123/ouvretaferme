@@ -198,7 +198,7 @@ class BalanceUi {
 		return $h;
 	}
 
-	public function displayPdfLink(\company\Company $eCompany, \accounting\FinancialYear $eFinancialYear, string $type): string {
+	public function displayPdfLink(\company\Company $eCompany, \account\FinancialYear $eFinancialYear, string $type): string {
 
 		$h = '<div class="text-end mb-1">';
 			$h .= '<a href="'.\overview\PdfUi::urlBalance($eCompany, $eFinancialYear).'?type='.$type.'" data-ajax-navigation="never" class="btn btn-primary">';

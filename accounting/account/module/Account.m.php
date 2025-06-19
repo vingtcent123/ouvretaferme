@@ -1,5 +1,5 @@
 <?php
-namespace accounting;
+namespace account;
 
 abstract class AccountElement extends \Element {
 
@@ -27,9 +27,9 @@ abstract class AccountElement extends \Element {
 
 class AccountModel extends \ModuleModel {
 
-	protected string $module = 'accounting\Account';
-	protected string $package = 'accounting';
-	protected string $table = 'accountingAccount';
+	protected string $module = 'account\Account';
+	protected string $package = 'account';
+	protected string $table = 'account';
 
 	public function __construct() {
 
@@ -41,7 +41,7 @@ class AccountModel extends \ModuleModel {
 			'description' => ['text8', 'min' => 1, 'max' => NULL, 'collate' => 'general', 'cast' => 'string'],
 			'visible' => ['bool', 'cast' => 'bool'],
 			'custom' => ['bool', 'cast' => 'bool'],
-			'vatAccount' => ['element32', 'accounting\Account', 'null' => TRUE, 'cast' => 'element'],
+			'vatAccount' => ['element32', 'account\Account', 'null' => TRUE, 'cast' => 'element'],
 			'vatRate' => ['decimal', 'digits' => 5, 'decimal' => 2, 'null' => TRUE, 'cast' => 'float'],
 			'createdAt' => ['datetime', 'cast' => 'string'],
 			'createdBy' => ['element32', 'user\User', 'cast' => 'element'],
@@ -52,7 +52,7 @@ class AccountModel extends \ModuleModel {
 		]);
 
 		$this->propertiesToModule += [
-			'vatAccount' => 'accounting\Account',
+			'vatAccount' => 'account\Account',
 			'createdBy' => 'user\User',
 		];
 
@@ -237,7 +237,7 @@ abstract class AccountCrud extends \ModuleCrud {
 
 class AccountPage extends \ModulePage {
 
-	protected string $module = 'accounting\Account';
+	protected string $module = 'account\Account';
 
 	public function __construct(
 	   ?\Closure $start = NULL,

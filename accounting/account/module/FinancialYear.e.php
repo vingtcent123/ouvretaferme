@@ -1,5 +1,5 @@
 <?php
-namespace accounting;
+namespace account;
 
 class FinancialYear extends FinancialYearElement {
 
@@ -24,7 +24,7 @@ class FinancialYear extends FinancialYearElement {
 			})
 			->setCallback('startDate.check', function(string $date): bool {
 
-				$eFinancialYear = \accounting\FinancialYearLib::getFinancialYearSurroundingDate($date, $this['id']);
+				$eFinancialYear = \account\FinancialYearLib::getFinancialYearSurroundingDate($date, $this['id']);
 
 				return $eFinancialYear->exists() === FALSE;
 
@@ -40,7 +40,7 @@ class FinancialYear extends FinancialYearElement {
 			})
 			->setCallback('endDate.check', function(string $date) use($p): bool {
 
-				$eFinancialYear = \accounting\FinancialYearLib::getFinancialYearSurroundingDate($date, $this['id']);
+				$eFinancialYear = \account\FinancialYearLib::getFinancialYearSurroundingDate($date, $this['id']);
 
 				return $eFinancialYear->exists() === FALSE;
 

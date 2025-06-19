@@ -9,7 +9,7 @@ class PdfUi {
 
 	}
 
-	public static function getHeader(string $title, \accounting\FinancialYear $eFinancialYear): string {
+	public static function getHeader(string $title, \account\FinancialYear $eFinancialYear): string {
 
 		$borderColor = '#D5D5D5';
 		$h = '<style>

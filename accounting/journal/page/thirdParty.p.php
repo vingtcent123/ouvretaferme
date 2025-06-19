@@ -53,8 +53,8 @@ new Page(function($data) {
 		$cThirdParty = \journal\ThirdPartyLib::filterByCashflow($cThirdParty, $eCashflow);
 	}
 
-	$supplierAccountLabel = \journal\ThirdPartyLib::getNextThirdPartyAccountLabel('supplierAccountLabel', \Setting::get('accounting\thirdAccountSupplierDebtClass'));
-	$clientAccountLabel = \journal\ThirdPartyLib::getNextThirdPartyAccountLabel('clientAccountLabel', \Setting::get('accounting\thirdAccountClientReceivableClass'));
+	$supplierAccountLabel = \journal\ThirdPartyLib::getNextThirdPartyAccountLabel('supplierAccountLabel', \Setting::get('account\thirdAccountSupplierDebtClass'));
+	$clientAccountLabel = \journal\ThirdPartyLib::getNextThirdPartyAccountLabel('clientAccountLabel', \Setting::get('account\thirdAccountClientReceivableClass'));
 
 	// On affecte le prochain incrément automatiquement
 	foreach($cThirdParty as &$eThirdParty) {

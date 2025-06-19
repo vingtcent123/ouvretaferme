@@ -6,7 +6,7 @@ class ImportUi {
 	public function __construct() {
 	}
 
-	public function getImportTitle(\company\Company $eCompany, \accounting\FinancialYear $eFinancialYear): string {
+	public function getImportTitle(\company\Company $eCompany, \account\FinancialYear $eFinancialYear): string {
 
 		$h = '<div class="util-action">';
 
@@ -15,7 +15,7 @@ class ImportUi {
 			$h .= '</h1>';
 
 			if(
-				$eFinancialYear['status'] === \accounting\FinancialYearElement::OPEN
+				$eFinancialYear['status'] === \account\FinancialYearElement::OPEN
 				and $eFinancialYear['endDate'] >= date('Y-m-d')
 				and $eCompany->canWrite() === TRUE
 			) {
@@ -32,12 +32,12 @@ class ImportUi {
 
 	}
 
-	protected function getPeriod(string $period, \accounting\FinancialYear $eFinancialYear): string {
+	protected function getPeriod(string $period, \account\FinancialYear $eFinancialYear): string {
 
 		if($period > date('Y-m-d')) {
 			$period = date('Y-m-d');
 		}
-		$year = \accounting\FinancialYearUi::getYear($eFinancialYear);
+		$year = \account\FinancialYearUi::getYear($eFinancialYear);
 
 		if(mb_strlen($year) === 4) {
 			return \util\DateUi::numeric($period,\util\DateUi::DAY_MONTH);
@@ -50,13 +50,13 @@ class ImportUi {
 		\company\Company $eCompany,
 		\Collection $cImport,
 		array $imports,
-		\accounting\FinancialYear $eFinancialYearSelected,
+		\account\FinancialYear $eFinancialYearSelected,
 	): string {
 		\Asset::css('bank', 'flow.css');
 
 		if($cImport->empty() === TRUE) {
 			return '<div class="util-info">'.
-				s("Aucun import bancaire n'a été réalisé pour l'exercice {year}", ['year' => \accounting\FinancialYearUi::getYear($eFinancialYearSelected)]).
+				s("Aucun import bancaire n'a été réalisé pour l'exercice {year}", ['year' => \account\FinancialYearUi::getYear($eFinancialYearSelected)]).
 				'</div>';
 		}
 
