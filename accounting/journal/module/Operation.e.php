@@ -1,6 +1,8 @@
 <?php
 namespace journal;
 
+use account\ThirdPartyLib;
+
 class Operation extends OperationElement {
 
 	public function canQuickUpdate(): bool {
@@ -74,12 +76,12 @@ class Operation extends OperationElement {
 				return FALSE;
 
 			})
-			->setCallback('thirdParty.empty', function(?ThirdParty $eThirdParty): bool {
+			->setCallback('thirdParty.empty', function(?\account\ThirdParty $eThirdParty): bool {
 
 				return $eThirdParty !== NULL;
 
 			})
-			->setCallback('thirdParty.check', function(?ThirdParty $eThirdParty): bool {
+			->setCallback('thirdParty.check', function(?\account\ThirdParty $eThirdParty): bool {
 
 				if($eThirdParty->empty()) {
 					return TRUE;

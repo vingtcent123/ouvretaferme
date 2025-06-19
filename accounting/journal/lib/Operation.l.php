@@ -1,6 +1,9 @@
 <?php
 namespace journal;
 
+use account\ThirdPartyLib;
+use account\ThirdPartyUi;
+
 class OperationLib extends OperationCrud {
 
 	public static function getPropertiesCreate(): array {
@@ -54,7 +57,7 @@ class OperationLib extends OperationCrud {
 
 	}
 
-	public static function getByThirdPartyAndOrderedByUsage(ThirdParty $eThirdParty): \Collection {
+	public static function getByThirdPartyAndOrderedByUsage(\account\ThirdParty $eThirdParty): \Collection {
 
 		return \journal\Operation::model()
 			->select(['account', 'count' => new \Sql('COUNT(*)')])
@@ -190,7 +193,7 @@ class OperationLib extends OperationCrud {
 		}
 	}
 
-	public static function getNotLetteredOperationsByThirdParty(ThirdParty $eThirdParty): \Collection {
+	public static function getNotLetteredOperationsByThirdParty(\account\ThirdParty $eThirdParty): \Collection {
 
 		if($eThirdParty->empty()) {
 			return new \Collection();
@@ -345,9 +348,9 @@ class OperationLib extends OperationCrud {
 
 			$thirdParty = $input['thirdParty'][$index] ?? null;
 			if($thirdParty !== null) {
-				$eOperation['thirdParty'] = \journal\ThirdPartyLib::getById($thirdParty);
+				$eOperation['thirdParty'] = \account\ThirdPartyLib::getById($thirdParty);
 			} else {
-				$eOperation['thirdParty'] = new ThirdParty();
+				$eOperation['thirdParty'] = new \account\ThirdParty();
 			}
 
 			foreach(['date', 'document', 'documentDate', 'thirdParty'] as $property) {
@@ -411,7 +414,7 @@ class OperationLib extends OperationCrud {
 
 				$amount = $eOperation['amount'] + ($hasVatAccount ? $eOperationVat['amount'] : 0);
 
-				$eThirdParty = \journal\ThirdPartyLib::getById($thirdParty);
+				$eThirdParty = \account\ThirdPartyLib::getById($thirdParty);
 				$isChargeOperation = mb_substr($eOperation['accountLabel'], 0, 1) === (string)\Setting::get('account\chargeAccountClass');
 				$isProductOperation = mb_substr($eOperation['accountLabel'], 0, 1) === (string)\Setting::get('account\productAccountClass');
 
@@ -668,7 +671,7 @@ class OperationLib extends OperationCrud {
 
 		$eAccountBank = \account\AccountLib::getByClass(\Setting::get('account\bankAccountClass'));
 
-		$eThirdParty = $eOperation['thirdParty'] ?? new ThirdParty();
+		$eThirdParty = $eOperation['thirdParty'] ?? new \account\ThirdParty();
 
 		if($eCashflow['import']['account']['label'] !== NULL) {
 			$label = $eCashflow['import']['account']['label'];
@@ -843,7 +846,7 @@ class OperationLib extends OperationCrud {
 
 	}
 
-	public static function getWaiting(ThirdParty $eThirdParty): \Collection {
+	public static function getWaiting(\account\ThirdParty $eThirdParty): \Collection {
 
 		$search = new \Search([
 			'thirdParty' => $eThirdParty['id'],

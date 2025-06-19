@@ -58,7 +58,7 @@ new \bank\CashflowPage(
 	->post('addAllocate', function($data) {
 
 		$data->index = POST('index');
-		$eThirdParty = post_exists('thirdParty') ? \journal\ThirdPartyLib::getById(POST('thirdParty')) : new \journal\ThirdParty();
+		$eThirdParty = post_exists('thirdParty') ? \account\ThirdPartyLib::getById(POST('thirdParty')) : new \account\ThirdParty();
 		$data->eOperation = new \journal\Operation(['account' => new \account\Account(), 'thirdParty' => $eThirdParty]);
 
 		throw new ViewAction($data);

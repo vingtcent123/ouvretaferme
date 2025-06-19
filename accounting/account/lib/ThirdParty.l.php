@@ -1,5 +1,5 @@
 <?php
-namespace journal;
+namespace account;
 
 class ThirdPartyLib extends ThirdPartyCrud {
 
@@ -12,19 +12,19 @@ class ThirdPartyLib extends ThirdPartyCrud {
 		$search->validateSort(['id', 'name']);
 
 		return ThirdParty::model()
-			->select(ThirdParty::getSelection())
+      ->select(ThirdParty::getSelection())
       ->whereName('LIKE', '%'.$search->get('name').'%', if: $search->get('name'))
-			->sort($search->buildSort())
-			->getCollection();
+      ->sort($search->buildSort())
+      ->getCollection();
 
 	}
 
 	public static function getByName(string $name): ThirdParty|\Element {
 
 		return ThirdParty::model()
-			->select(ThirdParty::getSelection())
-			->whereName('=', $name)
-			->get();
+	    ->select(ThirdParty::getSelection())
+	    ->whereName('=', $name)
+	    ->get();
 
 	}
 
@@ -54,10 +54,10 @@ class ThirdPartyLib extends ThirdPartyCrud {
 	public static function getNextThirdPartyAccountLabel(string $field, string $prefix): string {
 
 		$eThirdParty = ThirdParty::model()
-			->select($field)
-			->where($field, 'LIKE', $prefix.'%')
-			->sort([$field => SORT_DESC])
-			->get();
+      ->select($field)
+      ->where($field, 'LIKE', $prefix.'%')
+      ->sort([$field => SORT_DESC])
+      ->get();
 
 		if($eThirdParty->empty()) {
 			return $prefix.'001';

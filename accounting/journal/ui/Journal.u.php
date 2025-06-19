@@ -63,7 +63,7 @@ class JournalUi {
 
 	}
 
-	public function getSearch(\Search $search, \account\FinancialYear $eFinancialYearSelected, \bank\Cashflow $eCashflow, ?ThirdParty $eThirdParty): string {
+	public function getSearch(\Search $search, \account\FinancialYear $eFinancialYearSelected, \bank\Cashflow $eCashflow, ?\account\ThirdParty $eThirdParty): string {
 
 		\Asset::js('journal', 'operation.js');
 

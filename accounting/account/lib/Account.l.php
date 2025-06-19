@@ -122,7 +122,7 @@ class AccountLib extends AccountCrud {
 			return $cAccount;
 		}
 
-		$eThirdParty = \journal\ThirdPartyLib::getById($thirdParty);
+		$eThirdParty = ThirdPartyLib::getById($thirdParty);
 
 		$cOperationThirdParty = \journal\OperationLib::getByThirdPartyAndOrderedByUsage($eThirdParty);
 

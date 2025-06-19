@@ -5,7 +5,7 @@ document.delegateEventListener('autocompleteBeforeQuery', '[data-third-party="jo
 class ThirdParty {
 
     static focusInput() {
-        qs('input[name="name"]').focus();
+        qs('#journal-thirdParty-create input[name="name"]').focus();
     }
 
     static createNewThirdParty(element) {

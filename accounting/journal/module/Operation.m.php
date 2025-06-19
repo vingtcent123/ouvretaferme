@@ -58,7 +58,7 @@ class OperationModel extends \ModuleModel {
 			'journalCode' => ['enum', [\journal\Operation::ACH, \journal\Operation::VEN, \journal\Operation::BAN, \journal\Operation::OD], 'null' => TRUE, 'cast' => 'enum'],
 			'account' => ['element32', 'account\Account', 'cast' => 'element'],
 			'accountLabel' => ['text8', 'min' => 1, 'max' => NULL, 'collate' => 'general', 'cast' => 'string'],
-			'thirdParty' => ['element32', 'journal\ThirdParty', 'null' => TRUE, 'cast' => 'element'],
+			'thirdParty' => ['element32', 'account\ThirdParty', 'null' => TRUE, 'cast' => 'element'],
 			'date' => ['date', 'min' => toDate('NOW - 2 YEARS'), 'max' => toDate('NOW + 1 YEARS'), 'cast' => 'string'],
 			'description' => ['text8', 'min' => 1, 'max' => NULL, 'collate' => 'general', 'cast' => 'string'],
 			'document' => ['text8', 'min' => 1, 'max' => NULL, 'collate' => 'general', 'null' => TRUE, 'cast' => 'string'],
@@ -85,7 +85,7 @@ class OperationModel extends \ModuleModel {
 
 		$this->propertiesToModule += [
 			'account' => 'account\Account',
-			'thirdParty' => 'journal\ThirdParty',
+			'thirdParty' => 'account\ThirdParty',
 			'cashflow' => 'bank\Cashflow',
 			'vatAccount' => 'account\Account',
 			'operation' => 'journal\Operation',

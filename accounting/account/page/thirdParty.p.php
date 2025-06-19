@@ -1,5 +1,5 @@
 <?php
-new \journal\ThirdPartyPage(
+new \account\ThirdPartyPage(
 	function($data) {
 		\user\ConnectionLib::checkLogged();
 		$company = REQUEST('company');
@@ -13,7 +13,7 @@ new \journal\ThirdPartyPage(
 			'name' => GET('name'),
 		], GET('sort'));
 
-		$data->cThirdParty = \journal\ThirdPartyLib::getAll($data->search);
+		$data->cThirdParty = account\ThirdPartyLib::getAll($data->search);
 		$cOperation = \journal\OperationLib::countGroupByThirdParty();
 		foreach($data->cThirdParty as &$eThirdParty) {
 			$eThirdParty['operations'] = $cOperation[$eThirdParty['id']]['count'] ?? 0;
@@ -32,7 +32,8 @@ new \journal\ThirdPartyPage(
 		throw new ViewAction($data);
 
 	})
-	->quick(['name']);
+	->quick(['name'])
+	->doDelete(fn($data) => throw new ReloadAction('account', 'ThirdParty::deleted'));
 
 new Page(function($data) {
 
@@ -46,15 +47,15 @@ new Page(function($data) {
 		'name' => POST('query'),
 	], GET('sort', default: 'name'));
 
-	$cThirdParty = \journal\ThirdPartyLib::getAll($data->search);
+	$cThirdParty = account\ThirdPartyLib::getAll($data->search);
 
 	if(post_exists('cashflowId') === TRUE) {
 		$eCashflow = \bank\CashflowLib::getById(POST('cashflowId', 'int'));
-		$cThirdParty = \journal\ThirdPartyLib::filterByCashflow($cThirdParty, $eCashflow);
+		$cThirdParty = account\ThirdPartyLib::filterByCashflow($cThirdParty, $eCashflow);
 	}
 
-	$supplierAccountLabel = \journal\ThirdPartyLib::getNextThirdPartyAccountLabel('supplierAccountLabel', \Setting::get('account\thirdAccountSupplierDebtClass'));
-	$clientAccountLabel = \journal\ThirdPartyLib::getNextThirdPartyAccountLabel('clientAccountLabel', \Setting::get('account\thirdAccountClientReceivableClass'));
+	$supplierAccountLabel = account\ThirdPartyLib::getNextThirdPartyAccountLabel('supplierAccountLabel', \Setting::get('account\thirdAccountSupplierDebtClass'));
+	$clientAccountLabel = account\ThirdPartyLib::getNextThirdPartyAccountLabel('clientAccountLabel', \Setting::get('account\thirdAccountClientReceivableClass'));
 
 	// On affecte le prochain incrément automatiquement
 	foreach($cThirdParty as &$eThirdParty) {
@@ -66,5 +67,5 @@ new Page(function($data) {
 
 	throw new \ViewAction($data);
 
-})
+});
 ?>

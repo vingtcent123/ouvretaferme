@@ -318,7 +318,7 @@ class CashflowUi {
 		\Asset::js('journal', 'operation.js');
 		\Asset::js('bank', 'cashflow.js');
 		\Asset::js('journal', 'asset.js');
-		\Asset::js('journal', 'thirdParty.js');
+		\Asset::js('account', 'thirdParty.js');
 
 		\Asset::css('journal', 'operation.css');
 		\Asset::css('bank', 'cashflow.css');

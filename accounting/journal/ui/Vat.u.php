@@ -25,7 +25,7 @@ Class VatUi {
 
 	}
 
-	public function getSearch(\Search $search, \account\FinancialYear $eFinancialYearSelected, ?ThirdParty $eThirdParty): string {
+	public function getSearch(\Search $search, \account\FinancialYear $eFinancialYearSelected, ?\account\ThirdParty $eThirdParty): string {
 
 		$h = '<div id="vat-search" class="util-block-search stick-xs '.($search->empty(['ids']) === TRUE ? 'hide' : '').'">';
 

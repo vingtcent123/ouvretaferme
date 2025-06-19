@@ -36,7 +36,7 @@ new \journal\OperationPage(
 		}
 
 		// Third party
-		$thirdParty = \journal\ThirdPartyLib::getById(GET('thirdParty', 'int'));
+		$thirdParty = account\ThirdPartyLib::getById(GET('thirdParty', 'int'));
 
 		$data->e->merge([
 			'company' => $data->eCompany['id'],
@@ -62,7 +62,7 @@ new \journal\OperationPage(
 		$data->index = POST('index');
 		$data->eFinancialYear = \account\FinancialYearLib::selectDefaultFinancialYear();
 
-		$eThirdParty = post_exists('thirdParty') ? \journal\ThirdPartyLib::getById(POST('thirdParty')) : new \journal\ThirdParty();
+		$eThirdParty = post_exists('thirdParty') ? \account\ThirdPartyLib::getById(POST('thirdParty')) : new \account\ThirdParty();
 		$data->eOperation = new \journal\Operation(['account' => new \account\Account(), 'thirdParty' => $eThirdParty]);
 
 		throw new ViewAction($data);
@@ -96,7 +96,7 @@ new \journal\OperationPage(
 	->create(action: function($data) {
 
 		// Third party
-		$thirdParty = \journal\ThirdPartyLib::getById(GET('thirdParty', 'int'));
+		$thirdParty = account\ThirdPartyLib::getById(GET('thirdParty', 'int'));
 
 		$data->e->merge([
 			'company' => $data->eCompany['id'],
@@ -144,7 +144,7 @@ new Page(
 	})
 	->post('getWaiting', function($data) {
 
-		$data->cOperation = \journal\OperationLib::getWaiting(POST('thirdParty', 'journal\ThirdParty'));
+		$data->cOperation = \journal\OperationLib::getWaiting(POST('thirdParty', 'account\ThirdParty'));
 
 		throw new ViewAction($data);
 

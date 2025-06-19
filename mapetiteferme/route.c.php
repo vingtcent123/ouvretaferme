@@ -67,6 +67,16 @@ Route::register([
 			'priority' => 5,
 			'route' => ['@module', 'account', 'Account', 'quick'],
 		],
+		'/@module/account/ThirdParty/doQuick' => [
+			'request' => 'account/thirdParty',
+			'priority' => 5,
+			'route' => ['@module', 'account', 'ThirdParty', 'doQuick'],
+		],
+		'/@module/account/ThirdParty/quick' => [
+			'request' => 'account/thirdParty',
+			'priority' => 5,
+			'route' => ['@module', 'account', 'ThirdParty', 'quick'],
+		],
 		'/@module/bank/BankAccount/doQuick' => [
 			'request' => 'bank/account',
 			'priority' => 5,
@@ -86,16 +96,6 @@ Route::register([
 			'request' => 'journal/operation',
 			'priority' => 5,
 			'route' => ['@module', 'journal', 'Operation', 'quick'],
-		],
-		'/@module/journal/ThirdParty/doQuick' => [
-			'request' => 'journal/thirdParty',
-			'priority' => 5,
-			'route' => ['@module', 'journal', 'ThirdParty', 'doQuick'],
-		],
-		'/@module/journal/ThirdParty/quick' => [
-			'request' => 'journal/thirdParty',
-			'priority' => 5,
-			'route' => ['@module', 'journal', 'ThirdParty', 'quick'],
 		],
 	],
 	'PUT' => [

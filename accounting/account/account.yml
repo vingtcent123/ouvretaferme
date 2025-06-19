@@ -25,3 +25,12 @@ FinancialYear:
   closeDate: ?date
   createdAt: datetime = SPECIAL(now)
   createdBy: user\User = SPECIAL(user)
+
+ThirdParty:
+  id: serial32
+  name: text8(1, null) @collate(general)
+  clientAccountLabel: ?text8(1, null) @collate(general)
+  supplierAccountLabel: ?text8(1, null) @collate(general)
+  UNIQUE: [
+    ["name"]
+  ]

@@ -21,6 +21,8 @@ class AlertUi {
 			'FinancialYear::startDate.loseOperations' => s("En modifiant cette date, certaines écritures ne seront plus rattachées à un exercice existant."),
 			'FinancialYear::endDate.loseOperations' => s("En modifiant cette date, certaines écritures ne seront plus rattachées à un exercice existant."),
 
+			'ThirdParty::name.duplicate' => s("Ce tiers existe déjà, utilisez-le directement ?"),
+
 			default => null
 
 		};
@@ -38,6 +40,9 @@ class AlertUi {
 			'FinancialYear::updated' => s("L'exercice comptable a bien été mis à jour."),
 			'FinancialYear::closedAndCreated' => s("L'exercice comptable a bien été clôturé et le suivant créé."),
 			'FinancialYear::closed' => s("L'exercice comptable a bien été clôturé."),
+
+			'ThirdParty::created' => s("Le tiers a bien été créé."),
+			'ThirdParty::deleted' => s("Le tiers a bien été supprimé."),
 
 			default => null
 

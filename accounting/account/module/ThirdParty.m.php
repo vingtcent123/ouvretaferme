@@ -1,5 +1,5 @@
 <?php
-namespace journal;
+namespace account;
 
 abstract class ThirdPartyElement extends \Element {
 
@@ -27,9 +27,9 @@ abstract class ThirdPartyElement extends \Element {
 
 class ThirdPartyModel extends \ModuleModel {
 
-	protected string $module = 'journal\ThirdParty';
-	protected string $package = 'journal';
-	protected string $table = 'journalThirdParty';
+	protected string $module = 'account\ThirdParty';
+	protected string $package = 'account';
+	protected string $table = 'accountThirdParty';
 
 	public function __construct() {
 
@@ -180,7 +180,7 @@ abstract class ThirdPartyCrud extends \ModuleCrud {
 
 class ThirdPartyPage extends \ModulePage {
 
-	protected string $module = 'journal\ThirdParty';
+	protected string $module = 'account\ThirdParty';
 
 	public function __construct(
 	   ?\Closure $start = NULL,

@@ -17,7 +17,7 @@ Operation:
   # Compte concerné par l'opération
   account: account\Account
   accountLabel: text8(1, null) @collate(general)
-  thirdParty: ?journal\ThirdParty
+  thirdParty: ?account\ThirdParty
   date: date(PHP(toDate('NOW - 2 YEARS')), PHP(toDate('NOW + 1 YEARS')))
   # Libellé de l'opération
   description: text8(1, null) @collate(general)
@@ -44,13 +44,4 @@ Operation:
   INDEX: [
     ["document"],
     ["cashflow"]
-  ]
-
-ThirdParty:
-  id: serial32
-  name: text8(1, null) @collate(general)
-  clientAccountLabel: ?text8(1, null) @collate(general)
-  supplierAccountLabel: ?text8(1, null) @collate(general)
-  UNIQUE: [
-    ["name"]
   ]

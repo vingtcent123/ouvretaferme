@@ -23,11 +23,11 @@ class VatLib {
 
 		$eAccountVat = \account\AccountLib::getByClass(\Setting::get('account\vatClass'));
 
-		$eThirdParty = ThirdPartyLib::getByName(new \account\VatUi()->getVatTranslation());
+		$eThirdParty = \account\ThirdPartyLib::getByName(new \account\VatUi()->getVatTranslation());
 		if($eThirdParty->exists() === FALSE) {
 
-			$eThirdParty = new ThirdParty(['name' => new \account\VatUi()->getVatTranslation()]);
-			ThirdPartyLib::create($eThirdParty);
+			$eThirdParty = new \account\ThirdParty(['name' => new \account\VatUi()->getVatTranslation()]);
+			\account\ThirdPartyLib::create($eThirdParty);
 
 		}
 

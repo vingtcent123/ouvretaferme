@@ -1,5 +1,5 @@
 <?php
-namespace journal;
+namespace account;
 
 class ThirdPartyUi {
 
@@ -12,8 +12,8 @@ class ThirdPartyUi {
 			$h .= '</h1>';
 
 			$h .= '<div>';
-				$h .= '<a '.attr('onclick', 'Lime.Search.toggle("#thirdParty-search")').' class="btn btn-primary">'.\Asset::icon('search').'</a> ';
-				$h .= '<a href="'.\company\CompanyUi::urlJournal($eCompany).'/thirdParty:create" class="btn btn-primary">'.\Asset::icon('plus-circle').' '.s("Créer un tiers").'</a>';
+				$h .= '<a '.\attr('onclick', 'Lime.Search.toggle("#thirdParty-search")').' class="btn btn-primary">'.\Asset::icon('search').'</a> ';
+				$h .= '<a href="'.\company\CompanyUi::urlAccount($eCompany).'/thirdParty:create" class="btn btn-primary">'.\Asset::icon('plus-circle').' '.s("Créer un tiers").'</a>';
 			$h .= '</div>';
 
 		$h .= '</div>';
@@ -37,7 +37,7 @@ class ThirdPartyUi {
 
 		$h = '';
 
-		$h .= $form->openAjax(\company\CompanyUi::urlJournal($eCompany).'/thirdParty:doCreate', ['id' => 'journal-thirdParty-create', 'autocomplete' => 'off', 'onrender' => 'ThirdParty.focusInput();']);
+		$h .= $form->openAjax(\company\CompanyUi::urlAccount($eCompany).'/thirdParty:doCreate', ['id' => 'journal-thirdParty-create', 'autocomplete' => 'off', 'onrender' => 'ThirdParty.focusInput();']);
 
 		$h .= $form->asteriskInfo();
 
@@ -82,7 +82,7 @@ class ThirdPartyUi {
 						$h .= ($search ? $search->linkSort('name', $label) : $label);
 					$h .= '</th>';
 					$h .= '<th>'.s("Nombre d'écritures comptables").'</th>';
-					$h .= '<th>';
+					$h .= '<th></th>';
 				$h .= '</thead>';
 
 				$h .= '<tbody>';
@@ -94,11 +94,22 @@ class ThirdPartyUi {
 							$h .= '</td>';
 							$h .= '<td>';
 								$eThirdParty->setQuickAttribute('company', $eCompany['id']);
-								$h .= $eThirdParty->quick('name', encode($eThirdParty['name']));
+								$h .= $eThirdParty->quick('name', \encode($eThirdParty['name']));
 							$h .= '</td>';
 							$h .= '<td>';
 								$h .= '<a href="'.\company\CompanyUi::urlJournal($eCompany).'/?thirdParty='.$eThirdParty['id'].'">'.$eThirdParty['operations'].'</a>';
 							$h .= '</td>';
+
+							$h .= '<td>';
+
+								$attributes = [
+									'data-ajax' => \company\CompanyUi::urlAccount($eCompany).'/thirdParty:doDelete',
+									'post-id' => $eThirdParty['id'],
+									'class' => 'btn btn-outline-secondary btn-outline-danger'.($eThirdParty['operations'] > 0 ? ' disabled' : ''),
+								];
+								$h .= '<a '.attrs($attributes).'>'.\Asset::icon('trash').'</a>';
+
+						$h .= '</td>';
 						$h .= '</tr>';
 
 					}
@@ -114,7 +125,7 @@ class ThirdPartyUi {
 		$h = '<div id="thirdParty-search" class="util-block-search stick-xs '.($search->empty(['ids']) === TRUE ? 'hide' : '').'">';
 
 			$form = new \util\FormUi();
-			$url = LIME_REQUEST_PATH;
+			$url = \LIME_REQUEST_PATH;
 
 			$h .= $form->openAjax($url, ['method' => 'get', 'id' => 'form-search']);
 
@@ -155,7 +166,7 @@ class ThirdPartyUi {
 		$d->multiple = $multiple;
 		$d->group += ['wrapper' => 'thirdParty'];
 
-		$d->autocompleteUrl = \company\CompanyUi::urlJournal($company).'/thirdParty:query';
+		$d->autocompleteUrl = \company\CompanyUi::urlAccount($company).'/thirdParty:query';
 		$d->autocompleteResults = function(ThirdParty $e) use ($company) {
 			return self::getAutocomplete($company, $e);
 		};
@@ -169,7 +180,7 @@ class ThirdPartyUi {
 
 		return [
 			'type' => 'link',
-			'link' => \company\CompanyUi::urlJournal($eCompany).'/thirdParty:create',
+			'link' => \company\CompanyUi::urlAccount($eCompany).'/thirdParty:create',
 			'itemHtml' => $item
 		];
 

@@ -1,5 +1,7 @@
 <?php
 namespace journal;
+use account\ThirdPartyUi;
+
 class OperationUi {
 
 	public function __construct() {
@@ -25,7 +27,7 @@ class OperationUi {
 
 		\Asset::css('journal', 'operation.css');
 		\Asset::js('journal', 'payment.js');
-		\Asset::js('journal', 'thirdParty.js');
+		\Asset::js('account', 'thirdParty.js');
 
 		$form = new \util\FormUi();
 
@@ -168,7 +170,7 @@ class OperationUi {
 		\Asset::css('journal', 'operation.css');
 		\Asset::js('journal', 'operation.js');
 		\Asset::js('journal', 'asset.js');
-		\Asset::js('journal', 'thirdParty.js');
+		\Asset::js('account', 'thirdParty.js');
 
 		$form = new \util\FormUi();
 

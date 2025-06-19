@@ -12,7 +12,7 @@ new Page(function($data) {
 		\Setting::set('main\viewJournal', 'account');
 
 		$data->eThirdParty = get_exists('thirdParty')
-			? \journal\ThirdPartyLib::getById(GET('thirdParty', 'int'))
+			? account\ThirdPartyLib::getById(GET('thirdParty', 'int'))
 			: NULL;
 
 		$accountType = GET('accountType',  'string', 'customer');

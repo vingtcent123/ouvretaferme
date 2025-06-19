@@ -12,7 +12,7 @@ new Page(function($data) {
 		\Setting::set('main\viewJournal', 'journal');
 
 		$data->eThirdParty = get_exists('thirdParty')
-			? \journal\ThirdPartyLib::getById(GET('thirdParty', 'int'))
+			? account\ThirdPartyLib::getById(GET('thirdParty', 'int'))
 			: NULL;
 
 		$search = new Search([

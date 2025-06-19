@@ -6,16 +6,16 @@ new AdaptativeView('index', function($data, CompanyTemplate $t) {
 	$t->subNav = new \company\CompanyUi()->getSettingsSubNav($data->eCompany);
 	$t->canonical = \company\CompanyUi::urlJournal($data->eCompany).'/thirdParty/';
 
-	$t->mainTitle = new \journal\ThirdPartyUi()->getThirdPartyTitle($data->eCompany);
+	$t->mainTitle = new \account\ThirdPartyUi()->getThirdPartyTitle($data->eCompany);
 
-	echo new \journal\ThirdPartyUi()->getSearch($data->search);
-	echo new \journal\ThirdPartyUi()->manage($data->eCompany, $data->cThirdParty, $data->search);
+	echo new \account\ThirdPartyUi()->getSearch($data->search);
+	echo new \account\ThirdPartyUi()->manage($data->eCompany, $data->cThirdParty, $data->search);
 
 });
 
 new AdaptativeView('create', function($data, PanelTemplate $t) {
 
-	return new \journal\ThirdPartyUi()->create($data->eCompany, $data->e);
+	return new \account\ThirdPartyUi()->create($data->eCompany, $data->e);
 
 });
 
@@ -49,11 +49,11 @@ new JsonView('query', function($data, AjaxTemplate $t) {
 
 		}
 
-		$results[] = \journal\ThirdPartyUi::getAutocomplete($data->eCompany['id'], $eThirdParty);
+		$results[] = \account\ThirdPartyUi::getAutocomplete($data->eCompany['id'], $eThirdParty);
 
 	}
 
-	$results[] = \journal\ThirdPartyUi::getAutocompleteCreate($data->eCompany);
+	$results[] = \account\ThirdPartyUi::getAutocompleteCreate($data->eCompany);
 
 	$t->push('results', $results);
 
@@ -61,7 +61,7 @@ new JsonView('query', function($data, AjaxTemplate $t) {
 
 new AdaptativeView('doCreate', function($data, AjaxTemplate $t) {
 
-	$t->js()->success('journal', 'ThirdParty::created');
+	$t->js()->success('account', 'ThirdParty::created');
 	$t->js()->closePanel('#panel-journal-thirdParty-create');
 	$t->js()->eval('ThirdParty.setNewThirdParty('.$data->e['id'].', "'.$data->e['name'].'");');
 
