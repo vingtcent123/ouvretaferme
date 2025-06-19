@@ -1,0 +1,142 @@
+#shop-order-nav {
+
+}
+#shop-order-nav ol {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 1rem;
+	padding: 0;
+	margin: 0;
+}
+
+#shop-order-nav ol li {
+	counter-increment: steps;
+	display: inline-block;
+	margin: 0;
+}
+
+#shop-order-nav ol li > *::before {
+	content: counter(steps) " - ";
+}
+
+.basket-flow {
+	background-color: var(--secondary);
+	border-radius: var(--radius);
+	padding: 1rem;
+	color: white;
+	margin-bottom: 1rem;
+}
+
+@media (min-width: 576px) {
+
+	.basket-flow {
+		max-width: max-content;
+	}
+
+}
+
+
+.shop-payments {
+	display: grid;
+	grid-template-columns: 1fr 1fr 1fr;
+	grid-gap: 1rem;
+}
+
+@supports (grid-template-columns: subgrid) {
+
+	.shop-payments {
+		grid-template-rows: 1fr auto auto;
+	}
+
+}
+
+@media (min-width: 576px) and (max-width: 767px) {
+
+	.shop-payments {
+		grid-template-columns: 1fr 1fr;
+	}
+
+}
+
+@media (max-width: 575px) {
+
+	.shop-payments {
+		grid-template-columns: 1fr;
+	}
+
+}
+
+.shop-payment {
+	display: grid;
+	grid-gap: 1rem;
+	transition: border-color 0.5s;
+	color: var(--text);
+	border: 2px solid var(--border);
+}
+
+@supports (grid-template-columns: subgrid) {
+
+	.shop-payment {
+		grid-row: span 3;
+		grid-template-rows: subgrid;
+	}
+
+}
+
+.shop-payment h4 {
+	color: var(--text);
+	font-size: 1.5rem;
+	font-weight: lighter;
+}
+
+.shop-payment:hover {
+	text-decoration: none;
+	border-color: var(--secondary);
+}
+
+.shop-payment .btn {
+	white-space: normal;
+}
+
+.shop-payment-description {
+	margin-bottom: 0;
+}
+
+.shop-payment-cancel {
+	color: var(--secondary);
+}
+
+.sale-confirmation-container {
+	margin-bottom: 2rem;
+}
+
+#shop-basket-summary-list td.basket-summary-product {
+	line-height: 1.4;
+}
+
+@media (max-width: 575px) {
+
+	#shop-basket-summary-list td.basket-summary-product {
+		letter-spacing: -0.1px;
+	}
+
+}
+
+.shop-basket-summary-farm {
+	background-color: #00000005;
+}
+
+.basket-buttons {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 1rem
+}
+
+#shop-basket-address-wrapper[data-type=""] {
+	display: none;
+}
+
+#shop-basket-address-wrapper:not([data-type="home"]) #shop-basket-address-form,
+#shop-basket-address-wrapper:not([data-type="home"]) .shop-basket-address-lines {
+	display: none;
+}

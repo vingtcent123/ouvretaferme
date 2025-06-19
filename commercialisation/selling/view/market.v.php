@@ -1,0 +1,79 @@
+<?php
+new AdaptativeView('/vente/{id}/marche', function($data, MarketTemplate $t) {
+
+	echo '<h2 class="mt-2 text-center">';
+
+		echo match($data->e['preparationStatus']) {
+			\selling\Sale::CLOSED => s("Cette vente est clôturée !"),
+			default => OTF_DEMO ? s("Bienvenue sur le logiciel de caisse de démonstration, à vous de jouer !") : s("Bienvenue sur le logiciel de caisse, à vous de jouer !")
+		};
+
+	echo '</h2>';
+
+	if($data->nItems === 0) {
+
+		echo '<div class="util-block-help mt-2">';
+			echo '<p>'.s("Vous n'avez pas encore ajouté d'article à votre vente, vous risquez de décevoir vos clients !").'</p>';
+			echo '<a href="'.\selling\SaleUi::urlMarket($data->e).'/articles" class="btn btn-secondary">'.s("Ajouter des articles").'</a>';
+		echo '</div>';
+
+	}
+
+});
+
+new AdaptativeView('/vente/{id}/marche/vente/{subId}', function($data, MarketTemplate $t) {
+
+	$t->selected = 'sales';
+
+	$t->eSaleSelected = $data->eSale;
+
+	echo new \selling\MarketUi()->displaySale($data->eFarmer, $data->eSale, $data->cItemSale, $data->e, $data->cItemMarket, $data->cPaymentMethod);
+
+});
+
+new AdaptativeView('doUpdateSale', function($data, AjaxTemplate $t) {
+
+	$t->qs('.market-main')->innerHtml(new \selling\MarketUi()->displaySale($data->eFarmer, $data->e, $data->cItemSale, $data->eSaleMarket, $data->cItemMarket, $data->cPaymentMethod));
+	$t->qs('#market-sale-'.$data->e['id'].'-price')->innerHtml(\util\TextUi::money($data->e['priceIncludingVat'] ?? 0));
+
+});
+
+new AdaptativeView('/vente/{id}/marche/articles', function($data, MarketTemplate $t) {
+
+	$t->selected = 'items';
+
+	echo new \selling\MarketUi()->displayItems($data->e, $data->cItemMarket);
+
+});
+
+new AdaptativeView('/vente/{id}/marche/ventes', function($data, MarketTemplate $t) {
+
+	$t->selected = 'sales';
+
+	if($data->cSale->empty()) {
+
+		echo '<div class="util-empty">';
+			echo s("Vous n'avez encore saisi aucune vente !");
+		echo '</div>';
+
+	} else {
+
+		echo new \selling\MarketUi()->getStats($data->e, $data->ccSaleLast);
+		echo new \selling\MarketUi()->getHours($data->hours);
+		echo new \selling\MarketUi()->getBestProducts($data->e['farm'], $data->cSale, $data->cItem, $data->cItemStats);
+
+		echo '<h2>'.s("Liste des ventes").'</h2>';
+
+		echo new \selling\SaleUi()->getList($data->e['farm'], $data->cSale, hide: ['deliveredAt', 'actions', 'documents'], show: ['createdAt'], link: fn($eSale) => \selling\SaleUi::urlMarket($data->e).'/vente/'.$eSale['id'], cPaymentMethod: $data->cPaymentMethod);
+
+	}
+
+});
+
+new JsonView('doCloseMarketSale', function($data, AjaxTemplate $t) {
+
+	$t->ajaxReload();
+
+});
+
+?>

@@ -1,0 +1,139 @@
+/* Products */
+.item-panel-header {
+	margin-top: .5rem;
+	font-size: 1.1rem;
+}
+
+div.product-item-wrapper {
+	overflow-x: auto;
+}
+
+table.product-item-table {
+	min-width: calc(599px);
+}
+td.product-item-actions {
+	text-align: right;
+}
+
+td.product-item-price {
+	white-space: nowrap;
+}
+
+td.product-item-unit {
+	width: 3rem;
+	font-weight: bold;
+}
+
+
+td.product-item-year-before {
+	font-size: 0.8rem;
+}
+
+@media (max-width: 767px) {
+
+	.product-item-plant {
+		display: none;
+	}
+
+}
+
+.product-item-vignette {
+	width: 4rem;
+}
+
+.product-item-vat {
+	white-space: nowrap;
+}
+
+@media (max-width: 767px) {
+
+	.product-item-vat {
+		display: none;
+	}
+
+}
+
+td.product-item-stock {
+	font-size: 1.1rem;
+	padding-top: 0.2rem;
+}
+
+td.product-item-stock a {
+	color: var(--text);
+}
+
+.product-item-stock-expired {
+	color: var(--muted);
+	font-size: 0.9rem;
+	margin-right: 0.5rem;
+}
+
+div.product-item-label {
+	width: 100%;
+	display: flex;
+	justify-content: space-between;
+	column-gap: 0.25rem;
+	line-height: 1.4;
+}
+
+div.product-item-label > a {
+	line-height: 1.4;
+}
+
+.product-item-label-unit {
+	font-weight: bold;
+	text-transform: uppercase;
+	font-size: 0.8rem;
+	margin-left: 0.5rem;
+}
+
+div.product-item-infos {
+	font-size: 0.9rem;
+	line-height: 1.2;
+	color: var(--muted);
+}
+
+@media (max-width: 575px) {
+	div.product-item-infos {
+		display: none;
+	}
+}
+
+div.product-item-infos > *:not(:last-child) {
+	margin-right: .5rem;
+}
+
+div.product-item-presentation-wrapper {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	grid-gap: 1rem;
+}
+
+@media (max-width: 575px) {
+
+	div.product-item-presentation-wrapper {
+		grid-template-columns: 1fr;
+	}
+
+}
+
+div.product-item-presentation {
+	margin-bottom: 2rem;
+}
+
+div.product-vignette-composition {
+	pointer-events: none;
+	position: absolute;
+	width: 50%;
+	height: 50%;
+	top: -5%;
+	left: -5%;
+	z-index: 1;
+	background: var(--primary);
+	color: white;
+	border-radius: 50%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-size: 75%;
+}

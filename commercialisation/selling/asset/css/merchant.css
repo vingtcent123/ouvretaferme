@@ -1,0 +1,330 @@
+.merchant {
+	position: fixed;
+	z-index: 10000;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	padding: 1rem;
+}
+
+@media (max-width: 449px) {
+
+	.merchant {
+		padding: 0.5rem;
+	}
+
+}
+
+.merchant-background {
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background-color: rgba(0, 0, 0, 0.5);
+}
+
+.merchant-content {
+	position: relative;
+	height: 20rem;
+}
+
+body[data-touch="yes"] .merchant-content {
+	width: calc(100vw - 2rem);
+	max-width: 40rem;
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+}
+
+@media (max-width: 399px) {
+
+	body[data-touch="yes"] .merchant-content {
+		width: calc(100vw - 1rem);
+		grid-template-columns: 16rem 1fr;
+	}
+
+}
+
+body[data-touch="no"] .merchant-content {
+	width: 25rem;
+}
+
+.merchant-title {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	column-gap: 1rem;
+	margin-bottom: 2rem;
+}
+
+.merchant-title h2 {
+	margin-bottom: 0;
+}
+
+.merchant-close {
+	font-size: 2.5rem;
+	line-height: 1;
+}
+
+.merchant-item {
+	background-color: white;
+	position: relative;
+	padding: 1rem;
+	border-radius: var(--radius);
+}
+
+.merchant-lines {
+	display: grid;
+	grid-template-columns: 1fr max-content max-content max-content;
+	grid-row-gap: 1rem;
+	align-items: center;
+}
+
+@media (min-width: 450px) {
+
+	body[data-touch="yes"] {
+
+		.merchant-lines {
+			margin-right: -1rem;
+		}
+
+	}
+
+}
+
+@media (max-width: 449px) {
+
+	body[data-touch="yes"] .merchant-item {
+		padding: 0.75rem;
+	}
+
+	body[data-touch="yes"] .merchant-lines {
+		margin-right: -0.75rem;
+	}
+
+}
+
+.merchant-label {
+	line-height: 1.2;
+}
+
+a.merchant-field {
+	font-size: 1.4rem;
+	text-align: right;
+	background: var(--background-light);
+	padding: 0.25rem 4.75rem 0.25rem 1.5rem;
+	display: flex;
+	align-items: center;
+	justify-content: end;
+	color: var(--text);
+	height: 3.5rem;
+	position: relative;
+	z-index: 1;
+}
+
+body[data-touch="yes"] a.merchant-field {
+	border-top-left-radius: var(--radius);
+	border-bottom-left-radius: var(--radius);
+}
+
+body[data-touch="no"] a.merchant-field {
+	border-radius: var(--radius);
+}
+
+
+@media (max-width: 449px) {
+
+	a.merchant-field {
+		font-size: 1.2rem;
+		padding-left: 1rem;
+	}
+
+}
+
+@media (max-width: 399px) {
+
+	body[data-touch="yes"] a.merchant-field {
+		font-size: 1rem;
+		padding-right: 4.25rem;
+	}
+
+}
+
+a.merchant-field.disabled {
+	pointer-events: none;
+}
+
+a.merchant-field.selected,
+a.merchant-field:hover {
+	background: var(--secondary);
+	color: white;
+	text-decoration: none;
+}
+
+a.merchant-field.disabled {
+	color: var(--muted);
+}
+
+a.merchant-field input {
+	width: 6rem;
+	text-align: right;
+}
+
+a.merchant-field.disabled input {
+	background-color: transparent;
+}
+.merchant-placeholder {
+	grid-column: span 2;
+	background-color: var(--background-light);
+	height: 3.5rem;
+	border-radius: var(--radius);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.merchant-unit {
+	padding-right: 1rem;
+	height: 3.5rem;
+	display: flex;
+	align-items: center;
+	margin-left: -4rem;
+	position: relative;
+	z-index: 2;
+	pointer-events: none;
+}
+
+@media (max-width: 399px) {
+
+	body[data-touch="yes"] .merchant-unit {
+		font-size: 0.9rem;
+		margin-left: -3rem;
+	}
+
+}
+
+a.merchant-field.selected + .merchant-unit,
+a.merchant-field:hover + .merchant-unit {
+	color: white;
+}
+
+body[data-touch="yes"] a.merchant-field input {
+	display: none;
+}
+
+body[data-touch="no"] a.merchant-field .merchant-value {
+	display: none;
+}
+
+.merchant-submit {
+	column-span: 2	;
+}
+
+a.merchant-delete {
+	display: inline-block;
+	margin-top: 1rem;
+}
+
+.merchant-lock,
+.merchant-erase {
+	font-size: 1.5rem;
+}
+
+.merchant-lock {
+	color: var(--text);
+	padding: 0.5rem;
+}
+
+.merchant-erase a {
+	color: var(--secondary);
+	padding: 0.5rem;
+}
+
+.merchant-keyboard {
+	background-color: var(--secondary);
+	margin: 2rem 0;
+	box-shadow: 0 0 20rem rgb(0 0 0 / 50%);
+	border-top-right-radius: var(--radius);
+	border-bottom-right-radius: var(--radius);
+}
+
+body[data-touch="no"] .merchant-keyboard {
+	display: none;
+}
+
+@media (max-width: 449px) {
+
+	.merchant-keyboard {
+		margin: 3rem 0;
+	}
+
+}
+
+.merchant-digits {
+	display: grid;
+	grid-template-columns: 1fr 1fr 1fr;
+	grid-template-rows: 1fr 1fr 1fr 1fr;
+	grid-gap: .75rem;
+	height: 100%;
+	padding: 1rem;
+	user-select: none;
+}
+
+@media (max-width: 575px) {
+
+	.merchant-digits {
+		padding: 0.75rem;
+		grid-gap: 0.5rem;
+	}
+
+}
+
+@media (max-width: 449px) {
+
+	.merchant-digits {
+		padding: 0.5rem;
+		grid-gap: 0.5rem;
+	}
+
+}
+
+.merchant-digit {
+	background-color: white;
+	color: var(--primary);
+	font-size: 2.5rem;
+	line-height: 1;
+	letter-spacing: -0.25rem;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	border-radius: var(--radius);
+}
+
+@keyframes digitHighlight {
+	 0% { background: var(--muted); }
+	 100% { background: white; }
+}
+
+.merchant-digit-animation {
+	animation: digitHighlight 0.1s linear;
+}
+
+.merchant-keyboard.disabled {
+	pointer-events: none;
+}
+
+.merchant-keyboard.disabled .merchant-digit {
+	opacity: 0.1;
+}
+
+.merchant-keyboard a.merchant-digit:hover {
+	text-decoration: none;
+}
+
+.merchant-erase a {
+	color: var(--primary);
+}
