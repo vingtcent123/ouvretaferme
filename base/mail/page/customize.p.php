@@ -31,5 +31,6 @@ new \mail\CustomizePage()
 		throw new ViewAction($data);
 
 	})
-	->doCreate(fn($data) => throw new ReloadAction('mail', 'Customize::created'));
+	->doCreate(fn($data) => throw new ReloadAction('mail', 'Customize::created'))
+	->doDelete(fn($data) => throw new ReloadAction('mail', 'Customize::deleted'));
 ?>

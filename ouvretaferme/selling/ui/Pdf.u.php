@@ -843,10 +843,10 @@ class PdfUi {
 
 	}
 
-	public function getOrderFormMail(\farm\Farm $eFarm, Sale $eSale, ?string $template): array {
+	public function getOrderFormMail(\farm\Farm $eFarm, Sale $eSale, string $type, ?string $template): array {
 
-		$template ??= \mail\CustomizeUi::getDefaultTemplate(\mail\Customize::SALE_ORDER_FORM, $eSale);
-		$variables = \mail\CustomizeUi::getSaleVariables(\mail\Customize::SALE_ORDER_FORM, $eFarm, $eSale);
+		$template ??= \mail\CustomizeUi::getDefaultTemplate($type, $eSale);
+		$variables = \mail\CustomizeUi::getSaleVariables($type, $eFarm, $eSale);
 
 		$title = s("Devis {value}", $variables['number'].' - '.$variables['customer']);
 		$content = \mail\CustomizeUi::convertTemplate($template, $variables);
@@ -855,10 +855,10 @@ class PdfUi {
 
 	}
 
-	public function getDeliveryNoteMail(\farm\Farm $eFarm, Sale $eSale, ?string $template): array {
+	public function getDeliveryNoteMail(\farm\Farm $eFarm, Sale $eSale, string $type, ?string $template): array {
 
-		$template ??= \mail\CustomizeUi::getDefaultTemplate(\mail\Customize::SALE_DELIVERY_NOTE, $eSale);
-		$variables = \mail\CustomizeUi::getSaleVariables(\mail\Customize::SALE_DELIVERY_NOTE, $eFarm, $eSale);
+		$template ??= \mail\CustomizeUi::getDefaultTemplate($type, $eSale);
+		$variables = \mail\CustomizeUi::getSaleVariables($type, $eFarm, $eSale);
 
 		$title = s("Bon de livraison {value}", $variables['number'].' - '.$variables['customer']);
 		$content = \mail\CustomizeUi::convertTemplate($template, $variables);
@@ -867,10 +867,10 @@ class PdfUi {
 
 	}
 
-	public function getInvoiceMail(\farm\Farm $eFarm, Invoice $eInvoice, \Collection $cSale, ?string $template): array {
+	public function getInvoiceMail(\farm\Farm $eFarm, Invoice $eInvoice, \Collection $cSale, string $type, ?string $template): array {
 
-		$template ??= \mail\CustomizeUi::getDefaultTemplate(\mail\Customize::SALE_INVOICE);
-		$variables = \mail\CustomizeUi::getSaleVariables(\mail\Customize::SALE_INVOICE, $eFarm, $eInvoice, $cSale);
+		$template ??= \mail\CustomizeUi::getDefaultTemplate($type);
+		$variables = \mail\CustomizeUi::getSaleVariables($type, $eFarm, $eInvoice, $cSale);
 
 		$eCustomer = $eInvoice['customer'];
 

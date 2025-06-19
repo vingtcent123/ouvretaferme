@@ -124,13 +124,37 @@ class PdfLib extends PdfCrud {
 		switch($type) {
 
 			case Pdf::ORDER_FORM :
-				$template = \mail\CustomizeLib::getTemplateByFarm($eFarm, \mail\Customize::SALE_ORDER_FORM);
-				$content = new PdfUi()->getOrderFormMail($eFarm, $eSale, $template);
+
+				$template = NULL;
+
+				if($eSale['type'] === Sale::PRO) {
+					$customize = \mail\Customize::SALE_ORDER_FORM_PRO;
+					$template = \mail\CustomizeLib::getTemplateByFarm($eFarm, \mail\Customize::SALE_ORDER_FORM_PRO);
+				}
+
+				if($template === NULL) {
+					$customize = \mail\Customize::SALE_ORDER_FORM_PRIVATE;
+					$template = \mail\CustomizeLib::getTemplateByFarm($eFarm, \mail\Customize::SALE_ORDER_FORM_PRIVATE);
+				}
+
+				$content = new PdfUi()->getOrderFormMail($eFarm, $eSale, $customize, $template);
 				break;
 
 			case Pdf::DELIVERY_NOTE :
-				$template = \mail\CustomizeLib::getTemplateByFarm($eFarm, \mail\Customize::SALE_DELIVERY_NOTE);
-				$content = new PdfUi()->getDeliveryNoteMail($eFarm, $eSale, $template);
+
+				$template = NULL;
+
+				if($eSale['type'] === Sale::PRO) {
+					$customize = \mail\Customize::SALE_DELIVERY_NOTE_PRO;
+					$template = \mail\CustomizeLib::getTemplateByFarm($eFarm, \mail\Customize::SALE_DELIVERY_NOTE_PRO);
+				}
+
+				if($template === NULL) {
+					$customize = \mail\Customize::SALE_DELIVERY_NOTE_PRIVATE;
+					$template = \mail\CustomizeLib::getTemplateByFarm($eFarm, \mail\Customize::SALE_DELIVERY_NOTE_PRIVATE);
+				}
+
+				$content = new PdfUi()->getDeliveryNoteMail($eFarm, $eSale, $customize, $template);
 				break;
 
 		}
@@ -202,8 +226,19 @@ class PdfLib extends PdfCrud {
 
 		$cSale = SaleLib::getByInvoice($eInvoice);
 
-		$template = \mail\CustomizeLib::getTemplateByFarm($eFarm, \mail\Customize::SALE_INVOICE);
-		$content = new PdfUi()->getInvoiceMail($eFarm, $eInvoice, $cSale, $template);
+		$template = NULL;
+
+		if($eInvoice['taxes'] === Invoice::EXCLUDING) {
+			$customize = \mail\Customize::SALE_INVOICE_PRO;
+			$template = \mail\CustomizeLib::getTemplateByFarm($eFarm, \mail\Customize::SALE_INVOICE_PRO);
+		}
+
+		if($template === NULL) {
+			$customize = \mail\Customize::SALE_INVOICE_PRIVATE;
+			$template = \mail\CustomizeLib::getTemplateByFarm($eFarm, \mail\Customize::SALE_INVOICE_PRIVATE);
+		}
+
+		$content = new PdfUi()->getInvoiceMail($eFarm, $eInvoice, $cSale, $customize, $template);
 
 		$libMail = new \mail\MailLib();
 

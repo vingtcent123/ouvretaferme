@@ -67,10 +67,7 @@ class SaleLib extends SaleCrud {
 		$eSale['document'] = '123';
 		$eSale['farm'] = $eFarm;
 		$eSale['hasVat'] = $eFarm->getSelling('hasVat');
-		$eSale['customer']['legalName'] = match($type) {
-			Customer::PRO => 'Magasin ABC',
-			Customer::PRIVATE => 'A. Bécé'
-		};
+		$eSale['customer']['legalName'] = '[Nom du client]';
 		$eSale['customer']['invoiceStreet1'] = '[Addresse]';
 		$eSale['customer']['invoiceStreet2'] = NULL;
 		$eSale['customer']['invoicePostcode'] = '[Code postal]';

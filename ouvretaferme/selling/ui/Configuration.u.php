@@ -35,7 +35,6 @@ class ConfigurationUi {
 				$h .= '<a class="tab-item" data-tab="orderForm" onclick="Lime.Tab.select(this)">'.s("Devis").'</a>';
 				$h .= '<a class="tab-item" data-tab="deliveryNote" onclick="Lime.Tab.select(this)">'.s("Bons de livraisons").'</a>';
 				$h .= '<a class="tab-item" data-tab="invoice" onclick="Lime.Tab.select(this)">'.s("Factures").'</a>';
-				$h .= '<a class="tab-item" data-tab="mail" onclick="Lime.Tab.select(this)">'.s("E-mails").'</a>';
 			$h .= '</div>';
 
 			$h .= '<div class="tab-panel selected" data-tab="settings">';
@@ -43,19 +42,15 @@ class ConfigurationUi {
 			$h .= '</div>';
 
 			$h .= '<div class="tab-panel" data-tab="orderForm">';
-				$h .= $this->updateOrderForm($eFarm, $eSaleExample);
+				$h .= $this->updateOrderForm($eFarm, $eSaleExample, $cCustomize);
 			$h .= '</div>';
 
 			$h .= '<div class="tab-panel" data-tab="deliveryNote">';
-				$h .= $this->updateDeliveryNote($eFarm, $eSaleExample);
+				$h .= $this->updateDeliveryNote($eFarm, $eSaleExample, $cCustomize);
 			$h .= '</div>';
 
 			$h .= '<div class="tab-panel" data-tab="invoice">';
-				$h .= $this->updateInvoice($eFarm, $eSaleExample);
-			$h .= '</div>';
-
-			$h .= '<div class="tab-panel" data-tab="mail">';
-				$h .= $this->updateMail($cCustomize, $eFarm, $eSaleExample);
+				$h .= $this->updateInvoice($eFarm, $eSaleExample, $cCustomize);
 			$h .= '</div>';
 
 		$h .= '</div>';
@@ -129,7 +124,7 @@ class ConfigurationUi {
 
 	}
 
-	public function updateOrderForm(\farm\Farm $eFarm, Sale $eSaleExample): string {
+	public function updateOrderForm(\farm\Farm $eFarm, Sale $eSaleExample, \Collection $cCustomize): string {
 
 		$eConfiguration = $eFarm->selling();
 
@@ -147,19 +142,27 @@ class ConfigurationUi {
 
 		}
 
-		$h .= $form->openAjax('/selling/configuration:doUpdateOrderForm', ['id' => 'farm-update', 'autocomplete' => 'off']);
+		$h .= '<h2 class="mb-2">'.s("Personnalisation des devis").'</h2>';
 
-			$h .= $form->hidden('id', $eConfiguration['id']);
+		$h .= '<div class="util-section mb-2">';
+			$h .= $form->openAjax('/selling/configuration:doUpdateOrderForm', ['id' => 'farm-update', 'autocomplete' => 'off']);
 
-			$h .= $form->dynamicGroups($eConfiguration, ['orderFormPrefix', 'orderFormDelivery', 'orderFormPaymentCondition', 'orderFormHeader', 'orderFormFooter']);
+				$h .= $form->hidden('id', $eConfiguration['id']);
 
-			$h .= $form->group(
-				content: $form->submit(s("Enregistrer"))
-			);
+				$h .= $form->dynamicGroups($eConfiguration, ['orderFormPrefix', 'orderFormDelivery', 'orderFormPaymentCondition', 'orderFormHeader', 'orderFormFooter']);
 
-		$h .= $form->close();
+				$h .= $form->group(
+					content: $form->submit(s("Enregistrer"))
+				);
 
-		$h .= '<br/>';
+			$h .= $form->close();
+		$h .= '</div>';
+
+		$h .= '<h2 class="mb-2">'.s("Envoi des devis par e-mail").'</h2>';
+
+		$h .= '<div class="util-section mb-2">';
+			$h .= $this->updateDocumentMail('order-form', $eFarm, $eSaleExample, $cCustomize);
+		$h .= '</div>';
 
 		$h .= '<h2>'.s("Exemple de devis").'</h2>';
 
@@ -173,7 +176,7 @@ class ConfigurationUi {
 
 	}
 
-	public function updateInvoice(\farm\Farm $eFarm, Sale $eSaleExample): string {
+	public function updateInvoice(\farm\Farm $eFarm, Sale $eSaleExample, \Collection $cCustomize): string {
 
 		$eConfiguration = $eFarm->selling();
 
@@ -191,20 +194,28 @@ class ConfigurationUi {
 
 		}
 
-		$h .= $form->openAjax('/selling/configuration:doUpdateInvoice', ['id' => 'farm-update', 'autocomplete' => 'off']);
+		$h .= '<h2 class="mb-2">'.s("Personnalisation des factures").'</h2>';
 
-			$h .= $form->hidden('id', $eConfiguration['id']);
+		$h .= '<div class="util-section mb-2">';
+			$h .= $form->openAjax('/selling/configuration:doUpdateInvoice', ['id' => 'farm-update', 'autocomplete' => 'off']);
 
-			$eConfiguration['documentInvoices']++;
-			$h .= $form->dynamicGroups($eConfiguration, ['invoicePrefix', 'creditPrefix', 'documentInvoices', 'invoicePaymentCondition', 'invoiceHeader', 'invoiceFooter']);
+				$h .= $form->hidden('id', $eConfiguration['id']);
 
-			$h .= $form->group(
-				content: $form->submit(s("Enregistrer"))
-			);
+				$eConfiguration['documentInvoices']++;
+				$h .= $form->dynamicGroups($eConfiguration, ['invoicePrefix', 'creditPrefix', 'documentInvoices', 'invoicePaymentCondition', 'invoiceHeader', 'invoiceFooter']);
 
-		$h .= $form->close();
+				$h .= $form->group(
+					content: $form->submit(s("Enregistrer"))
+				);
 
-		$h .= '<br/>';
+			$h .= $form->close();
+		$h .= '</div>';
+
+		$h .= '<h2 class="mb-2">'.s("Envoi des factures par e-mail").'</h2>';
+
+		$h .= '<div class="util-section mb-2">';
+			$h .= $this->updateDocumentMail('invoice', $eFarm, $eSaleExample, $cCustomize);
+		$h .= '</div>';
 
 		$h .= '<h2>'.s("Exemple de facture").'</h2>';
 
@@ -218,7 +229,7 @@ class ConfigurationUi {
 
 	}
 
-	public function updateDeliveryNote(\farm\Farm $eFarm, Sale $eSaleExample): string {
+	public function updateDeliveryNote(\farm\Farm $eFarm, Sale $eSaleExample, \Collection $cCustomize): string {
 
 		$eConfiguration = $eFarm->selling();
 
@@ -234,19 +245,31 @@ class ConfigurationUi {
 
 		}
 
-		$form = new \util\FormUi();
+		$h .= '<h2 class="mb-2">'.s("Personnalisation des bons de livraison").'</h2>';
 
-		$h .= $form->openAjax('/selling/configuration:doUpdateDeliveryNote', ['id' => 'farm-update', 'autocomplete' => 'off']);
+		$h .= '<div class="util-section mb-2">';
 
-			$h .= $form->hidden('id', $eConfiguration['id']);
+			$form = new \util\FormUi();
 
-			$h .= $form->dynamicGroups($eConfiguration, ['deliveryNotePrefix']);
+			$h .= $form->openAjax('/selling/configuration:doUpdateDeliveryNote', ['id' => 'farm-update', 'autocomplete' => 'off']);
 
-			$h .= $form->group(
-				content: $form->submit(s("Enregistrer"))
-			);
+				$h .= $form->hidden('id', $eConfiguration['id']);
 
-		$h .= $form->close();
+				$h .= $form->dynamicGroups($eConfiguration, ['deliveryNotePrefix']);
+
+				$h .= $form->group(
+					content: $form->submit(s("Enregistrer"))
+				);
+
+			$h .= $form->close();
+
+		$h .= '</div>';
+
+		$h .= '<h2 class="mb-2">'.s("Envoi des bons de livraison par e-mail").'</h2>';
+
+		$h .= '<div class="util-section mb-2">';
+			$h .= $this->updateDocumentMail('delivery-note', $eFarm, $eSaleExample, $cCustomize);
+		$h .= '</div>';
 
 		$h .= '<br/>';
 
@@ -262,54 +285,128 @@ class ConfigurationUi {
 
 	}
 
-	public function updateMail(\Collection $cCustomize, \farm\Farm $eFarm, Sale $eSaleExample): string {
+	public function updateDocumentMail(string $type, \farm\Farm $eFarm, Sale $eSaleExample, \Collection $cCustomize): string {
 
-		$eConfiguration = $eFarm->selling();
+		$customizePrivate = match($type) {
+			'order-form' => \mail\Customize::SALE_ORDER_FORM_PRIVATE,
+			'delivery-note' => \mail\Customize::SALE_DELIVERY_NOTE_PRIVATE,
+			'invoice' => \mail\Customize::SALE_INVOICE_PRIVATE,
+		};
 
-		$h = '';
+		$customizePro = match($type) {
+			'order-form' => \mail\Customize::SALE_ORDER_FORM_PRO,
+			'delivery-note' => \mail\Customize::SALE_DELIVERY_NOTE_PRO,
+			'invoice' => \mail\Customize::SALE_INVOICE_PRO,
+		};
 
-		if($eConfiguration->isComplete() === FALSE) {
+		$h = '<div class="tabs-h mb-3" id="selling-configure-mail-'.$type.'" onrender="'.encode('Lime.Tab.restore(this, "private")').'">';
 
-			$h .= '<div class="util-block-help">';
-				$h .= '<p>'.s("Vous pourrez personnaliser les e-mails dès lors que vous aurez terminé la configuration administrative de la commercialisation !").'</p>';
+			$h .= '<div class="tabs-item">';
+				$h .= '<a class="tab-item" data-tab="private" onclick="Lime.Tab.select(this)">';
+					$h .= s("Aux particuliers");
+				$h .= '</a>';
+				$h .= '<a class="tab-item" data-tab="pro" onclick="Lime.Tab.select(this)">';
+					$h .= s("Aux professionnels");
+				$h .= '</a>';
 			$h .= '</div>';
 
-			return $h;
+			$h .= '<div data-tab="private" class="tab-panel selected">';
 
-		}
+				$eCustomize = $cCustomize[$customizePrivate] ?? new \mail\Customize();
 
-		$h .= '<div class="util-block-help">';
-			$h .= '<h4>'.s("Personnalisation des e-mails").'</h4>';
-			$h .= '<p>'.s("Vous pouvez personnaliser le contenu des e-mails envoyés à vos clients pour leur transmettre vos devis, bons de livraison et factures.").'</p>';
+				$h .= '<div class="util-title">';
+					$h .= '<div>';
+						$h .= '<p class="util-info mb-0">';
+							$h .= match($type) {
+								'order-form' => s("Cet e-mail est envoyé lorsque vous envoyez un devis par e-mail à un client particulier."),
+								'delivery-note' => s("Cet e-mail est envoyé lorsque vous envoyez un bon de livraison par e-mail à un client particulier."),
+								'invoice' => s("Cet e-mail est envoyé lorsque vous envoyez une facture par e-mail à un client particulier."),
+							};
+						$h .= '</p>';
+					$h .= '</div>';
+					$h .= '<div>';
+						$h .= '<a href="/mail/customize:create?farm='.$eFarm['id'].'&type='.$customizePrivate.'" class="btn btn-outline-primary">'.s("Personnaliser l'e-mail").'</a>';
+						if($eCustomize->notEmpty()) {
+							$h .= ' <a data-ajax="/mail/customize:doDelete" post-id="'.$eCustomize['id'].'" data-confirm="'.s("Revenir sur le titre et le contenu par défaut ?").'" class="btn btn-outline-primary">'.s("Réinitialiser").'</a>';
+						}
+					$h .= '</div>';
+				$h .= '</div>';
+
+				$h .= $this->getMailExample($type, $eFarm, $eSaleExample, $customizePrivate, $eCustomize->empty() ? NULL : $eCustomize['template']);
+
+			$h .= '</div>';
+
+			$h .= '<div data-tab="pro" class="tab-panel">';
+
+				$eCustomize = $cCustomize[$customizePro] ?? new \mail\Customize();
+
+				if($eCustomize->notEmpty()) {
+
+					$h .= '<div class="util-title">';
+						$h .= '<div>';
+							$h .= '<p class="util-info mb-0">';
+								$h .= match($type) {
+									'order-form' => s("Cet e-mail est envoyé lorsque vous envoyez un devis par e-mail à un client professionnel."),
+									'delivery-note' => s("Cet e-mail est envoyé lorsque vous envoyez un bon de livraison par e-mail à un client professionnel."),
+									'invoice' => s("Cet e-mail est envoyé lorsque vous envoyez une facture par e-mail à un client professionnel."),
+								};
+							$h .= '</p>';
+						$h .= '</div>';
+						$h .= '<div>';
+							$h .= '<a href="/mail/customize:create?farm='.$eFarm['id'].'&type='.$customizePro.'" class="btn btn-outline-primary">'.s("Personnaliser l'e-mail").'</a>';
+							if($eCustomize->notEmpty()) {
+								$h .= ' <a data-ajax="/mail/customize:doDelete" post-id="'.$eCustomize['id'].'" data-confirm="'.s("Revenir sur le titre et le contenu par défaut ?").'" class="btn btn-outline-primary">'.s("Réinitialiser").'</a>';
+							}
+						$h .= '</div>';
+					$h .= '</div>';
+
+				} else {
+
+					$h .= '<div class="util-block-help">';
+						$h .= '<p>';
+							$h .= match($type) {
+								'order-form' => s("Vous n'avez pas personnalisé l'e-mail pour les devis des clients professionnels. Vos clients professionnels recevront l'e-mail configuré pour les clients particuliers."),
+								'delivery-note' => s("Vous n'avez pas personnalisé l'e-mail pour les bons de livraison des clients professionnels. Vos clients professionnels recevront l'e-mail configuré pour les clients particuliers."),
+								'invoice' => s("Vous n'avez pas personnalisé l'e-mail pour les factures des clients professionnels. Vos clients professionnels recevront l'e-mail configuré pour les clients particuliers."),
+							};
+						$h .= '</p>';
+						$h .= '<a href="/mail/customize:create?farm='.$eFarm['id'].'&type='.$customizePro.'" class="btn btn-secondary">'.s("Personnaliser l'e-mail").'</a>';
+					$h .= '</div>';
+
+				}
+
+				if($eCustomize->notEmpty()) {
+
+					$h .= $this->getMailExample($type, $eFarm, $eSaleExample, $customizePro, $eCustomize['template']);
+
+
+				}
+
+			$h .= '</div>';
+
 		$h .= '</div>';
-
-		$h .= '<br/>';
-
-		$h .= '<div class="util-title">';
-			$h .= '<h3>'.s("Envoi de devis").'</h3>';
-			$h .= '<a href="/mail/customize:create?farm='.$eFarm['id'].'&type='.\mail\Customize::SALE_ORDER_FORM.'" class="btn btn-outline-primary">'.s("Personnaliser l'e-mail").'</a>';
-		$h .= '</div>';
-
-		[$title, , $html] = new PdfUi()->getOrderFormMail($eFarm, $eSaleExample, $cCustomize[\mail\Customize::SALE_ORDER_FORM]['template'] ?? NULL);
-		$h .= new \mail\CustomizeUi()->getMailExample($title, $html);
-
-		$h .= '<div class="util-title">';
-			$h .= '<h3>'.s("Envoi de bon de livraison").'</h3>';
-			$h .= '<a href="/mail/customize:create?farm='.$eFarm['id'].'&type='.\mail\Customize::SALE_DELIVERY_NOTE.'" class="btn btn-outline-primary">'.s("Personnaliser l'e-mail").'</a>';
-		$h .= '</div>';
-
-		[$title, , $html] = new PdfUi()->getDeliveryNoteMail($eFarm, $eSaleExample, $cCustomize[\mail\Customize::SALE_DELIVERY_NOTE]['template'] ?? NULL);
-		$h .= new \mail\CustomizeUi()->getMailExample($title, $html);
-
-		$h .= '<div class="util-title">';
-			$h .= '<h3>'.s("Envoi de facture").'</h3>';
-			$h .= '<a href="/mail/customize:create?farm='.$eFarm['id'].'&type='.\mail\Customize::SALE_INVOICE.'" class="btn btn-outline-primary">'.s("Personnaliser l'e-mail").'</a>';
-		$h .= '</div>';
-
-		[$title, , $html] = new PdfUi()->getInvoiceMail($eFarm, $eSaleExample['invoice'], new \Collection([$eSaleExample]), $cCustomize[\mail\Customize::SALE_INVOICE]['template'] ?? NULL);
-		$h .= new \mail\CustomizeUi()->getMailExample($title, $html);
 
 		return $h;
+
+	}
+
+	protected function getMailExample(string $type, \farm\Farm $eFarm, Sale $eSaleExample, string $customize, ?string $template): string {
+
+		switch($type) {
+
+			case 'order-form' :
+				[$title, , $html] = new PdfUi()->getOrderFormMail($eFarm, $eSaleExample, $customize, $template);
+				return new \mail\CustomizeUi()->getMailExample($title, $html);
+
+			case 'delivery-note' :
+				[$title, , $html] = new PdfUi()->getDeliveryNoteMail($eFarm, $eSaleExample, $customize, $template);
+				return new \mail\CustomizeUi()->getMailExample($title, $html);
+
+			case 'invoice' :
+				[$title, , $html] = new PdfUi()->getInvoiceMail($eFarm, $eSaleExample['invoice'], new \Collection([$eSaleExample]), $customize,$template);
+				return new \mail\CustomizeUi()->getMailExample($title, $html);
+
+		}
 
 	}
 

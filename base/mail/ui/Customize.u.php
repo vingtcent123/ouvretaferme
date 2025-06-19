@@ -83,9 +83,12 @@ class CustomizeUi {
 
 		return match($type) {
 
-			Customize::SALE_ORDER_FORM => s("Personnaliser l'e-mail pour les devis"),
-			Customize::SALE_DELIVERY_NOTE => s("Personnaliser l'e-mail pour les bons de livraison"),
-			Customize::SALE_INVOICE => s("Personnaliser l'e-mail pour les factures"),
+			Customize::SALE_ORDER_FORM_PRIVATE => s("Personnaliser l'e-mail pour les devis destinés aux clients particuliers"),
+			Customize::SALE_ORDER_FORM_PRO => s("Personnaliser l'e-mail pour les devis destinés aux clients professionnels"),
+			Customize::SALE_DELIVERY_NOTE_PRIVATE => s("Personnaliser l'e-mail pour les bons de livraison destinés aux clients particuliers"),
+			Customize::SALE_DELIVERY_NOTE_PRO => s("Personnaliser l'e-mail pour les bons de livraison destinés aux clients professionnels"),
+			Customize::SALE_INVOICE_PRIVATE => s("Personnaliser l'e-mail pour les factures destinées aux clients particuliers"),
+			Customize::SALE_INVOICE_PRO => s("Personnaliser l'e-mail pour les factures destinées aux clients professionnels"),
 			Customize::SHOP_CONFIRMED_NONE => s("Personnaliser l'e-mail de confirmation de commande"),
 			Customize::SHOP_CONFIRMED_PLACE => s("Personnaliser l'e-mail de confirmation de commande pour les livraisons en point de retrait"),
 			Customize::SHOP_CONFIRMED_HOME => s("Personnaliser l'e-mail de confirmation de commande pour les livraisons à domicile"),
@@ -98,21 +101,21 @@ class CustomizeUi {
 
 		return match($e['type']) {
 
-			Customize::SALE_ORDER_FORM => [
+			Customize::SALE_ORDER_FORM_PRIVATE, Customize::SALE_ORDER_FORM_PRO => [
 				'number' => s("Numéro de devis"),
 				'customer' => s("Nom du client"),
 				'farm' => s("Nom de votre ferme"),
 				'valid' => s("Date d'échéance du devis")
 			],
 
-			Customize::SALE_DELIVERY_NOTE => [
+			Customize::SALE_DELIVERY_NOTE_PRIVATE, Customize::SALE_DELIVERY_NOTE_PRO => [
 				'number' => s("Numéro du bon de livraison"),
 				'customer' => s("Nom du client"),
 				'farm' => s("Nom de votre ferme"),
 				'delivered' => s("Date de livraison")
 			],
 
-			Customize::SALE_INVOICE => [
+			Customize::SALE_INVOICE_PRIVATE, Customize::SALE_INVOICE_PRO => [
 				'number' => s("Numéro de facture"),
 				'customer' => s("Nom du client"),
 				'farm' => s("Nom de votre ferme"),
@@ -141,11 +144,14 @@ class CustomizeUi {
 	public static function getExampleVariables(string $type, \farm\Farm $eFarm, \selling\Sale $eSaleExample): array {
 
 		switch($type) {
-			case Customize::SALE_ORDER_FORM :
-			case Customize::SALE_DELIVERY_NOTE :
+			case Customize::SALE_ORDER_FORM_PRIVATE :
+			case Customize::SALE_ORDER_FORM_PRO :
+			case Customize::SALE_DELIVERY_NOTE_PRIVATE :
+			case Customize::SALE_DELIVERY_NOTE_PRO :
 				return self::getSaleVariables($type, $eFarm, $eSaleExample);
 
-			case Customize::SALE_INVOICE :
+			case Customize::SALE_INVOICE_PRIVATE :
+			case Customize::SALE_INVOICE_PRO :
 				return self::getSaleVariables($type, $eFarm, $eSaleExample['invoice'], new \Collection([$eSaleExample]));
 
 			case Customize::SHOP_CONFIRMED_NONE :
@@ -181,7 +187,8 @@ class CustomizeUi {
 
 		switch($type) {
 
-			case Customize::SALE_ORDER_FORM :
+			case Customize::SALE_ORDER_FORM_PRIVATE :
+			case Customize::SALE_ORDER_FORM_PRO :
 
 				[$eSale] = $more;
 
@@ -192,7 +199,8 @@ class CustomizeUi {
 					'valid' => $eSale['orderFormValidUntil'] ? \util\DateUi::numeric($eSale['orderFormValidUntil']) : s("limite de validité inconnue"),
 				];
 
-			case Customize::SALE_DELIVERY_NOTE :
+			case Customize::SALE_DELIVERY_NOTE_PRIVATE :
+			case Customize::SALE_DELIVERY_NOTE_PRO :
 
 				[$eSale] = $more;
 
@@ -203,7 +211,8 @@ class CustomizeUi {
 					'delivered' => \util\DateUi::numeric($eSale['deliveredAt'], \util\DateUi::DATE),
 				];
 
-			case Customize::SALE_INVOICE :
+			case Customize::SALE_INVOICE_PRIVATE :
+			case Customize::SALE_INVOICE_PRO :
 
 				[$eInvoice, $cSale] = $more;
 
@@ -423,7 +432,8 @@ class CustomizeUi {
 
 		switch($type) {
 
-			case Customize::SALE_ORDER_FORM :
+			case Customize::SALE_ORDER_FORM_PRIVATE :
+			case Customize::SALE_ORDER_FORM_PRO :
 				return s("Bonjour,
 
 Vous trouverez en pièce jointe notre proposition commerciale.
@@ -431,7 +441,8 @@ Vous trouverez en pièce jointe notre proposition commerciale.
 Cordialement,
 @farm");
 
-			case Customize::SALE_DELIVERY_NOTE :
+			case Customize::SALE_DELIVERY_NOTE_PRIVATE :
+			case Customize::SALE_DELIVERY_NOTE_PRO :
 				return s("Bonjour,
 
 Vous trouverez en pièce jointe le bon de livraison pour la commande livrée le @delivered.
@@ -439,7 +450,8 @@ Vous trouverez en pièce jointe le bon de livraison pour la commande livrée le 
 Cordialement,
 @farm");
 
-			case Customize::SALE_INVOICE :
+			case Customize::SALE_INVOICE_PRIVATE :
+			case Customize::SALE_INVOICE_PRO :
 				return s("Bonjour,
 
 Vous trouverez en pièce jointe notre facture d'un montant de @amount.

@@ -19,6 +19,7 @@ class AlertUi {
 		return match($fqn) {
 
 			'Customize::created' => s("Le contenu de l'e-mail a bien été enregistré !"),
+			'Customize::deleted' => s("Le contenu de l'e-mail a bien été réinitialisé !"),
 
 			default => NULL
 

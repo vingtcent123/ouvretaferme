@@ -7,9 +7,12 @@ abstract class CustomizeElement extends \Element {
 
 	private static ?CustomizeModel $model = NULL;
 
-	const SALE_ORDER_FORM = 'sale-order-form';
-	const SALE_DELIVERY_NOTE = 'sale-delivery-note';
-	const SALE_INVOICE = 'sale-invoice';
+	const SALE_ORDER_FORM_PRIVATE = 'sale-order-form-private';
+	const SALE_ORDER_FORM_PRO = 'sale-order-form-pro';
+	const SALE_DELIVERY_NOTE_PRIVATE = 'sale-delivery-note-private';
+	const SALE_DELIVERY_NOTE_PRO = 'sale-delivery-note-pro';
+	const SALE_INVOICE_PRIVATE = 'sale-invoice-private';
+	const SALE_INVOICE_PRO = 'sale-invoice-pro';
 	const SHOP_CONFIRMED_NONE = 'shop-confirmed-none';
 	const SHOP_CONFIRMED_HOME = 'shop-confirmed-home';
 	const SHOP_CONFIRMED_PLACE = 'shop-confirmed-place';
@@ -46,7 +49,7 @@ class CustomizeModel extends \ModuleModel {
 			'id' => ['serial32', 'cast' => 'int'],
 			'farm' => ['element32', 'farm\Farm', 'cast' => 'element'],
 			'shop' => ['element32', 'shop\Shop', 'null' => TRUE, 'cast' => 'element'],
-			'type' => ['enum', [\mail\Customize::SALE_ORDER_FORM, \mail\Customize::SALE_DELIVERY_NOTE, \mail\Customize::SALE_INVOICE, \mail\Customize::SHOP_CONFIRMED_NONE, \mail\Customize::SHOP_CONFIRMED_HOME, \mail\Customize::SHOP_CONFIRMED_PLACE], 'cast' => 'enum'],
+			'type' => ['enum', [\mail\Customize::SALE_ORDER_FORM_PRIVATE, \mail\Customize::SALE_ORDER_FORM_PRO, \mail\Customize::SALE_DELIVERY_NOTE_PRIVATE, \mail\Customize::SALE_DELIVERY_NOTE_PRO, \mail\Customize::SALE_INVOICE_PRIVATE, \mail\Customize::SALE_INVOICE_PRO, \mail\Customize::SHOP_CONFIRMED_NONE, \mail\Customize::SHOP_CONFIRMED_HOME, \mail\Customize::SHOP_CONFIRMED_PLACE], 'cast' => 'enum'],
 			'template' => ['text24', 'min' => 0, 'max' => NULL, 'cast' => 'string'],
 		]);
 
