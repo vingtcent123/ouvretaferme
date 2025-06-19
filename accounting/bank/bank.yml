@@ -1,4 +1,4 @@
-Account:
+BankAccount:
   id: serial32
   bankId: text8(1, null)
   accountId: text8(1, null)
@@ -16,7 +16,7 @@ Cashflow:
   fitid: ?text8(1, null)
   name: ?text24(1, null)
   memo: ?text8(1, null) @collate(general)
-  account: bank\Account
+  account: bank\BankAccount
   import: bank\Import
   status: enum(WAITING, ALLOCATED) = WAITING
   document: ?text8(1, null) @collate(general)
@@ -34,7 +34,7 @@ Import:
   endDate: datetime
   result: json = PHP([])
   status: enum(PROCESSING, FULL, PARTIAL, NONE, ERROR)
-  account: bank\Account
+  account: bank\BankAccount
   createdAt: datetime = SPECIAL(now)
   processedAt: ?datetime
   createdBy: user\User = SPECIAL(user)

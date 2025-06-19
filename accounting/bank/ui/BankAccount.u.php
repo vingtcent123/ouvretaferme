@@ -1,7 +1,7 @@
 <?php
 namespace bank;
 
-class AccountUi {
+class BankAccountUi {
 
 	public function __construct() {
 	}
@@ -28,9 +28,9 @@ class AccountUi {
 
 	}
 
-	public function list(\company\Company $eCompany ,\Collection $cAccount): string {
+	public function list(\company\Company $eCompany ,\Collection $cBankAccount): string {
 
-		if($cAccount->empty() === TRUE) {
+		if($cBankAccount->empty()) {
 			return '<div class="util-info">'.s("Aucun compte bancaire n'a encore été enregistré. Lorsque vous effectuerez votre premier import de relevé bancaire, le compte bancaire rattaché sera automatiquement créé.").'</div>';
 		}
 
@@ -63,18 +63,18 @@ class AccountUi {
 
 				$h .= '<tbody>';
 
-				foreach($cAccount as $eAccount) {
+				foreach($cBankAccount as $eBankAccount) {
 
 					$h .= '<tr>';
 
-						$h .= '<td>'.encode($eAccount['bankId']).'</td>';
-						$h .= '<td>'.encode($eAccount['accountId']).'</td>';
+						$h .= '<td>'.encode($eBankAccount['bankId']).'</td>';
+						$h .= '<td>'.encode($eBankAccount['accountId']).'</td>';
 						$h .= '<td>';
 							if($canUpdate === TRUE) {
-								$eAccount->setQuickAttribute('company', $eCompany['id']);
-								$h .= $eAccount->quick('label', $eAccount['label'] ? encode($eAccount['label']) : '<i>'.\Setting::get('accounting\defaultBankAccountLabel').'&nbsp;'.s("(Par défaut)").'</i>');
+								$eBankAccount->setQuickAttribute('company', $eCompany['id']);
+								$h .= $eBankAccount->quick('label', $eBankAccount['label'] ? encode($eBankAccount['label']) : '<i>'.\Setting::get('accounting\defaultBankAccountLabel').'&nbsp;'.s("(Par défaut)").'</i>');
 							} else {
-								$h .= encode($eAccount['label']);
+								$h .= encode($eBankAccount['label']);
 							}
 						$h .= '</td>';
 
@@ -92,7 +92,7 @@ class AccountUi {
 
 	public static function p(string $property): \PropertyDescriber {
 
-		$d = Account::model()->describer($property, [
+		$d = BankAccount::model()->describer($property, [
 			'label' => s("Libellé de compte"),
 		]);
 

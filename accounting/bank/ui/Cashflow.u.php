@@ -334,7 +334,7 @@ class CashflowUi {
 			]
 		);
 
-		$eOperation = new \journal\Operation(['account' => new Account()]);
+		$eOperation = new \journal\Operation(['account' => new \accounting\Account()]);
 		$index = 0;
 		$defaultValues = [
 			'date' => $eCashflow['date'],

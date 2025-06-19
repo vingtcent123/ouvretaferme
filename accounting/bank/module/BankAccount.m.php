@@ -1,35 +1,35 @@
 <?php
 namespace bank;
 
-abstract class AccountElement extends \Element {
+abstract class BankAccountElement extends \Element {
 
 	use \FilterElement;
 
-	private static ?AccountModel $model = NULL;
+	private static ?BankAccountModel $model = NULL;
 
 	public static function getSelection(): array {
-		return Account::model()->getProperties();
+		return BankAccount::model()->getProperties();
 	}
 
-	public static function model(): AccountModel {
+	public static function model(): BankAccountModel {
 		if(self::$model === NULL) {
-			self::$model = new AccountModel();
+			self::$model = new BankAccountModel();
 		}
 		return self::$model;
 	}
 
 	public static function fail(string|\FailException $failName, array $arguments = [], ?string $wrapper = NULL): bool {
-		return \Fail::log('Account::'.$failName, $arguments, $wrapper);
+		return \Fail::log('BankAccount::'.$failName, $arguments, $wrapper);
 	}
 
 }
 
 
-class AccountModel extends \ModuleModel {
+class BankAccountModel extends \ModuleModel {
 
-	protected string $module = 'bank\Account';
+	protected string $module = 'bank\BankAccount';
 	protected string $package = 'bank';
-	protected string $table = 'bankAccount';
+	protected string $table = 'bankBankAccount';
 
 	public function __construct() {
 
@@ -67,31 +67,31 @@ class AccountModel extends \ModuleModel {
 
 	}
 
-	public function select(...$fields): AccountModel {
+	public function select(...$fields): BankAccountModel {
 		return parent::select(...$fields);
 	}
 
-	public function where(...$data): AccountModel {
+	public function where(...$data): BankAccountModel {
 		return parent::where(...$data);
 	}
 
-	public function whereId(...$data): AccountModel {
+	public function whereId(...$data): BankAccountModel {
 		return $this->where('id', ...$data);
 	}
 
-	public function whereBankId(...$data): AccountModel {
+	public function whereBankId(...$data): BankAccountModel {
 		return $this->where('bankId', ...$data);
 	}
 
-	public function whereAccountId(...$data): AccountModel {
+	public function whereAccountId(...$data): BankAccountModel {
 		return $this->where('accountId', ...$data);
 	}
 
-	public function whereLabel(...$data): AccountModel {
+	public function whereLabel(...$data): BankAccountModel {
 		return $this->where('label', ...$data);
 	}
 
-	public function whereIsDefault(...$data): AccountModel {
+	public function whereIsDefault(...$data): BankAccountModel {
 		return $this->where('isDefault', ...$data);
 	}
 
@@ -99,24 +99,24 @@ class AccountModel extends \ModuleModel {
 }
 
 
-abstract class AccountCrud extends \ModuleCrud {
+abstract class BankAccountCrud extends \ModuleCrud {
 
  private static array $cache = [];
 
-	public static function getById(mixed $id, array $properties = []): Account {
+	public static function getById(mixed $id, array $properties = []): BankAccount {
 
-		$e = new Account();
+		$e = new BankAccount();
 
 		if(empty($id)) {
-			Account::model()->reset();
+			BankAccount::model()->reset();
 			return $e;
 		}
 
 		if($properties === []) {
-			$properties = Account::getSelection();
+			$properties = BankAccount::getSelection();
 		}
 
-		if(Account::model()
+		if(BankAccount::model()
 			->select($properties)
 			->whereId($id)
 			->get($e) === FALSE) {
@@ -134,14 +134,14 @@ abstract class AccountCrud extends \ModuleCrud {
 		}
 
 		if($properties === []) {
-			$properties = Account::getSelection();
+			$properties = BankAccount::getSelection();
 		}
 
 		if($sort !== NULL) {
-			Account::model()->sort($sort);
+			BankAccount::model()->sort($sort);
 		}
 
-		return Account::model()
+		return BankAccount::model()
 			->select($properties)
 			->whereId('IN', $ids)
 			->getCollection(NULL, NULL, $index);
@@ -155,51 +155,51 @@ abstract class AccountCrud extends \ModuleCrud {
 
 	}
 
-	public static function getCreateElement(): Account {
+	public static function getCreateElement(): BankAccount {
 
-		return new Account(['id' => NULL]);
-
-	}
-
-	public static function create(Account $e): void {
-
-		Account::model()->insert($e);
+		return new BankAccount(['id' => NULL]);
 
 	}
 
-	public static function update(Account $e, array $properties): void {
+	public static function create(BankAccount $e): void {
+
+		BankAccount::model()->insert($e);
+
+	}
+
+	public static function update(BankAccount $e, array $properties): void {
 
 		$e->expects(['id']);
 
-		Account::model()
+		BankAccount::model()
 			->select($properties)
 			->update($e);
 
 	}
 
-	public static function updateCollection(\Collection $c, Account $e, array $properties): void {
+	public static function updateCollection(\Collection $c, BankAccount $e, array $properties): void {
 
-		Account::model()
+		BankAccount::model()
 			->select($properties)
 			->whereId('IN', $c)
 			->update($e->extracts($properties));
 
 	}
 
-	public static function delete(Account $e): void {
+	public static function delete(BankAccount $e): void {
 
 		$e->expects(['id']);
 
-		Account::model()->delete($e);
+		BankAccount::model()->delete($e);
 
 	}
 
 }
 
 
-class AccountPage extends \ModulePage {
+class BankAccountPage extends \ModulePage {
 
-	protected string $module = 'bank\Account';
+	protected string $module = 'bank\BankAccount';
 
 	public function __construct(
 	   ?\Closure $start = NULL,
@@ -208,8 +208,8 @@ class AccountPage extends \ModulePage {
 	) {
 		parent::__construct(
 		   $start,
-		   $propertiesCreate ?? AccountLib::getPropertiesCreate(),
-		   $propertiesUpdate ?? AccountLib::getPropertiesUpdate()
+		   $propertiesCreate ?? BankAccountLib::getPropertiesCreate(),
+		   $propertiesUpdate ?? BankAccountLib::getPropertiesUpdate()
 		);
 	}
 

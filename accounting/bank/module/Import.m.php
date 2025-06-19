@@ -48,7 +48,7 @@ class ImportModel extends \ModuleModel {
 			'endDate' => ['datetime', 'cast' => 'string'],
 			'result' => ['json', 'cast' => 'array'],
 			'status' => ['enum', [\bank\Import::PROCESSING, \bank\Import::FULL, \bank\Import::PARTIAL, \bank\Import::NONE, \bank\Import::ERROR], 'cast' => 'enum'],
-			'account' => ['element32', 'bank\Account', 'cast' => 'element'],
+			'account' => ['element32', 'bank\BankAccount', 'cast' => 'element'],
 			'createdAt' => ['datetime', 'cast' => 'string'],
 			'processedAt' => ['datetime', 'null' => TRUE, 'cast' => 'string'],
 			'createdBy' => ['element32', 'user\User', 'cast' => 'element'],
@@ -59,7 +59,7 @@ class ImportModel extends \ModuleModel {
 		]);
 
 		$this->propertiesToModule += [
-			'account' => 'bank\Account',
+			'account' => 'bank\BankAccount',
 			'createdBy' => 'user\User',
 		];
 

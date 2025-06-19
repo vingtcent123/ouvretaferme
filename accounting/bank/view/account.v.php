@@ -5,9 +5,9 @@ new AdaptativeView('index', function($data, CompanyTemplate $t) {
 	$t->tab = 'settings';
 	$t->canonical = \company\CompanyUi::urlBank($data->eCompany).'/account/';
 
-	$t->mainTitle = new \bank\AccountUi()->getAccountTitle($data->eFinancialYear);
+	$t->mainTitle = new \bank\BankAccountUi()->getAccountTitle($data->eFinancialYear);
 
-	echo new \bank\AccountUi()->list($data->eCompany, $data->cAccount);
+	echo new \bank\BankAccountUi()->list($data->eCompany, $data->cBankAccount);
 
 });
 

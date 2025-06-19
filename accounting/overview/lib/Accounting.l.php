@@ -146,7 +146,7 @@ Class AccountingLib {
 		$cAccount = \accounting\AccountLib::getByIds($cOperation->getColumn('accountId'));
 
 		$cOperationLastFinancialYear = self::getLastYearBalance($eFinancialYear);
-		$cAccountBank = \bank\AccountLib::getAll();
+		$cAccountBank = \bank\BankAccountLib::getAll();
 
 		foreach($accountingBalanceSheet as &$accountingBalance) {
 

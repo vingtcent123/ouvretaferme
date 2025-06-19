@@ -95,7 +95,7 @@ class ImportLib extends ImportCrud {
 
 	public static function getAll(\accounting\FinancialYear $eFinancialYear): \Collection {
 		return Import::model()
-			->select(Import::getSelection() + ['account' => Account::getSelection()])
+			->select(Import::getSelection() + ['account' => BankAccount::getSelection()])
 			->whereStartDate('>=', $eFinancialYear['startDate'].' 00:00:00')
 			->whereEndDate('<=', $eFinancialYear['endDate'].' 23:59:59')
 			->sort(['startDate' => SORT_ASC])
@@ -121,13 +121,13 @@ class ImportLib extends ImportCrud {
 
 			$xmlFile = \bank\OfxParserLib::extractFile($filepath);;
 
-			$eAccount = \bank\OfxParserLib::extractAccount($xmlFile);
+			$eBankAccount = \bank\OfxParserLib::extractAccount($xmlFile);
 
 			$import = \bank\OfxParserLib::extractImport($xmlFile);
 
 			$eImport = new Import([
 				'filename' => $filename,
-				'account' => $eAccount,
+				'account' => $eBankAccount,
 				'startDate' => $import['startDate'],
 				'endDate' => $import['endDate'],
 				'result' => [],
@@ -136,7 +136,7 @@ class ImportLib extends ImportCrud {
 
 			Import::model()->insert($eImport);
 
-			$cashflows = \bank\OfxParserLib::extractOperations($xmlFile, $eAccount, $eImport);
+			$cashflows = \bank\OfxParserLib::extractOperations($xmlFile, $eBankAccount, $eImport);
 			$result = \bank\CashflowLib::insertMultiple($cashflows, $eCompany);
 
 			if(count($result['imported']) === 0) {

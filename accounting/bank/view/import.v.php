@@ -3,7 +3,7 @@ new AdaptativeView('index', function($data, CompanyTemplate $t) {
 
 	$t->title = s("Les imports bancaires de {company}", ['company' => $data->eCompany['name']]);
 	$t->tab = 'bank';
-	$t->subNav = (new \company\CompanyUi())->getBankSubNav($data->eCompany);
+	$t->subNav = new \company\CompanyUi()->getBankSubNav($data->eCompany);
 	$t->canonical = \company\CompanyUi::urlBank($data->eCompany).'/import';
 
 	$t->js()->replaceHistory($t->canonical);

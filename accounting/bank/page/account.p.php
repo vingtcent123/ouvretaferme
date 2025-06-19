@@ -1,5 +1,5 @@
 <?php
-new \bank\AccountPage(
+new \bank\BankAccountPage(
 	function($data) {
 		\user\ConnectionLib::checkLogged();
 		$company = REQUEST('company');
@@ -12,12 +12,12 @@ new \bank\AccountPage(
 )
 	->get('index', function($data) {
 
-		$data->cAccount = \bank\AccountLib::getAll();
+		$data->cBankAccount = \bank\BankAccountLib::getAll();
 		throw new ViewAction($data);
 
 	});
 
-new \bank\AccountPage(
+new \bank\BankAccountPage(
 	function($data) {
 		\user\ConnectionLib::checkLogged();
 		$company = REQUEST('company');

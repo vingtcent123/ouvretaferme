@@ -5,7 +5,8 @@ Lime::setUrls([
 ]);
 
 Lime::setName( 'MaPetiteFerme');
-Lime::setApps(['framework', 'mapetiteferme', 'base', 'accounting']);
+// TODO BASE
+Lime::setApps(['framework', 'mapetiteferme', /*'base', */'accounting']);
 
 L::setLang('fr_FR');
 L::setVariables([
@@ -31,7 +32,7 @@ switch(LIME_ENV) {
       'session' => 'mapetiteferme',
       'user' => 'mapetiteferme',
       'storage' => 'mapetiteferme',
-      'farm' => 'ouvretaferme',
+      //'farm' => 'ouvretaferme', // TODO BASE
     ]);
 
     break;
@@ -50,7 +51,7 @@ switch(LIME_ENV) {
       'session' => 'dev_mapetiteferme',
       'user' => 'dev_mapetiteferme',
       'storage' => 'dev_mapetiteferme',
-      'farm' => 'dev_ouvretaferme',
+      //'farm' => 'dev_ouvretaferme', // TODO BASE
     ]);
 
     break;

@@ -1,35 +1,35 @@
 <?php
 namespace main;
 
-abstract class AccountElement extends \Element {
+abstract class GenericAccountElement extends \Element {
 
 	use \FilterElement;
 
-	private static ?AccountModel $model = NULL;
+	private static ?GenericAccountModel $model = NULL;
 
 	public static function getSelection(): array {
-		return Account::model()->getProperties();
+		return GenericAccount::model()->getProperties();
 	}
 
-	public static function model(): AccountModel {
+	public static function model(): GenericAccountModel {
 		if(self::$model === NULL) {
-			self::$model = new AccountModel();
+			self::$model = new GenericAccountModel();
 		}
 		return self::$model;
 	}
 
 	public static function fail(string|\FailException $failName, array $arguments = [], ?string $wrapper = NULL): bool {
-		return \Fail::log('Account::'.$failName, $arguments, $wrapper);
+		return \Fail::log('GenericAccount::'.$failName, $arguments, $wrapper);
 	}
 
 }
 
 
-class AccountModel extends \ModuleModel {
+class GenericAccountModel extends \ModuleModel {
 
-	protected string $module = 'main\Account';
+	protected string $module = 'main\GenericAccount';
 	protected string $package = 'main';
-	protected string $table = 'mainAccount';
+	protected string $table = 'mainGenericAccount';
 
 	public function __construct() {
 
@@ -76,35 +76,35 @@ class AccountModel extends \ModuleModel {
 
 	}
 
-	public function select(...$fields): AccountModel {
+	public function select(...$fields): GenericAccountModel {
 		return parent::select(...$fields);
 	}
 
-	public function where(...$data): AccountModel {
+	public function where(...$data): GenericAccountModel {
 		return parent::where(...$data);
 	}
 
-	public function whereId(...$data): AccountModel {
+	public function whereId(...$data): GenericAccountModel {
 		return $this->where('id', ...$data);
 	}
 
-	public function whereClass(...$data): AccountModel {
+	public function whereClass(...$data): GenericAccountModel {
 		return $this->where('class', ...$data);
 	}
 
-	public function whereDescription(...$data): AccountModel {
+	public function whereDescription(...$data): GenericAccountModel {
 		return $this->where('description', ...$data);
 	}
 
-	public function whereVisible(...$data): AccountModel {
+	public function whereVisible(...$data): GenericAccountModel {
 		return $this->where('visible', ...$data);
 	}
 
-	public function whereVatAccount(...$data): AccountModel {
+	public function whereVatAccount(...$data): GenericAccountModel {
 		return $this->where('vatAccount', ...$data);
 	}
 
-	public function whereVatRate(...$data): AccountModel {
+	public function whereVatRate(...$data): GenericAccountModel {
 		return $this->where('vatRate', ...$data);
 	}
 
@@ -112,24 +112,24 @@ class AccountModel extends \ModuleModel {
 }
 
 
-abstract class AccountCrud extends \ModuleCrud {
+abstract class GenericAccountCrud extends \ModuleCrud {
 
  private static array $cache = [];
 
-	public static function getById(mixed $id, array $properties = []): Account {
+	public static function getById(mixed $id, array $properties = []): GenericAccount {
 
-		$e = new Account();
+		$e = new GenericAccount();
 
 		if(empty($id)) {
-			Account::model()->reset();
+			GenericAccount::model()->reset();
 			return $e;
 		}
 
 		if($properties === []) {
-			$properties = Account::getSelection();
+			$properties = GenericAccount::getSelection();
 		}
 
-		if(Account::model()
+		if(GenericAccount::model()
 			->select($properties)
 			->whereId($id)
 			->get($e) === FALSE) {
@@ -147,14 +147,14 @@ abstract class AccountCrud extends \ModuleCrud {
 		}
 
 		if($properties === []) {
-			$properties = Account::getSelection();
+			$properties = GenericAccount::getSelection();
 		}
 
 		if($sort !== NULL) {
-			Account::model()->sort($sort);
+			GenericAccount::model()->sort($sort);
 		}
 
-		return Account::model()
+		return GenericAccount::model()
 			->select($properties)
 			->whereId('IN', $ids)
 			->getCollection(NULL, NULL, $index);
@@ -168,51 +168,51 @@ abstract class AccountCrud extends \ModuleCrud {
 
 	}
 
-	public static function getCreateElement(): Account {
+	public static function getCreateElement(): GenericAccount {
 
-		return new Account(['id' => NULL]);
-
-	}
-
-	public static function create(Account $e): void {
-
-		Account::model()->insert($e);
+		return new GenericAccount(['id' => NULL]);
 
 	}
 
-	public static function update(Account $e, array $properties): void {
+	public static function create(GenericAccount $e): void {
+
+		GenericAccount::model()->insert($e);
+
+	}
+
+	public static function update(GenericAccount $e, array $properties): void {
 
 		$e->expects(['id']);
 
-		Account::model()
+		GenericAccount::model()
 			->select($properties)
 			->update($e);
 
 	}
 
-	public static function updateCollection(\Collection $c, Account $e, array $properties): void {
+	public static function updateCollection(\Collection $c, GenericAccount $e, array $properties): void {
 
-		Account::model()
+		GenericAccount::model()
 			->select($properties)
 			->whereId('IN', $c)
 			->update($e->extracts($properties));
 
 	}
 
-	public static function delete(Account $e): void {
+	public static function delete(GenericAccount $e): void {
 
 		$e->expects(['id']);
 
-		Account::model()->delete($e);
+		GenericAccount::model()->delete($e);
 
 	}
 
 }
 
 
-class AccountPage extends \ModulePage {
+class GenericAccountPage extends \ModulePage {
 
-	protected string $module = 'main\Account';
+	protected string $module = 'main\GenericAccount';
 
 	public function __construct(
 	   ?\Closure $start = NULL,
@@ -221,8 +221,8 @@ class AccountPage extends \ModulePage {
 	) {
 		parent::__construct(
 		   $start,
-		   $propertiesCreate ?? AccountLib::getPropertiesCreate(),
-		   $propertiesUpdate ?? AccountLib::getPropertiesUpdate()
+		   $propertiesCreate ?? GenericAccountLib::getPropertiesCreate(),
+		   $propertiesUpdate ?? GenericAccountLib::getPropertiesUpdate()
 		);
 	}
 

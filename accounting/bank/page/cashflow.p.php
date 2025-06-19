@@ -69,7 +69,7 @@ new \bank\CashflowPage(
 			\bank\Cashflow::getSelection() +
 			[
 				'import' => \bank\Import::getSelection() +
-					['account' => \bank\Account::getSelection()]
+					['account' => \bank\BankAccount::getSelection()]
 			]
 		);
 		$fw = new FailWatch();
@@ -116,7 +116,7 @@ new \bank\CashflowPage(
 			\bank\Cashflow::getSelection() +
 			[
 				'import' => \bank\Import::getSelection() +
-					['account' => \bank\Account::getSelection()]
+					['account' => \bank\BankAccount::getSelection()]
 			]
 		);
 

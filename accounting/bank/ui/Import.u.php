@@ -89,8 +89,8 @@ class ImportUi {
 					$h .= '</div>';
 					$h .= '<div class="flow-timeline-action">';
 						$h .= '<div class="flow-timeline-action-title">';
-							if($eImport->exists() === FALSE) {
-								$h .= '<div class="util-warning mt-1 mb-1">';
+							if($eImport->empty()) {
+								$h .= '<div class="util-warning-outline mt-1 mb-1">';
 									$h .= \Asset::icon('exclamation-circle').'&nbsp;'.s("Aucun import n'a couvert cette période");
 								$h .= '</div>';
 							} else {
@@ -117,7 +117,7 @@ class ImportUi {
 			ImportElement::NONE => ['class' => 'util-info mb-0', 'title' => s("Aucune donnée importée"), 'icon' => 'slash-circle'],
 			ImportElement::PROCESSING => ['class' => 'util-info mb-0', 'title' => s("En cours d'import"), 'icon' => 'arrow-repeat'],
 			ImportElement::FULL => ['class' => 'util-success mb-0', 'title' => s("Totalement importé"), 'icon' => 'check2-all'],
-			ImportElement::PARTIAL => ['class' => 'util-warning', 'title' => s("Partiellement importé"), 'icon' => 'check2'],
+			ImportElement::PARTIAL => ['class' => 'util-warning-outline', 'title' => s("Partiellement importé"), 'icon' => 'check2'],
 			ImportElement::ERROR => ['class' => 'util-info', 'title' => s("En erreur"), 'icon' => 'exclamation-octogon'],
 		});
 

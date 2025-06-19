@@ -36,20 +36,20 @@ class OfxParserLib {
 
 	}
 
-	public static function extractAccount(\SimpleXMLElement $xmlElement): Account {
+	public static function extractAccount(\SimpleXMLElement $xmlElement): BankAccount {
 
 		$bankId = $xmlElement->BANKMSGSRSV1->STMTTRNRS->STMTRS->BANKACCTFROM->BANKID;
 		$accountId = $xmlElement->BANKMSGSRSV1->STMTTRNRS->STMTRS->BANKACCTFROM->ACCTID;
 
 		if(strlen($bankId) === 0 or strlen($accountId) === 0) {
-			return new Account();
+			return new BankAccount();
 		}
 
-		return AccountLib::getFromOfx($bankId, $accountId);
+		return BankAccountLib::getFromOfx($bankId, $accountId);
 
 	}
 
-	public static function extractOperations(\SimpleXMLElement $xmlElement, Account $eAccount, Import $eImport): array {
+	public static function extractOperations(\SimpleXMLElement $xmlElement, BankAccount $eBankAccount, Import $eImport): array {
 
 		$cashflows = [];
 
@@ -62,7 +62,7 @@ class OfxParserLib {
 				'fitid' => (string) $operation->FITID,
 				'name' => (string) $operation->NAME,
 				'memo' => (string) $operation->MEMO,
-				'account' => $eAccount,
+				'account' => $eBankAccount,
 				'import' => $eImport,
 			];
 

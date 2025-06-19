@@ -75,9 +75,15 @@ class Operation extends OperationElement {
 
 			})
 			->setCallback('thirdParty.empty', function(?ThirdParty $eThirdParty): bool {
+
 				return $eThirdParty !== NULL;
+
 			})
 			->setCallback('thirdParty.check', function(?ThirdParty $eThirdParty): bool {
+
+				if($eThirdParty->empty()) {
+					return TRUE;
+				}
 
 				return ThirdPartyLib::getById($eThirdParty['id'])->notEmpty();
 

@@ -201,8 +201,8 @@ class CompanyLib extends CompanyCrud {
 		}
 
 		// Copy Account content from package main to package accounting
-		$cAccount = \main\Account::model()
-			->select(\main\Account::getSelection())
+		$cAccount = \main\GenericAccount::model()
+			->select(\main\GenericAccount::getSelection())
 			->getCollection();
 		foreach($cAccount as $eAccount) {
 			\accounting\Account::model()->insert($eAccount);

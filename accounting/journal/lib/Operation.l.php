@@ -144,16 +144,16 @@ class OperationLib extends OperationCrud {
 
 	}
 
-	public static function updateAccountLabels(\bank\Account $eAccount): bool {
+	public static function updateAccountLabels(\bank\BankAccount $eBankAccount): bool {
 
-		$eOperation = ['accountLabel' => $eAccount['label'], 'updatedAt' => new \Sql('NOW()')];
+		$eOperation = ['accountLabel' => $eBankAccount['label'], 'updatedAt' => new \Sql('NOW()')];
 		$eFinancialYear = \accounting\FinancialYearLib::selectDefaultFinancialYear();
 
 		Operation::model()
 			->select(['accountLabel', 'updatedAt'])
 			// Liée aux cashflow de ce compte bancaire
 			->join(\bank\Cashflow::model(), 'm1.cashflow = m2.id')
-			->where('m2.account = '.$eAccount['id'])
+			->where('m2.account = '.$eBankAccount['id'])
 			// Type banque
 			->join(\accounting\Account::model(), 'm1.account = m3.id')
 			->where('m3.class = '.\Setting::get('accounting\bankAccountClass'))
@@ -283,7 +283,7 @@ class OperationLib extends OperationCrud {
 		$eOperationBank = clone $eOperation;
 		$eOperationBank->offsetUnset('id');
 		$eOperationBank['type'] = $type === Operation::CREDIT ? Operation::DEBIT : Operation::CREDIT;
-		$eBankAccount = \bank\AccountLib::getById($input['bankAccountLabel']);
+		$eBankAccount = \bank\BankAccountLib::getById($input['bankAccountLabel']);
 		$eAccount = \accounting\AccountLib::getByClass(\Setting::get('accounting\bankAccountClass'));
 		$eOperationBank['accountLabel'] = $eBankAccount->empty() ? \accounting\ClassLib::pad($eBankAccount['class']) : $eBankAccount['label'];
 		$eOperationBank['account'] = $eAccount;
@@ -342,17 +342,18 @@ class OperationLib extends OperationCrud {
 				$eOperation['documentDate'] = NULL;
 			}
 
-			foreach(['date', 'document', 'documentDate'] as $property) {
-				if(($eOperationDefault[$property] ?? NULL) === NULL) {
-					$eOperationDefault[$property] = $eOperation[$property];
-				}
-			}
 
 			$thirdParty = $input['thirdParty'][$index] ?? null;
 			if($thirdParty !== null) {
 				$eOperation['thirdParty'] = \journal\ThirdPartyLib::getById($thirdParty);
 			} else {
 				$eOperation['thirdParty'] = new ThirdParty();
+			}
+
+			foreach(['date', 'document', 'documentDate', 'thirdParty'] as $property) {
+				if(($eOperationDefault[$property] ?? NULL) === NULL) {
+					$eOperationDefault[$property] = $eOperation[$property];
+				}
 			}
 
 			$eOperation['journalCode'] = \accounting\AccountLib::getJournalCodeByClass($eOperation['accountLabel']);
@@ -657,6 +658,7 @@ class OperationLib extends OperationCrud {
 			->update($eOperation);
 
 		// Create Bank line
+		$eOperation = OperationLib::getById(first($operationIds));
 		OperationLib::createBankOperationFromCashflow($eCashflow, $eOperation);
 
 		return $updated;
@@ -664,9 +666,9 @@ class OperationLib extends OperationCrud {
 
 	public static function createBankOperationFromCashflow(\bank\Cashflow $eCashflow, Operation $eOperation, ?string $document = NULL): Operation {
 
-		$eAccountBank = \bank\AccountLib::getByClass(\Setting::get('accounting\bankAccountClass'));
+		$eAccountBank = \accounting\AccountLib::getByClass(\Setting::get('accounting\bankAccountClass'));
 
-		$eThirdParty = $eOperation['thirdParty'] ?? NULL;
+		$eThirdParty = $eOperation['thirdParty'] ?? new ThirdParty();
 
 		if($eCashflow['import']['account']['label'] !== NULL) {
 			$label = $eCashflow['import']['account']['label'];

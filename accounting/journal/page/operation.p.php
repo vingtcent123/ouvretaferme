@@ -29,7 +29,7 @@ new \journal\OperationPage(
 		if(get_exists('accountLabel') and mb_strlen(GET('accountLabel') > 0)) {
 			$label = GET('accountLabel');
 		} elseif($eAccount->exists() === TRUE and $eAccount['class'] === \Setting::get('accounting\bankAccountClass')) {
-			$eAccountBank = \bank\AccountLib::getDefaultAccount();
+			$eAccountBank = \bank\BankAccountLib::getDefaultAccount();
 			if($eAccountBank->exists() === TRUE) {
 				$label = $eAccountBank['accountLabel'];
 			}
@@ -110,7 +110,7 @@ new \journal\OperationPage(
 
 		$data->eFinancialYear = \accounting\FinancialYearLib::selectDefaultFinancialYear();
 
-		$data->cBankAccount = \bank\AccountLib::getAll();
+		$data->cBankAccount = \bank\BankAccountLib::getAll();
 
 		throw new ViewAction($data);
 	}, page: 'createPayment')

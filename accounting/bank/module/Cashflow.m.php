@@ -50,7 +50,7 @@ class CashflowModel extends \ModuleModel {
 			'fitid' => ['text8', 'min' => 1, 'max' => NULL, 'null' => TRUE, 'unique' => TRUE, 'cast' => 'string'],
 			'name' => ['text24', 'min' => 1, 'max' => NULL, 'null' => TRUE, 'cast' => 'string'],
 			'memo' => ['text8', 'min' => 1, 'max' => NULL, 'collate' => 'general', 'null' => TRUE, 'cast' => 'string'],
-			'account' => ['element32', 'bank\Account', 'cast' => 'element'],
+			'account' => ['element32', 'bank\BankAccount', 'cast' => 'element'],
 			'import' => ['element32', 'bank\Import', 'cast' => 'element'],
 			'status' => ['enum', [\bank\Cashflow::WAITING, \bank\Cashflow::ALLOCATED], 'cast' => 'enum'],
 			'document' => ['text8', 'min' => 1, 'max' => NULL, 'collate' => 'general', 'null' => TRUE, 'cast' => 'string'],
@@ -64,7 +64,7 @@ class CashflowModel extends \ModuleModel {
 		]);
 
 		$this->propertiesToModule += [
-			'account' => 'bank\Account',
+			'account' => 'bank\BankAccount',
 			'import' => 'bank\Import',
 			'createdBy' => 'user\User',
 		];
