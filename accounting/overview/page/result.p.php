@@ -11,10 +11,13 @@ new Page(
 )
 	->get('index', function($data) {
 
-		Setting::set('main\viewAnalyze', 'charges');
+		Setting::set('main\viewAnalyze', 'result');
 
-		[$data->cOperation, $data->cAccount] = \journal\AnalyzeLib::getChargeOperationsByMonth($data->eFinancialYear);
+		$data->cOperation = \overview\AnalyzeLib::getResultOperationsByMonth($data->eFinancialYear);
+		[$data->result, $data->cAccount] = \overview\AnalyzeLib::getResult($data->eFinancialYear);
 
 		throw new ViewAction($data);
 
 	});
+
+?>

@@ -11,10 +11,9 @@ new Page(
 )
 	->get('index', function($data) {
 
-		Setting::set('main\viewAnalyze', 'bank');
+		Setting::set('main\viewAnalyze', 'charges');
 
-		$data->cOperationBank = \journal\AnalyzeLib::getBankOperationsByMonth($data->eFinancialYear, 'bank');
-		$data->cOperationCash = \journal\AnalyzeLib::getBankOperationsByMonth($data->eFinancialYear, 'cash');
+		[$data->cOperation, $data->cAccount] = \overview\AnalyzeLib::getChargeOperationsByMonth($data->eFinancialYear);
 
 		throw new ViewAction($data);
 

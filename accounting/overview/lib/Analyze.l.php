@@ -1,13 +1,13 @@
 <?php
-namespace journal;
+namespace overview;
 
 class AnalyzeLib {
 
 	public static function getResultForFinancialYear(\account\FinancialYear $eFinancialYear): array {
 
-		$eOperation = new Operation();
+		$eOperation = new \journal\Operation();
 
-		Operation::model()
+		\journal\Operation::model()
        ->select([
          'charge' => new \Sql('SUM(IF(SUBSTRING(m2.class, 1, 1) = "'.\Setting::get('account\chargeAccountClass').'", amount, 0))'),
          'product' => new \Sql('SUM(IF(SUBSTRING(m2.class, 1, 1) = "'.\Setting::get('account\productAccountClass').'", amount, 0))'),
@@ -24,28 +24,29 @@ class AnalyzeLib {
 
 	public static function getResult(\account\FinancialYear $eFinancialYear): array {
 
-		$cOperation = Operation::model()
-      ->select([
+		$cOperation = \journal\Operation::model()
+			->select([
 				'class' => new \Sql('m2.class'),
-	      'credit' => new \Sql('SUM(IF(type = "credit", amount, 0))'),
-	      'debit' => new \Sql('SUM(IF(type = "debit", amount, 0))'),
-      ])
-      ->whereDate('>=', $eFinancialYear['startDate'])
-      ->whereDate('<=', $eFinancialYear['endDate'])
-      ->where(new \Sql('SUBSTRING(m2.class, 1, 1) = "'.\Setting::get('account\chargeAccountClass').'" OR SUBSTRING(m2.class, 1, 1) = "'.\Setting::get('account\productAccountClass').'"'))
-      ->join(\account\Account::model(), 'm1.account = m2.id')
-      ->group(['class'])
+				'credit' => new \Sql('SUM(IF(type = "credit", amount, 0))'),
+				'debit' => new \Sql('SUM(IF(type = "debit", amount, 0))'),
+			])
+			->whereDate('>=', $eFinancialYear['startDate'])
+			->whereDate('<=', $eFinancialYear['endDate'])
+			->where(new \Sql('SUBSTRING(m2.class, 1, 1) = "'.\Setting::get('account\chargeAccountClass').'" OR SUBSTRING(m2.class, 1, 1) = "'.\Setting::get('account\productAccountClass').'"'))
+			->join(\account\Account::model(), 'm1.account = m2.id')
+			->group(['class'])
 			->sort(['class' => SORT_ASC])
-      ->getCollection(NULL, NULL, ['class']);
+			->getCollection(NULL, NULL, ['class']);
 
 		$cAccount = \account\AccountLib::getByClasses($cOperation->getColumn('class'), 'class');
 
 		return [$cOperation->getArrayCopy(), $cAccount];
 
 	}
+
 	public static function getResultOperationsByMonth(\account\FinancialYear $eFinancialYear): \Collection {
 
-		return Operation::model()
+		return \journal\Operation::model()
 			->select([
 				'month' => new \Sql('DATE_FORMAT(date, "%Y-%m")'),
 				'charge' => new \Sql('SUM(IF(SUBSTRING(m2.class, 1, 1) = "'.\Setting::get('account\chargeAccountClass').'", amount, 0))'),
@@ -72,7 +73,7 @@ class AnalyzeLib {
 			->sort(['description' => SORT_ASC])
 			->getCollection();
 
-		$cOperation = Operation::model()
+		$cOperation = \journal\Operation::model()
 			->select([
 				'big_class' => new \Sql('SUBSTRING(m2.class, 1, 2)'),
 				'total' => new \Sql('SUM(amount)'),
@@ -92,7 +93,7 @@ class AnalyzeLib {
 
 		$accountClass = $type === 'bank' ? \Setting::get('account\bankAccountClass') : \Setting::get('account\cashAccountClass');
 
-		$cOperation = Operation::model()
+		$cOperation = \journal\Operation::model()
 			->select([
 				'month' => new \Sql('DATE_FORMAT(date, "%Y-%m")'),
 				'credit' => new \Sql('SUM(IF(type = "credit", amount, 0))'),

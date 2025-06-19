@@ -1,5 +1,5 @@
 <?php
-namespace analyze;
+namespace overview;
 
 class AnalyzeUi {
 

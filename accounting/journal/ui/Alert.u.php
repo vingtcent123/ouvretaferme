@@ -17,6 +17,8 @@ class AlertUi {
 			'Operation::payment.noOperation' => s("Aucun paiement n'a pu être enregistré."),
 			'Operation::payment.typeMissing' => s("Choisissez le type de paiement."),
 
+			'Operation::description.check' => s("Veuillez saisir un libellé"),
+
 			'Operation::lettering.duplicate' => s("Ce code de lettrage est déjà utilisé."),
 
 			'thirdParty.empty' => s("Choisissez un tiers pour ce paiement."),

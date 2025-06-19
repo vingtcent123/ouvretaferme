@@ -94,7 +94,7 @@ class ThirdPartyUi {
 							$h .= '</td>';
 							$h .= '<td>';
 								$eThirdParty->setQuickAttribute('company', $eCompany['id']);
-								$h .= $eThirdParty->quick('name', \encode($eThirdParty['name']));
+								$h .= $eThirdParty->quick('name', encode($eThirdParty['name']));
 							$h .= '</td>';
 							$h .= '<td>';
 								$h .= '<a href="'.\company\CompanyUi::urlJournal($eCompany).'/?thirdParty='.$eThirdParty['id'].'">'.$eThirdParty['operations'].'</a>';

@@ -12,7 +12,6 @@ Package::setList([
 	'util' => 'framework',
 	'media' => 'mapetiteferme',
 	'account' => 'accounting',
-	'analyze' => 'accounting',
 	'asset' => 'accounting',
 	'bank' => 'accounting',
 	'company' => 'accounting',

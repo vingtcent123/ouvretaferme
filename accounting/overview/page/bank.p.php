@@ -11,13 +11,11 @@ new Page(
 )
 	->get('index', function($data) {
 
-		Setting::set('main\viewAnalyze', 'result');
+		Setting::set('main\viewAnalyze', 'bank');
 
-		$data->cOperation = \journal\AnalyzeLib::getResultOperationsByMonth($data->eFinancialYear);
-		[$data->result, $data->cAccount] = \journal\AnalyzeLib::getResult($data->eFinancialYear);
+		$data->cOperationBank = \overview\AnalyzeLib::getBankOperationsByMonth($data->eFinancialYear, 'bank');
+		$data->cOperationCash = \overview\AnalyzeLib::getBankOperationsByMonth($data->eFinancialYear, 'cash');
 
 		throw new ViewAction($data);
 
 	});
-
-?>

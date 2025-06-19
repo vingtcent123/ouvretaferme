@@ -1,11 +1,11 @@
 <?php
-namespace analyze;
+namespace overview;
 
 class BankUi {
 
 	public function __construct() {
-		\Asset::css('analyze', 'analyze.css');
-		\Asset::js('analyze', 'analyze.js');
+		\Asset::css('overview', 'analyze.css');
+		\Asset::js('overview', 'analyze.js');
 	}
 
 	public function get(array $operations): string {
@@ -88,7 +88,7 @@ class BankUi {
 		[$values, $labels] = $this->getValues($cOperation);
 
 		$h = '<div class="analyze-line">';
-			$h .= '<canvas '.attr('onrender', 'Analyze.create3Lines(this, '.json_encode($labels).', '.json_encode($values).', '.json_encode([s("Recettes"), s("Dépenses"), s("Solde")]).')').'</canvas>';
+			$h .= '<canvas '.\attr('onrender', 'Analyze.create3Lines(this, '.json_encode($labels).', '.json_encode($values).', '.json_encode([s("Recettes"), s("Dépenses"), s("Solde")]).')').'</canvas>';
 		$h .= '</div>';
 
 		return $h;

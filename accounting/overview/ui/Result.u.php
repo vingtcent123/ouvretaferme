@@ -1,12 +1,12 @@
 <?php
 
-namespace analyze;
+namespace overview;
 
 Class ResultUi {
 
 	public function __construct() {
-		\Asset::css('analyze', 'analyze.css');
-		\Asset::js('analyze', 'analyze.js');
+		\Asset::css('overview', 'analyze.css');
+		\Asset::js('overview', 'analyze.js');
 	}
 
 	public function get(array $result, \Collection $cAccount): string {
@@ -146,7 +146,7 @@ Class ResultUi {
 		}
 
 		$h = '<div class="analyze-bar">';
-			$h .= '<canvas '.attr('onrender', 'Analyze.createDoubleBar(this, "'.s("Charges").'", '.json_encode($charges).', "'.s("Produits").'", '.json_encode($products).', '.json_encode($labels).')').'</canvas>';
+			$h .= '<canvas '.\attr('onrender', 'Analyze.createDoubleBar(this, "'.s("Charges").'", '.json_encode($charges).', "'.s("Produits").'", '.json_encode($products).', '.json_encode($labels).')').'</canvas>';
 		$h .= '</div>';
 
 		return $h;

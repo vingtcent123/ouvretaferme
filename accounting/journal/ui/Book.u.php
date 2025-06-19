@@ -98,7 +98,7 @@ class BookUi {
 				$h .= '</td>';
 
 				$h .= '<td>';
-					$h .= \encode($eOperation['description']);
+					$h .= encode($eOperation['description']);
 				$h .= '</td>';
 
 				$h .= '<td class="text-end">';

@@ -3,13 +3,13 @@ new AdaptativeView('index', function($data, CompanyTemplate $t) {
 
 	$t->title = s("La trésorerie de {company}", ['company' => $data->eCompany['name']]);
 	$t->tab = 'analyze';
-	$t->canonical = \company\CompanyUi::urlAnalyze($data->eCompany).'/bank';
+	$t->canonical = \company\CompanyUi::urlOverview($data->eCompany).'/bank';
 
-	$t->mainTitle = new \analyze\AnalyzeUi()->getTitle($data->eCompany);
+	$t->mainTitle = new overview\AnalyzeUi()->getTitle($data->eCompany);
 
 	$t->mainYear = new \account\FinancialYearUi()->getFinancialYearTabs(
 		function(\account\FinancialYear $eFinancialYear) use ($data) {
-			return \company\CompanyUi::urlAnalyze($data->eCompany).'/bank?financialYear='.$eFinancialYear['id'];
+			return \company\CompanyUi::urlOverview($data->eCompany).'/bank?financialYear='.$eFinancialYear['id'];
 		},
 		$data->cFinancialYear,
 		$data->eFinancialYear,
@@ -17,6 +17,6 @@ new AdaptativeView('index', function($data, CompanyTemplate $t) {
 
 	$t->package('main')->updateNavAnalyze($t->canonical, 'bank');
 
-	echo new \analyze\BankUi()->get([$data->cOperationBank, $data->cOperationCash]);
+	echo new overview\BankUi()->get([$data->cOperationBank, $data->cOperationCash]);
 
 });

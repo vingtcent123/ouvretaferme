@@ -1,11 +1,11 @@
 <?php
-namespace analyze;
+namespace overview;
 
 class ChargesUi {
 
 	public function __construct() {
-		\Asset::css('analyze', 'analyze.css');
-		\Asset::js('analyze', 'analyze.js');
+		\Asset::css('overview', 'analyze.css');
+		\Asset::js('overview', 'analyze.js');
 	}
 
 	public function get(\company\Company $eCompany, \account\FinancialYear $eFinancialYear, \Collection $cOperation, \Collection $cAccount): string {
@@ -47,7 +47,7 @@ class ChargesUi {
 		}
 
 		$h = '<div class="analyze-pie-canvas">';
-			$h .= '<canvas '.attr('onrender', 'Analyze.createPie(this, '.json_encode($values).', '.json_encode($labels).')').'</canvas>';
+			$h .= '<canvas '.\attr('onrender', 'Analyze.createPie(this, '.json_encode($values).', '.json_encode($labels).')').'</canvas>';
 		$h .= '</div>';
 
 		return $h;

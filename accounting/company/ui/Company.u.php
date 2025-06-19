@@ -24,10 +24,6 @@ class CompanyUi {
 		return \Lime::getUrl().'/'.(is_int($company) ? $company : $company['id']).'/journal';
 	}
 
-	public static function urlAnalyze(int|Company $company): string {
-		return \Lime::getUrl().'/'.(is_int($company) ? $company : $company['id']).'/analyze';
-	}
-
 	public static function urlOverview(int|Company $company): string {
 		return \Lime::getUrl().'/'.(is_int($company) ? $company : $company['id']).'/overview';
 	}
@@ -188,7 +184,7 @@ class CompanyUi {
 				$categories = $this->getAnalyzeCategories($eCompany);
 				$selectedCategory = \Setting::get('main\viewAnalyze');
 
-				$h .= '<a href="'.CompanyUi::urlAnalyze($eCompany).'/bank" class="company-tab '.($tab === 'analyze' ? 'selected' : '').'" data-tab="analyze">';
+				$h .= '<a href="'.CompanyUi::urlOverview($eCompany).'/bank" class="company-tab '.($tab === 'analyze' ? 'selected' : '').'" data-tab="analyze">';
 					$h .= '<span class="hide-lateral-down company-tab-icon">'.\Asset::icon('bar-chart').'</span>';
 					$h .= '<span class="hide-lateral-up company-tab-icon">'.\Asset::icon('bar-chart-fill').'</span>';
 					$h .= '<span class="company-tab-label">';
@@ -469,17 +465,17 @@ class CompanyUi {
 
 		return [
 			'bank' => [
-				'url' => CompanyUi::urlAnalyze($eCompany).'/bank',
+				'url' => CompanyUi::urlOverview($eCompany).'/bank',
 				'label' => s("Trésorerie"),
 				'longLabel' => s("Suivi de la trésorerie"),
 			],
 			'charges' => [
-				'url' => CompanyUi::urlAnalyze($eCompany).'/charges',
+				'url' => CompanyUi::urlOverview($eCompany).'/charges',
 				'label' => s("Charges"),
 				'longLabel' => s("Suivi des charges"),
 			],
 			'result' => [
-				'url' => CompanyUi::urlAnalyze($eCompany).'/result',
+				'url' => CompanyUi::urlOverview($eCompany).'/result',
 				'label' => s("Résultat"),
 				'longLabel' => s("Suivi du résultat"),
 			],

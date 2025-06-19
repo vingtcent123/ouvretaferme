@@ -111,13 +111,13 @@ class AccountingUi {
 								$h .= '</td>';
 								$h .= '<td colspan="8" class="cell-bordered text-center">';
 									$h .= match($currentClass) {
-										'1' => \s("Comptes de bilan"),
-										'2' => \s("Comptes d'immobilisation"),
-										'3' => \s("Comptes de stocks et encours"),
-										'4' => \s("Comptes de tiers"),
-										'5' => \s("Comptes financiers"),
-										'6' => \s("Comptes de charges"),
-										'7' => \s("Comptes de produits"),
+										'1' => s("Comptes de bilan"),
+										'2' => s("Comptes d'immobilisation"),
+										'3' => s("Comptes de stocks et encours"),
+										'4' => s("Comptes de tiers"),
+										'5' => s("Comptes financiers"),
+										'6' => s("Comptes de charges"),
+										'7' => s("Comptes de produits"),
 									};
 								$h .= '</td>';
 							$h .= '</tr>';
@@ -140,13 +140,13 @@ class AccountingUi {
 							];
 						}
 
-						$label = $category['min'] === $category['max'] ? $category['min'] : \s("{min} à {max}", ['min' => $category['min'], 'max' => $category['max']]);
+						$label = $category['min'] === $category['max'] ? $category['min'] : s("{min} à {max}", ['min' => $category['min'], 'max' => $category['max']]);
 						$description = $category['name'];
 
 						$h .= '<tr class="row-bordered">';
 
 							$h .= '<td class="cell-bordered">'.$label.'</td>';
-							$h .= '<td class="cell-bordered">'.\encode($description).'</td>';
+							$h .= '<td class="cell-bordered">'.encode($description).'</td>';
 							$h .= $this->displayDebitCredit($balance);
 
 						$h .= '</tr>';
@@ -185,8 +185,8 @@ class AccountingUi {
 
 				$h .= '<tr'.($isTotal === TRUE ? ' class="row-header"' : '').'>';
 
-				$h .= '<td>'.($isTotal === TRUE ? s("Totaux") : \encode($balance['accountLabel'])).'</td>';
-				$h .= '<td>'.($isTotal === TRUE ? s("comptes") : \encode($balance['description'])).'</td>';
+				$h .= '<td>'.($isTotal === TRUE ? s("Totaux") : encode($balance['accountLabel'])).'</td>';
+				$h .= '<td>'.($isTotal === TRUE ? s("comptes") : encode($balance['description'])).'</td>';
 				$h .= '<td class="text-end util-unit">'.(new OverviewUi()->number($balance['startDebit'], '')).'</td>';
 				$h .= '<td class="text-end util-unit">'.(new OverviewUi()->number($balance['startCredit'], '')).'</td>';
 				$h .= '<td class="text-end util-unit">'.(new OverviewUi()->number($balance['moveDebit'], '')).'</td>';
