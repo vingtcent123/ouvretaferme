@@ -4,7 +4,7 @@ Lime::setUrls([
 	'prod' => 'https://www.ouvretaferme.org'
 ]);
 
-Lime::setApps(['framework', 'agora', 'ouvretaferme', 'base', 'commercialisation']);
+Lime::setApps(['framework', 'agora', 'ouvretaferme', 'base', 'commercialisation', 'production']);
 
 L::setLang('fr_FR');
 L::setVariables([
@@ -77,7 +77,7 @@ switch(LIME_ENV) {
 
 }
 
-Package::setConfFile('storage', LIME_DIRECTORY.'/ouvretaferme/media/media.c.php');
+Package::setConfFile('storage', LIME_DIRECTORY.'/base/media/media.c.php');
 
 Feature::set('user\ban', TRUE);
 

@@ -11,11 +11,6 @@ Package::setList([
 	'user' => 'framework',
 	'util' => 'framework',
 	'analyze' => 'ouvretaferme',
-	'gallery' => 'ouvretaferme',
-	'map' => 'ouvretaferme',
-	'plant' => 'ouvretaferme',
-	'sequence' => 'ouvretaferme',
-	'series' => 'ouvretaferme',
 	'website' => 'ouvretaferme',
 	'farm' => 'base',
 	'hr' => 'base',
@@ -24,6 +19,11 @@ Package::setList([
 	'payment' => 'commercialisation',
 	'selling' => 'commercialisation',
 	'shop' => 'commercialisation',
+	'gallery' => 'production',
+	'map' => 'production',
+	'plant' => 'production',
+	'sequence' => 'production',
+	'series' => 'production',
 ]);
 
 Package::setObservers([
