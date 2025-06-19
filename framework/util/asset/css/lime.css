@@ -827,6 +827,15 @@ body[data-touch="no"] .hide-notouch {
 }
 
 /* Utilities */
+@media (min-width: 576px) {
+
+	.util-section {
+		border-left: 2px solid var(--secondary);
+		padding-left: 1rem;
+	}
+
+}
+
 .util-quick {
 	display: inline-block;
 	border-bottom: 2px dotted transparent;
