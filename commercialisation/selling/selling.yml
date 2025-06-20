@@ -15,13 +15,6 @@ Configuration:
   hasVat: bool = TRUE
   defaultVat: int8(0, null)
   defaultVatShipping: ?int8(0, null)
-  legalEmail: ?email
-  legalName: ?text8
-  invoiceStreet1: ?text8
-  invoiceStreet2: ?text8
-  invoicePostcode: ?text8
-  invoiceCity: ?text8
-  invoiceRegistration: ?text8
   invoiceVat: ?text8
   organicCertifier: ?text8
   paymentMode: ?editor16(1, 400)
