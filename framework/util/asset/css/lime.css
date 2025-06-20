@@ -24,7 +24,16 @@ body {
 
 p {
 	margin-top: 0;
-	margin-bottom: 0.7rem;
+	margin-bottom: 0.5rem;
+}
+
+p:has(+ h1),
+p:has(+ h2),
+p:has(+ h3),
+p:has(+ h4),
+p:has(+ h5),
+p:has(+ h6) {
+	margin-bottom: 1rem;
 }
 
 [data-href],

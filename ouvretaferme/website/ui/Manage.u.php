@@ -80,7 +80,7 @@ class ManageUi {
 		$h = '<p>'.s("Vous pouvez facilement intégrer un formulaire de contact sur le site internet de votre ferme. Lorsqu'un client vous contactera par ce biais, vous recevrez un e-mail avec le message laissé par le client.").'</p>';
 
 
-		$h .= '<dl class="util-presentation util-presentation-1 mb-3">';
+		$h .= '<dl class="util-presentation util-presentation-1 mb-2">';
 			$h .= '<dt>'.s("Adresse e-mail de la ferme").'</dt>';
 			$h .= '<dd>'.($farmEmail ?? s("non renseignée")).'</dd>';
 			$h .= '<dt>'.s("Site internet de la ferme").'</dt>';
