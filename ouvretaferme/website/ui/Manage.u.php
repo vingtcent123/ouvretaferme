@@ -73,6 +73,55 @@ class ManageUi {
 
 	}
 
+	public function contact(Website $eWebsite): \Panel {
+
+		$farmEmail = $eWebsite['farm']->selling()['legalEmail'];
+
+		$h = '<p>'.s("Vous pouvez facilement intégrer un formulaire de contact sur le site internet de votre ferme. Lorsqu'un client vous contactera par ce biais, vous recevrez un e-mail avec le message laissé par le client.").'</p>';
+
+
+		$h .= '<dl class="util-presentation util-presentation-1 mb-3">';
+			$h .= '<dt>'.s("Adresse e-mail de la ferme").'</dt>';
+			$h .= '<dd>'.($farmEmail ?? s("non renseignée")).'</dd>';
+			$h .= '<dt>'.s("Site internet de la ferme").'</dt>';
+			$h .= '<dd>'.\website\WebsiteUi::link($eWebsite).'</dd>';
+		$h .= '</dl>';
+
+		if($farmEmail === NULL) {
+
+			$h .= '<div class="util-box-danger">';
+				$h .= '<p>'.s("Pour intégrer un formulaire de contact sur votre site internet, veuillez d'abord renseigner l'adresse e-mail de votre ferme.").'</p>';
+				$h .= '<a href="/farm/farm:update?id='.$eWebsite['farm']['id'].'" class="btn btn-transparent">'.s("Configurer maintenant").'</a>';
+			$h .= '</div>';
+
+		} else {
+
+			$h .= '<p>'.s("Pour réaliser l'intégration du formulaire, il vous suffit d'ajouter le code ci-dessous sur n'importe quelle page de votre site").'</p>';
+
+			$h .= '<code>@contactForm</code>';
+
+			$h .= '<br/>';
+
+			$h .= '<h3>'.s("Rendu sur votre site internet").'</h3>';
+
+			$h .= '<div class="util-block-help">';
+				$h .= s("L'envoi du message est volontairement désactivé sur cette page de rendu.");
+			$h .= '</div>';
+
+			$h .= '<div>';
+				$h .= new ContactUi()->getForm($eWebsite, TRUE);
+			$h .= '</div>';
+
+		}
+
+		return new \Panel(
+			id: 'panel-website-contact',
+			title: s("Intégrer un formulaire de contact"),
+			body: $h
+		);
+
+	}
+
 	public function displayTitle(Website $eWebsite): string {
 
 		$h = '<div class="util-action">';
@@ -87,6 +136,7 @@ class ManageUi {
 				$h .= '<div class="dropdown-list bg-primary">';
 					$h .= '<div class="dropdown-title">'.s("Site internet").'</div>';
 					$h .= '<a href="/website/manage:update?id='.$eWebsite['id'].'" class="dropdown-item">'.s("Paramétrer le site").'</a>';
+					$h .= '<a href="/website/manage:contact?id='.$eWebsite['id'].'" class="dropdown-item">'.s("Intégrer un formulaire de contact sur le site").'</a>';
 					$h .= match($eWebsite['status']) {
 						Website::INACTIVE => '<a data-ajax="/website/manage:doUpdateStatus" post-id="'.$eWebsite['id'].'" post-status="'.Website::ACTIVE.'" class="dropdown-item" data-confirm="'.s("Le site sera rendu accessible au public, voulez-vous continuer ?").'">'.s("Mettre en ligne le site").'</a>',
 						Website::ACTIVE => '<a data-ajax="/website/manage:doUpdateStatus" post-id="'.$eWebsite['id'].'" post-status="'.Website::INACTIVE.'" class="dropdown-item" data-confirm="'.s("Le site deviendra inaccessible au public, voulez-vous continuer ?").'">'.s("Mettre hors ligne le site").'</a>'

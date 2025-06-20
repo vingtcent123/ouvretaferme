@@ -3,7 +3,7 @@ namespace website;
 
 class ContactUi {
 
-	public function getForm(Website $eWebsite): string {
+	public function getForm(Website $eWebsite, bool $readOnly = FALSE): string {
 
 		$form = new \util\FormUi();
 
@@ -15,7 +15,11 @@ class ContactUi {
 
 			$h .= $form->dynamicGroups(new Contact(), ['name', 'email', 'title', 'content']);
 
-			$h .= $form->group(content: $form->submit(s("Envoyer le message")));
+			if($readOnly) {
+				$h .= $form->group(content: '<span class="btn btn-primary disabled">'.s("Envoyer le message").'</span>');
+			} else {
+				$h .= $form->group(content: $form->submit(s("Envoyer le message")));
+			}
 
 		$h .= $form->close();
 

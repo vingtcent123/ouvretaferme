@@ -27,4 +27,10 @@ new AdaptativeView('update', function($data, PanelTemplate $t) {
 	return new \website\ManageUi()->update($data->e);
 
 });
+
+new AdaptativeView('contact', function($data, PanelTemplate $t) {
+
+	return new \website\ManageUi()->contact($data->e);
+
+});
 ?>
