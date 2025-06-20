@@ -2199,7 +2199,7 @@ class EditorFormat {
 
 		// Apply new alignment
 		for(let i = 0; i < nodes.length; i++) {
-			nodes[i].setAttribute('data-align', align);
+			nodes[i].style.textAlign = align;
 		}
 
 		EditorFormat._restyleIcons(instanceId);
@@ -2379,7 +2379,7 @@ class EditorFormat {
 
 				if(nodeAlign !== null) {
 
-					const selectedAlignement = nodeAlign.getAttribute('data-align');
+					const selectedAlignement = nodeAlign.style.textAlign;
 					const commandAlignement = command.substring(6);
 
 					if(selectedAlignement === 'left' || selectedAlignement === 'center' || selectedAlignement === 'right' || selectedAlignement === 'justify') {
@@ -4241,7 +4241,7 @@ class EditorMutation {
 
 					EditorNode.trim(node);
 
-					return EditorMutation._nodeAttributes(node, [], ['data-embed', 'data-header', 'data-align']);
+					return EditorMutation._nodeAttributes(node, [], ['data-embed', 'data-header']);
 
 				}
 				// Others <p/div/...> are evil

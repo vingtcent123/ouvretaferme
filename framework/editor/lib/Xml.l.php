@@ -697,29 +697,16 @@ class XmlLib {
 		\util\DomLib::trimNode($node);
 
 		$attributes = [
-			'data-align?' => 'align',
-			'data-lat?' => 'lat',
-			'data-lon?' => 'lon',
-			'data-name?' => 'name',
-			'data-id?' => 'id',
-			'data-zoom?' => 'zoom',
+			'style?' => NULL,
 		];
+
+		$this->cleanStyleNode($node, ['text-align']);
 
 		return $this->createParagraphElement($node, $attributes);
 
 	}
 
 	protected function createParagraphElement(\DOMNode $node, array $attributes): int {
-
-		if($node->hasAttribute('data-align')) {
-
-			if(
-				in_array($node->getAttribute('data-align'), ['center', 'right', 'justify']) === FALSE
-			) {
-				$node->removeAttribute('data-align');
-			}
-
-		}
 
 		if($node->hasAttribute('data-header')) {
 
@@ -792,6 +779,7 @@ class XmlLib {
 			case XML_ELEMENT_NODE :
 
 				$this->cleanChildTextNodes($node);
+				$this->cleanStyleNode($node, ['color']);
 
 				switch($node->nodeName) {
 
@@ -799,15 +787,13 @@ class XmlLib {
 					case 'b' :
 					case 'i' :
 					case 'u' :
-						$this->cleanStyleNode($node);
 						return $this->cleanNodeAttributes($node, ['style?' => NULL]);
 
 					case 'a' :
-						$this->cleanStyleNode($node);
 						return $this->cleanLinkNode($node);
 
 					case 'span' :
-						return $this->cleanSpanNode($node);
+						return 0;
 
 					default :
 						return \util\DomLib::removeNode($node);
@@ -884,16 +870,7 @@ class XmlLib {
 	 *
 	 * @param \DOMNode $node
 	 */
-	protected function cleanSpanNode(\DOMNode $node) : int {
-		return $this->cleanStyleNode($node) ? 0 : \util\DomLib::removeNode($node);
-	}
-
-	/**
-	 * Clean a span node
-	 *
-	 * @param \DOMNode $node
-	 */
-	protected function cleanStyleNode(\DOMNode $node): bool {
+	protected function cleanStyleNode(\DOMNode $node, array $allowed = []): bool {
 
 		if($node->hasAttribute('style') === FALSE) {
 			return FALSE;
@@ -902,23 +879,31 @@ class XmlLib {
 		$style = $node->getAttribute('style');
 		$matches = [];
 
-		if(preg_match('/(^|\s|\;)color\s*:\s*(rgb\([0-9]{1,3}\s*,\s*[0-9]{1,3}\s*,\s*[0-9]{1,3}\)|[a-z]+|\#[0-9a-f]{6})($|\s|\;)/si', $style, $matches) === 1) {
+		$cleanedStyle = '';
 
-			if($matches[2] === 'inherit') {
-				$node->removeAttribute('style');
-				return FALSE;
-			} else {
-
-				$node->setAttribute('style', 'color: '.$matches[2].';');
-				$this->cleanNodeAttributes($node, ['style' => NULL]);
-
-				return TRUE;
-
-			}
-
+		if(
+			in_array('color', $allowed) and
+			preg_match('/(^|\s|\;)color\s*:\s*(rgb\([0-9]{1,3}\s*,\s*[0-9]{1,3}\s*,\s*[0-9]{1,3}\)|[a-z]+|\#[0-9a-f]{6})($|\s|\;)/si', $style, $matches) === 1 and
+			$matches[2] !== 'inherit'
+		) {
+			$cleanedStyle .= 'color: '.$matches[2].';';
 		}
 
-		return FALSE;
+		if(
+			in_array('text-align', $allowed) and
+			preg_match('/(^|\s|\;)text-align\s*:\s*(left|center|right|justify)($|\s|\;)/si', $style, $matches) === 1 and
+			$matches[2] !== 'inherit'
+		) {
+			$cleanedStyle .= 'text-align: '.$matches[2].';';
+		}
+
+		if($cleanedStyle === '') {
+			$node->removeAttribute('style');
+			return FALSE;
+		} else {
+			$node->setAttribute('style', $style);
+			return TRUE;
+		}
 
 	}
 

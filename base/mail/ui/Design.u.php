@@ -20,13 +20,7 @@ class DesignUi {
 
 		$eFarm->expects(['emailBanner', 'emailFooter']);
 
-		$html = $content;
-
-		if($eFarm['emailFooter'] !== NULL) {
-			$html .= "\n\n".$eFarm['emailFooter'];
-		}
-
-		return $html;
+		return $content;
 
 	}
 
@@ -38,9 +32,9 @@ class DesignUi {
 		$html .= $content;
 
 		if($eFarm['emailFooter'] !== NULL) {
-			$html .= nl2br("\n\n".encode($eFarm['emailFooter']));
+			$html .= new \editor\ReadorFormatterUi()->getFromXml($eFarm['emailFooter']);
 		}
-
+dd(encode($html));
 		return $html;
 
 	}

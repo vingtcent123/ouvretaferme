@@ -1821,11 +1821,6 @@ class FarmUi {
 				$d->field = NULL;
 				break;
 
-			case 'emailFooter' :
-				$d->field = 'textarea';
-				$d->attributes = ['data-limit' => Farm::model()->getPropertyRange('emailFooter')[1]];
-				break;
-
 			case 'rotationYears' :
 				$d->append = s("saisons");
 				break;

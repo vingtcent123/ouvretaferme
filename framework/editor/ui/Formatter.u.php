@@ -926,16 +926,6 @@ abstract class FormatterUi {
 			case 'a' :
 				return $this->convertLinkNode($node);
 
-			case 'p':
-			case 'h2':
-			case 'h3':
-
-				$attributes = [
-					'align' => 'data-align',
-				];
-
-				\util\DomLib::renameNodeAttributes($node, $attributes);
-
 		}
 
 	}

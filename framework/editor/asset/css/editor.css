@@ -68,22 +68,6 @@ div.readitor p {
 	overflow-wrap: break-word;
 }
 
-div.readitor [data-align="left"] {
-	text-align: left;
-}
-
-div.readitor [data-align="center"] {
-	text-align: center;
-}
-
-div.readitor [data-align="right"] {
-	text-align: right;
-}
-
-div.readitor [data-align="justify"] {
-	text-align: justify;
-}
-
 div.readitor b {
 	font-weight: bold;
 }

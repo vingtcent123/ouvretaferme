@@ -64,7 +64,7 @@ class FarmModel extends \ModuleModel {
 			'description' => ['editor24', 'null' => TRUE, 'cast' => 'string'],
 			'logo' => ['textFixed', 'min' => 30, 'max' => 30, 'charset' => 'ascii', 'null' => TRUE, 'cast' => 'string'],
 			'emailBanner' => ['textFixed', 'min' => 30, 'max' => 30, 'charset' => 'ascii', 'null' => TRUE, 'cast' => 'string'],
-			'emailFooter' => ['text16', 'min' => 1, 'max' => 400, 'null' => TRUE, 'cast' => 'string'],
+			'emailFooter' => ['editor16', 'min' => 1, 'max' => 400, 'null' => TRUE, 'cast' => 'string'],
 			'seasonFirst' => ['int16', 'min' => 0, 'max' => NULL, 'cast' => 'int'],
 			'seasonLast' => ['int16', 'min' => 0, 'max' => NULL, 'cast' => 'int'],
 			'rotationYears' => ['int8', 'min' => 2, 'max' => 5, 'cast' => 'int'],
