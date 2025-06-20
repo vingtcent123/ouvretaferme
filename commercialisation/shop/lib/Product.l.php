@@ -346,6 +346,10 @@ class ProductLib extends ProductCrud {
 
 					$eDate['ccProduct'] = $cProduct->reindex(function($eProduct) use($eShop) {
 
+						if($eProduct['catalog']->empty()) {
+							return NULL;
+						}
+
 						$eRange = $eShop['ccRange'][$eProduct['farm']['id']][$eProduct['catalog']['id']] ?? new Range();
 
 						if($eRange->empty() or $eRange['department']->empty()) {
