@@ -1,3 +1,16 @@
+Contact:
+  id: serial32
+  website: website\Website
+  farm: farm\Farm
+  name: text8(1, null)
+  email: email
+  title: text8(1, null)
+  content: text16(1, null)
+  createdAt: datetime = SPECIAL(now)
+  INDEX: [
+    ["farm", "website"]
+  ]
+
 Design:
   id: serial32
   name: text8(1, null)

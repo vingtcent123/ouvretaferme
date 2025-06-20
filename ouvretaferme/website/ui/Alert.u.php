@@ -7,6 +7,10 @@ class AlertUi {
 
 		return match($fqn) {
 
+			'Contact::from.check' => s("Merci d'indiquer votre adresse e-mail pour être recontacté(e)."),
+			'Contact::title.check' => s("Indiquez la raison pour laquelle vous envoyez ce message."),
+			'Contact::content.check' => s("Vous n'avez pas écrit de message."),
+
 			'Website::internalDomain.check' => s("Merci de saisir une adresse uniquement composées de caractères alphanumériques et de tirets."),
 			'Website::internalDomain.duplicate' => s("Cette adresse est déjà utilisée par une autre ferme."),
 			'Website::domain.check' => s("Votre nom de domaine ne semble pas valable."),
@@ -26,6 +30,8 @@ class AlertUi {
 	public static function getSuccess(string $fqn): ?string {
 
 		return match($fqn) {
+
+			'Contact::created' => s("Votre message a bien été envoyé !"),
 
 			'Website::created' => s("Le site internet de votre ferme a bien été créé et peut désormais être configuré !"),
 			'Website::updated' => s("Le site internet a bien été mis à jour."),

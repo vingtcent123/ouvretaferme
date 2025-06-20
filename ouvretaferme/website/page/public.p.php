@@ -85,6 +85,23 @@ new Page()
 		}
 
 	})
+	->post('/public/{domain}/:doContact', function($data) {
+
+		$fw = new \FailWatch();
+
+		$e = new \website\Contact([
+			'website' => $data->eWebsite,
+			'farm' => $data->eWebsite['farm']
+		]);
+		$e->build(['name', 'email', 'title', 'content'], $_POST, new \Properties('create'));
+
+		$fw->validate();
+
+		\website\ContactLib::create($e);
+
+		throw new ViewAction($data, ':doContact');
+
+	})
 	->get(['/public/{domain}/', '/public/{domain}/{page}'], function($data) {
 
 		if(
@@ -104,7 +121,7 @@ new Page()
 		}
 
 		$data->eWebpage = \website\WebpageLib::getByUrl($data->eWebsite, GET('page'));
-		\website\WidgetLib::fill($data->eWebpage);
+		\website\WidgetLib::fill($data->eWebsite, $data->eWebpage);
 
 		$data->eWebpageNews = \website\WebpageLib::getNewsByWebsite($data->eWebsite);
 

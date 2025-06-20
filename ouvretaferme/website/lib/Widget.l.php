@@ -3,7 +3,7 @@ namespace website;
 
 class WidgetLib {
 
-	public static function fill(Webpage $eWebpage): void {
+	public static function fill(Website $eWebsite, Webpage $eWebpage): void {
 
 		if($eWebpage->empty()) {
 			return;
@@ -15,7 +15,7 @@ class WidgetLib {
 
 		if($eWebpage['content'] !== NULL) {
 
-			$found = preg_match_all('/\@('.implode('|', self::getList()).')=([0-9]+)/si', $eWebpage['content'], $matches);
+			$found = preg_match_all('/\@('.implode('|', self::getList()).')(=([0-9]+))?/si', $eWebpage['content'], $matches);
 
 			for($i = 0; $i < $found; $i++) {
 
@@ -26,11 +26,12 @@ class WidgetLib {
 				}
 
 				$app = $matches[1][$i];
-				$value = $matches[2][$i];
+				$value = $matches[3][$i] ?? NULL;
 
 				$eWebpage['widgets'][$original] = match($app) {
-					'shop' => self::getShop($eFarm, (int)$value, 'limited'),
-					'fullShop' => self::getShop($eFarm, (int)$value, 'full'),
+					'contactForm' => self::getContactForm($eWebsite),
+					'shop' => $value ? self::getShop($eFarm, (int)$value, 'limited') : '',
+					'fullShop' => $value ? self::getShop($eFarm, (int)$value, 'full') : '',
 				} ?? $original;
 
 			}
@@ -56,8 +57,14 @@ class WidgetLib {
 
 	}
 
+	public static function getContactForm(Website $eWebsite): ?\Closure {
+
+		return fn() => new ContactUi()->getForm($eWebsite);
+
+	}
+
 	public static function getList(): array {
-		return ['shop', 'fullShop'];
+		return ['shop', 'fullShop', 'contactForm'];
 	}
 
 }

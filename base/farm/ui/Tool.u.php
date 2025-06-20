@@ -469,6 +469,5 @@ class ToolUi {
 
 	}
 
-
 }
 ?>

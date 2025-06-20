@@ -712,6 +712,11 @@ Route::register([
 			'priority' => 5,
 			'route' => ['@module', 'website', 'News', 'quick'],
 		],
+		'/public/{domain}/:doContact' => [
+			'request' => 'website/public',
+			'priority' => 5,
+			'route' => ['public', '{domain}', ':doContact'],
+		],
 		'/shop/public/{fqn}/{date}/:doCancelCustomer' => [
 			'request' => 'shop/public',
 			'priority' => 5,

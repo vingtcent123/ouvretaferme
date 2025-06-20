@@ -16,6 +16,12 @@ new AdaptativeView('nothing', function($data, MainTemplate $t) {
 
 });
 
+new AdaptativeView('doContact', function($data, AjaxTemplate $t) {
+
+	$t->qs('#website-contact')->outerHtml('<div class="util-box-success">'.\website\AlertUi::getSuccess('Contact::created').'</div>');
+
+});
+
 new AdaptativeView('public', function($data, WebsiteTemplate $t) {
 
 	$t->title = $data->eWebpage['title'] ?? $data->eWebsite['title'];
