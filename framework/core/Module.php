@@ -5209,7 +5209,7 @@ abstract class ModulePage extends Page {
 
 	}
 
-	public function doCreate(\Closure $action, ?array $propertiesCreate = NULL, string $page = 'doCreate', array $validate = ['canCreate'], ?Closure $onKo = NULL): ModulePage {
+	public function doCreate(\Closure $action, ?array $propertiesCreate = NULL, array|string $page = 'doCreate', array $validate = ['canCreate'], ?Closure $onKo = NULL): ModulePage {
 
 		$this->post($page, function($data) use($action, $propertiesCreate, $validate, $onKo) {
 
@@ -5279,7 +5279,7 @@ abstract class ModulePage extends Page {
 
 	}
 
-	public function doUpdate(\Closure $action, ?array $propertiesUpdate = NULL, string $page = 'doUpdate', array $validate = ['canUpdate'], ?Closure $onKo = NULL): ModulePage {
+	public function doUpdate(\Closure $action, ?array $propertiesUpdate = NULL, array|string $page = 'doUpdate', array $validate = ['canUpdate'], ?Closure $onKo = NULL): ModulePage {
 
 		$this->post($page, function($data) use($action, $propertiesUpdate, $validate, $onKo) {
 
