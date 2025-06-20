@@ -34,8 +34,7 @@ class ContactLib extends ContactCrud {
 			->setReplyTo($e['email'])
 			->setContent(...ContactUi::getFarmEmail($e))
 			->send();
-dd('ok');
-		/* Envoi de mail */
+
 
 	}
 
