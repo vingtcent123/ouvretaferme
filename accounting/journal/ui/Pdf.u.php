@@ -9,22 +9,24 @@ class PdfUi {
 
 	}
 
-	public static function filenameJournal(\company\Company $eCompany): string {
+	public static function filenameJournal(\farm\Farm $eFarm): string {
 
-		return s("{date}-{company}-journal", ['date' => date('Y-m-d'), 'company' => $eCompany['siret']]);
+		// TODO SIRET
+		return s("{date}-{company}-journal", ['date' => date('Y-m-d'), 'company' => $eFarm['siret']]);
 
 	}
 
-	public static function filenameVat(\company\Company $eCompany, string $type): string {
+	public static function filenameVat(\farm\Farm $eFarm, string $type): string {
 
 		$typeText = $type === 'sell' ? s("ventes") : s("achats");
-		return s("{date}-{company}-tva-{type}", ['date' => date('Y-m-d'), 'company' => $eCompany['siret'], 'type' => $typeText]);
+		// TODO SIRET
+		return s("{date}-{company}-tva-{type}", ['date' => date('Y-m-d'), 'company' => $eFarm['id'], 'type' => $typeText]);
 
 	}
 
-	public static function urlJournal(\company\Company $eCompany): string {
+	public static function urlJournal(\farm\Farm $eFarm): string {
 
-		return \company\CompanyUi::urlJournal($eCompany).'/:pdf';
+		return \company\CompanyUi::urlJournal($eFarm).'/:pdf';
 
 	}
 
@@ -34,10 +36,7 @@ class PdfUi {
 
 	}
 
-	public function getJournal(
-		\company\Company $eCompany,
-		\Collection $cOperation,
-	): string {
+	public function getJournal(\Collection $cOperation): string {
 
 		$h = '<style>@page {	size: A4; margin: calc(var(--margin-bloc-height) + 2cm) 1cm 1cm; }</style>';
 
@@ -122,15 +121,16 @@ class PdfUi {
 
 	}
 
-	public static function filenameBook(\company\Company $eCompany): string {
+	public static function filenameBook(\farm\Farm $eFarm): string {
 
-		return s("{date}-{company}-grand-livre", ['date' => date('Y-m-d'), 'company' => $eCompany['siret']]);
+		// TODO SIRET eu lieu de ID
+		return s("{date}-{company}-grand-livre", ['date' => date('Y-m-d'), 'company' => $eFarm['id']]);
 
 	}
 
-	public static function urlBook(\company\Company $eCompany): string {
+	public static function urlBook(\farm\Farm $eFarm): string {
 
-		return \company\CompanyUi::urlJournal($eCompany).'/book:pdf';
+		return \company\CompanyUi::urlJournal($eFarm).'/book:pdf';
 
 	}
 
@@ -151,7 +151,7 @@ class PdfUi {
 	}
 
 	public function getBook(
-		\company\Company $eCompany,
+		\farm\Farm $eFarm,
 		\Collection $cOperation,
 		\account\FinancialYear $eFinancialYear,
 	): string {
@@ -173,7 +173,7 @@ class PdfUi {
 						$h .= BookUi::getBookTheadContent();
 					$h .= '</thead>';
 
-					$h .= BookUi::getBookTbody($eCompany, $cOperation, $eFinancialYear);
+					$h .= BookUi::getBookTbody($eFarm, $cOperation, $eFinancialYear);
 
 				$h .= '</table>';
 
@@ -189,7 +189,7 @@ class PdfUi {
 	}
 
 	public function getVat(
-		\company\Company $eCompany,
+		\farm\Farm $eFarm,
 		\Collection $cccOperation,
 		\account\FinancialYear $eFinancialYear,
 	): string {
@@ -205,7 +205,7 @@ class PdfUi {
 
 			$h .= '<div class="pdf-document-content">';
 
-				$h .= new VatUi()->getTables($eCompany, $cccOperation, new \Search(), 'pdf');
+				$h .= new VatUi()->getTables($eFarm, $cccOperation, new \Search(), 'pdf');
 
 			$h .= '</div>';
 

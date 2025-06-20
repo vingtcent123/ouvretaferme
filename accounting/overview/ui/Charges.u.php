@@ -8,7 +8,7 @@ class ChargesUi {
 		\Asset::js('overview', 'analyze.js');
 	}
 
-	public function get(\company\Company $eCompany, \account\FinancialYear $eFinancialYear, \Collection $cOperation, \Collection $cAccount): string {
+	public function get(\Collection $cOperation, \Collection $cAccount): string {
 
 		if($cOperation->empty() === TRUE) {
 

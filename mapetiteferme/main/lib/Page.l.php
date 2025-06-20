@@ -37,22 +37,22 @@ class PageLib {
 		if($data->isLogged) {
 
 			$data->userDeletedAt = \session\SessionLib::get('userDeletedAt');
-			$data->cCompanyUser = \company\CompanyLib::getOnline();
+			$data->cFarmUser = \farm\FarmLib::getOnline();
 
 		} else {
 
 			$data->userDeletedAt = NULL;
-			$data->cCompanyUser = new \Collection();
+			$data->cFarmUser = new \Collection();
 
 		}
 
-		$data->eCompany = \company\CompanyLib::getById(REQUEST('company'));
+		$data->eFarm = \farm\FarmLib::getById(REQUEST('farm'));
 
-		if($data->eCompany->empty() === FALSE) {
-			\company\CompanyLib::connectSpecificDatabaseAndServer($data->eCompany);
+		if($data->eFarm->empty() === FALSE) {
+			\company\CompanyLib::connectSpecificDatabaseAndServer($data->eFarm);
 		}
 
-		$data->nCompanyUser = $data->cCompanyUser->count();
+		$data->nFarmUser = $data->cFarmUser->count();
 
 		$data->logInExternal = \user\ConnectionLib::checkLoginExternal();
 

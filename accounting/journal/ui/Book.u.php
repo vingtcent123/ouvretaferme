@@ -7,7 +7,7 @@ class BookUi {
 		\Asset::css('journal', 'journal.css');
 	}
 
-	public function getBookTitle(\company\Company $eCompany): string {
+	public function getBookTitle(\farm\Farm $eFarm): string {
 
 		$h = '<div class="util-action">';
 
@@ -16,7 +16,7 @@ class BookUi {
 			$h .= '</h1>';
 
 			$h .= '<div>';
-				$h .= '<a href="'.PdfUi::urlBook($eCompany).'" data-ajax-navigation="never" class="btn btn-primary">'.\Asset::icon('download').'&nbsp;'.s("Télécharger en PDF").'</a>';
+				$h .= '<a href="'.PdfUi::urlBook($eFarm).'" data-ajax-navigation="never" class="btn btn-primary">'.\Asset::icon('download').'&nbsp;'.s("Télécharger en PDF").'</a>';
 			$h .= '</div>';
 		$h .= '</div>';
 
@@ -39,7 +39,7 @@ class BookUi {
 	}
 
 	public static function getBookTbody(
-		\company\Company $eCompany,
+		\farm\Farm $eFarm,
 		\Collection $cOperation,
 		\account\FinancialYear $eFinancialYear,
 	): string {
@@ -94,7 +94,7 @@ class BookUi {
 				$h .= '</td>';
 
 				$h .= '<td>';
-					$h .= '<a href="'.\company\CompanyUi::urlJournal($eCompany).'/?document='.encode($eOperation['document']).'&financialYear='.$eFinancialYear['id'].'">'.encode($eOperation['document']).'</a>';
+					$h .= '<a href="'.\company\CompanyUi::urlJournal($eFarm).'/?document='.encode($eOperation['document']).'&financialYear='.$eFinancialYear['id'].'">'.encode($eOperation['document']).'</a>';
 				$h .= '</td>';
 
 				$h .= '<td>';
@@ -132,7 +132,7 @@ class BookUi {
 	}
 
 	public function getBook(
-		\company\Company $eCompany,
+		\farm\Farm $eFarm,
 		\Collection $cOperation,
 		\account\FinancialYear $eFinancialYear,
 	): string {
@@ -149,7 +149,7 @@ class BookUi {
 					$h .= self::getBookTheadContent();
 				$h .= '</thead>';
 
-				$h .= self::getBookTbody($eCompany, $cOperation, $eFinancialYear);
+				$h .= self::getBookTbody($eFarm, $cOperation, $eFinancialYear);
 
 
 			$h .= '</table>';

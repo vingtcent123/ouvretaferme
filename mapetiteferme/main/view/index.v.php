@@ -102,11 +102,7 @@ new AdaptativeView('logged', function($data, MainTemplate $t) {
 
 	$t->header = '<h1>'.s("Bienvenue, {userName}&nbsp;!", ['userName' => encode($data->eUserOnline['firstName'] ?? $data->eUserOnline['lastName'])]).'</h1>';
 
-	if(Privilege::can('company\access')) {
-
-		echo new \main\HomeUi()->getCompanies($data->cCompanyUser);
-
-	}
+	echo new \main\HomeUi()->getFarms($data->cFarmUser);
 
 });
 
@@ -264,7 +260,7 @@ new AdaptativeView('/presentation/pricing', function($data, MainTemplate $t) {
 
 	$t->header = '<h1>'.s("Grille tarifaire").'</h1>';
 
-	echo new \company\SubscriptionUi()->getPlans(new \company\Company());
+	echo new \company\SubscriptionUi()->getPlans(new \farm\Farm());
 
 });
 

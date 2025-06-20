@@ -1,9 +1,11 @@
 <?php
 new Page(function($data) {
 
-	$data->eCompany = \company\CompanyLib::getById(GET('company'))->validate('canView');
+	$data->eFarm = \farm\FarmLib::getById(GET('farm'))->validate('canAccounting');
 
-	[$data->cFinancialYear, $data->eFinancialYear] = \company\EmployeeLib::getDynamicFinancialYear($data->eCompany, GET('financialYear', 'int'));
+	// TODO Récupérer et sauvegarder dynamiquement
+	$data->eFinancialYear = \account\FinancialYearLib::selectDefaultFinancialYear();
+	$data->cFinancialYear = \account\FinancialYearLib::getAll();
 
 })
 	->get('index', function($data) {
@@ -37,7 +39,8 @@ new Page(function($data) {
 			$search->set('cashflow', GET('cashflow'));
 		}
 
-		if($data->eCompany->isAccrualAccounting()) {
+		// TODO ACCRUAL
+		/*if($data->eFarm->isAccrualAccounting()) {
 
 			$code = GET('code');
 			if(in_array($code, \journal\Operation::model()->getProperty('journalCode')) === FALSE) {
@@ -45,7 +48,7 @@ new Page(function($data) {
 			}
 			$search->set('journalCode', $code);
 
-		}
+		}*/
 
 		$data->cOperation = \journal\OperationLib::getAllForJournal($search, $hasSort);
 		$data->cAccount = \account\AccountLib::getAll();
@@ -55,13 +58,13 @@ new Page(function($data) {
 	})
 	->get('pdf', function($data) {
 
-		$content = pdf\PdfLib::generate($data->eCompany, $data->eFinancialYear, \pdf\PdfElement::JOURNAL_INDEX);
+		$content = pdf\PdfLib::generate($data->eFarm, $data->eFinancialYear, \pdf\PdfElement::JOURNAL_INDEX);
 
 		if($content === NULL) {
 			throw new NotExistsAction();
 		}
 
-		$filename = journal\PdfUi::filenameJournal($data->eCompany).'.pdf';
+		$filename = journal\PdfUi::filenameJournal($data->eFarm).'.pdf';
 
 		throw new PdfAction($content, $filename);
 	});

@@ -1,10 +1,7 @@
 Company:
   id: serial32
   name: text8(1, null) @collate(general)
-  vignette: ?textFixed(30, 30) @charset(ascii)
   url: ?url
-  logo: ?textFixed(30, 30) @charset(ascii)
-  banner: ?textFixed(30, 30) @charset(ascii)
   siret: ?text8(14,14)
   nafCode: ?text8(6, 6)
   addressLine1: ?text16

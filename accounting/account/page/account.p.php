@@ -3,7 +3,7 @@ new Page(function($data) {
 
 	\user\ConnectionLib::checkLogged();
 
-	$data->eCompany = \company\CompanyLib::getById(GET('company'))->validate('canWrite');
+	$data->eFarm = \farm\FarmLib::getById(GET('farm'))->validate('canManage');
 })
 ->get('index', function($data) {
 
@@ -69,7 +69,7 @@ new \account\AccountPage(function($data) {
 
 	\user\ConnectionLib::checkLogged();
 
-	$data->eCompany = \company\CompanyLib::getById(REQUEST('company'))->validate('canWrite');
+	$data->eFarm = \farm\FarmLib::getById(REQUEST('farm'))->validate('canManage');
 })
 ->quick(['description'], [], ['canQuickUpdate'])
 ->create(function($data) {

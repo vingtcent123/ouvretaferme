@@ -4,11 +4,10 @@ new Page()
 
 		\Setting::set('main\viewAsset', 'depreciation');
 
-		$company = GET('company');
-
-		$data->eCompany = \company\CompanyLib::getById($company)->validate('canView');
-
-		[$data->cFinancialYear, $data->eFinancialYear] = \company\EmployeeLib::getDynamicFinancialYear($data->eCompany, GET('financialYear', 'int'));
+		$data->eFarm = \farm\FarmLib::getById(GET('farm'))->validate('canManage');
+		// TODO Récupérer et sauvegarder dynamiquement
+		$data->eFinancialYear = \account\FinancialYearLib::selectDefaultFinancialYear();
+		$data->cFinancialYear = \account\FinancialYearLib::getAll();
 
 		$data->assetDepreciations = \asset\DepreciationLib::getByFinancialYear($data->eFinancialYear, 'asset');
 		$data->subventionDepreciations = \asset\DepreciationLib::getByFinancialYear($data->eFinancialYear, 'subvention');

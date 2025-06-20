@@ -21,14 +21,15 @@ class PdfUi {
 
 	}
 
-	public static function filenameBalance(\company\Company $eCompany): string {
+	public static function filenameBalance(\farm\Farm $eFarm): string {
 
-		return s("{date}-{company}-bilan-comptable", ['date' => date('Y-m-d'), 'company' => $eCompany['siret']]);
+		// TODO SIRET
+		return s("{date}-{farm}-bilan-comptable", ['date' => date('Y-m-d'), 'farm' => $eFarm['id']]);
 
 	}
-	public static function urlBalance(\company\Company $eCompany, \account\FinancialYear $eFinancialYear): string {
+	public static function urlBalance(\farm\Farm $eFarm, \account\FinancialYear $eFinancialYear): string {
 
-		return \company\CompanyUi::urlOverview($eCompany).'/balance:pdf';
+		return \company\CompanyUi::urlOverview($eFarm).'/balance:pdf';
 
 	}
 

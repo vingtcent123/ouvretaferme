@@ -7,16 +7,16 @@ class SubscriptionUi {
 		\Asset::css('company', 'subscription.css');
 	}
 
-	public static function urlManage(Company $eCompany): string {
-		return CompanyUi::url($eCompany).'/subscription:manage';
+	public static function urlManage(\farm\Farm $eFarm): string {
+		return CompanyUi::url($eFarm).'/subscription:manage';
 	}
 
-	public function getManageTitle(Company $eCompany): string {
+	public function getManageTitle(\farm\Farm $eFarm): string {
 
 		$h = '<div class="util-action">';
 
 		$h .= '<h1>';
-			$h .= '<a href="'.\company\CompanyUi::urlSettings($eCompany).'"  class="h-back">'.\Asset::icon('arrow-left').'</a>';
+			$h .= '<a href="'.\company\CompanyUi::urlSettings($eFarm).'"  class="h-back">'.\Asset::icon('arrow-left').'</a>';
 				$h .= s("L'abonnement");
 			$h .= '</h1>';
 
@@ -48,11 +48,13 @@ class SubscriptionUi {
 
 	}
 
-	public static function getCurrent(Company $eCompany): string {
+	public static function getCurrent(\farm\Farm $eFarm): string {
 
+		// TODO SUBSCRIPTION
+		return '';
 		$h = '<h2>'.s("Votre abonnement").'</h2>';
 
-		if($eCompany['cSubscription']->empty()) {
+		if($eFarm['cSubscription']->empty()) {
 
 			$h .= '<div class="util-info">';
 				$h .= s("Vous n'avez pas d'abonnement en cours !");
@@ -76,7 +78,7 @@ class SubscriptionUi {
 					$h .= '<tbody>';
 						$h .= '<div class="util-overflow-sm">';
 
-						foreach($eCompany['cSubscription'] as $eSubscription) {
+						foreach($eFarm['cSubscription'] as $eSubscription) {
 
 							$price = \Setting::get('company\subscriptionPrices')[$eSubscription['type']];
 
@@ -96,9 +98,9 @@ class SubscriptionUi {
 
 								$h .= '<td>';
 
-									if($eCompany['isBio'] === FALSE) {
+									if($eFarm['isBio'] === FALSE) {
 
-											$h .= '<a class="btn btn-primary" title="'.s("Prolonger pour un an à {price}", ['price' => \util\TextUi::money($price)]).'" data-ajax="'.CompanyUi::url($eCompany).'/subscription:subscribe" post-type="'.self::getCompanySubscriptionTypeBySubscriptionType($eSubscription['type']).'">'.\Asset::icon('arrow-repeat').'</a>';
+											$h .= '<a class="btn btn-primary" title="'.s("Prolonger pour un an à {price}", ['price' => \util\TextUi::money($price)]).'" data-ajax="'.CompanyUi::url($eFarm).'/subscription:subscribe" post-type="'.self::getCompanySubscriptionTypeBySubscriptionType($eSubscription['type']).'">'.\Asset::icon('arrow-repeat').'</a>';
 
 									}
 
@@ -215,7 +217,7 @@ class SubscriptionUi {
 
 	}
 
-	public function getPlans(Company $eCompany): string {
+	public function getPlans(\farm\Farm $eFarm): string {
 
 		$h = '<h2>'.s("Toutes les offres sans engagement").'</h2>';
 
@@ -239,14 +241,14 @@ class SubscriptionUi {
 						}
 					$h .= '</ul>';
 
-					if($eCompany->notEmpty()) {
-						if($eCompany['subscriptionType'] !== NULL and $eCompany['subscriptionType']->value($companySubscriptionType) === TRUE) {
-							$eSubscription = $eCompany['cSubscription']->find(fn($e) => $e['type'] === $subscriptionType)->first();
+					if($eFarm->notEmpty()) {
+						if(($eFarm['subscriptionType'] ?? NULL) !== NULL and $eFarm['subscriptionType']->value($companySubscriptionType) === TRUE) {
+							$eSubscription = $eFarm['cSubscription']->find(fn($e) => $e['type'] === $subscriptionType)->first();
 							$h .= '<a class="btn btn-outline-secondary">';
 								$h .= s("Votre abonnement est actif jusqu'au {date}", ['date' => \util\DateUi::numeric($eSubscription['endsAt'])]);
 							$h .= '</a>';
 						} else {
-							$h .= '<a class="btn btn-primary" data-ajax="'.CompanyUi::url($eCompany).'/subscription:subscribe" post-type="'.$companySubscriptionType.'">'.s("Souscrire pour 1 an à {price}", ['price' => \util\TextUi::money($price)]).'</a>';
+							$h .= '<a class="btn btn-primary" data-ajax="'.CompanyUi::url($eFarm).'/subscription:subscribe" post-type="'.$companySubscriptionType.'">'.s("Souscrire pour 1 an à {price}", ['price' => \util\TextUi::money($price)]).'</a>';
 						}
 					}
 				$h .= '</div>';
@@ -257,7 +259,7 @@ class SubscriptionUi {
 
 		$h .= '<p class="more-info"><sup>*</sup>'.s("Le logiciel de caisse n'est pas encore certifié NF525, et le module de comptabilité n'est pas encore certifié NF203.").'</p>';
 
-		if($eCompany->empty() or $eCompany['isBio'] === FALSE) {
+		if($eFarm->empty() or $eFarm['quality'] !== NULL) {
 
 			$h .= '<div class="subscriptions-item">';
 
@@ -277,14 +279,14 @@ class SubscriptionUi {
 						$h .= '</li>';
 				$h .= '</ul>';
 
-				if($eCompany->notEmpty()) {
-					if($eCompany['cSubscription']->count() === 3) {
+				if($eFarm->notEmpty()) {
+					if(($eFarm['cSubscription'] ?? NULL) !== NULL and $eFarm['cSubscription']->count() === 3) {
 
-						$h .= '<a class="btn btn-outline-secondary" data-ajax="'.CompanyUi::url($eCompany).'/subscription:subscribePack">'.s("Renouveler mes 3 modules pour {pricePack}", ['pricePack' => \util\TextUi::money(\Setting::get('company\subscriptionPackPrice'))]).'</a>';
+						$h .= '<a class="btn btn-outline-secondary" data-ajax="'.CompanyUi::url($eFarm).'/subscription:subscribePack">'.s("Renouveler mes 3 modules pour {pricePack}", ['pricePack' => \util\TextUi::money(\Setting::get('company\subscriptionPackPrice'))]).'</a>';
 
 					} else {
 
-						$h .= '<a class="btn btn-primary" data-ajax="'.CompanyUi::url($eCompany).'/subscription:subscribePack">'.s("Souscrire aux 3 modules pour 1 an à {pricePack}", ['pricePack' => \util\TextUi::money(\Setting::get('company\subscriptionPackPrice'))]).'</a>';
+						$h .= '<a class="btn btn-primary" data-ajax="'.CompanyUi::url($eFarm).'/subscription:subscribePack">'.s("Souscrire aux 3 modules pour 1 an à {pricePack}", ['pricePack' => \util\TextUi::money(\Setting::get('company\subscriptionPackPrice'))]).'</a>';
 
 					}
 				}

@@ -34,3 +34,6 @@ ThirdParty:
   UNIQUE: [
     ["name"]
   ]
+
+Setting:
+  id: serial32

@@ -1,16 +1,16 @@
 <?php
 new AdaptativeView('index', function($data, CompanyTemplate $t) {
 
-	$t->title = s("Les immobilisations de {company}", ['company' => $data->eCompany['name']]);
+	$t->title = s("Les immobilisations de {farm}", ['farm' => $data->eFarm['name']]);
 	$t->tab = 'asset';
-	$t->subNav = new \company\CompanyUi()->getAssetSubNav($data->eCompany);
-	$t->canonical = \company\CompanyUi::urlAsset($data->eCompany).'/depreciation';
+	$t->subNav = new \company\CompanyUi()->getAssetSubNav($data->eFarm);
+	$t->canonical = \company\CompanyUi::urlAsset($data->eFarm).'/depreciation';
 
 	$t->mainTitle = new asset\DepreciationUi()->getTitle();
 
 	$t->mainYear = new \account\FinancialYearUi()->getFinancialYearTabs(
 		function(\account\FinancialYear $eFinancialYear) use ($data) {
-			return \company\CompanyUi::urlAsset($data->eCompany).'/depreciation?financialYear='.$eFinancialYear['id'];
+			return \company\CompanyUi::urlAsset($data->eFarm).'/depreciation?financialYear='.$eFinancialYear['id'];
 		},
 		$data->cFinancialYear,
 		$data->eFinancialYear,
@@ -40,11 +40,11 @@ new AdaptativeView('index', function($data, CompanyTemplate $t) {
 			echo '</div>';
 
 			echo '<div class="tab-panel" data-tab="depreciation-asset">';
-				echo \asset\DepreciationUi::getDepreciationTable($data->eCompany, $data->assetDepreciations);
+				echo \asset\DepreciationUi::getDepreciationTable($data->eFarm, $data->assetDepreciations);
 			echo '</div>';
 
 			echo '<div class="tab-panel" data-tab="depreciation-subvention">';
-				echo \asset\DepreciationUi::getDepreciationTable($data->eCompany, $data->subventionDepreciations);
+				echo \asset\DepreciationUi::getDepreciationTable($data->eFarm, $data->subventionDepreciations);
 			echo '</div>';
 
 		echo '</div>';

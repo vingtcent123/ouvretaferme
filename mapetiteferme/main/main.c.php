@@ -27,4 +27,9 @@ Setting::register('main', [
 	],
 
 ]);
+
+Setting::register('selling', [
+	'remoteKey' => 'toto',
+]);
+
 ?>

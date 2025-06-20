@@ -3,7 +3,7 @@ namespace account;
 
 class ThirdPartyUi {
 
-	public function getThirdPartyTitle(\company\Company $eCompany): string {
+	public function getThirdPartyTitle(\farm\Farm $eFarm): string {
 
 		$h = '<div class="util-action">';
 
@@ -13,7 +13,7 @@ class ThirdPartyUi {
 
 			$h .= '<div>';
 				$h .= '<a '.\attr('onclick', 'Lime.Search.toggle("#thirdParty-search")').' class="btn btn-primary">'.\Asset::icon('search').'</a> ';
-				$h .= '<a href="'.\company\CompanyUi::urlAccount($eCompany).'/thirdParty:create" class="btn btn-primary">'.\Asset::icon('plus-circle').' '.s("Créer un tiers").'</a>';
+				$h .= '<a href="'.\company\CompanyUi::urlAccount($eFarm).'/thirdParty:create" class="btn btn-primary">'.\Asset::icon('plus-circle').' '.s("Créer un tiers").'</a>';
 			$h .= '</div>';
 
 		$h .= '</div>';
@@ -31,13 +31,13 @@ class ThirdPartyUi {
 
 	}
 
-	public function create(\company\Company $eCompany, ThirdParty $eThirdParty): \Panel {
+	public function create(\farm\Farm $eFarm, ThirdParty $eThirdParty): \Panel {
 
 		$form = new \util\FormUi();
 
 		$h = '';
 
-		$h .= $form->openAjax(\company\CompanyUi::urlAccount($eCompany).'/thirdParty:doCreate', ['id' => 'journal-thirdParty-create', 'autocomplete' => 'off', 'onrender' => 'ThirdParty.focusInput();']);
+		$h .= $form->openAjax(\company\CompanyUi::urlAccount($eFarm).'/thirdParty:doCreate', ['id' => 'journal-thirdParty-create', 'autocomplete' => 'off', 'onrender' => 'ThirdParty.focusInput();']);
 
 		$h .= $form->asteriskInfo();
 
@@ -57,7 +57,7 @@ class ThirdPartyUi {
 
 	}
 
-	public static function manage(\company\Company $eCompany, \Collection $cThirdParty, \Search $search): string {
+	public static function manage(\farm\Farm $eFarm, \Collection $cThirdParty, \Search $search): string {
 
 		if($cThirdParty->empty() === TRUE) {
 			return '<div class="util-info">'.
@@ -93,17 +93,17 @@ class ThirdPartyUi {
 								$h .= $eThirdParty['id'];
 							$h .= '</td>';
 							$h .= '<td>';
-								$eThirdParty->setQuickAttribute('company', $eCompany['id']);
+								$eThirdParty->setQuickAttribute('farm', $eFarm['id']);
 								$h .= $eThirdParty->quick('name', encode($eThirdParty['name']));
 							$h .= '</td>';
 							$h .= '<td>';
-								$h .= '<a href="'.\company\CompanyUi::urlJournal($eCompany).'/?thirdParty='.$eThirdParty['id'].'">'.$eThirdParty['operations'].'</a>';
+								$h .= '<a href="'.\company\CompanyUi::urlJournal($eFarm).'/?thirdParty='.$eThirdParty['id'].'">'.$eThirdParty['operations'].'</a>';
 							$h .= '</td>';
 
 							$h .= '<td>';
 
 								$attributes = [
-									'data-ajax' => \company\CompanyUi::urlAccount($eCompany).'/thirdParty:doDelete',
+									'data-ajax' => \company\CompanyUi::urlAccount($eFarm).'/thirdParty:doDelete',
 									'post-id' => $eThirdParty['id'],
 									'class' => 'btn btn-outline-secondary btn-outline-danger'.($eThirdParty['operations'] > 0 ? ' disabled' : ''),
 								];
@@ -142,7 +142,7 @@ class ThirdPartyUi {
 		return $h;
 
 	}
-	public static function getAutocomplete(int $company, ThirdParty $eThirdParty): array {
+	public static function getAutocomplete(int $farm, ThirdParty $eThirdParty): array {
 
 		\Asset::css('media', 'media.css');
 
@@ -150,7 +150,7 @@ class ThirdPartyUi {
 			'value' => $eThirdParty['id'],
 			'clientAccountLabel' => $eThirdParty['clientAccountLabel'],
 			'supplierAccountLabel' => $eThirdParty['supplierAccountLabel'],
-			'company' => $company,
+			'company' => $farm,
 			'itemHtml' => $eThirdParty['name'],
 			'itemText' => $eThirdParty['name']
 		];
@@ -173,14 +173,14 @@ class ThirdPartyUi {
 
 	}
 
-	public static function getAutocompleteCreate(\company\Company $eCompany): array {
+	public static function getAutocompleteCreate(\farm\Farm $eFarm): array {
 
 		$item = \Asset::icon('plus-circle');
 		$item .= '<div>'.s("Créer un tiers").'</div>';
 
 		return [
 			'type' => 'link',
-			'link' => \company\CompanyUi::urlAccount($eCompany).'/thirdParty:create',
+			'link' => \company\CompanyUi::urlAccount($eFarm).'/thirdParty:create',
 			'itemHtml' => $item
 		];
 

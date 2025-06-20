@@ -28,13 +28,13 @@ class BankAccountUi {
 
 	}
 
-	public function list(\company\Company $eCompany ,\Collection $cBankAccount): string {
+	public function list(\farm\Farm $eFarm ,\Collection $cBankAccount): string {
 
 		if($cBankAccount->empty()) {
 			return '<div class="util-info">'.s("Aucun compte bancaire n'a encore été enregistré. Lorsque vous effectuerez votre premier import de relevé bancaire, le compte bancaire rattaché sera automatiquement créé.").'</div>';
 		}
 
-		$canUpdate = $eCompany->canWrite();
+		$canUpdate = $eFarm->canManage();
 
 		\Asset::js('util', 'form.js');
 		\Asset::css('util', 'form.css');
@@ -71,7 +71,7 @@ class BankAccountUi {
 						$h .= '<td>'.encode($eBankAccount['accountId']).'</td>';
 						$h .= '<td>';
 							if($canUpdate === TRUE) {
-								$eBankAccount->setQuickAttribute('company', $eCompany['id']);
+								$eBankAccount->setQuickAttribute('farm', $eFarm['id']);
 								$h .= $eBankAccount->quick('label', $eBankAccount['label'] ? encode($eBankAccount['label']) : '<i>'.\Setting::get('account\defaultBankAccountLabel').'&nbsp;'.s("(Par défaut)").'</i>');
 							} else {
 								$h .= encode($eBankAccount['label']);

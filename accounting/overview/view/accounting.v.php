@@ -1,16 +1,16 @@
 <?php
 new AdaptativeView('index', function($data, CompanyTemplate $t) {
 
-	$t->title = s("Les balances de {company}", ['company' => $data->eCompany['name']]);
+	$t->title = s("Les balances de {farm}", ['farm' => $data->eFarm['name']]);
 	$t->tab = 'overview';
-	$t->subNav = new \company\CompanyUi()->getOverviewSubNav($data->eCompany);
-	$t->canonical = \company\CompanyUi::urlOverview($data->eCompany).'/balance';
+	$t->subNav = new \company\CompanyUi()->getOverviewSubNav($data->eFarm);
+	$t->canonical = \company\CompanyUi::urlOverview($data->eFarm).'/balance';
 
-	$t->mainTitle = new overview\OverviewUi()->getTitle($data->eCompany, $data->eFinancialYear);
+	$t->mainTitle = new overview\OverviewUi()->getTitle($data->eFarm, $data->eFinancialYear);
 
 	$t->mainYear = new \account\FinancialYearUi()->getFinancialYearTabs(
 		function(\account\FinancialYear $eFinancialYear) use ($data) {
-			return \company\CompanyUi::urlOverview($data->eCompany).'/balance?financialYear='.$eFinancialYear['id'];
+			return \company\CompanyUi::urlOverview($data->eFarm).'/balance?financialYear='.$eFinancialYear['id'];
 		},
 		$data->cFinancialYear,
 		$data->eFinancialYear,

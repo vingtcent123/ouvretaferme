@@ -5,8 +5,7 @@ Lime::setUrls([
 ]);
 
 Lime::setName( 'MaPetiteFerme');
-// TODO BASE
-Lime::setApps(['framework', 'mapetiteferme', /*'base', */'accounting']);
+Lime::setApps(['framework', 'mapetiteferme', 'accounting', 'commercialisation', 'production', 'base']);
 
 L::setLang('fr_FR');
 L::setVariables([
@@ -30,9 +29,15 @@ switch(LIME_ENV) {
       'media' => 'mapetiteferme',
       'util' => 'mapetiteferme',
       'session' => 'mapetiteferme',
-      'user' => 'mapetiteferme',
       'storage' => 'mapetiteferme',
-      //'farm' => 'ouvretaferme', // TODO BASE
+
+      'user' => 'ouvretaferme',
+      'farm' => 'ouvretaferme',
+      'map' => 'ouvretaferme',
+      'series' => 'ouvretaferme',
+      'plant' => 'ouvretaferme',
+
+      'hr' => 'ouvretaferme',
     ]);
 
     break;
@@ -49,9 +54,15 @@ switch(LIME_ENV) {
       'media' => 'dev_mapetiteferme',
       'util' => 'dev_mapetiteferme',
       'session' => 'dev_mapetiteferme',
-      'user' => 'dev_mapetiteferme',
       'storage' => 'dev_mapetiteferme',
-      //'farm' => 'dev_ouvretaferme', // TODO BASE
+
+      'user' => 'dev_ouvretaferme',
+      'farm' => 'dev_ouvretaferme',
+      'map' => 'dev_ouvretaferme',
+      'series' => 'dev_ouvretaferme',
+      'plant' => 'dev_ouvretaferme',
+
+      'hr' => 'dev_ouvretaferme',
     ]);
 
     break;
@@ -61,6 +72,19 @@ switch(LIME_ENV) {
 Feature::set('user\ban', TRUE);
 Setting::set('user\signUpRoles', ['employee']);
 Setting::set('user\signUpView', 'main/index:signUp');
+
+if(LIME_HOST !== NULL) {
+  define('OTF_DEMO', str_starts_with(LIME_HOST, 'demo.'));
+} else {
+  define('OTF_DEMO', FALSE);
+}
+
+define('ACTION_FERTILISATION', 'fertilisation');
+define('ACTION_RECOLTE', 'recolte');
+define('ACTION_SEMIS_PEPINIERE', 'semis-pepiniere');
+define('ACTION_SEMIS_DIRECT', 'semis-direct');
+define('ACTION_PLANTATION', 'plantation');
+
 
 Page::construct(function($data) {
 

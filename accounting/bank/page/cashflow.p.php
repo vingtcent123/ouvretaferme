@@ -2,16 +2,18 @@
 new Page(
 	function($data) {
 		\user\ConnectionLib::checkLogged();
-		$company = GET('company');
 
-		$data->eCompany = \company\CompanyLib::getById($company)->validate('canView');
+		$data->eFarm = \farm\FarmLib::getById(GET('farm'))->validate('canAccounting');
 
 		\Setting::set('main\viewBank', 'cashflow');
 	}
 )
 	->get('index', function($data) {
 
-		[$data->cFinancialYear, $data->eFinancialYear] = \company\EmployeeLib::getDynamicFinancialYear($data->eCompany, GET('financialYear', 'int'));
+		// TODO Récupérer et sauvegarder dynamiquement
+		$data->eFinancialYear = \account\FinancialYearLib::selectDefaultFinancialYear();
+		$data->cFinancialYear = \account\FinancialYearLib::getAll();
+		//[$data->cFinancialYear, $data->eFinancialYear] = \company\EmployeeLib::getDynamicFinancialYear($data->eFarm, GET('financialYear', 'int'));
 
 		$search = new Search([
 			'date' => GET('date'),
@@ -41,13 +43,14 @@ new Page(
 new \bank\CashflowPage(
 	function($data) {
 		\user\ConnectionLib::checkLogged();
-		$company = GET('company');
 
-		$data->eCompany = \company\CompanyLib::getById($company)->validate('canWrite');
+		$data->eFarm = \farm\FarmLib::getById(GET('farm'))->validate('canManage');
 		$data->eCashflow = \bank\CashflowLib::getById(INPUT('id'))->validate('canAllocate');
 
 		\Setting::set('main\viewBank', 'import');
-		[$data->cFinancialYear, $data->eFinancialYear] = \company\EmployeeLib::getDynamicFinancialYear($data->eCompany, GET('financialYear', 'int'));
+		// TODO Récupérer et sauvegarder dynamiquement
+		$data->eFinancialYear = \account\FinancialYearLib::selectDefaultFinancialYear();
+		$data->cFinancialYear = \account\FinancialYearLib::getAll();
 	}
 )
 	->get('allocate', function($data) {
@@ -141,13 +144,14 @@ new \bank\CashflowPage(
 new \bank\CashflowPage(
 	function($data) {
 		\user\ConnectionLib::checkLogged();
-		$company = GET('company');
 
-		$data->eCompany = \company\CompanyLib::getById($company)->validate('canWrite');
+		$data->eFarm = \farm\FarmLib::getById(GET('farm'))->validate('canManage');
 		$data->eCashflow = \bank\CashflowLib::getById(INPUT('id'));
 
-		\Setting::set('main\viewBank', 'import');
-		[$data->cFinancialYear, $data->eFinancialYear] = \company\EmployeeLib::getDynamicFinancialYear($data->eCompany, GET('financialYear', 'int'));
+		// TODO Récupérer et sauvegarder dynamiquement
+		$data->eFinancialYear = \account\FinancialYearLib::selectDefaultFinancialYear();
+		$data->cFinancialYear = \account\FinancialYearLib::getAll();
+
 	}
 )
 ->post('deAllocate', function($data) {

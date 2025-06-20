@@ -11,12 +11,12 @@ class EmployeeUi {
     return CompanyUi::url($eCompany).'/employee:manage';
   }
 
-  public function getMyCompanies(\Collection $cCompany): string {
+  public function getMyCompanies(\Collection $cFarm): string {
 
     $h = '<div class="employee-companies">';
 
-    foreach($cCompany as $eCompany) {
-      $h .= (new CompanyUi())->getPanel($eCompany);
+    foreach($cFarm as $eFarm) {
+      $h .= new CompanyUi()->getPanel($eFarm);
     }
 
     $h .= '</div>';

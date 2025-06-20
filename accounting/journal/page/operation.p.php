@@ -2,10 +2,9 @@
 new \journal\OperationPage(
 	function($data) {
 		\user\ConnectionLib::checkLogged();
-		$company = REQUEST('company');
 
-		$data->eCompany = \company\CompanyLib::getById($company)->validate('canWrite');
-		\company\CompanyLib::connectSpecificDatabaseAndServer($data->eCompany);
+		$data->eFarm = \farm\FarmLib::getById(REQUEST('farm'))->validate('canManage');
+		\company\CompanyLib::connectSpecificDatabaseAndServer($data->eFarm);
 	}
 )
 	->quick(['document', 'description', 'amount', 'comment'], [], ['canQuickUpdate'])
@@ -39,7 +38,7 @@ new \journal\OperationPage(
 		$thirdParty = account\ThirdPartyLib::getById(GET('thirdParty', 'int'));
 
 		$data->e->merge([
-			'company' => $data->eCompany['id'],
+			'farm' => $data->eFarm['id'],
 			'account' => $eAccount,
 			'accountLabel' => $label,
 			'vatRate' => $eAccount['vatRate'] ?? 0,
@@ -99,7 +98,7 @@ new \journal\OperationPage(
 		$thirdParty = account\ThirdPartyLib::getById(GET('thirdParty', 'int'));
 
 		$data->e->merge([
-			'company' => $data->eCompany['id'],
+			'farm' => $data->eFarm['id'],
 			'thirdParty' => $thirdParty,
 			'date' => GET('date'),
 			'description' => GET('description'),
@@ -137,10 +136,9 @@ new \journal\OperationPage(
 new Page(
 	function($data) {
 		\user\ConnectionLib::checkLogged();
-		$company = REQUEST('company');
 
-		$data->eCompany = \company\CompanyLib::getById($company)->validate('canWrite');
-		\company\CompanyLib::connectSpecificDatabaseAndServer($data->eCompany);
+		$data->eFarm = \farm\FarmLib::getById(REQUEST('farm'))->validate('canManage');
+		\company\CompanyLib::connectSpecificDatabaseAndServer($data->eFarm);
 	})
 	->post('getWaiting', function($data) {
 
@@ -153,10 +151,8 @@ new Page(
 new \journal\OperationPage(
 	function($data) {
 		\user\ConnectionLib::checkLogged();
-		$company = REQUEST('company');
-
-		$data->eCompany = \company\CompanyLib::getById($company)->validate('canWrite');
-		\company\CompanyLib::connectSpecificDatabaseAndServer($data->eCompany);
+		$data->eFarm = \farm\FarmLib::getById(REQUEST('farm'))->validate('canManage');
+		\company\CompanyLib::connectSpecificDatabaseAndServer($data->eFarm);
 		$data->eOperation = \journal\OperationLib::getById(REQUEST('id', 'int'))->validate('canDelete');
 	}
 )

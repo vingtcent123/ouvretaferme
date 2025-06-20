@@ -42,36 +42,36 @@ class PdfLib extends \pdf\PdfCrud {
 
 	}
 
-	private static function generateContent(\company\Company $eCompany, \account\FinancialYear $eFinancialYear, string $type): string {
+	private static function generateContent(\farm\Farm $eFarm, \account\FinancialYear $eFinancialYear, string $type): string {
 
 		switch($type) {
 			case PdfElement::OVERVIEW_BALANCE_SUMMARY;
-				$url = \company\CompanyUi::urlOverview($eCompany).'/pdf/balance:summary?financialYear='.$eFinancialYear['id'].'&key='.\Setting::get('main\remoteKey');
+				$url = \company\CompanyUi::urlOverview($eFarm).'/pdf/balance:summary?financialYear='.$eFinancialYear['id'].'&key='.\Setting::get('main\remoteKey');
 				$title = \overview\PdfUi::getTitle();
 				break;
 
 			case PdfElement::OVERVIEW_BALANCE_OPENING;
-				$url = \company\CompanyUi::urlOverview($eCompany).'/pdf/balance:opening?financialYear='.$eFinancialYear['id'].'&key='.\Setting::get('main\remoteKey');
+				$url = \company\CompanyUi::urlOverview($eFarm).'/pdf/balance:opening?financialYear='.$eFinancialYear['id'].'&key='.\Setting::get('main\remoteKey');
 				$title = \overview\PdfUi::getBalanceOpeningTitle();
 				break;
 
 			case PdfElement::JOURNAL_INDEX:
-				$url = \company\CompanyUi::urlJournal($eCompany).'/pdf/?financialYear='.$eFinancialYear['id'].'&key='.\Setting::get('main\remoteKey');
+				$url = \company\CompanyUi::urlJournal($eFarm).'/pdf/?financialYear='.$eFinancialYear['id'].'&key='.\Setting::get('main\remoteKey');
 				$title = \journal\PdfUi::getJournalTitle();
 				break;
 
 			case PdfElement::JOURNAL_BOOK:
-				$url = \company\CompanyUi::urlJournal($eCompany).'/pdf/book?financialYear='.$eFinancialYear['id'].'&key='.\Setting::get('main\remoteKey');
+				$url = \company\CompanyUi::urlJournal($eFarm).'/pdf/book?financialYear='.$eFinancialYear['id'].'&key='.\Setting::get('main\remoteKey');
 				$title = \journal\PdfUi::getBookTitle();
 				break;
 
 			case PdfElement::JOURNAL_TVA_BUY:
-				$url = \company\CompanyUi::urlJournal($eCompany).'/pdf/vat?financialYear='.$eFinancialYear['id'].'&type=buy&key='.\Setting::get('main\remoteKey');
+				$url = \company\CompanyUi::urlJournal($eFarm).'/pdf/vat?financialYear='.$eFinancialYear['id'].'&type=buy&key='.\Setting::get('main\remoteKey');
 				$title = \journal\PdfUi::getVatTitle(PdfElement::JOURNAL_TVA_BUY);
 				break;
 
 			case PdfElement::JOURNAL_TVA_SELL:
-				$url = \company\CompanyUi::urlJournal($eCompany).'/pdf/vat?financialYear='.$eFinancialYear['id'].'&type=sell&key='.\Setting::get('main\remoteKey');
+				$url = \company\CompanyUi::urlJournal($eFarm).'/pdf/vat?financialYear='.$eFinancialYear['id'].'&type=sell&key='.\Setting::get('main\remoteKey');
 				$title = \journal\PdfUi::getVatTitle(PdfElement::JOURNAL_TVA_SELL);
 				break;
 
@@ -85,7 +85,7 @@ class PdfLib extends \pdf\PdfCrud {
 
 	}
 
-	public static function generate(\company\Company $eCompany, \account\FinancialYear $eFinancialYear, string $type): ?string {
+	public static function generate(\farm\Farm $eFarm, \account\FinancialYear $eFinancialYear, string $type): ?string {
 
 		if($eFinancialYear['status'] === \account\FinancialYearElement::CLOSE) {
 
@@ -112,7 +112,7 @@ class PdfLib extends \pdf\PdfCrud {
 		}
 		try {
 
-			$content = self::generateContent($eCompany, $eFinancialYear, $type);
+			$content = self::generateContent($eFarm, $eFinancialYear, $type);
 
 		} catch(\Exception) {
 

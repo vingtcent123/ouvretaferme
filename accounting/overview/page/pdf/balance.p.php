@@ -1,7 +1,7 @@
 <?php
 new Page(function($data) {
 
-	$data->eCompany = \company\CompanyLib::getById(GET('company'))->validate('canRemote');
+	$data->eFarm = \farm\FarmLib::getById(GET('farm'))->validate('canManage');
 
 	$data->eFinancialYear = \account\FinancialYearLib::getById(GET('financialYear'));
 	if($data->eFinancialYear->exists() === FALSE) {

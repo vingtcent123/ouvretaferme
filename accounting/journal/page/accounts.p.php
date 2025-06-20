@@ -1,9 +1,11 @@
 <?php
 new Page(function($data) {
 
-	$data->eCompany = \company\CompanyLib::getById(GET('company'))->validate('canView')->validate('isAccrualAccounting');
+	$data->eFarm = \farm\FarmLib::getById(GET('farm'))->validate('canManage'); // TODO ACCRUAL ADD VALIDATE
 
-	[$data->cFinancialYear, $data->eFinancialYear] = \company\EmployeeLib::getDynamicFinancialYear($data->eCompany, GET('financialYear', 'int'));
+	// TODO Récupérer et sauvegarder dynamiquement
+	$data->eFinancialYear = \account\FinancialYearLib::selectDefaultFinancialYear();
+	$data->cFinancialYear = \account\FinancialYearLib::getAll();
 
 })
 	->get('index', function($data) {

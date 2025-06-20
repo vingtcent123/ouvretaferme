@@ -131,34 +131,9 @@ class CompanyLib extends CompanyCrud {
 
 	}
 
-	public static function create(Company $e): void {
+	public static function connectSpecificDatabaseAndServer(\farm\Farm $eFarm): void {
 
-    Company::model()->beginTransaction();
-
-    Company::model()->insert($e);
-
-		if(isset($e['owner'])) {
-
-			$eEmployee = new Employee([
-				'user' => $e['owner'],
-				'company' => $e,
-				'status' => Employee::IN,
-				'role' => Employee::OWNER,
-			]);
-
-			Employee::model()->insert($eEmployee);
-
-		}
-
-		self::createSpecificDatabaseAndTables($e);
-
-    Company::model()->commit();
-
-	}
-
-	public static function connectSpecificDatabaseAndServer(Company $eCompany): void {
-
-		$base = self::getDatabaseName($eCompany);
+		$base = self::getDatabaseName($eFarm);
 
 		foreach(self::$specificPackages as $package) {
 			\Database::addPackages([$package => $base]);
@@ -168,22 +143,23 @@ class CompanyLib extends CompanyCrud {
 
 	}
 
-	public static function getDatabaseName(Company $eCompany): string {
+	public static function getDatabaseName(\farm\Farm $eFarm): string {
 
 		if(LIME_ENV === 'prod') {
-			return'mapetiteferme_'.$eCompany['id'];
+			return'mapetiteferme_'.$eFarm['id'];
 		}
 
-		return 'dev_mapetiteferme_'.$eCompany['id'];
+		return 'dev_mapetiteferme_'.$eFarm['id'];
 	}
 
-	public static function createSpecificDatabaseAndTables(Company $eCompany): void {
+	// TODO CREATE FARM : appeler la création de la DB
+	public static function createSpecificDatabaseAndTables(\farm\Farm $eFarm): void {
 
 		// Create database
-		new \ModuleAdministration('company\Company')->createDatabase(CompanyLib::getDatabaseNameFromCompany($eCompany));
+		new \ModuleAdministration('company\Company')->createDatabase(CompanyLib::getDatabaseNameFromCompany($eFarm));
 
 		// Connect database
-		self::connectSpecificDatabaseAndServer($eCompany);
+		self::connectSpecificDatabaseAndServer($eFarm);
 
 		// Create packages tables
 		$libModule = new \dev\ModuleLib();
@@ -209,43 +185,14 @@ class CompanyLib extends CompanyCrud {
 		}
 	}
 
-  public static function getDatabaseNameFromCompany(Company $e): string {
+  public static function getDatabaseNameFromCompany(\farm\Farm $eFarm): string {
 
-    return \Database::getPackages()[Company::model()->getPackage()].'_'.$e['id'];
+    return \Database::getPackages()[\main\GenericAccount::model()->getPackage()].'_'.$eFarm['id'];
 
   }
 
-	public static function update(Company $e, array $properties): void {
+	// TODO DELETE FARM
+  //new \ModuleAdministration('main\GenericAccount')->dropDatabase(CompanyLib::getDatabaseNameFromCompany($e));
 
-    Company::model()->beginTransaction();
-
-		parent::update($e, $properties);
-
-		if(in_array('status', $properties)) {
-
-			Employee::model()
-				->whereCompany($e)
-				->update([
-					'companyStatus' => $e['status']
-				]);
-
-		}
-
-		if(in_array('isBio', $properties) and $e['isBio']) {
-
-			\company\SubscriptionLib::subscribe($e, CompanyElement::PRODUCTION, isBio: $e['isBio']);
-			\company\SubscriptionLib::subscribe($e, CompanyElement::SALES, isBio: $e['isBio']);
-
-		}
-
-    Company::model()->commit();
-
-	}
-
-	public static function delete(Company $e): void {
-
-    (new \ModuleAdministration('company\Company'))->dropDatabase(CompanyLib::getDatabaseNameFromCompany($e));
-
-	}
-
+	// TODO SET BIO FARM : subscription auto ?
 }

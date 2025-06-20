@@ -2,9 +2,8 @@
 new \account\FinancialYearPage(
 	function($data) {
 		\user\ConnectionLib::checkLogged();
-		$company = GET('company');
 
-		$data->eCompany = \company\CompanyLib::getById($company)->validate('canWrite');
+		$data->eFarm = \farm\FarmLib::getById(GET('farm'))->validate('canManage');
 	}
 )
 	->get('opening', function($data) {
@@ -14,9 +13,9 @@ new \account\FinancialYearPage(
 new \account\FinancialYearPage(
 	function($data) {
 		\user\ConnectionLib::checkLogged();
-		$company = GET('company');
 
-		$data->eCompany = \company\CompanyLib::getById($company)->validate('canWrite');
+		$data->eFarm = \farm\FarmLib::getById(GET('farm'))->validate('canManage');
+
 		$data->eFinancialYear = \account\FinancialYearLib::getById(GET('id'))->validate('canReadDocument');
 	}
 )
@@ -27,7 +26,8 @@ new \account\FinancialYearPage(
 		throw new DataAction(
 			$fecData,
 			'text/txt',
-			$data->eCompany['siret'].'FEC'.date('Ymd', strtotime($data->eFinancialYear['closeDate'])).'.txt',
+			// TODO SIRET 
+			$data->eFarm['id'].'FEC'.date('Ymd', strtotime($data->eFinancialYear['closeDate'])).'.txt',
 		);
 
 	})

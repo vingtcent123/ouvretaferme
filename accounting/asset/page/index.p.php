@@ -7,7 +7,7 @@ new \asset\AssetPage(function($data) {
 		throw new NotExpectedAction('Asset Id is required.');
 	}
 
-	$data->eCompany = \company\CompanyLib::getById(GET('company'))->validate('canView');
+	$data->eFarm = \farm\FarmLib::getById(GET('farm'))->validate('canManage');
 
 	$data->eAsset = \asset\AssetLib::getWithDepreciationsById(REQUEST('id'));
 
@@ -26,14 +26,16 @@ new \asset\AssetPage(function($data) {
 		throw new NotExpectedAction('Asset Id is required.');
 	}
 
-	$data->eCompany = \company\CompanyLib::getById(GET('company'))->validate('canView');
+	$data->eFarm = \farm\FarmLib::getById(GET('farm'))->validate('canManage');
 
 	$data->eAsset = \asset\AssetLib::getWithDepreciationsById(REQUEST('id'))->validate('canView');
 
 })
 	->get('dispose', function($data) {
 
-		[$data->cFinancialYear, $data->eFinancialYear] = \company\EmployeeLib::getDynamicFinancialYear($data->eCompany, GET('financialYear', 'int'));
+		// TODO Récupérer et sauvegarder dynamiquement
+		$data->eFinancialYear = \account\FinancialYearLib::selectDefaultFinancialYear();
+		$data->cFinancialYear = \account\FinancialYearLib::getAll();
 
 		throw new ViewAction($data);
 

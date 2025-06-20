@@ -2,7 +2,7 @@
 new \company\CompanyPage()
 	->get('index', function($data) {
 
-		$data->eCompany->validate('canWrite');
+		$data->eFarm->validate('canManage');
 
 		throw new ViewAction($data);
 

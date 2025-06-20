@@ -23,7 +23,7 @@ class OperationUi {
 
 	}
 
-	public function createPayment(\company\Company $eCompany, Operation $eOperation, \Collection $cBankAccount): \Panel {
+	public function createPayment(\farm\Farm $eFarm, Operation $eOperation, \Collection $cBankAccount): \Panel {
 
 		\Asset::css('journal', 'operation.css');
 		\Asset::js('journal', 'payment.js');
@@ -32,7 +32,7 @@ class OperationUi {
 		$form = new \util\FormUi();
 
 		$dialogOpen = $form->openAjax(
-			\company\CompanyUi::urlJournal($eCompany).'/operation:doCreatePayment',
+			\company\CompanyUi::urlJournal($eFarm).'/operation:doCreatePayment',
 			[
 				'id' => 'journal-operation-create-payment',
 				'third-party-create-index' => 0,
@@ -40,7 +40,7 @@ class OperationUi {
 			],
 		);
 
-		$h = $form->hidden('company', $eCompany['id']);
+		$h = $form->hidden('farm', $eFarm['id']);
 
 		$h .= $form->group(
 			s("Type de paiement").\util\FormUi::asterisk(),
@@ -84,7 +84,7 @@ class OperationUi {
 				attributes: ['mandatory' => TRUE]
 			).\util\FormUi::info(s(
 				"Pour modifier vos comptes bancaires, rendez-vous dans les <link>Paramètres > Les comptes bancaires</link> de votre ferme",
-				['link' => '<a href="'.\company\CompanyUi::urlBank($eCompany).'/account" target="_blank">'])
+				['link' => '<a href="'.\company\CompanyUi::urlBank($eFarm).'/account" target="_blank">'])
 			)
 		);
 
@@ -117,7 +117,7 @@ class OperationUi {
 
 	}
 
-	public function listWaitingOperations(\company\Company $eCompany, \util\FormUi $form, \Collection $cOperation): string {
+	public function listWaitingOperations(\farm\Farm $eFarm, \util\FormUi $form, \Collection $cOperation): string {
 
 		$h = '<table class="tr-even">';
 			$h .= '<tr>';
@@ -136,7 +136,7 @@ class OperationUi {
 					- $eOperation['cLetteringCredit']->reduce(fn($e, $n) => $n + $e['amount'], 0);
 
 				$h .= '<tr>';
-					$h .= '<td class="td-min-content text-center">'.OperationUi::link($eCompany, $eOperation, newTab: TRUE).'</td>';
+					$h .= '<td class="td-min-content text-center">'.OperationUi::link($eFarm, $eOperation, newTab: TRUE).'</td>';
 					$h .= '<td>'.\util\DateUi::numeric($eOperation['date']).'</td>';
 					$h .= '<td>'.encode($eOperation['description']).'</td>';
 					$h .= '<td>'.encode($eOperation['accountLabel']).'</td>';
@@ -165,7 +165,7 @@ class OperationUi {
 
 	}
 
-	public function create(\company\Company $eCompany, Operation $eOperation, \account\FinancialYear $eFinancialYear): \Panel {
+	public function create(\farm\Farm $eFarm, Operation $eOperation, \account\FinancialYear $eFinancialYear): \Panel {
 
 		\Asset::css('journal', 'operation.css');
 		\Asset::js('journal', 'operation.js');
@@ -175,7 +175,7 @@ class OperationUi {
 		$form = new \util\FormUi();
 
 		$dialogOpen = $form->openAjax(
-			\company\CompanyUi::urlJournal($eCompany).'/operation:doCreate',
+			\company\CompanyUi::urlJournal($eFarm).'/operation:doCreate',
 			[
 				'id' => 'journal-operation-create',
 				'third-party-create-index' => 0,
@@ -183,14 +183,14 @@ class OperationUi {
 			],
 		);
 
-		$h = $form->hidden('company', $eCompany['id']);
+		$h = $form->hidden('company', $eFarm['id']);
 
 		$index = 0;
 		$defaultValues = $eOperation->getArrayCopy();
 
-		$h .= self::getCreateGrid($eCompany, $eOperation, $eFinancialYear, $index, $form, $defaultValues);
+		$h .= self::getCreateGrid($eFarm, $eOperation, $eFinancialYear, $index, $form, $defaultValues);
 
-		$addButton = '<a id="add-operation" data-ajax="'.\company\CompanyUi::urlJournal($eCompany).'/operation:addOperation" post-index="'.($index + 1).'" post-amount="" post-third-party="" class="btn btn-outline-secondary">';
+		$addButton = '<a id="add-operation" data-ajax="'.\company\CompanyUi::urlJournal($eFarm).'/operation:addOperation" post-index="'.($index + 1).'" post-amount="" post-third-party="" class="btn btn-outline-secondary">';
 		$addButton .= \Asset::icon('plus-circle').'&nbsp;'.s("Ajouter une autre écriture");
 		$addButton .= '</a>';
 
@@ -219,7 +219,7 @@ class OperationUi {
 
 	}
 
-	private static function getCreateHeader(\company\Company $eCompany, bool $isFromCashflow): string {
+	private static function getCreateHeader(\farm\Farm $eFarm, bool $isFromCashflow): string {
 
 		$h = '<div class="create-operation create-operation-headers">';
 
@@ -251,7 +251,8 @@ class OperationUi {
 
 			if($isFromCashflow === FALSE) {
 
-				$mandatory = $eCompany->isCashAccounting() ? ' '.\util\FormUi::asterisk() : '';
+				// TODO ACCRUAL
+				$mandatory = /*$eFarm->isCashAccounting() ? ' '.\util\FormUi::asterisk() :*/ '';
 				$h .= '<div class="create-operation-header">'.self::p('paymentDate')->label.$mandatory.'</div>';
 				$h .= '<div class="create-operation-header">'.self::p('paymentMode')->label.$mandatory.'</div>';
 
@@ -279,7 +280,7 @@ class OperationUi {
 	}
 
 	public static function getFieldsCreateGrid(
-		\company\Company $eCompany,
+		\farm\Farm $eFarm,
 		\util\FormUi $form,
 		Operation $eOperation,
 		\account\FinancialYear $eFinancialYear,
@@ -294,9 +295,10 @@ class OperationUi {
 		$index = ($suffix !== NULL) ? mb_substr($suffix, 1, mb_strlen($suffix) - 2) : NULL;
 		$isFromCashflow = (isset($defaultValues['cashflow']) and $defaultValues['cashflow']->exists() === TRUE);
 
-		if($eCompany->isAccrualAccounting() and $index > 0) {
+		// TODO ACCRUAL
+		/*if($eFarm->isAccrualAccounting() and $index > 0) {
 			$disabled[] = 'thirdParty';
-		}
+		}*/
 
 		$h = '<div class="create-operation" data-index="'.$index.'">';
 			$h .= '<div class="create-operation-title">';
@@ -321,7 +323,8 @@ class OperationUi {
 						'max' => $eFinancialYear['endDate'],
 						'data-date' => $form->getId(),
 						'data-index' => $index,
-						'data-accounting-type' => $eCompany['accountingType'],
+						// TODO ACCRUAL
+						//'data-accounting-type' => $eFarm['accountingType'],
 					]);
 			$h .='</div>';
 
@@ -508,7 +511,8 @@ class OperationUi {
 						'paymentMode',
 						\journal\OperationUi::p('paymentMode')->values,
 						$defaultValues['paymentMode'] ?? '',
-						['mandatory' => $eCompany->isCashAccounting()],
+						// TODO ACCRUAL
+						//['mandatory' => $eFarm->isCashAccounting()],
 					);
 				$h .= '</div>';
 
@@ -557,7 +561,7 @@ class OperationUi {
 	}
 
 	public static function getCreateGrid(
-		\company\Company $eCompany,
+		\farm\Farm $eFarm,
 		Operation $eOperation,
 		\account\FinancialYear $eFinancialYear,
 		int $index,
@@ -570,8 +574,8 @@ class OperationUi {
 
 		$h = '<div id="create-operation-list" class="create-operations-container" data-columns="1" data-cashflow="'.($isFromCashflow ? '1' : '0').'">';
 
-			$h .= self::getCreateHeader($eCompany, $isFromCashflow);
-			$h .= self::getFieldsCreateGrid($eCompany, $form, $eOperation, $eFinancialYear, $suffix, $defaultValues, []);
+			$h .= self::getCreateHeader($eFarm, $isFromCashflow);
+			$h .= self::getFieldsCreateGrid($eFarm, $form, $eOperation, $eFinancialYear, $suffix, $defaultValues, []);
 
 			if($isFromCashflow === TRUE) {
 				$h .= self::getCreateValidate();
@@ -583,15 +587,15 @@ class OperationUi {
 
 	}
 
-	public static function url(\company\Company $eCompany, Operation $eOperation): string {
+	public static function url(\farm\Farm $eFarm, Operation $eOperation): string {
 
-		return \company\CompanyUi::urlJournal($eCompany).'?id='.$eOperation['id'];
+		return \company\CompanyUi::urlJournal($eFarm).'?id='.$eOperation['id'];
 
 	}
 
-	public static function link(\company\Company $eCompany, Operation $eOperation, bool $newTab): string {
+	public static function link(\farm\Farm $eFarm, Operation $eOperation, bool $newTab): string {
 
-		return '<a href="'.self::url($eCompany, $eOperation).'" class="btn btn-sm btn-outline-primary" '.($newTab ? 'target="_blank"' : '').'>'.$eOperation['id'].'</a>';
+		return '<a href="'.self::url($eFarm, $eOperation).'" class="btn btn-sm btn-outline-primary" '.($newTab ? 'target="_blank"' : '').'>'.$eOperation['id'].'</a>';
 
 	}
 
@@ -644,7 +648,7 @@ class OperationUi {
 					];
 				};
 				$d->group += ['wrapper' => 'account'];
-				new \account\AccountUi()->query($d, GET('company', '?int'));
+				new \account\AccountUi()->query($d, GET('farm', '?int'));
 				break;
 
 			case 'accountLabel':
@@ -653,7 +657,7 @@ class OperationUi {
 					];
 				};
 				$d->group += ['wrapper' => 'accountLabel'];
-				new \account\AccountUi()->queryLabel($d, GET('company', '?int'), query: GET('query'));
+				new \account\AccountUi()->queryLabel($d, GET('farm', '?int'), query: GET('query'));
 				break;
 
 			case 'vatValue' :
@@ -677,7 +681,7 @@ class OperationUi {
 					return [
 					];
 				};
-				new ThirdPartyUi()->query($d, GET('company', '?int'));
+				new ThirdPartyUi()->query($d, GET('farm', '?int'));
 				break;
 
 			case 'document':

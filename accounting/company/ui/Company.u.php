@@ -12,32 +12,39 @@ class CompanyUi {
 		return '<a href="'.self::url($eCompany).'" '.($newTab ? 'target="_blank"' : '').'>'.encode($eCompany['name']).'</a>';
 	}
 
-	public static function url(Company $eCompany): string {
-		return \Lime::getUrl().'/'.$eCompany['id'].'/company';
+
+	public function getHomeUrl(\farm\Farm $eFarm): string {
+
+		return self::urlJournal($eFarm).'/';
+
 	}
 
-	public static function urlSettings(Company $eCompany): string {
-		return self::url($eCompany).'/configuration';
+	public static function url(\farm\Farm $eFarm): string {
+		return \Lime::getUrl().'/'.$eFarm['id'].'/company';
 	}
 
-	public static function urlJournal(int|Company $company): string {
-		return \Lime::getUrl().'/'.(is_int($company) ? $company : $company['id']).'/journal';
+	public static function urlSettings(\farm\Farm $eFarm): string {
+		return self::url($eFarm).'/configuration';
 	}
 
-	public static function urlOverview(int|Company $company): string {
-		return \Lime::getUrl().'/'.(is_int($company) ? $company : $company['id']).'/overview';
+	public static function urlJournal(int|\farm\Farm $farm): string {
+		return \Lime::getUrl().'/'.(is_int($farm) ? $farm : $farm['id']).'/journal';
 	}
 
-	public static function urlAsset(int|Company $company): string {
-		return \Lime::getUrl().'/'.(is_int($company) ? $company : $company['id']).'/asset';
+	public static function urlOverview(int|\farm\Farm $farm): string {
+		return \Lime::getUrl().'/'.(is_int($farm) ? $farm : $farm['id']).'/overview';
 	}
 
-	public static function urlBank(int|Company $company): string {
-		return \Lime::getUrl().'/'.(is_int($company) ? $company : $company['id']).'/bank';
+	public static function urlAsset(int|\farm\Farm $farm): string {
+		return \Lime::getUrl().'/'.(is_int($farm) ? $farm : $farm['id']).'/asset';
 	}
 
-	public static function urlAccount(int|Company $company): string {
-		return \Lime::getUrl().'/'.(is_int($company) ? $company : $company['id']).'/account';
+	public static function urlBank(int|\farm\Farm $farm): string {
+		return \Lime::getUrl().'/'.(is_int($farm) ? $farm : $farm['id']).'/bank';
+	}
+
+	public static function urlAccount(int|\farm\Farm $farm): string {
+		return \Lime::getUrl().'/'.(is_int($farm) ? $farm : $farm['id']).'/account';
 	}
 
 	/**
@@ -143,7 +150,7 @@ class CompanyUi {
 
 	}
 
-	public function getMainTabs(Company $eCompany, string $tab): string {
+	public function getMainTabs(\farm\Farm $eFarm, string $tab): string {
 
 		$prefix = '<span class="company-subnav-prefix">'.\Asset::icon('chevron-right').' </span>';
 
@@ -151,7 +158,7 @@ class CompanyUi {
 
 			$h .= '<div class="company-tabs">';
 
-				$h .= '<a href="'.CompanyUi::urlBank($eCompany).'/cashflow" class="company-tab '.($tab === 'bank' ? 'selected' : '').'" data-tab="bank">';
+				$h .= '<a href="'.CompanyUi::urlBank($eFarm).'/cashflow" class="company-tab '.($tab === 'bank' ? 'selected' : '').'" data-tab="bank">';
 					$h .= '<span class="hide-lateral-down company-tab-icon">'.\Asset::icon('piggy-bank').'</span>';
 					$h .= '<span class="hide-lateral-up company-tab-icon">'.\Asset::icon('piggy-bank-fill').'</span>';
 					$h .= '<span class="company-tab-label">';
@@ -159,9 +166,9 @@ class CompanyUi {
 					$h .= '</span>';
 				$h .= '</a>';
 
-				$h .= $this->getBankMenu($eCompany, prefix: $prefix, tab: $tab);
+				$h .= $this->getBankMenu($eFarm, prefix: $prefix, tab: $tab);
 
-				$h .= '<a href="'.CompanyUi::urlJournal($eCompany).'/" class="company-tab '.($tab === 'journal' ? 'selected' : '').'" data-tab="journal">';
+				$h .= '<a href="'.CompanyUi::urlJournal($eFarm).'/" class="company-tab '.($tab === 'journal' ? 'selected' : '').'" data-tab="journal">';
 					$h .= '<span class="hide-lateral-down company-tab-icon">'.\Asset::icon('journal-bookmark').'</span>';
 					$h .= '<span class="hide-lateral-up company-tab-icon">'.\Asset::icon('journal-bookmark-fill').'</span>';
 					$h .= '<span class="company-tab-label">';
@@ -169,9 +176,9 @@ class CompanyUi {
 					$h .= '</span>';
 				$h .= '</a>';
 
-				$h .= $this->getJournalMenu($eCompany, prefix: $prefix, tab: $tab);
+				$h .= new \journal\JournalUi()->getJournalMenu($eFarm, prefix: $prefix, tab: $tab);
 
-				$h .= '<a href="'.CompanyUi::urlAsset($eCompany).'/acquisition" class="company-tab '.($tab === 'asset' ? 'selected' : '').'" data-tab="asset">';
+				$h .= '<a href="'.CompanyUi::urlAsset($eFarm).'/acquisition" class="company-tab '.($tab === 'asset' ? 'selected' : '').'" data-tab="asset">';
 					$h .= '<span class="hide-lateral-down company-tab-icon">'.\Asset::icon('house-door').'</span>';
 					$h .= '<span class="hide-lateral-up company-tab-icon">'.\Asset::icon('house-door-fill').'</span>';
 					$h .= '<span class="company-tab-label">';
@@ -179,12 +186,12 @@ class CompanyUi {
 					$h .= '</span>';
 				$h .= '</a>';
 
-				$h .= $this->getAssetMenu($eCompany, prefix: $prefix, tab: $tab);
+				$h .= $this->getAssetMenu($eFarm, prefix: $prefix, tab: $tab);
 
-				$categories = $this->getAnalyzeCategories($eCompany);
+				$categories = $this->getAnalyzeCategories($eFarm);
 				$selectedCategory = \Setting::get('main\viewAnalyze');
 
-				$h .= '<a href="'.CompanyUi::urlOverview($eCompany).'/bank" class="company-tab '.($tab === 'analyze' ? 'selected' : '').'" data-tab="analyze">';
+				$h .= '<a href="'.CompanyUi::urlOverview($eFarm).'/bank" class="company-tab '.($tab === 'analyze' ? 'selected' : '').'" data-tab="analyze">';
 					$h .= '<span class="hide-lateral-down company-tab-icon">'.\Asset::icon('bar-chart').'</span>';
 					$h .= '<span class="hide-lateral-up company-tab-icon">'.\Asset::icon('bar-chart-fill').'</span>';
 					$h .= '<span class="company-tab-label">';
@@ -208,10 +215,10 @@ class CompanyUi {
 
 				}
 
-				$categories = $this->getOverviewCategories($eCompany);
+				$categories = $this->getOverviewCategories($eFarm);
 				$selectedCategory = \Setting::get('main\viewOverview');
 
-				$h .= '<a href="'.CompanyUi::urlOverview($eCompany).'/balance" class="company-tab '.($tab === 'overview' ? 'selected' : '').'" data-tab="overview">';
+				$h .= '<a href="'.CompanyUi::urlOverview($eFarm).'/balance" class="company-tab '.($tab === 'overview' ? 'selected' : '').'" data-tab="overview">';
 
 					$h .= '<span class="hide-lateral-down company-tab-icon">'.\Asset::icon('file-earmark-spreadsheet').'</span>';
 					$h .= '<span class="hide-lateral-up company-tab-icon">'.\Asset::icon('file-earmark-spreadsheet-fill').'</span>';
@@ -237,9 +244,9 @@ class CompanyUi {
 
 				}
 
-				if($eCompany->canWrite() === TRUE) {
+				if($eFarm->canManage()) {
 
-					$h .= '<a href="'.CompanyUi::urlSettings($eCompany).'" class="company-tab '.($tab === 'settings' ? 'selected' : '').'" data-tab="settings">';
+					$h .= '<a href="'.CompanyUi::urlSettings($eFarm).'" class="company-tab '.($tab === 'settings' ? 'selected' : '').'" data-tab="settings">';
 						$h .= '<span class="hide-lateral-down company-tab-icon">'.\Asset::icon('gear').'</span>';
 						$h .= '<span class="hide-lateral-up company-tab-icon">'.\Asset::icon('gear-fill').'</span>';
 						$h .= '<span class="company-tab-label hide-xs-down">';
@@ -265,14 +272,14 @@ class CompanyUi {
 
 	}
 
-	public function getSettingsSubNav(Company $eCompany): string {
+	public function getSettingsSubNav(\farm\Farm $eFarm): string {
 
 		$selectedView = \Setting::get('main\viewSettings');
 
 		$h = '<nav id="company-subnav">';
 			$h .= '<div class="company-subnav-wrapper">';
 
-				foreach(self::getSettingsCategories($eCompany) as $key => ['url' => $url, 'label' => $label]) {
+				foreach(self::getSettingsCategories($eFarm) as $key => ['url' => $url, 'label' => $label]) {
 					$h .= '<a href="'.$url.'" class="company-subnav-item '.($key === $selectedView ? 'selected' : '').'">'.$label.'</a> ';
 				}
 
@@ -283,11 +290,11 @@ class CompanyUi {
 
 	}
 
-	protected static function getSettingsCategories(Company $eCompany): array {
+	protected static function getSettingsCategories(\farm\Farm $eFarm): array {
 
 		return [
 			'settings' => [
-				'url' => CompanyUi::urlSettings($eCompany),
+				'url' => CompanyUi::urlSettings($eFarm),
 				'label' => s("Paramétrage")
 			]
 		];
@@ -295,7 +302,7 @@ class CompanyUi {
 	}
 
 
-	public function getSettings(Company $eCompany): string {
+	public function getSettings(\farm\Farm $eFarm): string {
 
 		$h = '';
 
@@ -313,30 +320,26 @@ class CompanyUi {
 
 			$h .= '<div class="util-buttons">';
 
-				if($eCompany->canManage() === TRUE) {
+				if($eFarm->canManage() === TRUE) {
 
-					$h .= '<a href="'.CompanyUi::url($eCompany).'/company:update?id='.$eCompany['id'].'" class="bg-secondary util-button">';
+					$h .= '<a href="'.CompanyUi::url($eFarm).'/company:update?id='.$eFarm['id'].'" class="bg-secondary util-button">';
 						$h .= '<h4>'.s("Les réglages de base<br/>de la ferme").'</h4>';
 						$h .= \Asset::icon('gear-fill');
 					$h .= '</a>';
 
-					$h .= '<a href="'.SubscriptionUi::urlManage($eCompany).'" class="bg-secondary util-button">';
+					$h .= '<a href="'.SubscriptionUi::urlManage($eFarm).'" class="bg-secondary util-button">';
 						$h .= '<h4>'.s("L'abonnement<br/>de la ferme").'</h4>';
 						$h .= \Asset::icon('cart4');
 					$h .= '</a>';
 
-					$h .= '<a href="'.EmployeeUi::urlManage($eCompany).'" class="bg-secondary util-button">';
-						$h .= '<h4>'.s("L'équipe").'</h4>';
-						$h .= \Asset::icon('people-fill');
-					$h .= '</a>';
 				}
 
-				$h .= '<a href="'.CompanyUi::urlBank($eCompany).'/account" class="bg-secondary util-button">';
+				$h .= '<a href="'.CompanyUi::urlBank($eFarm).'/account" class="bg-secondary util-button">';
 					$h .= '<h4>'.s("Les comptes bancaires").'</h4>';
 					$h .= \Asset::icon('bank');
 				$h .= '</a>';
 
-				$h .= '<a href="'.CompanyUi::urlAccount($eCompany).'/thirdParty" class="bg-secondary util-button">';
+				$h .= '<a href="'.CompanyUi::urlAccount($eFarm).'/thirdParty" class="bg-secondary util-button">';
 					$h .= '<h4>'.s("Les tiers").'</h4>';
 					$h .= \Asset::icon('person-rolodex');
 				$h .= '</a>';
@@ -351,12 +354,12 @@ class CompanyUi {
 
 			$h .= '<div class="util-buttons">';
 
-				$h .= '<a href="'.CompanyUi::urlAccount($eCompany).'/account" class="bg-secondary util-button">';
+				$h .= '<a href="'.CompanyUi::urlAccount($eFarm).'/account" class="bg-secondary util-button">';
 					$h .= '<h4>'.s("Les classes de compte").'</h4>';
 					$h .= \Asset::icon('gear-fill');
 				$h .= '</a>';
 
-				$h .= '<a href="'.CompanyUi::urlAccount($eCompany).'/financialYear/" class="bg-secondary util-button">';
+				$h .= '<a href="'.CompanyUi::urlAccount($eFarm).'/financialYear/" class="bg-secondary util-button">';
 					$h .= '<h4>'.s("Les exercices comptables").'</h4>';
 					$h .= \Asset::icon('calendar3');
 				$h .= '</a>';
@@ -365,7 +368,7 @@ class CompanyUi {
 
 		$h .= '</div>';
 
-		if($eCompany->canManage() === TRUE) {
+		if($eFarm->canManage() === TRUE) {
 
 			$h .= '<div class="util-block-optional">';
 
@@ -373,7 +376,7 @@ class CompanyUi {
 
 				$h .= '<div class="util-buttons">';
 
-					$h .= '<a data-ajax="/company/company:doClose" post-id="'.$eCompany['id'].'" data-confirm="'.s("Confirmez-vous vouloir supprimer votre ferme ?").'" class="bg-danger util-button">';
+					$h .= '<a data-ajax="/company/company:doClose" post-id="'.$eFarm['id'].'" data-confirm="'.s("Confirmez-vous vouloir supprimer votre ferme ?").'" class="bg-danger util-button">';
 
 						$h .= '<h4>'.s("Supprimer la ferme").'</h4>';
 						$h .= \Asset::icon('trash');
@@ -389,93 +392,50 @@ class CompanyUi {
 
 	}
 
-	public function getAssetSubNav(Company $eCompany, string $prefix = '', ?string $tab = NULL): string {
+	public function getAssetSubNav(\farm\Farm $eFarm, string $prefix = '', ?string $tab = NULL): string {
 
 		$h = '<nav id="company-subnav">';
-			$h .= $this->getAssetMenu($eCompany, tab: 'asset');
+			$h .= $this->getAssetMenu($eFarm, tab: 'asset');
 		$h .= '</nav>';
 
 		return $h;
 
 	}
 
-	public function getJournalSubNav(Company $eCompany, string $prefix = '', ?string $tab = NULL): string {
-
-		$h = '<nav id="company-subnav">';
-			$h .= $this->getJournalMenu($eCompany, tab: 'journal');
-		$h .= '</nav>';
-
-		return $h;
-
-	}
-
-	protected static function getJournalCategories(Company $eCompany): array {
-
-		$journalTitle = $eCompany->isCashAccounting() ? s("Journal comptable") : s("Journaux");
-
-		$categories = [
-			'journal' => [
-				'url' => CompanyUi::urlJournal($eCompany).'/',
-				'label' => $journalTitle,
-			],
-		];
-
-		if($eCompany->isAccrualAccounting()) {
-
-			$categories['account'] = [
-				'url' => CompanyUi::urlJournal($eCompany).'/accounts',
-				'label' => s("Comptes")
-			];
-
-		}
-
-		$categories['book'] = [
-			'url' => CompanyUi::urlJournal($eCompany).'/book',
-			'label' => s("Grand livre")
-		];
-		$categories['vat'] = [
-			'url' => CompanyUi::urlJournal($eCompany).'/vat',
-			'label' => s("Journaux de TVA")
-		];
-
-		return $categories;
-
-	}
-
-	protected static function getAssetCategories(Company $eCompany): array {
+	protected static function getAssetCategories(\farm\Farm $eFarm): array {
 
 		return [
 			'acquisition' => [
-				'url' => CompanyUi::urlAsset($eCompany).'/acquisition',
+				'url' => CompanyUi::urlAsset($eFarm).'/acquisition',
 				'label' => s("Acquisitions")
 			],
 			'depreciation' => [
-				'url' => CompanyUi::urlAsset($eCompany).'/depreciation',
+				'url' => CompanyUi::urlAsset($eFarm).'/depreciation',
 				'label' => s("Amortissements")
 			],
 			'state' => [
-				'url' => CompanyUi::urlAsset($eCompany).'/state',
+				'url' => CompanyUi::urlAsset($eFarm).'/state',
 				'label' => s("État des immos")
 			]
 		];
 
 	}
 
-	public static function getAnalyzeCategories(Company $eCompany): array {
+	public static function getAnalyzeCategories(\farm\Farm $eFarm): array {
 
 		return [
 			'bank' => [
-				'url' => CompanyUi::urlOverview($eCompany).'/bank',
+				'url' => CompanyUi::urlOverview($eFarm).'/bank',
 				'label' => s("Trésorerie"),
 				'longLabel' => s("Suivi de la trésorerie"),
 			],
 			'charges' => [
-				'url' => CompanyUi::urlOverview($eCompany).'/charges',
+				'url' => CompanyUi::urlOverview($eFarm).'/charges',
 				'label' => s("Charges"),
 				'longLabel' => s("Suivi des charges"),
 			],
 			'result' => [
-				'url' => CompanyUi::urlOverview($eCompany).'/result',
+				'url' => CompanyUi::urlOverview($eFarm).'/result',
 				'label' => s("Résultat"),
 				'longLabel' => s("Suivi du résultat"),
 			],
@@ -483,13 +443,13 @@ class CompanyUi {
 
 	}
 
-	public function getBankMenu(Company $eCompany, string $prefix = '', ?string $tab = NULL): string {
+	public function getBankMenu(\farm\Farm $eFarm, string $prefix = '', ?string $tab = NULL): string {
 
 		$selectedView = ($tab === 'bank') ? \Setting::get('main\viewBank') : NULL;
 
 		$h = '<div class="company-subnav-wrapper">';
 
-			foreach(self::getBankCategories($eCompany) as $key => ['url' => $url, 'label' => $label]) {
+			foreach(self::getBankCategories($eFarm) as $key => ['url' => $url, 'label' => $label]) {
 
 				$h .= '<a href="'.$url.'" class="company-subnav-item '.($key === $selectedView ? 'selected' : '').'" data-sub-tab="'.$key.'">';
 					$h .= $prefix.'<span>'.$label.'</span>';
@@ -502,15 +462,15 @@ class CompanyUi {
 
 	}
 
-	protected static function getBankCategories(Company $eCompany): array {
+	protected static function getBankCategories(\farm\Farm $eFarm): array {
 
 		return [
 			'cashflow' => [
-				'url' => CompanyUi::urlBank($eCompany).'/cashflow',
+				'url' => CompanyUi::urlBank($eFarm).'/cashflow',
 				'label' => s("Opérations bancaires")
 			],
 			'import' => [
-				'url' => CompanyUi::urlBank($eCompany).'/import',
+				'url' => CompanyUi::urlBank($eFarm).'/import',
 				'label' => s("Imports de relevés")
 			]
 		];
@@ -518,40 +478,22 @@ class CompanyUi {
 	}
 
 
-	public function getBankSubNav(Company $eCompany): string {
+	public function getBankSubNav(\farm\Farm $eFarm): string {
 
 		$h = '<nav id="company-subnav">';
-		$h .= $this->getBankMenu($eCompany, tab: 'bank');
+		$h .= $this->getBankMenu($eFarm, tab: 'bank');
 		$h .= '</nav>';
 
 		return $h;
 
 	}
-	public function getJournalMenu(Company $eCompany, string $prefix = '', ?string $tab = NULL): string {
-
-		$selectedView = ($tab === 'journal') ? \Setting::get('main\viewJournal') : NULL;
-
-		$h = '<div class="company-subnav-wrapper">';
-
-			foreach(self::getJournalCategories($eCompany) as $key => ['url' => $url, 'label' => $label]) {
-
-				$h .= '<a href="'.$url.'" class="company-subnav-item '.($key === $selectedView ? 'selected' : '').'" data-sub-tab="'.$key.'">';
-					$h .= $prefix.'<span>'.$label.'</span>';
-				$h .= '</a>';
-			}
-
-		$h .= '</div>';
-
-		return $h;
-
-	}
-	public function getAssetMenu(Company $eCompany, string $prefix = '', ?string $tab = NULL): string {
+	public function getAssetMenu(\farm\Farm $eFarm, string $prefix = '', ?string $tab = NULL): string {
 
 		$selectedView = ($tab === 'asset') ? \Setting::get('main\viewAsset') : NULL;
 
 		$h = '<div class="company-subnav-wrapper">';
 
-			foreach(self::getAssetCategories($eCompany) as $key => ['url' => $url, 'label' => $label]) {
+			foreach(self::getAssetCategories($eFarm) as $key => ['url' => $url, 'label' => $label]) {
 
 				$h .= '<a href="'.$url.'" class="company-subnav-item '.($key === $selectedView ? 'selected' : '').'" data-sub-tab="'.$key.'">';
 					$h .= $prefix.'<span>'.$label.'</span>';
@@ -564,16 +506,16 @@ class CompanyUi {
 
 	}
 
-	public static function getOverviewCategories(Company $eCompany): array {
+	public static function getOverviewCategories(\farm\Farm $eFarm): array {
 
 		return [
 			'balance' => [
-				'url' => CompanyUi::urlOverview($eCompany).'/balance',
+				'url' => CompanyUi::urlOverview($eFarm).'/balance',
 				'label' => s("Bilans"),
 				'longLabel' => s("Les bilans"),
 			],
 			'accounting' => [
-				'url' => CompanyUi::urlOverview($eCompany).'/accounting',
+				'url' => CompanyUi::urlOverview($eFarm).'/accounting',
 				'label' => s("Balances"),
 				'longLabel' => s("Les balances"),
 			],
@@ -581,13 +523,13 @@ class CompanyUi {
 
 	}
 
-	public function getOverviewMenu(Company $eCompany, string $prefix = '', ?string $tab = NULL): string {
+	public function getOverviewMenu(\farm\Farm $eFarm, string $prefix = '', ?string $tab = NULL): string {
 
 		$selectedView = ($tab === 'overview') ? \Setting::get('main\viewOverview') : NULL;
 
 		$h = '<div class="company-subnav-wrapper">';
 
-			foreach(self::getStatementCategories($eCompany) as $key => ['url' => $url, 'label' => $label]) {
+			foreach(self::getStatementCategories($eFarm) as $key => ['url' => $url, 'label' => $label]) {
 
 				$h .= '<a href="'.$url.'" class="company-subnav-item '.($key === $selectedView ? 'selected' : '').'" data-sub-tab="'.$key.'">';
 					$h .= $prefix.'<span>'.$label.'</span>';
@@ -601,43 +543,43 @@ class CompanyUi {
 	}
 
 
-	public function getOverviewSubNav(Company $eCompany): string {
+	public function getOverviewSubNav(\farm\Farm $eFarm): string {
 
 		$h = '<nav id="company-subnav">';
-			$h .= $this->getOverviewMenu($eCompany, tab: 'overview');
+			$h .= $this->getOverviewMenu($eFarm, tab: 'overview');
 		$h .= '</nav>';
 
 		return $h;
 
 	}
 
-	protected static function getStatementCategories(Company $eCompany): array {
+	protected static function getStatementCategories(\farm\Farm $eFarm): array {
 
 		return [
 			'balance' => [
-				'url' => CompanyUi::urlOverview($eCompany).'/balance',
+				'url' => CompanyUi::urlOverview($eFarm).'/balance',
 				'label' => s("Bilans")
 			],
 			'accounting' => [
-				'url' => CompanyUi::urlOverview($eCompany).'/accounting',
+				'url' => CompanyUi::urlOverview($eFarm).'/accounting',
 				'label' => s("Balances")
 			],
 		];
 
 	}
 
-	public function getPanel(Company $eCompany): string {
+	public function getPanel(\farm\Farm $eFarm): string {
 
 		$h = '';
 
-		$h .= '<a href="'.$eCompany->getHomeUrl().'" class="employee-companies-item">';
+		$h .= '<a href="'.CompanyUi::getHomeUrl($eFarm).'" class="employee-companies-item">';
 
 			$h .= '<div class="employee-companies-item-vignette">';
-				$h .= self::getVignette($eCompany, '6rem');
+				$h .= \farm\FarmUi::getVignette($eFarm, '6rem');
 			$h .= '</div>';
 			$h .= '<div class="employee-companies-item-content">';
 				$h .= '<h4>';
-					$h .= encode($eCompany['name']);
+					$h .= encode($eFarm['name']);
 				$h .= '</h4>';
 				$h .= '<div class="employee-companies-item-infos">';
 
@@ -656,7 +598,7 @@ class CompanyUi {
 	}
 
 	public static function getVignette(Company $eCompany, string $size): string {
-
+return '';
 		$eCompany->expects(['id', 'vignette']);
 
 		$class = 'company-vignette-view media-circle-view'.' ';

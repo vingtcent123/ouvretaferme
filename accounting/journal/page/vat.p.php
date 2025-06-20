@@ -1,9 +1,10 @@
 <?php
 new Page(function($data) {
 
-	$data->eCompany = \company\CompanyLib::getById(GET('company'))->validate('canView');
-
-	[$data->cFinancialYear, $data->eFinancialYear] = \company\EmployeeLib::getDynamicFinancialYear($data->eCompany, GET('financialYear', 'int'));
+	$data->eFarm = \farm\FarmLib::getById(GET('farm'))->validate('canManage');
+	// TODO Récupérer et sauvegarder dynamiquement
+	$data->eFinancialYear = \account\FinancialYearLib::selectDefaultFinancialYear();
+	$data->cFinancialYear = \account\FinancialYearLib::getAll();
 
 	\Setting::set('main\viewJournal', 'vat');
 
@@ -48,7 +49,7 @@ new Page(function($data) {
 		}
 
 		$content = pdf\PdfLib::generate(
-			$data->eCompany,
+			$data->eFarm,
 			$data->eFinancialYear,
 			match($data->type) {
 				'buy' => \pdf\PdfElement::JOURNAL_TVA_BUY,
@@ -60,7 +61,7 @@ new Page(function($data) {
 			throw new NotExistsAction();
 		}
 
-		$filename = journal\PdfUi::filenameVat($data->eCompany, $data->type).'.pdf';
+		$filename = journal\PdfUi::filenameVat($data->eFarm, $data->type).'.pdf';
 
 		throw new PdfAction($content, $filename);
 	});

@@ -1,6 +1,6 @@
 <?php
 new HtmlView('index', function($data, PdfTemplate $t) {
-	echo new \journal\PdfUi()->getVat($data->eCompany, $data->cccOperation, $data->eFinancialYear);
+	echo new \journal\PdfUi()->getVat($data->eFarm, $data->cccOperation, $data->eFinancialYear);
 });
 
 ?>

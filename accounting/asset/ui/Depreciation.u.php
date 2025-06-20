@@ -21,7 +21,7 @@ Class DepreciationUi {
 
 	}
 
-	private static function getDepreciationLine(\company\Company $eCompany, array $depreciation): string {
+	private static function getDepreciationLine(\farm\Farm $eFarm, array $depreciation): string {
 
 		$isTotalLine = match($depreciation['type']) {
 			AssetElement::LINEAR, AssetElement::WITHOUT => FALSE,
@@ -46,7 +46,7 @@ Class DepreciationUi {
 
 		if($depreciation['id'] !== NULL and $depreciation['id'] !== '') {
 
-			$link = \company\CompanyUi::urlAsset($eCompany).'/:view?id='.$depreciation['id'];
+			$link = \company\CompanyUi::urlAsset($eFarm).'/:view?id='.$depreciation['id'];
 			$description = '<a href="'.$link.'">'.encode($depreciation['description']).'</a>';
 			$id = '<a href="'.$link.'">'.encode($depreciation['id']).'</a>';
 
@@ -113,7 +113,7 @@ Class DepreciationUi {
 
 	}
 
-	public static function getDepreciationTable(\company\Company $eCompany, array $depreciations): string {
+	public static function getDepreciationTable(\farm\Farm $eFarm, array $depreciations): string {
 
 		$highlightedAssetId = GET('id', 'int');
 
@@ -182,7 +182,7 @@ Class DepreciationUi {
 
 					if($currentAccountLabel !== NULL and $depreciation['accountLabel'] !== $currentAccountLabel) {
 
-						$h .= self::getDepreciationLine($eCompany, $total);
+						$h .= self::getDepreciationLine($eFarm, $total);
 						self::addTotalLine($generalTotal, $total);
 						$total = $emptyLine;
 
@@ -190,13 +190,13 @@ Class DepreciationUi {
 					$currentAccountLabel = $depreciation['accountLabel'];
 					$total['description'] = $depreciation['accountLabel'].' '.$depreciation['accountDescription'];
 
-					$h .= self::getDepreciationLine($eCompany, $depreciation);
+					$h .= self::getDepreciationLine($eFarm, $depreciation);
 					self::addTotalLine($total, $depreciation);
 
 				}
 				self::addTotalLine($generalTotal, $total);
-				$h .= self::getDepreciationLine($eCompany, $total);
-				$h .= self::getDepreciationLine($eCompany, $generalTotal);
+				$h .= self::getDepreciationLine($eFarm, $total);
+				$h .= self::getDepreciationLine($eFarm, $generalTotal);
 
 			$h .= '</tbody>';
 

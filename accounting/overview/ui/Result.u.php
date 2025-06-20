@@ -107,7 +107,7 @@ Class ResultUi {
 
 	}
 
-	public function getByMonth(\company\Company $eCompany, \account\FinancialYear $eFinancialYear, \Collection $cOperation): string {
+	public function getByMonth(\account\FinancialYear $eFinancialYear, \Collection $cOperation): string {
 
 		if($cOperation->empty() === TRUE) {
 

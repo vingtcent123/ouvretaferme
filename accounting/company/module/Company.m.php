@@ -48,10 +48,7 @@ class CompanyModel extends \ModuleModel {
 		$this->properties = array_merge($this->properties, [
 			'id' => ['serial32', 'cast' => 'int'],
 			'name' => ['text8', 'min' => 1, 'max' => NULL, 'collate' => 'general', 'cast' => 'string'],
-			'vignette' => ['textFixed', 'min' => 30, 'max' => 30, 'charset' => 'ascii', 'null' => TRUE, 'cast' => 'string'],
 			'url' => ['url', 'null' => TRUE, 'cast' => 'string'],
-			'logo' => ['textFixed', 'min' => 30, 'max' => 30, 'charset' => 'ascii', 'null' => TRUE, 'cast' => 'string'],
-			'banner' => ['textFixed', 'min' => 30, 'max' => 30, 'charset' => 'ascii', 'null' => TRUE, 'cast' => 'string'],
 			'siret' => ['text8', 'min' => 14, 'max' => 14, 'null' => TRUE, 'cast' => 'string'],
 			'nafCode' => ['text8', 'min' => 6, 'max' => 6, 'null' => TRUE, 'cast' => 'string'],
 			'addressLine1' => ['text16', 'null' => TRUE, 'cast' => 'string'],
@@ -66,7 +63,7 @@ class CompanyModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'name', 'vignette', 'url', 'logo', 'banner', 'siret', 'nafCode', 'addressLine1', 'addressLine2', 'postalCode', 'city', 'createdAt', 'status', 'accountingType', 'subscriptionType', 'isBio'
+			'id', 'name', 'url', 'siret', 'nafCode', 'addressLine1', 'addressLine2', 'postalCode', 'city', 'createdAt', 'status', 'accountingType', 'subscriptionType', 'isBio'
 		]);
 
 	}
@@ -124,20 +121,8 @@ class CompanyModel extends \ModuleModel {
 		return $this->where('name', ...$data);
 	}
 
-	public function whereVignette(...$data): CompanyModel {
-		return $this->where('vignette', ...$data);
-	}
-
 	public function whereUrl(...$data): CompanyModel {
 		return $this->where('url', ...$data);
-	}
-
-	public function whereLogo(...$data): CompanyModel {
-		return $this->where('logo', ...$data);
-	}
-
-	public function whereBanner(...$data): CompanyModel {
-		return $this->where('banner', ...$data);
 	}
 
 	public function whereSiret(...$data): CompanyModel {

@@ -58,7 +58,7 @@ class CompanyTemplate extends MainTemplate {
 	}
 
 	protected function getCompanyNav(): string {
-		return new \company\CompanyUi()->getMainTabs($this->data->eCompany, $this->tab);
+		return new \company\CompanyUi()->getMainTabs($this->data->eFarm, $this->tab);
 	}
 
 	protected function getCompanySubNav(): string {
@@ -119,22 +119,22 @@ class CompanyTemplate extends MainTemplate {
 
 		$company = '<div class="nav-title">';
 
-			if($this->data->cCompanyUser->count() > 1) {
+			if($this->data->cFarmUser->count() > 1) {
 
 				$company .= '<div class="nav-title-company">';
-					$company .= '<div>'.\company\CompanyUi::getVignette($this->data->eCompany, '4rem').'</div>';
-					$company .= '<a data-dropdown="bottom-start" data-dropdown-hover="TRUE">'.encode($this->data->eCompany['name']).'  '.Asset::icon('chevron-down').'</a>';
+					$company .= '<div>'.\farm\FarmUi::getVignette($this->data->eFarm, '4rem').'</div>';
+					$company .= '<a data-dropdown="bottom-start" data-dropdown-hover="TRUE">'.encode($this->data->eFarm['name']).'  '.Asset::icon('chevron-down').'</a>';
 					$company .= '<div class="dropdown-list bg-primary">';
-						foreach($this->data->cCompanyUser as $eCompany) {
-							$company .= '<a href="'.$eCompany->getHomeUrl().'" data-ajax-navigation="never" class="dropdown-item">'.\company\CompanyUi::getVignette($eCompany, '1.75rem').'&nbsp;&nbsp;'.encode($eCompany['name']).'</a>';
+						foreach($this->data->cFarmUser as $eFarm) {
+							$company .= '<a href="'.new \company\CompanyUi()->getHomeUrl($eFarm).'" data-ajax-navigation="never" class="dropdown-item">'.\farm\FarmUi::getVignette($eFarm, '1.75rem').'&nbsp;&nbsp;'.encode($eFarm['name']).'</a>';
 						}
 					$company .= '</div>';
 				$company .= '</div>';
 
 			} else {
 				$company .= '<div class="nav-title-company">';
-					$company .= '<div>'.\company\CompanyUi::getVignette($this->data->eCompany, '4rem').'</div>';
-					$company .= '<div>'.encode($this->data->eCompany['name']).'</div>';
+					$company .= '<div>'.\farm\FarmUi::getVignette($this->data->eFarm, '4rem').'</div>';
+					$company .= '<div>'.encode($this->data->eFarm['name']).'</div>';
 				$company .= '</div>';
 			}
 

@@ -6,18 +6,18 @@ class AccountUi {
 	public function __construct() {
 	}
 
-	public function getManageTitle(\company\Company $eCompany): string {
+	public function getManageTitle(\farm\Farm $eFarm): string {
 
 		$h = '<div class="util-action">';
 
 			$h .= '<h1>';
-				$h .= '<a href="'.\company\CompanyUi::urlSettings($eCompany).'"  class="h-back">'.\Asset::icon('arrow-left').'</a>';
+				$h .= '<a href="'.\company\CompanyUi::urlSettings($eFarm).'"  class="h-back">'.\Asset::icon('arrow-left').'</a>';
 				$h .= s("Les classes de comptes");
 			$h .= '</h1>';
 
 			$h .= '<div>';
 				$h .= '<a '.attr('onclick', 'Lime.Search.toggle("#account-search")').' class="btn btn-primary">'.\Asset::icon('search').'</a> ';
-				$h .= '<a href="'.\company\CompanyUi::urlAccount($eCompany).'/account:create" class="btn btn-primary">'.\Asset::icon('plus-circle').' '.s("Créer un compte personnalisé").'</a>';
+				$h .= '<a href="'.\company\CompanyUi::urlAccount($eFarm).'/account:create" class="btn btn-primary">'.\Asset::icon('plus-circle').' '.s("Créer un compte personnalisé").'</a>';
 			$h .= '</div>';
 
 		$h .= '</div>';
@@ -54,7 +54,7 @@ class AccountUi {
 
 	}
 
-	public function getManage(\company\Company $eCompany, \Collection $cAccount): string {
+	public function getManage(\farm\Farm $eFarm, \Collection $cAccount): string {
 
 		if($cAccount->empty() === TRUE) {
 			return '<div class="util-info">'.s("Aucun compte n'a encore été enregistré").'</div>';
@@ -110,7 +110,7 @@ class AccountUi {
 							$h .= '<span class="ml-'.$classNumber.'">';
 								$h .= $classNumber === 0 ? '<b>' : '';
 									if($eAccount['custom'] === TRUE) {
-										$eAccount->setQuickAttribute('company', $eCompany['id']);
+										$eAccount->setQuickAttribute('farm', $eFarm['id']);
 										$h .= $eAccount->quick('description', encode($eAccount['description']));
 									} else {
 										$h .= encode($eAccount['description']).'</span>';
@@ -138,7 +138,7 @@ class AccountUi {
 						$h .= '<td>';
 							if($eAccount['custom'] === TRUE and $eAccount['nOperation'] === 0) {
 								$message = s("Confirmez-vous la suppression de cette classe de compte ?");
-								$h .= '<a data-ajax="'.\company\CompanyUi::urlAccount($eCompany).'/account:doDelete" post-id="'.$eAccount['id'].'" data-confirm="'.$message.'" class="btn btn-outline-secondary btn-outline-danger">'.\Asset::icon('trash').'</a>';
+								$h .= '<a data-ajax="'.\company\CompanyUi::urlAccount($eFarm).'/account:doDelete" post-id="'.$eAccount['id'].'" data-confirm="'.$message.'" class="btn btn-outline-secondary btn-outline-danger">'.\Asset::icon('trash').'</a>';
 							}
 						$h .= '</td>';
 
@@ -154,7 +154,7 @@ class AccountUi {
 
 	}
 
-	public static function getAutocomplete(int $company, Account $eAccount, \Search $search = new \Search()): array {
+	public static function getAutocomplete(int $farm, Account $eAccount, \Search $search = new \Search()): array {
 
 		\Asset::css('media', 'media.css');
 
@@ -178,27 +178,27 @@ class AccountUi {
 			'value' => $eAccount['id'],
 			'class' => encode($eAccount['class']),
 			'vatRate' => $vatRate,
-			'company' => $company,
+			'company' => $farm,
 			'itemHtml' => $itemHtml,
 			'itemText' => $eAccount['class'].' '.$eAccount['description']
 		];
 
 	}
 
-	public static function getAutocompleteCreate(\company\Company $eCompany): array {
+	public static function getAutocompleteCreate(\farm\Farm $eFarm): array {
 
 		$item = \Asset::icon('plus-circle');
 		$item .= '<div>'.s("Créer une classe de compte").'</div>';
 
 		return [
 			'type' => 'link',
-			'link' => \company\CompanyUi::urlAccount($eCompany).'/account:create',
+			'link' => \company\CompanyUi::urlAccount($eFarm).'/account:create',
 			'itemHtml' => $item
 		];
 
 	}
 
-	public function query(\PropertyDescriber $d, int $company, bool $multiple = FALSE, array $query = []): void {
+	public function query(\PropertyDescriber $d, int $farm, bool $multiple = FALSE, array $query = []): void {
 
 		$d->prepend = \Asset::icon('journal-text');
 		$d->field = 'autocomplete';
@@ -206,27 +206,27 @@ class AccountUi {
 		$d->placeholder ??= s("Commencez à saisir la classe...");
 		$d->multiple = $multiple;
 
-		$d->autocompleteUrl = \company\CompanyUi::urlAccount($company).'/account:query?'.http_build_query($query);
-		$d->autocompleteResults = function(Account $e) use ($company) {
-			return self::getAutocomplete($company, $e);
+		$d->autocompleteUrl = \company\CompanyUi::urlAccount($farm).'/account:query?'.http_build_query($query);
+		$d->autocompleteResults = function(Account $e) use ($farm) {
+			return self::getAutocomplete($farm, $e);
 		};
 
 	}
 
-	public static function getAutocompleteLabel(string $query, int $company, string $label): array {
+	public static function getAutocompleteLabel(string $query, int $farm, string $label): array {
 
 		\Asset::css('media', 'media.css');
 
 		return [
 			'value' => $label,
-			'company' => $company,
+			'farm' => $farm,
 			'itemHtml' => str_replace($query, '<b>'.$query.'</b>', $label),
 			'itemText' => encode($label),
 		];
 
 	}
 
-	public function queryLabel(\PropertyDescriber $d, int $company, ?string $query, bool $multiple = FALSE): void {
+	public function queryLabel(\PropertyDescriber $d, int $farm, ?string $query, bool $multiple = FALSE): void {
 
 		$d->prepend = \Asset::icon('123');
 		$d->field = 'autocomplete';
@@ -234,20 +234,20 @@ class AccountUi {
 		$d->placeholder ??= s("Commencez à saisir le compte...");
 		$d->multiple = $multiple;
 
-		$d->autocompleteUrl = \company\CompanyUi::urlAccount($company).'/account:queryLabel';
-		$d->autocompleteResults = function(string $label) use ($company, $query) {
-			return self::getAutocompleteLabel($query, $company, $label);
+		$d->autocompleteUrl = \company\CompanyUi::urlAccount($farm).'/account:queryLabel';
+		$d->autocompleteResults = function(string $label) use ($farm, $query) {
+			return self::getAutocompleteLabel($query, $farm, $label);
 		};
 
 	}
 
-	public function create(\company\Company $eCompany, Account $eAccount): \Panel {
+	public function create(\farm\Farm $eFarm, Account $eAccount): \Panel {
 
 		$form = new \util\FormUi();
 
 		$h = '';
 
-		$h .= $form->openAjax(\company\CompanyUi::urlAccount($eCompany).'/account:doCreate', ['id' => 'account-account-create', 'autocomplete' => 'off']);
+		$h .= $form->openAjax(\company\CompanyUi::urlAccount($eFarm).'/account:doCreate', ['id' => 'account-account-create', 'autocomplete' => 'off']);
 
 		$h .= $form->asteriskInfo();
 
@@ -629,7 +629,7 @@ class AccountUi {
 					];
 				};
 				$d->group += ['wrapper' => 'vatAccount'];
-				new \account\AccountUi()->query($d, GET('company', '?int'), query: ['classPrefix' => \Setting::get('account\vatClass')]);
+				new \account\AccountUi()->query($d, GET('farm', '?int'), query: ['classPrefix' => \Setting::get('account\vatClass')]);
 				break;
 
 			case 'class':

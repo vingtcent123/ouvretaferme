@@ -144,7 +144,10 @@ class Farm extends FarmElement {
 	// Peut gérer la ferme
 	public function canManage(): bool {
 		return $this->isRole(Farmer::OWNER);
+	}
 
+	public function canAccounting(): bool {
+		return $this->isRole(Farmer::OWNER);
 	}
 
 	public function isRole(string $role): bool {

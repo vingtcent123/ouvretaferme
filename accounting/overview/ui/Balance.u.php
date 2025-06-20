@@ -198,10 +198,10 @@ class BalanceUi {
 		return $h;
 	}
 
-	public function displayPdfLink(\company\Company $eCompany, \account\FinancialYear $eFinancialYear, string $type): string {
+	public function displayPdfLink(\farm\Farm $eFarm, \account\FinancialYear $eFinancialYear, string $type): string {
 
 		$h = '<div class="text-end mb-1">';
-			$h .= '<a href="'.\overview\PdfUi::urlBalance($eCompany, $eFinancialYear).'?type='.$type.'" data-ajax-navigation="never" class="btn btn-primary">';
+			$h .= '<a href="'.\overview\PdfUi::urlBalance($eFarm, $eFinancialYear).'?type='.$type.'" data-ajax-navigation="never" class="btn btn-primary">';
 				$h .= \Asset::icon('download').'&nbsp;'.s("Télécharger en PDF");
 			$h .= '</a>';
 		$h .= '</div>';

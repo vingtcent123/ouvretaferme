@@ -7,7 +7,7 @@ Class VatUi {
 		\Asset::css('journal', 'vat.css');
 	}
 
-	public function getTitle(\company\Company $eCompany, \account\FinancialYear $eFinancialYear): string {
+	public function getTitle(): string {
 
 		$h = '<div class="util-action">';
 
@@ -108,10 +108,9 @@ Class VatUi {
 	}
 
 	public function getJournal(
-		\company\Company $eCompany,
+		\farm\Farm $eFarm,
 		\account\FinancialYear $eFinancialYear,
 		array $operations,
-		\account\FinancialYear $eFinancialYearSelected,
 		\Search $search = new \Search(),
 	): string {
 
@@ -131,11 +130,11 @@ Class VatUi {
 				$h .= '<a class="tab-item" data-tab="vat-sell" onclick="Lime.Tab.select(this)">'.s("Ventes").'</a>';
 			$h .= '</div>';
 			$h .= '<div class="tab-panel" data-tab="vat-buy">';
-				$h .= $this->getTableContainer($eCompany, $eFinancialYear, $operations['buy'], 'buy', $search);
+				$h .= $this->getTableContainer($eFarm, $eFinancialYear, $operations['buy'], 'buy', $search);
 			$h .= '</div>';
 
 			$h .= '<div class="tab-panel" data-tab="vat-sell">';
-				$h .= $this->getTableContainer($eCompany, $eFinancialYear, $operations['sell'], 'sell', $search);
+				$h .= $this->getTableContainer($eFarm, $eFinancialYear, $operations['sell'], 'sell', $search);
 			$h .= '</div>';
 
 		$h .= '</div>';
@@ -145,7 +144,7 @@ Class VatUi {
 	}
 
 	private function getTableContainer(
-		\company\Company $eCompany,
+		\farm\Farm $eFarm,
 		\account\FinancialYear $eFinancialYear,
 		\Collection $cccOperation,
 		string $type,
@@ -163,9 +162,9 @@ Class VatUi {
 
 		$h = '<div class="stick-sm util-overflow-sm">';
 
-			$h .= '<a href="'.\company\CompanyUi::urlJournal($eCompany).'/vat:pdf?type='.$type.'&financialYear='.$eFinancialYear['id'].'" data-ajax-navigation="never" class="btn btn-primary">'.\Asset::icon('download').'&nbsp;'.s("Télécharger en PDF").'</a>';
+			$h .= '<a href="'.\company\CompanyUi::urlJournal($eFarm).'/vat:pdf?type='.$type.'&financialYear='.$eFinancialYear['id'].'" data-ajax-navigation="never" class="btn btn-primary">'.\Asset::icon('download').'&nbsp;'.s("Télécharger en PDF").'</a>';
 
-			$h .= $this->getTables($eCompany, $cccOperation, $search);
+			$h .= $this->getTables($eFarm, $cccOperation, $search);
 
 		$h .= '</div>';
 
@@ -173,7 +172,7 @@ Class VatUi {
 	}
 
 	public function getTables(
-		\company\Company $eCompany,
+		\farm\Farm $eFarm,
 		\Collection $cccOperation,
 		\Search $search = new \Search(),
 		string $for = 'web',
@@ -265,7 +264,7 @@ Class VatUi {
 							$monthTotals['vat']+= $multiplyer * $eOperation['amount'];
 
 							if($eOperationInitial['cashflow']->exists() === TRUE) {
-								$cashflowLink = \company\CompanyUi::urlBank($eCompany).'/cashflow?id='.$eOperationInitial['cashflow']['id'];
+								$cashflowLink = \company\CompanyUi::urlBank($eFarm).'/cashflow?id='.$eOperationInitial['cashflow']['id'];
 							} else {
 								$cashflowLink = NULL;
 							}

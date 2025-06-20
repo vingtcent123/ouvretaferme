@@ -7,9 +7,9 @@ class OverviewUi {
 		\Asset::css('journal', 'journal.css');
 	}
 
-	public function getTitle(\company\Company $eCompany, \account\FinancialYear $eFinancialYear): string {
+	public function getTitle(\farm\Farm $eFarm, \account\FinancialYear $eFinancialYear): string {
 
-		$categories = \company\CompanyUi::getOverviewCategories($eCompany);
+		$categories = \company\CompanyUi::getOverviewCategories($eFarm);
 		$selectedView = \Setting::get('main\viewOverview');
 
 		return \main\MainUi::getDropdownMenuTitle($categories, $selectedView);

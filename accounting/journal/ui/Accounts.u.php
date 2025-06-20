@@ -69,7 +69,7 @@ class AccountsUi {
 
 
 	public function getJournal(
-		\company\Company $eCompany,
+		\farm\Farm $eFarm,
 		\Collection $cOperation,
 		\account\FinancialYear $eFinancialYearSelected,
 		\Search $search = new \Search()
@@ -87,7 +87,7 @@ class AccountsUi {
 
 				foreach($accountsTypes as $accountsType => $translation) {
 
-					$h .= '<a class="tab-item'.($selectedAccountType === $accountsType ? ' selected' : '').'" data-tab="account-'.$accountsType.'" href="'.\company\CompanyUi::urlJournal($eCompany).'/accounts?accountType='.$accountsType.'">'.$translation.'</a>';
+					$h .= '<a class="tab-item'.($selectedAccountType === $accountsType ? ' selected' : '').'" data-tab="account-'.$accountsType.'" href="'.\company\CompanyUi::urlJournal($eFarm).'/accounts?accountType='.$accountsType.'">'.$translation.'</a>';
 
 				}
 
@@ -95,7 +95,7 @@ class AccountsUi {
 
 			foreach($accountsTypes as $accountsType => $translation) {
 				$h .= '<div class="tab-panel'.($selectedAccountType === $accountsType ? ' selected' : '').'" data-tab="account-'.$accountsType.'">';
-					$h .= $this->getTableContainer($eCompany, $cOperation, $eFinancialYearSelected, $search);
+					$h .= $this->getTableContainer($eFarm, $cOperation, $eFinancialYearSelected, $search);
 				$h .= '</div>';
 			}
 
@@ -105,7 +105,7 @@ class AccountsUi {
 
 	}
 	public function getTableContainer(
-		\company\Company $eCompany,
+		\farm\Farm $eFarm,
 		\Collection $cOperation,
 		\account\FinancialYear $eFinancialYearSelected,
 		\Search $search = new \Search()
@@ -162,7 +162,7 @@ class AccountsUi {
 			$canUpdate = ($eFinancialYearSelected['status'] === \account\FinancialYear::OPEN
 				and $eOperation['date'] <= $eFinancialYearSelected['endDate']
 				and $eOperation['date'] >= $eFinancialYearSelected['startDate']
-				and $eCompany->canWrite() === TRUE);
+				and $eFarm->canManage() === TRUE);
 
 			if($eOperation['type'] === Operation::CREDIT) {
 
@@ -180,7 +180,7 @@ class AccountsUi {
 				$letteringField = 'cLetteringDebit';
 			}
 
-			$eOperation->setQuickAttribute('company', $eCompany['id']);
+			$eOperation->setQuickAttribute('farm', $eFarm['id']);
 
 			$h .= '<tr name="operation-'.$eOperation['id'].'" name-linked="operation-linked-'.($eOperation['operation']['id'] ?? '').'">';
 

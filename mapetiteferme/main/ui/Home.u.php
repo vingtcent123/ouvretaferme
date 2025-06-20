@@ -7,22 +7,23 @@ class HomeUi {
 
 		\Asset::css('main', 'home.css');
 
+
 	}
 
-	public function getCompanies(\Collection $cCompany): string {
+	public function getFarms(\Collection $cFarm): string {
 
 		$h = '';
 
-		if($cCompany->empty()) {
-			if(new \company\Company()->canCreate()) {
-				$h .= new \company\EmployeeUi()->getNoCompany();
+		if($cFarm->empty()) {
+			if(new \farm\Farm()->canCreate()) {
+				$h .= new \farm\FarmerUi()->getNoFarms();
 			} else {
 				$h .= '';
 			}
 		} else {
 
-			$h .= '<h2>'.($cCompany->count() === 1 ? s("Ma ferme") : s("Mes fermes")).'</h2>';
-			$h .= new \company\EmployeeUi()->getMyCompanies($cCompany);
+			$h .= '<h2>'.($cFarm->count() === 1 ? s("Ma ferme") : s("Mes fermes")).'</h2>';
+			$h .= new \company\EmployeeUi()->getMyCompanies($cFarm);
 
 		}
 

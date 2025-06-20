@@ -2,9 +2,11 @@
 new Page(function($data) {
 	\user\ConnectionLib::checkLogged();
 
-	$data->eCompany = \company\CompanyLib::getById(GET('company'))->validate('canView');
+	$data->eFarm = \farm\FarmLib::getById(REQUEST('farm'))->validate('canManage');
+	// TODO Récupérer et sauvegarder dynamiquement
+	$data->eFinancialYear = \account\FinancialYearLib::selectDefaultFinancialYear();
+	$data->cFinancialYear = \account\FinancialYearLib::getAll();
 
-	[$data->cFinancialYear, $data->eFinancialYear] = \company\EmployeeLib::getDynamicFinancialYear($data->eCompany, GET('financialYear', 'int'));
 	\Setting::set('main\viewOverview', 'balance');
 
 })
@@ -24,13 +26,13 @@ new Page(function($data) {
 		default => throw new NotExpectedAction('Unknown type of balance PDF.'),
 	};
 
-	$content = \pdf\PdfLib::generate($data->eCompany, $data->eFinancialYear, $type);
+	$content = \pdf\PdfLib::generate($data->eFarm, $data->eFinancialYear, $type);
 
 	if($content === NULL) {
 		throw new NotExistsAction();
 	}
 
-	$filename = \overview\PdfUi::filenameBalance($data->eCompany).'.pdf';
+	$filename = \overview\PdfUi::filenameBalance($data->eFarm).'.pdf';
 
 	throw new PdfAction($content, $filename);
 });

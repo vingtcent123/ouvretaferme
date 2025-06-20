@@ -1,14 +1,14 @@
 <?php
 new AdaptativeView('index', function($data, CompanyTemplate $t) {
 
-	$t->title = s("Tous les comptes de {value}", $data->eCompany['name']);
+	$t->title = s("Tous les comptes de {value}", $data->eFarm['name']);
 	$t->tab = 'settings';
-	$t->subNav = new \company\CompanyUi()->getSettingsSubNav($data->eCompany);
+	$t->subNav = new \company\CompanyUi()->getSettingsSubNav($data->eFarm);
 
-	$t->mainTitle = new \account\AccountUi()->getManageTitle($data->eCompany);
+	$t->mainTitle = new \account\AccountUi()->getManageTitle($data->eFarm);
 
 	echo new \account\AccountUi()->getSearch($data->search);
-	echo new \account\AccountUi()->getManage($data->eCompany, $data->cAccount);
+	echo new \account\AccountUi()->getManage($data->eFarm, $data->cAccount);
 
 });
 
@@ -42,11 +42,11 @@ new JsonView('query', function($data, AjaxTemplate $t) {
 
 		}
 
-		$results[] = \account\AccountUi::getAutocomplete($data->eCompany['id'], $eAccount);
+		$results[] = \account\AccountUi::getAutocomplete($data->eFarm['id'], $eAccount);
 
 	}
 
-	$results[] = \account\AccountUi::getAutocompleteCreate($data->eCompany);
+	$results[] = \account\AccountUi::getAutocompleteCreate($data->eFarm);
 
 	$t->push('results', $results);
 
@@ -54,7 +54,7 @@ new JsonView('query', function($data, AjaxTemplate $t) {
 
 new JsonView('queryLabel', function($data, AjaxTemplate $t) {
 
-	$results = array_map(function($label) use ($data) { return \account\AccountUi::getAutocompleteLabel(POST('query'), $data->eCompany['id'], $label); }, $data->labels);
+	$results = array_map(function($label) use ($data) { return \account\AccountUi::getAutocompleteLabel(POST('query'), $data->eFarm['id'], $label); }, $data->labels);
 
 	$t->push('results', $results);
 
@@ -62,7 +62,7 @@ new JsonView('queryLabel', function($data, AjaxTemplate $t) {
 
 new AdaptativeView('create', function($data, PanelTemplate $t) {
 
-	return new \account\AccountUi()->create($data->eCompany, $data->e);
+	return new \account\AccountUi()->create($data->eFarm, $data->e);
 
 });
 ?>

@@ -2,12 +2,13 @@
 new \bank\BankAccountPage(
 	function($data) {
 		\user\ConnectionLib::checkLogged();
-		$company = REQUEST('company');
 
-		$data->eCompany = \company\CompanyLib::getById($company)->validate('canView');
-		\company\CompanyLib::connectSpecificDatabaseAndServer($data->eCompany);
+		$data->eFarm = \farm\FarmLib::getById(REQUEST('farm'))->validate('canManage');
+		\company\CompanyLib::connectSpecificDatabaseAndServer($data->eFarm);
 
-		[$data->cFinancialYear, $data->eFinancialYear] = \company\EmployeeLib::getDynamicFinancialYear($data->eCompany, GET('financialYear', 'int'));
+		// TODO Récupérer et sauvegarder dynamiquement
+		$data->eFinancialYear = \account\FinancialYearLib::selectDefaultFinancialYear();
+		$data->cFinancialYear = \account\FinancialYearLib::getAll();
 	}
 )
 	->get('index', function($data) {
@@ -20,12 +21,12 @@ new \bank\BankAccountPage(
 new \bank\BankAccountPage(
 	function($data) {
 		\user\ConnectionLib::checkLogged();
-		$company = REQUEST('company');
+		$data->eFarm = \farm\FarmLib::getById(REQUEST('farm'))->validate('canManage');
+		\company\CompanyLib::connectSpecificDatabaseAndServer($data->eFarm);
 
-		$data->eCompany = \company\CompanyLib::getById($company)->validate('canWrite');
-		\company\CompanyLib::connectSpecificDatabaseAndServer($data->eCompany);
-
-		[$data->cFinancialYear, $data->eFinancialYear] = \company\EmployeeLib::getDynamicFinancialYear($data->eCompany, GET('financialYear', 'int'));
+		// TODO Récupérer et sauvegarder dynamiquement
+		$data->eFinancialYear = \account\FinancialYearLib::selectDefaultFinancialYear();
+		$data->cFinancialYear = \account\FinancialYearLib::getAll();
 	}
 )
 	->quick(['label']);

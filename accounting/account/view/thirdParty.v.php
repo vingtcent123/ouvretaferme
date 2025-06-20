@@ -1,21 +1,21 @@
 <?php
 new AdaptativeView('index', function($data, CompanyTemplate $t) {
 
-	$t->title = s("Les tiers de {company}", ['company' => $data->eCompany['name']]);
+	$t->title = s("Les tiers de {company}", ['company' => $data->eFarm['name']]);
 	$t->tab = 'settings';
-	$t->subNav = new \company\CompanyUi()->getSettingsSubNav($data->eCompany);
-	$t->canonical = \company\CompanyUi::urlJournal($data->eCompany).'/thirdParty/';
+	$t->subNav = new \company\CompanyUi()->getSettingsSubNav($data->eFarm);
+	$t->canonical = \company\CompanyUi::urlJournal($data->eFarm).'/thirdParty/';
 
-	$t->mainTitle = new \account\ThirdPartyUi()->getThirdPartyTitle($data->eCompany);
+	$t->mainTitle = new \account\ThirdPartyUi()->getThirdPartyTitle($data->eFarm);
 
 	echo new \account\ThirdPartyUi()->getSearch($data->search);
-	echo new \account\ThirdPartyUi()->manage($data->eCompany, $data->cThirdParty, $data->search);
+	echo new \account\ThirdPartyUi()->manage($data->eFarm, $data->cThirdParty, $data->search);
 
 });
 
 new AdaptativeView('create', function($data, PanelTemplate $t) {
 
-	return new \account\ThirdPartyUi()->create($data->eCompany, $data->e);
+	return new \account\ThirdPartyUi()->create($data->eFarm, $data->e);
 
 });
 
@@ -49,11 +49,11 @@ new JsonView('query', function($data, AjaxTemplate $t) {
 
 		}
 
-		$results[] = \account\ThirdPartyUi::getAutocomplete($data->eCompany['id'], $eThirdParty);
+		$results[] = \account\ThirdPartyUi::getAutocomplete($data->eFarm['id'], $eThirdParty);
 
 	}
 
-	$results[] = \account\ThirdPartyUi::getAutocompleteCreate($data->eCompany);
+	$results[] = \account\ThirdPartyUi::getAutocompleteCreate($data->eFarm);
 
 	$t->push('results', $results);
 

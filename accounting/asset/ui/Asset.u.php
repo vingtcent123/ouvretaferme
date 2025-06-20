@@ -253,7 +253,7 @@ Class AssetUi {
 
 	}
 
-	public static function dispose(\company\Company $eCompany, \account\FinancialYear $eFinancialYear, Asset $eAsset): \Panel {
+	public static function dispose(\farm\Farm $eFarm, \account\FinancialYear $eFinancialYear, Asset $eAsset): \Panel {
 
 		\Asset::js('asset', 'asset.js');
 
@@ -268,11 +268,11 @@ Class AssetUi {
 		$h .= '<div class="util-block">';
 
 			$h .= $form->openAjax(
-				\company\CompanyUi::urlAsset($eCompany).'/:doDispose',
+				\company\CompanyUi::urlAsset($eFarm).'/:doDispose',
 				['id' => 'panel-asset-dispose']
 			);
 
-				$h .= $form->hidden('company', $eCompany['id']);
+				$h .= $form->hidden('farm', $eFarm['id']);
 				$h .= $form->hidden('id', $eAsset['id']);
 
 				$h .= $form->asteriskInfo();
@@ -326,19 +326,19 @@ Class AssetUi {
 		);
 	}
 
-	public static function view(\company\Company $eCompany, Asset $eAsset): \Panel {
+	public static function view(\farm\Farm $eFarm, Asset $eAsset): \Panel {
 
 		$h = self::getHeader($eAsset);
 
 		$h .= '<div>';
-			$h .= '<a href="'.\company\CompanyUi::urlJournal($eCompany).'/?asset='.$eAsset['id'].'">'.s("Voir toutes les écritures comptables de cette immobilisation pour cet exercice comptable").'&nbsp;'.\Asset::icon('box-arrow-up-right').'</a>';
+			$h .= '<a href="'.\company\CompanyUi::urlJournal($eFarm).'/?asset='.$eAsset['id'].'">'.s("Voir toutes les écritures comptables de cette immobilisation pour cet exercice comptable").'&nbsp;'.\Asset::icon('box-arrow-up-right').'</a>';
 		$h .= '</div>';
 
 		if($eAsset['status'] === AssetElement::ONGOING) {
 
 
 			$h .= '<div class="mt-1 mb-1">';
-				$h .= '<a href="'.\company\CompanyUi::urlAsset($eCompany).'/:dispose?id='.$eAsset['id'].'" class="btn btn-primary">'.\Asset::icon('box-arrow-right').' '.s("Céder l'immobilisation").'</a>';
+				$h .= '<a href="'.\company\CompanyUi::urlAsset($eFarm).'/:dispose?id='.$eAsset['id'].'" class="btn btn-primary">'.\Asset::icon('box-arrow-right').' '.s("Céder l'immobilisation").'</a>';
 			$h .= '</div>';
 
 		}

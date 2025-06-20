@@ -1,15 +1,15 @@
 <?php
 new AdaptativeView('index', function($data, CompanyTemplate $t) {
 
-	$t->title = s("Le résultat de {company}", ['company' => $data->eCompany['name']]);
+	$t->title = s("Le résultat de {company}", ['company' => $data->eFarm['name']]);
 	$t->tab = 'analyze';
-	$t->canonical = \company\CompanyUi::urlOverview($data->eCompany).'/result';
+	$t->canonical = \company\CompanyUi::urlOverview($data->eFarm).'/result';
 
-	$t->mainTitle = new overview\AnalyzeUi()->getTitle($data->eCompany);
+	$t->mainTitle = new overview\AnalyzeUi()->getTitle($data->eFarm);
 
 	$t->mainYear = new \account\FinancialYearUi()->getFinancialYearTabs(
 		function(\account\FinancialYear $eFinancialYear) use ($data) {
-			return \company\CompanyUi::urlOverview($data->eCompany).'/result?financialYear='.$eFinancialYear['id'];
+			return \company\CompanyUi::urlOverview($data->eFarm).'/result?financialYear='.$eFinancialYear['id'];
 		},
 		$data->cFinancialYear,
 		$data->eFinancialYear,
@@ -25,7 +25,7 @@ new AdaptativeView('index', function($data, CompanyTemplate $t) {
 		echo '</div>';
 
 		echo '<div class="tab-panel" data-tab="result-month">';
-			echo new overview\ResultUi()->getByMonth($data->eCompany, $data->eFinancialYear, $data->cOperation);
+			echo new overview\ResultUi()->getByMonth($data->eFinancialYear, $data->cOperation);
 		echo '</div>';
 
 		echo '<div class="tab-panel" data-tab="result-all">';

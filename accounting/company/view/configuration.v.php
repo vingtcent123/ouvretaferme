@@ -2,10 +2,10 @@
 new AdaptativeView('index', function($data, CompanyTemplate $t) {
 
 	$t->tab = 'settings';
-	$t->subNav = new \company\CompanyUi()->getSettingsSubNav($data->eCompany);
+	$t->subNav = new \company\CompanyUi()->getSettingsSubNav($data->eFarm);
 
-	$t->title = s("Configuration pour {value}", $data->eCompany['name']);
-	$t->canonical = \company\CompanyUi::urlSettings($data->eCompany);
+	$t->title = s("Configuration pour {value}", $data->eFarm['name']);
+	$t->canonical = \company\CompanyUi::urlSettings($data->eFarm);
 
 	$t->package('main')->updateNavSettings($t->canonical);
 
@@ -14,7 +14,7 @@ new AdaptativeView('index', function($data, CompanyTemplate $t) {
 
 	$t->hasCRM = TRUE;
 
-	echo new \company\CompanyUi()->getSettings($data->eCompany);
+	echo new \company\CompanyUi()->getSettings($data->eFarm);
 
 });
 ?>

@@ -34,10 +34,10 @@ class FinancialYearLib extends FinancialYearCrud {
 
 	}
 
-	public static function checkHasAtLeastOne(\Collection $cFinancialYear, \company\Company $eCompany): void {
+	public static function checkHasAtLeastOne(\Collection $cFinancialYear, \farm\Farm $eFarm): void {
 
 		if($cFinancialYear->empty() === TRUE) {
-			throw new \RedirectAction(\company\CompanyUi::urlAccount($eCompany).'/financialYear/:create?message=FinancialYear::toCreate');
+			throw new \RedirectAction(\company\CompanyUi::urlAccount($eFarm).'/financialYear/:create?message=FinancialYear::toCreate');
 		}
 
 	}

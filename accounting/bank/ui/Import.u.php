@@ -6,7 +6,7 @@ class ImportUi {
 	public function __construct() {
 	}
 
-	public function getImportTitle(\company\Company $eCompany, \account\FinancialYear $eFinancialYear): string {
+	public function getImportTitle(\farm\Farm $eFarm, \account\FinancialYear $eFinancialYear): string {
 
 		$h = '<div class="util-action">';
 
@@ -17,11 +17,11 @@ class ImportUi {
 			if(
 				$eFinancialYear['status'] === \account\FinancialYearElement::OPEN
 				and $eFinancialYear['endDate'] >= date('Y-m-d')
-				and $eCompany->canWrite() === TRUE
+				and $eFarm->canManage() === TRUE
 			) {
 
 				$h .= '<div>';
-					$h .= '<a href="'.\company\CompanyUi::urlBank($eCompany).'/import:import" class="btn btn-primary">'.\Asset::icon('file-earmark-plus').' '.s("Importer un relevé .ofx").'</a>';
+					$h .= '<a href="'.\company\CompanyUi::urlBank($eFarm).'/import:import" class="btn btn-primary">'.\Asset::icon('file-earmark-plus').' '.s("Importer un relevé .ofx").'</a>';
 				$h .= '</div>';
 
 			}
@@ -47,7 +47,7 @@ class ImportUi {
 	}
 
 	public function getImport(
-		\company\Company $eCompany,
+		\farm\Farm $eFarm,
 		\Collection $cImport,
 		array $imports,
 		\account\FinancialYear $eFinancialYearSelected,
@@ -94,7 +94,7 @@ class ImportUi {
 									$h .= \Asset::icon('exclamation-circle').'&nbsp;'.s("Aucun import n'a couvert cette période");
 								$h .= '</div>';
 							} else {
-								$h .= $this->getImportDetails($eCompany, $eImport);
+								$h .= $this->getImportDetails($eFarm, $eImport);
 							}
 						$h .= '</div>';
 					$h .= '</div>';
@@ -109,7 +109,7 @@ class ImportUi {
 
 	}
 
-	protected function getImportDetails(\company\Company $eCompany, Import $eImport): string {
+	protected function getImportDetails(\farm\Farm $eFarm, Import $eImport): string {
 
 		$h = '';
 
@@ -135,7 +135,7 @@ class ImportUi {
 
 				if(in_array($eImport['status'], [ImportElement::FULL, ImportElement::PARTIAL]) === TRUE) {
 
-					$h.= '<a href="'.\company\CompanyUi::urlBank($eCompany).'/cashflow?import='.$eImport['id'].'" class="color-text">';
+					$h.= '<a href="'.\company\CompanyUi::urlBank($eFarm).'/cashflow?import='.$eImport['id'].'" class="color-text">';
 						$h.= \Asset::icon('chevron-right');
 						$h.= p(
 							"{number} mouvement enregistré",

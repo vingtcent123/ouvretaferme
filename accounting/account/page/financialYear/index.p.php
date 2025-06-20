@@ -2,9 +2,8 @@
 new Page()
 	->get('index', function($data) {
 
-		$company = GET('company');
+		$data->eFarm = \farm\FarmLib::getById(GET('farm'))->validate('canManage');
 
-		$data->eCompany = \company\CompanyLib::getById($company)->validate('canWrite');
 		$data->cFinancialYear = \account\FinancialYearLib::getAll();
 		$data->cFinancialYearOpen = \account\FinancialYearLib::getOpenFinancialYears();
 
@@ -15,9 +14,7 @@ new Page()
 new \account\FinancialYearPage(
 	function($data) {
 		\user\ConnectionLib::checkLogged();
-		$company = GET('company');
-
-		$data->eCompany = \company\CompanyLib::getById($company)->validate('canWrite');
+		$data->eFarm = \farm\FarmLib::getById(GET('farm'))->validate('canManage');
 	}
 )
 	->create(function($data) {
@@ -58,12 +55,12 @@ new \account\FinancialYearPage(
 
 		\account\FinancialYearLib::closeFinancialYear($data->e, createNew: FALSE);
 
-		throw new RedirectAction(\company\CompanyUi::urlAccount($data->eCompany).'/financialYear/?success=account:FinancialYear::closed');
+		throw new RedirectAction(\company\CompanyUi::urlAccount($data->eFarm).'/financialYear/?success=account:FinancialYear::closed');
 	})
 	->write('closeAndCreateNew', function($data) {
 
 		\account\FinancialYearLib::closeFinancialYear($data->e, createNew: TRUE);
 
-		throw new RedirectAction(\company\CompanyUi::urlAccount($data->eCompany).'/financialYear/?success=account:FinancialYear::closedAndCreated');
+		throw new RedirectAction(\company\CompanyUi::urlAccount($data->eFarm).'/financialYear/?success=account:FinancialYear::closedAndCreated');
 	});
 ?>

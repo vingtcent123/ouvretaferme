@@ -2,10 +2,12 @@
 new Page(
 	function ($data) {
 
-		$data->eCompany = \company\CompanyLib::getById(REQUEST('company'))->validate('canView');
+		$data->eFarm = \farm\FarmLib::getById(REQUEST('farm'))->validate('canManage');
+		// TODO Récupérer et sauvegarder dynamiquement
+		$data->eFinancialYear = \account\FinancialYearLib::selectDefaultFinancialYear();
+		$data->cFinancialYear = \account\FinancialYearLib::getAll();
 
-		[$data->cFinancialYear, $data->eFinancialYear] = \company\EmployeeLib::getDynamicFinancialYear($data->eCompany, GET('financialYear', 'int'));
-		\account\FinancialYearLib::checkHasAtLeastOne($data->cFinancialYear, $data->eCompany);
+		\account\FinancialYearLib::checkHasAtLeastOne($data->cFinancialYear, $data->eFarm);
 
 	}
 )

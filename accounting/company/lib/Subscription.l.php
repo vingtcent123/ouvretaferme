@@ -31,10 +31,10 @@ class SubscriptionLib extends SubscriptionCrud {
 
 	}
 
-	private static function addHistory(Company $eCompany, string $subscriptionType, string $from, string $to, bool $isPack, bool $isBio): void {
+	private static function addHistory(\farm\Farm $eFarm, string $subscriptionType, string $from, string $to, bool $isPack, bool $isBio): void {
 
 		$eSubscriptionHistory = new SubscriptionHistory([
-			'company' => $eCompany,
+			'farm' => $eFarm,
 			'type' => $subscriptionType,
 			'isPack' => $isPack,
 			'isBio' => $isBio,
@@ -46,13 +46,13 @@ class SubscriptionLib extends SubscriptionCrud {
 
 	}
 
-	public static function getByCompanyAndType(Company $eCompany, string $type): Subscription {
+	public static function getByCompanyAndType(\farm\Farm $eFarm, string $type): Subscription {
 
 		$eSubscription = new Subscription();
 
 		Subscription::model()
 			->select(Subscription::getSelection())
-			->whereCompany($eCompany)
+			->whereCompany($eFarm)
 			->whereType($type)
 			->get($eSubscription);
 
@@ -60,7 +60,7 @@ class SubscriptionLib extends SubscriptionCrud {
 
 	}
 
-	public static function subscribe(Company $eCompany, int $type, bool $isPack = FALSE, bool $isBio = FALSE): string {
+	public static function subscribe(\farm\Farm $eFarm, int $type, bool $isPack = FALSE, bool $isBio = FALSE): string {
 
 		Subscription::model()->beginTransaction();
 
@@ -69,7 +69,7 @@ class SubscriptionLib extends SubscriptionCrud {
 		$startsAt = date('Y-m-d');
 		$endsAt = date('Y-m-d', strtotime($startsAt.' + 1 year - 1 day'));
 		$eSubscription = new Subscription([
-			'company' => $eCompany,
+			'farm' => $eFarm,
 			'type' => $subscriptionType,
 			'startsAt' => $startsAt,
 			'endsAt' => $endsAt,
@@ -86,7 +86,7 @@ class SubscriptionLib extends SubscriptionCrud {
 
 		} catch (\DuplicateException $e) {
 
-			$eSubscriptionOld = self::getByCompanyAndType($eCompany, $subscriptionType);
+			$eSubscriptionOld = self::getByCompanyAndType($eFarm, $subscriptionType);
 
 			// Prolongation
 			if($eSubscriptionOld['endsAt'] >= date('Y-m-d')) {
@@ -121,14 +121,14 @@ class SubscriptionLib extends SubscriptionCrud {
 			$eSubscription = $eSubscriptionOld;
 
 		}
-
-		if($eCompany['subscriptionType'] === NULL) {
-			$eCompany['subscriptionType'] = new \Set();
+/*
+		if($eFarm['subscriptionType'] === NULL) {
+			$eFarm['subscriptionType'] = new \Set();
 		}
-		$eCompany['subscriptionType']->value($type, TRUE);
+		$eFarm['subscriptionType']->value($type, TRUE);
 		CompanyLib::update($eCompany, ['subscriptionType']);
-
-		self::addHistory($eCompany, $subscriptionType, $from, $to, $isPack, $isBio);
+*/
+		self::addHistory($eFarm, $subscriptionType, $from, $to, $isPack, $isBio);
 
 		Subscription::model()->commit();
 
@@ -136,20 +136,20 @@ class SubscriptionLib extends SubscriptionCrud {
 
 	}
 
-	public static function subscribePack(Company $eCompany): void {
+	public static function subscribePack(\farm\Farm $eFarm): void {
 
 		foreach([CompanyElement::ACCOUNTING, CompanyElement::PRODUCTION, CompanyElement::SALES] as $companySubscriptionType) {
-			self::subscribe($eCompany, $companySubscriptionType, TRUE);
+			self::subscribe($eFarm, $companySubscriptionType, TRUE);
 		}
 
 	}
 
-	public static function getHistory(Company $eCompany): \Collection {
+	public static function getHistory(\farm\Farm $eFarm): \Collection {
 
 		return SubscriptionHistory::model()
 			->select(SubscriptionHistory::getSelection())
 			->sort(['createdAt' => SORT_DESC])
-			->whereCompany($eCompany)
+			->whereCompany($eFarm)
 			->getCollection();
 
 	}

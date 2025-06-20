@@ -34,7 +34,7 @@ class CashflowLib extends CashflowCrud {
 				->getCollection(NULL, NULL, 'status');
 	}
 
-	public static function insertMultiple(array $cashflows, \company\Company $eCompany): array {
+	public static function insertMultiple(array $cashflows, \farm\Farm $eFarm): array {
 
 		$alreadyImported = [];
 		$noFinancialYear = [];
@@ -58,8 +58,9 @@ class CashflowLib extends CashflowCrud {
 			};
 			$date = substr($cashflow['date'], 0, 4).'-'.substr($cashflow['date'], 4, 2).'-'.substr($cashflow['date'], 6, 2);
 
+			// TODO ACCRUAL
 			if(
-				$eCompany['accountingType'] === \company\Company::CASH
+				$eFarm['accountingType'] === \company\Company::CASH
 				and \account\FinancialYearLib::isDateLinkedToFinancialYear($date, $cFinancialYear) === FALSE
 			) {
 				$noFinancialYear[] = $cashflow['fitid'];

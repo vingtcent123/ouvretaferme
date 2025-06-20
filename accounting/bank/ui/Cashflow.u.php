@@ -36,7 +36,7 @@ class CashflowUi {
 	}
 
 	public function getSummarize(
-		\company\Company $eCompany,
+		\farm\Farm $eFarm,
 		\Collection $nCashflow,
 		\Search $search
 	): string {
@@ -49,7 +49,7 @@ class CashflowUi {
 
 				$h .= '<li '.($search->get('status') === $status ? 'class="selected"' : '').'>';
 
-					$h .= '<a href="'.\company\CompanyUi::urlBank($eCompany).'/cashflow?'.$search->toQuery(['status']).'&status='.$status.'">';
+					$h .= '<a href="'.\company\CompanyUi::urlBank($eFarm).'/cashflow?'.$search->toQuery(['status']).'&status='.$status.'">';
 
 						$h .= '<h5>';
 							if($count > 1) {
@@ -71,7 +71,7 @@ class CashflowUi {
 	}
 
 	public function getCashflow(
-		\company\Company $eCompany,
+		\farm\Farm $eFarm,
 		\Collection $cCashflow,
 		\account\FinancialYear $eFinancialYearSelected,
 		Import $eImport,
@@ -90,7 +90,7 @@ class CashflowUi {
 			return '<div class="util-info">'.
 				s("Aucun import bancaire n'a été réalisé pour l'exercice {year} (<link>importer</link>)", [
 					'year' => \account\FinancialYearUi::getYear($eFinancialYearSelected),
-					'link' => '<a href="'.\company\CompanyUi::urlBank($eCompany).'/import">',
+					'link' => '<a href="'.\company\CompanyUi::urlBank($eFarm).'/import">',
 				]).
 			'</div>';
 		}
@@ -185,7 +185,7 @@ class CashflowUi {
 
 					$h .= '<td class="td-min-content text-center">';
 					if($eCashflow['status'] === CashflowElement::ALLOCATED) {
-						$h .= '<a class="cashflow-status-label cashflow-status-'.$eCashflow['status'].'" href="'.\company\CompanyUi::urlJournal($eCompany).'/?cashflow='.$eCashflow['id'].'">';
+						$h .= '<a class="cashflow-status-label cashflow-status-'.$eCashflow['status'].'" href="'.\company\CompanyUi::urlJournal($eFarm).'/?cashflow='.$eCashflow['id'].'">';
 							$h .= CashflowUi::p('status')->values[$eCashflow['status']];
 						$h .= '</a>';
 					} else {
@@ -201,7 +201,7 @@ class CashflowUi {
 								&& $eCashflow['date'] <= $eFinancialYearSelected['endDate']
 								&& $eCashflow['date'] >= $eFinancialYearSelected['startDate']
 							) {
-								$h .= $this->getUpdate($eCompany, $eCashflow);
+								$h .= $this->getUpdate($eFarm, $eCashflow);
 							}
 						$h .= '</td>';
 
@@ -215,9 +215,9 @@ class CashflowUi {
 		return $h;
 
 	}
-	protected function getUpdate(\company\Company $eCompany, Cashflow $eCashflow): string {
+	protected function getUpdate(\farm\Farm $eFarm, Cashflow $eCashflow): string {
 
-		if($eCompany->canWrite() === FALSE) {
+		if($eFarm->canManage() === FALSE) {
 			return '';
 		}
 
@@ -227,15 +227,15 @@ class CashflowUi {
 
 			if($eCashflow['status'] === CashflowElement::ALLOCATED) {
 				$confirm = s("Cette action supprimera les écritures actuellement liées à l'opération bancaire qui repassera l'opération bancaire au statut attente. Confirmez-vous ?");
-				$h .= '<a data-ajax="'.\company\CompanyUi::urlBank($eCompany).'/cashflow:deAllocate" post-id="'.$eCashflow['id'].'" class="dropdown-item" data-confirm="'.$confirm.'">';
+				$h .= '<a data-ajax="'.\company\CompanyUi::urlBank($eFarm).'/cashflow:deAllocate" post-id="'.$eCashflow['id'].'" class="dropdown-item" data-confirm="'.$confirm.'">';
 					$h .= s("Annuler les écritures liées");
 				$h .= '</a>';
 
 			} else if($eCashflow['status'] === CashflowElement::WAITING) {
-				$h .= '<a href="'.\company\CompanyUi::urlBank($eCompany).'/cashflow:allocate?id='.$eCashflow['id'].'" class="dropdown-item">';
+				$h .= '<a href="'.\company\CompanyUi::urlBank($eFarm).'/cashflow:allocate?id='.$eCashflow['id'].'" class="dropdown-item">';
 					$h .= s("Créer de nouvelles écritures");
 				$h .= '</a>';
-				$h .= '<a href="'.\company\CompanyUi::urlBank($eCompany).'/cashflow:attach?id='.$eCashflow['id'].'" class="dropdown-item">';
+				$h .= '<a href="'.\company\CompanyUi::urlBank($eFarm).'/cashflow:attach?id='.$eCashflow['id'].'" class="dropdown-item">';
 					$h .= s("Rattacher des écritures comptables");
 				$h .= '</a>';
 			}
@@ -313,7 +313,7 @@ class CashflowUi {
 
 	}
 
-	public static function getAllocate(\company\Company $eCompany, \account\FinancialYear $eFinancialYear, Cashflow $eCashflow): \Panel {
+	public static function getAllocate(\farm\Farm $eFarm, \account\FinancialYear $eFinancialYear, Cashflow $eCashflow): \Panel {
 
 		\Asset::js('journal', 'operation.js');
 		\Asset::js('bank', 'cashflow.js');
@@ -326,7 +326,7 @@ class CashflowUi {
 		$form = new \util\FormUi();
 
 		$dialogOpen = $form->openAjax(
-			\company\CompanyUi::urlBank($eCompany).'/cashflow:doAllocate',
+			\company\CompanyUi::urlBank($eFarm).'/cashflow:doAllocate',
 			[
 				'id' => 'bank-cashflow-allocate',
 				'third-party-create-index' => 0,
@@ -347,7 +347,7 @@ class CashflowUi {
 			'amountIncludingVAT' => abs($eCashflow['amount']),
 		];
 
-		$h = $form->hidden('company', $eCompany['id']);
+		$h = $form->hidden('farm', $eFarm['id']);
 		$h .= $form->hidden('id', $eCashflow['id']);
 		$h .= $form->hidden('type', $eCashflow['type']);
 		$h .= '<span name="cashflow-amount" class="hide">'.$eCashflow['amount'].'</span>';
@@ -385,13 +385,13 @@ class CashflowUi {
 			);
 		$subtitle .= '</div>';
 
-		$h .= \journal\OperationUi::getCreateGrid($eCompany, $eOperation, $eFinancialYear, $index, $form, $defaultValues);
+		$h .= \journal\OperationUi::getCreateGrid($eFarm, $eOperation, $eFinancialYear, $index, $form, $defaultValues);
 
 		$amountWarning = '<div id="cashflow-allocate-difference-warning" class="util-danger hide">';
 			$amountWarning .= s("Attention, les montants saisis doivent correspondre au montant total de la transaction. Il y a une différence de {difference}.", ['difference' => '<span id="cashflow-allocate-difference-value">0</span>']);
 		$amountWarning .= '</div>';
 
-		$addButton = '<a id="add-operation" onclick="Cashflow.recalculateAmounts(); return TRUE;" data-ajax="'.\company\CompanyUi::urlBank($eCompany).'/cashflow:addAllocate" post-index="'.($index + 1).'" post-id="'.$eCashflow['id'].'" post-third-party="" post-amount="" class="btn btn-outline-secondary">';
+		$addButton = '<a id="add-operation" onclick="Cashflow.recalculateAmounts(); return TRUE;" data-ajax="'.\company\CompanyUi::urlBank($eFarm).'/cashflow:addAllocate" post-index="'.($index + 1).'" post-id="'.$eCashflow['id'].'" post-third-party="" post-amount="" class="btn btn-outline-secondary">';
 		$addButton .= \Asset::icon('plus-circle').'&nbsp;'.s("Ajouter une autre écriture");
 		$addButton .= '</a>';
 
@@ -417,7 +417,7 @@ class CashflowUi {
 
 	}
 
-	public static function addAllocate(\company\Company $eCompany, \journal\Operation $eOperation, \account\FinancialYear $eFinancialYear, Cashflow $eCashflow, int $index): string {
+	public static function addAllocate(\farm\Farm $eFarm, \journal\Operation $eOperation, \account\FinancialYear $eFinancialYear, Cashflow $eCashflow, int $index): string {
 
 		$form = new \util\FormUi();
 		$form->open('bank-cashflow-allocate');
@@ -428,11 +428,11 @@ class CashflowUi {
 			'cashflow' => $eCashflow,
 		];
 
-		return \journal\OperationUi::getFieldsCreateGrid($eCompany, $form, $eOperation, $eFinancialYear, '['.$index.']', $defaultValues, []);
+		return \journal\OperationUi::getFieldsCreateGrid($eFarm, $form, $eOperation, $eFinancialYear, '['.$index.']', $defaultValues, []);
 
 	}
 
-	public static function import(\company\Company $eCompany): \Panel {
+	public static function import(\farm\Farm $eFarm): \Panel {
 
 		$form = new \util\FormUi();
 		$h = '';
@@ -445,8 +445,8 @@ class CashflowUi {
 		$h .= '<div class="util-info">'.s("Si le compte bancaire n'existe pas encore, il sera automatiquement créé (et vous pourrez paramétrer son libellé dans Paramétrage > Les comptes bancaires).").'</div>';
 
 
-		$h .= $form->openUrl(\company\CompanyUi::urlBank($eCompany).'/import:doImport', ['id' => 'cashflow-import', 'binary' => TRUE, 'method' => 'post']);
-			$h .= $form->hidden('company', $eCompany['id']);
+		$h .= $form->openUrl(\company\CompanyUi::urlBank($eFarm).'/import:doImport', ['id' => 'cashflow-import', 'binary' => TRUE, 'method' => 'post']);
+			$h .= $form->hidden('farm', $eFarm['id']);
 			$h .= '<label class="btn btn-primary">';
 				$h .= $form->file('ofx', ['onchange' => 'this.form.submit()', 'accept' => '.ofx']);
 				$h .= s("Importer un fichier OFX depuis mon ordinateur");
@@ -460,7 +460,7 @@ class CashflowUi {
 		);
 	}
 
-	public function getAttach(\company\Company $eCompany, \account\FinancialYear $eFinancialYear, Cashflow $eCashflow, \Collection $cOperation): \Panel {
+	public function getAttach(\farm\Farm $eFarm, Cashflow $eCashflow, \Collection $cOperation): \Panel {
 
 		\Asset::js('bank', 'cashflow.js');
 		$h = CashflowUi::getCashflowHeader($eCashflow);
@@ -472,7 +472,7 @@ class CashflowUi {
 		} else {
 
 			$form = new \util\FormUi();
-			$h .= $form->openAjax(\company\CompanyUi::urlBank($eCompany).'/cashflow:doAttach', ['method' => 'post', 'id' => 'cashflow-doAttach']);
+			$h .= $form->openAjax(\company\CompanyUi::urlBank($eFarm).'/cashflow:doAttach', ['method' => 'post', 'id' => 'cashflow-doAttach']);
 
 				$h .= $form->hidden('id', $eCashflow['id']);
 				$h .= '<span class="hide" name="cashflow-amount">'.$eCashflow['amount'].'</span>';
