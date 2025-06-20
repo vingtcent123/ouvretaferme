@@ -30,7 +30,7 @@ class ShopManageUi {
 		$h .= '<h3>'.s("Créer une boutique").'</h3>';
 
 
-		if($eFarm->selling()->isLegal()) {
+		if($eFarm->isLegal()) {
 
 			$eShop = new Shop([
 				'farm' => $eFarm,
@@ -42,7 +42,7 @@ class ShopManageUi {
 		} else {
 
 			$h .= '<div class="util-block">';
-				$h .= \selling\AlertUi::getError('Configuration::notLegal', [
+				$h .= \farm\AlertUi::getError('Farm::notLegal', [
 					'farm' => $eFarm,
 					'btn' => 'btn-secondary'
 				]);

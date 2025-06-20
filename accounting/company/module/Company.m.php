@@ -7,9 +7,6 @@ abstract class CompanyElement extends \Element {
 
 	private static ?CompanyModel $model = NULL;
 
-	const ACTIVE = 'active';
-	const CLOSED = 'closed';
-
 	const ACCRUAL = 'accrual';
 	const CASH = 'cash';
 
@@ -47,36 +44,24 @@ class CompanyModel extends \ModuleModel {
 
 		$this->properties = array_merge($this->properties, [
 			'id' => ['serial32', 'cast' => 'int'],
-			'name' => ['text8', 'min' => 1, 'max' => NULL, 'collate' => 'general', 'cast' => 'string'],
-			'url' => ['url', 'null' => TRUE, 'cast' => 'string'],
-			'siret' => ['text8', 'min' => 14, 'max' => 14, 'null' => TRUE, 'cast' => 'string'],
-			'nafCode' => ['text8', 'min' => 6, 'max' => 6, 'null' => TRUE, 'cast' => 'string'],
-			'addressLine1' => ['text16', 'null' => TRUE, 'cast' => 'string'],
-			'addressLine2' => ['text16', 'null' => TRUE, 'cast' => 'string'],
-			'postalCode' => ['text8', 'null' => TRUE, 'cast' => 'string'],
-			'city' => ['text8', 'null' => TRUE, 'cast' => 'string'],
-			'createdAt' => ['datetime', 'cast' => 'string'],
-			'status' => ['enum', [\company\Company::ACTIVE, \company\Company::CLOSED], 'cast' => 'enum'],
+			'farm' => ['element32', 'farm\Farm', 'null' => TRUE, 'cast' => 'element'],
 			'accountingType' => ['enum', [\company\Company::ACCRUAL, \company\Company::CASH], 'cast' => 'enum'],
 			'subscriptionType' => ['set', [\company\Company::ACCOUNTING, \company\Company::PRODUCTION, \company\Company::SALES], 'null' => TRUE, 'cast' => 'set'],
-			'isBio' => ['bool', 'null' => TRUE, 'cast' => 'bool'],
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'name', 'url', 'siret', 'nafCode', 'addressLine1', 'addressLine2', 'postalCode', 'city', 'createdAt', 'status', 'accountingType', 'subscriptionType', 'isBio'
+			'id', 'farm', 'accountingType', 'subscriptionType'
 		]);
+
+		$this->propertiesToModule += [
+			'farm' => 'farm\Farm',
+		];
 
 	}
 
 	public function getDefaultValue(string $property) {
 
 		switch($property) {
-
-			case 'createdAt' :
-				return new \Sql('NOW()');
-
-			case 'status' :
-				return Company::ACTIVE;
 
 			case 'accountingType' :
 				return Company::CASH;
@@ -91,9 +76,6 @@ class CompanyModel extends \ModuleModel {
 	public function encode(string $property, $value) {
 
 		switch($property) {
-
-			case 'status' :
-				return ($value === NULL) ? NULL : (string)$value;
 
 			case 'accountingType' :
 				return ($value === NULL) ? NULL : (string)$value;
@@ -117,44 +99,8 @@ class CompanyModel extends \ModuleModel {
 		return $this->where('id', ...$data);
 	}
 
-	public function whereName(...$data): CompanyModel {
-		return $this->where('name', ...$data);
-	}
-
-	public function whereUrl(...$data): CompanyModel {
-		return $this->where('url', ...$data);
-	}
-
-	public function whereSiret(...$data): CompanyModel {
-		return $this->where('siret', ...$data);
-	}
-
-	public function whereNafCode(...$data): CompanyModel {
-		return $this->where('nafCode', ...$data);
-	}
-
-	public function whereAddressLine1(...$data): CompanyModel {
-		return $this->where('addressLine1', ...$data);
-	}
-
-	public function whereAddressLine2(...$data): CompanyModel {
-		return $this->where('addressLine2', ...$data);
-	}
-
-	public function wherePostalCode(...$data): CompanyModel {
-		return $this->where('postalCode', ...$data);
-	}
-
-	public function whereCity(...$data): CompanyModel {
-		return $this->where('city', ...$data);
-	}
-
-	public function whereCreatedAt(...$data): CompanyModel {
-		return $this->where('createdAt', ...$data);
-	}
-
-	public function whereStatus(...$data): CompanyModel {
-		return $this->where('status', ...$data);
+	public function whereFarm(...$data): CompanyModel {
+		return $this->where('farm', ...$data);
 	}
 
 	public function whereAccountingType(...$data): CompanyModel {
@@ -163,10 +109,6 @@ class CompanyModel extends \ModuleModel {
 
 	public function whereSubscriptionType(...$data): CompanyModel {
 		return $this->where('subscriptionType', ...$data);
-	}
-
-	public function whereIsBio(...$data): CompanyModel {
-		return $this->where('isBio', ...$data);
 	}
 
 

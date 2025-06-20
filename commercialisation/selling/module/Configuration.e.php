@@ -3,24 +3,6 @@ namespace selling;
 
 class Configuration extends ConfigurationElement {
 
-	public function isLegal(): bool {
-
-		return (
-			$this['legalName'] !== NULL and
-			$this['legalEmail'] !== NULL
-		);
-
-	}
-
-	public function isComplete(): bool {
-
-		return (
-			$this->isLegal() and
-			$this['invoiceCity'] !== NULL
-		);
-
-	}
-
 	public function canRead(): bool {
 		return $this->canWrite();
 	}
@@ -30,26 +12,6 @@ class Configuration extends ConfigurationElement {
 		$this->expects(['farm']);
 		return $this['farm']->canManage();
 
-	}
-
-	public function getInvoiceAddress(string $type = 'text'): ?string {
-
-		if($this->hasInvoiceAddress() === FALSE) {
-			return NULL;
-		}
-
-		$address = $this['invoiceStreet1']."\n";
-		if($this['invoiceStreet2'] !== NULL) {
-			$address .= $this['invoiceStreet2']."\n";
-		}
-		$address .= $this['invoicePostcode'].' '.$this['invoiceCity'];
-
-		return ($type === 'text') ? $address : nl2br(encode($address));
-
-	}
-
-	public function hasInvoiceAddress(): bool {
-		return ($this['invoiceCity'] !== NULL);
 	}
 
 	public static function getNumber(string $code, int $document): string {
@@ -64,12 +26,6 @@ class Configuration extends ConfigurationElement {
 	public function build(array $properties, array $input, \Properties $p = new \Properties()): void {
 
 		$p
-			->setCallback('legalName.empty', function(?string $value): bool {
-				return ($value !== NULL);
-			})
-			->setCallback('legalEmail.empty', function(?string $value): bool {
-				return ($value !== NULL);
-			})
 			->setCallback('documentInvoices.set', function(int &$value): void {
 				$this['documentInvoices'] = $value - 1;
 			})

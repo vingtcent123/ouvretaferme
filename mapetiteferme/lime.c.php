@@ -33,6 +33,7 @@ switch(LIME_ENV) {
 
       'user' => 'ouvretaferme',
       'farm' => 'ouvretaferme',
+      'selling' => 'ouvretaferme',
       'map' => 'ouvretaferme',
       'series' => 'ouvretaferme',
       'plant' => 'ouvretaferme',
@@ -58,6 +59,7 @@ switch(LIME_ENV) {
 
       'user' => 'dev_ouvretaferme',
       'farm' => 'dev_ouvretaferme',
+      'selling' => 'dev_ouvretaferme',
       'map' => 'dev_ouvretaferme',
       'series' => 'dev_ouvretaferme',
       'plant' => 'dev_ouvretaferme',

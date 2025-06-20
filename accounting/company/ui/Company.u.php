@@ -8,8 +8,8 @@ class CompanyUi {
 		\Asset::js('company', 'company.js');
 	}
 
-	public static function link(Company $eCompany, bool $newTab = FALSE): string {
-		return '<a href="'.self::url($eCompany).'" '.($newTab ? 'target="_blank"' : '').'>'.encode($eCompany['name']).'</a>';
+	public static function link(\farm\Farm $eFarm, bool $newTab = FALSE): string {
+		return '<a href="'.self::url($eFarm).'" '.($newTab ? 'target="_blank"' : '').'>'.encode($eFarm['name']).'</a>';
 	}
 
 
@@ -82,14 +82,14 @@ class CompanyUi {
 
 	}
 
-	public function warnFinancialYear(Company $eCompany, \Collection $cFinancialYear): string {
+	public function warnFinancialYear(\farm\Farm $eFarm, \Collection $cFinancialYear): string {
 
 		if($cFinancialYear->notEmpty()) {
 			return '';
 		}
 
 		$h = '<div class="util-info">';
-			$h .= \Asset::icon('leaf').' '.s("Avant de démarrer, rendez-vous <link>dans les paramètres de votre exploitation</link> pour créer votre premier exercice comptable !", ['link' => '<a href="'.CompanyUi::urlAccount($eCompany).'/financialYear/">']);
+			$h .= \Asset::icon('leaf').' '.s("Avant de démarrer, rendez-vous <link>dans les paramètres de votre exploitation</link> pour créer votre premier exercice comptable !", ['link' => '<a href="'.CompanyUi::urlAccount($eFarm).'/financialYear/">']);
 		$h .= '</div>';
 
 		return $h;
@@ -125,20 +125,21 @@ class CompanyUi {
 
 	}
 
-	public function update(Company $eCompany): string {
+	public function update(\farm\Farm $eFarm): string {
 
 		$form = new \util\FormUi();
 
-		$h = $form->openAjax(CompanyUi::url($eCompany).'/company:doUpdate', ['id' => 'company-update', 'autocomplete' => 'off']);
+		$h = $form->openAjax('/farm/farm:doUpdate', ['id' => 'farm-update', 'autocomplete' => 'off']);
 
-			$h .= $form->hidden('id', $eCompany['id']);
+			$h .= $form->hidden('id', $eFarm['id']);
 
 			$h .= $form->group(
 				self::p('vignette')->label,
-				new \media\CompanyVignetteUi()->getCamera($eCompany, size: '10rem')
+				new \media\FarmVignetteUi()->getCamera($eFarm, size: '10rem')
 			);
-			$h .= $form->group(self::p('siret'), $form->text('siret', $eCompany['siret'], ['disabled' => TRUE]));
-			$h .= $form->dynamicGroups($eCompany, ['nafCode', 'name', 'accountingType', 'url', 'addressLine1', 'addressLine2', 'postalCode', 'city', 'isBio']);
+			$h .= $form->dynamicGroups($eFarm, ['name', 'siret', 'legalName']);
+			$h .= $form->addressGroup(s("Siège social de la ferme"), 'legal', $eFarm);
+			$h .= $form->dynamicGroups($eFarm, ['description', 'startedAt', 'placeLngLat', 'url', 'defaultBedLength', 'defaultBedWidth', 'defaultAlleyWidth', 'quality']);
 
 			$h .= $form->group(
 				content: $form->submit(s("Modifier"))
@@ -332,6 +333,10 @@ class CompanyUi {
 						$h .= \Asset::icon('cart4');
 					$h .= '</a>';
 
+					/*$h .= '<a href="'.EmployeeUi::urlManage($eFarm).'" class="bg-secondary util-button">';
+						$h .= '<h4>'.s("L'équipe").'</h4>';
+						$h .= \Asset::icon('people-fill');
+					$h .= '</a>';*/
 				}
 
 				$h .= '<a href="'.CompanyUi::urlBank($eFarm).'/account" class="bg-secondary util-button">';

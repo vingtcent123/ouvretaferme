@@ -203,13 +203,13 @@ class ShopObserverLib {
 
 		$eSale->expects([
 			'shop' => ['shared', 'email'],
-			'farm'
+			'farm' => ['legalEmail'],
 		]);
 
 		if($eSale['shop']['shared']) {
-			return $eSale['farm']->selling()['legalEmail'];
+			return $eSale['farm']['legalEmail'];
 		} else {
-			return $eSale['shop']['email'] ?? $eSale['farm']->selling()['legalEmail'];
+			return $eSale['shop']['email'] ?? $eSale['farm']['legalEmail'];
 		}
 
 	}
@@ -221,7 +221,7 @@ class ShopObserverLib {
 		if($eShop['shared']) {
 			return $eShop['email'];
 		} else {
-			return $eShop['email'] ?? $eFarm->selling()['legalEmail'];
+			return $eShop['email'] ?? $eFarm['legalEmail'];
 		}
 
 	}

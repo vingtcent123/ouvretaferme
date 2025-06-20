@@ -33,9 +33,9 @@ new Page()
 			}
 			echo $class."\n";
 			try {
-				(new \ModuleAdministration($class))->init();
+				new \ModuleAdministration($class)->init();
 			} catch (\Exception $e) {
-				(new \ModuleAdministration($class))->rebuild([]);
+				new \ModuleAdministration($class)->rebuild([]);
 			}
 		}
 

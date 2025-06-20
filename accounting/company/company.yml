@@ -1,45 +1,8 @@
 Company:
   id: serial32
-  name: text8(1, null) @collate(general)
-  url: ?url
-  siret: ?text8(14,14)
-  nafCode: ?text8(6, 6)
-  addressLine1: ?text16
-  addressLine2: ?text16
-  postalCode: ?text8
-  city: ?text8
-  createdAt: datetime = SPECIAL(now)
-  status: enum(ACTIVE, CLOSED) = ACTIVE
+  farm: farm\Farm
   accountingType: enum(ACCRUAL, CASH) = CASH
   subscriptionType: ?set(ACCOUNTING, PRODUCTION, SALES)
-  isBio: ?bool
-
-Employee:
-  id: serial32
-  user: ?user\User
-  company: company\Company
-  companyStatus: enum(ACTIVE, CLOSED) = ACTIVE
-  role: ?enum(OWNER, EMPLOYEE, ACCOUNTANT)
-  viewFinancialYear: ?int16(0, null)
-  status: enum(INVITED, IN, OUT) = INVITED
-  createdAt: datetime = SPECIAL(now)
-  UNIQUE: [
-    ["user", "company"]
-  ]
-
-Invite:
-  id: serial32
-  company: company\Company
-  email: email
-  employee: ?company\Employee
-  expiresAt: date = SQL(NOW() + INTERVAL 3 DAY)
-  key: ?text8 = PHP(bin2hex(random_bytes(16)))
-  status: enum(PENDING, ACCEPTED) = PENDING
-  createdBy: user\User = SPECIAL(user)
-  INDEX: [
-    ["email"],
-    ["key"]
-  ]
 
 Subscription:
   id: serial32

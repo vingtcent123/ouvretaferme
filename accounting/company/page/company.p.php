@@ -1,12 +1,11 @@
 <?php
-new \company\CompanyPage()
-	->applyElement(function($data, \company\Company $e) {
+new \farm\FarmPage()
+	->applyElement(function($data, \farm\Farm $e) {
 		$e->validate('canManage');
 	})
 	->update(function($data) {
 
-		$data->eCompany = $data->e;
-		\company\EmployeeLib::register($data->e);
+		$data->eFarm = $data->e;
 
 		throw new ViewAction($data);
 
@@ -22,7 +21,7 @@ new \company\CompanyPage()
 
 	});
 
-(new \company\CompanyPage())
+new \farm\FarmPage()
 	->get('configuration', function($data) {
 
 		throw new ViewAction($data, ':configuration');

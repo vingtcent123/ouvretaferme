@@ -261,21 +261,21 @@ class DemoLib {
 				'description' => 'Ferme de démonstration pour présenter {siteName} !',
 				'logo' => NULL,
 				'emailBanner' => NULL,
+				'legalName' => 'GAEC de Démo',
+				'legalEmail' => NULL,
+				'addressStreet1' => NULL,
+				'addressStreet2' => NULL,
+				'addressPostcode' => NULL,
+				'addressCity' => NULL,
+				'siret' => NULL,
 				'url' => NULL,
 			]);
 
 		\selling\Configuration::model()
 			->whereFarm(Farm::DEMO)
 			->update([
-				'legalEmail' => NULL,
-				'legalName' => 'GAEC de Démo',
 				'hasVat' => TRUE,
-				'invoiceStreet1' => NULL,
-				'invoiceStreet2' => NULL,
-				'invoicePostcode' => NULL,
-				'invoiceCity' => NULL,
 				'invoiceVat' => NULL,
-				'invoiceRegistration' => NULL,
 				'invoiceHeader' => NULL,
 				'invoiceFooter' => NULL
 			]);

@@ -9,7 +9,7 @@ class ContactLib extends ContactCrud {
 
 	public static function create(Contact $e): void {
 
-		$farmEmail = $e['farm']->selling()['legalEmail'];
+		$farmEmail = $e['farm']['legalEmail'];
 
 		if($farmEmail === NULL) {
 			throw new \Exception('Missing farm email');

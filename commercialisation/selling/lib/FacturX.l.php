@@ -45,10 +45,10 @@ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<rsm:SupplyChainTradeTransaction><!--BG-25-00-->
 		<ram:ApplicableHeaderTradeAgreement><!--BT-10-00-->
 			<ram:SellerTradeParty><!--BG-4-->
-				<ram:Name>'.encode($eInvoice['farm']['configuration']['legalName']).'</ram:Name><!--BT-24-->
-				'.($eInvoice['farm']['configuration']['invoiceRegistration'] !== NULL ? '
+				<ram:Name>'.encode($eInvoice['farm']['legalName']).'</ram:Name><!--BT-24-->
+				'.($eInvoice['farm']['siret'] !== NULL ? '
 				<ram:SpecifiedLegalOrganization><!--BT-30-->
-					<ram:ID schemeID="0002">'.encode($eInvoice['farm']['configuration']['invoiceRegistration']).'</ram:ID>
+					<ram:ID schemeID="0002">'.encode($eInvoice['farm']['siret']).'</ram:ID>
 				</ram:SpecifiedLegalOrganization>' : '').'
 				<ram:PostalTradeAddress><!--BG-5-->
 					<ram:CountryID>FR</ram:CountryID><!--BT-40-->
@@ -60,9 +60,9 @@ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 			</ram:SellerTradeParty>
 			<ram:BuyerTradeParty><!--BG-7-->
 				<ram:Name>'.encode($eInvoice['customer']['legalName'] ?? $eInvoice['customer']['name']).'</ram:Name><!--BT-44-->
-				'.($eInvoice['customer']['invoiceRegistration'] !== NULL ? '
+				'.($eInvoice['customer']['siret'] !== NULL ? '
 				<ram:SpecifiedLegalOrganization><!--BT-47-00-->
-					<ram:ID schemeID="0002">'.encode($eInvoice['customer']['invoiceRegistration']).'</ram:ID>
+					<ram:ID schemeID="0002">'.encode($eInvoice['customer']['siret']).'</ram:ID>
 				</ram:SpecifiedLegalOrganization>' : '').'
 			</ram:BuyerTradeParty>
 		</ram:ApplicableHeaderTradeAgreement>
@@ -102,7 +102,7 @@ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	 */
 	public static function generate(Invoice $eInvoice, string $pdfContent): string {
 
-		$eInvoice->expects(['name', 'date', 'priceExcludingVat', 'vat', 'priceIncludingVat', 'farm' => ['id'], 'customer' => ['name']]);
+		$eInvoice->expects(['name', 'date', 'priceExcludingVat', 'vat', 'priceIncludingVat', 'farm' => ['id', 'siret'], 'customer' => ['name']]);
 
 		$eInvoice['farm']['configuration'] =  \selling\ConfigurationLib::getByFarm($eInvoice['farm']);
 

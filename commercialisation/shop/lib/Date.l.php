@@ -331,7 +331,7 @@ class DateLib extends DateCrud {
 		$cDate = Date::model()
 			->select(Date::getSelection() + [
 				'shop' => ['name', 'shared', 'email', 'emailEndDate'],
-				'farm' => ['emailBanner', 'emailFooter']
+				'farm' => ['legalEmail', 'emailBanner', 'emailFooter']
 			])
 			->where('orderEndAt BETWEEN NOW() - INTERVAL 6 HOUR AND NOW() - INTERVAL 10 MINUTE')
 			->where('orderEndAt != orderEndEmailedAt OR orderEndEmailedAt IS NULL')
@@ -356,14 +356,14 @@ class DateLib extends DateCrud {
 
 				foreach($cShare as $eShare) {
 
-					$to = $eShare['farm']->selling()['legalEmail'];
+					$to = $eShare['farm']['legalEmail'];
 					self::sendEndEmail($eDate, $eShare['farm'], $to);
 
 				}
 
 			} else {
 
-				$to = $eDate['shop']['email'] ?? $eDate['farm']->selling()['legalEmail'];
+				$to = $eDate['shop']['email'] ?? $eDate['farm']['legalEmail'];
 				self::sendEndEmail($eDate, $eDate['farm'], $to);
 
 			}

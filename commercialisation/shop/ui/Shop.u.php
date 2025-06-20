@@ -1262,7 +1262,7 @@ class ShopUi {
 				break;
 
 			case 'email' :
-				$d->placeholder = fn(Shop $eShop) => $eShop['shared'] ? '' : $eShop['farm']->selling()['legalEmail'];
+				$d->placeholder = fn(Shop $eShop) => $eShop['shared'] ? '' : $eShop['farm']['legalEmail'];
 				$d->after = fn(\util\FormUi $form, Shop $eShop) => \util\FormUi::info(
 					$eShop['shared'] ?
 						s("Cette adresse e-mail est utilisée comme expéditeur des e-mails envoyés aux clients pour les confirmations de commande, choisissez de préférence une adresse e-mail commune à tous les producteurs.") :

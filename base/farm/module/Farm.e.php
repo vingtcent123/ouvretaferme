@@ -164,6 +164,23 @@ class Farm extends FarmElement {
 		);
 
 	}
+	public function isLegal(): bool {
+
+		return (
+			$this['legalName'] !== NULL and
+			$this['legalEmail'] !== NULL
+		);
+
+	}
+
+	public function isLegalComplete(): bool {
+
+		return (
+			$this->isLegal() and
+			$this['legalCity'] !== NULL
+		);
+
+	}
 
 	public function canCreate(): bool {
 		return (\user\ConnectionLib::getOnline()->isRole('customer') === FALSE);
@@ -220,13 +237,13 @@ class Farm extends FarmElement {
 
 	public function validateLegalComplete(): void {
 
-		$this->selling()->isLegal() ?: throw new \FailAction('selling\Configuration::notLegal', ['farm' => $this]);
+		$this->isLegal() ?: throw new \FailAction('farm\Farm::notLegal', ['farm' => $this]);
 
 	}
 
 	public function validateSellingComplete(): void {
 
-		$this->selling()->isComplete() ?: throw new \FailAction('selling\Configuration::notSelling', ['farm' => $this]);
+		$this->isLegalComplete() ?: throw new \FailAction('farm\Farm::notSelling', ['farm' => $this]);
 
 	}
 
@@ -244,6 +261,26 @@ class Farm extends FarmElement {
 
 		return $this['featureTime'];
 
+	}
+
+	public function getLegalAddress(string $type = 'text'): ?string {
+
+		if($this->hasLegalAddress() === FALSE) {
+			return NULL;
+		}
+
+		$address = $this['legalStreet1']."\n";
+		if($this['legalStreet2'] !== NULL) {
+			$address .= $this['legalStreet2']."\n";
+		}
+		$address .= $this['legalPostcode'].' '.$this['legalCity'];
+
+		return ($type === 'text') ? $address : nl2br(encode($address));
+
+	}
+
+	public function hasLegalAddress(): bool {
+		return ($this['legalCity'] !== NULL);
 	}
 
 	public function hasFeatureDocument(string $type): bool {

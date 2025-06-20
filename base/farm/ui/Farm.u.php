@@ -361,7 +361,9 @@ class FarmUi {
 				self::p('vignette')->label,
 				new \media\FarmVignetteUi()->getCamera($eFarm, size: '10rem')
 			);
-			$h .= $form->dynamicGroups($eFarm, ['name', 'description', 'startedAt', 'place', 'placeLngLat', 'url', 'defaultBedLength', 'defaultBedWidth', 'defaultAlleyWidth', 'quality']);
+			$h .= $form->dynamicGroups($eFarm, ['name', 'legalEmail', 'siret', 'legalName']);
+			$h .= $form->addressGroup(s("Siège social de la ferme"), 'legal', $eFarm);
+			$h .= $form->dynamicGroups($eFarm, ['description', 'startedAt', 'place', 'placeLngLat', 'url', 'defaultBedLength', 'defaultBedWidth', 'defaultAlleyWidth', 'quality']);
 
 			$h .= $form->group(
 				content: $form->submit(s("Modifier"))
@@ -1783,6 +1785,9 @@ class FarmUi {
 
 		$d = Farm::model()->describer($property, [
 			'name' => s("Nom de la ferme"),
+			'legalName' => s("Raison sociale de la ferme"),
+			'legalEmail' => s("Adresse e-mail de la ferme"),
+			'siret' => s("Numéro d'immatriculation SIRET"),
 			'vignette' => s("Photo de présentation"),
 			'description' => s("Présentation de la ferme"),
 			'startedAt' => s("Année de création"),
@@ -1802,6 +1807,11 @@ class FarmUi {
 		]);
 
 		switch($property) {
+
+			case 'siret' :
+				$d->placeholder = s("Exemple : {value}", '123 456 789 00013');
+				$d->attributes['oninput'] = 'Farm.getFarmDataBySiret(this)';
+				break;
 
 			case 'place' :
 				new \main\PlaceUi()->query($d);

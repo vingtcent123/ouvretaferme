@@ -6,7 +6,8 @@ class Website extends WebsiteElement {
 	public static function getSelection(): array {
 
 		return parent::getSelection() + [
-			'customDesign' => ['maxWidth']
+			'customDesign' => ['maxWidth'],
+			'farm' => ['legalEmail'],
 		];
 
 	}

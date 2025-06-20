@@ -75,7 +75,7 @@ class ManageUi {
 
 	public function contact(Website $eWebsite): \Panel {
 
-		$farmEmail = $eWebsite['farm']->selling()['legalEmail'];
+		$farmEmail = $eWebsite['farm']['legalEmail'];
 
 		$h = '<p>'.s("Vous pouvez facilement intégrer un formulaire de contact sur le site internet de votre ferme. Lorsqu'un client vous contactera par ce biais, vous recevrez un e-mail avec le message laissé par le client.").'</p>';
 

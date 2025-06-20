@@ -247,6 +247,7 @@ class InvoiceLib extends InvoiceCrud {
 
 		if($e['generation'] === Invoice::NOW) {
 			$e['customer'] = CustomerLib::getById($e['customer']['id']);
+			$e['farm'] = \farm\FarmLib::getById($e['farm']['id']);
 			self::generate($e);
 		}
 

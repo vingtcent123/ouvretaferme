@@ -71,25 +71,22 @@ class ConfigurationUi {
 
 			$h .= $form->hidden('id', $eConfiguration['id']);
 
-				$h .= $form->group(content: '<h3>'.s("Général").'</h3>');
+				if($eFarm['legalName'] === NULL or $eFarm['legalEmail'] === NULL) {
 
-				if($eConfiguration['legalName'] === NULL or $eConfiguration['legalEmail'] === NULL) {
-
-					$h .= $form->group(content: '<div class="util-block-help">'.s("Veuillez renseigner la raison sociale et l'adresse e-mail de la ferme pour utiliser les fonctionnalités relatives à la commercialisation sur {siteName}.").'</div>');
+					$h .= $form->group(content: '<h3>'.s("Général").'</h3>');
+					$h .= $form->group(content: '<div class="util-block-help">'.s("Veuillez <link>renseigner la raison sociale et l'adresse e-mail de la ferme</link> pour utiliser les fonctionnalités relatives à la commercialisation sur {siteName}.", ['link' => '<a href="/farm/farm:update?id='.$eFarm['id'].'">']).'</div>');
 
 				}
 
-				$h .= $form->dynamicGroups($eConfiguration, ['legalName*', 'legalEmail*']);
 				$h .= $form->group(content: '<h3>'.s("Facturation").'</h3>');
 
-				if($eConfiguration->hasInvoiceAddress() === FALSE) {
+				if($eFarm->hasLegalAddress() === FALSE) {
 
-					$h .= $form->group(content: '<div class="util-block-help">'.s("Pour générer des devis, bons de livraison et factures sur {siteName}, veuillez renseigner à minima l'adresse de facturation de la ferme.").'</div>');
+					$h .= $form->group(content: '<div class="util-block-help">'.s("Pour générer des devis, bons de livraison et factures sur {siteName}, veuillez <link>renseigner à minima le siège social de la ferme</link>.", ['link' => '<a href="/farm/farm:update?id='.$eFarm['id'].'">']).'</div>');
 
 				}
 
-				$h .= $form->addressGroup(s("Adresse de facturation de la ferme"), 'invoice', $eConfiguration);
-				$h .= $form->dynamicGroups($eConfiguration, ['invoiceRegistration', 'paymentMode', 'documentCopy']);
+				$h .= $form->dynamicGroups($eConfiguration, ['paymentMode', 'documentCopy']);
 				$h .= '<br/>';
 				$h .= $form->group(
 					\farm\FarmUi::p('logo')->label,
@@ -132,7 +129,7 @@ class ConfigurationUi {
 
 		$h = '';
 
-		if($eConfiguration->isComplete() === FALSE) {
+		if($eFarm->isLegalComplete() === FALSE) {
 
 			$h .= '<div class="util-block-help">';
 				$h .= '<p>'.s("Vous pourrez personnaliser les devis dès lors que vous aurez terminé la configuration administrative de la commercialisation !").'</p>';
@@ -184,7 +181,7 @@ class ConfigurationUi {
 
 		$h = '';
 
-		if($eConfiguration->isComplete() === FALSE) {
+		if($eFarm->isLegalComplete() === FALSE) {
 
 			$h .= '<div class="util-block-help">';
 				$h .= '<p>'.s("Vous pourrez personnaliser les factures dès lors que vous aurez terminé la configuration administrative de la commercialisation !").'</p>';
@@ -235,7 +232,7 @@ class ConfigurationUi {
 
 		$h = '';
 
-		if($eConfiguration->isComplete() === FALSE) {
+		if($eFarm->isLegalComplete() === FALSE) {
 
 			$h .= '<div class="util-block-help">';
 				$h .= '<p>'.s("Vous pourrez personnaliser les bons de livraison dès lors que vous aurez terminé la configuration administrative de la commercialisation !").'</p>';
@@ -413,12 +410,9 @@ class ConfigurationUi {
 	public static function p(string $property): \PropertyDescriber {
 
 		$d = Configuration::model()->describer($property, [
-			'legalName' => s("Raison sociale de la ferme"),
-			'invoiceRegistration' => s("Numéro d'immatriculation SIRET"),
 			'documentInvoices' => s("Prochain numéro de facture ou d'avoir"),
 			'hasVat' => s("Assujettissement à la TVA"),
 			'invoiceVat' => s("Numéro de TVA intracommunautaire"),
-			'legalEmail' => s("Adresse e-mail de la ferme"),
 			'defaultVat' => s("Taux de TVA par défaut sur vos produits"),
 			'defaultVatShipping' => s("Taux de TVA par défaut sur les frais de livraison"),
 			'organicCertifier' => s("Organisme de certification pour l'Agriculture Biologique"),
@@ -442,11 +436,6 @@ class ConfigurationUi {
 		]);
 
 		switch($property) {
-
-			case 'invoiceRegistration' :
-				$d->palceholder = s("Exemple : {value}", '123 456 789 00013');
-				$d->after = \util\FormUi::info(s("Indiquez ici un numéro SIRET que vous souhaitez voir apparaître sur les factures."));
-				break;
 
 			case 'invoiceVat' :
 				$d->palceholder = s("Exemple : {value}", 'FR01234567890');

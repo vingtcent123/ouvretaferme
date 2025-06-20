@@ -25,6 +25,13 @@ Category:
 Farm:
   id: serial32
   name: text8(1, null) @collate(general)
+  legalName: ?text8
+  legalEmail: ?email
+  siret: ?text8
+  legalStreet1: ?text8
+  legalStreet2: ?text8
+  legalPostcode: ?text8
+  legalCity: ?text8
   vignette: ?textFixed(30, 30) @charset(ascii)
   place: ?text8(1, null)
   placeLngLat: ?point

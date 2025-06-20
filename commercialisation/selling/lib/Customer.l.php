@@ -31,7 +31,7 @@ class CustomerLib extends CustomerCrud {
 
 		return match($category) {
 
-			Customer::PRO => ['category', 'firstName', 'lastName', 'name', 'legalName', 'invoiceStreet1', 'invoiceStreet2', 'invoicePostcode', 'invoiceCity', 'invoiceRegistration', 'invoiceVat', 'email', 'defaultPaymentMethod', 'phone'],
+			Customer::PRO => ['category', 'firstName', 'lastName', 'name', 'legalName', 'invoiceStreet1', 'invoiceStreet2', 'invoicePostcode', 'invoiceCity', 'siret', 'invoiceVat', 'email', 'defaultPaymentMethod', 'phone'],
 			Customer::PRIVATE => ['category', 'firstName', 'lastName', 'name', 'email', 'phone'],
 			Customer::COLLECTIVE => match($for) {
 				'create' => ['category', 'firstName', 'lastName', 'name'],

@@ -136,8 +136,8 @@ class PdfUi {
 					$h .= '<div class="pdf-label-logo" style="background-image: url('.$logo.')"></div>';
 				}
 				$h .= '<div class="pdf-label-address">';
-					$h .= encode($eFarm->getSelling('legalName')).'<br/>';
-					$h .= $eFarm->selling()->getInvoiceAddress('html');
+					$h .= encode($eFarm['legalName']).'<br/>';
+					$h .= $eFarm->getLegalAddress('html');
 				$h .= '</div>';
 				$h .= '<div class="pdf-label-quality">';
 					if($quality) {
@@ -601,14 +601,14 @@ class PdfUi {
 					$h .= '<div class="pdf-document-vendor-logo" style="background-image: url('.$logo.')"></div>';
 				}
 				$h .= '<div class="pdf-document-vendor-name">';
-					$h .= encode($eFarm->getSelling('legalName')).'<br/>';
+					$h .= encode($eFarm['legalName'] ?? '').'<br/>';
 				$h .= '</div>';
 				$h .= '<div class="pdf-document-vendor-address">';
-					$h .= $eFarm->selling()->getInvoiceAddress('html');
+					$h .= $eFarm->getLegalAddress('html');
 				$h .= '</div>';
-				if($eFarm->getSelling('invoiceRegistration')) {
+				if($eFarm['siret']) {
 					$h .= '<div class="pdf-document-vendor-registration">';
-						$h .= s("SIRET <u>{value}</u>", encode($eFarm->getSelling('invoiceRegistration')));
+						$h .= s("SIRET <u>{value}</u>", encode($eFarm['siret']));
 					$h .= '</div>';
 				}
 				if($e['hasVat'] and $eFarm->getSelling('invoiceVat')) {
@@ -651,13 +651,13 @@ class PdfUi {
 						$h .= '</div>';
 					}
 
-					if($eCustomer['invoiceRegistration'] !== NULL or $eCustomer['invoiceVat'] !== NULL) {
+					if($eCustomer['siret'] !== NULL or $eCustomer['invoiceVat'] !== NULL) {
 						$h .= '<br/>';
 					}
 
-					if($eCustomer['invoiceRegistration'] !== NULL) {
+					if($eCustomer['siret'] !== NULL) {
 						$h .= '<div class="pdf-document-customer-registration">';
-							$h .= s("SIRET <u>{value}</u>", encode($eCustomer['invoiceRegistration']));
+							$h .= s("SIRET <u>{value}</u>", encode($eCustomer['siret']));
 						$h .= '</div>';
 					}
 					if($eCustomer['invoiceVat'] !== NULL) {

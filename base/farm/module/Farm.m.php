@@ -50,6 +50,13 @@ class FarmModel extends \ModuleModel {
 		$this->properties = array_merge($this->properties, [
 			'id' => ['serial32', 'cast' => 'int'],
 			'name' => ['text8', 'min' => 1, 'max' => NULL, 'collate' => 'general', 'cast' => 'string'],
+			'legalName' => ['text8', 'null' => TRUE, 'cast' => 'string'],
+			'legalEmail' => ['email', 'null' => TRUE, 'cast' => 'string'],
+			'siret' => ['text8', 'null' => TRUE, 'cast' => 'string'],
+			'legalStreet1' => ['text8', 'null' => TRUE, 'cast' => 'string'],
+			'legalStreet2' => ['text8', 'null' => TRUE, 'cast' => 'string'],
+			'legalPostcode' => ['text8', 'null' => TRUE, 'cast' => 'string'],
+			'legalCity' => ['text8', 'null' => TRUE, 'cast' => 'string'],
 			'vignette' => ['textFixed', 'min' => 30, 'max' => 30, 'charset' => 'ascii', 'null' => TRUE, 'cast' => 'string'],
 			'place' => ['text8', 'min' => 1, 'max' => NULL, 'null' => TRUE, 'cast' => 'string'],
 			'placeLngLat' => ['point', 'null' => TRUE, 'cast' => 'json'],
@@ -84,7 +91,7 @@ class FarmModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'name', 'vignette', 'place', 'placeLngLat', 'url', 'description', 'logo', 'emailBanner', 'emailFooter', 'seasonFirst', 'seasonLast', 'rotationYears', 'rotationExclude', 'quality', 'defaultBedLength', 'defaultBedWidth', 'defaultAlleyWidth', 'calendarMonthStart', 'calendarMonthStop', 'planningDelayedMax', 'featureTime', 'featureStock', 'featureDocument', 'stockNotes', 'stockNotesUpdatedAt', 'stockNotesUpdatedBy', 'hasShops', 'hasSales', 'hasCultivations', 'startedAt', 'createdAt', 'status'
+			'id', 'name', 'legalName', 'legalEmail', 'siret', 'legalStreet1', 'legalStreet2', 'legalPostcode', 'legalCity', 'vignette', 'place', 'placeLngLat', 'url', 'description', 'logo', 'emailBanner', 'emailFooter', 'seasonFirst', 'seasonLast', 'rotationYears', 'rotationExclude', 'quality', 'defaultBedLength', 'defaultBedWidth', 'defaultAlleyWidth', 'calendarMonthStart', 'calendarMonthStop', 'planningDelayedMax', 'featureTime', 'featureStock', 'featureDocument', 'stockNotes', 'stockNotesUpdatedAt', 'stockNotesUpdatedBy', 'hasShops', 'hasSales', 'hasCultivations', 'startedAt', 'createdAt', 'status'
 		]);
 
 		$this->propertiesToModule += [
@@ -203,6 +210,34 @@ class FarmModel extends \ModuleModel {
 
 	public function whereName(...$data): FarmModel {
 		return $this->where('name', ...$data);
+	}
+
+	public function whereLegalName(...$data): FarmModel {
+		return $this->where('legalName', ...$data);
+	}
+
+	public function whereLegalEmail(...$data): FarmModel {
+		return $this->where('legalEmail', ...$data);
+	}
+
+	public function whereSiret(...$data): FarmModel {
+		return $this->where('siret', ...$data);
+	}
+
+	public function whereLegalStreet1(...$data): FarmModel {
+		return $this->where('legalStreet1', ...$data);
+	}
+
+	public function whereLegalStreet2(...$data): FarmModel {
+		return $this->where('legalStreet2', ...$data);
+	}
+
+	public function whereLegalPostcode(...$data): FarmModel {
+		return $this->where('legalPostcode', ...$data);
+	}
+
+	public function whereLegalCity(...$data): FarmModel {
+		return $this->where('legalCity', ...$data);
 	}
 
 	public function whereVignette(...$data): FarmModel {

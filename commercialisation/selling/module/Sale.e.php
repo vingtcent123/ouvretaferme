@@ -7,10 +7,10 @@ class Sale extends SaleElement {
 
 		return parent::getSelection() + [
 			'customer' => CustomerElement::getSelection(),
-			'shop' => ['fqn', 'shared', 'name', 'email', 'emailNewSale', 'emailEndDate', 'approximate', 'paymentCard', 'hasPayment', 'paymentOfflineHow', 'paymentTransferHow', 'shipping', 'shippingUntil', 'orderMin', 'embedOnly', 'embedUrl', 'farm' => ['name']],
+			'shop' => ['fqn', 'shared', 'name', 'email', 'emailNewSale', 'emailEndDate', 'approximate', 'paymentCard', 'hasPayment', 'paymentOfflineHow', 'paymentTransferHow', 'shipping', 'shippingUntil', 'orderMin', 'embedOnly', 'embedUrl', 'farm' => ['name', 'legalEmail']],
 			'shopDate' => \shop\Date::getSelection(),
 			'shopPoint' => ['type', 'name'],
-			'farm' => ['name', 'url', 'vignette', 'emailBanner', 'emailFooter', 'featureDocument', 'hasSales'],
+			'farm' => ['name', 'legalEmail', 'url', 'vignette', 'emailBanner', 'emailFooter', 'featureDocument', 'hasSales'],
 			'price' => fn($e) => $e['type'] === Sale::PRO ? $e['priceExcludingVat'] : $e['priceIncludingVat'],
 			'invoice' => ['name', 'emailedAt', 'createdAt', 'priceExcludingVat', 'generation'],
 			'compositionOf' => ['name'],

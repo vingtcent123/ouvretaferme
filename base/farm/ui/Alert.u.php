@@ -7,7 +7,7 @@ namespace farm;
  */
 class AlertUi {
 
-	public static function getError(string $fqn): mixed {
+	public static function getError(string $fqn, array $options): mixed {
 
 		return match($fqn) {
 
@@ -24,6 +24,8 @@ class AlertUi {
 			'Farmer::email.duplicate' => s("Il y a déjà un utilisateur rattaché à votre ferme avec cette adresse e-mail..."),
 			'Farmer::deleteGhost' => s("Vous ne pouvez pas supprimer un utilisateur créé spécifiquement pour la ferme."),
 			'Farmer::deleteItself' => s("Vous ne pouvez pas vous sortir vous-même de la ferme."),
+			'Farm::notLegal' => '<p>'.s("Vous devez configurer la raison sociale et l'adresse e-mail de votre ferme pour continuer !").'</p><a href="/farm/farm:update?id='.$options['farm']['id'].'" class="btn '.($options['btn'] ?? 'btn-transparent').'">'.s("Compléter mes informations").'</a>',
+			'Farm::notSelling' => '<p>'.s("Nous avons besoin de quelques informations administratives de base à propos de votre ferme (adresse e-mail, raison sociale...) pour accéder à cette fonctionnalité !").'</p><a href="/farm/farm:update?id='.$options['farm']['id'].'" class="btn '.($options['btn'] ?? 'btn-transparent').'">'.s("Compléter mes informations").'</a>',
 
 			'Action::deleteMandatory' => s("Cette intervention ne peut pas être supprimée car elle est indispensable au bon fonctionnement du site."),
 			'Action::deleteUsed' => s("Vous ne pouvez pas supprimer une action qui est déjà utilisée sur les itinéraires techniques ou les séries..."),
