@@ -1,7 +1,7 @@
 <?php
 new Page(function($data) {
 
-	$data->eFarm = \farm\FarmLib::getById(REQUEST('farm'))->validate('canManage');
+	$data->eFarm->validate('canManage');
 
 	\user\ConnectionLib::checkLogged();
 

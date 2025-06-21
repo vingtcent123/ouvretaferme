@@ -7,11 +7,11 @@ class CompanyLib extends CompanyCrud {
 	public static array $specificPackages = ['account', 'asset', 'bank', 'journal', 'pdf'];
 
 	public static function getPropertiesCreate(): array {
-		return ['name', 'nafCode', 'siret', 'addressLine1', 'addressLine2', 'postalCode', 'city'];
+		return ['accountingType'];
 	}
 
 	public static function getPropertiesUpdate(): array {
-		return ['name', 'nafCode', 'addressLine1', 'addressLine2', 'postalCode', 'city', 'accountingType', 'isBio'];
+		return self::getPropertiesCreate();
 	}
 
 	public static function getList(?array $properties = NULL): \Collection {
@@ -51,6 +51,15 @@ class CompanyLib extends CompanyCrud {
 			->where('m2.user', 'IN', $cUser)
 			->where('m2.role', $role, if: ($role !== NULL))
 			->getCollection();
+
+	}
+
+	public static function getCurrent(): Company {
+
+		return Company::model()
+			->select(Company::getSelection())
+			->whereFarm(REQUEST('farm'))
+			->get();
 
 	}
 

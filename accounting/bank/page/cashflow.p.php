@@ -3,7 +3,7 @@ new Page(
 	function($data) {
 		\user\ConnectionLib::checkLogged();
 
-		$data->eFarm = \farm\FarmLib::getById(GET('farm'))->validate('canAccounting');
+		$data->eFarm->validate('canManage');
 
 		\Setting::set('main\viewBank', 'cashflow');
 	}
@@ -44,7 +44,7 @@ new \bank\CashflowPage(
 	function($data) {
 		\user\ConnectionLib::checkLogged();
 
-		$data->eFarm = \farm\FarmLib::getById(GET('farm'))->validate('canManage');
+		$data->eFarm->validate('canManage');
 		$data->eCashflow = \bank\CashflowLib::getById(INPUT('id'))->validate('canAllocate');
 
 		\Setting::set('main\viewBank', 'import');
@@ -145,7 +145,7 @@ new \bank\CashflowPage(
 	function($data) {
 		\user\ConnectionLib::checkLogged();
 
-		$data->eFarm = \farm\FarmLib::getById(GET('farm'))->validate('canManage');
+		$data->eFarm->validate('canManage');
 		$data->eCashflow = \bank\CashflowLib::getById(INPUT('id'));
 
 		// TODO Récupérer et sauvegarder dynamiquement

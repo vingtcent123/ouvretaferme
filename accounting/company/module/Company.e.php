@@ -9,27 +9,12 @@ class Company extends CompanyElement {
 
 	}
 
-	// Peut gérer l'entreprise
-	public function canCreate(): bool {
-
-		return TRUE;
-
+	public function isAccrualAccounting() {
+		return $this['accountingType'] === Company::ACCRUAL;
 	}
 
-	public function canRemote(): bool {
-		return GET('key') === \Setting::get('main\remoteKey') || LIME_ENV === 'dev';
-	}
-
-	public function build(array $properties, array $input, \Properties $p = new \Properties()): void {
-
-		$p
-			->setCallback('name.empty', function(?string $name): bool {
-
-				return $name !== NULL and mb_strlen($name) > 0;
-
-			});
-		parent::build($properties, $input, $p);
-
+	public function isCashAccounting() {
+		return $this['accountingType'] === Company::CASH;
 	}
 
 }

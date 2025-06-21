@@ -24,8 +24,7 @@ class OperationLib extends OperationCrud {
 
 	public static function applySearch(\Search $search = new \Search()): OperationModel {
 
-		// TODO ACCRUAL
-		/*$eCompany = \company\CompanyLib::getCurrent();
+		$eCompany = \company\CompanyLib::getCurrent();
 
 		if($eCompany->isAccrualAccounting()) {
 
@@ -34,13 +33,13 @@ class OperationLib extends OperationCrud {
 				->whereDate('<=', fn() => $search->get('financialYear')['endDate'], if: $search->has('financialYear'))
 				->whereJournalCode('=', $search->get('journalCode'), if: $search->has('journalCode') and $search->get('journalCode') !== NULL);
 
-		} else {*/
+		} else {
 
 			$model = Operation::model()
 				->wherePaymentDate('>=', fn() => $search->get('financialYear')['startDate'], if: $search->has('financialYear'))
 				->wherePaymentDate('<=', fn() => $search->get('financialYear')['endDate'], if: $search->has('financialYear'));
 
-		//}
+		}
 
 		return $model
 			->whereDate('LIKE', '%'.$search->get('date').'%', if: $search->get('date'))
@@ -101,9 +100,8 @@ class OperationLib extends OperationCrud {
 
 	public static function getAllForJournal(\Search $search = new \Search(), bool $hasSort = FALSE): \Collection {
 
-		// TODO ACCRUAL
-		//$defaultOrder = $eCompany->isCashAccounting() ? ['paymentDate' => SORT_ASC, 'id' => SORT_ASC] : ['date' => SORT_ASC, 'id' => SORT_ASC];
-		$defaultOrder = ['date' => SORT_ASC, 'id' => SORT_ASC];
+		$eCompany = \company\CompanyLib::getCurrent();
+		$defaultOrder = $eCompany->isCashAccounting() ? ['paymentDate' => SORT_ASC, 'id' => SORT_ASC] : ['date' => SORT_ASC, 'id' => SORT_ASC];
 
 		return self::applySearch($search)
 			->select(
@@ -309,6 +307,7 @@ class OperationLib extends OperationCrud {
 		$accounts = var_filter($input['account'] ?? [], 'array');
 		$vatValues = var_filter($input['vatValue'] ?? [], 'array');
 		$isFromCashflow = ($eOperationDefault->offsetExists('cashflow') === TRUE);
+		$eCompany = \company\CompanyLib::getCurrent();
 
 		$fw = new \FailWatch();
 
@@ -410,8 +409,7 @@ class OperationLib extends OperationCrud {
 
 			// En cas de comptabilité à l'engagement : création de l'entrée en 401 ou 411
 			// Et vérification si un lettrage est possible
-			// TODO ACCRUAL
-			/*if($eCompany->isAccrualAccounting() and $eOperation['thirdParty']->notEmpty()) {
+			if($eCompany->isAccrualAccounting() and $eOperation['thirdParty']->notEmpty()) {
 
 				$amount = $eOperation['amount'] + ($hasVatAccount ? $eOperationVat['amount'] : 0);
 
@@ -481,11 +479,10 @@ class OperationLib extends OperationCrud {
 				// On tente de le lettrage
 				LetteringLib::letter($eOperationThirdParty);
 
-			}*/
+			}
 		}
 
-		// TODO ACCRUAL
-		//if($eCompany->isCashAccounting()) {
+		if($eCompany->isCashAccounting()) {
 
 			// Si toutes les écritures sont sur le même document, on utilise aussi celui-ci pour l'opération bancaire;
 			$documents = $cOperation->getColumn('document');
@@ -507,7 +504,7 @@ class OperationLib extends OperationCrud {
 				$cOperation->append($eOperationBank);
 
 			}
-		//}
+		}
 
 		if($fw->ko()) {
 			return new \Collection();

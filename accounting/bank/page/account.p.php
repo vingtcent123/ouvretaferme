@@ -3,8 +3,7 @@ new \bank\BankAccountPage(
 	function($data) {
 		\user\ConnectionLib::checkLogged();
 
-		$data->eFarm = \farm\FarmLib::getById(REQUEST('farm'))->validate('canManage');
-		\company\CompanyLib::connectSpecificDatabaseAndServer($data->eFarm);
+		$data->eFarm->validate('canManage');
 
 		// TODO Récupérer et sauvegarder dynamiquement
 		$data->eFinancialYear = \account\FinancialYearLib::selectDefaultFinancialYear();
@@ -21,8 +20,7 @@ new \bank\BankAccountPage(
 new \bank\BankAccountPage(
 	function($data) {
 		\user\ConnectionLib::checkLogged();
-		$data->eFarm = \farm\FarmLib::getById(REQUEST('farm'))->validate('canManage');
-		\company\CompanyLib::connectSpecificDatabaseAndServer($data->eFarm);
+		$data->eFarm->validate('canManage');
 
 		// TODO Récupérer et sauvegarder dynamiquement
 		$data->eFinancialYear = \account\FinancialYearLib::selectDefaultFinancialYear();

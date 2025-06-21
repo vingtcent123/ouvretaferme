@@ -3,7 +3,7 @@ new \journal\OperationPage(
 	function($data) {
 		\user\ConnectionLib::checkLogged();
 
-		$data->eFarm = \farm\FarmLib::getById(REQUEST('farm'))->validate('canManage');
+		$data->eFarm->validate('canManage');
 		\company\CompanyLib::connectSpecificDatabaseAndServer($data->eFarm);
 	}
 )
@@ -137,7 +137,7 @@ new Page(
 	function($data) {
 		\user\ConnectionLib::checkLogged();
 
-		$data->eFarm = \farm\FarmLib::getById(REQUEST('farm'))->validate('canManage');
+		$data->eFarm->validate('canManage');
 		\company\CompanyLib::connectSpecificDatabaseAndServer($data->eFarm);
 	})
 	->post('getWaiting', function($data) {
@@ -151,7 +151,7 @@ new Page(
 new \journal\OperationPage(
 	function($data) {
 		\user\ConnectionLib::checkLogged();
-		$data->eFarm = \farm\FarmLib::getById(REQUEST('farm'))->validate('canManage');
+		$data->eFarm->validate('canManage');
 		\company\CompanyLib::connectSpecificDatabaseAndServer($data->eFarm);
 		$data->eOperation = \journal\OperationLib::getById(REQUEST('id', 'int'))->validate('canDelete');
 	}

@@ -10,9 +10,7 @@ class JournalUi {
 
 	protected static function getJournalCategories(\farm\Farm $eFarm): array {
 
-		// TODO ACCRUAL
-		//$journalTitle = $eCompany->isCashAccounting() ? s("Journal comptable") : s("Journaux");
-		$journalTitle = s("Journal comptable");
+		$journalTitle = $eFarm['company']->isCashAccounting() ? s("Journal comptable") : s("Journaux");
 
 		$categories = [
 			'journal' => [
@@ -21,15 +19,14 @@ class JournalUi {
 			],
 		];
 
-		// TODO ACCRUAL
-		/*if($eCompany->isAccrualAccounting()) {
+		if($eFarm['company']->isAccrualAccounting()) {
 
 			$categories['account'] = [
-				'url' => CompanyUi::urlJournal($eCompany).'/accounts',
+				'url' => \company\CompanyUi::urlJournal($eFarm).'/accounts',
 				'label' => s("Comptes")
 			];
 
-		}*/
+		}
 
 		$categories['book'] = [
 			'url' => \company\CompanyUi::urlJournal($eFarm).'/book',
@@ -79,12 +76,11 @@ class JournalUi {
 		$h = '<div class="util-action">';
 
 			$h .= '<h1>';
-			// TODO ACCRUAL
-				/*if($eCompany->isCashAccounting()) {
+				if($eFarm['company']->isCashAccounting()) {
 					$h .= s("Le journal comptable");
-				} else {*/
+				} else {
 					$h .= s("Les journaux");
-				//}
+				}
 
 			$h .= '</h1>';
 
@@ -97,15 +93,12 @@ class JournalUi {
 					if(
 						get_exists('cashflow') === FALSE
 						and $eFinancialYear['status'] === \account\FinancialYearElement::OPEN
-						// TODO RIGHTS
-						/*and $eCompany->canWrite() === TRUE*/
+						and $eFarm->canManage()
 					) {
-						// TODO ACCRUAL
-						if(true/*$eCompany->isCashAccounting()*/) {
+						if($eFarm['company']->isCashAccounting()) {
 							$h .= '<a href="'.\company\CompanyUi::urlJournal($eFarm).'/operation:create" class="btn btn-primary">'.\Asset::icon('plus-circle').' '.s("Ajouter une écriture").'</a> ';
 						}
-						// TODO ACCRUAL
-						if(true/*$eCompany->isAccrualAccounting()*/) {
+						if($eFarm['company']->isAccrualAccounting()) {
 
 							$h .= '<a data-dropdown="bottom-end" class="dropdown-toggle btn btn-primary">'.\Asset::icon('plus-circle').' '.s("Ajouter...").'</a>';
 							$h .= '<div class="dropdown-list">';
@@ -194,10 +187,9 @@ class JournalUi {
 		\Search $search = new \Search()
 	): string {
 
-		// TODO ACCRUAL
-		/*if($eCompany->isCashAccounting()) {
-			return $this->getTableContainer($eCompany, $cOperation, $eFinancialYearSelected, $search, NULL);
-		}*/
+		if($eFarm['company']->isCashAccounting()) {
+			return $this->getTableContainer($eFarm, $cOperation, $eFinancialYearSelected, $search, NULL);
+		}
 
 		$selectedJournalCode = GET('code');
 		if(in_array($selectedJournalCode, Operation::model()->getPropertyEnum('journalCode')) === FALSE) {
@@ -263,21 +255,19 @@ class JournalUi {
 					$h .= '<tr>';
 						$h .= '<th>';
 
-						// TODO ACCRUAL
-							/*if($eCompany->isCashAccounting()) {
+							if($eFarm['company']->isCashAccounting()) {
 								$label = s("Date de transaction");
 								$h .= ($search ? $search->linkSort('paymentDate', $label) : $label);
-							} else {*/
+							} else {
 								$label = s("Date de l'écriture");
 								$h .= ($search ? $search->linkSort('date', $label) : $label);
-							//}
+							}
 						$h .= '</th>';
 						$h .= '<th>'.s("# Opération bancaire").'</th>';
 
-						// TODO ACCRUAL
-						/*if($eCompany->isAccrualAccounting() and $selectedJournalCode === NULL) {
+						if($eFarm['company']->isAccrualAccounting() and $selectedJournalCode === NULL) {
 							$h .= '<th>'.s("Journal").'</th>';
-						}*/
+						}
 
 						$h .= '<th>';
 							$label = s("Pièce comptable");
@@ -325,18 +315,17 @@ class JournalUi {
 								}
 							$h .= '</td>';
 
-								// TODO ACCRUAL
-							/*if($eCompany->isAccrualAccounting() and $selectedJournalCode === NULL) {
+							if($eFarm['company']->isAccrualAccounting() and $selectedJournalCode === NULL) {
 								$h .= '<td>';
 
 									if($eOperation['journalCode']) {
-										$h .= '<a href="'.\company\CompanyUi::urlJournal($eCompany).'/?code='.$eOperation['journalCode'].'">'.mb_strtoupper($eOperation['journalCode']).'</a>';
+										$h .= '<a href="'.\company\CompanyUi::urlJournal($eFarm).'/?code='.$eOperation['journalCode'].'">'.mb_strtoupper($eOperation['journalCode']).'</a>';
 									} else {
 										$h .= '-';
 									}
 
 								$h .= '</td>';
-							}*/
+							}
 							$h .= '<td>';
 								$h .= '<div class="operation-info">';
 									if($canUpdate === TRUE) {

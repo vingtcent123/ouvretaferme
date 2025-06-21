@@ -4,7 +4,8 @@ new Page()
 
 		\Setting::set('main\viewAsset', 'acquisition');
 
-		$data->eFarm = \farm\FarmLib::getById(GET('farm'))->validate('canManage');
+		$data->eFarm->validate('canManage');
+
 		// TODO Récupérer et sauvegarder dynamiquement
 		$data->eFinancialYear = \account\FinancialYearLib::selectDefaultFinancialYear();
 		$data->cFinancialYear = \account\FinancialYearLib::getAll();

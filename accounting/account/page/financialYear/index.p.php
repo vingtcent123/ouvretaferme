@@ -2,7 +2,7 @@
 new Page()
 	->get('index', function($data) {
 
-		$data->eFarm = \farm\FarmLib::getById(GET('farm'))->validate('canManage');
+		$data->eFarm->validate('canManage');
 
 		$data->cFinancialYear = \account\FinancialYearLib::getAll();
 		$data->cFinancialYearOpen = \account\FinancialYearLib::getOpenFinancialYears();
@@ -14,7 +14,7 @@ new Page()
 new \account\FinancialYearPage(
 	function($data) {
 		\user\ConnectionLib::checkLogged();
-		$data->eFarm = \farm\FarmLib::getById(GET('farm'))->validate('canManage');
+		$data->eFarm->validate('canManage');
 	}
 )
 	->create(function($data) {

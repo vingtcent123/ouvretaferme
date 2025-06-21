@@ -145,23 +145,42 @@ class CompanyUi {
 
 	public function update(\farm\Farm $eFarm): string {
 
+		$h = '<h4>'.s("Général").'</h4>';
+
 		$form = new \util\FormUi();
 
-		$h = $form->openAjax('/farm/farm:doUpdate', ['id' => 'farm-update', 'autocomplete' => 'off']);
+		$h .= $form->openAjax('/'.$eFarm['id'].'/company/company:doUpdate', ['id' => 'company-update', 'autocomplete' => 'off']);
 
-			$h .= $form->hidden('id', $eFarm['id']);
+		$h .= '<div>';
+		$h .= s("Vous avez configuré certains paramètres pour votre ferme. Pour les modifier, rendez-vous <link>dans les paramètres généraux de votre ferme</link>.", ['link' => '<a href="/farm/farm:update?id='.$eFarm['id'].'">']);
+		$h .= '</div>';
 
-			$h .= $form->group(
-				self::p('vignette')->label,
-				new \media\FarmVignetteUi()->getCamera($eFarm, size: '10rem')
-			);
-			$h .= $form->dynamicGroups($eFarm, ['name', 'siret', 'legalName']);
-			$h .= $form->addressGroup(s("Siège social de la ferme"), 'legal', $eFarm);
-			$h .= $form->dynamicGroups($eFarm, ['description', 'startedAt', 'placeLngLat', 'url', 'defaultBedLength', 'defaultBedWidth', 'defaultAlleyWidth', 'quality']);
+		$h .= '<div class="util-block stick-xs bg-background-light">';
+		$h .= '<dl class="util-presentation util-presentation-2">';
 
-			$h .= $form->group(
-				content: $form->submit(s("Modifier"))
-			);
+		foreach(['siret', 'legalName', 'legalEmail'] as $field) {
+
+			$h .= '<dt>'.\farm\FarmUi::p($field)->label.'</dt>';
+			$h .= '<dd>'.encode($eFarm[$field]).'</dd>';
+
+		}
+
+		$h .= '<dt>'.s("Siège social de la ferme").'</dt>';
+		$h .= '<dd>'.$eFarm->getLegalAddress('html').'</dd>';
+
+		$h .= '</dl>';
+		$h .= '</div>';
+
+
+		$h .= '<h4>'.s("Paramètres de comptabilité").'</h4>';
+		$h .= $form->asteriskInfo();
+
+		$h .= $form->hidden('id', $eFarm['company']['id']);
+		$h .= $form->dynamicGroups($eFarm['company'], ['accountingType']);
+
+		$h .= $form->group(
+			content: $form->submit(s("Enregistrer les paramètres de ma ferme"))
+		);
 
 		$h .= $form->close();
 

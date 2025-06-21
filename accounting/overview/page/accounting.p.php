@@ -4,7 +4,7 @@ new Page(function($data) {
 
 	\user\ConnectionLib::checkLogged();
 
-	$data->eFarm = \farm\FarmLib::getById(GET('farm'))->validate('canManage');
+	$data->eFarm->validate('canManage');
 
 	// TODO Récupérer et sauvegarder dynamiquement
 	$data->eFinancialYear = \account\FinancialYearLib::selectDefaultFinancialYear();

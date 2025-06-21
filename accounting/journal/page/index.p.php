@@ -1,7 +1,7 @@
 <?php
 new Page(function($data) {
 
-	$data->eFarm = \farm\FarmLib::getById(GET('farm'))->validate('canAccounting');
+	$data->eFarm->validate('canManage');
 
 	// TODO Récupérer et sauvegarder dynamiquement
 	$data->eFinancialYear = \account\FinancialYearLib::selectDefaultFinancialYear();
@@ -39,8 +39,7 @@ new Page(function($data) {
 			$search->set('cashflow', GET('cashflow'));
 		}
 
-		// TODO ACCRUAL
-		/*if($data->eFarm->isAccrualAccounting()) {
+		if($data->eFarm['company']->isAccrualAccounting()) {
 
 			$code = GET('code');
 			if(in_array($code, \journal\Operation::model()->getProperty('journalCode')) === FALSE) {
@@ -48,7 +47,7 @@ new Page(function($data) {
 			}
 			$search->set('journalCode', $code);
 
-		}*/
+		}
 
 		$data->cOperation = \journal\OperationLib::getAllForJournal($search, $hasSort);
 		$data->cAccount = \account\AccountLib::getAll();

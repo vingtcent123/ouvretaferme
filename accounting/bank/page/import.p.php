@@ -3,7 +3,7 @@ new Page(
 	function($data) {
 		\user\ConnectionLib::checkLogged();
 
-		$data->eFarm = \farm\FarmLib::getById(INPUT('farm'))->validate('canManage');
+		$data->eFarm->validate('canManage');
 
 		\Setting::set('main\viewBank', 'import');
 	}
@@ -24,7 +24,7 @@ new Page(
 new Page(
 	function($data) {
 		\user\ConnectionLib::checkLogged();
-		$data->eFarm = \farm\FarmLib::getById(INPUT('farm'))->validate('canManage');
+		$data->eFarm->validate('canManage');
 
 		\Setting::set('main\viewBank', 'import');
 	}

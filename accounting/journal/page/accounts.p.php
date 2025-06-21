@@ -1,7 +1,7 @@
 <?php
 new Page(function($data) {
 
-	$data->eFarm = \farm\FarmLib::getById(GET('farm'))->validate('canManage'); // TODO ACCRUAL ADD VALIDATE
+	$data->eFarm->validate('canManage');
 
 	// TODO Récupérer et sauvegarder dynamiquement
 	$data->eFinancialYear = \account\FinancialYearLib::selectDefaultFinancialYear();

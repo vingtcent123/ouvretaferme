@@ -3,7 +3,7 @@ new \account\ThirdPartyPage(
 	function($data) {
 		\user\ConnectionLib::checkLogged();
 
-		$data->eFarm = \farm\FarmLib::getById(REQUEST('farm'))->validate('canManage');
+		$data->eFarm->validate('canManage');
 	}
 )
 	->get('index', function($data) {
@@ -38,7 +38,7 @@ new Page(function($data) {
 
 	\user\ConnectionLib::checkLogged();
 
-	$data->eFarm = \farm\FarmLib::getById(GET('farm'))->validate('canManage');
+	$data->eFarm->validate('canManage');
 })
 ->post('query', function($data) {
 

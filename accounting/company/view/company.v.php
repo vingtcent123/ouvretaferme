@@ -29,7 +29,7 @@ new AdaptativeView('update', function($data, CompanyTemplate $t) {
 
 	$t->mainTitle = $h;
 
-	echo new \company\CompanyUi()->update($data->e);
+	echo new \company\CompanyUi()->update($data->eFarm);
 
 });
 ?>

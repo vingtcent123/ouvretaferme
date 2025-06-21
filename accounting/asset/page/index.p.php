@@ -7,7 +7,7 @@ new \asset\AssetPage(function($data) {
 		throw new NotExpectedAction('Asset Id is required.');
 	}
 
-	$data->eFarm = \farm\FarmLib::getById(GET('farm'))->validate('canManage');
+	$data->eFarm->validate('canManage');
 
 	$data->eAsset = \asset\AssetLib::getWithDepreciationsById(REQUEST('id'));
 
@@ -26,7 +26,7 @@ new \asset\AssetPage(function($data) {
 		throw new NotExpectedAction('Asset Id is required.');
 	}
 
-	$data->eFarm = \farm\FarmLib::getById(GET('farm'))->validate('canManage');
+	$data->eFarm->validate('canManage');
 
 	$data->eAsset = \asset\AssetLib::getWithDepreciationsById(REQUEST('id'))->validate('canView');
 

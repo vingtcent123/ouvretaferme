@@ -1,7 +1,7 @@
 <?php
 new Page(function($data) {
 
-	$data->eFarm = \farm\FarmLib::getById(GET('farm'))->validate('canManage');
+	$data->eFarm->validate('canManage');
 
 	$data->eFinancialYear = \account\FinancialYearLib::getById(GET('financialYear'));
 	if($data->eFinancialYear->exists() === FALSE) {

@@ -251,8 +251,7 @@ class OperationUi {
 
 			if($isFromCashflow === FALSE) {
 
-				// TODO ACCRUAL
-				$mandatory = /*$eFarm->isCashAccounting() ? ' '.\util\FormUi::asterisk() :*/ '';
+				$mandatory = $eFarm['company']->isCashAccounting() ? ' '.\util\FormUi::asterisk() : '';
 				$h .= '<div class="create-operation-header">'.self::p('paymentDate')->label.$mandatory.'</div>';
 				$h .= '<div class="create-operation-header">'.self::p('paymentMode')->label.$mandatory.'</div>';
 
@@ -295,10 +294,9 @@ class OperationUi {
 		$index = ($suffix !== NULL) ? mb_substr($suffix, 1, mb_strlen($suffix) - 2) : NULL;
 		$isFromCashflow = (isset($defaultValues['cashflow']) and $defaultValues['cashflow']->exists() === TRUE);
 
-		// TODO ACCRUAL
-		/*if($eFarm->isAccrualAccounting() and $index > 0) {
+		if($eFarm['company']->isAccrualAccounting() and $index > 0) {
 			$disabled[] = 'thirdParty';
-		}*/
+		}
 
 		$h = '<div class="create-operation" data-index="'.$index.'">';
 			$h .= '<div class="create-operation-title">';
@@ -323,8 +321,7 @@ class OperationUi {
 						'max' => $eFinancialYear['endDate'],
 						'data-date' => $form->getId(),
 						'data-index' => $index,
-						// TODO ACCRUAL
-						//'data-accounting-type' => $eFarm['accountingType'],
+						'data-accounting-type' => $eFarm['company']['accountingType'],
 					]);
 			$h .='</div>';
 
@@ -511,8 +508,7 @@ class OperationUi {
 						'paymentMode',
 						\journal\OperationUi::p('paymentMode')->values,
 						$defaultValues['paymentMode'] ?? '',
-						// TODO ACCRUAL
-						//['mandatory' => $eFarm->isCashAccounting()],
+						['mandatory' => $eFarm['company']->isCashAccounting()],
 					);
 				$h .= '</div>';
 
