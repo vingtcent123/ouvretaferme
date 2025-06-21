@@ -100,6 +100,19 @@ class Customer extends CustomerElement {
 		$this->expects(['destination']);
 		return $this['destination'] === Customer::COLLECTIVE;
 	}
+	public function getDeliveryStreet(): ?string {
+
+		$street = $this['deliveryStreet1'];
+
+		if($this['deliveryStreet2'] !== NULL) {
+
+			$street .= "\n".$this['deliveryStreet2'];
+
+		}
+
+		return $street;
+
+	}
 
 	public function getInvoiceAddress(string $type = 'text'): ?string {
 
