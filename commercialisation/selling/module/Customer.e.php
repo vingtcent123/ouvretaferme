@@ -6,7 +6,7 @@ class Customer extends CustomerElement {
 	public static function getSelection(): array {
 
 		return parent::getSelection() + [
-			'farm' => ['name', 'vignette', 'url', 'featureDocument'],
+			'farm' => ['name', 'legalName', 'legalEmail', 'vignette', 'url', 'featureDocument'],
 			'user' => ['email']
 		];
 

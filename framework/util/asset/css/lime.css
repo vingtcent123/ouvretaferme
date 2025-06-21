@@ -933,6 +933,7 @@ tbody .td-checkbox > label {
 .util-info,
 .util-success,
 .util-warning,
+.util-warning-outline,
 .util-danger {
 	margin-bottom: 1.5rem;
 	padding: 0.5rem 1rem 0.5rem;
@@ -944,6 +945,7 @@ tbody .td-checkbox > label {
 	.util-info,
 	.util-success,
 	.util-warning,
+	.util-warning-outline,
 	.util-danger {
 		display: none;
 	}
@@ -953,6 +955,7 @@ tbody .td-checkbox > label {
 .util-info p:last-child,
 .util-success p:last-child,
 .util-warning p:last-child,
+.util-warning-outline p:last-child,
 .util-danger p:last-child {
 	margin-bottom: 0;
 }
@@ -975,6 +978,17 @@ tbody .td-checkbox > label {
 
 .util-warning a:not(.btn) {
 	color: white;
+	text-decoration: underline;
+}
+
+.util-warning-outline {
+	border: 1px solid var(--warning);
+	border-radius: var(--radius);
+	color: var(--warning);
+}
+
+.util-warning-outline a:not(.btn) {
+	color: var(--warning);
 	text-decoration: underline;
 }
 

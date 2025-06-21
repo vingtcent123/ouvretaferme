@@ -10,7 +10,7 @@ class Sale extends SaleElement {
 			'shop' => ['fqn', 'shared', 'name', 'email', 'emailNewSale', 'emailEndDate', 'approximate', 'paymentCard', 'hasPayment', 'paymentOfflineHow', 'paymentTransferHow', 'shipping', 'shippingUntil', 'orderMin', 'embedOnly', 'embedUrl', 'farm' => ['name', 'legalEmail']],
 			'shopDate' => \shop\Date::getSelection(),
 			'shopPoint' => ['type', 'name'],
-			'farm' => ['name', 'legalEmail', 'url', 'vignette', 'emailBanner', 'emailFooter', 'featureDocument', 'hasSales'],
+			'farm' => ['name', 'legalName', 'legalEmail', 'url', 'vignette', 'emailBanner', 'emailFooter', 'featureDocument', 'hasSales'],
 			'price' => fn($e) => $e['type'] === Sale::PRO ? $e['priceExcludingVat'] : $e['priceIncludingVat'],
 			'invoice' => ['name', 'emailedAt', 'createdAt', 'priceExcludingVat', 'generation'],
 			'compositionOf' => ['name'],
