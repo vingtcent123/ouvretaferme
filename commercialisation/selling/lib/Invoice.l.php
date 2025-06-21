@@ -91,9 +91,7 @@ class InvoiceLib extends InvoiceCrud {
 	public static function getByCustomers(\Collection $cCustomer, ?int $limit = NULL): \Collection {
 
 		return Invoice::model()
-			->select(Invoice::getSelection() + [
-				'farm' => ['name', 'url', 'vignette']
-			])
+			->select(Invoice::getSelection())
 			->whereCustomer('IN', $cCustomer)
 			->sort(['id' => SORT_DESC])
 			->getCollection(0, $limit);
