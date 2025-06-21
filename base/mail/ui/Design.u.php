@@ -34,7 +34,7 @@ class DesignUi {
 		if($eFarm['emailFooter'] !== NULL) {
 			$html .= new \editor\ReadorFormatterUi()->getFromXml($eFarm['emailFooter']);
 		}
-dd(encode($html));
+
 		return $html;
 
 	}
