@@ -8,7 +8,8 @@ class Invoice extends InvoiceElement {
 		return parent::getSelection() + [
 			'customer' => CustomerElement::getSelection(),
 			'paymentMethod' => ['name', 'fqn'],
-			'expiresAt' => new \Sql('IF(content IS NULL, NULL, createdAt + INTERVAL '.\Setting::get('selling\documentExpires').' MONTH)')
+			'expiresAt' => new \Sql('IF(content IS NULL, NULL, createdAt + INTERVAL '.\Setting::get('selling\documentExpires').' MONTH)'),
+			'farm' => ['id', 'siret', 'legalName', 'legalEmail', 'legalStreet1', 'legalStreet2', 'legalPostcode', 'legalCity'],
 		];
 
 	}
