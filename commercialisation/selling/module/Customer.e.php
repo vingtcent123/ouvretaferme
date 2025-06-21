@@ -6,7 +6,7 @@ class Customer extends CustomerElement {
 	public static function getSelection(): array {
 
 		return parent::getSelection() + [
-			'farm' => ['name', 'legalName', 'legalEmail', 'vignette', 'url', 'featureDocument'],
+			'farm' => ['name', 'legalName', 'legalEmail', 'legalCity', 'vignette', 'url', 'featureDocument'],
 			'user' => ['email']
 		];
 
@@ -99,30 +99,6 @@ class Customer extends CustomerElement {
 	public function isCollective(): bool {
 		$this->expects(['destination']);
 		return $this['destination'] === Customer::COLLECTIVE;
-	}
-
-	public function getDeliveryAddress(): ?string {
-
-		if($this->hasDeliveryAddress() === FALSE) {
-			return NULL;
-		}
-
-		$address = $this->getDeliveryStreet()."\n";
-		$address .= $this['deliveryPostcode'].' '.$this['deliveryCity'];
-
-		return $address;
-
-	}
-
-	public function getDeliveryStreet(): ?string {
-
-		$street = $this['deliveryStreet1'];
-		if($this['deliveryStreet2'] !== NULL) {
-			$street .= "\n".$this['deliveryStreet2'];
-		}
-
-		return $street;
-
 	}
 
 	public function getInvoiceAddress(string $type = 'text'): ?string {
