@@ -306,8 +306,6 @@ class OperationLib extends OperationCrud {
 
 	public static function prepareOperations(array $input, Operation $eOperationDefault): \Collection {
 
-		$eCompany = \company\CompanyLib::getCurrent();
-
 		$accounts = var_filter($input['account'] ?? [], 'array');
 		$vatValues = var_filter($input['vatValue'] ?? [], 'array');
 		$isFromCashflow = ($eOperationDefault->offsetExists('cashflow') === TRUE);

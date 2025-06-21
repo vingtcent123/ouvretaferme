@@ -24,7 +24,7 @@ class FinancialYear extends FinancialYearElement {
 			})
 			->setCallback('startDate.check', function(string $date): bool {
 
-				$eFinancialYear = \account\FinancialYearLib::getFinancialYearSurroundingDate($date, $this['id']);
+				$eFinancialYear = \account\FinancialYearLib::getFinancialYearSurroundingDate($date, $this['id'] ?? NULL);
 
 				return $eFinancialYear->exists() === FALSE;
 

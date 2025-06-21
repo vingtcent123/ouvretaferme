@@ -22,6 +22,7 @@ switch(LIME_ENV) {
     Asset::setVersion(hash_file('crc32', LIME_DIRECTORY.'/.git/FETCH_HEAD'));
 
     Database::setPackages([
+      'account' => 'mapetiteferme',
       'company' => 'mapetiteferme',
       'dev' => 'mapetiteferme',
       'mail' => 'mapetiteferme',
@@ -48,6 +49,7 @@ switch(LIME_ENV) {
     Database::setDebug(get_exists('sql'));
 
     Database::addPackages([
+      'account' => 'dev_mapetiteferme',
       'company' => 'dev_mapetiteferme',
       'dev' => 'dev_mapetiteferme',
       'mail' => 'dev_mapetiteferme',

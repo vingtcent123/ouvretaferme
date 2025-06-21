@@ -14,64 +14,12 @@ class CompanyLib extends CompanyCrud {
 		return ['name', 'nafCode', 'addressLine1', 'addressLine2', 'postalCode', 'city', 'accountingType', 'isBio'];
 	}
 
-	public static function getOnline(): \Collection {
-
-		if(self::$cCompanyOnline === NULL) {
-			$eUser = \user\ConnectionLib::getOnline();
-			self::$cCompanyOnline = self::getByUser($eUser);
-		}
-
-		return self::$cCompanyOnline;
-
-	}
-
-	public static function getCurrent(): Company {
-
-		$eCompany = \company\CompanyLib::getById(REQUEST('company'));
-		if($eCompany->empty()) {
-			return $eCompany;
-		}
-
-		if(self::getOnline()->find(fn($e) => $e['id'] === $eCompany['id'])) {
-			return $eCompany;
-		}
-
-		return new Company();
-
-	}
-
 	public static function getList(?array $properties = NULL): \Collection {
 
 		return Company::model()
 			->select($properties ?? Company::getSelection())
-			->whereStatus(Company::ACTIVE)
 			->sort('name')
 			->getCollection();
-
-	}
-
-	public static function getBySiret(string $siret): Company {
-
-		$eCompany = new Company();
-
-		Company::model()
-      ->select(Company::getSelection())
-			->whereSiret($siret)
-			->whereStatus(Company::ACTIVE)
-      ->get($eCompany);
-
-		return $eCompany;
-
-	}
-
-	public static function getByUser(\user\User $eUser): \Collection {
-
-		return Company::model()
-			->join(Employee::model(), 'm1.id = m2.company')
-			->select(Company::getSelection())
-			->where('m2.user', $eUser)
-			->where('m1.status', Company::ACTIVE)
-			->getCollection(NULL, NULL, 'id');
 
 	}
 
@@ -102,8 +50,16 @@ class CompanyLib extends CompanyCrud {
 			->join(Employee::model(), 'm1.id = m2.company')
 			->where('m2.user', 'IN', $cUser)
 			->where('m2.role', $role, if: ($role !== NULL))
-			->where('m1.status', Company::ACTIVE)
 			->getCollection();
+
+	}
+
+	public static function getByFarm(\farm\Farm $eFarm): Company {
+
+		return Company::model()
+			->select(Company::getSelection())
+			->whereFarm($eFarm)
+			->get();
 
 	}
 
@@ -123,7 +79,6 @@ class CompanyLib extends CompanyCrud {
 
 		return \company\Company::model()
 			->select($properties ?: Company::getSelection())
-			->whereStatus(\company\Company::ACTIVE)
 			->sort([
 				'name' => SORT_DESC
 			])
@@ -138,9 +93,13 @@ class CompanyLib extends CompanyCrud {
 		foreach(self::$specificPackages as $package) {
 			\Database::addPackages([$package => $base]);
 		}
+		// 2 lignes nécessaires pour écraser 'account' qui est déjà setté de base (pour le formulaire d'inscription)
+		$packages = \Database::getPackages();
+		$packages['account'] = $base;
+
+		\Database::setPackages($packages);
 
 		\Database::addBase($base, 'mapetiteferme-default');
-
 	}
 
 	public static function getDatabaseName(\farm\Farm $eFarm): string {
@@ -152,7 +111,47 @@ class CompanyLib extends CompanyCrud {
 		return 'dev_mapetiteferme_'.$eFarm['id'];
 	}
 
-	// TODO CREATE FARM : appeler la création de la DB
+	public static function createCompanyAndFinancialYear(\farm\Farm $eFarm, array $input): void {
+
+		Company::model()->beginTransaction();
+
+		$fw = new \FailWatch();
+
+		$eCompany = new Company();
+		$eCompany->build(['farm', 'accountingType'], $input);
+
+		Company::model()->insert($eCompany);
+
+		$startDate = POST('startDate');
+		if(mb_strlen($startDate) === 0 or \util\DateLib::isValid($startDate) === FALSE) {
+			\Fail::log('FinancialYear::startDate.check');
+		}
+
+		$endDate = POST('endDate');
+		if(mb_strlen($endDate) === 0 or \util\DateLib::isValid($endDate) === FALSE) {
+			\Fail::log('FinancialYear::endDate.check');
+		}
+
+		if($startDate >= $endDate) {
+			\Fail::log('FinancialYear::dates.inconsistency');
+		}
+
+		if($fw->ko()) {
+			return;
+		}
+
+		Company::model()->commit();
+
+		self::createSpecificDatabaseAndTables($eFarm);
+
+		$eFinancialYear = new \account\FinancialYear(['startDate' => $startDate, 'endDate' => $endDate]);
+
+		\account\FinancialYear::model()->insert($eFinancialYear);
+
+
+		// TODO subscribe SET BIO FARM : subscription auto ?
+	}
+
 	public static function createSpecificDatabaseAndTables(\farm\Farm $eFarm): void {
 
 		// Create database
@@ -171,7 +170,7 @@ class CompanyLib extends CompanyCrud {
 
 			list($package) = explode('\\', $class);
 			if(in_array($package, self::$specificPackages)) {
-				(new \ModuleAdministration($class))->init();
+				new \ModuleAdministration($class)->init();
 			}
 
 		}
@@ -194,5 +193,4 @@ class CompanyLib extends CompanyCrud {
 	// TODO DELETE FARM
   //new \ModuleAdministration('main\GenericAccount')->dropDatabase(CompanyLib::getDatabaseNameFromCompany($e));
 
-	// TODO SET BIO FARM : subscription auto ?
 }

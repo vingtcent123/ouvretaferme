@@ -11,6 +11,8 @@ class AlertUi {
 
 		return match($fqn) {
 
+			'FinancialYear::dates.inconsistency' => s("La date de début de votre exercice comptable doit être antérieure à la date de fin."),
+
 			'Company::disabled' => s("Vous avez désactivé cette fonctionnalité sur votre ferme."),
 			'Company::siret.exists' => s("Cette ferme a déjà un compte sur le site, rapprochez-vous de ses dirigeants pour vous ajouter à l'équipe !"),
 
@@ -34,8 +36,8 @@ class AlertUi {
 
 		return match($fqn) {
 
-			'Company::created' => s("Votre ferme a bien été créée, à vous de jouer !"),
-			'Company::updated' => s("Votre ferme a bien été mise à jour !"),
+			'Company::created' => s("Votre ferme a bien été configurée, à vous de jouer !"),
+			'Company::updated' => s("Vos paramètres ont bien été mis à jour !"),
 			'Company::closed' => s("Votre ferme a bien été supprimée !"),
 
 			'Employee::userCreated' => s("L'utilisateur a bien été créé et peut désormais être ajouté dans l'équipe de votre ferme !"),

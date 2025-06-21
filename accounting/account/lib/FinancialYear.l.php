@@ -114,14 +114,10 @@ class FinancialYearLib extends FinancialYearCrud {
 	}
 	public static function selectDefaultFinancialYear(): FinancialYear {
 
-		$eFinancialYear = new FinancialYear();
-
-		FinancialYear::model()
+		return FinancialYear::model()
 			->select(FinancialYear::getSelection())
 			->whereStatus(FinancialYearElement::OPEN)
-			->get($eFinancialYear);
-
-		return $eFinancialYear;
+			->get();
 
 	}
 

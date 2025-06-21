@@ -44,7 +44,7 @@ class CompanyModel extends \ModuleModel {
 
 		$this->properties = array_merge($this->properties, [
 			'id' => ['serial32', 'cast' => 'int'],
-			'farm' => ['element32', 'farm\Farm', 'null' => TRUE, 'cast' => 'element'],
+			'farm' => ['element32', 'farm\Farm', 'unique' => TRUE, 'cast' => 'element'],
 			'accountingType' => ['enum', [\company\Company::ACCRUAL, \company\Company::CASH], 'cast' => 'enum'],
 			'subscriptionType' => ['set', [\company\Company::ACCOUNTING, \company\Company::PRODUCTION, \company\Company::SALES], 'null' => TRUE, 'cast' => 'set'],
 		]);
@@ -56,6 +56,10 @@ class CompanyModel extends \ModuleModel {
 		$this->propertiesToModule += [
 			'farm' => 'farm\Farm',
 		];
+
+		$this->uniqueConstraints = array_merge($this->uniqueConstraints, [
+			['farm']
+		]);
 
 	}
 

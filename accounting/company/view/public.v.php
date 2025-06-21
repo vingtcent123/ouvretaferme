@@ -1,7 +1,7 @@
 <?php
 new AdaptativeView('create', function($data, PanelTemplate $t) {
 
-	return new \company\CompanyUi()->create();
+	return new \company\CompanyUi()->create($data->eFarm);
 
 });
 

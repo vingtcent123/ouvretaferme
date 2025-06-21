@@ -47,41 +47,6 @@ class CompanyUi {
 		return \Lime::getUrl().'/'.(is_int($farm) ? $farm : $farm['id']).'/account';
 	}
 
-	/**
-	 * Display a field to search companies
-	 *
-	 *
-	 */
-	public function query(\PropertyDescriber $d, bool $multiple = FALSE) {
-
-		$d->prepend = \Asset::icon('house-door-fill');
-		$d->field = 'autocomplete';
-
-		$d->placeholder = s("Tapez un nom de ferme...");
-		$d->multiple = $multiple;
-
-		$d->autocompleteUrl = '/company/search:query';
-		$d->autocompleteResults = function(Company $e) {
-			return self::getAutocomplete($e);
-		};
-
-	}
-
-	public static function getAutocomplete(Company $eCompany): array {
-
-		$item = self::getVignette($eCompany, '2.5rem');
-		$item .= '<div>';
-		$item .= encode($eCompany['name']).'<br/>';
-		$item .= '</div>';
-
-		return [
-			'value' => $eCompany['id'],
-			'itemHtml' => $item,
-			'itemText' => $eCompany['name']
-		];
-
-	}
-
 	public function warnFinancialYear(\farm\Farm $eFarm, \Collection $cFinancialYear): string {
 
 		if($cFinancialYear->notEmpty()) {
@@ -96,30 +61,83 @@ class CompanyUi {
 
 	}
 
-	public function create(): \Panel {
+	public function create(\farm\Farm $eFarm): \Panel {
 
 		$eCompany = new Company();
 
-		$form = new \util\FormUi();
+		$h = '<h4>'.s("Général").'</h4>';
 
-		$h = '';
+		if($eFarm->isLegalComplete() === FALSE) {
 
-		$h .= $form->openAjax('/company/public:doCreate', ['id' => 'company-create', 'autocomplete' => 'off']);
+			$h .= '<div>';
+				$h .= s("Il manque certaines informations indispensables à la création de votre comptabilité. Saisissez-les dans ce formulaire :", ['link' => '<a href="/farm/farm:update?id='.$eFarm['id'].'">']);
+			$h .= '</div>';
 
-			$h .= $form->asteriskInfo();
 
-			$h .= $form->dynamicGroups($eCompany, ['siret*', 'name*', 'addressLine1', 'addressLine2', 'postalCode', 'city', 'isBio']);
-			$h .= $form->hidden('nafCode', null);
+			$form = new \util\FormUi();
+
+			$h .= $form->openAjax('/farm/farm:doUpdate', ['id' => 'farm-update', 'autocomplete' => 'off']);
+
+				$h .= $form->hidden('id', $eFarm['id']);
+
+				$h .= $form->dynamicGroups($eFarm, ['name', 'legalEmail', 'siret', 'legalName']);
+				$h .= $form->addressGroup(s("Siège social de la ferme"), 'legal', $eFarm);
+			$h .= $form->dynamicGroups($eFarm, ['startedAt']);
 
 			$h .= $form->group(
-				content: $form->submit(s("Créer ma ferme"))
+				content: $form->submit(s("Enregistrer "))
 			);
 
-		$h .= $form->close();
+			$h .= $form->close();
+
+		} else {
+
+			$form = new \util\FormUi();
+
+			$h .= $form->openAjax('/company/public:doCreate', ['id' => 'company-create', 'autocomplete' => 'off']);
+
+			$h .= '<div>';
+				$h .= s("Vous avez configuré certains paramètres pour votre ferme. Pour les modifier, rendez-vous <link>dans les paramètres généraux de votre ferme</link>.", ['link' => '<a href="/farm/farm:update?id='.$eFarm['id'].'">']);
+			$h .= '</div>';
+
+			$h .= '<div class="util-block stick-xs bg-background-light">';
+				$h .= '<dl class="util-presentation util-presentation-2">';
+
+					foreach(['siret', 'legalName', 'legalEmail'] as $field) {
+
+						$h .= '<dt>'.\farm\FarmUi::p($field)->label.'</dt>';
+						$h .= '<dd>'.encode($eFarm[$field]).'</dd>';
+
+					}
+
+					$h .= '<dt>'.s("Siège social de la ferme").'</dt>';
+					$h .= '<dd>'.$eFarm->getLegalAddress('html').'</dd>';
+
+				$h .= '</dl>';
+			$h .= '</div>';
+
+
+			$h .= '<h4>'.s("Paramètres de comptabilité").'</h4>';
+			$h .= $form->asteriskInfo();
+
+			$h .= $form->hidden('farm', $eFarm['id']);
+			$h .= $form->dynamicGroups($eCompany, ['accountingType']);
+
+
+			$h .= '<h4>'.s("Premier exercice comptable").'</h4>';
+
+			$h .= $form->dynamicGroups(new \account\FinancialYear(), ['startDate*', 'endDate*']);
+
+			$h .= $form->group(
+				content: $form->submit(s("Enregistrer les paramètres de ma ferme"))
+			);
+
+			$h .= $form->close();
+		}
 
 		return new \Panel(
 			id: 'panel-company-create',
-			title: s("Créer ma ferme"),
+			title: s("Configurer ma ferme pour la comptabilité"),
 			body: $h
 		);
 
@@ -307,14 +325,6 @@ class CompanyUi {
 
 		$h = '';
 
-		if(get_exists('firstTime') === TRUE) {
-
-			$h .= '<div class="util-block-search stick-xs">';
-			$h .= \Asset::icon('leaf').' '.s(
-				"Pour commencer, vérifiez le <b>type de comptabilité</b> de votre ferme dans la section ”Les réglages de base”. Puis ensuite, créez votre <b>premier exercice comptable</b>.",
-			);
-			$h .= '</div>';
-		}
 		$h .= '<div class="util-block-optional">';
 
 			$h .= '<h2>'.s("La ferme").'</h2>';
@@ -599,84 +609,6 @@ class CompanyUi {
 		$h .= '</a>';
 
 		return $h;
-
-	}
-
-	public static function getVignette(Company $eCompany, string $size): string {
-return '';
-		$eCompany->expects(['id', 'vignette']);
-
-		$class = 'company-vignette-view media-circle-view'.' ';
-		$style = '';
-
-		$ui = new \media\CompanyVignetteUi();
-
-		if($eCompany['vignette'] === NULL) {
-
-			$class .= ' media-vignette-default';
-			$style .= 'color: var(--muted)';
-			$content = \Asset::icon('house-door-fill');
-
-		} else {
-
-			$format = $ui->convertToFormat($size);
-
-			$style .= 'background-image: url('.$ui->getUrlByElement($eCompany, $format).');';
-			$content = '';
-
-		}
-
-		return '<div class="'.$class.'" style="'.$ui->getSquareCss($size).'; '.$style.'">'.$content.'</div>';
-
-	}
-
-	public static function getLogo(Company $eCompany, string $size): string {
-
-		$eCompany->expects(['id', 'logo']);
-
-		$ui = new \media\CompanyLogoUi();
-
-		$class = 'company-logo-view media-rectangle-view'.' ';
-		$style = '';
-
-		if($eCompany['logo'] === NULL) {
-
-			$class .= ' media-logo-default';
-			$style .= '';
-
-		} else {
-
-			$format = $ui->convertToFormat($size);
-
-			$style .= 'background-image: url('.$ui->getUrlByElement($eCompany, $format).');';
-
-		}
-
-		return '<div class="'.$class.'" style="'.$ui->getSquareCss($size).'; '.$style.'"></div>';
-
-	}
-
-	public static function getBanner(Company $eCompany, string $width): string {
-
-		$eCompany->expects(['id', 'banner']);
-
-		$ui = new \media\CompanyBannerUi();
-
-		$class = 'company-banner-view media-rectangle-view'.' ';
-		$style = '';
-
-		if($eCompany['banner'] === NULL) {
-
-			$class .= ' media-banner-default';
-			$style .= '';
-
-		} else {
-
-			$style .= 'background-image: url('.$ui->getUrlByElement($eCompany, 'm').');';
-
-		}
-
-		return '<div class="'.$class.'" style="width: '.$width.'; max-width: 100%; height: auto; aspect-ratio: 5; '.$style.'"></div>';
 
 	}
 

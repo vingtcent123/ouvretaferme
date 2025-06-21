@@ -3,6 +3,9 @@ Company:
   farm: farm\Farm
   accountingType: enum(ACCRUAL, CASH) = CASH
   subscriptionType: ?set(ACCOUNTING, PRODUCTION, SALES)
+  UNIQUE: [
+    ["farm"]
+  ]
 
 Subscription:
   id: serial32
