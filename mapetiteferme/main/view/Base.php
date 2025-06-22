@@ -136,7 +136,6 @@ class BaseTemplate extends SmartTemplate {
 		$t->qs('nav')->innerHtml($this->getNav());
 		$t->qs('main')->innerHtml($this->getMain($stream));
 		$t->qs('footer')->innerHtml($this->getFooter());
-		$t->js()->eval('Main.checkBrevo('.($this->hasCRM ? 'true' : 'false').')');
 
 		$this->buildAjaxHeader($t);
 		$this->buildAjaxScroll($t);

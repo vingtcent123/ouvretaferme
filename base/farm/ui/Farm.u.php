@@ -314,6 +314,10 @@ class FarmUi {
 		return self::urlSettings($eFarm, 'commercialisation');
 	}
 
+	public static function urlSettingsAccounting(Farm $eFarm): string {
+		return \company\CompanyUi::urlSettings($eFarm);
+	}
+
 	/**
 	 * Display a field to search farms
 	 *
@@ -616,6 +620,14 @@ class FarmUi {
 				$h .= $this->getCommercialisationSection($eFarm, $nav, $subNav);
 			$h .= '</div>';
 
+			if(FEATURE_ACCOUNTING) {
+
+				$h .= '<div class="farm-tabs farm-section-accounting">';
+					$h .= $this->getAccountingSection($eFarm, $nav, $subNav);
+				$h .= '</div>';
+
+			}
+
 		$h .= '</nav>';
 
 		return $h;
@@ -750,7 +762,7 @@ class FarmUi {
 				self::getAnalyzeCommercialisationCategories($eFarm),
 				$eFarm->getView('viewAnalyzeCommercialisation'),
 				fn($view) => FarmUi::urlAnalyzeCommercialisation($eFarm, $view)
-			);
+		);
 
 		$h .= '</div>';
 		$h .= '<div class="farm-nav-settings-commercialisation">';
@@ -760,6 +772,61 @@ class FarmUi {
 				$nav,
 				'commercialisation',
 				FarmUi::urlSettingsCommercialisation($eFarm)
+			);
+
+		$h .= '</div>';
+		return $h;
+
+	}
+
+	protected function getAccountingSection(Farm $eFarm, ?string $nav, ?string $subNav): string {
+
+		$prefix = '<span class="farm-subnav-prefix">'.\Asset::icon('chevron-right').' </span>';
+
+		$h = '';
+
+		if($eFarm->canAccounting()) {
+
+			$h .= '<div data-nav="bank" class="farm-tab farm-tab-subnav '.($nav === 'bank' ? 'selected' : '').'">';
+				$h .= '<span class="farm-tab-icon">'.\Asset::icon('piggy-bank').'</span>';
+				$h .= '<span class="farm-tab-label">'.s("Banque").'</span>';
+			$h .= '</div>';
+
+			$h .= $this->getBankMenu($eFarm, prefix: $prefix, subNav: $subNav);
+
+
+			$h .= '<div data-nav="operations" class="farm-tab farm-tab-subnav '.($nav === 'journal' ? 'selected' : '').'">';
+				$h .= '<span class="farm-tab-icon">'.\Asset::icon('journal-bookmark').'</span>';
+				$h .= '<span class="farm-tab-label">'.s("Écritures comptables").'</span>';
+			$h .= '</div>';
+
+			$h .= $this->getOperationsMenu($eFarm, prefix: $prefix, subNav: $subNav);
+
+			$h .= '<div data-nav="assets" class="farm-tab farm-tab-subnav '.($nav === 'assets' ? 'selected' : '').'">';
+				$h .= '<span class="farm-tab-icon">'.\Asset::icon('house-door').'</span>';
+				$h .= '<span class="farm-tab-label">'.s("Immobilisations").'</span>';
+			$h .= '</div>';
+
+			$h .= $this->getAssetsMenu($eFarm, prefix: $prefix, subNav: $subNav);
+
+		}
+
+		$h .= $this->getAnalyzeTab(
+			$eFarm,
+			$nav,
+			'accounting',
+			self::getAnalyzeAccountingCategories($eFarm),
+			$eFarm->getView('viewAnalyzeAccounting'),
+			fn($view) => \company\CompanyUi::urlOverview($eFarm, $view)
+		);
+
+		$h .= '<div class="farm-nav-settings-accounting">';
+
+			$h .= $this->getSettingsTab(
+				$eFarm,
+				$nav,
+				'accounting',
+				FarmUi::urlSettingsAccounting($eFarm)
 			);
 
 		$h .= '</div>';
@@ -1126,6 +1193,89 @@ class FarmUi {
 
 	}
 
+	public function getAssetsMenu(Farm $eFarm, string $prefix = '', ?string $subNav = NULL): string {
+
+		$h = '<div class="farm-subnav-wrapper">';
+
+			foreach($this->getAssetsCategories() as $key => $value) {
+
+				$h .= '<a href="'.\company\CompanyUi::urlAsset($eFarm).'/'.$key.'" class="farm-subnav-item '.($key === $subNav ? 'selected' : '').'" data-sub-nav="'.$key.'">';
+					$h .= $prefix.'<span>'.$value.'</span>';
+				$h .= '</a>';
+
+			}
+
+		$h .= '</div>';
+
+		return $h;
+
+	}
+
+	protected static function getAssetsCategories(): array {
+
+		return [
+			'acquisition' => s("Acquisitions"),
+			'depreciation' => s("Amortissement"),
+			'state' => s("État des immos"),
+		];
+
+	}
+
+	public function getOperationsMenu(Farm $eFarm, string $prefix = '', ?string $subNav = NULL): string {
+
+		$h = '<div class="farm-subnav-wrapper">';
+
+			foreach($this->getOperationsCategories() as $key => $value) {
+
+				$h .= '<a href="'.\company\CompanyUi::urlJournal($eFarm).'/'.$key.'" class="farm-subnav-item '.($key === $subNav ? 'selected' : '').'" data-sub-nav="'.$key.'">';
+					$h .= $prefix.'<span>'.$value.'</span>';
+				$h .= '</a>';
+
+			}
+
+		$h .= '</div>';
+
+		return $h;
+
+	}
+
+	protected static function getOperationsCategories(): array {
+
+		return [
+			'index' => s("Journal comptable"),
+			'book' => s("Grand livre"),
+			'vat' => s("Journaux de TVA"),
+		];
+
+	}
+
+	public function getBankMenu(Farm $eFarm, string $prefix = '', ?string $subNav = NULL): string {
+
+		$h = '<div class="farm-subnav-wrapper">';
+
+			foreach($this->getBankCategories() as $key => $value) {
+
+				$h .= '<a href="'.\company\CompanyUi::urlBank($eFarm).'/'.$key.'" class="farm-subnav-item '.($key === $subNav ? 'selected' : '').'" data-sub-nav="'.$key.'">';
+					$h .= $prefix.'<span>'.$value.'</span>';
+				$h .= '</a>';
+
+			}
+
+		$h .= '</div>';
+
+		return $h;
+
+	}
+
+	protected static function getBankCategories(): array {
+
+		return [
+			'cashflow' => s("Opérations bancaires"),
+			'import' => s("Imports"),
+		];
+
+	}
+
 	public function getSellingMenu(Farm $eFarm, ?int $season = NULL, string $prefix = '', ?string $subNav = NULL): string {
 
 		$h = '<div class="farm-subnav-wrapper">';
@@ -1354,6 +1504,18 @@ class FarmUi {
 		}
 
 		return $categories;
+
+	}
+
+	protected static function getAnalyzeAccountingCategories(Farm $eFarm): array {
+
+		return [
+			Farmer::BANK => s("Trésorerie"),
+			Farmer::CHARGES => s("Charges"),
+			Farmer::RESULT => s("Résultat"),
+			Farmer::BALANCE => s("Bilan"),
+			Farmer::ACCOUNTING => s("Balances"),
+		];
 
 	}
 

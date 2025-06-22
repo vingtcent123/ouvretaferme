@@ -65,7 +65,7 @@ class FarmTemplate extends MainTemplate {
 			'commercialisation' => [\Asset::icon('basket3'), s("Vendre")],
 		];
 
-		if(FEATURE_ACCOUNTING) {
+		if(FEATURE_ACCOUNTING and $this->data->eFarm->canAccounting()) {
 			$sections['accounting'] = [\Asset::icon('bank'), s("Comptabilité")];
 		}
 

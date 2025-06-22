@@ -39,7 +39,6 @@ class MainTemplate extends BaseTemplate {
 		parent::__construct();
 
 		\Asset::css('main', 'design.css');
-		\Asset::js('main', 'main.js');
 
 		$this->base = \Lime::getProtocol().'://'.SERVER('HTTP_HOST');
 

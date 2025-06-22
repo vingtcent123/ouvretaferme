@@ -467,6 +467,26 @@ Route::register([
 	'HEAD' => [
 	],
 	'POST' => [
+		'/@module/account/Account/doQuick' => [
+			'request' => 'account/account',
+			'priority' => 5,
+			'route' => ['@module', 'account', 'Account', 'doQuick'],
+		],
+		'/@module/account/Account/quick' => [
+			'request' => 'account/account',
+			'priority' => 5,
+			'route' => ['@module', 'account', 'Account', 'quick'],
+		],
+		'/@module/account/ThirdParty/doQuick' => [
+			'request' => 'account/thirdParty',
+			'priority' => 5,
+			'route' => ['@module', 'account', 'ThirdParty', 'doQuick'],
+		],
+		'/@module/account/ThirdParty/quick' => [
+			'request' => 'account/thirdParty',
+			'priority' => 5,
+			'route' => ['@module', 'account', 'ThirdParty', 'quick'],
+		],
 		'/@module/analyze/Cultivation/doQuick' => [
 			'request' => 'analyze/cultivation',
 			'priority' => 5,
@@ -476,6 +496,16 @@ Route::register([
 			'request' => 'analyze/cultivation',
 			'priority' => 5,
 			'route' => ['@module', 'analyze', 'Cultivation', 'quick'],
+		],
+		'/@module/bank/BankAccount/doQuick' => [
+			'request' => 'bank/account',
+			'priority' => 5,
+			'route' => ['@module', 'bank', 'BankAccount', 'doQuick'],
+		],
+		'/@module/bank/BankAccount/quick' => [
+			'request' => 'bank/account',
+			'priority' => 5,
+			'route' => ['@module', 'bank', 'BankAccount', 'quick'],
 		],
 		'/@module/farm/Farmer/doQuick' => [
 			'request' => 'farm/farmer',
@@ -516,6 +546,16 @@ Route::register([
 			'request' => 'farm/tool',
 			'priority' => 5,
 			'route' => ['@module', 'farm', 'Tool', 'quick'],
+		],
+		'/@module/journal/Operation/doQuick' => [
+			'request' => 'journal/operation',
+			'priority' => 5,
+			'route' => ['@module', 'journal', 'Operation', 'doQuick'],
+		],
+		'/@module/journal/Operation/quick' => [
+			'request' => 'journal/operation',
+			'priority' => 5,
+			'route' => ['@module', 'journal', 'Operation', 'quick'],
 		],
 		'/@module/map/Bed/doQuick' => [
 			'request' => 'map/bed',

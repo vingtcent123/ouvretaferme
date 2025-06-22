@@ -31,8 +31,8 @@ class CompanyUi {
 		return \Lime::getUrl().'/'.(is_int($farm) ? $farm : $farm['id']).'/journal';
 	}
 
-	public static function urlOverview(int|\farm\Farm $farm): string {
-		return \Lime::getUrl().'/'.(is_int($farm) ? $farm : $farm['id']).'/overview';
+	public static function urlOverview(int|\farm\Farm $farm, ?string $view = NULL): string {
+		return \Lime::getUrl().'/'.(is_int($farm) ? $farm : $farm['id']).'/overview'.($view !== NULL ? '/'.$view : '');
 	}
 
 	public static function urlAsset(int|\farm\Farm $farm): string {

@@ -147,7 +147,7 @@ class Farm extends FarmElement {
 	}
 
 	public function canAccounting(): bool {
-		return $this->isRole(Farmer::OWNER);
+		return FEATURE_ACCOUNTING and $this->isRole(Farmer::OWNER);
 	}
 
 	public function isRole(string $role): bool {

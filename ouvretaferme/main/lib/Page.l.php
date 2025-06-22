@@ -66,6 +66,26 @@ class PageLib {
 
 		}
 
+		if(GET('accounting', 'bool', FALSE)) {
+
+			$data->eFarm = \farm\FarmLib::getById(REQUEST('farm'));
+
+			if($data->eFarm->notEmpty()) {
+
+				$data->eFarm['company'] = \company\CompanyLib::getByFarm($data->eFarm);
+
+				if($data->eFarm['company']->notEmpty()) {
+
+					\company\CompanyLib::connectSpecificDatabaseAndServer($data->eFarm);
+
+				} else if(mb_strpos(SERVER('REQUEST_URI'), '/public:') === FALSE) {
+
+					throw new \RedirectAction('/public:create?farm='.$data->eFarm['id']);
+
+				}
+			}
+		}
+
 		$data->nFarmUser = $data->cFarmUser->count();
 
 		$data->logInExternal = \user\ConnectionLib::checkLoginExternal();

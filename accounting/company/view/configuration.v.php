@@ -1,16 +1,17 @@
 <?php
-new AdaptativeView('index', function($data, CompanyTemplate $t) {
+new AdaptativeView('index', function($data, FarmTemplate $t) {
 
-	$t->tab = 'settings';
-	$t->subNav = new \company\CompanyUi()->getSettingsSubNav($data->eFarm);
+	$t->nav = 'settings-accounting';
 
-	$t->title = s("Configuration pour {value}", $data->eFarm['name']);
-	$t->canonical = \company\CompanyUi::urlSettings($data->eFarm);
+	$t->title = s("Les réglages de comptabilité pour {value}", $data->eFarm['name']);
 
-	$t->mainTitle = '<h1>'.s("Paramétrage").'</h1>';
-	$t->mainTitleClass = 'hide-lateral-down';
 
-	$t->hasCRM = TRUE;
+	$h = '<h1>';
+		$h .= '<a href="'.\farm\FarmUi::urlSettingsAccounting($data->eFarm).'"  class="h-back">'.\Asset::icon('arrow-left').'</a>';
+		$h .= s("Réglages de comptabilité");
+	$h .= '</h1>';
+
+	$t->mainTitle = $h;
 
 	echo new \company\CompanyUi()->getSettings($data->eFarm);
 
