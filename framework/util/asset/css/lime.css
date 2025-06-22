@@ -788,7 +788,7 @@ div.input-group > .field-checkbox {
 
 }
 
-@media (max-width: 1199px), (max-height: 599px) {
+@media (max-width: 1099px), (max-height: 599px) {
 
 	.hide-lateral-down {
 		display: none !important;
@@ -811,7 +811,7 @@ div.input-group > .field-checkbox {
 
 }
 
-@media (min-width: 1200px) and (min-height: 600px) {
+@media (min-width: 1100px) and (min-height: 600px) {
 
 	.hide-lateral-up {
 		display: none !important;
@@ -1058,6 +1058,18 @@ tbody .td-checkbox > label {
 
 	.util-overflow-lg > * {
 		min-width: calc(991px - 2 * var(--container-md-padding));
+	}
+
+}
+
+@media (max-width: 1199px) {
+
+	.util-overflow-xl {
+		overflow-x: auto;
+	}
+
+	.util-overflow-xl > * {
+		min-width: calc(1199px - 2 * var(--container-md-padding));
 	}
 
 }

@@ -29,7 +29,7 @@ td.product-item-year-before {
 	font-size: 0.8rem;
 }
 
-@media (max-width: 767px) {
+@media (max-width: 1199px) {
 
 	.product-item-plant {
 		display: none;

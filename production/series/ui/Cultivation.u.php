@@ -523,7 +523,7 @@ class CultivationUi {
 			$help = '';
 		}
 
-		$h = '<div id="series-wrapper" class="series-item-wrapper series-item-forecast-wrapper util-overflow-lg stick-lg">';
+		$h = '<div id="series-wrapper" class="series-item-wrapper series-item-forecast-wrapper util-overflow-lg stick-md">';
 
 			$h .= '<div class="series-item-header series-item-forecast">';
 

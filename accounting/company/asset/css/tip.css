@@ -35,7 +35,7 @@
 		pointer-events: none;
 	}
 
-	@media (min-width: 1200px) and (min-height: 600px) {
+	@media (min-width: 1100px) and (min-height: 600px) {
 
 		#tip-wrapper:not(.tip-wrapper-inline) {
 			margin-top: 0;

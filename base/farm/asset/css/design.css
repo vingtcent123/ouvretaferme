@@ -56,10 +56,10 @@ body[data-template^="farm"] header a:hover {
 	color: white;
 }
 
-@media (min-width: 1200px) and (min-height: 600px) {
+@media (min-width: 1100px) and (min-height: 600px) {
 
 	:root {
-		--nav-height: 9rem;
+		--nav-height: 8.5rem;
 	}
 
 	@media (min-width: 1600px) {
@@ -71,10 +71,19 @@ body[data-template^="farm"] header a:hover {
 
 	}
 
-	@media (max-width: 1599px) {
+	@media (min-width: 1200px) and (max-width: 1599px) {
 
 		:root {
 			--nav-width: 20rem;
+			--nav-padding: 1rem;
+		}
+
+	}
+
+	@media (max-width: 1199px) {
+
+		:root {
+			--nav-width: 19rem;
 			--nav-padding: 1rem;
 		}
 
@@ -123,6 +132,15 @@ body[data-template^="farm"] header a:hover {
 		margin-right: 0;
 		padding-left: 2rem;
 		padding-right: 2rem;
+	}
+
+	@media (max-width: 1199px) {
+
+		body[data-template~="farm"] main .container {
+			padding-left: 1rem;
+			padding-right: 1rem;
+		}
+
 	}
 
 	body[data-template~="farm"] main .container.farm-template-main-title {
@@ -274,6 +292,10 @@ body[data-template^="farm"] header a:hover {
 		font-size: 1.2rem;
 	}
 
+	.farm-nav-section-down {
+		display: none;
+	}
+
 	#farm-nav div.farm-subnav-wrapper {
 		display: flex;
 		flex-direction: column;
@@ -422,7 +444,7 @@ body[data-template^="farm"] header a:hover {
 
 }
 
-@media (max-width: 1199px), (max-height: 599px) {
+@media (max-width: 1099px), (max-height: 599px) {
 
 	body[data-template~="farm"] header {
 		position: sticky;
@@ -552,25 +574,6 @@ body[data-template^="farm"] header a:hover {
 
 	body[data-touch="no"]  div.farm-subnav-wrapper > a.farm-subnav-item {
 		padding-bottom: 0.25rem;
-	}
-
-	div.farm-subnav-wrapper > .selected {
-		border-top-left-radius: var(--radius);
-		border-top-right-radius: var(--radius);
-		background: #ececef;
-		padding-left: 0.75rem;
-		padding-right: 0.75rem;
-		font-weight: bold;
-		color: var(--text);
-	}
-
-	@media (max-width: 575px) {
-
-		div.farm-subnav-wrapper > .selected {
-			font-size: 1.1rem;
-			line-height: 1.2;
-		}
-
 	}
 
 	.farm-tab {

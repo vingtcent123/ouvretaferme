@@ -60,14 +60,27 @@ class FarmTemplate extends MainTemplate {
 
 	protected function getFarmSections(): string {
 
-		$sections = FEATURE_ACCOUNTING ? 3 : 2;
+		$sections = [
+			'production' => [\Asset::icon('leaf'), s("Produire")],
+			'commercialisation' => [\Asset::icon('basket3'), s("Vendre")],
+		];
 
-		$h = '<div id="farm-nav-sections" class="farm-nav-sections-'.$sections.'">';
-			$h .= '<a onclick="Farm.changeSection(this)" onmouseenter="Farm.changeSection(this, 150)" onmouseleave="Farm.clearSection(this)" data-section="production" class="farm-nav-section farm-nav-section-production">'.\Asset::icon('leaf').'<span>'.s("Produire").'</span></a>';
-			$h .= '<a onclick="Farm.changeSection(this)" onmouseenter="Farm.changeSection(this, 150)" onmouseleave="Farm.clearSection(this)" data-section="commercialisation" class="farm-nav-section farm-nav-section-commercialisation">'.\Asset::icon('basket3').'<span>'.s("Vendre").'</span></a>';
-			if(FEATURE_ACCOUNTING) {
-				$h .= '<a onclick="Farm.changeSection(this)" onmouseenter="Farm.changeSection(this, 150)" onmouseleave="Farm.clearSection(this)" data-section="accounting" class="farm-nav-section farm-nav-section-accounting">'.\Asset::icon('bank').'<span>'.s("Comptabilité").'</span></a>';
+		if(FEATURE_ACCOUNTING) {
+			$sections['accounting'] = [\Asset::icon('bank'), s("Comptabilité")];
+		}
+
+		$h = '<div id="farm-nav-sections" class="farm-nav-sections-'.count($sections).'">';
+
+			foreach($sections as $name => [$icon, $label]) {
+
+				$h .= '<a onclick="Farm.changeSection(this)" onmouseenter="Farm.changeSection(this, 150)" onmouseleave="Farm.clearSection(this)" data-section="'.$name.'" class="farm-nav-section farm-nav-section-'.$name.'">';
+					$h .= $icon;
+					$h .= '<span>'.$label.'</span>';
+					$h .= '<span class="farm-nav-section-down">'.Asset::icon('chevron-down').'</span>';
+				$h .= '</a>';
+
 			}
+
 		$h .= '</div>';
 		
 		return $h;
