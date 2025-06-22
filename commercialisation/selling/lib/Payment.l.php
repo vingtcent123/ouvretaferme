@@ -125,6 +125,8 @@ class PaymentLib extends PaymentCrud {
 
 		Payment::model()->insert($ePayment);
 
+		self::fillOnlyMarketPayment($eSale);
+
 	}
 
 	public static function createBySale(Sale $eSale, ?\payment\Method $eMethod, ?string $providerId = NULL): void {
@@ -253,6 +255,38 @@ class PaymentLib extends PaymentCrud {
 			->whereSale($eSale)
 			->whereMethod($eMethod)
 			->delete();
+
+		self::fillOnlyMarketPayment($eSale);
+
+	}
+
+	public static function updateBySaleAndMethod(Sale $eSale, \payment\Method $eMethod, Payment $ePayment): void {
+
+		$ePayment->expects(['id', 'method' => ['id']]);
+
+		$hasNew = Payment::model()
+			->whereSale($eSale)
+			->whereMethod($eMethod)
+			->exists();
+
+		if($hasNew) {
+			throw new \NotExpectedAction('Unable to update a payment method that has not been previously selected.');
+		}
+
+		$hasOld = Payment::model()
+      ->whereSale($eSale)
+      ->whereMethod($ePayment['method'])
+      ->exists();
+
+		if($hasOld === FALSE) {
+			throw new \NotExpectedAction('Unable to update a payment method that has already been selected.');
+		}
+
+		$ePayment['method'] = $eMethod;
+
+		self::update($ePayment, ['method']);
+
+		self::fillOnlyMarketPayment($eSale);
 
 	}
 
