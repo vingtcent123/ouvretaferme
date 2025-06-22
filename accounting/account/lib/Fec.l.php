@@ -25,17 +25,17 @@ class FecLib  {
 			'CompAuxLib', // peut être vide
 			'PieceRef',
 			'PieceDate', // Date sur la pièce ou date d'enregistrement
-			'EcritureLib',
+			'LibelleEcriture',
 			'Debit',
 			'Credit',
 			'EcritureLet',// peut être vide
 			'DateLet', // peut être vide
 			'ValidDate',
-			'Montantdevise', // peut être vide
-			'Idevise', // peut être vide
-			'DateRglt', // Utilisé en BA en compta de trésorerie uniquement
+			'MontantDevise', // peut être vide
+			'IDevise', // peut être vide
+			/*'DateRglt', // Utilisé en BA en compta de trésorerie uniquement
 			'ModeRglt', // Utilisé en BA en compta de trésorerie uniquement
-			'NatOp', // peut être vide, Utilisé en BA en compta de trésorerie uniquement
+			'NatOp', // peut être vide, Utilisé en BA en compta de trésorerie uniquement*/
 		];
 		$fecData = [
 			join('|', $headers),
@@ -65,9 +65,9 @@ class FecLib  {
 				date('Ymd', strtotime($eFinancialYear['closeDate'])),
 				'',
 				'',
-				$eOperation['paymentDate'] !== NULL ? date('Ymd', strtotime($eOperation['paymentDate'])) : NULL,
+				/*$eOperation['paymentDate'] !== NULL ? date('Ymd', strtotime($eOperation['paymentDate'])) : NULL,
 				$eOperation['paymentMode'],
-				'',
+				'',*/
 			];
 			$fecData[] = join('|', $operationData);
 

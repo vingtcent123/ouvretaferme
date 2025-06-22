@@ -6,90 +6,81 @@
 new Page()
 	->cli('index', function($data) {
 
-		$colonnes_obligatoires = [
-			'JournalCode', 'JournalLib', 'EcritureNum', 'EcritureDate',
-			'CompteNum', 'CompteLib', 'CompAuxNum', 'CompAuxLib',
-			'PieceRef', 'PieceDate', 'EcritureLib', 'Debit', 'Credit'
-		];
-
-		$filepath = '/tmp/fec.txt';
-		$handle = fopen($filepath, 'r');
-		if (!$handle) {
-			dd("Erreur : impossible d'ouvrir le fichier");
-		}
-
+		$cheminFichier = '/tmp/shared/fec.txt';
 		$erreurs = [];
-		$ligne_num = 0;
-		$total_debit = 0.0;
-		$total_credit = 0.0;
-		$doublons = [];
+		$totalDebit = 0;
+		$totalCredit = 0;
 
-		// Lecture en-tête
-		$header = fgetcsv($handle, 0, ';');
-		$ligne_num++;
-		if ($header !== $colonnes_obligatoires) {
-			$erreurs[] = "Colonnes incorrectes ou mal ordonnées.";
-			$erreurs[] = "Colonnes attendues : " . implode(', ', $colonnes_obligatoires);
-			$erreurs[] = "Colonnes trouvées : " . implode(', ', $header);
-			fclose($handle);
-			dd($erreurs);
+		// 1. Vérifier l'encodage UTF-8 sans BOM
+		$premiers_octets = file_get_contents($cheminFichier, false, null, 0, 3);
+		if ($premiers_octets === "\xEF\xBB\xBF") {
+			dd("Le fichier est en UTF-8 avec BOM. Il doit être en UTF-8 sans BOM.");
 		}
 
-		while (($data = fgetcsv($handle, 0, ';')) !== false) {
-			$ligne_num++;
-			$row = array_combine($header, $data);
+		$fichier = fopen($cheminFichier, 'r');
+		if (!$fichier) dd("Impossible d’ouvrir le fichier.");
 
-			// Vérification date EcritureDate
-			$date = DateTime::createFromFormat('Y-m-d', $row['EcritureDate']);
-			if (!$date || $date->format('Y-m-d') !== $row['EcritureDate']) {
-				$erreurs[] = "Ligne $ligne_num : date EcritureDate invalide ({$row['EcritureDate']}). Format attendu : YYYY-MM-DD.";
+		// 2. Vérification de l'en-tête
+		$colonnes_attendues = [
+			"JournalCode", "JournalLib", "EcritureNum", "EcritureDate", "CompteNum", "CompteLib",
+			"CompAuxNum", "CompAuxLib", "PieceRef", "PieceDate", "LibelleEcriture",
+			"Debit", "Credit", "EcritureLet", "DateLet",
+			"ValidDate", "MontantDevise", "IDevise"
+		];
+		$ligne = fgets($fichier);
+		if (!$ligne) dd("Le fichier est vide.");
+
+		$entetes = array_map('trim', explode('|', trim($ligne)));
+		if ($entetes !== $colonnes_attendues) {
+			$erreurs[] = "Les colonnes du FEC ne sont pas conformes à l’ordre ou au nom attendu.";
+			$erreurs[] = "Colonnes trouvées : " . implode(', ', $entetes);
+		}
+
+		$nLigne = 1;
+		while (($ligne = fgets($fichier)) !== false) {
+			$nLigne++;
+			$champs = explode('|', trim($ligne));
+
+			if (count($champs) !== 18) {
+				$erreurs[] = "Ligne $nLigne : doit contenir exactement 18 champs, trouvé " . count($champs);
+				continue;
 			}
 
-			// Vérification date PieceDate (peut être vide)
-			if ($row['PieceDate'] !== '') {
-				$datePiece = DateTime::createFromFormat('Y-m-d', $row['PieceDate']);
-				if (!$datePiece || $datePiece->format('Y-m-d') !== $row['PieceDate']) {
-					$erreurs[] = "Ligne $ligne_num : date PieceDate invalide ({$row['PieceDate']}). Format attendu : YYYY-MM-DD.";
+			// Vérification des dates (AAAAMMJJ)
+			$dates = [3, 9, 14, 15, 16]; // index des champs date
+			foreach ($dates as $i) {
+				$champ = $champs[$i];
+				if ($champ !== '' && !preg_match('/^\d{8}$/', $champ)) {
+					$erreurs[] = "Ligne $nLigne : date invalide dans " . $entetes[$i] . " : '$champ'";
+				} elseif ($champ !== '') {
+					$y = substr($champ, 0, 4);
+					$m = substr($champ, 4, 2);
+					$d = substr($champ, 6, 2);
+					if (!checkdate((int)$m, (int)$d, (int)$y)) {
+						$erreurs[] = "Ligne $nLigne : date non valide dans " . $entetes[$i] . " : '$champ'";
+					}
 				}
 			}
 
-			// Vérification débits et crédits
-			$debit = str_replace(',', '.', $row['Debit']);
-			$credit = str_replace(',', '.', $row['Credit']);
-			if (!is_numeric($debit)) {
-				$erreurs[] = "Ligne $ligne_num : Debit non numérique ({$row['Debit']}).";
-				$debit = 0;
-			}
-			if (!is_numeric($credit)) {
-				$erreurs[] = "Ligne $ligne_num : Credit non numérique ({$row['Credit']}).";
-				$credit = 0;
+			// Vérification des montants (numériques)
+			$montants = [11, 12, 16];
+			foreach ($montants as $i) {
+				$champ = $champs[$i];
+				if ($champ !== '' && !is_numeric($champ)) {
+					$erreurs[] = "Ligne $nLigne : champ numérique invalide (" . $entetes[$i] . ") : '$champ'";
+				}
 			}
 
-			if ($debit == 0 && $credit == 0) {
-				$erreurs[] = "Ligne $ligne_num : Debit et Credit tous deux nuls.";
-			}
-
-			$total_debit += (float)$debit;
-			$total_credit += (float)$credit;
-
-			// Recherche doublons (JournalCode + EcritureNum + CompteNum + Debit + Credit)
-			$doublon_key = $row['JournalCode'] . '|' . $row['EcritureNum'] . '|' . $row['CompteNum'] . '|' . $debit . '|' . $credit;
-			if (isset($doublons[$doublon_key])) {
-				$erreurs[] = "Ligne $ligne_num : doublon détecté avec la ligne {$doublons[$doublon_key]}.";
-			} else {
-				$doublons[$doublon_key] = $ligne_num;
-			}
+			// Totalisation débits/crédits
+			$totalDebit += floatval($champs[11] ?? 0);
+			$totalCredit += floatval($champs[12] ?? 0);
 		}
 
-		fclose($handle);
+		fclose($fichier);
 
-		// Vérification équilibre débits/crédits
-		if (round($total_debit, 2) !== round($total_credit, 2)) {
-			$erreurs[] = "Somme des débits ($total_debit) différente de la somme des crédits ($total_credit).";
-		}
-
-		if (empty($erreurs)) {
-			dd("Le fichier FEC est conforme aux règles de base.");
+		// Vérification équilibre
+		if (abs($totalDebit - $totalCredit) > 0.01) {
+			$erreurs[] = "Le total des débits ($totalDebit) est différent du total des crédits ($totalCredit)";
 		}
 
 		dd($erreurs);
