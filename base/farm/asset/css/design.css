@@ -650,9 +650,10 @@ body[data-template^="farm"] header a:hover {
 	}
 
 	.nav-title .farm-vignette-view {
-		width: 2rem !important;
-		height: 2rem !important;
-		min-width: 2rem !important;
+		width: 1.75rem !important;
+		height: 1.75rem !important;
+		min-width: 1.75rem !important;
+		font-size: 1rem !important;
 	}
 
 	.farm-tabs {
