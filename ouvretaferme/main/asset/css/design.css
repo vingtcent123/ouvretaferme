@@ -44,7 +44,7 @@
   background: #e5e5f3;
 }
 
-@media (min-width: 1100px) and (min-height: 600px) {
+@media (min-width: 1100px) and (min-height: 650px) {
 
 	:root {
 		--mainNav: 3.5rem;
@@ -53,7 +53,7 @@
 
 }
 
-@media (max-width: 1099px), (max-height: 599px) {
+@media (max-width: 1099px), (max-height: 649px) {
 
 	@media (max-width: 767px) {
 
@@ -262,7 +262,7 @@ body {
 
 }
 
-@media (max-width: 1099px), (max-height: 599px) {
+@media (max-width: 1099px), (max-height: 649px) {
 
 	body {
 		min-height: 150vh;
@@ -300,7 +300,7 @@ body[data-template~="default"] header {
 	padding: 1.5rem 0;
 }
 
-@media (min-height: 768px) and (min-width: 768px) {
+@media (min-width: 1100px) and (min-height: 650px) {
 
 	body[data-template~="farm"] header {
 		top: var(--mainNav);
@@ -314,7 +314,7 @@ body[data-template~="default"] header {
 }
 
 
-@media (max-width: 1099px), (max-height: 599px) {
+@media (max-width: 1099px), (max-height: 649px) {
 
 	body[data-template~="farm"] header {
 		top: 0;

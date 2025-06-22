@@ -15,8 +15,6 @@ new AdaptativeView('index', function($data, CompanyTemplate $t) {
 		$data->eFinancialYear,
 	);
 
-	$t->package('main')->updateNavAnalyze($t->canonical, 'bank');
-
 	echo new overview\BankUi()->get([$data->cOperationBank, $data->cOperationCash]);
 
 });

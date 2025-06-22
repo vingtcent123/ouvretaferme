@@ -641,8 +641,6 @@
 			throw new RedirectAction(\farm\FarmUi::urlAnalyzeCultivation($data->eFarm));
 		}
 
-		\farm\FarmerLib::setView('viewAnalyzeProduction', $data->eFarm, \farm\Farmer::WORKING_TIME);
-
 		$data->years = \series\AnalyzeLib::getYears($data->eFarm);
 
 		if($data->years) {
@@ -748,8 +746,6 @@
 			$data->season = ($currentSeason >= $data->eFarm['seasonFirst'] and $currentSeason <= $data->eFarm['seasonLast']) ? $currentSeason : $data->eFarm['seasonLast'];
 		}
 
-		\farm\FarmerLib::setView('viewAnalyzeCommercialisation', $data->eFarm, \farm\Farmer::REPORT);
-
 		$data->search = new Search([
 			'plant' => get_exists('plant') ? \plant\PlantLib::getById(GET('plant')) : NULL,
 		], REQUEST('sort'));
@@ -764,8 +760,6 @@
 		'/ferme/{id}/analyses/ventes/{year}/{category}',
 		'/ferme/{id}/analyses/ventes/{year}/{category}/compare/{compare}',
 		], function($data) {
-
-		\farm\FarmerLib::setView('viewAnalyzeCommercialisation', $data->eFarm, \farm\Farmer::SALES);
 
 		[$data->years, $data->salesByYear] = \selling\AnalyzeLib::getYears($data->eFarm);
 
@@ -920,8 +914,6 @@
 	->get(['/ferme/{id}/analyses/cultures', '/ferme/{id}/analyses/cultures/{season}/{category}'], function($data) {
 
 		$data->eFarm->validate('canAnalyze');
-
-		\farm\FarmerLib::setView('viewAnalyzeProduction', $data->eFarm, \farm\Farmer::CULTIVATION);
 
 		$data->seasons = $data->eFarm->getSeasons();
 

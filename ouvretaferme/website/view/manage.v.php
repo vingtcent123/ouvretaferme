@@ -5,8 +5,6 @@ new AdaptativeView('index', function($data, FarmTemplate $t) {
 	$t->nav = 'communications';
 	$t->subNav = 'website';
 
-	$t->package('main')->updateNavCommunications($t->canonical);
-
 	if($data->eWebsite->empty()) {
 
 		$t->mainTitle = '<h1>'.s("Créer le site internet de la ferme").'</h1>';

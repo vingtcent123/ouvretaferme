@@ -55,22 +55,11 @@ abstract class FarmerElement extends \Element {
 	const CUSTOMER = 'customer';
 	const SHOP = 'shop';
 
-	const CULTIVATION = 'cultivation';
-
-	const REPORT = 'report';
-	const SALES = 'sales';
-
 	const TURNOVER = 'turnover';
 	const QUANTITY = 'quantity';
 
 	const COMPOSITION = 'composition';
 	const INGREDIENT = 'ingredient';
-
-	const BANK = 'bank';
-	const CHARGES = 'charges';
-	const RESULT = 'result';
-	const BALANCE = 'balance';
-	const ACCOUNTING = 'accounting';
 
 	public static function getSelection(): array {
 		return Farmer::model()->getProperties();
@@ -123,19 +112,16 @@ class FarmerModel extends \ModuleModel {
 			'viewSellingCategory' => ['enum', [\farm\Farmer::ITEM, \farm\Farmer::CUSTOMER, \farm\Farmer::SHOP, \farm\Farmer::PERIOD], 'cast' => 'enum'],
 			'viewSellingCategoryCurrent' => ['element32', 'selling\Category', 'null' => TRUE, 'cast' => 'element'],
 			'viewShopCatalogCurrent' => ['element32', 'shop\Catalog', 'null' => TRUE, 'cast' => 'element'],
-			'viewAnalyzeProduction' => ['enum', [\farm\Farmer::WORKING_TIME, \farm\Farmer::CULTIVATION], 'cast' => 'enum'],
-			'viewAnalyzeCommercialisation' => ['enum', [\farm\Farmer::REPORT, \farm\Farmer::SALES], 'cast' => 'enum'],
 			'viewAnalyzeChart' => ['enum', [\farm\Farmer::TURNOVER, \farm\Farmer::QUANTITY], 'cast' => 'enum'],
 			'viewAnalyzeComposition' => ['enum', [\farm\Farmer::COMPOSITION, \farm\Farmer::INGREDIENT], 'cast' => 'enum'],
 			'viewAnalyzeYear' => ['int16', 'min' => 0, 'max' => NULL, 'null' => TRUE, 'cast' => 'int'],
-			'viewAnalyzeAccounting' => ['enum', [\farm\Farmer::BANK, \farm\Farmer::CHARGES, \farm\Farmer::RESULT, \farm\Farmer::BALANCE, \farm\Farmer::ACCOUNTING], 'cast' => 'enum'],
 			'viewSeason' => ['int16', 'min' => 0, 'max' => NULL, 'null' => TRUE, 'cast' => 'int'],
 			'viewShopCurrent' => ['element32', 'shop\Shop', 'null' => TRUE, 'cast' => 'element'],
 			'createdAt' => ['datetime', 'cast' => 'string'],
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'user', 'farm', 'farmGhost', 'farmStatus', 'status', 'role', 'viewPlanning', 'viewPlanningYear', 'viewPlanningCategory', 'viewPlanningHarvestExpected', 'viewPlanningField', 'viewPlanningArea', 'viewPlanningSearch', 'viewPlanningUser', 'viewCultivationCategory', 'viewSeries', 'viewSoil', 'viewSellingSales', 'viewSellingCategory', 'viewSellingCategoryCurrent', 'viewShopCatalogCurrent', 'viewAnalyzeProduction', 'viewAnalyzeCommercialisation', 'viewAnalyzeChart', 'viewAnalyzeComposition', 'viewAnalyzeYear', 'viewAnalyzeAccounting', 'viewSeason', 'viewShopCurrent', 'createdAt'
+			'id', 'user', 'farm', 'farmGhost', 'farmStatus', 'status', 'role', 'viewPlanning', 'viewPlanningYear', 'viewPlanningCategory', 'viewPlanningHarvestExpected', 'viewPlanningField', 'viewPlanningArea', 'viewPlanningSearch', 'viewPlanningUser', 'viewCultivationCategory', 'viewSeries', 'viewSoil', 'viewSellingSales', 'viewSellingCategory', 'viewSellingCategoryCurrent', 'viewShopCatalogCurrent', 'viewAnalyzeChart', 'viewAnalyzeComposition', 'viewAnalyzeYear', 'viewSeason', 'viewShopCurrent', 'createdAt'
 		]);
 
 		$this->propertiesToModule += [
@@ -196,20 +182,11 @@ class FarmerModel extends \ModuleModel {
 			case 'viewSellingCategory' :
 				return Farmer::ITEM;
 
-			case 'viewAnalyzeProduction' :
-				return Farmer::CULTIVATION;
-
-			case 'viewAnalyzeCommercialisation' :
-				return Farmer::SALES;
-
 			case 'viewAnalyzeChart' :
 				return Farmer::TURNOVER;
 
 			case 'viewAnalyzeComposition' :
 				return Farmer::COMPOSITION;
-
-			case 'viewAnalyzeAccounting' :
-				return Farmer::BANK;
 
 			case 'createdAt' :
 				return new \Sql('NOW()');
@@ -267,19 +244,10 @@ class FarmerModel extends \ModuleModel {
 			case 'viewSellingCategory' :
 				return ($value === NULL) ? NULL : (string)$value;
 
-			case 'viewAnalyzeProduction' :
-				return ($value === NULL) ? NULL : (string)$value;
-
-			case 'viewAnalyzeCommercialisation' :
-				return ($value === NULL) ? NULL : (string)$value;
-
 			case 'viewAnalyzeChart' :
 				return ($value === NULL) ? NULL : (string)$value;
 
 			case 'viewAnalyzeComposition' :
-				return ($value === NULL) ? NULL : (string)$value;
-
-			case 'viewAnalyzeAccounting' :
 				return ($value === NULL) ? NULL : (string)$value;
 
 			default :
@@ -399,14 +367,6 @@ class FarmerModel extends \ModuleModel {
 		return $this->where('viewShopCatalogCurrent', ...$data);
 	}
 
-	public function whereViewAnalyzeProduction(...$data): FarmerModel {
-		return $this->where('viewAnalyzeProduction', ...$data);
-	}
-
-	public function whereViewAnalyzeCommercialisation(...$data): FarmerModel {
-		return $this->where('viewAnalyzeCommercialisation', ...$data);
-	}
-
 	public function whereViewAnalyzeChart(...$data): FarmerModel {
 		return $this->where('viewAnalyzeChart', ...$data);
 	}
@@ -417,10 +377,6 @@ class FarmerModel extends \ModuleModel {
 
 	public function whereViewAnalyzeYear(...$data): FarmerModel {
 		return $this->where('viewAnalyzeYear', ...$data);
-	}
-
-	public function whereViewAnalyzeAccounting(...$data): FarmerModel {
-		return $this->where('viewAnalyzeAccounting', ...$data);
 	}
 
 	public function whereViewSeason(...$data): FarmerModel {

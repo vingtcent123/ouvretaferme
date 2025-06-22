@@ -7,8 +7,6 @@ new AdaptativeView('/ferme/{id}/boutique/{shop}', function($data, FarmTemplate $
 	$t->title = $data->eShop['name'];
 	$t->canonical = \farm\FarmUi::urlShopList($data->e);
 
-	$t->package('main')->updateNavShop($t->canonical);
-
 	$uiShopManage = new \shop\ShopManageUi();
 
 	$t->mainTitle = $uiShopManage->getHeader($data->e, $data->eShop, $data->ccShop);

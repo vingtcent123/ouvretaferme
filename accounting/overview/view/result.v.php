@@ -15,8 +15,6 @@ new AdaptativeView('index', function($data, CompanyTemplate $t) {
 		$data->eFinancialYear,
 	);
 
-	$t->package('main')->updateNavAnalyze($t->canonical, 'result');
-
 	echo '<div class="tabs-h" id="analyze-result" onrender="'.encode('Lime.Tab.restore(this, "result-month")').'">';
 
 		echo '<div class="tabs-item">';

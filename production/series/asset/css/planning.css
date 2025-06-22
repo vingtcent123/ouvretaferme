@@ -39,7 +39,7 @@
 	color: white;
 }
 
-@media (max-width: 1099px), (max-height: 599px) {
+@media (max-width: 1099px), (max-height: 649px) {
 
 	body[data-template~="farm-planning-yearly"] header {
 		position: relative;
@@ -113,7 +113,7 @@ body[data-template~="farm-planning-yearly"] {
 	min-height: 100vh;
 }
 
-@media (max-width: 1099px), (max-height: 599px) {
+@media (max-width: 1099px), (max-height: 649px) {
 
 	[data-template~="farm-planning-yearly"][data-template~="farm-planning-scrolling"],
 	[data-template~="farm-planning-daily"][data-template~="farm-planning-scrolling"] {

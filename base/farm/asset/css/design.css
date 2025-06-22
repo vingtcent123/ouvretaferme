@@ -32,15 +32,7 @@
 	opacity: 0.33;
 }
 
-@media (max-height: 649px) {
-
-	.farm-tab {
-		padding: 0.5rem;
-	}
-
-}
-
-@media (min-height: 650px) and (max-height: 699px) {
+@media (max-height: 699px) {
 
 	.farm-tab {
 		padding: 0.5rem;
@@ -85,30 +77,6 @@ a.farm-tab:not(.farm-tab-subnav):hover {
 
 .farm-tab .farm-tab-icon svg {
 	font-size: 1.2rem;
-}
-
-.farm-tab-complement {
-	display: inline-flex;
-	align-items: center;
-	line-height: 1;
-	border-radius: 1rem;
-	font-weight: normal;
-	margin-left: 0.5rem;
-	font-size: 0.9rem;
-	border: 1px solid white;
-	padding: 0.5rem;
-}
-
-@media (max-width: 1599px) {
-
-	body[data-template~="farm"] nav .farm-tab-complement {
-		padding: 0.5rem 0.375rem;
-	}
-
-}
-
-.farm-tab-complement svg {
-	margin-bottom: -0.125rem;
 }
 
 a.farm-subnav-item {
@@ -184,7 +152,7 @@ body[data-template^="farm"] header a:hover {
 	color: white;
 }
 
-@media (min-width: 1100px) and (min-height: 600px) {
+@media (min-width: 1100px) and (min-height: 650px) {
 
 	:root {
 		--nav-height: 8.5rem;
@@ -448,7 +416,7 @@ body[data-template^="farm"] header a:hover {
 
 }
 
-@media (max-width: 1099px), (max-height: 599px) {
+@media (max-width: 1099px), (max-height: 649px) {
 
 	body[data-template~="farm"] header {
 		position: sticky;
@@ -563,8 +531,9 @@ body[data-template^="farm"] header a:hover {
 			display: grid;
 			grid-gap: .5rem;
 			grid-template:
-					"planning analyze analyze" auto
-					"cultivation settings settings" 1fr / 1fr 1fr;
+					"planning cultivation" auto
+					"analyze cultivation" auto
+					"analyze settings" 1fr / 1fr 1fr;
 		}
 
 
@@ -663,8 +632,20 @@ body[data-template^="farm"] header a:hover {
 		padding: 0.5rem;
 	}
 
+	.farm-tab {
+		border-radius: var(--radius);
+	}
+
 	.farm-subnav-item {
 		border-radius: var(--radius);
+	}
+
+	@media (max-width: 449px) {
+
+		a.farm-subnav-item {
+			padding-left: 1rem;
+		}
+
 	}
 
 	.nav-year {

@@ -15,8 +15,6 @@ new AdaptativeView('index', function($data, CompanyTemplate $t) {
 		$data->eFinancialYear,
 	);
 
-	$t->package('main')->updateNavAnalyze($t->canonical, 'charges');
-
 	echo new overview\ChargesUi()->get($data->cOperation, $data->cAccount);
 
 });
