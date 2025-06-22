@@ -7,6 +7,11 @@ abstract class ConfigurationElement extends \Element {
 
 	private static ?ConfigurationModel $model = NULL;
 
+	const ALL = 'all';
+	const PRIVATE = 'private';
+	const PRO = 'pro';
+	const DISABLED = 'disabled';
+
 	public static function getSelection(): array {
 		return Configuration::model()->getProperties();
 	}
@@ -47,6 +52,7 @@ class ConfigurationModel extends \ModuleModel {
 			'organicCertifier' => ['text8', 'null' => TRUE, 'cast' => 'string'],
 			'paymentMode' => ['editor16', 'min' => 1, 'max' => 400, 'null' => TRUE, 'cast' => 'string'],
 			'documentCopy' => ['bool', 'cast' => 'bool'],
+			'documentTarget' => ['enum', [\selling\Configuration::ALL, \selling\Configuration::PRIVATE, \selling\Configuration::PRO, \selling\Configuration::DISABLED], 'cast' => 'enum'],
 			'orderFormPrefix' => ['text8', 'min' => 1, 'max' => 15, 'cast' => 'string'],
 			'orderFormDelivery' => ['bool', 'cast' => 'bool'],
 			'orderFormPaymentCondition' => ['editor16', 'min' => 1, 'max' => 400, 'null' => TRUE, 'cast' => 'string'],
@@ -63,7 +69,7 @@ class ConfigurationModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'farm', 'documentSales', 'documentInvoices', 'hasVat', 'defaultVat', 'defaultVatShipping', 'invoiceVat', 'organicCertifier', 'paymentMode', 'documentCopy', 'orderFormPrefix', 'orderFormDelivery', 'orderFormPaymentCondition', 'orderFormHeader', 'orderFormFooter', 'deliveryNotePrefix', 'creditPrefix', 'invoicePrefix', 'invoicePaymentCondition', 'invoiceHeader', 'invoiceFooter', 'marketSalePaymentMethod', 'pdfNaturalOrder'
+			'id', 'farm', 'documentSales', 'documentInvoices', 'hasVat', 'defaultVat', 'defaultVatShipping', 'invoiceVat', 'organicCertifier', 'paymentMode', 'documentCopy', 'documentTarget', 'orderFormPrefix', 'orderFormDelivery', 'orderFormPaymentCondition', 'orderFormHeader', 'orderFormFooter', 'deliveryNotePrefix', 'creditPrefix', 'invoicePrefix', 'invoicePaymentCondition', 'invoiceHeader', 'invoiceFooter', 'marketSalePaymentMethod', 'pdfNaturalOrder'
 		]);
 
 		$this->propertiesToModule += [
@@ -93,6 +99,9 @@ class ConfigurationModel extends \ModuleModel {
 			case 'documentCopy' :
 				return FALSE;
 
+			case 'documentTarget' :
+				return Configuration::PRO;
+
 			case 'orderFormPrefix' :
 				return \selling\ConfigurationUi::getDefaultOrderFormPrefix();
 
@@ -113,6 +122,20 @@ class ConfigurationModel extends \ModuleModel {
 
 			default :
 				return parent::getDefaultValue($property);
+
+		}
+
+	}
+
+	public function encode(string $property, $value) {
+
+		switch($property) {
+
+			case 'documentTarget' :
+				return ($value === NULL) ? NULL : (string)$value;
+
+			default :
+				return parent::encode($property, $value);
 
 		}
 
@@ -168,6 +191,10 @@ class ConfigurationModel extends \ModuleModel {
 
 	public function whereDocumentCopy(...$data): ConfigurationModel {
 		return $this->where('documentCopy', ...$data);
+	}
+
+	public function whereDocumentTarget(...$data): ConfigurationModel {
+		return $this->where('documentTarget', ...$data);
 	}
 
 	public function whereOrderFormPrefix(...$data): ConfigurationModel {

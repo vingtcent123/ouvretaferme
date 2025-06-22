@@ -33,7 +33,6 @@ new \website\WebpagePage()
 
 		$data->eFarm = \farm\FarmLib::getById($data->e['website']['farm'])->validate('canManage');
 
-
 		throw new ViewAction($data);
 
 	})

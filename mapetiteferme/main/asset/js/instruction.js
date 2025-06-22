@@ -12,7 +12,7 @@ new Lime.Instruction('main')
 			companyNav.qs('[data-tab="'+ tab +'"]', node => node.classList.add('selected'));
 
 			if(subTab !== null) {
-				companyNav.qs('[data-sub-tab="'+ subTab +'"]', node => node.classList.add('selected'));
+				companyNav.qs('[data-sub-nav="'+ subTab +'"]', node => node.classList.add('selected'));
 			}
 
 			const seasonNav = qs('#company-subnav');
@@ -72,9 +72,6 @@ new Lime.Instruction('main')
 		}
 
 
-	})
-	.register('updateNavSettings', function(url) {
-		qs('#company-nav [data-tab="settings"]', node => node.setAttribute('href', url));
 	})
 	.register('updateNavFinances', function(url) {
 		qs('#company-nav [data-tab="finances"]', node => node.setAttribute('href', url));

@@ -7,7 +7,7 @@ class MainTemplate extends BaseTemplate {
 	/**
 	 * Display nav ?
 	 */
-	public bool $nav = TRUE;
+	public bool $hasNav = TRUE;
 
 	/**
 	 * Header content
@@ -105,7 +105,7 @@ class MainTemplate extends BaseTemplate {
 
 	protected function getDefaultNav(?string $center = NULL): string {
 
-		if($this->nav === FALSE) {
+		if($this->hasNav === FALSE) {
 			return '';
 		}
 

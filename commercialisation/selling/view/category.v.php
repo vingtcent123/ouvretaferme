@@ -2,8 +2,8 @@
 new AdaptativeView('manage', function($data, FarmTemplate $t) {
 
 	$t->title = s("Les catégories de produits de {value}", $data->eFarm['name']);
-	$t->tab = 'selling';
-	$t->subNav = new \farm\FarmUi()->getSellingSubNav($data->eFarm);
+	$t->nav = 'selling';
+	$t->subNav = 'product';
 
 	$t->mainTitle = new \selling\CategoryUi()->getManageTitle($data->eFarm, $data->cCategory);
 

@@ -22,7 +22,6 @@ new Page()
 		$data->eFarm = \farm\FarmLib::getById(GET('farm'))->validate('canManage');
 		$data->cUnit = \selling\UnitLib::getByFarm($data->eFarm, sort: new \Sql('fqn IS NULL, id ASC'));
 
-
 		throw new \ViewAction($data);
 
 	});

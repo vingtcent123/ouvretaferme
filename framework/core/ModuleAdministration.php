@@ -665,7 +665,7 @@ class ModuleAdministration {
 						continue;
 					}
 
-					// Determine the starting ID value of the sub-table.
+					// Determine the starting ID value of the sub-navle.
 					if($hasSerial) {
 						$fields['id'][1][1] = $this->getStartValue($fields['id'][1][0], $suffix, $this->mElement->getSplit());
 					}

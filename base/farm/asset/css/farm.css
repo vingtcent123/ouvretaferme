@@ -68,6 +68,7 @@ div.farmer-farms-item-infos {
 	color: var(--muted);
 	font-size: 0.9rem;
 	margin: 0.25rem 0;
+	line-height: 1.2;
 }
 
 /* Farm update */

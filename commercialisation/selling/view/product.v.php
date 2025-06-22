@@ -3,8 +3,8 @@ new AdaptativeView('/produit/{id}', function($data, FarmTemplate $t) {
 
 	$t->title = s("Produit {value}", encode($data->e['name']));
 
-	$t->tab = 'selling';
-	$t->subNav = new \farm\FarmUi()->getSellingSubNav($data->eFarm);
+	$t->nav = 'selling';
+	$t->subNav = 'product';
 
 	$t->mainTitle = new \selling\ProductUi()->displayTitle($data->e, $data->switchComposition);
 

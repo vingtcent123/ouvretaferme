@@ -2,8 +2,6 @@
 new \farm\FarmPage()
 	->read('/ferme/{id}/date/{date}', function($data) {
 
-		\farm\FarmerLib::setView('viewShop', $data->e, \farm\Farmer::SHOP);
-
 		$data->eDate = \shop\DateLib::getById(GET('date'))->validate();
 
 		$data->eShop = \shop\ShopLib::getById($data->eDate['shop'])->validateShareRead($data->e);

@@ -140,11 +140,11 @@ body[data-template~="farm-planning-daily"] main > div.container {
 }
 
 body[data-touch="no"][data-template~="farm-planning-daily"] main {
-	height: calc(100vh - var(--mainNav) - var(--farmNav) - var(--farmSubNav));
+	height: calc(100vh - var(--mainNav) - var(--farmNav));
 }
 
 body[data-touch="yes"][data-template~="farm-planning-daily"] main {
-	height: calc(100vh - var(--farmNav) - var(--farmSubNav));
+	height: calc(100vh - var(--farmNav));
 }
 
 #planning-container-daily {

@@ -20,8 +20,6 @@ new \selling\CustomerPage()
 
 		$data->eFarm = \farm\FarmLib::getById($data->e['farm']);
 
-		\farm\FarmerLib::setView('viewSelling', $data->eFarm, \farm\Farmer::CUSTOMER);
-
 		$data->cGrid = \selling\GridLib::getByCustomer($data->e);
 		$data->cSale = \selling\SaleLib::getByCustomer($data->e);
 		$data->cInvoice = \selling\InvoiceLib::getByCustomer($data->e, selectSales: TRUE);

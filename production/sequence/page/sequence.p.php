@@ -8,8 +8,6 @@ new \sequence\SequencePage()
 
 		$data->eFarm = \farm\FarmLib::getById($data->e['farm'])->validate('active');
 
-		\farm\FarmerLib::setView('viewCultivation', $data->eFarm, \farm\Farmer::SEQUENCE);
-
 		$data->cFlow = \sequence\FlowLib::getBySequence($data->e);
 
 		if($data->cFlow->count() === 2) {

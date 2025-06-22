@@ -13,8 +13,8 @@ new \farm\FarmPage()
 	});
 
 new \selling\ConfigurationPage()
-	->doUpdateProperties('doUpdateDeliveryNote', ['deliveryNotePrefix'], fn() => throw new ReloadAction('selling', 'Configuration::updated'))
-	->doUpdateProperties('doUpdateOrderForm', ['orderFormPrefix', 'orderFormDelivery', 'orderFormPaymentCondition', 'orderFormHeader', 'orderFormFooter'], fn() => throw new ReloadAction('selling', 'Configuration::updated'))
+	->doUpdateProperties('doUpdateDeliveryNote', ['documentTarget', 'deliveryNotePrefix'], fn() => throw new ReloadAction('selling', 'Configuration::updated'))
+	->doUpdateProperties('doUpdateOrderForm', ['documentTarget', 'orderFormPrefix', 'orderFormDelivery', 'orderFormPaymentCondition', 'orderFormHeader', 'orderFormFooter'], fn() => throw new ReloadAction('selling', 'Configuration::updated'))
 	->doUpdateProperties('doUpdateInvoice', ['invoicePrefix', 'documentInvoices', 'creditPrefix', 'invoicePaymentCondition', 'invoiceHeader', 'invoiceFooter'], fn() => throw new ReloadAction('selling', 'Configuration::updated'))
 	->doUpdate(fn() => throw new ReloadAction('selling', 'Configuration::updated'), onKo: fn() => \selling\Configuration::fail('error'));
 ?>

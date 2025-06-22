@@ -11,11 +11,6 @@ abstract class FarmElement extends \Element {
 	const NATURE_PROGRES = 'nature-progres';
 	const CONVERSION = 'conversion';
 
-	const ALL = 'all';
-	const PRIVATE = 'private';
-	const PRO = 'pro';
-	const DISABLED = 'disabled';
-
 	const ACTIVE = 'active';
 	const CLOSED = 'closed';
 
@@ -78,7 +73,6 @@ class FarmModel extends \ModuleModel {
 			'planningDelayedMax' => ['int8', 'min' => 1, 'max' => 6, 'null' => TRUE, 'cast' => 'int'],
 			'featureTime' => ['bool', 'cast' => 'bool'],
 			'featureStock' => ['bool', 'cast' => 'bool'],
-			'featureDocument' => ['enum', [\farm\Farm::ALL, \farm\Farm::PRIVATE, \farm\Farm::PRO, \farm\Farm::DISABLED], 'cast' => 'enum'],
 			'stockNotes' => ['text16', 'null' => TRUE, 'cast' => 'string'],
 			'stockNotesUpdatedAt' => ['datetime', 'null' => TRUE, 'cast' => 'string'],
 			'stockNotesUpdatedBy' => ['element32', 'user\User', 'null' => TRUE, 'cast' => 'element'],
@@ -91,7 +85,7 @@ class FarmModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'name', 'legalName', 'legalEmail', 'siret', 'legalStreet1', 'legalStreet2', 'legalPostcode', 'legalCity', 'vignette', 'place', 'placeLngLat', 'url', 'description', 'logo', 'emailBanner', 'emailFooter', 'seasonFirst', 'seasonLast', 'rotationYears', 'rotationExclude', 'quality', 'defaultBedLength', 'defaultBedWidth', 'defaultAlleyWidth', 'calendarMonthStart', 'calendarMonthStop', 'planningDelayedMax', 'featureTime', 'featureStock', 'featureDocument', 'stockNotes', 'stockNotesUpdatedAt', 'stockNotesUpdatedBy', 'hasShops', 'hasSales', 'hasCultivations', 'startedAt', 'createdAt', 'status'
+			'id', 'name', 'legalName', 'legalEmail', 'siret', 'legalStreet1', 'legalStreet2', 'legalPostcode', 'legalCity', 'vignette', 'place', 'placeLngLat', 'url', 'description', 'logo', 'emailBanner', 'emailFooter', 'seasonFirst', 'seasonLast', 'rotationYears', 'rotationExclude', 'quality', 'defaultBedLength', 'defaultBedWidth', 'defaultAlleyWidth', 'calendarMonthStart', 'calendarMonthStop', 'planningDelayedMax', 'featureTime', 'featureStock', 'stockNotes', 'stockNotesUpdatedAt', 'stockNotesUpdatedBy', 'hasShops', 'hasSales', 'hasCultivations', 'startedAt', 'createdAt', 'status'
 		]);
 
 		$this->propertiesToModule += [
@@ -128,9 +122,6 @@ class FarmModel extends \ModuleModel {
 			case 'featureStock' :
 				return FALSE;
 
-			case 'featureDocument' :
-				return Farm::PRO;
-
 			case 'hasShops' :
 				return FALSE;
 
@@ -164,9 +155,6 @@ class FarmModel extends \ModuleModel {
 				return $value === NULL ? NULL : json_encode($value, JSON_UNESCAPED_UNICODE);
 
 			case 'quality' :
-				return ($value === NULL) ? NULL : (string)$value;
-
-			case 'featureDocument' :
 				return ($value === NULL) ? NULL : (string)$value;
 
 			case 'status' :
@@ -322,10 +310,6 @@ class FarmModel extends \ModuleModel {
 
 	public function whereFeatureStock(...$data): FarmModel {
 		return $this->where('featureStock', ...$data);
-	}
-
-	public function whereFeatureDocument(...$data): FarmModel {
-		return $this->where('featureDocument', ...$data);
 	}
 
 	public function whereStockNotes(...$data): FarmModel {

@@ -32,8 +32,8 @@ new \farm\FarmPage()
 
 		throw new ViewAction($data);
 
-	}, page: 'updateSeries')
-	->doUpdateProperties('doUpdateSeries', ['calendarMonthStart', 'calendarMonthStop', 'rotationYears', 'rotationExclude'], fn() => throw new ReloadAction('farm', 'Farm::updatedRotation'))
+	}, page: 'updateProduction')
+	->doUpdateProperties('doUpdateProduction', ['defaultBedLength', 'defaultBedWidth', 'defaultAlleyWidth', 'featureTime', 'calendarMonthStart', 'calendarMonthStop', 'rotationYears', 'rotationExclude'], fn() => throw new ReloadAction('farm', 'Farm::updatedRotation'))
 	->update(function($data) {
 
 		$data->eFarm = $data->e;
@@ -42,14 +42,6 @@ new \farm\FarmPage()
 
 	}, page: 'updateEmail')
 	->doUpdateProperties('doUpdateEmail', ['emailFooter'], fn() => throw new ReloadAction('farm', 'Farm::updatedEmail'))
-	->update(function($data) {
-
-		$data->eFarm = $data->e;
-
-		throw new ViewAction($data);
-
-	}, page: 'updateFeature')
-	->doUpdateProperties('doUpdateFeature', ['featureTime', 'featureDocument'], fn() => throw new ReloadAction('farm', 'Farm::updatedFeatures'))
 	->doUpdateProperties('doUpdatePlanningDelayedMax', ['planningDelayedMax'], fn() => throw new ReloadAction())
 	->read('calendarMonth', function($data) {
 

@@ -352,28 +352,28 @@ class CompanyUi {
 
 				if($eFarm->canManage() === TRUE) {
 
-					$h .= '<a href="'.CompanyUi::url($eFarm).'/company:update?id='.$eFarm['id'].'" class="bg-secondary util-button">';
+					$h .= '<a href="'.CompanyUi::url($eFarm).'/company:update?id='.$eFarm['id'].'" class="util-button">';
 						$h .= '<h4>'.s("Les réglages de base<br/>de la ferme").'</h4>';
 						$h .= \Asset::icon('gear-fill');
 					$h .= '</a>';
 
-					$h .= '<a href="'.SubscriptionUi::urlManage($eFarm).'" class="bg-secondary util-button">';
+					$h .= '<a href="'.SubscriptionUi::urlManage($eFarm).'" class="util-button">';
 						$h .= '<h4>'.s("L'abonnement<br/>de la ferme").'</h4>';
 						$h .= \Asset::icon('cart4');
 					$h .= '</a>';
 
-					/*$h .= '<a href="'.EmployeeUi::urlManage($eFarm).'" class="bg-secondary util-button">';
+					/*$h .= '<a href="'.EmployeeUi::urlManage($eFarm).'" class="util-button">';
 						$h .= '<h4>'.s("L'équipe").'</h4>';
 						$h .= \Asset::icon('people-fill');
 					$h .= '</a>';*/
 				}
 
-				$h .= '<a href="'.CompanyUi::urlBank($eFarm).'/account" class="bg-secondary util-button">';
+				$h .= '<a href="'.CompanyUi::urlBank($eFarm).'/account" class="util-button">';
 					$h .= '<h4>'.s("Les comptes bancaires").'</h4>';
 					$h .= \Asset::icon('bank');
 				$h .= '</a>';
 
-				$h .= '<a href="'.CompanyUi::urlAccount($eFarm).'/thirdParty" class="bg-secondary util-button">';
+				$h .= '<a href="'.CompanyUi::urlAccount($eFarm).'/thirdParty" class="util-button">';
 					$h .= '<h4>'.s("Les tiers").'</h4>';
 					$h .= \Asset::icon('person-rolodex');
 				$h .= '</a>';
@@ -388,12 +388,12 @@ class CompanyUi {
 
 			$h .= '<div class="util-buttons">';
 
-				$h .= '<a href="'.CompanyUi::urlAccount($eFarm).'/account" class="bg-secondary util-button">';
+				$h .= '<a href="'.CompanyUi::urlAccount($eFarm).'/account" class="util-button">';
 					$h .= '<h4>'.s("Les classes de compte").'</h4>';
 					$h .= \Asset::icon('gear-fill');
 				$h .= '</a>';
 
-				$h .= '<a href="'.CompanyUi::urlAccount($eFarm).'/financialYear/" class="bg-secondary util-button">';
+				$h .= '<a href="'.CompanyUi::urlAccount($eFarm).'/financialYear/" class="util-button">';
 					$h .= '<h4>'.s("Les exercices comptables").'</h4>';
 					$h .= \Asset::icon('calendar3');
 				$h .= '</a>';
@@ -485,7 +485,7 @@ class CompanyUi {
 
 			foreach(self::getBankCategories($eFarm) as $key => ['url' => $url, 'label' => $label]) {
 
-				$h .= '<a href="'.$url.'" class="company-subnav-item '.($key === $selectedView ? 'selected' : '').'" data-sub-tab="'.$key.'">';
+				$h .= '<a href="'.$url.'" class="company-subnav-item '.($key === $selectedView ? 'selected' : '').'" data-sub-nav="'.$key.'">';
 					$h .= $prefix.'<span>'.$label.'</span>';
 				$h .= '</a>';
 			}
@@ -529,7 +529,7 @@ class CompanyUi {
 
 			foreach(self::getAssetCategories($eFarm) as $key => ['url' => $url, 'label' => $label]) {
 
-				$h .= '<a href="'.$url.'" class="company-subnav-item '.($key === $selectedView ? 'selected' : '').'" data-sub-tab="'.$key.'">';
+				$h .= '<a href="'.$url.'" class="company-subnav-item '.($key === $selectedView ? 'selected' : '').'" data-sub-nav="'.$key.'">';
 					$h .= $prefix.'<span>'.$label.'</span>';
 				$h .= '</a>';
 			}
@@ -565,7 +565,7 @@ class CompanyUi {
 
 			foreach(self::getStatementCategories($eFarm) as $key => ['url' => $url, 'label' => $label]) {
 
-				$h .= '<a href="'.$url.'" class="company-subnav-item '.($key === $selectedView ? 'selected' : '').'" data-sub-tab="'.$key.'">';
+				$h .= '<a href="'.$url.'" class="company-subnav-item '.($key === $selectedView ? 'selected' : '').'" data-sub-nav="'.$key.'">';
 					$h .= $prefix.'<span>'.$label.'</span>';
 				$h .= '</a>';
 			}

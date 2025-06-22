@@ -110,7 +110,7 @@ class ActionUi {
 		$h = '<div class="util-action">';
 
 			$h .= '<h1>';
-				$h .= '<a href="'.FarmUi::urlSettings($eFarm).'"  class="h-back">'.\Asset::icon('arrow-left').'</a>';
+				$h .= '<a href="'.FarmUi::urlSettingsProduction($eFarm).'"  class="h-back">'.\Asset::icon('arrow-left').'</a>';
 				$h .= s("Interventions");
 			$h .= '</h1>';
 

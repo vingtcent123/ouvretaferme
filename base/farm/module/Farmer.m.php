@@ -36,25 +36,15 @@ abstract class FarmerElement extends \Element {
 	const AREA = 'area';
 	const LENGTH = 'length';
 
-	const SERIES = 'series';
-	const SEQUENCE = 'sequence';
-
 	const PLANT = 'plant';
 	const FAMILY = 'family';
-	const ROTATION = 'rotation';
 
-	const FORECAST = 'forecast';
 	const SEEDLING = 'seedling';
 	const HARVESTING = 'harvesting';
 	const WORKING_TIME = 'working-time';
 
 	const PLAN = 'plan';
-
-	const SALE = 'sale';
-	const PRODUCT = 'product';
-	const CUSTOMER = 'customer';
-	const INVOICE = 'invoice';
-	const STOCK = 'stock';
+	const ROTATION = 'rotation';
 
 	const ALL = 'all';
 	const PRIVATE = 'private';
@@ -62,23 +52,19 @@ abstract class FarmerElement extends \Element {
 	const LABEL = 'label';
 
 	const ITEM = 'item';
+	const CUSTOMER = 'customer';
 	const SHOP = 'shop';
 
-	const CATALOG = 'catalog';
-	const POINT = 'point';
+	const CULTIVATION = 'cultivation';
 
 	const REPORT = 'report';
 	const SALES = 'sales';
-	const CULTIVATION = 'cultivation';
 
 	const TURNOVER = 'turnover';
 	const QUANTITY = 'quantity';
 
 	const COMPOSITION = 'composition';
 	const INGREDIENT = 'ingredient';
-
-	const SETTINGS = 'settings';
-	const WEBSITE = 'website';
 
 	public static function getSelection(): array {
 		return Farmer::model()->getProperties();
@@ -124,28 +110,25 @@ class FarmerModel extends \ModuleModel {
 			'viewPlanningArea' => ['enum', [\farm\Farmer::AREA, \farm\Farmer::LENGTH], 'cast' => 'enum'],
 			'viewPlanningSearch' => ['json', 'null' => TRUE, 'cast' => 'array'],
 			'viewPlanningUser' => ['element32', 'user\User', 'null' => TRUE, 'cast' => 'element'],
-			'viewCultivation' => ['enum', [\farm\Farmer::SERIES, \farm\Farmer::SOIL, \farm\Farmer::SEQUENCE], 'cast' => 'enum'],
-			'viewCultivationCategory' => ['enum', [\farm\Farmer::AREA, \farm\Farmer::PLANT, \farm\Farmer::FAMILY, \farm\Farmer::ROTATION], 'cast' => 'enum'],
-			'viewSeries' => ['enum', [\farm\Farmer::AREA, \farm\Farmer::FORECAST, \farm\Farmer::SEEDLING, \farm\Farmer::HARVESTING, \farm\Farmer::WORKING_TIME], 'cast' => 'enum'],
+			'viewCultivationCategory' => ['enum', [\farm\Farmer::AREA, \farm\Farmer::PLANT, \farm\Farmer::FAMILY], 'cast' => 'enum'],
+			'viewSeries' => ['enum', [\farm\Farmer::AREA, \farm\Farmer::SEEDLING, \farm\Farmer::HARVESTING, \farm\Farmer::WORKING_TIME], 'cast' => 'enum'],
 			'viewSoil' => ['enum', [\farm\Farmer::PLAN, \farm\Farmer::ROTATION], 'cast' => 'enum'],
-			'viewSelling' => ['enum', [\farm\Farmer::SALE, \farm\Farmer::PRODUCT, \farm\Farmer::CUSTOMER, \farm\Farmer::INVOICE, \farm\Farmer::STOCK], 'cast' => 'enum'],
 			'viewSellingSales' => ['enum', [\farm\Farmer::ALL, \farm\Farmer::PRIVATE, \farm\Farmer::PRO, \farm\Farmer::LABEL], 'cast' => 'enum'],
 			'viewSellingCategory' => ['enum', [\farm\Farmer::ITEM, \farm\Farmer::CUSTOMER, \farm\Farmer::SHOP, \farm\Farmer::PERIOD], 'cast' => 'enum'],
 			'viewSellingCategoryCurrent' => ['element32', 'selling\Category', 'null' => TRUE, 'cast' => 'element'],
-			'viewShop' => ['enum', [\farm\Farmer::SHOP, \farm\Farmer::CATALOG, \farm\Farmer::POINT], 'cast' => 'enum'],
 			'viewShopCatalogCurrent' => ['element32', 'shop\Catalog', 'null' => TRUE, 'cast' => 'element'],
-			'viewAnalyze' => ['enum', [\farm\Farmer::WORKING_TIME, \farm\Farmer::REPORT, \farm\Farmer::SALES, \farm\Farmer::CULTIVATION], 'cast' => 'enum'],
+			'viewAnalyzeProduction' => ['enum', [\farm\Farmer::WORKING_TIME, \farm\Farmer::CULTIVATION], 'cast' => 'enum'],
+			'viewAnalyzeCommercialisation' => ['enum', [\farm\Farmer::REPORT, \farm\Farmer::SALES], 'cast' => 'enum'],
 			'viewAnalyzeChart' => ['enum', [\farm\Farmer::TURNOVER, \farm\Farmer::QUANTITY], 'cast' => 'enum'],
 			'viewAnalyzeComposition' => ['enum', [\farm\Farmer::COMPOSITION, \farm\Farmer::INGREDIENT], 'cast' => 'enum'],
 			'viewAnalyzeYear' => ['int16', 'min' => 0, 'max' => NULL, 'null' => TRUE, 'cast' => 'int'],
-			'viewSettings' => ['enum', [\farm\Farmer::SETTINGS, \farm\Farmer::WEBSITE], 'cast' => 'enum'],
 			'viewSeason' => ['int16', 'min' => 0, 'max' => NULL, 'null' => TRUE, 'cast' => 'int'],
 			'viewShopCurrent' => ['element32', 'shop\Shop', 'null' => TRUE, 'cast' => 'element'],
 			'createdAt' => ['datetime', 'cast' => 'string'],
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'user', 'farm', 'farmGhost', 'farmStatus', 'status', 'role', 'viewPlanning', 'viewPlanningYear', 'viewPlanningCategory', 'viewPlanningHarvestExpected', 'viewPlanningField', 'viewPlanningArea', 'viewPlanningSearch', 'viewPlanningUser', 'viewCultivation', 'viewCultivationCategory', 'viewSeries', 'viewSoil', 'viewSelling', 'viewSellingSales', 'viewSellingCategory', 'viewSellingCategoryCurrent', 'viewShop', 'viewShopCatalogCurrent', 'viewAnalyze', 'viewAnalyzeChart', 'viewAnalyzeComposition', 'viewAnalyzeYear', 'viewSettings', 'viewSeason', 'viewShopCurrent', 'createdAt'
+			'id', 'user', 'farm', 'farmGhost', 'farmStatus', 'status', 'role', 'viewPlanning', 'viewPlanningYear', 'viewPlanningCategory', 'viewPlanningHarvestExpected', 'viewPlanningField', 'viewPlanningArea', 'viewPlanningSearch', 'viewPlanningUser', 'viewCultivationCategory', 'viewSeries', 'viewSoil', 'viewSellingSales', 'viewSellingCategory', 'viewSellingCategoryCurrent', 'viewShopCatalogCurrent', 'viewAnalyzeProduction', 'viewAnalyzeCommercialisation', 'viewAnalyzeChart', 'viewAnalyzeComposition', 'viewAnalyzeYear', 'viewSeason', 'viewShopCurrent', 'createdAt'
 		]);
 
 		$this->propertiesToModule += [
@@ -191,9 +174,6 @@ class FarmerModel extends \ModuleModel {
 			case 'viewPlanningArea' :
 				return Farmer::LENGTH;
 
-			case 'viewCultivation' :
-				return Farmer::SERIES;
-
 			case 'viewCultivationCategory' :
 				return Farmer::AREA;
 
@@ -203,29 +183,23 @@ class FarmerModel extends \ModuleModel {
 			case 'viewSoil' :
 				return Farmer::PLAN;
 
-			case 'viewSelling' :
-				return Farmer::SALE;
-
 			case 'viewSellingSales' :
 				return Farmer::ALL;
 
 			case 'viewSellingCategory' :
 				return Farmer::ITEM;
 
-			case 'viewShop' :
-				return Farmer::SHOP;
+			case 'viewAnalyzeProduction' :
+				return Farmer::CULTIVATION;
 
-			case 'viewAnalyze' :
-				return Farmer::WORKING_TIME;
+			case 'viewAnalyzeCommercialisation' :
+				return Farmer::SALES;
 
 			case 'viewAnalyzeChart' :
 				return Farmer::TURNOVER;
 
 			case 'viewAnalyzeComposition' :
 				return Farmer::COMPOSITION;
-
-			case 'viewSettings' :
-				return Farmer::SETTINGS;
 
 			case 'createdAt' :
 				return new \Sql('NOW()');
@@ -268,9 +242,6 @@ class FarmerModel extends \ModuleModel {
 			case 'viewPlanningSearch' :
 				return $value === NULL ? NULL : json_encode($value, JSON_UNESCAPED_UNICODE);
 
-			case 'viewCultivation' :
-				return ($value === NULL) ? NULL : (string)$value;
-
 			case 'viewCultivationCategory' :
 				return ($value === NULL) ? NULL : (string)$value;
 
@@ -280,28 +251,22 @@ class FarmerModel extends \ModuleModel {
 			case 'viewSoil' :
 				return ($value === NULL) ? NULL : (string)$value;
 
-			case 'viewSelling' :
-				return ($value === NULL) ? NULL : (string)$value;
-
 			case 'viewSellingSales' :
 				return ($value === NULL) ? NULL : (string)$value;
 
 			case 'viewSellingCategory' :
 				return ($value === NULL) ? NULL : (string)$value;
 
-			case 'viewShop' :
+			case 'viewAnalyzeProduction' :
 				return ($value === NULL) ? NULL : (string)$value;
 
-			case 'viewAnalyze' :
+			case 'viewAnalyzeCommercialisation' :
 				return ($value === NULL) ? NULL : (string)$value;
 
 			case 'viewAnalyzeChart' :
 				return ($value === NULL) ? NULL : (string)$value;
 
 			case 'viewAnalyzeComposition' :
-				return ($value === NULL) ? NULL : (string)$value;
-
-			case 'viewSettings' :
 				return ($value === NULL) ? NULL : (string)$value;
 
 			default :
@@ -393,10 +358,6 @@ class FarmerModel extends \ModuleModel {
 		return $this->where('viewPlanningUser', ...$data);
 	}
 
-	public function whereViewCultivation(...$data): FarmerModel {
-		return $this->where('viewCultivation', ...$data);
-	}
-
 	public function whereViewCultivationCategory(...$data): FarmerModel {
 		return $this->where('viewCultivationCategory', ...$data);
 	}
@@ -407,10 +368,6 @@ class FarmerModel extends \ModuleModel {
 
 	public function whereViewSoil(...$data): FarmerModel {
 		return $this->where('viewSoil', ...$data);
-	}
-
-	public function whereViewSelling(...$data): FarmerModel {
-		return $this->where('viewSelling', ...$data);
 	}
 
 	public function whereViewSellingSales(...$data): FarmerModel {
@@ -425,16 +382,16 @@ class FarmerModel extends \ModuleModel {
 		return $this->where('viewSellingCategoryCurrent', ...$data);
 	}
 
-	public function whereViewShop(...$data): FarmerModel {
-		return $this->where('viewShop', ...$data);
-	}
-
 	public function whereViewShopCatalogCurrent(...$data): FarmerModel {
 		return $this->where('viewShopCatalogCurrent', ...$data);
 	}
 
-	public function whereViewAnalyze(...$data): FarmerModel {
-		return $this->where('viewAnalyze', ...$data);
+	public function whereViewAnalyzeProduction(...$data): FarmerModel {
+		return $this->where('viewAnalyzeProduction', ...$data);
+	}
+
+	public function whereViewAnalyzeCommercialisation(...$data): FarmerModel {
+		return $this->where('viewAnalyzeCommercialisation', ...$data);
 	}
 
 	public function whereViewAnalyzeChart(...$data): FarmerModel {
@@ -447,10 +404,6 @@ class FarmerModel extends \ModuleModel {
 
 	public function whereViewAnalyzeYear(...$data): FarmerModel {
 		return $this->where('viewAnalyzeYear', ...$data);
-	}
-
-	public function whereViewSettings(...$data): FarmerModel {
-		return $this->where('viewSettings', ...$data);
 	}
 
 	public function whereViewSeason(...$data): FarmerModel {

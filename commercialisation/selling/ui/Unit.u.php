@@ -126,7 +126,7 @@ class UnitUi {
 
 		$h = '<div class="util-action">';
 			$h .= '<h1>';
-				$h .= '<a href="'.\farm\FarmUi::urlSettings($eFarm).'"  class="h-back">'.\Asset::icon('arrow-left').'</a>';
+				$h .= '<a href="'.\farm\FarmUi::urlSettingsCommercialisation($eFarm).'"  class="h-back">'.\Asset::icon('arrow-left').'</a>';
 				$h .= s("Unités de vente");
 			$h .= '</h1>';
 			$h .= '<div>';

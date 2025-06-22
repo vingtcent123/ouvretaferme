@@ -96,7 +96,7 @@ class HomeUi {
 			$h = '<h2>'.s("Quoi de neuf sur Ouvretaferme ?").'</h2>';
 
 			$h .= '<div class="home-blog bg-info util-block">';
-				$h .= \Asset::image('main', 'favicon.png', ['style' => 'width: 6rem; height: 6rem']).'';
+				$h .= \Asset::image('main', 'favicon.png', ['style' => 'width: 6rem; height: 6rem']);
 				$h .= '<div>';
 					$h .= '<p class="font-oswald" style="font-size: 1.3rem; line-height: 1.3">'.s("Suivez le blog de {siteName} pour retrouver les annonces de nouvelles fonctionnalités, la feuille de route avec les priorités de développement pour les mois à venir  et des ressources pour faciliter la prise en main du site !").'</p>';
 					$h .= '<a href="https://blog.ouvretaferme.org/" target="_blank" class="btn btn-secondary">'.\Asset::icon('chevron-right').' '.s("Découvrir le blog").'</a>';

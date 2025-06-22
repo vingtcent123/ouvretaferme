@@ -221,12 +221,12 @@ class SeriesUi {
 					if($eFarm['seasonFirst'] < $currentSeason) {
 						$h .= '<p>'.s("Vous pouvez également créer facilement votre plan de culture {current} en dupliquant les séries de productions annuelles qui ont bien fonctionné lors des saisons précédentes. Pour cela, retournez simplement sur la planification de la saison de votre choix, puis cochez vos séries préférées et enfin dupliquez-les !", ['current' => $currentSeason]).'</p>';
 						if($previousSeason === $eFarm['seasonFirst']) {
-							$h .= '<a href="'.\farm\FarmUi::urlCultivationSeries($eFarm, \farm\Farmer::SERIES, season: $previousSeason).'" class="btn btn-secondary">'.s("Revenir sur la planification {previous}",  ['previous' => $previousSeason]).'</a>';
+							$h .= '<a href="'.\farm\FarmUi::urlCultivationSeries($eFarm, \farm\Farmer::AREA, season: $previousSeason).'" class="btn btn-secondary">'.s("Revenir sur la planification {previous}",  ['previous' => $previousSeason]).'</a>';
 						} else {
 							$h .= '<a data-dropdown="bottom-start" class="dropdown-toggle btn btn-secondary">'.s("Revenir sur la planification d'une autre saison").'</a>';
 							$h .= '<div class="dropdown-list">';
 								for($season = $currentSeason - 1, $count = 1; $season >= $eFarm['seasonFirst'], $count <= 3; $season--, $count++) {
-									$h .= '<a href="'.\farm\FarmUi::urlCultivationSeries($eFarm, \farm\Farmer::SERIES, season: $season).'" class="btn btn-secondary">'.s("Saison {value}", $season).'</a>';
+									$h .= '<a href="'.\farm\FarmUi::urlCultivationSeries($eFarm, \farm\Farmer::AREA, season: $season).'" class="btn btn-secondary">'.s("Saison {value}", $season).'</a>';
 								}
 							$h .= '</div>';
 						}

@@ -1,37 +1,27 @@
 new Lime.Instruction('main')
-	.register('updateHeader', function(tab, subTab, farmHtml, subNavHtml) {
+	.register('updateHeader', function(nav, subNav, sectionHtml, navHtml) {
 
 		const farmNav = qs('#farm-nav');
 
 		if(farmNav) {
 
-			farmNav.qsa('[data-tab].selected', node => node.classList.remove('selected'));
-			farmNav.qsa('.farm-subnav-item.selected', node => node.classList.remove('selected'));
+			farmNav.qsa('[data-nav].selected', node => node.classList.remove('selected'));
+			farmNav.qsa('a.farm-subnav-item.selected', node => node.classList.remove('selected'));
 
-			farmNav.qsa('[data-tab].selected', node => node.classList.remove('selected'));
-			farmNav.qs('[data-tab="'+ tab +'"]', node => node.classList.add('selected'));
+			farmNav.qsa('[data-nav].selected', node => node.classList.remove('selected'));
+			farmNav.qs('[data-nav="'+ nav +'"]', node => node.classList.add('selected'));
 
-			if(subTab !== null) {
-				farmNav.qs('[data-sub-tab="'+ subTab +'"]', node => node.classList.add('selected'));
-			}
-
-			const seasonNav = qs('#farm-subnav');
-
-			if(seasonNav) {
-				seasonNav.renderOuter(subNavHtml);
-			} else {
-				farmNav.renderAdjacentHTML('afterend', subNavHtml);
-			}
+			farmNav.qs('[data-sub-nav="'+ subNav +'"]', node => node.classList.add('selected'));
 
 		} else {
-			qs('header').renderInner(farmHtml + subNavHtml);
+			qs('header').renderInner(sectionHtml + navHtml);
 		}
 
 
 	})
 	.register('updateNavPlanning', function(url, period) {
 
-		qs('#farm-nav [data-tab="home"]', node => node.setAttribute('href', url));
+		qs('#farm-nav [data-nav="home"]', node => node.setAttribute('href', url));
 
 		if(qs('#farm-tab-planning-period')) {
 			qs('#farm-tab-planning-period').innerHTML = qs('#farm-tab-planning-'+ period).innerHTML;
@@ -41,17 +31,20 @@ new Lime.Instruction('main')
 
 	})
 	.register('updateNavCultivation', function(url) {
-		qs('#farm-nav [data-tab="cultivation"]', node => node.setAttribute('href', url));
+		qs('#farm-nav [data-nav="cultivation"]', node => node.setAttribute('href', url));
 	})
 	.register('updateNavShop', function(url) {
-		qs('#farm-nav [data-tab="shop"]', node => node.setAttribute('href', url));
+		qs('#farm-nav [data-nav="shop"]', node => node.setAttribute('href', url));
 	})
 	.register('updateNavSelling', function(url) {
-		qs('#farm-nav [data-tab="selling"]', node => node.setAttribute('href', url));
+		qs('#farm-nav [data-nav="selling"]', node => node.setAttribute('href', url));
+	})
+	.register('updateNavCommunications', function(url) {
+		qs('#farm-nav [data-nav="communications"]', node => node.setAttribute('href', url));
 	})
 	.register('updateNavAnalyze', function(url, category) {
 		
-		qs('#farm-nav [data-tab="analyze"]', node => node.setAttribute('href', url));
+		qs('#farm-nav [data-nav="analyze"]', node => node.setAttribute('href', url));
 
 		if(qs('#farm-tab-analyze-category')) {
 			qs('#farm-tab-analyze-category').innerHTML = qs('#farm-tab-analyze-'+ category).innerHTML;
@@ -60,9 +53,6 @@ new Lime.Instruction('main')
 		}
 
 		
-	})
-	.register('updateNavSettings', function(url) {
-		qs('#farm-nav [data-tab="settings"]', node => node.setAttribute('href', url));
 	})
 	.register('keepScroll', function() {
 

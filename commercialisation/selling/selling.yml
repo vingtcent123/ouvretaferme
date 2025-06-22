@@ -19,6 +19,7 @@ Configuration:
   organicCertifier: ?text8
   paymentMode: ?editor16(1, 400)
   documentCopy: bool = FALSE
+  documentTarget: enum(ALL, PRIVATE, PRO, DISABLED) = PRO
   orderFormPrefix: text8(1, 15) = PHP(\selling\ConfigurationUi::getDefaultOrderFormPrefix())
   orderFormDelivery: bool = TRUE
   orderFormPaymentCondition: ?editor16(1, 400)

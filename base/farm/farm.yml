@@ -53,7 +53,6 @@ Farm:
   planningDelayedMax: ?int8(1, 6) = 2
   featureTime: bool = TRUE
   featureStock: bool = FALSE
-  featureDocument: enum(ALL, PRIVATE, PRO, DISABLED) = PRO
   stockNotes: ?text16
   stockNotesUpdatedAt: ?datetime
   stockNotesUpdatedBy: ?user\User
@@ -80,21 +79,18 @@ Farmer:
   viewPlanningArea: enum(AREA, LENGTH) = LENGTH
   viewPlanningSearch: ?json
   viewPlanningUser: ?user\User
-  viewCultivation: enum(SERIES, SOIL, SEQUENCE) = SERIES
-  viewCultivationCategory: enum(AREA, PLANT, FAMILY, ROTATION) = AREA
-  viewSeries: enum(AREA, FORECAST, SEEDLING, HARVESTING, WORKING_TIME) = AREA
+  viewCultivationCategory: enum(AREA, PLANT, FAMILY) = AREA
+  viewSeries: enum(AREA, SEEDLING, HARVESTING, WORKING_TIME) = AREA
   viewSoil: enum(PLAN, ROTATION) = PLAN
-  viewSelling: enum(SALE, PRODUCT, CUSTOMER, INVOICE, STOCK) = SALE
   viewSellingSales: enum(ALL, PRIVATE, PRO, LABEL) = ALL
   viewSellingCategory: enum(ITEM, CUSTOMER, SHOP, PERIOD) = ITEM
   viewSellingCategoryCurrent: ?selling\Category
-  viewShop: enum(SHOP, CATALOG, POINT) = SHOP
   viewShopCatalogCurrent: ?shop\Catalog
-  viewAnalyze: enum(WORKING_TIME, REPORT, SALES, CULTIVATION) = WORKING_TIME
+  viewAnalyzeProduction: enum(WORKING_TIME, CULTIVATION) = CULTIVATION
+  viewAnalyzeCommercialisation: enum(REPORT, SALES) = SALES
   viewAnalyzeChart: enum(TURNOVER, QUANTITY) = TURNOVER
   viewAnalyzeComposition: enum(COMPOSITION, INGREDIENT) = COMPOSITION
   viewAnalyzeYear: ?int16(0, null)
-  viewSettings: enum(SETTINGS, WEBSITE) = SETTINGS
   viewSeason: ?int16(0, null)
   viewShopCurrent: ?shop\Shop
   createdAt: datetime = SPECIAL(now)

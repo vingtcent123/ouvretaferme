@@ -9,8 +9,7 @@ new JsonView('query', function($data, AjaxTemplate $t) {
 new AdaptativeView('manage', function($data, FarmTemplate $t) {
 
 	$t->title = s("Les fournisseurs de {value}", $data->eFarm['name']);
-	$t->tab = 'settings';
-	$t->subNav = new \farm\FarmUi()->getSettingsSubNav($data->eFarm);
+	$t->nav = 'settings-production';
 
 	$t->mainTitle = new \farm\SupplierUi()->getManageTitle($data->eFarm);
 	echo new \farm\SupplierUi()->getManage($data->eFarm, $data->cSupplier);

@@ -1,4 +1,89 @@
+document.addEventListener('keyup', function(e) {
+
+	Farm.changeArrowSection(e)
+
+});
+
 class Farm {
+
+	static pendingSection = null;
+
+	static changeArrowSection(e) {
+
+		if(
+			document.activeElement !== document.body ||
+			document.body.classList.contains('panel-open')
+		) {
+			return;
+		}
+
+		if(e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
+
+			const sections = [];
+			qsa('#farm-nav-sections .farm-nav-section', node => sections[sections.length] = node.dataset.section);
+
+			let position = sections.findIndex(section => document.body.dataset.template.includes('farm-section-'+ section));
+
+			if(position === -1) {
+				position = sections.findIndex(section => document.body.dataset.template.includes('farm-'+ section));
+			}
+
+			let newPosition;
+
+			switch(e.key) {
+
+				case 'ArrowLeft' :
+					newPosition = (position - 1 + sections.length) % sections.length;
+					break;
+
+				case 'ArrowRight' :
+					newPosition = (position + 1) % sections.length;
+					break;
+
+			}
+
+			this.setSection(sections[newPosition]);
+
+		}
+
+	}
+
+	static changeSection(target, delay = 0) {
+
+		if(this.pendingSection !== null) {
+			clearTimeout(this.pendingSection);
+		}
+
+		this.pendingSection = setTimeout(() => {
+
+			this.setSection(target.dataset.section);
+
+			this.pendingSection = null;
+
+		}, delay);
+
+	}
+
+	static setSection(section) {
+
+		qsa('#farm-nav-sections .farm-nav-section', node => {
+
+			const newTemplates = document.body.dataset.template.replace(' farm-section-' + node.dataset.section, '');
+			document.body.dataset.template = newTemplates;
+
+		});
+
+		document.body.dataset.template += ' farm-section-'+ section;
+
+	}
+
+	static clearSection() {
+
+		if(this.pendingSection !== null) {
+			clearTimeout(this.pendingSection);
+		}
+
+	}
 
 	static changeSearchFamily(target) {
 

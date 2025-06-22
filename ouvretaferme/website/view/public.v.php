@@ -1,7 +1,7 @@
 <?php
 new AdaptativeView('nothing', function($data, MainTemplate $t) {
 
-	$t->nav = FALSE;
+	$t->hasNav = FALSE;
 	$t->header = '<h1>'.s("Site inaccessible").'</h1>';
 
 	echo '<h3>'.s("Pourquoi un site peut-il être inaccessible ?").'</h3>';

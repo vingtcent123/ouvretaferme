@@ -9,12 +9,11 @@ new AdaptativeView('update', function($data, PanelTemplate $t) {
 
 new AdaptativeView('updateContent', function($data, FarmTemplate $t) {
 
-	$t->tab = 'settings';
+	$t->nav = 'communications';
+	$t->subNav = 'website';
 
 	$t->title = s("Modifier une page");
 	$t->mainTitle = new \website\WebpageUi()->updateTitle($data->e);
-
-	$t->subNav = new \farm\FarmUi()->getSettingsSubNav($data->eFarm);
 
 	echo new \website\WebpageUi()->updateContent($data->e);
 

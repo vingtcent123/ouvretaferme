@@ -35,7 +35,6 @@ new \website\NewsPage()
 
 		$data->eFarm = \farm\FarmLib::getById($data->e['farm']);
 
-
 		throw new ViewAction($data);
 	})
 	->doUpdate(function($data) {

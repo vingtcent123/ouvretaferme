@@ -7,8 +7,6 @@
 	}))
 	->get('index', function($data) {
 
-		\farm\FarmerLib::setView('viewSettings', $data->eFarm, \farm\Farmer::WEBSITE);
-
 		$data->eWebsite = \website\WebsiteLib::getByFarm($data->eFarm);
 
 		if($data->eWebsite->notEmpty()) {

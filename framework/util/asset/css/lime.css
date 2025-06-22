@@ -1856,23 +1856,6 @@ label.btn input:checked + * {
 	border-color: var(--secondary);
 }
 
-.btn-secondary-dark,
-.btn-outline-secondary-dark:not(.btn-readonly):hover {
-	color: white;
-	background-color: var(--secondary-dark);
-	border-color: var(--secondary-dark);
-}
-
-.btn-secondary-dark:not(.btn-readonly):hover {
-	color: white;
-	box-shadow: inset 0px 0px 0 100px rgba(0, 0, 0, .1);
-}
-
-.btn-outline-secondary-dark {
-	color: var(--secondary-dark);
-	border-color: var(--secondary-dark);
-}
-
 .btn-info,
 .btn-outline-info:not(.btn-readonly):hover {
 	background-color: var(--info);
@@ -2822,41 +2805,46 @@ div.util-buttons:not(:last-child) {
 
 }
 
-div.util-buttons > .util-button {
+div.util-buttons > a.util-button {
 	padding: 1rem;
 	border-radius: var(--radius);
 	display: grid;
 	grid-template-columns: 1fr auto;
 	grid-column-gap: 1rem;
+	background-color: var(--background-light);
 	grid-template-rows: 1fr auto;
-	color: white;
 	transition: color 0.25s, background-color 0.25s, border-color 0.25s, box-shadow 0.25s;
 	text-decoration: none;
+	border: 3px solid var(--secondary);
 }
-div.util-buttons > .util-button.disabled {
+
+div.util-buttons > a.util-button.util-button-danger {
+	border-color: var(--danger);
+	color: var(--danger);
+}
+
+div.util-buttons > a.util-button:hover {
+	border-color: var(--text);
+	color: var(--text);
+}
+
+div.util-buttons > a.util-button.disabled {
 	opacity: 0.3;
 }
 
-div.util-buttons > .util-button > svg {
+div.util-buttons > a.util-button > svg {
 	font-size: 5rem;
-	color: #FFF3;
-	transition: color 0.5s;
 }
 
-div.util-buttons > .util-button:hover > svg {
-	color: #FFF8;
-}
-
-div.util-buttons > .util-button div.util-button-text {
+div.util-buttons > a.util-button div.util-button-text {
 	word-wrap: break-word;
 	line-height: 1.4;
 	font-size: 0.9rem;
-	color: #FFFA;
 	grid-column: span 2;
 	grid-column-start: 1;
 }
 
-div.util-buttons > .util-button h4 {
+div.util-buttons > a.util-button h4 {
 	margin-bottom: 0.5rem;
 	line-height: 1.3;
 }

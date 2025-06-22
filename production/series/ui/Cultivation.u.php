@@ -511,7 +511,7 @@ class CultivationUi {
 				if($ccForecast->empty()) {
 					$help .= '<a href="/plant/forecast:create?farm='.$eFarm['id'].'&season='.$season.'" class="btn btn-secondary">'.s("Ajouter une espèce au prévisionnel").'</a>';
 				} else {
-					$help .= '<a href="'.\farm\FarmUi::urlCultivationSeries($eFarm, \farm\Farmer::FORECAST, $season).'&help" class="btn btn-secondary">'.\Asset::icon('x-lg').' '.s("Ok, cacher ce message").'</a>';
+					$help .= '<a href="'.\farm\FarmUi::urlCultivationForecast($eFarm, $season).'&help" class="btn btn-secondary">'.\Asset::icon('x-lg').' '.s("Ok, cacher ce message").'</a>';
 				}
 			$help .= '</div>';
 
@@ -531,7 +531,7 @@ class CultivationUi {
 				$h .= '<div class="util-grid-header text-center color-private" style="grid-row: span 2">'.s("Prix et volume<br/>particuliers").'</div>';
 				$h .= '<div class="util-grid-header text-center color-pro" style="grid-row: span 2">'.s("Prix et volume<br/>professionnels").'</div>';
 				$h .= '<div class="util-grid-header series-item-forecast-objective-title" style="grid-column: span 3">'.s("Prévisionnel").'</div>';
-				$h .= '<div class="util-grid-header series-item-forecast-objective-title" style="grid-column: span 4">'.s("Planification").'</div>';
+				$h .= '<div class="util-grid-header series-item-forecast-objective-title" style="grid-column: span 4">'.s("Planifié").'</div>';
 				$h .= '<div class="util-grid-header" style="grid-row: span 2"></div>';
 
 				$h .= '<div class="util-grid-header series-item-forecast-objective series-item-forecast-objective-first" style="grid-column: span 2">'.s("Volume").'</div>';
@@ -762,7 +762,7 @@ class CultivationUi {
 				$total .= '</div>';
 
 				$total .= '<div class="series-total-forecast-label">';
-					$total .= s("Total planification");
+					$total .= s("Total planifié");
 				$total .= '</div>';
 
 				$total .= '<div class="series-total-forecast-value">';

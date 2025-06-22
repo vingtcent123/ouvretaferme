@@ -98,7 +98,7 @@ class ShopUi {
 
 			$h .= '<div class="util-buttons mb-3">';
 
-				$h .= '<a href="/shop/:create?farm='.$eShop['farm']['id'].'&shared=0" class="bg-secondary util-button">';
+				$h .= '<a href="/shop/:create?farm='.$eShop['farm']['id'].'&shared=0" class="util-button">';
 					$h .= '<div>';
 						$h .= '<h4>'.s("Créer une boutique personnelle").'</h4>';
 						$h .= '<div class="util-button-text">'.s("Vous serez le seul producteur à vendre sur cette boutique.").'</div>';
@@ -106,7 +106,7 @@ class ShopUi {
 					$h .= \Asset::icon('person-fill-lock');
 				$h .= '</a>';
 
-				$h .= '<a href="/shop/:create?farm='.$eShop['farm']['id'].'&shared=1" class="bg-secondary util-button">';
+				$h .= '<a href="/shop/:create?farm='.$eShop['farm']['id'].'&shared=1" class="util-button">';
 					$h .= '<div>';
 						$h .= '<h4>'.s("Créer une boutique collective").'</h4>';
 						$h .= '<div class="util-button-text">'.s("Vous pourrez inviter d'autres producteurs à vendre leur production sur cette boutique.").'</div>';

@@ -2,8 +2,7 @@
 new AdaptativeView('manage', function($data, FarmTemplate $t) {
 
 	$t->title = s("Les unités de vente de {value}", $data->eFarm['name']);
-	$t->tab = 'settings';
-	$t->subNav = new \farm\FarmUi()->getSettingsSubNav($data->eFarm);
+	$t->nav = 'settings-commercialisation';
 
 	$t->mainTitle = new \selling\UnitUi()->getManageTitle($data->eFarm);
 	echo new \selling\UnitUi()->getManage($data->cUnit);

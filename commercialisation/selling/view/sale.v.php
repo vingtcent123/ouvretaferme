@@ -22,8 +22,8 @@ new AdaptativeView('salePlain', function($data, FarmTemplate $t) {
 
 	$t->title = \selling\SaleUi::getName($data->e);
 
-	$t->tab = 'selling';
-	$t->subNav = new \farm\FarmUi()->getSellingSubNav($data->eFarm);
+	$t->nav = 'selling';
+	$t->subNav = 'sale';
 
 	$t->mainTitle = new \selling\SaleUi()->getHeader($data->e);
 

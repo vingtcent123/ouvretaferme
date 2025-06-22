@@ -127,7 +127,6 @@ class ManageUi {
 		$h = '<div class="util-action">';
 
 			$h .= '<h1>';
-				$h .= '<a href="'.\farm\FarmUi::urlSettings($eWebsite['farm']).'"  class="h-back hide-lateral-down">'.\Asset::icon('arrow-left').'</a>';
 				$h .= s("Site internet");
 			$h .= '</h1>';
 

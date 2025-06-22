@@ -1,8 +1,9 @@
 <?php
 new AdaptativeView('create', function($data, FarmTemplate $t) {
 
-	$t->tab = 'selling';
-	$t->subNav = new \farm\FarmUi()->getShopSubNav($data->eFarm);
+	$t->nav = 'shop';
+	$t->subNav = 'shop';
+
 	$t->title = s("Ajouter une nouvelle livraison");
 
 	\Asset::js('shop', 'manage.js');
@@ -40,8 +41,9 @@ new JsonView('doUpdateCatalog', function($data, AjaxTemplate $t) {
 
 new AdaptativeView('/ferme/{id}/date/{date}', function($data, FarmTemplate $t) {
 
-	$t->tab = 'shop';
-	$t->subNav = new \farm\FarmUi()->getShopSubNav($data->e);
+	$t->nav = 'shop';
+	$t->subNav = 'shop';
+
 	$t->title = \shop\DateUi::name($data->eDate);
 
 	\Asset::js('shop', 'manage.js');

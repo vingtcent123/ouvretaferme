@@ -23,7 +23,7 @@
 	#tip-wrapper:not(.tip-wrapper-inline) {
 		z-index: 2000;
 		position: absolute;
-		margin-top: calc(var(--mainNav) + var(--farmNav) + var(--farmSubNav));
+		margin-top: calc(var(--mainNav) + var(--farmNav));
 		padding-top: 2rem;
 		display: flex;
 		justify-content: center;

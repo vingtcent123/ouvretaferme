@@ -87,8 +87,6 @@ new \selling\SalePage()
 			throw new NotExpectedAction('Market sale');
 		}
 
-		\farm\FarmerLib::setView('viewSelling', $data->eFarm, \farm\Farmer::SALE);
-
 		$data->cItem = \selling\SaleLib::getItems($data->e, withIngredients: TRUE);
 		$data->ccSaleMarket = \selling\SaleLib::getByParent($data->e);
 		$data->cHistory = \selling\HistoryLib::getBySale($data->e);
@@ -142,10 +140,10 @@ new \selling\SalePage()
 	->read('generateOrderForm', function($data) {
 
 		$data->e->validate('canManage');
+		$data->e->acceptDocumentTarget($data->e['type']) ?: throw new FailAction('farm\Farm::disabled');
 		$data->e->acceptGenerateOrderForm() ?: throw new FailAction('selling\Sale::generateOrderForm');
 
 		$data->eFarm = $data->e['farm'];
-		$data->eFarm->hasFeatureDocument($data->e['type']) ?: throw new FailAction('farm\Farm::disabled');
 		$data->eFarm->validateSellingComplete();
 
 		$data->ePdf = \selling\PdfLib::getOne($data->e, \selling\Pdf::ORDER_FORM);
@@ -163,7 +161,8 @@ new \selling\SalePage()
 			throw new FailAction('selling\Pdf::emptySale');
 		}
 
-		$data->e['farm']->hasFeatureDocument($data->e['type']) ?: throw new FailAction('farm\Farm::disabled');
+		$data->e->acceptDocumentTarget($data->e['type']) ?: throw new FailAction('farm\Farm::disabled');
+
 		$data->e['farm']->validateSellingComplete();
 
 		$type = POST('type', [\selling\Pdf::DELIVERY_NOTE, \selling\Pdf::ORDER_FORM], fn() => throw new NotExpectedAction());

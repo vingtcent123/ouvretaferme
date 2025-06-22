@@ -2,8 +2,7 @@
 new AdaptativeView('planning', function($data, FarmTemplate $t) {
 
 	$t->title = s("Planning de {value}", $data->eFarm['name']);
-	$t->tab = 'home';
-	$t->subNav = new \farm\FarmUi()->getPlanningSubNav($data->eFarm, $data->week);
+	$t->nav = 'home';
 
 	$uiTask = new \series\TaskUi();
 
@@ -83,8 +82,7 @@ new AdaptativeView('planning', function($data, FarmTemplate $t) {
 new AdaptativeView('/ferme/{id}/taches/{week}/{action}', function($data, FarmTemplate $t) {
 
 	$t->title = $data->eAction['name'];
-	$t->tab = 'home';
-	$t->subNav = new \farm\FarmUi()->getPlanningSubNav($data->eFarm);
+	$t->nav = 'home';
 
 	$t->mainTitle = new \series\TaskUi()->displayByActionTitle($data->eFarm, $data->week, $data->eAction);
 	echo new \series\TaskUi()->displayByAction($data->eFarm, $data->week, $data->eAction, $data->cTask);
@@ -95,8 +93,8 @@ new AdaptativeView('sequence', function($data, FarmTemplate $t) {
 
 	$t->canonical = \farm\FarmUi::urlCultivationSequences($data->eFarm);
 	$t->title = s("Itinéraires techniques de {value}", $data->eFarm['name']);
-	$t->tab = 'cultivation';
-	$t->subNav = new \farm\FarmUi()->getCultivationSubNav($data->eFarm);
+	$t->nav = 'cultivation';
+	$t->subNav = 'sequence';
 
 	$t->package('main')->updateNavCultivation($t->canonical);
 
@@ -135,8 +133,8 @@ new AdaptativeView('series', function($data, FarmTemplate $t) {
 
 	$t->canonical = \farm\FarmUi::urlCultivationSeries($data->eFarm, season: $data->season);
 	$t->title = s("Plan de culture de {value}", $data->eFarm['name']);
-	$t->tab = 'cultivation';
-	$t->subNav = new \farm\FarmUi()->getCultivationSubNav($data->eFarm);
+	$t->nav = 'cultivation';
+	$t->subNav = 'series';
 
 	$t->package('main')->updateNavCultivation($t->canonical);
 
@@ -172,7 +170,6 @@ new AdaptativeView('series', function($data, FarmTemplate $t) {
 
 		echo match($view)  {
 			\farm\Farmer::AREA => new \series\CultivationUi()->displayByArea($data->season, $data->eFarm, $data->ccCultivation),
-			\farm\Farmer::FORECAST => new \series\CultivationUi()->displayByForecast($data->eFarm, $data->season, $data->ccForecast),
 			\farm\Farmer::SEEDLING => ($data->search->get('seedling') === \series\Cultivation::YOUNG_PLANT_BOUGHT) ?
 				new \series\CultivationUi()->displayBySeedlingByStartWeek($data->eFarm, $data->season, $data->items, $data->cSupplier, $data->search) :
 				new \series\CultivationUi()->displayBySeedling($data->eFarm, $data->items, $data->cSupplier, $data->search),
@@ -185,19 +182,38 @@ new AdaptativeView('series', function($data, FarmTemplate $t) {
 
 });
 
+new AdaptativeView('forecast', function($data, FarmTemplate $t) {
+
+	$t->canonical = \farm\FarmUi::urlCultivationForecast($data->eFarm, season: $data->season);
+	$t->title = s("Prévisionnel financier de {value}", $data->eFarm['name']);
+	$t->nav = 'cultivation';
+	$t->subNav = 'forecast';
+
+	$t->package('main')->updateNavCultivation($t->canonical);
+
+	$t->js()->replaceHistory($t->canonical);
+
+	$uiFarm = new \farm\FarmUi();
+
+	$t->mainTitle = $uiFarm->getCultivationForecastTitle($data->eFarm, $data->season);
+	$t->mainYear = $uiFarm->getSeasonsTabs($data->eFarm, fn($season) => \farm\FarmUi::urlCultivationForecast($data->eFarm, season: $season), $data->season);
+
+	echo new \series\CultivationUi()->displayByForecast($data->eFarm, $data->season, $data->ccForecast);
+
+});
+
 new AdaptativeView('mapEmpty', function($data, FarmTemplate $t) {
 
 	$t->title = s("Plan de {value}", $data->eFarm['name']);
 
-	$t->tab = 'settings';
-	$t->subNav = new \farm\FarmUi()->getSettingsSubNav($data->eFarm);
+	$t->nav = 'settings-production';
 
 	$t->mainYear .= new \farm\FarmUi()->getSeasonsTabs($data->eFarm, fn($season) => \farm\FarmUi::urlSoil($data->eFarm, $season), $data->season);
 	$t->mainTitle = '<h1>';
 		$t->mainTitle .= s("Plan de la ferme");
 	$t->mainTitle .= '</h1>';
 
-	echo '<div class="util-block-help">';
+	echo '<div class="util-block-help mb-2">';
 		echo '<h4>'.s("Vous venez de créer votre ferme !").'</h4>';
 		echo '<p>'.s("Pour travailler avec {siteName}, vous devez maintenant créer le plan de votre ferme, c'est-à-dire paramétrer les emplacements de vos cultures. Cette première étape vous permettra ensuite d'accéder à l'ensemble des fonctionnalités du site.").'</p>';
 		echo '<p>'.s("Vous pouvez paramétrer les emplacements de vos cultures sur trois échelles différentes :").'</p>';
@@ -216,8 +232,7 @@ new AdaptativeView('mapEmpty', function($data, FarmTemplate $t) {
 
 new AdaptativeView('cartography', function($data, FarmTemplate $t) {
 
-	$t->tab = 'settings';
-	$t->subNav = new \farm\FarmUi()->getSettingsSubNav($data->eFarm);
+	$t->nav = 'settings-production';
 
 	$t->canonical = \farm\FarmUi::urlCartography($data->eFarm, $data->season);
 	$t->title = s("Plan de {value}", $data->eFarm['name']);
@@ -225,7 +240,7 @@ new AdaptativeView('cartography', function($data, FarmTemplate $t) {
 	$h = '<div class="util-action">';
 		$h .= '<h1>';
 			if($data->eFarm->canManage()) {
-				$h .= '<a href="'.\farm\FarmUi::urlSettings($data->eFarm).'"  class="h-back">'.\Asset::icon('arrow-left').'</a>';
+				$h .= '<a href="'.\farm\FarmUi::urlSettingsProduction($data->eFarm).'"  class="h-back">'.\Asset::icon('arrow-left').'</a>';
 			}
 			$h .= s("Plan de la ferme");
 		$h .= '</h1>';
@@ -263,8 +278,8 @@ new AdaptativeView('soil', function($data, FarmTemplate $t) {
 
 	$t->canonical = \farm\FarmUi::urlCultivationSoil($data->eFarm, season: $data->season);
 	$t->title = s("Assolement de {value}", $data->eFarm['name']);
-	$t->tab = 'cultivation';
-	$t->subNav = new \farm\FarmUi()->getCultivationSubNav($data->eFarm);
+	$t->nav = 'cultivation';
+	$t->subNav = 'soil';
 
 	$view = $data->eFarm->getView('viewSoil');
 
@@ -306,8 +321,8 @@ new AdaptativeView('soil', function($data, FarmTemplate $t) {
 
 new AdaptativeView('sellingSales', function($data, FarmTemplate $t) {
 
-	$t->tab = 'selling';
-	$t->subNav = new \farm\FarmUi()->getSellingSubNav($data->eFarm);
+	$t->nav = 'selling';
+	$t->subNav = 'sale';
 
 	$t->title = s("Ventes de {value}", $data->eFarm['name']);
 	$t->canonical = \farm\FarmUi::urlSellingSalesAll($data->eFarm);
@@ -371,8 +386,8 @@ new AdaptativeView('sellingSales', function($data, FarmTemplate $t) {
 
 new AdaptativeView('/ferme/{id}/clients', function($data, FarmTemplate $t) {
 
-	$t->tab = 'selling';
-	$t->subNav = new \farm\FarmUi()->getSellingSubNav($data->eFarm);
+	$t->nav = 'selling';
+	$t->subNav = 'customer';
 
 	$t->title = s("Clients de {value}", $data->eFarm['name']);
 	$t->canonical = \farm\FarmUi::urlSellingCustomer($data->eFarm);
@@ -421,8 +436,8 @@ new AdaptativeView('/ferme/{id}/clients', function($data, FarmTemplate $t) {
 
 new AdaptativeView('/ferme/{id}/produits', function($data, FarmTemplate $t) {
 
-	$t->tab = 'selling';
-	$t->subNav = new \farm\FarmUi()->getSellingSubNav($data->eFarm);
+	$t->nav = 'selling';
+	$t->subNav = 'product';
 
 	$t->title = s("Produits de {value}", $data->eFarm['name']);
 	$t->canonical = \farm\FarmUi::urlSellingProduct($data->eFarm);
@@ -490,8 +505,8 @@ new AdaptativeView('/ferme/{id}/produits', function($data, FarmTemplate $t) {
 
 new AdaptativeView('/ferme/{id}/stocks', function($data, FarmTemplate $t) {
 
-	$t->tab = 'selling';
-	$t->subNav = new \farm\FarmUi()->getSellingSubNav($data->eFarm);
+	$t->nav = 'selling';
+	$t->subNav = 'stock';
 
 	$t->title = s("Stocks de {value}", $data->eFarm['name']);
 	$t->canonical = \farm\FarmUi::urlSellingStock($data->eFarm);
@@ -536,8 +551,8 @@ new AdaptativeView('/ferme/{id}/stocks', function($data, FarmTemplate $t) {
 
 new AdaptativeView('/ferme/{id}/boutiques', function($data, FarmTemplate $t) {
 
-	$t->tab = 'shop';
-	$t->subNav = new \farm\FarmUi()->getShopSubNav($data->eFarm);
+	$t->nav = 'shop';
+	$t->subNav = 'shop';
 
 	$t->title = s("Boutiques de {value}", $data->eFarm['name']);
 	$t->canonical = \farm\FarmUi::urlShopList($data->eFarm);
@@ -586,8 +601,8 @@ new AdaptativeView('/ferme/{id}/boutiques', function($data, FarmTemplate $t) {
 
 new AdaptativeView('/ferme/{id}/catalogues', function($data, FarmTemplate $t) {
 
-	$t->tab = 'shop';
-	$t->subNav = new \farm\FarmUi()->getShopSubNav($data->eFarm);
+	$t->nav = 'shop';
+	$t->subNav = 'catalog';
 
 	$t->title = s("Catalogues de {value}", $data->eFarm['name']);
 	$t->canonical = \farm\FarmUi::urlShopCatalog($data->eFarm);
@@ -635,8 +650,8 @@ new AdaptativeView('/ferme/{id}/catalogues', function($data, FarmTemplate $t) {
 
 new AdaptativeView('/ferme/{id}/livraison', function($data, FarmTemplate $t) {
 
-	$t->tab = 'shop';
-	$t->subNav = new \farm\FarmUi()->getShopSubNav($data->eFarm);
+	$t->nav = 'shop';
+	$t->subNav = 'point';
 
 	$t->title = s("Modes de livraison de {value}", $data->eFarm['name']);
 	$t->canonical = \farm\FarmUi::urlShopPoint($data->eFarm);
@@ -650,8 +665,8 @@ new AdaptativeView('/ferme/{id}/livraison', function($data, FarmTemplate $t) {
 
 new AdaptativeView('/ferme/{id}/factures', function($data, FarmTemplate $t) {
 
-	$t->tab = 'selling';
-	$t->subNav = new \farm\FarmUi()->getSellingSubNav($data->eFarm);
+	$t->nav = 'selling';
+	$t->subNav = 'invoice';
 
 	$t->title = s("Factures pour {value}", $data->eFarm['name']);
 	$t->canonical = \farm\FarmUi::urlSellingSalesInvoice($data->eFarm);
@@ -705,7 +720,7 @@ new AdaptativeView('/ferme/{id}/factures', function($data, FarmTemplate $t) {
 		echo '</div>';
 		echo '<div class="util-block-help">';
 			echo '<p>'.s("L'utilisation du module de facturation demande un peu de paramétrage avant d'être utilisé, notamment pour renseigner les informations légales à afficher sur vos factures. N'hésitez pas à l'anticiper dès maintenant.").'</p>';
-			echo '<a href="/selling/configuration:update?id='.$data->eFarm['id'].'" class="btn btn-secondary">'.s("Paramétrer la commercialisation").'</a>';
+			echo '<a href="/selling/configuration:update?id='.$data->eFarm['id'].'" class="btn btn-secondary">'.s("Paramétrer la vente").'</a>';
 		echo '</div>';
 
 	} else {
@@ -718,8 +733,8 @@ new AdaptativeView('/ferme/{id}/factures', function($data, FarmTemplate $t) {
 
 new AdaptativeView('/ferme/{id}/etiquettes', function($data, FarmTemplate $t) {
 
-	$t->tab = 'selling';
-	$t->subNav = new \farm\FarmUi()->getSellingSubNav($data->eFarm);
+	$t->nav = 'selling';
+	$t->subNav = 'sale';
 
 	$t->title = s("Étiquettes de colisage pour {value}", $data->eFarm['name']);
 	$t->canonical = \farm\FarmUi::urlSellingSalesLabel($data->eFarm);
@@ -734,8 +749,7 @@ new AdaptativeView('/ferme/{id}/etiquettes', function($data, FarmTemplate $t) {
 
 new AdaptativeView('analyzeReport', function($data, FarmTemplate $t) {
 
-	$t->tab = 'analyze';
-	$t->subNav = new \farm\FarmUi()->getAnalyzeSubNav($data->eFarm);
+	$t->nav = 'analyze-commercialisation';
 
 	$t->title = s("Analyse des séries de {value}", $data->eFarm['name']);
 	$t->canonical = \farm\FarmUi::urlAnalyzeReport($data->eFarm, $data->season);
@@ -752,8 +766,7 @@ new AdaptativeView('analyzeReport', function($data, FarmTemplate $t) {
 
 new AdaptativeView('analyzeWorkingTime', function($data, FarmTemplate $t) {
 
-	$t->tab = 'analyze';
-	$t->subNav = new \farm\FarmUi()->getAnalyzeSubNav($data->eFarm);
+	$t->nav = 'analyze-production';
 
 	$t->title = s("Analyse du planning de {value}", $data->eFarm['name']);
 	$t->canonical = \farm\FarmUi::urlAnalyzeWorkingTime($data->eFarm, $data->year, $data->category);
@@ -789,8 +802,7 @@ new AdaptativeView('analyzeWorkingTime', function($data, FarmTemplate $t) {
 
 new AdaptativeView('analyzeSelling', function($data, FarmTemplate $t) {
 
-	$t->tab = 'analyze';
-	$t->subNav = new \farm\FarmUi()->getAnalyzeSubNav($data->eFarm);
+	$t->nav = 'analyze-commercialisation';
 
 	$t->title = s("Analyse des ventes de {value}", $data->eFarm['name']);
 
@@ -851,8 +863,7 @@ new AdaptativeView('analyzeSelling', function($data, FarmTemplate $t) {
 
 new AdaptativeView('analyzeCultivation', function($data, FarmTemplate $t) {
 
-	$t->tab = 'analyze';
-	$t->subNav = new \farm\FarmUi()->getAnalyzeSubNav($data->eFarm);
+	$t->nav = 'analyze-production';
 
 	$t->title = s("Analyse des cultures de {value}", $data->eFarm['name']);
 	$t->canonical = \farm\FarmUi::urlAnalyzeCultivation($data->eFarm, $data->season, $data->category);
@@ -864,7 +875,7 @@ new AdaptativeView('analyzeCultivation', function($data, FarmTemplate $t) {
 	$actions = match($data->category) {
 		\farm\Farmer::PLANT => '<a '.attr('onclick', 'Lime.Search.toggle("#analyze-plant-search")').' class="btn btn-primary">'.\Asset::icon('search').' '.s("Filtrer").'</a>',
 		\farm\Farmer::FAMILY => '<a '.attr('onclick', 'Lime.Search.toggle("#analyze-family-search")').' class="btn btn-primary">'.\Asset::icon('search').' '.s("Filtrer").'</a>',
-		\farm\Farmer::ROTATION => '<a href="/farm/farm:updateSeries?id='.$data->eFarm['id'].'" class="btn btn-primary">'.\Asset::icon('gear-fill').' '.s("Configurer").'</a>',
+		\farm\Farmer::ROTATION => '<a href="/farm/farm:updateProduction?id='.$data->eFarm['id'].'" class="btn btn-primary">'.\Asset::icon('gear-fill').' '.s("Configurer").'</a>',
 		default => ''
 	};
 
@@ -883,20 +894,31 @@ new AdaptativeView('analyzeCultivation', function($data, FarmTemplate $t) {
 
 });
 
-new AdaptativeView('/ferme/{id}/configuration', function($data, FarmTemplate $t) {
+new AdaptativeView('/ferme/{id}/configuration/production', function($data, FarmTemplate $t) {
 
-	$t->tab = 'settings';
-	$t->subNav = new \farm\FarmUi()->getSettingsSubNav($data->eFarm);
+	$t->nav = 'settings-production';
 
-	$t->title = s("Configuration pour {value}", $data->eFarm['name']);
-	$t->canonical = \farm\FarmUi::urlSettings($data->eFarm);
+	$t->title = s("Paramétrer la production pour {value}", $data->eFarm['name']);
+	$t->canonical = \farm\FarmUi::urlSettingsProduction($data->eFarm);
 
-	$t->package('main')->updateNavSettings($t->canonical);
-
-	$t->mainTitle = '<h1>'.s("Paramétrage").'</h1>';
+	$t->mainTitle = new \farm\FarmUi()->getSettingsTitle($data->eFarm, s("Paramétrer la production"), 'production').'</h1>';
 	$t->mainTitleClass = 'hide-lateral-down';
 
-	echo new \farm\FarmUi()->getSettings($data->eFarm, $data->eNews);
+	echo new \farm\FarmUi()->getSettingsProduction($data->eFarm);
+
+});
+
+new AdaptativeView('/ferme/{id}/configuration/commercialisation', function($data, FarmTemplate $t) {
+
+	$t->nav = 'settings-commercialisation';
+
+	$t->title = s("Paramétrer la vente pour {value}", $data->eFarm['name']);
+	$t->canonical = \farm\FarmUi::urlSettingsCommercialisation($data->eFarm);
+
+	$t->mainTitle = new \farm\FarmUi()->getSettingsTitle($data->eFarm, s("Paramétrer la vente"), 'commercialisation').'</h1>';
+	$t->mainTitleClass = 'hide-lateral-down';
+
+	echo new \farm\FarmUi()->getSettingsCommercialisation($data->eFarm);
 
 });
 ?>

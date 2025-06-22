@@ -2,20 +2,19 @@
 new AdaptativeView('importCultivations', function($data, FarmTemplate $t) {
 
 	$t->title = s("Importer un plan de culture");
-	$t->tab = 'settings';
-	$t->subNav = new \farm\FarmUi()->getSettingsSubNav($data->eFarm);
+	$t->nav = 'settings-production';
 
 	if(get_exists('created')) {
 
 		echo '<div class="util-success">';
 			echo '<p>'.s("Les séries contenues dans votre fichier CSV ont bien été ajoutées à votre planification !").'</p>';
-			echo '<a href="'.\farm\FarmUi::urlCultivation($data->eFarm, \farm\Farmer::SERIES).'" class="btn btn-success">'.s("Voir ma planification").'</a>';
+			echo '<a href="'.\farm\FarmUi::urlCultivationSeries($data->eFarm).'" class="btn btn-success">'.s("Voir ma planification").'</a>';
 		echo '</div>';
 
 	}
 
 	$h = '<h1>';
-		$h .= '<a href="'.\farm\FarmUi::urlSettings($data->eFarm).'"  class="h-back">'.\Asset::icon('arrow-left').'</a>';
+		$h .= '<a href="'.\farm\FarmUi::urlSettingsProduction($data->eFarm).'"  class="h-back">'.\Asset::icon('arrow-left').'</a>';
 		$h .= s("Importer un plan de culture");
 	$h .= '</h1>';
 	
@@ -37,12 +36,11 @@ new AdaptativeView('importCultivations', function($data, FarmTemplate $t) {
 new AdaptativeView('importFile', function($data, FarmTemplate $t) {
 
 	$t->title = s("Importer un plan de culture");
-	$t->tab = 'settings';
-	$t->subNav = new \farm\FarmUi()->getSettingsSubNav($data->eFarm);
+	$t->nav = 'settings-production';
 
 	$h = '<div class="util-action">';
 		$h .= '<h1>';
-			$h .= '<a href="'.\farm\FarmUi::urlSettings($data->eFarm).'"  class="h-back">'.\Asset::icon('arrow-left').'</a>';
+			$h .= '<a href="'.\farm\FarmUi::urlSettingsProduction($data->eFarm).'"  class="h-back">'.\Asset::icon('arrow-left').'</a>';
 			$h .= p("Votre fichier CSV contient {value} série", "Votre fichier CSV contient {value} séries", count($data->data['import']));
 		$h .= '</h1>';
 		$h .= '<a href="/series/csv:importCultivations?id='.$data->eFarm['id'].'&reset" class="btn btn-primary">'.s("Téléverser un autre fichier").'</a>';

@@ -166,7 +166,7 @@ class TipUi {
 
 			case 'feature-time-disable' :
 
-				$link = '/farm/farm:updateFeature?id='.$eFarm['id'];
+				$link = '/farm/farm:updateProduction?id='.$eFarm['id'];
 
 				$h = '<p>'.s("Simplifiez-vous l'interface de {siteName} en désactivant cette fonctionnalité. Vous ne serez plus dérangé par les interfaces de saisie de temps de travail. Vous pourrez réactiver cette fonctionnalité ultérieurement !").'</p>';
 
@@ -175,7 +175,7 @@ class TipUi {
 					'title' => s("Vous ne souhaitez pas renseigner votre temps de travail ?"),
 					'content' => $h,
 					'image' => FALSE,
-					'button' => [$link, s("Activer ou désactiver des fonctionnalités")],
+					'button' => [$link, s("Désactiver cette fonctionnalité")],
 				];
 
 			case 'feature-tools' :
@@ -223,7 +223,7 @@ class TipUi {
 
 			case 'selling-pdf' :
 
-				$link = FarmUi::urlSelling($eFarm);
+				$link = FarmUi::urlSellingSales($eFarm);
 
 				$h = '<p>'.s("Créez vos ventes avec {siteName} et éditez vos devis, bons de livraisons et factures en PDF à destination de vos clients avec envoi automatique par e-mail. Fonctionne aussi bien pour les ventes à destination des particuliers que des professionnels.").'</p>';
 
@@ -267,7 +267,7 @@ class TipUi {
 
 			case 'series-duplicate' :
 
-				$link = FarmUi::urlCultivationSeries($eFarm, Farmer::SERIES);
+				$link = FarmUi::urlCultivationSeries($eFarm, Farmer::AREA);
 
 				$h = '<p>'.s("Vous êtes satisfait d'une de vos séries ? Dupliquez-là à partir de sa page pour passer moins de temps à faire votre plan de culture l'année prochaine !").'</p>';
 
@@ -295,7 +295,7 @@ class TipUi {
 
 			case 'series-forecast' :
 
-				$link = FarmUi::urlCultivationSeries($eFarm, Farmer::FORECAST);
+				$link = FarmUi::urlCultivationForecast($eFarm);
 
 				$h = '<p>'.s("À partir de votre plan de culture ou même en amont, vous pouvez obtenir le prévisionnel financier de votre année. Il ne vous reste qu'à saisir vos prix de ventes pour les particuliers et les professionnels, ainsi que la répartition des ventes entre les deux !").'</p>';
 

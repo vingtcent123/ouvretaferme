@@ -1,8 +1,8 @@
 <?php
 new AdaptativeView('/ferme/{id}/boutique/{shop}', function($data, FarmTemplate $t) {
 
-	$t->tab = 'shop';
-	$t->subNav = new \farm\FarmUi()->getShopSubNav($data->e);
+	$t->nav = 'shop';
+	$t->subNav = 'shop';
 
 	$t->title = $data->eShop['name'];
 	$t->canonical = \farm\FarmUi::urlShopList($data->e);
@@ -47,8 +47,8 @@ new AdaptativeView('create', function($data, PanelTemplate $t) {
 new AdaptativeView('website', function($data, FarmTemplate $t) {
 
 	$t->title = s("Intégrer la boutique sur un site internet");
-	$t->tab = 'shop';
-	$t->subNav = new \farm\FarmUi()->getShopSubNav($data->eFarm);
+	$t->nav = 'shop';
+	$t->subNav = 'shop';
 
 	$h = '<h1>';
 		$h .= '<a href="'.\shop\ShopUi::adminUrl($data->eFarm, $data->e).'" class="h-back">'.\Asset::icon('arrow-left').'</a>';

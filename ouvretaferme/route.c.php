@@ -133,10 +133,15 @@ Route::register([
 			'priority' => 5,
 			'route' => ['ferme', '{id}', 'clients'],
 		],
-		'/ferme/{id}/configuration' => [
+		'/ferme/{id}/configuration/commercialisation' => [
 			'request' => 'farm/index',
 			'priority' => 5,
-			'route' => ['ferme', '{id}', 'configuration'],
+			'route' => ['ferme', '{id}', 'configuration', 'commercialisation'],
+		],
+		'/ferme/{id}/configuration/production' => [
+			'request' => 'farm/index',
+			'priority' => 5,
+			'route' => ['ferme', '{id}', 'configuration', 'production'],
 		],
 		'/ferme/{id}/date/{date}' => [
 			'request' => 'shop/date',
@@ -197,6 +202,16 @@ Route::register([
 			'request' => 'farm/index',
 			'priority' => 5,
 			'route' => ['ferme', '{id}', 'planning', '{view}', '{period}', '{subPeriod}'],
+		],
+		'/ferme/{id}/previsionnel' => [
+			'request' => 'farm/index',
+			'priority' => 5,
+			'route' => ['ferme', '{id}', 'previsionnel'],
+		],
+		'/ferme/{id}/previsionnel/{season}' => [
+			'request' => 'farm/index',
+			'priority' => 5,
+			'route' => ['ferme', '{id}', 'previsionnel', '{season}'],
 		],
 		'/ferme/{id}/produits' => [
 			'request' => 'farm/index',

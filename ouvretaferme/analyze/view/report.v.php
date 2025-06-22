@@ -2,8 +2,8 @@
 new AdaptativeView('/rapport/{id}', function($data, FarmTemplate $t) {
 
 	$t->title = \analyze\ReportUi::getName($data->e);
-	$t->tab = 'analyze';
-	$t->subNav = new \farm\FarmUi()->getAnalyzeSubNav($data->eFarm);
+
+	$t->nav = 'analyze-commercialisation';
 
 	$t->mainTitle = new \analyze\ReportUi()->getOneTitle($data->e);
 
@@ -17,8 +17,7 @@ new AdaptativeView('/rapport/{id}', function($data, FarmTemplate $t) {
 
 new AdaptativeView('create', function($data, FarmTemplate $t) {
 
-	$t->tab = 'analyze';
-	$t->subNav = new \farm\FarmUi()->getAnalyzeSubNav($data->eFarm);
+	$t->nav = 'analyze-commercialisation';
 
 	if($data->e['from']->notEmpty()) {
 		$url = \analyze\ReportUi::url($data->e['from']);

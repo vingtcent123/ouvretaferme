@@ -2,9 +2,8 @@
 new AdaptativeView('display', function($data, FarmTemplate $t) {
 
 	$t->title = $data->e['name'];
-	$t->tab = 'cultivation';
-
-	$t->subNav = new \farm\FarmUi()->getCultivationSubNav($data->eFarm);
+	$t->nav = 'cultivation';
+	$t->subNav = 'sequence';
 
 	$t->mainTitle = new \sequence\SequenceUi()->getHeader($data->eFarm, $data->e, $data->cFlow);
 	echo new \sequence\SequenceUi()->getDetails($data->e);

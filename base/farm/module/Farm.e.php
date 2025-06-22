@@ -249,7 +249,7 @@ class Farm extends FarmElement {
 
 	public function saveFeaturesAsSettings(): void {
 
-		foreach(['featureTime', 'featureDocument'] as $feature) {
+		foreach(['featureTime'] as $feature) {
 			\Setting::set('farm\\'.$feature, $this[$feature]);
 		}
 
@@ -283,39 +283,12 @@ class Farm extends FarmElement {
 		return ($this['legalCity'] !== NULL);
 	}
 
-	public function hasFeatureDocument(string $type): bool {
-
-		$this->expects(['featureDocument']);
-
-		return match($type) {
-			\selling\Sale::PRO => $this->hasFeatureDocumentPro(),
-			\selling\Sale::PRIVATE => $this->hasFeatureDocumentPrivate(),
-		};
-
-	}
-
-	public function hasFeatureDocumentPro(): bool {
-
-		$this->expects(['featureDocument']);
-
-		return in_array($this['featureDocument'], [Farm::ALL, Farm::PRO]);
-
-	}
-
-	public function hasFeatureDocumentPrivate(): bool {
-
-		$this->expects(['featureDocument']);
-
-		return in_array($this['featureDocument'], [Farm::ALL, Farm::PRIVATE]);
-
-	}
-
 	public function getHomeUrl(): string {
 
 		if($this->canPlanning()) {
 			return FarmUi::urlPlanningWeekly($this);
 		} else {
-			return FarmUi::urlCultivation($this, Farmer::SERIES, Farmer::AREA);
+			return FarmUi::urlCultivationSeries($this, Farmer::AREA);
 		}
 
 	}

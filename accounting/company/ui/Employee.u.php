@@ -33,7 +33,7 @@ class EmployeeUi {
 		$h .= '<p>'.s("Vous dirigez une exploitation et vous venez de vous inscrire sur {siteName}. Pour commencer à utiliser tous les services à votre disposition sur la plateforme, configurez maintenant votre exploitation en renseignant quelques informations de base !").'</p>';
 		$h .= '</div>';
 		$h .= '<div class="util-buttons">';
-		$h .= '<a href="/company/public:create" class="bg-secondary util-button">';
+		$h .= '<a href="/company/public:create" class="util-button">';
 		$h .= '<div>';
 		$h .= '<h4>'.s("Démarrer la création de ma ferme").'</h4>';
 		$h .= '</div>';
@@ -151,7 +151,7 @@ class EmployeeUi {
 
 				$properties = [];
 
-				$h .= '<a href="'.CompanyUi::url($eCompany).'/employee:show?id='.$eEmployee['id'].'" class="util-button bg-secondary">';
+				$h .= '<a href="'.CompanyUi::url($eCompany).'/employee:show?id='.$eEmployee['id'].'" class="util-button">';
 				$h .= '<div>';
 				$h .= '<h4>';
 				$h .= \user\UserUi::name($eEmployee['user']);

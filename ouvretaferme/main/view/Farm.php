@@ -11,15 +11,31 @@ class FarmTemplate extends MainTemplate {
 	public ?string $mainTitle = NULL;
 	public ?string $mainTitleClass = '';
 
-	public string $subNav = '';
-
-	public string $tab;
+	public ?string $nav = NULL;
+	public ?string $subNav = NULL;
+	public ?string $section = NULL;
 
 	public function __construct() {
 
 		parent::__construct();
 
 		\Asset::css('farm', 'design.css');
+
+	}
+
+	protected function buildAjax(string $stream): AjaxTemplate {
+
+		$this->buildSections();
+
+		return parent::buildAjax($stream);
+
+	}
+
+	protected function buildHtml(string $stream): string {
+
+		$this->buildSections();
+
+		return parent::buildHtml($stream);
 
 	}
 
@@ -33,41 +49,40 @@ class FarmTemplate extends MainTemplate {
 
 	protected function buildAjaxHeader(AjaxTemplate $t): void {
 
-		try {
-
-			$subTab = match($this->tab) {
-				'cultivation' => $this->data->eFarm->getView('viewCultivation'),
-				'selling' => $this->data->eFarm->getView('viewSelling'),
-				'shop' => $this->data->eFarm->getView('viewShop'),
-				'analyze' => $this->data->eFarm->getView('viewAnalyze'),
-				default => NULL,
-			};
-
-		} catch(Exception) {
-			$subTab = NULL;
-		}
-
 		$t->package('main')->updateHeader(
-			$this->tab,
-			$subTab,
+			$this->nav,
+			$this->subNav,
+			$this->getFarmSections(),
 			$this->getFarmNav(),
-			$this->getFarmSubNav(),
 		);
 
 	}
 
-	protected function getFarmNav(): string {
-		return new \farm\FarmUi()->getMainTabs($this->data->eFarm, $this->tab);
+	protected function getFarmSections(): string {
+
+		$sections = FEATURE_ACCOUNTING ? 3 : 2;
+
+		$h = '<div id="farm-nav-sections" class="farm-nav-sections-'.$sections.'">';
+			$h .= '<a onclick="Farm.changeSection(this)" onmouseenter="Farm.changeSection(this, 150)" onmouseleave="Farm.clearSection(this)" data-section="production" class="farm-nav-section farm-nav-section-production">'.\Asset::icon('leaf').'<span>'.s("Produire").'</span></a>';
+			$h .= '<a onclick="Farm.changeSection(this)" onmouseenter="Farm.changeSection(this, 150)" onmouseleave="Farm.clearSection(this)" data-section="commercialisation" class="farm-nav-section farm-nav-section-commercialisation">'.\Asset::icon('basket3').'<span>'.s("Vendre").'</span></a>';
+			if(FEATURE_ACCOUNTING) {
+				$h .= '<a onclick="Farm.changeSection(this)" onmouseenter="Farm.changeSection(this, 150)" onmouseleave="Farm.clearSection(this)" data-section="accounting" class="farm-nav-section farm-nav-section-accounting">'.\Asset::icon('bank').'<span>'.s("Comptabilité").'</span></a>';
+			}
+		$h .= '</div>';
+		
+		return $h;
+		
 	}
 
-	protected function getFarmSubNav(): string {
-		return $this->subNav;
+	protected function getFarmNav(): string {
+
+		return new \farm\FarmUi()->getMainTabs($this->data->eFarm, $this->nav, $this->subNav);
 	}
 
 	protected function getHeader(): string {
 
-		$h = $this->getFarmNav();
-		$h .= $this->getFarmSubNav();
+		$h = $this->getFarmSections();
+		$h .= $this->getFarmNav();
 
 		return $h;
 
@@ -128,30 +143,87 @@ class FarmTemplate extends MainTemplate {
 				$farm .= '&nbsp;&nbsp;<a href="'.Lime::getUrl().'" class="btn btn-transparent">'.Asset::icon('escape').' '.s("Quitter la démo").'</a>';
 			} else {
 
-				if($this->data->cFarmUser->count() > 1) {
+				$canUpdate = (
+					$this->data->eFarm->canManage() or
+					$this->data->eFarm->canPersonalData()
+				);
 
-					$farm .= '<div class="nav-title-farm">';
-						$farm .= '<div>'.\farm\FarmUi::getVignette($this->data->eFarm, '4rem').'</div>';
+				$canNavigate = ($this->data->cFarmUser->count() > 1);
+
+				$farm .= '<div class="nav-title-farm">';
+					$farm .= '<div>'.\farm\FarmUi::getVignette($this->data->eFarm, '4rem').'</div>';
+
+					if($canUpdate or $canNavigate) {
+
 						$farm .= '<a data-dropdown="bottom-start" data-dropdown-hover="true">'.encode($this->data->eFarm['name']).'  '.Asset::icon('chevron-down').'</a>';
 						$farm .= '<div class="dropdown-list bg-primary">';
-							foreach($this->data->cFarmUser as $eFarm) {
-								$farm .= '<a href="'.$eFarm->getHomeUrl().'" data-ajax-navigation="never" class="dropdown-item">'.\farm\FarmUi::getVignette($eFarm, '1.75rem').'&nbsp;&nbsp;'.encode($eFarm['name']).'</a>';
-							}
-						$farm .= '</div>';
-					$farm .= '</div>';
 
-				} else {
-					$farm .= '<div class="nav-title-farm">';
-						$farm .= '<div>'.\farm\FarmUi::getVignette($this->data->eFarm, '4rem').'</div>';
-						$farm .= '<div>'.encode($this->data->eFarm['name']).'</div>';
-					$farm .= '</div>';
-				}
+							if($canUpdate) {
+
+								$farm .= '<div class="dropdown-subtitle">'.encode($this->data->eFarm['name']).'</div>';
+
+								if($this->data->eFarm->canManage()) {
+									$farm .= '<a href="/farm/farm:update?id='.$this->data->eFarm['id'].'" class="dropdown-item">'.Asset::icon('gear-fill').'  '.s("Paramétrer la ferme").'</a>';
+									$farm .= '<a href="'.\farm\FarmerUi::urlManage($this->data->eFarm).'" class="dropdown-item">'.Asset::icon('people-fill').'  '.s("Gérer l'équipe de la ferme").'</a>';
+								}
+								if($this->data->eFarm->canPersonalData()) {
+									$farm .= '<a href="/farm/farm:export?id='.$this->data->eFarm['id'].'" class="dropdown-item">'.Asset::icon('database-fill').'  '.s("Exporter les données").'</a>';
+								}
+
+							}
+
+							if($canNavigate) {
+
+								$farm .= '<div class="dropdown-divider"></div>';
+								$farm .= '<div class="dropdown-subtitle">'.s("Mes autres fermes").'</div>';
+
+								foreach($this->data->cFarmUser as $eFarm) {
+
+									if($eFarm->is($this->data->eFarm) === FALSE) {
+										$farm .= '<a href="'.$eFarm->getHomeUrl().'" data-ajax-navigation="never" class="dropdown-item">'.\farm\FarmUi::getVignette($eFarm, '1.75rem').'&nbsp;&nbsp;'.encode($eFarm['name']).'</a>';
+									}
+								}
+
+							}
+
+						$farm .= '</div>';
+
+					} else {
+						$farm .= encode($this->data->eFarm['name']);
+					}
+
+				$farm .= '</div>';
 
 			}
 
 		$farm .= '</div>';
 
 		return $this->getDefaultNav($farm);
+
+	}
+
+	protected function buildSections(): void {
+
+		switch($this->nav) {
+
+			case 'home' :
+			case 'cultivation' :
+			case 'analyze-production' :
+			case 'settings-production' :
+				$this->section = 'production';
+				$this->template .= ' farm-production ';
+				break;
+
+			case 'selling' :
+			case 'shop' :
+			case 'communications' :
+			case 'analyze-commercialisation' :
+			case 'settings-commercialisation' :
+				$this->section = 'commercialisation';
+				$this->template .= ' farm-commercialisation ';
+				break;
+
+		}
 
 	}
 

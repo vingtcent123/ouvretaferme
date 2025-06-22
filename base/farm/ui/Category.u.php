@@ -95,7 +95,7 @@ class CategoryUi {
 
 			$h .= '<h1>';
 				$h .= '<a href="/farm/action:manage?farm='.$eFarm['id'].'" class="h-back">'.\Asset::icon('arrow-left').'</a>';
-				$h .= s("Les catégories");
+				$h .= s("Catégories");
 			$h .= '</h1>';
 
 			if($cCategory->count() < \Setting::get('farm\categoriesLimit')) {

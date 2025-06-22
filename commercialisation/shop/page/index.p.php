@@ -2,8 +2,6 @@
 new \farm\FarmPage()
 	->read('/ferme/{id}/boutique/{shop}', function($data) {
 
-		\farm\FarmerLib::setView('viewShop', $data->e, \farm\Farmer::SHOP);
-
 		// Liste des boutiques
 		$data->ccShop = \shop\ShopLib::getList($data->e);
 

@@ -107,7 +107,7 @@ a.nav-year:hover {
 		width: var(--nav-width);
 		top: var(--nav-height);
 		height: calc(100vh - var(--nav-height));
-		background: linear-gradient(145deg, var(--secondary) 0, var(--secondary) 50%, var(--secondary-dark) 100%);
+		background: var(--secondary);
 		box-shadow: 0 0 1rem #8888;
 		z-index: 2;
 	}
@@ -212,7 +212,7 @@ a.nav-year:hover {
 		border-top-right-radius: var(--radius);
 	}
 	body[data-template~="company"] nav .nav-products a.selected {
-		background-color: var(--secondary-dark);
+		background-color: #0003;
 		border-top: 1px solid #fffd;
 		border-left: 1px solid #fffd;
 		border-right: 1px solid #fffd;
@@ -310,7 +310,7 @@ a.nav-year:hover {
 	}
 
 	a.company-tab:not(.company-tab-subnav).selected {
-		background-color: var(--secondary-dark);
+		background-color: #0003;
 	}
 
 	a.company-tab.company-tab-subnav {
@@ -381,7 +381,7 @@ a.nav-year:hover {
 	}
 
 	a.company-subnav-item.selected {
-		background-color: var(--secondary-dark);
+		background-color: #0003;
 	}
 
 	a.company-subnav-item:hover {
@@ -581,7 +581,7 @@ a.nav-year:hover {
 	}
 
 	a.company-tab.selected {
-		background: var(--secondary-dark);
+		background: #0003;
 	}
 
 	.company-tab-complement {
@@ -701,7 +701,7 @@ a.nav-year:hover {
 
 	}
 
-	@media (max-width: 359px) {
+	@media (max-width: 380px) {
 
 		.company-tab-label {
 			font-size: 0.8rem;

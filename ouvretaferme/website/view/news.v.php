@@ -1,7 +1,9 @@
 <?php
 new AdaptativeView('create', function($data, FarmTemplate $t) {
 
-	$t->tab = 'settings';
+	$t->nav = 'communications';
+	$t->subNav = 'website';
+
 	$t->title = s("Ajouter une actualité");
 	$t->mainTitle = new \website\NewsUi()->createTitle($data->e);
 
@@ -10,7 +12,9 @@ new AdaptativeView('create', function($data, FarmTemplate $t) {
 
 new AdaptativeView('update', function($data, FarmTemplate $t) {
 
-	$t->tab = 'settings';
+	$t->nav = 'communications';
+	$t->subNav = 'website';
+
 	$t->title = s("Modifier une actualité");
 	$t->mainTitle = new \website\NewsUi()->updateTitle($data->e);
 

@@ -197,8 +197,6 @@ new \series\SeriesPage()
 		$data->eFarm = \farm\FarmLib::getById($data->e['farm']);
 		$data->eFarm->saveFeaturesAsSettings();
 
-		\farm\FarmerLib::setView('viewCultivation', $data->eFarm, \farm\Farmer::SERIES);
-
 		$data->season = $data->e['season'];
 
 		$data->cSeriesPerennial = \series\SeriesLib::getByPerennialFirst($data->e['perennialFirst']);
@@ -275,7 +273,7 @@ new \series\SeriesPage()
 	})
 	->doUpdate(fn() => throw new ReloadAction())
 	->doDelete(function($data) {
-		throw new RedirectAction(\farm\FarmUi::urlCultivationSeries($data->eFarm, \farm\Farmer::SERIES, season: $data->season).'?success=series:Series::deleted');
+		throw new RedirectAction(\farm\FarmUi::urlCultivationSeries($data->eFarm, \farm\Farmer::AREA, season: $data->season).'?success=series:Series::deleted');
 	});
 
 
@@ -344,7 +342,7 @@ new \series\SeriesPage()
 		if($cSeriesNew->count() === 1) {
 			throw new RedirectAction(\series\SeriesUi::url($cSeriesNew->first()).'?success=series:Series::duplicated');
 		} else {
-			throw new RedirectAction(\farm\FarmUi::urlCultivationSeries($data->eFarm, \farm\Farmer::SERIES, season: $season).'&success=series:Series::duplicatedCollection');
+			throw new RedirectAction(\farm\FarmUi::urlCultivationSeries($data->eFarm, \farm\Farmer::AREA, season: $season).'&success=series:Series::duplicatedCollection');
 		}
 
 	})

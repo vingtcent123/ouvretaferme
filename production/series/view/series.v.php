@@ -2,8 +2,8 @@
 new AdaptativeView('/serie/{id}', function($data, FarmTemplate $t) {
 
 	$t->title = s("Série {value}", $data->e['name']);
-	$t->tab = 'cultivation';
-	$t->subNav = new \farm\FarmUi()->getCultivationSubNav($data->eFarm, $data->e['season']);
+	$t->nav = 'cultivation';
+	$t->subNav = 'series';
 
 	$t->mainTitle =  new \series\CultivationUi()->getHeader($data->e);
 

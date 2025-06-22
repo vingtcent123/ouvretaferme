@@ -1,9 +1,11 @@
 <?php
 new AdaptativeView('index', function($data, FarmTemplate $t) {
 
-	$t->title = s("Site internet de {value}", $data->eFarm['name']);
-	$t->tab = 'settings';
-	$t->subNav = new \farm\FarmUi()->getSettingsSubNav($data->eFarm);
+	$t->title = s("Le site internet de {value}", $data->eFarm['name']);
+	$t->nav = 'communications';
+	$t->subNav = 'website';
+
+	$t->package('main')->updateNavCommunications($t->canonical);
 
 	if($data->eWebsite->empty()) {
 

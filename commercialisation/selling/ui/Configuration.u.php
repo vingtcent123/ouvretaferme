@@ -146,7 +146,7 @@ class ConfigurationUi {
 
 				$h .= $form->hidden('id', $eConfiguration['id']);
 
-				$h .= $form->dynamicGroups($eConfiguration, ['orderFormPrefix', 'orderFormDelivery', 'orderFormPaymentCondition', 'orderFormHeader', 'orderFormFooter']);
+				$h .= $form->dynamicGroups($eConfiguration, ['documentTarget', 'orderFormPrefix', 'orderFormDelivery', 'orderFormPaymentCondition', 'orderFormHeader', 'orderFormFooter']);
 
 				$h .= $form->group(
 					content: $form->submit(s("Enregistrer"))
@@ -252,7 +252,7 @@ class ConfigurationUi {
 
 				$h .= $form->hidden('id', $eConfiguration['id']);
 
-				$h .= $form->dynamicGroups($eConfiguration, ['deliveryNotePrefix']);
+				$h .= $form->dynamicGroups($eConfiguration, ['documentTarget', 'deliveryNotePrefix']);
 
 				$h .= $form->group(
 					content: $form->submit(s("Enregistrer"))
@@ -411,6 +411,7 @@ class ConfigurationUi {
 
 		$d = Configuration::model()->describer($property, [
 			'documentInvoices' => s("Prochain numéro de facture ou d'avoir"),
+			'documentTarget' => s("Permettre l'édition de devis et de bons de livraison"),
 			'hasVat' => s("Assujettissement à la TVA"),
 			'invoiceVat' => s("Numéro de TVA intracommunautaire"),
 			'defaultVat' => s("Taux de TVA par défaut sur vos produits"),
@@ -497,6 +498,22 @@ class ConfigurationUi {
 			case 'pdfNaturalOrder' :
 				$d->field = 'yesNo';
 				$d->labelAfter = \util\FormUi::info(s("Les étiquettes devront être coupées empilées après impression et déposées l'une sur l'autre du coin haut gauche au coin bas droite des feuilles pour conserver le tri"));
+				break;
+
+			case 'documentTarget' :
+
+				$d->values = [
+					Configuration::ALL => s("Pour tous les clients"),
+					Configuration::PRIVATE => s("Pour les clients particuliers"),
+					Configuration::PRO => s("Pour les clients professionnels"),
+					Configuration::DISABLED => s("Désactiver cette fonctionnalité"),
+				];
+
+				$d->field = 'select';
+				$d->attributes['mandatory'] = TRUE;
+
+				$h = s("L'édition des factures reste toujours disponible pour tous les clients.");
+				$d->after = \util\FormUi::info($h);
 				break;
 
 			case 'orderFormPaymentCondition' :

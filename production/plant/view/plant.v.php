@@ -2,15 +2,14 @@
 
 new AdaptativeView('plant', function($data, FarmTemplate $t) {
 
-	$t->tab = 'settings';
-	$t->subNav = new \farm\FarmUi()->getSettingsSubNav($data->eFarm);
+	$t->nav = 'settings-production';
 
-	$t->title = s("Espèces de {value}", $data->eFarm['name']);
+	$t->title = s("Les espèces de {value}", $data->eFarm['name']);
 	$t->canonical = \plant\PlantUi::urlManage($data->eFarm);
 
 	$h = '<div class="util-action">';
 		$h .= '<h1>';
-			$h .= '<a href="'.\farm\FarmUi::urlSettings($data->eFarm).'"  class="h-back">'.\Asset::icon('arrow-left').'</a>';
+			$h .= '<a href="'.\farm\FarmUi::urlSettingsProduction($data->eFarm).'"  class="h-back">'.\Asset::icon('arrow-left').'</a>';
 			$h .= s("Espèces");
 		$h .= '</h1>';
 		$h .=  '<div>';

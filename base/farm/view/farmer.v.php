@@ -1,9 +1,8 @@
 <?php
 new AdaptativeView('manage', function($data, FarmTemplate $t) {
 
-	$t->title = s("L'équipe de {value}", $data->eFarm['name']);
-	$t->tab = 'settings';
-	$t->subNav = new \farm\FarmUi()->getSettingsSubNav($data->eFarm);
+	$t->title = s("Gérer l'équipe de la ferme");
+	$t->nav = 'settings-commercialisation';
 
 	$t->mainTitle = new \farm\FarmerUi()->getManageTitle($data->eFarm);
 
@@ -14,8 +13,7 @@ new AdaptativeView('manage', function($data, FarmTemplate $t) {
 new AdaptativeView('show', function($data, FarmTemplate $t) {
 
 	$t->title = $data->eFarmer['user']->getName();
-	$t->tab = 'settings';
-	$t->subNav = new \farm\FarmUi()->getSettingsSubNav($data->eFarmer['farm']);
+	$t->nav = 'settings-commercialisation';
 
 	$t->mainTitle = new \farm\FarmerUi()->getUserTitle($data->eFarmer);
 

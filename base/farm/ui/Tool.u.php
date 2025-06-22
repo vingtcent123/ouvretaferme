@@ -150,7 +150,7 @@ class ToolUi {
 	public function getManageTitle(\farm\Farm $eFarm, ?string $routineName, array $tools, \Collection $cTool, \Search $search): string {
 
 		$title = '<h1>';
-			$title .= '<a href="'.FarmUi::urlSettings($eFarm).'"  class="h-back">'.\Asset::icon('arrow-left').'</a>';
+			$title .= '<a href="'.FarmUi::urlSettingsProduction($eFarm).'"  class="h-back">'.\Asset::icon('arrow-left').'</a>';
 			$title .= ($routineName ? RoutineUi::getProperty($routineName, 'title') : s("Matériel"));
 		$title .= '</h1>';
 

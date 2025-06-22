@@ -15,9 +15,30 @@ class FarmerUi {
 
 		$h = '<div class="farmer-farms">';
 
-		foreach($cFarm as $eFarm) {
-			$h .= new FarmUi()->getPanel($eFarm);
-		}
+			foreach($cFarm as $eFarm) {
+				$h .= new FarmUi()->getPanel($eFarm);
+			}
+
+			if($cFarm->count() <= 2) {
+
+				$h .= '<a href="'.OTF_DEMO_URL.'/ferme/'.\farm\Farm::DEMO.'/series?view=area" class="farmer-farms-item">';
+
+					$h .= '<div class="farmer-farms-item-vignette">';
+						$h .= \Asset::image('main', 'favicon.png', ['style' => 'width: 6rem; height: 6rem']);
+					$h .= '</div>';
+					$h .= '<div class="farmer-farms-item-content">';
+						$h .= '<h4>';
+							$h .= s("Ferme de démonstration");
+						$h .= '</h4>';
+						$h .= '<div class="farmer-farms-item-infos">';
+							$h .= s("Découvrez comment utiliser les fonctionnalités de {siteName} en explorant la démo !");
+						$h .= '</div>';
+
+					$h .= '</div>';
+
+				$h .= '</a>';
+
+			}
 
 		$h .= '</div>';
 
@@ -33,7 +54,7 @@ class FarmerUi {
 			$h .= '<p>'.s("Vous êtes producteur et vous venez de vous inscrire sur {siteName}. Pour commencer à utiliser tous les outils numériques développés pour vous sur la plateforme, configurez maintenant votre ferme en renseignant quelques informations de base !").'</p>';
 		$h .= '</div>';
 		$h .= '<div class="util-buttons">';
-			$h .= '<a href="/farm/farm:create" class="bg-secondary util-button">';
+			$h .= '<a href="/farm/farm:create" class="util-button">';
 				$h .= '<div>';
 					$h .= '<h4>'.s("Démarrer la création de ma ferme").'</h4>';
 				$h .= '</div>';
@@ -121,20 +142,11 @@ class FarmerUi {
 
 	public function getManageTitle(Farm $eFarm): string {
 
-		$h = '<div class="util-action">';
-
-			$h .= '<h1>';
-				$h .= '<a href="'.\farm\FarmUi::urlSettings($eFarm).'"  class="h-back">'.\Asset::icon('arrow-left').'</a>';
-				$h .= s("L'équipe");
-			$h .= '</h1>';
-
-			$h .= '<div>';
-				$h .= '<a href="/farm/farmer:create?farm='.$eFarm['id'].'" class="btn btn-primary">'.\Asset::icon('plus-circle').' '.s("Inviter un utilisateur dans l'équipe").'</a>';
-			$h .= '</div>';
-
-		$h .= '</div>';
-
-		return $h;
+		$actions = '<div>';
+			$actions .= '<a href="/farm/farmer:create?farm='.$eFarm['id'].'" class="btn btn-primary">'.\Asset::icon('plus-circle').' '.s("Inviter un utilisateur dans l'équipe").'</a>';
+		$actions .= '</div>';
+		
+		return new \farm\FarmUi()->getSettingsTitle($eFarm, s("Gérer l'équipe de la ferme"), 'team', $actions).'</h1>';
 
 	}
 
@@ -186,7 +198,7 @@ class FarmerUi {
 						$properties[] = \Asset::icon('exclamation-triangle-fill').'&nbsp;&nbsp;'.s("Aucune période de présence à la ferme enregistrée, cet utilisateur ne pourra pas participer aux tâches de la ferme !");
 					}
 
-					$h .= '<a href="/farm/farmer:show?id='.$eFarmer['id'].'" class="util-button bg-secondary">';
+					$h .= '<a href="/farm/farmer:show?id='.$eFarmer['id'].'" class="util-button">';
 						$h .= '<div>';
 							$h .= '<h4>';
 								if($eFarmer['farmGhost']) {

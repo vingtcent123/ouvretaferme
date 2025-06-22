@@ -468,7 +468,7 @@ class MarketUi {
 
 		$paymentMethodDropdown = '<div class="dropdown-list bg-secondary">';
 
-			$paymentMethodDropdown .= '<div class="dropdown-title">';
+			$paymentMethodDropdown .= '<div class="dropdown-subtitle">';
 			$paymentMethodDropdown .= match($for) {
 				'add' => s("Ajouter un moyen de paiement"),
 				'update' => s("Modifier le moyen de paiement"),
@@ -510,7 +510,7 @@ class MarketUi {
 					$paymentMethodDropdown .= '<div class="market-payment-method">';
 						$paymentMethodDropdown .= '<a data-ajax="/selling/sale:doUpdatePaymentMethod" post-id="'.$eSale['id'].'" post-payment-method="'.$ePayment['method']['id'].'" class="dropdown-item" post-action="remove">';
 
-							$paymentMethodDropdown .= s("Retirer {paymentMethod}", ['paymentMethod' => encode($ePayment['method']['name'])]);
+							$paymentMethodDropdown .= s("Retirer ce moyen de paiement");
 
 						$paymentMethodDropdown .= '</a>';
 					$paymentMethodDropdown .= '</div>';

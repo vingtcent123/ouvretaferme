@@ -468,12 +468,16 @@ Ajax.Navigation = class extends Ajax.Query {
 				Lime.Alert.hideStaticErrors();
 
 				if(json.__context === 'new') {
+
 					Lime.Dropdown.purge();
 					Lime.Panel.purge();
-				}
 
-				if(json.__context === 'new') {
+					if(document.activeElement !== document.body) {
+						document.activeElement.blur();
+					}
+
 					document.dispatchEvent(new CustomEvent('navigation.sleep'));
+
 				}
 
 				const url = this.fetchUrl;

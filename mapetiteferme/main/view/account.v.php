@@ -12,7 +12,7 @@ new AdaptativeView('index', function($data, MainTemplate $t) {
 
 	$h = '<div class="util-buttons">';
 
-		$h .= '<a href="/company/public:create" class="bg-secondary util-button">';
+		$h .= '<a href="/company/public:create" class="util-button">';
 
 			$h .= '<div>';
 				$h .= '<h4>'.s("Créer une autre ferme").'</h4>';
@@ -21,7 +21,7 @@ new AdaptativeView('index', function($data, MainTemplate $t) {
 
 		$h .= '</a>';
 
-		$h .= '<a href="/user/settings:updateUser" class="bg-secondary util-button">';
+		$h .= '<a href="/user/settings:updateUser" class="util-button">';
 
 			$h .= '<div>';
 				$h .= '<h4>'.s("Modifier mes informations personnelles").'</h4>';
@@ -32,7 +32,7 @@ new AdaptativeView('index', function($data, MainTemplate $t) {
 
 		if($data->canUpdate['email']) {
 
-			$h .= '<a href="/user/settings:updateEmail" class="bg-secondary util-button">';
+			$h .= '<a href="/user/settings:updateEmail" class="util-button">';
 
 				$h .= '<div>';
 					$h .= '<h4>'.s("Changer mon adresse e-mail").'</h4>';
@@ -46,7 +46,7 @@ new AdaptativeView('index', function($data, MainTemplate $t) {
 
 		if($data->canUpdate['drop']) {
 
-			$h .= '<a href="/user/settings:dropAccount" class="bg-danger util-button">';
+			$h .= '<a href="/user/settings:dropAccount" class="util-button util-button-danger">';
 
 				$h .= '<h4>';
 				if($data->userDeletedAt) {

@@ -5,72 +5,41 @@ new AdaptativeView('create', function($data, PanelTemplate $t) {
 
 });
 
-new AdaptativeView('update', function($data, FarmTemplate $t) {
+new AdaptativeView('update', function($data, PanelTemplate $t) {
 
-	$t->title = s("Réglages de base de {value}", $data->e['name']);
-	$t->tab = 'settings';
-	$t->subNav = new \farm\FarmUi()->getSettingsSubNav($data->e);
-
-	$h = '<h1>';
-		$h .= '<a href="'.\farm\FarmUi::urlSettings($data->e).'"  class="h-back">'.\Asset::icon('arrow-left').'</a>';
-		$h .= s("Réglages de base de la ferme");
-	$h .= '</h1>';
-
-	$t->mainTitle = $h;
-
-	echo new \farm\FarmUi()->update($data->e);
+	return new \farm\FarmUi()->update($data->e);
 
 });
 
-new AdaptativeView('updateSeries', function($data, FarmTemplate $t) {
+new AdaptativeView('updateProduction', function($data, FarmTemplate $t) {
 
-	$t->title = s("Réglages de base de {value}", $data->e['name']);
-	$t->tab = 'settings';
-	$t->subNav = new \farm\FarmUi()->getSettingsSubNav($data->e);
+	$t->title = s("Les réglages de base de {value}", $data->e['name']);
+	$t->nav = 'settings-production';
 
 	$h = '<h1>';
-		$h .= '<a href="'.\farm\FarmUi::urlSettings($data->e).'"  class="h-back">'.\Asset::icon('arrow-left').'</a>';
-		$h .= s("Réglages de base pour produire");
+		$h .= '<a href="'.\farm\FarmUi::urlSettingsProduction($data->e).'"  class="h-back">'.\Asset::icon('arrow-left').'</a>';
+		$h .= s("Réglages de base");
 	$h .= '</h1>';
 
 	$t->mainTitle = $h;
 
-	echo new \farm\FarmUi()->updateSeries($data->e);
+	echo new \farm\FarmUi()->updateProduction($data->e);
 
 });
 
 new AdaptativeView('updateEmail', function($data, FarmTemplate $t) {
 
-	$t->title = s("Configurer les e-mails envoyés par {value}", $data->e['name']);
-	$t->tab = 'settings';
-	$t->subNav = new \farm\FarmUi()->getSettingsSubNav($data->e);
+	$t->title = s("Les e-mails envoyés par {value}", $data->e['name']);
+	$t->nav = 'settings-commercialisation';
 
 	$h = '<h1>';
-		$h .= '<a href="'.\farm\FarmUi::urlSettings($data->e).'"  class="h-back">'.\Asset::icon('arrow-left').'</a>';
-		$h .= s("Configurer les e-mails");
+		$h .= '<a href="'.\farm\FarmUi::urlSettingsCommercialisation($data->e).'"  class="h-back">'.\Asset::icon('arrow-left').'</a>';
+		$h .= s("E-mails");
 	$h .= '</h1>';
 
 	$t->mainTitle = $h;
 
 	echo new \farm\FarmUi()->updateEmail($data->e);
-
-});
-
-new AdaptativeView('updateFeature', function($data, FarmTemplate $t) {
-
-	$t->title = s("Configurer les fonctionnalités de {value}", $data->e['name']);
-	$t->tab = 'settings';
-	$t->subNav = new \farm\FarmUi()->getSettingsSubNav($data->e);
-
-	$h = '<h1>';
-		$h .= '<a href="'.\farm\FarmUi::urlSettings($data->e).'"  class="h-back">'.\Asset::icon('arrow-left').'</a>';
-		$h .= s("Configurer les fonctionnalités");
-	$h .= '</h1>';
-
-
-	$t->mainTitle = $h;
-
-	echo new \farm\FarmUi()->updateFeature($data->e);
 
 });
 
@@ -80,20 +49,9 @@ new AdaptativeView('calendarMonth', function($data, AjaxTemplate $t) {
 
 });
 
-new AdaptativeView('export', function($data, FarmTemplate $t) {
-
-	$t->title = s("Exporter les données de {value}", $data->e['name']);
-	$t->tab = 'settings';
-	$t->subNav = new \farm\FarmUi()->getSettingsSubNav($data->e);
-
-	$h = '<h1>';
-		$h .= '<a href="'.\farm\FarmUi::urlSettings($data->e).'"  class="h-back">'.\Asset::icon('arrow-left').'</a>';
-		$h .= s("Exporter les données");
-	$h .= '</h1>';
+new AdaptativeView('export', function($data, PanelTemplate $t) {
 	
-	$t->mainTitle = $h;
-	
-	echo new \farm\FarmUi()->export($data->e, $data->year);
+	return new \farm\FarmUi()->export($data->e, $data->year);
 
 });
 ?>

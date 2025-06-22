@@ -10,7 +10,7 @@ class Sale extends SaleElement {
 			'shop' => ['fqn', 'shared', 'name', 'email', 'emailNewSale', 'emailEndDate', 'approximate', 'paymentCard', 'hasPayment', 'paymentOfflineHow', 'paymentTransferHow', 'shipping', 'shippingUntil', 'orderMin', 'embedOnly', 'embedUrl', 'farm' => ['name', 'legalEmail']],
 			'shopDate' => \shop\Date::getSelection(),
 			'shopPoint' => ['type', 'name'],
-			'farm' => ['name', 'siret', 'legalName', 'legalEmail', 'legalCity', 'url', 'vignette', 'emailBanner', 'emailFooter', 'featureDocument', 'hasSales'],
+			'farm' => ['name', 'siret', 'legalName', 'legalEmail', 'legalCity', 'url', 'vignette', 'emailBanner', 'emailFooter', 'hasSales'],
 			'price' => fn($e) => $e['type'] === Sale::PRO ? $e['priceExcludingVat'] : $e['priceIncludingVat'],
 			'invoice' => ['name', 'emailedAt', 'createdAt', 'priceExcludingVat', 'generation'],
 			'compositionOf' => ['name'],
@@ -232,6 +232,19 @@ class Sale extends SaleElement {
 			$this['preparationStatus'] !== Sale::CANCELED and
 			$this['invoice']->empty()
 		);
+
+	}
+
+	public function acceptDocumentTarget(): bool {
+
+		$this->expects(['type', 'farm']);
+
+		$target = $this['farm']->getSelling('documentTarget');
+
+		return match($this['type']) {
+			\selling\Sale::PRO => in_array($target, [\selling\Configuration::ALL, \selling\Configuration::PRO]),
+			\selling\Sale::PRIVATE => in_array($target, [\selling\Configuration::ALL, \selling\Configuration::PRIVATE]),
+		};
 
 	}
 
@@ -530,7 +543,7 @@ class Sale extends SaleElement {
 			$this['customer']['destination'] !== Customer::COLLECTIVE and
 			$this->isMarket() === FALSE and
 			$this->isMarketSale() === FALSE and
-			$this['farm']->hasFeatureDocument($this['type'])
+			$this->acceptDocumentTarget()
 		);
 
 	}

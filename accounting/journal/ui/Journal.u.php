@@ -49,7 +49,7 @@ class JournalUi {
 
 		foreach(self::getJournalCategories($eFarm) as $key => ['url' => $url, 'label' => $label]) {
 
-			$h .= '<a href="'.$url.'" class="company-subnav-item '.($key === $selectedView ? 'selected' : '').'" data-sub-tab="'.$key.'">';
+			$h .= '<a href="'.$url.'" class="company-subnav-item '.($key === $selectedView ? 'selected' : '').'" data-sub-nav="'.$key.'">';
 				$h .= $prefix.'<span>'.$label.'</span>';
 			$h .= '</a>';
 
