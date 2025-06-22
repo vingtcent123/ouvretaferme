@@ -113,7 +113,7 @@ class PaymentLib extends PaymentCrud {
 			return;
 		}
 
-		$amount = $eSale['priceIncludingVat'] - self::sumTotalBySale($eSale);
+		$amount = max(0, $eSale['priceIncludingVat'] - self::sumTotalBySale($eSale));
 
 		$ePayment = new Payment([
 			'sale' => $eSale,

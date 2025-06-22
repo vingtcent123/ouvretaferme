@@ -402,7 +402,7 @@ class MarketUi {
 
 								$h .= '<div>';
 
-									if($canUpdatePayments) {
+									if($canUpdatePayments and $eSale['cPayment']->count() < $cMethod->count()) {
 
 										$h .= '<a data-dropdown="bottom-end" class="dropdown-toggle btn btn-outline-secondary btn-sm" data-dropdown-hover="true">';
 											$h .= '<span style="font-weight: normal">'.s("Ajouter").'</span>';
@@ -503,7 +503,9 @@ class MarketUi {
 
 				if($for === 'update' and $ePayment->notEmpty()) {
 
-					$paymentMethodDropdown .= '<div class="dropdown-divider"></div>';
+					if($eSale['cPayment']->count() < $cMethod->count()) {
+						$paymentMethodDropdown .= '<div class="dropdown-divider"></div>';
+					}
 
 					$paymentMethodDropdown .= '<div class="market-payment-method">';
 						$paymentMethodDropdown .= '<a data-ajax="/selling/sale:doUpdatePaymentMethod" post-id="'.$eSale['id'].'" post-payment-method="'.$ePayment['method']['id'].'" class="dropdown-item" post-action="remove">';
