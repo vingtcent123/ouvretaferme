@@ -5,7 +5,6 @@ new AdaptativeView('index', function($data, FarmTemplate $t) {
 
 	$t->title = s("Tous les comptes de {value}", $data->eFarm['name']);
 	$t->canonical = \company\CompanyUi::urlJournal($data->eFarm).'/thirdParty/';
-	$t->subNav = new \company\CompanyUi()->getSettingsSubNav($data->eFarm);
 
 	$t->mainTitle = new \account\AccountUi()->getManageTitle($data->eFarm);
 	$t->mainTitleClass = 'hide-lateral-down';

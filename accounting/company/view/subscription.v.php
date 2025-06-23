@@ -5,7 +5,6 @@ new AdaptativeView('manage', function($data, FarmTemplate $t) {
 
 	$t->title = s("Abonnements de {farm}", ['farm' => encode($data->eFarm['name'])]);
 	$t->canonical = \farm\FarmUi::urlSettingsAccounting($data->eFarm);
-	$t->subNav = new \company\CompanyUi()->getSettingsSubNav($data->eFarm);
 
 	$t->mainTitle = new \company\SubscriptionUi()->getManageTitle($data->eFarm);
 	$t->mainTitleClass = 'hide-lateral-down';

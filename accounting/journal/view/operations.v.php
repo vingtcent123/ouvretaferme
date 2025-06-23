@@ -12,7 +12,7 @@ new AdaptativeView('index', function($data, FarmTemplate $t) {
 
 	$t->mainYear = new \account\FinancialYearUi()->getFinancialYearTabs(
 		function(\account\FinancialYear $eFinancialYear) use ($data) {
-			return \company\CompanyUi::urlJournal($data->eFarm).'/?financialYear='.$eFinancialYear['id'].'&'.http_build_query($data->search->getFiltered(['financialYear']));
+			return \company\CompanyUi::urlJournal($data->eFarm).'/operations?financialYear='.$eFinancialYear['id'].'&'.http_build_query($data->search->getFiltered(['financialYear']));
 			},
 		$data->cFinancialYear,
 		$data->eFinancialYear,

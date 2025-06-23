@@ -7,8 +7,7 @@ new AdaptativeView('balance-sheet', function($data, FarmTemplate $t) {
 	$t->title = s("Les bilans de {farm}", ['farm' => encode($data->eFarm['name'])]);
 	$t->canonical = \company\CompanyUi::urlOverview($data->eFarm).'/statements:bilans';
 
-	$categories = \company\CompanyUi::getOverviewCategories($data->eFarm);
-	$t->mainTitle = \company\CompanyUi::getDropdownMenuTitle($categories, $data->selectedView);
+	$t->mainTitle = new \overview\OverviewUi()->getStatementsTitle($data->eFarm, $data->selectedView);
 	$t->mainTitleClass = 'hide-lateral-down';
 
 	$t->mainYear = new \account\FinancialYearUi()->getFinancialYearTabs(
@@ -67,8 +66,7 @@ new AdaptativeView('trial-balance', function($data, FarmTemplate $t) {
 	$t->title = s("Les balances de {farm}", ['farm' => encode($data->eFarm['name'])]);
 	$t->canonical = \company\CompanyUi::urlOverview($data->eFarm).'/statements:balances';
 
-	$categories = \company\CompanyUi::getOverviewCategories($data->eFarm);
-	$t->mainTitle = \company\CompanyUi::getDropdownMenuTitle($categories, $data->selectedView);
+	$t->mainTitle = new \overview\OverviewUi()->getStatementsTitle($data->eFarm, $data->selectedView);
 	$t->mainTitleClass = 'hide-lateral-down';
 
 	$t->mainYear = new \account\FinancialYearUi()->getFinancialYearTabs(

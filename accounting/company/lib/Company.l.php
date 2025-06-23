@@ -181,8 +181,8 @@ class CompanyLib extends CompanyCrud {
 		}
 
 		// Copy Account content from package main to package accounting
-		$cAccount = \main\GenericAccount::model()
-			->select(\main\GenericAccount::getSelection())
+		$cAccount = \company\GenericAccount::model()
+			->select(\company\GenericAccount::getSelection())
 			->getCollection();
 		foreach($cAccount as $eAccount) {
 			\account\Account::model()->insert($eAccount);
@@ -191,7 +191,7 @@ class CompanyLib extends CompanyCrud {
 
   public static function getDatabaseNameFromCompany(\farm\Farm $eFarm): string {
 
-    return \Database::getPackages()[\main\GenericAccount::model()->getPackage()].'_'.$eFarm['id'];
+    return \Database::getPackages()[\company\GenericAccount::model()->getPackage()].'_'.$eFarm['id'];
 
   }
 

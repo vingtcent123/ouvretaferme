@@ -7,6 +7,18 @@ Company:
     ["farm"]
   ]
 
+GenericAccount:
+  id: serial32
+  class: text8(1, null)
+  description: text8(1, null) @collate(general)
+  visible: bool = TRUE
+  vatAccount: ?account\Account
+  vatRate: ?decimal(5, 2) = 0.00
+  INDEX: [
+    ["id"],
+    ["class"]
+  ]
+
 Subscription:
   id: serial32
   company: company\Company
