@@ -10,7 +10,7 @@ new Page()
 		\company\CompanyLib::connectSpecificDatabaseAndServer($eCompany);
 
 		$databaseName = \company\CompanyLib::getDatabaseNameFromCompany($eCompany);
-		\Database::addBase($databaseName, 'mapetiteferme-default');
+		\Database::addBase($databaseName, 'otf-default');
 
 		$packagesToAdd = [];
 		foreach(\company\CompanyLib::$specificPackages as $package) {

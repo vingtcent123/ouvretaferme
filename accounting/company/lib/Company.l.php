@@ -100,15 +100,11 @@ class CompanyLib extends CompanyCrud {
 		$base = self::getDatabaseName($eFarm);
 
 		foreach(self::$specificPackages as $package) {
-			\Database::addPackages([$package => $base]);
+			\Database::setPackage($package, $base);
 		}
-		// 2 lignes nécessaires pour écraser 'account' qui est déjà setté de base (pour le formulaire d'inscription)
-		$packages = \Database::getPackages();
-		$packages['account'] = $base;
 
-		\Database::setPackages($packages);
+		\Database::addBase($base, 'otf-default');
 
-		\Database::addBase($base, 'mapetiteferme-default');
 	}
 
 	public static function getDatabaseName(\farm\Farm $eFarm): string {

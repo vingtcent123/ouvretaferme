@@ -5,6 +5,9 @@ Privilege::register('account', [
 ]);
 
 Setting::register('account', [
+
+	'remoteKey' => 'toto',
+
 	'assetClass' => 2,
 	'subventionAssetClass' => '13',
 	'subventionDepreciationAssetClass' => '777',

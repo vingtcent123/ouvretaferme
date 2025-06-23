@@ -5,12 +5,12 @@ new Page()
 	/**
 	 * Init pour tester sur l'entreprise #1
 	 */
-	$eCompany = \company\CompanyLib::getById(1);
+	$eFarm = \farm\FarmLib::getById(7);
 
-	\company\CompanyLib::connectSpecificDatabaseAndServer($eCompany);
+	\company\CompanyLib::connectSpecificDatabaseAndServer($eFarm);
 
-	$databaseName = \company\CompanyLib::getDatabaseNameFromCompany($eCompany);
-	\Database::addBase($databaseName, 'mapetiteferme-default');
+	$databaseName = \company\CompanyLib::getDatabaseNameFromCompany($eFarm);
+	\Database::addBase($databaseName, 'otf-default');
 
 	$packagesToAdd = [];
 	foreach(\company\CompanyLib::$specificPackages as $package) {

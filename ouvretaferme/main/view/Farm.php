@@ -236,6 +236,15 @@ class FarmTemplate extends MainTemplate {
 				$this->template .= ' farm-commercialisation ';
 				break;
 
+			case 'bank' :
+			case 'operations' :
+			case 'assets' :
+			case 'analyze-accounting' :
+			case 'settings-accounting' :
+				$this->section = 'accounting';
+				$this->template .= ' farm-accounting ';
+				break;
+
 		}
 
 	}

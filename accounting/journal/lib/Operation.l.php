@@ -152,6 +152,10 @@ class OperationLib extends OperationCrud {
 		$eOperation = ['accountLabel' => $eBankAccount['label'], 'updatedAt' => new \Sql('NOW()')];
 		$eFinancialYear = \account\FinancialYearLib::selectDefaultFinancialYear();
 
+		if($eFinancialYear['status'] === \account\FinancialYear::CLOSE) {
+			return TRUE;
+		}
+
 		Operation::model()
 			->select(['accountLabel', 'updatedAt'])
 			// Liée aux cashflow de ce compte bancaire

@@ -8,6 +8,7 @@ class ThirdPartyUi {
 		$h = '<div class="util-action">';
 
 			$h .= '<h1>';
+			$h .= '<a href="'.\company\CompanyUi::urlSettings($eFarm).'"  class="h-back">'.\Asset::icon('arrow-left').'</a>';
 				$h .= s("Les tiers");
 			$h .= '</h1>';
 
@@ -94,6 +95,7 @@ class ThirdPartyUi {
 							$h .= '</td>';
 							$h .= '<td>';
 								$eThirdParty->setQuickAttribute('farm', $eFarm['id']);
+								$eThirdParty->setQuickAttribute('app', 'accounting');
 								$h .= $eThirdParty->quick('name', encode($eThirdParty['name']));
 							$h .= '</td>';
 							$h .= '<td>';

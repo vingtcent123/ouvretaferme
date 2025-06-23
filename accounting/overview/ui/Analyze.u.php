@@ -3,12 +3,11 @@ namespace overview;
 
 class AnalyzeUi {
 
-	public static function getTitle(\farm\Farm $eFarm): string {
+	public static function getTitle(\farm\Farm $eFarm, string $selectedView): string {
 
 		$categories = new \company\CompanyUi()->getAnalyzeCategories($eFarm);
-		$selectedView = \Setting::get('main\viewAnalyze');
 
-		return \main\MainUi::getDropdownMenuTitle($categories, $selectedView);
+		return \company\CompanyUi::getDropdownMenuTitle($categories, $selectedView);
 
 	}
 }

@@ -220,6 +220,13 @@ class Database extends PDO {
 	}
 
 	/**
+	 * Link package to base
+	 */
+	public static function setPackage(string $package, string $base): void {
+		self::$packages[$package] = $base;
+	}
+
+	/**
 	 * Link packages to bases
 	 *
 	 * [

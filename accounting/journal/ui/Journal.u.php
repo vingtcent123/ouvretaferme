@@ -273,7 +273,7 @@ class JournalUi {
 							$label = s("Pièce comptable");
 							$h .= ($search ? $search->linkSort('document', $label) : $label);
 						$h .= '</th>';
-						$h .= '<th colspan="2">'.s("Compte (Classe et libellé)").'</th>';
+						$h .= '<th colspan="2">'.s("Compte (Libellé et classe)").'</th>';
 						$h .= '<th>';
 							$label = s("Description");
 							$h .= ($search ? $search->linkSort('description', $label) : $label);

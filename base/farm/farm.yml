@@ -89,6 +89,9 @@ Farmer:
   viewAnalyzeChart: enum(TURNOVER, QUANTITY) = TURNOVER
   viewAnalyzeComposition: enum(COMPOSITION, INGREDIENT) = COMPOSITION
   viewAnalyzeYear: ?int16(0, null)
+  viewAnalyzeAccountingYear: ?int16(0, null)
+  viewAnalyzeAccountingFinancials: enum(BANK, CHARGES, RESULTS) = BANK
+  viewAnalyzeAccountingStatements: enum(BALANCE_SHEET, TRIAL_BALANCE) = BALANCE_SHEET
   viewSeason: ?int16(0, null)
   viewShopCurrent: ?shop\Shop
   createdAt: datetime = SPECIAL(now)

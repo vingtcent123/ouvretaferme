@@ -47,6 +47,7 @@ switch(LIME_ENV) {
 
 			'accounting' => 'mapetiteferme',
 			'company' => 'mapetiteferme',
+			'account' => 'mapetiteferme',
 		]);
 
 		break;
@@ -79,6 +80,7 @@ switch(LIME_ENV) {
 
 			'accounting' => 'dev_mapetiteferme',
 			'company' => 'dev_mapetiteferme',
+			'account' => 'dev_mapetiteferme',
 		]);
 
 		break;

@@ -6,21 +6,14 @@ class BankAccountUi {
 	public function __construct() {
 	}
 
-	public function getAccountTitle(\account\FinancialYear $eFinancialYear): string {
+	public function getAccountTitle(\farm\Farm $eFarm): string {
 
 		$h = '<div class="util-action">';
 
 			$h .= '<h1>';
-				$h .= s("Les comptes bancaires");
+				$h .= '<a href="'.\company\CompanyUi::urlSettings($eFarm).'"  class="h-back">'.\Asset::icon('arrow-left').'</a>';
+					$h .= s("Les comptes bancaires");
 			$h .= '</h1>';
-
-			if($eFinancialYear->notEmpty()) {
-
-				$h .= '<div>';
-					$h .= '<a '.attr('onclick', 'Lime.Search.toggle("#cashflow-search")').' class="btn btn-primary">'.\Asset::icon('search').'</a> ';
-				$h .= '</div>';
-
-			}
 
 		$h .= '</div>';
 
@@ -45,7 +38,7 @@ class BankAccountUi {
 
 			$h .= '<div class="util-info">'.s("Les comptes bancaires se créent automatiquement lors de l'import d'un relevé. Vous pouvez modifier le libellé du compte").'</div>';
 
-			$h .= '<div class="util-warning">'.s("Attention, en <b>modifiant le libellé d'un compte bancaire</b>, toutes les écritures comptables de l'exercice comptable en cours qui sont liées à ce compte bancaire verront leur n° de compte être mis à jour avec ce libellé.").'</div>';
+			$h .= '<div class="util-warning-outline">'.s("Attention, en <b>modifiant le libellé d'un compte bancaire</b>, toutes les écritures comptables de l'exercice comptable en cours qui sont liées à ce numéro de compte bancaire verront leur libellé de compte être mis à jour.").'</div>';
 
 		}
 
@@ -72,6 +65,7 @@ class BankAccountUi {
 						$h .= '<td>';
 							if($canUpdate === TRUE) {
 								$eBankAccount->setQuickAttribute('farm', $eFarm['id']);
+								$eBankAccount->setQuickAttribute('app', 'accounting');
 								$h .= $eBankAccount->quick('label', $eBankAccount['label'] ? encode($eBankAccount['label']) : '<i>'.\Setting::get('account\defaultBankAccountLabel').'&nbsp;'.s("(Par défaut)").'</i>');
 							} else {
 								$h .= encode($eBankAccount['label']);

@@ -3,11 +3,19 @@
 const argv = require('minimist')(process.argv.slice(2));
 const puppeteer = require('puppeteer-core');
 const fs = require('fs');
-const { PDFDocument } = require("pdf-lib");
+const { PDFDocument } = require('pdf-lib');
 
 // CLI Args
 const url = argv.url;
 const destination = argv.destination;
+const headerTemplate = argv.header || null;
+const title = argv.title || null;
+const footerTemplate = argv.footer || null;
+const headerFooterArgs = {
+	...headerTemplate ? {headerTemplate: decodeURIComponent((headerTemplate + '').replace(/\+/g, '%20'))} : {},
+	...footerTemplate ? {footerTemplate: decodeURIComponent((footerTemplate + '').replace(/\+/g, '%20'))} : {},
+	...(headerTemplate || footerTemplate) ? {displayHeaderFooter : true, margin: {top: '150px'}} : {},
+};
 
 (async() => {
 
@@ -25,15 +33,13 @@ const destination = argv.destination;
 	await page.pdf({
 		path: destination,
 		printBackground: true,
-		format: 'A4'
+		format: 'A4',
+		...headerFooterArgs,
 	});
-
-	const pageTitle = await page.title();
 
 	const buffer = fs.readFileSync(destination);
 	const pdfDoc = await PDFDocument.load(buffer)
-	console.log(pageTitle);
-	pdfDoc.setTitle(pageTitle)
+	pdfDoc.setTitle(decodeURIComponent((title + '').replace(/\+/g, '%20')))
 	const pdfBytes = await pdfDoc.save()
 
 	await fs.writeFileSync(destination, pdfBytes);

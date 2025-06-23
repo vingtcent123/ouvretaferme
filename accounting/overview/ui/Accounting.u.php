@@ -3,6 +3,10 @@ namespace overview;
 
 class AccountingUi {
 
+	public function __construct() {
+		\Asset::css('company', 'company.css');
+	}
+
 	private function displayDebitCredit(array $line): string {
 
 		$h = '<td class="cell-bordered text-end util-unit">'.(new OverviewUi()->number($line['startDebit'], '')).'</td>';

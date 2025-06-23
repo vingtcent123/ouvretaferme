@@ -1,11 +1,14 @@
 <?php
-new AdaptativeView('index', function($data, CompanyTemplate $t) {
+new AdaptativeView('index', function($data, FarmTemplate $t) {
+
+	$t->nav = 'settings-accounting';
 
 	$t->title = s("Tous les comptes de {value}", $data->eFarm['name']);
-	$t->tab = 'settings';
+	$t->canonical = \company\CompanyUi::urlJournal($data->eFarm).'/thirdParty/';
 	$t->subNav = new \company\CompanyUi()->getSettingsSubNav($data->eFarm);
 
 	$t->mainTitle = new \account\AccountUi()->getManageTitle($data->eFarm);
+	$t->mainTitleClass = 'hide-lateral-down';
 
 	echo new \account\AccountUi()->getSearch($data->search);
 	echo new \account\AccountUi()->getManage($data->eFarm, $data->cAccount);

@@ -764,28 +764,38 @@ class FarmUi {
 
 		if($eFarm->canAccounting()) {
 
-			$h .= '<div data-nav="bank" class="farm-tab farm-tab-subnav '.($nav === 'bank' ? 'selected' : '').'">';
-				$h .= '<span class="farm-tab-icon">'.\Asset::icon('piggy-bank').'</span>';
-				$h .= '<span class="farm-tab-label">'.s("Banque").'</span>';
+			$h .= '<div class="farm-nav-bank">';
+
+				$h .= '<div data-nav="bank" class="farm-tab farm-tab-subnav '.($nav === 'bank' ? 'selected' : '').'">';
+					$h .= '<span class="farm-tab-icon">'.\Asset::icon('piggy-bank').'</span>';
+					$h .= '<span class="farm-tab-label">'.s("Banque").'</span>';
+				$h .= '</div>';
+
+				$h .= $this->getBankMenu($eFarm, prefix: $prefix, subNav: $subNav);
+
 			$h .= '</div>';
 
-			$h .= $this->getBankMenu($eFarm, prefix: $prefix, subNav: $subNav);
+			$h .= '<div class="farm-nav-operations">';
 
+				$h .= '<div data-nav="operations" class="farm-tab farm-tab-subnav '.($nav === 'journal' ? 'selected' : '').'">';
+					$h .= '<span class="farm-tab-icon">'.\Asset::icon('journal-bookmark').'</span>';
+					$h .= '<span class="farm-tab-label">'.s("Écritures comptables").'</span>';
+				$h .= '</div>';
 
-			$h .= '<div data-nav="operations" class="farm-tab farm-tab-subnav '.($nav === 'journal' ? 'selected' : '').'">';
-				$h .= '<span class="farm-tab-icon">'.\Asset::icon('journal-bookmark').'</span>';
-				$h .= '<span class="farm-tab-label">'.s("Écritures comptables").'</span>';
+				$h .= $this->getOperationsMenu($eFarm, prefix: $prefix, subNav: $subNav);
+
 			$h .= '</div>';
 
-			$h .= $this->getOperationsMenu($eFarm, prefix: $prefix, subNav: $subNav);
+			$h .= '<div class="farm-nav-assets">';
 
-			$h .= '<div data-nav="assets" class="farm-tab farm-tab-subnav '.($nav === 'assets' ? 'selected' : '').'">';
-				$h .= '<span class="farm-tab-icon">'.\Asset::icon('house-door').'</span>';
-				$h .= '<span class="farm-tab-label">'.s("Immobilisations").'</span>';
+				$h .= '<div data-nav="assets" class="farm-tab farm-tab-subnav '.($nav === 'assets' ? 'selected' : '').'">';
+					$h .= '<span class="farm-tab-icon">'.\Asset::icon('house-door').'</span>';
+					$h .= '<span class="farm-tab-label">'.s("Immobilisations").'</span>';
+				$h .= '</div>';
+
+				$h .= $this->getAssetsMenu($eFarm, prefix: $prefix, subNav: $subNav);
+
 			$h .= '</div>';
-
-			$h .= $this->getAssetsMenu($eFarm, prefix: $prefix, subNav: $subNav);
-
 		}
 
 		$h .= $this->getAnalyzeTab(
@@ -794,7 +804,7 @@ class FarmUi {
 			$nav,
 			$subNav,
 			'accounting',
-			self::getAnalyzeAccountingCategories($eFarm),
+			self::getAnalyzeAccountingCategories(),
 			fn($view) => \company\CompanyUi::urlOverview($eFarm, $view)
 		);
 
@@ -1456,14 +1466,11 @@ class FarmUi {
 
 	}
 
-	protected static function getAnalyzeAccountingCategories(Farm $eFarm): array {
+	protected static function getAnalyzeAccountingCategories(): array {
 
 		return [
-			'bank' => s("Trésorerie"),
-			'charges' => s("Charges"),
-			'result' => s("Résultat"),
-			'balance' => s("Bilan"),
-			'accounting' => s("Balances"),
+			'financials' => s("Situation financière"),
+			'statements' => s("État comptable"),
 		];
 
 	}
@@ -1682,6 +1689,9 @@ class FarmUi {
 					$h .= '<a href="/farm/farmer:manage?farm='.$eFarm['id'].' '.($selected === 'team' ? 'selected' : '').'" class="dropdown-item">'.\Asset::icon('people-fill').'  '.s("Gérer l'équipe de la ferme").'</a>';
 					$h .= '<a href="'.self::urlSettingsProduction($eFarm).'" class="dropdown-item '.($selected === 'production' ? 'selected' : '').'">'.\Asset::icon('leaf').'  '.s("Paramétrer la production").'</a>';
 					$h .= '<a href="'.self::urlSettingsCommercialisation($eFarm).'" class="dropdown-item '.($selected === 'commercialisation' ? 'selected' : '').'">'.\Asset::icon('basket3').'  '.s("Paramétrer la vente").'</a>';
+					if(FEATURE_ACCOUNTING) {
+						$h .= '<a href="'.self::urlSettingsAccounting($eFarm).'" class="dropdown-item '.($selected === 'accounting' ? 'selected' : '').'">'.\Asset::icon('bank').'  '.s("Paramétrer la comptabilité").'</a>';
+					}
 				$h .= '</div>';
 			$h .= '</h1>';
 			$h .= $actions;

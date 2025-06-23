@@ -145,41 +145,42 @@ class CompanyUi {
 
 	public function update(\farm\Farm $eFarm): string {
 
-		$h = '<h4>'.s("Général").'</h4>';
+		$h = '<h3>'.s("Général").'</h3>';
 
 		$form = new \util\FormUi();
 
 		$h .= $form->openAjax('/'.$eFarm['id'].'/company/company:doUpdate', ['id' => 'company-update', 'autocomplete' => 'off']);
 
 		$h .= '<div>';
-		$h .= s("Vous avez configuré certains paramètres pour votre ferme. Pour les modifier, rendez-vous <link>dans les paramètres généraux de votre ferme</link>.", ['link' => '<a href="/farm/farm:update?id='.$eFarm['id'].'">']);
+			$h .= s("Vous avez configuré certains paramètres pour votre ferme. Pour les modifier, rendez-vous <link>dans les paramètres généraux de votre ferme</link>.", ['link' => '<a href="/farm/farm:update?id='.$eFarm['id'].'">']);
 		$h .= '</div>';
 
-		$h .= '<div class="util-block stick-xs bg-background-light">';
-		$h .= '<dl class="util-presentation util-presentation-2">';
+		$h .= '<div class="util-block stick-xs bg-background-light mt-1 mb-1">';
 
-		foreach(['siret', 'legalName', 'legalEmail'] as $field) {
+			$h .= '<dl class="util-presentation util-presentation-2">';
 
-			$h .= '<dt>'.\farm\FarmUi::p($field)->label.'</dt>';
-			$h .= '<dd>'.encode($eFarm[$field]).'</dd>';
+			foreach(['siret', 'legalName', 'legalEmail'] as $field) {
 
-		}
+				$h .= '<dt>'.\farm\FarmUi::p($field)->label.'</dt>';
+				$h .= '<dd>'.encode($eFarm[$field]).'</dd>';
 
-		$h .= '<dt>'.s("Siège social de la ferme").'</dt>';
-		$h .= '<dd>'.$eFarm->getLegalAddress('html').'</dd>';
+			}
 
-		$h .= '</dl>';
+			$h .= '<dt>'.s("Siège social de la ferme").'</dt>';
+			$h .= '<dd>'.$eFarm->getLegalAddress('html').'</dd>';
+
+			$h .= '</dl>';
 		$h .= '</div>';
 
 
-		$h .= '<h4>'.s("Paramètres de comptabilité").'</h4>';
+		$h .= '<h3>'.s("Paramètres de comptabilité").'</h3>';
 		$h .= $form->asteriskInfo();
 
 		$h .= $form->hidden('id', $eFarm['company']['id']);
 		$h .= $form->dynamicGroups($eFarm['company'], ['accountingType']);
 
 		$h .= $form->group(
-			content: $form->submit(s("Enregistrer les paramètres de ma ferme"))
+			content: $form->submit(s("Enregistrer"))
 		);
 
 		$h .= $form->close();
@@ -344,16 +345,12 @@ class CompanyUi {
 
 		$h = '';
 
-		$h .= '<div class="util-block-optional">';
-
-			$h .= '<h2>'.s("La ferme").'</h2>';
-
 			$h .= '<div class="util-buttons">';
 
 				if($eFarm->canManage() === TRUE) {
 
 					$h .= '<a href="'.CompanyUi::url($eFarm).'/company:update?id='.$eFarm['id'].'" class="util-button">';
-						$h .= '<h4>'.s("Les réglages de base<br/>de la ferme").'</h4>';
+						$h .= '<h4>'.s("Les réglages de base").'</h4>';
 						$h .= \Asset::icon('gear-fill');
 					$h .= '</a>';
 
@@ -378,16 +375,6 @@ class CompanyUi {
 					$h .= \Asset::icon('person-rolodex');
 				$h .= '</a>';
 
-			$h .= '</div>';
-
-		$h .= '</div>';
-
-		$h .= '<div class="util-block-optional">';
-
-		$h .= '<h2>'.s("La comptabilité").'</h2>';
-
-			$h .= '<div class="util-buttons">';
-
 				$h .= '<a href="'.CompanyUi::urlAccount($eFarm).'/account" class="util-button">';
 					$h .= '<h4>'.s("Les classes de compte").'</h4>';
 					$h .= \Asset::icon('gear-fill');
@@ -399,28 +386,6 @@ class CompanyUi {
 				$h .= '</a>';
 
 			$h .= '</div>';
-
-		$h .= '</div>';
-
-		if($eFarm->canManage() === TRUE) {
-
-			$h .= '<div class="util-block-optional">';
-
-				$h .= '<h2>😭</h2>';
-
-				$h .= '<div class="util-buttons">';
-
-					$h .= '<a data-ajax="/company/company:doClose" post-id="'.$eFarm['id'].'" data-confirm="'.s("Confirmez-vous vouloir supprimer votre ferme ?").'" class="bg-danger util-button">';
-
-						$h .= '<h4>'.s("Supprimer la ferme").'</h4>';
-						$h .= \Asset::icon('trash');
-
-					$h .= '</a>';
-
-				$h .= '</div>';
-
-			$h .= '</div>';
-		}
 
 		return $h;
 
@@ -459,17 +424,17 @@ class CompanyUi {
 
 		return [
 			'bank' => [
-				'url' => CompanyUi::urlOverview($eFarm).'/bank',
+				'url' => CompanyUi::urlOverview($eFarm).'/financials:bank',
 				'label' => s("Trésorerie"),
 				'longLabel' => s("Suivi de la trésorerie"),
 			],
 			'charges' => [
-				'url' => CompanyUi::urlOverview($eFarm).'/charges',
+				'url' => CompanyUi::urlOverview($eFarm).'/financials:charges',
 				'label' => s("Charges"),
 				'longLabel' => s("Suivi des charges"),
 			],
 			'result' => [
-				'url' => CompanyUi::urlOverview($eFarm).'/result',
+				'url' => CompanyUi::urlOverview($eFarm).'/financials:result',
 				'label' => s("Résultat"),
 				'longLabel' => s("Suivi du résultat"),
 			],
@@ -543,13 +508,13 @@ class CompanyUi {
 	public static function getOverviewCategories(\farm\Farm $eFarm): array {
 
 		return [
-			'balance' => [
-				'url' => CompanyUi::urlOverview($eFarm).'/balance',
+			\farm\Farmer::BALANCE_SHEET => [
+				'url' => CompanyUi::urlOverview($eFarm).'/statements:bilans',
 				'label' => s("Bilans"),
 				'longLabel' => s("Les bilans"),
 			],
-			'accounting' => [
-				'url' => CompanyUi::urlOverview($eFarm).'/accounting',
+			\farm\Farmer::TRIAL_BALANCE => [
+				'url' => CompanyUi::urlOverview($eFarm).'/statements:balances',
 				'label' => s("Balances"),
 				'longLabel' => s("Les balances"),
 			],
@@ -633,6 +598,32 @@ class CompanyUi {
 
 	public static function getNavigation(): string {
 		return '<span class="h-menu">'.\Asset::icon('chevron-down').'</span>';
+	}
+
+
+	public static function getDropdownMenuTitle(array $categories, string $selectedView): string {
+
+		$h = '<div class="util-action">';
+
+			$h .= '<h1>';
+
+				$h .= '<a class="util-action-navigation" data-dropdown="bottom-start" data-dropdown-hover="true">';
+					$h .= $categories[$selectedView]['longLabel'].' '.'<span class="h-menu">'.\Asset::icon('chevron-down').'</span>';
+				$h .= '</a>';
+
+				$h .= '<div class="dropdown-list bg-primary">';
+
+					foreach($categories as $category => $categoryData) {
+						$h .= '<a href="'.$categoryData['url'].'" class="dropdown-item '.($category === $selectedView ? 'selected' : '').'">'.$categoryData['longLabel'].'</a> ';
+					}
+
+				$h .= '</div>';
+
+			$h .= '</h1>';
+
+		$h .= '</div>';
+
+		return $h;
 	}
 
 	public static function p(string $property): \PropertyDescriber {

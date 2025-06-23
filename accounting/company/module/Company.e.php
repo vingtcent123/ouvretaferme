@@ -9,6 +9,10 @@ class Company extends CompanyElement {
 
 	}
 
+	public function canRemote(): bool {
+		return GET('key') === \Setting::get('account\remoteKey');
+	}
+
 	public function isAccrualAccounting() {
 		return $this['accountingType'] === Company::ACCRUAL;
 	}

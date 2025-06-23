@@ -3,6 +3,10 @@ namespace overview;
 
 class BalanceUi {
 
+	public function __construct() {
+		\Asset::css('company', 'company.css');
+	}
+
 	public function extractLabelsFromCategories(array $categories): array {
 
 		$accountLabels = [];

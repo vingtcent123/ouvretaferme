@@ -29,7 +29,7 @@ class PdfUi {
 	}
 	public static function urlBalance(\farm\Farm $eFarm, \account\FinancialYear $eFinancialYear): string {
 
-		return \company\CompanyUi::urlOverview($eFarm).'/balance:pdf';
+		return \company\CompanyUi::urlOverview($eFarm).'/statements:pdfBalances';
 
 	}
 

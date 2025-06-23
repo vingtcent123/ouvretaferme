@@ -212,6 +212,22 @@ class FinancialYearLib extends FinancialYearCrud {
 		return FALSE;
 
 	}
+
+	public static function getDynamicFinancialYear(\farm\Farm $eFarm, int $financialYearId): FinancialYear {
+
+		if($financialYearId) {
+
+			\farm\FarmerLib::setView('viewAnalyzeAccountingYear', $eFarm, $financialYearId);
+
+			return self::getById($financialYearId);
+
+		} else {
+
+			return self::getById($eFarm->getView('viewAnalyzeAccountingYear')) ?? self::selectDefaultFinancialYear();
+
+		}
+
+	}
 }
 
 ?>

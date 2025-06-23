@@ -79,3 +79,121 @@ div.employee-companies-item-infos {
 	line-height: 1.7;
 	opacity: 0.7;
 }
+
+
+
+.btn.inactive:hover {
+	color: inherit;
+	background-color: inherit;
+	border-color: inherit;
+}
+.btn.inactive {
+	cursor: initial;
+	opacity: 0.33;
+}
+
+tr.row-emphasis {
+	background-color: var(--account-group) !important;
+}
+
+tr.row-highlight {
+	background-color: var(--background-highlight) !important;
+}
+
+tr.row-upper,
+tr.row-upper td,
+tr.row-upper th {
+	text-transform: uppercase;
+}
+
+tr.row-bold > td {
+	font-weight: bold;
+}
+
+.util-quick-dropdown .form-info {
+	color: var(--muted-light);
+}
+
+tr.row-header,
+tr.row-header td,
+tr.row-header th
+{
+	background-color: var(--background-dark) !important;
+	font-weight: bold;
+}
+
+div.operation-asset-dropdown,
+div.operation-comment-dropdown {
+	border-radius: calc(var(--radius) / 2);
+	background-color: var(--secondary);
+	color: white;
+	padding: 0.5rem;
+	line-height: 1.4;
+	max-width: 30rem;
+}
+
+div.util-unit > div.util-quick {
+	border: 0;
+}
+
+table.table-bordered {
+	width: 100%;
+	border-collapse: separate; /* Don't collapse */
+	border-spacing: 0;
+}
+
+table.table-bordered thead.thead-sticky td[colspan],
+table.table-bordered thead.thead-sticky th[colspan] {
+	border-top: 1px solid var(--border);
+	border-right: 1px solid var(--border);
+}
+
+table.table-bordered thead.thead-sticky td:not([colspan]),
+table.table-bordered thead.thead-sticky th:not([colspan]) {
+	/* Apply both top and bottom borders to the <th> */
+	border-top: 1px solid var(--border);
+	border-bottom: 1px solid var(--border);
+	border-right: 1px solid var(--border);
+}
+
+td.border-bottom,
+th.border-bottom {
+	border-bottom: 1px solid var(--border);
+}
+
+th.no-border-left,
+td.no-border-left {
+	border-left: 0!important;
+}
+
+table.table-bordered tbody td {
+	/* For cells, apply the border to one of each side only (right but not left, bottom but not top) */
+	border-bottom: 1px solid var(--border);
+	border-right: 1px solid var(--border);
+}
+
+table.table-bordered th:first-child,
+table.table-bordered td:first-child {
+	/* Apply a left border on the first <td> or <th> in a row */
+	border-left: 1px solid var(--border);
+}
+
+table.table-bordered th:first-child.no-border,
+table.table-bordered td:first-child.no-border {
+	/* For cells which are the firsts after a rowspan */
+	border-left: none;
+}
+
+thead.thead-sticky {
+	position: sticky;
+	top: calc(var(--mainSticky) - 1px);
+	z-index: 1;
+}
+thead.thead-sticky td,
+thead.thead-sticky th {
+	background-color: #edecec;
+}
+
+.is-bio {
+	color: var(--secondary);
+}
