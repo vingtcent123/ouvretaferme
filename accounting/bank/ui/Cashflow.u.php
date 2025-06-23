@@ -5,6 +5,7 @@ class CashflowUi {
 
 	public function __construct() {
 		\Asset::js('bank', 'cashflow.js');
+		\Asset::css('company', 'company.css');
 	}
 
 	public function getSearch(\Search $search, \account\FinancialYear $eFinancialYearSelected): string {
@@ -185,7 +186,7 @@ class CashflowUi {
 
 					$h .= '<td class="td-min-content text-center">';
 					if($eCashflow['status'] === CashflowElement::ALLOCATED) {
-						$h .= '<a class="cashflow-status-label cashflow-status-'.$eCashflow['status'].'" href="'.\company\CompanyUi::urlJournal($eFarm).'/?cashflow='.$eCashflow['id'].'">';
+						$h .= '<a class="cashflow-status-label cashflow-status-'.$eCashflow['status'].'" href="'.\company\CompanyUi::urlJournal($eFarm).'/operations?cashflow='.$eCashflow['id'].'">';
 							$h .= CashflowUi::p('status')->values[$eCashflow['status']];
 						$h .= '</a>';
 					} else {

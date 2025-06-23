@@ -5,6 +5,7 @@ Class DepreciationUi {
 
 	public function __construct() {
 		\Asset::js('asset', 'asset.js');
+		\Asset::css('company', 'company.css');
 	}
 
 	public static function getTitle(): string {

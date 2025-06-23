@@ -3,6 +3,10 @@ namespace asset;
 
 Class AssetUi {
 
+	public function __construct() {
+		\Asset::css('company', 'company.css');
+	}
+
 	public function getAssetShortTranslation(): string {
 
 		return s("I");
@@ -331,7 +335,7 @@ Class AssetUi {
 		$h = self::getHeader($eAsset);
 
 		$h .= '<div>';
-			$h .= '<a href="'.\company\CompanyUi::urlJournal($eFarm).'/?asset='.$eAsset['id'].'">'.s("Voir toutes les écritures comptables de cette immobilisation pour cet exercice comptable").'&nbsp;'.\Asset::icon('box-arrow-up-right').'</a>';
+			$h .= '<a href="'.\company\CompanyUi::urlJournal($eFarm).'/operations?asset='.$eAsset['id'].'">'.s("Voir toutes les écritures comptables de cette immobilisation pour cet exercice comptable").'&nbsp;'.\Asset::icon('box-arrow-up-right').'</a>';
 		$h .= '</div>';
 
 		if($eAsset['status'] === AssetElement::ONGOING) {

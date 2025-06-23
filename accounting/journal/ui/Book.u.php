@@ -5,6 +5,7 @@ class BookUi {
 
 	public function __construct() {
 		\Asset::css('journal', 'journal.css');
+		\Asset::css('company', 'company.css');
 	}
 
 	public function getBookTitle(\farm\Farm $eFarm): string {
@@ -94,7 +95,7 @@ class BookUi {
 				$h .= '</td>';
 
 				$h .= '<td>';
-					$h .= '<a href="'.\company\CompanyUi::urlJournal($eFarm).'/?document='.encode($eOperation['document']).'&financialYear='.$eFinancialYear['id'].'">'.encode($eOperation['document']).'</a>';
+					$h .= '<a href="'.\company\CompanyUi::urlJournal($eFarm).'/operations?document='.encode($eOperation['document']).'&financialYear='.$eFinancialYear['id'].'">'.encode($eOperation['document']).'</a>';
 				$h .= '</td>';
 
 				$h .= '<td>';

@@ -5,13 +5,11 @@ new Page(
 
 		$data->eFarm->validate('canManage');
 
-		\Setting::set('main\viewBank', 'import');
 	}
 )
 	->get('index', function($data) {
 
-		// TODO Récupérer et sauvegarder dynamiquement
-		$data->eFinancialYear = \account\FinancialYearLib::selectDefaultFinancialYear();
+		$data->eFinancialYear = \account\FinancialYearLib::getDynamicFinancialYear($data->eFarm, GET('financialYear', 'int'));
 		$data->cFinancialYear = \account\FinancialYearLib::getAll();
 
 		$data->imports = \bank\ImportLib::formatCurrentFinancialYearImports($data->eFinancialYear);
@@ -26,7 +24,6 @@ new Page(
 		\user\ConnectionLib::checkLogged();
 		$data->eFarm->validate('canManage');
 
-		\Setting::set('main\viewBank', 'import');
 	}
 )
 	->get('import', function($data) {

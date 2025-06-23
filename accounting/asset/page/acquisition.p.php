@@ -2,12 +2,9 @@
 new Page()
 	->get('index', function($data) {
 
-		\Setting::set('main\viewAsset', 'acquisition');
-
 		$data->eFarm->validate('canManage');
 
-		// TODO Récupérer et sauvegarder dynamiquement
-		$data->eFinancialYear = \account\FinancialYearLib::selectDefaultFinancialYear();
+		$data->eFinancialYear = \account\FinancialYearLib::getDynamicFinancialYear($data->eFarm, GET('financialYear', 'int'));
 		$data->cFinancialYear = \account\FinancialYearLib::getAll();
 
 		$data->cAsset = asset\AssetLib::getAcquisitions($data->eFinancialYear, 'asset');

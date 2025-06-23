@@ -585,7 +585,7 @@ class OperationUi {
 
 	public static function url(\farm\Farm $eFarm, Operation $eOperation): string {
 
-		return \company\CompanyUi::urlJournal($eFarm).'?id='.$eOperation['id'];
+		return \company\CompanyUi::urlJournal($eFarm).'/operations?id='.$eOperation['id'];
 
 	}
 

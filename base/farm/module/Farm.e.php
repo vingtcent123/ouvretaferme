@@ -21,6 +21,9 @@ class Farm extends FarmElement {
 
 		return parent::getSelection() + [
 			'calendarMonths' => new \Sql('IF(calendarMonthStart IS NULL, 0, 12 - calendarMonthStart + 1) + 12 + IF(calendarMonthStop IS NULL, 0, calendarMonthStop)', 'int'),
+			'company' => \company\Company::model()
+				->select(\company\Company::getSelection())
+				->delegateElement('farm'),
 		];
 
 	}

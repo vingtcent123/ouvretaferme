@@ -237,7 +237,7 @@ class FarmTemplate extends MainTemplate {
 				break;
 
 			case 'bank' :
-			case 'operations' :
+			case 'journal' :
 			case 'assets' :
 			case 'analyze-accounting' :
 			case 'settings-accounting' :

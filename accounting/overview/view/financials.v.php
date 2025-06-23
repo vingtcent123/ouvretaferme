@@ -4,7 +4,7 @@ new AdaptativeView('bank', function($data, FarmTemplate $t) {
 	$t->nav = 'analyze-accounting';
 	$t->subNav = 'financials';
 
-	$t->title = s("La trésorerie de {value}", $data->eFarm['name']);
+	$t->title = s("La trésorerie de {farm}", ['farm' => encode($data->eFarm['name'])]);
 	$t->canonical = \company\CompanyUi::urlOverview($data->eFarm).'/financials:'.$data->selectedView;
 
 	$categories = new \company\CompanyUi()->getAnalyzeCategories($data->eFarm);
@@ -28,7 +28,7 @@ new AdaptativeView('charges', function($data, FarmTemplate $t) {
 	$t->nav = 'analyze-accounting';
 	$t->subNav = 'financials';
 
-	$t->title = s("Les charges de {value}", $data->eFarm['name']);
+	$t->title = s("Les charges de {farm}", ['farm' => encode($data->eFarm['name'])]);
 	$t->canonical = \company\CompanyUi::urlOverview($data->eFarm).'/financials:'.$data->selectedView;
 
 	$categories = new \company\CompanyUi()->getAnalyzeCategories($data->eFarm);
@@ -52,7 +52,7 @@ new AdaptativeView('results', function($data, FarmTemplate $t) {
 	$t->nav = 'analyze-accounting';
 	$t->subNav = 'financials';
 
-	$t->title = s("Les charges de {value}", $data->eFarm['name']);
+	$t->title = s("Les charges de {farm}", ['farm' => encode($data->eFarm['name'])]);
 	$t->canonical = \company\CompanyUi::urlOverview($data->eFarm).'/financials:'.$data->selectedView;
 
 	$categories = new \company\CompanyUi()->getAnalyzeCategories($data->eFarm);

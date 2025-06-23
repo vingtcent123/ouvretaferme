@@ -2,16 +2,15 @@
 new Page(function($data) {
 
 	$data->eFarm->validate('canManage');
+	$data->eFarm['company']->validate('isAccrualAccounting');
 
-	// TODO Récupérer et sauvegarder dynamiquement
-	$data->eFinancialYear = \account\FinancialYearLib::selectDefaultFinancialYear();
+	$data->eFinancialYear = \account\FinancialYearLib::getDynamicFinancialYear($data->eFarm, GET('financialYear', 'int'));
 	$data->cFinancialYear = \account\FinancialYearLib::getAll();
 
 })
 	->get('index', function($data) {
 
 		\user\ConnectionLib::checkLogged();
-		\Setting::set('main\viewJournal', 'account');
 
 		$data->eThirdParty = get_exists('thirdParty')
 			? account\ThirdPartyLib::getById(GET('thirdParty', 'int'))

@@ -4,7 +4,13 @@ new \company\CompanyPage(
 		\user\ConnectionLib::checkLogged();
 	}
 )
-	->create(fn($data) =>throw new ViewAction($data));
+	->create(function ($data) {
+
+		$data->eFarm = \farm\FarmLib::getById(GET('farm'));
+
+		throw new ViewAction($data);
+
+});
 
 new Page(
 	function($data) {
@@ -17,7 +23,7 @@ new Page(
 		$data->eCompany = \company\CompanyLib::getByFarm($data->eFarm);
 
 		if($data->eCompany->notEmpty()) {
-			throw new RedirectAction(\company\CompanyUi::urlJournal($data->eFarm));
+			throw new RedirectAction(\company\CompanyUi::urlJournal($data->eFarm).'/operations');
 		}
 
 		$fw = new FailWatch();
@@ -26,7 +32,7 @@ new Page(
 
 		$fw->validate();
 
-		throw new RedirectAction(\company\CompanyUi::urlJournal($data->eFarm).'?success=company:Company::created');
+		throw new RedirectAction(\company\CompanyUi::urlJournal($data->eFarm).'/operations?success=company:Company::created');
 
 	});
 

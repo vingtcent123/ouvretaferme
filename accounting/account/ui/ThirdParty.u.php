@@ -99,7 +99,7 @@ class ThirdPartyUi {
 								$h .= $eThirdParty->quick('name', encode($eThirdParty['name']));
 							$h .= '</td>';
 							$h .= '<td>';
-								$h .= '<a href="'.\company\CompanyUi::urlJournal($eFarm).'/?thirdParty='.$eThirdParty['id'].'">'.$eThirdParty['operations'].'</a>';
+								$h .= '<a href="'.\company\CompanyUi::urlJournal($eFarm).'/operations?thirdParty='.$eThirdParty['id'].'">'.$eThirdParty['operations'].'</a>';
 							$h .= '</td>';
 
 							$h .= '<td>';

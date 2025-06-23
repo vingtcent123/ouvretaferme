@@ -1,16 +1,18 @@
 <?php
-new AdaptativeView('index', function($data, CompanyTemplate $t) {
+new AdaptativeView('index', function($data, FarmTemplate $t) {
 
-	$t->title = s("Les opérations bancaires de {company}", ['company' => $data->eFarm['name']]);
-	$t->tab = 'bank';
-	$t->subNav = new \company\CompanyUi()->getBankSubNav($data->eFarm);
+	$t->nav = 'bank';
+	$t->subNav = 'cashflow';
+
+	$t->title = s("Les opérations bancaires de {farm}", ['farm' => encode($data->eFarm['name'])]);
 	$t->canonical = \company\CompanyUi::urlBank($data->eFarm).'/cashflow';
 
 	$t->mainTitle = new \bank\BankUi()->getBankTitle($data->eFinancialYear);
+	$t->mainTitleClass = 'hide-lateral-down';
 
 	$t->mainYear = new \account\FinancialYearUi()->getFinancialYearTabs(
 		function(\account\FinancialYear $eFinancialYear) use ($data) {
-			return \company\CompanyUi::urlBank($data->eFarm).'/cashflow?financialYear='.$eFinancialYear['id'];
+			return \company\CompanyUi::urlOverview($data->eFarm).'/cashflow?financialYear='.$eFinancialYear['id'];
 		},
 		$data->cFinancialYear,
 		$data->eFinancialYear,

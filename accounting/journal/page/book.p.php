@@ -2,14 +2,12 @@
 new Page(function($data) {
 
 	$data->eFarm->validate('canManage');
-	// TODO Récupérer et sauvegarder dynamiquement
-	$data->eFinancialYear = \account\FinancialYearLib::selectDefaultFinancialYear();
+
+	$data->eFinancialYear = \account\FinancialYearLib::getDynamicFinancialYear($data->eFarm, GET('financialYear', 'int'));
 	$data->cFinancialYear = \account\FinancialYearLib::getAll();
 
 })
 	->get('index', function($data) {
-
-		\Setting::set('main\viewJournal', 'book');
 
 		$search = new Search(['financialYear' => $data->eFinancialYear]);
 

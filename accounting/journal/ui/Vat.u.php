@@ -5,6 +5,7 @@ Class VatUi {
 
 	public function __construct() {
 		\Asset::css('journal', 'vat.css');
+		\Asset::css('company', 'company.css');
 	}
 
 	public function getTitle(): string {

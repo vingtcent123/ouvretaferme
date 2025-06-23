@@ -2,11 +2,9 @@
 new Page(function($data) {
 
 	$data->eFarm->validate('canManage');
-	// TODO Récupérer et sauvegarder dynamiquement
-	$data->eFinancialYear = \account\FinancialYearLib::selectDefaultFinancialYear();
-	$data->cFinancialYear = \account\FinancialYearLib::getAll();
 
-	\Setting::set('main\viewJournal', 'vat');
+	$data->eFinancialYear = \account\FinancialYearLib::getDynamicFinancialYear($data->eFarm, GET('financialYear', 'int'));
+	$data->cFinancialYear = \account\FinancialYearLib::getAll();
 
 	$data->eThirdParty = get_exists('thirdParty')
 		? account\ThirdPartyLib::getById(GET('thirdParty', 'int'))

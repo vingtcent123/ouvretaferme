@@ -1,24 +1,9 @@
 <?php
-new AdaptativeView('configuration', function($data, CompanyTemplate $t) {
-
-	$t->tab = 'settings';
-	$t->subNav = new \company\CompanyUi()->getSettingsSubNav($data->eFarm);
-
-	$t->title = s("Configuration pour {value}", $data->eFarm['name']);
-	$t->canonical = \company\CompanyUi::urlSettings($data->eFarm);
-
-	$t->mainTitle = '<h1>'.s("Paramétrage").'</h1>';
-	$t->mainTitleClass = 'hide-lateral-down';
-
-	echo new \company\CompanyUi()->getSettings($data->eFarm);
-
-});
-
 new AdaptativeView('update', function($data, FarmTemplate $t) {
 
 	$t->nav = 'settings-accounting';
 
-	$t->title = s("Réglages de base de {value}", $data->e['name']);
+	$t->title = s("Réglages de base de {farm}", ['farm' => encode($data->eFarm['name'])]);
 	$t->canonical = \farm\FarmUi::urlSettingsAccounting($data->eFarm);
 	$t->subNav = new \company\CompanyUi()->getSettingsSubNav($data->e);
 

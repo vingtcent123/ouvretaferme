@@ -1,12 +1,14 @@
 <?php
-new AdaptativeView('index', function($data, CompanyTemplate $t) {
+new AdaptativeView('index', function($data, FarmTemplate $t) {
 
-	$t->title = s("Les acquisitions de {farm}", ['farm' => $data->eFarm['name']]);
-	$t->tab = 'asset';
-	$t->subNav = new \company\CompanyUi()->getAssetSubNav($data->eFarm);
+	$t->nav = 'assets';
+	$t->subNav = 'acquisition';
+
+	$t->title = s("Les acquisitions de {farm}", ['farm' => encode($data->eFarm['name'])]);
 	$t->canonical = \company\CompanyUi::urlAsset($data->eFarm).'/acquisition';
 
 	$t->mainTitle = new asset\AssetUi()->getAcquisitionTitle();
+	$t->mainTitleClass = 'hide-lateral-down';
 
 	$t->mainYear = new \account\FinancialYearUi()->getFinancialYearTabs(
 		function(\account\FinancialYear $eFinancialYear) use ($data) {
@@ -24,11 +26,11 @@ new AdaptativeView('index', function($data, CompanyTemplate $t) {
 		echo '</div>';
 
 		echo '<div class="tab-panel" data-tab="acquisition-asset">';
-			echo new asset\AssetUi()->getAcquisitionTable($data->cAsset, 'asset');
+			echo new \asset\AssetUi()->getAcquisitionTable($data->cAsset, 'asset');
 		echo '</div>';
 
 		echo '<div class="tab-panel" data-tab="acquisition-subvention">';
-			echo new asset\AssetUi()->getAcquisitionTable($data->cAssetSubvention, 'subvention');
+			echo new \asset\AssetUi()->getAcquisitionTable($data->cAssetSubvention, 'subvention');
 		echo '</div>';
 
 	echo '</div>';

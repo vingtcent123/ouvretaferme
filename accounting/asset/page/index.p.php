@@ -33,8 +33,7 @@ new \asset\AssetPage(function($data) {
 })
 	->get('dispose', function($data) {
 
-		// TODO Récupérer et sauvegarder dynamiquement
-		$data->eFinancialYear = \account\FinancialYearLib::selectDefaultFinancialYear();
+		$data->eFinancialYear = \account\FinancialYearLib::getDynamicFinancialYear($data->eFarm, GET('financialYear', 'int'));
 		$data->cFinancialYear = \account\FinancialYearLib::getAll();
 
 		throw new ViewAction($data);

@@ -65,14 +65,13 @@ class CompanyUi {
 
 		$eCompany = new Company();
 
-		$h = '<h4>'.s("Général").'</h4>';
+		$h = '';
 
 		if($eFarm->isLegalComplete() === FALSE) {
 
-			$h .= '<div>';
-				$h .= s("Il manque certaines informations indispensables à la création de votre comptabilité. Saisissez-les dans ce formulaire :", ['link' => '<a href="/farm/farm:update?id='.$eFarm['id'].'">']);
+			$h .= '<div class="util-block-help">';
+				$h .= s("Pour que votre comptabilité soit tenue au plus juste, certaines informations légales sur votre ferme sont nécessaires. Transmettez-les nous dès à présent pour pouvoir commencer votre comptabilité :");
 			$h .= '</div>';
-
 
 			$form = new \util\FormUi();
 
@@ -80,9 +79,9 @@ class CompanyUi {
 
 				$h .= $form->hidden('id', $eFarm['id']);
 
-				$h .= $form->dynamicGroups($eFarm, ['name', 'legalEmail', 'siret', 'legalName']);
-				$h .= $form->addressGroup(s("Siège social de la ferme"), 'legal', $eFarm);
-			$h .= $form->dynamicGroups($eFarm, ['startedAt']);
+				$h .= $form->dynamicGroups($eFarm, ['name*', 'legalEmail*', 'siret*', 'legalName*']);
+				$h .= $form->addressGroup(s("Siège social de la ferme").' '.\util\FormUi::asterisk(), 'legal', $eFarm);
+			$h .= $form->dynamicGroups($eFarm, ['startedAt*']);
 
 			$h .= $form->group(
 				content: $form->submit(s("Enregistrer "))
@@ -91,6 +90,8 @@ class CompanyUi {
 			$h .= $form->close();
 
 		} else {
+
+			$h .= '<h4>'.s("Général").'</h4>';
 
 			$form = new \util\FormUi();
 
@@ -137,7 +138,7 @@ class CompanyUi {
 
 		return new \Panel(
 			id: 'panel-company-create',
-			title: s("Configurer ma ferme pour la comptabilité"),
+			title: s("Bienvenue dans le module de comptabilité de {siteName} !"),
 			body: $h
 		);
 
@@ -207,7 +208,7 @@ class CompanyUi {
 
 				$h .= $this->getBankMenu($eFarm, prefix: $prefix, tab: $tab);
 
-				$h .= '<a href="'.CompanyUi::urlJournal($eFarm).'/" class="company-tab '.($tab === 'journal' ? 'selected' : '').'" data-tab="journal">';
+				$h .= '<a href="'.CompanyUi::urlJournal($eFarm).'/operations" class="company-tab '.($tab === 'journal' ? 'selected' : '').'" data-tab="journal">';
 					$h .= '<span class="hide-lateral-down company-tab-icon">'.\Asset::icon('journal-bookmark').'</span>';
 					$h .= '<span class="hide-lateral-up company-tab-icon">'.\Asset::icon('journal-bookmark-fill').'</span>';
 					$h .= '<span class="company-tab-label">';

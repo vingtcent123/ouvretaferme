@@ -4,7 +4,7 @@ new AdaptativeView('balance-sheet', function($data, FarmTemplate $t) {
 	$t->nav = 'analyze-accounting';
 	$t->subNav = 'statements';
 
-	$t->title = s("Les bilans de {value}", $data->eFarm['name']);
+	$t->title = s("Les bilans de {farm}", ['farm' => encode($data->eFarm['name'])]);
 	$t->canonical = \company\CompanyUi::urlOverview($data->eFarm).'/statements:bilans';
 
 	$categories = \company\CompanyUi::getOverviewCategories($data->eFarm);
@@ -64,7 +64,7 @@ new AdaptativeView('trial-balance', function($data, FarmTemplate $t) {
 	$t->nav = 'analyze-accounting';
 	$t->subNav = 'statements';
 
-	$t->title = s("Les balances de {value}", $data->eFarm['name']);
+	$t->title = s("Les balances de {farm}", ['farm' => encode($data->eFarm['name'])]);
 	$t->canonical = \company\CompanyUi::urlOverview($data->eFarm).'/statements:balances';
 
 	$categories = \company\CompanyUi::getOverviewCategories($data->eFarm);

@@ -1,12 +1,14 @@
 <?php
-new AdaptativeView('index', function($data, CompanyTemplate $t) {
+new AdaptativeView('index', function($data, FarmTemplate $t) {
 
-	$t->title = s("Les immobilisations de {farm}", ['farm' => $data->eFarm['name']]);
-	$t->tab = 'asset';
-	$t->subNav = new \company\CompanyUi()->getAssetSubNav($data->eFarm);
+	$t->nav = 'assets';
+	$t->subNav = 'depreciation';
+
+	$t->title = s("Les immobilisations de {farm}", ['farm' => encode($data->eFarm['name'])]);
 	$t->canonical = \company\CompanyUi::urlAsset($data->eFarm).'/depreciation';
 
-	$t->mainTitle = new asset\DepreciationUi()->getTitle();
+	$t->mainTitle = new \asset\DepreciationUi()->getTitle();
+	$t->mainTitleClass = 'hide-lateral-down';
 
 	$t->mainYear = new \account\FinancialYearUi()->getFinancialYearTabs(
 		function(\account\FinancialYear $eFinancialYear) use ($data) {

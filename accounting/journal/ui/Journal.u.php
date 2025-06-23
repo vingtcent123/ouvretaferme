@@ -5,6 +5,7 @@ class JournalUi {
 
 	public function __construct() {
 		\Asset::css('journal', 'journal.css');
+		\Asset::css('company', 'company.css');
 	}
 
 
@@ -14,7 +15,7 @@ class JournalUi {
 
 		$categories = [
 			'journal' => [
-				'url' => \company\CompanyUi::urlJournal($eFarm).'/',
+				'url' => \company\CompanyUi::urlJournal($eFarm).'/operations',
 				'label' => $journalTitle,
 			],
 		];
@@ -200,11 +201,11 @@ class JournalUi {
 
 			$h .= '<div class="tabs-item">';
 
-				$h .= '<a class="tab-item'.($selectedJournalCode === NULL ? ' selected' : '').'" data-tab="journal" href="'.\company\CompanyUi::urlJournal($eFarm).'/">'.s("Général").'</a>';
+				$h .= '<a class="tab-item'.($selectedJournalCode === NULL ? ' selected' : '').'" data-tab="journal" href="'.\company\CompanyUi::urlJournal($eFarm).'/operations">'.s("Général").'</a>';
 
 				foreach(Operation::model()->getPropertyEnum('journalCode') as $journalCode) {
 
-					$h .= '<a class="tab-item'.($selectedJournalCode === $journalCode ? ' selected' : '').'" data-tab="journal-'.$journalCode.'" href="'.\company\CompanyUi::urlJournal($eFarm).'/?code='.$journalCode.'">'.OperationUi::p('journalCode')->values[$journalCode].'</a>';
+					$h .= '<a class="tab-item'.($selectedJournalCode === $journalCode ? ' selected' : '').'" data-tab="journal-'.$journalCode.'" href="'.\company\CompanyUi::urlJournal($eFarm).'/operations?code='.$journalCode.'">'.OperationUi::p('journalCode')->values[$journalCode].'</a>';
 
 				}
 
@@ -319,7 +320,7 @@ class JournalUi {
 								$h .= '<td>';
 
 									if($eOperation['journalCode']) {
-										$h .= '<a href="'.\company\CompanyUi::urlJournal($eFarm).'/?code='.$eOperation['journalCode'].'">'.mb_strtoupper($eOperation['journalCode']).'</a>';
+										$h .= '<a href="'.\company\CompanyUi::urlJournal($eFarm).'/operations?code='.$eOperation['journalCode'].'">'.mb_strtoupper($eOperation['journalCode']).'</a>';
 									} else {
 										$h .= '-';
 									}

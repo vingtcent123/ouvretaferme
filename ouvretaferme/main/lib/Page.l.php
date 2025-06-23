@@ -74,19 +74,14 @@ class PageLib {
 
 			$data->eFarm = \farm\FarmLib::getById(REQUEST('farm'));
 
-			if($data->eFarm->notEmpty()) {
+			if($data->eFarm['company']->notEmpty()) {
 
-				$data->eFarm['company'] = \company\CompanyLib::getByFarm($data->eFarm);
+				\company\CompanyLib::connectSpecificDatabaseAndServer($data->eFarm);
 
-				if($data->eFarm['company']->notEmpty()) {
+			} else if(mb_strpos(SERVER('REQUEST_URI'), '/public:') === FALSE) {
 
-					\company\CompanyLib::connectSpecificDatabaseAndServer($data->eFarm);
+				throw new \RedirectAction('/public:create?farm='.$data->eFarm['id']);
 
-				} else if(mb_strpos(SERVER('REQUEST_URI'), '/public:') === FALSE) {
-
-					throw new \RedirectAction('/public:create?farm='.$data->eFarm['id']);
-
-				}
 			}
 		}
 

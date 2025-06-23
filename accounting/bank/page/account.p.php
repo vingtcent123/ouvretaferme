@@ -5,8 +5,7 @@ new \bank\BankAccountPage(
 
 		$data->eFarm->validate('canManage');
 
-		// TODO Récupérer et sauvegarder dynamiquement
-		$data->eFinancialYear = \account\FinancialYearLib::selectDefaultFinancialYear();
+		$data->eFinancialYear = \account\FinancialYearLib::getDynamicFinancialYear($data->eFarm, GET('financialYear', 'int'));
 		$data->cFinancialYear = \account\FinancialYearLib::getAll();
 	}
 )
@@ -22,8 +21,7 @@ new \bank\BankAccountPage(
 		\user\ConnectionLib::checkLogged();
 		$data->eFarm->validate('canManage');
 
-		// TODO Récupérer et sauvegarder dynamiquement
-		$data->eFinancialYear = \account\FinancialYearLib::selectDefaultFinancialYear();
+		$data->eFinancialYear = \account\FinancialYearLib::getDynamicFinancialYear($data->eFarm, GET('financialYear', 'int'));
 		$data->cFinancialYear = \account\FinancialYearLib::getAll();
 	}
 )

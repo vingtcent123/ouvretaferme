@@ -1,12 +1,14 @@
 <?php
-new AdaptativeView('index', function($data, CompanyTemplate $t) {
+new AdaptativeView('index', function($data, FarmTemplate $t) {
 
-	$t->title = s("Les comptes clients et fournisseurs de {farm}", ['farm' => $data->eFarm['name']]);
-	$t->tab = 'journal';
-	$t->subNav = new \journal\JournalUi()->getJournalSubNav($data->eFarm);
-	$t->canonical = \company\CompanyUi::urlJournal($data->eFarm);
+	$t->nav = 'journal';
+	$t->subNav = 'accounts';
+
+	$t->title = s("Les comptes de {farm}", ['farm' => $data->eFarm['name']]);
+	$t->canonical = \company\CompanyUi::urlJournal($data->eFarm).'/accounts';
 
 	$t->mainTitle = new \journal\AccountsUi()->getAccountsTitle($data->eFinancialYear);
+	$t->mainTitleClass = 'hide-lateral-down';
 
 	$t->mainYear = new \account\FinancialYearUi()->getFinancialYearTabs(
 		function(\account\FinancialYear $eFinancialYear) use ($data) {

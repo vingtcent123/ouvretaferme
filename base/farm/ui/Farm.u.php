@@ -649,6 +649,7 @@ class FarmUi {
 			$h .= $this->getCultivationMenu($eFarm, prefix: $prefix, subNav: $subNav);
 
 		$h .= '</div>';
+
 		$h .= '<div class="farm-nav-analyze-production">';
 
 			$h .= $this->getAnalyzeTab(
@@ -662,6 +663,7 @@ class FarmUi {
 			);
 
 		$h .= '</div>';
+
 		$h .= '<div class="farm-nav-settings-production">';
 
 			$h .= $this->getSettingsTab(
@@ -775,9 +777,9 @@ class FarmUi {
 
 			$h .= '</div>';
 
-			$h .= '<div class="farm-nav-operations">';
+			$h .= '<div class="farm-nav-journal">';
 
-				$h .= '<div data-nav="operations" class="farm-tab farm-tab-subnav '.($nav === 'journal' ? 'selected' : '').'">';
+				$h .= '<div data-nav="journal" class="farm-tab farm-tab-subnav '.($nav === 'journal' ? 'selected' : '').'">';
 					$h .= '<span class="farm-tab-icon">'.\Asset::icon('journal-bookmark').'</span>';
 					$h .= '<span class="farm-tab-label">'.s("Écritures comptables").'</span>';
 				$h .= '</div>';
@@ -849,7 +851,7 @@ class FarmUi {
 			$h .= '<div class="farm-tab disabled">';
 				$h .= '<span class="farm-tab-icon">'.\Asset::icon('bar-chart').'</span>';
 				$h .= '<span class="farm-tab-label">'.s("Analyse").'</span>';
-			$h .= '</a>';
+			$h .= '</div>';
 
 		}
 
@@ -1224,7 +1226,7 @@ class FarmUi {
 
 		$h = '<div class="farm-subnav-wrapper">';
 
-			foreach($this->getOperationsCategories() as $key => $value) {
+			foreach($this->getOperationsCategories($eFarm) as $key => $value) {
 
 				$h .= '<a href="'.\company\CompanyUi::urlJournal($eFarm).'/'.$key.'" class="farm-subnav-item '.($key === $subNav ? 'selected' : '').'" data-sub-nav="'.$key.'">';
 					$h .= $prefix.'<span>'.$value.'</span>';
@@ -1238,10 +1240,22 @@ class FarmUi {
 
 	}
 
-	protected static function getOperationsCategories(): array {
+	protected static function getOperationsCategories(Farm $eFarm): array {
 
+		$useDefaultValues = $eFarm['company']->empty() or $eFarm['company']->isCashAccounting();
+
+		if($useDefaultValues) {
+
+			$journalTitle = s("Journal comptable");
+
+		} else {
+
+			$journalTitle = s("Journaux");
+
+		}
 		return [
-			'index' => s("Journal comptable"),
+			'operations' => $journalTitle,
+			...$useDefaultValues ? [] : ['accounts' => s("Comptes")],
 			'book' => s("Grand livre"),
 			'vat' => s("Journaux de TVA"),
 		];

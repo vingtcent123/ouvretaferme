@@ -3,7 +3,7 @@ new AdaptativeView('manage', function($data, FarmTemplate $t) {
 
 	$t->nav = 'settings-accounting';
 
-	$t->title = s("Abonnements de {value}", $data->eFarm['name']);
+	$t->title = s("Abonnements de {farm}", ['farm' => encode($data->eFarm['name'])]);
 	$t->canonical = \farm\FarmUi::urlSettingsAccounting($data->eFarm);
 	$t->subNav = new \company\CompanyUi()->getSettingsSubNav($data->eFarm);
 

@@ -14,11 +14,11 @@ class Company extends CompanyElement {
 	}
 
 	public function isAccrualAccounting() {
-		return $this['accountingType'] === Company::ACCRUAL;
+		return $this->notEmpty() and $this['accountingType'] === Company::ACCRUAL;
 	}
 
 	public function isCashAccounting() {
-		return $this['accountingType'] === Company::CASH;
+		return $this->empty() or $this['accountingType'] === Company::CASH;
 	}
 
 }
