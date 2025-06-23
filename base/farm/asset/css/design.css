@@ -611,6 +611,78 @@ body[data-template^="farm"] header a:hover {
 
 	}
 
+	.farm-nav-bank {
+		grid-area: bank;
+	}
+
+	.farm-nav-journal {
+		grid-area: journal;
+	}
+
+	.farm-nav-assets {
+		grid-area: assets;
+	}
+
+	.farm-nav-analyze-accounting {
+		grid-area: analyze;
+	}
+
+	.farm-nav-settings-accounting {
+		grid-area: settings;
+	}
+
+	@media (min-width: 992px) {
+
+		.farm-section-accounting {
+			display: grid;
+			grid-gap: 1rem;
+			grid-template: "bank journal assets analyze settings" auto / auto auto auto auto auto;
+		}
+
+
+	}
+
+	@media (min-width: 768px) and (max-width: 991px) {
+
+		.farm-section-accounting {
+			display: grid;
+			grid-gap: 1rem;
+			grid-template:
+				"bank journal assets analyze" auto
+				"bank journal assets settings" 1fr / auto auto auto auto;
+		}
+
+
+	}
+
+	@media (min-width: 576px) and (max-width: 767px) {
+
+		.farm-section-accounting {
+			display: grid;
+			grid-gap: 0.75rem;
+			grid-template:
+				"bank journal analyze" auto
+				"assets journal analyze" auto
+				"assets journal settings" 1fr / auto auto auto;
+		}
+
+
+	}
+
+	@media (min-width: 360px) and (max-width: 575px) {
+
+		.farm-section-accounting {
+			display: grid;
+			grid-gap: .5rem;
+			grid-template:
+				"bank assets" auto
+				"journal analyze" auto
+				"journal settings" auto / auto auto;
+		}
+
+
+	}
+
 	#farm-nav {
 		display: flex;
 		align-items: center;

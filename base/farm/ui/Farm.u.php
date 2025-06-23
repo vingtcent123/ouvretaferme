@@ -800,15 +800,19 @@ class FarmUi {
 			$h .= '</div>';
 		}
 
-		$h .= $this->getAnalyzeTab(
-			$eFarm,
-			$prefix,
-			$nav,
-			$subNav,
-			'accounting',
-			self::getAnalyzeAccountingCategories(),
-			fn($view) => \company\CompanyUi::urlOverview($eFarm, $view)
-		);
+		$h .= '<div class="farm-nav-analyze-accounting">';
+
+			$h .= $this->getAnalyzeTab(
+				$eFarm,
+				$prefix,
+				$nav,
+				$subNav,
+				'accounting',
+				self::getAnalyzeAccountingCategories(),
+				fn($view) => \company\CompanyUi::urlOverview($eFarm, $view)
+			);
+
+		$h .= '</div>';
 
 		$h .= '<div class="farm-nav-settings-accounting">';
 
