@@ -3,6 +3,9 @@
 ############################
 
 30 3 * * * tar czf /var/www/storage.tar.gz /var/www/storage/
+15 4 * * * php /var/www/otf/framework/lime.php -e prod -a ouvretaferme main/cron/backup
+0 4 * * * php /var/www/otf/framework/lime.php -e prod -a ouvretaferme configure/backup username=[USER] password=[PASSWORD]
+
 * * * * * php /var/www/otf/framework/lime.php -e prod -a ouvretaferme website/cron/certbot:ping
 * * * * * php /var/www/otf/framework/lime.php -e prod -a ouvretaferme website/cron/certbot:rewrite
 */5 * * * * php /var/www/otf/framework/lime.php -e prod -a ouvretaferme session/cron/sessionClean
@@ -16,7 +19,6 @@
 0 2 * * * php /var/www/otf/framework/lime.php -e prod -a ouvretaferme media/cron/clean
 0 3 * * * php /var/www/otf/framework/lime.php -e prod -a ouvretaferme hr/cron/calculate
 0 4 * * * php /var/www/otf/framework/lime.php -e prod -a ouvretaferme farm/cron/demo
-15 4 * * * php /var/www/otf/framework/lime.php -e prod -a ouvretaferme main/cron/backup
 0 6 * * * php /var/www/otf/framework/lime.php -e prod -a ouvretaferme cron/sitemap
 0 6 * * * php /var/www/otf/framework/lime.php -e prod -a ouvretaferme user/cron/close
 0 6 * * * php /var/www/otf/framework/lime.php -e prod -a ouvretaferme user/cron/log

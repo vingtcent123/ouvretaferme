@@ -443,16 +443,18 @@ class JournalUi {
 			$eOperation['comment'] !== NULL
 		) {
 
-			$icon = 'send-fill';
+			$icon = 'chat-left-text-fill';
 			$content = encode($eOperation['comment']);
 
 		} else {
 
-			$icon = 'send';
+			$icon = 'chat-left-text';
 			$content = s("Ajouter un commentaire");
 
 		}
 
+		$eOperation->setQuickAttribute('farm', $eFarm['id']);
+		$eOperation->setQuickAttribute('app', 'accounting');
 		$h .= $eOperation->quick('comment', $this->getCommentButton($icon, $content));
 		$h .= '&nbsp;';
 
@@ -562,29 +564,6 @@ class JournalUi {
 		return $h;
 	}
 
-	protected function getUpdate(\company\Company $eCompany, Operation $eOperation, string $btn): string {
-
-		$primaryList = '<a href="'.\company\CompanyUi::urlJournal($eCompany).'/operation:update?id='.$eOperation['id'].'" class="dropdown-item">'.s("Modifier").'</a>';;
-
-		$secondaryList = '<a data-ajax="'.\company\CompanyUi::urlJournal($eCompany).'/operation:doDelete" post-id="'.$eOperation['id'].'" class="dropdown-item" data-confirm="'.s("Confirmer la suppression de cette écriture ?").'">'.s("Supprimer").'</a>';
-
-		$h = '<a data-dropdown="bottom-end" class="dropdown-toggle btn '.$btn.'">'.\Asset::icon('gear-fill').'</a>';
-		$h .= '<div class="dropdown-list">';
-
-		$h .= $primaryList;
-
-		if($secondaryList) {
-
-			$h .= '<div class="dropdown-divider"></div>';
-			$h .= $secondaryList;
-
-		}
-
-		$h .= '</div>';
-
-		return $h;
-
-	}
 }
 
 ?>
