@@ -6,6 +6,7 @@
 	--todo: slategray;
 	--done: teal;
 	--muted: #707079;
+	--muted-light: #d5d5d5;
 	--selling: #722583;
 	--basket: #b17e2f;
 	--background-body: #e4e4e8;
@@ -26,6 +27,7 @@
 	--production: #035e42;
 	--commercialisation: #4a4a70;
 	--accounting: #205160;
+	--account-group: #FDE9D9;
 }
 
 :root:has(body[data-template~="farm-production"]) {

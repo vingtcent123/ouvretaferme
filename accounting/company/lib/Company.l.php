@@ -43,17 +43,6 @@ class CompanyLib extends CompanyCrud {
 
 	}
 
-	public static function getByUsers(\Collection $cUser, ?string $role = NULL): \Collection {
-
-		return Company::model()
-			->select(Company::getSelection())
-			->join(Employee::model(), 'm1.id = m2.company')
-			->where('m2.user', 'IN', $cUser)
-			->where('m2.role', $role, if: ($role !== NULL))
-			->getCollection();
-
-	}
-
 	public static function getCurrent(): Company {
 
 		return Company::model()

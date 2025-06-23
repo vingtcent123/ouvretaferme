@@ -25,17 +25,17 @@ class OverviewUi {
 
 		return [
 			'bank' => [
-				'url' => CompanyUi::urlOverview($eFarm).'/financials:bank',
+				'url' => \company\CompanyUi::urlOverview($eFarm).'/financials:bank',
 				'label' => s("Trésorerie"),
 				'longLabel' => s("Suivi de la trésorerie"),
 			],
 			'charges' => [
-				'url' => CompanyUi::urlOverview($eFarm).'/financials:charges',
+				'url' => \company\CompanyUi::urlOverview($eFarm).'/financials:charges',
 				'label' => s("Charges"),
 				'longLabel' => s("Suivi des charges"),
 			],
 			'result' => [
-				'url' => CompanyUi::urlOverview($eFarm).'/financials:result',
+				'url' => \company\CompanyUi::urlOverview($eFarm).'/financials:result',
 				'label' => s("Résultat"),
 				'longLabel' => s("Suivi du résultat"),
 			],
@@ -47,12 +47,12 @@ class OverviewUi {
 
 		return [
 			\farm\Farmer::BALANCE_SHEET => [
-				'url' => CompanyUi::urlOverview($eFarm).'/statements:bilans',
+				'url' => \company\CompanyUi::urlOverview($eFarm).'/statements:bilans',
 				'label' => s("Bilans"),
 				'longLabel' => s("Les bilans"),
 			],
 			\farm\Farmer::TRIAL_BALANCE => [
-				'url' => CompanyUi::urlOverview($eFarm).'/statements:balances',
+				'url' => \company\CompanyUi::urlOverview($eFarm).'/statements:balances',
 				'label' => s("Balances"),
 				'longLabel' => s("Les balances"),
 			],
