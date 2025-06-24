@@ -18,7 +18,6 @@ class CompanyLib extends CompanyCrud {
 
 		return Company::model()
 			->select($properties ?? Company::getSelection())
-			->sort('name')
 			->getCollection();
 
 	}

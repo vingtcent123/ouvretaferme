@@ -5,6 +5,9 @@ new \farm\FarmPage()
 	})
 	->update(function($data) {
 
+		// Get Partner data
+		$data->partners = ['dropbox' => \account\DropboxLib::getPartnerData($data->eFarm)];
+
 		throw new ViewAction($data);
 
 	});

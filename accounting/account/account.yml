@@ -26,6 +26,19 @@ FinancialYear:
   createdAt: datetime = SPECIAL(now)
   createdBy: user\User = SPECIAL(user)
 
+Partner:
+  partner: enum(DROPBOX)
+  accessToken: text16
+  params: ?json = PHP([])
+  createdAt: datetime = SQL(NOW())
+  updatedAt: datetime = SQL(NOW())
+  expiresAt: ?datetime
+  createdBy: user\User = SPECIAL(user)
+  updatedBy: user\User = SPECIAL(user)
+  UNIQUE: [
+    ["partner"]
+  ]
+
 ThirdParty:
   id: serial32
   name: text8(1, null) @collate(general)

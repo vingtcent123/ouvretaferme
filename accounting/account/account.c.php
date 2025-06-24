@@ -8,6 +8,11 @@ Setting::register('account', [
 
 	'remoteKey' => 'toto',
 
+	'dropbox' => [
+		'appKey' => '',
+		'appSecret' => '',
+	],
+
 	'assetClass' => 2,
 	'subventionAssetClass' => '13',
 	'subventionDepreciationAssetClass' => '777',

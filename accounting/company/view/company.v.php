@@ -18,5 +18,7 @@ new AdaptativeView('update', function($data, FarmTemplate $t) {
 
 	echo new \company\CompanyUi()->update($data->eFarm);
 
+	echo new \account\DropboxUi()->updateConnection($data->eFarm, $data->partners['dropbox']);
+
 });
 ?>
