@@ -1246,7 +1246,7 @@ class FarmUi {
 
 	protected static function getOperationsCategories(Farm $eFarm): array {
 
-		$useDefaultValues = $eFarm['company']->empty() or $eFarm['company']->isCashAccounting();
+		$useDefaultValues = ($eFarm['company']->empty() or $eFarm['company']->isCashAccounting());
 
 		if($useDefaultValues) {
 
@@ -1259,7 +1259,7 @@ class FarmUi {
 		}
 		return [
 			'operations' => $journalTitle,
-			...$useDefaultValues ? [] : ['accounts' => s("Comptes")],
+			...($useDefaultValues ? [] : ['accounts' => s("Comptes")]),
 			'book' => s("Grand livre"),
 			'vat' => s("Journaux de TVA"),
 		];
