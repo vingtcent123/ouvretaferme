@@ -734,7 +734,7 @@ body[data-template^="farm"] header a:hover {
 	}
 
 	#farm-breadcrumbs {
-		padding-left: var(--container-padding);
+		padding-left: calc(var(--container-padding) + 0.5rem);
 		padding-right: var(--container-padding);
 		color: white;
 	}
