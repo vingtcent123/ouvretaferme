@@ -668,7 +668,7 @@ class FarmUi {
 			],
 			'settings-production' => [
 				'icon' => \Asset::icon('gear-fill'),
-				'label' => s("Configuration")
+				'label' => s("Paramétrage")
 			],
 			'selling' => [
 				'icon' => \Asset::icon('piggy-bank'),
@@ -688,7 +688,7 @@ class FarmUi {
 			],
 			'settings-commercialisation' => [
 				'icon' => \Asset::icon('gear-fill'),
-				'label' => s("Configuration")
+				'label' => s("Paramétrage")
 			],
 			'bank' => [
 				'icon' => \Asset::icon('piggy-bank'),
@@ -708,7 +708,7 @@ class FarmUi {
 			],
 			'settings-accounting' => [
 				'icon' => \Asset::icon('gear-fill'),
-				'label' => s("Configuration")
+				'label' => s("Paramétrage")
 			],
 		};
 
