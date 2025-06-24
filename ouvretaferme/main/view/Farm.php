@@ -219,7 +219,7 @@ class FarmTemplate extends MainTemplate {
 
 		switch($this->nav) {
 
-			case 'home' :
+			case 'planning' :
 			case 'cultivation' :
 			case 'analyze-production' :
 			case 'settings-production' :

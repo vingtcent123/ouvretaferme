@@ -594,7 +594,11 @@ class FarmUi {
 
 	public function getMainTabs(Farm $eFarm, ?string $nav, ?string $subNav): string {
 
+
+
 		$h = '<nav id="farm-nav">';
+
+			$h .= '<div id="farm-breadcrumbs">'.$this->getBreadcrumbs($nav, $subNav).'</div>';
 
 			$h .= '<div class="farm-tabs farm-section-production">';
 				$h .= $this->getProductionSection($eFarm, $nav, $subNav);
@@ -618,6 +622,100 @@ class FarmUi {
 
 	}
 
+	protected function getBreadcrumbs(?string $nav, ?string $subNav): string {
+
+		if($nav === NULL) {
+			return '';
+		}
+
+		$section = $this->getSection($nav);
+
+		$h = '<span class="">';
+			$h .= $section['icon'].'  <b>'.$section['label'].'</b>';
+			if($subNav !== NULL) {
+				$h .= '  '.\Asset::icon('chevron-right').'  ';
+				$h .= $subNav;
+			}
+		$h .= '</span>';
+
+		return $h;
+
+	}
+
+	protected function getNav(string $section, string $nav, bool $disabled = FALSE, ?string $link = NULL): string {
+
+		$h = ($link ? '<a href="'.$link.'"' : '<div').' data-nav="'.$nav.'" class="farm-tab '.($link === NULL ? 'farm-tab-subnav' : '').' '.($disabled ? 'disabled' : '').' '.($nav === $section ? 'selected' : '').'">';
+			$h .= '<span class="farm-tab-icon">'.$this->getSection($section)['icon'].'</span>';
+			$h .= '<span class="farm-tab-label">'.$this->getSection($section)['label'].'</span>';
+		$h .= '</'.($link ? 'a' : 'div').'>';
+
+		return $h;
+
+	}
+
+	protected function getSection($name): array {
+
+		return match($name) {
+			'planning' => [
+				'icon' => \Asset::icon('calendar3'),
+				'label' => s("Planning")
+			],
+			'cultivation' => [
+				'icon' => \Asset::icon('journals'),
+				'label' => s("Cultures")
+			],
+			'analyze-production' => [
+				'icon' => \Asset::icon('bar-chart'),
+				'label' => s("Analyze")
+			],
+			'settings-production' => [
+				'icon' => \Asset::icon('gear-fill'),
+				'label' => s("Configuration")
+			],
+			'selling' => [
+				'icon' => \Asset::icon('piggy-bank'),
+				'label' => s("Commercialisation")
+			],
+			'shop' => [
+				'icon' => \Asset::icon('cart'),
+				'label' => s("Vente en ligne")
+			],
+			'communications' => [
+				'icon' => \Asset::icon('megaphone'),
+				'label' => s("Communication")
+			],
+			'analyze-commercialisation' => [
+				'icon' => \Asset::icon('bar-chart'),
+				'label' => s("Analyze")
+			],
+			'settings-commercialisation' => [
+				'icon' => \Asset::icon('gear-fill'),
+				'label' => s("Configuration")
+			],
+			'bank' => [
+				'icon' => \Asset::icon('piggy-bank'),
+				'label' => s("Banque")
+			],
+			'journal' => [
+				'icon' => \Asset::icon('journal-bookmark'),
+				'label' => s("Écritures comptables")
+			],
+			'assets' => [
+				'icon' => \Asset::icon('house'),
+				'label' => s("Immobilisations")
+			],
+			'analyze-accounting' => [
+				'icon' => \Asset::icon('bar-chart'),
+				'label' => s("Analyze")
+			],
+			'settings-accounting' => [
+				'icon' => \Asset::icon('gear-fill'),
+				'label' => s("Configuration")
+			],
+		};
+
+	}
+
 	protected function getProductionSection(Farm $eFarm, ?string $nav, ?string $subNav): string {
 
 		$prefix = '<span class="farm-subnav-prefix">'.\Asset::icon('chevron-right').' </span>';
@@ -628,10 +726,7 @@ class FarmUi {
 
 			$h .= '<div class="farm-nav-planning">';
 
-				$h .= '<div class="farm-tab farm-tab-subnav '.($nav === 'cultivation' ? 'selected' : '').'">';
-					$h .= '<span class="farm-tab-icon">'.\Asset::icon('calendar3').'</span>';
-					$h .= '<span class="farm-tab-label">'.s("Planning").'</span>';
-				$h .= '</div>';
+				$h .= $this->getNav('planning', $nav);
 
 				$h .= $this->getPlanningMenu($eFarm, prefix: $prefix, subNav: $subNav);
 
@@ -641,10 +736,7 @@ class FarmUi {
 
 		$h .= '<div class="farm-nav-cultivation">';
 
-			$h .= '<div class="farm-tab farm-tab-subnav '.($nav === 'cultivation' ? 'selected' : '').'">';
-				$h .= '<span class="farm-tab-icon">'.\Asset::icon('journals').'</span>';
-				$h .= '<span class="farm-tab-label">'.s("Cultures").'</span>';
-			$h .= '</div>';
+			$h .= $this->getNav('cultivation', $nav);
 
 			$h .= $this->getCultivationMenu($eFarm, prefix: $prefix, subNav: $subNav);
 
@@ -689,10 +781,7 @@ class FarmUi {
 
 			$h .= '<div class="farm-nav-selling">';
 
-				$h .= '<div data-nav="selling" class="farm-tab farm-tab-subnav '.($nav === 'selling' ? 'selected' : '').'">';
-					$h .= '<span class="farm-tab-icon">'.\Asset::icon('piggy-bank').'</span>';
-					$h .= '<span class="farm-tab-label">'.s("Commercialisation").'</span>';
-				$h .= '</div>';
+				$h .= $this->getNav('selling', $nav);
 
 				$h .= $this->getSellingMenu($eFarm, prefix: $prefix, subNav: $subNav);
 
@@ -701,30 +790,20 @@ class FarmUi {
 
 				if($eFarm['hasShops']) {
 
-					$h .= '<div data-nav="shop" class="farm-tab '.($eFarm['hasShops'] ? 'farm-tab-subnav' : '').' '.($nav === 'shop' ? 'selected' : '').'">';
-						$h .= '<span class="farm-tab-icon">'.\Asset::icon('cart').'</span>';
-						$h .= '<span class="farm-tab-label">'.s("Vente en ligne").'</span>';
-					$h .= '</div>';
+					$h .= $this->getNav('shop', $nav, $eFarm['hasShops']);
 
 					$h .= $this->getShopMenu($eFarm, prefix: $prefix, subNav: $subNav);
 
 				} else {
 
-					$h .= '<a href="'.FarmUi::urlShopList($eFarm).'" data-nav="shop" class="farm-tab '.($nav === 'shop' ? 'selected' : '').'">';
-						$h .= '<span class="farm-tab-icon">'.\Asset::icon('cart').'</span>';
-						$h .= '<span class="farm-tab-label">'.s("Vente en ligne").'</span>';
-					$h .= '</a>';
+					$h .= $this->getNav('shop', $nav, link: FarmUi::urlShopList($eFarm));
 
 				}
 
 			$h .= '</div>';
 			$h .= '<div class="farm-nav-communication">';
 
-				$h .= '<div data-nav="communications" class="farm-tab farm-tab-subnav '.($nav === 'communications' ? 'selected' : '').'">';
-					$h .= '<span class="farm-tab-icon">'.\Asset::icon('megaphone').'</span>';
-					$h .= '<span class="farm-tab-label">'.s("Communication").'</span>';
-				$h .= '</div>';
-
+				$h .= $this->getNav('communications', $nav);
 				$h .= $this->getCommunicationsMenu($eFarm, prefix: $prefix, subNav: $subNav);
 
 			$h .= '</div>';
@@ -768,10 +847,7 @@ class FarmUi {
 
 			$h .= '<div class="farm-nav-bank">';
 
-				$h .= '<div data-nav="bank" class="farm-tab farm-tab-subnav '.($nav === 'bank' ? 'selected' : '').'">';
-					$h .= '<span class="farm-tab-icon">'.\Asset::icon('piggy-bank').'</span>';
-					$h .= '<span class="farm-tab-label">'.s("Banque").'</span>';
-				$h .= '</div>';
+				$h .= $this->getNav('bank', $nav);
 
 				$h .= $this->getBankMenu($eFarm, prefix: $prefix, subNav: $subNav);
 
@@ -779,10 +855,7 @@ class FarmUi {
 
 			$h .= '<div class="farm-nav-journal">';
 
-				$h .= '<div data-nav="journal" class="farm-tab farm-tab-subnav '.($nav === 'journal' ? 'selected' : '').'">';
-					$h .= '<span class="farm-tab-icon">'.\Asset::icon('journal-bookmark').'</span>';
-					$h .= '<span class="farm-tab-label">'.s("Écritures comptables").'</span>';
-				$h .= '</div>';
+				$h .= $this->getNav('journal', $nav);
 
 				$h .= $this->getOperationsMenu($eFarm, prefix: $prefix, subNav: $subNav);
 
@@ -790,10 +863,7 @@ class FarmUi {
 
 			$h .= '<div class="farm-nav-assets">';
 
-				$h .= '<div data-nav="assets" class="farm-tab farm-tab-subnav '.($nav === 'assets' ? 'selected' : '').'">';
-					$h .= '<span class="farm-tab-icon">'.\Asset::icon('house-door').'</span>';
-					$h .= '<span class="farm-tab-label">'.s("Immobilisations").'</span>';
-				$h .= '</div>';
+				$h .= $this->getNav('assets', $nav);
 
 				$h .= $this->getAssetsMenu($eFarm, prefix: $prefix, subNav: $subNav);
 
@@ -835,10 +905,7 @@ class FarmUi {
 
 		if($eFarm->canAnalyze() and $categories) {
 
-			$h .= '<div class="farm-tab">';
-				$h .= '<span class="farm-tab-icon">'.\Asset::icon('bar-chart').'</span>';
-				$h .= '<span class="farm-tab-label">'.s("Analyse").'</span>';
-			$h .= '</div>';
+			$h .= $this->getNav('analyze-'.$section, $nav);
 
 			$h .= '<div class="farm-subnav-wrapper">';
 
@@ -852,10 +919,7 @@ class FarmUi {
 
 		} else {
 
-			$h .= '<div class="farm-tab disabled">';
-				$h .= '<span class="farm-tab-icon">'.\Asset::icon('bar-chart').'</span>';
-				$h .= '<span class="farm-tab-label">'.s("Analyse").'</span>';
-			$h .= '</div>';
+			$h .= $this->getNav('analyze-'.$section, $nav, disabled: TRUE);
 
 		}
 
@@ -868,11 +932,7 @@ class FarmUi {
 		$h = '';
 
 		if($eFarm->canManage()) {
-			$h .= '<a href="'.$url.'" class="farm-tab '.($nav === 'settings-'.$section ? 'selected' : '').'" data-nav="settings-'.$section.'">';
-				$h .= '<span class="hide-lateral-down farm-tab-icon">'.\Asset::icon('gear').'</span>';
-				$h .= '<span class="hide-lateral-up farm-tab-icon">'.\Asset::icon('gear-fill').'</span>';
-				$h .= '<span class="farm-tab-label">'.s("Paramétrage").'</span>';
-			$h .= '</a>';
+			$h .= $this->getNav('settings-'.$section, $nav, link: $url);
 		}
 
 		return $h;

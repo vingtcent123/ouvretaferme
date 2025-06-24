@@ -59,10 +59,13 @@
 
 @media (max-width: 1099px), (max-height: 649px) {
 
+	:root {
+		--farmNav: 3rem;
+	}
+
 	@media (max-width: 767px) {
 
 		:root {
-			--farmNav: 5rem;
 			--mainNav: 3rem;
 		}
 
@@ -71,7 +74,6 @@
 	@media (min-width: 768px) {
 
 		:root {
-			--farmNav: 4rem;
 			--mainNav: 3rem;
 		}
 

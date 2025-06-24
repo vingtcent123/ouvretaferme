@@ -2,7 +2,7 @@
 new AdaptativeView('planning', function($data, FarmTemplate $t) {
 
 	$t->title = s("Planning de {value}", $data->eFarm['name']);
-	$t->nav = 'home';
+	$t->nav = 'planning';
 
 	$uiTask = new \series\TaskUi();
 
@@ -87,7 +87,7 @@ new AdaptativeView('planning', function($data, FarmTemplate $t) {
 new AdaptativeView('/ferme/{id}/taches/{week}/{action}', function($data, FarmTemplate $t) {
 
 	$t->title = $data->eAction['name'];
-	$t->nav = 'home';
+	$t->nav = 'planning';
 
 	$t->mainTitle = new \series\TaskUi()->displayByActionTitle($data->eFarm, $data->week, $data->eAction);
 	echo new \series\TaskUi()->displayByAction($data->eFarm, $data->week, $data->eAction, $data->cTask);

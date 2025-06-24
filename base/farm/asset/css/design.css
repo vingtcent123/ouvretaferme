@@ -3,10 +3,6 @@
 	padding: 0;
 }
 
-#farm-nav:last-child {
-	margin-bottom: 1rem;
-}
-
 .farm-tabs.farm-section-production {
 	background-color: var(--production);
 }
@@ -314,6 +310,10 @@ body[data-template^="farm"] header a:hover {
 		height: calc(100vh - var(--nav-height));
 	}
 
+	#farm-nav:last-child {
+		margin-bottom: 1rem;
+	}
+
 	.farm-tabs {
 		padding-top: 0.5rem;
 		height: 100%;
@@ -415,6 +415,10 @@ body[data-template^="farm"] header a:hover {
 		padding: 0.375rem 2rem;
 		border-top-left-radius: 0;
 		border-bottom-left-radius: 0;
+	}
+
+	#farm-breadcrumbs {
+		display: none;
 	}
 
 }
@@ -681,6 +685,7 @@ body[data-template^="farm"] header a:hover {
 		align-items: center;
 		height: var(--farmNav);
 		min-height: var(--farmNav);
+		background-color: var(--secondary);
 	}
 
 	.nav-title .farm-vignette-view {
@@ -696,23 +701,22 @@ body[data-template^="farm"] header a:hover {
 		width: 100%;
 		padding: 0.5rem 0.5rem 1rem 0.5rem;
 		column-gap: 1rem;
+		box-shadow: 0 0 1rem #0003;
 	}
 
 	.farm-tab {
 		border-radius: var(--radius);
 		display: flex;
 		column-gap: 0.5rem;
+		font-size: 1.1rem;
 		align-items: center;
-		padding-top: 0.75rem;
-		padding-bottom: 0.75rem;
-	}
-
-	.farm-tab .farm-tab-icon {
+		padding-top: 1rem;
+		padding-bottom: 1rem;
 	}
 
 	a.farm-subnav-item {
-		border-top: 1px solid #fff5;
-		padding: 0.75rem;
+		padding: 0.75rem 0.75rem 0.75rem 1rem;
+		border-radius: var(--radius);
 	}
 
 	@media (max-width: 449px) {
@@ -723,14 +727,16 @@ body[data-template^="farm"] header a:hover {
 
 	}
 
-	.farm-subnav-prefix {
-		display: none;
-	}
-
 	.nav-year {
 		font-size: 1.1rem;
 		padding: 0.25rem 0.75rem;
 		margin-bottom: .5rem;
+	}
+
+	#farm-breadcrumbs {
+		padding-left: var(--container-padding);
+		padding-right: var(--container-padding);
+		color: white;
 	}
 
 }
@@ -772,17 +778,23 @@ body[data-template~="farm-section-accounting"] .farm-nav-section-accounting {
 body[data-template~="farm-production"]:not([data-template*="farm-section-"]) .farm-nav-section-production,
 body[data-template~="farm-section-production"] .farm-nav-section-production {
 	background-color: var(--production);
+	position: relative;
+	z-index: 1;
 }
 
 
 body[data-template~="farm-commercialisation"]:not([data-template*="farm-section-"]) .farm-nav-section-commercialisation,
 body[data-template~="farm-section-commercialisation"] .farm-nav-section-commercialisation {
 	background-color: var(--commercialisation);
+	position: relative;
+	z-index: 1;
 }
 
 body[data-template~="farm-accounting"]:not([data-template*="farm-section-"]) .farm-nav-section-accounting,
 body[data-template~="farm-section-accounting"] .farm-nav-section-accounting {
 	background-color: var(--accounting);
+	position: relative;
+	z-index: 1;
 }
 
 body:not([data-template~="farm-production"]):not([data-template~="farm-section-production"]) .farm-tabs.farm-section-production,
@@ -798,4 +810,20 @@ body[data-template*="farm-section-"]:not([data-template~="farm-section-commercia
 body:not([data-template~="farm-accounting"]):not([data-template~="farm-section-accounting"]) .farm-tabs.farm-section-accounting,
 body[data-template*="farm-section-"]:not([data-template~="farm-section-accounting"]) .farm-tabs.farm-section-accounting {
 	display: none;
+}
+
+@media (max-width: 1099px), (max-height: 649px) {
+
+	body:not([data-template~="farm-section-production"]) .farm-tabs.farm-section-production {
+		display: none;
+	}
+
+	body:not([data-template~="farm-section-commercialisation"]) .farm-tabs.farm-section-commercialisation {
+		display: none;
+	}
+
+	body:not([data-template~="farm-section-accounting"]) .farm-tabs.farm-section-accounting {
+		display: none;
+	}
+
 }
