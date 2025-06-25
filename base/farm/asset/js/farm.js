@@ -6,6 +6,10 @@ document.addEventListener('keyup', function(e) {
 
 document.delegateEventListener('mouseleave', 'header', function(e) {
 
+	if(window.matchMedia('(min-width: 1100px) and (min-height: 650px)').matches) {
+		return;
+	}
+
 	Farm.clearSection();
 	Farm.closeSection();
 
