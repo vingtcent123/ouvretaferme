@@ -594,8 +594,6 @@ class FarmUi {
 
 	public function getMainTabs(Farm $eFarm, ?string $nav, ?string $subNav): string {
 
-
-
 		$h = '<nav id="farm-nav">';
 
 			$h .= '<div id="farm-breadcrumbs">'.$this->getBreadcrumbs($eFarm, $nav, $subNav).'</div>';
@@ -608,7 +606,7 @@ class FarmUi {
 				$h .= $this->getCommercialisationSection($eFarm, $nav, $subNav);
 			$h .= '</div>';
 
-			if(FEATURE_ACCOUNTING) {
+			if($eFarm->hasAccounting()) {
 
 				$h .= '<div class="farm-tabs farm-section-accounting">';
 					$h .= $this->getAccountingSection($eFarm, $nav, $subNav);
@@ -770,7 +768,7 @@ class FarmUi {
 				'import' => s("Imports"),
 			},
 
-			'operations' => match($name) {
+			'journal' => match($name) {
 				'operations' => ($eFarm['company']->empty() or $eFarm['company']->isCashAccounting()) ? s("Journal comptable") : s("Journaux"),
 				'accounts' => s("Comptes"),
 				'book' => s("Grand livre"),
@@ -1354,7 +1352,7 @@ class FarmUi {
 			foreach($this->getOperationsCategories($eFarm) as $name) {
 
 				$h .= '<a href="'.\company\CompanyUi::urlJournal($eFarm).'/'.$name.'" class="farm-subnav-item '.($name === $subNav ? 'selected' : '').'" data-sub-nav="'.$name.'">';
-					$h .= $prefix.'<span>'.$this->getCategory($eFarm, 'operations', $name).'</span>';
+					$h .= $prefix.'<span>'.$this->getCategory($eFarm, 'journal', $name).'</span>';
 				$h .= '</a>';
 
 			}
@@ -1371,7 +1369,7 @@ class FarmUi {
 			'operations'
 		];
 
-		if($eFarm['company']->empty() or $eFarm['company']->isCashAccounting()) {
+		if($eFarm['company']->empty() or $eFarm['company']->isAccrualAccounting()) {
 			$categories[] = 'accounts';
 		}
 
@@ -1803,7 +1801,7 @@ class FarmUi {
 					$h .= '<a href="/farm/farmer:manage?farm='.$eFarm['id'].' '.($selected === 'team' ? 'selected' : '').'" class="dropdown-item">'.\Asset::icon('people-fill').'  '.s("Gérer l'équipe de la ferme").'</a>';
 					$h .= '<a href="'.self::urlSettingsProduction($eFarm).'" class="dropdown-item '.($selected === 'production' ? 'selected' : '').'">'.\Asset::icon('leaf').'  '.s("Paramétrer la production").'</a>';
 					$h .= '<a href="'.self::urlSettingsCommercialisation($eFarm).'" class="dropdown-item '.($selected === 'commercialisation' ? 'selected' : '').'">'.\Asset::icon('basket3').'  '.s("Paramétrer la vente").'</a>';
-					if(FEATURE_ACCOUNTING) {
+					if($eFarm->hasAccounting()) {
 						$h .= '<a href="'.self::urlSettingsAccounting($eFarm).'" class="dropdown-item '.($selected === 'accounting' ? 'selected' : '').'">'.\Asset::icon('bank').'  '.s("Paramétrer la comptabilité").'</a>';
 					}
 				$h .= '</div>';

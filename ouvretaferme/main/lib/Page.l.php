@@ -68,11 +68,11 @@ class PageLib {
 
 		if(REQUEST('app') === 'accounting') {
 
-			if(FEATURE_ACCOUNTING === FALSE) {
+			$data->eFarm = \farm\FarmLib::getById(REQUEST('farm'));
+
+			if($data->eFarm->hasAccounting() === FALSE) {
 				throw new \NotExpectedAction('Accounting feature not activated.');
 			}
-
-			$data->eFarm = \farm\FarmLib::getById(REQUEST('farm'));
 
 			if($data->eFarm['company']->notEmpty()) {
 

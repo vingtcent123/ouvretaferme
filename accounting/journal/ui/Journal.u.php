@@ -9,69 +9,6 @@ class JournalUi {
 	}
 
 
-	protected static function getJournalCategories(\farm\Farm $eFarm): array {
-
-		$journalTitle = $eFarm['company']->isCashAccounting() ? s("Journal comptable") : s("Journaux");
-
-		$categories = [
-			'journal' => [
-				'url' => \company\CompanyUi::urlJournal($eFarm).'/operations',
-				'label' => $journalTitle,
-			],
-		];
-
-		if($eFarm['company']->isAccrualAccounting()) {
-
-			$categories['account'] = [
-				'url' => \company\CompanyUi::urlJournal($eFarm).'/accounts',
-				'label' => s("Comptes")
-			];
-
-		}
-
-		$categories['book'] = [
-			'url' => \company\CompanyUi::urlJournal($eFarm).'/book',
-			'label' => s("Grand livre")
-		];
-		$categories['vat'] = [
-			'url' => \company\CompanyUi::urlJournal($eFarm).'/vat',
-			'label' => s("Journaux de TVA")
-		];
-
-		return $categories;
-
-	}
-
-	public function getJournalMenu(\farm\Farm $eFarm, string $prefix = '', ?string $tab = NULL): string {
-
-		$selectedView = ($tab === 'journal') ? \Setting::get('main\viewJournal') : NULL;
-
-		$h = '<div class="company-subnav-wrapper">';
-
-		foreach(self::getJournalCategories($eFarm) as $key => ['url' => $url, 'label' => $label]) {
-
-			$h .= '<a href="'.$url.'" class="company-subnav-item '.($key === $selectedView ? 'selected' : '').'" data-sub-nav="'.$key.'">';
-				$h .= $prefix.'<span>'.$label.'</span>';
-			$h .= '</a>';
-
-		}
-
-		$h .= '</div>';
-
-		return $h;
-
-	}
-
-	public function getJournalSubNav(\farm\Farm $eFarm, string $prefix = '', ?string $tab = NULL): string {
-
-		$h = '<nav id="company-subnav">';
-			$h .= $this->getJournalMenu($eFarm, tab: 'journal');
-		$h .= '</nav>';
-
-		return $h;
-
-	}
-
 	public function getJournalTitle(\farm\Farm $eFarm, \account\FinancialYear $eFinancialYear): string {
 
 		$h = '<div class="util-action">';

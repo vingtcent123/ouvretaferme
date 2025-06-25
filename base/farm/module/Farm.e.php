@@ -98,6 +98,10 @@ class Farm extends FarmElement {
 		return ($this['status'] === Farm::ACTIVE);
 	}
 
+	public function hasAccounting(): bool {
+		return FEATURE_ACCOUNTING || $this['id'] === 7; // Jardins de Tallende
+	}
+
 	// Peut accéder aux pages d'analyse des données
 	public function canAnalyze(): bool {
 		return (
@@ -150,7 +154,7 @@ class Farm extends FarmElement {
 	}
 
 	public function canAccounting(): bool {
-		return FEATURE_ACCOUNTING and $this->isRole(Farmer::OWNER);
+		return $this->isRole(Farmer::OWNER);
 	}
 
 	public function isRole(string $role): bool {

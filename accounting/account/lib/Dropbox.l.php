@@ -199,7 +199,6 @@ Class DropboxLib {
 			'refresh_token' => $ePartner['params']['refresh_token'],
 			'client_id' => \Setting::get('account\dropbox')['appKey'],
 			'client_secret' => \Setting::get('account\dropbox')['appSecret'],
-			'redirect_uri' => self::getRedirectUri(),
 		];
 
 		$curl = new \util\CurlLib();
@@ -213,7 +212,7 @@ Class DropboxLib {
 		$ePartner = new Partner([
 			'partner' => Partner::DROPBOX,
 			'accessToken' => $data['access_token'],
-			'params' => ['uid' => $data['uid'], 'account_id' => $data['account_id'], 'refresh_token' => $data['refresh_token']],
+			'params' => ['account_id' => $data['account_id'], 'refresh_token' => $data['refresh_token']],
 			'expiresAt' => new \Sql('ADDDATE(NOW(), INTERVAL '.$data['expires_in'].' SECOND)'),
 			'updatedAt' => new \Sql('NOW()'),
 			'updatedBy' => \user\ConnectionLib::getOnline(),
