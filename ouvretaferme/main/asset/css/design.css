@@ -60,6 +60,7 @@
 @media (max-width: 1099px), (max-height: 649px) {
 
 	:root {
+		--farmSections: 3.5rem;
 		--farmNav: 3rem;
 	}
 
@@ -80,7 +81,7 @@
 	}
 
 	:root {
-		--mainSticky: var(--farmNav);
+		--mainSticky: calc(var(--farmSections) + var(--farmNav));
 	}
 
 }

@@ -599,16 +599,19 @@ class FarmUi {
 			$h .= '<div id="farm-breadcrumbs">'.$this->getBreadcrumbs($eFarm, $nav, $subNav).'</div>';
 
 			$h .= '<div class="farm-tabs farm-section-production">';
+				$h .= $this->getCloseSection();
 				$h .= $this->getProductionSection($eFarm, $nav, $subNav);
 			$h .= '</div>';
 
 			$h .= '<div class="farm-tabs farm-section-commercialisation">';
+				$h .= $this->getCloseSection();
 				$h .= $this->getCommercialisationSection($eFarm, $nav, $subNav);
 			$h .= '</div>';
 
 			if($eFarm->hasAccounting()) {
 
 				$h .= '<div class="farm-tabs farm-section-accounting">';
+					$h .= $this->getCloseSection();
 					$h .= $this->getAccountingSection($eFarm, $nav, $subNav);
 				$h .= '</div>';
 
@@ -620,7 +623,17 @@ class FarmUi {
 
 	}
 
-	protected function getBreadcrumbs(Farm $eFarm, ?string $nav, ?string $subNav): string {
+	protected function getCloseSection(): string {
+
+		$h = '<a onclick="Farm.closeSection();" class="farm-tab-close">';
+			$h .= '<span>'.\Asset::icon('x-lg').'</span>';
+		$h .= '</a>';
+
+		return $h;
+
+	}
+
+	public function getBreadcrumbs(Farm $eFarm, ?string $nav, ?string $subNav): string {
 
 		if($nav === NULL) {
 			return '';
@@ -858,7 +871,7 @@ class FarmUi {
 
 				if($eFarm['hasShops']) {
 
-					$h .= $this->getNav('shop', $nav, $eFarm['hasShops']);
+					$h .= $this->getNav('shop', $nav);
 
 					$h .= $this->getShopMenu($eFarm, prefix: $prefix, subNav: $subNav);
 

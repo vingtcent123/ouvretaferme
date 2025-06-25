@@ -4,6 +4,13 @@ document.addEventListener('keyup', function(e) {
 
 });
 
+document.delegateEventListener('mouseleave', 'header', function(e) {
+
+	Farm.clearSection();
+	Farm.closeSection();
+
+});
+
 class Farm {
 
 	static pendingSection = null;
@@ -48,10 +55,17 @@ class Farm {
 
 	}
 
-	static changeSection(target, delay = 0) {
+	static changeSection(target, event, delay = 0) {
 
-		if(this.pendingSection !== null) {
-			clearTimeout(this.pendingSection);
+		this.clearSection();
+
+		if(event === 'click') {
+
+			if(document.body.dataset.section === target.dataset.section) {
+				this.closeSection();
+				return;
+			}
+
 		}
 
 		this.pendingSection = setTimeout(() => {
@@ -64,16 +78,26 @@ class Farm {
 
 	}
 
+	static closeSection() {
+
+		if(document.body.dataset.section === undefined) {
+			return false;
+		}
+
+		document.body.dataset.template = document.body.dataset.template.replace(' farm-section-' + document.body.dataset.section, '');
+
+		delete document.body.dataset.section;
+
+		return true;
+
+	}
+
 	static setSection(section) {
 
-		qsa('#farm-nav-sections .farm-nav-section', node => {
-
-			const newTemplates = document.body.dataset.template.replace(' farm-section-' + node.dataset.section, '');
-			document.body.dataset.template = newTemplates;
-
-		});
+		document.body.dataset.template = document.body.dataset.template.replace(' farm-section-' + document.body.dataset.section, '');
 
 		document.body.dataset.template += ' farm-section-'+ section;
+		document.body.dataset.section = section;
 
 	}
 

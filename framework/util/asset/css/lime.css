@@ -635,7 +635,7 @@ div.input-group > .field-checkbox {
 /* Containers */
 :root {
 
-	--container-xs-padding: 0.75rem;
+	--container-xs-padding: 0.5rem;
 	--container-sm-padding: 1rem;
 	--container-md-padding: 1.5rem;
 	--container-lg-padding: 2rem;

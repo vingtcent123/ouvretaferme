@@ -1,17 +1,17 @@
 new Lime.Instruction('main')
-	.register('updateHeader', function(nav, subNav, sectionHtml, navHtml) {
+	.register('updateHeader', function(nav, subNav, sectionHtml, navHtml, breadcrumbs) {
 
 		const farmNav = qs('#farm-nav');
 
 		if(farmNav) {
 
 			farmNav.qsa('[data-nav].selected', node => node.classList.remove('selected'));
-			farmNav.qsa('a.farm-subnav-item.selected', node => node.classList.remove('selected'));
-
-			farmNav.qsa('[data-nav].selected', node => node.classList.remove('selected'));
 			farmNav.qs('[data-nav="'+ nav +'"]', node => node.classList.add('selected'));
 
+			farmNav.qsa('[data-sub-nav].selected', node => node.classList.remove('selected'));
 			farmNav.qs('[data-sub-nav="'+ subNav +'"]', node => node.classList.add('selected'));
+
+			farmNav.qs('#farm-breadcrumbs', node => node.renderInner(breadcrumbs));
 
 		} else {
 			qs('header').renderInner(sectionHtml + navHtml);

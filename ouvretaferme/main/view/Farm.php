@@ -27,7 +27,10 @@ class FarmTemplate extends MainTemplate {
 
 		$this->buildSections();
 
-		return parent::buildAjax($stream);
+		$t = parent::buildAjax($stream);
+		$t->qs('body')->removeAttribute('data-section');
+
+		return $t;
 
 	}
 
@@ -54,6 +57,7 @@ class FarmTemplate extends MainTemplate {
 			$this->subNav,
 			$this->getFarmSections(),
 			$this->getFarmNav(),
+			new \farm\FarmUi()->getBreadcrumbs($this->data->eFarm, $this->nav, $this->subNav),
 		);
 
 	}
@@ -73,10 +77,11 @@ class FarmTemplate extends MainTemplate {
 
 			foreach($sections as $name => [$icon, $label]) {
 
-				$h .= '<a onclick="Farm.changeSection(this)" onmouseenter="Farm.changeSection(this, 150)" onmouseleave="Farm.clearSection(this)" data-section="'.$name.'" class="farm-nav-section farm-nav-section-'.$name.'">';
+				$h .= '<a '.attr('onclick', 'Farm.changeSection(this, "click")').' '.attr('onmouseenter', 'Farm.changeSection(this, "mouseneter", 150)').' onmouseleave="Farm.clearSection(this)" data-section="'.$name.'" class="farm-nav-section farm-nav-section-'.$name.'">';
 					$h .= $icon;
 					$h .= '<span>'.$label.'</span>';
 					$h .= '<span class="farm-nav-section-down">'.Asset::icon('chevron-down').'</span>';
+					$h .= '<span class="farm-nav-section-up">'.Asset::icon('chevron-up').'</span>';
 				$h .= '</a>';
 
 			}
