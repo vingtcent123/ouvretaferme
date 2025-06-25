@@ -15,6 +15,7 @@ class DemoLib {
 	];
 
 	const COPY_MODULE_EXCLUDE = [
+		'account\Partner',
 		'farm\Invite',
 		'farm\Tip',
 		'payment\StripeFarm',
