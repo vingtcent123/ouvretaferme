@@ -19,48 +19,56 @@ class DropboxUi {
 			);
 		$h .= '</div>';
 
-		if($ePartner->isValid()) {
 
-			[$quotaUsed, $quotaTotal] = $partnerData['quota'];
+		if(OTF_DEMO) {
 
-			$h .= '<ul style="list-style-type: disclosure-closed">';
-
-				$h .= '<li>';
-					$h .= s("<b>{employee}</b> a autorisé {siteName} à accéder au compte Dropbox de votre ferme le <b>{date}</b>.", [
-						'date' => \util\DateUi::numeric($ePartner['updatedAt']),
-						'employee' => $ePartner['updatedBy']->getName(),
-					]);
-				$h .= '</li>';
-
-				$h .= '<li>';
-					$h .= s("Note : vous avez utilisé {quotaUsed} Mo sur votre quota de {quotaTotal} Mo sur votre compte Dropbox", [
-						'quotaUsed' => number_format($quotaUsed, decimal_separator: ',', thousands_separator: ' '),
-						'quotaTotal' => number_format($quotaTotal, decimal_separator: ',', thousands_separator: ' '),
-					]);
-				$h .= '</li>';
-
-			$h .= '</ul>';
-
-			$h .= '<a data-ajax="/'.$eFarm['id'].'/account/dropbox:revoke" class="btn btn-primary">'.s("Révoquer l'accès à Dropbox").'</a>';
+			$h .= '<a href="" class="btn btn-primary disabled">'.s("Autoriser {siteName} à accéder à Dropbox (désactivé sur la démo)").'</a>';
 
 		} else {
 
-			if($ePartner->notEmpty()) {
+			if($ePartner->isValid()) {
+
+				[$quotaUsed, $quotaTotal] = $partnerData['quota'];
 
 				$h .= '<ul style="list-style-type: disclosure-closed">';
 
 					$h .= '<li>';
-						$h .= s("L'accès au compte Dropbox de votre ferme a été révoqué ou a expiré. Cliquez sur le lien ci-dessous pour le remettre en place :");
+						$h .= s("<b>{employee}</b> a autorisé {siteName} à accéder au compte Dropbox de votre ferme le <b>{date}</b>.", [
+							'date' => \util\DateUi::numeric($ePartner['updatedAt']),
+							'employee' => $ePartner['updatedBy']->getName(),
+						]);
+					$h .= '</li>';
+
+					$h .= '<li>';
+						$h .= s("Note : vous avez utilisé {quotaUsed} Mo sur votre quota de {quotaTotal} Mo sur votre compte Dropbox", [
+							'quotaUsed' => number_format($quotaUsed, decimal_separator: ',', thousands_separator: ' '),
+							'quotaTotal' => number_format($quotaTotal, decimal_separator: ',', thousands_separator: ' '),
+						]);
 					$h .= '</li>';
 
 				$h .= '</ul>';
 
+				$h .= '<a data-ajax="/'.$eFarm['id'].'/account/dropbox:revoke" class="btn btn-primary">'.s("Révoquer l'accès à Dropbox").'</a>';
+
+			} else {
+
+				if($ePartner->notEmpty()) {
+
+					$h .= '<ul style="list-style-type: disclosure-closed">';
+
+						$h .= '<li>';
+							$h .= s("L'accès au compte Dropbox de votre ferme a été révoqué ou a expiré. Cliquez sur le lien ci-dessous pour le remettre en place :");
+						$h .= '</li>';
+
+					$h .= '</ul>';
+
+				}
+
+				$h .= '<a href="'.$partnerData['authorizationUrl'].'" class="btn btn-primary">'.s("Autoriser {siteName} à accéder à Dropbox").'</a>';
+
 			}
 
-			$h .= '<a href="'.$partnerData['authorizationUrl'].'" class="btn btn-primary">'.s("Autoriser {siteName} à accéder à Dropbox").'</a>';
-
 		}
-
 
 		return $h;
 	}

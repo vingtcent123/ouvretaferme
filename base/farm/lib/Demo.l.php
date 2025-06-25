@@ -31,6 +31,7 @@ class DemoLib {
 	];
 
 	const COPY_PROPERTY_EXCLUDE = [
+		'account\Partner' => ['accessToken', 'params'],
 		'user\User' => ['birthdate', 'phone', 'vignette', 'street1', 'street2', 'postcode', 'city'],
 		'series\Repeat' => ['description'],
 		'series\Series' => ['comment'],
