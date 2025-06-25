@@ -675,7 +675,7 @@ class FarmUi {
 			],
 			'analyze-production' => [
 				'icon' => \Asset::icon('bar-chart'),
-				'label' => s("Analyze")
+				'label' => s("Analyse")
 			],
 			'settings-production' => [
 				'icon' => \Asset::icon('gear-fill'),
@@ -695,7 +695,7 @@ class FarmUi {
 			],
 			'analyze-commercialisation' => [
 				'icon' => \Asset::icon('bar-chart'),
-				'label' => s("Analyze")
+				'label' => s("Analyse")
 			],
 			'settings-commercialisation' => [
 				'icon' => \Asset::icon('gear-fill'),
@@ -715,7 +715,7 @@ class FarmUi {
 			],
 			'analyze-accounting' => [
 				'icon' => \Asset::icon('bar-chart'),
-				'label' => s("Analyze")
+				'label' => s("Analyse")
 			],
 			'settings-accounting' => [
 				'icon' => \Asset::icon('gear-fill'),
