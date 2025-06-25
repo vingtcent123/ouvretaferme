@@ -91,7 +91,7 @@ class CompanyLib extends CompanyCrud {
 			\Database::setPackage($package, $base);
 		}
 
-		\Database::addBase($base, 'otf-default');
+		\Database::addBase($base, 'ouvretaferme');
 
 	}
 

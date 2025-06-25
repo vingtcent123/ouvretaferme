@@ -10,7 +10,7 @@ new Page()
 			\company\CompanyLib::connectSpecificDatabaseAndServer($eCompany['farm']);
 
 			$databaseName = \company\CompanyLib::getDatabaseNameFromCompany($eCompany['farm']);
-			\Database::addBase($databaseName, 'otf-default');
+			\Database::addBase($databaseName, 'ouvretaferme');
 
 			$packagesToAdd = [];
 			foreach(\company\CompanyLib::$specificPackages as $package) {
