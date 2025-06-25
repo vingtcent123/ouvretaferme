@@ -221,9 +221,13 @@ class FinancialYearLib extends FinancialYearCrud {
 
 			return self::getById($financialYearId);
 
+		} else if($eFarm->getView('viewAnalyzeAccountingYear') !== NULL) {
+
+			return self::getById($eFarm->getView('viewAnalyzeAccountingYear'));
+
 		} else {
 
-			return self::getById($eFarm->getView('viewAnalyzeAccountingYear')) ?? self::selectDefaultFinancialYear();
+			return self::selectDefaultFinancialYear();
 
 		}
 
