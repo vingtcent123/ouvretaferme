@@ -15,7 +15,18 @@ class DemoLib {
 	];
 
 	const COPY_MODULE_EXCLUDE = [
+		'account\Account',
 		'account\Partner',
+		'account\ThirdParty',
+		'asset\Asset',
+		'asset\Depreciation',
+		'bank\BankAccount',
+		'bank\Cashflow',
+		'bank\Import',
+		'company\Subscription',
+		'company\SubscriptionHistory',
+		'journal\Lettering',
+		'journal\Operation',
 		'farm\Invite',
 		'farm\Tip',
 		'payment\StripeFarm',
@@ -32,7 +43,6 @@ class DemoLib {
 	];
 
 	const COPY_PROPERTY_EXCLUDE = [
-		'account\Partner' => ['accessToken', 'params'],
 		'user\User' => ['birthdate', 'phone', 'vignette', 'street1', 'street2', 'postcode', 'city'],
 		'series\Repeat' => ['description'],
 		'series\Series' => ['comment'],
@@ -46,6 +56,7 @@ class DemoLib {
 
 	public static function rebuild() {
 
+		\company\CompanyLib::connectSpecificDatabaseAndServer(new Farm(['id' => self::COPY_FARM]));
 		// prod instance
 		self::$ms = self::getModules();
 
@@ -265,10 +276,10 @@ class DemoLib {
 				'emailBanner' => NULL,
 				'legalName' => 'GAEC de Démo',
 				'legalEmail' => NULL,
-				'addressStreet1' => NULL,
-				'addressStreet2' => NULL,
-				'addressPostcode' => NULL,
-				'addressCity' => NULL,
+				'legalStreet1' => NULL,
+				'legalStreet2' => NULL,
+				'legalPostcode' => NULL,
+				'legalCity' => NULL,
 				'siret' => NULL,
 				'url' => NULL,
 			]);

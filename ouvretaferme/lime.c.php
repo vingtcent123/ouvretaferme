@@ -78,9 +78,9 @@ switch(LIME_ENV) {
 			'selling' => 'dev_ouvretaferme',
 			'website' => 'dev_ouvretaferme',
 
+			'account' => 'dev_mapetiteferme',
 			'accounting' => 'dev_mapetiteferme',
 			'company' => 'dev_mapetiteferme',
-			'account' => 'dev_mapetiteferme',
 		]);
 
 		break;

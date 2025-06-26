@@ -125,6 +125,7 @@ class PackageLib {
 
 		// Register new package list
 		\Package::setList($list);
+		ksort($list);
 
 		return $list;
 

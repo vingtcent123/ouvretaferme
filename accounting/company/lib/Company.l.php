@@ -97,6 +97,10 @@ class CompanyLib extends CompanyCrud {
 
 	public static function getDatabaseName(\farm\Farm $eFarm): string {
 
+		if(OTF_DEMO) {
+			return 'ouvretaferme';
+		}
+
 		if(LIME_ENV === 'prod') {
 			return'mapetiteferme_'.$eFarm['id'];
 		}
