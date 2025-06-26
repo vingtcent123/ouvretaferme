@@ -317,7 +317,7 @@ abstract class ModuleModel {
 	public function __construct() {
 
 		$this->suffix($this->getPersistentSuffix());
-    $this->base = Database::getBase($this->package);
+		$this->base = Database::getBase($this->package);
 
 	}
 
