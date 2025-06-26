@@ -77,7 +77,7 @@ class FarmTemplate extends MainTemplate {
 
 			foreach($sections as $name => [$icon, $label]) {
 
-				$h .= '<a '.attr('onclick', 'Farm.changeSection(this, "click")').' '.attr('onmouseenter', 'Farm.changeSection(this, "mouseneter", 150)').' onmouseleave="Farm.clearSection(this)" data-section="'.$name.'" class="farm-nav-section farm-nav-section-'.$name.'">';
+				$h .= '<a '.attr('onclick', 'Farm.changeSection(this, "click")').' '.attr('onmouseenter', 'Farm.changeSection(this, "mouseenter", 200)').' onmouseleave="Farm.clearSection(this)" data-section="'.$name.'" class="farm-nav-section farm-nav-section-'.$name.'">';
 					$h .= $icon;
 					$h .= '<span>'.$label.'</span>';
 					$h .= '<span class="farm-nav-section-down">'.Asset::icon('chevron-down').'</span>';

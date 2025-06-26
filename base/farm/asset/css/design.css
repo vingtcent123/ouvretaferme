@@ -95,6 +95,14 @@ a.farm-subnav-item:hover {
 	text-decoration: none;
 }
 
+@media (max-width: 1099px), (max-height: 649px) {
+
+	a.farm-subnav-item:hover {
+		background-color: #0003;
+	}
+
+}
+
 body[data-template^="farm"] header a:hover {
 	color: white;
 }
