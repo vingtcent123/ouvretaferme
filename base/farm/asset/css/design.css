@@ -797,6 +797,10 @@ body[data-template^="farm"] header a:hover {
 		color: white;
 	}
 
+	.farm-breadcrumbs-link {
+		color: white;
+	}
+
 }
 
 .farm-tab-disabled {

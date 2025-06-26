@@ -109,12 +109,12 @@ class FarmUi {
 		return self::url($eFarm).'/analyses/planning'.($year ? '/'.$year : '').($category ? '/'.$category : '');
 	}
 
-	public static function urlCultivation(Farm $eFarm, string $view, ?string $subView = NULL, ?int $season = NULL): string {
+	public static function urlCultivation(Farm $eFarm, string $view, ?string $subView = NULL): string {
 
 		return match($view) {
-			'series' => self::urlCultivationSeries($eFarm, $subView, $season),
-			'forecast' => self::urlCultivationForecast($eFarm, $season),
-			'soil' => self::urlCultivationSoil($eFarm, $subView, $season),
+			'series' => self::urlCultivationSeries($eFarm, $subView),
+			'forecast' => self::urlCultivationForecast($eFarm),
+			'soil' => self::urlCultivationSoil($eFarm, $subView),
 			'sequence' => self::urlCultivationSequences($eFarm)
 		};
 
@@ -644,7 +644,7 @@ class FarmUi {
 		$h = $section['icon'].'  <b>'.$section['label'].'</b>';
 		if($subNav !== NULL) {
 			$h .= '  '.\Asset::icon('chevron-right').'  ';
-			$h .= $this->getCategory($eFarm, $nav, $subNav);
+			$h .= '<a href="'.$this->getCategoryUrl($eFarm, $nav, $subNav).'" class="farm-breadcrumbs-link">'.$this->getCategoryName($eFarm, $nav, $subNav).'</a>';
 		}
 
 		return $h;
@@ -657,6 +657,25 @@ class FarmUi {
 			$h .= '<span class="farm-tab-icon">'.$this->getSection($section)['icon'].'</span>';
 			$h .= '<span class="farm-tab-label">'.$this->getSection($section)['label'].'</span>';
 		$h .= '</'.($link ? 'a' : 'div').'>';
+
+		return $h;
+
+	}
+
+	protected function getSubNav(Farm $eFarm, array $categories, string $section, ?string $subNav): string {
+
+		$h = '<div class="farm-subnav-wrapper">';
+
+			foreach($categories as $name) {
+
+				$h .= '<a href="'.$this->getCategoryUrl($eFarm, $section, $name).'" class="farm-subnav-item '.($name === $subNav ? 'selected' : '').'" data-sub-nav="'.$name.'">';
+					$h .= '<span class="farm-subnav-prefix">'.\Asset::icon('chevron-right').' </span>';
+					$h .= '<span>'.$this-> getCategoryName($eFarm, $section, $name).'</span>';
+				$h .= '</a>';
+
+			}
+
+		$h .= '</div>';
 
 		return $h;
 
@@ -725,7 +744,34 @@ class FarmUi {
 
 	}
 
-	protected function getCategory(Farm $eFarm, string $section, string $name): string {
+	protected function getCategoryUrl(Farm $eFarm, string $section, string $name): string {
+
+		return match($section) {
+
+			'planning' => match($name) {
+				Farmer::DAILY => FarmUi::urlPlanningDaily($eFarm),
+				Farmer::WEEKLY => FarmUi::urlPlanningWeekly($eFarm),
+				Farmer::YEARLY => FarmUi::urlPlanningYear($eFarm)
+			},
+
+			'cultivation' => FarmUi::urlCultivation($eFarm, $name),
+			'analyze-production' => FarmUi::urlAnalyzeProduction($eFarm, $name),
+
+			'selling' => FarmUi::urlSelling($eFarm, $name),
+			'shop' => FarmUi::urlShop($eFarm, $name),
+			'communications' => FarmUi::urlCommunications($eFarm, $name),
+			'analyze-commercialisation' => FarmUi::urlAnalyzeCommercialisation($eFarm, $name),
+
+			'assets' => \company\CompanyUi::urlAsset($eFarm).'/'.$name,
+			'bank' => \company\CompanyUi::urlBank($eFarm).'/'.$name,
+			'journal' => \company\CompanyUi::urlJournal($eFarm).'/'.$name,
+			'analyze-accounting' => \company\CompanyUi::urlOverview($eFarm, $name),
+
+		};
+
+	}
+
+	protected function getCategoryName(Farm $eFarm, string $section, string $name): string {
 
 		return match($section) {
 
@@ -799,8 +845,6 @@ class FarmUi {
 
 	protected function getProductionSection(Farm $eFarm, ?string $nav, ?string $subNav): string {
 
-		$prefix = '<span class="farm-subnav-prefix">'.\Asset::icon('chevron-right').' </span>';
-
 		$h = '';
 
 		if($eFarm->canPlanning()) {
@@ -809,7 +853,7 @@ class FarmUi {
 
 				$h .= $this->getNav('planning', $nav);
 
-				$h .= $this->getPlanningMenu($eFarm, prefix: $prefix, subNav: $subNav);
+				$h .= $this->getPlanningMenu($eFarm, subNav: $subNav);
 
 			$h .= '</div>';
 
@@ -819,7 +863,7 @@ class FarmUi {
 
 			$h .= $this->getNav('cultivation', $nav);
 
-			$h .= $this->getCultivationMenu($eFarm, prefix: $prefix, subNav: $subNav);
+			$h .= $this->getCultivationMenu($eFarm, subNav: $subNav);
 
 		$h .= '</div>';
 
@@ -827,12 +871,10 @@ class FarmUi {
 
 			$h .= $this->getAnalyzeTab(
 				$eFarm,
-				$prefix,
 				$nav,
 				$subNav,
 				'production',
-				self::getAnalyzeProductionCategories($eFarm),
-				fn($view) => FarmUi::urlAnalyzeProduction($eFarm, $view)
+				self::getAnalyzeProductionCategories($eFarm)
 			);
 
 		$h .= '</div>';
@@ -854,8 +896,6 @@ class FarmUi {
 
 	protected function getCommercialisationSection(Farm $eFarm, ?string $nav, ?string $subNav): string {
 
-		$prefix = '<span class="farm-subnav-prefix">'.\Asset::icon('chevron-right').' </span>';
-
 		$h = '';
 
 		if($eFarm->canSelling()) {
@@ -864,7 +904,7 @@ class FarmUi {
 
 				$h .= $this->getNav('selling', $nav);
 
-				$h .= $this->getSellingMenu($eFarm, prefix: $prefix, subNav: $subNav);
+				$h .= $this->getSellingMenu($eFarm, subNav: $subNav);
 
 			$h .= '</div>';
 			$h .= '<div class="farm-nav-shop">';
@@ -873,7 +913,7 @@ class FarmUi {
 
 					$h .= $this->getNav('shop', $nav);
 
-					$h .= $this->getShopMenu($eFarm, prefix: $prefix, subNav: $subNav);
+					$h .= $this->getShopMenu($eFarm, subNav: $subNav);
 
 				} else {
 
@@ -885,7 +925,7 @@ class FarmUi {
 			$h .= '<div class="farm-nav-communication">';
 
 				$h .= $this->getNav('communications', $nav);
-				$h .= $this->getCommunicationsMenu($eFarm, prefix: $prefix, subNav: $subNav);
+				$h .= $this->getCommunicationsMenu($eFarm, subNav: $subNav);
 
 			$h .= '</div>';
 
@@ -895,12 +935,10 @@ class FarmUi {
 
 			$h .= $this->getAnalyzeTab(
 				$eFarm,
-				$prefix,
 				$nav,
 				$subNav,
 				'commercialisation',
-				self::getAnalyzeCommercialisationCategories($eFarm),
-				fn($view) => FarmUi::urlAnalyzeCommercialisation($eFarm, $view)
+				self::getAnalyzeCommercialisationCategories($eFarm)
 		);
 
 		$h .= '</div>';
@@ -920,8 +958,6 @@ class FarmUi {
 
 	protected function getAccountingSection(Farm $eFarm, ?string $nav, ?string $subNav): string {
 
-		$prefix = '<span class="farm-subnav-prefix">'.\Asset::icon('chevron-right').' </span>';
-
 		$h = '';
 
 		if($eFarm->canAccounting()) {
@@ -930,7 +966,7 @@ class FarmUi {
 
 				$h .= $this->getNav('bank', $nav);
 
-				$h .= $this->getBankMenu($eFarm, prefix: $prefix, subNav: $subNav);
+				$h .= $this->getBankMenu($eFarm, subNav: $subNav);
 
 			$h .= '</div>';
 
@@ -938,7 +974,7 @@ class FarmUi {
 
 				$h .= $this->getNav('journal', $nav);
 
-				$h .= $this->getOperationsMenu($eFarm, prefix: $prefix, subNav: $subNav);
+				$h .= $this->getOperationsMenu($eFarm, subNav: $subNav);
 
 			$h .= '</div>';
 
@@ -946,7 +982,7 @@ class FarmUi {
 
 				$h .= $this->getNav('assets', $nav);
 
-				$h .= $this->getAssetsMenu($eFarm, prefix: $prefix, subNav: $subNav);
+				$h .= $this->getAssetsMenu($eFarm, subNav: $subNav);
 
 			$h .= '</div>';
 		}
@@ -955,12 +991,10 @@ class FarmUi {
 
 			$h .= $this->getAnalyzeTab(
 				$eFarm,
-				$prefix,
 				$nav,
 				$subNav,
 				'accounting',
-				self::getAnalyzeAccountingCategories(),
-				fn($view) => \company\CompanyUi::urlOverview($eFarm, $view)
+				self::getAnalyzeAccountingCategories()
 			);
 
 		$h .= '</div>';
@@ -980,7 +1014,7 @@ class FarmUi {
 
 	}
 
-	protected function getAnalyzeTab(Farm $eFarm, string $prefix, ?string $nav, ?string $subNav, string $section, array $categories, \Closure $url): string {
+	protected function getAnalyzeTab(Farm $eFarm, ?string $nav, ?string $subNav, string $section, array $categories): string {
 
 		$h = '';
 
@@ -988,15 +1022,12 @@ class FarmUi {
 
 			$h .= $this->getNav('analyze-'.$section, $nav);
 
-			$h .= '<div class="farm-subnav-wrapper">';
-
-				foreach($categories as $name) {
-					$h .= '<a href="'.$url($name).'" class="farm-subnav-item '.($name === $subNav ? 'selected' : '').'" data-sub-nav="'.$name.'">';
-						$h .= $prefix.'<span>'.$this->getCategory($eFarm, 'analyze-'.$section, $name).'</span>';
-					$h .= '</a>';
-				}
-
-			$h .= '</div>';
+			$h .= $this->getSubNav(
+				$eFarm,
+				$categories,
+				'analyze-'.$section,
+				$subNav
+			);
 
 		} else {
 
@@ -1021,41 +1052,17 @@ class FarmUi {
 	}
 
 	protected function getPlanningCategories(Farm $eFarm, ?string $week = NULL): array {
-
-		$categories = [
-			Farmer::DAILY => [
-				'url' => FarmUi::urlPlanningDaily($eFarm, $week),
-				'label' => $this->getCategory($eFarm, 'planning', Farmer::DAILY)
-			],
-			Farmer::WEEKLY => [
-				'url' => FarmUi::urlPlanningWeekly($eFarm, $week),
-				'label' => $this->getCategory($eFarm, 'planning', Farmer::WEEKLY)
-			],
-			Farmer::YEARLY => [
-				'url' => FarmUi::urlPlanningYear($eFarm),
-				'label' => $this->getCategory($eFarm, 'planning', Farmer::YEARLY)
-			]
-		];
-
-		return $categories;
-
+		return [Farmer::DAILY, Farmer::WEEKLY, Farmer::YEARLY];
 	}
 
-	public function getPlanningMenu(Farm $eFarm, string $prefix = '', ?string $subNav = NULL): string {
+	public function getPlanningMenu(Farm $eFarm, ?string $subNav = NULL): string {
 
-		$h = '<div class="farm-subnav-wrapper">';
-
-			foreach($this->getPlanningCategories($eFarm) as $key => ['url' => $url, 'label' => $label]) {
-
-				$h .= '<a href="'.$url.'" class="farm-subnav-item '.($key === $subNav ? 'selected' : '').'" data-sub-nav="'.$key.'">';
-					$h .= $prefix.'<span>'.$label.'</span>';
-				$h .= '</a>';
-
-			}
-
-		$h .= '</div>';
-
-		return $h;
+		return $this->getSubNav(
+			$eFarm,
+			$this->getPlanningCategories($eFarm),
+			'planning',
+			$subNav
+		);
 
 	}
 
@@ -1114,7 +1121,7 @@ class FarmUi {
 
 		$h = '<div class="util-action">';
 			$h .= '<h1>';
-				$h .= $this->getCategory($eFarm, 'cultivation', 'forecast');
+				$h .= $this->getCategoryName($eFarm, 'cultivation', 'forecast');
 			$h .= '</h1>';
 			$h .=  '<div>';
 				$h .= '<a href="/plant/forecast:create?farm='.$eFarm['id'].'&season='.$selectedSeason.'" class="btn btn-primary">'.\Asset::icon('plus-circle').'<span class="hide-xs-down"> '.s("Ajouter une espèce").'</span></a>';
@@ -1230,21 +1237,14 @@ class FarmUi {
 
 	}
 
-	public function getCultivationMenu(Farm $eFarm, ?int $season = NULL, string $prefix = '', ?string $subNav = NULL): string {
+	public function getCultivationMenu(Farm $eFarm, ?string $subNav = NULL): string {
 
-		$h = '<div class="farm-subnav-wrapper">';
-
-			foreach($this->getCultivationCategories($eFarm) as $name) {
-
-				$h .= '<a href="'.FarmUi::urlCultivation($eFarm, $name, season: $season).'" class="farm-subnav-item '.($name === $subNav ? 'selected' : '').'" data-sub-nav="'.$name.'">';
-					$h .= $prefix.'<span>'.$this->getCategory($eFarm, 'cultivation', $name).'</span>';
-				$h .= '</a>';
-
-			}
-
-		$h .= '</div>';
-
-		return $h;
+		return $this->getSubNav(
+			$eFarm,
+			$this->getCultivationCategories($eFarm),
+			'cultivation',
+			$subNav
+		);
 
 	}
 
@@ -1334,21 +1334,14 @@ class FarmUi {
 
 	}
 
-	public function getAssetsMenu(Farm $eFarm, string $prefix = '', ?string $subNav = NULL): string {
+	public function getAssetsMenu(Farm $eFarm, ?string $subNav = NULL): string {
 
-		$h = '<div class="farm-subnav-wrapper">';
-
-			foreach($this->getAssetsCategories() as $name) {
-
-				$h .= '<a href="'.\company\CompanyUi::urlAsset($eFarm).'/'.$name.'" class="farm-subnav-item '.($name === $subNav ? 'selected' : '').'" data-sub-nav="'.$name.'">';
-					$h .= $prefix.'<span>'.$this->getCategory($eFarm, 'assets', $name).'</span>';
-				$h .= '</a>';
-
-			}
-
-		$h .= '</div>';
-
-		return $h;
+		return $this->getSubNav(
+			$eFarm,
+			$this->getAssetsCategories(),
+			'assets',
+			$subNav
+		);
 
 	}
 
@@ -1358,21 +1351,14 @@ class FarmUi {
 
 	}
 
-	public function getOperationsMenu(Farm $eFarm, string $prefix = '', ?string $subNav = NULL): string {
+	public function getOperationsMenu(Farm $eFarm, ?string $subNav = NULL): string {
 
-		$h = '<div class="farm-subnav-wrapper">';
-
-			foreach($this->getOperationsCategories($eFarm) as $name) {
-
-				$h .= '<a href="'.\company\CompanyUi::urlJournal($eFarm).'/'.$name.'" class="farm-subnav-item '.($name === $subNav ? 'selected' : '').'" data-sub-nav="'.$name.'">';
-					$h .= $prefix.'<span>'.$this->getCategory($eFarm, 'journal', $name).'</span>';
-				$h .= '</a>';
-
-			}
-
-		$h .= '</div>';
-
-		return $h;
+		return $this->getSubNav(
+			$eFarm,
+			$this->getOperationsCategories($eFarm),
+			'journal',
+			$subNav
+		);
 
 	}
 
@@ -1395,19 +1381,12 @@ class FarmUi {
 
 	public function getBankMenu(Farm $eFarm, string $prefix = '', ?string $subNav = NULL): string {
 
-		$h = '<div class="farm-subnav-wrapper">';
-
-			foreach($this->getBankCategories() as $name) {
-
-				$h .= '<a href="'.\company\CompanyUi::urlBank($eFarm).'/'.$name.'" class="farm-subnav-item '.($name === $subNav ? 'selected' : '').'" data-sub-nav="'.$name.'">';
-					$h .= $prefix.'<span>'.$this->getCategory($eFarm, 'bank', $name).'</span>';
-				$h .= '</a>';
-
-			}
-
-		$h .= '</div>';
-
-		return $h;
+		return $this->getSubNav(
+			$eFarm,
+			$this->getBankCategories(),
+			'bank',
+			$subNav
+		);
 
 	}
 
@@ -1419,19 +1398,12 @@ class FarmUi {
 
 	public function getSellingMenu(Farm $eFarm, ?int $season = NULL, string $prefix = '', ?string $subNav = NULL): string {
 
-		$h = '<div class="farm-subnav-wrapper">';
-
-			foreach($this->getSellingCategories($eFarm) as $name) {
-
-				$h .= '<a href="'.FarmUi::urlSelling($eFarm, $name).'" class="farm-subnav-item '.($name === $subNav ? 'selected' : '').'" data-sub-nav="'.$name.'">';
-					$h .= $prefix.'<span>'.$this->getCategory($eFarm, 'selling', $name).'</span>';
-				$h .= '</a>';
-
-			}
-
-		$h .= '</div>';
-
-		return $h;
+		return $this->getSubNav(
+			$eFarm,
+			$this->getSellingCategories($eFarm),
+			'selling',
+			$subNav
+		);
 
 	}
 
@@ -1502,25 +1474,18 @@ class FarmUi {
 		];
 	}
 
-	public function getShopMenu(Farm $eFarm, string $prefix = '', ?string $subNav = NULL): string {
+	public function getShopMenu(Farm $eFarm, ?string $subNav = NULL): string {
 
-		$h = '<div class="farm-subnav-wrapper">';
-
-			foreach($this->getShopCategories($eFarm) as $name) {
-
-				$h .= '<a href="'.FarmUi::urlShop($eFarm, $name).'" class="farm-subnav-item '.($name === $subNav ? 'selected' : '').'" data-sub-nav="'.$name.'">';
-					$h .= $prefix.'<span>'.$this->getCategory($eFarm, 'shop', $name).'</span>';
-				$h .= '</a>';
-
-			}
-
-		$h .= '</div>';
-
-		return $h;
+		return $this->getSubNav(
+			$eFarm,
+			$this->getShopCategories($eFarm),
+			'shop',
+			$subNav
+		);
 
 	}
 
-	public static function getShopCategories(Farm $eFarm): array {
+	public function getShopCategories(Farm $eFarm): array {
 
 		$categories = ['shop'];
 
@@ -1535,21 +1500,14 @@ class FarmUi {
 
 	}
 
-	public function getCommunicationsMenu(Farm $eFarm, string $prefix = '', ?string $subNav = NULL): string {
+	public function getCommunicationsMenu(Farm $eFarm, ?string $subNav = NULL): string {
 
-		$h = '<div class="farm-subnav-wrapper">';
-
-			foreach($this->getCommunicationsCategories($eFarm) as $name) {
-
-				$h .= '<a href="'.FarmUi::urlCommunications($eFarm, $name).'" class="farm-subnav-item '.($name === $subNav ? 'selected' : '').'" data-sub-nav="'.$name.'">';
-					$h .= $prefix.'<span>'.$this->getCategory($eFarm, 'communications', $name).'</span>';
-				$h .= '</a>';
-
-			}
-
-		$h .= '</div>';
-
-		return $h;
+		return $this->getSubNav(
+			$eFarm,
+			$this->getCommunicationsCategories($eFarm),
+			'communications',
+			$subNav
+		);
 
 	}
 
