@@ -866,5 +866,20 @@ class OperationLib extends OperationCrud {
 			->getCollection();
 
 	}
+
+	// TODO cron clean invoices tous les jours
+	public static function readInvoice(string $tmpFilename): array {
+
+		$hash = \media\UtilLib::generateHash();
+		$localFilename = 'tmp-invoice/'.date('Y-m-d-').$hash;
+
+		// Copie du fichier
+		\storage\DriverLib::sendBinary(file_get_contents($tmpFilename), $localFilename);
+
+		// Lecture sur Mindee
+		$invoiceData = \company\MindeeLib::getInvoiceData(\storage\DriverLib::getFileName($localFilename));
+
+		return ['invoiceData' => $invoiceData, 'filename' => $localFilename];
+	}
 }
 ?>

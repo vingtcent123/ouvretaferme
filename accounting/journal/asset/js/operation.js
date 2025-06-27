@@ -185,6 +185,10 @@ class Operation {
 
         qs('#create-operation-list').setAttribute('data-columns', operations);
 
+        if(operations > 1) {
+
+        }
+
         Operation.updateSingularPluralText();
 
     }
@@ -469,5 +473,13 @@ class Operation {
 
         return !qs('[data-wrapper="' + type + '[' + index + ']"] .merchant-lock').classList.contains('hide');
 
+    }
+
+    static openInvoiceFileForm() {
+        qs('#read-invoice input[type="file"]').click();
+    }
+
+    static submitReadInvoice() {
+        qs('#read-invoice-submit').click();
     }
 }

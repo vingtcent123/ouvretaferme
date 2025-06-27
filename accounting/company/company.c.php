@@ -11,5 +11,6 @@ Setting::register('company', [
 		\company\SubscriptionElement::SALES => 200,
 	],
 	'subscriptionPackPrice' => 300,
+	'mindeeApiKey' => '',
 ]);
 ?>

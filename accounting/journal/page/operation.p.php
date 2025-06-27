@@ -56,6 +56,12 @@ new \journal\OperationPage(
 		throw new ViewAction($data);
 
 	})
+	->post('doReadInvoice', function($data) {
+
+		$invoiceData = \journal\OperationLib::readInvoice($_FILES['invoice']['tmp_name']);
+		dd($invoiceData);
+
+	})
 	->post('addOperation', function($data) {
 
 		$data->index = POST('index');

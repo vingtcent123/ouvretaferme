@@ -165,16 +165,32 @@ class OperationUi {
 
 	}
 
-	public function create(\farm\Farm $eFarm, Operation $eOperation, \account\FinancialYear $eFinancialYear): \Panel {
+	public function create(\farm\Farm $eFarm, Operation $eOperation, \account\FinancialYear $eFinancialYear, ?string $invoice = NULL): \Panel {
 
 		\Asset::css('journal', 'operation.css');
 		\Asset::js('journal', 'operation.js');
 		\Asset::js('journal', 'asset.js');
 		\Asset::js('account', 'thirdParty.js');
 
+		$dialogOpen = '';
+
+		if(FEATURE_MINDEE) {
+
+			$invoiceFileForm = new \util\FormUi();
+
+			$importButton = $invoiceFileForm->openAjax(\company\CompanyUi::urlJournal($eFarm).'/operation:doReadInvoice', ['id' => 'read-invoice', 'binary' => TRUE, 'method' => 'post']);
+				$importButton .= $invoiceFileForm->hidden('farm', $eFarm['id']);
+					$importButton .= $invoiceFileForm->file('invoice', ['onchange' => 'Operation.submitReadInvoice();', 'accept' => 'image/*,.pdf']);
+					$importButton .= $invoiceFileForm->submit(s("Envoyer la facture"), ['class' => 'hide', 'id' => 'read-invoice-submit']);
+			$importButton .= $invoiceFileForm->close();
+
+			$dialogOpen .= $importButton;
+
+		}
+
 		$form = new \util\FormUi();
 
-		$dialogOpen = $form->openAjax(
+		$dialogOpen .= $form->openAjax(
 			\company\CompanyUi::urlJournal($eFarm).'/operation:doCreate',
 			[
 				'id' => 'journal-operation-create',
@@ -183,15 +199,31 @@ class OperationUi {
 			],
 		);
 
-		$h = $form->hidden('company', $eFarm['id']);
+		$h = '';
 
-		$index = 0;
-		$defaultValues = $eOperation->getArrayCopy();
+		$h .= '<div>';
 
-		$h .= self::getCreateGrid($eFarm, $eOperation, $eFinancialYear, $index, $form, $defaultValues);
+			$h .= '<div>';
+
+				$h .= $form->hidden('company', $eFarm['id']);
+
+				$index = 0;
+				$defaultValues = $eOperation->getArrayCopy();
+
+				$h .= self::getCreateGrid($eFarm, $eOperation, $eFinancialYear, $index, $form, $defaultValues);
+			$h .= '</div>';
+
+			if($invoice) {
+
+				$h .= '<div>';
+					$h .= '<img src="data:image/pdf;base64,'.base64_encode($invoice).'" />';
+				$h .= '</div>';
+			}
+
+		$h .= '</div>';
 
 		$addButton = '<a id="add-operation" data-ajax="'.\company\CompanyUi::urlJournal($eFarm).'/operation:addOperation" post-index="'.($index + 1).'" post-amount="" post-third-party="" class="btn btn-outline-secondary">';
-		$addButton .= \Asset::icon('plus-circle').'&nbsp;'.s("Ajouter une autre écriture");
+			$addButton .= \Asset::icon('plus-circle').'&nbsp;'.s("Ajouter une autre écriture");
 		$addButton .= '</a>';
 
 		$saveButton = $form->submit(
@@ -207,6 +239,18 @@ class OperationUi {
 
 		$dialogClose = $form->close();
 
+		$footer = '<div class="create-operation-buttons">'
+			.'<div class="import-invoice-button">';
+				if(FEATURE_MINDEE) {
+					$footer .= '<label class="btn btn-outline-secondary" onclick="Operation.openInvoiceFileForm();">'
+							.s("Importer une facture")
+						.'</label>';
+
+				}
+			$footer .= '</div>'
+			.'<div class="create-operation-button-add">'.$addButton.$saveButton.'</div>'
+		.'</div>';
+
 		$defaultTitle = s("Ajouter une écriture");
 		return new \Panel(
 			id: 'panel-journal-operation-create',
@@ -214,7 +258,7 @@ class OperationUi {
 			dialogOpen: $dialogOpen,
 			dialogClose: $dialogClose,
 			body: $h,
-			footer: '<div class="create-operation-buttons">'.$addButton.$saveButton.'</div>',
+			footer: $footer,
 		);
 
 	}

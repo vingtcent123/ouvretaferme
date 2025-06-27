@@ -103,6 +103,10 @@
 }
 .create-operation-buttons {
     display: flex;
+    justify-content: space-between;
+}
+.create-operation-button-add {
+    display: flex;
     justify-content: end;
     gap: 1rem;
 }

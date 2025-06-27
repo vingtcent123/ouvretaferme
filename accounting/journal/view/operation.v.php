@@ -4,6 +4,12 @@ new AdaptativeView('create', function($data, PanelTemplate $t) {
 		return new \journal\OperationUi()->create($data->eFarm, $data->e, $data->eFinancialYear);
 
 });
+
+new AdaptativeView('createFromInvoice', function($data, PanelTemplate $t) {
+
+		return new \journal\OperationUi()->create($data->eFarm, $data->e, $data->eFinancialYear, $data->invoiceFile);
+
+});
 new AdaptativeView('createPayment', function($data, PanelTemplate $t) {
 
 		return new \journal\OperationUi()->createPayment($data->eFarm, $data->e, $data->cBankAccount);
