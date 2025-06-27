@@ -99,7 +99,7 @@ class Farm extends FarmElement {
 	}
 
 	public function hasAccounting(): bool {
-		return (FEATURE_ACCOUNTING or $this['id'] === 7); // Jardins de Tallende
+		return (!OTF_DEMO and (FEATURE_ACCOUNTING or $this['id'] === 7)); // Jardins de Tallende
 	}
 
 	// Peut accéder aux pages d'analyse des données
