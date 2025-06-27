@@ -476,10 +476,64 @@ class Operation {
     }
 
     static openInvoiceFileForm() {
+
+        const columns = qs('#create-operation-list').getAttribute('data-columns');
+
+        if(columns > 1) {
+            return false;
+        }
+
+        qs('#read-invoice input[name="columns"]').setAttribute('value', columns);
         qs('#read-invoice input[type="file"]').click();
     }
 
     static submitReadInvoice() {
         qs('#read-invoice-submit').click();
+    }
+
+    static deactivateInvoiceImport() {
+
+        qs('.import-invoice-button > label').classList.add('disabled');
+        qs('.import-invoice-button > label').setAttribute('onclick', 'void(0);');
+
+    }
+
+    static selectAccount(index, accountId, vatRate) {
+
+        new Ajax.Query()
+          .url('/' + qs('input[name="company"]').getAttribute('value') + '/journal/operation:selectAccount')
+          .method('post')
+          .body({
+              index, account: accountId, vatRate
+          })
+          .fetch();
+    }
+
+    static prefillThirdParty(index, id, name, vatNumber) {
+
+        if(id !== null) {
+
+            new Ajax.Query()
+              .url('/' + qs('input[name="company"]').getAttribute('value') + '/journal/operation:selectThirdParty')
+              .method('post')
+              .body({
+                  index, thirdParty: id,
+                  name, vatNumber
+              })
+              .fetch();
+
+        } else {
+
+            qs('input[data-third-party][data-index="' + index + '"]').setAttribute('value', name);
+            qs('input[name="thirdPartyName[' + index + ']"]').setAttribute('value', name);
+            qs('input[name="thirdPartyVatNumber[' + index + ']"]').setAttribute('value', vatNumber);
+
+            const autocompleteId = qs('input[data-third-party][data-index="' + index + '"]').getAttribute('id');
+            qs('input[data-third-party][data-index="' + index + '"]').focus();
+
+            AutocompleteField.start(qs('#'+ autocompleteId));
+
+        }
+
     }
 }

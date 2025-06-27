@@ -1,9 +1,6 @@
 <?php
 namespace journal;
 
-use account\ThirdPartyLib;
-use account\ThirdPartyUi;
-
 class OperationLib extends OperationCrud {
 
 	public static function getPropertiesCreate(): array {
@@ -228,7 +225,7 @@ class OperationLib extends OperationCrud {
 		$eOperation->build(['thirdParty', 'amount', 'paymentDate'], $input);
 
 		$fw->validate();
-		$eOperation['thirdParty'] = ThirdPartyLib::getById($eOperation['thirdParty']['id']);
+		$eOperation['thirdParty'] = \account\ThirdPartyLib::getById($eOperation['thirdParty']['id']);
 
 		if(mb_strpos($paymentType, 'client') !== FALSE) {
 
@@ -237,9 +234,9 @@ class OperationLib extends OperationCrud {
 
 			if($eOperation['thirdParty']['clientAccountLabel'] === NULL) {
 
-				$nextLabel = ThirdPartyLib::getNextThirdPartyAccountLabel('clientAccountLabel',\Setting::get('account\thirdAccountClientReceivableClass'));
+				$nextLabel = \account\ThirdPartyLib::getNextThirdPartyAccountLabel('clientAccountLabel',\Setting::get('account\thirdAccountClientReceivableClass'));
 				$eOperation['thirdParty']['clientAccountLabel'] = $nextLabel;
-				ThirdPartyLib::update($eOperation['thirdParty'], ['clientAccountLabel']);
+				\account\ThirdPartyLib::update($eOperation['thirdParty'], ['clientAccountLabel']);
 				$accountLabel = $nextLabel;
 
 			} else {
@@ -255,9 +252,9 @@ class OperationLib extends OperationCrud {
 
 			if($eOperation['thirdParty']['supplierAccountLabel'] === NULL) {
 
-				$nextLabel = ThirdPartyLib::getNextThirdPartyAccountLabel('supplierAccountLabel',\Setting::get('account\thirdAccountSupplierDebtClass'));
+				$nextLabel = \account\ThirdPartyLib::getNextThirdPartyAccountLabel('supplierAccountLabel',\Setting::get('account\thirdAccountSupplierDebtClass'));
 				$eOperation['thirdParty']['supplierAccountLabel'] = $nextLabel;
-				ThirdPartyLib::update($eOperation['thirdParty'], ['supplierAccountLabel']);
+				\account\ThirdPartyLib::update($eOperation['thirdParty'], ['supplierAccountLabel']);
 				$accountLabel = $nextLabel;
 
 			} else {
@@ -282,7 +279,7 @@ class OperationLib extends OperationCrud {
 		$eOperation['date'] = $eOperation['paymentDate'];
 		$eOperation['type'] = $type;
 
-		$eOperation['description'] = new ThirdPartyUi()->getOperationDescription($eOperation['thirdParty'], $thirdPartyType);
+		$eOperation['description'] = new \account\ThirdPartyUi()->getOperationDescription($eOperation['thirdParty'], $thirdPartyType);
 
 		$cOperation->append($eOperation);
 		Operation::model()->insert($eOperation);
@@ -350,10 +347,30 @@ class OperationLib extends OperationCrud {
 
 
 			$thirdParty = $input['thirdParty'][$index] ?? null;
+
 			if($thirdParty !== null) {
+
 				$eOperation['thirdParty'] = \account\ThirdPartyLib::getById($thirdParty);
+
+				// Vérifier si on doit enregistrer des données supplémentaires
+				if($eOperation['thirdParty']['vatNumber'] === NULL and ($input['thirdPartyVatNumber'][$index] ?? NULL) !== NULL) {
+					$eOperation['thirdParty']['vatNumber'] = rtrim(trim($input['thirdPartyVatNumber'][$index]));
+				}
+
+				if(($input['thirdPartyName'][$index] ?? NULL) !== NULL and ($eOperation['thirdParty']['names'] === NULL or mb_strpos($eOperation['thirdParty']['names'], $input['thirdPartyName'][$index]) !== FALSE)) {
+					if($eOperation['thirdParty']['names'] === NULL) {
+						$eOperation['thirdParty']['names'] = rtrim(trim($input['thirdPartyName'][$index]));
+					} else {
+						$eOperation['thirdParty']['names'] .= '|'.rtrim(trim($input['thirdPartyName'][$index]));
+					}
+				}
+
+				\account\ThirdPartyLib::update($eOperation['thirdParty'], ['vatNumber', 'names']);
+
 			} else {
+
 				$eOperation['thirdParty'] = new \account\ThirdParty();
+
 			}
 
 			foreach(['date', 'document', 'documentDate', 'thirdParty'] as $property) {
@@ -361,8 +378,6 @@ class OperationLib extends OperationCrud {
 					$eOperationDefault[$property] = $eOperation[$property];
 				}
 			}
-
-			$eOperation['journalCode'] = \account\AccountLib::getJournalCodeByClass($eOperation['accountLabel']);
 
 			// Ce type d'écriture a un compte de TVA correspondant
 			$eAccount = $cAccounts[$account] ?? new \account\Account();
@@ -381,6 +396,8 @@ class OperationLib extends OperationCrud {
 			}
 
 			$fw->validate();
+
+			$eOperation['journalCode'] = \account\AccountLib::getJournalCodeByClass($eOperation['accountLabel']);
 
 			// Class 2 => Vérification et création de l'immobilisation
 			$eAsset = \asset\AssetLib::prepareAsset($eOperation, $input['asset'][$index] ?? [], $index);
@@ -424,14 +441,14 @@ class OperationLib extends OperationCrud {
 				// Classe 6 => Fournisseur
 				if($isChargeOperation) {
 
-					$description = new ThirdPartyUi()->getOperationDescription($eThirdParty, 'supplier');
+					$description = new \account\ThirdPartyUi()->getOperationDescription($eThirdParty, 'supplier');
 					$eAccountThirdParty = \account\AccountLib::getByClass(\Setting::get('account\thirdAccountClientReceivableClass'));
 
 					if($eThirdParty['supplierAccountLabel'] === NULL) {
 
-						$accountLabel = ThirdPartyLib::getNextThirdPartyAccountLabel('supplierAccountLabel', \Setting::get('account\thirdAccountSupplierDebtClass'));
+						$accountLabel = \account\ThirdPartyLib::getNextThirdPartyAccountLabel('supplierAccountLabel', \Setting::get('account\thirdAccountSupplierDebtClass'));
 						$eThirdParty['supplierAccountLabel'] = $accountLabel;
-						ThirdPartyLib::update($eThirdParty, ['supplierAccountLabel']);
+						\account\ThirdPartyLib::update($eThirdParty, ['supplierAccountLabel']);
 
 					} else {
 
@@ -442,14 +459,14 @@ class OperationLib extends OperationCrud {
 					// Classe 7 => Client
 				} else if($isProductOperation) {
 
-					$description = new ThirdPartyUi()->getOperationDescription($eThirdParty, 'client');
+					$description = new \account\ThirdPartyUi()->getOperationDescription($eThirdParty, 'client');
 					$eAccountThirdParty = \account\AccountLib::getByClass(\Setting::get('account\thirdAccountClientReceivableClass'));
 
 					if($eThirdParty['clientAccountLabel'] === NULL) {
 
-						$accountLabel = ThirdPartyLib::getNextThirdPartyAccountLabel('clientAccountLabel', \Setting::get('account\thirdAccountClientReceivableClass'));
+						$accountLabel = \account\ThirdPartyLib::getNextThirdPartyAccountLabel('clientAccountLabel', \Setting::get('account\thirdAccountClientReceivableClass'));
 						$eThirdParty['clientAccountLabel'] = $accountLabel;
-						ThirdPartyLib::update($eThirdParty, ['clientAccountLabel']);
+						\account\ThirdPartyLib::update($eThirdParty, ['clientAccountLabel']);
 
 					} else {
 
@@ -867,19 +884,50 @@ class OperationLib extends OperationCrud {
 
 	}
 
+	private static function getExtension(string $mimeType): ?string {
+
+		return match($mimeType) {
+			'image/jpeg' => 'jpeg',
+			'image/png' => 'png',
+			'image/gif' => 'gif',
+			'application/pdf' => 'pdf',
+			default => null,
+		};
+
+	}
+
 	// TODO cron clean invoices tous les jours
-	public static function readInvoice(string $tmpFilename): array {
+	public static function readInvoice(\farm\Farm $eFarm, array $file): array {
 
 		$hash = \media\UtilLib::generateHash();
-		$localFilename = 'tmp-invoice/'.date('Y-m-d-').$hash;
+		$extension = self::getExtension($file['type']);
+		if($extension === NULL) {
+			\Fail::log('Operation::invoice.unknownExtension');
+			return [];
+		}
+		$localFilename = date('Y-m-d-').$hash.'.pdf';
 
 		// Copie du fichier
-		\storage\DriverLib::sendBinary(file_get_contents($tmpFilename), $localFilename);
+		\storage\DriverLib::sendBinary(file_get_contents($file['tmp_name']), 'tmp-invoice/'.$localFilename);
 
 		// Lecture sur Mindee
-		$invoiceData = \company\MindeeLib::getInvoiceData(\storage\DriverLib::getFileName($localFilename));
+		$operation = \company\MindeeLib::getInvoiceData($eFarm, \storage\DriverLib::getFileName($localFilename));
 
-		return ['invoiceData' => $invoiceData, 'filename' => $localFilename];
+		// Récupération du tiers
+		$operation['eThirdParty'] = \account\ThirdPartyLib::selectFromOcrData($operation['thirdParty']);
+
+		if(count($operation['shipping']) > 0) {
+			$operation['shipping']['account'] = \account\AccountLib::getByClass(\Setting::get('account\shippingChargeAccountClass'));
+			if($operation['shipping']['vatRate'] !== NULL) {
+				$operation['shipping']['account']['vatRate'] = $operation['shipping']['vatRate'];
+			}
+		}
+
+		$operation['mimetype'] = $file['type'];
+		$operation['filename'] = $localFilename;
+		$operation['filepath'] = \storage\DriverLib::getFileName('tmp-invoice/'.$localFilename);
+
+		return $operation;
 	}
 }
 ?>

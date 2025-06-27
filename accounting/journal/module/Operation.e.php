@@ -100,6 +100,26 @@ class Operation extends OperationElement {
 
 				return $eCashflow->exists();
 
+			})
+			->setCallback('paymentDate.empty', function(?string $paymentDate): bool {
+
+				$eCompany = \company\CompanyLib::getCurrent();
+
+				if($eCompany->isAccrualAccounting()) {
+					return TRUE;
+				}
+
+				return $paymentDate !== NULL;
+			})
+			->setCallback('paymentMode.empty', function(?string $paymentDate): bool {
+
+				$eCompany = \company\CompanyLib::getCurrent();
+
+				if($eCompany->isAccrualAccounting()) {
+					return TRUE;
+				}
+
+				return $paymentDate !== NULL;
 			});
 
 		parent::build($properties, $input, $p);

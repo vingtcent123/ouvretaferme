@@ -40,10 +40,12 @@ class ThirdPartyModel extends \ModuleModel {
 			'name' => ['text8', 'min' => 1, 'max' => NULL, 'collate' => 'general', 'unique' => TRUE, 'cast' => 'string'],
 			'clientAccountLabel' => ['text8', 'min' => 1, 'max' => NULL, 'collate' => 'general', 'null' => TRUE, 'cast' => 'string'],
 			'supplierAccountLabel' => ['text8', 'min' => 1, 'max' => NULL, 'collate' => 'general', 'null' => TRUE, 'cast' => 'string'],
+			'vatNumber' => ['text8', 'null' => TRUE, 'cast' => 'string'],
+			'names' => ['text16', 'null' => TRUE, 'cast' => 'string'],
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'name', 'clientAccountLabel', 'supplierAccountLabel'
+			'id', 'name', 'clientAccountLabel', 'supplierAccountLabel', 'vatNumber', 'names'
 		]);
 
 		$this->uniqueConstraints = array_merge($this->uniqueConstraints, [
@@ -74,6 +76,14 @@ class ThirdPartyModel extends \ModuleModel {
 
 	public function whereSupplierAccountLabel(...$data): ThirdPartyModel {
 		return $this->where('supplierAccountLabel', ...$data);
+	}
+
+	public function whereVatNumber(...$data): ThirdPartyModel {
+		return $this->where('vatNumber', ...$data);
+	}
+
+	public function whereNames(...$data): ThirdPartyModel {
+		return $this->where('names', ...$data);
 	}
 
 

@@ -145,6 +145,9 @@
     text-decoration: none;
 }
 
+#create-operation-list {
+    flex: 1;
+}
 #create-operation-list .create-operation-headers,
 #create-operation-list .create-operation-validation {
     background-color: transparent !important;
@@ -169,6 +172,18 @@
     flex-direction: row;
     justify-content: space-between;
     font-size: 1.3rem;
+}
+
+.invoice-preview {
+    width: 500px;
+}
+.invoice-preview embed {
+    height: 730px;
+    width: 500px;
+}
+.invoice-preview img {
+    max-height: 730px;
+    max-width: 500px;
 }
 
 .field-radio-group.payment-type-radio > label:hover {

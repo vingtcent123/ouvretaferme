@@ -28,6 +28,24 @@ class ThirdPartyLib extends ThirdPartyCrud {
 
 	}
 
+	public static function getByVatNumber(string $vatNumber): ThirdParty|\Element {
+
+		return ThirdParty::model()
+	    ->select(ThirdParty::getSelection())
+	    ->whereVatNumber('=', $vatNumber)
+	    ->get();
+
+	}
+
+	public static function getByNames(string $name): ThirdParty|\Element {
+
+		return ThirdParty::model()
+	    ->select(ThirdParty::getSelection())
+	    ->whereNames('LIKE', '%'.$name.'%')
+	    ->get();
+
+	}
+
 	public static function filterByCashflow(\Collection $cThirdParty, \bank\Cashflow $eCashflow): \Collection {
 
 		$memoItems = explode(' ', $eCashflow['memo']);
@@ -64,6 +82,26 @@ class ThirdPartyLib extends ThirdPartyCrud {
 		}
 
 		return (int)$eThirdParty[$field] + 1;
+
+	}
+
+	public static function selectFromOcrData(array $data): ThirdParty {
+
+		$eThirdParty = new \account\ThirdParty();
+
+		if($data['vatNumber']) {
+
+			$eThirdParty = self::getByVatNumber($data['vatNumber']);
+
+		}
+
+		if($eThirdParty->notEmpty()) {
+			return $eThirdParty;
+		}
+
+		$eThirdParty = self::getByNames($data['name']);
+
+		return $eThirdParty;
 
 	}
 

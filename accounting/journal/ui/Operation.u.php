@@ -178,10 +178,11 @@ class OperationUi {
 
 			$invoiceFileForm = new \util\FormUi();
 
-			$importButton = $invoiceFileForm->openAjax(\company\CompanyUi::urlJournal($eFarm).'/operation:doReadInvoice', ['id' => 'read-invoice', 'binary' => TRUE, 'method' => 'post']);
+			$importButton = $invoiceFileForm->openAjax(\company\CompanyUi::urlJournal($eFarm).'/operation:readInvoice', ['id' => 'read-invoice', 'binary' => TRUE, 'method' => 'post']);
 				$importButton .= $invoiceFileForm->hidden('farm', $eFarm['id']);
-					$importButton .= $invoiceFileForm->file('invoice', ['onchange' => 'Operation.submitReadInvoice();', 'accept' => 'image/*,.pdf']);
-					$importButton .= $invoiceFileForm->submit(s("Envoyer la facture"), ['class' => 'hide', 'id' => 'read-invoice-submit']);
+				$importButton .= $invoiceFileForm->hidden('columns', 1);
+				$importButton .= $invoiceFileForm->file('invoice', ['onchange' => 'Operation.submitReadInvoice();', 'accept' => 'image/*,.pdf']);
+				$importButton .= $invoiceFileForm->submit(s("Envoyer la facture"), ['class' => 'hide', 'id' => 'read-invoice-submit']);
 			$importButton .= $invoiceFileForm->close();
 
 			$dialogOpen .= $importButton;
@@ -203,7 +204,7 @@ class OperationUi {
 
 		$h .= '<div>';
 
-			$h .= '<div>';
+			$h .= '<div style="display: flex;">';
 
 				$h .= $form->hidden('company', $eFarm['id']);
 
@@ -211,14 +212,13 @@ class OperationUi {
 				$defaultValues = $eOperation->getArrayCopy();
 
 				$h .= self::getCreateGrid($eFarm, $eOperation, $eFinancialYear, $index, $form, $defaultValues);
-			$h .= '</div>';
 
-			if($invoice) {
-
-				$h .= '<div>';
-					$h .= '<img src="data:image/pdf;base64,'.base64_encode($invoice).'" />';
+				$h .= '<div class="invoice-preview hide">';
+					$h .= '<embed class="hide"/>';
+					$h .= '<img class="hide"/>';
+					$h .= $form->hidden('invoiceFile', '');
 				$h .= '</div>';
-			}
+			$h .= '</div>';
 
 		$h .= '</div>';
 
@@ -549,7 +549,7 @@ class OperationUi {
 
 				$h .= '<div data-wrapper="paymentMode'.$suffix.'">';
 					$h .= $form->select(
-						'paymentMode',
+						'paymentMode'.$suffix,
 						\journal\OperationUi::p('paymentMode')->values,
 						$defaultValues['paymentMode'] ?? '',
 						['mandatory' => $eFarm['company']->isCashAccounting()],
@@ -720,6 +720,10 @@ class OperationUi {
 				$d->autocompleteBody = function(\util\FormUi $form, Operation $e) {
 					return [
 					];
+				};
+				$d->after = function(\util\FormUi $form, Operation $e, string $property, string $field, array $attributes) {
+					return $form->hidden('thirdPartyVatNumber['.$attributes['data-index'].']')
+						.$form->hidden('thirdPartyName['.$attributes['data-index'].']');
 				};
 				new ThirdPartyUi()->query($d, GET('farm', '?int'));
 				break;

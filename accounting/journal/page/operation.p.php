@@ -56,10 +56,41 @@ new \journal\OperationPage(
 		throw new ViewAction($data);
 
 	})
-	->post('doReadInvoice', function($data) {
+	->post('readInvoice', function($data) {
 
-		$invoiceData = \journal\OperationLib::readInvoice($_FILES['invoice']['tmp_name']);
-		dd($invoiceData);
+		if(POST('columns', 'int', NULL) !== 1) {
+			throw new NotExpectedAction('Impossible to read an invoice when there are more than 1 operation in form.');
+		}
+
+		$fw = new FailWatch();
+
+		$data->operation = \journal\OperationLib::readInvoice($data->eFarm, $_FILES['invoice']);
+		$data->eFinancialYear = \account\FinancialYearLib::selectDefaultFinancialYear();
+
+		$fw->validate();
+
+		throw new ViewAction($data);
+
+	})
+	->post('selectAccount', function($data) {
+
+		$data->index = POST('index');
+		$vatRate = POST('vatRate', 'float');
+		$data->eAccount = \account\AccountLib::getById(POST('account'));
+
+		if($vatRate !== NULL) {
+			$data->eAccount['vatRate'] = $vatRate;
+		}
+
+		throw new ViewAction($data);
+
+	})
+	->post('selectThirdParty', function($data) {
+
+		$data->index = POST('index');
+		$data->eThirdParty = \account\ThirdPartyLib::getById(POST('thirdParty'));
+
+		throw new ViewAction($data);
 
 	})
 	->post('addOperation', function($data) {
@@ -82,7 +113,7 @@ new \journal\OperationPage(
 		$accounts = post('account', 'array', []);
 
 		if(count($accounts) === 0) {
-			Fail::log('Operation::allocate.accountsCheck');
+			\Fail::log('Operation::allocate.accountsCheck');
 		}
 
 		$cOperation = \journal\OperationLib::prepareOperations($_POST, new \journal\Operation());

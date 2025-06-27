@@ -44,6 +44,8 @@ ThirdParty:
   name: text8(1, null) @collate(general)
   clientAccountLabel: ?text8(1, null) @collate(general)
   supplierAccountLabel: ?text8(1, null) @collate(general)
+  vatNumber: ?text8
+  names: ?text16 # Quels autres noms récupère-t-on de ce tiers (sur les factures ou autres docs) ?
   UNIQUE: [
     ["name"]
   ]

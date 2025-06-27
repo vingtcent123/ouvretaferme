@@ -27,6 +27,9 @@ class AlertUi {
 			'Operation::account.check' => s("N'oubliez pas de choisir une classe de compte !"),
 			'Operation::accountLabel.inconsistency' => s("Le compte doit commencer par les mêmes chiffres que la classe de compte."),
 
+			'Operation::invoice.incorrectType' => s("Le fichier n'est pas reconnu comme une facture. Vous pouvez effectuer la saisie manuellement ou réessayer."),
+			'Operation::invoice.unknownExtension' => s("Le format du fichier n'est pas reconnu, veuillez essayer avec un autre fichier ou faire une saisie manuelle."),
+
 			default => null
 
 		};
