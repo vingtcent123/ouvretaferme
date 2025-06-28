@@ -36,7 +36,7 @@ class FarmerUi {
 
 					$h .= '</div>';
 					$h .= '<div class="farmer-farms-item-buttons">';
-						$h .= '<a href="'.OTF_DEMO_URL.'/ferme/'.\farm\Farm::DEMO.'/series?view=area" class="btn btn-outline-primary">'.s("Aller sur la démo").'</a>';
+						$h .= '<a href="'.OTF_DEMO_URL.'/ferme/'.\farm\Farm::DEMO.'/series?view=area" class="btn btn-primary">'.s("Aller sur la démo").'</a>';
 					$h .= '</div>';
 
 				$h .= '</div>';

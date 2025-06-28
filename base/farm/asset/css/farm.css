@@ -85,6 +85,11 @@ div.farmer-farms-item-buttons {
 	gap: 0.5rem;
 }
 
+div.farmer-farms-item-buttons svg {
+	font-size: 1.2rem;
+	margin-bottom: 0.5rem;
+}
+
 /* Farm update */
 #farm-update .media-image-upload[data-type="farm-vignette"] {
 	border-radius: var(--radius);

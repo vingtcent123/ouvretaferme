@@ -1901,11 +1901,11 @@ class FarmUi {
 
 			$h .= '</div>';
 			$h .= '<div class="farmer-farms-item-buttons">';
-				$h .= '<a href="'.$eFarm->getProductionUrl().'" class="btn btn-outline-production">'.s("Produire").'</a> ';
-				$h .= '<a href="'.$eFarm->getCommercialisationUrl().'" class="btn btn-outline-commercialisation">'.s("Vendre").'</a> ';
+				$h .= '<a href="'.$eFarm->getProductionUrl().'" class="btn btn-production">'.\Asset::icon('leaf').'<br/>'.s("Produire").'</a> ';
+				$h .= '<a href="'.$eFarm->getCommercialisationUrl().'" class="btn btn-commercialisation">'.\Asset::icon('basket3').'<br/>'.s("Vendre").'</a> ';
 
 				if(FEATURE_ACCOUNTING) {
-					$h .= '<a href="'.$eFarm->getAccountingUrl().'" class="btn btn-outline-accounting">'.s("Comptabilité").'</a> ';
+					$h .= '<a href="'.$eFarm->getAccountingUrl().'" class="btn btn-accounting">'.\Asset::icon('bank').'<br/>'.s("Comptabilité").'</a> ';
 				}
 
 			$h .= '</div>';
