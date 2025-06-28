@@ -10,8 +10,9 @@ class DropboxUi {
 
 		$ePartner = $partnerData['partner'];
 
-		$h = '<h3>'.s("Dropbox").'</h3>';
+		$h = '<h3>'.s("Stockage de fichiers en ligne").'</h3>';
 
+		$h .= '<h4>'.s("{icon} Dropbox", ['icon' => \Asset::icon('dropbox')]).'</h4>';
 		$h .= '<div class="util-block-help">';
 			$h .= s(
 				"Vous avez la possibilité de connecter votre compte <link>Dropbox</link> pour y stocker vos factures.<br />Lorsque vous ajouterez vos factures dans le module de comptabilité au moment d'enregistrer vos opérations, elles seront alors automatiquement téléversées et rangées dans un sous-dossier dans votre Dropbox Applications > Ouvretaferme.",

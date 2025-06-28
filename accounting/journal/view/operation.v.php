@@ -53,7 +53,7 @@ new JsonView('readInvoice', function($data, AjaxTemplate $t) {
 
 	$t->js()->eval('Operation.prefillThirdParty(0, '.($data->operation['eThirdParty']->notEmpty() ? $data->operation['eThirdParty']['id'] : 'null').', "'.$data->operation['thirdParty']['name'].'", "'.$data->operation['thirdParty']['vatNumber'].'");');
 
-	// Saisie des frais de port s'ils existent
+	// Saisie des frais de port s'ils existent en 2è opération
 	if(count($data->operation['shipping']) > 0) {
 
 		$index = 1;
@@ -75,6 +75,10 @@ new JsonView('readInvoice', function($data, AjaxTemplate $t) {
 		// Sélectionner un compte également
 		$t->js()->eval('Operation.selectAccount('.$index.', '.$data->operation['shipping']['account']['id'].', '.$data->operation['shipping']['vatRate'].')');
 
+	}
+
+	if($data->ePartner->empty()) {
+		$t->qs('[data-help="dropbox"]')->removeHide();
 	}
 
 });

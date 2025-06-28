@@ -230,7 +230,7 @@ class JournalUi {
 						$canUpdate = ($eFinancialYearSelected['status'] === \account\FinancialYear::OPEN
 							and $eOperation['date'] <= $eFinancialYearSelected['endDate']
 							and $eOperation['date'] >= $eFinancialYearSelected['startDate']
-							/*TODO and $eCompany->canWrite() === TRUE*/ );
+							and $eFarm->canManage());
 
 						$eOperation->setQuickAttribute('farm', $eFarm['id']);
 						if($eOperation['cashflow']->exists() === TRUE) {

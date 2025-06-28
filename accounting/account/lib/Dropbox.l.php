@@ -97,12 +97,12 @@ Class DropboxLib {
 	 * Envoie un fichier sur Dropbox
 	 * Note : pas la peine de créer le dossier en amont, Dropbox s'en occupe
 	 *
+	 * @param string $distantFile Le fichier et son path sur dropbox
 	 * @param string $localFile Le fichier et son path en local
-	 * @param string $pathFile Le fichier et son path sur dropbox
 	 *
-	 * exemple d'usage : \account\DropboxLib::uploadFile('@/tmp/shared/fec.txt', '/2025/fec.txt');
+	 * exemple d'usage : \account\DropboxLib::uploadFile('/2025/fec.txt', '/tmp/shared/fec.txt');
 	 */
-	public static function uploadFile(string $localFile, string $pathFile): void {
+	public static function uploadFile(string $distantFile, string $localFile): void {
 
 		$ePartner = self::getPartner();
 
@@ -116,19 +116,21 @@ Class DropboxLib {
 				'Content-Type: application/octet-stream',
 				'Dropbox-API-Arg: '.json_encode([
 					'autorename' => FALSE,
-					'mode' => 'add',
+					'mode' => 'overwrite',
 					'mute' => FALSE,
-					'path' => $localFile,
+					'path' => $distantFile,
 					'strict_conflict' => FALSE,
 				]),
 			],
 			CURLOPT_VERBOSE => TRUE,
+			CURLOPT_PUT => TRUE,
+			CURLOPT_CUSTOMREQUEST => 'POST',
 			CURLOPT_RETURNTRANSFER => TRUE,
+			CURLOPT_INFILE => fopen($localFile, 'rb'),
+			CURLOPT_INFILESIZE => filesize($localFile),
 		];
 
-		$params = json_encode([
-			'data-binary' => $pathFile,
-		]);
+		$params = json_encode([]);
 
 		$curl = new \util\CurlLib();
 
@@ -206,19 +208,25 @@ Class DropboxLib {
 		$data = json_decode($curl->exec(self::OAUTH_TOKEN_URL, $params, 'POST'), TRUE);
 
 		if(($data['error'] ?? NULL) !== NULL) {
-			throw new \NotExpectedAction('Dropbox : cannot retrieve access token');
+
+			Partner::model()
+				->wherePartner(Partner::DROPBOX)
+				->delete();
+
+		} else {
+
+			$ePartner = new Partner([
+				'partner' => Partner::DROPBOX,
+				'accessToken' => $data['access_token'],
+				'params' => ['account_id' => $data['account_id'], 'refresh_token' => $data['refresh_token']],
+				'expiresAt' => new \Sql('ADDDATE(NOW(), INTERVAL '.$data['expires_in'].' SECOND)'),
+				'updatedAt' => new \Sql('NOW()'),
+				'updatedBy' => \user\ConnectionLib::getOnline(),
+			]);
+
+			Partner::model()->option('add-replace')->insert($ePartner);
+
 		}
-
-		$ePartner = new Partner([
-			'partner' => Partner::DROPBOX,
-			'accessToken' => $data['access_token'],
-			'params' => ['account_id' => $data['account_id'], 'refresh_token' => $data['refresh_token']],
-			'expiresAt' => new \Sql('ADDDATE(NOW(), INTERVAL '.$data['expires_in'].' SECOND)'),
-			'updatedAt' => new \Sql('NOW()'),
-			'updatedBy' => \user\ConnectionLib::getOnline(),
-		]);
-
-		Partner::model()->option('add-replace')->insert($ePartner);
 
 		return $ePartner;
 

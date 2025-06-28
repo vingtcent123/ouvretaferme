@@ -30,6 +30,8 @@ class AlertUi {
 			'Operation::invoice.incorrectType' => s("Le fichier n'est pas reconnu comme une facture. Vous pouvez effectuer la saisie manuellement ou réessayer."),
 			'Operation::invoice.unknownExtension' => s("Le format du fichier n'est pas reconnu, veuillez essayer avec un autre fichier ou faire une saisie manuelle."),
 
+			'Operation::document.empty' => s("Le nom de la pièce comptable est nécessaire pour enregistrer le document dans votre espace de stockage."),
+
 			default => null
 
 		};

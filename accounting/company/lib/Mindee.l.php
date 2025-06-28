@@ -31,7 +31,7 @@ Class MindeeLib {
 			];
 
 			$randomFile = $files[mt_rand(0, count($files) - 1)];
-			$randomFile = 'stripe.json';
+			$randomFile = 'mon-irrigation.json';
 			$data = json_decode(file_get_contents('/tmp/shared/'.$randomFile), TRUE);
 
 		} else {

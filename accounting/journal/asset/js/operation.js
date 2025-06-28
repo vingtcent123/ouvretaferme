@@ -107,6 +107,14 @@ document.delegateEventListener('change', '[data-field="type"]', function () {
 
 });
 
+document.delegateEventListener('input', '[data-field="document"]', function(e) {
+
+    const value = e.delegateTarget.value;
+    e.delegateTarget.value = value.toFqn();
+
+});
+
+
 class Operation {
 
     static highlight(selector) {

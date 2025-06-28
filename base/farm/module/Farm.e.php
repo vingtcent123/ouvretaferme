@@ -305,7 +305,7 @@ class Farm extends FarmElement {
 	}
 
 	public function getAccountingUrl(): string {
-		return \company\CompanyUi::urlJournal($this);
+		return \company\CompanyUi::urlJournal($this).'/operations';
 	}
 
 	public function build(array $properties, array $input, \Properties $p = new \Properties()): void {

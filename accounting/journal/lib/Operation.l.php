@@ -3,6 +3,8 @@ namespace journal;
 
 class OperationLib extends OperationCrud {
 
+	const TMP_INVOICE_FOLDER = 'tmp-invoice';
+
 	public static function getPropertiesCreate(): array {
 		return ['account', 'accountLabel', 'date', 'description', 'document', 'amount', 'type', 'vatRate', 'thirdParty', 'asset'];
 	}
@@ -307,6 +309,7 @@ class OperationLib extends OperationCrud {
 
 		$accounts = var_filter($input['account'] ?? [], 'array');
 		$vatValues = var_filter($input['vatValue'] ?? [], 'array');
+		$invoiceFile = var_filter($input['invoiceFile'] ?? NULL, 'string');
 		$isFromCashflow = ($eOperationDefault->offsetExists('cashflow') === TRUE);
 		$eCompany = \company\CompanyLib::getCurrent();
 
@@ -334,17 +337,18 @@ class OperationLib extends OperationCrud {
 			$eOperation = clone $eOperationDefault;
 			$eOperation['index'] = $index;
 
+			$input['invoiceFile'] = [$index => $invoiceFile];
 			$eOperation->buildIndex($properties, $input, $index);
 
 			$eOperation['amount'] = abs($eOperation['amount']);
 
+			$fw->validate();
 			// Date de la pièce justificative : date de l'écriture
 			if($eOperation['document'] !== NULL) {
 				$eOperation['documentDate'] = $eOperation['date'];
 			} else {
 				$eOperation['documentDate'] = NULL;
 			}
-
 
 			$thirdParty = $input['thirdParty'][$index] ?? null;
 
@@ -896,7 +900,6 @@ class OperationLib extends OperationCrud {
 
 	}
 
-	// TODO cron clean invoices tous les jours
 	public static function readInvoice(\farm\Farm $eFarm, array $file): array {
 
 		$hash = \media\UtilLib::generateHash();
@@ -908,7 +911,7 @@ class OperationLib extends OperationCrud {
 		$localFilename = date('Y-m-d-').$hash.'.pdf';
 
 		// Copie du fichier
-		\storage\DriverLib::sendBinary(file_get_contents($file['tmp_name']), 'tmp-invoice/'.$localFilename);
+		\storage\DriverLib::sendBinary(file_get_contents($file['tmp_name']), self::TMP_INVOICE_FOLDER.'/'.$localFilename);
 
 		// Lecture sur Mindee
 		$operation = \company\MindeeLib::getInvoiceData($eFarm, \storage\DriverLib::getFileName($localFilename));
@@ -925,9 +928,55 @@ class OperationLib extends OperationCrud {
 
 		$operation['mimetype'] = $file['type'];
 		$operation['filename'] = $localFilename;
-		$operation['filepath'] = \storage\DriverLib::getFileName('tmp-invoice/'.$localFilename);
+		$operation['filepath'] = \storage\DriverLib::getFileName(self::TMP_INVOICE_FOLDER.'/'.$localFilename);
 
 		return $operation;
+	}
+
+	public static function cleanInvoices(): void {
+
+		$folder = \storage\DriverLib::getFileName(self::TMP_INVOICE_FOLDER);
+		$command = 'ls '.$folder;
+
+		exec($command, $files);
+
+		foreach($files as $file) {
+			if(mb_substr($file, 0, 11) !== date('Y-m-d')) {
+				unlink($folder.'/'.$file);
+			}
+		}
+	}
+
+	public static function saveInvoiceToDropbox(?string $filename, Operation $eOperation): void {
+
+		if($eOperation->empty()) {
+			return;
+		}
+
+		if($eOperation['document'] === NULL) {
+			return;
+		}
+
+		$filepath = \storage\DriverLib::getFileName(self::TMP_INVOICE_FOLDER.'/'.$filename);
+		if($filename === NULL or is_file($filepath) === FALSE) {
+			return;
+		}
+
+		$eFinancialYear = \account\FinancialYearLib::selectDefaultFinancialYear();
+
+		if($eOperation['thirdParty']->notEmpty()) {
+			$thirdPartyQName = '-'.toFqn($eOperation['thirdParty']['name']);
+		} else {
+			$thirdPartyQName = '';
+		}
+
+		$extension = mb_substr($filename, mb_stripos($filename, '.') + 1);
+		$newFilename = '/'.mb_substr($eFinancialYear['startDate'], 0, 4)
+			.'/'.mb_substr($eOperation['date'], 5, 2)
+			.'/'.$eOperation['date'].'-'.$eOperation['document'].$thirdPartyQName.'.'.$extension;
+
+		\account\DropboxLib::uploadFile($newFilename, $filepath);
+
 	}
 }
 ?>

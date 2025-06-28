@@ -13,6 +13,7 @@
 0 0 1 10 * php /var/www/otf/framework/lime.php -e preprod -a ouvretaferme farm/cron/newSeason
 0 12 * * * php /var/www/otf/framework/lime.php -e preprod -a ouvretaferme mail/cron/clean
 0 2 * * * php /var/www/otf/framework/lime.php -e preprod -a ouvretaferme media/cron/clean
+15 2 * * * php /var/www/otf/framework/lime.php -e preprod -a ouvretaferme journal/cron/cleanInvoices
 0 3 * * * php /var/www/otf/framework/lime.php -e preprod -a ouvretaferme hr/cron/calculate
 0 4 * * * php /var/www/otf/framework/lime.php -e preprod -a ouvretaferme farm/cron/demo
 0 6 * * * php /var/www/otf/framework/lime.php -e preprod -a ouvretaferme cron/sitemap

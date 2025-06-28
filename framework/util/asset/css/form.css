@@ -116,6 +116,7 @@ input[type="checkbox"] {
 
 [data-wrapper].form-error-wrapper input {
 	color: var(--danger);
+	border-color: var(--danger);
 }
 
 [data-wrapper].form-warning-wrapper [data-wrapper]  input,

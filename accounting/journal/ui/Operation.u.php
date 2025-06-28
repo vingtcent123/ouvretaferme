@@ -202,6 +202,10 @@ class OperationUi {
 
 		$h = '';
 
+		$h .= '<div class="util-block-help hide" data-help="dropbox">';
+			$h .= s("Le saviez-vous ? En connectant votre compte {siteName} à un gestionnaire de fichiers comme Dropbox, vos documents comptables seront automatiquement rangés lorsque vous les importez lors de la saisie de vos opérations ! Vous pouvez le faire <link>dans les réglages de comptabilité de votre ferme</link>.",
+				['link' => '<a href="'.\company\CompanyUi::url($eFarm).'/company:update?id='.$eFarm['id'].'" target="_blank">']);
+		$h .= '</div>';
 		$h .= '<div>';
 
 			$h .= '<div style="display: flex;">';
@@ -370,7 +374,10 @@ class OperationUi {
 			$h .='</div>';
 
 			$h .= '<div data-wrapper="document'.$suffix.'">';
-				$h .=  $form->dynamicField($eOperation, 'document'.$suffix);
+				$h .=  $form->dynamicField($eOperation, 'document'.$suffix, function($d) use($index) {
+					$d->attributes['data-index'] = $index;
+					$d->attributes['data-field'] = 'document';
+				});
 			$h .='</div>';
 
 			$h .= '<div data-wrapper="thirdParty'.$suffix.'">';

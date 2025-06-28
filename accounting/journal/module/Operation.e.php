@@ -120,7 +120,21 @@ class Operation extends OperationElement {
 				}
 
 				return $paymentDate !== NULL;
-			});
+			})
+			->setCallback('document.empty', function(?string $document) use($input): bool {
+
+				if(!var_filter($input['invoiceFile'] ?? NULL, 'string')) {
+					return TRUE;
+				}
+
+				$ePartner = \account\DropboxLib::getPartner();
+				if($ePartner->empty()) {
+					return TRUE;
+				}
+
+				return $document !== NULL;
+			})
+		;
 
 		parent::build($properties, $input, $p);
 
