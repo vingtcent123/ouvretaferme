@@ -175,8 +175,9 @@ div.tasks-calendar-navigation a:hover {
 }
 
 #tasks-time {
-	border-bottom-left-radius: var(--radius);
-	border-bottom-right-radius: var(--radius);
+	width: 100vw;
+	padding-left: var(--container-padding);
+	padding-right: var(--container-padding);
 }
 
 #planning-wrapper-weekly #tasks-time {
