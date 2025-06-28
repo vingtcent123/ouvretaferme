@@ -829,14 +829,42 @@ body[data-template^="farm"] header a:hover {
 	}
 
 	#farm-breadcrumbs {
+		width: 100%;
+		display: grid;
+		align-items: center;
+		grid-template-columns: max-content 1fr;
 		padding-left: calc(var(--container-padding) + 0.5rem);
 		padding-right: var(--container-padding);
 		color: white;
-		display: flex;
 	}
 
 	.farm-breadcrumbs-link {
 		color: white;
+		border: 1px solid transparent;
+		padding-top: 0.125rem;
+		padding-bottom: 0.125rem;
+	}
+
+	.farm-breadcrumbs-link.selected {
+		background-color: #0003;
+		border-radius: var(--radius);
+		padding-left: 0.375rem;
+		padding-right: 0.375rem;
+	}
+
+	.farm-breadcrumbs-categories {
+		display: flex;
+		column-gap: 1rem;
+		overflow-x: auto;
+		white-space: nowrap;
+	}
+
+	.farm-breadcrumbs-categories {
+		-ms-overflow-style: none;  /* Internet Explorer 10+ */
+		scrollbar-width: none;  /* Firefox, Safari 18.2+, Chromium 121+ */
+	}
+	.farm-breadcrumbs-categories::-webkit-scrollbar {
+		display: none;  /* Older Safari and Chromium */
 	}
 
 }

@@ -104,7 +104,7 @@ class BaseTemplate extends SmartTemplate {
 			$h .= Asset::importHtml();
 		$h .= '</head>';
 
-		$h .= '<body data-template="'.$this->getTemplate().'" '.(OTF_DEMO ? 'data-demo' : '').' data-touch="no">';
+		$h .= '<body data-template="'.$this->getTemplate().'" '.(OTF_DEMO ? 'data-demo' : '').'>';
 
 			$h .= '<nav id="main-nav">'.$nav.'</nav>';
 			$h .= '<header>'.$header.'</header>';

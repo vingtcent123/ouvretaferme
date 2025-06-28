@@ -639,7 +639,7 @@ class FarmUi {
 			return '';
 		}
 
-		$section = $this->getSection($nav);
+		$section = $this->getMenu($nav);
 
 		$h = '<div class="farm-breadcrumbs-section">';
 			$h .= $section['icon'].'  <b>'.$section['label'].'</b>';
@@ -649,8 +649,14 @@ class FarmUi {
 		$h .= '</div>';
 
 		if($subNav !== NULL) {
-			$h .= '<div class="farm-breadcrumbs-category">';
+			$h .= '<div class="farm-breadcrumbs-categories hide-sm-up">';
 				$h .= '<a href="'.$this->getCategoryUrl($eFarm, $nav, $subNav).'" class="farm-breadcrumbs-link">'.$this->getCategoryName($eFarm, $nav, $subNav).'</a>';
+			$h .= '</div>';
+
+			$h .= '<div class="farm-breadcrumbs-categories hide-xs-down">';
+				foreach($this->getCategories($eFarm, $nav) as $category) {
+					$h .= '<a href="'.$this->getCategoryUrl($eFarm, $nav, $category).'" class="farm-breadcrumbs-link '.($subNav === $category ? 'selected' : '').'">'.$this->getCategoryName($eFarm, $nav, $category).'</a>';
+				}
 			$h .= '</div>';
 		}
 
@@ -661,23 +667,23 @@ class FarmUi {
 	protected function getNav(string $section, string $nav, bool $disabled = FALSE, ?string $link = NULL): string {
 
 		$h = ($link ? '<a href="'.$link.'"' : '<div').' data-nav="'.$nav.'" class="farm-tab '.($link === NULL ? 'farm-tab-subnav' : '').' '.($disabled ? 'disabled' : '').' '.($nav === $section ? 'selected' : '').'">';
-			$h .= '<span class="farm-tab-icon">'.$this->getSection($section)['icon'].'</span>';
-			$h .= '<span class="farm-tab-label">'.$this->getSection($section)['label'].'</span>';
+			$h .= '<span class="farm-tab-icon">'.$this->getMenu($section)['icon'].'</span>';
+			$h .= '<span class="farm-tab-label">'.$this->getMenu($section)['label'].'</span>';
 		$h .= '</'.($link ? 'a' : 'div').'>';
 
 		return $h;
 
 	}
 
-	protected function getSubNav(Farm $eFarm, array $categories, string $section, ?string $subNav): string {
+	protected function getSubNav(Farm $eFarm, string $menu, ?string $subNav): string {
 
 		$h = '<div class="farm-subnav-wrapper">';
 
-			foreach($categories as $name) {
+			foreach($this->getCategories($eFarm, $menu) as $name) {
 
-				$h .= '<a href="'.$this->getCategoryUrl($eFarm, $section, $name).'" class="farm-subnav-item '.($name === $subNav ? 'selected' : '').'" data-sub-nav="'.$name.'">';
+				$h .= '<a href="'.$this->getCategoryUrl($eFarm, $menu, $name).'" class="farm-subnav-item '.($name === $subNav ? 'selected' : '').'" data-sub-nav="'.$name.'">';
 					$h .= '<span class="farm-subnav-prefix">'.\Asset::icon('chevron-right').' </span>';
-					$h .= '<span>'.$this-> getCategoryName($eFarm, $section, $name).'</span>';
+					$h .= '<span>'.$this-> getCategoryName($eFarm, $menu, $name).'</span>';
 				$h .= '</a>';
 
 			}
@@ -688,7 +694,7 @@ class FarmUi {
 
 	}
 
-	protected function getSection($name): array {
+	protected function getMenu($name): array {
 
 		return match($name) {
 			'planning' => [
@@ -880,8 +886,7 @@ class FarmUi {
 				$eFarm,
 				$nav,
 				$subNav,
-				'production',
-				self::getAnalyzeProductionCategories($eFarm)
+				'production'
 			);
 
 		$h .= '</div>';
@@ -944,8 +949,7 @@ class FarmUi {
 				$eFarm,
 				$nav,
 				$subNav,
-				'commercialisation',
-				self::getAnalyzeCommercialisationCategories($eFarm)
+				'commercialisation'
 		);
 
 		$h .= '</div>';
@@ -1000,8 +1004,7 @@ class FarmUi {
 				$eFarm,
 				$nav,
 				$subNav,
-				'accounting',
-				self::getAnalyzeAccountingCategories()
+				'accounting'
 			);
 
 		$h .= '</div>';
@@ -1021,17 +1024,19 @@ class FarmUi {
 
 	}
 
-	protected function getAnalyzeTab(Farm $eFarm, ?string $nav, ?string $subNav, string $section, array $categories): string {
+	protected function getAnalyzeTab(Farm $eFarm, ?string $nav, ?string $subNav, string $section): string {
 
 		$h = '';
 
-		if($eFarm->canAnalyze() and $categories) {
+		if(
+			$eFarm->canAnalyze() and
+			$this->getCategories($eFarm, 'analyze-'.$section)
+		) {
 
 			$h .= $this->getNav('analyze-'.$section, $nav);
 
 			$h .= $this->getSubNav(
 				$eFarm,
-				$categories,
 				'analyze-'.$section,
 				$subNav
 			);
@@ -1058,15 +1063,10 @@ class FarmUi {
 
 	}
 
-	protected function getPlanningCategories(Farm $eFarm, ?string $week = NULL): array {
-		return [Farmer::DAILY, Farmer::WEEKLY, Farmer::YEARLY];
-	}
-
 	public function getPlanningMenu(Farm $eFarm, ?string $subNav = NULL): string {
 
 		return $this->getSubNav(
 			$eFarm,
-			$this->getPlanningCategories($eFarm),
 			'planning',
 			$subNav
 		);
@@ -1248,22 +1248,9 @@ class FarmUi {
 
 		return $this->getSubNav(
 			$eFarm,
-			$this->getCultivationCategories($eFarm),
 			'cultivation',
 			$subNav
 		);
-
-	}
-
-	public function getCultivationCategories(Farm $eFarm): array {
-
-		$categories = ['series', 'soil', 'forecast', 'sequence'];
-
-		if($eFarm->canAnalyze() === FALSE) {
-			array_delete($categories, 'forecast');
-		}
-
-		return $categories;
 
 	}
 
@@ -1345,16 +1332,9 @@ class FarmUi {
 
 		return $this->getSubNav(
 			$eFarm,
-			$this->getAssetsCategories(),
 			'assets',
 			$subNav
 		);
-
-	}
-
-	protected static function getAssetsCategories(): array {
-
-		return ['acquisition', 'depreciation', 'state'];
 
 	}
 
@@ -1362,27 +1342,9 @@ class FarmUi {
 
 		return $this->getSubNav(
 			$eFarm,
-			$this->getOperationsCategories($eFarm),
 			'journal',
 			$subNav
 		);
-
-	}
-
-	protected static function getOperationsCategories(Farm $eFarm): array {
-
-		$categories = [
-			'operations'
-		];
-
-		if($eFarm['company']->empty() or $eFarm['company']->isAccrualAccounting()) {
-			$categories[] = 'accounts';
-		}
-
-		$categories[] = 'book';
-		$categories[] = 'vat';
-
-		return $categories;
 
 	}
 
@@ -1390,16 +1352,9 @@ class FarmUi {
 
 		return $this->getSubNav(
 			$eFarm,
-			$this->getBankCategories(),
 			'bank',
 			$subNav
 		);
-
-	}
-
-	protected static function getBankCategories(): array {
-
-		return ['cashflow', 'import'];
 
 	}
 
@@ -1407,26 +1362,9 @@ class FarmUi {
 
 		return $this->getSubNav(
 			$eFarm,
-			$this->getSellingCategories($eFarm),
 			'selling',
 			$subNav
 		);
-
-	}
-
-	protected static function getSellingCategories(Farm $eFarm): array {
-
-		$categories = ['sale', 'customer', 'product'];
-
-		if($eFarm['hasSales']) {
-			$categories[] = 'invoice';
-		}
-
-		if($eFarm['featureStock']) {
-			$categories[] = 'stock';
-		}
-
-		return $categories;
 
 	}
 
@@ -1485,25 +1423,9 @@ class FarmUi {
 
 		return $this->getSubNav(
 			$eFarm,
-			$this->getShopCategories($eFarm),
 			'shop',
 			$subNav
 		);
-
-	}
-
-	public function getShopCategories(Farm $eFarm): array {
-
-		$categories = ['shop'];
-
-		if($eFarm['hasShops']) {
-
-			$categories[] = 'catalog';
-			$categories[] = 'point';
-
-		}
-
-		return $categories;
 
 	}
 
@@ -1511,57 +1433,113 @@ class FarmUi {
 
 		return $this->getSubNav(
 			$eFarm,
-			$this->getCommunicationsCategories($eFarm),
 			'communications',
 			$subNav
 		);
 
 	}
 
-	public static function getCommunicationsCategories(Farm $eFarm): array {
+	public function getCategories(Farm $eFarm, string $menu): array {
 
-		return ['website'];
+		switch($menu) {
 
-	}
+			case 'planning' :
+				return [Farmer::DAILY, Farmer::WEEKLY, Farmer::YEARLY];
 
-	protected static function getAnalyzeProductionCategories(Farm $eFarm): array {
+			case 'cultivation' :
 
-		$categories = [];
+				$categories = ['series', 'soil', 'forecast', 'sequence'];
 
-		if(
-			$eFarm['hasCultivations'] and
-			$eFarm->hasFeatureTime()
-		) {
-			$categories[] = 'working-time';
-		}
+				if($eFarm->canAnalyze() === FALSE) {
+					array_delete($categories, 'forecast');
+				}
 
-		if($eFarm['hasCultivations']) {
-			$categories[] = 'cultivation';
-		}
+				return $categories;
 
-		return $categories;
+			case 'analyze-production' :
 
-	}
+				$categories = [];
 
-	protected static function getAnalyzeCommercialisationCategories(Farm $eFarm): array {
+				if(
+					$eFarm['hasCultivations'] and
+					$eFarm->hasFeatureTime()
+				) {
+					$categories[] = 'working-time';
+				}
 
-		$categories = [];
+				if($eFarm['hasCultivations']) {
+					$categories[] = 'cultivation';
+				}
 
-		if($eFarm['hasSales']) {
-			$categories[] = 'sales';
-		}
+				return $categories;
 
-		if($eFarm['hasCultivations'] and $eFarm['hasSales']) {
-			$categories[] = 'report';
-		}
+			case 'selling' :
 
-		return $categories;
+				$categories = ['sale', 'customer', 'product'];
 
-	}
+				if($eFarm['hasSales']) {
+					$categories[] = 'invoice';
+				}
 
-	protected static function getAnalyzeAccountingCategories(): array {
+				if($eFarm['featureStock']) {
+					$categories[] = 'stock';
+				}
 
-		return ['financials', 'statements'];
+				return $categories;
+
+			case 'shop' :
+				$categories = ['shop'];
+
+				if($eFarm['hasShops']) {
+
+					$categories[] = 'catalog';
+					$categories[] = 'point';
+
+				}
+
+				return $categories;
+
+			case 'communications' :
+				return ['website'];
+
+			case 'analyze-commercialisation' :
+
+				$categories = [];
+
+				if($eFarm['hasSales']) {
+					$categories[] = 'sales';
+				}
+
+				if($eFarm['hasCultivations'] and $eFarm['hasSales']) {
+					$categories[] = 'report';
+				}
+
+				return $categories;
+
+			case 'assets' :
+				return ['acquisition', 'depreciation', 'state'];
+
+			case 'journal' :
+				$categories = [
+					'operations'
+				];
+
+				if($eFarm['company']->empty() or $eFarm['company']->isAccrualAccounting()) {
+					$categories[] = 'accounts';
+				}
+
+				$categories[] = 'book';
+				$categories[] = 'vat';
+
+				return $categories;
+
+			case 'bank' :
+				return ['cashflow', 'import'];
+
+			case 'analyze-accounting' :
+				return ['financials', 'statements'];
+
+		};
 
 	}
 

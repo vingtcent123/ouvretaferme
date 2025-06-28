@@ -827,11 +827,11 @@ div.input-group > .field-checkbox {
 	visibility: hidden;
 }
 
-body[data-touch="yes"] .hide-touch {
+body:not([data-touch="no"]) .hide-touch {
 	display: none !important;
 }
 
-body[data-touch="no"] .hide-notouch {
+body:not([data-touch="yes"]) .hide-notouch {
 	display: none !important;
 }
 
