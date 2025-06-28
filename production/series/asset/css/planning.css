@@ -113,7 +113,7 @@ body[data-template~="farm-planning-yearly"] {
 	min-height: 100vh;
 }
 
-@media (max-width: 1099px), (max-height: 649px) {
+@media (max-width: 1099px), (max-height: 694px) {
 
 	[data-template~="farm-planning-yearly"][data-template~="farm-planning-scrolling"],
 	[data-template~="farm-planning-daily"][data-template~="farm-planning-scrolling"] {
@@ -171,7 +171,7 @@ body[data-touch="yes"][data-template~="farm-planning-daily"] main {
 @media (min-width: 576px) {
 
 	#planning-wrapper-daily {
-		width: calc(27rem * 8 + var(--container-padding) * 2);
+		width: calc(27rem * 8 + var(--container-padding) * 2 + var(--nav-width));
 		grid-template-columns: repeat(8, 27rem);
 		padding: 0 var(--container-padding);
 	}

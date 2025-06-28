@@ -438,6 +438,10 @@ body[data-template^="farm"] header a:hover {
 
 @media (max-width: 1099px), (max-height: 649px) {
 
+	:root {
+		--nav-width: 0;
+	}
+
 	body[data-template~="farm"] header {
 		position: sticky;
 		z-index: 500;

@@ -36,7 +36,7 @@ class TaskUi {
 
 		\Asset::css('series', 'planning.css');
 
-		$h = '<div id="tasks-time">';
+		$h = '<div id="tasks-time" class="task-time-daily">';
 			$h .= $this->getWeekUsers($eFarm, $week, $eUser, $cUserFarm, fn($eUserFarm) => 'data-ajax="'.\farm\FarmUi::urlPlanningDaily($eFarm, $week).'?user'.($eUserFarm->notEmpty() ? '='.$eUserFarm['id'] : '').'" data-ajax-method="get"', team: TRUE);
 		$h .= '</div>';
 

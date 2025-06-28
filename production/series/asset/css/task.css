@@ -174,7 +174,7 @@ div.tasks-calendar-navigation a:hover {
 	background: #eee;
 }
 
-#tasks-time {
+#tasks-time.task-time-daily {
 	width: 100vw;
 	padding-left: var(--container-padding);
 	padding-right: var(--container-padding);
