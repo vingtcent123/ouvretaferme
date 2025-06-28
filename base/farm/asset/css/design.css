@@ -834,6 +834,15 @@ body[data-template^="farm"] header a:hover {
 		color: white;
 	}
 
+	a.farm-breadcrumbs-section {
+		color: white;
+		text-decoration: none;
+	}
+
+	a.farm-breadcrumbs-section:hover b {
+		text-decoration: underline;
+	}
+
 	.farm-breadcrumbs-link {
 		color: white;
 	}

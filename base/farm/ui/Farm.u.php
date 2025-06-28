@@ -641,7 +641,9 @@ class FarmUi {
 
 		$section = $this->getSection($nav);
 
-		$h = '<a href="" data-dropdown="bottom-start">'.$section['icon'].'  <b>'.$section['label'].'</b></a>';
+		// getCategories()
+
+		$h = '<a href="" class="farm-breadcrumbs-section" data-dropdown="bottom-start">'.$section['icon'].'  <b>'.$section['label'].'</b></a>';
 		if($subNav !== NULL) {
 			$h .= '  '.\Asset::icon('chevron-right').'  ';
 			$h .= '<a href="'.$this->getCategoryUrl($eFarm, $nav, $subNav).'" class="farm-breadcrumbs-link">'.$this->getCategoryName($eFarm, $nav, $subNav).'</a>';
