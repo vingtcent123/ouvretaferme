@@ -641,7 +641,7 @@ class FarmUi {
 
 		$section = $this->getSection($nav);
 
-		$h = $section['icon'].'  <b>'.$section['label'].'</b>';
+		$h = '<a href="" data-dropdown="bottom-start">'.$section['icon'].'  <b>'.$section['label'].'</b></a>';
 		if($subNav !== NULL) {
 			$h .= '  '.\Asset::icon('chevron-right').'  ';
 			$h .= '<a href="'.$this->getCategoryUrl($eFarm, $nav, $subNav).'" class="farm-breadcrumbs-link">'.$this->getCategoryName($eFarm, $nav, $subNav).'</a>';
@@ -1878,12 +1878,10 @@ class FarmUi {
 
 	public function getPanel(Farm $eFarm): string {
 
-		$h = '';
-
-		$h .= '<a href="'.$eFarm->getHomeUrl().'" class="farmer-farms-item">';
+		$h = '<div class="farmer-farms-item">';
 
 			$h .= '<div class="farmer-farms-item-vignette">';
-				$h .= self::getVignette($eFarm, '6rem');
+				$h .= self::getVignette($eFarm, '4rem');
 			$h .= '</div>';
 			$h .= '<div class="farmer-farms-item-content">';
 				$h .= '<h4>';
@@ -1902,8 +1900,17 @@ class FarmUi {
 				$h .= '</div>';
 
 			$h .= '</div>';
+			$h .= '<div class="farmer-farms-item-buttons">';
+				$h .= '<a href="'.$eFarm->getProductionUrl().'" class="btn btn-outline-production">'.s("Produire").'</a> ';
+				$h .= '<a href="'.$eFarm->getCommercialisationUrl().'" class="btn btn-outline-commercialisation">'.s("Vendre").'</a> ';
 
-		$h .= '</a>';
+				if(FEATURE_ACCOUNTING) {
+					$h .= '<a href="'.$eFarm->getAccountingUrl().'" class="btn btn-outline-accounting">'.s("Comptabilité").'</a> ';
+				}
+
+			$h .= '</div>';
+
+		$h .= '</div>';
 
 		return $h;
 

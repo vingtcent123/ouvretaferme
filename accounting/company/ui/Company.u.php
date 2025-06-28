@@ -12,13 +12,6 @@ class CompanyUi {
 		return '<a href="'.self::url($eFarm).'" '.($newTab ? 'target="_blank"' : '').'>'.encode($eFarm['name']).'</a>';
 	}
 
-
-	public function getHomeUrl(\farm\Farm $eFarm): string {
-
-		return self::urlJournal($eFarm).'/';
-
-	}
-
 	public static function url(\farm\Farm $eFarm): string {
 		return \Lime::getUrl().'/'.$eFarm['id'].'/company';
 	}

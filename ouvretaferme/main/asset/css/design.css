@@ -759,6 +759,39 @@ address {
 	border-color: var(--production);
 }
 
+.btn-commercialisation,
+.btn-outline-commercialisation:not(.btn-readonly):hover {
+	color: white;
+	background-color: var(--commercialisation);
+	border-color: var(--commercialisation);
+}
+
+.btn-commercialisation:not(.btn-readonly):hover {
+	color: white;
+	box-shadow: inset 0px 0px 0 100px rgba(0, 0, 0, .1);
+}
+
+.btn-outline-commercialisation {
+	color: var(--commercialisation);
+	border-color: var(--commercialisation);
+}
+
+.btn-accounting,
+.btn-outline-accounting:not(.btn-readonly):hover {
+	color: white;
+	background-color: var(--accounting);
+	border-color: var(--accounting);
+}
+
+.btn-accounting:not(.btn-readonly):hover {
+	color: white;
+	box-shadow: inset 0px 0px 0 100px rgba(0, 0, 0, .1);
+}
+
+.btn-outline-accounting {
+	color: var(--accounting);
+	border-color: var(--accounting);
+}
 
 .btn-selling,
 .btn-outline-selling:not(.btn-readonly):hover {

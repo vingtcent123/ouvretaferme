@@ -24,17 +24,14 @@
 
 .farmer-farms-item {
 	display: grid;
-	grid-template: "vignette content" 1fr / 6rem 1fr;
-	grid-column-gap: 1rem;
-	align-items: center;
-}
-
-a.farmer-farms-item {
-	text-decoration: none;
-	color: var(--secondary);
+	grid-template:
+		"vignette content" max-content
+		"vignette buttons" max-content / 4rem 1fr;
+	grid-gap: 1rem;
 	background: white;
 	padding: 1rem;
 	border-radius: var(--radius);
+	text-decoration: none;
 }
 
 @media (max-width: 767px) {
@@ -45,12 +42,23 @@ a.farmer-farms-item {
 
 }
 
+@media (max-width: 399px) {
+
+	.farmer-farms-item {
+		grid-template:
+			"vignette content" max-content
+			"buttons buttons" max-content / 4rem 1fr;
+	}
+
+}
+
 div.farmer-farms-item-vignette {
 	grid-area: vignette;
 }
 
 div.farmer-farms-item-content {
 	grid-area: content;
+	align-self: center;
 	transition: color .5s;
 }
 
@@ -59,16 +67,22 @@ a.farmer-farms-item:hover div.farmer-farms-item-content {
 }
 
 div.farmer-farms-item-content h4 {
-   font-size: 1.6rem;
+	font-size: 1.6rem;
 	margin-bottom: 0.5rem;
-   font-weight: lighter;
+	font-weight: lighter;
 }
 
 div.farmer-farms-item-infos {
 	color: var(--muted);
 	font-size: 0.9rem;
-	margin: 0.25rem 0;
 	line-height: 1.2;
+}
+
+div.farmer-farms-item-buttons {
+	grid-area: buttons;
+	display: flex;
+	align-items: start;
+	gap: 0.5rem;
 }
 
 /* Farm update */

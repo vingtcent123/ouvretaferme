@@ -290,7 +290,7 @@ class Farm extends FarmElement {
 		return ($this['legalCity'] !== NULL);
 	}
 
-	public function getHomeUrl(): string {
+	public function getProductionUrl(): string {
 
 		if($this->canPlanning()) {
 			return FarmUi::urlPlanningWeekly($this);
@@ -298,6 +298,14 @@ class Farm extends FarmElement {
 			return FarmUi::urlCultivationSeries($this, Farmer::AREA);
 		}
 
+	}
+
+	public function getCommercialisationUrl(): string {
+		return FarmUi::urlSellingSales($this);
+	}
+
+	public function getAccountingUrl(): string {
+		return \company\CompanyUi::urlJournal($this);
 	}
 
 	public function build(array $properties, array $input, \Properties $p = new \Properties()): void {

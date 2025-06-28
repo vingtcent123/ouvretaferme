@@ -19,24 +19,27 @@ class FarmerUi {
 				$h .= new FarmUi()->getPanel($eFarm);
 			}
 
-			if($cFarm->count() <= 2) {
+			if($cFarm->count() <= 12) {
 
-				$h .= '<a href="'.OTF_DEMO_URL.'/ferme/'.\farm\Farm::DEMO.'/series?view=area" class="farmer-farms-item">';
+				$h .= '<div class="farmer-farms-item">';
 
 					$h .= '<div class="farmer-farms-item-vignette">';
-						$h .= \Asset::image('main', 'favicon.png', ['style' => 'width: 6rem; height: 6rem']);
+						$h .= \Asset::image('main', 'favicon.png', ['style' => 'width: 4rem; height: 4rem']);
 					$h .= '</div>';
 					$h .= '<div class="farmer-farms-item-content">';
 						$h .= '<h4>';
 							$h .= s("Ferme de démonstration");
 						$h .= '</h4>';
 						$h .= '<div class="farmer-farms-item-infos">';
-							$h .= s("Découvrez comment utiliser les fonctionnalités de {siteName} en explorant la démo !");
+							$h .= s("Testez {siteName} en explorant la démo !");
 						$h .= '</div>';
 
 					$h .= '</div>';
+					$h .= '<div class="farmer-farms-item-buttons">';
+						$h .= '<a href="'.OTF_DEMO_URL.'/ferme/'.\farm\Farm::DEMO.'/series?view=area" class="btn btn-outline-primary">'.s("Aller sur la démo").'</a>';
+					$h .= '</div>';
 
-				$h .= '</a>';
+				$h .= '</div>';
 
 			}
 
