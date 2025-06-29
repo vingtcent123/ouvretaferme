@@ -840,6 +840,7 @@ body[data-template^="farm"] header a:hover {
 		padding-left: calc(var(--container-padding) + 0.5rem);
 		padding-right: var(--container-padding);
 		color: white;
+		letter-spacing: -0.1px;
 	}
 
 	@media (max-width: 359px) {
@@ -853,8 +854,8 @@ body[data-template^="farm"] header a:hover {
 	.farm-breadcrumbs-link {
 		color: white;
 		border: 1px solid transparent;
-		padding-top: 0.125rem;
-		padding-bottom: 0.125rem;
+		padding-top: 0.25rem;
+		padding-bottom: 0.25rem;
 	}
 
 	.farm-breadcrumbs-link.selected {

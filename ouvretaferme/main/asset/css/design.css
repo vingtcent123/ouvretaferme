@@ -61,7 +61,7 @@
 
 	:root {
 		--farmSections: 3.5rem;
-		--farmNav: 3rem;
+		--farmNav: 3.25rem;
 	}
 
 	@media (max-width: 767px) {
