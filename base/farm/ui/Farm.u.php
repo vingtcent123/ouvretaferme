@@ -641,7 +641,7 @@ class FarmUi {
 
 		$section = $this->getMenu($nav);
 
-		$h = '<div class="farm-breadcrumbs-section">';
+		$h = '<div id="farm-breadcrumbs-section">';
 			$h .= $section['icon'].'  <b>'.$section['label'].'</b>';
 			if($subNav !== NULL) {
 				$h .= '  '.\Asset::icon('chevron-right').'  ';

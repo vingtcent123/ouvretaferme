@@ -115,27 +115,26 @@ class Farm {
 
 	static scrollBreadCrumbs(target, selected) {
 
+		const subNavOffset = qs('#farm-breadcrumbs-section').getBoundingClientRect().width;
+
+		target.style.paddingLeft = subNavOffset +'px';
+
 		const subNavSelected = target.qs('.selected');
 
 		if(subNavSelected) {
 
-
 			const subNavBounding = subNavSelected.getBoundingClientRect();
 			const breadcrumbsBounding = target.getBoundingClientRect();
 
-			const subNavLeft = subNavBounding.left - breadcrumbsBounding.left + target.scrollLeft;
+			const subNavLeft = subNavBounding.left + target.scrollLeft;
 
-			const offset = breadcrumbsBounding.width / 2 - subNavBounding.width / 2;
+			const leftTarget = subNavOffset + (breadcrumbsBounding.width - subNavOffset) / 2 - subNavBounding.width / 2;
 
-			const scroll = Math.max(0, subNavLeft - offset);
+			const scroll = Math.max(0, subNavLeft - leftTarget);
 
 			target.scroll(scroll, 0);
 
 		}
-
-		// -> récupérer la position du selected + si pas visible l'afficher en scrollant à gauche ou à droite
-		// ajouter des < à gauche et à droite > pour naviguer
-
 
 	}
 
