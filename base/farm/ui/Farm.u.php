@@ -649,13 +649,9 @@ class FarmUi {
 		$h .= '</div>';
 
 		if($subNav !== NULL) {
-			$h .= '<div class="farm-breadcrumbs-categories hide-sm-up">';
-				$h .= '<a href="'.$this->getCategoryUrl($eFarm, $nav, $subNav).'" class="farm-breadcrumbs-link">'.$this->getCategoryName($eFarm, $nav, $subNav).'</a>';
-			$h .= '</div>';
-
-			$h .= '<div class="farm-breadcrumbs-categories hide-xs-down">';
+			$h .= '<div class="farm-breadcrumbs-categories" '.Attr('onrender', 'Farm.scrollBreadCrumbs(this, "'.$subNav.'")').'>';
 				foreach($this->getCategories($eFarm, $nav) as $category) {
-					$h .= '<a href="'.$this->getCategoryUrl($eFarm, $nav, $category).'" class="farm-breadcrumbs-link '.($subNav === $category ? 'selected' : '').'">'.$this->getCategoryName($eFarm, $nav, $category).'</a>';
+					$h .= '<a href="'.$this->getCategoryUrl($eFarm, $nav, $category).'" class="farm-breadcrumbs-link '.($subNav === $category ? 'selected' : '').'" data-sub-nav="'.$category.'">'.$this->getCategoryName($eFarm, $nav, $category).'</a>';
 				}
 			$h .= '</div>';
 		}

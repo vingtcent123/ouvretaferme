@@ -842,6 +842,14 @@ body[data-template^="farm"] header a:hover {
 		color: white;
 	}
 
+	@media (max-width: 359px) {
+
+		#farm-breadcrumbs {
+			padding-left: 0.5rem;
+		}
+
+	}
+
 	.farm-breadcrumbs-link {
 		color: white;
 		border: 1px solid transparent;
