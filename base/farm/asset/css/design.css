@@ -556,6 +556,7 @@ body[data-template^="farm"] header a:hover {
 
 		.farm-section-production {
 			display: grid;
+			align-items: start;
 			grid-template: "planning cultivation analyze settings" auto / 1fr 1fr 1fr 1fr;
 		}
 
@@ -566,6 +567,7 @@ body[data-template^="farm"] header a:hover {
 
 		.farm-section-production {
 			display: grid;
+			align-items: start;
 			grid-template:
 					"planning cultivation analyze" auto
 					"planning cultivation settings" 1fr / 1fr 1fr 1fr;
@@ -578,9 +580,9 @@ body[data-template^="farm"] header a:hover {
 
 		.farm-section-production {
 			display: grid;
+			align-items: start;
 			grid-template:
 					"planning cultivation" auto
-					"analyze cultivation" auto
 					"analyze settings" 1fr / 1fr 1fr;
 		}
 
@@ -611,6 +613,7 @@ body[data-template^="farm"] header a:hover {
 
 		.farm-section-commercialisation {
 			display: grid;
+			align-items: start;
 			grid-template: "selling shop communication analyze settings" auto / auto auto auto auto auto;
 		}
 
@@ -621,6 +624,7 @@ body[data-template^="farm"] header a:hover {
 
 		.farm-section-commercialisation {
 			display: grid;
+			align-items: start;
 			grid-template:
 				"selling shop communication analyze" auto
 				"selling shop communication settings" 1fr / auto auto auto auto;
@@ -633,10 +637,11 @@ body[data-template^="farm"] header a:hover {
 
 		.farm-section-commercialisation {
 			display: grid;
+			align-items: start;
 			grid-template:
-				"selling shop communication" auto
 				"selling shop analyze" auto
-				"selling shop settings" 1fr / auto auto auto;
+				"selling shop settings" auto
+				"selling communication settings" 1fr / auto auto auto;
 		}
 
 
@@ -646,11 +651,11 @@ body[data-template^="farm"] header a:hover {
 
 		.farm-section-commercialisation {
 			display: grid;
+			align-items: start;
 			grid-template:
 				"selling shop" auto
-				"selling analyze" auto
-				"communication analyze" auto
-				"communication settings" auto / auto auto;
+				"selling communication" auto
+				"analyze settings" auto / auto auto;
 		}
 
 
@@ -680,6 +685,7 @@ body[data-template^="farm"] header a:hover {
 
 		.farm-section-accounting {
 			display: grid;
+			align-items: start;
 			grid-template: "bank journal assets analyze settings" auto / auto auto auto auto auto;
 		}
 
@@ -690,6 +696,7 @@ body[data-template^="farm"] header a:hover {
 
 		.farm-section-accounting {
 			display: grid;
+			align-items: start;
 			grid-template:
 				"bank journal assets analyze" auto
 				"bank journal assets settings" 1fr / auto auto auto auto;
@@ -702,9 +709,10 @@ body[data-template^="farm"] header a:hover {
 
 		.farm-section-accounting {
 			display: grid;
+			align-items: start;
 			grid-template:
 				"bank journal analyze" auto
-				"assets journal analyze" auto
+				"assets journal settings" auto
 				"assets journal settings" 1fr / auto auto auto;
 		}
 
@@ -715,10 +723,11 @@ body[data-template^="farm"] header a:hover {
 
 		.farm-section-accounting {
 			display: grid;
+			align-items: start;
 			grid-template:
 				"bank assets" auto
-				"journal analyze" auto
-				"journal settings" auto / auto auto;
+				"journal assets" auto
+				"analyze settings" auto / auto auto;
 		}
 
 
@@ -748,7 +757,7 @@ body[data-template^="farm"] header a:hover {
 		top: var(--farmSections);
 		width: 100%;
 		padding: 0.5rem 1rem 1rem 0.5rem;
-		column-gap: 1rem;
+		gap: 1rem;
 		box-shadow: 0 0 1rem #0003;
 		z-index: 3;
 	}

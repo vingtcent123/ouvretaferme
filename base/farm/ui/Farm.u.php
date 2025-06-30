@@ -858,7 +858,7 @@ class FarmUi {
 
 		if($eFarm->canPlanning()) {
 
-			$h .= '<div class="farm-nav-planning">';
+			$h .= '<div class="farm-tab-wrapper farm-nav-planning">';
 
 				$h .= $this->getNav('planning', $nav);
 
@@ -868,7 +868,7 @@ class FarmUi {
 
 		}
 
-		$h .= '<div class="farm-nav-cultivation">';
+		$h .= '<div class="farm-tab-wrapper farm-nav-cultivation">';
 
 			$h .= $this->getNav('cultivation', $nav);
 
@@ -876,7 +876,7 @@ class FarmUi {
 
 		$h .= '</div>';
 
-		$h .= '<div class="farm-nav-analyze-production">';
+		$h .= '<div class="farm-tab-wrapper farm-nav-analyze-production">';
 
 			$h .= $this->getAnalyzeTab(
 				$eFarm,
@@ -887,7 +887,7 @@ class FarmUi {
 
 		$h .= '</div>';
 
-		$h .= '<div class="farm-nav-settings-production">';
+		$h .= '<div class="farm-tab-wrapper farm-nav-settings-production">';
 
 			$h .= $this->getSettingsTab(
 				$eFarm,
@@ -908,14 +908,14 @@ class FarmUi {
 
 		if($eFarm->canSelling()) {
 
-			$h .= '<div class="farm-nav-selling">';
+			$h .= '<div class="farm-tab-wrapper farm-nav-selling">';
 
 				$h .= $this->getNav('selling', $nav);
 
 				$h .= $this->getSellingMenu($eFarm, subNav: $subNav);
 
 			$h .= '</div>';
-			$h .= '<div class="farm-nav-shop">';
+			$h .= '<div class="farm-tab-wrapper farm-nav-shop">';
 
 				if($eFarm['hasShops']) {
 
@@ -931,7 +931,7 @@ class FarmUi {
 				}
 
 			$h .= '</div>';
-			$h .= '<div class="farm-nav-communication">';
+			$h .= '<div class="farm-tab-wrapper farm-nav-communication">';
 
 				$h .= $this->getNav('communications', $nav);
 				$h .= $this->getCommunicationsMenu($eFarm, subNav: $subNav);
@@ -940,7 +940,7 @@ class FarmUi {
 
 		}
 
-		$h .= '<div class="farm-nav-analyze-commercialisation">';
+		$h .= '<div class="farm-tab-wrapper farm-nav-analyze-commercialisation">';
 
 			$h .= $this->getAnalyzeTab(
 				$eFarm,
@@ -950,7 +950,7 @@ class FarmUi {
 		);
 
 		$h .= '</div>';
-		$h .= '<div class="farm-nav-settings-commercialisation">';
+		$h .= '<div class="farm-tab-wrapper farm-nav-settings-commercialisation">';
 
 			$h .= $this->getSettingsTab(
 				$eFarm,
@@ -970,7 +970,7 @@ class FarmUi {
 
 		if($eFarm->canAccounting()) {
 
-			$h .= '<div class="farm-nav-bank">';
+			$h .= '<div class="farm-tab-wrapper farm-nav-bank">';
 
 				$h .= $this->getNav('bank', $nav);
 
@@ -978,7 +978,7 @@ class FarmUi {
 
 			$h .= '</div>';
 
-			$h .= '<div class="farm-nav-journal">';
+			$h .= '<div class="farm-tab-wrapper farm-nav-journal">';
 
 				$h .= $this->getNav('journal', $nav);
 
@@ -986,7 +986,7 @@ class FarmUi {
 
 			$h .= '</div>';
 
-			$h .= '<div class="farm-nav-assets">';
+			$h .= '<div class="farm-tab-wrapper farm-nav-assets">';
 
 				$h .= $this->getNav('assets', $nav);
 
@@ -995,7 +995,7 @@ class FarmUi {
 			$h .= '</div>';
 		}
 
-		$h .= '<div class="farm-nav-analyze-accounting">';
+		$h .= '<div class="farm-tab-wrapper farm-nav-analyze-accounting">';
 
 			$h .= $this->getAnalyzeTab(
 				$eFarm,
@@ -1006,7 +1006,7 @@ class FarmUi {
 
 		$h .= '</div>';
 
-		$h .= '<div class="farm-nav-settings-accounting">';
+		$h .= '<div class="farm-tab-wrapper farm-nav-settings-accounting">';
 
 			$h .= $this->getSettingsTab(
 				$eFarm,
@@ -1037,10 +1037,6 @@ class FarmUi {
 				'analyze-'.$section,
 				$subNav
 			);
-
-		} else {
-
-			$h .= $this->getNav('analyze-'.$section, $nav, disabled: TRUE);
 
 		}
 
