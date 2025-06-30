@@ -13,6 +13,9 @@ class AlertUi {
 
 			'Stripe::demo.write' => s("Vous ne pouvez pas configurer le paiement sur le site de démo."),
 
+			'StripeFarm::apiSecretKey.check' => s("La clé que vous avez saisie n'est pas au bon format."),
+			'StripeFarm::apiSecretKey.end' => s("La clé que vous avez saisie n'est pas reconnue par Stripe, veuillez vérifier la configuration de votre compte Stripe."),
+
 			'Cb::error' => s("Une erreur est intervenue pendant la procédure, la commande n'a pas abouti."),
 
 			'Method::deleteUsed' => s("Ce moyen de paiement ne peut pas être supprimé car il est utilisée dans une vente."),

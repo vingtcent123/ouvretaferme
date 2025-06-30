@@ -40,7 +40,7 @@ class StripeFarmModel extends \ModuleModel {
 			'farm' => ['element32', 'farm\Farm', 'unique' => TRUE, 'cast' => 'element'],
 			'apiSecretKey' => ['text8', 'min' => 1, 'max' => NULL, 'cast' => 'string'],
 			'apiSecretKeyTest' => ['text8', 'min' => 1, 'max' => NULL, 'null' => TRUE, 'cast' => 'string'],
-			'webhookSecretKey' => ['text8', 'min' => 1, 'max' => NULL, 'cast' => 'string'],
+			'webhookSecretKey' => ['text8', 'min' => 1, 'max' => NULL, 'null' => TRUE, 'cast' => 'string'],
 			'webhookSecretKeyTest' => ['text8', 'min' => 1, 'max' => NULL, 'null' => TRUE, 'cast' => 'string'],
 			'createdBy' => ['element32', 'user\User', 'cast' => 'element'],
 			'createdAt' => ['datetime', 'cast' => 'string'],

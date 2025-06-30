@@ -1749,7 +1749,9 @@ class Element extends ArrayObject {
 					$this[$property] = $value;
 				};
 
-				unset($callbacksProperty[$property.'.prepare'], $callbacksProperty[$property.'.check'], $callbacksProperty[$property.'.set']);
+				$callbackEnd = $callbacksProperty[$property.'.end'] ?? function($value) { };
+
+				unset($callbacksProperty[$property.'.prepare'], $callbacksProperty[$property.'.check'], $callbacksProperty[$property.'.set'], $callbacksProperty[$property.'.end']);
 
 				$callbacksSelected = [];
 				$callbacksSelected[$property.'.cast'] = $callbackCast;
@@ -1757,6 +1759,7 @@ class Element extends ArrayObject {
 				$callbacksSelected[$property.'.check'] = $callbackCheck;
 				$callbacksSelected += $callbacksProperty;
 				$callbacksSelected[$property.'.set'] = $callbackSet;
+				$callbacksSelected[$property.'.end'] = $callbackEnd;
 
 			} else {
 				$callbacksSelected = $callbacksProperty;

@@ -38,7 +38,6 @@ class ThirdPartyModel extends \ModuleModel {
 		$this->properties = array_merge($this->properties, [
 			'id' => ['serial32', 'cast' => 'int'],
 			'name' => ['text8', 'min' => 1, 'max' => NULL, 'collate' => 'general', 'unique' => TRUE, 'cast' => 'string'],
-			'customer' => ['element32', 'selling\Customer', 'null' => TRUE, 'cast' => 'element'],
 			'clientAccountLabel' => ['text8', 'min' => 1, 'max' => NULL, 'collate' => 'general', 'null' => TRUE, 'cast' => 'string'],
 			'supplierAccountLabel' => ['text8', 'min' => 1, 'max' => NULL, 'collate' => 'general', 'null' => TRUE, 'cast' => 'string'],
 			'vatNumber' => ['text8', 'null' => TRUE, 'cast' => 'string'],
@@ -46,12 +45,8 @@ class ThirdPartyModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'name', 'customer', 'clientAccountLabel', 'supplierAccountLabel', 'vatNumber', 'names'
+			'id', 'name', 'clientAccountLabel', 'supplierAccountLabel', 'vatNumber', 'names'
 		]);
-
-		$this->propertiesToModule += [
-			'customer' => 'selling\Customer',
-		];
 
 		$this->uniqueConstraints = array_merge($this->uniqueConstraints, [
 			['name']
@@ -73,10 +68,6 @@ class ThirdPartyModel extends \ModuleModel {
 
 	public function whereName(...$data): ThirdPartyModel {
 		return $this->where('name', ...$data);
-	}
-
-	public function whereCustomer(...$data): ThirdPartyModel {
-		return $this->where('customer', ...$data);
 	}
 
 	public function whereClientAccountLabel(...$data): ThirdPartyModel {

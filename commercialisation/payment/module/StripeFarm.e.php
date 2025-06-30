@@ -20,6 +20,17 @@ class StripeFarm extends StripeFarmElement {
 			->setCallback('apiSecretKey.check', function(string $key): bool {
 				return str_starts_with($key, 'rk_live_') and strlen($key) > 10;
 			})
+			->setCallback('apiSecretKey.end', function(): bool {
+
+				try {
+					StripeLib::getWebhooks($this);
+					return TRUE;
+				}
+				catch(\Exception) {
+					return FALSE;
+				}
+
+			})
 			->setCallback('apiSecretKeyTest.check', function(?string $key): bool {
 				return (
 					$key === NULL or

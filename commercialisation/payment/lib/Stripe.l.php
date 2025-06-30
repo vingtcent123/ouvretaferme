@@ -24,11 +24,24 @@ class StripeLib {
 
 	public static function createWebhook(StripeFarm $eStripeFarm): void {
 
-		$endpoint = 'webhook_endpoints';
+		// On supprime d'anciens webhooks liés à OTF
+		$webhooks = self::getWebhooks($eStripeFarm);
 
+		foreach($webhooks['data'] as $webhook) {
+
+			if(
+				$webhook['object'] === 'webhook_endpoint' and
+				str_starts_with($webhook['url'], self::getWebhookUrl($eStripeFarm['farm']))
+			) {;
+				self::sendStripeRequest($eStripeFarm, 'webhook_endpoints/'.$webhook['id'], mode: 'DELETE');
+			}
+
+		}
+
+		// On crée un nouveau webhook
 		$arguments = [
 			'url' => self::getWebhookUrl($eStripeFarm['farm']),
-			'description' => s("Webhook créé par Ouvretaferme"),
+			'description' => 'Created by '.\Lime::getName(),
 			'enabled_events' => [
 				'payment_intent.amount_capturable_updated',
 				'payment_intent.canceled',
@@ -45,7 +58,7 @@ class StripeLib {
 			],
 		];
 
-		$data = self::sendStripeRequest($eStripeFarm, $endpoint, $arguments);
+		$data = self::sendStripeRequest($eStripeFarm, 'webhook_endpoints', $arguments);
 
 		$eStripeFarm['webhookSecretKey'] = $data['secret'];
 
@@ -57,32 +70,27 @@ class StripeLib {
 
 	public static function getWebhooks(StripeFarm $eStripeFarm): array {
 
-		$endpoint = 'webhook_endpoints';
-
-		return self::sendStripeRequest($eStripeFarm, $endpoint, mode: 'GET');
+		return self::sendStripeRequest($eStripeFarm, 'webhook_endpoints', mode: 'GET');
 
 	}
 
 	public static function createCheckoutSession(StripeFarm $eStripeFarm, array $arguments): array {
-
-		$endpoint = 'checkout/sessions';
 
 		$arguments += [
 			'mode' => 'payment',
 			'payment_method_types' => ['card'],
 		];
 
-		return self::sendStripeRequest($eStripeFarm, $endpoint, $arguments);
+		return self::sendStripeRequest($eStripeFarm, 'checkout/sessions', $arguments);
 
 	}
 
 	public static function getStripeCheckoutSessionFromPaymentIntent(StripeFarm $eStripeFarm, string $paymentIntentId) {
 
-		$endpoint = 'checkout/sessions';
 		$arguments = [
 			'payment_intent' => $paymentIntentId,
 		];
-		return self::sendStripeRequest($eStripeFarm, $endpoint, $arguments, mode: 'GET');
+		return self::sendStripeRequest($eStripeFarm, 'checkout/sessions', $arguments, mode: 'GET');
 
 	}
 
@@ -243,7 +251,7 @@ class StripeLib {
 		if($httpCode === 200) {
 			return json_decode($data, TRUE);
 		} else {
-			throw new \Exception('Stripe error (HTTP code is '.$httpCode.')');
+			throw new \Exception('Stripe error (HTTP code is '.$httpCode.')', $httpCode);
 		}
 
 	}

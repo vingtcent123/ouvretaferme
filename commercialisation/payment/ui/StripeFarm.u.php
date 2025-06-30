@@ -39,17 +39,28 @@ class StripeFarmUi {
 		$h .= '<dl class="util-presentation util-presentation-1">';
 			$h .= '<dt>'.self::p('apiSecretKey')->label.'</dt>';
 			$h .= '<dd>rk_live_...'.substr($eStripeFarm['apiSecretKey'], -4).'</dd>';
-			if($eStripeFarm['apiSecretKeyTest'] !== NULL) {
-				$h .= '<dt>'.self::p('apiSecretKeyTest')->label.'</dt>';
-				$h .= '<dd>sk_test_...'.substr($eStripeFarm['apiSecretKeyTest'], -4).'</dd>';
-			}
 			$h .= '<dt>'.self::p('webhookSecretKey')->label.'</dt>';
 			$h .= '<dd>whsec_...'.substr($eStripeFarm['webhookSecretKey'], -4).'</dd>';
-			if($eStripeFarm['webhookSecretKeyTest'] !== NULL) {
-				$h .= '<dt>'.self::p('webhookSecretKeyTest')->label.'</dt>';
-				$h .= '<dd>whsec_...'.substr($eStripeFarm['webhookSecretKeyTest'], -4).'</dd>';
-			}
 		$h .= '</dl>';
+
+		if($eStripeFarm['apiSecretKeyTest'] !== NULL or $eStripeFarm['webhookSecretKeyTest'] !== NULL) {
+
+			$h .= '<br/>';
+
+			$h .= '<h3>'.s("Mode test").'</h3>';
+
+			$h .= '<dl class="util-presentation util-presentation-1">';
+				if($eStripeFarm['apiSecretKeyTest'] !== NULL) {
+					$h .= '<dt>'.self::p('apiSecretKeyTest')->label.'</dt>';
+					$h .= '<dd>sk_test_...'.substr($eStripeFarm['apiSecretKeyTest'], -4).'</dd>';
+				}
+				if($eStripeFarm['webhookSecretKeyTest'] !== NULL) {
+					$h .= '<dt>'.self::p('webhookSecretKeyTest')->label.'</dt>';
+					$h .= '<dd>whsec_...'.substr($eStripeFarm['webhookSecretKeyTest'], -4).'</dd>';
+				}
+			$h .= '</dl>';
+
+		}
 
 		$h .= '<br/>';
 
@@ -96,7 +107,7 @@ class StripeFarmUi {
 				\farm\FarmUi::link($eFarm, TRUE)
 			);
 
-			$h .= $form->dynamicGroups($eStripeFarm, ['apiSecretKey', 'webhookSecretKey']);
+			$h .= $form->dynamicGroups($eStripeFarm, ['apiSecretKey']);
 
 			$h .= $form->group(
 				content: $form->submit(s("Enregistrer les clés"))

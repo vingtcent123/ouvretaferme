@@ -23,11 +23,6 @@ abstract class FarmerElement extends \Element {
 	const WEEKLY = 'weekly';
 	const YEARLY = 'yearly';
 
-	const TIME = 'time';
-	const TEAM = 'team';
-	const PACE = 'pace';
-	const PERIOD = 'period';
-
 	const TOTAL = 'total';
 
 	const VARIETY = 'variety';
@@ -54,6 +49,7 @@ abstract class FarmerElement extends \Element {
 	const ITEM = 'item';
 	const CUSTOMER = 'customer';
 	const SHOP = 'shop';
+	const PERIOD = 'period';
 
 	const TURNOVER = 'turnover';
 	const QUANTITY = 'quantity';
@@ -106,7 +102,6 @@ class FarmerModel extends \ModuleModel {
 			'role' => ['enum', [\farm\Farmer::SEASONAL, \farm\Farmer::PERMANENT, \farm\Farmer::OWNER, \farm\Farmer::OBSERVER], 'null' => TRUE, 'cast' => 'enum'],
 			'viewPlanning' => ['enum', [\farm\Farmer::DAILY, \farm\Farmer::WEEKLY, \farm\Farmer::YEARLY], 'cast' => 'enum'],
 			'viewPlanningYear' => ['int16', 'min' => 0, 'max' => NULL, 'null' => TRUE, 'cast' => 'int'],
-			'viewPlanningCategory' => ['enum', [\farm\Farmer::TIME, \farm\Farmer::TEAM, \farm\Farmer::PACE, \farm\Farmer::PERIOD], 'cast' => 'enum'],
 			'viewPlanningHarvestExpected' => ['enum', [\farm\Farmer::TOTAL, \farm\Farmer::WEEKLY], 'cast' => 'enum'],
 			'viewPlanningField' => ['enum', [\farm\Farmer::VARIETY, \farm\Farmer::SOIL], 'cast' => 'enum'],
 			'viewPlanningArea' => ['enum', [\farm\Farmer::AREA, \farm\Farmer::LENGTH], 'cast' => 'enum'],
@@ -131,7 +126,7 @@ class FarmerModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'user', 'farm', 'farmGhost', 'farmStatus', 'status', 'role', 'viewPlanning', 'viewPlanningYear', 'viewPlanningCategory', 'viewPlanningHarvestExpected', 'viewPlanningField', 'viewPlanningArea', 'viewPlanningSearch', 'viewPlanningUser', 'viewCultivationCategory', 'viewSeries', 'viewSoil', 'viewSellingSales', 'viewSellingCategory', 'viewSellingCategoryCurrent', 'viewShopCatalogCurrent', 'viewAnalyzeChart', 'viewAnalyzeComposition', 'viewAnalyzeYear', 'viewAnalyzeAccountingYear', 'viewAnalyzeAccountingFinancials', 'viewAnalyzeAccountingStatements', 'viewSeason', 'viewShopCurrent', 'createdAt'
+			'id', 'user', 'farm', 'farmGhost', 'farmStatus', 'status', 'role', 'viewPlanning', 'viewPlanningYear', 'viewPlanningHarvestExpected', 'viewPlanningField', 'viewPlanningArea', 'viewPlanningSearch', 'viewPlanningUser', 'viewCultivationCategory', 'viewSeries', 'viewSoil', 'viewSellingSales', 'viewSellingCategory', 'viewSellingCategoryCurrent', 'viewShopCatalogCurrent', 'viewAnalyzeChart', 'viewAnalyzeComposition', 'viewAnalyzeYear', 'viewAnalyzeAccountingYear', 'viewAnalyzeAccountingFinancials', 'viewAnalyzeAccountingStatements', 'viewSeason', 'viewShopCurrent', 'createdAt'
 		]);
 
 		$this->propertiesToModule += [
@@ -164,9 +159,6 @@ class FarmerModel extends \ModuleModel {
 
 			case 'viewPlanning' :
 				return Farmer::WEEKLY;
-
-			case 'viewPlanningCategory' :
-				return Farmer::TIME;
 
 			case 'viewPlanningHarvestExpected' :
 				return Farmer::TOTAL;
@@ -228,9 +220,6 @@ class FarmerModel extends \ModuleModel {
 				return ($value === NULL) ? NULL : (string)$value;
 
 			case 'viewPlanning' :
-				return ($value === NULL) ? NULL : (string)$value;
-
-			case 'viewPlanningCategory' :
 				return ($value === NULL) ? NULL : (string)$value;
 
 			case 'viewPlanningHarvestExpected' :
@@ -335,10 +324,6 @@ class FarmerModel extends \ModuleModel {
 
 	public function whereViewPlanningYear(...$data): FarmerModel {
 		return $this->where('viewPlanningYear', ...$data);
-	}
-
-	public function whereViewPlanningCategory(...$data): FarmerModel {
-		return $this->where('viewPlanningCategory', ...$data);
 	}
 
 	public function whereViewPlanningHarvestExpected(...$data): FarmerModel {
