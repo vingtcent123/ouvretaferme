@@ -65,8 +65,10 @@ class Farm {
 
 		if(event === 'click') {
 
-			if(document.body.dataset.section === target.dataset.section) {
-				this.closeSection();
+			if(
+				window.matchMedia('(max-width: 1099px), (max-height: 649px)').matches &&
+				document.body.dataset.section === target.dataset.section
+			) {
 				return;
 			}
 
