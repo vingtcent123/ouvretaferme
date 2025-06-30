@@ -217,7 +217,7 @@ class StripeLib {
 		$expectedSignature = hash_hmac('sha256', $signedPayload, $webhookSecretKey);
 
 		if($expectedSignature !== $elements['v1']) {
-			throw new \Exception('Stripe webhook: Error in checkSignature (t = '.$elements['t'].', v1 = '.$elements['v1'].').');
+			throw new \Exception('Stripe webhook: Error in checkSignature (t = '.$elements['t'].', v1 = '.$elements['v1'].', payload = '.$payload.').');
 		}
 
 	}
