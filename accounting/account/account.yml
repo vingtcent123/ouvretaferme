@@ -26,6 +26,13 @@ FinancialYear:
   createdAt: datetime = SPECIAL(now)
   createdBy: user\User = SPECIAL(user)
 
+Log:
+  action: text8
+  element: text8
+  params: ?json = PHP([])
+  doneBy: ?user\User = SPECIAL(user)
+  createdAt: datetime = SPECIAL(now)
+
 Partner:
   partner: enum(DROPBOX)
   accessToken: text16

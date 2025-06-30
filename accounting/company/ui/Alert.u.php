@@ -32,10 +32,6 @@ class AlertUi {
 			'Company::updated' => s("Vos paramètres ont bien été mis à jour !"),
 			'Company::closed' => s("Votre ferme a bien été supprimée !"),
 
-			'Subscription::activated' => s("Votre abonnement a bien été activé !"),
-			'Subscription::prolongated' => s("Votre abonnement a bien été prolongé !"),
-			'Subscription::pack' => s("Votre pack est maintenant actif !"),
-
 			default => null
 
 		};

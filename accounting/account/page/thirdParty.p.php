@@ -31,7 +31,7 @@ new \account\ThirdPartyPage(
 		throw new ViewAction($data);
 
 	})
-	->quick(['name'])
+	->quick(['name'], ['name' => fn($data) => \account\LogLib::save('update', 'thirdParty', ['field' => 'name', 'id' => $data['e']['id']])])
 	->doDelete(fn($data) => throw new ReloadAction('account', 'ThirdParty::deleted'));
 
 new Page(function($data) {

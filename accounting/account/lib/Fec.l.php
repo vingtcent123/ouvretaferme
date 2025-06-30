@@ -73,6 +73,8 @@ class FecLib  {
 
 		}
 
+		LogLib::save('generateFec', 'operation', ['financialYear' => $eFinancialYear['id']]);
+
 		return join("\n", $fecData);
 
 	}

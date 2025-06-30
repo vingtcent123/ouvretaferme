@@ -5,6 +5,7 @@ Lettering:
   code: text8(1, null)
   amount: decimal(8, 2)
   createdAt: datetime = SPECIAL(now)
+  createdBy: ?user\User = SPECIAL(user)
   INDEX: [
     ["credit"],
     ["debit"]

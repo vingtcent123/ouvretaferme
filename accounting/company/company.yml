@@ -2,7 +2,6 @@ Company:
   id: serial32
   farm: farm\Farm
   accountingType: enum(ACCRUAL, CASH) = CASH
-  subscriptionType: ?set(ACCOUNTING, PRODUCTION, SALES)
   UNIQUE: [
     ["farm"]
   ]
@@ -19,29 +18,3 @@ GenericAccount:
     ["class"]
   ]
 
-Subscription:
-  id: serial32
-  company: company\Company
-  type: enum(ACCOUNTING, PRODUCTION, SALES)
-  startsAt: date
-  endsAt: date
-  createdAt: datetime = SQL(NOW())
-  updatedAt: datetime = SQL(NOW())
-  createdBy: user\User = SPECIAL(user)
-  UNIQUE: [
-    ["company", "type"]
-  ]
-
-SubscriptionHistory:
-  id: serial32
-  company: company\Company
-  type: enum(ACCOUNTING, PRODUCTION, SALES)
-  isPack: bool
-  isBio: bool
-  startsAt: date
-  endsAt: date
-  createdBy: ?user\User = SPECIAL(user)
-  createdAt: datetime = SQL(NOW())
-  INDEX: [
-    ["company"]
-  ]

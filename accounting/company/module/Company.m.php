@@ -10,10 +10,6 @@ abstract class CompanyElement extends \Element {
 	const ACCRUAL = 'accrual';
 	const CASH = 'cash';
 
-	const ACCOUNTING = 1;
-	const PRODUCTION = 2;
-	const SALES = 4;
-
 	public static function getSelection(): array {
 		return Company::model()->getProperties();
 	}
@@ -46,11 +42,10 @@ class CompanyModel extends \ModuleModel {
 			'id' => ['serial32', 'cast' => 'int'],
 			'farm' => ['element32', 'farm\Farm', 'unique' => TRUE, 'cast' => 'element'],
 			'accountingType' => ['enum', [\company\Company::ACCRUAL, \company\Company::CASH], 'cast' => 'enum'],
-			'subscriptionType' => ['set', [\company\Company::ACCOUNTING, \company\Company::PRODUCTION, \company\Company::SALES], 'null' => TRUE, 'cast' => 'set'],
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'farm', 'accountingType', 'subscriptionType'
+			'id', 'farm', 'accountingType'
 		]);
 
 		$this->propertiesToModule += [
@@ -109,10 +104,6 @@ class CompanyModel extends \ModuleModel {
 
 	public function whereAccountingType(...$data): CompanyModel {
 		return $this->where('accountingType', ...$data);
-	}
-
-	public function whereSubscriptionType(...$data): CompanyModel {
-		return $this->where('subscriptionType', ...$data);
 	}
 
 

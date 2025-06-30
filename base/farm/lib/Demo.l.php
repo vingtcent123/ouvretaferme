@@ -16,6 +16,7 @@ class DemoLib {
 
 	const COPY_MODULE_EXCLUDE = [
 		'account\Account',
+		'account\Log',
 		'account\Partner',
 		'account\ThirdParty',
 		'asset\Asset',
@@ -23,8 +24,6 @@ class DemoLib {
 		'bank\BankAccount',
 		'bank\Cashflow',
 		'bank\Import',
-		'company\Subscription',
-		'company\SubscriptionHistory',
 		'journal\Lettering',
 		'journal\Operation',
 		'farm\Invite',

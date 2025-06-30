@@ -136,6 +136,8 @@ Class DropboxLib {
 
 		$curl->exec(self::API_CONTENT_URL.'/2/files/upload', $params, 'POST', $options);
 
+		LogLib::save('upload', 'dropbox', ['distantFile' => $distantFile, 'localFile' => $localFile]);
+
 	}
 
 	public static function createFolder(string $folderPath): void {
@@ -213,6 +215,8 @@ Class DropboxLib {
 				->wherePartner(Partner::DROPBOX)
 				->delete();
 
+			LogLib::save('delete', 'dropbox', ['refreshToken' => 'invalid']);
+
 		} else {
 
 			$ePartner = new Partner([
@@ -225,6 +229,8 @@ Class DropboxLib {
 			]);
 
 			Partner::model()->option('add-replace')->insert($ePartner);
+
+			LogLib::save('refreshToken', 'dropbox');
 
 		}
 
@@ -259,6 +265,8 @@ Class DropboxLib {
 		]);
 
 		Partner::model()->option('add-replace')->insert($ePartner);
+
+		LogLib::save('getAccessToken', 'dropbox');
 
 	}
 	public static function getAuthorizeUrl(\farm\Farm $eFarm): string {
@@ -295,6 +303,8 @@ Class DropboxLib {
 		$curl = new \util\CurlLib();
 
 		$curl->exec(self::API_URL.'/2/auth/token/revoke', $params, 'POST', $options);
+
+		LogLib::save('revoke', 'dropbox');
 
 		return $curl->getLastInfos()['httpCode'] === 200;
 	}

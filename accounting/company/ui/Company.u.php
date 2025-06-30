@@ -196,11 +196,6 @@ class CompanyUi {
 						$h .= \Asset::icon('gear-fill');
 					$h .= '</a>';
 
-					$h .= '<a href="'.SubscriptionUi::urlManage($eFarm).'" class="util-button">';
-						$h .= '<h4>'.s("L'abonnement<br/>de la ferme").'</h4>';
-						$h .= \Asset::icon('cart4');
-					$h .= '</a>';
-
 				}
 
 				$h .= '<a href="'.CompanyUi::urlBank($eFarm).'/account" class="util-button">';

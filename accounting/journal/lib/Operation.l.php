@@ -194,6 +194,9 @@ class OperationLib extends OperationCrud {
 					->update(['document' => $e['document'], 'documentDate' => new \Sql('NOW()')]);
 			}
 		}
+
+		\account\LogLib::save('update', 'Operation', ['id' => $e['id'], 'properties' => $properties]);
+
 	}
 
 	public static function getNotLetteredOperationsByThirdParty(\account\ThirdParty $eThirdParty): \Collection {
@@ -600,6 +603,8 @@ class OperationLib extends OperationCrud {
 
 		\journal\Operation::model()->commit();
 
+		\account\LogLib::save('delete', 'Operation', ['id' => $e['id']]);
+
 	}
 
 	private static function addOpenFinancialYearCondition(): OperationModel {
@@ -737,7 +742,6 @@ class OperationLib extends OperationCrud {
 
 		\journal\Operation::model()->insert($eOperationBank);
 
-
 		return $eOperationBank;
 
 	}
@@ -801,6 +805,8 @@ class OperationLib extends OperationCrud {
       ->delete();
 
 		Operation::model()->commit();
+
+		\account\LogLib::save('deleteByCashflow', 'Operation', ['id' => $eCashflow['id']]);
 
 	}
 

@@ -42,15 +42,17 @@ class LetteringModel extends \ModuleModel {
 			'code' => ['text8', 'min' => 1, 'max' => NULL, 'cast' => 'string'],
 			'amount' => ['decimal', 'digits' => 8, 'decimal' => 2, 'cast' => 'float'],
 			'createdAt' => ['datetime', 'cast' => 'string'],
+			'createdBy' => ['element32', 'user\User', 'null' => TRUE, 'cast' => 'element'],
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'credit', 'debit', 'code', 'amount', 'createdAt'
+			'id', 'credit', 'debit', 'code', 'amount', 'createdAt', 'createdBy'
 		]);
 
 		$this->propertiesToModule += [
 			'credit' => 'journal\Operation',
 			'debit' => 'journal\Operation',
+			'createdBy' => 'user\User',
 		];
 
 		$this->indexConstraints = array_merge($this->indexConstraints, [
@@ -66,6 +68,9 @@ class LetteringModel extends \ModuleModel {
 
 			case 'createdAt' :
 				return new \Sql('NOW()');
+
+			case 'createdBy' :
+				return \user\ConnectionLib::getOnline();
 
 			default :
 				return parent::getDefaultValue($property);
@@ -104,6 +109,10 @@ class LetteringModel extends \ModuleModel {
 
 	public function whereCreatedAt(...$data): LetteringModel {
 		return $this->where('createdAt', ...$data);
+	}
+
+	public function whereCreatedBy(...$data): LetteringModel {
+		return $this->where('createdBy', ...$data);
 	}
 
 

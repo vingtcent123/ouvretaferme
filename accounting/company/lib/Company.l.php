@@ -27,14 +27,7 @@ class CompanyLib extends CompanyCrud {
 		$eCompany = new Company();
 
 		Company::model()
-      ->select(
-				Company::getSelection() + [
-						'cSubscription' => Subscription::model()
-              ->select(Subscription::getSelection())
-							->sort(['endsAt' => SORT_DESC])
-              ->delegateCollection('company')
-					],
-      )
+      ->select(Company::getSelection())
 			->whereId($id)
       ->get($eCompany);
 
@@ -145,8 +138,6 @@ class CompanyLib extends CompanyCrud {
 
 		\account\FinancialYear::model()->insert($eFinancialYear);
 
-
-		// TODO subscribe SET BIO FARM : subscription auto ?
 	}
 
 	public static function createSpecificDatabaseAndTables(\farm\Farm $eFarm): void {

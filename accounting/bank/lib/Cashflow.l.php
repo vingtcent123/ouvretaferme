@@ -114,6 +114,8 @@ class CashflowLib extends CashflowCrud {
 			->update($eCashflow->extracts(['status', 'updatedAt']));
 
 		Cashflow::model()->commit();
+
+		\account\LogLib::save('attach', 'cashflow', ['id' => $eCashflow['id'], 'operations' => $operations]);
 	}
 }
 ?>

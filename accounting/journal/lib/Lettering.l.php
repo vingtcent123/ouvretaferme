@@ -134,6 +134,8 @@ class LetteringLib extends LetteringCrud {
 
 			Lettering::model()->insert($eLettering);
 
+			\account\LogLib::save('letter', 'Letter', ['id' => $eOperation['id']]);
+
 		}
 
 	}

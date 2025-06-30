@@ -46,12 +46,17 @@ class FinancialYearLib extends FinancialYearCrud {
 	 */
 	public static function closeBalanceSheet(FinancialYear $eFinancialYear): void {
 
+
+		LogLib::save('closeBalanceSheet', 'financialYear', ['id' => $eFinancialYear['id']]);
+
 	}
 
 	/**
 	 * Bilan d'ouverture
 	 */
 	public static function openBalanceSheet(FinancialYear $eFinancialYear): void {
+
+		LogLib::save('openBalanceSheet', 'financialYear', ['id' => $eFinancialYear['id']]);
 
 	}
 
@@ -94,6 +99,8 @@ class FinancialYearLib extends FinancialYearCrud {
 		\journal\OperationLib::setNumbers($eFinancialYear);
 
 		FinancialYear::model()->commit();
+
+		LogLib::save('close', 'financialYear', ['id' => $eFinancialYear['id']]);
 
 	}
 

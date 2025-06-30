@@ -69,6 +69,8 @@ class BankAccountLib extends BankAccountCrud {
 		if(in_array('label', $properties) === TRUE) {
 			\journal\OperationLib::updateAccountLabels($e);
 		}
+
+		\account\LogLib::save('update', 'bank', ['id' => $e['id'], 'properties' => $properties]);
 	}
 }
 ?>
