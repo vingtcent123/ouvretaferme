@@ -32,7 +32,7 @@ class StripeLib {
 			if(
 				$webhook['object'] === 'webhook_endpoint' and
 				str_starts_with($webhook['url'], self::getWebhookUrl($eStripeFarm['farm']))
-			) {;
+			) {
 				self::sendStripeRequest($eStripeFarm, 'webhook_endpoints/'.$webhook['id'], mode: 'DELETE');
 			}
 
@@ -235,7 +235,7 @@ class StripeLib {
 
 		$header = ['Authorization: Bearer '.$key];
 
-		if($mode === 'POST') {
+		if($mode === 'POST' or $mode === 'DELETE') {
 			$header[] = 'Content-Type: application/x-www-form-urlencoded';
 		}
 
