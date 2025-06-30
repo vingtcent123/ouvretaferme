@@ -19,6 +19,17 @@ new Lime.Instruction('main')
 
 
 	})
+	.register('updateNavPlanning', function(url, period) {
+
+		qs('#farm-nav [data-nav="planning"]', node => node.setAttribute('href', url));
+
+		if(qs('#farm-tab-planning-period')) {
+			qs('#farm-tab-planning-period').innerHTML = qs('#farm-tab-planning-'+ period).innerHTML;
+			qsa('[data-dropdown-id="farm-tab-planning-list"] .dropdown-item', item => item.classList.remove('selected'))
+			qs('#farm-tab-planning-'+ period).classList.add('selected');
+		}
+
+	})
 	.register('keepScroll', function() {
 
 		if(

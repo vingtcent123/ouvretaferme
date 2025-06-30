@@ -16,7 +16,8 @@
 }
 
 .farm-tab {
-	display: block;
+	display: flex;
+	align-items: center;
 	padding: 0.75rem 1rem;
 	text-decoration: none;
 	color: white;
@@ -31,7 +32,7 @@
 @media (max-height: 699px) {
 
 	.farm-tab {
-		padding: 0.5rem;
+		padding: 0.75rem;
 	}
 
 }
@@ -48,7 +49,7 @@ a.farm-tab:not(.farm-tab-subnav):hover {
 	text-decoration: underline;
 }
 
-.farm-tab:not(.farm-tab-subnav).selected {
+.farm-tab-wrapper:has(.farm-tab:not(.farm-tab-subnav).selected) {
 	background-color: #0003;
 }
 
@@ -62,6 +63,32 @@ a.farm-tab:not(.farm-tab-subnav):hover {
 
 .farm-tab .farm-tab-icon svg {
 	font-size: 1.2rem;
+}
+
+.farm-tab-complement {
+	display: inline-flex;
+	align-items: center;
+	line-height: 1;
+	border-radius: 1rem;
+	font-weight: normal;
+	font-size: 0.9rem;
+	border: 1px solid white;
+	padding: 0.5rem;
+	color: white;
+}
+
+a.farm-tab-complement:hover {
+	text-decoration: none;
+}
+
+.farm-tab-complement svg {
+	margin-bottom: -0.125rem;
+}
+
+div.farm-nav-planning {
+	display: flex;
+	align-items: center;
+	column-gap: 0.25rem;
 }
 
 a.farm-subnav-item {
@@ -557,7 +584,9 @@ body[data-template^="farm"] header a:hover {
 		.farm-section-production {
 			display: grid;
 			align-items: start;
-			grid-template: "planning cultivation analyze settings" auto / 1fr 1fr 1fr 1fr;
+			grid-template:
+				"planning planning planning" auto
+				"cultivation analyze settings" 1fr / 1fr 1fr 1fr;
 		}
 
 
@@ -569,8 +598,8 @@ body[data-template^="farm"] header a:hover {
 			display: grid;
 			align-items: start;
 			grid-template:
-					"planning cultivation analyze" auto
-					"planning cultivation settings" 1fr / 1fr 1fr 1fr;
+				"planning planning planning" auto
+				"cultivation analyze settings" 1fr / 1fr 1fr 1fr;
 		}
 
 
@@ -582,8 +611,9 @@ body[data-template^="farm"] header a:hover {
 			display: grid;
 			align-items: start;
 			grid-template:
-					"planning cultivation" auto
-					"analyze settings" 1fr / 1fr 1fr;
+				"planning planning" auto
+				"cultivation analyze" auto
+				"cultivation settings" auto / 1fr 1fr;
 		}
 
 
@@ -726,8 +756,8 @@ body[data-template^="farm"] header a:hover {
 			align-items: start;
 			grid-template:
 				"bank assets" auto
-				"journal assets" auto
-				"analyze settings" auto / auto auto;
+				"journal analyze" auto
+				"journal settings" auto / auto auto;
 		}
 
 
@@ -757,9 +787,13 @@ body[data-template^="farm"] header a:hover {
 		top: var(--farmSections);
 		width: 100%;
 		padding: 0.5rem 1rem 1rem 0.5rem;
-		gap: 1rem;
+		gap: 0 0.5rem;
 		box-shadow: 0 0 1rem #0003;
 		z-index: 3;
+	}
+
+	.farm-tab-wrapper {
+		border-radius: var(--radius);
 	}
 
 	.farm-tab {
@@ -791,7 +825,7 @@ body[data-template^="farm"] header a:hover {
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		background-color: #0003;
+		background-color: #0006;
 		color: white;
 	}
 
@@ -849,7 +883,7 @@ body[data-template^="farm"] header a:hover {
 		display: grid;
 		align-items: center;
 		grid-template-columns: max-content 1fr;
-		padding-left: calc(var(--container-padding) + 0.5rem);
+		padding-left: var(--container-padding);
 		padding-right: var(--container-padding);
 		color: white;
 		letter-spacing: -0.1px;
@@ -886,7 +920,7 @@ body[data-template^="farm"] header a:hover {
 		bottom: 0;
 		display: flex;
 		align-items: center;
-		padding-left: var(--container-padding);
+		padding-left: max(1rem, var(--container-padding));
 		z-index: 2;
 		pointer-events: none;
 	}

@@ -80,6 +80,8 @@ new AdaptativeView('planning', function($data, FarmTemplate $t) {
 
 	}
 
+	$t->package('main')->updateNavPlanning($t->canonical, $period);
+
 	$t->js()->replaceHistory($t->canonical);
 
 });

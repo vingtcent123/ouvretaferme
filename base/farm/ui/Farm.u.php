@@ -660,11 +660,14 @@ class FarmUi {
 
 	}
 
-	protected function getNav(string $section, string $nav, bool $disabled = FALSE, ?string $link = NULL): string {
+	protected function getNav(string $section, string $nav, bool $disabled = FALSE, ?string $link = NULL, ?string $complement = NULL): string {
 
-		$h = ($link ? '<a href="'.$link.'"' : '<div').' data-nav="'.$nav.'" class="farm-tab '.($link === NULL ? 'farm-tab-subnav' : '').' '.($disabled ? 'disabled' : '').' '.($nav === $section ? 'selected' : '').'">';
+		$h = ($link ? '<a href="'.$link.'"' : '<div').' data-nav="'.$section.'" class="farm-tab '.($link === NULL ? 'farm-tab-subnav' : '').' '.($disabled ? 'disabled' : '').' '.($nav === $section ? 'selected' : '').'">';
 			$h .= '<span class="farm-tab-icon">'.$this->getMenu($section)['icon'].'</span>';
 			$h .= '<span class="farm-tab-label">'.$this->getMenu($section)['label'].'</span>';
+			if($complement !== NULL) {
+				$h .= $complement;
+			}
 		$h .= '</'.($link ? 'a' : 'div').'>';
 
 		return $h;
@@ -860,9 +863,15 @@ class FarmUi {
 
 			$h .= '<div class="farm-tab-wrapper farm-nav-planning">';
 
-				$h .= $this->getNav('planning', $nav);
+				$selectedPeriod = $eFarm->getView('viewPlanning');
 
+				$h .= $this->getNav('planning', $nav, link: FarmUi::urlPlanning($eFarm));
+
+				$h .= '<a class="farm-tab-complement" data-dropdown="bottom-left" data-dropdown-id="farm-tab-planning" data-dropdown-hover="true">';
+					$h .= '<span id="farm-tab-planning-period">'.$this->getCategoryName($eFarm, 'planning', $selectedPeriod).'</span> '.\Asset::icon('chevron-down');
+				$h .= '</a>';
 				$h .= $this->getPlanningMenu($eFarm, subNav: $subNav);
+
 
 			$h .= '</div>';
 
@@ -1062,11 +1071,17 @@ class FarmUi {
 
 	public function getPlanningMenu(Farm $eFarm, ?string $subNav = NULL): string {
 
-		return $this->getSubNav(
-			$eFarm,
-			'planning',
-			$subNav
-		);
+		$h = '<div data-dropdown-id="farm-tab-planning-list" class="dropdown-list bg-production">';
+
+			foreach($this->getCategories($eFarm, 'planning') as $name) {
+
+				$h .= '<a href="'.$this->getCategoryUrl($eFarm, 'planning', $name).'" id="farm-tab-planning-'.$name.'" class="dropdown-item '.($name === $subNav ? 'selected' : '').'">'.$this->getCategoryName($eFarm, 'planning', $name).'</a>';
+
+			}
+
+		$h .= '</div>';
+
+		return $h;
 
 	}
 
