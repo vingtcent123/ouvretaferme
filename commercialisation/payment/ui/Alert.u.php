@@ -15,6 +15,7 @@ class AlertUi {
 
 			'StripeFarm::apiSecretKey.check' => s("La clé que vous avez saisie n'est pas au bon format."),
 			'StripeFarm::apiSecretKey.end' => s("La clé que vous avez saisie n'est pas reconnue par Stripe, veuillez vérifier la configuration de votre compte Stripe."),
+			'StripeFarm::webhook' => s("La clé que vous avez saisie est correcte, mais ne semble pas avoir les droits en écriture sur les Webhooks, veuillez en vérifier la configuration sur votre compte Stripe."),
 
 			'Cb::error' => s("Une erreur est intervenue pendant la procédure, la commande n'a pas abouti."),
 

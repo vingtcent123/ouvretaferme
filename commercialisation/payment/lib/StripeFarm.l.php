@@ -13,9 +13,20 @@ class StripeFarmLib extends StripeFarmCrud {
 
 			parent::create($e);
 
-			StripeLib::createWebhook($e);
+			try {
 
-		StripeFarm::model()->commit();
+				StripeLib::createWebhook($e);
+
+				StripeFarm::model()->commit();
+
+			}
+			catch(\Exception) {
+
+				\Fail::log('StripeFarm::webhook');
+
+				StripeFarm::model()->rollBack();
+
+			}
 
 	}
 
