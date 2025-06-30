@@ -34,6 +34,8 @@ Class MindeeLib {
 			$randomFile = 'mon-irrigation.json';
 			$data = json_decode(file_get_contents('/tmp/shared/'.$randomFile), TRUE);
 
+			$prediction = $data['prediction'];
+
 		} else {
 
 			$options = [
@@ -43,7 +45,6 @@ Class MindeeLib {
 					CURLOPT_RETURNTRANSFER => true,
 				],
 			];
-
 
 			$params = [
 				'document' => new \CURLFile($filepath, 'pdf', 'invoice.pdf')
@@ -56,9 +57,8 @@ Class MindeeLib {
 				throw new \NotExpectedAction('Unable to read invoice : '.json_encode($data['api_request']['error']));
 			}
 
+			$prediction = $data['document']['inference']['prediction'];
 		}
-
-		$prediction = $data['prediction'];
 
 		$documentType = $prediction['document_type']['value'];
 		if(in_array($documentType, [self::TYPE_INVOICE, self::TYPE_CREDIT_NOTE]) === FALSE) {

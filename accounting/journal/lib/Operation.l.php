@@ -920,7 +920,7 @@ class OperationLib extends OperationCrud {
 		\storage\DriverLib::sendBinary(file_get_contents($file['tmp_name']), self::TMP_INVOICE_FOLDER.'/'.$localFilename);
 
 		// Lecture sur Mindee
-		$operation = \company\MindeeLib::getInvoiceData($eFarm, \storage\DriverLib::getFileName($localFilename));
+		$operation = \company\MindeeLib::getInvoiceData($eFarm, \storage\DriverLib::getFileName(self::TMP_INVOICE_FOLDER.'/'.$localFilename));
 
 		// Récupération du tiers
 		$operation['eThirdParty'] = \account\ThirdPartyLib::selectFromOcrData($operation['thirdParty']);
