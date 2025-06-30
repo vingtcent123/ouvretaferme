@@ -26,15 +26,25 @@ class WidgetUi {
 				$h .= \shop\ShopUi::link($eShop);
 			$h .= '</h3>';
 
-			$h .= new \shop\ShopUi()->getDateHeader($eDate, cssPrefix: 'website-widget');
+			if($eDate->notEmpty()) {
 
-			if($eDate['isOrderable']) {
+				$h .= new \shop\ShopUi()->getDateHeader($eDate, cssPrefix: 'website-widget');
 
-				$url = $eShop['embedOnly'] ? $eShop['embedUrl'] : \shop\ShopUi::url($eShop);
+				if($eDate['isOrderable']) {
 
-				$h .= '<div class="website-widget-shop-order">';
-					$h .= '<a href="'.encode($url).'">&gt;  '.s("Commander en ligne").'  &lt;</a>';
-				$h .= '</div>';
+					$url = $eShop['embedOnly'] ? $eShop['embedUrl'] : \shop\ShopUi::url($eShop);
+
+					$h .= '<div class="website-widget-shop-order">';
+						$h .= '<a href="'.encode($url).'">&gt;  '.s("Commander en ligne").'  &lt;</a>';
+					$h .= '</div>';
+
+				}
+
+			} else {
+
+				$h .= '<p>';
+					$h .= s("Cette boutique n'est pas encore ouverte.");
+				$h .= '</p>';
 
 			}
 
