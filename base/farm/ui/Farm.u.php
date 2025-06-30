@@ -1038,6 +1038,10 @@ class FarmUi {
 				$subNav
 			);
 
+		} else {
+
+			$h .= $this->getNav('analyze-'.$section, $nav, disabled: TRUE);
+
 		}
 
 		return $h;
