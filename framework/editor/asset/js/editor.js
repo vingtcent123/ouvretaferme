@@ -3630,7 +3630,7 @@ class EditorVideo {
 
 	static vimeo(url) {
 
-		const re = /^https?:\/\/(www\.)?vimeo\.com\/([0-9]*)(#t=.*)?$/;
+		const re = /^https?:\/\/(www\.)?vimeo\.com\/([0-9]+)/;
 		const match = re.exec(url);
 
 		if(match === null) {
@@ -3641,7 +3641,7 @@ class EditorVideo {
 
 		return {
 			source: 'vimeo',
-			url: '//player.vimeo.com/video/' + idVideo
+			url: 'https://player.vimeo.com/video/' + idVideo
 		}
 	};
 
