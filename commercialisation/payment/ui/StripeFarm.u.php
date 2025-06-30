@@ -34,6 +34,11 @@ class StripeFarmUi {
 		$h .= '<div class="util-block-help">';
 			$h .= '<p>'.s("Le paiement en ligne est désormais activable sur l'ensemble de vos boutiques en ligne, et le produit de vos ventes sera versé directement sur votre compte Stripe.").'</p>';
 			$h .= self::getWarning();
+			$h .= '<h3>'.s("Pour la sécurité de vos paiements").'</h3>';
+			$h .= '<ul>';
+				$h .= '<li>'.s("Ne communiquez jamais les clés API et Webhook à des tiers !").'</li>';
+				$h .= '<li>'.s("La clé Webhook a été créée automatiquement par {siteName} sur votre compte Stripe et ne doit pas être supprimée").'</li>';
+			$h .= '</ul>';
 		$h .= '</div>';
 
 		$h .= '<dl class="util-presentation util-presentation-1">';
