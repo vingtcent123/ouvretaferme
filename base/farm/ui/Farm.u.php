@@ -925,7 +925,8 @@ class FarmUi {
 
 				} else {
 
-					$h .= $this->getNav('shop', $nav, link: FarmUi::urlShopList($eFarm));
+					$h .= $this->getNav('shop', $nav);
+					$h .= $this->getEmptyShopMenu($eFarm, subNav: $subNav);
 
 				}
 
@@ -1422,6 +1423,19 @@ class FarmUi {
 			'shop',
 			$subNav
 		);
+
+	}
+
+	public function getEmptyShopMenu(Farm $eFarm, ?string $subNav = NULL): string {
+
+		$h = '<div class="farm-subnav-wrapper">';
+			$h .= '<a href="'.self::urlShopList($eFarm).'" class="farm-subnav-item '.('shop' === $subNav ? 'selected' : '').'" data-sub-nav="shop">';
+				$h .= '<span class="farm-subnav-prefix">'.\Asset::icon('chevron-right').' </span>';
+				$h .= '<span>'.s("Créer une boutique").'</span>';
+			$h .= '</a>';
+		$h .= '</div>';
+
+		return $h;
 
 	}
 
