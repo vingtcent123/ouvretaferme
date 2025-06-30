@@ -28,6 +28,7 @@ class StripeLib {
 
 		$arguments = [
 			'url' => self::getWebhookUrl($eStripeFarm['farm']),
+			'description' => s("Webhook créé par Ouvretaferme"),
 			'enabled_events' => [
 				'payment_intent.amount_capturable_updated',
 				'payment_intent.canceled',
