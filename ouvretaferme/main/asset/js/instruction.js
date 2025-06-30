@@ -9,7 +9,7 @@ new Lime.Instruction('main')
 			farmNav.qs('[data-nav="'+ nav +'"]', node => node.classList.add('selected'));
 
 			farmNav.qsa('[data-sub-nav].selected', node => node.classList.remove('selected'));
-			farmNav.qs('[data-sub-nav="'+ subNav +'"]', node => node.classList.add('selected'));
+			farmNav.qsa('[data-sub-nav="'+ subNav +'"]', node => node.classList.add('selected'));
 
 			farmNav.qs('#farm-breadcrumbs', node => node.renderInner(breadcrumbs));
 
