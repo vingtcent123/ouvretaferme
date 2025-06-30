@@ -66,8 +66,6 @@ class TaskModel extends \ModuleModel {
 			'plannedUsers' => ['json', 'cast' => 'array'],
 			'doneWeek' => ['week', 'null' => TRUE, 'cast' => 'string'],
 			'doneDate' => ['date', 'null' => TRUE, 'cast' => 'string'],
-			'timelineStart' => ['date', 'null' => TRUE, 'cast' => 'string'],
-			'timelineStop' => ['date', 'null' => TRUE, 'cast' => 'string'],
 			'timesheetStart' => ['date', 'null' => TRUE, 'cast' => 'string'],
 			'timesheetStop' => ['date', 'null' => TRUE, 'cast' => 'string'],
 			'repeat' => ['element32', 'series\Repeat', 'null' => TRUE, 'cast' => 'element'],
@@ -78,7 +76,7 @@ class TaskModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'farm', 'season', 'cultivation', 'series', 'plant', 'variety', 'action', 'methods', 'tools', 'category', 'description', 'time', 'timeExpected', 'harvest', 'harvestUnit', 'harvestSize', 'fertilizer', 'plannedWeek', 'plannedDate', 'plannedUsers', 'doneWeek', 'doneDate', 'timelineStart', 'timelineStop', 'timesheetStart', 'timesheetStop', 'repeat', 'createdAt', 'createdBy', 'updatedAt', 'status'
+			'id', 'farm', 'season', 'cultivation', 'series', 'plant', 'variety', 'action', 'methods', 'tools', 'category', 'description', 'time', 'timeExpected', 'harvest', 'harvestUnit', 'harvestSize', 'fertilizer', 'plannedWeek', 'plannedDate', 'plannedUsers', 'doneWeek', 'doneDate', 'timesheetStart', 'timesheetStop', 'repeat', 'createdAt', 'createdBy', 'updatedAt', 'status'
 		]);
 
 		$this->propertiesToModule += [
@@ -281,14 +279,6 @@ class TaskModel extends \ModuleModel {
 
 	public function whereDoneDate(...$data): TaskModel {
 		return $this->where('doneDate', ...$data);
-	}
-
-	public function whereTimelineStart(...$data): TaskModel {
-		return $this->where('timelineStart', ...$data);
-	}
-
-	public function whereTimelineStop(...$data): TaskModel {
-		return $this->where('timelineStop', ...$data);
 	}
 
 	public function whereTimesheetStart(...$data): TaskModel {
