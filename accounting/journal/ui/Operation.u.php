@@ -185,9 +185,9 @@ class OperationUi {
 				$importButton .= $invoiceFileForm->submit(s("Envoyer la facture"), ['class' => 'hide', 'id' => 'read-invoice-submit']);
 			$importButton .= $invoiceFileForm->close();
 
-		}
+			$dialogOpen .= $importButton;
 
-		$dialogOpen .= $importButton;
+		}
 
 		$form = new \util\FormUi();
 
