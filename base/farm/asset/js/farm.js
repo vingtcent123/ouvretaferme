@@ -69,6 +69,7 @@ class Farm {
 				window.matchMedia('(max-width: 1099px), (max-height: 649px)').matches &&
 				document.body.dataset.section === target.dataset.section
 			) {
+				this.closeSection();
 				return;
 			}
 
