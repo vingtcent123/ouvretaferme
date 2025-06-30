@@ -18,6 +18,42 @@ class StripeLib {
 
 	}
 
+	public static function getWebhookUrl(\farm\Farm $eFarm): string {
+		return \Lime::getUrl().'/payment/stripe:webhook?farm='.$eFarm['id'];
+	}
+
+	public static function createWebhook(StripeFarm $eStripeFarm): void {
+
+		$endpoint = 'webhook_endpoints';
+
+		$arguments = [
+			'url' => self::getWebhookUrl($eStripeFarm['farm']),
+			'enabled_events' => [
+				'payment_intent.amount_capturable_updated',
+				'payment_intent.canceled',
+				'payment_intent.created',
+				'payment_intent.partially_funded',
+				'payment_intent.payment_failed',
+				'payment_intent.processing',
+				'payment_intent.requires_action',
+				'payment_intent.succeeded',
+				'checkout.session.async_payment_failed',
+				'checkout.session.async_payment_succeeded',
+				'checkout.session.completed',
+				'checkout.session.expired'
+			],
+		];
+
+		$data = self::sendStripeRequest($eStripeFarm, $endpoint, $arguments);
+
+		$eStripeFarm['webhookSecretKey'] = $data['secret'];
+
+		StripeFarm::model()
+			->select('webhookSecretKey')
+			->update($eStripeFarm);
+
+	}
+
 	public static function getWebhooks(StripeFarm $eStripeFarm): array {
 
 		$endpoint = 'webhook_endpoints';

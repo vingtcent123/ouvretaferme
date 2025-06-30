@@ -55,5 +55,15 @@ new Page()
 
 		throw new VoidAction();
 
+	})
+	->cli('createWebhook', function($data) {
+
+		$eFarm = \farm\FarmLib::getById(GET('farm'))->validate('active');
+		$eStripeFarm = \payment\StripeLib::getByFarm($eFarm)->validate();
+
+		var_dump(\payment\StripeLib::createWebhook($eStripeFarm));
+
+		throw new VoidAction();
+
 	});
 ?>
