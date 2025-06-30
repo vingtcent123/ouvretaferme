@@ -72,6 +72,12 @@ class CurlLib {
 				CURLOPT_POSTFIELDS => $params
 			]);
 
+		} else if($mode === 'DELETE') {
+
+			curl_setopt_array($curl, [
+				CURLOPT_CUSTOMREQUEST => 'DELETE',
+			]);
+
 		} else {
 			$url .= (strpos($url, '?') === FALSE ? '?' : '&').(is_array($params) ? http_build_query($params) : $params);
 		}
