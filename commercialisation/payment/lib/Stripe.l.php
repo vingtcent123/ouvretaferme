@@ -18,6 +18,14 @@ class StripeLib {
 
 	}
 
+	public static function getWebhooks(StripeFarm $eStripeFarm): array {
+
+		$endpoint = 'webhook_endpoints';
+
+		return self::sendStripeRequest($eStripeFarm, $endpoint, mode: 'GET');
+
+	}
+
 	public static function createCheckoutSession(StripeFarm $eStripeFarm, array $arguments): array {
 
 		$endpoint = 'checkout/sessions';
@@ -142,7 +150,6 @@ class StripeLib {
 		$webhookSecretKey = match(LIME_ENV) {
 			'dev' => $eStripeFarm['webhookSecretKeyTest'],
 			'prod' => $eStripeFarm['webhookSecretKey'],
-			'preprod' => $eStripeFarm['webhookSecretKeyTest'],
 		};
 
 		if($webhookSecretKey === NULL) {
@@ -175,7 +182,6 @@ class StripeLib {
 		$key = match(LIME_ENV) {
 			'dev' => $eStripeFarm['apiSecretKeyTest'],
 			'prod' => $eStripeFarm['apiSecretKey'],
-			'preprod' => $eStripeFarm['apiSecretKeyTest'],
 		};
 
 		if($key === NULL) {

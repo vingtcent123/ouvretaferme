@@ -300,7 +300,7 @@ abstract class NotAction extends Action {
 	 */
 	public function __construct(string $message, ?Action $alternateAction) {
 
-		if(LIME_ENV === 'dev' or LIME_ENV === 'preprod' or LIME_ENV === 'prod') {
+		if(LIME_ENV === 'dev' or LIME_ENV === 'prod') {
 
 			$backtrace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
 

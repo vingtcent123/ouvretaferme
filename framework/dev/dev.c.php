@@ -27,7 +27,6 @@ Setting::register('dev', [
 	// Url of monitoring site
 	'monitoringUrl' => [
 		'prod' => '',
-		'preprod' => '',
 		'dev' => '',
 	],
 

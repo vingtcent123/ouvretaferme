@@ -119,7 +119,7 @@ class CronLib {
 
 		sort($lines);
 
-		foreach(['dev', 'preprod', 'prod'] as $mode) {
+		foreach(['dev', 'prod'] as $mode) {
 			self::saveMode($lines, $directory, $mode);
 		}
 
