@@ -19,6 +19,8 @@ Setting::register('account', [
 
 	'thirdAccountGeneralClass' => 4,
 	'vatClass' => '445',
+	'payableVatClass' => '44551', // TVA à décaisser
+	'carriedVatClass' => '44567', // TVA à reporter
 	'bankAccountGeneralClass' => 5,
 	'chargeAccountClass' => 6,
 	'productAccountClass' => 7,

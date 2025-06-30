@@ -75,13 +75,19 @@ class FinancialYearLib extends FinancialYearCrud {
 
 		// Effectuer toutes les opérations de clôture :
 
-		// Calcul des amortissements
+		// 1- Calcul des amortissements
 		\asset\AssetLib::depreciateAll($eFinancialYear);
 
 		// Reprise des subventions dont l'amortissement de l'immobilisation est terminé
 		\asset\AssetLib::subventionReversal($eFinancialYear);
 
-		// Calcul de la TVA
+		// 2- Charges constatées d'avance
+
+		// 3- Produits à recevoir
+
+		// 4- Stocks de fin d'exercice
+
+		// 5- Calcul de la TVA
 		\journal\VatLib::balance($eFinancialYear);
 
 		if($createNew === TRUE) {
@@ -98,9 +104,9 @@ class FinancialYearLib extends FinancialYearCrud {
 		// Mettre les numéros d'écritures
 		\journal\OperationLib::setNumbers($eFinancialYear);
 
-		FinancialYear::model()->commit();
-
 		LogLib::save('close', 'financialYear', ['id' => $eFinancialYear['id']]);
+
+		FinancialYear::model()->commit();
 
 	}
 
