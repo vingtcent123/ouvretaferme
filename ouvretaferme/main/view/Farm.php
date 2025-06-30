@@ -198,7 +198,7 @@ class FarmTemplate extends MainTemplate {
 								foreach($this->data->cFarmUser as $eFarm) {
 
 									if($eFarm->is($this->data->eFarm) === FALSE) {
-										$farm .= '<a href="'.$eFarm->getProductionUrl().'" data-ajax-navigation="never" class="dropdown-item">'.\farm\FarmUi::getVignette($eFarm, '1.75rem').'&nbsp;&nbsp;'.encode($eFarm['name']).'</a>';
+										$farm .= '<a href="'.$eFarm->getUrl($this->section).'" data-ajax-navigation="never" class="dropdown-item">'.\farm\FarmUi::getVignette($eFarm, '1.75rem').'&nbsp;&nbsp;'.encode($eFarm['name']).'</a>';
 									}
 								}
 

@@ -293,6 +293,16 @@ class Farm extends FarmElement {
 		return ($this['legalCity'] !== NULL);
 	}
 
+	public function getUrl(?string $section): string {
+
+		return match($section) {
+			'accounting' => $this->getAccountingUrl(),
+			'commercialisation' => $this->getCommercialisationUrl(),
+			default => $this->getProductionUrl()
+		};
+
+	}
+
 	public function getProductionUrl(): string {
 
 		if($this->canPlanning()) {
