@@ -8,7 +8,6 @@ new AdaptativeView('balance-sheet', function($data, FarmTemplate $t) {
 	$t->canonical = \company\CompanyUi::urlOverview($data->eFarm).'/statements:bilans';
 
 	$t->mainTitle = new \overview\OverviewUi()->getStatementsTitle($data->eFarm, $data->selectedView);
-	$t->mainTitleClass = 'hide-lateral-down';
 
 	$t->mainYear = new \account\FinancialYearUi()->getFinancialYearTabs(
 		function(\account\FinancialYear $eFinancialYear) use ($data) {
@@ -67,7 +66,6 @@ new AdaptativeView('trial-balance', function($data, FarmTemplate $t) {
 	$t->canonical = \company\CompanyUi::urlOverview($data->eFarm).'/statements:balances';
 
 	$t->mainTitle = new \overview\OverviewUi()->getStatementsTitle($data->eFarm, $data->selectedView);
-	$t->mainTitleClass = 'hide-lateral-down';
 
 	$t->mainYear = new \account\FinancialYearUi()->getFinancialYearTabs(
 		function(\account\FinancialYear $eFinancialYear) use ($data) {

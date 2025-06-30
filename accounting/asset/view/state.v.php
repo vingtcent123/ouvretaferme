@@ -8,7 +8,6 @@ new AdaptativeView('index', function($data, FarmTemplate $t) {
 	$t->canonical = \company\CompanyUi::urlAsset($data->eFarm).'/state';
 
 	$t->mainTitle = new asset\AssetUi()->getTitle();
-	$t->mainTitleClass = 'hide-lateral-down';
 
 	$t->mainYear = new \account\FinancialYearUi()->getFinancialYearTabs(
 		function(\account\FinancialYear $eFinancialYear) use ($data) {

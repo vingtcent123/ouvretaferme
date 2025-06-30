@@ -8,7 +8,6 @@ new AdaptativeView('index', function($data, FarmTemplate $t) {
 	$t->canonical = \company\CompanyUi::urlJournal($data->eFarm).'/book';
 
 	$t->mainTitle = new \journal\BookUi()->getBookTitle($data->eFarm);
-	$t->mainTitleClass = 'hide-lateral-down';
 
 	$t->mainYear = new \account\FinancialYearUi()->getFinancialYearTabs(
 		function(\account\FinancialYear $eFinancialYear) use ($data) {

@@ -113,3 +113,23 @@ thead.thead-sticky th {
 .is-bio {
 	color: var(--secondary);
 }
+
+.table-container {
+	overflow-x: auto;
+	overflow-y: hidden;
+	width: calc(100vw - var(--nav-width) - 4rem);
+}
+@media (max-width: 1199px) {
+
+	.table-container {
+		width: calc(100vw - var(--nav-width) - 2rem);
+	}
+
+}
+@media (min-width: 1200px) {
+
+	.table-container {
+		width: calc(100vw - var(--nav-width) - 4rem);
+	}
+
+}

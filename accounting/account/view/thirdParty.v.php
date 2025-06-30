@@ -7,7 +7,6 @@ new AdaptativeView('index', function($data, FarmTemplate $t) {
 	$t->canonical = \company\CompanyUi::urlJournal($data->eFarm).'/thirdParty/';
 
 	$t->mainTitle = new \account\ThirdPartyUi()->getThirdPartyTitle($data->eFarm);
-	$t->mainTitleClass = 'hide-lateral-down';
 
 	echo new \account\ThirdPartyUi()->getSearch($data->search);
 	echo new \account\ThirdPartyUi()->manage($data->eFarm, $data->cThirdParty, $data->search);

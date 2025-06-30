@@ -8,7 +8,6 @@ new AdaptativeView('index', function($data, FarmTemplate $t) {
 	$t->canonical = \company\CompanyUi::urlBank($data->eFarm).'/import';
 
 	$t->mainTitle = new \bank\ImportUi()->getImportTitle($data->eFarm, $data->eFinancialYear);
-	$t->mainTitleClass = 'hide-lateral-down';
 
 	$t->mainYear = new \account\FinancialYearUi()->getFinancialYearTabs(
 		function(\account\FinancialYear $eFinancialYear) use ($data) {

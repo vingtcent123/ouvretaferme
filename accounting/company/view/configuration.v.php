@@ -7,7 +7,6 @@ new AdaptativeView('index', function($data, FarmTemplate $t) {
 	$t->canonical = \farm\FarmUi::urlSettingsAccounting($data->eFarm);
 
 	$t->mainTitle = new \farm\FarmUi()->getSettingsTitle($data->eFarm, s("Paramétrer la comptabilité"), 'accounting').'</h1>';
-	$t->mainTitleClass = 'hide-lateral-down';
 
 	echo new \company\CompanyUi()->getSettings($data->eFarm);
 
