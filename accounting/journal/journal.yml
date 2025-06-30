@@ -24,6 +24,7 @@ Operation:
   description: text8(1, null) @collate(general)
   document: ?text8(1, null) @collate(general)
   documentDate: ?date
+  documentStorage: ?text16
   # Une opération est toujours HT
   amount: decimal(8, 2)
   type: enum(DEBIT, CREDIT)

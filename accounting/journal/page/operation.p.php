@@ -126,7 +126,7 @@ new \journal\OperationPage(
 
 		$fw->validate();
 
-		\journal\OperationLib::saveInvoiceToDropbox(POST('invoiceFile'), $cOperation->first());
+		\journal\OperationLib::saveInvoiceToDropbox(POST('invoiceFile'), $cOperation);
 
 		\journal\Operation::model()->commit();
 

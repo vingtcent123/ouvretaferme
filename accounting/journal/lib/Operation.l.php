@@ -953,7 +953,13 @@ class OperationLib extends OperationCrud {
 		}
 	}
 
-	public static function saveInvoiceToDropbox(?string $filename, Operation $eOperation): void {
+	public static function saveInvoiceToDropbox(?string $filename, \Collection $cOperation): void {
+
+		if($cOperation->count() === 0) {
+			return;
+		}
+
+		$eOperation = $cOperation->first();
 
 		if($eOperation->empty()) {
 			return;
@@ -982,6 +988,19 @@ class OperationLib extends OperationCrud {
 			.'/'.$eOperation['date'].'-'.$eOperation['document'].$thirdPartyQName.'.'.$extension;
 
 		\account\DropboxLib::uploadFile($newFilename, $filepath);
+
+		self::updateDocumentStorage($newFilename, $cOperation);
+
+	}
+
+	public static function updateDocumentStorage(string $storage, \Collection $cOperation): void {
+
+		$eOperation = new Operation(['documentStorage' => $storage]);
+
+		Operation::model()
+			->select(['documentStorage'])
+			->where('id IN ('.join(', ', $cOperation->getIds()).')')
+			->update($eOperation);
 
 	}
 }
