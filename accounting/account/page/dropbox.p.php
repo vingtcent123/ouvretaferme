@@ -5,9 +5,6 @@ new Page(function($data) {
 	$data->eFarm->validate('canManage');
 
 })
-	->get('index', function($data) {
-		\company\MindeeLib::getInvoiceData('/tmp/shared/test-invoice.pdf');
-	})
 	->post('revoke', function($data) {
 
 		\account\DropboxLib::revoke();
