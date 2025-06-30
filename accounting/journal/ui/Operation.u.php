@@ -176,12 +176,16 @@ class OperationUi {
 
 		$invoiceFileForm = new \util\FormUi();
 
-		$importButton = $invoiceFileForm->openAjax(\company\CompanyUi::urlJournal($eFarm).'/operation:readInvoice', ['id' => 'read-invoice', 'binary' => TRUE, 'method' => 'post']);
-			$importButton .= $invoiceFileForm->hidden('farm', $eFarm['id']);
-			$importButton .= $invoiceFileForm->hidden('columns', 1);
-			$importButton .= $invoiceFileForm->file('invoice', ['onchange' => 'Operation.submitReadInvoice();', 'accept' => 'image/*,.pdf']);
-			$importButton .= $invoiceFileForm->submit(s("Envoyer la facture"), ['class' => 'hide', 'id' => 'read-invoice-submit']);
-		$importButton .= $invoiceFileForm->close();
+		if(FEATURE_MINDEE) {
+
+			$importButton = $invoiceFileForm->openAjax(\company\CompanyUi::urlJournal($eFarm).'/operation:readInvoice', ['id' => 'read-invoice', 'binary' => TRUE, 'method' => 'post']);
+				$importButton .= $invoiceFileForm->hidden('farm', $eFarm['id']);
+				$importButton .= $invoiceFileForm->hidden('columns', 1);
+				$importButton .= $invoiceFileForm->file('invoice', ['onchange' => 'Operation.submitReadInvoice();', 'accept' => 'image/*,.pdf']);
+				$importButton .= $invoiceFileForm->submit(s("Envoyer la facture"), ['class' => 'hide', 'id' => 'read-invoice-submit']);
+			$importButton .= $invoiceFileForm->close();
+
+		}
 
 		$dialogOpen .= $importButton;
 
@@ -242,9 +246,13 @@ class OperationUi {
 		$footer = '<div class="create-operation-buttons">'
 			.'<div class="import-invoice-button">';
 
-				$footer .= '<label class="btn btn-outline-secondary" onclick="Operation.openInvoiceFileForm();">'
-						.s("Importer une facture")
-					.'</label>';
+				if(FEATURE_MINDEE) {
+
+					$footer .= '<label class="btn btn-outline-secondary" onclick="Operation.openInvoiceFileForm();">'
+							.s("Importer une facture")
+						.'</label>';
+
+				}
 
 			$footer .= '</div>'
 			.'<div class="create-operation-button-add">'.$addButton.$saveButton.'</div>'
