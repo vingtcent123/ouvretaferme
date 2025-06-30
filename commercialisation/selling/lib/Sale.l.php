@@ -786,6 +786,7 @@ class SaleLib extends SaleCrud {
 			$e['shopPoint'] = $e['shopPointPermissive'];
 
 			if(
+				$e['customer']['user']->notEmpty() and
 				$e['shopPoint']->notEmpty() and
 				$e['shopPoint']['type'] === \shop\Point::HOME
 			) {
