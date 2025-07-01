@@ -223,7 +223,7 @@ class WebsiteTemplate extends BaseTemplate {
 
 			if($this->data->eWebsite['customDisabledFooter'] === FALSE) {
 				$h = '<div>';
-				$h .= s("/ Ce site a été créé avec {link} /<br/><small>Logiciel libre pour les producteurs de fruits et légumes</small>", ['link' => '<a href="' . Lime::getUrl() . '">' . Lime::getDomain() . '</a>']);
+				$h .= s("/ Ce site a été créé avec {link} /<br/><small>Logiciel libre pour les producteurs</small>", ['link' => '<a href="' . Lime::getUrl() . '">' . Lime::getDomain() . '</a>']);
 				$h .= '</div>';
 
 				return $h;
