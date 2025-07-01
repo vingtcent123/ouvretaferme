@@ -141,7 +141,6 @@ class Farm extends FarmElement {
 	public function canAccounting(): string {
 		return (
 			$this->canAccountEntry() or
-			$this->canAnalyze() or
 			$this->canManage()
 		);
 	}
@@ -344,18 +343,26 @@ class Farm extends FarmElement {
 
 	}
 
-	public function getProductionUrl(): string {
+	public function getProductionUrl(): ?string {
 
-		if($this->canPlanning()) {
+		if($this->canPlanning() or $this->canManage()) {
 			return FarmUi::urlPlanningWeekly($this);
 		} else {
-			return FarmUi::urlCultivationSeries($this, Farmer::AREA);
+			return FarmUi::urlCultivationSeries($this);
 		}
 
 	}
 
-	public function getCommercialisationUrl(): string {
-		return FarmUi::urlSellingSales($this);
+	public function getCommercialisationUrl(): ?string {
+
+		if($this->canSelling() or $this->canManage()) {
+			return FarmUi::urlSellingSales($this);
+		} else if($this->canAnalyze()) {
+			return FarmUi::urlAnalyzeCommercialisation($this);
+		} else {
+			return NULL;
+		}
+
 	}
 
 	public function getAccountingUrl(): string {

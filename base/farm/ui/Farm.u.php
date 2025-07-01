@@ -260,7 +260,7 @@ class FarmUi {
 		return self::url($eFarm).'/analyses/rapports'.($season ? '/'.$season : '');
 	}
 
-	public static function urlAnalyzeProduction(Farm $eFarm, string $view): string {
+	public static function urlAnalyzeProduction(Farm $eFarm, string $view = 'cultivation'): string {
 
 		return match($view) {
 			'working-time' => self::urlAnalyzeWorkingTime($eFarm),
@@ -269,7 +269,7 @@ class FarmUi {
 
 	}
 
-	public static function urlAnalyzeCommercialisation(Farm $eFarm, string $view): string {
+	public static function urlAnalyzeCommercialisation(Farm $eFarm, string $view = 'sales'): string {
 
 		return match($view) {
 			'report' => self::urlAnalyzeReport($eFarm),
