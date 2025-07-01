@@ -208,7 +208,27 @@ class FarmTemplate extends MainTemplate {
 								foreach($this->data->cFarmUser as $eFarm) {
 
 									if($eFarm->is($this->data->eFarm) === FALSE) {
-										$farm .= '<a href="'.$eFarm->getUrl($this->section).'" data-ajax-navigation="never" class="dropdown-item">'.\farm\FarmUi::getVignette($eFarm, '1.75rem').'&nbsp;&nbsp;'.encode($eFarm['name']).'</a>';
+
+										if($eFarm->canSection($this->section)) {
+											$section = $this->section;
+										} else {
+
+											if($eFarm->canProduction()) {
+												$section = 'production';
+											} else if($eFarm->canCommercialisation()) {
+												$section = 'commercialisation';
+											} else if($eFarm->canAccounting()) {
+												$section = 'accounting';
+											} else {
+												$section = NULL;
+											}
+
+										}
+
+										if($section !== NULL) {
+											$farm .= '<a href="'.$eFarm->getUrl($section).'" data-ajax-navigation="never" class="dropdown-item">'.\farm\FarmUi::getVignette($eFarm, '1.75rem').'&nbsp;&nbsp;'.encode($eFarm['name']).'</a>';
+										}
+
 									}
 								}
 

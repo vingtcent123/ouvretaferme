@@ -1935,10 +1935,13 @@ class FarmUi {
 
 			$h .= '</div>';
 			$h .= '<div class="farmer-farms-item-buttons">';
-				$h .= '<a href="'.$eFarm->getProductionUrl().'" class="btn btn-production">'.\Asset::icon('leaf').'<br/>'.s("Produire").'</a> ';
-				$h .= '<a href="'.$eFarm->getCommercialisationUrl().'" class="btn btn-commercialisation">'.\Asset::icon('basket3').'<br/>'.s("Vendre").'</a> ';
-
-				if($eFarm->hasAccounting()) {
+				if($eFarm->canProduction()) {
+					$h .= '<a href="'.$eFarm->getProductionUrl().'" class="btn btn-production">'.\Asset::icon('leaf').'<br/>'.s("Produire").'</a> ';
+				}
+				if($eFarm->canCommercialisation()) {
+					$h .= '<a href="'.$eFarm->getCommercialisationUrl().'" class="btn btn-commercialisation">'.\Asset::icon('basket3').'<br/>'.s("Vendre").'</a> ';
+				}
+				if($eFarm->hasAccounting() and $eFarm->canAccounting()) {
 					$h .= '<a href="'.$eFarm->getAccountingUrl().'" class="btn btn-accounting">'.\Asset::icon('bank').'<br/>'.s("Comptabilité").'</a> ';
 				}
 

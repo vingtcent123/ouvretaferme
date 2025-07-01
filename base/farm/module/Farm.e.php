@@ -105,6 +105,23 @@ class Farm extends FarmElement {
 		); // Jardins de Tallende
 	}
 
+	public function canSection(string $section): bool {
+
+		switch($section) {
+
+			case 'production' :
+				return $this->canProduction();
+
+			case 'commercialisation' :
+				return $this->canCommercialisation();
+
+			case 'accounting' :
+				return $this->canAccounting();
+
+		}
+
+	}
+
 	public function canProduction(): string {
 		return (
 			$this->canPlanning() or
