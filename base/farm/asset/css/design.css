@@ -378,6 +378,10 @@ body[data-template^="farm"] header a:hover {
 		background-color: var(--primary);
 	}
 
+	.farm-nav-sections-1 {
+		grid-template-columns: max-content;
+	}
+
 	.farm-nav-sections-2 {
 		grid-template-columns: max-content max-content;
 	}
@@ -402,6 +406,7 @@ body[data-template^="farm"] header a:hover {
 		color: white;
 	}
 
+	.farm-nav-sections-1 .farm-nav-section,
 	.farm-nav-sections-2 .farm-nav-section {
 		padding-left: 1rem;
 		padding-right: 1rem;

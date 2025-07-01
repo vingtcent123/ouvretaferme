@@ -64,10 +64,17 @@ class FarmTemplate extends MainTemplate {
 
 	protected function getFarmSections(): string {
 
-		$sections = [
-			'production' => [\Asset::icon('leaf'), s("Produire")],
-			'commercialisation' => [\Asset::icon('basket3'), s("Vendre")],
-		];
+		$eFarm = $this->data->eFarm;
+
+		$sections = [];
+
+		if($eFarm->canProduction()) {
+			$sections['production'] = [\Asset::icon('leaf'), s("Produire")];
+		}
+
+		if($eFarm->canCommercialisation()) {
+			$sections['commercialisation'] = [\Asset::icon('basket3'), s("Vendre")];
+		}
 
 		if($this->data->eFarm->hasAccounting() and $this->data->eFarm->canAccounting()) {
 			$sections['accounting'] = [\Asset::icon('bank'), s("Comptabilité")];
@@ -190,9 +197,12 @@ class FarmTemplate extends MainTemplate {
 
 							}
 
+							if($canUpdate and $canNavigate) {
+								$farm .= '<div class="dropdown-divider"></div>';
+							}
+
 							if($canNavigate) {
 
-								$farm .= '<div class="dropdown-divider"></div>';
 								$farm .= '<div class="dropdown-subtitle">'.s("Mes autres fermes").'</div>';
 
 								foreach($this->data->cFarmUser as $eFarm) {

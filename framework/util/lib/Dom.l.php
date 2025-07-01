@@ -126,10 +126,12 @@ class DomLib {
 
 		}
 
+		$newAttributes = [];
+
 		// Remove attributes from figure
 		for($i = 0; $i < $node->attributes->length; $i++) {
 
-			$attribute = $node->attributes->item(0);
+			$attribute = $node->attributes->item($i);
 			$value = $attribute->value;
 
 			// Nothing to rename
@@ -137,8 +139,14 @@ class DomLib {
 				continue;
 			}
 
-			$node->setAttribute($attributes[$attribute->name], $value);
-			$node->removeAttribute($attribute->name);
+			$newAttributes[$attribute->name] = $value;
+
+		}
+
+		foreach($newAttributes as $name => $value) {
+
+			$node->setAttribute($attributes[$name], $value);
+			$node->removeAttribute($name);
 
 		}
 

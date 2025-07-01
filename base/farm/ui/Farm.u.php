@@ -598,17 +598,25 @@ class FarmUi {
 
 			$h .= '<div id="farm-breadcrumbs">'.$this->getBreadcrumbs($eFarm, $nav, $subNav).'</div>';
 
-			$h .= '<div class="farm-tabs farm-section-production">';
-				$h .= $this->getCloseSection();
-				$h .= $this->getProductionSection($eFarm, $nav, $subNav);
-			$h .= '</div>';
+			if($eFarm->canProduction()) {
 
-			$h .= '<div class="farm-tabs farm-section-commercialisation">';
-				$h .= $this->getCloseSection();
-				$h .= $this->getCommercialisationSection($eFarm, $nav, $subNav);
-			$h .= '</div>';
+				$h .= '<div class="farm-tabs farm-section-production">';
+					$h .= $this->getCloseSection();
+					$h .= $this->getProductionSection($eFarm, $nav, $subNav);
+				$h .= '</div>';
 
-			if($eFarm->hasAccounting()) {
+			}
+
+			if($eFarm->canCommercialisation()) {
+
+				$h .= '<div class="farm-tabs farm-section-commercialisation">';
+					$h .= $this->getCloseSection();
+					$h .= $this->getCommercialisationSection($eFarm, $nav, $subNav);
+				$h .= '</div>';
+
+			}
+
+			if($eFarm->hasAccounting() and $eFarm->canAccounting()) {
 
 				$h .= '<div class="farm-tabs farm-section-accounting">';
 					$h .= $this->getCloseSection();
@@ -885,27 +893,35 @@ class FarmUi {
 
 		$h .= '</div>';
 
-		$h .= '<div class="farm-tab-wrapper farm-nav-analyze-production">';
+		if($eFarm->canAnalyze()) {
 
-			$h .= $this->getAnalyzeTab(
-				$eFarm,
-				$nav,
-				$subNav,
-				'production'
-			);
+			$h .= '<div class="farm-tab-wrapper farm-nav-analyze-production">';
 
-		$h .= '</div>';
+				$h .= $this->getAnalyzeTab(
+					$eFarm,
+					$nav,
+					$subNav,
+					'production'
+				);
 
-		$h .= '<div class="farm-tab-wrapper farm-nav-settings-production">';
+			$h .= '</div>';
 
-			$h .= $this->getSettingsTab(
-				$eFarm,
-				$nav,
-				'production',
-				FarmUi::urlSettingsProduction($eFarm)
-			);
+		}
 
-		$h .= '</div>';
+		if($eFarm->canManage()) {
+
+			$h .= '<div class="farm-tab-wrapper farm-nav-settings-production">';
+
+				$h .= $this->getSettingsTab(
+					$eFarm,
+					$nav,
+					'production',
+					FarmUi::urlSettingsProduction($eFarm)
+				);
+
+			$h .= '</div>';
+
+		}
 
 		return $h;
 
@@ -949,26 +965,35 @@ class FarmUi {
 
 		}
 
-		$h .= '<div class="farm-tab-wrapper farm-nav-analyze-commercialisation">';
+		if($eFarm->canAnalyze()) {
 
-			$h .= $this->getAnalyzeTab(
-				$eFarm,
-				$nav,
-				$subNav,
-				'commercialisation'
-		);
+			$h .= '<div class="farm-tab-wrapper farm-nav-analyze-commercialisation">';
 
-		$h .= '</div>';
-		$h .= '<div class="farm-tab-wrapper farm-nav-settings-commercialisation">';
+				$h .= $this->getAnalyzeTab(
+					$eFarm,
+					$nav,
+					$subNav,
+					'commercialisation'
+				);
 
-			$h .= $this->getSettingsTab(
-				$eFarm,
-				$nav,
-				'commercialisation',
-				FarmUi::urlSettingsCommercialisation($eFarm)
-			);
+			$h .= '</div>';
 
-		$h .= '</div>';
+		}
+
+		if($eFarm->canManage()) {
+
+			$h .= '<div class="farm-tab-wrapper farm-nav-settings-commercialisation">';
+
+				$h .= $this->getSettingsTab(
+					$eFarm,
+					$nav,
+					'commercialisation',
+					FarmUi::urlSettingsCommercialisation($eFarm)
+				);
+
+			$h .= '</div>';
+
+		}
 		return $h;
 
 	}
@@ -977,7 +1002,7 @@ class FarmUi {
 
 		$h = '';
 
-		if($eFarm->canAccounting()) {
+		if($eFarm->canAccountEntry()) {
 
 			$h .= '<div class="farm-tab-wrapper farm-nav-bank">';
 
@@ -1004,27 +1029,35 @@ class FarmUi {
 			$h .= '</div>';
 		}
 
-		$h .= '<div class="farm-tab-wrapper farm-nav-analyze-accounting">';
+		if($eFarm->canAnalyze()) {
 
-			$h .= $this->getAnalyzeTab(
-				$eFarm,
-				$nav,
-				$subNav,
-				'accounting'
-			);
+			$h .= '<div class="farm-tab-wrapper farm-nav-analyze-accounting">';
 
-		$h .= '</div>';
+				$h .= $this->getAnalyzeTab(
+					$eFarm,
+					$nav,
+					$subNav,
+					'accounting'
+				);
 
-		$h .= '<div class="farm-tab-wrapper farm-nav-settings-accounting">';
+			$h .= '</div>';
 
-			$h .= $this->getSettingsTab(
-				$eFarm,
-				$nav,
-				'accounting',
-				FarmUi::urlSettingsAccounting($eFarm)
-			);
+		}
 
-		$h .= '</div>';
+		if($eFarm->canManage()) {
+
+			$h .= '<div class="farm-tab-wrapper farm-nav-settings-accounting">';
+
+				$h .= $this->getSettingsTab(
+					$eFarm,
+					$nav,
+					'accounting',
+					FarmUi::urlSettingsAccounting($eFarm)
+				);
+
+			$h .= '</div>';
+
+		}
 
 		return $h;
 
@@ -1034,10 +1067,7 @@ class FarmUi {
 
 		$h = '';
 
-		if(
-			$eFarm->canAnalyze() and
-			$this->getCategories($eFarm, 'analyze-'.$section)
-		) {
+		if($this->getCategories($eFarm, 'analyze-'.$section)) {
 
 			$h .= $this->getNav('analyze-'.$section, $nav);
 
@@ -1059,13 +1089,7 @@ class FarmUi {
 
 	protected function getSettingsTab(Farm $eFarm, string $nav, string $section, string $url): string {
 
-		$h = '';
-
-		if($eFarm->canManage()) {
-			$h .= $this->getNav('settings-'.$section, $nav, link: $url);
-		}
-
-		return $h;
+		return $this->getNav('settings-'.$section, $nav, link: $url);
 
 	}
 

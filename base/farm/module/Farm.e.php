@@ -105,6 +105,30 @@ class Farm extends FarmElement {
 		); // Jardins de Tallende
 	}
 
+	public function canProduction(): string {
+		return (
+			$this->canPlanning() or
+			$this->canAnalyze() or
+			$this->canManage()
+		);
+	}
+
+	public function canCommercialisation(): string {
+		return (
+			$this->canSelling() or
+			$this->canAnalyze() or
+			$this->canManage()
+		);
+	}
+
+	public function canAccounting(): string {
+		return (
+			$this->canAccountEntry() or
+			$this->canAnalyze() or
+			$this->canManage()
+		);
+	}
+
 	// Peut accéder aux pages d'analyse des données
 	public function canAnalyze(): bool {
 		return (
@@ -156,7 +180,7 @@ class Farm extends FarmElement {
 		return $this->isRole(Farmer::OWNER);
 	}
 
-	public function canAccounting(): bool {
+	public function canAccountEntry(): bool {
 		return $this->isRole(Farmer::OWNER);
 	}
 
