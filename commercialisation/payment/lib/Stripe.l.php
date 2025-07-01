@@ -33,7 +33,7 @@ class StripeLib {
 				$webhook['object'] === 'webhook_endpoint' and
 				str_starts_with($webhook['url'], self::getWebhookUrl($eStripeFarm['farm']))
 			) {
-				self::sendStripeRequest($eStripeFarm, 'webhook_endpoints/'.$webhook['id'], mode: 'DELETE');
+				self::deleteWebhook($eStripeFarm, $webhook['id']);
 			}
 
 		}
@@ -66,6 +66,10 @@ class StripeLib {
 			->select('webhookSecretKey')
 			->update($eStripeFarm);
 
+	}
+
+	public static function deleteWebhook(StripeFarm $eStripeFarm, string $id): void {
+		self::sendStripeRequest($eStripeFarm, 'webhook_endpoints/'.$id, mode: 'DELETE');
 	}
 
 	public static function getWebhooks(StripeFarm $eStripeFarm): array {
