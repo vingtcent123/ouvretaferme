@@ -74,7 +74,7 @@ class PlotLib extends PlotCrud {
 
 		Plot::model()->insert($e);
 
-		// On crée une planche inféodée au bloc
+		// On crée une planche inféodée au jardin
 		$eBed = new Bed([
 			'zone' => $e['zone'],
 			'zoneFill' => $e['zoneFill'],

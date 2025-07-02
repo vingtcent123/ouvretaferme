@@ -8,8 +8,15 @@ new \farm\FarmPage(
 		'owner' => \user\ConnectionLib::getOnline()
 	]))
 	->create()
+	->read('start', function($data) {
+
+		$data->eFarm = $data->e;
+
+		throw new ViewAction($data);
+
+	}, validate: ['canManage'])
 	->doCreate(function($data) {
-		throw new RedirectAction(\farm\FarmUi::urlCartography($data->e).'?success=farm:Farm::created');
+		throw new RedirectAction('/farm/farm:start?id='.$data->e['id']);
 	});
 
 new \farm\FarmPage()
@@ -41,6 +48,7 @@ new \farm\FarmPage()
 		throw new ViewAction($data);
 
 	}, page: 'updateEmail')
+	->doUpdateProperties('doUpdateLegal', ['legalName', 'legalEmail', 'siret', 'legalStreet1', 'legalStreet2', 'legalPostcode', 'legalCity'], fn() => throw new ReloadAction('farm', 'Farm::updatedLegal'))
 	->doUpdateProperties('doUpdateEmail', ['emailFooter'], fn() => throw new ReloadAction('farm', 'Farm::updatedEmail'))
 	->doUpdateProperties('doUpdatePlanningDelayedMax', ['planningDelayedMax'], fn() => throw new ReloadAction())
 	->read('calendarMonth', function($data) {

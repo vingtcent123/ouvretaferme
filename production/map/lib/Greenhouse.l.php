@@ -117,7 +117,7 @@ class GreenhouseLib extends GreenhouseCrud {
 
 			$e['plot']->expects(['zone', 'zoneFill']);
 
-			// Remets la serre à zéro si elle a été changée de bloc ou parcelle
+			// Remets la serre à zéro si elle a été changée de jardin ou parcelle
 			Bed::model()
 				->whereGreenhouse($e)
 				->wherePlot('!=', $e['plot'])

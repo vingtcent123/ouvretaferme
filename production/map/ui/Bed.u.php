@@ -390,10 +390,20 @@ class BedUi {
 	public function createCollection(int $season, Plot $ePlot, \Collection $cGreenhouse): \Panel {
 
 		$eBed = new Bed();
+		$eFarm = $ePlot['farm'];
 
-		$h = '<p class="util-info">';
-			$h .= s("Ajoutez ici la liste des planches de cet emplacement, en précisant le nom, la longueur et la largeur travaillée de chaque planche. Vous pouvez ajouter simultanément plusieurs planches de mêmes dimensions !");
-		$h .= '</p>';
+		$h = '<div class="util-block-help">';
+			$h .= '<h4>'.s("Ajouter des planches à {value}", '<u>'.encode($ePlot['zoneFill'] ? $ePlot['zone']['name'] : $ePlot['name']).'</u>').'</h4>';
+			$h .= '<p>';
+				$h .= s("Pour chaque planche à ajouter, précisez le nom, la longueur et la largeur travaillée.");
+
+			if($eFarm['defaultBedWidth'] === NULL) {
+				$h .= '<br/>'.s("Vous pouvez également gagner du temps en <link>indiquant les longueur et largeur de planche par défaut</link> sur votre ferme.", ['link' => '<a href="/farm/farm:updateProduction?id='.$eFarm['id'].'">']);
+			}
+
+			$h .= '</p>';
+
+		$h .= '</div>';
 
 		$form = new \util\FormUi();
 
@@ -415,7 +425,7 @@ class BedUi {
 
 			$h .= '<div id="bed-create-form" data-number="0">';
 
-				$names = '<div class="util-block">';
+				$names = '<div class="util-block bg-background">';
 					$names .= '<h4>'.s("Aide au remplissage automatique du nom des planches").'</h4>';
 					$names .= '<div class="bed-create-fill">';
 						$names .= '<div class="input-group">';
@@ -488,7 +498,7 @@ class BedUi {
 						if($ePlot['zoneFill']) {
 							return s("Parcelle");
 						} else {
-							return s("Bloc {value}", $ePlot['name']);
+							return s("Jardin {value}", $ePlot['name']);
 						}
 					});
 
@@ -721,7 +731,7 @@ class BedUi {
 				if($ePlot['zoneFill'] === FALSE) {
 
 					$zoneBeds[] = [
-						'label' => s("Bloc {value}", $ePlot['name']),
+						'label' => s("Jardin {value}", $ePlot['name']),
 						'attributes' => ['disabled', 'style' => 'font-weight: bold; background-color: var(--background)']
 					];
 
@@ -812,7 +822,7 @@ class BedUi {
 		} else {
 
 			$h .= $form->group(
-				s("Bloc"),
+				s("Jardin"),
 				$form->fake($ePlot['name'])
 			);
 
@@ -833,7 +843,7 @@ class BedUi {
 			'name' => s("Nom de la planche"),
 			'farm' => s("Ferme"),
 			'zone' => s("Parcelle"),
-			'plot' => s("Bloc"),
+			'plot' => s("Jardin"),
 			'length' => s("Longueur de planche"),
 			'width' => s("Largeur travaillée de planche"),
 			'greenhouse' => s("Abri"),
@@ -872,8 +882,8 @@ class BedUi {
 					$e->expects(['plot', 'zone', 'farm']);
 
 					$placeholder = [
-						'seasonFirst' => s("la création du bloc"),
-						'seasonLast' => s("la disparition du bloc")
+						'seasonFirst' => s("la création du jardin"),
+						'seasonLast' => s("la disparition du jardin")
 					][$property];
 
 					return new SeasonUi()->getDescriberField($form, $e, $e['farm'], $e['zone'], $e['plot'], $property, $placeholder);

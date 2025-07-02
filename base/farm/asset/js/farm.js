@@ -165,11 +165,11 @@ class Farm {
 	}
 	static getFarmDataBySiret(target) {
 
-		if(target.value.length !== 14) {
+		const siret = target.value.replaceAll(' ', '');
+
+		if(siret.length !== 14) {
 			return;
 		}
-
-		const siret = target.value;
 
 		const form = target.firstParent('form');
 
@@ -178,12 +178,17 @@ class Farm {
 			.url('https://suggestions.pappers.fr/v2?cibles=siret&q='+ siret)
 			.fetch()
 			.then((response) => {
+
 				if(response.resultats_siret[0] === undefined) {
 					return;
 				}
+
+				target.value = siret;
+
 				if(form.qs('[name="legalName"]').value.length === 0) {
 					form.qs('[name="legalName"]').value = response.resultats_siret[0].nom_entreprise;
 				}
+
 				if(
 					form.qs('[name="legalStreet1"]').value.length === 0 &&
 					form.qs('[name="legalStreet2"]').value.length === 0 &&
@@ -195,6 +200,7 @@ class Farm {
 					form.qs('[name="legalPostcode"]').value = response.resultats_siret[0].siege.code_postal;
 					form.qs('[name="legalCity"]').value = response.resultats_siret[0].siege.ville;
 				}
+
 			});
 
 	}

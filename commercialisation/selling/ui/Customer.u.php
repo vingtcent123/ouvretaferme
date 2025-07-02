@@ -752,7 +752,7 @@ class CustomerUi {
 			'firstName' => s("Prénom"),
 			'lastName' => s("Nom"),
 			'email' => s("Adresse e-mail"),
-			'category' => s("Catégorie"),
+			'category' => s("Type de client"),
 			'farm' => s("Ferme"),
 			'discount' => s("Remise commerciale"),
 			'defaultPaymentMethod' => s("Moyen de paiement par défaut"),
@@ -775,7 +775,7 @@ class CustomerUi {
 					$values[Customer::PRIVATE] = s("Client particulier");
 
 					if($e['type'] === NULL) {
-						$values[Customer::COLLECTIVE] = s("Point de vente pour les particuliers").'<br/><small style="color: var(--muted) ">'.\Asset::icon('arrow-return-right').' '.s("Marché / Vente à la ferme / AMAP").'</small>';
+						$values[Customer::COLLECTIVE] = s("Point de vente pour les particuliers").'<span class="hide-sm-up"><br/></span><span class="hide-xs-down">  </span><small class="color-muted">'.\Asset::icon('arrow-right').'  '.s("Marché / Vente à la ferme / AMAP / ...").'</small>';
 					}
 
 					$values[Customer::PRO] = s("Client professionnel");

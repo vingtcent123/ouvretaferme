@@ -3184,7 +3184,7 @@ class TaskUi {
 			$h .= '<div class="task-fertilizer-grid">';
 
 				$h .= '<div class="util-grid-header">'.s("Parcelle").'</div>';
-				$h .= '<div class="util-grid-header">'.s("Bloc").'</div>';
+				$h .= '<div class="util-grid-header">'.s("Jardin").'</div>';
 				$h .= '<div class="util-grid-header">';
 					if($eSeries['use'] === Series::BED) {
 						$h .= s("Planche");

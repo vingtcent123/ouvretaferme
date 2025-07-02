@@ -6,7 +6,7 @@ class FarmLib extends FarmCrud {
 	private static ?\Collection $cFarmOnline = NULL;
 
 	public static function getPropertiesCreate(): array {
-		return ['name', 'startedAt', 'place', 'placeLngLat', 'defaultBedLength', 'defaultBedWidth', 'defaultAlleyWidth', 'quality'];
+		return ['name', 'place', 'placeLngLat', 'quality'];
 	}
 
 	public static function getPropertiesUpdate(): array {
@@ -106,7 +106,7 @@ class FarmLib extends FarmCrud {
 			$ePresence = new \hr\Presence([
 				'farm' => $e,
 				'user' => $eFarmer['user'],
-				'from' => $e['startedAt'].'-01-01'
+				'from' => (date('Y') - 1).'-01-01'
 			]);
 
 			\hr\Presence::model()->insert($ePresence);

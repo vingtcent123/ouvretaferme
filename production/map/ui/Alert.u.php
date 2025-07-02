@@ -8,8 +8,8 @@ class AlertUi {
 		return match($fqn) {
 
 			'Plot::seasonLast.consistency' => s("Merci d'être cohérent entre la saison de début et la saison de fin."),
-			'Plot::greenhouse' => s("Vous ne pouvez pas supprimer un bloc sur lequel se trouve un abri."),
-			'Plot::deleteUsed' => s("Vous ne pouvez pas supprimer un bloc qui a déjà été cultivé. Vous devez soit modifier les dates d'exploitation du bloc, soit supprimer préalablement les séries qui s'y trouvent."),
+			'Plot::greenhouse' => s("Vous ne pouvez pas supprimer un jardin sur lequel se trouve un abri."),
+			'Plot::deleteUsed' => s("Vous ne pouvez pas supprimer un jardin qui a déjà été cultivé. Vous devez soit modifier les dates d'exploitation du jardin, soit supprimer préalablement les séries qui s'y trouvent."),
 
 			'Zone::seasonLast.consistency' => s("Merci d'être cohérent entre la saison de début et la saison de fin."),
 			'Zone::greenhouse' => s("Vous ne pouvez pas supprimer une parcelle sur laquelle se trouve un abri."),
@@ -21,7 +21,7 @@ class AlertUi {
 			'Bed::names.duplicate' => fn($names) => p("Le nom {value} est déjà utilisé par une autre planche de votre ferme.", "Les noms {value} sont déjà utilisés par d'autres planches de votre ferme.", count($names), ['value' => implode(', ', $names)]),
 			'Bed::ids.check' => s("Veuillez sélectionner au moins une planche."),
 			'Bed::seasonLast.consistency' => s("Merci d'être cohérent entre la saison de début et la saison de fin."),
-			'Bed::canNotDraw' => s("Vous ne pouvez pas dessiner ces planches car le bloc ou la parcelle ne sont pas cartographiés."),
+			'Bed::canNotDraw' => s("Vous ne pouvez pas dessiner ces planches car le jardin ou la parcelle ne sont pas cartographiés."),
 
 			'Draw::coordinates.check' => s("Vous n'avez pas tracé de ligne de départ des planches."),
 
@@ -47,9 +47,9 @@ class AlertUi {
 			'Zone::updated' => s("La parcelle a bien été mise à jour."),
 			'Zone::deleted' => s("La parcelle a bien été supprimée."),
 
-			'Plot::created' => s("Le bloc a bien été ajouté."),
-			'Plot::updated' => s("Le bloc a bien été mis à jour."),
-			'Plot::deleted' => s("Le bloc a bien été supprimé."),
+			'Plot::created' => s("Le jardin a bien été ajouté."),
+			'Plot::updated' => s("Le jardin a bien été mis à jour."),
+			'Plot::deleted' => s("Le jardin a bien été supprimé."),
 
 			'Greenhouse.created' => s("L'abri a bien été ajouté."),
 			'Greenhouse.updated' => s("L'abri a bien été mis à jour."),

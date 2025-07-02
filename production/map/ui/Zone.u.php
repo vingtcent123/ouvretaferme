@@ -14,7 +14,7 @@ class ZoneUi {
 		$eZone->expects(['cGreenhouse', 'cPlot']);
 
 		$cPlot = $eZone['cPlot'];
-		$ePlotFill = $cPlot->first(); // Bloc inféodé à la parcelle
+		$ePlotFill = $cPlot->first(); // Jardin inféodé à la parcelle
 
 		$h = '<div class="zone-cartography" id="zone-item-'.$eZone['id'].'" data-ref="zone" data-name="'.encode($eZone['name']).'">';
 
@@ -31,7 +31,7 @@ class ZoneUi {
 						$h .= ' <a data-dropdown="bottom-end" class="dropdown-toggle btn btn-transparent">'.\Asset::icon('gear-fill').'</a>';
 						$h .= '<div class="dropdown-list bg-secondary">';
 							$h .= '<div class="dropdown-title">'.encode($eZone['name']).'</div>';
-							$h .= '<a href="/map/plot:create?zone='.$eZone['id'].'&season='.$season.'" class="dropdown-item">'.s("Ajouter un bloc à la parcelle").'</a>';
+							$h .= '<a href="/map/plot:create?zone='.$eZone['id'].'&season='.$season.'" class="dropdown-item">'.s("Ajouter un jardin à la parcelle").'</a>';
 							$h .= '<a href="/map/greenhouse:create?farm='.$eZone['farm']['id'].'&plot='.$ePlotFill['id'].'" class="dropdown-item">'.s("Ajouter un abri à la parcelle").'</a>';
 							$h .= '<div class="dropdown-divider"></div>';
 							$h .= '<a href="/map/zone:update?id='.$eZone['id'].'&season='.$season.'" class="dropdown-item">'.s("Modifier la parcelle").'</a>';
@@ -144,7 +144,7 @@ class ZoneUi {
 		}
 
 		if($eZone['plots'] > 0) {
-			$h .= ' | '.p("{value} bloc", "{value} blocs", $eZone['plots']);
+			$h .= ' | '.p("{value} jardin", "{value} jardins", $eZone['plots']);
 		}
 
 		if($eZone['beds'] > 0) {
@@ -256,7 +256,7 @@ class ZoneUi {
 
 						$selectPlots[] = [
 							'value' => $ePlotSelect['id'],
-							'label' => '> '.s("Bloc {value}", $ePlotSelect['name']),
+							'label' => '> '.s("Jardin {value}", $ePlotSelect['name']),
 							'attributes' => ['data-zone' => $eZoneSelect['id'], 'data-plot' => $ePlotSelect['id']]
 						];
 

@@ -10,7 +10,7 @@ class GreenhouseUi {
 	}
 
 	public static function defaultName(): string {
-		return s("Bloc sous abri");
+		return s("Jardin sous abri");
 	}
 
 	public function getList(\farm\Farm $eFarm, \Collection $cGreenhouse, string $buttonStyle, string $backgroundDropdown): string {
@@ -69,7 +69,7 @@ class GreenhouseUi {
 			} else {
 
 				$h .= $form->group(
-					s("Bloc"),
+					s("Jardin"),
 					$form->fake($eGreenhouse['plot']['name'])
 				);
 

@@ -304,8 +304,8 @@ div.bed-item-grid div.bed-item-cultivation-plant {
 
 /* Create */
 div.bed-create-number {
-	background-color: #eee;
-	padding: 1rem;
+	background-color: var(--background);
+	padding: 1rem !important;
 	margin: 0;
 	border-radius: var(--radius);
 }

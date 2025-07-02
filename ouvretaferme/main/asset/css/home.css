@@ -10,6 +10,9 @@ body[data-template="home-main"] header {
 	background-image: url(/asset/ouvretaferme/main/image/banner.jpg);
 }
 
+body[data-template="home-start"] header {
+	background: linear-gradient(135deg, var(--commercialisation) 0, var(--production) 50%, var(--accounting) 100%);
+}
 
 body[data-template="home-farmer"] header {
    background-image: url(/asset/ouvretaferme/main/image/banner-farmer.jpg);
@@ -47,10 +50,11 @@ body[data-template^="home"] header h1 {
 
 }
 
-body[data-template="home-main"] h2 {
+body[data-template^="home-"] header h2,
+body[data-template^="home-"] header h3,
+body[data-template^="home-"] header h4 {
+	margin-top: 1.5rem;
 	text-align: center;
-	font-size: 2.25rem;
-	margin-bottom: 1.5rem;
 }
 
 .home-blog {
@@ -87,7 +91,6 @@ body[data-template="home-main"] h2 {
 	text-align: center;
 	font-size: 1.4rem;
 	line-height: 1.2;
-	margin-top: 1.5rem;
 	font-weight: lighter;
 }
 
@@ -250,7 +253,7 @@ div.home-category {
 
 div.home-features {
 	display: grid;
-	grid-row-gap: 1rem;
+	grid-gap: 1rem;
 	margin-bottom: 3rem;
 	background: linear-gradient(to bottom, var(--background-light) 0, white 100%);
 	padding: 1rem;
@@ -273,6 +276,7 @@ div.home-feature {
 }
 
 div.home-feature h2 {
+	text-align: center;
 	font-size: 1.75rem;
 }
 
@@ -291,28 +295,51 @@ div.home-feature-for {
 	margin-bottom: 1.25rem;
 }
 
+.home-feature-description {
+	color: var(--muted);
+	font-size: 1rem;
+	margin-bottom: 1rem;
+}
+
 div.home-feature-buttons {
 	text-align: center;
+}
+
+body[data-template^="home-start"] div.home-feature {
+	border-radius: var(--radius);
+	border: 1px solid var(--background);
 }
 
 
 @media (min-width: 992px) {
 
-	div.home-features {
+	body[data-template^="home-main"] div.home-feature:not(:last-child) {
+		border-right: 1px solid var(--border);
+	}
+
+	div.home-features.home-features-3 {
 		grid-template-columns: 1fr 1fr 1fr;
+	}
+
+	div.home-features.home-features-2 {
+		grid-template-columns: 1fr 1fr;
 	}
 
 	.home-feature-title {
 		grid-column: span 3;
 	}
 
-	div.home-feature:not(:nth-child(3n + 1)) {
-		border-right: 1px solid var(--border);
-	}
-
 }
 
 @media (min-width: 768px) and (max-width: 991px) {
+
+	body[data-template^="home-main"] div.home-feature:nth-child(2) {
+		border-right: 1px solid var(--border);
+	}
+
+	body[data-template^="home-main"] div.home-feature:last-child {
+		border-top: 1px solid var(--border);
+	}
 
 	div.home-features {
 		grid-template-columns: 1fr 1fr;
@@ -322,17 +349,12 @@ div.home-feature-buttons {
 		grid-column: span 2;
 	}
 
-	div.home-feature:nth-child(2) {
-		border-right: 1px solid var(--border);
-	}
-
 	.home-feature.home-feature-other {
 		grid-column: span 2;
 		display: grid;
 		align-items: center;
 		grid-template-columns: auto 1fr auto;
 		grid-column-gap: 1rem;
-		border-top: 1px solid var(--border);
 		padding-top: 1.5rem;
 	}
 
@@ -350,9 +372,9 @@ div.home-feature-buttons {
 
 @media (max-width: 767px) {
 
-	div.home-feature:not(:last-child) {
-		border-bottom: 1px solid var(--border);
+	body[data-template^="home-main"] div.home-feature:not(:last-child) {
 		padding-bottom: 2rem;
+		border-bottom: 1px solid var(--border);
 	}
 
 	div.home-feature ul {

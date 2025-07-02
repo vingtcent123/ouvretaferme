@@ -12,7 +12,7 @@ new AdaptativeView('anonymous', function($data, MainTemplate $t) {
 		$t->header .= '<h1>'.s("<a>O</a>rganisez le <b>T</b>ravail à la <a>F</a>erme<br/>de la production à la vente", ['a' => '<span style="border-bottom: 3px solid var(--border); font-weight: bold" ">', 'b' => '<span style="border-top: 3px solid var(--border); font-weight: bold" ">']).'</h1>';
 	$t->header .= '</div>';
 
-	echo '<div class="home-features">';
+	echo '<div class="home-features home-features-3">';
 
 		echo '<h3 class="home-feature-title">'.s("Ouvretaferme est un logiciel libre et gratuit qui contribue à l'autonomie des fermes").'</h3>';
 
@@ -27,10 +27,10 @@ new AdaptativeView('anonymous', function($data, MainTemplate $t) {
 				echo '<li>'.s("Mutualisez vos boutiques entre producteurs").'</li>';
 				echo '<li>'.s("Produits et catalogues de vente illimités").'</li>';
 			echo '</ul>';
-			echo '<div class="home-feature-for">';
-				echo s("Adapté à toutes les productions");
-			echo '</div>';
 			echo '<div class="home-feature-buttons">';
+				echo '<div class="home-feature-for">';
+					echo s("Adapté à toutes les productions");
+				echo '</div>';
 				echo '<a href="/presentation/producteur" class="btn btn-secondary">'.s("En savoir plus").'</a>';
 			echo '</div>';
 
@@ -46,10 +46,10 @@ new AdaptativeView('anonymous', function($data, MainTemplate $t) {
 				echo '<li>'.s("Suivez votre planning semaine par semaine").'</li>';
 				echo '<li>'.s("Notez votre temps de travail").'</li>';
 			echo '</ul>';
-			echo '<div class="home-feature-for">';
-				echo s("Maraichage  ·  Arboriculture  ·  Floriculture");
-			echo '</div>';
 			echo '<div class="home-feature-buttons">';
+				echo '<div class="home-feature-for">';
+					echo s("Maraichage  ·  Arboriculture  ·  Floriculture");
+				echo '</div>';
 				echo '<a href="/presentation/producteur" class="btn btn-production">'.s("En savoir plus").'</a>';
 				echo '  <a href="'.OTF_DEMO_URL.'/ferme/'.\farm\Farm::DEMO.'/series?view=area" class="btn btn-outline-production" target="_blank">'.s("Explorer la démo").'</a>';
 			echo '</div>';
@@ -65,10 +65,10 @@ new AdaptativeView('anonymous', function($data, MainTemplate $t) {
 				echo '<li>'.s("Utilisez un logiciel de caisse pour vos marchés").'</li>';
 				echo '<li>'.s("Créez le site internet de votre ferme").'</li>';
 			echo '</ul>';
-			echo '<div class="home-feature-for">';
-				echo s("Envie d'essayer Ouvretaferme ?");
-			echo '</div>';
 			echo '<div class="home-feature-buttons">';
+				echo '<div class="home-feature-for">';
+					echo s("Envie d'essayer Ouvretaferme ?");
+				echo '</div>';
 				echo '<a href="/user/signUp" class="btn btn-primary">'.Asset::icon('person-fill').' '.s("Créer un compte").'</a>';
 			echo '</div>';
 

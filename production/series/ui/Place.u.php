@@ -317,7 +317,7 @@ class PlaceUi {
 						$cPlace[$eBedPlot['id']] ?? new Place(),
 						'plot',
 						$eBedPlot,
-						s("Bloc {value}", encode($ePlot['name']))
+						s("Jardin {value}", encode($ePlot['name']))
 					);
 
 					if($ePlot['beds'] > 0) {

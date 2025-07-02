@@ -91,7 +91,7 @@ class BedLib extends BedCrud {
 			Bed::fail('ids.check');
 		}
 
-		// On vérifie que toutes les planches appartiennent bien au bloc
+		// On vérifie que toutes les planches appartiennent bien au jardin
 		Bed::model()
 			->select(['plot', 'name', 'length', 'width'])
 			->whereStatus(Bed::ACTIVE)

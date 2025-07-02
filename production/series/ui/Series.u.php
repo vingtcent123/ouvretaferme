@@ -313,7 +313,7 @@ class SeriesUi {
 		$h = '<div class="series-soil-grid series-soil-grid-'.$source.'">';
 
 			$h .= '<div class="util-grid-header">'.s("Parcelle").'</div>';
-			$h .= '<div class="util-grid-header">'.s("Bloc").'</div>';
+			$h .= '<div class="util-grid-header">'.s("Jardin").'</div>';
 			$h .= '<div class="util-grid-header">';
 				if($use === Series::BED) {
 					$h .= s("Planche");

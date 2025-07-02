@@ -352,7 +352,7 @@ class FarmUi {
 
 			$h .= $form->asteriskInfo();
 
-			$h .= $form->dynamicGroups($eFarm, ['name*', 'startedAt*', 'place', 'placeLngLat', 'defaultBedLength', 'defaultBedWidth', 'defaultAlleyWidth', 'quality']);
+			$h .= $form->dynamicGroups($eFarm, ['name*', 'place', 'placeLngLat', 'quality']);
 
 			$h .= $form->group(
 				content: $form->submit(s("Créer ma ferme"))
@@ -365,6 +365,29 @@ class FarmUi {
 			title: s("Créer ma ferme"),
 			body: $h
 		);
+
+	}
+
+	public function updateLegal(Farm $eFarm): string {
+
+		$form = new \util\FormUi();
+
+		$h = $form->openAjax('/farm/farm:doUpdateLegal', ['autocomplete' => 'off']);
+
+			$h .= $form->hidden('id', $eFarm['id']);
+			$h .= $form->asteriskInfo();
+
+			$h .= $form->dynamicGroups($eFarm, ['legalEmail*']);
+				$h .= $form->dynamicGroups($eFarm, ['siret', 'legalName*']);
+				$h .= $form->addressGroup(s("Siège social de la ferme").\util\FormUi::asterisk(), 'legal', $eFarm);
+
+			$h .= $form->group(
+				content: $form->submit(s("Valider"))
+			);
+
+		$h .= $form->close();
+
+		return $h;
 
 	}
 
@@ -445,7 +468,7 @@ class FarmUi {
 
 			$h .= $form->hidden('id', $eFarm);
 
-			$h .= $form->dynamicGroups($eFarm, ['defaultBedLength', 'defaultBedWidth', 'defaultAlleyWidth', 'featureTime']);
+			$h .= $form->dynamicGroups($eFarm, ['featureTime']);
 
 			$input = '<div class="input-group mb-1">';
 				$input .= $form->addon(s("Début en année n - 1 :"));
@@ -461,6 +484,9 @@ class FarmUi {
 			$input .= '</div>';
 
 			$h .= $form->group(s("Période affichée sur les diagrammes"), $input, ['wrapper' => 'calendarMonthStart calendarMonthStop']);
+
+			$h .= $form->group(content: '<h3>'.s("Planches de culture").'</h3>');
+			$h .= $form->dynamicGroups($eFarm, ['defaultBedLength', 'defaultBedWidth', 'defaultAlleyWidth']);
 
 			$h .= $form->group(content: '<h3>'.s("Rotations").'</h3>');
 			$h .= $form->dynamicGroups($eFarm, ['rotationYears', 'rotationExclude']);
@@ -2045,7 +2071,7 @@ class FarmUi {
 			'vignette' => s("Photo de présentation"),
 			'description' => s("Présentation de la ferme"),
 			'startedAt' => s("Année de création"),
-			'place' => s("Siège d'exploitation"),
+			'place' => s("Lieu de production"),
 			'url' => s("Site internet"),
 			'rotationYears' => s("Temps de suivi des rotations"),
 			'rotationExclude' => s("Espèces cultivées exclues du suivi des rotations"),

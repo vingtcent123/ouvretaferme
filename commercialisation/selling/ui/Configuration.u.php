@@ -71,23 +71,6 @@ class ConfigurationUi {
 
 			$h .= $form->hidden('id', $eConfiguration['id']);
 
-				if($eFarm['legalName'] === NULL or $eFarm['legalEmail'] === NULL) {
-
-					$h .= $form->group(content: '<h3>'.s("Général").'</h3>');
-					$h .= $form->group(content: '<div class="util-block-help">'.s("Veuillez <link>renseigner la raison sociale et l'adresse e-mail de la ferme</link> pour utiliser les fonctionnalités relatives à la commercialisation sur {siteName}.", ['link' => '<a href="/farm/farm:update?id='.$eFarm['id'].'">']).'</div>');
-
-				}
-
-				$h .= $form->group(content: '<h3>'.s("Facturation").'</h3>');
-
-				if($eFarm->hasLegalAddress() === FALSE) {
-
-					$h .= $form->group(content: '<div class="util-block-help">'.s("Pour générer des devis, bons de livraison et factures sur {siteName}, veuillez <link>renseigner à minima le siège social de la ferme</link>.", ['link' => '<a href="/farm/farm:update?id='.$eFarm['id'].'">']).'</div>');
-
-				}
-
-				$h .= $form->dynamicGroups($eConfiguration, ['paymentMode', 'documentCopy']);
-				$h .= '<br/>';
 				$h .= $form->group(
 					\farm\FarmUi::p('logo')->label,
 					new \media\FarmLogoUi()->getCamera($eFarm, size: '15rem')
@@ -109,7 +92,7 @@ class ConfigurationUi {
 				$h .= $form->group(content: '<h3>'.s("Certification").'</h3>');
 				$h .= $form->dynamicGroups($eConfiguration, ['organicCertifier']);
 				$h .= $form->group(content: '<h3>'.s("Autres").'</h3>');
-				$h .= $form->dynamicGroups($eConfiguration, ['pdfNaturalOrder']);
+				$h .= $form->dynamicGroups($eConfiguration, ['documentCopy', 'paymentMode', 'pdfNaturalOrder']);
 
 			$h .= $form->group(
 				content: $form->submit(s("Enregistrer"))
@@ -132,7 +115,10 @@ class ConfigurationUi {
 		if($eFarm->isLegalComplete() === FALSE) {
 
 			$h .= '<div class="util-block-help">';
-				$h .= '<p>'.s("Vous pourrez personnaliser les devis dès lors que vous aurez terminé la configuration administrative de la commercialisation !").'</p>';
+				$h .= \farm\AlertUi::getError('Farm::notLegal', [
+					'farm' => $eFarm,
+					'btn' => 'btn-secondary'
+				]);
 			$h .= '</div>';
 
 			return $h;
@@ -184,7 +170,10 @@ class ConfigurationUi {
 		if($eFarm->isLegalComplete() === FALSE) {
 
 			$h .= '<div class="util-block-help">';
-				$h .= '<p>'.s("Vous pourrez personnaliser les factures dès lors que vous aurez terminé la configuration administrative de la commercialisation !").'</p>';
+				$h .= \farm\AlertUi::getError('Farm::notLegal', [
+					'farm' => $eFarm,
+					'btn' => 'btn-secondary'
+				]);
 			$h .= '</div>';
 
 			return $h;
@@ -235,7 +224,10 @@ class ConfigurationUi {
 		if($eFarm->isLegalComplete() === FALSE) {
 
 			$h .= '<div class="util-block-help">';
-				$h .= '<p>'.s("Vous pourrez personnaliser les bons de livraison dès lors que vous aurez terminé la configuration administrative de la commercialisation !").'</p>';
+				$h .= \farm\AlertUi::getError('Farm::notLegal', [
+					'farm' => $eFarm,
+					'btn' => 'btn-secondary'
+				]);
 			$h .= '</div>';
 
 			return $h;

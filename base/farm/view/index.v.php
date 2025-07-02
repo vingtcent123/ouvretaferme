@@ -215,15 +215,14 @@ new AdaptativeView('mapEmpty', function($data, FarmTemplate $t) {
 	$t->mainTitle .= '</h1>';
 
 	echo '<div class="util-block-help mb-2">';
-		echo '<h4>'.s("Vous venez de créer votre ferme !").'</h4>';
-		echo '<p>'.s("Pour travailler avec {siteName}, vous devez maintenant créer le plan de votre ferme, c'est-à-dire paramétrer les emplacements de vos cultures. Cette première étape vous permettra ensuite d'accéder à l'ensemble des fonctionnalités du site.").'</p>';
-		echo '<p>'.s("Vous pouvez paramétrer les emplacements de vos cultures sur trois échelles différentes :").'</p>';
+		echo '<h4>'.s("Créez le plan de votre ferme pour démarrer la planification !").'</h4>';
+		echo '<p>'.s("Pour travailler votre plan de culture et votre plan d'assolement avec {siteName}, il est préférable de créer le plan de votre ferme, c'est-à-dire paramétrer les emplacements de vos cultures sur trois échelles différentes :").'</p>';
 		echo '<ul>';
 			echo '<li>'.s("les parcelles, qui sont l'échelle la plus large").'</li>';
-			echo '<li>'.s("les blocs, qui sont créés au sein des parcelles").'</li>';
-			echo '<li>'.s("les planches, qui sont paramétrées dans les parcelles ou les blocs").'</li>';
+			echo '<li>'.s("les jardins, qui sont créés au sein des parcelles").'</li>';
+			echo '<li>'.s("les planches, qui sont paramétrées dans les parcelles ou les jardins").'</li>';
 		echo '</ul>';
-		echo '<p>'.s("Il est nécessaire de créer au minimum une première parcelle, depuis cette page !").'</p>';
+		echo '<p>'.s("Si vous ne souhaitez pas faire le plan de votre ferme maintenant, vous pouvez toujours <link>ajouter une première série dans votre plan de culture</link> !", ['link' => '<a href="'.\farm\FarmUi::urlCultivationSeries($data->eFarm).'">']).'</p>';
 	echo '</div>';
 
 	echo '<h3>'.s("Ajouter une première parcelle").'</h3>';
@@ -257,13 +256,13 @@ new AdaptativeView('cartography', function($data, FarmTemplate $t) {
 
 	if(
 		$data->cZone->count() === 1 and // Une seule parcelle
-		$data->eZone['cPlot']->count() === 1 and // Uniquement le bloc inféodé à la parcelle
+		$data->eZone['cPlot']->count() === 1 and // Uniquement le jardininféodé à la parcelle
 		$data->eZone['cPlot']->first()['cBed']->count() === 1 // Uniquement la planche inféodé à la parcelle
 	) {
 
 		echo '<div class="util-block-help">';
 			echo '<h4>'.s("Vous avez créé votre première parcelle !").'</h4>';
-			echo '<p>'.s("Vous pouvez maintenant soit ajouter directement des planches permanentes à cette parcelle, soit subdiviser la parcelle en plusieurs blocs. Par exemple, les maraîchers qui travaillent avec des jardins créent généralement un bloc par jardin. Les serres sont également traitées le plus souvent comme un bloc.").'</p>';
+			echo '<p>'.s("Vous pouvez maintenant soit ajouter directement des planches permanentes à cette parcelle, soit subdiviser la parcelle en plusieurs jardins. Les serres sont également traitées le plus souvent comme un jardin.").'</p>';
 			echo '<p>'.s("Libre à vous de choisir l'organisation spatiale qui vous convient le mieux !").'</p>';
 		echo '</div>';
 
@@ -400,6 +399,7 @@ new AdaptativeView('/ferme/{id}/clients', function($data, FarmTemplate $t) {
 		echo '<div class="util-block-help">';
 			echo '<h4>'.s("Vous êtes sur la page pour gérer votre clientèle").'</h4>';
 			echo '<p>'.s("Pour vendre, vous devez avoir des clients et c'est ici que ça se passe pour créer un premier client. Deux champs du formulaire sont obligatoires, le nom du client et la catégorie. Les clients professionnels sont facturés HT et les clients particuliers TTC si vous êtes assujetti à la TVA.").'</p>';
+			echo '<p>'.s("Si vous souhaitez utiliser le logiciel de caisse, vous devez utiliser un point de vente pour les particuliers !").'</p>';
 		echo '</div>';
 
 		echo '<br/>';
@@ -696,16 +696,21 @@ new AdaptativeView('/ferme/{id}/factures', function($data, FarmTemplate $t) {
 				echo '<li>'.s("Envoyez automatiquement les factures par e-mail à vos clients").'</li>';
 			echo '</ul>';
 			if($data->hasSales) {
-				echo '<a href="/selling/invoice:create?farm='.$data->eFarm['id'].'" class="btn btn-secondary">'.s("Créer une première facture").'</a> ';
+				if($data->eFarm->isLegalComplete()) {
+					echo '<a href="/selling/invoice:create?farm='.$data->eFarm['id'].'" class="btn btn-secondary">'.s("Créer une première facture").'</a> ';
+				} else {
+					echo '<p>'.s("Il manque encore quelques informations sur votre ferme pour facturer vos premières ventes.").'</p>';
+				}
 			} else {
 				echo '<p>'.s("Vous ne pouvez pas encore générer de facture car vous n'avez encore livré aucune vente !").'</p>';
 				echo '<a href="'.\farm\FarmUi::urlSellingSalesAll($data->eFarm).'" class="btn btn-secondary">'.s("Retourner sur les ventes").'</a>';
 			}
 		echo '</div>';
-		echo '<div class="util-block-help">';
-			echo '<p>'.s("L'utilisation du module de facturation demande un peu de paramétrage avant d'être utilisé, notamment pour renseigner les informations légales à afficher sur vos factures. N'hésitez pas à l'anticiper dès maintenant.").'</p>';
-			echo '<a href="/selling/configuration:update?id='.$data->eFarm['id'].'" class="btn btn-secondary">'.s("Paramétrer la vente").'</a>';
-		echo '</div>';
+
+		if($data->eFarm->isLegalComplete() === FALSE) {
+			echo '<h3>'.s("Informations requises pour facturer vos ventes").'</h3>';
+			echo new \farm\FarmUi()->updateLegal($data->eFarm);
+		}
 
 	} else {
 

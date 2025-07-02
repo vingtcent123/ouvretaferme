@@ -164,7 +164,7 @@ class ZoneLib extends ZoneCrud {
 
 		Zone::model()->insert($e);
 
-		// On crée le bloc inféodé à la parcelle
+		// On crée le jardin inféodé à la parcelle
 		PlotLib::createFromZone($e);
 
 		Zone::model()->commit();

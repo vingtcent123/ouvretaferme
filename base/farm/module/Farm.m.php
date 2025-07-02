@@ -79,7 +79,7 @@ class FarmModel extends \ModuleModel {
 			'hasShops' => ['bool', 'cast' => 'bool'],
 			'hasSales' => ['bool', 'cast' => 'bool'],
 			'hasCultivations' => ['bool', 'cast' => 'bool'],
-			'startedAt' => ['int16', 'min' => date('Y') - 100, 'max' => date('Y') + 10, 'cast' => 'int'],
+			'startedAt' => ['int16', 'min' => date('Y') - 100, 'max' => date('Y') + 10, 'null' => TRUE, 'cast' => 'int'],
 			'createdAt' => ['datetime', 'cast' => 'string'],
 			'status' => ['enum', [\farm\Farm::ACTIVE, \farm\Farm::CLOSED], 'cast' => 'enum'],
 		]);

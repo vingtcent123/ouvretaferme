@@ -819,9 +819,9 @@ class ProductUi {
 			});
 
 			$h .= '<br/>';
-			$h .= '<h3>'.s("Caractéristiques").'</h3>';
 
 			$h .= '<div class="util-block bg-background-light">';
+				$h .= $form->group(content: '<h4>'.s("Caractéristiques").'</h4>');
 				if($eProduct['composition']) {
 					$h .= $form->dynamicGroups($eProduct, ['compositionVisibility*']);
 				} else {
@@ -878,9 +878,9 @@ class ProductUi {
 			);
 
 			$h .= '<br/>';
-			$h .= '<h3>'.s("Caractéristiques").'</h3>';
 
 			$h .= '<div class="util-block bg-background-light">';
+				$h .= $form->group(content: '<h4>'.s("Caractéristiques").'</h4>');
 				if($eProduct['composition']) {
 					$h .= $form->dynamicGroups($eProduct, ['compositionVisibility']);
 				} else {

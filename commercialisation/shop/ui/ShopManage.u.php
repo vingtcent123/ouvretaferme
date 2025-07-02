@@ -13,8 +13,7 @@ class ShopManageUi {
 	public function getIntroCreate(\farm\Farm $eFarm): string {
 
 		$h = '<div class="util-block-help">';
-			$h .= '<h4>'.s("Vendre ma production en ligne").'</h4>';
-			$h .= '<p>'.s("Avec {siteName}, il est très facile de vendre votre production en ligne !").'</p>';
+			$h .= '<h4>'.s("Vendre sa production en ligne avec {siteName} en 6 étapes").'</h4>';
 			$h .= '<ol>';
 				$h .= '<li>'.s("Créez une boutique").'</li>';
 				$h .= '<li>'.s("Ajoutez les produits que vous souhaitez vendre").'</li>';
@@ -27,10 +26,10 @@ class ShopManageUi {
 
 		$h .= '<br/>';
 
-		$h .= '<h3>'.s("Créer une boutique").'</h3>';
-
 
 		if($eFarm->isLegal()) {
+
+			$h .= '<h3>'.s("Créer une boutique").'</h3>';
 
 			$eShop = new Shop([
 				'farm' => $eFarm,
@@ -41,12 +40,9 @@ class ShopManageUi {
 
 		} else {
 
-			$h .= '<div class="util-block">';
-				$h .= \farm\AlertUi::getError('Farm::notLegal', [
-					'farm' => $eFarm,
-					'btn' => 'btn-secondary'
-				]);
-			$h .= '</div>';
+			$h .= '<h3>'.s("Informations requises pour créer une boutique en ligne").'</h3>';
+
+			$h .= new \farm\FarmUi()->updateLegal($eFarm);
 
 		}
 
