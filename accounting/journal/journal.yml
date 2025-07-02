@@ -14,6 +14,7 @@ Lettering:
 Operation:
   id: serial32
   number: ?int32(0, null)
+  financialYear: account\FinancialYear
   journalCode: ?enum(ACH, VEN, BAN, OD)
   # Compte concerné par l'opération
   account: account\Account
@@ -53,6 +54,7 @@ VatDeclaration:
   id: serial32
   startAt: date
   endsAt: date
-  type: enum(STATEMENT,AMENDMENT) = STATEMENT
+  type: enum(STATEMENT, ADJUSTMENT, AMENDMENT) = STATEMENT # Déclaration, régularisation, rectificative
+  amendment: ?journal\VatDeclaration # Déclaration rectificative liée si elle existe
   createdAt: datetime = SPECIAL(now)
   createdBy: user\User = SPECIAL(user)

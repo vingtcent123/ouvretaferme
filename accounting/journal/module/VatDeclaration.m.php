@@ -8,6 +8,7 @@ abstract class VatDeclarationElement extends \Element {
 	private static ?VatDeclarationModel $model = NULL;
 
 	const STATEMENT = 'statement';
+	const ADJUSTMENT = 'adjustment';
 	const AMENDMENT = 'amendment';
 
 	public static function getSelection(): array {
@@ -42,16 +43,18 @@ class VatDeclarationModel extends \ModuleModel {
 			'id' => ['serial32', 'cast' => 'int'],
 			'startAt' => ['date', 'cast' => 'string'],
 			'endsAt' => ['date', 'cast' => 'string'],
-			'type' => ['enum', [\journal\VatDeclaration::STATEMENT, \journal\VatDeclaration::AMENDMENT], 'cast' => 'enum'],
+			'type' => ['enum', [\journal\VatDeclaration::STATEMENT, \journal\VatDeclaration::ADJUSTMENT, \journal\VatDeclaration::AMENDMENT], 'cast' => 'enum'],
+			'amendment' => ['element32', 'journal\VatDeclaration', 'null' => TRUE, 'cast' => 'element'],
 			'createdAt' => ['datetime', 'cast' => 'string'],
 			'createdBy' => ['element32', 'user\User', 'cast' => 'element'],
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'startAt', 'endsAt', 'type', 'createdAt', 'createdBy'
+			'id', 'startAt', 'endsAt', 'type', 'amendment', 'createdAt', 'createdBy'
 		]);
 
 		$this->propertiesToModule += [
+			'amendment' => 'journal\VatDeclaration',
 			'createdBy' => 'user\User',
 		];
 
@@ -113,6 +116,10 @@ class VatDeclarationModel extends \ModuleModel {
 
 	public function whereType(...$data): VatDeclarationModel {
 		return $this->where('type', ...$data);
+	}
+
+	public function whereAmendment(...$data): VatDeclarationModel {
+		return $this->where('amendment', ...$data);
 	}
 
 	public function whereCreatedAt(...$data): VatDeclarationModel {

@@ -313,10 +313,16 @@ class OperationLib extends OperationCrud {
 		$accounts = var_filter($input['account'] ?? [], 'array');
 		$vatValues = var_filter($input['vatValue'] ?? [], 'array');
 		$invoiceFile = var_filter($input['invoiceFile'] ?? NULL, 'string');
+		$eFinancialYear = \account\FinancialYearLib::getById($input['financialYear'] ?? NULL);
 		$isFromCashflow = ($eOperationDefault->offsetExists('cashflow') === TRUE);
 		$eCompany = \company\CompanyLib::getCurrent();
 
 		$fw = new \FailWatch();
+
+		if($eFinancialYear->canUpdate() === FALSE) {
+			\Fail::log('Operation::FinancialYear.notUpdatable');
+			return new \Collection();
+		}
 
 		$cAccounts = \account\AccountLib::getByIdsWithVatAccount($accounts);
 
@@ -330,6 +336,7 @@ class OperationLib extends OperationCrud {
 		}
 
 		$eOperationDefault['thirdParty'] = NULL;
+		$eOperationDefault['financialYear'] = $eFinancialYear;
 
 		if($isFromCashflow === TRUE) {
 			$eOperationDefault->build(['paymentMode', 'paymentDate'], $input);
@@ -339,6 +346,7 @@ class OperationLib extends OperationCrud {
 
 			$eOperation = clone $eOperationDefault;
 			$eOperation['index'] = $index;
+			$eOperation['financialYear'] = $eFinancialYear;
 
 			$input['invoiceFile'] = [$index => $invoiceFile];
 			$eOperation->buildIndex($properties, $input, $index);
@@ -499,6 +507,7 @@ class OperationLib extends OperationCrud {
 						'type' => $eOperation['type'] === Operation::CREDIT ? Operation::DEBIT : Operation::CREDIT,
 						'accountLabel' => $accountLabel,
 						'description' => $description,
+						'financialYear' => $eFinancialYear,
 					]
 				);
 
@@ -553,6 +562,7 @@ class OperationLib extends OperationCrud {
 			'paymentDate' => $eOperationLinked['paymentDate'],
 			'paymentMode' => $eOperationLinked['paymentMode'],
 			'amount' => abs($vatValue),
+			'financialYear' => $eOperationLinked['financialYear']['id'],
 		];
 		if($eOperationLinked['cashflow']->exists() === TRUE) {
 			$values['cashflow'] = $eOperationLinked['cashflow']['id'];
@@ -566,7 +576,7 @@ class OperationLib extends OperationCrud {
 			[
 				'cashflow', 'date', 'account', 'accountLabel', 'description', 'document',
 				'thirdParty', 'type', 'amount', 'operation',
-				'paymentDate', 'paymentMode',
+				'paymentDate', 'paymentMode', 'financialYear',
 			],
 			$values,
 			new \Properties('create'),
@@ -723,6 +733,7 @@ class OperationLib extends OperationCrud {
 			'amount' => abs($eCashflow['amount']),
 			'paymentDate' => $eCashflow['date'],
 			'paymentMode'=> $eOperation['paymentMode'],
+			'financialYear'=> $eOperation['financialYear']['id'],
 		];
 
 		$eOperationBank = new Operation();
@@ -731,7 +742,7 @@ class OperationLib extends OperationCrud {
 
 		$eOperationBank->build([
 			'cashflow', 'date', 'account', 'accountLabel', 'description', 'document', 'thirdParty', 'type', 'amount',
-			'operation', 'paymentDate', 'paymentMode',
+			'operation', 'paymentDate', 'paymentMode', 'financialYear',
 		], $values, new \Properties('create'));
 
 		if($document !== NULL) {

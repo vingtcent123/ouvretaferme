@@ -32,6 +32,8 @@ class AlertUi {
 
 			'Operation::document.empty' => s("Le nom de la pièce comptable est nécessaire pour enregistrer le document dans votre espace de stockage."),
 
+			'Operation::FinancialYear.notUpdatable' => s("Il n'est plus possible d'écrire dans cet exercice comptable."),
+
 			default => null
 
 		};

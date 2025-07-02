@@ -207,6 +207,7 @@ class OperationUi {
 			$h .= '<div style="display: flex;">';
 
 				$h .= $form->hidden('company', $eFarm['id']);
+				$h .= $form->hidden('financialYear', $eFinancialYear['id']);
 
 				$index = 0;
 				$defaultValues = $eOperation->getArrayCopy();

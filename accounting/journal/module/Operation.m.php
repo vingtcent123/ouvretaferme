@@ -55,6 +55,7 @@ class OperationModel extends \ModuleModel {
 		$this->properties = array_merge($this->properties, [
 			'id' => ['serial32', 'cast' => 'int'],
 			'number' => ['int32', 'min' => 0, 'max' => NULL, 'null' => TRUE, 'cast' => 'int'],
+			'financialYear' => ['element32', 'account\FinancialYear', 'cast' => 'element'],
 			'journalCode' => ['enum', [\journal\Operation::ACH, \journal\Operation::VEN, \journal\Operation::BAN, \journal\Operation::OD], 'null' => TRUE, 'cast' => 'enum'],
 			'account' => ['element32', 'account\Account', 'cast' => 'element'],
 			'accountLabel' => ['text8', 'min' => 1, 'max' => NULL, 'collate' => 'general', 'cast' => 'string'],
@@ -82,10 +83,11 @@ class OperationModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'number', 'journalCode', 'account', 'accountLabel', 'thirdParty', 'date', 'description', 'document', 'documentDate', 'documentStorage', 'amount', 'type', 'cashflow', 'vatRate', 'vatAccount', 'operation', 'asset', 'comment', 'paymentDate', 'paymentMode', 'letteringStatus', 'vatDeclaration', 'createdAt', 'updatedAt', 'createdBy'
+			'id', 'number', 'financialYear', 'journalCode', 'account', 'accountLabel', 'thirdParty', 'date', 'description', 'document', 'documentDate', 'documentStorage', 'amount', 'type', 'cashflow', 'vatRate', 'vatAccount', 'operation', 'asset', 'comment', 'paymentDate', 'paymentMode', 'letteringStatus', 'vatDeclaration', 'createdAt', 'updatedAt', 'createdBy'
 		]);
 
 		$this->propertiesToModule += [
+			'financialYear' => 'account\FinancialYear',
 			'account' => 'account\Account',
 			'thirdParty' => 'account\ThirdParty',
 			'cashflow' => 'bank\Cashflow',
@@ -163,6 +165,10 @@ class OperationModel extends \ModuleModel {
 
 	public function whereNumber(...$data): OperationModel {
 		return $this->where('number', ...$data);
+	}
+
+	public function whereFinancialYear(...$data): OperationModel {
+		return $this->where('financialYear', ...$data);
 	}
 
 	public function whereJournalCode(...$data): OperationModel {
