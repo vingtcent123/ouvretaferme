@@ -75,13 +75,14 @@ class OperationModel extends \ModuleModel {
 			'paymentDate' => ['date', 'null' => TRUE, 'cast' => 'string'],
 			'paymentMode' => ['enum', [\journal\Operation::TRANSFER, \journal\Operation::CHEQUE, \journal\Operation::CASH, \journal\Operation::CREDIT_CARD, \journal\Operation::DIRECT_DEBIT], 'null' => TRUE, 'cast' => 'enum'],
 			'letteringStatus' => ['enum', [\journal\Operation::PARTIAL, \journal\Operation::TOTAL], 'null' => TRUE, 'cast' => 'enum'],
+			'vatDeclaration' => ['element32', 'journal\VatDeclaration', 'null' => TRUE, 'cast' => 'element'],
 			'createdAt' => ['datetime', 'cast' => 'string'],
 			'updatedAt' => ['datetime', 'cast' => 'string'],
 			'createdBy' => ['element32', 'user\User', 'null' => TRUE, 'cast' => 'element'],
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'number', 'journalCode', 'account', 'accountLabel', 'thirdParty', 'date', 'description', 'document', 'documentDate', 'documentStorage', 'amount', 'type', 'cashflow', 'vatRate', 'vatAccount', 'operation', 'asset', 'comment', 'paymentDate', 'paymentMode', 'letteringStatus', 'createdAt', 'updatedAt', 'createdBy'
+			'id', 'number', 'journalCode', 'account', 'accountLabel', 'thirdParty', 'date', 'description', 'document', 'documentDate', 'documentStorage', 'amount', 'type', 'cashflow', 'vatRate', 'vatAccount', 'operation', 'asset', 'comment', 'paymentDate', 'paymentMode', 'letteringStatus', 'vatDeclaration', 'createdAt', 'updatedAt', 'createdBy'
 		]);
 
 		$this->propertiesToModule += [
@@ -91,6 +92,7 @@ class OperationModel extends \ModuleModel {
 			'vatAccount' => 'account\Account',
 			'operation' => 'journal\Operation',
 			'asset' => 'asset\Asset',
+			'vatDeclaration' => 'journal\VatDeclaration',
 			'createdBy' => 'user\User',
 		];
 
@@ -241,6 +243,10 @@ class OperationModel extends \ModuleModel {
 
 	public function whereLetteringStatus(...$data): OperationModel {
 		return $this->where('letteringStatus', ...$data);
+	}
+
+	public function whereVatDeclaration(...$data): OperationModel {
+		return $this->where('vatDeclaration', ...$data);
 	}
 
 	public function whereCreatedAt(...$data): OperationModel {

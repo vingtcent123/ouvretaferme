@@ -74,7 +74,7 @@ class CompanyUi {
 
 				$h .= $form->dynamicGroups($eFarm, ['name*', 'legalEmail*', 'siret*', 'legalName*']);
 				$h .= $form->addressGroup(s("Siège social de la ferme").' '.\util\FormUi::asterisk(), 'legal', $eFarm);
-			$h .= $form->dynamicGroups($eFarm, ['startedAt*']);
+				$h .= $form->dynamicGroups($eFarm, ['startedAt*']);
 
 			$h .= $form->group(
 				content: $form->submit(s("Enregistrer "))
@@ -120,7 +120,7 @@ class CompanyUi {
 
 			$h .= '<h4>'.s("Premier exercice comptable").'</h4>';
 
-			$h .= $form->dynamicGroups(new \account\FinancialYear(), ['startDate*', 'endDate*']);
+			$h .= $form->dynamicGroups(new \account\FinancialYear(), ['startDate*', 'endDate*', 'hasVat*']);
 
 			$h .= $form->group(
 				content: $form->submit(s("Enregistrer les paramètres de ma ferme"))

@@ -129,6 +129,7 @@ Class VatUi {
 			$h .= '<div class="tabs-item">';
 				$h .= '<a class="tab-item selected" data-tab="vat-buy" onclick="Lime.Tab.select(this)">'.s("Achats").'</a>';
 				$h .= '<a class="tab-item" data-tab="vat-sell" onclick="Lime.Tab.select(this)">'.s("Ventes").'</a>';
+				$h .= '<a class="tab-item" data-tab="vat-statement" onclick="Lime.Tab.select(this)">'.s("Déclarations de TVA").'</a>';
 			$h .= '</div>';
 			$h .= '<div class="tab-panel" data-tab="vat-buy">';
 				$h .= $this->getTableContainer($eFarm, $eFinancialYear, $operations['buy'], 'buy', $search);
@@ -138,7 +139,19 @@ Class VatUi {
 				$h .= $this->getTableContainer($eFarm, $eFinancialYear, $operations['sell'], 'sell', $search);
 			$h .= '</div>';
 
+			$h .= '<div class="tab-panel" data-tab="vat-statement">';
+				$h .= $this->getStatementContainer($eFarm, $eFinancialYear, $operations['sell'], 'sell', $search);
+			$h .= '</div>';
+
 		$h .= '</div>';
+
+		return $h;
+
+	}
+
+	private function getStatementContainer(): string {
+
+		$h = 'ici les déclarations de TVA (TODO)';
 
 		return $h;
 

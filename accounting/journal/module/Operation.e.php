@@ -5,19 +5,24 @@ use account\ThirdPartyLib;
 
 class Operation extends OperationElement {
 
-	public function canQuickUpdate(): bool {
+	public function canUpdate(): bool {
 
-		return \account\FinancialYearLib::isDateInOpenFinancialYear($this['date']);
+		$this->expects(['vatDeclaration', 'date']);
 
+		return $this['vatDeclaration']->empty() and \account\FinancialYearLib::isDateInOpenFinancialYear($this['date']);
 	}
 
 	public function canDelete(): bool {
 
-		return ($this->exists() === TRUE and $this['operation']->exists() === FALSE);
+		$this->expects(['operation']);
+
+		return ($this->exists() === TRUE and $this->canUpdate() and $this['operation']->exists() === FALSE );
 
 	}
 
 	public function isClassAccount(int $class): bool {
+
+		$this->expects(['accountLabel']);
 
 		$stringClass = (string)$class;
 		return str_starts_with($this['accountLabel'], $stringClass);

@@ -10,6 +10,16 @@ abstract class FinancialYearElement extends \Element {
 	const OPEN = 'open';
 	const CLOSE = 'close';
 
+	const MONTHLY = 'monthly';
+	const QUARTERLY = 'quarterly';
+	const ANNUALLY = 'annually';
+
+	const MICRO_BA = 'micro-ba';
+	const BA_REEL_SIMPLIFIE = 'ba-reel-simplifie';
+	const BA_REEL_NORMAL = 'ba-reel-normal';
+	const AUTRE_BIC = 'autre-bic';
+	const AUTRE_BNC = 'autre-bnc';
+
 	public static function getSelection(): array {
 		return FinancialYear::model()->getProperties();
 	}
@@ -43,6 +53,9 @@ class FinancialYearModel extends \ModuleModel {
 			'startDate' => ['date', 'cast' => 'string'],
 			'endDate' => ['date', 'cast' => 'string'],
 			'status' => ['enum', [\account\FinancialYear::OPEN, \account\FinancialYear::CLOSE], 'cast' => 'enum'],
+			'hasVat' => ['bool', 'cast' => 'bool'],
+			'vatFrequency' => ['enum', [\account\FinancialYear::MONTHLY, \account\FinancialYear::QUARTERLY, \account\FinancialYear::ANNUALLY], 'null' => TRUE, 'cast' => 'enum'],
+			'taxSystem' => ['enum', [\account\FinancialYear::MICRO_BA, \account\FinancialYear::BA_REEL_SIMPLIFIE, \account\FinancialYear::BA_REEL_NORMAL, \account\FinancialYear::AUTRE_BIC, \account\FinancialYear::AUTRE_BNC], 'null' => TRUE, 'cast' => 'enum'],
 			'balanceSheetOpen' => ['bool', 'cast' => 'bool'],
 			'balanceSheetClose' => ['bool', 'cast' => 'bool'],
 			'closeDate' => ['date', 'null' => TRUE, 'cast' => 'string'],
@@ -51,7 +64,7 @@ class FinancialYearModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'startDate', 'endDate', 'status', 'balanceSheetOpen', 'balanceSheetClose', 'closeDate', 'createdAt', 'createdBy'
+			'id', 'startDate', 'endDate', 'status', 'hasVat', 'vatFrequency', 'taxSystem', 'balanceSheetOpen', 'balanceSheetClose', 'closeDate', 'createdAt', 'createdBy'
 		]);
 
 		$this->propertiesToModule += [
@@ -93,6 +106,12 @@ class FinancialYearModel extends \ModuleModel {
 			case 'status' :
 				return ($value === NULL) ? NULL : (string)$value;
 
+			case 'vatFrequency' :
+				return ($value === NULL) ? NULL : (string)$value;
+
+			case 'taxSystem' :
+				return ($value === NULL) ? NULL : (string)$value;
+
 			default :
 				return parent::encode($property, $value);
 
@@ -122,6 +141,18 @@ class FinancialYearModel extends \ModuleModel {
 
 	public function whereStatus(...$data): FinancialYearModel {
 		return $this->where('status', ...$data);
+	}
+
+	public function whereHasVat(...$data): FinancialYearModel {
+		return $this->where('hasVat', ...$data);
+	}
+
+	public function whereVatFrequency(...$data): FinancialYearModel {
+		return $this->where('vatFrequency', ...$data);
+	}
+
+	public function whereTaxSystem(...$data): FinancialYearModel {
+		return $this->where('taxSystem', ...$data);
 	}
 
 	public function whereBalanceSheetOpen(...$data): FinancialYearModel {

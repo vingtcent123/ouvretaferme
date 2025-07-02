@@ -3,10 +3,10 @@ namespace account;
 class FinancialYearLib extends FinancialYearCrud {
 
 	public static function getPropertiesCreate(): array {
-		return ['startDate', 'endDate'];
+		return ['startDate', 'endDate', 'hasVat', 'vatFrequency', 'taxSystem'];
 	}
 	public static function getPropertiesUpdate(): array {
-		return ['startDate', 'endDate'];
+		return ['startDate', 'endDate', 'hasVat', 'vatFrequency', 'taxSystem'];
 	}
 
 	public static function getPreviousFinancialYear(FinancialYear $eFinancialYear): FinancialYear {
@@ -88,13 +88,18 @@ class FinancialYearLib extends FinancialYearCrud {
 		// 4- Stocks de fin d'exercice
 
 		// 5- Calcul de la TVA
-		\journal\VatLib::balance($eFinancialYear);
+		if($eFinancialYear['hasVat']) {
+			\journal\VatLib::balance($eFinancialYear);
+		}
 
 		if($createNew === TRUE) {
 
 			$eFinancialYearNew = new FinancialYear([
 				'status' => FinancialYearElement::OPEN,
 				...FinancialYearLib::getNextFinancialYearDates(),
+				'hasVat' => $eFinancialYear['hasVat'],
+				'vatFrequency' => $eFinancialYear['vatFrequency'],
+				'taxSystem' => $eFinancialYear['taxSystem'],
 			]);
 
 			self::create($eFinancialYearNew);

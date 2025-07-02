@@ -35,7 +35,7 @@ class FinancialYearUi {
 			$h .= '<a data-ajax="'.\company\CompanyUi::urlAccount($eFarm).'/financialYear/document:opening" post-id="'.$eFinancialYear['id'].'" class="dropdown-item">'.s("Télécharger le Bilan d'Ouverture (Bientôt disponible !)").'</a>';
 			$h .= '<div class="dropdown-divider"></div>';
 			$h .= '<a href="'.\company\CompanyUi::urlAccount($eFarm).'/financialYear/:update?id='.$eFinancialYear['id'].'" class="dropdown-item">';
-				$h .= s("Modifier les dates");
+				$h .= s("Modifier");
 			$h .= '</a>';
 			$h .= '<a data-ajax="'.\company\CompanyUi::urlAccount($eFarm).'/financialYear/:close" post-id="'.$eFinancialYear['id'].'" class="dropdown-item" data-confirm="'.s("Action irréversible ! Souhaitez-vous confirmer la clôture de cet exercice comptable ?").'">'.s("Clôturer").'</a>';;
 			$h .= '<a data-ajax="'.\company\CompanyUi::urlAccount($eFarm).'/financialYear/:close" post-id="'.$eFinancialYear['id'].'" class="dropdown-item" data-confirm="'.s("Action irréversible ! Souhaitez-vous confirmer la clôture de cet exercice comptable ? Le suivant sera créé automatiquement.").'">'.s("Clôturer et créer l'exercice suivant").'</a>';;
@@ -83,6 +83,9 @@ class FinancialYearUi {
 						$h .= '<th class="text-center">'.s("#").'</th>';
 						$h .= '<th>'.s("Date de début").'</th>';
 						$h .= '<th>'.s("Date de fin").'</th>';
+						$h .= '<th>'.s("Assujettissement à la TVA").'</th>';
+						$h .= '<th>'.s("Fréquence de <br />déclaration de TVA").'</th>';
+						$h .= '<th>'.s("Régime fiscal").'</th>';
 						$h .= '<th class="text-center">'.s("Statut").'</th>';
 						$h .= '<th class="td-min-content"></th>';
 					$h .= '</tr>';
@@ -111,12 +114,42 @@ class FinancialYearUi {
 							$h .= \util\DateUi::numeric($eFinancialYear['endDate']);
 						$h .= '</td>';
 
+						$h .= '<td>';
+
+							$h .= match($eFinancialYear['hasVat']) {
+								TRUE => s("Oui"),
+								FALSE => s("Non"),
+							};
+
+						$h .= '</td>';
+
+						$h .= '<td>';
+
+							if($eFinancialYear['vatFrequency'] === NULL) {
+								$h .= 'n/a';
+							} else {
+								$h .= self::p('vatFrequency')->values[$eFinancialYear['vatFrequency']];
+							}
+
+						$h .= '</td>';
+
+						$h .= '<td>';
+
+							if($eFinancialYear['taxSystem'] === NULL) {
+								$h .= '?';
+							} else {
+								$h .= self::p('taxSystem')->values[$eFinancialYear['taxSystem']];
+							}
+
+						$h .= '</td>';
+
 						$h .= '<td class="text-center">';
 							$h .= match($eFinancialYear['status']) {
 								FinancialYearElement::OPEN => s("En cours"),
 								FinancialYearElement::CLOSE => s("Clôturé"),
 							};
 						$h .= '</td>';
+
 						$h .= '<td>';
 							if($eFinancialYear['status'] === FinancialYearElement::OPEN) {
 								$h .= self::getAction($eFarm, $eFinancialYear);
@@ -146,7 +179,7 @@ class FinancialYearUi {
 
 		if(GET('message') === 'FinancialYear::toCreate') {
 			$h .= '<div class="util-info">';
-			$h .= s("Avant de démarrer, votre ferme a besoin d'un premier exercice comptable. Vous pouvez le créer ici !");
+				$h .= s("Avant de démarrer, votre ferme a besoin d'un premier exercice comptable. Vous pouvez le créer ci-dessous :");
 			$h .= '</div>';
 		}
 
@@ -156,7 +189,7 @@ class FinancialYearUi {
 
 			$h .= $form->hidden('farm', $eFarm['id']);
 
-			$h .= $form->dynamicGroups($eFinancialYear, ['startDate*', 'endDate*']);
+			$h .= $form->dynamicGroups($eFinancialYear, ['startDate*', 'endDate*', 'hasVat*', 'taxSystem*']);
 
 			$h .= $form->group(
 				content: $form->submit(s("Créer l'exercice"))
@@ -185,10 +218,10 @@ class FinancialYearUi {
 			$h .= $form->hidden('farm', $eFarm['id']);
 			$h .= $form->hidden('id', $eFinancialYear['id']);
 
-			$h .= $form->dynamicGroups($eFinancialYear, ['startDate*', 'endDate*']);
+			$h .= $form->dynamicGroups($eFinancialYear, ['startDate*', 'endDate*', 'hasVat*', 'taxSystem']);
 
 			$h .= $form->group(
-				content: $form->submit(s("Mettre à jour l'exercice"))
+				content: $form->submit(s("Enregistrer"))
 			);
 
 		$h .= $form->close();
@@ -240,6 +273,9 @@ class FinancialYearUi {
 		$d = FinancialYear::model()->describer($property, [
 			'startDate' => s("Date de début"),
 			'endDate' => s("Date de fin"),
+			'hasVat' => s("Assujettissement à la TVA"),
+			'vatFrequency' => s("Fréquence de déclaration de TVA"),
+			'taxSystem' => s("Régime fiscal"),
 		]);
 
 		switch($property) {
@@ -249,6 +285,23 @@ class FinancialYearUi {
 				$d->prepend = \Asset::icon('calendar-date');
 				break;
 
+			case 'vatFrequency' :
+				$d->values = [
+					FinancialYear::MONTHLY => s("Mensuelle"),
+					FinancialYear::QUARTERLY => s("Trimestrielle"),
+					FinancialYear::ANNUALLY => s("Annuelle"),
+				];
+				break;
+
+			case 'taxSystem':
+				$d->values = [
+					FinancialYear::MICRO_BA => s("Micro-BA"),
+					FinancialYear::BA_REEL_SIMPLIFIE => s("Réel simplifié agricole"),
+					FinancialYear::BA_REEL_NORMAL => s("Réel normal agricole"),
+					FinancialYear::AUTRE_BIC => s("BIC"),
+					FinancialYear::AUTRE_BNC => s("BNC"),
+				];
+				$d->attributes['mandatory'] = TRUE;
 		}
 
 		return $d;

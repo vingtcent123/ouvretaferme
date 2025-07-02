@@ -40,6 +40,7 @@ Operation:
   paymentMode: ?enum(TRANSFER, CHEQUE, CASH, CREDIT_CARD, DIRECT_DEBIT)
   # Lettrage : null = non lettrée, partial = partiellement lettrée, total = soldée
   letteringStatus: ?enum(PARTIAL, TOTAL)
+  vatDeclaration: ?journal\VatDeclaration
   createdAt: datetime = SPECIAL(now)
   updatedAt: datetime = SPECIAL(now)
   createdBy: ?user\User = SPECIAL(user)
@@ -47,3 +48,11 @@ Operation:
     ["document"],
     ["cashflow"]
   ]
+
+VatDeclaration:
+  id: serial32
+  startAt: date
+  endsAt: date
+  type: enum(STATEMENT,AMENDMENT) = STATEMENT
+  createdAt: datetime = SPECIAL(now)
+  createdBy: user\User = SPECIAL(user)
