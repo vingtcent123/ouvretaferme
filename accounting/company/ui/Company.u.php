@@ -95,7 +95,7 @@ class CompanyUi {
 
 		$h .= $form->group(content: '<h3>'.s("Premier exercice comptable").'</h3>');
 
-		$h .= $form->dynamicGroups(new \account\FinancialYear(), ['startDate*', 'endDate*']);
+		$h .= $form->dynamicGroups(new \account\FinancialYear(), ['startDate*', 'endDate*', 'hasVat*']);
 
 		$h .= $form->group(
 			content: $form->submit(s("Enregistrer les paramètres de ma ferme"))
