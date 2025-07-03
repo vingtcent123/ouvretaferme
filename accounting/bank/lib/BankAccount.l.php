@@ -44,7 +44,7 @@ class BankAccountLib extends BankAccountCrud {
 			->whereAccountId($accountId)
 			->get($eBankAccount);
 
-		if($eBankAccount->notEmpty()) {
+		if($eBankAccount->empty()) {
 
 			// Check if there is already an account. Set current account to default if there is none.
 			$cBankAccountDefault = BankAccount::model()->whereIsDefault(TRUE)->count();

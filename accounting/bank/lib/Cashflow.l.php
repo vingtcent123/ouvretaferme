@@ -59,7 +59,7 @@ class CashflowLib extends CashflowCrud {
 			$date = substr($cashflow['date'], 0, 4).'-'.substr($cashflow['date'], 4, 2).'-'.substr($cashflow['date'], 6, 2);
 
 			if(
-				$eFarm['company']->isAccrual()
+				$eFarm['company']->isAccrualAccounting()
 				and \account\FinancialYearLib::isDateLinkedToFinancialYear($date, $cFinancialYear) === FALSE
 			) {
 				$noFinancialYear[] = $cashflow['fitid'];
