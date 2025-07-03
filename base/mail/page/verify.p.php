@@ -43,7 +43,7 @@ new Page()
 
 		$fw = new FailWatch();
 
-		\user\MailLib::validate(GET('hash'));
+		\user\EmailLib::validate(GET('hash'));
 
 		if($fw->ok()) {
 

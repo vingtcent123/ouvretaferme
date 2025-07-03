@@ -194,7 +194,7 @@ class UserLib extends UserCrud {
 				$eUserAuth['user']['email']
 			);
 
-			new \mail\MailLib()
+			new \mail\SendLib()
 				->setTo($eUserAuth['user']['email'])
 				->setContent(...$content)
 				->send();

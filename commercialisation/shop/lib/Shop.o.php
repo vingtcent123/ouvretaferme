@@ -28,7 +28,7 @@ class ShopObserverLib {
 			$group === FALSE
 		) {
 
-			new \mail\MailLib()
+			new \mail\SendLib()
 				->setTo(self::getEmail($eSale))
 				->setContent(...MailUi::getNewFarmSale('confirmed', $eSale, $cItem))
 				->send();
@@ -62,7 +62,7 @@ class ShopObserverLib {
 			$group === FALSE
 		) {
 
-			new \mail\MailLib()
+			new \mail\SendLib()
 				->setTo(self::getEmail($eSale))
 				->setContent(...MailUi::getNewFarmSale('updated', $eSale, $cItem))
 				->send();
@@ -93,7 +93,7 @@ class ShopObserverLib {
 
 		if($eSale['shop']['emailNewSale']) {
 
-			new \mail\MailLib()
+			new \mail\SendLib()
 				->setTo(self::getEmail($eSale))
 				->setContent(...MailUi::getNewFarmSale('confirmed', $eSale, $cItem))
 				->send();
@@ -162,7 +162,7 @@ class ShopObserverLib {
 			$group === FALSE
 		) {
 
-			new \mail\MailLib()
+			new \mail\SendLib()
 				->setTo(self::getEmail($eSale))
 				->setContent(...MailUi::getCancelFarmSale($eSale))
 				->send();
@@ -187,12 +187,12 @@ class ShopObserverLib {
 
 	}
 
-	private static function newSend(\selling\Sale $eSale): \mail\MailLib {
+	private static function newSend(\selling\Sale $eSale): \mail\SendLib {
 
 		$eShop = $eSale['shop'];
 		$eFarm = $eSale['shop']['farm'];
 
-		return new \mail\MailLib()
+		return new \mail\SendLib()
 			->setFarm($eFarm)
 			->setReplyTo(self::getReplyTo($eFarm, $eShop))
 			->setFromName($eFarm['name']);

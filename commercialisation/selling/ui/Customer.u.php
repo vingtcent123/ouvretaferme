@@ -761,8 +761,6 @@ class CustomerUi {
 			'color' => s("Couleur de représentation"),
 			'siret' => s("Numéro d'immatriculation SIRET"),
 			'invoiceVat' => s("Numéro de TVA intracommunautaire"),
-			'emailOptOut' => s("Opt-out"),
-			'emailOptIn' => s("Opt-in"),
 		]);
 
 		switch($property) {
@@ -847,15 +845,6 @@ class CustomerUi {
 			case 'discount' :
 				$d->append = s("%");
 				$d->after = \util\FormUi::info(s("Cette remise commerciale s'applique automatiquement au prix par défaut de tous les produits commandés par ce client."));
-				break;
-
-			case 'emailOptOut' :
-				$d->field = 'yesNo';
-				$d->labelAfter = \util\FormUi::info(s("Envoyer des communications par e-mail à ce client"));
-				break;
-
-			case 'emailOptIn' :
-				$d->labelAfter = \util\FormUi::info(s("Consentement du client pour recevoir des communications par e-mail"));
 				break;
 
 			case 'defaultPaymentMethod' :

@@ -233,7 +233,7 @@ Vous recevrez alors un e-mail contenant un lien vous permettant d'en choisir un 
 
 		if($eUser['email'] !== NULL and $eUser['bounce'] === FALSE) {
 
-			$isVerified = MailLib::isVerified($eUser);
+			$isVerified = EmailLib::isVerified($eUser);
 
 			$h .= '<br/><br/>';
 

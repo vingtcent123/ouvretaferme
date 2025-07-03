@@ -5,7 +5,7 @@ namespace user;
 /**
  * Handle features relative to user and mail sending
  */
-class MailLib {
+class EmailLib {
 
 	/**
 	 * Return true if the user has verified his last specified mail address and false otherwise.
@@ -34,7 +34,7 @@ class MailLib {
 
 		$content = UserUi::getCloseMail();
 
-		new \mail\MailLib()
+		new \mail\SendLib()
 			->setTo($eUser['email'])
 			->setContent(...$content)
 			->send();
@@ -53,7 +53,7 @@ class MailLib {
 
 		$content = UserUi::getSignUpMail($eUser);
 
-		new \mail\MailLib()
+		new \mail\SendLib()
 			->setTo($eUser['email'])
 			->setContent(...$content)
 			->send();
@@ -74,7 +74,7 @@ class MailLib {
 
 		$content = UserUi::getVerifyMail($eUser, $hash, $change);
 
-		new \mail\MailLib()
+		new \mail\SendLib()
 			->setTo($eUser['email'])
 			->setContent(...$content)
 			->send();

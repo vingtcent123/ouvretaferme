@@ -2,7 +2,7 @@
 new Page()
 	->cron('index', function($data) {
 
-		\mail\MailLib::sendWaiting();
+		\mail\SendLib::sendWaiting();
 
 	}, interval: 'permanent@2');
 ?>

@@ -25,6 +25,9 @@ new \selling\CustomerPage()
 		$data->cInvoice = \selling\InvoiceLib::getByCustomer($data->e, selectSales: TRUE);
 
 		$data->e['invite'] = \farm\InviteLib::getByCustomer($data->e);
+		$data->e['contact'] = \mail\ContactLib::getByCustomer($data->e);
+
+		//$data->cMail = \mail\EmailLib::g
 
 		$data->cSaleTurnover = \selling\AnalyzeLib::getCustomerTurnover($data->e);
 

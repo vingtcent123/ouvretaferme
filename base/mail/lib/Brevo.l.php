@@ -151,7 +151,7 @@ class BrevoLib {
 			->select('status')
 			->update($eEmail);
 
-		ContactLib::updateContact($eEmail);
+		ContactLib::updateEmailStatus($eEmail);
 
 	}
 

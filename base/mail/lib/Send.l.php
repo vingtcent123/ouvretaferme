@@ -1,7 +1,7 @@
 <?php
 namespace mail;
 
-class MailLib {
+class SendLib {
 
 	protected \farm\Farm|null $eFarm = NULL;
 	protected ?string $fromEmail = NULL;
@@ -19,32 +19,32 @@ class MailLib {
 	public function __construct() {
 	}
 
-	public function setFarm(\farm\Farm $eFarm): MailLib {
+	public function setFarm(\farm\Farm $eFarm): SendLib {
 		$this->eFarm = $eFarm;
 		return $this;
 	}
 
-	public function setFromEmail(?string $fromEmail): MailLib {
+	public function setFromEmail(?string $fromEmail): SendLib {
 		$this->fromEmail = $fromEmail;
 		return $this;
 	}
 
-	public function setFromName(?string $fromName): MailLib {
+	public function setFromName(?string $fromName): SendLib {
 		$this->fromName = $fromName;
 		return $this;
 	}
 
-	public function setReplyTo(?string $email): MailLib {
+	public function setReplyTo(?string $email): SendLib {
 		$this->replyTo = $email;
 		return $this;
 	}
 
-	public function setTemplate(string $template): MailLib {
+	public function setTemplate(string $template): SendLib {
 		$this->template = $template;
 		return $this;
 	}
 
-	public function addAttachment(string $content, string $name, string $type): MailLib {
+	public function addAttachment(string $content, string $name, string $type): SendLib {
 		$this->attachments[] = [
 			'content' => $content,
 			'name' => $name,
@@ -53,17 +53,17 @@ class MailLib {
 		return $this;
 	}
 
-	public function setTo(string $to): MailLib {
+	public function setTo(string $to): SendLib {
 		$this->to = $to;
 		return $this;
 	}
 
-	public function setBcc(string $email): MailLib {
+	public function setBcc(string $email): SendLib {
 		$this->bcc = $email;
 		return $this;
 	}
 
-	public function setContent(string $subject, ?string $bodyText = NULL, ?string $bodyHtml = NULL): MailLib {
+	public function setContent(string $subject, ?string $bodyText = NULL, ?string $bodyHtml = NULL): SendLib {
 
 		$this->subject = $subject;
 		$this->bodyText = $bodyText;
@@ -73,17 +73,17 @@ class MailLib {
 
 	}
 
-	public function setBodyText(string $bodyText): MailLib {
+	public function setBodyText(string $bodyText): SendLib {
 		$this->bodyText = $bodyText;
 		return $this;
 	}
 
-	public function setBodyHtml(string $bodyHtml): MailLib {
+	public function setBodyHtml(string $bodyHtml): SendLib {
 		$this->bodyHtml = $bodyHtml;
 		return $this;
 	}
 
-	public function setSubject(string $subject): MailLib {
+	public function setSubject(string $subject): SendLib {
 		$this->subject = $subject;
 		return $this;
 	}
@@ -107,7 +107,7 @@ class MailLib {
 	/**
 	 * Send the mail.
 	 */
-	public function send(): MailLib {
+	public function send(): SendLib {
 
 		if(
 			$this->to === NULL or
@@ -142,6 +142,14 @@ class MailLib {
 				'replyTo' => $this->replyTo,
 				'attachments' => serialize($this->attachments)
 			]);
+
+			if($eEmail['farm']->notEmpty()) {
+				$eContact = ContactLib::getByEmail($eEmail, autoCreate: TRUE);
+			} else {
+				$eContact = new Contact();
+			}
+
+			$eEmail['contact'] = $eContact;
 
 			\mail\Email::model()->insert($eEmail);
 
@@ -209,7 +217,7 @@ class MailLib {
 
 		}
 
-		ContactLib::updateContact($eEmail);
+		ContactLib::updateEmailStatus($eEmail);
 
 	}
 

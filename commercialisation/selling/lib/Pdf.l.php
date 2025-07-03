@@ -159,7 +159,7 @@ class PdfLib extends PdfCrud {
 
 		}
 
-		$libMail = new \mail\MailLib();
+		$libMail = new \mail\SendLib();
 
 		if($eFarm->getSelling('documentCopy')) {
 			$libMail->setBcc($eFarm['legalEmail']);
@@ -240,7 +240,7 @@ class PdfLib extends PdfCrud {
 
 		$content = new PdfUi()->getInvoiceMail($eFarm, $eInvoice, $cSale, $customize, $template);
 
-		$libMail = new \mail\MailLib();
+		$libMail = new \mail\SendLib();
 
 		if($eFarm->getSelling('documentCopy')) {
 			$libMail->setBcc($eFarm['legalEmail']);

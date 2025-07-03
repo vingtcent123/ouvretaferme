@@ -21,7 +21,7 @@ class ContactLib extends ContactCrud {
 			->select(\farm\FarmElement::getSelection())
 			->get($e['farm']);
 
-		new \mail\MailLib()
+		new \mail\SendLib()
 			->setFarm($e['farm'])
 			->setFromName($e['farm']['name'])
 			->setReplyTo($farmEmail)
@@ -29,7 +29,7 @@ class ContactLib extends ContactCrud {
 			->setContent(...ContactUi::getUserEmail($e))
 			->send();
 
-		new \mail\MailLib()
+		new \mail\SendLib()
 			->setTo($farmEmail)
 			->setReplyTo($e['email'])
 			->setContent(...ContactUi::getFarmEmail($e))

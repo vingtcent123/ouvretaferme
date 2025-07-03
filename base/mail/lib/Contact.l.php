@@ -1,34 +1,76 @@
 <?php
 namespace mail;
 
-class ContactLib {
+class ContactLib extends ContactCrud {
 
-	public static function updateContact(Email $eEmail): void {
+	public static function getByCustomer(\selling\Customer $eCustomer): Contact {
 
-		$eEmail->expects(['id', 'farm', 'to', 'status']);
+		$eCustomer->expects(['farm', 'email']);
 
-		if($eEmail['farm']->empty()) {
+		return Contact::model()
+			->select(Contact::getSelection())
+			->whereFarm($eCustomer['farm'])
+			->whereEmail($eCustomer['email'])
+			->get();
+
+	}
+
+	public static function getByEmail(Email $eEmail, bool $autoCreate = FALSE): Contact {
+
+		$eEmail->expects(['farm', 'to']);
+
+		if($autoCreate) {
+			Email::model()->beginTransaction();
+		}
+
+		$eContact = Contact::model()
+			->select(Contact::getSelection())
+			->whereFarm($eEmail['farm'])
+			->whereEmail($eEmail['to'])
+			->get();
+
+		if($autoCreate) {
+
+			if($eContact->empty()) {
+				$eContact = self::createByEmail($eEmail);
+			}
+
+			Email::model()->commit();
+
+		}
+
+		return $eContact;
+
+	}
+
+	public static function createByEmail(Email $eEmail): Contact {
+
+		$eEmail->expects(['farm', 'to']);
+
+		$eContact = new Contact([
+			'farm' => $eEmail['farm'],
+			'email' => $eEmail['to']
+		]);
+
+		Contact::model()
+			->option('add-ignore')
+			->insert($eContact);
+
+		return $eContact;
+
+	}
+
+	public static function updateEmailStatus(Email $eEmail): void {
+
+		$eEmail->expects(['id', 'contact', 'status']);
+
+		$eContact = $eEmail['contact'];
+
+		if($eContact->empty()) {
 			return;
 		}
 
 		Contact::model()->beginTransaction();
-
-			$eContact = Contact::model()
-				->select(Contact::getSelection())
-				->whereFarm($eEmail['farm'])
-				->whereEmail($eEmail['to'])
-				->get();
-
-			if($eContact->empty()) {
-
-				$eContact = new Contact([
-					'farm' => $eEmail['farm'],
-					'email' => $eEmail['to']
-				]);
-
-				Contact::model()->insert($eContact);
-
-			}
 
 			switch($eEmail['status']) {
 
