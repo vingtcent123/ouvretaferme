@@ -40,9 +40,18 @@ class FinancialYear extends FinancialYearElement {
 			})
 			->setCallback('endDate.check', function(string $date) use($p): bool {
 
-				$eFinancialYear = \account\FinancialYearLib::getFinancialYearSurroundingDate($date, $this['id']);
+				$eFinancialYear = \account\FinancialYearLib::getFinancialYearSurroundingDate($date, $this['id'] ?? NULL);
 
 				return $eFinancialYear->exists() === FALSE;
+
+			})
+			->setCallback('vatFrequency.check', function(?string $vatFrequency) use($p): bool {
+
+				if($p->isBuilt('hasVat') and $this['hasVat'] === FALSE and $vatFrequency === NULL) {
+					return TRUE;
+				}
+
+				return $vatFrequency !== NULL;
 
 			});
 

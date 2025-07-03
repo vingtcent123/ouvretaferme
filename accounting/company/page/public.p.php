@@ -15,6 +15,7 @@ new \company\CompanyPage(
 new Page(
 	function($data) {
 		\user\ConnectionLib::checkLogged();
+		$data->eFarm = \farm\FarmLib::getById(POST('farm'));
 		$data->eFarm->canManage();
 	}
 )

@@ -4,6 +4,9 @@ namespace account;
 class FinancialYearUi {
 
 	public function __construct() {
+
+		\Asset::js('account', 'financialYear.js');
+
 	}
 
 	public function getManageTitle(\farm\Farm $eFarm, \Collection $cFinancialYearOpen): string {
@@ -218,7 +221,14 @@ class FinancialYearUi {
 			$h .= $form->hidden('farm', $eFarm['id']);
 			$h .= $form->hidden('id', $eFinancialYear['id']);
 
-			$h .= $form->dynamicGroups($eFinancialYear, ['startDate*', 'endDate*', 'hasVat*', 'taxSystem']);
+			$h .= $form->dynamicGroups($eFinancialYear, ['startDate*', 'endDate*', 'hasVat*', 'vatFrequency*', 'taxSystem*'], [
+				'hasVat' => function($d) use($form) {
+					$d->attributes['callbackRadioAttributes'] = fn() => ['onclick' => 'FinancialYear.changeHasVat(this)'];
+				},
+				'vatFrequency' => function($d) use($form, $eFinancialYear) {
+					$d->group['class'] = $eFinancialYear['hasVat'] ? '' : 'hide';
+				},
+			]);
 
 			$h .= $form->group(
 				content: $form->submit(s("Enregistrer"))
@@ -285,12 +295,17 @@ class FinancialYearUi {
 				$d->prepend = \Asset::icon('calendar-date');
 				break;
 
+			case 'hasVat' :
+				$d->field = 'yesNo';
+				break;
+
 			case 'vatFrequency' :
 				$d->values = [
 					FinancialYear::MONTHLY => s("Mensuelle"),
 					FinancialYear::QUARTERLY => s("Trimestrielle"),
 					FinancialYear::ANNUALLY => s("Annuelle"),
 				];
+				$d->attributes['mandatory'] = TRUE;
 				break;
 
 			case 'taxSystem':

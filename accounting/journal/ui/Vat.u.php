@@ -151,7 +151,7 @@ Class VatUi {
 
 	private function getStatementContainer(): string {
 
-		$h = 'ici les déclarations de TVA (TODO)';
+		$h = 'ici les déclarations de TVA (TODO) : 1/ Déclarations existantes 2/ Écritures non déclarées 3/ Créer une nouvelle déclaration ';
 
 		return $h;
 

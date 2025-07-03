@@ -130,13 +130,14 @@ class CompanyLib extends CompanyCrud {
 			return;
 		}
 
-		Company::model()->commit();
-
 		self::createSpecificDatabaseAndTables($eFarm);
 
-		$eFinancialYear = new \account\FinancialYear(['startDate' => $startDate, 'endDate' => $endDate]);
+		$eFinancialYear = new \account\FinancialYear();
+		$eFinancialYear->build(['startDate', 'endDate', 'hasVat', 'vatFrequency', 'taxSystem'], $input);
 
 		\account\FinancialYear::model()->insert($eFinancialYear);
+
+		Company::model()->commit();
 
 	}
 

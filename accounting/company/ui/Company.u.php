@@ -58,6 +58,8 @@ class CompanyUi {
 
 		$eCompany = new Company();
 
+		\Asset::js('account', 'financialYear.js');
+
 		$h = '';
 
 		$form = new \util\FormUi();
@@ -92,10 +94,16 @@ class CompanyUi {
 		$h .= $form->hidden('farm', $eFarm['id']);
 		$h .= $form->dynamicGroups($eCompany, ['accountingType']);
 
-
 		$h .= $form->group(content: '<h3>'.s("Premier exercice comptable").'</h3>');
 
-		$h .= $form->dynamicGroups(new \account\FinancialYear(), ['startDate*', 'endDate*', 'hasVat*']);
+		$h .= $form->dynamicGroups(new \account\FinancialYear(), ['startDate*', 'endDate*', 'hasVat*', 'vatFrequency*', 'taxSystem*'], [
+			'hasVat*' => function($d) use($form) {
+				$d->attributes['callbackRadioAttributes'] = fn() => ['onclick' => 'FinancialYear.changeHasVat(this)'];
+			},
+			'vatFrequency*' => function($d) use($form) {
+				$d->group['class'] = 'hide';
+			},
+		]);
 
 		$h .= $form->group(
 			content: $form->submit(s("Enregistrer les paramètres de ma ferme"))
