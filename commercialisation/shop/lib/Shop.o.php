@@ -3,7 +3,7 @@ namespace shop;
 
 class ShopObserverLib {
 
-	public static function saleConfirmed(\selling\Sale $eSale, \user\User $eUser, \Collection $cItem, bool $group): void {
+	public static function saleConfirmed(\selling\Sale $eSale, \Collection $cItem, bool $group): void {
 
 		$eSale->expects([
 			'shop' => ['shared', 'email', 'emailNewSale'],
@@ -14,7 +14,7 @@ class ShopObserverLib {
 			($eSale['shop']->isShared() and $group)
 		) {
 
-			$eUser = \user\UserLib::getById($eUser);
+			$eUser = \user\UserLib::getById($eSale['customer']['user']);
 
 			self::newSend($eSale)
 				->setTo($eUser['email'])
@@ -37,7 +37,7 @@ class ShopObserverLib {
 
 	}
 
-	public static function saleUpdated(\selling\Sale $eSale, \user\User $eUser, \Collection $cItem, bool $group): void {
+	public static function saleUpdated(\selling\Sale $eSale, \Collection $cItem, bool $group): void {
 
 		$eSale->expects([
 			'shop' => ['email', 'shared'],
@@ -48,7 +48,7 @@ class ShopObserverLib {
 			($eSale['shop']->isShared() and $group)
 		) {
 
-			$eUser = \user\UserLib::getById($eUser);
+			$eUser = \user\UserLib::getById($eSale['customer']['user']);
 
 			self::newSend($eSale)
 				->setTo($eUser['email'])
@@ -71,7 +71,7 @@ class ShopObserverLib {
 
 	}
 
-	public static function salePaid(\selling\Sale $eSale, \user\User $eUser, \Collection $cItem): void {
+	public static function salePaid(\selling\Sale $eSale, \Collection $cItem): void {
 
 		$eSale->expects([
 			'shop' => [
@@ -83,7 +83,7 @@ class ShopObserverLib {
 			'shopPoint'
 		]);
 
-		$eUser = \user\UserLib::getById($eUser);
+		$eUser = \user\UserLib::getById($eSale['customer']['user']);
 		$eSale['shopPoint'] = PointLib::getById($eSale['shopPoint']);
 
 		self::newSend($eSale)
@@ -111,7 +111,7 @@ class ShopObserverLib {
 
 	}
 
-	public static function saleFailed(\selling\Sale $eSale, \user\User $eUser): void {
+	public static function saleFailed(\selling\Sale $eSale): void {
 
 		$eSale->expects([
 			'shop' => [
@@ -122,7 +122,7 @@ class ShopObserverLib {
 			'customer' => ['user']
 		]);
 
-		$eUser = \user\UserLib::getById($eUser);
+		$eUser = \user\UserLib::getById($eSale['customer']['user']);
 
 		if($eSale->isPaymentOnline()) {
 
@@ -189,11 +189,13 @@ class ShopObserverLib {
 
 	private static function newSend(\selling\Sale $eSale): \mail\SendLib {
 
+		$eCustomer = $eSale['customer'];
 		$eShop = $eSale['shop'];
 		$eFarm = $eSale['shop']['farm'];
 
 		return new \mail\SendLib()
 			->setFarm($eFarm)
+			->setCustomer($eCustomer)
 			->setReplyTo(self::getReplyTo($eFarm, $eShop))
 			->setFromName($eFarm['name']);
 

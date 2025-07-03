@@ -50,12 +50,15 @@ class CustomerModel extends \ModuleModel {
 			'firstName' => ['text8', 'min' => 1, 'max' => 30, 'collate' => 'general', 'null' => TRUE, 'cast' => 'string'],
 			'lastName' => ['text8', 'min' => 1, 'max' => 30, 'collate' => 'general', 'null' => TRUE, 'cast' => 'string'],
 			'legalName' => ['text8', 'null' => TRUE, 'cast' => 'string'],
-			'email' => ['text8', 'null' => TRUE, 'cast' => 'string'],
+			'email' => ['email', 'null' => TRUE, 'cast' => 'string'],
 			'farm' => ['element32', 'farm\Farm', 'cast' => 'element'],
 			'user' => ['element32', 'user\User', 'null' => TRUE, 'cast' => 'element'],
 			'type' => ['enum', [\selling\Customer::PRIVATE, \selling\Customer::PRO], 'cast' => 'enum'],
 			'destination' => ['enum', [\selling\Customer::INDIVIDUAL, \selling\Customer::COLLECTIVE], 'null' => TRUE, 'cast' => 'enum'],
 			'discount' => ['int8', 'min' => 0, 'max' => 100, 'cast' => 'int'],
+			'orderFormEmail' => ['email', 'null' => TRUE, 'cast' => 'string'],
+			'deliveryNoteEmail' => ['email', 'null' => TRUE, 'cast' => 'string'],
+			'invoiceEmail' => ['email', 'null' => TRUE, 'cast' => 'string'],
 			'invoiceStreet1' => ['text8', 'null' => TRUE, 'cast' => 'string'],
 			'invoiceStreet2' => ['text8', 'null' => TRUE, 'cast' => 'string'],
 			'invoicePostcode' => ['text8', 'null' => TRUE, 'cast' => 'string'],
@@ -76,7 +79,7 @@ class CustomerModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'name', 'firstName', 'lastName', 'legalName', 'email', 'farm', 'user', 'type', 'destination', 'discount', 'invoiceStreet1', 'invoiceStreet2', 'invoicePostcode', 'invoiceCity', 'siret', 'invoiceVat', 'deliveryStreet1', 'deliveryStreet2', 'deliveryPostcode', 'deliveryCity', 'defaultPaymentMethod', 'phone', 'color', 'emailOptIn', 'emailOptOut', 'createdAt', 'status'
+			'id', 'name', 'firstName', 'lastName', 'legalName', 'email', 'farm', 'user', 'type', 'destination', 'discount', 'orderFormEmail', 'deliveryNoteEmail', 'invoiceEmail', 'invoiceStreet1', 'invoiceStreet2', 'invoicePostcode', 'invoiceCity', 'siret', 'invoiceVat', 'deliveryStreet1', 'deliveryStreet2', 'deliveryPostcode', 'deliveryCity', 'defaultPaymentMethod', 'phone', 'color', 'emailOptIn', 'emailOptOut', 'createdAt', 'status'
 		]);
 
 		$this->propertiesToModule += [
@@ -184,6 +187,18 @@ class CustomerModel extends \ModuleModel {
 
 	public function whereDiscount(...$data): CustomerModel {
 		return $this->where('discount', ...$data);
+	}
+
+	public function whereOrderFormEmail(...$data): CustomerModel {
+		return $this->where('orderFormEmail', ...$data);
+	}
+
+	public function whereDeliveryNoteEmail(...$data): CustomerModel {
+		return $this->where('deliveryNoteEmail', ...$data);
+	}
+
+	public function whereInvoiceEmail(...$data): CustomerModel {
+		return $this->where('invoiceEmail', ...$data);
 	}
 
 	public function whereInvoiceStreet1(...$data): CustomerModel {

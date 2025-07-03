@@ -43,12 +43,15 @@ Customer:
   firstName: ?text8(1, 30) @collate(general)
   lastName: ?text8(1, 30) @collate(general)
   legalName: ?text8
-  email: ?text8
+  email: ?email
   farm: farm\Farm
   user: ?user\User
   type: enum(PRIVATE, PRO)
   destination: ?enum(INDIVIDUAL, COLLECTIVE)
   discount: int8(0, 100) = 0
+  orderFormEmail: ?email
+  deliveryNoteEmail: ?email
+  invoiceEmail: ?email
   invoiceStreet1: ?text8
   invoiceStreet2: ?text8
   invoicePostcode: ?text8

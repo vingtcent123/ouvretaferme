@@ -51,6 +51,7 @@ class EmailModel extends \ModuleModel {
 			'farm' => ['element32', 'farm\Farm', 'null' => TRUE, 'cast' => 'element'],
 			'campaign' => ['element32', 'mail\Campaign', 'null' => TRUE, 'cast' => 'element'],
 			'contact' => ['element32', 'mail\Contact', 'null' => TRUE, 'cast' => 'element'],
+			'customer' => ['element32', 'selling\Customer', 'null' => TRUE, 'cast' => 'element'],
 			'subject' => ['text24', 'min' => 0, 'max' => NULL, 'cast' => 'string'],
 			'html' => ['text24', 'min' => 0, 'max' => NULL, 'null' => TRUE, 'cast' => 'string'],
 			'text' => ['text24', 'min' => 0, 'max' => NULL, 'null' => TRUE, 'cast' => 'string'],
@@ -66,17 +67,19 @@ class EmailModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'farm', 'campaign', 'contact', 'subject', 'html', 'text', 'fromEmail', 'fromName', 'to', 'bcc', 'replyTo', 'attachments', 'status', 'createdAt', 'sentAt'
+			'id', 'farm', 'campaign', 'contact', 'customer', 'subject', 'html', 'text', 'fromEmail', 'fromName', 'to', 'bcc', 'replyTo', 'attachments', 'status', 'createdAt', 'sentAt'
 		]);
 
 		$this->propertiesToModule += [
 			'farm' => 'farm\Farm',
 			'campaign' => 'mail\Campaign',
 			'contact' => 'mail\Contact',
+			'customer' => 'selling\Customer',
 		];
 
 		$this->indexConstraints = array_merge($this->indexConstraints, [
 			['contact'],
+			['customer'],
 			['farm'],
 			['status']
 		]);
@@ -136,6 +139,10 @@ class EmailModel extends \ModuleModel {
 
 	public function whereContact(...$data): EmailModel {
 		return $this->where('contact', ...$data);
+	}
+
+	public function whereCustomer(...$data): EmailModel {
+		return $this->where('customer', ...$data);
 	}
 
 	public function whereSubject(...$data): EmailModel {

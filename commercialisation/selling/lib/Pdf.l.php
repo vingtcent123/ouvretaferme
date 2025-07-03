@@ -159,16 +159,17 @@ class PdfLib extends PdfCrud {
 
 		}
 
-		$libMail = new \mail\SendLib();
+		$libSend = new \mail\SendLib();
 
 		if($eFarm->getSelling('documentCopy')) {
-			$libMail->setBcc($eFarm['legalEmail']);
+			$libSend->setBcc($eFarm['legalEmail']);
 		}
 
 		$pdf = self::getContentByPdf($ePdf['content']);
 
-		$libMail
+		$libSend
 			->setFarm($eFarm)
+			->setCustomer($eCustomer)
 			->setFromName($eFarm['name'])
 			->setTo($customerEmail)
 			->setReplyTo($eFarm['legalEmail'])
@@ -240,16 +241,17 @@ class PdfLib extends PdfCrud {
 
 		$content = new PdfUi()->getInvoiceMail($eFarm, $eInvoice, $cSale, $customize, $template);
 
-		$libMail = new \mail\SendLib();
+		$libSend = new \mail\SendLib();
 
 		if($eFarm->getSelling('documentCopy')) {
-			$libMail->setBcc($eFarm['legalEmail']);
+			$libSend->setBcc($eFarm['legalEmail']);
 		}
 
 		$pdf = self::getContentByPdf($ePdfContent);
 
-		$libMail
+		$libSend
 			->setFarm($eFarm)
+			->setCustomer($eCustomer)
 			->setFromName($eFarm['name'])
 			->setTo($eCustomer['email'])
 			->setReplyTo($eFarm['legalEmail'])

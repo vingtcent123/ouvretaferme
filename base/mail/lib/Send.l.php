@@ -4,6 +4,7 @@ namespace mail;
 class SendLib {
 
 	protected \farm\Farm|null $eFarm = NULL;
+	protected \selling\Customer|null $eCustomer = NULL;
 	protected ?string $fromEmail = NULL;
 	protected ?string $fromName = NULL;
 	protected ?string $to = NULL;
@@ -21,6 +22,11 @@ class SendLib {
 
 	public function setFarm(\farm\Farm $eFarm): SendLib {
 		$this->eFarm = $eFarm;
+		return $this;
+	}
+
+	public function setCustomer(\selling\Customer $eCustomer): SendLib {
+		$this->eCustomer = $eCustomer;
 		return $this;
 	}
 
@@ -93,6 +99,7 @@ class SendLib {
 	 */
 	public function reset() {
 		$this->eFarm = NULL;
+		$this->eCustomer = NULL;
 		$this->fromEmail = NULL;
 		$this->fromName = NULL;
 		$this->to = NULL;
@@ -132,6 +139,7 @@ class SendLib {
 
 			$eEmail = new \mail\Email([
 				'farm' => $this->eFarm ?? new \farm\Farm(),
+				'customer' => $this->eCustomer ?? new \selling\Customer(),
 				'html' => $this->bodyHtml,
 				'text' => $this->bodyText,
 				'subject' => $this->subject,

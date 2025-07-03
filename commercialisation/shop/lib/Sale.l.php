@@ -142,7 +142,7 @@ class SaleLib {
 
 		// Création du client sur la ferme à l'origine de la boutique partagée
 		if($eShop->isShared()) {
-			\selling\CustomerLib::getByUserAndFarm($eUser, $eShop['farm'], autoCreate: TRUE, autoCreateType: $eSaleReference['type']);
+			$eSaleReference['customer'] = \selling\CustomerLib::getByUserAndFarm($eUser, $eShop['farm'], autoCreate: TRUE, autoCreateType: $eSaleReference['type']);
 		}
 
 		foreach($ccItem as $farm => $cItem) {
@@ -176,7 +176,7 @@ class SaleLib {
 		if($eShop->isShared()) {
 			$cItemLinearized = $ccItem->linearize();
 			$group = TRUE;
-			self::notify('saleConfirmed', $eSaleReference, $eUser, $cItemLinearized, $group);
+			self::notify('saleConfirmed', $eSaleReference, $cItemLinearized, $group);
 		}
 
 		\selling\Sale::model()->commit();
@@ -392,9 +392,6 @@ class SaleLib {
 						// Annuler la vente
 						\selling\SaleLib::updatePreparationStatusCollection(new \Collection([$eSaleExisting]), \selling\Sale::CANCELED);
 
-						$group = FALSE;
-						self::notify('saleCanceled', $eSaleExisting, $group);
-
 					}
 
 				}
@@ -407,7 +404,7 @@ class SaleLib {
 		if($eShop->isShared()) {
 			$cItemLinearized = $ccItem->linearize();
 			$group = TRUE;
-			self::notify('saleUpdated', $eSaleReference, $eUser, $cItemLinearized, $group);
+			self::notify('saleUpdated', $eSaleReference, $cItemLinearized, $group);
 		}
 
 		if($eShop['hasPayment'] === FALSE) {
@@ -525,7 +522,7 @@ class SaleLib {
 		\selling\PaymentLib::putBySale($eSale, $eMethod);
 
 		$group = FALSE;
-		self::notify($eSale['shopUpdated'] ? 'saleUpdated' : 'saleConfirmed', $eSale, $eSale['customer']['user'], $eSale['cItem'], $group);
+		self::notify($eSale['shopUpdated'] ? 'saleUpdated' : 'saleConfirmed', $eSale, $eSale['cItem'], $group);
 
 		\selling\Sale::model()->commit();
 
@@ -550,8 +547,14 @@ class SaleLib {
 			}
 
 			if($eShop->isShared()) {
+
+				$eSaleReference = (clone $eSale)->merge([
+					'customer' => $eCustomer
+				]);
+
 				$group = TRUE;
-				self::notify('saleCanceled', $eSale, $group);
+				self::notify('saleCanceled', $eSaleReference, $group);
+
 			}
 
 		\selling\Sale::model()->commit();
@@ -589,7 +592,7 @@ class SaleLib {
 
 				\selling\HistoryLib::createBySale($eSale, 'shop-payment-failed', 'Stripe event id #'.$object['id'].' (event type '.$event['type'].')');
 
-				self::notify('saleFailed', $eSale, $eSale['customer']['user']);
+				self::notify('saleFailed', $eSale);
 
 			}
 
@@ -636,7 +639,7 @@ class SaleLib {
 
 		$cItem = \selling\SaleLib::getItems($eSale);
 
-		self::notify('salePaid', $eSale, $eSale['customer']['user'], $cItem);
+		self::notify('salePaid', $eSale, $cItem);
 
 		\selling\Sale::model()->commit();
 

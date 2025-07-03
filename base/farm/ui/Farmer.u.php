@@ -19,7 +19,7 @@ class FarmerUi {
 				$h .= new FarmUi()->getPanel($eFarm);
 			}
 
-			if($cFarm->count() <= 12) {
+			if($cFarm->count() <= 2) {
 
 				$h .= '<div class="farmer-farms-item">';
 
