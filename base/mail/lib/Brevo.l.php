@@ -113,10 +113,17 @@ class BrevoLib {
 
 	public static function updateEmail(Email $eEmail, array $payload): void {
 
+		$eEmail->expects(['to']);
+
+		if($eEmail['to'] !== $payload['email']) {
+			return;
+		}
+
 		switch($payload['event']) {
 
 			case 'delivered' :
 				$eEmail['status'] = Email::DELIVERED;
+				Email::model()->whereStatus(Email::SENT);
 				break;
 
 			case 'unique_opened' :
@@ -147,11 +154,13 @@ class BrevoLib {
 
 		}
 
-		Email::model()
+		$affected = Email::model()
 			->select('status')
 			->update($eEmail);
 
-		ContactLib::updateEmailStatus($eEmail);
+		if($affected > 0) {
+			ContactLib::updateEmailStatus($eEmail);
+		}
 
 	}
 
