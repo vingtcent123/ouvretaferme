@@ -40,6 +40,7 @@ Email:
   id: serial32
   farm: ?farm\Farm
   campaign: ?mail\Campaign
+  contact: ?mail\Contact
   subject: text24(0, null)
   html: ?text24(0, null)
   text: ?text24(0, null)
@@ -53,6 +54,8 @@ Email:
   createdAt: datetime = SPECIAL(now)
   sentAt: ?datetime
   INDEX: [
+    ["contact"],
+    ["farm"],
     ["status"]
   ]
 
