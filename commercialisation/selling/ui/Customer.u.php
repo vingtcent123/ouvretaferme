@@ -692,7 +692,7 @@ class CustomerUi {
 				$h .= '<div class="customer-form-category customer-form-private customer-form-pro">';
 					$h .= $form->dynamicGroup($eCustomer, 'discount');
 				$h .= '</div>';
-				$h .= '<div class="customer-form-category customer-form-pro">';
+				$h .= '<div class="customer-form-category customer-form-private customer-form-pro">';
 					$h .= $form->dynamicGroup($eCustomer, 'defaultPaymentMethod');
 				$h .= '</div>';
 				$h .= '<div class="customer-form-category customer-form-collective customer-form-pro">';

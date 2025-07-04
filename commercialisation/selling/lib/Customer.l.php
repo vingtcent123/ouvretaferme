@@ -32,7 +32,7 @@ class CustomerLib extends CustomerCrud {
 		return match($category) {
 
 			Customer::PRO => ['category', 'firstName', 'lastName', 'name', 'legalName', 'invoiceStreet1', 'invoiceStreet2', 'invoicePostcode', 'invoiceCity', 'siret', 'invoiceVat', 'email', 'defaultPaymentMethod', 'phone'],
-			Customer::PRIVATE => ['category', 'firstName', 'lastName', 'name', 'email', 'phone'],
+			Customer::PRIVATE => ['category', 'firstName', 'lastName', 'name', 'email', 'defaultPaymentMethod', 'phone'],
 			Customer::COLLECTIVE => match($for) {
 				'create' => ['category', 'firstName', 'lastName', 'name'],
 				'update' => ['firstName', 'lastName', 'name']
@@ -333,14 +333,6 @@ class CustomerLib extends CustomerCrud {
 		if(array_delete($properties, 'category')) {
 			$properties[] = 'type';
 			$properties[] = 'destination';
-		}
-
-		if(in_array('type', $properties)) {
-
-			if($e['type'] === Customer::PRIVATE) {
-				$e['defaultPaymentMethod'] = new \payment\Method();
-				$properties[] = 'defaultPaymentMethod';
-			}
 		}
 
 		Customer::model()->beginTransaction();

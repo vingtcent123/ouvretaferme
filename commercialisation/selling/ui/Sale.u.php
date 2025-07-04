@@ -1161,7 +1161,7 @@ class SaleUi {
 
 	}
 
-	public static function getPaymentMethodName(Sale $eSale): string {
+	public static function getPaymentMethodName(Sale $eSale): ?string {
 
 		$eSale->expects(['paymentMethod']);
 
@@ -1187,7 +1187,9 @@ class SaleUi {
 			}
 		}
 
-		$paymentList[] = self::getPaymentMethodName($eSale).' '.self::getPaymentStatus($eSale);
+		if($eSale['paymentMethod']->notEmpty()) {
+			$paymentList[] = self::getPaymentMethodName($eSale).' '.self::getPaymentStatus($eSale);
+		}
 
 		return implode('<br />', $paymentList);
 	}

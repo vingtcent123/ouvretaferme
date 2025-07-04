@@ -159,10 +159,10 @@ class MethodUi {
 
 	}
 
-	public static function getName(\payment\Method $eMethod): string {
+	public static function getName(\payment\Method $eMethod): ?string {
 
 		if($eMethod->empty()) {
-			return '/';
+			return NULL;
 		}
 
 		$eMethod->expects(['fqn', 'name']);
