@@ -368,7 +368,7 @@ class CustomerUi {
 							$h .= '<a href="mailto:'.encode($email).'">'.encode($email).'</a>';
 						}
 						if($eCustomer['contact']->isEmailValid()) {
-							$h .= ' <span class="color-secondary" title="'.s("E-mail vérifié").'">'.\Asset::icon('patch-check-fill', ['class' => 'asset-icon-lg']).'</span>';
+							$h .= ' <span class="color-secondary" title="'.s("E-mail vérifié").'">'.\Asset::icon('check-circle-fill', ['class' => 'asset-icon-lg']).'</span>';
 						} else if($eCustomer['contact']->isEmailBlocked()) {
 							$h .= ' <span class="color-danger" title="'.s("E-mail en erreur").'">'.\Asset::icon('x-circle-fill', ['class' => 'asset-icon-lg']).'</span>';
 						}
