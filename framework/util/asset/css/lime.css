@@ -616,6 +616,10 @@ div.input-group > .field-checkbox {
 	pointer-events: none;
 }
 
+.asset-icon-lg {
+	font-size: 1.2em;
+}
+
 .asset-icon-rotate-90 {
 	transform: rotate(90deg);
 }
