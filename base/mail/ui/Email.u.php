@@ -3,6 +3,31 @@ namespace mail;
 
 class EmailUi {
 
+	public function get(Email $e): \Panel {
+
+		$h = '<div class="util-block stick-xs bg-background-light">';
+			$h .= '<dl class="util-presentation util-presentation-2">';
+				$h .= '<dt>'.s("Pour").'</dt>';
+				$h .= '<dd>'.encode($e['to']).'</dd>';
+				$h .= '<dt>'.s("Envoyé le").'</dt>';
+				$h .= '<dd>'.\util\DateUi::numeric($e['createdAt']).'</dd>';
+				$h .= '<dt>'.s("Titre").'</dt>';
+				$h .= '<dd>'.encode($e['subject']).'</dd>';
+				$h .= '<dt>'.s("État").'</dt>';
+				$h .= '<dd>'.($e->isBlocked() ? s("Bloqué") : s("Reçu")).'</dd>';
+			$h .= '</dl>';
+		$h .= '</div>';
+
+		$h .= $e['html'];
+
+		return new \Panel(
+			id: 'panel-email-show',
+			title: s("E-mail envoyé"),
+			body: $h
+		);
+
+	}
+
 	public function getList(\Collection $cEmail, array $hide = []) {
 
 		if($cEmail->empty()) {
@@ -45,7 +70,7 @@ class EmailUi {
 						}
 
 						$h .= '<td>';
-							$h .= '<span>'.encode($eEmail['subject']).'</span>';
+							$h .= '<a href="/mail/email?id='.$eEmail['id'].'">'.encode($eEmail['subject']).'</a>';
 							if($attachments > 0) {
 								$h .= '<span class="util-badge bg-primary ml-1">'.p("{value} pièce jointe", "{value} pièces jointes", $attachments).'</span>';
 							}
