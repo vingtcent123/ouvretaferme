@@ -3,7 +3,7 @@
 new Page()
 	->cron('index', function($data) {
 
-		\mail\SendLib::clean();
+		\mail\EmailLib::clean();
 
 	}, interval: '0 12 * * *');
 ?>

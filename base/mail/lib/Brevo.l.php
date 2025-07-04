@@ -119,6 +119,8 @@ class BrevoLib {
 			return;
 		}
 
+		$properties = ['status'];
+
 		switch($payload['event']) {
 
 			case 'delivered' :
@@ -128,6 +130,8 @@ class BrevoLib {
 
 			case 'unique_opened' :
 				$eEmail['status'] = Email::OPENED;
+				$eEmail['openedAt'] = new \Sql('NOW()');
+				$properties[] = 'openedAt';
 				break;
 
 			case 'spam' :
@@ -155,7 +159,7 @@ class BrevoLib {
 		}
 
 		$affected = Email::model()
-			->select('status')
+			->select($properties)
 			->update($eEmail);
 
 		if($affected > 0) {

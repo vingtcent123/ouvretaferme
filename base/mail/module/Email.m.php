@@ -64,10 +64,11 @@ class EmailModel extends \ModuleModel {
 			'status' => ['enum', [\mail\Email::WAITING, \mail\Email::SENDING, \mail\Email::SENT, \mail\Email::DELIVERED, \mail\Email::OPENED, \mail\Email::ERROR_PROVIDER, \mail\Email::ERROR_SPAM, \mail\Email::ERROR_BOUNCE, \mail\Email::ERROR_INVALID, \mail\Email::ERROR_BLOCKED], 'cast' => 'enum'],
 			'createdAt' => ['datetime', 'cast' => 'string'],
 			'sentAt' => ['datetime', 'null' => TRUE, 'cast' => 'string'],
+			'openedAt' => ['datetime', 'null' => TRUE, 'cast' => 'string'],
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'farm', 'campaign', 'contact', 'customer', 'subject', 'html', 'text', 'fromEmail', 'fromName', 'to', 'bcc', 'replyTo', 'attachments', 'status', 'createdAt', 'sentAt'
+			'id', 'farm', 'campaign', 'contact', 'customer', 'subject', 'html', 'text', 'fromEmail', 'fromName', 'to', 'bcc', 'replyTo', 'attachments', 'status', 'createdAt', 'sentAt', 'openedAt'
 		]);
 
 		$this->propertiesToModule += [
@@ -191,6 +192,10 @@ class EmailModel extends \ModuleModel {
 
 	public function whereSentAt(...$data): EmailModel {
 		return $this->where('sentAt', ...$data);
+	}
+
+	public function whereOpenedAt(...$data): EmailModel {
+		return $this->where('openedAt', ...$data);
 	}
 
 

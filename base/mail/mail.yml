@@ -54,6 +54,7 @@ Email:
   status: enum(WAITING, SENDING, SENT, DELIVERED, OPENED, ERROR_PROVIDER, ERROR_SPAM, ERROR_BOUNCE, ERROR_INVALID, ERROR_BLOCKED) = WAITING
   createdAt: datetime = SPECIAL(now)
   sentAt: ?datetime
+  openedAt: ?datetime
   INDEX: [
     ["contact"],
     ["customer"],

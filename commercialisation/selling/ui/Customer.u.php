@@ -323,7 +323,7 @@ class CustomerUi {
 
 	}
 
-	public function display(Customer $eCustomer, \Collection $cSaleTurnover, \Collection $cGrid, \Collection $cSale, \Collection $cInvoice, \Collection $cPaymentMethod): string {
+	public function display(Customer $eCustomer, \Collection $cSaleTurnover, \Collection $cGrid, \Collection $cSale, \Collection $cEmail, \Collection $cInvoice, \Collection $cPaymentMethod): string {
 
 		$eCustomer->expects(['invite']);
 
@@ -408,6 +408,11 @@ class CustomerUi {
 						$h .= s("Factures");
 					$h .= '</a>';
 				}
+				if($cEmail->notEmpty()) {
+					$h .= '<a class="tab-item" data-tab="emails" onclick="Lime.Tab.select(this)">';
+						$h .= s("E-mails");
+					$h .= '</a>';
+				}
 				if($eCustomer->canGrid()) {
 					$h .= '<a class="tab-item" data-tab="grid" onclick="Lime.Tab.select(this)">';
 						$h .= s("Grille tarifaire");
@@ -431,6 +436,12 @@ class CustomerUi {
 				if($cInvoice->notEmpty()) {
 					$h .= '<div data-tab="invoices" class="tab-panel">';
 						$h .= new \selling\InvoiceUi()->getList($cInvoice, hide: ['customer']);
+					$h .= '</div>';
+				}
+
+				if($cEmail->notEmpty()) {
+					$h .= '<div data-tab="emails" class="tab-panel">';
+						$h .= new \mail\EmailUi()->getList($cEmail, hide: ['customer']);
 					$h .= '</div>';
 				}
 

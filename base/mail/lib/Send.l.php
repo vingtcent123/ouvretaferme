@@ -229,14 +229,5 @@ class SendLib {
 
 	}
 
-	public static function clean(): void {
-
-		\mail\Email::model()
-			->whereStatus(\mail\Email::SENT)
-			->where('sentAt < NOW() - INTERVAL 1 MONTH')
-			->delete();
-
-	}
-
 }
 ?>

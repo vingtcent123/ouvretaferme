@@ -36,13 +36,13 @@ class PointUi {
 						$h .= $this->getPoints('write', new Shop(), $cc[Point::PLACE], pointsUsed: $pointsUsed);
 					} else {
 
-						if($eFarm->canManage()) {
-							$h .= '<div class="util-info">';
+						$h .= '<div class="util-empty">';
+							if($eFarm->canManage()) {
 								$h .= s("La livraison en point de retrait collectif n'est pas activée sur votre ferme. Pour l'activer, ajoutez un premier point de retrait !");
-							$h .= '</div>';
-						} else {
-							$h .= s("La livraison en point de retrait collectif n'est pas activée sur la ferme.");
-						}
+							} else {
+								$h .= s("La livraison en point de retrait collectif n'est pas activée sur la ferme.");
+							}
+						$h .= '</div>';
 
 					}
 
@@ -60,13 +60,13 @@ class PointUi {
 						$h .= $this->getPoints('write', new Shop(), $cc[Point::HOME], pointsUsed: $pointsUsed);
 					} else {
 
-						if($eFarm->canManage()) {
-							$h .= '<div class="util-info">';
+						$h .= '<div class="util-empty">';
+							if($eFarm->canManage()) {
 								$h .= s("La livraison à domicile n'est pas activée sur votre ferme. Pour l'activer, créez une première tournée avec les zones géographiques dans lesquelles vous acceptez de livrer vos clients !");
-							$h .= '</div>';
-						} else {
-							$h .= s("La livraison à domicile n'est pas activée sur la ferme.");
-						}
+							} else {
+								$h .= s("La livraison à domicile n'est pas activée sur la ferme.");
+							}
+						$h .= '</div>';
 
 					}
 
@@ -187,7 +187,7 @@ class PointUi {
 					if($eShop['ccPoint']->offsetExists(Point::PLACE)) {
 						$h .= $this->getPoints('date', $eShop, $eShop['ccPoint'][Point::PLACE], cPointSelected: $cc[Point::PLACE] ?? new \Collection(), eDate: $eDate);
 					} else {
-						$h .= '<div class="util-info">';
+						$h .= '<div class="util-empty">';
 							$h .= s("La livraison en point de retrait collectif n'est pas activée pour cette vente !");
 						$h .= '</div>';
 					}
@@ -201,7 +201,7 @@ class PointUi {
 					if($eShop['ccPoint']->offsetExists(Point::HOME)) {
 						$h .= $this->getPoints('date', $eShop, $eShop['ccPoint'][Point::HOME], cPointSelected: $cc[Point::HOME] ?? new \Collection(), eDate: $eDate);
 					} else {
-						$h .= '<div class="util-info">';
+						$h .= '<div class="util-empty">';
 							$h .= s("La livraison à domicile n'est pas activée dans cette boutique !");
 						$h .= '</div>';
 					}

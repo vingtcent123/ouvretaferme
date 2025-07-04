@@ -27,7 +27,7 @@ new \selling\CustomerPage()
 		$data->e['invite'] = \farm\InviteLib::getByCustomer($data->e);
 		$data->e['contact'] = \mail\ContactLib::getByCustomer($data->e);
 
-		//$data->cMail = \mail\EmailLib::g
+		$data->cEmail = \mail\EmailLib::getByCustomer($data->e);
 
 		$data->cSaleTurnover = \selling\AnalyzeLib::getCustomerTurnover($data->e);
 
