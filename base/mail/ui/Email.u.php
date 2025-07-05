@@ -85,7 +85,7 @@ class EmailUi {
 						if($eEmail->isBlocked()) {
 
 							$h .= '<td class="text-center color-danger"><b>'.s("BLOQUÉ").'</b></td>';
-							$h .= '<td class="text-center">'.\Asset::icon('x-circle-fill').'</td>';
+							$h .= '<td class="text-center">'.\Asset::icon('x-circle-fill', ['class' => 'asset-icon-lg']).'</td>';
 
 							$h .= '<td class="color-danger">';
 								$h .= match($eEmail['status']) {
@@ -100,9 +100,9 @@ class EmailUi {
 							$h .= '<td class="text-center color-success"><b>'.s("REÇU").'</b></td>';
 
 							if($eEmail['openedAt'] !== NULL) {
-								$h .= '<td class="text-center color-success"><b>'.\Asset::icon('check-circle-fill').'</b></td>';
+								$h .= '<td class="text-center color-success"><b>'.\Asset::icon('check-circle-fill', ['class' => 'asset-icon-lg']).'</b></td>';
 							} else {
-								$h .= '<td class="text-center"><b>'.\Asset::icon('question-circle-fill').'</b></td>';
+								$h .= '<td class="text-center"><b>'.\Asset::icon('question-circle-fill', ['class' => 'asset-icon-lg']).'</b></td>';
 							}
 
 							$h .= '<td></td>';
