@@ -65,8 +65,11 @@ class ContactModel extends \ModuleModel {
 		];
 
 		$this->indexConstraints = array_merge($this->indexConstraints, [
-			['farm', 'email'],
 			['email']
+		]);
+
+		$this->uniqueConstraints = array_merge($this->uniqueConstraints, [
+			['farm', 'email']
 		]);
 
 	}

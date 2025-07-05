@@ -49,7 +49,7 @@ new AdaptativeView('index', function($data, MainTemplate $t) {
 
 		if($data->nCustomer > 0) {
 
-			$h .= '<a href="/selling/customer:updateOptIn" class="util-button">';
+			$h .= '<a href="/mail/contact:updateOptIn" class="util-button">';
 
 				$h .= '<div>';
 					$h .= '<h4>'.s("Gérer mes préférences de communication par e-mail").'</h4>';

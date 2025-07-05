@@ -21,8 +21,10 @@ Contact:
   optOut: bool = TRUE
   createdAt: datetime = SPECIAL(now)
   INDEX: [
-    ["farm", "email"],
     ["email"]
+  ]
+  UNIQUE: [
+    ["farm", "email"]
   ]
 
 Customize:

@@ -142,20 +142,6 @@ class Customer extends CustomerElement {
 		return ($this['invoiceCity'] !== NULL);
 	}
 
-	public function getEmailOptIn() {
-
-		$this->expects(['emailOptIn']);
-
-		if($this['emailOptIn'] === NULL) {
-			return '<span class="color-muted">'.\Asset::icon('question-circle').' '.s("Pas de consentement explicite du client").'</span>';
-		} else if($this['emailOptIn'] === FALSE) {
-			return '<span class="color-danger">'.\Asset::icon('x-circle').' '.s("Refus du client").'</span>';
-		} else {
-			return '<span class="color-success">'.\Asset::icon('check-circle').' '.s("Accord du client").'</span>';
-		}
-
-	}
-
 	public function getOptInHash() {
 		return hash('sha256', random_bytes(1024));
 	}

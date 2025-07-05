@@ -134,17 +134,22 @@ class ShopLib extends ShopCrud {
 
         $emails = \selling\Customer::model()
             ->select([
-                'user' => ['email', 'status']
+					'email',
+                'user' => ['status']
             ])
-            ->whereId('IN', $cCustomer)
+			  ->join(\mail\Contact::model(), 'm1.farm = m2.farm AND m1.email = m2.email', 'LEFT')
+            ->where('m1.id', 'IN', $cCustomer)
             ->whereUser('!=', NULL)
             ->or(
-                fn() => $this->whereEmailOptIn(TRUE),
-                fn() => $this->whereEmailOptIn(NULL)
+                fn() => $this->where('m2.optIn', TRUE),
+                fn() => $this->where('m2.optIn', NULL)
             )
-            ->whereEmailOptOut(TRUE)
-            ->getColumn('user')
-            ->filter(fn($eUser) => $eUser['status'] === \user\User::ACTIVE)
+            ->or(
+                fn() => $this->where('m2.optOut', TRUE),
+                fn() => $this->where('m2.optOut', NULL)
+            )
+			  ->getCollection()
+			  ->filter(fn($eCustomer) => $eCustomer['user']['status'] === \user\User::ACTIVE)
             ->getColumn('email');
 
         return $emails;

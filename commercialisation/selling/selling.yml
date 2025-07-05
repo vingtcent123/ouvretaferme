@@ -65,8 +65,6 @@ Customer:
   defaultPaymentMethod: ?payment\Method
   phone: ?text8
   color: ?color
-  emailOptIn: ?bool
-  emailOptOut: bool = TRUE
   createdAt: datetime = SPECIAL(now)
   status: enum(ACTIVE, INACTIVE) = ACTIVE
   UNIQUE: [

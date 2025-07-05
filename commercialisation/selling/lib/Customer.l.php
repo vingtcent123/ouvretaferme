@@ -17,8 +17,8 @@ class CustomerLib extends CustomerCrud {
 				POST('category', default: ($e['destination'] === Customer::COLLECTIVE ? Customer::COLLECTIVE : $e['type']))
 			),
 			match($e->getCategory()) {
-				Customer::PRO => ['discount', 'color', 'emailOptOut'],
-				Customer::PRIVATE => ['discount', 'emailOptOut'],
+				Customer::PRO => ['discount', 'color'],
+				Customer::PRIVATE => ['discount'],
 				Customer::COLLECTIVE => ['color'],
 			}
 		);
@@ -217,16 +217,6 @@ class CustomerLib extends CustomerCrud {
 
 	}
 
-	public static function getByUser(\user\User $eUser): \Collection {
-
-		return Customer::model()
-			->select(Customer::getSelection())
-			->whereUser($eUser)
-			->getCollection()
-			->sort(['user' => ['farm']]);
-
-	}
-
 	public static function getByUserAndFarm(\user\User $eUser, \farm\Farm $eFarm, bool $autoCreate = FALSE, ?string $autoCreateType = NULL): Customer {
 
 		if($eUser->empty()) {
@@ -338,52 +328,6 @@ class CustomerLib extends CustomerCrud {
 		Customer::model()->beginTransaction();
 
 		parent::update($e, $properties);
-
-		Customer::model()->commit();
-
-	}
-
-	public static function updateOptIn(\user\User $eUser, $customers): void {
-
-		Customer::model()->beginTransaction();
-
-		foreach($customers as $customer => $optIn) {
-
-			$optIn = Customer::filter($optIn, 'emailOptIn', NULL);
-
-			if($optIn !== NULL) {
-				Customer::model()
-					->whereUser($eUser)
-					->whereId($customer)
-					->update([
-						'emailOptIn' => $optIn
-					]);
-			}
-
-		}
-
-		Customer::model()->commit();
-
-	}
-
-	public static function updateOptInByEmail(\farm\Farm $eFarm, string $email, bool $optIn): void {
-
-		Customer::model()->beginTransaction();
-
-		$eUser = \user\UserLib::getByEmail($email);
-
-		if($eUser->notEmpty()) {
-
-			Customer::model()
-				->whereFarm($eFarm)
-				->whereUser($eUser)
-				->whereStatus(Customer::ACTIVE)
-				->update([
-					'emailOptIn' => $optIn
-				]);
-
-
-		}
 
 		Customer::model()->commit();
 

@@ -972,7 +972,12 @@ class AnalyzeLib {
 	public static function getExportCustomers(\farm\Farm $eFarm): array {
 
 		$data = Customer::model()
-			->select(Customer::getSelection())
+			->select(Customer::getSelection() + [
+				'contact' => \mail\Contact::model()
+					->select(\mail\ContactElement::getSelection())
+					->whereFarm($eFarm)
+					->delegateElement('email', propertyParent: 'email')
+			])
 			->whereFarm($eFarm)
 			->whereStatus(Customer::ACTIVE)
 			->sort('name')
@@ -993,8 +998,8 @@ class AnalyzeLib {
 					$eCustomer->getDeliveryStreet(),
 					$eCustomer['deliveryPostcode'] ?? '',
 					$eCustomer['deliveryCity'] ?? '',
-					($eCustomer['emailOptIn'] === NULL) ? s("?") : ($eCustomer['emailOptIn'] ? s("oui") : s("non")),
-					$eCustomer['emailOptOut'] ? s("oui") : s("non"),
+					($eCustomer['contact']->getOptIn() === NULL) ? s("?") : ($eCustomer['contact']->getOptIn() ? s("oui") : s("non")),
+					$eCustomer['contact']->getOptOut() ? s("oui") : s("non"),
 				];
 			});
 

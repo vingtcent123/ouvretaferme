@@ -34,9 +34,7 @@ class EmailUi {
 			return '<div class="util-empty">'.s("Il n'y a aucun e-mail à afficher.").'</div>';
 		}
 
-		$h = '<p class="util-info">'.s("Vous pouvez consulter la liste des e-mails envoyés il y a moins de trois mois.").'</p>';
-
-		$h .= '<div class="util-overflow-sm stick-xs">';
+		$h = '<div class="util-overflow-sm stick-xs">';
 
 			$h .= '<table class="tr-even">';
 

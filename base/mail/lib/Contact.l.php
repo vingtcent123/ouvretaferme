@@ -3,15 +3,38 @@ namespace mail;
 
 class ContactLib extends ContactCrud {
 
-	public static function getByCustomer(\selling\Customer $eCustomer): Contact {
+	public static function getByUser(\user\User $eUser): \Collection {
+
+		return Contact::model()
+			->select(Contact::getSelection() + [
+				'farm' => ['name', 'vignette']
+			])
+			->whereEmail($eUser['email'])
+			->getCollection();
+
+	}
+
+	public static function getByFarm(\farm\Farm $eFarm, string $email, bool $autoCreate = FALSE): Contact {
+
+		$eContact = Contact::model()
+			->select(Contact::getSelection())
+			->whereFarm($eFarm)
+			->whereEmail($email)
+			->get();
+
+		if($eContact->empty() and $autoCreate) {
+			$eContact = self::autoCreate($eFarm, $email);
+		}
+
+		return $eContact;
+
+	}
+
+	public static function getByCustomer(\selling\Customer $eCustomer, bool $autoCreate = FALSE): Contact {
 
 		$eCustomer->expects(['farm', 'email']);
 
-		return Contact::model()
-			->select(Contact::getSelection())
-			->whereFarm($eCustomer['farm'])
-			->whereEmail($eCustomer['email'])
-			->get();
+		return self::getByFarm($eCustomer['farm'], $eCustomer['email'], $autoCreate);
 
 	}
 
@@ -19,44 +42,67 @@ class ContactLib extends ContactCrud {
 
 		$eEmail->expects(['farm', 'to']);
 
-		if($autoCreate) {
-			Email::model()->beginTransaction();
-		}
-
-		$eContact = Contact::model()
-			->select(Contact::getSelection())
-			->whereFarm($eEmail['farm'])
-			->whereEmail($eEmail['to'])
-			->get();
-
-		if($autoCreate) {
-
-			if($eContact->empty()) {
-				$eContact = self::createByEmail($eEmail);
-			}
-
-			Email::model()->commit();
-
-		}
-
-		return $eContact;
+		return self::getByFarm($eEmail['farm'], $eEmail['to'], $autoCreate);
 
 	}
 
-	public static function createByEmail(Email $eEmail): Contact {
-
-		$eEmail->expects(['farm', 'to']);
+	public static function autoCreate(\farm\Farm $eFarm, string $email): Contact {
 
 		$eContact = new Contact([
-			'farm' => $eEmail['farm'],
-			'email' => $eEmail['to']
+			'farm' => $eFarm,
+			'email' => $email
 		]);
 
 		Contact::model()
 			->option('add-ignore')
 			->insert($eContact);
 
+		Contact::model()
+			->select(ContactElement::getSelection())
+			->whereFarm($eFarm)
+			->whereEmail($email)
+			->get($eContact);
+
 		return $eContact;
+
+	}
+
+	public static function updateOptInByEmail(\farm\Farm $eFarm, string $email, bool $optIn): void {
+
+		Contact::model()->beginTransaction();
+
+			$eContact = self::getByFarm($eFarm, $email, autoCreate: $optIn);
+
+			if($eContact->notEmpty()) {
+
+				$eContact['optIn'] = $optIn;
+
+				Contact::model()
+					->select('optIn')
+					->update($eContact);
+
+			}
+
+		Contact::model()->commit();
+
+	}
+
+	public static function updateOptIn(\user\User $eUser, array $contacts): void {
+
+		Contact::model()->beginTransaction();
+
+		foreach($contacts as $farm => $optIn) {
+
+			Contact::model()
+				->whereEmail($eUser['email'])
+				->whereFarm($farm)
+				->update([
+					'optIn' => (bool)$optIn
+				]);
+
+		}
+
+		Contact::model()->commit();
 
 	}
 

@@ -2491,7 +2491,7 @@ abstract class ModuleModel {
 
 				$cDelegate = $mDelegate->getCollection(NULL, NULL, $index);
 
-				$this->buildRecursiveDelegation($mixed, $destination, $propertyParent, $propertySelected, $type, $cDelegate, $callback);
+				$this->buildRecursiveDelegation($mixed, $destination, $propertyParent, $propertySelected, $type, $cDelegate, $mDelegate, $callback);
 
 			}
 
@@ -2499,7 +2499,7 @@ abstract class ModuleModel {
 
 	}
 
-	private function buildRecursiveDelegation(&$mixed, $destination, string $propertyParent, ?string $propertySelected, string $type, Collection $cDelegate, ?\Closure $callback) {
+	private function buildRecursiveDelegation(&$mixed, $destination, string $propertyParent, ?string $propertySelected, string $type, Collection $cDelegate, ModuleModel $mDelegate, ?\Closure $callback) {
 
 		if($mixed instanceof Element) {
 
@@ -2522,7 +2522,7 @@ abstract class ModuleModel {
 						break;
 
 					case 'element' :
-						$value = $cDelegate[$parent] ?? new Element;
+						$value = $cDelegate[$parent] ?? $mDelegate->getNewElement();
 						break;
 
 					case 'array' :
@@ -2549,7 +2549,7 @@ abstract class ModuleModel {
 		} else {
 
 			foreach($mixed as $key => $subElement) {
-				$this->buildRecursiveDelegation($mixed[$key], $destination, $propertyParent, $propertySelected, $type, $cDelegate, $callback);
+				$this->buildRecursiveDelegation($mixed[$key], $destination, $propertyParent, $propertySelected, $type, $cDelegate, $mDelegate, $callback);
 			}
 
 		}

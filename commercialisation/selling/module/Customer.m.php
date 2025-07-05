@@ -72,14 +72,12 @@ class CustomerModel extends \ModuleModel {
 			'defaultPaymentMethod' => ['element32', 'payment\Method', 'null' => TRUE, 'cast' => 'element'],
 			'phone' => ['text8', 'null' => TRUE, 'cast' => 'string'],
 			'color' => ['color', 'null' => TRUE, 'cast' => 'string'],
-			'emailOptIn' => ['bool', 'null' => TRUE, 'cast' => 'bool'],
-			'emailOptOut' => ['bool', 'cast' => 'bool'],
 			'createdAt' => ['datetime', 'cast' => 'string'],
 			'status' => ['enum', [\selling\Customer::ACTIVE, \selling\Customer::INACTIVE], 'cast' => 'enum'],
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'name', 'firstName', 'lastName', 'legalName', 'email', 'farm', 'user', 'type', 'destination', 'discount', 'orderFormEmail', 'deliveryNoteEmail', 'invoiceEmail', 'invoiceStreet1', 'invoiceStreet2', 'invoicePostcode', 'invoiceCity', 'siret', 'invoiceVat', 'deliveryStreet1', 'deliveryStreet2', 'deliveryPostcode', 'deliveryCity', 'defaultPaymentMethod', 'phone', 'color', 'emailOptIn', 'emailOptOut', 'createdAt', 'status'
+			'id', 'name', 'firstName', 'lastName', 'legalName', 'email', 'farm', 'user', 'type', 'destination', 'discount', 'orderFormEmail', 'deliveryNoteEmail', 'invoiceEmail', 'invoiceStreet1', 'invoiceStreet2', 'invoicePostcode', 'invoiceCity', 'siret', 'invoiceVat', 'deliveryStreet1', 'deliveryStreet2', 'deliveryPostcode', 'deliveryCity', 'defaultPaymentMethod', 'phone', 'color', 'createdAt', 'status'
 		]);
 
 		$this->propertiesToModule += [
@@ -100,9 +98,6 @@ class CustomerModel extends \ModuleModel {
 
 			case 'discount' :
 				return 0;
-
-			case 'emailOptOut' :
-				return TRUE;
 
 			case 'createdAt' :
 				return new \Sql('NOW()');
@@ -251,14 +246,6 @@ class CustomerModel extends \ModuleModel {
 
 	public function whereColor(...$data): CustomerModel {
 		return $this->where('color', ...$data);
-	}
-
-	public function whereEmailOptIn(...$data): CustomerModel {
-		return $this->where('emailOptIn', ...$data);
-	}
-
-	public function whereEmailOptOut(...$data): CustomerModel {
-		return $this->where('emailOptOut', ...$data);
 	}
 
 	public function whereCreatedAt(...$data): CustomerModel {

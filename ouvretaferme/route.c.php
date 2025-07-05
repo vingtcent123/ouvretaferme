@@ -8,11 +8,6 @@ Route::register([
 			'priority' => 5,
 			'route' => ['client', '{id}'],
 		],
-		'/client/{id}/optIn' => [
-			'request' => 'selling/customer',
-			'priority' => 5,
-			'route' => ['client', '{id}', 'optIn'],
-		],
 		'/commande/{id}' => [
 			'request' => 'selling/order',
 			'priority' => 5,
@@ -184,7 +179,7 @@ Route::register([
 			'route' => ['ferme', '{id}', 'livraison'],
 		],
 		'/ferme/{id}/optIn' => [
-			'request' => 'selling/customer',
+			'request' => 'mail/contact',
 			'priority' => 5,
 			'route' => ['ferme', '{id}', 'optIn'],
 		],

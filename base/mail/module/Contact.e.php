@@ -3,6 +3,31 @@ namespace mail;
 
 class Contact extends ContactElement {
 
+	public function getOptOut(): bool {
+		if($this->empty()) {
+			return TRUE;
+		} else {
+			return $this['optOut'];
+		}
+	}
+
+	public function getOptIn(): ?bool {
+		if($this->empty()) {
+			return NULL;
+		} else {
+			return $this['optIn'];
+		}
+	}
+
+	public function opt(): bool {
+
+		return (
+			$this->getOptOut() and
+			$this->getOptIn()
+		);
+
+	}
+
 	public function isEmailValid(): bool {
 
 		return (

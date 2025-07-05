@@ -77,10 +77,6 @@ class CustomerUi {
 
 	}
 
-	public static function urlOptIn(Customer $eCustomer, bool $consent): string {
-		return '/client/'.$eCustomer['id'].'/optIn?hash='.$eCustomer->getOptInHash().'&consent='.($consent ? 1 : 0);
-	}
-
 	public static function getTaxes(string $type): string {
 
 		return match($type) {
@@ -323,7 +319,7 @@ class CustomerUi {
 
 	}
 
-	public function display(Customer $eCustomer, \Collection $cSaleTurnover, \Collection $cGrid, \Collection $cSale, \Collection $cEmail, \Collection $cInvoice, \Collection $cPaymentMethod): string {
+	public function display(Customer $eCustomer): string {
 
 		$eCustomer->expects(['invite']);
 
@@ -389,11 +385,6 @@ class CustomerUi {
 						$h .= '</dd>';
 
 					}
-					$h .= '<dt>'.s("Communication par e-mail").'</dt>';
-					$h .= '<dd>';
-						$h .= s("Opt-out {value}", $eCustomer['emailOptOut'] ? \Asset::icon('check-circle') : \Asset::icon('x-circle')).'<br/>';
-						$h .= s("Opt-in {value}", $eCustomer['emailOptIn'] === NULL ? \Asset::icon('question-circle') : ($eCustomer['emailOptIn'] ? \Asset::icon('check-circle') : \Asset::icon('x-circle')));
-					$h .= '</dd>';
 					$h .= '<dt>'.s("Remise commerciale").'</dt>';
 					$h .= '<dd>'.($eCustomer['discount'] > 0 ? s("{value} %", $eCustomer['discount']) : '').'</dd>';
 				$h .= '</dl>';
@@ -403,7 +394,13 @@ class CustomerUi {
 			$h .= '<div class="util-block">'.s("Ce client est un point de vente aux particuliers.").'</div>';
 		}
 
-		$h .= '<div class="tabs-h" id="customer-tabs-wrapper" onrender="'.encode('Lime.Tab.restore(this, "sales")').'">';
+		return $h;
+
+	}
+
+	public function getTabs(Customer $eCustomer, \Collection $cSaleTurnover, \Collection $cGrid, \Collection $cSale, \Collection $cEmail, \Collection $cInvoice, \Collection $cPaymentMethod): string {
+
+		$h = '<div class="tabs-h" id="customer-tabs-wrapper" onrender="'.encode('Lime.Tab.restore(this, "sales")').'">';
 
 			$h .= '<div class="tabs-item">';
 				$h .= '<a class="tab-item selected" data-tab="sales" onclick="Lime.Tab.select(this)">';
@@ -414,11 +411,9 @@ class CustomerUi {
 						$h .= s("Factures");
 					$h .= '</a>';
 				}
-				if($cEmail->notEmpty()) {
-					$h .= '<a class="tab-item" data-tab="emails" onclick="Lime.Tab.select(this)">';
-						$h .= s("E-mails");
-					$h .= '</a>';
-				}
+				$h .= '<a class="tab-item" data-tab="emails" onclick="Lime.Tab.select(this)">';
+					$h .= s("E-mails");
+				$h .= '</a>';
 				if($eCustomer->canGrid()) {
 					$h .= '<a class="tab-item" data-tab="grid" onclick="Lime.Tab.select(this)">';
 						$h .= s("Grille tarifaire");
@@ -445,11 +440,17 @@ class CustomerUi {
 					$h .= '</div>';
 				}
 
-				if($cEmail->notEmpty()) {
-					$h .= '<div data-tab="emails" class="tab-panel">';
+				$h .= '<div data-tab="emails" class="tab-panel">';
+
+					$h .= new \mail\ContactUi()->getOpt($eCustomer['contact']);
+
+					if($cEmail->notEmpty()) {
+
+						$h .= '<h3>'.s("E-mails envoyés dans les trois derniers mois").'</h3>';
 						$h .= new \mail\EmailUi()->getList($cEmail, hide: ['customer']);
-					$h .= '</div>';
-				}
+
+					}
+				$h .= '</div>';
 
 				if($eCustomer->canGrid()) {
 					$h .= '<div data-tab="grid" class="tab-panel">';
@@ -644,17 +645,6 @@ class CustomerUi {
 			}
 			$h .= $this->write('update', $form, $eCustomer);
 
-			$h .= '<div class="customer-form-category customer-form-private customer-form-pro">';
-				$h .= '<div class="util-block bg-background-light">';
-					$h .= $form->group(content: '<h4>'.s("Gestion de la communication par e-mail").'</h4>');
-					$h .= $form->dynamicGroup($eCustomer, 'emailOptOut');
-					$h .= $form->group(
-						self::p('emailOptIn')->label.self::p('emailOptIn')->labelAfter,
-						$eCustomer->getEmailOptIn()
-					);
-				$h .= '</div>';
-			$h .= '</div>';
-
 			$h .= $form->group(
 				content: $form->submit(s("Modifier"))
 			);
@@ -719,46 +709,6 @@ class CustomerUi {
 		$h .= '</div>';
 
 		return $h;
-
-	}
-
-	public function updateOptIn(\Collection $cCustomer): \Panel {
-
-		$form = new \util\FormUi();
-
-		$h = '';
-
-		$h .= $form->openAjax('/selling/customer:doUpdateOptIn');
-
-			$h .= '<h4>'.s("Recevoir les communications des producteurs").'</h4>';
-
-			$h .= '<p class="util-info">';
-				$h .= s("Vos producteurs sont susceptibles de vous envoyer des communications par e-mail, selon une fréquence et un contenu qu'ils choisissent eux-mêmes. Vous pouvez choisir de recevoir ces communications ou les refuser.");
-			$h .= '</p>';
-
-			foreach($cCustomer as $eCustomer) {
-
-				$h .= $form->group(
-					\farm\FarmUi::link($eCustomer['farm'], TRUE),
-					$form->yesNo('customer['.$eCustomer['id'].']', $eCustomer['emailOptIn'] ?? TRUE, [
-						'yes' => s("Oui, les recevoir"),
-						'no' => s("Ne rien recevoir")
-					])
-				);
-
-			}
-
-			$h .= $form->group(
-				content: $form->submit(s("Enregistrer mes préférences"))
-			);
-
-		$h .= $form->close();
-
-		return new \Panel(
-			id: 'panel-customer-email',
-			title: s("Préférences de communication par e-mail"),
-			body: $h
-		);
 
 	}
 

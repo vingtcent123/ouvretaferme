@@ -25,7 +25,7 @@ new \selling\CustomerPage()
 		$data->cInvoice = \selling\InvoiceLib::getByCustomer($data->e, selectSales: TRUE);
 
 		$data->e['invite'] = \farm\InviteLib::getByCustomer($data->e);
-		$data->e['contact'] = \mail\ContactLib::getByCustomer($data->e);
+		$data->e['contact'] = \mail\ContactLib::getByCustomer($data->e, autoCreate: TRUE);
 
 		$data->cEmail = \mail\EmailLib::getByCustomer($data->e);
 
@@ -112,60 +112,6 @@ new Page()
 		$data->hasNew = post_exists('new');
 
 		throw new \ViewAction($data);
-
-	})
-	->get('updateOptIn', function($data) {
-
-		\user\ConnectionLib::checkLogged();
-
-		$data->cCustomer = \selling\CustomerLib::getByUser($data->eUserOnline);
-
-		throw new ViewAction($data);
-
-	})
-	->post('doUpdateOptIn', function($data) {
-
-		\user\ConnectionLib::checkLogged();
-
-		\selling\CustomerLib::updateOptIn($data->eUserOnline, POST('customer', 'array'));
-
-		throw new ReloadAction('selling', 'Customer::optInUpdated');
-
-	})
-	->get('/ferme/{id}/optIn', function($data) {
-
-		$data->eFarm = \farm\FarmLib::getById(GET('id'))->validate('canRead');
-		$data->consent = GET('consent', 'bool', TRUE);
-
-		throw new ViewAction($data);
-
-	})
-	->post('doUpdateOptInByEmail', function($data) {
-
-		$eFarm = \farm\FarmLib::getById(POST('id'))->validate('canRead');
-		$data->consent = POST('consent', 'bool');
-
-		\selling\CustomerLib::updateOptInByEmail($eFarm, POST('email'), $data->consent);
-
-		throw new ViewAction($data, ':optInSaved');
-
-	})
-	->get('/client/{id}/optIn', function($data) {
-
-		$eCustomer = \selling\CustomerLib::getById(GET('id'))->validate();
-
-		$data->consent = GET('consent', 'bool');
-		$hash = GET('hash');
-
-		if($hash !== $eCustomer->getOptInHash()) {
-			throw new NotExpectedAction('Bad hash');
-		}
-
-		$eCustomer['emailOptIn'] = $data->consent;
-
-		\selling\CustomerLib::update($eCustomer, ['emailOptIn']);
-
-		throw new ViewAction($data, ':optInSaved');
 
 	});
 ?>
