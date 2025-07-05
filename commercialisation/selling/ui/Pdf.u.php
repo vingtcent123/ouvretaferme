@@ -848,7 +848,7 @@ class PdfUi {
 		$template ??= \mail\CustomizeUi::getDefaultTemplate($type, $eSale);
 		$variables = \mail\CustomizeUi::getSaleVariables($type, $eFarm, $eSale);
 
-		$title = s("Devis {value}", $variables['number'].' - '.$variables['customer']);
+		$title = s("Devis {value}", $eSale->getOrderForm($eFarm).' - '.$eSale['customer']->getLegalName());
 		$content = \mail\CustomizeUi::convertTemplate($template, $variables);
 
 		return \mail\DesignUi::format($eFarm, $title, $content);
@@ -860,7 +860,7 @@ class PdfUi {
 		$template ??= \mail\CustomizeUi::getDefaultTemplate($type, $eSale);
 		$variables = \mail\CustomizeUi::getSaleVariables($type, $eFarm, $eSale);
 
-		$title = s("Bon de livraison {value}", $variables['number'].' - '.$variables['customer']);
+		$title = s("Bon de livraison {value}", $eSale->getDeliveryNote($eFarm).' - '.$eSale['customer']->getLegalName());
 		$content = \mail\CustomizeUi::convertTemplate($template, $variables);
 
 		return \mail\DesignUi::format($eFarm, $title, $content);

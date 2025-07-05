@@ -243,11 +243,6 @@ Merci et à bientôt,
 
 		$hasVat = $eDate['farm']->getSelling('hasVat');
 
-		$arguments = [
-			'shop' => encode($eDate['shop']['name']),
-			'date' => \util\DateUi::numeric($eDate['deliveryDate']),
-		];
-
 		if($sales['number'] === 0) {
 
 			$text = s("Vous n'avez pas reçu de commande cette fois-ci.
@@ -256,7 +251,10 @@ Bonne réception,
 {siteName}");
 
 			return [
-				s("Pas de commande pour le {date} sur {shop}", $arguments),
+				s("Pas de commande pour le {date} sur {shop}", [
+					'shop' => $eDate['shop']['name'],
+					'date' => \util\DateUi::numeric($eDate['deliveryDate']),
+				]),
 				\mail\DesignUi::encapsulateText($eDate['farm'], $text),
 				\mail\DesignUi::encapsulateHtml($eDate['farm'], nl2br($text))
 			];
@@ -269,9 +267,14 @@ Bonne réception,
 			$price .= ' '.\selling\CustomerUi::getTaxes(Date::PRO);
 		}
 
-		$arguments['price'] = $price;
+		$arguments = [
+			'shop' => encode($eDate['shop']['name']),
+			'date' => \util\DateUi::numeric($eDate['deliveryDate']),
+			'price' => $price
+		];
 
-		$title = p("✅ {value} commande pour le {date} sur {shop}", "✅ {value} commandes pour le {date} sur {shop}", $sales['number'], $arguments);
+
+		$title = p("✅ {value} commande pour le {date} sur {shop}", "✅ {value} commandes pour le {date} sur {shop}", $sales['number'], ['shop' => $eDate['shop']['name']]);
 
 		$items = '';
 
@@ -294,8 +297,6 @@ Bonne réception,
 
 Bonne réception,
 {siteName}", ['items' => $items]);
-
-		$text = $intro.$products;
 
 		$content = $intro;
 		$content .= \mail\DesignUi::getButton(\Lime::getUrl().ShopUi::adminDateUrl($eDate['farm'], $eDate).'/', s("Voir la vente"))."\n\n";

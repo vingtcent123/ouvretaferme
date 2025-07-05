@@ -77,7 +77,9 @@ class EmailUi {
 						$h .= '</td>';
 
 						$h .= '<td class="text-center">';
-							$h .= \util\DateUi::numeric($eEmail['sentAt']);
+							if($eEmail['sentAt'] !== NULL) {
+								$h .= \util\DateUi::numeric($eEmail['sentAt']);
+							}
 						$h .= '</td>';
 
 						if($eEmail->isBlocked()) {
