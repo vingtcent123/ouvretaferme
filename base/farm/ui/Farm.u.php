@@ -2078,7 +2078,7 @@ class FarmUi {
 			'featureTime' => s("Activer le suivi du temps de travail"),
 			'logo' => s("Logo de la ferme"),
 			'emailBanner' => s("Bandeau à afficher en haut des e-mails envoyés à vos clients"),
-			'emailFooter' => s("Pied de page à afficher en bas des e-mails envoyés à vos clients"),
+			'emailFooter' => s("Signature à afficher en bas des e-mails envoyés à vos clients"),
 			'defaultBedLength' => s("Longueur des planches par défaut"),
 			'defaultBedWidth' => s("Largeur travaillée des planches par défaut"),
 			'defaultAlleyWidth' => s("Largeur de passe-pied entre les planches par défaut"),
