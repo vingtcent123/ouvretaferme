@@ -411,9 +411,11 @@ class CustomerUi {
 						$h .= s("Factures");
 					$h .= '</a>';
 				}
-				$h .= '<a class="tab-item" data-tab="emails" onclick="Lime.Tab.select(this)">';
-					$h .= s("E-mails");
-				$h .= '</a>';
+				if($eCustomer['contact']->notEmpty()) {
+					$h .= '<a class="tab-item" data-tab="emails" onclick="Lime.Tab.select(this)">';
+						$h .= s("E-mails");
+					$h .= '</a>';
+				}
 				if($eCustomer->canGrid()) {
 					$h .= '<a class="tab-item" data-tab="grid" onclick="Lime.Tab.select(this)">';
 						$h .= s("Grille tarifaire");
@@ -440,17 +442,20 @@ class CustomerUi {
 					$h .= '</div>';
 				}
 
-				$h .= '<div data-tab="emails" class="tab-panel">';
+				if($eCustomer['contact']->notEmpty()) {
+					$h .= '<div data-tab="emails" class="tab-panel">';
 
-					$h .= new \mail\ContactUi()->getOpt($eCustomer['contact']);
+						$h .= new \mail\ContactUi()->getOpt($eCustomer['contact']);
 
-					if($cEmail->notEmpty()) {
+						if($cEmail->notEmpty()) {
 
-						$h .= '<h3>'.s("E-mails envoyés dans les trois derniers mois").'</h3>';
-						$h .= new \mail\EmailUi()->getList($cEmail, hide: ['customer']);
+							$h .= '<h3>'.s("E-mails envoyés dans les trois derniers mois").'</h3>';
+							$h .= new \mail\EmailUi()->getList($cEmail, hide: ['customer']);
 
-					}
-				$h .= '</div>';
+						}
+					$h .= '</div>';
+
+				}
 
 				if($eCustomer->canGrid()) {
 					$h .= '<div data-tab="grid" class="tab-panel">';

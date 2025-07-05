@@ -34,6 +34,10 @@ class ContactLib extends ContactCrud {
 
 		$eCustomer->expects(['farm', 'email']);
 
+		if($eCustomer['email'] === NULL) {
+			return new Contact();
+		}
+
 		return self::getByFarm($eCustomer['farm'], $eCustomer['email'], $autoCreate);
 
 	}
