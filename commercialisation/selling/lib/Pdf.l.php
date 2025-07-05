@@ -80,7 +80,11 @@ class PdfLib extends PdfCrud {
 			throw new \Exception('Invalid type');
 		}
 
-		$customerEmail = $eCustomer['email'] ?? $eCustomer['user']['email'] ?? NULL;
+		$customerEmail = match($type) {
+			Pdf::DELIVERY_NOTE => $eCustomer['deliveryNoteEmail'],
+			Pdf::ORDER_FORM => $eCustomer['orderFormEmail'],
+		};
+		$customerEmail ??= $eCustomer['email'] ?? NULL;
 
 		if($customerEmail === NULL) {
 			Pdf::fail('noCustomerEmail');
@@ -190,8 +194,9 @@ class PdfLib extends PdfCrud {
 		]);
 
 		$eCustomer = $eInvoice['customer'];
+		$customerEmail = $eCustomer['invoiceEmail'] ?? $eCustomer['email'];
 
-		if($eCustomer['email'] === NULL) {
+		if($customerEmail === NULL) {
 			Pdf::fail('noCustomerEmail');
 			return;
 		}
@@ -253,7 +258,7 @@ class PdfLib extends PdfCrud {
 			->setFarm($eFarm)
 			->setCustomer($eCustomer)
 			->setFromName($eFarm['name'])
-			->setTo($eCustomer['email'])
+			->setTo($customerEmail)
 			->setReplyTo($eFarm['legalEmail'])
 			->setContent(...$content)
 			->addAttachment($pdf, $eInvoice['name'].'.pdf', 'application/pdf')

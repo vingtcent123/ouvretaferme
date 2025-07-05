@@ -704,6 +704,14 @@ class CustomerUi {
 				$h .= '<div class="customer-form-category customer-form-private customer-form-pro">';
 					$h .= $form->dynamicGroup($eCustomer, 'discount');
 				$h .= '</div>';
+				$h .= '<div class="customer-form-category customer-form-pro">';
+					$h .= $form->group(
+						s("Personnaliser les adresses e-mail pour l'envoi de certains documents"),
+						$form->dynamicField($eCustomer, 'orderFormEmail').
+						$form->dynamicField($eCustomer, 'deliveryNoteEmail').
+						$form->dynamicField($eCustomer, 'invoiceEmail')
+					);
+				$h .= '</div>';
 				$h .= '<div class="customer-form-category customer-form-private customer-form-pro">';
 					$h .= $form->dynamicGroup($eCustomer, 'defaultPaymentMethod');
 				$h .= '</div>';
@@ -724,6 +732,9 @@ class CustomerUi {
 			'firstName' => s("Prénom"),
 			'lastName' => s("Nom"),
 			'email' => s("Adresse e-mail"),
+			'orderFormEmail' => s("Adresse e-mail pour l'envoi des devis"),
+			'deliveryNoteEmail' => s("Adresse e-mail pour l'envoi des bons de livraison"),
+			'invoiceEmail' => s("Adresse e-mail pour l'envoi des factures"),
 			'category' => s("Type de client"),
 			'farm' => s("Ferme"),
 			'discount' => s("Remise commerciale"),
@@ -812,6 +823,21 @@ class CustomerUi {
 						return NULL;
 					}
 				};
+				break;
+
+			case 'orderFormEmail' :
+			case 'deliveryNoteEmail' :
+			case 'invoiceEmail' :
+
+				$label = match($property) {
+					'orderFormEmail' => s("Devis"),
+					'deliveryNoteEmail' => s("Bons de livraison"),
+					'invoiceEmail' => s("Factures")
+				};
+
+				$d->inputGroup['style'] = 'margin-bottom: 0.25rem';
+				$d->prepend = \util\FormUi::info($label);
+				$d->placeholder = s("Utiliser l'adresse e-mail par défaut");
 				break;
 
 			case 'discount' :

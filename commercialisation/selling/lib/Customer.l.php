@@ -17,7 +17,7 @@ class CustomerLib extends CustomerCrud {
 				POST('category', default: ($e['destination'] === Customer::COLLECTIVE ? Customer::COLLECTIVE : $e['type']))
 			),
 			match($e->getCategory()) {
-				Customer::PRO => ['discount', 'color'],
+				Customer::PRO => ['discount', 'color', 'orderFormEmail', 'deliveryNoteEmail', 'invoiceEmail'],
 				Customer::PRIVATE => ['discount'],
 				Customer::COLLECTIVE => ['color'],
 			}
