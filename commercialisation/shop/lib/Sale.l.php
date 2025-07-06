@@ -475,21 +475,14 @@ class SaleLib {
 		$eSale['paymentStatus'] = \selling\Sale::NOT_PAID;
 		$eSale['onlinePaymentStatus'] = \selling\Sale::INITIALIZED;
 
-		// On prolonge le délai d'expiration de la vante
+		// On prolonge le délai d'expiration de la vente
 		if($eSale['preparationStatus'] === \selling\Sale::BASKET) {
 			$eSale['expiresAt'] = new \Sql('NOW() + INTERVAL 1 HOUR');
 			$properties[] = 'expiresAt';
 		}
 
 		\selling\SaleLib::update($eSale, $properties);
-		\selling\PaymentLib::createBySale($eSale, $eMethod);
-
-		$ePayment = \selling\PaymentLib::getBySale($eSale)->first();
-		$ePayment['checkoutId'] = $stripeSession['id'];
-
-		\selling\Payment::model()
-			->select('checkoutId')
-			->update($ePayment);
+		$ePayment = \selling\PaymentLib::createBySale($eSale, $eMethod, $stripeSession['id']);
 
 		\selling\HistoryLib::createBySale($eSale, 'shop-payment-initiated', 'Stripe checkout id #'.$stripeSession['id'], ePayment: $ePayment);
 

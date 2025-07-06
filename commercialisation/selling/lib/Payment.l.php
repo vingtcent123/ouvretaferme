@@ -129,10 +129,10 @@ class PaymentLib extends PaymentCrud {
 
 	}
 
-	public static function createBySale(Sale $eSale, ?\payment\Method $eMethod, ?string $providerId = NULL): void {
+	public static function createBySale(Sale $eSale, ?\payment\Method $eMethod, ?string $providerId = NULL): Payment {
 
 		if($eMethod->empty()) {
-			return;
+			throw new \Exception('Missing method');
 		}
 
 		$eSale->expects(['customer', 'farm']);
@@ -150,6 +150,8 @@ class PaymentLib extends PaymentCrud {
 		]);
 
 		Payment::model()->insert($ePayment);
+
+		return $ePayment;
 
 	}
 
