@@ -226,6 +226,13 @@ class StripeLib {
 
 	}
 
+	public static function getPaymentIntentDetails(StripeFarm $eStripeFarm, string $paymentIntent): array {
+
+		return self::sendStripeRequest($eStripeFarm, 'payment_intents/'.encode($paymentIntent));
+
+	}
+
+
 	private static function sendStripeRequest(StripeFarm $eStripeFarm, string $endpoint, array $arguments = [], string $mode = 'POST'): ?array {
 
 		$key = match(LIME_ENV) {
