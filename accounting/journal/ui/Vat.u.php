@@ -8,7 +8,7 @@ Class VatUi {
 		\Asset::css('company', 'company.css');
 	}
 
-	public function getTitle(): string {
+	public function getTitle(\farm\Farm $eFarm, \account\FinancialYear $eFinancialYear, bool $hasWaitingOperations): string {
 
 		$h = '<div class="util-action">';
 
@@ -17,8 +17,18 @@ Class VatUi {
 			$h .= '</h1>';
 
 			$h .= '<div>';
+
 				$h .= '<a '.attr('onclick', 'Lime.Search.toggle("#vat-search")').' class="btn btn-primary">'.\Asset::icon('search').'</a> ';
-			$h .= '</div>';
+
+				if(
+					$eFinancialYear['status'] === \account\FinancialYearElement::OPEN
+					and $eFarm->canManage()
+					and $hasWaitingOperations
+				) {
+					$h .= '<a href="'.\company\CompanyUi::urlJournal($eFarm).'/vatDeclaration:create" class="btn btn-primary">'.\Asset::icon('plus-circle').' '.s("Créer une déclaration").'</a> ';
+				}
+
+		$h .= '</div>';
 
 		$h .= '</div>';
 
@@ -112,6 +122,7 @@ Class VatUi {
 		\farm\Farm $eFarm,
 		\account\FinancialYear $eFinancialYear,
 		array $operations,
+		array $vatDeclarationData,
 		\Search $search = new \Search(),
 	): string {
 
@@ -140,7 +151,7 @@ Class VatUi {
 			$h .= '</div>';
 
 			$h .= '<div class="tab-panel" data-tab="vat-statement">';
-				$h .= $this->getStatementContainer($eFarm, $eFinancialYear, $operations['sell'], 'sell', $search);
+				$h .= $this->getStatementContainer($eFarm, $vatDeclarationData, $eFinancialYear);
 			$h .= '</div>';
 
 		$h .= '</div>';
@@ -149,12 +160,75 @@ Class VatUi {
 
 	}
 
-	private function getStatementContainer(): string {
+	private function getStatementContainer(\farm\Farm $eFarm, array $vatDeclarationData, \account\FinancialYear $eFinancialYear): string {
 
-		$h = 'ici les déclarations de TVA (TODO) : 1/ Déclarations existantes 2/ Écritures non déclarées 3/ Créer une nouvelle déclaration ';
+		$cVatDeclaration = $vatDeclarationData['cVatDeclaration'];
+		$cOperationWaiting = $vatDeclarationData['cOperationWaiting'];
+
+		$h = '';
+
+		$h .= '<h3>'.s("Déclarations de TVA").'</h3>';
+
+		$h .= self::getVatDeclarations($eFarm, $cVatDeclaration);
+
+		if($cOperationWaiting->count() > 0) {
+
+			$h .= '<h3>'.s("Écritures en attente de déclaration").'</h3>';
+
+			$h .= '<div class="util-info">'.p(
+					"<b>{value}</b> écriture n'a pas encore été intégrée dans une déclaration de TVA.",
+					"<b>{value}</b> écritures n'ont pas encore été intégrées dans une déclaration de TVA.",
+					$cOperationWaiting->count()
+				).'</div>';
+
+			$h .= new JournalUi()->getTableContainer($eFarm, $cOperationWaiting, $eFinancialYear, hide: ['cashflow', 'actions', 'document']);
+
+		}
 
 		return $h;
 
+	}
+
+	private function getVatDeclarations(\farm\Farm $eFarm, \Collection $cVatDeclaration): string {
+
+		if($cVatDeclaration->count() === 0) {
+			return '<div class="util-info">'.s("Vous n'avez pas encore déclaré la TVA pendant cet exercice comptable.").'</div>';
+		}
+
+		$h = '<table class="tr-even td-vertical-top tr-hover table-bordered">';
+
+			$h .= '<thead class="thead-sticky">';
+				$h .= '<tr>';
+					$h .= '<th>'.s("Période").'</th>';
+					$h .= '<th>'.s("Date de validation").'</th>';
+					$h .= '<th class="text-end">'.s("TVA collectée").'</th>';
+					$h .= '<th class="text-end">'.s("TVA déductible").'</th>';
+					$h .= '<th class="text-end">'.s("TVA due").'</th>';
+					$h .= '<th>'.s("Type").'</th>';
+					$h .= '<th></th>';
+				$h .= '</tr>';
+			$h .= '</thead>';
+
+			$h .= '<tbody>';
+				foreach($cVatDeclaration as $eVatDeclaration) {
+
+					$h .= '<tr>';
+						$h .= '<td>'.s("{startDate} au {endDate}", ['startDate' => \util\DateUi::numeric($eVatDeclaration['startDate']), 'endDate' => \util\DateUi::numeric($eVatDeclaration['endDate'])]).'</td>';
+						$h .= '<td>'.\util\DateUi::numeric($eVatDeclaration['createdAt'], \util\DateUi::DATE).'</td>';
+						$h .= '<td class="text-end">'.\util\TextUi::money($eVatDeclaration['collectedVat']).'</td>';
+						$h .= '<td class="text-end">'.\util\TextUi::money($eVatDeclaration['deductibleVat']).'</td>';
+						$h .= '<td class="text-end">'.\util\TextUi::money($eVatDeclaration['dueVat']).'</td>';
+						$h .= '<td>'.VatDeclarationUi::p('type')->values[$eVatDeclaration['type']].'</td>';
+						$h .= '<td><a href="'.PdfUi::urlVatDeclaration($eFarm, $eVatDeclaration).'" data-ajax-navigation="never" >'.\Asset::icon('download').' '.s("Télécharger en PDF").'</a></td>';
+					$h .= '</tr>';
+
+				}
+
+			$h .= '</tbody>';
+
+		$h .= '</table>';
+
+		return $h;
 	}
 
 	private function getTableContainer(

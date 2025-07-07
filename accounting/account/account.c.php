@@ -52,9 +52,9 @@ Setting::register('account', [
 	'balanceLiabilityCategories' => account\AccountUi::getLiabilityBalanceCategories(),
 
 	'vatBuyVatClasses' => ['44562', '44566'],
-	'vatBuyClassPrefix' => '4456',
+	'vatBuyClassPrefix' => '4456', // TVA déductible
 	'vatSellVatClasses' => ['44571'],
-	'vatSellClassPrefix' => '4457',
+	'vatSellClassPrefix' => '4457', // TVA collectée
 	'payableVatClass' => '44551', // TVA à décaisser
 	'carriedVatClass' => '44567', // TVA à reporter
 

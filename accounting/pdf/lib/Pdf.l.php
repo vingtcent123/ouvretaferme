@@ -42,7 +42,7 @@ class PdfLib extends \pdf\PdfCrud {
 
 	}
 
-	private static function generateContent(\farm\Farm $eFarm, \account\FinancialYear $eFinancialYear, string $type): string {
+	private static function generateContent(\farm\Farm $eFarm, \account\FinancialYear $eFinancialYear, string $type, ?string $more): string {
 
 		switch($type) {
 			case PdfElement::OVERVIEW_BALANCE_SUMMARY;
@@ -75,6 +75,11 @@ class PdfLib extends \pdf\PdfCrud {
 				$title = \journal\PdfUi::getVatTitle(PdfElement::JOURNAL_TVA_SELL);
 				break;
 
+			case PdfElement::VAT_STATEMENT:
+				$url = \company\CompanyUi::urlJournal($eFarm).'/pdf/vatDeclaration?id='.$more.'&key='.\Setting::get('account\remoteKey');
+				$title = \journal\PdfUi::getVatDeclarationTitle();
+				break;
+
 			default:
 				throw new \NotExpectedAction('Unknown pdf type');
 		}
@@ -85,7 +90,7 @@ class PdfLib extends \pdf\PdfCrud {
 
 	}
 
-	public static function generate(\farm\Farm $eFarm, \account\FinancialYear $eFinancialYear, string $type): ?string {
+	public static function generate(\farm\Farm $eFarm, \account\FinancialYear $eFinancialYear, string $type, ?string $more = NULL): ?string {
 
 		if($eFinancialYear['status'] === \account\FinancialYearElement::CLOSE) {
 
@@ -113,7 +118,7 @@ class PdfLib extends \pdf\PdfCrud {
 
 		try {
 
-			$content = self::generateContent($eFarm, $eFinancialYear, $type);
+			$content = self::generateContent($eFarm, $eFinancialYear, $type, $more);
 
 		} catch(\Exception) {
 

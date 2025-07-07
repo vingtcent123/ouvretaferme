@@ -51,6 +51,8 @@ class AlertUi {
 			'Operation::createdSeveral' => s("Les écritures ont bien été enregistrées."),
 			'Operation::deleted' => s("L'écriture a bien été supprimée."),
 
+			'VatDeclaration:created' => s("La déclaration de TVA a bien été créée."),
+
 			default => null
 
 		};

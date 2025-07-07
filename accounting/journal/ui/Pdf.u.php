@@ -11,7 +11,6 @@ class PdfUi {
 
 	public static function filenameJournal(\farm\Farm $eFarm): string {
 
-		// TODO SIRET
 		return s("{date}-{company}-journal", ['date' => date('Y-m-d'), 'company' => $eFarm['siret']]);
 
 	}
@@ -19,8 +18,13 @@ class PdfUi {
 	public static function filenameVat(\farm\Farm $eFarm, string $type): string {
 
 		$typeText = $type === 'sell' ? s("ventes") : s("achats");
-		// TODO SIRET
-		return s("{date}-{company}-tva-{type}", ['date' => date('Y-m-d'), 'company' => $eFarm['id'], 'type' => $typeText]);
+		return s("{date}-{company}-tva-{type}", ['date' => date('Y-m-d'), 'company' => $eFarm['siret'], 'type' => $typeText]);
+
+	}
+
+	public static function filenameVatStatement(\farm\Farm $eFarm): string {
+
+		return s("{date}-{company}-declaration-tva", ['date' => date('Y-m-d'), 'company' => $eFarm['siret']]);
 
 	}
 
@@ -140,6 +144,18 @@ class PdfUi {
 
 	}
 
+	public static function urlVatDeclaration(\farm\Farm $eFarm, VatDeclaration $eVatDeclaration): string {
+
+		return \company\CompanyUi::urlJournal($eFarm).'/vatDeclaration:pdf?id='.$eVatDeclaration['id'];
+
+	}
+
+	public static function getVatDeclarationTitle(): string {
+
+		return s("Déclaration de TVA");
+
+	}
+
 	public static function getVatTitle(string $type): string {
 
 		if($type === \pdf\PdfElement::JOURNAL_TVA_BUY) {
@@ -207,6 +223,93 @@ class PdfUi {
 
 				$h .= new VatUi()->getTables($eFarm, $cccOperation, new \Search(), 'pdf');
 
+			$h .= '</div>';
+
+		$h .= '</div>';
+
+		if(get_exists('test') === TRUE) {
+			$h .= \pdf\PdfUi::getFooter();
+		}
+		return $h;
+
+	}
+
+
+	public function getVatDeclaration(
+		\farm\Farm $eFarm,
+		\Collection $cOperation,
+		\account\FinancialYear $eFinancialYear,
+		VatDeclaration $eVatDeclaration,
+	): string {
+
+		$regime = \account\FinancialYearUi::p('taxSystem')->values[$eFinancialYear['taxSystem']].' (Déclaration '.strtolower(\account\FinancialYearUi::p('vatFrequency')->values[$eFinancialYear['vatFrequency']]).')';
+
+		$h = '<style>@page {	size: A4; margin: calc(var(--margin-bloc-height) + 2cm) 1cm 1cm; } table {width: inherit; } .row-bordered { border-bottom: 1px solid black; }</style>';
+
+		if(get_exists('test') === TRUE) {
+			$h .= \pdf\PdfUi::getHeader(\journal\PdfUi::getVatDeclarationTitle(), $eFinancialYear);
+		}
+
+		$h .= '<div class="pdf-document-wrapper">';
+
+			$h .= '<div class="pdf-document-content">';
+
+				$h .= '<div class="util-block stick-xs bg-background-light mt-1 mb-1">';
+
+					$h .= '<dl class="util-presentation util-presentation-2">';
+
+						$h .= '<dt>'.s("Exploitation").'</dt>';
+						$h .= '<dd>'.encode($eFarm['legalName']).'</dd>';
+
+						$h .= '<dt>'.s("Exercice").'</dt>';
+						$h .= '<dd>'.\account\FinancialYearUi::getYear($eFinancialYear).'</dd>';
+
+						$h .= '<dt>'.s("SIRET").'</dt>';
+						$h .= '<dd>'.encode($eFarm['siret']).'</dd>';
+
+						$h .= '<dt>'.s("Période").'</dt>';
+						$h .= '<dd>'.s("du {startDate} au {endDate}", ['startDate' => \util\DateUi::numeric($eVatDeclaration['startDate']), 'endDate' => \util\DateUi::numeric($eVatDeclaration['endDate'])]).'</dd>';
+
+						$h .= '<dt>'.s("Régime").'</dt>';
+						$h .= '<dd>'.$regime.'</dd>';
+
+						$h .= '<dt>'.s("Date de validation").'</dt>';
+						$h .= '<dd>'.\util\DateUi::numeric($eVatDeclaration['createdAt'], \util\DateUi::DATE).'</dd>';
+
+						$h .= '<dt></dt>';
+						$h .= '<dd></dd>';
+
+						$h .= '<dt>'.s("N° de déclaration").'</dt>';
+						$h .= '<dd>'.$eVatDeclaration['id'].'</dd>';
+
+					$h .= '</dl>';
+				$h .= '</div>';
+
+				$h .= '<h3>'.s("Résumé").'</h3>';
+
+				$h .= '<table>';
+					$h .= '<tr class="row-bordered">';
+						$h .= '<th class="text-end">'.s("TVA collectée").'</th>';
+						$h .= '<td class="text-end">'.\util\TextUi::money($eVatDeclaration['collectedVat']).'</td>';
+					$h .= '</tr>';
+					$h .= '<tr class="row-bordered">';
+						$h .= '<th class="text-end">'.s("TVA déductible").'</th>';
+						$h .= '<td class="text-end">'.\util\TextUi::money($eVatDeclaration['deductibleVat']).'</td>';
+					$h .= '</tr>';
+					$h .= '<tr>';
+						$h .= '<th class="text-end">'.s("TVA due").'</th>';
+						$h .= '<td class="text-end">'.\util\TextUi::money($eVatDeclaration['dueVat']).'</td>';
+					$h .= '</tr>';
+				$h .= '</table>';
+
+				$h .= '<h3>'.s("Lignes de TVA").'</h3>';
+
+				$h .= new VatDeclarationUi()->getPdfTable($cOperation);
+
+			$h .= '</div>';
+
+			$h .= '<div class="mt-2">';
+				$h .= '<i>'.s("Document généré automatiquement par {siteName}. Ce document n'est pas une transmission officielle à l'administration fiscale.").'</i>';
 			$h .= '</div>';
 
 		$h .= '</div>';

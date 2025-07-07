@@ -41,20 +41,25 @@ class VatDeclarationModel extends \ModuleModel {
 
 		$this->properties = array_merge($this->properties, [
 			'id' => ['serial32', 'cast' => 'int'],
-			'startAt' => ['date', 'cast' => 'string'],
-			'endsAt' => ['date', 'cast' => 'string'],
+			'startDate' => ['date', 'cast' => 'string'],
+			'endDate' => ['date', 'cast' => 'string'],
 			'type' => ['enum', [\journal\VatDeclaration::STATEMENT, \journal\VatDeclaration::ADJUSTMENT, \journal\VatDeclaration::AMENDMENT], 'cast' => 'enum'],
 			'amendment' => ['element32', 'journal\VatDeclaration', 'null' => TRUE, 'cast' => 'element'],
+			'collectedVat' => ['decimal', 'digits' => 8, 'decimal' => 2, 'cast' => 'float'],
+			'deductibleVat' => ['decimal', 'digits' => 8, 'decimal' => 2, 'cast' => 'float'],
+			'dueVat' => ['decimal', 'digits' => 8, 'decimal' => 2, 'cast' => 'float'],
+			'financialYear' => ['element32', 'account\FinancialYear', 'cast' => 'element'],
 			'createdAt' => ['datetime', 'cast' => 'string'],
 			'createdBy' => ['element32', 'user\User', 'cast' => 'element'],
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'startAt', 'endsAt', 'type', 'amendment', 'createdAt', 'createdBy'
+			'id', 'startDate', 'endDate', 'type', 'amendment', 'collectedVat', 'deductibleVat', 'dueVat', 'financialYear', 'createdAt', 'createdBy'
 		]);
 
 		$this->propertiesToModule += [
 			'amendment' => 'journal\VatDeclaration',
+			'financialYear' => 'account\FinancialYear',
 			'createdBy' => 'user\User',
 		];
 
@@ -106,12 +111,12 @@ class VatDeclarationModel extends \ModuleModel {
 		return $this->where('id', ...$data);
 	}
 
-	public function whereStartAt(...$data): VatDeclarationModel {
-		return $this->where('startAt', ...$data);
+	public function whereStartDate(...$data): VatDeclarationModel {
+		return $this->where('startDate', ...$data);
 	}
 
-	public function whereEndsAt(...$data): VatDeclarationModel {
-		return $this->where('endsAt', ...$data);
+	public function whereEndDate(...$data): VatDeclarationModel {
+		return $this->where('endDate', ...$data);
 	}
 
 	public function whereType(...$data): VatDeclarationModel {
@@ -120,6 +125,22 @@ class VatDeclarationModel extends \ModuleModel {
 
 	public function whereAmendment(...$data): VatDeclarationModel {
 		return $this->where('amendment', ...$data);
+	}
+
+	public function whereCollectedVat(...$data): VatDeclarationModel {
+		return $this->where('collectedVat', ...$data);
+	}
+
+	public function whereDeductibleVat(...$data): VatDeclarationModel {
+		return $this->where('deductibleVat', ...$data);
+	}
+
+	public function whereDueVat(...$data): VatDeclarationModel {
+		return $this->where('dueVat', ...$data);
+	}
+
+	public function whereFinancialYear(...$data): VatDeclarationModel {
+		return $this->where('financialYear', ...$data);
 	}
 
 	public function whereCreatedAt(...$data): VatDeclarationModel {

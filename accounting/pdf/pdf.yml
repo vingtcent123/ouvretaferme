@@ -7,7 +7,7 @@ Pdf:
   id: serial32
   used: int16(0, null) = 1
   content: ?pdf\Content
-  type: enum(OVERVIEW_BALANCE_SUMMARY, OVERVIEW_BALANCE_OPENING, JOURNAL_INDEX, JOURNAL_BOOK, JOURNAL_TVA_BUY, JOURNAL_TVA_SELL)
+  type: enum(OVERVIEW_BALANCE_SUMMARY, OVERVIEW_BALANCE_OPENING, JOURNAL_INDEX, JOURNAL_BOOK, JOURNAL_TVA_BUY, JOURNAL_TVA_SELL, VAT_STATEMENT)
   financialYear: account\FinancialYear
   emailedAt: ?datetime
   createdAt: datetime = SPECIAL(now)

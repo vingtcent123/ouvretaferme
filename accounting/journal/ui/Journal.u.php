@@ -163,12 +163,14 @@ class JournalUi {
 		return $h;
 
 	}
+
 	public function getTableContainer(
 		\farm\Farm $eFarm,
 		\Collection $cOperation,
 		\account\FinancialYear $eFinancialYearSelected,
 		\Search $search = new \Search(),
-		?string $selectedJournalCode = NULL
+		?string $selectedJournalCode = NULL,
+		array $hide = [],
 	): string {
 
 		if($cOperation->empty() === TRUE) {
@@ -194,23 +196,29 @@ class JournalUi {
 						$h .= '<th>';
 
 							if($eFarm['company']->isCashAccounting()) {
-								$label = s("Date de transaction");
+								$label = s("Date de l'écriture");
 								$h .= ($search ? $search->linkSort('paymentDate', $label) : $label);
 							} else {
-								$label = s("Date de l'écriture");
+								$label = s("Date de transaction");
 								$h .= ($search ? $search->linkSort('date', $label) : $label);
 							}
 						$h .= '</th>';
-						$h .= '<th>'.s("# Opération bancaire").'</th>';
+
+						if(in_array('cashflow', $hide) === FALSE) {
+							$h .= '<th>'.s("# Opération bancaire").'</th>';
+						}
 
 						if($eFarm['company']->isAccrualAccounting() and $selectedJournalCode === NULL) {
 							$h .= '<th>'.s("Journal").'</th>';
 						}
 
-						$h .= '<th>';
-							$label = s("Pièce comptable");
-							$h .= ($search ? $search->linkSort('document', $label) : $label);
-						$h .= '</th>';
+						if(in_array('document', $hide) === FALSE) {
+							$h .= '<th>';
+								$label = s("Pièce comptable");
+								$h .= ($search ? $search->linkSort('document', $label) : $label);
+							$h .= '</th>';
+						}
+
 						$h .= '<th colspan="2">'.s("Compte (Libellé et classe)").'</th>';
 						$h .= '<th>';
 							$label = s("Description");
@@ -219,7 +227,11 @@ class JournalUi {
 						$h .= '<th>'.s("Tiers").'</th>';
 						$h .= '<th class="text-end">'.s("Débit (D)").'</th>';
 						$h .= '<th class="text-end">'.s("Crédit (C)").'</th>';
-						$h .= '<th class="text-end"></th>';
+
+						if(in_array('actions', $hide) === FALSE) {
+							$h .= '<th class="text-end"></th>';
+						}
+
 					$h .= '</tr>';
 				$h .= '</thead>';
 
@@ -227,12 +239,17 @@ class JournalUi {
 
 					foreach($cOperation as $eOperation) {
 
-						$canUpdate = ($eFinancialYearSelected['status'] === \account\FinancialYear::OPEN
+						$canUpdate = (
+							$eFinancialYearSelected['status'] === \account\FinancialYear::OPEN
 							and $eOperation['date'] <= $eFinancialYearSelected['endDate']
 							and $eOperation['date'] >= $eFinancialYearSelected['startDate']
-							and $eFarm->canManage());
+							and $eFarm->canManage()
+							and $eOperation->canUpdate()
+							and in_array('actions', $hide) === FALSE
+						);
 
 						$eOperation->setQuickAttribute('farm', $eFarm['id']);
+						$eOperation->setQuickAttribute('app', 'accounting');
 						if($eOperation['cashflow']->exists() === TRUE) {
 							$cashflowLink = \company\CompanyUi::urlBank($eFarm).'/cashflow?id='.$eOperation['cashflow']['id'];
 						} else {
@@ -245,13 +262,17 @@ class JournalUi {
 								$h .= \util\DateUi::numeric($eOperation['date']);
 							$h .= '</td>';
 
-							$h .= '<td>';
-								if($eOperation['cashflow']->exists() === TRUE) {
-									$h .= '<a href="'.$cashflowLink.'" class="color-text">'.$eOperation['cashflow']['id'].'</a>';
-								} else {
-									$h .= '';
-								}
-							$h .= '</td>';
+							if(in_array('cashflow', $hide) === FALSE) {
+
+								$h .= '<td>';
+									if($eOperation['cashflow']->exists() === TRUE) {
+										$h .= '<a href="'.$cashflowLink.'" class="color-text">'.$eOperation['cashflow']['id'].'</a>';
+									} else {
+										$h .= '';
+									}
+								$h .= '</td>';
+
+							}
 
 							if($eFarm['company']->isAccrualAccounting() and $selectedJournalCode === NULL) {
 								$h .= '<td>';
@@ -264,15 +285,18 @@ class JournalUi {
 
 								$h .= '</td>';
 							}
-							$h .= '<td>';
-								$h .= '<div class="operation-info">';
-									if($canUpdate === TRUE) {
-										$h .= $eOperation->quick('document', $eOperation['document'] ? encode($eOperation['document']) : '<i>'.s("Non définie").'</i>');
-									} else {
-										$h .= encode($eOperation['document']);
-									}
-								$h .= '</div>';
-							$h .= '</td>';
+
+							if(in_array('document', $hide) === FALSE) {
+								$h .= '<td>';
+									$h .= '<div class="operation-info">';
+										if($canUpdate === TRUE) {
+											$h .= $eOperation->quick('document', $eOperation['document'] ? encode($eOperation['document']) : '<i>'.s("Non définie").'</i>');
+										} else {
+											$h .= encode($eOperation['document']);
+										}
+									$h .= '</div>';
+								$h .= '</td>';
+							}
 
 							$h .= '<td>';
 								if($eOperation['accountLabel'] !== NULL) {
@@ -337,11 +361,15 @@ class JournalUi {
 								}
 							$h .= '</td>';
 
-							$h .= '<td>';
-								$h .= '<div class="util-unit text-end">';
-									$h .= $this->displayActions($eFarm, $eOperation, $canUpdate, $cashflowLink);
-								$h .= '</div>';
-							$h .= '</td>';
+							if(in_array('actions', $hide) === FALSE) {
+
+								$h .= '<td>';
+									$h .= '<div class="util-unit text-end">';
+										$h .= $this->displayActions($eFarm, $eOperation, $canUpdate, $cashflowLink);
+									$h .= '</div>';
+								$h .= '</td>';
+
+							}
 
 						$h .= '</tr>';
 					}

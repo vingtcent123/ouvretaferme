@@ -13,6 +13,7 @@ abstract class PdfElement extends \Element {
 	const JOURNAL_BOOK = 'journal-book';
 	const JOURNAL_TVA_BUY = 'journal-tva-buy';
 	const JOURNAL_TVA_SELL = 'journal-tva-sell';
+	const VAT_STATEMENT = 'vat-statement';
 
 	public static function getSelection(): array {
 		return Pdf::model()->getProperties();
@@ -46,7 +47,7 @@ class PdfModel extends \ModuleModel {
 			'id' => ['serial32', 'cast' => 'int'],
 			'used' => ['int16', 'min' => 0, 'max' => NULL, 'cast' => 'int'],
 			'content' => ['element32', 'pdf\Content', 'null' => TRUE, 'cast' => 'element'],
-			'type' => ['enum', [\pdf\Pdf::OVERVIEW_BALANCE_SUMMARY, \pdf\Pdf::OVERVIEW_BALANCE_OPENING, \pdf\Pdf::JOURNAL_INDEX, \pdf\Pdf::JOURNAL_BOOK, \pdf\Pdf::JOURNAL_TVA_BUY, \pdf\Pdf::JOURNAL_TVA_SELL], 'cast' => 'enum'],
+			'type' => ['enum', [\pdf\Pdf::OVERVIEW_BALANCE_SUMMARY, \pdf\Pdf::OVERVIEW_BALANCE_OPENING, \pdf\Pdf::JOURNAL_INDEX, \pdf\Pdf::JOURNAL_BOOK, \pdf\Pdf::JOURNAL_TVA_BUY, \pdf\Pdf::JOURNAL_TVA_SELL, \pdf\Pdf::VAT_STATEMENT], 'cast' => 'enum'],
 			'financialYear' => ['element32', 'account\FinancialYear', 'cast' => 'element'],
 			'emailedAt' => ['datetime', 'null' => TRUE, 'cast' => 'string'],
 			'createdAt' => ['datetime', 'cast' => 'string'],

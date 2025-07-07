@@ -36,6 +36,11 @@ new Page(function($data) {
 			'sell' => \journal\OperationLib::getAllForVatJournal('sell', $search, $hasSort),
 		];
 
+		$data->vatDeclarationData = [
+			'cVatDeclaration' => \journal\VatDeclarationLib::getByFinancialYear($data->eFinancialYear),
+			'cOperationWaiting' => \journal\OperationLib::getAllForVatDeclaration($search),
+		];
+
 		throw new ViewAction($data);
 
 	})
@@ -62,4 +67,5 @@ new Page(function($data) {
 		$filename = journal\PdfUi::filenameVat($data->eFarm, $data->type).'.pdf';
 
 		throw new PdfAction($content, $filename);
+
 	});

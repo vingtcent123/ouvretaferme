@@ -1,6 +1,5 @@
 <?php
 namespace journal;
-use account\ThirdPartyUi;
 
 class OperationUi {
 
@@ -728,7 +727,7 @@ class OperationUi {
 					return $form->hidden('thirdPartyVatNumber['.$attributes['data-index'].']')
 						.$form->hidden('thirdPartyName['.$attributes['data-index'].']');
 				};
-				new ThirdPartyUi()->query($d, GET('farm', '?int'));
+				new \account\ThirdPartyUi()->query($d, GET('farm', '?int'));
 				break;
 
 			case 'document':

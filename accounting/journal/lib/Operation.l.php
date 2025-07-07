@@ -83,6 +83,23 @@ class OperationLib extends OperationCrud {
 
 	}
 
+	public static function getAllForVatDeclaration(\Search $search = new \Search()): \Collection {
+
+		$search->set('accountLabel', \Setting::get('account\vatClass'));
+
+		return self::applySearch($search)
+       ->select(
+         Operation::getSelection()
+         + ['account' => ['class', 'description']]
+         + ['thirdParty' => ['id', 'name']]
+	       + ['operation' => Operation::getSelection()]
+       )
+			->whereVatDeclaration(NULL, if: $search->has('vatDeclaration') === FALSE)
+			->sort(['date' => SORT_ASC, 'id' => SORT_ASC])
+			->getCollection();
+
+	}
+
 	public static function getAllForAccounting(\Search $search = new \Search(), bool $hasSort = FALSE): \Collection {
 
 		return self::applySearch($search)

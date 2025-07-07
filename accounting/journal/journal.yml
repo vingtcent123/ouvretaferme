@@ -52,9 +52,13 @@ Operation:
 
 VatDeclaration:
   id: serial32
-  startAt: date
-  endsAt: date
+  startDate: date
+  endDate: date
   type: enum(STATEMENT, ADJUSTMENT, AMENDMENT) = STATEMENT # Déclaration, régularisation, rectificative
   amendment: ?journal\VatDeclaration # Déclaration rectificative liée si elle existe
+  collectedVat : decimal(8, 2)
+  deductibleVat : decimal(8, 2)
+  dueVat : decimal(8, 2)
+  financialYear: account\FinancialYear
   createdAt: datetime = SPECIAL(now)
   createdBy: user\User = SPECIAL(user)

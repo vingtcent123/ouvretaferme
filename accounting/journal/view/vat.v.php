@@ -7,7 +7,7 @@ new AdaptativeView('index', function($data, FarmTemplate $t) {
 	$t->title = s("Les journaux de TVA de {farm}", ['farm' => $data->eFarm['name']]);
 	$t->canonical = \company\CompanyUi::urlJournal($data->eFarm).'/vat';
 
-	$t->mainTitle = new \journal\VatUi()->getTitle();
+	$t->mainTitle = new \journal\VatUi()->getTitle($data->eFarm, $data->eFinancialYear, $data->vatDeclarationData['cOperationWaiting']->count() > 0);
 
 	$t->mainYear = new \account\FinancialYearUi()->getFinancialYearTabs(
 		function(\account\FinancialYear $eFinancialYear) use ($data) {
@@ -18,6 +18,6 @@ new AdaptativeView('index', function($data, FarmTemplate $t) {
 	);
 
 	echo new \journal\VatUi()->getSearch($data->search, $data->eFinancialYear, $data->eThirdParty);
-	echo new \journal\VatUi()->getJournal($data->eFarm, $data->eFinancialYear, $data->operations, $data->search);
+	echo new \journal\VatUi()->getJournal($data->eFarm, $data->eFinancialYear, $data->operations, $data->vatDeclarationData, $data->search);
 
 });
