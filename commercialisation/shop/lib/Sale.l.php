@@ -483,7 +483,6 @@ class SaleLib {
 
 		\selling\SaleLib::update($eSale, $properties);
 		$ePayment = \selling\PaymentLib::createBySale($eSale, $eMethod, $stripeSession['id']);
-
 		\selling\HistoryLib::createBySale($eSale, 'shop-payment-initiated', 'Stripe checkout id #'.$stripeSession['id'], ePayment: $ePayment);
 
 		\selling\Sale::model()->commit();
