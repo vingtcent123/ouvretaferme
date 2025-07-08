@@ -11,6 +11,7 @@ new Page()
 		}
 
 		$data->eFinancialYear = $data->eVatDeclaration['financialYear'];
+		$data->eFinancialYear['lastPeriod'] = \journal\VatDeclarationLib::calculateLastPeriod($data->eFinancialYear);
 
 		$search = new Search(['financialYear' => $data->eFinancialYear, 'vatDeclaration' => $data->eVatDeclaration]);
 

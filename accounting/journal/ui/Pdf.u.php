@@ -287,6 +287,11 @@ class PdfUi {
 
 				$h .= '<h3>'.s("Résumé").'</h3>';
 
+				$adjustements = $cOperation->reduce(fn($e, $n) => $e->isVatAdjustement($eFinancialYear['lastPeriod']) ? $n + 1 : $n, 0);
+				if($adjustements > 0) {
+					$h .= '<p>'.p("{value} ligne de régularisation incluse.", "{value} lignes de régularisation incluses.", $adjustements).'</p>';
+				}
+
 				$h .= '<table>';
 					$h .= '<tr class="row-bordered">';
 						$h .= '<th class="text-end">'.s("TVA collectée").'</th>';
