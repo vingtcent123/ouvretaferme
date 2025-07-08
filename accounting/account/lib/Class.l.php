@@ -11,7 +11,7 @@ class ClassLib {
 
 	public static function isFromClass(string $account, string $class): bool {
 
-		return mb_substr($account, 0, strlen($class)) === $class;
+		return mb_substr($account, 0, mb_strlen($class)) === $class;
 
 	}
 

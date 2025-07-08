@@ -51,11 +51,12 @@ Setting::register('account', [
 	'balanceAssetCategories' => account\AccountUi::getAssetBalanceCategories(),
 	'balanceLiabilityCategories' => account\AccountUi::getLiabilityBalanceCategories(),
 
-	'vatBuyVatClasses' => ['44562', '44566'],
-	'vatBuyClassPrefix' => '4456', // TVA déductible
-	'vatSellVatClasses' => ['44571'],
-	'vatSellClassPrefix' => '4457', // TVA collectée
+	'vatBuyClassPrefix' => '4456', // TVA déductible (sur les ventes)
+	'vatSellClassPrefix' => '4457', // TVA collectée (sur les achats)
+
+	'collectedVatClass' => '44571', // TVA collectée
 	'payableVatClass' => '44551', // TVA à décaisser
+
 	'carriedVatClass' => '44567', // TVA à reporter
 
 	// Classement des classes par journal

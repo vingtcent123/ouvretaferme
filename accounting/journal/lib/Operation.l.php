@@ -133,18 +133,6 @@ class OperationLib extends OperationCrud {
 
 	public static function getAllForVatJournal(string $type, \Search $search = new \Search(), bool $hasSort = FALSE): \Collection {
 
-		$whereAccountLabels = [];
-		if($type === 'buy') {
-			foreach(\Setting::get('account\vatBuyVatClasses') as $class) {
-				$whereAccountLabels[] = 'accountLabel LIKE "'.$class.'%"';
-			}
-		} elseif($type === 'sell') {
-			foreach(\Setting::get('account\vatSellVatClasses') as $class) {
-				$whereAccountLabels[] = 'accountLabel LIKE "'.$class.'%"';
-			}
-		}
-		$whereAccountLabelSql = new \Sql(join(' OR ', $whereAccountLabels));
-
 		return self::applySearch($search)
 			->select(
 				Operation::getSelection()
@@ -158,7 +146,7 @@ class OperationLib extends OperationCrud {
 				+ ['month' => new \Sql('SUBSTRING(date, 1, 7)')]
 			)
 			->sort($hasSort === TRUE ? $search->buildSort() : ['accountLabel' => SORT_ASC, 'date' => SORT_ASC, 'id' => SORT_ASC])
-			->where($whereAccountLabelSql)
+			->whereAccountLabel('LIKE', '"'.($type === 'buy' ? \Setting::get('account\vatBuyClassPrefix') : \Setting::get('account\vatSellClassPrefix')).'%"')
 			->where(new \Sql('operation IS NOT NULL'))
 			->getCollection(NULL, NULL, ['accountLabel', 'month', 'id']);
 
