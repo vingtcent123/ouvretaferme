@@ -471,6 +471,7 @@ new Page(function($data) {
 		try {
 			$url = \shop\SaleLib::createPayment($data->payment, $data->eSaleReference);
 		} catch(Exception $e) {
+			\dev\ErrorPhpLib::handle($e);
 			throw new FailAction($data->eDate->canWrite() ? 'shop\Shop::payment.createOwner' : 'shop\Shop::payment.create', ['message' => $e->getMessage()]);
 		}
 
