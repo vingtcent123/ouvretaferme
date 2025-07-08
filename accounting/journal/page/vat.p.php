@@ -36,11 +36,12 @@ new Page(function($data) {
 			'sell' => \journal\OperationLib::getAllForVatJournal('sell', $search, $hasSort),
 		];
 
+		$data->eFinancialYear['lastPeriod'] = \journal\VatDeclarationLib::calculateLastPeriod($data->eFinancialYear);
+		$search->set('maxDate', $data->eFinancialYear['lastPeriod']['end']);
 		$data->vatDeclarationData = [
 			'cVatDeclaration' => \journal\VatDeclarationLib::getByFinancialYear($data->eFinancialYear),
 			'cOperationWaiting' => \journal\OperationLib::getAllForVatDeclaration($search),
 		];
-		$data->eFinancialYear['lastPeriod'] = \journal\VatDeclarationLib::calculateLastPeriod($data->eFinancialYear);
 
 		throw new ViewAction($data);
 

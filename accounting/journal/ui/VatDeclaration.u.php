@@ -55,11 +55,15 @@ class VatDeclarationUi {
 		$adjustements = $cOperation->reduce(fn($e, $n) => $e->isVatAdjustement($eFinancialYear['lastPeriod']) ? $n + 1 : $n, 0);
 
 		$h .= '<ul>';
-			$h .= '<li>'.s("Écritures concernées : {value} lignes", $cOperation->count()).'</li>';
+			$h .= '<li>';
+				if($cOperation->count() === 0) {
+					$h .= s("Il n'y a aucune ligne à déclarer.");
+				} else {
+					$h .= s("Écritures concernées : {value} lignes", $cOperation->count());
+				}
+			$h .= '</li>';
 			if($adjustements > 0) {
-				$h .= '<li>'.p("dont régularisation : {value} ligne", "dont régularisations : {value} lignes", $adjustements).'</li>';
-			} else {
-				$h .= '<li>'.s("sans régularisation").'</li>';
+				$h .= '<li>'.p("dont {value} ligne en régularisation", "dont {value} lignes en régularisation", $adjustements).'</li>';
 			}
 		$h .= '</ul>';
 

@@ -38,6 +38,7 @@ tr.row-header th
 	font-weight: bold;
 }
 
+div.financial-year-dropdown,
 div.operation-asset-dropdown,
 div.operation-comment-dropdown {
 	border-radius: calc(var(--radius) / 2);

@@ -146,7 +146,7 @@ class OperationLib extends OperationCrud {
 				+ ['month' => new \Sql('SUBSTRING(date, 1, 7)')]
 			)
 			->sort($hasSort === TRUE ? $search->buildSort() : ['accountLabel' => SORT_ASC, 'date' => SORT_ASC, 'id' => SORT_ASC])
-			->whereAccountLabel('LIKE', '"'.($type === 'buy' ? \Setting::get('account\vatBuyClassPrefix') : \Setting::get('account\vatSellClassPrefix')).'%"')
+			->whereAccountLabel('LIKE', ($type === 'buy' ? \Setting::get('account\vatBuyClassPrefix') : \Setting::get('account\vatSellClassPrefix')).'%')
 			->where(new \Sql('operation IS NOT NULL'))
 			->getCollection(NULL, NULL, ['accountLabel', 'month', 'id']);
 

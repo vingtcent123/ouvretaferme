@@ -7,6 +7,8 @@ new Page()
 		$data->cFinancialYear = \account\FinancialYearLib::getAll();
 		$data->cFinancialYearOpen = \account\FinancialYearLib::getOpenFinancialYears();
 
+		\account\FinancialYearLib::getDataCheckForOpenFinancialYears($data->cFinancialYear);
+
 		throw new ViewAction($data);
 
 	});

@@ -250,6 +250,51 @@ class FinancialYearLib extends FinancialYearCrud {
 		}
 
 	}
+
+	public static function getDataCheckForOpenFinancialYears(\Collection $cFinancialYear): void {
+
+		// Cloning collection.
+		$cFinancialYearHasVat = new \Collection();
+		foreach($cFinancialYear as $eFinancialYear) {
+			$cFinancialYearHasVat->append(new FinancialYear($eFinancialYear->getArrayCopy()));
+		}
+
+		// Recherche d'écritures de TVA non déclarées
+		$cOperation = \journal\Operation::model()
+			->select(['financialYear', 'count' => new \Sql('COUNT(*)', 'int')])
+			->whereFinancialYear('IN', $cFinancialYearHasVat->filter(fn($e) => $e['hasVat']))
+			->whereVatDeclaration(NULL)
+			->group(['financialYear'])
+			->getCollection(NULL, NULL, 'financialYear');
+
+		// Recherche de déclarations de TVA manquantes
+		$cVatDeclaration = \journal\VatDeclaration::model()
+			->select(['financialYear', 'startDate', 'endDate'])
+			->whereFinancialYear('IN', $cFinancialYearHasVat->filter(fn($e) => $e['hasVat']))
+			->getCollection();
+
+		foreach($cFinancialYear as $index => $eFinancialYear) {
+
+			$vatData = [];
+			if($cOperation->offsetExists($eFinancialYear['id'])) {
+				$vatData['undeclaredVatOperations'] = $cOperation[$eFinancialYear['id']]['count'];
+			}
+
+			$periods = \journal\VatDeclarationLib::calculateAllPeriods($eFinancialYear);
+			$missingPeriods = [];
+			foreach($periods as $period) {
+				$found = $cVatDeclaration->find(fn($e) => $e['financialYear']['id'] === $eFinancialYear['id'] and $e['startDate'] === $period['start'] and $e['endDate'] === $period['end'])->notEmpty();
+				if($found === FALSE) {
+					$missingPeriods[] = $period;
+				}
+			}
+
+			$vatData['missingPeriods'] = $missingPeriods;
+
+			$cFinancialYear[$index]['vatData'] = $vatData;
+		}
+
+	}
 }
 
 ?>

@@ -6,6 +6,7 @@ class FinancialYearUi {
 	public function __construct() {
 
 		\Asset::js('account', 'financialYear.js');
+		\Asset::css('company', 'company.css');
 
 	}
 
@@ -82,7 +83,9 @@ class FinancialYearUi {
 			$h .= '<table class="financialYear-item-table tr-even tr-hover">';
 
 				$h .= '<thead>';
+
 					$h .= '<tr>';
+
 						$h .= '<th class="text-center">'.s("#").'</th>';
 						$h .= '<th>'.s("Date de début").'</th>';
 						$h .= '<th>'.s("Date de fin").'</th>';
@@ -90,76 +93,119 @@ class FinancialYearUi {
 						$h .= '<th>'.s("Fréquence de <br />déclaration de TVA").'</th>';
 						$h .= '<th>'.s("Régime fiscal").'</th>';
 						$h .= '<th class="text-center">'.s("Statut").'</th>';
-						$h .= '<th class="td-min-content"></th>';
+						$h .= '<th></th>';
+
 					$h .= '</tr>';
+
 				$h .= '</thead>';
 
 				$h .= '<tbody>';
+
 					$h .= '<div class="util-overflow-sm">';
 
 					foreach($cFinancialYear as $eFinancialYear) {
 
 						$h .= '<tr>';
 
-						$h .= '<td class="td-min-content text-center">';
-							if($eFinancialYear['status'] === FinancialYear::CLOSE) {
-								$h .= $eFinancialYear['id'];
-							} else {
-								$h .= '<a href="'.\company\CompanyUi::urlAccount($eFarm).'/financialYear/:update?id='.$eFinancialYear['id'].'" class="btn btn-sm btn-outline-primary">'.$eFinancialYear['id'].'</a>';
-							}
-						$h .= '</td>';
+							$h .= '<td class="td-min-content text-center">';
+								if($eFinancialYear['status'] === FinancialYear::CLOSE) {
+									$h .= $eFinancialYear['id'];
+								} else {
+									$h .= '<a href="'.\company\CompanyUi::urlAccount($eFarm).'/financialYear/:update?id='.$eFinancialYear['id'].'" class="btn btn-sm btn-outline-primary">'.$eFinancialYear['id'].'</a>';
+								}
+							$h .= '</td>';
 
-						$h .= '<td>';
-							$h .= \util\DateUi::numeric($eFinancialYear['startDate']);
-						$h .= '</td>';
+							$h .= '<td>';
+								$h .= \util\DateUi::numeric($eFinancialYear['startDate']);
+							$h .= '</td>';
 
-						$h .= '<td>';
-							$h .= \util\DateUi::numeric($eFinancialYear['endDate']);
-						$h .= '</td>';
+							$h .= '<td>';
+								$h .= \util\DateUi::numeric($eFinancialYear['endDate']);
+							$h .= '</td>';
 
-						$h .= '<td>';
+							$h .= '<td>';
 
-							$h .= match($eFinancialYear['hasVat']) {
-								TRUE => s("Oui"),
-								FALSE => s("Non"),
-							};
+								$h .= match($eFinancialYear['hasVat']) {
+									TRUE => s("Oui"),
+									FALSE => s("Non"),
+								};
 
-						$h .= '</td>';
+								if($eFinancialYear['hasVat']) {
+									$messages = [];
+									if($eFinancialYear['status'] === FinancialYear::OPEN and $eFinancialYear['hasVat']) {
+										if(($eFinancialYear['vatData']['undeclaredVatOperations'] ?? 0) > 0) {
+											$messages[] = p("{value} opération de TVA n'a pas été déclarée.", "{value} opérations de TVA n'ont pas été déclarées.", $eFinancialYear['vatData']['undeclaredVatOperations']);
+										}
 
-						$h .= '<td>';
+										if(count($eFinancialYear['vatData']['missingPeriods'] ?? []) > 0) {
+											$periodText = [];
+											foreach($eFinancialYear['vatData']['missingPeriods'] as $periods) {
+												$periodText[] = s("du {startDate} au {endDate}", [
+													'startDate' => \util\DateUi::numeric($periods['start'], \util\DateUi::DATE),
+													'endDate' => \util\DateUi::numeric($periods['end'], \util\DateUi::DATE),
+												]);
+											}
+											$messages[] = p("{value} période de TVA n'a pas été déclarée : {period}.", "{value} périodes de TVA n'ont pas été déclarées : {period}.", count($eFinancialYear['vatData']['missingPeriods']), ['period' => join(', ', $periodText)]);
+										}
 
-							if($eFinancialYear['vatFrequency'] === NULL) {
-								$h .= 'n/a';
-							} else {
-								$h .= self::p('vatFrequency')->values[$eFinancialYear['vatFrequency']];
-							}
+										$attributes = [
+											'data-dropdown' => 'bottom-start',
+											'data-dropdown-hover' => TRUE,
+											'data-dropdown-offset-x' => 0,
+											'class' => 'ml-1',
+										];
+										$h .= '&nbsp;';
+										$h .= '<span '.attrs($attributes).'>'.\Asset::icon('exclamation-circle').'</span>';
+										$h .= '<div class="financial-year-dropdown dropdown-list dropdown-list-unstyled">';
+											$h .= '<ul>';
+												$h .= '<li>';
+													$h .= join('</li><li>', $messages);
+												$h .= '</li>';
+											$h .= '</ul>';
+										$h .= '</div>';
+									}
 
-						$h .= '</td>';
+								}
 
-						$h .= '<td>';
+							$h .= '</td>';
 
-							if($eFinancialYear['taxSystem'] === NULL) {
-								$h .= '?';
-							} else {
-								$h .= self::p('taxSystem')->values[$eFinancialYear['taxSystem']];
-							}
+							$h .= '<td>';
 
-						$h .= '</td>';
+								if($eFinancialYear['vatFrequency'] === NULL) {
+									$h .= 'n/a';
+								} else {
+									$h .= self::p('vatFrequency')->values[$eFinancialYear['vatFrequency']];
+								}
 
-						$h .= '<td class="text-center">';
-							$h .= match($eFinancialYear['status']) {
-								FinancialYearElement::OPEN => s("En cours"),
-								FinancialYearElement::CLOSE => s("Clôturé"),
-							};
-						$h .= '</td>';
+							$h .= '</td>';
 
-						$h .= '<td>';
-							if($eFinancialYear['status'] === FinancialYearElement::OPEN) {
-								$h .= self::getAction($eFarm, $eFinancialYear);
-							} else {
-								$h .= self::getReadAction($eFarm, $eFinancialYear);
-							}
-						$h .= '</td>';
+							$h .= '<td>';
+
+								if($eFinancialYear['taxSystem'] === NULL) {
+									$h .= '?';
+								} else {
+									$h .= self::p('taxSystem')->values[$eFinancialYear['taxSystem']];
+								}
+
+							$h .= '</td>';
+
+							$h .= '<td class="text-center">';
+								$h .= match($eFinancialYear['status']) {
+									FinancialYearElement::OPEN => s("En cours"),
+									FinancialYearElement::CLOSE => s("Clôturé"),
+								};
+							$h .= '</td>';
+
+							$h .= '<td>';
+							$h .= '</td>';
+
+							$h .= '<td>';
+								if($eFinancialYear['status'] === FinancialYearElement::OPEN) {
+									$h .= self::getAction($eFarm, $eFinancialYear);
+								} else {
+									$h .= self::getReadAction($eFarm, $eFinancialYear);
+								}
+							$h .= '</td>';
 
 						$h .= '</tr>';
 					}
