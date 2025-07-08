@@ -8,10 +8,14 @@ new \journal\VatDeclarationPage(function($data) {
 })
 	->create(action: function($data) {
 
-		$search = new Search(['financialYear' => $data->eFinancialYear]);
 
 		$data->eFinancialYear = \account\FinancialYearLib::selectDefaultFinancialYear();
 		$data->eFinancialYear['lastPeriod'] = \journal\VatDeclarationLib::calculateLastPeriod($data->eFinancialYear);
+
+		$search = new Search(['financialYear' => $data->eFinancialYear]);
+		if($data->eFinancialYear['lastPeriod'] !== NULL) {
+			$search->set('maxDate', $data->eFinancialYear['lastPeriod']['end']);
+		}
 
 		$data->cOperationWaiting = \journal\OperationLib::getAllForVatDeclaration($search);
 		$data->vatByType = \journal\VatDeclarationLib::sumByVatType($data->cOperationWaiting);

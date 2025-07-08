@@ -95,6 +95,7 @@ class OperationLib extends OperationCrud {
 	       + ['operation' => Operation::getSelection()]
        )
 			->whereVatDeclaration(NULL, if: $search->has('vatDeclaration') === FALSE)
+			->whereDate('<', fn() => $search->get('maxDate'), if: $search->has('maxDate'))
 			->sort(['date' => SORT_ASC, 'id' => SORT_ASC])
 			->getCollection();
 

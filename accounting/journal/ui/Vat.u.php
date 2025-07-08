@@ -181,7 +181,11 @@ Class VatUi {
 					$cOperationWaiting->count()
 				).'</div>';
 
-			$h .= new JournalUi()->getTableContainer($eFarm, $cOperationWaiting, $eFinancialYear, hide: ['cashflow', 'actions', 'document']);
+			$h .= new JournalUi()->getTableContainer(
+				$eFarm, $cOperationWaiting, $eFinancialYear,
+				hide: ['cashflow', 'actions', 'document'],
+				show: ['vatAdjustement', 'period' => $eFinancialYear['lastPeriod']],
+			);
 
 		}
 

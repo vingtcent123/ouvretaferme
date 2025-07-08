@@ -40,6 +40,7 @@ new Page(function($data) {
 			'cVatDeclaration' => \journal\VatDeclarationLib::getByFinancialYear($data->eFinancialYear),
 			'cOperationWaiting' => \journal\OperationLib::getAllForVatDeclaration($search),
 		];
+		$data->eFinancialYear['lastPeriod'] = \journal\VatDeclarationLib::calculateLastPeriod($data->eFinancialYear);
 
 		throw new ViewAction($data);
 

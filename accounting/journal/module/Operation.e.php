@@ -29,6 +29,16 @@ class Operation extends OperationElement {
 
 	}
 
+	public function isVatAdjustement(?array $period): bool {
+
+		if($period === NULL) {
+			return FALSE;
+		}
+
+		return $this['date'] < $period['start'];
+
+	}
+
 	public function build(array $properties, array $input, \Properties $p = new \Properties()): void {
 
 		$p

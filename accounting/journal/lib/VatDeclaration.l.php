@@ -9,8 +9,9 @@ class VatDeclarationLib extends VatDeclarationCrud {
 
 		$eFarm = \farm\FarmLib::getById(REQUEST('farm', 'int'))->validate('canManage');
 		$eFinancialYear = \account\FinancialYearLib::getDynamicFinancialYear($eFarm, GET('financialYear', 'int'))->validate('canUpdate');
+		$lastPeriod = \journal\VatDeclarationLib::calculateLastPeriod($eFinancialYear);
 		
-		$search = new \Search(['financialYear' => $eFinancialYear]);
+		$search = new \Search(['financialYear' => $eFinancialYear, 'maxDate' => $lastPeriod['end']]);
 		
 		$cOperationWaiting = \journal\OperationLib::getAllForVatDeclaration($search);
 		$vatByType = \journal\VatDeclarationLib::sumByVatType($cOperationWaiting);
@@ -22,21 +23,32 @@ class VatDeclarationLib extends VatDeclarationCrud {
 		$e['collectedVat'] = $vatByType['collectedVat'];
 		$e['deductibleVat'] = $vatByType['deductibleVat'];
 		$e['dueVat'] = $vatByType['dueVat'];
-		$e['type'] = VatDeclaration::STATEMENT; // TODO
+		$e['type'] = VatDeclaration::STATEMENT; // pour le moment on ne permet pas les rectificatives
 		$e['financialYear'] = $eFinancialYear;
 
 		VatDeclaration::model()->insert($e);
 
-		$eOperation = new Operation(['vatDeclaration' => $e, 'updatedAt' => new \Sql("NOW()")]);
+		// Les régularisations
+		$eOperation = new Operation(['vatDeclaration' => $e, 'updatedAt' => new \Sql("NOW()"), 'vatAdjustement' => TRUE]);
 
 		Operation::model()
-			->select(['vatDeclaration', 'updatedAt'])
+			->select(['vatDeclaration', 'updatedAt', 'vatAdjustement'])
 			->whereId('IN', $cOperationWaiting->getIds())
+			->where(new \Sql('date < "'.$period['start'].'" OR date > "'.$period['end'].'"'))
+			->update($eOperation);
+
+		// Les déclarations standard
+		$eOperation = new Operation(['vatDeclaration' => $e, 'updatedAt' => new \Sql("NOW()"), 'vatAdjustement' => FALSE]);
+
+		Operation::model()
+			->select(['vatDeclaration', 'updatedAt', 'vatAdjustement'])
+			->whereId('IN', $cOperationWaiting->getIds())
+			->where(new \Sql('date BETWEEN "'.$period['start'].'" AND "'.$period['end'].'"'))
 			->update($eOperation);
 
 		VatDeclaration::model()->commit();
-	}
 
+	}
 	
 	public static function getByFinancialYear(\account\FinancialYear $eFinancialYear): \Collection {
 

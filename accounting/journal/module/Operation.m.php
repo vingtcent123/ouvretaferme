@@ -77,13 +77,14 @@ class OperationModel extends \ModuleModel {
 			'paymentMode' => ['enum', [\journal\Operation::TRANSFER, \journal\Operation::CHEQUE, \journal\Operation::CASH, \journal\Operation::CREDIT_CARD, \journal\Operation::DIRECT_DEBIT], 'null' => TRUE, 'cast' => 'enum'],
 			'letteringStatus' => ['enum', [\journal\Operation::PARTIAL, \journal\Operation::TOTAL], 'null' => TRUE, 'cast' => 'enum'],
 			'vatDeclaration' => ['element32', 'journal\VatDeclaration', 'null' => TRUE, 'cast' => 'element'],
+			'vatAdjustement' => ['bool', 'null' => TRUE, 'cast' => 'bool'],
 			'createdAt' => ['datetime', 'cast' => 'string'],
 			'updatedAt' => ['datetime', 'cast' => 'string'],
 			'createdBy' => ['element32', 'user\User', 'null' => TRUE, 'cast' => 'element'],
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'number', 'financialYear', 'journalCode', 'account', 'accountLabel', 'thirdParty', 'date', 'description', 'document', 'documentDate', 'documentStorage', 'amount', 'type', 'cashflow', 'vatRate', 'vatAccount', 'operation', 'asset', 'comment', 'paymentDate', 'paymentMode', 'letteringStatus', 'vatDeclaration', 'createdAt', 'updatedAt', 'createdBy'
+			'id', 'number', 'financialYear', 'journalCode', 'account', 'accountLabel', 'thirdParty', 'date', 'description', 'document', 'documentDate', 'documentStorage', 'amount', 'type', 'cashflow', 'vatRate', 'vatAccount', 'operation', 'asset', 'comment', 'paymentDate', 'paymentMode', 'letteringStatus', 'vatDeclaration', 'vatAdjustement', 'createdAt', 'updatedAt', 'createdBy'
 		]);
 
 		$this->propertiesToModule += [
@@ -253,6 +254,10 @@ class OperationModel extends \ModuleModel {
 
 	public function whereVatDeclaration(...$data): OperationModel {
 		return $this->where('vatDeclaration', ...$data);
+	}
+
+	public function whereVatAdjustement(...$data): OperationModel {
+		return $this->where('vatAdjustement', ...$data);
 	}
 
 	public function whereCreatedAt(...$data): OperationModel {

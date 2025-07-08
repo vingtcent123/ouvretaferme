@@ -52,18 +52,23 @@ class VatDeclarationUi {
 		$h .= $form->hidden('company', $eFarm['id']);
 		$h .= $form->hidden('financialYear', $eFinancialYear['id']);
 
+		$adjustements = $cOperation->reduce(fn($e, $n) => $e->isVatAdjustement($eFinancialYear['lastPeriod']) ? $n + 1 : $n, 0);
+
 		$h .= '<ul>';
 			$h .= '<li>'.s("Écritures concernées : {value} lignes", $cOperation->count()).'</li>';
-			$regul = 0;
-			if($regul > 0) {
-				$h .= '<li>'.p("dont régularisation : {value} ligne", "dont régularisations : {value} lignes (TODO)", 0).'</li>';
+			if($adjustements > 0) {
+				$h .= '<li>'.p("dont régularisation : {value} ligne", "dont régularisations : {value} lignes", $adjustements).'</li>';
 			} else {
-				$h .= '<li>'.s("sans régularisation (TODO)", 0).'</li>';
+				$h .= '<li>'.s("sans régularisation").'</li>';
 			}
 		$h .= '</ul>';
 
 		$h .= '<h3>'.s("Liste des écritures").'</h3>';
-		$h .= new JournalUi()->getTableContainer($eFarm, $cOperation, $eFinancialYear, hide: ['cashflow', 'actions', 'document']);
+		$h .= new JournalUi()->getTableContainer(
+			$eFarm, $cOperation, $eFinancialYear,
+			hide: ['cashflow', 'actions', 'document'],
+			show: ['vatAdjustement', 'period' => $eFinancialYear['lastPeriod']],
+		);
 
 		$h .= '<h3>'.s("Résumé").'</h3>';
 
@@ -120,6 +125,7 @@ class VatDeclarationUi {
 						$h .= '<th>'.s("TVA").'</th>';
 						$h .= '<th>'.s("HT").'</th>';
 						$h .= '<th>'.s("TVA").'</th>';
+						$h .= '<th>'.s("Régul ?").'</th>';
 
 					$h .= '</tr>';
 
@@ -170,6 +176,7 @@ class VatDeclarationUi {
 							$h .= '<td>'.$type.'</td>';
 							$h .= '<td class="text-end">'.$amountWithoutVat.'</td>';
 							$h .= '<td class="text-end">'.\util\TextUi::money($eOperation['amount']).'</td>';
+							$h .= '<td>'.($eOperation['vatAdjustement'] ? s("oui") : '').'</td>';
 						$h .= '</tr>';
 
 					}
@@ -197,7 +204,6 @@ class VatDeclarationUi {
 			case 'type' :
 				$d->values = [
 					VatDeclarationElement::STATEMENT => s("Déclaration initiale"),
-					VatDeclarationElement::ADJUSTMENT => s("Régularisation"),
 					VatDeclarationElement::AMENDMENT => s("Déclaration rectificative"),
 				];
 				break;

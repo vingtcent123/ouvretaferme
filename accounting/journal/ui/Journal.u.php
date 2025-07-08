@@ -171,6 +171,7 @@ class JournalUi {
 		\Search $search = new \Search(),
 		?string $selectedJournalCode = NULL,
 		array $hide = [],
+		array $show = [],
 	): string {
 
 		if($cOperation->empty() === TRUE) {
@@ -230,6 +231,10 @@ class JournalUi {
 
 						if(in_array('actions', $hide) === FALSE) {
 							$h .= '<th class="text-end"></th>';
+						}
+
+						if(in_array('vatAdjustement', $show)) {
+							$h .= '<th class="text-end">'.s("Régularisation").'</th>';
 						}
 
 					$h .= '</tr>';
@@ -366,6 +371,16 @@ class JournalUi {
 								$h .= '<td>';
 									$h .= '<div class="util-unit text-end">';
 										$h .= $this->displayActions($eFarm, $eOperation, $canUpdate, $cashflowLink);
+									$h .= '</div>';
+								$h .= '</td>';
+
+							}
+
+							if(in_array('vatAdjustement', $show)) {
+
+								$h .= '<td>';
+									$h .= '<div class="text-center">';
+										$h .= $eOperation->isVatAdjustement($show['period']) ? s("oui") : '';
 									$h .= '</div>';
 								$h .= '</td>';
 

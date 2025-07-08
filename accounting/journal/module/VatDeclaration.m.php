@@ -8,7 +8,6 @@ abstract class VatDeclarationElement extends \Element {
 	private static ?VatDeclarationModel $model = NULL;
 
 	const STATEMENT = 'statement';
-	const ADJUSTMENT = 'adjustment';
 	const AMENDMENT = 'amendment';
 
 	public static function getSelection(): array {
@@ -43,7 +42,7 @@ class VatDeclarationModel extends \ModuleModel {
 			'id' => ['serial32', 'cast' => 'int'],
 			'startDate' => ['date', 'cast' => 'string'],
 			'endDate' => ['date', 'cast' => 'string'],
-			'type' => ['enum', [\journal\VatDeclaration::STATEMENT, \journal\VatDeclaration::ADJUSTMENT, \journal\VatDeclaration::AMENDMENT], 'cast' => 'enum'],
+			'type' => ['enum', [\journal\VatDeclaration::STATEMENT, \journal\VatDeclaration::AMENDMENT], 'cast' => 'enum'],
 			'amendment' => ['element32', 'journal\VatDeclaration', 'null' => TRUE, 'cast' => 'element'],
 			'collectedVat' => ['decimal', 'digits' => 8, 'decimal' => 2, 'cast' => 'float'],
 			'deductibleVat' => ['decimal', 'digits' => 8, 'decimal' => 2, 'cast' => 'float'],
