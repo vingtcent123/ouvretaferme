@@ -24,4 +24,10 @@ new AdaptativeView('update', function($data, PanelTemplate $t) {
 
 });
 
+new AdaptativeView('close', function($data, PanelTemplate $t) {
+
+	return new \account\FinancialYearUi()->close($data->eFarm, $data->e);
+
+});
+
 ?>

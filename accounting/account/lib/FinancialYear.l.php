@@ -60,7 +60,7 @@ class FinancialYearLib extends FinancialYearCrud {
 
 	}
 
-	public static function closeFinancialYear(FinancialYear $eFinancialYear, bool $createNew): void {
+	public static function closeFinancialYear(FinancialYear $eFinancialYear): void {
 
 		if($eFinancialYear['status'] == FinancialYearElement::CLOSE) {
 			throw new \NotExpectedAction('Financial year already closed');
@@ -92,7 +92,10 @@ class FinancialYearLib extends FinancialYearCrud {
 			\journal\VatLib::balance($eFinancialYear);
 		}
 
-		if($createNew === TRUE) {
+		// Mettre les numéros d'écritures
+		\journal\OperationLib::setNumbers($eFinancialYear);
+
+		LogLib::save('close', 'financialYear', ['id' => $eFinancialYear['id']]);
 
 			$eFinancialYearNew = new FinancialYear([
 				'status' => FinancialYearElement::OPEN,
@@ -103,13 +106,6 @@ class FinancialYearLib extends FinancialYearCrud {
 			]);
 
 			self::create($eFinancialYearNew);
-
-		}
-
-		// Mettre les numéros d'écritures
-		\journal\OperationLib::setNumbers($eFinancialYear);
-
-		LogLib::save('close', 'financialYear', ['id' => $eFinancialYear['id']]);
 
 		FinancialYear::model()->commit();
 
@@ -251,48 +247,40 @@ class FinancialYearLib extends FinancialYearCrud {
 
 	}
 
-	public static function getDataCheckForOpenFinancialYears(\Collection $cFinancialYear): void {
+	public static function getDataCheckForOpenFinancialYears(FinancialYear $eFinancialYear): array {
 
-		// Cloning collection.
-		$cFinancialYearHasVat = new \Collection();
-		foreach($cFinancialYear as $eFinancialYear) {
-			$cFinancialYearHasVat->append(new FinancialYear($eFinancialYear->getArrayCopy()));
+		if($eFinancialYear['hasVat'] === FALSE) {
+			return [];
 		}
 
 		// Recherche d'écritures de TVA non déclarées
-		$cOperation = \journal\Operation::model()
+		$eOperation = \journal\Operation::model()
 			->select(['financialYear', 'count' => new \Sql('COUNT(*)', 'int')])
-			->whereFinancialYear('IN', $cFinancialYearHasVat->filter(fn($e) => $e['hasVat']))
+			->whereFinancialYear($eFinancialYear)
 			->whereVatDeclaration(NULL)
 			->group(['financialYear'])
-			->getCollection(NULL, NULL, 'financialYear');
+			->get();
 
 		// Recherche de déclarations de TVA manquantes
 		$cVatDeclaration = \journal\VatDeclaration::model()
 			->select(['financialYear', 'startDate', 'endDate'])
-			->whereFinancialYear('IN', $cFinancialYearHasVat->filter(fn($e) => $e['hasVat']))
+			->whereFinancialYear($eFinancialYear)
 			->getCollection();
 
-		foreach($cFinancialYear as $index => $eFinancialYear) {
+		$vatData = ['undeclaredVatOperations' => ($eOperation['count'] ?? 0)];
 
-			$vatData = [];
-			if($cOperation->offsetExists($eFinancialYear['id'])) {
-				$vatData['undeclaredVatOperations'] = $cOperation[$eFinancialYear['id']]['count'];
+		$periods = \journal\VatDeclarationLib::calculateAllPeriods($eFinancialYear);
+		$missingPeriods = [];
+		foreach($periods as $period) {
+			$found = $cVatDeclaration->find(fn($e) => $e['financialYear']['id'] === $eFinancialYear['id'] and $e['startDate'] === $period['start'] and $e['endDate'] === $period['end'])->notEmpty();
+			if($found === FALSE) {
+				$missingPeriods[] = $period;
 			}
-
-			$periods = \journal\VatDeclarationLib::calculateAllPeriods($eFinancialYear);
-			$missingPeriods = [];
-			foreach($periods as $period) {
-				$found = $cVatDeclaration->find(fn($e) => $e['financialYear']['id'] === $eFinancialYear['id'] and $e['startDate'] === $period['start'] and $e['endDate'] === $period['end'])->notEmpty();
-				if($found === FALSE) {
-					$missingPeriods[] = $period;
-				}
-			}
-
-			$vatData['missingPeriods'] = $missingPeriods;
-
-			$cFinancialYear[$index]['vatData'] = $vatData;
 		}
+
+		$vatData['missingPeriods'] = $missingPeriods;
+
+		return $vatData;
 
 	}
 }

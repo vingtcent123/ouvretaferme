@@ -41,8 +41,7 @@ class FinancialYearUi {
 			$h .= '<a href="'.\company\CompanyUi::urlAccount($eFarm).'/financialYear/:update?id='.$eFinancialYear['id'].'" class="dropdown-item">';
 				$h .= s("Modifier");
 			$h .= '</a>';
-			$h .= '<a data-ajax="'.\company\CompanyUi::urlAccount($eFarm).'/financialYear/:close" post-id="'.$eFinancialYear['id'].'" class="dropdown-item" data-confirm="'.s("Action irréversible ! Souhaitez-vous confirmer la clôture de cet exercice comptable ?").'">'.s("Clôturer").'</a>';;
-			$h .= '<a data-ajax="'.\company\CompanyUi::urlAccount($eFarm).'/financialYear/:close" post-id="'.$eFinancialYear['id'].'" class="dropdown-item" data-confirm="'.s("Action irréversible ! Souhaitez-vous confirmer la clôture de cet exercice comptable ? Le suivant sera créé automatiquement.").'">'.s("Clôturer et créer l'exercice suivant").'</a>';;
+			$h .= '<a href="'.\company\CompanyUi::urlAccount($eFarm).'/financialYear/:update?action=close&id='.$eFinancialYear['id'].'" class="dropdown-item">'.s("Clôturer").'</a>';;
 		$h .= '</div>';
 
 		return $h;
@@ -129,43 +128,6 @@ class FinancialYearUi {
 									TRUE => s("Oui"),
 									FALSE => s("Non"),
 								};
-
-								if($eFinancialYear['hasVat']) {
-									$messages = [];
-									if($eFinancialYear['status'] === FinancialYear::OPEN and $eFinancialYear['hasVat']) {
-										if(($eFinancialYear['vatData']['undeclaredVatOperations'] ?? 0) > 0) {
-											$messages[] = p("{value} opération de TVA n'a pas été déclarée.", "{value} opérations de TVA n'ont pas été déclarées.", $eFinancialYear['vatData']['undeclaredVatOperations']);
-										}
-
-										if(count($eFinancialYear['vatData']['missingPeriods'] ?? []) > 0) {
-											$periodText = [];
-											foreach($eFinancialYear['vatData']['missingPeriods'] as $periods) {
-												$periodText[] = s("du {startDate} au {endDate}", [
-													'startDate' => \util\DateUi::numeric($periods['start'], \util\DateUi::DATE),
-													'endDate' => \util\DateUi::numeric($periods['end'], \util\DateUi::DATE),
-												]);
-											}
-											$messages[] = p("{value} période de TVA n'a pas été déclarée : {period}.", "{value} périodes de TVA n'ont pas été déclarées : {period}.", count($eFinancialYear['vatData']['missingPeriods']), ['period' => join(', ', $periodText)]);
-										}
-
-										$attributes = [
-											'data-dropdown' => 'bottom-start',
-											'data-dropdown-hover' => TRUE,
-											'data-dropdown-offset-x' => 0,
-											'class' => 'ml-1',
-										];
-										$h .= '&nbsp;';
-										$h .= '<span '.attrs($attributes).'>'.\Asset::icon('exclamation-circle').'</span>';
-										$h .= '<div class="financial-year-dropdown dropdown-list dropdown-list-unstyled">';
-											$h .= '<ul>';
-												$h .= '<li>';
-													$h .= join('</li><li>', $messages);
-												$h .= '</li>';
-											$h .= '</ul>';
-										$h .= '</div>';
-									}
-
-								}
 
 							$h .= '</td>';
 
@@ -278,6 +240,100 @@ class FinancialYearUi {
 
 			$h .= $form->group(
 				content: $form->submit(s("Enregistrer"))
+			);
+
+		$h .= $form->close();
+
+		return new \Panel(
+			id: 'panel-account-financialYear-update',
+			title: s("Modifier un exercice comptable"),
+			body: $h
+		);
+
+	}
+
+	public function close(\farm\Farm $eFarm, FinancialYear $eFinancialYear): \Panel {
+
+		$form = new \util\FormUi();
+
+		$h = '<div class="util-block stick-xs bg-background-light mt-1 mb-1">';
+
+			$h .= '<dl class="util-presentation util-presentation-2">';
+
+				$h .= '<dt>'.s("Exercice").'</dt>';
+				$h .= '<dd>'.self::getYear($eFinancialYear).' ('.s("du {startDate} au {endDate}", [
+					'startDate' => \util\DateUi::numeric($eFinancialYear['startDate'], \util\DateUi::DATE),
+					'endDate' => \util\DateUi::numeric($eFinancialYear['endDate'], \util\DateUi::DATE),
+				]).')</dd>';
+
+				$h .= '<dt>'.self::p('hasVat')->label.'</dt>';
+				$h .= '<dd>'.$eFinancialYear['hasVat'] ? s("Oui") : s("Non").'</dd>';
+
+				$h .= '<dt>'.self::p('taxSystem')->label.'</dt>';
+				$h .= '<dd>'.self::p('taxSystem')->values[$eFinancialYear['taxSystem']].'</dd>';
+
+				$h .= '<dt>'.self::p('vatFrequency')->label.'</dt>';
+				$h .= '<dd>'.$eFinancialYear['vatFrequency'] ? self::p('vatFrequency')->values[$eFinancialYear['vatFrequency']] : ''.'</dd>';
+
+			$h .= '</dl>';
+		$h .= '</div>';
+
+		if($eFinancialYear['hasVat'] and count($eFinancialYear['vatData']) > 0) {
+
+			$h .= '<h3>'.s("Vérification de la TVA").'</h3>';
+
+			$messages = [];
+
+			if(($eFinancialYear['vatData']['undeclaredVatOperations'] ?? 0) > 0) {
+				$messages[] = p("{value} opération de TVA n'a pas été déclarée.", "{value} opérations de TVA n'ont pas été déclarées.", $eFinancialYear['vatData']['undeclaredVatOperations']);
+			}
+
+			if(count($eFinancialYear['vatData']['missingPeriods'] ?? []) > 0) {
+				$periodList = [];
+				foreach($eFinancialYear['vatData']['missingPeriods'] as $periods) {
+					$periodList[] = s("du {startDate} au {endDate}", [
+						'startDate' => \util\DateUi::numeric($periods['start'], \util\DateUi::DATE),
+						'endDate' => \util\DateUi::numeric($periods['end'], \util\DateUi::DATE),
+					]);
+				}
+
+				$periodText = '<ul>';
+					$periodText .= '<li>';
+						$periodText .= join('</li><li>', $periodList);
+					$periodText .= '</li>';
+				$periodText .= '</ul>';
+
+				$messages[] = p("{value} période de TVA n'a pas été déclarée : {period}", "{value} périodes de TVA n'ont pas été déclarées : {period}", count($eFinancialYear['vatData']['missingPeriods']), ['period' => $periodText]);
+			}
+
+			if(count($messages) > 0) {
+
+				$h .= '<div>';
+					$h .= '<ul>';
+						$h .= '<li>';
+							$h .= join('</li><li>', $messages);
+						$h .= '</li>';
+					$h .= '</ul>';
+				$h .= '</div>';
+
+				$h .= '<a class="btn btn-outline-secondary" href="'.\company\CompanyUi::urlJournal($eFarm).'/vat">'.s("Voir mes déclarations").'</a>';
+
+			} else {
+
+				$h .= s("Aucune anomalie à signaler concernant les déclarations de TVA");
+
+			}
+
+		}
+
+		$h .= $form->openAjax(\company\CompanyUi::urlAccount($eFarm).'/financialYear/:doClose', ['id' => 'account-financialYear-close', 'autocomplete' => 'off']);
+
+
+			$h .= $form->hidden('farm', $eFarm['id']);
+			$h .= $form->hidden('id', $eFinancialYear['id']);
+
+			$h .= $form->group(
+				content: $form->submit(s("Clôturer l'exercice comptable {year}", ['year' => self::getYear($eFinancialYear)]))
 			);
 
 		$h .= $form->close();

@@ -7,8 +7,6 @@ new Page()
 		$data->cFinancialYear = \account\FinancialYearLib::getAll();
 		$data->cFinancialYearOpen = \account\FinancialYearLib::getOpenFinancialYears();
 
-		\account\FinancialYearLib::getDataCheckForOpenFinancialYears($data->cFinancialYear);
-
 		throw new ViewAction($data);
 
 	});
@@ -45,6 +43,13 @@ new \account\FinancialYearPage(
 	})
 	->update(function($data) {
 
+		if(GET('action') === 'close') {
+
+			$data->e['vatData'] = \account\FinancialYearLib::getDataCheckForOpenFinancialYears($data->e);
+
+			throw new ViewAction($data, ':close');
+		}
+
 		throw new ViewAction($data);
 
 	})
@@ -53,16 +58,10 @@ new \account\FinancialYearPage(
 		throw new ReloadAction('account', 'FinancialYear::updated');
 
 	})
-	->write('close', function($data) {
+	->write('doClose', function($data) {
 
-		\account\FinancialYearLib::closeFinancialYear($data->e, createNew: FALSE);
+		\account\FinancialYearLib::closeFinancialYear($data->e);
 
 		throw new RedirectAction(\company\CompanyUi::urlAccount($data->eFarm).'/financialYear/?success=account:FinancialYear::closed');
-	})
-	->write('closeAndCreateNew', function($data) {
-
-		\account\FinancialYearLib::closeFinancialYear($data->e, createNew: TRUE);
-
-		throw new RedirectAction(\company\CompanyUi::urlAccount($data->eFarm).'/financialYear/?success=account:FinancialYear::closedAndCreated');
 	});
 ?>
