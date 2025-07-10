@@ -46,9 +46,9 @@ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 		<ram:ApplicableHeaderTradeAgreement><!--BT-10-00-->
 			<ram:SellerTradeParty><!--BG-4-->
 				<ram:Name>'.encode($eInvoice['farm']['legalName']).'</ram:Name><!--BT-24-->
-				'.($eInvoice['farm']['siret'] !== NULL ? '
+				'.($eInvoice['farm']['configuration']['invoiceVat'] !== NULL ? '
 				<ram:SpecifiedLegalOrganization><!--BT-30-->
-					<ram:ID schemeID="0002">'.encode($eInvoice['farm']['siret']).'</ram:ID>
+					<ram:ID schemeID="0002">'.encode($eInvoice['farm']['configuration']['invoiceVat']).'</ram:ID>
 				</ram:SpecifiedLegalOrganization>' : '').'
 				<ram:PostalTradeAddress><!--BG-5-->
 					<ram:CountryID>FR</ram:CountryID><!--BT-40-->
