@@ -47,6 +47,10 @@ new \account\FinancialYearPage(
 
 			$data->e['vatData'] = \account\FinancialYearLib::getDataCheckForOpenFinancialYears($data->e);
 
+			$search = new Search(['financialYear' => $data->e]);
+			$data->cOperationCharges = \journal\OperationLib::getAllChargesForClosing($search);
+			\journal\DeferredChargeLib::getDeferredChargesForOperations($data->cOperationCharges);
+
 			throw new ViewAction($data, ':close');
 		}
 

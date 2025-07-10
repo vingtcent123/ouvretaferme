@@ -1,3 +1,16 @@
+DeferredCharge:
+  id: serial32
+  operation: journal\Operation
+  startDate: date # Début conso
+  endDate: date # Fin conso
+  amount: decimal(8, 2)
+  initialFinancialYear: account\FinancialYear
+  destinationFinancialYear: ?account\FinancialYear
+  status: enum(PLANNED, RECORDED, DEFERRED, CANCELLED)
+  createdAt: datetime = SPECIAL(now)
+  updatedAt: datetime = SPECIAL(now)
+  createdBy: ?user\User = SPECIAL(user)
+
 Lettering:
   id: serial32
   credit: journal\Operation

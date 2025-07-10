@@ -131,6 +131,25 @@ class OperationLib extends OperationCrud {
 
 	}
 
+	public static function getAllChargesForClosing(\Search $search): \Collection {
+
+		return self::applySearch($search)
+			->select(
+				Operation::getSelection()
+				+ ['operation' => [
+				'id', 'account', 'accountLabel', 'document', 'type',
+				'thirdParty' => ['id', 'name'],
+				'description', 'amount', 'vatRate', 'cashflow', 'date'
+				]]
+				+ ['account' => ['class', 'description']]
+				+ ['thirdParty' => ['id', 'name']]
+				+ ['month' => new \Sql('SUBSTRING(date, 1, 7)')]
+			)
+			->sort(['date' => SORT_ASC, 'id' => SORT_ASC])
+			->whereAccountLabel('LIKE', \Setting::get('account\chargeAccountClass').'%')
+			->getCollection();
+	}
+
 	public static function getAllForVatJournal(string $type, \Search $search = new \Search(), bool $hasSort = FALSE): \Collection {
 
 		return self::applySearch($search)

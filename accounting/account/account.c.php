@@ -59,6 +59,8 @@ Setting::register('account', [
 
 	'carriedVatClass' => '44567', // TVA à reporter
 
+	'deferredChargeClass' => '486', // Charge constatée d'avance
+
 	// Classement des classes par journal
 	'classesByJournal' => [
 		\journal\Operation::BAN => ['5'],

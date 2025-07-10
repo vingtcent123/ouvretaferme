@@ -252,7 +252,7 @@ class FinancialYearUi {
 
 	}
 
-	public function close(\farm\Farm $eFarm, FinancialYear $eFinancialYear): \Panel {
+	public function close(\farm\Farm $eFarm, FinancialYear $eFinancialYear, \Collection $cOperationCharges): \Panel {
 
 		$form = new \util\FormUi();
 
@@ -320,10 +320,80 @@ class FinancialYearUi {
 
 			} else {
 
-				$h .= s("Aucune anomalie à signaler concernant les déclarations de TVA");
+				$h .= '<p>'.s("Aucune anomalie à signaler concernant les déclarations de TVA").'</p>';
 
 			}
 
+		}
+
+		$h .= '<h3 class="mt-2">'.s("Charges à reporter").'</h3>';
+
+		if($cOperationCharges->empty()) {
+
+			$h .= '<div class="util-info">'.s("Aucune charge à reporter sur cet exercice").'</div>';
+
+		} else {
+
+			$h .= '<div class="util-info">';
+				$h .= s("Toutes les écritures de charge de cet exercice comptable ont été listées ci-après. Si vous souhaitez que certaines d'entre elles soient en partie reportées au prochain exercice, vous pouvez modifier leur période de consommation ou le montant à reporter");
+			$h .= '</div>';
+
+			$h .= '<div class="stick-sm util-overflow-sm">';
+
+				$h .= '<table class="financialYear-item-table tr-even tr-hover">';
+
+					$h .= '<thead>';
+
+						$h .= '<tr>';
+
+							$h .= '<th>'.s("Date").'</th>';
+							$h .= '<th>'.s("Compte").'</th>';
+							$h .= '<th>'.s("Libellé").'</th>';
+							$h .= '<th>'.s("Montant HT").'</th>';
+							$h .= '<th>'.s("Période de<br />consommation").'</th>';
+							$h .= '<th class="text-end">'.s("À reporter").'</th>';
+
+						$h .= '</tr>';
+
+
+					$h .= '</thead>';
+
+					$h .= '<tbody>';
+
+						foreach($cOperationCharges as $eOperation) {
+
+							if(($eOperation['deferredCharge'] ?? NULL) !== NULL) {
+
+								$period = s("{startDate} - {endDate}", [
+									'startDate' => \util\DateUi::numeric($eOperation['date'], \util\DateUi::DATE),
+									'endDate' => \util\DateUi::numeric($eOperation['deferredCharge']['endDate'], \util\DateUi::DATE),
+								]);
+								$amount = \util\TextUi::money($eOperation['deferredCharge']['amount']);
+
+							} else {
+
+								$period = '<a href="'.\company\CompanyUi::urlJournal($eFarm).'/deferredCharge:set?operation='.$eOperation['id'].'&financialYear='.$eFinancialYear['id'].'&field=dates">'.s("modifier").'</a>';
+								$amount = '<a href="'.\company\CompanyUi::urlJournal($eFarm).'/deferredCharge:set?operation='.$eOperation['id'].'&financialYear='.$eFinancialYear['id'].'&field=amount">'.s("modifier").'</a>';
+
+							}
+							$h .= '<tr id="'.$eOperation['id'].'">';
+
+								$h .= '<td>'.\util\DateUi::numeric($eOperation['date'], \util\DateUi::DATE).'</td>';
+								$h .= '<td>'.encode($eOperation['accountLabel']).'</td>';
+								$h .= '<td>'.encode($eOperation['description']).'</td>';
+								$h .= '<td class="text-end">'.\util\TextUi::money($eOperation['amount']).'</td>';
+								$h .= '<td>'.$period.'</td>';
+								$h .= '<td class="text-end">'.$amount.'</td>';
+
+							$h .= '</tr>';
+
+						}
+
+					$h .= '</tbody>';
+
+				$h .= '</table>';
+
+			$h .= '</div>';
 		}
 
 		$h .= $form->openAjax(\company\CompanyUi::urlAccount($eFarm).'/financialYear/:doClose', ['id' => 'account-financialYear-close', 'autocomplete' => 'off']);
@@ -339,8 +409,8 @@ class FinancialYearUi {
 		$h .= $form->close();
 
 		return new \Panel(
-			id: 'panel-account-financialYear-update',
-			title: s("Modifier un exercice comptable"),
+			id: 'panel-account-financialYear-close',
+			title: s("Clôturer un exercice comptable"),
 			body: $h
 		);
 

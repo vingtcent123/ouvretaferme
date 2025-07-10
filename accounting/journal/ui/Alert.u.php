@@ -53,6 +53,8 @@ class AlertUi {
 
 			'VatDeclaration:created' => s("La déclaration de TVA a bien été créée."),
 
+			'DeferredCharge::saved' => s("La charge constatée d'avance a bien été enregistrée."),
+
 			default => null
 
 		};

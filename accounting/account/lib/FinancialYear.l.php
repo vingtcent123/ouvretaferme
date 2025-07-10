@@ -23,9 +23,9 @@ class FinancialYearLib extends FinancialYearCrud {
 
 	}
 
-	public static function getNextFinancialYearDates(): array {
+	public static function getNextFinancialYearDates(?FinancialYear $eFinancialYear = NULL): array {
 
-		$eFinancialYear = FinancialYearLib::getLastFinancialYear();
+		$eFinancialYear ??= FinancialYearLib::getLastFinancialYear();
 
 		return [
 			'startDate' => date('Y-m-d', strtotime($eFinancialYear['endDate'].' +1 day')),
@@ -60,6 +60,31 @@ class FinancialYearLib extends FinancialYearCrud {
 
 	}
 
+	public static function openFinancialYear(): void {
+
+		FinancialYear::model()->beginTransaction();
+
+		$eFinancialYearLast = self::getLastFinancialYear();
+
+		$eFinancialYear = new FinancialYear([
+			'status' => FinancialYearElement::OPEN,
+			...FinancialYearLib::getNextFinancialYearDates($eFinancialYearLast),
+			'hasVat' => $eFinancialYearLast['hasVat'],
+			'vatFrequency' => $eFinancialYearLast['vatFrequency'],
+			'taxSystem' => $eFinancialYearLast['taxSystem'],
+		]);
+
+		// Charges constatées d'avance
+		\journal\DeferredChargeLib::recordChargesIntoFinancialYear($eFinancialYear);
+
+		LogLib::save('open', 'financialYear', ['id' => $eFinancialYear['id']]);
+
+		self::create($eFinancialYear);
+
+		FinancialYear::model()->commit();
+
+	}
+
 	public static function closeFinancialYear(FinancialYear $eFinancialYear): void {
 
 		if($eFinancialYear['status'] == FinancialYearElement::CLOSE) {
@@ -82,6 +107,7 @@ class FinancialYearLib extends FinancialYearCrud {
 		\asset\AssetLib::subventionReversal($eFinancialYear);
 
 		// 2- Charges constatées d'avance
+		\journal\DeferredChargeLib::recordChargesIntoFinancialYear($eFinancialYear);
 
 		// 3- Produits à recevoir
 
@@ -96,16 +122,6 @@ class FinancialYearLib extends FinancialYearCrud {
 		\journal\OperationLib::setNumbers($eFinancialYear);
 
 		LogLib::save('close', 'financialYear', ['id' => $eFinancialYear['id']]);
-
-			$eFinancialYearNew = new FinancialYear([
-				'status' => FinancialYearElement::OPEN,
-				...FinancialYearLib::getNextFinancialYearDates(),
-				'hasVat' => $eFinancialYear['hasVat'],
-				'vatFrequency' => $eFinancialYear['vatFrequency'],
-				'taxSystem' => $eFinancialYear['taxSystem'],
-			]);
-
-			self::create($eFinancialYearNew);
 
 		FinancialYear::model()->commit();
 

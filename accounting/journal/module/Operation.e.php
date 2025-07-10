@@ -39,6 +39,14 @@ class Operation extends OperationElement {
 
 	}
 
+	public function isDeferrableCharge(\account\FinancialYear $eFinancialYear): bool {
+
+		return mb_substr($this['accountLabel'], 0, mb_strlen(\Setting::get('account\chargeAccountClass'))) === (string)\Setting::get('account\chargeAccountClass')
+			and $this['financialYear']['id'] === $eFinancialYear['id']
+			and $eFinancialYear->canUpdate();
+
+	}
+
 	public function build(array $properties, array $input, \Properties $p = new \Properties()): void {
 
 		$p
