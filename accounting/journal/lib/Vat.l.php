@@ -75,6 +75,7 @@ class VatLib {
 			'description' => new \account\VatUi()->getVatLabel(\Setting::get('account\collectedVatClass')),
 			'type' => $deductibleVatAmount >= 0 ? OperationElement::CREDIT : OperationElement::DEBIT,
 			'financialYear' => $eFinancialYear,
+			'journalCode' => Operation::OD,
 		]);
 
 		Operation::model()->insert($eOperationReverse);
@@ -97,6 +98,7 @@ class VatLib {
 			'financialYear' => $eFinancialYear,
 			'description' => new \account\VatUi()->getVatBalanceTranslation($eAccount['class'], $eFinancialYear),
 			'type' => $type,
+			'journalCode' => Operation::OD,
 		]);
 
 		Operation::model()->insert($eOperationVat);
