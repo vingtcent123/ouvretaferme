@@ -6,7 +6,7 @@ class LegalUi {
 	public function tos() : string {
 
 		$h = '<h2>'.s("Principe de gratuité").'</h2>';
-		$h .= '<p>'.s("L'accès à toutes les fonctionnalités de {siteName} est libre et gratuit pour les producteurs dont la ferme est convertie <i>intégralement à l'Agriculture biologique</i> ou sous mention <i>Nature & Progrès</i>. <b>L'utilisation du site n'est pas autorisée pour les producteurs qui ne respectent aucun de ces deux critères.</b>").'</p>';
+		$h .= '<p>'.s("L'accès à toutes les fonctionnalités de {siteName} est libre et gratuit pour les producteurs dont la ferme est convertie intégralement à l'Agriculture biologique, en cours de conversion vers l'Agriculture biologique ou sous mention Nature & Progrès. <b>L'utilisation du site n'est pas autorisée pour les producteurs qui ne respectent aucun de ces deux critères.</b>").'</p>';
 
 		$h .= '<br/>';
 		$h .= '<h2>'.s("Données personnelles").'</h2>';
