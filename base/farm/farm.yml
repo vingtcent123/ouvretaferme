@@ -85,6 +85,7 @@ Farmer:
   viewSellingSales: enum(ALL, PRIVATE, PRO, LABEL) = ALL
   viewSellingCategory: enum(ITEM, CUSTOMER, SHOP, PERIOD) = ITEM
   viewSellingCategoryCurrent: ?selling\Category
+  viewEmailingCategory: enum(CAMPAIGN, CONTACT) = CAMPAIGN
   viewShopCatalogCurrent: ?shop\Catalog
   viewAnalyzeChart: enum(TURNOVER, QUANTITY) = TURNOVER
   viewAnalyzeComposition: enum(COMPOSITION, INGREDIENT) = COMPOSITION

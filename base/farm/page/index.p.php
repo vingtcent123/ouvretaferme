@@ -159,6 +159,45 @@
 		throw new ViewAction($data);
 
 	})
+	->get('/ferme/{id}/campagnes', function($data) {
+
+		$data->eFarm->validate('canSelling');
+
+		$data->page = GET('page', 'int');
+
+		$data->search = new Search([
+			'name' => GET('name'),
+			'email' => GET('email'),
+			'category' => GET('category')
+		], GET('sort', default: 'lastName'));
+
+		[$data->cCustomer, $data->nCustomer] = \selling\CustomerLib::getByFarm($data->eFarm, selectPrices: TRUE, selectSales: TRUE, selectInvite: TRUE, page: $data->page, search: $data->search);
+
+		throw new ViewAction($data);
+
+	})
+	->get('/ferme/{id}/contacts', function($data) {
+
+		$data->eFarm->validate('canSelling');
+
+		$data->search = new Search([
+			'email' => GET('email'),
+			'opened' => GET('opened', 'bool'),
+			'blocked' => GET('blocked', 'bool'),
+		], GET('sort', default: 'lastSent'));
+
+
+		$data->contacts = \mail\ContactLib::aggregateByFarm($data->eFarm, $data->search);
+		dd($data->contacts);
+		$data->cContact = \mail\ContactLib::getByFarm($data->eFarm, search: $data->search);
+
+		if($data->cProduct->empty()) {
+			$data->cUnit = \selling\UnitLib::getByFarm($data->eFarm);
+		}
+
+		throw new ViewAction($data);
+
+	})
 	->get('/ferme/{id}/boutiques', function($data) {
 
 		$data->eFarm->validate('canSelling');

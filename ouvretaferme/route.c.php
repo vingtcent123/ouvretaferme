@@ -108,6 +108,11 @@ Route::register([
 			'priority' => 5,
 			'route' => ['ferme', '{id}', 'boutiques'],
 		],
+		'/ferme/{id}/campagnes' => [
+			'request' => 'farm/index',
+			'priority' => 5,
+			'route' => ['ferme', '{id}', 'campagnes'],
+		],
 		'/ferme/{id}/carte' => [
 			'request' => 'farm/index',
 			'priority' => 5,
@@ -137,6 +142,11 @@ Route::register([
 			'request' => 'farm/index',
 			'priority' => 5,
 			'route' => ['ferme', '{id}', 'configuration', 'production'],
+		],
+		'/ferme/{id}/contacts' => [
+			'request' => 'farm/index',
+			'priority' => 5,
+			'route' => ['ferme', '{id}', 'contacts'],
 		],
 		'/ferme/{id}/date/{date}' => [
 			'request' => 'shop/date',

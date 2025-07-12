@@ -14,7 +14,45 @@ class ContactLib extends ContactCrud {
 
 	}
 
-	public static function getByFarm(\farm\Farm $eFarm, string $email, bool $autoCreate = FALSE): Contact {
+	public static function aggregateByFarm(\farm\Farm $eFarm, \Search $search = new \Search()): array {
+
+		$search->validateSort(['email', 'createdAt']);
+
+		self::applySearch($search);
+
+		return Contact::model()
+			->select([
+				'count' => new \Sql('COUNT(*)', 'int'),
+				'sent1' => new \Sql('SUM(lastSent > NOW() - INTERVAL 1 MONTH)', 'int'),
+			])
+			->whereFarm($eFarm)
+			->get()
+			->getArrayCopy();
+
+	}
+
+	public static function getByFarm(\farm\Farm $eFarm, \Search $search = new \Search()): \Collection {
+
+		$search->validateSort(['email', 'createdAt']);
+
+		self::applySearch($search);
+
+		return Contact::model()
+			->select(Contact::getSelection())
+			->whereFarm($eFarm)
+			->sort($search->buildSort())
+			->getCollection();
+
+	}
+
+	public static function applySearch(\Search $search): void {
+
+		Contact::model()
+			->whereEmail('LIKE', '%'.$search->get('email').'%', if: $search->get('email'));
+
+	}
+
+	public static function get(\farm\Farm $eFarm, string $email, bool $autoCreate = FALSE): Contact {
 
 		$eContact = Contact::model()
 			->select(Contact::getSelection())
@@ -38,7 +76,7 @@ class ContactLib extends ContactCrud {
 			return new Contact();
 		}
 
-		return self::getByFarm($eCustomer['farm'], $eCustomer['email'], $autoCreate);
+		return self::get($eCustomer['farm'], $eCustomer['email'], $autoCreate);
 
 	}
 
@@ -46,7 +84,7 @@ class ContactLib extends ContactCrud {
 
 		$eEmail->expects(['farm', 'to']);
 
-		return self::getByFarm($eEmail['farm'], $eEmail['to'], $autoCreate);
+		return self::get($eEmail['farm'], $eEmail['to'], $autoCreate);
 
 	}
 
@@ -75,7 +113,7 @@ class ContactLib extends ContactCrud {
 
 		Contact::model()->beginTransaction();
 
-			$eContact = self::getByFarm($eFarm, $email, autoCreate: $optIn);
+			$eContact = self::get($eFarm, $email, autoCreate: $optIn);
 
 			if($eContact->notEmpty()) {
 
