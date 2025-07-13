@@ -40,15 +40,15 @@ class GroupModel extends \ModuleModel {
 
 		$this->properties = array_merge($this->properties, [
 			'id' => ['serial32', 'cast' => 'int'],
-			'type' => ['enum', [\selling\Group::PRIVATE, \selling\Group::PRO], 'cast' => 'enum'],
 			'name' => ['text8', 'min' => 1, 'max' => NULL, 'collate' => 'general', 'cast' => 'string'],
+			'type' => ['enum', [\selling\Group::PRIVATE, \selling\Group::PRO], 'cast' => 'enum'],
 			'color' => ['color', 'cast' => 'string'],
 			'farm' => ['element32', 'farm\Farm', 'null' => TRUE, 'cast' => 'element'],
 			'createdAt' => ['datetime', 'cast' => 'string'],
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'type', 'name', 'color', 'farm', 'createdAt'
+			'id', 'name', 'type', 'color', 'farm', 'createdAt'
 		]);
 
 		$this->propertiesToModule += [
@@ -104,12 +104,12 @@ class GroupModel extends \ModuleModel {
 		return $this->where('id', ...$data);
 	}
 
-	public function whereType(...$data): GroupModel {
-		return $this->where('type', ...$data);
-	}
-
 	public function whereName(...$data): GroupModel {
 		return $this->where('name', ...$data);
+	}
+
+	public function whereType(...$data): GroupModel {
+		return $this->where('type', ...$data);
 	}
 
 	public function whereColor(...$data): GroupModel {
