@@ -98,8 +98,6 @@ new \selling\InvoicePage()
 	}, propertiesUpdate: ['date', 'paymentCondition', 'header', 'footer'], page: 'doRegenerate', validate: ['canWrite', 'acceptRegenerate'])
 	->read('/facture/{id}', function($data) {
 
-		$data->e->validate('canRead');
-
 		if($data->e['content']->empty()) {
 			throw new NotExistsAction();
 		}
@@ -109,7 +107,7 @@ new \selling\InvoicePage()
 
 		throw new PdfAction($content, $filename);
 
-	})
+	}, validate: ['canPublicRead'])
 	->update(function($data) {
 
 		$data->e['cPaymentMethod'] = \payment\MethodLib::getByFarm($data->e['farm'], FALSE);

@@ -21,6 +21,23 @@ class Invoice extends InvoiceElement {
 
 	}
 
+	public function canPublicRead(): bool {
+
+		$this->expects([
+			'farm',
+			'customer' => ['user']
+		]);
+
+		// Producteur
+		if($this->canRead()) {
+			return TRUE;
+		}
+
+		// Client
+		return \user\ConnectionLib::getOnline()->is($this['customer']['user']);
+
+	}
+
 	public function canWrite(): bool {
 		$this->expects(['farm']);
 		return $this['farm']->canManage();
