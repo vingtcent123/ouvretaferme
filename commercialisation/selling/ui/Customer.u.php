@@ -139,15 +139,18 @@ class CustomerUi {
 
 	public function getSearch(\farm\Farm $eFarm, \Search $search): string {
 
-		$h = '<div id="customer-search" class="util-block-search stick-xs '.($search->empty() ? 'hide' : '').'">';
+		$h = '<div id="customer-search" class="util-block-search stick-xs '.($search->empty(['cGroup']) ? 'hide' : '').'">';
 
 			$form = new \util\FormUi();
 			$url = \farm\FarmUi::urlSellingCustomer($eFarm);
 
 			$h .= $form->openAjax($url, ['method' => 'get', 'id' => 'form-search']);
 				$h .= '<div>';
-					$h .= $form->text('name', $search->get('name'), ['placeholder' => s("Nom du client")]);
-					$h .= $form->email('email', $search->get('email'), ['placeholder' => s("E-mail du client")]);
+					if($search->get('cGroup')->notEmpty()) {
+						$h .= $form->select('group', $search->get('cGroup'), $search->get('group'), ['placeholder' => s("Groupe de clients")]);
+					}
+					$h .= $form->text('name', $search->get('name'), ['placeholder' => s("Nom de client")]);
+					$h .= $form->email('email', $search->get('email'), ['placeholder' => s("E-mail de client")]);
 					$h .= $form->select('category', self::getCategories(), $search->get('category'), ['placeholder' => s("Catégorie")]);
 					$h .= $form->submit(s("Chercher"), ['class' => 'btn btn-secondary']);
 					$h .= '<a href="'.$url.'" class="btn btn-secondary">'.\Asset::icon('x-lg').'</a>';
@@ -179,16 +182,15 @@ class CustomerUi {
 						$label = s("Nom");
 						$h .= ($search ? $search->linkSort('lastName', $label) : $label);
 					$h .= '</th>';
-					$h .= '<th rowspan="2" class="text-center">'.s("Compte client").'</th>';
-					$h .= '<th colspan="2" class="text-center highlight">'.s("Ventes").'</th>';
+					$h .= '<th colspan="2" class="text-center hide-xs-down highlight">'.s("Ventes").'</th>';
 					$h .= '<th rowspan="2" class="customer-item-grid">'.s("Grille tarifaire").'</th>';
 					$h .= '<th rowspan="2" class="customer-item-contact">'.s("Contact").'</th>';
 					$h .= '<th rowspan="2" class="text-center">'.s("Activé").'</th>';
 					$h .= '<th rowspan="2"></th>';
 				$h .= '</tr>';
 				$h .= '<tr>';
-					$h .= '<th class="text-end highlight-stick-right">'.$year.'</th>';
-					$h .= '<th class="text-end customer-item-year-before highlight-stick-left">'.$yearBefore.'</th>';
+					$h .= '<th class="text-end hide-xs-down highlight-stick-right">'.$year.'</th>';
+					$h .= '<th class="text-end hide-xs-down customer-item-year-before highlight-stick-left">'.$yearBefore.'</th>';
 				$h .= '</tr>';
 			$h .= '</thead>';
 			$h .= '<tbody>';
@@ -199,27 +201,35 @@ class CustomerUi {
 
 					$h .= '<tr>';
 
-						$h .= '<td class="customer-item-name">';
-							$h .= '<a href="/client/'.$eCustomer['id'].'">'.encode($eCustomer->getName()).'</a>';
-							$h .= '<div class="util-annotation">';
-								$h .= self::getCategory($eCustomer);
-								if($eCustomer['color']) {
-									$h .= ' | '.CustomerUi::getColorCircle($eCustomer);
-								}
+						$h .= '<td>';
+
+							$h .= '<div class="customer-item-info">';
+								$h .= '<div>';
+
+									$h .= '<a href="/client/'.$eCustomer['id'].'">'.encode($eCustomer->getName()).'</a>';
+									if($eCustomer['user']->notEmpty()) {
+										$h .= ' <span title="'.s("Ce client a un compte client à partir duquel il peut se connecter").'">'.\Asset::icon('person-circle').'</span> ';
+									}
+									$h .= '<div class="util-annotation">';
+										$h .= self::getCategory($eCustomer);
+										if($eCustomer['color']) {
+											$h .= ' | '.CustomerUi::getColorCircle($eCustomer);
+										}
+									$h .= '</div>';
+
+								$h .= '</div>';
+								$h .= '<div class="customer-item-label">';
+									if($eCustomer['invite']->notEmpty()) {
+										$h .= '<span class="util-badge bg-primary">'.\Asset::icon('person-fill').' '.s("invitation envoyée").'</span> ';
+									}
+									$h .= $this->getGroups($eCustomer);
+								$h .= '</div>';
+
 							$h .= '</div>';
+
 						$h .= '</td>';
 
-						$h .= '<td class="text-center">';
-							if($eCustomer['user']->notEmpty()) {
-								$h .= '<b>'.s("oui").'</b>';
-							} else if($eCustomer['invite']->notEmpty()) {
-								$h .= s("invitation envoyée");
-							} else {
-								$h .= s("non");
-							}
-						$h .= '</td>';
-
-						$h .= '<td class="text-end highlight-stick-right">';
+						$h .= '<td class="text-end hide-xs-down highlight-stick-right">';
 							if($eSaleTotal->notEmpty() and $eSaleTotal['year']) {
 								$amount = \util\TextUi::money($eSaleTotal['year'], precision: 0);
 								$h .= $eFarm->canAnalyze() ? '<a href="/selling/customer:analyze?id='.$eCustomer['id'].'&year='.$year.'">'.$amount.'</a>' : $amount;
@@ -228,7 +238,7 @@ class CustomerUi {
 							}
 						$h .= '</td>';
 
-						$h .= '<td class="text-end customer-item-year-before highlight-stick-left">';
+						$h .= '<td class="text-end hide-xs-down customer-item-year-before highlight-stick-left">';
 							if($eSaleTotal->notEmpty() and $eSaleTotal['yearBefore']) {
 								$amount = \util\TextUi::money($eSaleTotal['yearBefore'], precision: 0);
 								$h .= $eFarm->canAnalyze() ? '<a href="/selling/customer:analyze?id='.$eCustomer['id'].'&year='.$yearBefore.'">'.$amount.'</a>' : $amount;
@@ -648,6 +658,7 @@ class CustomerUi {
 			if($eCustomer['destination'] !== Customer::COLLECTIVE) {
 				$h .= $form->dynamicGroup($eCustomer, 'category');
 			}
+
 			$h .= $this->write('update', $form, $eCustomer);
 
 			$h .= $form->group(
@@ -666,9 +677,19 @@ class CustomerUi {
 
 	protected function write(string $action, \util\FormUi $form, Customer $eCustomer) {
 
-		$eCustomer->expects(['user']);
+		$eCustomer->expects(['user', 'nGroup']);
 
-		$h = '<div class="util-block bg-background-light customer-form-type">';
+		$h = '';
+
+		if($eCustomer['nGroup'] > 0) {
+
+			$h = '<div class="customer-form-category customer-form-pro customer-form-private">';
+				$h .= $form->dynamicGroup($eCustomer, 'groups');;
+			$h .= '</div>';
+
+		}
+
+		$h .= '<div class="util-block bg-background-light customer-form-type">';
 			$h .= '<div class="customer-form-category customer-form-pro">';
 				$h .= $form->group(content: '<h4>'.s("Client professionnel").'</h4>');
 			$h .= '</div>';
@@ -725,6 +746,18 @@ class CustomerUi {
 
 	}
 
+	public function getGroups(Customer $eCustomer): string {
+
+		$h = '';
+
+		foreach($eCustomer['cGroup?']() as $eGroup) {
+			$h .= ' <a href="'.\farm\FarmUi::urlSellingCustomer($eCustomer['farm']).'?group='.$eGroup['id'].'" class="util-badge" style="background-color: '.$eGroup['color'].'">'.encode($eGroup['name']).'</a> ';
+		}
+
+		return $h;
+
+	}
+
 	public static function p(string $property): \PropertyDescriber {
 
 		$d = Customer::model()->describer($property, [
@@ -732,6 +765,7 @@ class CustomerUi {
 			'firstName' => s("Prénom"),
 			'lastName' => s("Nom"),
 			'email' => s("Adresse e-mail"),
+			'groups' => s("Groupe"),
 			'orderFormEmail' => s("Adresse e-mail pour l'envoi des devis"),
 			'deliveryNoteEmail' => s("Adresse e-mail pour l'envoi des bons de livraison"),
 			'invoiceEmail' => s("Adresse e-mail pour l'envoi des factures"),
@@ -772,6 +806,18 @@ class CustomerUi {
 					'mandatory' => TRUE,
 					'callbackRadioAttributes' => fn() => ['oninput' => 'Customer.changeCategory(this)']
 				];
+				break;
+
+			case 'groups' :
+				$d->autocompleteDefault = fn(Customer $e) => ($e['cGroup?'] ?? $e->expects(['cGroup?']))();
+				$d->autocompleteBody = function(\util\FormUi $form, Customer $e) {
+					$e->expects(['farm']);
+					return [
+						'farm' => $e['farm']['id']
+					];
+				};
+				new \selling\GroupUi()->query($d, TRUE);
+				$d->group = ['wrapper' => 'groups'];
 				break;
 
 			case 'firstName' :

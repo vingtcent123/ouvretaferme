@@ -1,35 +1,35 @@
 <?php
 namespace selling;
 
-abstract class CategoryElement extends \Element {
+abstract class GroupElement extends \Element {
 
 	use \FilterElement;
 
-	private static ?CategoryModel $model = NULL;
+	private static ?GroupModel $model = NULL;
 
 	public static function getSelection(): array {
-		return Category::model()->getProperties();
+		return Group::model()->getProperties();
 	}
 
-	public static function model(): CategoryModel {
+	public static function model(): GroupModel {
 		if(self::$model === NULL) {
-			self::$model = new CategoryModel();
+			self::$model = new GroupModel();
 		}
 		return self::$model;
 	}
 
 	public static function fail(string|\FailException $failName, array $arguments = [], ?string $wrapper = NULL): bool {
-		return \Fail::log('Category::'.$failName, $arguments, $wrapper);
+		return \Fail::log('Group::'.$failName, $arguments, $wrapper);
 	}
 
 }
 
 
-class CategoryModel extends \ModuleModel {
+class GroupModel extends \ModuleModel {
 
-	protected string $module = 'selling\Category';
+	protected string $module = 'selling\Group';
 	protected string $package = 'selling';
-	protected string $table = 'sellingCategory';
+	protected string $table = 'sellingGroup';
 
 	public function __construct() {
 
@@ -38,13 +38,13 @@ class CategoryModel extends \ModuleModel {
 		$this->properties = array_merge($this->properties, [
 			'id' => ['serial32', 'cast' => 'int'],
 			'name' => ['text8', 'min' => 1, 'max' => NULL, 'collate' => 'general', 'cast' => 'string'],
+			'color' => ['color', 'cast' => 'string'],
 			'farm' => ['element32', 'farm\Farm', 'null' => TRUE, 'cast' => 'element'],
-			'position' => ['int8', 'min' => 0, 'max' => NULL, 'cast' => 'int'],
 			'createdAt' => ['datetime', 'cast' => 'string'],
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'name', 'farm', 'position', 'createdAt'
+			'id', 'name', 'color', 'farm', 'createdAt'
 		]);
 
 		$this->propertiesToModule += [
@@ -61,6 +61,9 @@ class CategoryModel extends \ModuleModel {
 
 		switch($property) {
 
+			case 'color' :
+				return '#373737';
+
 			case 'createdAt' :
 				return new \Sql('NOW()');
 
@@ -71,31 +74,31 @@ class CategoryModel extends \ModuleModel {
 
 	}
 
-	public function select(...$fields): CategoryModel {
+	public function select(...$fields): GroupModel {
 		return parent::select(...$fields);
 	}
 
-	public function where(...$data): CategoryModel {
+	public function where(...$data): GroupModel {
 		return parent::where(...$data);
 	}
 
-	public function whereId(...$data): CategoryModel {
+	public function whereId(...$data): GroupModel {
 		return $this->where('id', ...$data);
 	}
 
-	public function whereName(...$data): CategoryModel {
+	public function whereName(...$data): GroupModel {
 		return $this->where('name', ...$data);
 	}
 
-	public function whereFarm(...$data): CategoryModel {
+	public function whereColor(...$data): GroupModel {
+		return $this->where('color', ...$data);
+	}
+
+	public function whereFarm(...$data): GroupModel {
 		return $this->where('farm', ...$data);
 	}
 
-	public function wherePosition(...$data): CategoryModel {
-		return $this->where('position', ...$data);
-	}
-
-	public function whereCreatedAt(...$data): CategoryModel {
+	public function whereCreatedAt(...$data): GroupModel {
 		return $this->where('createdAt', ...$data);
 	}
 
@@ -103,24 +106,24 @@ class CategoryModel extends \ModuleModel {
 }
 
 
-abstract class CategoryCrud extends \ModuleCrud {
+abstract class GroupCrud extends \ModuleCrud {
 
  private static array $cache = [];
 
-	public static function getById(mixed $id, array $properties = []): Category {
+	public static function getById(mixed $id, array $properties = []): Group {
 
-		$e = new Category();
+		$e = new Group();
 
 		if(empty($id)) {
-			Category::model()->reset();
+			Group::model()->reset();
 			return $e;
 		}
 
 		if($properties === []) {
-			$properties = Category::getSelection();
+			$properties = Group::getSelection();
 		}
 
-		if(Category::model()
+		if(Group::model()
 			->select($properties)
 			->whereId($id)
 			->get($e) === FALSE) {
@@ -138,14 +141,14 @@ abstract class CategoryCrud extends \ModuleCrud {
 		}
 
 		if($properties === []) {
-			$properties = Category::getSelection();
+			$properties = Group::getSelection();
 		}
 
 		if($sort !== NULL) {
-			Category::model()->sort($sort);
+			Group::model()->sort($sort);
 		}
 
-		return Category::model()
+		return Group::model()
 			->select($properties)
 			->whereId('IN', $ids)
 			->getCollection(NULL, NULL, $index);
@@ -159,51 +162,51 @@ abstract class CategoryCrud extends \ModuleCrud {
 
 	}
 
-	public static function getCreateElement(): Category {
+	public static function getCreateElement(): Group {
 
-		return new Category(['id' => NULL]);
-
-	}
-
-	public static function create(Category $e): void {
-
-		Category::model()->insert($e);
+		return new Group(['id' => NULL]);
 
 	}
 
-	public static function update(Category $e, array $properties): void {
+	public static function create(Group $e): void {
+
+		Group::model()->insert($e);
+
+	}
+
+	public static function update(Group $e, array $properties): void {
 
 		$e->expects(['id']);
 
-		Category::model()
+		Group::model()
 			->select($properties)
 			->update($e);
 
 	}
 
-	public static function updateCollection(\Collection $c, Category $e, array $properties): void {
+	public static function updateCollection(\Collection $c, Group $e, array $properties): void {
 
-		Category::model()
+		Group::model()
 			->select($properties)
 			->whereId('IN', $c)
 			->update($e->extracts($properties));
 
 	}
 
-	public static function delete(Category $e): void {
+	public static function delete(Group $e): void {
 
 		$e->expects(['id']);
 
-		Category::model()->delete($e);
+		Group::model()->delete($e);
 
 	}
 
 }
 
 
-class CategoryPage extends \ModulePage {
+class GroupPage extends \ModulePage {
 
-	protected string $module = 'selling\Category';
+	protected string $module = 'selling\Group';
 
 	public function __construct(
 	   ?\Closure $start = NULL,
@@ -212,8 +215,8 @@ class CategoryPage extends \ModulePage {
 	) {
 		parent::__construct(
 		   $start,
-		   $propertiesCreate ?? CategoryLib::getPropertiesCreate(),
-		   $propertiesUpdate ?? CategoryLib::getPropertiesUpdate()
+		   $propertiesCreate ?? GroupLib::getPropertiesCreate(),
+		   $propertiesUpdate ?? GroupLib::getPropertiesUpdate()
 		);
 	}
 

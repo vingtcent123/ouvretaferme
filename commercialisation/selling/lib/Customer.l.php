@@ -31,8 +31,8 @@ class CustomerLib extends CustomerCrud {
 
 		return match($category) {
 
-			Customer::PRO => ['category', 'firstName', 'lastName', 'name', 'legalName', 'invoiceStreet1', 'invoiceStreet2', 'invoicePostcode', 'invoiceCity', 'siret', 'invoiceVat', 'email', 'defaultPaymentMethod', 'phone'],
-			Customer::PRIVATE => ['category', 'firstName', 'lastName', 'name', 'email', 'defaultPaymentMethod', 'phone'],
+			Customer::PRO => ['category', 'firstName', 'lastName', 'name', 'legalName', 'invoiceStreet1', 'invoiceStreet2', 'invoicePostcode', 'invoiceCity', 'siret', 'invoiceVat', 'email', 'defaultPaymentMethod', 'phone', 'groups'],
+			Customer::PRIVATE => ['category', 'firstName', 'lastName', 'name', 'email', 'defaultPaymentMethod', 'phone', 'groups'],
 			Customer::COLLECTIVE => match($for) {
 				'create' => ['category', 'firstName', 'lastName', 'name'],
 				'update' => ['firstName', 'lastName', 'name']
@@ -154,6 +154,7 @@ class CustomerLib extends CustomerCrud {
 			->select(Customer::getSelection())
 			->option('count')
 			->whereFarm($eFarm)
+			->where(fn() => new \Sql('JSON_CONTAINS('.Customer::model()->field('groups').', \''.$search->get('group')['id'].'\')'), if: $search->get('group')->notEmpty())
 			->whereName('LIKE', '%'.$search->get('name').'%', if: $search->get('name'))
 			->whereEmail('LIKE', '%'.$search->get('email').'%', if: $search->get('email'))
 			->sort($search->buildSort([
@@ -169,6 +170,17 @@ class CustomerLib extends CustomerCrud {
 			->getCollection($position, $number);
 
 		return [$cCustomer, Customer::model()->found()];
+
+	}
+
+	public static function countByGroup(Group $eGroup): int {
+
+		$eGroup->expects(['farm']);
+
+		return Customer::model()
+			->whereFarm($eGroup['farm'])
+			->where('JSON_CONTAINS('.Customer::model()->field('groups').', \''.$eGroup['id'].'\')')
+			->count();
 
 	}
 

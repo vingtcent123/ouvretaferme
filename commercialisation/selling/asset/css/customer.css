@@ -15,7 +15,7 @@ td.customer-item-grid {
 	white-space: nowrap;
 }
 
-@media (max-width: 575px) {
+@media (max-width: 991px) {
 
 	.customer-item-grid {
 		display: none;
@@ -33,10 +33,38 @@ td.customer-item-grid {
 
 }
 
-div.customer-item-name a {
-	font-size: 1.1rem;
-	font-weight: bold;
-	color: var(--text);
+tr.customer-item-details {
+	max-width: 20rem;
+}
+
+.customer-item-info {
+	display: grid;
+	grid-gap: 0.5rem;
+	grid-template-columns: auto auto;
+	align-items: start;
+}
+
+@media (max-width: 767px) {
+
+	.customer-item-info {
+		grid-template-columns: 1fr;
+	}
+
+}
+
+.customer-item-label {
+	display: flex;
+	justify-content: end;
+	gap: 0.25rem 0.5rem;
+	flex-wrap: wrap;
+}
+
+@media (max-width: 767px) {
+
+	.customer-item-label {
+		justify-content: start;
+	}
+
 }
 
 .customer-panel-header {
@@ -78,6 +106,10 @@ form.customer-form-private .customer-form-itself-private {
 
 form.customer-form-unknown .customer-form-type {
 	display: none;
+}
+
+.customer-form-type {
+	margin-top: 1rem;
 }
 
 form.customer-form-pro .customer-form-category:not(.customer-form-pro),

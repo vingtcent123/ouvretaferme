@@ -53,6 +53,7 @@ class CustomerModel extends \ModuleModel {
 			'email' => ['email', 'null' => TRUE, 'cast' => 'string'],
 			'farm' => ['element32', 'farm\Farm', 'cast' => 'element'],
 			'user' => ['element32', 'user\User', 'null' => TRUE, 'cast' => 'element'],
+			'groups' => ['json', 'cast' => 'array'],
 			'type' => ['enum', [\selling\Customer::PRIVATE, \selling\Customer::PRO], 'cast' => 'enum'],
 			'destination' => ['enum', [\selling\Customer::INDIVIDUAL, \selling\Customer::COLLECTIVE], 'null' => TRUE, 'cast' => 'enum'],
 			'discount' => ['int8', 'min' => 0, 'max' => 100, 'cast' => 'int'],
@@ -77,7 +78,7 @@ class CustomerModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'name', 'firstName', 'lastName', 'legalName', 'email', 'farm', 'user', 'type', 'destination', 'discount', 'orderFormEmail', 'deliveryNoteEmail', 'invoiceEmail', 'invoiceStreet1', 'invoiceStreet2', 'invoicePostcode', 'invoiceCity', 'siret', 'invoiceVat', 'deliveryStreet1', 'deliveryStreet2', 'deliveryPostcode', 'deliveryCity', 'defaultPaymentMethod', 'phone', 'color', 'createdAt', 'status'
+			'id', 'name', 'firstName', 'lastName', 'legalName', 'email', 'farm', 'user', 'groups', 'type', 'destination', 'discount', 'orderFormEmail', 'deliveryNoteEmail', 'invoiceEmail', 'invoiceStreet1', 'invoiceStreet2', 'invoicePostcode', 'invoiceCity', 'siret', 'invoiceVat', 'deliveryStreet1', 'deliveryStreet2', 'deliveryPostcode', 'deliveryCity', 'defaultPaymentMethod', 'phone', 'color', 'createdAt', 'status'
 		]);
 
 		$this->propertiesToModule += [
@@ -95,6 +96,9 @@ class CustomerModel extends \ModuleModel {
 	public function getDefaultValue(string $property) {
 
 		switch($property) {
+
+			case 'groups' :
+				return [];
 
 			case 'discount' :
 				return 0;
@@ -116,6 +120,9 @@ class CustomerModel extends \ModuleModel {
 
 		switch($property) {
 
+			case 'groups' :
+				return $value === NULL ? NULL : json_encode($value, JSON_UNESCAPED_UNICODE);
+
 			case 'type' :
 				return ($value === NULL) ? NULL : (string)$value;
 
@@ -127,6 +134,20 @@ class CustomerModel extends \ModuleModel {
 
 			default :
 				return parent::encode($property, $value);
+
+		}
+
+	}
+
+	public function decode(string $property, $value) {
+
+		switch($property) {
+
+			case 'groups' :
+				return $value === NULL ? NULL : json_decode($value, TRUE);
+
+			default :
+				return parent::decode($property, $value);
 
 		}
 
@@ -170,6 +191,10 @@ class CustomerModel extends \ModuleModel {
 
 	public function whereUser(...$data): CustomerModel {
 		return $this->where('user', ...$data);
+	}
+
+	public function whereGroups(...$data): CustomerModel {
+		return $this->where('groups', ...$data);
 	}
 
 	public function whereType(...$data): CustomerModel {

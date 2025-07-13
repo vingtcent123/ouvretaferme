@@ -3,59 +3,6 @@ namespace selling;
 
 class CategoryUi {
 
-	public static function text(\sequence\Flow|series\Task $e): string {
-
-		if($e instanceof \sequence\Flow) {
-
-			$e['variety'] = new \plant\Variety();
-
-			$e->expects(['sequence']);
-
-		} else {
-			$e->expects(['series']);
-		}
-
-		$e->expects([
-			'plant',
-			'category' => ['name'],
-			'variety',
-			'description'
-		]);
-
-		$ePlant = $e['plant'];
-
-		$eCategory = $e['category'];
-		$eCategory->expects(['name']);
-
-		\Asset::css('farm', 'category.css');
-
-		$h = '<span class="category-text">';
-
-		if($ePlant->empty()) {
-
-			$h .= encode($eCategory['name']);
-
-			if(
-				($e instanceof series\Task and $e['series']->notEmpty()) or
-				($e instanceof \sequence\Flow and $e['sequence']->notEmpty())
-			) {
-				$h .= ' <span class="category-name">'.s("PARTAGÉ").'</span>';
-			}
-
-		} else {
-
-			$ePlant->expects(['name']);
-
-			$plant = '<span class="category-name">'.encode($ePlant['name']).'</span>';
-
-		}
-
-		$h .= '</span>';
-
-		return $h;
-
-	}
-
 	public function getManageTitle(\farm\Farm $eFarm, \Collection $cCategory): string {
 
 		$h = '<div class="util-action">';
@@ -93,7 +40,7 @@ class CategoryUi {
 
 		} else {
 
-			$h .= '<table>';
+			$h .= '<table class="tr-even">';
 				$h .= '<thead>';
 					$h .= '<tr>';
 						if($cCategory->count() >= 2 ) {

@@ -6,7 +6,8 @@ new \selling\CustomerPage()
 
 		return new \selling\Customer([
 			'farm' => $data->eFarm,
-			'user' => new \user\User()
+			'user' => new \user\User(),
+			'nGroup' => \selling\GroupLib::countByFarm($data->eFarm)
 		]);
 
 	})
@@ -84,6 +85,7 @@ new \selling\CustomerPage()
 	}, validate: ['canManage'])
 	->update(function($data) {
 
+		$data->e['nGroup'] = \selling\GroupLib::countByFarm($data->e['farm']);
 		$data->e['cPaymentMethod'] = \payment\MethodLib::getByFarm($data->e['farm'], FALSE);
 
 		throw new ViewAction($data);

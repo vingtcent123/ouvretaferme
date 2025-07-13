@@ -3,6 +3,7 @@ Category:
   name: text8(1, null) @collate(general)
   farm: ?farm\Farm
   position: int8(0, null)
+  createdAt: datetime = SPECIAL(now)
   INDEX: [
     ["farm"]
   ]
@@ -46,6 +47,7 @@ Customer:
   email: ?email
   farm: farm\Farm
   user: ?user\User
+  groups: json = PHP([])
   type: enum(PRIVATE, PRO)
   destination: ?enum(INDIVIDUAL, COLLECTIVE)
   discount: int8(0, 100) = 0
@@ -94,6 +96,16 @@ Grid:
   ]
   UNIQUE: [
     ["customer", "product"]
+  ]
+
+Group:
+  id: serial32
+  name: text8(1, null) @collate(general)
+  color: color = PHP('#373737')
+  farm: ?farm\Farm
+  createdAt: datetime = SPECIAL(now)
+  INDEX: [
+    ["farm"]
   ]
 
 History:

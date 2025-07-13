@@ -122,6 +122,10 @@ class AlertUi {
 			'Category::updated' => s("La catégorie a bien été mise à jour."),
 			'Category::deleted' => s("La catégorie a bien été supprimée."),
 
+			'Group::created' => s("Le groupe a bien été créé."),
+			'Group::updated' => s("Le groupe a bien été mis à jour."),
+			'Group::deleted' => s("Le groupe a bien été supprimé."),
+
 			'Product::created' => s("Le produit a bien été ajouté."),
 			'Product::createdComposition' => s("La composition a bien été ajoutée."),
 			'Product::updated' => s("Le produit a bien été mis à jour."),

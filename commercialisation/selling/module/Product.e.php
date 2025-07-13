@@ -22,6 +22,14 @@ class Product extends ProductElement {
 
 	}
 
+	public function canCreate(): bool {
+
+		$this->expects(['farm']);
+
+		return $this['farm']->canManage();
+
+	}
+
 	public function canWrite(): bool {
 
 		$this->expects(['farm', 'status']);

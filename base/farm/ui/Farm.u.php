@@ -1863,6 +1863,11 @@ class FarmUi {
 				$h .= \Asset::icon('receipt');
 			$h .= '</a>';
 
+			$h .= '<a href="/selling/group:manage?farm='.$eFarm['id'].'" class="util-button">';
+				$h .= '<h4>'.s("Les groupes de clients").'</h4>';
+				$h .= \Asset::icon('people-fill');
+			$h .= '</a>';
+
 			$h .= '<a href="/payment/method:manage?farm='.$eFarm['id'].'" class="util-button">';
 				$h .= '<h4>'.s("Les moyens de paiement").'</h4>';
 				$h .= \Asset::icon('cash-coin');

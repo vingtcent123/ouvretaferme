@@ -95,6 +95,8 @@
 
 		$data->search = new Search([
 			'name' => GET('name'),
+			'group' => GET('group', 'selling\Group'),
+			'cGroup' => \selling\GroupLib::getByFarm($data->eFarm),
 			'email' => GET('email'),
 			'category' => GET('category')
 		], GET('sort', default: 'lastName'));

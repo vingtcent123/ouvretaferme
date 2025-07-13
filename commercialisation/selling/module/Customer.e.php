@@ -7,7 +7,8 @@ class Customer extends CustomerElement {
 
 		return parent::getSelection() + [
 			'farm' => ['name', 'siret', 'legalName', 'legalEmail', 'legalCity', 'vignette', 'url'],
-			'user' => ['email']
+			'user' => ['email'],
+			'cGroup?' => fn($e) => fn() => \selling\GroupLib::askByFarm($e['farm'], $e['groups']),
 		];
 
 	}
@@ -241,15 +242,27 @@ class Customer extends CustomerElement {
 				);
 
 			})
-			->setCallback('defaultPaymentMethod.check', function(\payment\Method $eMethod): bool {
+			->setCallback('defaultPaymentGroup.check', function(\payment\Group $eGroup): bool {
 
-				if($eMethod->empty()) {
+				if($eGroup->empty()) {
 					return TRUE;
 				}
 
 				$this->expects(['farm']);
 
-				return \payment\MethodLib::isSelectable($this['farm'], $eMethod);
+				return \payment\GroupLib::isSelectable($this['farm'], $eGroup);
+
+			})
+			->setCallback('groups.check', function(mixed &$groups) use($p): bool {
+
+				$this->expects(['farm']);
+
+				$groups = \selling\Group::model()
+					->whereId('IN', (array)($groups ?? []))
+					->whereFarm($this['farm'])
+					->getColumn('id');
+
+				return TRUE;
 
 			})
 			->setCallback('category.set', function(?string $category) use($p): bool {

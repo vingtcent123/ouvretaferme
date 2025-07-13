@@ -221,7 +221,7 @@ class SaleLib extends SaleCrud {
 			->whereDocument($search->get('document'), if: $search->get('document'))
 			->where('m1.id', 'IN', fn() => explode(',', $search->get('ids')), if: $search->get('ids'))
 			->where('m1.farm', $eFarm)
-			->whereType($type, if: $type !== NULL)
+			->where('m1.type', $type, if: $type !== NULL)
 			->where('m1.customer', $search->get('customer'), if: $search->get('customer'))
 			->whereDeliveredAt('LIKE', '%'.$search->get('deliveredAt').'%', if: $search->get('deliveredAt'))
 			->whereDeliveredAt('>', new \Sql('CURDATE() - INTERVAL '.Sale::model()->format($search->get('delivered')).' DAY'), if: $search->get('delivered'))

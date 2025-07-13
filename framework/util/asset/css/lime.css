@@ -1163,6 +1163,11 @@ div.util-subtitle {
 	color: white;
 }
 
+a.util-badge {
+	color: white;
+	text-decoration: none;
+}
+
 .util-empty {
 	color: var(--muted);
 	margin-bottom: 1rem;

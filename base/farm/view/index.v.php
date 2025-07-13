@@ -414,7 +414,7 @@ new AdaptativeView('/ferme/{id}/clients', function($data, FarmTemplate $t) {
 			$h .= '<h1>'.s("Clients").'</h1>';
 			$h .= '<div>';
 				$h .= '<a '.attr('onclick', 'Lime.Search.toggle("#customer-search")').' class="btn btn-primary">'.\Asset::icon('search').'</a> ';
-				if(new \selling\Customer(['farm' => $data->eFarm])->canWrite()) {
+				if(new \selling\Customer(['farm' => $data->eFarm])->canCreate()) {
 					$h .= '<a href="/selling/customer:create?farm='.$data->eFarm['id'].'" class="btn btn-primary">'.\Asset::icon('plus-circle').'<span class="hide-xs-down"> '.s("Nouveau client").'</span></a>';
 				}
 			$h .= '</div>';
@@ -470,14 +470,14 @@ new AdaptativeView('/ferme/{id}/produits', function($data, FarmTemplate $t) {
 			$h .= '<h1>'.s("Produits").'</h1>';
 			$h .= '<div>';
 				$h .= '<a '.attr('onclick', 'Lime.Search.toggle("#product-search")').' class="btn btn-primary">'.\Asset::icon('search').'</a> ';
-				if($data->eFarm->canManage()) {
+				if(new \selling\Product(['farm' => $data->eFarm])->canCreate()) {
 
 					if(array_sum($data->products) > 5) {
 						$h .= '<a data-dropdown="bottom-end" class="btn btn-primary dropdown-toggle">'.\Asset::icon('gear-fill').'</a>';
 						$h .= '<div class="dropdown-list">';
 							$h .= '<div class="dropdown-title">'.s("Produits").'</div>';
 							$h .= '<a href="/selling/product:create?farm='.$data->eFarm['id'].'" class="dropdown-item">'.s("Ajouter un produit").'</a>';
-							$h .= '<a href="/selling/category:manage?farm='.$data->eFarm['id'].'" class="dropdown-item">'.s("Personnaliser des catégories").'</a>';
+							$h .= '<a href="/selling/category:manage?farm='.$data->eFarm['id'].'" class="dropdown-item">'.s("Paramétrer des catégories de produits").'</a>';
 						$h .= '</div>';
 					} else {
 						$h .= '<a href="/selling/product:create?farm='.$data->eFarm['id'].'" class="btn btn-primary">'.\Asset::icon('plus-circle').'<span class="hide-xs-down"> '.s("Nouveau produit").'</span></a>';
