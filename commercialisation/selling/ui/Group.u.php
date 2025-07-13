@@ -44,6 +44,19 @@ class GroupUi {
 
 	}
 
+	public static function getAutocompleteCreate(\farm\Farm $eFarm): array {
+
+		$item = \Asset::icon('plus-circle');
+		$item .= '<div>'.s("Ajouter un groupe").'</div>';
+
+		return [
+			'type' => 'link',
+			'link' => '/selling/group:create?farm='.$eFarm['id'],
+			'itemHtml' => $item
+		];
+
+	}
+
 	public function getManageTitle(\farm\Farm $eFarm, \Collection $cGroup): string {
 
 		$h = '<div class="util-action">';
@@ -85,6 +98,7 @@ class GroupUi {
 				$h .= '<thead>';
 					$h .= '<tr>';
 						$h .= '<th>'.self::p('name')->label.'</th>';
+						$h .= '<th>'.self::p('type')->label.'</th>';
 						$h .= '<th class="td-min-content">'.self::p('color')->label.'</th>';
 						$h .= '<th class="text-center">'.s("Clients").'</th>';
 						$h .= '<th></th>';
@@ -98,6 +112,9 @@ class GroupUi {
 					$h .= '<tr>';
 						$h .= '<td>';
 							$h .= encode($eGroup['name']);
+						$h .= '</td>';
+						$h .= '<td>';
+							$h .= self::p('type')->values[$eGroup['type']];
 						$h .= '</td>';
 						$h .= '<td class="td-min-content text-center">';
 							$h .= self::getColorCircle($eGroup);
@@ -154,7 +171,7 @@ class GroupUi {
 			$h .= $form->asteriskInfo();
 
 			$h .= $form->hidden('farm', $eFarm['id']);
-			$h .= $form->dynamicGroups($eGroup, ['name*', 'color']);
+			$h .= $form->dynamicGroups($eGroup, ['name*', 'type*', 'color']);
 			$h .= $form->group(
 				content: $form->submit(\s("Ajouter"))
 			);
@@ -196,7 +213,8 @@ class GroupUi {
 	public static function p(string $property): \PropertyDescriber {
 
 		$d = Group::model()->describer($property, [
-			'name' => \s("Nom du groupe"),
+			'name' => \s("Nom"),
+			'type' => \s("Clientèle"),
 			'color' => \s("Couleur"),
 			'fqn' => \s("Nom qualifié")
 		]);
@@ -205,6 +223,13 @@ class GroupUi {
 
 			case 'color' :
 				$d->labelAfter = \util\FormUi::info(s("Choisissez une couleur plutôt sombre pour que le nom du groupe reste lisible."));
+				break;
+
+			case 'type' :
+				$d->values = [
+					Group::PRO => s("Professionnels"),
+					Group::PRIVATE => s("Particuliers")
+				];
 				break;
 
 		}

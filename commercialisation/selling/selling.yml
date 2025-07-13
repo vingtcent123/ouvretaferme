@@ -100,6 +100,7 @@ Grid:
 
 Group:
   id: serial32
+  type: enum(PRIVATE, PRO)
   name: text8(1, null) @collate(general)
   color: color = PHP('#373737')
   farm: ?farm\Farm

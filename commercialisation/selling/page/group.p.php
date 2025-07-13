@@ -32,9 +32,10 @@ new \selling\GroupPage()
 new Page()
 	->post('query', function($data) {
 
-		$eFarm = \farm\FarmLib::getById(POST('farm'))->validate('canWrite');
+		$data->eFarm = \farm\FarmLib::getById(POST('farm'))->validate('canWrite');
+		$type = \selling\Group::POST('type', 'type');
 
-		$data->cGroup = \selling\GroupLib::getFromQuery(POST('query'), $eFarm);
+		$data->cGroup = \selling\GroupLib::getFromQuery(POST('query'), $data->eFarm, $type);
 
 		throw new \ViewAction($data);
 

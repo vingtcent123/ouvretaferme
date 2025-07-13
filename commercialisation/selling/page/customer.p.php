@@ -100,6 +100,31 @@ new \selling\CustomerPage()
 	});
 
 new Page()
+	->post('getGroupField', function($data) {
+
+		if(POST('id')) {
+			$data->eCustomer = \selling\CustomerLib::getById(POST('id'))->validate('canWrite');
+		} else {
+			$data->eCustomer = new \selling\Customer();
+		}
+
+		$type = \selling\Customer::POST('type', 'type', fn() => throw new NotExpectedAction('Missing type'));
+
+		if(
+			$data->eCustomer->notEmpty() and
+			$type !== $data->eCustomer['type']
+		) {
+
+			$data->eCustomer['groups'] = [];
+
+		}
+
+		$data->eCustomer['type'] = $type;
+
+
+		throw new \ViewAction($data);
+
+	})
 	->post('query', function($data) {
 
 		$data->eFarm = \farm\FarmLib::getById(POST('farm'))->validate('canWrite');

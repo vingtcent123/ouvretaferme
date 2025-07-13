@@ -600,16 +600,16 @@ class CustomerUi {
 
 	}
 
-	public function create(\farm\Farm $eFarm): \Panel {
+	public function create(Customer $eCustomer): \Panel {
+
+		$eCustomer->expects(['nGroup', 'farm', 'user']);
 
 		$form = new \util\FormUi();
 
-		$eCustomer = new Customer([
-			'farm' => $eFarm,
-			'type' => NULL,
-			'destination' => NULL,
-			'user' => new \user\User()
-		]);
+		$eCustomer['type'] = NULL;
+		$eCustomer['destination'] = NULL;
+
+		$eFarm = $eCustomer['farm'];
 
 		$h = '';
 
@@ -675,16 +675,26 @@ class CustomerUi {
 
 	}
 
+	public function getGroupField(\util\FormUi $form, Customer $eCustomer): string {
+
+		$h = '<div id="customer-group-field">';
+			$h .= $form->dynamicGroup($eCustomer, 'groups');
+		$h .= '</div>';
+
+		return $h;
+
+	}
+
 	protected function write(string $action, \util\FormUi $form, Customer $eCustomer) {
 
 		$eCustomer->expects(['user', 'nGroup']);
 
 		$h = '';
 
-		if($eCustomer['nGroup'] > 0) {
+		if($action === 'update' and $eCustomer['nGroup'] > 0) {
 
 			$h = '<div class="customer-form-category customer-form-pro customer-form-private">';
-				$h .= $form->dynamicGroup($eCustomer, 'groups');;
+				$h .= $this->getGroupField($form, $eCustomer);
 			$h .= '</div>';
 
 		}
@@ -813,7 +823,8 @@ class CustomerUi {
 				$d->autocompleteBody = function(\util\FormUi $form, Customer $e) {
 					$e->expects(['farm']);
 					return [
-						'farm' => $e['farm']['id']
+						'farm' => $e['farm']['id'],
+						'type' => $e['type'],
 					];
 				};
 				new \selling\GroupUi()->query($d, TRUE);

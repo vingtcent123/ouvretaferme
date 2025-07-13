@@ -4,14 +4,14 @@ namespace selling;
 class GroupLib extends GroupCrud {
 
 	public static function getPropertiesCreate(): array {
-		return ['name', 'color'];
+		return ['name', 'color', 'type'];
 	}
 
 	public static function getPropertiesUpdate(): array {
 		return ['name', 'color'];
 	}
 
-	public static function getFromQuery(string $query, \farm\Farm $eFarm, ?array $properties = []): \Collection {
+	public static function getFromQuery(string $query, \farm\Farm $eFarm, ?string $type, ?array $properties = []): \Collection {
 
 		if($query !== '') {
 			Group::model()->whereName('LIKE', '%'.$query.'%');
@@ -20,6 +20,7 @@ class GroupLib extends GroupCrud {
 		return Group::model()
 			->select($properties ?: Group::getSelection())
 			->whereFarm($eFarm)
+			->whereType($type, if: $type !== NULL)
 			->getCollection()
 			->sort('name', natural: TRUE);
 

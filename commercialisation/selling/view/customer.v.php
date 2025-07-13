@@ -13,12 +13,21 @@ new AdaptativeView('/client/{id}', function($data, FarmTemplate $t) {
 
 });
 
+new JsonView('getGroupField', function($data, AjaxTemplate $t) {
+
+	$t->qs('#customer-group-field')->outerHtml(new \selling\CustomerUi()->getGroupField(
+		new \util\FormUi(),
+		$data->eCustomer
+	));
+
+});
+
 new AdaptativeView('analyze', function($data, PanelTemplate $t) {
 	return new \selling\AnalyzeUi()->getCustomer($data->e, $data->year, $data->cSaleTurnover, $data->cItemProduct, $data->cItemMonth, $data->cItemMonthBefore, $data->cItemWeek, $data->cItemWeekBefore);
 });
 
 new AdaptativeView('create', function($data, PanelTemplate $t) {
-	return new \selling\CustomerUi()->create($data->eFarm);
+	return new \selling\CustomerUi()->create($data->e);
 });
 
 new AdaptativeView('update', function($data, PanelTemplate $t) {

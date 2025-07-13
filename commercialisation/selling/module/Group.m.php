@@ -7,6 +7,9 @@ abstract class GroupElement extends \Element {
 
 	private static ?GroupModel $model = NULL;
 
+	const PRIVATE = 'private';
+	const PRO = 'pro';
+
 	public static function getSelection(): array {
 		return Group::model()->getProperties();
 	}
@@ -37,6 +40,7 @@ class GroupModel extends \ModuleModel {
 
 		$this->properties = array_merge($this->properties, [
 			'id' => ['serial32', 'cast' => 'int'],
+			'type' => ['enum', [\selling\Group::PRIVATE, \selling\Group::PRO], 'cast' => 'enum'],
 			'name' => ['text8', 'min' => 1, 'max' => NULL, 'collate' => 'general', 'cast' => 'string'],
 			'color' => ['color', 'cast' => 'string'],
 			'farm' => ['element32', 'farm\Farm', 'null' => TRUE, 'cast' => 'element'],
@@ -44,7 +48,7 @@ class GroupModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'name', 'color', 'farm', 'createdAt'
+			'id', 'type', 'name', 'color', 'farm', 'createdAt'
 		]);
 
 		$this->propertiesToModule += [
@@ -74,6 +78,20 @@ class GroupModel extends \ModuleModel {
 
 	}
 
+	public function encode(string $property, $value) {
+
+		switch($property) {
+
+			case 'type' :
+				return ($value === NULL) ? NULL : (string)$value;
+
+			default :
+				return parent::encode($property, $value);
+
+		}
+
+	}
+
 	public function select(...$fields): GroupModel {
 		return parent::select(...$fields);
 	}
@@ -84,6 +102,10 @@ class GroupModel extends \ModuleModel {
 
 	public function whereId(...$data): GroupModel {
 		return $this->where('id', ...$data);
+	}
+
+	public function whereType(...$data): GroupModel {
+		return $this->where('type', ...$data);
 	}
 
 	public function whereName(...$data): GroupModel {

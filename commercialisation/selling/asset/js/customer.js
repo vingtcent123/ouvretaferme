@@ -4,6 +4,20 @@ class Customer {
 
 		const form = target.firstParent('form');
 
+		const idField = form.qs('[name="id"]');
+
+		if(idField !== null) {
+
+			new Ajax.Query(target)
+				.body({
+					id: idField.value,
+					type: target.value
+				})
+				.url('/selling/customer:getGroupField')
+				.fetch();
+
+		}
+
 		switch(target.value) {
 
 			case 'private' :

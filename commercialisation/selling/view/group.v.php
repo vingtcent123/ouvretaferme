@@ -2,6 +2,8 @@
 new JsonView('query', function($data, AjaxTemplate $t) {
 
 	$results = $data->cGroup->makeArray(fn($eGroup) => \selling\GroupUi::getAutocomplete($eGroup));
+	$results[] = \selling\GroupUi::getAutocompleteCreate($data->eFarm);
+
 	$t->push('results', $results);
 
 });

@@ -17,8 +17,8 @@ class CustomerLib extends CustomerCrud {
 				POST('category', default: ($e['destination'] === Customer::COLLECTIVE ? Customer::COLLECTIVE : $e['type']))
 			),
 			match($e->getCategory()) {
-				Customer::PRO => ['discount', 'color', 'orderFormEmail', 'deliveryNoteEmail', 'invoiceEmail'],
-				Customer::PRIVATE => ['discount'],
+				Customer::PRO => ['discount', 'color', 'orderFormEmail', 'deliveryNoteEmail', 'invoiceEmail', 'groups'],
+				Customer::PRIVATE => ['discount', 'groups'],
 				Customer::COLLECTIVE => ['color'],
 			}
 		);
@@ -31,8 +31,8 @@ class CustomerLib extends CustomerCrud {
 
 		return match($category) {
 
-			Customer::PRO => ['category', 'firstName', 'lastName', 'name', 'legalName', 'invoiceStreet1', 'invoiceStreet2', 'invoicePostcode', 'invoiceCity', 'siret', 'invoiceVat', 'email', 'defaultPaymentMethod', 'phone', 'groups'],
-			Customer::PRIVATE => ['category', 'firstName', 'lastName', 'name', 'email', 'defaultPaymentMethod', 'phone', 'groups'],
+			Customer::PRO => ['category', 'firstName', 'lastName', 'name', 'legalName', 'invoiceStreet1', 'invoiceStreet2', 'invoicePostcode', 'invoiceCity', 'siret', 'invoiceVat', 'email', 'defaultPaymentMethod', 'phone'],
+			Customer::PRIVATE => ['category', 'firstName', 'lastName', 'name', 'email', 'defaultPaymentMethod', 'phone'],
 			Customer::COLLECTIVE => match($for) {
 				'create' => ['category', 'firstName', 'lastName', 'name'],
 				'update' => ['firstName', 'lastName', 'name']
