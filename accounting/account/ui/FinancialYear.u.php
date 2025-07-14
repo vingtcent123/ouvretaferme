@@ -253,7 +253,7 @@ class FinancialYearUi {
 
 	}
 
-	public function close(\farm\Farm $eFarm, FinancialYear $eFinancialYear, \Collection $cOperationCharges): string {
+	public function close(\farm\Farm $eFarm, FinancialYear $eFinancialYear, \Collection $cOperationCharges, \Collection $cAccruedIncome): string {
 
 		$form = new \util\FormUi();
 
@@ -327,7 +327,7 @@ class FinancialYearUi {
 
 		}
 
-		$h .= '<h3 class="mt-2">'.s("Charges à reporter").'</h3>';
+		$h .= '<h3 class="mt-2">'.s("Charges constatées d'avance (CCA)").'</h3>';
 
 		if($cOperationCharges->empty()) {
 
@@ -353,9 +353,10 @@ class FinancialYearUi {
 							$h .= '<th>'.s("Date").'</th>';
 							$h .= '<th>'.s("Compte").'</th>';
 							$h .= '<th>'.s("Libellé").'</th>';
-							$h .= '<th>'.s("Montant HT").'</th>';
+							$h .= '<th class="text-end">'.s("Montant HT").'</th>';
 							$h .= '<th>'.s("Période de<br />consommation").'</th>';
 							$h .= '<th class="text-end">'.s("À reporter").'</th>';
+							$h .= '<th></th>';
 
 						$h .= '</tr>';
 
@@ -376,12 +377,23 @@ class FinancialYearUi {
 								]);
 								$amount = \util\TextUi::money($eOperation['deferredCharge']['amount']);
 
+								if($eOperation['deferredCharge']->canDelete()) {
+
+									$action = '<a data-ajax="'.\company\CompanyUi::urlJournal($eFarm).'/deferredCharge:doDelete" post-id="'.$eOperation['deferredCharge']['id'].'" title="'.s("Supprimer").'" data-confirm="'.s("Voulez-vous vraiment supprimer cette charge constatée d'avance ?").'" class="btn btn-danger">'.\Asset::icon('trash').'</a>';
+
+								} else {
+
+									$action = '';
+
+								}
+
 							} else {
 
 								$isDeferred = FALSE;
 
 								$period = '<a href="'.\company\CompanyUi::urlJournal($eFarm).'/deferredCharge:set?operation='.$eOperation['id'].'&financialYear='.$eFinancialYear['id'].'&field=dates">'.s("modifier").'</a>';
 								$amount = '<a href="'.\company\CompanyUi::urlJournal($eFarm).'/deferredCharge:set?operation='.$eOperation['id'].'&financialYear='.$eFinancialYear['id'].'&field=amount">'.s("modifier").'</a>';
+								$action = '';
 
 							}
 
@@ -408,6 +420,7 @@ class FinancialYearUi {
 								$h .= '<td class="text-end">'.\util\TextUi::money($eOperation['amount']).'</td>';
 								$h .= '<td>'.$period.'</td>';
 								$h .= '<td class="text-end">'.$amount.'</td>';
+								$h .= '<td class="td-min-content">'.$action.'</td>';
 
 							$h .= '</tr>';
 
@@ -418,14 +431,83 @@ class FinancialYearUi {
 				$h .= '</table>';
 
 				if($cOperationCharges->count() > $totalDeferred) {
-					$h .= '<a style="width: 100%" class="btn btn-outline-secondary" onclick="FinancialYear.displayCharges(this)">'.s("Afficher toutes les charges").'</a>';
+					$h .= '<a style="width: 100%" class="btn btn-outline-secondary" onclick="FinancialYear.displayCharges(this)">'.\Asset::icon('caret-down').' '.s("Afficher toutes les charges").'</a>';
 				}
 
 			$h .= '</div>';
+
 		}
 
-		$h .= $form->openAjax(\company\CompanyUi::urlAccount($eFarm).'/financialYear/:doClose', ['id' => 'account-financialYear-close', 'autocomplete' => 'off']);
 
+		$h .= '<h3 class="mt-2">'.s("Produits à recevoir (PAR)").'</h3>';
+
+		$h .= '<div class="util-info">';
+			$h .= s("Si vous avez déjà livré des biens durant cet exercice comptable mais qu'aucune facture n'a encore été établie, vous pouvez les enregistrer maintenant.");
+		$h .= '</div>';
+
+		$h .= '<div class="stick-sm util-overflow-sm mb-1">';
+
+			if($cAccruedIncome->empty()) {
+
+				$h .= '<div class="util-info">'.s("Aucun produit à recevoir n'a été enregistré sur cet exercice").'</div>';
+
+			} else {
+
+				$h .= '<table class="financial-year-par-table tr-even tr-hover">';
+
+					$h .= '<thead>';
+
+						$h .= '<tr>';
+
+							$h .= '<th>'.s("Date").'</th>';
+							$h .= '<th>'.s("Compte").'</th>';
+							$h .= '<th>'.s("Tiers").'</th>';
+							$h .= '<th>'.s("Libellé").'</th>';
+							$h .= '<th class="text-end">'.s("Montant HT").'</th>';
+							$h .= '<th></th>';
+
+						$h .= '</tr>';
+
+					$h .= '</thead>';
+
+					$h .= '<tbody>';
+
+						foreach($cAccruedIncome as $eAccruedIncome) {
+
+							if($eAccruedIncome->canDelete()) {
+
+								$action = '<a data-ajax="'.\company\CompanyUi::urlJournal($eFarm).'/accruedIncome:doDelete" post-id="'.$eAccruedIncome['id'].'" class="btn btn-danger">'.\Asset::icon('trash').'</a>';
+
+							} else {
+
+								$action = '';
+
+							}
+
+							$h .= '<tr id="'.$eAccruedIncome['id'].'">';
+
+								$h .= '<td>'.\util\DateUi::numeric($eAccruedIncome['date'], \util\DateUi::DATE).'</td>';
+								$h .= '<td>'.encode($eAccruedIncome['accountLabel']).'</td>';
+								$h .= '<td>'.encode($eAccruedIncome['thirdParty']['name']).'</td>';
+								$h .= '<td>'.encode($eAccruedIncome['description']).'</td>';
+								$h .= '<td class="text-end">'.\util\TextUi::money($eAccruedIncome['amount']).'</td>';
+								$h .= '<td class="td-min-content">'.$action.'</td>';
+
+							$h .= '</tr>';
+
+						}
+
+					$h .= '</tbody>';
+
+				$h .= '</table>';
+
+			}
+
+			$h .= '<a class="btn btn-secondary" href="'.\company\CompanyUi::urlJournal($eFarm).'/accruedIncome:create">'.\Asset::icon('plus-circle').' '.s("Ajouter un produit à recevoir").'</a>';
+
+		$h .= '</div>';
+
+		$h .= $form->openAjax(\company\CompanyUi::urlAccount($eFarm).'/financialYear/:doClose', ['id' => 'account-financialYear-close', 'autocomplete' => 'off']);
 
 			$h .= $form->hidden('farm', $eFarm['id']);
 			$h .= $form->hidden('id', $eFinancialYear['id']);

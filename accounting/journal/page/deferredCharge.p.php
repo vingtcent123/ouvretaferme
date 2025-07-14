@@ -1,18 +1,8 @@
 <?php
-new \journal\DeferredChargePage(
-	function($data) {
-		\user\ConnectionLib::checkLogged();
-
-		$data->eFarm->validate('canManage');
-		\company\CompanyLib::connectSpecificDatabaseAndServer($data->eFarm);
-	}
-);
-
 new Page(function($data) {
 	\user\ConnectionLib::checkLogged();
 
 	$data->eFarm->validate('canManage');
-	\company\CompanyLib::connectSpecificDatabaseAndServer($data->eFarm);
 })
 ->get('set', function($data) {
 
@@ -33,5 +23,18 @@ new Page(function($data) {
 	\journal\DeferredChargeLib::createDeferredCharge($_POST);
 
 	throw new ReloadAction('journal', 'DeferredCharge::saved');
+
+});
+
+new \journal\DeferredChargePage(function($data) {
+	\user\ConnectionLib::checkLogged();
+
+	$data->eFarm->validate('canManage');
+})
+->doDelete(function($data) {
+
+	\account\LogLib::save('delete', 'deferredCharge', ['id' => $data->e['id']]);
+
+	throw new ReloadAction('journal', 'DeferredCharge::deleted');
 
 });

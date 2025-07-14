@@ -50,7 +50,7 @@ class DeferredChargeUi {
 
 		$h .= $form->group(s("Dates de consommation"), s("du {startDate} au {endDate}", [
 			'startDate' => $form->date('startDate', $eOperation['date'], $datesAttributes),
-			'endDate' => $form->date('endDate', NULL, $datesAttributes),
+			'endDate' => $form->date('endDate', NULL, $datesAttributes + ['min' => date('Y-m-d', strtotime($eFinancialYear['endDate'].' + 1 day'))]),
 		]));
 		$h .= $form->dynamicGroup($eDeferredCharge, 'amount', function($d) use($amountAttributes) {
 			$d->attributes = $amountAttributes;
@@ -91,6 +91,10 @@ class DeferredChargeUi {
 		]);
 
 		switch($property) {
+
+			case 'amount' :
+				$d->attributes['min'] = 0;
+				break;
 
 			case 'status':
 				$d->values = [

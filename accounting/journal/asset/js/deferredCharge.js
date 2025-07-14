@@ -35,12 +35,17 @@ class DeferredCharge {
 		if (montantConsomme <= 0) {
 			return;
 		}
+		const minEndDate = new Date(qs('#journal-deferredCharge-set input[name="endDate"]').getAttribute('min'));
 
 		const dureeTotale = Math.round(joursN * (initialAmount / montantConsomme));
 		const endDate = new Date(startDate.getTime());
 		endDate.setDate(endDate.getDate() + dureeTotale - 1);
 
-		qs('#journal-deferredCharge-set input[name="endDate"]').setAttribute('value', endDate.toISOString().substring(0, 10));
+		if(minEndDate < endDate) {
+
+			qs('#journal-deferredCharge-set input[name="endDate"]').setAttribute('value', endDate.toISOString().substring(0, 10));
+
+		}
 
 	}
 

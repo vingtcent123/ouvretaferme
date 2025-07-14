@@ -1,9 +1,28 @@
+# Produits à recevoir (PAR)
+AccruedIncome:
+  id: serial32
+  operation: ?journal\Operation
+  correspondingOperation: ?journal\Operation
+  account: account\Account
+  accountLabel: text8(1, null) @collate(general)
+  thirdParty: ?account\ThirdParty
+  description: text8(1, null) @collate(general)
+  date: date
+  amount: decimal(8, 2, 0.01, null)
+  financialYear: account\FinancialYear
+  destinationFinancialYear: ?account\FinancialYear
+  status: enum(PLANNED, RECORDED, ACCRUED, CANCELLED) = PLANNED
+  createdAt: datetime = SPECIAL(now)
+  updatedAt: datetime = SPECIAL(now)
+  createdBy: ?user\User = SPECIAL(user)
+
+# Charges constatées d'avance (CCA)
 DeferredCharge:
   id: serial32
   operation: journal\Operation
   startDate: date # Début conso
   endDate: date # Fin conso
-  amount: decimal(8, 2)
+  amount: decimal(8, 2, 0.01, null)
   initialFinancialYear: account\FinancialYear
   destinationFinancialYear: ?account\FinancialYear
   status: enum(PLANNED, RECORDED, DEFERRED, CANCELLED)

@@ -171,18 +171,24 @@ class DeferredChargeLib extends DeferredChargeCrud {
 
 		}
 
-		$eDeferredCharge = new DeferredCharge([
-			'operation' => $eOperation,
+		$fw = new \FailWatch();
+
+		$eDeferredCharge = new DeferredCharge();
+		$values = [
+			'operation' => $eOperation['id'],
 			'startDate' => $eOperation['date'],
 			'endDate' => $endDate,
 			'amount' => $amount,
-			'initialFinancialYear' => $eFinancialYear,
+			'initialFinancialYear' => $eFinancialYear['id'],
 			'status' => DeferredCharge::PLANNED,
-		]);
+		];
+		$eDeferredCharge->build(['operation', 'startDate', 'endDate', 'amount', 'initialFinancialYear', 'status'], $values);
+
+		$fw->validate();
 
 		DeferredCharge::model()->insert($eDeferredCharge);
 
-		\account\LogLib::save('setDeferredCharge', 'deferredCharge', ['id' => $eDeferredCharge['id']]);
+		\account\LogLib::save('create', 'deferredCharge', ['id' => $eDeferredCharge['id']]);
 		return TRUE;
 
 	}

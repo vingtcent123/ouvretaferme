@@ -45,7 +45,7 @@ class DeferredChargeModel extends \ModuleModel {
 			'operation' => ['element32', 'journal\Operation', 'cast' => 'element'],
 			'startDate' => ['date', 'cast' => 'string'],
 			'endDate' => ['date', 'cast' => 'string'],
-			'amount' => ['decimal', 'digits' => 8, 'decimal' => 2, 'cast' => 'float'],
+			'amount' => ['decimal', 'digits' => 8, 'decimal' => 2, 'min' => 0.01, 'max' => NULL, 'cast' => 'float'],
 			'initialFinancialYear' => ['element32', 'account\FinancialYear', 'cast' => 'element'],
 			'destinationFinancialYear' => ['element32', 'account\FinancialYear', 'null' => TRUE, 'cast' => 'element'],
 			'status' => ['enum', [\journal\DeferredCharge::PLANNED, \journal\DeferredCharge::RECORDED, \journal\DeferredCharge::DEFERRED, \journal\DeferredCharge::CANCELLED], 'cast' => 'enum'],

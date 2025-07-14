@@ -57,8 +57,11 @@ new \account\FinancialYearPage(
 
 		$data->cFinancialYearOpen = \account\FinancialYearLib::getOpenFinancialYears();
 		$search = new Search(['financialYear' => $data->e]);
+
 		$data->cOperationCharges = \journal\OperationLib::getAllChargesForClosing($search);
 		\journal\DeferredChargeLib::getDeferredChargesForOperations($data->cOperationCharges);
+
+		$data->cAccruedIncome = \journal\AccruedIncomeLib::getAllProductToReceiveForClosing($data->e);
 
 		throw new ViewAction($data);
 	})
