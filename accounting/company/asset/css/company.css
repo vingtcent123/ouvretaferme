@@ -111,8 +111,8 @@ thead.thead-sticky th {
 	background-color: #edecec;
 }
 
-.is-bio {
-	color: var(--secondary);
+tr.tr-border-top {
+	border-top: 1px dotted var(--secondary);
 }
 
 .table-container {

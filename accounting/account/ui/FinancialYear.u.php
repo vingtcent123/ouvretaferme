@@ -6,6 +6,7 @@ class FinancialYearUi {
 	public function __construct() {
 
 		\Asset::js('account', 'financialYear.js');
+		\Asset::css('account', 'financialYear.css');
 		\Asset::css('company', 'company.css');
 
 	}
@@ -41,7 +42,7 @@ class FinancialYearUi {
 			$h .= '<a href="'.\company\CompanyUi::urlAccount($eFarm).'/financialYear/:update?id='.$eFinancialYear['id'].'" class="dropdown-item">';
 				$h .= s("Modifier");
 			$h .= '</a>';
-			$h .= '<a href="'.\company\CompanyUi::urlAccount($eFarm).'/financialYear/:update?action=close&id='.$eFinancialYear['id'].'" class="dropdown-item">'.s("Clôturer").'</a>';;
+			$h .= '<a href="'.\company\CompanyUi::urlAccount($eFarm).'/financialYear/:close?id='.$eFinancialYear['id'].'" class="dropdown-item">'.s("Clôturer").'</a>';;
 		$h .= '</div>';
 
 		return $h;
@@ -252,7 +253,7 @@ class FinancialYearUi {
 
 	}
 
-	public function close(\farm\Farm $eFarm, FinancialYear $eFinancialYear, \Collection $cOperationCharges): \Panel {
+	public function close(\farm\Farm $eFarm, FinancialYear $eFinancialYear, \Collection $cOperationCharges): string {
 
 		$form = new \util\FormUi();
 
@@ -334,13 +335,16 @@ class FinancialYearUi {
 
 		} else {
 
+			$countDeferred = $cOperationCharges->find(fn($e) => $e['deferredCharge'] !== NULL)->count();
+			$totalDeferred = $countDeferred;
+
 			$h .= '<div class="util-info">';
 				$h .= s("Toutes les écritures de charge de cet exercice comptable ont été listées ci-après. Si vous souhaitez que certaines d'entre elles soient en partie reportées au prochain exercice, vous pouvez modifier leur période de consommation ou le montant à reporter");
 			$h .= '</div>';
 
-			$h .= '<div class="stick-sm util-overflow-sm">';
+			$h .= '<div class="stick-sm util-overflow-sm mb-1">';
 
-				$h .= '<table class="financialYear-item-table tr-even tr-hover">';
+				$h .= '<table class="financial-year-cca-table tr-even tr-hover">';
 
 					$h .= '<thead>';
 
@@ -355,7 +359,6 @@ class FinancialYearUi {
 
 						$h .= '</tr>';
 
-
 					$h .= '</thead>';
 
 					$h .= '<tbody>';
@@ -363,6 +366,9 @@ class FinancialYearUi {
 						foreach($cOperationCharges as $eOperation) {
 
 							if(($eOperation['deferredCharge'] ?? NULL) !== NULL) {
+
+								$isDeferred = TRUE;
+								$countDeferred--;
 
 								$period = s("{startDate} - {endDate}", [
 									'startDate' => \util\DateUi::numeric($eOperation['date'], \util\DateUi::DATE),
@@ -372,11 +378,29 @@ class FinancialYearUi {
 
 							} else {
 
+								$isDeferred = FALSE;
+
 								$period = '<a href="'.\company\CompanyUi::urlJournal($eFarm).'/deferredCharge:set?operation='.$eOperation['id'].'&financialYear='.$eFinancialYear['id'].'&field=dates">'.s("modifier").'</a>';
 								$amount = '<a href="'.\company\CompanyUi::urlJournal($eFarm).'/deferredCharge:set?operation='.$eOperation['id'].'&financialYear='.$eFinancialYear['id'].'&field=amount">'.s("modifier").'</a>';
 
 							}
-							$h .= '<tr id="'.$eOperation['id'].'">';
+
+							if($countDeferred === 0 and $isDeferred === FALSE and $totalDeferred > 0) {
+
+								$class = 'tr-border-top hide';
+								$countDeferred = NULL;
+
+							} else if($isDeferred === FALSE) {
+
+								$class = 'hide';
+
+							} else {
+
+								$class = '';
+
+							}
+
+							$h .= '<tr id="'.$eOperation['id'].'" class="'.$class.'">';
 
 								$h .= '<td>'.\util\DateUi::numeric($eOperation['date'], \util\DateUi::DATE).'</td>';
 								$h .= '<td>'.encode($eOperation['accountLabel']).'</td>';
@@ -393,6 +417,10 @@ class FinancialYearUi {
 
 				$h .= '</table>';
 
+				if($cOperationCharges->count() > $totalDeferred) {
+					$h .= '<a style="width: 100%" class="btn btn-outline-secondary" onclick="FinancialYear.displayCharges(this)">'.s("Afficher toutes les charges").'</a>';
+				}
+
 			$h .= '</div>';
 		}
 
@@ -402,17 +430,11 @@ class FinancialYearUi {
 			$h .= $form->hidden('farm', $eFarm['id']);
 			$h .= $form->hidden('id', $eFinancialYear['id']);
 
-			$h .= $form->group(
-				content: $form->submit(s("Clôturer l'exercice comptable {year}", ['year' => self::getYear($eFinancialYear)]))
-			);
+			$h .= '<div>'.$form->submit(s("Clôturer l'exercice comptable {year}", ['year' => self::getYear($eFinancialYear)])).'</div>';
 
 		$h .= $form->close();
 
-		return new \Panel(
-			id: 'panel-account-financialYear-close',
-			title: s("Clôturer un exercice comptable"),
-			body: $h
-		);
+		return $h;
 
 	}
 

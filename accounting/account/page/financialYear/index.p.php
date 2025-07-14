@@ -43,17 +43,6 @@ new \account\FinancialYearPage(
 	})
 	->update(function($data) {
 
-		if(GET('action') === 'close') {
-
-			$data->e['vatData'] = \account\FinancialYearLib::getDataCheckForOpenFinancialYears($data->e);
-
-			$search = new Search(['financialYear' => $data->e]);
-			$data->cOperationCharges = \journal\OperationLib::getAllChargesForClosing($search);
-			\journal\DeferredChargeLib::getDeferredChargesForOperations($data->cOperationCharges);
-
-			throw new ViewAction($data, ':close');
-		}
-
 		throw new ViewAction($data);
 
 	})
@@ -61,6 +50,17 @@ new \account\FinancialYearPage(
 
 		throw new ReloadAction('account', 'FinancialYear::updated');
 
+	})
+	->read('close', function($data) {
+
+		$data->e['vatData'] = \account\FinancialYearLib::getDataCheckForOpenFinancialYears($data->e);
+
+		$data->cFinancialYearOpen = \account\FinancialYearLib::getOpenFinancialYears();
+		$search = new Search(['financialYear' => $data->e]);
+		$data->cOperationCharges = \journal\OperationLib::getAllChargesForClosing($search);
+		\journal\DeferredChargeLib::getDeferredChargesForOperations($data->cOperationCharges);
+
+		throw new ViewAction($data);
 	})
 	->write('doClose', function($data) {
 

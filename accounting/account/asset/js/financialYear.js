@@ -12,4 +12,11 @@ class FinancialYear {
 
 	}
 
+	static displayCharges(button) {
+
+		qsa('table.financial-year-cca-table tr.hide', element => element.removeHide());
+		button.classList.add('hide');
+
+	}
+
 }

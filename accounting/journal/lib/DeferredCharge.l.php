@@ -130,6 +130,21 @@ class DeferredChargeLib extends DeferredChargeCrud {
 			})->first();
 		});
 
+		// On affichera les charges déjà reportées en premier
+		$cOperation->sort(function($e1, $e2) {
+
+			if($e1['deferredCharge'] !== null and $e2['deferredCharge'] === NULL) {
+				return -1;
+			}
+
+			if($e1['deferredCharge'] === NULL and $e2['deferredCharge'] !== NULL) {
+				return 1;
+			}
+
+			return $e1['date'] > $e2['date'] ? 1 : -1;
+
+		});
+
 	}
 
 	public static function createDeferredCharge(array $input): bool {

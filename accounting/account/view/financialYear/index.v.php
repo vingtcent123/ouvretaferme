@@ -18,15 +18,22 @@ new AdaptativeView('create', function($data, PanelTemplate $t) {
 
 });
 
-new AdaptativeView('update', function($data, PanelTemplate $t) {
+new AdaptativeView('close', function($data, FarmTemplate $t) {
 
-	return new \account\FinancialYearUi()->update($data->eFarm, $data->e);
+	$t->nav = 'settings-accounting';
+
+	$t->title = s("Clôturer un exercice comptable");
+	$t->canonical = \company\CompanyUi::urlJournal($data->eFarm).'/thirdParty/';
+
+	$t->mainTitle = new \account\FinancialYearUi()->getManageTitle($data->eFarm, $data->cFinancialYearOpen);
+
+	echo new \account\FinancialYearUi()->close($data->eFarm, $data->e, $data->cOperationCharges);
 
 });
 
-new AdaptativeView('close', function($data, PanelTemplate $t) {
+new AdaptativeView('update', function($data, PanelTemplate $t) {
 
-	return new \account\FinancialYearUi()->close($data->eFarm, $data->e, $data->cOperationCharges);
+	return new \account\FinancialYearUi()->update($data->eFarm, $data->e);
 
 });
 
