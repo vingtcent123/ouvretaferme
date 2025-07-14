@@ -42,6 +42,7 @@ class AlertUi {
 
 			'Sale::deletedNotDraft' => s("Il n'est possible de supprimer que les ventes à l'état de brouillon ou de panier."),
 			'Sale::deletedMarket' => s("Cette vente de marché ne peut pas être supprimée."),
+			'Sale::customer.typeConsistency' => s("Vous ne pouvez pas mixer clients professionnels et particuliers lorsque vous créez une vente pour plusieurs clients."),
 
 			'Sale::shopPoint.check' => s("Vous devez choisir un mode de livraison pour continuer !"),
 			'Sale::phone.check' => s("Nous avons besoin de votre numéro de téléphone pour le suivi de votre commande."),
@@ -137,6 +138,7 @@ class AlertUi {
 			'Product::stockDisabled' => s("Le suivi du stock a bien été désactivé pour ce produit."),
 
 			'Sale::created' => s("La vente a bien été créée."),
+			'Sale::createdCollection' => s("Les ventes ont bien été créées !"),
 			'Sale::updated' => s("La vente a bien été mise à jour."),
 			'Sale::deleted' => s("La vente a bien été supprimée."),
 			'Sale::pdfCreated' => [

@@ -1459,7 +1459,7 @@ class FarmUi {
 				case Farmer::PRO :
 					$h .= '<div>';
 						$h .= '<a '.attr('onclick', 'Lime.Search.toggle("#sale-search")').' class="btn btn-primary">'.\Asset::icon('search').'</a> ';
-						$h .= '<a href="/selling/sale:create?farm='.$eFarm['id'].'" class="btn btn-primary">'.\Asset::icon('plus-circle').'<span class="hide-xs-down"> '.s("Nouvelle vente").'</span></a> ';
+						$h .= '<a href="/selling/sale:createCollection?farm='.$eFarm['id'].'" class="btn btn-primary">'.\Asset::icon('plus-circle').'<span class="hide-xs-down"> '.s("Nouvelle vente").'</span></a> ';
 					$h .= '</div>';
 					break;
 

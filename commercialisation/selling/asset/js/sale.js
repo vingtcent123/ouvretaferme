@@ -4,7 +4,7 @@ document.delegateEventListener('autocompleteSelect', '#sale-create', function(e)
 		return;
 	}
 
-	Sale.refreshCreateCustomer(e.detail.value);
+	Sale.refreshCustomerCreate(e.detail.value);
 
 });
 
@@ -26,14 +26,13 @@ class Sale {
 
 	}
 
-	static refreshCreateCustomer(customer) {
+	static refreshCustomerCreate(customer) {
 
-		const form = qs('#sale-create');
-
-		const shopDate = form.qs('input[name="shopDate"]');
+		let request = document.location.href;
+		request = request.setArgument('customer', customer);
 
 		new Ajax.Query()
-			.url('/selling/sale:create?farm='+ form.qs('input[name="farm"]').value + (shopDate ? '&shopDate='+ shopDate.value : '') +'&customer='+ customer)
+			.url(request)
 			.method('get')
 			.fetch();
 

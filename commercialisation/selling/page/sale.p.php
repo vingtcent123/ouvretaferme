@@ -26,26 +26,36 @@ new \selling\SalePage()
 	})
 	->create(function($data) {
 
-		$eDate = get_exists('shopDate') ? \shop\DateLib::getById(GET('shopDate'), \shop\Date::getSelection() + ['shop' => ['shared']])->validateProperty('farm', $data->eFarm)->validate('acceptOrder', 'acceptNotShared') : new \shop\Date();
+		if($data->e->isComposition()) {
 
-		$data->e->merge([
-			'shopDate' => $eDate,
-			'shop' => $eDate->empty() ? new \shop\Shop() : $eDate['shop'],
-			'customer' => get_exists('customer') ? \selling\CustomerLib::getById(GET('customer'))->validateProperty('farm', $data->eFarm) : new \selling\Customer()
-		]);
+			$data->e['shop'] = new \shop\Shop();
+			$data->e['shopDate'] = new \shop\Date();
+			$data->e['customer'] = new \selling\Customer();
+			$data->e['type'] = $data->e['compositionOf']['private'] ? \selling\Sale::PRIVATE : \selling\Sale::PRO;
+			$data->e['discount'] = 0;
+
+		} else {
+
+			$eDate = get_exists('shopDate') ? \shop\DateLib::getById(GET('shopDate'), \shop\Date::getSelection() + ['shop' => ['shared']])->validateProperty('farm', $data->eFarm)->validate('acceptOrder', 'acceptNotShared') : new \shop\Date();
+
+			$data->e->merge([
+				'shopDate' => $eDate,
+				'shop' => $eDate->empty() ? new \shop\Shop() : $eDate['shop']
+			]);
+
+			$data->e['customer'] = get_exists('customer') ? \selling\CustomerLib::getById(GET('customer'))->validateProperty('farm', $data->eFarm) : new \selling\Customer();
+
+			if($data->e['customer']->notEmpty()) {
+				$data->e['type'] = $data->e['customer']['type'];
+				$data->e['discount'] = $data->e['customer']['discount'];
+			}
+
+		}
 
 		if(
 			$data->e['customer']->notEmpty() or
 			$data->e->isComposition()
 		) {
-
-			if($data->e->isComposition()) {
-				$data->e['type'] = $data->e['compositionOf']['private'] ? \selling\Sale::PRIVATE : \selling\Sale::PRO;
-				$data->e['discount'] = 0;
-			} else {
-				$data->e['type'] = $data->e['customer']['type'];
-				$data->e['discount'] = $data->e['customer']['discount'];
-			}
 
 			$data->e['hasVat'] = $data->e['farm']->getSelling('hasVat');
 			$data->e['taxes'] = $data->e->getTaxesFromType();
@@ -69,6 +79,95 @@ new \selling\SalePage()
 				\selling\ProductUi::url($data->e['compositionOf']).'?success=Product::createdComposition' :
 				\selling\SaleUi::url($data->e).'?success=Sale::created'
 		);
+	});
+
+
+(new Page(function($data) {
+
+		$data->eFarm = \farm\FarmLib::getById(INPUT('farm'))->validate('canSelling');
+
+	}))
+	->get('createCollection', function($data) {
+
+		$data->e = new \selling\Sale([
+			'farm' => $data->eFarm,
+			'shop' => new \shop\Shop(),
+			'shopDate' => new \shop\Date(),
+			'origin' => \selling\Sale::SALE,
+			'customer' => get_exists('customer') ? \selling\CustomerLib::getById(GET('customer'))->validateProperty('farm', $data->eFarm) : new \selling\Customer()
+		]);
+
+		$data->e->validate('canCreate');
+
+		if($data->e['customer']->notEmpty()) {
+
+			$data->e['type'] = $data->e['customer']['type'];
+			$data->e['discount'] = 0;
+
+			$data->e['hasVat'] = $data->e['farm']->getSelling('hasVat');
+			$data->e['taxes'] = $data->e->getTaxesFromType();
+
+			$data->e['cCategory'] = \selling\CategoryLib::getByFarm($data->e['farm'], index: 'id');
+
+			$data->e['cProduct'] = \selling\ProductLib::getForSale($data->e['farm'], $data->e['type']);
+			\selling\ProductLib::applyItemsForSale($data->e['cProduct'], $data->e);
+
+		}
+
+		throw new \ViewAction($data);
+
+	})
+	->post('doCreateCollection', function($data) {
+
+		$eSaleReference = new \selling\Sale([
+			'farm' => $data->eFarm,
+			'origin' => \selling\Sale::SALE,
+		]);
+
+		$eSaleReference->validate('canCreate');
+
+		$fw = new \FailWatch();
+
+		$properties = \selling\SaleLib::getPropertiesCreate()($eSaleReference);
+
+		$cSale = new Collection();
+		$type = NULL;
+
+		foreach(POST('customers', 'array') as $customer) {
+
+			$eSale = clone $eSaleReference;
+
+			$eSale->build($properties, ['customer' => $customer] + $_POST, new \Properties('create'));
+
+			$type ??= $eSale['type'];
+
+			if($type !== $eSale['type']) {
+				\selling\Sale::fail('customer.typeConsistency');
+			}
+
+			$fw->validate();
+
+			$cSale[] = $eSale;
+
+		}
+
+		\selling\Sale::model()->beginTransaction();
+
+			foreach($cSale as $eSale) {
+				\selling\SaleLib::create($eSale);
+			}
+
+
+		\selling\Sale::model()->commit();
+
+		$fw->validate();
+
+		throw new RedirectAction(
+			$cSale->count() > 1 ?
+				\farm\FarmUi::urlSellingSales($data->eFarm, \farm\Farmer::ALL).'?success=selling:Sale::createdCollection' :
+				\selling\SaleUi::url($eSale).'?success=Sale::created'
+		);
+
 	});
 
 new \selling\SalePage()

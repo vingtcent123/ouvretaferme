@@ -708,7 +708,7 @@ class ItemLib extends ItemCrud {
 
 	public static function build(Sale $eSale, array $input, bool $errorIfEmpty): \Collection {
 
-		$eSale->expects(['id', 'customer', 'farm']);
+		$eSale->expects(['customer', 'farm']);
 
 		$count = count((array)($input['product'] ?? []));
 

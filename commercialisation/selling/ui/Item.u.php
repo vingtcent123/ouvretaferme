@@ -960,7 +960,7 @@ class ItemUi {
 
 		$h = '<div class="items-submit">';
 			$h .= '<div>';
-				$h .= $form->submit($submitText, ['class' => 'btn btn-primary btn-lg']);
+				$h .= $form->submit($submitText, ['data-submit-waiter' => s("Création en cours..."), 'class' => 'btn btn-primary btn-lg']);
 			$h .= '</div>';
 			$h .= '<div>';
 				$h .= '<div class="items-submit-icon">'.\Asset::icon('basket').'</div>';

@@ -199,9 +199,9 @@ function array_expects(array $input, $keys, ?callable $callback = NULL): mixed {
 
 }
 
-function array_delete(&$array, $key): bool {
+function array_delete(array &$array, mixed $value): bool {
 
-	$position = array_search($key, $array, TRUE);
+	$position = array_search($value, $array, TRUE);
 
 	if($position !== FALSE) {
 		unset($array[$position]);

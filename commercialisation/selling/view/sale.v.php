@@ -60,6 +60,10 @@ new AdaptativeView('create', function($data, PanelTemplate $t) {
 	return new \selling\SaleUi()->create($data->e);
 });
 
+new AdaptativeView('createCollection', function($data, PanelTemplate $t) {
+	return new \selling\SaleUi()->createCollection($data->e);
+});
+
 new AdaptativeView('update', function($data, PanelTemplate $t) {
 	return new \selling\SaleUi()->update($data->e);
 });

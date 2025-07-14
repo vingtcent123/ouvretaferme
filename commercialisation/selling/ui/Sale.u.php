@@ -1766,15 +1766,17 @@ class SaleUi {
 
 		$h .= $form->dynamicGroup($eSale, 'customer*', function($d) use($form, $eSale) {
 
-				$d->autocompleteDispatch = '#sale-create';
+			$d->autocompleteDispatch = '#sale-create';
 
-				if($eSale['shopDate']->notEmpty()) {
-					$d->autocompleteBody = ($d->autocompleteBody)($form, $eSale) + [
-						'type' => $eSale['shopDate']['type']
-					];
-				}
+			if($eSale['shopDate']->notEmpty()) {
 
-			});
+				$d->autocompleteBody = [
+					'type' => $eSale['shopDate']['type']
+				] + ($d->autocompleteBody)($form, $eSale);
+
+			}
+
+		});
 
 		if($eSale['customer']->notEmpty()) {
 
@@ -1817,6 +1819,74 @@ class SaleUi {
 			id: 'panel-sale-create',
 			title: s("Ajouter une vente"),
 			dialogOpen: $form->openAjax('/selling/sale:doCreate', ['id' => 'sale-create', 'class' => 'panel-dialog container']),
+			dialogClose: $form->close(),
+			body: $h,
+			footer: $footer
+		);
+
+	}
+
+	public function createCollection(Sale $eSale): \Panel {
+
+		$eSale->expects(['farm']);
+
+		$form = new \util\FormUi();
+
+		if($eSale['customer']->empty()) {
+			$eSale['customers'] = new \Collection();
+		} else {
+			$eSale['customers'] = new \Collection([$eSale['customer']]);
+		}
+
+		$h = '';
+
+		$h .= $form->asteriskInfo();
+
+		$h .= $form->hidden('farm', $eSale['farm']['id']);
+
+		if($eSale['customer']->notEmpty()) {
+
+			$formId = 'sale-create-collection';
+
+			$h .= $form->dynamicGroup($eSale, 'customers*', function($d) {
+
+				$d->autocompleteDispatch = '#sale-create-collection';
+
+			});
+
+			$h .= $form->dynamicGroup($eSale, 'deliveredAt');
+
+			if($eSale['cProduct']->notEmpty()) {
+
+				$h .= '<h3 class="mt-2">'.s("Ajouter des produits à la vente").'</h3>';
+
+				$h .= '<div class="util-info">'.s("La vente sera créée à l'identique pour tous les clients, y compris pour ceux qui bénéficient d'une remise commerciale.", $eSale['discount']).'</div>';
+
+				$h .= $form->dynamicField($eSale, 'productsList');
+
+				$footer = ItemUi::getCreateSubmit($eSale, $form, s("Créer la vente"));
+
+			} else {
+				$footer = $form->submit(s("Créer la vente"), ['data-submit-waiter' => s("Création en cours..."), 'class' => 'btn btn-primary btn-lg']);
+			}
+
+		} else {
+
+			$formId = 'sale-create';
+
+			$h .= $form->dynamicGroup($eSale, 'customer*', function($d) use($form, $eSale) {
+
+				$d->autocompleteDispatch = '#sale-create';
+
+			});
+
+			$footer = NULL;
+		}
+
+		return new \Panel(
+			id: 'panel-sale-create-collection',
+			title: s("Ajouter une vente"),
+			dialogOpen: $form->openAjax('/selling/sale:doCreateCollection', ['id' => $formId, 'class' => 'panel-dialog container']),
 			dialogClose: $form->close(),
 			body: $h,
 			footer: $footer
@@ -2082,6 +2152,7 @@ class SaleUi {
 	public static function p(string $property): \PropertyDescriber {
 
 		$d = Sale::model()->describer($property, [
+			'customers' => s("Clients"),
 			'customer' => s("Client"),
 			'deliveredAt' => fn($e) => $e->isComposition() ? s("Pour les livraisons à partir du") : s("Date de vente"),
 			'market' => s("Utiliser le logiciel de caisse<br/>pour cette vente"),
@@ -2111,6 +2182,19 @@ class SaleUi {
 					];
 				};
 				new CustomerUi()->query($d);
+				break;
+
+			case 'customers' :
+				$d->autocompleteDefault = fn(Sale $e) => new \Collection($e['customer']->notEmpty() ? [$e['customer']] : []);
+				$d->autocompleteBody = function(\util\FormUi $form, Sale $e) {
+					$e->expects(['farm']);
+					return [
+						'farm' => $e['farm']['id'],
+						'type' => $e['type'],
+						'new' => TRUE
+					];
+				};
+				new CustomerUi()->query($d, multiple: TRUE);
 				break;
 
 			case 'shopDate' :
