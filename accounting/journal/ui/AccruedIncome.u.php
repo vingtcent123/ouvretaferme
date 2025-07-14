@@ -55,6 +55,14 @@ class AccruedIncomeUi {
 
 	}
 
+	public static function getTranslation(string $type): string {
+
+		return match($type) {
+			AccruedIncome::RECORDED => s("Produit à recevoir"),
+			AccruedIncome::ACCRUED => s("Produit à recevoir"),
+		};
+
+	}
 
 	public static function p(string $property): \PropertyDescriber {
 

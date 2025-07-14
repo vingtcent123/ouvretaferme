@@ -110,6 +110,7 @@ class FinancialYearLib extends FinancialYearCrud {
 		\journal\DeferredChargeLib::recordChargesIntoFinancialYear($eFinancialYear);
 
 		// 3- Produits à recevoir
+		\journal\AccruedIncomeLib::recordAccruedIncomesIntoFinancialYear($eFinancialYear);
 
 		// 4- Stocks de fin d'exercice
 
