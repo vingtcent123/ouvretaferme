@@ -1,8 +1,9 @@
 # Produits à recevoir (PAR)
 AccruedIncome:
   id: serial32
-  operation: ?journal\Operation
-  correspondingOperation: ?journal\Operation
+  operationClosing: ?journal\Operation
+  operationOpening: ?journal\Operation
+  operationClearing: ?journal\Operation # Opération de rapprochement
   account: account\Account
   accountLabel: text8(1, null) @collate(general)
   thirdParty: ?account\ThirdParty
@@ -12,6 +13,9 @@ AccruedIncome:
   financialYear: account\FinancialYear
   destinationFinancialYear: ?account\FinancialYear
   status: enum(PLANNED, RECORDED, ACCRUED, CANCELLED) = PLANNED
+  isCleared: bool = FALSE
+  clearingDate: ?datetime
+  clearedBy: ?user\User
   createdAt: datetime = SPECIAL(now)
   updatedAt: datetime = SPECIAL(now)
   createdBy: ?user\User = SPECIAL(user)

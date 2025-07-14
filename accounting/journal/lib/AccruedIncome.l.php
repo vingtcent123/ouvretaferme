@@ -65,13 +65,13 @@ Class AccruedIncomeLib extends AccruedIncomeCrud {
 
 			Operation::model()->insert($eOperationCredit);
 
-			$eAccruedIncome['operation'] = $eOperationCredit;
+			$eAccruedIncome['operationClosing'] = $eOperationCredit;
 			$eAccruedIncome['destinationFinancialYear'] = $eFinancialYear;
 			$eAccruedIncome['status'] = AccruedIncome::RECORDED;
 			$eAccruedIncome['updatedAt'] = new \Sql('NOW()');
 
 			AccruedIncome::model()
-	      ->select(['operation', 'destinationFinancialYear', 'status', 'updatedAt'])
+	      ->select(['operationClosing', 'destinationFinancialYear', 'status', 'updatedAt'])
 	      ->update($eAccruedIncome);
 
 		}

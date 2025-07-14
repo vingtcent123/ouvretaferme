@@ -42,8 +42,9 @@ class AccruedIncomeModel extends \ModuleModel {
 
 		$this->properties = array_merge($this->properties, [
 			'id' => ['serial32', 'cast' => 'int'],
-			'operation' => ['element32', 'journal\Operation', 'null' => TRUE, 'cast' => 'element'],
-			'correspondingOperation' => ['element32', 'journal\Operation', 'null' => TRUE, 'cast' => 'element'],
+			'operationClosing' => ['element32', 'journal\Operation', 'null' => TRUE, 'cast' => 'element'],
+			'operationOpening' => ['element32', 'journal\Operation', 'null' => TRUE, 'cast' => 'element'],
+			'operationClearing' => ['element32', 'journal\Operation', 'null' => TRUE, 'cast' => 'element'],
 			'account' => ['element32', 'account\Account', 'cast' => 'element'],
 			'accountLabel' => ['text8', 'min' => 1, 'max' => NULL, 'collate' => 'general', 'cast' => 'string'],
 			'thirdParty' => ['element32', 'account\ThirdParty', 'null' => TRUE, 'cast' => 'element'],
@@ -53,22 +54,27 @@ class AccruedIncomeModel extends \ModuleModel {
 			'financialYear' => ['element32', 'account\FinancialYear', 'cast' => 'element'],
 			'destinationFinancialYear' => ['element32', 'account\FinancialYear', 'null' => TRUE, 'cast' => 'element'],
 			'status' => ['enum', [\journal\AccruedIncome::PLANNED, \journal\AccruedIncome::RECORDED, \journal\AccruedIncome::ACCRUED, \journal\AccruedIncome::CANCELLED], 'cast' => 'enum'],
+			'isCleared' => ['bool', 'cast' => 'bool'],
+			'clearingDate' => ['datetime', 'null' => TRUE, 'cast' => 'string'],
+			'clearedBy' => ['element32', 'user\User', 'null' => TRUE, 'cast' => 'element'],
 			'createdAt' => ['datetime', 'cast' => 'string'],
 			'updatedAt' => ['datetime', 'cast' => 'string'],
 			'createdBy' => ['element32', 'user\User', 'null' => TRUE, 'cast' => 'element'],
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'operation', 'correspondingOperation', 'account', 'accountLabel', 'thirdParty', 'description', 'date', 'amount', 'financialYear', 'destinationFinancialYear', 'status', 'createdAt', 'updatedAt', 'createdBy'
+			'id', 'operationClosing', 'operationOpening', 'operationClearing', 'account', 'accountLabel', 'thirdParty', 'description', 'date', 'amount', 'financialYear', 'destinationFinancialYear', 'status', 'isCleared', 'clearingDate', 'clearedBy', 'createdAt', 'updatedAt', 'createdBy'
 		]);
 
 		$this->propertiesToModule += [
-			'operation' => 'journal\Operation',
-			'correspondingOperation' => 'journal\Operation',
+			'operationClosing' => 'journal\Operation',
+			'operationOpening' => 'journal\Operation',
+			'operationClearing' => 'journal\Operation',
 			'account' => 'account\Account',
 			'thirdParty' => 'account\ThirdParty',
 			'financialYear' => 'account\FinancialYear',
 			'destinationFinancialYear' => 'account\FinancialYear',
+			'clearedBy' => 'user\User',
 			'createdBy' => 'user\User',
 		];
 
@@ -80,6 +86,9 @@ class AccruedIncomeModel extends \ModuleModel {
 
 			case 'status' :
 				return AccruedIncome::PLANNED;
+
+			case 'isCleared' :
+				return FALSE;
 
 			case 'createdAt' :
 				return new \Sql('NOW()');
@@ -123,12 +132,16 @@ class AccruedIncomeModel extends \ModuleModel {
 		return $this->where('id', ...$data);
 	}
 
-	public function whereOperation(...$data): AccruedIncomeModel {
-		return $this->where('operation', ...$data);
+	public function whereOperationClosing(...$data): AccruedIncomeModel {
+		return $this->where('operationClosing', ...$data);
 	}
 
-	public function whereCorrespondingOperation(...$data): AccruedIncomeModel {
-		return $this->where('correspondingOperation', ...$data);
+	public function whereOperationOpening(...$data): AccruedIncomeModel {
+		return $this->where('operationOpening', ...$data);
+	}
+
+	public function whereOperationClearing(...$data): AccruedIncomeModel {
+		return $this->where('operationClearing', ...$data);
 	}
 
 	public function whereAccount(...$data): AccruedIncomeModel {
@@ -165,6 +178,18 @@ class AccruedIncomeModel extends \ModuleModel {
 
 	public function whereStatus(...$data): AccruedIncomeModel {
 		return $this->where('status', ...$data);
+	}
+
+	public function whereIsCleared(...$data): AccruedIncomeModel {
+		return $this->where('isCleared', ...$data);
+	}
+
+	public function whereClearingDate(...$data): AccruedIncomeModel {
+		return $this->where('clearingDate', ...$data);
+	}
+
+	public function whereClearedBy(...$data): AccruedIncomeModel {
+		return $this->where('clearedBy', ...$data);
 	}
 
 	public function whereCreatedAt(...$data): AccruedIncomeModel {
