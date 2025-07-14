@@ -102,7 +102,7 @@ new \selling\SalePage()
 		if($data->e['customer']->notEmpty()) {
 
 			$data->e['type'] = $data->e['customer']['type'];
-			$data->e['discount'] = 0;
+			$data->e['discount'] = $data->e['customer']['discount'];
 
 			$data->e['hasVat'] = $data->e['farm']->getSelling('hasVat');
 			$data->e['taxes'] = $data->e->getTaxesFromType();
