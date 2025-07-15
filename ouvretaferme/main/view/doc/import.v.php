@@ -200,6 +200,18 @@ new AdaptativeView('index', function($data, DocTemplate $t) {
 				s("Le rendement attendu pour cette culture en fonction de l'unité de récolte choisie"),
 				'3.5'
 			],
+			[
+				s("Nom de la variété"),
+				'variety_name',
+				s("Une variété utilisée pour cette culture. Il est possible d'enchainer les colonnes <i>variety_name</i> et <i>variety_part</i> autant de fois que nécessaire dans le fichier CSV à importer."),
+				'Andine cornue'
+			],
+			[
+				s("Fréquence de la variété en %"),
+				'variety_part',
+				s("La part de la variété dans la culture. La somme des variétés doit être égale à 100."),
+				'25'
+			],
 		];
 
 		echo '<table>';

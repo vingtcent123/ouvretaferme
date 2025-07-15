@@ -147,7 +147,7 @@ class CustomerUi {
 			$h .= $form->openAjax($url, ['method' => 'get', 'id' => 'form-search']);
 				$h .= '<div>';
 					if($search->get('cGroup')->notEmpty()) {
-						$h .= $form->select('group', $search->get('cGroup'), $search->get('group'), ['placeholder' => s("Groupe de clients")]);
+						$h .= $form->select('group', $search->get('cGroup'), $search->get('group'), ['placeholder' => s("Groupe")]);
 					}
 					$h .= $form->text('name', $search->get('name'), ['placeholder' => s("Nom de client")]);
 					$h .= $form->email('email', $search->get('email'), ['placeholder' => s("E-mail de client")]);
@@ -176,6 +176,11 @@ class CustomerUi {
 
 			$h .= '<thead>';
 				$h .= '<tr>';
+					$h .= '<th rowspan="2" class="td-checkbox">';
+						$h .= '<label title="'.s("Tout cocher / Tout décocher").'">';
+							$h .= '<input type="checkbox" class="batch-all" onclick="Customer.toggleSelection(this)"/>';
+						$h .= '</label>';
+					$h .= '</th>';
 					$h .= '<th rowspan="2">';
 						$label = s("Prénom");
 						$h .= ($search ? $search->linkSort('firstName', $label) : $label).' / ';
@@ -199,7 +204,19 @@ class CustomerUi {
 
 					$eSaleTotal = $eCustomer['eSaleTotal'];
 
-					$h .= '<tr>';
+					$batch = [];
+
+					if($eCustomer['status'] === Customer::INACTIVE) {
+						$batch[] = 'not-active';
+					}
+
+					$h .= '<tr class="'.($eCustomer['status'] === Customer::INACTIVE ? 'tr-disabled' : '').'">';
+
+						$h .= '<td class="td-checkbox">';
+							$h .= '<label>';
+								$h .= '<input type="checkbox" name="batch[]" value="'.$eCustomer['id'].'" oninput="Customer.changeSelection()" data-batch="'.implode(' ', $batch).'"/>';
+							$h .= '</label>';
+						$h .= '</td>';
 
 						$h .= '<td>';
 
@@ -285,7 +302,49 @@ class CustomerUi {
 			$h .= \util\TextUi::pagination($page, $nCustomer / 100);
 		}
 
+		$h .= $this->getBatch($eFarm);
+
 		return $h;
+
+	}
+
+	public function getBatch(\farm\Farm $eFarm, \Collection $cCategory = new \Collection()): string {
+
+		$menu = '';
+
+		if($cCategory->count() > 0) {
+
+			$menu .= '<a data-dropdown="top-start" class="batch-menu-category batch-menu-item">';
+				$menu .= \Asset::icon('tag');
+				$menu .= '<span>'.s("Catégorie").'</span>';
+			$menu .= '</a>';
+
+			$menu .= '<div class="dropdown-list bg-secondary">';
+				$menu .= '<div class="dropdown-title">'.s("Changer de catégorie").'</div>';
+				foreach($cCategory as $eCategory) {
+					$menu .= '<a data-ajax-submit="/selling/product:doUpdateCategoryCollection" data-ajax-target="#batch-group-form" post-category="'.$eCategory['id'].'" class="dropdown-item">'.encode($eCategory['name']).'</a>';
+				}
+				$menu .= '<a data-ajax-submit="/selling/product:doUpdateCategoryCollection" data-ajax-target="#batch-group-form" post-category="" class="dropdown-item"><i>'.s("Non catégorisé").'</i></a>';
+			$menu .= '</div>';
+
+		}
+
+		$menu .= '<a data-url-collection="/selling/sale:createCollection?farm='.$eFarm['id'].'" data-url="/selling/sale:create?farm='.$eFarm['id'].'&customer=" class="batch-menu-sale batch-menu-item">';
+			$menu .= \Asset::icon('plus-circle');
+			$menu .= '<span>'.s("Créer une vente").'</span>';
+		$menu .= '</a>';
+
+		$menu .= '<a data-ajax-submit="/selling/customer:doUpdateStatusCollection" post-status="'.Customer::ACTIVE.'" data-confirm="'.s("Activer ces clients ?").'" class="batch-menu-active batch-menu-item">';
+			$menu .= \Asset::icon('toggle-on');
+			$menu .= '<span>'.s("Activer").'</span>';
+		$menu .= '</a>';
+
+		$menu .= '<a data-ajax-submit="/selling/customer:doUpdateStatusCollection" post-status="'.Customer::INACTIVE.'" data-confirm="'.s("Désactiver ces clients ?").'" class="batch-menu-inactive batch-menu-item">';
+			$menu .= \Asset::icon('toggle-off');
+			$menu .= '<span>'.s("Désactiver").'</span>';
+		$menu .= '</a>';
+
+		return \util\BatchUi::group($menu, title: s("Pour les clients sélectionnés"));
 
 	}
 

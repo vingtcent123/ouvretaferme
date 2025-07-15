@@ -50,4 +50,47 @@ class Customer {
 
 	}
 
+	static toggleSelection(target) {
+
+		CheckboxField.all(target.firstParent('table'), target.checked, '[name^="batch[]"]');
+
+		this.changeSelection(target);
+
+	}
+
+	static changeSelection()	 {
+
+		return Batch.changeSelection(function(selection) {
+
+			let idsCollection = '';
+			let lastId = '';
+
+			selection.forEach(node => {
+
+				idsCollection += '&customers[]='+ node.value;
+				lastId = node.value;
+
+			});
+
+			qs(
+				'.batch-menu-sale',
+				selection.filter('[data-batch~="not-active"]').length > 0 ?
+					node => node.hide() :
+					node => {
+
+						node.removeHide();
+
+						if(selection.length === 1) {
+							node.setAttribute('href', node.dataset.url + lastId);
+						} else {
+							node.setAttribute('href', node.dataset.urlCollection + idsCollection);
+						}
+
+					}
+			);
+
+		});
+
+	}
+
 }

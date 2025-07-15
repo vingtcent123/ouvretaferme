@@ -89,24 +89,51 @@ new \selling\SalePage()
 	}))
 	->get('createCollection', function($data) {
 
+		$eCustomer = new \selling\Customer();
+		$cCustomer = new Collection();
+
+		if(get_exists('customers')) {
+
+			$cCustomer = \selling\CustomerLib::getByIds(GET('customers', 'array'));
+
+			\selling\Customer::validateCreateSale($cCustomer, $data->eFarm);
+
+			if($cCustomer->notEmpty()) {
+				$eCustomer = $cCustomer->first();
+			}
+
+		} else if(get_exists('customer')) {
+
+			$eCustomer = \selling\CustomerLib::getById(GET('customer'))->validateProperty('farm', $data->eFarm);
+
+			if($eCustomer->notEmpty()) {
+				$cCustomer[] = $eCustomer;
+			}
+
+		}
+
+		if(
+			$cCustomer->count() === 1 and
+			$eCustomer['destination'] === \selling\Customer::COLLECTIVE
+		) {
+			throw new RedirectAction('/selling/sale:create?farm='.$data->eFarm['id'].'&customer='.$eCustomer['id'].'');
+		}
+
 		$data->e = new \selling\Sale([
 			'farm' => $data->eFarm,
 			'shop' => new \shop\Shop(),
 			'shopDate' => new \shop\Date(),
 			'origin' => \selling\Sale::SALE,
-			'customer' => get_exists('customer') ? \selling\CustomerLib::getById(GET('customer'))->validateProperty('farm', $data->eFarm) : new \selling\Customer()
+			'customer' => $eCustomer,
+			'cCustomer' => $cCustomer
 		]);
-
-		if($data->e['customer']->notEmpty() and $data->e['customer']['destination'] === \selling\Customer::COLLECTIVE) {
-			throw new RedirectAction('/selling/sale:create?farm='.$data->eFarm['id'].'&customer='.$data->e['customer']['id'].'');
-		}
 
 		$data->e->validate('canCreate');
 
-		if($data->e['customer']->notEmpty()) {
+		if($cCustomer->notEmpty()) {
 
-			$data->e['type'] = $data->e['customer']['type'];
-			$data->e['discount'] = $data->e['customer']['discount'];
+			$data->e['type'] = $eCustomer['type'];
+			$data->e['discount'] = $eCustomer['discount'];
 
 			$data->e['hasVat'] = $data->e['farm']->getSelling('hasVat');
 			$data->e['taxes'] = $data->e->getTaxesFromType();

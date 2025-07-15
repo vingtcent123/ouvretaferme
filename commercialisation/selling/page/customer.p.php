@@ -99,6 +99,12 @@ new \selling\CustomerPage()
 		throw new RedirectAction(\farm\FarmUi::urlSellingCustomer($data->e['farm']).'?success=selling:Customer::deleted');
 	});
 
+new \selling\CustomerPage()
+	->applyCollection(function($data, Collection $c) {
+		$c->validateProperty('farm', $c->first()['farm']);
+	})
+	->doUpdateCollectionProperties('doUpdateStatusCollection', ['status'], fn($data) => throw new ReloadAction());
+
 new Page()
 	->post('getGroupField', function($data) {
 

@@ -161,6 +161,10 @@ tr.tr-title {
 	font-weight: bold;
 }
 
+tr.tr-disabled {
+	opacity: 0.5;
+}
+
 div.div-even > *:nth-of-type(even) {
     background-color: white;
 }

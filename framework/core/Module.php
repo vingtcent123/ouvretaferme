@@ -5150,7 +5150,7 @@ abstract class ModulePage extends Page {
 		$this->applyElement = function($data, Element $e) {
 		};
 
-		$this->applyCollection = function($data, Element $e) {
+		$this->applyCollection = function($data, Collection $e) {
 		};
 
 		parent::__construct($start);

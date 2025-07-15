@@ -42,6 +42,7 @@ class AlertUi {
 
 			'Sale::deletedNotDraft' => s("Il n'est possible de supprimer que les ventes à l'état de brouillon ou de panier."),
 			'Sale::deletedMarket' => s("Cette vente de marché ne peut pas être supprimée."),
+			'Sale::customer.typeCollective' => s("Vous ne pouvez pas créer une vente pour plusieurs clients dont au moins l'un est un point de vente collectif."),
 			'Sale::customer.typeConsistency' => s("Vous ne pouvez pas mixer clients professionnels et particuliers lorsque vous créez une vente pour plusieurs clients."),
 
 			'Sale::shopPoint.check' => s("Vous devez choisir un mode de livraison pour continuer !"),

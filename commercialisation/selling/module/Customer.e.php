@@ -82,6 +82,33 @@ class Customer extends CustomerElement {
 		return $this->canManage();
 	}
 
+	public static function validateCreateSale(\Collection $cCustomer, \farm\Farm $eFarm): void {
+
+		if($cCustomer->empty()) {
+			return;
+		}
+
+		$cCustomer->validateProperty('farm', $eFarm);
+
+		$type = $cCustomer->first()['type'];
+
+		foreach($cCustomer as $eCustomer) {
+
+			if(
+				$cCustomer->count() > 1 and
+				$eCustomer->isCollective()
+			) {
+				throw new \FailAction('selling\Sale::customer.typeCollective');
+			}
+
+			if($eCustomer['type'] !== $type) {
+				throw new \FailAction('selling\Sale::customer.typeConsistency');
+			}
+
+		}
+
+	}
+
 	public function isPro(): bool {
 		$this->expects(['type']);
 		return $this['type'] === Customer::PRO;

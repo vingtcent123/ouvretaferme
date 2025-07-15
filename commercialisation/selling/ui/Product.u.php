@@ -165,7 +165,7 @@ class ProductUi {
 
 				$eItemTotal = $eProduct['eItemTotal'];
 
-				$h .= '<tr>';
+				$h .= '<tr class="'.($eProduct['status'] === Product::INACTIVE ? 'tr-disabled' : '').'">';
 
 					$h .= '<td class="td-checkbox">';
 						$h .= '<label>';

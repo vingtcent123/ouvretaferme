@@ -1844,7 +1844,7 @@ class SaleUi {
 
 		$h .= $form->hidden('farm', $eSale['farm']['id']);
 
-		if($eSale['customer']->notEmpty()) {
+		if($eSale['cCustomer']->notEmpty()) {
 
 			$formId = 'sale-create-collection';
 
@@ -2187,7 +2187,7 @@ class SaleUi {
 				break;
 
 			case 'customers' :
-				$d->autocompleteDefault = fn(Sale $e) => new \Collection($e['customer']->notEmpty() ? [$e['customer']] : []);
+				$d->autocompleteDefault = fn(Sale $e) => $e['cCustomer'] ?? new \Collection();
 				$d->autocompleteBody = function(\util\FormUi $form, Sale $e) {
 					$e->expects(['farm']);
 					return [
