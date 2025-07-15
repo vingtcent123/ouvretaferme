@@ -97,6 +97,10 @@ new \selling\SalePage()
 			'customer' => get_exists('customer') ? \selling\CustomerLib::getById(GET('customer'))->validateProperty('farm', $data->eFarm) : new \selling\Customer()
 		]);
 
+		if($data->e['customer']->notEmpty() and $data->e['customer']['destination'] === \selling\Customer::COLLECTIVE) {
+			throw new RedirectAction('/selling/sale:create?farm='.$data->eFarm['id'].'&customer='.$data->e['customer']['id'].'');
+		}
+
 		$data->e->validate('canCreate');
 
 		if($data->e['customer']->notEmpty()) {
