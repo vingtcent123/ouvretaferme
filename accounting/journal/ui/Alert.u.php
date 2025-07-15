@@ -59,6 +59,10 @@ class AlertUi {
 			'AccruedIncome::created' => s("Le produit à recevoir a bien été enregistré."),
 			'AccruedIncome::deleted' => s("Le produit à recevoir a bien été supprimé."),
 
+			'Stock::created' => s("Le stock a bien été enregistré."),
+			'Stock::deleted' => s("Le stock a bien été supprimé."),
+			'Stock::set' => s("Le stock a bien été enregistré pour cet exercice fiscal."),
+
 			default => null
 
 		};

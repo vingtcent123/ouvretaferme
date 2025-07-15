@@ -78,6 +78,11 @@ class AccruedIncomeModel extends \ModuleModel {
 			'createdBy' => 'user\User',
 		];
 
+		$this->indexConstraints = array_merge($this->indexConstraints, [
+			['financialYear'],
+			['status']
+		]);
+
 	}
 
 	public function getDefaultValue(string $property) {

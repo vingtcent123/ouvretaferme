@@ -32,6 +32,21 @@ class FinancialYearUi {
 
 	}
 
+	public function getCloseTitle(\farm\Farm $eFarm): string {
+
+		$h = '<div class="util-action">';
+
+			$h .= '<h1>';
+				$h .= '<a href="'.\company\CompanyUi::urlAccount($eFarm).'/financialYear/"  class="h-back">'.\Asset::icon('arrow-left').'</a>';
+				$h .= s("Clôturer un exercice comptable");
+			$h .= '</h1>';
+
+		$h .= '</div>';
+
+		return $h;
+
+	}
+
 	protected function getAction(\farm\Farm $eFarm, FinancialYear $eFinancialYear): string {
 
 		$h = '<a data-dropdown="bottom-end" class="dropdown-toggle btn btn-outline-primary">'.\Asset::icon('gear-fill').'</a>';
@@ -253,7 +268,7 @@ class FinancialYearUi {
 
 	}
 
-	public function close(\farm\Farm $eFarm, FinancialYear $eFinancialYear, \Collection $cOperationCharges, \Collection $cAccruedIncome): string {
+	public function close(\farm\Farm $eFarm, FinancialYear $eFinancialYear, \Collection $cOperationCharges, \Collection $cAccruedIncome, \Collection $cStock): string {
 
 		$form = new \util\FormUi();
 
@@ -278,6 +293,30 @@ class FinancialYearUi {
 
 			$h .= '</dl>';
 		$h .= '</div>';
+
+		$h .= $this->vat($eFarm, $eFinancialYear);
+		$h .= $this->cca($eFarm, $eFinancialYear, $cOperationCharges);
+		$h .= $this->par($eFarm, $eFinancialYear, $cAccruedIncome);
+
+		$h .= new \journal\StockUi()->list($eFarm, $eFinancialYear, $cStock);
+
+
+		$h .= $form->openAjax(\company\CompanyUi::urlAccount($eFarm).'/financialYear/:doClose', ['id' => 'account-financialYear-close', 'autocomplete' => 'off']);
+
+			$h .= $form->hidden('farm', $eFarm['id']);
+			$h .= $form->hidden('id', $eFinancialYear['id']);
+
+			$h .= '<div>'.$form->submit(s("Clôturer l'exercice comptable {year}", ['year' => self::getYear($eFinancialYear)])).'</div>';
+
+		$h .= $form->close();
+
+		return $h;
+
+	}
+
+	private function vat(\farm\Farm $eFarm, FinancialYear $eFinancialYear): string {
+
+		$h = '';
 
 		if($eFinancialYear['hasVat'] and count($eFinancialYear['vatData']) > 0) {
 
@@ -327,11 +366,17 @@ class FinancialYearUi {
 
 		}
 
-		$h .= '<h3 class="mt-2">'.s("Charges constatées d'avance (CCA)").'</h3>';
+		return $h;
+
+	}
+
+	private function cca(\farm\Farm $eFarm, FinancialYear $eFinancialYear, \Collection $cOperationCharges): string {
+
+		$h = '<h3 class="mt-2">'.s("Charges constatées d'avance (CCA)").'</h3>';
 
 		if($cOperationCharges->empty()) {
 
-			$h .= '<div class="util-info">'.s("Aucune charge à reporter sur cet exercice").'</div>';
+			$h .= '<div class="util-info">'.s("Aucune charge ne peut être reportée.").'</div>';
 
 		} else {
 
@@ -339,7 +384,7 @@ class FinancialYearUi {
 			$totalDeferred = $countDeferred;
 
 			$h .= '<div class="util-info">';
-				$h .= s("Toutes les écritures de charge de cet exercice comptable ont été listées ci-après. Si vous souhaitez que certaines d'entre elles soient en partie reportées au prochain exercice, vous pouvez modifier leur période de consommation ou le montant à reporter");
+				$h .= \Asset::icon('info-circle').' '.s("Toutes les écritures de charge de cet exercice comptable ont été listées ci-après. Si vous souhaitez que certaines d'entre elles soient en partie reportées au prochain exercice, vous pouvez modifier leur période de consommation ou le montant à reporter");
 			$h .= '</div>';
 
 			$h .= '<div class="stick-sm util-overflow-sm mb-1">';
@@ -438,20 +483,21 @@ class FinancialYearUi {
 
 		}
 
+		return $h;
 
-		$h .= '<h3 class="mt-2">'.s("Produits à recevoir (PAR)").'</h3>';
+	}
+
+	private function par(\farm\Farm $eFarm, FinancialYear $eFinancialYear, \Collection $cAccruedIncome): string {
+
+		$h = '<h3 class="mt-2">'.s("Produits à recevoir (PAR)").'</h3>';
 
 		$h .= '<div class="util-info">';
-			$h .= s("Si vous avez déjà livré des biens durant cet exercice comptable mais qu'aucune facture n'a encore été établie, vous pouvez les enregistrer maintenant.");
+			$h .= \Asset::icon('info-circle').' '.s("Si vous avez déjà livré des biens durant cet exercice comptable mais qu'aucune facture n'a encore été établie, vous pouvez les enregistrer maintenant.");
 		$h .= '</div>';
 
 		$h .= '<div class="stick-sm util-overflow-sm mb-1">';
 
-			if($cAccruedIncome->empty()) {
-
-				$h .= '<div class="util-info">'.s("Aucun produit à recevoir n'a été enregistré sur cet exercice").'</div>';
-
-			} else {
+			if($cAccruedIncome->notEmpty()) {
 
 				$h .= '<table class="financial-year-par-table tr-even tr-hover">';
 
@@ -503,18 +549,9 @@ class FinancialYearUi {
 
 			}
 
-			$h .= '<a class="btn btn-secondary" href="'.\company\CompanyUi::urlJournal($eFarm).'/accruedIncome:create">'.\Asset::icon('plus-circle').' '.s("Ajouter un produit à recevoir").'</a>';
+			$h .= '<a class="btn btn-secondary" href="'.\company\CompanyUi::urlJournal($eFarm).'/accruedIncome:create?financialYear='.$eFinancialYear['id'].'">'.\Asset::icon('plus-circle').' '.s("Ajouter un produit à recevoir").'</a>';
 
 		$h .= '</div>';
-
-		$h .= $form->openAjax(\company\CompanyUi::urlAccount($eFarm).'/financialYear/:doClose', ['id' => 'account-financialYear-close', 'autocomplete' => 'off']);
-
-			$h .= $form->hidden('farm', $eFarm['id']);
-			$h .= $form->hidden('id', $eFinancialYear['id']);
-
-			$h .= '<div>'.$form->submit(s("Clôturer l'exercice comptable {year}", ['year' => self::getYear($eFinancialYear)])).'</div>';
-
-		$h .= $form->close();
 
 		return $h;
 

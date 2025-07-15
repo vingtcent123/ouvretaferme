@@ -40,6 +40,17 @@ new \account\FinancialYearPage(
 
 		throw new ReloadAction('account', 'FinancialYear::created');
 
+	});
+
+new \account\FinancialYearPage(
+	function($data) {
+		\user\ConnectionLib::checkLogged();
+		$data->eFarm->validate('canManage');
+	})
+	->applyElement(function($data, \account\FinancialYear $e) {
+
+		$e->validate('canUpdate');
+
 	})
 	->update(function($data) {
 
@@ -62,6 +73,9 @@ new \account\FinancialYearPage(
 		\journal\DeferredChargeLib::getDeferredChargesForOperations($data->cOperationCharges);
 
 		$data->cAccruedIncome = \journal\AccruedIncomeLib::getAllProductToReceiveForClosing($data->e);
+
+		// Stock enregistré de cet exercice comptable + celui de l'exercice précédent non reporté
+		$data->cStock = \journal\StockLib::getAllForFinancialYear($data->e);
 
 		throw new ViewAction($data);
 	})

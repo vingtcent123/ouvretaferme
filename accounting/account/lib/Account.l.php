@@ -107,9 +107,11 @@ class AccountLib extends AccountCrud {
         + ['vatAccount' => ['class', 'vatRate', 'description']]
       )
 			->sort(['class' => SORT_ASC])
+			->whereClass('IN', fn() => \Setting::get('account\stockVariationClasses')[$search->get('stock')['class']], if: $search->has('stock'))
 			->where('class LIKE "%'.$query.'%" OR description LIKE "%'.$query.'%"', if: $query !== '')
 			->where('class LIKE "'.$search->get('classPrefix').'%"', if: $search->get('classPrefix'))
-			->whereClass('LIKE', '%'.$search->get('class').'%', if: $search->get('class'))
+			->whereClass('LIKE', fn() => '%'.$search->get('class').'%', if: $search->get('class') and is_string($search->get('class')))
+			->whereClass('IN', fn() => $search->get('class'), if: $search->has('class') and is_array($search->get('class')))
 			->whereDescription('LIKE', '%'.$search->get('description').'%', if: $search->get('description'))
 			->whereCustom(TRUE, if: $search->get('customFilter') === TRUE)
 			->where('vatAccount IS NOT NULL', if: $search->get('vatFilter') === TRUE)

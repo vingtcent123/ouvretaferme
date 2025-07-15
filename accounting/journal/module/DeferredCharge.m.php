@@ -65,6 +65,11 @@ class DeferredChargeModel extends \ModuleModel {
 			'createdBy' => 'user\User',
 		];
 
+		$this->indexConstraints = array_merge($this->indexConstraints, [
+			['initialFinancialYear'],
+			['status']
+		]);
+
 	}
 
 	public function getDefaultValue(string $property) {

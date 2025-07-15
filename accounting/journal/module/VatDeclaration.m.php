@@ -62,6 +62,10 @@ class VatDeclarationModel extends \ModuleModel {
 			'createdBy' => 'user\User',
 		];
 
+		$this->indexConstraints = array_merge($this->indexConstraints, [
+			['financialYear']
+		]);
+
 	}
 
 	public function getDefaultValue(string $property) {

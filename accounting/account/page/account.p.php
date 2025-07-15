@@ -29,8 +29,16 @@ new Page(function($data) {
 	$thirdParty = POST('thirdParty', '?int');
 	$classPrefix = REQUEST('classPrefix');
 	$accountsAlreadyUsed = POST('accountAlready', 'array', []);
+	$stock = POST('stock', '?int');
 
-	$data->search = new Search(['classPrefix' => $classPrefix]);
+
+	$data->search = new Search(['classPrefix' => $classPrefix, 'class' => GET('class', 'array', [])]);
+	if($stock) {
+		$eAccountStock = \account\AccountLib::getById($stock);
+		if($eAccountStock->notEmpty()) {
+			$data->search->set('stock', $eAccountStock);
+		}
+	}
 	$data->cAccount = \account\AccountLib::getAll(query: $query, search: $data->search);
 
 	$data->cAccount = \account\AccountLib::orderAccounts($data->cAccount, $thirdParty, $accountsAlreadyUsed);

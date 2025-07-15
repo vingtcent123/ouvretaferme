@@ -177,6 +177,7 @@ class AccountUi {
 		return [
 			'value' => $eAccount['id'],
 			'class' => encode($eAccount['class']),
+			'description' => $eAccount['description'],
 			'vatRate' => $vatRate,
 			'company' => $farm,
 			'itemHtml' => $itemHtml,

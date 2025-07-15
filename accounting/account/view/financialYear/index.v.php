@@ -25,9 +25,9 @@ new AdaptativeView('close', function($data, FarmTemplate $t) {
 	$t->title = s("Clôturer un exercice comptable");
 	$t->canonical = \company\CompanyUi::urlJournal($data->eFarm).'/thirdParty/';
 
-	$t->mainTitle = new \account\FinancialYearUi()->getManageTitle($data->eFarm, $data->cFinancialYearOpen);
+	$t->mainTitle = new \account\FinancialYearUi()->getCloseTitle($data->eFarm);
 
-	echo new \account\FinancialYearUi()->close($data->eFarm, $data->e, $data->cOperationCharges, $data->cAccruedIncome);
+	echo new \account\FinancialYearUi()->close($data->eFarm, $data->e, $data->cOperationCharges, $data->cAccruedIncome, $data->cStock);
 
 });
 

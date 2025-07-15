@@ -62,6 +62,32 @@ Setting::register('account', [
 	'deferredChargeClass' => '486', // Charge constatée d'avance
 	'accruedIncomeClass' => '4181', // Produit à recevoir
 
+	'stockAccountClass' => [],
+	'stockVariationClasses' => [ // Compte de stock => Compte de variation correspondant
+    '311' => '60311',
+    '312' => '60312',
+    '321' => '60321',
+    '322' => '60322',
+    '323' => '60323',
+    '324' => '60324',
+    '325' => '60325',
+    '326' => '60326',
+    '327' => '60327',
+    '328' => '60328',
+    '329' => '60329',
+    '331' => '71331',
+    '332' => '71332',
+    '341' => '71341',
+    '342' => '71342',
+    '344' => '71344',
+    '351' => '71351',
+    '353' => '71353',
+    '361' => '60361',
+    '362' => '60362',
+    '371' => '60371',
+    '372' => '60372',
+	],
+
 	// Classement des classes par journal
 	'classesByJournal' => [
 		\journal\Operation::BAN => ['5'],

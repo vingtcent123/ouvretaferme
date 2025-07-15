@@ -19,6 +19,10 @@ AccruedIncome:
   createdAt: datetime = SPECIAL(now)
   updatedAt: datetime = SPECIAL(now)
   createdBy: ?user\User = SPECIAL(user)
+  INDEX: [
+    ["financialYear"],
+    ["status"]
+  ]
 
 # Charges constatées d'avance (CCA)
 DeferredCharge:
@@ -33,6 +37,10 @@ DeferredCharge:
   createdAt: datetime = SPECIAL(now)
   updatedAt: datetime = SPECIAL(now)
   createdBy: ?user\User = SPECIAL(user)
+  INDEX: [
+    ["initialFinancialYear"],
+    ["status"]
+  ]
 
 Lettering:
   id: serial32
@@ -87,6 +95,26 @@ Operation:
     ["cashflow"]
   ]
 
+Stock:
+  id: serial32
+  financialYear: account\FinancialYear
+  type: text8(1, null) @collate(general)
+  account: account\Account
+  accountLabel: text8(1, null) @collate(general)
+  variationAccount: account\Account
+  variationAccountLabel: text8(1, null) @collate(general)
+  initialStock: decimal(8, 2, 0, null)
+  finalStock: decimal(8, 2, 0, null)
+  variation: decimal(8, 2)
+  operation: ?journal\Operation
+  reportedTo: ?journal\Stock # Report du stock final sur le stock de l'exercice suivant effectué.
+  createdAt: datetime = SPECIAL(now)
+  updatedAt: datetime = SPECIAL(now)
+  createdBy: ?user\User = SPECIAL(user)
+  INDEX: [
+    ["financialYear"],
+  ]
+
 VatDeclaration:
   id: serial32
   startDate: date
@@ -99,3 +127,6 @@ VatDeclaration:
   financialYear: account\FinancialYear
   createdAt: datetime = SPECIAL(now)
   createdBy: user\User = SPECIAL(user)
+  INDEX: [
+    ["financialYear"],
+  ]

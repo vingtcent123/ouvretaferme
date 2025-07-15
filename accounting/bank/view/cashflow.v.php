@@ -11,7 +11,7 @@ new AdaptativeView('index', function($data, FarmTemplate $t) {
 
 	$t->mainYear = new \account\FinancialYearUi()->getFinancialYearTabs(
 		function(\account\FinancialYear $eFinancialYear) use ($data) {
-			return \company\CompanyUi::urlOverview($data->eFarm).'/cashflow?financialYear='.$eFinancialYear['id'];
+			return \company\CompanyUi::urlBank($data->eFarm).'/cashflow?financialYear='.$eFinancialYear['id'];
 		},
 		$data->cFinancialYear,
 		$data->eFinancialYear,
