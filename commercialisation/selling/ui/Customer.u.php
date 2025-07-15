@@ -163,7 +163,7 @@ class CustomerUi {
 
 	}
 
-	public function getList(\farm\Farm $eFarm, \Collection $cCustomer, ?int $nCustomer = NULL, \Search $search = new \Search(), ?int $page = NULL) {
+	public function getList(\farm\Farm $eFarm, \Collection $cCustomer, \Collection $cGroup, ?int $nCustomer = NULL, \Search $search = new \Search(), ?int $page = NULL) {
 
 		if($cCustomer->empty()) {
 			return '<div class="util-empty">'.s("Il n'y a aucun client à afficher.").'</div>';
@@ -302,29 +302,34 @@ class CustomerUi {
 			$h .= \util\TextUi::pagination($page, $nCustomer / 100);
 		}
 
-		$h .= $this->getBatch($eFarm);
+		$h .= $this->getBatch($eFarm, $cGroup);
 
 		return $h;
 
 	}
 
-	public function getBatch(\farm\Farm $eFarm, \Collection $cCategory = new \Collection()): string {
+	public function getBatch(\farm\Farm $eFarm, \Collection $cGroup): string {
 
 		$menu = '';
 
-		if($cCategory->count() > 0) {
+		if($cGroup->count() > 0) {
 
-			$menu .= '<a data-dropdown="top-start" class="batch-menu-category batch-menu-item">';
+			$menu .= '<a data-dropdown="top-start" class="batch-menu-item">';
 				$menu .= \Asset::icon('tag');
-				$menu .= '<span>'.s("Catégorie").'</span>';
+				$menu .= '<span>'.s("Groupe").'</span>';
 			$menu .= '</a>';
 
 			$menu .= '<div class="dropdown-list bg-secondary">';
-				$menu .= '<div class="dropdown-title">'.s("Changer de catégorie").'</div>';
-				foreach($cCategory as $eCategory) {
-					$menu .= '<a data-ajax-submit="/selling/product:doUpdateCategoryCollection" data-ajax-target="#batch-group-form" post-category="'.$eCategory['id'].'" class="dropdown-item">'.encode($eCategory['name']).'</a>';
+				$menu .= '<div class="dropdown-title">'.s("Modifier les groupes").'</div>';
+				foreach($cGroup as $eGroup) {
+					$menu .= '<div class="dropdown-subtitle">';
+						$menu .= '<span class="util-badge" style="background-color: '.$eGroup['color'].'">'.encode($eGroup['name']).'</span>';
+					$menu .= '</div>';
+					$menu .= '<div class="dropdown-items-2">';
+						$menu .= '<a data-ajax-submit="/selling/customer:doUpdateGroupAssociateCollection" data-ajax-target="#batch-group-form" post-group="'.$eGroup['id'].'" class="dropdown-item">'.\Asset::icon('plus').' '.s(text: "Ajouter").'</a>';
+						$menu .= '<a data-ajax-submit="/selling/customer:doUpdateGroupDissociateCollection" data-ajax-target="#batch-group-form" post-group="'.$eGroup['id'].'" class="dropdown-item">'.\Asset::icon('x').' '.s("Retirer").'</a>';
+					$menu .= '</div>';
 				}
-				$menu .= '<a data-ajax-submit="/selling/product:doUpdateCategoryCollection" data-ajax-target="#batch-group-form" post-category="" class="dropdown-item"><i>'.s("Non catégorisé").'</i></a>';
 			$menu .= '</div>';
 
 		}

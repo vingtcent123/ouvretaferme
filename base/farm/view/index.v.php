@@ -423,7 +423,7 @@ new AdaptativeView('/ferme/{id}/clients', function($data, FarmTemplate $t) {
 		$t->mainTitle = $h;
 
 		echo new \selling\CustomerUi()->getSearch($data->eFarm, $data->search);
-		echo new \selling\CustomerUi()->getList($data->eFarm, $data->cCustomer, $data->nCustomer, $data->search, $data->page);
+		echo new \selling\CustomerUi()->getList($data->eFarm, $data->cCustomer, $data->cGroup, $data->nCustomer, $data->search, $data->page);
 
 	}
 

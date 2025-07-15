@@ -103,6 +103,8 @@
 
 		[$data->cCustomer, $data->nCustomer] = \selling\CustomerLib::getByFarm($data->eFarm, selectPrices: TRUE, selectSales: TRUE, selectInvite: TRUE, page: $data->page, search: $data->search);
 
+		$data->cGroup = \selling\GroupLib::getByFarm($data->eFarm);
+
 		throw new ViewAction($data);
 
 	})

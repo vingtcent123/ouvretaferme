@@ -103,6 +103,26 @@ new \selling\CustomerPage()
 	->applyCollection(function($data, Collection $c) {
 		$c->validateProperty('farm', $c->first()['farm']);
 	})
+	->writeCollection('doUpdateGroupAssociateCollection', function($data) {
+
+		$eFarm = $data->c->first()['farm'];
+		$eGroup = \selling\GroupLib::getById(POST('group'))->validateProperty('farm', $eFarm);
+
+		\selling\CustomerLib::associateGroup($data->c, $eGroup);
+
+		throw new ReloadAction();
+
+	})
+	->writeCollection('doUpdateGroupDissociateCollection', function($data) {
+
+		$eFarm = $data->c->first()['farm'];
+		$eGroup = \selling\GroupLib::getById(POST('group'))->validateProperty('farm', $eFarm);
+
+		\selling\CustomerLib::dissociateGroup($data->c, $eGroup);
+
+		throw new ReloadAction();
+
+	})
 	->doUpdateCollectionProperties('doUpdateStatusCollection', ['status'], fn($data) => throw new ReloadAction());
 
 new Page()

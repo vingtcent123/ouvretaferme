@@ -5449,9 +5449,9 @@ abstract class ModulePage extends Page {
 
 		$this->post($page, function($data) use($properties, $action, $validate) {
 
-			$e = $this->collection->call($this, $data);
+			$c = $this->collection->call($this, $data);
 
-			if($e === NULL) {
+			if($c === NULL) {
 
 				$ids = POST('ids', 'array');
 				$c = ($this->module.'Lib')::getByIds($ids);
@@ -5522,6 +5522,36 @@ abstract class ModulePage extends Page {
 			$data->e = $e;
 
 			$action->call($this, $data, $e);
+
+		});
+
+		return $this;
+
+	}
+
+	public function writeCollection(string $page, \Closure $action, array $validate = ['canUpdate']): ModulePage {
+
+		$this->post($page, function($data) use($action, $validate) {
+
+			$c = $this->collection->call($this, $data);
+
+			if($c === NULL) {
+
+				$ids = POST('ids', 'array');
+				$c = ($this->module.'Lib')::getByIds($ids);
+
+				if($c->empty()) {
+					throw new \NotExistsAction($this->module);
+				}
+
+			}
+
+			$c->validate(...$validate);
+
+			$this->applyCollection->call($this, $data, $c);
+			$data->c = $c;
+
+			$action->call($this, $data);
 
 		});
 

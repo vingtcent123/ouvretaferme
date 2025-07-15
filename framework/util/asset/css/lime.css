@@ -2545,6 +2545,11 @@ h6 .dropdown-toggle:after {
 	border-left: 0.32em solid transparent !important;
 }
 
+.dropdown-items-2 {
+	display: grid;
+	grid-template-columns: repeat(2, auto);
+}
+
 .dropdown-item {
 	display: block;
 	cursor: pointer;

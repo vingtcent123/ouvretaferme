@@ -26,6 +26,10 @@ class MySQLApi extends DatabaseApi {
 		return 'REPLACE(REGEXP_REPLACE(REGEXP_REPLACE('.$this->field($property).', \'([\\\\[ ])'.$number.', \', \'$1\'), \', '.$number.'([\\\\],])\', \'$1\'), \'['.$number.']\', \'[]\')';
 	}
 
+	public function jsonAdd(string $property, int $number): string {
+		return 'REPLACE(REGEXP_REPLACE(REGEXP_REPLACE('.$this->field($property).', \'([\\\\[ ])'.$number.', \', \'$1\'), \', '.$number.'([\\\\],])\', \'$1\'), \'['.$number.']\', \'[]\')';
+	}
+
 	public function limit(int $start, int $length): string {
 		$return = "LIMIT ";
 		if($start > 0) {

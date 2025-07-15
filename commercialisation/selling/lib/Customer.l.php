@@ -345,6 +345,28 @@ class CustomerLib extends CustomerCrud {
 
 	}
 
+	public static function associateGroup(\Collection $cCustomer, Group $eGroup): void {
+
+		Customer::model()
+			->where('JSON_CONTAINS('.Customer::model()->field('groups').', \''.$eGroup['id'].'\') = 0')
+			->whereId('IN', $cCustomer)
+			->update([
+				'groups' => new \Sql('JSON_ARRAY_INSERT('.Customer::model()->field('groups').', \'$[0]\', '.$eGroup['id'].')')
+			]);
+
+	}
+
+	public static function dissociateGroup(\Collection $cCustomer, Group $eGroup): void {
+
+		Customer::model()
+			->where('JSON_CONTAINS('.Customer::model()->field('groups').', \''.$eGroup['id'].'\')')
+			->whereId('IN', $cCustomer)
+			->update([
+				'groups' => new \Sql(Customer::model()->pdo()->api->jsonRemove('groups', $eGroup['id']))
+			]);
+
+	}
+
 	public static function delete(Customer $e): void {
 
 		$e->expects(['id']);
