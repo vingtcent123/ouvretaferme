@@ -14,7 +14,7 @@ new AdaptativeView('anonymous', function($data, MainTemplate $t) {
 
 	echo '<div class="home-features home-features-3">';
 
-		echo '<h3 class="home-feature-title">'.s("Ouvretaferme est un logiciel libre et gratuit qui contribue à l'autonomie des fermes").'</h3>';
+		echo '<h3 class="home-feature-title">'.s("Ouvretaferme est un logiciel ouvert et gratuit qui contribue à l'autonomie des fermes").'</h3>';
 
 		echo '<div class="home-feature">';
 
@@ -168,7 +168,7 @@ new AdaptativeView('anonymous', function($data, MainTemplate $t) {
 	echo '<h3>'.s("Philosophie du projet 👩‍🌾").'</h3>';
 
 	echo '<div class="home-story">';
-		echo s("Le logiciel {siteName} a été lancé en 2021 pour combler l'absence d'un logiciel libre, gratuit et intuitif destiné aux producteurs en agriculture biologique. Conçu pour simplifier l'organisation du travail à la ferme, ce logiciel complet accompagne les producteurs agricoles, du plan de culture à la vente de leurs produits. Notre mission : fournir aux producteurs les outils nécessaires pour contribuer à réaliser les finalités des fermes.");
+		echo s("Le logiciel {siteName} a été lancé en 2021 pour combler l'absence d'un logiciel ouvert, gratuit et intuitif destiné aux producteurs en agriculture biologique. Conçu pour simplifier l'organisation du travail à la ferme, ce logiciel complet accompagne les producteurs agricoles, du plan de culture à la vente de leurs produits. Notre mission : fournir aux producteurs les outils nécessaires pour contribuer à réaliser les finalités des fermes.");
 	echo '</div>';
 
 	echo new \main\HomeUi()->getPoints();
@@ -347,7 +347,7 @@ new AdaptativeView('/presentation/producteur', function($data, MainTemplate $t) 
 	echo '<h3 class="mt-2">'.s("Principe de gratuité").'</h3>';
 
 	echo '<div class="home-story">';
-		echo s("L'accès à toutes les fonctionnalités de {siteName} est libre et gratuit pour les producteurs sous signe de qualité <i>Agriculture biologique</i> ou <i>Nature & Progrès</i>. Pour les autres, reportez-vous aux <link>conditions d'utilisation du service</link>.", ['link' => '<a href="/presentation/service">']);
+		echo s("L'accès à toutes les fonctionnalités de {siteName} est ouvert et gratuit pour les producteurs sous signe de qualité <i>Agriculture biologique</i> ou <i>Nature & Progrès</i>. Pour les autres, reportez-vous aux <link>conditions d'utilisation du service</link>.", ['link' => '<a href="/presentation/service">']);
 	echo '</div>';
 
 });
