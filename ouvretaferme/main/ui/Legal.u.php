@@ -64,7 +64,7 @@ class LegalUi {
 
 		$h .= '<div class="home-category">';
 
-			$h .= '<p>'.s("La plateforme ouvretaferme.org est née du constat qu'il n'existait pas de logiciel libre, gratuit et simple d'utilisation pour permettre aux producteurs maraîchers d'organiser le travail dans leur ferme, de la planification des cultures jusqu'à la vente. Le développement du site a commencé en 2019 sur cette base, avec comme point de départ le besoin exprimé par une petite ferme en maraichage diversifié située dans le Puy-de-Dôme.").'</p>';
+			$h .= '<p>'.s("La plateforme ouvretaferme.org est née du constat qu'il n'existait pas de logiciel ouvert, gratuit et simple d'utilisation pour permettre aux producteurs maraîchers d'organiser le travail dans leur ferme, de la planification des cultures jusqu'à la vente. Le développement du site a commencé en 2019 sur cette base, avec comme point de départ le besoin exprimé par une petite ferme en maraichage diversifié située dans le Puy-de-Dôme.").'</p>';
 
 			$h .= '<p>'.s("Depuis 2022, la plateforme est diffusée plus largement et a été adaptée pour répondre aux besoins du plus grand nombre de fermes possible.").'</p>';
 
@@ -122,7 +122,7 @@ class LegalUi {
 
 		$h .= '<div class="home-category">';
 
-			$h .= '<p>'.s("Les logiciels commerciaux sont en général moins durables les logiciels libres comme {siteName} :").'</p>';
+			$h .= '<p>'.s("Les logiciels commerciaux sont en général moins durables que les logiciels ouverts comme {siteName} :").'</p>';
 			$h .= '<ul>';
 				$h .= '<li>'.s("ils sont soumis à des contraintes de rentabilité, sous peine de disparaître, voire de voir l'entreprise disparaître elle-même,").'</li>';
 				$h .= '<li>'.s("ils ne peuvent être repris par une communauté de développeurs si l'entreprise modifie ses priorités,").'</li>';

@@ -153,11 +153,11 @@ class HomeUi {
 		return $h;
 
 	}
-	
+
 	public function getPoints(): string {
 
 		$h = '<h3>'.s("Principes de conception").'</h3>';
-		
+
 		$h .= '<div class="home-points">';
 			$h .= '<div class="home-point" style="grid-column: span 2">';
 				$h .= \Asset::icon('inboxes');
@@ -168,7 +168,7 @@ class HomeUi {
 				$h .= '<h4>'.s("Les interfaces sont simples et intuitives,<br/>elles s'adaptent à vos pratiques").'</h4>';
 			$h .= '</div>';
 		$h .= '</div>';
-		
+
 		$h .= '<div class="home-points">';
 			$h .= '<div class="home-point">';
 				$h .= \Asset::icon('lock');
@@ -184,7 +184,7 @@ class HomeUi {
 			$h .= '</div>';
 			$h .= '<div class="home-point">';
 				$h .= \Asset::icon('code-slash');
-				$h .= '<h4>'.s("Logiciel libre dont<br/>le code source est public").'</h4>';
+				$h .= '<h4>'.s("Logiciel ouvert dont<br/>le code source est public").'</h4>';
 			$h .= '</div>';
 		$h .= '</div>';
 
