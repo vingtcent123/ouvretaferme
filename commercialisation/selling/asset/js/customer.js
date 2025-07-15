@@ -89,6 +89,27 @@ class Customer {
 					}
 			);
 
+			if(selection.filter('[data-batch~="not-private"]').length > 0) {
+				qsa('.batch-menu-private', node => node.hide());
+				qsa('.batch-menu-pro', node => node.removeHide());
+			}
+
+			if(selection.filter('[data-batch~="not-pro"]').length > 0) {
+				qsa('.batch-menu-private', node => node.removeHide());
+				qsa('.batch-menu-pro', node => node.hide());
+			}
+
+			qs(
+				'.batch-menu-group',
+				(
+					selection.filter('[data-batch~="not-group"]').length > 0 ||
+					(selection.filter('[data-batch~="not-private"]').length > 0 && selection.filter('[data-batch~="not-pro"]').length > 0) ||
+					qsa('.batch-menu-type:not(.hide)').length === 0
+				) ?
+					node => node.hide() :
+					node => node.removeHide()
+			);
+
 		});
 
 	}

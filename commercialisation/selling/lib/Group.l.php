@@ -88,12 +88,6 @@ class GroupLib extends GroupCrud {
 
 		Group::model()->beginTransaction();
 
-			Product::model()
-				->whereGroup($e)
-				->update([
-					'group' => new Group()
-				]);
-
 			Customer::model()
 				->whereFarm($e['farm'])
 				->where('JSON_CONTAINS('.Customer::model()->field('groups').', \''.$e['id'].'\')')

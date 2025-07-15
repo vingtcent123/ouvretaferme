@@ -362,6 +362,8 @@ class CustomerLib extends CustomerCrud {
 
 		Customer::model()
 			->where('JSON_CONTAINS('.Customer::model()->field('groups').', \''.$eGroup['id'].'\') = 0')
+			->whereDestination('!=', Customer::COLLECTIVE)
+			->whereType($eGroup['type'])
 			->whereId('IN', $cCustomer)
 			->update([
 				'groups' => new \Sql('JSON_ARRAY_INSERT('.Customer::model()->field('groups').', \'$[0]\', '.$eGroup['id'].')')
@@ -374,6 +376,8 @@ class CustomerLib extends CustomerCrud {
 		Customer::model()
 			->where('JSON_CONTAINS('.Customer::model()->field('groups').', \''.$eGroup['id'].'\')')
 			->whereId('IN', $cCustomer)
+			->whereDestination('!=', Customer::COLLECTIVE)
+			->whereType($eGroup['type'])
 			->update([
 				'groups' => new \Sql(Customer::model()->pdo()->api->jsonRemove('groups', $eGroup['id']))
 			]);
