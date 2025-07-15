@@ -1826,7 +1826,7 @@ class SaleUi {
 
 	}
 
-	public function createCollection(Sale $eSale): \Panel {
+	public function createCollection(Sale $eSale, \Collection $cGroup): \Panel {
 
 		$eSale->expects(['farm']);
 
@@ -1881,6 +1881,21 @@ class SaleUi {
 				$d->autocompleteDispatch = '#sale-create';
 
 			});
+
+			if($cGroup->notEmpty()) {
+
+				$h .= '<div class="text-end">';
+					$h .= '<a class="dropdown-toggle" data-dropdown="bottom-end">'.s("Créer une vente pour un groupe de clients").'</a>';
+					$h .= '<div class="dropdown-list bg-primary">';
+					foreach($cGroup as $eGroup) {
+						$h .= '<a href="/selling/sale:createCollection?farm='.$eSale['farm']['id'].'&group='.$eGroup['id'].'" class="dropdown-item">';
+							$h .= '<span class="util-badge" style="background-color: '.$eGroup['color'].'">'.encode($eGroup['name']).'</span>';
+						$h .= '</a>';
+					}
+					$h .= '</div>';
+				$h .= '</div>';
+
+			}
 
 			$footer = NULL;
 		}

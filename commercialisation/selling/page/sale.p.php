@@ -92,7 +92,16 @@ new \selling\SalePage()
 		$eCustomer = new \selling\Customer();
 		$cCustomer = new Collection();
 
-		if(get_exists('customers')) {
+		if(get_exists('group')) {
+
+			$eGroup = \selling\GroupLib::getById(GET('group'))->validateProperty('farm', $data->eFarm);
+			$cCustomer = \selling\CustomerLib::getByGroup($eGroup);
+
+			if($cCustomer->notEmpty()) {
+				$eCustomer = $cCustomer->first();
+			}
+
+		} else if(get_exists('customers')) {
 
 			$cCustomer = \selling\CustomerLib::getByIds(GET('customers', 'array'));
 
@@ -143,6 +152,10 @@ new \selling\SalePage()
 			$data->e['cProduct'] = \selling\ProductLib::getForSale($data->e['farm'], $data->e['type']);
 			\selling\ProductLib::applyItemsForSale($data->e['cProduct'], $data->e);
 
+			$data->cGroup = new Collection();
+
+		} else {
+			$data->cGroup = \selling\GroupLib::getByFarm($data->eFarm);
 		}
 
 		throw new \ViewAction($data);

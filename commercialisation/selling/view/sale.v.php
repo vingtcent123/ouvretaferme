@@ -61,7 +61,7 @@ new AdaptativeView('create', function($data, PanelTemplate $t) {
 });
 
 new AdaptativeView('createCollection', function($data, PanelTemplate $t) {
-	return new \selling\SaleUi()->createCollection($data->e);
+	return new \selling\SaleUi()->createCollection($data->e, $data->cGroup);
 });
 
 new AdaptativeView('update', function($data, PanelTemplate $t) {

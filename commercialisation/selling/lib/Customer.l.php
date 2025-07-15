@@ -173,6 +173,19 @@ class CustomerLib extends CustomerCrud {
 
 	}
 
+	public static function getByGroup(Group $eGroup): \Collection {
+
+		$eGroup->expects(['farm']);
+
+		return Customer::model()
+			->select(Customer::getSelection())
+			->whereFarm($eGroup['farm'])
+			->where('JSON_CONTAINS('.Customer::model()->field('groups').', \''.$eGroup['id'].'\')')
+			->sort(['name' => SORT_ASC])
+			->getCollection();
+
+	}
+
 	public static function countByGroup(Group $eGroup): int {
 
 		$eGroup->expects(['farm']);
