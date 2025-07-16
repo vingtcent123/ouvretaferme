@@ -170,10 +170,8 @@ class PaymentLib extends PaymentCrud {
 
 			\payment\StripeLib::expiresCheckoutSession($eStripeFarm, $ePayment['checkoutId']);
 
-			$ePayment['onlineStatus'] = Payment::EXPIRED;
-			Payment::model()
-				->select(['onlineStatus'])
-				->update($ePayment);
+			Payment::model()->update($ePayment, ['onlineStatus' => Payment::EXPIRED]);
+
 		}
 
 	}
