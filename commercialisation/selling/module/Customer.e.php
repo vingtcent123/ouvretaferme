@@ -207,7 +207,7 @@ class Customer extends CustomerElement {
 					return ($lastName !== NULL);
 				} else {
 
-					if($p->isBuilt('firstName')) {
+					if($p->isBuilt('firstName') === FALSE) {
 						return TRUE;
 					} else {
 						return ($lastName !== NULL or $this['firstName'] !== NULL);
