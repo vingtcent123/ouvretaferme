@@ -1177,7 +1177,7 @@ class ProductUi {
 			dialogOpen: $form->openAjax('/shop/product:doCreateCollection', ['class' => 'panel-dialog container']),
 			dialogClose: $form->close(),
 			body: $h,
-			footer: $form->submit(s("Ajouter les produits"), ['class' => 'btn btn-primary btn-lg'])
+			footer: $form->submit(s("Ajouter les produits"), ['data-submit-waiter' => s("Ajout en cours..."), 'class' => 'btn btn-primary btn-lg'])
 		);
 	}
 
@@ -1328,6 +1328,7 @@ class ProductUi {
 							'placeholder' => s("Illimité"),
 							'data-placeholder' => s("Illimité"),
 							'min' => 0,
+							'max' => Product::model()->getPropertyRange('available')[1],
 							'step' => $step,
 						]);
 

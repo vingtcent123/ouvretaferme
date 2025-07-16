@@ -57,7 +57,7 @@ class ProductModel extends \ModuleModel {
 			'limitStartAt' => ['date', 'null' => TRUE, 'cast' => 'string'],
 			'limitEndAt' => ['date', 'null' => TRUE, 'cast' => 'string'],
 			'excludeCustomers' => ['json', 'cast' => 'array'],
-			'available' => ['decimal', 'digits' => 8, 'decimal' => 2, 'min' => 0.0, 'max' => NULL, 'null' => TRUE, 'cast' => 'float'],
+			'available' => ['decimal', 'digits' => 9, 'decimal' => 2, 'min' => 0.0, 'max' => 999999, 'null' => TRUE, 'cast' => 'float'],
 			'status' => ['enum', [\shop\Product::ACTIVE, \shop\Product::INACTIVE], 'cast' => 'enum'],
 		]);
 

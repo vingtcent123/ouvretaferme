@@ -77,7 +77,7 @@ Product:
   limitStartAt: ?date
   limitEndAt: ?date
   excludeCustomers: json = PHP([])
-  available: ?decimal(8, 2, 0.0, null)
+  available: ?decimal(9, 2, 0.0, 999999)
   status: enum(ACTIVE, INACTIVE) = ACTIVE
   INDEX: [
     ["product"],
