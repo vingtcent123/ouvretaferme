@@ -2433,7 +2433,6 @@ body.dropdown-fullscreen-open[data-touch="no"] {
 
 .dropdown-list.dropdown-list-open {
 	display: grid;
-	height: max-content;
 	max-height: calc(100vh - 3rem);
 	overflow-y: auto;
 }
