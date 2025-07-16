@@ -97,18 +97,21 @@ Class AssetUi {
 								$h .= match($eAsset['type']) {
 									AssetElement::LINEAR => s("LIN"),
 									AssetElement::WITHOUT => s("SANS"),
+									AssetElement::GRANT => s("SUB"),
 								};
 							$h .= '</td>';
 							$h .= '<td>';
 								$h .= match($eAsset['type']) {
 									AssetElement::LINEAR => s("LIN"),
 									AssetElement::WITHOUT => s("SANS"),
+									AssetElement::GRANT => s("SUB"),
 								};
 							$h .= '</td>';
 							$h .= '<td class="text-center">';
 								$h .= match($eAsset['type']) {
 									AssetElement::LINEAR => encode($eAsset['duration']),
 									AssetElement::WITHOUT => '',
+									AssetElement::GRANT => '',
 								};
 							$h .= '</td>';
 							$h .= '<td class="text-end">'.\util\DateUi::numeric($eAsset['startDate'], \util\DateUi::DATE).'</td>';
