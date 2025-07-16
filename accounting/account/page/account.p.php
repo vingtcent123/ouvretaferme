@@ -32,12 +32,15 @@ new Page(function($data) {
 	$stock = POST('stock', '?int');
 
 
-	$data->search = new Search(['classPrefix' => $classPrefix, 'class' => GET('class', 'array', [])]);
+	$data->search = new Search(['classPrefix' => $classPrefix]);
 	if($stock) {
 		$eAccountStock = \account\AccountLib::getById($stock);
 		if($eAccountStock->notEmpty()) {
 			$data->search->set('stock', $eAccountStock);
 		}
+	}
+	if(get_exists('class')) {
+		$data->search->set('class', GET('class', 'array'));
 	}
 	$data->cAccount = \account\AccountLib::getAll(query: $query, search: $data->search);
 

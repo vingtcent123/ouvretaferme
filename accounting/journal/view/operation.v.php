@@ -1,15 +1,10 @@
 <?php
 new AdaptativeView('create', function($data, PanelTemplate $t) {
 
-		return new \journal\OperationUi()->create($data->eFarm, $data->e, $data->eFinancialYear);
+		return new \journal\OperationUi()->create($data->eFarm, $data->e, $data->eFinancialYear, $data->cAssetGrant);
 
 });
 
-new AdaptativeView('createFromInvoice', function($data, PanelTemplate $t) {
-
-		return new \journal\OperationUi()->create($data->eFarm, $data->e, $data->eFinancialYear, $data->invoiceFile);
-
-});
 new AdaptativeView('createPayment', function($data, PanelTemplate $t) {
 
 		return new \journal\OperationUi()->createPayment($data->eFarm, $data->e, $data->cBankAccount);
@@ -63,7 +58,7 @@ new JsonView('readInvoice', function($data, AjaxTemplate $t) {
 		$t->qs('#create-operation-list')->setAttribute('data-columns', $index + 1);
 		$t->qs('.create-operation[data-index="'.($index - 1).'"]')->insertAdjacentHtml(
 			'afterend',
-			new \journal\OperationUi()::getFieldsCreateGrid($data->eFarm, $form, $eOperation, $data->eFinancialYear, '['.$index.']', $defaultValues, [])
+			new \journal\OperationUi()::getFieldsCreateGrid($data->eFarm, $form, $eOperation, $data->eFinancialYear, '['.$index.']', $defaultValues, [], new Collection())
 		);
 		$t->qs('#add-operation')->setAttribute('post-index', $index + 1);
 		$t->js()->eval('Operation.showOrHideDeleteOperation()');
@@ -155,7 +150,7 @@ new JsonView('addOperation', function($data, AjaxTemplate $t) {
 	$t->qs('#create-operation-list')->setAttribute('data-columns', $data->index + 1);
 	$t->qs('.create-operation[data-index="'.($data->index - 1).'"]')->insertAdjacentHtml(
 		'afterend',
-		new \journal\OperationUi()::getFieldsCreateGrid($data->eFarm, $form, $data->eOperation, $data->eFinancialYear, '['.$data->index.']', $defaultValues, [])
+		new \journal\OperationUi()::getFieldsCreateGrid($data->eFarm, $form, $data->eOperation, $data->eFinancialYear, '['.$data->index.']', $defaultValues, [], $data->cAssetGrant)
 	);
 	$t->qs('#add-operation')->setAttribute('post-index', $data->index + 1);
 	if($data->index >= 4) {

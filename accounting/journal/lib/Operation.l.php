@@ -439,7 +439,7 @@ class OperationLib extends OperationCrud {
 
 			$eOperation['journalCode'] = \account\AccountLib::getJournalCodeByClass($eOperation['accountLabel']);
 
-			// Class 2 => Vérification et création de l'immobilisation
+			// Immo : vérification et création
 			$eAsset = \asset\AssetLib::prepareAsset($eOperation, $input['asset'][$index] ?? [], $index);
 
 			$fw->validate();

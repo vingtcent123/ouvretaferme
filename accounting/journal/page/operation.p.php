@@ -53,6 +53,8 @@ new \journal\OperationPage(
 
 		$data->eFinancialYear = \account\FinancialYearLib::selectDefaultFinancialYear();
 
+		$data->cAssetGrant = \asset\AssetLib::getAllGrants();
+
 		throw new ViewAction($data);
 
 	})
@@ -102,6 +104,8 @@ new \journal\OperationPage(
 
 		$eThirdParty = post_exists('thirdParty') ? \account\ThirdPartyLib::getById(POST('thirdParty')) : new \account\ThirdParty();
 		$data->eOperation = new \journal\Operation(['account' => new \account\Account(), 'thirdParty' => $eThirdParty]);
+
+		$data->cAssetGrant = \asset\AssetLib::getAllGrants();
 
 		throw new ViewAction($data);
 

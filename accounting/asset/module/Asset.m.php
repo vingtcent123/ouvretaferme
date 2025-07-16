@@ -10,6 +10,7 @@ abstract class AssetElement extends \Element {
 	const LINEAR = 'linear';
 	const WITHOUT = 'without';
 	const DEGRESSIVE = 'degressive';
+	const GRANT = 'grant';
 
 	const ONGOING = 'ongoing';
 	const SOLD = 'sold';
@@ -50,23 +51,27 @@ class AssetModel extends \ModuleModel {
 			'accountLabel' => ['text8', 'min' => 1, 'max' => NULL, 'collate' => 'general', 'cast' => 'string'],
 			'value' => ['decimal', 'digits' => 8, 'decimal' => 2, 'cast' => 'float'],
 			'description' => ['text8', 'min' => 1, 'max' => NULL, 'collate' => 'general', 'cast' => 'string'],
-			'type' => ['enum', [\asset\Asset::LINEAR, \asset\Asset::WITHOUT, \asset\Asset::DEGRESSIVE], 'cast' => 'enum'],
+			'type' => ['enum', [\asset\Asset::LINEAR, \asset\Asset::WITHOUT, \asset\Asset::DEGRESSIVE, \asset\Asset::GRANT], 'cast' => 'enum'],
 			'acquisitionDate' => ['date', 'cast' => 'string'],
-			'startDate' => ['date', 'cast' => 'string'],
+			'startDate' => ['date', 'null' => TRUE, 'cast' => 'string'],
 			'endDate' => ['date', 'cast' => 'string'],
 			'duration' => ['int8', 'min' => 0, 'max' => NULL, 'cast' => 'int'],
 			'status' => ['enum', [\asset\Asset::ONGOING, \asset\Asset::SOLD, \asset\Asset::SCRAPPED, \asset\Asset::ENDED], 'cast' => 'enum'],
+			'grant' => ['element32', 'asset\Asset', 'null' => TRUE, 'cast' => 'element'],
+			'asset' => ['element32', 'asset\Asset', 'null' => TRUE, 'cast' => 'element'],
 			'createdAt' => ['datetime', 'cast' => 'string'],
 			'updatedAt' => ['datetime', 'cast' => 'string'],
 			'createdBy' => ['element32', 'user\User', 'cast' => 'element'],
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'account', 'accountLabel', 'value', 'description', 'type', 'acquisitionDate', 'startDate', 'endDate', 'duration', 'status', 'createdAt', 'updatedAt', 'createdBy'
+			'id', 'account', 'accountLabel', 'value', 'description', 'type', 'acquisitionDate', 'startDate', 'endDate', 'duration', 'status', 'grant', 'asset', 'createdAt', 'updatedAt', 'createdBy'
 		]);
 
 		$this->propertiesToModule += [
 			'account' => 'account\Account',
+			'grant' => 'asset\Asset',
+			'asset' => 'asset\Asset',
 			'createdBy' => 'user\User',
 		];
 
@@ -162,6 +167,14 @@ class AssetModel extends \ModuleModel {
 
 	public function whereStatus(...$data): AssetModel {
 		return $this->where('status', ...$data);
+	}
+
+	public function whereGrant(...$data): AssetModel {
+		return $this->where('grant', ...$data);
+	}
+
+	public function whereAsset(...$data): AssetModel {
+		return $this->where('asset', ...$data);
 	}
 
 	public function whereCreatedAt(...$data): AssetModel {

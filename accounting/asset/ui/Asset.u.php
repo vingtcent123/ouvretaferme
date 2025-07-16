@@ -412,6 +412,7 @@ Class AssetUi {
 			'status' => s("Statut"),
 			'endDate' => s('Date de fin'),
 			'description' => s('Libellé'),
+			'grant' => s('Subvention'),
 		]);
 
 		switch($property) {
@@ -425,6 +426,7 @@ Class AssetUi {
 				$d->values = [
 					AssetElement::LINEAR => s("Linéaire"),
 					AssetElement::WITHOUT => s("Sans"),
+					AssetElement::GRANT => s("Subvention"),
 				];
 				break;
 
@@ -436,6 +438,7 @@ Class AssetUi {
 					AssetElement::ENDED => s("Terminé"),
 				];
 				break;
+
 		}
 
 		return $d;

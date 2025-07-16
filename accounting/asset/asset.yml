@@ -5,16 +5,20 @@ Asset:
   # Valeur d'acquisition
   value: decimal(8, 2)
   description: text8(1, null) @collate(general)
-  type: enum(LINEAR, WITHOUT, DEGRESSIVE)
+  type: enum(LINEAR, WITHOUT, DEGRESSIVE, GRANT)
   # Date d'achat
   acquisitionDate: date
-  # Date de mise en service (= début de l'amortissement)
-  startDate: date
+  # Date de mise en service (= début de l'amortissement), null si type grant
+  startDate: ?date
   # Date de fin d'amortissement (calculé)
   endDate: date
   # Durée en années
   duration: int8(0, null)
   status: enum(ONGOING, SOLD, SCRAPPED, ENDED) = ONGOING
+  # Si l'immo a été en partie financée par une sub, lien vers cette sub
+  grant: ?asset\Asset
+  # Si la subvention a été utilisée sur une immo, lien vers cette immo
+  asset: ?asset\Asset
   createdAt: datetime = SPECIAL(now)
   updatedAt: datetime = SPECIAL(now)
   createdBy: user\User = SPECIAL(user)

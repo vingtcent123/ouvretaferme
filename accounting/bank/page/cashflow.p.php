@@ -50,6 +50,8 @@ new \bank\CashflowPage(
 )
 	->get('allocate', function($data) {
 
+		$data->cAssetGrant = \asset\AssetLib::getAllGrants();
+
 		throw new ViewAction($data);
 
 	})
@@ -58,6 +60,8 @@ new \bank\CashflowPage(
 		$data->index = POST('index');
 		$eThirdParty = post_exists('thirdParty') ? \account\ThirdPartyLib::getById(POST('thirdParty')) : new \account\ThirdParty();
 		$data->eOperation = new \journal\Operation(['account' => new \account\Account(), 'thirdParty' => $eThirdParty]);
+
+		$data->cAssetGrant = \asset\AssetLib::getAllGrants();
 
 		throw new ViewAction($data);
 

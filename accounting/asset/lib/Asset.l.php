@@ -50,6 +50,16 @@ class AssetLib extends \asset\AssetCrud {
 
 	}
 
+	public static function getAllGrants(): \Collection {
+
+		return Asset::model()
+			->select(Asset::getSelection())
+			->whereType(Asset::GRANT)
+			->whereAsset(NULL)
+			->whereAccountLabel('LIKE', \Setting::get('account\subventionAssetClass').'%')
+			->getCollection();
+	}
+
 	public static function getAcquisitions(\account\FinancialYear $eFinancialYear, string $type): \Collection {
 
 		return Asset::model()
@@ -97,32 +107,51 @@ class AssetLib extends \asset\AssetCrud {
 
 		$eOperation->expects(['accountLabel']);
 
+		// Ni une immo, ni une sub
 		if(
-			(int)mb_substr($eOperation['accountLabel'], 0, 1) !== \Setting::get('account\assetClass')
-			and
-			(int)mb_substr($eOperation['accountLabel'], 0, 2) !== \Setting::get('account\subventionAssetClass')
+			\account\ClassLib::isFromClass($eOperation['accountLabel'], \Setting::get('account\assetClass')) === FALSE
+			and	\account\ClassLib::isFromClass($eOperation['accountLabel'], \Setting::get('account\subventionAssetClass')) === FALSE
 		) {
 			return NULL;
 		}
 
-		$eAsset = new Asset();
 		$fw = new \FailWatch();
 
 		$properties = new \Properties('create');
 		$properties->setWrapper(function(string $property) use($index) {
 			return 'asset['.$index.']['.$property.']';
 		});
-		$eAsset->build(['value', 'type', 'acquisitionDate', 'startDate', 'duration'], $assetData, $properties);
+		$assetData['account'] = $eOperation['account']['id'];
+		$assetData['accountLabel'] = $eOperation['accountLabel'];
+		$assetData['description'] = $eOperation['description'];
+
+		$eAsset = new Asset();
+		$eAsset->build(['accountLabel', 'account', 'description', 'value', 'type', 'acquisitionDate', 'startDate', 'duration', 'grant'], $assetData);
+
 		if($fw->ko() === TRUE) {
 			return NULL;
 		}
 
-		$eAsset['account'] = $eOperation['account'];
-		$eAsset['accountLabel'] = $eOperation['accountLabel'];
-		$eAsset['description'] = $eOperation['description'];
+		// Pour les subventions date d'acquisition = date de mise en service
+		$isSubvention = self::isSubventionAsset($eAsset['accountLabel']);
+		if($isSubvention) {
+			$eAsset['startDate'] = $eAsset['acquisitionDate'];
+		}
+
 		$eAsset['endDate'] = date('Y-m-d', strtotime($eAsset['startDate'].' + '.$eAsset['duration'].' year - 1 day'));
 
 		Asset::model()->insert($eAsset);
+
+		// On ajoute le lien vers l'immo depuis la sub
+		if($eAsset['grant']->notEmpty()) {
+
+			$eAsset['grant']['asset'] = $eAsset;
+
+			Asset::model()
+				->select(['asset'])
+				->update($eAsset['grant']);
+
+		}
 
 		return $eAsset;
 

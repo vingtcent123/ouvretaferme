@@ -164,7 +164,7 @@ class OperationUi {
 
 	}
 
-	public function create(\farm\Farm $eFarm, Operation $eOperation, \account\FinancialYear $eFinancialYear, ?string $invoice = NULL): \Panel {
+	public function create(\farm\Farm $eFarm, Operation $eOperation, \account\FinancialYear $eFinancialYear, \Collection $cAssetGrant, ?string $invoice = NULL): \Panel {
 
 		\Asset::css('journal', 'operation.css');
 		\Asset::js('journal', 'operation.js');
@@ -203,6 +203,17 @@ class OperationUi {
 		$h .= '</div>';
 		$h .= '<div>';
 
+		$h .= '<div class="util-block-help hide" data-help="asset">';
+			$h .= '<h4>'.s("Quelques précisions sur les immobilisations").'</h4>';
+			$h .= '<p>'.s("En règle générale, les durées sont de :").'</p>';
+			$h .= '<ul>';
+				$h .= '<li>'.s('5 à 10 ans pour du matériel agricole (compte 2153)').'</li>';
+				$h .= '<li>'.s('4 à 7 ans pour du matériel de transport (compte 2154)').'</li>';
+				$h .= '<li>'.s('15 à 25 ans pour des constructions agricoles (compte 2132)').'</li>';
+				$h .= '<li>'.s('sans amortissement pour les terrains (compte 212)').'</li>';
+			$h .= '</ul>';
+		$h .= '</div>';
+
 			$h .= '<div style="display: flex;">';
 
 				$h .= $form->hidden('company', $eFarm['id']);
@@ -211,7 +222,7 @@ class OperationUi {
 				$index = 0;
 				$defaultValues = $eOperation->getArrayCopy();
 
-				$h .= self::getCreateGrid($eFarm, $eOperation, $eFinancialYear, $index, $form, $defaultValues);
+				$h .= self::getCreateGrid($eFarm, $eOperation, $eFinancialYear, $index, $form, $defaultValues, $cAssetGrant);
 
 				$h .= '<div class="invoice-preview hide">';
 					$h .= '<embed class="hide"/>';
@@ -283,6 +294,7 @@ class OperationUi {
 			$h .= '<div class="operation-asset" data-is-asset="1">';
 				$h .= \asset\AssetUi::p('type')->label.' '.\util\FormUi::asterisk();
 			$h .= '</div>';
+			$h .= '<div class="operation-asset" data-is-asset="1">'.\asset\AssetUi::p('grant')->label.'</div>';
 			$h .= '<div class="operation-asset" data-is-asset="1">'.\asset\AssetUi::p('acquisitionDate')->label.' '.\util\FormUi::asterisk().'</div>';
 			$h .= '<div class="operation-asset" data-is-asset="1">'.\asset\AssetUi::p('startDate')->label.' '.\util\FormUi::asterisk().'</div>';
 			$h .= '<div class="operation-asset" data-is-asset="1">'.\asset\AssetUi::p('value')->label.' '.\util\FormUi::asterisk().'</div>';
@@ -329,6 +341,7 @@ class OperationUi {
 		?string $suffix,
 		array $defaultValues,
 		array $disabled,
+		\Collection $cAssetGrant,
 	): string {
 
 		\Asset::js('journal', 'asset.js');
@@ -454,9 +467,19 @@ class OperationUi {
 			$h .= '<div class="operation-asset" data-wrapper="asset'.$suffix.'[type]" data-is-asset="1" data-index="'.$index.'">';
 				$h .= $form->radios('asset'.$suffix.'[type]', \asset\AssetUi::p('type')->values, '', [
 					'data-index' => $index,
-					'columns' => 2,
+					'columns' => 3,
 					'mandatory' => TRUE,
 				]);
+			$h .='</div>';
+
+			$h .= '<div class="operation-asset" data-wrapper="asset'.$suffix.'[grant]" data-is-asset="1" data-index="'.$index.'">';
+			$grants = $cAssetGrant->makeArray(fn($e) => ['value' => $e['id'], 'label' => s("{description} / montant : {amount} / durée : {duration} / date d'obtention : {date}", [
+				'description' => $e['description'],
+				'amount' => \util\TextUi::money($e['value']),
+				'duration' => p('{value} an', '{value} ans', $e['duration']),
+				'date' => \util\DateUi::numeric($e['acquisitionDate'])
+				])]);
+				$h .= $form->select('asset'.$suffix.'[grant]', $grants, NULL, ['placeholder' => s("< Choisir la subvention qui a financé tout ou partie cette immobilisation >")]);
 			$h .='</div>';
 
 			$h .= '<div class="operation-asset" data-wrapper="asset'.$suffix.'[acquisitionDate]" data-is-asset="1" data-index="'.$index.'">';
@@ -481,7 +504,7 @@ class OperationUi {
 			$h .= '</div>';
 
 			$h .= '<div class="operation-asset" data-wrapper="asset'.$suffix.'[duration]" data-is-asset="1" data-index="'.$index.'">';
-				$h .= $form->number('asset'.$suffix.'[duration]', '');
+				$h .= '<div>'.$form->number('asset'.$suffix.'[duration]', '').'</div>';
 			$h .= '</div>';
 
 			$h .= '<div data-wrapper="type'.$suffix.'">';
@@ -609,6 +632,7 @@ class OperationUi {
 		int $index,
 		\util\FormUi $form,
 		array $defaultValues,
+		\Collection $cAssetGrant,
 	): string {
 
 		$suffix = '['.$index.']';
@@ -617,7 +641,7 @@ class OperationUi {
 		$h = '<div id="create-operation-list" class="create-operations-container" data-columns="1" data-cashflow="'.($isFromCashflow ? '1' : '0').'">';
 
 			$h .= self::getCreateHeader($eFarm, $isFromCashflow);
-			$h .= self::getFieldsCreateGrid($eFarm, $form, $eOperation, $eFinancialYear, $suffix, $defaultValues, []);
+			$h .= self::getFieldsCreateGrid($eFarm, $form, $eOperation, $eFinancialYear, $suffix, $defaultValues, [], $cAssetGrant);
 
 			if($isFromCashflow === TRUE) {
 				$h .= self::getCreateValidate();

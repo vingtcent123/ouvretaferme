@@ -1,6 +1,6 @@
 :root {
     --create-operation-rows: 15;
-    --create-operation-rows-with-asset: 21;
+    --create-operation-rows-with-asset: 22;
 }
 @supports (grid-template-columns: subgrid) {
 

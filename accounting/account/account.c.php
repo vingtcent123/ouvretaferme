@@ -62,7 +62,6 @@ Setting::register('account', [
 	'deferredChargeClass' => '486', // Charge constatée d'avance
 	'accruedIncomeClass' => '4181', // Produit à recevoir
 
-	'stockAccountClass' => [],
 	'stockVariationClasses' => [ // Compte de stock => Compte de variation correspondant
     '311' => '60311',
     '312' => '60312',
