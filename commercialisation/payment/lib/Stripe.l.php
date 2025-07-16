@@ -89,6 +89,12 @@ class StripeLib {
 
 	}
 
+	public static function expiresCheckoutSession(StripeFarm $eStripeFarm, string $sessionId): array {
+
+		return self::sendStripeRequest($eStripeFarm, 'checkout/sessions/'.$sessionId.'/expire');
+
+	}
+
 	public static function getStripeCheckoutSessionFromPaymentIntent(StripeFarm $eStripeFarm, string $paymentIntentId) {
 
 		$arguments = [
