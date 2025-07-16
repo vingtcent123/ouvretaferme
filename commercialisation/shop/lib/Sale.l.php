@@ -485,6 +485,8 @@ class SaleLib {
 		$ePayment = \selling\PaymentLib::createBySale($eSale, $eMethod, $stripeSession['id']);
 		\selling\HistoryLib::createBySale($eSale, 'shop-payment-initiated', 'Stripe checkout id #'.$stripeSession['id'], ePayment: $ePayment);
 
+		\selling\PaymentLib::expiresPaymentSessions($eStripeFarm, $eSale, $eMethod, $stripeSession['id']);
+
 		\selling\Sale::model()->commit();
 
 		return $stripeSession['url'];

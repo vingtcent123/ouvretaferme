@@ -155,6 +155,29 @@ class PaymentLib extends PaymentCrud {
 
 	}
 
+	public static function expiresPaymentSessions(\payment\StripeFarm $eStripeFarm, Sale $eSale, \payment\Method $eMethod, ?string $providerIdToKeep): void {
+
+		// Expires the other checkout sessions
+		$cPayment = Payment::model()
+			->select(Payment::getSelection())
+			->whereMethod($eMethod)
+			->whereSale($eSale)
+			->whereCheckoutId('!=', $providerIdToKeep, if: $providerIdToKeep !== NULL)
+			->whereOnlineStatus(Payment::INITIALIZED)
+			->getCollection();
+
+		foreach($cPayment as $ePayment) {
+
+			\payment\StripeLib::expiresCheckoutSession($eStripeFarm, $ePayment['checkoutId']);
+
+			$ePayment['onlineStatus'] = Payment::EXPIRED;
+			Payment::model()
+				->select(['onlineStatus'])
+				->update($ePayment);
+		}
+
+	}
+
 	public static function sumTotalBySale(Sale $eSale): float {
 
 		$ePayment = new Payment();

@@ -201,7 +201,7 @@ Payment:
   method: ?payment\Method
   checkoutId: ?text8
   paymentIntentId: ?text8
-  onlineStatus: ?enum(INITIALIZED, SUCCESS, FAILURE)
+  onlineStatus: ?enum(INITIALIZED, SUCCESS, FAILURE, EXPIRED)
   createdAt: datetime = SPECIAL(now)
   INDEX: [
     ["farm"],

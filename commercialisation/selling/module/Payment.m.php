@@ -10,6 +10,7 @@ abstract class PaymentElement extends \Element {
 	const INITIALIZED = 'initialized';
 	const SUCCESS = 'success';
 	const FAILURE = 'failure';
+	const EXPIRED = 'expired';
 
 	public static function getSelection(): array {
 		return Payment::model()->getProperties();
@@ -48,7 +49,7 @@ class PaymentModel extends \ModuleModel {
 			'method' => ['element32', 'payment\Method', 'null' => TRUE, 'cast' => 'element'],
 			'checkoutId' => ['text8', 'null' => TRUE, 'unique' => TRUE, 'cast' => 'string'],
 			'paymentIntentId' => ['text8', 'null' => TRUE, 'unique' => TRUE, 'cast' => 'string'],
-			'onlineStatus' => ['enum', [\selling\Payment::INITIALIZED, \selling\Payment::SUCCESS, \selling\Payment::FAILURE], 'null' => TRUE, 'cast' => 'enum'],
+			'onlineStatus' => ['enum', [\selling\Payment::INITIALIZED, \selling\Payment::SUCCESS, \selling\Payment::FAILURE, \selling\Payment::EXPIRED], 'null' => TRUE, 'cast' => 'enum'],
 			'createdAt' => ['datetime', 'cast' => 'string'],
 		]);
 
