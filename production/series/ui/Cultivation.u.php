@@ -1418,7 +1418,7 @@ class CultivationUi {
 
 					if($eTask['variety']->notEmpty()) {
 						foreach($eCultivation['cSlice'] as $eSlice) {
-							if($eSlice['variety']['id'] === $eTask['variety']['id']) {
+							if($eSlice['variety']->is($eTask['variety'])) {
 								$area = $eSlice['area'];
 							}
 						}
