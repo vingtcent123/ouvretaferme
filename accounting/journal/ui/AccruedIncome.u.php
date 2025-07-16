@@ -55,6 +55,76 @@ class AccruedIncomeUi {
 
 	}
 
+	public function list(\farm\Farm $eFarm, \account\FinancialYear $eFinancialYear, \Collection $cAccruedIncome): string {
+
+		$h = '<h3 class="mt-2">'.s("Produits à recevoir (PAR)").'</h3>';
+
+		$h .= '<div class="util-info">';
+			$h .= \Asset::icon('info-circle').' '.s("Si vous avez déjà livré des biens durant cet exercice comptable mais qu'aucune facture n'a encore été établie, vous pouvez les enregistrer maintenant.");
+		$h .= '</div>';
+
+		$h .= '<div class="stick-sm util-overflow-sm mb-1">';
+
+			if($cAccruedIncome->notEmpty()) {
+
+				$h .= '<table class="financial-year-par-table tr-even tr-hover">';
+
+					$h .= '<thead>';
+
+						$h .= '<tr>';
+
+							$h .= '<th>'.s("Date").'</th>';
+							$h .= '<th>'.s("Compte").'</th>';
+							$h .= '<th>'.s("Tiers").'</th>';
+							$h .= '<th>'.s("Libellé").'</th>';
+							$h .= '<th class="text-end">'.s("Montant HT").'</th>';
+							$h .= '<th></th>';
+
+						$h .= '</tr>';
+
+						$h .= '</thead>';
+
+					$h .= '<tbody>';
+
+						foreach($cAccruedIncome as $eAccruedIncome) {
+
+							if($eAccruedIncome->canDelete()) {
+
+								$action = '<a data-ajax="'.\company\CompanyUi::urlJournal($eFarm).'/accruedIncome:doDelete" post-id="'.$eAccruedIncome['id'].'" class="btn btn-outline-danger">'.\Asset::icon('trash').'</a>';
+
+							} else {
+
+								$action = '';
+
+							}
+
+							$h .= '<tr id="'.$eAccruedIncome['id'].'">';
+
+								$h .= '<td>'.\util\DateUi::numeric($eAccruedIncome['date'], \util\DateUi::DATE).'</td>';
+								$h .= '<td>'.encode($eAccruedIncome['accountLabel']).'</td>';
+								$h .= '<td>'.encode($eAccruedIncome['thirdParty']['name']).'</td>';
+								$h .= '<td>'.encode($eAccruedIncome['description']).'</td>';
+								$h .= '<td class="text-end">'.\util\TextUi::money($eAccruedIncome['amount']).'</td>';
+								$h .= '<td class="td-min-content">'.$action.'</td>';
+
+							$h .= '</tr>';
+
+						}
+
+					$h .= '</tbody>';
+
+				$h .= '</table>';
+
+			}
+
+			$h .= '<a class="btn btn-secondary" href="'.\company\CompanyUi::urlJournal($eFarm).'/accruedIncome:create?financialYear='.$eFinancialYear['id'].'">'.\Asset::icon('plus-circle').' '.s("Ajouter un produit à recevoir").'</a>';
+
+		$h .= '</div>';
+
+		return $h;
+
+	}
+
 	public static function getTranslation(string $type): string {
 
 		return match($type) {

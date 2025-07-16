@@ -11,6 +11,12 @@ class FinancialYear extends FinancialYearElement {
 		return $this['status'] === FinancialYearElement::CLOSE;
 	}
 
+	public function acceptClose(): bool {
+
+		return \journal\StockLib::hasWaitingStockFromPreviousFinancialYear($this) === FALSE;
+
+	}
+
 	public function build(array $properties, array $input, \Properties $p = new \Properties()): void {
 
 		$p

@@ -113,6 +113,7 @@ class FinancialYearLib extends FinancialYearCrud {
 		\journal\AccruedIncomeLib::recordAccruedIncomesIntoFinancialYear($eFinancialYear);
 
 		// 4- Stocks de fin d'exercice
+		\journal\StockLib::recordStock($eFinancialYear);
 
 		// 5- Calcul de la TVA
 		if($eFinancialYear['hasVat']) {

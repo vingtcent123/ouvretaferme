@@ -69,6 +69,123 @@ class DeferredChargeUi {
 		);
 	}
 
+	public function list(\farm\Farm $eFarm, \account\FinancialYear $eFinancialYear, \Collection $cOperationCharges): string {
+
+		$h = '<h3 class="mt-2">'.s("Charges constatées d'avance (CCA)").'</h3>';
+
+		if($cOperationCharges->empty()) {
+
+			$h .= '<div class="util-info">'.s("Aucune charge ne peut être reportée.").'</div>';
+
+		} else {
+
+			$countDeferred = $cOperationCharges->find(fn($e) => $e['deferredCharge'] !== NULL)->count();
+			$totalDeferred = $countDeferred;
+
+			$h .= '<div class="util-info">';
+				$h .= \Asset::icon('info-circle').' '.s("Toutes les écritures de charge de cet exercice comptable ont été listées ci-après. Si vous souhaitez que certaines d'entre elles soient en partie reportées au prochain exercice, vous pouvez modifier leur période de consommation ou le montant à reporter");
+			$h .= '</div>';
+
+			$h .= '<div class="stick-sm util-overflow-sm mb-1">';
+
+				$h .= '<table class="financial-year-cca-table tr-even tr-hover">';
+
+					$h .= '<thead>';
+
+						$h .= '<tr>';
+
+							$h .= '<th>'.s("Date").'</th>';
+							$h .= '<th>'.s("Compte").'</th>';
+							$h .= '<th>'.s("Libellé").'</th>';
+							$h .= '<th class="text-end">'.s("Montant HT").'</th>';
+							$h .= '<th>'.s("Période de<br />consommation").'</th>';
+							$h .= '<th class="text-end">'.s("À reporter").'</th>';
+							$h .= '<th></th>';
+
+						$h .= '</tr>';
+
+					$h .= '</thead>';
+
+					$h .= '<tbody>';
+
+						foreach($cOperationCharges as $eOperation) {
+
+							if(($eOperation['deferredCharge'] ?? NULL) !== NULL) {
+
+								$isDeferred = TRUE;
+								$countDeferred--;
+
+								$period = s("{startDate} - {endDate}", [
+									'startDate' => \util\DateUi::numeric($eOperation['date'], \util\DateUi::DATE),
+									'endDate' => \util\DateUi::numeric($eOperation['deferredCharge']['endDate'], \util\DateUi::DATE),
+								]);
+								$amount = \util\TextUi::money($eOperation['deferredCharge']['amount']);
+
+								if($eOperation['deferredCharge']->canDelete()) {
+
+									$action = '<a data-ajax="'.\company\CompanyUi::urlJournal($eFarm).'/deferredCharge:doDelete" post-id="'.$eOperation['deferredCharge']['id'].'" title="'.s("Supprimer").'" data-confirm="'.s("Voulez-vous vraiment supprimer cette charge constatée d'avance ?").'" class="btn btn-outline-danger">'.\Asset::icon('trash').'</a>';
+
+								} else {
+
+									$action = '';
+
+								}
+
+							} else {
+
+								$isDeferred = FALSE;
+
+								$period = '<a href="'.\company\CompanyUi::urlJournal($eFarm).'/deferredCharge:set?operation='.$eOperation['id'].'&financialYear='.$eFinancialYear['id'].'&field=dates">'.s("modifier").'</a>';
+								$amount = '<a href="'.\company\CompanyUi::urlJournal($eFarm).'/deferredCharge:set?operation='.$eOperation['id'].'&financialYear='.$eFinancialYear['id'].'&field=amount">'.s("modifier").'</a>';
+								$action = '';
+
+							}
+
+							if($countDeferred === 0 and $isDeferred === FALSE and $totalDeferred > 0) {
+
+								$class = 'tr-border-top hide';
+								$countDeferred = NULL;
+
+							} else if($isDeferred === FALSE) {
+
+								$class = 'hide';
+
+							} else {
+
+								$class = '';
+
+							}
+
+							$h .= '<tr id="'.$eOperation['id'].'" class="'.$class.'">';
+
+								$h .= '<td>'.\util\DateUi::numeric($eOperation['date'], \util\DateUi::DATE).'</td>';
+								$h .= '<td>'.encode($eOperation['accountLabel']).'</td>';
+								$h .= '<td>'.encode($eOperation['description']).'</td>';
+								$h .= '<td class="text-end">'.\util\TextUi::money($eOperation['amount']).'</td>';
+								$h .= '<td>'.$period.'</td>';
+								$h .= '<td class="text-end">'.$amount.'</td>';
+								$h .= '<td class="td-min-content">'.$action.'</td>';
+
+							$h .= '</tr>';
+
+						}
+
+					$h .= '</tbody>';
+
+				$h .= '</table>';
+
+				if($cOperationCharges->count() > $totalDeferred) {
+					$h .= '<a style="width: 100%" class="btn btn-outline-secondary" onclick="FinancialYear.displayCharges(this)">'.\Asset::icon('caret-down').' '.s("Afficher toutes les charges").'</a>';
+				}
+
+			$h .= '</div>';
+
+		}
+
+		return $h;
+
+	}
+
 	public static function getTranslation(string $type): string {
 
 		return match($type) {

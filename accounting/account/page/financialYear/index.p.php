@@ -81,6 +81,8 @@ new \account\FinancialYearPage(
 	})
 	->write('doClose', function($data) {
 
+		$data->e->validate('acceptClose');
+
 		\account\FinancialYearLib::closeFinancialYear($data->e);
 
 		throw new RedirectAction(\company\CompanyUi::urlAccount($data->eFarm).'/financialYear/?success=account:FinancialYear::closed');

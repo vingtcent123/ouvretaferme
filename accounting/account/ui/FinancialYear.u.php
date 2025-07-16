@@ -295,18 +295,34 @@ class FinancialYearUi {
 		$h .= '</div>';
 
 		$h .= $this->vat($eFarm, $eFinancialYear);
-		$h .= $this->cca($eFarm, $eFinancialYear, $cOperationCharges);
-		$h .= $this->par($eFarm, $eFinancialYear, $cAccruedIncome);
+
+		$h .= new \journal\DeferredChargeUi()->list($eFarm, $eFinancialYear, $cOperationCharges);
+
+		$h .= new \journal\AccruedIncomeUi()->list($eFarm, $eFinancialYear, $cAccruedIncome);
 
 		$h .= new \journal\StockUi()->list($eFarm, $eFinancialYear, $cStock);
 
+		$canClose = TRUE;
+		foreach($cStock as $eStock) {
+			if($eStock['financialYear']->is($eFinancialYear) === FALSE) {
+				$canClose = FALSE;
+			}
+		}
+
+		$h .= '<h3 class="mt-2">'.s("Confirmer la clôture de l'exercice comptable {year}", ['year' => self::getYear($eFinancialYear)]).'</h3>';
 
 		$h .= $form->openAjax(\company\CompanyUi::urlAccount($eFarm).'/financialYear/:doClose', ['id' => 'account-financialYear-close', 'autocomplete' => 'off']);
 
 			$h .= $form->hidden('farm', $eFarm['id']);
 			$h .= $form->hidden('id', $eFinancialYear['id']);
 
-			$h .= '<div>'.$form->submit(s("Clôturer l'exercice comptable {year}", ['year' => self::getYear($eFinancialYear)])).'</div>';
+			if($canClose === FALSE) {
+				$h .= '<div class="util-warning-outline">'.s("Vous ne pouvez pas clôturer l'exercice comptable car des actions n'ont pas été réalisées, vérifiez partout où le symbole {icon} est affiché plus haut.", ['icon' => \Asset::icon('exclamation-diamond', ['class' => 'color-danger'])]).'</div>';
+			}
+			$h .= '<div>'.$form->submit(
+				s("Clôturer l'exercice comptable {year}", ['year' => self::getYear($eFinancialYear)]),
+				$canClose ? [] : ['disabled' => 'disabled', 'class' => 'disabled']
+			).'</div>';
 
 		$h .= $form->close();
 
@@ -365,193 +381,6 @@ class FinancialYearUi {
 			}
 
 		}
-
-		return $h;
-
-	}
-
-	private function cca(\farm\Farm $eFarm, FinancialYear $eFinancialYear, \Collection $cOperationCharges): string {
-
-		$h = '<h3 class="mt-2">'.s("Charges constatées d'avance (CCA)").'</h3>';
-
-		if($cOperationCharges->empty()) {
-
-			$h .= '<div class="util-info">'.s("Aucune charge ne peut être reportée.").'</div>';
-
-		} else {
-
-			$countDeferred = $cOperationCharges->find(fn($e) => $e['deferredCharge'] !== NULL)->count();
-			$totalDeferred = $countDeferred;
-
-			$h .= '<div class="util-info">';
-				$h .= \Asset::icon('info-circle').' '.s("Toutes les écritures de charge de cet exercice comptable ont été listées ci-après. Si vous souhaitez que certaines d'entre elles soient en partie reportées au prochain exercice, vous pouvez modifier leur période de consommation ou le montant à reporter");
-			$h .= '</div>';
-
-			$h .= '<div class="stick-sm util-overflow-sm mb-1">';
-
-				$h .= '<table class="financial-year-cca-table tr-even tr-hover">';
-
-					$h .= '<thead>';
-
-						$h .= '<tr>';
-
-							$h .= '<th>'.s("Date").'</th>';
-							$h .= '<th>'.s("Compte").'</th>';
-							$h .= '<th>'.s("Libellé").'</th>';
-							$h .= '<th class="text-end">'.s("Montant HT").'</th>';
-							$h .= '<th>'.s("Période de<br />consommation").'</th>';
-							$h .= '<th class="text-end">'.s("À reporter").'</th>';
-							$h .= '<th></th>';
-
-						$h .= '</tr>';
-
-					$h .= '</thead>';
-
-					$h .= '<tbody>';
-
-						foreach($cOperationCharges as $eOperation) {
-
-							if(($eOperation['deferredCharge'] ?? NULL) !== NULL) {
-
-								$isDeferred = TRUE;
-								$countDeferred--;
-
-								$period = s("{startDate} - {endDate}", [
-									'startDate' => \util\DateUi::numeric($eOperation['date'], \util\DateUi::DATE),
-									'endDate' => \util\DateUi::numeric($eOperation['deferredCharge']['endDate'], \util\DateUi::DATE),
-								]);
-								$amount = \util\TextUi::money($eOperation['deferredCharge']['amount']);
-
-								if($eOperation['deferredCharge']->canDelete()) {
-
-									$action = '<a data-ajax="'.\company\CompanyUi::urlJournal($eFarm).'/deferredCharge:doDelete" post-id="'.$eOperation['deferredCharge']['id'].'" title="'.s("Supprimer").'" data-confirm="'.s("Voulez-vous vraiment supprimer cette charge constatée d'avance ?").'" class="btn btn-danger">'.\Asset::icon('trash').'</a>';
-
-								} else {
-
-									$action = '';
-
-								}
-
-							} else {
-
-								$isDeferred = FALSE;
-
-								$period = '<a href="'.\company\CompanyUi::urlJournal($eFarm).'/deferredCharge:set?operation='.$eOperation['id'].'&financialYear='.$eFinancialYear['id'].'&field=dates">'.s("modifier").'</a>';
-								$amount = '<a href="'.\company\CompanyUi::urlJournal($eFarm).'/deferredCharge:set?operation='.$eOperation['id'].'&financialYear='.$eFinancialYear['id'].'&field=amount">'.s("modifier").'</a>';
-								$action = '';
-
-							}
-
-							if($countDeferred === 0 and $isDeferred === FALSE and $totalDeferred > 0) {
-
-								$class = 'tr-border-top hide';
-								$countDeferred = NULL;
-
-							} else if($isDeferred === FALSE) {
-
-								$class = 'hide';
-
-							} else {
-
-								$class = '';
-
-							}
-
-							$h .= '<tr id="'.$eOperation['id'].'" class="'.$class.'">';
-
-								$h .= '<td>'.\util\DateUi::numeric($eOperation['date'], \util\DateUi::DATE).'</td>';
-								$h .= '<td>'.encode($eOperation['accountLabel']).'</td>';
-								$h .= '<td>'.encode($eOperation['description']).'</td>';
-								$h .= '<td class="text-end">'.\util\TextUi::money($eOperation['amount']).'</td>';
-								$h .= '<td>'.$period.'</td>';
-								$h .= '<td class="text-end">'.$amount.'</td>';
-								$h .= '<td class="td-min-content">'.$action.'</td>';
-
-							$h .= '</tr>';
-
-						}
-
-					$h .= '</tbody>';
-
-				$h .= '</table>';
-
-				if($cOperationCharges->count() > $totalDeferred) {
-					$h .= '<a style="width: 100%" class="btn btn-outline-secondary" onclick="FinancialYear.displayCharges(this)">'.\Asset::icon('caret-down').' '.s("Afficher toutes les charges").'</a>';
-				}
-
-			$h .= '</div>';
-
-		}
-
-		return $h;
-
-	}
-
-	private function par(\farm\Farm $eFarm, FinancialYear $eFinancialYear, \Collection $cAccruedIncome): string {
-
-		$h = '<h3 class="mt-2">'.s("Produits à recevoir (PAR)").'</h3>';
-
-		$h .= '<div class="util-info">';
-			$h .= \Asset::icon('info-circle').' '.s("Si vous avez déjà livré des biens durant cet exercice comptable mais qu'aucune facture n'a encore été établie, vous pouvez les enregistrer maintenant.");
-		$h .= '</div>';
-
-		$h .= '<div class="stick-sm util-overflow-sm mb-1">';
-
-			if($cAccruedIncome->notEmpty()) {
-
-				$h .= '<table class="financial-year-par-table tr-even tr-hover">';
-
-					$h .= '<thead>';
-
-						$h .= '<tr>';
-
-							$h .= '<th>'.s("Date").'</th>';
-							$h .= '<th>'.s("Compte").'</th>';
-							$h .= '<th>'.s("Tiers").'</th>';
-							$h .= '<th>'.s("Libellé").'</th>';
-							$h .= '<th class="text-end">'.s("Montant HT").'</th>';
-							$h .= '<th></th>';
-
-						$h .= '</tr>';
-
-					$h .= '</thead>';
-
-					$h .= '<tbody>';
-
-						foreach($cAccruedIncome as $eAccruedIncome) {
-
-							if($eAccruedIncome->canDelete()) {
-
-								$action = '<a data-ajax="'.\company\CompanyUi::urlJournal($eFarm).'/accruedIncome:doDelete" post-id="'.$eAccruedIncome['id'].'" class="btn btn-danger">'.\Asset::icon('trash').'</a>';
-
-							} else {
-
-								$action = '';
-
-							}
-
-							$h .= '<tr id="'.$eAccruedIncome['id'].'">';
-
-								$h .= '<td>'.\util\DateUi::numeric($eAccruedIncome['date'], \util\DateUi::DATE).'</td>';
-								$h .= '<td>'.encode($eAccruedIncome['accountLabel']).'</td>';
-								$h .= '<td>'.encode($eAccruedIncome['thirdParty']['name']).'</td>';
-								$h .= '<td>'.encode($eAccruedIncome['description']).'</td>';
-								$h .= '<td class="text-end">'.\util\TextUi::money($eAccruedIncome['amount']).'</td>';
-								$h .= '<td class="td-min-content">'.$action.'</td>';
-
-							$h .= '</tr>';
-
-						}
-
-					$h .= '</tbody>';
-
-				$h .= '</table>';
-
-			}
-
-			$h .= '<a class="btn btn-secondary" href="'.\company\CompanyUi::urlJournal($eFarm).'/accruedIncome:create?financialYear='.$eFinancialYear['id'].'">'.\Asset::icon('plus-circle').' '.s("Ajouter un produit à recevoir").'</a>';
-
-		$h .= '</div>';
 
 		return $h;
 

@@ -46,6 +46,17 @@ Class StockLib extends StockCrud {
 
 	}
 
+	public static function hasWaitingStockFromPreviousFinancialYear(\account\FinancialYear $eFinancialYear): bool {
+
+		$eFinancialYearPrevious = \account\FinancialYearLib::getPreviousFinancialYear($eFinancialYear);
+
+		return Stock::model()
+			->whereFinancialYear($eFinancialYearPrevious)
+			->whereReportedTo(NULL)
+			->count() > 0;
+
+	}
+
 	public static function setNewStock(Stock $eStockReference, array $input): void {
 
 		$eStock = clone $eStockReference;
@@ -73,6 +84,54 @@ Class StockLib extends StockCrud {
 
 		Stock::model()->commit();
 
+	}
+
+	public static function recordStock(\account\FinancialYear $eFinancialYear): void {
+
+		$cStock = Stock::model()
+			->select(Stock::getSelection())
+			->whereFinancialYear($eFinancialYear)
+			->getCollection();
+
+		foreach($cStock as $eStock) {
+
+			$eOperationVariation = new Operation([
+				'financialYear' => $eFinancialYear,
+				'account' => $eStock['variationAccount'],
+				'accountLabel' => $eStock['variationAccountLabel'],
+				'thirdParty' => NULL,
+				'description' => new StockUi()->getTranslation($eStock),
+				'amount' => abs($eStock['variation']),
+				'type' => $eStock['variation'] > 0 ? Operation::CREDIT : Operation::DEBIT,
+				'journalCode' => Operation::OD,
+				'date' => $eFinancialYear['endDate'],
+				'paymentDate' => $eFinancialYear['endDate'],
+			]);
+
+			$eOperationStock = new Operation([
+				'financialYear' => $eFinancialYear,
+				'account' => $eStock['account'],
+				'accountLabel' => $eStock['accountLabel'],
+				'thirdParty' => NULL,
+				'description' => new StockUi()->getTranslation($eStock),
+				'amount' => abs($eStock['variation']),
+				'type' => $eStock['variation'] > 0 ? Operation::DEBIT : Operation::CREDIT,
+				'journalCode' => Operation::OD,
+				'date' => $eFinancialYear['endDate'],
+				'paymentDate' => $eFinancialYear['endDate'],
+			]);
+
+			Operation::model()->insert($eOperationVariation);
+			Operation::model()->insert($eOperationStock);
+
+			$eStock['operation'] = $eOperationStock;
+			$eStock['updatedAt'] = new \Sql('NOW()');
+
+			Stock::model()
+				->select(['operation', 'updatedAt'])
+				->update($eStock);
+
+		}
 
 	}
 

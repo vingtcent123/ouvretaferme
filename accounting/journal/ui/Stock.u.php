@@ -9,6 +9,12 @@ class StockUi {
 
 	}
 
+	public function getTranslation(Stock $eStock) : string {
+
+			return s("Variation de stock - {description}", ['description' => $eStock['type']]);
+
+	}
+
 	public function create(\farm\Farm $eFarm, Stock $eStock, \account\FinancialYear $eFinancialYear): \Panel {
 
 		$dialogOpen = '';
@@ -98,7 +104,7 @@ class StockUi {
 				$h .= '<dd>'.encode($eStock['variationAccountLabel']).' - '.encode($eStock['variationAccount']['description']).'</dd>';
 
 				$h .= '<dt>'.self::p('finalStock')->label.'</dt>';
-				$h .= '<dd>'.\util\TextUi::money($initialStock).'</dd>';
+				$h .= '<dd>'.s("{amount} (au {date})", ['amount' => \util\TextUi::money($initialStock), 'date' => \util\DateUi::numeric($eStock['financialYear']['endDate'], \util\DateUi::DATE)]).'</dd>';
 
 			$h .= '</dl>';
 		$h .= '</div>';
@@ -149,7 +155,7 @@ class StockUi {
 		$h = '<h3 class="mt-2">'.s("Stocks").'</h3>';
 
 		$h .= '<div class="util-info">';
-		$h .= \Asset::icon('info-circle').' '.s("S'il vous reste du stock ou si votre stock a varié depuis le début de l'exercice comptable, indiquez-le ici.");
+		$h .= \Asset::icon('info-circle').' '.s("Si vous avez généré du stock pendant cette période comptable, ou si vous aviez du stock à la fin de la période comptable précédente, indiquez ici le stock comptabilisé en date du {day}.", ['day'=> \util\DateUi::numeric($eFinancialYear['endDate'])]);
 		$h .= '</div>';
 
 		$h .= '<div class="stick-sm util-overflow-sm mb-1">';
@@ -181,17 +187,32 @@ class StockUi {
 
 							if($eStock->canDelete()) {
 
-								$action = '<a data-ajax="'.\company\CompanyUi::urlJournal($eFarm).'/stock:doDelete" post-id="'.$eStock['id'].'" class="btn btn-danger">'.\Asset::icon('trash').'</a>';
+								$action = '<a data-ajax="'.\company\CompanyUi::urlJournal($eFarm).'/stock:doDelete" post-id="'.$eStock['id'].'" class="btn btn-outline-danger">'.\Asset::icon('trash').'</a>';
 
 							} else {
 
-								$action = '';
+								$action = '<a data-dropdown="bottom-end" class="dropdown-toggle btn btn-outline-secondary">'.\Asset::icon('gear-fill').'</a>';
+
+								$action .= '<div class="dropdown-list">';
+
+									$action .= '<a href="'.\company\CompanyUi::urlJournal($eFarm).'/stock:set?id='.$eStock['id'].'&financialYear='.$eFinancialYear['id'].'" class="dropdown-item">'.s("Saisir le stock final").'</a>';
+									$action .= '<a data-ajax="'.\company\CompanyUi::urlJournal($eFarm).'/stock:reset" post-id="'.$eStock['id'].'" post-financial-year="'.$eFinancialYear['id'].'" class="dropdown-item">'.s("Passer le stock à 0").'</a>';
+									$action .= '<a data-ajax="'.\company\CompanyUi::urlJournal($eFarm).'/stock:renew" post-id="'.$eStock['id'].'" post-financial-year="'.$eFinancialYear['id'].'" class="dropdown-item">'.s("Reconduire le stock").'</a>';
+
+								$action .= '</div>';
 
 							}
 
 							$h .= '<tr id="'.$eStock['id'].'">';
 
-								$h .= '<td>'.\util\DateUi::numeric($eStock['createdAt'], \util\DateUi::DATE).'</td>';
+								$h .= '<td>';
+									if($eStock['financialYear']->is($eFinancialYear) === FALSE) {
+										$h .= '<div class="text-center color-danger" title="'.s("Vous devez indiquer l'encours de ce stock à la fin de cet exercice comptable.").'">';
+											$h .= \Asset::icon('exclamation-diamond');
+										$h .= '</div>';
+									}
+									$h .= \util\DateUi::numeric($eStock['createdAt'], \util\DateUi::DATE);
+								$h .= '</td>';
 								$h .= '<td>'.encode($eStock['type']).'</td>';
 								$h .= '<td>'.encode($eStock['accountLabel']).' - '.encode($eStock['account']['description']).'</td>';
 								$h .= '<td>'.encode($eStock['variationAccountLabel']).' - '.encode($eStock['variationAccount']['description']).'</td>';
@@ -206,9 +227,8 @@ class StockUi {
 								} else { // Du stock reporté de la déclaration de l'exercice comptable passé (mais pas encore enregistré)
 
 									$h .= '<td class="text-end">'.\util\TextUi::money($eStock['finalStock']).'</td>';
-									$h .= '<td class="text-end"><a href="'.\company\CompanyUi::urlJournal($eFarm).'/stock:set?id='.$eStock['id'].'&financialYear='.$eFinancialYear['id'].'">'.s("modifier").'</a></td>';
-									$h .= '<td class="text-end">?</td>';
-
+									$h .= '<td class="text-end"></td>';
+									$h .= '<td class="text-end"></td>';
 
 								}
 

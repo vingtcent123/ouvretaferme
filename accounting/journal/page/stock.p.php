@@ -43,4 +43,32 @@ new \journal\StockPage(
 		throw new ReloadAction('journal', 'Stock::set');
 
 	})
+	->post('reset', function($data) {
+
+		$eStock = \journal\StockLib::getById(POST('id'))->validate('canSet');
+
+		$newValues = [
+			'finalStock' => 0,
+			'variation' => 0 - $eStock['finalStock'],
+			'financialYear' => POST('financialYear'),
+		];
+		\journal\StockLib::setNewStock($eStock, $newValues);
+
+		throw new ReloadAction('journal', 'Stock::reset');
+
+	})
+	->post('renew', function($data) {
+
+		$eStock = \journal\StockLib::getById(POST('id'))->validate('canSet');
+
+		$newValues = [
+			'finalStock' => $eStock['finalStock'],
+			'variation' => 0,
+			'financialYear' => POST('financialYear'),
+		];
+		\journal\StockLib::setNewStock($eStock, $newValues);
+
+		throw new ReloadAction('journal', 'Stock::renew');
+
+	})
 ;
