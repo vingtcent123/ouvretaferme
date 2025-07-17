@@ -72,7 +72,7 @@ class PageLib {
 
 			$data->eFarm = \farm\FarmLib::getById(REQUEST('farm'));
 
-      if($data->eFarm->empty() or $data->eFarm->canAccountEntry() === FALSE) {
+			if($data->eFarm->empty() or $data->eFarm->canAccountEntry() === FALSE) {
 				$action = new \ViewAction($data, ':404');
 				$action->setStatusCode(404);
 				throw $action;
