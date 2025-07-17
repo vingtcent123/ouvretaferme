@@ -164,7 +164,7 @@ class OperationUi {
 
 	}
 
-	public function create(\farm\Farm $eFarm, Operation $eOperation, \account\FinancialYear $eFinancialYear, \Collection $cAssetGrant, ?string $invoice = NULL): \Panel {
+	public function create(\farm\Farm $eFarm, Operation $eOperation, \account\FinancialYear $eFinancialYear, array $assetData, ?string $invoice = NULL): \Panel {
 
 		\Asset::css('journal', 'operation.css');
 		\Asset::js('journal', 'operation.js');
@@ -222,7 +222,7 @@ class OperationUi {
 				$index = 0;
 				$defaultValues = $eOperation->getArrayCopy();
 
-				$h .= self::getCreateGrid($eFarm, $eOperation, $eFinancialYear, $index, $form, $defaultValues, $cAssetGrant);
+				$h .= self::getCreateGrid($eFarm, $eOperation, $eFinancialYear, $index, $form, $defaultValues, $assetData);
 
 				$h .= '<div class="invoice-preview hide">';
 					$h .= '<embed class="hide"/>';
@@ -294,7 +294,8 @@ class OperationUi {
 			$h .= '<div class="operation-asset" data-is-asset="1">';
 				$h .= \asset\AssetUi::p('type')->label.' '.\util\FormUi::asterisk();
 			$h .= '</div>';
-			$h .= '<div class="operation-asset" data-is-asset="1">'.\asset\AssetUi::p('grant')->label.'</div>';
+			$h .= '<div class="operation-asset" data-is-asset="1" data-asset-link="grant">'.\asset\AssetUi::p('grant')->label.'</div>';
+			$h .= '<div class="operation-asset" data-is-asset="1" data-asset-link="asset">'.\asset\AssetUi::p('asset')->label.'</div>';
 			$h .= '<div class="operation-asset" data-is-asset="1">'.\asset\AssetUi::p('acquisitionDate')->label.' '.\util\FormUi::asterisk().'</div>';
 			$h .= '<div class="operation-asset" data-is-asset="1">'.\asset\AssetUi::p('startDate')->label.' '.\util\FormUi::asterisk().'</div>';
 			$h .= '<div class="operation-asset" data-is-asset="1">'.\asset\AssetUi::p('value')->label.' '.\util\FormUi::asterisk().'</div>';
@@ -341,7 +342,7 @@ class OperationUi {
 		?string $suffix,
 		array $defaultValues,
 		array $disabled,
-		\Collection $cAssetGrant,
+		array $assetData,
 	): string {
 
 		\Asset::js('journal', 'asset.js');
@@ -349,6 +350,9 @@ class OperationUi {
 
 		$index = ($suffix !== NULL) ? mb_substr($suffix, 1, mb_strlen($suffix) - 2) : NULL;
 		$isFromCashflow = (isset($defaultValues['cashflow']) and $defaultValues['cashflow']->exists() === TRUE);
+
+		$cAssetGrant = $assetData['grant'] ?? new \Collection();
+		$cAssetToLinkToGrant = $assetData['asset'] ?? new \Collection();
 
 		if($eFarm['company']->isAccrualAccounting() and $index > 0) {
 			$disabled[] = 'thirdParty';
@@ -472,7 +476,7 @@ class OperationUi {
 				]);
 			$h .='</div>';
 
-			$h .= '<div class="operation-asset" data-wrapper="asset'.$suffix.'[grant]" data-is-asset="1" data-index="'.$index.'">';
+			$h .= '<div class="operation-asset" data-wrapper="asset'.$suffix.'[grant]" data-is-asset="1" data-index="'.$index.'" data-asset-link="grant">';
 			$grants = $cAssetGrant->makeArray(fn($e) => ['value' => $e['id'], 'label' => s("{description} / montant : {amount} / durée : {duration} / date d'obtention : {date}", [
 				'description' => $e['description'],
 				'amount' => \util\TextUi::money($e['value']),
@@ -480,6 +484,15 @@ class OperationUi {
 				'date' => \util\DateUi::numeric($e['acquisitionDate'])
 				])]);
 				$h .= $form->select('asset'.$suffix.'[grant]', $grants, NULL, ['placeholder' => s("< Choisir la subvention qui a financé tout ou partie cette immobilisation >")]);
+			$h .='</div>';
+
+			$h .= '<div class="operation-asset" data-wrapper="asset'.$suffix.'[asset]" data-is-asset="1" data-index="'.$index.'" data-asset-link="asset">';
+			$grants = $cAssetToLinkToGrant->makeArray(fn($e) => ['value' => $e['id'], 'label' => s("{description} / date d'acquisition : {date} / valeur : {amount}", [
+				'description' => $e['description'],
+				'amount' => \util\TextUi::money($e['value']),
+				'date' => \util\DateUi::numeric($e['acquisitionDate'])
+				])]);
+				$h .= $form->select('asset'.$suffix.'[asset]', $grants, NULL, ['placeholder' => s("< Choisir l'immobilisation amortissable >")]);
 			$h .='</div>';
 
 			$h .= '<div class="operation-asset" data-wrapper="asset'.$suffix.'[acquisitionDate]" data-is-asset="1" data-index="'.$index.'">';
@@ -632,7 +645,7 @@ class OperationUi {
 		int $index,
 		\util\FormUi $form,
 		array $defaultValues,
-		\Collection $cAssetGrant,
+		array $assetData,
 	): string {
 
 		$suffix = '['.$index.']';
@@ -641,7 +654,7 @@ class OperationUi {
 		$h = '<div id="create-operation-list" class="create-operations-container" data-columns="1" data-cashflow="'.($isFromCashflow ? '1' : '0').'">';
 
 			$h .= self::getCreateHeader($eFarm, $isFromCashflow);
-			$h .= self::getFieldsCreateGrid($eFarm, $form, $eOperation, $eFinancialYear, $suffix, $defaultValues, [], $cAssetGrant);
+			$h .= self::getFieldsCreateGrid($eFarm, $form, $eOperation, $eFinancialYear, $suffix, $defaultValues, [], $assetData);
 
 			if($isFromCashflow === TRUE) {
 				$h .= self::getCreateValidate();

@@ -93,7 +93,7 @@ class DepreciationLib extends \asset\DepreciationCrud {
 	 */
 	public static function calculateDepreciation(string $startDate, string $endDate, Asset $eAsset): float {
 
-		if(in_array($eAsset['type'], [Asset::WITHOUT, Asset::GRANT])) {
+		if(in_array($eAsset['type'], [Asset::LINEAR, Asset::DEGRESSIVE]) === FALSE) {
 			return 0.0;
 		}
 

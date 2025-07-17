@@ -314,7 +314,7 @@ class CashflowUi {
 
 	}
 
-	public static function getAllocate(\farm\Farm $eFarm, \account\FinancialYear $eFinancialYear, Cashflow $eCashflow, \Collection $cAssetGrant): \Panel {
+	public static function getAllocate(\farm\Farm $eFarm, \account\FinancialYear $eFinancialYear, Cashflow $eCashflow, array $assetData): \Panel {
 
 		\Asset::js('journal', 'operation.js');
 		\Asset::js('bank', 'cashflow.js');
@@ -387,7 +387,7 @@ class CashflowUi {
 			);
 		$subtitle .= '</div>';
 
-		$h .= \journal\OperationUi::getCreateGrid($eFarm, $eOperation, $eFinancialYear, $index, $form, $defaultValues, $cAssetGrant);
+		$h .= \journal\OperationUi::getCreateGrid($eFarm, $eOperation, $eFinancialYear, $index, $form, $defaultValues, $assetData);
 
 		$amountWarning = '<div id="cashflow-allocate-difference-warning" class="util-danger hide">';
 			$amountWarning .= s("Attention, les montants saisis doivent correspondre au montant total de la transaction. Il y a une différence de {difference}.", ['difference' => '<span id="cashflow-allocate-difference-value">0</span>']);
@@ -419,7 +419,7 @@ class CashflowUi {
 
 	}
 
-	public static function addAllocate(\farm\Farm $eFarm, \journal\Operation $eOperation, \account\FinancialYear $eFinancialYear, Cashflow $eCashflow, int $index, \Collection $cAssetGrant): string {
+	public static function addAllocate(\farm\Farm $eFarm, \journal\Operation $eOperation, \account\FinancialYear $eFinancialYear, Cashflow $eCashflow, int $index, array $assetData): string {
 
 		$form = new \util\FormUi();
 		$form->open('bank-cashflow-allocate');
@@ -430,7 +430,7 @@ class CashflowUi {
 			'cashflow' => $eCashflow,
 		];
 
-		return \journal\OperationUi::getFieldsCreateGrid($eFarm, $form, $eOperation, $eFinancialYear, '['.$index.']', $defaultValues, [], $cAssetGrant);
+		return \journal\OperationUi::getFieldsCreateGrid($eFarm, $form, $eOperation, $eFinancialYear, '['.$index.']', $defaultValues, [], $assetData);
 
 	}
 

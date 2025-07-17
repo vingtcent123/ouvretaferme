@@ -51,6 +51,7 @@ new \bank\CashflowPage(
 	->get('allocate', function($data) {
 
 		$data->cAssetGrant = \asset\AssetLib::getAllGrants();
+		$data->cAssetToLinkToGrant = \asset\AssetLib::getAllAssetsToLinkToGrant();
 
 		throw new ViewAction($data);
 
@@ -62,6 +63,7 @@ new \bank\CashflowPage(
 		$data->eOperation = new \journal\Operation(['account' => new \account\Account(), 'thirdParty' => $eThirdParty]);
 
 		$data->cAssetGrant = \asset\AssetLib::getAllGrants();
+		$data->cAssetToLinkToGrant = \asset\AssetLib::getAllAssetsToLinkToGrant();
 
 		throw new ViewAction($data);
 

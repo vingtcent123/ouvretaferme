@@ -31,7 +31,7 @@ class Asset extends AssetElement {
 
 				$this->expects(['type']);
 
-				return $this['type'] === Asset::GRANT ? $startDate === NULL : $startDate !== NULL;
+				return in_array($this['type'], [Asset::LINEAR, Asset::DEGRESSIVE]) ? $startDate !== NULL : TRUE;
 
 			})
 			->setCallback('accountLabel.check', function(?string $accountLabel): bool {
@@ -61,11 +61,11 @@ class Asset extends AssetElement {
 				$this->expects(['accountLabel']);
 
 				if(\account\ClassLib::isFromClass($this['accountLabel'], \Setting::get('account\subventionAssetClass'))) {
-					return $type === Asset::GRANT;
+					return $type === NULL or in_array($type, [Asset::WITHOUT, Asset::GRANT_RECOVERY]);
 				}
 
 				if(\account\ClassLib::isFromClass($this['accountLabel'], \Setting::get('account\assetClass'))) {
-					return $type !== Asset::GRANT;
+					return in_array($type, [Asset::LINEAR, Asset::WITHOUT, Asset::DEGRESSIVE]);
 				}
 
 				return FALSE;
@@ -73,13 +73,32 @@ class Asset extends AssetElement {
 			})
 			->setCallback('grant.check', function(?Asset $eAsset): bool {
 
+				if($eAsset->empty()) {
+					return TRUE;
+				}
+
 				$this->expects(['accountLabel']);
 
 				$eAsset = AssetLib::getById($eAsset['id']);
 
-				return $eAsset['type'] === Asset::GRANT
+				return ($eAsset['type'] === NULL or $eAsset['type'] === Asset::GRANT_RECOVERY)
 					and $eAsset['asset']->empty()
 					and \account\ClassLib::isFromClass($this['accountLabel'], \Setting::get('account\assetClass'));
+
+			})
+			->setCallback('asset.check', function(?Asset $eAsset): bool {
+
+				if($eAsset->empty()) {
+					return TRUE;
+				}
+
+				$this->expects(['accountLabel']);
+
+				$eAsset = AssetLib::getById($eAsset['id']);
+
+				return (in_array($eAsset['type'], [Asset::LINEAR, Asset::DEGRESSIVE]))
+					and $eAsset['grant']->empty()
+					and \account\ClassLib::isFromClass($this['accountLabel'], \Setting::get('account\subventionAssetClass'));
 
 			})
 			;

@@ -4,10 +4,7 @@ namespace asset;
 class AssetLib extends \asset\AssetCrud {
 
 	public static function getPropertiesCreate(): array {
-		return ['value', 'type', 'description', 'mode', 'acquisitionDate', 'startDate', 'duration'];
-	}
-	public static function getPropertiesUpdate(): array {
-		return ['value', 'type', 'description', 'mode', 'acquisitionDate', 'startDate', 'duration', 'status'];
+		return ['account', 'accountLabel', 'value', 'type', 'description', 'acquisitionDate', 'startDate', 'duration', 'grant', 'asset'];
 	}
 
 	public static function isTangibleAsset(string $account): bool {
@@ -54,9 +51,20 @@ class AssetLib extends \asset\AssetCrud {
 
 		return Asset::model()
 			->select(Asset::getSelection())
-			->whereType(Asset::GRANT)
+			->whereIsGrant(TRUE)
 			->whereAsset(NULL)
 			->whereAccountLabel('LIKE', \Setting::get('account\subventionAssetClass').'%')
+			->getCollection();
+	}
+
+	public static function getAllAssetsToLinkToGrant(): \Collection {
+
+		return Asset::model()
+			->select(Asset::getSelection())
+			->whereType('IN', [Asset::LINEAR, Asset::DEGRESSIVE])
+			->whereIsGrant(FALSE)
+			->whereGrant(NULL)
+			->whereAccountLabel('LIKE', \Setting::get('account\assetClass').'%')
 			->getCollection();
 	}
 
@@ -84,7 +92,7 @@ class AssetLib extends \asset\AssetCrud {
       )
       ->whereStartDate('<=', $eFinancialYear['endDate'])
 			->whereAccountLabel('LIKE', \Setting::get('account\subventionAssetClass').'%')
-			->whereType(Asset::GRANT)
+			->whereIsGrant(TRUE)
       ->sort(['accountLabel' => SORT_ASC, 'startDate' => SORT_ASC])
       ->getCollection();
 	}
@@ -126,16 +134,18 @@ class AssetLib extends \asset\AssetCrud {
 		$assetData['accountLabel'] = $eOperation['accountLabel'];
 		$assetData['description'] = $eOperation['description'];
 
+		$isGrant = self::isSubventionAsset($eOperation['accountLabel']);
+		$assetData['isGrant'] = $isGrant;
+
 		$eAsset = new Asset();
-		$eAsset->build(['accountLabel', 'account', 'description', 'value', 'type', 'acquisitionDate', 'startDate', 'duration', 'grant'], $assetData);
+		$eAsset->build(['isGrant', 'accountLabel', 'account', 'description', 'value', 'type', 'acquisitionDate', 'startDate', 'duration', 'grant', 'asset'], $assetData);
 
 		if($fw->ko() === TRUE) {
 			return NULL;
 		}
 
 		// Pour les subventions date d'acquisition = date de mise en service
-		$isSubvention = self::isSubventionAsset($eAsset['accountLabel']);
-		if($isSubvention) {
+		if($isGrant) {
 			$eAsset['startDate'] = $eAsset['acquisitionDate'];
 		}
 

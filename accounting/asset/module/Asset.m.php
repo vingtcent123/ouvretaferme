@@ -10,7 +10,7 @@ abstract class AssetElement extends \Element {
 	const LINEAR = 'linear';
 	const WITHOUT = 'without';
 	const DEGRESSIVE = 'degressive';
-	const GRANT = 'grant';
+	const GRANT_RECOVERY = 'grant-recovery';
 
 	const ONGOING = 'ongoing';
 	const SOLD = 'sold';
@@ -49,9 +49,9 @@ class AssetModel extends \ModuleModel {
 			'id' => ['serial32', 'cast' => 'int'],
 			'account' => ['element32', 'account\Account', 'cast' => 'element'],
 			'accountLabel' => ['text8', 'min' => 1, 'max' => NULL, 'collate' => 'general', 'cast' => 'string'],
-			'value' => ['decimal', 'digits' => 8, 'decimal' => 2, 'cast' => 'float'],
+			'value' => ['decimal', 'digits' => 8, 'decimal' => 2, 'min' => 0, 'max' => NULL, 'cast' => 'float'],
 			'description' => ['text8', 'min' => 1, 'max' => NULL, 'collate' => 'general', 'cast' => 'string'],
-			'type' => ['enum', [\asset\Asset::LINEAR, \asset\Asset::WITHOUT, \asset\Asset::DEGRESSIVE, \asset\Asset::GRANT], 'cast' => 'enum'],
+			'type' => ['enum', [\asset\Asset::LINEAR, \asset\Asset::WITHOUT, \asset\Asset::DEGRESSIVE, \asset\Asset::GRANT_RECOVERY], 'null' => TRUE, 'cast' => 'enum'],
 			'acquisitionDate' => ['date', 'cast' => 'string'],
 			'startDate' => ['date', 'null' => TRUE, 'cast' => 'string'],
 			'endDate' => ['date', 'cast' => 'string'],
@@ -59,13 +59,21 @@ class AssetModel extends \ModuleModel {
 			'status' => ['enum', [\asset\Asset::ONGOING, \asset\Asset::SOLD, \asset\Asset::SCRAPPED, \asset\Asset::ENDED], 'cast' => 'enum'],
 			'grant' => ['element32', 'asset\Asset', 'null' => TRUE, 'cast' => 'element'],
 			'asset' => ['element32', 'asset\Asset', 'null' => TRUE, 'cast' => 'element'],
+			'isGrant' => ['bool', 'cast' => 'bool'],
+			'taxDuration' => ['int8', 'min' => 0, 'max' => NULL, 'null' => TRUE, 'cast' => 'int'],
+			'taxValue' => ['decimal', 'digits' => 8, 'decimal' => 2, 'min' => 0, 'max' => NULL, 'null' => TRUE, 'cast' => 'float'],
+			'derogationTotalAmount' => ['decimal', 'digits' => 8, 'decimal' => 2, 'min' => 0, 'max' => NULL, 'null' => TRUE, 'cast' => 'float'],
+			'alreadyDerogatedAmount' => ['decimal', 'digits' => 8, 'decimal' => 2, 'min' => 0, 'max' => NULL, 'null' => TRUE, 'cast' => 'float'],
+			'derogatoryAllocation' => ['decimal', 'digits' => 8, 'decimal' => 2, 'min' => 0, 'max' => NULL, 'null' => TRUE, 'cast' => 'float'],
+			'possibleRecovery' => ['decimal', 'digits' => 8, 'decimal' => 2, 'min' => 0, 'max' => NULL, 'null' => TRUE, 'cast' => 'float'],
+			'taxJustification' => ['text24', 'min' => 0, 'max' => NULL, 'null' => TRUE, 'cast' => 'string'],
 			'createdAt' => ['datetime', 'cast' => 'string'],
 			'updatedAt' => ['datetime', 'cast' => 'string'],
 			'createdBy' => ['element32', 'user\User', 'cast' => 'element'],
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'account', 'accountLabel', 'value', 'description', 'type', 'acquisitionDate', 'startDate', 'endDate', 'duration', 'status', 'grant', 'asset', 'createdAt', 'updatedAt', 'createdBy'
+			'id', 'account', 'accountLabel', 'value', 'description', 'type', 'acquisitionDate', 'startDate', 'endDate', 'duration', 'status', 'grant', 'asset', 'isGrant', 'taxDuration', 'taxValue', 'derogationTotalAmount', 'alreadyDerogatedAmount', 'derogatoryAllocation', 'possibleRecovery', 'taxJustification', 'createdAt', 'updatedAt', 'createdBy'
 		]);
 
 		$this->propertiesToModule += [
@@ -83,6 +91,9 @@ class AssetModel extends \ModuleModel {
 
 			case 'status' :
 				return Asset::ONGOING;
+
+			case 'isGrant' :
+				return FALSE;
 
 			case 'createdAt' :
 				return new \Sql('NOW()');
@@ -175,6 +186,38 @@ class AssetModel extends \ModuleModel {
 
 	public function whereAsset(...$data): AssetModel {
 		return $this->where('asset', ...$data);
+	}
+
+	public function whereIsGrant(...$data): AssetModel {
+		return $this->where('isGrant', ...$data);
+	}
+
+	public function whereTaxDuration(...$data): AssetModel {
+		return $this->where('taxDuration', ...$data);
+	}
+
+	public function whereTaxValue(...$data): AssetModel {
+		return $this->where('taxValue', ...$data);
+	}
+
+	public function whereDerogationTotalAmount(...$data): AssetModel {
+		return $this->where('derogationTotalAmount', ...$data);
+	}
+
+	public function whereAlreadyDerogatedAmount(...$data): AssetModel {
+		return $this->where('alreadyDerogatedAmount', ...$data);
+	}
+
+	public function whereDerogatoryAllocation(...$data): AssetModel {
+		return $this->where('derogatoryAllocation', ...$data);
+	}
+
+	public function wherePossibleRecovery(...$data): AssetModel {
+		return $this->where('possibleRecovery', ...$data);
+	}
+
+	public function whereTaxJustification(...$data): AssetModel {
+		return $this->where('taxJustification', ...$data);
 	}
 
 	public function whereCreatedAt(...$data): AssetModel {

@@ -37,24 +37,33 @@ class Asset {
         if(isAsset) {
 
             qs('div[data-help="asset"]').removeHide();
-            qs('input[name="asset[' + index + '][type]"][value="grant"]').setAttribute('disabled', 'disabled');
-            qs('input[name="asset[' + index + '][type]"][value="grant"]').removeAttribute('checked');
-            qs('input[name="asset[' + index + '][type]"][value="linear"]').removeAttribute('disabled');
+            qs('input[name="asset[' + index + '][type]"][value="grant-recovery"]').parentElement
+            qs('input[name="asset[' + index + '][type]"][value="grant-recovery"]').setAttribute('disabled', 'disabled');
+            qs('input[name="asset[' + index + '][type]"][value="grant-recovery"]').removeAttribute('checked');
+
             qs('input[name="asset[' + index + '][type]"][value="without"]').removeAttribute('disabled');
-            qs('input[name="asset[' + index + '][acquisitionDate]"]').removeAttribute('disabled');
+
+            qs('input[name="asset[' + index + '][type]"][value="linear"]').removeAttribute('disabled');
+            qs('input[name="asset[' + index + '][startDate]"]').removeAttribute('disabled');
             qs('select[name="asset[' + index + '][grant]"]').removeAttribute('disabled');
+
+            qsa('[data-asset-link="asset"]', element => element.hide())
+            qsa('[data-asset-link="grant"]', element => element.removeHide())
 
         } else if(isGrant) {
 
-            qs('input[name="asset[' + index + '][type]"][value="grant"]').removeAttribute('disabled');
-            qs('input[name="asset[' + index + '][type]"][value="grant"]').setAttribute('checked', 'checked');
+            qs('input[name="asset[' + index + '][type]"][value="grant-recovery"]').removeAttribute('disabled');
+            qs('input[name="asset[' + index + '][type]"][value="grant-recovery"]').removeAttribute('checked');
+            qs('input[name="asset[' + index + '][type]"][value="without"]').removeAttribute('disabled');
+            qs('input[name="asset[' + index + '][type]"][value="without"]').removeAttribute('checked');
+
             qs('input[name="asset[' + index + '][type]"][value="linear"]').removeAttribute('checked');
             qs('input[name="asset[' + index + '][type]"][value="linear"]').setAttribute('disabled', 'disabled');
-            qs('input[name="asset[' + index + '][type]"][value="without"]').removeAttribute('checked');
-            qs('input[name="asset[' + index + '][type]"][value="without"]').setAttribute('disabled', 'disabled');
-            qs('input[name="asset[' + index + '][acquisitionDate]"]').setAttribute('disabled', 'disabled');
+            qs('input[name="asset[' + index + '][startDate]"]').setAttribute('disabled', 'disabled');
             qs('select[name="asset[' + index + '][grant]"]').setAttribute('disabled', 'disabled');
 
+            qsa('[data-asset-link="asset"]', element => element.removeHide());
+            qsa('[data-asset-link="grant"]', element => element.hide());
         }
 
     }

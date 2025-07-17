@@ -3,9 +3,9 @@ Asset:
   account: account\Account
   accountLabel: text8(1, null) @collate(general)
   # Valeur d'acquisition
-  value: decimal(8, 2)
+  value: decimal(8, 2, 0, null)
   description: text8(1, null) @collate(general)
-  type: enum(LINEAR, WITHOUT, DEGRESSIVE, GRANT)
+  type: ?enum(LINEAR, WITHOUT, DEGRESSIVE, GRANT_RECOVERY) # linéaire, pas, dégressif, reprise de sub
   # Date d'achat
   acquisitionDate: date
   # Date de mise en service (= début de l'amortissement), null si type grant
@@ -19,6 +19,15 @@ Asset:
   grant: ?asset\Asset
   # Si la subvention a été utilisée sur une immo, lien vers cette immo
   asset: ?asset\Asset
+  isGrant: bool = false
+  # Infos supplémentaires pour les amortissements dérogatoires
+  taxDuration: ?int8(0, null)
+  taxValue: ?decimal(8, 2, 0, null)
+  derogationTotalAmount: ?decimal(8, 2, 0, null)
+  alreadyDerogatedAmount: ?decimal(8, 2, 0, null)
+  derogatoryAllocation: ?decimal(8, 2, 0, null)
+  possibleRecovery: ?decimal(8, 2, 0, null)
+  taxJustification: ?text(0, null)
   createdAt: datetime = SPECIAL(now)
   updatedAt: datetime = SPECIAL(now)
   createdBy: user\User = SPECIAL(user)
@@ -27,7 +36,7 @@ Depreciation:
   id: serial32
   asset: asset\Asset
   amount: decimal(8, 2)
-  type: enum(ECONOMIC, EXCESS)
+  type: enum(ECONOMIC, EXCESS) # excess : dérogatoire
   date: date = SPECIAL(now)
   financialYear: account\FinancialYear
   createdAt: datetime = SPECIAL(now)

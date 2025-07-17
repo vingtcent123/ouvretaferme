@@ -97,21 +97,21 @@ Class AssetUi {
 								$h .= match($eAsset['type']) {
 									AssetElement::LINEAR => s("LIN"),
 									AssetElement::WITHOUT => s("SANS"),
-									AssetElement::GRANT => s("SUB"),
+									AssetElement::GRANT_RECOVERY => s("SUB"),
 								};
 							$h .= '</td>';
 							$h .= '<td>';
 								$h .= match($eAsset['type']) {
 									AssetElement::LINEAR => s("LIN"),
 									AssetElement::WITHOUT => s("SANS"),
-									AssetElement::GRANT => s("SUB"),
+									AssetElement::GRANT_RECOVERY => s("SUB"),
 								};
 							$h .= '</td>';
 							$h .= '<td class="text-center">';
 								$h .= match($eAsset['type']) {
 									AssetElement::LINEAR => encode($eAsset['duration']),
 									AssetElement::WITHOUT => '',
-									AssetElement::GRANT => '',
+									default => '',
 								};
 							$h .= '</td>';
 							$h .= '<td class="text-end">'.\util\DateUi::numeric($eAsset['startDate'], \util\DateUi::DATE).'</td>';
@@ -416,6 +416,7 @@ Class AssetUi {
 			'endDate' => s('Date de fin'),
 			'description' => s('Libellé'),
 			'grant' => s('Subvention'),
+			'asset' => s('Immobilisation liée'),
 		]);
 
 		switch($property) {
@@ -429,7 +430,7 @@ Class AssetUi {
 				$d->values = [
 					AssetElement::LINEAR => s("Linéaire"),
 					AssetElement::WITHOUT => s("Sans"),
-					AssetElement::GRANT => s("Subvention"),
+					AssetElement::GRANT_RECOVERY => s("Reprise sur subvention"),
 				];
 				break;
 
