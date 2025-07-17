@@ -122,7 +122,7 @@ class Farm extends FarmElement {
 
 	}
 
-	public function canProduction(): string {
+	public function canProduction(): bool {
 		return (
 			$this->canPlanning() or
 			$this->canAnalyze() or
@@ -130,7 +130,7 @@ class Farm extends FarmElement {
 		);
 	}
 
-	public function canCommercialisation(): string {
+	public function canCommercialisation(): bool {
 		return (
 			$this->canSelling() or
 			$this->canAnalyze() or
@@ -138,7 +138,7 @@ class Farm extends FarmElement {
 		);
 	}
 
-	public function canAccounting(): string {
+	public function canAccounting(): bool {
 		return (
 			$this->canAccountEntry() or
 			$this->canManage()
