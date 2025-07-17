@@ -66,9 +66,17 @@ class PageLib {
 
 		}
 
+		$data->logInExternal = \user\ConnectionLib::checkLoginExternal();
+
 		if(REQUEST('app') === 'accounting') {
 
 			$data->eFarm = \farm\FarmLib::getById(REQUEST('farm'));
+
+			if($data->eFarm->empty()) {
+				$action = new \ViewAction($data, ':404');
+				$action->setStatusCode(404);
+				throw $action;
+			}
 
 			if($data->eFarm->hasAccounting() === FALSE) {
 				throw new \NotExpectedAction('Accounting feature not activated.');
@@ -86,8 +94,6 @@ class PageLib {
 		}
 
 		$data->nFarmUser = $data->cFarmUser->count();
-
-		$data->logInExternal = \user\ConnectionLib::checkLoginExternal();
 
 		// In some specific cases of redirections after network login we need to load datas before displaying a message
 		if(\Feature::get('user\ban')) {

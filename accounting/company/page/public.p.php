@@ -6,7 +6,7 @@ new \company\CompanyPage(
 )
 	->create(function ($data) {
 
-		$data->eFarm = \farm\FarmLib::getById(GET('farm'));
+		$data->eFarm = \farm\FarmLib::getById(GET('farm'))->validate('canManage');
 
 		throw new ViewAction($data);
 
