@@ -164,8 +164,8 @@ class FarmTemplate extends MainTemplate {
 		$farm = '<div class="nav-title">';
 
 			if(OTF_DEMO) {
-				$farm .= '<a href="'.\farm\FarmUi::urlPlanning($this->data->eFarm).'" style="color: white">'.encode($this->data->eFarm['name']).'</a>';
-				$farm .= '&nbsp;&nbsp;<a href="'.Lime::getUrl().'" class="btn btn-transparent">'.Asset::icon('escape').' '.s("Quitter la démo").'</a>';
+				$farm .= '<a href="'.\farm\FarmUi::urlPlanning($this->data->eFarm).'">'.encode($this->data->eFarm['name']).'</a>';
+				$farm .= '&nbsp;&nbsp;<a href="'.Lime::getUrl().'" class="btn btn-info">'.Asset::icon('escape').' '.s("Quitter la démo").'</a>';
 			} else {
 
 				$canUpdate = (
