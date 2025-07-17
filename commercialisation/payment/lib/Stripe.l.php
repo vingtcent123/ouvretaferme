@@ -268,10 +268,14 @@ class StripeLib {
 		if($httpCode === 200) {
 			return json_decode($data, TRUE);
 		} else {
-			throw new \Exception('Stripe error (HTTP code is '.$httpCode.')', $httpCode);
+			throw new StripeException('Stripe error (HTTP code is '.$httpCode.')', $httpCode);
 		}
 
 	}
 
+
+}
+
+class StripeException extends \Exception {
 
 }
