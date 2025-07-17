@@ -149,7 +149,7 @@ new AdaptativeView('series', function($data, FarmTemplate $t) {
 	$uiFarm = new \farm\FarmUi();
 
 	if(OTF_DEMO and $view === \farm\Farmer::AREA) {
-		echo '<div class="util-block bg-demo color-white">';
+		echo '<div class="util-block bg-secondary color-white">';
 			echo '<h4>'.s("Bienvenue sur la démo !").'</h4>';
 			echo '<p>'.s("Cette ferme est en libre service partagé entre tous les utilisateurs de {siteName} pour vous aider à découvrir les fonctionnalités de notre site. N'hésitez pas à parcourir toutes les pages et faire toutes sortes d'actions ! Les données de cette ferme sont automatiquement remises à zéro toutes les nuits.").'</p>';
 			echo '<p>'.s("Vous pouvez quitter à tout moment la démo en utilisant le lien <i>Quitter la démo</i> en haut de la page.").'</p>';

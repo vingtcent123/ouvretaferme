@@ -1,5 +1,4 @@
 :root {
-	--demo: #722364;
 	--soil: #48372f;
 	--harvest: #2e71b5;
 	--order: #7e1661;
@@ -120,9 +119,6 @@
 
 .bg-harvest {
 	background-color: var(--harvest) !important;
-}
-.bg-demo {
-	background-color: var(--demo) !important;
 }
 .bg-todo {
 	background-color: var(--todo) !important;
@@ -354,11 +350,7 @@ body > nav {
 	font-weight: normal;
 	color: white;
 	background-color: var(--primary);
-}
-
-body[data-demo] > nav {
-	background-color: var(--demo);
-}
+}F
 
 body > nav a {
 	color: white;
