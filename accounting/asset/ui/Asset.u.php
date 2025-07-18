@@ -97,22 +97,18 @@ Class AssetUi {
 								$h .= match($eAsset['type']) {
 									AssetElement::LINEAR => s("LIN"),
 									AssetElement::WITHOUT => s("SANS"),
-									AssetElement::GRANT_RECOVERY => s("SUB"),
+									AssetElement::GRANT_RECOVERY => s("LIN"),
 								};
 							$h .= '</td>';
 							$h .= '<td>';
 								$h .= match($eAsset['type']) {
 									AssetElement::LINEAR => s("LIN"),
 									AssetElement::WITHOUT => s("SANS"),
-									AssetElement::GRANT_RECOVERY => s("SUB"),
+									AssetElement::GRANT_RECOVERY => s("LIN"),
 								};
 							$h .= '</td>';
 							$h .= '<td class="text-center">';
-								$h .= match($eAsset['type']) {
-									AssetElement::LINEAR => encode($eAsset['duration']),
-									AssetElement::WITHOUT => '',
-									default => '',
-								};
+								$h .= $eAsset['duration'];
 							$h .= '</td>';
 							$h .= '<td class="text-end">'.\util\DateUi::numeric($eAsset['startDate'], \util\DateUi::DATE).'</td>';
 							$h .= '<td class="text-end">'.$this->number($eAsset['value'], '', 2).'</td>';

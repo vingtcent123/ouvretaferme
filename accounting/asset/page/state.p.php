@@ -17,6 +17,7 @@ new Page()
 new \asset\AssetPage(function($data) {
 
 	\user\ConnectionLib::checkLogged();
+	$data->eFarm->validate('canManage');
 
 	if(get_exists('id') === FALSE) {
 		throw new NotExpectedAction('Asset Id is required.');
