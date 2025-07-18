@@ -41,8 +41,8 @@ Depreciation:
   financialYear: account\FinancialYear
   createdAt: datetime = SPECIAL(now)
 
-# Reprises sur subventions
-Reversal:
+# Quote-part des sub virées au résultat
+Recognition:
   id: serial32
   grant: asset\Asset
   financialYear: account\FinancialYear

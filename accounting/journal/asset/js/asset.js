@@ -36,6 +36,7 @@ class Asset {
 
         if(isAsset) {
 
+            qs('div[data-help="grant"]').hide();
             qs('div[data-help="asset"]').removeHide();
             qs('input[name="asset[' + index + '][type]"][value="grant-recovery"]').parentElement
             qs('input[name="asset[' + index + '][type]"][value="grant-recovery"]').setAttribute('disabled', 'disabled');
@@ -51,6 +52,9 @@ class Asset {
             qsa('[data-asset-link="grant"]', element => element.removeHide())
 
         } else if(isGrant) {
+
+            qs('div[data-help="grant"]').removeHide();
+            qs('div[data-help="asset"]').hide();
 
             qs('input[name="asset[' + index + '][type]"][value="grant-recovery"]').removeAttribute('disabled');
             qs('input[name="asset[' + index + '][type]"][value="grant-recovery"]').removeAttribute('checked');

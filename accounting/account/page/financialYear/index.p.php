@@ -77,6 +77,7 @@ new \account\FinancialYearPage(
 		// Stock enregistré de cet exercice comptable + celui de l'exercice précédent non reporté
 		$data->cStock = \journal\StockLib::getAllForFinancialYear($data->e);
 
+		\asset\AssetLib::recogniseGrants($data->e);
 		throw new ViewAction($data);
 	})
 	->write('doClose', function($data) {

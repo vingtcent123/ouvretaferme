@@ -1,35 +1,35 @@
 <?php
 namespace asset;
 
-abstract class ReversalElement extends \Element {
+abstract class RecognitionElement extends \Element {
 
 	use \FilterElement;
 
-	private static ?ReversalModel $model = NULL;
+	private static ?RecognitionModel $model = NULL;
 
 	public static function getSelection(): array {
-		return Reversal::model()->getProperties();
+		return Recognition::model()->getProperties();
 	}
 
-	public static function model(): ReversalModel {
+	public static function model(): RecognitionModel {
 		if(self::$model === NULL) {
-			self::$model = new ReversalModel();
+			self::$model = new RecognitionModel();
 		}
 		return self::$model;
 	}
 
 	public static function fail(string|\FailException $failName, array $arguments = [], ?string $wrapper = NULL): bool {
-		return \Fail::log('Reversal::'.$failName, $arguments, $wrapper);
+		return \Fail::log('Recognition::'.$failName, $arguments, $wrapper);
 	}
 
 }
 
 
-class ReversalModel extends \ModuleModel {
+class RecognitionModel extends \ModuleModel {
 
-	protected string $module = 'asset\Reversal';
+	protected string $module = 'asset\Recognition';
 	protected string $package = 'asset';
-	protected string $table = 'assetReversal';
+	protected string $table = 'assetRecognition';
 
 	public function __construct() {
 
@@ -75,55 +75,55 @@ class ReversalModel extends \ModuleModel {
 
 	}
 
-	public function select(...$fields): ReversalModel {
+	public function select(...$fields): RecognitionModel {
 		return parent::select(...$fields);
 	}
 
-	public function where(...$data): ReversalModel {
+	public function where(...$data): RecognitionModel {
 		return parent::where(...$data);
 	}
 
-	public function whereId(...$data): ReversalModel {
+	public function whereId(...$data): RecognitionModel {
 		return $this->where('id', ...$data);
 	}
 
-	public function whereGrant(...$data): ReversalModel {
+	public function whereGrant(...$data): RecognitionModel {
 		return $this->where('grant', ...$data);
 	}
 
-	public function whereFinancialYear(...$data): ReversalModel {
+	public function whereFinancialYear(...$data): RecognitionModel {
 		return $this->where('financialYear', ...$data);
 	}
 
-	public function whereDate(...$data): ReversalModel {
+	public function whereDate(...$data): RecognitionModel {
 		return $this->where('date', ...$data);
 	}
 
-	public function whereAmount(...$data): ReversalModel {
+	public function whereAmount(...$data): RecognitionModel {
 		return $this->where('amount', ...$data);
 	}
 
-	public function whereOperation(...$data): ReversalModel {
+	public function whereOperation(...$data): RecognitionModel {
 		return $this->where('operation', ...$data);
 	}
 
-	public function whereDebitAccountLabel(...$data): ReversalModel {
+	public function whereDebitAccountLabel(...$data): RecognitionModel {
 		return $this->where('debitAccountLabel', ...$data);
 	}
 
-	public function whereCreditAccountLabel(...$data): ReversalModel {
+	public function whereCreditAccountLabel(...$data): RecognitionModel {
 		return $this->where('creditAccountLabel', ...$data);
 	}
 
-	public function whereProrataDays(...$data): ReversalModel {
+	public function whereProrataDays(...$data): RecognitionModel {
 		return $this->where('prorataDays', ...$data);
 	}
 
-	public function whereComment(...$data): ReversalModel {
+	public function whereComment(...$data): RecognitionModel {
 		return $this->where('comment', ...$data);
 	}
 
-	public function whereCreatedAt(...$data): ReversalModel {
+	public function whereCreatedAt(...$data): RecognitionModel {
 		return $this->where('createdAt', ...$data);
 	}
 
@@ -131,24 +131,24 @@ class ReversalModel extends \ModuleModel {
 }
 
 
-abstract class ReversalCrud extends \ModuleCrud {
+abstract class RecognitionCrud extends \ModuleCrud {
 
  private static array $cache = [];
 
-	public static function getById(mixed $id, array $properties = []): Reversal {
+	public static function getById(mixed $id, array $properties = []): Recognition {
 
-		$e = new Reversal();
+		$e = new Recognition();
 
 		if(empty($id)) {
-			Reversal::model()->reset();
+			Recognition::model()->reset();
 			return $e;
 		}
 
 		if($properties === []) {
-			$properties = Reversal::getSelection();
+			$properties = Recognition::getSelection();
 		}
 
-		if(Reversal::model()
+		if(Recognition::model()
 			->select($properties)
 			->whereId($id)
 			->get($e) === FALSE) {
@@ -166,14 +166,14 @@ abstract class ReversalCrud extends \ModuleCrud {
 		}
 
 		if($properties === []) {
-			$properties = Reversal::getSelection();
+			$properties = Recognition::getSelection();
 		}
 
 		if($sort !== NULL) {
-			Reversal::model()->sort($sort);
+			Recognition::model()->sort($sort);
 		}
 
-		return Reversal::model()
+		return Recognition::model()
 			->select($properties)
 			->whereId('IN', $ids)
 			->getCollection(NULL, NULL, $index);
@@ -187,51 +187,51 @@ abstract class ReversalCrud extends \ModuleCrud {
 
 	}
 
-	public static function getCreateElement(): Reversal {
+	public static function getCreateElement(): Recognition {
 
-		return new Reversal(['id' => NULL]);
-
-	}
-
-	public static function create(Reversal $e): void {
-
-		Reversal::model()->insert($e);
+		return new Recognition(['id' => NULL]);
 
 	}
 
-	public static function update(Reversal $e, array $properties): void {
+	public static function create(Recognition $e): void {
+
+		Recognition::model()->insert($e);
+
+	}
+
+	public static function update(Recognition $e, array $properties): void {
 
 		$e->expects(['id']);
 
-		Reversal::model()
+		Recognition::model()
 			->select($properties)
 			->update($e);
 
 	}
 
-	public static function updateCollection(\Collection $c, Reversal $e, array $properties): void {
+	public static function updateCollection(\Collection $c, Recognition $e, array $properties): void {
 
-		Reversal::model()
+		Recognition::model()
 			->select($properties)
 			->whereId('IN', $c)
 			->update($e->extracts($properties));
 
 	}
 
-	public static function delete(Reversal $e): void {
+	public static function delete(Recognition $e): void {
 
 		$e->expects(['id']);
 
-		Reversal::model()->delete($e);
+		Recognition::model()->delete($e);
 
 	}
 
 }
 
 
-class ReversalPage extends \ModulePage {
+class RecognitionPage extends \ModulePage {
 
-	protected string $module = 'asset\Reversal';
+	protected string $module = 'asset\Recognition';
 
 	public function __construct(
 	   ?\Closure $start = NULL,
@@ -240,8 +240,8 @@ class ReversalPage extends \ModulePage {
 	) {
 		parent::__construct(
 		   $start,
-		   $propertiesCreate ?? ReversalLib::getPropertiesCreate(),
-		   $propertiesUpdate ?? ReversalLib::getPropertiesUpdate()
+		   $propertiesCreate ?? RecognitionLib::getPropertiesCreate(),
+		   $propertiesUpdate ?? RecognitionLib::getPropertiesUpdate()
 		);
 	}
 

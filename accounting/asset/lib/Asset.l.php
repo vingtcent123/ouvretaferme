@@ -196,7 +196,7 @@ class AssetLib extends \asset\AssetCrud {
 
 	}
 
-	public static function reverseGrants(\account\FinancialYear $eFinancialYear): void {
+	public static function recogniseGrants(\account\FinancialYear $eFinancialYear): void {
 
 		\journal\Operation::model()->beginTransaction();
 
@@ -214,10 +214,10 @@ class AssetLib extends \asset\AssetCrud {
 			// Valeur théorique
 			$depreciationValue = $depreciationData['value'];
 
-			// Valeur restante
-			$alreadyReversed = ReversalLib::sumByGrant($eAsset);
+			// Valeur restante (déjà virée au compte de résultat)
+			$alreadyRecognised = RecognitionLib::sumByGrant($eAsset);
 
-			$value = min($eAsset['value'] - $alreadyReversed, $depreciationValue);
+			$value = min($eAsset['value'] - $alreadyRecognised, $depreciationValue);
 
 			// Crée l'opération 139 au débit
 			$eOperationSubvention = new \journal\Operation([
@@ -238,7 +238,7 @@ class AssetLib extends \asset\AssetCrud {
 			\journal\Operation::model()->insert($eOperationSubvention);
 
 			// Crée l'opération de reprise au crédit du compte 7777
-			$eOperationReversal = new \journal\Operation([
+			$eOperationRecognition = new \journal\Operation([
 				'type' => \journal\OperationElement::CREDIT,
 				'amount' => $value,
 				'account' => $eAccountDepreciation,
@@ -253,23 +253,23 @@ class AssetLib extends \asset\AssetCrud {
 				'paymentDate' => $eFinancialYear['endDate'],
 			]);
 
-			\journal\Operation::model()->insert($eOperationReversal);
+			\journal\Operation::model()->insert($eOperationRecognition);
 
-			// Enregistre la reprise
-			$reversalValues = [
+			// Enregistre la quote part virée au compte de résultat
+			$recognitionValues = [
 				'grant' => $eAsset,
 				'financialYear' => $eFinancialYear,
 				'date' => $eFinancialYear['endDate'] > $eAsset['endDate'] ? $eAsset['endDate'] : $eFinancialYear['endDate'],
 				'amount' => $value,
-				'operation' => $eOperationReversal,
+				'operation' => $eOperationRecognition,
 				'debitAccountLabel' => $eOperationSubvention['accountLabel'],
-				'creditAccountLabel' => $eOperationReversal['accountLabel'],
+				'creditAccountLabel' => $eOperationRecognition['accountLabel'],
 				'prorataDays' => $prorataDays,
 			];
-			ReversalLib::saveByValues($reversalValues);
+			RecognitionLib::saveByValues($recognitionValues);
 
 			// Solde la subvention si elle est terminée
-			if($eAsset['endDate'] <= $eFinancialYear['endDate'] or $alreadyReversed + $value >= $eAsset['value']) {
+			if($eAsset['endDate'] <= $eFinancialYear['endDate'] or $alreadyRecognised + $value >= $eAsset['value']) {
 				Asset::model()->update($eAsset, ['status' => Asset::ENDED, 'updatedAt' => new \Sql('NOW()')]);
 			}
 

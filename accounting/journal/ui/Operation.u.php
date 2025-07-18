@@ -203,9 +203,20 @@ class OperationUi {
 		$h .= '</div>';
 		$h .= '<div>';
 
-		$h .= '<div class="util-block-help hide" data-help="asset">';
+		$h .= '<div class="util-block-help hide" data-help="grant">';
 			$h .= '<h4>'.s("Quelques précisions sur les immobilisations").'</h4>';
 			$h .= '<p>'.s("En règle générale, les durées sont de :").'</p>';
+			$h .= '<ul>';
+				$h .= '<li>'.s('5 ans pour un montant < 1 000 € (petites aides à effet immédiat)').'</li>';
+				$h .= '<li>'.s('7 ans pour un montant compris entre 1 000 € et 10 000 € (aide intermédiaire)').'</li>';
+				$h .= '<li>'.s('10 ans pour un montant > 10 000 € (durée recommandée par défaut)').'</li>';
+			$h .= '</ul>';
+		$h .= '</div>';
+
+		$h .= '<div class="util-block-help hide" data-help="grant">';
+			$h .= '<h4>'.s("Quelques précisions sur les subventions").'</h4>';
+			$h .= '<p>'.s("La durée de la subvention est équivalente à celle de l'immobilisation liée.").'</p>';
+			$h .= '<p>'.s("Si aucune suvention n'est liée, voici quelques indications pour la durée de l'utilisation comptable de la subvention :").'</p>';
 			$h .= '<ul>';
 				$h .= '<li>'.s('5 à 10 ans pour du matériel agricole (compte 2153)').'</li>';
 				$h .= '<li>'.s('4 à 7 ans pour du matériel de transport (compte 2154)').'</li>';

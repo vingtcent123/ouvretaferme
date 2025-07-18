@@ -104,7 +104,7 @@ class FinancialYearLib extends FinancialYearCrud {
 		\asset\AssetLib::depreciateAll($eFinancialYear);
 
 		// Reprise sur subventions
-		\asset\AssetLib::reverseGrants($eFinancialYear);
+		\asset\AssetLib::recogniseGrants($eFinancialYear);
 
 		// 2- Charges constatées d'avance
 		\journal\DeferredChargeLib::recordChargesIntoFinancialYear($eFinancialYear);
