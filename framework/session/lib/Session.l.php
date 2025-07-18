@@ -195,7 +195,7 @@ class SessionLib {
 
 		$eSession = new Session([
 			'sid' => $sid,
-			'content' => gzcompress(self::$content),
+			'content' => self::$content,
 		]);
 
 		$affected = Session::model()
@@ -276,25 +276,15 @@ class SessionLib {
 				}
 			} else {
 
-				self::$content = gzuncompress($eSession['content']);
+				self::$content = $eSession['content'];
 
-				if(self::$content === FALSE) {
+				self::getCache()->set(self::$cachePrefix.$sid, self::$content, self::REGENERATION * 2);
 
-					self::deleteSession($sid);
+				if($eSession['lastUpdate'] > self::REGENERATION) {
 
-					self::$content = '';
-
-				} else {
-
-					self::getCache()->set(self::$cachePrefix.$sid, self::$content, self::REGENERATION * 2);
-
-					if($eSession['lastUpdate'] > self::REGENERATION) {
-
-						Session::model()
-							->whereSid($sid)
-							->update('updatedAt = NOW()');
-
-					}
+					Session::model()
+						->whereSid($sid)
+						->update('updatedAt = NOW()');
 
 				}
 
@@ -319,7 +309,7 @@ class SessionLib {
 		}
 
 		$properties = [
-			'content' => gzcompress($content),
+			'content' => $content,
 			'updatedAt' => new \Sql('NOW()')
 		];
 

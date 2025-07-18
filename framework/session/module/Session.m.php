@@ -40,7 +40,7 @@ class SessionModel extends \ModuleModel {
 
 		$this->properties = array_merge($this->properties, [
 			'sid' => ['sid', 'unique' => TRUE, 'cast' => 'string'],
-			'content' => ['binary16', 'min' => 0, 'max' => SessionLib::MAX_LENGTH, 'cast' => 'binary'],
+			'content' => ['text16', 'min' => 0, 'max' => SessionLib::MAX_LENGTH, 'cast' => 'string'],
 			'updatedAt' => ['datetime', 'cast' => 'string'],
 			'user' => ['element32', 'user\User', 'null' => TRUE, 'cast' => 'element'],
 		]);
