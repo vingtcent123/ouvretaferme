@@ -14,8 +14,8 @@ Setting::register('account', [
 	],
 
 	'assetClass' => 2,
-	'subventionAssetClass' => '13',
-	'subventionDepreciationAssetClass' => '777',
+	'grantAssetClass' => '13',
+	'grantDepreciationClass' => '777', // Quote-part des subventions d'investissement virées au résultat de l'exercice
 
 	'thirdAccountGeneralClass' => 4,
 	'vatClass' => '445',
@@ -40,7 +40,7 @@ Setting::register('account', [
 	'intangibleAssetsClass' => '20', // Immobilisations incorporelles
 	'tangibleAssetsClasses' => ['21', '24'], // Immobilisations corporelles
 
-	'subventionAssetsDepreciationChargeClass' => '139', // Subventions d'investissement inscrites au CdR
+	'grantsInIncomeStatement' => '139', // Subventions d'investissement inscrites au CdR
 	'intangibleAssetsDepreciationChargeClass' => '68111', // Dotation aux amortissements sur immos incorporelles
 	'tangibleAssetsDepreciationChargeClass' => '68112', // Dotation aux amortissements sur immos corporelles
 	'exceptionalDepreciationChargeClass' => '6871', // Dotation aux amortissements exceptionnels

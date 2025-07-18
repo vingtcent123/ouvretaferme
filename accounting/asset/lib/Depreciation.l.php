@@ -83,6 +83,18 @@ class DepreciationLib extends \asset\DepreciationCrud {
 		return $days;
 	}
 
+	public static function calculateGrantDepreciation(string $startDate, string $endDate, Asset $eAsset): array {
+
+		$value = $eAsset['value'];
+		$rate = 1 / $eAsset['duration'];
+
+		$days = self::getDays(max($startDate, $eAsset['startDate']), min($endDate, $eAsset['endDate']), $eAsset);
+
+		$prorata = min(1, $days / 360);
+
+		return ['prorataDays' => $prorata, 'value' => round($value * $rate * $prorata, 2)];
+	}
+
 	/**
 	 * Calcul l'amortissement de l'immobilisation entre 2 dates
 	 *
@@ -202,7 +214,7 @@ class DepreciationLib extends \asset\DepreciationCrud {
 
 		$cAsset = match($type) {
 			'asset' => AssetLib::getAssetsByFinancialYear($eFinancialYear),
-			'subvention' => AssetLib::getSubventionsByFinancialYear($eFinancialYear),
+			'subvention' => AssetLib::getGrantsByFinancialYear($eFinancialYear),
 		};
 
 		$ccDepreciation = Depreciation::model()

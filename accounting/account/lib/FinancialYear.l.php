@@ -103,8 +103,8 @@ class FinancialYearLib extends FinancialYearCrud {
 		// 1- Calcul des amortissements
 		\asset\AssetLib::depreciateAll($eFinancialYear);
 
-		// Reprise des subventions dont l'amortissement de l'immobilisation est terminé
-		\asset\AssetLib::subventionReversal($eFinancialYear);
+		// Reprise sur subventions
+		\asset\AssetLib::reverseGrants($eFinancialYear);
 
 		// 2- Charges constatées d'avance
 		\journal\DeferredChargeLib::recordChargesIntoFinancialYear($eFinancialYear);

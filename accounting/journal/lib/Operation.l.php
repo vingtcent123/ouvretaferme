@@ -1039,5 +1039,15 @@ class OperationLib extends OperationCrud {
 			->update($eOperation);
 
 	}
+
+	public static function getByAsset(\asset\Asset $eAsset): Operation {
+
+		return Operation::model()
+			->select(Operation::getSelection())
+			->whereAsset($eAsset)
+			->sort(['createdAt' => SORT_ASC])
+			->get();
+
+	}
 }
 ?>

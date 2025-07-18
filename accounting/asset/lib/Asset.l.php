@@ -25,16 +25,16 @@ class AssetLib extends \asset\AssetCrud {
 
 	}
 
-	public static function isSubventionAsset(string $account): bool {
+	public static function isGrantAsset(string $account): bool {
 
-		return \account\ClassLib::isFromClass($account, \Setting::get('account\subventionAssetClass'));
+		return \account\ClassLib::isFromClass($account, \Setting::get('account\grantAssetClass'));
 
 	}
 
 	public static function depreciationClassByAssetClass(string $class): string {
 
-		if(self::isSubventionAsset($class) === TRUE) {
-			return \Setting::get('account\subventionDepreciationAssetClass');
+		if(self::isGrantAsset($class) === TRUE) {
+			return \Setting::get('account\grantDepreciationClass');
 		}
 
 		return mb_substr($class, 0, 1).'8'.mb_substr($class, 1);
@@ -53,7 +53,7 @@ class AssetLib extends \asset\AssetCrud {
 			->select(Asset::getSelection())
 			->whereIsGrant(TRUE)
 			->whereAsset(NULL)
-			->whereAccountLabel('LIKE', \Setting::get('account\subventionAssetClass').'%')
+			->whereAccountLabel('LIKE', \Setting::get('account\grantAssetClass').'%')
 			->getCollection();
 	}
 
@@ -76,28 +76,27 @@ class AssetLib extends \asset\AssetCrud {
 			->whereAcquisitionDate('<=', $eFinancialYear['endDate'])
 			->whereAccountLabel('LIKE', match($type) {
 				'asset' => \Setting::get('account\assetClass').'%',
-				'subvention' => \Setting::get('account\subventionAssetClass').'%',
+				'subvention' => \Setting::get('account\grantAssetClass').'%',
 			})
 			->sort(['accountLabel' => SORT_ASC, 'startDate' => SORT_ASC])
 			->getCollection();
 
 	}
 
-	public static function getSubventionsByFinancialYear(\account\FinancialYear $eFinancialYear): \Collection {
+	public static function getGrantsByFinancialYear(\account\FinancialYear $eFinancialYear): \Collection {
 
 		return Asset::model()
-      ->select(
-        Asset::getSelection()
-        + ['account' => \account\Account::getSelection()]
-      )
+      ->select(Asset::getSelection())
       ->whereStartDate('<=', $eFinancialYear['endDate'])
-			->whereAccountLabel('LIKE', \Setting::get('account\subventionAssetClass').'%')
+      ->whereEndDate('>=', $eFinancialYear['startDate'])
+			->whereAccountLabel('LIKE', \Setting::get('account\grantAssetClass').'%')
 			->whereIsGrant(TRUE)
+			->whereStatus(Asset::ONGOING)
       ->sort(['accountLabel' => SORT_ASC, 'startDate' => SORT_ASC])
       ->getCollection();
 	}
 
-	public static function getAssetsByFinancialYear(\account\FinancialYear $eFinancialYear): \Collection {
+	public static function getAssetsByFinancialYear(\account\FinancialYear $eFinancialYear, ?string $status = Asset::ONGOING): \Collection {
 
 		return Asset::model()
 			->select(
@@ -107,6 +106,8 @@ class AssetLib extends \asset\AssetCrud {
 			->whereStartDate('<=', $eFinancialYear['endDate'])
 			->whereEndDate('>=', $eFinancialYear['startDate'])
 			->whereAccountLabel('LIKE', \Setting::get('account\assetClass').'%')
+			->whereIsGrant(FALSE)
+			->whereStatus($status, if: $status !== NULL)
 			->sort(['accountLabel' => SORT_ASC, 'startDate' => SORT_ASC])
 			->getCollection();
 
@@ -119,7 +120,7 @@ class AssetLib extends \asset\AssetCrud {
 		// Ni une immo, ni une sub
 		if(
 			\account\ClassLib::isFromClass($eOperation['accountLabel'], \Setting::get('account\assetClass')) === FALSE
-			and	\account\ClassLib::isFromClass($eOperation['accountLabel'], \Setting::get('account\subventionAssetClass')) === FALSE
+			and	\account\ClassLib::isFromClass($eOperation['accountLabel'], \Setting::get('account\grantAssetClass')) === FALSE
 		) {
 			return NULL;
 		}
@@ -134,7 +135,7 @@ class AssetLib extends \asset\AssetCrud {
 		$assetData['accountLabel'] = $eOperation['accountLabel'];
 		$assetData['description'] = $eOperation['description'];
 
-		$isGrant = self::isSubventionAsset($eOperation['accountLabel']);
+		$isGrant = self::isGrantAsset($eOperation['accountLabel']);
 		$assetData['isGrant'] = $isGrant;
 
 		$eAsset = new Asset();
@@ -153,14 +154,10 @@ class AssetLib extends \asset\AssetCrud {
 
 		Asset::model()->insert($eAsset);
 
-		// On ajoute le lien vers l'immo depuis la sub
+		// On ajoute le lien vers l'immo dans la subvention concernée
 		if($eAsset['grant']->notEmpty()) {
 
-			$eAsset['grant']['asset'] = $eAsset;
-
-			Asset::model()
-				->select(['asset'])
-				->update($eAsset['grant']);
+			Asset::model()->update($eAsset['grant'], ['asset' => $eAsset]);
 
 		}
 
@@ -199,58 +196,82 @@ class AssetLib extends \asset\AssetCrud {
 
 	}
 
-	public static function subventionReversal(\account\FinancialYear $eFinancialYear): void {
+	public static function reverseGrants(\account\FinancialYear $eFinancialYear): void {
 
 		\journal\Operation::model()->beginTransaction();
 
-		$cAsset = self::getSubventionsByFinancialYear($eFinancialYear);
+		$cAsset = self::getGrantsByFinancialYear($eFinancialYear);
 
-		$eAccountSubventionAssetDepreciation = \account\AccountLib::getByClass(\Setting::get('account\subventionAssetsDepreciationChargeClass'));
+		$eAccountGrantsInIncomeStatement = \account\AccountLib::getByClass(\Setting::get('account\grantsInIncomeStatement'));
+		$eAccountDepreciation = \account\AccountLib::getByClass(\Setting::get('account\grantDepreciationClass'));
 
 		foreach($cAsset as $eAsset) {
 
-			if(
-				$eAsset !== AssetElement::ONGOING
-				or $eAsset['endDate'] > $eFinancialYear['endDate']
-				or $eAsset['endDate'] < $eFinancialYear['startDate']
-			) {
-				continue;
-			}
+			$eOperation = \journal\OperationLib::getByAsset($eAsset);
+			$depreciationData = DepreciationLib::calculateGrantDepreciation($eFinancialYear['startDate'], $eFinancialYear['endDate'], $eAsset);
+			$prorataDays = $depreciationData['prorataDays'];
 
-			// Crée l'opération 13x au débit
+			// Valeur théorique
+			$depreciationValue = $depreciationData['value'];
+
+			// Valeur restante
+			$alreadyReversed = ReversalLib::sumByGrant($eAsset);
+
+			$value = min($eAsset['value'] - $alreadyReversed, $depreciationValue);
+
+			// Crée l'opération 139 au débit
 			$eOperationSubvention = new \journal\Operation([
 				'type' => \journal\OperationElement::DEBIT,
-				'amount' => $eAsset['value'],
-				'account' => $eAsset['account'],
-				'accountLabel' => $eAsset['accountLabel'],
+				'amount' => $value,
+				'account' => $eAccountGrantsInIncomeStatement,
+				'accountLabel' => \account\ClassLib::pad($eAccountGrantsInIncomeStatement['class']),
 				'description' => $eAsset['description'],
+				'thirdParty' => $eOperation['thirdParty'] ?? new \account\ThirdParty(),
 				'document' => new AssetUi()->getAssetShortTranslation(),
 				'documentDate' => new \Sql('NOW()'),
 				'asset' => $eAsset,
+				'financialYear' => $eFinancialYear,
+				'date' => $eFinancialYear['endDate'],
+				'paymentDate' => $eFinancialYear['endDate'],
 			]);
 
 			\journal\Operation::model()->insert($eOperationSubvention);
 
-			// Crée l'opération de reprise au crédit
+			// Crée l'opération de reprise au crédit du compte 7777
 			$eOperationReversal = new \journal\Operation([
 				'type' => \journal\OperationElement::CREDIT,
-				'amount' => $eAsset['value'],
-				'account' => $eAccountSubventionAssetDepreciation,
-				'accountLabel' => \account\ClassLib::pad($eAccountSubventionAssetDepreciation['class']),
+				'amount' => $value,
+				'account' => $eAccountDepreciation,
+				'accountLabel' => \account\ClassLib::pad($eAccountDepreciation['class']),
 				'description' => $eAsset['description'],
+				'thirdParty' => $eOperation['thirdParty'] ?? new \account\ThirdParty(),
 				'document' => new AssetUi()->getAssetShortTranslation(),
 				'documentDate' => new \Sql('NOW()'),
 				'asset' => $eAsset,
+				'financialYear' => $eFinancialYear,
+				'date' => $eFinancialYear['endDate'],
+				'paymentDate' => $eFinancialYear['endDate'],
 			]);
 
 			\journal\Operation::model()->insert($eOperationReversal);
 
-			// Solde la subvention
-			$eAsset['status'] = AssetElement::ENDED;
-			$eAsset['updatedAt'] = new \Sql('NOW()');
-			Asset::model()
-				->select(['status', 'updatedAt'])
-				->update($eAsset);
+			// Enregistre la reprise
+			$reversalValues = [
+				'grant' => $eAsset,
+				'financialYear' => $eFinancialYear,
+				'date' => $eFinancialYear['endDate'] > $eAsset['endDate'] ? $eAsset['endDate'] : $eFinancialYear['endDate'],
+				'amount' => $value,
+				'operation' => $eOperationReversal,
+				'debitAccountLabel' => $eOperationSubvention['accountLabel'],
+				'creditAccountLabel' => $eOperationReversal['accountLabel'],
+				'prorataDays' => $prorataDays,
+			];
+			ReversalLib::saveByValues($reversalValues);
+
+			// Solde la subvention si elle est terminée
+			if($eAsset['endDate'] <= $eFinancialYear['endDate'] or $alreadyReversed + $value >= $eAsset['value']) {
+				Asset::model()->update($eAsset, ['status' => Asset::ENDED, 'updatedAt' => new \Sql('NOW()')]);
+			}
 
 		}
 
@@ -262,7 +283,7 @@ class AssetLib extends \asset\AssetCrud {
 
 		Asset::model()->beginTransaction();
 
-		$cAsset = self::getAssetsByFinancialYear($eFinancialYear)->mergeCollection(self::getSubventionsByFinancialYear($eFinancialYear));
+		$cAsset = self::getAssetsByFinancialYear($eFinancialYear);
 
 		foreach($cAsset as $eAsset) {
 
@@ -275,13 +296,14 @@ class AssetLib extends \asset\AssetCrud {
 
 	/**
 	 * Amortit l'immobilisation sur l'exercice comptable dépendant de sa date d'acquisition / date de fin d'amortissement
-	 * Crée une entrée "Dotation aux amortissements" (classe 6) et une entrée "Amortissement" (classe 2)
+	 * Crée une entrée "Dotation aux amortissements" (classe 6) au débit et une entrée "Amortissement" (classe 2) au crédit
 	 *
 	 * @param Asset $eAsset
 	 * @return void
 	 */
 	public static function depreciate(\account\FinancialYear $eFinancialYear, Asset $eAsset, ?string $endDate): void {
 
+		// Cas où on sort l'immo manuellement (cassé, mise au rebus etc.)
 		if($endDate === NULL) {
 			$endDate = $eFinancialYear['endDate'];
 		}
@@ -289,9 +311,7 @@ class AssetLib extends \asset\AssetCrud {
 		$depreciationValue = DepreciationLib::calculateDepreciation($eFinancialYear['startDate'], $endDate, $eAsset);
 
 		// Dotation aux amortissements
-		if(self::isSubventionAsset($eAsset['accountLabel'])) {
-			$depreciationChargeClass = \Setting::get('account\subventionAssetsDepreciationChargeClass');
-		} else if(self::isIntangibleAsset($eAsset['accountLabel'])) {
+		if(self::isIntangibleAsset($eAsset['accountLabel'])) {
 			$depreciationChargeClass = \Setting::get('account\intangibleAssetsDepreciationChargeClass');
 		} else {
 			$depreciationChargeClass = \Setting::get('account\tangibleAssetsDepreciationChargeClass');
@@ -327,6 +347,16 @@ class AssetLib extends \asset\AssetCrud {
 
 		Depreciation::model()->insert($eDepreciation);
 
+		// Si l'immobilisation a été entièrement amortie ou n'est plus valide
+		$depreciatedValue = Depreciation::model()
+			->select(['sum' => new \Sql('SUM(amount)')])
+			->whereAsset($eAsset)
+			->getValue('sum');
+
+		if($eAsset['endDate'] <= $eFinancialYear['endDate'] or $depreciatedValue >= $eAsset['value']) {
+			Asset::model()->update($eAsset, ['status' => Asset::ENDED, 'updatedAt' => new \Sql('NOW()')]);
+		}
+
 	}
 
 	/**
@@ -361,6 +391,9 @@ class AssetLib extends \asset\AssetCrud {
 
 	}
 
+	/**
+	 * TODO : vérifier la mise au rebut, vente etc.
+	 */
 	public static function dispose(Asset $eAsset, array $input): void {
 
 		$fw = new \FailWatch();

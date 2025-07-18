@@ -40,3 +40,17 @@ Depreciation:
   date: date = SPECIAL(now)
   financialYear: account\FinancialYear
   createdAt: datetime = SPECIAL(now)
+
+# Reprises sur subventions
+Reversal:
+  id: serial32
+  grant: asset\Asset
+  financialYear: account\FinancialYear
+  date: date # Date de comptabilisation
+  amount: decimal(8, 2)
+  operation: journal\Operation
+  debitAccountLabel: text8(1, null) @collate(general)
+  creditAccountLabel: text8(1, null) @collate(general)
+  prorataDays: float(0.0, 1.0)
+  comment: ?text(1, null) @collage(general)
+  createdAt: datetime = SPECIAL(now)

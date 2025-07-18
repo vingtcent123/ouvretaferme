@@ -12,7 +12,7 @@ class Asset {
         const isGrant = accountClass?.startsWith('13');
         const isAsset = accountClass?.startsWith('2');
 
-        // assetClass & subventionAssetClass
+        // assetClass & grantAssetClass
         if(!accountClass || (!isAsset && !isGrant)) {
 
             e.delegateTarget.firstParent('.create-operation').classList.remove('is-asset');
