@@ -11,7 +11,7 @@ class SessionLib {
 	 * Session content max length
 	 *
 	 */
-	const MAX_LENGTH = 3000;
+	const MAX_LENGTH = 16384;
 
 	/**
 	 * Session lifetime
