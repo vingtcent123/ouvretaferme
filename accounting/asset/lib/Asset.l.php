@@ -208,10 +208,12 @@ class AssetLib extends \asset\AssetCrud {
 
 		foreach($grantsToRecognize as $grantId) {
 
-			$eAsset = $cAssetGrant->find(fn($e) => $e['id'] === (int)$grantId);
-			if($eAsset->empty()) {
+			$cAsset = $cAssetGrant->find(fn($e) => $e['id'] === (int)$grantId);
+			if($cAsset->empty()) {
 				continue;
 			}
+
+			$eAsset = $cAsset->first();
 
 			$alreadyRecognized = RecognitionLib::sumByGrant($eAsset);
 			$depreciationValue = $eAsset['value'] - $alreadyRecognized;
