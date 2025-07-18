@@ -27,7 +27,14 @@ new AdaptativeView('close', function($data, FarmTemplate $t) {
 
 	$t->mainTitle = new \account\FinancialYearUi()->getCloseTitle($data->eFarm);
 
-	echo new \account\FinancialYearUi()->close($data->eFarm, $data->e, $data->cOperationCharges, $data->cAccruedIncome, $data->cStock);
+	echo new \account\FinancialYearUi()->close(
+		$data->eFarm,
+		$data->e,
+		$data->cOperationCharges,
+		$data->cAccruedIncome,
+		$data->cStock,
+		$data->cAssetGrant
+	);
 
 });
 

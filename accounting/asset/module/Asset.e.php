@@ -27,8 +27,8 @@ class Asset extends AssetElement {
 	public static function getSelection(): array {
 
 		return parent::getSelection() + [
-				'asset' => ['account', 'accountLabel', 'duration', 'value', 'type', 'startDate', 'endDate', 'acquisitionDate'],
-				'grant' => ['account', 'accountLabel', 'duration', 'value', 'type', 'startDate', 'endDate', 'acquisitionDate'],
+				'asset' => ['account', 'accountLabel', 'description', 'duration', 'value', 'type', 'startDate', 'endDate', 'acquisitionDate'],
+				'grant' => ['account', 'accountLabel', 'description', 'duration', 'value', 'type', 'startDate', 'endDate', 'acquisitionDate'],
 				'account' => \account\Account::getSelection(),
 			];
 

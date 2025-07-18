@@ -59,8 +59,8 @@ class AccruedIncomeUi {
 
 		$h = '<h3 class="mt-2">'.s("Produits à recevoir (PAR)").'</h3>';
 
-		$h .= '<div class="util-info">';
-			$h .= \Asset::icon('info-circle').' '.s("Si vous avez déjà livré des biens durant cet exercice comptable mais qu'aucune facture n'a encore été établie, vous pouvez les enregistrer maintenant.");
+		$h .= '<div class="util-block-help">';
+			$h .= s("Si vous avez déjà livré des biens durant cet exercice comptable mais qu'aucune facture n'a encore été établie, vous pouvez les enregistrer maintenant.");
 		$h .= '</div>';
 
 		$h .= '<div class="stick-sm util-overflow-sm mb-1">';

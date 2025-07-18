@@ -82,8 +82,8 @@ class DeferredChargeUi {
 			$countDeferred = $cOperationCharges->find(fn($e) => $e['deferredCharge'] !== NULL)->count();
 			$totalDeferred = $countDeferred;
 
-			$h .= '<div class="util-info">';
-				$h .= \Asset::icon('info-circle').' '.s("Toutes les écritures de charge de cet exercice comptable ont été listées ci-après. Si vous souhaitez que certaines d'entre elles soient en partie reportées au prochain exercice, vous pouvez modifier leur période de consommation ou le montant à reporter");
+			$h .= '<div class="util-block-help">';
+				$h .= s("Toutes les écritures de charge de cet exercice comptable ont été listées ci-après. Si vous souhaitez que certaines d'entre elles soient en partie reportées au prochain exercice, vous pouvez modifier leur période de consommation ou le montant à reporter");
 			$h .= '</div>';
 
 			$h .= '<div class="stick-sm util-overflow-sm mb-1">';

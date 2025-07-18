@@ -77,14 +77,15 @@ new \account\FinancialYearPage(
 		// Stock enregistré de cet exercice comptable + celui de l'exercice précédent non reporté
 		$data->cStock = \journal\StockLib::getAllForFinancialYear($data->e);
 
-		\asset\AssetLib::recogniseGrants($data->e);
+		$data->cAssetGrant = \asset\AssetLib::getGrantsWithAmortizedAssets();
+
 		throw new ViewAction($data);
 	})
 	->write('doClose', function($data) {
 
 		$data->e->validate('acceptClose');
 
-		\account\FinancialYearLib::closeFinancialYear($data->e);
+		\account\FinancialYearLib::closeFinancialYear($data->e, POST('grantsToRecognize', 'array', []));
 
 		throw new RedirectAction(\company\CompanyUi::urlAccount($data->eFarm).'/financialYear/?success=account:FinancialYear::closed');
 	});

@@ -268,7 +268,7 @@ class FinancialYearUi {
 
 	}
 
-	public function close(\farm\Farm $eFarm, FinancialYear $eFinancialYear, \Collection $cOperationCharges, \Collection $cAccruedIncome, \Collection $cStock): string {
+	public function close(\farm\Farm $eFarm, FinancialYear $eFinancialYear, \Collection $cOperationCharges, \Collection $cAccruedIncome, \Collection $cStock, \Collection $cAssetGrant): string {
 
 		$form = new \util\FormUi();
 
@@ -294,24 +294,25 @@ class FinancialYearUi {
 			$h .= '</dl>';
 		$h .= '</div>';
 
-		$h .= $this->vat($eFarm, $eFinancialYear);
-
-		$h .= new \journal\DeferredChargeUi()->list($eFarm, $eFinancialYear, $cOperationCharges);
-
-		$h .= new \journal\AccruedIncomeUi()->list($eFarm, $eFinancialYear, $cAccruedIncome);
-
-		$h .= new \journal\StockUi()->list($eFarm, $eFinancialYear, $cStock);
-
-		$canClose = TRUE;
-		foreach($cStock as $eStock) {
-			if($eStock['financialYear']->is($eFinancialYear) === FALSE) {
-				$canClose = FALSE;
-			}
-		}
-
-		$h .= '<h3 class="mt-2">'.s("Confirmer la clôture de l'exercice comptable {year}", ['year' => self::getYear($eFinancialYear)]).'</h3>';
-
 		$h .= $form->openAjax(\company\CompanyUi::urlAccount($eFarm).'/financialYear/:doClose', ['id' => 'account-financialYear-close', 'autocomplete' => 'off']);
+			$h .= $this->vat($eFarm, $eFinancialYear);
+
+			$h .= new \journal\DeferredChargeUi()->list($eFarm, $eFinancialYear, $cOperationCharges);
+
+			$h .= new \journal\AccruedIncomeUi()->list($eFarm, $eFinancialYear, $cAccruedIncome);
+
+			$h .= new \journal\StockUi()->list($eFarm, $eFinancialYear, $cStock);
+
+			$h .= new \asset\AssetUi()->listGrantsForClosing($form, $cAssetGrant);
+
+			$canClose = TRUE;
+			foreach($cStock as $eStock) {
+				if($eStock['financialYear']->is($eFinancialYear) === FALSE) {
+					$canClose = FALSE;
+				}
+			}
+
+			$h .= '<h3 class="mt-2">'.s("Confirmer la clôture de l'exercice comptable {year}", ['year' => self::getYear($eFinancialYear)]).'</h3>';
 
 			$h .= $form->hidden('farm', $eFarm['id']);
 			$h .= $form->hidden('id', $eFinancialYear['id']);

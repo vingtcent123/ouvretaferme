@@ -154,8 +154,8 @@ class StockUi {
 
 		$h = '<h3 class="mt-2">'.s("Stocks").'</h3>';
 
-		$h .= '<div class="util-info">';
-		$h .= \Asset::icon('info-circle').' '.s("Si vous avez généré du stock pendant cette période comptable, ou si vous aviez du stock à la fin de la période comptable précédente, indiquez ici le stock comptabilisé en date du {day}.", ['day'=> \util\DateUi::numeric($eFinancialYear['endDate'])]);
+		$h .= '<div class="util-block-help">';
+		$h .= s("Si vous avez généré du stock pendant cette période comptable, ou si vous aviez du stock à la fin de la période comptable précédente, indiquez ici le stock comptabilisé en date du {day}.", ['day'=> \util\DateUi::numeric($eFinancialYear['endDate'])]);
 		$h .= '</div>';
 
 		$h .= '<div class="stick-sm util-overflow-sm mb-1">';

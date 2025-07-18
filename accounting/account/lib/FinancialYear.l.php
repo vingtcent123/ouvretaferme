@@ -85,7 +85,7 @@ class FinancialYearLib extends FinancialYearCrud {
 
 	}
 
-	public static function closeFinancialYear(FinancialYear $eFinancialYear): void {
+	public static function closeFinancialYear(FinancialYear $eFinancialYear, array $grantsToRecognize): void {
 
 		if($eFinancialYear['status'] == FinancialYearElement::CLOSE) {
 			throw new \NotExpectedAction('Financial year already closed');
@@ -104,7 +104,8 @@ class FinancialYearLib extends FinancialYearCrud {
 		\asset\AssetLib::depreciateAll($eFinancialYear);
 
 		// Reprise sur subventions
-		\asset\AssetLib::recogniseGrants($eFinancialYear);
+		\asset\AssetLib::finallyRecognizeGrants($eFinancialYear, $grantsToRecognize); // Solde les subventions sélectionnées
+		\asset\AssetLib::recognizeGrants($eFinancialYear); // Quote part des sub restantes à réintégrer au CdR
 
 		// 2- Charges constatées d'avance
 		\journal\DeferredChargeLib::recordChargesIntoFinancialYear($eFinancialYear);

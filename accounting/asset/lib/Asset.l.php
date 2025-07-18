@@ -196,9 +196,37 @@ class AssetLib extends \asset\AssetCrud {
 
 	}
 
-	public static function recogniseGrants(\account\FinancialYear $eFinancialYear): void {
+	public static function finallyRecognizeGrants(\account\FinancialYear $eFinancialYear, array $grantsToRecognize): void {
 
-		\journal\Operation::model()->beginTransaction();
+		Asset::model()->beginTransaction();
+
+		// Toutes les subventions possibles
+		$cAssetGrant = \asset\AssetLib::getGrantsWithAmortizedAssets();
+
+		$eAccountGrantsInIncomeStatement = \account\AccountLib::getByClass(\Setting::get('account\grantsInIncomeStatement'));
+		$eAccountDepreciation = \account\AccountLib::getByClass(\Setting::get('account\grantDepreciationClass'));
+
+		foreach($grantsToRecognize as $grantId) {
+
+			$eAsset = $cAssetGrant->find(fn($e) => $e['id'] === (int)$grantId);
+			if($eAsset->empty()) {
+				continue;
+			}
+
+			$alreadyRecognized = RecognitionLib::sumByGrant($eAsset);
+			$depreciationValue = $eAsset['value'] - $alreadyRecognized;
+			$prorataDays = 0;
+
+			self::recognize($eFinancialYear, $eAsset, $alreadyRecognized, $depreciationValue, $eAccountGrantsInIncomeStatement, $eAccountDepreciation, $prorataDays, new AssetUi()->getFinalRecognitionTranslation());
+
+		}
+
+		Asset::model()->commit();
+	}
+
+	public static function recognizeGrants(\account\FinancialYear $eFinancialYear): void {
+
+		Asset::model()->beginTransaction();
 
 		$cAsset = self::getGrantsByFinancialYear($eFinancialYear);
 
@@ -207,7 +235,6 @@ class AssetLib extends \asset\AssetCrud {
 
 		foreach($cAsset as $eAsset) {
 
-			$eOperation = \journal\OperationLib::getByAsset($eAsset);
 			$depreciationData = DepreciationLib::calculateGrantDepreciation($eFinancialYear['startDate'], $eFinancialYear['endDate'], $eAsset);
 			$prorataDays = $depreciationData['prorataDays'];
 
@@ -215,67 +242,82 @@ class AssetLib extends \asset\AssetCrud {
 			$depreciationValue = $depreciationData['value'];
 
 			// Valeur restante (déjà virée au compte de résultat)
-			$alreadyRecognised = RecognitionLib::sumByGrant($eAsset);
+			$alreadyRecognized = RecognitionLib::sumByGrant($eAsset);
 
-			$value = min($eAsset['value'] - $alreadyRecognised, $depreciationValue);
-
-			// Crée l'opération 139 au débit
-			$eOperationSubvention = new \journal\Operation([
-				'type' => \journal\OperationElement::DEBIT,
-				'amount' => $value,
-				'account' => $eAccountGrantsInIncomeStatement,
-				'accountLabel' => \account\ClassLib::pad($eAccountGrantsInIncomeStatement['class']),
-				'description' => $eAsset['description'],
-				'thirdParty' => $eOperation['thirdParty'] ?? new \account\ThirdParty(),
-				'document' => new AssetUi()->getAssetShortTranslation(),
-				'documentDate' => new \Sql('NOW()'),
-				'asset' => $eAsset,
-				'financialYear' => $eFinancialYear,
-				'date' => $eFinancialYear['endDate'],
-				'paymentDate' => $eFinancialYear['endDate'],
-			]);
-
-			\journal\Operation::model()->insert($eOperationSubvention);
-
-			// Crée l'opération de reprise au crédit du compte 7777
-			$eOperationRecognition = new \journal\Operation([
-				'type' => \journal\OperationElement::CREDIT,
-				'amount' => $value,
-				'account' => $eAccountDepreciation,
-				'accountLabel' => \account\ClassLib::pad($eAccountDepreciation['class']),
-				'description' => $eAsset['description'],
-				'thirdParty' => $eOperation['thirdParty'] ?? new \account\ThirdParty(),
-				'document' => new AssetUi()->getAssetShortTranslation(),
-				'documentDate' => new \Sql('NOW()'),
-				'asset' => $eAsset,
-				'financialYear' => $eFinancialYear,
-				'date' => $eFinancialYear['endDate'],
-				'paymentDate' => $eFinancialYear['endDate'],
-			]);
-
-			\journal\Operation::model()->insert($eOperationRecognition);
-
-			// Enregistre la quote part virée au compte de résultat
-			$recognitionValues = [
-				'grant' => $eAsset,
-				'financialYear' => $eFinancialYear,
-				'date' => $eFinancialYear['endDate'] > $eAsset['endDate'] ? $eAsset['endDate'] : $eFinancialYear['endDate'],
-				'amount' => $value,
-				'operation' => $eOperationRecognition,
-				'debitAccountLabel' => $eOperationSubvention['accountLabel'],
-				'creditAccountLabel' => $eOperationRecognition['accountLabel'],
-				'prorataDays' => $prorataDays,
-			];
-			RecognitionLib::saveByValues($recognitionValues);
-
-			// Solde la subvention si elle est terminée
-			if($eAsset['endDate'] <= $eFinancialYear['endDate'] or $alreadyRecognised + $value >= $eAsset['value']) {
-				Asset::model()->update($eAsset, ['status' => Asset::ENDED, 'updatedAt' => new \Sql('NOW()')]);
-			}
+			self::recognize($eFinancialYear, $eAsset, $alreadyRecognized, $depreciationValue, $eAccountGrantsInIncomeStatement, $eAccountDepreciation, $prorataDays, NULL);
 
 		}
 
-		\journal\Operation::model()->commit();
+		Asset::model()->commit();
+	}
+
+	private static function recognize(
+		\account\FinancialYear $eFinancialYear,
+		Asset $eAsset,
+		float $alreadyRecognized,
+		float $depreciationValue,
+		\account\Account $eAccountGrantsInIncomeStatement,
+		\account\Account $eAccountDepreciation,
+		float $prorataDays,
+		?string $comment,
+	): void {
+
+		$value = min($eAsset['value'] - $alreadyRecognized, $depreciationValue);
+
+		// Crée l'opération 139 au débit
+		$eOperationSubvention = new \journal\Operation([
+			'type' => \journal\OperationElement::DEBIT,
+			'amount' => $value,
+			'account' => $eAccountGrantsInIncomeStatement,
+			'accountLabel' => \account\ClassLib::pad($eAccountGrantsInIncomeStatement['class']),
+			'description' => $eAsset['description'],
+			'thirdParty' => $eOperation['thirdParty'] ?? new \account\ThirdParty(),
+			'document' => new AssetUi()->getAssetShortTranslation(),
+			'documentDate' => new \Sql('NOW()'),
+			'asset' => $eAsset,
+			'financialYear' => $eFinancialYear,
+			'date' => $eFinancialYear['endDate'],
+			'paymentDate' => $eFinancialYear['endDate'],
+		]);
+
+		\journal\Operation::model()->insert($eOperationSubvention);
+
+		// Crée l'opération de reprise au crédit du compte 7777
+		$eOperationRecognition = new \journal\Operation([
+			'type' => \journal\OperationElement::CREDIT,
+			'amount' => $value,
+			'account' => $eAccountDepreciation,
+			'accountLabel' => \account\ClassLib::pad($eAccountDepreciation['class']),
+			'description' => $eAsset['description'],
+			'thirdParty' => $eOperation['thirdParty'] ?? new \account\ThirdParty(),
+			'document' => new AssetUi()->getAssetShortTranslation(),
+			'documentDate' => new \Sql('NOW()'),
+			'asset' => $eAsset,
+			'financialYear' => $eFinancialYear,
+			'date' => $eFinancialYear['endDate'],
+			'paymentDate' => $eFinancialYear['endDate'],
+		]);
+
+		\journal\Operation::model()->insert($eOperationRecognition);
+
+		// Enregistre la quote part virée au compte de résultat
+		$recognitionValues = [
+			'grant' => $eAsset,
+			'financialYear' => $eFinancialYear,
+			'date' => $eFinancialYear['endDate'] > $eAsset['endDate'] ? $eAsset['endDate'] : $eFinancialYear['endDate'],
+			'amount' => $value,
+			'operation' => $eOperationRecognition,
+			'debitAccountLabel' => $eOperationSubvention['accountLabel'],
+			'creditAccountLabel' => $eOperationRecognition['accountLabel'],
+			'prorataDays' => $prorataDays,
+			'comment' => $comment,
+		];
+		RecognitionLib::saveByValues($recognitionValues);
+
+		// Solde la subvention si elle est terminée
+		if($eAsset['endDate'] <= $eFinancialYear['endDate'] or $alreadyRecognized + $value >= $eAsset['value']) {
+			Asset::model()->update($eAsset, ['status' => Asset::ENDED, 'updatedAt' => new \Sql('NOW()')]);
+		}
 
 	}
 
@@ -388,6 +430,31 @@ class AssetLib extends \asset\AssetCrud {
 	public static function isDepreciable(Asset $eAsset): bool {
 
 		return substr($eAsset['accountLabel'], 0, mb_strlen(\Setting::get('account\nonDepreciableAssetClass'))) !== \Setting::get('account\nonDepreciableAssetClass');
+
+	}
+
+	/**
+	 * Recupère toutes les subventions courantes reliées à une immobilisation amortie ou terminée.
+	 */
+	public static function getGrantsWithAmortizedAssets(): \Collection {
+
+		$assetModel = clone Asset::model();
+		return Asset::model()
+			->select(
+				Asset::getSelection()
+				+ [
+					'asset' => Asset::getSelection(),
+					'alreadyRecognized' => Recognition::model()
+             ->delegateProperty('grant', new \Sql('SUM(amount)', 'float'))
+				]
+			)
+			->join($assetModel, 'm1.asset = m2.id')
+			->where('m2.status != "'.Asset::ONGOING.'"')
+			->where('m1.status = "'.Asset::ONGOING.'"')
+			->where('m1.type = "'.Asset::GRANT_RECOVERY.'"')
+			->where('m1.asset IS NOT NULL')
+			->where('m1.isGrant = 1')
+			->getCollection();
 
 	}
 

@@ -398,6 +398,76 @@ Class AssetUi {
 
 	}
 
+	public function listGrantsForClosing(\util\FormUi $form, \Collection $cAssetGrant): string {
+
+		$h = '<h3 class="mt-2">'.s("Reprise finale des subventions").'</h3>';
+
+		$h .= '<div class="util-block-help">';
+			$h .= s("Si des subventions n'ont pas été entièrement reprises au compte de résultat alors que l'immobilisation correspondante est totalement amortie, vous pouvez intégrer cette reprise dans l'exercice comptable.");
+		$h .= '</div>';
+
+		if($cAssetGrant->empty()) {
+
+			$h .= '<div class="util-info">'.s("Aucune subvention ne nécessite une reprise.").'</div>';
+
+		} else {
+
+			$h .= '<div class="stick-sm util-overflow-sm">';
+
+
+				$h .= '<table class="financial-year-stock-table tr-even tr-hover">';
+
+					$h .= '<thead>';
+
+						$h .= '<tr>';
+
+							$h .= '<th>'.s("Subvention").'</th>';
+							$h .= '<th>'.s("Immobilisation liée").'</th>';
+							$h .= '<th class="text-end">'.s("Reprise déjà faite").'</th>';
+							$h .= '<th class="text-end">'.s("Solde à reprendre").'</th>';
+							$h .= '<th>'.s("Écriture proposée").'</th>';
+							$h .= '<th class="text-center">'.s("Intégrer ?").'</th>';
+
+						$h .= '</tr>';
+
+					$h .= '</thead>';
+
+					$h .= '<tbody>';
+						foreach($cAssetGrant as $eAsset) {
+
+							$h .= '<tr id="'.$eAsset['id'].'">';
+
+							$h .= '<td>'.encode($eAsset['description']).'</td>';
+							$h .= '<td>'.encode($eAsset['asset']['description']).'</td>';
+							$h .= '<td class="text-end">'.\util\TextUi::money($eAsset['alreadyRecognized']).'</td>';
+							$h .= '<td class="text-end">'.\util\TextUi::money($eAsset['value'] - $eAsset['alreadyRecognized']).'</td>';
+							$h .= '<td>'.s("Débit {accountDebit} / Crédit {accountCredit}", [
+								'accountDebit' => encode($eAsset['account']['class']),
+								'accountCredit' => \Setting::get('account\grantsInIncomeStatement'),
+							]).'</td>';
+							$h .= '<td class="text-center">';
+								$h .= $form->checkbox('grantsToRecognize[]', $eAsset['id']);
+							$h .= '</td>';
+
+							$h .= '</tr>';
+
+						}
+
+					$h .= '</tbody>';
+
+				$h .= '</table>';
+
+			$h .= '</div>';
+		}
+
+		return $h;
+
+	}
+
+	public function getFinalRecognitionTranslation(): string {
+		return s("Reprise finale de subvention");
+	}
+
 	public static function p(string $property): \PropertyDescriber {
 
 		$d = \journal\Operation::model()->describer($property, [
