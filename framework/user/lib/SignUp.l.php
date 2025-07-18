@@ -150,7 +150,7 @@ class SignUpLib {
 
 				// In case of specific registration methods we store data to generate the good error message after redirection.
 				if($eUser['auth']['type'] !== UserAuth::BASIC) {
-					\session\SessionLib::set('activeBanForUser', $eBan);
+					\session\SessionLib::set('activeBanForUser', $eBan['id']);
 				}
 
 				return User::fail('signUpBanned', ['eBan' => $eBan]);
@@ -302,9 +302,7 @@ class SignUpLib {
 					$eUserOnline['id'] === $eUser['id']
 				) {
 
-					\session\SessionLib::set('user', new User([
-						'id'=> $eUser['id']
-					]));
+					\session\SessionLib::set('user', $eUser['id']);
 
 				}
 

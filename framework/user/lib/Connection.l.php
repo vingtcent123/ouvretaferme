@@ -124,7 +124,7 @@ class ConnectionLib {
 
 	protected static function getFromSession(): User {
 
-		$eUser = \session\SessionLib::get('user');
+		$eUser = new User(['id' => \session\SessionLib::get('user')]);
 
 		User::model()
 			->select(User::getSelection() + [
@@ -362,7 +362,7 @@ class ConnectionLib {
 
 						// In case of specific login methods we store data to generate the good error message after redirection.
 						if($auth !== UserAuth::BASIC) {
-							\session\SessionLib::set('activeBanForUser', $eBan);
+							\session\SessionLib::set('activeBanForUser', $eBan['id']);
 						}
 
 						return User::fail('connectionBanned', ['eBan' => $eBan]);
@@ -580,7 +580,7 @@ class ConnectionLib {
 			// Log out connected user first
 			try {
 
-				$eUserOnline = \session\SessionLib::get('user');
+				$eUserOnline = new User(['id' => \session\SessionLib::get('user')]);
 
 				self::logOut($eUserOnline);
 
@@ -595,9 +595,7 @@ class ConnectionLib {
 		\session\SessionLib::set('userLoggedAt', $loggedAt);
 		\session\SessionLib::set('userDeletedAt', $eUser['deletedAt']);
 
-		\session\SessionLib::set('user', new User([
-			'id'=> $eUser['id']
-		]));
+		\session\SessionLib::set('user', $eUser['id']);
 
 		if($isRegularLogin) {
 
@@ -623,7 +621,7 @@ class ConnectionLib {
 	 */
 	public static function logInExternal(User $eUser, User $eUserAction): bool {
 
-		$eUserOld = \session\SessionLib::get('user');
+		$eUserOld = new User(['id' => \session\SessionLib::get('user')]);
 
 		if(\session\SessionLib::exists('userOld')) {
 			return FALSE;
@@ -635,7 +633,7 @@ class ConnectionLib {
 		// Second : logIn $eUserAction as if it was $eUser
 		self::doLogIn($eUser, Log::LOGIN_EXTERNAL);
 
-		\session\SessionLib::set('userOld', $eUserOld);
+		\session\SessionLib::set('userOld', $eUserOld['id']);
 
 		return TRUE;
 
@@ -649,7 +647,7 @@ class ConnectionLib {
 	public static function logOutExternal(): bool {
 
 		try {
-			$eUserOld = \session\SessionLib::get('userOld');
+			$eUserOld = new User(['id' => \session\SessionLib::get('userOld')]);
 		} catch(\Exception $e) {
 			return FALSE;
 		}
@@ -718,7 +716,7 @@ class ConnectionLib {
 			return NULL;
 		}
 
-		$eUserAction = \session\SessionLib::get('userOld');
+		$eUserAction = new User(['id' => \session\SessionLib::get('userOld')]);
 		$eUser = self::getOnline();
 
 		return [$eUser, $eUserAction];
