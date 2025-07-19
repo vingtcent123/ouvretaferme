@@ -885,27 +885,49 @@ class Sale extends SaleElement {
 				}
 
 			})
-			->setCallback('preparationStatus.check', function(string $preparationStatus): bool {
+			->setCallback('preparationStatus.check', function(?string $preparationStatus) use ($p, $fw): bool {
 
-				$this->expects(['preparationStatus', 'deliveredAt', 'origin', 'marketParent']);
-
-				if($this->acceptUpdatePreparationStatus() === FALSE) {
-					return FALSE;
+				if($p->isInvalid('customer')) {
+					return TRUE;
 				}
 
-				$this['oldPreparationStatus'] = $this['preparationStatus'];
+				switch($p->for) {
 
-				return match($preparationStatus) {
-					Sale::DRAFT => in_array($this['oldPreparationStatus'], $this->isMarketSale() ? [Sale::CANCELED, Sale::DELIVERED] : [Sale::CONFIRMED, Sale::PREPARED, Sale::SELLING]),
-					Sale::CONFIRMED => $this->acceptStatusConfirmed(),
-					Sale::SELLING => in_array($this['oldPreparationStatus'], $this->isMarket() ? [Sale::CONFIRMED, Sale::DELIVERED] : []),
-					Sale::PREPARED => in_array($this['oldPreparationStatus'], $this->isMarketSale() ? [] : [Sale::CONFIRMED]),
-					Sale::CANCELED => $this->acceptStatusCanceled(),
-					Sale::DELIVERED => $this->acceptStatusDelivered(),
-				};
+					case 'create' :
+						if($this['customer']['destination'] === Customer::COLLECTIVE) {
+							return ($preparationStatus === NULL);
+						} else {
+							return in_array($preparationStatus, [Sale::DRAFT, Sale::CONFIRMED, Sale::PREPARED, Sale::DELIVERED]);
+						}
+
+					case 'update' :
+
+						$this->expects(['preparationStatus', 'deliveredAt', 'origin', 'marketParent']);
+
+						if($this->acceptUpdatePreparationStatus() === FALSE) {
+							return FALSE;
+						}
+
+						$this['oldPreparationStatus'] = $this['preparationStatus'];
+
+						return match($preparationStatus) {
+							Sale::DRAFT => in_array($this['oldPreparationStatus'], $this->isMarketSale() ? [Sale::CANCELED, Sale::DELIVERED] : [Sale::CONFIRMED, Sale::PREPARED, Sale::SELLING]),
+							Sale::CONFIRMED => $this->acceptStatusConfirmed(),
+							Sale::SELLING => in_array($this['oldPreparationStatus'], $this->isMarket() ? [Sale::CONFIRMED, Sale::DELIVERED] : []),
+							Sale::PREPARED => in_array($this['oldPreparationStatus'], $this->isMarketSale() ? [] : [Sale::CONFIRMED]),
+							Sale::CANCELED => $this->acceptStatusCanceled(),
+							Sale::DELIVERED => $this->acceptStatusDelivered(),
+							default => FALSE
+						};
+
+				}
 
 			})
-			->setCallback('preparationStatus.market', function(string $preparationStatus): bool {
+			->setCallback('preparationStatus.market', function(?string $preparationStatus) use ($p): bool {
+
+				if($p->for === 'create') {
+					return TRUE;
+				}
 
 				$this->expects(['farm', 'origin']);
 
@@ -1086,17 +1108,6 @@ class Sale extends SaleElement {
 					$vat === NULL or
 					in_array($vat, \Setting::get('selling\vatRates'))
 				);
-			})
-			->setCallback('preparationStatus.checkOutOfDraft', function(string $preparationStatus): bool {
-
-				$this->expects(['preparationStatus', 'deliveredAt']);
-
-				if($this['preparationStatus'] !== Sale::DRAFT) {
-					return TRUE;
-				}
-
-				return ($this['deliveredAt'] !== NULL);
-
 			})
 			->setCallback('orderFormValidUntil.check', function(?string &$date): bool {
 

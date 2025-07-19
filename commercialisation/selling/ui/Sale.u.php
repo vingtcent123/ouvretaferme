@@ -1795,6 +1795,8 @@ class SaleUi {
 				);
 			}
 
+			$h .= $this->getPreparationStatusField($form, $eSale);
+
 			if($eSale['cProduct']->notEmpty()) {
 
 				$h .= '<h3 class="mt-2">'.s("Ajouter des produits à la vente").'</h3>';
@@ -1855,6 +1857,7 @@ class SaleUi {
 			});
 
 			$h .= $form->dynamicGroup($eSale, 'deliveredAt');
+			$h .= $this->getPreparationStatusField($form, $eSale);
 
 			if($eSale['cProduct']->notEmpty()) {
 
@@ -1908,6 +1911,31 @@ class SaleUi {
 			body: $h,
 			footer: $footer
 		);
+
+	}
+
+	protected function getPreparationStatusField(\util\FormUi $form, Sale $eSale): string {
+
+		if($eSale['customer']['destination'] === Customer::COLLECTIVE) {
+			return '';
+		}
+
+		$values = [];
+
+		foreach([Sale::DRAFT, Sale::CONFIRMED, Sale::PREPARED, Sale::DELIVERED] as $status) {
+			$values[] = [
+				'value' => $status,
+				'label' => '⬤  '.self::p('preparationStatus')->values[$status],
+				'attributes' => ['class' => 'sale-preparation-status-'.$status]
+			];
+		}
+
+		$h = $form->group(
+			s("État"),
+			$form->select('preparationStatus', $values, attributes: ['class' => 'sale-field-preparation-status', 'mandatory' => TRUE]),
+		);
+
+		return $h;
 
 	}
 

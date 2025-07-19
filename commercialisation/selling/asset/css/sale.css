@@ -108,6 +108,22 @@ div.selling-label-example > * {
 	height: calc((21cm - 2.25rem) / 2 / 2.16);
 }
 
+.sale-field-preparation-status:has(option[value="draft"]:checked) {
+	color: var(--draft);
+}
+
+.sale-field-preparation-status:has(option[value="confirmed"]:checked) {
+	color: var(--confirmed);
+}
+
+.sale-field-preparation-status:has(option[value="prepared"]:checked) {
+	color: var(--prepared);
+}
+
+.sale-field-preparation-status:has(option[value="delivered"]:checked) {
+	color: var(--delivered);
+}
+
 .sale-preparation-status-batch {
 	text-decoration: none;
 	margin-bottom: 0.25rem;
@@ -149,21 +165,21 @@ div.selling-label-example > * {
 }
 
 .sale-preparation-status-draft {
-	color: var(--todo);
+	color: var(--draft);
 }
 
 .sale-preparation-status-draft-button {
 	color: white !important;
-	background-color: var(--todo);
+	background-color: var(--draft);
 	font-weight: bold;
 }
 
 .sale-preparation-status-confirmed {
-	color: var(--order);
+	color: var(--confirmed);
 }
 
 .sale-preparation-status-confirmed-button {
-	background-color: var(--order);
+	background-color: var(--confirmed);
 	color: white !important;
 	font-weight: bold;
 }
@@ -180,21 +196,21 @@ div.selling-label-example > * {
 }
 
 .sale-preparation-status-prepared {
-	color: var(--done);
+	color: var(--prepared);
 }
 
 .sale-preparation-status-prepared-button {
-	background-color: var(--done);
+	background-color: var(--prepared);
 	color: white !important;
 	font-weight: bold;
 }
 
 .sale-preparation-status-delivered {
-	color: var(--success);
+	color: var(--delivered);
 }
 
 .sale-preparation-status-delivered-button {
-	background-color: var(--success);
+	background-color: var(--delivered);
 	color: white !important;
 	font-weight: bold;
 }

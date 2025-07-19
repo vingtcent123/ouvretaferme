@@ -9,7 +9,7 @@ class SaleLib extends SaleCrud {
 
 			return $e->isComposition() ?
 				['customer', 'deliveredAt', 'productsList'] :
-				['customer', 'shopDate', 'deliveredAt', 'productsList', 'shipping'];
+				['customer', 'shopDate', 'deliveredAt', 'productsList', 'shipping', 'preparationStatus'];
 
 		};
 
@@ -513,7 +513,17 @@ class SaleLib extends SaleCrud {
 			$e->isSale() and
 			$e['shop']->empty()
 		) {
+
 			$e['paymentMethod'] = $e['customer']['defaultPaymentMethod'];
+/*
+			if($e['paymentMethod']->notEmpty()) {
+
+
+
+				$e['paymentStatus'] = Sale::NOT_PAID;
+
+			}
+*/
 		}
 
 		if($e->isMarket()) {

@@ -27,6 +27,11 @@
 	--commercialisation: #4a4a70;
 	--accounting: #205160;
 	--account-group: #FDE9D9;
+
+	--draft: var(--todo);
+	--confirmed: var(--order);
+	--prepared: var(--done);
+	--delivered: var(--success);
 }
 
 :root:has(body[data-template~="farm-production"]) {
