@@ -5,136 +5,115 @@ new Page()
 		$cPlant = new Collection();
 
 		$cPlant[] = new \plant\Plant([
-			'name' => 'Vesce',
-			'fqn' => 'vesce',
+			'name' => 'Chou pointu',
+			'fqn' => 'chou-pointu',
 			'cycle' => \plant\Plant::ANNUAL,
-			'family' => \plant\FamilyLib::getByFqn('fabaceae')
+			'family' => \plant\FamilyLib::getByFqn('brassicaceae')
 		]);
 
 		$cPlant[] = new \plant\Plant([
-			'name' => 'Sureau',
-			'fqn' => 'sureau',
+			'name' => 'Consoude',
+			'fqn' => 'consoude',
 			'cycle' => \plant\Plant::PERENNIAL,
-			'family' => \plant\FamilyLib::getByFqn('adoxaceae')
+			'family' => \plant\FamilyLib::getByFqn('boraginaceae')
 		]);
 
 		$cPlant[] = new \plant\Plant([
-			'name' => 'Statice',
-			'fqn' => 'statice',
+			'name' => 'Digitale',
+			'fqn' => 'digitale',
 			'cycle' => \plant\Plant::ANNUAL,
-			'family' => \plant\FamilyLib::getByFqn('plumbaginaceae')
+			'family' => \plant\FamilyLib::getByFqn('scrophulariaceae')
 		]);
 
 		$cPlant[] = new \plant\Plant([
-			'name' => 'Soja',
-			'fqn' => 'soja',
+			'name' => 'Estragon',
+			'fqn' => 'estragon',
+			'cycle' => \plant\Plant::PERENNIAL,
+			'family' => \plant\FamilyLib::getByFqn('asteraceae')
+		]);
+
+		$cPlant[] = new \plant\Plant([
+			'name' => 'Eucalyptus',
+			'fqn' => 'eucalyptus',
+			'cycle' => \plant\Plant::PERENNIAL,
+			'family' => \plant\FamilyLib::getByFqn('myrtaceae')
+		]);
+
+		$cPlant[] = new \plant\Plant([
+			'name' => 'Lupin',
+			'fqn' => 'lupin',
 			'cycle' => \plant\Plant::ANNUAL,
 			'family' => \plant\FamilyLib::getByFqn('fabaceae')
 		]);
 
 		$cPlant[] = new \plant\Plant([
-			'name' => 'Sarriette',
-			'fqn' => 'sarriette',
+			'name' => 'Marjolaine',
+			'fqn' => 'marjolaine',
+			'cycle' => \plant\Plant::PERENNIAL,
+			'family' => \plant\FamilyLib::getByFqn('lamiaceae')
+		]);
+
+		$cPlant[] = new \plant\Plant([
+			'name' => 'Monarde',
+			'fqn' => 'monarde',
 			'cycle' => \plant\Plant::ANNUAL,
 			'family' => \plant\FamilyLib::getByFqn('lamiaceae')
 		]);
 
 		$cPlant[] = new \plant\Plant([
-			'name' => 'Pivoine',
-			'fqn' => 'pivoine',
-			'cycle' => \plant\Plant::PERENNIAL,
-			'family' => \plant\FamilyLib::getByFqn('paeoniaceae')
-		]);
-
-		$cPlant[] = new \plant\Plant([
-			'name' => 'Oseille',
-			'fqn' => 'oseille',
-			'cycle' => \plant\Plant::ANNUAL,
-			'family' => \plant\FamilyLib::getByFqn('polygonaceae')
-		]);
-
-		$cPlant[] = new \plant\Plant([
-			'name' => 'Oca du Pérou',
-			'fqn' => 'oca-du-perou',
-			'cycle' => \plant\Plant::ANNUAL,
-			'family' => \plant\FamilyLib::getByFqn('oxalidaceae')
-		]);
-
-		$cPlant[] = new \plant\Plant([
-			'name' => 'Noix',
-			'fqn' => 'noix',
-			'cycle' => \plant\Plant::PERENNIAL,
-			'family' => \plant\FamilyLib::getByFqn('juglandaceae')
-		]);
-
-		$cPlant[] = new \plant\Plant([
-			'name' => 'Nigelle',
-			'fqn' => 'nigelle',
-			'cycle' => \plant\Plant::ANNUAL,
-			'family' => \plant\FamilyLib::getByFqn('ranunculaceae')
-		]);
-
-		$cPlant[] = new \plant\Plant([
-			'name' => 'Mûre',
-			'fqn' => 'mure',
-			'cycle' => \plant\Plant::PERENNIAL,
-			'family' => \plant\FamilyLib::getByFqn('rosaceae')
-		]);
-
-		$cPlant[] = new \plant\Plant([
-			'name' => 'Millet',
-			'fqn' => 'millet',
+			'name' => 'Orge',
+			'fqn' => 'orge',
 			'cycle' => \plant\Plant::ANNUAL,
 			'family' => \plant\FamilyLib::getByFqn('poaceae')
 		]);
 
 		$cPlant[] = new \plant\Plant([
-			'name' => 'Marguerite',
-			'fqn' => 'marguerite',
-			'cycle' => \plant\Plant::ANNUAL,
-			'family' => \plant\FamilyLib::getByFqn('asteraceae')
-		]);
-
-		$cPlant[] = new \plant\Plant([
-			'name' => 'Kiwi',
-			'fqn' => 'kiwi',
-			'cycle' => \plant\Plant::PERENNIAL,
-			'family' => \plant\FamilyLib::getByFqn('actinidiaceae')
-		]);
-
-		$cPlant[] = new \plant\Plant([
-			'name' => 'Hysope',
-			'fqn' => 'hysope',
-			'cycle' => \plant\Plant::ANNUAL,
-			'family' => \plant\FamilyLib::getByFqn('lamiaceae')
-		]);
-
-		$cPlant[] = new \plant\Plant([
-			'name' => 'Hibiscus',
-			'fqn' => 'hibiscus',
-			'cycle' => \plant\Plant::PERENNIAL,
-			'family' => \plant\FamilyLib::getByFqn('malvaceae')
-		]);
-
-		$cPlant[] = new \plant\Plant([
-			'name' => 'Coquelicot',
-			'fqn' => 'coquelicot',
+			'name' => 'Pavot',
+			'fqn' => 'pavot',
 			'cycle' => \plant\Plant::ANNUAL,
 			'family' => \plant\FamilyLib::getByFqn('papaveraceae')
 		]);
 
 		$cPlant[] = new \plant\Plant([
-			'name' => 'Arroche',
-			'fqn' => 'arroche',
+			'name' => 'Pois de senteur',
+			'fqn' => 'pois-de-senteur',
 			'cycle' => \plant\Plant::ANNUAL,
-			'family' => \plant\FamilyLib::getByFqn('chenopodiaceae')
+			'family' => \plant\FamilyLib::getByFqn('fabaceae')
 		]);
 
 		$cPlant[] = new \plant\Plant([
-			'name' => 'Achillée millefeuille',
-			'fqn' => 'achillee-millefeuille',
+			'name' => 'Prune',
+			'fqn' => 'prune',
+			'cycle' => \plant\Plant::PERENNIAL,
+			'family' => \plant\FamilyLib::getByFqn('rosaceae')
+		]);
+
+		$cPlant[] = new \plant\Plant([
+			'name' => 'Reine marguerite',
+			'fqn' => 'reine-marguerite',
 			'cycle' => \plant\Plant::ANNUAL,
 			'family' => \plant\FamilyLib::getByFqn('asteraceae')
+		]);
+
+		$cPlant[] = new \plant\Plant([
+			'name' => 'Renoncule',
+			'fqn' => 'renoncule',
+			'cycle' => \plant\Plant::ANNUAL,
+			'family' => \plant\FamilyLib::getByFqn('ranunculaceae')
+		]);
+
+		$cPlant[] = new \plant\Plant([
+			'name' => 'Scabieuse',
+			'fqn' => 'scabieuse',
+			'cycle' => \plant\Plant::ANNUAL,
+			'family' => \plant\FamilyLib::getByFqn('dipsacaceae')
+		]);
+
+		$cPlant[] = new \plant\Plant([
+			'name' => 'Tulipe',
+			'fqn' => 'tulipe',
+			'cycle' => \plant\Plant::ANNUAL,
+			'family' => \plant\FamilyLib::getByFqn('amaryllidaceae')
 		]);
 
 		$cFarm = \plant\Plant::model()
