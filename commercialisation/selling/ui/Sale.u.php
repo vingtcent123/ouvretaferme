@@ -2030,6 +2030,21 @@ class SaleUi {
 					});
 				$h .= '</div>';
 
+			} else if($eSale->isPaymentOnline()) {
+
+				$content = '<div class="flex-justify-space-between flex-align-center">';
+					$content .= '<div>'.SaleUi::getPaymentMethodName($eSale).' '.SaleUi::getPaymentStatus($eSale).'</div>';
+					$content .= '<a data-ajax="/selling/sale:doDeleteOnlinePaymentMethod" post-id="'.$eSale['id'].'" class="btn btn-xs btn-danger" data-confirm="'.s("Voulez-vous vraiment supprimer ce mode de règlement pour la vente ?").'">'.s("Supprimer").'</a>';
+				$content .= '</div>';
+
+				$h .= '<div class="util-block bg-background-light">';
+					$h .= $form->group(content: '<h4>'.s("Règlement").'</h4>');
+					$h .= $form->group(
+						self::p('paymentMethod')->label,
+						$content
+					);
+				$h .= '</div>';
+
 			}
 
 			if(

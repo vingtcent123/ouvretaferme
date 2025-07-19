@@ -460,6 +460,13 @@ new \selling\SalePage()
 
 		throw new ReloadAction();
 	}, validate: ['canWrite', 'acceptUpdateMarketSalePayment'])
+	->write('doDeleteOnlinePaymentMethod', function($data) {
+
+		\selling\SaleLib::emptyPaymentMethod($data->e);
+
+		throw new ReloadLayerAction();
+
+	}, validate: ['canWrite', 'acceptEmptyOnlinePayment'])
 	->doUpdateProperties('doUpdatePreparationStatus', ['preparationStatus'], function($data) {
 
 		throw new ViewAction($data);

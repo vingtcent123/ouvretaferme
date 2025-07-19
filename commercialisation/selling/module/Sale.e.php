@@ -235,6 +235,18 @@ class Sale extends SaleElement {
 
 	}
 
+	public function acceptEmptyOnlinePayment(): bool {
+
+		$this->expects(['paymentMethod', 'invoice']);
+
+		return (
+			$this->isPaymentOnline() and
+			$this['preparationStatus'] !== Sale::CANCELED and
+			$this['invoice']->empty()
+		);
+
+	}
+
 	public function acceptDocumentTarget(): bool {
 
 		$this->expects(['type', 'farm']);

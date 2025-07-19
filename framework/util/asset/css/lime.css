@@ -1595,7 +1595,13 @@ td.util-manage-vignette {
 .flex-align-center {
 	display: flex;
 	align-items: center;
-	grid-column-gap: 1rem;
+	gap: 1rem;
+}
+
+.flex-justify-space-between {
+	display: flex;
+	justify-content: space-between;
+	gap: 1rem;
 }
 
 /* Text */

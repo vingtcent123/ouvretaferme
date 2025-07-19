@@ -515,15 +515,11 @@ class SaleLib extends SaleCrud {
 		) {
 
 			$e['paymentMethod'] = $e['customer']['defaultPaymentMethod'];
-/*
+
 			if($e['paymentMethod']->notEmpty()) {
-
-
-
 				$e['paymentStatus'] = Sale::NOT_PAID;
-
 			}
-*/
+
 		}
 
 		if($e->isMarket()) {
@@ -1014,6 +1010,20 @@ class SaleLib extends SaleCrud {
 			self::delete($eSale);
 		}
 
+	}
+
+	public static function emptyPaymentMethod(Sale $e): void {
+
+		$e->expects([
+			'paymentMethod'
+		]);
+
+		Sale::model()
+			->wherePaymentMethod($e['paymentMethod'])
+			->update($e, [
+				'paymentMethod' => new \payment\Method(),
+				'paymentStatus' => NULL
+			]);
 	}
 
 	public static function delete(Sale $e): void {
