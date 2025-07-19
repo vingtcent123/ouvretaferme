@@ -24,7 +24,7 @@ class Cultivation {
 
 	static changeExpectedHarvest(target, type) {
 
-		const form = target.firstParent('form');
+		const form = target.firstParent('.cultivation-periods-wrapper');
 
 		const selectorGroup = form.qs('[name^="harvestPeriodExpected"]');
 		const monthGroup = form.qs('[data-wrapper^="harvestMonthsExpected"]');
