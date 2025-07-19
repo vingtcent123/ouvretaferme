@@ -195,6 +195,11 @@ new \selling\SalePage()
 
 		}
 
+		if($cSale->empty()) {
+			\selling\Sale::fail('customer.check');
+			$fw->validate();
+		}
+
 		\selling\Sale::model()->beginTransaction();
 
 			foreach($cSale as $eSale) {
