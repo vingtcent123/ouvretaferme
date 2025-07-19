@@ -68,13 +68,6 @@ new Page()
 		]);
 
 		$cPlant[] = new \plant\Plant([
-			'name' => 'Pavot',
-			'fqn' => 'pavot',
-			'cycle' => \plant\Plant::ANNUAL,
-			'family' => \plant\FamilyLib::getByFqn('papaveraceae')
-		]);
-
-		$cPlant[] = new \plant\Plant([
 			'name' => 'Pois de senteur',
 			'fqn' => 'pois-de-senteur',
 			'cycle' => \plant\Plant::ANNUAL,
