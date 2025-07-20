@@ -152,7 +152,7 @@ class ActionLib extends ActionCrud {
 
 	public static function delete(Action $e): void {
 
-		$e->expects(['id', 'fqn']);
+		$e->expects(['id', 'fqn', 'farm']);
 
 		if($e['fqn'] !== NULL) {
 			Action::fail('deleteMandatory');
@@ -167,6 +167,14 @@ class ActionLib extends ActionCrud {
 			Action::fail('deleteUsed');
 			return;
 		}
+
+
+		Tool::model()
+			->whereFarm($e['farm'])
+			->whereAction($e)
+			->update([
+				'action' => new Action()
+			]);
 
 		parent::delete($e);
 
