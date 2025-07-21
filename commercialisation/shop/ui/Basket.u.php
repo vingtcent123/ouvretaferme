@@ -931,7 +931,12 @@ class BasketUi {
 
 	public function getJsonBasket(\Collection $cItem, ?array $products = NULL): string {
 
-		if($cItem->empty() and $products === NULL) {
+		$eUser = \user\ConnectionLib::getOnline();
+
+		if(
+			$eUser->empty() or
+			($cItem->empty() and $products === NULL)
+		) {
 
 			return '{}';
 
@@ -939,7 +944,7 @@ class BasketUi {
 
 			$h = '{';
 				$h .= 'createdAt: '.time().',';
-				$h .= 'userId: '.($cItem->notEmpty() ? \user\ConnectionLib::getOnline()['id'] : 'null').',';
+				$h .= 'userId: '.($cItem->notEmpty() ? $eUser['id'] : 'null').',';
 				$h .= 'products: ';
 
 					if($products !== NULL) {
