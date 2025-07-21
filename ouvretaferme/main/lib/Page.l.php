@@ -70,6 +70,8 @@ class PageLib {
 
 		if(REQUEST('app') === 'accounting') {
 
+			\user\ConnectionLib::checkLogged();
+
 			$data->eFarm = \farm\FarmLib::getById(REQUEST('farm'));
 
 			if($data->eFarm->empty() or $data->eFarm->canAccountEntry() === FALSE) {

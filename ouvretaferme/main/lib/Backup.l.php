@@ -5,6 +5,7 @@ class BackupLib {
 
 	const LOCAL_BACKUP_DIR = '/var/www/';
 	const LOCAL_DATABASE_BACKUP_FILE = 'backup.sql';
+	const LOCAL_MPF_BACKUP_FILE = 'mpf-mysql.tar.gz';
 	const LOCAL_STORAGE_BACKUP_FILE = 'storage.tar.gz';
 	const SERVER_BACKUP_DIR = '/home/ubuntu/otf-backup/';
 	const DATABASE_FOLDER = 'mysql';
@@ -12,6 +13,16 @@ class BackupLib {
 
 	const DURATION_BACKUP_IN_DAYS = 15;
 	const DURATION_BACKUP_MAX_IN_DAYS = 365 * 7;
+
+	public static function backupMpf(): void {
+
+		$day = date('Y-m-d');
+		[$serverUser, $serverHostname] = self::getHostData();
+
+		$command = 'scp '.self::LOCAL_BACKUP_DIR.self::LOCAL_MPF_BACKUP_FILE.' '.$serverUser.'@'.$serverHostname.':'.self::SERVER_BACKUP_DIR.self::DATABASE_FOLDER.'/'.$day.'-mpf.tar.gz';
+		self::exec($command);
+
+	}
 
 	public static function backupDatabase(): void {
 
