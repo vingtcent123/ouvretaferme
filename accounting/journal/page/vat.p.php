@@ -37,7 +37,8 @@ new Page(function($data) {
 		];
 
 		$data->eFinancialYear['lastPeriod'] = \journal\VatDeclarationLib::calculateLastPeriod($data->eFinancialYear);
-		$search->set('maxDate', $data->eFinancialYear['lastPeriod']['end']);
+
+		$search->set('maxDate', $data->eFinancialYear['lastPeriod']['end'] ?? $data->eFinancialYear['startDate']);
 		$data->vatDeclarationData = [
 			'cVatDeclaration' => \journal\VatDeclarationLib::getByFinancialYear($data->eFinancialYear),
 			'cOperationWaiting' => \journal\OperationLib::getAllForVatDeclaration($search),

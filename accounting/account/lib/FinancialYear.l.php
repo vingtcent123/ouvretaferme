@@ -93,11 +93,6 @@ class FinancialYearLib extends FinancialYearCrud {
 
 		FinancialYear::model()->beginTransaction();
 
-		$eFinancialYear['status'] = FinancialYearElement::CLOSE;
-		$eFinancialYear['closeDate'] = new \Sql('NOW()');
-
-		self::update($eFinancialYear, ['status', 'closeDate']);
-
 		// Effectuer toutes les opérations de clôture :
 
 		// 1- Calcul des amortissements
@@ -123,6 +118,8 @@ class FinancialYearLib extends FinancialYearCrud {
 
 		// Mettre les numéros d'écritures
 		\journal\OperationLib::setNumbers($eFinancialYear);
+
+		FinancialYear::model()->update($eFinancialYear, ['status' => FinancialYear::CLOSE, 'closeDate' => new \Sql('NOW()')]);
 
 		LogLib::save('close', 'financialYear', ['id' => $eFinancialYear['id']]);
 
@@ -226,7 +223,7 @@ class FinancialYearLib extends FinancialYearCrud {
 
 		return FinancialYear::model()
 			->select(FinancialYear::getSelection())
-			->whereStatus(FinancialYearElement::OPEN)
+			->whereStatus('=', FinancialYear::OPEN)
 			->sort(['endDate' => SORT_DESC])
 			->getCollection();
 

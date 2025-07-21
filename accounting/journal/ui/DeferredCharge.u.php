@@ -143,10 +143,10 @@ class DeferredChargeUi {
 
 							if($countDeferred === 0 and $isDeferred === FALSE and $totalDeferred > 0) {
 
-								$class = 'tr-border-top hide';
+								$class = 'tr-border-top '.($totalDeferred > 0 ? 'hide' : '');
 								$countDeferred = NULL;
 
-							} else if($isDeferred === FALSE) {
+							} else if($isDeferred === FALSE and $totalDeferred > 0) {
 
 								$class = 'hide';
 
@@ -174,7 +174,7 @@ class DeferredChargeUi {
 
 				$h .= '</table>';
 
-				if($cOperationCharges->count() > $totalDeferred) {
+				if($cOperationCharges->count() > $totalDeferred and $totalDeferred > 0) {
 					$h .= '<a style="width: 100%" class="btn btn-outline-secondary" onclick="FinancialYear.displayCharges(this)">'.\Asset::icon('caret-down').' '.s("Afficher toutes les charges").'</a>';
 				}
 

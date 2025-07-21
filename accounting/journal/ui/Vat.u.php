@@ -169,7 +169,7 @@ Class VatUi {
 
 		$h .= '<h3>'.s("Déclarations de TVA").'</h3>';
 
-		$h .= self::getVatDeclarations($eFarm, $cVatDeclaration);
+		$h .= self::getVatDeclarations($eFinancialYear, $eFarm, $cVatDeclaration);
 
 		if($cOperationWaiting->count() > 0) {
 
@@ -193,10 +193,10 @@ Class VatUi {
 
 	}
 
-	private function getVatDeclarations(\farm\Farm $eFarm, \Collection $cVatDeclaration): string {
+	private function getVatDeclarations(\account\FinancialYear $eFinancialYear, \farm\Farm $eFarm, \Collection $cVatDeclaration): string {
 
 		if($cVatDeclaration->count() === 0) {
-			return '<div class="util-info">'.s("Vous n'avez pas encore déclaré la TVA pendant cet exercice comptable.").'</div>';
+			return '<div class="util-info">'.s("Vous n'avez pas encore déclaré la TVA pendant cet exercice comptable. La TVA peut être déclarée une fois la période révolue.<br />Pour mettre à jour la fréquence de déclaration, rendez-vous dans Comptabilité > Paramétrage > Les exercices comptables > <link>Modifier</link>.", ['link' => '<a href="'.\company\CompanyUi::urlAccount($eFarm).'/financialYear/:update?id='.$eFinancialYear['id'].'">']).'</div>';
 		}
 
 		$h = '<table class="tr-even td-vertical-top tr-hover table-bordered">';

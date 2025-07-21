@@ -796,6 +796,7 @@ class OperationLib extends OperationCrud {
 				'description', 'type', 'amount',
 				'document', 'documentDate',
 				'vatRate', 'vatAccount',
+				'financialYear'
 			],
 			$values,
 			new \Properties('create')

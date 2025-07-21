@@ -370,11 +370,12 @@ class AssetLib extends \asset\AssetCrud {
 			'amount' => $depreciationValue,
 			'type' => \journal\OperationElement::DEBIT,
 			'asset' => $eAsset,
+			'financialYear' => $eFinancialYear['id'],
 		];
 		\journal\OperationLib::createFromValues($values);
 
 		// Amortissement
-		$values = self::getDepreciationOperationValues($eAsset, $endDate, $depreciationValue);
+		$values = self::getDepreciationOperationValues($eFinancialYear, $eAsset, $endDate, $depreciationValue);
 
 		if($depreciationValue !== 0.0) {
 			\journal\OperationLib::createFromValues($values);
@@ -393,9 +394,8 @@ class AssetLib extends \asset\AssetCrud {
 
 		// Si l'immobilisation a été entièrement amortie ou n'est plus valide
 		$depreciatedValue = Depreciation::model()
-			->select(['sum' => new \Sql('SUM(amount)')])
 			->whereAsset($eAsset)
-			->getValue('sum');
+			->getValue(new \Sql('SUM(amount)', 'float'));
 
 		if($eAsset['endDate'] <= $eFinancialYear['endDate'] or $depreciatedValue >= $eAsset['value']) {
 			Asset::model()->update($eAsset, ['status' => Asset::ENDED, 'updatedAt' => new \Sql('NOW()')]);
@@ -412,7 +412,7 @@ class AssetLib extends \asset\AssetCrud {
 	 *
 	 * @return array
 	 */
-	private static function getDepreciationOperationValues(Asset $eAsset, string $date, float $amount): array {
+	private static function getDepreciationOperationValues(\account\FinancialYear $eFinancialYear, Asset $eAsset, string $date, float $amount): array {
 
 		$depreciationClass = self::depreciationClassByAssetClass(substr($eAsset['accountLabel'], 0, 3));
 		$eAccountDepreciation = \account\AccountLib::getByClass(trim($depreciationClass, '0'));
@@ -425,6 +425,7 @@ class AssetLib extends \asset\AssetCrud {
 			'amount' => $amount,
 			'type' => \journal\OperationElement::CREDIT,
 			'asset' => $eAsset,
+			'financialYear' => $eFinancialYear['id'],
 		];
 
 	}
@@ -546,7 +547,7 @@ class AssetLib extends \asset\AssetCrud {
 		// Sortir l'actif (amort. : 28x) en annulant l'amortissement cumulé
 		if(AssetLib::isDepreciable($eAsset) === TRUE) {
 
-			$values = self::getDepreciationOperationValues($eAsset, $date, $accumulatedDepreciationsValue);
+			$values = self::getDepreciationOperationValues($eFinancialYear, $eAsset, $date, $accumulatedDepreciationsValue);
 			$values['type'] = \journal\OperationElement::DEBIT;
 			\journal\OperationLib::createFromValues($values);
 

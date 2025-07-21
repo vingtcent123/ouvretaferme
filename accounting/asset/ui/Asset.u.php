@@ -400,65 +400,61 @@ Class AssetUi {
 
 	public function listGrantsForClosing(\util\FormUi $form, \Collection $cAssetGrant): string {
 
+		if($cAssetGrant->empty()) {
+			return '';
+		}
+
 		$h = '<h3 class="mt-2">'.s("Reprise finale des subventions").'</h3>';
 
 		$h .= '<div class="util-block-help">';
-			$h .= s("Si des subventions n'ont pas été entièrement reprises au compte de résultat alors que l'immobilisation correspondante est totalement amortie, vous pouvez intégrer cette reprise dans l'exercice comptable.");
+			$h .= s("Si des subventions n'ont pas été entièrement reprises au compte de résultat alors que l'immobilisation correspondante est totalement amortie, vous pouvez <b>intégrer</b> cette reprise dans l'exercice comptable.");
 		$h .= '</div>';
 
-		if($cAssetGrant->empty()) {
+		$h .= '<div class="stick-sm util-overflow-sm">';
 
-			$h .= '<div class="util-info">'.s("Aucune subvention ne nécessite une reprise.").'</div>';
+			$h .= '<table class="financial-year-stock-table tr-even tr-hover">';
 
-		} else {
+				$h .= '<thead>';
 
-			$h .= '<div class="stick-sm util-overflow-sm">';
+					$h .= '<tr>';
 
+						$h .= '<th>'.s("Subvention").'</th>';
+						$h .= '<th>'.s("Immobilisation liée").'</th>';
+						$h .= '<th class="text-end">'.s("Reprise déjà faite").'</th>';
+						$h .= '<th class="text-end">'.s("Solde à reprendre").'</th>';
+						$h .= '<th>'.s("Écriture proposée").'</th>';
+						$h .= '<th class="text-center">'.s("Intégrer ?").'</th>';
 
-				$h .= '<table class="financial-year-stock-table tr-even tr-hover">';
+					$h .= '</tr>';
 
-					$h .= '<thead>';
+				$h .= '</thead>';
 
-						$h .= '<tr>';
+				$h .= '<tbody>';
+					foreach($cAssetGrant as $eAsset) {
 
-							$h .= '<th>'.s("Subvention").'</th>';
-							$h .= '<th>'.s("Immobilisation liée").'</th>';
-							$h .= '<th class="text-end">'.s("Reprise déjà faite").'</th>';
-							$h .= '<th class="text-end">'.s("Solde à reprendre").'</th>';
-							$h .= '<th>'.s("Écriture proposée").'</th>';
-							$h .= '<th class="text-center">'.s("Intégrer ?").'</th>';
+						$h .= '<tr id="'.$eAsset['id'].'">';
+
+						$h .= '<td>'.encode($eAsset['description']).'</td>';
+						$h .= '<td>'.encode($eAsset['asset']['description']).'</td>';
+						$h .= '<td class="text-end">'.\util\TextUi::money($eAsset['alreadyRecognized']).'</td>';
+						$h .= '<td class="text-end">'.\util\TextUi::money($eAsset['value'] - $eAsset['alreadyRecognized']).'</td>';
+						$h .= '<td>'.s("Débit {accountDebit} / Crédit {accountCredit}", [
+							'accountDebit' => encode($eAsset['account']['class']),
+							'accountCredit' => \Setting::get('account\grantsInIncomeStatement'),
+						]).'</td>';
+						$h .= '<td class="text-center">';
+							$h .= $form->checkbox('grantsToRecognize[]', $eAsset['id']);
+						$h .= '</td>';
 
 						$h .= '</tr>';
 
-					$h .= '</thead>';
+					}
 
-					$h .= '<tbody>';
-						foreach($cAssetGrant as $eAsset) {
+				$h .= '</tbody>';
 
-							$h .= '<tr id="'.$eAsset['id'].'">';
+			$h .= '</table>';
 
-							$h .= '<td>'.encode($eAsset['description']).'</td>';
-							$h .= '<td>'.encode($eAsset['asset']['description']).'</td>';
-							$h .= '<td class="text-end">'.\util\TextUi::money($eAsset['alreadyRecognized']).'</td>';
-							$h .= '<td class="text-end">'.\util\TextUi::money($eAsset['value'] - $eAsset['alreadyRecognized']).'</td>';
-							$h .= '<td>'.s("Débit {accountDebit} / Crédit {accountCredit}", [
-								'accountDebit' => encode($eAsset['account']['class']),
-								'accountCredit' => \Setting::get('account\grantsInIncomeStatement'),
-							]).'</td>';
-							$h .= '<td class="text-center">';
-								$h .= $form->checkbox('grantsToRecognize[]', $eAsset['id']);
-							$h .= '</td>';
-
-							$h .= '</tr>';
-
-						}
-
-					$h .= '</tbody>';
-
-				$h .= '</table>';
-
-			$h .= '</div>';
-		}
+		$h .= '</div>';
 
 		return $h;
 
