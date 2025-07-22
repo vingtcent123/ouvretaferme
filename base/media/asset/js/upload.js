@@ -595,13 +595,12 @@ class ImageCrop {
 
 		} else {
 
-			preview.insertAdjacentElement('afterend', '<div class="resize-warning">'+
+			preview.insertAdjacentHTML('afterend', '<div class="resize-warning">'+
 				'<div>'+ Lime.Asset.icon('exclamation-triangle-fill') +' '+ ImageMessage.imageNoZoom +'</div>'+
 			'</div>');
 
 		}
 
-		qs('#' + type + '-zoom').style.display = 'flex';
 		qs('#' + type + '-image').style.display = 'block';
 
 	};
