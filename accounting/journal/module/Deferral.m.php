@@ -1,11 +1,14 @@
 <?php
 namespace journal;
 
-abstract class DeferredChargeElement extends \Element {
+abstract class DeferralElement extends \Element {
 
 	use \FilterElement;
 
-	private static ?DeferredChargeModel $model = NULL;
+	private static ?DeferralModel $model = NULL;
+
+	const CHARGE = 'charge';
+	const PRODUCT = 'product';
 
 	const PLANNED = 'planned';
 	const RECORDED = 'recorded';
@@ -13,28 +16,28 @@ abstract class DeferredChargeElement extends \Element {
 	const CANCELLED = 'cancelled';
 
 	public static function getSelection(): array {
-		return DeferredCharge::model()->getProperties();
+		return Deferral::model()->getProperties();
 	}
 
-	public static function model(): DeferredChargeModel {
+	public static function model(): DeferralModel {
 		if(self::$model === NULL) {
-			self::$model = new DeferredChargeModel();
+			self::$model = new DeferralModel();
 		}
 		return self::$model;
 	}
 
 	public static function fail(string|\FailException $failName, array $arguments = [], ?string $wrapper = NULL): bool {
-		return \Fail::log('DeferredCharge::'.$failName, $arguments, $wrapper);
+		return \Fail::log('Deferral::'.$failName, $arguments, $wrapper);
 	}
 
 }
 
 
-class DeferredChargeModel extends \ModuleModel {
+class DeferralModel extends \ModuleModel {
 
-	protected string $module = 'journal\DeferredCharge';
+	protected string $module = 'journal\Deferral';
 	protected string $package = 'journal';
-	protected string $table = 'journalDeferredCharge';
+	protected string $table = 'journalDeferral';
 
 	public function __construct() {
 
@@ -42,20 +45,21 @@ class DeferredChargeModel extends \ModuleModel {
 
 		$this->properties = array_merge($this->properties, [
 			'id' => ['serial32', 'cast' => 'int'],
+			'type' => ['enum', [\journal\Deferral::CHARGE, \journal\Deferral::PRODUCT], 'cast' => 'enum'],
 			'operation' => ['element32', 'journal\Operation', 'cast' => 'element'],
 			'startDate' => ['date', 'cast' => 'string'],
 			'endDate' => ['date', 'cast' => 'string'],
 			'amount' => ['decimal', 'digits' => 8, 'decimal' => 2, 'min' => 0.01, 'max' => NULL, 'cast' => 'float'],
 			'initialFinancialYear' => ['element32', 'account\FinancialYear', 'cast' => 'element'],
 			'destinationFinancialYear' => ['element32', 'account\FinancialYear', 'null' => TRUE, 'cast' => 'element'],
-			'status' => ['enum', [\journal\DeferredCharge::PLANNED, \journal\DeferredCharge::RECORDED, \journal\DeferredCharge::DEFERRED, \journal\DeferredCharge::CANCELLED], 'cast' => 'enum'],
+			'status' => ['enum', [\journal\Deferral::PLANNED, \journal\Deferral::RECORDED, \journal\Deferral::DEFERRED, \journal\Deferral::CANCELLED], 'cast' => 'enum'],
 			'createdAt' => ['datetime', 'cast' => 'string'],
 			'updatedAt' => ['datetime', 'cast' => 'string'],
 			'createdBy' => ['element32', 'user\User', 'null' => TRUE, 'cast' => 'element'],
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'operation', 'startDate', 'endDate', 'amount', 'initialFinancialYear', 'destinationFinancialYear', 'status', 'createdAt', 'updatedAt', 'createdBy'
+			'id', 'type', 'operation', 'startDate', 'endDate', 'amount', 'initialFinancialYear', 'destinationFinancialYear', 'status', 'createdAt', 'updatedAt', 'createdBy'
 		]);
 
 		$this->propertiesToModule += [
@@ -96,6 +100,9 @@ class DeferredChargeModel extends \ModuleModel {
 
 		switch($property) {
 
+			case 'type' :
+				return ($value === NULL) ? NULL : (string)$value;
+
 			case 'status' :
 				return ($value === NULL) ? NULL : (string)$value;
 
@@ -106,55 +113,59 @@ class DeferredChargeModel extends \ModuleModel {
 
 	}
 
-	public function select(...$fields): DeferredChargeModel {
+	public function select(...$fields): DeferralModel {
 		return parent::select(...$fields);
 	}
 
-	public function where(...$data): DeferredChargeModel {
+	public function where(...$data): DeferralModel {
 		return parent::where(...$data);
 	}
 
-	public function whereId(...$data): DeferredChargeModel {
+	public function whereId(...$data): DeferralModel {
 		return $this->where('id', ...$data);
 	}
 
-	public function whereOperation(...$data): DeferredChargeModel {
+	public function whereType(...$data): DeferralModel {
+		return $this->where('type', ...$data);
+	}
+
+	public function whereOperation(...$data): DeferralModel {
 		return $this->where('operation', ...$data);
 	}
 
-	public function whereStartDate(...$data): DeferredChargeModel {
+	public function whereStartDate(...$data): DeferralModel {
 		return $this->where('startDate', ...$data);
 	}
 
-	public function whereEndDate(...$data): DeferredChargeModel {
+	public function whereEndDate(...$data): DeferralModel {
 		return $this->where('endDate', ...$data);
 	}
 
-	public function whereAmount(...$data): DeferredChargeModel {
+	public function whereAmount(...$data): DeferralModel {
 		return $this->where('amount', ...$data);
 	}
 
-	public function whereInitialFinancialYear(...$data): DeferredChargeModel {
+	public function whereInitialFinancialYear(...$data): DeferralModel {
 		return $this->where('initialFinancialYear', ...$data);
 	}
 
-	public function whereDestinationFinancialYear(...$data): DeferredChargeModel {
+	public function whereDestinationFinancialYear(...$data): DeferralModel {
 		return $this->where('destinationFinancialYear', ...$data);
 	}
 
-	public function whereStatus(...$data): DeferredChargeModel {
+	public function whereStatus(...$data): DeferralModel {
 		return $this->where('status', ...$data);
 	}
 
-	public function whereCreatedAt(...$data): DeferredChargeModel {
+	public function whereCreatedAt(...$data): DeferralModel {
 		return $this->where('createdAt', ...$data);
 	}
 
-	public function whereUpdatedAt(...$data): DeferredChargeModel {
+	public function whereUpdatedAt(...$data): DeferralModel {
 		return $this->where('updatedAt', ...$data);
 	}
 
-	public function whereCreatedBy(...$data): DeferredChargeModel {
+	public function whereCreatedBy(...$data): DeferralModel {
 		return $this->where('createdBy', ...$data);
 	}
 
@@ -162,24 +173,24 @@ class DeferredChargeModel extends \ModuleModel {
 }
 
 
-abstract class DeferredChargeCrud extends \ModuleCrud {
+abstract class DeferralCrud extends \ModuleCrud {
 
  private static array $cache = [];
 
-	public static function getById(mixed $id, array $properties = []): DeferredCharge {
+	public static function getById(mixed $id, array $properties = []): Deferral {
 
-		$e = new DeferredCharge();
+		$e = new Deferral();
 
 		if(empty($id)) {
-			DeferredCharge::model()->reset();
+			Deferral::model()->reset();
 			return $e;
 		}
 
 		if($properties === []) {
-			$properties = DeferredCharge::getSelection();
+			$properties = Deferral::getSelection();
 		}
 
-		if(DeferredCharge::model()
+		if(Deferral::model()
 			->select($properties)
 			->whereId($id)
 			->get($e) === FALSE) {
@@ -197,14 +208,14 @@ abstract class DeferredChargeCrud extends \ModuleCrud {
 		}
 
 		if($properties === []) {
-			$properties = DeferredCharge::getSelection();
+			$properties = Deferral::getSelection();
 		}
 
 		if($sort !== NULL) {
-			DeferredCharge::model()->sort($sort);
+			Deferral::model()->sort($sort);
 		}
 
-		return DeferredCharge::model()
+		return Deferral::model()
 			->select($properties)
 			->whereId('IN', $ids)
 			->getCollection(NULL, NULL, $index);
@@ -218,51 +229,51 @@ abstract class DeferredChargeCrud extends \ModuleCrud {
 
 	}
 
-	public static function getCreateElement(): DeferredCharge {
+	public static function getCreateElement(): Deferral {
 
-		return new DeferredCharge(['id' => NULL]);
-
-	}
-
-	public static function create(DeferredCharge $e): void {
-
-		DeferredCharge::model()->insert($e);
+		return new Deferral(['id' => NULL]);
 
 	}
 
-	public static function update(DeferredCharge $e, array $properties): void {
+	public static function create(Deferral $e): void {
+
+		Deferral::model()->insert($e);
+
+	}
+
+	public static function update(Deferral $e, array $properties): void {
 
 		$e->expects(['id']);
 
-		DeferredCharge::model()
+		Deferral::model()
 			->select($properties)
 			->update($e);
 
 	}
 
-	public static function updateCollection(\Collection $c, DeferredCharge $e, array $properties): void {
+	public static function updateCollection(\Collection $c, Deferral $e, array $properties): void {
 
-		DeferredCharge::model()
+		Deferral::model()
 			->select($properties)
 			->whereId('IN', $c)
 			->update($e->extracts($properties));
 
 	}
 
-	public static function delete(DeferredCharge $e): void {
+	public static function delete(Deferral $e): void {
 
 		$e->expects(['id']);
 
-		DeferredCharge::model()->delete($e);
+		Deferral::model()->delete($e);
 
 	}
 
 }
 
 
-class DeferredChargePage extends \ModulePage {
+class DeferralPage extends \ModulePage {
 
-	protected string $module = 'journal\DeferredCharge';
+	protected string $module = 'journal\Deferral';
 
 	public function __construct(
 	   ?\Closure $start = NULL,
@@ -271,8 +282,8 @@ class DeferredChargePage extends \ModulePage {
 	) {
 		parent::__construct(
 		   $start,
-		   $propertiesCreate ?? DeferredChargeLib::getPropertiesCreate(),
-		   $propertiesUpdate ?? DeferredChargeLib::getPropertiesUpdate()
+		   $propertiesCreate ?? DeferralLib::getPropertiesCreate(),
+		   $propertiesUpdate ?? DeferralLib::getPropertiesUpdate()
 		);
 	}
 

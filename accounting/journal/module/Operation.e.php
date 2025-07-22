@@ -39,9 +39,12 @@ class Operation extends OperationElement {
 
 	}
 
-	public function isDeferrableCharge(\account\FinancialYear $eFinancialYear): bool {
+	public function isDeferrable(\account\FinancialYear $eFinancialYear): bool {
 
-		return mb_substr($this['accountLabel'], 0, mb_strlen(\Setting::get('account\chargeAccountClass'))) === (string)\Setting::get('account\chargeAccountClass')
+		return (
+				mb_substr($this['accountLabel'], 0, mb_strlen(\Setting::get('account\chargeAccountClass'))) === (string)\Setting::get('account\chargeAccountClass')
+				or mb_substr($this['accountLabel'], 0, mb_strlen(\Setting::get('account\productAccountClass'))) === (string)\Setting::get('account\productAccountClass')
+			)
 			and $this['financialYear']['id'] === $eFinancialYear['id']
 			and $eFinancialYear->canUpdate();
 

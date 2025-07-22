@@ -9,8 +9,8 @@ new Page(function($data) {
 	$data->eFinancialYear = \account\FinancialYearLib::getById(GET('financialYear'))->validate('canUpdate');
 	$data->eOperation = \journal\OperationLib::getById(GET('operation'));
 
-	if($data->eOperation->isDeferrableCharge($data->eFinancialYear) === FALSE) {
-		throw new NotExpectedAction('Cannot defer charge on operation');
+	if($data->eOperation->isDeferrable($data->eFinancialYear) === FALSE) {
+		throw new NotExpectedAction('Cannot defer operation');
 	}
 
 	$data->field = GET('field');
@@ -20,21 +20,21 @@ new Page(function($data) {
 })
 ->post('doSet', function($data) {
 
-	\journal\DeferredChargeLib::createDeferredCharge($_POST);
+	$success = \journal\DeferralLib::createDeferral($_POST);
 
-	throw new ReloadAction('journal', 'DeferredCharge::saved');
+	throw new ReloadAction('journal', $success);
 
 });
 
-new \journal\DeferredChargePage(function($data) {
+new \journal\DeferralPage(function($data) {
 	\user\ConnectionLib::checkLogged();
 
 	$data->eFarm->validate('canManage');
 })
 ->doDelete(function($data) {
 
-	\account\LogLib::save('delete', 'deferredCharge', ['id' => $data->e['id']]);
+	\account\LogLib::save('delete', 'deferral', ['id' => $data->e['id']]);
 
-	throw new ReloadAction('journal', 'DeferredCharge::deleted');
+	throw new ReloadAction('journal', 'Deferral::deleted');
 
 });

@@ -1,32 +1,7 @@
-# Produits à recevoir (PAR)
-AccruedIncome:
+# Charges et produits constatés d'avance (CCA et PCA)
+Deferral:
   id: serial32
-  operationClosing: ?journal\Operation
-  operationOpening: ?journal\Operation
-  operationClearing: ?journal\Operation # Opération de rapprochement
-  account: account\Account
-  accountLabel: text8(1, null) @collate(general)
-  thirdParty: ?account\ThirdParty
-  description: text8(1, null) @collate(general)
-  date: date
-  amount: decimal(8, 2, 0.01, null)
-  financialYear: account\FinancialYear
-  destinationFinancialYear: ?account\FinancialYear
-  status: enum(PLANNED, RECORDED, ACCRUED, CANCELLED) = PLANNED
-  isCleared: bool = FALSE
-  clearingDate: ?datetime
-  clearedBy: ?user\User
-  createdAt: datetime = SPECIAL(now)
-  updatedAt: datetime = SPECIAL(now)
-  createdBy: ?user\User = SPECIAL(user)
-  INDEX: [
-    ["financialYear"],
-    ["status"]
-  ]
-
-# Charges constatées d'avance (CCA)
-DeferredCharge:
-  id: serial32
+  type: enum(CHARGE, PRODUCT)
   operation: journal\Operation
   startDate: date # Début conso
   endDate: date # Fin conso

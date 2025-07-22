@@ -12,9 +12,9 @@ class FinancialYear {
 
 	}
 
-	static displayCharges(button) {
+	static displayOperations(button, type) {
 
-		qsa('table.financial-year-cca-table tr.hide', element => element.removeHide());
+		qsa('table[data-type="' + type + '"].financial-year-cca-table tr.hide', element => element.removeHide());
 		button.classList.add('hide');
 
 	}

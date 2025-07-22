@@ -150,7 +150,7 @@ class StockUi {
 
 	}
 
-	public function list(\farm\Farm $eFarm, \account\FinancialYear $eFinancialYear, \Collection $cStock): string {
+	public function listForClosing(\farm\Farm $eFarm, \account\FinancialYear $eFinancialYear, \Collection $cStock): string {
 
 		$h = '<h3 class="mt-2">'.s("Stocks").'</h3>';
 

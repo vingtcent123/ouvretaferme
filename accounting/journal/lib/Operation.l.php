@@ -35,8 +35,13 @@ class OperationLib extends OperationCrud {
 		} else {
 
 			$model = Operation::model()
-				->wherePaymentDate('>=', fn() => $search->get('financialYear')['startDate'], if: $search->has('financialYear'))
-				->wherePaymentDate('<=', fn() => $search->get('financialYear')['endDate'], if: $search->has('financialYear'));
+				->or(
+					fn() => $this
+						->wherePaymentDate('BETWEEN', new \Sql(\account\FinancialYear::model()->format($search->get('financialYear')['startDate']).' AND '.\account\FinancialYear::model()->format($search->get('financialYear')['endDate'])), if: $search->has('financialYear')),
+					fn() => $this
+						->wherePaymentDate(NULL)
+						->whereDate('BETWEEN', new \Sql(\account\FinancialYear::model()->format($search->get('financialYear')['startDate']).' AND '.\account\FinancialYear::model()->format($search->get('financialYear')['endDate'])), if: $search->has('financialYear')),
+				);
 
 		}
 
@@ -118,7 +123,7 @@ class OperationLib extends OperationCrud {
 	public static function getAllForJournal(\Search $search = new \Search(), bool $hasSort = FALSE): \Collection {
 
 		$eCompany = \company\CompanyLib::getCurrent();
-		$defaultOrder = $eCompany->isCashAccounting() ? ['paymentDate' => SORT_ASC, 'id' => SORT_ASC] : ['date' => SORT_ASC, 'id' => SORT_ASC];
+		$defaultOrder = $eCompany->isCashAccounting() ? ['paymentDate' => SORT_ASC, 'date' => SORT_ASC, 'id' => SORT_ASC] : ['date' => SORT_ASC, 'id' => SORT_ASC];
 
 		return self::applySearch($search)
 			->select(
@@ -145,8 +150,11 @@ class OperationLib extends OperationCrud {
 				+ ['thirdParty' => ['id', 'name']]
 				+ ['month' => new \Sql('SUBSTRING(date, 1, 7)')]
 			)
-			->sort(['date' => SORT_ASC, 'id' => SORT_ASC])
-			->whereAccountLabel('LIKE', \Setting::get('account\chargeAccountClass').'%')
+			->sort(['accountLabel' => SORT_ASC, 'date' => SORT_ASC, 'id' => SORT_ASC])
+			->or(
+				fn() => $this->whereAccountLabel('LIKE', \Setting::get('account\chargeAccountClass').'%'),
+				fn() => $this->whereAccountLabel('LIKE', \Setting::get('account\productAccountClass').'%'),
+			)
 			->getCollection();
 	}
 
@@ -796,7 +804,7 @@ class OperationLib extends OperationCrud {
 				'description', 'type', 'amount',
 				'document', 'documentDate',
 				'vatRate', 'vatAccount',
-				'financialYear'
+				'financialYear', 'journalCode'
 			],
 			$values,
 			new \Properties('create')
@@ -1041,13 +1049,47 @@ class OperationLib extends OperationCrud {
 
 	}
 
-	public static function getByAsset(\asset\Asset $eAsset): Operation {
+	public static function getForOpening(\account\FinancialYear $eFinancialYear): \Collection {
 
 		return Operation::model()
-			->select(Operation::getSelection())
-			->whereAsset($eAsset)
-			->sort(['createdAt' => SORT_ASC])
-			->get();
+			->select([
+				'total' => new \Sql('SUM(IF(type="debit", -amount, amount))', 'float'),
+				'account' => \account\Account::getSelection(),
+				'accountLabel'
+			])
+			->whereFinancialYear($eFinancialYear)
+			->where(new \Sql('SUBSTRING(accountLabel, 1, 1) NOT IN ("'.join('", "', [\Setting::get('account\chargeAccountClass'), \Setting::get('account\productAccountClass')]).'")'))
+			->where(new \Sql('SUBSTRING(accountLabel, 1, 3) NOT IN ("'.join('", "', [\Setting::get('account\prepaidExpenseClass'), \Setting::get('account\accruedIncomeClass')]).'")'))
+			->sort(['accountLabel' => SORT_ASC])
+			->group(['account', 'accountLabel'])
+			->having(new \Sql('ABS(total) > 0.5'))
+			->getCollection();
+
+	}
+
+	/**
+	 * @param \Collection $cOperation Opérations sommées par compte de l'exercice précédent
+	 * @param \account\FinancialYear $eFinancialYear Exercice sur lequel écrire les opérations d'ouverture
+	 * @param \account\FinancialYear $eFinancialYearPrevious Exercice sur lequel sont basées les opérations $cOperation
+	 */
+	public static function createForOpening(\Collection $cOperation, \account\FinancialYear $eFinancialYear, \account\FinancialYear $eFinancialYearPrevious): void {
+
+		foreach($cOperation as $eOperation) {
+
+			$values = [
+				'financialYear' => $eFinancialYear['id'],
+				'amount' => abs($eOperation['total']),
+				'type' => ($eOperation['total'] > 0 ? Operation::CREDIT : Operation::DEBIT),
+				'account' => $eOperation['account']['id'],
+				'accountLabel' => $eOperation['accountLabel'],
+				'date' => $eFinancialYear['startDate'],
+				'description' => new \account\FinancialYearUi()->getOpeningDescription($eFinancialYearPrevious['endDate']),
+				'journalCode' => Operation::OD,
+			];
+
+			self::createFromValues($values);
+
+		}
 
 	}
 }

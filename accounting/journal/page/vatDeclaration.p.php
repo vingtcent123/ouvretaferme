@@ -10,6 +10,11 @@ new \journal\VatDeclarationPage(function($data) {
 
 
 		$data->eFinancialYear = \account\FinancialYearLib::selectDefaultFinancialYear();
+
+		if(count(\journal\VatDeclarationLib::listMissingPeriods($data->eFinancialYear)) === 0) {
+			throw new NotExistsAction($data);
+		}
+
 		$data->eFinancialYear['lastPeriod'] = \journal\VatDeclarationLib::calculateLastPeriod($data->eFinancialYear);
 
 		$search = new Search(['financialYear' => $data->eFinancialYear]);

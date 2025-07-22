@@ -47,6 +47,21 @@ class FinancialYearUi {
 
 	}
 
+	public function getOpenTitle(\farm\Farm $eFarm): string {
+
+		$h = '<div class="util-action">';
+
+			$h .= '<h1>';
+				$h .= '<a href="'.\company\CompanyUi::urlAccount($eFarm).'/financialYear/"  class="h-back">'.\Asset::icon('arrow-left').'</a>';
+				$h .= s("Créer un bilan d'ouverture");
+			$h .= '</h1>';
+
+		$h .= '</div>';
+
+		return $h;
+
+	}
+
 	protected function getAction(\farm\Farm $eFarm, FinancialYear $eFinancialYear): string {
 
 		$h = '<a data-dropdown="bottom-end" class="dropdown-toggle btn btn-outline-primary">'.\Asset::icon('gear-fill').'</a>';
@@ -57,7 +72,12 @@ class FinancialYearUi {
 			$h .= '<a href="'.\company\CompanyUi::urlAccount($eFarm).'/financialYear/:update?id='.$eFinancialYear['id'].'" class="dropdown-item">';
 				$h .= s("Modifier");
 			$h .= '</a>';
-			$h .= '<a href="'.\company\CompanyUi::urlAccount($eFarm).'/financialYear/:close?id='.$eFinancialYear['id'].'" class="dropdown-item">'.s("Clôturer").'</a>';;
+			if($eFinancialYear['balanceSheetOpen'] === FALSE) {
+				$h .= '<a href="'.\company\CompanyUi::urlAccount($eFarm).'/financialYear/:open?id='.$eFinancialYear['id'].'" class="dropdown-item">'.s("Créer le bilan d'ouverture").'</a>';
+			}
+			if($eFinancialYear['balanceSheetClose'] === FALSE) {
+				$h .= '<a href="'.\company\CompanyUi::urlAccount($eFarm).'/financialYear/:close?id='.$eFinancialYear['id'].'" class="dropdown-item">'.s("Clôturer").'</a>';;
+			}
 		$h .= '</div>';
 
 		return $h;
@@ -115,8 +135,6 @@ class FinancialYearUi {
 				$h .= '</thead>';
 
 				$h .= '<tbody>';
-
-					$h .= '<div class="util-overflow-sm">';
 
 					foreach($cFinancialYear as $eFinancialYear) {
 
@@ -197,8 +215,7 @@ class FinancialYearUi {
 
 	}
 
-
-	public function create(\farm\Farm $eFarm, FinancialYear $eFinancialYear): \Panel {
+	public function createForm(\farm\Farm $eFarm, FinancialYear $eFinancialYear): string {
 
 		$form = new \util\FormUi();
 
@@ -224,10 +241,15 @@ class FinancialYearUi {
 
 		$h .= $form->close();
 
+		return $h;
+
+	}
+	public function create(\farm\Farm $eFarm, FinancialYear $eFinancialYear): \Panel {
+
 		return new \Panel(
 			id: 'panel-account-financialYear-create',
 			title: s("Créer un exercice comptable"),
-			body: $h
+			body: new FinancialYearUi()->createForm($eFarm, $eFinancialYear),
 		);
 
 	}
@@ -268,7 +290,119 @@ class FinancialYearUi {
 
 	}
 
-	public function close(\farm\Farm $eFarm, FinancialYear $eFinancialYear, \Collection $cOperationCharges, \Collection $cAccruedIncome, \Collection $cStock, \Collection $cAssetGrant): string {
+	public function open(
+		\farm\Farm $eFarm,
+		FinancialYear $eFinancialYear,
+		FinancialYear $eFinancialYearPrevious,
+		\Collection $cOperation,
+		\Collection $cDeferral,
+	): string {
+
+		$h = '<h3>'.s("Report des soldes de l'exercice {year}", ['year' => self::getYear($eFinancialYearPrevious)]).'</h3>';
+
+		if($cOperation->empty()) {
+
+			$h .= '<div class="util-info">';
+				$h .= s("Il n'y a aucune écriture à reprendre, avez-vous bien effectué la saisie comptable de l'exercice précédent ainsi que son bilan de clôture ?");
+			$h .= '</div>';
+
+			return $h;
+		}
+
+		$h .= '<div class="stick-sm util-overflow-sm">';
+
+			$h .= '<table class="financialYear-item-table tr-even tr-hover">';
+
+				$h .= '<thead>';
+
+					$h .= '<tr>';
+
+						$h .= '<th>'.s("Date").'</th>';
+						$h .= '<th>'.s("Compte").'</th>';
+						$h .= '<th>'.s("Libellé du compte").'</th>';
+						$h .= '<th class="text-end">'.s("Débit").'</th>';
+						$h .= '<th class="text-end">'.s("Crédit").'</th>';
+						$h .= '<th>'.s("Libellé écriture").'</th>';
+
+					$h .= '</tr>';
+
+				$h .= '</thead>';
+
+				$h .= '<tbody>';
+
+				$totalDebit = 0;
+				$totalCredit = 0;
+
+					foreach($cOperation as $eOperation) {
+
+						$h .= '<tr>';
+
+							$h .= '<td>'.\util\DateUi::numeric($eFinancialYear['startDate'], \util\DateUi::DATE).'</td>';
+							$h .= '<td>'.encode($eOperation['accountLabel']).'</td>';
+							$h .= '<td>'.encode($eOperation['account']['description']).'</td>';
+
+							$h .= '<td class="text-end">';
+								if($eOperation['total'] < 0 ) {
+									$h .= \util\TextUi::money(abs($eOperation['total']));
+									$totalDebit += $eOperation['total'];
+								} else {
+									$h .= '';
+								}
+							$h .= '</td>';
+
+							$h .= '<td class="text-end">';
+								if($eOperation['total'] > 0 ) {
+									$h .= \util\TextUi::money($eOperation['total']);
+									$totalCredit += $eOperation['total'];
+								} else {
+									$h .= '';
+								}
+							$h .= '</td>';
+
+							$h .= '<td>'.new FinancialYearUi()->getOpeningDescription($eFinancialYearPrevious['endDate']).'</td>';
+
+						$h .= '</tr>';
+
+					}
+
+					$h .= '<tr class="row-bold row-highlight">';
+
+						$h .= '<td></td>';
+						$h .= '<td></td>';
+
+						$h .= '<td>'.s("Totaux").'</td>';
+
+						$h .= '<td class="text-end">';
+							$h .= \util\TextUi::money(abs($totalDebit));
+						$h .= '</td>';
+
+						$h .= '<td class="text-end">';
+							$h .= \util\TextUi::money($totalCredit);
+						$h .= '</td>';
+
+						$h .= '<td></td>';
+
+					$h .= '</tr>';
+
+				$h .= '</tbody>';
+
+			$h .= '</table>';
+		$h .= '</div>';
+
+		$h .= new \journal\DeferralUi()->listForOpening($cDeferral);
+
+
+		$h .= '<a class="btn btn-primary" data-ajax="'.\company\CompanyUi::urlAccount($eFarm).'/financialYear/:doOpen" post-id="'.$eFinancialYear['id'].'">'.s("Générer les écritures et le bilan d'ouverture").'</a>';
+
+		return $h;
+
+	}
+
+	public function getOpeningDescription(string $date): string {
+		return s("Reprise solde au {date}", ['date' => \util\DateUi::numeric($date, \util\DateUi::DATE)]);
+	}
+
+	public function close(\farm\Farm $eFarm, FinancialYear $eFinancialYear, \Collection $cOperationToDefer, \Collection $cStock, \Collection $cAssetGrant): string {
 
 		$form = new \util\FormUi();
 
@@ -297,11 +431,9 @@ class FinancialYearUi {
 		$h .= $form->openAjax(\company\CompanyUi::urlAccount($eFarm).'/financialYear/:doClose', ['id' => 'account-financialYear-close', 'autocomplete' => 'off']);
 			$h .= $this->vat($eFarm, $eFinancialYear);
 
-			$h .= new \journal\DeferredChargeUi()->list($eFarm, $eFinancialYear, $cOperationCharges);
+			$h .= new \journal\DeferralUi()->listForClosing($eFarm, $eFinancialYear, $cOperationToDefer);
 
-			$h .= new \journal\AccruedIncomeUi()->list($eFarm, $eFinancialYear, $cAccruedIncome);
-
-			$h .= new \journal\StockUi()->list($eFarm, $eFinancialYear, $cStock);
+			$h .= new \journal\StockUi()->listForClosing($eFarm, $eFinancialYear, $cStock);
 
 			$h .= new \asset\AssetUi()->listGrantsForClosing($form, $cAssetGrant);
 
@@ -377,7 +509,7 @@ class FinancialYearUi {
 
 			} else {
 
-				$h .= '<p>'.s("Aucune anomalie à signaler concernant les déclarations de TVA").'</p>';
+				$h .= '<div class="util-success">'.s("Aucune anomalie à signaler concernant les déclarations de TVA").'</div>';
 
 			}
 

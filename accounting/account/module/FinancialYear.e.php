@@ -13,7 +13,13 @@ class FinancialYear extends FinancialYearElement {
 
 	public function acceptClose(): bool {
 
-		return \journal\StockLib::hasWaitingStockFromPreviousFinancialYear($this) === FALSE;
+		return \journal\StockLib::hasWaitingStockFromPreviousFinancialYear($this) === FALSE and $this['balanceSheetClose'] === FALSE;
+
+	}
+
+	public function acceptOpen(): bool {
+
+		return $this['balanceSheetOpen'] === FALSE and $this['balanceSheetClose'] === FALSE and $this['status'] === FinancialYear::OPEN;
 
 	}
 

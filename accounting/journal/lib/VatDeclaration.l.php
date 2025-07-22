@@ -153,4 +153,32 @@ class VatDeclarationLib extends VatDeclarationCrud {
 
 	}
 
+	public static function listMissingPeriods(\account\FinancialYear $eFinancialYear): array {
+
+		$cVatDeclaration = \journal\VatDeclaration::model()
+      ->select(['financialYear', 'startDate', 'endDate'])
+      ->whereFinancialYear($eFinancialYear)
+      ->getCollection();
+
+		$periods = self::calculateAllPeriods($eFinancialYear);
+		$missingPeriods = [];
+
+		foreach($periods as $period) {
+
+			$found = $cVatDeclaration->find(fn($e) =>
+				$e['financialYear']['id'] === $eFinancialYear['id']
+				and $e['startDate'] === $period['start']
+				and $e['endDate'] === $period['end']
+			)->notEmpty();
+
+			if($found === FALSE) {
+				$missingPeriods[] = $period;
+			}
+
+		}
+
+		return $missingPeriods;
+
+	}
+
 }

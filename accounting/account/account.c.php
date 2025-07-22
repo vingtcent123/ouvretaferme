@@ -59,8 +59,8 @@ Setting::register('account', [
 
 	'carriedVatClass' => '44567', // TVA à reporter
 
-	'deferredChargeClass' => '486', // Charge constatée d'avance
-	'accruedIncomeClass' => '4181', // Produit à recevoir
+	'prepaidExpenseClass' => '486', // Charge constatée d'avance
+	'accruedIncomeClass' => '487', // Produit à recevoir
 
 	'stockVariationClasses' => [ // Compte de stock => Compte de variation correspondant
     '311' => '60311',

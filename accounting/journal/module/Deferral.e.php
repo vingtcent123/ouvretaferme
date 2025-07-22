@@ -1,13 +1,13 @@
 <?php
 namespace journal;
 
-class DeferredCharge extends DeferredChargeElement {
+class Deferral extends DeferralElement {
 
 	public function canDelete(): bool {
 
 		$this->expects(['status']);
 
-		return ($this['status'] === DeferredChargeElement::PLANNED);
+		return ($this['status'] === Deferral::PLANNED);
 
 	}
 
@@ -50,7 +50,5 @@ class DeferredCharge extends DeferredChargeElement {
 		parent::build($properties, $input, $p);
 
 	}
-
-
 }
 ?>

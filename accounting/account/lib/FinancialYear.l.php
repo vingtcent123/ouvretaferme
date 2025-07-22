@@ -60,26 +60,27 @@ class FinancialYearLib extends FinancialYearCrud {
 
 	}
 
-	public static function openFinancialYear(): void {
+	/**
+	 * @param FinancialYear $eFinancialYear Exercice sur lequel écrire le bilan d'ouverture
+	 */
+	public static function openFinancialYear(FinancialYear $eFinancialYear): void {
 
 		FinancialYear::model()->beginTransaction();
 
-		$eFinancialYearLast = self::getLastFinancialYear();
+		$eFinancialYearPrevious = self::getPreviousFinancialYear($eFinancialYear);
+		$cOperation = \journal\OperationLib::getForOpening($eFinancialYearPrevious);
 
-		$eFinancialYear = new FinancialYear([
-			'status' => FinancialYearElement::OPEN,
-			...FinancialYearLib::getNextFinancialYearDates($eFinancialYearLast),
-			'hasVat' => $eFinancialYearLast['hasVat'],
-			'vatFrequency' => $eFinancialYearLast['vatFrequency'],
-			'taxSystem' => $eFinancialYearLast['taxSystem'],
-		]);
+		// 1. Report des soldes
+		\journal\OperationLib::createForOpening($cOperation, $eFinancialYear, $eFinancialYearPrevious);
 
-		// Charges constatées d'avance
-		\journal\DeferredChargeLib::recordChargesIntoFinancialYear($eFinancialYear);
+		// 2. Charges et Produits constatés d'avance
+		\journal\DeferralLib::deferIntoFinancialYear($eFinancialYearPrevious, $eFinancialYear);
 
 		LogLib::save('open', 'financialYear', ['id' => $eFinancialYear['id']]);
 
-		self::create($eFinancialYear);
+		FinancialYear::model()->update($eFinancialYear, [
+			'balanceSheetOpen' => TRUE,
+		]);
 
 		FinancialYear::model()->commit();
 
@@ -98,15 +99,12 @@ class FinancialYearLib extends FinancialYearCrud {
 		// 1- Calcul des amortissements
 		\asset\AssetLib::depreciateAll($eFinancialYear);
 
-		// Reprise sur subventions
+		// 2- Reprise sur subventions
 		\asset\AssetLib::finallyRecognizeGrants($eFinancialYear, $grantsToRecognize); // Solde les subventions sélectionnées
 		\asset\AssetLib::recognizeGrants($eFinancialYear); // Quote part des sub restantes à réintégrer au CdR
 
-		// 2- Charges constatées d'avance
-		\journal\DeferredChargeLib::recordChargesIntoFinancialYear($eFinancialYear);
-
-		// 3- Produits à recevoir
-		\journal\AccruedIncomeLib::recordAccruedIncomesIntoFinancialYear($eFinancialYear);
+		// 3- Charges et Produits constatés d'avance
+		\journal\DeferralLib::recordDeferralIntoFinancialYear($eFinancialYear);
 
 		// 4- Stocks de fin d'exercice
 		\journal\StockLib::recordStock($eFinancialYear);
@@ -119,7 +117,11 @@ class FinancialYearLib extends FinancialYearCrud {
 		// Mettre les numéros d'écritures
 		\journal\OperationLib::setNumbers($eFinancialYear);
 
-		FinancialYear::model()->update($eFinancialYear, ['status' => FinancialYear::CLOSE, 'closeDate' => new \Sql('NOW()')]);
+		FinancialYear::model()->update($eFinancialYear, [
+			'status' => FinancialYear::CLOSE,
+			'closeDate' => new \Sql('NOW()'),
+			'balanceSheetClose' => TRUE,
+		]);
 
 		LogLib::save('close', 'financialYear', ['id' => $eFinancialYear['id']]);
 
@@ -270,31 +272,20 @@ class FinancialYearLib extends FinancialYearCrud {
 		}
 
 		// Recherche d'écritures de TVA non déclarées
-		$eOperation = \journal\Operation::model()
-			->select(['financialYear', 'count' => new \Sql('COUNT(*)', 'int')])
-			->whereFinancialYear($eFinancialYear)
-			->whereVatDeclaration(NULL)
-			->group(['financialYear'])
-			->get();
+		$search = new \Search(['financialYear' => $eFinancialYear]);
+		$eFinancialYear['lastPeriod'] = \journal\VatDeclarationLib::calculateLastPeriod($eFinancialYear);
 
-		// Recherche de déclarations de TVA manquantes
-		$cVatDeclaration = \journal\VatDeclaration::model()
-			->select(['financialYear', 'startDate', 'endDate'])
-			->whereFinancialYear($eFinancialYear)
-			->getCollection();
-
-		$vatData = ['undeclaredVatOperations' => ($eOperation['count'] ?? 0)];
-
-		$periods = \journal\VatDeclarationLib::calculateAllPeriods($eFinancialYear);
-		$missingPeriods = [];
-		foreach($periods as $period) {
-			$found = $cVatDeclaration->find(fn($e) => $e['financialYear']['id'] === $eFinancialYear['id'] and $e['startDate'] === $period['start'] and $e['endDate'] === $period['end'])->notEmpty();
-			if($found === FALSE) {
-				$missingPeriods[] = $period;
-			}
+		if($eFinancialYear['lastPeriod'] !== NULL) {
+			$search->set('maxDate', $eFinancialYear['lastPeriod']['end']);
 		}
 
-		$vatData['missingPeriods'] = $missingPeriods;
+		$cOperationWaiting = \journal\OperationLib::getAllForVatDeclaration($search);
+
+		$vatData = [
+			'undeclaredVatOperations' => $cOperationWaiting->count(),
+			// Recherche de déclarations de TVA manquantes
+			'missingPeriods' => \journal\VatDeclarationLib::listMissingPeriods($eFinancialYear),
+		];
 
 		return $vatData;
 

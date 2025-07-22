@@ -22,31 +22,33 @@ class VatLib {
 			'accountLabel' => \Setting::get('account\vatBuyClassPrefix'),
 		]);
 
-		$eOperation = OperationLib::applySearch($search)
-			->select([
-				'total' => new \Sql('SUM(IF(type = "debit", amount, -1 * amount))', 'float')
-			])
-			->having('total != 0.0')
-			->get();
-		$deductibleVatAmount = $eOperation['total'];
+		$deductibleVatAmount = OperationLib::applySearch($search)
+      ->select([
+        'total' => new \Sql('SUM(IF(type = "debit", amount, -1 * amount))', 'float')
+      ])
+      ->get()['total'];
 
-		$eAccount = \account\AccountLib::getByClass(\Setting::get('account\vatBuyClassPrefix'));
+		if($deductibleVatAmount !== 0.0) {
 
-		// Opération d'équilibrage
-		$eOperationReverse = new Operation([
-			'accountLabel' => \account\ClassLib::pad($eAccount['class']),
-			'amount' => abs($deductibleVatAmount),
-			'account' => $eAccount,
-			'document' => new \account\VatUi()->getVatTranslation(),
-			'documentDate' => new \Sql('NOW()'),
-			'thirdParty' => $eThirdPartyVat,
-			'date' => $eFinancialYear['endDate'],
-			'description' => new \account\VatUi()->getVatLabel(\Setting::get('account\vatBuyClassPrefix')),
-			'type' => $deductibleVatAmount >= 0 ? OperationElement::DEBIT : OperationElement::CREDIT,
-			'financialYear' => $eFinancialYear,
-		]);
+			$eAccount = \account\AccountLib::getByClass(\Setting::get('account\vatBuyClassPrefix'));
 
-		Operation::model()->insert($eOperationReverse);
+			// Opération d'équilibrage
+			$eOperationReverse = new Operation([
+				'accountLabel' => \account\ClassLib::pad($eAccount['class']),
+				'amount' => abs($deductibleVatAmount),
+				'account' => $eAccount,
+				'document' => new \account\VatUi()->getVatTranslation(),
+				'documentDate' => new \Sql('NOW()'),
+				'thirdParty' => $eThirdPartyVat,
+				'date' => $eFinancialYear['endDate'],
+				'description' => new \account\VatUi()->getVatLabel(\Setting::get('account\vatBuyClassPrefix')),
+				'type' => $deductibleVatAmount >= 0 ? OperationElement::DEBIT : OperationElement::CREDIT,
+				'financialYear' => $eFinancialYear,
+			]);
+
+			Operation::model()->insert($eOperationReverse);
+
+		}
 
 		// Calcul de la TVA collectée (vatSellClassPrefix / 4457)
 		$search = new \Search([
@@ -54,54 +56,60 @@ class VatLib {
 			'accountLabel' => \Setting::get('account\vatSellClassPrefix'),
 		]);
 
-		$eOperation = OperationLib::applySearch($search)
+		$collectedVatAmount = OperationLib::applySearch($search)
 			->select([
 				'total' => new \Sql('SUM(IF(type = "credit", amount, -1 * amount))', 'float')
 			])
-			->having('total != 0.0')
-			->get();
-		$collectedVatAmount = $eOperation['total'];
+			->get()['total'];
 
-		$eAccount = \account\AccountLib::getByClass(\Setting::get('account\collectedVatClass'));
+		if($collectedVatAmount !== 0.0) {
 
-		$eOperationReverse = new Operation([
-			'accountLabel' => \account\ClassLib::pad($eAccount['class']),
-			'amount' => abs($collectedVatAmount),
-			'account' => $eAccount,
-			'document' => new \account\VatUi()->getVatTranslation(),
-			'documentDate' => new \Sql('NOW()'),
-			'thirdParty' => $eThirdPartyVat,
-			'date' => $eFinancialYear['endDate'],
-			'description' => new \account\VatUi()->getVatLabel(\Setting::get('account\collectedVatClass')),
-			'type' => $deductibleVatAmount >= 0 ? OperationElement::CREDIT : OperationElement::DEBIT,
-			'financialYear' => $eFinancialYear,
-			'journalCode' => Operation::OD,
-		]);
+			$eAccount = \account\AccountLib::getByClass(\Setting::get('account\collectedVatClass'));
 
-		Operation::model()->insert($eOperationReverse);
+			$eOperationReverse = new Operation([
+				'accountLabel' => \account\ClassLib::pad($eAccount['class']),
+				'amount' => abs($collectedVatAmount),
+				'account' => $eAccount,
+				'document' => new \account\VatUi()->getVatTranslation(),
+				'documentDate' => new \Sql('NOW()'),
+				'thirdParty' => $eThirdPartyVat,
+				'date' => $eFinancialYear['endDate'],
+				'description' => new \account\VatUi()->getVatLabel(\Setting::get('account\collectedVatClass')),
+				'type' => $deductibleVatAmount >= 0 ? OperationElement::CREDIT : OperationElement::DEBIT,
+				'financialYear' => $eFinancialYear,
+				'journalCode' => Operation::OD,
+			]);
+
+			Operation::model()->insert($eOperationReverse);
+
+		}
 
 		$balance = abs($collectedVatAmount - $deductibleVatAmount);
 
-		// Constatation du solde net dans le bilan sur 44551 / payableVatClass si la TVA est à décaisser, sur 44567 / carriedVatClass pour un crédit de TVA
-		$class = ($collectedVatAmount > $deductibleVatAmount ? \Setting::get('account\payableVatClass') : \Setting::get('account\carriedVatClass'));
-		$type = ($collectedVatAmount > $deductibleVatAmount ? OperationElement::CREDIT : OperationElement::DEBIT);
-		$eAccount = \account\AccountLib::getByClass($class);
+		if($balance !== 0.0) {
 
-		$eOperationVat = new Operation([
-			'amount' => $balance,
-			'account' => $eAccount,
-			'accountLabel' => \account\ClassLib::pad($eAccount['class']),
-			'document' => new \account\VatUi()->getVatTranslation(),
-			'documentDate' => new \Sql('NOW()'),
-			'thirdParty' => $eThirdPartyVat,
-			'date' => $eFinancialYear['endDate'],
-			'financialYear' => $eFinancialYear,
-			'description' => new \account\VatUi()->getVatBalanceTranslation($eAccount['class'], $eFinancialYear),
-			'type' => $type,
-			'journalCode' => Operation::OD,
-		]);
+			// Constatation du solde net dans le bilan sur 44551 / payableVatClass si la TVA est à décaisser, sur 44567 / carriedVatClass pour un crédit de TVA
+			$class = ($collectedVatAmount > $deductibleVatAmount ? \Setting::get('account\payableVatClass') : \Setting::get('account\carriedVatClass'));
+			$type = ($collectedVatAmount > $deductibleVatAmount ? OperationElement::CREDIT : OperationElement::DEBIT);
+			$eAccount = \account\AccountLib::getByClass($class);
 
-		Operation::model()->insert($eOperationVat);
+			$eOperationVat = new Operation([
+				'amount' => $balance,
+				'account' => $eAccount,
+				'accountLabel' => \account\ClassLib::pad($eAccount['class']),
+				'document' => new \account\VatUi()->getVatTranslation(),
+				'documentDate' => new \Sql('NOW()'),
+				'thirdParty' => $eThirdPartyVat,
+				'date' => $eFinancialYear['endDate'],
+				'financialYear' => $eFinancialYear,
+				'description' => new \account\VatUi()->getVatBalanceTranslation($eAccount['class'], $eFinancialYear),
+				'type' => $type,
+				'journalCode' => Operation::OD,
+			]);
+
+			Operation::model()->insert($eOperationVat);
+
+		}
 
 		Operation::model()->commit();
 

@@ -25,8 +25,10 @@ new \account\FinancialYearPage(
 		}
 
 		$nextDates = \account\FinancialYearLib::getNextFinancialYearDates();
-		$data->e['startDate'] = $nextDates['startDate'];
-		$data->e['endDate'] = $nextDates['endDate'];
+		$eFinancialYear = \account\FinancialYearLib::getLastFinancialYear();
+		$eFinancialYear['startDate'] = $nextDates['startDate'];
+		$eFinancialYear['endDate'] = $nextDates['endDate'];
+		$data->e = $eFinancialYear;
 
 		throw new ViewAction($data);
 
@@ -69,10 +71,8 @@ new \account\FinancialYearPage(
 		$data->cFinancialYearOpen = \account\FinancialYearLib::getOpenFinancialYears();
 		$search = new Search(['financialYear' => $data->e]);
 
-		$data->cOperationCharges = \journal\OperationLib::getAllChargesForClosing($search);
-		\journal\DeferredChargeLib::getDeferredChargesForOperations($data->cOperationCharges);
-
-		$data->cAccruedIncome = \journal\AccruedIncomeLib::getAllProductToReceiveForClosing($data->e);
+		$data->cOperationToDefer = \journal\OperationLib::getAllChargesForClosing($search);
+		\journal\DeferralLib::getDeferralsForOperations($data->cOperationToDefer);
 
 		// Stock enregistré de cet exercice comptable + celui de l'exercice précédent non reporté
 		$data->cStock = \journal\StockLib::getAllForFinancialYear($data->e);
@@ -80,6 +80,29 @@ new \account\FinancialYearPage(
 		$data->cAssetGrant = \asset\AssetLib::getGrantsWithAmortizedAssets();
 
 		throw new ViewAction($data);
+	})
+	->read('open', function($data) {
+
+		$data->e->validate('acceptOpen');
+
+		$data->eFinancialYearPrevious = \account\FinancialYearLib::getPreviousFinancialYear($data->e);
+
+		$data->cOperation = \journal\OperationLib::getForOpening($data->eFinancialYearPrevious);
+
+		// Récupérer les écritures de charges constatées d'avance
+		$data->cDeferral = \journal\DeferralLib::getDeferrals($data->eFinancialYearPrevious);
+
+		throw new ViewAction($data);
+
+	})
+	->write('doOpen', function($data) {
+
+		$data->e->validate('acceptOpen');
+
+		\account\FinancialYearLib::openFinancialYear($data->e);
+
+		throw new RedirectAction(\company\CompanyUi::urlAccount($data->eFarm).'/financialYear/?success=account:FinancialYear::open');
+
 	})
 	->write('doClose', function($data) {
 
