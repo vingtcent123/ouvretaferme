@@ -48,8 +48,8 @@ Setting::register('account', [
 	'receivablesOnAssetDisposalClass' => '462', // Créances sur cessions d'immobilisations
 
 	'summaryAccountingBalanceCategories' => account\AccountUi::getSummaryBalanceCategories(),
-	'balanceAssetCategories' => account\AccountUi::getAssetBalanceCategories(),
-	'balanceLiabilityCategories' => account\AccountUi::getLiabilityBalanceCategories(),
+	'balanceActifCategories' => account\AccountUi::getActifBalanceCategories(),
+	'balancePassifCategories' => account\AccountUi::getPassifBalanceCategories(),
 
 	'vatBuyClassPrefix' => '4456', // TVA déductible (sur les ventes)
 	'vatSellClassPrefix' => '4457', // TVA collectée (sur les achats)

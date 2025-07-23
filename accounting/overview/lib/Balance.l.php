@@ -30,15 +30,21 @@ Class BalanceLib {
 
 		foreach($balance as $balanceLine) {
 
-			if(in_array((int)$balanceLine['accountPrefix'], $allLabels) === FALSE) {
+			if(
+				in_array((int)$balanceLine['accountPrefix'], $allLabels) === FALSE
+				// Déjà pris en charge dans les subventions
+				or $balanceLine['accountPrefix'] === strlen(\Setting::get('account\grantDepreciationClass'))
+			) {
 				continue;
 			}
 
-			if(\asset\AssetLib::isDepreciationClass($balanceLine['accountPrefix']) === TRUE) {
-				$totalAmort += $balanceLine['amount'];
-			} else {
-				$totalValue += $balanceLine['amount'];
+			$accountAmort = \asset\AssetLib::depreciationClassByAssetClass($balanceLine['accountPrefix']);
+
+			// Les amortissements de subvention sont directement déduits
+			if(\asset\AssetLib::isGrantAsset($balanceLine['accountPrefix']) === FALSE and ($balance[$accountAmort]['amount'] ?? NULL) !== NULL) {
+				$totalAmort -= $balance[$accountAmort]['amount'];
 			}
+			$totalValue += $balanceLine['amount'];
 
 		}
 
@@ -63,6 +69,7 @@ Class BalanceLib {
 				foreach($accounts as $account) {
 
 					$value = $balance[$account]['amount'] ?? 0;
+					//$accountAmort = \asset\AssetLib::depreciationClassByAssetClass($account);
 					$accountAmort = mb_substr($account, 0, 1).'8'.mb_substr($account, 1);
 					$valueAmort = $balance[$accountAmort]['amount'] ?? 0;
 					$net = $value + $valueAmort;
@@ -106,7 +113,6 @@ Class BalanceLib {
 			];
 
 		}
-
 		$formattedData[] = [
 			'type' => 'total',
 			'label' => '',
@@ -129,14 +135,15 @@ Class BalanceLib {
 		}
 
 		return self::getSummarizedBalance($eFinancialYearPrevious);
+
 	}
 
 	public static function getSummarizedBalance(\account\FinancialYear $eFinancialYear): array {
 
-		$balanceAssetCategories = \Setting::get('account\balanceAssetCategories');
-		$balanceLiabilityCategories = \Setting::get('account\balanceLiabilityCategories');
+		$balanceActifCategories = \Setting::get('account\balanceActifCategories');
+		$balancePassifCategories = \Setting::get('account\balancePassifCategories');
 
-		$accountLabels = new BalanceUi()->extractLabelsFromCategories($balanceAssetCategories + $balanceLiabilityCategories);
+		$accountLabels = new BalanceUi()->extractLabelsFromCategories($balanceActifCategories + $balancePassifCategories);
 		$accountLabelsWithDepreciation = self::getAccountLabelsWithDepreciation($accountLabels);
 
 		[$resultTable, ] = \overview\AnalyzeLib::getResult($eFinancialYear);
@@ -157,7 +164,7 @@ Class BalanceLib {
 		$cOperation = \journal\Operation::model()
 			->select([
 				'accountPrefix' => new \Sql('CASE '.$case.' END'),
-				'amount' => new \Sql('ABS(SUM(if(type = "debit" OR accountLabel LIKE "139%", -1 * amount, amount)))', 'float')
+				'amount' => new \Sql('ABS(SUM(if(type = "debit", -1 * amount, amount)))', 'float')
 			])
 			->where('accountLabel LIKE "'.$where.'"')
 			->where('date BETWEEN "'.$eFinancialYear['startDate'].'" AND "'.$eFinancialYear['endDate'].'"')
@@ -182,8 +189,8 @@ Class BalanceLib {
 		$balanceData = $cOperation->getArrayCopy();
 
 		return [
-			'asset' => self::formatSummarizedBalanceData($balanceData, $balanceAssetCategories),
-			'liability' => self::formatSummarizedBalanceData($balanceData, $balanceLiabilityCategories),
+			'actif' => self::formatSummarizedBalanceData($balanceData, $balanceActifCategories),
+			'passif' => self::formatSummarizedBalanceData($balanceData, $balancePassifCategories),
 		];
 	}
 
@@ -331,10 +338,10 @@ Class BalanceLib {
 
 	public static function getDetailedBalance(\account\FinancialYear $eFinancialYear): array {
 
-		$balanceAssetCategories = \Setting::get('account\balanceAssetCategories');
-		$balanceLiabilityCategories = \Setting::get('account\balanceLiabilityCategories');
+		$balanceActifCategories = \Setting::get('account\balanceActifCategories');
+		$balancePassifCategories = \Setting::get('account\balancePassifCategories');
 
-		$accountLabels = new BalanceUi()->extractLabelsFromCategories($balanceAssetCategories + $balanceLiabilityCategories);
+		$accountLabels = new BalanceUi()->extractLabelsFromCategories($balanceActifCategories + $balancePassifCategories);
 		$accountLabelsWithDepreciation = self::getAccountLabelsWithDepreciation($accountLabels);
 
 		[$resultTable, ] = \overview\AnalyzeLib::getResult($eFinancialYear);
@@ -366,12 +373,12 @@ Class BalanceLib {
 		}
 
 		// We set all the amortissements to negative values.
-		foreach($cOperation as $accountLabel => &$eOperation) {
+		/*foreach($cOperation as $accountLabel => &$eOperation) {
 			$secondCar = mb_substr($eOperation['accountPrefix'], 1, 1);
 			if($secondCar === '8' or str_starts_with($eOperation['accountPrefix'], '139')) {
 				$eOperation['amount'] *= -1;
 			}
-		}
+		}*/
 
 		// Retrieve all the labels
 		$cOperationLabels = \journal\Operation::model()
@@ -384,8 +391,8 @@ Class BalanceLib {
 			->getCollection(NULL, NULL, 'accountLabel');
 
 		return [
-			'asset' => self::formatDetailedBalanceData($cOperation, $cOperationLabels, $balanceAssetCategories),
-			'liability' => self::formatDetailedBalanceData($cOperation, $cOperationLabels, $balanceLiabilityCategories),
+			'actif' => self::formatDetailedBalanceData($cOperation, $cOperationLabels, $balanceActifCategories),
+			'passif' => self::formatDetailedBalanceData($cOperation, $cOperationLabels, $balancePassifCategories),
 		];
 	}
 

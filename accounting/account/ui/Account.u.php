@@ -332,7 +332,7 @@ class AccountUi {
 		];
 	}
 
-	public static function getLiabilityBalanceCategories(): array {
+	public static function getPassifBalanceCategories(): array {
 
 		return [
 			'capitaux-propres' => [
@@ -413,7 +413,7 @@ class AccountUi {
 		];
 
 	}
-	public static function getAssetBalanceCategories(): array {
+	public static function getActifBalanceCategories(): array {
 
 		return [
 			'actif-immobilise' => [
@@ -437,7 +437,7 @@ class AccountUi {
 					],
 					[
 						'name' => s("Immobilisations financières"),
-						'accounts' => [/*261, 266, 267, 268, 271, 272, 273, 274, 275, 276, 277*/],
+						'accounts' => [261, 266, 267, 268, 271, 272, 273, 274, 275, 276, 277],
 					],
 				]
 			],

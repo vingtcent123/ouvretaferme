@@ -52,7 +52,7 @@ class PdfUi {
 						$h .= '<th class="text-center">'.s("% actif").'</th>';
 					$h .= '</tr>';
 
-					$h .= new BalanceUi()->displaySubCategoryBody($balance['asset'], s("Total de l'actif"));
+					$h .= new BalanceUi()->displaySubCategoryBody($balance['actif'], s("Total de l'actif"), 'actif');
 
 				$h .= '</table>';
 
@@ -63,12 +63,10 @@ class PdfUi {
 						$h .= '<tr class="row-header row-upper">';
 							$h .= '<th class="text-center">'.s("PASSIF").'</th>';
 							$h .= '<th class="text-center">'.s("Brut").'</th>';
-							$h .= '<th class="text-center">'.s("Amort prov.").'</th>';
-							$h .= '<th class="text-center">'.s("Net").'</th>';
 							$h .= '<th class="text-center">'.s("% passif").'</th>';
 						$h .= '</tr>';
 
-					$h .= new BalanceUi()->displaySubCategoryBody($balance['liability'], s("Total du passif"));
+					$h .= new BalanceUi()->displaySubCategoryBody($balance['passif'], s("Total du passif"), 'passif');
 
 				$h .= '</table>';
 

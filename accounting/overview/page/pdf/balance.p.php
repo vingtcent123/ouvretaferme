@@ -13,15 +13,11 @@ new Page(function($data) {
 
 		$data->balanceSummarized = \overview\BalanceLib::getSummarizedBalance($data->eFinancialYear);
 
-		\account\LogLib::save('getSummary', 'Overview', ['financialYear' => $data->eFinancialYear['id']]);
-
 		throw new ViewAction($data);
 	})
 	->get('opening', function($data) {
 
 		$data->balanceSummarized = \overview\BalanceLib::getOpeningBalance($data->eFinancialYear);
-
-		\account\LogLib::save('getOpening', 'Overview', ['financialYear' => $data->eFinancialYear['id']]);
 
 		throw new ViewAction($data, ':summary');
 	});

@@ -35,7 +35,7 @@ class BalanceUi {
 
 	}
 
-	public function displaySubCategoryBody(array $balance, string $totalText): string {
+	public function displaySubCategoryBody(array $balance, string $totalText, string $type): string {
 
 		$h = '<tbody>';
 
@@ -55,11 +55,14 @@ class BalanceUi {
 					'total' => $totalText,
 				};
 
+				if($line['type'] === 'line' and $line['value'] === 0 and $line['valueAmort'] === 0 and $line['net'] === 0) {
+					continue;
+				}
 				$h .= '<tr class="'.$class.'">';
 					$h .= $this->displayLine(
 						$label,
 						$line['value'],
-						$line['valueAmort'],
+						$type === 'actif' ? $line['valueAmort'] : NULL,
 						$line['net'],
 						$line['total']
 					);
@@ -92,7 +95,7 @@ class BalanceUi {
 						$h .= '<td class="text-center">'.s("% actif").'</td>';
 					$h .= '</tr>';
 
-					$h .= $this->displaySubCategoryBody($balance['asset'], s("Total de l'actif"));
+					$h .= $this->displaySubCategoryBody($balance['asset'], s("Total de l'actif"), 'actif');
 
 			$h .= '</table>';
 
@@ -108,7 +111,7 @@ class BalanceUi {
 						$h .= '<td class="text-center">'.s("% passif").'</td>';
 					$h .= '</tr>';
 
-					$h .= $this->displaySubCategoryBody($balance['liability'], s("Total du passif"));
+					$h .= $this->displaySubCategoryBody($balance['liability'], s("Total du passif"), 'passif');
 
 			$h .= '</table>';
 
@@ -121,8 +124,8 @@ class BalanceUi {
 	public function displayDetailedSubCategoryBody(array $balance, string $type): string {
 
 		$totalText = match($type) {
-			'asset' => s("Total de l'actif"),
-			'liability' => s("Total du passif"),
+			'actif' => s("Total de l'actif"),
+			'passif' => s("Total du passif"),
 		};
 
 		$h = '<tbody>';
@@ -147,7 +150,7 @@ class BalanceUi {
 			$h .= $this->displayLine(
 				$label,
 				$line['value'],
-				$type === 'liability' ? NULL : $line['valueAmort'],
+				$type === 'actif' ? NULL : $line['valueAmort'],
 				$line['net'],
 				$line['total']
 			);
@@ -179,7 +182,7 @@ class BalanceUi {
 						$h .= '<td class="text-center">'.s("% actif").'</td>';
 					$h .= '</tr>';
 
-					$h .= $this->displayDetailedSubCategoryBody($balance['asset'],'asset');
+					$h .= $this->displayDetailedSubCategoryBody($balance['actif'],'actif');
 
 			$h .= '</table>';
 
@@ -193,7 +196,7 @@ class BalanceUi {
 						$h .= '<td class="text-center">'.s("% passif").'</td>';
 					$h .= '</tr>';
 
-					$h .= $this->displayDetailedSubCategoryBody($balance['liability'], 'liability');
+					$h .= $this->displayDetailedSubCategoryBody($balance['passif'], 'passif');
 
 			$h .= '</table>';
 

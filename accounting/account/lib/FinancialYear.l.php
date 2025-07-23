@@ -41,24 +41,6 @@ class FinancialYearLib extends FinancialYearCrud {
 		}
 
 	}
-	/**
-	 * Bilan de clôture
-	 */
-	public static function closeBalanceSheet(FinancialYear $eFinancialYear): void {
-
-
-		LogLib::save('closeBalanceSheet', 'financialYear', ['id' => $eFinancialYear['id']]);
-
-	}
-
-	/**
-	 * Bilan d'ouverture
-	 */
-	public static function openBalanceSheet(FinancialYear $eFinancialYear): void {
-
-		LogLib::save('openBalanceSheet', 'financialYear', ['id' => $eFinancialYear['id']]);
-
-	}
 
 	/**
 	 * @param FinancialYear $eFinancialYear Exercice sur lequel écrire le bilan d'ouverture

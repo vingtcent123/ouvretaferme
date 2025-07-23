@@ -1074,6 +1074,7 @@ class OperationLib extends OperationCrud {
 	 */
 	public static function createForOpening(\Collection $cOperation, \account\FinancialYear $eFinancialYear, \account\FinancialYear $eFinancialYearPrevious): void {
 
+		$number = 1;
 		foreach($cOperation as $eOperation) {
 
 			$values = [
@@ -1083,11 +1084,16 @@ class OperationLib extends OperationCrud {
 				'account' => $eOperation['account']['id'],
 				'accountLabel' => $eOperation['accountLabel'],
 				'date' => $eFinancialYear['startDate'],
+				'paymentDate' => $eFinancialYear['startDate'],
 				'description' => new \account\FinancialYearUi()->getOpeningDescription($eFinancialYearPrevious['endDate']),
 				'journalCode' => Operation::OD,
+				'document' => 'OUV-'.str_pad($number, 4, '0', STR_PAD_LEFT),
+				'documentDate' => $eFinancialYear['startDate'],
 			];
 
 			self::createFromValues($values);
+
+			$number++;
 
 		}
 
