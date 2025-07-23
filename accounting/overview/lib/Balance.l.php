@@ -69,7 +69,7 @@ Class BalanceLib {
 				foreach($accounts as $account) {
 
 					$value = $balance[$account]['amount'] ?? 0;
-					//$accountAmort = \asset\AssetLib::depreciationClassByAssetClass($account);
+					// On ne prend pas les amort de sub (qui sont déduites des sub directement, dans le passif)
 					$accountAmort = mb_substr($account, 0, 1).'8'.mb_substr($account, 1);
 					$valueAmort = $balance[$accountAmort]['amount'] ?? 0;
 					$net = $value + $valueAmort;
@@ -371,14 +371,6 @@ Class BalanceLib {
 		} else {
 			$cOperation->append(new \journal\Operation(['accountPrefix' => '129', 'accountLabel' => '12900000', 'amount' => $result]));
 		}
-
-		// We set all the amortissements to negative values.
-		/*foreach($cOperation as $accountLabel => &$eOperation) {
-			$secondCar = mb_substr($eOperation['accountPrefix'], 1, 1);
-			if($secondCar === '8' or str_starts_with($eOperation['accountPrefix'], '139')) {
-				$eOperation['amount'] *= -1;
-			}
-		}*/
 
 		// Retrieve all the labels
 		$cOperationLabels = \journal\Operation::model()

@@ -57,9 +57,6 @@ class AlertUi {
 			'DeferralProduct::created' => s("Le produit constaté d'avance a bien été enregistré."),
 			'Deferral::deleted' => s("La suppression a bien été effectuée."),
 
-			'AccruedIncome::created' => s("Le produit à recevoir a bien été enregistré."),
-			'AccruedIncome::deleted' => s("Le produit à recevoir a bien été supprimé."),
-
 			'Stock::created' => s("Le stock a bien été enregistré."),
 			'Stock::deleted' => s("Le stock a bien été supprimé."),
 			'Stock::set' => s("Le stock a bien été enregistré pour cet exercice fiscal."),
