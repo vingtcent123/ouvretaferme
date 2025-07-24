@@ -61,8 +61,8 @@ class AccountUi {
 		}
 		\Asset::js('main', 'settings.js');
 
-		$h = '<div class="util-info">';
-			$h .= s("Il est possible de créer des classes de compte (dites “personnalisées“), par exemple pour créer un compte-courant par associé.");
+		$h = '<div class="util-block-help">';
+			$h .= s("Il est possible de créer des classes de compte (dites “personnalisées“), par exemple pour créer un compte-courant par associé. Cela vous permettra de mieux analyser vos comptes.");
 		$h .= '</div>';
 
 		$h .= '<div class="util-overflow-sm">';

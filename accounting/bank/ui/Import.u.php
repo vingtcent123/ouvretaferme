@@ -91,7 +91,7 @@ class ImportUi {
 						$h .= '<div class="flow-timeline-action-title">';
 							if($eImport->empty()) {
 								$h .= '<div class="util-warning-outline mt-1 mb-1">';
-									$h .= \Asset::icon('exclamation-circle').'&nbsp;'.s("Aucun import n'a couvert cette période");
+									$h .= \Asset::icon('exclamation-circle', ['class' => 'mr-1']).'&nbsp;'.s("Aucun import n'a couvert cette période");
 								$h .= '</div>';
 							} else {
 								$h .= $this->getImportDetails($eFarm, $eImport);
@@ -113,21 +113,23 @@ class ImportUi {
 
 		$h = '';
 
+		$dateArg = ['date' => \util\DateUi::numeric($eImport['processedAt'], \util\DateUi::DATE)];
+
 		$status = (match($eImport['status']) {
-			ImportElement::NONE => ['class' => 'util-info mb-0', 'title' => s("Aucune donnée importée"), 'icon' => 'slash-circle'],
-			ImportElement::PROCESSING => ['class' => 'util-info mb-0', 'title' => s("En cours d'import"), 'icon' => 'arrow-repeat'],
-			ImportElement::FULL => ['class' => 'util-success mb-0', 'title' => s("Totalement importé"), 'icon' => 'check2-all'],
-			ImportElement::PARTIAL => ['class' => 'util-warning-outline', 'title' => s("Partiellement importé"), 'icon' => 'check2'],
-			ImportElement::ERROR => ['class' => 'util-info', 'title' => s("En erreur"), 'icon' => 'exclamation-octogon'],
+			ImportElement::NONE => ['class' => 'util-info mb-0', 'text' => s("Aucune donnée importée"), 'icon' => 'slash-circle'],
+			ImportElement::PROCESSING => ['class' => 'util-info mb-0', 'text' => s("En cours d'import"), 'icon' => 'arrow-repeat'],
+			ImportElement::FULL => ['class' => 'util-success mb-0', 'text' => s("Import total du {date}", $dateArg), 'icon' => 'check2-all'],
+			ImportElement::PARTIAL => ['class' => 'util-warning-outline', 'text' => s("Import partiel du {date}", $dateArg), 'icon' => 'check2'],
+			ImportElement::ERROR => ['class' => 'util-info', 'text' => s("Import en erreur"), 'icon' => 'exclamation-octogon'],
 		});
 
-		$h .= '<div class="'.$status['class'].'" title="'.$status['title'].'">';
-			$h .= \Asset::icon($status['icon']);
+		$h .= '<div class="'.$status['class'].'">';
+			$h .= \Asset::icon($status['icon'], ['class' => 'mr-1']);
 			$h .= '&nbsp;';
-			$h .= s("Import du {date}", ['date' => \util\DateUi::numeric($eImport['processedAt'], \util\DateUi::DATE)]);
+			$h .= $status['text'];
 
 			$h .= '<div class="color-text">';
-				$h .= \Asset::icon('chevron-right');
+				$h .= \Asset::icon('chevron-right', ['class' => 'mr-1']);
 				$h .= s("Fichier {name}", ['name' => '<i>'.encode($eImport['filename']).'</i>']);
 			$h .= '</div>';
 
@@ -136,7 +138,7 @@ class ImportUi {
 				if(in_array($eImport['status'], [ImportElement::FULL, ImportElement::PARTIAL]) === TRUE) {
 
 					$h.= '<a href="'.\company\CompanyUi::urlBank($eFarm).'/cashflow?import='.$eImport['id'].'" class="color-text">';
-						$h.= \Asset::icon('chevron-right');
+						$h.= \Asset::icon('chevron-right', ['class' => 'mr-1']);
 						$h.= p(
 							"{number} mouvement enregistré",
 							"{number} mouvements enregistrés",
@@ -146,7 +148,7 @@ class ImportUi {
 					$h.= '</a>';
 					if(empty($eImport['result']['alreadyImported']) === FALSE) {
 						$h .= '<div>';
-						$h.= \Asset::icon('slash-circle');
+						$h.= \Asset::icon('slash-circle', ['class' => 'mr-1']);
 						$h.= p(
 							"{number} mouvement ignoré (déjà importé)",
 							"{number} mouvements ignorés (déjà importés)",
@@ -158,12 +160,12 @@ class ImportUi {
 
 				} else if($eImport['status'] === ImportElement::NONE) {
 
-					$h.= \Asset::icon('chevron-right');
+					$h.= \Asset::icon('chevron-right', ['class' => 'mr-1']);
 					$h.= s("Aucun mouvement enregistré");
 
 				} else if($eImport['status'] === ImportElement::ERROR) {
 
-					$h.= \Asset::icon('chevron-right');
+					$h.= \Asset::icon('chevron-right', ['class' => 'mr-1']);
 					$h.= s("Cet import n'a pas pu être réalisé");
 
 				}

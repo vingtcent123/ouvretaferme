@@ -173,14 +173,14 @@ class CashflowUi {
 						$h .= '<td class="text-end">';
 							$h .= match($eCashflow['type']) {
 								CashflowElement::DEBIT => \util\TextUi::money(abs($eCashflow['amount'])),
-								default => \util\TextUi::money(0),
+								default => '',
 							};
 						$h .= '</td>';
 
 						$h .= '<td class="text-end">';
 							$h .= match($eCashflow['type']) {
 								CashflowElement::CREDIT => \util\TextUi::money(abs($eCashflow['amount'])),
-								default => \util\TextUi::money(0),
+								default => '',
 							};
 						$h .= '</td>';
 
