@@ -172,14 +172,14 @@ class CashflowUi {
 
 						$h .= '<td class="text-end">';
 							$h .= match($eCashflow['type']) {
-								CashflowElement::DEBIT => \util\TextUi::money($eCashflow['amount']),
+								CashflowElement::DEBIT => \util\TextUi::money(abs($eCashflow['amount'])),
 								default => \util\TextUi::money(0),
 							};
 						$h .= '</td>';
 
 						$h .= '<td class="text-end">';
 							$h .= match($eCashflow['type']) {
-								CashflowElement::CREDIT => \util\TextUi::money($eCashflow['amount']),
+								CashflowElement::CREDIT => \util\TextUi::money(abs($eCashflow['amount'])),
 								default => \util\TextUi::money(0),
 							};
 						$h .= '</td>';
@@ -227,9 +227,9 @@ class CashflowUi {
 			$h .= '<div class="dropdown-title">'.self::getName($eCashflow).'</div>';
 
 			if($eCashflow['status'] === CashflowElement::ALLOCATED) {
-				$confirm = s("Cette action supprimera les écritures actuellement liées à l'opération bancaire qui repassera l'opération bancaire au statut attente. Confirmez-vous ?");
+				$confirm = s("Cette action dissociera les écritures de l'opération bancaire. Confirmez-vous ?");
 				$h .= '<a data-ajax="'.\company\CompanyUi::urlBank($eFarm).'/cashflow:deAllocate" post-id="'.$eCashflow['id'].'" class="dropdown-item" data-confirm="'.$confirm.'">';
-					$h .= s("Annuler les écritures liées");
+					$h .= s("Dissocier des écritures liées");
 				$h .= '</a>';
 
 			} else if($eCashflow['status'] === CashflowElement::WAITING) {
@@ -480,19 +480,18 @@ class CashflowUi {
 				$h .= '<span class="hide" name="cashflow-amount">'.$eCashflow['amount'].'</span>';
 
 				$h .= '<div class="stick-sm util-overflow-sm">';
-					$h .= '<table class="tr-even tr-hover">';
+					$h .= '<table class="tr-hover">';
 
 						$h .= '<thead>';
-							$h .= '<tr>';
+							$h .= '<tr class="row-header">';
 								$h .= '<th class="text-end">';
 									$h .= s("Date");
 								$h .= '</th>';
 								$h .= '<th>';
 									$h .= s("Description");
 								$h .= '</th>';
-								$h .= '<th>';
-									$h .= s("Tiers");
-								$h .= '</th>';
+								$h .= '<th>'.s("Tiers").'</th>';
+								$h .= '<th>'.s("Moyen de paiement").'</th>';
 								$h .= '<th class="text-end">'.s("Total").'</th>';
 								$h .= '<th class="text-end">'.s("Débit (D)").'</th>';
 								$h .= '<th class="text-end">'.s("Crédit (C)").'</th>';
@@ -504,9 +503,12 @@ class CashflowUi {
 
 						foreach($cOperation as $eOperation) {
 
+							$eOperation->setQuickAttribute('farm', $eFarm['id']);
+							$eOperation->setQuickAttribute('app', 'accounting');
+
 							if($eOperation['links']->empty() === FALSE) {
 								// Ajouter une ligne de résumé
-								$h .= '<tr class="row-bold">';
+								$h .= '<tr class="border-top">';
 									$h .= '<td class="text-end">';
 										$h .= \util\DateUi::numeric($eOperation['date']);
 									$h .= '</td>';
@@ -520,19 +522,22 @@ class CashflowUi {
 									}
 									$h .= '</td>';
 
-									$h .= '<td class="text-end">';
-										$h .= \util\TextUi::money($eOperation['totalVATIncludedAmount']);
-									$h .= '</td>';
+									$h .= '<td></td>';
 
 									$h .= '<td class="text-end">';
+										$h .= $eOperation['difference'] < 1 ? '<b>' : '';
+											$h .= \util\TextUi::money($eOperation['totalVATIncludedAmount']);
+										$h .= $eOperation['difference'] < 1 ? '</b>' : '';
 									$h .= '</td>';
+
+									$h .= '<td class="text-end"></td>';
 
 									$h .= '<td class="text-end">';
 									$h .= '</td>';
 
 									$h .= '<td class="text-center">';
 										$h .= $form->checkbox('operation[]', $eOperation['id']);
-										$h .= '<span class="hide" name="amount" data-operation="'.$eOperation['id'].'">'.$eOperation['totalVATIncludedAmount'].'</span>';
+										$h .= '<span class="hide" name="amount" data-operation="'.$eOperation['id'].'" data-type="'.$eOperation['type'].'">'.$eOperation['totalVATIncludedAmount'].'</span>';
 									$h .= '</td>';
 								$h .= '</tr>';
 							}
@@ -547,9 +552,12 @@ class CashflowUi {
 
 						}
 
-						$h .= '<tr>';
-							$h .= '<td colspan="6" class="text-end">'.s("Total sélectionné :").'</td>';
-							$h .= '<td class="text-center"><span data-field="totalAmount"></span></td>';
+						$h .= '<tr class="row-highlight row-bold">';
+							$h .= '<td colspan="4" class="text-end">'.s("Total sélectionné :").'</td>';
+							$h .= '<td class="text-end"><span data-field="totalAmount">'.\util\TextUi::money(0).'</span></td>';
+							$h .= '<td class="text-end"></td>';
+							$h .= '<td class="text-end"></td>';
+							$h .= '<td class="text-end"></td>';
 						$h .= '</tr>';
 
 						$h .= '</tbody>';
@@ -557,7 +565,7 @@ class CashflowUi {
 					$h .= '</table>';
 				$h .= '</div>';
 
-				$h .= '<div id="cashflow-attach-difference-warning" class="util-danger hide">';
+				$h .= '<div id="cashflow-attach-difference-warning" class="util-warning-outline hide">';
 				$h .= s("Attention, le montant de l'opération bancaire ne correspond pas au total des écritures sélectionnées. Vous pouvez quand même valider.");
 				$h .= '</div>';
 
@@ -576,7 +584,7 @@ class CashflowUi {
 
 	protected static function getOperationLineForAttachment(\journal\Operation $eOperation, ?\util\FormUi $form): string {
 
-		$h = '<tr '.($form !== NULL ? 'class="row-bold"' : '').'>';
+		$h = '<tr class="'.($form === NULL ? 'row-light' : 'border-top').'">';
 			$h .= '<td class="text-end">';
 				if($form !== NULL) {
 					$h .= \util\DateUi::numeric($eOperation['date']);
@@ -586,7 +594,7 @@ class CashflowUi {
 			if($form !== NULL) {
 				$h .= encode($eOperation['account']['class'].' '.$eOperation['account']['description']).' - '.encode($eOperation['description']);
 			} else {
-				$h .= '<span class="ml-1">'.encode($eOperation['account']['class'].' '.$eOperation['account']['description']).'</span>';
+				$h .= '<span class="ml-1">'.\Asset::icon('arrow-return-right', ['class' => 'mr-1']).encode($eOperation['account']['class'].' '.$eOperation['account']['description']).'</span>';
 			}
 			$h .= '</td>';
 
@@ -596,8 +604,10 @@ class CashflowUi {
 			}
 			$h .= '</td>';
 
-			$h .= '<td class="text-end">';
+			$h .= '<td>';
+				$h .= $eOperation->quick('paymentMode', \journal\OperationUi::p('paymentMode')->values[$eOperation['paymentMode']] ?? '<i>'.s("Non défini").'</i>');
 			$h .= '</td>';
+			$h .= '<td class="text-end"></td>';
 
 			$h .= '<td class="text-end">';
 			$h .= match($eOperation['type']) {
@@ -615,7 +625,7 @@ class CashflowUi {
 			$h .= '<td class="text-center">';
 				$h .= $form !== NULL
 					? $form->checkbox('operation[]', $eOperation['id'])
-						.'<span class="hide" name="amount" data-operation="'.$eOperation['id'].'">'.$eOperation['amount'].'</span>'
+						.'<span class="hide" name="amount" data-operation="'.$eOperation['id'].'" data-type="'.$eOperation['type'].'">'.$eOperation['amount'].'</span>'
 					: '';
 			$h .= '</td>';
 		$h .= '</tr>';

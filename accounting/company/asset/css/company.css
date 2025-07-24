@@ -25,6 +25,9 @@ tr.row-upper th {
 tr.row-bold > td {
 	font-weight: bold;
 }
+tr.row-light > td {
+	opacity: 0.5;
+}
 
 .util-quick-dropdown .form-info {
 	color: var(--muted-light);
@@ -71,6 +74,12 @@ table.table-bordered thead.thead-sticky th:not([colspan]) {
 	border-top: 1px solid var(--border);
 	border-bottom: 1px solid var(--border);
 	border-right: 1px solid var(--border);
+}
+
+tr.border-top,
+td.border-top,
+th.border-top {
+	border-top: 1px solid var(--border);
 }
 
 td.border-bottom,

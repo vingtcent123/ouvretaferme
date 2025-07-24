@@ -225,6 +225,7 @@ class JournalUi {
 							$label = s("Description");
 							$h .= ($search ? $search->linkSort('description', $label) : $label);
 						$h .= '</th>';
+						$h .= '<th>'.s("Mode de paiement").'</th>';
 						$h .= '<th>'.s("Tiers").'</th>';
 						$h .= '<th class="text-end">'.s("Débit (D)").'</th>';
 						$h .= '<th class="text-end">'.s("Crédit (C)").'</th>';
@@ -333,6 +334,14 @@ class JournalUi {
 									$h .= $eOperation->quick('description', encode($eOperation['description']));
 								} else {
 									$h .= encode($eOperation['description']);
+								}
+							$h .= '</td>';
+
+							$h .= '<td>';
+								if($canUpdate === TRUE) {
+									$h .= $eOperation->quick('paymentMode', OperationUi::p('paymentMode')->values[$eOperation['paymentMode']] ?? '<i>'.s("Non défini").'</i>');
+								} else {
+									$h .= OperationUi::p('paymentMode')->values[$eOperation['paymentMode']] ?? '-';
 								}
 							$h .= '</td>';
 

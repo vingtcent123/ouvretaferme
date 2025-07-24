@@ -27,7 +27,7 @@ Class AlertUi {
 		return match($fqn) {
 
 			'Cashflow::allocated' => s("Les écritures ont bien été attribuées !"),
-			'Cashflow::deallocated' => s("Les écritures ont bien été annulées et la transaction bancaire remise en attente !"),
+			'Cashflow::deallocated' => s("Les écritures du journal ont bien été dissociées de l'écriture' bancaire !"),
 			'Cashflow::attached' => s("L'opération bancaire a bien été rattachée !"),
 
 			'Import::full' => s("L'import de votre relevé bancaire a bien été effectué !"),

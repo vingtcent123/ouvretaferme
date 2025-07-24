@@ -831,7 +831,7 @@ class OperationLib extends OperationCrud {
       ->getCollection();
 	}
 
-	public static function deleteByCashflow(\bank\Cashflow $eCashflow): void {
+	public static function unlinkCashflow(\bank\Cashflow $eCashflow): void {
 
 		if($eCashflow->exists() === FALSE) {
 			return;
@@ -839,19 +839,21 @@ class OperationLib extends OperationCrud {
 
 		Operation::model()->beginTransaction();
 
-		// Get all the operation and check if we have to delete the assets too
-		$cAsset = OperationLib::getByCashflow($eCashflow)->getColumnCollection('asset');
-		if($cAsset->empty() === FALSE) {
-			\asset\AssetLib::deleteByIds($cAsset->getIds());
-		}
-
+		// Supprimer  l'écriture sur le compte 512 (banque) (qui est créée automatiquement
 		\journal\Operation::model()
       ->whereCashflow('=', $eCashflow['id'])
+			->whereAccountLabel('LIKE', \Setting::get('account\defaultBankAccountLabel').'%')
       ->delete();
 
-		Operation::model()->commit();
 
-		\account\LogLib::save('deleteByCashflow', 'Operation', ['id' => $eCashflow['id']]);
+		// Dissocier les autres écritures
+		\journal\Operation::model()
+      ->whereCashflow('=', $eCashflow['id'])
+      ->update('cashflow = NULL');
+
+		\account\LogLib::save('unlinkCashflow', 'Operation', ['id' => $eCashflow['id']]);
+
+		Operation::model()->commit();
 
 	}
 

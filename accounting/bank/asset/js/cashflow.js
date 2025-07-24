@@ -230,13 +230,22 @@ class CashflowAttach {
     static updateTotal() {
 
         let total = 0;
-        qsa('input[type="checkbox"][name="operation[]"]:checked', operation => total += parseFloat(qs('span[data-operation="' + operation.value + '"][name="amount"]').innerHTML));
+        qsa('input[type="checkbox"][name="operation[]"]:checked', function (operation) {
+            const amountElement = qs('span[data-operation="' + operation.value + '"][name="amount"]');
+            const amount = parseFloat(qs('span[data-operation="' + operation.value + '"][name="amount"]').innerHTML);
+            const type = amountElement.getAttribute('data-type');
+            if(type === 'debit') {
+                total -= amount;
+            } else {
+                total += amount;
+            }
+        });
         total = round(total);
         qs('span[data-field="totalAmount"]').innerHTML = money(total);
 
         const cashflowAmount = parseFloat(qs('span[name="cashflow-amount"]').innerHTML);
 
-        if(Math.abs(cashflowAmount) !== Math.abs(total)) {
+        if(qsa('input[type="checkbox"][name="operation[]"]:checked').length > 0 && Math.abs(cashflowAmount) !== Math.abs(total)) {
             qs('#cashflow-attach-difference-warning').classList.remove('hide');
         } else {
             qs('#cashflow-attach-difference-warning').classList.add('hide');

@@ -7,7 +7,7 @@ new \journal\OperationPage(
 		\company\CompanyLib::connectSpecificDatabaseAndServer($data->eFarm);
 	}
 )
-	->quick(['document', 'description', 'amount', 'comment'], [], ['canUpdate'])
+	->quick(['document', 'description', 'amount', 'comment', 'paymentMode'], [], ['canUpdate'])
 	->create(function($data) {
 
 		if(get_exists('account') === TRUE) {

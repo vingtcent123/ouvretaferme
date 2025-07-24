@@ -164,7 +164,7 @@ new \bank\CashflowPage(
 
 	$fw->validate();
 
-	\journal\OperationLib::deleteByCashflow($data->eCashflow);
+	\journal\OperationLib::unlinkCashflow($data->eCashflow);
 
 	$data->eCashflow['status'] = \bank\CashflowElement::WAITING;
 	\bank\CashflowLib::update($data->eCashflow, ['status']);
