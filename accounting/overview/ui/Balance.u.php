@@ -106,8 +106,6 @@ class BalanceUi {
 					$h .= '<tr class="row-header row-upper">';
 						$h .= '<td class="text-center">'.s("PASSIF").'</td>';
 						$h .= '<td class="text-center">'.s("Brut").'</td>';
-						$h .= '<td class="text-center">'.s("Amort prov.").'</td>';
-						$h .= '<td class="text-center">'.s("Net").'</td>';
 						$h .= '<td class="text-center">'.s("% passif").'</td>';
 					$h .= '</tr>';
 
@@ -150,7 +148,7 @@ class BalanceUi {
 			$h .= $this->displayLine(
 				$label,
 				$line['value'],
-				$type === 'actif' ? NULL : $line['valueAmort'],
+				$type === 'actif' ? $line['valueAmort'] : NULL,
 				$line['net'],
 				$line['total']
 			);
