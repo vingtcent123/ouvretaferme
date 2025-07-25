@@ -11,22 +11,22 @@ document.delegateEventListener('autocompleteBeforeQuery', '[data-third-party="ba
 });
 
 document.delegateEventListener('autocompleteBeforeQuery', '[data-account="journal-operation-create"], [data-account="bank-cashflow-allocate"]', function(e) {
-    if(e.detail.input.firstParent('div.create-operation').qs('[name^="thirdParty"]') !== null) {
-        const thirdParty = e.detail.input.firstParent('div.create-operation').qs('[name^="thirdParty"]').getAttribute('value');
+    if(e.detail.input.firstParent('div.create-operation').qs('[name^="thirdParty["]') !== null) {
+        const thirdParty = e.detail.input.firstParent('div.create-operation').qs('[name^="thirdParty["]').getAttribute('value');
         e.detail.body.append('thirdParty', thirdParty);
     }
-    Array.from(qsa('div.create-operation [name^="account"]')).map(element => e.detail.body.append('accountAlready[]', element.value ? parseInt(element.value) : ''));
+    Array.from(qsa('div.create-operation [name^="account["]')).map(element => e.detail.body.append('accountAlready[]', element.value ? parseInt(element.value) : ''));
 });
 
 document.delegateEventListener('autocompleteBeforeQuery', '[data-account-label="journal-operation-create"], [data-account-label="bank-cashflow-allocate"]', function(e) {
 
-    if(e.detail.input.firstParent('div.create-operation').qs('[name^="thirdParty"]') !== null) {
-        const thirdParty = e.detail.input.firstParent('div.create-operation').qs('[name^="thirdParty"]').getAttribute('value');
+    if(e.detail.input.firstParent('div.create-operation').qs('[name^="thirdParty["]') !== null) {
+        const thirdParty = e.detail.input.firstParent('div.create-operation').qs('[name^="thirdParty["]').getAttribute('value');
         e.detail.body.append('thirdParty', thirdParty);
     }
 
-    if(e.detail.input.firstParent('div.create-operation').qs('[name^="account"]') !== null) {
-        const account = e.detail.input.firstParent('div.create-operation').qs('[name^="account"]').getAttribute('value');
+    if(e.detail.input.firstParent('div.create-operation').qs('[name^="account["]') !== null) {
+        const account = e.detail.input.firstParent('div.create-operation').qs('[name^="account["]').getAttribute('value');
         e.detail.body.append('account', account);
     }
 

@@ -97,10 +97,10 @@ class ThirdPartyUi {
 						$label = s("Nom");
 						$h .= ($search ? $search->linkSort('name', $label) : $label);
 					$h .= '</th>';
-					
+					$h .= '<th>'.s("Client").'</th>';
+
 					if($eFarm['company']->isAccrualAccounting()) {
 
-						$h .= '<th>'.s("Client").'</th>';
 						$h .= '<th>'.s("Compte Client").'</th>';
 						$h .= '<th>'.s("Compte Fournisseur").'</th>';
 
@@ -127,11 +127,11 @@ class ThirdPartyUi {
 								$h .= $eThirdParty->quick('name', encode($eThirdParty['name']));
 							$h .= '</td>';
 
-							if($eFarm['company']->isAccrualAccounting()) {
-
 								$h .= '<td>';
 									$h .= $eThirdParty->quick('customer', $eThirdParty['customer']->exists() ? encode($eThirdParty['customer']['name']) : '<span class="undefined">'.s("Non renseigné").'</span>');
 								$h .= '</td>';
+
+							if($eFarm['company']->isAccrualAccounting()) {
 
 								$h .= '<td>';
 									$h .= $eThirdParty->quick('clientAccountLabel', $eThirdParty['clientAccountLabel'] ? encode($eThirdParty['clientAccountLabel']) : '<span class="undefined">'.s("Non défini").'</span>');

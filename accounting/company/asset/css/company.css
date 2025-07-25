@@ -57,6 +57,16 @@ div.operation-comment-dropdown {
 	max-width: 30rem;
 }
 
+div.single-checkbox {
+	border: 1px solid #0002;
+	padding: 1rem 0.5rem;
+	border-radius: var(--radius);
+}
+div.single-checkbox > label.field-checkbox {
+	display: flex;
+	align-items: center;
+	gap: 1rem;
+}
 div.util-unit > div.util-quick {
 	border: 0;
 }

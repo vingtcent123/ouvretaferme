@@ -314,7 +314,7 @@ class CashflowUi {
 
 	}
 
-	public static function getAllocate(\farm\Farm $eFarm, \account\FinancialYear $eFinancialYear, Cashflow $eCashflow, array $assetData): \Panel {
+	public static function getAllocate(\farm\Farm $eFarm, \account\FinancialYear $eFinancialYear, Cashflow $eCashflow, \Collection $cInvoice, array $assetData): \Panel {
 
 		\Asset::js('journal', 'operation.js');
 		\Asset::js('bank', 'cashflow.js');
@@ -407,6 +407,17 @@ class CashflowUi {
 				'data-confirm-text' => s("Il y a une incohérence entre les écritures saisies et le montant de l'opération bancaire. Voulez-vous vraiment les enregistrer tel quel ?"),
 			],
 		);
+
+		if($cInvoice->count() === 1) {
+			$eInvoice = $cInvoice->first();
+			$h .= '<div class="single-checkbox mt-1">'.$form->checkbox('invoice['.$eInvoice['id'].']', $eInvoice['id'], ['callbackLabel' => fn($input) => '<div>'.$input.'</div><div>'.s("Une facture {number} non payée du client {clientName} d'un montant de {amount} du {date} a été trouvée.<br />Souhaitez-vous l'enregistrer comme <b>payée</b> avec le moyen de paiement {paymentMode} en même temps ? <br />⚠️ Ne fonctionne pas encore ! ⚠️", [
+				'number' => '<b>'.encode($eInvoice['name']).'</b>',
+				'date' => '<b>'.\util\DateUi::numeric($eInvoice['date']).'</b>',
+				'paymentMode' => '<b>'.\journal\OperationUi::p('paymentMode')->values[$defaultValues['paymentMode']].'</b>',
+				'clientName' => '<b>'.encode($eInvoice['customer']->getName()).'</b>',
+				'amount' => '<b>'.\util\TextUi::money($eInvoice['priceIncludingVat']).'</b>',
+				])]).'</div></div>';
+		}
 
 		return new \Panel(
 			id         : 'panel-bank-cashflow-allocate',
