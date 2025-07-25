@@ -22,6 +22,8 @@ class AlertUi {
 			'FinancialYear::endDate.loseOperations' => s("En modifiant cette date, certaines écritures ne seront plus rattachées à un exercice existant."),
 
 			'ThirdParty::name.duplicate' => s("Ce tiers existe déjà, utilisez-le directement ?"),
+			'ThirdParty::clientAccountLabel.check' => s("Ce compte client a déjà été attribué, choisissez-en un autre."),
+			'ThirdParty::supplierAccountLabel.check' => s("Ce compte client a déjà été attribué, choisissez-en un autre."),
 
 			default => null
 

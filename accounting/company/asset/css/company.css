@@ -8,6 +8,11 @@
 	opacity: 0.33;
 }
 
+span.undefined {
+	font-style: italic;
+	opacity: 0.5;
+}
+
 tr.row-emphasis {
 	background-color: var(--account-group) !important;
 }

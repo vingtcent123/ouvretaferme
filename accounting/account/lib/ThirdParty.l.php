@@ -4,7 +4,7 @@ namespace account;
 class ThirdPartyLib extends ThirdPartyCrud {
 
 	public static function getPropertiesCreate(): array {
-		return ['name'];
+		return ['name', 'customer'];
 	}
 
 	public static function getAll(\Search $search): \Collection {

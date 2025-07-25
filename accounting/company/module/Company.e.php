@@ -13,10 +13,12 @@ class Company extends CompanyElement {
 		return GET('key') === \Setting::get('account\remoteKey');
 	}
 
+	// Comptabilité à l'engagement
 	public function isAccrualAccounting() {
 		return $this->notEmpty() and $this['accountingType'] === Company::ACCRUAL;
 	}
 
+	// Comptabilité de trésorerie
 	public function isCashAccounting() {
 		return $this->empty() or $this['accountingType'] === Company::CASH;
 	}

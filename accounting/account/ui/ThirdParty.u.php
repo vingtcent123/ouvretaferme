@@ -3,6 +3,11 @@ namespace account;
 
 class ThirdPartyUi {
 
+	public function __construct() {
+		\Asset::js('account', 'thirdParty.js');
+		\Asset::css('company', 'company.css');
+	}
+
 	public function getThirdPartyTitle(\farm\Farm $eFarm): string {
 
 		$h = '<div class="util-action">';
@@ -61,9 +66,19 @@ class ThirdPartyUi {
 	public static function manage(\farm\Farm $eFarm, \Collection $cThirdParty, \Search $search): string {
 
 		if($cThirdParty->empty() === TRUE) {
+
+			if($search->empty()) {
+
+				return '<div class="util-info">'.
+					s("Aucun tiers n'a encore été créé.").
+					'</div>';
+
+			}
+
 			return '<div class="util-info">'.
-				s("Aucun tiers n'a encore été créé.").
+				s("Aucun tiers n'a été trouvé avec ces critères de recherche.").
 				'</div>';
+
 		}
 
 		$h = '';
@@ -82,40 +97,70 @@ class ThirdPartyUi {
 						$label = s("Nom");
 						$h .= ($search ? $search->linkSort('name', $label) : $label);
 					$h .= '</th>';
+					
+					if($eFarm['company']->isAccrualAccounting()) {
+
+						$h .= '<th>'.s("Client").'</th>';
+						$h .= '<th>'.s("Compte Client").'</th>';
+						$h .= '<th>'.s("Compte Fournisseur").'</th>';
+
+					}
+					
 					$h .= '<th>'.s("Nombre d'écritures comptables").'</th>';
 					$h .= '<th></th>';
 				$h .= '</thead>';
 
 				$h .= '<tbody>';
+
 					foreach($cThirdParty as $eThirdParty) {
 
+						$eThirdParty->setQuickAttribute('farm', $eFarm['id']);
+						$eThirdParty->setQuickAttribute('app', 'accounting');
+
 						$h .= '<tr>';
-							$h .= '<td>';
+
+						$h .= '<td>';
 								$h .= $eThirdParty['id'];
 							$h .= '</td>';
+
 							$h .= '<td>';
-								$eThirdParty->setQuickAttribute('farm', $eFarm['id']);
-								$eThirdParty->setQuickAttribute('app', 'accounting');
 								$h .= $eThirdParty->quick('name', encode($eThirdParty['name']));
 							$h .= '</td>';
+
+							if($eFarm['company']->isAccrualAccounting()) {
+
+								$h .= '<td>';
+									$h .= $eThirdParty->quick('customer', $eThirdParty['customer']->exists() ? encode($eThirdParty['customer']['name']) : '<span class="undefined">'.s("Non renseigné").'</span>');
+								$h .= '</td>';
+
+								$h .= '<td>';
+									$h .= $eThirdParty->quick('clientAccountLabel', $eThirdParty['clientAccountLabel'] ? encode($eThirdParty['clientAccountLabel']) : '<span class="undefined">'.s("Non défini").'</span>');
+								$h .= '</td>';
+
+								$h .= '<td>';
+									$h .= $eThirdParty->quick('supplierAccountLabel', $eThirdParty['supplierAccountLabel'] ? encode($eThirdParty['supplierAccountLabel']) : '<span class="undefined">'.s("Non défini").'</span>');
+								$h .= '</td>';
+
+							}
+
 							$h .= '<td>';
 								$h .= '<a href="'.\company\CompanyUi::urlJournal($eFarm).'/operations?thirdParty='.$eThirdParty['id'].'">'.$eThirdParty['operations'].'</a>';
 							$h .= '</td>';
 
 							$h .= '<td>';
-
 								$attributes = [
 									'data-ajax' => \company\CompanyUi::urlAccount($eFarm).'/thirdParty:doDelete',
 									'post-id' => $eThirdParty['id'],
 									'class' => 'btn btn-outline-secondary btn-outline-danger'.($eThirdParty['operations'] > 0 ? ' disabled' : ''),
 								];
 								$h .= '<a '.attrs($attributes).'>'.\Asset::icon('trash').'</a>';
+							$h .= '</td>';
 
-						$h .= '</td>';
 						$h .= '</tr>';
 
 					}
 				$h .= '</tbody>';
+
 			$h .= '</table>';
 
 		return $h;
@@ -192,12 +237,37 @@ class ThirdPartyUi {
 
 		$d = ThirdParty::model()->describer($property, [
 			'name' => s("Nom"),
+			'customer' => s("Client"),
+			'clientAccountLabel' => s("Compte client"),
+			'supplierAccountLabel' => s("Compte fournisseur"),
 		]);
 
 		switch($property) {
+
+			case 'clientAccountLabel':
+				$d->after = \util\FormUi::info(s("Le compte client commence toujours par {accountPrefix}", ['accountPrefix' => \Setting::get('account\thirdAccountClientReceivableClass')]));
+				$d->placeholder = \Setting::get('account\thirdAccountClientReceivableClass');
+				break;
+
+			case 'supplierAccountLabel':
+				$d->after = \util\FormUi::info(s("Le compte fournisseur commence toujours par {accountPrefix}", ['accountPrefix' => \Setting::get('account\thirdAccountSupplierDebtClass')]));
+				$d->placeholder = \Setting::get('account\thirdAccountSupplierDebtClass');
+				break;
+
 			case 'name':
 				$d->before = fn(\util\FormUi $form, $e) => $e->isQuick() ? \util\FormUi::info(s("Attention, ce changement sera répercuté sur toutes les opérations déjà créées")) : '';
 				break;
+
+			case 'customer':
+				$d->after = \util\FormUi::info(s("Lien entre les tiers (comptables) et vos clients"));
+				$d->autocompleteBody = function(\util\FormUi $form, ThirdParty $e) {
+					return [
+						'farm' => POST('farm', '?int'),
+					];
+				};
+				new \selling\CustomerUi()->query($d);
+				break;
+
 		}
 		return $d;
 

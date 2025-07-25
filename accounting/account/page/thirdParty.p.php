@@ -10,7 +10,7 @@ new \account\ThirdPartyPage(
 
 		$data->search = new Search([
 			'name' => GET('name'),
-		], GET('sort'));
+		], GET('sort', 'string', 'name'));
 
 		$data->cThirdParty = account\ThirdPartyLib::getAll($data->search);
 		$cOperation = \journal\OperationLib::countGroupByThirdParty();
@@ -31,7 +31,7 @@ new \account\ThirdPartyPage(
 		throw new ViewAction($data);
 
 	})
-	->quick(['name'], ['name' => fn($data) => \account\LogLib::save('update', 'thirdParty', ['field' => 'name', 'id' => $data['e']['id']])])
+	->quick(['name', 'customer', 'clientAccountLabel', 'supplierAccountLabel'])
 	->doDelete(fn($data) => throw new ReloadAction('account', 'ThirdParty::deleted'));
 
 new Page(function($data) {
