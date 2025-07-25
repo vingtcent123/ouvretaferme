@@ -362,7 +362,7 @@ class CustomerLib extends CustomerCrud {
 
 		Customer::model()
 			->where('JSON_CONTAINS('.Customer::model()->field('groups').', \''.$eGroup['id'].'\') = 0')
-			->whereDestination('!=', Customer::COLLECTIVE)
+			->whereDestination('!=', Customer::COLLECTIVE, if: $eGroup['type'] === Customer::PRIVATE)
 			->whereType($eGroup['type'])
 			->whereId('IN', $cCustomer)
 			->update([
