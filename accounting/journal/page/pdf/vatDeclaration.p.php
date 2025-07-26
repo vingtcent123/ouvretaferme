@@ -1,8 +1,8 @@
 <?php
 new Page()
-	->get('index', function($data) {
+	->remote('index', 'accounting', function($data) {
 
-		$data->eFarm = \farm\FarmLib::getById(GET('farm'))->validate('canRemote');
+		$data->eFarm = \farm\FarmLib::getById(GET('farm'));
 
 		$data->eVatDeclaration = \journal\VatDeclarationLib::getById(GET('id'));
 

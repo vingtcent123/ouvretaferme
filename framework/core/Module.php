@@ -5529,6 +5529,37 @@ abstract class ModulePage extends Page {
 
 	}
 
+	private function elementCallback($action, $validate, $onEmpty) {
+
+		return function($data) use($action, $validate, $onEmpty) {
+
+			$e = $this->element->call($this, $data);
+
+			if($e === NULL) {
+
+				$id = INPUT('id', '?int');
+				$e = ($this->module.'Lib')::getById($id);
+
+				if($e->empty()) {
+					if($onEmpty) {
+						$onEmpty($data);
+					} else {
+						throw new \NotExistsAction($this->module.' #'.$id);
+					}
+				}
+
+			}
+
+			$e->validate(...$validate);
+
+			$this->applyElement->call($this, $data, $e);
+			$data->e = $e;
+
+			$action->call($this, $data);
+
+		};
+	}
+
 	public function writeCollection(string $page, \Closure $action, array $validate = ['canUpdate']): ModulePage {
 
 		$this->post($page, function($data) use($action, $validate) {
@@ -5561,33 +5592,15 @@ abstract class ModulePage extends Page {
 
 	public function read(string|array $pageList, \Closure $action, string $method = 'get', array $validate = ['canRead'], ?Closure $onEmpty = NULL): ModulePage {
 
-		$this->match([$method], $pageList, function($data) use($action, $validate, $onEmpty) {
+		$this->match([$method], $pageList, $this->elementCallback($action, $validate, $onEmpty));
 
-			$e = $this->element->call($this, $data);
+		return $this;
 
-			if($e === NULL) {
+	}
 
-				$id = INPUT('id', '?int');
-				$e = ($this->module.'Lib')::getById($id);
+	public function remote(string|array $pageList, ?string $remoteKeyName, \Closure $action, ?Closure $onEmpty = NULL): ModulePage {
 
-				if($e->empty()) {
-					if($onEmpty) {
-						$onEmpty($data);
-					} else {
-						throw new \NotExistsAction($this->module.' #'.$id);
-					}
-				}
-
-			}
-
-			$e->validate(...$validate);
-
-			$this->applyElement->call($this, $data, $e);
-			$data->e = $e;
-
-			$action->call($this, $data);
-
-		});
+		parent::remote($pageList, $remoteKeyName, $this->elementCallback($action, [], $onEmpty));
 
 		return $this;
 

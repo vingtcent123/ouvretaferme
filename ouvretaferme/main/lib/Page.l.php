@@ -70,15 +70,14 @@ class PageLib {
 
 		if(REQUEST('app') === 'accounting') {
 
-
 			$data->eFarm = \farm\FarmLib::getById(REQUEST('farm'));
 
-			if($data->eFarm->canRemote() === FALSE) {
+			if($data->pageType !== 'remote') {
 				\user\ConnectionLib::checkLogged();
 			}
 
 			if(
-				$data->eFarm->canRemote() === FALSE
+				$data->pageType !== 'remote'
 				and ($data->eFarm->empty() or $data->eFarm->canAccountEntry() === FALSE)
 			) {
 				$action = new \ViewAction($data, ':404');
