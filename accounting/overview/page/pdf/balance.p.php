@@ -1,21 +1,19 @@
 <?php
 new Page(function($data) {
 
-	$data->eFarm['company']->validate('canRemote');
-
 	$data->eFinancialYear = \account\FinancialYearLib::getById(GET('financialYear'));
 	if($data->eFinancialYear->exists() === FALSE) {
 		throw new NotExpectedAction('Cannot generate PDF of book with no financial year');
 	}
 
 })
-	->get('summary', function($data) {
+	->remote('summary', 'accounting', function($data) {
 
 		$data->balanceSummarized = \overview\BalanceLib::getSummarizedBalance($data->eFinancialYear);
 
 		throw new ViewAction($data);
 	})
-	->get('opening', function($data) {
+	->remote('opening', 'accounting', function($data) {
 
 		$data->balanceSummarized = \overview\BalanceLib::getOpeningBalance($data->eFinancialYear);
 

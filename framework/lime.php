@@ -62,6 +62,13 @@ class Lime {
 	private static array $siblings = [];
 
 	/**
+	 * Remote key value
+	 *
+	 * @var array
+	 */
+	private static array $remoteKey = [];
+
+	/**
 	 * Define main app
 	 *
 	 * @param string $app
@@ -114,12 +121,31 @@ class Lime {
 	}
 
 	/**
+	 * Set remoteKey
+	 *
+	 * @param string $name
+	 * @param ?string $value
+	 */
+	public static function setRemoteKey(string $name, ?string $value): void {
+		self::$remoteKey[$name] = $value;
+	}
+
+	/**
 	 * Get siblings
 	 *
 	 * @return array
 	 */
 	public static function getSiblings(): array {
 		return self::$siblings;
+	}
+
+	/**
+	 * Get remoteKey
+	 *
+	 * @return ?string
+	 */
+	public static function getRemoteKey(string $name): ?string {
+		return self::$remoteKey[$name];
 	}
 
 	/**

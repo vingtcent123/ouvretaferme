@@ -6,6 +6,7 @@ class PdfUi {
 	public function __construct() {
 
 		\Asset::css('pdf', 'pdf.css');
+		\Asset::css('company', 'company.css');
 
 	}
 
@@ -47,7 +48,7 @@ class PdfUi {
 		$h .= '<div class="pdf-document-wrapper">';
 
 			$h .= '<div class="pdf-document-content">';
-				$h .= '<table class="table-bordered ">';
+				$h .= '<table class="">';
 
 					$h .= '<thead>';
 						$h .= '<tr class="row-header row-upper">';
@@ -64,7 +65,7 @@ class PdfUi {
 
 					foreach($cOperation as $eOperation) {
 
-						$h .= '<tr>';
+						$h .= '<tr class="border-top">';
 
 							$h .= '<td rowspan="2">';
 								$h .= \util\DateUi::numeric($eOperation['date']);
@@ -183,7 +184,7 @@ class PdfUi {
 
 			$h .= '<div class="pdf-document-content">';
 
-				$h .= '<table class="table-bordered tr-fixed-height">';
+				$h .= '<table class="table-bordered">';
 
 					$h .= '<thead>';
 						$h .= BookUi::getBookTheadContent();

@@ -56,10 +56,6 @@ tr {
     page-break-inside: avoid;
 }
 
-.tr-fixed-height tr td {
-    line-height: 0.5;
-}
-
 .text-small {
     font-size: 0.75rem;
 }

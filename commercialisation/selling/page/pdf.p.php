@@ -1,8 +1,8 @@
 <?php
 new Page()
-	->get('getLabels', function($data) {
+	->remote('getLabels', 'selling', function($data) {
 
-		$data->eFarm = \farm\FarmLib::getById(GET('id'))->validate('canRemote');
+		$data->eFarm = \farm\FarmLib::getById(GET('id'));
 
 		$sales = GET('sales', 'array');
 
@@ -15,10 +15,10 @@ new Page()
 		throw new ViewAction($data);
 
 	})
-	->get('getDocument', function($data) {
+	->remote('getDocument', 'selling',  function($data) {
 
 		$data->type = GET('type', [\selling\Pdf::DELIVERY_NOTE, \selling\Pdf::ORDER_FORM, \selling\Pdf::INVOICE], fn() => throw new NotExpectedAction());
-		$data->e = \selling\SaleLib::getById(GET('id'))->validate('canRemote', fn($e) => $e->acceptDocument($data->type));
+		$data->e = \selling\SaleLib::getById(GET('id'))->validate(fn($e) => $e->acceptDocument($data->type));
 
 		$data->e['customer']['user'] = \user\UserLib::getById($data->e['customer']['user']); // Récupération de l'e-mail
 
@@ -39,7 +39,7 @@ new Page()
 	});
 
 new \selling\InvoicePage()
-	->read('getDocumentInvoice', function($data) {
+	->remote('getDocumentInvoice', 'selling', function($data) {
 
 		$data->eFarm = \farm\FarmLib::getById($data->e['farm']);
 
@@ -49,5 +49,5 @@ new \selling\InvoicePage()
 
 		throw new ViewAction($data);
 
-	}, validate: ['canRemote']);
+	});
 ?>
