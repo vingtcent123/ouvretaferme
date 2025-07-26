@@ -246,10 +246,6 @@ class Farm extends FarmElement {
 
 	}
 
-	public function canRemote(): bool {
-		return GET('key') === \Setting::get('selling\remoteKey') or LIME_ENV === 'dev';
-	}
-
 	public function canShop(): bool {
 
 		$this->expects(['legalEmail', 'legalName']);

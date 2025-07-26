@@ -360,7 +360,7 @@ class PdfLib extends PdfCrud {
 			$file = tempnam('/tmp', 'pdf-').'.pdf';
 
 			$url .= str_contains($url, '?') ? '&' : '?';
-			$url .= 'key='.\Setting::get('selling\remoteKey');
+			$url .= 'remoteKey='.\Lime::getRemoteKey('selling');
 
 			$args = '"--url='.\Lime::getUrl().$url.'"';
 			$args .= ' "--destination='.$file.'"';

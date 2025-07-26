@@ -43,10 +43,6 @@ class Invoice extends InvoiceElement {
 		return $this['farm']->canManage();
 	}
 
-	public function canRemote(): bool {
-		return GET('key') === \Setting::get('selling\remoteKey') or $this->canRead();
-	}
-
 	public function acceptSend(): bool {
 
 		$this->expects(['emailedAt', 'createdAt', 'generation']);
