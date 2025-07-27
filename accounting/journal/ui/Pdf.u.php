@@ -84,7 +84,7 @@ class PdfUi {
 							$h .= '</td>';
 
 							$h .= '<td>';
-								$h .= encode($eOperation['description']);
+								$h .= encode($eOperation['account']['description']);
 							$h .= '</td>';
 
 							$h .= '<td>';
@@ -112,7 +112,7 @@ class PdfUi {
 						$h .= '</tr>';
 						$h .= '<tr>';
 							$h .= '<td class="no-border" colspan="5">';
-							$h .= encode($eOperation['account']['description']);
+							$h .= encode($eOperation['description']);
 							$h .= '</td>';
 						$h .= '</tr>';
 					}

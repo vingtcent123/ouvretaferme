@@ -63,7 +63,7 @@ Class AssetUi {
 
 		}
 
-		$h = '<div class="stick-sm util-overflow-sm table-container">';
+		$h = '<div class="stick-sm util-overflow-sm ">';
 
 			$h .= '<table class="tr-even td-vertical-top tr-hover table-bordered">';
 
@@ -155,7 +155,7 @@ Class AssetUi {
 
 		}
 
-		$h .= '<div class="stick-sm util-overflow-sm table-container">';
+		$h .= '<div class="stick-sm util-overflow-sm">';
 
 			$h .= '<table class="tr-even td-vertical-top tr-hover table-bordered">';
 
