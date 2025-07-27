@@ -80,7 +80,7 @@ class PageLib {
 				$data->pageType !== 'remote'
 				and ($data->eFarm->empty() or $data->eFarm->canAccountEntry() === FALSE)
 			) {
-				$action = new \ViewAction($data, ':404');
+				$action = new \ViewAction($data, 'error:404');
 				$action->setStatusCode(404);
 				throw $action;
 			}
