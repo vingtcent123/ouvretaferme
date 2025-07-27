@@ -41,10 +41,6 @@ class Date extends DateElement {
 
 	}
 
-	public function canRemote(): bool {
-		return GET('key') === \Setting::get('selling\remoteKey') or $this->canRead();
-	}
-
 	public function acceptNotShared(): bool {
 
 		$this->expects(['shop' => ['shared']]);

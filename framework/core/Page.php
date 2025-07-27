@@ -154,6 +154,13 @@ class Page {
 	}
 
 	/**
+	 * Create a REMOTE page
+	 */
+	public function remote(string|array $pageList, string $remoteKeyName, Closure $callback): Page {
+		return $this->save(__FUNCTION__, ['GET'], (array)$pageList, $callback, ['remoteKeyName' => $remoteKeyName]);
+	}
+
+	/**
 	 * Create a GET page
 	 */
 	public function get(string|array $pageList, Closure $callback): Page {
@@ -234,9 +241,12 @@ class Page {
 				'name' => $name,
 				'type' => $type,
 				'request' => $request,
-				'create' => function($data) use($create) {
+				'create' => function($data) use($create, $more, $type) {
 					if($this->start !== NULL) {
 						$this->start->call($this, $data);
+					}
+					if($type === 'remote' and Lime::getRemoteKey($more['remoteKeyName']) !== GET('remoteKey', '?string')) {
+						throw new NotAllowedAction();
 					}
 					$create($data);
 				},
@@ -370,6 +380,7 @@ class Page {
 		switch($page['type']) {
 
 			case 'http' :
+			case 'remote' :
 			case 'get' :
 			case 'post' :
 			case 'put' :
@@ -460,7 +471,8 @@ class Page {
 
 	private static function doRun(array $page, stdClass $data) {
 
-		$data->route = $page['name'];
+		$data->pageName = $page['name'];
+		$data->pageType = $page['type'];
 
 		$action = NULL;
 
@@ -473,7 +485,6 @@ class Page {
 					$constructor($data);
 				}
 			}
-
 
 			$page['create']($data);
 

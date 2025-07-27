@@ -47,7 +47,7 @@ new Page(function($data) {
 		throw new ViewAction($data);
 
 	})
-	->get('pdf', function($data) {
+	->remote('pdf', 'accounting', function($data) {
 
 		$data->type = GET('type',  'string', 'buy');
 		if(in_array($data->type, ['buy', 'sell']) === FALSE) {

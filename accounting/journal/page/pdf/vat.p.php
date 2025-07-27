@@ -1,8 +1,8 @@
 <?php
 new Page()
-	->get('index', function($data) {
+	->remote('index', 'accounting', function($data) {
 
-		$data->eFarm = \farm\FarmLib::getById(GET('farm'))->validate('canRemote');
+		$data->eFarm = \farm\FarmLib::getById(GET('farm'));
 
 		$data->eFinancialYear = \account\FinancialYearLib::getById(GET('financialYear'));
 		if($data->eFinancialYear->exists() === FALSE) {

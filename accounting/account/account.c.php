@@ -6,8 +6,6 @@ Privilege::register('account', [
 
 Setting::register('account', [
 
-	'remoteKey' => 'toto',
-
 	'dropbox' => [
 		'appKey' => '',
 		'appSecret' => '',

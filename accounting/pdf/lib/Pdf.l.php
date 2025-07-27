@@ -11,7 +11,7 @@ class PdfLib extends \pdf\PdfCrud {
 			$file = tempnam('/tmp', 'pdf-').'.pdf';
 
 			$url .= str_contains($url, '?') ? '&' : '?';
-			$url .= 'key='.\Setting::get('account\remoteKey');
+			$url .= 'remoteKey='.\Lime::getRemoteKey('accounting');
 
 			$args = '"--url='.$url.'"';
 			$args .= ' "--destination='.$file.'"';
@@ -91,7 +91,7 @@ class PdfLib extends \pdf\PdfCrud {
 		} else {
 			$url .= '&';
 		}
-		$url .= 'key='.\Setting::get('account\remoteKey');
+		$url .= 'remoteKey='.\Lime::getRemoteKey('accounting');
 
 		return self::build($url, $title, $header, $footer);
 

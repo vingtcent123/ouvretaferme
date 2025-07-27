@@ -543,9 +543,7 @@ new Page(function($data) {
 		throw new PdfAction($content, $filename);
 
 	})
-	->get('getExport', function($data) {
-
-		$data->c->validate('canRemote');
+	->remote('getExport', 'selling', function($data) {
 
 		\selling\SaleLib::fillItems($data->c);
 

@@ -45,7 +45,7 @@
 
 		$data->eFarm->validate('canSelling');
 
-		switch($data->route) {
+		switch($data->pageName) {
 
 			case '/ferme/{id}/ventes' :
 				$data->type = NULL;

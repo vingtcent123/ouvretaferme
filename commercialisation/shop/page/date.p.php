@@ -194,9 +194,9 @@ new \shop\DatePage()
 	->doUpdate(fn() => throw new ReloadAction('shop', 'Date::updated'));
 
 new Page()
-	->get('getSales', function($data) {
+	->remote('getSales', 'selling', function($data) {
 
-		$data->e = \shop\DateLib::getById(GET('id'))->validate('canRemote');
+		$data->e = \shop\DateLib::getById(GET('id'));
 		$data->e['shop'] = \shop\ShopLib::getById($data->e['shop']);
 
 		if($data->e['shop']->isPersonal()) {
