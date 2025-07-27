@@ -118,7 +118,7 @@ Class DepreciationUi {
 
 		$highlightedAssetId = GET('id', 'int');
 
-		$h = '<div class="stick-sm util-overflow-sm table-container">';
+		$h = '<div class="stick-sm util-overflow-sm">';
 
 			$h .= '<table id="asset-list" class="tr-even td-vertical-top tr-hover table-bordered" '.($highlightedAssetId !== NULL ? ' onrender="DepreciationList.scrollTo('.$highlightedAssetId.');"' : '').'>';
 

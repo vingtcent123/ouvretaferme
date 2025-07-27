@@ -186,13 +186,15 @@ class JournalUi {
 		\Asset::js('util', 'form.js');
 		\Asset::css('util', 'form.css');
 
+		$thRowspan = in_array('document', $hide) ? 1 : 2;
+
 		$h = '';
 
-		$h .= '<div class="stick-sm util-overflow-sm table-container">';
+		$h .= '<div class="stick-sm util-overflow-sm">';
 
-			$h .= '<table class="tr-even td-vertical-top tr-hover">';
+			$h .= '<table class="td-vertical-top tr-hover">';
 
-				$h .= '<thead class="thead-sticky">';
+				$h .= '<thead class="thead-sticky table-operations">';
 					$h .= '<tr>';
 						$h .= '<th>';
 
@@ -213,32 +215,46 @@ class JournalUi {
 							$h .= '<th>'.s("Journal").'</th>';
 						}
 
-						if(in_array('document', $hide) === FALSE) {
-							$h .= '<th>';
-								$label = s("Pièce comptable");
-								$h .= ($search ? $search->linkSort('document', $label) : $label);
-							$h .= '</th>';
-						}
-
 						$h .= '<th colspan="2">'.s("Compte (Libellé et classe)").'</th>';
-						$h .= '<th>';
-							$label = s("Description");
-							$h .= ($search ? $search->linkSort('description', $label) : $label);
-						$h .= '</th>';
 						$h .= '<th>'.s("Mode de paiement").'</th>';
 						$h .= '<th>'.s("Tiers").'</th>';
-						$h .= '<th class="text-end">'.s("Débit (D)").'</th>';
-						$h .= '<th class="text-end">'.s("Crédit (C)").'</th>';
+						$h .= '<th class="text-end highlight-stick-right rowspaned-center" rowspan="'.$thRowspan.'">'.s("Débit (D)").'</th>';
+						$h .= '<th class="text-end highlight-stick-left rowspaned-center" rowspan="'.$thRowspan.'">'.s("Crédit (C)").'</th>';
 
 						if(in_array('actions', $hide) === FALSE) {
-							$h .= '<th class="text-end"></th>';
+							$h .= '<th class="td-min-content" rowspan="'.$thRowspan.'" class="rowspaned-center"></th>';
 						}
 
 						if(in_array('vatAdjustement', $show)) {
-							$h .= '<th class="text-end">'.s("Régularisation").'</th>';
+							$h .= '<th class="text-end" rowspan="'.$thRowspan.'" class="rowspaned-center">'.s("Régularisation").'</th>';
 						}
 
 					$h .= '</tr>';
+
+					$h .= '<tr>';
+
+						if(in_array('document', $hide) === FALSE) {
+
+							$h .= '<th colspan="2">';
+								$label = s("Pièce comptable");
+								$h .= ($search ? $search->linkSort('document', $label) : $label);
+							$h .= '</th>';
+
+						} else {
+
+							$h .= '<th></th>';
+							$h .= '<th></th>';
+							if($eFarm['company']->isAccrualAccounting() and $selectedJournalCode === NULL) {
+								$h .= '<th></th>';
+							}
+
+						}
+						$h .= '<th colspan="4">';
+							$label = s("Description");
+							$h .= ($search ? $search->linkSort('description', $label) : $label);
+						$h .= '</th>';
+					$h .= '</tr>';
+
 				$h .= '</thead>';
 
 				$h .= '<tbody>';
@@ -262,7 +278,9 @@ class JournalUi {
 							$cashflowLink = NULL;
 						}
 
-						$h .= '<tr name="operation-'.$eOperation['id'].'" name-linked="operation-linked-'.($eOperation['operation']['id'] ?? '').'">';
+						$descriptionColspan = 4;
+
+						$h .= '<tr name="operation-'.$eOperation['id'].'" name-linked="operation-linked-'.($eOperation['operation']['id'] ?? '').'" class="tr-border-top">';
 
 							$h .= '<td>';
 								$h .= \util\DateUi::numeric($eOperation['date']);
@@ -289,18 +307,6 @@ class JournalUi {
 										$h .= '-';
 									}
 
-								$h .= '</td>';
-							}
-
-							if(in_array('document', $hide) === FALSE) {
-								$h .= '<td>';
-									$h .= '<div class="operation-info">';
-										if($canUpdate === TRUE) {
-											$h .= $eOperation->quick('document', $eOperation['document'] ? encode($eOperation['document']) : '<i>'.s("Non définie").'</i>');
-										} else {
-											$h .= encode($eOperation['document']);
-										}
-									$h .= '</div>';
 								$h .= '</td>';
 							}
 
@@ -331,14 +337,6 @@ class JournalUi {
 
 							$h .= '<td>';
 								if($canUpdate === TRUE) {
-									$h .= $eOperation->quick('description', encode($eOperation['description']));
-								} else {
-									$h .= encode($eOperation['description']);
-								}
-							$h .= '</td>';
-
-							$h .= '<td>';
-								if($canUpdate === TRUE) {
 									$h .= $eOperation->quick('paymentMode', OperationUi::p('paymentMode')->values[$eOperation['paymentMode']] ?? '<i>'.s("Non défini").'</i>');
 								} else {
 									$h .= OperationUi::p('paymentMode')->values[$eOperation['paymentMode']] ?? '-';
@@ -351,7 +349,7 @@ class JournalUi {
 								}
 							$h .= '</td>';
 
-							$h .= '<td class="text-end">';
+							$h .= '<td class="text-end highlight-stick-right">';
 								$debitDisplay = match($eOperation['type']) {
 									Operation::DEBIT => \util\TextUi::money($eOperation['amount']),
 									default => '',
@@ -363,7 +361,7 @@ class JournalUi {
 								}
 							$h .= '</td>';
 
-							$h .= '<td class="text-end">';
+							$h .= '<td class="text-end highlight-stick-left">';
 								$creditDisplay = match($eOperation['type']) {
 									Operation::CREDIT => \util\TextUi::money($eOperation['amount']),
 									default => '',
@@ -378,7 +376,7 @@ class JournalUi {
 							if(in_array('actions', $hide) === FALSE) {
 
 								$h .= '<td>';
-									$h .= '<div class="util-unit text-end">';
+									$h .= '<div class="util-unit td-min-content text-end">';
 										$h .= $this->displayActions($eFarm, $eOperation, $canUpdate, $cashflowLink);
 									$h .= '</div>';
 								$h .= '</td>';
@@ -396,6 +394,50 @@ class JournalUi {
 							}
 
 						$h .= '</tr>';
+
+						$h .= '<tr>';
+
+							if(in_array('document', $hide) === FALSE) {
+								$h .= '<td colspan="'.(($eFarm['company']->isAccrualAccounting() and $selectedJournalCode === NULL) ? 3 : 2).'">';
+									$h .= '<div class="operation-info">';
+										if($canUpdate === TRUE) {
+											$h .= $eOperation->quick('document', $eOperation['document'] ? encode($eOperation['document']) : '<i>'.s("Non définie").'</i>');
+										} else {
+											$h .= encode($eOperation['document']);
+										}
+									$h .= '</div>';
+								$h .= '</td>';
+							}
+
+							$h .= '<td colspan="'.$descriptionColspan.'" class="td-description">';
+
+							$h .= '<div>';
+								if($eOperation['comment'] !== NULL) {
+									$h .= '<span title="'.encode($eOperation['comment']).'">'.\Asset::icon('chat-left-text-fill').'</span>';
+								}
+
+								$h .= '<div class="description">';
+									if($canUpdate === TRUE) {
+										$h .= $eOperation->quick('description', encode($eOperation['description']));
+									} else {
+										$h .= encode($eOperation['description']);
+									}
+
+								$h .= '</div>';
+
+							$h .= '</div>';
+
+							$h .= '</td>';
+								$h .= '<td class="highlight-stick-right"></td>';
+								$h .= '<td class="highlight-stick-left"></td>';
+							if(in_array('actions', $hide) === FALSE) {
+								$h .= '<td class="td-min-content"></td>';
+							}
+							if(in_array('vatAdjustement', $show)) {
+								$h .= '<td></td>';
+							}
+
+						$h .= '</tr>';
 					}
 
 				$h .= '</tbody>';
@@ -403,12 +445,6 @@ class JournalUi {
 		$h .= '</div>';
 
 		return $h;
-
-	}
-
-	private function getCommentButton(string $icon, string $content): string {
-
-		return '<span class="btn btn-outline-secondary" title="'.encode($content).'" >'.\Asset::icon($icon).'</span>';
 
 	}
 
@@ -420,137 +456,118 @@ class JournalUi {
 				return '';
 			}
 
-			$icon = 'send-fill';
-			$content = encode($eOperation['comment']);
-
-			return $this->getCommentButton($icon, $content);
 		}
+		$h = '<a data-dropdown="bottom-end" class="dropdown-toggle btn btn-outline-secondary">'.\Asset::icon('gear-fill').'</a>';
+		$h .= '<div class="dropdown-list">';
+			$h .= '<div class="dropdown-title">'.s("Modifier une écriture comptable").'</div>';
 
-		$h = '';
+			$eOperation->setQuickAttribute('farm', $eFarm['id']);
+			$eOperation->setQuickAttribute('app', 'accounting');
 
-		if(
-			$eOperation['comment'] !== NULL
-		) {
-
-			$icon = 'chat-left-text-fill';
-			$content = encode($eOperation['comment']);
-
-		} else {
-
-			$icon = 'chat-left-text';
-			$content = s("Ajouter un commentaire");
-
-		}
-
-		$eOperation->setQuickAttribute('farm', $eFarm['id']);
-		$eOperation->setQuickAttribute('app', 'accounting');
-		$h .= $eOperation->quick('comment', $this->getCommentButton($icon, $content));
-		$h .= '&nbsp;';
-
-		if(
-			$eOperation->isClassAccount(\Setting::get('account\chargeAccountClass')) === TRUE
-			// On ne rajoute pas des frais de port sur des frais de port
-			and mb_substr($eOperation['accountLabel'], 0, strlen((string)\Setting::get('account\shippingChargeAccountClass'))) !== (string)\Setting::get('account\shippingChargeAccountClass')
-		) {
-
-			$args = [
-				'accountPrefix' => \Setting::get('account\shippingChargeAccountClass'),
-				'accountLabel' => encode(OperationUi::getAccountLabelFromAccountPrefix(\Setting::get('account\shippingChargeAccountClass'))),
-				'document' => $eOperation['document'],
-				'type' => $eOperation['type'],
-				'date' => $eOperation['date'],
-				'thirdParty' => $eOperation['thirdParty']['id'] ?? NULL,
-				'description' => $eOperation['description'],
-				'cashflow' => $eOperation['cashflow']['id'] ?? NULL,
-			];
-
-			$h .= '<a href="'.\company\CompanyUi::urlJournal($eFarm).'/operation:create?'.http_build_query($args).'" class="btn btn-outline-secondary" class="btn btn-outline-secondary" title="'.s("Ajouter des frais de livraison").'">'.\Asset::icon('truck').'</a>';
-
-		} else {
-
-			$h .= '<span class="not-visible btn btn-outline-secondary">'.\Asset::icon('truck').'</span>';
-
-		}
-
-		$h .= '&nbsp;';
-
-		if($eOperation['cashflow']->exists() === FALSE) {
-
-			// Cette opération est liée à une autre : on ne peut pas la supprimer.
-			if($eOperation['operation']->exists() === TRUE) {
-
-				$attributes = [
-					'class' => 'btn btn-outline-secondary inactive',
-					'data-dropdown' => 'bottom-end',
-					'data-dropdown-hover' => TRUE,
-					'data-dropdown-offset-x' => 0,
-					'onclick' => 'void(0);',
-				];
-				$buttonDelete = '<a '.attrs($attributes).'>'.\Asset::icon('trash').'</a>';
-				$buttonDelete .= '<div class="operation-comment-dropdown dropdown-list dropdown-list-unstyled">';
-					$buttonDelete .= s("Cette opération est liée à une autre opération. Supprimez plutôt l'opération initiale.");
-				$buttonDelete .= '</div>';
-
-
+			// COMMENTAIRE
+			if($eOperation['comment'] === NULL) {
+				$title = s("Ajouter un commentaire");
 			} else {
+				$title = s("Modifier le commentaire");
+			}
+			$h .= $eOperation->quick('comment', '<span class="dropdown-item">'.$title.'</span>');
 
-				$attributes = [
-					'data-ajax' => \company\CompanyUi::urlJournal($eFarm).'/operation:doDelete',
-					'post-id' => $eOperation['id'],
-					'data-confirm' => s("Confirmez-vous la suppression de cette écriture ?"),
-					'class' => 'btn btn-outline-secondary btn-outline-danger',
+
+			// FRAIS DE LIVRAISON
+			if(
+				$eOperation->isClassAccount(\Setting::get('account\chargeAccountClass')) === TRUE
+				// On ne rajoute pas des frais de port sur des frais de port
+				and mb_substr($eOperation['accountLabel'], 0, strlen((string)\Setting::get('account\shippingChargeAccountClass'))) !== (string)\Setting::get('account\shippingChargeAccountClass')
+			) {
+
+				$args = [
+					'accountPrefix' => \Setting::get('account\shippingChargeAccountClass'),
+					'accountLabel' => encode(OperationUi::getAccountLabelFromAccountPrefix(\Setting::get('account\shippingChargeAccountClass'))),
+					'document' => $eOperation['document'],
+					'type' => $eOperation['type'],
+					'date' => $eOperation['date'],
+					'thirdParty' => $eOperation['thirdParty']['id'] ?? NULL,
+					'description' => $eOperation['description'],
+					'cashflow' => $eOperation['cashflow']['id'] ?? NULL,
 				];
 
-				if($eOperation['vatAccount']->exists() === TRUE) {
-					$attributes += [
-						'data-dropdown' => 'bottom-end',
-						'data-dropdown-hover' => 'TRUE',
-						'data-dropdown-offset-x' => '0',
-						'data-highlight' => $eOperation['vatAccount']->exists()
-							? 'operation-linked-'.$eOperation['id']
-							: 'operation-'.$eOperation['operation']['id'],
-						'data-confirm' => s("Confirmez-vous la suppression de cette écriture ?"),
+				$h .= '<a href="'.\company\CompanyUi::urlJournal($eFarm).'/operation:create?'.http_build_query($args).'" class="dropdown-item">';
+					$h .= s("Ajouter des frais de livraison");
+				$h .= '</a>';
+
+			}
+
+			// SUPPRIMER
+			if($eOperation['cashflow']->exists() === FALSE) {
+
+				// Cette opération est liée à une autre : on ne peut pas la supprimer.
+				if($eOperation['operation']->exists() === TRUE) {
+
+					$attributes = [
+						'class' => 'dropdown-item inactive',
+						'onclick' => 'void(0);',
 					];
-				}
+					$buttonDelete = '<a '.attrs($attributes).'>'.s("Supprimer").'</a>';
 
-				$buttonDeleteDropdown = '';
 
-				if($eOperation['asset']->exists() === TRUE) {
+				} else {
+
+					$attributes = [
+						'data-ajax' => \company\CompanyUi::urlJournal($eFarm).'/operation:doDelete',
+						'post-id' => $eOperation['id'],
+						'data-confirm' => s("Confirmez-vous la suppression de cette écriture ?"),
+						'class' => 'dropdown-item',
+					];
 
 					if($eOperation['vatAccount']->exists() === TRUE) {
+						$attributes += [
+							'data-highlight' => $eOperation['vatAccount']->exists()
+								? 'operation-linked-'.$eOperation['id']
+								: 'operation-'.$eOperation['operation']['id'],
+							'data-confirm' => s("Confirmez-vous la suppression de cette écriture ?"),
+						];
+					}
 
-						$attributes['data-confirm'] = s("Confirmez-vous la suppression de cette écriture, de l'entrée de TVA liée, ainsi que de l'entrée dans les immobilisations ?");
+					if($eOperation['asset']->exists() === TRUE) {
 
-						$buttonDeleteDropdown .= '<div class="operation-comment-dropdown dropdown-list dropdown-list-unstyled">';
-							$buttonDeleteDropdown .= s("En supprimant cette écriture, l'écriture de TVA associée et l'entrée dans les immobilisations seront également supprimées.");
-						$buttonDeleteDropdown .= '</div>';
+						if($eOperation['vatAccount']->exists() === TRUE) {
 
-					} else {
+							$attributes['data-confirm'] = s("Confirmez-vous la suppression de cette écriture, de l'entrée de TVA liée, ainsi que de l'entrée dans les immobilisations ?");
 
-						$attributes['data-confirm'] = s("Confirmez-vous la suppression de cette écriture ainsi que de l'entrée dans les immobilisations ?");
-						$buttonDeleteDropdown .= '<div class="operation-comment-dropdown dropdown-list dropdown-list-unstyled">';
-							$buttonDeleteDropdown .= s("En supprimant cette écriture, l'entrée dans les immobilisations sera également supprimée.");
-						$buttonDeleteDropdown .= '</div>';
+							$more = s("En supprimant cette écriture, l'écriture de TVA associée et l'entrée dans les immobilisations seront également supprimées.");
+
+						} else {
+
+							$attributes['data-confirm'] = s("Confirmez-vous la suppression de cette écriture ainsi que de l'entrée dans les immobilisations ?");
+							$more = s("En supprimant cette écriture, l'entrée dans les immobilisations sera également supprimée.");
+
+						}
+
+					} else if($eOperation['vatAccount']->exists() === TRUE) {
+
+						$attributes['data-confirm'] = s("Confirmez-vous la suppression de cette écriture ainsi que de l'écriture de TVA associée ?");
+						$more = s("En supprimant cette écriture, l'écriture de TVA associée sera également supprimée.");
 
 					}
 
-				} else if($eOperation['vatAccount']->exists() === TRUE) {
+					if(isset($more)) {
+						$deleteText = s("Supprimer <div>({more})</div>", ['div' => '<div class="operations-delete-more">', 'more' => $more]);
+					} else {
+						$deleteText = s("Supprimer");
+					}
 
-					$attributes['data-confirm'] = s("Confirmez-vous la suppression de cette écriture ainsi que de l'écriture de TVA associée ?");
-					$buttonDeleteDropdown .= '<div class="operation-comment-dropdown dropdown-list dropdown-list-unstyled">';
-						$buttonDeleteDropdown .= s("En supprimant cette écriture, l'écriture de TVA associée sera également supprimée.");
-					$buttonDeleteDropdown .= '</div>';
-
+					$buttonDelete = '<a '.attrs($attributes).'>'.$deleteText.'</a>';
 				}
 
-				$buttonDelete = '<a '.attrs($attributes).'>'.\Asset::icon('trash').'</a>'.$buttonDeleteDropdown;
+				$h .= '<div class="dropdown-divider"></div>';
+				$h .= $buttonDelete;
+
 			}
 
-			$h .= $buttonDelete;
-
-		}
+		$h .= '</div>';
 
 		return $h;
+
 	}
 
 }
