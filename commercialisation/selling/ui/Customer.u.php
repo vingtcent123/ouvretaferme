@@ -975,7 +975,7 @@ class CustomerUi {
 
 			case 'discount' :
 				$d->append = s("%");
-				$d->after = \util\FormUi::info(s("Cette remise commerciale s'applique automatiquement au prix par défaut de tous les produits commandés par ce client."));
+				$d->after = \util\FormUi::info(s("Si vous modifiez la remise commerciale, elle s'appliquera automatiquement à toutes les futures ventes créées pour ce client."));
 				break;
 
 			case 'defaultPaymentMethod' :

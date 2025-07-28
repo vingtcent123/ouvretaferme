@@ -160,9 +160,9 @@ class ProductLib extends ProductCrud {
 					'eItemTotal' => Item::model()
 						->select([
 							'product',
-							'all' => new \Sql('SUM(priceExcludingVat)', 'float'),
-							'year' => new \Sql('SUM(IF(EXTRACT(YEAR FROM deliveredAt) = '.date('Y').', priceExcludingVat, 0))', 'float'),
-							'yearBefore' => new \Sql('SUM(IF(EXTRACT(YEAR FROM deliveredAt) = '.(date('Y') - 1).', priceExcludingVat, 0))', 'float'),
+							'all' => new \Sql('SUM(priceStats)', 'float'),
+							'year' => new \Sql('SUM(IF(EXTRACT(YEAR FROM deliveredAt) = '.date('Y').', priceStats, 0))', 'float'),
+							'yearBefore' => new \Sql('SUM(IF(EXTRACT(YEAR FROM deliveredAt) = '.(date('Y') - 1).', priceStats, 0))', 'float'),
 						])
 						->where(new \Sql('EXTRACT(YEAR FROM deliveredAt)'), 'IN', [(int)date('Y'), (int)date('Y') - 1])
 						->group(['product'])
@@ -272,7 +272,7 @@ class ProductLib extends ProductCrud {
 			->select([
 				'sales' => Item::model()
 					->select([
-						'turnover' => new \Sql('SUM(priceExcludingVat)', 'float'),
+						'turnover' => new \Sql('SUM(priceStats)', 'float'),
 						'quantity' => new \Sql('SUM(IF(packaging IS NULL, 1, packaging) * number)', 'float'),
 					])
 					->whereDeliveredAt('BETWEEN', new \Sql(Item::model()->format($firstSale).' AND '.Item::model()->format($lastSale)))

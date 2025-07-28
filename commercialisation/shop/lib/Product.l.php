@@ -281,24 +281,6 @@ class ProductLib extends ProductCrud {
 
 	}
 
-	public static function applyDiscounts(\Collection $cProduct, array $discounts): void {
-
-		if($discounts === []) {
-			return;
-		}
-
-		foreach($cProduct as $eProduct) {
-
-			$discount = $discounts[$eProduct['farm']['id']] ?? 0;
-
-			if($discount > 0) {
-				$eProduct['price'] = round($eProduct['price'] * (1 - $discount / 100), 2);
-			}
-
-		}
-
-	}
-
 	public static function applySold(Date $eDate, \Collection $cProduct, \Collection $cGrid, \Collection $cSaleExclude = new \Collection()): \Collection {
 
 		$cItem = SaleLib::getProductsByDate($eDate, $cSaleExclude);

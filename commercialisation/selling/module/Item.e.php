@@ -6,7 +6,7 @@ class Item extends ItemElement {
 	public static function getSelection(): array {
 
 		return parent::getSelection() + [
-			'sale' => ['farm', 'hasVat', 'origin', 'type', 'taxes', 'shippingVatRate', 'shippingVatFixed', 'document', 'preparationStatus', 'shop', 'shopShared', 'marketParent', 'compositionOf', 'compositionEndAt', 'shipping', 'deliveredAt', 'customer'],
+			'sale' => ['farm', 'hasVat', 'origin', 'type', 'taxes', 'discount', 'shippingVatRate', 'shippingVatFixed', 'document', 'preparationStatus', 'shop', 'shopShared', 'marketParent', 'compositionOf', 'compositionEndAt', 'shipping', 'deliveredAt', 'customer'],
 			'customer' => ['name', 'type'],
 			'farm' => ['name'],
 			'unit' => \selling\Unit::getSelection(),

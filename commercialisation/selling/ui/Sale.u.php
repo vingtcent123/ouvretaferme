@@ -1179,16 +1179,16 @@ class SaleUi {
 		if($eSale['invoice']->notEmpty()) {
 
 			if($eSale['invoice']->isCreditNote()) {
-				$paymentList[] = '<div>'.s("Avoir").'</div>';
+				$paymentList[] = s("Avoir");
 			} else {
-				$paymentList[] =
-					'<div>'.s("Facture").'</div>'.
-					'<div>'.InvoiceUi::getPaymentStatus($eSale['invoice']).'</div>';
+				$paymentList[] = s("Facture").' '.InvoiceUi::getPaymentStatus($eSale['invoice']);
 			}
-		}
+		} else {
 
-		if($eSale['paymentMethod']->notEmpty()) {
-			$paymentList[] = self::getPaymentMethodName($eSale).' '.self::getPaymentStatus($eSale);
+			if($eSale['paymentMethod']->notEmpty()) {
+				$paymentList[] = self::getPaymentMethodName($eSale).' '.self::getPaymentStatus($eSale);
+			}
+
 		}
 
 		return implode('<br />', $paymentList);
@@ -1200,7 +1200,7 @@ class SaleUi {
 			return '';
 		}
 
-		$h = '<div class="sale-content-wrapper util-block stick-xs">';
+		$h = '<div class="util-block stick-xs">';
 			$h .= '<dl class="util-presentation util-presentation-2">';
 				$h .= '<dt>'.s("Client").'</dt>';
 				$h .= '<dd>'.CustomerUi::link($eSale['customer']).'</dd>';
@@ -1243,11 +1243,6 @@ class SaleUi {
 					$update($eSale['deliveredAt'] ? s("Planifié le {value}", \util\DateUi::numeric($eSale['deliveredAt'], \util\DateUi::DATE)) : s("Non planifié"));
 				$h .= '</dd>';
 
-				if($eSale->acceptDiscount()) {
-					$h .= '<dt>'.s("Remise commerciale").'</dt>';
-					$h .= '<dd>'.($eSale['discount'] > 0 ? s("{value} %", $eSale['discount']) : '').'</dd>';
-				}
-
 				if($eSale->acceptAnyDocument()) {
 
 					$h .= '<dt>'.s("Documents").'</dt>';
@@ -1257,32 +1252,6 @@ class SaleUi {
 
 				}
 
-				if($eSale->acceptShipping()) {
-
-					if($eSale['hasVat'] and $eSale['items'] > 0) {
-						$vatRate = 'title="'.s("Taux de TVA appliqué de {value} %", $eSale['shippingVatRate']).'"';
-					} else {
-						$vatRate = '';
-					}
-
-					$h .= '<dt>'.SaleUi::getShippingName().'</dt>';
-					$h .= '<dd '.$vatRate.'>';
-
-						if($eSale['shipping'] !== NULL) {
-
-							$shipping = \util\TextUi::money($eSale['shipping']).' '.$eSale->getTaxes();
-
-							if($eSale->isLocked() === FALSE) {
-								$h .= $eSale->quick('shipping', $shipping);
-							} else {
-								$h .= $shipping;
-							}
-
-						}
-
-					$h .= '</dd>';
-
-				}
 				if($eSale->isMarket()) {
 
 					$h .= '<dt>'.s("Logiciel de caisse").'</dt>';
@@ -1294,7 +1263,17 @@ class SaleUi {
 			}
 
 			$h .= '</dl>';
+
 		$h .= '</div>';
+
+		if(
+			(
+				($eSale->isMarket() and $eSale->isMarketPreparing() === FALSE) or
+				($eSale->isMarket() === FALSE and $eSale['items'] > 0)
+			)
+		) {
+			$h .= $this->getSummary($eSale);
+		}
 
 		return $h;
 
@@ -1321,145 +1300,97 @@ class SaleUi {
 		) {
 			if($eSale['preparationStatus'] === Sale::CONFIRMED) {
 
-				$h .= '<div class="util-block color-white bg-selling">';
+				$h .= '<div class="util-block color-white bg-selling mb-2">';
 					$h .= '<h4>'.s("Votre vente va démarrer ?").'</h4>';
 					$h .= '<p>'.s("Vous pouvez commencer à prendre les commandes avec la caisse virtuelle !").'<br/>'.s("Les quantités des produits que vous avez saisies pour préparer cette vente seront remises à zéro.").'</p>';
 					$h .= '<a data-ajax="/selling/sale:doUpdatePreparationStatus" post-id="'.$eSale['id'].'" post-preparation-status="'.Sale::SELLING.'" class="btn btn-transparent" data-confirm="'.s("C'est parti ?").'">'.\Asset::icon('cart4').'  '.s("Ouvrir le logiciel de caisse").'</a>';
 				$h .= '</div>';
 
 			} else if($eSale['preparationStatus'] === Sale::SELLING) {
-				$h .= '<a href="'.SaleUi::urlMarket($eSale).'" class="btn btn-xl btn-selling" style="width: 100%">'.\Asset::icon('cart4').'  '.s("Ouvrir le logiciel de caisse").'</a>';
+				$h .= '<a href="'.SaleUi::urlMarket($eSale).'" class="btn btn-xl btn-selling mb-2" style="width: 100%">'.\Asset::icon('cart4').'  '.s("Ouvrir le logiciel de caisse").'</a>';
 			}
 		}
-
-		if(
-			($eSale->isMarket() and $eSale->isMarketPreparing() === FALSE) or
-			($eSale->isMarket() === FALSE and $eSale['items'] > 0)
-		) {
-			$h .= $this->getSummary($eSale);
-		}
-
 
 		return $h;
 
 	}
 
-	public function getSummary(Sale $eSale, bool $onlyIncludingVat = FALSE, bool $includeMoney = FALSE): string {
+	public function getSummary(Sale $eSale): string {
 
-			$h = '<ul class="util-summarize">';
-				$h .= '<li>';
-					$h .= '<h5>'.s("Articles").'</h5>';
-					$h .= $eSale['items'];
-				$h .= '</li>';
-				if($eSale->isMarket()) {
-					$h .= '<li>';
-						$h .= '<h5>'.s("Ventes").'</h5>';
-						$h .= $eSale['marketSales'];
-					$h .= '</li>';
-				}
+		$h = '<table class="tr-bordered sale-summary">';
 
-				if($eSale['hasVat']) {
+			if($eSale['discount'] > 0) {
 
-					if($onlyIncludingVat === FALSE) {
+				$discountAmount = -1 * ($eSale['priceGross'] - $eSale['price']);
+				$taxes = $eSale->getTaxes();
 
-						if(
-							$eSale->isComposition() === FALSE or
-							$eSale['taxes'] === Sale::EXCLUDING
-						) {
-
-							$h .= '<li>';
-								$h .= '<h5>'.s("Montant HT").'</h5>';
-								$h .= \util\TextUi::money($eSale['priceExcludingVat'] ?? 0);
-							$h .= '</li>';
-
-						}
-
-						if($eSale->isComposition() === FALSE) {
-
-							$h .= '<li>';
-								$h .= '<h5>'.s("TVA").'</h5>';
-								$h .= \util\TextUi::money($eSale['vat'] ?? 0);
-							$h .= '</li>';
-
-						}
-
-					}
-
-					if(
-						$eSale->isComposition() === FALSE or
-						$eSale['taxes'] === Sale::INCLUDING
-					) {
-
-						$h .= '<li>';
-							$h .= '<h5>'.s("Montant TTC").'</h5>';
-							$h .= \util\TextUi::money($eSale['priceIncludingVat'] ?? 0);
-						$h .= '</li>';
-
-					}
-
-				} else {
-					$h .= '<li>';
-						$h .= '<h5>'.s("Montant").'</h5>';
-						$h .= \util\TextUi::money($eSale['priceIncludingVat'] ?? 0);
-					$h .= '</li>';
-				}
-
-				if($includeMoney) {
-
-					$h .= '<li style="align-self: end">';
-						$h .= '<a '.attr('onclick', 'Sale.toggleMoney('.$eSale['id'].')').' class="btn btn-outline-primary">'.s("Rendu de monnaie").'</a>';
-					$h .= '</li>';
-
-				}
-
-			$h .= '</ul>';
-
-			if($includeMoney) {
-
-				$values = [];
-
-				foreach([5, 10, 20, 50] as $value) {
-					if($eSale['priceIncludingVat'] < $value) {
-						$values[] = $value;
-					}
-				}
-
-				$values[] = floor($eSale['priceIncludingVat'] / 5) * 5 + 5;
-				$values[] = floor($eSale['priceIncludingVat'] / 10) * 10 + 10;
-				$values[] = floor($eSale['priceIncludingVat'] / 20) * 20 + 20;
-
-				$values = array_unique($values);
-				sort($values);
-
-				$form = new \util\FormUi();
-
-				$h .= '<div id="sale-money-'.$eSale['id'].'" class="hide util-overflow-sm">';
-					$h .= '<table>';
-						$h .= '<tr>';
-							$h .= '<td><h3 class="mb-0">'.s("Donné").'</h3></td>';
-							foreach($values as $value) {
-								$h .= '<td style="font-size: 1.2rem">'.\util\TextUi::money($value, precision: 0).'<td>';
-							}
-							$h .= '<td>';
-								$h .= $form->inputGroup(
-									$form->number(attributes: ['placeholder' => s("Autre"), 'id' => 'sale-money-'.$eSale['id'].'-field', 'oninput' => 'Sale.updateCustomerMoney('.$eSale['id'].', '.$eSale['priceIncludingVat'].', this)']).
-									$form->addon('€')
-								);
-							$h .= '<td>';
-						$h .= '</tr>';
-						$h .= '<tr>';
-							$h .= '<td><h3 class="mb-0">'.s("À rendre").'</h3></td>';
-							foreach($values as $value) {
-								$h .= '<td style="font-size: 1.2rem">'.\util\TextUi::money($value - $eSale['priceIncludingVat']).'<td>';
-							}
-							$h .= '<td style="font-size: 1.2rem" id="sale-money-'.$eSale['id'].'-custom"><td>';
-						$h .= '</tr>';
-					$h .= '</table>';
-				$h .= '</div>';
+				$h .= '<tr>';
+					$h .= '<td>'.s("Montant total avant remise {taxes}", ['taxes' => $taxes]).'</td>';
+					$h .= '<td class="sale-summary-value sale-summary-value-highlight">'.\util\TextUi::money($eSale['priceGross'] ?? 0).'</td>';
+				$h .= '</tr>';
+				$h .= '<tr>';
+					$h .= '<td>'.s("Remise <i>- {value} %</i>", $eSale['discount']).'</td>';
+					$h .= '<td class="sale-summary-value">'.\util\TextUi::money($discountAmount).'</td>';
+				$h .= '</tr>';
 
 			}
 
-			return $h;
+			if($eSale['hasVat']) {
+
+				switch($eSale['taxes']) {
+
+					case Sale::INCLUDING :
+
+						$h .= '<tr>';
+							$h .= '<td>'.s("Montant total TTC").'</td>';
+							$h .= '<td class="sale-summary-value sale-summary-value-highlight">'.\util\TextUi::money($eSale['priceIncludingVat'] ?? 0).'</td>';
+						$h .= '</tr>';
+
+						$h .= '<tr class="color-muted"">';
+							$h .= '<td style="padding-left: 2rem">'.s("Dont TVA").'</td>';
+							$h .= '<td class="sale-summary-value">'.\util\TextUi::money($eSale['vat'] ?? 0).'</td>';
+						$h .= '</tr>';
+
+						$h .= '<tr class="color-muted">';
+							$h .= '<td style="padding-left: 2rem">'.s("Dont montant HT").'</td>';
+							$h .= '<td class="sale-summary-value">'.\util\TextUi::money($eSale['priceExcludingVat'] ?? 0).'</td>';
+						$h .= '</tr>';
+
+						break;
+
+					case Sale::EXCLUDING :
+
+						$h .= '<tr>';
+							$h .= '<td>'.s("Montant total HT").'</td>';
+							$h .= '<td class="sale-summary-value sale-summary-value-highlight">'.\util\TextUi::money($eSale['priceExcludingVat'] ?? 0).'</td>';
+						$h .= '</tr>';
+
+						$h .= '<tr>';
+							$h .= '<td>'.s("TVA").'</td>';
+							$h .= '<td class="sale-summary-value">'.\util\TextUi::money($eSale['vat'] ?? 0).'</td>';
+						$h .= '</tr>';
+
+						$h .= '<tr>';
+							$h .= '<td>'.s("Montant total TTC").'</td>';
+							$h .= '<td class="sale-summary-value">'.\util\TextUi::money($eSale['priceIncludingVat'] ?? 0).'</td>';
+						$h .= '</tr>';
+
+						break;
+
+				}
+
+			} else {
+
+				$h .= '<tr>';
+					$h .= '<td>'.s("Montant total").'</td>';
+					$h .= '<td class="sale-summary-value sale-summary-value-highlight">'.\util\TextUi::money($eSale['priceIncludingVat'] ?? 0).'</td>';
+				$h .= '</tr>';
+
+			}
+
+		$h .= '</table>';
+
+		return $h;
 
 	}
 
@@ -1561,11 +1492,14 @@ class SaleUi {
 
 			$preparationStatus = $cSale->first()['preparationStatus'];
 
-			$h .= '<h3>'.match($preparationStatus) {
-				\selling\Sale::DELIVERED => s("Ventes terminées"),
-				\selling\Sale::DRAFT => s("Ventes en cours"),
-				\selling\Sale::CANCELED => s("Ventes annulées")
-			}.'</h3>';
+			$h .= '<h3>';
+				$h .= match($preparationStatus) {
+					\selling\Sale::DELIVERED => s("Ventes terminées"),
+					\selling\Sale::DRAFT => s("Ventes en cours"),
+					\selling\Sale::CANCELED => s("Ventes annulées")
+				};
+				$h .= '  <span class="util-badge bg-primary">'.$cSale->count().'</span>';
+			$h .= '</h3>';
 
 			if($preparationStatus === Sale::DELIVERED) {
 				$h .= $this->getPaymentMethods($eSaleMarket, $cSale, $cPaymentMethod);
@@ -1986,7 +1920,7 @@ class SaleUi {
 
 		$h = '';
 
-		$h .= $form->openAjax('/selling/sale:doUpdate');
+		$h .= $form->openAjax('/selling/sale:doUpdate', ['class' => 'sale-update-form']);
 
 			$h .= $form->hidden('id', $eSale['id']);
 
@@ -2314,10 +2248,7 @@ class SaleUi {
 
 			case 'discount' :
 				$d->append = s("%");
-				$d->after = fn(\util\FormUi $form, Sale $e) => match($e['type']) {
-					Sale::PRIVATE => \util\FormUi::info(s("Cette remise commerciale s'applique automatiquement à tous les produits ajoutés <u>ultérieurement</u> à cette vente.")),
-					Sale::PRO => \util\FormUi::info(s("Cette remise commerciale s'applique automatiquement à tous les produits ajoutés <u>ultérieurement</u> à cette vente."))
-				};
+				$d->after = \util\FormUi::info(s("La remise commerciale s'applique à l'intégralité de la vente à l'exception d'éventuels frais de livraison."));
 				break;
 
 			case 'deliveredAt' :

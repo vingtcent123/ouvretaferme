@@ -267,14 +267,7 @@ Bonne réception,
 			$price .= ' '.\selling\CustomerUi::getTaxes(Date::PRO);
 		}
 
-		$arguments = [
-			'shop' => encode($eDate['shop']['name']),
-			'date' => \util\DateUi::numeric($eDate['deliveryDate']),
-			'price' => $price
-		];
-
-
-		$title = p("✅ {value} commande pour le {date} sur {shop}", "✅ {value} commandes pour le {date} sur {shop}", $sales['number'], ['shop' => $eDate['shop']['name']]);
+		$title = p("✅ {value} commande pour le {date} sur {shop}", "✅ {value} commandes pour le {date} sur {shop}", $sales['number'], ['shop' => $eDate['shop']['name'], 'date' => \util\DateUi::numeric($eDate['deliveryDate'])]);
 
 		$items = '';
 
@@ -290,7 +283,11 @@ Bonne réception,
 
 		}
 
-		$intro = p("Vous avez reçu {value} commande d'un montant total de {price} pour la livraison du {date} sur votre boutique {shop}.", "Vous avez reçu {value} commandes d'un montant total de {price} pour la livraison du {date} sur votre boutique {shop}.", $sales['number'], $arguments)."\n\n";
+		$intro = p("Vous avez reçu {value} commande d'un montant total de {price} pour la livraison du {date} sur votre boutique {shop}.", "Vous avez reçu {value} commandes d'un montant total de {price} pour la livraison du {date} sur votre boutique {shop}.", $sales['number'], [
+			'shop' => encode($eDate['shop']['name']),
+			'date' => \util\DateUi::numeric($eDate['deliveryDate']),
+			'price' => $price
+		])."\n\n";
 		$products = s("Vos clients ont commandé :
 
 {items}

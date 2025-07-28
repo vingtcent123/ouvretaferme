@@ -453,6 +453,7 @@ class OrderUi {
 				$h .= '<tbody>';
 					$h .= '<tr>';
 
+						$h .= '<td></td>';
 						$h .= '<td>';
 							$h .= SaleUi::getShippingName();
 						$h .= '</td>';
@@ -463,8 +464,7 @@ class OrderUi {
 
 						}
 
-						$h .= '<td></td>';
-						$h .= '<td></td>';
+						$h .= '<td colspan="3"></td>';
 
 						$h .= '<td class="item-item-price text-end">';
 							$h .= \util\TextUi::money($eSale['shipping']);
@@ -483,8 +483,49 @@ class OrderUi {
 				$h .= '</tbody>';
 
 			}
+			$h .= '<tbody>';
+
+				if($eSale['discount'] > 0) {
+					$discountAmount = -1 * ($eSale['priceGross'] - $eSale['price']);
+					$h .= $this->getItemTotal($eSale, $withPackaging, s("Total avant remise"), \util\TextUi::money($eSale['priceGross']));
+					$h .= $this->getItemTotal($eSale, $withPackaging, s("Remise <i>- {value} %</i>", $eSale['discount']), \util\TextUi::money($discountAmount));
+
+				}
+
+				$h .= $this->getItemTotal($eSale, $withPackaging, s("Total"), \util\TextUi::money($eSale['price']));
+
+			$h .= '</tbody>';
 
 		$h .= '</table>';
+
+		return $h;
+
+	}
+
+	protected function getItemTotal(Sale $eSale, bool $withPackaging, string $label, string $value): string {
+
+		$h = '<tr class="order-summary-total">';
+
+		$h .= '<td></td>';
+			$h .= '<td>';
+				$h .= '<b>'.$label.'</b>';
+			$h .= '</td>';
+
+			if($withPackaging) {
+				$h .= '<td></td>';
+			}
+
+			$h .= '<td colspan="3"></td>';
+
+			$h .= '<td class="item-item-price text-end">';
+				$h .= $value;
+			$h .= '</td>';
+
+			if($eSale['hasVat'] and $eSale['type'] === Customer::PRO) {
+				$h .= '<td class="item-item-vat text-center"></td>';
+			}
+
+		$h .= '</tr>';
 
 		return $h;
 

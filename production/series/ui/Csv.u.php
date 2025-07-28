@@ -169,7 +169,7 @@ class CsvUi {
 						$params = [
 							'defaultAlleyWidth' => $eFarm['defaultAlleyWidth'],
 							'defaultBedWidth' => $eFarm['defaultBedWidth'],
-							'link' => '<a href="/farm/farm:update?id='.$eFarm['id'].'">'
+							'link' => '<a href="/farm/farm:updateProduction?id='.$eFarm['id'].'">'
 						];
 
 						if($eFarm['defaultAlleyWidth']) {
@@ -198,7 +198,7 @@ class CsvUi {
 					$h .= '<div class="util-block">';
 						$h .= '<h4 class="color-danger">'.s("Largeur des planches").'</h4>';
 						$h .= '<p>'.s("Veuillez renseigner la largeur des planches par défaut sur votre ferme pour que {siteName} puisse importer vos données.").'</p>';
-						$h .= '<a href="/farm/farm:update?id='.$eFarm['id'].'" class="btn btn-danger">'.s("Configurer les planches").'</a>';
+						$h .= '<a href="/farm/farm:updateProduction?id='.$eFarm['id'].'" class="btn btn-danger">'.s("Configurer les planches").'</a>';
 					$h .= '</div>';
 					break;
 

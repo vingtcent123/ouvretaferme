@@ -119,6 +119,10 @@ class Sale extends SaleElement {
 
 	}
 
+	public static function calculateDiscount(float $amount, int $discount): float {
+		return round($amount * $discount / 100, 2);
+	}
+
 	public function canRead(): bool {
 
 		$this->expects(['farm', 'shop', 'shopShared']);
@@ -228,6 +232,7 @@ class Sale extends SaleElement {
 
 		return (
 			$this->isMarket() === FALSE and
+			$this->isComposition() === FALSE and
 			($this['paymentMethod']->empty() or $this->isPaymentOnline() === FALSE) and
 			$this['preparationStatus'] !== Sale::CANCELED and
 			$this['invoice']->empty()
@@ -405,12 +410,7 @@ class Sale extends SaleElement {
 	}
 
 	public function acceptDiscount(): bool {
-
-		return (
-			$this->isMarket() === FALSE and
-			$this->isMarketSale() === FALSE
-		);
-
+		return $this->isSale();
 	}
 
 	public function acceptShipping(): bool {
@@ -1015,6 +1015,12 @@ class Sale extends SaleElement {
 				}
 
 
+			})
+			->setCallback('discount.prepare', function(mixed &$value): bool {
+				if($value === NULL) {
+					$value = 0;
+				}
+				return TRUE;
 			})
 			->setCallback('shopDate.check', function(\shop\Date &$eDate): bool {
 

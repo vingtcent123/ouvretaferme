@@ -41,6 +41,12 @@ tr.item-item-separator {
 
 .item-item-vignette {
 	width: 3rem;
+	text-align: center;
+}
+
+.item-item-vignette svg {
+	font-size: 2rem;
+	margin: 0.25rem 0;
 }
 
 .item-item-product {

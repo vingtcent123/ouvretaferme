@@ -78,6 +78,7 @@ class SaleModel extends \ModuleModel {
 			'hasVat' => ['bool', 'cast' => 'bool'],
 			'vat' => ['decimal', 'digits' => 8, 'decimal' => 2, 'null' => TRUE, 'cast' => 'float'],
 			'vatByRate' => ['json', 'null' => TRUE, 'cast' => 'array'],
+			'priceGross' => ['decimal', 'digits' => 8, 'decimal' => 2, 'null' => TRUE, 'cast' => 'float'],
 			'priceExcludingVat' => ['decimal', 'digits' => 8, 'decimal' => 2, 'null' => TRUE, 'cast' => 'float'],
 			'priceIncludingVat' => ['decimal', 'digits' => 8, 'decimal' => 2, 'null' => TRUE, 'cast' => 'float'],
 			'shippingVatRate' => ['decimal', 'digits' => 4, 'decimal' => 2, 'null' => TRUE, 'cast' => 'float'],
@@ -117,7 +118,7 @@ class SaleModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'document', 'farm', 'customer', 'origin', 'taxes', 'organic', 'conversion', 'type', 'discount', 'items', 'hasVat', 'vat', 'vatByRate', 'priceExcludingVat', 'priceIncludingVat', 'shippingVatRate', 'shippingVatFixed', 'shipping', 'shippingExcludingVat', 'preparationStatus', 'paymentMethod', 'paymentStatus', 'onlinePaymentStatus', 'compositionOf', 'compositionEndAt', 'marketSales', 'marketParent', 'orderFormValidUntil', 'orderFormPaymentCondition', 'invoice', 'shop', 'shopDate', 'shopLocked', 'shopShared', 'shopUpdated', 'shopPoint', 'shopComment', 'deliveryStreet1', 'deliveryStreet2', 'deliveryPostcode', 'deliveryCity', 'comment', 'stats', 'createdAt', 'createdBy', 'deliveredAt', 'expiresAt', 'statusAt', 'statusBy'
+			'id', 'document', 'farm', 'customer', 'origin', 'taxes', 'organic', 'conversion', 'type', 'discount', 'items', 'hasVat', 'vat', 'vatByRate', 'priceGross', 'priceExcludingVat', 'priceIncludingVat', 'shippingVatRate', 'shippingVatFixed', 'shipping', 'shippingExcludingVat', 'preparationStatus', 'paymentMethod', 'paymentStatus', 'onlinePaymentStatus', 'compositionOf', 'compositionEndAt', 'marketSales', 'marketParent', 'orderFormValidUntil', 'orderFormPaymentCondition', 'invoice', 'shop', 'shopDate', 'shopLocked', 'shopShared', 'shopUpdated', 'shopPoint', 'shopComment', 'deliveryStreet1', 'deliveryStreet2', 'deliveryPostcode', 'deliveryCity', 'comment', 'stats', 'createdAt', 'createdBy', 'deliveredAt', 'expiresAt', 'statusAt', 'statusBy'
 		]);
 
 		$this->propertiesToModule += [
@@ -305,6 +306,10 @@ class SaleModel extends \ModuleModel {
 
 	public function whereVatByRate(...$data): SaleModel {
 		return $this->where('vatByRate', ...$data);
+	}
+
+	public function wherePriceGross(...$data): SaleModel {
+		return $this->where('priceGross', ...$data);
 	}
 
 	public function wherePriceExcludingVat(...$data): SaleModel {

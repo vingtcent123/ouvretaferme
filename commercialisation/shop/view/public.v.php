@@ -149,10 +149,10 @@ new AdaptativeView('shop', function($data, ShopTemplate $t) {
 		if(array_sum($data->discounts) > 0) {
 
 			if($data->eShop['shared']) {
-				$details[] = Asset::icon('check-lg').'  '.s("Les prix affichés incluent vos remises commerciales chez certains producteurs");
+				$details[] = Asset::icon('check-lg').'  '.s("Vos remises commerciales chez certains producteurs seront prises en compte à l'étape suivante");
 			} else {
 				$discount = $data->discounts[$data->eShop['farm']['id']];
-				$details[] = Asset::icon('check-lg').'  '.s("Les prix affichés incluent votre remise commerciale de {value} %", $discount);
+				$details[] = Asset::icon('check-lg').'  '.s("Votre remise commerciale de {value} % sera prise en compte à l'étape suivante", $discount);
 			}
 		}
 
@@ -210,7 +210,7 @@ new AdaptativeView('/shop/public/{fqn}/{date}/panier', function($data, ShopTempl
 
 new JsonView('/shop/public/{fqn}/{date}/:getBasket', function($data, AjaxTemplate $t) {
 
-	$t->push('basketSummary', new \shop\BasketUi()->getSummary($data->eShop, $data->eDate, $data->cItemExisting, $data->basket));
+	$t->push('basketSummary', new \shop\BasketUi()->getSummary($data->eShop, $data->eDate, $data->cItemExisting, $data->basketByFarm));
 	$t->push('basketPrice', $data->price);
 	$t->push('basketApproximate', $data->approximate);
 	$t->push('basketProducts', $data->basketProducts);

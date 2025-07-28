@@ -269,24 +269,11 @@ class PdfUi {
 						if($eSale['shipping']) {
 
 							$h .= '<tr>';
-								$h .= '<td colspan="'.($withPackaging ? 4 : 3).'"></td>';
-								$h .= '<td colspan="2">';
-
-									$h .= '<div class="pdf-document-total">';
-
-										if($eSale['shipping']) {
-											$h .= '<div class="pdf-document-total-label">';
-												$h .= s("Frais de<br/>livraison").' '.$eSale->getTaxes();
-											$h .= '</div>';
-											$h .= '<div class="pdf-document-total-value">';
-												$h .= \util\TextUi::money($eSale['shipping']);
-											$h .= '</div>';
-										}
-
-									$h .= '</div>';
-
+								$h .= '<td colspan="'.($withPackaging ? 5 : 4).'">'.SaleUi::getShippingName().'</td>';
+								$h .= '<td class="pdf-document-price">';
+									$h .= \util\TextUi::money($eSale['shipping']);
 								$h .= '</td>';
-								if($eSale['hasVat'] and $type === Pdf::INVOICE) {
+								if($eSale['hasVat'] and $type !== Pdf::DELIVERY_NOTE) {
 									$h .= '<td class="pdf-document-vat">';
 										$h .= s("{value} %", $eSale['shippingVatRate']);
 									$h .= '</td>';
@@ -362,33 +349,21 @@ class PdfUi {
 
 						foreach($cSale as $eSale) {
 
+							$h .= '<tr class="pdf-document-item pdf-document-item-main">';
+								$h .= '<td class="pdf-document-product" colspan="3">';
+									$h .= s("Livraison du {value}", \util\DateUi::numeric($eSale['deliveredAt']));
+									if($eSale['cPdf']->offsetExists(Pdf::DELIVERY_NOTE)) {
+										$h .= '<div class="pdf-document-product-details">';
+											$h .= s("Bon de livraison {value}", $eSale->getDeliveryNote($eFarm));
+										$h .= '</div>';
+									}
+								$h .= '</td>';
+								$h .= '<td colspan="'.($eInvoice['hasVat'] ? 3 : 2).'"></td>';
+							$h .= '</tr>';
+
 							foreach($eSale['vatByRate'] as $key => ['vat' => $vat, 'vatRate' => $vatRate, 'amount' => $amount]) {
 
 								$vatRate = (float)$vatRate;
-
-								$h .= '<tr class="pdf-document-item pdf-document-item-main">';
-									$h .= '<td class="pdf-document-product" colspan="3">';
-										$h .= s("Livraison du {value}", \util\DateUi::numeric($eSale['deliveredAt']));
-										if($eSale['cPdf']->offsetExists(Pdf::DELIVERY_NOTE)) {
-											$h .= '<div class="pdf-document-product-details">';
-												$h .= s("Bon de livraison {value}", $eSale->getDeliveryNote($eFarm));
-											$h .= '</div>';
-										}
-									$h .= '</td>';
-									$h .= '<td></td>';
-									if($eInvoice['hasVat']) {
-										$h .= '<td class="pdf-document-price">';
-											$h .= \util\TextUi::money($amount);
-										$h .= '</td>';
-										$h .= '<td class="pdf-document-vat">';
-											$h .= s('{value} %', $vatRate);
-										$h .= '</td>';
-									} else {
-										$h .= '<td class="pdf-document-price">';
-											$h .= \util\TextUi::money($amount);
-										$h .= '</td>';
-									}
-								$h .= '</tr>';
 
 								foreach($eSale['cItem'] as $eItem) {
 
@@ -400,23 +375,62 @@ class PdfUi {
 
 								}
 
-								if(
-									$eSale['shipping'] and
-									$eSale['shippingVatRate'] === $vatRate
-								) {
-									$h .= $this->getDetailTableItem($eSale, new Item([
-										'name' => SaleUi::getShippingName(),
-										'product' => new Product(),
-										'quality' => NULL,
-										'number' => NULL,
-										'packaging' => NULL,
-										'unit' => new Unit(),
-										'unitPrice' => NULL,
-										'price' => $eSale['shipping']
-									]));
-								}
+							}
+
+							if($eSale['shipping']) {
+								$h .= $this->getDetailTableItem($eSale, new Item([
+									'name' => SaleUi::getShippingName(),
+									'product' => new Product(),
+									'quality' => NULL,
+									'number' => NULL,
+									'packaging' => NULL,
+									'unit' => new Unit(),
+									'unitPrice' => NULL,
+									'price' => $eSale['shipping'],
+									'vatRate' => $eSale['shippingVatRate']
+								]));
+							}
+
+							if($eSale['discount'] > 0) {
+
+								$discountAmount = -1 * ($eSale['priceGross'] - $eSale['price']);
+
+								$h .= '<tr class="pdf-document-item pdf-document-item-subtotal">';
+									$h .= '<td class="pdf-document-product" colspan="4">';
+										$h .= s("Total de la livraison avant remise");
+									$h .= '</td>';
+									$h .= '<td class="pdf-document-price">';
+										$h .= \util\TextUi::money($eSale['priceGross']);
+									$h .= '</td>';
+									if($eInvoice['hasVat']) {
+										$h .= '<td></td>';
+									}
+								$h .= '</tr>';
+								$h .= '<tr class="pdf-document-item pdf-document-item-subtotal">';
+									$h .= '<td class="pdf-document-product" colspan="4">';
+										$h .= s("Remise <i>- {value} %</i>", $eSale['discount']);
+									$h .= '</td>';
+									$h .= '<td class="pdf-document-price">';
+										$h .= \util\TextUi::money($discountAmount);
+									$h .= '</td>';
+									if($eInvoice['hasVat']) {
+										$h .= '<td></td>';
+									}
+								$h .= '</tr>';
 
 							}
+
+							$h .= '<tr class="pdf-document-item pdf-document-item-subtotal">';
+								$h .= '<td class="pdf-document-product" colspan="4">';
+									$h .= s("Total de la livraison");
+								$h .= '</td>';
+								$h .= '<td class="pdf-document-price">';
+									$h .= \util\TextUi::money($eSale['price']);
+								$h .= '</td>';
+								if($eInvoice['hasVat']) {
+									$h .= '<td></td>';
+								}
+							$h .= '</tr>';
 
 						}
 
@@ -469,7 +483,9 @@ class PdfUi {
 			$h .= '</td>';
 
 			if($eSale['hasVat']) {
-				$h .= '<td></td>';
+				$h .= '<td class="pdf-document-vat">';
+					$h .= s('{value} %', $eItem['vatRate']);
+				$h .= '</td>';
 			}
 		$h .= '</tr>';
 
@@ -532,6 +548,30 @@ class PdfUi {
 
 				$h .= '<div class="pdf-document-total">';
 
+					$taxes = $e->getTaxes();
+
+					if(
+						$e instanceof Sale and
+						$e['discount'] > 0
+					) {
+
+						$discountAmount = -1 * ($e['priceGross'] - $e['price']);
+
+						$h .= '<div class="pdf-document-total-label">';
+							$h .= s("Total {taxes}<br/>avant remise", ['taxes' => $taxes]);
+						$h .= '</div>';
+						$h .= '<div class="pdf-document-total-value">';
+							$h .= \util\TextUi::money($e['priceGross']);
+						$h .= '</div>';
+						$h .= '<div class="pdf-document-total-label">';
+							$h .= s("Remise").' <i>- '.s("{value} %", $e['discount']).'</i>';
+						$h .= '</div>';
+						$h .= '<div class="pdf-document-total-value">';
+							$h .= \util\TextUi::money($discountAmount);
+						$h .= '</div>';
+
+					}
+
 					if($e['hasVat']) {
 
 						if($type !== Pdf::DELIVERY_NOTE) {
@@ -556,8 +596,6 @@ class PdfUi {
 							$h .= '</div>';
 
 						} else {
-
-							$taxes = $e->getTaxes();
 
 							$h .= '<div class="pdf-document-total-label">';
 								$h .= s("Total {value}", $taxes);

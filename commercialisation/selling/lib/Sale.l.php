@@ -712,7 +712,7 @@ class SaleLib extends SaleCrud {
 
 			if($eSaleNew->isMarket()) {
 
-				unset($eItem['price'], $eItem['priceExcludingVat']);
+				unset($eItem['price'], $eItem['priceStats']);
 
 			}
 
@@ -878,6 +878,20 @@ class SaleLib extends SaleCrud {
 
 		if(in_array('type', $properties)) {
 			$newItems['type'] = $e['type'];
+		}
+
+		if(in_array('discount', $properties)) {
+
+			$newItems['discount'] = $e['discount'];
+
+			$priceExcludingVat = match($e['taxes']) {
+				Sale::INCLUDING => 'price / (1 + vatRate / 100)',
+				Sale::EXCLUDING => 'price',
+				NULL => 'price'
+			};
+
+			$newItems['priceStats'] = new \Sql('ROUND('.$priceExcludingVat.' * (100 - '.$e['discount'].') / 100 * 100) / 100');
+
 		}
 
 		if($newItems) {
@@ -1187,7 +1201,7 @@ class SaleLib extends SaleCrud {
 	 */
 	public static function recalculate(Sale $e): void {
 
-		$e->expects(['farm', 'taxes', 'shippingVatRate', 'shippingVatFixed']);
+		$e->expects(['farm', 'discount', 'taxes', 'shippingVatRate', 'shippingVatFixed']);
 
 		$cItem = Item::model()
 			->select(ItemElement::getSelection())
@@ -1259,6 +1273,33 @@ class SaleLib extends SaleCrud {
 
 		}
 
+		// On applique la remise commerciale
+		if($e['discount'] > 0) {
+
+			$total = array_sum($vatList);
+			$totalDiscount = Sale::calculateDiscount($total, $e['discount']);
+
+			$position = 0;
+
+			foreach($vatList as $rate => $amount) {
+
+				if(++$position === count($vatList)) {
+					$discount = $totalDiscount;
+				} else {
+					$discount = Sale::calculateDiscount($amount, $e['discount']);
+					$totalDiscount -= $discount;
+				}
+
+				$vatList[$rate] = round($amount - $discount, 2);
+
+			}
+
+			$newValues['priceGross'] = round($total, 2);
+
+		} else {
+			$newValues['priceGross'] = NULL;
+		}
+
 		if($e['shipping'] !== NULL) {
 
 			if($e['shippingVatFixed'] === FALSE) {
@@ -1283,6 +1324,10 @@ class SaleLib extends SaleCrud {
 
 			$vatList[(string)$shippingVatRate] ??= 0;
 			$vatList[(string)$shippingVatRate] += $e['shipping'];
+
+			if($newValues['priceGross'] !== NULL) {
+				$newValues['priceGross'] += $e['shipping'];
+			}
 
 		} else {
 			$newValues['shippingExcludingVat'] = NULL;

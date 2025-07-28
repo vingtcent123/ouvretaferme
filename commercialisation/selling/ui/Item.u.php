@@ -14,7 +14,7 @@ class ItemUi {
 		return p('{value} article', '{value} articles', $cItem->count());
 	}
 
-	public function getBySale(Sale $eSale, \shop\Shop $eShop, \Collection $cItem) {
+	public function getBySale(Sale $eSale, \Collection $cItem) {
 
 		$eItemCreate = new Item([
 			'sale' => $eSale,
@@ -25,19 +25,32 @@ class ItemUi {
 
 		if($eSale->isComposition()) {
 			$h .= '<div class="util-title">';
-				$h .= '<h3>';
-					if(
-						$eSale['compositionEndAt'] === NULL or
-						$eSale['deliveredAt'] === $eSale['compositionEndAt']
-					) {
-						$h .= s("Composition du {value}", \util\DateUi::numeric($eSale['deliveredAt']));
-					} else {
-						$h .= s("Composition du {from}<small> au {to}</small>", ['from' => \util\DateUi::numeric($eSale['deliveredAt']), 'to' => \util\DateUi::numeric($eSale['compositionEndAt']), 'small' => '<small class="color-muted" style="font-weight: normal">']);
-					}
-					if($eSale->acceptUpdateComposition() === FALSE) {
-						$h .= ' '.\Asset::icon('lock-fill');
-					}
-				$h .= '</h3>';
+				$h .= '<div>';
+					$h .= '<h3 class="mb-1">';
+						if(
+							$eSale['compositionEndAt'] === NULL or
+							$eSale['deliveredAt'] === $eSale['compositionEndAt']
+						) {
+							$h .= s("Composition du {value}", \util\DateUi::numeric($eSale['deliveredAt']));
+						} else {
+							$h .= s("Composition du {from}<small> au {to}</small>", ['from' => \util\DateUi::numeric($eSale['deliveredAt']), 'to' => \util\DateUi::numeric($eSale['compositionEndAt']), 'small' => '<small class="color-muted" style="font-weight: normal">']);
+						}
+						if($eSale->acceptUpdateComposition() === FALSE) {
+							$h .= ' '.\Asset::icon('lock-fill');
+						}
+
+					$h .= '</h3>';
+					$h .= '<h4>';
+
+						$value = '<span class="util-badge bg-primary">'.match($eSale['taxes']) {
+							Sale::EXCLUDING => \util\TextUi::money($eSale['priceExcludingVat'] ?? 0),
+							Sale::INCLUDING => \util\TextUi::money($eSale['priceIncludingVat'] ?? 0),
+						}.'</span> <small class="color-muted">'.SaleUi::getTaxes($eSale['taxes']).'</small>';
+
+						$h .= s("Valeur de {value}", $value);
+
+					$h .= '</h4>';
+				$h .= '</div>';
 				if($eSale->acceptUpdateComposition()) {
 					$h .= new SaleUi()->getUpdate($eSale, 'btn-outline-primary');
 				}
@@ -77,7 +90,7 @@ class ItemUi {
 		$h .= new \selling\SaleUi()->getStats($eSale);
 
 		if($eSale['comment']) {
-			$h .= '<div class="util-block">';
+			$h .= '<div class="util-block mb-2">';
 				$h .= '<h4>'.s("Commentaire interne").'</h4>';
 				$h .= encode($eSale['comment']).' &raquo;';
 			$h .= '</div>';
@@ -93,12 +106,19 @@ class ItemUi {
 		if($eSale->isComposition() === FALSE) {
 			$h .= '<div class="util-title">';
 
-				if($eSale->isMarketPreparing()) {
-					$h .= '<h3>'.s("Articles disponibles dans la caisse").'</h3>';
-				} else {
-					$h .= '<h3>'.s("Articles").'</h3>';
-				}
+				$h .= '<h3>';
 
+					if($eSale->isMarketPreparing()) {
+						$h .= s("Articles disponibles dans la caisse");
+					} else {
+						$h .= s("Articles");
+					}
+
+					$articles = $cItem->count() + ($eSale['discount'] !== NULL ? 1 : 0);
+
+					$h .= '  <span class="util-badge bg-primary">'.$articles.'</span>';
+
+				$h .= '</h3>';
 
 				if(
 					$eSale->acceptCreateItems() and
@@ -201,6 +221,38 @@ class ItemUi {
 
 					$h .= $this->getItemsBody($eSale, $cItem, $columns, $withPackaging);
 
+					if($eSale['shipping'] !== NULL) {
+
+						$h .= '<tbody>';
+							$h .= '<tr>';
+								$h .= '<td class="item-item-vignette">'.\Asset::icon('truck').'</td>';
+								$h .= '<td colspan="'.($withPackaging ? 3 : 2).'">'.SaleUi::getShippingName().'</td>';
+								$h .= '<td class="hide-sm-down" colspan="2"></td>';
+
+								$h .= '<td class="item-item-price text-end">';
+									$shipping = \util\TextUi::money($eSale['shipping']);
+
+									if($eSale->isLocked() === FALSE) {
+										$h .= $eSale->quick('shipping', $shipping);
+									} else {
+										$h .= $shipping;
+									}
+								$h .= '</td>';
+
+								if($eSale['hasVat']) {
+									$h .= '<td class="item-item-vat text-center hide-sm-down">';
+										$h .= s("{value} %", $eSale['shippingVatRate']);
+									$h .= '</td>';
+								}
+
+								$h .= '<td class="text-end">';
+									$h .= '<a href="/selling/sale:update?id='.$eSale['id'].'" class="btn btn-sm btn-outline-secondary">'.\Asset::icon('gear-fill').'</a>';
+								$h .= '</td>';
+							$h .= '</tr>';
+						$h .= '</tbody>';
+
+					}
+
 			$h .= '</table>';
 
 			$h .= '</div>';
@@ -257,7 +309,7 @@ class ItemUi {
 
 				$h .= '<tr class="item-item-line-1">';
 					$h .= '<td class="item-item-vignette" rowspan="2">'.$vignette.'</td>';
-					$h .= '<td class="hide-md-up" colspan="'.$columns.'" style="border-bottom: 1px dashed var(--border)">';
+					$h .= '<td class="hide-md-up" colspan="'.($columns - 3).'" style="border-bottom: 1px dashed var(--border)">';
 						$h .= '<div class="item-item-product">';
 							$h .= '<div>'.$product.'</div>';
 							if($description) {
@@ -1045,7 +1097,6 @@ class ItemUi {
 					$h .= $form->dynamicGroup($eItem, 'quality[0]');
 
 					$h .= $form->hidden('product[0]', $eProduct['id']);
-					$h .= $form->hidden('discount[0]', $eItem['sale']['discount']);
 					$h .= $form->hidden('unit[0]', $eProduct['unit']);
 					$h .= $form->hidden('locked[0]', Item::PRICE);
 

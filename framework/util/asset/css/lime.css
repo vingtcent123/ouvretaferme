@@ -1482,7 +1482,7 @@ dl.util-presentation {
 	margin: 0;
 	padding: 0;
 	grid-column-gap: 1rem;
-	grid-row-gap: 0.25rem;
+	grid-row-gap: 0.5rem;
 	grid-auto-rows: min-content;
 	align-items: baseline;
 }
@@ -1492,7 +1492,7 @@ dl.util-presentation-max-content {
 	margin: 0;
 	padding: 0;
 	grid-column-gap: 1rem;
-	grid-row-gap: 0.125rem;
+	grid-row-gap: 0.25rem;
 	grid-auto-rows: min-content;
 	align-items: baseline;
 }
@@ -1509,6 +1509,10 @@ dl.util-presentation-max-content {
 
 	dl.util-presentation-1 {
 		grid-template-columns: auto 1fr;
+	}
+
+	dl.util-presentation-auto.util-presentation-1 {
+		grid-template-columns: auto auto;
 	}
 
 	dl.util-presentation-2,

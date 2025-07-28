@@ -159,7 +159,7 @@ class MarketLib {
 				'parent',
 				'totalNumber' => new \Sql('SUM(number)', 'float'),
 				'totalPrice' => new \Sql('SUM(price)', 'float'),
-				'totalPriceExcludingVat' => new \Sql('SUM(priceExcludingVat)', 'float'),
+				'totalPriceStats' => new \Sql('SUM(priceStats)', 'float'),
 			])
 			->whereParent('IN', $cItemMarket)
 			->whereStatus(Sale::DELIVERED)
@@ -175,19 +175,19 @@ class MarketLib {
 				$eItemMarket->merge([
 					'number' => round($eItemSaled['totalNumber'], 2),
 					'price' => round($eItemSaled['totalPrice'], 2),
-					'priceExcludingVat' => round($eItemSaled['totalPriceExcludingVat'], 2)
+					'priceStats' => round($eItemSaled['totalPriceStats'], 2)
 				]);
 
 			} else {
 				$eItemMarket->merge([
 					'number' => 0.0,
 					'price' => 0.0,
-					'priceExcludingVat' => 0.0
+					'priceStats' => 0.0
 				]);
 			}
 
 			Item::model()
-				->select('number', 'price', 'priceExcludingVat')
+				->select('number', 'price', 'priceStats')
 				->update($eItemMarket);
 
 			if($eItemMarket['productComposition']) {

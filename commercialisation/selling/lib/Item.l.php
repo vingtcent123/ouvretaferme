@@ -95,12 +95,6 @@ class ItemLib extends ItemCrud {
 				Customer::PRO => $eProduct->calcProMagicPrice($eSale['hasVat']),
 				Customer::PRIVATE => $eProduct->calcPrivateMagicPrice($eSale['hasVat']),
 			};
-
-			// La réduction s'applique uniquement pour les produits qui disposent d'un prix pour ce type de client (particulier / professionnel)
-			if($eSale['discount'] > 0 and $eItem['unitPrice'] !== NULL) {
-				$eItem['baseUnitPrice'] = $eItem['unitPrice'];
-				$eItem['unitPrice'] = round($eItem['unitPrice'] * (1 - $eSale['discount'] / 100), 2);
-			}
 			
 		} else {
 
@@ -164,7 +158,7 @@ class ItemLib extends ItemCrud {
 
 		return Item::model()
 			->select([
-				'sale' => ['farm', 'shop', 'shopShared', 'hasVat', 'taxes', 'shippingVatRate', 'shippingVatFixed', 'document'],
+				'sale' => ['farm', 'shop', 'shopShared', 'hasVat', 'taxes', 'discount', 'shippingVatRate', 'shippingVatFixed', 'document'],
 				'customer' => ['type', 'name'],
 				'quantity' => new \Sql('IF(packaging IS NULL, 1, packaging) * number', 'float'),
 				'unit' => \selling\Unit::getSelection(),
@@ -450,7 +444,7 @@ class ItemLib extends ItemCrud {
 		foreach($cItemCopy as $eItemCopy) {
 
 			$copyPrice = ($ratio !== NULL) ? $eItemCopy['price'] * $ratio : $eItemComposition['price'] / $cItemCopy->count();
-			$copyPriceExcludingVat = ($ratio !== NULL) ? $eItemCopy['priceExcludingVat'] * $ratio : $eItemComposition['priceExcludingVat'] / $cItemCopy->count();
+			$copyPriceStats = ($ratio !== NULL) ? $eItemCopy['priceStats'] * $ratio : $eItemComposition['priceStats'] / $cItemCopy->count();
 			$copyPackaging = $eItemCopy['packaging'];
 			$copyNumber = $eItemCopy['number'] * $eItemComposition['number'] * ($eItemComposition['packaging'] ?? 1);
 
@@ -468,7 +462,7 @@ class ItemLib extends ItemCrud {
 			  'unitPrice' => ($copyNumber > 0 and $copyPackaging > 0) ? $copyPrice / $copyNumber / $copyPackaging : $eItemCopy['unitPrice'],
 			  'number' => $copyNumber,
 			  'price' => $copyPrice,
-			  'priceExcludingVat' => $copyPriceExcludingVat,
+			  'priceStats' => $copyPriceStats,
 			  'vatRate' => $eItemCopy['vatRate'],
 			  'stats' => $eItemComposition['stats']
 			]);
@@ -579,7 +573,7 @@ class ItemLib extends ItemCrud {
 
 		$e->expects([
 			'sale' => [
-				'deliveredAt', 'preparationStatus', 'shop', 'shopDate', 'type', 'stats', 'hasVat'
+				'deliveredAt', 'preparationStatus', 'shop', 'shopDate', 'type', 'stats', 'hasVat', 'discount'
 			],
 		]);
 
@@ -594,6 +588,7 @@ class ItemLib extends ItemCrud {
 		$e['shopDate'] = $eSale['shopDate'];
 		$e['shopProduct'] ??= new \shop\Product();
 		$e['type'] = $eSale['type'];
+		$e['discount'] = $eSale['discount'];
 		$e['stats'] = $eSale['stats'];
 		$e['status'] = $eSale['preparationStatus'];
 		$e['productComposition'] = $e['product']->notEmpty() ? $e['product']['composition'] : FALSE;
@@ -611,7 +606,7 @@ class ItemLib extends ItemCrud {
 		$e->expects([
 			'sale' => ['farm', 'taxes', 'origin'],
 			'locked',
-			'unitPrice', 'number', 'packaging', 'vatRate'
+			'unitPrice', 'number', 'packaging', 'vatRate', 'discount'
 		]);
 
 		if($e['sale']->isMarket()) {
@@ -619,15 +614,15 @@ class ItemLib extends ItemCrud {
 			// Marché en cours, à priori zéro vente à la création
 			if($e['sale']['preparationStatus'] === Sale::SELLING) {
 				$e['price'] = 0.0;
-				$e['priceExcludingVat'] = 0.0;
+				$e['priceStats'] = 0.0;
 				$e['number'] = 0.0;
 			} else {
 				$e['price'] = NULL;
-				$e['priceExcludingVat'] = NULL;
+				$e['priceStats'] = NULL;
 			}
 
 			$properties[] = 'price';
-			$properties[] = 'priceExcludingVat';
+			$properties[] = 'priceStats';
 
 		} else {
 
@@ -685,15 +680,27 @@ class ItemLib extends ItemCrud {
 
 			}
 
-			$e['priceExcludingVat'] = match($e['sale']['taxes']) {
-				Sale::INCLUDING => round($e['price'] / (1 + $e['vatRate'] / 100), 2),
-				Sale::EXCLUDING => $e['price'],
-				NULL => $e['price']
-			};
+			self::preparePriceStats($e);
 
 		}
 
-		$properties[] = 'priceExcludingVat';
+		$properties[] = 'priceStats';
+
+	}
+
+	public static function preparePriceStats(Item $e): void {
+
+		$priceStats = match($e['sale']['taxes']) {
+			Sale::INCLUDING => $e['price'] / (1 + $e['vatRate'] / 100),
+			Sale::EXCLUDING => $e['price'],
+			NULL => $e['price']
+		};
+
+		if($e['discount'] > 0) {
+			$priceStats *= (100 - $e['discount']) / 100;
+		}
+
+		$e['priceStats'] = round($priceStats, 2);
 
 	}
 
@@ -732,10 +739,11 @@ class ItemLib extends ItemCrud {
 			$eItem = new Item([
 				'sale' => $eSale,
 				'farm' => $eSale['farm'],
-				'customer' => $eSale['customer']
+				'customer' => $eSale['customer'],
+				'discount' => $eSale['discount']
 			]);
 
-			$eItem->buildIndex(['product', 'quality', 'name', 'packaging', 'locked', 'discount', 'unit', 'unitPrice', 'number', 'price', 'vatRate'], $input, $position, new \Properties('create'));
+			$eItem->buildIndex(['product', 'quality', 'name', 'packaging', 'locked', 'unit', 'unitPrice', 'number', 'price', 'vatRate'], $input, $position, new \Properties('create'));
 
 			$cItem[] = $eItem;
 

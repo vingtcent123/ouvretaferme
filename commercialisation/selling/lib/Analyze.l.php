@@ -52,9 +52,9 @@ class AnalyzeLib {
 			->select([
 				'month' => new \Sql('EXTRACT(MONTH FROM deliveredAt)', 'int'),
 				'quantity' => new \Sql('SUM(IF(packaging IS NULL, 1, packaging) * number)', 'float'),
-				'turnover' => new \Sql('SUM(priceExcludingVat)', 'float'),
+				'turnover' => new \Sql('SUM(priceStats)', 'float'),
 				'unit' => \selling\Unit::getSelection(),
-				'average' => new \Sql('SUM(priceExcludingVat) / SUM(IF(packaging IS NULL, 1, packaging) * number)', 'float')
+				'average' => new \Sql('SUM(priceStats) / SUM(IF(packaging IS NULL, 1, packaging) * number)', 'float')
 			])
 			->join(Customer::model(), 'm1.customer = m2.id')
 			->where('number != 0')
@@ -94,9 +94,9 @@ class AnalyzeLib {
 				'month' => new \Sql('EXTRACT(MONTH FROM deliveredAt)', 'int'),
 				'products' => new \Sql('COUNT(DISTINCT product)'),
 				'customers' => new \Sql('COUNT(DISTINCT customer)'),
-				'turnover' => new \Sql('SUM(priceExcludingVat)', 'float'),
-				'turnoverPrivate' => new \Sql('SUM(IF(type="'.Customer::PRIVATE.'", priceExcludingVat, 0))', 'float'),
-				'turnoverPro' => new \Sql('SUM(IF(type="'.Customer::PRO.'", priceExcludingVat, 0))', 'float')
+				'turnover' => new \Sql('SUM(priceStats)', 'float'),
+				'turnoverPrivate' => new \Sql('SUM(IF(type="'.Customer::PRIVATE.'", priceStats, 0))', 'float'),
+				'turnoverPro' => new \Sql('SUM(IF(type="'.Customer::PRO.'", priceStats, 0))', 'float')
 			])
 			->where(new \Sql('EXTRACT(YEAR FROM deliveredAt)'), $year)
 			->group(new \Sql('month'))
@@ -164,7 +164,7 @@ class AnalyzeLib {
 		return Item::model()
 			->select([
 				'week' => new \Sql('WEEK(deliveredAt, 1)', 'int'),
-				'turnover' => new \Sql('SUM(priceExcludingVat)', 'float')
+				'turnover' => new \Sql('SUM(priceStats)', 'float')
 			])
 			->where(new \Sql('EXTRACT(YEAR FROM deliveredAt)'), $year)
 			->group(new \Sql('week'))
@@ -226,7 +226,7 @@ class AnalyzeLib {
 			->select([
 				'year' => new \Sql('EXTRACT(YEAR FROM deliveredAt)', 'int'),
 				'customer' => ['type', 'name'],
-				'turnover' => new \Sql('SUM(priceExcludingVat)', 'float')
+				'turnover' => new \Sql('SUM(priceStats)', 'float')
 			])
 			->join(Customer::model(), 'm1.customer = m2.id')
 			->where(new \Sql('EXTRACT(YEAR FROM deliveredAt)'), 'IN', [$year, $year - 1])
@@ -266,7 +266,7 @@ class AnalyzeLib {
 			->select([
 				'year' => new \Sql('EXTRACT(YEAR FROM deliveredAt)', 'int'),
 				'type',
-				'turnover' => new \Sql('SUM(priceExcludingVat)', 'float')
+				'turnover' => new \Sql('SUM(priceStats)', 'float')
 			])
 			->join(Customer::model(), 'm1.customer = m2.id')
 			->where(new \Sql('EXTRACT(YEAR FROM deliveredAt)'), 'IN', [$year, $year - 1])
@@ -296,7 +296,7 @@ class AnalyzeLib {
 			->select([
 				'month' => new \Sql('EXTRACT(MONTH FROM deliveredAt)', 'int'),
 				'customer',
-				'turnover' => new \Sql('SUM(priceExcludingVat)', 'float')
+				'turnover' => new \Sql('SUM(priceStats)', 'float')
 			])
 			->join(Customer::model(), 'm1.customer = m2.id')
 			->where(new \Sql('EXTRACT(YEAR FROM deliveredAt)'), $year)
@@ -411,14 +411,14 @@ class AnalyzeLib {
 
 		return Item::model()
 			->select([
-				'turnover' => new \Sql('SUM(priceExcludingVat)', 'float'),
+				'turnover' => new \Sql('SUM(priceStats)', 'float'),
 				'turnoverGlobal' => new SaleModel()
 					->select([
 						'year' => new \Sql('EXTRACT(YEAR FROM deliveredAt)', 'float')
 					])
 					->whereFarm($cProduct->first()['farm'])
 					->group(new \Sql('year'))
-					->delegateProperty('year', new \Sql('SUM(priceExcludingVat)', 'float'), propertyParent: 'year'),
+					->delegateProperty('year', new \Sql('SUM(priceStats)', 'float'), propertyParent: 'year'),
 				'year' => new \Sql('EXTRACT(YEAR FROM deliveredAt)', 'int'),
 			])
 			->whereProduct('IN', $cProduct)
@@ -438,7 +438,7 @@ class AnalyzeLib {
 
 		return Item::model()
 			->select([
-				'turnover' => new \Sql('SUM(priceExcludingVat)', 'float'),
+				'turnover' => new \Sql('SUM(priceStats)', 'float'),
 				'quantity' => new \Sql('SUM(IF(packaging IS NULL, 1, packaging) * number)', 'float'),
 				'product'
 			])
@@ -454,7 +454,7 @@ class AnalyzeLib {
 
 		Item::model()->where('m1.sale', $eSale);
 
-		return self::getProducts($eSale['farm'], field: $displayExcludingVat ? 'priceExcludingVat' : 'price');
+		return self::getProducts($eSale['farm'], field: $displayExcludingVat ? 'priceStats' : 'price');
 
 	}
 
@@ -514,7 +514,7 @@ class AnalyzeLib {
 
 	}
 
-	private static function getProducts(\farm\Farm $eFarm, ?int $year = NULL, ?int $month = NULL, ?string $week = NULL, \Search $search = new \Search(), string $field = 'priceExcludingVat'): \Collection {
+	private static function getProducts(\farm\Farm $eFarm, ?int $year = NULL, ?int $month = NULL, ?string $week = NULL, \Search $search = new \Search(), string $field = 'priceStats'): \Collection {
 
 		if($search->get('type')) {
 			Item::model()->where('m2.type', $search->get('type'));
@@ -564,14 +564,14 @@ class AnalyzeLib {
 			$mItem
 				->where('m1.status', 'IN', [Sale::DELIVERED, Sale::CLOSED])
 				->where('m1.stats', TRUE)
-				->where('m1.priceExcludingVat', '!=', NULL);
+				->where('m1.priceStats', '!=', NULL);
 
 		} else {
 
 			$mItem
 				->whereStatus('IN', [Sale::DELIVERED, Sale::CLOSED])
 				->whereStats(TRUE)
-				->wherePriceExcludingVat('!=', NULL);
+				->wherePriceStats('!=', NULL);
 
 		}
 
@@ -619,8 +619,8 @@ class AnalyzeLib {
 				'month' => new \Sql('EXTRACT(MONTH FROM deliveredAt)', 'int'),
 				'product',
 				'quantity' => new \Sql('SUM(IF(packaging IS NULL, 1, packaging) * number)', 'float'),
-				'turnover' => new \Sql('SUM(priceExcludingVat)', 'float'),
-				'average' => new \Sql('SUM(priceExcludingVat) / SUM(IF(packaging IS NULL, 1, packaging) * number)', 'float')
+				'turnover' => new \Sql('SUM(priceStats)', 'float'),
+				'average' => new \Sql('SUM(priceStats) / SUM(IF(packaging IS NULL, 1, packaging) * number)', 'float')
 			])
 			->join(Customer::model(), 'm1.customer = m2.id')
 			->where(new \Sql('EXTRACT(YEAR FROM deliveredAt)'), $year)
@@ -663,8 +663,8 @@ class AnalyzeLib {
 		$ccItemPlant = Item::model()
 			->select([
 				'quantity' => new \Sql('SUM(IF(packaging IS NULL, 1, packaging) * number)', 'float'),
-				'turnover' => new \Sql('SUM(priceExcludingVat)', 'float'),
-				'average' => new \Sql('SUM(priceExcludingVat) / SUM(IF(packaging IS NULL, 1, packaging) * number)', 'float'),
+				'turnover' => new \Sql('SUM(priceStats)', 'float'),
+				'average' => new \Sql('SUM(priceStats) / SUM(IF(packaging IS NULL, 1, packaging) * number)', 'float'),
 				'containsComposition' => new \Sql('SUM(productComposition) > 0', 'bool'),
 				'containsIngredient' => new \Sql('SUM(ingredientOf IS NOT NULL) > 0', 'bool')
 			])
@@ -730,8 +730,8 @@ class AnalyzeLib {
 			->select([
 				'month' => new \Sql('EXTRACT(MONTH FROM deliveredAt)', 'int'),
 				'quantity' => new \Sql('SUM(IF(packaging IS NULL, 1, packaging) * number)', 'float'),
-				'turnover' => new \Sql('SUM(priceExcludingVat)', 'float'),
-				'average' => new \Sql('SUM(priceExcludingVat) / SUM(IF(packaging IS NULL, 1, packaging) * number)', 'float')
+				'turnover' => new \Sql('SUM(priceStats)', 'float'),
+				'average' => new \Sql('SUM(priceStats) / SUM(IF(packaging IS NULL, 1, packaging) * number)', 'float')
 			])
 			->join(Product::model()
 				->select([
@@ -852,7 +852,7 @@ class AnalyzeLib {
 				'sale' => ['document',  'type'],
 				'customer' => ['type', 'name'],
 				'quantity' => new \Sql('IF(packaging IS NULL, 1, packaging) * number', 'float'),
-				'type', 'price', 'priceExcludingVat', 'vatRate',
+				'type', 'price', 'priceStats', 'vatRate',
 				'unit' => \selling\Unit::getSelection(),
 				'deliveredAt'
 			])
@@ -874,7 +874,7 @@ class AnalyzeLib {
 					\util\DateUi::numeric($eItem['deliveredAt']),
 					\util\TextUi::csvNumber($eItem['quantity']),
 					\selling\UnitUi::getSingular($eItem['unit'], noWrap: FALSE),
-					\util\TextUi::csvNumber($eItem['priceExcludingVat']),
+					\util\TextUi::csvNumber($eItem['priceStats']),
 				];
 
 				if($eFarm->getSelling('hasVat')) {

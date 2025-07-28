@@ -170,15 +170,17 @@ class BasketUi {
 
 	}
 
-	public function getSummary(Shop $eShop, Date $eDate, \Collection $cItem, array $basket): string {
+	public function getSummary(Shop $eShop, Date $eDate, \Collection $cItem, array $basketByFarm): string {
 
 		\Asset::css('shop', 'product.css');
 
 		$eDate->expects(['cProduct']);
 
+		$lines = array_reduce($basketByFarm, fn($sum, $basket) => $sum + count($basket['products']), 0);
+
 		$h = '<div class="util-title">';
 			$h .= '<h2>';
-				$h .= s("Mon panier").' (<span id="shop-basket-articles">'.count($basket).'</span>)';
+				$h .= s("Mon panier").' (<span id="shop-basket-articles">'.$lines.'</span>)';
 			$h .= '</h2>';
 			$h .= '<a href="'.ShopUi::dateUrl($eShop, $eDate).'?modify=1" class="btn btn-outline-primary">'.\Asset::icon('chevron-left').' <span class="hide-xs-down">'.s("Modifier ma sélection").'</span><span class="hide-sm-up">'.s("Modifier").'</span></a>';
 		$h .= '</div>';
@@ -208,52 +210,59 @@ class BasketUi {
 
 				$h .= '<tbody>';
 
-					if($eShop['shared']) {
 
-						$basketByFarm = [];
+					foreach($basketByFarm as $basket) {
 
-						foreach($basket as $product) {
+						$eFarm = $basket['farm'];
 
-							$eFarm = $product['product']['product']['farm'];
-
-							$basketByFarm[$eFarm['id']] ??= [];
-							$basketByFarm[$eFarm['id']][] = $product;
-
-						}
-
-						foreach($basketByFarm as $basket) {
-
-							$eFarm = first($basket)['product']['product']['farm'];
-
+						if($eShop['shared']) {
 							$h .= '<tr class="shop-basket-summary-farm">';
 								$h .= '<td colspan="'.$columns.'">'.encode($eFarm['name']).'</td>';
 							$h .= '</tr>';
+						}
 
-							$h .= $this->getProducts($eShop, $eDate, $cItem, $basket, $total, $approximate);
+						$total += $basket['price'];
+
+						$subTotal = 0;
+						$subApproximate = FALSE;
+
+						$h .= $this->getProducts($eShop, $eDate, $cItem, $basket['products'], $subTotal, $subApproximate);
+
+						$approximate = $subApproximate ?: $approximate;
+						$isTotal = count($basketByFarm) === 1;
+
+						if($basket['priceGross'] !== NULL) {
+
+							$discountAmount = -1 * ($basket['priceGross'] - $basket['price']);
+
+							$h .= $this->getSummaryTotal(
+								$eDate,
+								$subApproximate,
+								$isTotal ? s("Total avant remise") : s("Sous-total avant remise"),
+								\util\TextUi::money($basket['priceGross']).' '.ProductUi::getTaxes($eDate)
+							);
+							$h .= $this->getSummaryTotal($eDate, $subApproximate, s("Remise <i>- {value} %</i>", $basket['discount']), \util\TextUi::money($discountAmount).' '.ProductUi::getTaxes($eDate), $isTotal);
 
 						}
 
-					} else {
-						$h .= $this->getProducts($eShop, $eDate, $cItem, $basket, $total, $approximate);
+						$h .= $this->getSummaryTotal(
+							$eDate,
+							$subApproximate,
+							$isTotal ? s("Total") : s("Sous-total"),
+							\util\TextUi::money($basket['price']).' '.ProductUi::getTaxes($eDate)
+						);
+
 					}
 
 				$h .= '</tbody>';
-				$h .= '<tfoot>';
-					$h .= '<tr>';
-						$h .= '<td class="hide-xs-down"></td>';
-						if($eDate['type'] === Date::PRO) {
-							$h .= '<td class="hide-sm-down"></td>';
-						}
-						$h .= '<td class="text-end" colspan="3"><b>'.s("Total").'</b></td>';
-						$h .= '<td class="text-end" style="font-weight: bold">';
-							if($approximate) {
-								$h .= '<div class="shop-product-around">'.s("environ").'</div>';
-							}
-							$h .= \util\TextUi::money($total).' '.ProductUi::getTaxes($eDate);
-						$h .= '</td>';
-						$h .= '<td class="hide-xs-down"></td>';
-					$h .= '</tr>';
-				$h .= '</tfoot>';
+
+				if(count($basketByFarm) > 1) {
+
+					$h .= '<tfoot>';
+						$h .= $this->getSummaryTotal($eDate, $approximate, s("Total"), \util\TextUi::money($total).' '.ProductUi::getTaxes($eDate), TRUE);
+					$h .= '</tfoot>';
+
+				}
 
 			$h .= '</table>';
 
@@ -263,11 +272,32 @@ class BasketUi {
 
 	}
 
-	public function getProducts(Shop $eShop, Date $eDate, \Collection $cItem, array $basket, float &$total, bool &$approximate): string {
+	protected function getSummaryTotal(Date $eDate, bool $approximate, string $label, string $content, bool $isTotal = FALSE): string {
+
+		$h = '<tr class="'.($isTotal ? 'shop-basket-summary-farm' : '').'">';
+			$h .= '<td class="hide-xs-down"></td>';
+			if($eDate['type'] === Date::PRO) {
+				$h .= '<td class="hide-sm-down"></td>';
+			}
+			$h .= '<td class="text-end" colspan="3"><b>'.$label.'</b></td>';
+			$h .= '<td class="text-end" style="font-weight: bold">';
+				if($approximate) {
+					$h .= '<div class="shop-product-around">'.s("environ").'</div>';
+				}
+				$h .= $content;
+			$h .= '</td>';
+			$h .= '<td class="hide-xs-down"></td>';
+		$h .= '</tr>';
+
+		return $h;
+
+	}
+
+	public function getProducts(Shop $eShop, Date $eDate, \Collection $cItem, array $products, float &$total, bool &$approximate): string {
 
 		$h = '';
 
-		foreach($basket as $product) {
+		foreach($products as $product) {
 
 			$eProduct = $product['product'];
 			$eProductSelling = $eProduct['product'];
@@ -893,10 +923,10 @@ class BasketUi {
 					}
 
 				$h .= '</dl>';
-
 				$h .= '<br/>';
 
 			}
+
 
 			if($eSaleReference['shopPoint']->notEmpty()) {
 				$h .= '<h3>'.s("Mode de livraison").'</h3>';

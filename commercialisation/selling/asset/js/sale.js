@@ -10,22 +10,6 @@ document.delegateEventListener('autocompleteSelect', '#sale-create', function(e)
 
 class Sale {
 
-	static toggleMoney(sale) {
-		qs('#sale-money-'+ sale).toggle();
-	}
-
-	static updateCustomerMoney(sale, value, target) {
-
-		const input = parseFloat(target.value);
-
-		if(isNaN(input) || input < value) {
-			qs('#sale-money-'+ sale +'-custom').innerHTML = '';
-		} else {
-			qs('#sale-money-'+ sale +'-custom').innerHTML = money(input - value, 2);
-		}
-
-	}
-
 	static refreshCustomerCreate(customer) {
 
 		let request = document.location.href;

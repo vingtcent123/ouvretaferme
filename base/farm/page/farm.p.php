@@ -40,7 +40,7 @@ new \farm\FarmPage()
 		throw new ViewAction($data);
 
 	}, page: 'updateProduction')
-	->doUpdateProperties('doUpdateProduction', ['defaultBedLength', 'defaultBedWidth', 'defaultAlleyWidth', 'featureTime', 'calendarMonthStart', 'calendarMonthStop', 'rotationYears', 'rotationExclude'], fn() => throw new ReloadAction('farm', 'Farm::updatedRotation'))
+	->doUpdateProperties('doUpdateProduction', ['defaultBedLength', 'defaultBedWidth', 'defaultAlleyWidth', 'featureTime', 'calendarMonthStart', 'calendarMonthStop', 'rotationYears', 'rotationExclude'], fn() => throw new ReloadAction('farm', 'Farm::updatedProduction'))
 	->update(function($data) {
 
 		$data->eFarm = $data->e;

@@ -234,7 +234,6 @@ END;
 
 			}
 
-			\shop\ProductLib::applyDiscounts($cProductAvailable, $data->discounts);
 			\shop\ProductLib::applyIndexing($data->eShop, $data->eDateSelected, $cProductAvailable);
 
 			$data->eDateSelected['farm'] = $data->eShop['farm'];
@@ -305,7 +304,6 @@ new Page(function($data) {
 		$data->eDate['shop'] = $data->eShop;
 
 		$data->eDate['cProduct'] = \shop\ProductLib::getByDate($data->eDate, $data->eCustomer, cSaleExclude: $data->cSaleExisting, public: TRUE);
-		\shop\ProductLib::applyDiscounts($data->eDate['cProduct'], $data->discounts);
 
 		$data->eDate['ccPoint'] = $data->eShop['ccPoint'];
 		$data->eDate['ccPoint']->filter(fn($ePoint) => in_array($ePoint['id'], $data->eDate['points']), depth: 2);
@@ -489,27 +487,15 @@ new Page(function($data) {
 			throw new RedirectAction(\shop\ShopUi::url($data->eShop));
 		}
 
+		$data->discounts = \shop\SaleLib::getDiscounts($data->cSaleExisting, $data->cCustomerExisting);
 		$data->basket = \shop\BasketLib::checkAvailableProducts(POST('products', 'array', []), $data->eDate['cProduct'], $data->cItemExisting);
 
 		if($data->basket === []) {
 			throw new RedirectAction(\shop\ShopUi::url($data->eShop));
 		}
 
-		$data->approximate = FALSE;
 
-		$data->price = round(array_reduce($data->basket, function($total, $item) use ($data) {
-
-			if(
-				$data->eShop->isApproximate() and
-				$item['product']['product']['unit']->notEmpty() and
-				$item['product']['product']['unit']['approximate']
-			) {
-				$data->approximate = TRUE;
-			}
-
-			return $total + round($item['product']['price'] * $item['number'] * ($item['product']['packaging'] ?? 1), 2);
-
-		}, 0), 2);
+		[$data->basketByFarm, $data->price, $data->approximate] = \shop\BasketLib::reorganizeByFarm($data->eShop, $data->basket, $data->discounts);
 
 		$data->basketProducts = \shop\BasketLib::getProductsFromBasket($data->basket);
 

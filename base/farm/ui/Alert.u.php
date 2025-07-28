@@ -71,7 +71,7 @@ class AlertUi {
 			'Supplier::deleted' => s("Le fournisseur a bien été supprimé."),
 
 			'Farm::updated' => s("La ferme a bien été mise à jour !"),
-			'Farm::updatedRotation' => s("La configuration des rotations de culture a bien été mise à jour !"),
+			'Farm::updatedProduction' => s("La configuration de la production a bien été mise à jour !"),
 			'Farm::updatedLegal' => s("Les informations de votre ferme ont bien été mises à jour !"),
 			'Farm::updatedEmail' => s("La ferme a bien été mise à jour !"),
 			'Farm::closed' => s("La ferme a bien été supprimée !"),

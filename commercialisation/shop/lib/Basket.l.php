@@ -105,5 +105,56 @@ class BasketLib {
 		return $cleanBasket;
 	}
 
+	public static function reorganizeByFarm(Shop $eShop, array $basket, array $discounts): array {
+
+		$basketByFarm = [];
+		$approximate = FALSE;
+
+		foreach($basket as $product) {
+
+			$eFarm = $product['product']['product']['farm'];
+
+			$basketByFarm[$eFarm['id']] ??= [
+				'farm' => $eFarm,
+				'products' => [],
+				'discount' => $discounts[$eFarm['id']] ?? 0,
+				'priceGross' => NULL,
+				'price' => 0
+			];
+
+			$basketByFarm[$eFarm['id']]['products'][] = $product;
+			$basketByFarm[$eFarm['id']]['price'] += round($product['product']['price'] * $product['number'] * ($product['product']['packaging'] ?? 1), 2);
+
+			if(
+				$eShop->isApproximate() and
+				$product['product']['product']['unit']->notEmpty() and
+				$product['product']['product']['unit']['approximate']
+			) {
+				$approximate = TRUE;
+			}
+
+		}
+
+		$price = 0;
+
+		foreach($basketByFarm as $farm => $basket) {
+
+			if($basket['discount'] > 0) {
+
+				$basketByFarm[$farm]['priceGross'] = $basket['price'];
+				$basketByFarm[$farm]['price'] = round($basket['price'] - \selling\Sale::calculateDiscount($basket['price'], $basket['discount']), 2);
+
+			}
+
+			$price += $basketByFarm[$farm]['price'];
+
+		}
+
+		$price = round($price, 2);
+
+		return [$basketByFarm, $price, $approximate];
+
+	}
+
 }
 ?>

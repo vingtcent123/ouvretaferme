@@ -67,7 +67,7 @@ class ItemModel extends \ModuleModel {
 			'discount' => ['int8', 'min' => 0, 'max' => 100, 'cast' => 'int'],
 			'number' => ['decimal', 'digits' => 8, 'decimal' => 2, 'null' => TRUE, 'cast' => 'float'],
 			'price' => ['decimal', 'digits' => 8, 'decimal' => 2, 'null' => TRUE, 'cast' => 'float'],
-			'priceExcludingVat' => ['decimal', 'digits' => 8, 'decimal' => 2, 'null' => TRUE, 'cast' => 'float'],
+			'priceStats' => ['decimal', 'digits' => 8, 'decimal' => 2, 'null' => TRUE, 'cast' => 'float'],
 			'locked' => ['enum', [\selling\Item::UNIT_PRICE, \selling\Item::NUMBER, \selling\Item::PRICE], 'cast' => 'enum'],
 			'vatRate' => ['decimal', 'digits' => 4, 'decimal' => 2, 'min' => 0.0, 'max' => 100, 'null' => TRUE, 'cast' => 'float'],
 			'stats' => ['bool', 'cast' => 'bool'],
@@ -77,7 +77,7 @@ class ItemModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'name', 'sale', 'customer', 'type', 'farm', 'shop', 'shopDate', 'shopProduct', 'product', 'productComposition', 'ingredientOf', 'quality', 'parent', 'packaging', 'unit', 'unitPrice', 'discount', 'number', 'price', 'priceExcludingVat', 'locked', 'vatRate', 'stats', 'status', 'createdAt', 'deliveredAt'
+			'id', 'name', 'sale', 'customer', 'type', 'farm', 'shop', 'shopDate', 'shopProduct', 'product', 'productComposition', 'ingredientOf', 'quality', 'parent', 'packaging', 'unit', 'unitPrice', 'discount', 'number', 'price', 'priceStats', 'locked', 'vatRate', 'stats', 'status', 'createdAt', 'deliveredAt'
 		]);
 
 		$this->propertiesToModule += [
@@ -238,8 +238,8 @@ class ItemModel extends \ModuleModel {
 		return $this->where('price', ...$data);
 	}
 
-	public function wherePriceExcludingVat(...$data): ItemModel {
-		return $this->where('priceExcludingVat', ...$data);
+	public function wherePriceStats(...$data): ItemModel {
+		return $this->where('priceStats', ...$data);
 	}
 
 	public function whereLocked(...$data): ItemModel {

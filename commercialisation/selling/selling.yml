@@ -176,7 +176,7 @@ Item:
   discount: int8(0, 100) = 0
   number: ?decimal(8, 2)
   price: ?decimal(8, 2)
-  priceExcludingVat: ?decimal(8, 2)
+  priceStats: ?decimal(8, 2)
   locked: enum(UNIT_PRICE, NUMBER, PRICE) = PRICE
   vatRate: ?decimal(4, 2, 0.0, 100)
   stats: bool = TRUE
@@ -281,6 +281,7 @@ Sale:
   hasVat: bool
   vat: ?decimal(8, 2)
   vatByRate: ?json
+  priceGross: ?decimal(8, 2)
   priceExcludingVat: ?decimal(8, 2)
   priceIncludingVat: ?decimal(8, 2)
   shippingVatRate: ?decimal(4, 2)

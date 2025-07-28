@@ -6,6 +6,22 @@ document.delegateEventListener('input', '#market-item-list input', function(e) {
 
 class Market {
 
+	static toggleMoney(sale) {
+		qs('#sale-money-'+ sale).toggle();
+	}
+
+		static updateCustomerMoney(sale, value, target) {
+
+		const input = parseFloat(target.value);
+
+		if(isNaN(input) || input < value) {
+			qs('#sale-money-'+ sale +'-custom').innerHTML = '';
+		} else {
+			qs('#sale-money-'+ sale +'-custom').innerHTML = money(input - value, 2);
+		}
+
+	}
+
 	static itemListUpdate() {
 
 		const items = qsa('#market-item-list .market-item input[name^="unitPrice"]:not(:placeholder-shown)').length;

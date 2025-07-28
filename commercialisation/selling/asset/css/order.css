@@ -79,3 +79,7 @@ div.order-pro-item-infos {
 	font-size: 0.9rem;
 	margin: 0.25rem 0;
 }
+
+.order-summary-total {
+	background-color: #00000005;
+}

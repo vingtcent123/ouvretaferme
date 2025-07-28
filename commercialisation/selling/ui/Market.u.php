@@ -437,7 +437,7 @@ class MarketUi {
 						$eSale['customer']->notEmpty() and
 						$eSale['customer']['discount'] > 0
 					) {
-						$h .= '<dt>'.s("Remise commerciale").'</dt>';
+						$h .= '<dt>'.s("Remise").'</dt>';
 						$h .= '<dd title="'.s("La remise commerciale s'applique sur les saisies réalisées après l'affectation de la vente à ce client").'">';
 							$h .= s("{value} %", $eSale['customer']['discount']);
 						$h .= '</dd>';
@@ -449,18 +449,101 @@ class MarketUi {
 
 		if($eSale['items'] > 0) {
 
-			$money = (
-				$eSale['preparationStatus'] !== Sale::CANCELED and
-				($eSale['cPayment']->count() === 0 or count($eSale['cPayment']->filter(fn($ePayment) => $ePayment['method']['fqn'] === \payment\MethodLib::CASH)) > 0)
-			);
-
-			$h .= new SaleUi()->getSummary($eSale, onlyIncludingVat: TRUE, includeMoney: $money);
+			$h .= $this->getSummary($eSale);
 
 		}
 
 		$h .= $this->displaySaleItems($eSale, $cItemSale, $cItemMarket);
 
 		return $h;
+
+	}
+
+	protected function getSummary(Sale $eSale): string {
+
+			$money = (
+				$eSale['preparationStatus'] !== Sale::CANCELED and
+				($eSale['cPayment']->count() === 0 or count($eSale['cPayment']->filter(fn($ePayment) => $ePayment['method']['fqn'] === \payment\MethodLib::CASH)) > 0)
+			);
+
+			$h = '<ul class="util-summarize">';
+
+				$h .= '<li>';
+					$h .= '<h5>'.s("Articles").'</h5>';
+					$h .= $eSale['items'];
+				$h .= '</li>';
+
+				if(
+					$eSale['hasVat'] and
+					$eSale['taxes'] === Sale::INCLUDING
+				) {
+					$h .= '<li>';
+						$h .= '<h5>'.s("Montant TTC").'</h5>';
+						$h .= \util\TextUi::money($eSale['priceIncludingVat'] ?? 0);
+					$h .= '</li>';
+				} else {
+					$h .= '<li>';
+						$h .= '<h5>'.s("Montant").'</h5>';
+						$h .= \util\TextUi::money($eSale['priceIncludingVat'] ?? 0);
+					$h .= '</li>';
+				}
+
+				if($money) {
+
+					$h .= '<li style="align-self: end">';
+						$h .= '<a '.attr('onclick', 'Market.toggleMoney('.$eSale['id'].')').' class="btn btn-outline-primary">'.s("Rendu de monnaie").'</a>';
+					$h .= '</li>';
+
+				}
+
+			$h .= '</ul>';
+
+			if($money) {
+
+				$values = [];
+
+				foreach([5, 10, 20, 50] as $value) {
+					if($eSale['priceIncludingVat'] < $value) {
+						$values[] = $value;
+					}
+				}
+
+				$values[] = floor($eSale['priceIncludingVat'] / 5) * 5 + 5;
+				$values[] = floor($eSale['priceIncludingVat'] / 10) * 10 + 10;
+				$values[] = floor($eSale['priceIncludingVat'] / 20) * 20 + 20;
+
+				$values = array_unique($values);
+				sort($values);
+
+				$form = new \util\FormUi();
+
+				$h .= '<div id="sale-money-'.$eSale['id'].'" class="hide util-overflow-sm">';
+					$h .= '<table>';
+						$h .= '<tr>';
+							$h .= '<td><h3 class="mb-0">'.s("Donné").'</h3></td>';
+							foreach($values as $value) {
+								$h .= '<td style="font-size: 1.2rem">'.\util\TextUi::money($value, precision: 0).'<td>';
+							}
+							$h .= '<td>';
+								$h .= $form->inputGroup(
+									$form->number(attributes: ['placeholder' => s("Autre"), 'id' => 'sale-money-'.$eSale['id'].'-field', 'oninput' => 'Market.updateCustomerMoney('.$eSale['id'].', '.$eSale['priceIncludingVat'].', this)']).
+									$form->addon('€')
+								);
+							$h .= '<td>';
+						$h .= '</tr>';
+						$h .= '<tr>';
+							$h .= '<td><h3 class="mb-0">'.s("À rendre").'</h3></td>';
+							foreach($values as $value) {
+								$h .= '<td style="font-size: 1.2rem">'.\util\TextUi::money($value - $eSale['priceIncludingVat']).'<td>';
+							}
+							$h .= '<td style="font-size: 1.2rem" id="sale-money-'.$eSale['id'].'-custom"><td>';
+						$h .= '</tr>';
+					$h .= '</table>';
+				$h .= '</div>';
+
+			}
+
+			return $h;
 
 	}
 
@@ -538,7 +621,7 @@ class MarketUi {
 					$eItemSale = $cItemSale->find(fn($eItemTry) => $eItemTry['name'] === $eItemMarket['name'], limit: 1, default: new Item());
 				}
 
-				$eItemMarket['unitPrice'] = round($eItemMarket['unitPrice'] * (1 - $discount / 100), 2);
+				$eItemMarket['unitPrice'] = round($eItemMarket['unitPrice'] - Sale::calculateDiscount($eItemMarket['unitPrice'], $discount), 2);
 
 				$h .= $this->getSaleItem($eSale, $eItemMarket, $eItemSale);
 				$h .= new MerchantUi()->get('/selling/market:doUpdateSale', $eSale, $eItemSale->empty() ? new Item([
