@@ -36,14 +36,8 @@ form[data-ajax-form="/@module/journal/Operation/doQuick"] {
     color: var(--muted);
 }
 
-table.table-operations .td-description > div {
-    display: flex;
-    align-items: flex-start;
-    gap: 0.5rem;
-}
-
-table.table-operations .td-description div.description div::first-letter,
-table:not(.table-operations) .td-description div::first-letter {
+.td-description div::first-letter,
+.td-description div div::first-letter {
     text-transform: uppercase;
 }
 .td-description > div > span {

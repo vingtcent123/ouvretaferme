@@ -340,9 +340,9 @@ class JournalUi {
 
 							$h .= '<td>';
 								if($canUpdate === TRUE) {
-									$h .= $eOperation->quick('paymentMode', OperationUi::p('paymentMode')->values[$eOperation['paymentMode']] ?? '<i>'.s("Non défini").'</i>');
+									$h .= $eOperation->quick('paymentMethod', \payment\MethodUi::getName($eOperation['paymentMethod']) ?? '<i>'.s("Non défini").'</i>');
 								} else {
-									$h .= OperationUi::p('paymentMode')->values[$eOperation['paymentMode']] ?? '-';
+									$h .= \payment\MethodUi::getName($eOperation['paymentMethod']);
 								}
 							$h .= '</td>';
 
@@ -380,7 +380,7 @@ class JournalUi {
 
 								$h .= '<td>';
 									$h .= '<div class="util-unit td-min-content text-end">';
-										$h .= $this->displayActions($eFarm, $eOperation, $canUpdate, $cashflowLink);
+										$h .= $this->displayActions($eFarm, $eOperation, $canUpdate);
 									$h .= '</div>';
 								$h .= '</td>';
 
@@ -404,7 +404,7 @@ class JournalUi {
 								$h .= '<td colspan="'.(($eFarm['company']->isAccrualAccounting() and $selectedJournalCode === NULL) ? 3 : 2).'">';
 									$h .= '<div class="operation-info">';
 										if($canUpdate === TRUE) {
-											$h .= $eOperation->quick('document', $eOperation['document'] ? encode($eOperation['document']) : '<i>'.s("Non définie").'</i>');
+											$h .= $eOperation->quick('document', $eOperation['document'] ? encode($eOperation['document']) : '<i>'.s("Non défini").'</i>');
 										} else {
 											$h .= encode($eOperation['document']);
 										}
@@ -413,11 +413,6 @@ class JournalUi {
 							}
 
 							$h .= '<td colspan="'.$descriptionColspan.'" class="td-description">';
-
-							$h .= '<div>';
-								if($eOperation['comment'] !== NULL) {
-									$h .= '<span title="'.encode($eOperation['comment']).'">'.\Asset::icon('chat-left-text-fill').'</span>';
-								}
 
 								$h .= '<div class="description">';
 									if($canUpdate === TRUE) {
@@ -428,7 +423,9 @@ class JournalUi {
 
 								$h .= '</div>';
 
-							$h .= '</div>';
+								if($eOperation['comment'] !== NULL) {
+									$h .= '<div><i>'.s("Commentaire : {comment}", ['comment' => $eOperation->quick('comment', encode($eOperation['comment']))]).'</i></div>';
+								}
 
 							$h .= '</td>';
 								$h .= '<td class="highlight-stick-right"></td>';
@@ -451,7 +448,7 @@ class JournalUi {
 
 	}
 
-	protected function displayActions(\farm\Farm $eFarm, Operation $eOperation, bool $canUpdate, ?string $cashflowLink): string {
+	protected function displayActions(\farm\Farm $eFarm, Operation $eOperation, bool $canUpdate): string {
 
 		if($canUpdate === FALSE or $eFarm->canManage() === FALSE) {
 
@@ -460,28 +457,23 @@ class JournalUi {
 			}
 
 		}
+
+		$canAddShipping = ($eOperation->isClassAccount(\Setting::get('account\chargeAccountClass')) === TRUE
+			// On ne rajoute pas des frais de port sur des frais de port
+			and \account\ClassLib::isFromClass($eOperation['accountLabel'], \Setting::get('account\shippingChargeAccountClass')) === FALSE);
+
 		$h = '<a data-dropdown="bottom-end" class="dropdown-toggle btn btn-outline-secondary">'.\Asset::icon('gear-fill').'</a>';
 		$h .= '<div class="dropdown-list">';
 			$h .= '<div class="dropdown-title">'.s("Modifier une écriture comptable").'</div>';
 
-			$eOperation->setQuickAttribute('farm', $eFarm['id']);
-			$eOperation->setQuickAttribute('app', 'accounting');
-
 			// COMMENTAIRE
 			if($eOperation['comment'] === NULL) {
 				$title = s("Ajouter un commentaire");
-			} else {
-				$title = s("Modifier le commentaire");
+				$h .= $eOperation->quick('comment', $title, 'dropdown-item');
 			}
-			$h .= $eOperation->quick('comment', '<span class="dropdown-item">'.$title.'</span>');
-
 
 			// FRAIS DE LIVRAISON
-			if(
-				$eOperation->isClassAccount(\Setting::get('account\chargeAccountClass')) === TRUE
-				// On ne rajoute pas des frais de port sur des frais de port
-				and mb_substr($eOperation['accountLabel'], 0, strlen((string)\Setting::get('account\shippingChargeAccountClass'))) !== (string)\Setting::get('account\shippingChargeAccountClass')
-			) {
+			if($canAddShipping) {
 
 				$args = [
 					'accountPrefix' => \Setting::get('account\shippingChargeAccountClass'),
@@ -498,6 +490,10 @@ class JournalUi {
 					$h .= s("Ajouter des frais de livraison");
 				$h .= '</a>';
 
+			}
+
+			if($eOperation['comment'] === NULL or $canAddShipping) {
+				$h .= '<div class="dropdown-divider"></div>';
 			}
 
 			// SUPPRIMER
@@ -562,9 +558,12 @@ class JournalUi {
 					$buttonDelete = '<a '.attrs($attributes).'>'.$deleteText.'</a>';
 				}
 
-				$h .= '<div class="dropdown-divider"></div>';
 				$h .= $buttonDelete;
 
+			} else {
+
+				$deleteText = s("Supprimer <div>(Passez par l'opération bancaire pour supprimer cette écriture)</div>", ['div' => '<div class="operations-delete-more">']);
+				$h .= '<a class="dropdown-item inactive">'.$deleteText.'</a>';
 			}
 
 		$h .= '</div>';

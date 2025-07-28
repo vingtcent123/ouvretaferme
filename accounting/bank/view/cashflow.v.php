@@ -33,7 +33,14 @@ new AdaptativeView('index', function($data, FarmTemplate $t) {
 
 new AdaptativeView('allocate', function($data, PanelTemplate $t) {
 
-	return new \bank\CashflowUi()->getAllocate($data->eFarm, $data->eFinancialYear, $data->eCashflow, $data->cInvoice, ['grant' => $data->cAssetGrant, 'asset' => $data->cAssetToLinkToGrant]);
+	return new \bank\CashflowUi()->getAllocate(
+		$data->eFarm,
+		$data->eFinancialYear,
+		$data->eCashflow,
+		$data->cInvoice,
+		['grant' => $data->cAssetGrant, 'asset' => $data->cAssetToLinkToGrant],
+		$data->cPaymentMethod,
+	);
 
 });
 

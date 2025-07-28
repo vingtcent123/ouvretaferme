@@ -68,6 +68,9 @@ new \bank\CashflowPage(
 
 		}
 
+		// Payment methods
+		$data->cPaymentMethod = \payment\MethodLib::getByFarm($data->eFarm, NULL, NULL);
+
 		throw new ViewAction($data);
 
 	})
@@ -149,7 +152,7 @@ new \bank\CashflowPage(
 			\bank\Cashflow::fail('noSelectedOperation');
 		}
 
-		\bank\CashflowLib::attach($data->eCashflow, POST('operation', 'array'));
+		\bank\CashflowLib::attach($data->eCashflow, POST('operation', 'array'), $data->cPaymentMethod);
 
 		$fw->validate();
 
@@ -177,9 +180,14 @@ new \bank\CashflowPage(
 		\bank\Cashflow::fail('internal');
 	}
 
+	$action = POST('action');
+	if(in_array($action, ['dissociate', 'delete']) === FALSE) {
+		throw new NotExpectedAction('Unable to do nothing but dissociate nor delete');
+	}
+
 	$fw->validate();
 
-	\journal\OperationLib::unlinkCashflow($data->eCashflow);
+	\journal\OperationLib::unlinkCashflow($data->eCashflow, $action);
 
 	$data->eCashflow['status'] = \bank\CashflowElement::WAITING;
 	\bank\CashflowLib::update($data->eCashflow, ['status']);

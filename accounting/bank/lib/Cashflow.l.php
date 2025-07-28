@@ -91,7 +91,7 @@ class CashflowLib extends CashflowCrud {
 	}
 
 
-	public static function attach(Cashflow $eCashflow, array $operations): void {
+	public static function attach(Cashflow $eCashflow, array $operations, \Collection $cPaymentMethod): void {
 
 		Cashflow::model()->beginTransaction();
 
@@ -99,7 +99,7 @@ class CashflowLib extends CashflowCrud {
 			throw new \NotExpectedAction('Cashflow #'.$eCashflow['id'].' already attached');
 		}
 
-		$updated = \journal\OperationLib::attachIdsToCashflow($eCashflow, $operations);
+		$updated = \journal\OperationLib::attachIdsToCashflow($eCashflow, $operations, $cPaymentMethod);
 		if($updated !== count($operations)) {
 			throw new \NotExpectedAction($updated.' operations updated instead of '.count($operations).' expected. Cashflow #'.$eCashflow['id'].' not attached.');
 		}

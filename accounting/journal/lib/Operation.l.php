@@ -365,14 +365,14 @@ class OperationLib extends OperationCrud {
 			'description', 'amount', 'type', 'document', 'vatRate', 'comment',
 		];
 		if($isFromCashflow === FALSE) {
-			$properties = array_merge($properties, ['date', 'cashflow', 'paymentDate', 'paymentMode']);
+			$properties = array_merge($properties, ['date', 'cashflow', 'paymentDate', 'paymentMethod']);
 		}
 
 		$eOperationDefault['thirdParty'] = NULL;
 		$eOperationDefault['financialYear'] = $eFinancialYear;
 
 		if($isFromCashflow === TRUE) {
-			$eOperationDefault->build(['paymentMode', 'paymentDate'], $input);
+			$eOperationDefault->build(['paymentMethod', 'paymentDate'], $input);
 		}
 
 		foreach($accounts as $index => $account) {
@@ -469,6 +469,8 @@ class OperationLib extends OperationCrud {
 							'date' => $eOperationDefault['cashflow']['date'],
 							'description' => $eOperation['description'] ?? $eOperationDefault['cashflow']['memo'],
 							'cashflow' => $eOperationDefault['cashflow'],
+							'paymentMethod' => $eOperation['paymentMethod'],
+							'journalCode' => $eOperation['journalCode'],
 						]
 						: $eOperation->getArrayCopy(),
 				);
@@ -593,7 +595,7 @@ class OperationLib extends OperationCrud {
 			'thirdParty' => $eOperationLinked['thirdParty']['id'] ?? NULL,
 			'type' => $eOperationLinked['type'],
 			'paymentDate' => $eOperationLinked['paymentDate'],
-			'paymentMode' => $eOperationLinked['paymentMode'],
+			'paymentMethod' => $eOperationLinked['paymentMethod'],
 			'amount' => abs($vatValue),
 			'financialYear' => $eOperationLinked['financialYear']['id'],
 		];
@@ -609,7 +611,7 @@ class OperationLib extends OperationCrud {
 			[
 				'cashflow', 'date', 'account', 'accountLabel', 'description', 'document',
 				'thirdParty', 'type', 'amount', 'operation',
-				'paymentDate', 'paymentMode', 'financialYear',
+				'paymentDate', 'paymentMethod', 'financialYear',
 			],
 			$values,
 			new \Properties('create'),
@@ -709,14 +711,14 @@ class OperationLib extends OperationCrud {
 
 	}
 
-	public static function attachIdsToCashflow(\bank\Cashflow $eCashflow, array $operationIds): int {
+	public static function attachIdsToCashflow(\bank\Cashflow $eCashflow, array $operationIds, \Collection $cPaymentMethod): int {
 
 		$properties = ['cashflow', 'updatedAt'];
 		$eOperation = new Operation([
 			'cashflow' => $eCashflow,
 			'updatedAt' => Operation::model()->now(),
 			'paymentDate' => $eCashflow['date'],
-			'paymentMode' => new \bank\CashflowUi()::extractPaymentTypeFromCashflowDescription($eCashflow['memo']),
+			'paymentMethod' => new \bank\CashflowUi()::extractPaymentTypeFromCashflowDescription($eCashflow['memo'], $cPaymentMethod),
 		]);
 
 		$updated = self::addOpenFinancialYearCondition()
@@ -765,7 +767,7 @@ class OperationLib extends OperationCrud {
 			},
 			'amount' => abs($eCashflow['amount']),
 			'paymentDate' => $eCashflow['date'],
-			'paymentMode'=> $eOperation['paymentMode'],
+			'paymentMethod'=> $eOperation['paymentMethod'],
 			'financialYear'=> $eOperation['financialYear']['id'],
 		];
 
@@ -775,7 +777,7 @@ class OperationLib extends OperationCrud {
 
 		$eOperationBank->build([
 			'cashflow', 'date', 'account', 'accountLabel', 'description', 'document', 'thirdParty', 'type', 'amount',
-			'operation', 'paymentDate', 'paymentMode', 'financialYear',
+			'operation', 'paymentDate', 'paymentMethod', 'financialYear',
 		], $values, new \Properties('create'));
 
 		if($document !== NULL) {
@@ -831,7 +833,7 @@ class OperationLib extends OperationCrud {
       ->getCollection();
 	}
 
-	public static function unlinkCashflow(\bank\Cashflow $eCashflow): void {
+	public static function unlinkCashflow(\bank\Cashflow $eCashflow, string $action): void {
 
 		if($eCashflow->exists() === FALSE) {
 			return;
@@ -839,19 +841,36 @@ class OperationLib extends OperationCrud {
 
 		Operation::model()->beginTransaction();
 
-		// Supprimer  l'écriture sur le compte 512 (banque) (qui est créée automatiquement
+		// Supprimer  l'écriture sur le compte 512 (banque) (qui est créée automatiquement)
 		\journal\Operation::model()
       ->whereCashflow('=', $eCashflow['id'])
 			->whereAccountLabel('LIKE', \Setting::get('account\defaultBankAccountLabel').'%')
       ->delete();
 
+		switch($action) {
 
-		// Dissocier les autres écritures
-		\journal\Operation::model()
-      ->whereCashflow('=', $eCashflow['id'])
-      ->update('cashflow = NULL');
+			case 'dissociate':
+				// Dissocier les autres écritures
+				\journal\Operation::model()
+		      ->whereCashflow('=', $eCashflow['id'])
+		      ->update('cashflow = NULL');
+				break;
 
-		\account\LogLib::save('unlinkCashflow', 'Operation', ['id' => $eCashflow['id']]);
+			case 'delete':
+				// Suppression des immos
+				$cAsset = OperationLib::getByCashflow($eCashflow)->getColumnCollection('asset');
+				if($cAsset->empty() === FALSE) {
+					\asset\AssetLib::deleteByIds($cAsset->getIds());
+				}
+				// Supprimer toutes les écritures
+				\journal\Operation::model()
+		      ->whereCashflow('=', $eCashflow['id'])
+		      ->delete();
+				break;
+
+		}
+
+		\account\LogLib::save('unlinkCashflow', 'Operation', ['id' => $eCashflow['id'], 'action' => $action]);
 
 		Operation::model()->commit();
 

@@ -88,7 +88,7 @@ class BookUi {
 					$h .= '<td class="highlight-stick-left">';
 					$h .= '</td>';
 				$h .= '</tr>';
-				//$h .= '<tbody>';
+
 				$trClass = '';
 
 			} else {

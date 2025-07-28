@@ -5,9 +5,16 @@ new \journal\OperationPage(
 
 		$data->eFarm->validate('canManage');
 		\company\CompanyLib::connectSpecificDatabaseAndServer($data->eFarm);
+
+		// Payment methods
+		$data->cPaymentMethod = \payment\MethodLib::getByFarm($data->eFarm, NULL, NULL);
 	}
 )
-	->quick(['document', 'description', 'amount', 'comment', 'paymentMode'], [], ['canUpdate'])
+	->applyElement(function($data, \journal\Operation $e) {
+		$e['cPaymentMethod'] = $data->cPaymentMethod;
+		$e['farm'] = $data->eFarm;
+	})
+	->quick(['document', 'description', 'amount', 'comment', 'paymentMethod'], [], ['canUpdate'])
 	->create(function($data) {
 
 		if(get_exists('account') === TRUE) {

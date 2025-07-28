@@ -75,6 +75,7 @@ class OperationModel extends \ModuleModel {
 			'comment' => ['text8', 'min' => 1, 'max' => NULL, 'null' => TRUE, 'cast' => 'string'],
 			'paymentDate' => ['date', 'null' => TRUE, 'cast' => 'string'],
 			'paymentMode' => ['enum', [\journal\Operation::TRANSFER, \journal\Operation::CHEQUE, \journal\Operation::CASH, \journal\Operation::CREDIT_CARD, \journal\Operation::DIRECT_DEBIT], 'null' => TRUE, 'cast' => 'enum'],
+			'paymentMethod' => ['element32', 'payment\Method', 'null' => TRUE, 'cast' => 'element'],
 			'letteringStatus' => ['enum', [\journal\Operation::PARTIAL, \journal\Operation::TOTAL], 'null' => TRUE, 'cast' => 'enum'],
 			'vatDeclaration' => ['element32', 'journal\VatDeclaration', 'null' => TRUE, 'cast' => 'element'],
 			'vatAdjustement' => ['bool', 'null' => TRUE, 'cast' => 'bool'],
@@ -84,7 +85,7 @@ class OperationModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'number', 'financialYear', 'journalCode', 'account', 'accountLabel', 'thirdParty', 'date', 'description', 'document', 'documentDate', 'documentStorage', 'amount', 'type', 'cashflow', 'vatRate', 'vatAccount', 'operation', 'asset', 'comment', 'paymentDate', 'paymentMode', 'letteringStatus', 'vatDeclaration', 'vatAdjustement', 'createdAt', 'updatedAt', 'createdBy'
+			'id', 'number', 'financialYear', 'journalCode', 'account', 'accountLabel', 'thirdParty', 'date', 'description', 'document', 'documentDate', 'documentStorage', 'amount', 'type', 'cashflow', 'vatRate', 'vatAccount', 'operation', 'asset', 'comment', 'paymentDate', 'paymentMode', 'paymentMethod', 'letteringStatus', 'vatDeclaration', 'vatAdjustement', 'createdAt', 'updatedAt', 'createdBy'
 		]);
 
 		$this->propertiesToModule += [
@@ -95,6 +96,7 @@ class OperationModel extends \ModuleModel {
 			'vatAccount' => 'account\Account',
 			'operation' => 'journal\Operation',
 			'asset' => 'asset\Asset',
+			'paymentMethod' => 'payment\Method',
 			'vatDeclaration' => 'journal\VatDeclaration',
 			'createdBy' => 'user\User',
 		];
@@ -246,6 +248,10 @@ class OperationModel extends \ModuleModel {
 
 	public function wherePaymentMode(...$data): OperationModel {
 		return $this->where('paymentMode', ...$data);
+	}
+
+	public function wherePaymentMethod(...$data): OperationModel {
+		return $this->where('paymentMethod', ...$data);
 	}
 
 	public function whereLetteringStatus(...$data): OperationModel {

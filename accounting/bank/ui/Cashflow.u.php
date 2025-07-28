@@ -6,6 +6,7 @@ class CashflowUi {
 	public function __construct() {
 		\Asset::js('bank', 'cashflow.js');
 		\Asset::css('company', 'company.css');
+		\Asset::css('journal', 'journal.css');
 	}
 
 	public function getSearch(\Search $search, \account\FinancialYear $eFinancialYearSelected): string {
@@ -224,21 +225,33 @@ class CashflowUi {
 
 		$h = '<a data-dropdown="bottom-end" class="dropdown-toggle btn btn-outline-secondary">'.\Asset::icon('gear-fill').'</a>';
 		$h .= '<div class="dropdown-list">';
-			$h .= '<div class="dropdown-title">'.self::getName($eCashflow).'</div>';
 
 			if($eCashflow['status'] === CashflowElement::ALLOCATED) {
-				$confirm = s("Cette action dissociera les écritures de l'opération bancaire. Confirmez-vous ?");
-				$h .= '<a data-ajax="'.\company\CompanyUi::urlBank($eFarm).'/cashflow:deAllocate" post-id="'.$eCashflow['id'].'" class="dropdown-item" data-confirm="'.$confirm.'">';
-					$h .= s("Dissocier des écritures liées");
+
+				$h .= '<div class="dropdown-title">'.s("Annuler les écritures comptables").'</div>';
+
+				$confirm = s("Cette action dissociera les écritures de l'opération bancaire sans les supprimer. Confirmez-vous ?");
+				$h .= '<a data-ajax="'.\company\CompanyUi::urlBank($eFarm).'/cashflow:deAllocate" post-action="dissociate" post-id="'.$eCashflow['id'].'" class="dropdown-item" data-confirm="'.$confirm.'">';
+					$h .= s("Dissocier <div>(Ne supprimera <b><u>pas</u></b> les écritures)</div>", ['div' => '<div class="operations-delete-more">']);
+				$h .= '</a>';
+
+				$confirm = s("Cette action supprimera toutes les écritures liées à l'opération bancaire. Confirmez-vous ?");
+				$h .= '<a data-ajax="'.\company\CompanyUi::urlBank($eFarm).'/cashflow:deAllocate" post-action="delete" post-id="'.$eCashflow['id'].'" class="dropdown-item" data-confirm="'.$confirm.'">';
+					$h .= s("Supprimer <div>(<b><u>Supprimera</u></b> les écritures)</div>", ['div' => '<div class="operations-delete-more">']);
 				$h .= '</a>';
 
 			} else if($eCashflow['status'] === CashflowElement::WAITING) {
+
+				$h .= '<div class="dropdown-title">'.s("Créer des écritures comptables").'</div>';
+
 				$h .= '<a href="'.\company\CompanyUi::urlBank($eFarm).'/cashflow:allocate?id='.$eCashflow['id'].'" class="dropdown-item">';
 					$h .= s("Créer de nouvelles écritures");
 				$h .= '</a>';
+
 				$h .= '<a href="'.\company\CompanyUi::urlBank($eFarm).'/cashflow:attach?id='.$eCashflow['id'].'" class="dropdown-item">';
 					$h .= s("Rattacher des écritures comptables");
 				$h .= '</a>';
+
 			}
 
 		$h .= '</div>';
@@ -276,45 +289,45 @@ class CashflowUi {
 		return $h;
 	}
 
-	public static function extractPaymentTypeFromCashflowDescription(string $description): ?string {
+	public static function extractPaymentTypeFromCashflowDescription(string $description, \Collection $cPaymentMethod): ?\payment\Method {
 
 		if(mb_strpos(mb_strtolower($description), 'carte') !== FALSE) {
-			return \journal\OperationElement::CREDIT_CARD;
+			return $cPaymentMethod->find(fn($e) => $e['fqn'] === 'card')->first();
 		}
 
 		if(
 			mb_strpos(mb_strtolower($description), 'virement') !== FALSE
 			or mb_strpos(mb_strtolower($description), 'sepa') !== FALSE
 		) {
-			return \journal\OperationElement::TRANSFER;
+			return $cPaymentMethod->find(fn($e) => $e['fqn'] === 'transfer')->first();
 		}
 
 		if(
 			mb_strpos(mb_strtolower($description), 'prélèvement') !== FALSE
 			or mb_strpos(mb_strtolower($description), 'prelevement') !== FALSE
 		) {
-			return \journal\OperationElement::DIRECT_DEBIT;
+			return $cPaymentMethod->find(fn($e) => $e['fqn'] === 'direct-debit')->first();
 		}
 
 		if(
 			mb_strpos(mb_strtolower($description), 'chèque') !== FALSE
 			or mb_strpos(mb_strtolower($description), 'cheque') !== FALSE
 		) {
-			return \journal\OperationElement::CHEQUE;
+			return $cPaymentMethod->find(fn($e) => $e['fqn'] === 'check')->first();
 		}
 
 		if(
 			mb_strpos(mb_strtolower($description), 'espèce') !== FALSE
 			or mb_strpos(mb_strtolower($description), 'espece') !== FALSE
 		) {
-			return \journal\OperationElement::CHEQUE;
+			return $cPaymentMethod->find(fn($e) => $e['fqn'] === 'cash')->first();
 		}
 
 		return NULL;
 
 	}
 
-	public static function getAllocate(\farm\Farm $eFarm, \account\FinancialYear $eFinancialYear, Cashflow $eCashflow, \Collection $cInvoice, array $assetData): \Panel {
+	public static function getAllocate(\farm\Farm $eFarm, \account\FinancialYear $eFinancialYear, Cashflow $eCashflow, \Collection $cInvoice, array $assetData, \Collection $cPaymentMethod): \Panel {
 
 		\Asset::js('journal', 'operation.js');
 		\Asset::js('bank', 'cashflow.js');
@@ -343,7 +356,7 @@ class CashflowUi {
 			'type' => $eCashflow['type'],
 			'description' => $eCashflow['memo'],
 			'paymentDate' => $eCashflow['date'],
-			'paymentMode' => self::extractPaymentTypeFromCashflowDescription($eCashflow['memo']),
+			'paymentMethod' => self::extractPaymentTypeFromCashflowDescription($eCashflow['memo'], $cPaymentMethod),
 			'cashflow' => $eCashflow,
 			'amountIncludingVAT' => abs($eCashflow['amount']),
 		];
@@ -378,16 +391,16 @@ class CashflowUi {
 					$defaultValues['paymentDate'] ?? '',
 				['min' => $eFinancialYear['startDate'], 'max' => $eFinancialYear['endDate']],
 			);
-			$subtitle .= '<div class="create-operation-cashflow-title">'.\journal\OperationUi::p('paymentMode').'</div>';
+			$subtitle .= '<div class="create-operation-cashflow-title">'.\journal\OperationUi::p('paymentMethod').'</div>';
 			$subtitle .= $form->select(
-				'paymentMode',
-				\journal\OperationUi::p('paymentMode')->values,
-					$defaultValues['paymentMode'] ?? '',
+				'paymentMethod',
+				$cPaymentMethod,
+					$defaultValues['paymentMethod'] ?? '',
 				['mandatory' => TRUE],
 			);
 		$subtitle .= '</div>';
 
-		$h .= \journal\OperationUi::getCreateGrid($eFarm, $eOperation, $eFinancialYear, $index, $form, $defaultValues, $assetData);
+		$h .= \journal\OperationUi::getCreateGrid($eFarm, $eOperation, $eFinancialYear, $index, $form, $defaultValues, $assetData, new \Collection());
 
 		$amountWarning = '<div id="cashflow-allocate-difference-warning" class="util-danger hide">';
 			$amountWarning .= s("Attention, les montants saisis doivent correspondre au montant total de la transaction. Il y a une différence de {difference}.", ['difference' => '<span id="cashflow-allocate-difference-value">0</span>']);
@@ -410,10 +423,10 @@ class CashflowUi {
 
 		if($cInvoice->count() === 1) {
 			$eInvoice = $cInvoice->first();
-			$h .= '<div class="single-checkbox mt-1">'.$form->checkbox('invoice['.$eInvoice['id'].']', $eInvoice['id'], ['callbackLabel' => fn($input) => '<div>'.$input.'</div><div>'.s("Une facture {number} non payée du client {clientName} d'un montant de {amount} du {date} a été trouvée.<br />Souhaitez-vous l'enregistrer comme <b>payée</b> avec le moyen de paiement {paymentMode} en même temps ? <br />⚠️ Ne fonctionne pas encore ! ⚠️", [
+			$h .= '<div class="single-checkbox mt-1">'.$form->checkbox('invoice['.$eInvoice['id'].']', $eInvoice['id'], ['callbackLabel' => fn($input) => '<div>'.$input.'</div><div>'.s("Une facture {number} non payée du client {clientName} d'un montant de {amount} du {date} a été trouvée.<br />Souhaitez-vous l'enregistrer comme <b>payée</b> avec le moyen de paiement {paymentMethod} en même temps ? <br />⚠️ Ne fonctionne pas encore ! ⚠️", [
 				'number' => '<b>'.encode($eInvoice['name']).'</b>',
 				'date' => '<b>'.\util\DateUi::numeric($eInvoice['date']).'</b>',
-				'paymentMode' => '<b>'.\journal\OperationUi::p('paymentMode')->values[$defaultValues['paymentMode']].'</b>',
+				'paymentMethod' => '<b></b>',
 				'clientName' => '<b>'.encode($eInvoice['customer']->getName()).'</b>',
 				'amount' => '<b>'.\util\TextUi::money($eInvoice['priceIncludingVat']).'</b>',
 				])]).'</div></div>';
@@ -441,7 +454,7 @@ class CashflowUi {
 			'cashflow' => $eCashflow,
 		];
 
-		return \journal\OperationUi::getFieldsCreateGrid($eFarm, $form, $eOperation, $eFinancialYear, '['.$index.']', $defaultValues, [], $assetData);
+		return \journal\OperationUi::getFieldsCreateGrid($eFarm, $form, $eOperation, $eFinancialYear, '['.$index.']', $defaultValues, [], $assetData, new \Collection());
 
 	}
 
@@ -616,7 +629,7 @@ class CashflowUi {
 			$h .= '</td>';
 
 			$h .= '<td>';
-				$h .= $eOperation->quick('paymentMode', \journal\OperationUi::p('paymentMode')->values[$eOperation['paymentMode']] ?? '<i>'.s("Non défini").'</i>');
+				$h .= $eOperation->quick('paymentMethod', \payment\MethodUi::getName($eOperation['paymentMethod']) ?? '<i>'.s("Non défini").'</i>');
 			$h .= '</td>';
 			$h .= '<td class="text-end"></td>';
 

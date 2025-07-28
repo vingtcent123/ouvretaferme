@@ -5,6 +5,14 @@ use account\ThirdPartyLib;
 
 class Operation extends OperationElement {
 
+	public static function getSelection(): array {
+
+		return parent::getSelection() + [
+			'paymentMethod' => \payment\Method::getSelection(),
+		];
+
+	}
+
 	public function canUpdate(): bool {
 
 		$this->expects(['vatDeclaration', 'date']);

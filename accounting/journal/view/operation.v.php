@@ -1,7 +1,13 @@
 <?php
 new AdaptativeView('create', function($data, PanelTemplate $t) {
 
-		return new \journal\OperationUi()->create($data->eFarm, $data->e, $data->eFinancialYear, ['grant' => $data->cAssetGrant, 'asset' => $data->cAssetToLinkToGrant]);
+		return new \journal\OperationUi()->create(
+			$data->eFarm,
+			$data->e,
+			$data->eFinancialYear,
+			['grant' => $data->cAssetGrant, 'asset' => $data->cAssetToLinkToGrant],
+			$data->cPaymentMethod,
+		);
 
 });
 
@@ -58,7 +64,16 @@ new JsonView('readInvoice', function($data, AjaxTemplate $t) {
 		$t->qs('#create-operation-list')->setAttribute('data-columns', $index + 1);
 		$t->qs('.create-operation[data-index="'.($index - 1).'"]')->insertAdjacentHtml(
 			'afterend',
-			new \journal\OperationUi()::getFieldsCreateGrid($data->eFarm, $form, $eOperation, $data->eFinancialYear, '['.$index.']', $defaultValues, [], [])
+			new \journal\OperationUi()::getFieldsCreateGrid(
+				$data->eFarm,
+				$form,
+				$eOperation,
+				$data->eFinancialYear,
+				'['.$index.']',
+				$defaultValues,
+				[], [],
+				$data->cPaymentMethod
+			)
 		);
 		$t->qs('#add-operation')->setAttribute('post-index', $index + 1);
 		$t->js()->eval('Operation.showOrHideDeleteOperation()');
@@ -150,7 +165,17 @@ new JsonView('addOperation', function($data, AjaxTemplate $t) {
 	$t->qs('#create-operation-list')->setAttribute('data-columns', $data->index + 1);
 	$t->qs('.create-operation[data-index="'.($data->index - 1).'"]')->insertAdjacentHtml(
 		'afterend',
-		new \journal\OperationUi()::getFieldsCreateGrid($data->eFarm, $form, $data->eOperation, $data->eFinancialYear, '['.$data->index.']', $defaultValues, [], ['grant' => $data->cAssetGrant, 'asset' => $data->cAssetToLinkToGrant])
+		new \journal\OperationUi()::getFieldsCreateGrid(
+			$data->eFarm,
+			$form,
+			$data->eOperation,
+			$data->eFinancialYear,
+			'['.$data->index.']',
+			$defaultValues,
+			[],
+			['grant' => $data->cAssetGrant, 'asset' => $data->cAssetToLinkToGrant],
+			$data->cPaymentMethod
+		)
 	);
 	$t->qs('#add-operation')->setAttribute('post-index', $data->index + 1);
 	if($data->index >= 4) {

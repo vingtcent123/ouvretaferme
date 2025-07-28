@@ -4,6 +4,7 @@ namespace journal;
 class OperationUi {
 
 	public function __construct() {
+		\Asset::css('company', 'company.css');
 		\Asset::css('journal', 'journal.css');
 	}
 
@@ -164,7 +165,7 @@ class OperationUi {
 
 	}
 
-	public function create(\farm\Farm $eFarm, Operation $eOperation, \account\FinancialYear $eFinancialYear, array $assetData, ?string $invoice = NULL): \Panel {
+	public function create(\farm\Farm $eFarm, Operation $eOperation, \account\FinancialYear $eFinancialYear, array $assetData, \Collection $cPaymentMethod, ?string $invoice = NULL): \Panel {
 
 		\Asset::css('journal', 'operation.css');
 		\Asset::js('journal', 'operation.js');
@@ -233,7 +234,7 @@ class OperationUi {
 				$index = 0;
 				$defaultValues = $eOperation->getArrayCopy();
 
-				$h .= self::getCreateGrid($eFarm, $eOperation, $eFinancialYear, $index, $form, $defaultValues, $assetData);
+				$h .= self::getCreateGrid($eFarm, $eOperation, $eFinancialYear, $index, $form, $defaultValues, $assetData, $cPaymentMethod);
 
 				$h .= '<div class="invoice-preview hide">';
 					$h .= '<embed class="hide"/>';
@@ -354,6 +355,7 @@ class OperationUi {
 		array $defaultValues,
 		array $disabled,
 		array $assetData,
+		\Collection $cPaymentMethod,
 	): string {
 
 		\Asset::js('journal', 'asset.js');
@@ -596,11 +598,11 @@ class OperationUi {
 					$h .= $form->date('paymentDate'.$suffix, $defaultValues['paymentDate'] ?? '', ['min' => $eFinancialYear['startDate'], 'max' => $eFinancialYear['endDate']]);
 				$h .= '</div>';
 
-				$h .= '<div data-wrapper="paymentMode'.$suffix.'">';
+				$h .= '<div data-wrapper="paymentMethod'.$suffix.'">';
 					$h .= $form->select(
-						'paymentMode'.$suffix,
-						\journal\OperationUi::p('paymentMode')->values,
-						$defaultValues['paymentMode'] ?? '',
+						'paymentMethod'.$suffix,
+						$cPaymentMethod,
+						$defaultValues['paymentMethod'] ?? '',
 						['mandatory' => $eFarm['company']->isCashAccounting()],
 					);
 				$h .= '</div>';
@@ -657,6 +659,7 @@ class OperationUi {
 		\util\FormUi $form,
 		array $defaultValues,
 		array $assetData,
+		\Collection $cPaymentMethod,
 	): string {
 
 		$suffix = '['.$index.']';
@@ -665,7 +668,7 @@ class OperationUi {
 		$h = '<div id="create-operation-list" class="create-operations-container" data-columns="1" data-cashflow="'.($isFromCashflow ? '1' : '0').'">';
 
 			$h .= self::getCreateHeader($eFarm, $isFromCashflow);
-			$h .= self::getFieldsCreateGrid($eFarm, $form, $eOperation, $eFinancialYear, $suffix, $defaultValues, [], $assetData);
+			$h .= self::getFieldsCreateGrid($eFarm, $form, $eOperation, $eFinancialYear, $suffix, $defaultValues, [], $assetData, $cPaymentMethod);
 
 			if($isFromCashflow === TRUE) {
 				$h .= self::getCreateValidate();
@@ -703,6 +706,7 @@ class OperationUi {
 			'thirdParty' => s("Tiers"),
 			'comment' => s("Commentaire"),
 			'paymentMode' => s("Mode de paiement"),
+			'paymentMethod' => s("Mode de paiement"),
 			'paymentDate' => s("Date de paiement"),
 			'vatRate' => s("Taux de TVA"),
 			'vatValue' => s("Valeur de TVA"),
@@ -783,6 +787,17 @@ class OperationUi {
 
 			case 'comment' :
 				$d->attributes['data-limit'] = 250;
+				break;
+
+			case 'paymentMethod' :
+
+				$d->values = fn(Operation $e) => $e['cPaymentMethod'] ?? $e->expects(['cPaymentMethod']);
+				$d->attributes = function(\util\FormUi $form, Operation $eOperation) use($property) {
+					if($eOperation['farm']['company']->isCashAccounting()) {
+						return ['mandatory' => TRUE];
+					}
+					return [];
+				};
 				break;
 
 			case 'paymentMode' :
