@@ -532,7 +532,7 @@ class PdfUi {
 
 					$h .= '<div class="pdf-document-vat-rates">';
 						$h .= '<div>'.s("Taux TVA").'</div>';
-						$h .= '<div>'.s("Total", $e->getTaxes()).'</div>';
+						$h .= '<div>'.s("Total {taxes}", ['taxes' => $e->getTaxes()]).'</div>';
 						$h .= '<div>'.s("TVA").'</div>';
 						foreach($e['vatByRate'] as ['vat' => $vat, 'vatRate' => $vatRate, 'amount' => $amount]) {
 							$h .= '<div>'.s("{value} %", $vatRate).'</div>';
