@@ -36,15 +36,16 @@ form[data-ajax-form="/@module/journal/Operation/doQuick"] {
     color: var(--muted);
 }
 
-.td-description div.description div::first-letter  {
-    text-transform: uppercase;
-}
-.td-description > div {
+table.table-operations .td-description > div {
     display: flex;
     align-items: flex-start;
     gap: 0.5rem;
 }
 
+table.table-operations .td-description div.description div::first-letter,
+table:not(.table-operations) .td-description div::first-letter {
+    text-transform: uppercase;
+}
 .td-description > div > span {
     margin-top: 0.15rem;
     cursor: help;

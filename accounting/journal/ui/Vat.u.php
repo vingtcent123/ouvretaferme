@@ -75,19 +75,10 @@ Class VatUi {
 
 	private static function getMonthTotal(?string $currentMonth, array $totals): string {
 
-		$h = '<tr class="row-bold">';
+		$h = '<tr class="row-bold row-highlight tr-border-top">';
 
-			$h .= '<td>';
-			$h .= '</td>';
-
-			$h .= '<td>';
-			$h .= '</td>';
-
-			$h .= '<td>';
+			$h .= '<td colspan="2">';
 				$h .= s("Total TVA");
-			$h .= '</td>';
-
-			$h .= '<td>';
 			$h .= '</td>';
 
 			$h .= '<td>';
@@ -98,19 +89,19 @@ Class VatUi {
 				}
 			$h .= '</td>';
 
-			$h .= '<td class="text-end">';
+			$h .= '<td>';
+			$h .= '</td>';
+
+			$h .= '<td class="text-end highlight-stick-right">';
 			$h .= \util\TextUi::money($totals['withVat']);
 			$h .= '</td>';
 
-			$h .= '<td class="text-end">';
+			$h .= '<td class="text-end highlight-stick-left">';
 				$h .= \util\TextUi::money($totals['withoutVat']);
 			$h .= '</td>';
 
-			$h .= '<td class="text-end">';
+			$h .= '<td class="text-end highlight-stick-right">';
 				$h .= \util\TextUi::money($totals['vat']);
-			$h .= '</td>';
-
-			$h .= '<td>';
 			$h .= '</td>';
 
 		$h .= '</tr>';
@@ -293,7 +284,7 @@ Class VatUi {
 				'withoutVat' => 0,
 				'vat' => 0,
 			];
-			$h .= '<table class="tr-even td-vertical-top tr-hover table-bordered table-'.$for.'">';
+			$h .= '<table class="td-vertical-top tr-hover table-'.$for.' no-background">';
 
 				$h .= '<thead '.($for === 'web' ? 'class="thead-sticky"' : '').'>';
 					$h .= '<tr '.($for === 'pdf' ? 'class="row-header row-upper"' : '').'>';
@@ -302,19 +293,22 @@ Class VatUi {
 							$h .= (($search and $for !== 'pdf') ? $search->linkSort('date', $label) : $label);
 						$h .= '</th>';
 						$h .= '<th>'.s("# Opération bancaire").'</th>';
-						$h .= '<th>';
+						$h .= '<th>'.s("Tiers").'</th>';
+						$h .= '<th class="td-min-content text-end">'.s("Taux TVA").'</th>';
+						$h .= '<th class="text-end highlight-stick-right">'.s("Montant (TTC)").'</th>';
+						$h .= '<th class="text-end highlight-stick-left">'.s("Montant (HT)").'</th>';
+						$h .= '<th class="text-end highlight-stick-right">'.s("TVA").'</th>';
+					$h .= '</tr>';
+
+					$h .= '<tr>';
+						$h .= '<th colspan="2">';
 							$label = s("Pièce comptable");
 							$h .= (($search and $for !== 'pdf') ? $search->linkSort('document', $label) : $label);
 						$h .= '</th>';
-						$h .= '<th>'.s("Tiers").'</th>';
-						$h .= '<th>';
+						$h .= '<th colspan="5">';
 							$label = s("Description");
 							$h .= (($search and $for !== 'pdf') ? $search->linkSort('description', $label) : $label);
 						$h .= '</th>';
-						$h .= '<th class="text-end">'.s("Montant (TTC)").'</th>';
-						$h .= '<th class="text-end">'.s("Montant (HT)").'</th>';
-						$h .= '<th class="text-end">'.s("TVA").'</th>';
-						$h .= '<th class="text-end">'.s("Taux TVA").'</th>';
 					$h .= '</tr>';
 				$h .= '</thead>';
 
@@ -355,13 +349,7 @@ Class VatUi {
 							$monthTotals['withoutVat'] += $multiplyer * $eOperationInitial['amount'];
 							$monthTotals['vat']+= $multiplyer * $eOperation['amount'];
 
-							if($eOperationInitial['cashflow']->exists() === TRUE) {
-								$cashflowLink = \company\CompanyUi::urlBank($eFarm).'/cashflow?id='.$eOperationInitial['cashflow']['id'];
-							} else {
-								$cashflowLink = NULL;
-							}
-
-							$h .= '<tr>';
+							$h .= '<tr class="tr-border-top">';
 
 								$h .= '<td '.($for === 'pdf' ? 'class="text-small"' : '').'>';
 									$h .= \util\DateUi::numeric($eOperationInitial['date']);
@@ -369,14 +357,10 @@ Class VatUi {
 
 								$h .= '<td>';
 								if($eOperationInitial['cashflow']->exists() === TRUE) {
-									$h .= '<a href="'.$cashflowLink.'" class="color-text">'.$eOperationInitial['cashflow']['id'].'</a>';
+									$h .= '<a href="'.new JournalUi()->getBaseUrl($eFarm).'&cashflow='.$eOperationInitial['cashflow']['id'].'" title="'.s("Voir les écritures liées à cette opération bancaire").'">'.encode($eOperationInitial['cashflow']['id']).'</a>';
 								} else {
 									$h .= '';
 								}
-								$h .= '</td>';
-
-								$h .= '<td>';
-									$h .= encode($eOperationInitial['document']);
 								$h .= '</td>';
 
 								$h .= '<td>';
@@ -385,24 +369,38 @@ Class VatUi {
 									}
 								$h .= '</td>';
 
-								$h .= '<td>';
-									$h .= encode($eOperationInitial['description']);
+								$h .= '<td class="td-min-content text-end">';
+										$h .= $eOperationInitial['vatRate'];
 								$h .= '</td>';
 
-								$h .= '<td class="text-end">';
+								$h .= '<td class="text-end highlight-stick-right" rowspan="2">';
 										$h .= \util\TextUi::money($multiplyer * ($eOperationInitial['amount'] + $eOperation['amount']));
 								$h .= '</td>';
 
-								$h .= '<td class="text-end">';
+								$h .= '<td class="text-end highlight-stick-left" rowspan="2">';
 										$h .= \util\TextUi::money($multiplyer * $eOperationInitial['amount']);
 								$h .= '</td>';
 
-								$h .= '<td class="text-end">';
+								$h .= '<td class="text-end highlight-stick-right" rowspan="2">';
 										$h .= \util\TextUi::money($multiplyer * $eOperation['amount']);
 								$h .= '</td>';
 
-								$h .= '<td class="text-center">';
-										$h .= $eOperationInitial['vatRate'];
+							$h .= '</tr>';
+
+							$h .= '<tr>';
+
+								$h .= '<td colspan="2">';
+									$h .= '<div class="operation-info">';
+										if($eOperationInitial['document'] !== NULL) {
+											$h .= '<a href="'.new JournalUi()->getBaseUrl($eFarm).'&document='.urlencode($eOperationInitial['document']).'" title="'.s("Voir les écritures liées à cette pièce comptable").'">'.encode($eOperationInitial['document']).'</a>';
+										}
+									$h .= '</div>';
+								$h .= '</td>';
+
+								$h .= '<td colspan="5" class="td-description">';
+									$h .= '<div class="description">';
+										$h .= encode($eOperationInitial['description']);
+									$h .= '</div>';
 								$h .= '</td>';
 
 							$h .= '</tr>';

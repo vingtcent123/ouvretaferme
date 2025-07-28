@@ -65,14 +65,19 @@ class JournalUi {
 
 	}
 
-	public function getSearch(\Search $search, \account\FinancialYear $eFinancialYearSelected, \bank\Cashflow $eCashflow, ?\account\ThirdParty $eThirdParty): string {
+	public function getBaseUrl(\farm\Farm $eFarm, \account\FinancialYear $eFinancialYear = new \account\FinancialYear()): string {
+
+		return \company\CompanyUi::urlJournal($eFarm).'/operations'.'?financialYear='.($eFinancialYear['id'] ?? '').'&code='.GET('code');
+
+	}
+	public function getSearch(\farm\Farm $eFarm, \Search $search, \account\FinancialYear $eFinancialYearSelected, \bank\Cashflow $eCashflow, ?\account\ThirdParty $eThirdParty): string {
 
 		\Asset::js('journal', 'operation.js');
 
 		$h = '<div id="journal-search" class="util-block-search stick-xs '.($search->empty(['ids']) === TRUE ? 'hide' : '').'">';
 
 			$form = new \util\FormUi();
-			$url = LIME_REQUEST_PATH.'?financialYear='.$eFinancialYearSelected['id'].'&code='.GET('code');
+			$url = $this->getBaseUrl($eFarm, $eFinancialYearSelected);
 
 			$statuses = OperationUi::p('type')->values;
 
@@ -103,12 +108,13 @@ class JournalUi {
 		if($eCashflow->exists() === TRUE) {
 			$h .= '<div class="util-block-search stick-xs">';
 				$h .= s(
-					"Vous visualisez actuellement les écritures correspondant à l'opération bancaire du {date}, \"{memo}\" d'un {type} de {amount}.",
+					"Vous visualisez actuellement les écritures correspondant à l'opération bancaire du {date}, \"{memo}\" d'un {type} de {amount} (<link>annuler le filtre</link>).",
 					[
 						'date' => \util\DateUi::numeric($eCashflow['date']),
 						'memo' => encode($eCashflow['memo']),
 						'type' => mb_strtolower(\bank\CashflowUi::p('type')->values[$eCashflow['type']]),
 						'amount' => \util\TextUi::money(abs($eCashflow['amount'])),
+						'link' => '<a href="'.$url.'">',
 					]
 				);
 			$h .= '</div>';
@@ -187,14 +193,15 @@ class JournalUi {
 		\Asset::css('util', 'form.css');
 
 		$thRowspan = in_array('document', $hide) ? 1 : 2;
+		$baseUrl = $this->getBaseUrl($eFarm, $eFinancialYearSelected);
 
 		$h = '';
 
 		$h .= '<div class="stick-sm util-overflow-sm">';
 
-			$h .= '<table class="td-vertical-top tr-hover">';
+			$h .= '<table class="td-vertical-top tr-hover no-background table-operations">';
 
-				$h .= '<thead class="thead-sticky table-operations">';
+				$h .= '<thead class="thead-sticky">';
 					$h .= '<tr>';
 						$h .= '<th>';
 
@@ -272,11 +279,6 @@ class JournalUi {
 
 						$eOperation->setQuickAttribute('farm', $eFarm['id']);
 						$eOperation->setQuickAttribute('app', 'accounting');
-						if($eOperation['cashflow']->exists() === TRUE) {
-							$cashflowLink = \company\CompanyUi::urlBank($eFarm).'/cashflow?id='.$eOperation['cashflow']['id'];
-						} else {
-							$cashflowLink = NULL;
-						}
 
 						$descriptionColspan = 4;
 
@@ -287,10 +289,11 @@ class JournalUi {
 							$h .= '</td>';
 
 							if(in_array('cashflow', $hide) === FALSE) {
-
 								$h .= '<td>';
 									if($eOperation['cashflow']->exists() === TRUE) {
-										$h .= '<a href="'.$cashflowLink.'" class="color-text">'.$eOperation['cashflow']['id'].'</a>';
+										$search->set('cashflow', $eOperation['cashflow']['id']);
+										$cashflowLink = $baseUrl.'&'.$search->toQuery();
+										$h .= '<a href="'.$cashflowLink.'" class="color-text" title="'.s("Filtrer sur cette opération bancaire").'">'.$eOperation['cashflow']['id'].'</a>';
 									} else {
 										$h .= '';
 									}

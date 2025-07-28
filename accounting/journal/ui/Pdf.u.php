@@ -184,7 +184,7 @@ class PdfUi {
 
 			$h .= '<div class="pdf-document-content">';
 
-				$h .= '<table class="table-bordered">';
+				$h .= '<table>';
 
 					$h .= '<thead>';
 						$h .= BookUi::getBookTheadContent();
