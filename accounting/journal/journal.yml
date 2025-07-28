@@ -57,7 +57,6 @@ Operation:
   asset: ?asset\Asset
   comment: ?text8(1, null)
   paymentDate: ?date
-  paymentMode: ?enum(TRANSFER, CHEQUE, CASH, CREDIT_CARD, DIRECT_DEBIT)
   paymentMethod: ?payment\Method
   # Lettrage : null = non lettrée, partial = partiellement lettrée, total = soldée
   letteringStatus: ?enum(PARTIAL, TOTAL)

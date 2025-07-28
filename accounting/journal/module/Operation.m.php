@@ -15,12 +15,6 @@ abstract class OperationElement extends \Element {
 	const DEBIT = 'debit';
 	const CREDIT = 'credit';
 
-	const TRANSFER = 'transfer';
-	const CHEQUE = 'cheque';
-	const CASH = 'cash';
-	const CREDIT_CARD = 'credit-card';
-	const DIRECT_DEBIT = 'direct-debit';
-
 	const PARTIAL = 'partial';
 	const TOTAL = 'total';
 
@@ -74,7 +68,6 @@ class OperationModel extends \ModuleModel {
 			'asset' => ['element32', 'asset\Asset', 'null' => TRUE, 'cast' => 'element'],
 			'comment' => ['text8', 'min' => 1, 'max' => NULL, 'null' => TRUE, 'cast' => 'string'],
 			'paymentDate' => ['date', 'null' => TRUE, 'cast' => 'string'],
-			'paymentMode' => ['enum', [\journal\Operation::TRANSFER, \journal\Operation::CHEQUE, \journal\Operation::CASH, \journal\Operation::CREDIT_CARD, \journal\Operation::DIRECT_DEBIT], 'null' => TRUE, 'cast' => 'enum'],
 			'paymentMethod' => ['element32', 'payment\Method', 'null' => TRUE, 'cast' => 'element'],
 			'letteringStatus' => ['enum', [\journal\Operation::PARTIAL, \journal\Operation::TOTAL], 'null' => TRUE, 'cast' => 'enum'],
 			'vatDeclaration' => ['element32', 'journal\VatDeclaration', 'null' => TRUE, 'cast' => 'element'],
@@ -85,7 +78,7 @@ class OperationModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'number', 'financialYear', 'journalCode', 'account', 'accountLabel', 'thirdParty', 'date', 'description', 'document', 'documentDate', 'documentStorage', 'amount', 'type', 'cashflow', 'vatRate', 'vatAccount', 'operation', 'asset', 'comment', 'paymentDate', 'paymentMode', 'paymentMethod', 'letteringStatus', 'vatDeclaration', 'vatAdjustement', 'createdAt', 'updatedAt', 'createdBy'
+			'id', 'number', 'financialYear', 'journalCode', 'account', 'accountLabel', 'thirdParty', 'date', 'description', 'document', 'documentDate', 'documentStorage', 'amount', 'type', 'cashflow', 'vatRate', 'vatAccount', 'operation', 'asset', 'comment', 'paymentDate', 'paymentMethod', 'letteringStatus', 'vatDeclaration', 'vatAdjustement', 'createdAt', 'updatedAt', 'createdBy'
 		]);
 
 		$this->propertiesToModule += [
@@ -139,9 +132,6 @@ class OperationModel extends \ModuleModel {
 				return ($value === NULL) ? NULL : (string)$value;
 
 			case 'type' :
-				return ($value === NULL) ? NULL : (string)$value;
-
-			case 'paymentMode' :
 				return ($value === NULL) ? NULL : (string)$value;
 
 			case 'letteringStatus' :
@@ -244,10 +234,6 @@ class OperationModel extends \ModuleModel {
 
 	public function wherePaymentDate(...$data): OperationModel {
 		return $this->where('paymentDate', ...$data);
-	}
-
-	public function wherePaymentMode(...$data): OperationModel {
-		return $this->where('paymentMode', ...$data);
 	}
 
 	public function wherePaymentMethod(...$data): OperationModel {
