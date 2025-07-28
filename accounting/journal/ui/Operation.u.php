@@ -321,7 +321,7 @@ class OperationUi {
 
 				$mandatory = $eFarm['company']->isCashAccounting() ? ' '.\util\FormUi::asterisk() : '';
 				$h .= '<div class="create-operation-header">'.self::p('paymentDate')->label.$mandatory.'</div>';
-				$h .= '<div class="create-operation-header">'.self::p('paymentMode')->label.$mandatory.'</div>';
+				$h .= '<div class="create-operation-header">'.self::p('paymentMethod')->label.$mandatory.'</div>';
 
 			}
 
@@ -705,7 +705,6 @@ class OperationUi {
 			'type' => s("Type (débit / crédit)"),
 			'thirdParty' => s("Tiers"),
 			'comment' => s("Commentaire"),
-			'paymentMode' => s("Mode de paiement"),
 			'paymentMethod' => s("Mode de paiement"),
 			'paymentDate' => s("Date de paiement"),
 			'vatRate' => s("Taux de TVA"),
@@ -798,16 +797,6 @@ class OperationUi {
 					}
 					return [];
 				};
-				break;
-
-			case 'paymentMode' :
-				$d->values = [
-					OperationElement::CREDIT_CARD => s("Carte bancaire"),
-					OperationElement::CHEQUE => s("Chèque bancaire"),
-					OperationElement::CASH => s("Espèces"),
-					OperationElement::TRANSFER => s("Virement bancaire"),
-					OperationElement::DIRECT_DEBIT => s("Prélèvement"),
-				];
 				break;
 
 		}

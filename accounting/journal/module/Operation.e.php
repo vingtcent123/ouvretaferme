@@ -145,7 +145,7 @@ class Operation extends OperationElement {
 
 				return $paymentDate !== NULL;
 			})
-			->setCallback('paymentMode.empty', function(?string $paymentDate): bool {
+			->setCallback('paymentMethod.empty', function(?string $paymentDate): bool {
 
 				$eCompany = \company\CompanyLib::getCurrent();
 

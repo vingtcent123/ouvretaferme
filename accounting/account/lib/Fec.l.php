@@ -66,7 +66,7 @@ class FecLib  {
 				'',
 				'',
 				/*$eOperation['paymentDate'] !== NULL ? date('Ymd', strtotime($eOperation['paymentDate'])) : NULL,
-				$eOperation['paymentMode'],
+				$eOperation['paymentMethode']['name'],
 				'',*/
 			];
 			$fecData[] = join('|', $operationData);

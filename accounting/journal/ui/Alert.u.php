@@ -16,7 +16,7 @@ class AlertUi {
 
 			'Operation::payment.noOperation' => s("Aucun paiement n'a pu être enregistré."),
 			'Operation::payment.typeMissing' => s("Choisissez le type de paiement."),
-			'Operation::paymentMode.empty' => s("Le moyen de paiement est nécessaire."),
+			'Operation::paymentMethod.empty' => s("Le moyen de paiement est nécessaire."),
 
 			'Operation::description.check' => s("Veuillez saisir un libellé"),
 
