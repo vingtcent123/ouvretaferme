@@ -873,7 +873,7 @@ class CsvLib {
 				return FALSE;
 			}
 
-			$prepare[0]['status'] = ($series['finished'] === 'true') ? Series::FINISHED : Series::OPEN;
+			$prepare[0]['status'] = ($series['finished'] === TRUE) ? Series::FINISHED : Series::OPEN;
 
 			$prepared[] = $prepare;
 
