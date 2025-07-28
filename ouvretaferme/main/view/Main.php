@@ -254,6 +254,7 @@ class MainTemplate extends BaseTemplate {
 							$h .= '<a href="/presentation/faq">'.s("Questions fréquentes").'</a><br/>';
 							$h .= '<a href="/presentation/legal">'.s("Mentions légales").'</a><br/>';
 							$h .= '<a href="/presentation/service">'.s("Conditions d'utilisation").'</a><br/>';
+							$h .= '<a href="https://blog.ouvretaferme.org/nous-contacter">'.s("Nous contacter").'</a><br/>';
 						$h .= '</div>';
 					$h .= '</div>';
 				$h .= '</div>';
