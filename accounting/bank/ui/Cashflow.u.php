@@ -124,7 +124,7 @@ class CashflowUi {
 							$label = s("Numéro");
 							$h .= ($search ? $search->linkSort('id', $label) : $label);
 						$h .= '</th>';
-						$h .= '<th class="text-end">';
+						$h .= '<th>';
 							$label = s("Date");
 							$h .= ($search ? $search->linkSort('date', $label) : $label);
 						$h .= '</th>';
@@ -132,8 +132,8 @@ class CashflowUi {
 							$label = s("Libellé");
 							$h .= ($search ? $search->linkSort('memo', $label) : $label);
 						$h .= '</th>';
-						$h .= '<th class="text-end">'.s("Débit (D)").'</th>';
-						$h .= '<th class="text-end">'.s("Crédit (C)").'</th>';
+						$h .= '<th class="text-end highlight-stick-right">'.s("Débit (D)").'</th>';
+						$h .= '<th class="text-end highlight-stick-left">'.s("Crédit (C)").'</th>';
 						$h .= '<th class="text-center">'.s("Statut").'</th>';
 						$h .= '<th></th>';
 					$h .= '</tr>';
@@ -162,7 +162,7 @@ class CashflowUi {
 							$h .= encode($eCashflow['id']);
 						$h .= '</td>';
 
-						$h .= '<td class="text-end">';
+						$h .= '<td>';
 							$h .= \util\DateUi::numeric($eCashflow['date']);
 						$h .= '</td>';
 
@@ -170,14 +170,14 @@ class CashflowUi {
 							$h .= encode($eCashflow['memo']);
 						$h .= '</td>';
 
-						$h .= '<td class="text-end">';
+						$h .= '<td class="text-end highlight-stick-right">';
 							$h .= match($eCashflow['type']) {
 								CashflowElement::DEBIT => \util\TextUi::money(abs($eCashflow['amount'])),
 								default => '',
 							};
 						$h .= '</td>';
 
-						$h .= '<td class="text-end">';
+						$h .= '<td class="text-end highlight-stick-left">';
 							$h .= match($eCashflow['type']) {
 								CashflowElement::CREDIT => \util\TextUi::money(abs($eCashflow['amount'])),
 								default => '',
