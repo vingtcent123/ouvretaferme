@@ -418,7 +418,7 @@ class AnalyzeLib {
 					])
 					->whereFarm($cProduct->first()['farm'])
 					->group(new \Sql('year'))
-					->delegateProperty('year', new \Sql('SUM(priceStats)', 'float'), propertyParent: 'year'),
+					->delegateProperty('year', new \Sql('SUM(priceExcludingVat)', 'float'), propertyParent: 'year'),
 				'year' => new \Sql('EXTRACT(YEAR FROM deliveredAt)', 'int'),
 			])
 			->whereProduct('IN', $cProduct)
