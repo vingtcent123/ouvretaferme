@@ -47,7 +47,7 @@ class ThirdPartyUi {
 
 		$h .= $form->asteriskInfo();
 
-		$h .= $form->dynamicGroup($eThirdParty, 'name*');
+		$h .= $form->dynamicGroups($eThirdParty, ['name*', 'customer']);
 
 		$h .= $form->group(
 			content: $form->submit(s("Créer le tiers"))
@@ -259,10 +259,12 @@ class ThirdPartyUi {
 				break;
 
 			case 'customer':
-				$d->after = \util\FormUi::info(s("Lien entre les tiers (comptables) et vos clients"));
+				$d->after = \util\FormUi::info(s("Lien entre les tiers et les clients de votre ferme"));
 				$d->autocompleteBody = function(\util\FormUi $form, ThirdParty $e) {
+					$e->expects(['farm']);
 					return [
-						'farm' => POST('farm', '?int'),
+						'farm' => $e['farm']['id'],
+						'withCollective' => 0,
 					];
 				};
 				new \selling\CustomerUi()->query($d);

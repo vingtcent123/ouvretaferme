@@ -380,7 +380,7 @@ class OperationLib extends OperationCrud {
 
 			if($invoiceId !== NULL) {
 
-				$input['invoice'] = $input['invoice']['id'];
+				$input['invoice'] = $invoiceId;
 				$fields[] = 'invoice';
 
 			}

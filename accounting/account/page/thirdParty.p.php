@@ -23,6 +23,8 @@ new \account\ThirdPartyPage(
 	})
 	->create(function($data) {
 
+		$data->e['farm'] = $data->eFarm;
+
 		throw new ViewAction($data);
 
 	})
