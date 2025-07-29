@@ -341,11 +341,13 @@ class OperationLib extends OperationCrud {
 
 	}
 
-	public static function prepareOperations(array $input, Operation $eOperationDefault): \Collection {
+	public static function prepareOperations(\farm\Farm $eFarm, array $input, Operation $eOperationDefault): \Collection {
 
 		$accounts = var_filter($input['account'] ?? [], 'array');
 		$vatValues = var_filter($input['vatValue'] ?? [], 'array');
 		$invoiceFile = var_filter($input['invoiceFile'] ?? NULL, 'string');
+		$invoiceId = var_filter($input['invoice']['id'] ?? NULL, '?int');
+		$ePaymentMethodInvoice = var_filter($input['invoice']['paymentMethod'] ?? NULL, 'payment\Method');
 		$eFinancialYear = \account\FinancialYearLib::getById($input['financialYear'] ?? NULL);
 		$isFromCashflow = ($eOperationDefault->offsetExists('cashflow') === TRUE);
 		$eCompany = \company\CompanyLib::getCurrent();
@@ -364,15 +366,27 @@ class OperationLib extends OperationCrud {
 			'account', 'accountLabel',
 			'description', 'amount', 'type', 'document', 'vatRate', 'comment',
 		];
-		if($isFromCashflow === FALSE) {
-			$properties = array_merge($properties, ['date', 'cashflow', 'paymentDate', 'paymentMethod']);
-		}
 
 		$eOperationDefault['thirdParty'] = NULL;
 		$eOperationDefault['financialYear'] = $eFinancialYear;
 
-		if($isFromCashflow === TRUE) {
-			$eOperationDefault->build(['paymentMethod', 'paymentDate'], $input);
+		if($isFromCashflow === FALSE) {
+
+			$properties = array_merge($properties, ['date', 'cashflow', 'paymentDate', 'paymentMethod']);
+
+		} else {
+
+			$fields = ['paymentMethod', 'paymentDate'];
+
+			if($invoiceId !== NULL) {
+
+				$input['invoice'] = $input['invoice']['id'];
+				$fields[] = 'invoice';
+
+			}
+
+			$eOperationDefault->build($fields, $input);
+
 		}
 
 		foreach($accounts as $index => $account) {
@@ -576,6 +590,18 @@ class OperationLib extends OperationCrud {
 				$cOperation->append($eOperationBank);
 
 			}
+		}
+
+		if($eOperationDefault['invoice']->exists() and $ePaymentMethodInvoice->exists()) {
+
+			$ePaymentMethod = \payment\MethodLib::getById($ePaymentMethodInvoice['id']);
+
+			if($ePaymentMethod['use']->value(\payment\Method::SELLING) and ($ePaymentMethod['farm']->exists() === FALSE or $ePaymentMethod['farm']->is($eFarm))) {
+
+				\selling\Invoice::model()->update($eOperationDefault['invoice'], ['paymentStatus' => \selling\Invoice::PAID, 'paymentMethod' => $ePaymentMethod]);
+
+			}
+
 		}
 
 		if($fw->ko()) {

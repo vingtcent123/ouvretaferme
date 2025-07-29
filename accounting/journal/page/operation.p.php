@@ -7,7 +7,7 @@ new \journal\OperationPage(
 		\company\CompanyLib::connectSpecificDatabaseAndServer($data->eFarm);
 
 		// Payment methods
-		$data->cPaymentMethod = \payment\MethodLib::getByFarm($data->eFarm, NULL, NULL);
+		$data->cPaymentMethod = \payment\MethodLib::getByFarm($data->eFarm, NULL, NULL, NULL);
 	}
 )
 	->applyElement(function($data, \journal\Operation $e) {
@@ -131,7 +131,7 @@ new \journal\OperationPage(
 			\Fail::log('Operation::allocate.accountsCheck');
 		}
 
-		$cOperation = \journal\OperationLib::prepareOperations($_POST, new \journal\Operation());
+		$cOperation = \journal\OperationLib::prepareOperations($data->eFarm, $_POST, new \journal\Operation());
 
 		if($cOperation->empty() === TRUE) {
 			\Fail::log('Operation::allocate.noOperation');

@@ -206,7 +206,11 @@ class Operation {
         const operations = qsa('#create-operation-list .create-operation:not(.create-operation-headers)').length;
 
         qs('#submit-save-operation').innerHTML = qs('#submit-save-operation').getAttribute(operations > 1 ? 'data-text-plural' : 'data-text-singular');
-        qs('#panel-journal-operation-create-title').innerHTML = qs('#panel-journal-operation-create-title').getAttribute(operations > 1 ? 'data-text-plural' : 'data-text-singular');
+
+        if(qs('#panel-journal-operation-create-title')) {
+            qs('#panel-journal-operation-create-title').innerHTML = qs('#panel-journal-operation-create-title').getAttribute(operations > 1 ? 'data-text-plural' : 'data-text-singular');
+        }
+
     }
 
     static updateType(accountDetail) {

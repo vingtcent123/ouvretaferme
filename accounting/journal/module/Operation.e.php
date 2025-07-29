@@ -168,6 +168,20 @@ class Operation extends OperationElement {
 
 				return $document !== NULL;
 			})
+			->setCallback('invoice.check', function(?\selling\Invoice $eInvoice) use($input): bool {
+
+				if($eInvoice->empty()) {
+					return TRUE;
+				}
+
+				$eInvoice->expects(['id']);
+
+				$eInvoice = \selling\InvoiceLib::getById($eInvoice['id']);
+				$eFarm = new \farm\Farm(['id' => POST('farm', '?int')]);
+
+				return $eInvoice['farm']->is($eFarm);
+
+			})
 		;
 
 		parent::build($properties, $input, $p);

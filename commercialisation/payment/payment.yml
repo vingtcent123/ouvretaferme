@@ -18,6 +18,7 @@ Method:
   farm: ?farm\Farm
   online: bool = FALSE
   status: enum(ACTIVE, INACTIVE, DELETED) = ACTIVE
+  use: set(SELLING, ACCOUNTING) = SELLING
   UNIQUE: [
     ["farm", "fqn"]
   ]

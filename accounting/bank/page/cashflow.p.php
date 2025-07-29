@@ -69,7 +69,7 @@ new \bank\CashflowPage(
 		}
 
 		// Payment methods
-		$data->cPaymentMethod = \payment\MethodLib::getByFarm($data->eFarm, NULL, NULL);
+		$data->cPaymentMethod = \payment\MethodLib::getByFarm($data->eFarm, NULL, NULL, NULL);
 
 		throw new ViewAction($data);
 
@@ -104,7 +104,7 @@ new \bank\CashflowPage(
 			Fail::log('Cashflow::allocate.accountsCheck');
 		}
 
-		$cOperation = \journal\OperationLib::prepareOperations($_POST, new \journal\Operation([
+		$cOperation = \journal\OperationLib::prepareOperations($data->eFarm, $_POST, new \journal\Operation([
 			'cashflow' => $data->eCashflow,
 			'date' => $data->eCashflow['date'],
 		]));

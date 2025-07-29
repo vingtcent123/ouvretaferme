@@ -11,6 +11,9 @@ abstract class MethodElement extends \Element {
 	const INACTIVE = 'inactive';
 	const DELETED = 'deleted';
 
+	const SELLING = 1;
+	const ACCOUNTING = 2;
+
 	public static function getSelection(): array {
 		return Method::model()->getProperties();
 	}
@@ -46,10 +49,11 @@ class MethodModel extends \ModuleModel {
 			'farm' => ['element32', 'farm\Farm', 'null' => TRUE, 'cast' => 'element'],
 			'online' => ['bool', 'cast' => 'bool'],
 			'status' => ['enum', [\payment\Method::ACTIVE, \payment\Method::INACTIVE, \payment\Method::DELETED], 'cast' => 'enum'],
+			'use' => ['set', [\payment\Method::SELLING, \payment\Method::ACCOUNTING], 'cast' => 'set'],
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'name', 'fqn', 'farm', 'online', 'status'
+			'id', 'name', 'fqn', 'farm', 'online', 'status', 'use'
 		]);
 
 		$this->propertiesToModule += [
@@ -71,6 +75,9 @@ class MethodModel extends \ModuleModel {
 
 			case 'status' :
 				return Method::ACTIVE;
+
+			case 'use' :
+				return new \Set(Method::SELLING);
 
 			default :
 				return parent::getDefaultValue($property);
@@ -123,6 +130,10 @@ class MethodModel extends \ModuleModel {
 
 	public function whereStatus(...$data): MethodModel {
 		return $this->where('status', ...$data);
+	}
+
+	public function whereUse(...$data): MethodModel {
+		return $this->where('use', ...$data);
 	}
 
 

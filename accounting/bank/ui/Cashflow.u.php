@@ -323,7 +323,7 @@ class CashflowUi {
 			return $cPaymentMethod->find(fn($e) => $e['fqn'] === 'cash')->first();
 		}
 
-		return NULL;
+		return new \payment\Method();
 
 	}
 
@@ -356,7 +356,7 @@ class CashflowUi {
 			'type' => $eCashflow['type'],
 			'description' => $eCashflow['memo'],
 			'paymentDate' => $eCashflow['date'],
-			'paymentMethod' => self::extractPaymentTypeFromCashflowDescription($eCashflow['memo'], $cPaymentMethod),
+			'paymentMethod' => self::extractPaymentTypeFromCashflowDescription($eCashflow['memo'], $cPaymentMethod->filter(fn($e) => $e['use']->value(\payment\Method::ACCOUNTING))),
 			'cashflow' => $eCashflow,
 			'amountIncludingVAT' => abs($eCashflow['amount']),
 		];
@@ -423,10 +423,10 @@ class CashflowUi {
 
 		if($cInvoice->count() === 1) {
 			$eInvoice = $cInvoice->first();
-			$h .= '<div class="single-checkbox mt-1">'.$form->checkbox('invoice['.$eInvoice['id'].']', $eInvoice['id'], ['callbackLabel' => fn($input) => '<div>'.$input.'</div><div>'.s("Une facture {number} non payée du client {clientName} d'un montant de {amount} du {date} a été trouvée.<br />Souhaitez-vous l'enregistrer comme <b>payée</b> avec le moyen de paiement {paymentMethod} en même temps ? <br />⚠️ Ne fonctionne pas encore ! ⚠️", [
+			$h .= '<div class="single-checkbox mt-1">'.$form->checkbox('invoice[id]', $eInvoice['id'], ['callbackLabel' => fn($input) => '<div>'.$input.'</div><div>'.s("Une facture {number} non payée du client {clientName} d'un montant de {amount} du {date} a été trouvée.<br />Souhaitez-vous l'enregistrer comme <b>payée</b> ? Si oui, vous pouvez modifier le moyen de paiement si nécessaire :<br />{paymentMethod}", [
 				'number' => '<b>'.encode($eInvoice['name']).'</b>',
 				'date' => '<b>'.\util\DateUi::numeric($eInvoice['date']).'</b>',
-				'paymentMethod' => '<b></b>',
+				'paymentMethod' => $form->select('invoice[paymentMethod]', $cPaymentMethod->filter(fn($e) => $e['use']->value(\payment\Method::SELLING)), $defaultValues['paymentMethod'] ?? NULL, ['mandatory' => TRUE]),
 				'clientName' => '<b>'.encode($eInvoice['customer']->getName()).'</b>',
 				'amount' => '<b>'.\util\TextUi::money($eInvoice['priceIncludingVat']).'</b>',
 				])]).'</div></div>';
@@ -434,6 +434,7 @@ class CashflowUi {
 
 		return new \Panel(
 			id         : 'panel-bank-cashflow-allocate',
+			title      : s("Créer des écritures pour une opération bancaire"),
 			dialogOpen : $dialogOpen,
 			dialogClose: $form->close(),
 			body       : $h,

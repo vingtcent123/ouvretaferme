@@ -29,7 +29,7 @@ class MethodLib extends MethodCrud {
 			->get($eMethod);
 	}
 
-	public static function getByFarm(\farm\Farm $eFarm, ?bool $online, ?bool $onlyActive = TRUE): \Collection {
+	public static function getByFarm(\farm\Farm $eFarm, ?bool $online, ?bool $onlyActive = TRUE, ?int $use = Method::SELLING): \Collection {
 
 		return Method::model()
 			->select(Method::getSelection())
@@ -39,6 +39,7 @@ class MethodLib extends MethodCrud {
 			)
 			->whereOnline($online, if: $online !== NULL)
 			->whereStatus(Method::ACTIVE, if: $onlyActive !== NULL)
+			->whereUse('LIKE', $use, if: $use !== NULL)
 			->sort(['name' => SORT_ASC])
 			->getCollection(NULL, NULL, 'id');
 

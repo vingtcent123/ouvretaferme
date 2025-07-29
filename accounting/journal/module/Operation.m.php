@@ -59,6 +59,7 @@ class OperationModel extends \ModuleModel {
 			'document' => ['text8', 'min' => 1, 'max' => NULL, 'collate' => 'general', 'null' => TRUE, 'cast' => 'string'],
 			'documentDate' => ['date', 'null' => TRUE, 'cast' => 'string'],
 			'documentStorage' => ['text16', 'null' => TRUE, 'cast' => 'string'],
+			'invoice' => ['element32', 'selling\Invoice', 'null' => TRUE, 'cast' => 'element'],
 			'amount' => ['decimal', 'digits' => 8, 'decimal' => 2, 'cast' => 'float'],
 			'type' => ['enum', [\journal\Operation::DEBIT, \journal\Operation::CREDIT], 'cast' => 'enum'],
 			'cashflow' => ['element32', 'bank\Cashflow', 'null' => TRUE, 'cast' => 'element'],
@@ -78,13 +79,14 @@ class OperationModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'number', 'financialYear', 'journalCode', 'account', 'accountLabel', 'thirdParty', 'date', 'description', 'document', 'documentDate', 'documentStorage', 'amount', 'type', 'cashflow', 'vatRate', 'vatAccount', 'operation', 'asset', 'comment', 'paymentDate', 'paymentMethod', 'letteringStatus', 'vatDeclaration', 'vatAdjustement', 'createdAt', 'updatedAt', 'createdBy'
+			'id', 'number', 'financialYear', 'journalCode', 'account', 'accountLabel', 'thirdParty', 'date', 'description', 'document', 'documentDate', 'documentStorage', 'invoice', 'amount', 'type', 'cashflow', 'vatRate', 'vatAccount', 'operation', 'asset', 'comment', 'paymentDate', 'paymentMethod', 'letteringStatus', 'vatDeclaration', 'vatAdjustement', 'createdAt', 'updatedAt', 'createdBy'
 		]);
 
 		$this->propertiesToModule += [
 			'financialYear' => 'account\FinancialYear',
 			'account' => 'account\Account',
 			'thirdParty' => 'account\ThirdParty',
+			'invoice' => 'selling\Invoice',
 			'cashflow' => 'bank\Cashflow',
 			'vatAccount' => 'account\Account',
 			'operation' => 'journal\Operation',
@@ -198,6 +200,10 @@ class OperationModel extends \ModuleModel {
 
 	public function whereDocumentStorage(...$data): OperationModel {
 		return $this->where('documentStorage', ...$data);
+	}
+
+	public function whereInvoice(...$data): OperationModel {
+		return $this->where('invoice', ...$data);
 	}
 
 	public function whereAmount(...$data): OperationModel {
