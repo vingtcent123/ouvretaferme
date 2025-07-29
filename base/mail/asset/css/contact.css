@@ -1,0 +1,12 @@
+.contact-item-stat {
+	text-align: center;
+}
+
+.contact-item-stat span {
+	font-weight: bold;
+}
+
+.contact-item-stat-percent {
+	color: var(--muted);
+	font-size: .8rem;
+}

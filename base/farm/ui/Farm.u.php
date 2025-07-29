@@ -244,16 +244,36 @@ class FarmUi {
 		return self::url($eFarm).'/livraison';
 	}
 
-	public static function urlCommunications(Farm $eFarm, string $view): string {
+	public static function urlCommunications(Farm $eFarm, string $view, ?string $subView = NULL): string {
 
 		return match($view) {
 			'website' => self::urlCommunicationsWebsite($eFarm),
+			'mailing' => self::urlCommunicationsMailing($eFarm, $subView),
 		};
 
 	}
 
 	public static function urlCommunicationsWebsite(Farm $eFarm): string {
 		return '/website/manage?id='.$eFarm['id'];
+	}
+
+	public static function urlCommunicationsMailing(Farm $eFarm, ?string $view = NULL, ?int $season = NULL): string {
+
+		$view ??= $eFarm->getView('viewEmailingCategory');
+
+		return match($view) {
+			Farmer::CAMPAIGN => self::urlCommunicationsCampaign($eFarm),
+			Farmer::CONTACT => self::urlCommunicationsContact($eFarm),
+		};
+
+	}
+
+	public static function urlCommunicationsCampaign(Farm $eFarm): string {
+		return self::url($eFarm).'/contacts';
+	}
+
+	public static function urlCommunicationsContact(Farm $eFarm): string {
+		return self::url($eFarm).'/contacts';
 	}
 
 	public static function urlAnalyzeReport(Farm $eFarm, ?int $season = NULL): string {
@@ -716,7 +736,7 @@ class FarmUi {
 
 				$h .= '<a href="'.$this->getCategoryUrl($eFarm, $menu, $name).'" class="farm-subnav-item '.($name === $subNav ? 'selected' : '').'" data-sub-nav="'.$name.'">';
 					$h .= '<span class="farm-subnav-prefix">'.\Asset::icon('chevron-right').' </span>';
-					$h .= '<span>'.$this-> getCategoryName($eFarm, $menu, $name).'</span>';
+					$h .= '<span>'.$this->getCategoryName($eFarm, $menu, $name).'</span>';
 				$h .= '</a>';
 
 			}
@@ -854,7 +874,8 @@ class FarmUi {
 			},
 
 			'communications' => match($name) {
-				'website' => s("Site internet")
+				'website' => s("Site internet"),
+				'mailing' => s("E-mailing")
 			},
 
 			'analyze-commercialisation' => match($name) {
@@ -1575,7 +1596,13 @@ class FarmUi {
 				return $categories;
 
 			case 'communications' :
-				return ['website'];
+				$categories = ['website'];
+
+				if($eFarm['hasSales'] and LIME_ENV === 'dev') {
+					$categories[] = 'mailing';
+				}
+
+				return $categories;
 
 			case 'analyze-commercialisation' :
 

@@ -541,6 +541,34 @@ new AdaptativeView('/ferme/{id}/stocks', function($data, FarmTemplate $t) {
 
 });
 
+new AdaptativeView('/ferme/{id}/contacts', function($data, FarmTemplate $t) {
+
+	$t->nav = 'communications';
+	$t->subNav = 'contact';
+
+	$t->title = s("Contacts de {value}", $data->eFarm['name']);
+	$t->canonical = \farm\FarmUi::urlCommunicationsMailing($data->eFarm);
+
+	$h = '<div class="util-action">';
+		$h .= '<h1>'.s("Contacts").'</h1>';
+		$h .= '<div>';
+
+			$h .= '<a '.attr('onclick', 'Lime.Search.toggle("#contact-search")').' class="btn btn-primary">'.\Asset::icon('search').'</a> ';
+
+			if(new \mail\Contact(['farm' => $data->eFarm])->canCreate()) {
+				$h .= '<a href="/selling/contact:create?farm='.$data->eFarm['id'].'" class="btn btn-primary">'.\Asset::icon('plus-circle').'<span class="hide-xs-down"> '.s("Nouveau produit").'</span></a>';
+			}
+
+		$h .= '</div>';
+	$h .= '</div>';
+
+	$t->mainTitle = $h;
+
+	echo new \mail\ContactUi()->getSearch($data->eFarm, $data->search);
+	echo new \mail\ContactUi()->getList($data->eFarm, $data->cContact, $data->contacts, $data->search);
+
+});
+
 new AdaptativeView('/ferme/{id}/boutiques', function($data, FarmTemplate $t) {
 
 	$t->nav = 'shop';

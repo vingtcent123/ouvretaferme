@@ -3,6 +3,159 @@ namespace mail;
 
 class ContactUi {
 
+	public function __construct() {
+
+		\Asset::css('mail', 'contact.css');
+
+	}
+
+	public function getSearch(\farm\Farm $eFarm, \Search $search): string {
+
+		$form = new \util\FormUi();
+
+		$h = '<div id="contact-search" class="util-block-search stick-xs '.($search->empty() ? 'hide' : '').'">';
+
+			$h .= $form->openAjax(\farm\FarmUi::urlCommunicationsMailing($eFarm), ['method' => 'get', 'id' => 'form-search']);
+				$h .= $form->hidden('category', $search->get('category'));
+				$h .= '<div>';
+					$h .= $form->text('name', $search->get('name'), ['placeholder' => s("Nom du produit")]);
+					$h .= $form->text('plant', $search->get('plant'), ['placeholder' => s("Espèce")]);
+					$h .= $form->submit(s("Chercher"), ['class' => 'btn btn-secondary']);
+					$h .= '<a href="'.\farm\FarmUi::urlCommunicationsMailing($eFarm).'" class="btn btn-secondary">'.\Asset::icon('x-lg').'</a>';
+				$h .= '</div>';
+			$h .= $form->close();
+
+		$h .= '</div>';
+
+		return $h;
+
+	}
+
+	public function getList(\farm\Farm $eFarm, \Collection $cContact, array $contacts, \Search $search) {
+
+		$h = '';
+
+		if($cContact->empty()) {
+
+			$h .= '<div class="util-empty">'.s("Il n'y a aucun contact à afficher.").'</div>';
+			return $h;
+
+		}
+
+		$h .= '<div class="contact-item-wrapper stick-md">';
+
+		$h .= '<table class="contact-item-table tr-even">';
+
+			$h .= '<thead>';
+
+				$h .= '<tr>';
+					$h .= '<th rowspan="2">'.$search->linkSort('email', s("Adresse e-mail")).'</th>';
+					$h .= '<th rowspan="2">'.s("Client").'</th>';
+					$h .= '<th rowspan="2" class="text-center">'.s("Opt-in").'</th>';
+					$h .= '<th rowspan="2" class="text-center">'.s("Opt-out").'</th>';
+					$h .= '<th rowspan="2">'.s("Dernier e-mail envoyé").'</th>';
+					$h .= '<th colspan="4" class="text-center hide-md-down">'.s("Statistiques").'</th>';
+				$h .= '</tr>';
+
+				$h .= '<tr>';
+					$h .= '<th class="text-center highlight-stick-right hide-md-down">'.s("Envoyés").'</th>';
+					$h .= '<th class="text-center highlight-stick-both hide-md-down">'.s("Reçus").'</th>';
+					$h .= '<th class="text-center highlight-stick-both hide-md-down">'.s("Ouverts").'</th>';
+					$h .= '<th class="text-center highlight-stick-left hide-md-down">'.s("Bloqués").'</th>';
+				$h .= '</tr>';
+
+			$h .= '</thead>';
+
+			$h .= '<tbody>';
+
+			foreach($cContact as $eContact) {
+
+				$h .= '<tr>';
+
+					$h .= '<td class="contact-item-email">';
+						$h .= encode($eContact['email']);
+
+						if($eContact['optIn'] === FALSE) {
+
+							$h .= '<div>';
+								$h .= s("Refus de recevoir vos communications par e-mail");
+							$h .= '</div>';
+
+						}
+
+					$h .= '</td>';
+
+					$h .= '<td class="contact-item-email">';
+					$h .= '</td>';
+
+					$h .= '<td class="text-center">';
+						if($eContact['optIn'] === NULL) {
+							$h .= \Asset::icon('question-circle');
+						} else if($eContact['optIn'] === TRUE) {
+							$h .= \Asset::icon('check-circle', ['class' => 'color-success']);
+						} else if($eContact['optIn'] === FALSE) {
+							$h .= \Asset::icon('x-circle', ['class' => 'color-danger']);
+						}
+					$h .= '</td>';
+
+					$h .= '<td class="text-center">';
+						if($eContact['optOut'] === TRUE) {
+							$h .= \Asset::icon('check-circle', ['class' => 'color-success']);
+						} else if($eContact['optOut'] === FALSE) {
+							$h .= \Asset::icon('x-circle', ['class' => 'color-danger']);
+						}
+					$h .= '</td>';
+
+					$h .= '<td>';
+						if($eContact['lastSent'] !== NULL) {
+
+							$h .= \util\DateUi::ago($eContact['lastSent']);
+
+							// afficher lastEmail
+
+						}
+					$h .= '</td>';
+
+					$h .= '<td class="contact-item-stat highlight-stick-right">';
+						$h .= '<span style="font-size: 1.25rem">'.$eContact['sent'].'</span>';
+					$h .= '</td>';
+
+					$h .= '<td class="contact-item-stat highlight-stick-both">';
+						if($eContact['sent'] > 0) {
+							$h .= '<span>'.$eContact['delivered'].'</span>';
+							$h .= '<div class="contact-item-stat-percent">'.s("{value} %", round($eContact['delivered'] / $eContact['sent'] * 100)).'</div>';
+						}
+					$h .= '</td>';
+
+					$h .= '<td class="contact-item-stat highlight-stick-both">';
+						if($eContact['sent'] > 0) {
+							$h .= '<span>'.$eContact['opened'].'</span>';
+							$h .= '<div class="contact-item-stat-percent">'.s("{value} %", round($eContact['opened'] / $eContact['sent'] * 100)).'</div>';
+						}
+					$h .= '</td>';
+
+					$h .= '<td class="contact-item-stat highlight-stick-left">';
+						if($eContact['sent'] > 0) {
+							$blocked = $eContact['failed'] + $eContact['spam'];
+							$h .= '<span '.($blocked > 0 ? 'class="color-danger"' : '').'>'.$blocked.'</span>';
+							$h .= '<div class="contact-item-stat-percent">'.s("{value} %", round($blocked / $eContact['sent'] * 100)).'</div>';
+						}
+					$h .= '</td>';
+
+				$h .= '</tr>';
+
+			}
+
+			$h .= '</tbody>';
+
+		$h .= '</table>';
+
+		$h .= '</div>';
+
+		return $h;
+
+	}
+
 	public function toggleOptOut(Contact $eContact) {
 
 		return \util\TextUi::switch([

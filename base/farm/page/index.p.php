@@ -190,14 +190,9 @@
 			'blocked' => GET('blocked', 'bool'),
 		], GET('sort', default: 'lastSent'));
 
-
 		$data->contacts = \mail\ContactLib::aggregateByFarm($data->eFarm, $data->search);
-		dd($data->contacts);
-		$data->cContact = \mail\ContactLib::getByFarm($data->eFarm, search: $data->search);
 
-		if($data->cProduct->empty()) {
-			$data->cUnit = \selling\UnitLib::getByFarm($data->eFarm);
-		}
+		$data->cContact = \mail\ContactLib::getByFarm($data->eFarm, search: $data->search);
 
 		throw new ViewAction($data);
 
