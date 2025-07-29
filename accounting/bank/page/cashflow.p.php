@@ -57,13 +57,15 @@ new \bank\CashflowPage(
 		$cThirdParty = account\ThirdPartyLib::filterByCashflow(account\ThirdPartyLib::getAll(new Search()), $data->eCashflow)->find(fn($e) => $e['weight'] > 0);
 		$data->cInvoice = new Collection();
 
-		if($cThirdParty->count() === 1) {
+		if($cThirdParty->notEmpty()) {
 
-			$eThirdParty = $cThirdParty->first();
+			foreach($cThirdParty as $eThirdParty) {
 
-			if($eThirdParty['customer']->notEmpty()) {
-				// On va chercher des factures en attente de ce client
-				$data->cInvoice = \selling\InvoiceLib::getByCustomer($eThirdParty['customer'])->find(fn($e) => $e['paymentStatus'] === \selling\Invoice::NOT_PAID and abs($e['priceIncludingVat'] - $data->eCashflow['amount']) < 1);
+				if($eThirdParty['customer']->notEmpty()) {
+					// On va chercher des factures en attente de ces clients dont le montant correspond à 1€ près
+					$data->cInvoice->appendCollection(\selling\InvoiceLib::getByCustomer($eThirdParty['customer'])->find(fn($e) => $e['paymentStatus'] === \selling\Invoice::NOT_PAID and abs($e['priceIncludingVat'] - $data->eCashflow['amount']) < 1));
+				}
+
 			}
 
 		}
