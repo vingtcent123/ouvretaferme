@@ -54,21 +54,8 @@ new \bank\CashflowPage(
 		$data->cAssetToLinkToGrant = \asset\AssetLib::getAllAssetsToLinkToGrant();
 
 		// On regarde si on trouve un tiers qui correspond ainsi que des factures
-		$cThirdParty = account\ThirdPartyLib::filterByCashflow(account\ThirdPartyLib::getAll(new Search()), $data->eCashflow)->find(fn($e) => $e['weight'] > 0);
-		$data->cInvoice = new Collection();
-
-		if($cThirdParty->notEmpty()) {
-
-			foreach($cThirdParty as $eThirdParty) {
-
-				if($eThirdParty['customer']->notEmpty()) {
-					// On va chercher des factures en attente de ces clients dont le montant correspond à 1€ près
-					$data->cInvoice->appendCollection(\selling\InvoiceLib::getByCustomer($eThirdParty['customer'])->find(fn($e) => $e['paymentStatus'] === \selling\Invoice::NOT_PAID and abs($e['priceIncludingVat'] - $data->eCashflow['amount']) < 1));
-				}
-
-			}
-
-		}
+		$cThirdParty = \account\ThirdPartyLib::getAll(new Search());
+		$data->cInvoice = \bank\CashflowLib::searchInvoices($cThirdParty, $data->eCashflow);
 
 		// Payment methods
 		$data->cPaymentMethod = \payment\MethodLib::getByFarm($data->eFarm, NULL, NULL, NULL);

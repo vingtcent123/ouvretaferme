@@ -161,6 +161,9 @@ class CashflowUi {
 
 						$h .= '<td class="text-left">';
 							$h .= encode($eCashflow['id']);
+					if($eCashflow['cInvoice']->notEmpty()) {
+						$h .= '<span class="color-success ml-1" style="cursor: help" title="'.s("Une facture en attente de paiement a été trouvée").'">'.\Asset::icon('magic').'</span>';
+					}
 						$h .= '</td>';
 
 						$h .= '<td>';
@@ -423,7 +426,7 @@ class CashflowUi {
 
 		if($cInvoice->count() === 1) {
 			$eInvoice = $cInvoice->first();
-			$h .= '<div class="single-checkbox mt-1">'.$form->checkbox('invoice[id]', $eInvoice['id'], ['callbackLabel' => fn($input) => '<div>'.$input.'</div><div>'.s("Une facture {number} non payée du client {clientName} d'un montant de {amount} du {date} a été trouvée.<br />Souhaitez-vous l'enregistrer comme <b>payée</b> ? Si oui, vous pouvez modifier le moyen de paiement si nécessaire :<br />{paymentMethod}", [
+			$h .= '<div class="single-checkbox mt-1">'.$form->checkbox('invoice[id]', $eInvoice['id'], ['callbackLabel' => fn($input) => '<div>'.$input.'</div><div>'.s("Une facture {number} adressée à {clientName} d'un montant de {amount} du {date} a été trouvée.<br />Souhaitez-vous l'enregistrer comme <b>payée</b> ? Si oui, vous pouvez modifier le moyen de paiement si nécessaire :<br />{paymentMethod}", [
 				'number' => '<b>'.encode($eInvoice['name']).'</b>',
 				'date' => '<b>'.\util\DateUi::numeric($eInvoice['date']).'</b>',
 				'paymentMethod' => $form->select('invoice[paymentMethod]', $cPaymentMethod->filter(fn($e) => $e['use']->value(\payment\Method::SELLING)), $defaultValues['paymentMethod'] ?? NULL, ['mandatory' => TRUE]),

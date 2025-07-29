@@ -21,6 +21,8 @@ new AdaptativeView('index', function($data, FarmTemplate $t) {
 
 		echo new \bank\CashflowUi()->getSearch($data->search, $data->eFinancialYear);
 		echo new \bank\CashflowUi()->getSummarize($data->eFarm, $data->nCashflow, $data->search);
+		echo '<div class="mb-1"><span class="color-success" style="cursor: help">'.\Asset::icon('magic').'</span> : '.s("Une facture non payée correspondante a été trouvée.").'</div>';
+		echo '<div class="util-block-help">'.s("Pour que le système trouve une correspondance entre une facture et une opération bancaire, il faut que les montants soient identiques à 1€ près, que le tiers existe et soit détecté dans le libellé de l'opération, et que <link>le client soit configuré dans le tiers</link>.", ['link' => '<a href="'.\company\CompanyUi::urlAccount($data->eFarm).'/thirdParty">']).'</div>';
 		echo new \bank\CashflowUi()->getCashflow($data->eFarm, $data->cCashflow, $data->eFinancialYear, $data->eImport, $data->search);
 
 	} else {
