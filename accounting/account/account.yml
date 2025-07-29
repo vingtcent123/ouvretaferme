@@ -57,6 +57,7 @@ ThirdParty:
   vatNumber: ?text8
   customer: ?selling\Customer
   names: ?text16 # Quels autres noms récupère-t-on de ce tiers (sur les factures ou autres docs) ?
+  memos: ?json = PHP([])
   UNIQUE: [
     ["name"]
   ]

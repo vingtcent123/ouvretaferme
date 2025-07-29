@@ -414,7 +414,7 @@ class OperationLib extends OperationCrud {
 
 				$eOperation['thirdParty'] = \account\ThirdPartyLib::getById($thirdParty);
 
-				// Vérifier si on doit enregistrer des données supplémentaires
+				// Vérifier si on doit enregistrer des données supplémentaires (issues de la facture pdf)
 				if($eOperation['thirdParty']['vatNumber'] === NULL and ($input['thirdPartyVatNumber'][$index] ?? NULL) !== NULL) {
 					$eOperation['thirdParty']['vatNumber'] = rtrim(trim($input['thirdPartyVatNumber'][$index]));
 				}
@@ -427,7 +427,40 @@ class OperationLib extends OperationCrud {
 					}
 				}
 
-				\account\ThirdPartyLib::update($eOperation['thirdParty'], ['vatNumber', 'names']);
+				// Enregistre les termes du libellé de banque pour améliorer les prédictions
+				if($isFromCashflow === TRUE) {
+					$memos = explode(' ', $eOperation['cashflow']['memo']);
+					if($eOperation['thirdParty']['memos'] === NULL) {
+						$eOperation['thirdParty']['memos'] = [];
+					}
+
+					foreach($memos as $memo) {
+						$loweredMemo = mb_strtolower($memo);
+						if(
+							mb_strlen($loweredMemo) <= 3
+							or strpos($loweredMemo, 'paiement') !== FALSE
+							or strpos($loweredMemo, 'carte') !== FALSE
+						) {
+							continue;
+						}
+
+						$textToArray = str_split(str_replace(' ', '', $loweredMemo));
+						$numbers = count(array_filter($textToArray, function ($item) { return is_numeric($item); }));
+
+						// On ne garde pas les memo avec plus de 3 chiffres (comme des dates ou des numéros de référence)
+						if($numbers >= 3) {
+							continue;
+						}
+
+						if(isset($eOperation['thirdParty']['memos'][$loweredMemo]) === FALSE) {
+							$eOperation['thirdParty']['memos'][$loweredMemo] = 0;
+						}
+						$eOperation['thirdParty']['memos'][$loweredMemo]++;
+					}
+
+				}
+
+				\account\ThirdPartyLib::update($eOperation['thirdParty'], ['vatNumber', 'names', 'memos']);
 
 			} else {
 
@@ -592,7 +625,7 @@ class OperationLib extends OperationCrud {
 			}
 		}
 
-		if($eOperationDefault['invoice']->exists() and $ePaymentMethodInvoice->exists()) {
+		if(($eOperationDefault['invoice'] ?? NULL) !== NULL and $eOperationDefault['invoice']->exists() and $ePaymentMethodInvoice->exists()) {
 
 			$ePaymentMethod = \payment\MethodLib::getById($ePaymentMethodInvoice['id']);
 

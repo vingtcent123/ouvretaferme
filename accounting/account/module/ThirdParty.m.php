@@ -43,10 +43,11 @@ class ThirdPartyModel extends \ModuleModel {
 			'vatNumber' => ['text8', 'null' => TRUE, 'cast' => 'string'],
 			'customer' => ['element32', 'selling\Customer', 'null' => TRUE, 'cast' => 'element'],
 			'names' => ['text16', 'null' => TRUE, 'cast' => 'string'],
+			'memos' => ['json', 'null' => TRUE, 'cast' => 'array'],
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'name', 'clientAccountLabel', 'supplierAccountLabel', 'vatNumber', 'customer', 'names'
+			'id', 'name', 'clientAccountLabel', 'supplierAccountLabel', 'vatNumber', 'customer', 'names', 'memos'
 		]);
 
 		$this->propertiesToModule += [
@@ -56,6 +57,48 @@ class ThirdPartyModel extends \ModuleModel {
 		$this->uniqueConstraints = array_merge($this->uniqueConstraints, [
 			['name']
 		]);
+
+	}
+
+	public function getDefaultValue(string $property) {
+
+		switch($property) {
+
+			case 'memos' :
+				return [];
+
+			default :
+				return parent::getDefaultValue($property);
+
+		}
+
+	}
+
+	public function encode(string $property, $value) {
+
+		switch($property) {
+
+			case 'memos' :
+				return $value === NULL ? NULL : json_encode($value, JSON_UNESCAPED_UNICODE);
+
+			default :
+				return parent::encode($property, $value);
+
+		}
+
+	}
+
+	public function decode(string $property, $value) {
+
+		switch($property) {
+
+			case 'memos' :
+				return $value === NULL ? NULL : json_decode($value, TRUE);
+
+			default :
+				return parent::decode($property, $value);
+
+		}
 
 	}
 
@@ -93,6 +136,10 @@ class ThirdPartyModel extends \ModuleModel {
 
 	public function whereNames(...$data): ThirdPartyModel {
 		return $this->where('names', ...$data);
+	}
+
+	public function whereMemos(...$data): ThirdPartyModel {
+		return $this->where('memos', ...$data);
 	}
 
 

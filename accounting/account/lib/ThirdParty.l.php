@@ -52,17 +52,29 @@ class ThirdPartyLib extends ThirdPartyCrud {
 
 		foreach($cThirdParty as &$eThirdParty) {
 			$eThirdParty['weight'] = 0;
-
 			foreach($memoItems as $memoItem) {
 				if(mb_strlen($memoItem) < 3) {
 					continue;
 				}
+
+				$memoItem = mb_strtolower($memoItem);
+
 				if(strtolower($eThirdParty['name']) === strtolower($memoItem)) {
+
 					$eThirdParty['weight'] += 50;
+
+					// On a déjà vu ce terme + de 2 fois dans des allocations précédentes
+				} else if(isset($eThirdParty['memos'][$memoItem]) and $eThirdParty['memos'][$memoItem] > 2) {
+
+					$eThirdParty['weight'] += 10 * $eThirdParty['memos'][$memoItem];
+
 				} else if(mb_strlen($memoItem) > 3 and mb_strpos(strtolower($eThirdParty['name']), strtolower($memoItem)) !== FALSE) {
+
 					$eThirdParty['weight'] += levenshtein(strtolower($eThirdParty['name']), strtolower($memoItem));
+
 				}
 			}
+
 		}
 
 		return $cThirdParty->sort(['weight' => SORT_DESC, 'name' => SORT_ASC]);
