@@ -170,8 +170,8 @@ class CashflowUi {
 							$h .= \util\DateUi::numeric($eCashflow['date']);
 						$h .= '</td>';
 
-						$h .= '<td>';
-							$h .= encode($eCashflow['memo']);
+						$h .= '<td class="td-description color-primary">';
+							$h .= '<div>'.encode($eCashflow['memo']).'</div>';
 						$h .= '</td>';
 
 						$h .= '<td class="text-end highlight-stick-right">';

@@ -438,8 +438,7 @@ class OperationLib extends OperationCrud {
 						$loweredMemo = mb_strtolower($memo);
 						if(
 							mb_strlen($loweredMemo) <= 3
-							or strpos($loweredMemo, 'paiement') !== FALSE
-							or strpos($loweredMemo, 'carte') !== FALSE
+							or in_array($loweredMemo, ['paiement', 'carte', 'votre', 'inst', 'faveur', 'virement', 'emis'])
 						) {
 							continue;
 						}
