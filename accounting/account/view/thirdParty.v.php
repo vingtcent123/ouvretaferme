@@ -10,13 +10,14 @@ new AdaptativeView('index', function($data, FarmTemplate $t) {
 
 	echo new \account\ThirdPartyUi()->getSearch($data->search);
 
-	if($data->eFarm['company']->isAccrualAccounting()) {
-		echo '<div class="util-block-help">';
+	echo '<div class="util-block-help">';
+		if($data->eFarm['company']->isAccrualAccounting()) {
 			echo s("Les tiers sont des personnes ou des organismes avec qui votre ferme échange des flux. Un tiers peut être un client, un fournisseur, l'état... En fonction de son statut (la plupart du temps client/fournisseur), vos tiers auront un numéro de compte personnalisé, ce qui vous permet une analyse plus fine de vos encours (créances, dettes) et de vos flux financiers.");
 			echo '<br />';
-			echo s("Pour faciliter la remontée d'informations dans la partie comptabilité, vos clients (dans la partie commercialisation) peuvent être importés automatiquement ici en tant que tiers.");
-		echo '</div>';
-	}
+		}
+		echo s("Pour faciliter la remontée d'informations dans la partie comptabilité (notamment entre les écritures comptables et les factures), vos clients peuvent être associés ici aux tiers.");
+	echo '</div>';
+
 	echo new \account\ThirdPartyUi()->manage($data->eFarm, $data->cThirdParty, $data->search);
 
 });
