@@ -330,41 +330,45 @@ class CropLib extends CropCrud {
 
 		Crop::model()->beginTransaction();
 
-		Flow::model()
-			->whereCrop($e)
-			->delete();
-
-		\series\Cultivation::model()
-				->whereCrop($e)
-				->update([
-					'crop' => NULL
-				]);
-
-		Crop::model()->delete($e);
-
-		// Mets à jour le compteur de productions
-		$cCrop = self::getBySequence($e['sequence']);
-
-		$e['sequence']['plants'] = $cCrop->count();
-
-		Sequence::model()
-			->select('plants')
-			->update($e['sequence']);
-
-		// on passe les actions générales sur la culture restante
-		if($e['sequence']['plants'] === 1) {
-
-			$eCropRemaining = $cCrop->first();
-
 			Flow::model()
-				->whereSequence($e['sequence'])
-				->whereCrop(NULL)
-				->update([
-					'crop' => $eCropRemaining,
-					'plant' => $eCropRemaining['plant']
-				]);
+				->whereCrop($e)
+				->delete();
 
-		}
+			\series\Cultivation::model()
+					->whereCrop($e)
+					->update([
+						'crop' => NULL
+					]);
+
+			Slice::model()
+				->whereCrop($e)
+				->delete();
+
+			Crop::model()->delete($e);
+
+			// Mets à jour le compteur de productions
+			$cCrop = self::getBySequence($e['sequence']);
+
+			$e['sequence']['plants'] = $cCrop->count();
+
+			Sequence::model()
+				->select('plants')
+				->update($e['sequence']);
+
+			// on passe les actions générales sur la culture restante
+			if($e['sequence']['plants'] === 1) {
+
+				$eCropRemaining = $cCrop->first();
+
+				Flow::model()
+					->whereSequence($e['sequence'])
+					->whereCrop(NULL)
+					->update([
+						'crop' => $eCropRemaining,
+						'plant' => $eCropRemaining['plant']
+					]);
+
+			}
 
 		Crop::model()->commit();
 

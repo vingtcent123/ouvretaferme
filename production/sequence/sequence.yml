@@ -83,6 +83,9 @@ Slice:
   plant: plant\Plant
   variety: plant\Variety
   partPercent: ?float32(0.0, 100.0)
+  INDEX: [
+    ["sequence"]
+  ]
   UNIQUE: [
     ["crop", "variety"]
   ]
