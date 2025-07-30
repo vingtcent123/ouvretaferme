@@ -827,6 +827,7 @@ class OperationLib extends OperationCrud {
 			'paymentDate' => $eCashflow['date'],
 			'paymentMethod'=> $eOperation['paymentMethod'],
 			'financialYear'=> $eOperation['financialYear']['id'],
+			'journalCode' => \account\AccountLib::getJournalCodeByClass($label),
 		];
 
 		$eOperationBank = new Operation();

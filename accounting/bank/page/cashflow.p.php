@@ -9,6 +9,9 @@ new Page(
 )
 	->get('index', function($data) {
 
+		$data->tip = \farm\TipLib::pickOne($data->eUserOnline, 'accounting-invoice-cashflow');
+		$data->tipNavigation = 'close';
+
 		$data->eFinancialYear = \account\FinancialYearLib::getDynamicFinancialYear($data->eFarm, GET('financialYear', 'int'));
 		$data->cFinancialYear = \account\FinancialYearLib::getAll();
 

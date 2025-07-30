@@ -7,10 +7,6 @@ class TipUi {
 		\Asset::css('farm', 'tip.css');
 	}
 
-	public static function link(Farm $eFarm, bool $newTab = FALSE): string {
-		return '<a href="'.self::urlPlanningWeekly($eFarm).'" '.($newTab ? 'target="_blank"' : '').'>'.\encode($eFarm['name']).'</a>';
-	}
-
 	public function get(Farm $eFarm, string $tip, string $navigation): string {
 
 		$content = $this->getContent($eFarm, $tip);
@@ -313,9 +309,9 @@ class TipUi {
 
 				$h = '<p>'.s("Vous y trouverez :").'</p>';
 				$h .= '<ul>';
-					$h .= '<li>Les annonces de nouvelles fonctionnalités au fur et à mesure de leur développement,</li>';
-					$h .= '<li>la feuille de route avec les priorités pour les mois à venir,</li>';
-					$h .= '<li>et des ressources pour faciliter la prise en main du site !</li>';
+					$h .= '<li>'.s("Les annonces de nouvelles fonctionnalités au fur et à mesure de leur développement,").'</li>';
+					$h .= '<li>'.s("la feuille de route avec les priorités pour les mois à venir,").'</li>';
+					$h .= '<li>'.s("et des ressources pour faciliter la prise en main du site !").'</li>';
 				$h .= '</ul>';
 
 				return [
@@ -324,6 +320,28 @@ class TipUi {
 					'content' => $h,
 					'image' => TRUE,
 					'button' => [$link, s("Lire le blog")],
+				];
+
+			case 'accounting-invoice-cashflow' :
+
+				$link = \company\CompanyUi::urlAccount($eFarm).'/thirdParty';
+
+				$h = '<p>'.s("Il vous est possible de marquer vos factures <b>payées</b> avec son moyen de paiement, en même temps que vous créez une écriture comptable à partir d'une opération bancaire.").'</p>';
+				$h .= '<p>'.s("Pour que cela fonctionne, il faut :").'</p>';
+				$h .= '<ul>';
+					$h .= '<li>'.s("Avoir créé le tiers,").'</li>';
+					$h .= '<li>'.s("Avoir indiqué le lien entre le tiers et le client de votre ferme,").'</li>';
+					$h .= '<li>'.s("Que le montant de l'opération bancaire soit identique à la facture, à 1€ près,").'</li>';
+					$h .= '<li>'.s("Que la facture soit encore au statut \"non réglée\".").'</li>';
+				$h .= '</ul>';
+				$h .= '<p>'.s("Cette petite icône {icon} apparaîtra sur la ligne de l'opération bancaire pour vous signaler qu'une facture correspondante a été trouvée.", ['icon' => \Asset::icon('magic')]).'</p>';
+
+				return [
+					'icon' => \Asset::icon('list-check'),
+					'title' => s("Rapprochez factures et opérations bancaires"),
+					'content' => $h,
+					'image' => FALSE,
+					'button' => [$link, s("Configurer mes tiers")],
 				];
 
 			default:

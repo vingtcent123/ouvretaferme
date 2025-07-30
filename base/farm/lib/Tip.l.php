@@ -87,7 +87,11 @@ class TipLib extends TipCrud {
 			],
 			'blog' => [
 				'minSeniority' => 8
-			]
+			],
+			'accounting-invoice-cashflow' => [
+				'minSeniority' => 8,
+				'match' => fn(\user\User $eUser, Farm $eFarm) => $eFarm->hasAccounting() and \bank\Cashflow::model()->count() > 0,
+			],
 
 		];
 
