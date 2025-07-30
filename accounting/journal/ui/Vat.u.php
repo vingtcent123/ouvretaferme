@@ -357,7 +357,7 @@ Class VatUi {
 
 								$h .= '<td>';
 								if($eOperationInitial['cashflow']->exists() === TRUE) {
-									$h .= '<a href="'.new JournalUi()->getBaseUrl($eFarm).'&cashflow='.$eOperationInitial['cashflow']['id'].'" title="'.s("Voir les écritures liées à cette opération bancaire").'">'.encode($eOperationInitial['cashflow']['id']).'</a>';
+									$h .= '<a href="'.new JournalUi()->getBaseUrl($eFarm, $eOperationInitial['financialYear']).'&cashflow='.$eOperationInitial['cashflow']['id'].'" title="'.s("Voir les écritures liées à cette opération bancaire").'">'.encode($eOperationInitial['cashflow']['id']).'</a>';
 								} else {
 									$h .= '';
 								}
@@ -392,7 +392,7 @@ Class VatUi {
 								$h .= '<td colspan="2">';
 									$h .= '<div class="operation-info">';
 										if($eOperationInitial['document'] !== NULL) {
-											$h .= '<a href="'.new JournalUi()->getBaseUrl($eFarm).'&document='.urlencode($eOperationInitial['document']).'" title="'.s("Voir les écritures liées à cette pièce comptable").'">'.encode($eOperationInitial['document']).'</a>';
+											$h .= '<a href="'.new JournalUi()->getBaseUrl($eFarm, $eOperationInitial['financialYear']).'&document='.urlencode($eOperationInitial['document']).'" title="'.s("Voir les écritures liées à cette pièce comptable").'">'.encode($eOperationInitial['document']).'</a>';
 										}
 									$h .= '</div>';
 								$h .= '</td>';

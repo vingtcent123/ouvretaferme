@@ -142,9 +142,10 @@ class OperationLib extends OperationCrud {
 			->select(
 				Operation::getSelection()
 				+ ['operation' => [
-				'id', 'account', 'accountLabel', 'document', 'type',
-				'thirdParty' => ['id', 'name'],
-				'description', 'amount', 'vatRate', 'cashflow', 'date'
+					'id', 'account', 'accountLabel', 'document', 'type',
+					'thirdParty' => ['id', 'name'],
+					'description', 'amount', 'vatRate', 'cashflow', 'date',
+					'financialYear',
 				]]
 				+ ['account' => ['class', 'description']]
 				+ ['thirdParty' => ['id', 'name']]
@@ -166,7 +167,8 @@ class OperationLib extends OperationCrud {
 				+ ['operation' => [
 					'id', 'account', 'accountLabel', 'document', 'type',
 					'thirdParty' => ['id', 'name'],
-					'description', 'amount', 'vatRate', 'cashflow', 'date'
+					'description', 'amount', 'vatRate', 'cashflow', 'date',
+					'financialYear',
 				]]
 				+ ['account' => ['class', 'description']]
 				+ ['thirdParty' => ['id', 'name']]
