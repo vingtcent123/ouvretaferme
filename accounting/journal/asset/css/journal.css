@@ -31,15 +31,10 @@ form[data-ajax-form="/@module/journal/Operation/doQuick"] {
     vertical-align: middle;
 }
 .td-description {
-    text-transform: lowercase;
     font-size: 0.95rem;
     color: var(--muted);
 }
 
-.td-description div::first-letter,
-.td-description div div::first-letter {
-    text-transform: uppercase;
-}
 .td-description > div > span {
     margin-top: 0.15rem;
     cursor: help;

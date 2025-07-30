@@ -61,7 +61,7 @@ class OfxParserLib {
 				'type' => (string) $operation->TRNTYPE,
 				'fitid' => (string) $operation->FITID,
 				'name' => (string) $operation->NAME,
-				'memo' => (string) $operation->MEMO,
+				'memo' => ucfirst(strtolower((string) $operation->MEMO)),
 				'account' => $eBankAccount,
 				'import' => $eImport,
 			];
