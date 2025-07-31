@@ -63,8 +63,8 @@ class ThirdPartyLib extends ThirdPartyCrud {
 
 					$eThirdParty['weight'] += 50;
 
-					// On a déjà vu ce terme + de 2 fois dans des allocations précédentes
-				} else if(isset($eThirdParty['memos'][$memoItem]) and $eThirdParty['memos'][$memoItem] > 2) {
+					// On a déjà vu ce terme au moins 2 fois dans des allocations précédentes
+				} else if(isset($eThirdParty['memos'][$memoItem]) and $eThirdParty['memos'][$memoItem] >= 2) {
 
 					$eThirdParty['weight'] += 10 * $eThirdParty['memos'][$memoItem];
 
