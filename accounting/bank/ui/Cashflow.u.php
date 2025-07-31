@@ -161,9 +161,6 @@ class CashflowUi {
 
 						$h .= '<td class="text-left">';
 							$h .= encode($eCashflow['id']);
-					if($eCashflow['cInvoice']->notEmpty()) {
-						$h .= '<span class="color-success ml-1" style="cursor: help" title="'.s("Une facture en attente de paiement a été trouvée").'">'.\Asset::icon('magic').'</span>';
-					}
 						$h .= '</td>';
 
 						$h .= '<td>';
@@ -171,7 +168,12 @@ class CashflowUi {
 						$h .= '</td>';
 
 						$h .= '<td class="td-description color-primary">';
-							$h .= '<div>'.encode($eCashflow['memo']).'</div>';
+							$h .= '<div>';
+								if($eCashflow['cInvoice']->notEmpty()) {
+									$h .= '<span class="color-success" style="cursor: help" title="'.s("Une facture en attente de paiement a été trouvée").'">'.\Asset::icon('magic').'</span>&nbsp;';
+								}
+								$h .= encode($eCashflow['memo']);
+							$h .= '</div>';
 						$h .= '</td>';
 
 						$h .= '<td class="text-end highlight-stick-right">';
