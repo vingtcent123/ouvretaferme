@@ -69,6 +69,9 @@ Customer:
   color: ?color
   createdAt: datetime = SPECIAL(now)
   status: enum(ACTIVE, INACTIVE) = ACTIVE
+  INDEX: [
+    ["farm", "email"]
+  ]
   UNIQUE: [
     ["farm", "user"]
   ]

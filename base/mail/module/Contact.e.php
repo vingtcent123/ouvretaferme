@@ -3,11 +3,11 @@ namespace mail;
 
 class Contact extends ContactElement {
 
-	public function getOptOut(): bool {
+	public function getActive(): bool {
 		if($this->empty()) {
 			return TRUE;
 		} else {
-			return $this['optOut'];
+			return $this['active'];
 		}
 	}
 
@@ -22,7 +22,7 @@ class Contact extends ContactElement {
 	public function opt(): bool {
 
 		return (
-			$this->getOptOut() and
+			$this->getActive() and
 			$this->getOptIn()
 		);
 

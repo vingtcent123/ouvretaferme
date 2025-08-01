@@ -3,6 +3,12 @@ namespace mail;
 
 class ContactLib extends ContactCrud {
 
+	public static function getPropertiesCreate(): array {
+
+		return ['email'];
+
+	}
+
 	public static function getByUser(\user\User $eUser): \Collection {
 
 		return Contact::model()
@@ -31,14 +37,23 @@ class ContactLib extends ContactCrud {
 
 	}
 
-	public static function getByFarm(\farm\Farm $eFarm, \Search $search = new \Search()): \Collection {
+	public static function getByFarm(\farm\Farm $eFarm, bool $withCustomer = FALSE, \Search $search = new \Search()): \Collection {
 
 		$search->validateSort(['email', 'createdAt']);
 
 		self::applySearch($search);
 
+		$selection = Contact::getSelection();
+
+		if($withCustomer) {
+			$selection['cCustomer'] = \selling\Customer::model()
+				->select(\selling\CustomerElement::getSelection())
+				->whereFarm($eFarm)
+				->delegateCollection('email', propertyParent: 'email');
+		}
+
 		return Contact::model()
-			->select(Contact::getSelection())
+			->select($selection)
 			->whereFarm($eFarm)
 			->sort($search->buildSort())
 			->getCollection();
@@ -106,6 +121,16 @@ class ContactLib extends ContactCrud {
 			->get($eContact);
 
 		return $eContact;
+
+	}
+
+	public static function create(Contact $e): void {
+
+		try {
+			parent::create($e);
+		} catch(\DuplicateException) {
+			Contact::fail('email.duplicate');
+		}
 
 	}
 

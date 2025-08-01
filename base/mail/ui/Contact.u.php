@@ -9,6 +9,36 @@ class ContactUi {
 
 	}
 
+	public function create(Contact $eContact): \Panel {
+
+		$form = new \util\FormUi();
+
+		$eFarm = $eContact['farm'];
+
+		$h = '';
+
+		$h .= $form->openAjax('/mail/contact:doCreate');
+
+			$h .= $form->asteriskInfo();
+
+			$h .= $form->hidden('farm', $eFarm['id']);
+
+			$h .= $form->dynamicGroup($eContact, 'email*');
+
+			$h .= $form->group(
+				content: $form->submit(s("Ajouter le contact"))
+			);
+
+		$h .= $form->close();
+
+		return new \Panel(
+			id: 'panel-contact-create',
+			title: s("Ajouter un contact"),
+			body: $h
+		);
+
+	}
+
 	public function getSearch(\farm\Farm $eFarm, \Search $search): string {
 
 		$form = new \util\FormUi();
@@ -42,113 +72,122 @@ class ContactUi {
 
 		}
 
+		$h .= '<p class="util-info">'.s("Les préférences d'envoi des e-mails ne s'appliquent qu'aux campagnes de communications que vous faites auprès de vos clients. Les e-mails directement liés aux commandes et à la facturation sont toujours envoyés.").'</p>';
+
 		$h .= '<div class="contact-item-wrapper stick-md">';
 
-		$h .= '<table class="contact-item-table tr-even">';
+			$h .= '<table class="contact-item-table tr-even">';
 
-			$h .= '<thead>';
+				$h .= '<thead>';
 
-				$h .= '<tr>';
-					$h .= '<th rowspan="2">'.$search->linkSort('email', s("Adresse e-mail")).'</th>';
-					$h .= '<th rowspan="2">'.s("Client").'</th>';
-					$h .= '<th rowspan="2" class="text-center">'.s("Opt-in").'</th>';
-					$h .= '<th rowspan="2" class="text-center">'.s("Opt-out").'</th>';
-					$h .= '<th rowspan="2">'.s("Dernier e-mail envoyé").'</th>';
-					$h .= '<th colspan="4" class="text-center hide-md-down">'.s("Statistiques").'</th>';
-				$h .= '</tr>';
+					$h .= '<tr>';
+						$h .= '<th rowspan="2">'.$search->linkSort('email', s("Adresse e-mail")).'</th>';
+						$h .= '<th rowspan="2" class="text-center">'.s("Envoyer<br/>des e-mails").'</th>';
+						$h .= '<th rowspan="2" class="text-center">'.s("Consentement pour<br/>recevoir des e-mails").'</th>';
+						$h .= '<th rowspan="2">'.s("Dernier e-mail envoyé").'</th>';
+						$h .= '<th colspan="4" class="text-center hide-md-down">'.s("Statistiques").'</th>';
+					$h .= '</tr>';
 
-				$h .= '<tr>';
-					$h .= '<th class="text-center highlight-stick-right hide-md-down">'.s("Envoyés").'</th>';
-					$h .= '<th class="text-center highlight-stick-both hide-md-down">'.s("Reçus").'</th>';
-					$h .= '<th class="text-center highlight-stick-both hide-md-down">'.s("Ouverts").'</th>';
-					$h .= '<th class="text-center highlight-stick-left hide-md-down">'.s("Bloqués").'</th>';
-				$h .= '</tr>';
+					$h .= '<tr>';
+						$h .= '<th class="text-center highlight-stick-right hide-md-down">'.s("Envoyés").'</th>';
+						$h .= '<th class="text-center highlight-stick-both hide-md-down">'.s("Reçus").'</th>';
+						$h .= '<th class="text-center highlight-stick-both hide-md-down">'.s("Ouverts").'</th>';
+						$h .= '<th class="text-center highlight-stick-left hide-md-down">'.s("Bloqués").'</th>';
+					$h .= '</tr>';
 
-			$h .= '</thead>';
+				$h .= '</thead>';
 
-			$h .= '<tbody>';
+				$h .= '<tbody>';
 
-			foreach($cContact as $eContact) {
+				foreach($cContact as $eContact) {
 
-				$h .= '<tr>';
+					$h .= '<tr>';
 
-					$h .= '<td class="contact-item-email">';
-						$h .= encode($eContact['email']);
+						$h .= '<td class="contact-item-email">';
+							$h .= '<div>'.encode($eContact['email']).'</div>';
 
-						if($eContact['optIn'] === FALSE) {
+							if($eContact['cCustomer']->notEmpty()) {
 
-							$h .= '<div>';
-								$h .= s("Refus de recevoir vos communications par e-mail");
-							$h .= '</div>';
+								$h .= '<div class="util-annotation">';
 
-						}
+									foreach($eContact['cCustomer'] as $position => $eCustomer) {
 
-					$h .= '</td>';
+										if($position > 0) {
+											$h .= ' / ';
+										}
 
-					$h .= '<td class="contact-item-email">';
-					$h .= '</td>';
+										$h .= '<a href="/client/'.$eCustomer['id'].'">'.encode($eCustomer->getName()).'</a>';
 
-					$h .= '<td class="text-center">';
-						if($eContact['optIn'] === NULL) {
-							$h .= \Asset::icon('question-circle');
-						} else if($eContact['optIn'] === TRUE) {
-							$h .= \Asset::icon('check-circle', ['class' => 'color-success']);
-						} else if($eContact['optIn'] === FALSE) {
-							$h .= \Asset::icon('x-circle', ['class' => 'color-danger']);
-						}
-					$h .= '</td>';
+									}
+								$h .= '</div>';
 
-					$h .= '<td class="text-center">';
-						if($eContact['optOut'] === TRUE) {
-							$h .= \Asset::icon('check-circle', ['class' => 'color-success']);
-						} else if($eContact['optOut'] === FALSE) {
-							$h .= \Asset::icon('x-circle', ['class' => 'color-danger']);
-						}
-					$h .= '</td>';
+							}
 
-					$h .= '<td>';
-						if($eContact['lastSent'] !== NULL) {
+						$h .= '</td>';
 
-							$h .= \util\DateUi::ago($eContact['lastSent']);
+						$h .= '<td class="text-center">';
+							if($eContact['optIn'] === FALSE) {
+								$h .= '<div class="color-muted">'.s("Non configurable").'</div>';
+							} else {
+								$h .= $this->toggleActive($eContact);
+							}
+						$h .= '</td>';
 
-							// afficher lastEmail
+						$h .= '<td class="text-center">';
+							if($eContact['optIn'] === NULL) {
+								$h .= \Asset::icon('question-circle');
+							} else if($eContact['optIn'] === TRUE) {
+								$h .= '<div class="color-success">'.\Asset::icon('check-circle').' '.s("Acceptation").'</div>';
+							} else if($eContact['optIn'] === FALSE) {
+								$h .= '<div class="color-danger">'.\Asset::icon('x-circle').' '.s("Refus").'</div>';
+							}
+						$h .= '</td>';
 
-						}
-					$h .= '</td>';
+						$h .= '<td>';
 
-					$h .= '<td class="contact-item-stat highlight-stick-right">';
-						$h .= '<span style="font-size: 1.25rem">'.$eContact['sent'].'</span>';
-					$h .= '</td>';
+							if($eContact['lastSent'] !== NULL) {
 
-					$h .= '<td class="contact-item-stat highlight-stick-both">';
-						if($eContact['sent'] > 0) {
-							$h .= '<span>'.$eContact['delivered'].'</span>';
-							$h .= '<div class="contact-item-stat-percent">'.s("{value} %", round($eContact['delivered'] / $eContact['sent'] * 100)).'</div>';
-						}
-					$h .= '</td>';
+								$h .= \util\DateUi::ago($eContact['lastSent']);
 
-					$h .= '<td class="contact-item-stat highlight-stick-both">';
-						if($eContact['sent'] > 0) {
-							$h .= '<span>'.$eContact['opened'].'</span>';
-							$h .= '<div class="contact-item-stat-percent">'.s("{value} %", round($eContact['opened'] / $eContact['sent'] * 100)).'</div>';
-						}
-					$h .= '</td>';
+								// afficher lastEmail
 
-					$h .= '<td class="contact-item-stat highlight-stick-left">';
-						if($eContact['sent'] > 0) {
-							$blocked = $eContact['failed'] + $eContact['spam'];
-							$h .= '<span '.($blocked > 0 ? 'class="color-danger"' : '').'>'.$blocked.'</span>';
-							$h .= '<div class="contact-item-stat-percent">'.s("{value} %", round($blocked / $eContact['sent'] * 100)).'</div>';
-						}
-					$h .= '</td>';
+							}
 
-				$h .= '</tr>';
+						$h .= '</td>';
 
-			}
+						$h .= '<td class="contact-item-stat highlight-stick-right">';
+							$h .= '<span style="font-size: 1.25rem">'.$eContact['sent'].'</span>';
+						$h .= '</td>';
 
-			$h .= '</tbody>';
+						$h .= '<td class="contact-item-stat highlight-stick-both">';
+							if($eContact['sent'] > 0) {
+								$h .= '<span>'.$eContact['delivered'].'</span>';
+								$h .= '<div class="contact-item-stat-percent">'.s("{value} %", round($eContact['delivered'] / $eContact['sent'] * 100)).'</div>';
+							}
+						$h .= '</td>';
 
-		$h .= '</table>';
+						$h .= '<td class="contact-item-stat highlight-stick-both">';
+							if($eContact['sent'] > 0) {
+								$h .= '<span>'.$eContact['opened'].'</span>';
+								$h .= '<div class="contact-item-stat-percent">'.s("{value} %", round($eContact['opened'] / $eContact['sent'] * 100)).'</div>';
+							}
+						$h .= '</td>';
+
+						$h .= '<td class="contact-item-stat highlight-stick-left">';
+							if($eContact['sent'] > 0) {
+								$blocked = $eContact['failed'] + $eContact['spam'];
+								$h .= '<span '.($blocked > 0 ? 'class="color-danger"' : '').'>'.$blocked.'</span>';
+								$h .= '<div class="contact-item-stat-percent">'.s("{value} %", round($blocked / $eContact['sent'] * 100)).'</div>';
+							}
+						$h .= '</td>';
+
+					$h .= '</tr>';
+
+				}
+
+				$h .= '</tbody>';
+
+			$h .= '</table>';
 
 		$h .= '</div>';
 
@@ -156,48 +195,42 @@ class ContactUi {
 
 	}
 
-	public function toggleOptOut(Contact $eContact) {
+	public function toggleActive(Contact $eContact) {
 
 		return \util\TextUi::switch([
 			'id' => 'contact-switch-'.$eContact['id'],
 			'disabled' => $eContact->canWrite() === FALSE,
-			'data-ajax' => $eContact->canWrite() ? '/mail/contact:doUpdateOptOut' : NULL,
+			'data-ajax' => $eContact->canWrite() ? '/mail/contact:doUpdateActive' : NULL,
 			'post-id' => $eContact['id'],
-			'post-opt-out' => $eContact['optOut'] ? FALSE : TRUE
-		], $eContact['optOut']);
+			'post-active' => $eContact['active'] ? FALSE : TRUE
+		], $eContact['active']);
 
 	}
 
 	public function getOpt(Contact $eContact): string {
 
 		$h = '<h3>'.s("Préférences de communication par e-mail").'</h3>';
-		$h .= '<p class="util-info">'.s("Les préférences de communication ne s'appliquent qu'aux campagnes de communications que vous faites auprès de {value}. Les e-mails directement liés aux commandes et à la facturation sont toujours envoyés.", ['value' => '<u>'.encode($eContact['email']).'</u>']).'</p>';
+		$h .= '<p class="util-info">'.s("Les préférences d'envoi des e-mails ne s'appliquent qu'aux campagnes de communications que vous faites auprès de {value}. Les e-mails directement liés aux commandes et à la facturation sont toujours envoyés.", ['value' => '<u>'.encode($eContact['email']).'</u>']).'</p>';
 
 		$h .= '<table class="mb-3">';
 			$h .= '<tr>';
-				$h .= '<td style="white-space: nowrap"><b>'.s("Opt-in").'</b></td>';
-				$h .= '<td class="hide-xs-down">';
-					$h .= '<div class="util-annotation">'.s("Consentement donné par le client pour recevoir vos communications par e-mail").'</div>';
-				$h .= '</td>';
-				$h .= '<td>';
-					$h .= match($eContact->getOptIn()) {
-						NULL => s("Pas de consentement explicite"),
-						TRUE => '<span class="color-success">'.\Asset::icon('check-circle-fill', ['class' => 'asset-icon-lg']).' '.s("Acceptation explicite de vos communications").'</span>',
-						FALSE => '<span class="color-danger">'.\Asset::icon('x-circle-fill', ['class' => 'asset-icon-lg']).' '.s("Refus explicite de vos communications").'</span>'
-					};
-				$h .= '</td>';
-			$h .= '</tr>';
-			$h .= '<tr>';
-				$h .= '<td style="white-space: nowrap"><b>'.s("Opt-out").'</b></td>';
-				$h .= '<td class="hide-xs-down">';
-					$h .= '<div class="util-annotation">'.s("Envoyer des communications par e-mail à ce client").'</div>';
-				$h .= '</td>';
+				$h .= '<td style="white-space: nowrap"><b>'.s("Envoyer des communications par e-mail à ce client").'</b></td>';
 				$h .= '<td>';
 					if($eContact->getOptIn() === FALSE) {
 						$h .= s("Non configurable");
 					} else {
-						$h .= $this->toggleOptOut($eContact);
+						$h .= $this->toggleActive($eContact);
 					}
+				$h .= '</td>';
+			$h .= '</tr>';
+			$h .= '<tr>';
+				$h .= '<td style="white-space: nowrap"><b>'.s("Consentement donné par le client pour recevoir vos communications par e-mail").'</b></td>';
+				$h .= '<td>';
+					$h .= match($eContact->getOptIn()) {
+						NULL => \Asset::icon('question-circle').' '.s("Pas de consentement explicite"),
+						TRUE => '<span class="color-success">'.\Asset::icon('check-circle-fill', ['class' => 'asset-icon-lg']).' '.s("Acceptation explicite de vos communications").'</span>',
+						FALSE => '<span class="color-danger">'.\Asset::icon('x-circle-fill', ['class' => 'asset-icon-lg']).' '.s("Refus explicite de vos communications").'</span>'
+					};
 				$h .= '</td>';
 			$h .= '</tr>';
 		$h .= '</table>';
@@ -247,6 +280,21 @@ class ContactUi {
 			title: s("Préférences de communication par e-mail"),
 			body: $h
 		);
+
+	}
+
+	public static function p(string $property): \PropertyDescriber {
+
+		$d = Contact::model()->describer($property, [
+			'email' => s("Adresse e-mail"),
+		]);
+
+		switch($property) {
+
+
+		}
+
+		return $d;
 
 	}
 

@@ -2131,7 +2131,6 @@ class AnalyzeUi {
 			'delivery_postcode',
 			'delivery_city',
 			'opt_in',
-			'opt_out',
 		];
 
 	}

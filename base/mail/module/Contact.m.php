@@ -51,12 +51,12 @@ class ContactModel extends \ModuleModel {
 			'spam' => ['int32', 'min' => 0, 'max' => NULL, 'cast' => 'int'],
 			'lastSpam' => ['datetime', 'null' => TRUE, 'cast' => 'string'],
 			'optIn' => ['bool', 'null' => TRUE, 'cast' => 'bool'],
-			'optOut' => ['bool', 'cast' => 'bool'],
+			'active' => ['bool', 'cast' => 'bool'],
 			'createdAt' => ['datetime', 'cast' => 'string'],
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'farm', 'email', 'lastEmail', 'sent', 'lastSent', 'delivered', 'lastDelivered', 'opened', 'lastOpened', 'failed', 'lastFailed', 'spam', 'lastSpam', 'optIn', 'optOut', 'createdAt'
+			'id', 'farm', 'email', 'lastEmail', 'sent', 'lastSent', 'delivered', 'lastDelivered', 'opened', 'lastOpened', 'failed', 'lastFailed', 'spam', 'lastSpam', 'optIn', 'active', 'createdAt'
 		]);
 
 		$this->propertiesToModule += [
@@ -93,7 +93,7 @@ class ContactModel extends \ModuleModel {
 			case 'spam' :
 				return 0;
 
-			case 'optOut' :
+			case 'active' :
 				return TRUE;
 
 			case 'createdAt' :
@@ -174,8 +174,8 @@ class ContactModel extends \ModuleModel {
 		return $this->where('optIn', ...$data);
 	}
 
-	public function whereOptOut(...$data): ContactModel {
-		return $this->where('optOut', ...$data);
+	public function whereActive(...$data): ContactModel {
+		return $this->where('active', ...$data);
 	}
 
 	public function whereCreatedAt(...$data): ContactModel {

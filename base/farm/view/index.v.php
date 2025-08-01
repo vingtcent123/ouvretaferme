@@ -556,7 +556,7 @@ new AdaptativeView('/ferme/{id}/contacts', function($data, FarmTemplate $t) {
 			$h .= '<a '.attr('onclick', 'Lime.Search.toggle("#contact-search")').' class="btn btn-primary">'.\Asset::icon('search').'</a> ';
 
 			if(new \mail\Contact(['farm' => $data->eFarm])->canCreate()) {
-				$h .= '<a href="/selling/contact:create?farm='.$data->eFarm['id'].'" class="btn btn-primary">'.\Asset::icon('plus-circle').'<span class="hide-xs-down"> '.s("Nouveau produit").'</span></a>';
+				$h .= '<a href="/mail/contact:create?farm='.$data->eFarm['id'].'" class="btn btn-primary">'.\Asset::icon('plus-circle').'<span class="hide-xs-down"> '.s("Nouveau contact").'</span></a>';
 			}
 
 		$h .= '</div>';

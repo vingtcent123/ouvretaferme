@@ -1158,6 +1158,11 @@ div.util-subtitle {
 	color: var(--muted);
 }
 
+.util-annotation a {
+	color: var(--muted);
+	text-decoration: underline;
+}
+
 .util-badge {
 	font-size: 90%;
 	line-height: 1.2;

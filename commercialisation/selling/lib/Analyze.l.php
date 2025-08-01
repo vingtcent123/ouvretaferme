@@ -999,7 +999,6 @@ class AnalyzeLib {
 					$eCustomer['deliveryPostcode'] ?? '',
 					$eCustomer['deliveryCity'] ?? '',
 					($eCustomer['contact']->getOptIn() === NULL) ? s("?") : ($eCustomer['contact']->getOptIn() ? s("oui") : s("non")),
-					$eCustomer['contact']->getOptOut() ? s("oui") : s("non"),
 				];
 			});
 

@@ -18,7 +18,7 @@ Contact:
   spam: int(0, null) = 0
   lastSpam: ?datetime
   optIn: ?bool
-  optOut: bool = TRUE
+  active: bool = TRUE
   createdAt: datetime = SPECIAL(now)
   INDEX: [
     ["email"]

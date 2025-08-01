@@ -1,4 +1,8 @@
 <?php
+new AdaptativeView('create', function($data, PanelTemplate $t) {
+	return new \mail\ContactUi()->create($data->e);
+});
+
 new AdaptativeView('/ferme/{id}/optIn', function($data, MainTemplate $t) {
 
 	$form = new \util\FormUi();
@@ -49,8 +53,8 @@ new AdaptativeView('doUpdateOptInByEmail', function($data, MainTemplate $t) {
 
 });
 
-new JsonView('doUpdateOptOut', function($data, AjaxTemplate $t) {
-	$t->qs('#contact-switch-'.$data->e['id'])->toggleSwitch('post-opt-out', [TRUE, FALSE]);
+new JsonView('doUpdateActive', function($data, AjaxTemplate $t) {
+	$t->qs('#contact-switch-'.$data->e['id'])->toggleSwitch('post-active', [TRUE, FALSE]);
 });
 
 new AdaptativeView('updateOptIn', function($data, PanelTemplate $t) {

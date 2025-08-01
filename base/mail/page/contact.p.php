@@ -1,6 +1,21 @@
 <?php
 new \mail\ContactPage()
-	->doUpdateProperties('doUpdateOptOut', ['optOut'], fn($data) => throw new ViewAction($data));
+	->getCreateElement(function($data) {
+
+		$data->eFarm = \farm\FarmLib::getById(INPUT('farm'));
+
+		return new \mail\Contact([
+			'farm' => $data->eFarm
+		]);
+
+	})
+	->create()
+	->doCreate(function($data) {
+		throw new RedirectAction(\farm\FarmUi::urlCommunicationsMailing($data->eFarm).'?success=mail:Contact::created');
+	});
+
+new \mail\ContactPage()
+	->doUpdateProperties('doUpdateActive', ['active'], fn($data) => throw new ViewAction($data));
 
 new Page()
 	->get('/ferme/{id}/optIn', function($data) {

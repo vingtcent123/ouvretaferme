@@ -87,6 +87,10 @@ class CustomerModel extends \ModuleModel {
 			'defaultPaymentMethod' => 'payment\Method',
 		];
 
+		$this->indexConstraints = array_merge($this->indexConstraints, [
+			['farm', 'email']
+		]);
+
 		$this->uniqueConstraints = array_merge($this->uniqueConstraints, [
 			['farm', 'user']
 		]);

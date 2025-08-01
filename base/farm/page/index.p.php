@@ -192,7 +192,7 @@
 
 		$data->contacts = \mail\ContactLib::aggregateByFarm($data->eFarm, $data->search);
 
-		$data->cContact = \mail\ContactLib::getByFarm($data->eFarm, search: $data->search);
+		$data->cContact = \mail\ContactLib::getByFarm($data->eFarm, withCustomer: TRUE, search: $data->search);
 
 		throw new ViewAction($data);
 
