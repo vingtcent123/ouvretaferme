@@ -14,6 +14,7 @@ class SendLib {
 	protected ?string $bodyText = NULL;
 	protected ?string $bodyHtml = NULL;
 	protected ?string $subject = NULL;
+	protected ?\Closure $autoCreateCallback = NULL;
 
 	protected array $attachments = [];
 
@@ -94,6 +95,11 @@ class SendLib {
 		return $this;
 	}
 
+	public function setAutoCreateCallback(?\Closure $callback): SendLib {
+		$this->autoCreateCallback = $callback;
+		return $this;
+	}
+
 	/**
 	 * Reset mail parameters.
 	 */
@@ -109,6 +115,7 @@ class SendLib {
 		$this->bodyHtml = '';
 		$this->subject = '';
 		$this->attachments = [];
+		$this->autoCreateCallback = NULL;
 	}
 
 	/**
@@ -152,7 +159,7 @@ class SendLib {
 			]);
 
 			if($eEmail['farm']->notEmpty()) {
-				$eContact = ContactLib::getByEmail($eEmail, autoCreate: TRUE);
+				$eContact = ContactLib::getByEmail($eEmail, autoCreate: TRUE, autoCreateCallback: $this->autoCreateCallback);
 			} else {
 				$eContact = new Contact();
 			}

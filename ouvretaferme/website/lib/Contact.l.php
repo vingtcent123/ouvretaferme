@@ -27,6 +27,9 @@ class ContactLib extends ContactCrud {
 			->setReplyTo($farmEmail)
 			->setTo($e['email'])
 			->setContent(...ContactUi::getUserEmail($e))
+			->setAutoCreateCallback(function(\mail\Contact $eContact) {
+				$eContact['active'] = FALSE;
+			})
 			->send();
 
 		new \mail\SendLib()

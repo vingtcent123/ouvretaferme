@@ -129,7 +129,7 @@ class ContactLib extends ContactCrud {
 
 	}
 
-	public static function get(\farm\Farm $eFarm, string $email, bool $autoCreate = FALSE): Contact {
+	public static function get(\farm\Farm $eFarm, string $email, bool $autoCreate = FALSE, ?\Closure $autoCreateCallback = NULL): Contact {
 
 		$eContact = Contact::model()
 			->select(Contact::getSelection())
@@ -138,14 +138,14 @@ class ContactLib extends ContactCrud {
 			->get();
 
 		if($eContact->empty() and $autoCreate) {
-			$eContact = self::autoCreate($eFarm, $email);
+			$eContact = self::autoCreate($eFarm, $email, $autoCreateCallback);
 		}
 
 		return $eContact;
 
 	}
 
-	public static function getByCustomer(\selling\Customer $eCustomer, bool $autoCreate = FALSE): Contact {
+	public static function getByCustomer(\selling\Customer $eCustomer, bool $autoCreate = FALSE, ?\Closure $autoCreateCallback = NULL): Contact {
 
 		$eCustomer->expects(['farm', 'email']);
 
@@ -153,24 +153,28 @@ class ContactLib extends ContactCrud {
 			return new Contact();
 		}
 
-		return self::get($eCustomer['farm'], $eCustomer['email'], $autoCreate);
+		return self::get($eCustomer['farm'], $eCustomer['email'], $autoCreate, $autoCreateCallback);
 
 	}
 
-	public static function getByEmail(Email $eEmail, bool $autoCreate = FALSE): Contact {
+	public static function getByEmail(Email $eEmail, bool $autoCreate = FALSE, ?\Closure $autoCreateCallback = NULL): Contact {
 
 		$eEmail->expects(['farm', 'to']);
 
-		return self::get($eEmail['farm'], $eEmail['to'], $autoCreate);
+		return self::get($eEmail['farm'], $eEmail['to'], $autoCreate, $autoCreateCallback);
 
 	}
 
-	public static function autoCreate(\farm\Farm $eFarm, string $email): Contact {
+	public static function autoCreate(\farm\Farm $eFarm, string $email, ?\Closure $callback = NULL): Contact {
 
 		$eContact = new Contact([
 			'farm' => $eFarm,
 			'email' => $email
 		]);
+
+		if($callback) {
+			$callback($eContact);
+		}
 
 		Contact::model()
 			->option('add-ignore')
