@@ -1604,7 +1604,7 @@ class FarmUi {
 			case 'communications' :
 				$categories = ['website'];
 
-				if($eFarm['hasSales'] and LIME_ENV === 'dev') {
+				if($eFarm['hasSales']) {
 					$categories[] = 'mailing';
 				}
 

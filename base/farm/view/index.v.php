@@ -350,20 +350,7 @@ new AdaptativeView('sellingSales', function($data, FarmTemplate $t) {
 
 		echo '<br/>';
 
-		echo '<h3>'.s("Ajouter une première vente").'</h3>';
-
-		$eSale = new \selling\Sale([
-			'farm' => $data->eFarm,
-			'customer' => new \selling\Customer(),
-			'shopDate' => new \shop\Date(),
-			'origin' => \selling\Sale::SALE
-		]);
-
-		$panel = new \selling\SaleUi()->create($eSale);
-
-		echo $panel->dialogOpen;
-			echo $panel->body;
-		echo $panel->dialogClose;
+		echo '<a href="/selling/sale:create?farm='.$data->eFarm['id'].'" class="btn btn-primary btn-lg">'.s("Ajouter une première vente").'</a>';
 
 	} else {
 
@@ -406,7 +393,13 @@ new AdaptativeView('/ferme/{id}/clients', function($data, FarmTemplate $t) {
 
 		echo '<h3>'.s("Ajouter un premier client").'</h3>';
 
-		echo new \selling\CustomerUi()->create($data->eFarm)->body;
+		$eCustomer = new \selling\Customer([
+			'farm' => $data->eFarm,
+			'user' => new \user\User(),
+			'nGroup' => $data->cGroup->count()
+		]);
+
+		echo new \selling\CustomerUi()->create($eCustomer)->body;
 
 	} else {
 

@@ -2298,6 +2298,7 @@ class Search {
 
 		return $this->has($property) and !(
 			($this->properties[$property] instanceof Element and $this->properties[$property]->empty()) or
+			($this->properties[$property] instanceof Collection and $this->properties[$property]->empty()) or
 			empty($this->properties[$property])
 		);
 

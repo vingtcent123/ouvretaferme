@@ -520,6 +520,11 @@ class CustomerUi {
 					}
 
 					$h .= new \selling\SaleUi()->getList($eCustomer['farm'], $cSale, hide: ['customer'], cPaymentMethod: $cPaymentMethod);
+
+					if($cSale->empty()) {
+						$h .= '<a href="/selling/sale:create?farm='.$eCustomer['farm']['id'].'&customer='.$eCustomer['id'].'" class="btn btn-outline-secondary">'.s("Créer une première vente").'</a>';
+					}
+
 				$h .= '</div>';
 
 				if($cInvoice->notEmpty()) {
