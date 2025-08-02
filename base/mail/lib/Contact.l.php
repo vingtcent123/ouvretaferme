@@ -148,6 +148,16 @@ class ContactLib extends ContactCrud {
 
 	}
 
+	public static function createFromNewsletter(Contact $e): void {
+
+		try {
+			parent::create($e);
+		} catch(\DuplicateException) {
+			Contact::fail('email.duplicate');
+		}
+
+	}
+
 	public static function updateOptInByEmail(\farm\Farm $eFarm, string $email, bool $optIn): void {
 
 		Contact::model()->beginTransaction();

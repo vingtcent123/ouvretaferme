@@ -190,7 +190,7 @@
 			'email' => GET('email'),
 			'optIn' => GET('optIn', '?string'),
 			'category' => GET('category', [\selling\Customer::PRIVATE, \selling\Customer::PRO]),
-		], GET('sort'));
+		], GET('sort', default: 'createdAt-'));
 
 		$data->page = GET('page', 'int');
 

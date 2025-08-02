@@ -34,11 +34,8 @@ new \website\WebsitePage()
 
 new \website\WebsitePage()
 	->update()
-	->read('contact', function($data) {
-
-		throw new ViewAction($data);
-
-	})
+	->read('contact', fn($data) => throw new ViewAction($data))
+	->read('newsletter', fn($data) => throw new ViewAction($data))
 	->doUpdate(fn($data) => throw new BackAction('website', 'Website::updated'))
 	->doUpdateProperties('doUpdateStatus', ['status'], fn() => throw new ReloadAction())
 	->doUpdateProperties('doUpdateDomainTry', ['domainTry'], fn() => throw new ReloadAction('website', 'Website::domainRetry'))

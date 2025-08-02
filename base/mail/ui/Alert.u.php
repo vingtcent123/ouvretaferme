@@ -20,6 +20,7 @@ class AlertUi {
 		return match($fqn) {
 
 			'Contact::created' => s("Le contact a bien été créé !"),
+			'Contact::createdNewsletter' => s("Votre inscription à la lettre d'information a bien été prise en compte !"),
 
 			'Customize::created' => s("Le contenu de l'e-mail a bien été enregistré !"),
 			'Customize::deleted' => s("Le contenu de l'e-mail a bien été réinitialisé !"),

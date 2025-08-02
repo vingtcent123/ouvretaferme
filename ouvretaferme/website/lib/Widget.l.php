@@ -30,6 +30,7 @@ class WidgetLib {
 
 				$eWebpage['widgets'][$original] = match($app) {
 					'contactForm' => self::getContactForm($eWebsite),
+					'newsletterForm' => self::getNewsletterForm($eWebsite),
 					'shop' => $value ? self::getShop($eFarm, (int)$value, 'limited') : '',
 					'fullShop' => $value ? self::getShop($eFarm, (int)$value, 'full') : '',
 				} ?? $original;
@@ -63,8 +64,14 @@ class WidgetLib {
 
 	}
 
+	public static function getNewsletterForm(Website $eWebsite): ?\Closure {
+
+		return fn() => new NewsletterUi()->getForm($eWebsite);
+
+	}
+
 	public static function getList(): array {
-		return ['shop', 'fullShop', 'contactForm'];
+		return ['shop', 'fullShop', 'contactForm', 'newsletterForm'];
 	}
 
 }

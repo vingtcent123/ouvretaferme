@@ -87,17 +87,18 @@ class ContactUi {
 
 					$h .= '<tr>';
 						$h .= '<th rowspan="2">'.$search->linkSort('email', s("Adresse e-mail")).'</th>';
+						$h .= '<th rowspan="2" class="text-center hide-lg-down">'.$search->linkSort('createdAt', s("Depuis"), SORT_DESC).'</th>';
 						$h .= '<th rowspan="2" class="text-center">'.s("Envoyer<br/>des e-mails").'</th>';
 						$h .= '<th rowspan="2" class="text-center">'.s("Consentement pour<br/>recevoir des e-mails").'</th>';
-						$h .= '<th rowspan="2" class="hide-xs-down">'.$search->linkSort('lastSent-', s("Dernier e-mail envoyé")).'</th>';
-						$h .= '<th colspan="4" class="text-center hide-md-down">'.s("Statistiques depuis juin 2025").'</th>';
+						$h .= '<th rowspan="2" class="hide-xs-down">'.$search->linkSort('lastSent', s("Dernier e-mail<br/>envoyé"), SORT_DESC).'</th>';
+						$h .= '<th colspan="4" class="text-center hide-md-down">'.s("Statistiques depuis le 14 juin 2025 *").'</th>';
 						$h .= '<th rowspan="2"></th>';
 					$h .= '</tr>';
 
 					$h .= '<tr>';
 						$h .= '<th class="text-center highlight-stick-right hide-md-down">'.$search->linkSort('sent', s("Envoyés"), SORT_DESC).'</th>';
 						$h .= '<th class="text-center highlight-stick-both hide-md-down">'.$search->linkSort('delivered', s("Reçus"), SORT_DESC).'</th>';
-						$h .= '<th class="text-center highlight-stick-both hide-md-down">'.$search->linkSort('opened', s("Lus *"), SORT_DESC).'</th>';
+						$h .= '<th class="text-center highlight-stick-both hide-md-down">'.$search->linkSort('opened', s("Lus"), SORT_DESC).'</th>';
 						$h .= '<th class="text-center highlight-stick-left hide-md-down">'.$search->linkSort('blocked', s("Bloqués"), SORT_DESC).'</th>';
 					$h .= '</tr>';
 
@@ -129,6 +130,10 @@ class ContactUi {
 
 							}
 
+						$h .= '</td>';
+
+						$h .= '<td class="text-center">';
+							$h .= \util\DateUi::numeric($eContact['createdAt'], \util\DateUi::DATE);
 						$h .= '</td>';
 
 						$h .= '<td class="text-center">';
@@ -204,7 +209,7 @@ class ContactUi {
 		}
 
 		$h .= '<div class="util-info">';
-			$h .= s("* Le nombre d'e-mails lus est une estimation qui n'est pas fiable à 100 %.");
+			$h .= s("* Les statistiques d'e-mails reçus, lus et bloqués sont des estimations qui ne sont pas fiables à 100 %.");
 		$h .= '</div>';
 
 		return $h;

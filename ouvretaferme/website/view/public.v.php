@@ -22,6 +22,12 @@ new AdaptativeView('doContact', function($data, AjaxTemplate $t) {
 
 });
 
+new AdaptativeView('doNewsletter', function($data, AjaxTemplate $t) {
+
+	$t->qs('#website-newsletter')->outerHtml('<div class="util-box-success">'.\mail\AlertUi::getSuccess('Contact::createdNewsletter').'</div>');
+
+});
+
 new AdaptativeView('public', function($data, WebsiteTemplate $t) {
 
 	$t->title = $data->eWebpage['title'] ?? $data->eWebsite['title'];

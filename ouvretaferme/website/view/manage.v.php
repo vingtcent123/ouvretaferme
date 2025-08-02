@@ -33,4 +33,10 @@ new AdaptativeView('contact', function($data, PanelTemplate $t) {
 	return new \website\ManageUi()->contact($data->e);
 
 });
+
+new AdaptativeView('newsletter', function($data, PanelTemplate $t) {
+
+	return new \website\ManageUi()->newsletter($data->e);
+
+});
 ?>

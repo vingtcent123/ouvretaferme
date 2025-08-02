@@ -102,6 +102,22 @@ new Page()
 		throw new ViewAction($data, ':doContact');
 
 	})
+	->post('/public/{domain}/:doNewsletter', function($data) {
+
+		$fw = new \FailWatch();
+
+		$e = new \mail\Contact([
+			'farm' => $data->eWebsite['farm']
+		]);
+		$e->build(['email'], $_POST, new \Properties('create'));
+
+		$fw->validate();
+
+		\mail\ContactLib::updateOptInByEmail($e['farm'], $e['email'], TRUE);
+
+		throw new ViewAction($data, ':doNewsletter');
+
+	})
 	->get(['/public/{domain}/', '/public/{domain}/{page}'], function($data) {
 
 		if(

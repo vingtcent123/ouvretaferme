@@ -777,6 +777,11 @@ Route::register([
 			'priority' => 5,
 			'route' => ['public', '{domain}', ':doContact'],
 		],
+		'/public/{domain}/:doNewsletter' => [
+			'request' => 'website/public',
+			'priority' => 5,
+			'route' => ['public', '{domain}', ':doNewsletter'],
+		],
 		'/shop/public/{fqn}/{date}/:doCancelCustomer' => [
 			'request' => 'shop/public',
 			'priority' => 5,

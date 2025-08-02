@@ -122,6 +122,55 @@ class ManageUi {
 
 	}
 
+	public function newsletter(Website $eWebsite): \Panel {
+
+		$farmEmail = $eWebsite['farm']['legalEmail'];
+
+		$h = '<p>'.s("Vous pouvez facilement intégrer un formulaire d'inscription à votre lettre d'information sur le site internet de votre ferme. Lorsqu'un client s'inscrira à votre lettre d'information, vous recevrez un e-mail avec les coordonnées laissées par le client et celui-ci sera ajouté à <link>votre liste de contacts</link>.", ['link' => '<a href="'.\farm\FarmUi::urlCommunicationsContact($eWebsite['farm']).'">']).'</p>';
+
+
+		$h .= '<dl class="util-presentation util-presentation-1 mb-2">';
+			$h .= '<dt>'.s("Adresse e-mail de la ferme").'</dt>';
+			$h .= '<dd>'.($farmEmail ?? s("non renseignée")).'</dd>';
+			$h .= '<dt>'.s("Site internet de la ferme").'</dt>';
+			$h .= '<dd>'.\website\WebsiteUi::link($eWebsite).'</dd>';
+		$h .= '</dl>';
+
+		if($farmEmail === NULL) {
+
+			$h .= '<div class="util-box-danger">';
+				$h .= '<p>'.s("Pour intégrer un formulaire d'inscription à votre lettre d'information sur votre site internet, veuillez d'abord renseigner l'adresse e-mail de votre ferme.").'</p>';
+				$h .= '<a href="/farm/farm:update?id='.$eWebsite['farm']['id'].'" class="btn btn-transparent">'.s("Configurer maintenant").'</a>';
+			$h .= '</div>';
+
+		} else {
+
+			$h .= '<p>'.s("Pour réaliser l'intégration du formulaire, il vous suffit d'ajouter le code ci-dessous sur n'importe quelle page de votre site").'</p>';
+
+			$h .= '<code>@newsletterForm</code>';
+
+			$h .= '<br/>';
+
+			$h .= '<h3>'.s("Rendu sur votre site internet").'</h3>';
+
+			$h .= '<div class="util-block-help">';
+				$h .= s("La validation du formulaire est volontairement désactivée sur cette page de rendu.");
+			$h .= '</div>';
+
+			$h .= '<div>';
+				$h .= new NewsletterUi()->getForm($eWebsite, TRUE);
+			$h .= '</div>';
+
+		}
+
+		return new \Panel(
+			id: 'panel-website-newsletter',
+			title: s("Intégrer un formulaire d'inscription à votre lettre d'information"),
+			body: $h
+		);
+
+	}
+
 	public function displayTitle(Website $eWebsite): string {
 
 		$h = '<div class="util-action">';
@@ -135,11 +184,13 @@ class ManageUi {
 				$h .= '<div class="dropdown-list bg-primary">';
 					$h .= '<div class="dropdown-title">'.s("Site internet").'</div>';
 					$h .= '<a href="/website/manage:update?id='.$eWebsite['id'].'" class="dropdown-item">'.s("Paramétrer le site").'</a>';
-					$h .= '<a href="/website/manage:contact?id='.$eWebsite['id'].'" class="dropdown-item">'.s("Intégrer un formulaire de contact sur le site").'</a>';
 					$h .= match($eWebsite['status']) {
 						Website::INACTIVE => '<a data-ajax="/website/manage:doUpdateStatus" post-id="'.$eWebsite['id'].'" post-status="'.Website::ACTIVE.'" class="dropdown-item" data-confirm="'.s("Le site sera rendu accessible au public, voulez-vous continuer ?").'">'.s("Mettre en ligne le site").'</a>',
 						Website::ACTIVE => '<a data-ajax="/website/manage:doUpdateStatus" post-id="'.$eWebsite['id'].'" post-status="'.Website::INACTIVE.'" class="dropdown-item" data-confirm="'.s("Le site deviendra inaccessible au public, voulez-vous continuer ?").'">'.s("Mettre hors ligne le site").'</a>'
 					};
+					$h .= '<div class="dropdown-subtitle">'.s("Intégrer un formulaire sur le site internet").'</div>';
+					$h .= '<a href="/website/manage:contact?id='.$eWebsite['id'].'" class="dropdown-item">'.\Asset::icon('arrow-right').' '.s("Formulaire de contact").'</a>';
+					$h .= '<a href="/website/manage:newsletter?id='.$eWebsite['id'].'" class="dropdown-item">'.\Asset::icon('arrow-right').' '.s("Formulaire d'inscription à votre lettre d'information").'</a>';
 					$h .= '<div class="dropdown-divider"></div>';
 					$h .= '<a data-ajax="/website/manage:doDelete" post-id="'.$eWebsite['id'].'" class="dropdown-item" data-confirm="'.s("Le site ainsi que toutes les données seront supprimées, êtes-vous sûr de vouloir continuer ?").'">'.s("Supprimer définitivement le site").'</a>';
 				$h .= '</div>';
