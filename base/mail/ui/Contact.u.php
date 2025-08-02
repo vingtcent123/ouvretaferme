@@ -72,7 +72,7 @@ class ContactUi {
 
 			$h .= '<h3>'.s("Liste des e-mails").'</h3>';
 
-			$h .= '<p class="util-danger">'.s("Les clients pour qui vous avez désactivé l'envoi des e-mails ainsi que ceux qui ont refusé vos communications ne sont pas présents dans cette liste. En envoyant des e-mails non sollicités ou en refusant de désabonner les clients qui le souhaitent, vous engagez votre propre responsabilité et vous exposez à un bannissement à vie de {siteName}.").'</p>';
+			$h .= '<p class="util-danger">'.s("Les clients pour qui vous avez désactivé l'envoi des e-mails ainsi que ceux qui ont refusé vos communications ne sont pas présents dans cette liste. En envoyant des e-mails non sollicités ou en refusant de désabonner les clients qui le souhaitent, vous engagez votre propre responsabilité et vous exposez à un bannissement à vie de {siteName}. <b>Si vous faites le choix de ne pas respecter le cadre légal concernant votre politique de gestion des e-mails, n'utilisez pas {siteName}.</b>").'</p>';
 
 			$emails = $cContact->getColumn('email');
 
