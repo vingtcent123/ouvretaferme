@@ -46,10 +46,15 @@ class ContactUi {
 		$h = '<div id="contact-search" class="util-block-search stick-xs '.($search->empty() ? 'hide' : '').'">';
 
 			$h .= $form->openAjax(\farm\FarmUi::urlCommunicationsMailing($eFarm), ['method' => 'get', 'id' => 'form-search']);
-				$h .= $form->hidden('category', $search->get('category'));
 				$h .= '<div>';
-					$h .= $form->text('name', $search->get('name'), ['placeholder' => s("Nom du produit")]);
-					$h .= $form->text('plant', $search->get('plant'), ['placeholder' => s("Espèce")]);
+					$h .= $form->text('email', $search->get('email'), ['placeholder' => s("Adresse e-mail")]);
+					$h .= $form->select('optIn', [
+						'no' => s("Refus de consentement")
+					], $search->get('optIn'), ['placeholder' => s("Tous consentements")]);
+					$h .= $form->select('category', [
+						\selling\Customer::PRO => s("Clients professionnels"),
+						\selling\Customer::PRIVATE => s("Clients particuliers")
+					], $search->get('category'), ['placeholder' => s("Clientèle")]);
 					$h .= $form->submit(s("Chercher"), ['class' => 'btn btn-secondary']);
 					$h .= '<a href="'.\farm\FarmUi::urlCommunicationsMailing($eFarm).'" class="btn btn-secondary">'.\Asset::icon('x-lg').'</a>';
 				$h .= '</div>';
@@ -61,7 +66,7 @@ class ContactUi {
 
 	}
 
-	public function getList(\farm\Farm $eFarm, \Collection $cContact, array $contacts, \Search $search) {
+	public function getList(\farm\Farm $eFarm, \Collection $cContact, int $nContact, int $page, \Search $search) {
 
 		$h = '';
 
@@ -84,16 +89,16 @@ class ContactUi {
 						$h .= '<th rowspan="2">'.$search->linkSort('email', s("Adresse e-mail")).'</th>';
 						$h .= '<th rowspan="2" class="text-center">'.s("Envoyer<br/>des e-mails").'</th>';
 						$h .= '<th rowspan="2" class="text-center">'.s("Consentement pour<br/>recevoir des e-mails").'</th>';
-						$h .= '<th rowspan="2" class="hide-xs-down">'.s("Dernier e-mail envoyé").'</th>';
-						$h .= '<th colspan="4" class="text-center hide-md-down">'.s("Statistiques").'</th>';
+						$h .= '<th rowspan="2" class="hide-xs-down">'.$search->linkSort('lastSent-', s("Dernier e-mail envoyé")).'</th>';
+						$h .= '<th colspan="4" class="text-center hide-md-down">'.s("Statistiques depuis juin 2025").'</th>';
 						$h .= '<th rowspan="2"></th>';
 					$h .= '</tr>';
 
 					$h .= '<tr>';
-						$h .= '<th class="text-center highlight-stick-right hide-md-down">'.s("Envoyés").'</th>';
-						$h .= '<th class="text-center highlight-stick-both hide-md-down">'.s("Reçus").'</th>';
-						$h .= '<th class="text-center highlight-stick-both hide-md-down">'.s("Ouverts").'</th>';
-						$h .= '<th class="text-center highlight-stick-left hide-md-down">'.s("Bloqués").'</th>';
+						$h .= '<th class="text-center highlight-stick-right hide-md-down">'.$search->linkSort('sent', s("Envoyés"), SORT_DESC).'</th>';
+						$h .= '<th class="text-center highlight-stick-both hide-md-down">'.$search->linkSort('delivered', s("Reçus"), SORT_DESC).'</th>';
+						$h .= '<th class="text-center highlight-stick-both hide-md-down">'.$search->linkSort('opened', s("Lus *"), SORT_DESC).'</th>';
+						$h .= '<th class="text-center highlight-stick-left hide-md-down">'.$search->linkSort('blocked', s("Bloqués"), SORT_DESC).'</th>';
 					$h .= '</tr>';
 
 				$h .= '</thead>';
@@ -148,6 +153,8 @@ class ContactUi {
 
 							if($eContact['lastSent'] !== NULL) {
 								$h .= \util\DateUi::ago($eContact['lastSent']);
+							} else {
+								$h .= '/';
 							}
 
 						$h .= '</td>';
@@ -190,6 +197,14 @@ class ContactUi {
 
 			$h .= '</table>';
 
+		$h .= '</div>';
+
+		if($nContact !== NULL and $page !== NULL) {
+			$h .= \util\TextUi::pagination($page, $nContact / 100);
+		}
+
+		$h .= '<div class="util-info">';
+			$h .= s("* Le nombre d'e-mails lus est une estimation qui n'est pas fiable à 100 %.");
 		$h .= '</div>';
 
 		return $h;

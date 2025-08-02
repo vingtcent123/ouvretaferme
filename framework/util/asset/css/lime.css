@@ -1163,6 +1163,19 @@ div.util-subtitle {
 	text-decoration: underline;
 }
 
+.util-counter {
+	font-size: 0.9rem;
+	line-height: 1.2;
+	display: inline-block;
+	padding: calc(0.375rem / 2) 0.375rem;
+	border-radius: calc(var(--radius) / 2);
+	border: 1px solid var(--muted);
+}
+
+h1 .util-counter {
+	font-size: 1.3rem;
+}
+
 .util-badge {
 	font-size: 90%;
 	line-height: 1.2;

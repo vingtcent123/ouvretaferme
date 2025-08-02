@@ -411,7 +411,7 @@ new AdaptativeView('/ferme/{id}/clients', function($data, FarmTemplate $t) {
 	} else {
 
 		$h = '<div class="util-action">';
-			$h .= '<h1>'.s("Clients").'</h1>';
+			$h .= '<h1>'.s("Clients").' <span class="util-counter">'.$data->nCustomer.'</span></h1>';
 			$h .= '<div>';
 				$h .= '<a '.attr('onclick', 'Lime.Search.toggle("#customer-search")').' class="btn btn-primary">'.\Asset::icon('search').'</a> ';
 				if(new \selling\Customer(['farm' => $data->eFarm])->canCreate()) {
@@ -467,7 +467,7 @@ new AdaptativeView('/ferme/{id}/produits', function($data, FarmTemplate $t) {
 	} else {
 
 		$h = '<div class="util-action">';
-			$h .= '<h1>'.s("Produits").'</h1>';
+			$h .= '<h1>'.s("Produits").' <span class="util-counter">'.$data->nProduct.'</span></h1>';
 			$h .= '<div>';
 				$h .= '<a '.attr('onclick', 'Lime.Search.toggle("#product-search")').' class="btn btn-primary">'.\Asset::icon('search').'</a> ';
 				if(new \selling\Product(['farm' => $data->eFarm])->canCreate()) {
@@ -550,7 +550,7 @@ new AdaptativeView('/ferme/{id}/contacts', function($data, FarmTemplate $t) {
 	$t->canonical = \farm\FarmUi::urlCommunicationsMailing($data->eFarm);
 
 	$h = '<div class="util-action">';
-		$h .= '<h1>'.s("Contacts").'</h1>';
+		$h .= '<h1>'.s("Contacts").' <span class="util-counter">'.$data->nContact.'</span></h1>';
 		$h .= '<div>';
 
 			$h .= '<a '.attr('onclick', 'Lime.Search.toggle("#contact-search")').' class="btn btn-primary">'.\Asset::icon('search').'</a> ';
@@ -565,7 +565,7 @@ new AdaptativeView('/ferme/{id}/contacts', function($data, FarmTemplate $t) {
 	$t->mainTitle = $h;
 
 	echo new \mail\ContactUi()->getSearch($data->eFarm, $data->search);
-	echo new \mail\ContactUi()->getList($data->eFarm, $data->cContact, $data->contacts, $data->search);
+	echo new \mail\ContactUi()->getList($data->eFarm, $data->cContact, $data->nContact, $data->page, $data->search);
 
 });
 

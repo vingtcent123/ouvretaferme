@@ -20,26 +20,19 @@ class ContactLib extends ContactCrud {
 
 	}
 
-	public static function aggregateByFarm(\farm\Farm $eFarm, \Search $search = new \Search()): array {
-
-		$search->validateSort(['email', 'createdAt']);
+	public static function countByFarm(\farm\Farm $eFarm, \Search $search = new \Search()): int {
 
 		self::applySearch($search);
 
 		return Contact::model()
-			->select([
-				'count' => new \Sql('COUNT(*)', 'int'),
-				'sent1' => new \Sql('SUM(lastSent > NOW() - INTERVAL 1 MONTH)', 'int'),
-			])
-			->whereFarm($eFarm)
-			->get()
-			->getArrayCopy();
+			->where('m1.farm', $eFarm)
+			->count();
 
 	}
 
-	public static function getByFarm(\farm\Farm $eFarm, bool $withCustomer = FALSE, \Search $search = new \Search()): \Collection {
+	public static function getByFarm(\farm\Farm $eFarm, int $page, bool $withCustomer = FALSE, \Search $search = new \Search()): \Collection {
 
-		$search->validateSort(['email', 'createdAt']);
+		$search->validateSort(['email', 'createdAt', 'lastSent', 'sent', 'delivered', 'opened', 'blocked'], 'email');
 
 		self::applySearch($search);
 
@@ -52,18 +45,39 @@ class ContactLib extends ContactCrud {
 				->delegateCollection('email', propertyParent: 'email');
 		}
 
+		$number = 100;
+		$position = $page * $number;
+
 		return Contact::model()
 			->select($selection)
-			->whereFarm($eFarm)
-			->sort($search->buildSort())
-			->getCollection();
+			->where('m1.farm', $eFarm)
+			->sort($search->buildSort([
+				'email' => fn($direction) => match($direction) {
+					SORT_ASC => new \Sql('m1.email'),
+					SORT_DESC => new \Sql('m1.email DESC')
+				},
+				'blocked' => fn($direction) => match($direction) {
+					SORT_ASC => new \Sql('failed + spam'),
+					SORT_DESC => new \Sql('failed + spam DESC')
+				},
+			]))
+			->getCollection($position, $number);
 
 	}
 
 	public static function applySearch(\Search $search): void {
 
 		Contact::model()
-			->whereEmail('LIKE', '%'.$search->get('email').'%', if: $search->get('email'));
+			->where('m1.email', 'LIKE', '%'.$search->get('email').'%', if: $search->get('email'))
+			->whereOptIn(FALSE, if: $search->get('optIn') === 'no');
+
+		if($search->get('category')) {
+
+			Contact::model()
+				->join(\selling\Customer::model(), 'm1.email = m2.email AND m1.farm = m2.farm')
+				->where('m2.type', $search->get('category'));
+
+		}
 
 	}
 

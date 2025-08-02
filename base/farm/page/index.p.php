@@ -137,6 +137,8 @@
 
 
 		$data->products = \selling\ProductLib::countByFarm($data->eFarm, $data->search);
+
+		$data->nProduct = array_sum($data->products);
 		$data->cProduct = \selling\ProductLib::getByFarm($data->eFarm, $data->eCategory, selectSales: TRUE, search: $data->search);
 
 		if($data->cProduct->empty()) {
@@ -186,13 +188,14 @@
 
 		$data->search = new Search([
 			'email' => GET('email'),
-			'opened' => GET('opened', 'bool'),
-			'blocked' => GET('blocked', 'bool'),
-		], GET('sort', default: 'lastSent'));
+			'optIn' => GET('optIn', '?string'),
+			'category' => GET('category', [\selling\Customer::PRIVATE, \selling\Customer::PRO]),
+		], GET('sort'));
 
-		$data->contacts = \mail\ContactLib::aggregateByFarm($data->eFarm, $data->search);
+		$data->page = GET('page', 'int');
 
-		$data->cContact = \mail\ContactLib::getByFarm($data->eFarm, withCustomer: TRUE, search: $data->search);
+		$data->nContact = \mail\ContactLib::countByFarm($data->eFarm, $data->search);
+		$data->cContact = \mail\ContactLib::getByFarm($data->eFarm, $data->page, withCustomer: TRUE, search: $data->search);
 
 		throw new ViewAction($data);
 
