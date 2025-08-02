@@ -8,7 +8,7 @@ class TipLib extends TipCrud {
 	}
 
 	public static function getPrivate(): array {
-		return ['sequence-weeks'];
+		return ['sequence-weeks', 'accounting-invoice-cashflow'];
 	}
 
 	public static function getPublic(): array {
@@ -88,10 +88,6 @@ class TipLib extends TipCrud {
 			'blog' => [
 				'minSeniority' => 8
 			],
-			'accounting-invoice-cashflow' => [
-				'minSeniority' => 8,
-				'match' => fn(\user\User $eUser, Farm $eFarm) => $eFarm->hasAccounting() and \bank\Cashflow::model()->count() > 0,
-			],
 
 		];
 
@@ -147,7 +143,7 @@ class TipLib extends TipCrud {
 			return NULL;
 		}
 
-		if($eUser['id'] !== 1) {
+		if($eUser->isRole('admin') === FALSE) {
 
 			if(
 				$eUser['seniority'] >= 200 or
@@ -178,7 +174,7 @@ class TipLib extends TipCrud {
 		if($eTip->notEmpty()) {
 
 			// Maximum une astuce tous les deux jours
-			if($eUser['id'] !== 1) {
+			if($eUser->isRole('admin') === FALSE) {
 
 				if($eUser['seniority'] < $eTip['lastSeniority'] + 2) {
 					return NULL;
