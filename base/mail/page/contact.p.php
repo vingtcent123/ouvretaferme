@@ -15,7 +15,8 @@ new \mail\ContactPage()
 	});
 
 new \mail\ContactPage()
-	->doUpdateProperties('doUpdateActive', ['active'], fn($data) => throw new ViewAction($data));
+	->doUpdateProperties('doUpdateActive', ['active'], fn($data) => throw new ViewAction($data))
+	->doDelete(fn() => throw new ReloadAction());
 
 new Page()
 	->get('/ferme/{id}/optIn', function($data) {

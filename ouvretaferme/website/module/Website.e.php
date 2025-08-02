@@ -22,7 +22,7 @@ class Website extends WebsiteElement {
 	public function canWrite(): bool {
 
 		$this->expects(['farm']);
-		return $this['farm']->canManage();
+		return $this['farm']->canCommunication();
 
 	}
 

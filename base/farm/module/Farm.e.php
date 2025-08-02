@@ -174,6 +174,11 @@ class Farm extends FarmElement {
 		);
 	}
 
+	// Peut accéder en lecture aux pages liées à la communication
+	public function canCommunication(): bool {
+		return $this->canManage();
+	}
+
 	// Peut créer ou modifier des interventions
 	public function canTask(): bool {
 		return (

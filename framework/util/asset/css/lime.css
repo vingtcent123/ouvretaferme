@@ -2488,9 +2488,9 @@ body[data-touch="yes"] .dropdown-list:not(.dropdown-list-minimalist).dropdown-li
 	background-color: var(--primary);
 	color: white;
 	border-radius: 50%;
-	font-size: 0.66em;
-	width: 1.5em;
-	height: 1.5em;
+	font-size: 75%;
+	width: 3rem;
+	height: 3rem;
 	line-height: 1;
 	margin-right: .5em;
 	transition: background-color 0.5s;
@@ -2501,6 +2501,30 @@ body[data-touch="yes"] .dropdown-list:not(.dropdown-list-minimalist).dropdown-li
 	.h-menu,
 	.h-back {
 		display: none;
+	}
+
+}
+
+.h-menu-wrapper {
+	background: linear-gradient(to right, #0000000C, transparent);
+	border-top-left-radius: 4rem;
+	border-bottom-left-radius: 4rem;
+	font-size: 2.25rem;
+	height: 3rem;
+	display: inline-block;
+}
+
+@media (max-width: 575px) {
+
+	.h-menu,
+	.h-back {
+		width: 2.5rem;
+		height: 2.5rem;
+	}
+
+	.h-menu-wrapper {
+		font-size: 1.75rem;
+		height: 2.5rem;
 	}
 
 }
@@ -2521,10 +2545,6 @@ a.h-back {
 .h-back:hover {
 	color: white;
 	background-color: var(--primary);
-}
-
-.h-menu svg {
-	margin-bottom: -0.25rem;
 }
 
 h1 .dropdown-toggle:after {

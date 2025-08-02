@@ -3,6 +3,13 @@ namespace mail;
 
 class Contact extends ContactElement {
 
+	public function canRead(): bool {
+
+		$this->expects(['farm']);
+		return $this['farm']->canCommunication();
+
+	}
+
 	public function getActive(): bool {
 		if($this->empty()) {
 			return TRUE;

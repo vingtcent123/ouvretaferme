@@ -1,7 +1,7 @@
 <?php
 (new Page(function($data) {
 
-		$data->eFarm = \farm\FarmLib::getById(GET('id'))->validate('canManage');
+		$data->eFarm = \farm\FarmLib::getById(GET('id'))->validate('canCommunication');
 
 
 	}))

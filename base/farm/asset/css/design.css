@@ -167,6 +167,11 @@ body[data-template^="farm"] header a:hover {
 	color: white;
 }
 
+body[data-template~="farm"] main .container.farm-template-main-title.farm-template-main-title-with-year > div.farm-template-main-content {
+	margin-top: .5rem;
+}
+
+
 @media (min-width: 1100px) and (min-height: 650px) {
 
 	:root {

@@ -59,8 +59,9 @@ class ShopManageUi {
 				$h .= new \media\ShopLogoUi()->getCamera($eShopCurrent, size: '5rem');
 				$h .= '<div>';
 					$h .= '<h1 class="mb-0">';
-						$h .= '<a class="util-action-navigation" data-dropdown="bottom-start" data-dropdown-hover="true">';
-							$h .= encode($eShopCurrent['name']).' '.\farm\FarmUi::getNavigation();
+						$h .= '<a class="util-action-navigation h-menu-wrapper" data-dropdown="bottom-start" data-dropdown-hover="true">';
+							$h .= \farm\FarmUi::getNavigation();
+							$h .= '<span class="h-menu-label">'.encode($eShopCurrent['name']).'</span>';
 						$h .= '</a>';
 						$h .= '<div class="dropdown-list bg-secondary">';
 							$h .= '<div class="dropdown-title">'.s("Mes boutiques").'</div>';

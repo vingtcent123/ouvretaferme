@@ -14,3 +14,12 @@
 .contact-item-customers {
 	font-size: 0.9rem;
 }
+
+@media (max-width: 767px) {
+
+	.contact-item-email {
+		max-width: 16rem;
+		word-wrap: break-word;
+	}
+
+}

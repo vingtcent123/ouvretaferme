@@ -1003,12 +1003,15 @@ class FarmUi {
 				}
 
 			$h .= '</div>';
-			$h .= '<div class="farm-tab-wrapper farm-nav-communication">';
 
-				$h .= $this->getNav('communications', $nav);
-				$h .= $this->getCommunicationsMenu($eFarm, subNav: $subNav);
+			if($eFarm->canCommunication()) {
+				$h .= '<div class="farm-tab-wrapper farm-nav-communication">';
 
-			$h .= '</div>';
+					$h .= $this->getNav('communications', $nav);
+					$h .= $this->getCommunicationsMenu($eFarm, subNav: $subNav);
+
+				$h .= '</div>';
+			}
 
 		}
 
@@ -1160,8 +1163,9 @@ class FarmUi {
 
 		$h = '<div class="util-action">';
 			$h .= '<h1>';
-				$h .= '<a class="util-action-navigation" data-dropdown="bottom-start" data-dropdown-hover="true">';
-					$h .= $this->getSeriesCategories($eFarm)[$selectedView].' '.self::getNavigation();
+				$h .= '<a class="util-action-navigation h-menu-wrapper" data-dropdown="bottom-start" data-dropdown-hover="true">';
+					$h .= self::getNavigation();
+					$h .= '<span class="h-menu-label">'.$this->getSeriesCategories($eFarm)[$selectedView].'</span>';
 				$h .= '</a>';
 				$h .= '<div class="dropdown-list bg-primary">';
 					foreach($this->getSeriesCategories($eFarm) as $key => $value) {
@@ -1283,8 +1287,9 @@ class FarmUi {
 
 		$h = '<div class="util-action">';
 			$h .= '<h1>';
-				$h .= '<a class="util-action-navigation" data-dropdown="bottom-start" data-dropdown-hover="true">';
-					$h .= $this->getSoilCategories($eFarm)[$selectedView].' '.self::getNavigation();
+				$h .= '<a class="util-action-navigation h-menu-wrapper" data-dropdown="bottom-start" data-dropdown-hover="true">';
+					$h .= self::getNavigation();
+					$h .= '<span class="h-menu-label">'.$this->getSoilCategories($eFarm)[$selectedView].'</span>';
 				$h .= '</a>';
 				$h .= '<div class="dropdown-list bg-primary">';
 					foreach($this->getSoilCategories($eFarm) as $key => $value) {
@@ -1459,8 +1464,9 @@ class FarmUi {
 
 		$h = '<div class="util-action">';
 			$h .= '<h1>';
-				$h .= '<a class="util-action-navigation" data-dropdown="bottom-start" data-dropdown-hover="true">';
-					$h .= $title.' '.self::getNavigation();
+				$h .= '<a class="util-action-navigation h-menu-wrapper" data-dropdown="bottom-start" data-dropdown-hover="true">';
+					$h .= self::getNavigation();
+					$h .= '<span class="h-menu-label">'.$title.'</span>';
 				$h .= '</a>';
 				$h .= '<div class="dropdown-list bg-primary">';
 					foreach($categories as $key => $value) {
@@ -1668,8 +1674,9 @@ class FarmUi {
 
 		$h = '<div class="util-action">';
 			$h .= '<h1>';
-				$h .= '<a class="util-action-navigation" data-dropdown="bottom-start" data-dropdown-hover="true">';
-					$h .= $categories[$selectedView].' '.self::getNavigation();
+				$h .= '<a class="util-action-navigation h-menu-wrapper" data-dropdown="bottom-start" data-dropdown-hover="true">';
+					$h .= self::getNavigation();
+					$h .= '<span class="h-menu-label">'.$categories[$selectedView].'</span>';
 				$h .= '</a>';
 				$h .= '<div class="dropdown-list bg-primary">';
 					foreach($categories as $key => $value) {
@@ -1716,8 +1723,9 @@ class FarmUi {
 
 		$h = '<div class="util-action">';
 			$h .= '<h1>';
-				$h .= '<a class="util-action-navigation" data-dropdown="bottom-start" data-dropdown-hover="true">';
-					$h .= $categories[$selectedView].' '.self::getNavigation();
+				$h .= '<a class="util-action-navigation h-menu-wrapper" data-dropdown="bottom-start" data-dropdown-hover="true">';
+					$h .= self::getNavigation();
+					$h .= '<span class="h-menu-label">'.$categories[$selectedView].'</span>';
 				$h .= '</a>';
 				$h .= '<div class="dropdown-list bg-primary">';
 					foreach($categories as $key => $value) {
@@ -1779,8 +1787,9 @@ class FarmUi {
 
 		$h = '<div class="util-action">';
 			$h .= '<h1>';
-				$h .= '<a class="util-action-navigation" data-dropdown="bottom-start" data-dropdown-hover="true">';
-					$h .= $categories[$selectedView].' '.self::getNavigation();
+				$h .= '<a class="util-action-navigation h-menu-wrapper" data-dropdown="bottom-start" data-dropdown-hover="true">';
+					$h .= self::getNavigation();
+					$h .= '<span class="h-menu-label">'.$categories[$selectedView].'</span>';
 				$h .= '</a>';
 				$h .= '<div class="dropdown-list bg-primary">';
 					foreach($categories as $key => $value) {
@@ -1850,8 +1859,9 @@ class FarmUi {
 
 		$h = '<div class="util-action">';
 			$h .= '<h1>';
-				$h .= '<a class="util-action-navigation" data-dropdown="bottom-start" data-dropdown-hover="true">';
-					$h .= $label.' '.self::getNavigation();
+				$h .= '<a class="util-action-navigation h-menu-wrapper" data-dropdown="bottom-start" data-dropdown-hover="true">';
+					$h .= self::getNavigation();
+					$h .= '<span class="h-menu-label">'.$label.'</span>';
 				$h .= '</a>';
 				$h .= '<div class="dropdown-list bg-primary">';
 					$h .= '<div class="dropdown-title">'.s("Paramétrage").'</div>';
@@ -2090,7 +2100,13 @@ class FarmUi {
 	}
 
 	public static function getNavigation(): string {
-		return '<span class="h-menu">'.\Asset::icon('chevron-down').'</span>';
+
+		$h = '<span class="h-menu">';
+			$h .= \Asset::icon('list');
+		$h .= '</span>';
+
+		return $h;
+
 	}
 
 	public static function p(string $property): \PropertyDescriber {

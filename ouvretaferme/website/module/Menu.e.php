@@ -15,7 +15,7 @@ class Menu extends MenuElement {
 
 		$this->expects(['farm']);
 
-		return $this['farm']->canWrite();
+		return $this['farm']->canCommunication();
 
 	}
 

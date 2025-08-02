@@ -182,7 +182,7 @@
 	})
 	->get('/ferme/{id}/contacts', function($data) {
 
-		$data->eFarm->validate('canSelling');
+		$data->eFarm->validate('canCommunication');
 
 		$data->search = new Search([
 			'email' => GET('email'),

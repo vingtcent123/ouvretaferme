@@ -74,7 +74,7 @@ class ContactUi {
 
 		$h .= '<p class="util-info">'.s("Les préférences d'envoi des e-mails ne s'appliquent qu'aux campagnes de communications que vous faites auprès de vos clients. Les e-mails directement liés aux commandes et à la facturation sont toujours envoyés.").'</p>';
 
-		$h .= '<div class="contact-item-wrapper stick-md">';
+		$h .= '<div class="stick-md util-overflow-xs">';
 
 			$h .= '<table class="contact-item-table tr-even">';
 
@@ -84,8 +84,9 @@ class ContactUi {
 						$h .= '<th rowspan="2">'.$search->linkSort('email', s("Adresse e-mail")).'</th>';
 						$h .= '<th rowspan="2" class="text-center">'.s("Envoyer<br/>des e-mails").'</th>';
 						$h .= '<th rowspan="2" class="text-center">'.s("Consentement pour<br/>recevoir des e-mails").'</th>';
-						$h .= '<th rowspan="2">'.s("Dernier e-mail envoyé").'</th>';
+						$h .= '<th rowspan="2" class="hide-xs-down">'.s("Dernier e-mail envoyé").'</th>';
 						$h .= '<th colspan="4" class="text-center hide-md-down">'.s("Statistiques").'</th>';
+						$h .= '<th rowspan="2"></th>';
 					$h .= '</tr>';
 
 					$h .= '<tr>';
@@ -103,8 +104,8 @@ class ContactUi {
 
 					$h .= '<tr>';
 
-						$h .= '<td class="contact-item-email">';
-							$h .= '<div>'.encode($eContact['email']).'</div>';
+						$h .= '<td>';
+							$h .= '<div class="contact-item-email">'.encode($eContact['email']).'</div>';
 
 							if($eContact['cCustomer']->notEmpty()) {
 
@@ -127,7 +128,7 @@ class ContactUi {
 
 						$h .= '<td class="text-center">';
 							if($eContact['optIn'] === FALSE) {
-								$h .= '<div class="color-muted">'.s("Non configurable").'</div>';
+								$h .= '<div class="color-muted">'.s("Impossible").'</div>';
 							} else {
 								$h .= $this->toggleActive($eContact);
 							}
@@ -143,42 +144,42 @@ class ContactUi {
 							}
 						$h .= '</td>';
 
-						$h .= '<td>';
+						$h .= '<td class="hide-xs-down">';
 
 							if($eContact['lastSent'] !== NULL) {
-
 								$h .= \util\DateUi::ago($eContact['lastSent']);
-
-								// afficher lastEmail
-
 							}
 
 						$h .= '</td>';
 
-						$h .= '<td class="contact-item-stat highlight-stick-right">';
+						$h .= '<td class="contact-item-stat highlight-stick-right hide-md-down">';
 							$h .= '<span style="font-size: 1.25rem">'.$eContact['sent'].'</span>';
 						$h .= '</td>';
 
-						$h .= '<td class="contact-item-stat highlight-stick-both">';
+						$h .= '<td class="contact-item-stat highlight-stick-both hide-md-down">';
 							if($eContact['sent'] > 0) {
 								$h .= '<span>'.$eContact['delivered'].'</span>';
 								$h .= '<div class="contact-item-stat-percent">'.s("{value} %", round($eContact['delivered'] / $eContact['sent'] * 100)).'</div>';
 							}
 						$h .= '</td>';
 
-						$h .= '<td class="contact-item-stat highlight-stick-both">';
+						$h .= '<td class="contact-item-stat highlight-stick-both hide-md-down">';
 							if($eContact['sent'] > 0) {
 								$h .= '<span>'.$eContact['opened'].'</span>';
 								$h .= '<div class="contact-item-stat-percent">'.s("{value} %", round($eContact['opened'] / $eContact['sent'] * 100)).'</div>';
 							}
 						$h .= '</td>';
 
-						$h .= '<td class="contact-item-stat highlight-stick-left">';
+						$h .= '<td class="contact-item-stat highlight-stick-left hide-md-down">';
 							if($eContact['sent'] > 0) {
 								$blocked = $eContact['failed'] + $eContact['spam'];
 								$h .= '<span '.($blocked > 0 ? 'class="color-danger"' : '').'>'.$blocked.'</span>';
 								$h .= '<div class="contact-item-stat-percent">'.s("{value} %", round($blocked / $eContact['sent'] * 100)).'</div>';
 							}
+						$h .= '</td>';
+
+						$h .= '<td class="td-min-content">';
+							$h .= '<a data-ajax="/mail/contact:doDelete" post-id="'.$eContact['id'].'" data-confirm="'.s("Vous allez supprimer un contact. Veuillez noter que, même supprimé, un contact est automatiquement recréé dès qu'un e-mail liés à ses commandes doit lui être envoyé. Continuer ?").'" class="btn btn-danger">'.\Asset::icon('trash').'</a>';
 						$h .= '</td>';
 
 					$h .= '</tr>';
@@ -217,7 +218,7 @@ class ContactUi {
 				$h .= '<td style="white-space: nowrap"><b>'.s("Envoyer des communications par e-mail à ce client").'</b></td>';
 				$h .= '<td>';
 					if($eContact->getOptIn() === FALSE) {
-						$h .= s("Non configurable");
+						$h .= s("Impossible");
 					} else {
 						$h .= $this->toggleActive($eContact);
 					}
