@@ -30,6 +30,29 @@ class ContactLib extends ContactCrud {
 
 	}
 
+	public static function registerNewsletter(Contact $e): void {
+
+		self::updateOptInByEmail($e['farm'], $e['email'], TRUE);
+
+		$farmEmail = $e['farm']['legalEmail'];
+
+		if($farmEmail === NULL) {
+			throw new \Exception('Missing farm email');
+		}
+
+		\farm\Farm::model()
+			->select(\farm\FarmElement::getSelection())
+			->get($e['farm']);
+
+		new \mail\SendLib()
+			->setTo($farmEmail)
+			->setReplyTo($e['email'])
+			->setContent(...\website\NewsletterUi::getFarmEmail($e))
+			->send();
+
+
+	}
+
 	public static function countByFarm(\farm\Farm $eFarm, \Search $search = new \Search()): int {
 
 		self::applySearch($search);

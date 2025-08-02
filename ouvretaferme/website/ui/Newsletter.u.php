@@ -27,7 +27,7 @@ class NewsletterUi {
 
 	}
 
-	public static function getFarmEmail(Contact $eContact): array {
+	public static function getFarmEmail(\mail\Contact $eContact): array {
 
 		$title = s("Nouvelle inscription à votre lettre d'information sur votre site internet !");
 

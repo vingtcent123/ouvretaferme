@@ -113,7 +113,7 @@ new Page()
 
 		$fw->validate();
 
-		\mail\ContactLib::updateOptInByEmail($e['farm'], $e['email'], TRUE);
+		\mail\ContactLib::registerNewsletter($e);
 
 		throw new ViewAction($data, ':doNewsletter');
 
