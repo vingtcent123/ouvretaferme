@@ -316,7 +316,23 @@ class CustomerLib extends CustomerCrud {
 
 		Customer::model()->insert($eCustomer);
 
+		if($eCustomer['email'] !== NULL) {
+			\mail\ContactLib::autoCreate($eCustomer['farm'], $eCustomer['email']);
+		}
+
 		return $eCustomer;
+
+	}
+
+	public static function create(Customer $e): void {
+
+		$e->expects(['farm', 'email']);
+
+		parent::create($e);
+
+		if($e['email'] !== NULL) {
+			\mail\ContactLib::autoCreate($e['farm'], $e['email']);
+		}
 
 	}
 

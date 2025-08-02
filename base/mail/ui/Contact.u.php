@@ -104,8 +104,10 @@ class ContactUi {
 			return $h;
 
 		}
-
+/*
 		$h .= '<p class="util-info">'.s("Les préférences d'envoi des e-mails ne s'appliquent qu'aux campagnes de communications que vous faites auprès de vos clients. Les e-mails directement liés aux commandes et à la facturation sont toujours envoyés.").'</p>';
+*/
+
 
 		if($cContact->count() > 0) {
 
