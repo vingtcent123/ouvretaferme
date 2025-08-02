@@ -18,7 +18,7 @@ class NewsletterUi {
 			if($readOnly) {
 				$h .= $form->group(content: '<span class="btn btn-primary disabled">'.s("Valider l'inscription").'</span>');
 			} else {
-				$h .= $form->group(content: $form->submit(s("Valider l'inscription")));
+				$h .= $form->group(content: $form->submit(s("Valider l'inscription"), ['data-submit-waiter' => s("Inscription en cours...")]));
 			}
 
 		$h .= $form->close();
