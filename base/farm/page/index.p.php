@@ -186,11 +186,7 @@
 
 		$data->eFarm->validate('canCommunication');
 
-		$data->search = new Search([
-			'email' => GET('email'),
-			'optIn' => GET('optIn', '?string'),
-			'category' => GET('category', [\selling\Customer::PRIVATE, \selling\Customer::PRO]),
-		], GET('sort', default: 'createdAt-'));
+		$data->search = \mail\ContactLib::getSearch();
 
 		$data->page = GET('page', 'int');
 

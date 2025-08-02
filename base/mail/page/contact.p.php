@@ -31,6 +31,17 @@ new Page()
 		throw new ViewAction($data);
 
 	})
+	->get('export', function($data) {
+
+		$search = \mail\ContactLib::getSearch();
+		$search->set('export', TRUE);
+
+		$data->eFarm = \farm\FarmLib::getById(GET('farm'))->validate('canRead');
+		$data->cContact = \mail\ContactLib::getByFarm($data->eFarm, search: $search);
+
+		throw new ViewAction($data);
+
+	})
 	->post('doUpdateOptInByEmail', function($data) {
 
 		$eFarm = \farm\FarmLib::getById(POST('id'))->validate('canRead');

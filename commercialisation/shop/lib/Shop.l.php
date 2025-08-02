@@ -145,8 +145,8 @@ class ShopLib extends ShopCrud {
                 fn() => $this->where('m2.optIn', NULL)
             )
             ->or(
-                fn() => $this->where('m2.blocked', TRUE),
-                fn() => $this->where('m2.blocked', NULL)
+                fn() => $this->where('m2.active', TRUE),
+                fn() => $this->where('m2.active', NULL)
             )
 			  ->getCollection()
 			  ->filter(fn($eCustomer) => $eCustomer['user']['status'] === \user\User::ACTIVE)

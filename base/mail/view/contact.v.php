@@ -3,6 +3,10 @@ new AdaptativeView('create', function($data, PanelTemplate $t) {
 	return new \mail\ContactUi()->create($data->e);
 });
 
+new JsonView('export', function($data, AjaxTemplate $t) {
+	$t->qs('#contact-export')->innerHtml(new \mail\ContactUi()->getExport($data->eFarm, $data->cContact));
+});
+
 new AdaptativeView('/ferme/{id}/optIn', function($data, MainTemplate $t) {
 
 	$form = new \util\FormUi();

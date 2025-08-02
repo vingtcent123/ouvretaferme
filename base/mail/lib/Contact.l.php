@@ -20,6 +20,16 @@ class ContactLib extends ContactCrud {
 
 	}
 
+	public static function getSearch(): \Search {
+
+		return new \Search([
+			'email' => GET('email'),
+			'optIn' => GET('optIn', '?string'),
+			'category' => GET('category', [\selling\Customer::PRIVATE, \selling\Customer::PRO]),
+		], GET('sort', default: 'createdAt-'));
+
+	}
+
 	public static function countByFarm(\farm\Farm $eFarm, \Search $search = new \Search()): int {
 
 		self::applySearch($search);
@@ -30,7 +40,7 @@ class ContactLib extends ContactCrud {
 
 	}
 
-	public static function getByFarm(\farm\Farm $eFarm, int $page, bool $withCustomer = FALSE, \Search $search = new \Search()): \Collection {
+	public static function getByFarm(\farm\Farm $eFarm, ?int $page = NULL, bool $withCustomer = FALSE, \Search $search = new \Search()): \Collection {
 
 		$search->validateSort(['email', 'createdAt', 'lastSent', 'sent', 'delivered', 'opened', 'blocked'], 'email');
 
@@ -45,13 +55,17 @@ class ContactLib extends ContactCrud {
 				->delegateCollection('email', propertyParent: 'email');
 		}
 
-		$number = 100;
-		$position = $page * $number;
+		$number = ($page === NULL) ? NULL : 100;
+		$position = ($page === NULL) ? NULL : $page * $number;
 
 		return Contact::model()
 			->select($selection)
 			->where('m1.farm', $eFarm)
 			->sort($search->buildSort([
+				'createdAt' => fn($direction) => match($direction) {
+					SORT_ASC => new \Sql('m1.createdAt'),
+					SORT_DESC => new \Sql('m1.createdAt DESC')
+				},
 				'email' => fn($direction) => match($direction) {
 					SORT_ASC => new \Sql('m1.email'),
 					SORT_DESC => new \Sql('m1.email DESC')
@@ -70,6 +84,17 @@ class ContactLib extends ContactCrud {
 		Contact::model()
 			->where('m1.email', 'LIKE', '%'.$search->get('email').'%', if: $search->get('email'))
 			->whereOptIn(FALSE, if: $search->get('optIn') === 'no');
+
+		if($search->get('export')) {
+
+			Contact::model()
+				->or(
+					fn() => $this->whereOptIn(TRUE),
+					fn() => $this->whereOptIn(NULL)
+				)
+				->whereActive(TRUE);
+
+		}
 
 		if($search->get('category')) {
 

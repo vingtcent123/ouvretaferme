@@ -66,6 +66,34 @@ class ContactUi {
 
 	}
 
+	public function getExport(\farm\Farm $eFarm, \Collection $cContact) {
+
+		$h = '<div class="util-block">';
+
+			$h .= '<h3>'.s("Liste des e-mails").'</h3>';
+
+			$h .= '<p class="util-danger">'.s("Les clients pour qui vous avez désactivé l'envoi des e-mails ainsi que ceux qui ont refusé vos communications ne sont pas présents dans cette liste. En envoyant des e-mails non sollicités ou en refusant de désabonner les clients qui le souhaitent, vous engagez votre propre responsabilité et vous exposez à un bannissement à vie de {siteName}.").'</p>';
+
+			$emails = $cContact->getColumn('email');
+
+			if($emails) {
+				$h .= '<code id="contact-emails">'.implode(', ', array_map('encode', $emails)).'</code>';
+				$h .= '<a onclick="doCopy(this)" data-selector="#contact-emails" data-message="'.s("Copié !").'" class="btn btn-secondary mb-1 mt-1">'.s("Copier la liste dans le presse-papier").'</a>';
+			} else {
+				$h .= '<p class="util-info">'.s("Aucune adresse e-mail ne correspond aux critères.").'</p>';
+			}
+
+			$h .= '<br/><br/>';
+
+			$h .= '<h3>'.s("Lien à donner à vos clients pour se désabonner de vos communications").'</h3>';
+			$h .= '<code>'.\Lime::getUrl().\farm\FarmUi::url($eFarm).'/optIn</code>';
+
+		$h .= '</div>';
+
+		return $h;
+
+	}
+
 	public function getList(\farm\Farm $eFarm, \Collection $cContact, int $nContact, int $page, \Search $search) {
 
 		$h = '';
@@ -78,6 +106,21 @@ class ContactUi {
 		}
 
 		$h .= '<p class="util-info">'.s("Les préférences d'envoi des e-mails ne s'appliquent qu'aux campagnes de communications que vous faites auprès de vos clients. Les e-mails directement liés aux commandes et à la facturation sont toujours envoyés.").'</p>';
+
+		if($cContact->count() > 0) {
+
+			$h .= '<div class="mb-1">';
+				$h .= '<a data-ajax="/mail/contact:export?farm='.$eFarm['id'].'&'.http_build_query($_GET).'" data-ajax-method="get" class="btn btn-secondary">';
+					if($search->empty()) {
+						$h .= s("Récupérer les adresses e-mail");
+					} else {
+						$h .= s("Récupérer les adresses e-mail de cette recherche");
+					}
+				$h .= '</a>';
+			$h .= '</div>';
+			$h .= '<div id="contact-export"></div>';
+
+		}
 
 		$h .= '<div class="stick-md util-overflow-xs">';
 
