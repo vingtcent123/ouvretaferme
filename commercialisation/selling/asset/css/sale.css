@@ -55,47 +55,9 @@ td.sale-item-actions {
 	text-align: right;
 }
 
-/* Labels */
-div.selling-label {
-	display: grid;
-	grid-column-gap: 1rem;
-	grid-template-columns: repeat(3, 1fr);
-}
-
-@media (min-width: 768px) and (max-width: 991px) {
-
-	div.selling-label {
-		grid-template-columns: repeat(2, 1fr);
-	}
-
-}
-
-@media (max-width: 767px) {
-
-	div.selling-label {
-		grid-template-columns: 1fr;
-	}
-
-}
-
-label.selling-label-item {
-	display: block;
-}
-
-div.selling-label-title {
-	display: grid;
-	grid-column-gap: 1rem;
-	grid-template-columns: auto 1fr auto;
-	align-items: center;
-}
-
-div.selling-label-title h4 {
-	margin-bottom: 0;
-}
-
-div.selling-label-title input {
-	width: 2rem;
-	height: 2rem;
+td.selling-label-checkbox input {
+	width: 1.5rem;
+	height: 1.5rem;
 }
 
 div.selling-label-example {

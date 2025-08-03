@@ -1019,7 +1019,7 @@ class SaleUi {
 
 	public function getLabels(\farm\Farm $eFarm, \Collection $cSale): string {
 
-		$h = '<h4>'.s("Générer les étiquettes des ventes aux professionnels en cours").'</h4>';
+		$h = '<h3>'.s("Générer les étiquettes des ventes aux professionnels en cours").'</h3>';
 
 		if($cSale->empty()) {
 			$h .= '<div class="util-empty">'.s("Il n'y a aucune vente en cours de préparation ou déjà préparée.").'</div>';
@@ -1032,30 +1032,39 @@ class SaleUi {
 				$h .= $form->hidden('id', $eFarm['id']);
 				$h .= $form->hidden('checkSales', TRUE);
 
-				$h .= '<div class="selling-label">';
+				$h .= '<div class="util-overflow-xs">';
+					$h .= '<table class="tr-even">';
+						$h .= '<thead>';
+							$h .= '<tr>';
+								$h .= '<th></th>';
+								$h .= '<th class="text-center">'.s("Vente").'</th>';
+								$h .= '<th>'.s("Client").'</th>';
+								$h .= '<th class="text-center">'.s("Date").'</th>';
+								$h .= '<th class="text-center">'.s("Montant").'</th>';
+								$h .= '<th class="text-center hide-sm-down">'.s("Articles").'</th>';
+							$h .= '</tr>';
+						$h .= '</thead>';
 
-				foreach($cSale as $eSale) {
+						$h .= '<tbody>';
 
-					$h .= '<label class="selling-label-item util-block">';
-						$h .= '<div class="selling-label-title">';
-							$h .= SaleUi::link($eSale);
-							$h .= '<h4>'.CustomerUi::getColorCircle($eSale['customer']).' '.CustomerUi::link($eSale['customer']).'</h4>';
-							$h .= $form->inputCheckbox('sales[]', $eSale['id']);
-						$h .= '</div>';
-						$h .= '<ul class="util-summarize">';
-							$h .= '<li>';
-								$h .= '<h5>'.s("Articles").'</h5>';
-								$h .= $eSale['items'];
-							$h .= '</li>';
-							$h .= '<li>';
-								$h .= '<h5>'.s("Montant").'</h5>';
-								$h .= \util\TextUi::money($eSale['priceExcludingVat']).' '.$eSale->getTaxes();
-							$h .= '</li>';
-						$h .= '</ul>';
-					$h .= '</label>';
+							foreach($cSale as $eSale) {
 
-				}
+								$h .= '<tr>';
+									$h .= '<td class="td-min-content selling-label-checkbox">'.$form->inputCheckbox('sales[]', $eSale['id']).'</td>';
+									$h .= '<td class="td-min-content">'.SaleUi::link($eSale).'</td>';
+									$h .= '<td>';
+										$h .= CustomerUi::getColorCircle($eSale['customer']).' '.CustomerUi::link($eSale['customer']);
+									$h .= '</td>';
+									$h .= '<td class="text-center">'.\util\DateUi::numeric($eSale['deliveredAt']).'</td>';
+									$h .= '<td class="text-center">'.\util\TextUi::money($eSale['priceExcludingVat']).' '.$eSale->getTaxes().'</td>';
+									$h .= '<td class="text-center hide-sm-down">'.$eSale['items'].'</td>';
+								$h .= '</tr>';
 
+							}
+
+					$h .= '</tbody>';
+
+				$h .= '</table>';
 			$h .= '</div>';
 
 			$h .= $form->submit(s("Générer les étiquettes"));
@@ -1066,7 +1075,7 @@ class SaleUi {
 
 		}
 
-		$h .= '<h4>'.s("Modèle des étiquettes").'</h4>';
+		$h .= '<h3>'.s("Modèle des étiquettes").'</h3>';
 
 		$h .= '<div class="selling-label-example">';
 			$h .= new PdfUi()->getLabel($eFarm, new Customer(), quality: $eFarm['quality']);

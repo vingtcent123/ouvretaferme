@@ -67,17 +67,25 @@ class PdfUi {
 
 		$itemsPerPage = 12;
 
-		if($eConfiguration['pdfNaturalOrder']) {
+		if(count($items) === 0) {
+			$modulo = 0;
+			$complete = TRUE;
+		} else {
 
 			$modulo = count($items) % $itemsPerPage;
+			$complete = ($modulo > 0);
 
-			if($modulo > 0) {
+		}
 
-				for($i = $modulo; $i < $itemsPerPage; $i++) {
-					$items[] = $this->getLabel($eFarm, new Customer(), quality: $eFarm['quality']);
-				}
+		if($complete) {
 
+			for($i = $modulo; $i < $itemsPerPage; $i++) {
+				$items[] = $this->getLabel($eFarm, new Customer(), quality: $eFarm['quality']);
 			}
+
+		}
+
+		if($eConfiguration['pdfNaturalOrder']) {
 
 			$pages = count($items) / $itemsPerPage;
 

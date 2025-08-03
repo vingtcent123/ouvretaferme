@@ -303,7 +303,7 @@ class SaleLib extends SaleCrud {
 			->whereFarm($eFarm)
 			->wherePreparationStatus('IN', [Sale::CONFIRMED, Sale::PREPARED])
 			->whereType(Customer::PRO)
-			->sort(new \Sql('FIELD(preparationStatus, "'.Sale::CONFIRMED.'", "'.Sale::PREPARED.'") DESC, id DESC'))
+			->sort(new \Sql('FIELD(preparationStatus, "'.Sale::CONFIRMED.'", "'.Sale::PREPARED.'") DESC, deliveredAt ASC, id ASC'))
 			->getCollection();
 
 	}
@@ -320,7 +320,6 @@ class SaleLib extends SaleCrud {
 			->whereDeliveredAt($date)
 			->wherePreparationStatus('IN', [Sale::CONFIRMED, Sale::PREPARED, Sale::DELIVERED, Sale::CLOSED])
 			->whereStats(TRUE)
-			->sort('id')
 			->getCollection(NULL, NULL, 'id');
 
 	}
