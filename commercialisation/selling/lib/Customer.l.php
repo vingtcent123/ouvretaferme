@@ -326,7 +326,10 @@ class CustomerLib extends CustomerCrud {
 
 	public static function create(Customer $e): void {
 
-		$e->expects(['farm', 'email']);
+		$e->expects(['farm']);
+
+		// Points de vente
+		$e['email'] ??= NULL;
 
 		parent::create($e);
 
