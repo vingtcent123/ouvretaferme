@@ -15,10 +15,23 @@
 	font-size: 0.9rem;
 }
 
-@media (max-width: 767px) {
+.contact-item-email {
+	letter-spacing: -0.2px;
+}
+
+@media (max-width: 1199px) {
 
 	.contact-item-email {
 		max-width: 16rem;
+		word-wrap: break-word;
+	}
+
+}
+
+@media (min-width: 1200px) and (max-width: 1599px) {
+
+	.contact-item-email {
+		max-width: 20rem;
 		word-wrap: break-word;
 	}
 

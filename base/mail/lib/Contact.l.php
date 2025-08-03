@@ -26,7 +26,7 @@ class ContactLib extends ContactCrud {
 			'email' => GET('email'),
 			'optIn' => GET('optIn', '?string'),
 			'category' => GET('category', [\selling\Customer::PRIVATE, \selling\Customer::PRO]),
-		], GET('sort', default: 'email'));
+		], GET('sort', default: 'createdAt-'));
 
 	}
 

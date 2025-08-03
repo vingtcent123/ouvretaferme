@@ -109,6 +109,14 @@ class ContactUi {
 */
 
 
+		if($cContact->count() > 10) {
+
+			$h .= '<div class="util-block-help">';
+				$h .= s("Vos contacts correspondent aux adresses e-mail de vos clients, aux personnes qui se sont inscrites à la lettre d'information de votre ferme sur votre site internet ainsi que celles que vous aurez ajouté manuellement. Pour chaque contact, vous retrouvez quelques chiffres qui vous permettent notamment de savoir si vos e-mails parviennent bien à leurs destinataires.");
+			$h .= '</div>';
+
+		}
+
 		if($cContact->count() > 0) {
 
 			$h .= '<div class="mb-1">';
@@ -132,10 +140,10 @@ class ContactUi {
 
 					$h .= '<tr>';
 						$h .= '<th rowspan="2">'.$search->linkSort('email', s("Adresse e-mail")).'</th>';
-						$h .= '<th rowspan="2" class="text-center hide-lg-down">'.$search->linkSort('createdAt', s("Depuis"), SORT_DESC).'</th>';
+						$h .= '<th rowspan="2" class="text-center hide-sm-down">'.$search->linkSort('createdAt', s("Depuis"), SORT_DESC).'</th>';
 						$h .= '<th rowspan="2" class="text-center">'.s("Envoyer<br/>des e-mails").'</th>';
 						$h .= '<th rowspan="2" class="text-center">'.s("Consentement pour<br/>recevoir des e-mails").'</th>';
-						$h .= '<th rowspan="2" class="hide-xs-down">'.$search->linkSort('lastSent', s("Dernier e-mail<br/>envoyé"), SORT_DESC).'</th>';
+						$h .= '<th rowspan="2" class="hide-xl-down">'.$search->linkSort('lastSent', s("Dernier e-mail<br/>envoyé il y a"), SORT_DESC).'</th>';
 						$h .= '<th colspan="4" class="text-center hide-md-down">'.s("Statistiques depuis le 14 juin 2025 *").'</th>';
 						$h .= '<th rowspan="2"></th>';
 					$h .= '</tr>';
@@ -177,7 +185,7 @@ class ContactUi {
 
 						$h .= '</td>';
 
-						$h .= '<td class="text-center">';
+						$h .= '<td class="text-center hide-sm-down">';
 							$h .= \util\DateUi::numeric($eContact['createdAt'], \util\DateUi::DATE);
 						$h .= '</td>';
 
@@ -199,10 +207,10 @@ class ContactUi {
 							}
 						$h .= '</td>';
 
-						$h .= '<td class="hide-xs-down">';
+						$h .= '<td class="hide-xl-down">';
 
 							if($eContact['lastSent'] !== NULL) {
-								$h .= \util\DateUi::ago($eContact['lastSent']);
+								$h .= \util\DateUi::secondToDuration(time() - strtotime($eContact['lastSent']), \util\DateUi::AGO, maxNumber: 1);
 							} else {
 								$h .= '/';
 							}

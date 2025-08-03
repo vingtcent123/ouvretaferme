@@ -537,7 +537,7 @@ new AdaptativeView('/ferme/{id}/stocks', function($data, FarmTemplate $t) {
 new AdaptativeView('/ferme/{id}/contacts', function($data, FarmTemplate $t) {
 
 	$t->nav = 'communications';
-	$t->subNav = 'contact';
+	$t->subNav = 'mailing';
 
 	$t->title = s("Contacts de {value}", $data->eFarm['name']);
 	$t->canonical = \farm\FarmUi::urlCommunicationsMailing($data->eFarm);
