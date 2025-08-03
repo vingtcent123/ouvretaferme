@@ -5,8 +5,12 @@
 .tip-block {
 	position: relative;
 	background-color: #2e687f;
-	width: calc(100% - 4rem);
-	max-width: 50rem;
+	border-radius: var(--radius);
+	width: calc(100% - var(--container-padding) * 2);
+}
+
+#tip-wrapper.tip-wrapper-inline .tip-block {
+	margin: 1rem auto;
 }
 
 @media (max-width: 575px) {
@@ -43,14 +47,11 @@
 
 	}
 
-	#tip-wrapper.tip-wrapper-inline .tip-block {
-		margin: 1rem auto;
-	}
-
 	#tip-wrapper:not(.tip-wrapper-inline) .tip-block {
 		border-radius: var(--radius);
 		box-shadow: 0 0 50rem var(--muted);
 		pointer-events: initial;
+		max-width: 50rem;
 	}
 
 }
@@ -138,13 +139,13 @@
 	text-transform: uppercase;
 	margin-bottom: 0;
 	line-height: 1;
-	font-size: 1.1rem;
+	font-size: 1.5rem;
 }
 
 .tip-title {
 	padding: 1rem 2rem 1rem 2rem;
 	position: relative;
-	font-size: 3rem;
+	font-size: 2.5rem;
 	line-height: 1;
 	color: white;
 	margin-bottom: 0;
@@ -155,7 +156,7 @@
 	position: relative;
 	font-size: 1.1rem;
 	min-height: 5vw;
-	padding: 5vw 2rem 1rem 2rem;
+	padding: 3vw 2rem 1rem 2rem;
 	color: white;
 }
 
@@ -170,6 +171,7 @@
 
 .tip-image img {
 	width: 100%;
+	max-width: 50rem;
 }
 
 .tip-button {
@@ -179,14 +181,18 @@
 	background-color: #0006;
 	display: flex;
 	flex-wrap: wrap;
-	row-gap: 0.5rem;
-	justify-content: space-between;
+	gap: 0.5rem;
 	border-bottom-left-radius: var(--radius);
 	border-bottom-right-radius: var(--radius);
 }
 
+.tip-button:has(> *:not(:only-child)) {
+	justify-content: space-between;
+}
+
 .tip-button .btn-tip {
 	color: white;
+	border-color: white;
 }
 
 .tip-button .btn-outline-tip {

@@ -108,15 +108,6 @@ class ContactUi {
 		$h .= '<p class="util-info">'.s("Les préférences d'envoi des e-mails ne s'appliquent qu'aux campagnes de communications que vous faites auprès de vos clients. Les e-mails directement liés aux commandes et à la facturation sont toujours envoyés.").'</p>';
 */
 
-
-		if($cContact->count() > 10) {
-
-			$h .= '<div class="util-block-help">';
-				$h .= s("Vos contacts correspondent aux adresses e-mail de vos clients, aux personnes qui se sont inscrites à la lettre d'information de votre ferme sur votre site internet ainsi que celles que vous aurez ajouté manuellement. Pour chaque contact, vous retrouvez quelques chiffres qui vous permettent notamment de savoir si vos e-mails parviennent bien à leurs destinataires.");
-			$h .= '</div>';
-
-		}
-
 		if($cContact->count() > 0) {
 
 			$h .= '<div class="mb-1">';

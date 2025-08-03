@@ -495,34 +495,6 @@ class CultivationUi {
 
 	public function displayByForecast(\farm\Farm $eFarm, int $season, \Collection $ccForecast) {
 
-		if(
-			$ccForecast->empty() or
-			\Cache::redis()->get('help-forecast-'.$eFarm['id']) !== false
-		) {
-
-			$help = '<div class="util-block-help">';
-				$help .= '<h4>'.s("Qu'est-ce que le prévisionnel financier ?").'</h4>';
-				$help .= '<p>'.s("Le prévisionnel financier est un outil qui vous permet d'avoir une vue d'ensemble de la production et des ventes de la saison. Les ventes sont calculées automatiquement selon des prix et une répartition des ventes entre clients particuliers et professionnels que vous choisissez.").'</p>';
-				$help .= '<h5>'.s("Vous pouvez utiliser le prévisionnel de deux manières différentes :").'</h5>';
-				$help .= '<ol>';
-					$help .= '<li>'.s("La page du prévisionnel reprend automatiquement les séries que vous avez déjà créé pour la saison en cours. Vous n'avez plus qu'à saisir vos prix de ventes pour avoir vos prévisions financières !").'</li>';
-					$help .= '<li>'.s("Vous pouvez aussi utiliser le prévisionnel en amont de votre planification en ajoutant les espèces cultivées que vous souhaitez cultiver au prévisionnel. Une fois que vous êtes satisfait de votre prévisionnel, vous pouvez ainsi commencer votre planification !").'</li>';
-				$help .= '</ol>';
-				if($ccForecast->empty()) {
-					$help .= '<a href="/plant/forecast:create?farm='.$eFarm['id'].'&season='.$season.'" class="btn btn-secondary">'.s("Ajouter une espèce au prévisionnel").'</a>';
-				} else {
-					$help .= '<a href="'.\farm\FarmUi::urlCultivationForecast($eFarm, $season).'&help" class="btn btn-secondary">'.\Asset::icon('x-lg').' '.s("Ok, cacher ce message").'</a>';
-				}
-			$help .= '</div>';
-
-			if($ccForecast->empty()) {
-				return $help;
-			}
-
-		} else {
-			$help = '';
-		}
-
 		$h = '<div id="series-wrapper" class="series-item-wrapper series-item-forecast-wrapper util-overflow-lg stick-md">';
 
 			$h .= '<div class="series-item-header series-item-forecast">';
@@ -782,7 +754,7 @@ class CultivationUi {
 			$total = '';
 		}
 
-		return $help.$total.$h;
+		return $total.$h;
 
 	}
 

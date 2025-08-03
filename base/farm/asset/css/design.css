@@ -247,8 +247,8 @@ body[data-template~="farm"] main .container.farm-template-main-title.farm-templa
 	body[data-template~="farm"] main .container {
 		margin-left: 0;
 		margin-right: 0;
-		padding-left: 2rem;
-		padding-right: 2rem;
+		padding-left: var(--container-padding);
+		padding-right: var(--container-padding);
 	}
 
 	@media (max-width: 1199px) {

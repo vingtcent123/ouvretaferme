@@ -193,6 +193,9 @@
 		$data->nContact = \mail\ContactLib::countByFarm($data->eFarm, $data->search);
 		$data->cContact = \mail\ContactLib::getByFarm($data->eFarm, $data->page, withCustomer: TRUE, search: $data->search);
 
+		$data->tip = \farm\TipLib::pickOne($data->eUserOnline, 'mailing-contact-help');
+		$data->tipNavigation = 'inline';
+
 		throw new ViewAction($data);
 
 	})
@@ -584,9 +587,9 @@
 
 		\farm\ActionLib::getMainByFarm($data->eFarm);
 
-		if(get_exists('help')) {
-			\Cache::redis()->delete('help-forecast-'.$data->eFarm['id']);
-		}
+		$data->tip = \farm\TipLib::pickOne($data->eUserOnline, 'series-forecast-help');
+		$data->tipNavigation = 'inline';
+
 		$cccCultivation = \series\CultivationLib::getForForecast($data->eFarm, $data->season);
 		$data->ccForecast = \plant\ForecastLib::getByFarm($data->eFarm, $data->season, $cccCultivation);
 

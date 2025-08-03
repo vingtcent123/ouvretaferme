@@ -8,7 +8,7 @@ class TipLib extends TipCrud {
 	}
 
 	public static function getPrivate(): array {
-		return ['sequence-weeks', 'accounting-invoice-cashflow'];
+		return ['sequence-weeks', 'accounting-invoice-cashflow', 'mailing-contact-help', 'series-forecast-help'];
 	}
 
 	public static function getPublic(): array {
@@ -133,8 +133,8 @@ class TipLib extends TipCrud {
 
 	}
 
-	public static function pickOne(\user\User $eUser, string $id): ?string {
-		return self::changeStatus($eUser, $id, 'shown', FALSE) ? $id : NULL;
+	public static function pickOne(\user\User $eUser, string $id, bool $closedByUser = TRUE): ?string {
+		return self::changeStatus($eUser, $id, 'shown', override: FALSE, closeByUser: $closedByUser) ? $id : NULL;
 	}
 
 	public static function pickRandom(\user\User $eUser, Farm $eFarm): ?string {
@@ -223,7 +223,7 @@ class TipLib extends TipCrud {
 
 	}
 
-	public static function changeStatus(\user\User $eUser, string $id, string $newStatus, bool $override = TRUE): bool {
+	public static function changeStatus(\user\User $eUser, string $id, string $newStatus, bool $override = TRUE, bool $closeByUser = FALSE): bool {
 
 		if(in_array($newStatus, ['shown', 'closed', 'clicked', 'unmatched']) === FALSE) {
 			throw new \Exception('Unknown status');
@@ -242,7 +242,10 @@ class TipLib extends TipCrud {
 			$list[$id] = $newStatus;
 		} else {
 
-			if(array_key_exists($id, $list)) {
+			if(
+				array_key_exists($id, $list) and
+				($closeByUser === FALSE or $list[$id] === 'closed')
+			) {
 				Tip::model()->rollBack();
 				return FALSE;
 			}

@@ -127,11 +127,11 @@ class FarmTemplate extends MainTemplate {
 		} else {
 
 			$h = '';
+
+			$h .= $this->getMainTitle();
 			if($this->data->tip) {
 				$h .= new \farm\TipUi()->get($this->data->eFarm, $this->data->tip, $this->data->tipNavigation);
 			}
-
-			$h .= $this->getMainTitle();
 			$h .= parent::getMain($stream);
 
 			return $h;

@@ -17,7 +17,7 @@ class TipUi {
 					$h .= str_repeat($content['icon'], 9);
 				$h .= '</div>';
 				$h .= '<div class="tip-header">';
-					$h .= '<div class="tip-intro">'.s("Le saviez-vous ?").'</div>';
+					$h .= '<div class="tip-intro">'.\Asset::icon('info-circle').'</div>';
 					$h .= match($navigation) {
 						'close' => '<a href="/farm/tip?farm='.$eFarm['id'].'" class="btn btn-transparent btn-sm">'.\Asset::icon('caret-right-fill').' '.s("Toutes les astuces").'</a>',
 						'next' => '<a href="/farm/tip?farm='.$eFarm['id'].'" class="btn btn-transparent btn-sm">'.\Asset::icon('caret-right-fill').' '.s("Astuce suivante").'</a>',
@@ -40,11 +40,9 @@ class TipUi {
 				$h .= '<div class="tip-button">';
 					if($content['button'] !== NULL) {
 						$h .= '<a href="/farm/tip:click?id='.$tip.'&redirect='.urlencode($content['button'][0]).'" data-ajax-navigation="never" class="btn btn-outline-tip">'.$content['button'][1].'</a>';
-					} else {
-						$h .= '<span></span>';
 					}
 					if($navigation === 'close' or $navigation === 'inline') {
-						$h .= '<a data-ajax="/farm/tip:close?id='.$tip.'" data-ajax-method="get" class="btn btn-tip">'.\Asset::icon('x').' '.s("Ignorer").'</a>';
+						$h .= '<a data-ajax="/farm/tip:close?id='.$tip.'" data-ajax-method="get" class="btn btn-tip">'.\Asset::icon('x-lg').'  '.s("Cacher ce message").'</a>';
 					}
 				$h .= '</div>';
 			$h .= '</div>';
@@ -258,6 +256,35 @@ class TipUi {
 					'title' => s("Un seul itinéraire technique par espèce"),
 					'content' => $h,
 					'image' => TRUE,
+					'button' => NULL,
+				];
+
+			case 'mailing-contact-help' :
+
+				$h = s("Vos contacts correspondent aux adresses e-mail de vos clients, aux personnes qui se sont inscrites à la lettre d'information de votre ferme sur votre site internet ainsi que celles que vous aurez ajouté manuellement. Pour chaque contact, vous retrouvez quelques chiffres qui vous permettent notamment de savoir si vos e-mails parviennent bien à leurs destinataires.");
+
+				return [
+					'icon' => \Asset::icon('envelope'),
+					'title' => s("Que sont les contacts ?"),
+					'content' => $h,
+					'image' => FALSE,
+					'button' => NULL,
+				];
+
+			case 'series-forecast-help' :
+
+				$h = '<p>'.s("Le prévisionnel financier est un outil qui vous permet d'avoir une vue d'ensemble de la production et des ventes de la saison. Les ventes sont calculées automatiquement selon des prix et une répartition des ventes entre clients particuliers et professionnels que vous choisissez.").'</p>';
+				$h .= '<h5>'.s("Vous pouvez utiliser le prévisionnel de deux manières différentes :").'</h5>';
+				$h .= '<ol>';
+					$h .= '<li>'.s("La page du prévisionnel reprend automatiquement les séries que vous avez déjà créé pour la saison en cours. Vous n'avez plus qu'à saisir vos prix de ventes pour avoir vos prévisions financières !").'</li>';
+					$h .= '<li>'.s("Vous pouvez aussi utiliser le prévisionnel en amont de votre planification en ajoutant les espèces cultivées que vous souhaitez cultiver au prévisionnel. Une fois que vous êtes satisfait de votre prévisionnel, vous pouvez ainsi commencer votre planification !").'</li>';
+				$h .= '</ol>';
+
+				return [
+					'icon' => \Asset::icon('wallet'),
+					'title' => s("Qu'est-ce que le prévisionnel financier ?"),
+					'content' => $h,
+					'image' => FALSE,
 					'button' => NULL,
 				];
 

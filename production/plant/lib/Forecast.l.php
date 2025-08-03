@@ -52,11 +52,6 @@ class ForecastLib extends ForecastCrud {
 						'cCultivation' => fn() => new \Collection()
 				]);
 
-			} else {
-
-				// Premier accès
-				\Cache::redis()->set('help-forecast-'.$eFarm['id'], 'valid', 86400 * 14);
-
 			}
 
 		}
