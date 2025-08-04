@@ -175,7 +175,7 @@ class InvoiceUi {
 						$h .= '</td>';
 
 						$h .= '<td class="text-end invoice-item-amount">';
-							$h .= SaleUi::getTotal($eInvoice);
+							$h .= SaleUi::getIncludingTaxesTotal($eInvoice);
 						$h .= '</td>';
 
 						switch($eInvoice['generation']) {

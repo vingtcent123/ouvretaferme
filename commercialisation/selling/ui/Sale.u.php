@@ -72,6 +72,12 @@ class SaleUi {
 
 	}
 
+	public static function getIncludingTaxesTotal(Sale|Invoice $eSale): string {
+
+		return $eSale['priceIncludingVat'] ? \util\TextUi::money($eSale['priceIncludingVat']).' <span class="util-annotation">'.SaleUi::p('taxes')->values[Sale::INCLUDING].'</span>' : '-';
+
+	}
+
 	public static function getPanelHeader(Sale $eSale): string {
 
 		return '<div class="panel-header-subtitle">'.self::getName($eSale).'</div>';

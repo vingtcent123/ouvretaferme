@@ -1158,6 +1158,10 @@ div.util-subtitle {
 	color: var(--muted);
 }
 
+.util-annotation:empty {
+	display: none;
+}
+
 .util-annotation a {
 	color: var(--muted);
 	text-decoration: underline;
