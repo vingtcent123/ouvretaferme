@@ -364,6 +364,8 @@ class CustomerLib extends CustomerCrud {
 
 	public static function update(Customer $e, array $properties): void {
 
+		$e->expects(['farm', 'email']);
+
 		if(array_delete($properties, 'category')) {
 			$properties[] = 'type';
 			$properties[] = 'destination';
@@ -372,6 +374,26 @@ class CustomerLib extends CustomerCrud {
 		Customer::model()->beginTransaction();
 
 		parent::update($e, $properties);
+
+		if(
+			in_array('status', $properties) and
+			$e['email'] !== NULL
+		) {
+
+			// Tous les clients partageant la même adresse e-mail ont le même status
+			if(
+				Customer::model()
+					->whereFarm($e['farm'])
+					->whereEmail($e['email'])
+					->whereStatus($e['status'] === Customer::ACTIVE ? Customer::INACTIVE : Customer::ACTIVE)
+					->exists() === FALSE
+			) {
+
+				\mail\ContactLib::synchronizeStatus($e);
+
+			}
+
+		}
 
 		Customer::model()->commit();
 

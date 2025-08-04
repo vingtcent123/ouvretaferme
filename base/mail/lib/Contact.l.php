@@ -102,6 +102,17 @@ class ContactLib extends ContactCrud {
 
 	}
 
+	public static function synchronizeStatus(\selling\Customer $eCustomer): void {
+
+		Contact::model()
+			->whereFarm($eCustomer['farm'])
+			->whereEmail($eCustomer['email'])
+			->update([
+				'active' => $eCustomer['status'] === \selling\Customer::ACTIVE
+			]);
+
+	}
+
 	public static function applySearch(\Search $search): void {
 
 		Contact::model()
