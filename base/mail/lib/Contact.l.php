@@ -119,6 +119,27 @@ class ContactLib extends ContactCrud {
 
 	}
 
+	public static function deleteCustomer(\selling\Customer $eCustomer): void {
+
+		$exists = \selling\Customer::model()
+			->whereFarm($eCustomer['farm'])
+			->whereEmail($eCustomer['email'])
+			->exists();
+
+		if($exists === FALSE) {
+
+			Contact::model()
+				->whereFarm($eCustomer['farm'])
+				->whereEmail($eCustomer['email'])
+				->update([
+					'active' => FALSE,
+					'activeCustomer' => NULL
+				]);
+
+		}
+
+	}
+
 	public static function applySearch(\Search $search): void {
 
 		Contact::model()

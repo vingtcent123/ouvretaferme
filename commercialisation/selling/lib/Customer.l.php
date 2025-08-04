@@ -435,6 +435,8 @@ class CustomerLib extends CustomerCrud {
 
 			Customer::model()->delete($e);
 
+			\mail\ContactLib::deleteCustomer($e);
+
 		Customer::model()->commit();
 
 	}
