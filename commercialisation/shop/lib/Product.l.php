@@ -9,6 +9,10 @@ class ProductLib extends ProductCrud {
 
 			$properties = ['price', 'available', 'limitCustomers', 'excludeCustomers', 'limitMin', 'limitMax'];
 
+			if($eProduct['type'] === Product::PRO) {
+				$properties[] = 'packaging';
+			}
+
 			if($eProduct['catalog']->notEmpty()) {
 				$properties[] = 'limitStartAt';
 				$properties[] = 'limitEndAt';

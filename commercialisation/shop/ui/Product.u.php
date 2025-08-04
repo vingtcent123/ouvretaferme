@@ -908,7 +908,7 @@ class ProductUi {
 						$h .= '<th colspan="2">'.s("Produit").'</th>';
 						if($eCatalog['type'] === Date::PRO) {
 							$columns++;
-							$h .= '<td></td>';
+							$h .= '<th>'.s("Colisage").'</th>';
 						}
 						$h .= '<th class="text-end">'.s("Prix").' '.$taxes.'</th>';
 						$h .= '<th class="highlight">'.s("Disponible").'</th>';
@@ -952,7 +952,9 @@ class ProductUi {
 							if($eCatalog['type'] === Date::PRO) {
 								$h .= '<td class="td-min-content">';
 									if($eProduct['packaging'] !== NULL) {
-										$h .= s("Colis de {value}", \selling\UnitUi::getValue($eProduct['packaging'], $eProductSelling['unit'], TRUE));
+										$h .= $eProduct->quick('packaging', s("Colis de {value}", \selling\UnitUi::getValue($eProduct['packaging'], $eProductSelling['unit'], TRUE)));
+									} else {
+										$h .= $eProduct->quick('packaging', '-');
 									}
 								$h .= '</td>';
 							}
@@ -1191,7 +1193,10 @@ class ProductUi {
 
 			$h .= $form->hidden('id', $e['id']);
 
-			$h .= $form->dynamicGroups($e, ['price', 'available']);
+			$h .= $form->dynamicGroups($e, match($e['type']) {
+				Product::PRO => ['price', 'packaging', 'available'],
+				Product::PRIVATE => ['price', 'available']
+			});
 
 			$h .= '<br/>';
 			$h .= '<div class="util-block bg-background-light">';
@@ -1247,6 +1252,7 @@ class ProductUi {
 		$d = Product::model()->describer($property, [
 			'product' => s("Produit"),
 			'available' => s("Disponible"),
+			'packaging' => s("Colisage"),
 			'price' => fn($e) => s("Prix unitaire").($e['farm']->getSelling('hasVat') ? ' <span class="util-annotation">'.$e->getTaxes().'</span>' : ''),
 			'date' => s("Vente"),
 			'limitStartAt' => s("Proposer pour les commandes livrées à partir de"),
@@ -1348,6 +1354,10 @@ class ProductUi {
 					return $h;
 
 				};
+				break;
+
+			case 'packaging' :
+				$d->append = fn(\util\FormUi $form, Product $e) => $form->addon(\selling\UnitUi::getSingular($e['product']['unit'], TRUE));
 				break;
 
 			case 'price' :

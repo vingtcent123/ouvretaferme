@@ -15,7 +15,7 @@ new \shop\ProductPage()
 		throw new ReloadAction('shop', 'Product::deleted');
 	})
 	->doUpdateProperties('doUpdateStatus', ['status'], fn($data) => throw new ViewAction($data))
-	->quick(['available', 'price']);
+	->quick(['available', 'price', 'packaging']);
 
 (new Page(function($data) {
 
