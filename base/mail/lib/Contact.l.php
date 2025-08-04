@@ -102,13 +102,19 @@ class ContactLib extends ContactCrud {
 
 	}
 
-	public static function synchronizeStatus(\selling\Customer $eCustomer): void {
+	public static function synchronizeCustomer(\selling\Customer $eCustomer): void {
+
+		$active = \selling\Customer::model()
+			->whereFarm($eCustomer['farm'])
+			->whereEmail($eCustomer['email'])
+			->whereStatus(\selling\Customer::ACTIVE)
+			->exists();
 
 		Contact::model()
 			->whereFarm($eCustomer['farm'])
 			->whereEmail($eCustomer['email'])
 			->update([
-				'active' => $eCustomer['status'] === \selling\Customer::ACTIVE
+				'activeCustomer' => $active
 			]);
 
 	}
@@ -126,7 +132,11 @@ class ContactLib extends ContactCrud {
 					fn() => $this->whereOptIn(TRUE),
 					fn() => $this->whereOptIn(NULL)
 				)
-				->whereActive(TRUE);
+				->whereActive(TRUE)
+				->or(
+					fn() => $this->whereActiveCustomer(TRUE),
+					fn() => $this->whereActiveCustomer(NULL)
+				);
 
 		}
 

@@ -182,7 +182,9 @@ class ContactUi {
 
 						$h .= '<td class="text-center">';
 							if($eContact['optIn'] === FALSE) {
-								$h .= '<div class="color-muted">'.s("Impossible").'</div>';
+								$h .= '<div class="color-muted">'.s("Impossible").'<br/><small>'.s("(refus du client)").'</small></div>';
+							} else if($eContact['activeCustomer'] === FALSE) {
+								$h .= '<div class="color-muted">'.s("Impossible").'<br/><small>'.s("(client désactivé)").'</small></div>';
 							} else {
 								$h .= $this->toggleActive($eContact);
 							}

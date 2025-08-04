@@ -317,7 +317,9 @@ class CustomerLib extends CustomerCrud {
 		Customer::model()->insert($eCustomer);
 
 		if($eCustomer['email'] !== NULL) {
-			\mail\ContactLib::autoCreate($eCustomer['farm'], $eCustomer['email']);
+			\mail\ContactLib::autoCreate($eCustomer['farm'], $eCustomer['email'], function(\mail\Contact $e) {
+				$e['activeCustomer'] = TRUE;
+			});
 		}
 
 		return $eCustomer;
@@ -380,18 +382,7 @@ class CustomerLib extends CustomerCrud {
 			$e['email'] !== NULL
 		) {
 
-			// Tous les clients partageant la même adresse e-mail ont le même status
-			if(
-				Customer::model()
-					->whereFarm($e['farm'])
-					->whereEmail($e['email'])
-					->whereStatus($e['status'] === Customer::ACTIVE ? Customer::INACTIVE : Customer::ACTIVE)
-					->exists() === FALSE
-			) {
-
-				\mail\ContactLib::synchronizeStatus($e);
-
-			}
+			\mail\ContactLib::synchronizeCustomer($e);
 
 		}
 

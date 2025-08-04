@@ -19,6 +19,7 @@ Contact:
   lastSpam: ?datetime
   optIn: ?bool
   active: bool = TRUE
+  activeCustomer: ?bool
   createdAt: datetime = SPECIAL(now)
   INDEX: [
     ["email"]

@@ -52,11 +52,12 @@ class ContactModel extends \ModuleModel {
 			'lastSpam' => ['datetime', 'null' => TRUE, 'cast' => 'string'],
 			'optIn' => ['bool', 'null' => TRUE, 'cast' => 'bool'],
 			'active' => ['bool', 'cast' => 'bool'],
+			'activeCustomer' => ['bool', 'null' => TRUE, 'cast' => 'bool'],
 			'createdAt' => ['datetime', 'cast' => 'string'],
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'farm', 'email', 'lastEmail', 'sent', 'lastSent', 'delivered', 'lastDelivered', 'opened', 'lastOpened', 'failed', 'lastFailed', 'spam', 'lastSpam', 'optIn', 'active', 'createdAt'
+			'id', 'farm', 'email', 'lastEmail', 'sent', 'lastSent', 'delivered', 'lastDelivered', 'opened', 'lastOpened', 'failed', 'lastFailed', 'spam', 'lastSpam', 'optIn', 'active', 'activeCustomer', 'createdAt'
 		]);
 
 		$this->propertiesToModule += [
@@ -176,6 +177,10 @@ class ContactModel extends \ModuleModel {
 
 	public function whereActive(...$data): ContactModel {
 		return $this->where('active', ...$data);
+	}
+
+	public function whereActiveCustomer(...$data): ContactModel {
+		return $this->where('activeCustomer', ...$data);
 	}
 
 	public function whereCreatedAt(...$data): ContactModel {
