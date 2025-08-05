@@ -56,10 +56,6 @@ new \bank\CashflowPage(
 		$data->cAssetGrant = \asset\AssetLib::getAllGrants();
 		$data->cAssetToLinkToGrant = \asset\AssetLib::getAllAssetsToLinkToGrant();
 
-		// On regarde si on trouve un tiers qui correspond ainsi que des factures
-		$cThirdParty = \account\ThirdPartyLib::getAll(new Search());
-		$data->cInvoice = \bank\CashflowLib::searchInvoices($cThirdParty, $data->eCashflow);
-
 		// Payment methods
 		$data->cPaymentMethod = \payment\MethodLib::getByFarm($data->eFarm, NULL, NULL, NULL);
 

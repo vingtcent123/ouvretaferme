@@ -2,6 +2,11 @@ document.delegateEventListener('panelAfterPaint', '#panel-bank-cashflow-allocate
     Cashflow.checkValidationValues();
 });
 
+document.delegateEventListener('change', 'input[name="invoice[id]"]', function(e) {
+    const element = e.delegateTarget;
+    CashflowInvoice.updateInvoiceSelection(element);
+});
+
 class Cashflow {
 
     static recalculateAmounts(excludeIndex) {
@@ -250,6 +255,24 @@ class CashflowAttach {
         } else {
             qs('#cashflow-attach-difference-warning').classList.add('hide');
         }
+
+    }
+}
+
+class CashflowInvoice {
+
+    // Nécessaire pour un comportement identique à un bouton radio avec un unselect.
+    static updateInvoiceSelection(element) {
+
+        const isChecked = element.checked;
+        const valueChecked = element.value;
+
+        qsa('input[name="invoice[id]"]', checkbox => {
+            if(isChecked && checkbox.value === valueChecked) {
+                return;
+            }
+            checkbox.checked = false;
+        });
 
     }
 }

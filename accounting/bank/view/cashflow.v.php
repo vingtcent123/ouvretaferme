@@ -37,7 +37,6 @@ new AdaptativeView('allocate', function($data, PanelTemplate $t) {
 		$data->eFarm,
 		$data->eFinancialYear,
 		$data->eCashflow,
-		$data->cInvoice,
 		['grant' => $data->cAssetGrant, 'asset' => $data->cAssetToLinkToGrant],
 		$data->cPaymentMethod,
 	);

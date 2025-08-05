@@ -29,4 +29,5 @@
 19 5 * * * php /var/www/otf/framework/lime.php -e prod -a ouvretaferme selling/cron/clean:pdf
 28 4 * * * php /var/www/otf/framework/lime.php -e prod -a ouvretaferme website/cron/certbot:clean
 3 */12 * * * php /var/www/otf/framework/lime.php -e prod -a ouvretaferme website/cron/certbot:certificate
+5 */2 * * * php /var/www/otf/framework/lime.php -e prod -a ouvretaferme bank/cron/invoices
 47 5 * * * php /var/www/otf/framework/lime.php -e prod -a ouvretaferme dev/cron/error

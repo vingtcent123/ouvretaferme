@@ -16,47 +16,12 @@ class CashflowLib extends CashflowCrud {
 
 	}
 
-	public static function searchInvoices(\Collection $cThirdParty, Cashflow $eCashflow): \Collection {
-
-		// On regarde si on trouve un tiers qui correspond ainsi que des factures
-		$cThirdPartyFiltered = \account\ThirdPartyLib::filterByCashflow($cThirdParty, $eCashflow)->find(fn($e) => $e['weight'] > 0);
-		$cInvoice = new \Collection();
-
-		if($cThirdPartyFiltered->notEmpty()) {
-
-			foreach($cThirdPartyFiltered as $eThirdParty) {
-
-				if($eThirdParty['customer']->notEmpty()) {
-					// On va chercher des factures en attente de ces clients dont le montant correspond à 1€ près
-					$cInvoice->appendCollection(\selling\InvoiceLib::getByCustomer($eThirdParty['customer'])->find(fn($e) => $e['paymentStatus'] === \selling\Invoice::NOT_PAID and abs($e['priceIncludingVat'] - $eCashflow['amount']) < 1));
-				}
-
-			}
-
-		}
-
-		return $cInvoice;
-
-	}
-
 	public static function getAll(\Search $search, bool $hasSort): \Collection {
 
-			$cCashflow = self::applySearch($search)
-				->select(Cashflow::getSelection())
-				->sort($hasSort === TRUE ? $search->buildSort() : ['date' => SORT_DESC, 'fitid' => SORT_DESC])
-				->getCollection();
-
-			$cThirdParty = \account\ThirdPartyLib::getAll(new \Search());
-
-			foreach($cCashflow as &$eCashflow) {
-				if($eCashflow['status'] === Cashflow::WAITING) {
-					$eCashflow['cInvoice'] = self::searchInvoices($cThirdParty, $eCashflow);
-				} else {
-					$eCashflow['cInvoice'] = new \Collection();
-				}
-			}
-
-			return $cCashflow;
+		return self::applySearch($search)
+			->select(Cashflow::getSelection())
+			->sort($hasSort === TRUE ? $search->buildSort() : ['date' => SORT_DESC, 'fitid' => SORT_DESC])
+			->getCollection();
 
 	}
 
