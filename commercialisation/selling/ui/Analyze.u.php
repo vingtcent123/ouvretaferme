@@ -156,9 +156,11 @@ class AnalyzeUi {
 									$h .= '-';
 								}
 							$h .= '</td>';
-							$h .= '<td class="util-annotation">';
+							$h .= '<td>';
 								if($turnover !== NULL) {
-									$h .= ($totalTurnover > 0 ? \util\TextUi::pc($turnover / $totalTurnover * 100) : '-');
+									$h .= '<div class="util-annotation">';
+										$h .= ($totalTurnover > 0 ? \util\TextUi::pc($turnover / $totalTurnover * 100) : '-');
+									$h .= '</div>';
 								}
 							$h .= '</td>';
 
@@ -242,9 +244,9 @@ class AnalyzeUi {
 						$h .= '<td class="text-end">';
 							$h .= \util\TextUi::money($totalTurnover, precision: 0);
 						$h .= '</td>';
-						$h .= '<td class="util-annotation">';
+						$h .= '<td>';
 							if($turnover !== NULL) {
-								$h .= \util\TextUi::pc($turnover / $totalTurnover * 100, 0);
+								$h .= '<div class="util-annotation">'.\util\TextUi::pc($turnover / $totalTurnover * 100, 0).'</div>';
 							}
 						$h .= '</td>';
 
@@ -670,16 +672,20 @@ class AnalyzeUi {
 			$h = '<td class="text-end">';
 				$h .= \util\TextUi::money($eItem['turnover'], precision: 0);
 			$h .= '</td>';
-			$h .= '<td class="util-annotation">';
-				$h .= ($turnover > 0) ? \util\TextUi::pc($eItem['turnover'] / $turnover * 100) : '-';
+			$h .= '<td>';
+				$h .= '<div class="util-annotation">';
+					$h .= ($turnover > 0) ? \util\TextUi::pc($eItem['turnover'] / $turnover * 100) : '-';
+				$h .= '</div>';
 			$h .= '</td>';
 
 			if($eItemBefore->notEmpty()) {
 				$h .= '<td class="text-end">';
 					$h .= \util\TextUi::money($eItemBefore['turnover'], precision: 0);
 				$h .= '</td>';
-				$h .= '<td class="util-annotation">';
-					$h .= ($turnoverBefore > 0) ? \util\TextUi::pc($eItemBefore['turnover'] / $turnoverBefore * 100, 0) : '-';
+				$h .= '<td>';
+					$h .= '<div class="util-annotation">';
+						$h .= ($turnoverBefore > 0) ? \util\TextUi::pc($eItemBefore['turnover'] / $turnoverBefore * 100, 0) : '-';
+					$h .= '</div>';
 				$h .= '</td>';
 			} else {
 				$h .= '<td class="text-end">-</td>';
@@ -786,8 +792,10 @@ class AnalyzeUi {
 			$h = '<td class="text-end">';
 				$h .= \util\TextUi::money($eItem['turnover'], precision: 0);
 			$h .= '</td>';
-			$h .= '<td class="util-annotation">';
-				$h .= ($turnover > 0 ? \util\TextUi::pc($eItem['turnover'] / $turnover * 100) : '-');
+			$h .= '<td>';
+				$h .= '<div class="util-annotation">';
+					$h .= ($turnover > 0 ? \util\TextUi::pc($eItem['turnover'] / $turnover * 100) : '-');
+				$h .= '</div>';
 			$h .= '</td>';
 
 			if($eItemBefore->notEmpty()) {

@@ -93,9 +93,11 @@ class AnalyzeUi {
 									$h .= '-';
 								}
 							$h .= '</td>';
-							$h .= '<td class="util-annotation">';
+							$h .= '<td>';
 								if($time !== NULL) {
-									$h .= \util\TextUi::pc($time / $globalTime * 100, 0);
+									$h .= '<div class="util-annotation">';
+										$h .= \util\TextUi::pc($time / $globalTime * 100, 0);
+									$h .= '</div>';
 								}
 							$h .= '</td>';
 
