@@ -18,6 +18,6 @@ new AdaptativeView('index', function($data, FarmTemplate $t) {
 	);
 
 	echo new \journal\VatUi()->getSearch($data->search, $data->eFinancialYear, $data->eThirdParty);
-	echo new \journal\VatUi()->getJournal($data->eFarm, $data->eFinancialYear, $data->operations, $data->vatDeclarationData, $data->search);
+	echo new \journal\VatUi()->getJournal($data->eFarm, $data->eFinancialYear, $data->operations, $data->vatDeclarationData, $data->currentVatPeriod, $data->search);
 
 });

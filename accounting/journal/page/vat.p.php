@@ -44,6 +44,8 @@ new Page(function($data) {
 			'cOperationWaiting' => \journal\OperationLib::getAllForVatDeclaration($search),
 		];
 
+		$data->currentVatPeriod = \journal\VatDeclarationLib::calculateCurrentPeriod($data->eFinancialYear);
+
 		throw new ViewAction($data);
 
 	})

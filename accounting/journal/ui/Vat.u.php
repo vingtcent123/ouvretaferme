@@ -114,6 +114,7 @@ Class VatUi {
 		\account\FinancialYear $eFinancialYear,
 		array $operations,
 		array $vatDeclarationData,
+		?array $currentVatPeriod,
 		\Search $search = new \Search(),
 	): string {
 
@@ -142,7 +143,7 @@ Class VatUi {
 			$h .= '</div>';
 
 			$h .= '<div class="tab-panel" data-tab="vat-statement">';
-				$h .= $this->getStatementContainer($eFarm, $vatDeclarationData, $eFinancialYear);
+				$h .= $this->getStatementContainer($eFarm, $vatDeclarationData, $eFinancialYear, $currentVatPeriod);
 			$h .= '</div>';
 
 		$h .= '</div>';
@@ -151,7 +152,7 @@ Class VatUi {
 
 	}
 
-	private function getStatementContainer(\farm\Farm $eFarm, array $vatDeclarationData, \account\FinancialYear $eFinancialYear): string {
+	private function getStatementContainer(\farm\Farm $eFarm, array $vatDeclarationData, \account\FinancialYear $eFinancialYear, ?array $currentVatPeriod): string {
 
 		$cVatDeclaration = $vatDeclarationData['cVatDeclaration'];
 		$cOperationWaiting = $vatDeclarationData['cOperationWaiting'];
@@ -160,7 +161,7 @@ Class VatUi {
 
 		$h .= '<h3>'.s("Déclarations de TVA").'</h3>';
 
-		$h .= self::getVatDeclarations($eFinancialYear, $eFarm, $cVatDeclaration);
+		$h .= self::getVatDeclarations($eFinancialYear, $eFarm, $cVatDeclaration, $currentVatPeriod);
 
 		if($cOperationWaiting->count() > 0) {
 
@@ -184,13 +185,28 @@ Class VatUi {
 
 	}
 
-	private function getVatDeclarations(\account\FinancialYear $eFinancialYear, \farm\Farm $eFarm, \Collection $cVatDeclaration): string {
+	private function getVatDeclarations(\account\FinancialYear $eFinancialYear, \farm\Farm $eFarm, \Collection $cVatDeclaration, ?array $currentVatPeriod): string {
+
+		$currentText = $currentVatPeriod !== NULL
+			? s("La prochaine période à déclarer commence le {startDate} et se termine le {endDate}.", [
+				'startDate' => '<b>'.\util\DateUi::numeric($currentVatPeriod['start']).'</b>',
+				'endDate' => '<b>'.\util\DateUi::numeric($currentVatPeriod['end']).'</b>',
+			])
+		 : '';
 
 		if($cVatDeclaration->count() === 0) {
-			return '<div class="util-info">'.s("Vous n'avez pas encore déclaré la TVA pendant cet exercice comptable.").'</div><div class="util-block-help">'.s("La TVA peut être déclarée une fois la période révolue.<br />Pour mettre à jour la fréquence de déclaration, rendez-vous dans Comptabilité > Paramétrage > Les exercices comptables > <link>Modifier</link>.", ['link' => '<a href="'.\company\CompanyUi::urlAccount($eFarm).'/financialYear/:update?id='.$eFinancialYear['id'].'">']).'</div>';
+
+			return '<div class="util-info">'.s("Vous n'avez pas encore déclaré la TVA pendant cet exercice comptable.").'<br />'.$currentText.'</div>'
+				.'<div class="util-block-help">'
+					.s("La TVA peut être déclarée une fois la période révolue.<br />Pour mettre à jour la fréquence de déclaration, rendez-vous dans Comptabilité > Paramétrage > Les exercices comptables > <link>Modifier</link>.",
+					['link' => '<a href="'.\company\CompanyUi::urlAccount($eFarm).'/financialYear/:update?id='.$eFinancialYear['id'].'">'])
+				.'</div>';
+
 		}
 
-		$h = '<table class="tr-even td-vertical-top tr-hover table-bordered">';
+		$h = '<div class="util-info">'.$currentText.'</div>';
+
+		$h .= '<table class="tr-even td-vertical-top tr-hover table-bordered">';
 
 			$h .= '<thead class="thead-sticky">';
 				$h .= '<tr>';

@@ -112,9 +112,46 @@ class VatDeclarationLib extends VatDeclarationCrud {
 		return $allPeriods;
 
 	}
-	public static function calculateLastPeriod(\account\FinancialYear $eFinancialYear): ?array {
 
-		$now = new \DateTime('today');
+	public static function calculateCurrentPeriod(\account\FinancialYear $eFinancialYear): ?array {
+
+		$today = date('Y-m-d');
+		// Si aujourd'hui est avant le début de l'année comptable ou après la fin de l'année comptable, rien à faire
+		if($today < $eFinancialYear['startDate'] or $today > $eFinancialYear['endDate']) {
+			return NULL;
+		}
+
+		// Calcule les intervalles selon la périodicité
+		$intervalSpec = match ($eFinancialYear['vatFrequency']) {
+			\account\FinancialYearElement::MONTHLY => '1 month',
+			\account\FinancialYearElement::QUARTERLY => '3 month',
+			\account\FinancialYearElement::ANNUALLY => '1 year',
+			default => throw new \Exception('Invalid vatFrequency')
+		};
+
+		$startTime = strtotime($eFinancialYear['startDate']);
+		$startDate = date('Y-m-d', $startTime);
+		$endTime = strtotime('+'.$intervalSpec.' - 1 day', $startTime);
+		$endDate = date('Y-m-d', $endTime);
+
+		$lastPeriod = NULL;
+
+		// Parcourt les périodes tant que la fin de la période est avant aujourd'hui et avant la date de fin
+		while ($endDate <=$eFinancialYear['endDate'] and $endDate <= $eFinancialYear['endDate']) {
+
+			if($startDate <= $today and $endDate >= $today) {
+				return ['start' => $startDate, 'end' => $endDate];
+			}
+
+			$startDate = date('Y-m-d', strtotime('+ '.$intervalSpec, strtotime($startDate)));
+			$endDate = date('Y-m-d', strtotime('+'.$intervalSpec.' - 1 day', strtotime($startDate)));
+
+		}
+
+		return NULL;
+	}
+
+	public static function calculateLastPeriod(\account\FinancialYear $eFinancialYear): ?array {
 
 		// Si la période de début est après la date de fin ou aujourd'hui, rien à faire
 		if ($eFinancialYear['startDate'] >= $eFinancialYear['endDate'] or $eFinancialYear['startDate'] > date('y-m-d')) {
