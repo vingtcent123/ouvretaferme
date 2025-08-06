@@ -167,17 +167,12 @@
 	})
 	->get('/ferme/{id}/campagnes', function($data) {
 
-		$data->eFarm->validate('canSelling');
+		$data->eFarm->validate('canCommunication');
 
 		$data->page = GET('page', 'int');
 
-		$data->search = new Search([
-			'name' => GET('name'),
-			'email' => GET('email'),
-			'category' => GET('category')
-		], GET('sort', default: 'lastName'));
-
-		[$data->cCustomer, $data->nCustomer] = \selling\CustomerLib::getByFarm($data->eFarm, selectPrices: TRUE, selectSales: TRUE, selectInvite: TRUE, page: $data->page, search: $data->search);
+		$data->nCampaign = \mail\CampaignLib::countByFarm($data->eFarm);
+		$data->cCampaign = \mail\CampaignLib::getByFarm($data->eFarm, $data->page);
 
 		throw new ViewAction($data);
 

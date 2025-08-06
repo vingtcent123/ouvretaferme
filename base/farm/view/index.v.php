@@ -562,6 +562,24 @@ new AdaptativeView('/ferme/{id}/contacts', function($data, FarmTemplate $t) {
 
 });
 
+new AdaptativeView('/ferme/{id}/campagnes', function($data, FarmTemplate $t) {
+
+	$t->nav = 'communications';
+	$t->subNav = 'mailing';
+
+	$t->title = s("Campagnes de {value}", $data->eFarm['name']);
+	$t->canonical = \farm\FarmUi::urlCommunicationsMailing($data->eFarm);
+
+	$h = '<div class="util-action">';
+		$h .= '<h1>'.s("Campagnes").' <span class="util-counter">'.$data->nCampaign.'</span></h1>';
+	$h .= '</div>';
+
+	$t->mainTitle = $h;
+
+	echo new \mail\CampaignUi()->getList($data->eFarm, $data->cCampaign, $data->nCampaign, $data->page);
+
+});
+
 new AdaptativeView('/ferme/{id}/boutiques', function($data, FarmTemplate $t) {
 
 	$t->nav = 'shop';

@@ -7,6 +7,9 @@ abstract class CampaignElement extends \Element {
 
 	private static ?CampaignModel $model = NULL;
 
+	const PRIVATE = 'private';
+	const PRO = 'pro';
+
 	public static function getSelection(): array {
 		return Campaign::model()->getProperties();
 	}
@@ -38,15 +41,96 @@ class CampaignModel extends \ModuleModel {
 		$this->properties = array_merge($this->properties, [
 			'id' => ['serial32', 'cast' => 'int'],
 			'farm' => ['element32', 'farm\Farm', 'cast' => 'element'],
+			'toNewsletter' => ['bool', 'cast' => 'bool'],
+			'toType' => ['enum', [\mail\Campaign::PRIVATE, \mail\Campaign::PRO], 'null' => TRUE, 'cast' => 'enum'],
+			'toShop' => ['element32', 'shop\Shop', 'null' => TRUE, 'cast' => 'element'],
+			'toGroup' => ['element32', 'selling\Group', 'null' => TRUE, 'cast' => 'element'],
+			'to' => ['json', 'cast' => 'array'],
+			'subject' => ['text24', 'min' => 0, 'max' => NULL, 'null' => TRUE, 'cast' => 'string'],
+			'html' => ['text24', 'min' => 0, 'max' => NULL, 'null' => TRUE, 'cast' => 'string'],
+			'text' => ['text24', 'min' => 0, 'max' => NULL, 'null' => TRUE, 'cast' => 'string'],
+			'sent' => ['int32', 'min' => 0, 'max' => NULL, 'cast' => 'int'],
+			'delivered' => ['int32', 'min' => 0, 'max' => NULL, 'cast' => 'int'],
+			'opened' => ['int32', 'min' => 0, 'max' => NULL, 'cast' => 'int'],
+			'failed' => ['int32', 'min' => 0, 'max' => NULL, 'cast' => 'int'],
+			'spam' => ['int32', 'min' => 0, 'max' => NULL, 'cast' => 'int'],
+			'scheduledAt' => ['datetime', 'cast' => 'string'],
+			'sentAt' => ['datetime', 'cast' => 'string'],
+			'createdAt' => ['datetime', 'cast' => 'string'],
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'farm'
+			'id', 'farm', 'toNewsletter', 'toType', 'toShop', 'toGroup', 'to', 'subject', 'html', 'text', 'sent', 'delivered', 'opened', 'failed', 'spam', 'scheduledAt', 'sentAt', 'createdAt'
 		]);
 
 		$this->propertiesToModule += [
 			'farm' => 'farm\Farm',
+			'toShop' => 'shop\Shop',
+			'toGroup' => 'selling\Group',
 		];
+
+	}
+
+	public function getDefaultValue(string $property) {
+
+		switch($property) {
+
+			case 'toNewsletter' :
+				return FALSE;
+
+			case 'sent' :
+				return 0;
+
+			case 'delivered' :
+				return 0;
+
+			case 'opened' :
+				return 0;
+
+			case 'failed' :
+				return 0;
+
+			case 'spam' :
+				return 0;
+
+			case 'createdAt' :
+				return new \Sql('NOW()');
+
+			default :
+				return parent::getDefaultValue($property);
+
+		}
+
+	}
+
+	public function encode(string $property, $value) {
+
+		switch($property) {
+
+			case 'toType' :
+				return ($value === NULL) ? NULL : (string)$value;
+
+			case 'to' :
+				return $value === NULL ? NULL : json_encode($value, JSON_UNESCAPED_UNICODE);
+
+			default :
+				return parent::encode($property, $value);
+
+		}
+
+	}
+
+	public function decode(string $property, $value) {
+
+		switch($property) {
+
+			case 'to' :
+				return $value === NULL ? NULL : json_decode($value, TRUE);
+
+			default :
+				return parent::decode($property, $value);
+
+		}
 
 	}
 
@@ -64,6 +148,70 @@ class CampaignModel extends \ModuleModel {
 
 	public function whereFarm(...$data): CampaignModel {
 		return $this->where('farm', ...$data);
+	}
+
+	public function whereToNewsletter(...$data): CampaignModel {
+		return $this->where('toNewsletter', ...$data);
+	}
+
+	public function whereToType(...$data): CampaignModel {
+		return $this->where('toType', ...$data);
+	}
+
+	public function whereToShop(...$data): CampaignModel {
+		return $this->where('toShop', ...$data);
+	}
+
+	public function whereToGroup(...$data): CampaignModel {
+		return $this->where('toGroup', ...$data);
+	}
+
+	public function whereTo(...$data): CampaignModel {
+		return $this->where('to', ...$data);
+	}
+
+	public function whereSubject(...$data): CampaignModel {
+		return $this->where('subject', ...$data);
+	}
+
+	public function whereHtml(...$data): CampaignModel {
+		return $this->where('html', ...$data);
+	}
+
+	public function whereText(...$data): CampaignModel {
+		return $this->where('text', ...$data);
+	}
+
+	public function whereSent(...$data): CampaignModel {
+		return $this->where('sent', ...$data);
+	}
+
+	public function whereDelivered(...$data): CampaignModel {
+		return $this->where('delivered', ...$data);
+	}
+
+	public function whereOpened(...$data): CampaignModel {
+		return $this->where('opened', ...$data);
+	}
+
+	public function whereFailed(...$data): CampaignModel {
+		return $this->where('failed', ...$data);
+	}
+
+	public function whereSpam(...$data): CampaignModel {
+		return $this->where('spam', ...$data);
+	}
+
+	public function whereScheduledAt(...$data): CampaignModel {
+		return $this->where('scheduledAt', ...$data);
+	}
+
+	public function whereSentAt(...$data): CampaignModel {
+		return $this->where('sentAt', ...$data);
+	}
+
+	public function whereCreatedAt(...$data): CampaignModel {
+		return $this->where('createdAt', ...$data);
 	}
 
 

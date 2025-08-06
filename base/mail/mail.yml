@@ -1,6 +1,22 @@
 Campaign:
   id: serial32
   farm: farm\Farm
+  toNewsletter: bool = FALSE
+  toType: ?enum(PRIVATE, PRO)
+  toShop: ?shop\Shop
+  toGroup: ?selling\Group
+  to: json
+  subject: ?text24(0, null)
+  html: ?text24(0, null)
+  text: ?text24(0, null)
+  sent: int(0, null) = 0
+  delivered: int(0, null) = 0
+  opened: int(0, null) = 0
+  failed: int(0, null) = 0
+  spam: int(0, null) = 0
+  scheduledAt: datetime
+  sentAt: datetime
+  createdAt: datetime = SPECIAL(now)
 
 Contact:
   id: serial32
