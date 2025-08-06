@@ -4,5 +4,5 @@ new Page()
 
 		\bank\CashflowInvoiceLib::associateInvoicesToCashflow();
 
-	}, interval: '5 */2 * * *');
+	}, interval: '5 */'.\bank\CashflowInvoiceLib::DELAY_ASSOCIATE_INVOICES.' * * *');
 ?>

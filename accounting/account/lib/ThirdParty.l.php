@@ -28,6 +28,15 @@ class ThirdPartyLib extends ThirdPartyCrud {
 
 	}
 
+	public static function getByCustomer(\selling\Customer $eCustomer): ThirdParty|\Element {
+
+		return ThirdParty::model()
+	    ->select(ThirdParty::getSelection())
+	    ->whereCustomer($eCustomer)
+	    ->get();
+
+	}
+
 	public static function getByVatNumber(string $vatNumber): ThirdParty|\Element {
 
 		return ThirdParty::model()
@@ -46,34 +55,45 @@ class ThirdPartyLib extends ThirdPartyCrud {
 
 	}
 
-	public static function filterByCashflow(\Collection $cThirdParty, \bank\Cashflow $eCashflow): \Collection {
+	public static function extractWeightByCashflow(ThirdParty $eThirdParty, \bank\Cashflow $eCashflow): int {
 
 		$memoItems = explode(' ', $eCashflow['memo']);
 
-		foreach($cThirdParty as &$eThirdParty) {
-			$eThirdParty['weight'] = 0;
-			foreach($memoItems as $memoItem) {
-				if(mb_strlen($memoItem) < 3) {
-					continue;
-				}
+		$weight = 0;
 
-				$memoItem = mb_strtolower($memoItem);
-
-				if(strtolower($eThirdParty['name']) === strtolower($memoItem)) {
-
-					$eThirdParty['weight'] += 50;
-
-					// On a déjà vu ce terme au moins 2 fois dans des allocations précédentes
-				} else if(isset($eThirdParty['memos'][$memoItem]) and $eThirdParty['memos'][$memoItem] >= 2) {
-
-					$eThirdParty['weight'] += 10 * $eThirdParty['memos'][$memoItem];
-
-				} else if(mb_strlen($memoItem) > 3 and mb_strpos(strtolower($eThirdParty['name']), strtolower($memoItem)) !== FALSE) {
-
-					$eThirdParty['weight'] += levenshtein(strtolower($eThirdParty['name']), strtolower($memoItem));
-
-				}
+		foreach($memoItems as $memoItem) {
+			if(mb_strlen($memoItem) < 3) {
+				continue;
 			}
+
+			$memoItem = mb_strtolower($memoItem);
+
+			if(strtolower($eThirdParty['name']) === strtolower($memoItem)) {
+
+				$weight += 50;
+
+				// On a déjà vu ce terme au moins 2 fois dans des allocations précédentes
+			} else if(isset($eThirdParty['memos'][$memoItem]) and $eThirdParty['memos'][$memoItem] >= 2) {
+
+				$weight += 10 * $eThirdParty['memos'][$memoItem];
+
+			} else if(mb_strlen($memoItem) > 3 and mb_strpos(strtolower($eThirdParty['name']), strtolower($memoItem)) !== FALSE) {
+
+				// Plus il faut modifier, moins y'a de chances que ça soit le bon tiers.
+				$weight -= levenshtein(strtolower($eThirdParty['name']), strtolower($memoItem));
+
+			}
+		}
+
+		return $weight;
+
+	}
+
+	public static function filterByCashflow(\Collection $cThirdParty, \bank\Cashflow $eCashflow): \Collection {
+
+		foreach($cThirdParty as &$eThirdParty) {
+
+			$eThirdParty['weight'] = self::extractWeightByCashflow($eThirdParty, $eCashflow);
 
 		}
 

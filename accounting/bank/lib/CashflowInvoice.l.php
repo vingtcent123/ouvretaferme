@@ -3,11 +3,45 @@ namespace bank;
 
 class CashflowInvoiceLib extends CashflowInvoice {
 
+	const DELAY_ASSOCIATE_INVOICES = 2; // En heures
+	const AMOUNT_MARGIN = 1; // En euros
+
 	public static function delegateByInvoice(): CashflowInvoiceModel {
 
 		return CashflowInvoice::model()
 			->select(CashflowInvoice::getSelection())
 			->delegateCollection('cashflow', 'id');
+
+	}
+
+	public static function associateInvoiceToCashflow(\selling\Invoice $eInvoice): void {
+
+		$eInvoice->expects(['farm', 'customer']);
+
+		$eFarm = $eInvoice['farm'];
+
+		if($eFarm->hasAccounting() === FALSE) {
+			return;
+		}
+
+		\company\CompanyLib::connectSpecificDatabaseAndServer($eInvoice['farm']);
+
+		$cCashflow = self::searchCashflows($eInvoice);
+
+		if($cCashflow->empty()) {
+			return;
+		}
+
+		foreach($cCashflow as $eCashflow) {
+
+			$eCashflowInvoice = new CashflowInvoice([
+				'cashflow' => $eCashflow,
+				'invoice' => $eInvoice,
+			]);
+
+			CashflowInvoice::model()->option('add-replace')->insert($eCashflowInvoice);
+
+		}
 
 	}
 
@@ -21,13 +55,18 @@ class CashflowInvoiceLib extends CashflowInvoice {
 			$eFarm = $eCompany['farm'];
 			\company\CompanyLib::connectSpecificDatabaseAndServer($eFarm);
 
+			// On récupère toutes les opérations bancaires importées il y a moins de 2h
+
 			$cThirdParty = \account\ThirdPartyLib::getAll(new \Search());
 
 			$eFinancialYear = \account\FinancialYearLib::getOpenFinancialYears()->first();
 			$search = new \Search([
 				'financialYear' => $eFinancialYear,
 				'status' => Cashflow::WAITING,
-				]);
+				'createdAt' => new \Sql('NOW() - INTERVAL '.self::DELAY_ASSOCIATE_INVOICES.' HOUR'),
+				'type' => Cashflow::CREDIT,
+			]);
+
 			$cCashflow = CashflowLib::getAll($search, FALSE);
 
 			foreach($cCashflow as $eCashflow) {
@@ -47,6 +86,36 @@ class CashflowInvoiceLib extends CashflowInvoice {
 			}
 
 		}
+
+	}
+
+	private static function searchCashflows(\selling\Invoice $eInvoice): \Collection {
+
+		$eThirdParty = \account\ThirdPartyLib::getByCustomer($eInvoice['customer']);
+
+		$search = new \Search([
+			'status' => Cashflow::WAITING,
+			'type' => Cashflow::CREDIT,
+			'amountMin' => $eInvoice['priceIncludingVat'] - self::AMOUNT_MARGIN,
+			'amountMax' => $eInvoice['priceIncludingVat'] + self::AMOUNT_MARGIN,
+		]);
+
+		$cCashflowRaw = CashflowLib::getAll($search, FALSE);
+
+		$cCashflow = new \Collection();
+
+		foreach($cCashflowRaw as $eCashflow) {
+
+			$weight = \account\ThirdPartyLib::extractWeightByCashflow($eThirdParty, $eCashflow);
+
+			if($weight > 0) {
+				$cCashflow->append($eCashflow);
+			}
+
+		}
+
+
+		return $cCashflow;
 
 	}
 

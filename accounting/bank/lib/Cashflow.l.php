@@ -12,7 +12,10 @@ class CashflowLib extends CashflowCrud {
 			->whereDate('<=', fn() => $search->get('financialYear')['endDate'], if: $search->has('financialYear'))
 			->whereFitid('LIKE', '%'.$search->get('fitid').'%', if: $search->get('fitid'))
 			->whereMemo('LIKE', '%'.mb_strtolower($search->get('memo') ?? '').'%', if: $search->get('memo'))
-			->whereStatus('=', $search->get('status'), if: $search->get('status'));
+			->whereCreatedAt('<=', $search->get('createdAt'), if: $search->get('createdAt'))
+			->whereStatus('=', $search->get('status'), if: $search->get('status'))
+			->where('amount BETWEEN '.$search->get('amountMin').' AND '.$search->get('amountMax'), if: ($search->has('amountMin') and $search->has('amountMax')))
+		;
 
 	}
 
