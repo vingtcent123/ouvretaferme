@@ -114,7 +114,7 @@ class ItemUi {
 						$h .= s("Articles");
 					}
 
-					$articles = $cItem->count() + ($eSale['discount'] > 0 ? 1 : 0);
+					$articles = $cItem->count() + ($eSale['shipping'] !== NULL ? 1 : 0);
 
 					$h .= '  <span class="util-badge bg-primary">'.$articles.'</span>';
 
