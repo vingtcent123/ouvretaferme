@@ -1529,9 +1529,9 @@ class TaskLib extends TaskCrud {
 
 		}
 
-		if(array_intersect(['plannedWeek', 'doneWeek'], $properties)) {
+		if(array_intersect(['plannedWeek', 'doneWeek', 'action'], $properties)) {
 
-			SeriesLib::recalculate($e['farm'], $e['series'], $e['action']);
+			SeriesLib::recalculate($e['farm'], $e['series'], new \farm\Action() /* On force le recalcul */);
 
 		}
 
