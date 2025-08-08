@@ -2886,7 +2886,7 @@ div.util-buttons:not(:last-child) {
 
 }
 
-div.util-buttons > a.util-button {
+div.util-buttons > .util-button {
 	padding: 1rem;
 	border-radius: var(--radius);
 	display: grid;
@@ -2899,25 +2899,25 @@ div.util-buttons > a.util-button {
 	border: 3px solid var(--secondary);
 }
 
-div.util-buttons > a.util-button.util-button-danger {
+div.util-buttons > .util-button.util-button-danger {
 	border-color: var(--danger);
 	color: var(--danger);
 }
 
-div.util-buttons > a.util-button:hover {
+div.util-buttons > .util-button:hover {
 	border-color: var(--text);
 	color: var(--text);
 }
 
-div.util-buttons > a.util-button.disabled {
+div.util-buttons > .util-button.disabled {
 	opacity: 0.3;
 }
 
-div.util-buttons > a.util-button > svg {
+div.util-buttons > .util-button > svg {
 	font-size: 5rem;
 }
 
-div.util-buttons > a.util-button div.util-button-text {
+div.util-buttons > .util-button div.util-button-text {
 	word-wrap: break-word;
 	line-height: 1.4;
 	font-size: 0.9rem;
@@ -2925,7 +2925,7 @@ div.util-buttons > a.util-button div.util-button-text {
 	grid-column-start: 1;
 }
 
-div.util-buttons > a.util-button h4 {
+div.util-buttons > .util-button h4 {
 	margin-bottom: 0.5rem;
 	line-height: 1.3;
 }

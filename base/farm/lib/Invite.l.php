@@ -134,14 +134,6 @@ class InviteLib extends InviteCrud {
 
 		$eUser->expects(['email']);
 
-		// Le cas où le Farmer est associé à un utilisateur existant est géré à part
-		if(
-			$e['type'] === Invite::FARMER and
-			$e['farmer']['user']->notEmpty()
-		) {
-			return FALSE;
-		}
-
 		Invite::model()->beginTransaction();
 
 		$affected = Invite::model()

@@ -235,7 +235,7 @@ class FarmerUi {
 
 					foreach($cFarmerInvite as $eFarmer) {
 
-						$h .= '<div class="util-button bg-primary">';
+						$h .= '<div class="util-button">';
 							$h .= '<div>';
 								$h .= '<div>';
 									if($eFarmer['invite']->empty()) {
@@ -247,10 +247,10 @@ class FarmerUi {
 									}
 								$h .= '</div>';
 								$h .= '<div class="mt-1">';
-									$h .= '<a data-ajax="/farm/farmer:doDeleteInvite" post-id="'.$eFarmer['id'].'" class="btn btn-transparent">';
+									$h .= '<a data-ajax="/farm/farmer:doDeleteInvite" post-id="'.$eFarmer['id'].'" class="btn btn-secondary">';
 										$h .= s("Supprimer");
 									$h .= '</a> ';
-									$h .= '<a data-ajax="/farm/invite:doExtends" post-id="'.$eFarmer['invite']['id'].'" data-confirm="'.s("Voulez-vous vraiment renvoyer un mail d'invitation à cette personne ?").'" class="btn btn-transparent">';
+									$h .= '<a data-ajax="/farm/invite:doExtends" post-id="'.$eFarmer['invite']['id'].'" data-confirm="'.s("Voulez-vous vraiment renvoyer un mail d'invitation à cette personne ?").'" class="btn btn-secondary">';
 										$h .= s("Renvoyer l'invitation");
 									$h .= '</a>';
 								$h .= '</div>';
