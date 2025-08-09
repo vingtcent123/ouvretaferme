@@ -58,10 +58,26 @@ new AdaptativeView('doUpdateOptInByEmail', function($data, MainTemplate $t) {
 });
 
 new JsonView('doUpdateActive', function($data, AjaxTemplate $t) {
-	$t->qs('#contact-switch-'.$data->e['id'])->toggleSwitch('post-active', [TRUE, FALSE]);
+	$t->qs('#contact-active-switch-'.$data->e['id'])->toggleSwitch('post-active', [TRUE, FALSE]);
+});
+
+new JsonView('doUpdateNewsletter', function($data, AjaxTemplate $t) {
+	$t->qs('#contact-newsletter-switch-'.$data->e['id'])->toggleSwitch('post-newsletter', [TRUE, FALSE]);
 });
 
 new AdaptativeView('updateOptIn', function($data, PanelTemplate $t) {
 	return new \mail\ContactUi()->updateOptIn($data->cContact);
+});
+
+new JsonView('query', function($data, AjaxTemplate $t) {
+
+	$results = $data->cContact->makeArray(fn($eContact) => \mail\ContactUi::getAutocomplete($eContact));
+
+	if($data->hasNew) {
+		$results[] = \mail\ContactUi::getAutocompleteCreate($data->eFarm);
+	}
+
+	$t->push('results', $results);
+
 });
 ?>

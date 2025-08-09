@@ -51,6 +51,10 @@ class ContactUi {
 					$h .= $form->select('optIn', [
 						'no' => s("Refus de consentement")
 					], $search->get('optIn'), ['placeholder' => s("Tous consentements")]);
+					$h .= $form->select('newsletter', [
+						'yes' => s("Inscrits à la newsletter"),
+						'no' => s("Non inscrits à la newsletter"),
+					], $search->get('newsletter'), ['placeholder' => s("Newsletter ?")]);
 					$h .= $form->select('category', [
 						\selling\Customer::PRO => s("Clients professionnels"),
 						\selling\Customer::PRIVATE => s("Clients particuliers")
@@ -63,6 +67,71 @@ class ContactUi {
 		$h .= '</div>';
 
 		return $h;
+
+	}
+
+	public function query(\PropertyDescriber $d, bool $multiple = FALSE) {
+
+		$d->prepend ??= \Asset::icon('at');
+		$d->field = 'autocomplete';
+
+		$d->placeholder ??= s("Tapez une adresse e-mail");
+		$d->multiple = $multiple;
+		$d->group += ['wrapper' => 'contact'];
+
+		$d->autocompleteUrl = '/mail/contact:query';
+		$d->autocompleteResults = function(Contact $e) {
+			return self::getAutocomplete($e);
+		};
+
+	}
+
+	public static function getAutocomplete(Contact $eContact): array {
+
+		\Asset::css('media', 'media.css');
+		
+		$html = '<div>';
+			$html .= encode($eContact['email']).'<br/>';
+
+			if($eContact['cCustomer']->notEmpty()) {
+
+				$html .= '<small class="color-muted">';
+
+					$position = 0;
+
+					foreach($eContact['cCustomer'] as $eCustomer) {
+						if($position++ > 0) {
+							$html .= ' / ';
+						}
+						$html .= $eCustomer->getName();
+					}
+
+				$html .= '</small>';
+
+			}
+
+		$html .= '</div>';
+
+		//$te$eCustomer['name'].' / '.$eCustomer->getTextCategory(short: TRUE);
+		
+		return [
+			'value' => $eContact['email'],
+			'itemHtml' => $html,
+			'itemText' => $eContact['email']
+		];
+
+	}
+
+	public static function getAutocompleteCreate(\farm\Farm $eFarm): array {
+
+		$item = \Asset::icon('plus-circle');
+		$item .= '<div>'.s("Ajouter un nouveau contact").'</div>';
+
+		return [
+			'type' => 'link',
+			'link' => '/mail/contact:create?farm='.$eFarm['id'],
+			'itemHtml' => $item
+		];
 
 	}
 
@@ -120,18 +189,19 @@ class ContactUi {
 
 		}
 
-		$h .= '<div class="stick-md util-overflow-xs">';
+		$h .= '<div class="stick-md util-overflow-sm">';
 
 			$h .= '<table class="contact-item-table tr-even">';
 
-				$h .= '<thead>';
+				$h .= '<thead class="thead-sticky">';
 
 					$h .= '<tr>';
 						$h .= '<th rowspan="2">'.$search->linkSort('email', s("Adresse e-mail")).'</th>';
 						$h .= '<th rowspan="2" class="text-center hide-sm-down">'.$search->linkSort('createdAt', s("Depuis"), SORT_DESC).'</th>';
-						$h .= '<th rowspan="2" class="text-center">'.s("Envoyer<br/>des e-mails").'</th>';
-						$h .= '<th rowspan="2" class="text-center">'.s("Consentement pour<br/>recevoir des e-mails").'</th>';
-						$h .= '<th rowspan="2" class="hide-xl-down">'.$search->linkSort('lastSent', s("Dernier e-mail<br/>envoyé il y a"), SORT_DESC).'</th>';
+						$h .= '<th rowspan="2" class="text-center">'.s("Consentement<br/>pour recevoir<br/>des e-mails").'</th>';
+						$h .= '<th rowspan="2" class="text-center highlight-stick-right">'.s("Envoyer<br/>des e-mails").'</th>';
+						$h .= '<th rowspan="2" class="text-center highlight-stick-left">'.s("Newsletter").'</th>';
+						$h .= '<th rowspan="2" class="hide-xl-down">'.$search->linkSort('lastSent', s("Dernier<br/>e-mail<br/>envoyé"), SORT_DESC).'</th>';
 						$h .= '<th colspan="4" class="text-center hide-md-down">'.s("Statistiques depuis le 14 juin 2025 *").'</th>';
 						$h .= '<th rowspan="2"></th>';
 					$h .= '</tr>';
@@ -178,16 +248,6 @@ class ContactUi {
 						$h .= '</td>';
 
 						$h .= '<td class="text-center">';
-							if($eContact['optIn'] === FALSE) {
-								$h .= '<div class="color-muted">'.s("Impossible").'<br/><small>'.s("(refus du client)").'</small></div>';
-							} else if($eContact['activeCustomer'] === FALSE) {
-								$h .= '<div class="color-muted">'.s("Impossible").'<br/><small>'.s("(client désactivé)").'</small></div>';
-							} else {
-								$h .= $this->toggleActive($eContact);
-							}
-						$h .= '</td>';
-
-						$h .= '<td class="text-center">';
 							if($eContact['optIn'] === NULL) {
 								$h .= \Asset::icon('question-circle');
 							} else if($eContact['optIn'] === TRUE) {
@@ -196,6 +256,25 @@ class ContactUi {
 								$h .= '<div class="color-danger">'.\Asset::icon('x-circle').' '.s("Refus").'</div>';
 							}
 						$h .= '</td>';
+
+						if($eContact['optIn'] === FALSE) {
+							$h .= '<td class="text-center highlight-stick-alone" colspan="2">';
+								$h .= '<div class="color-muted">'.s("Impossible").' <small>'.s("(refus du client)").'</small></div>';
+							$h .= '</td>';
+						} else if($eContact['activeCustomer'] === FALSE) {
+							$h .= '<td class="text-center highlight-stick-alone" colspan="2">';
+								$h .= '<div class="color-muted">'.s("Impossible").' <small>'.s("(client désactivé)").'</small></div>';
+							$h .= '</td>';
+						} else {
+
+							$h .= '<td class="text-center highlight-stick-right">';
+								$h .= $this->toggleActive($eContact);
+							$h .= '</td>';
+							$h .= '<td class="text-center highlight-stick-left">';
+								$h .= $this->toggleNewsletter($eContact);
+							$h .= '</td>';
+
+						}
 
 						$h .= '<td class="hide-xl-down">';
 
@@ -262,12 +341,24 @@ class ContactUi {
 	public function toggleActive(Contact $eContact) {
 
 		return \util\TextUi::switch([
-			'id' => 'contact-switch-'.$eContact['id'],
+			'id' => 'contact-active-switch-'.$eContact['id'],
 			'disabled' => $eContact->canWrite() === FALSE,
 			'data-ajax' => $eContact->canWrite() ? '/mail/contact:doUpdateActive' : NULL,
 			'post-id' => $eContact['id'],
 			'post-active' => $eContact['active'] ? FALSE : TRUE
 		], $eContact['active']);
+
+	}
+
+	public function toggleNewsletter(Contact $eContact) {
+
+		return \util\TextUi::switch([
+			'id' => 'contact-newsletter-switch-'.$eContact['id'],
+			'disabled' => $eContact->canWrite() === FALSE,
+			'data-ajax' => $eContact->canWrite() ? '/mail/contact:doUpdateNewsletter' : NULL,
+			'post-id' => $eContact['id'],
+			'post-newsletter' => $eContact['newsletter'] ? FALSE : TRUE
+		], $eContact['newsletter']);
 
 	}
 

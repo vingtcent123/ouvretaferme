@@ -7,6 +7,10 @@ abstract class CampaignElement extends \Element {
 
 	private static ?CampaignModel $model = NULL;
 
+	const CUSTOMER_TYPE = 'customer-type';
+	const SHOP = 'shop';
+	const GROUP = 'group';
+
 	const PRIVATE = 'private';
 	const PRO = 'pro';
 
@@ -41,8 +45,9 @@ class CampaignModel extends \ModuleModel {
 		$this->properties = array_merge($this->properties, [
 			'id' => ['serial32', 'cast' => 'int'],
 			'farm' => ['element32', 'farm\Farm', 'cast' => 'element'],
+			'source' => ['enum', [\mail\Campaign::CUSTOMER_TYPE, \mail\Campaign::SHOP, \mail\Campaign::GROUP], 'cast' => 'enum'],
 			'toNewsletter' => ['bool', 'cast' => 'bool'],
-			'toType' => ['enum', [\mail\Campaign::PRIVATE, \mail\Campaign::PRO], 'null' => TRUE, 'cast' => 'enum'],
+			'toCustomerType' => ['enum', [\mail\Campaign::PRIVATE, \mail\Campaign::PRO], 'null' => TRUE, 'cast' => 'enum'],
 			'toShop' => ['element32', 'shop\Shop', 'null' => TRUE, 'cast' => 'element'],
 			'toGroup' => ['element32', 'selling\Group', 'null' => TRUE, 'cast' => 'element'],
 			'to' => ['json', 'cast' => 'array'],
@@ -60,7 +65,7 @@ class CampaignModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'farm', 'toNewsletter', 'toType', 'toShop', 'toGroup', 'to', 'subject', 'html', 'text', 'sent', 'delivered', 'opened', 'failed', 'spam', 'scheduledAt', 'sentAt', 'createdAt'
+			'id', 'farm', 'source', 'toNewsletter', 'toCustomerType', 'toShop', 'toGroup', 'to', 'subject', 'html', 'text', 'sent', 'delivered', 'opened', 'failed', 'spam', 'scheduledAt', 'sentAt', 'createdAt'
 		]);
 
 		$this->propertiesToModule += [
@@ -107,7 +112,10 @@ class CampaignModel extends \ModuleModel {
 
 		switch($property) {
 
-			case 'toType' :
+			case 'source' :
+				return ($value === NULL) ? NULL : (string)$value;
+
+			case 'toCustomerType' :
 				return ($value === NULL) ? NULL : (string)$value;
 
 			case 'to' :
@@ -150,12 +158,16 @@ class CampaignModel extends \ModuleModel {
 		return $this->where('farm', ...$data);
 	}
 
+	public function whereSource(...$data): CampaignModel {
+		return $this->where('source', ...$data);
+	}
+
 	public function whereToNewsletter(...$data): CampaignModel {
 		return $this->where('toNewsletter', ...$data);
 	}
 
-	public function whereToType(...$data): CampaignModel {
-		return $this->where('toType', ...$data);
+	public function whereToCustomerType(...$data): CampaignModel {
+		return $this->where('toCustomerType', ...$data);
 	}
 
 	public function whereToShop(...$data): CampaignModel {

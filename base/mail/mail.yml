@@ -1,8 +1,9 @@
 Campaign:
   id: serial32
   farm: farm\Farm
+  source: enum(CUSTOMER_TYPE, SHOP, GROUP)
   toNewsletter: bool = FALSE
-  toType: ?enum(PRIVATE, PRO)
+  toCustomerType: ?enum(PRIVATE, PRO)
   toShop: ?shop\Shop
   toGroup: ?selling\Group
   to: json
@@ -33,6 +34,7 @@ Contact:
   lastFailed: ?datetime
   spam: int(0, null) = 0
   lastSpam: ?datetime
+  newsletter: bool = FALSE
   optIn: ?bool
   active: bool = TRUE
   activeCustomer: ?bool

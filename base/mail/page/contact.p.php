@@ -16,6 +16,7 @@ new \mail\ContactPage()
 
 new \mail\ContactPage()
 	->doUpdateProperties('doUpdateActive', ['active'], fn($data) => throw new ViewAction($data))
+	->doUpdateProperties('doUpdateNewsletter', ['newsletter'], fn($data) => throw new ViewAction($data))
 	->doDelete(fn() => throw new ReloadAction());
 
 new Page()
@@ -68,6 +69,21 @@ new Page()
 		\mail\ContactLib::updateOptIn($data->eUserOnline, POST('farms', 'array'));
 
 		throw new ReloadAction('selling', 'Customer::optInUpdated');
+
+	})
+	->post('query', function($data) {
+
+		$data->eFarm = \farm\FarmLib::getById(POST('farm', '?int'));
+
+		if($data->eFarm->notEmpty()) {
+			$data->eFarm->validate('canWrite');
+		}
+
+		$data->cContact = \mail\ContactLib::getFromQuery(POST('query'), $data->eFarm);
+
+		$data->hasNew = post_exists('new');
+
+		throw new \ViewAction($data);
 
 	});
 ?>

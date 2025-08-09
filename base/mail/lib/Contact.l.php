@@ -25,6 +25,7 @@ class ContactLib extends ContactCrud {
 		return new \Search([
 			'email' => GET('email'),
 			'optIn' => GET('optIn', '?string'),
+			'newsletter' => GET('newsletter', '?string'),
 			'category' => GET('category', [\selling\Customer::PRIVATE, \selling\Customer::PRO]),
 		], GET('sort', default: 'createdAt-'));
 
@@ -102,6 +103,29 @@ class ContactLib extends ContactCrud {
 
 	}
 
+	public static function getFromQuery(string $query, \farm\Farm $eFarm): \Collection {
+
+		return Contact::model()
+			->select([
+				'email',
+				'cCustomer' => \selling\Customer::model()
+					->select('firstName', 'lastName', 'name', 'destination', 'type')
+					->whereFarm($eFarm)
+					->delegateCollection('email', propertyParent: 'email')
+			])
+			->join(\selling\Customer::model(), 'm1.email = m2.email AND m1.farm = m2.farm', 'LEFT')
+			->where('m1.farm', $eFarm)
+			->or(
+				fn() => $this->where('m1.email', 'LIKE', '%'.$query.'%'),
+				fn() => $this->where('m2.name', 'LIKE', '%'.$query.'%'),
+				if: $query !== ''
+			)
+			->group(new \Sql('m1.email'))
+			->sort(new \Sql('m1.email ASC'))
+			->getCollection();
+
+	}
+
 	public static function synchronizeCustomer(\selling\Customer $eCustomer): void {
 
 		$active = \selling\Customer::model()
@@ -145,6 +169,28 @@ class ContactLib extends ContactCrud {
 		Contact::model()
 			->where('m1.email', 'LIKE', '%'.$search->get('email').'%', if: $search->get('email'))
 			->whereOptIn(FALSE, if: $search->get('optIn') === 'no');
+
+		switch($search->get('newsletter')) {
+
+			case 'yes' :
+				Contact::model()
+					->whereNewsletter(TRUE)
+					->or(
+						fn() => $this->whereOptIn(TRUE),
+						fn() => $this->whereOptIn(NULL)
+					);
+
+				break;
+
+			case 'no' :
+				Contact::model()
+					->or(
+						fn() => $this->whereNewsletter(FALSE),
+						fn() => $this->whereOptIn(FALSE)
+					);
+				break;
+
+		}
 
 		if($search->get('export')) {
 
@@ -261,9 +307,10 @@ class ContactLib extends ContactCrud {
 			if($eContact->notEmpty()) {
 
 				$eContact['optIn'] = $optIn;
+				$eContact['newsletter'] = $optIn;
 
 				Contact::model()
-					->select('optIn')
+					->select('optIn', 'newsletter')
 					->update($eContact);
 
 			}

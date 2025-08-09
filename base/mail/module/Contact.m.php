@@ -50,6 +50,7 @@ class ContactModel extends \ModuleModel {
 			'lastFailed' => ['datetime', 'null' => TRUE, 'cast' => 'string'],
 			'spam' => ['int32', 'min' => 0, 'max' => NULL, 'cast' => 'int'],
 			'lastSpam' => ['datetime', 'null' => TRUE, 'cast' => 'string'],
+			'newsletter' => ['bool', 'cast' => 'bool'],
 			'optIn' => ['bool', 'null' => TRUE, 'cast' => 'bool'],
 			'active' => ['bool', 'cast' => 'bool'],
 			'activeCustomer' => ['bool', 'null' => TRUE, 'cast' => 'bool'],
@@ -57,7 +58,7 @@ class ContactModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'farm', 'email', 'lastEmail', 'sent', 'lastSent', 'delivered', 'lastDelivered', 'opened', 'lastOpened', 'failed', 'lastFailed', 'spam', 'lastSpam', 'optIn', 'active', 'activeCustomer', 'createdAt'
+			'id', 'farm', 'email', 'lastEmail', 'sent', 'lastSent', 'delivered', 'lastDelivered', 'opened', 'lastOpened', 'failed', 'lastFailed', 'spam', 'lastSpam', 'newsletter', 'optIn', 'active', 'activeCustomer', 'createdAt'
 		]);
 
 		$this->propertiesToModule += [
@@ -93,6 +94,9 @@ class ContactModel extends \ModuleModel {
 
 			case 'spam' :
 				return 0;
+
+			case 'newsletter' :
+				return FALSE;
 
 			case 'active' :
 				return TRUE;
@@ -169,6 +173,10 @@ class ContactModel extends \ModuleModel {
 
 	public function whereLastSpam(...$data): ContactModel {
 		return $this->where('lastSpam', ...$data);
+	}
+
+	public function whereNewsletter(...$data): ContactModel {
+		return $this->where('newsletter', ...$data);
 	}
 
 	public function whereOptIn(...$data): ContactModel {

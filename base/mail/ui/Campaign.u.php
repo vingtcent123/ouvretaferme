@@ -21,17 +21,17 @@ class CampaignUi {
 
 			$h .= $form->hidden('farm', $eFarm['id']);
 
-			$h .= $form->dynamicGroup($eCampaign, 'email*');
+			$h .= $form->dynamicGroup($eCampaign, 'to*');
 
 			$h .= $form->group(
-				content: $form->submit(\s("Ajouter le campaign"))
+				content: $form->submit(\s("Créer la campagne"))
 			);
 
 		$h .= $form->close();
 
 		return new \Panel(
 			id: 'panel-campaign-create',
-			title: \s("Ajouter un campaign"),
+			title: \s("Programmer une campagne"),
 			body: $h
 		);
 
@@ -103,10 +103,22 @@ class CampaignUi {
 	public static function p(string $property): \PropertyDescriber {
 
 		$d = Campaign::model()->describer($property, [
-			'email' => \s("Adresse e-mail"),
+			'to' => \s("Destinataires"),
 		]);
 
 		switch($property) {
+
+			case 'to' :
+				$d->autocompleteDefault = fn(Campaign $e) => $e['to'] ?? [];
+				$d->autocompleteBody = function(\util\FormUi $form, Campaign $e) {
+					$e->expects(['farm']);
+					return [
+						'farm' => $e['farm']['id']
+					];
+				};
+				new \mail\ContactUi()->query($d, TRUE);
+				$d->group = ['wrapper' => 'to'];
+				break;
 
 
 		}

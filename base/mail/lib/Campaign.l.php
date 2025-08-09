@@ -5,7 +5,7 @@ class CampaignLib extends CampaignCrud {
 
 	public static function getPropertiesCreate(): array {
 
-		return ['email'];
+		return ['toType', 'toShop', 'toGroup'];
 
 	}
 

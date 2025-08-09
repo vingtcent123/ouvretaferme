@@ -203,6 +203,13 @@ div.div-even > *:nth-of-type(odd) {
 		padding-right: 0.75rem;
 	}
 
+	td.highlight-stick-alone,
+	th.highlight-stick-alone {
+		background: linear-gradient(to right, transparent 0, transparent 0.75rem, #8881 0.75rem, #8881 calc(100% - 0.75rem), transparent calc(100% - 0.75rem), transparent 100%);
+		padding-left: 0.75rem;
+		padding-right: 0.75rem;
+	}
+
 }
 
 @media (max-width: 767px) {
@@ -231,6 +238,13 @@ div.div-even > *:nth-of-type(odd) {
 	td.highlight-stick-both,
 	th.highlight-stick-both {
 		background: rgba(127, 127, 127, 0.05);
+		padding-left: 0.5rem;
+		padding-right: 0.5rem;
+	}
+
+	td.highlight-stick-alone,
+	th.highlight-stick-alone {
+		background: linear-gradient(to right, transparent 0, transparent 0.5rem, #8881 0.5rem, #8881 calc(100% - 0.5rem), transparent calc(100% - 0.5rem), transparent 100%);
 		padding-left: 0.5rem;
 		padding-right: 0.5rem;
 	}

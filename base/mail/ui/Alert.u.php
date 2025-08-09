@@ -19,6 +19,8 @@ class AlertUi {
 
 		return match($fqn) {
 
+			'Campaign::created' => s("La campagne de communication par e-mail a bien été programmée !"),
+
 			'Contact::created' => s("Le contact a bien été créé !"),
 			'Contact::createdNewsletter' => s("Votre inscription à la lettre d'information a bien été prise en compte !"),
 

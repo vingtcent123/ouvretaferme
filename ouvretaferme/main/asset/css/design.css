@@ -267,7 +267,7 @@ h5 {
 body {
 	display: flex;
 	flex-direction: column;
-	background: linear-gradient(90deg, var(--background-body) 0, #e8e8ea 100%);
+	background-color: var(--background-body);
 }
 
 @media print {
@@ -655,6 +655,58 @@ div.footer-content-legal {
 	div.footer-content-legal {
 		padding: 1rem;
 		column-gap: 1rem;
+	}
+
+}
+
+thead.thead-sticky {
+	position: sticky;
+	background-color: var(--background-body);
+	top: var(--mainSticky);
+	z-index: 999;
+}
+
+@media (max-width: 449px) {
+
+	.util-overflow-xs thead.thead-sticky {
+		position: relative;
+		top: 0;
+	}
+
+}
+
+@media (max-width: 575px) {
+
+	.util-overflow-sm thead.thead-sticky {
+		position: relative;
+		top: 0;
+	}
+
+}
+
+@media (max-width: 767px) {
+
+	.util-overflow-md thead.thead-sticky {
+		position: relative;
+		top: 0;
+	}
+
+}
+
+@media (max-width: 991px) {
+
+	.util-overflow-lg thead.thead-sticky {
+		position: relative;
+		top: 0;
+	}
+
+}
+
+@media (max-width: 1199px) {
+
+	.util-overflow-xl thead.thead-sticky {
+		position: relative;
+		top: 0;
 	}
 
 }
