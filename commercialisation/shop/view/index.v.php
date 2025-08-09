@@ -66,10 +66,6 @@ new AdaptativeView('updateEmbed', function($data, PanelTemplate $t) {
 
 });
 
-new AdaptativeView('emails', function($data, PanelTemplate $t) {
-	return new \shop\ShopUi()->displayEmails($data->eFarm, $data->emails);
-});
-
 new AdaptativeView('invite', function($data, PanelTemplate $t) {
 	return new \shop\ShopUi()->displayInvite($data->e);
 });

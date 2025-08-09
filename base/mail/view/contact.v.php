@@ -5,6 +5,7 @@ new AdaptativeView('create', function($data, PanelTemplate $t) {
 
 new JsonView('export', function($data, AjaxTemplate $t) {
 	$t->qs('#contact-export')->innerHtml(new \mail\ContactUi()->getExport($data->eFarm, $data->cContact));
+	$t->qs('#contact-export-link')->hide();
 });
 
 new AdaptativeView('/ferme/{id}/optIn', function($data, MainTemplate $t) {

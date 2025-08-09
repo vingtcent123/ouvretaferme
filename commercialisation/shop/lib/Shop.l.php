@@ -123,39 +123,6 @@ class ShopLib extends ShopCrud {
 
 	}
 
-	public static function getEmails(Shop $e): array {
-
-        $cCustomer = \selling\Sale::model()
-            ->select(['customer'])
-            ->whereShop($e)
-            ->wherePreparationStatus(\selling\Sale::DELIVERED)
-            ->group('customer')
-            ->getColumn('customer');
-
-        $emails = \selling\Customer::model()
-            ->select([
-					'email',
-                'user' => ['status']
-            ])
-			  ->join(\mail\Contact::model(), 'm1.farm = m2.farm AND m1.email = m2.email', 'LEFT')
-            ->where('m1.id', 'IN', $cCustomer)
-            ->whereUser('!=', NULL)
-            ->or(
-                fn() => $this->where('m2.optIn', TRUE),
-                fn() => $this->where('m2.optIn', NULL)
-            )
-            ->or(
-                fn() => $this->where('m2.active', TRUE),
-                fn() => $this->where('m2.active', NULL)
-            )
-			  ->getCollection()
-			  ->filter(fn($eCustomer) => $eCustomer['user']['status'] === \user\User::ACTIVE)
-            ->getColumn('email');
-
-        return $emails;
-
-	}
-
 	public static function create(Shop $e): void {
 
 		$e->expects(['farm', 'shared']);

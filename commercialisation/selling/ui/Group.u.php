@@ -63,7 +63,7 @@ class GroupUi {
 
 			$h .= '<h1>';
 				$h .= '<a href="'.\farm\FarmUi::urlSellingProduct($eFarm).'" class="h-back">'.\Asset::icon('arrow-left').'</a>';
-				$h .= \s("Les groupes de clients");
+				$h .= s("Les groupes de clients");
 			$h .= '</h1>';
 
 			if($cGroup->notEmpty()) {
@@ -173,14 +173,14 @@ class GroupUi {
 			$h .= $form->hidden('farm', $eFarm['id']);
 			$h .= $form->dynamicGroups($eGroup, ['name*', 'type*', 'color']);
 			$h .= $form->group(
-				content: $form->submit(\s("Ajouter"))
+				content: $form->submit(s("Ajouter"))
 			);
 
 		$h .= $form->close();
 
 		return new \Panel(
 			id: 'panel-group-create',
-			title: \s("Ajouter un nouveau groupe de clients"),
+			title: s("Ajouter un nouveau groupe de clients"),
 			body: $h,
 			close: 'reload'
 		);
@@ -196,14 +196,14 @@ class GroupUi {
 			$h .= $form->hidden('id', $eGroup['id']);
 			$h .= $form->dynamicGroups($eGroup, ['name', 'color']);
 			$h .= $form->group(
-				content: $form->submit(\s("Modifier"))
+				content: $form->submit(s("Modifier"))
 			);
 
 		$h .= $form->close();
 
 		return new \Panel(
 			id: 'panel-group-update',
-			title: \s("Modifier un groupe de clients"),
+			title: s("Modifier un groupe de clients"),
 			body: $h,
 			close: 'reload'
 		);
@@ -213,10 +213,10 @@ class GroupUi {
 	public static function p(string $property): \PropertyDescriber {
 
 		$d = Group::model()->describer($property, [
-			'name' => \s("Nom"),
-			'type' => \s("Clientèle"),
-			'color' => \s("Couleur"),
-			'fqn' => \s("Nom qualifié")
+			'name' => s("Nom"),
+			'type' => s("Clientèle"),
+			'color' => s("Couleur"),
+			'fqn' => s("Nom qualifié")
 		]);
 
 		switch($property) {

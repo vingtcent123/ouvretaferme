@@ -785,35 +785,6 @@ class ShopUi {
 
 	}
 
-	public function displayEmails(\farm\Farm $eFarm, array $emails): \Panel {
-
-		$eFarm->expects(['name', 'url']);
-
-		$h = '<p class="util-info">'.s("Cette page vous permet de récupérer les adresses e-mail des clients de votre boutique. Les clients qui ont supprimé leur compte ou qui ont refusé vos communications ne sont pas présents dans cette liste. En envoyant des e-mails non sollicités ou en refusant de désabonner les clients qui le souhaitent, vous engagez votre propre responsabilité.").'</p>';
-
-		$h .= '<h3>'.s("Liste des e-mails").'</h3>';
-
-		if($emails) {
-			$h .= '<code id="shop-emails">'.implode(', ', array_map('encode', $emails)).'</code>';
-			$h .= '<a onclick="doCopy(this)" data-selector="#shop-emails" data-message="'.s("Copié !").'" class="btn btn-secondary mb-1 mt-1">'.s("Copier la liste dans le presse-papier").'</a>';
-		} else {
-			$h .= '<p class="util-info">'.s("Vous n'avez encore collecté aucune adresse e-mail pour vos communucations.").'</p>';
-		}
-
-		$h .= '<br/>';
-
-		$h .= '<h3>'.s("Lien à donner à vos clients pour se désabonner de vos communications").'</h3>';
-		$h .= '<code>'.\Lime::getUrl().\farm\FarmUi::url($eFarm).'/optIn</code>';
-
-
-		return new \Panel(
-			id: 'panel-shop-email',
-			title: s("Obtenir les adresses e-mail des clients"),
-			body: $h
-		);
-
-	}
-
 	public function displayInvite(Shop $eShop): \Panel {
 
 		$h = '<div class="util-block-help">';

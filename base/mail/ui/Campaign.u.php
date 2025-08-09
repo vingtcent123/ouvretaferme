@@ -24,14 +24,14 @@ class CampaignUi {
 			$h .= $form->dynamicGroup($eCampaign, 'to*');
 
 			$h .= $form->group(
-				content: $form->submit(\s("Créer la campagne"))
+				content: $form->submit(s("Créer la campagne"))
 			);
 
 		$h .= $form->close();
 
 		return new \Panel(
 			id: 'panel-campaign-create',
-			title: \s("Programmer une campagne"),
+			title: s("Programmer une campagne"),
 			body: $h
 		);
 
@@ -93,7 +93,7 @@ class CampaignUi {
 		}
 
 		$h .= '<div class="util-info">';
-			$h .= \s("* Les statistiques d'e-mails reçus, lus et bloqués sont des estimations qui ne sont pas fiables à 100 %.");
+			$h .= s("* Les statistiques d'e-mails reçus, lus et bloqués sont des estimations qui ne sont pas fiables à 100 %.");
 		$h .= '</div>';
 
 		return $h;
@@ -103,7 +103,7 @@ class CampaignUi {
 	public static function p(string $property): \PropertyDescriber {
 
 		$d = Campaign::model()->describer($property, [
-			'to' => \s("Destinataires"),
+			'to' => s("Destinataires"),
 		]);
 
 		switch($property) {

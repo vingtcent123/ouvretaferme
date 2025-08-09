@@ -125,10 +125,10 @@ Share:
 
 Shop:
   id: serial32
+  name: text8(1, null) @collate(general)
   fqn: fqn
   farm: farm\Farm
   logo: ?textFixed(30, 30) @charset(ascii)
-  name: text8(1, null) @collate(general)
   email: ?email
   type: enum(PRIVATE, PRO)
   shared: bool

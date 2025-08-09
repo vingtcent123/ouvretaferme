@@ -34,10 +34,11 @@ new Page()
 	})
 	->get('export', function($data) {
 
-		$search = \mail\ContactLib::getSearch();
+		$data->eFarm = \farm\FarmLib::getById(GET('id'))->validate('canCommunication');
+
+		$search = \mail\ContactLib::getSearch($data->eFarm);
 		$search->set('export', TRUE);
 
-		$data->eFarm = \farm\FarmLib::getById(GET('farm'))->validate('canRead');
 		$data->cContact = \mail\ContactLib::getByFarm($data->eFarm, search: $search);
 
 		throw new ViewAction($data);

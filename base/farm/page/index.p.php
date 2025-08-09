@@ -181,7 +181,7 @@
 
 		$data->eFarm->validate('canCommunication');
 
-		$data->search = \mail\ContactLib::getSearch();
+		$data->search = \mail\ContactLib::getSearch($data->eFarm);
 
 		$data->page = GET('page', 'int');
 

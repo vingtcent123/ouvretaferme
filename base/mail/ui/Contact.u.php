@@ -5,6 +5,7 @@ class ContactUi {
 
 	public function __construct() {
 
+		\Asset::js('mail', 'contact.js');
 		\Asset::css('mail', 'contact.css');
 
 	}
@@ -43,22 +44,22 @@ class ContactUi {
 
 		$form = new \util\FormUi();
 
-		$h = '<div id="contact-search" class="util-block-search stick-xs '.($search->empty() ? 'hide' : '').'">';
+		$h = '<div id="contact-search" class="util-block-search stick-xs '.($search->empty(['source', 'cShop']) ? 'hide' : '').'">';
 
 			$h .= $form->openAjax(\farm\FarmUi::urlCommunicationsMailing($eFarm), ['method' => 'get', 'id' => 'form-search']);
 				$h .= '<div>';
-					$h .= $form->text('email', $search->get('email'), ['placeholder' => s("Adresse e-mail")]);
-					$h .= $form->select('optIn', [
-						'no' => s("Refus de consentement")
-					], $search->get('optIn'), ['placeholder' => s("Tous consentements")]);
-					$h .= $form->select('newsletter', [
-						'yes' => s("Inscrits à la newsletter"),
-						'no' => s("Non inscrits à la newsletter"),
-					], $search->get('newsletter'), ['placeholder' => s("Newsletter ?")]);
-					$h .= $form->select('category', [
-						\selling\Customer::PRO => s("Clients professionnels"),
-						\selling\Customer::PRIVATE => s("Clients particuliers")
-					], $search->get('category'), ['placeholder' => s("Clientèle")]);
+
+					if($search->get('source') === NULL) {
+
+						$h .= $form->text('email', $search->get('email'), ['placeholder' => s("Adresse e-mail")]);
+						$h .= $form->inputGroup(
+							$form->checkbox('newsletter', 'yes', ['checked' => $search->get('newsletter') === 'yes', 'callbackLabel' => fn($input) => $input.'  '.$form->addon(s("Uniquement inscrits à la newsletter")), 'callbackFieldAttributes' => ['class' => 'bg-white']])
+						);
+
+					}
+
+					$h .= $form->select('shop', $search->get('cShop'), $search->get('shop'), ['placeholder' => s("Clients d'une boutique")]);
+
 					$h .= $form->submit(s("Chercher"), ['class' => 'btn btn-secondary']);
 					$h .= '<a href="'.\farm\FarmUi::urlCommunicationsMailing($eFarm).'" class="btn btn-secondary">'.\Asset::icon('x-lg').'</a>';
 				$h .= '</div>';
@@ -177,15 +178,15 @@ class ContactUi {
 		if($cContact->count() > 0) {
 
 			$h .= '<div class="mb-1">';
-				$h .= '<a data-ajax="/mail/contact:export?farm='.$eFarm['id'].'&'.http_build_query($_GET).'" data-ajax-method="get" class="btn btn-secondary">';
-					if($search->empty()) {
+				$h .= '<a data-ajax="/mail/contact:export?farm='.$eFarm['id'].'&'.http_build_query($_GET).'" data-ajax-method="get" class="btn btn-secondary" id="contact-export-link">';
+					if($search->empty(['source', 'cShop'])) {
 						$h .= s("Récupérer les adresses e-mail");
 					} else {
 						$h .= s("Récupérer les adresses e-mail de cette recherche");
 					}
 				$h .= '</a>';
 			$h .= '</div>';
-			$h .= '<div id="contact-export"></div>';
+			$h .= '<div id="contact-export" '.($search->get('source') === 'shop' ? 'onrender="Contact.loadExport()"' : '').'></div>';
 
 		}
 

@@ -20,13 +20,16 @@ class ContactLib extends ContactCrud {
 
 	}
 
-	public static function getSearch(): \Search {
+	public static function getSearch(\farm\Farm $eFarm): \Search {
 
 		return new \Search([
+			'source' => GET('source', '?string'),
 			'email' => GET('email'),
+			'shop' => GET('shop', 'shop\Shop'),
 			'optIn' => GET('optIn', '?string'),
 			'newsletter' => GET('newsletter', '?string'),
 			'category' => GET('category', [\selling\Customer::PRIVATE, \selling\Customer::PRO]),
+			'cShop' => \shop\ShopLib::getByFarm($eFarm)
 		], GET('sort', default: 'createdAt-'));
 
 	}
@@ -237,6 +240,21 @@ class ContactLib extends ContactCrud {
 			Contact::model()
 				->join(\selling\Customer::model(), 'm1.email = m2.email AND m1.farm = m2.farm')
 				->where('m2.type', $search->get('category'));
+
+		}
+
+		if($search->get('shop')->notEmpty()) {
+
+        $cCustomer = \selling\Sale::model()
+            ->select(['customer'])
+            ->whereShop($search->get('shop'))
+            ->wherePreparationStatus(\selling\Sale::DELIVERED)
+            ->group('customer')
+            ->getColumn('customer');
+
+			Contact::model()
+				->join(\selling\Customer::model(), 'm1.email = m2.email AND m1.farm = m2.farm')
+				->where('m2.id', 'IN', $cCustomer);
 
 		}
 

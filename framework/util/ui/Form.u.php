@@ -888,9 +888,18 @@ class FormUi {
 			$addon = fn($input) => $input;
 		}
 
+		if(isset($attributes['callbackFieldAttributes'])) {
+			$fieldAttributes = $attributes['callbackFieldAttributes'];
+			unset($attributes['callbackFieldAttributes']);
+		} else {
+			$fieldAttributes = [];
+		}
+
+		$fieldAttributes['class'] = ($fieldAttributes['class'] ?? '').' field-checkbox';
+
 		$input = $this->inputCheckbox($name, $value, $attributes);
 
-		$h = '<label class="field-checkbox">';
+		$h = '<label '.attrs($fieldAttributes).'">';
 			$h .= $addon($input);
 		$h .= '</label>';
 

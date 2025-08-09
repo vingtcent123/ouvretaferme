@@ -108,7 +108,7 @@ class ShopManageUi {
 						$h .= '<div class="dropdown-title">'.encode($eShopCurrent['name']).'</div>';
 						$h .= '<a href="/shop/configuration:update?id='.$eShopCurrent['id'].'" class="dropdown-item">'.s("Paramétrer la boutique").'</a>';
 						$h .= '<a href="/shop/:website?id='.$eShopCurrent['id'].'&farm='.$eFarm['id'].'" class="dropdown-item">'.s("Intégrer la boutique sur un site internet").'</a>';
-						$h .= '<a href="/shop/:emails?id='.$eShopCurrent['id'].'&farm='.$eFarm['id'].'" class="dropdown-item">'.s("Obtenir les adresses e-mail des clients").'</a>';
+						$h .= '<a href="'.\farm\FarmUi::urlCommunicationsContact($eFarm).'?shop='.$eShopCurrent['id'].'&source=shop" class="dropdown-item">'.s("Obtenir les adresses e-mail des clients").'</a>';
 
 						if(
 							$eShopCurrent->canDelete() and
