@@ -126,7 +126,7 @@ class ContactLib extends ContactCrud {
 
 	}
 
-	public static function synchronizeCustomer(\selling\Customer $eCustomer): void {
+	public static function synchronizeCustomerStatus(\selling\Customer $eCustomer): void {
 
 		$active = \selling\Customer::model()
 			->whereFarm($eCustomer['farm'])
@@ -143,7 +143,32 @@ class ContactLib extends ContactCrud {
 
 	}
 
+	public static function synchronizeCustomerEmail(\selling\Customer $eCustomer): void {
+
+		$eCustomer->expects(['email', 'oldEmail']);
+
+		if($eCustomer['email'] === $eCustomer['oldEmail']) {
+			return;
+		}
+
+		// On désactive l'ancien contact
+		if($eCustomer['oldEmail'] !== NULL) {
+
+			self::deleteCustomer(new \selling\Customer([
+				'farm' => $eCustomer['farm'],
+				'email' => $eCustomer['oldEmail']
+			]));
+
+		}
+
+		// On recrée un contact
+		\mail\ContactLib::autoCreate($eCustomer['farm'], $eCustomer['email']);
+
+	}
+
 	public static function deleteCustomer(\selling\Customer $eCustomer): void {
+
+		$eCustomer->expects(['farm', 'email']);
 
 		$exists = \selling\Customer::model()
 			->whereFarm($eCustomer['farm'])
@@ -273,6 +298,57 @@ class ContactLib extends ContactCrud {
 			->whereFarm($eFarm)
 			->whereEmail($email)
 			->get($eContact);
+
+		$customers = \selling\Customer::model()
+			->select([
+				'count' => new \Sql('COUNT(*)', 'int'),
+				'countValid' => new \Sql('SUM(status = "'.\selling\Customer::ACTIVE.'")', 'int')
+			])
+			->whereFarm($eFarm)
+			->whereEmail($email)
+			->get();
+
+		if($customers['count'] === 0) {
+
+			if($eContact['activeCustomer'] !== NULL) {
+
+				$eContact['activeCustomer'] = NULL;
+
+				Contact::model()
+					->select('activeCustomer')
+					->update($eContact);
+
+			}
+
+		} else {
+
+			if($customers['countValid'] > 0) {
+
+				if($eContact['activeCustomer'] !== TRUE) {
+
+					$eContact['activeCustomer'] = TRUE;
+
+					Contact::model()
+						->select('activeCustomer')
+						->update($eContact);
+
+				}
+
+			} else {
+
+				if($eContact['activeCustomer'] !== FALSE) {
+
+					$eContact['activeCustomer'] = FALSE;
+
+					Contact::model()
+						->select('activeCustomer')
+						->update($eContact);
+
+				}
+
+			}
+
+		}
 
 		return $eContact;
 

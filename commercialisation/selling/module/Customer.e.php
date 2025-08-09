@@ -216,6 +216,16 @@ class Customer extends CustomerElement {
 				}
 
 			})
+			->setCallback('email.save', function() use ($p): bool {
+
+				if($p->for === 'update') {
+					$this->expects(['email']);
+					$this['oldEmail'] = $this['email'];
+				}
+
+				return TRUE;
+
+			})
 			->setCallback('name.empty', function(?string &$name): bool {
 
 				$this->expects(['user']);

@@ -317,9 +317,7 @@ class CustomerLib extends CustomerCrud {
 		Customer::model()->insert($eCustomer);
 
 		if($eCustomer['email'] !== NULL) {
-			\mail\ContactLib::autoCreate($eCustomer['farm'], $eCustomer['email'], function(\mail\Contact $e) {
-				$e['activeCustomer'] = TRUE;
-			});
+			\mail\ContactLib::autoCreate($eCustomer['farm'], $eCustomer['email']);
 		}
 
 		return $eCustomer;
@@ -382,8 +380,12 @@ class CustomerLib extends CustomerCrud {
 			$e['email'] !== NULL
 		) {
 
-			\mail\ContactLib::synchronizeCustomer($e);
+			\mail\ContactLib::synchronizeCustomerStatus($e);
 
+		}
+
+		if(in_array('email', $properties)) {
+			\mail\ContactLib::synchronizeCustomerEmail($e);
 		}
 
 		Customer::model()->commit();
