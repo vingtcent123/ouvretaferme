@@ -152,5 +152,34 @@ new \selling\SalePage()
 	}, validate: ['canWrite', 'isMarketSelling'])
 	->doDelete(function($data) {
 		throw new RedirectAction(\selling\SaleUi::urlMarket($data->e['marketParent']).'?success=selling:Sale::deleted');
+	})
+	->read('sendTicket', function($data) {
+
+		$data->e['cItem'] = \selling\SaleLib::getItems($data->e);
+
+		$data->e->validate('canSendTicket');
+
+		throw new ViewAction($data);
+
+	})
+	->write('doSendTicket', function($data) {
+
+		$data->e['cItem'] = \selling\SaleLib::getItems($data->e);
+
+		$data->e->validate('canSendTicket');
+
+		$fw = new \FailWatch();
+
+		$email = POST('email');
+		if(\Filter::check('email', $email) === FALSE) {
+			Sale::fail('ticket.email');
+		}
+
+		$fw->validate();
+
+		\selling\MarketLib::sendTicket($data->e, $email);
+
+		throw new ReloadAction('selling', 'Sale::ticket.send');
+
 	});
 ?>

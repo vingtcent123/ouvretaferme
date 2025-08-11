@@ -82,11 +82,11 @@ new \selling\SalePage()
 	});
 
 
-(new Page(function($data) {
+new Page(function($data) {
 
 		$data->eFarm = \farm\FarmLib::getById(INPUT('farm'))->validate('canSelling');
 
-	}))
+	})
 	->get('createCollection', function($data) {
 
 		$eCustomer = new \selling\Customer();

@@ -63,6 +63,14 @@ class Sale extends SaleElement {
 
 	}
 
+	public function canSendTicket(): bool {
+
+		$this->expects(['origin', 'price', 'preparationStatus']);
+
+		return $this->isMarketSale() and $this['price'] > 0 and $this['preparationStatus'] === Sale::DELIVERED;
+
+	}
+
 	public function getDeliveryAddress(string $type = 'text'): ?string {
 
 		if($this->hasDeliveryAddress() === FALSE) {
