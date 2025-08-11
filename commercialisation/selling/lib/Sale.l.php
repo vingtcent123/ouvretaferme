@@ -1370,20 +1370,6 @@ class SaleLib extends SaleCrud {
 
 	}
 
-	public static function sendTicket(Sale $eSale, string $email): void {
-
-		$eFarm = $eSale['farm'];
-
-		new \mail\SendLib()
-			->setFarm($eFarm)
-			->setReplyTo($eSale['farm']['legalEmail'])
-			->setFromName($eFarm['name'])
-			->setTo($email)
-			->setContent(...\shop\MailUi::getSaleMarketTicket($eSale))
-			->send();
-
-	}
-
 	public static function getDefaultVat(\farm\Farm $eFarm): int {
 		return 2;
 	}

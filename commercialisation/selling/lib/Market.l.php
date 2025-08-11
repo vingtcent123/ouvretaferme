@@ -267,5 +267,19 @@ class MarketLib {
 		Sale::model()->commit();
 	}
 
+
+	public static function sendTicket(Sale $eSale, string $email): void {
+
+		$eFarm = $eSale['farm'];
+
+		new \mail\SendLib()
+			->setFarm($eFarm)
+			->setReplyTo($eFarm['legalEmail'])
+			->setFromName($eFarm['name'])
+			->setTo($email)
+			->setContent(...\shop\MailUi::getSaleMarketTicket($eSale))
+			->send();
+
+	}
 }
 ?>

@@ -522,35 +522,6 @@ new \selling\SalePage()
 				\farm\FarmUi::urlSellingSalesAll($data->e['farm']).'?success=selling:Sale::deleted'
 		);
 
-	})
-	->read('sendTicket', function($data) {
-
-		$data->e['cItem'] = \selling\SaleLib::getItems($data->e);
-
-		$data->e->validate('canSendTicket');
-
-		throw new ViewAction($data);
-
-	})
-	->write('doSendTicket', function($data) {
-
-		$data->e['cItem'] = \selling\SaleLib::getItems($data->e);
-
-		$data->e->validate('canSendTicket');
-
-		$fw = new \FailWatch();
-
-		$email = POST('email');
-		if(\Filter::check('email', $email) === FALSE) {
-			Sale::fail('ticket.email');
-		}
-
-		$fw->validate();
-
-		\selling\SaleLib::sendTicket($data->e, POST('email'));
-
-		throw new ReloadAction('selling', 'Sale::ticket.send');
-
 	});
 
 new Page(function($data) {

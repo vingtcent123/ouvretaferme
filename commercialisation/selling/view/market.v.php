@@ -76,4 +76,10 @@ new JsonView('doCloseMarketSale', function($data, AjaxTemplate $t) {
 
 });
 
+new AdaptativeView('sendTicket', function($data, PanelTemplate $t) {
+
+	return new \selling\MarketUi()->getTicketForm($data->e);
+
+});
+
 ?>

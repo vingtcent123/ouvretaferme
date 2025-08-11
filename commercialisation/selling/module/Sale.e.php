@@ -65,9 +65,9 @@ class Sale extends SaleElement {
 
 	public function canSendTicket(): bool {
 
-		$this->expects(['origin', 'price', 'cItem']);
+		$this->expects(['origin', 'price', 'preparationStatus']);
 
-		return $this->isMarketSale() and $this['price'] > 0 and $this['cItem']->count() > 0;
+		return $this->isMarketSale() and $this['price'] > 0 and $this['preparationStatus'] === Sale::DELIVERED;
 
 	}
 

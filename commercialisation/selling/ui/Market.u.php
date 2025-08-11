@@ -295,39 +295,41 @@ class MarketUi {
 
 				if($eSaleMarket->isMarketSelling()) {
 
+					$buttons = [];
+
 					$reopenButton = '<a data-ajax="/selling/sale:doUpdatePreparationStatus" post-id="'.$eSale['id'].'" post-preparation-status="'.Sale::DRAFT.'" class="btn btn-outline-primary" data-confirm="'.s("Voulez-vous réellement remettre cette vente en cours ?").'">'.s("Repasser en cours").'</a> ';
+
+					if($eSale->canSendTicket()) {
+						$buttons[] = '<a href="/selling/market:sendTicket?id='.$eSale['id'].'" class="btn btn-outline-primary">'.s("Envoyer le ticket").'</a>';
+					}
 
 					switch($eSale['preparationStatus']) {
 
 						case Sale::DRAFT :
 
 							if($cItemSale->empty()) {
-								$h .= '<div>';
-									$h .= '<a data-ajax="/selling/market:doDelete" post-id="'.$eSale['id'].'" class="btn btn-danger" data-confirm="'.s("Voulez-vous réellement supprimer cette vente ?").'">'.s("Supprimer la vente").'</a>';
-								$h .= '</div>';
+								$buttons[] = '<a data-ajax="/selling/market:doDelete" post-id="'.$eSale['id'].'" class="btn btn-danger" data-confirm="'.s("Voulez-vous réellement supprimer cette vente ?").'">'.s("Supprimer la vente").'</a>';
 							} else {
-								$h .= '<div>';
-									$h .= '<a data-ajax="/selling/market:doCloseMarketSale" post-id="'.$eSale['id'].'" class="btn btn-success">'.s("Terminer<span> la vente</span>", ['span' => '<span class="hide-xs-down">']).'</a> ';
-									$h .= '<a data-ajax="/selling/sale:doUpdatePreparationStatus" post-id="'.$eSale['id'].'" post-preparation-status="'.Sale::CANCELED.'" class="btn btn-muted" data-confirm="'.s("Voulez-vous réellement annuler cette vente ?").'">'.s("Annuler<span> la vente</span>", ['span' => '<span class="hide-xs-down">']).'</a>';
-								$h .= '</div>';
+								$buttons[] = '<a data-ajax="/selling/market:doCloseMarketSale" post-id="'.$eSale['id'].'" class="btn btn-success">'.s("Terminer<span> la vente</span>", ['span' => '<span class="hide-xs-down">']).'</a>';
+								$buttons[] = '<a data-ajax="/selling/sale:doUpdatePreparationStatus" post-id="'.$eSale['id'].'" post-preparation-status="'.Sale::CANCELED.'" class="btn btn-muted" data-confirm="'.s("Voulez-vous réellement annuler cette vente ?").'">'.s("Annuler<span> la vente</span>", ['span' => '<span class="hide-xs-down">']).'</a>';
 							}
 
 							break;
 
 						case Sale::CANCELED :
-							$h .= $reopenButton;
-							break;
-
 						case Sale::DELIVERED :
-							$h .= '<div>';
-								$h .= '<a href="/selling/sale:sendTicket?id='.$eSale['id'].'" class="btn btn-outline-primary">'.s("Envoyer le ticket").'</a> ';
-								$h .= $reopenButton;
-							$h .= '</div>';
-
+							$buttons[] = $reopenButton;
 							break;
 
 					}
 
+					if(count($buttons) > 0) {
+
+						$h .= '<div>';
+							$h .= implode(' ', $buttons);
+						$h .= '</div>';
+
+					}
 				}
 
 			$h .= '</div>';
@@ -720,6 +722,44 @@ class MarketUi {
 
 		return $h;
 
+	}
+
+	public function getTicketForm(Sale $eSaleMarket): \Panel {
+
+		$h = '';
+
+		if($eSaleMarket['farm']['legalEmail'] === NULL) {
+			$h .= '<div class="util-box-danger">';
+				$h .= '<p>'.s("Pour envoyer un ticket de caisse, veuillez d'abord renseigner l'adresse e-mail de votre ferme.").'</p>';
+				$h .= '<a href="/farm/farm:update?id='.$eSaleMarket['farm']['id'].'" class="btn btn-transparent">'.s("Configurer maintenant").'</a>';
+			$h .= '</div>';
+
+ 		} else {
+
+			$form = new \util\FormUi();
+
+			$h .= $form->openAjax('/selling/market:doSendTicket');
+
+				$h .= $form->hidden('id', $eSaleMarket['id']);
+
+				$h .= $form->group(
+					label: s("E-mail"),
+					content: $form->email('email'),
+				);
+
+				$h .= $form->group(
+					content: $form->submit(s("Envoyer"))
+				);
+
+			$h .= $form->close();
+
+		}
+
+		return new \Panel(
+			id: 'panel-sale-send-ticket',
+			title: s("Envoyer le ticket de caisse"),
+			body: $h
+		);
 	}
 	
 	protected function getCircle(Sale $eSale): string {

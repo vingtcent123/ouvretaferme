@@ -95,10 +95,4 @@ new HtmlView('getExport', function($data, PdfTemplate $t) {
 	echo new \selling\PdfUi()->getSales($data->eFarm, $data->c, $data->cItem);
 
 });
-
-new AdaptativeView('sendTicket', function($data, PanelTemplate $t) {
-
-	return new \selling\SaleUi()->getTicketForm($data->e);
-
-});
 ?>
