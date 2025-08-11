@@ -1491,6 +1491,34 @@ class SaleUi {
 
 	}
 
+	public function getTicketForm(Sale $eSaleMarket): \Panel {
+
+		$form = new \util\FormUi();
+
+		$h = '';
+
+		$h .= $form->openAjax('/selling/sale:doSendTicket');
+
+			$h .= $form->hidden('id', $eSaleMarket['id']);
+
+			$h .= $form->group(
+				label: s("Email"),
+				content: $form->email('email'),
+			);
+
+		$h .= $form->group(
+			content: $form->submit(s("Envoyer"))
+		);
+
+		$h .= $form->close();
+
+		return new \Panel(
+			id: 'panel-sale-send-ticket',
+			title: s("Envoyer le ticket de caisse"),
+			body: $h
+		);
+	}
+
 	public function getMarket(Sale $eSaleMarket, \farm\Farm $eFarm, \Collection $ccSale, \Collection $cPaymentMethod) {
 
 		if($ccSale->empty()) {

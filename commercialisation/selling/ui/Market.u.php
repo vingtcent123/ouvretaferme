@@ -295,6 +295,8 @@ class MarketUi {
 
 				if($eSaleMarket->isMarketSelling()) {
 
+					$reopenButton = '<a data-ajax="/selling/sale:doUpdatePreparationStatus" post-id="'.$eSale['id'].'" post-preparation-status="'.Sale::DRAFT.'" class="btn btn-outline-primary" data-confirm="'.s("Voulez-vous réellement remettre cette vente en cours ?").'">'.s("Repasser en cours").'</a> ';
+
 					switch($eSale['preparationStatus']) {
 
 						case Sale::DRAFT :
@@ -313,8 +315,14 @@ class MarketUi {
 							break;
 
 						case Sale::CANCELED :
+							$h .= $reopenButton;
+							break;
+
 						case Sale::DELIVERED :
-							$h .= '<a data-ajax="/selling/sale:doUpdatePreparationStatus" post-id="'.$eSale['id'].'" post-preparation-status="'.Sale::DRAFT.'" class="btn btn-outline-primary" data-confirm="'.s("Voulez-vous réellement remettre cette vente en cours ?").'">'.s("Repasser en cours").'</a> ';
+							$h .= '<div>';
+								$h .= '<a href="/selling/sale:sendTicket?id='.$eSale['id'].'" class="btn btn-outline-primary">'.s("Envoyer le ticket").'</a> ';
+								$h .= $reopenButton;
+							$h .= '</div>';
 
 							break;
 

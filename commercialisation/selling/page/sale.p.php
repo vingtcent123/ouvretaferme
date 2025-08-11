@@ -82,11 +82,11 @@ new \selling\SalePage()
 	});
 
 
-(new Page(function($data) {
+new Page(function($data) {
 
 		$data->eFarm = \farm\FarmLib::getById(INPUT('farm'))->validate('canSelling');
 
-	}))
+	})
 	->get('createCollection', function($data) {
 
 		$eCustomer = new \selling\Customer();
@@ -521,6 +521,35 @@ new \selling\SalePage()
 				\selling\ProductUi::url($data->e['compositionOf']).'?success=selling:Product::deletedComposition' :
 				\farm\FarmUi::urlSellingSalesAll($data->e['farm']).'?success=selling:Sale::deleted'
 		);
+
+	})
+	->read('sendTicket', function($data) {
+
+		$data->e['cItem'] = \selling\SaleLib::getItems($data->e);
+
+		$data->e->validate('canSendTicket');
+
+		throw new ViewAction($data);
+
+	})
+	->write('doSendTicket', function($data) {
+
+		$data->e['cItem'] = \selling\SaleLib::getItems($data->e);
+
+		$data->e->validate('canSendTicket');
+
+		$fw = new \FailWatch();
+
+		$email = POST('email');
+		if(\Filter::check('email', $email) === FALSE) {
+			Sale::fail('ticket.email');
+		}
+
+		$fw->validate();
+
+		\selling\SaleLib::sendTicket($data->e, POST('email'));
+
+		throw new ReloadAction('selling', 'Sale::ticket.send');
 
 	});
 

@@ -101,6 +101,8 @@ class AlertUi {
 			'Market::emptyPayment' => s("Veuillez indiquer un moyen de paiement pour terminer cette vente"),
 			'Market::inconsistencyTotal' => s("Le montant total par moyen de paiement est différent du montant total de la vente"),
 
+			'Sale::ticket.email' => s("Veuillez vérifier l'adresse email"),
+
 			default => NULL
 
 		};
@@ -175,6 +177,8 @@ class AlertUi {
 
 			'Quality::updated' => s("Le signe de qualité a bien été modifié."),
 			'Quality::deleted' => s("Le signe de qualité a bien été supprimé et retiré des produits."),
+
+			'Sale::ticket.send' => s("Le ticket de caisse a bien été envoyé par email."),
 
 			default => NULL
 
