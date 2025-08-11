@@ -296,7 +296,7 @@ class MarketUi {
 				$buttons = [];
 
 				if($eSale->canSendTicket()) {
-					$buttons[] = '<a href="/selling/market:sendTicket?id='.$eSale['id'].'" class="btn btn-outline-primary">'.s("Envoyer le ticket").'</a>';
+					$buttons[] = '<a href="/selling/market:sendTicket?id='.$eSale['id'].'" class="btn btn-outline-primary">'.s("Envoyer un ticket par e-mail").'</a>';
 				}
 
 				if($eSaleMarket->isMarketSelling()) {
