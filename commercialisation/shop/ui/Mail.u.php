@@ -223,20 +223,29 @@ Vos producteurs", [
 			}
 			$unitPrice = \util\TextUi::money($eItem['unitPrice']).$unit;
 
-			$products .= encode($eItem['name'])."\t: ".$number.' x '.$unitPrice;
+			$products .= encode($eItem['name'])."\t: ".$number.' x '.$unitPrice."\n";
 
 		}
 
-		$products .= '<h3>'.s("Totaux").'</h3>';
-		$products .= s("Total HT\t: {price}", ['price' => str_pad(\util\TextUi::money($eSale['priceExcludingVat']), 10, ' ', STR_PAD_LEFT)])."\n";
+		if($eSale['hasVat']) {
 
-		foreach($eSale['vatByRate'] as $vatByRate) {
+			$products .= '<h3>'.s("Totaux").'</h3>';
+			$products .= s("Total HT\t: {price}", ['price' => str_pad(\util\TextUi::money($eSale['priceExcludingVat']), 10, ' ', STR_PAD_LEFT)])."\n";
 
-			$products .= s("TVA à {vatRate}%\t: {amount}", ['vatRate' => $vatByRate['vatRate'], 'amount' => str_pad(\util\TextUi::money($vatByRate['vat']), 10, ' ', STR_PAD_LEFT)])."\n";
+			foreach($eSale['vatByRate'] as $vatByRate) {
+
+				$products .= s("TVA à {vatRate}%\t: {amount}", ['vatRate' => $vatByRate['vatRate'], 'amount' => str_pad(\util\TextUi::money($vatByRate['vat']), 10, ' ', STR_PAD_LEFT)])."\n";
+
+			}
+
+			$products .= s("Total TTC\t: {price}", ['price' => str_pad(\util\TextUi::money($eSale['priceIncludingVat']), 10, ' ', STR_PAD_LEFT)]);
+
+		} else {
+
+			$products .= '<h3>'.s("Total").'</h3>';
+			$products .= s("Prix total\t: {price}", ['price' => str_pad(\util\TextUi::money($eSale['priceIncludingVat']), 10, ' ', STR_PAD_LEFT)]);
 
 		}
-
-		$products .= s("Total TTC\t: {price}", ['price' => str_pad(\util\TextUi::money($eSale['priceIncludingVat']), 10, ' ', STR_PAD_LEFT)]);
 
 		$title = s("Votre achat du {date}", ['date' => \util\DateUi::numeric($eSale['statusAt'], \util\DateUi::DATE)]);
 
