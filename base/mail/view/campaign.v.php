@@ -1,5 +1,23 @@
 <?php
-new AdaptativeView('create', function($data, PanelTemplate $t) {
-	return new \mail\CampaignUi()->create($data->e);
+new AdaptativeView('createSelect', function($data, PanelTemplate $t) {
+	return new \mail\CampaignUi()->createSelect($data->e, $data->cGroup, $data->ccShop);
+});
+
+new AdaptativeView('create', function($data, FarmTemplate $t) {
+
+	$t->nav = 'communications';
+	$t->subNav = 'mailing';
+
+	$t->title = s("Programmer une campagne pour {farm}", $data->eFarm['name']);
+	$t->canonical = \farm\FarmUi::urlCommunicationsCampaign($data->eFarm);
+
+	$h = '<div class="util-action">';
+		$h .= '<h1>'.s("Nouvelle campagne").'</h1>';
+	$h .= '</div>';
+
+	$t->mainTitle = $h;
+
+
+	echo new \mail\CampaignUi()->create($data->e);
 });
 ?>

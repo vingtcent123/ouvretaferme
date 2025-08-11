@@ -575,7 +575,7 @@ new AdaptativeView('/ferme/{id}/campagnes', function($data, FarmTemplate $t) {
 		$h .= '<div>';
 
 			if(new \mail\Campaign(['farm' => $data->eFarm])->canCreate()) {
-				$h .= '<a href="/mail/campaign:create?farm='.$data->eFarm['id'].'" class="btn btn-primary">'.\Asset::icon('plus-circle').'<span class="hide-xs-down"> '.s("Nouvelle campagne").'</span></a>';
+				$h .= '<a href="/mail/campaign:createSelect?id='.$data->eFarm['id'].'" class="btn btn-primary">'.\Asset::icon('plus-circle').'<span class="hide-xs-down"> '.s("Nouvelle campagne").'</span></a>';
 			}
 
 		$h .= '</div>';

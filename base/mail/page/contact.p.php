@@ -36,7 +36,7 @@ new Page()
 
 		$data->eFarm = \farm\FarmLib::getById(GET('id'))->validate('canCommunication');
 
-		$search = \mail\ContactLib::getSearch($data->eFarm);
+		$search = \mail\ContactLib::getSearch($data->eFarm, $_GET);
 		$search->set('export', TRUE);
 
 		$data->cContact = \mail\ContactLib::getByFarm($data->eFarm, search: $search);

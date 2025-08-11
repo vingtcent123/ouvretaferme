@@ -20,17 +20,18 @@ class ContactLib extends ContactCrud {
 
 	}
 
-	public static function getSearch(\farm\Farm $eFarm): \Search {
+	public static function getSearch(\farm\Farm $eFarm, array $data = []): \Search {
 
 		return new \Search([
-			'source' => GET('source', '?string'),
-			'email' => GET('email'),
-			'shop' => GET('shop', 'shop\Shop'),
-			'optIn' => GET('optIn', '?string'),
-			'newsletter' => GET('newsletter', '?string'),
-			'category' => GET('category', [\selling\Customer::PRIVATE, \selling\Customer::PRO]),
+			'source' => var_filter($data['source'] ?? NULL, '?string'),
+			'email' => var_filter($data['email'] ?? NULL),
+			'shop' => var_filter($data['shop'] ?? NULL, 'shop\Shop'),
+			'group' => var_filter($data['group'] ?? NULL, 'selling\Group'),
+			'optIn' => var_filter($data['optIn'] ?? NULL, '?string'),
+			'newsletter' => var_filter($data['newsletter'] ?? NULL, '?string'),
+			'category' => var_filter($data['category'] ?? NULL, [\selling\Customer::PRIVATE, \selling\Customer::PRO]),
 			'cShop' => \shop\ShopLib::getByFarm($eFarm)
-		], GET('sort', default: 'createdAt-'));
+		], var_filter($data['sort'] ?? NULL, default: 'createdAt-'));
 
 	}
 
@@ -103,6 +104,33 @@ class ContactLib extends ContactCrud {
 				},
 			]))
 			->getCollection($position, $number);
+
+	}
+
+	public static function getByCampaign(Campaign $eCampaign, bool $withCustomer = FALSE): \Collection {
+
+		$eCampaign->expects(['farm', 'source']);
+
+		$search = self::getSearch($eCampaign['farm']);
+		$search->set('export', TRUE);
+
+		switch($eCampaign['source']) {
+
+			case Campaign::SHOP :
+				$search->set('shop', $eCampaign['sourceShop']);
+				break;
+
+			case Campaign::GROUP :
+				$search->set('group', $eCampaign['sourceGroup']);
+				break;
+
+			case Campaign::PERIOD :
+				$search->set('period', $eCampaign['sourcePeriod']);
+				break;
+
+		}
+
+		return self::getByFarm($eCampaign['farm'], withCustomer: $withCustomer, search: $search);
 
 	}
 
@@ -254,6 +282,26 @@ class ContactLib extends ContactCrud {
 
 			Contact::model()
 				->join(\selling\Customer::model(), 'm1.email = m2.email AND m1.farm = m2.farm')
+				->where('m2.id', 'IN', $cCustomer);
+
+		} else if($search->get('group')->notEmpty()) {
+
+			Contact::model()
+				->join(\selling\Customer::model(), 'm1.email = m2.email AND m1.farm = m2.farm')
+				->where('JSON_CONTAINS(m2.groups, \''.$search->get('group')['id'].'\')');
+
+		} else if($search->get('period')) {
+
+        $cCustomer = \selling\Sale::model()
+            ->select(['customer'])
+			  	->whereDeliveredAt('>', new \Sql('NOW() - INTERVAL '.(int)$search->get('period').' MONTH'))
+            ->wherePreparationStatus(\selling\Sale::DELIVERED)
+            ->group('customer')
+            ->getColumn('customer');
+
+			Contact::model()
+				->join(\selling\Customer::model(), 'm1.email = m2.email AND m1.farm = m2.farm')
+				->where('m2.type', \selling\Customer::PRIVATE)
 				->where('m2.id', 'IN', $cCustomer);
 
 		}

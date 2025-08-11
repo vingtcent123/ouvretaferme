@@ -7,12 +7,13 @@ abstract class CampaignElement extends \Element {
 
 	private static ?CampaignModel $model = NULL;
 
-	const CUSTOMER_TYPE = 'customer-type';
+	const PERIOD = 'period';
 	const SHOP = 'shop';
 	const GROUP = 'group';
+	const NEWSLETTER = 'newsletter';
 
-	const PRIVATE = 'private';
-	const PRO = 'pro';
+	const CONFIRMED = 'confirmed';
+	const SENT = 'sent';
 
 	public static function getSelection(): array {
 		return Campaign::model()->getProperties();
@@ -45,33 +46,33 @@ class CampaignModel extends \ModuleModel {
 		$this->properties = array_merge($this->properties, [
 			'id' => ['serial32', 'cast' => 'int'],
 			'farm' => ['element32', 'farm\Farm', 'cast' => 'element'],
-			'source' => ['enum', [\mail\Campaign::CUSTOMER_TYPE, \mail\Campaign::SHOP, \mail\Campaign::GROUP], 'cast' => 'enum'],
-			'toNewsletter' => ['bool', 'cast' => 'bool'],
-			'toCustomerType' => ['enum', [\mail\Campaign::PRIVATE, \mail\Campaign::PRO], 'null' => TRUE, 'cast' => 'enum'],
-			'toShop' => ['element32', 'shop\Shop', 'null' => TRUE, 'cast' => 'element'],
-			'toGroup' => ['element32', 'selling\Group', 'null' => TRUE, 'cast' => 'element'],
+			'source' => ['enum', [\mail\Campaign::PERIOD, \mail\Campaign::SHOP, \mail\Campaign::GROUP, \mail\Campaign::NEWSLETTER], 'null' => TRUE, 'cast' => 'enum'],
+			'sourceShop' => ['element32', 'shop\Shop', 'null' => TRUE, 'cast' => 'element'],
+			'sourceGroup' => ['element32', 'selling\Group', 'null' => TRUE, 'cast' => 'element'],
+			'sourcePeriod' => ['int8', 'min' => 1, 'max' => 12, 'cast' => 'int'],
 			'to' => ['json', 'cast' => 'array'],
-			'subject' => ['text24', 'min' => 0, 'max' => NULL, 'null' => TRUE, 'cast' => 'string'],
-			'html' => ['text24', 'min' => 0, 'max' => NULL, 'null' => TRUE, 'cast' => 'string'],
-			'text' => ['text24', 'min' => 0, 'max' => NULL, 'null' => TRUE, 'cast' => 'string'],
+			'subject' => ['text8', 'min' => 1, 'max' => 100, 'cast' => 'string'],
+			'html' => ['editor16', 'min' => 0, 'max' => NULL, 'null' => TRUE, 'cast' => 'string'],
+			'text' => ['text16', 'min' => 0, 'max' => NULL, 'null' => TRUE, 'cast' => 'string'],
 			'sent' => ['int32', 'min' => 0, 'max' => NULL, 'cast' => 'int'],
 			'delivered' => ['int32', 'min' => 0, 'max' => NULL, 'cast' => 'int'],
 			'opened' => ['int32', 'min' => 0, 'max' => NULL, 'cast' => 'int'],
 			'failed' => ['int32', 'min' => 0, 'max' => NULL, 'cast' => 'int'],
 			'spam' => ['int32', 'min' => 0, 'max' => NULL, 'cast' => 'int'],
+			'status' => ['enum', [\mail\Campaign::CONFIRMED, \mail\Campaign::SENT], 'cast' => 'enum'],
 			'scheduledAt' => ['datetime', 'cast' => 'string'],
 			'sentAt' => ['datetime', 'cast' => 'string'],
 			'createdAt' => ['datetime', 'cast' => 'string'],
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'farm', 'source', 'toNewsletter', 'toCustomerType', 'toShop', 'toGroup', 'to', 'subject', 'html', 'text', 'sent', 'delivered', 'opened', 'failed', 'spam', 'scheduledAt', 'sentAt', 'createdAt'
+			'id', 'farm', 'source', 'sourceShop', 'sourceGroup', 'sourcePeriod', 'to', 'subject', 'html', 'text', 'sent', 'delivered', 'opened', 'failed', 'spam', 'status', 'scheduledAt', 'sentAt', 'createdAt'
 		]);
 
 		$this->propertiesToModule += [
 			'farm' => 'farm\Farm',
-			'toShop' => 'shop\Shop',
-			'toGroup' => 'selling\Group',
+			'sourceShop' => 'shop\Shop',
+			'sourceGroup' => 'selling\Group',
 		];
 
 	}
@@ -79,9 +80,6 @@ class CampaignModel extends \ModuleModel {
 	public function getDefaultValue(string $property) {
 
 		switch($property) {
-
-			case 'toNewsletter' :
-				return FALSE;
 
 			case 'sent' :
 				return 0;
@@ -97,6 +95,9 @@ class CampaignModel extends \ModuleModel {
 
 			case 'spam' :
 				return 0;
+
+			case 'status' :
+				return Campaign::SENT;
 
 			case 'createdAt' :
 				return new \Sql('NOW()');
@@ -115,11 +116,11 @@ class CampaignModel extends \ModuleModel {
 			case 'source' :
 				return ($value === NULL) ? NULL : (string)$value;
 
-			case 'toCustomerType' :
-				return ($value === NULL) ? NULL : (string)$value;
-
 			case 'to' :
 				return $value === NULL ? NULL : json_encode($value, JSON_UNESCAPED_UNICODE);
+
+			case 'status' :
+				return ($value === NULL) ? NULL : (string)$value;
 
 			default :
 				return parent::encode($property, $value);
@@ -162,20 +163,16 @@ class CampaignModel extends \ModuleModel {
 		return $this->where('source', ...$data);
 	}
 
-	public function whereToNewsletter(...$data): CampaignModel {
-		return $this->where('toNewsletter', ...$data);
+	public function whereSourceShop(...$data): CampaignModel {
+		return $this->where('sourceShop', ...$data);
 	}
 
-	public function whereToCustomerType(...$data): CampaignModel {
-		return $this->where('toCustomerType', ...$data);
+	public function whereSourceGroup(...$data): CampaignModel {
+		return $this->where('sourceGroup', ...$data);
 	}
 
-	public function whereToShop(...$data): CampaignModel {
-		return $this->where('toShop', ...$data);
-	}
-
-	public function whereToGroup(...$data): CampaignModel {
-		return $this->where('toGroup', ...$data);
+	public function whereSourcePeriod(...$data): CampaignModel {
+		return $this->where('sourcePeriod', ...$data);
 	}
 
 	public function whereTo(...$data): CampaignModel {
@@ -212,6 +209,10 @@ class CampaignModel extends \ModuleModel {
 
 	public function whereSpam(...$data): CampaignModel {
 		return $this->where('spam', ...$data);
+	}
+
+	public function whereStatus(...$data): CampaignModel {
+		return $this->where('status', ...$data);
 	}
 
 	public function whereScheduledAt(...$data): CampaignModel {

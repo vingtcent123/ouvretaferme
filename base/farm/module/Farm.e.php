@@ -370,6 +370,14 @@ class Farm extends FarmElement {
 		return \company\CompanyUi::urlJournal($this).'/operations';
 	}
 
+	public function getCampaignLimit(): int {
+		return 100;
+	}
+
+	public function getCampaignMemberLimit(): int {
+		return 1000;
+	}
+
 	public function build(array $properties, array $input, \Properties $p = new \Properties()): void {
 
 		$p

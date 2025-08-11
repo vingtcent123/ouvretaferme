@@ -76,7 +76,7 @@ class ContactUi {
 		$d->prepend ??= \Asset::icon('at');
 		$d->field = 'autocomplete';
 
-		$d->placeholder ??= s("Tapez une adresse e-mail");
+		$d->placeholder ??= s("Ajoutez un contact");
 		$d->multiple = $multiple;
 		$d->group += ['wrapper' => 'contact'];
 
@@ -92,7 +92,9 @@ class ContactUi {
 		\Asset::css('media', 'media.css');
 		
 		$html = '<div>';
-			$html .= encode($eContact['email']).'<br/>';
+			$html .= encode($eContact['email']);
+			$html .= '<br class="hide-xs-down"/>';
+			$html .= '<span class="hide-sm-up">  </span>';
 
 			if($eContact['cCustomer']->notEmpty()) {
 

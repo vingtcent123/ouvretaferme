@@ -174,6 +174,9 @@
 		$data->nCampaign = \mail\CampaignLib::countByFarm($data->eFarm);
 		$data->cCampaign = \mail\CampaignLib::getByFarm($data->eFarm, $data->page);
 
+		$data->tip = \farm\TipLib::pickOne($data->eUserOnline, 'mailing-campaign-help');
+		$data->tipNavigation = 'inline';
+
 		throw new ViewAction($data);
 
 	})
@@ -181,7 +184,7 @@
 
 		$data->eFarm->validate('canCommunication');
 
-		$data->search = \mail\ContactLib::getSearch($data->eFarm);
+		$data->search = \mail\ContactLib::getSearch($data->eFarm, $_GET);
 
 		$data->page = GET('page', 'int');
 

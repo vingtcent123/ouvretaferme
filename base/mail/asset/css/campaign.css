@@ -1,0 +1,9 @@
+.campaign-list {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 1rem;
+}
+
+#campaign-create .autocomplete-items {
+	font-size: 0.9rem;
+}

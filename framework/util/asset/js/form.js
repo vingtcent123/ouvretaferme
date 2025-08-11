@@ -1118,7 +1118,16 @@ class AutocompleteField {
 	};
 
 	static removeItem(item) {
+
+		const wrapper = item.firstParent('.autocomplete-items');
 		item.firstParent('.autocomplete-item').remove();
+
+		const input = qs('[data-autocomplete-items="'+ wrapper.id +'"]');
+
+		if(input !== null) {
+			this.onUpdate(input);
+		}
+
 	}
 
 	static remove(input) {

@@ -30,12 +30,21 @@ class DesignUi {
 
 		$html = self::getBanner($eFarm);
 		$html .= $content;
-
-		if($eFarm['emailFooter'] !== NULL) {
-			$html .= new \editor\ReadorFormatterUi()->getFromXml($eFarm['emailFooter']);
-		}
+		$html .= self::getFooter($eFarm);
 
 		return $html;
+
+	}
+
+	public static function getFooter(\farm\Farm $eFarm): string {
+
+		$eFarm->expects(['emailFooter']);
+
+		if($eFarm['emailFooter'] !== NULL) {
+			return new \editor\ReadorFormatterUi()->getFromXml($eFarm['emailFooter']);
+		} else {
+			return '';
+		}
 
 	}
 

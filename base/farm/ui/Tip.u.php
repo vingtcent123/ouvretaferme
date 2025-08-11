@@ -271,6 +271,20 @@ class TipUi {
 					'button' => NULL,
 				];
 
+			case 'mailing-campaign-help' :
+
+				$h = '<p>'.s("Un campagne est un envoi groupés d'e-mails à certains de vos contacts. Vous pouvez par exemple envoyer un e-mail à tous les clients qui ont déjà été livrés sur une boutique en ligne afin de les prévenir de l'ouverture de la prochaine vente.").'</p>';
+				$h .= '<p>'.s("Cette fonctionnalité est une source de coût pour l'association {siteName}, vous êtes donc limité à {value} envoi d'e-mails par semaine.", $eFarm->getCampaignLimit()).'</p>';
+				$h .= '<p>'.s("Enfin, il n'est pas possible d'envoyer des e-mails aux contacts pour qui vous avez désactivé l'envoi des e-mails ainsi que ceux qui ont refusé vos communications. Rappelez-vous qu'en envoyant des e-mails non sollicités ou en refusant de désabonner les clients qui le souhaitent, vous engagez votre propre responsabilité et vous exposez à un bannissement à vie de {siteName}.").'</p>';
+
+				return [
+					'icon' => \Asset::icon('envelope'),
+					'title' => s("Les campagnes d'e-mailing"),
+					'content' => $h,
+					'image' => FALSE,
+					'button' => NULL,
+				];
+
 			case 'series-forecast-help' :
 
 				$h = '<p>'.s("Le prévisionnel financier est un outil qui vous permet d'avoir une vue d'ensemble de la production et des ventes de la saison. Les ventes sont calculées automatiquement selon des prix et une répartition des ventes entre clients particuliers et professionnels que vous choisissez.").'</p>';

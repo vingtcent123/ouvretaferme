@@ -76,6 +76,7 @@ class FarmModel extends \ModuleModel {
 			'stockNotes' => ['text16', 'null' => TRUE, 'cast' => 'string'],
 			'stockNotesUpdatedAt' => ['datetime', 'null' => TRUE, 'cast' => 'string'],
 			'stockNotesUpdatedBy' => ['element32', 'user\User', 'null' => TRUE, 'cast' => 'element'],
+			'hasCampaign' => ['bool', 'cast' => 'bool'],
 			'hasShops' => ['bool', 'cast' => 'bool'],
 			'hasSales' => ['bool', 'cast' => 'bool'],
 			'hasCultivations' => ['bool', 'cast' => 'bool'],
@@ -85,7 +86,7 @@ class FarmModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'name', 'legalName', 'legalEmail', 'siret', 'legalStreet1', 'legalStreet2', 'legalPostcode', 'legalCity', 'vignette', 'place', 'placeLngLat', 'url', 'description', 'logo', 'emailBanner', 'emailFooter', 'seasonFirst', 'seasonLast', 'rotationYears', 'rotationExclude', 'quality', 'defaultBedLength', 'defaultBedWidth', 'defaultAlleyWidth', 'calendarMonthStart', 'calendarMonthStop', 'planningDelayedMax', 'featureTime', 'featureStock', 'stockNotes', 'stockNotesUpdatedAt', 'stockNotesUpdatedBy', 'hasShops', 'hasSales', 'hasCultivations', 'startedAt', 'createdAt', 'status'
+			'id', 'name', 'legalName', 'legalEmail', 'siret', 'legalStreet1', 'legalStreet2', 'legalPostcode', 'legalCity', 'vignette', 'place', 'placeLngLat', 'url', 'description', 'logo', 'emailBanner', 'emailFooter', 'seasonFirst', 'seasonLast', 'rotationYears', 'rotationExclude', 'quality', 'defaultBedLength', 'defaultBedWidth', 'defaultAlleyWidth', 'calendarMonthStart', 'calendarMonthStop', 'planningDelayedMax', 'featureTime', 'featureStock', 'stockNotes', 'stockNotesUpdatedAt', 'stockNotesUpdatedBy', 'hasCampaign', 'hasShops', 'hasSales', 'hasCultivations', 'startedAt', 'createdAt', 'status'
 		]);
 
 		$this->propertiesToModule += [
@@ -120,6 +121,9 @@ class FarmModel extends \ModuleModel {
 				return TRUE;
 
 			case 'featureStock' :
+				return FALSE;
+
+			case 'hasCampaign' :
 				return FALSE;
 
 			case 'hasShops' :
@@ -322,6 +326,10 @@ class FarmModel extends \ModuleModel {
 
 	public function whereStockNotesUpdatedBy(...$data): FarmModel {
 		return $this->where('stockNotesUpdatedBy', ...$data);
+	}
+
+	public function whereHasCampaign(...$data): FarmModel {
+		return $this->where('hasCampaign', ...$data);
 	}
 
 	public function whereHasShops(...$data): FarmModel {

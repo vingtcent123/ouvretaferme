@@ -56,6 +56,7 @@ Farm:
   stockNotes: ?text16
   stockNotesUpdatedAt: ?datetime
   stockNotesUpdatedBy: ?user\User
+  hasCampaign: bool = FALSE
   hasShops: bool = FALSE
   hasSales: bool = FALSE
   hasCultivations: bool = FALSE

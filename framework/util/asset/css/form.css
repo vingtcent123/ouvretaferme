@@ -229,6 +229,11 @@ input[type="checkbox"] {
 	margin: 0 0.5rem;
 }
 
+.form-info a {
+	text-decoration: underline;
+	color: var(--muted);
+}
+
 .form-info > :last-child {
 	margin-bottom: 0;
 }
@@ -987,20 +992,30 @@ input[data-autocomplete-items]:placeholder-shown + a.autocomplete-empty:not(:foc
 .autocomplete-items-multiple:not(:empty) {
 	display: flex;
 	flex-wrap: wrap;
-	margin: 0.5rem -0.5rem;
+	gap: 0.25rem;
+	margin: 0.5rem 0;
 }
 
 .autocomplete-items-multiple .autocomplete-item {
 	display: flex;
 	align-items: center;
-	margin: 0.5rem;
+	justify-content: space-between;
 	padding: 0.5rem 0.75rem;
-	border-radius: var(--radius);
-	background-color: #eee;
+	border-radius: calc(var(--radius) / 2);
+	background-color: #00000008;
 	font-weight: bold;
-
 }
 
-.autocomplete-items-multiple .autocomplete-item > *:not(:last-child) {
-	margin-right: 0.5rem;
+.autocomplete-items-multiple .autocomplete-item a {
+	margin-left: 0.5rem;
+}
+
+@media (max-width: 575px) {
+
+	.autocomplete-items-multiple .autocomplete-item {
+		width: 100%;
+		line-height: 1.3;
+		justify-content: space-between;
+	}
+
 }
