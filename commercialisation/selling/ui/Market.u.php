@@ -745,7 +745,7 @@ class MarketUi {
 
 				$h .= $form->group(
 					label: s("E-mail"),
-					content: $form->email('email'),
+					content: $form->email('email', $eSaleMarket['customer']->empty() ? '' : ($eSaleMarket['customer']['email'] ?? '')),
 				);
 
 				$h .= $form->group(
@@ -758,7 +758,7 @@ class MarketUi {
 
 		return new \Panel(
 			id: 'panel-sale-send-ticket',
-			title: s("Envoyer le ticket de caisse"),
+			title: s("Envoyer le ticket de caisse par e-mail"),
 			body: $h
 		);
 	}

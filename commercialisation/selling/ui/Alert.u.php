@@ -178,7 +178,7 @@ class AlertUi {
 			'Quality::updated' => s("Le signe de qualité a bien été modifié."),
 			'Quality::deleted' => s("Le signe de qualité a bien été supprimé et retiré des produits."),
 
-			'Sale::ticket.send' => s("Le ticket de caisse a bien été envoyé par email."),
+			'Sale::ticket.send' => s("Le ticket de caisse a bien été envoyé par e-mail."),
 
 			default => NULL
 

@@ -208,24 +208,10 @@ Vos producteurs", [
 		$products = '<h3>'.s("Produits").'</h3>';
 		$products .= '<pre>';
 
+			$maxNameLength = $eSale['cItem']->reduce(fn($eItem, $maxNameLength) => max($maxNameLength, mb_strlen($eItem['name'])), 0);
+
 			foreach($eSale['cItem'] as $eItem) {
-
-				if($eItem['packaging'] === NULL) {
-					$number = \selling\UnitUi::getValue($eItem['number'], $eItem['unit']);
-				} else {
-					$number = p("{value} colis de {quantity}", "{value} colis de {quantity}", $eItem['number'], ['quantity' => \selling\UnitUi::getValue($eItem['packaging'], $eItem['unit'])]);
-				}
-
-
-				if($eItem['unit']) {
-					$unit = \selling\UnitUi::getBy($eItem['unit'], short: TRUE);
-				} else {
-					$unit = '';
-				}
-				$unitPrice = \util\TextUi::money($eItem['unitPrice']).$unit;
-
-				$products .= encode($eItem['name'])."\t: ".$number.' x '.$unitPrice."\n";
-
+				$products .= str_pad(encode($eItem['name']), $maxNameLength).' : '. str_pad(\util\TextUi::money($eItem['price']), 10, ' ', STR_PAD_LEFT).'<br/>';
 			}
 
 		$products .= '</pre>';
@@ -234,11 +220,11 @@ Vos producteurs", [
 
 			$products .= '<h3>'.s("Totaux").'</h3>';
 			$products .= '<pre>';
-				$products .= s("Total HT\t: {price}", ['price' => str_pad(\util\TextUi::money($eSale['priceExcludingVat']), 10, ' ', STR_PAD_LEFT)])."\n";
+				$products .= s("Total HT\t: {price}", ['price' => str_pad(\util\TextUi::money($eSale['priceExcludingVat']), 10, ' ', STR_PAD_LEFT)]).'<br/>';
 
 				foreach($eSale['vatByRate'] as $vatByRate) {
 
-					$products .= s("TVA à {vatRate}%\t: {amount}", ['vatRate' => $vatByRate['vatRate'], 'amount' => str_pad(\util\TextUi::money($vatByRate['vat']), 10, ' ', STR_PAD_LEFT)])."\n";
+					$products .= s("TVA à {vatRate}%\t: {amount}", ['vatRate' => $vatByRate['vatRate'], 'amount' => str_pad(\util\TextUi::money($vatByRate['vat']), 10, ' ', STR_PAD_LEFT)]).'<br/>';
 
 				}
 
@@ -256,7 +242,7 @@ Vos producteurs", [
 
 		$content = s("Bonjour,
 
-Voici le reçu de votre achat réalisé le {date} d'un montant de {amount} :
+Voici le reçu de votre achat réalisé le {date} d'un montant de {amount}.
 
 {products}
 
