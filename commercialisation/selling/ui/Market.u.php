@@ -293,15 +293,15 @@ class MarketUi {
 					}
 				$h .= '</h2>';
 
+				$buttons = [];
+
+				if($eSale->canSendTicket()) {
+					$buttons[] = '<a href="/selling/market:sendTicket?id='.$eSale['id'].'" class="btn btn-outline-primary">'.s("Envoyer le ticket").'</a>';
+				}
+
 				if($eSaleMarket->isMarketSelling()) {
 
-					$buttons = [];
-
 					$reopenButton = '<a data-ajax="/selling/sale:doUpdatePreparationStatus" post-id="'.$eSale['id'].'" post-preparation-status="'.Sale::DRAFT.'" class="btn btn-outline-primary" data-confirm="'.s("Voulez-vous réellement remettre cette vente en cours ?").'">'.s("Repasser en cours").'</a> ';
-
-					if($eSale->canSendTicket()) {
-						$buttons[] = '<a href="/selling/market:sendTicket?id='.$eSale['id'].'" class="btn btn-outline-primary">'.s("Envoyer le ticket").'</a>';
-					}
 
 					switch($eSale['preparationStatus']) {
 
@@ -323,13 +323,14 @@ class MarketUi {
 
 					}
 
-					if(count($buttons) > 0) {
+				}
 
-						$h .= '<div>';
-							$h .= implode(' ', $buttons);
-						$h .= '</div>';
+				if(count($buttons) > 0) {
 
-					}
+					$h .= '<div>';
+						$h .= implode(' ', $buttons);
+					$h .= '</div>';
+
 				}
 
 			$h .= '</div>';
