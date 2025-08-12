@@ -640,6 +640,7 @@ class MarketUi {
 					'name' => $eItemMarket['name'],
 					'unit' => $eItemMarket['unit'],
 					'unitPrice' => $eItemMarket['unitPrice'],
+					'unitPriceInitial' => $eItemMarket['unitPriceInitial'],
 					'number' => NULL,
 					'price' => NULL,
 					'packaging' => NULL,
@@ -665,6 +666,9 @@ class MarketUi {
 		$h = '<'.$tag.' class="market-item '.($eItemSale->empty() ? '' : 'market-item-highlight').'" '.$onclick.' data-locked="'.$locked.'" data-item="'.$eItemReference['id'].'">';
 
 			$more = \util\TextUi::money($eItemReference['unitPrice']).' <span class="util-annotation">'.\selling\UnitUi::getBy($eItemReference['unit'], short: TRUE).'</span>';
+			if($eItemReference['unitPriceInitial'] !== NULL) {
+				$more = '<span class="strikethrough">'.\util\TextUi::money($eItemReference['unitPriceInitial']).'</span> '.$more;
+			}
 
 			$h .= $this->getItemProduct($eItemMarket, $more);
 

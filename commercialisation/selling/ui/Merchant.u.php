@@ -111,6 +111,21 @@ class MerchantUi {
 								$h .= '€ '.\selling\UnitUi::getBy($eItem['unit'], short: TRUE);
 							$h .= '</div>';
 
+							if($eItem['unitPriceInitial'] !== NULL) {
+
+								$h .= '<div class="merchant-label form-control-label"></div>';
+								$h .= '<div class="merchant-actions"></div>';
+								$h .= '<div class="merchant-value-initial">';
+										$h .= s("au lieu de <span>{price}{unit}</span>", [
+											'span' => '<span class="strikethrough">',
+											'price' => $format(Item::UNIT_PRICE, $eItem['unitPriceInitial']),
+											'unit' => '€ '.\selling\UnitUi::getBy($eItem['unit'], short: TRUE)
+										]);
+								$h .= '</div>';
+								$h .= '<div></div>';
+
+							}
+
 							$h .= '<div class="merchant-label form-control-label" data-wrapper="price['.$eItem['id'].']">'.s("Montant").'</div>';
 							$h .= '<div class="merchant-actions" data-property="'.Item::PRICE.'">';
 								$h .= $actions(Item::PRICE);

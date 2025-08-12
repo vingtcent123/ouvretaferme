@@ -125,6 +125,16 @@ a.merchant-field {
 	position: relative;
 	z-index: 1;
 }
+.merchant-value-initial {
+	font-size: 0.85rem;
+	color: var(--muted);
+	font-style: italic;
+	margin-top: -1rem;
+	margin-bottom: -0.5rem;
+	border-left: 2px solid var(--muted);
+	padding-left: 0.5rem;
+	margin-left: 1rem;
+}
 
 body[data-touch="yes"] a.merchant-field {
 	border-top-left-radius: var(--radius);

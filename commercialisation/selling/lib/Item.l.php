@@ -744,6 +744,7 @@ class ItemLib extends ItemCrud {
 			]);
 
 			$eItem->buildIndex(['product', 'quality', 'name', 'packaging', 'locked', 'unit', 'unitPrice', 'number', 'price', 'vatRate'], $input, $position, new \Properties('create'));
+			self::setInitialPrice($eItem, var_filter($input['unitPriceDiscount'][$position] ?? NULL, '?float'));
 
 			$cItem[] = $eItem;
 
@@ -754,6 +755,17 @@ class ItemLib extends ItemCrud {
 		}
 
 		return $cItem;
+
+	}
+
+	protected static function setInitialPrice(Item $eItem, ?float $discountPrice): void {
+
+		if($discountPrice === NULL) {
+			return;
+		}
+
+		$eItem->buildProperty('unitPriceInitial', $eItem['unitPrice']);
+		$eItem->buildProperty('unitPrice', $discountPrice);
 
 	}
 

@@ -176,6 +176,7 @@ Item:
   packaging: ?decimal(6, 2, 0.01, null)
   unit: ?selling\Unit
   unitPrice: decimal(8, 2)
+  unitPriceInitial: ?decimal(8, 2)
   discount: int8(0, 100) = 0
   number: ?decimal(8, 2)
   price: ?decimal(8, 2)

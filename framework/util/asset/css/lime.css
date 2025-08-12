@@ -2971,3 +2971,24 @@ div.util-buttons > .util-button h4 {
 	}
 
 }
+
+.strikethrough {
+	color: var(--muted);
+	position: relative;
+	font-size: 1rem;
+}
+.strikethrough:before {
+	position: absolute;
+	content: "";
+	left: 0;
+	top: 50%;
+	right: 0;
+	border-top: 1px solid;
+	border-color: inherit;
+
+	-webkit-transform:rotate(-5deg);
+	-moz-transform:rotate(-5deg);
+	-ms-transform:rotate(-5deg);
+	-o-transform:rotate(-5deg);
+	transform:rotate(-5deg);
+}

@@ -386,7 +386,12 @@ class ItemUi {
 						} else {
 							$unit = '';
 						}
-						$value = \util\TextUi::money($eItem['unitPrice']).' '.$unit;
+
+						$value = '';
+						if($eItem['unitPriceInitial'] !== NULL) {
+							$value .= '<span class="item-item-unit-price-initial strikethrough">'.\util\TextUi::money($eItem['unitPriceInitial']).'</span> ';
+						}
+						$value .= \util\TextUi::money($eItem['unitPrice']).' '.$unit;
 
 						if($eItem['locked'] === Item::UNIT_PRICE) {
 							$h .= '<span class="item-item-locked">'.\Asset::icon('lock-fill').'</span> '.$value;
@@ -430,6 +435,7 @@ class ItemUi {
 									$h .= '<a onclick="Merchant.show(this)" class="util-quick" data-item="'.$eItem['id'].'" data-property="price">'.$value.'</a>';
 								}
 							}
+
 						$h .= '</td>';
 					}
 
@@ -910,11 +916,14 @@ class ItemUi {
 					$h .= '<div>'.s("Colisage").'</div>';
 				}
 				$h .= '<div>';
-						$h .= s("Prix unitaire");
-						if($eSale['hasVat']) {
-							$h .= ' <span class="util-annotation">'.$eSale->getTaxes().'</span>';
-						}
-					$h .= '</div>';
+					$h .= s("Prix unitaire");
+					if($eSale['hasVat']) {
+						$h .= ' <span class="util-annotation">'.$eSale->getTaxes().'</span>';
+					}
+				$h .= '</div>';
+				$h .= '<div>';
+					$h .= s("Prix remisé");
+				$h .= '</div>';
 				if($hasQuantity) {
 					$h .= '<div>'.s("Quantité vendue").'</div>';
 				}
@@ -981,6 +990,16 @@ class ItemUi {
 						$h .= $form->dynamicField($eItem, 'unitPrice['.$eProduct['id'].']*', function(\PropertyDescriber $d) use($form) {
 							$d->append = $form->addon(s("€"));
 						});
+
+					$h .= '</div>';
+					$h .= '<div data-wrapper="unitPriceDiscount['.$eProduct['id'].']">';
+
+						$h .= '<h4>'.s("Prix remisé").'</h4>';
+						$h .= '<div class="input-group">';
+							$h .= $form->addon(\Asset::icon('tag'));
+							$h .= $form->number('unitPriceDiscount['.$eProduct['id'].']', NULL, ['oninput' => 'Item.recalculateLock(this)', 'step' => 0.01]);
+							$h .= $form->addon(s("€"));
+						$h .= '</div>';
 
 					$h .= '</div>';
 

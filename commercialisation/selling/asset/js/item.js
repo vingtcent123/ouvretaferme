@@ -93,11 +93,12 @@ class Item {
 
 		const basePrice = wrapper.qs('[name^="price"]').value;
 		const baseUnitPrice = wrapper.qs('[name^="unitPrice"]').value;
+		const baseUnitPriceDiscount = wrapper.qs('[name^="unitPriceDiscount"]').value;
 		const baseNumber = wrapper.qs('[name^="number"]').value;
 
 		const packaging = parseFloat(wrapper.qs('[name^="packaging"]')?.value || 1);
 		const price = parseFloat(basePrice || 0);
-		const unitPrice = parseFloat(baseUnitPrice || 0);
+		const unitPrice = parseFloat(baseUnitPriceDiscount || baseUnitPrice || 0);
 		const number = parseFloat(baseNumber || 0);
 
 		switch(locked) {
@@ -108,6 +109,9 @@ class Item {
 
 			case 'unit-price' :
 				wrapper.qs('[name^="unitPrice"]').value = (baseNumber !== '' && basePrice !== '') ? ((number > 0 && packaging > 0) ? Math.round(100 * price / number / packaging) / 100 : 0) : '';
+				if(baseUnitPriceDiscount) {
+					wrapper.qs('[name^="unitPriceDiscount"]').value = '';
+				}
 				break;
 
 			case 'number' :
