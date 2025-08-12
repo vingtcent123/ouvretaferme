@@ -490,6 +490,11 @@ class ItemLib extends ItemCrud {
 			self::preparePricing($e, $properties);
 		}
 
+		self::setInitialPrice($e, var_filter($_POST['unitPriceDiscount'] ?? NULL, '?float'));
+		if($e['unitPriceInitial'] ?? NULL) {
+			$properties[] = 'unitPriceInitial';
+		}
+
 		Item::model()->beginTransaction();
 
 		parent::update($e, $properties);

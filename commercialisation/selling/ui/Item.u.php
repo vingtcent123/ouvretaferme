@@ -1221,10 +1221,27 @@ class ItemUi {
 				$h .= self::getPackagingGroup($form, 'packaging', $eItem);
 			}
 
-			$h .= $form->dynamicGroups($eItem, $eItem['sale']->isMarket() ?
-				['number', 'unitPrice'] :
-				['number', 'unitPrice', 'price']
+			$h .= $form->dynamicGroup($eItem, 'number');
+
+			$h .= $form->dynamicGroup($eItem, 'unitPrice', function($d) use($eItem, $form) {
+				if($eItem['unitPriceInitial'] !== NULL) {
+					$d->default = fn() => $eItem['unitPriceInitial'];
+				}
+			});
+
+			$h .= $form->group(
+				s("Prix remisé"),
+				'<div class="input-group">'.
+					$form->addon(\Asset::icon('tag'))
+					.$form->number('unitPriceDiscount', $eItem['unitPriceInitial'] ? $eItem['unitPrice'] : NULL, ['oninput' => 'Item.recalculateLock(this)', 'step' => 0.01])
+					.$form->addon(s("€ {taxes}", ['taxes' => $eItem['sale']->getTaxes()]).\selling\UnitUi::getBy($eItem['unit'], short: $eItem['unitShort'] ?? FALSE))
+				.'</div>'
 			);
+			$h .= '</div>';
+
+			if($eItem['sale']->isMarket() === FALSE) {
+				$h .= $form->dynamicGroup($eItem, 'price');
+			}
 
 			if($eItem['sale']['hasVat']) {
 				$h .= $form->dynamicGroup($eItem, 'vatRate');
