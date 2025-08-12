@@ -389,7 +389,7 @@ class ItemUi {
 
 						$value = '';
 						if($eItem['unitPriceInitial'] !== NULL) {
-							$value .= '<span class="item-item-unit-price-initial strikethrough">'.\util\TextUi::money($eItem['unitPriceInitial']).'</span> ';
+							$value .= '<div><span class="item-item-unit-price-initial strikethrough">'.\util\TextUi::money($eItem['unitPriceInitial']).'</span></div>';
 						}
 						$value .= \util\TextUi::money($eItem['unitPrice']).' '.$unit;
 
@@ -1228,7 +1228,11 @@ class ItemUi {
 				}
 			});
 
-			$h .= $form->dynamicGroup($eItem, 'unitPriceDiscount');
+			$h .= $form->dynamicGroup($eItem, 'unitPriceDiscount', function($d) use($eItem, $form) {
+				if($eItem['unitPriceInitial'] === NULL) {
+					$d->group = ['class' => 'hide'];
+				}
+			});
 
 			if($eItem['sale']->isMarket() === FALSE) {
 				$h .= $form->dynamicGroup($eItem, 'price');
@@ -1360,7 +1364,11 @@ class ItemUi {
 				$d->append = function(\util\FormUi $form, Item $eItem) {
 					$h = s("€ {taxes}", ['taxes' => $eItem['sale']->getTaxes()]);
 					$h .= \selling\UnitUi::getBy($eItem['unit'], short: $eItem['unitShort'] ?? FALSE);
-					return $form->addon($h);
+
+					$unitPriceDiscountSelect = '<a class="input-group-addon ">'.\Asset::icon('tag').'</a>';
+
+					return $form->addon($h)
+						.$form->addon($unitPriceDiscountSelect, ['title' => s("Ajouter un prix remisé"), 'onclick' => 'Item.toggleUnitPriceDiscountField(this, null);']);
 				};
 				break;
 

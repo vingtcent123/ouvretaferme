@@ -167,14 +167,18 @@ class Item extends ItemElement {
 				);
 
 			})
-			->setCallback('unitPriceDiscount.check', function(?float $unitPriceDiscount) use($p): bool {
+			->setCallback('unitPriceDiscount.check', function(?string $unitPriceDiscount) use($p, $input): bool {
 
-				if($p->isBuilt('unitPrice') === FALSE or $unitPriceDiscount === NULL) {
+				if($p->isBuilt('unitPrice') === FALSE) {
 					return TRUE;
 				}
 
-				$this['unitPriceInitial'] = $this['unitPrice'];
-				$this['unitPrice'] = $unitPriceDiscount;
+				if(empty($unitPriceDiscount)) {
+					$this['unitPriceInitial'] = NULL;
+				} else {
+					$this['unitPriceInitial'] = $this['unitPrice'];
+					$this['unitPrice'] = var_filter($unitPriceDiscount, 'float');
+				}
 
 				return TRUE;
 

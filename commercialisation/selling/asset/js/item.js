@@ -151,4 +151,25 @@ class Item {
 
 	}
 
+	static toggleUnitPriceDiscountField(target, visible) {
+
+		const wrapper = target.firstParent('[data-wrapper^="unitPrice"]');
+
+		const unitPriceDiscountFieldWrapper = wrapper.dataset.wrapper.replace('unitPrice', 'unitPriceDiscount');
+
+		const isHidden = qs('[data-wrapper="' + unitPriceDiscountFieldWrapper + '"]').classList.contains('hide');
+
+		if(visible || (visible === null && isHidden)) {
+
+			qs('[data-wrapper="' + unitPriceDiscountFieldWrapper + '"]').removeHide();
+
+		} else if(visible === false || (visible === null && isHidden === false)) {
+
+			qs('[data-wrapper="' + unitPriceDiscountFieldWrapper + '"]').hide();
+			qs('[data-wrapper="' + unitPriceDiscountFieldWrapper + '"]').qs('[name^="unitPriceDiscount"]').value = '';
+
+		}
+
+	}
+
 }
