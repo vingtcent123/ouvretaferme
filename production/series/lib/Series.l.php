@@ -592,9 +592,7 @@ class SeriesLib extends SeriesCrud {
 			$eSeriesNew['length'] = NULL;
 			$eSeriesNew['lengthPermanent'] = NULL;
 
-			Series::model()
-				->select('area', 'areaPermanent', 'length', 'lengthPermanent')
-				->update($eSeriesNew);
+			\series\PlaceLib::updateMetadata($eSeriesNew);
 
 		}
 
