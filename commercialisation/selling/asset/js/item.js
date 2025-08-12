@@ -76,8 +76,10 @@ class Item {
 			node.nextElementSibling.classList.remove('disabled');
 		});
 
-		target.classList.add('item-write-locked');
-		target.nextElementSibling.classList.add('disabled');
+		wrapper.qsa('[data-locked="' + property + '"]', node => {
+			node.classList.add('item-write-locked');
+			node.nextElementSibling.classList.add('disabled');
+		});
 
 		wrapper.qs('[name^="locked"]').value = property;
 
@@ -136,7 +138,7 @@ class Item {
 		const list = wrapper.qsa('input[name^="product["]:checked');
 
 		let amount = 0;
-		list.forEach(node => amount += parseFloat(node.firstParent('.items-products').qs('input[name^="price["]').value) || 0.0);
+		list.forEach(node => amount += parseFloat(node.firstParent('.items-products').qs('input[name^="price["]')?.value) || 0.0);
 
 
 		if(qs('#items-submit-articles')) {

@@ -1373,7 +1373,7 @@ class ItemUi {
 					);
 				};
 				$d->prepend = function(\util\FormUi $form) {
-					return $form->addon(\Asset::icon('tag'));
+					return $form->addon(\Asset::icon('tag'), ['data-locked' => 'unit-price']);
 				};
 				$d->append = function(\util\FormUi $form, Item $eItem) {
 					$h = s("€ {taxes}", ['taxes' => $eItem['sale']->getTaxes()]);
