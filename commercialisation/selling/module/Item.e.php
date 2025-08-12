@@ -184,7 +184,7 @@ class Item extends ItemElement {
 				return TRUE;
 
 			})
-			->setCallback('unitPriceDiscount.value', function(?float $number) use($p): bool {
+			->setCallback('unitPriceDiscount.value', function() use($p): bool {
 
 				if($p->isBuilt('unitPrice') === FALSE or $p->isBuilt('unitPriceInitial') === FALSE) {
 					return TRUE;

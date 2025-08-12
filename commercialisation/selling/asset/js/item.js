@@ -162,11 +162,16 @@ class Item {
 		if(visible || (visible === null && isHidden)) {
 
 			qs('[data-wrapper="' + unitPriceDiscountFieldWrapper + '"]').removeHide();
+			target.qs('[data-unit-price-discount-visible="1"]').removeHide();
+			target.qs('[data-unit-price-discount-visible="0"]').hide();
 
 		} else if(visible === false || (visible === null && isHidden === false)) {
 
 			qs('[data-wrapper="' + unitPriceDiscountFieldWrapper + '"]').hide();
 			qs('[data-wrapper="' + unitPriceDiscountFieldWrapper + '"]').qs('[name^="unitPriceDiscount"]').value = '';
+			target.qs('[data-unit-price-discount-visible="0"]').removeHide();
+			target.qs('[data-unit-price-discount-visible="1"]').hide();
+			Item.recalculateLock(target);
 
 		}
 

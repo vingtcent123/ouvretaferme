@@ -984,12 +984,15 @@ class ItemUi {
 					$h .= '<div data-wrapper="unitPrice['.$eProduct['id'].']">';
 
 						$h .= '<h4>'.s("Prix unitaire").'</h4>';
-						$h .= $form->dynamicField($eItem, 'unitPrice['.$eProduct['id'].']*', function(\PropertyDescriber $d) use($form) {
+						$h .= $form->dynamicField($eItem, 'unitPrice['.$eProduct['id'].']*', function(\PropertyDescriber $d) use($eItem, $form) {
 
-							$d->append = function()  use($form) {
-								$unitPriceDiscountSelect = '<a class="input-group-addon ">'.\Asset::icon('tag').'</a>';
+							$d->append = function() use($eItem, $form) {
+								$unitPriceDiscountSelect = '<a class="input-group-addon ">'
+									.\Asset::icon('tag', ['data-unit-price-discount-visible' => 0, 'class' => $eItem['unitPriceInitial'] === NULL ? '' : 'hide'])
+									.\Asset::icon('tag-fill', ['data-unit-price-discount-visible' => 1, 'class' => $eItem['unitPriceInitial'] === NULL ? 'hide' : ''])
+								.'</a>';
 								return $form->addon(s('€'))
-								.$form->addon($unitPriceDiscountSelect, ['title' => s("Ajouter un prix remisé"), 'onclick' => 'Item.toggleUnitPriceDiscountField(this, null);']);
+								.$form->addon($unitPriceDiscountSelect, ['title' => s("Gérer une remise de prix"), 'onclick' => 'Item.toggleUnitPriceDiscountField(this, null);']);
 							};
 
 						});
@@ -1368,10 +1371,13 @@ class ItemUi {
 					$h = s("€ {taxes}", ['taxes' => $eItem['sale']->getTaxes()]);
 					$h .= \selling\UnitUi::getBy($eItem['unit'], short: $eItem['unitShort'] ?? FALSE);
 
-					$unitPriceDiscountSelect = '<a class="input-group-addon ">'.\Asset::icon('tag').'</a>';
+					$unitPriceDiscountSelect = '<a class="input-group-addon ">'
+						.\Asset::icon('tag', ['data-unit-price-discount-visible' => 0, 'class' => $eItem['unitPriceInitial'] === NULL ? '' : 'hide'])
+						.\Asset::icon('tag-fill', ['data-unit-price-discount-visible' => 1, 'class' => $eItem['unitPriceInitial'] === NULL ? 'hide' : ''])
+					.'</a>';
 
 					return $form->addon($h)
-						.$form->addon($unitPriceDiscountSelect, ['title' => s("Ajouter un prix remisé"), 'onclick' => 'Item.toggleUnitPriceDiscountField(this, null);']);
+						.$form->addon($unitPriceDiscountSelect, ['title' => s("Gérer une remise de prix"), 'onclick' => 'Item.toggleUnitPriceDiscountField(this, null);']);
 				};
 				break;
 
