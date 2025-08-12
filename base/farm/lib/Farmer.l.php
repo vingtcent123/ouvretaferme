@@ -283,7 +283,19 @@ class FarmerLib extends FarmerCrud {
 			->delete();
 
 		if($affected > 0) {
+
+			\hr\Presence::model()
+				->whereFarm($eFarm)
+				->whereUser($eUser)
+				->delete();
+
+			\hr\Absence::model()
+				->whereFarm($eFarm)
+				->whereUser($eUser)
+				->delete();
+
 			\user\DropLib::closeNow($eUser);
+
 		}
 
 		Farmer::model()->commit();
