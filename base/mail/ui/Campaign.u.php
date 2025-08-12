@@ -10,6 +10,23 @@ class CampaignUi {
 
 	}
 
+	public static function unsubscribe(\farm\Farm $eFarm, ?string $email = NULL): string {
+
+		$link = \Lime::getUrl().\farm\FarmUi::url($eFarm).'/optIn';
+
+		if($email !== NULL) {
+			$link .= '?input='.\main\CryptLib::encrypt($email, 'mail');
+		}
+
+		$h = '<p style="font-size: 90%; border-top: 1px solid #888; margin-top: 30px; padding-top: 15px">';
+			$h .= s("Vous pouvez vous désinscrire de ces communications par e-mail en suivant ce lien :").'<br/>';
+			$h .= '<a href="'.encode($link).'">'.encode($link).'</a>';
+		$h .= '</p>';
+
+		return $h;
+
+	}
+
 	public function createSelect(\farm\Farm $eFarm, \Collection $cGroup, \Collection $ccShop): \Panel {
 
 		$h = '';
@@ -102,7 +119,7 @@ class CampaignUi {
 			switch($eCampaign['source']) {
 
 				case Campaign::GROUP :
-					$h .= '<div class="util-block-help">'.s("Vous allez envoyer un e-mail à tous les clients du groupe <u>{name}</link>.", ['name' => encode($eCampaign['sourceGroup']['name'])]).'</div>';
+					$h .= '<div class="util-block-help">'.s("Vous allez envoyer un e-mail à tous les clients du groupe <u>{name}</u>.", ['name' => encode($eCampaign['sourceGroup']['name'])]).'</div>';
 					break;
 
 				case Campaign::SHOP :
@@ -110,7 +127,7 @@ class CampaignUi {
 					break;
 
 				case Campaign::PERIOD :
-					$h .= '<div class="util-block-help">'.s("Vous allez envoyer un e-mail à tous les clients ayant été livrés il y a moins de <b>{value} mois</link>.", $eCampaign['sourcePeriod']).'</div>';
+					$h .= '<div class="util-block-help">'.s("Vous allez envoyer un e-mail à tous les clients ayant été livrés il y a moins de <b>{value} mois</b>.", $eCampaign['sourcePeriod']).'</div>';
 					break;
 
 				case Campaign::NEWSLETTER :
@@ -126,18 +143,25 @@ class CampaignUi {
 			$h .= $form->dynamicGroups($eCampaign, ['scheduledAt', 'subject']);
 
 			$h .= $form->group(
-				self::p('html')->label.\util\FormUi::info(s("L'e-mail envoyé contiendra toujours le bandeau et la signature que vous avez défini sur la <link>page de configuration des e-mails</link>.", ['link' => '<a href="/farm/farm:updateEmail?id='.$eCampaign['farm']['id'].'" target="_blank">'])),
-				'<div class="util-block">'.$form->dynamicField($eCampaign, 'html').'</div>'
+				self::p('content')->label.\util\FormUi::info(s("L'e-mail envoyé contiendra toujours le bandeau et la signature que vous avez défini sur la <link>page de configuration des e-mails</link>.", ['link' => '<a href="/farm/farm:updateEmail?id='.$eCampaign['farm']['id'].'" target="_blank">'])),
+				'<div class="util-block">'.$form->dynamicField($eCampaign, 'content').'</div>'
 			);
 
 			$h .= $form->group(
 				self::p('to')->label.'  <span class="util-counter" id="campaign-contacts">'.$eCampaign['cContact']->count().'</span>',
-				$form->dynamicField($eCampaign, 'to')
+				$form->dynamicField($eCampaign, 'to'),
+				['wrapper' => 'to']
 			);
 
-			$h .= $form->group(
-				content: $form->submit(s("Créer un brouillon"), ['class' => 'btn btn-primary btn-lg'])
-			);
+				$content = '<div class="util-block">';
+					$content .= '<p class="color-muted">'.s("Vous pourrez modifier votre campagne jusqu'à la date d'envoi que vous avez programmée.").'</p>';
+					$content .= $form->submit(s("Programmer la campagne"), ['class' => 'btn btn-primary btn-lg']);
+				$content .= '</div>';
+
+				$h .= $form->group(
+					content: $content
+				);
+
 
 		$h .= $form->close();
 
@@ -213,7 +237,7 @@ class CampaignUi {
 		$d = Campaign::model()->describer($property, [
 			'scheduledAt' => s("Programmer l'envoi de l'e-mail"),
 			'subject' => s("Titre de l'e-mail"),
-			'html' => s("Contenu de l'e-mail"),
+			'content' => s("Contenu de l'e-mail"),
 			'to' => s("Destinataires"),
 		]);
 
@@ -225,9 +249,13 @@ class CampaignUi {
 				$d->default = fn(Campaign $e) => $e->getMinScheduledAt();
 				break;
 
-			case 'html' :
+			case 'subject' :
+				$d->attributes = ['data-limit' => Campaign::model()->getPropertyRange('subject')[1]];
+				break;
+
+			case 'content' :
 				$d->before = fn(\util\FormUi $form, Campaign $e) => DesignUi::getBanner($e['farm']);
-				$d->after = fn(\util\FormUi $form, Campaign $e) => '<br/>'.DesignUi::getFooter($e['farm']);
+				$d->after = fn(\util\FormUi $form, Campaign $e) => '<br/>'.DesignUi::getFooter($e['farm']).self::unsubscribe($e['farm']);
 				$d->placeholder = s("Tapez votre texte ici...");
 				break;
 
@@ -237,7 +265,8 @@ class CampaignUi {
 				$d->autocompleteBody = function(\util\FormUi $form, Campaign $e) {
 					$e->expects(['farm']);
 					return [
-						'farm' => $e['farm']['id']
+						'farm' => $e['farm']['id'],
+						'new' => TRUE
 					];
 				};
 				new \mail\ContactUi()->query($d, TRUE);

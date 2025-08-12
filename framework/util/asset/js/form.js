@@ -941,8 +941,8 @@ class AutocompleteField {
 						html += value['itemHtml'];
 					html += '</li>';
 				} else if(type === 'link') {
-					html += '<li data-ajax="'+ value.link +'" data-ajax-method="get" class="autocomplete-link">';
-						html += value['itemHtml'];
+					html += '<li class="autocomplete-link">';
+						html += '<a href="'+ value['link'] +'" '+ (value['target'] !== undefined ? 'target="'+ value['target'] +'"' : '') +'>'+ value['itemHtml'] +'</a>';
 					html += '</li>';
 				} else {
 					html += '<li data-n="'+ key +'">';

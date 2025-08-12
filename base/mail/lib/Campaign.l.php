@@ -5,7 +5,7 @@ class CampaignLib extends CampaignCrud {
 
 	public static function getPropertiesCreate(): array {
 
-		return ['toType', 'toShop', 'toGroup'];
+		return ['scheduledAt', 'subject', 'content', 'to'];
 
 	}
 
@@ -29,21 +29,13 @@ class CampaignLib extends CampaignCrud {
 
 	}
 
-	public static function synchronizeCustomer(\selling\Customer $eCustomer): void {
-
-		$active = \selling\Customer::model()
-			->whereFarm($eCustomer['farm'])
-			->whereEmail($eCustomer['email'])
-			->whereStatus(\selling\Customer::ACTIVE)
-			->exists();
-
-		Campaign::model()
-			->whereFarm($eCustomer['farm'])
-			->whereEmail($eCustomer['email'])
-			->update([
-				'activeCustomer' => $active
-			]);
-
+	public static function getLimits(): \Collection {
+/*
+		return Campaign::model()
+			->select(Campaign::getSelection())
+			->whereFarm($eFarm)
+			->getCollection($position, $number);
+*/
 	}
 
 }

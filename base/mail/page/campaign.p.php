@@ -39,8 +39,8 @@ new \mail\CampaignPage()
 
 	})
 	->doCreate(function($data) {
-		throw new RedirectAction(\farm\FarmUi::urlCommunicationsMailing($data->eFarm).'?success=mail:Campaign::created');
-	});
+		throw new RedirectAction(\farm\FarmUi::urlCommunicationsCampaign($data->eFarm).'?success=mail:Campaign::created');
+	}, onKo: fn() => \mail\Campaign::fail('createError'));
 
 new \farm\FarmPage()
 	->read('createSelect', function($data) {

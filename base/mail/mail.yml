@@ -4,11 +4,10 @@ Campaign:
   source: ?enum(PERIOD, SHOP, GROUP, NEWSLETTER)
   sourceShop: ?shop\Shop
   sourceGroup: ?selling\Group
-  sourcePeriod: int8(1, 12)
+  sourcePeriod: ?int8(1, 12)
   to: json
   subject: text8(1, 100)
-  html: ?editor16(0, null)
-  text: ?text16(0, null)
+  content: editor16(1, null)
   sent: int(0, null) = 0
   delivered: int(0, null) = 0
   opened: int(0, null) = 0
@@ -16,7 +15,7 @@ Campaign:
   spam: int(0, null) = 0
   status: enum(CONFIRMED, SENT) = SENT
   scheduledAt: datetime
-  sentAt: datetime
+  sentAt: ?datetime
   createdAt: datetime = SPECIAL(now)
 
 Contact:

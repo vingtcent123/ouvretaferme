@@ -115,8 +115,6 @@ class ContactUi {
 
 		$html .= '</div>';
 
-		//$te$eCustomer['name'].' / '.$eCustomer->getTextCategory(short: TRUE);
-		
 		return [
 			'value' => $eContact['email'],
 			'itemHtml' => $html,
@@ -132,7 +130,8 @@ class ContactUi {
 
 		return [
 			'type' => 'link',
-			'link' => '/mail/contact:create?farm='.$eFarm['id'],
+			'link' => \farm\FarmUi::urlCommunicationsContact($eFarm),
+			'target' => '_blank',
 			'itemHtml' => $item
 		];
 

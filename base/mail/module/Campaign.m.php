@@ -49,11 +49,10 @@ class CampaignModel extends \ModuleModel {
 			'source' => ['enum', [\mail\Campaign::PERIOD, \mail\Campaign::SHOP, \mail\Campaign::GROUP, \mail\Campaign::NEWSLETTER], 'null' => TRUE, 'cast' => 'enum'],
 			'sourceShop' => ['element32', 'shop\Shop', 'null' => TRUE, 'cast' => 'element'],
 			'sourceGroup' => ['element32', 'selling\Group', 'null' => TRUE, 'cast' => 'element'],
-			'sourcePeriod' => ['int8', 'min' => 1, 'max' => 12, 'cast' => 'int'],
+			'sourcePeriod' => ['int8', 'min' => 1, 'max' => 12, 'null' => TRUE, 'cast' => 'int'],
 			'to' => ['json', 'cast' => 'array'],
 			'subject' => ['text8', 'min' => 1, 'max' => 100, 'cast' => 'string'],
-			'html' => ['editor16', 'min' => 0, 'max' => NULL, 'null' => TRUE, 'cast' => 'string'],
-			'text' => ['text16', 'min' => 0, 'max' => NULL, 'null' => TRUE, 'cast' => 'string'],
+			'content' => ['editor16', 'min' => 1, 'max' => NULL, 'cast' => 'string'],
 			'sent' => ['int32', 'min' => 0, 'max' => NULL, 'cast' => 'int'],
 			'delivered' => ['int32', 'min' => 0, 'max' => NULL, 'cast' => 'int'],
 			'opened' => ['int32', 'min' => 0, 'max' => NULL, 'cast' => 'int'],
@@ -61,12 +60,12 @@ class CampaignModel extends \ModuleModel {
 			'spam' => ['int32', 'min' => 0, 'max' => NULL, 'cast' => 'int'],
 			'status' => ['enum', [\mail\Campaign::CONFIRMED, \mail\Campaign::SENT], 'cast' => 'enum'],
 			'scheduledAt' => ['datetime', 'cast' => 'string'],
-			'sentAt' => ['datetime', 'cast' => 'string'],
+			'sentAt' => ['datetime', 'null' => TRUE, 'cast' => 'string'],
 			'createdAt' => ['datetime', 'cast' => 'string'],
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'farm', 'source', 'sourceShop', 'sourceGroup', 'sourcePeriod', 'to', 'subject', 'html', 'text', 'sent', 'delivered', 'opened', 'failed', 'spam', 'status', 'scheduledAt', 'sentAt', 'createdAt'
+			'id', 'farm', 'source', 'sourceShop', 'sourceGroup', 'sourcePeriod', 'to', 'subject', 'content', 'sent', 'delivered', 'opened', 'failed', 'spam', 'status', 'scheduledAt', 'sentAt', 'createdAt'
 		]);
 
 		$this->propertiesToModule += [
@@ -183,12 +182,8 @@ class CampaignModel extends \ModuleModel {
 		return $this->where('subject', ...$data);
 	}
 
-	public function whereHtml(...$data): CampaignModel {
-		return $this->where('html', ...$data);
-	}
-
-	public function whereText(...$data): CampaignModel {
-		return $this->where('text', ...$data);
+	public function whereContent(...$data): CampaignModel {
+		return $this->where('content', ...$data);
 	}
 
 	public function whereSent(...$data): CampaignModel {

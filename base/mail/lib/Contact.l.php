@@ -128,6 +128,9 @@ class ContactLib extends ContactCrud {
 				$search->set('period', $eCampaign['sourcePeriod']);
 				break;
 
+			default :
+				return new \Collection();
+
 		}
 
 		return self::getByFarm($eCampaign['farm'], withCustomer: $withCustomer, search: $search);

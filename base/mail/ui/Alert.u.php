@@ -7,6 +7,11 @@ class AlertUi {
 
 		return match($fqn) {
 
+			'Campaign::scheduledAt.past' => s("Votre campagne ne peut pas être programmée aussi tôt, veuillez décaler l'envoi."),
+			'Campaign::to.empty' => s("Merci de renseigner au moins un contact"),
+			'Campaign::to.check' => s("Une ou plusieurs adresses e-mail ne sont pas présentes dans votre base de contacts"),
+			'Campaign::createError' => s("Il y a des erreurs à corriger avant de programmer cette campagne."),
+
 			'Contact::email.duplicate' => s("Il y a déjà un contact avec cette adresse e-mail"),
 
 			default => NULL

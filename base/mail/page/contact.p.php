@@ -10,9 +10,7 @@ new \mail\ContactPage()
 
 	})
 	->create()
-	->doCreate(function($data) {
-		throw new RedirectAction(\farm\FarmUi::urlCommunicationsMailing($data->eFarm).'?success=mail:Contact::created');
-	});
+	->doCreate(fn() => throw new ReloadAction('mail', 'Contact::created'));
 
 new \mail\ContactPage()
 	->doUpdateProperties('doUpdateActive', ['active'], fn($data) => throw new ViewAction($data))
