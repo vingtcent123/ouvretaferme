@@ -95,10 +95,12 @@ class ItemLib extends ItemCrud {
 				Customer::PRO => $eProduct->calcProMagicPrice($eSale['hasVat']),
 				Customer::PRIVATE => $eProduct->calcPrivateMagicPrice($eSale['hasVat']),
 			};
-			
+			$eItem['unitPriceInitial'] ??= $eProduct[$eSale['type'].'PriceInitial'];
+
 		} else {
 
 			$eItem['unit'] = new Unit();
+			$eItem['unitPriceInitial'] = NULL;
 			$eItem['packaging'] = NULL;
 
 		}

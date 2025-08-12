@@ -251,9 +251,11 @@ Product:
   unit: ?selling\Unit = PHP(\Setting::get('selling\unitDefaultId'))
   private: bool = TRUE
   privatePrice: ?decimal(8, 2)
+  privatePriceInitial: ?decimal(8, 2)
   privateStep: ?decimal(6, 2, 0.01, null)
   pro: bool = TRUE
   proPrice: ?decimal(8, 2)
+  proPriceInitial: ?decimal(8, 2)
   proPackaging: ?float32(0.01, null)
   proStep: ?decimal(6, 2, 0.01, null)
   vat: int8(1, null)

@@ -60,9 +60,11 @@ class ProductModel extends \ModuleModel {
 			'unit' => ['element32', 'selling\Unit', 'null' => TRUE, 'cast' => 'element'],
 			'private' => ['bool', 'cast' => 'bool'],
 			'privatePrice' => ['decimal', 'digits' => 8, 'decimal' => 2, 'null' => TRUE, 'cast' => 'float'],
+			'privatePriceInitial' => ['decimal', 'digits' => 8, 'decimal' => 2, 'null' => TRUE, 'cast' => 'float'],
 			'privateStep' => ['decimal', 'digits' => 6, 'decimal' => 2, 'min' => 0.01, 'max' => NULL, 'null' => TRUE, 'cast' => 'float'],
 			'pro' => ['bool', 'cast' => 'bool'],
 			'proPrice' => ['decimal', 'digits' => 8, 'decimal' => 2, 'null' => TRUE, 'cast' => 'float'],
+			'proPriceInitial' => ['decimal', 'digits' => 8, 'decimal' => 2, 'null' => TRUE, 'cast' => 'float'],
 			'proPackaging' => ['float32', 'min' => 0.01, 'max' => NULL, 'null' => TRUE, 'cast' => 'float'],
 			'proStep' => ['decimal', 'digits' => 6, 'decimal' => 2, 'min' => 0.01, 'max' => NULL, 'null' => TRUE, 'cast' => 'float'],
 			'vat' => ['int8', 'min' => 1, 'max' => NULL, 'cast' => 'int'],
@@ -77,7 +79,7 @@ class ProductModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'name', 'description', 'vignette', 'category', 'plant', 'variety', 'size', 'origin', 'farm', 'unit', 'private', 'privatePrice', 'privateStep', 'pro', 'proPrice', 'proPackaging', 'proStep', 'vat', 'quality', 'composition', 'compositionVisibility', 'stock', 'stockLast', 'stockUpdatedAt', 'createdAt', 'status'
+			'id', 'name', 'description', 'vignette', 'category', 'plant', 'variety', 'size', 'origin', 'farm', 'unit', 'private', 'privatePrice', 'privatePriceInitial', 'privateStep', 'pro', 'proPrice', 'proPriceInitial', 'proPackaging', 'proStep', 'vat', 'quality', 'composition', 'compositionVisibility', 'stock', 'stockLast', 'stockUpdatedAt', 'createdAt', 'status'
 		]);
 
 		$this->propertiesToModule += [
@@ -204,6 +206,10 @@ class ProductModel extends \ModuleModel {
 		return $this->where('privatePrice', ...$data);
 	}
 
+	public function wherePrivatePriceInitial(...$data): ProductModel {
+		return $this->where('privatePriceInitial', ...$data);
+	}
+
 	public function wherePrivateStep(...$data): ProductModel {
 		return $this->where('privateStep', ...$data);
 	}
@@ -214,6 +220,10 @@ class ProductModel extends \ModuleModel {
 
 	public function whereProPrice(...$data): ProductModel {
 		return $this->where('proPrice', ...$data);
+	}
+
+	public function whereProPriceInitial(...$data): ProductModel {
+		return $this->where('proPriceInitial', ...$data);
 	}
 
 	public function whereProPackaging(...$data): ProductModel {

@@ -389,7 +389,7 @@ class ItemUi {
 
 						$value = '';
 						if($eItem['unitPriceInitial'] !== NULL) {
-							$value .= '<div><span class="item-item-unit-price-initial strikethrough">'.\util\TextUi::money($eItem['unitPriceInitial']).'</span></div>';
+							$value .= '<div><span class="item-item-unit-price-initial strikethrough">'.\util\TextUi::money($eItem['unitPriceInitial']).' '.$unit.'</span></div>';
 						}
 						$value .= \util\TextUi::money($eItem['unitPrice']).' '.$unit;
 
@@ -921,9 +921,6 @@ class ItemUi {
 						$h .= ' <span class="util-annotation">'.$eSale->getTaxes().'</span>';
 					}
 				$h .= '</div>';
-				$h .= '<div>';
-					$h .= s("Prix remisé");
-				$h .= '</div>';
 				if($hasQuantity) {
 					$h .= '<div>'.s("Quantité vendue").'</div>';
 				}
@@ -988,17 +985,23 @@ class ItemUi {
 
 						$h .= '<h4>'.s("Prix unitaire").'</h4>';
 						$h .= $form->dynamicField($eItem, 'unitPrice['.$eProduct['id'].']*', function(\PropertyDescriber $d) use($form) {
-							$d->append = $form->addon(s("€"));
+
+							$d->append = function()  use($form) {
+								$unitPriceDiscountSelect = '<a class="input-group-addon ">'.\Asset::icon('tag').'</a>';
+								return $form->addon(s('€'))
+								.$form->addon($unitPriceDiscountSelect, ['title' => s("Ajouter un prix remisé"), 'onclick' => 'Item.toggleUnitPriceDiscountField(this, null);']);
+							};
+
 						});
 
-					$h .= '</div>';
+						$h .= '<div data-wrapper="unitPriceDiscount['.$eProduct['id'].']" class="mt-1'.($eItem['unitPriceInitial'] === NULL ? ' hide' : '').'">';
 
-					$h .= '<div data-wrapper="unitPriceDiscount['.$eProduct['id'].']">';
+							$h .= '<h4>'.s("Prix remisé").'</h4>';
+							$h .= $form->dynamicField($eItem, 'unitPriceDiscount['.$eProduct['id'].']*', function(\PropertyDescriber $d) use($form) {
+								$d->append = $form->addon(s("€"));
+							});
 
-						$h .= '<h4>'.s("Prix remisé").'</h4>';
-						$h .= $form->dynamicField($eItem, 'unitPriceDiscount['.$eProduct['id'].']*', function(\PropertyDescriber $d) use($form) {
-							$d->append = $form->addon(s("€"));
-						});
+						$h .= '</div>';
 
 					$h .= '</div>';
 

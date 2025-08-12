@@ -178,9 +178,19 @@ class Item extends ItemElement {
 				} else {
 					$this['unitPriceInitial'] = $this['unitPrice'];
 					$this['unitPrice'] = var_filter($unitPriceDiscount, 'float');
+					$p->addBuilt('unitPriceInitial');
 				}
 
 				return TRUE;
+
+			})
+			->setCallback('unitPriceDiscount.value', function(?float $number) use($p): bool {
+
+				if($p->isBuilt('unitPrice') === FALSE or $p->isBuilt('unitPriceInitial') === FALSE) {
+					return TRUE;
+				}
+
+				return $this['unitPriceInitial'] > $this['unitPrice'];
 
 			})
 			->setCallback('price.locked', function(?float $price) use($p): bool {
