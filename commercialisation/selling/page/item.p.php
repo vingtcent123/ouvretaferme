@@ -48,7 +48,7 @@ new Page(function($data) {
 	->post('doCreateCollection', function($data) {
 
 		$fw = new FailWatch();
-dd($_POST);
+
 		$data->cItem = \selling\ItemLib::build($data->eSale, $_POST, TRUE);
 
 		$fw->validate(onKo: fn() => $fw->has('Item::createEmpty') ? NULL : \selling\Item::fail('createCollectionError'));

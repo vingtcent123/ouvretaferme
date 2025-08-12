@@ -995,6 +995,13 @@ class ItemUi {
 								.$form->addon($unitPriceDiscountSelect, ['title' => s("Gérer une remise de prix"), 'onclick' => 'Item.toggleUnitPriceDiscountField(this, null);']);
 							};
 
+							$d->default = function() use($eItem) {
+								if($eItem['unitPriceInitial'] !== NULL) {
+									return $eItem['unitPriceInitial'];
+								}
+								return $eItem['unitPrice'];
+							};
+
 						});
 
 						$h .= '<div data-wrapper="unitPriceDiscount['.$eProduct['id'].']" class="mt-1'.($eItem['unitPriceInitial'] === NULL ? ' hide' : '').'">';
@@ -1371,7 +1378,7 @@ class ItemUi {
 					$h = s("€ {taxes}", ['taxes' => $eItem['sale']->getTaxes()]);
 					$h .= \selling\UnitUi::getBy($eItem['unit'], short: $eItem['unitShort'] ?? FALSE);
 
-					$unitPriceDiscountSelect = '<a class="input-group-addon ">'
+					$unitPriceDiscountSelect = '<a class="input-group-addon">'
 						.\Asset::icon('tag', ['data-unit-price-discount-visible' => 0, 'class' => $eItem['unitPriceInitial'] === NULL ? '' : 'hide'])
 						.\Asset::icon('tag-fill', ['data-unit-price-discount-visible' => 1, 'class' => $eItem['unitPriceInitial'] === NULL ? 'hide' : ''])
 					.'</a>';

@@ -221,6 +221,8 @@ class Product extends ProductElement {
 					$value = NULL;
 				}
 
+				return TRUE;
+
 			})
 			->setCallback('proPrice.empty', function(?float &$value) use ($p) {
 
@@ -235,6 +237,120 @@ class Product extends ProductElement {
 				} else {
 					$value = NULL;
 				}
+
+				return TRUE;
+
+			})
+			// Quick uniquement
+			->setCallback('privatePrice.discount', function(?string $value) use ($p) {
+
+				if(count($p->getBuilt()) !== 0 or $this['privatePriceInitial'] === NULL) {
+					return TRUE;
+				}
+
+				$this['privatePriceInitial'] = var_filter($value, 'float');
+				$p->addBuilt('privatePriceInitial');
+
+				throw new \PropertySkip();
+
+			})
+			->setCallback('privatePriceDiscount.check', function(?string $privatePriceDiscount) use($p, $input): bool {
+
+				if($p->isBuilt('privatePrice') === FALSE) {
+					return TRUE;
+				}
+
+				if(empty($privatePriceDiscount)) {
+					$this['privatePriceInitial'] = NULL;
+				} else {
+					$this['privatePriceInitial'] = $this['privatePrice'];
+					$this['privatePrice'] = var_filter($privatePriceDiscount, 'float');
+					$p->addBuilt('privatePriceInitial');
+				}
+
+				return TRUE;
+
+			})
+			// Quick uniquement
+			->setCallback('privatePriceDiscount.discount', function(?string $privatePriceDiscount) use($p, $input): bool {
+
+				if(count($p->getBuilt()) !== 0) {
+					return TRUE;
+				}
+
+				if(empty($privatePriceDiscount)) {
+					$this['privatePriceInitial'] = NULL;
+				} else {
+					$this['privatePrice'] = var_filter($privatePriceDiscount, 'float');
+					$p->addBuilt('privatePrice');
+				}
+
+				return TRUE;
+
+			})
+			->setCallback('privatePriceDiscount.value', function() use($p): bool {
+
+				if($p->isBuilt('privatePrice') === FALSE or $p->isBuilt('privatePriceInitial') === FALSE) {
+					return TRUE;
+				}
+
+				return $this['privatePriceInitial'] > $this['privatePrice'];
+
+			})
+			// Quick uniquement
+			->setCallback('proPrice.discount', function(?string $value) use ($p) {
+
+				if(count($p->getBuilt()) !== 0 or $this['proPriceInitial'] === NULL) {
+					return TRUE;
+				}
+
+				$this['proPriceInitial'] = var_filter($value, 'float');
+				$p->addBuilt('proPriceInitial');
+
+				throw new \PropertySkip();
+
+			})
+			->setCallback('proPriceDiscount.check', function(?string $proPriceDiscount) use($p, $input): bool {
+
+				if($p->isBuilt('proPrice') === FALSE) {
+					return TRUE;
+				}
+
+				if(empty($proPriceDiscount)) {
+					$this['proPriceInitial'] = NULL;
+				} else {
+					$this['proPriceInitial'] = $this['proPrice'];
+					$this['proPrice'] = var_filter($proPriceDiscount, 'float');
+					$p->addBuilt('proPriceInitial');
+				}
+
+				return TRUE;
+
+			})
+			// Quick uniquement
+			->setCallback('proPriceDiscount.discount', function(?string $proPriceDiscount) use($p, $input): bool {
+
+				if(count($p->getBuilt()) !== 0) {
+					return TRUE;
+				}
+
+				if(empty($proPriceDiscount)) {
+					$this['proPriceInitial'] = NULL;
+				} else {
+					$this['proPrice'] = var_filter($proPriceDiscount, 'float');
+					$p->addBuilt('proPrice');
+				}
+
+				return TRUE;
+
+			})
+			->setCallback('proPriceDiscount.value', function() use($p): bool {
+
+				if($p->isBuilt('proPrice') === FALSE or $p->isBuilt('proPriceInitial') === FALSE) {
+					return TRUE;
+				}
+
+				return $this['proPriceInitial'] > $this['proPrice'];
 
 			});
 		

@@ -191,7 +191,7 @@ class FormUi {
 
 		$e->expects(['id', $property]);
 
-		$form = new FormUi();
+		$form = new FormUi(['data-form' => 'quick']);
 
 		$uiClass = '\\'.$e->getModule().'Ui';
 
@@ -2215,6 +2215,10 @@ class FormUi {
 
 	public function getLastFieldId(): ?string {
 		return $this->lastFieldId;
+	}
+
+	public function getFormOptions(): array {
+		return $this->options;
 	}
 
 }

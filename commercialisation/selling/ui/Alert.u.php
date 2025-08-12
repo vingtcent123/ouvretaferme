@@ -39,6 +39,8 @@ class AlertUi {
 			'Product::proOrPrivate.check' => s("Veuillez déterminer si votre produit composé est vendu aux clients particuliers ou aux clients professionnels. Il ne peut pas à la fois être vendu aux professionnels et aux particuliers"),
 			'Product::privatePrice.empty' => s("Veuillez indiquer le prix de ce produit vendu aux particuliers"),
 			'Product::proPrice.empty' => s("Veuillez indiquer le prix de ce produit vendu aux professionnels"),
+			'Product::privatePriceDiscount.value' => s("Le prix remisé doit être plus avantageux que le prix de base"),
+			'Product::proPriceDiscount.value' => s("Le prix remisé doit être plus avantageux que le prix de base"),
 
 			'Sale::deletedNotDraft' => s("Il n'est possible de supprimer que les ventes à l'état de brouillon ou de panier."),
 			'Sale::deletedMarket' => s("Cette vente de marché ne peut pas être supprimée."),

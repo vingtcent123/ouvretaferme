@@ -37,14 +37,14 @@ class ProductLib extends ProductCrud {
 			if($for === 'update') {
 
 				if($eProduct['private']) {
-					$properties = array_merge($properties, ['privatePrice', 'privateStep']);
+					$properties = array_merge($properties, ['privatePrice', 'privateStep', 'privatePriceDiscount']);
 				} else if($eProduct['pro']) {
-					$properties = array_merge($properties, ['proPrice', 'proPackaging', 'proStep']);
+					$properties = array_merge($properties, ['proPrice', 'proPackaging', 'proStep', 'proPriceDiscount']);
 				}
 
 			} else if($for === 'create') {
 
-				$properties = array_merge($properties, ['pro', 'proPrice', 'proPackaging', 'private', 'privatePrice', 'proOrPrivate']);
+				$properties = array_merge($properties, ['pro', 'proPrice', 'proPriceDiscount', 'proPackaging', 'private', 'privatePrice', 'privatePriceDiscount', 'proOrPrivate']);
 
 			}
 
@@ -52,7 +52,7 @@ class ProductLib extends ProductCrud {
 
 		} else {
 
-			$properties = ['name', 'category', 'variety', 'size', 'origin', 'description', 'quality', 'plant', 'pro', 'proPrice', 'proPackaging', 'private', 'privatePrice', 'vat'];
+			$properties = ['name', 'category', 'variety', 'size', 'origin', 'description', 'quality', 'plant', 'pro', 'proPrice', 'proPriceDiscount', 'proPackaging', 'private', 'privatePrice', 'privatePriceDiscount', 'vat'];
 
 			if($for === 'update') {
 				$properties[] = 'privateStep';
@@ -62,6 +62,19 @@ class ProductLib extends ProductCrud {
 			return $properties;
 
 		}
+
+	}
+	public static function update(Product $e, array $properties): void {
+
+		if(array_delete($properties, 'privatePriceDiscount')) {
+			$properties[] = 'privatePriceInitial';
+		}
+
+		if(array_delete($properties, 'proPriceDiscount')) {
+			$properties[] = 'proPriceInitial';
+		}
+
+		parent::update($e, $properties);
 
 	}
 
