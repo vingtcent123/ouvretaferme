@@ -139,8 +139,13 @@ class Item {
 		list.forEach(node => amount += parseFloat(node.firstParent('.items-products').qs('input[name^="price["]').value) || 0.0);
 
 
-		qs('#items-submit-articles').innerHTML = list.length;
-		qs('#items-submit-price').innerHTML = money(amount);
+		if(qs('#items-submit-articles')) {
+			qs('#items-submit-articles').innerHTML = list.length;
+		}
+
+		if(qs('#items-submit-price')) {
+			qs('#items-submit-price').innerHTML = money(amount);
+		}
 
 	}
 

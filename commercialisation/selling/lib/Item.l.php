@@ -10,7 +10,7 @@ class ItemLib extends ItemCrud {
 				'sale' => ['hasVat']
 			]);
 
-			$properties = ['name', 'quality', 'locked', 'packaging', 'number', 'unitPrice', 'price'];
+			$properties = ['name', 'quality', 'locked', 'packaging', 'number', 'unitPrice', 'unitPriceDiscount', 'price'];
 
 			if($e['sale']['hasVat']) {
 				$properties[] = 'vatRate';
@@ -490,8 +490,7 @@ class ItemLib extends ItemCrud {
 			self::preparePricing($e, $properties);
 		}
 
-		self::setInitialPrice($e, var_filter($_POST['unitPriceDiscount'] ?? NULL, '?float'));
-		if($e['unitPriceInitial'] ?? NULL) {
+		if(array_delete($properties, 'unitPriceDiscount')) {
 			$properties[] = 'unitPriceInitial';
 		}
 
@@ -748,8 +747,7 @@ class ItemLib extends ItemCrud {
 				'discount' => $eSale['discount']
 			]);
 
-			$eItem->buildIndex(['product', 'quality', 'name', 'packaging', 'locked', 'unit', 'unitPrice', 'number', 'price', 'vatRate'], $input, $position, new \Properties('create'));
-			self::setInitialPrice($eItem, var_filter($input['unitPriceDiscount'][$position] ?? NULL, '?float'));
+			$eItem->buildIndex(['product', 'quality', 'name', 'packaging', 'locked', 'unit', 'unitPrice', 'unitPriceDiscount', 'number', 'price', 'vatRate'], $input, $position, new \Properties('create'));
 
 			$cItem[] = $eItem;
 
@@ -760,17 +758,6 @@ class ItemLib extends ItemCrud {
 		}
 
 		return $cItem;
-
-	}
-
-	protected static function setInitialPrice(Item $eItem, ?float $discountPrice): void {
-
-		if($discountPrice === NULL) {
-			return;
-		}
-
-		$eItem->buildProperty('unitPriceInitial', $eItem['unitPrice']);
-		$eItem->buildProperty('unitPrice', $discountPrice);
 
 	}
 

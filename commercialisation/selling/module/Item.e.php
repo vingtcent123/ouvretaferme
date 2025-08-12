@@ -167,6 +167,18 @@ class Item extends ItemElement {
 				);
 
 			})
+			->setCallback('unitPriceDiscount.check', function(?float $unitPriceDiscount) use($p): bool {
+
+				if($p->isBuilt('unitPrice') === FALSE or $unitPriceDiscount === NULL) {
+					return TRUE;
+				}
+
+				$this['unitPriceInitial'] = $this['unitPrice'];
+				$this['unitPrice'] = $unitPriceDiscount;
+
+				return TRUE;
+
+			})
 			->setCallback('price.locked', function(?float $price) use($p): bool {
 
 				return (
