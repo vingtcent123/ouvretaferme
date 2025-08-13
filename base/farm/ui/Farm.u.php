@@ -269,7 +269,7 @@ class FarmUi {
 	}
 
 	public static function urlCommunicationsCampaign(Farm $eFarm): string {
-		return self::url($eFarm).'/contacts';
+		return self::url($eFarm).'/campagnes';
 	}
 
 	public static function urlCommunicationsContact(Farm $eFarm): string {

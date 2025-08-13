@@ -295,17 +295,20 @@ class ContactLib extends ContactCrud {
 
 		} else if($search->get('period')) {
 
-        $cCustomer = \selling\Sale::model()
-            ->select(['customer'])
+			$emails = \selling\Sale::model()
+            ->select([
+					'customer' => ['type', 'email']
+				])
+				->whereOrigin('IN', [\selling\Sale::SALE_MARKET, \selling\Sale::SALE])
+				->whereCustomer('!=', NULL)
 			  	->whereDeliveredAt('>', new \Sql('NOW() - INTERVAL '.(int)$search->get('period').' MONTH'))
             ->wherePreparationStatus(\selling\Sale::DELIVERED)
             ->group('customer')
-            ->getColumn('customer');
+            ->getColumn('customer')
+		  		->filter(fn($eCustomer) => $eCustomer['type'] === \selling\Customer::PRIVATE)
+		  		->getColumn('email');
 
-			Contact::model()
-				->join(\selling\Customer::model(), 'm1.email = m2.email AND m1.farm = m2.farm')
-				->where('m2.type', \selling\Customer::PRIVATE)
-				->where('m2.id', 'IN', $cCustomer);
+			Contact::model()->whereEmail('IN', $emails);
 
 		}
 

@@ -9,6 +9,15 @@ class CampaignLib extends CampaignCrud {
 
 	}
 
+	public static function create(Campaign $e): void {
+
+		$e['scheduled'] = count($e['to']);
+
+		parent::create($e);
+
+	}
+
+
 	public static function countByFarm(\farm\Farm $eFarm): int {
 
 		return Campaign::model()
@@ -25,6 +34,10 @@ class CampaignLib extends CampaignCrud {
 		return Campaign::model()
 			->select(Campaign::getSelection())
 			->whereFarm($eFarm)
+			->sort([
+				'scheduledAt' => SORT_DESC,
+				'id' => SORT_DESC
+			])
 			->getCollection($position, $number);
 
 	}

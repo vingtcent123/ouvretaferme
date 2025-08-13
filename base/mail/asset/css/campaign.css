@@ -7,3 +7,16 @@
 #campaign-create .autocomplete-items {
 	font-size: 0.9rem;
 }
+
+.campaign-item-stat {
+	text-align: center;
+}
+
+.campaign-item-stat span {
+	font-weight: bold;
+}
+
+.campaign-item-stat-percent {
+	color: var(--muted);
+	font-size: .8rem;
+}

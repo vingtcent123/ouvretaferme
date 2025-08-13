@@ -3,10 +3,25 @@ namespace mail;
 
 class Campaign extends CampaignElement {
 
+	public static function getSelection(): array {
+
+		return parent::getSelection() + [
+			'sourceShop' => \shop\ShopElement::getSelection(),
+			'sourceGroup' => \selling\GroupElement::getSelection(),
+		];
+
+	}
+
 	public function canRead(): bool {
 
 		$this->expects(['farm']);
 		return $this['farm']->canCommunication();
+
+	}
+
+	public function acceptDelete(): bool {
+
+		return $this['status'] === Campaign::CONFIRMED;
 
 	}
 
@@ -50,7 +65,7 @@ class Campaign extends CampaignElement {
 				return Contact::model()
 					->whereFarm($this['farm'])
 					->whereEmail('IN', $to)
-					->count() !== count($to);
+					->count() === count($to);
 
 			});
 

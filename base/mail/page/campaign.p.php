@@ -6,7 +6,7 @@ new \mail\CampaignPage()
 
 		$eCampaign = new \mail\Campaign([
 			'farm' => $data->eFarm,
-			'source' => \mail\Campaign::GET('source', 'source'),
+			'source' => \mail\Campaign::INPUT('source', 'source', fn($value) => $value !== NULL ? throw new NotExpectedAction() : NULL),
 			'sourceGroup' => new \selling\Group(),
 			'sourceShop' => new \shop\Shop(),
 			'sourcePeriod' => NULL
@@ -15,15 +15,15 @@ new \mail\CampaignPage()
 		switch($eCampaign['source']) {
 
 			case \mail\Campaign::SHOP :
-				$eCampaign['sourceShop'] = \shop\ShopLib::getById(INPUT('shop'))->validateShareRead($data->eFarm);
+				$eCampaign['sourceShop'] = \shop\ShopLib::getById(INPUT('sourceShop'))->validateShareRead($data->eFarm);
 				break;
 
 			case \mail\Campaign::GROUP :
-				$eCampaign['sourceGroup'] = \selling\GroupLib::getById(INPUT('group'))->validateProperty('farm', $data->eFarm);
+				$eCampaign['sourceGroup'] = \selling\GroupLib::getById(INPUT('sourceGroup'))->validateProperty('farm', $data->eFarm);
 				break;
 
 			case \mail\Campaign::PERIOD :
-				$eCampaign['sourcePeriod'] = \mail\Campaign::GET('period', 'sourcePeriod', fn() => throw new NotExpectedAction('Invalid value'));
+				$eCampaign['sourcePeriod'] = \mail\Campaign::INPUT('sourcePeriod', 'sourcePeriod', fn() => throw new NotExpectedAction('Invalid value'));
 				break;
 
 		}
@@ -53,5 +53,5 @@ new \farm\FarmPage()
 	}, validate: ['canCommunication']);
 
 new \mail\CampaignPage()
-	->doDelete(fn() => throw new ReloadAction());
+	->doDelete(fn() => throw new ReloadAction(), validate: ['canDelete', 'acceptDelete']);
 ?>

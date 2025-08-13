@@ -12,7 +12,10 @@ new AdaptativeView('create', function($data, FarmTemplate $t) {
 	$t->canonical = \farm\FarmUi::urlCommunicationsCampaign($data->eFarm);
 
 	$h = '<div class="util-action">';
-		$h .= '<h1>'.s("Nouvelle campagne").'</h1>';
+		$h .= '<h1>';
+			$h .= '<a href="'.\farm\FarmUi::urlCommunicationsCampaign($data->eFarm).'"  class="h-back">'.\Asset::icon('arrow-left').'</a>';
+			$h .= s("Nouvelle campagne");
+		$h .= '</h1>';
 	$h .= '</div>';
 
 	$t->mainTitle = $h;

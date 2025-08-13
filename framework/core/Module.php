@@ -765,7 +765,8 @@ abstract class ModuleModel {
 
 			case 'enum' :
 
-				if($value === NULL) {
+				if(empty($value)) {
+					$value = NULL;
 					return;
 				}
 
@@ -5606,9 +5607,9 @@ abstract class ModulePage extends Page {
 
 	}
 
-	public function doDelete(\Closure $action, string $page = 'doDelete', ?Closure $onEmpty = NULL): ModulePage {
+	public function doDelete(\Closure $action, string $page = 'doDelete', array $validate = ['canDelete'], ?Closure $onEmpty = NULL): ModulePage {
 
-		$this->post($page, function($data) use($action, $onEmpty) {
+		$this->post($page, function($data) use($action, $validate, $onEmpty) {
 
 			$e = $this->element->call($this, $data);
 
@@ -5627,7 +5628,7 @@ abstract class ModulePage extends Page {
 
 			}
 
-			$e->validate('canDelete');
+			$e->validate(...$validate);
 
 			$this->applyElement->call($this, $data, $e);
 

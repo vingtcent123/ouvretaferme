@@ -46,7 +46,7 @@ class ContactUi {
 
 		$h = '<div id="contact-search" class="util-block-search stick-xs '.($search->empty(['source', 'cShop']) ? 'hide' : '').'">';
 
-			$h .= $form->openAjax(\farm\FarmUi::urlCommunicationsMailing($eFarm), ['method' => 'get', 'id' => 'form-search']);
+			$h .= $form->openAjax(\farm\FarmUi::urlCommunicationsContact($eFarm), ['method' => 'get', 'id' => 'form-search']);
 				$h .= '<div>';
 
 					if($search->get('source') === NULL) {
@@ -61,7 +61,7 @@ class ContactUi {
 					$h .= $form->select('shop', $search->get('cShop'), $search->get('shop'), ['placeholder' => s("Clients d'une boutique")]);
 
 					$h .= $form->submit(s("Chercher"), ['class' => 'btn btn-secondary']);
-					$h .= '<a href="'.\farm\FarmUi::urlCommunicationsMailing($eFarm).'" class="btn btn-secondary">'.\Asset::icon('x-lg').'</a>';
+					$h .= '<a href="'.\farm\FarmUi::urlCommunicationsContact($eFarm).'" class="btn btn-secondary">'.\Asset::icon('x-lg').'</a>';
 				$h .= '</div>';
 			$h .= $form->close();
 
@@ -288,31 +288,7 @@ class ContactUi {
 
 						$h .= '</td>';
 
-						$h .= '<td class="contact-item-stat highlight-stick-right hide-md-down">';
-							$h .= '<span style="font-size: 1.25rem">'.$eContact['sent'].'</span>';
-						$h .= '</td>';
-
-						$h .= '<td class="contact-item-stat highlight-stick-both hide-md-down">';
-							if($eContact['sent'] > 0) {
-								$h .= '<span>'.$eContact['delivered'].'</span>';
-								$h .= '<div class="contact-item-stat-percent">'.s("{value} %", round($eContact['delivered'] / $eContact['sent'] * 100)).'</div>';
-							}
-						$h .= '</td>';
-
-						$h .= '<td class="contact-item-stat highlight-stick-both hide-md-down">';
-							if($eContact['sent'] > 0) {
-								$h .= '<span>'.$eContact['opened'].'</span>';
-								$h .= '<div class="contact-item-stat-percent">'.s("{value} %", round($eContact['opened'] / $eContact['sent'] * 100)).'</div>';
-							}
-						$h .= '</td>';
-
-						$h .= '<td class="contact-item-stat highlight-stick-left hide-md-down">';
-							if($eContact['sent'] > 0) {
-								$blocked = $eContact['failed'] + $eContact['spam'];
-								$h .= '<span '.($blocked > 0 ? 'class="color-danger"' : '').'>'.$blocked.'</span>';
-								$h .= '<div class="contact-item-stat-percent">'.s("{value} %", round($blocked / $eContact['sent'] * 100)).'</div>';
-							}
-						$h .= '</td>';
+						$h .= $this->getStats($eContact);
 
 						$h .= '<td class="td-min-content">';
 							$h .= '<a data-ajax="/mail/contact:doDelete" post-id="'.$eContact['id'].'" data-confirm="'.s("Vous allez supprimer un contact. Veuillez noter que, même supprimé, un contact est automatiquement recréé dès qu'un e-mail liés à ses commandes doit lui être envoyé. Continuer ?").'" class="btn btn-danger">'.\Asset::icon('trash').'</a>';
@@ -338,6 +314,38 @@ class ContactUi {
 
 		return $h;
 
+	}
+
+	public function getStats(Campaign|Contact $e): string {
+
+		$h = '<td class="contact-item-stat highlight-stick-right hide-md-down">';
+			$h .= '<span style="font-size: 1.25rem">'.$e['sent'].'</span>';
+		$h .= '</td>';
+
+		$h .= '<td class="contact-item-stat highlight-stick-both hide-md-down">';
+			if($e['sent'] > 0) {
+				$h .= '<span>'.$e['delivered'].'</span>';
+				$h .= '<div class="contact-item-stat-percent">'.s("{value} %", round($e['delivered'] / $e['sent'] * 100)).'</div>';
+			}
+		$h .= '</td>';
+
+		$h .= '<td class="contact-item-stat highlight-stick-both hide-md-down">';
+			if($e['delivered'] > 0) {
+				$h .= '<span>'.$e['opened'].'</span>';
+				$h .= '<div class="contact-item-stat-percent">'.s("{value} %", round($e['opened'] / $e['delivered'] * 100)).'</div>';
+			}
+		$h .= '</td>';
+
+		$h .= '<td class="contact-item-stat highlight-stick-left hide-md-down">';
+			if($e['sent'] > 0) {
+				$blocked = $e['failed'] + $e['spam'];
+				$h .= '<span '.($blocked > 0 ? 'class="color-danger"' : '').'>'.$blocked.'</span>';
+				$h .= '<div class="contact-item-stat-percent">'.s("{value} %", round($blocked / $e['sent'] * 100)).'</div>';
+			}
+		$h .= '</td>';
+
+		return $h;
+		
 	}
 
 	public function toggleActive(Contact $eContact) {

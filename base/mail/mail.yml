@@ -8,12 +8,13 @@ Campaign:
   to: json
   subject: text8(1, 100)
   content: editor16(1, null)
+  scheduled: int(0, null) = 0
   sent: int(0, null) = 0
   delivered: int(0, null) = 0
   opened: int(0, null) = 0
   failed: int(0, null) = 0
   spam: int(0, null) = 0
-  status: enum(CONFIRMED, SENT) = SENT
+  status: enum(CONFIRMED, SENT) = CONFIRMED
   scheduledAt: datetime
   sentAt: ?datetime
   createdAt: datetime = SPECIAL(now)

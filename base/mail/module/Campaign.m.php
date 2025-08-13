@@ -53,6 +53,7 @@ class CampaignModel extends \ModuleModel {
 			'to' => ['json', 'cast' => 'array'],
 			'subject' => ['text8', 'min' => 1, 'max' => 100, 'cast' => 'string'],
 			'content' => ['editor16', 'min' => 1, 'max' => NULL, 'cast' => 'string'],
+			'scheduled' => ['int32', 'min' => 0, 'max' => NULL, 'cast' => 'int'],
 			'sent' => ['int32', 'min' => 0, 'max' => NULL, 'cast' => 'int'],
 			'delivered' => ['int32', 'min' => 0, 'max' => NULL, 'cast' => 'int'],
 			'opened' => ['int32', 'min' => 0, 'max' => NULL, 'cast' => 'int'],
@@ -65,7 +66,7 @@ class CampaignModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'farm', 'source', 'sourceShop', 'sourceGroup', 'sourcePeriod', 'to', 'subject', 'content', 'sent', 'delivered', 'opened', 'failed', 'spam', 'status', 'scheduledAt', 'sentAt', 'createdAt'
+			'id', 'farm', 'source', 'sourceShop', 'sourceGroup', 'sourcePeriod', 'to', 'subject', 'content', 'scheduled', 'sent', 'delivered', 'opened', 'failed', 'spam', 'status', 'scheduledAt', 'sentAt', 'createdAt'
 		]);
 
 		$this->propertiesToModule += [
@@ -79,6 +80,9 @@ class CampaignModel extends \ModuleModel {
 	public function getDefaultValue(string $property) {
 
 		switch($property) {
+
+			case 'scheduled' :
+				return 0;
 
 			case 'sent' :
 				return 0;
@@ -96,7 +100,7 @@ class CampaignModel extends \ModuleModel {
 				return 0;
 
 			case 'status' :
-				return Campaign::SENT;
+				return Campaign::CONFIRMED;
 
 			case 'createdAt' :
 				return new \Sql('NOW()');
@@ -184,6 +188,10 @@ class CampaignModel extends \ModuleModel {
 
 	public function whereContent(...$data): CampaignModel {
 		return $this->where('content', ...$data);
+	}
+
+	public function whereScheduled(...$data): CampaignModel {
+		return $this->where('scheduled', ...$data);
 	}
 
 	public function whereSent(...$data): CampaignModel {

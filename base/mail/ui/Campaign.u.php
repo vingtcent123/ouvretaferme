@@ -41,7 +41,7 @@ class CampaignUi {
 
 				$h .= '<div class="campaign-list">';
 					foreach($cGroup as $eGroup) {
-						$h .= '<a href="/mail/campaign:create?farm='.$eFarm['id'].'&source='.Campaign::GROUP.'&group='.$eGroup['id'].'" class="btn color-white btn-lg" style="background-color: '.$eGroup['color'].'">'.encode($eGroup['name']).'</a>';
+						$h .= '<a href="/mail/campaign:create?farm='.$eFarm['id'].'&source='.Campaign::GROUP.'&sourceGroup='.$eGroup['id'].'" class="btn color-white btn-lg" style="background-color: '.$eGroup['color'].'">'.encode($eGroup['name']).'</a>';
 					}
 				$h .= '</div>';
 
@@ -59,7 +59,7 @@ class CampaignUi {
 
 					$h .= '<div class="campaign-list">';
 						foreach($ccShop['selling'] as $eShop) {
-							$h .= '<a href="/mail/campaign:create?farm='.$eFarm['id'].'&source='.Campaign::SHOP.'&shop='.$eShop['id'].'" class="btn btn-primary btn-lg">'.encode($eShop['name']).'</a>';
+							$h .= '<a href="/mail/campaign:create?farm='.$eFarm['id'].'&source='.Campaign::SHOP.'&sourceShop='.$eShop['id'].'" class="btn btn-primary btn-lg">'.encode($eShop['name']).'</a>';
 						}
 					$h .= '</div>';
 
@@ -74,10 +74,10 @@ class CampaignUi {
 			$h .= '<h3>'.s("À destination des clients particuliers ayant commandé il y a ...").'</h3>';
 
 			$h .= '<div class="campaign-list">';
-				$h .= '<a href="/mail/campaign:create?farm='.$eFarm['id'].'&source='.Campaign::PERIOD.'&period=1" class="btn btn-primary btn-lg">'.s("Moins de 1 mois").'</a>';
-				$h .= '<a href="/mail/campaign:create?farm='.$eFarm['id'].'&source='.Campaign::PERIOD.'&period=3" class="btn btn-primary btn-lg">'.s("Moins de 3 mois").'</a>';
-				$h .= '<a href="/mail/campaign:create?farm='.$eFarm['id'].'&source='.Campaign::PERIOD.'&period=6" class="btn btn-primary btn-lg">'.s("Moins de 6 mois").'</a>';
-				$h .= '<a href="/mail/campaign:create?farm='.$eFarm['id'].'&source='.Campaign::PERIOD.'&period=12" class="btn btn-primary btn-lg">'.s("Moins de 1 an").'</a>';
+				$h .= '<a href="/mail/campaign:create?farm='.$eFarm['id'].'&source='.Campaign::PERIOD.'&sourcePeriod=1" class="btn btn-primary btn-lg">'.s("Moins de 1 mois").'</a>';
+				$h .= '<a href="/mail/campaign:create?farm='.$eFarm['id'].'&source='.Campaign::PERIOD.'&sourcePeriod=3" class="btn btn-primary btn-lg">'.s("Moins de 3 mois").'</a>';
+				$h .= '<a href="/mail/campaign:create?farm='.$eFarm['id'].'&source='.Campaign::PERIOD.'&sourcePeriod=6" class="btn btn-primary btn-lg">'.s("Moins de 6 mois").'</a>';
+				$h .= '<a href="/mail/campaign:create?farm='.$eFarm['id'].'&source='.Campaign::PERIOD.'&sourcePeriod=12" class="btn btn-primary btn-lg">'.s("Moins de 1 an").'</a>';
 			$h .= '</div>';
 
 		$h .= '</div>';
@@ -108,6 +108,8 @@ class CampaignUi {
 
 	public function create(Campaign $eCampaign): string {
 
+		$eCampaign->expects(['farm', 'source']);
+
 		$form = new \util\FormUi([
 			'firstColumnSize' => 25
 		]);
@@ -116,17 +118,22 @@ class CampaignUi {
 
 		$h = $form->openAjax('/mail/campaign:doCreate', ['id' => 'campaign-create']);
 
+			$h .= $form->hidden('source', $eCampaign['source']);
+
 			switch($eCampaign['source']) {
 
 				case Campaign::GROUP :
+					$h .= $form->hidden('sourceGroup', $eCampaign['sourceGroup']);
 					$h .= '<div class="util-block-help">'.s("Vous allez envoyer un e-mail à tous les clients du groupe <u>{name}</u>.", ['name' => encode($eCampaign['sourceGroup']['name'])]).'</div>';
 					break;
 
 				case Campaign::SHOP :
+					$h .= $form->hidden('sourceShop', $eCampaign['sourceShop']);
 					$h .= '<div class="util-block-help">'.s("Vous allez envoyer un e-mail à tous les clients que vous avez déjà livrés sur la boutique <link>{name}</link>.", ['link' => '<a href="'.\shop\ShopUi::url($eCampaign['sourceShop']).'">', 'name' => encode($eCampaign['sourceShop']['name'])]).'</div>';
 					break;
 
 				case Campaign::PERIOD :
+					$h .= $form->hidden('sourcePeriod', $eCampaign['sourcePeriod']);
 					$h .= '<div class="util-block-help">'.s("Vous allez envoyer un e-mail à tous les clients ayant été livrés il y a moins de <b>{value} mois</b>.", $eCampaign['sourcePeriod']).'</div>';
 					break;
 
@@ -180,14 +187,24 @@ class CampaignUi {
 
 		}
 
-		$h .= '<div class="stick-md util-overflow-xs">';
+		$h .= '<div class="stick-md util-overflow-md">';
 
 			$h .= '<table class="campaign-item-table tr-even">';
 
 				$h .= '<thead>';
 
 					$h .= '<tr>';
-						$h .= '<th rowspan="2">'.s("Date").'</th>';
+						$h .= '<th class="td-min-content" rowspan="2">'.s("Date d'envoi").'</th>';
+						$h .= '<th rowspan="2">'.s("Titre").'</th>';
+						$h .= '<th colspan="5" class="text-center">'.s("Statistiques *").'</th>';
+					$h .= '</tr>';
+
+					$h .= '<tr>';
+						$h .= '<th class="text-center highlight-stick-right">'.s("Destinataires").'</th>';
+						$h .= '<th class="text-center highlight-stick-both">'.s("Envoyés").'</th>';
+						$h .= '<th class="text-center highlight-stick-both">'.s("Reçus").'</th>';
+						$h .= '<th class="text-center highlight-stick-both">'.s("Lus").'</th>';
+						$h .= '<th class="text-center highlight-stick-left">'.s("Bloqués").'</th>';
 					$h .= '</tr>';
 
 				$h .= '</thead>';
@@ -198,16 +215,89 @@ class CampaignUi {
 
 					$h .= '<tr>';
 
-						$h .= '<td>';
-							$h .= '<div class="text-center">'.\util\DateUi::numeric($eCampaign['scheduledAt'], \util\DateUi::DATE).'</div>';
+						$h .= '<td class="td-min-content">';
+							$h .= \util\DateUi::numeric($eCampaign['scheduledAt'], \util\DateUi::DATE);
 						$h .= '</td>';
 
-						$h .= '<td class="text-center hide-sm-down">';
-							$h .= \util\DateUi::numeric($eCampaign['createdAt'], \util\DateUi::DATE);
+						$h .= '<td>';
+							$h .= encode($eCampaign['subject']);
+							$h .= '<div class="util-annotation">';
+
+								switch($eCampaign['source']) {
+
+									case Campaign::SHOP :
+										$h .= s("Pour les clients de {value}", \shop\ShopUi::link($eCampaign['sourceShop']));
+										break;
+
+									case Campaign::GROUP :
+										$h .= s("Pour le groupe de clients {value}", '<span class="util-badge" style="background-color: '.$eCampaign['sourceGroup']['color'].'">'.encode($eCampaign['sourceGroup']['name']).'</span>');
+										break;
+
+									case Campaign::PERIOD :
+										$h .= s("Pour les clients livrés il y a moins de {value} mois", $eCampaign['sourcePeriod']);
+										break;
+
+									case Campaign::NEWSLETTER :
+										$h .= s("Newsletter");
+										break;
+
+								}
+
+							$h .= '</div>';
 						$h .= '</td>';
+
+						$scheduled = '<span style="font-size: 1.25rem">'.$eCampaign['scheduled'].'</span>';
+
+						switch($eCampaign['status']) {
+
+							case Campaign::CONFIRMED :
+								$h .= '<td class="campaign-item-stat highlight-stick-right">';
+									$h .= $scheduled;
+								$h .= '</td>';
+								$h .= '<td colspan="4" class="text-center highlight-stick-left color-warning">';
+									$h .= \Asset::icon('alarm').' '.s("Envoi programmé le {date}", ['date' => \util\DateUi::numeric($eCampaign['scheduledAt'], \util\DateUi::DATE_HOUR_MINUTE)]);
+								$h .= '</td>';
+								break;
+
+							case Campaign::SENT :
+								$h .= '<td class="campaign-item-stat highlight-stick-right">';
+									$h .= $scheduled;
+								$h .= '</td>';
+
+								$h .= '<td class="campaign-item-stat highlight-stick-both">';
+									$h .= '<span style="font-size: 1.25rem">'.$eCampaign['sent'].'</span>';
+									$h .= '<div class="campaign-item-stat-percent">'.s("{value} %", round($eCampaign['delivered'] / $eCampaign['scheduled'] * 100)).'</div>';
+								$h .= '</td>';
+
+								$h .= '<td class="campaign-item-stat highlight-stick-both">';
+									if($eCampaign['sent'] > 0) {
+										$h .= '<span>'.$eCampaign['delivered'].'</span>';
+										$h .= '<div class="campaign-item-stat-percent">'.s("{value} %", round($eCampaign['delivered'] / $eCampaign['sent'] * 100)).'</div>';
+									}
+								$h .= '</td>';
+
+								$h .= '<td class="campaign-item-stat highlight-stick-both">';
+									if($eCampaign['delivered'] > 0) {
+										$h .= '<span>'.$eCampaign['opened'].'</span>';
+										$h .= '<div class="campaign-item-stat-percent">'.s("{value} %", round($eCampaign['opened'] / $eCampaign['delivered'] * 100)).'</div>';
+									}
+								$h .= '</td>';
+
+								$h .= '<td class="campaign-item-stat highlight-stick-left">';
+									if($eCampaign['sent'] > 0) {
+										$blocked = $eCampaign['failed'] + $eCampaign['spam'];
+										$h .= '<span '.($blocked > 0 ? 'class="color-danger"' : '').'>'.$blocked.'</span>';
+										$h .= '<div class="campaign-item-stat-percent">'.s("{value} %", round($blocked / $eCampaign['sent'] * 100)).'</div>';
+									}
+								$h .= '</td>';
+								break;
+
+						}
 
 						$h .= '<td class="td-min-content">';
-							$h .= '<a data-ajax="/mail/campaign:doDelete" post-id="'.$eCampaign['id'].'" data-confirm="'.s("Vous allez supprimer une campagne. Continuer ?").'" class="btn btn-danger">'.\Asset::icon('trash').'</a>';
+							if($eCampaign->acceptDelete()) {
+								$h .= '<a data-ajax="/mail/campaign:doDelete" post-id="'.$eCampaign['id'].'" data-confirm="'.s("Vous allez supprimer une campagne et les e-mails ne seront pas envoyés. Continuer ?").'" class="btn btn-danger">'.\Asset::icon('trash').'</a>';
+							}
 						$h .= '</td>';
 
 					$h .= '</tr>';
