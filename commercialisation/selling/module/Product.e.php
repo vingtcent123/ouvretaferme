@@ -258,7 +258,10 @@ class Product extends ProductElement {
 
 				// Si Quick
 				if($this->isQuick()) {
-					return $privatePrice > $this['privatePrice'];
+					if($this['privatePriceInitial'] === NULL) {
+						return TRUE;
+					}
+					return $privatePrice < $this['privatePriceInitial'];
 				}
 
 				// Si pas quick, pas de vérification (sera faite dans privatePriceDiscount.value)
@@ -388,9 +391,10 @@ class Product extends ProductElement {
 
 				// Si Quick
 				if($this->isQuick()) {
-
-					return $proPrice > $this['proPrice'];
-
+					if($this['proPriceInitial'] === NULL) {
+						return TRUE;
+					}
+					return $proPrice < $this['proPriceInitial'];
 				}
 
 				// Si pas quick, pas de vérification (sera faite dans proPriceDiscount.value)

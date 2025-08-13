@@ -219,8 +219,12 @@ class ProductUi {
 
 							$taxes = $eFarm->getSelling('hasVat') ? ' <span class="util-annotation">'.CustomerUi::getTaxes(Customer::PRIVATE).'</span>' : '';
 
+							$field = 'privatePrice';
 							if($eProduct['privatePrice'] !== NULL) {
 								$value = \util\TextUi::money($eProduct['privatePrice']).$taxes;
+								if($eProduct['privatePriceInitial'] !== NULL) {
+									$field = 'privatePriceDiscount';
+								}
 							} else if($eProduct['proPrice'] !== NULL) {
 								$value = '<span class="color-muted" title="'.s("Prix calculé à partir du prix pour les professionnels augmenté de la TVA.").'">'.\Asset::icon('magic').' ';
 									$value .= \util\TextUi::money($eProduct->calcPrivateMagicPrice($eFarm->getSelling('hasVat'))).$taxes;
@@ -229,7 +233,7 @@ class ProductUi {
 								$value = \Asset::icon('question');
 							}
 
-							$h .= $eProduct->quick('privatePrice', $value);
+							$h .= $eProduct->quick($field, $value);
 
 						}
 					$h .= '</td>';
@@ -241,8 +245,12 @@ class ProductUi {
 
 							$taxes = $eFarm->getSelling('hasVat') ? ' <span class="util-annotation">'.CustomerUi::getTaxes(Customer::PRO).'</span>' : '';
 
+							$field = 'proPrice';
 							if($eProduct['proPrice']) {
 								$value = \util\TextUi::money($eProduct['proPrice']).$taxes;
+								if($eProduct['proPriceInitial'] !== NULL) {
+									$field = 'proPriceDiscount';
+								}
 							} else if($eProduct['privatePrice']) {
 								$value = '<span class="color-muted" title="'.s("Prix calculé à partir du prix pour les particuliers diminué de la TVA.").'">'.\Asset::icon('magic').' ';
 									$value .= \util\TextUi::money($eProduct->calcProMagicPrice($eFarm->getSelling('hasVat'))).$taxes;
@@ -251,7 +259,7 @@ class ProductUi {
 								$value = \Asset::icon('question');
 							}
 
-							$h .= $eProduct->quick('proPrice', $value);
+							$h .= $eProduct->quick($field, $value);
 
 						}
 					$h .= '</td>';

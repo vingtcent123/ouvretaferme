@@ -139,30 +139,21 @@ new \selling\ProductPage()
 		throw new ReloadAction('selling', 'Product::stockDisabled');
 
 	})
-	->quick(['privatePrice', 'privatePriceDiscount', 'privateStep', 'proPrice', 'proPriceDiscount', 'proPackaging', 'proStep'], [
-		'privatePrice' => function($data) {
-			if($data->e['privatePriceInitial']) {
-				$data->e['privatePrice'] = $data->e['privatePriceInitial'];
-			}
-		},
-		'privatePriceDiscount' => function($data) {
-			if($data->e['privatePriceInitial']) {
-				$data->e['privatePriceDiscount'] = $data->e['privatePrice'];
-			}
-		},
-		'proPrice' => function($data) {
-			if($data->e['proPriceInitial']) {
-				$data->e['proPrice'] = $data->e['proPriceInitial'];
-			}
-		},
-		'proPriceDiscount' => function($data) {
-			if($data->e['proPriceInitial']) {
-				$data->e['proPriceDiscount'] = $data->e['proPrice'];
-			}
-		},
-	])
 	->doUpdateProperties('doUpdateStatus', ['status'], fn($data) => throw new ViewAction($data))
 	->doDelete(fn($data) => throw new RedirectAction(\farm\FarmUi::urlSellingProduct($data->e['farm']).'?success=selling:Product::deleted'));
+
+new \selling\ProductPage()
+	->applyElement(function($data, \selling\Product $eProduct) {
+
+		if($eProduct['privatePriceInitial'] !== NULL) {
+			$eProduct['privatePriceDiscount'] = $eProduct['privatePrice'];
+		}
+		if($eProduct['proPriceInitial'] !== NULL) {
+			$eProduct['proPriceDiscount'] = $eProduct['proPrice'];
+		}
+
+	})
+	->quick(['privatePrice', 'privatePriceDiscount', 'privateStep', 'proPrice', 'proPriceDiscount', 'proPackaging', 'proStep']);
 
 new \selling\ProductPage()
 	->applyCollection(function($data, Collection $c) {
