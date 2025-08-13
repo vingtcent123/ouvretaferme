@@ -1210,15 +1210,13 @@ class ProductUi {
 					);
 				};
 				$d->prepend = function(\util\FormUi $form) {
-					$isQuick = ($form->getFormOptions()['data-form'] ?? NULL) === 'quick';
-					if($isQuick) {
+					if($form->isQuick()) {
 						return NULL;
 					}
 					return $form->addon(\Asset::icon('tag'));
 				};
 				$d->append = function(\util\FormUi $form, Product $eProduct) {
-					$isQuick = ($form->getFormOptions()['data-form'] ?? NULL) === 'quick';
-					if($isQuick) {
+					if($form->isQuick()) {
 						return NULL;
 					}
 					$taxes = $eProduct['farm']->getSelling('hasVat') ? '/ '.CustomerUi::getTaxes(Customer::PRIVATE) : '';
@@ -1251,15 +1249,13 @@ class ProductUi {
 					);
 				};
 				$d->prepend = function(\util\FormUi $form) {
-					$isQuick = ($form->getFormOptions()['data-form'] ?? NULL) === 'quick';
-					if($isQuick) {
+					if($form->isQuick()) {
 						return NULL;
 					}
 					return $form->addon(\Asset::icon('tag'));
 				};
 				$d->append = function(\util\FormUi $form, Product $eProduct) {
-					$isQuick = ($form->getFormOptions()['data-form'] ?? NULL) === 'quick';
-					if($isQuick) {
+					if($form->isQuick()) {
 						return NULL;
 					}
 					$taxes = $eProduct['farm']->getSelling('hasVat') ? '/ '.CustomerUi::getTaxes(Customer::PRO) : '';

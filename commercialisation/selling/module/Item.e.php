@@ -177,7 +177,7 @@ class Item extends ItemElement {
 					$this['unitPriceInitial'] = NULL;
 				} else {
 					$this['unitPriceInitial'] = $this['unitPrice'];
-					$this['unitPrice'] = var_filter($unitPriceDiscount, 'float');
+					$this['unitPrice'] = (float)($unitPriceDiscount);
 					$p->addBuilt('unitPriceInitial');
 				}
 

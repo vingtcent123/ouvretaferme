@@ -40,7 +40,9 @@ class AlertUi {
 			'Product::privatePrice.empty' => s("Veuillez indiquer le prix de ce produit vendu aux particuliers"),
 			'Product::proPrice.empty' => s("Veuillez indiquer le prix de ce produit vendu aux professionnels"),
 			'Product::privatePriceDiscount.value' => s("Le prix remisé doit être plus avantageux que le prix de base"),
+			'Product::privatePrice.value' => s("Le prix de base doit être plus élevé que le prix remisé"),
 			'Product::proPriceDiscount.value' => s("Le prix remisé doit être plus avantageux que le prix de base"),
+			'Product::proPrice.value' => s("Le prix de base doit être plus élevé que le prix remisé"),
 
 			'Sale::deletedNotDraft' => s("Il n'est possible de supprimer que les ventes à l'état de brouillon ou de panier."),
 			'Sale::deletedMarket' => s("Cette vente de marché ne peut pas être supprimée."),
