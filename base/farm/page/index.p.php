@@ -169,6 +169,8 @@
 
 		$data->eFarm->validate('canCommunication');
 
+		\farm\FarmerLib::setView('viewMailingCategory', $data->eFarm, \farm\Farmer::CAMPAIGN);
+
 		$data->page = GET('page', 'int');
 
 		$data->nCampaign = \mail\CampaignLib::countByFarm($data->eFarm);
@@ -183,6 +185,8 @@
 	->get('/ferme/{id}/contacts', function($data) {
 
 		$data->eFarm->validate('canCommunication');
+
+		\farm\FarmerLib::setView('viewMailingCategory', $data->eFarm, \farm\Farmer::CONTACT);
 
 		$data->search = \mail\ContactLib::getSearch($data->eFarm, $_GET);
 

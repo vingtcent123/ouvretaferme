@@ -13,6 +13,7 @@ class FarmTemplate extends MainTemplate {
 
 	public ?string $nav = NULL;
 	public ?string $subNav = NULL;
+	public ?string $subNavTarget = NULL;
 	public ?string $section = NULL;
 
 	public function __construct() {
@@ -55,6 +56,7 @@ class FarmTemplate extends MainTemplate {
 		$t->package('main')->updateHeader(
 			$this->nav,
 			$this->subNav,
+			$this->subNavTarget,
 			$this->getFarmSections(),
 			$this->getFarmNav(),
 			new \farm\FarmUi()->getBreadcrumbs($this->data->eFarm, $this->nav, $this->subNav),

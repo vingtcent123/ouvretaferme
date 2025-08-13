@@ -259,7 +259,7 @@ class FarmUi {
 
 	public static function urlCommunicationsMailing(Farm $eFarm, ?string $view = NULL, ?int $season = NULL): string {
 
-		$view ??= $eFarm->getView('viewEmailingCategory');
+		$view ??= $eFarm->getView('viewMailingCategory');
 
 		return match($view) {
 			Farmer::CAMPAIGN => self::urlCommunicationsCampaign($eFarm),
@@ -1538,6 +1538,64 @@ class FarmUi {
 			'communications',
 			$subNav
 		);
+
+	}
+
+	public function getMailingTitle(\farm\Farm $eFarm, int $counter, string $selectedView): string {
+
+		$h = '<div class="util-action">';
+			$h .= '<h1>';
+				$h .= '<a class="util-action-navigation h-menu-wrapper" data-dropdown="bottom-start" data-dropdown-hover="true">';
+					$h .= self::getNavigation();
+					$h .= '<span class="h-menu-label">'.$this->getMailingCategories()[$selectedView].' <span class="util-counter">'.$counter.'</span></span>';
+				$h .= '</a>';
+				$h .= '<div class="dropdown-list bg-primary">';
+					foreach($this->getMailingCategories() as $key => $value) {
+						$h .= '<a href="'.FarmUi::urlCommunicationsMailing($eFarm, $key).'" class="dropdown-item '.($key === $selectedView ? 'selected' : '').'">'.$value.'</a> ';
+					}
+				$h .= '</div>';
+			$h .= '</h1>';
+
+			switch($selectedView) {
+
+				case \farm\Farmer::CONTACT :
+					$h .=  '<div>';
+						$h .= '<a '.attr('onclick', 'Lime.Search.toggle("#contact-search")').' class="btn btn-primary">'.\Asset::icon('search').'</a> ';
+
+						if(new \mail\Contact(['farm' => $eFarm])->canCreate()) {
+							$h .= '<a href="/mail/contact:create?farm='.$eFarm['id'].'" class="btn btn-primary">'.\Asset::icon('plus-circle').'<span class="hide-xs-down"> '.s("Nouveau contact").'</span></a>';
+						}
+					$h .=  '</div>';
+					break;
+
+				case \farm\Farmer::CAMPAIGN :
+					$h .=  '<div>';
+						if(new \mail\Campaign(['farm' => $eFarm])->canCreate()) {
+							$h .= '<a href="/mail/campaign:createSelect?id='.$eFarm['id'].'" class="btn btn-primary">'.\Asset::icon('plus-circle').'<span class="hide-xs-down"> '.s("Nouvelle campagne").'</span></a>';
+						}
+					$h .=  '</div>';
+					break;
+
+			}
+
+		$h .=  '</div>';
+
+		return $h;
+
+	}
+
+	public static function getMailingCategories(): array {
+
+		if(LIME_ENV === 'prod') {
+			return [
+				Farmer::CONTACT => s("Contacts"),
+			];
+		}
+
+		return [
+			Farmer::CONTACT => s("Contacts"),
+			Farmer::CAMPAIGN => s("Campagnes"),
+		];
 
 	}
 

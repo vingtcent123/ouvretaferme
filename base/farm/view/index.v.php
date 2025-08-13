@@ -100,6 +100,7 @@ new AdaptativeView('sequence', function($data, FarmTemplate $t) {
 
 	$t->canonical = \farm\FarmUi::urlCultivationSequences($data->eFarm);
 	$t->title = s("Itinéraires techniques de {value}", $data->eFarm['name']);
+
 	$t->nav = 'cultivation';
 	$t->subNav = 'sequence';
 
@@ -138,8 +139,10 @@ new AdaptativeView('series', function($data, FarmTemplate $t) {
 
 	$t->canonical = \farm\FarmUi::urlCultivationSeries($data->eFarm, season: $data->season);
 	$t->title = s("Plan de culture de {value}", $data->eFarm['name']);
+
 	$t->nav = 'cultivation';
 	$t->subNav = 'series';
+	$t->subNavTarget = $t->canonical;
 
 	$t->js()->replaceHistory($t->canonical);
 
@@ -278,8 +281,10 @@ new AdaptativeView('soil', function($data, FarmTemplate $t) {
 
 	$t->canonical = \farm\FarmUi::urlCultivationSoil($data->eFarm, season: $data->season);
 	$t->title = s("Assolement de {value}", $data->eFarm['name']);
+
 	$t->nav = 'cultivation';
 	$t->subNav = 'soil';
+	$t->subNavTarget = $t->canonical;
 
 	$view = $data->eFarm->getView('viewSoil');
 
@@ -320,11 +325,12 @@ new AdaptativeView('soil', function($data, FarmTemplate $t) {
 
 new AdaptativeView('sellingSales', function($data, FarmTemplate $t) {
 
+	$t->title = s("Ventes de {value}", $data->eFarm['name']);
+	$t->canonical = \farm\FarmUi::urlSellingSales($data->eFarm);
+
 	$t->nav = 'selling';
 	$t->subNav = 'sale';
-
-	$t->title = s("Ventes de {value}", $data->eFarm['name']);
-	$t->canonical = \farm\FarmUi::urlSellingSalesAll($data->eFarm);
+	$t->subNavTarget = $t->canonical;
 
 	if(
 		$data->nSale === 0 and
@@ -536,26 +542,14 @@ new AdaptativeView('/ferme/{id}/stocks', function($data, FarmTemplate $t) {
 
 new AdaptativeView('/ferme/{id}/contacts', function($data, FarmTemplate $t) {
 
-	$t->nav = 'communications';
-	$t->subNav = 'mailing';
-
 	$t->title = s("Contacts de {value}", $data->eFarm['name']);
 	$t->canonical = \farm\FarmUi::urlCommunicationsMailing($data->eFarm);
 
-	$h = '<div class="util-action">';
-		$h .= '<h1>'.s("Contacts").' <span class="util-counter">'.$data->nContact.'</span></h1>';
-		$h .= '<div>';
+	$t->nav = 'communications';
+	$t->subNav = 'mailing';
+	$t->subNavTarget = $t->canonical;
 
-			$h .= '<a '.attr('onclick', 'Lime.Search.toggle("#contact-search")').' class="btn btn-primary">'.\Asset::icon('search').'</a> ';
-
-			if(new \mail\Contact(['farm' => $data->eFarm])->canCreate()) {
-				$h .= '<a href="/mail/contact:create?farm='.$data->eFarm['id'].'" class="btn btn-primary">'.\Asset::icon('plus-circle').'<span class="hide-xs-down"> '.s("Nouveau contact").'</span></a>';
-			}
-
-		$h .= '</div>';
-	$h .= '</div>';
-
-	$t->mainTitle = $h;
+	$t->mainTitle = new \farm\FarmUi()->getMailingTitle($data->eFarm, $data->nContact, \farm\Farmer::CONTACT);
 
 	echo new \mail\ContactUi()->getSearch($data->eFarm, $data->search);
 	echo new \mail\ContactUi()->getList($data->eFarm, $data->cContact, $data->nContact, $data->page, $data->search);
@@ -564,24 +558,14 @@ new AdaptativeView('/ferme/{id}/contacts', function($data, FarmTemplate $t) {
 
 new AdaptativeView('/ferme/{id}/campagnes', function($data, FarmTemplate $t) {
 
-	$t->nav = 'communications';
-	$t->subNav = 'mailing';
-
 	$t->title = s("Campagnes de {value}", $data->eFarm['name']);
 	$t->canonical = \farm\FarmUi::urlCommunicationsMailing($data->eFarm);
 
-	$h = '<div class="util-action">';
-		$h .= '<h1>'.s("Campagnes").' <span class="util-counter">'.$data->nCampaign.'</span></h1>';
-		$h .= '<div>';
+	$t->nav = 'communications';
+	$t->subNav = 'mailing';
+	$t->subNavTarget = $t->canonical;
 
-			if(new \mail\Campaign(['farm' => $data->eFarm])->canCreate()) {
-				$h .= '<a href="/mail/campaign:createSelect?id='.$data->eFarm['id'].'" class="btn btn-primary">'.\Asset::icon('plus-circle').'<span class="hide-xs-down"> '.s("Nouvelle campagne").'</span></a>';
-			}
-
-		$h .= '</div>';
-	$h .= '</div>';
-
-	$t->mainTitle = $h;
+	$t->mainTitle = new \farm\FarmUi()->getMailingTitle($data->eFarm, $data->nCampaign, \farm\Farmer::CAMPAIGN);
 
 	echo new \mail\CampaignUi()->getList($data->eFarm, $data->cCampaign, $data->nCampaign, $data->page);
 
