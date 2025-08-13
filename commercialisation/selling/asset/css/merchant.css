@@ -251,10 +251,9 @@ a.merchant-delete {
 }
 
 .merchant-erase a,
-.merchant-tag span {
+.merchant-tag a {
 	color: var(--secondary);
 	padding: 0.5rem;
-	cursor: pointer;
 }
 
 .merchant-keyboard {
@@ -339,6 +338,6 @@ body[data-touch="no"] .merchant-keyboard {
 }
 
 .merchant-erase a,
-.merchant-tag span {
+.merchant-tag a {
 	color: var(--primary);
 }

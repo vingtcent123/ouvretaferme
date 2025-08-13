@@ -120,7 +120,7 @@ class MerchantUi {
 							$h .= '</div>';
 							$h .= '<div class="merchant-toggle-unit-price-initial" data-property="'.Item::UNIT_PRICE.'">';
 								$h .= '<div class="merchant-tag">';
-									$h .= '<span onclick="Merchant.toggleUnitPriceDiscountField('.$eItem['id'].');">';
+									$h .= '<a onclick="Merchant.toggleUnitPriceDiscountField('.$eItem['id'].');">';
 										$h .= \Asset::icon('tag', ['data-item' => $eItem['id'], 'data-unit-price-discount-visible' => 0, 'class' => $unitPriceDiscountClass === '' ? 'hide' : '']);
 										$h .= \Asset::icon('tag-fill', ['data-item' => $eItem['id'], 'data-unit-price-discount-visible' => 1, 'class' => $unitPriceDiscountClass]);
 									$h .= '</a>';
@@ -130,7 +130,7 @@ class MerchantUi {
 							$h .= '<div class="merchant-label form-control-label'.$unitPriceDiscountClass.'" data-wrapper="unitPriceDiscount['.$eItem['id'].']" data-property="unit-price-discount" data-item="'.$eItem['id'].'">'.s("Prix remisé").'</div>';
 							$h .= '<div class="merchant-actions'.$unitPriceDiscountClass.'" data-property="unit-price-discount" data-item="'.$eItem['id'].'">';
 								$h .= '<div class="merchant-tag">';
-									$h .= '<span>'.\Asset::icon('tag').'</a>';
+									$h .= '<a onclick="void(0);">'.\Asset::icon('tag').'</a>';
 								$h .= '</div>';
 							$h .= '</div>';
 							$h .= '<a onclick="Merchant.keyboardToggle(this)" data-property="unit-price-discount" class="merchant-field'.$unitPriceDiscountClass.'" data-item="'.$eItem['id'].'">';
