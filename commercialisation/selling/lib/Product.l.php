@@ -259,7 +259,7 @@ class ProductLib extends ProductCrud {
 				'proPrice', 'proPackaging', 'proStep',
 				'vat',
 				'eGrid' => Grid::model()
-					->select(['id', 'price', 'packaging'])
+					->select(['id', 'price', 'priceInitial', 'packaging'])
 					->whereCustomer($e)
 					->delegateElement('product')
 			])

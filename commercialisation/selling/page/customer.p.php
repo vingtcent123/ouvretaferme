@@ -69,7 +69,11 @@ new \selling\CustomerPage()
 			throw new NotExpectedAction('Invalid customer type');
 		}
 
+		$fw = new FailWatch();
+
 		$data->cGrid = \selling\GridLib::prepareByCustomer($data->e, $_POST);
+
+		$fw->validate();
 
 		\selling\GridLib::updateGrid($data->cGrid);
 

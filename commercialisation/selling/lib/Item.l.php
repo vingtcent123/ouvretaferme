@@ -58,6 +58,7 @@ class ItemLib extends ItemCrud {
 		if($eGrid->notEmpty()) {
 			$eItem['packaging'] = $eGrid['packaging'];
 			$eItem['unitPrice'] = $eGrid['price'];
+			$eItem['unitPriceInitial'] = $eGrid['priceInitial'];
 		}
 
 	}

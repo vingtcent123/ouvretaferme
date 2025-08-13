@@ -311,7 +311,7 @@ td.item-item-composition-number {
 	}
 
 	.items-products-3 .items-products-fields {
-		grid-template-columns: 12rem 10rem 12rem 12rem;
+		grid-template-columns: 12rem 12rem 10rem 12rem;
 	}
 
 }

@@ -107,7 +107,11 @@ new \selling\ProductPage()
 	})
 	->write('doUpdateGrid', function($data) {
 
+		$fw = new FailWatch();
+
 		$data->cGrid = \selling\GridLib::prepareByProduct($data->e, $_POST);
+
+		$fw->validate();
 
 		\selling\GridLib::updateGrid($data->cGrid);
 
