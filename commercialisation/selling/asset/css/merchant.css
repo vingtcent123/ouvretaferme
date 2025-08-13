@@ -79,7 +79,7 @@ body[data-touch="no"] .merchant-content {
 
 .merchant-lines {
 	display: grid;
-	grid-template-columns: 1fr max-content max-content max-content;
+	grid-template-columns: 1fr max-content max-content max-content max-content;
 	grid-row-gap: 1rem;
 	align-items: center;
 }
@@ -240,7 +240,8 @@ a.merchant-delete {
 }
 
 .merchant-lock,
-.merchant-erase {
+.merchant-erase,
+.merchant-tag {
 	font-size: 1.5rem;
 }
 
@@ -249,9 +250,11 @@ a.merchant-delete {
 	padding: 0.5rem;
 }
 
-.merchant-erase a {
+.merchant-erase a,
+.merchant-tag span {
 	color: var(--secondary);
 	padding: 0.5rem;
+	cursor: pointer;
 }
 
 .merchant-keyboard {
@@ -335,6 +338,7 @@ body[data-touch="no"] .merchant-keyboard {
 	text-decoration: none;
 }
 
-.merchant-erase a {
+.merchant-erase a,
+.merchant-tag span {
 	color: var(--primary);
 }

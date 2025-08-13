@@ -48,17 +48,17 @@ class Product {
 
 	}
 
-	static toggleUnitPriceDiscountField(target, visible, type) {
+	static toggleUnitPriceDiscountField(target, type) {
 
 		const isHidden = qs('[data-wrapper="' + type + 'PriceDiscount"]').classList.contains('hide');
 
-		if(visible || (visible === null && isHidden)) {
+		if(isHidden) {
 
 			qs('[data-wrapper="' + type + 'PriceDiscount"]').removeHide();
 			target.qs('[data-' + type + '-price-discount-visible="1"]').removeHide();
 			target.qs('[data-' + type + '-price-discount-visible="0"]').hide();
 
-		} else if(visible === false || (visible === null && isHidden === false)) {
+		} else {
 
 			qs('[data-wrapper="' + type + 'PriceDiscount"]').hide();
 			qs('[data-wrapper="' + type + 'PriceDiscount"]').qs('[name^="' + type + 'PriceDiscount"]').value = '';

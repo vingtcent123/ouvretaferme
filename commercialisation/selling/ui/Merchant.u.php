@@ -73,6 +73,7 @@ class MerchantUi {
 									$h .= $unit;
 								}
 							$h .= '</div>';
+							$h .= '<div></div>';
 
 							if($eSale->isPro()) {
 
@@ -96,42 +97,50 @@ class MerchantUi {
 								$h .= '</div>';
 								$h .= '<div class="merchant-placeholder merchant-packaging '.($eItem['packaging'] !== NULL ? 'hide' : '').'">';
 								$h .= '</div>';
+								$h .= '<div></div>';
 
 							}
 
 							if($eItem['unitPriceInitial'] !== NULL) {
-								$label = s("Prix remisé");
+								$unitPriceDiscountClass = '';
 							} else {
-								$label = s("Prix unitaire");
+								$unitPriceDiscountClass = ' hide';
 							}
 
-							$h .= '<div class="merchant-label form-control-label" data-wrapper="unitPrice['.$eItem['id'].']">'.$label.'</div>';
+							$h .= '<div class="merchant-label form-control-label" data-wrapper="unitPrice['.$eItem['id'].']">'.s("Prix unitaire").'</div>';
 							$h .= '<div class="merchant-actions" data-property="'.Item::UNIT_PRICE.'">';
 								$h .= $actions(Item::UNIT_PRICE);
 							$h .= '</div>';
 							$h .= '<a onclick="Merchant.keyboardToggle(this)" data-property="'.Item::UNIT_PRICE.'" class="merchant-field">';
-								$h .= $form->text('unitPrice['.$eItem['id'].']', $eItem['unitPrice']);
+								$h .= $form->text('unitPrice['.$eItem['id'].']', $eItem['unitPriceInitial'] !== NULL ? $eItem['unitPriceInitial'] : $eItem['unitPrice']);
 								$h .= '<div class="merchant-value" id="merchant-'.$eItem['id'].'-unit-price">'.$format(Item::UNIT_PRICE, $eItem['unitPrice']).'</div>';
 							$h .= '</a>';
 							$h .= '<div class="merchant-unit">';
 								$h .= '€ '.\selling\UnitUi::getBy($eItem['unit'], short: TRUE);
 							$h .= '</div>';
-
-							if($eItem['unitPriceInitial'] !== NULL) {
-
-								$h .= '<div class="merchant-label form-control-label" data-wrapper="unitPriceInitial['.$eItem['id'].']">'.s("Prix unitaire").'</div>';
-								$h .= '<div class="merchant-actions" data-property="unit-price-initial">';
-									$h .= $actions(Item::UNIT_PRICE);
+							$h .= '<div class="merchant-toggle-unit-price-initial" data-property="'.Item::UNIT_PRICE.'">';
+								$h .= '<div class="merchant-tag">';
+									$h .= '<span onclick="Merchant.toggleUnitPriceDiscountField('.$eItem['id'].');">';
+										$h .= \Asset::icon('tag', ['data-item' => $eItem['id'], 'data-unit-price-discount-visible' => 0, 'class' => $unitPriceDiscountClass === '' ? 'hide' : '']);
+										$h .= \Asset::icon('tag-fill', ['data-item' => $eItem['id'], 'data-unit-price-discount-visible' => 1, 'class' => $unitPriceDiscountClass]);
+									$h .= '</a>';
 								$h .= '</div>';
-								$h .= '<a onclick="Merchant.keyboardToggle(this)" data-property="unit-price-initial" class="merchant-field">';
-									$h .= $form->text('unitPriceInitial['.$eItem['id'].']', $eItem['unitPriceInitial']);
-									$h .= '<div class="merchant-value" id="merchant-'.$eItem['id'].'-unit-price-initial">'.$format(Item::UNIT_PRICE, $eItem['unitPriceInitial']).'</div>';
-								$h .= '</a>';
-								$h .= '<div class="merchant-unit">';
-									$h .= '€ '.\selling\UnitUi::getBy($eItem['unit'], short: TRUE);
-								$h .= '</div>';
+							$h .= '</div>';
 
-							}
+							$h .= '<div class="merchant-label form-control-label'.$unitPriceDiscountClass.'" data-wrapper="unitPriceDiscount['.$eItem['id'].']" data-property="unit-price-discount" data-item="'.$eItem['id'].'">'.s("Prix remisé").'</div>';
+							$h .= '<div class="merchant-actions'.$unitPriceDiscountClass.'" data-property="unit-price-discount" data-item="'.$eItem['id'].'">';
+								$h .= '<div class="merchant-tag">';
+									$h .= '<span>'.\Asset::icon('tag').'</a>';
+								$h .= '</div>';
+							$h .= '</div>';
+							$h .= '<a onclick="Merchant.keyboardToggle(this)" data-property="unit-price-discount" class="merchant-field'.$unitPriceDiscountClass.'" data-item="'.$eItem['id'].'">';
+								$h .= $form->text('unitPriceDiscount['.$eItem['id'].']', $eItem['unitPriceInitial'] !== NULL ? $eItem['unitPrice'] : NULL);
+								$h .= '<div class="merchant-value" id="merchant-'.$eItem['id'].'-unit-price-discount">'.($eItem['unitPriceInitial'] !== NULL ? $format(Item::UNIT_PRICE, $eItem['unitPrice']) : '').'</div>';
+							$h .= '</a>';
+							$h .= '<div class="merchant-unit'.$unitPriceDiscountClass.'" data-property="unit-price-discount" data-item="'.$eItem['id'].'">';
+								$h .= '€ '.\selling\UnitUi::getBy($eItem['unit'], short: TRUE);
+							$h .= '</div>';
+							$h .= '<div class="'.$unitPriceDiscountClass.'" data-property="unit-price-discount" data-item="'.$eItem['id'].'"></div>';
 
 							$h .= '<div class="merchant-label form-control-label" data-wrapper="price['.$eItem['id'].']">'.s("Montant").'</div>';
 							$h .= '<div class="merchant-actions" data-property="'.Item::PRICE.'">';
@@ -144,6 +153,7 @@ class MerchantUi {
 							$h .= '<div class="merchant-unit">';
 								$h .= '€';
 							$h .= '</div>';
+							$h .= '<div></div>';
 
 							$h .= '<div></div>';
 							$h .= '<div></div>';

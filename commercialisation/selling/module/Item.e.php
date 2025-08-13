@@ -167,60 +167,47 @@ class Item extends ItemElement {
 				);
 
 			})
-			->setCallback('unitPrice.check', function(?float &$unitPrice) use($p, &$input): bool {
-
-				if($unitPrice === NULL) {
-
-					if(($input['unitPriceInitial'] ?? NULL) !== NULL) {
-						$unitPrice = (float)$input['unitPriceInitial'];
-						return TRUE;
-					}
-
-					return FALSE;
-
-				}
-
-				return TRUE;
-
-			})
-			->setCallback('unitPriceDiscount.check', function(?string $unitPriceDiscount) use($p, $input): bool {
+			->setCallback('unitPriceDiscount.check', function(?string &$unitPriceDiscount) use($p, $input): bool {
 
 				if($p->isBuilt('unitPrice') === FALSE) {
 					return TRUE;
 				}
 
 				if(empty($unitPriceDiscount)) {
-					$this['unitPriceInitial'] = NULL;
+					$unitPriceDiscount = NULL;
 				} else {
-					$this['unitPriceInitial'] = $this['unitPrice'];
-					$this['unitPrice'] = (float)($unitPriceDiscount);
-					$p->addBuilt('unitPriceInitial');
+					$unitPriceDiscount = (float)$unitPriceDiscount;
 				}
 
 				return TRUE;
 
 			})
-			->setCallback('unitPriceDiscount.value', function() use($p): bool {
+			->setCallback('unitPriceDiscount.value', function(?float &$unitPriceDiscount) use($p): bool {
 
-				if($p->isBuilt('unitPrice') === FALSE or $p->isBuilt('unitPriceInitial') === FALSE) {
+				if($p->isBuilt('unitPrice') === FALSE or $unitPriceDiscount === NULL) {
 					return TRUE;
 				}
 
-				return $this['unitPriceInitial'] > $this['unitPrice'];
+				return $this['unitPrice'] > $unitPriceDiscount;
 
 			})
-			->setCallback('unitPriceInitial.value', function(?float &$unitPriceInitial) use($p, $input): bool {
+			->setCallback('unitPriceDiscount.setValue', function(?float $unitPriceDiscount) use($p): bool {
 
-				if($p->isBuilt('unitPrice') === FALSE or $unitPriceInitial === NULL) {
+				if($p->isBuilt('unitPrice') === FALSE) {
 					return TRUE;
 				}
 
-				if($this['unitPrice'] === $unitPriceInitial) {
-					$unitPriceInitial = NULL;
+				if($unitPriceDiscount === NULL) {
+					$this['unitPriceInitial'] = NULL;
+					$p->addBuilt('unitPriceInitial');
 					return TRUE;
 				}
 
-				return $unitPriceInitial >= $this['unitPrice'];
+				$this['unitPriceInitial'] = $this['unitPrice'];
+				$this['unitPrice'] = $unitPriceDiscount;
+				$p->addBuilt('unitPriceInitial');
+
+				return TRUE;
 
 			})
 			->setCallback('price.locked', function(?float $price) use($p): bool {

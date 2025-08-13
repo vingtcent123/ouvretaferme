@@ -992,7 +992,7 @@ class ItemUi {
 									.\Asset::icon('tag-fill', ['data-unit-price-discount-visible' => 1, 'class' => $eItem['unitPriceInitial'] === NULL ? 'hide' : ''])
 								.'</a>';
 								return $form->addon(s('€'))
-								.$form->addon($unitPriceDiscountSelect, ['title' => s("Gérer une remise de prix"), 'onclick' => 'Item.toggleUnitPriceDiscountField(this, null);']);
+								.$form->addon($unitPriceDiscountSelect, ['title' => s("Gérer une remise de prix"), 'onclick' => 'Item.toggleUnitPriceDiscountField(this);']);
 							};
 
 							$d->default = function() use($eItem) {
@@ -1384,7 +1384,7 @@ class ItemUi {
 					.'</a>';
 
 					return $form->addon($h)
-						.$form->addon($unitPriceDiscountSelect, ['title' => s("Gérer une remise de prix"), 'onclick' => 'Item.toggleUnitPriceDiscountField(this, null);']);
+						.$form->addon($unitPriceDiscountSelect, ['title' => s("Gérer une remise de prix"), 'onclick' => 'Item.toggleUnitPriceDiscountField(this);']);
 				};
 				break;
 

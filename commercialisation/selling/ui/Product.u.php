@@ -998,7 +998,7 @@ class ProductUi {
 			$taxes = $eProduct['farm']->getSelling('hasVat') ? '/ '.CustomerUi::getTaxes(Customer::PRO) : '';
 			$unit = ($eProduct['unit']->notEmpty() ? encode($eProduct['unit']['singular']) : self::p('unit')->placeholder);
 
-			$unitAttributes = ['class' => 'input-group-addon', 'title' => s("Gérer une remise de prix"), 'onclick' => 'Product.toggleUnitPriceDiscountField(this, null, "pro");'];
+			$unitAttributes = ['class' => 'input-group-addon', 'title' => s("Gérer une remise de prix"), 'onclick' => 'Product.toggleUnitPriceDiscountField(this, "pro");'];
 			$hasDiscountPrice = ($eProduct['proPriceInitial'] ?? NULL) !== NULL;
 
 			$h .= $form->group(
@@ -1068,7 +1068,7 @@ class ProductUi {
 			$taxes = $eProduct['farm']->getSelling('hasVat') ? '/ '.CustomerUi::getTaxes(Customer::PRIVATE) : '';
 			$unit = ($eProduct['unit']->notEmpty() ? encode($eProduct['unit']['singular']) : self::p('unit')->placeholder);
 
-			$unitAttributes = ['class' => 'input-group-addon', 'title' => s("Gérer une remise de prix"), 'onclick' => 'Product.toggleUnitPriceDiscountField(this, null, "private");'];
+			$unitAttributes = ['class' => 'input-group-addon', 'title' => s("Gérer une remise de prix"), 'onclick' => 'Product.toggleUnitPriceDiscountField(this, "private");'];
 
 			$hasDiscountPrice = ($eProduct['privatePriceInitial'] ?? NULL) !== NULL;
 			$h .= $form->group(
