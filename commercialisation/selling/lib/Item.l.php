@@ -303,7 +303,7 @@ class ItemLib extends ItemCrud {
 				'vatRate' => $eItem['vatRate'],
 			]);
 
-			$eItemNew->buildIndex(['locked', 'number', 'unitPrice', 'price', 'packaging'], $post, $key);
+			$eItemNew->buildIndex(['locked', 'number', 'unitPrice', 'unitPriceInitial', 'price', 'packaging'], $post, $key);
 
 			$cItemNew[] = $eItemNew;
 

@@ -167,6 +167,22 @@ class Item extends ItemElement {
 				);
 
 			})
+			->setCallback('unitPrice.check', function(?float &$unitPrice) use($p, &$input): bool {
+
+				if($unitPrice === NULL) {
+
+					if(($input['unitPriceInitial'] ?? NULL) !== NULL) {
+						$unitPrice = (float)$input['unitPriceInitial'];
+						return TRUE;
+					}
+
+					return FALSE;
+
+				}
+
+				return TRUE;
+
+			})
 			->setCallback('unitPriceDiscount.check', function(?string $unitPriceDiscount) use($p, $input): bool {
 
 				if($p->isBuilt('unitPrice') === FALSE) {
@@ -191,6 +207,20 @@ class Item extends ItemElement {
 				}
 
 				return $this['unitPriceInitial'] > $this['unitPrice'];
+
+			})
+			->setCallback('unitPriceInitial.value', function(?float &$unitPriceInitial) use($p, $input): bool {
+
+				if($p->isBuilt('unitPrice') === FALSE or $unitPriceInitial === NULL) {
+					return TRUE;
+				}
+
+				if($this['unitPrice'] === $unitPriceInitial) {
+					$unitPriceInitial = NULL;
+					return TRUE;
+				}
+
+				return $unitPriceInitial >= $this['unitPrice'];
 
 			})
 			->setCallback('price.locked', function(?float $price) use($p): bool {

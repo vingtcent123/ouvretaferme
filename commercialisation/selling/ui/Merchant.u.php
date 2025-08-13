@@ -99,7 +99,13 @@ class MerchantUi {
 
 							}
 
-							$h .= '<div class="merchant-label form-control-label" data-wrapper="unitPrice['.$eItem['id'].']">'.s("Prix unitaire").'</div>';
+							if($eItem['unitPriceInitial'] !== NULL) {
+								$label = s("Prix remisé");
+							} else {
+								$label = s("Prix unitaire");
+							}
+
+							$h .= '<div class="merchant-label form-control-label" data-wrapper="unitPrice['.$eItem['id'].']">'.$label.'</div>';
 							$h .= '<div class="merchant-actions" data-property="'.Item::UNIT_PRICE.'">';
 								$h .= $actions(Item::UNIT_PRICE);
 							$h .= '</div>';
@@ -113,16 +119,17 @@ class MerchantUi {
 
 							if($eItem['unitPriceInitial'] !== NULL) {
 
-								$h .= '<div class="merchant-label form-control-label"></div>';
-								$h .= '<div class="merchant-actions"></div>';
-								$h .= '<div class="merchant-value-initial">';
-										$h .= s("au lieu de <span>{price}{unit}</span>", [
-											'span' => '<span class="strikethrough">',
-											'price' => $format(Item::UNIT_PRICE, $eItem['unitPriceInitial']),
-											'unit' => '€ '.\selling\UnitUi::getBy($eItem['unit'], short: TRUE)
-										]);
+								$h .= '<div class="merchant-label form-control-label" data-wrapper="unitPriceInitial['.$eItem['id'].']">'.s("Prix unitaire").'</div>';
+								$h .= '<div class="merchant-actions" data-property="unit-price-initial">';
+									$h .= $actions(Item::UNIT_PRICE);
 								$h .= '</div>';
-								$h .= '<div></div>';
+								$h .= '<a onclick="Merchant.keyboardToggle(this)" data-property="unit-price-initial" class="merchant-field">';
+									$h .= $form->text('unitPriceInitial['.$eItem['id'].']', $eItem['unitPriceInitial']);
+									$h .= '<div class="merchant-value" id="merchant-'.$eItem['id'].'-unit-price-initial">'.$format(Item::UNIT_PRICE, $eItem['unitPriceInitial']).'</div>';
+								$h .= '</a>';
+								$h .= '<div class="merchant-unit">';
+									$h .= '€ '.\selling\UnitUi::getBy($eItem['unit'], short: TRUE);
+								$h .= '</div>';
 
 							}
 
