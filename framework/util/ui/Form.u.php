@@ -2228,9 +2228,5 @@ class FormUi {
 		return $this->lastFieldId;
 	}
 
-	public function getFormOptions(): array {
-		return $this->options;
-	}
-
 }
 ?>

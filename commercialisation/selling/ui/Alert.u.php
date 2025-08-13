@@ -91,7 +91,6 @@ class AlertUi {
 			'Item::price.locked' => s("Veuillez indiquer le montant total !"),
 			'Item::unitPrice.check' => s("Veuillez indiquer le prix unitaire !"),
 			'Item::unitPriceDiscount.value' => s("Le prix remisé doit être plus avantageux que le prix unitaire initial"),
-			'Item::unitPriceInitial.value' => s("Le prix remisé doit être plus avantageux que le prix unitaire initial"),
 			'Item::number.division' => s("Lorsque le prix unitaire est verrouillée, la quantité vendue ne peut pas être égale à zéro !"),
 			'Item::unitPrice.division' => s("Lorsque la quantité vendue est verrouillée, le prix unitaire ne peut pas être égal à zéro !"),
 			'Item::createEmpty' => s("Ajoutez au moins un article à la vente !"),
