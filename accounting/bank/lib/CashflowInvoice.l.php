@@ -93,6 +93,10 @@ class CashflowInvoiceLib extends CashflowInvoice {
 
 		$eThirdParty = \account\ThirdPartyLib::getByCustomer($eInvoice['customer']);
 
+		if($eThirdParty->empty()) {
+			return new \Collection();
+		}
+
 		$search = new \Search([
 			'status' => Cashflow::WAITING,
 			'type' => Cashflow::CREDIT,
