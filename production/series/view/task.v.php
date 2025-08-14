@@ -156,8 +156,14 @@ new JsonView('doUpdateHarvestCollection', function($data, AjaxTemplate $t) {
 	$ids = $data->c->makeArray(fn($e) => 'ids[]='.$e['id']);
 
 	if($data->eFarm->hasFeatureTime()) {
-		$t->ajaxRedirect('/series/timesheet?'.implode('&', $ids).'&date='.$data->harvestDate, purgeLayers: TRUE);
-		$t->ajaxReload(purgeLayers: FALSE); // Le contexte principal ne doit pas interférer
+
+		if(POST('source') !== 'delete') {
+			$t->ajaxRedirect('/series/timesheet?'.implode('&', $ids).'&date='.$data->harvestDate, purgeLayers: TRUE);
+			$t->ajaxReload(purgeLayers: FALSE); // Le contexte principal ne doit pas interférer
+		} else {
+			$t->ajaxReloadLayer(); // Le contexte principal ne doit pas interférer
+		}
+
 	} else {
 		$t->ajaxReload();
 	}

@@ -2191,8 +2191,9 @@ class TaskUi {
 								if($workingTime > 0) {
 									$h .= ' title="'.s("{value} / h", \selling\UnitUi::getValue(round($value / $workingTime, 1), $eTask['harvestUnit'])).'"';
 								}
-							$h .= '>';
+							$h .= ' class="flex-justify-space-between">';
 								$h .= \selling\UnitUi::getValue(round($value, 1), $eTask['harvestUnit']);
+								$h .= '<a data-ajax="/series/task:doUpdateHarvestCollection" post-ids="'.$eTask['id'].'" post-harvest-date="'.$date.'" post-harvest-more="'.($value * -1).'" post-harvest-unit="'.$eTask['harvestUnit'].'" post-source="delete" title="'.s("Supprimer cette ligne").'">'.\Asset::icon('trash').'</a>';
 							$h .= '</dd>';
 
 						}

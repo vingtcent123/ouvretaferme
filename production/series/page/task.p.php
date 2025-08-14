@@ -493,6 +493,8 @@ new \series\TaskPage()
 			POST('distribution', ['area', 'plant', 'fair'], 'fair')
 		);
 
+		$fw->validate();
+
 		foreach($data->c as $e) {
 			\series\TaskLib::update($e, ['harvest', 'harvestUnit']);
 		}
@@ -633,6 +635,15 @@ new \series\TaskPage()
 		\series\TaskLib::updateUser($data->c, $eUser, $action);
 
 		throw new ViewAction($data);
+
+	})
+	->post('doDeleteCollection', function($data) {
+
+		$data->c->validate('canDelete');
+
+		\series\TaskLib::deleteCollection($data->c);
+
+		throw new ReloadAction();
 
 	})
 	->post('doDeleteCollection', function($data) {
