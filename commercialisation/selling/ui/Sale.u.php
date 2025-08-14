@@ -982,7 +982,7 @@ class SaleUi {
 			default :
 				return '<span class="sale-preparation-status-'.Sale::CONFIRMED.'">'.s("Confirmé").'</span>';
 
-		}
+		};
 
 	}
 
