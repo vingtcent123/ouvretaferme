@@ -7,6 +7,7 @@ class ItemUi {
 
 		\Asset::css('selling', 'item.css');
 		\Asset::js('selling', 'item.js');
+		\Asset::js('selling', 'priceInitial.js');
 
 	}
 
@@ -984,17 +985,17 @@ class ItemUi {
 					$h .= '<div data-wrapper="unitPrice['.$eProduct['id'].']">';
 
 						$h .= '<h4>'.s("Prix unitaire").'</h4>';
-						$h .= $form->dynamicField($eItem, 'unitPrice['.$eProduct['id'].']*', function(\PropertyDescriber $d) use($eItem, $form) {
+						$h .= $form->dynamicField($eItem, 'unitPrice['.$eProduct['id'].']*', function(\PropertyDescriber $d) use($eItem, $eProduct, $form) {
 
-							$d->append = function() use($eItem, $form) {
+							$d->append = function() use($eItem, $form, $eProduct) {
 								$unitPriceDiscountSelect = '<a class="input-group-addon ">'
-									.\Asset::icon('tag', ['data-unit-price-discount-visible' => 0, 'class' => $eItem['unitPriceInitial'] === NULL ? '' : 'hide'])
-									.\Asset::icon('tag-fill', ['data-unit-price-discount-visible' => 1, 'class' => $eItem['unitPriceInitial'] === NULL ? 'hide' : ''])
+									.\Asset::icon('tag', ['class' => $eItem['unitPriceInitial'] === NULL ? '' : 'hide', 'data-price-discount' => $eProduct['id']])
+									.\Asset::icon('tag-fill', ['class' => $eItem['unitPriceInitial'] === NULL ? 'hide' : '', 'data-price-discount' => $eProduct['id']])
 								.'</a>';
 								return $form->addon(s('€'))
-								.$form->addon($unitPriceDiscountSelect, ['title' => s("Gérer une remise de prix"), 'onclick' => 'Item.toggleUnitPriceDiscountField(this);']);
+								.$form->addon($unitPriceDiscountSelect, ['title' => s("Gérer une remise de prix"), 'onclick' => 'PriceInitial.togglePriceDiscountField('.$eProduct['id'].', function(target) { Item.recalculateLock(target);});']);
 							};
-
+							$d->attributes = ['data-price-discount-onhide' =>  $eProduct['id']];
 							$d->default = function() use($eItem) {
 								if($eItem['unitPriceInitial'] !== NULL) {
 									return $eItem['unitPriceInitial'];
@@ -1004,7 +1005,7 @@ class ItemUi {
 
 						});
 
-						$h .= '<div data-wrapper="unitPriceDiscount['.$eProduct['id'].']" class="mt-1'.($eItem['unitPriceInitial'] === NULL ? ' hide' : '').'">';
+						$h .= '<div data-wrapper="unitPriceDiscount['.$eProduct['id'].']" class="mt-1'.($eItem['unitPriceInitial'] === NULL ? ' hide' : '').'" data-price-discount="'.$eProduct['id'].'">';
 
 							$h .= '<h4>'.s("Prix remisé").'</h4>';
 							$h .= $form->dynamicField($eItem, 'unitPriceDiscount['.$eProduct['id'].']*', function(\PropertyDescriber $d) use($form) {
@@ -1243,7 +1244,7 @@ class ItemUi {
 
 			$h .= $form->dynamicGroup($eItem, 'unitPriceDiscount', function($d) use($eItem, $form) {
 				if($eItem['unitPriceInitial'] === NULL) {
-					$d->group = ['class' => 'hide'];
+					$d->group = ['class' => 'hide', 'data-price-discount' => $eItem['id']];
 				}
 			});
 
@@ -1374,21 +1375,28 @@ class ItemUi {
 			case 'unitPrice' :
 				self::applyLocking($d, Item::UNIT_PRICE);
 
+				$d->attributes = function(\util\FormUi $form, Item $eItem) {
+					return ['data-price-discount-onhide' =>  $eItem['id']];
+				};
+
 				$d->append = function(\util\FormUi $form, Item $eItem) {
 					$h = s("€ {taxes}", ['taxes' => $eItem['sale']->getTaxes()]);
 					$h .= \selling\UnitUi::getBy($eItem['unit'], short: $eItem['unitShort'] ?? FALSE);
 
 					$unitPriceDiscountSelect = '<a class="input-group-addon">'
-						.\Asset::icon('tag', ['data-unit-price-discount-visible' => 0, 'class' => $eItem['unitPriceInitial'] === NULL ? '' : 'hide'])
-						.\Asset::icon('tag-fill', ['data-unit-price-discount-visible' => 1, 'class' => $eItem['unitPriceInitial'] === NULL ? 'hide' : ''])
+						.\Asset::icon('tag', ['class' => $eItem['unitPriceInitial'] === NULL ? '' : 'hide', 'data-price-discount' => $eItem['id']])
+						.\Asset::icon('tag-fill', ['class' => $eItem['unitPriceInitial'] === NULL ? 'hide' : '', 'data-price-discount' => $eItem['id']])
 					.'</a>';
 
 					return $form->addon($h)
-						.$form->addon($unitPriceDiscountSelect, ['title' => s("Gérer une remise de prix"), 'onclick' => 'Item.toggleUnitPriceDiscountField(this);']);
+						.$form->addon($unitPriceDiscountSelect, ['title' => s("Gérer une remise de prix"), 'onclick' => 'PriceInitial.togglePriceDiscountField('.$eItem['id'].', function(target) { Item.recalculateLock(target);});']);
 				};
 				break;
 
 			case 'unitPriceDiscount':
+				$d->group = function(Item $eItem) {
+					return ['data-price-discount' => $eItem['id']];
+				};
 				$d->field = function(\util\FormUi $form, Item $eItem) {
 					return $form->number(
 						$this->name,

@@ -151,30 +151,4 @@ class Item {
 
 	}
 
-	static toggleUnitPriceDiscountField(target) {
-
-		const wrapper = target.firstParent('[data-wrapper^="unitPrice"]');
-
-		const unitPriceDiscountFieldWrapper = wrapper.dataset.wrapper.replace('unitPrice', 'unitPriceDiscount');
-
-		const isHidden = qs('[data-wrapper="' + unitPriceDiscountFieldWrapper + '"]').classList.contains('hide');
-
-		if(isHidden) {
-
-			qs('[data-wrapper="' + unitPriceDiscountFieldWrapper + '"]').removeHide();
-			target.qs('[data-unit-price-discount-visible="1"]').removeHide();
-			target.qs('[data-unit-price-discount-visible="0"]').hide();
-
-		} else {
-
-			qs('[data-wrapper="' + unitPriceDiscountFieldWrapper + '"]').hide();
-			qs('[data-wrapper="' + unitPriceDiscountFieldWrapper + '"]').qs('[name^="unitPriceDiscount"]').value = '';
-			target.qs('[data-unit-price-discount-visible="0"]').removeHide();
-			target.qs('[data-unit-price-discount-visible="1"]').hide();
-			Item.recalculateLock(target);
-
-		}
-
-	}
-
 }

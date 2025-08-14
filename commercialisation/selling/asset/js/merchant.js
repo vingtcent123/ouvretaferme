@@ -612,44 +612,4 @@ class Merchant {
 
 	}
 
-	static toggleUnitPriceDiscountField(itemId) {
-
-		const itemSelector = '[data-property="unit-price-discount"][data-item="' + itemId + '"]';
-		const isHidden = qs(itemSelector).classList.contains('hide');
-
-		if(isHidden) {
-
-			Merchant.showUnitPriceDiscountField(itemId);
-
-		} else {
-
-			Merchant.hideUnitPriceDiscountField(itemId);
-
-		}
-
-	}
-
-	static showUnitPriceDiscountField(itemId) {
-
-		const itemSelector = '[data-property="unit-price-discount"][data-item="' + itemId + '"]';
-
-		qsa(itemSelector, node => node.removeHide());
-		qs('[data-item="' + itemId + '"][data-unit-price-discount-visible="1"]').removeHide();
-		qs('[data-item="' + itemId + '"][data-unit-price-discount-visible="0"]').hide();
-	}
-
-	static hideUnitPriceDiscountField(itemId, recalculate = true) {
-
-		const itemSelector = '[data-property="unit-price-discount"][data-item="' + itemId + '"]';
-
-		qsa(itemSelector, node => node.hide());
-		qs('input[name="unitPriceDiscount[' + itemId + ']"]').value = '';
-
-		if(recalculate) {
-			Merchant.recalculate();
-		}
-
-		qs('[data-item="' + itemId + '"][data-unit-price-discount-visible="1"]').hide();
-		qs('[data-item="' + itemId + '"][data-unit-price-discount-visible="0"]').removeHide();
-	}
 }

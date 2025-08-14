@@ -1,8 +1,12 @@
+/**
+ * Gestion des remises de prix par article
+ */
 class PriceInitial {
 
-	static toggleUnitPriceDiscountField(selector) {
+	static togglePriceDiscountField(reference, onHide = null) {
 
-		const isHidden = qs(selector + ':not([data-unit-price-discount-visible])').classList.contains('hide');
+		const selector = '[data-price-discount="' + reference + '"]';
+		const isHidden = qs(':not(svg)' + selector).classList.contains('hide');
 
 		if(isHidden) {
 
@@ -12,6 +16,9 @@ class PriceInitial {
 
 			this.hideUnitPriceDiscountField(selector);
 
+			if(onHide) {
+				onHide(qs('[data-price-discount-onhide="' + reference + '"]'));
+			}
 		}
 
 	}
@@ -20,21 +27,18 @@ class PriceInitial {
 
 		qsa(selector, node => node.removeHide());
 
-		qs(selector + '[data-unit-price-discount-visible="1"]').removeHide();
-		qs(selector + '[data-unit-price-discount-visible="0"]').hide();
+		qs('svg' + selector + '.asset-icon-tag-fill').removeHide();
+		qs('svg' + selector + '.asset-icon-tag').hide();
 	}
 
-	static hideUnitPriceDiscountField(selector, callback = null) {
+	static hideUnitPriceDiscountField(selector) {
 
 		qsa(selector, node => node.hide());
 		qs(selector + ' input').value = '';
 
-		if(callback) {
-			callback();
-		}
+		qs('svg' + selector + '.asset-icon-tag-fill').hide();
+		qs('svg' + selector + '.asset-icon-tag').removeHide();
 
-		qs(selector + '[data-unit-price-discount-visible="1"]').hide();
-		qs(selector + '[data-unit-price-discount-visible="0"]').removeHide();
 	}
 
 }

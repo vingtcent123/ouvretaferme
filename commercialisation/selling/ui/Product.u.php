@@ -9,6 +9,7 @@ class ProductUi {
 
 		\Asset::css('selling', 'product.css');
 		\Asset::js('selling', 'product.js');
+		\Asset::js('selling', 'priceInitial.js');
 
 	}
 
@@ -998,7 +999,7 @@ class ProductUi {
 			$taxes = $eProduct['farm']->getSelling('hasVat') ? '/ '.CustomerUi::getTaxes(Customer::PRO) : '';
 			$unit = ($eProduct['unit']->notEmpty() ? encode($eProduct['unit']['singular']) : self::p('unit')->placeholder);
 
-			$unitAttributes = ['class' => 'input-group-addon', 'title' => s("Gérer une remise de prix"), 'onclick' => 'Product.toggleUnitPriceDiscountField(this, "pro");'];
+			$unitAttributes = ['class' => 'input-group-addon', 'title' => s("Gérer une remise de prix"), 'onclick' => 'PriceInitial.togglePriceDiscountField("'.$eProduct['id'].'-pro");'];
 			$hasDiscountPrice = ($eProduct['proPriceInitial'] ?? NULL) !== NULL;
 
 			$h .= $form->group(
@@ -1011,8 +1012,8 @@ class ProductUi {
 					}).
 					'<div class="input-group-addon">€ '.$taxes.' / <span data-ref="product-unit">'.$unit.'</span></div>'
 						.'<a '.attrs($unitAttributes).'>'
-						.\Asset::icon('tag', ['data-pro-price-discount-visible' => 0, 'class' => $hasDiscountPrice ? 'hide' : ''])
-						.\Asset::icon('tag-fill', ['data-pro-price-discount-visible' => 1, 'class' => $hasDiscountPrice ? '' : 'hide'])
+						.\Asset::icon('tag', ['data-price-discount' => $eProduct['id'].'-pro', 'class' => $hasDiscountPrice ? 'hide' : ''])
+						.\Asset::icon('tag-fill', ['data-price-discount' => $eProduct['id'].'-pro', 'class' => $hasDiscountPrice ? '' : 'hide'])
 					.'</a>',
 				),
 				['wrapper' => 'proTaxes proPrice']
@@ -1025,7 +1026,7 @@ class ProductUi {
 						$d->default = fn() => $eProduct['proPrice'];
 					}
 				}),
-				['wrapper' => 'proPriceDiscount'] + ($hasDiscountPrice ? [] : ['class' => 'hide']),
+				['wrapper' => 'proPriceDiscount', 'data-price-discount' => $eProduct['id'].'-pro'] + ($hasDiscountPrice ? [] : ['class' => 'hide']),
 			);
 
 			$h .= $form->group(
@@ -1068,7 +1069,7 @@ class ProductUi {
 			$taxes = $eProduct['farm']->getSelling('hasVat') ? '/ '.CustomerUi::getTaxes(Customer::PRIVATE) : '';
 			$unit = ($eProduct['unit']->notEmpty() ? encode($eProduct['unit']['singular']) : self::p('unit')->placeholder);
 
-			$unitAttributes = ['class' => 'input-group-addon', 'title' => s("Gérer une remise de prix"), 'onclick' => 'Product.toggleUnitPriceDiscountField(this, "private");'];
+			$unitAttributes = ['class' => 'input-group-addon', 'title' => s("Gérer une remise de prix"), 'onclick' => 'PriceInitial.togglePriceDiscountField("'.$eProduct['id'].'-private");'];
 
 			$hasDiscountPrice = ($eProduct['privatePriceInitial'] ?? NULL) !== NULL;
 			$h .= $form->group(
@@ -1081,8 +1082,8 @@ class ProductUi {
 					}).
 					'<div class="input-group-addon">€ '.$taxes.' / <span data-ref="product-unit">'.$unit.'</span></div>'
 					.'<a '.attrs($unitAttributes).'>'
-						.\Asset::icon('tag', ['data-private-price-discount-visible' => 0, 'class' => $hasDiscountPrice ? 'hide' : ''])
-						.\Asset::icon('tag-fill', ['data-private-price-discount-visible' => 1, 'class' => $hasDiscountPrice ? '' : 'hide'])
+						.\Asset::icon('tag', ['data-price-discount' => $eProduct['id'].'-private', 'class' => $hasDiscountPrice ? 'hide' : ''])
+						.\Asset::icon('tag-fill', ['data-price-discount' => $eProduct['id'].'-private', 'class' => $hasDiscountPrice ? '' : 'hide'])
 					.'</a>',
 				),
 				['wrapper' => 'privatePrice']
@@ -1095,7 +1096,7 @@ class ProductUi {
 						$d->default = fn() => $eProduct['privatePrice'];
 					}
 				}),
-				['wrapper' => 'privatePriceDiscount'] + ($hasDiscountPrice ? [] : ['class' => 'hide']),
+				['wrapper' => 'privatePriceDiscount', 'data-price-discount' => $eProduct['id'].'-private'] + ($hasDiscountPrice ? [] : ['class' => 'hide']),
 			);
 
 			if($for === 'update') {
