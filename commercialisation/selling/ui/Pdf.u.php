@@ -841,7 +841,7 @@ class PdfUi {
 			$h .= '<td class="pdf-document-unit-price">';
 				if($eItem['unitPriceInitial'] !== NULL) {
 					$h .= '<div>';
-						$h .= '<span class="strikethrough">';
+						$h .= '<span class="util-strikethrough">';
 							$h .= \util\TextUi::money($eItem['unitPriceInitial']);
 							$h .= \selling\UnitUi::getBy($eItem['unit'], short: TRUE);
 					$h .= '</span>';

@@ -390,7 +390,7 @@ class ItemUi {
 
 						$value = '';
 						if($eItem['unitPriceInitial'] !== NULL) {
-							$value .= '<div><span class="item-item-unit-price-initial strikethrough">'.\util\TextUi::money($eItem['unitPriceInitial']).' '.$unit.'</span></div>';
+							$value .= '<div><span class="item-item-unit-price-initial util-strikethrough">'.\util\TextUi::money($eItem['unitPriceInitial']).' '.$unit.'</span></div>';
 						}
 						$value .= \util\TextUi::money($eItem['unitPrice']).' '.$unit;
 

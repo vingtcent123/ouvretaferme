@@ -2972,12 +2972,12 @@ div.util-buttons > .util-button h4 {
 
 }
 
-.strikethrough {
+.util-strikethrough {
 	color: var(--muted);
 	position: relative;
 	font-size: 1rem;
 }
-.strikethrough:before {
+.util-strikethrough:before {
 	position: absolute;
 	content: "";
 	left: 0;

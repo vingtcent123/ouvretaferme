@@ -667,7 +667,7 @@ class MarketUi {
 
 			$more = \util\TextUi::money($eItemReference['unitPrice']).' <span class="util-annotation">'.\selling\UnitUi::getBy($eItemReference['unit'], short: TRUE).'</span>';
 			if($eItemReference['unitPriceInitial'] !== NULL) {
-				$more = '<span class="strikethrough">'.\util\TextUi::money($eItemReference['unitPriceInitial']).'</span> '.$more;
+				$more = '<span class="util-strikethrough">'.\util\TextUi::money($eItemReference['unitPriceInitial']).'</span> '.$more;
 			}
 
 			$h .= $this->getItemProduct($eItemMarket, $more);

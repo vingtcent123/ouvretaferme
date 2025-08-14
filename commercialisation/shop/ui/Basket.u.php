@@ -314,7 +314,7 @@ class BasketUi {
 			$unit = ' '.ProductUi::getTaxes($eProduct).\selling\UnitUi::getBy($eProductSelling['unit'], short: TRUE);
 			if($eProduct['priceInitial'] !== NULL) {
 				$unitPrice .= '<div>';
-					$unitPrice .= '<span class="strikethrough">';
+					$unitPrice .= '<span class="util-strikethrough">';
 						$unitPrice .= \util\TextUi::money($eProduct['priceInitial']).$unit;
 					$unitPrice .= '</span>';
 				$unitPrice .= '</div>';

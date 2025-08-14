@@ -589,7 +589,7 @@ class OrderUi {
 						}
 						if($eItem['unitPriceInitial'] !== NULL) {
 							$h .= '<div>';
-								$h .= '<span class="strikethrough">';
+								$h .= '<span class="util-strikethrough">';
 									$h .= \util\TextUi::money($eItem['unitPriceInitial']).$unit;
 								$h .= '</span>';
 							$h .= '</div>';
