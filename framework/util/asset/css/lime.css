@@ -2971,3 +2971,19 @@ div.util-buttons > .util-button h4 {
 	}
 
 }
+
+.util-strikethrough {
+	color: var(--muted);
+	position: relative;
+	font-size: 1rem;
+}
+.util-strikethrough:before {
+	position: absolute;
+	content: "";
+	left: 0;
+	top: 50%;
+	right: 0;
+	border-top: 1px solid;
+	border-color: inherit;
+	transform:rotate(-5deg);
+}

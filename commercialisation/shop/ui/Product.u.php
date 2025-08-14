@@ -6,6 +6,7 @@ class ProductUi {
 	public function __construct() {
 
 		\Asset::css('shop', 'product.css');
+		\Asset::js('selling', 'priceInitial.js');
 
 	}
 
@@ -363,7 +364,17 @@ class ProductUi {
 					$h .= '</div>';
 					$h .= '<div class="shop-product-title">';
 
-						$h .= '<div class="shop-product-buy-price">'.\util\TextUi::money($eProduct['price']).' '.$this->getTaxes($eProduct).\selling\UnitUi::getBy($eProductSelling['unit']).'</div>';
+						$h .= '<div class="shop-product-buy-price">';
+
+							$unit = ' '.$this->getTaxes($eProduct).\selling\UnitUi::getBy($eProductSelling['unit']);
+							if($eProduct['priceInitial'] !== NULL) {
+								$h .= '<div class="util-strikethrough">';
+									$h .= \util\TextUi::money($eProduct['priceInitial']).$unit;
+								$h .= '</div>';
+							}
+							$h .= \util\TextUi::money($eProduct['price']).$unit;
+
+						$h .= '</div>';
 
 						if($acceptOrder) {
 
@@ -526,11 +537,13 @@ class ProductUi {
 				switch($type) {
 
 					case Date::PRIVATE :
+						$priceInitial = $eProduct['privatePriceInitial'];
 						$price = $eProduct['privatePrice'] ?? $eProduct->calcPrivateMagicPrice($eFarm->getSelling('hasVat'));
 						$packaging = NULL;
 						break;
 
 					case Date::PRO :
+						$priceInitial = $eProduct['proPriceInitial'];
 						$price = $eProduct['proPrice'] ?? $eProduct->calcProMagicPrice($eFarm->getSelling('hasVat'));
 						$packaging = $eProduct['proPackaging'];
 						break;
@@ -542,6 +555,7 @@ class ProductUi {
 					'type' => $type,
 					'product' => $eProduct,
 					'price' => $price,
+					'priceInitial' => $priceInitial,
 					'packaging' => $packaging,
 					'available' => NULL,
 				]);
@@ -580,7 +594,12 @@ class ProductUi {
 						$h .= '</div>';
 						$h .= '<div data-wrapper="price['.$eProduct['id'].']">';
 							$h .= '<h4>'.s("Prix unitaire").'</h4>';
-							$h .= $form->dynamicField($eShopProduct, 'price['.$eProduct['id'].']');
+							$h .= $form->dynamicField($eShopProduct, 'price['.$eProduct['id'].']', function($d) use($eShopProduct) {
+								$d->default = fn() => $eShopProduct['priceInitial'] ?? $eShopProduct['price'];
+							});
+							$h .= $form->dynamicField($eShopProduct, 'priceDiscount['.$eProduct['id'].']', function($d) use($eShopProduct) {
+								$d->default = fn() => $eShopProduct['priceInitial'] ? $eShopProduct['price'] : NULL;
+							});
 						$h .= '</div>';
 						$h .= '<div data-wrapper="available['.$eProduct['id'].']">';
 							$h .= '<h4>'.s("Disponible").'</h4>';
@@ -832,9 +851,17 @@ class ProductUi {
 							}
 
 							$h .= '<td class="text-end '.(($isExpired or $eProduct->exists()) ? '' : 'shop-product-not-exist').'" style="white-space: nowrap">';
-								$price = \util\TextUi::money($eProduct['price']).\selling\UnitUi::getBy($eProductSelling['unit'], short: TRUE);
+								$price = '';
+								$unit = \selling\UnitUi::getBy($eProductSelling['unit'], short: TRUE);
+								if($eProduct['priceInitial'] === NULL) {
+									$field = 'price';
+								} else {
+									$field = 'priceDiscount';
+									$price .= '<div><span class="shop-product-price-initial util-strikethrough">'.\util\TextUi::money($eProduct['priceInitial']).' '.$unit.'</span></div>';
+								}
+								$price .= \util\TextUi::money($eProduct['price']).$unit;
 								if($canUpdate) {
-									$h .= $eProduct->quick('price', $price);
+									$h .= $eProduct->quick($field, $price);
 								} else {
 									$h .= $price;
 								}
@@ -1194,9 +1221,13 @@ class ProductUi {
 			$h .= $form->hidden('id', $e['id']);
 
 			$h .= $form->dynamicGroups($e, match($e['type']) {
-				Product::PRO => ['price', 'packaging', 'available'],
-				Product::PRIVATE => ['price', 'available']
-			});
+				Product::PRO => ['price', 'priceDiscount', 'packaging', 'available'],
+				Product::PRIVATE => ['price', 'priceDiscount', 'available']
+			}, ['priceDiscount' => function($d) use($e, $form) {
+				$d->group = function(Product $e) {
+					return ['data-price-discount' => $e['product']['id'], 'class' => $e['priceInitial'] !== NULL ? '' : 'hide'];
+				};
+			}]);
 
 			$h .= '<br/>';
 			$h .= '<div class="util-block bg-background-light">';
@@ -1254,6 +1285,7 @@ class ProductUi {
 			'available' => s("Disponible"),
 			'packaging' => s("Colisage"),
 			'price' => fn($e) => s("Prix unitaire").($e['farm']->getSelling('hasVat') ? ' <span class="util-annotation">'.$e->getTaxes().'</span>' : ''),
+			'priceDiscount' => s("Prix remisé"),
 			'date' => s("Vente"),
 			'limitStartAt' => s("Proposer pour les commandes livrées à partir de"),
 			'limitEndAt' => s("Proposer pour les commandes livrées jusqu'au"),
@@ -1363,14 +1395,39 @@ class ProductUi {
 			case 'price' :
 				$d->append = function(\util\FormUi $form, Product $e) {
 
+					$unitPriceDiscountSelect = '<a class="input-group-addon">'
+						.\Asset::icon('tag', ['class' => $e['priceInitial'] === NULL ? '' : 'hide', 'data-price-discount' => $e['product']['id']])
+						.\Asset::icon('tag-fill', ['class' => $e['priceInitial'] === NULL ? 'hide' : '', 'data-price-discount' => $e['product']['id']])
+						.'</a>';
+
 					return $form->addon(s('€ {unit}', [
-						'unit' => \selling\UnitUi::getBy($e['product']['unit'], short: TRUE)
-					]));
+							'unit' => \selling\UnitUi::getBy($e['product']['unit'], short: TRUE)
+						]))
+						.$form->addon($unitPriceDiscountSelect, ['title' => s("Gérer une remise de prix"), 'onclick' => 'PriceInitial.togglePriceDiscountField('.$e['product']['id'].');']);
 
 				};
 				$d->attributes = [
 					'onfocus' => 'this.select()'
 				];
+				break;
+
+			case 'priceDiscount':
+				$d->inputGroup = function(Product $eProduct) {
+					return ['data-price-discount' => $eProduct['product']['id'], 'class' => $eProduct['priceInitial'] !== NULL ? '' : 'hide'];
+				};
+				$d->field = function(\util\FormUi $form, Product $eProduct) {
+					return $form->number(
+						$this->name,
+						($eProduct['priceInitial'] ?? NULL) !== NULL ? $eProduct['price'] : NULL,
+						['step' => 0.01],
+					);
+				};
+				$d->prepend = function(\util\FormUi $form) {
+					return $form->addon(\Asset::icon('tag'));
+				};
+				$d->append = function(\util\FormUi $form, Product $eProduct) {
+					return $form->addon(s("€ {unit}", ['unit' => \selling\UnitUi::getBy($eProduct['product']['unit'], short: TRUE)]));
+				};
 				break;
 
 

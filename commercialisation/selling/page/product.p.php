@@ -107,7 +107,11 @@ new \selling\ProductPage()
 	})
 	->write('doUpdateGrid', function($data) {
 
+		$fw = new FailWatch();
+
 		$data->cGrid = \selling\GridLib::prepareByProduct($data->e, $_POST);
+
+		$fw->validate();
 
 		\selling\GridLib::updateGrid($data->cGrid);
 
@@ -139,9 +143,21 @@ new \selling\ProductPage()
 		throw new ReloadAction('selling', 'Product::stockDisabled');
 
 	})
-	->quick(['privatePrice', 'privateStep', 'proPrice', 'proPackaging', 'proStep'])
 	->doUpdateProperties('doUpdateStatus', ['status'], fn($data) => throw new ViewAction($data))
 	->doDelete(fn($data) => throw new RedirectAction(\farm\FarmUi::urlSellingProduct($data->e['farm']).'?success=selling:Product::deleted'));
+
+new \selling\ProductPage()
+	->applyElement(function($data, \selling\Product $eProduct) {
+
+		if($eProduct['privatePriceInitial'] !== NULL) {
+			$eProduct['privatePriceDiscount'] = $eProduct['privatePrice'];
+		}
+		if($eProduct['proPriceInitial'] !== NULL) {
+			$eProduct['proPriceDiscount'] = $eProduct['proPrice'];
+		}
+
+	})
+	->quick(['privatePrice', 'privatePriceDiscount', 'privateStep', 'proPrice', 'proPriceDiscount', 'proPackaging', 'proStep']);
 
 new \selling\ProductPage()
 	->applyCollection(function($data, Collection $c) {

@@ -84,12 +84,13 @@ class Merchant {
 	static recalculate() {
 
 		const inputUnitPrice = this.current.qs('input[name^="unitPrice"]');
+		const inputUnitPriceDiscount = this.current.qs('input[name^="unitPriceDiscount"]');
 		const inputNumber = this.current.qs('input[name^="number"]');
 		const inputPrice = this.current.qs('input[name^="price"]');
 		const inputLocked = this.current.qs('input[name^="locked"]');
 		const inputPackaging = this.current.qs('input[name^="packaging"]');
 
-		let unitPrice = this.getRealValue(inputUnitPrice);
+		let unitPrice = this.getRealValue(inputUnitPriceDiscount) || this.getRealValue(inputUnitPrice);
 		let number = this.getRealValue(inputNumber);
 		let price = this.getRealValue(inputPrice);
 		let packaging = (inputPackaging && inputPackaging.value !== '') ? this.getRealValue(inputPackaging) : 1;
@@ -273,6 +274,10 @@ class Merchant {
 
 		this.current.qs('input[name^="locked"]').value = '';
 
+		if(property === 'unit-price') {
+			Merchant.hideUnitPriceDiscountField(this.current.dataset.item, false);
+		}
+
 		this.recalculate();
 
 	}
@@ -434,7 +439,12 @@ class Merchant {
 		this.current.qs('.merchant-keyboard').classList.remove('disabled');
 
 		if(isTouch() === false) {
-			this.selectedField.select();
+			const unitPriceDiscountField = this.current.qs('.merchant-field[data-property="unit-price-discount"] input');
+			if(this.selectedProperty === 'unit-price' && this.current.qs('a.merchant-field[data-property="unit-price-discount"]').classList.contains('hide') === false) {
+				unitPriceDiscountField.select();
+			} else {
+				this.selectedField.select();
+			}
 		}
 
 	}
@@ -559,7 +569,7 @@ class Merchant {
 
 		if(
 			input.value === '' ||
-			(input.parentElement.dataset.property !== 'unit-price' && input.value === '0')
+			(['unit-price', 'unit-price-discount'].indexOf(input.parentElement.dataset.property) === -1 && input.value === '0')
 		) {
 			return null;
 		} else {

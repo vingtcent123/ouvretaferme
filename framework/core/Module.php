@@ -5386,11 +5386,11 @@ abstract class ModulePage extends Page {
 
 			$fw = new \FailWatch();
 
-			$e->build([$property], $_POST, new \Properties('update'));
-
+			$properties = new \Properties('update');
+			$e->build([$property], $_POST, $properties);
 			$fw->validate();
 
-			($this->module.'Lib')::update($e, [$property]);
+			($this->module.'Lib')::update($e, $properties->getBuilt());
 
 			$fw->validate();
 

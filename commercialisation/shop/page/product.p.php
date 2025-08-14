@@ -14,10 +14,19 @@ new \shop\ProductPage()
 	->doDelete(function($data) {
 		throw new ReloadAction('shop', 'Product::deleted');
 	})
-	->doUpdateProperties('doUpdateStatus', ['status'], fn($data) => throw new ViewAction($data))
-	->quick(['available', 'price', 'packaging']);
+	->doUpdateProperties('doUpdateStatus', ['status'], fn($data) => throw new ViewAction($data));
 
-(new Page(function($data) {
+new \shop\ProductPage()
+	->applyElement(function($data, \shop\Product $e) {
+
+		if($e['priceInitial'] !== NULL) {
+			$e['priceDiscount'] = $e['price'];
+		}
+
+	})
+	->quick(['available', 'price', 'priceDiscount', 'packaging']);
+
+new Page(function($data) {
 
 		if(request_exists('date')) {
 
@@ -31,7 +40,7 @@ new \shop\ProductPage()
 			throw new NotExpectedAction('Invalid source');
 		}
 
-	}))
+	})
 	->get('createCollection', function($data) {
 
 		$data->e['cCategory'] = \selling\CategoryLib::getByFarm($data->e['farm'], index: 'id');

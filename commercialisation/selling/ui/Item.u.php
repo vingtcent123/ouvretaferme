@@ -7,6 +7,7 @@ class ItemUi {
 
 		\Asset::css('selling', 'item.css');
 		\Asset::js('selling', 'item.js');
+		\Asset::js('selling', 'priceInitial.js');
 
 	}
 
@@ -386,7 +387,12 @@ class ItemUi {
 						} else {
 							$unit = '';
 						}
-						$value = \util\TextUi::money($eItem['unitPrice']).' '.$unit;
+
+						$value = '';
+						if($eItem['unitPriceInitial'] !== NULL) {
+							$value .= '<div><span class="item-item-unit-price-initial util-strikethrough">'.\util\TextUi::money($eItem['unitPriceInitial']).' '.$unit.'</span></div>';
+						}
+						$value .= \util\TextUi::money($eItem['unitPrice']).' '.$unit;
 
 						if($eItem['locked'] === Item::UNIT_PRICE) {
 							$h .= '<span class="item-item-locked">'.\Asset::icon('lock-fill').'</span> '.$value;
@@ -430,6 +436,7 @@ class ItemUi {
 									$h .= '<a onclick="Merchant.show(this)" class="util-quick" data-item="'.$eItem['id'].'" data-property="price">'.$value.'</a>';
 								}
 							}
+
 						$h .= '</td>';
 					}
 
@@ -910,11 +917,11 @@ class ItemUi {
 					$h .= '<div>'.s("Colisage").'</div>';
 				}
 				$h .= '<div>';
-						$h .= s("Prix unitaire");
-						if($eSale['hasVat']) {
-							$h .= ' <span class="util-annotation">'.$eSale->getTaxes().'</span>';
-						}
-					$h .= '</div>';
+					$h .= s("Prix unitaire");
+					if($eSale['hasVat']) {
+						$h .= ' <span class="util-annotation">'.$eSale->getTaxes().'</span>';
+					}
+				$h .= '</div>';
 				if($hasQuantity) {
 					$h .= '<div>'.s("Quantité vendue").'</div>';
 				}
@@ -978,9 +985,34 @@ class ItemUi {
 					$h .= '<div data-wrapper="unitPrice['.$eProduct['id'].']">';
 
 						$h .= '<h4>'.s("Prix unitaire").'</h4>';
-						$h .= $form->dynamicField($eItem, 'unitPrice['.$eProduct['id'].']*', function(\PropertyDescriber $d) use($form) {
-							$d->append = $form->addon(s("€"));
+						$h .= $form->dynamicField($eItem, 'unitPrice['.$eProduct['id'].']*', function(\PropertyDescriber $d) use($eItem, $eProduct, $form) {
+
+							$d->append = function() use($eItem, $form, $eProduct) {
+								$unitPriceDiscountSelect = '<a class="input-group-addon ">'
+									.\Asset::icon('tag', ['class' => $eItem['unitPriceInitial'] === NULL ? '' : 'hide', 'data-price-discount' => $eProduct['id']])
+									.\Asset::icon('tag-fill', ['class' => $eItem['unitPriceInitial'] === NULL ? 'hide' : '', 'data-price-discount' => $eProduct['id']])
+								.'</a>';
+								return $form->addon(s('€'))
+								.$form->addon($unitPriceDiscountSelect, ['title' => s("Gérer une remise de prix"), 'onclick' => 'PriceInitial.togglePriceDiscountField('.$eProduct['id'].', function(target) { Item.recalculateLock(target);});']);
+							};
+							$d->attributes = ['data-price-discount-onhide' =>  $eProduct['id']];
+							$d->default = function() use($eItem) {
+								if($eItem['unitPriceInitial'] !== NULL) {
+									return $eItem['unitPriceInitial'];
+								}
+								return $eItem['unitPrice'];
+							};
+
 						});
+
+						$h .= '<div data-wrapper="unitPriceDiscount['.$eProduct['id'].']" class="mt-1'.($eItem['unitPriceInitial'] === NULL ? ' hide' : '').'" data-price-discount="'.$eProduct['id'].'">';
+
+							$h .= '<h4>'.s("Prix remisé").'</h4>';
+							$h .= $form->dynamicField($eItem, 'unitPriceDiscount['.$eProduct['id'].']*', function(\PropertyDescriber $d) use($form) {
+								$d->append = $form->addon(s("€"));
+							});
+
+						$h .= '</div>';
 
 					$h .= '</div>';
 
@@ -1202,10 +1234,23 @@ class ItemUi {
 				$h .= self::getPackagingGroup($form, 'packaging', $eItem);
 			}
 
-			$h .= $form->dynamicGroups($eItem, $eItem['sale']->isMarket() ?
-				['number', 'unitPrice'] :
-				['number', 'unitPrice', 'price']
-			);
+			$h .= $form->dynamicGroup($eItem, 'number');
+
+			$h .= $form->dynamicGroup($eItem, 'unitPrice', function($d) use($eItem, $form) {
+				if($eItem['unitPriceInitial'] !== NULL) {
+					$d->default = fn() => $eItem['unitPriceInitial'];
+				}
+			});
+
+			$h .= $form->dynamicGroup($eItem, 'unitPriceDiscount', function($d) use($eItem, $form) {
+				if($eItem['unitPriceInitial'] === NULL) {
+					$d->group = ['class' => 'hide', 'data-price-discount' => $eItem['id']];
+				}
+			});
+
+			if($eItem['sale']->isMarket() === FALSE) {
+				$h .= $form->dynamicGroup($eItem, 'price');
+			}
 
 			if($eItem['sale']['hasVat']) {
 				$h .= $form->dynamicGroup($eItem, 'vatRate');
@@ -1265,6 +1310,7 @@ class ItemUi {
 			'packaging' => s("Colisage"),
 			'unit' => s("Unité de vente"),
 			'unitPrice' => s("Prix unitaire"),
+			'unitPriceDiscount' => s("Prix remisé"),
 			'price' => s("Montant"),
 			'number' => s("Quantité vendue"),
 			'vatRate' => s("Taux de TVA")
@@ -1329,6 +1375,38 @@ class ItemUi {
 			case 'unitPrice' :
 				self::applyLocking($d, Item::UNIT_PRICE);
 
+				$d->attributes = function(\util\FormUi $form, Item $eItem) {
+					return ['data-price-discount-onhide' =>  $eItem['id']];
+				};
+
+				$d->append = function(\util\FormUi $form, Item $eItem) {
+					$h = s("€ {taxes}", ['taxes' => $eItem['sale']->getTaxes()]);
+					$h .= \selling\UnitUi::getBy($eItem['unit'], short: $eItem['unitShort'] ?? FALSE);
+
+					$unitPriceDiscountSelect = '<a class="input-group-addon">'
+						.\Asset::icon('tag', ['class' => $eItem['unitPriceInitial'] === NULL ? '' : 'hide', 'data-price-discount' => $eItem['id']])
+						.\Asset::icon('tag-fill', ['class' => $eItem['unitPriceInitial'] === NULL ? 'hide' : '', 'data-price-discount' => $eItem['id']])
+					.'</a>';
+
+					return $form->addon($h)
+						.$form->addon($unitPriceDiscountSelect, ['title' => s("Gérer une remise de prix"), 'onclick' => 'PriceInitial.togglePriceDiscountField('.$eItem['id'].', function(target) { Item.recalculateLock(target);});']);
+				};
+				break;
+
+			case 'unitPriceDiscount':
+				$d->group = function(Item $eItem) {
+					return ['data-price-discount' => $eItem['id']];
+				};
+				$d->field = function(\util\FormUi $form, Item $eItem) {
+					return $form->number(
+						$this->name,
+						($eItem['unitPriceInitial'] ?? NULL) !== NULL ? $eItem['unitPrice'] : NULL,
+						['oninput' => 'Item.recalculateLock(this)', 'step' => 0.01],
+					);
+				};
+				$d->prepend = function(\util\FormUi $form) {
+					return $form->addon(\Asset::icon('tag'), ['data-locked' => 'unit-price']);
+				};
 				$d->append = function(\util\FormUi $form, Item $eItem) {
 					$h = s("€ {taxes}", ['taxes' => $eItem['sale']->getTaxes()]);
 					$h .= \selling\UnitUi::getBy($eItem['unit'], short: $eItem['unitShort'] ?? FALSE);

@@ -281,7 +281,7 @@ class CustomerLib extends CustomerCrud {
 			->select([
 				'id', 'name', 'type',
 				'eGrid' => Grid::model()
-					->select(['id', 'price', 'packaging'])
+					->select(['id', 'price', 'priceInitial', 'packaging'])
 					->whereProduct($e)
 					->delegateElement('customer')
 			])

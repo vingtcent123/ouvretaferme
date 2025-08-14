@@ -257,6 +257,7 @@ class SaleLib {
 				'locked' => \selling\Item::PRICE,
 				'unit' => $eProductSelling['unit'],
 				'unitPrice' => $eProduct['price'],
+				'unitPriceInitial' => $eProduct['priceInitial'],
 				'number' => $number,
 				'vatRate' => \Setting::get('selling\vatRates')[$eProductSelling['vat']],
 			]);

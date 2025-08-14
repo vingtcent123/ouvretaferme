@@ -23,6 +23,7 @@ class AlertUi {
 
 			'Grid::packaging.check' => s("Merci d'indiquer un conditionnement valide."),
 			'Grid::price.check' => s("Merci d'indiquer un prix valide."),
+			'Grid::priceDiscount.value' => s("Le prix remisé doit être plus avantageux que le prix de base."),
 
 			'Invoice::sales.prepare' => s("Veuillez sélectionner au moins une vente."),
 			'Invoice::sales.check' => s("Une ou plusieurs ventes ne sont pas éligibles à la facturation."),
@@ -39,6 +40,10 @@ class AlertUi {
 			'Product::proOrPrivate.check' => s("Veuillez déterminer si votre produit composé est vendu aux clients particuliers ou aux clients professionnels. Il ne peut pas à la fois être vendu aux professionnels et aux particuliers"),
 			'Product::privatePrice.empty' => s("Veuillez indiquer le prix de ce produit vendu aux particuliers"),
 			'Product::proPrice.empty' => s("Veuillez indiquer le prix de ce produit vendu aux professionnels"),
+			'Product::privatePriceDiscount.value' => s("Le prix remisé doit être plus avantageux que le prix de base"),
+			'Product::privatePrice.value' => s("Le prix de base doit être plus élevé que le prix remisé"),
+			'Product::proPriceDiscount.value' => s("Le prix remisé doit être plus avantageux que le prix de base"),
+			'Product::proPrice.value' => s("Le prix de base doit être plus élevé que le prix remisé"),
 
 			'Sale::deletedNotDraft' => s("Il n'est possible de supprimer que les ventes à l'état de brouillon ou de panier."),
 			'Sale::deletedMarket' => s("Cette vente de marché ne peut pas être supprimée."),
@@ -86,6 +91,7 @@ class AlertUi {
 			'Item::number.empty' => s("La quantité vendue ne peut pas être vide !"),
 			'Item::price.locked' => s("Veuillez indiquer le montant total !"),
 			'Item::unitPrice.check' => s("Veuillez indiquer le prix unitaire !"),
+			'Item::unitPriceDiscount.value' => s("Le prix remisé doit être plus avantageux que le prix unitaire initial"),
 			'Item::number.division' => s("Lorsque le prix unitaire est verrouillée, la quantité vendue ne peut pas être égale à zéro !"),
 			'Item::unitPrice.division' => s("Lorsque la quantité vendue est verrouillée, le prix unitaire ne peut pas être égal à zéro !"),
 			'Item::createEmpty' => s("Ajoutez au moins un article à la vente !"),

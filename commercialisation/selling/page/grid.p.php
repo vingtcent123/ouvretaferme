@@ -8,6 +8,9 @@ new \selling\GridPage()
 
 		$e['product']->validate('canWrite');
 
+		if($e['priceInitial'] !== NULL) {
+			$e['priceDiscount'] = $e['price'];
+		}
 	})
-	->quick(['price', 'packaging']);
+	->quick(['price', 'priceDiscount', 'packaging']);
 ?>

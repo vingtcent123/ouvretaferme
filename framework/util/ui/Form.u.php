@@ -17,6 +17,8 @@ class FormUi {
 
 	protected ?string $id = NULL;
 
+	protected bool $isQuick = FALSE;
+
 	/**
 	 * Build a new form
 	 *
@@ -90,6 +92,14 @@ class FormUi {
 
 	public function getId(): ?string {
 		return $this->id;
+	}
+
+	public function setIsQuick(bool $isQuick): void {
+		$this->isQuick = $isQuick;
+	}
+
+	public function isQuick(): bool {
+		return $this->isQuick;
 	}
 
 	public function openUrl(string $url, array $attributes = []): string {
@@ -192,6 +202,7 @@ class FormUi {
 		$e->expects(['id', $property]);
 
 		$form = new FormUi();
+		$form->setIsQuick(TRUE);
 
 		$uiClass = '\\'.$e->getModule().'Ui';
 

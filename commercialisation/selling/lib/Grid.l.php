@@ -88,7 +88,7 @@ class GridLib extends GridCrud {
 				'farm' => $eCustomer['farm']
 			]);
 
-			$eGrid->buildIndex(['price', 'packaging'], $input, $eProduct['id']);
+			$eGrid->buildIndex(['price', 'priceDiscount', 'packaging'], $input, $eProduct['id']);
 
 			$cGrid[] = $eGrid;
 
@@ -122,7 +122,7 @@ class GridLib extends GridCrud {
 				'farm' => $eProduct['farm']
 			]);
 
-			$eGrid->buildIndex(['price', 'packaging'], $input, $eCustomer['id']);
+			$eGrid->buildIndex(['price', 'priceDiscount', 'packaging'], $input, $eCustomer['id']);
 
 			$cGrid[] = $eGrid;
 
@@ -136,6 +136,10 @@ class GridLib extends GridCrud {
 
 		$properties[] = 'updatedAt';
 		$e['updatedAt'] = new \Sql('NOW()');
+
+		if(array_delete($properties, 'priceDiscount')) {
+			$properties[] = 'priceInitial';
+		}
 
 		parent::update($e, $properties);
 
@@ -168,6 +172,7 @@ class GridLib extends GridCrud {
 						->update([
 							'packaging' => $eGrid['packaging'],
 							'price' => $eGrid['price'],
+							'priceInitial' => $eGrid['priceInitial'] ?? NULL,
 							'updatedAt' => new \Sql('NOW()')
 						]);
 

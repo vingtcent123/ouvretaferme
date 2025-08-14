@@ -89,7 +89,7 @@ class Product extends ProductElement {
 
 	public function calcProMagicPrice(bool $hasVat): ?float {
 
-		$this->expects(['vat', 'proPrice']);
+		$this->expects(['vat', 'privatePrice']);
 
 		if($this['privatePrice'] === NULL) {
 			return NULL;
@@ -116,7 +116,6 @@ class Product extends ProductElement {
 		} else {
 			return $this['proPrice'];
 		}
-
 
 	}
 
@@ -221,6 +220,8 @@ class Product extends ProductElement {
 					$value = NULL;
 				}
 
+				return TRUE;
+
 			})
 			->setCallback('proPrice.empty', function(?float &$value) use ($p) {
 
@@ -236,8 +237,273 @@ class Product extends ProductElement {
 					$value = NULL;
 				}
 
+				return TRUE;
+
+			})
+			// Set si quick
+			->setCallback('privatePrice.check', function() use($input): bool {
+
+				$this->setQuick((($input['property'] ?? NULL) === 'privatePrice'));
+				return TRUE;
+
+			})
+			// Vérifie la cohérence des données, valable pour quick et pas quick
+			->setCallback('privatePrice.value', function(?float $privatePrice): bool {
+
+				// Empty déjà checké
+				if($privatePrice === NULL or $this['privatePriceInitial'] === NULL) {
+					return TRUE;
+				}
+
+				// Si Quick
+				if($this->isQuick()) {
+					if($this['privatePriceInitial'] === NULL) {
+						return TRUE;
+					}
+					return $privatePrice < $this['privatePriceInitial'];
+				}
+
+				// Si pas quick, pas de vérification (sera faite dans privatePriceDiscount.value)
+				return TRUE;
+
+			})
+			->setCallback('privatePrice.setValue', function(?float $privatePrice) use($p): bool {
+
+				// Si Quick + Existence d'un prix remisé => va dans privatePriceInitial (sinon dans privatePrice et c'est privatePriceDiscount qui gèreà-)
+				if($this->isQuick() and $privatePrice !== NULL and $this['privatePriceInitial']) {
+
+					$this['privatePriceInitial'] = $privatePrice;
+					$p->addBuilt('privatePriceInitial');
+
+					throw new \PropertySkip();
+				}
+
+				return TRUE;
+			})
+			// Formatte privatePriceDiscount et set si quick
+			->setCallback('privatePriceDiscount.check', function(?string &$privatePriceDiscount) use($input): bool {
+
+				$privatePriceDiscount = empty($privatePriceDiscount) ? NULL : (float)$privatePriceDiscount;
+
+				$this->setQuick((($input['property'] ?? NULL) === 'privatePriceDiscount'));
+
+				// Si Quick, il faut avoir un prix initial
+				if($this->isQuick() and $this['privatePriceInitial'] === NULL) {
+					return FALSE;
+				}
+
+				return TRUE;
+
+			})
+			// Vérifie la cohérence des données
+			->setCallback('privatePriceDiscount.value', function(?float $privatePriceDiscount) use($p): bool {
+
+				// Si Quick
+				if($this->isQuick()) {
+
+					if($privatePriceDiscount === NULL) {
+						return TRUE;
+					}
+
+					return $this['privatePriceInitial'] > $privatePriceDiscount;
+				}
+
+				// Si pas quick
+				if($p->isBuilt('privatePrice') === FALSE) {
+					return TRUE;
+				}
+
+				if($privatePriceDiscount === NULL) {
+					return TRUE;
+				}
+				return $this['privatePrice'] > $privatePriceDiscount;
+
+			})
+			// Set les valeurs dans l'élement
+			->setCallback('privatePriceDiscount.setValue', function(?float $privatePriceDiscount) use($p): bool {
+
+				// Si Quick
+				if($this->isQuick()) {
+
+					// Reset du prix remisé
+					if($privatePriceDiscount === NULL and $this['privatePriceInitial'] !== NULL) {
+
+						$this['privatePrice'] = $this['privatePriceInitial'];
+						$this['privatePriceInitial'] = NULL;
+						$p->addBuilt('privatePriceInitial');
+						$p->addBuilt('privatePrice');
+						throw new \PropertySkip();
+
+					}
+
+					// Modif du prix remisé
+					if($privatePriceDiscount !== NULL) {
+
+						$this['privatePrice'] = $privatePriceDiscount;
+						$p->addBuilt('privatePrice');
+						throw new \PropertySkip();
+
+					}
+				}
+
+				if($this->isQuick() === FALSE and $p->isBuilt('privatePrice') === FALSE) {
+					throw new \PropertySkip();
+				}
+
+				// Reset du prix remisé, privatePrice a déjà été setté correctement
+				if($privatePriceDiscount === NULL) {
+
+					if($this['privatePriceInitial'] !== NULL) {
+
+						$this['privatePriceInitial'] = NULL;
+						$p->addBuilt('privatePriceInitial');
+
+					}
+
+					throw new \PropertySkip();
+				}
+
+				$this['privatePriceInitial'] = $this['privatePrice'];
+				$this['privatePrice'] = $privatePriceDiscount;
+				$p->addBuilt('privatePriceInitial');
+				$p->addBuilt('privatePrice');
+
+				throw new \PropertySkip();
+
+			})
+
+
+			// Set si quick
+			->setCallback('proPrice.check', function() use($input): bool {
+
+				$this->setQuick((($input['property'] ?? NULL) === 'proPrice'));
+				return TRUE;
+
+			})
+			// Vérifie la cohérence des données, valable pour quick et pas quick
+			->setCallback('proPrice.value', function(?float $proPrice): bool {
+
+				// Empty déjà checké
+				if($proPrice === NULL or $this['proPriceInitial'] === NULL) {
+					return TRUE;
+				}
+
+				// Si Quick
+				if($this->isQuick()) {
+					if($this['proPriceInitial'] === NULL) {
+						return TRUE;
+					}
+					return $proPrice < $this['proPriceInitial'];
+				}
+
+				// Si pas quick, pas de vérification (sera faite dans proPriceDiscount.value)
+				return TRUE;
+
+			})
+			->setCallback('proPrice.setValue', function(?float $proPrice) use($p): bool {
+
+				// Si Quick + Existence d'un prix remisé => va dans privatePriceInitial (sinon dans privatePrice et c'est privatePriceDiscount qui gèrera)
+				if($this->isQuick() and $proPrice !== NULL and $this['proPriceInitial']) {
+
+					$this['proPriceInitial'] = $proPrice;
+					$p->addBuilt('proPriceInitial');
+
+					throw new \PropertySkip();
+				}
+
+				return TRUE;
+			})
+			// Formatte proPriceDiscount
+			->setCallback('proPriceDiscount.check', function(?string &$proPriceDiscount) use($input): bool {
+
+				$proPriceDiscount = empty($proPriceDiscount) ? NULL : (float)$proPriceDiscount;
+				$this->setQuick((($input['property'] ?? NULL) === 'proPriceDiscount'));
+
+				// Si Quick, il faut avoir un prix initial
+				if($this->isQuick() and $this['proPriceInitial'] === NULL) {
+					return FALSE;
+				}
+
+				return TRUE;
+
+			})
+			// Vérifie la cohérence des données
+			->setCallback('proPriceDiscount.value', function(?float $proPriceDiscount) use($p): bool {
+
+				// Si Quick
+				if($this->isQuick()) {
+
+					if($proPriceDiscount === NULL) {
+						return TRUE;
+					}
+
+					return $this['proPriceInitial'] > $proPriceDiscount;
+				}
+
+				// Si pas quick
+				if($p->isBuilt('proPrice') === FALSE) {
+					return TRUE;
+				}
+
+				if($proPriceDiscount === NULL) {
+					return TRUE;
+				}
+				return $this['proPrice'] > $proPriceDiscount;
+
+			})
+			// Set les valeurs dans l'élement
+			->setCallback('proPriceDiscount.setValue', function(?float $proPriceDiscount) use($p): bool {
+
+				// Si Quick
+				if($this->isQuick()) {
+
+					// Reset du prix remisé
+					if($proPriceDiscount === NULL and $this['proPriceInitial'] !== NULL) {
+
+						$this['proPrice'] = $this['proPriceInitial'];
+						$this['proPriceInitial'] = NULL;
+						$p->addBuilt('proPriceInitial');
+						$p->addBuilt('proPrice');
+						throw new \PropertySkip();
+
+					}
+
+					// Modif du prix remisé
+					if($proPriceDiscount !== NULL) {
+
+						$this['proPrice'] = $proPriceDiscount;
+						$p->addBuilt('proPrice');
+						throw new \PropertySkip();
+
+					}
+				}
+
+				if($this->isQuick() === FALSE and $p->isBuilt('proPrice') === FALSE) {
+					throw new \PropertySkip();
+				}
+
+				// proPrice a déjà été setté
+				if($proPriceDiscount === NULL) {
+
+					if($this['proPriceInitial'] !== NULL) {
+
+						$this['proPriceInitial'] = NULL;
+						$p->addBuilt('proPriceInitial');
+
+					}
+
+					throw new \PropertySkip();
+				}
+
+				$this['proPriceInitial'] = $this['proPrice'];
+				$this['proPrice'] = $proPriceDiscount;
+				$p->addBuilt('proPriceInitial');
+				$p->addBuilt('proPrice');
+
+				throw new \PropertySkip();
+
 			});
-		
+
 		parent::build($properties, $input, $p);
 
 	}

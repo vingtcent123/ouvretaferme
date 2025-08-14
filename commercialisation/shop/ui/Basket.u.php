@@ -310,7 +310,16 @@ class BasketUi {
 				'title' => s("Supprimer cet article"),
 			];
 
-			$unitPrice = \util\TextUi::money($eProduct['price']).' '.ProductUi::getTaxes($eProduct).\selling\UnitUi::getBy($eProductSelling['unit'], short: TRUE);
+			$unitPrice = '';
+			$unit = ' '.ProductUi::getTaxes($eProduct).\selling\UnitUi::getBy($eProductSelling['unit'], short: TRUE);
+			if($eProduct['priceInitial'] !== NULL) {
+				$unitPrice .= '<div>';
+					$unitPrice .= '<span class="util-strikethrough">';
+						$unitPrice .= \util\TextUi::money($eProduct['priceInitial']).$unit;
+					$unitPrice .= '</span>';
+				$unitPrice .= '</div>';
+			}
+			$unitPrice .= \util\TextUi::money($eProduct['price']).$unit;
 			$price = round($eProduct['price'] * $product['number'] * ($eProduct['packaging'] ?? 1), 2);
 
 			$h .= '<tr>';

@@ -10,7 +10,7 @@ class ItemLib extends ItemCrud {
 				'sale' => ['hasVat']
 			]);
 
-			$properties = ['name', 'quality', 'locked', 'packaging', 'number', 'unitPrice', 'price'];
+			$properties = ['name', 'quality', 'locked', 'packaging', 'number', 'unitPrice', 'unitPriceDiscount', 'price'];
 
 			if($e['sale']['hasVat']) {
 				$properties[] = 'vatRate';
@@ -58,6 +58,7 @@ class ItemLib extends ItemCrud {
 		if($eGrid->notEmpty()) {
 			$eItem['packaging'] = $eGrid['packaging'];
 			$eItem['unitPrice'] = $eGrid['price'];
+			$eItem['unitPriceInitial'] = $eGrid['priceInitial'];
 		}
 
 	}
@@ -95,10 +96,12 @@ class ItemLib extends ItemCrud {
 				Customer::PRO => $eProduct->calcProMagicPrice($eSale['hasVat']),
 				Customer::PRIVATE => $eProduct->calcPrivateMagicPrice($eSale['hasVat']),
 			};
-			
+			$eItem['unitPriceInitial'] ??= $eProduct[$eSale['type'].'PriceInitial'];
+
 		} else {
 
 			$eItem['unit'] = new Unit();
+			$eItem['unitPriceInitial'] = NULL;
 			$eItem['packaging'] = NULL;
 
 		}
@@ -298,10 +301,11 @@ class ItemLib extends ItemCrud {
 				'name' => $eItem['name'],
 				'quality' => $eItem['quality'],
 				'unit' => $eItem['unit'],
+				'unitPriceInitial' => $eItem['unitPriceInitial'],
 				'vatRate' => $eItem['vatRate'],
 			]);
 
-			$eItemNew->buildIndex(['locked', 'number', 'unitPrice', 'price', 'packaging'], $post, $key);
+			$eItemNew->buildIndex(['locked', 'number', 'unitPrice', 'unitPriceDiscount', 'price', 'packaging'], $post, $key);
 
 			$cItemNew[] = $eItemNew;
 
@@ -488,6 +492,10 @@ class ItemLib extends ItemCrud {
 
 		if(array_intersect(['unitPrice', 'number', 'packaging', 'vatRate', 'price'], $properties)) {
 			self::preparePricing($e, $properties);
+		}
+
+		if(array_delete($properties, 'unitPriceDiscount')) {
+			$properties[] = 'unitPriceInitial';
 		}
 
 		Item::model()->beginTransaction();
@@ -743,7 +751,7 @@ class ItemLib extends ItemCrud {
 				'discount' => $eSale['discount']
 			]);
 
-			$eItem->buildIndex(['product', 'quality', 'name', 'packaging', 'locked', 'unit', 'unitPrice', 'number', 'price', 'vatRate'], $input, $position, new \Properties('create'));
+			$eItem->buildIndex(['product', 'quality', 'name', 'packaging', 'locked', 'unit', 'unitPrice', 'unitPriceDiscount', 'number', 'price', 'vatRate'], $input, $position, new \Properties('create'));
 
 			$cItem[] = $eItem;
 

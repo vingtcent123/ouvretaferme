@@ -91,6 +91,7 @@ Grid:
   farm: farm\Farm
   product: selling\Product
   price: ?decimal(8, 2, 0.0, null)
+  priceInitial: ?decimal(8, 2, 0.0, null)
   packaging: ?decimal(6, 2, 0.01, null)
   createdAt: datetime = SPECIAL(now)
   updatedAt: datetime = SPECIAL(now)
@@ -176,6 +177,7 @@ Item:
   packaging: ?decimal(6, 2, 0.01, null)
   unit: ?selling\Unit
   unitPrice: decimal(8, 2)
+  unitPriceInitial: ?decimal(8, 2)
   discount: int8(0, 100) = 0
   number: ?decimal(8, 2)
   price: ?decimal(8, 2)
@@ -250,9 +252,11 @@ Product:
   unit: ?selling\Unit = PHP(\Setting::get('selling\unitDefaultId'))
   private: bool = TRUE
   privatePrice: ?decimal(8, 2)
+  privatePriceInitial: ?decimal(8, 2)
   privateStep: ?decimal(6, 2, 0.01, null)
   pro: bool = TRUE
   proPrice: ?decimal(8, 2)
+  proPriceInitial: ?decimal(8, 2)
   proPackaging: ?float32(0.01, null)
   proStep: ?decimal(6, 2, 0.01, null)
   vat: int8(1, null)

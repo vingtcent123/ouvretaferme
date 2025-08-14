@@ -584,10 +584,17 @@ class OrderUi {
 						} else {
 							$unit = '';
 						}
-						$h .= \util\TextUi::money($eItem['unitPrice']);
 						if($eSale['hasVat'] and $eSale['type'] === Customer::PRO) {
-							$h .= ' '.$eSale->getTaxes();
+							$unit = $eSale->getTaxes().' '.$unit;
 						}
+						if($eItem['unitPriceInitial'] !== NULL) {
+							$h .= '<div>';
+								$h .= '<span class="util-strikethrough">';
+									$h .= \util\TextUi::money($eItem['unitPriceInitial']).$unit;
+								$h .= '</span>';
+							$h .= '</div>';
+						}
+						$h .= \util\TextUi::money($eItem['unitPrice']);
 						$h .= ' '.$unit;
 					$h .= '</td>';
 

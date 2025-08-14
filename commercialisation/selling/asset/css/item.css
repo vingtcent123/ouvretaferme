@@ -78,7 +78,6 @@ td.item-item-unit-price,
 td.item-item-packaging {
 	white-space: nowrap;
 }
-
 span.item-item-packaging-size {
 	color: var(--muted);
 	font-size: 0.9rem;
@@ -106,6 +105,10 @@ td.item-item-composition-number {
 	font-size: .8rem;
 	color: var(--muted);
 	opacity: 0.33;
+}
+
+.item-item-unit-price-initial {
+	font-size: .8rem;
 }
 
 .item-item-create {
@@ -308,7 +311,7 @@ td.item-item-composition-number {
 	}
 
 	.items-products-3 .items-products-fields {
-		grid-template-columns: 12rem 10rem 12rem 12rem;
+		grid-template-columns: 12rem 12rem 10rem 12rem;
 	}
 
 }
