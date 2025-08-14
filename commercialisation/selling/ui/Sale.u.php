@@ -1813,7 +1813,7 @@ class SaleUi {
 				$h .= '<h3 class="mt-2">'.s("Ajouter des produits à la vente").'</h3>';
 
 				if($eSale['discount'] > 0) {
-					$h .= '<div class="util-info">'.s("Les prix unitaires affichés incluent la remise de {discount} % applicable à {customer}. La remise sera également appliquées aux autres clients que vous pourriez ajouter à cette vente.", ['discount' => $eSale['discount'], 'customer' => encode($eSale['customer']->getName())]).'</div>';
+					$h .= '<div class="util-info">'.s("Les prix unitaires affichés incluent la remise de {discount} % applicable à {customer}. La remise sera également appliquée aux autres clients que vous pourriez ajouter à cette vente.", ['discount' => $eSale['discount'], 'customer' => encode($eSale['customer']->getName())]).'</div>';
 				}
 
 				$h .= $form->dynamicField($eSale, 'productsList');
