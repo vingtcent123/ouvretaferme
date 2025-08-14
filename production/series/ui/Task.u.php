@@ -2193,7 +2193,7 @@ class TaskUi {
 								}
 							$h .= ' class="flex-justify-space-between">';
 								$h .= \selling\UnitUi::getValue(round($value, 1), $eTask['harvestUnit']);
-								$h .= '<a data-ajax="/series/task:doUpdateHarvestCollection" post-ids="'.$eTask['id'].'" post-harvest-date="'.$date.'" post-harvest-more="'.($value * -1).'" post-harvest-unit="'.$eTask['harvestUnit'].'" post-source="delete" title="'.s("Supprimer cette ligne").'" title="'.s("Confirmer la suppression de la ligne ?").'">'.\Asset::icon('trash').'</a>';
+								$h .= '<a data-ajax="/series/task:doUpdateHarvestCollection" post-ids="'.$eTask['id'].'" post-harvest-date="'.$date.'" post-harvest-more="'.($value * -1).'" post-harvest-unit="'.$eTask['harvestUnit'].'" post-source="delete" title="'.s("Supprimer cette ligne").'" data-confirm="'.s("Confirmer la suppression de la ligne ?").'">'.\Asset::icon('trash').'</a>';
 							$h .= '</dd>';
 
 						}
