@@ -23,6 +23,7 @@ class AlertUi {
 			'Product::limitCustomers.consistency' => s("Vous ne pouvez pas à la fois ajouter une liste de clients autorisés et une listes de clients interdits."),
 			'Product::empty' => s("Vous n'avez sélectionné aucun produit."),
 			'Product::createCollectionError' => s("Il y a des erreurs à vérifier sur un ou plusieurs produits que vous souhaitez ajouter."),
+			'Product::priceDiscount.value' => s("Le prix remisé doit être plus avantageux que le prix de base."),
 
 			'Range::missingDate' => s("Veuillez choisir si vous souhaitez retirer le catalogue de toutes les ventes en cours sur la boutique ou non."),
 			'Range::duplicate' => s("Ce catalogue a déjà été associé à la boutique."),

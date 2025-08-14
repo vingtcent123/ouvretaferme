@@ -648,6 +648,10 @@ body:not([data-template~="shop-embedded"]) {
 	white-space: nowrap;
 }
 
+.shop-product-price-initial {
+	font-size: 0.8rem;
+}
+
 .shop-product-limits {
 	border-top: 1px dotted var(--border);
 	padding: 0.125rem 0;

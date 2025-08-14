@@ -7,7 +7,7 @@ class ProductLib extends ProductCrud {
 
 		return function(Product $eProduct) {
 
-			$properties = ['price', 'available', 'limitCustomers', 'excludeCustomers', 'limitMin', 'limitMax'];
+			$properties = ['price', 'priceDiscount', 'available', 'limitCustomers', 'excludeCustomers', 'limitMin', 'limitMax'];
 
 			if($eProduct['type'] === Product::PRO) {
 				$properties[] = 'packaging';
@@ -410,7 +410,7 @@ class ProductLib extends ProductCrud {
 				'packaging' => ($base['type'] === Product::PRO) ? $eProductSelling['proPackaging'] : NULL,
 			] + $base);
 
-			$eProduct->buildIndex(['available', 'price'], $input, $index);
+			$eProduct->buildIndex(['available', 'price', 'priceDiscount'], $input, $index);
 
 			$cProduct->append($eProduct);
 
@@ -524,6 +524,16 @@ class ProductLib extends ProductCrud {
 			}
 
 		}
+
+	}
+
+	public static function update(Product $e, array $properties): void {
+
+		if(array_delete($properties, 'priceDiscount')) {
+			$properties[] = 'priceInitial';
+		}
+
+		parent::update($e, $properties);
 
 	}
 
