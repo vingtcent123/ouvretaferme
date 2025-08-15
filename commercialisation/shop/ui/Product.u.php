@@ -854,7 +854,7 @@ class ProductUi {
 									$field = 'price';
 								} else {
 									$field = 'priceDiscount';
-									$h .= new \selling\PriceUi()->priceWithoutDiscount($eProduct['priceInitial'], unit: ' '.$unit, class: 'shop-product-price-initial');
+									$h .= new \selling\PriceUi()->priceWithoutDiscount($eProduct['priceInitial'], unit: ' '.$unit);
 								}
 								$price .= \util\TextUi::money($eProduct['price']).$unit;
 								if($canUpdate) {

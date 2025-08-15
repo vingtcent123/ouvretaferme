@@ -389,7 +389,7 @@ class ItemUi {
 
 						$value = '';
 						if($eItem['unitPriceInitial'] !== NULL) {
-							$value .= new PriceUi()->priceWithoutDiscount($eItem['unitPriceInitial'], unit: ' '.$unit, class: 'item-item-unit-price-initial');
+							$value .= new PriceUi()->priceWithoutDiscount($eItem['unitPriceInitial'], unit: ' '.$unit);
 						}
 						$value .= \util\TextUi::money($eItem['unitPrice']).' '.$unit;
 
