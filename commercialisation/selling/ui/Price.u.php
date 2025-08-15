@@ -9,7 +9,7 @@ class PriceUi {
 
 	}
 
-	public function getDiscountLink(string|int $identifier, bool $hasDiscountPrice, ?string $onHide = null, string $more = ''): string {
+	public function getDiscountLink(string|int $identifier, bool $hasDiscountPrice, ?string $onHide = null): string {
 
 		$attributes = [
 			'onclick' => 'PriceInitial.showUnitPriceDiscountField("'.$identifier.'", '.$onHide.');',
@@ -17,7 +17,7 @@ class PriceUi {
 			'class' => $hasDiscountPrice ? 'hide' : '',
 		];
 
-		return \util\FormUi::actionLink($more.'<a '.attrs($attributes).'>'.s("Ajouter une remise").' '.\Asset::icon('caret-down-fill').'</a>', empty($more) ? '' : 'columns-2');
+		return \util\FormUi::getFieldAction('<a '.attrs($attributes).'>'.s("Ajouter une remise").' '.\Asset::icon('caret-down-fill').'</a>');
 
 	}
 

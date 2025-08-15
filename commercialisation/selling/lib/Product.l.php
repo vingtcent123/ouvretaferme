@@ -263,6 +263,7 @@ class ProductLib extends ProductCrud {
 					->whereCustomer($e)
 					->delegateElement('product')
 			])
+			->wherePro(TRUE)
 			->whereFarm($e['farm'])
 			->whereStatus(Product::ACTIVE)
 			->sort(['name' => SORT_ASC])

@@ -216,92 +216,93 @@ class GridUi {
 
 		$h .= '<div class="util-block-help">'.s("Vous pouvez personnaliser ici les prix et les conditionnements pour votre client {value}. Les informations personnalisées ont la priorité sur les valeurs de base, mais ne s'appliquent pas dans les boutiques en ligne.", encode($eCustomer->getName())).'</div>';
 
-		$h .= '<table class="stick-xs">';
+		$h .= '<div class="util-overflow-md">';
 
-		$h .= '<tr>';
-			$h .= '<th class="customer-price-vignette"></th>';
-			$h .= '<th>'.s("Produit").'</th>';
-			$h .= '<th>'.s("Prix").'</th>';
-			if($eCustomer['type'] === Customer::PRO) {
-				$h .= '<th>'.s("Colis").'</th>';
-			}
-		$h .= '</tr>';
+			$h .= '<table class="stick-xs tr-even">';
 
-		foreach($cProduct as $eProduct) {
+				$h .= '<thead>';
+					$h .= '<tr>';
+						$h .= '<th class="customer-price-vignette"></th>';
+						$h .= '<th>'.s("Produit").'</th>';
+						$h .= '<th class="text-end td-min-content">'.s("Prix de base").'</th>';
+						$h .= '<th>'.s("Prix personnalisé").'</th>';
+						$h .= '<th class="text-end td-min-content">'.s("Colis de base").'</th>';
+						$h .= '<th>'.s("Colis personnalisé").'</th>';
+					$h .= '</tr>';
+				$h .= '</thead>';
+				$h .= '<tbody>';
 
-			$eGrid = $eProduct['eGrid'];
+				foreach($cProduct as $eProduct) {
 
-			$taxes = $eCustomer['farm']->getSelling('hasVat') ? CustomerUi::getTaxes($eCustomer['type']) : '';
+					$eGrid = $eProduct['eGrid'];
 
-			$h .= '<tr>';
+					$taxes = $eCustomer['farm']->getSelling('hasVat') ? CustomerUi::getTaxes($eCustomer['type']) : '';
 
-				$h .= '<td class="customer-price-vignette">';
-					$h .= ProductUi::getVignette($eProduct, '4rem');
-				$h .= '</td>';
+					$defaultPrice = $eProduct[$eCustomer['type'].'Price'];
 
-				$h .= '<td>';
-					$h .= '<a href="/produit/'.$eProduct['id'].'">'.encode($eProduct->getName()).'</a>';
-					if($eProduct['size']) {
-						$h .= '<div><small><u>'.encode($eProduct['size']).'</u></small></div>';
-					}
-				$h .= '</td>';
+					$h .= '<tr>';
 
-				$defaultPrice = $eProduct[$eCustomer['type'].'Price'];
+						$h .= '<td class="customer-price-vignette">';
+							$h .= ProductUi::getVignette($eProduct, '4rem');
+						$h .= '</td>';
 
-				$h .= '<td data-wrapper="price['.$eProduct['id'].']" class="td-vertical-align-top">';
+						$h .= '<td>';
+							$h .= '<a href="/produit/'.$eProduct['id'].'">'.encode($eProduct->getName()).'</a>';
+							if($eProduct['size']) {
+								$h .= '<div><small><u>'.encode($eProduct['size']).'</u></small></div>';
+							}
+						$h .= '</td>';
 
-					$price = ($eGrid['priceInitial'] ?? NULL) !== NULL ? $eGrid['priceInitial'] : $eGrid['price'] ?? '';
-					$priceDiscount = ($eGrid['priceInitial'] ?? NULL) !== NULL ? $eGrid['price'] ?? '' : '';
+						$h .= '<td class="text-end color-muted" style="vertical-align: baseline; padding-top: 1rem">';
+							$h .= \util\TextUi::money($defaultPrice);
+						$h .= '</td>';
 
-					if($defaultPrice !== NULL) {
-						$more = '<div class="color-muted">';
-							$more .= s("Base : {value}", \util\TextUi::money($defaultPrice));
-						$more .= '</div>';
-					} else {
-						$more = '';
-					}
+						$h .= '<td data-wrapper="price['.$eProduct['id'].']" class="td-vertical-align-top">';
 
-					$actionDiscount = new PriceUi()->getDiscountLink($eProduct['id'], hasDiscountPrice: empty($priceDiscount) === FALSE, more: $more);
+							$price = ($eGrid['priceInitial'] ?? NULL) !== NULL ? $eGrid['priceInitial'] : $eGrid['price'] ?? '';
+							$priceDiscount = ($eGrid['priceInitial'] ?? NULL) !== NULL ? $eGrid['price'] ?? '' : '';
 
-					$h .= '<div>';
-						$h .= $form->inputGroup(
-							$form->number('price['.$eProduct['id'].']', $price, ['step' => 0.01])
-							.$form->addon('€ '.$taxes.\selling\UnitUi::getBy($eProduct['unit'])),
-						).$actionDiscount;
-					$h .= '</div>';
+							$actionDiscount = new PriceUi()->getDiscountLink($eProduct['id'], hasDiscountPrice: empty($priceDiscount) === FALSE);
 
-					$addon = '<div class="input-group-addon">'.s("€ {taxes}", ['taxes' => $taxes.\selling\UnitUi::getBy($eProduct['unit'])]).'</div>'.
-					'<div class="input-group-addon">'.new PriceUi()->getDiscountTrashAddon($eProduct['id']).'</div>';
-					$h .= $form->inputGroup(
-						$form->number('priceDiscount['.$eProduct['id'].']', $priceDiscount, ['step' => 0.01]).$addon,
-						['class' => 'mt-1'.(empty($priceDiscount) ? ' hide' : ''), 'data-price-discount' => $eProduct['id'], 'data-wrapper' => 'priceDiscount['.$eProduct['id'].']']
-					);
+							$h .= '<div>';
+								$h .= $form->inputGroup(
+									$form->number('price['.$eProduct['id'].']', $price, ['step' => 0.01])
+									.$form->addon('€ '.$taxes.\selling\UnitUi::getBy($eProduct['unit'])),
+								).$actionDiscount;
+							$h .= '</div>';
 
-				$h .= '</td>';
-
-				if($eCustomer['type'] === Customer::PRO) {
-
-					$h .= '<td data-wrapper="packaging['.$eProduct['id'].']" class="td-vertical-align-top">';
-						$h .= '<div>';
+							$addon = '<div class="input-group-addon">'.s("€ {taxes}", ['taxes' => $taxes.\selling\UnitUi::getBy($eProduct['unit'])]).'</div>'.
+							'<div class="input-group-addon">'.new PriceUi()->getDiscountTrashAddon($eProduct['id']).'</div>';
 							$h .= $form->inputGroup(
-								$form->number('packaging['.$eProduct['id'].']', $eGrid['packaging'] ?? '', ['step' => 0.01]).
-								($eProduct['unit']->notEmpty() ? $form->addon(\selling\UnitUi::getSingular($eProduct['unit'])) : '')
+								$form->number('priceDiscount['.$eProduct['id'].']', $priceDiscount, ['step' => 0.01]).$addon,
+								['class' => 'mt-1'.(empty($priceDiscount) ? ' hide' : ''), 'data-price-discount' => $eProduct['id'], 'data-wrapper' => 'priceDiscount['.$eProduct['id'].']']
 							);
-						$h .= '</div>';
-						if($eProduct['proPackaging'] !== NULL) {
-							$h .= '<small class="color-muted">';
-								$h .= s("Base : {value}", \selling\UnitUi::getValue($eProduct['proPackaging'], $eProduct['unit']));
-							$h .= '</small>';
-						}
-					$h .= '</td>';
+
+						$h .= '</td>';
+
+						$h .= '<td class="text-end color-muted" style="vertical-align: baseline; padding-top: 1rem">';
+							if($eProduct['proPackaging'] !== NULL) {
+								$h .= \selling\UnitUi::getValue($eProduct['proPackaging'], $eProduct['unit'], short: TRUE);
+							}
+						$h .= '</td>';
+
+						$h .= '<td data-wrapper="packaging['.$eProduct['id'].']" class="td-vertical-align-top">';
+							$h .= '<div>';
+								$h .= $form->inputGroup(
+									$form->number('packaging['.$eProduct['id'].']', $eGrid['packaging'] ?? '', ['step' => 0.01]).
+									($eProduct['unit']->notEmpty() ? $form->addon(\selling\UnitUi::getSingular($eProduct['unit'], short: TRUE)) : '')
+								);
+							$h .= '</div>';
+						$h .= '</td>';
+
+					$h .= '</tr>';
 
 				}
 
-			$h .= '</tr>';
+				$h .= '</tbody>';
+			$h .= '</table>';
 
-		}
-
-		$h .= '</table>';
+		$h .= '</div>';
 
 		return new \Panel(
 			id: 'panel-grid-customer',

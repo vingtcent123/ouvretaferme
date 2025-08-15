@@ -1815,7 +1815,7 @@ class FormUi {
 
 	}
 
-	public static function actionLink(string $text, string $class = ''): string {
+	public static function getFieldAction(string $text, string $class = ''): string {
 		return '<div class="field-action '.$class.'">'.$text.'</div>';
 	}
 	public static function info(string $text, string $class = ''): string {
