@@ -420,9 +420,13 @@ div.form-group.form-group-nested > .form-control-label {
 		grid-template-columns: 1fr !important;
 	}
 
-	.form-columns-xs div.form-group:not(.form-group-nested) > .form-control-label {
+	.form-columns-xs div.form-group:not(.form-group-nested) > .form-control-label:not(:empty) {
 		margin: 0.5rem 0;
 		font-weight: bold;
+	}
+
+	.form-columns-xs div.form-group:not(.form-group-nested) > .form-control-label:empty {
+		display: none;
 	}
 
 }
