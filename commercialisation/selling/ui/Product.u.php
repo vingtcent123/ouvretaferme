@@ -1231,7 +1231,7 @@ class ProductUi {
 					return $form->number(
 						$this->name,
 						($eProduct['privatePriceInitial'] ?? NULL) !== NULL ? $eProduct['privatePrice'] : NULL,
-						['step' => 0.01],
+						['step' => 0.01, 'disabled' => $eProduct['private'] ? NULL : 'disabled'],
 					);
 				};
 				$d->prepend = function(\util\FormUi $form) {
@@ -1261,16 +1261,11 @@ class ProductUi {
 				break;
 
 			case 'proPriceDiscount':
-				$d->attributes += [
-					'disabled' => function(\util\FormUi $form, Product $e) {
-						return $e['pro'] ? NULL : 'disabled';
-					}
-				];
 				$d->field = function(\util\FormUi $form, Product $eProduct) {
 					return $form->number(
 						$this->name,
 						($eProduct['proPriceInitial'] ?? NULL) !== NULL ? $eProduct['proPrice'] : NULL,
-						['step' => 0.01],
+						['step' => 0.01, 'disabled' => $eProduct['pro'] ? NULL : 'disabled'],
 					);
 				};
 				$d->prepend = function(\util\FormUi $form) {
