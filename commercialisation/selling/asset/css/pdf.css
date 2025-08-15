@@ -137,6 +137,10 @@ table.pdf-document-items {
 	background-color: #fafafa;
 }
 
+.pdf-document-item.pdf-document-item-detail td .font-sm {
+	font-size: 0.8rem;
+}
+
 .pdf-document-item.pdf-document-item-detail td:first-child {
 	padding-left: 1cm;
 	min-width: 9cm;
