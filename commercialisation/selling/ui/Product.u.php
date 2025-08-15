@@ -1010,6 +1010,7 @@ class ProductUi {
 				($eProduct['composition'] === FALSE or $for === 'create') ? $form->dynamicField($eProduct, 'pro') : ''
 			);
 
+			$taxes = $eProduct['farm']->getSelling('hasVat') ? '/ '.CustomerUi::getTaxes(Customer::PRO) : '';
 			$unit = ($eProduct['unit']->notEmpty() ? encode($eProduct['unit']['singular']) : self::p('unit')->placeholder);
 
 			$hasDiscountPrice = ($eProduct['proPriceInitial'] ?? NULL) !== NULL;
@@ -1028,7 +1029,9 @@ class ProductUi {
 							$d->default = fn() => $eProduct['proPriceInitial'];
 						}
 					})
-				).\util\FormUi::actionLink('<a '.attrs($priceDiscountLinkAttributes).'>'.$priceDiscountLinkAttributes['data-text-'.($hasDiscountPrice ? 'off' : 'on')].'</a>'),
+				)
+				.'<div class="input-group-addon">€ '.$taxes.' / <span data-ref="product-unit">'.$unit.'</span></div>'
+				.\util\FormUi::actionLink('<a '.attrs($priceDiscountLinkAttributes).'>'.$priceDiscountLinkAttributes['data-text-'.($hasDiscountPrice ? 'off' : 'on')].'</a>'),
 				['wrapper' => 'proTaxes proPrice']
 			);
 			$h .= $form->group(
