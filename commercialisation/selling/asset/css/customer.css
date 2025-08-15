@@ -73,19 +73,27 @@ tr.customer-item-details {
 }
 
 /* Prices */
-table.customer-price td {
-	line-height: 1.4;
+.customer-price td {
+    line-height: 1.4;
+}
+@media (min-width: 992px) {
+
+    .customer-price thead br {
+        display: none;
+    }
+
 }
 
-.customer-price-vignette {
-	width: 4rem;
+.customer-price input {
+    min-width: 5rem;
 }
 
-@media (max-width: 575px) {
+@media (max-width: 991px) {
 
-	.customer-price-vignette {
-		display: none;
-	}
+    .customer-price-product {
+        max-width: 10rem;
+    }
+
 }
 
 .customer-color-circle {

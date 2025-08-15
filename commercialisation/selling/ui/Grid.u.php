@@ -218,15 +218,15 @@ class GridUi {
 
 		$h .= '<div class="util-overflow-md">';
 
-			$h .= '<table class="stick-xs tr-even">';
+			$h .= '<table class="customer-price stick-md tr-even">';
 
 				$h .= '<thead>';
 					$h .= '<tr>';
-						$h .= '<th class="customer-price-vignette"></th>';
+						$h .= '<th></th>';
 						$h .= '<th>'.s("Produit").'</th>';
-						$h .= '<th class="text-end td-min-content">'.s("Prix de base").'</th>';
+						$h .= '<th class="text-end td-min-content">'.s("Prix <br/>de base").'</th>';
 						$h .= '<th>'.s("Prix personnalisé").'</th>';
-						$h .= '<th class="text-end td-min-content">'.s("Colis de base").'</th>';
+						$h .= '<th class="text-end td-min-content">'.s("Colis <br/>de base").'</th>';
 						$h .= '<th>'.s("Colis personnalisé").'</th>';
 					$h .= '</tr>';
 				$h .= '</thead>';
@@ -242,11 +242,11 @@ class GridUi {
 
 					$h .= '<tr>';
 
-						$h .= '<td class="customer-price-vignette">';
+						$h .= '<td class="td-min-content">';
 							$h .= ProductUi::getVignette($eProduct, '4rem');
 						$h .= '</td>';
 
-						$h .= '<td>';
+						$h .= '<td class="customer-price-product">';
 							$h .= '<a href="/produit/'.$eProduct['id'].'">'.encode($eProduct->getName()).'</a>';
 							if($eProduct['size']) {
 								$h .= '<div><small><u>'.encode($eProduct['size']).'</u></small></div>';
@@ -267,16 +267,16 @@ class GridUi {
 							$h .= '<div>';
 								$h .= $form->inputGroup(
 									$form->number('price['.$eProduct['id'].']', $price, ['step' => 0.01])
-									.$form->addon('€ '.$taxes.\selling\UnitUi::getBy($eProduct['unit'])),
+									.$form->addon('€ '.$taxes.\selling\UnitUi::getBy($eProduct['unit'], short: TRUE)),
 								).$actionDiscount;
 							$h .= '</div>';
 
-							$addon = '<div class="input-group-addon">'.s("€ {taxes}", ['taxes' => $taxes.\selling\UnitUi::getBy($eProduct['unit'])]).'</div>'.
+							$addon = '<div class="input-group-addon">'.s("€ {taxes}", ['taxes' => $taxes.\selling\UnitUi::getBy($eProduct['unit'], short: TRUE)]).'</div>'.
 							'<div class="input-group-addon">'.new PriceUi()->getDiscountTrashAddon($eProduct['id']).'</div>';
 							$h .= $form->inputGroup(
 								$form->addon(s("Prix remisé")).
 								$form->number('priceDiscount['.$eProduct['id'].']', $priceDiscount, ['step' => 0.01]).$addon,
-								['class' => 'mt-1'.(empty($priceDiscount) ? ' hide' : ''), 'data-price-discount' => $eProduct['id'], 'data-wrapper' => 'priceDiscount['.$eProduct['id'].']']
+								['class' => (empty($priceDiscount) ? ' hide' : ''), 'data-price-discount' => $eProduct['id'], 'data-wrapper' => 'priceDiscount['.$eProduct['id'].']']
 							);
 
 						$h .= '</td>';
