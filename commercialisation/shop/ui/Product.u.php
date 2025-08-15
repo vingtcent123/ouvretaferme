@@ -987,8 +987,15 @@ class ProductUi {
 							}
 
 							$h .= '<td class="text-end" style="white-space: nowrap">';
-								$price = \util\TextUi::money($eProduct['price']).\selling\UnitUi::getBy($eProductSelling['unit'], short: TRUE);
-								$h .= $eProduct->quick('price', $price);
+								$unit = \selling\UnitUi::getBy($eProductSelling['unit'], short: TRUE);
+								if($eProduct['priceInitial'] !== NULL) {
+									$h .= '<div><span class="util-strikethrough">'.\util\TextUi::money($eProduct['priceInitial']).$unit.'</span></div>';
+									$field = 'priceDiscount';
+								} else {
+									$field = 'price';
+								}
+								$price = \util\TextUi::money($eProduct['price']).$unit;
+								$h .= $eProduct->quick($field, $price);
 							$h .= '</td>';
 
 							$h .= '<td class="shop-product-available highlight" '.($hasLimits ? 'rowspan="2"' : '').' id="product-available-'.$eProduct['id'].'">';

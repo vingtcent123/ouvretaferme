@@ -225,6 +225,7 @@ class ProductUi {
 								$value = \util\TextUi::money($eProduct['privatePrice']).$taxes;
 								if($eProduct['privatePriceInitial'] !== NULL) {
 									$field = 'privatePriceDiscount';
+									$h .= '<div><span class="util-strikethrough">'.\util\TextUi::money($eProduct['privatePriceInitial']).$taxes.'</span></div>';
 								}
 							} else if($eProduct['proPrice'] !== NULL) {
 								$value = '<span class="color-muted" title="'.s("Prix calculé à partir du prix pour les professionnels augmenté de la TVA.").'">'.\Asset::icon('magic').' ';
@@ -251,6 +252,7 @@ class ProductUi {
 								$value = \util\TextUi::money($eProduct['proPrice']).$taxes;
 								if($eProduct['proPriceInitial'] !== NULL) {
 									$field = 'proPriceDiscount';
+									$h .= '<div><span class="util-strikethrough">'.\util\TextUi::money($eProduct['proPriceInitial']).$taxes.'</span></div>';
 								}
 							} else if($eProduct['privatePrice']) {
 								$value = '<span class="color-muted" title="'.s("Prix calculé à partir du prix pour les particuliers diminué de la TVA.").'">'.\Asset::icon('magic').' ';
