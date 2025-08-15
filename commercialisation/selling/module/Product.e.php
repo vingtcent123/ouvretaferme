@@ -240,6 +240,29 @@ class Product extends ProductElement {
 				return TRUE;
 
 			})
+
+
+			->setCallback('privatePriceInitial.check', function() use($input): bool {
+
+				$this->setQuick((($input['property'] ?? NULL) === 'privatePriceInitial'));
+				return TRUE;
+
+			})
+			->setCallback('privatePriceInitial.value', function(?float $privatePriceInitial): bool {
+
+				if($privatePriceInitial === NULL) {
+					return TRUE;
+				}
+
+				// Si Quick
+				if($this->isQuick()) {
+					return $privatePriceInitial > $this['privatePrice'];
+				}
+
+				return TRUE;
+
+			})
+
 			// Set si quick
 			->setCallback('privatePrice.check', function() use($input): bool {
 
@@ -373,6 +396,28 @@ class Product extends ProductElement {
 			})
 
 
+			->setCallback('proPriceInitial.check', function() use($input): bool {
+
+				$this->setQuick((($input['property'] ?? NULL) === 'proPriceInitial'));
+				return TRUE;
+
+			})
+			->setCallback('proPriceInitial.value', function(?float $proPriceInitial): bool {
+
+				if($proPriceInitial === NULL) {
+					return TRUE;
+				}
+
+				// Si Quick
+				if($this->isQuick()) {
+					return $proPriceInitial > $this['proPrice'];
+				}
+
+				return TRUE;
+
+			})
+
+
 			// Set si quick
 			->setCallback('proPrice.check', function() use($input): bool {
 
@@ -393,7 +438,7 @@ class Product extends ProductElement {
 					if($this['proPriceInitial'] === NULL) {
 						return TRUE;
 					}
-					return $proPrice < $this['proPriceInitial'];
+					return $proPrice > $this['proPrice'];
 				}
 
 				// Si pas quick, pas de vérification (sera faite dans proPriceDiscount.value)

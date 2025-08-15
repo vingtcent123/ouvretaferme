@@ -651,9 +651,11 @@ class ProductUi {
 
 					$h .= '<dt>'.s("Prix de base").'</dt>';
 					$h .= '<dd>';
+						$field = 'privatePrice';
 						if($eProduct['privatePrice']) {
 							if($eProduct['privatePriceInitial']) {
 								$value = \util\TextUi::money($eProduct['privatePriceInitial']);
+								$field = 'privatePriceInitial';
 							} else {
 								$value = \util\TextUi::money($eProduct['privatePrice']);
 							}
@@ -666,7 +668,11 @@ class ProductUi {
 						} else {
 							$value = '/';
 						}
-						$h .= $eProduct->quick('privatePrice', $value);
+						if($eProduct['privatePrice'] and $eProduct['privatePriceInitial']) {
+							$h .= '<div><span class="util-strikethrough">'.$eProduct->quick($field, $value).'</span></div>';
+						} else {
+							$h .= $eProduct->quick($field, $value);
+						}
 					$h .= '</dd>';
 
 					if($eProduct['privatePriceInitial']) {
@@ -707,9 +713,11 @@ class ProductUi {
 
 					$h .= '<dt>'.s("Prix de base").'</dt>';
 					$h .= '<dd>';
+						$field = 'proPrice';
 						if($eProduct['proPrice']) {
 							if($eProduct['proPriceInitial']) {
 								$value = \util\TextUi::money($eProduct['proPriceInitial']);
+								$field = 'proPriceInitial';
 							} else {
 								$value = \util\TextUi::money($eProduct['proPrice']);
 							}
@@ -722,7 +730,11 @@ class ProductUi {
 						} else {
 							$value = '/';
 						}
-						$h .= $eProduct->quick('proPrice', $value);
+						if($eProduct['proPrice'] and $eProduct['proPriceInitial']) {
+							$h .= '<div><span class="util-strikethrough">'.$eProduct->quick($field, $value).'</span></div>';
+						} else {
+							$h .= $eProduct->quick($field, $value);
+						}
 					$h .= '</dd>';
 
 
@@ -1139,10 +1151,12 @@ class ProductUi {
 			'unit' => s("Unité de vente"),
 			'private' => s("Vente aux clients particuliers"),
 			'privatePrice' => s("Prix particulier"),
+			'privatePriceInitial' => s("Prix particulier de base"),
 			'privatePriceDiscount' => s("Prix particulier remisé"),
 			'privateStep' => s("Multiple de vente"),
 			'pro' => s("Vente aux clients professionnels"),
 			'proPrice' => s("Prix professionnel"),
+			'proPriceInitial' => s("Prix professionnel de base"),
 			'proPriceDiscount' => s("Prix professionnel remisé"),
 			'proPackaging' => s("Colis de base"),
 			'proStep' => s("Multiple de vente"),

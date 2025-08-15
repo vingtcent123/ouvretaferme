@@ -157,7 +157,7 @@ new \selling\ProductPage()
 		}
 
 	})
-	->quick(['privatePrice', 'privatePriceDiscount', 'privateStep', 'proPrice', 'proPriceDiscount', 'proPackaging', 'proStep']);
+	->quick(['privatePrice', 'privatePriceInitial', 'privatePriceDiscount', 'privateStep', 'proPrice', 'proPriceInitial', 'proPriceDiscount', 'proPackaging', 'proStep']);
 
 new \selling\ProductPage()
 	->applyCollection(function($data, Collection $c) {

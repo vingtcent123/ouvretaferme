@@ -62,7 +62,6 @@ new \farm\FarmPage()
 				]);
 
 		}
-
 		\shop\ProductLib::applyIndexing($data->eShop, $data->eDate, $cProduct);
 		$data->eDate['nProduct'] = $cProduct->count();
 
