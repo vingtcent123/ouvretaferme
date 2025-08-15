@@ -120,12 +120,12 @@ new \selling\InvoicePage()
 	->doUpdate(fn() => throw new ReloadAction('selling', 'Invoice::updated'))
 	->doDelete(fn() => throw new ReloadAction('selling', 'Invoice::deleted'));
 
-(new Page(function($data) {
+new Page(function($data) {
 
 	$data->eFarm = \farm\FarmLib::getById(INPUT('farm'))->validate('canManage');
 	$data->eFarm->validateSellingComplete();
 
-	}))
+	})
 	->get('createCollection', function($data) {
 
 		$data->month = GET('month', '?string');

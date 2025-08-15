@@ -480,10 +480,14 @@ class PdfUi {
 				}
 			$h .= '</td>';
 			$h .= '<td class="pdf-document-unit-price">';
+				$unit = \selling\UnitUi::getBy($eItem['unit'], short: TRUE);
 				if($eItem['unitPrice'] !== NULL) {
+					if($eItem['unitPriceInitial'] !== NULL) {
+						$h .= new PriceUi()->priceWithoutDiscount($eItem['unitPriceInitial'], $unit);
+					}
 					$h .= \util\TextUi::money($eItem['unitPrice']);
 				}
-				$h .= \selling\UnitUi::getBy($eItem['unit'], short: TRUE);
+				$h .= $unit;
 			$h .= '</td>';
 
 			$h .= '<td class="pdf-document-price">';
