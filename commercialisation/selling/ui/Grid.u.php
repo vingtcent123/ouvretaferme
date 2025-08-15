@@ -249,7 +249,7 @@ class GridUi {
 
 				$defaultPrice = $eProduct[$eCustomer['type'].'Price'];
 
-				$h .= '<td data-wrapper="price['.$eProduct['id'].']">';
+				$h .= '<td data-wrapper="price['.$eProduct['id'].']" class="td-vertical-align-top">';
 
 					$price = ($eGrid['priceInitial'] ?? NULL) !== NULL ? $eGrid['priceInitial'] : $eGrid['price'] ?? '';
 					$priceDiscount = ($eGrid['priceInitial'] ?? NULL) !== NULL ? $eGrid['price'] ?? '' : '';
@@ -264,7 +264,6 @@ class GridUi {
 							$form->number('price['.$eProduct['id'].']', $price, ['step' => 0.01])
 							.$form->addon('€ '.$taxes.\selling\UnitUi::getBy($eProduct['unit']))
 							.$form->addon($unitPriceDiscountSelect, ['title' => s("Gérer une remise de prix"), 'onclick' => 'PriceInitial.togglePriceDiscountField('.$eProduct['id'].');']),
-							['data-price-discount' => $eProduct['id']]
 						);
 					$h .= '</div>';
 
@@ -285,7 +284,7 @@ class GridUi {
 
 				if($eCustomer['type'] === Customer::PRO) {
 
-					$h .= '<td data-wrapper="packaging['.$eProduct['id'].']">';
+					$h .= '<td data-wrapper="packaging['.$eProduct['id'].']" class="td-vertical-align-top">';
 						$h .= '<div>';
 							$h .= $form->inputGroup(
 								$form->number('packaging['.$eProduct['id'].']', $eGrid['packaging'] ?? '', ['step' => 0.01]).
@@ -346,7 +345,7 @@ class GridUi {
 					$h .= CustomerUi::link($eCustomer);
 				$h .= '</td>';
 
-				$h .= '<td data-wrapper="price['.$eCustomer['id'].']">';
+				$h .= '<td data-wrapper="price['.$eCustomer['id'].']" class="td-vertical-align-top">';
 
 					$price = ($eGrid['priceInitial'] ?? NULL) !== NULL ? $eGrid['priceInitial'] : $eGrid['price'] ?? '';
 					$priceDiscount = ($eGrid['priceInitial'] ?? NULL) !== NULL ? $eGrid['price'] ?? '' : '';
@@ -371,7 +370,7 @@ class GridUi {
 					);
 				$h .= '</td>';
 
-				$h .= '<td data-wrapper="packaging['.$eCustomer['id'].']">';
+				$h .= '<td data-wrapper="packaging['.$eCustomer['id'].']" class="td-vertical-align-top">';
 
 					if($eCustomer['type'] === Customer::PRO) {
 						$h .= $form->inputGroup(

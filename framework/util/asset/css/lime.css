@@ -916,6 +916,10 @@ table th,
 	white-space: nowrap;
 }
 
+.td-vertical-align-top {
+	vertical-align: top;
+}
+
 tr:not(:last-child):has(> .td-border) .td-border {
 	border-bottom: 1px dashed var(--border);
 }

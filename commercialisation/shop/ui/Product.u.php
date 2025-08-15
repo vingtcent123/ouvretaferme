@@ -368,9 +368,9 @@ class ProductUi {
 
 							$unit = ' '.$this->getTaxes($eProduct).\selling\UnitUi::getBy($eProductSelling['unit']);
 							if($eProduct['priceInitial'] !== NULL) {
-								$h .= '<div class="util-strikethrough">';
+								$h .= '<div><span class="util-strikethrough">';
 									$h .= \util\TextUi::money($eProduct['priceInitial']).$unit;
-								$h .= '</div>';
+								$h .= '</span></div>';
 							}
 							$h .= \util\TextUi::money($eProduct['price']).$unit;
 
