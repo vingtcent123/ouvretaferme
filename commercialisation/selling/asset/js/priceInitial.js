@@ -3,18 +3,18 @@
  */
 class PriceInitial {
 
-	static togglePriceDiscountField(reference, onHide = null) {
+	static togglePriceDiscountField(linkElement, reference, onHide = null) {
 
 		const selector = '[data-price-discount="'+ reference +'"]';
-		const isHidden = qs(':not(svg)'+ selector).classList.contains('hide');
+		const isHidden = qs(selector).classList.contains('hide');
 
 		if(isHidden) {
 
-			this.showUnitPriceDiscountField(selector);
+			this.showUnitPriceDiscountField(linkElement, selector);
 
 		} else {
 
-			this.hideUnitPriceDiscountField(selector);
+			this.hideUnitPriceDiscountField(linkElement, selector);
 
 			if(onHide) {
 				onHide(qs('[data-price-discount-onhide="'+ reference + '"]'));
@@ -23,21 +23,20 @@ class PriceInitial {
 
 	}
 
-	static showUnitPriceDiscountField(selector) {
+	static showUnitPriceDiscountField(linkElement, selector) {
 
 		qsa(selector, node => node.removeHide());
 
-		qs('svg'+ selector +'.asset-icon-tag-fill').removeHide();
-		qs('svg'+ selector +'.asset-icon-tag').hide();
+		linkElement.innerHTML = linkElement.dataset.textOff;
+
 	}
 
-	static hideUnitPriceDiscountField(selector) {
+	static hideUnitPriceDiscountField(linkElement, selector) {
 
 		qsa(selector, node => node.hide());
 		qs(selector +' input').value = '';
 
-		qs('svg'+ selector +'.asset-icon-tag-fill').hide();
-		qs('svg'+ selector +'.asset-icon-tag').removeHide();
+		linkElement.innerHTML = linkElement.dataset.textOn;
 
 	}
 

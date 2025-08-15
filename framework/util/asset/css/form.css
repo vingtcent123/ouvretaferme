@@ -214,6 +214,26 @@ input[type="checkbox"] {
 	margin-top: .25rem;
 }
 
+.form-action-link {
+	font-size: .85rem;
+	font-weight: normal;
+	color: var(--muted);
+	margin: 0 1rem 0 0;
+	padding: 0.25rem 0.5rem;
+	text-align: right;
+	border-right: 2px solid var(--border);
+}
+.form-action-link.columns-2 {
+	display: flex;
+	justify-content: space-between;
+}
+.form-action-link a {
+	color: var(--muted);
+}
+.form-action-link a:hover {
+	color: var(--muted);
+}
+
 .form-control + .form-info,
 .form-info-ancestor + .form-info,
 .editor + .form-info,

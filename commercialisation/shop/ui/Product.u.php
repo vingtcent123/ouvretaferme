@@ -1401,17 +1401,19 @@ class ProductUi {
 
 			case 'price' :
 				$d->append = function(\util\FormUi $form, Product $e) {
-
-					$unitPriceDiscountSelect = '<a class="input-group-addon">'
-						.\Asset::icon('tag', ['class' => $e['priceInitial'] === NULL ? '' : 'hide', 'data-price-discount' => $e['product']['id']])
-						.\Asset::icon('tag-fill', ['class' => $e['priceInitial'] === NULL ? 'hide' : '', 'data-price-discount' => $e['product']['id']])
-						.'</a>';
-
 					return $form->addon(s('€ {unit}', [
 							'unit' => \selling\UnitUi::getBy($e['product']['unit'], short: TRUE)
-						]))
-						.$form->addon($unitPriceDiscountSelect, ['title' => s("Gérer une remise de prix"), 'onclick' => 'PriceInitial.togglePriceDiscountField('.$e['product']['id'].');']);
+						]));
 
+				};
+				$d->after = function(\util\FormUi $form, Product $e) {
+					$priceDiscountLinkAttributes = [
+						'onclick' => 'PriceInitial.togglePriceDiscountField(this, '.$e['product']['id'].');',
+						'data-text-on' => s("Ajouter une remise"),
+						'data-text-off' => s("Retirer la remise"),
+					];
+
+					return \util\FormUi::actionLink('<a '.attrs($priceDiscountLinkAttributes).'>'.$priceDiscountLinkAttributes['data-text-'.($e['priceInitial'] !== NULL ? 'off' : 'on')].'</a>');
 				};
 				$d->attributes = [
 					'onfocus' => 'this.select()'
@@ -1428,9 +1430,6 @@ class ProductUi {
 						($eProduct['priceInitial'] ?? NULL) !== NULL ? $eProduct['price'] : NULL,
 						['step' => 0.01],
 					);
-				};
-				$d->prepend = function(\util\FormUi $form) {
-					return $form->addon(\Asset::icon('tag'));
 				};
 				$d->append = function(\util\FormUi $form, Product $eProduct) {
 					return $form->addon(s("€ {unit}", ['unit' => \selling\UnitUi::getBy($eProduct['product']['unit'], short: TRUE)]));

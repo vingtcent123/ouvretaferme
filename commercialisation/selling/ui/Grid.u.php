@@ -254,24 +254,29 @@ class GridUi {
 					$price = ($eGrid['priceInitial'] ?? NULL) !== NULL ? $eGrid['priceInitial'] : $eGrid['price'] ?? '';
 					$priceDiscount = ($eGrid['priceInitial'] ?? NULL) !== NULL ? $eGrid['price'] ?? '' : '';
 
-					$unitPriceDiscountSelect = '<a class="input-group-addon ">'
-						.\Asset::icon('tag', ['data-price-discount' => $eProduct['id'], 'class' => empty($priceDiscount) ? '' : 'hide'])
-						.\Asset::icon('tag-fill', ['data-price-discount' => $eProduct['id'], 'class' => empty($priceDiscount) ? 'hide' : ''])
-						.'</a>';
+					$priceDiscountLinkAttributes = [
+						'onclick' => 'PriceInitial.togglePriceDiscountField(this, '.$eProduct['id'].');',
+						'data-text-on' => s("Indiquer une remise"),
+						'data-text-off' => s("Retirer la remise"),
+					];
+
+					if($defaultPrice !== NULL) {
+						$actionLinkClass = 'columns-2';
+						$more = '<div class="color-muted">';
+							$more .= s("Base : {value}", \util\TextUi::money($defaultPrice));
+						$more .= '</div>';
+					} else {
+						$actionLinkClass = '';
+						$more = '';
+					}
 
 					$h .= '<div>';
 						$h .= $form->inputGroup(
 							$form->number('price['.$eProduct['id'].']', $price, ['step' => 0.01])
-							.$form->addon('€ '.$taxes.\selling\UnitUi::getBy($eProduct['unit']))
-							.$form->addon($unitPriceDiscountSelect, ['title' => s("Gérer une remise de prix"), 'onclick' => 'PriceInitial.togglePriceDiscountField('.$eProduct['id'].');']),
-						);
+							.$form->addon('€ '.$taxes.\selling\UnitUi::getBy($eProduct['unit'])),
+						)
+						.\util\FormUi::actionLink($more.'<a '.attrs($priceDiscountLinkAttributes).'>'.$priceDiscountLinkAttributes['data-text-'.(empty($priceDiscount) ? 'on' : 'off')].'</a>', $actionLinkClass);
 					$h .= '</div>';
-
-					if($defaultPrice !== NULL) {
-						$h .= '<small class="color-muted">';
-							$h .= s("Base : {value}", \util\TextUi::money($defaultPrice));
-						$h .= '</small>';
-					}
 
 					$h .= $form->inputGroup(
 						$form->addon(\Asset::icon('tag'))
@@ -350,21 +355,20 @@ class GridUi {
 					$price = ($eGrid['priceInitial'] ?? NULL) !== NULL ? $eGrid['priceInitial'] : $eGrid['price'] ?? '';
 					$priceDiscount = ($eGrid['priceInitial'] ?? NULL) !== NULL ? $eGrid['price'] ?? '' : '';
 
-					$unitPriceDiscountSelect = '<a class="input-group-addon ">'
-						.\Asset::icon('tag', ['data-price-discount' => $eCustomer['id'], 'class' => empty($priceDiscount) ? '' : 'hide'])
-						.\Asset::icon('tag-fill', ['data-price-discount' => $eCustomer['id'], 'class' => empty($priceDiscount) ? 'hide' : ''])
-						.'</a>';
+					$priceDiscountLinkAttributes = [
+						'onclick' => 'PriceInitial.togglePriceDiscountField(this, '.$eCustomer['id'].');',
+						'data-text-on' => s("Indiquer une remise"),
+						'data-text-off' => s("Retirer la remise"),
+					];
 
 					$h .= $form->inputGroup(
 						$form->number('price['.$eCustomer['id'].']', $price, ['step' => 0.01]).
-						$form->addon('€ '.$taxes.\selling\UnitUi::getBy($eProduct['unit']))
-						.$form->addon($unitPriceDiscountSelect, ['title' => s("Gérer une remise de prix"), 'onclick' => 'PriceInitial.togglePriceDiscountField('.$eCustomer['id'].');']),
-					);
+						$form->addon('€ '.$taxes.\selling\UnitUi::getBy($eProduct['unit'])),
+					).\util\FormUi::actionLink('<a '.attrs($priceDiscountLinkAttributes).'>'.$priceDiscountLinkAttributes['data-text-'.(empty($priceDiscount) ? 'on' : 'off')].'</a>');
 
 
 					$h .= $form->inputGroup(
-						$form->addon(\Asset::icon('tag'))
-						.$form->number('priceDiscount['.$eCustomer['id'].']', $priceDiscount, ['step' => 0.01])
+						$form->number('priceDiscount['.$eCustomer['id'].']', $priceDiscount, ['step' => 0.01])
 						.$form->addon('€ '.$taxes.\selling\UnitUi::getBy($eProduct['unit'])),
 						['class' => 'mt-1'.(empty($priceDiscount) ? ' hide' : ''), 'data-price-discount' => $eCustomer['id'], 'data-wrapper' => 'priceDiscount['.$eCustomer['id'].']']
 					);

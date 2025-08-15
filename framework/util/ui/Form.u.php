@@ -1448,7 +1448,7 @@ class FormUi {
 	 * @param string $name
 	 * @param string $value Default time
 	 * @param array $attributes => 'callback' method called for each changement
-	 * @return strings
+	 * @return string
 	 */
 	public function time(string $name, mixed $value = NULL, array $attributes = []): string {
 
@@ -1815,6 +1815,9 @@ class FormUi {
 
 	}
 
+	public static function actionLink(string $text, string $class = ''): string {
+		return '<div class="form-action-link '.$class.'">'.$text.'</div>';
+	}
 	public static function info(string $text, string $class = ''): string {
 		return '<div class="form-info '.$class.'">'.$text.'</div>';
 	}

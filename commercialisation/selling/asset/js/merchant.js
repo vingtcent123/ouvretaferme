@@ -275,7 +275,8 @@ class Merchant {
 		this.current.qs('input[name^="locked"]').value = '';
 
 		if(property === 'unit-price') {
-			Merchant.hideUnitPriceDiscountField(this.current.dataset.item, false);
+			const target = qs('#merchant-'+ this.current.dataset.item + ' a[data-price-initial-link-toggle]');
+			PriceInitial.hideUnitPriceDiscountField(target, '[data-price-discount="'+ this.current.dataset.item +'"]');
 		}
 
 		this.recalculate();

@@ -1010,11 +1010,15 @@ class ProductUi {
 				($eProduct['composition'] === FALSE or $for === 'create') ? $form->dynamicField($eProduct, 'pro') : ''
 			);
 
-			$taxes = $eProduct['farm']->getSelling('hasVat') ? '/ '.CustomerUi::getTaxes(Customer::PRO) : '';
 			$unit = ($eProduct['unit']->notEmpty() ? encode($eProduct['unit']['singular']) : self::p('unit')->placeholder);
 
-			$unitAttributes = ['class' => 'input-group-addon', 'title' => s("Gérer une remise de prix"), 'onclick' => 'PriceInitial.togglePriceDiscountField("'.$eProduct['id'].'-pro");'];
 			$hasDiscountPrice = ($eProduct['proPriceInitial'] ?? NULL) !== NULL;
+
+			$priceDiscountLinkAttributes = [
+				'onclick' => 'PriceInitial.togglePriceDiscountField(this, "'.$eProduct['id'].'-pro");',
+				'data-text-on' => s("Indiquer une remise"),
+				'data-text-off' => s("Retirer la remise"),
+			];
 
 			$h .= $form->group(
 				s("Prix de base"),
@@ -1023,16 +1027,10 @@ class ProductUi {
 						if($hasDiscountPrice) {
 							$d->default = fn() => $eProduct['proPriceInitial'];
 						}
-					}).
-					'<div class="input-group-addon">€ '.$taxes.' / <span data-ref="product-unit">'.$unit.'</span></div>'
-						.'<a '.attrs($unitAttributes).'>'
-						.\Asset::icon('tag', ['data-price-discount' => $eProduct['id'].'-pro', 'class' => $hasDiscountPrice ? 'hide' : ''])
-						.\Asset::icon('tag-fill', ['data-price-discount' => $eProduct['id'].'-pro', 'class' => $hasDiscountPrice ? '' : 'hide'])
-					.'</a>',
-				),
+					})
+				).\util\FormUi::actionLink('<a '.attrs($priceDiscountLinkAttributes).'>'.$priceDiscountLinkAttributes['data-text-'.($hasDiscountPrice ? 'off' : 'on')].'</a>'),
 				['wrapper' => 'proTaxes proPrice']
 			);
-
 			$h .= $form->group(
 				s("Prix remisé"),
 				$form->dynamicField($eProduct, 'proPriceDiscount', function($d) use($eProduct, $form, $hasDiscountPrice) {
@@ -1083,9 +1081,13 @@ class ProductUi {
 			$taxes = $eProduct['farm']->getSelling('hasVat') ? '/ '.CustomerUi::getTaxes(Customer::PRIVATE) : '';
 			$unit = ($eProduct['unit']->notEmpty() ? encode($eProduct['unit']['singular']) : self::p('unit')->placeholder);
 
-			$unitAttributes = ['class' => 'input-group-addon', 'title' => s("Gérer une remise de prix"), 'onclick' => 'PriceInitial.togglePriceDiscountField("'.$eProduct['id'].'-private");'];
-
 			$hasDiscountPrice = ($eProduct['privatePriceInitial'] ?? NULL) !== NULL;
+
+			$priceDiscountLinkAttributes = [
+				'onclick' => 'PriceInitial.togglePriceDiscountField(this, "'.$eProduct['id'].'-private");',
+				'data-text-on' => s("Indiquer une remise"),
+				'data-text-off' => s("Retirer la remise"),
+			];
 			$h .= $form->group(
 				s("Prix de base"),
 				$form->inputGroup(
@@ -1094,12 +1096,8 @@ class ProductUi {
 							$d->default = fn() => $eProduct['privatePriceInitial'];
 						}
 					}).
-					'<div class="input-group-addon">€ '.$taxes.' / <span data-ref="product-unit">'.$unit.'</span></div>'
-					.'<a '.attrs($unitAttributes).'>'
-						.\Asset::icon('tag', ['data-price-discount' => $eProduct['id'].'-private', 'class' => $hasDiscountPrice ? 'hide' : ''])
-						.\Asset::icon('tag-fill', ['data-price-discount' => $eProduct['id'].'-private', 'class' => $hasDiscountPrice ? '' : 'hide'])
-					.'</a>',
-				),
+					'<div class="input-group-addon">€ '.$taxes.' / <span data-ref="product-unit">'.$unit.'</span></div>',
+				).\util\FormUi::actionLink('<a '.attrs($priceDiscountLinkAttributes).'>'.$priceDiscountLinkAttributes['data-text-'.($hasDiscountPrice ? 'off' : 'on')].'</a>'),
 				['wrapper' => 'privatePrice']
 			);
 
@@ -1234,12 +1232,6 @@ class ProductUi {
 						['step' => 0.01, 'disabled' => $eProduct['private'] ? NULL : 'disabled'],
 					);
 				};
-				$d->prepend = function(\util\FormUi $form) {
-					if($form->isQuick()) {
-						return NULL;
-					}
-					return $form->addon(\Asset::icon('tag'));
-				};
 				$d->append = function(\util\FormUi $form, Product $eProduct) {
 					if($form->isQuick()) {
 						return NULL;
@@ -1267,12 +1259,6 @@ class ProductUi {
 						($eProduct['proPriceInitial'] ?? NULL) !== NULL ? $eProduct['proPrice'] : NULL,
 						['step' => 0.01, 'disabled' => $eProduct['pro'] ? NULL : 'disabled'],
 					);
-				};
-				$d->prepend = function(\util\FormUi $form) {
-					if($form->isQuick()) {
-						return NULL;
-					}
-					return $form->addon(\Asset::icon('tag'));
 				};
 				$d->append = function(\util\FormUi $form, Product $eProduct) {
 					if($form->isQuick()) {
