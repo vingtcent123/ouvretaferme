@@ -1004,7 +1004,7 @@ class ItemUi {
 
 						$priceDiscountLinkAttributes = [
 							'onclick' => 'PriceInitial.togglePriceDiscountField(this, '.$eProduct['id'].', function(target) { Item.recalculateLock(target);});',
-							'data-text-on' => s("Indiquer une remise"),
+							'data-text-on' => s("Ajouter une remise").' '.\Asset::icon('caret-down-fill'),
 							'data-text-off' => s("Retirer la remise"),
 						];
 						$h .= \util\FormUi::actionLink('<a '.attrs($priceDiscountLinkAttributes).'>'.$priceDiscountLinkAttributes['data-text-'.($hasDiscountPrice ? 'off' : 'on')].'</a>');
@@ -1392,7 +1392,7 @@ class ItemUi {
 				$d->after = function(\util\FormUi $form, Item $e) {
 					$priceDiscountLinkAttributes = [
 						'onclick' => 'PriceInitial.togglePriceDiscountField(this, '.$e['id'].');',
-						'data-text-on' => s("Indiquer une remise"),
+						'data-text-on' => s("Ajouter une remise").' '.\Asset::icon('caret-down-fill'),
 						'data-text-off' => s("Retirer la remise"),
 					];
 					return \util\FormUi::actionLink('<a '.attrs($priceDiscountLinkAttributes).'>'.$priceDiscountLinkAttributes['data-text-'.(empty($priceDiscount) ? 'on' : 'off')].'</a>');

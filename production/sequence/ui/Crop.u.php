@@ -638,7 +638,7 @@ class CropUi {
 			'<div class="crop-write-spacing-values">'.
 				$fields.
 			'</div>'.
-			'<div class="field-followup">'.
+			'<div class="field-action">'.
 				'<a '.attr('onclick', 'Crop.changeSpacing(this, "'.Crop::DENSITY.'")').'>'.s("Raisonner en densité au m²").'</a>'.
 			'</div>',
 			['class' => 'crop-write-spacing '.($eCrop['distance'] === Crop::SPACING ? '' : 'hide'), 'wrapper' => 'plantSpacing rowSpacing rows']
@@ -648,7 +648,7 @@ class CropUi {
 			$d->default = function($eCrop) {
 				return isset($eCrop['density']) ? round($eCrop['density'], 1) : NULL;
 			};
-			$d->after = '<div class="field-followup">'.
+			$d->after = '<div class="field-action">'.
 				'<a '.attr('onclick', 'Crop.changeSpacing(this, "'.Crop::SPACING.'")').'>'.s("Raisonner en espacement des plantes").'</a>'.
 			'</div>';
 			$d->group['class'] = ($eCrop['distance'] === Crop::DENSITY ? '' : 'hide');

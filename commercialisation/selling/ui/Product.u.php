@@ -1017,7 +1017,7 @@ class ProductUi {
 
 			$priceDiscountLinkAttributes = [
 				'onclick' => 'PriceInitial.togglePriceDiscountField(this, "'.$eProduct['id'].'-pro");',
-				'data-text-on' => s("Indiquer une remise"),
+				'data-text-on' => s("Ajouter une remise").' '.\Asset::icon('caret-down-fill'),
 				'data-text-off' => s("Retirer la remise"),
 			];
 
@@ -1028,20 +1028,21 @@ class ProductUi {
 						if($hasDiscountPrice) {
 							$d->default = fn() => $eProduct['proPriceInitial'];
 						}
-					})
+					}).
+					'<div class="input-group-addon">€ '.$taxes.' / <span data-ref="product-unit">'.$unit.'</span></div>'
 				)
-				.'<div class="input-group-addon">€ '.$taxes.' / <span data-ref="product-unit">'.$unit.'</span></div>'
 				.\util\FormUi::actionLink('<a '.attrs($priceDiscountLinkAttributes).'>'.$priceDiscountLinkAttributes['data-text-'.($hasDiscountPrice ? 'off' : 'on')].'</a>'),
 				['wrapper' => 'proTaxes proPrice']
 			);
 			$h .= $form->group(
-				s("Prix remisé"),
-				$form->dynamicField($eProduct, 'proPriceDiscount', function($d) use($eProduct, $form, $hasDiscountPrice) {
-					if($hasDiscountPrice) {
-						$d->default = fn() => $eProduct['proPrice'];
-					}
-				}),
-				['wrapper' => 'proPriceDiscount', 'data-price-discount' => $eProduct['id'].'-pro'] + ($hasDiscountPrice ? [] : ['class' => 'hide']),
+				content: $form->inputGroup(
+					$form->dynamicField($eProduct, 'proPriceDiscount', function($d) use($eProduct, $form, $hasDiscountPrice) {
+						if($hasDiscountPrice) {
+							$d->default = fn() => $eProduct['proPrice'];
+						}
+					})
+				),
+				attributes: ['wrapper' => 'proPriceDiscount', 'data-price-discount' => $eProduct['id'].'-pro'] + ($hasDiscountPrice ? [] : ['class' => 'hide']),
 			);
 
 			$h .= $form->group(
@@ -1088,7 +1089,7 @@ class ProductUi {
 
 			$priceDiscountLinkAttributes = [
 				'onclick' => 'PriceInitial.togglePriceDiscountField(this, "'.$eProduct['id'].'-private");',
-				'data-text-on' => s("Indiquer une remise"),
+				'data-text-on' => s("Ajouter une remise").' '.\Asset::icon('caret-down-fill'),
 				'data-text-off' => s("Retirer la remise"),
 			];
 			$h .= $form->group(
@@ -1105,13 +1106,12 @@ class ProductUi {
 			);
 
 			$h .= $form->group(
-				s("Prix remisé"),
-				$form->dynamicField($eProduct, 'privatePriceDiscount', function($d) use($eProduct, $form, $hasDiscountPrice) {
+				content: $form->dynamicField($eProduct, 'privatePriceDiscount', function($d) use($eProduct, $form, $hasDiscountPrice) {
 					if($hasDiscountPrice) {
 						$d->default = fn() => $eProduct['privatePrice'];
 					}
 				}),
-				['wrapper' => 'privatePriceDiscount', 'data-price-discount' => $eProduct['id'].'-private'] + ($hasDiscountPrice ? [] : ['class' => 'hide']),
+				attributes: ['wrapper' => 'privatePriceDiscount', 'data-price-discount' => $eProduct['id'].'-private'] + ($hasDiscountPrice ? [] : ['class' => 'hide']),
 			);
 
 			if($for === 'update') {
@@ -1235,6 +1235,7 @@ class ProductUi {
 						['step' => 0.01, 'disabled' => $eProduct['private'] ? NULL : 'disabled'],
 					);
 				};
+				$d->prepend = '<span class="input-group-addon">'.s("Prix remisé").'</span>';
 				$d->append = function(\util\FormUi $form, Product $eProduct) {
 					if($form->isQuick()) {
 						return NULL;
@@ -1263,6 +1264,7 @@ class ProductUi {
 						['step' => 0.01, 'disabled' => $eProduct['pro'] ? NULL : 'disabled'],
 					);
 				};
+				$d->prepend = '<span class="input-group-addon">'.s("Prix remisé").'</span>';
 				$d->append = function(\util\FormUi $form, Product $eProduct) {
 					if($form->isQuick()) {
 						return NULL;

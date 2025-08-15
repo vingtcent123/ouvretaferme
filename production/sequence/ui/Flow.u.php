@@ -932,7 +932,7 @@ class FlowUi {
 			$h .= $form->group(
 				self::p('weekOnly')->label,
 				$this->getWeekField($form, $eFlow, fn($name) => $name.'Only').
-				'<div class="field-followup"><a data-action="flow-period-interval">'.s("Répéter l'intervention plusieurs fois dans la saison").'</a></div>',
+				'<div class="field-action"><a data-action="flow-period-interval">'.s("Répéter l'intervention plusieurs fois dans la saison").'</a></div>',
 				['wrapper' => 'weekOnly yearOnly']
 			);
 		$h .= '</div>';
@@ -948,7 +948,7 @@ class FlowUi {
 			$h .= $form->group(
 				self::p('weekStop')->label,
 				$this->getWeekField($form, $eFlow, fn($name) => $name.'Stop').
-				'<div class="field-followup"><a data-action="flow-period-only">'.s("Ne pas répéter l'intervention dans la saison").'</a></div>',
+				'<div class="field-action"><a data-action="flow-period-only">'.s("Ne pas répéter l'intervention dans la saison").'</a></div>',
 				['wrapper' => 'weekStop yearStop']
 			);
 
@@ -990,7 +990,7 @@ class FlowUi {
 			$h .= $form->group(
 				self::p('seasonOnly')->label,
 				$form->dynamicField($eFlow, 'seasonOnly', $values).
-				'<div class="field-followup"><a data-action="flow-season-interval">'.s("Répéter l'intervention sur plusieurs saisons").'</a></div>'
+				'<div class="field-action"><a data-action="flow-season-interval">'.s("Répéter l'intervention sur plusieurs saisons").'</a></div>'
 			);
 		$h .= '</div>';
 
@@ -1004,7 +1004,7 @@ class FlowUi {
 			$h .= $form->group(
 				self::p('seasonStop')->label,
 				$form->dynamicField($eFlow, 'seasonStop', $values).
-				'<div class="field-followup"><a data-action="flow-season-only">'.s("Ne pas répéter l'intervention sur plusieurs saisons").'</a></div>'
+				'<div class="field-action"><a data-action="flow-season-only">'.s("Ne pas répéter l'intervention sur plusieurs saisons").'</a></div>'
 			);
 
 		$h .= '</div>';

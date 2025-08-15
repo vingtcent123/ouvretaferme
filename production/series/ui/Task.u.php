@@ -4797,7 +4797,7 @@ class TaskUi {
 							'done' => s("Consigner à la journée")
 						};
 
-						$h .= '<div class="field-followup">';
+						$h .= '<div class="field-action">';
 							$h .= '<span class="task-write-planned-link-week">';
 								$h .= '<a '.attr('onclick', 'Task.changePlanned(this, "week")').'>'.$labelWeek.'</a>';
 							$h .= '</span>';

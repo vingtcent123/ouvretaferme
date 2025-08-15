@@ -1409,7 +1409,7 @@ class ProductUi {
 				$d->after = function(\util\FormUi $form, Product $e) {
 					$priceDiscountLinkAttributes = [
 						'onclick' => 'PriceInitial.togglePriceDiscountField(this, '.$e['product']['id'].');',
-						'data-text-on' => s("Ajouter une remise"),
+						'data-text-on' => s("Ajouter une remise").' '.\Asset::icon('caret-down-fill'),
 						'data-text-off' => s("Retirer la remise"),
 					];
 

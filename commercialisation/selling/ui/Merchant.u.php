@@ -118,7 +118,7 @@ class MerchantUi {
 								$h .= '</a>';
 								$priceDiscountLinkAttributes = [
 									'onclick' => 'PriceInitial.togglePriceDiscountField(this, '.$eItem['id'].', function () { Merchant.recalculate(); });',
-									'data-text-on' => s("Indiquer une remise"),
+									'data-text-on' => s("Ajouter une remise").' '.\Asset::icon('caret-down-fill'),
 									'data-text-off' => s("Retirer la remise"),
 									'data-price-initial-link-toggle' => 1,
 								];

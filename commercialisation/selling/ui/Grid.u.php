@@ -256,7 +256,7 @@ class GridUi {
 
 					$priceDiscountLinkAttributes = [
 						'onclick' => 'PriceInitial.togglePriceDiscountField(this, '.$eProduct['id'].');',
-						'data-text-on' => s("Indiquer une remise"),
+						'data-text-on' => s("Ajouter une remise").' '.\Asset::icon('caret-down-fill'),
 						'data-text-off' => s("Retirer la remise"),
 					];
 
@@ -357,7 +357,7 @@ class GridUi {
 
 					$priceDiscountLinkAttributes = [
 						'onclick' => 'PriceInitial.togglePriceDiscountField(this, '.$eCustomer['id'].');',
-						'data-text-on' => s("Indiquer une remise"),
+						'data-text-on' => s("Ajouter une remise").' '.\Asset::icon('caret-down-fill'),
 						'data-text-off' => s("Retirer la remise"),
 					];
 

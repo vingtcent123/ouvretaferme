@@ -2509,11 +2509,11 @@ class CultivationUi {
 
 			$h .= $form->hidden('harvestPeriodExpected'.$suffix, $eCultivation['harvestPeriodExpected']);
 			$h .= $form->dynamicGroup($eCultivation, 'harvestMonthsExpected'.$suffix, function($d) use($eCultivation) {
-				$d->after = '<div class="field-followup cultivation-periods-field"><a '.attr('onclick', 'Cultivation.changeExpectedHarvest(this, "week")').'>'.s("Raisonner par semaine").'</a></div>';
+				$d->after = '<div class="field-action cultivation-periods-field"><a '.attr('onclick', 'Cultivation.changeExpectedHarvest(this, "week")').'>'.s("Raisonner par semaine").'</a></div>';
 				$d->group['class'] = ($eCultivation['harvestPeriodExpected'] === Cultivation::MONTH ? '' : 'hide');
 			});
 			$h .= $form->dynamicGroup($eCultivation, 'harvestWeeksExpected'.$suffix, function($d) use($eCultivation) {
-				$d->after = '<div class="field-followup cultivation-periods-field"><a '.attr('onclick', 'Cultivation.changeExpectedHarvest(this, "month")').'>'.s("Raisonner par mois").'</a></div>';
+				$d->after = '<div class="field-action cultivation-periods-field"><a '.attr('onclick', 'Cultivation.changeExpectedHarvest(this, "month")').'>'.s("Raisonner par mois").'</a></div>';
 				$d->group['class'] = ($eCultivation['harvestPeriodExpected'] === Cultivation::WEEK ? '' : 'hide');
 			});
 
