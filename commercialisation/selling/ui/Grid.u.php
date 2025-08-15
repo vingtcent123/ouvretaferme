@@ -274,6 +274,7 @@ class GridUi {
 							$addon = '<div class="input-group-addon">'.s("€ {taxes}", ['taxes' => $taxes.\selling\UnitUi::getBy($eProduct['unit'])]).'</div>'.
 							'<div class="input-group-addon">'.new PriceUi()->getDiscountTrashAddon($eProduct['id']).'</div>';
 							$h .= $form->inputGroup(
+								$form->addon(s("Prix remisé")).
 								$form->number('priceDiscount['.$eProduct['id'].']', $priceDiscount, ['step' => 0.01]).$addon,
 								['class' => 'mt-1'.(empty($priceDiscount) ? ' hide' : ''), 'data-price-discount' => $eProduct['id'], 'data-wrapper' => 'priceDiscount['.$eProduct['id'].']']
 							);
@@ -360,6 +361,7 @@ class GridUi {
 						'<div class="input-group-addon">'.new PriceUi()->getDiscountTrashAddon($eCustomer['id']).'</div>';
 
 					$h .= $form->inputGroup(
+						$form->addon(s("Prix remisé")).
 						$form->number('priceDiscount['.$eCustomer['id'].']', $priceDiscount, ['step' => 0.01]).$addon,
 						['class' => 'mt-1'.(empty($priceDiscount) ? ' hide' : ''), 'data-price-discount' => $eCustomer['id'], 'data-wrapper' => 'priceDiscount['.$eCustomer['id'].']']
 					);

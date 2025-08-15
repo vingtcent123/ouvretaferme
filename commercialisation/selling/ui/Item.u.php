@@ -983,8 +983,6 @@ class ItemUi {
 					}
 					$h .= '<div data-wrapper="unitPrice['.$eProduct['id'].']">';
 
-						$hasDiscountPrice = $eItem['unitPriceInitial'] !== NULL;
-
 						$h .= '<h4>'.s("Prix unitaire").'</h4>';
 						$h .= $form->dynamicField($eItem, 'unitPrice['.$eProduct['id'].']*', function(\PropertyDescriber $d) use($eItem, $eProduct, $form) {
 
