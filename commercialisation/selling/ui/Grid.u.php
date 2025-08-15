@@ -238,7 +238,11 @@ class GridUi {
 
 					$taxes = $eCustomer['farm']->getSelling('hasVat') ? CustomerUi::getTaxes($eCustomer['type']) : '';
 
-					$defaultPrice = $eProduct[$eCustomer['type'].'Price'];
+					$defaultPrice = '';
+					if($eProduct[$eCustomer['type'].'PriceInitial'] !== NULL) {
+						$defaultPrice .= new PriceUi()->priceWithoutDiscount($eProduct[$eCustomer['type'].'PriceInitial']);
+					}
+					$defaultPrice .= \util\TextUi::money($eProduct[$eCustomer['type'].'Price']);
 
 					$h .= '<tr>';
 
@@ -254,7 +258,7 @@ class GridUi {
 						$h .= '</td>';
 
 						$h .= '<td class="text-end color-muted" style="vertical-align: baseline; padding-top: 1rem">';
-							$h .= \util\TextUi::money($defaultPrice);
+							$h .= $defaultPrice;
 						$h .= '</td>';
 
 						$h .= '<td data-wrapper="price['.$eProduct['id'].']" class="td-vertical-align-top">';

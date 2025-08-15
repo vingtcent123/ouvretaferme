@@ -313,11 +313,7 @@ class BasketUi {
 			$unitPrice = '';
 			$unit = ' '.ProductUi::getTaxes($eProduct).\selling\UnitUi::getBy($eProductSelling['unit'], short: TRUE);
 			if($eProduct['priceInitial'] !== NULL) {
-				$unitPrice .= '<div>';
-					$unitPrice .= '<span class="util-strikethrough">';
-						$unitPrice .= \util\TextUi::money($eProduct['priceInitial']).$unit;
-					$unitPrice .= '</span>';
-				$unitPrice .= '</div>';
+				$h .= new \selling\PriceUi()->priceWithoutDiscount($eProduct['priceInitial'], unit: $unit);
 			}
 			$unitPrice .= \util\TextUi::money($eProduct['price']).$unit;
 			$price = round($eProduct['price'] * $product['number'] * ($eProduct['packaging'] ?? 1), 2);

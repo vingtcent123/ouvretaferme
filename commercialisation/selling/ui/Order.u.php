@@ -588,11 +588,7 @@ class OrderUi {
 							$unit = $eSale->getTaxes().' '.$unit;
 						}
 						if($eItem['unitPriceInitial'] !== NULL) {
-							$h .= '<div>';
-								$h .= '<span class="util-strikethrough">';
-									$h .= \util\TextUi::money($eItem['unitPriceInitial']).$unit;
-								$h .= '</span>';
-							$h .= '</div>';
+							$h .= new PriceUi()->priceWithoutDiscount($eItem['unitPriceInitial'], unit: $unit);
 						}
 						$h .= \util\TextUi::money($eItem['unitPrice']);
 						$h .= ' '.$unit;

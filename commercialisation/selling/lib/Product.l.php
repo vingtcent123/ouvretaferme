@@ -255,8 +255,8 @@ class ProductLib extends ProductCrud {
 			->select([
 				'id', 'name', 'variety', 'vignette', 'farm', 'composition', 'size', 'origin',
 				'unit' => \selling\Unit::getSelection(),
-				'privatePrice', 'privateStep',
-				'proPrice', 'proPackaging', 'proStep',
+				'privatePrice', 'privatePriceInitial', 'privateStep',
+				'proPrice', 'proPriceInitial', 'proPackaging', 'proStep',
 				'vat',
 				'eGrid' => Grid::model()
 					->select(['id', 'price', 'priceInitial', 'packaging'])

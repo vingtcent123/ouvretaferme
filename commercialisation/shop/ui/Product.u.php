@@ -367,9 +367,7 @@ class ProductUi {
 
 							$unit = ' '.$this->getTaxes($eProduct).\selling\UnitUi::getBy($eProductSelling['unit']);
 							if($eProduct['priceInitial'] !== NULL) {
-								$h .= '<div><span class="util-strikethrough">';
-									$h .= \util\TextUi::money($eProduct['priceInitial']).$unit;
-								$h .= '</span></div>';
+								$h .= new \selling\PriceUi()->priceWithoutDiscount($eProduct['priceInitial'], unit: $unit);
 							}
 							$h .= \util\TextUi::money($eProduct['price']).$unit;
 
@@ -856,7 +854,7 @@ class ProductUi {
 									$field = 'price';
 								} else {
 									$field = 'priceDiscount';
-									$price .= '<div><span class="shop-product-price-initial util-strikethrough">'.\util\TextUi::money($eProduct['priceInitial']).' '.$unit.'</span></div>';
+									$h .= new \selling\PriceUi()->priceWithoutDiscount($eProduct['priceInitial'], unit: ' '.$unit, class: 'shop-product-price-initial');
 								}
 								$price .= \util\TextUi::money($eProduct['price']).$unit;
 								if($canUpdate) {
@@ -988,7 +986,7 @@ class ProductUi {
 							$h .= '<td class="text-end" style="white-space: nowrap">';
 								$unit = \selling\UnitUi::getBy($eProductSelling['unit'], short: TRUE);
 								if($eProduct['priceInitial'] !== NULL) {
-									$h .= '<div><span class="util-strikethrough">'.\util\TextUi::money($eProduct['priceInitial']).$unit.'</span></div>';
+									$h .= new \selling\PriceUi()->priceWithoutDiscount($eProduct['priceInitial'], unit: $unit);
 									$field = 'priceDiscount';
 								} else {
 									$field = 'price';

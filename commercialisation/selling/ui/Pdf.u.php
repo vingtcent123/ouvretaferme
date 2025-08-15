@@ -835,20 +835,16 @@ class PdfUi {
 					}
 				$h .= '</td>';
 			}
+			$unit = \selling\UnitUi::getBy($eItem['unit'], short: TRUE);
 			$h .= '<td class="pdf-document-number">';
 				$h .= \selling\UnitUi::getValue($eItem['number'] * ($eItem['packaging'] ?? 1), $eItem['unit'], TRUE);
 			$h .= '</td>';
 			$h .= '<td class="pdf-document-unit-price">';
 				if($eItem['unitPriceInitial'] !== NULL) {
-					$h .= '<div>';
-						$h .= '<span class="util-strikethrough">';
-							$h .= \util\TextUi::money($eItem['unitPriceInitial']);
-							$h .= \selling\UnitUi::getBy($eItem['unit'], short: TRUE);
-					$h .= '</span>';
-					$h .= '</div>';
+					$h .= new PriceUi()->priceWithoutDiscount($eItem['unitPriceInitial'], unit: $unit);
 				}
 				$h .= \util\TextUi::money($eItem['unitPrice']);
-				$h .= \selling\UnitUi::getBy($eItem['unit'], short: TRUE);
+				$h .= $unit;
 			$h .= '</td>';
 			$h .= '<td class="pdf-document-price">';
 				$h .= \util\TextUi::money($eItem['price']);
