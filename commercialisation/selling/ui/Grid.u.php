@@ -328,68 +328,74 @@ class GridUi {
 
 		$h = $form->hidden('id', $eProduct['id']);
 
-		$h .= '<table class="stick-xs">';
+		$h .= '<div class="util-overflow-sm">';
 
-		$h .= '<tr>';
-			$h .= '<th>'.s("Client").'</th>';
-			$h .= '<th>'.s("Prix").'</th>';
-			$h .= '<th>'.s("Colis").'</th>';
-		$h .= '</tr>';
+			$h .= '<table class="stick-sm tr-even">';
 
-		foreach($cCustomer as $eCustomer) {
+				$h .= '<thead>';
+					$h .= '<tr>';
+						$h .= '<th>'.s("Client").'</th>';
+						$h .= '<th>'.s("Prix").'</th>';
+						$h .= '<th>'.s("Colis").'</th>';
+					$h .= '</tr>';
+				$h .= '</thead>';
 
-			$eGrid = $eCustomer['eGrid'];
+				foreach($cCustomer as $eCustomer) {
 
-			$taxes = $eProduct['farm']->getSelling('hasVat') ? CustomerUi::getTaxes($eCustomer['type']) : '';
+					$eGrid = $eCustomer['eGrid'];
 
-			$h .= '<tr>';
+					$taxes = $eProduct['farm']->getSelling('hasVat') ? CustomerUi::getTaxes($eCustomer['type']) : '';
 
-				$h .= '<td>';
-					$h .= CustomerUi::link($eCustomer);
-				$h .= '</td>';
+					$h .= '<tr>';
 
-				$h .= '<td data-wrapper="price['.$eCustomer['id'].']" class="td-vertical-align-top">';
+						$h .= '<td>';
+							$h .= CustomerUi::link($eCustomer);
+						$h .= '</td>';
 
-					$unit = s("€ {taxes}", ['taxes' => $taxes.\selling\UnitUi::getBy($eProduct['unit'])]);
-					$price = ($eGrid['priceInitial'] ?? NULL) !== NULL ? $eGrid['priceInitial'] : $eGrid['price'] ?? '';
-					$priceDiscount = ($eGrid['priceInitial'] ?? NULL) !== NULL ? $eGrid['price'] ?? '' : '';
+						$h .= '<td data-wrapper="price['.$eCustomer['id'].']" class="td-vertical-align-top">';
 
-					$actionDiscount = new PriceUi()->getDiscountLink($eCustomer['id'], hasDiscountPrice: empty($priceDiscount) === FALSE);
+							$unit = s("€ {taxes}", ['taxes' => $taxes.\selling\UnitUi::getBy($eProduct['unit'], short: TRUE)]);
+							$price = ($eGrid['priceInitial'] ?? NULL) !== NULL ? $eGrid['priceInitial'] : $eGrid['price'] ?? '';
+							$priceDiscount = ($eGrid['priceInitial'] ?? NULL) !== NULL ? $eGrid['price'] ?? '' : '';
 
-					$h .= $form->inputGroup(
-							$form->number('price['.$eCustomer['id'].']', $price, ['step' => 0.01])
-							.$form->addon($unit),
-						).$actionDiscount;
+							$actionDiscount = new PriceUi()->getDiscountLink($eCustomer['id'], hasDiscountPrice: empty($priceDiscount) === FALSE);
 
-					$addon = '<div class="input-group-addon">'.$unit.'</div>'.
-						'<div class="input-group-addon">'.new PriceUi()->getDiscountTrashAddon($eCustomer['id']).'</div>';
+							$h .= $form->inputGroup(
+									$form->number('price['.$eCustomer['id'].']', $price, ['step' => 0.01]).
+									$form->addon($unit),
+								).$actionDiscount;
 
-					$h .= $form->inputGroup(
-						$form->addon(s("Prix remisé")).
-						$form->number('priceDiscount['.$eCustomer['id'].']', $priceDiscount, ['step' => 0.01]).$addon,
-						['class' => 'mt-1'.(empty($priceDiscount) ? ' hide' : ''), 'data-price-discount' => $eCustomer['id'], 'data-wrapper' => 'priceDiscount['.$eCustomer['id'].']']
-					);
+							$addon = '<div class="input-group-addon">'.$unit.'</div>';
+							$addon .= '<div class="input-group-addon">'.new PriceUi()->getDiscountTrashAddon($eCustomer['id']).'</div>';
 
-				$h .= '</td>';
+							$h .= $form->inputGroup(
+								$form->addon(s("Prix remisé")).
+								$form->number('priceDiscount['.$eCustomer['id'].']', $priceDiscount, ['step' => 0.01]).$addon,
+								['class' => (empty($priceDiscount) ? ' hide' : ''), 'data-price-discount' => $eCustomer['id'], 'data-wrapper' => 'priceDiscount['.$eCustomer['id'].']']
+							);
 
-				$h .= '<td data-wrapper="packaging['.$eCustomer['id'].']" class="td-vertical-align-top">';
+						$h .= '</td>';
 
-					if($eCustomer['type'] === Customer::PRO) {
-						$h .= $form->inputGroup(
-							$form->number('packaging['.$eCustomer['id'].']', $eGrid['packaging'] ?? '', ['step' => 0.01]).
-							($eProduct['unit']->notEmpty() ? $form->addon(\selling\UnitUi::getSingular($eProduct['unit'])) : '')
-						);
-					} else {
-						$h .= '-';
-					}
+						$h .= '<td data-wrapper="packaging['.$eCustomer['id'].']" class="td-vertical-align-top">';
 
-				$h .= '</td>';
+							if($eCustomer['type'] === Customer::PRO) {
+								$h .= $form->inputGroup(
+									$form->number('packaging['.$eCustomer['id'].']', $eGrid['packaging'] ?? '', ['step' => 0.01]).
+									($eProduct['unit']->notEmpty() ? $form->addon(\selling\UnitUi::getSingular($eProduct['unit'], short: TRUE)) : '')
+								);
+							} else {
+								$h .= '-';
+							}
 
-			$h .= '</tr>';
+						$h .= '</td>';
 
-		}
+					$h .= '</tr>';
 
-		$h .= '</table>';
+				}
+
+			$h .= '</table>';
+
+		$h .= '</div>';
 
 		return new \Panel(
 			id: 'panel-grid-product',
