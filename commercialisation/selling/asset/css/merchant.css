@@ -243,7 +243,7 @@ a.merchant-delete {
 
 .merchant-lock,
 .merchant-erase,
-.merchant-tag {
+.merchant-trash {
 	font-size: 1.5rem;
 }
 
@@ -253,7 +253,7 @@ a.merchant-delete {
 }
 
 .merchant-erase a,
-.merchant-tag a {
+.merchant-trash a {
 	color: var(--secondary);
 	padding: 0.5rem;
 }
@@ -340,6 +340,6 @@ body[data-touch="no"] .merchant-keyboard {
 }
 
 .merchant-erase a,
-.merchant-tag a {
+.merchant-trash a {
 	color: var(--primary);
 }

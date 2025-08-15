@@ -6,7 +6,6 @@ class ProductUi {
 	public function __construct() {
 
 		\Asset::css('shop', 'product.css');
-		\Asset::js('selling', 'priceInitial.js');
 
 	}
 
@@ -1407,13 +1406,7 @@ class ProductUi {
 
 				};
 				$d->after = function(\util\FormUi $form, Product $e) {
-					$priceDiscountLinkAttributes = [
-						'onclick' => 'PriceInitial.togglePriceDiscountField(this, '.$e['product']['id'].');',
-						'data-text-on' => s("Ajouter une remise").' '.\Asset::icon('caret-down-fill'),
-						'data-text-off' => s("Retirer la remise"),
-					];
-
-					return \util\FormUi::actionLink('<a '.attrs($priceDiscountLinkAttributes).'>'.$priceDiscountLinkAttributes['data-text-'.($e['priceInitial'] !== NULL ? 'off' : 'on')].'</a>');
+					return new \selling\PriceUi()->getDiscountLink($e['product']['id'], hasDiscountPrice: $e['priceInitial'] !== NULL);
 				};
 				$d->attributes = [
 					'onfocus' => 'this.select()'
@@ -1432,7 +1425,13 @@ class ProductUi {
 					);
 				};
 				$d->append = function(\util\FormUi $form, Product $eProduct) {
-					return $form->addon(s("€ {unit}", ['unit' => \selling\UnitUi::getBy($eProduct['product']['unit'], short: TRUE)]));
+
+					$unit = s("€ {unit}", ['unit' => \selling\UnitUi::getBy($eProduct['product']['unit'], short: TRUE)]);
+					$append = '<div class="input-group-addon">'.$unit.'</div>'.
+						'<div class="input-group-addon">'.new \selling\PriceUi()->getDiscountTrashAddon($eProduct['product']['id']).'</div>';
+
+					return $append;
+
 				};
 				break;
 

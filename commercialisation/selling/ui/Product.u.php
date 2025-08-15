@@ -9,7 +9,6 @@ class ProductUi {
 
 		\Asset::css('selling', 'product.css');
 		\Asset::js('selling', 'product.js');
-		\Asset::js('selling', 'priceInitial.js');
 
 	}
 
@@ -1012,28 +1011,26 @@ class ProductUi {
 
 			$taxes = $eProduct['farm']->getSelling('hasVat') ? '/ '.CustomerUi::getTaxes(Customer::PRO) : '';
 			$unit = ($eProduct['unit']->notEmpty() ? encode($eProduct['unit']['singular']) : self::p('unit')->placeholder);
+			$taxesAndUnit = '<div class="input-group-addon">€ '.$taxes.' / <span data-ref="product-unit">'.$unit.'</span></div>';
 
 			$hasDiscountPrice = ($eProduct['proPriceInitial'] ?? NULL) !== NULL;
 
-			$priceDiscountLinkAttributes = [
-				'onclick' => 'PriceInitial.togglePriceDiscountField(this, "'.$eProduct['id'].'-pro");',
-				'data-text-on' => s("Ajouter une remise").' '.\Asset::icon('caret-down-fill'),
-				'data-text-off' => s("Retirer la remise"),
-			];
+			$inputGroup = $form->inputGroup(
+				$form->dynamicField($eProduct, 'proPrice', function($d) use($eProduct, $form, $hasDiscountPrice) {
+					if($hasDiscountPrice) {
+						$d->default = fn() => $eProduct['proPriceInitial'];
+					}
+				}).
+				$taxesAndUnit
+			);
+			$discountAddon = new PriceUi()->getDiscountLink($eProduct['id'].'-pro', $hasDiscountPrice);
 
 			$h .= $form->group(
 				s("Prix de base"),
-				$form->inputGroup(
-					$form->dynamicField($eProduct, 'proPrice', function($d) use($eProduct, $form, $hasDiscountPrice) {
-						if($hasDiscountPrice) {
-							$d->default = fn() => $eProduct['proPriceInitial'];
-						}
-					}).
-					'<div class="input-group-addon">€ '.$taxes.' / <span data-ref="product-unit">'.$unit.'</span></div>'
-				)
-				.\util\FormUi::actionLink('<a '.attrs($priceDiscountLinkAttributes).'>'.$priceDiscountLinkAttributes['data-text-'.($hasDiscountPrice ? 'off' : 'on')].'</a>'),
-				['wrapper' => 'proTaxes proPrice']
+				content: $inputGroup.$discountAddon,
+				attributes: ['wrapper' => 'proTaxes proPrice']
 			);
+
 			$h .= $form->group(
 				content: $form->inputGroup(
 					$form->dynamicField($eProduct, 'proPriceDiscount', function($d) use($eProduct, $form, $hasDiscountPrice) {
@@ -1087,22 +1084,20 @@ class ProductUi {
 
 			$hasDiscountPrice = ($eProduct['privatePriceInitial'] ?? NULL) !== NULL;
 
-			$priceDiscountLinkAttributes = [
-				'onclick' => 'PriceInitial.togglePriceDiscountField(this, "'.$eProduct['id'].'-private");',
-				'data-text-on' => s("Ajouter une remise").' '.\Asset::icon('caret-down-fill'),
-				'data-text-off' => s("Retirer la remise"),
-			];
+			$inputGroup = $form->inputGroup(
+				$form->dynamicField($eProduct, 'privatePrice', function($d) use($eProduct, $form, $hasDiscountPrice) {
+					if($hasDiscountPrice) {
+						$d->default = fn() => $eProduct['privatePriceInitial'];
+					}
+				}).
+				'<div class="input-group-addon">€ '.$taxes.' / <span data-ref="product-unit">'.$unit.'</span></div>',
+			);
+			$discountAddon = new PriceUi()->getDiscountLink($eProduct['id'].'-private', $hasDiscountPrice);
+
 			$h .= $form->group(
 				s("Prix de base"),
-				$form->inputGroup(
-					$form->dynamicField($eProduct, 'privatePrice', function($d) use($eProduct, $form, $hasDiscountPrice) {
-						if($hasDiscountPrice) {
-							$d->default = fn() => $eProduct['privatePriceInitial'];
-						}
-					}).
-					'<div class="input-group-addon">€ '.$taxes.' / <span data-ref="product-unit">'.$unit.'</span></div>',
-				).\util\FormUi::actionLink('<a '.attrs($priceDiscountLinkAttributes).'>'.$priceDiscountLinkAttributes['data-text-'.($hasDiscountPrice ? 'off' : 'on')].'</a>'),
-				['wrapper' => 'privatePrice']
+				content: $inputGroup.$discountAddon,
+				attributes: ['wrapper' => 'privatePrice']
 			);
 
 			$h .= $form->group(
@@ -1242,7 +1237,11 @@ class ProductUi {
 					}
 					$taxes = $eProduct['farm']->getSelling('hasVat') ? '/ '.CustomerUi::getTaxes(Customer::PRIVATE) : '';
 					$unit = ($eProduct['unit']->notEmpty() ? encode($eProduct['unit']['singular']) : self::p('unit')->placeholder);
-					return '<div class="input-group-addon">€ '.$taxes.' / <span data-ref="product-unit">'.$unit.'</span></div>';
+					$h = '<div class="input-group-addon">€ '.$taxes.' / <span data-ref="product-unit">'.$unit.'</span></div>';
+
+					$trash = new PriceUi()->getDiscountTrashAddon($eProduct['id'].'-private');
+					$h .= '<div class="input-group-addon">'.$trash.'</div>';
+					return $h;
 				};
 				break;
 
@@ -1269,9 +1268,15 @@ class ProductUi {
 					if($form->isQuick()) {
 						return NULL;
 					}
+
 					$taxes = $eProduct['farm']->getSelling('hasVat') ? '/ '.CustomerUi::getTaxes(Customer::PRO) : '';
 					$unit = ($eProduct['unit']->notEmpty() ? encode($eProduct['unit']['singular']) : self::p('unit')->placeholder);
-					return '<div class="input-group-addon">€ '.$taxes.' / <span data-ref="product-unit">'.$unit.'</span></div>';
+					$h = '<div class="input-group-addon">€ '.$taxes.' / <span data-ref="product-unit">'.$unit.'</span></div>';
+
+					$trash = new PriceUi()->getDiscountTrashAddon($eProduct['id'].'-pro');
+					$h .= '<div class="input-group-addon">'.$trash.'</div>';
+
+					return $h;
 				};
 				break;
 

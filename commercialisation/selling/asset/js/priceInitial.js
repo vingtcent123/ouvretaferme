@@ -3,40 +3,27 @@
  */
 class PriceInitial {
 
-	static togglePriceDiscountField(linkElement, reference, onHide = null) {
+	static showUnitPriceDiscountField(reference) {
 
 		const selector = '[data-price-discount="'+ reference +'"]';
-		const isHidden = qs(selector).classList.contains('hide');
-
-		if(isHidden) {
-
-			this.showUnitPriceDiscountField(linkElement, selector);
-
-		} else {
-
-			this.hideUnitPriceDiscountField(linkElement, selector);
-
-			if(onHide) {
-				onHide(qs('[data-price-discount-onhide="'+ reference + '"]'));
-			}
-		}
-
-	}
-
-	static showUnitPriceDiscountField(linkElement, selector) {
 
 		qsa(selector, node => node.removeHide());
-
-		linkElement.innerHTML = linkElement.dataset.textOff;
+		qs('[data-price-discount-link="'+ reference +'"]')?.hide();
 
 	}
 
-	static hideUnitPriceDiscountField(linkElement, selector) {
+	static hideUnitPriceDiscountField(reference, onHide = null) {
+
+		const selector = '[data-price-discount="'+ reference +'"]';
 
 		qsa(selector, node => node.hide());
 		qs(selector +' input').value = '';
 
-		linkElement.innerHTML = linkElement.dataset.textOn;
+		qs('[data-price-discount-link="'+ reference +'"]')?.removeHide();
+
+		if(onHide) {
+			onHide(qs('[data-price-discount-onhide="'+ reference + '"]'));
+		}
 
 	}
 

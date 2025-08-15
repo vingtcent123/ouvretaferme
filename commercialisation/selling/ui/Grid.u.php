@@ -6,7 +6,6 @@ class GridUi {
 	public function __construct() {
 
 		\Asset::css('selling', 'customer.css');
-		\Asset::js('selling', 'priceInitial.js');
 
 	}
 
@@ -254,34 +253,27 @@ class GridUi {
 					$price = ($eGrid['priceInitial'] ?? NULL) !== NULL ? $eGrid['priceInitial'] : $eGrid['price'] ?? '';
 					$priceDiscount = ($eGrid['priceInitial'] ?? NULL) !== NULL ? $eGrid['price'] ?? '' : '';
 
-					$priceDiscountLinkAttributes = [
-						'onclick' => 'PriceInitial.togglePriceDiscountField(this, '.$eProduct['id'].');',
-						'data-text-on' => s("Ajouter une remise").' '.\Asset::icon('caret-down-fill'),
-						'data-text-off' => s("Retirer la remise"),
-					];
-
 					if($defaultPrice !== NULL) {
-						$actionLinkClass = 'columns-2';
 						$more = '<div class="color-muted">';
 							$more .= s("Base : {value}", \util\TextUi::money($defaultPrice));
 						$more .= '</div>';
 					} else {
-						$actionLinkClass = '';
 						$more = '';
 					}
+
+					$actionDiscount = new PriceUi()->getDiscountLink($eProduct['id'], hasDiscountPrice: empty($priceDiscount) === FALSE, more: $more);
 
 					$h .= '<div>';
 						$h .= $form->inputGroup(
 							$form->number('price['.$eProduct['id'].']', $price, ['step' => 0.01])
 							.$form->addon('€ '.$taxes.\selling\UnitUi::getBy($eProduct['unit'])),
-						)
-						.\util\FormUi::actionLink($more.'<a '.attrs($priceDiscountLinkAttributes).'>'.$priceDiscountLinkAttributes['data-text-'.(empty($priceDiscount) ? 'on' : 'off')].'</a>', $actionLinkClass);
+						).$actionDiscount;
 					$h .= '</div>';
 
+					$addon = '<div class="input-group-addon">'.s("€ {taxes}", ['taxes' => $taxes.\selling\UnitUi::getBy($eProduct['unit'])]).'</div>'.
+					'<div class="input-group-addon">'.new PriceUi()->getDiscountTrashAddon($eProduct['id']).'</div>';
 					$h .= $form->inputGroup(
-						$form->addon(\Asset::icon('tag'))
-						.$form->number('priceDiscount['.$eProduct['id'].']', $priceDiscount, ['step' => 0.01])
-						.$form->addon('€ '.$taxes.\selling\UnitUi::getBy($eProduct['unit'])),
+						$form->number('priceDiscount['.$eProduct['id'].']', $priceDiscount, ['step' => 0.01]).$addon,
 						['class' => 'mt-1'.(empty($priceDiscount) ? ' hide' : ''), 'data-price-discount' => $eProduct['id'], 'data-wrapper' => 'priceDiscount['.$eProduct['id'].']']
 					);
 
@@ -352,26 +344,25 @@ class GridUi {
 
 				$h .= '<td data-wrapper="price['.$eCustomer['id'].']" class="td-vertical-align-top">';
 
+					$unit = s("€ {taxes}", ['taxes' => $taxes.\selling\UnitUi::getBy($eProduct['unit'])]);
 					$price = ($eGrid['priceInitial'] ?? NULL) !== NULL ? $eGrid['priceInitial'] : $eGrid['price'] ?? '';
 					$priceDiscount = ($eGrid['priceInitial'] ?? NULL) !== NULL ? $eGrid['price'] ?? '' : '';
 
-					$priceDiscountLinkAttributes = [
-						'onclick' => 'PriceInitial.togglePriceDiscountField(this, '.$eCustomer['id'].');',
-						'data-text-on' => s("Ajouter une remise").' '.\Asset::icon('caret-down-fill'),
-						'data-text-off' => s("Retirer la remise"),
-					];
+					$actionDiscount = new PriceUi()->getDiscountLink($eCustomer['id'], hasDiscountPrice: empty($priceDiscount) === FALSE);
 
 					$h .= $form->inputGroup(
-						$form->number('price['.$eCustomer['id'].']', $price, ['step' => 0.01]).
-						$form->addon('€ '.$taxes.\selling\UnitUi::getBy($eProduct['unit'])),
-					).\util\FormUi::actionLink('<a '.attrs($priceDiscountLinkAttributes).'>'.$priceDiscountLinkAttributes['data-text-'.(empty($priceDiscount) ? 'on' : 'off')].'</a>');
+							$form->number('price['.$eCustomer['id'].']', $price, ['step' => 0.01])
+							.$form->addon($unit),
+						).$actionDiscount;
 
+					$addon = '<div class="input-group-addon">'.$unit.'</div>'.
+						'<div class="input-group-addon">'.new PriceUi()->getDiscountTrashAddon($eCustomer['id']).'</div>';
 
 					$h .= $form->inputGroup(
-						$form->number('priceDiscount['.$eCustomer['id'].']', $priceDiscount, ['step' => 0.01])
-						.$form->addon('€ '.$taxes.\selling\UnitUi::getBy($eProduct['unit'])),
+						$form->number('priceDiscount['.$eCustomer['id'].']', $priceDiscount, ['step' => 0.01]).$addon,
 						['class' => 'mt-1'.(empty($priceDiscount) ? ' hide' : ''), 'data-price-discount' => $eCustomer['id'], 'data-wrapper' => 'priceDiscount['.$eCustomer['id'].']']
 					);
+
 				$h .= '</td>';
 
 				$h .= '<td data-wrapper="packaging['.$eCustomer['id'].']" class="td-vertical-align-top">';

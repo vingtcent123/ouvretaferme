@@ -7,7 +7,6 @@ class ItemUi {
 
 		\Asset::css('selling', 'item.css');
 		\Asset::js('selling', 'item.js');
-		\Asset::js('selling', 'priceInitial.js');
 
 	}
 
@@ -1002,20 +1001,15 @@ class ItemUi {
 
 						});
 
-						$priceDiscountLinkAttributes = [
-							'onclick' => 'PriceInitial.togglePriceDiscountField(this, '.$eProduct['id'].', function(target) { Item.recalculateLock(target);});',
-							'data-text-on' => s("Ajouter une remise").' '.\Asset::icon('caret-down-fill'),
-							'data-text-off' => s("Retirer la remise"),
-						];
-						$h .= \util\FormUi::actionLink('<a '.attrs($priceDiscountLinkAttributes).'>'.$priceDiscountLinkAttributes['data-text-'.($hasDiscountPrice ? 'off' : 'on')].'</a>');
-
 						$h .= '<div data-wrapper="unitPriceDiscount['.$eProduct['id'].']" class="mt-1'.($eItem['unitPriceInitial'] === NULL ? ' hide' : '').'" data-price-discount="'.$eProduct['id'].'">';
 
 							$h .= '<h4>'.s("Prix remisé").'</h4>';
 							$h .= $form->dynamicField($eItem, 'unitPriceDiscount['.$eProduct['id'].']*', function(\PropertyDescriber $d) use($form) {
-								$d->append = $form->addon(s("€"));
+								$d->append = function(\util\FormUi $form, Item $eItem) {
+									return '<div class="input-group-addon">'.s("€").'</div>'.
+									'<div class="input-group-addon">'.new PriceUi()->getDiscountTrashAddon($eItem['id'] ?? $eItem['product']['id'], 'Item.recalculateLock(this)').'</div>';
+								};
 							});
-
 						$h .= '</div>';
 
 					$h .= '</div>';
@@ -1390,12 +1384,7 @@ class ItemUi {
 					return $form->addon($h);
 				};
 				$d->after = function(\util\FormUi $form, Item $e) {
-					$priceDiscountLinkAttributes = [
-						'onclick' => 'PriceInitial.togglePriceDiscountField(this, '.$e['id'].');',
-						'data-text-on' => s("Ajouter une remise").' '.\Asset::icon('caret-down-fill'),
-						'data-text-off' => s("Retirer la remise"),
-					];
-					return \util\FormUi::actionLink('<a '.attrs($priceDiscountLinkAttributes).'>'.$priceDiscountLinkAttributes['data-text-'.(empty($priceDiscount) ? 'on' : 'off')].'</a>');
+					return new PriceUi()->getDiscountLink($e['id'] ?? $e['product']['id'], hasDiscountPrice: $e['unitPriceInitial'] !== NULL);
 				};
 				break;
 
@@ -1411,9 +1400,14 @@ class ItemUi {
 					);
 				};
 				$d->append = function(\util\FormUi $form, Item $eItem) {
-					$h = s("€ {taxes}", ['taxes' => $eItem['sale']->getTaxes()]);
-					$h .= \selling\UnitUi::getBy($eItem['unit'], short: $eItem['unitShort'] ?? FALSE);
-					return $form->addon($h);
+
+					$unit = s("€ {taxes}", ['taxes' => $eItem['sale']->getTaxes()]);
+					$unit .= \selling\UnitUi::getBy($eItem['unit'], short: $eItem['unitShort'] ?? FALSE);
+
+					$trash = new PriceUi()->getDiscountTrashAddon($eItem['id']);
+
+					return '<div class="input-group-addon">'.$unit.'</div>'.
+						'<div class="input-group-addon">'.$trash.'</div>';
 				};
 				break;
 
