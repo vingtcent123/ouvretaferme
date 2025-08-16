@@ -192,7 +192,6 @@ class FormUi {
 		$e->expects(['id', $property]);
 
 		$form = new FormUi();
-		$form->setIsQuick(TRUE);
 
 		$uiClass = '\\'.$e->getModule().'Ui';
 
