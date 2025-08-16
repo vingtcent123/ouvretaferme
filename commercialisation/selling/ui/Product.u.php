@@ -1023,7 +1023,7 @@ class ProductUi {
 				}).
 				$taxesAndUnit
 			);
-			$discountAddon = new PriceUi()->getDiscountLink($eProduct['id'].'-pro', $hasDiscountPrice);
+			$discountAddon = new PriceUi()->getDiscountLink(($eProduct['id'] ?? '').'-pro', $hasDiscountPrice);
 
 			$h .= $form->group(
 				s("Prix de base"),
@@ -1039,7 +1039,7 @@ class ProductUi {
 						}
 					})
 				),
-				attributes: ['wrapper' => 'proPriceDiscount', 'data-price-discount' => $eProduct['id'].'-pro'] + ($hasDiscountPrice ? [] : ['class' => 'hide']),
+				attributes: ['wrapper' => 'proPriceDiscount', 'data-price-discount' => ($eProduct['id'] ?? '').'-pro'] + ($hasDiscountPrice ? [] : ['class' => 'hide']),
 			);
 
 			$h .= $form->group(
@@ -1092,7 +1092,7 @@ class ProductUi {
 				}).
 				'<div class="input-group-addon">€ '.$taxes.' / <span data-ref="product-unit">'.$unit.'</span></div>',
 			);
-			$discountAddon = new PriceUi()->getDiscountLink($eProduct['id'].'-private', $hasDiscountPrice);
+			$discountAddon = new PriceUi()->getDiscountLink(($eProduct['id'] ?? '').'-private', $hasDiscountPrice);
 
 			$h .= $form->group(
 				s("Prix de base"),
@@ -1106,7 +1106,7 @@ class ProductUi {
 						$d->default = fn() => $eProduct['privatePrice'];
 					}
 				}),
-				attributes: ['wrapper' => 'privatePriceDiscount', 'data-price-discount' => $eProduct['id'].'-private'] + ($hasDiscountPrice ? [] : ['class' => 'hide']),
+				attributes: ['wrapper' => 'privatePriceDiscount', 'data-price-discount' => ($eProduct['id'] ?? '').'-private'] + ($hasDiscountPrice ? [] : ['class' => 'hide']),
 			);
 
 			if($for === 'update') {
@@ -1239,7 +1239,7 @@ class ProductUi {
 					$unit = ($eProduct['unit']->notEmpty() ? encode($eProduct['unit']['singular']) : self::p('unit')->placeholder);
 					$h = '<div class="input-group-addon">€ '.$taxes.' / <span data-ref="product-unit">'.$unit.'</span></div>';
 
-					$trash = new PriceUi()->getDiscountTrashAddon($eProduct['id'].'-private');
+					$trash = new PriceUi()->getDiscountTrashAddon(($eProduct['id'] ?? '').'-private');
 					$h .= '<div class="input-group-addon">'.$trash.'</div>';
 					return $h;
 				};
@@ -1273,7 +1273,7 @@ class ProductUi {
 					$unit = ($eProduct['unit']->notEmpty() ? encode($eProduct['unit']['singular']) : self::p('unit')->placeholder);
 					$h = '<div class="input-group-addon">€ '.$taxes.' / <span data-ref="product-unit">'.$unit.'</span></div>';
 
-					$trash = new PriceUi()->getDiscountTrashAddon($eProduct['id'].'-pro');
+					$trash = new PriceUi()->getDiscountTrashAddon(($eProduct['id'] ?? '').'-pro');
 					$h .= '<div class="input-group-addon">'.$trash.'</div>';
 
 					return $h;
