@@ -1230,7 +1230,7 @@ class ProductUi {
 						['step' => 0.01, 'disabled' => $eProduct['private'] ? NULL : 'disabled'],
 					);
 				};
-				$d->prepend = '<span class="input-group-addon">'.s("Prix remisé").'</span>';
+				$d->prepend = s("Prix remisé");
 				$d->append = function(\util\FormUi $form, Product $eProduct) {
 					if($form->isQuick()) {
 						return NULL;
@@ -1263,7 +1263,7 @@ class ProductUi {
 						['step' => 0.01, 'disabled' => $eProduct['pro'] ? NULL : 'disabled'],
 					);
 				};
-				$d->prepend = '<span class="input-group-addon">'.s("Prix remisé").'</span>';
+				$d->prepend = s("Prix remisé");
 				$d->append = function(\util\FormUi $form, Product $eProduct) {
 					if($form->isQuick()) {
 						return NULL;

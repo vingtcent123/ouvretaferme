@@ -497,7 +497,7 @@ class ProductUi {
 					$h .= s("Produit");
 				$h .= '</div>';
 				$h .= '<div class="date-products-fields">';
-					$h .= '<div>';
+					$h .= '<div class="text-center">';
 						if($type === Date::PRIVATE) {
 							$h .= s("Multiple<br/>de vente");
 						}
@@ -569,7 +569,7 @@ class ProductUi {
 						$h .= \selling\ProductUi::getInfos($eProduct, includeUnit: TRUE, link: FALSE);
 					$h .= '</label>';
 					$h .= '<div class="date-products-fields">';
-						$h .= '<div>';
+						$h .= '<div class="text-center">';
 
 							switch($type) {
 
@@ -591,12 +591,14 @@ class ProductUi {
 						$h .= '</div>';
 						$h .= '<div data-wrapper="price['.$eProduct['id'].']">';
 							$h .= '<h4>'.s("Prix unitaire").'</h4>';
-							$h .= $form->dynamicField($eShopProduct, 'price['.$eProduct['id'].']', function($d) use($eShopProduct) {
-								$d->default = fn() => $eShopProduct['priceInitial'] ?? $eShopProduct['price'];
-							});
-							$h .= $form->dynamicField($eShopProduct, 'priceDiscount['.$eProduct['id'].']', function($d) use($eShopProduct) {
-								$d->default = fn() => $eShopProduct['priceInitial'] ? $eShopProduct['price'] : NULL;
-							});
+							$h .= '<div>';
+								$h .= $form->dynamicField($eShopProduct, 'price['.$eProduct['id'].']', function($d) use($eShopProduct) {
+									$d->default = fn() => $eShopProduct['priceInitial'] ?? $eShopProduct['price'];
+								});
+								$h .= $form->dynamicField($eShopProduct, 'priceDiscount['.$eProduct['id'].']', function($d) use($eShopProduct) {
+									$d->default = fn() => $eShopProduct['priceInitial'] ? $eShopProduct['price'] : NULL;
+								});
+							$h .= '</div>';
 						$h .= '</div>';
 						$h .= '<div data-wrapper="available['.$eProduct['id'].']">';
 							$h .= '<h4>'.s("Disponible").'</h4>';
@@ -1435,6 +1437,7 @@ class ProductUi {
 						['step' => 0.01],
 					);
 				};
+				$d->prepend = s("Prix remisé");
 				$d->append = function(\util\FormUi $form, Product $eProduct) {
 
 					$unit = s("€ {unit}", ['unit' => \selling\UnitUi::getBy($eProduct['product']['unit'], short: TRUE)]);
