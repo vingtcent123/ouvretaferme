@@ -1427,6 +1427,7 @@ class ProductUi {
 				break;
 
 			case 'priceDiscount':
+				$d->groupLabel = FALSE;
 				$d->inputGroup = function(Product $eProduct) {
 					return ['data-price-discount' => $eProduct['product']['id'], 'class' => $eProduct['priceInitial'] !== NULL ? '' : 'hide'];
 				};
