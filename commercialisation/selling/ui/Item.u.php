@@ -1148,9 +1148,6 @@ class ItemUi {
 								if($eItem['unitPriceInitial'] !== NULL) {
 									$d->default = fn() => $eItem['unitPriceInitial'];
 								}
-								if($eItem['sale']['discount'] > 0 and $eItem['unitPrice'] !== NULL) {
-									$d->after = \util\FormUi::info(s("Prix de base : {value}", \util\TextUi::money($eItem['baseUnitPrice'])));
-								}
 							},
 						'unitPriceDiscount[0]' => function(\PropertyDescriber $d) use($eItem) {
 							if($eItem['unitPriceInitial'] === NULL) {
