@@ -33,12 +33,12 @@ class PriceUi {
 
 	}
 
-	public function priceWithoutDiscount(string|float $price, string $unit = ''): string {
+	public function priceWithoutDiscount(string|float $price, string $unit = '', bool $isSmall = TRUE): string {
 
 		$displayedPrice = is_float($price) ? \util\TextUi::money($price) : $price;
 
 		$h = '<div>';
-			$h .= '<span class="util-strikethrough font-sm">';
+			$h .= '<span class="util-strikethrough '.($isSmall ? 'font-sm' : '').'">';
 				$h .= $displayedPrice.$unit;
 			$h .= '</span>';
 		$h .= '</div>';

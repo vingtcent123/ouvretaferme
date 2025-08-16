@@ -668,7 +668,7 @@ class ProductUi {
 							$value = '/';
 						}
 						if($eProduct['privatePrice'] and $eProduct['privatePriceInitial']) {
-							$h .= new PriceUi()->priceWithoutDiscount($eProduct->quick($field, $value));
+							$h .= new PriceUi()->priceWithoutDiscount($eProduct->quick($field, $value), isSmall: FALSE);
 						} else {
 							$h .= $eProduct->quick($field, $value);
 						}
@@ -730,7 +730,7 @@ class ProductUi {
 							$value = '/';
 						}
 						if($eProduct['proPrice'] and $eProduct['proPriceInitial']) {
-							$h .= new PriceUi()->priceWithoutDiscount($eProduct->quick($field, $value));
+							$h .= new PriceUi()->priceWithoutDiscount($eProduct->quick($field, $value), isSmall: FALSE);
 						} else {
 							$h .= $eProduct->quick($field, $value);
 						}

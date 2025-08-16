@@ -24,6 +24,7 @@ class AlertUi {
 			'Grid::packaging.check' => s("Merci d'indiquer un conditionnement valide."),
 			'Grid::price.check' => s("Merci d'indiquer un prix valide."),
 			'Grid::priceDiscount.value' => s("Le prix remisé doit être plus avantageux que le prix de base."),
+			'Grid::priceDiscount.noInitial' => s("Le prix de base doit être renseigné."),
 
 			'Invoice::sales.prepare' => s("Veuillez sélectionner au moins une vente."),
 			'Invoice::sales.check' => s("Une ou plusieurs ventes ne sont pas éligibles à la facturation."),

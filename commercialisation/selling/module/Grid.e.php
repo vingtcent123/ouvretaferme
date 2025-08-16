@@ -45,6 +45,15 @@ class Grid extends GridElement {
 				return TRUE;
 
 			})
+			->setCallback('priceDiscount.noInitial', function (?float $priceDiscount) use($p): bool {
+
+				if($this->isQuick() or $p->isBuilt('price') === FALSE or $priceDiscount === NULL) {
+					return TRUE;
+				}
+
+				return $this['price'] !== NULL;
+
+			})
 			->setCallback('priceDiscount.value', function (?float $priceDiscount) use($p): bool {
 
 				// Si Quick
