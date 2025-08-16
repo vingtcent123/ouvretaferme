@@ -989,7 +989,7 @@ class ItemUi {
 							$d->append = function() use($eItem, $form, $eProduct) {
 								return $form->addon(s('€'));
 							};
-							$d->attributes = ['data-price-discount-onhide' =>  $eProduct['id']];
+							$d->attributes = ['data-price-discount-onhide' =>  $e['id'] ?? $eProduct['id'] ?? 0];
 							$d->default = function() use($eItem) {
 								if($eItem['unitPriceInitial'] !== NULL) {
 									return $eItem['unitPriceInitial'];
@@ -999,12 +999,12 @@ class ItemUi {
 
 						});
 
-						$h .= '<div data-wrapper="unitPriceDiscount['.$eProduct['id'].']" class="'.($eItem['unitPriceInitial'] === NULL ? ' hide' : '').'" data-price-discount="'.$eProduct['id'].'">';
+						$h .= '<div data-wrapper="unitPriceDiscount['.$eProduct['id'].']" class="'.($eItem['unitPriceInitial'] === NULL ? ' hide' : '').'" data-price-discount="'.($e['id'] ?? $eProduct['id'] ?? 0).'">';
 
 							$h .= $form->dynamicField($eItem, 'unitPriceDiscount['.$eProduct['id'].']*', function(\PropertyDescriber $d) use($form) {
 								$d->append = function(\util\FormUi $form, Item $eItem) {
 									return '<div class="input-group-addon">'.s("€").'</div>'.
-									'<div class="input-group-addon">'.new PriceUi()->getDiscountTrashAddon($eItem['id'] ?? $eItem['product']['id'], 'Item.recalculateLock(this)').'</div>';
+									'<div class="input-group-addon">'.new PriceUi()->getDiscountTrashAddon($eItem['id'] ?? $eItem['product']['id'] ?? 0, 'Item.recalculateLock(this)').'</div>';
 								};
 							});
 						$h .= '</div>';
@@ -1154,7 +1154,7 @@ class ItemUi {
 							},
 						'unitPriceDiscount[0]' => function(\PropertyDescriber $d) use($eItem) {
 							if($eItem['unitPriceInitial'] === NULL) {
-								$d->group = ['class' => 'hide', 'data-price-discount' => $eItem['product']['id']];
+								$d->group = ['class' => 'hide', 'data-price-discount' => $eItem['id'] ?? $eItem['product']['id'] ?? 0];
 							}
 						}
 					]);
@@ -1182,8 +1182,8 @@ class ItemUi {
 					}
 
 					$h .= $form->dynamicGroups($eItem, $eItem['sale']->isMarket() ?
-						($eItem['sale']['preparationStatus'] !== Sale::SELLING ? ['unit[0]', 'unitPrice[0]*', 'number[0]'] : ['unit[0]', 'unitPrice[0]*']) :
-						['unit[0]', 'unitPrice[0]*', 'number[0]*', 'price[0]*']);
+						($eItem['sale']['preparationStatus'] !== Sale::SELLING ? ['unit[0]', 'unitPrice[0]*', 'unitPriceDiscount[0]', 'number[0]'] : ['unit[0]', 'unitPrice[0]*', 'unitPriceDiscount[0]']) :
+						['unit[0]', 'unitPrice[0]*', 'unitPriceDiscount[0]', 'number[0]*', 'price[0]*']);
 
 					if($eItem['sale']['hasVat']) {
 						$h .= $form->group(
@@ -1246,8 +1246,9 @@ class ItemUi {
 			});
 
 			$h .= $form->dynamicGroup($eItem, 'unitPriceDiscount', function($d) use($eItem, $form) {
+				$d->group = ['data-price-discount' => $eItem['id'] ?? $eItem['product']['id'] ?? 0];
 				if($eItem['unitPriceInitial'] === NULL) {
-					$d->group = ['class' => 'hide', 'data-price-discount' => $eItem['id']];
+					$d->group['class'] = 'hide';
 				}
 			});
 
@@ -1379,7 +1380,7 @@ class ItemUi {
 				self::applyLocking($d, Item::UNIT_PRICE);
 
 				$d->attributes = function(\util\FormUi $form, Item $eItem) {
-					return ['data-price-discount-onhide' => $eItem['id'] ?? 0];
+					return ['data-price-discount-onhide' => $eItem['id'] ?? $eItem['product']['id'] ?? 0];
 				};
 
 				$d->append = function(\util\FormUi $form, Item $eItem) {
@@ -1389,14 +1390,14 @@ class ItemUi {
 					return $form->addon($h);
 				};
 				$d->after = function(\util\FormUi $form, Item $e) {
-					return new PriceUi()->getDiscountLink($e['id'] ?? $e['product']['id'], hasDiscountPrice: $e['unitPriceInitial'] !== NULL);
+					return new PriceUi()->getDiscountLink($e['product']['id'] ?? 0, hasDiscountPrice: $e['unitPriceInitial'] !== NULL);
 				};
 				break;
 
 			case 'unitPriceDiscount':
 				$d->groupLabel = FALSE;
-				$d->group = function(Item $eItem) {
-					return ['data-price-discount' => $eItem['product']['id'], 'data-locked' => 'unit-price'];
+				$d->group = function(Item $e) {
+					return ['data-price-discount' => $e['id'] ?? $e['product']['id'] ?? 0, 'data-locked' => 'unit-price', 'class' => $e['unitPriceInitial'] !== NULL ? '' : 'hide'];
 				};
 				$d->field = function(\util\FormUi $form, Item $eItem) {
 					return $form->number(
@@ -1411,7 +1412,7 @@ class ItemUi {
 					$unit = s("€ {taxes}", ['taxes' => $eItem['sale']->getTaxes()]);
 					$unit .= \selling\UnitUi::getBy($eItem['unit'], short: $eItem['unitShort'] ?? FALSE);
 
-					$trash = new PriceUi()->getDiscountTrashAddon($eItem['product']['id']);
+					$trash = new PriceUi()->getDiscountTrashAddon($eItem['id'] ?? $eItem['product']['id'] ?? 0);
 
 					return '<div class="input-group-addon">'.$unit.'</div>'.
 						'<div class="input-group-addon">'.$trash.'</div>';
