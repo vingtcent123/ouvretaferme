@@ -1229,24 +1229,7 @@ class ProductUi {
 			$h .= $form->dynamicGroups($e, match($e['type']) {
 				Product::PRO => ['price', 'priceDiscount', 'packaging', 'available'],
 				Product::PRIVATE => ['price', 'priceDiscount', 'available']
-			}, [
-				'price' => function($d) use($e, $form) {
-					$d->default = function(Product $e) {
-						if($e['priceInitial'] !== NULL) {
-							return $e['priceInitial'];
-						}
-							return $e['price'];
-					};
-					$d->group = function(Product $e) {
-						return ['class' => $e['priceInitial'] !== NULL ? '' : 'hide'];
-					};
-				},
-				'priceDiscount' => function($d) use($e, $form) {
-					$d->group = function(Product $e) {
-						return ['data-price-discount' => $e['product']['id'], 'class' => $e['priceInitial'] !== NULL ? '' : 'hide'];
-					};
-				},
-			]);
+			});
 
 			$h .= '<br/>';
 			$h .= '<div class="util-block bg-background-light">';
@@ -1418,6 +1401,9 @@ class ProductUi {
 						]));
 
 				};
+				$d->default = function(Product $e) {
+					return $e['priceInitial'] ?? $e['price'];
+				};
 				$d->after = function(\util\FormUi $form, Product $e) {
 					return new \selling\PriceUi()->getDiscountLink($e['product']['id'], hasDiscountPrice: $e['priceInitial'] !== NULL);
 				};
@@ -1438,6 +1424,7 @@ class ProductUi {
 						['step' => 0.01],
 					);
 				};
+				$d->groupLabel = FALSE;
 				$d->prepend = s("Prix remisé");
 				$d->append = function(\util\FormUi $form, Product $eProduct) {
 

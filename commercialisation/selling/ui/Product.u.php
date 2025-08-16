@@ -1230,6 +1230,10 @@ class ProductUi {
 						['step' => 0.01, 'disabled' => $eProduct['private'] ? NULL : 'disabled'],
 					);
 				};
+				$d->groupLabel = FALSE;
+				$d->group = function(Product $e) {
+					return ['data-price-discount' => $e['product']['id'], 'class' => $e['privatePriceInitial'] !== NULL ? '' : 'hide'];
+				};
 				$d->prepend = s("Prix remisé");
 				$d->append = function(\util\FormUi $form, Product $eProduct) {
 					if($form->isQuick()) {
@@ -1262,6 +1266,10 @@ class ProductUi {
 						($eProduct['proPriceInitial'] ?? NULL) !== NULL ? $eProduct['proPrice'] : NULL,
 						['step' => 0.01, 'disabled' => $eProduct['pro'] ? NULL : 'disabled'],
 					);
+				};
+				$d->groupLabel = FALSE;
+				$d->group = function(Product $e) {
+					return ['data-price-discount' => $e['product']['id'], 'class' => $e['proPriceInitial'] !== NULL ? '' : 'hide'];
 				};
 				$d->prepend = s("Prix remisé");
 				$d->append = function(\util\FormUi $form, Product $eProduct) {
