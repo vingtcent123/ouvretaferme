@@ -37,56 +37,64 @@ class GridUi {
 
 		} else {
 
-			$h .= '<table class="customer-price tr-even">';
+			$h .= '<div class="util-overflow-sm">';
 
-			$h .= '<tr>';
-				$h .= '<th>'.s("Client").'</th>';
-				$h .= '<th>'.s("Prix").'</th>';
-				$h .= '<th>'.s("Colis").'</th>';
-				$h .= '<th>'.s("Depuis le...").'</th>';
-			$h .= '</tr>';
+				$h .= '<table class="customer-price tr-even">';
 
-			foreach($cGrid as $eGrid) {
+					$h .= '<thead>';
+						$h .= '<tr>';
+							$h .= '<th>'.s("Client").'</th>';
+							$h .= '<th>'.s("Prix").'</th>';
+							$h .= '<th>'.s("Colis").'</th>';
+							$h .= '<th>'.s("Depuis le").'</th>';
+						$h .= '</tr>';
+					$h .= '</thead>';
+					$h .= '<tbody>';
 
-				// Pas de changement par rapport aux prix de base
-				if($eGrid['price'] === NULL and $eGrid['packaging'] === NULL) {
-					continue;
-				}
+						foreach($cGrid as $eGrid) {
 
-				$eCustomer = $eGrid['customer'];
+							// Pas de changement par rapport aux prix de base
+							if($eGrid['price'] === NULL and $eGrid['packaging'] === NULL) {
+								continue;
+							}
 
-				$taxes = $eProduct['farm']->getSelling('hasVat') ? CustomerUi::getTaxes($eCustomer['type']) : '';
+							$eCustomer = $eGrid['customer'];
 
-				$h .= '<tr>';
+							$taxes = $eProduct['farm']->getSelling('hasVat') ? CustomerUi::getTaxes($eCustomer['type']) : '';
 
-					$h .= '<td>';
-						$h .= CustomerUi::link($eCustomer);
-						$h .= ' <span class="util-annotation">'.CustomerUi::getCategory($eCustomer).'</span>';
-					$h .= '</td>';
+							$h .= '<tr>';
 
-					$h .= '<td>';
-						if($eGrid['priceInitial'] !== NULL) {
-							$field = 'priceDiscount';
-							$h .= new PriceUi()->priceWithoutDiscount($eGrid['priceInitial'], unit: ' '.$taxes.\selling\UnitUi::getBy($eProduct['unit']));
-						} else {
-							$field = 'price';
+								$h .= '<td>';
+									$h .= CustomerUi::link($eCustomer);
+									$h .= ' <span class="util-annotation">'.CustomerUi::getCategory($eCustomer).'</span>';
+								$h .= '</td>';
+
+								$h .= '<td>';
+									if($eGrid['priceInitial'] !== NULL) {
+										$field = 'priceDiscount';
+										$h .= new PriceUi()->priceWithoutDiscount($eGrid['priceInitial'], unit: ' '.$taxes.\selling\UnitUi::getBy($eProduct['unit'], short: TRUE));
+									} else {
+										$field = 'price';
+									}
+									$h .= $eGrid->quick($field, $eGrid['price'] ? \util\TextUi::money($eGrid['price']).' '.$taxes.\selling\UnitUi::getBy($eProduct['unit'], short: TRUE) : '-');
+								$h .= '</td>';
+
+								$h .= '<td>';
+									$h .= $eGrid->quick('packaging', $eGrid['packaging'] ? \selling\UnitUi::getValue($eGrid['packaging'], $eProduct['unit'], short: TRUE) : '-');
+								$h .= '</td>';
+
+								$h .= '<td>';
+									$h .= \util\DateUi::numeric($eGrid['updatedAt'], \util\DateUi::DATE);
+								$h .= '</td>';
+
+							$h .= '</tr>';
+
 						}
-						$h .= $eGrid->quick($field, $eGrid['price'] ? \util\TextUi::money($eGrid['price']).' '.$taxes.\selling\UnitUi::getBy($eProduct['unit']) : '-');
-					$h .= '</td>';
 
-					$h .= '<td>';
-						$h .= $eGrid->quick('packaging', $eGrid['packaging'] ? \selling\UnitUi::getValue($eGrid['packaging'], $eProduct['unit']) : '-');
-					$h .= '</td>';
+					$h .= '</tbody>';
+				$h .= '</table>';
 
-					$h .= '<td>';
-						$h .= \util\DateUi::numeric($eGrid['updatedAt'], \util\DateUi::DATE);
-					$h .= '</td>';
-
-				$h .= '</tr>';
-
-			}
-
-			$h .= '</table>';
+			$h .= '</div>';
 
 		}
 
@@ -129,79 +137,89 @@ class GridUi {
 
 		if($cGrid->notEmpty()) {
 
-			$h .= '<table class="customer-price tr-even">';
+			$h .= '<div class="util-overflow-md">';
 
-			$h .= '<tr>';
-				$h .= '<th class="customer-price-vignette"></th>';
-				$h .= '<th>'.s("Produit").'</th>';
-				$h .= '<th>'.s("Prix").'</th>';
-				if($eCustomer['type'] === Customer::PRO) {
-					$h .= '<th>'.s("Colis").'</th>';
-				}
-			$h .= '</tr>';
+				$h .= '<table class="customer-price tr-even">';
 
-			foreach($cGrid as $eGrid) {
+					$h .= '<thead>';
+						$h .= '<tr>';
+							$h .= '<th></th>';
+							$h .= '<th>'.s("Produit").'</th>';
+							$h .= '<th class="text-end">'.s("Prix de base").'</th>';
+							$h .= '<th>'.s("Prix personnalisé").'</th>';
+							$h .= '<th class="text-end">'.s("Colis de base").'</th>';
+							$h .= '<th>'.s("Colis personnalisé").'</th>';
+							$h .= '<th>'.s("Depuis le").'</th>';
+						$h .= '</tr>';
+					$h .= '</thead>';
+					$h .= '<tbody>';
 
-				// Pas de changement par rapport aux prix de base
-				if($eGrid['price'] === NULL and $eGrid['packaging'] === NULL) {
-					continue;
-				}
+						foreach($cGrid as $eGrid) {
 
-				$eProduct = $eGrid['product'];
-
-				$taxes = $eCustomer['farm']->getSelling('hasVat') ? CustomerUi::getTaxes($eCustomer['type']) : '';
-
-				$h .= '<tr>';
-
-					$h .= '<td class="customer-price-vignette">';
-						$h .= ProductUi::getVignette($eProduct, '4rem');
-					$h .= '</td>';
-
-					$h .= '<td>';
-						$h .= '<a href="/produit/'.$eProduct['id'].'">'.encode($eProduct->getName()).'</a>';
-						if($eProduct['size']) {
-							$h .= '<div><small><u>'.encode($eProduct['size']).'</u></div>';
-						}
-					$h .= '</td>';
-
-					$h .= '<td>';
-						$h .= '<div>';
-							if($eGrid['priceInitial'] !== NULL) {
-								$field = 'priceDiscount';
-							} else {
-								$field = 'price';
+							// Pas de changement par rapport aux prix de base
+							if($eGrid['price'] === NULL and $eGrid['packaging'] === NULL) {
+								continue;
 							}
-							$h .= $eGrid->quick($field, $eGrid['price'] ? \util\TextUi::money($eGrid['price']).' '.$taxes.\selling\UnitUi::getBy($eProduct['unit']) : '-');
-						$h .= '</div>';
-						$defaultPrice = $eProduct[$eCustomer['type'].'Price'];
-						if($defaultPrice !== NULL) {
-							$h .= '<small class="color-muted">';
-								$h .= s("Base : {value}", \util\TextUi::money($defaultPrice));
-							$h .= '</small>';
+
+							$eProduct = $eGrid['product'];
+
+							$taxes = $eCustomer['farm']->getSelling('hasVat') ? CustomerUi::getTaxes($eCustomer['type']) : '';
+							$priceSuffix = $taxes.\selling\UnitUi::getBy($eProduct['unit'], short: TRUE);
+
+							$h .= '<tr>';
+
+								$h .= '<td class="td-min-content">';
+									$h .= ProductUi::getVignette($eProduct, '4rem');
+								$h .= '</td>';
+
+								$h .= '<td>';
+									$h .= '<a href="/produit/'.$eProduct['id'].'">'.encode($eProduct->getName()).'</a>';
+									if($eProduct['size']) {
+										$h .= '<div><small><u>'.encode($eProduct['size']).'</u></div>';
+									}
+								$h .= '</td>';
+
+								$h .= '<td class="text-end">';
+									$defaultPrice = $eProduct[$eCustomer['type'].'Price'];
+									if($defaultPrice !== NULL) {
+										$h .= \util\TextUi::money($defaultPrice).' '.$priceSuffix;
+									}
+								$h .= '</td>';
+
+								$h .= '<td>';
+									if($eGrid['priceInitial'] !== NULL) {
+										$field = 'priceDiscount';
+									} else {
+										$field = 'price';
+									}
+									$h .= $eGrid->quick($field, $eGrid['price'] ? \util\TextUi::money($eGrid['price']).' '.$priceSuffix : '-');
+								$h .= '</td>';
+
+								$h .= '<td class="text-end">';
+									if($eProduct['proPackaging'] !== NULL) {
+										$h .= \selling\UnitUi::getValue($eProduct['proPackaging'], $eProduct['unit'], short: TRUE);
+									} else {
+										$h .= '-';
+									}
+								$h .= '</td>';
+
+								$h .= '<td>';
+									$h .= $eGrid->quick('packaging', $eGrid['packaging'] ? \selling\UnitUi::getValue($eGrid['packaging'], $eProduct['unit'], short: TRUE) : '-');
+								$h .= '</td>';
+
+								$h .= '<td>';
+									$h .= \util\DateUi::numeric($eGrid['updatedAt'], \util\DateUi::DATE);
+								$h .= '</td>';
+
+							$h .= '</tr>';
+
 						}
-					$h .= '</td>';
 
-					if($eCustomer['type'] === Customer::PRO) {
+					$h .= '</tbody>';
 
-						$h .= '<td>';
+				$h .= '</table>';
 
-							$h .= '<div>';
-								$h .= $eGrid->quick('packaging', $eGrid['packaging'] ? \selling\UnitUi::getValue($eGrid['packaging'], $eProduct['unit']) : '-');
-							$h .= '</div>';
-							if($eProduct['proPackaging'] !== NULL) {
-								$h .= '<small class="color-muted">';
-									$h .= s("Base : {value}", \selling\UnitUi::getValue($eProduct['proPackaging'], $eProduct['unit']));
-								$h .= '</small>';
-							}
-						$h .= '</td>';
-
-					}
-
-				$h .= '</tr>';
-
-			}
-
-			$h .= '</table>';
+			$h .= '</div>';
 
 		}
 
