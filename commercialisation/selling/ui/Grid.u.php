@@ -168,7 +168,6 @@ class GridUi {
 						$h .= '<div>';
 							if($eGrid['priceInitial'] !== NULL) {
 								$field = 'priceDiscount';
-								$h .= new PriceUi()->priceWithoutDiscount($eGrid['priceInitial'], unit: ' '.$taxes.\selling\UnitUi::getBy($eProduct['unit']));
 							} else {
 								$field = 'price';
 							}
