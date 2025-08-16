@@ -160,6 +160,7 @@ class BrevoLib {
 
 		$affected = Email::model()
 			->select($properties)
+			->whereStatus('!=', $eEmail['status']) // Le statut doit avoir changé
 			->update($eEmail);
 
 		if($affected > 0) {
