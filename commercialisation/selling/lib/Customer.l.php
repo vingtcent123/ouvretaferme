@@ -420,11 +420,18 @@ class CustomerLib extends CustomerCrud {
 
 	public static function delete(Customer $e): void {
 
-		$e->expects(['id']);
+		$e->expects(['id', 'farm']);
 
-		if(Sale::model()
-			->whereCustomer($e)
-			->exists()) {
+		if(
+			Sale::model()
+				->whereFarm($e['farm'])
+				->whereCustomer($e)
+				->exists() or
+			Invoice::model()
+				->whereFarm($e['farm'])
+				->whereCustomer($e)
+				->exists()
+		) {
 			Customer::fail('deletedUsed');
 			return;
 		}
