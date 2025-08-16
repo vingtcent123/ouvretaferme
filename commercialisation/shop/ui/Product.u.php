@@ -1236,7 +1236,7 @@ class ProductUi {
 							return $e['price'];
 					};
 					$d->group = function(Product $e) {
-						return ['data-price-discount' => $e['product']['id'], 'class' => $e['priceInitial'] !== NULL ? '' : 'hide'];
+						return ['class' => $e['priceInitial'] !== NULL ? '' : 'hide'];
 					};
 				},
 				'priceDiscount' => function($d) use($e, $form) {
