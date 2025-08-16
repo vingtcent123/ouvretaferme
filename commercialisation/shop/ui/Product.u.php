@@ -497,7 +497,7 @@ class ProductUi {
 					$h .= s("Produit");
 				$h .= '</div>';
 				$h .= '<div class="date-products-fields">';
-					$h .= '<div class="text-center">';
+					$h .= '<div class="date-products-multiple">';
 						if($type === Date::PRIVATE) {
 							$h .= s("Multiple<br/>de vente");
 						}
@@ -569,7 +569,7 @@ class ProductUi {
 						$h .= \selling\ProductUi::getInfos($eProduct, includeUnit: TRUE, link: FALSE);
 					$h .= '</label>';
 					$h .= '<div class="date-products-fields">';
-						$h .= '<div class="text-center">';
+						$h .= '<div class="date-products-multiple">';
 
 							switch($type) {
 

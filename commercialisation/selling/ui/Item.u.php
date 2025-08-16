@@ -999,9 +999,8 @@ class ItemUi {
 
 						});
 
-						$h .= '<div data-wrapper="unitPriceDiscount['.$eProduct['id'].']" class="mt-1'.($eItem['unitPriceInitial'] === NULL ? ' hide' : '').'" data-price-discount="'.$eProduct['id'].'">';
+						$h .= '<div data-wrapper="unitPriceDiscount['.$eProduct['id'].']" class="'.($eItem['unitPriceInitial'] === NULL ? ' hide' : '').'" data-price-discount="'.$eProduct['id'].'">';
 
-							$h .= '<h4>'.s("Prix remisé").'</h4>';
 							$h .= $form->dynamicField($eItem, 'unitPriceDiscount['.$eProduct['id'].']*', function(\PropertyDescriber $d) use($form) {
 								$d->append = function(\util\FormUi $form, Item $eItem) {
 									return '<div class="input-group-addon">'.s("€").'</div>'.
@@ -1397,6 +1396,7 @@ class ItemUi {
 						['oninput' => 'Item.recalculateLock(this)', 'step' => 0.01],
 					);
 				};
+				$d->prepend = s("Prix remisé");
 				$d->append = function(\util\FormUi $form, Item $eItem) {
 
 					$unit = s("€ {taxes}", ['taxes' => $eItem['sale']->getTaxes()]);

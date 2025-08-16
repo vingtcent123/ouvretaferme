@@ -75,6 +75,10 @@ div.shop-write-fqn label {
 		grid-template-columns: 8rem 20rem 10rem 5rem;
 	}
 
+    .date-products-multiple {
+        text-align: center;
+    }
+
 }
 
 @media (max-width: 991px) {
@@ -111,7 +115,7 @@ div.shop-write-fqn label {
 		grid-template-columns: 2fr 3fr;
 	}
 
-    @media (max-width: 575px) {
+    @media (max-width: 399px) {
 
         .date-products .date-products-fields > * {
             grid-template-columns: 1fr;
@@ -134,8 +138,8 @@ div.shop-write-fqn label {
 }
 
 .date-products > * {
-	padding-top: 0.25rem;
-	padding-bottom: 0.25rem;
+	padding-top: 0.5rem;
+	padding-bottom: 0.5rem;
 }
 
 .date-points-title {
