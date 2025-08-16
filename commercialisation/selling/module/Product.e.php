@@ -376,7 +376,7 @@ class Product extends ProductElement {
 				// Reset du prix remisé, privatePrice a déjà été setté correctement
 				if($privatePriceDiscount === NULL) {
 
-					if($this['privatePriceInitial'] !== NULL) {
+					if($p->for === 'update' and $this['privatePriceInitial'] !== NULL) {
 
 						$this['privatePriceInitial'] = NULL;
 						$p->addBuilt('privatePriceInitial');
@@ -530,7 +530,7 @@ class Product extends ProductElement {
 				// proPrice a déjà été setté
 				if($proPriceDiscount === NULL) {
 
-					if($this['proPriceInitial'] !== NULL) {
+					if($p->for === 'update' and $this['proPriceInitial'] !== NULL) {
 
 						$this['proPriceInitial'] = NULL;
 						$p->addBuilt('proPriceInitial');
