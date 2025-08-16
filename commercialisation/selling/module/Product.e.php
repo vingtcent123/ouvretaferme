@@ -271,10 +271,10 @@ class Product extends ProductElement {
 
 			})
 			// Vérifie la cohérence des données, valable pour quick et pas quick
-			->setCallback('privatePrice.value', function(?float $privatePrice): bool {
+			->setCallback('privatePrice.value', function(?float $privatePrice) use($p): bool {
 
 				// Empty déjà checké
-				if($privatePrice === NULL or $this['privatePriceInitial'] === NULL) {
+				if($privatePrice === NULL or $p->for === 'create') {
 					return TRUE;
 				}
 
@@ -426,10 +426,10 @@ class Product extends ProductElement {
 
 			})
 			// Vérifie la cohérence des données, valable pour quick et pas quick
-			->setCallback('proPrice.value', function(?float $proPrice): bool {
+			->setCallback('proPrice.value', function(?float $proPrice) use($p): bool {
 
 				// Empty déjà checké
-				if($proPrice === NULL or $this['proPriceInitial'] === NULL) {
+				if($proPrice === NULL or $p->for === 'create') {
 					return TRUE;
 				}
 
