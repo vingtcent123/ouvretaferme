@@ -1405,6 +1405,9 @@ class ProductUi {
 					return $e['priceInitial'] ?? $e['price'];
 				};
 				$d->after = function(\util\FormUi $form, Product $e) {
+					if($e->isQuick()) {
+						return NULL;
+					}
 					return new \selling\PriceUi()->getDiscountLink($e['product']['id'], hasDiscountPrice: $e['priceInitial'] !== NULL);
 				};
 				$d->attributes = [

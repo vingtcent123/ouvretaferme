@@ -1236,7 +1236,7 @@ class ProductUi {
 				};
 				$d->prepend = s("Prix remisé");
 				$d->append = function(\util\FormUi $form, Product $eProduct) {
-					if($form->isQuick()) {
+					if($eProduct->isQuick()) {
 						return NULL;
 					}
 					$taxes = $eProduct['farm']->getSelling('hasVat') ? '/ '.CustomerUi::getTaxes(Customer::PRIVATE) : '';
@@ -1273,7 +1273,7 @@ class ProductUi {
 				};
 				$d->prepend = s("Prix remisé");
 				$d->append = function(\util\FormUi $form, Product $eProduct) {
-					if($form->isQuick()) {
+					if($eProduct->isQuick()) {
 						return NULL;
 					}
 
