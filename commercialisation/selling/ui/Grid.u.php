@@ -262,7 +262,9 @@ class GridUi {
 					if($eProduct[$eCustomer['type'].'PriceInitial'] !== NULL) {
 						$defaultPrice .= new PriceUi()->priceWithoutDiscount($eProduct[$eCustomer['type'].'PriceInitial']);
 					}
-					$defaultPrice .= \util\TextUi::money($eProduct[$eCustomer['type'].'Price']);
+					if($eProduct[$eCustomer['type'].'Price'] !== NULL) {
+						$defaultPrice .= \util\TextUi::money($eProduct[$eCustomer['type'].'Price']);
+					}
 
 					$h .= '<tr>';
 
