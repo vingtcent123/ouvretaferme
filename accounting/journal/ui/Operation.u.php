@@ -23,7 +23,7 @@ class OperationUi {
 
 	}
 
-	public function createPayment(\farm\Farm $eFarm, Operation $eOperation, \Collection $cBankAccount): \Panel {
+	public function createPayment(\farm\Farm $eFarm, \account\FinancialYear $eFinancialYear, Operation $eOperation, \Collection $cBankAccount): \Panel {
 
 		\Asset::css('journal', 'operation.css');
 		\Asset::js('journal', 'payment.js');
@@ -41,6 +41,7 @@ class OperationUi {
 		);
 
 		$h = $form->hidden('farm', $eFarm['id']);
+		$h .= $form->hidden('financialYear', $eFinancialYear['id']);
 
 		$h .= $form->group(
 			s("Type de paiement").\util\FormUi::asterisk(),
@@ -71,7 +72,7 @@ class OperationUi {
 		$h .= $form->dynamicGroup($eOperation, 'amount*', function($d) {
 			$d->label = s("Montant du paiement");
 		});
-		$h .= $form->dynamicGroups($eOperation, ['paymentDate*']);
+		$h .= $form->dynamicGroups($eOperation, ['paymentMethod*', 'paymentDate*']);
 
 		$bankValues = $cBankAccount->makeArray(fn($e) => ['value' => $e['id'], 'label' => $e['label']]);
 
@@ -93,7 +94,7 @@ class OperationUi {
 		$h .= '<div id="waiting-operations-list-container" class="hide">'
 			.$form->group(
 				s("Écritures non lettrées"),
-				'<div class="util-info">'.s("Note : Les opérations non lettrées sont lettrées automatiquement par date croissante d'écriture (de la plus ancienne à la plus récente).").'</div><div id="waiting-operations-list"></div>'
+				'<div class="util-info" id="waiting-operations-list-info">'.$this->letteringInfo().'</div><div id="waiting-operations-list"></div>'
 			)
 		.'</div>';
 
@@ -115,6 +116,10 @@ class OperationUi {
 			footer: '<div class="create-operation-buttons">'.$saveButton.'</div>',
 		);
 
+	}
+
+	public function letteringInfo(): string {
+		return s("Note : Les opérations non lettrées sont lettrées dans l'ordre chronologique d'écriture (de la plus ancienne à la plus récente).");
 	}
 
 	public function listWaitingOperations(\farm\Farm $eFarm, \util\FormUi $form, \Collection $cOperation): string {
@@ -775,8 +780,8 @@ class OperationUi {
 					];
 				};
 				$d->after = function(\util\FormUi $form, Operation $e, string $property, string $field, array $attributes) {
-					return $form->hidden('thirdPartyVatNumber['.$attributes['data-index'].']')
-						.$form->hidden('thirdPartyName['.$attributes['data-index'].']');
+					return $form->hidden('thirdPartyVatNumber['.($attributes['data-index'] ?? 0).']')
+						.$form->hidden('thirdPartyName['.($attributes['data-index'] ?? 0).']');
 				};
 				new \account\ThirdPartyUi()->query($d, GET('farm', '?int'));
 				break;

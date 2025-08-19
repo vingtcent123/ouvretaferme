@@ -262,9 +262,10 @@ class OperationLib extends OperationCrud {
 		}
 
 		$eOperation = new Operation();
-		$eOperation->build(['thirdParty', 'amount', 'paymentDate'], $input);
+		$eOperation->build(['thirdParty', 'amount', 'paymentDate', 'financialYear', 'paymentMethod'], $input);
 
 		$fw->validate();
+
 		$eOperation['thirdParty'] = \account\ThirdPartyLib::getById($eOperation['thirdParty']['id']);
 
 		if(mb_strpos($paymentType, 'client') !== FALSE) {

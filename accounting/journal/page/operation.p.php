@@ -152,13 +152,14 @@ new \journal\OperationPage(
 		$thirdParty = account\ThirdPartyLib::getById(GET('thirdParty', 'int'));
 
 		$data->e->merge([
-			'farm' => $data->eFarm['id'],
+			'farm' => $data->eFarm,
 			'thirdParty' => $thirdParty,
 			'date' => GET('date'),
 			'description' => GET('description'),
 			'document' => GET('document'),
 			'type' => GET('type'),
 			'amount' => GET('amount', 'float'),
+			'cPaymentMethod' => $data->cPaymentMethod,
 		]);
 
 		$data->eFinancialYear = \account\FinancialYearLib::selectDefaultFinancialYear();

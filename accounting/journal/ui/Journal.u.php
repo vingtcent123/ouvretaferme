@@ -256,7 +256,7 @@ class JournalUi {
 							}
 
 						}
-						$h .= '<th colspan="4">';
+						$h .= '<th colspan="'.(($eFarm['company']->isAccrualAccounting() and $selectedJournalCode === NULL) ? 5 : 4).'">';
 							$label = s("Description");
 							$h .= ($search ? $search->linkSort('description', $label) : $label);
 						$h .= '</th>';

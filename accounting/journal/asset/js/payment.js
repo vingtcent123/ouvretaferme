@@ -47,12 +47,12 @@ class PaymentOperation {
 			return;
 		}
 
-		const company = qs('#journal-operation-create-payment [name="company"]').getAttribute('value');
+		const farm = qs('#journal-operation-create-payment [name="farm"]').getAttribute('value');
 
 		new Ajax.Query()
-			.url(company + '/journal/operation:getWaiting')
+			.url(farm + '/journal/operation:getWaiting')
 			.body({
-				thirdParty, paymentType, company
+				thirdParty, paymentType, farm
 			})
 			.fetch();
 
