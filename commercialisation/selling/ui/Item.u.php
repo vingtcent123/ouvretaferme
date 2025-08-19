@@ -92,14 +92,14 @@ class ItemUi {
 		if($eSale['comment']) {
 			$h .= '<div class="util-block mb-2">';
 				$h .= '<h4>'.s("Commentaire interne").'</h4>';
-				$h .= encode($eSale['comment']).' &raquo;';
+				$h .= nl2br(encode($eSale['comment']));
 			$h .= '</div>';
 		}
 
 		if($eSale['shopComment']) {
 			$h .= '<div class="util-block">';
 				$h .= '<h4>'.s("Commentaire laissé par le client").'</h4>';
-				$h .= encode($eSale['shopComment']);
+				$h .= nl2br(encode($eSale['shopComment']));
 			$h .= '</div>';
 		}
 
