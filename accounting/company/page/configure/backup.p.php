@@ -10,19 +10,19 @@ new Page()
 
 		$date = date('Y-m-d');
 
-		exec('mysqldump -u '.$username.' "'.$password.'" comptabilite > /var/www/mysql-backup/'.$date.'-comptabilite.sql');
-		exec('cp /var/www/mysql-backup/'.$date.'-comptabilite.sql /var/www/mysql-backup/backup/comptabilite.sql');
+		$mysqlBackupDir = \main\BackupLib::LOCAL_BACKUP_DIR.'mysql-backup/';
+
 		foreach($cCompany as $eCompany) {
 
 			$database = \company\CompanyLib::getDatabaseName($eCompany['farm']);
-			exec('mysqldump -u '.$username.' "'.$password.'" '.$database.' > /var/www/mysql-backup/'.$date.'-'.$database.'.sql');
-			exec('cp /var/www/mysql-backup/'.$date.'-'.$database.'.sql /var/www/mysql-backup/backup/'.$database.'.sql');
+			exec('mysqldump -u '.$username.' "'.$password.'" '.$database.' > '.$mysqlBackupDir.$date.'-'.$database.'.sql');
+			exec('cp '.$mysqlBackupDir.$date.'-'.$database.'.sql '.$mysqlBackupDir.'backup/'.$database.'.sql');
 
 		}
 
-		exec('tar czf /var/www/mpf-mysql.tar.gz /var/www/mysql-backup/backup/');
+		exec('tar czf '.\main\BackupLib::LOCAL_BACKUP_DIR.\main\BackupLib::LOCAL_FARMS_BACKUP_FILE.' '.$mysqlBackupDir.'backup/');
 
-		\main\BackupLib::backupMpf();
+		\main\BackupLib::backupFarms();
 
 	});
 ?>
