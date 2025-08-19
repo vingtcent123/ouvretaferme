@@ -95,7 +95,7 @@ class CompanyLib extends CompanyCrud {
 		}
 
 		if(LIME_ENV === 'prod') {
-			return'comptabilite'.$eFarm['id'];
+			return'comptabilite_'.$eFarm['id'];
 		}
 
 		return 'dev_comptabilite_'.$eFarm['id'];
