@@ -45,9 +45,8 @@ switch(LIME_ENV) {
 			'selling' => 'ouvretaferme',
 			'website' => 'ouvretaferme',
 
-			'accounting' => 'comptabilite',
-			'company' => 'comptabilite',
-			'account' => 'comptabilite',
+			'company' => 'ouvretaferme',
+
 		]);
 
 		break;
@@ -78,9 +77,8 @@ switch(LIME_ENV) {
 			'selling' => 'dev_ouvretaferme',
 			'website' => 'dev_ouvretaferme',
 
-			'account' => 'dev_comptabilite',
-			'accounting' => 'dev_comptabilite',
-			'company' => 'dev_comptabilite',
+			'company' => 'dev_ouvretaferme',
+
 		]);
 
 		break;
