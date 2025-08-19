@@ -101,7 +101,7 @@ class Farm extends FarmElement {
 	public function hasAccounting(): bool {
 		return (
 			!OTF_DEMO and
-			(FEATURE_ACCOUNTING or ($this->exists() and $this['id'] === 7))
+			(FEATURE_ACCOUNTING or ($this->exists() and in_array($this['id'], \Setting::get('company\accountingBetaTesterFarms'))))
 		); // Jardins de Tallende
 	}
 
