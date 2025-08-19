@@ -99,7 +99,7 @@ class CampaignUi {
 		$h .= '</div>';
 
 		return new \Panel(
-			id: 'panel-campaign-create',
+			id: 'panel-campaign-write',
 			title: s("Programmer une campagne"),
 			body: $h
 		);
@@ -116,7 +116,7 @@ class CampaignUi {
 
 		$eFarm = $eCampaign['farm'];
 
-		$h = $form->openAjax('/mail/campaign:doCreate', ['id' => 'campaign-create']);
+		$h = $form->openAjax('/mail/campaign:doCreate', ['id' => 'campaign-write']);
 
 			$h .= $form->hidden('source', $eCampaign['source']);
 
@@ -129,7 +129,7 @@ class CampaignUi {
 
 				case Campaign::SHOP :
 					$h .= $form->hidden('sourceShop', $eCampaign['sourceShop']);
-					$h .= '<div class="util-block-help">'.s("Vous allez envoyer un e-mail à tous les clients que vous avez déjà livrés sur la boutique <link>{name}</link>.", ['link' => '<a href="'.\shop\ShopUi::url($eCampaign['sourceShop']).'">', 'name' => encode($eCampaign['sourceShop']['name'])]).'</div>';
+					$h .= '<div class="util-block-secondary">'.s("Vous allez envoyer un e-mail à tous les clients que vous avez déjà livrés sur la boutique <link>{name}</link>.", ['link' => '<a href="'.\shop\ShopUi::url($eCampaign['sourceShop']).'">', 'name' => encode($eCampaign['sourceShop']['name'])]).'</div>';
 					break;
 
 				case Campaign::PERIOD :
@@ -147,30 +147,91 @@ class CampaignUi {
 
 			$h .= $form->hidden('farm', $eFarm['id']);
 
-			$h .= $form->dynamicGroups($eCampaign, ['scheduledAt', 'subject']);
+			$h .= $this->getWrite($form, $eCampaign);
+
+			$content = '<div class="util-block">';
+				$content .= '<p class="color-muted">'.s("Vous pourrez modifier votre campagne jusqu'à la date d'envoi que vous avez programmée.").'</p>';
+				$content .= $form->submit(s("Programmer la campagne"), ['class' => 'btn btn-primary btn-lg']);
+			$content .= '</div>';
 
 			$h .= $form->group(
-				self::p('content')->label.\util\FormUi::info(s("L'e-mail envoyé contiendra toujours le bandeau et la signature que vous avez défini sur la <link>page de configuration des e-mails</link>.", ['link' => '<a href="/farm/farm:updateEmail?id='.$eCampaign['farm']['id'].'" target="_blank">'])),
-				'<div class="util-block">'.$form->dynamicField($eCampaign, 'content').'</div>'
+				content: $content
 			);
-
-			$h .= $form->group(
-				self::p('to')->label.'  <span class="util-counter" id="campaign-contacts">'.$eCampaign['cContact']->count().'</span>',
-				$form->dynamicField($eCampaign, 'to'),
-				['wrapper' => 'to']
-			);
-
-				$content = '<div class="util-block">';
-					$content .= '<p class="color-muted">'.s("Vous pourrez modifier votre campagne jusqu'à la date d'envoi que vous avez programmée.").'</p>';
-					$content .= $form->submit(s("Programmer la campagne"), ['class' => 'btn btn-primary btn-lg']);
-				$content .= '</div>';
-
-				$h .= $form->group(
-					content: $content
-				);
-
 
 		$h .= $form->close();
+
+		return $h;
+
+	}
+
+	public function update(Campaign $eCampaign): \Panel {
+
+		$form = new \util\FormUi([
+			'firstColumnSize' => 25
+		]);
+
+		$h = $form->openAjax('/mail/campaign:doCreate', ['id' => 'campaign-write']);
+
+			$h .= $form->hidden('id', $eCampaign['id']);
+
+			$h .= $this->getWrite($form, $eCampaign);
+
+		$h .= $form->close();
+
+
+		return new \Panel(
+			id: 'panel-campaign-update',
+			title: s("Modifier une campagne"),
+			dialogOpen: $form->openAjax('/mail/campaign:doUpdate', ['class' => 'panel-dialog container']),
+			dialogClose: $form->close(),
+			body: $h,
+			footer: $form->submit(s("Enregistrer"), ['class' => 'btn btn-primary btn-lg']),
+		);
+
+	}
+
+	protected function getWrite(\util\FormUi $form, Campaign $eCampaign): string {
+
+		$h = $form->dynamicGroups($eCampaign, ['scheduledAt', 'subject']);
+
+
+		$content = '<div class="util-block mb-0">'.$form->dynamicField($eCampaign, 'content').'</div>';
+
+		if($eCampaign['cCampaignLast']->notEmpty()) {
+
+			$action = '<a data-dropdown="bottom-end" class="dropdown-toggle">'.s("Utiliser titre et contenu d'une ancienne campagne").'</a>';
+			$action .= '<div class="dropdown-list bg-secondary">';
+
+				foreach($eCampaign['cCampaignLast'] as $eCampaignLast) {
+					$action .= '<a href="" class="dropdown-item" '.attr('data-subject', $eCampaignLast['subject']).' '.attr('data-content', $form->editor('content', $eCampaignLast['content'])).'>'.encode($eCampaignLast['subject']).'<br/><small>'.\util\DateUi::numeric($eCampaignLast['scheduledAt'], \util\DateUi::DATE_HOUR_MINUTE).'</small></a>';
+				}
+
+			$action .= '</div>';
+
+			$content .= \util\FormUi::getFieldAction($action);
+
+		}
+
+
+		$h .= $form->group(
+			self::p('content')->label.\util\FormUi::info(s("L'e-mail envoyé contiendra toujours le bandeau et la signature que vous avez défini sur la <link>page de configuration des e-mails</link>.", ['link' => '<a href="/farm/farm:updateEmail?id='.$eCampaign['farm']['id'].'" target="_blank">'])),
+			$content
+		);
+
+		$label = self::p('to')->label.'  <span class="util-counter" id="campaign-contacts">'.$eCampaign['cContact']->count().'</span>';
+
+		if(
+			$eCampaign->exists() and
+			count($eCampaign['to']) !== $eCampaign['cContact']->count()
+		) {
+			$label .= \util\FormUi::info(s("Les contacts pour qui vous avez désactivé l'envoi des e-mails ainsi que ceux qui ont refusé vos communications ont été retirés de la liste."));
+		}
+
+		$h .= $form->group(
+			$label,
+			$form->dynamicField($eCampaign, 'to'),
+			['wrapper' => 'to']
+		);
 
 		return $h;
 
@@ -295,6 +356,9 @@ class CampaignUi {
 						}
 
 						$h .= '<td class="td-min-content">';
+							if($eCampaign->acceptUpdate()) {
+								$h .= '<a href="/mail/campaign:update?id='.$eCampaign['id'].'" class="btn btn-secondary">'.\Asset::icon('gear-fill').'</a> ';
+							}
 							if($eCampaign->acceptDelete()) {
 								$h .= '<a data-ajax="/mail/campaign:doDelete" post-id="'.$eCampaign['id'].'" data-confirm="'.s("Vous allez supprimer une campagne et les e-mails ne seront pas envoyés. Continuer ?").'" class="btn btn-danger">'.\Asset::icon('trash').'</a>';
 							}
@@ -336,7 +400,6 @@ class CampaignUi {
 			case 'scheduledAt' :
 				$d->prepend = s("Envoyer le");
 				$d->after = fn(\util\FormUi $form, Campaign $e) => ($e->getMinScheduledAt() > currentDatetime()) ? \util\FormUi::info(s("Au plus tôt le {date} pour laisser le temps d'amender l'e-mail si nécessaire", ['date' => \util\DateUi::numeric($e->getMinScheduledAt(), \util\DateUi::DATE_HOUR_MINUTE)])) : '';
-				$d->default = fn(Campaign $e) => $e->getMinScheduledAt();
 				break;
 
 			case 'subject' :
@@ -351,7 +414,7 @@ class CampaignUi {
 
 			case 'to' :
 				$d->autocompleteDefault = fn(Campaign $e) => $e['cContact'] ?? new \Collection();
-				$d->autocompleteDispatch = '#campaign-create';
+				$d->autocompleteDispatch = '#campaign-write';
 				$d->autocompleteBody = function(\util\FormUi $form, Campaign $e) {
 					$e->expects(['farm']);
 					return [

@@ -6,6 +6,7 @@ class Campaign extends CampaignElement {
 	public static function getSelection(): array {
 
 		return parent::getSelection() + [
+			'farm' => \farm\FarmElement::getSelection(),
 			'sourceShop' => \shop\ShopElement::getSelection(),
 			'sourceGroup' => \selling\GroupElement::getSelection(),
 		];
@@ -16,6 +17,12 @@ class Campaign extends CampaignElement {
 
 		$this->expects(['farm']);
 		return $this['farm']->canCommunication();
+
+	}
+
+	public function acceptUpdate(): bool {
+
+		return $this['status'] === Campaign::CONFIRMED;
 
 	}
 
@@ -33,7 +40,7 @@ class Campaign extends CampaignElement {
 		};
 
 		if($this->exists()) {
-			return date('Y-m-d H:00:00', strtotime($this['scheduledAt'].' + '.$delay.' HOUR'));
+			return date('Y-m-d H:00:00', strtotime($this['createdAt'].' + '.$delay.' HOUR'));
 		} else {
 			return date('Y-m-d H:00:00', time() + $delay * 3600);
 		}
@@ -48,8 +55,11 @@ class Campaign extends CampaignElement {
 				$scheduledAt = date('Y-m-d H:i:00', strtotime($scheduledAt));
 				return TRUE;
 			})
-			->setCallback('scheduledAt.past', function(string $scheduledAt): bool {
+			->setCallback('scheduledAt.soon', function(string $scheduledAt): bool {
 				return $scheduledAt >= $this->getMinScheduledAt('check');
+			})
+			->setCallback('scheduledAt.past', function(string $scheduledAt): bool {
+				return $scheduledAt >= currentDatetime();
 			})
 			->setCallback('html.prepare', function(string &$value): bool {
 				$value = new \editor\XmlLib()->fromHtml($value);

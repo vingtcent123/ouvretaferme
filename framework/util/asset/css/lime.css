@@ -1218,6 +1218,7 @@ a.util-badge {
 }
 
 .util-block,
+.util-block-secondary,
 .util-block-help,
 .util-card {
 	border-radius: var(--radius);
@@ -1226,13 +1227,12 @@ a.util-badge {
 }
 
 .util-block p:last-child,
-.util-block p:last-child,
+.util-block-secondary p:last-child,
 .util-block-help p:last-child,
 .util-card p:last-child {
 	margin-bottom: 0;
 }
 
-table.util-block tbody:last-child tr:last-child td:first-child,
 table.util-block tbody:last-child tr:last-child td:first-child {
 	border-bottom-left-radius: var(--radius);
 }
@@ -1243,6 +1243,16 @@ table.util-block tbody:last-child tr:last-child td:last-child {
 
 .util-block {
 	background: white;
+}
+
+.util-block-secondary {
+	background: var(--secondary);
+    color: white;
+}
+
+.util-block-secondary a{
+    color: white;
+    text-decoration: underline;
 }
 
 .util-block-separator {

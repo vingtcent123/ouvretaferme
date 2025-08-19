@@ -34,6 +34,8 @@ new \mail\CampaignPage()
 	->create(function($data) {
 
 		$data->e['cContact'] = \mail\ContactLib::getByCampaign($data->e, withCustomer: TRUE);
+		$data->e['cCampaignLast'] = \mail\CampaignLib::getLastByFarm($data->eFarm, $data->e['source']);
+		$data->e['scheduledAt'] = max($data->e->getMinScheduledAt(), GET('scheduledAt', default: currentDatetime()));
 
 		throw new ViewAction($data);
 
@@ -53,5 +55,13 @@ new \farm\FarmPage()
 	}, validate: ['canCommunication']);
 
 new \mail\CampaignPage()
-	->doDelete(fn() => throw new ReloadAction(), validate: ['canDelete', 'acceptDelete']);
+	->doDelete(fn() => throw new ReloadAction(), validate: ['canDelete', 'acceptDelete'])
+	->update(function($data) {
+
+		$data->e['cContact'] = \mail\ContactLib::getByEmails($data->e['farm'], $data->e['to'], withCustomer: TRUE);
+
+		throw new ViewAction($data);
+
+	}, validate: ['canUpdate', 'acceptUpdate'])
+	->doUpdate(fn() => throw new ReloadAction('mail', 'Campaign::updated'), validate: ['canUpdate', 'acceptUpdate']);
 ?>

@@ -7,7 +7,8 @@ class AlertUi {
 
 		return match($fqn) {
 
-			'Campaign::scheduledAt.past' => s("Votre campagne ne peut pas être programmée aussi tôt, veuillez décaler l'envoi."),
+			'Campaign::scheduledAt.soon' => s("Votre campagne ne peut pas être programmée aussi tôt, veuillez décaler l'envoi."),
+			'Campaign::scheduledAt.past' => s("Votre campagne ne peut pas être programmée dans le passé, veuillez décaler l'envoi."),
 			'Campaign::to.empty' => s("Merci de renseigner au moins un contact"),
 			'Campaign::to.check' => s("Une ou plusieurs adresses e-mail ne sont pas présentes dans votre base de contacts"),
 			'Campaign::createError' => s("Il y a des erreurs à corriger avant de programmer cette campagne."),
@@ -25,6 +26,7 @@ class AlertUi {
 		return match($fqn) {
 
 			'Campaign::created' => s("La campagne de communication par e-mail a bien été programmée !"),
+			'Campaign::updated' => s("La campagne de communication par e-mail a bien été mise à jour !"),
 			'Campaign::deleted' => s("La campagne de communication par e-mail a bien été supprimée et ne sera donc pas envoyée !"),
 
 			'Contact::created' => s("Le contact a bien été créé !"),

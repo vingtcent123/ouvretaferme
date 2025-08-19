@@ -55,7 +55,7 @@ new AdaptativeView('/ferme/{id}/date/{date}', function($data, FarmTemplate $t) {
 		$h .= '</h1>';
 		$h .= '<div>';
 			if($data->eDate->canWrite() or $data->eShop->canWrite()) {
-				$h .= new \shop\DateUi()->getMenu($data->eShop, $data->eDate, $data->eDate['sales']['count'], 'btn-primary');
+				$h .= new \shop\DateUi()->getMenu($data->eFarm, $data->eShop, $data->eDate, $data->eDate['sales']['count'], 'btn-primary');
 			}
 		$h .= '</div>';
 	$h .= '</div>';

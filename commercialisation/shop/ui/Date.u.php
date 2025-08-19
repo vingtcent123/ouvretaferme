@@ -595,7 +595,7 @@ class DateUi {
 
 								if($eDate->canWrite() or $eShop->canWrite()) {
 
-									$h .= $this->getMenu($eShop, $eDate, $eDate['sales']['count'], 'btn-outline-secondary');
+									$h .= $this->getMenu($eFarm, $eShop, $eDate, $eDate['sales']['count'], 'btn-outline-secondary');
 
 								}
 
@@ -615,7 +615,7 @@ class DateUi {
 
 	}
 
-	public function getMenu(Shop $eShop, Date $eDate, int $sales, string $btn): string {
+	public function getMenu(\farm\Farm $eFarm, Shop $eShop, Date $eDate, int $sales, string $btn): string {
 
 		$eDate->expects(['farm']);
 
@@ -627,8 +627,18 @@ class DateUi {
 			if($eDate->canWrite()) {
 
 				$h .= '<a href="/shop/date:update?id='.$eDate['id'].'" class="dropdown-item">'.s("Paramétrer la livraison").'</a>';
+
 				if($eDate->isDirect()) {
 					$h .= '<a href="/shop/product:createCollection?date='.$eDate['id'].'" class="dropdown-item">'.s("Ajouter des produits à la livraison").'</a>';
+				}
+
+				if(
+					$eDate->acceptOrderSoon() or
+					$eDate->acceptOrder()
+				) {
+
+					$h .= '<a href="/mail/campaign:create?farm='.$eFarm['id'].'&source=shop&sourceShop='.$eShop['id'].'&scheduledAt='.$eDate['orderStartAt'].'" class="dropdown-item">'.s("Créer une campagne d'envoi d'e-mails").'</a>';
+
 				}
 
 			}

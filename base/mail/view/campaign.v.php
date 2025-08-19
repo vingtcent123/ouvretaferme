@@ -23,4 +23,8 @@ new AdaptativeView('create', function($data, FarmTemplate $t) {
 
 	echo new \mail\CampaignUi()->create($data->e);
 });
+
+new AdaptativeView('update', function($data, PanelTemplate $t) {
+	return new \mail\CampaignUi()->update($data->e);
+});
 ?>

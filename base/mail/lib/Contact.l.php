@@ -137,6 +137,16 @@ class ContactLib extends ContactCrud {
 
 	}
 
+	public static function getByEmails(\farm\Farm $eFarm, array $emails, bool $withCustomer): \Collection {
+
+		self::applyExport();
+
+		Contact::model()->whereEmail('IN', $emails);
+
+		return self::getByFarm($eFarm, withCustomer: $withCustomer);
+
+	}
+
 	public static function getFromQuery(string $query, \farm\Farm $eFarm): \Collection {
 
 		return Contact::model()
@@ -225,6 +235,10 @@ class ContactLib extends ContactCrud {
 
 	public static function applySearch(\Search $search): void {
 
+		if($search->empty()) {
+			return;
+		}
+
 		Contact::model()
 			->where('m1.email', 'LIKE', '%'.$search->get('email').'%', if: $search->get('email'))
 			->whereOptIn(FALSE, if: $search->get('optIn') === 'no');
@@ -253,16 +267,7 @@ class ContactLib extends ContactCrud {
 
 		if($search->get('export')) {
 
-			Contact::model()
-				->or(
-					fn() => $this->whereOptIn(TRUE),
-					fn() => $this->whereOptIn(NULL)
-				)
-				->whereActive(TRUE)
-				->or(
-					fn() => $this->whereActiveCustomer(TRUE),
-					fn() => $this->whereActiveCustomer(NULL)
-				);
+			self::applyExport();
 
 		}
 
@@ -311,6 +316,21 @@ class ContactLib extends ContactCrud {
 			Contact::model()->whereEmail('IN', $emails);
 
 		}
+
+	}
+
+	public static function applyExport(): void {
+
+		Contact::model()
+			->or(
+				fn() => $this->whereOptIn(TRUE),
+				fn() => $this->whereOptIn(NULL)
+			)
+			->whereActive(TRUE)
+			->or(
+				fn() => $this->whereActiveCustomer(TRUE),
+				fn() => $this->whereActiveCustomer(NULL)
+			);
 
 	}
 

@@ -9,6 +9,12 @@ class CampaignLib extends CampaignCrud {
 
 	}
 
+	public static function getPropertiesUpdate(): array {
+
+		return ['scheduledAt', 'subject', 'content', 'to'];
+
+	}
+
 	public static function create(Campaign $e): void {
 
 		$e['scheduled'] = count($e['to']);
@@ -39,6 +45,20 @@ class CampaignLib extends CampaignCrud {
 				'id' => SORT_DESC
 			])
 			->getCollection($position, $number);
+
+	}
+
+	public static function getLastByFarm(\farm\Farm $eFarm, string $source): \Collection {
+
+		return Campaign::model()
+			->select(Campaign::getSelection())
+			->whereFarm($eFarm)
+			->whereSource($source)
+			->sort([
+				'scheduledAt' => SORT_DESC,
+				'id' => SORT_DESC
+			])
+			->getCollection(0, 5);
 
 	}
 
