@@ -131,10 +131,6 @@ class JournalUi {
 		\Search $search = new \Search()
 	): string {
 
-		if($eFarm['company']->isCashAccounting()) {
-			return $this->getTableContainer($eFarm, $cOperation, $eFinancialYearSelected, $search, NULL);
-		}
-
 		$selectedJournalCode = GET('code');
 		if(in_array($selectedJournalCode, Operation::model()->getPropertyEnum('journalCode')) === FALSE) {
 			$selectedJournalCode = NULL;
@@ -192,7 +188,8 @@ class JournalUi {
 		\Asset::js('util', 'form.js');
 		\Asset::css('util', 'form.css');
 
-		$thRowspan = in_array('document', $hide) ? 1 : 2;
+		$thRowspan = 2;
+		$descriptionColspan = 4;
 		$baseUrl = $this->getBaseUrl($eFarm, $eFinancialYearSelected);
 
 		$h = '';
@@ -218,7 +215,7 @@ class JournalUi {
 							$h .= '<th>'.s("# Opération bancaire").'</th>';
 						}
 
-						if($eFarm['company']->isAccrualAccounting() and $selectedJournalCode === NULL) {
+						if($selectedJournalCode === NULL) {
 							$h .= '<th>'.s("Journal").'</th>';
 						}
 
@@ -242,23 +239,22 @@ class JournalUi {
 
 						if(in_array('document', $hide) === FALSE) {
 
-							$h .= '<th colspan="2">';
+							$h .= '<th colspan="'.($selectedJournalCode === NULL ? 3 : 2).'"><i>';
 								$label = s("Pièce comptable");
 								$h .= ($search ? $search->linkSort('document', $label) : $label);
-							$h .= '</th>';
+							$h .= '</i></th>';
 
 						} else {
 
 							$h .= '<th></th>';
 							$h .= '<th></th>';
-							if($eFarm['company']->isAccrualAccounting() and $selectedJournalCode === NULL) {
+							if($selectedJournalCode === NULL) {
 								$h .= '<th></th>';
 							}
 
 						}
-						$h .= '<th colspan="'.(($eFarm['company']->isAccrualAccounting() and $selectedJournalCode === NULL) ? 5 : 4).'">';
-							$label = s("Description");
-							$h .= ($search ? $search->linkSort('description', $label) : $label);
+						$h .= '<th colspan="'.$descriptionColspan.'">';
+							$h .= s("Description");
 						$h .= '</th>';
 					$h .= '</tr>';
 
@@ -280,8 +276,6 @@ class JournalUi {
 						$eOperation->setQuickAttribute('farm', $eFarm['id']);
 						$eOperation->setQuickAttribute('app', 'accounting');
 
-						$descriptionColspan = 4;
-
 						$h .= '<tr name="operation-'.$eOperation['id'].'" name-linked="operation-linked-'.($eOperation['operation']['id'] ?? '').'" class="tr-border-top">';
 
 							$h .= '<td>';
@@ -301,7 +295,7 @@ class JournalUi {
 
 							}
 
-							if($eFarm['company']->isAccrualAccounting() and $selectedJournalCode === NULL) {
+							if($selectedJournalCode === NULL) {
 								$h .= '<td>';
 
 									if($eOperation['journalCode']) {
@@ -401,7 +395,7 @@ class JournalUi {
 						$h .= '<tr>';
 
 							if(in_array('document', $hide) === FALSE) {
-								$h .= '<td colspan="'.(($eFarm['company']->isAccrualAccounting() and $selectedJournalCode === NULL) ? 3 : 2).'">';
+								$h .= '<td colspan="'.($selectedJournalCode === NULL ? 3 : 2).'">';
 									$h .= '<div class="operation-info">';
 										if($canUpdate === TRUE) {
 											$h .= $eOperation->quick('document', $eOperation['document'] ? encode($eOperation['document']) : '<i>'.s("Non défini").'</i>');

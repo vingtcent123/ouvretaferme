@@ -37,15 +37,11 @@ new Page(function($data) {
 			$search->set('cashflow', GET('cashflow'));
 		}
 
-		if($data->eFarm['company']->isAccrualAccounting()) {
-
-			$code = GET('code');
-			if(in_array($code, \journal\Operation::model()->getProperty('journalCode')) === FALSE) {
-				$code = NULL;
-			}
-			$search->set('journalCode', $code);
-
+		$code = GET('code');
+		if(in_array($code, \journal\Operation::model()->getProperty('journalCode')) === FALSE) {
+			$code = NULL;
 		}
+		$search->set('journalCode', $code);
 
 		$data->cOperation = \journal\OperationLib::getAllForJournal($search, $hasSort);
 		$data->cAccount = \account\AccountLib::getAll();

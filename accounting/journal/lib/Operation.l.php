@@ -29,8 +29,7 @@ class OperationLib extends OperationCrud {
 
 			$model = Operation::model()
 				->whereDate('>=', fn() => $search->get('financialYear')['startDate'], if: $search->has('financialYear'))
-				->whereDate('<=', fn() => $search->get('financialYear')['endDate'], if: $search->has('financialYear'))
-				->whereJournalCode('=', $search->get('journalCode'), if: $search->has('journalCode') and $search->get('journalCode') !== NULL);
+				->whereDate('<=', fn() => $search->get('financialYear')['endDate'], if: $search->has('financialYear'));
 
 		} else {
 
@@ -46,6 +45,7 @@ class OperationLib extends OperationCrud {
 		}
 
 		return $model
+			->whereJournalCode('=', $search->get('journalCode'), if: $search->has('journalCode') and $search->get('journalCode') !== NULL)
 			->whereDate('LIKE', '%'.$search->get('date').'%', if: $search->get('date'))
 			->wherePaymentDate('LIKE', '%'.$search->get('paymentDate').'%', if: $search->get('paymentDate'))
 			->whereAccountLabel('LIKE', '%'.$search->get('accountLabel').'%', if: $search->get('accountLabel'))
