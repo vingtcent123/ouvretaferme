@@ -2,6 +2,8 @@
 namespace account;
 class FinancialYearLib extends FinancialYearCrud {
 
+	private static ?\Collection $cOpenFinancialYear = NULL;
+
 	public static function getPropertiesCreate(): array {
 		return ['startDate', 'endDate', 'hasVat', 'vatFrequency', 'taxSystem'];
 	}
@@ -205,11 +207,15 @@ class FinancialYearLib extends FinancialYearCrud {
 
 	public static function getOpenFinancialYears(): \Collection {
 
-		return FinancialYear::model()
-			->select(FinancialYear::getSelection())
-			->whereStatus('=', FinancialYear::OPEN)
-			->sort(['endDate' => SORT_DESC])
-			->getCollection();
+		if(self::$cOpenFinancialYear === NULL) {
+			self::$cOpenFinancialYear = FinancialYear::model()
+				->select(FinancialYear::getSelection())
+				->whereStatus('=', FinancialYear::OPEN)
+				->sort(['endDate' => SORT_DESC])
+				->getCollection();
+		}
+
+		return self::$cOpenFinancialYear;
 
 	}
 

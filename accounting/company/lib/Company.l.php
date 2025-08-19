@@ -3,7 +3,8 @@ namespace company;
 
 class CompanyLib extends CompanyCrud {
 
-	private static ?\Collection $cCompanyOnline = NULL;
+	private static ?Company $eCompany = NULL;
+
 	public static array $specificPackages = ['account', 'asset', 'bank', 'journal', 'pdf'];
 
 	public static function getPropertiesCreate(): array {
@@ -37,10 +38,14 @@ class CompanyLib extends CompanyCrud {
 
 	public static function getCurrent(): Company {
 
-		return Company::model()
-			->select(Company::getSelection())
-			->whereFarm(REQUEST('farm'))
-			->get();
+		if(self::$eCompany === NULL) {
+			self::$eCompany = Company::model()
+				->select(Company::getSelection())
+				->whereFarm(REQUEST('farm'))
+				->get();
+		}
+
+		return self::$eCompany;
 
 	}
 
