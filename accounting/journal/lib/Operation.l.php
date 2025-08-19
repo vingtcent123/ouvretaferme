@@ -655,7 +655,7 @@ class OperationLib extends OperationCrud {
 			'thirdParty' => $eOperationLinked['thirdParty']['id'] ?? NULL,
 			'type' => $eOperationLinked['type'],
 			'paymentDate' => $eOperationLinked['paymentDate'],
-			'paymentMethod' => $eOperationLinked['paymentMethod'],
+			'paymentMethod' => $eOperationLinked['paymentMethod']['id'] ?? NULL,
 			'amount' => abs($vatValue),
 			'financialYear' => $eOperationLinked['financialYear']['id'],
 		];
@@ -669,7 +669,7 @@ class OperationLib extends OperationCrud {
 
 		$eOperationVat->build(
 			[
-				'cashflow', 'date', 'account', 'accountLabel', 'description', 'document',
+				'cashflow', 'date', 'account', 'accountLabel', 'description', 'document', 'journalCode',
 				'thirdParty', 'type', 'amount', 'operation',
 				'paymentDate', 'paymentMethod', 'financialYear',
 			],

@@ -89,8 +89,8 @@ Setting::register('account', [
 	// Classement des classes par journal
 	'classesByJournal' => [
 		\journal\Operation::BAN => ['5'],
-		\journal\Operation::ACH => ['60', '61', '62', '63', '64', '44566'],
-		\journal\Operation::VEN => ['70', '71', '72', '74', '44571'],
+		\journal\Operation::ACH => ['60', '61', '6241', '63', '64', '44566'],
+		\journal\Operation::VEN => ['62', '70', '71', '72', '74', '44571'],
 		\journal\Operation::OD => ['28', '29', '65', '68', '69'],
 	]
 
