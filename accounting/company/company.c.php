@@ -9,7 +9,7 @@ Setting::register('company', [
 
 	'accountingBetaTesterFarms' => [
 		7, // Jardins de Tallende
-		1375, // Jardin Ouroboros
+		1679, // Aëlle Le Gall
 	]
 ]);
 ?>
