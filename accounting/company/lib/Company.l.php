@@ -95,10 +95,10 @@ class CompanyLib extends CompanyCrud {
 		}
 
 		if(LIME_ENV === 'prod') {
-			return'mapetiteferme_'.$eFarm['id'];
+			return'comptabilite'.$eFarm['id'];
 		}
 
-		return 'dev_mapetiteferme_'.$eFarm['id'];
+		return 'dev_comptabilite_'.$eFarm['id'];
 	}
 
 	public static function createCompanyAndFinancialYear(\farm\Farm $eFarm, array $input): void {

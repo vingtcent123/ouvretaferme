@@ -45,9 +45,9 @@ switch(LIME_ENV) {
 			'selling' => 'ouvretaferme',
 			'website' => 'ouvretaferme',
 
-			'accounting' => 'mapetiteferme',
-			'company' => 'mapetiteferme',
-			'account' => 'mapetiteferme',
+			'accounting' => 'comptabilite',
+			'company' => 'comptabilite',
+			'account' => 'comptabilite',
 		]);
 
 		break;
@@ -78,9 +78,9 @@ switch(LIME_ENV) {
 			'selling' => 'dev_ouvretaferme',
 			'website' => 'dev_ouvretaferme',
 
-			'account' => 'dev_mapetiteferme',
-			'accounting' => 'dev_mapetiteferme',
-			'company' => 'dev_mapetiteferme',
+			'account' => 'dev_comptabilite',
+			'accounting' => 'dev_comptabilite',
+			'company' => 'dev_comptabilite',
 		]);
 
 		break;

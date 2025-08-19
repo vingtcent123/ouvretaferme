@@ -10,8 +10,8 @@ new Page()
 
 		$date = date('Y-m-d');
 
-		exec('mysqldump -u '.$username.' "'.$password.'" mapetiteferme > /var/www/mysql-backup/'.$date.'-mapetiteferme.sql');
-		exec('cp /var/www/mysql-backup/'.$date.'-mapetiteferme.sql /var/www/mysql-backup/backup/mapetiteferme.sql');
+		exec('mysqldump -u '.$username.' "'.$password.'" comptabilite > /var/www/mysql-backup/'.$date.'-comptabilite.sql');
+		exec('cp /var/www/mysql-backup/'.$date.'-comptabilite.sql /var/www/mysql-backup/backup/comptabilite.sql');
 		foreach($cCompany as $eCompany) {
 
 			$database = \company\CompanyLib::getDatabaseName($eCompany['farm']);

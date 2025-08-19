@@ -2,7 +2,7 @@
 
 // Exemple d'utilisation :
 // 1. Déplacer le fec dans /tmp/fec.txt
-// 2. Lancer le script php framework/lime.php -a mapetiteferme -e dev configure/checkFec
+// 2. Lancer le script php framework/lime.php -a ouvretaferme -e dev configure/checkFec
 new Page()
 	->cli('index', function($data) {
 
