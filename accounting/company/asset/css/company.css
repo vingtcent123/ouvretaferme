@@ -139,6 +139,10 @@ tr.tr-border-top {
 	border-top: 1px dotted var(--secondary);
 }
 
+tr.tr-border-bottom {
+	border-bottom: 1px dotted var(--secondary);
+}
+
 .table-container {
 	overflow-x: auto;
 	overflow-y: hidden;

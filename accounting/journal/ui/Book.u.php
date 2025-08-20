@@ -89,11 +89,11 @@ class BookUi {
 					$h .= '</td>';
 				$h .= '</tr>';
 
-				$trClass = '';
+				$trClass = 'tr-border-bottom';
 
 			} else {
 
-				$trClass = 'tr-border-top';
+				$trClass = 'tr-border-bottom';
 
 			}
 
@@ -151,7 +151,7 @@ class BookUi {
 
 		$h = '<div class="stick-sm util-overflow-sm">';
 
-			$h .= '<table class="td-vertical-top tr-hover-shadow no-background">';
+			$h .= '<table class="td-vertical-top tr-hover no-background">';
 
 				$h .= '<thead class="thead-sticky">';
 					$h .= self::getBookTheadContent();

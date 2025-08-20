@@ -113,20 +113,22 @@ class ImportUi {
 
 		$h = '';
 
-		$dateArg = ['date' => \util\DateUi::numeric($eImport['processedAt'], \util\DateUi::DATE)];
+		$args = [
+			'date' => \util\DateUi::numeric($eImport['processedAt'], \util\DateUi::DATE),
+			'id' => $eImport['id'],
+		];
 
 		$status = (match($eImport['status']) {
 			ImportElement::NONE => ['class' => 'util-info mb-0', 'text' => s("Aucune donnée importée"), 'icon' => 'slash-circle'],
 			ImportElement::PROCESSING => ['class' => 'util-info mb-0', 'text' => s("En cours d'import"), 'icon' => 'arrow-repeat'],
-			ImportElement::FULL => ['class' => 'util-success mb-0', 'text' => s("Import total du {date}", $dateArg), 'icon' => 'check2-all'],
-			ImportElement::PARTIAL => ['class' => 'util-warning-outline', 'text' => s("Import partiel du {date}", $dateArg), 'icon' => 'check2'],
-			ImportElement::ERROR => ['class' => 'util-info', 'text' => s("Import en erreur"), 'icon' => 'exclamation-octogon'],
+			ImportElement::FULL => ['class' => 'util-success mb-0', 'text' => s("Import total #{id} du {date}", $args), 'icon' => 'check2-all'],
+			ImportElement::PARTIAL => ['class' => 'util-warning-outline', 'text' => s("Import partiel #{id} du {date}", $args), 'icon' => 'check2'],
+			ImportElement::ERROR => ['class' => 'util-info', 'text' => s("Import #{id} en erreur", $args), 'icon' => 'exclamation-octogon'],
 		});
 
 		$h .= '<div class="'.$status['class'].'">';
 			$h .= \Asset::icon($status['icon'], ['class' => 'mr-1']);
-			$h .= '&nbsp;';
-			$h .= $status['text'];
+			$h .= encode($status['text']);
 
 			$h .= '<div class="color-text">';
 				$h .= \Asset::icon('chevron-right', ['class' => 'mr-1']);
