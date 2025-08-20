@@ -27,7 +27,7 @@ class BookUi {
 
 	public static function getBookTheadContent(): string {
 
-		$h = '<tr class="row-header row-upper">';
+		$h = '<tr>';
 			$h .= '<th>'.s("Date").'</th>';
 			$h .= '<th>'.s("Pièce").'</th>';
 			$h .= '<th>'.s("Description").'</th>';
@@ -151,7 +151,7 @@ class BookUi {
 
 		$h = '<div class="stick-sm util-overflow-sm">';
 
-			$h .= '<table class="td-vertical-top tr-hover no-background">';
+			$h .= '<table class="td-vertical-top tr-hover-shadow no-background">';
 
 				$h .= '<thead class="thead-sticky">';
 					$h .= self::getBookTheadContent();
@@ -171,7 +171,7 @@ class BookUi {
 
 	private static function getSubTotal(string $class, float $debit, float $credit): string {
 
-		$h = '<tr class="row-highlight">';
+		$h = '<tr>';
 
 			$h .= '<td colspan="3" class="text-end">';
 				$h .= '<strong>'.s("Total pour le compte {class}", [
@@ -187,7 +187,7 @@ class BookUi {
 		$h .= '</tr>';
 
 		$balance = abs($debit - $credit);
-		$h .= '<tr class="row-highlight">';
+		$h .= '<tr>';
 
 			$h .= '<td colspan="3" class="text-end">';
 				$h .= '<strong>'.s("Solde").'</strong>';

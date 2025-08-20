@@ -239,10 +239,10 @@ class JournalUi {
 
 						if(in_array('document', $hide) === FALSE) {
 
-							$h .= '<th colspan="'.($selectedJournalCode === NULL ? 3 : 2).'"><i>';
+							$h .= '<th colspan="'.($selectedJournalCode === NULL ? 3 : 2).'">';
 								$label = s("Pièce comptable");
 								$h .= ($search ? $search->linkSort('document', $label) : $label);
-							$h .= '</i></th>';
+							$h .= '</th>';
 
 						} else {
 

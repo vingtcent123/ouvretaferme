@@ -75,7 +75,7 @@ Class VatUi {
 
 	private static function getMonthTotal(?string $currentMonth, array $totals): string {
 
-		$h = '<tr class="row-bold row-highlight tr-border-top">';
+		$h = '<tr class="row-bold tr-border-top">';
 
 			$h .= '<td colspan="2">';
 				$h .= s("Total TVA");
@@ -308,12 +308,12 @@ Class VatUi {
 							$label = s("Date");
 							$h .= (($search and $for !== 'pdf') ? $search->linkSort('date', $label) : $label);
 						$h .= '</th>';
-						$h .= '<th>'.s("# Opération bancaire").'</th>';
+						$h .= '<th><span title="'.s("Numéro d'opération bancaire").'">'.s("Op.").'</span></th>';
 						$h .= '<th>'.s("Tiers").'</th>';
-						$h .= '<th class="td-min-content text-end">'.s("Taux TVA").'</th>';
-						$h .= '<th class="text-end highlight-stick-right">'.s("Montant (TTC)").'</th>';
-						$h .= '<th class="text-end highlight-stick-left">'.s("Montant (HT)").'</th>';
-						$h .= '<th class="text-end highlight-stick-right">'.s("TVA").'</th>';
+						$h .= '<th class="td-min-content text-end rowspaned-center" rowspan="2">'.s("Taux TVA").'</th>';
+						$h .= '<th class="text-end highlight-stick-right rowspaned-center" rowspan="2">'.s("Montant (TTC)").'</th>';
+						$h .= '<th class="text-end highlight-stick-left rowspaned-center" rowspan="2">'.s("Montant (HT)").'</th>';
+						$h .= '<th class="text-end highlight-stick-right rowspaned-center" rowspan="2">'.s("TVA").'</th>';
 					$h .= '</tr>';
 
 					$h .= '<tr>';
@@ -321,7 +321,7 @@ Class VatUi {
 							$label = s("Pièce comptable");
 							$h .= (($search and $for !== 'pdf') ? $search->linkSort('document', $label) : $label);
 						$h .= '</th>';
-						$h .= '<th colspan="5">';
+						$h .= '<th colspan="2">';
 							$label = s("Description");
 							$h .= (($search and $for !== 'pdf') ? $search->linkSort('description', $label) : $label);
 						$h .= '</th>';

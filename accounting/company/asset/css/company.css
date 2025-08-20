@@ -130,11 +130,6 @@ table.table-bordered td:first-child.no-border {
 	border-left: none;
 }
 
-thead.thead-sticky {
-	position: sticky;
-	top: calc(var(--mainSticky) - 1px);
-	z-index: 1;
-}
 thead.thead-sticky td,
 thead.thead-sticky th {
 	background-color: #edecec;
