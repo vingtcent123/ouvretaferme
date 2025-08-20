@@ -18,6 +18,10 @@ Campaign:
   scheduledAt: datetime
   sentAt: ?datetime
   createdAt: datetime = SPECIAL(now)
+  INDEX: [
+    ["farm"],
+  ]
+
 
 Contact:
   id: serial32
@@ -83,4 +87,3 @@ Email:
     ["farm"],
     ["status"]
   ]
-

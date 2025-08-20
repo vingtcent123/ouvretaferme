@@ -632,19 +632,33 @@ class DateUi {
 					$h .= '<a href="/shop/product:createCollection?date='.$eDate['id'].'" class="dropdown-item">'.s("Ajouter des produits à la livraison").'</a>';
 				}
 
-				if(
-					$eDate->acceptOrderSoon() or
-					$eDate->acceptOrder()
-				) {
-
-					$h .= '<a href="/mail/campaign:create?farm='.$eFarm['id'].'&source=shop&sourceShop='.$eShop['id'].'&scheduledAt='.$eDate['orderStartAt'].'" class="dropdown-item">'.s("Créer une campagne d'envoi d'e-mails").'</a>';
-
-				}
-
 			}
 
 			if($eShop->canWrite()) {
 				$h .= '<a href="/shop/date:create?shop='.$eShop['id'].'&farm='.$eDate['farm']['id'].'&date='.$eDate['id'].'" class="dropdown-item">'.s("Nouvelle livraison à partir de celle-ci").'</a>';
+			}
+
+			if(
+				$eDate->canWrite() and (
+					$eDate->acceptOrderSoon() or
+					$eDate->acceptOrder()
+				)
+			) {
+
+				$h .= '<div class="dropdown-subtitle">'.s("Programmer une campagne d'e-mailing").'</div>';
+
+				$minScheduledAt = new \mail\Campaign()->getMinScheduledAt();
+
+				$h .= '<a href="/mail/campaign:create?farm='.$eFarm['id'].'&source=shop&sourceShop='.$eShop['id'].'" class="dropdown-item">'.\Asset::icon('chevron-right').' '.s("Maintenant").'</a>';
+
+				if($eDate['orderStartAt'] > $minScheduledAt) {
+
+					$h .= '<a href="/mail/campaign:create?farm='.$eFarm['id'].'&source=shop&sourceShop='.$eShop['id'].'&scheduledAt='.$eDate['orderStartAt'].'" class="dropdown-item">'.\Asset::icon('chevron-right').' '.s("Le {date}", ['date' => \util\DateUi::numeric($eDate['orderStartAt'], \util\DateUi::DATE_HOUR_MINUTE)]).'</a>';
+
+				}
+
+				$test = substr($eDate['orderStartAt'], 0, 10).' 20:00:00';
+
 			}
 
 			if($eDate->canWrite() and $sales === 0) {

@@ -75,6 +75,10 @@ class CampaignModel extends \ModuleModel {
 			'sourceGroup' => 'selling\Group',
 		];
 
+		$this->indexConstraints = array_merge($this->indexConstraints, [
+			['farm']
+		]);
+
 	}
 
 	public function getDefaultValue(string $property) {

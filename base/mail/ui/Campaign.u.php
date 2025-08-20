@@ -129,7 +129,9 @@ class CampaignUi {
 
 				case Campaign::SHOP :
 					$h .= $form->hidden('sourceShop', $eCampaign['sourceShop']);
-					$h .= '<div class="util-block-secondary">'.s("Vous allez envoyer un e-mail à tous les clients que vous avez déjà livrés sur la boutique <link>{name}</link>.", ['link' => '<a href="'.\shop\ShopUi::url($eCampaign['sourceShop']).'">', 'name' => encode($eCampaign['sourceShop']['name'])]).'</div>';
+					$h .= '<div class="util-block-secondary">';
+						$h .= s("Vous allez envoyer un e-mail à tous les clients que vous avez déjà livrés sur la boutique {shop}.", ['shop' => '<a href="'.\shop\ShopUi::adminUrl($eCampaign['farm'], $eCampaign['sourceShop']).'">'.encode($eCampaign['sourceShop']['name']).'</a>']);
+					$h .= '</div>';
 					break;
 
 				case Campaign::PERIOD :
@@ -222,7 +224,10 @@ class CampaignUi {
 
 			$content = '<div class="util-block mb-0">'.$form->dynamicField($eCampaign, 'content').'</div>';
 
-			if($eCampaign['cCampaignLast']->notEmpty()) {
+			if(
+				$eCampaign->exists() === FALSE and
+				$eCampaign['cCampaignLast']->notEmpty()
+			) {
 
 				$action = '<a data-dropdown="bottom-end" class="dropdown-toggle">'.s("Utiliser titre et contenu d'une ancienne campagne").'</a>';
 				$action .= '<div class="dropdown-list bg-secondary">';

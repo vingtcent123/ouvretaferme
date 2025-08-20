@@ -281,16 +281,17 @@ class ContactLib extends ContactCrud {
 
 		if($search->get('shop')->notEmpty()) {
 
-        $cCustomer = \selling\Sale::model()
-            ->select(['customer'])
+			$emails = \selling\Sale::model()
+            ->select([
+					'customer' => ['email']
+				])
             ->whereShop($search->get('shop'))
             ->wherePreparationStatus(\selling\Sale::DELIVERED)
             ->group('customer')
-            ->getColumn('customer');
+            ->getColumn('customer')
+				->getColumn('email');
 
-			Contact::model()
-				->join(\selling\Customer::model(), 'm1.email = m2.email AND m1.farm = m2.farm')
-				->where('m2.id', 'IN', $cCustomer);
+			Contact::model()->whereEmail('IN', $emails);
 
 		} else if($search->get('group')->notEmpty()) {
 
