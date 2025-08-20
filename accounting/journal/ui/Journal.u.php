@@ -220,8 +220,8 @@ class JournalUi {
 						}
 
 						$h .= '<th colspan="2">'.s("Compte (Libellé et classe)").'</th>';
-						$h .= '<th><span title="'.s("Mode de paiement").'">'.s("Mode").'</span></th>';
-						$h .= '<th>'.s("Tiers").'</th>';
+						$h .= '<th class="rowspaned-center" rowspan="'.$thRowspan.'"><span title="'.s("Mode de paiement").'">'.s("Mode").'</span></th>';
+						$h .= '<th class="rowspaned-center" rowspan="'.$thRowspan.'">'.s("Tiers").'</th>';
 						$h .= '<th class="text-end highlight-stick-right rowspaned-center" rowspan="'.$thRowspan.'">'.s("Débit (D)").'</th>';
 						$h .= '<th class="text-end highlight-stick-left rowspaned-center" rowspan="'.$thRowspan.'">'.s("Crédit (C)").'</th>';
 
@@ -253,7 +253,7 @@ class JournalUi {
 							}
 
 						}
-						$h .= '<th colspan="'.$descriptionColspan.'">';
+						$h .= '<th colspan="'.($descriptionColspan - 2).'">';
 							$h .= s("Description");
 						$h .= '</th>';
 					$h .= '</tr>';

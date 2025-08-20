@@ -839,7 +839,7 @@ class OperationLib extends OperationCrud {
 
 		$eOperationBank->build([
 			'cashflow', 'date', 'account', 'accountLabel', 'description', 'document', 'thirdParty', 'type', 'amount',
-			'operation', 'paymentDate', 'paymentMethod', 'financialYear',
+			'operation', 'paymentDate', 'paymentMethod', 'financialYear', 'journalCode',
 		], $values, new \Properties('create'));
 
 		if($document !== NULL) {
