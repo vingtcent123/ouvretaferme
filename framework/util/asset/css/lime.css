@@ -916,6 +916,10 @@ table th,
 	white-space: nowrap;
 }
 
+.td-vertical-align-middle {
+	vertical-align: middle;
+}
+
 .td-vertical-align-top {
 	vertical-align: top;
 }

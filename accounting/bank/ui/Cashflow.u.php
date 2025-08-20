@@ -121,21 +121,21 @@ class CashflowUi {
 
 				$h .= '<thead class="thead-sticky">';
 					$h .= '<tr>';
-						$h .= '<th>';
-							$label = s("Numéro");
+						$h .= '<th class="td-vertical-align-middle">';
+							$label = s("Numéro d'Op.");
 							$h .= ($search ? $search->linkSort('id', $label) : $label);
 						$h .= '</th>';
-						$h .= '<th>';
+						$h .= '<th class="td-vertical-align-middle">';
 							$label = s("Date");
 							$h .= ($search ? $search->linkSort('date', $label) : $label);
 						$h .= '</th>';
-						$h .= '<th>';
+						$h .= '<th class="td-vertical-align-middle">';
 							$label = s("Libellé");
 							$h .= ($search ? $search->linkSort('memo', $label) : $label);
 						$h .= '</th>';
-						$h .= '<th class="text-end highlight-stick-right">'.s("Débit (D)").'</th>';
-						$h .= '<th class="text-end highlight-stick-left">'.s("Crédit (C)").'</th>';
-						$h .= '<th class="text-center">'.s("Statut").'</th>';
+						$h .= '<th class="text-end highlight-stick-right td-vertical-align-middle">'.s("Débit (D)").'</th>';
+						$h .= '<th class="text-end highlight-stick-left td-vertical-align-middle">'.s("Crédit (C)").'</th>';
+						$h .= '<th class="text-center td-vertical-align-middle">'.s("Statut").'</th>';
 						$h .= '<th></th>';
 					$h .= '</tr>';
 				$h .= '</thead>';

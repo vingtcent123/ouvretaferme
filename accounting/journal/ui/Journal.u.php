@@ -212,15 +212,15 @@ class JournalUi {
 						$h .= '</th>';
 
 						if(in_array('cashflow', $hide) === FALSE) {
-							$h .= '<th>'.s("# Opération bancaire").'</th>';
+							$h .= '<th><span title="'.s("Numéro d'opération bancaire").'">'.s("Op.").'</span></th>';
 						}
 
 						if($selectedJournalCode === NULL) {
-							$h .= '<th>'.s("Journal").'</th>';
+							$h .= '<th class="td-min-content"><span title="'.s("Journal").'">'.s("J.").'</span></th>';
 						}
 
 						$h .= '<th colspan="2">'.s("Compte (Libellé et classe)").'</th>';
-						$h .= '<th>'.s("Mode de paiement").'</th>';
+						$h .= '<th><span title="'.s("Mode de paiement").'">'.s("Mode").'</span></th>';
 						$h .= '<th>'.s("Tiers").'</th>';
 						$h .= '<th class="text-end highlight-stick-right rowspaned-center" rowspan="'.$thRowspan.'">'.s("Débit (D)").'</th>';
 						$h .= '<th class="text-end highlight-stick-left rowspaned-center" rowspan="'.$thRowspan.'">'.s("Crédit (C)").'</th>';
@@ -285,9 +285,10 @@ class JournalUi {
 							if(in_array('cashflow', $hide) === FALSE) {
 								$h .= '<td>';
 									if($eOperation['cashflow']->exists() === TRUE) {
-										$search->set('cashflow', $eOperation['cashflow']['id']);
-										$cashflowLink = $baseUrl.'&'.$search->toQuery();
-										$h .= '<a href="'.$cashflowLink.'" class="color-text" title="'.s("Filtrer sur cette opération bancaire").'">'.$eOperation['cashflow']['id'].'</a>';
+										$searchCashflow = clone $search;
+										$searchCashflow->set('cashflow', $eOperation['cashflow']['id']);
+										$cashflowLink = $baseUrl.'&'.$searchCashflow->toQuery();
+										$h .= '<a href="'.$cashflowLink.'" title="'.s("Filtrer sur cette opération bancaire").'">'.$eOperation['cashflow']['id'].'</a>';
 									} else {
 										$h .= '';
 									}
@@ -296,10 +297,11 @@ class JournalUi {
 							}
 
 							if($selectedJournalCode === NULL) {
-								$h .= '<td>';
+								$h .= '<td class="td-min-content">';
 
 									if($eOperation['journalCode']) {
-										$h .= '<a href="'.\company\CompanyUi::urlJournal($eFarm).'/operations?code='.$eOperation['journalCode'].'">'.mb_strtoupper($eOperation['journalCode']).'</a>';
+										$journalLink = $baseUrl.'&'.$search->toQuery().'&code='.encode($eOperation['journalCode']);
+										$h .= '<a href="'.$journalLink.'">'.mb_strtoupper($eOperation['journalCode']).'</a>';
 									} else {
 										$h .= '-';
 									}
@@ -334,15 +336,18 @@ class JournalUi {
 
 							$h .= '<td>';
 								if($canUpdate === TRUE) {
-									$h .= $eOperation->quick('paymentMethod', \payment\MethodUi::getName($eOperation['paymentMethod']) ?? '<i>'.s("Non défini").'</i>');
+									$h .= $eOperation->quick('paymentMethod', \payment\MethodUi::getShort($eOperation['paymentMethod']) ?? '<i>'.s("?").'</i>');
 								} else {
-									$h .= \payment\MethodUi::getName($eOperation['paymentMethod']);
+									$h .= \payment\MethodUi::getShort($eOperation['paymentMethod']);
 								}
 							$h .= '</td>';
 
 							$h .= '<td>';
 								if($eOperation['thirdParty']->exists() === TRUE) {
-									$h .= encode($eOperation['thirdParty']['name']);
+									$searchThirdParty = clone $search;
+									$searchThirdParty->set('thirdParty', $eOperation['thirdParty']['id']);
+									$thirdPartyLink = $baseUrl.'&'.$searchThirdParty->toQuery();
+									$h .= '<a href="'.$thirdPartyLink.'" title="'.s("Filtrer sur ce tiers").'">'.encode($eOperation['thirdParty']['name']).'</a>';
 								}
 							$h .= '</td>';
 

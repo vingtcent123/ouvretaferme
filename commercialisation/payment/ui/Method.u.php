@@ -175,6 +175,25 @@ class MethodUi {
 
 	}
 
+	public static function getShort(Method $eMethod): string {
+
+		if($eMethod->empty()) {
+			return '';
+		}
+
+		$eMethod->expects(['fqn', 'name']);
+
+		return $eMethod['fqn'] === NULL ? self::getName($eMethod) : match($eMethod['fqn']) {
+			'card' => s("CB"),
+			'online-card' => s("CB"),
+			'cash' => s("Esp."),
+			'check' => s("Chèq."),
+			'transfer' => s("Vir."),
+			'direct-debit' => s("Prél.")
+		};
+
+	}
+
 	public static function p(string $property): \PropertyDescriber {
 
 		$d = Method::model()->describer($property, [
