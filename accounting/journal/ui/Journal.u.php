@@ -351,7 +351,7 @@ class JournalUi {
 								}
 							$h .= '</td>';
 
-							$h .= '<td class="text-end highlight-stick-right">';
+							$h .= '<td class="text-end highlight-stick-right" rowspan="2">';
 								$debitDisplay = match($eOperation['type']) {
 									Operation::DEBIT => \util\TextUi::money($eOperation['amount']),
 									default => '',
@@ -363,7 +363,7 @@ class JournalUi {
 								}
 							$h .= '</td>';
 
-							$h .= '<td class="text-end highlight-stick-left">';
+							$h .= '<td class="text-end highlight-stick-left" rowspan="2">';
 								$creditDisplay = match($eOperation['type']) {
 									Operation::CREDIT => \util\TextUi::money($eOperation['amount']),
 									default => '',
@@ -377,7 +377,7 @@ class JournalUi {
 
 							if(in_array('actions', $hide) === FALSE) {
 
-								$h .= '<td>';
+								$h .= '<td rowspan="2">';
 									$h .= '<div class="util-unit td-min-content text-end">';
 										$h .= $this->displayActions($eFarm, $eOperation, $canUpdate);
 									$h .= '</div>';
@@ -427,11 +427,6 @@ class JournalUi {
 								}
 
 							$h .= '</td>';
-								$h .= '<td class="highlight-stick-right"></td>';
-								$h .= '<td class="highlight-stick-left"></td>';
-							if(in_array('actions', $hide) === FALSE) {
-								$h .= '<td class="td-min-content"></td>';
-							}
 							if(in_array('vatAdjustement', $show)) {
 								$h .= '<td></td>';
 							}
@@ -461,7 +456,7 @@ class JournalUi {
 			// On ne rajoute pas des frais de port sur des frais de port
 			and \account\ClassLib::isFromClass($eOperation['accountLabel'], \Setting::get('account\shippingChargeAccountClass')) === FALSE);
 
-		$h = '<a data-dropdown="bottom-end" class="dropdown-toggle btn btn-outline-secondary">'.\Asset::icon('gear-fill').'</a>';
+		$h = '<a data-dropdown="bottom-end" class="dropdown-toggle btn btn-outline-secondary btn-xs">'.\Asset::icon('gear-fill').'</a>';
 		$h .= '<div class="dropdown-list">';
 			$h .= '<div class="dropdown-title">'.s("Modifier une écriture comptable").'</div>';
 
