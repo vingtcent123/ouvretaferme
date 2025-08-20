@@ -540,7 +540,7 @@ class CustomerUi {
 
 						if($cEmail->notEmpty()) {
 
-							$h .= '<h3>'.s("E-mails envoyés dans les trois derniers mois").'</h3>';
+							$h .= '<h3>'.s("E-mails envoyés dans les 12 derniers mois").'</h3>';
 							$h .= new \mail\EmailUi()->getList($cEmail, hide: ['customer']);
 
 						}

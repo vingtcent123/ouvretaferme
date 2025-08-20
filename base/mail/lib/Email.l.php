@@ -20,7 +20,7 @@ class EmailLib extends EmailCrud {
 
 		\mail\Email::model()
 			->whereStatus(\mail\Email::SENT)
-			->where('sentAt < NOW() - INTERVAL 3 MONTH')
+			->where('sentAt < NOW() - INTERVAL 12 MONTH')
 			->delete();
 
 	}

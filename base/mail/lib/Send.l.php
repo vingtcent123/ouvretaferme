@@ -155,7 +155,8 @@ class SendLib {
 				'to' => $this->to,
 				'bcc' => $this->bcc,
 				'replyTo' => $this->replyTo,
-				'attachments' => serialize($this->attachments)
+				'attachments' => serialize($this->attachments),
+				'hasAttachment' => count($this->attachments) > 0
 			]);
 
 			if($eEmail['farm']->notEmpty()) {
@@ -214,9 +215,11 @@ class SendLib {
 
 			$eEmail['sentAt'] = new \Sql('NOW()');
 			$eEmail['status'] = Email::SENT;
+			$eEmail['attachments'] = NULL;
+
 
 			\mail\Email::model()
-				->select('sentAt', 'status')
+				->select('sentAt', 'status', 'attachments')
 				->update($eEmail);
 
 		}

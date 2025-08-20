@@ -60,7 +60,8 @@ class EmailModel extends \ModuleModel {
 			'to' => ['text8', 'min' => 0, 'max' => NULL, 'cast' => 'string'],
 			'bcc' => ['text8', 'min' => 0, 'max' => NULL, 'null' => TRUE, 'cast' => 'string'],
 			'replyTo' => ['text8', 'null' => TRUE, 'cast' => 'string'],
-			'attachments' => ['binary32', 'cast' => 'binary'],
+			'hasAttachment' => ['bool', 'cast' => 'bool'],
+			'attachments' => ['binary32', 'null' => TRUE, 'cast' => 'binary'],
 			'status' => ['enum', [\mail\Email::WAITING, \mail\Email::SENDING, \mail\Email::SENT, \mail\Email::DELIVERED, \mail\Email::OPENED, \mail\Email::ERROR_PROVIDER, \mail\Email::ERROR_SPAM, \mail\Email::ERROR_BOUNCE, \mail\Email::ERROR_INVALID, \mail\Email::ERROR_BLOCKED], 'cast' => 'enum'],
 			'createdAt' => ['datetime', 'cast' => 'string'],
 			'sentAt' => ['datetime', 'null' => TRUE, 'cast' => 'string'],
@@ -68,7 +69,7 @@ class EmailModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'farm', 'campaign', 'contact', 'customer', 'subject', 'html', 'text', 'fromEmail', 'fromName', 'to', 'bcc', 'replyTo', 'attachments', 'status', 'createdAt', 'sentAt', 'openedAt'
+			'id', 'farm', 'campaign', 'contact', 'customer', 'subject', 'html', 'text', 'fromEmail', 'fromName', 'to', 'bcc', 'replyTo', 'hasAttachment', 'attachments', 'status', 'createdAt', 'sentAt', 'openedAt'
 		]);
 
 		$this->propertiesToModule += [
@@ -176,6 +177,10 @@ class EmailModel extends \ModuleModel {
 
 	public function whereReplyTo(...$data): EmailModel {
 		return $this->where('replyTo', ...$data);
+	}
+
+	public function whereHasAttachment(...$data): EmailModel {
+		return $this->where('hasAttachment', ...$data);
 	}
 
 	public function whereAttachments(...$data): EmailModel {

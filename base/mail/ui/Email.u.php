@@ -54,8 +54,6 @@ class EmailUi {
 
 				foreach($cEmail as $eEmail) {
 
-					$attachments = count(unserialize($eEmail['attachments']));
-
 					$h .= '<tr>';
 
 						if(in_array('customer', $hide) === FALSE) {
@@ -69,8 +67,8 @@ class EmailUi {
 
 						$h .= '<td>';
 							$h .= '<a href="/mail/email?id='.$eEmail['id'].'">'.encode($eEmail['subject']).'</a>';
-							if($attachments > 0) {
-								$h .= '<span class="util-badge bg-primary ml-1">'.p("{value} pièce jointe", "{value} pièces jointes", $attachments).'</span>';
+							if($eEmail['hasAttachment']) {
+								$h .= ' <span class="util-badge bg-primary">'.\Asset::icon('paperclip').'</span>';
 							}
 						$h .= '</td>';
 

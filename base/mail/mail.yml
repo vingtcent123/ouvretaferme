@@ -71,7 +71,8 @@ Email:
   to: text8(0, null)
   bcc: ?text8(0, null)
   replyTo: ?text8
-  attachments: binary32
+  hasAttachment: bool
+  attachments: ?binary32
   status: enum(WAITING, SENDING, SENT, DELIVERED, OPENED, ERROR_PROVIDER, ERROR_SPAM, ERROR_BOUNCE, ERROR_INVALID, ERROR_BLOCKED) = WAITING
   createdAt: datetime = SPECIAL(now)
   sentAt: ?datetime
