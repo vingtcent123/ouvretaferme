@@ -300,7 +300,7 @@ Class VatUi {
 				'withoutVat' => 0,
 				'vat' => 0,
 			];
-			$h .= '<table class="td-vertical-top tr-hover table-'.$for.' no-background">';
+			$h .= '<table class="td-vertical-top tbody-hover table-'.$for.' no-background">';
 
 				$h .= '<thead '.($for === 'web' ? 'class="thead-sticky"' : '').'>';
 					$h .= '<tr '.($for === 'pdf' ? 'class="row-header row-upper"' : '').'>';
@@ -311,9 +311,9 @@ Class VatUi {
 						$h .= '<th><span title="'.s("Numéro d'opération bancaire").'">'.s("Op.").'</span></th>';
 						$h .= '<th>'.s("Tiers").'</th>';
 						$h .= '<th class="td-min-content text-end rowspaned-center" rowspan="2">'.s("Taux TVA").'</th>';
-						$h .= '<th class="text-end highlight-stick-right rowspaned-center" rowspan="2">'.s("Montant (TTC)").'</th>';
-						$h .= '<th class="text-end highlight-stick-left rowspaned-center" rowspan="2">'.s("Montant (HT)").'</th>';
-						$h .= '<th class="text-end highlight-stick-right rowspaned-center" rowspan="2">'.s("TVA").'</th>';
+						$h .= '<th class="text-end td-min-content highlight-stick-right rowspaned-center" rowspan="2">'.s("Montant (TTC)").'</th>';
+						$h .= '<th class="text-end td-min-content highlight-stick-left rowspaned-center" rowspan="2">'.s("Montant (HT)").'</th>';
+						$h .= '<th class="text-end td-min-content highlight-stick-right rowspaned-center" rowspan="2">'.s("TVA").'</th>';
 					$h .= '</tr>';
 
 					$h .= '<tr>';
@@ -328,43 +328,42 @@ Class VatUi {
 					$h .= '</tr>';
 				$h .= '</thead>';
 
-				$h .= '<tbody>';
+				$currentMonth = NULL;
 
-					$currentMonth = NULL;
+				$monthTotals = [
+					'withVat' => 0,
+					'withoutVat' => 0,
+					'vat' => 0,
+				];
 
-					$monthTotals = [
-						'withVat' => 0,
-						'withoutVat' => 0,
-						'vat' => 0,
-					];
+				foreach($ccOperation as $month => $cOperation) {
 
-					foreach($ccOperation as $month => $cOperation) {
+					foreach($cOperation as $eOperation) {
 
-						foreach($cOperation as $eOperation) {
+						if($currentMonth !== NULL and $currentMonth !== $month) {
 
-							if($currentMonth !== NULL and $currentMonth !== $month) {
+							$monthTotals = [
+								'withVat' => 0,
+								'withoutVat' => 0,
+								'vat' => 0,
+							];
+						}
 
-								$monthTotals = [
-									'withVat' => 0,
-									'withoutVat' => 0,
-									'vat' => 0,
-								];
-							}
+						$currentMonth = $month;
 
-							$currentMonth = $month;
+						$eOperationInitial = $eOperation['operation'];
+						if(
+							str_starts_with($eOperation['accountLabel'], \Setting::get('account\vatBuyClassPrefix'))
+						and $eOperationInitial['type'] === OperationElement::CREDIT) {
+							$multiplyer = -1;
+						} else {
+							$multiplyer = 1;
+						}
+						$monthTotals['withVat'] += $multiplyer * $eOperationInitial['amount'] + $multiplyer * $eOperation['amount'];
+						$monthTotals['withoutVat'] += $multiplyer * $eOperationInitial['amount'];
+						$monthTotals['vat']+= $multiplyer * $eOperation['amount'];
 
-							$eOperationInitial = $eOperation['operation'];
-							if(
-								str_starts_with($eOperation['accountLabel'], \Setting::get('account\vatBuyClassPrefix'))
-							and $eOperationInitial['type'] === OperationElement::CREDIT) {
-								$multiplyer = -1;
-							} else {
-								$multiplyer = 1;
-							}
-							$monthTotals['withVat'] += $multiplyer * $eOperationInitial['amount'] + $multiplyer * $eOperation['amount'];
-							$monthTotals['withoutVat'] += $multiplyer * $eOperationInitial['amount'];
-							$monthTotals['vat']+= $multiplyer * $eOperation['amount'];
-
+						$h .= '<tbody>';
 							$h .= '<tr class="tr-border-top">';
 
 								$h .= '<td '.($for === 'pdf' ? 'class="text-small"' : '').'>';
@@ -389,15 +388,15 @@ Class VatUi {
 										$h .= $eOperationInitial['vatRate'];
 								$h .= '</td>';
 
-								$h .= '<td class="text-end highlight-stick-right" rowspan="2">';
+								$h .= '<td class="text-end td-min-content highlight-stick-right" rowspan="2">';
 										$h .= \util\TextUi::money($multiplyer * ($eOperationInitial['amount'] + $eOperation['amount']));
 								$h .= '</td>';
 
-								$h .= '<td class="text-end highlight-stick-left" rowspan="2">';
+								$h .= '<td class="text-end td-min-content highlight-stick-left" rowspan="2">';
 										$h .= \util\TextUi::money($multiplyer * $eOperationInitial['amount']);
 								$h .= '</td>';
 
-								$h .= '<td class="text-end highlight-stick-right" rowspan="2">';
+								$h .= '<td class="text-end td-min-content highlight-stick-right" rowspan="2">';
 										$h .= \util\TextUi::money($multiplyer * $eOperation['amount']);
 								$h .= '</td>';
 
@@ -413,26 +412,26 @@ Class VatUi {
 									$h .= '</div>';
 								$h .= '</td>';
 
-								$h .= '<td colspan="5" class="td-description">';
+								$h .= '<td colspan="2" class="td-description">';
 									$h .= '<div class="description">';
 										$h .= encode($eOperationInitial['description']);
 									$h .= '</div>';
 								$h .= '</td>';
 
 							$h .= '</tr>';
-						}
-
-						$bigTotals['withVat'] += $monthTotals['withVat'];
-						$bigTotals['withoutVat'] += $monthTotals['withoutVat'];
-						$bigTotals['vat'] += $monthTotals['vat'];
-
-						$h .= self::getMonthTotal($currentMonth, $monthTotals);
-
+						$h .= '</tbody>';
 					}
 
-					$h .= self::getMonthTotal(NULL, $bigTotals);
+					$bigTotals['withVat'] += $monthTotals['withVat'];
+					$bigTotals['withoutVat'] += $monthTotals['withoutVat'];
+					$bigTotals['vat'] += $monthTotals['vat'];
 
-				$h .= '</tbody>';
+					$h .= self::getMonthTotal($currentMonth, $monthTotals);
+
+				}
+
+				$h .= self::getMonthTotal(NULL, $bigTotals);
+
 			$h .= '</table>';
 		}
 		return $h;

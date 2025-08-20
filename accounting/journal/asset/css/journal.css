@@ -4,10 +4,6 @@ ul.list-unstyled {
     list-style: none;
 }
 
-table.td-vertical-top td {
-    vertical-align: top;
-}
-
 .operation-info {
     font-size: .9rem;
     font-weight: normal;

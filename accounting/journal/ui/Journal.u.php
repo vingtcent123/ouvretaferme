@@ -196,7 +196,7 @@ class JournalUi {
 
 		$h .= '<div class="stick-sm util-overflow-sm">';
 
-			$h .= '<table class="td-vertical-top tr-hover no-background table-operations">';
+			$h .= '<table class="td-vertical-top no-background tbody-hover table-operations">';
 
 				$h .= '<thead class="thead-sticky">';
 					$h .= '<tr>';
@@ -260,22 +260,21 @@ class JournalUi {
 
 				$h .= '</thead>';
 
-				$h .= '<tbody>';
+				foreach($cOperation as $eOperation) {
 
-					foreach($cOperation as $eOperation) {
+					$canUpdate = (
+						$eFinancialYearSelected['status'] === \account\FinancialYear::OPEN
+						and $eOperation['date'] <= $eFinancialYearSelected['endDate']
+						and $eOperation['date'] >= $eFinancialYearSelected['startDate']
+						and $eFarm->canManage()
+						and $eOperation->canUpdate()
+						and in_array('actions', $hide) === FALSE
+					);
 
-						$canUpdate = (
-							$eFinancialYearSelected['status'] === \account\FinancialYear::OPEN
-							and $eOperation['date'] <= $eFinancialYearSelected['endDate']
-							and $eOperation['date'] >= $eFinancialYearSelected['startDate']
-							and $eFarm->canManage()
-							and $eOperation->canUpdate()
-							and in_array('actions', $hide) === FALSE
-						);
+					$eOperation->setQuickAttribute('farm', $eFarm['id']);
+					$eOperation->setQuickAttribute('app', 'accounting');
 
-						$eOperation->setQuickAttribute('farm', $eFarm['id']);
-						$eOperation->setQuickAttribute('app', 'accounting');
-
+					$h .= '<tbody>';
 						$h .= '<tr name="operation-'.$eOperation['id'].'" name-linked="operation-linked-'.($eOperation['operation']['id'] ?? '').'" class="tr-border-top">';
 
 							$h .= '<td>';
@@ -377,7 +376,7 @@ class JournalUi {
 
 							if(in_array('actions', $hide) === FALSE) {
 
-								$h .= '<td rowspan="2">';
+								$h .= '<td rowspan="2" class="td-vertical-align-middle">';
 									$h .= '<div class="util-unit td-min-content text-end">';
 										$h .= $this->displayActions($eFarm, $eOperation, $canUpdate);
 									$h .= '</div>';
@@ -432,9 +431,10 @@ class JournalUi {
 							}
 
 						$h .= '</tr>';
-					}
 
-				$h .= '</tbody>';
+					$h .= '</tbody>';
+				}
+
 			$h .= '</table>';
 		$h .= '</div>';
 
