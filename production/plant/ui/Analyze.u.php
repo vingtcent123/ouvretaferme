@@ -133,14 +133,26 @@ class AnalyzeUi {
 							$h .= '<td class="text-sm">&nbsp;&nbsp;'.\Asset::icon('arrow-return-right').'&nbsp;&nbsp;'.s("Surface cultivée avec des espèces annuelles").'</td>';
 							foreach($seasons as $season) {
 								$h .= '<td class="text-end">'.s("{value} m²", \util\TextUi::number($area[$season]['bedsAreaAnnual'], 0)).'</td>';
-								$h .= '<td class="util-annotation">'.s("{value} %", round($area[$season]['bedsAreaAnnual'] / $area[$season]['bedsArea'] * 100)).'</td>';
+								$h .= '<td>';
+									if($area[$season]['bedsArea'] > 0) {
+										$h .= '<div class="util-annotation">';
+											$h .= s("{value} %", round($area[$season]['bedsAreaAnnual'] / $area[$season]['bedsArea'] * 100));
+										$h .= '</div>';
+									}
+								$h .= '</td>';
 							}
 						$h .= '</tr>';
 						$h .= '<tr>';
 							$h .= '<td class="text-sm">&nbsp;&nbsp;'.\Asset::icon('arrow-return-right').'&nbsp;&nbsp;'.s("Surface cultivée avec des espèces pérennes").'</td>';
 							foreach($seasons as $season) {
 								$h .= '<td class="text-end">'.s("{value} m²", \util\TextUi::number($area[$season]['bedsAreaPerennial'], 0)).'</td>';
-								$h .= '<td class="util-annotation">'.s("{value} %", round($area[$season]['bedsAreaPerennial'] / $area[$season]['bedsArea'] * 100)).'</td>';
+								$h .= '<td>';
+									if($area[$season]['bedsArea'] > 0) {
+										$h .= '<div class="util-annotation">';
+											$h .= s("{value} %", round($area[$season]['bedsAreaPerennial'] / $area[$season]['bedsArea'] * 100));
+										$h .= '</div>';
+									}
+								$h .= '</td>';
 							}
 						$h .= '</tr>';
 						$h .= '<tr>';
