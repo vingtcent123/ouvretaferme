@@ -46,6 +46,7 @@ switch(LIME_ENV) {
 			'website' => 'ouvretaferme',
 
 			'company' => 'ouvretaferme',
+			'account' => 'ouvretaferme',
 
 		]);
 
@@ -78,6 +79,7 @@ switch(LIME_ENV) {
 			'website' => 'dev_ouvretaferme',
 
 			'company' => 'dev_ouvretaferme',
+			'account' => 'dev_ouvretaferme',
 
 		]);
 

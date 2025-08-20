@@ -180,7 +180,7 @@ class CompanyLib extends CompanyCrud {
 
   public static function getDatabaseNameFromCompany(\farm\Farm $eFarm): string {
 
-    return \Database::getPackages()[\company\GenericAccount::model()->getPackage()].'_'.$eFarm['id'];
+    return (LIME_ENV === 'dev' ? 'dev_' : '').'farm_'.$eFarm['id'];
 
   }
 
