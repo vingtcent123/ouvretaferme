@@ -350,7 +350,7 @@ class JournalUi {
 								}
 							$h .= '</td>';
 
-							$h .= '<td class="text-end highlight-stick-right" rowspan="2">';
+							$h .= '<td class="text-end highlight-stick-right td-vertical-align-top" rowspan="2">';
 								$debitDisplay = match($eOperation['type']) {
 									Operation::DEBIT => \util\TextUi::money($eOperation['amount']),
 									default => '',
@@ -362,7 +362,7 @@ class JournalUi {
 								}
 							$h .= '</td>';
 
-							$h .= '<td class="text-end highlight-stick-left" rowspan="2">';
+							$h .= '<td class="text-end highlight-stick-left td-vertical-align-top" rowspan="2">';
 								$creditDisplay = match($eOperation['type']) {
 									Operation::CREDIT => \util\TextUi::money($eOperation['amount']),
 									default => '',

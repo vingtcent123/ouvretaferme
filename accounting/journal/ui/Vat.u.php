@@ -388,15 +388,15 @@ Class VatUi {
 										$h .= $eOperationInitial['vatRate'];
 								$h .= '</td>';
 
-								$h .= '<td class="text-end td-min-content highlight-stick-right" rowspan="2">';
+								$h .= '<td class="text-end td-min-content highlight-stick-right td-vertical-align-top" rowspan="2">';
 										$h .= \util\TextUi::money($multiplyer * ($eOperationInitial['amount'] + $eOperation['amount']));
 								$h .= '</td>';
 
-								$h .= '<td class="text-end td-min-content highlight-stick-left" rowspan="2">';
+								$h .= '<td class="text-end td-min-content highlight-stick-left td-vertical-align-top" rowspan="2">';
 										$h .= \util\TextUi::money($multiplyer * $eOperationInitial['amount']);
 								$h .= '</td>';
 
-								$h .= '<td class="text-end td-min-content highlight-stick-right" rowspan="2">';
+								$h .= '<td class="text-end td-min-content highlight-stick-right td-vertical-align-top" rowspan="2">';
 										$h .= \util\TextUi::money($multiplyer * $eOperation['amount']);
 								$h .= '</td>';
 
