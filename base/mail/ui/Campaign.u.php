@@ -192,31 +192,8 @@ class CampaignUi {
 
 	protected function getWrite(\util\FormUi $form, Campaign $eCampaign): string {
 
-		$h = $form->dynamicGroups($eCampaign, ['scheduledAt', 'subject']);
-
-
-		$content = '<div class="util-block mb-0">'.$form->dynamicField($eCampaign, 'content').'</div>';
-
-		if($eCampaign['cCampaignLast']->notEmpty()) {
-
-			$action = '<a data-dropdown="bottom-end" class="dropdown-toggle">'.s("Utiliser titre et contenu d'une ancienne campagne").'</a>';
-			$action .= '<div class="dropdown-list bg-secondary">';
-
-				foreach($eCampaign['cCampaignLast'] as $eCampaignLast) {
-					$action .= '<a href="" class="dropdown-item" '.attr('data-subject', $eCampaignLast['subject']).' '.attr('data-content', $form->editor('content', $eCampaignLast['content'])).'>'.encode($eCampaignLast['subject']).'<br/><small>'.\util\DateUi::numeric($eCampaignLast['scheduledAt'], \util\DateUi::DATE_HOUR_MINUTE).'</small></a>';
-				}
-
-			$action .= '</div>';
-
-			$content .= \util\FormUi::getFieldAction($action);
-
-		}
-
-
-		$h .= $form->group(
-			self::p('content')->label.\util\FormUi::info(s("L'e-mail envoyé contiendra toujours le bandeau et la signature que vous avez défini sur la <link>page de configuration des e-mails</link>.", ['link' => '<a href="/farm/farm:updateEmail?id='.$eCampaign['farm']['id'].'" target="_blank">'])),
-			$content
-		);
+		$h = $form->dynamicGroup($eCampaign, 'scheduledAt');
+		$h .= $this->getEmailFields($form, $eCampaign);
 
 		$label = self::p('to')->label.'  <span class="util-counter" id="campaign-contacts">'.$eCampaign['cContact']->count().'</span>';
 
@@ -232,6 +209,41 @@ class CampaignUi {
 			$form->dynamicField($eCampaign, 'to'),
 			['wrapper' => 'to']
 		);
+
+		return $h;
+
+	}
+
+	public function getEmailFields(\util\FormUi $form, Campaign $eCampaign): string {
+
+		$h = '<div id="campaign-write-email">';
+
+			$h .= $form->dynamicGroup($eCampaign, 'subject');
+
+			$content = '<div class="util-block mb-0">'.$form->dynamicField($eCampaign, 'content').'</div>';
+
+			if($eCampaign['cCampaignLast']->notEmpty()) {
+
+				$action = '<a data-dropdown="bottom-end" class="dropdown-toggle">'.s("Utiliser titre et contenu d'une ancienne campagne").'</a>';
+				$action .= '<div class="dropdown-list bg-secondary">';
+
+					foreach($eCampaign['cCampaignLast'] as $eCampaignLast) {
+						$action .= '<a data-ajax="/mail/campaign:getEmailFields?id='.$eCampaignLast['id'].'" data-ajax-method="get" class="dropdown-item" '.attr('data-subject', $eCampaignLast['subject']).' '.attr('data-content', $form->editor('content', $eCampaignLast['content'])).'>'.encode($eCampaignLast['subject']).'<br/><small>'.\util\DateUi::numeric($eCampaignLast['scheduledAt'], \util\DateUi::DATE_HOUR_MINUTE).'</small></a>';
+					}
+
+				$action .= '</div>';
+
+				$content .= \util\FormUi::getFieldAction($action);
+
+			}
+
+
+			$h .= $form->group(
+				self::p('content')->label.\util\FormUi::info(s("L'e-mail envoyé contiendra toujours le bandeau et la signature que vous avez défini sur la <link>page de configuration des e-mails</link>.", ['link' => '<a href="/farm/farm:updateEmail?id='.$eCampaign['farm']['id'].'" target="_blank">'])),
+				$content
+			);
+
+		$h .= '</div>';
 
 		return $h;
 
@@ -277,7 +289,7 @@ class CampaignUi {
 					$h .= '<tr>';
 
 						$h .= '<td class="td-min-content">';
-							$h .= \util\DateUi::numeric($eCampaign['scheduledAt'], \util\DateUi::DATE);
+							$h .= \util\DateUi::numeric($eCampaign['scheduledAt'], \util\DateUi::DATE_HOUR_MINUTE);
 						$h .= '</td>';
 
 						$h .= '<td>';
@@ -356,12 +368,7 @@ class CampaignUi {
 						}
 
 						$h .= '<td class="td-min-content">';
-							if($eCampaign->acceptUpdate()) {
-								$h .= '<a href="/mail/campaign:update?id='.$eCampaign['id'].'" class="btn btn-secondary">'.\Asset::icon('gear-fill').'</a> ';
-							}
-							if($eCampaign->acceptDelete()) {
-								$h .= '<a data-ajax="/mail/campaign:doDelete" post-id="'.$eCampaign['id'].'" data-confirm="'.s("Vous allez supprimer une campagne et les e-mails ne seront pas envoyés. Continuer ?").'" class="btn btn-danger">'.\Asset::icon('trash').'</a>';
-							}
+							$h .= $this->getMenu($eFarm, $eCampaign, 'btn-outline-secondary');
 						$h .= '</td>';
 
 					$h .= '</tr>';
@@ -380,6 +387,40 @@ class CampaignUi {
 
 		$h .= '<div class="util-info">';
 			$h .= s("* Les statistiques d'e-mails reçus, lus et bloqués sont des estimations qui ne sont pas fiables à 100 %.");
+		$h .= '</div>';
+
+		return $h;
+
+	}
+
+	public function getMenu(\farm\Farm $eFarm, Campaign $eCampaign, string $btn): string {
+
+		$h = '<a data-dropdown="bottom-end" class="dropdown-toggle btn '.$btn.'">'.\Asset::icon('gear-fill').'</a>';
+		$h .= '<div class="dropdown-list">';
+
+			$h .= '<div class="dropdown-title">'.s("Campagne du {date}", ['date' => \util\DateUi::textual($eCampaign['scheduledAt'], \util\DateUi::DATE_HOUR_MINUTE)]).'</div>';
+
+			if($eCampaign->acceptUpdate()) {
+				$h .= '<a href="/mail/campaign:update?id='.$eCampaign['id'].'" class="dropdown-item">'.s("Modifier la campagne").'</a> ';
+			}
+
+			$link = '/mail/campaign:create?farm='.$eCampaign['farm']['id'].'&copy='.$eCampaign['id'].'&source='.$eCampaign['source'];
+			$link .= match($eCampaign['source']) {
+
+				Campaign::SHOP => '&sourceShop='.$eCampaign['sourceShop']['id'],
+				Campaign::GROUP => '&sourceGroup='.$eCampaign['sourceGroup']['id'],
+				Campaign::PERIOD => '&sourcePeriod='.$eCampaign['sourcePeriod'],
+				default => ''
+
+			};
+
+			$h .= '<a href="'.$link.'" class="dropdown-item">'.s("Nouvelle campagne à partir de celle-ci").'</a>';
+
+			if($eCampaign->acceptDelete()) {
+				$h .= '<div class="dropdown-divider"></div>';
+				$h .= '<a data-ajax="/mail/campaign:doDelete" post-id="'.$eCampaign['id'].'" data-confirm="'.s("Vous allez supprimer une campagne et les e-mails ne seront pas envoyés. Continuer ?").'" class="dropdown-item">'.s("Supprimer la campagne").'</a>';
+			}
+
 		$h .= '</div>';
 
 		return $h;

@@ -28,6 +28,15 @@ new \mail\CampaignPage()
 
 		}
 
+		if(get_exists('copy')) {
+
+			$eCampaignCopy = \mail\CampaignLib::getById(GET('copy'))->validateProperty('farm', $data->eFarm);
+
+			$eCampaign['subject'] = $eCampaignCopy['subject'];
+			$eCampaign['content'] = $eCampaignCopy['content'];
+
+		}
+
 		return $eCampaign;
 
 	})
@@ -55,6 +64,13 @@ new \farm\FarmPage()
 	}, validate: ['canCommunication']);
 
 new \mail\CampaignPage()
+	->read('getEmailFields', function($data) {
+
+		$data->e['cCampaignLast'] = \mail\CampaignLib::getLastByFarm($data->e['farm'], $data->e['source']);
+
+		throw new ViewAction($data);
+
+	})
 	->doDelete(fn() => throw new ReloadAction(), validate: ['canDelete', 'acceptDelete'])
 	->update(function($data) {
 

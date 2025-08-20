@@ -27,4 +27,8 @@ new AdaptativeView('create', function($data, FarmTemplate $t) {
 new AdaptativeView('update', function($data, PanelTemplate $t) {
 	return new \mail\CampaignUi()->update($data->e);
 });
+
+new AdaptativeView('getEmailFields', function($data, AjaxTemplate $t) {
+	$t->qs('#campaign-write-email')->outerHtml(new \mail\CampaignUi()->getEmailFields(new \util\FormUi(), $data->e));
+});
 ?>
