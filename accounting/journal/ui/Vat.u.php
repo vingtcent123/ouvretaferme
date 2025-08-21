@@ -402,7 +402,7 @@ Class VatUi {
 
 							$h .= '</tr>';
 
-							$h .= '<tr>';
+							$h .= '<tr class="td-padding-xs">';
 
 								$h .= '<td colspan="2">';
 									$h .= '<div class="operation-info">';

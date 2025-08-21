@@ -376,7 +376,7 @@ class JournalUi {
 
 							if(in_array('actions', $hide) === FALSE) {
 
-								$h .= '<td rowspan="2" class="td-vertical-align-middle">';
+								$h .= '<td rowspan="2" class="td-vertical-align-top">';
 									$h .= '<div class="util-unit td-min-content text-end">';
 										$h .= $this->displayActions($eFarm, $eOperation, $canUpdate);
 									$h .= '</div>';
@@ -396,7 +396,7 @@ class JournalUi {
 
 						$h .= '</tr>';
 
-						$h .= '<tr>';
+						$h .= '<tr class="td-padding-xs">';
 
 							if(in_array('document', $hide) === FALSE) {
 								$h .= '<td colspan="'.($selectedJournalCode === NULL ? 3 : 2).'">';

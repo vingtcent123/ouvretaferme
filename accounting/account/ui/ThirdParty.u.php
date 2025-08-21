@@ -106,7 +106,7 @@ class ThirdPartyUi {
 
 					}
 					
-					$h .= '<th>'.s("Nombre d'écritures comptables").'</th>';
+					$h .= '<th class="text-end">'.s("Écritures comptables").'</th>';
 					$h .= '<th></th>';
 				$h .= '</thead>';
 
@@ -143,17 +143,19 @@ class ThirdPartyUi {
 
 							}
 
-							$h .= '<td>';
+							$h .= '<td class="text-end">';
 								$h .= '<a href="'.\company\CompanyUi::urlJournal($eFarm).'/operations?thirdParty='.$eThirdParty['id'].'"  title="'.s("Filtrer les opérations sur ce tiers").'">'.$eThirdParty['operations'].'</a>';
 							$h .= '</td>';
 
-							$h .= '<td>';
-								$attributes = [
-									'data-ajax' => \company\CompanyUi::urlAccount($eFarm).'/thirdParty:doDelete',
-									'post-id' => $eThirdParty['id'],
-									'class' => 'btn btn-outline-secondary btn-outline-danger'.($eThirdParty['operations'] > 0 ? ' disabled' : ''),
-								];
-								$h .= '<a '.attrs($attributes).'>'.\Asset::icon('trash').'</a>';
+							$h .= '<td class="td-min-content">';
+								if($eThirdParty['operations'] === 0) {
+									$attributes = [
+										'data-ajax' => \company\CompanyUi::urlAccount($eFarm).'/thirdParty:doDelete',
+										'post-id' => $eThirdParty['id'],
+										'class' => 'btn btn-outline-secondary btn-outline-danger'.($eThirdParty['operations'] > 0 ? ' disabled' : ''),
+									];
+									$h .= '<a '.attrs($attributes).'>'.\Asset::icon('trash').'</a>';
+								}
 							$h .= '</td>';
 
 						$h .= '</tr>';

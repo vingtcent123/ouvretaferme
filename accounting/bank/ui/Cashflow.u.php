@@ -117,7 +117,7 @@ class CashflowUi {
 
 		$h .= '<div id="cashflow-list" class="stick-sm util-overflow-sm" '.($highlightedCashflowId !== NULL ? ' onrender="CashflowList.scrollTo('.$highlightedCashflowId.');"' : '').' data-render-timeout="1">';
 
-			$h .= '<table class="tr-even tr-hover">';
+			$h .= '<table class="tr-even tr-hover td-padding-sm">';
 
 				$h .= '<thead class="thead-sticky">';
 					$h .= '<tr>';
@@ -228,7 +228,7 @@ class CashflowUi {
 			return '';
 		}
 
-		$h = '<a data-dropdown="bottom-end" class="dropdown-toggle btn btn-outline-secondary">'.\Asset::icon('gear-fill').'</a>';
+		$h = '<a data-dropdown="bottom-end" class="dropdown-toggle btn btn-outline-secondary btn-xs">'.\Asset::icon('gear-fill').'</a>';
 		$h .= '<div class="dropdown-list">';
 
 			if($eCashflow['status'] === CashflowElement::ALLOCATED) {
