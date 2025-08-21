@@ -16,6 +16,18 @@ class EmailLib extends EmailCrud {
 
 	}
 
+	public static function getByCampaign(Campaign $eCampaign): \Collection {
+
+		return Email::model()
+			->select(Email::getSelection())
+			->whereCampaign($eCampaign)
+			->sort([
+				'to' => SORT_ASC
+			])
+			->getCollection();
+
+	}
+
 	public static function clean(): void {
 
 		\mail\Email::model()

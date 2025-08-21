@@ -371,11 +371,19 @@ class Farm extends FarmElement {
 	}
 
 	public function getCampaignLimit(): int {
-		return 100;
+		return $this['id'] === 7 ? $this->getCampaignMemberLimit() : 100;
 	}
 
 	public function getCampaignMemberLimit(): int {
 		return 1000;
+	}
+
+	public function getContactLimit(): int {
+		return $this['id'] === 7 ? $this->getContactMemberLimit() : 1;
+	}
+
+	public function getContactMemberLimit(): int {
+		return 3;
 	}
 
 	public function build(array $properties, array $input, \Properties $p = new \Properties()): void {

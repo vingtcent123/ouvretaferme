@@ -254,6 +254,137 @@ class CampaignUi {
 
 	}
 
+	public function get(Campaign $e, \Collection $cEmail): string {
+
+		$status = match($e['status']) {
+			Campaign::CONFIRMED => s("Programmée"),
+			Campaign::SENT => s("Envoyée"),
+		};
+		$h = '<h2>'.encode($e['subject']).'</h2>';
+
+		$h .= '<div class="util-block stick-xs bg-background-light">';
+			$h .= '<dl class="util-presentation util-presentation-2">';
+				$h .= '<dt>'.s("État de la campagne").'</dt>';
+				$h .= '<dd>'.$status.'</dd>';
+				$h .= '<dt>'.s("Destinataires").'</dt>';
+				$h .= '<dd>'.$e['scheduled'].'</dd>';
+			$h .= '</dl>';
+		$h .= '</div>';
+
+		if($e['status'] === Campaign::SENT) {
+
+			$h .= '<ul class="util-summarize">';
+				$h .= '<li>';
+					$h .= '<h5>'.s("Envoyés").'</h5>';
+					$h .= '<div>'.$e['sent'].'</div>';
+				$h .= '</li>';
+				$h .= '<li>';
+					$h .= '<h5>'.s("Reçus").'</h5>';
+					$h .= '<div>'.$e['delivered'].'</div>';
+				$h .= '</li>';
+				$h .= '<li>';
+					$h .= '<h5>'.s("Ouverts").'</h5>';
+					$h .= '<div>'.$e['opened'].'</div>';
+				$h .= '</li>';
+				$h .= '<li>';
+					$h .= '<h5>'.s("Bloqués").'</h5>';
+					$h .= '<div>'.$e['failed'] + $e['spam'].'</div>';
+				$h .= '</li>';
+			$h .= '</ul>';
+
+		}
+
+		$h .= '<br/>';
+
+		$h .= '<h2>'.s("Destinataires").'</h2>';
+
+		if($e['consent']) {
+
+			$h .= '<h3>'.\Asset::icon('exclamation-triangle').' '.s("Consentement révoqué ou envoi d'e-mail désactivé").'</h3>';
+			$h .= '<code class="mb-2">';
+				$h .= encode(implode(', ', $e['consent']));
+			$h .= '</code>';
+
+		}
+
+		if($e['limited']) {
+
+			$h .= '<h3>'.\Asset::icon('exclamation-triangle').' '.s("Limite d'envoi hebdomadaire dépassée").'</h3>';
+			$h .= '<code class="mb-2">';
+				$h .= encode(implode(', ', $e['limited']));
+			$h .= '</code>';
+
+		}
+
+		if($cEmail->notEmpty()) {
+
+			if($cEmail->notEmpty()) {
+
+				$h .= '<h3>'.s("E-mail envoyés").'</h3>';
+
+				$h .= '<table class="tr-even">';
+					$h .= '<thead>';
+						$h .= '<tr>';
+							$h .= '<th>'.s("E-mail").'</th>';
+							$h .= '<th>'.s("État").'</th>';
+							$h .= '<th>'.s("Commentaire").'</th>';
+						$h .= '</tr>';
+					$h .= '</thead>';
+
+					$h .= '<tbody>';
+
+						foreach($cEmail as $eEmail) {
+
+							$h .= '<tr>';
+								$h .= '<td>'.encode($eEmail['to']).'</td>';
+								$h .= '<td>';
+
+									$h .= match($eEmail['status']) {
+										Email::WAITING, Email::SENDING => s("En attente"),
+										Email::SENT => s("Envoyé"),
+										Email::DELIVERED => s("Reçu"),
+										Email::OPENED => s("Ouvert"),
+										Email::ERROR_PROVIDER, Email::ERROR_SPAM, Email::ERROR_BOUNCE, Email::ERROR_INVALID, Email::ERROR_BLOCKED => s("Bloqué")
+									};
+
+								$h .= '</td>';
+								$h .= '<td class="text-center">';
+									if($eEmail['status'] === Email::OPENED) {
+										$h .= s("Ouvert le {date}", ['date' => \util\DateUi::numeric($eEmail['openedAt'])]);
+									}
+								$h .= '</td>';
+							$h .= '</tr>';
+
+						}
+
+					$h .= '</tbody>';
+				$h .= '</table>';
+
+			}
+
+		} else {
+
+			if($e['status'] === Campaign::SENT) {
+				$h .= '<div class="util-warning">'.s("Les informations détaillées sur les destinataires ne sont conservées que 12 mois.").'</div>';
+			}
+
+			$h .= '<code>';
+				$h .= encode(implode(', ', $e['to']));
+			$h .= '</code>';
+
+		}
+
+		$h .= '<br/>';
+
+		$h .= '<h2>'.s("Contenu").'</h2>';
+
+		$h .= '<div class="util-block">'.new \editor\ReadorFormatterUi()->getFromXml($e['content']).'</div>';
+
+		return $h;
+
+	}
+
+
 	public function getList(\farm\Farm $eFarm, \Collection $cCampaign, int $nCampaign, int $page) {
 
 		$h = '';
@@ -264,6 +395,8 @@ class CampaignUi {
 			return $h;
 
 		}
+
+		$h .= $this->getLimits($eFarm);
 
 		$h .= '<div class="stick-md util-overflow-md">';
 
@@ -294,7 +427,7 @@ class CampaignUi {
 					$h .= '<tr>';
 
 						$h .= '<td class="td-min-content">';
-							$h .= \util\DateUi::numeric($eCampaign['scheduledAt'], \util\DateUi::DATE_HOUR_MINUTE);
+							$h .= '<a href="/mail/campaign:get?id='.$eCampaign['id'].'" class="btn btn-outline-primary">'.\util\DateUi::numeric($eCampaign['scheduledAt'], \util\DateUi::DATE_HOUR_MINUTE).'</a>';
 						$h .= '</td>';
 
 						$h .= '<td>';
@@ -322,6 +455,11 @@ class CampaignUi {
 								}
 
 							$h .= '</div>';
+
+							if($eCampaign['limited']) {
+								$h .= '<div class="util-annotation color-danger">'.\Asset::icon('exclamation-triangle').' '.p("Limite hebdomadaire dépassée pour {value} contact", "Limite hebdomadaire dépassée pour {value} contacts", count($eCampaign['limited'])).'</div>';
+							}
+
 						$h .= '</td>';
 
 						$scheduled = '<span style="font-size: 1.25rem">'.$eCampaign['scheduled'].'</span>';
@@ -373,7 +511,7 @@ class CampaignUi {
 						}
 
 						$h .= '<td class="td-min-content">';
-							$h .= $this->getMenu($eFarm, $eCampaign, 'btn-outline-secondary');
+							$h .= $this->getMenu($eCampaign, 'btn-outline-secondary');
 						$h .= '</td>';
 
 					$h .= '</tr>';
@@ -398,7 +536,22 @@ class CampaignUi {
 
 	}
 
-	public function getMenu(\farm\Farm $eFarm, Campaign $eCampaign, string $btn): string {
+	public function getLimits(\farm\Farm $eFarm): string {
+
+		$h = '<div class="util-block-gradient">';
+			$h .= '<h4>'.s("Les campagnes sont soumises aux limites hebdomadaires suivantes :").'</h4>';
+			$h .= '<ul>';
+				$h .= '<li>'.s("{value} envois d'e-mails", $eFarm->getCampaignLimit()).'</li>';
+				$h .= '<li>'.p("{value} envois d'e-mail par contact", "{value} envois d'e-mails par contact", $eFarm->getContactLimit()).'</li>';
+			$h .= '</ul>';
+			$h .= '<p class="color-secondary">'.s("L'envoi d'e-mails est limité pour réduire les risques de spam et parce que l'envoi des e-mails est une source de coût pour l'association {siteName}. Il sera bientôt possible d'envoyer plus d'e-mails en adhérant à l'association. ").'</p>';
+		$h .= '</div>';
+
+		return $h;
+
+	}
+
+	public function getMenu(Campaign $eCampaign, string $btn): string {
 
 		$h = '<a data-dropdown="bottom-end" class="dropdown-toggle btn '.$btn.'">'.\Asset::icon('gear-fill').'</a>';
 		$h .= '<div class="dropdown-list">';

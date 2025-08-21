@@ -81,6 +81,7 @@ class EmailModel extends \ModuleModel {
 
 		$this->indexConstraints = array_merge($this->indexConstraints, [
 			['contact'],
+			['campaign'],
 			['customer'],
 			['farm'],
 			['status']

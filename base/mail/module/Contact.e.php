@@ -26,11 +26,11 @@ class Contact extends ContactElement {
 		}
 	}
 
-	public function opt(): bool {
+	public function canSend(): bool {
 
 		return (
 			$this->getActive() and
-			$this->getOptIn()
+			$this->getOptIn() !== FALSE
 		);
 
 	}

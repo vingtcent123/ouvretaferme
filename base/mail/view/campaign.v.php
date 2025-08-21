@@ -24,6 +24,26 @@ new AdaptativeView('create', function($data, FarmTemplate $t) {
 	echo new \mail\CampaignUi()->create($data->e);
 });
 
+new AdaptativeView('get', function($data, FarmTemplate $t) {
+
+	$t->nav = 'communications';
+	$t->subNav = 'mailing';
+
+	$t->title = s("Campagne du {date}", ['date' => \util\DateUi::numeric($data->e['scheduledAt'], \util\DateUi::DATE_HOUR_MINUTE)]);
+
+	$h = '<div class="util-action">';
+		$h .= '<h1>';
+			$h .= '<a href="'.\farm\FarmUi::urlCommunicationsCampaign($data->eFarm).'"  class="h-back">'.\Asset::icon('arrow-left').'</a>';
+			$h .= $t->title;
+		$h .= '</h1>';
+		$h .= new \mail\CampaignUi()->getMenu($data->e, 'btn-primary');
+	$h .= '</div>';
+
+	$t->mainTitle = $h;
+
+	echo new \mail\CampaignUi()->get($data->e, $data->cEmail);
+});
+
 new AdaptativeView('update', function($data, PanelTemplate $t) {
 	return new \mail\CampaignUi()->update($data->e);
 });

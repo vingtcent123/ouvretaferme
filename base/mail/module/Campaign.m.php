@@ -53,6 +53,8 @@ class CampaignModel extends \ModuleModel {
 			'to' => ['json', 'cast' => 'array'],
 			'subject' => ['text8', 'min' => 1, 'max' => 100, 'cast' => 'string'],
 			'content' => ['editor16', 'min' => 1, 'max' => NULL, 'cast' => 'string'],
+			'consent' => ['json', 'cast' => 'array'],
+			'limited' => ['json', 'cast' => 'array'],
 			'scheduled' => ['int32', 'min' => 0, 'max' => NULL, 'cast' => 'int'],
 			'sent' => ['int32', 'min' => 0, 'max' => NULL, 'cast' => 'int'],
 			'delivered' => ['int32', 'min' => 0, 'max' => NULL, 'cast' => 'int'],
@@ -66,7 +68,7 @@ class CampaignModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'farm', 'source', 'sourceShop', 'sourceGroup', 'sourcePeriod', 'to', 'subject', 'content', 'scheduled', 'sent', 'delivered', 'opened', 'failed', 'spam', 'status', 'scheduledAt', 'sentAt', 'createdAt'
+			'id', 'farm', 'source', 'sourceShop', 'sourceGroup', 'sourcePeriod', 'to', 'subject', 'content', 'consent', 'limited', 'scheduled', 'sent', 'delivered', 'opened', 'failed', 'spam', 'status', 'scheduledAt', 'sentAt', 'createdAt'
 		]);
 
 		$this->propertiesToModule += [
@@ -84,6 +86,12 @@ class CampaignModel extends \ModuleModel {
 	public function getDefaultValue(string $property) {
 
 		switch($property) {
+
+			case 'consent' :
+				return [];
+
+			case 'limited' :
+				return [];
 
 			case 'scheduled' :
 				return 0;
@@ -126,6 +134,12 @@ class CampaignModel extends \ModuleModel {
 			case 'to' :
 				return $value === NULL ? NULL : json_encode($value, JSON_UNESCAPED_UNICODE);
 
+			case 'consent' :
+				return $value === NULL ? NULL : json_encode($value, JSON_UNESCAPED_UNICODE);
+
+			case 'limited' :
+				return $value === NULL ? NULL : json_encode($value, JSON_UNESCAPED_UNICODE);
+
 			case 'status' :
 				return ($value === NULL) ? NULL : (string)$value;
 
@@ -141,6 +155,12 @@ class CampaignModel extends \ModuleModel {
 		switch($property) {
 
 			case 'to' :
+				return $value === NULL ? NULL : json_decode($value, TRUE);
+
+			case 'consent' :
+				return $value === NULL ? NULL : json_decode($value, TRUE);
+
+			case 'limited' :
 				return $value === NULL ? NULL : json_decode($value, TRUE);
 
 			default :
@@ -192,6 +212,14 @@ class CampaignModel extends \ModuleModel {
 
 	public function whereContent(...$data): CampaignModel {
 		return $this->where('content', ...$data);
+	}
+
+	public function whereConsent(...$data): CampaignModel {
+		return $this->where('consent', ...$data);
+	}
+
+	public function whereLimited(...$data): CampaignModel {
+		return $this->where('limited', ...$data);
 	}
 
 	public function whereScheduled(...$data): CampaignModel {

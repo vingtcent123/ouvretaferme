@@ -8,6 +8,8 @@ Campaign:
   to: json
   subject: text8(1, 100)
   content: editor16(1, null)
+  consent: json = PHP([])
+  limited: json = PHP([])
   scheduled: int(0, null) = 0
   sent: int(0, null) = 0
   delivered: int(0, null) = 0
@@ -83,6 +85,7 @@ Email:
   openedAt: ?datetime
   INDEX: [
     ["contact"],
+    ["campaign"],
     ["customer"],
     ["farm"],
     ["status"]

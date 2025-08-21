@@ -3,15 +3,18 @@ namespace mail;
 
 class DesignUi {
 
-	public static function format(\farm\Farm $eFarm, string $title, string $content, bool $encapsulate = TRUE): array {
+	public static function format(\farm\Farm $eFarm, string $title, string $content, ?string $footer = NULL, bool $encapsulate = TRUE): array {
 
-		$html = nl2br($content);
-		$text = decode(strip_tags($html));
+		$html = fn($value) => nl2br($value);
+		$text = fn($value) => decode(strip_tags(str_replace(['</p>', '<br/>'], ["\n", "\n"], $value)));
+
+		$contentHtml = $html($content);
+		$contentText = $text($content);
 
 		return [
 			$title,
-			$encapsulate ? \mail\DesignUi::encapsulateText($eFarm, $text) : $text,
-			$encapsulate ? \mail\DesignUi::encapsulateHtml($eFarm, $html) : $html
+			($encapsulate ? \mail\DesignUi::encapsulateText($eFarm, $contentText) : $contentText).($footer ? "\n\n".$text($footer) : ''),
+			($encapsulate ? \mail\DesignUi::encapsulateHtml($eFarm, $contentHtml) : $contentHtml).($footer ? $html($footer) : '')
 		];
 
 	}

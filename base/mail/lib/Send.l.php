@@ -5,6 +5,7 @@ class SendLib {
 
 	protected \farm\Farm|null $eFarm = NULL;
 	protected \selling\Customer|null $eCustomer = NULL;
+	protected Campaign|null $eCampaign = NULL;
 	protected ?string $fromEmail = NULL;
 	protected ?string $fromName = NULL;
 	protected ?string $to = NULL;
@@ -28,6 +29,11 @@ class SendLib {
 
 	public function setCustomer(\selling\Customer $eCustomer): SendLib {
 		$this->eCustomer = $eCustomer;
+		return $this;
+	}
+
+	public function setCampaign(\mail\Campaign $eCampaign): SendLib {
+		$this->eCampaign = $eCampaign;
 		return $this;
 	}
 
@@ -106,6 +112,7 @@ class SendLib {
 	public function reset() {
 		$this->eFarm = NULL;
 		$this->eCustomer = NULL;
+		$this->eCampaign = NULL;
 		$this->fromEmail = NULL;
 		$this->fromName = NULL;
 		$this->to = NULL;
@@ -147,6 +154,7 @@ class SendLib {
 			$eEmail = new \mail\Email([
 				'farm' => $this->eFarm ?? new \farm\Farm(),
 				'customer' => $this->eCustomer ?? new \selling\Customer(),
+				'campaign' => $this->eCampaign ?? new Campaign(),
 				'html' => $this->bodyHtml,
 				'text' => $this->bodyText,
 				'subject' => $this->subject,

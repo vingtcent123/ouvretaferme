@@ -61,6 +61,82 @@ class CampaignLib extends CampaignCrud {
 			->getCollection(0, 5);
 
 	}
+	public static function sendConfirmed(): void {
+
+		$cCampaign = \mail\Campaign::model()
+			->select(Campaign::getSelection())
+			->whereId(8)
+			->whereStatus(\mail\Campaign::CONFIRMED)
+			->where('NOW() > scheduledAt')
+			->getCollection();
+
+		foreach($cCampaign as $eCampaign) {
+
+			$affected = \mail\Campaign::model()
+				->whereStatus(Campaign::CONFIRMED)
+				->update($eCampaign, ['status' => \mail\Campaign::SENT]);
+
+			if($affected === 0) {
+				continue;
+			}
+
+			$eFarm = $eCampaign['farm'];
+
+			$failed = 0;
+			$consent = [];
+			$limited = [];
+
+			foreach($eCampaign['to'] as $to) {
+
+				$eContact = ContactLib::get($eFarm, $to);
+
+				// Pas de consentement
+				if($eContact->canSend() === FALSE) {
+
+					$failed++;
+					$consent[] = $to;
+					continue;
+
+				}
+
+				// Quota dépassé
+				if(
+					Email::model()
+						->whereTo($to)
+						->whereCampaign('!=', NULL)
+						->count() >= $eFarm->getContactLimit()
+				) {
+
+					$failed++;
+					$limited[] = $to;
+					continue;
+
+				}
+
+				new \mail\SendLib()
+					->setFarm($eFarm)
+					->setReplyTo($eFarm['legalEmail'])
+					->setFromName($eFarm['name'])
+					->setCampaign($eCampaign)
+					->setTo($to)
+					->setContent(...\mail\DesignUi::format($eFarm, $eCampaign['subject'], new \editor\ReadorFormatterUi()->getFromXml($eCampaign['content']), footer: CampaignUi::unsubscribe($eFarm, $to)))
+					->send();
+
+			}
+
+			if($failed > 0) {
+
+				Campaign::model()->update($eCampaign, [
+					'failed' => new \Sql('failed + '.$failed),
+					'limited' => $limited,
+					'consent' => $consent
+				]);
+
+			}
+
+		}
+
+	}
 
 	public static function getLimits(): \Collection {
 /*

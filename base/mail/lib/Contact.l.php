@@ -509,7 +509,7 @@ class ContactLib extends ContactCrud {
 
 	public static function updateEmailStatus(Email $eEmail): void {
 
-		$eEmail->expects(['id', 'contact', 'status']);
+		$eEmail->expects(['id', 'contact', 'campaign', 'status']);
 
 		$eContact = $eEmail['contact'];
 
@@ -527,6 +527,12 @@ class ContactLib extends ContactCrud {
 						'lastSent' => new \Sql('NOW()'),
 						'lastEmail' => $eEmail
 					]);
+
+					if($eEmail['campaign']->notEmpty()) {
+						Campaign::model()->update($eEmail['campaign'], [
+							'sent' => new \Sql('sent + 1'),
+						]);
+					}
 					break;
 
 				case Email::DELIVERED :
@@ -534,6 +540,11 @@ class ContactLib extends ContactCrud {
 						'delivered' => new \Sql('delivered + 1'),
 						'lastDelivered' => new \Sql('NOW()')
 					]);
+					if($eEmail['campaign']->notEmpty()) {
+						Campaign::model()->update($eEmail['campaign'], [
+							'delivered' => new \Sql('delivered + 1'),
+						]);
+					}
 					break;
 
 				case Email::OPENED :
@@ -541,6 +552,11 @@ class ContactLib extends ContactCrud {
 						'opened' => new \Sql('opened + 1'),
 						'lastOpened' => new \Sql('NOW()')
 					]);
+					if($eEmail['campaign']->notEmpty()) {
+						Campaign::model()->update($eEmail['campaign'], [
+							'opened' => new \Sql('opened + 1'),
+						]);
+					}
 					break;
 
 				case Email::ERROR_SPAM :
@@ -548,6 +564,11 @@ class ContactLib extends ContactCrud {
 						'spam' => new \Sql('spam + 1'),
 						'lastSpam' => new \Sql('NOW()')
 					]);
+					if($eEmail['campaign']->notEmpty()) {
+						Campaign::model()->update($eEmail['campaign'], [
+							'spam' => new \Sql('spam + 1'),
+						]);
+					}
 					break;
 
 				case Email::ERROR_BOUNCE :
@@ -557,6 +578,11 @@ class ContactLib extends ContactCrud {
 						'failed' => new \Sql('failed + 1'),
 						'lastFailed' => new \Sql('NOW()')
 					]);
+					if($eEmail['campaign']->notEmpty()) {
+						Campaign::model()->update($eEmail['campaign'], [
+							'failed' => new \Sql('failed + 1'),
+						]);
+					}
 					break;
 
 			}

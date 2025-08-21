@@ -73,6 +73,17 @@ new \mail\CampaignPage()
 		throw new ViewAction($data);
 
 	})
+	->read('get', function($data) {
+
+		$data->cEmail = $data->e['status'] === \mail\Campaign::SENT ?
+			\mail\EmailLib::getByCampaign($data->e) :
+			new Collection();
+
+		$data->eFarm = $data->e['farm'];
+
+		throw new ViewAction($data);
+
+	})
 	->doDelete(fn() => throw new ReloadAction(), validate: ['canDelete', 'acceptDelete'])
 	->update(function($data) {
 

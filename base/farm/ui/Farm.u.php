@@ -1690,6 +1690,8 @@ class FarmUi {
 					'operations'
 				];
 
+				$eFarm['company'] ??= new \company\Company();
+
 				if($eFarm['company']->empty() or $eFarm['company']->isAccrualAccounting()) {
 					$categories[] = 'accounts';
 				}
