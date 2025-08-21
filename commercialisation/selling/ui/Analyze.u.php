@@ -1774,7 +1774,9 @@ class AnalyzeUi {
 					}
 						$h .= '<h5>'.$eSaleTurnover['year'].'</h5>';
 						$h .= '<div>'.\util\TextUi::money($eSaleTurnover['turnover'], precision: 0).'</div>';
-						$h .= '<div class="util-summarize-muted">('.\util\TextUi::pc($eSaleTurnover['turnover'] / $eSaleTurnover['turnoverGlobal'] * 100, 0).')</div>';
+						if($eSaleTurnover['turnoverGlobal'] > 0) {
+							$h .= '<div class="util-summarize-muted">('.\util\TextUi::pc($eSaleTurnover['turnover'] / $eSaleTurnover['turnoverGlobal'] * 100, 0).')</div>';
+						}
 					$h .= '</a>';
 				$h .= '</li>';
 			}
@@ -2005,7 +2007,9 @@ class AnalyzeUi {
 					$h .= '<a href="/selling/product:analyze?id='.$eProductLink['id'].'&year='.$eItemYear['year'].''.($search->get('type') ? '&type='.encode($search->get('type')) : '').'">';
 						$h .= '<h5>'.$eItemYear['year'].'</h5>';
 						$h .= '<div>'.\util\TextUi::money($eItemYear['turnover'], precision: 0).'</div>';
-						$h .= '<div class="util-summarize-muted">('.\util\TextUi::pc($eItemYear['turnover'] / $eItemYear['turnoverGlobal'] * 100, 0).')</div>';
+						if($eItemYear['turnoverGlobal'] > 0) {
+							$h .= '<div class="util-summarize-muted">('.\util\TextUi::pc($eItemYear['turnover'] / $eItemYear['turnoverGlobal'] * 100, 0).')</div>';
+						}
 					$h .= '</a>';
 				$h .= '</li>';
 			}
