@@ -44,7 +44,9 @@ new \mail\CampaignPage()
 
 		$data->e['cContact'] = \mail\ContactLib::getByCampaign($data->e, withCustomer: TRUE);
 		$data->e['cCampaignLast'] = \mail\CampaignLib::getLastByFarm($data->eFarm, $data->e['source']);
-		$data->e['scheduledAt'] = max($data->e->getMinScheduledAt(), GET('scheduledAt', default: currentDatetime()));
+		$data->e['scheduledAt'] = get_exists('scheduledAt') ?
+			max($data->e->getMinScheduledAt(), GET('scheduledAt', default: currentDatetime())) :
+			$data->e->getMinFavoriteScheduledAt($data->eFarm);
 
 		throw new ViewAction($data);
 

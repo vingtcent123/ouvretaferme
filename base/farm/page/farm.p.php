@@ -49,7 +49,7 @@ new \farm\FarmPage()
 
 	}, page: 'updateEmail')
 	->doUpdateProperties('doUpdateLegal', ['legalName', 'legalEmail', 'siret', 'legalStreet1', 'legalStreet2', 'legalPostcode', 'legalCity'], fn() => throw new ReloadAction('farm', 'Farm::updatedLegal'))
-	->doUpdateProperties('doUpdateEmail', ['emailFooter'], fn() => throw new ReloadAction('farm', 'Farm::updatedEmail'))
+	->doUpdateProperties('doUpdateEmail', ['emailFooter', 'emailDefaultTime'], fn() => throw new ReloadAction('farm', 'Farm::updatedEmail'))
 	->doUpdateProperties('doUpdatePlanningDelayedMax', ['planningDelayedMax'], fn() => throw new ReloadAction())
 	->read('calendarMonth', function($data) {
 

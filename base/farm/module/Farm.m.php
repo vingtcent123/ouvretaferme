@@ -60,6 +60,7 @@ class FarmModel extends \ModuleModel {
 			'logo' => ['textFixed', 'min' => 30, 'max' => 30, 'charset' => 'ascii', 'null' => TRUE, 'cast' => 'string'],
 			'emailBanner' => ['textFixed', 'min' => 30, 'max' => 30, 'charset' => 'ascii', 'null' => TRUE, 'cast' => 'string'],
 			'emailFooter' => ['editor16', 'min' => 1, 'max' => 400, 'null' => TRUE, 'cast' => 'string'],
+			'emailDefaultTime' => ['time', 'null' => TRUE, 'cast' => 'string'],
 			'seasonFirst' => ['int16', 'min' => 0, 'max' => NULL, 'cast' => 'int'],
 			'seasonLast' => ['int16', 'min' => 0, 'max' => NULL, 'cast' => 'int'],
 			'rotationYears' => ['int8', 'min' => 2, 'max' => 5, 'cast' => 'int'],
@@ -86,7 +87,7 @@ class FarmModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'name', 'legalName', 'legalEmail', 'siret', 'legalStreet1', 'legalStreet2', 'legalPostcode', 'legalCity', 'vignette', 'place', 'placeLngLat', 'url', 'description', 'logo', 'emailBanner', 'emailFooter', 'seasonFirst', 'seasonLast', 'rotationYears', 'rotationExclude', 'quality', 'defaultBedLength', 'defaultBedWidth', 'defaultAlleyWidth', 'calendarMonthStart', 'calendarMonthStop', 'planningDelayedMax', 'featureTime', 'featureStock', 'stockNotes', 'stockNotesUpdatedAt', 'stockNotesUpdatedBy', 'hasCampaign', 'hasShops', 'hasSales', 'hasCultivations', 'startedAt', 'createdAt', 'status'
+			'id', 'name', 'legalName', 'legalEmail', 'siret', 'legalStreet1', 'legalStreet2', 'legalPostcode', 'legalCity', 'vignette', 'place', 'placeLngLat', 'url', 'description', 'logo', 'emailBanner', 'emailFooter', 'emailDefaultTime', 'seasonFirst', 'seasonLast', 'rotationYears', 'rotationExclude', 'quality', 'defaultBedLength', 'defaultBedWidth', 'defaultAlleyWidth', 'calendarMonthStart', 'calendarMonthStop', 'planningDelayedMax', 'featureTime', 'featureStock', 'stockNotes', 'stockNotesUpdatedAt', 'stockNotesUpdatedBy', 'hasCampaign', 'hasShops', 'hasSales', 'hasCultivations', 'startedAt', 'createdAt', 'status'
 		]);
 
 		$this->propertiesToModule += [
@@ -262,6 +263,10 @@ class FarmModel extends \ModuleModel {
 
 	public function whereEmailFooter(...$data): FarmModel {
 		return $this->where('emailFooter', ...$data);
+	}
+
+	public function whereEmailDefaultTime(...$data): FarmModel {
+		return $this->where('emailDefaultTime', ...$data);
 	}
 
 	public function whereSeasonFirst(...$data): FarmModel {

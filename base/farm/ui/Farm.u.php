@@ -535,7 +535,7 @@ class FarmUi {
 			);
 			$h .= '<br/>';
 
-			$h .= $form->dynamicGroups($eFarm, ['emailFooter']);
+			$h .= $form->dynamicGroups($eFarm, ['emailFooter', 'emailDefaultTime']);
 
 			$h .= $form->group(
 				content: $form->submit(s("Enregistrer"))
@@ -1586,7 +1586,7 @@ class FarmUi {
 
 	public static function getMailingCategories(): array {
 
-		if(LIME_ENV === 'prod') {
+		if(FEATURE_EMAILING === FALSE) {
 			return [
 				Farmer::CONTACT => s("Contacts"),
 			];
@@ -2185,6 +2185,7 @@ class FarmUi {
 			'logo' => s("Logo de la ferme"),
 			'emailBanner' => s("Bandeau à afficher en haut des e-mails envoyés à vos clients"),
 			'emailFooter' => s("Signature à afficher en bas des e-mails envoyés à vos clients"),
+			'emailDefaultTime' => s("Heure préférée pour l'envoi des campagnes d'e-mailing"),
 			'defaultBedLength' => s("Longueur des planches par défaut"),
 			'defaultBedWidth' => s("Largeur travaillée des planches par défaut"),
 			'defaultAlleyWidth' => s("Largeur de passe-pied entre les planches par défaut"),
@@ -2253,6 +2254,10 @@ class FarmUi {
 				$d->values = self::getQualities();
 				$d->placeholder = s("Aucun");
 				$d->after = \util\FormUi::info(s("Pour rappel, {siteName} ne peut être utilisé que par les fermes sous l'un de ces signes de qualité."));
+				break;
+
+			case 'emailDefaultTime' :
+				$d->labelAfter = \util\FormUi::info(s("En laissant ce champ vide, l'heure actuelle sera proposée par défaut"));
 				break;
 
 			case 'stockNotes' :

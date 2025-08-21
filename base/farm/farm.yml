@@ -40,6 +40,7 @@ Farm:
   logo: ?textFixed(30, 30) @charset(ascii)
   emailBanner: ?textFixed(30, 30) @charset(ascii)
   emailFooter: ?editor16(1, 400)
+  emailDefaultTime: ?time
   seasonFirst: int16(0, null)
   seasonLast: int16(0, null)
   rotationYears: int8(2, 5) = 4

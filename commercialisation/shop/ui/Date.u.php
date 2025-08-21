@@ -639,25 +639,59 @@ class DateUi {
 			}
 
 			if(
+				FEATURE_EMAILING and
 				$eDate->canWrite() and (
 					$eDate->acceptOrderSoon() or
 					$eDate->acceptOrder()
 				)
 			) {
 
-				$h .= '<div class="dropdown-subtitle">'.s("Programmer une campagne d'e-mailing").'</div>';
+				$h .= '<div class="dropdown-subtitle">';
+					$h .= s("Programmer une campagne d'e-mailing");
+					$h .= '<br/>';
+						if($eDate->acceptOrderSoon()) {
+							$h .= s("à l'ouverture des ventes");
+						}
+				$h .= '</div>';
 
-				$minScheduledAt = new \mail\Campaign()->getMinScheduledAt();
 
-				$h .= '<a href="/mail/campaign:create?farm='.$eFarm['id'].'&source=shop&sourceShop='.$eShop['id'].'" class="dropdown-item">'.\Asset::icon('chevron-right').' '.s("Maintenant").'</a>';
+				if($eDate->acceptOrder()) {
 
-				if($eDate['orderStartAt'] > $minScheduledAt) {
+					$h .= '<a href="/mail/campaign:create?farm='.$eFarm['id'].'&source=shop&sourceShop='.$eShop['id'].'" class="dropdown-item">'.s("Maintenant").'</a>';
 
-					$h .= '<a href="/mail/campaign:create?farm='.$eFarm['id'].'&source=shop&sourceShop='.$eShop['id'].'&scheduledAt='.$eDate['orderStartAt'].'" class="dropdown-item">'.\Asset::icon('chevron-right').' '.s("Le {date}", ['date' => \util\DateUi::numeric($eDate['orderStartAt'], \util\DateUi::DATE_HOUR_MINUTE)]).'</a>';
+
+					$minFavoriteScheduledAt = new \mail\Campaign()->getMinFavoriteScheduledAt($eFarm);
+
+					if(
+						$eDate['orderEndAt'] > $minFavoriteScheduledAt and
+						$minFavoriteScheduledAt > $eDate['orderStartAt']
+					) {
+
+						if(str_starts_with($minFavoriteScheduledAt, currentDate())) {
+							$label = s("Aujourd'hui à {date}", ['date' => \util\DateUi::numeric($minFavoriteScheduledAt, \util\DateUi::TIME_HOUR_MINUTE)]);
+						} else {
+							$label = s("Demain à {date}", ['date' => \util\DateUi::numeric($minFavoriteScheduledAt, \util\DateUi::TIME_HOUR_MINUTE)]);
+						}
+
+						$h .= '<a href="/mail/campaign:create?farm='.$eFarm['id'].'&source=shop&sourceShop='.$eShop['id'].'&scheduledAt='.$minFavoriteScheduledAt.'" class="dropdown-item">'.$label.'</a>';
+
+					}
+
+				} else {
+
+					$h .= '<a href="/mail/campaign:create?farm='.$eFarm['id'].'&source=shop&sourceShop='.$eShop['id'].'&scheduledAt='.$eDate['orderStartAt'].'" class="dropdown-item">'.\util\DateUi::getDayName(date('N', strtotime($eDate['orderStartAt']))).' '.\util\DateUi::numeric($eDate['orderStartAt'], \util\DateUi::DATE_HOUR_MINUTE).'</a>';
+
+					$startAt = substr($eDate['orderStartAt'], 0, 10).' '.($eFarm['emailDefaultTime'] ?? date('H:is:00'));
+
+					if($startAt < $eDate['orderStartAt']) {
+						$startAt = date('Y-m-d H:i:00', strtotime($startAt.' + 1 DAY'));
+					}
+
+					if($startAt < $eDate['orderEndAt']) {
+						$h .= '<a href="/mail/campaign:create?farm='.$eFarm['id'].'&source=shop&sourceShop='.$eShop['id'].'&scheduledAt='.$startAt.'" class="dropdown-item">'.\util\DateUi::getDayName(date('N', strtotime($startAt))).' '.\util\DateUi::numeric($startAt, \util\DateUi::DATE_HOUR_MINUTE).'</a>';
+					}
 
 				}
-
-				$test = substr($eDate['orderStartAt'], 0, 10).' 20:00:00';
 
 			}
 

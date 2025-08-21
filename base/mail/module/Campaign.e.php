@@ -35,14 +35,38 @@ class Campaign extends CampaignElement {
 	public function getMinScheduledAt(string $mode = 'display'): string {
 
 		$delay = match($mode) {
-			'display' => 3,
-			'check' => 2
+			'display' => 2,
+			'check' => 1
 		};
 
 		if($this->exists()) {
 			return date('Y-m-d H:00:00', strtotime($this['createdAt'].' + '.$delay.' HOUR'));
 		} else {
 			return date('Y-m-d H:00:00', time() + $delay * 3600);
+		}
+
+	}
+
+
+	public function getMinFavoriteScheduledAt(\farm\Farm $eFarm): string {
+
+		$eFarm->expects(['emailDefaultTime']);
+
+		$min = $this->getMinScheduledAt('display');
+
+		if($eFarm['emailDefaultTime'] !== NULL) {
+
+			$minDate = substr($min, 0, 10);
+			$newMin = $minDate.' '.$eFarm['emailDefaultTime'];
+
+			if($newMin < $min) {
+				return date('Y-m-d', strtotime($minDate.' + 1 DAY')).' '.$eFarm['emailDefaultTime'];
+			} else {
+				return $newMin;
+			}
+
+		} else {
+			return $min;
 		}
 
 	}
