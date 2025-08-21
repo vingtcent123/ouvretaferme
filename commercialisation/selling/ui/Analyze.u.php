@@ -157,9 +157,9 @@ class AnalyzeUi {
 								}
 							$h .= '</td>';
 							$h .= '<td>';
-								if($turnover !== NULL) {
+								if($turnover !== NULL and $totalTurnover > 0) {
 									$h .= '<div class="util-annotation">';
-										$h .= ($totalTurnover > 0 ? \util\TextUi::pc($turnover / $totalTurnover * 100) : '-');
+										$h .= \util\TextUi::pc($turnover / $totalTurnover * 100);
 									$h .= '</div>';
 								}
 							$h .= '</td>';
@@ -245,7 +245,7 @@ class AnalyzeUi {
 							$h .= \util\TextUi::money($totalTurnover, precision: 0);
 						$h .= '</td>';
 						$h .= '<td>';
-							if($turnover !== NULL) {
+							if($turnover !== NULL and $totalTurnover > 0) {
 								$h .= '<div class="util-annotation">'.\util\TextUi::pc($turnover / $totalTurnover * 100, 0).'</div>';
 							}
 						$h .= '</td>';
@@ -1295,7 +1295,9 @@ class AnalyzeUi {
 						$h .= '</td>';
 						if($compare === FALSE) {
 							$h .= '<td class="util-annotation '.$class.'">';
-								$h .= \util\TextUi::pc($eItem['turnover'] / $totalTurnover * 100);
+								if($totalTurnover > 0) {
+									$h .= \util\TextUi::pc($eItem['turnover'] / $totalTurnover * 100);
+								}
 							$h .= '</td>';
 						}
 					}
@@ -1607,7 +1609,9 @@ class AnalyzeUi {
 						$h .= '</td>';
 						if($compare === FALSE) {
 							$h .= '<td class="util-annotation '.$class.'">';
-								$h .= \util\TextUi::pc($itemTurnover / $globalTurnover * 100, 0);
+								if($globalTurnover > 0) {
+									$h .= \util\TextUi::pc($itemTurnover / $globalTurnover * 100, 0);
+								}
 							$h .= '</td>';
 						}
 					}
