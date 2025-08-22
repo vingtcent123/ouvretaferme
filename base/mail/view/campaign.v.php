@@ -3,6 +3,15 @@ new AdaptativeView('createSelect', function($data, PanelTemplate $t) {
 	return new \mail\CampaignUi()->createSelect($data->e, $data->cGroup, $data->ccShop);
 });
 
+new AdaptativeView('getLimits', function($data, AjaxTemplate $t) {
+
+	$remaining = $data->e['limit'] - $data->e['alreadyScheduled'];
+
+	$t->qs('#campaign-limit')->innerHtml($remaining);
+	$t->qs('#campaign-limit-alert')->innerHtml(new \mail\CampaignUi()->getAlert($data->date, $remaining, $data->e['limit']));
+
+});
+
 new AdaptativeView('create', function($data, FarmTemplate $t) {
 
 	$t->nav = 'communications';

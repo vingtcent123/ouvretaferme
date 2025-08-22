@@ -62,7 +62,7 @@ class CampaignLib extends CampaignCrud {
 
 	}
 
-	public static function countScheduled(\farm\Farm $eFarm, string $date): int {
+	public static function countScheduled(\farm\Farm $eFarm, string $date, Campaign $eCampaignExclude = new Campaign()): int {
 
 		$week = toWeek($date);
 		$dateStart = week_date_starts($week);
@@ -70,8 +70,9 @@ class CampaignLib extends CampaignCrud {
 
 		return Campaign::model()
 			->whereFarm($eFarm)
+			->whereId('!=', $eCampaignExclude, if: $eCampaignExclude->notEmpty())
 			->whereScheduledAt('BETWEEN', new \Sql(Campaign::model()->format($dateStart).' AND '.Campaign::model()->format($dateEnd)))
-			->getValue(new \Sql('SUM(scheduled)', 'int'));
+			->getValue(new \Sql('SUM(scheduled)', 'int')) ?? 0;
 
 	}
 

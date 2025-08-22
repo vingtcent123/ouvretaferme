@@ -6,4 +6,18 @@ document.delegateEventListener('autocompleteUpdate', '#campaign-write', function
 
 class Campaign {
 
+    static changeScheduledAt(farmId, campaignId, date) {
+
+        new Ajax.Query()
+          .url('/mail/campaign:getLimits')
+          .method('post')
+          .body({
+              id: farmId,
+              campaign: campaignId,
+              date: date
+          })
+          .fetch();
+
+    }
+
 }

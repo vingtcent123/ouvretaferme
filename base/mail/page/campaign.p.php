@@ -48,6 +48,9 @@ new \mail\CampaignPage()
 			max($data->e->getMinScheduledAt(), GET('scheduledAt', default: currentDatetime())) :
 			$data->e->getMinFavoriteScheduledAt($data->eFarm);
 
+		$data->e['alreadyScheduled'] = \mail\CampaignLib::countScheduled($data->eFarm, $data->e['scheduledAt']);
+		$data->e['limit'] = $data->eFarm->getCampaignLimit();
+
 		throw new ViewAction($data);
 
 	})
@@ -63,7 +66,18 @@ new \farm\FarmPage()
 
 		throw new ViewAction($data);
 
-	}, validate: ['canCommunication']);
+	}, validate: ['canCommunication'])
+	->read('getLimits', function($data) {
+
+		$data->date = \mail\Campaign::POST('date', 'scheduledAt', fn() => throw new NotExpectedAction());
+		$data->eCampaign = POST('campaign', 'mail\Campaign');
+
+		$data->e['alreadyScheduled'] = \mail\CampaignLib::countScheduled($data->e, $data->date, $data->eCampaign);
+		$data->e['limit'] = $data->e->getCampaignLimit();
+
+		throw new ViewAction($data);
+
+	}, method: 'post', validate: ['canCommunication']);
 
 new \mail\CampaignPage()
 	->read('getEmailFields', function($data) {
@@ -88,6 +102,9 @@ new \mail\CampaignPage()
 	->update(function($data) {
 
 		$data->e['cContact'] = \mail\ContactLib::getByEmails($data->e['farm'], $data->e['to'], withCustomer: TRUE);
+
+		$data->e['alreadyScheduled'] = \mail\CampaignLib::countScheduled($data->e['farm'], $data->e['scheduledAt']) - $data->e['scheduled'];
+		$data->e['limit'] = $data->e['farm']->getCampaignLimit();
 
 		throw new ViewAction($data);
 

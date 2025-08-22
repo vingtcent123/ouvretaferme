@@ -101,6 +101,18 @@ class Campaign extends CampaignElement {
 					->whereEmail('IN', $to)
 					->count() === count($to);
 
+			})
+			->setCallback('to.limitExceeded', function(array $to) use ($p): bool {
+
+				if($p->isInvalid('to')) {
+					return TRUE;
+				}
+
+				$this['toLimit'] = $this['farm']->getCampaignLimit();
+				$this['toAttempt'] = CampaignLib::countScheduled($this['farm'], $this['scheduledAt'], $this) + count($to);
+
+				return ($this['toAttempt'] <= $this['toLimit']);
+
 			});
 
 		parent::build($properties, $input, $p);

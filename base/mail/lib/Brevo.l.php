@@ -10,6 +10,10 @@ class BrevoLib {
 
 	public static function send(Email $eEmail): ?array {
 
+		if(OTF_DEMO) {
+			throw new \Exception('Mail sending disabled');
+		}
+
 		$object = [
 			'subject' => $eEmail['subject'],
 			'htmlContent' => $eEmail['html'] ?? nl2br($eEmail['text']),

@@ -172,19 +172,13 @@ class CampaignUi {
 			'firstColumnSize' => 25
 		]);
 
-		$h = $form->openAjax('/mail/campaign:doCreate', ['id' => 'campaign-write']);
-
-			$h .= $form->hidden('id', $eCampaign['id']);
-
-			$h .= $this->getWrite($form, $eCampaign);
-
-		$h .= $form->close();
-
+		$h = $form->hidden('id', $eCampaign['id']);
+		$h .= $this->getWrite($form, $eCampaign);
 
 		return new \Panel(
 			id: 'panel-campaign-update',
 			title: s("Modifier une campagne"),
-			dialogOpen: $form->openAjax('/mail/campaign:doUpdate', ['class' => 'panel-dialog container']),
+			dialogOpen: $form->openAjax('/mail/campaign:doUpdate', ['class' => 'panel-dialog container', 'id' => 'campaign-write']),
 			dialogClose: $form->close(),
 			body: $h,
 			footer: $form->submit(s("Enregistrer"), ['class' => 'btn btn-primary btn-lg']),
@@ -197,7 +191,12 @@ class CampaignUi {
 		$h = $form->dynamicGroup($eCampaign, 'scheduledAt');
 		$h .= $this->getEmailFields($form, $eCampaign);
 
+		$remaining = $eCampaign['limit'] - $eCampaign['alreadyScheduled'];
+		
 		$label = self::p('to')->label.'  <span class="util-counter" id="campaign-contacts">'.$eCampaign['cContact']->count().'</span>';
+		$label .= '<b> / <span id="campaign-limit">'.$remaining.'</span></b>';
+
+		$label .= '<div id="campaign-limit-alert">'.$this->getAlert($eCampaign['scheduledAt'], $remaining, $eCampaign['limit']).'</div>';
 
 		if(
 			$eCampaign->exists() and
@@ -214,6 +213,10 @@ class CampaignUi {
 
 		return $h;
 
+	}
+
+	public function getAlert(string $date, int $remaining, int $limit): string {
+		return \util\FormUi::info(s("Il vous reste {remaining} / {limit} mails à envoyer sur la semaine du {date}.", ['remaining' => $remaining, 'limit' => $limit, 'date' => \util\DateUi::numeric($date, \util\DateUi::DATE)]));
 	}
 
 	public function getEmailFields(\util\FormUi $form, Campaign $eCampaign): string {
@@ -628,6 +631,11 @@ class CampaignUi {
 			case 'scheduledAt' :
 				$d->prepend = s("Envoyer le");
 				$d->after = fn(\util\FormUi $form, Campaign $e) => ($e->getMinScheduledAt() > currentDatetime()) ? \util\FormUi::info(s("Au plus tôt le {date} pour laisser le temps d'amender l'e-mail si nécessaire", ['date' => \util\DateUi::numeric($e->getMinScheduledAt(), \util\DateUi::DATE_HOUR_MINUTE)])) : '';
+				$d->attributes = function(\util\FormUi $form, Campaign $e) {
+					return [
+						'oninput' => 'Campaign.changeScheduledAt('.$e['farm']['id'].', '.($e->exists() ? $e['id'] : 'null').', this.value)'
+					];
+				};
 				break;
 
 			case 'subject' :
