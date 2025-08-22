@@ -695,6 +695,12 @@ class DateUi {
 						$h .= '<a href="/mail/campaign:create?farm='.$eFarm['id'].'&source=shop&sourceShop='.$eShop['id'].'&scheduledAt='.$startAt.'" class="dropdown-item">'.\util\DateUi::getDayName(date('N', strtotime($startAt))).' '.\util\DateUi::numeric($startAt, \util\DateUi::DATE_HOUR_MINUTE).'</a>';
 					}
 
+					$nextAt = date('Y-m-d H:i:00', strtotime($startAt.' + 1 DAY'));
+
+					if($nextAt < $eDate['orderEndAt']) {
+						$h .= '<a href="/mail/campaign:create?farm='.$eFarm['id'].'&source=shop&sourceShop='.$eShop['id'].'&scheduledAt='.$nextAt.'" class="dropdown-item">'.\util\DateUi::getDayName(date('N', strtotime($nextAt))).' '.\util\DateUi::numeric($nextAt, \util\DateUi::DATE_HOUR_MINUTE).'</a>';
+					}
+
 				}
 
 			}
