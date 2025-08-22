@@ -567,7 +567,7 @@ new AdaptativeView('/ferme/{id}/campagnes', function($data, FarmTemplate $t) {
 
 	$t->mainTitle = new \farm\FarmUi()->getMailingTitle($data->eFarm, $data->nCampaign, \farm\Farmer::CAMPAIGN);
 
-	echo new \mail\CampaignUi()->getList($data->eFarm, $data->cCampaign, $data->nCampaign, $data->page);
+	echo new \mail\CampaignUi()->getList($data->eFarm, $data->cCampaign, $data->nCampaign, $data->page, $data->scheduledByWeek);
 
 });
 

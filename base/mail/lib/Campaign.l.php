@@ -61,11 +61,24 @@ class CampaignLib extends CampaignCrud {
 			->getCollection(0, 5);
 
 	}
+
+	public static function countScheduled(\farm\Farm $eFarm, string $date): int {
+
+		$week = toWeek($date);
+		$dateStart = week_date_starts($week);
+		$dateEnd = week_date_ends($week);
+
+		return Campaign::model()
+			->whereFarm($eFarm)
+			->whereScheduledAt('BETWEEN', new \Sql(Campaign::model()->format($dateStart).' AND '.Campaign::model()->format($dateEnd)))
+			->getValue(new \Sql('SUM(scheduled)', 'int'));
+
+	}
+
 	public static function sendConfirmed(): void {
 
 		$cCampaign = \mail\Campaign::model()
 			->select(Campaign::getSelection())
-			->whereId(8)
 			->whereStatus(\mail\Campaign::CONFIRMED)
 			->where('NOW() > scheduledAt')
 			->getCollection();

@@ -176,6 +176,11 @@
 		$data->nCampaign = \mail\CampaignLib::countByFarm($data->eFarm);
 		$data->cCampaign = \mail\CampaignLib::getByFarm($data->eFarm, $data->page);
 
+		$data->scheduledByWeek = [
+			0 => \mail\CampaignLib::countScheduled($data->eFarm, currentDate()),
+			1 => \mail\CampaignLib::countScheduled($data->eFarm, date('Y-m-d', strtotime('NOW + 1 WEEK')))
+		];
+
 		$data->tip = \farm\TipLib::pickOne($data->eUserOnline, 'mailing-campaign-help');
 		$data->tipNavigation = 'inline';
 

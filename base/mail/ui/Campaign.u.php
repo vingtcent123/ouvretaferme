@@ -385,7 +385,7 @@ class CampaignUi {
 	}
 
 
-	public function getList(\farm\Farm $eFarm, \Collection $cCampaign, int $nCampaign, int $page) {
+	public function getList(\farm\Farm $eFarm, \Collection $cCampaign, int $nCampaign, int $page, array $scheduledByWeek) {
 
 		$h = '';
 
@@ -396,7 +396,7 @@ class CampaignUi {
 
 		}
 
-		$h .= $this->getLimits($eFarm);
+		$h .= $this->getLimits($eFarm, $scheduledByWeek);
 
 		$h .= '<div class="stick-md util-overflow-md">';
 
@@ -411,8 +411,7 @@ class CampaignUi {
 					$h .= '</tr>';
 
 					$h .= '<tr>';
-						$h .= '<th class="text-center highlight-stick-right">'.s("Destinataires").'</th>';
-						$h .= '<th class="text-center highlight-stick-both">'.s("Envoyés").'</th>';
+						$h .= '<th class="text-center highlight-stick-right">'.s("Envoyés").'</th>';
 						$h .= '<th class="text-center highlight-stick-both">'.s("Reçus").'</th>';
 						$h .= '<th class="text-center highlight-stick-both">'.s("Lus").'</th>';
 						$h .= '<th class="text-center highlight-stick-left">'.s("Bloqués").'</th>';
@@ -470,7 +469,7 @@ class CampaignUi {
 								$h .= '<td class="campaign-item-stat highlight-stick-right">';
 									$h .= $scheduled;
 								$h .= '</td>';
-								$h .= '<td colspan="4" class="text-center highlight-stick-left color-warning">';
+								$h .= '<td colspan="3" class="text-center highlight-stick-left color-warning">';
 									$h .= \Asset::icon('alarm').' '.s("Envoi programmé le {date}", ['date' => \util\DateUi::numeric($eCampaign['scheduledAt'], \util\DateUi::DATE_HOUR_MINUTE)]);
 								$h .= '</td>';
 								break;
@@ -481,14 +480,9 @@ class CampaignUi {
 								$h .= '</td>';
 
 								$h .= '<td class="campaign-item-stat highlight-stick-both">';
-									$h .= '<span style="font-size: 1.25rem">'.$eCampaign['sent'].'</span>';
-									$h .= '<div class="campaign-item-stat-percent">'.s("{value} %", round($eCampaign['delivered'] / $eCampaign['scheduled'] * 100)).'</div>';
-								$h .= '</td>';
-
-								$h .= '<td class="campaign-item-stat highlight-stick-both">';
 									if($eCampaign['sent'] > 0) {
 										$h .= '<span>'.$eCampaign['delivered'].'</span>';
-										$h .= '<div class="campaign-item-stat-percent">'.s("{value} %", round($eCampaign['delivered'] / $eCampaign['sent'] * 100)).'</div>';
+										$h .= '<div class="campaign-item-stat-percent">'.s("{value} %", round($eCampaign['delivered'] / $eCampaign['scheduled'] * 100)).'</div>';
 									}
 								$h .= '</td>';
 
@@ -503,7 +497,7 @@ class CampaignUi {
 									if($eCampaign['sent'] > 0) {
 										$blocked = $eCampaign['failed'] + $eCampaign['spam'];
 										$h .= '<span '.($blocked > 0 ? 'class="color-danger"' : '').'>'.$blocked.'</span>';
-										$h .= '<div class="campaign-item-stat-percent">'.s("{value} %", round($blocked / $eCampaign['sent'] * 100)).'</div>';
+										$h .= '<div class="campaign-item-stat-percent">'.s("{value} %", round($blocked / $eCampaign['scheduled'] * 100)).'</div>';
 									}
 								$h .= '</td>';
 								break;
@@ -536,9 +530,9 @@ class CampaignUi {
 
 	}
 
-	public function getLimits(\farm\Farm $eFarm): string {
+	public function getLimits(\farm\Farm $eFarm, array $scheduledByWeek): string {
 
-		$h = '<div class="util-block-gradient">';
+		$h = '<div class="util-block">';
 			$h .= '<h4>'.s("Les campagnes sont soumises aux limites hebdomadaires suivantes :").'</h4>';
 			$h .= '<ul>';
 				$h .= '<li>'.s("{value} envois d'e-mails", $eFarm->getCampaignLimit()).'</li>';
@@ -546,6 +540,28 @@ class CampaignUi {
 			$h .= '</ul>';
 			$h .= '<p class="color-secondary">'.s("L'envoi d'e-mails est limité pour réduire les risques de spam et parce que l'envoi des e-mails est une source de coût pour l'association {siteName}. Il sera bientôt possible d'envoyer plus d'e-mails en adhérant à l'association. ").'</p>';
 		$h .= '</div>';
+
+		if(array_sum($scheduledByWeek) > 0) {
+
+			$h .= '<ul class="util-summarize">';
+
+				foreach($scheduledByWeek as $week => $scheduled) {
+
+					$h .= '<li>';
+						$h .= '<h5>';
+							$h .= match($week) {
+								0 => s("Cette semaine"),
+								1 => s("Semaine prochaine")
+							};
+						$h .= '</h5>';
+						$h .= '<div>'.s("{value} / {max}", ['value' => $scheduled, 'max' => $eFarm->getCampaignLimit()]).'</div>';
+					$h .= '</li>';
+
+				}
+
+			$h .= '</ul>';
+
+		}
 
 		return $h;
 
