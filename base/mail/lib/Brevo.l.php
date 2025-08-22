@@ -133,6 +133,7 @@ class BrevoLib {
 				break;
 
 			case 'unique_opened' :
+			case 'opened' :
 				$eEmail['status'] = Email::OPENED;
 				$eEmail['openedAt'] = new \Sql('NOW()');
 				$properties[] = 'openedAt';
