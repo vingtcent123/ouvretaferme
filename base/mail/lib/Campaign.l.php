@@ -48,7 +48,7 @@ class CampaignLib extends CampaignCrud {
 
 	}
 
-	public static function getLastByFarm(\farm\Farm $eFarm, string $source): \Collection {
+	public static function getLastByFarm(\farm\Farm $eFarm, ?string $source): \Collection {
 
 		return Campaign::model()
 			->select(Campaign::getSelection())
