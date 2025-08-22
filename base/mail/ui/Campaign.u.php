@@ -275,19 +275,19 @@ class CampaignUi {
 
 			$h .= '<ul class="util-summarize">';
 				$h .= '<li>';
-					$h .= '<h5>'.s("Envoyés").'</h5>';
+					$h .= '<h5><div style="margin-bottom: .25rem">'.self::getIcon(Email::SENT).'</div>'.s("Envoyés").'</h5>';
 					$h .= '<div>'.$e['sent'].'</div>';
 				$h .= '</li>';
 				$h .= '<li>';
-					$h .= '<h5>'.s("Reçus").'</h5>';
+					$h .= '<h5><div style="margin-bottom: .25rem">'.self::getIcon(Email::DELIVERED).'</div>'.s("Reçus").'</h5>';
 					$h .= '<div>'.$e['delivered'].'</div>';
 				$h .= '</li>';
 				$h .= '<li>';
-					$h .= '<h5>'.s("Ouverts").'</h5>';
+					$h .= '<h5><div style="margin-bottom: .25rem">'.self::getIcon(Email::OPENED).'</div>'.s("Ouverts").'</h5>';
 					$h .= '<div>'.$e['opened'].'</div>';
 				$h .= '</li>';
 				$h .= '<li>';
-					$h .= '<h5>'.s("Bloqués").'</h5>';
+					$h .= '<h5><div style="margin-bottom: .25rem">'.self::getIcon(Email::ERROR_BLOCKED).'</div>'.s("Bloqués").'</h5>';
 					$h .= '<div>'.$e['failed'] + $e['spam'].'</div>';
 				$h .= '</li>';
 			$h .= '</ul>';
@@ -339,12 +339,14 @@ class CampaignUi {
 								$h .= '<td>'.encode($eEmail['to']).'</td>';
 								$h .= '<td>';
 
+									$h .= self::getIcon($eEmail['status']).' ';
+
 									$h .= match($eEmail['status']) {
 										Email::WAITING, Email::SENDING => s("En attente"),
 										Email::SENT => s("Envoyé"),
 										Email::DELIVERED => s("Reçu"),
 										Email::OPENED => s("Ouvert"),
-										Email::ERROR_PROVIDER, Email::ERROR_SPAM, Email::ERROR_BOUNCE, Email::ERROR_INVALID, Email::ERROR_BLOCKED => s("Bloqué")
+										Email::ERROR_PROVIDER, Email::ERROR_SPAM, Email::ERROR_BOUNCE, Email::ERROR_INVALID, Email::ERROR_BLOCKED => '<b>'.s("Bloqué").'</b>'
 									};
 
 								$h .= '</td>';
@@ -384,6 +386,17 @@ class CampaignUi {
 
 	}
 
+	public static function getIcon(string $status): string {
+
+		return match($status) {
+			Email::SENT => \Asset::icon('arrow-up-circle'),
+			Email::DELIVERED => \Asset::icon('arrow-down-circle'),
+			Email::OPENED => \Asset::icon('envelope-open'),
+			Email::ERROR_BLOCKED, Email::ERROR_BOUNCE, Email::ERROR_SPAM, Email::ERROR_INVALID, Email::ERROR_PROVIDER => \Asset::icon('exclamation-circle'),
+			default => ''
+		};
+
+	}
 
 	public function getList(\farm\Farm $eFarm, \Collection $cCampaign, int $nCampaign, int $page, array $scheduledByWeek) {
 
@@ -411,10 +424,10 @@ class CampaignUi {
 					$h .= '</tr>';
 
 					$h .= '<tr>';
-						$h .= '<th class="text-center highlight-stick-right">'.s("Envoyés").'</th>';
-						$h .= '<th class="text-center highlight-stick-both">'.s("Reçus").'</th>';
-						$h .= '<th class="text-center highlight-stick-both">'.s("Lus").'</th>';
-						$h .= '<th class="text-center highlight-stick-left">'.s("Bloqués").'</th>';
+						$h .= '<th class="text-center highlight-stick-right"><div class="font-xl" style="margin-bottom: .25rem">'.self::getIcon(Email::SENT).'</div>'.s("Envoyés").'</th>';
+						$h .= '<th class="text-center highlight-stick-both"><div class="font-xl" style="margin-bottom: .25rem">'.self::getIcon(Email::DELIVERED).'</div>'.s("Reçus").'</th>';
+						$h .= '<th class="text-center highlight-stick-both"><div class="font-xl" style="margin-bottom: .25rem">'.self::getIcon(Email::OPENED).'</div>'.s("Lus").'</th>';
+						$h .= '<th class="text-center highlight-stick-left"><div class="font-xl" style="margin-bottom: .25rem">'.self::getIcon(Email::ERROR_BLOCKED).'</div>'.s("Bloqués").'</th>';
 					$h .= '</tr>';
 
 				$h .= '</thead>';
@@ -461,7 +474,7 @@ class CampaignUi {
 
 						$h .= '</td>';
 
-						$scheduled = '<span style="font-size: 1.25rem">'.$eCampaign['scheduled'].'</span>';
+						$scheduled = '<span class="font-xl">'.$eCampaign['scheduled'].'</span>';
 
 						switch($eCampaign['status']) {
 
@@ -480,7 +493,7 @@ class CampaignUi {
 								$h .= '</td>';
 
 								$h .= '<td class="campaign-item-stat highlight-stick-both">';
-									if($eCampaign['sent'] > 0) {
+									if($eCampaign['scheduled'] > 0) {
 										$h .= '<span>'.$eCampaign['delivered'].'</span>';
 										$h .= '<div class="campaign-item-stat-percent">'.s("{value} %", round($eCampaign['delivered'] / $eCampaign['scheduled'] * 100)).'</div>';
 									}
@@ -494,7 +507,7 @@ class CampaignUi {
 								$h .= '</td>';
 
 								$h .= '<td class="campaign-item-stat highlight-stick-left">';
-									if($eCampaign['sent'] > 0) {
+									if($eCampaign['scheduled'] > 0) {
 										$blocked = $eCampaign['failed'] + $eCampaign['spam'];
 										$h .= '<span '.($blocked > 0 ? 'class="color-danger"' : '').'>'.$blocked.'</span>';
 										$h .= '<div class="campaign-item-stat-percent">'.s("{value} %", round($blocked / $eCampaign['scheduled'] * 100)).'</div>';
@@ -538,7 +551,7 @@ class CampaignUi {
 				$h .= '<li>'.s("{value} envois d'e-mails", $eFarm->getCampaignLimit()).'</li>';
 				$h .= '<li>'.p("{value} envois d'e-mail par contact", "{value} envois d'e-mails par contact", $eFarm->getContactLimit()).'</li>';
 			$h .= '</ul>';
-			$h .= '<p class="color-secondary">'.s("L'envoi d'e-mails est limité pour réduire les risques de spam et parce que l'envoi des e-mails est une source de coût pour l'association {siteName}. Il sera bientôt possible d'envoyer plus d'e-mails en adhérant à l'association. ").'</p>';
+			$h .= '<p class="color-secondary">'.s("L'envoi d'e-mails est limité en nombre pour réduire les risques de spam et parce que l'envoi des e-mails est une source de coût pour l'association {siteName}. Il sera bientôt possible d'envoyer plus d'e-mails en adhérant à l'association. ").'</p>';
 		$h .= '</div>';
 
 		if(array_sum($scheduledByWeek) > 0) {
@@ -554,7 +567,7 @@ class CampaignUi {
 								1 => s("Semaine prochaine")
 							};
 						$h .= '</h5>';
-						$h .= '<div>'.s("{value} / {max}", ['value' => $scheduled, 'max' => $eFarm->getCampaignLimit()]).'</div>';
+						$h .= '<div>'.$scheduled.' <small>'.self::getIcon(Email::SENT).' / '.$eFarm->getCampaignLimit().'</small></div>';
 					$h .= '</li>';
 
 				}
