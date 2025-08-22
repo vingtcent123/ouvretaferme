@@ -303,7 +303,7 @@ class CampaignUi {
 
 		if($e['consent']) {
 
-			$h .= '<h3>'.\Asset::icon('exclamation-triangle').' '.s("Consentement révoqué ou envoi d'e-mail désactivé").'</h3>';
+			$h .= '<h3>'.\Asset::icon('exclamation-triangle').' '.s("Refus de consentement ou envoi d'e-mail désactivé").'</h3>';
 			$h .= '<code class="mb-2">';
 				$h .= encode(implode(', ', $e['consent']));
 			$h .= '</code>';

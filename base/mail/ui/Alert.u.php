@@ -10,7 +10,7 @@ class AlertUi {
 			'Campaign::scheduledAt.soon' => s("Votre campagne ne peut pas être programmée aussi tôt, veuillez décaler l'envoi."),
 			'Campaign::scheduledAt.past' => s("Votre campagne ne peut pas être programmée dans le passé, veuillez décaler l'envoi."),
 			'Campaign::to.empty' => s("Merci de renseigner au moins un contact"),
-			'Campaign::to.check' => s("Une ou plusieurs adresses e-mail ne sont pas présentes dans votre base de contacts"),
+			'Campaign::to.check' => s("Une ou plusieurs adresses e-mail ne sont pas présentes dans votre base de contacts ou ne permettent pas d'envoyer des e-mails promotionnels"),
 			'Campaign::to.limitExceeded' => fn(Campaign $e) => s("Vous êtes limités à {toLimit} mails hebdomadaires et cette campagne vous conduira à en envoyer {toAttempt} sur la semaine.", $e),
 			'Campaign::createError' => s("Il y a des erreurs à corriger avant de programmer cette campagne."),
 

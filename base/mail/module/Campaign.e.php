@@ -96,6 +96,8 @@ class Campaign extends CampaignElement {
 			})
 			->setCallback('to.check', function(array $to): bool {
 
+				ContactLib::applyExport();
+
 				return Contact::model()
 					->whereFarm($this['farm'])
 					->whereEmail('IN', $to)

@@ -149,6 +149,8 @@ class ContactLib extends ContactCrud {
 
 	public static function getFromQuery(string $query, \farm\Farm $eFarm): \Collection {
 
+		ContactLib::applyExport();
+
 		return Contact::model()
 			->select([
 				'email',
