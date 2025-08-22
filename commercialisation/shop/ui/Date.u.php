@@ -681,6 +681,11 @@ class DateUi {
 					$h .= '<a href="/mail/campaign:create?farm='.$eFarm['id'].'&source=shop&sourceShop='.$eShop['id'].'&scheduledAt='.$eDate['orderStartAt'].'" class="dropdown-item">'.\util\DateUi::getDayName(date('N', strtotime($eDate['orderStartAt']))).' '.\util\DateUi::numeric($eDate['orderStartAt'], \util\DateUi::DATE_HOUR_MINUTE).'</a>';
 
 					$startAt = substr($eDate['orderStartAt'], 0, 10).' '.($eFarm['emailDefaultTime'] ?? date('H:i:00'));
+					$minStartAt = new \mail\Campaign()->getMinScheduledAt();
+
+					if($startAt < $minStartAt) {
+						$startAt = $minStartAt;
+					}
 
 					if($startAt < $eDate['orderStartAt']) {
 						$startAt = date('Y-m-d H:i:00', strtotime($startAt.' + 1 DAY'));
