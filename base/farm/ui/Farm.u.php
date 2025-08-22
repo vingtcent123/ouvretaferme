@@ -1586,12 +1586,6 @@ class FarmUi {
 
 	public static function getMailingCategories(): array {
 
-		if(FEATURE_EMAILING === FALSE) {
-			return [
-				Farmer::CONTACT => s("Contacts"),
-			];
-		}
-
 		return [
 			Farmer::CONTACT => s("Contacts"),
 			Farmer::CAMPAIGN => s("Campagnes"),

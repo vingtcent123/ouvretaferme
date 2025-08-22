@@ -14,7 +14,6 @@ L::setVariables([
 Lime::setName('Ouvretaferme');
 
 define('FEATURE_ACCOUNTING', LIME_ENV === 'dev');
-define('FEATURE_EMAILING', LIME_ENV === 'dev');
 
 require_once Lime::getPath().'/secret.c.php';
 

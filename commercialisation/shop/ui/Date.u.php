@@ -639,7 +639,6 @@ class DateUi {
 			}
 
 			if(
-				FEATURE_EMAILING and
 				$eDate->canWrite() and (
 					$eDate->acceptOrderSoon() or
 					$eDate->acceptOrder()
