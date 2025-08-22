@@ -678,29 +678,39 @@ class DateUi {
 
 				} else {
 
-					$h .= '<a href="/mail/campaign:create?farm='.$eFarm['id'].'&source=shop&sourceShop='.$eShop['id'].'&scheduledAt='.$eDate['orderStartAt'].'" class="dropdown-item">'.\util\DateUi::getDayName(date('N', strtotime($eDate['orderStartAt']))).' '.\util\DateUi::numeric($eDate['orderStartAt'], \util\DateUi::DATE_HOUR_MINUTE).'</a>';
-
-					$startAt = substr($eDate['orderStartAt'], 0, 10).' '.($eFarm['emailDefaultTime'] ?? date('H:i:00'));
 					$minStartAt = new \mail\Campaign()->getMinScheduledAt();
 
+					$startAt = $eDate['orderStartAt'];
 					if($startAt < $minStartAt) {
 						$startAt = $minStartAt;
 					}
 
-					if($startAt < $eDate['orderStartAt']) {
-						$startAt = date('Y-m-d H:i:00', strtotime($startAt.' + 1 DAY'));
-					}
-
-					if($startAt < $eDate['orderEndAt']) {
-						$h .= '<a href="/mail/campaign:create?farm='.$eFarm['id'].'&source=shop&sourceShop='.$eShop['id'].'&scheduledAt='.$startAt.'" class="dropdown-item">'.\util\DateUi::getDayName(date('N', strtotime($startAt))).' '.\util\DateUi::numeric($startAt, \util\DateUi::DATE_HOUR_MINUTE).'</a>';
-					}
+					$h .= '<a href="/mail/campaign:create?farm='.$eFarm['id'].'&source=shop&sourceShop='.$eShop['id'].'&scheduledAt='.$startAt.'" class="dropdown-item">'.\util\DateUi::getDayName(date('N', strtotime($startAt))).' '.\util\DateUi::numeric($startAt, \util\DateUi::DATE_HOUR_MINUTE).'</a>';
 
 					if($eFarm['emailDefaultTime'] !== NULL) {
 
-						$nextAt = date('Y-m-d H:i:00', strtotime($startAt.' + 1 DAY'));
+						$defaultAt = substr($startAt, 0, 10).' '.$eFarm['emailDefaultTime'];
 
-						if($nextAt < $eDate['orderEndAt']) {
-							$h .= '<a href="/mail/campaign:create?farm='.$eFarm['id'].'&source=shop&sourceShop='.$eShop['id'].'&scheduledAt='.$nextAt.'" class="dropdown-item">'.\util\DateUi::getDayName(date('N', strtotime($nextAt))).' '.\util\DateUi::numeric($nextAt, \util\DateUi::DATE_HOUR_MINUTE).'</a>';
+						if($defaultAt < $minStartAt) {
+							$defaultAt = $minStartAt;
+						}
+
+						if($defaultAt < $eDate['orderStartAt']) {
+							$defaultAt = date('Y-m-d H:i:00', strtotime($defaultAt.' + 1 DAY'));
+						}
+
+						if($defaultAt < $eDate['orderEndAt']) {
+							$h .= '<a href="/mail/campaign:create?farm='.$eFarm['id'].'&source=shop&sourceShop='.$eShop['id'].'&scheduledAt='.$defaultAt.'" class="dropdown-item">'.\util\DateUi::getDayName(date('N', strtotime($defaultAt))).' '.\util\DateUi::numeric($defaultAt, \util\DateUi::DATE_HOUR_MINUTE).'</a>';
+						}
+
+						if($eFarm['emailDefaultTime'] !== NULL) {
+
+							$nextAt = date('Y-m-d H:i:00', strtotime($defaultAt.' + 1 DAY'));
+
+							if($nextAt < $eDate['orderEndAt']) {
+								$h .= '<a href="/mail/campaign:create?farm='.$eFarm['id'].'&source=shop&sourceShop='.$eShop['id'].'&scheduledAt='.$nextAt.'" class="dropdown-item">'.\util\DateUi::getDayName(date('N', strtotime($nextAt))).' '.\util\DateUi::numeric($nextAt, \util\DateUi::DATE_HOUR_MINUTE).'</a>';
+							}
+
 						}
 
 					}
