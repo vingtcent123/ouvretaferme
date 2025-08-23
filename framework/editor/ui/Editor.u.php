@@ -96,6 +96,7 @@ class EditorUi {
 		\Asset::lib('util', 'Sortable-1.11.0.js');
 
 		$options += [
+			'intro' => TRUE,
 			'acceptFigure' => FALSE,
 			'figurePlaceholders' => FALSE,
 			'speed' => 'fast',
@@ -149,6 +150,17 @@ class EditorUi {
 
 			$data .= ' data-figure="0"';
 			$class .= ' editor-bordered';
+
+		}
+
+		if($options['intro']) {
+
+			$h .= '<div class="editor-intro">';
+				$h .= '<span>'.s("Éditeur de texte").'</span>';
+				$h .= '<div class="editor-intro-help">';
+					$h .= '<a href="/doc/editor">'.s("Aide").'</a> '.\Asset::icon('person-raised-hand');
+				$h .= '</div>';
+			$h .= '</div>';
 
 		}
 

@@ -25,6 +25,8 @@ class DocTemplate extends MainTemplate {
 				$h .= '<a href="/doc/shop:shared" '.$this->menuSelected('shopShared').'>'.s("Les boutiques collectives").'</a>';
 				$h .= '<div class="doc-menu-title">'.s("Importer des données").'</div>';
 				$h .= '<a href="/doc/import" '.$this->menuSelected('import').'>'.s("Importer un plan de culture").'</a>';
+				$h .= '<div class="doc-menu-title">'.s("Divers").'</div>';
+				$h .= '<a href="/doc/editor" '.$this->menuSelected('editor').'>'.s("Utiliser l'éditeur de texte").'</a>';
 			$h .= '</div>';
 			$h .= '<div class="doc-header">';
 				$h .= '<h1>'.$this->title.'</h1>';

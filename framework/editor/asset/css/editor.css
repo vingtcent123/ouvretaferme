@@ -9,6 +9,28 @@ div.editor {
 	position: relative;
 }
 
+div.editor-intro {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.9rem;
+    background: #8881;
+    color: #0009;
+    padding: 0.25rem 0.5rem;
+    margin-left: var(--radius);
+    margin-right: var(--radius);
+    border-top-left-radius: var(--radius);
+    border-top-right-radius: var(--radius);
+}
+
+div.editor-intro-help a {
+    color: var(--secondary);
+}
+
+div.editor-intro-help {
+    color: var(--secondary);
+}
+
 div.editor:after {
 	clear: both;
 	content: ' ';

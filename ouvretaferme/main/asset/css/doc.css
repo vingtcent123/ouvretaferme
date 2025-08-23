@@ -3,6 +3,7 @@ div.doc-wrapper {
 	grid-template:
 		"menu header" auto
 		"menu content" auto / minmax(15rem, 20vw) 1fr;
+    min-width: 700px;
 }
 
 div.doc-menu {
@@ -79,6 +80,14 @@ div.doc-content h2 {
 div.doc-content pre {
 	margin: 0;
 	display: inline-block;
+}
+
+div.doc-content img {
+    display: block;
+    max-width: 100%;
+    border: 2px solid var(--border);
+    border-radius: var(--radius);
+    margin-bottom: 1rem;
 }
 
 div.doc-example {
