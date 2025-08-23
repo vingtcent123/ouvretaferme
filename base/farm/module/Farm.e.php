@@ -386,7 +386,7 @@ class Farm extends FarmElement {
 	}
 
 	public function getCampaignLimit(): int {
-		return $this['id'] === 7 ? $this->getCampaignMemberLimit() : 100;
+		return $this['id'] === 7 ? $this->getCampaignMemberLimit() : 50;
 	}
 
 	public function getCampaignMemberLimit(): int {
