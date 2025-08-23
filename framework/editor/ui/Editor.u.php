@@ -159,7 +159,7 @@ class EditorUi {
 			$h .= '<div class="editor-intro">';
 				$h .= '<span>'.s("Éditeur de texte").'</span>';
 				$h .= '<div class="editor-intro-help">';
-					$h .= '<a href="/doc/editor">'.s("Aide").'</a> '.\Asset::icon('person-raised-hand');
+					$h .= '<a href="/doc/editor" target="_blank">'.s("Aide").'</a> '.\Asset::icon('person-raised-hand');
 				$h .= '</div>';
 			$h .= '</div>';
 
