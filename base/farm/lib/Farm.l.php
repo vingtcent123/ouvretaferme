@@ -6,7 +6,7 @@ class FarmLib extends FarmCrud {
 	private static ?\Collection $cFarmOnline = NULL;
 
 	public static function getPropertiesCreate(): array {
-		return ['name', 'place', 'placeLngLat', 'quality'];
+		return ['name', 'legalEmail', 'place', 'placeLngLat', 'quality'];
 	}
 
 	public static function getPropertiesUpdate(): array {

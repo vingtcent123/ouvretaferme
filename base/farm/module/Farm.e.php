@@ -219,6 +219,15 @@ class Farm extends FarmElement {
 		);
 
 	}
+
+	public function isEmail(): bool {
+
+		return (
+			$this['legalEmail'] !== NULL
+		);
+
+	}
+
 	public function isLegal(): bool {
 
 		return (
@@ -284,6 +293,12 @@ class Farm extends FarmElement {
 		} else {
 			return new FarmerModel()->getDefaultValue($name);
 		}
+	}
+
+	public function validateEmailComplete(): void {
+
+		$this->isEmail() ?: throw new \FailAction('farm\Farm::notEmail', ['farm' => $this]);
+
 	}
 
 	public function validateLegalComplete(): void {
@@ -414,6 +429,9 @@ class Farm extends FarmElement {
 					return TRUE;
 				}
 
+			})
+			->setCallback('legalEmail.empty', function(?string $email) {
+				return ($email !== NULL);
 			})
 			->setCallback('placeLngLat.check', function(?array &$placeLngLat) {
 

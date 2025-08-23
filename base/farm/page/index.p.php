@@ -168,6 +168,7 @@
 	->get('/ferme/{id}/campagnes', function($data) {
 
 		$data->eFarm->validate('canCommunication');
+		$data->eFarm->validateEmailComplete();
 
 		\farm\FarmerLib::setView('viewMailingCategory', $data->eFarm, \farm\Farmer::CAMPAIGN);
 
@@ -190,6 +191,7 @@
 	->get('/ferme/{id}/contacts', function($data) {
 
 		$data->eFarm->validate('canCommunication');
+		$data->eFarm->validateEmailComplete();
 
 		\farm\FarmerLib::setView('viewMailingCategory', $data->eFarm, \farm\Farmer::CONTACT);
 

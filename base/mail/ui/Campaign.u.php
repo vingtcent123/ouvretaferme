@@ -592,6 +592,7 @@ class CampaignUi {
 
 			if($eCampaign->acceptUpdate()) {
 				$h .= '<a href="/mail/campaign:update?id='.$eCampaign['id'].'" class="dropdown-item">'.s("Modifier la campagne").'</a> ';
+				$h .= '<a data-ajax="/mail/campaign:doTest" post-id="'.$eCampaign['id'].'" data-confirm="'.s("L'e-mail de cette campagne sera envoyé pour vos tests à l'adresse e-mail de la ferme {email}. Continuer ?", ['email' => $eCampaign['farm']['legalEmail']]).'" class="dropdown-item">'.s("Envoyer un e-mail de test").'</a> ';
 			}
 
 			$link = '/mail/campaign:create?farm='.$eCampaign['farm']['id'].'&copy='.$eCampaign['id'].'&source='.$eCampaign['source'];

@@ -3,6 +3,7 @@ new \mail\CampaignPage()
 	->getCreateElement(function($data) {
 
 		$data->eFarm = \farm\FarmLib::getById(INPUT('farm'));
+		$data->eFarm->validateEmailComplete();
 
 		$eCampaign = new \mail\Campaign([
 			'farm' => $data->eFarm,
@@ -96,6 +97,13 @@ new \mail\CampaignPage()
 		$data->eFarm = $data->e['farm'];
 
 		throw new ViewAction($data);
+
+	})
+	->write('doTest', function($data) {
+
+		\mail\CampaignLib::sendOne($data->e['farm'], $data->e, $data->e['farm']['legalEmail']);
+
+		throw new ReloadAction('mail', 'Campaign::test');
 
 	})
 	->doDelete(fn() => throw new ReloadAction(), validate: ['canDelete', 'acceptDelete'])

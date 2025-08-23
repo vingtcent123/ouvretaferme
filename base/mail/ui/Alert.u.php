@@ -29,6 +29,7 @@ class AlertUi {
 			'Campaign::created' => s("La campagne de communication par e-mail a bien été programmée !"),
 			'Campaign::updated' => s("La campagne de communication par e-mail a bien été mise à jour !"),
 			'Campaign::deleted' => s("La campagne de communication par e-mail a bien été supprimée et ne sera donc pas envoyée !"),
+			'Campaign::test' => s("L'e-mail de test a bien été envoyé à l'adresse e-mail de la ferme !"),
 
 			'Contact::created' => s("Le contact a bien été créé !"),
 			'Contact::createdNewsletter' => s("Votre inscription à la lettre d'information a bien été prise en compte !"),

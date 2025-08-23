@@ -127,6 +127,8 @@ class CampaignLib extends CampaignCrud {
 
 				}
 
+				self::sendOne($eFarm, $eCampaign, $to);
+
 				new \mail\SendLib()
 					->setFarm($eFarm)
 					->setReplyTo($eFarm['legalEmail'])
@@ -149,6 +151,19 @@ class CampaignLib extends CampaignCrud {
 			}
 
 		}
+
+	}
+
+	public static function sendOne(\farm\Farm $eFarm, Campaign $eCampaign, string $to): void {
+
+			new \mail\SendLib()
+				->setFarm($eFarm)
+				->setReplyTo($eFarm['legalEmail'])
+				->setFromName($eFarm['name'])
+				->setCampaign($eCampaign)
+				->setTo($to)
+				->setContent(...\mail\DesignUi::format($eFarm, $eCampaign['subject'], new \editor\ReadorFormatterUi()->getFromXml($eCampaign['content']), footer: CampaignUi::unsubscribe($eFarm, $to)))
+				->send();
 
 	}
 

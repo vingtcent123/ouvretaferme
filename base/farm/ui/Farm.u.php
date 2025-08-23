@@ -372,7 +372,7 @@ class FarmUi {
 
 			$h .= $form->asteriskInfo();
 
-			$h .= $form->dynamicGroups($eFarm, ['name*', 'place', 'placeLngLat', 'quality']);
+			$h .= $form->dynamicGroups($eFarm, ['name*', 'legalEmail*', 'place', 'placeLngLat', 'quality']);
 
 			$h .= $form->group(
 				content: $form->submit(s("Créer ma ferme"))

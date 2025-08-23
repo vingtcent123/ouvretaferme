@@ -13,6 +13,7 @@ class AlertUi {
 
 			'Farm::disabled' => s("Vous avez désactivé cette fonctionnalité sur votre ferme."),
 			'Farm::demo.delete' => s("Vous ne pouvez pas supprimer la démo !"),
+			'Farm::legalEmail.empty' => s("Merci de renseigner l'adresse e-mail de la ferme !"),
 			'Farm::name.check' => s("Merci de renseigner le nom de la ferme !"),
 			'Farm::place.check' => s("Veuillez sélectionner une ville dans le menu déroulant."),
 			'Farm::place.required' => s("Merci de renseigner la ville du siège d'exploitation de la ferme."),
@@ -23,6 +24,7 @@ class AlertUi {
 			'Farmer::email.duplicate' => s("Il y a déjà un utilisateur rattaché à votre ferme avec cette adresse e-mail..."),
 			'Farmer::deleteGhost' => s("Vous ne pouvez pas supprimer un utilisateur créé spécifiquement pour la ferme."),
 			'Farmer::deleteItself' => s("Vous ne pouvez pas vous sortir vous-même de la ferme."),
+			'Farm::notEmail' => '<p>'.s("Vous devez configurer l'adresse e-mail de votre ferme pour accéder à cette page !").'</p><a href="/farm/farm:update?id='.$options['farm']['id'].'" class="btn '.($options['btn'] ?? 'btn-transparent').'">'.s("Compléter mes informations").'</a>',
 			'Farm::notLegal' => '<p>'.s("Vous devez configurer la raison sociale et l'adresse e-mail de votre ferme pour accéder à cette page !").'</p><a href="/farm/farm:update?id='.$options['farm']['id'].'" class="btn '.($options['btn'] ?? 'btn-transparent').'">'.s("Compléter mes informations").'</a>',
 			'Farm::notSelling' => '<p>'.s("Nous avons besoin de quelques informations administratives de base à propos de votre ferme (adresse e-mail, raison sociale...) pour accéder à cette page !").'</p><a href="/farm/farm:update?id='.$options['farm']['id'].'" class="btn '.($options['btn'] ?? 'btn-transparent').'">'.s("Compléter mes informations").'</a>',
 
