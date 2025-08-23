@@ -119,7 +119,7 @@ new AdaptativeView('index', function($data, DocTemplate $t) {
 			[
 				'Ctrl + I',
 				s("Mettre le texte sélectionné en italique"),
-				'<b>'.s("Texte en italique").'</b>'
+				'<i>'.s("Texte en italique").'</i>'
 			],
 			[
 				'Ctrl + U',

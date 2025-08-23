@@ -129,15 +129,6 @@ class CampaignLib extends CampaignCrud {
 
 				self::sendOne($eFarm, $eCampaign, $to);
 
-				new \mail\SendLib()
-					->setFarm($eFarm)
-					->setReplyTo($eFarm['legalEmail'])
-					->setFromName($eFarm['name'])
-					->setCampaign($eCampaign)
-					->setTo($to)
-					->setContent(...\mail\DesignUi::format($eFarm, $eCampaign['subject'], new \editor\ReadorFormatterUi()->getFromXml($eCampaign['content']), footer: CampaignUi::unsubscribe($eFarm, $to)))
-					->send();
-
 			}
 
 			if($failed > 0) {
@@ -167,7 +158,7 @@ class CampaignLib extends CampaignCrud {
 			->setReplyTo($eFarm['legalEmail'])
 			->setFromName($eFarm['name'])
 			->setTo($to)
-			->setContent(...\mail\DesignUi::format($eFarm, $subject, new \editor\ReadorFormatterUi()->getFromXml($eCampaign['content']), footer: CampaignUi::unsubscribe($eFarm, $to)));
+			->setContent(...\mail\DesignUi::format($eFarm, $subject, new \editor\ReadorFormatterUi()->getFromXml($eCampaign['content'], ['isEmail' => TRUE]), footer: CampaignUi::unsubscribe($eFarm, $to)));
 
 		if($test === FALSE) {
 			$libSend->setCampaign($eCampaign);
@@ -175,15 +166,6 @@ class CampaignLib extends CampaignCrud {
 
 		$libSend->send();
 
-	}
-
-	public static function getLimits(): \Collection {
-/*
-		return Campaign::model()
-			->select(Campaign::getSelection())
-			->whereFarm($eFarm)
-			->getCollection($position, $number);
-*/
 	}
 
 }

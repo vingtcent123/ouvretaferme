@@ -99,6 +99,7 @@ class EditorUi {
 			'intro' => TRUE,
 			'acceptFigure' => FALSE,
 			'figurePlaceholders' => FALSE,
+			'figureOnlyImage' => FALSE,
 			'speed' => 'fast',
 		];
 
@@ -134,7 +135,7 @@ class EditorUi {
 
 		if($options['acceptFigure']) {
 
-			$data .= ' data-figure="1"';
+			$data .= ' data-figure="1" data-figure-only-image="'.($options['figureOnlyImage'] ? 1 : 0).'"';
 
 			if($options['figurePlaceholders']) {
 				$data .= ' data-placeholder-focus="'.encode($placeholderEmpty).'"';

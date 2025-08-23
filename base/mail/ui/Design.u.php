@@ -31,9 +31,11 @@ class DesignUi {
 
 		$eFarm->expects(['emailBanner', 'emailFooter']);
 
-		$html = self::getBanner($eFarm);
-		$html .= $content;
-		$html .= self::getFooter($eFarm);
+		$html = '<div style="max-width: '.\Setting::get('mail\maxWidth').'px">';
+			$html .= self::getBanner($eFarm);
+			$html .= $content;
+			$html .= self::getFooter($eFarm);
+		$html .= '</div>';
 
 		return $html;
 
@@ -44,7 +46,7 @@ class DesignUi {
 		$eFarm->expects(['emailFooter']);
 
 		if($eFarm['emailFooter'] !== NULL) {
-			return new \editor\ReadorFormatterUi()->getFromXml($eFarm['emailFooter']);
+			return new \editor\ReadorFormatterUi()->getFromXml($eFarm['emailFooter'], ['isEmail' => TRUE]);
 		} else {
 			return '';
 		}

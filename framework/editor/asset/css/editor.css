@@ -1043,6 +1043,10 @@ div.editor figure > figcaption {
 	color: #666;
 }
 
+div.editor[data-figure-only-image="1"] figure > figcaption {
+	display: none !important;
+}
+
 div.editor figure > figcaption.figure-moving {
 	display: none !important;
 }

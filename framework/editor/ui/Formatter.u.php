@@ -52,6 +52,7 @@ abstract class FormatterUi {
 		}
 
 		$this->options = $options + [
+			'isEmail' => FALSE,
 			'domain' => \Lime::getDomain()
 		];
 
@@ -142,12 +143,51 @@ abstract class FormatterUi {
 	 *
 	 * @param \DOMNode $node
 	 */
-	protected function convertFigureNode(\DOMNode $node, $options = []): int {
+	protected function convertFigureNode(\DOMNode $node): int {
 
 		// Empty figure from app
 		if($node->childNodes->length === 0) {
 			$node->parentNode->removeChild($node);
 			return -1;
+		}
+
+		// On ne garde que les images en mode e-mail
+		if($this->options['isEmail']) {
+
+			for($i = 0; $i < $node->childNodes->length; $i++) {
+
+				$childNode = $node->childNodes[$i];
+
+				if(
+					$childNode->nodeType === XML_ELEMENT_NODE and
+					$childNode->nodeName === 'image'
+				) {
+
+					switch($childNode->nodeName) {
+
+						case 'image' :
+
+							$url = $this->getImageUrl($childNode, 'm');
+
+							$imageNode = $this->dom->createElement('img');
+							$imageNode->setAttribute('src', $url);
+							$imageNode->setAttribute('style', 'max-width: 100%; max-height: '.\Setting::get('mail\maxWidth').'px; width: auto; height: auto');
+
+							$newNode = $this->dom->createElement('p');
+							$newNode->appendChild($imageNode);
+
+							$node->parentElement->replaceChild($newNode, $node);
+
+							return 0;
+
+					}
+
+
+				}
+			}
+
+			return 0;
+
 		}
 
 		// Update attributes
@@ -425,7 +465,7 @@ abstract class FormatterUi {
 		$orientation = $orientations[$position];
 		$figureCount = count($orientations);
 
-		$url = $this->getImageUrl($node, $position, $orientation, $figureCount, $figureSize, $this->for === 'editor' ? 'l' : NULL);
+		$url = $this->getImageUrl($node, NULL, fn($xyzHash) => $this->getImageFormat($xyzHash, $position, $orientation, $figureCount, $this->for === 'editor' ? 'l' : NULL));
 
 		$previewColor = $node->getAttribute('color') ?: '#bbbbbb';
 
@@ -525,7 +565,7 @@ abstract class FormatterUi {
 
 	}
 
-	protected function getImageUrl(\DomNode $node, int $position, string $orientation, int $figureCount, string $figureSize, $format = NULL) : string {
+	protected function getImageUrl(\DomNode $node, ?string $format, ?\Closure $formatCallback = NULL) : string {
 
 		if($node->getAttribute('xyz')) {
 
@@ -544,7 +584,7 @@ abstract class FormatterUi {
 			$xyzVersion = (int)$node->getAttribute('xyz-version');
 
 			if($format === NULL) {
-				$format = $this->getImageFormat($xyzHash, $position, $orientation, $figureCount, $figureSize);
+				$format = $formatCallback($xyzHash);
 			}
 
 			if($format === 'original') {
@@ -560,7 +600,7 @@ abstract class FormatterUi {
 		return $url;
 	}
 
-	protected function getImageFormat(string $xyz, int $position, string $orientation, int $figureCount, string $figureSize): string {
+	protected function getImageFormat(string $xyz, int $position, string $orientation, int $figureCount, ?string $figureSize): string {
 
 		$isMobile = \util\DeviceLib::isMobile();
 

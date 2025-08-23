@@ -43,6 +43,23 @@ class EditorLib extends MediaLib {
 
 		}
 
+		// Search in mails
+		$cElement = \mail\Campaign::model()
+			->select('content')
+			->recordset()
+			->getCollection();
+
+		foreach($cElement as $eElement) {
+
+			if($eElement['content']) {
+
+				$active = $this->getHashes($eElement['content']);
+				$this->activeMedias($active);
+
+			}
+
+		}
+
 		return TRUE;
 
 	}

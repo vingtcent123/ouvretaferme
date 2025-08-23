@@ -225,7 +225,7 @@ class CampaignUi {
 
 			$h .= $form->dynamicGroup($eCampaign, 'subject');
 
-			$content = '<div class="util-block mb-0">'.$form->dynamicField($eCampaign, 'content').'</div>';
+			$content = '<div class="util-block mb-0" style="max-width: '.\Setting::get('mail\maxWidth').'px">'.$form->dynamicField($eCampaign, 'content').'</div>';
 
 			if(
 				$eCampaign->exists() === FALSE and
@@ -383,7 +383,7 @@ class CampaignUi {
 
 		$h .= '<h2>'.s("Contenu").'</h2>';
 
-		$h .= '<div class="util-block">'.new \editor\ReadorFormatterUi()->getFromXml($e['content']).'</div>';
+		$h .= '<div class="util-block" style="max-width: '.\Setting::get('mail\maxWidth').'px">'.new \editor\ReadorFormatterUi()->getFromXml($e['content'], ['isEmail' => TRUE]).'</div>';
 
 		return $h;
 
@@ -647,6 +647,10 @@ class CampaignUi {
 				$d->before = fn(\util\FormUi $form, Campaign $e) => DesignUi::getBanner($e['farm']);
 				$d->after = fn(\util\FormUi $form, Campaign $e) => '<br/>'.DesignUi::getFooter($e['farm']).self::unsubscribe($e['farm']);
 				$d->placeholder = s("Tapez votre texte ici...");
+				$d->options = [
+					'acceptFigure' => TRUE,
+					'figureOnlyImage' => TRUE
+				];
 				break;
 
 			case 'to' :

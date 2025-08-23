@@ -85,8 +85,8 @@ class Campaign extends CampaignElement {
 			->setCallback('scheduledAt.past', function(string $scheduledAt): bool {
 				return $scheduledAt >= currentDatetime();
 			})
-			->setCallback('html.prepare', function(string &$value): bool {
-				$value = new \editor\XmlLib()->fromHtml($value);
+			->setCallback('content.prepare', function(string &$value): bool {
+				$value = new \editor\XmlLib()->fromHtml($value, ['acceptFigure' => TRUE, 'figureOnlyImage' => TRUE]);
 				return TRUE;
 			})
 			->setCallback('to.empty', function(array $to): bool {

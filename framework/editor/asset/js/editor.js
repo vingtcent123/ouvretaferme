@@ -1432,15 +1432,17 @@ class EditorFormat {
 				'</div>'+
 			'</div>';
 
-			if(instance.getAttribute('data-figure') === '1') {
+			if(instance.dataset.figure === '1') {
 
-				html += '<div id="'+ instanceId.substring(1) +'-box-line" class="editor-box-line" data-instance="'+ instanceId +'">'+
-					'<div class="editor-box-line-open">'+
+                const onlyImage = instance.dataset.figureOnlyImage;
+
+				html += '<div id="'+ instanceId.substring(1) +'-box-line" class="editor-box-line" data-instance="'+ instanceId +'">';
+					html += '<div class="editor-box-line-open">'+
 						'<button class="editor-action" data-action="line-swap" data-instance="'+ instanceId +'" title="'+ Editor.labels.media +'">'+ Lime.Asset.icon('plus') +'</button>'+
 						'<div class="editor-box-line-helper" style="visibility: hidden;">'+ instance.getAttribute('data-placeholder-empty') +'</div>'+
-					'</div>'+
-					'<div class="editor-box-line-content">'+
-						'<button class="editor-action" data-action="list-ul" data-instance="'+ instanceId +'" title="'+ Editor.labels.listBullet +'">'+
+					'</div>';
+					html += '<div class="editor-box-line-content">';
+						html += '<button class="editor-action" data-action="list-ul" data-instance="'+ instanceId +'" title="'+ Editor.labels.listBullet +'">'+
 							Lime.Asset.icon('list-ul') +
 						'</button>'+
 						'<button class="editor-action" data-action="list-ol" data-instance="'+ instanceId +'" title="'+ Editor.labels.listDigit +'">'+
@@ -1448,13 +1450,19 @@ class EditorFormat {
 						'</button>'+
 						'<button class="editor-action" data-action="line-image" data-instance="'+ instanceId +'" title="'+ Editor.labels.image +'">'+
 							Lime.Asset.icon('image') +
-						'</button>'+
-						'<button class="editor-action" data-action="show-editor-video" data-instance="'+ instanceId +'" title="'+ Editor.labels.video +'">'+ Lime.Asset.icon('camera-video-fill') +'</button>'+
-						'<button class="editor-action" data-action="show-editor-grid" data-instance="'+ instanceId +'" title="'+ Editor.labels.grid +'">'+ Lime.Asset.icon('grid-fill') +'</button>'+
-						'<button class="editor-action" data-action="quote" data-instance="'+ instanceId +'" title="'+ Editor.labels.quote +'">'+ Lime.Asset.icon('chat-quote-fill') +'</button>'+
-						'<button class="editor-action" data-action="hr" data-instance="'+ instanceId +'" title="'+ Editor.labels.separator +'">'+ Lime.Asset.icon('dash') +'</button>'+
-					'</div>'+
-				'</div>';
+						'</button>';
+
+                        if(onlyImage === '0') {
+
+                            html += '<button class="editor-action" data-action="show-editor-video" data-instance="'+ instanceId +'" title="'+ Editor.labels.video +'">'+ Lime.Asset.icon('camera-video-fill') +'</button>'+
+                            '<button class="editor-action" data-action="show-editor-grid" data-instance="'+ instanceId +'" title="'+ Editor.labels.grid +'">'+ Lime.Asset.icon('grid-fill') +'</button>'+
+                            '<button class="editor-action" data-action="quote" data-instance="'+ instanceId +'" title="'+ Editor.labels.quote +'">'+ Lime.Asset.icon('chat-quote-fill') +'</button>'+
+                            '<button class="editor-action" data-action="hr" data-instance="'+ instanceId +'" title="'+ Editor.labels.separator +'">'+ Lime.Asset.icon('dash') +'</button>';
+
+                        }
+
+					html += '</div>';
+				html += '</div>';
 
 			}
 
@@ -1483,8 +1491,13 @@ class EditorFormat {
 	static displayMedia(instanceId, figureId, mediaSelector) {
 
 		const figureSelector = qs(figureId);
+        const onlyImage = qs(instanceId).dataset.figureOnlyImage;
 
 		EditorFormat.hideMedia(instanceId);
+
+        if(onlyImage === '1') {
+            return;
+        }
 
 		let html = '<div class="editor-box-media">';
 			html += '<div class="editor-box-media-content">';
@@ -3036,26 +3049,31 @@ class EditorFigure {
 
 		EditorFigure.deselect(instanceId);
 
+        const onlyImage = qs(instanceId).dataset.figureOnlyImage;
 		const boxId = figureId + '-box-figure';
 
 		if(qs(boxId) === null) {
 
 			let html = '<div id="'+ boxId.substring(1) +'" class="editor-box-figure" data-whitespace="1">';
 				html += '<div class="editor-box-figure-container">';
-					html += '<button class="editor-action editor-action-plus" data-action="figure-image" data-instance="'+ instanceId +'" title="'+ Editor.labels.imageFigure +'">'+ Lime.Asset.icon('image') +''+ Lime.Asset.icon('plus-circle') +'<span class="editor-box-figure-label">'+ Editor.labels.imageLabel +'</span></button>';
-					html += '<span class="separator">&nbsp;</span>';
-					html += '<button class="editor-action editor-action-plus" data-action="show-editor-video" data-instance="'+ instanceId +'" title="'+ Editor.labels.videoFigure +'">'+ Lime.Asset.icon('camera-video-fill') +''+ Lime.Asset.icon('plus-circle') +'<span class="editor-box-figure-label">'+ Editor.labels.videoLabel +'</span></button>';
-					html += '<span class="separator">&nbsp;</span>';
-					html += '<div>';
-						html += '<button class="dropdown-toggle" data-dropdown="bottom-start" title="'+ Editor.labels.resize +'">'+ Lime.Asset.icon('grid-fill') +'<span class="editor-box-figure-label hide-md-down">'+ Editor.labels.resizeLabel +'</span></button>';
-						html += '<div class="dropdown-list">';
-							html += '<button class="dropdown-item" data-action-run="1" data-action="resize" data-size="compressed" data-instance="'+ instanceId +'" data-figure="'+ figureId +'">'+ Editor.labels.resizeCompress +'</button>';
-							html += '<button class="dropdown-item" data-action-run="1" data-action="resize" data-size="left" data-instance="'+ instanceId +'" data-figure="'+ figureId +'">'+ Editor.labels.resizeLeft +'</button>';
-							html += '<button class="dropdown-item" data-action-run="1" data-action="resize" data-size="right" data-instance="'+ instanceId +'" data-figure="'+ figureId +'">'+ Editor.labels.resizeRight +'</button>';
-						html += '</div>';
-					html += '</div>';
+                    if(onlyImage === '0') {
 
-					html += '<span class="separator">&nbsp;</span>';
+                        html += '<button class="editor-action editor-action-plus" data-action="figure-image" data-instance="'+ instanceId +'" title="'+ Editor.labels.imageFigure +'">'+ Lime.Asset.icon('image') +''+ Lime.Asset.icon('plus-circle') +'<span class="editor-box-figure-label">'+ Editor.labels.imageLabel +'</span></button>';
+                        html += '<span class="separator">&nbsp;</span>';
+                        html += '<button class="editor-action editor-action-plus" data-action="show-editor-video" data-instance="'+ instanceId +'" title="'+ Editor.labels.videoFigure +'">'+ Lime.Asset.icon('camera-video-fill') +''+ Lime.Asset.icon('plus-circle') +'<span class="editor-box-figure-label">'+ Editor.labels.videoLabel +'</span></button>';
+                        html += '<span class="separator">&nbsp;</span>';
+                        html += '<div>';
+                            html += '<button class="dropdown-toggle" data-dropdown="bottom-start" title="'+ Editor.labels.resize +'">'+ Lime.Asset.icon('grid-fill') +'<span class="editor-box-figure-label hide-md-down">'+ Editor.labels.resizeLabel +'</span></button>';
+                            html += '<div class="dropdown-list">';
+                                html += '<button class="dropdown-item" data-action-run="1" data-action="resize" data-size="compressed" data-instance="'+ instanceId +'" data-figure="'+ figureId +'">'+ Editor.labels.resizeCompress +'</button>';
+                                html += '<button class="dropdown-item" data-action-run="1" data-action="resize" data-size="left" data-instance="'+ instanceId +'" data-figure="'+ figureId +'">'+ Editor.labels.resizeLeft +'</button>';
+                                html += '<button class="dropdown-item" data-action-run="1" data-action="resize" data-size="right" data-instance="'+ instanceId +'" data-figure="'+ figureId +'">'+ Editor.labels.resizeRight +'</button>';
+                            html += '</div>';
+                        html += '</div>';
+
+                        html += '<span class="separator">&nbsp;</span>';
+
+                    }
 					html += '<a class="editor-action" data-action="figure-move" data-instance="'+ instanceId +'" title="'+ Editor.labels.moveFigure +'" tabindex="-1">'+ Lime.Asset.icon('arrows-move') +'</a>';
 					html += '<span class="separator">&nbsp;</span>';
 					html += '<button class="editor-action" data-action="figure-remove" data-instance="'+ instanceId +'" title="'+ Editor.labels.removeFigure +'">'+ Lime.Asset.icon('trash-fill') +'</button>';
@@ -3072,18 +3090,22 @@ class EditorFigure {
 
 		}
 
-		qsa(boxId +' [data-action="resize"]', node => node.classList.remove('selected'));
-		qs(boxId +' [data-action="resize"][data-size="'+ figureSelector.getAttribute('data-size') +'"]', node => node.classList.add('selected'));
+        if(onlyImage === '0') {
 
-		const medias = qsa(figureId + ' > div[data-type]').length;
+            qsa(boxId +' [data-action="resize"]', node => node.classList.remove('selected'));
+            qs(boxId +' [data-action="resize"][data-size="'+ figureSelector.getAttribute('data-size') +'"]', node => node.classList.add('selected'));
 
-		if(medias > 1) {
-			qs(boxId +' [data-action="resize"][data-size="left"]').style.display = 'none';
-			qs(boxId +' [data-action="resize"][data-size="right"]').style.display = 'none';
-		} else {
-			qs(boxId +' [data-action="resize"][data-size="left"]').style.display = 'block';
-			qs(boxId +' [data-action="resize"][data-size="right"]').style.display = 'block';
-		}
+            const medias = qsa(figureId + ' > div[data-type]').length;
+
+            if(medias > 1) {
+                qs(boxId +' [data-action="resize"][data-size="left"]').style.display = 'none';
+                qs(boxId +' [data-action="resize"][data-size="right"]').style.display = 'none';
+            } else {
+                qs(boxId +' [data-action="resize"][data-size="left"]').style.display = 'block';
+                qs(boxId +' [data-action="resize"][data-size="right"]').style.display = 'block';
+            }
+
+        }
 
 		qsa(boxId +' .editor-action', action => action.setAttribute('data-figure', figureId));
 

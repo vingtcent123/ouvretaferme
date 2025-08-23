@@ -7,5 +7,7 @@ Setting::register('mail', [
 
 	'devSendOnly' => [],
 
+	'maxWidth' => 700,
+
 ]);
 ?>

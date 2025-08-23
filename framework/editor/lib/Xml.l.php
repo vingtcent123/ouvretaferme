@@ -35,6 +35,7 @@ class XmlLib {
 
 		$this->options = $options + [
 			'acceptFigure' => FALSE,
+			'figureOnlyImage' => FALSE,
 			'draft' => FALSE
 		];
 
@@ -262,35 +263,53 @@ class XmlLib {
 		switch($node->nodeName) {
 
 			case 'figcaption' :
-				return $this->cleanFigcaptionNode($node);
+				if($this->options['figureOnlyImage']) {
+					$node->parentNode->removeChild($node);
+					return -1;
+				} else {
+					return $this->cleanFigcaptionNode($node);
+				}
 
 			case 'div' :
 
 				$type = $node->getAttribute('data-type');
 
-				switch($type) {
+				if($this->options['figureOnlyImage']) {
 
-					case 'image' :
+					if($type === 'image') {
 						return $this->cleanImageNode($node);
-
-					case 'video' :
-						return $this->cleanVideoNode($node);
-
-					case 'hr' :
-						return $this->cleanHrNode($node);
-
-					case 'embed' :
-						return $this->cleanEmbedNode($node, 'data-source');
-
-					case 'quote' :
-						return $this->cleanQuoteNode($node);
-
-					case 'grid' :
-						return $this->cleanGridNode($node);
-
-					default:
+					} else {
 						$node->parentNode->removeChild($node);
 						return -1;
+					}
+
+				} else {
+
+					switch($type) {
+
+						case 'image' :
+							return $this->cleanImageNode($node);
+
+						case 'video' :
+							return $this->cleanVideoNode($node);
+
+						case 'hr' :
+							return $this->cleanHrNode($node);
+
+						case 'embed' :
+							return $this->cleanEmbedNode($node, 'data-source');
+
+						case 'quote' :
+							return $this->cleanQuoteNode($node);
+
+						case 'grid' :
+							return $this->cleanGridNode($node);
+
+						default:
+							$node->parentNode->removeChild($node);
+							return -1;
+
+					}
 
 				}
 
