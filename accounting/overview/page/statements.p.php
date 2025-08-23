@@ -7,11 +7,15 @@ new Page(function($data) {
 	$data->eFinancialYear = \account\FinancialYearLib::getDynamicFinancialYear($data->eFarm, GET('financialYear', 'int'));
 	$data->cFinancialYear = \account\FinancialYearLib::getAll();
 
-	$currentPage = self::getName();
+	if(strpos(LIME_PAGE_REQUESTED, ':') !== FALSE) {
+		$currentPage = substr(LIME_PAGE_REQUESTED, strpos(LIME_PAGE_REQUESTED, ':') + 1);
+	} else {
+		$currentPage = 'index';
+	}
 
 	if($currentPage === 'index') {
 
-		$data->selectedView = $data->eFarm->getView('viewAnalyzeAccountingStatements');
+		$data->selectedView = $data->eFarm->getView('viewAccountingStatements');
 
 	} else if(in_array($currentPage, ['bilans', 'balances'])) {
 
@@ -20,7 +24,7 @@ new Page(function($data) {
 			'balances' => \farm\Farmer::TRIAL_BALANCE,
 		};
 
-		\farm\FarmerLib::setView('viewAnalyzeAccountingStatements', $data->eFarm, $data->selectedView);
+		\farm\FarmerLib::setView('viewAccountingStatements', $data->eFarm, $data->selectedView);
 	}
 })
 	->get(['index', 'bilans', 'balances'], function($data) {

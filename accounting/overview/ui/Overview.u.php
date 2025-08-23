@@ -34,8 +34,8 @@ class OverviewUi {
 				'label' => s("Charges"),
 				'longLabel' => s("Suivi des charges"),
 			],
-			'result' => [
-				'url' => \company\CompanyUi::urlOverview($eFarm).'/financials:result',
+			'results' => [
+				'url' => \company\CompanyUi::urlOverview($eFarm).'/financials:results',
 				'label' => s("Résultat"),
 				'longLabel' => s("Suivi du résultat"),
 			],

@@ -126,16 +126,16 @@ class FarmerModel extends \ModuleModel {
 			'viewAnalyzeChart' => ['enum', [\farm\Farmer::TURNOVER, \farm\Farmer::QUANTITY], 'cast' => 'enum'],
 			'viewAnalyzeComposition' => ['enum', [\farm\Farmer::COMPOSITION, \farm\Farmer::INGREDIENT], 'cast' => 'enum'],
 			'viewAnalyzeYear' => ['int16', 'min' => 0, 'max' => NULL, 'null' => TRUE, 'cast' => 'int'],
-			'viewAnalyzeAccountingYear' => ['int16', 'min' => 0, 'max' => NULL, 'null' => TRUE, 'cast' => 'int'],
-			'viewAnalyzeAccountingFinancials' => ['enum', [\farm\Farmer::BANK, \farm\Farmer::CHARGES, \farm\Farmer::RESULTS], 'cast' => 'enum'],
-			'viewAnalyzeAccountingStatements' => ['enum', [\farm\Farmer::BALANCE_SHEET, \farm\Farmer::TRIAL_BALANCE], 'cast' => 'enum'],
+			'viewAccountingYear' => ['int16', 'min' => 0, 'max' => NULL, 'null' => TRUE, 'cast' => 'int'],
+			'viewAccountingFinancials' => ['enum', [\farm\Farmer::BANK, \farm\Farmer::CHARGES, \farm\Farmer::RESULTS], 'cast' => 'enum'],
+			'viewAccountingStatements' => ['enum', [\farm\Farmer::BALANCE_SHEET, \farm\Farmer::TRIAL_BALANCE], 'cast' => 'enum'],
 			'viewSeason' => ['int16', 'min' => 0, 'max' => NULL, 'null' => TRUE, 'cast' => 'int'],
 			'viewShopCurrent' => ['element32', 'shop\Shop', 'null' => TRUE, 'cast' => 'element'],
 			'createdAt' => ['datetime', 'cast' => 'string'],
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'user', 'farm', 'farmGhost', 'farmStatus', 'status', 'role', 'viewPlanning', 'viewPlanningCategory', 'viewPlanningYear', 'viewPlanningHarvestExpected', 'viewPlanningField', 'viewPlanningArea', 'viewPlanningSearch', 'viewPlanningUser', 'viewCultivationCategory', 'viewSeries', 'viewSoil', 'viewSellingSales', 'viewSellingCategory', 'viewSellingCategoryCurrent', 'viewMailingCategory', 'viewShopCatalogCurrent', 'viewAnalyzeChart', 'viewAnalyzeComposition', 'viewAnalyzeYear', 'viewAnalyzeAccountingYear', 'viewAnalyzeAccountingFinancials', 'viewAnalyzeAccountingStatements', 'viewSeason', 'viewShopCurrent', 'createdAt'
+			'id', 'user', 'farm', 'farmGhost', 'farmStatus', 'status', 'role', 'viewPlanning', 'viewPlanningCategory', 'viewPlanningYear', 'viewPlanningHarvestExpected', 'viewPlanningField', 'viewPlanningArea', 'viewPlanningSearch', 'viewPlanningUser', 'viewCultivationCategory', 'viewSeries', 'viewSoil', 'viewSellingSales', 'viewSellingCategory', 'viewSellingCategoryCurrent', 'viewMailingCategory', 'viewShopCatalogCurrent', 'viewAnalyzeChart', 'viewAnalyzeComposition', 'viewAnalyzeYear', 'viewAccountingYear', 'viewAccountingFinancials', 'viewAccountingStatements', 'viewSeason', 'viewShopCurrent', 'createdAt'
 		]);
 
 		$this->propertiesToModule += [
@@ -205,10 +205,10 @@ class FarmerModel extends \ModuleModel {
 			case 'viewAnalyzeComposition' :
 				return Farmer::COMPOSITION;
 
-			case 'viewAnalyzeAccountingFinancials' :
+			case 'viewAccountingFinancials' :
 				return Farmer::BANK;
 
-			case 'viewAnalyzeAccountingStatements' :
+			case 'viewAccountingStatements' :
 				return Farmer::BALANCE_SHEET;
 
 			case 'createdAt' :
@@ -276,10 +276,10 @@ class FarmerModel extends \ModuleModel {
 			case 'viewAnalyzeComposition' :
 				return ($value === NULL) ? NULL : (string)$value;
 
-			case 'viewAnalyzeAccountingFinancials' :
+			case 'viewAccountingFinancials' :
 				return ($value === NULL) ? NULL : (string)$value;
 
-			case 'viewAnalyzeAccountingStatements' :
+			case 'viewAccountingStatements' :
 				return ($value === NULL) ? NULL : (string)$value;
 
 			default :
@@ -415,16 +415,16 @@ class FarmerModel extends \ModuleModel {
 		return $this->where('viewAnalyzeYear', ...$data);
 	}
 
-	public function whereViewAnalyzeAccountingYear(...$data): FarmerModel {
-		return $this->where('viewAnalyzeAccountingYear', ...$data);
+	public function whereViewAccountingYear(...$data): FarmerModel {
+		return $this->where('viewAccountingYear', ...$data);
 	}
 
-	public function whereViewAnalyzeAccountingFinancials(...$data): FarmerModel {
-		return $this->where('viewAnalyzeAccountingFinancials', ...$data);
+	public function whereViewAccountingFinancials(...$data): FarmerModel {
+		return $this->where('viewAccountingFinancials', ...$data);
 	}
 
-	public function whereViewAnalyzeAccountingStatements(...$data): FarmerModel {
-		return $this->where('viewAnalyzeAccountingStatements', ...$data);
+	public function whereViewAccountingStatements(...$data): FarmerModel {
+		return $this->where('viewAccountingStatements', ...$data);
 	}
 
 	public function whereViewSeason(...$data): FarmerModel {
