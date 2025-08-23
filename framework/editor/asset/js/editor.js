@@ -623,86 +623,6 @@ class EditorKeyboard {
 
 					return true;
 
-				case 'P' :
-
-					if(browser.isFirefox) {
-
-						// Firefox does not know how to remove a line
-						if(EditorKeyboard.isEmptyLine(node)) {
-
-							node.parentElement.removeChild(node);
-							EditorRange.replaceEnd(previousNode);
-
-							return true;
-
-						} else {
-
-							if(EditorKeyboard.isEmptyLine(previousNode)) {
-
-								previousNode.parentElement.removeChild(previousNode);
-
-								return true;
-
-							} else {
-
-								EditorMutation.disconnect(instanceId);
-
-								EditorRange.replaceEnd(previousNode);
-
-								while(node.childNodes.length > 0) {
-									previousNode.appendChild(node.firstChild);
-								}
-
-
-								EditorMutation.observe(instanceId);
-
-								return true;
-
-							}
-
-						}
-
-					}
-
-					break;
-
-				case 'OL' :
-				case 'UL' :
-
-					// Firefox does not know how to remove a line
-					if(browser.isFirefox) {
-
-						const previousLi = previousNode.querySelector('li:last-child');
-
-						if(EditorKeyboard.isEmptyLine(node)) {
-
-							node.remove();
-
-							EditorRange.replaceEnd(previousLi); // End of last LI
-
-							return true;
-
-						} else {
-
-							EditorMutation.disconnect(instanceId);
-
-							EditorRange.replaceEnd(previousLi);
-
-							while(node.childNodes.length > 0) {
-								previousLi.appendChild(node.firstChild);
-							}
-
-
-							EditorMutation.observe(instanceId);
-
-							return true;
-
-						}
-
-					}
-
-					break;
-
 			}
 
 		}
@@ -744,23 +664,6 @@ class EditorKeyboard {
 					EditorFigure.select(instanceId, nextNode);
 
 					return true;
-
-				case 'P' :
-
-					if(browser.isFirefox) {
-
-						if(EditorKeyboard.isEmptyLine(node)) {
-
-							node.parentElement.removeChild(node);
-							EditorRange.replace(nextNode, 0);
-
-							return true;
-
-						}
-
-					}
-
-					break;
 
 
 
