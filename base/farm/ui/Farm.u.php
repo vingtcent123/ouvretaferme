@@ -2154,7 +2154,7 @@ class FarmUi {
 	}
 
 	public static function getEmailInfo(Farm $eFarm): string {
-		return \util\FormUi::info(s("L'e-mail envoyé contiendra toujours le bandeau et la signature que vous avez défini sur la <link>page de configuration des e-mails</link>.", ['link' => '<a href="/farm/farm:updateEmail?id='.$eFarm['id'].'" target="_blank">']));
+		return \util\FormUi::info(s("L'e-mail envoyé contiendra toujours le bandeau et la signature que vous avez définis sur la <link>page de configuration des e-mails</link>.", ['link' => '<a href="/farm/farm:updateEmail?id='.$eFarm['id'].'" target="_blank">']));
 	}
 
 	public static function getNavigation(): string {

@@ -941,13 +941,7 @@ class EditorKeyboard {
 		const nodeLi = document.createElement('li');
 		nodeUl.appendChild(nodeLi);
 
-		// Can't focus on <br> on firefox
-		let nodeBr;
-		if(browser.isFirefox) {
-			nodeBr = document.createTextNode('\u00A0');
-		} else {
-			nodeBr = document.createElement('br');
-		}
+		const nodeBr = document.createElement('br');
 
 		nodeLi.appendChild(nodeBr);
 
