@@ -154,16 +154,20 @@ class CampaignLib extends CampaignCrud {
 
 	}
 
-	public static function sendOne(\farm\Farm $eFarm, Campaign $eCampaign, string $to): void {
+	public static function sendOne(\farm\Farm $eFarm, Campaign $eCampaign, string $to, bool $test = FALSE): void {
 
-			new \mail\SendLib()
+			$libSend = \mail\SendLib()
 				->setFarm($eFarm)
 				->setReplyTo($eFarm['legalEmail'])
 				->setFromName($eFarm['name'])
-				->setCampaign($eCampaign)
 				->setTo($to)
-				->setContent(...\mail\DesignUi::format($eFarm, $eCampaign['subject'], new \editor\ReadorFormatterUi()->getFromXml($eCampaign['content']), footer: CampaignUi::unsubscribe($eFarm, $to)))
-				->send();
+				->setContent(...\mail\DesignUi::format($eFarm, $eCampaign['subject'], new \editor\ReadorFormatterUi()->getFromXml($eCampaign['content']), footer: CampaignUi::unsubscribe($eFarm, $to)));
+
+			if($test === FALSE) {
+				$libSend->setCampaign($eCampaign);
+			}
+
+			$libSend->send();
 
 	}
 

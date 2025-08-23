@@ -101,7 +101,7 @@ new \mail\CampaignPage()
 	})
 	->write('doTest', function($data) {
 
-		\mail\CampaignLib::sendOne($data->e['farm'], $data->e, $data->e['farm']['legalEmail']);
+		\mail\CampaignLib::sendOne($data->e['farm'], $data->e, $data->e['farm']['legalEmail'], test: TRUE);
 
 		throw new ReloadAction('mail', 'Campaign::test');
 
