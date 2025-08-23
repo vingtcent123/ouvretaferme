@@ -284,15 +284,15 @@ class FormUi {
 
 			default :
 
-				if($d->groupLabel === FALSE) {
-					$label = '';
-				} else {
-					$label = $d->labelBefore;
+				$label = '';
+
+				if($d->groupLabel !== FALSE) {
+					$label .= is_closure($d->labelBefore) ? call_user_func($d->labelBefore, $e) : $d->labelBefore;
 					$label .= is_closure($d->label) ? call_user_func($d->label, $e) : ($d->label ?? '<i>'.$property.'</i>');
 					if($asterisk or $d->asterisk) {
 						$label .= $this->asterisk();
 					}
-					$label .= $d->labelAfter;
+					$label .= is_closure($d->labelAfter) ? call_user_func($d->labelAfter, $e) : $d->labelAfter;
 				}
 
 				if($d->group) {

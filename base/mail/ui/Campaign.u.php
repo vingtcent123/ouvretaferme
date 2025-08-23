@@ -247,7 +247,7 @@ class CampaignUi {
 
 
 			$h .= $form->group(
-				self::p('content')->label.\util\FormUi::info(s("L'e-mail envoyé contiendra toujours le bandeau et la signature que vous avez défini sur la <link>page de configuration des e-mails</link>.", ['link' => '<a href="/farm/farm:updateEmail?id='.$eCampaign['farm']['id'].'" target="_blank">'])),
+				self::p('content')->label.\farm\FarmUi::getEmailInfo($eCampaign['farm']),
 				$content
 			);
 

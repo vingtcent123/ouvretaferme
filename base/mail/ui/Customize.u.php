@@ -63,6 +63,7 @@ class CustomizeUi {
 			}
 
 			$e['template'] ??= self::getDefaultTemplate($e['type'], $eSaleExample);
+
 			$h .= $form->dynamicGroup($e, 'template');
 
 			$h .= $form->group(
@@ -605,6 +606,9 @@ Merci et à bientôt,
 		switch($property) {
 
 			case 'template' :
+				$d->labelAfter = fn(Customize $e) => \farm\FarmUi::getEmailInfo($e['farm']);
+				$d->before = fn(\util\FormUi $form, Customize $e) => DesignUi::getBanner($e['farm']);
+				$d->after = fn(\util\FormUi $form, Customize $e) => '<br/>'.DesignUi::getFooter($e['farm']);
 				$d->attributes['style'] = 'height: 20rem';
 				break;
 
