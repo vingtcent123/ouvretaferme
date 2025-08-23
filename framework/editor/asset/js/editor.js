@@ -2358,7 +2358,7 @@ class EditorFormat {
 				return (EditorRange.browseTags('A').length > 0);
 
 			case 'foreColor' :
-				return (EditorRange.browseTags('SPAN').reduce((value, item) => value + item.getAttribute('style').includes('inherit') ? 0 : 1, 0) > 0);
+				return (EditorRange.browseTags('SPAN').reduce((value, item) => value + (item.hasAttribute('style') === false || item.getAttribute('style').includes('inherit')) ? 0 : 1, 0) > 0);
 
 			case 'header' :
 
