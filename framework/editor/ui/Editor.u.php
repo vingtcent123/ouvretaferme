@@ -230,6 +230,8 @@ class EditorUi {
 			'confirmRemoveLink' => s("Souhaitez-vous supprimer ce lien ?"),
 			'media' => s("Ajouter une photo, une vidéo, une astuce ou un séparateur"),
 			'imageLabel' => s("PHOTO"),
+			'listBullet' => s("Ajouter une liste à puces"),
+			'listDigit' => s("Ajouter une liste à numéros"),
 			'image' => s("Ajouter une photo"),
 			'imageFigure' => s("Ajouter une photo à la mosaïque"),
 			'videoLabel' => s("VIDEO"),

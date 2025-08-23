@@ -453,7 +453,7 @@ div.editor-box-line {
 	display: none;
 	position: absolute;
 	z-index: 9999;
-	font-size: 0.9rem;
+	font-size: 1rem;
 	pointer-events: none;
 }
 
@@ -562,7 +562,7 @@ div.editor-box-line button.editor-action {
 	text-decoration: none;
 	cursor: pointer;
 	line-height: 1;
-	font-size: 1.125rem;
+	font-size: 1.5rem;
 	width: 32px;
 	min-width: 32px;
 	height: 32px;

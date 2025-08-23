@@ -56,6 +56,14 @@ new AdaptativeView('index', function($data, DocTemplate $t) {
 
 		$data = [
 			[
+				Asset::icon('list-ul'),
+				s("Insérer une liste à puces")
+			],
+			[
+				Asset::icon('list-ol'),
+				s("Insérer une liste à numéros")
+			],
+			[
 				Asset::icon('image'),
 				s("Insérer une image")
 			],

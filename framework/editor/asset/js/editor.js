@@ -1440,6 +1440,12 @@ class EditorFormat {
 						'<div class="editor-box-line-helper" style="visibility: hidden;">'+ instance.getAttribute('data-placeholder-empty') +'</div>'+
 					'</div>'+
 					'<div class="editor-box-line-content">'+
+						'<button class="editor-action" data-action="list-ul" data-instance="'+ instanceId +'" title="'+ Editor.labels.listBullet +'">'+
+							Lime.Asset.icon('list-ul') +
+						'</button>'+
+						'<button class="editor-action" data-action="list-ol" data-instance="'+ instanceId +'" title="'+ Editor.labels.listDigit +'">'+
+							Lime.Asset.icon('list-ol') +
+						'</button>'+
 						'<button class="editor-action" data-action="line-image" data-instance="'+ instanceId +'" title="'+ Editor.labels.image +'">'+
 							Lime.Asset.icon('image') +
 						'</button>'+
@@ -1621,7 +1627,7 @@ class EditorFormat {
 		const currentTop = currentRectangle.top + window.scrollY;
 		const currentLeft = currentRectangle.left + window.scrollX;
 
-		const newTop = rectangle.top + window.scrollY - 3;
+		const newTop = rectangle.top + window.scrollY - 8;
 
 		let newLeft;
 
@@ -1817,6 +1823,15 @@ class EditorFormat {
 	static actionQuote(instanceId) {
 
 		EditorQuote.create(instanceId);
+		EditorFormat.action('line-close', instanceId);
+
+	}
+
+	static actionList(instanceId, type) {
+
+        const nodeCurrent = EditorFormat.getCurrentLine();
+
+        EditorKeyboard.list(nodeCurrent, type);
 		EditorFormat.action('line-close', instanceId);
 
 	}
@@ -2076,6 +2091,12 @@ class EditorFormat {
 
 			case 'hr' :
 				return this.actionHr(instanceId);
+
+			case 'list-ul' :
+				return this.actionList(instanceId, 'ul');
+
+			case 'list-ol' :
+				return this.actionList(instanceId, 'ol');
 
 			case 'quote' :
 				return this.actionQuote(instanceId);
@@ -2502,6 +2523,67 @@ class EditorFormat {
 		}
 
 	};
+
+
+	// Create a new and empty figure
+	static newLine(instanceId, newNode, options) {
+
+		const nodeCurrent = this.getCurrentLine(options);
+
+		if(nodeCurrent.parentElement !== null) {
+
+            nodeCurrent.parentElement.replaceChild(newNode, nodeCurrent);
+
+			// A figure can't be the last node of a contenteditable
+			if(newNode.nextSibling === null) {
+
+				const nodeP = EditorParagraph.getEmpty();
+
+				newNode.insertAdjacentElement('afterend', nodeP);
+
+			}
+
+			EditorFigure.updateHack(newNode);
+
+		}
+
+	};
+
+    static getCurrentLine(options) {
+
+		options = options || {};
+
+		let nodeHost;
+
+		if(options.nodeHost) {
+			nodeHost = options.nodeHost;
+		} else if(EditorRange.last && EditorRange.last.commonAncestorContainer) {
+			nodeHost = EditorRange.last.commonAncestorContainer;
+		} else {
+			nodeHost = qs(instanceId).lastChild;
+		}
+
+		let nodeCurrent;
+
+		if(Editor.isEditorNode(nodeHost)) {
+            nodeCurrent = EditorParagraph.getEmpty();
+			nodeHost.appendChild(nodeCurrent);
+		} else {
+
+			const baseNode = Editor.getBaseAncestor(nodeHost) || nodeHost;
+
+			if(EditorKeyboard.isEmptyLine(baseNode)) {
+                nodeCurrent = baseNode;
+			} else {
+                nodeCurrent = EditorParagraph.getEmpty();
+				baseNode.insertAdjacentElement('afterend', nodeCurrent);
+			}
+
+		}
+
+        return nodeCurrent;
+        
+    }
 
 }
 
@@ -3092,17 +3174,7 @@ class EditorFigure {
 	// Create a new and empty figure
 	static create(instanceId, options) {
 
-		options = options || {};
-
-		let nodeHost;
-
-		if(options.nodeHost) {
-			nodeHost = options.nodeHost;
-		} else if(EditorRange.last && EditorRange.last.commonAncestorContainer) {
-			nodeHost = EditorRange.last.commonAncestorContainer;
-		} else {
-			nodeHost = qs(instanceId).lastChild;
-		}
+        options = options || {};
 
 		const interactive = typeof options.interactive !== 'undefined' ? options.interactive : true;
 
@@ -3115,60 +3187,20 @@ class EditorFigure {
 		nodeFigure.setAttribute('id', nodeFigureId);
 
 		if(interactive) {
+
 			nodeFigure.setAttribute('data-size', 'compressed');
-		}
 
-		let node;
+            const nodeFigcaption = document.createElement('figcaption');
+            nodeFigcaption.setAttribute('contenteditable', 'true');
+            nodeFigcaption.setAttribute('placeholder', Editor.labels.captionFigure);
 
-		if(Editor.isEditorNode(nodeHost)) {
-			node = EditorParagraph.getEmpty();
-			nodeHost.appendChild(node);
-		} else {
+            nodeFigure.appendChild(nodeFigcaption);
 
-			const baseNode = Editor.getBaseAncestor(nodeHost) || nodeHost;
+        }
+        
+        EditorFormat.newLine(instanceId, nodeFigure, options);
 
-			if(EditorKeyboard.isEmptyLine(baseNode)) {
-				node = baseNode;
-			} else {
-				node = EditorParagraph.getEmpty();
-				baseNode.insertAdjacentElement('afterend', node);
-			}
-
-		}
-
-		if(node.parentElement !== null) {
-
-			node.parentElement.replaceChild(nodeFigure, node);
-
-
-
-			// A figure can't be the last node of a contenteditable
-			if(nodeFigure.nextSibling === null) {
-
-				const nodeP = EditorParagraph.getEmpty();
-
-				nodeFigure.insertAdjacentElement('afterend', nodeP);
-
-			}
-
-			// Add figcaption for interactive figures
-			if(interactive) {
-
-				const nodeFigcaption = document.createElement('figcaption');
-				nodeFigcaption.setAttribute('contenteditable', 'true');
-				nodeFigcaption.setAttribute('placeholder', Editor.labels.captionFigure);
-
-				nodeFigure.appendChild(nodeFigcaption);
-
-			}
-
-			EditorFigure.updateHack(nodeFigure);
-
-			return '#'+ nodeFigureId;
-
-		} else {
-			return null;
-		}
+        return '#'+ nodeFigureId;
 
 	};
 
@@ -3416,6 +3448,28 @@ class EditorFigure {
 class EditorHr {
 
 	static create(instanceId) {
+
+		const figureId = EditorFigure.create(instanceId, {
+			interactive: false
+		});
+
+		if(figureId === null) {
+			return;
+		}
+
+		const nodeHr = document.createElement('div');
+		nodeHr.setAttribute('class', 'editor-hr');
+		nodeHr.innerHTML = '&#149; &#149; &#149;';
+
+		EditorFigure.addNode(instanceId, figureId, nodeHr, 'hr', null, null, {});
+	};
+
+}
+
+// Handle list in the editor
+class EditorList {
+
+	static create(instanceId, type) {
 
 		const figureId = EditorFigure.create(instanceId, {
 			interactive: false
