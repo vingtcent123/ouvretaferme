@@ -23,25 +23,26 @@ class OperationLib extends OperationCrud {
 
 	public static function applySearch(\Search $search = new \Search()): OperationModel {
 
-		$eCompany = \company\CompanyLib::getCurrent();
+		if($search->has('financialYear')) {
 
-		if($eCompany->isAccrualAccounting()) {
+			if($search->get('financialYear')['accountingType'] === \account\FinancialYear::ACCRUAL) {
 
-			$model = Operation::model()
-				->whereDate('>=', fn() => $search->get('financialYear')['startDate'], if: $search->has('financialYear'))
-				->whereDate('<=', fn() => $search->get('financialYear')['endDate'], if: $search->has('financialYear'));
+				$model = Operation::model()
+					->whereDate('>=', fn() => $search->get('financialYear')['startDate'], if: $search->has('financialYear'))
+					->whereDate('<=', fn() => $search->get('financialYear')['endDate'], if: $search->has('financialYear'));
 
-		} else {
+			} else {
 
-			$model = Operation::model()
-				->or(
-					fn() => $this
-						->wherePaymentDate('BETWEEN', new \Sql(\account\FinancialYear::model()->format($search->get('financialYear')['startDate']).' AND '.\account\FinancialYear::model()->format($search->get('financialYear')['endDate'])), if: $search->has('financialYear')),
-					fn() => $this
-						->wherePaymentDate(NULL)
-						->whereDate('BETWEEN', new \Sql(\account\FinancialYear::model()->format($search->get('financialYear')['startDate']).' AND '.\account\FinancialYear::model()->format($search->get('financialYear')['endDate'])), if: $search->has('financialYear')),
-				);
+				$model = Operation::model()
+					->or(
+						fn() => $this
+							->wherePaymentDate('BETWEEN', new \Sql(\account\FinancialYear::model()->format($search->get('financialYear')['startDate']).' AND '.\account\FinancialYear::model()->format($search->get('financialYear')['endDate'])), if: $search->has('financialYear')),
+						fn() => $this
+							->wherePaymentDate(NULL)
+							->whereDate('BETWEEN', new \Sql(\account\FinancialYear::model()->format($search->get('financialYear')['startDate']).' AND '.\account\FinancialYear::model()->format($search->get('financialYear')['endDate'])), if: $search->has('financialYear')),
+					);
 
+			}
 		}
 
 		return $model
@@ -122,8 +123,8 @@ class OperationLib extends OperationCrud {
 
 	public static function getAllForJournal(\Search $search = new \Search(), bool $hasSort = FALSE): \Collection {
 
-		$eCompany = \company\CompanyLib::getCurrent();
-		$defaultOrder = $eCompany->isCashAccounting() ? ['paymentDate' => SORT_ASC, 'date' => SORT_ASC, 'id' => SORT_ASC] : ['date' => SORT_ASC, 'id' => SORT_ASC];
+		$eFinancialYear = $search->get('financialYear');
+		$defaultOrder = $eFinancialYear->isCashAccounting() ? ['paymentDate' => SORT_ASC, 'date' => SORT_ASC, 'id' => SORT_ASC] : ['date' => SORT_ASC, 'id' => SORT_ASC];
 
 		return self::applySearch($search)
 			->select(
@@ -262,7 +263,7 @@ class OperationLib extends OperationCrud {
 		}
 
 		$eOperation = new Operation();
-		$eOperation->build(['thirdParty', 'amount', 'paymentDate', 'financialYear', 'paymentMethod'], $input);
+		$eOperation->build(['financialYear', 'thirdParty', 'amount', 'paymentDate', 'paymentMethod'], $input);
 
 		$fw->validate();
 
@@ -353,7 +354,9 @@ class OperationLib extends OperationCrud {
 		$ePaymentMethodInvoice = var_filter($input['invoice']['paymentMethod'] ?? NULL, 'payment\Method');
 		$eFinancialYear = \account\FinancialYearLib::getById($input['financialYear'] ?? NULL);
 		$isFromCashflow = ($eOperationDefault->offsetExists('cashflow') === TRUE);
-		$eCompany = \company\CompanyLib::getCurrent();
+
+		$isAccrual = $eFinancialYear->isAccrualAccounting();
+		$isCash = $eFinancialYear->isCashAccounting();
 
 		$fw = new \FailWatch();
 
@@ -529,7 +532,7 @@ class OperationLib extends OperationCrud {
 
 			// En cas de comptabilité à l'engagement : création de l'entrée en 401 ou 411
 			// Et vérification si un lettrage est possible
-			if($eCompany->isAccrualAccounting() and $eOperation['thirdParty']->notEmpty()) {
+			if($isAccrual and $eOperation['thirdParty']->notEmpty()) {
 
 				$amount = $eOperation['amount'] + ($hasVatAccount ? $eOperationVat['amount'] : 0);
 
@@ -603,7 +606,7 @@ class OperationLib extends OperationCrud {
 			}
 		}
 
-		if($eCompany->isCashAccounting()) {
+		if($isCash) {
 
 			// Si toutes les écritures sont sur le même document, on utilise aussi celui-ci pour l'opération bancaire;
 			$documents = $cOperation->getColumn('document');
@@ -670,9 +673,10 @@ class OperationLib extends OperationCrud {
 
 		$eOperationVat->build(
 			[
+				'financialYear',
 				'cashflow', 'date', 'account', 'accountLabel', 'description', 'document', 'journalCode',
 				'thirdParty', 'type', 'amount', 'operation',
-				'paymentDate', 'paymentMethod', 'financialYear',
+				'paymentDate', 'paymentMethod',
 			],
 			$values,
 			new \Properties('create'),
@@ -838,8 +842,8 @@ class OperationLib extends OperationCrud {
 		$fw = new \FailWatch();
 
 		$eOperationBank->build([
-			'cashflow', 'date', 'account', 'accountLabel', 'description', 'document', 'thirdParty', 'type', 'amount',
-			'operation', 'paymentDate', 'paymentMethod', 'financialYear', 'journalCode',
+			'financialYear', 'cashflow', 'date', 'account', 'accountLabel', 'description', 'document', 'thirdParty', 'type', 'amount',
+			'operation', 'paymentDate', 'paymentMethod', 'journalCode',
 		], $values, new \Properties('create'));
 
 		if($document !== NULL) {
@@ -862,13 +866,13 @@ class OperationLib extends OperationCrud {
 
 		$eOperation->build(
 			[
-				'date',
+				'financialYear', 'date',
 				'cashflow', 'operation', 'asset', 'thirdParty',
 				'account', 'accountLabel',
 				'description', 'type', 'amount',
 				'document', 'documentDate',
 				'vatRate', 'vatAccount',
-				'financialYear', 'journalCode'
+				'journalCode'
 			],
 			$values,
 			new \Properties('create')

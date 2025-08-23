@@ -2,14 +2,17 @@
 new Page()
 	->cli('index', function($data) {
 
-		$cCompany = \company\CompanyLib::getList();
+		$cFarm = \farm\Farm::model()
+			->select(\farm\Farm::getSelection())
+			->whereHasAccounting(TRUE)
+			->getCollection();
 
-		foreach($cCompany as $eCompany) {
-			d($eCompany['id']);
+		foreach($cFarm as $eFarm) {
+			d($eFarm['id']);
 
-			\company\CompanyLib::connectSpecificDatabaseAndServer($eCompany['farm']);
+			\company\CompanyLib::connectSpecificDatabaseAndServer($eFarm);
 
-			$databaseName = \company\CompanyLib::getDatabaseNameFromCompany($eCompany['farm']);
+			$databaseName = \company\CompanyLib::getDatabaseNameFromCompany($eFarm);
 			\Database::addBase($databaseName, 'ouvretaferme');
 
 			$packagesToAdd = [];

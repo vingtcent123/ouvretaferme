@@ -25,6 +25,7 @@ FinancialYear:
   taxSystem: ?enum(MICRO_BA, BA_REEL_SIMPLIFIE, BA_REEL_NORMAL, AUTRE_BIC, AUTRE_BNC)
   balanceSheetOpen: bool = FALSE # Bilan d'ouverture effectué ?
   balanceSheetClose: bool = FALSE # Bilan de clôture effectué ?
+  accountingType: enum(ACCRUAL, CASH) = CASH
   closeDate: ?date
   createdAt: datetime = SPECIAL(now)
   createdBy: user\User = SPECIAL(user)

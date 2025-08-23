@@ -11,7 +11,5 @@ new \farm\FarmPage()
 		throw new ViewAction($data);
 
 	});
-new \company\CompanyPage()
-	->doUpdate(fn() => throw new ReloadAction('company', 'Company::updated'));
 
 ?>

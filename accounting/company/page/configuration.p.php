@@ -1,5 +1,5 @@
 <?php
-new \company\CompanyPage()
+new Page()
 	->get('index', function($data) {
 
 		$data->eFarm->validate('canManage');

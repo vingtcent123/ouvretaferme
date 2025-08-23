@@ -4,6 +4,10 @@ new Page(function($data) {
 	$data->eFarm->validate('canManage');
 
 	$data->eFinancialYear = \account\FinancialYearLib::getDynamicFinancialYear($data->eFarm, GET('financialYear', 'int'));
+	if($data->eFinancialYear['hasVat'] === FALSE) {
+		throw new NotExistsAction('This farm has no vat.');
+	}
+
 	$data->cFinancialYear = \account\FinancialYearLib::getAll();
 
 	$data->eThirdParty = get_exists('thirdParty')

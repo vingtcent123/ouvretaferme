@@ -2513,7 +2513,6 @@ body.dropdown-fullscreen-open[data-touch="no"] {
 .dropdown-list.dropdown-list-open {
 	display: grid;
 	max-height: calc(100vh - 3rem);
-	overflow-y: auto;
 }
 
 .dropdown-list.dropdown-list-2 {

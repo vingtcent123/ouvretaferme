@@ -8,6 +8,8 @@ new \account\ThirdPartyPage(
 )
 	->get('index', function($data) {
 
+		$data->eFinancialYear = \account\FinancialYearLib::getDynamicFinancialYear($data->eFarm, GET('financialYear', 'int'));
+
 		$data->search = new Search([
 			'name' => GET('name'),
 		], GET('sort', 'string', 'name'));

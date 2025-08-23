@@ -64,6 +64,9 @@ abstract class FarmerElement extends \Element {
 	const COMPOSITION = 'composition';
 	const INGREDIENT = 'ingredient';
 
+	const ACCRUAL = 'accrual';
+	const CASH = 'cash';
+
 	const BANK = 'bank';
 	const CHARGES = 'charges';
 	const RESULTS = 'results';
@@ -127,6 +130,8 @@ class FarmerModel extends \ModuleModel {
 			'viewAnalyzeComposition' => ['enum', [\farm\Farmer::COMPOSITION, \farm\Farmer::INGREDIENT], 'cast' => 'enum'],
 			'viewAnalyzeYear' => ['int16', 'min' => 0, 'max' => NULL, 'null' => TRUE, 'cast' => 'int'],
 			'viewAccountingYear' => ['int16', 'min' => 0, 'max' => NULL, 'null' => TRUE, 'cast' => 'int'],
+			'viewAccountingType' => ['enum', [\farm\Farmer::ACCRUAL, \farm\Farmer::CASH], 'cast' => 'enum'],
+			'viewAccountingHasVat' => ['bool', 'null' => TRUE, 'cast' => 'bool'],
 			'viewAccountingFinancials' => ['enum', [\farm\Farmer::BANK, \farm\Farmer::CHARGES, \farm\Farmer::RESULTS], 'cast' => 'enum'],
 			'viewAccountingStatements' => ['enum', [\farm\Farmer::BALANCE_SHEET, \farm\Farmer::TRIAL_BALANCE], 'cast' => 'enum'],
 			'viewSeason' => ['int16', 'min' => 0, 'max' => NULL, 'null' => TRUE, 'cast' => 'int'],
@@ -135,7 +140,7 @@ class FarmerModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'user', 'farm', 'farmGhost', 'farmStatus', 'status', 'role', 'viewPlanning', 'viewPlanningCategory', 'viewPlanningYear', 'viewPlanningHarvestExpected', 'viewPlanningField', 'viewPlanningArea', 'viewPlanningSearch', 'viewPlanningUser', 'viewCultivationCategory', 'viewSeries', 'viewSoil', 'viewSellingSales', 'viewSellingCategory', 'viewSellingCategoryCurrent', 'viewMailingCategory', 'viewShopCatalogCurrent', 'viewAnalyzeChart', 'viewAnalyzeComposition', 'viewAnalyzeYear', 'viewAccountingYear', 'viewAccountingFinancials', 'viewAccountingStatements', 'viewSeason', 'viewShopCurrent', 'createdAt'
+			'id', 'user', 'farm', 'farmGhost', 'farmStatus', 'status', 'role', 'viewPlanning', 'viewPlanningCategory', 'viewPlanningYear', 'viewPlanningHarvestExpected', 'viewPlanningField', 'viewPlanningArea', 'viewPlanningSearch', 'viewPlanningUser', 'viewCultivationCategory', 'viewSeries', 'viewSoil', 'viewSellingSales', 'viewSellingCategory', 'viewSellingCategoryCurrent', 'viewMailingCategory', 'viewShopCatalogCurrent', 'viewAnalyzeChart', 'viewAnalyzeComposition', 'viewAnalyzeYear', 'viewAccountingYear', 'viewAccountingType', 'viewAccountingHasVat', 'viewAccountingFinancials', 'viewAccountingStatements', 'viewSeason', 'viewShopCurrent', 'createdAt'
 		]);
 
 		$this->propertiesToModule += [
@@ -204,6 +209,9 @@ class FarmerModel extends \ModuleModel {
 
 			case 'viewAnalyzeComposition' :
 				return Farmer::COMPOSITION;
+
+			case 'viewAccountingType' :
+				return Farmer::CASH;
 
 			case 'viewAccountingFinancials' :
 				return Farmer::BANK;
@@ -274,6 +282,9 @@ class FarmerModel extends \ModuleModel {
 				return ($value === NULL) ? NULL : (string)$value;
 
 			case 'viewAnalyzeComposition' :
+				return ($value === NULL) ? NULL : (string)$value;
+
+			case 'viewAccountingType' :
 				return ($value === NULL) ? NULL : (string)$value;
 
 			case 'viewAccountingFinancials' :
@@ -417,6 +428,14 @@ class FarmerModel extends \ModuleModel {
 
 	public function whereViewAccountingYear(...$data): FarmerModel {
 		return $this->where('viewAccountingYear', ...$data);
+	}
+
+	public function whereViewAccountingType(...$data): FarmerModel {
+		return $this->where('viewAccountingType', ...$data);
+	}
+
+	public function whereViewAccountingHasVat(...$data): FarmerModel {
+		return $this->where('viewAccountingHasVat', ...$data);
 	}
 
 	public function whereViewAccountingFinancials(...$data): FarmerModel {

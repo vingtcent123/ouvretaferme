@@ -3,6 +3,16 @@ namespace account;
 
 class FinancialYear extends FinancialYearElement {
 
+	// Comptabilité à l'engagement
+	public function isAccrualAccounting() {
+		return $this->notEmpty() and $this['accountingType'] === FinancialYear::ACCRUAL;
+	}
+
+	// Comptabilité de trésorerie
+	public function isCashAccounting() {
+		return $this->empty() or $this['accountingType'] === FinancialYear::CASH;
+	}
+
 	public function canUpdate(): bool {
 		return ($this['status'] === FinancialYearElement::OPEN);
 	}

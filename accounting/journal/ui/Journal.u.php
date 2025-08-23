@@ -14,7 +14,7 @@ class JournalUi {
 		$h = '<div class="util-action">';
 
 			$h .= '<h1>';
-				if($eFarm['company']->isCashAccounting()) {
+				if($eFinancialYear->isCashAccounting()) {
 					$h .= s("Le journal comptable");
 				} else {
 					$h .= s("Les journaux");
@@ -33,10 +33,10 @@ class JournalUi {
 						and $eFinancialYear['status'] === \account\FinancialYearElement::OPEN
 						and $eFarm->canManage()
 					) {
-						if($eFarm['company']->isCashAccounting()) {
+						if($eFinancialYear->isCashAccounting()) {
 							$h .= '<a href="'.\company\CompanyUi::urlJournal($eFarm).'/operation:create" class="btn btn-primary">'.\Asset::icon('plus-circle').' '.s("Ajouter une écriture").'</a> ';
 						}
-						if($eFarm['company']->isAccrualAccounting()) {
+						if($eFinancialYear->isAccrualAccounting()) {
 
 							$h .= '<a data-dropdown="bottom-end" class="dropdown-toggle btn btn-primary">'.\Asset::icon('plus-circle').' '.s("Ajouter...").'</a>';
 							$h .= '<div class="dropdown-list">';
@@ -202,7 +202,7 @@ class JournalUi {
 					$h .= '<tr>';
 						$h .= '<th>';
 
-							if($eFarm['company']->isCashAccounting()) {
+							if($eFinancialYearSelected->isCashAccounting()) {
 								$label = s("Date de l'écriture");
 								$h .= ($search ? $search->linkSort('paymentDate', $label) : $label);
 							} else {

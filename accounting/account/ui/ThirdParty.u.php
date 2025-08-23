@@ -81,6 +81,8 @@ class ThirdPartyUi {
 
 		}
 
+		$isAccrual = ($eFarm->getView('viewAccountingType') === FinancialYear::ACCRUAL);
+
 		$h = '';
 
 		$h .= '<div class="stick-sm util-overflow-sm">';
@@ -99,7 +101,7 @@ class ThirdPartyUi {
 					$h .= '</th>';
 					$h .= '<th>'.s("Client").'</th>';
 
-					if($eFarm['company']->isAccrualAccounting()) {
+					if($isAccrual) {
 
 						$h .= '<th>'.s("Compte Client").'</th>';
 						$h .= '<th>'.s("Compte Fournisseur").'</th>';
@@ -131,7 +133,7 @@ class ThirdPartyUi {
 									$h .= $eThirdParty->quick('customer', $eThirdParty['customer']->exists() ? encode($eThirdParty['customer']['name']) : '<span class="undefined">'.s("Non renseigné").'</span>');
 								$h .= '</td>';
 
-							if($eFarm['company']->isAccrualAccounting()) {
+							if($isAccrual) {
 
 								$h .= '<td>';
 									$h .= $eThirdParty->quick('clientAccountLabel', $eThirdParty['clientAccountLabel'] ? encode($eThirdParty['clientAccountLabel']) : '<span class="undefined">'.s("Non défini").'</span>');
@@ -199,7 +201,7 @@ class ThirdPartyUi {
 			'value' => $eThirdParty['id'],
 			'clientAccountLabel' => $eThirdParty['clientAccountLabel'],
 			'supplierAccountLabel' => $eThirdParty['supplierAccountLabel'],
-			'company' => $farm,
+			'farm' => $farm,
 			'itemHtml' => $eThirdParty['name'],
 			'itemText' => $eThirdParty['name']
 		];
@@ -263,9 +265,8 @@ class ThirdPartyUi {
 			case 'customer':
 				$d->after = \util\FormUi::info(s("Lien entre les tiers et les clients de votre ferme"));
 				$d->autocompleteBody = function(\util\FormUi $form, ThirdParty $e) {
-					$e->expects(['farm']);
 					return [
-						'farm' => $e['farm']['id'],
+						'farm' => $e['farm']['id'] ?? POST('farm'),
 						'withCollective' => 0,
 					];
 				};

@@ -2,7 +2,10 @@
 new Page()
 	->cli('index', function($data) {
 
-		$cCompany = \company\CompanyLib::getList();
+		$cFarm = \farm\Farm::model()
+			->select('id')
+			->whereHasAccounting(TRUE)
+			->getCollection();
 
 		// Extract credentials
 		$username = GET('username');
@@ -12,9 +15,9 @@ new Page()
 
 		$mysqlBackupDir = \main\BackupLib::LOCAL_BACKUP_DIR.'mysql-backup/';
 
-		foreach($cCompany as $eCompany) {
+		foreach($cFarm as $eFarm) {
 
-			$database = \company\CompanyLib::getDatabaseName($eCompany['farm']);
+			$database = \company\CompanyLib::getDatabaseName($eFarm);
 			exec('mysqldump -u '.$username.' "'.$password.'" '.$database.' > '.$mysqlBackupDir.$date.'-'.$database.'.sql');
 			exec('cp '.$mysqlBackupDir.$date.'-'.$database.'.sql '.$mysqlBackupDir.'backup/'.$database.'.sql');
 

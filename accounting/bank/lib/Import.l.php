@@ -137,7 +137,7 @@ class ImportLib extends ImportCrud {
 			Import::model()->insert($eImport);
 
 			$cashflows = \bank\OfxParserLib::extractOperations($xmlFile, $eBankAccount, $eImport);
-			$result = \bank\CashflowLib::insertMultiple($cashflows, $eFarm);
+			$result = \bank\CashflowLib::insertMultiple($cashflows);
 
 			if(count($result['imported']) === 0) {
 				if(count($result['noFinancialYear']) > 0) {

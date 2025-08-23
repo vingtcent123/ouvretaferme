@@ -48,11 +48,13 @@ class CashflowInvoiceLib extends CashflowInvoice {
 	public static function associateInvoicesToCashflow(): void {
 
 		// Boucle sur toutes les fermes qui ont la comptabilité
-		$cCompany = \company\CompanyLib::getList();
+		$cFarm = \farm\Farm::model()
+			->select(\farm\Farm::getSelection())
+			->whereHasAccounting(TRUE)
+			->getCollection();
 
-		foreach($cCompany as $eCompany) {
+		foreach($cFarm as $eFarm) {
 
-			$eFarm = $eCompany['farm'];
 			\company\CompanyLib::connectSpecificDatabaseAndServer($eFarm);
 
 			// On récupère toutes les opérations bancaires importées il y a moins de 2h

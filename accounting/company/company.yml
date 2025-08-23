@@ -1,11 +1,3 @@
-Company:
-  id: serial32
-  farm: farm\Farm
-  accountingType: enum(ACCRUAL, CASH) = CASH
-  UNIQUE: [
-    ["farm"]
-  ]
-
 GenericAccount:
   id: serial32
   class: text8(1, null)

@@ -59,7 +59,6 @@ class AccountUi {
 		if($cAccount->empty() === TRUE) {
 			return '<div class="util-info">'.s("Aucun compte n'a encore été enregistré").'</div>';
 		}
-		\Asset::js('main', 'settings.js');
 
 		$h = '<div class="util-block-help">';
 			$h .= s("Il est possible de créer des classes de compte (dites “personnalisées“), par exemple pour créer un compte-courant par associé. Cela vous permettra de mieux analyser vos comptes.");
@@ -179,7 +178,7 @@ class AccountUi {
 			'class' => encode($eAccount['class']),
 			'description' => $eAccount['description'],
 			'vatRate' => $vatRate,
-			'company' => $farm,
+			'farm' => $farm,
 			'itemHtml' => $itemHtml,
 			'itemText' => $eAccount['class'].' '.$eAccount['description']
 		];

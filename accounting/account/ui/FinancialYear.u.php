@@ -273,7 +273,7 @@ class FinancialYearUi {
 			$h .= $form->hidden('farm', $eFarm['id']);
 			$h .= $form->hidden('id', $eFinancialYear['id']);
 
-			$h .= $form->dynamicGroups($eFinancialYear, ['startDate*', 'endDate*', 'hasVat*', 'vatFrequency*', 'taxSystem*'], [
+			$h .= $form->dynamicGroups($eFinancialYear, ['accountingType*', 'startDate*', 'endDate*', 'hasVat*', 'vatFrequency*', 'taxSystem*'], [
 				'hasVat' => function($d) use($form) {
 					$d->attributes['callbackRadioAttributes'] = fn() => ['onclick' => 'FinancialYear.changeHasVat(this)'];
 				},
@@ -567,9 +567,18 @@ class FinancialYearUi {
 			'hasVat' => s("Assujettissement à la TVA"),
 			'vatFrequency' => s("Fréquence de déclaration de TVA"),
 			'taxSystem' => s("Régime fiscal"),
+			'accountingType' => s("Type de comptabilité"),
 		]);
 
 		switch($property) {
+
+			case 'accountingType' :
+				$d->values = [
+					FinancialYear::ACCRUAL => s("Comptabilité à l'engagement"),
+					FinancialYear::CASH => s("Comptabilité de trésorerie"),
+				];
+				$d->after = \util\FormUi::info(s("Généralement, la comptabilité de <b>trésorerie</b> est choisie en <b>micro-BA</b> ou <b>régime simplifié</b>.<br />La comptabilité à l'<b>engagement</b> est choisie en <b>régime réel</b> (normal ou simplifié)"));
+				break;
 
 			case 'startDate' :
 			case 'endDate' :

@@ -2,9 +2,10 @@
 new Page(function($data) {
 
 	$data->eFarm->validate('canManage');
-	$data->eFarm['company']->validate('isAccrualAccounting');
 
 	$data->eFinancialYear = \account\FinancialYearLib::getDynamicFinancialYear($data->eFarm, GET('financialYear', 'int'));
+	$data->eFinancialYear->validate('isAccrualAccounting');
+
 	$data->cFinancialYear = \account\FinancialYearLib::getAll();
 
 })

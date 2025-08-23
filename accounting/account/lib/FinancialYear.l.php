@@ -5,10 +5,10 @@ class FinancialYearLib extends FinancialYearCrud {
 	private static ?\Collection $cOpenFinancialYear = NULL;
 
 	public static function getPropertiesCreate(): array {
-		return ['startDate', 'endDate', 'hasVat', 'vatFrequency', 'taxSystem'];
+		return ['accountingType', 'startDate', 'endDate', 'hasVat', 'vatFrequency', 'taxSystem'];
 	}
 	public static function getPropertiesUpdate(): array {
-		return ['startDate', 'endDate', 'hasVat', 'vatFrequency', 'taxSystem'];
+		return ['accountingType', 'startDate', 'endDate', 'hasVat', 'vatFrequency', 'taxSystem'];
 	}
 
 	public static function getPreviousFinancialYear(FinancialYear $eFinancialYear): FinancialYear {
@@ -237,9 +237,10 @@ class FinancialYearLib extends FinancialYearCrud {
 
 		if($financialYearId) {
 
-			\farm\FarmerLib::setView('viewAccountingYear', $eFarm, $financialYearId);
+			$eFinancialYear = self::getById($financialYearId);
+			self::setDefaultView($eFarm, $eFinancialYear);
 
-			return self::getById($financialYearId);
+			return $eFinancialYear;
 
 		} else if($eFarm->getView('viewAccountingYear') !== NULL) {
 
@@ -278,6 +279,31 @@ class FinancialYearLib extends FinancialYearCrud {
 		return $vatData;
 
 	}
+
+	public static function update(FinancialYear $e, array $properties): void {
+
+		$eFarm = \farm\FarmLib::getById(POST('farm'));
+
+		FinancialYear::model()->beginTransaction();
+
+		parent::update($e, $properties);
+
+		if($eFarm->getView('viewAccountingYear') === $e['id']) {
+			self::setDefaultView($eFarm, $e);
+		}
+
+		FinancialYear::model()->commit();
+
+	}
+
+	private static function setDefaultView(\farm\Farm $eFarm, FinancialYear $eFinancialYear): void {
+
+		\farm\FarmerLib::setView('viewAccountingYear', $eFarm, $eFinancialYear['id']);
+		\farm\FarmerLib::setView('viewAccountingType', $eFarm, $eFinancialYear['accountingType']);
+		\farm\FarmerLib::setView('viewAccountingHasVat', $eFarm, $eFinancialYear['hasVat']);
+
+	}
+
 }
 
 ?>

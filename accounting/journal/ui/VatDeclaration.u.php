@@ -49,7 +49,7 @@ class VatDeclarationUi {
 			$h .= '</dl>';
 		$h .= '</div>';
 
-		$h .= $form->hidden('company', $eFarm['id']);
+		$h .= $form->hidden('farm', $eFarm['id']);
 		$h .= $form->hidden('financialYear', $eFinancialYear['id']);
 
 		$adjustements = $cOperation->reduce(fn($e, $n) => $e->isVatAdjustement($eFinancialYear['lastPeriod']) ? $n + 1 : $n, 0);

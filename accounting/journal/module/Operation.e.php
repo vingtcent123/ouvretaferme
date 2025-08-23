@@ -9,6 +9,7 @@ class Operation extends OperationElement {
 
 		return parent::getSelection() + [
 			'paymentMethod' => \payment\Method::getSelection(),
+			'financialYear' => \account\FinancialYear::getSelection(),
 		];
 
 	}
@@ -61,6 +62,22 @@ class Operation extends OperationElement {
 	public function build(array $properties, array $input, \Properties $p = new \Properties()): void {
 
 		$p
+			->setCallback('financialYear.check', function(?\account\FinancialYear &$eFinancialYear): bool {
+
+				if($eFinancialYear === NULL or $eFinancialYear->empty()) {
+					return FALSE;
+				}
+
+				$cFinancialYear = \account\FinancialYearLib::getOpenFinancialYears();
+
+				if(in_array($eFinancialYear['id'], $cFinancialYear->getIds())) {
+					$eFinancialYear = $cFinancialYear->find(fn ($e) => $e['id'] === $eFinancialYear['id'])->first();
+					return TRUE;
+				}
+
+				return FALSE;
+
+			})
 			->setCallback('account.empty', function(?\account\Account $account): bool {
 
 				return $account !== NULL;
@@ -137,9 +154,9 @@ class Operation extends OperationElement {
 			})
 			->setCallback('paymentDate.empty', function(?string $paymentDate): bool {
 
-				$eCompany = \company\CompanyLib::getCurrent();
+				$this->expects(['financialYear']);
 
-				if($eCompany->isAccrualAccounting()) {
+				if($this['financialYear']->isAccrualAccounting()) {
 					return TRUE;
 				}
 
@@ -147,9 +164,9 @@ class Operation extends OperationElement {
 			})
 			->setCallback('paymentMethod.empty', function(?string $paymentDate): bool {
 
-				$eCompany = \company\CompanyLib::getCurrent();
+				$this->expects(['financialYear']);
 
-				if($eCompany->isAccrualAccounting()) {
+				if($this['financialYear']->isAccrualAccounting()) {
 					return TRUE;
 				}
 

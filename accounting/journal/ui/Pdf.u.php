@@ -12,20 +12,20 @@ class PdfUi {
 
 	public static function filenameJournal(\farm\Farm $eFarm): string {
 
-		return s("{date}-{company}-journal", ['date' => date('Y-m-d'), 'company' => $eFarm['siret']]);
+		return s("{date}-{siret}-journal", ['date' => date('Y-m-d'), 'siret' => $eFarm['siret']]);
 
 	}
 
 	public static function filenameVat(\farm\Farm $eFarm, string $type): string {
 
 		$typeText = $type === 'sell' ? s("ventes") : s("achats");
-		return s("{date}-{company}-tva-{type}", ['date' => date('Y-m-d'), 'company' => $eFarm['siret'], 'type' => $typeText]);
+		return s("{date}-{siret}-tva-{type}", ['date' => date('Y-m-d'), 'siret' => $eFarm['siret'], 'type' => $typeText]);
 
 	}
 
 	public static function filenameVatStatement(\farm\Farm $eFarm): string {
 
-		return s("{date}-{company}-declaration-tva", ['date' => date('Y-m-d'), 'company' => $eFarm['siret']]);
+		return s("{date}-{siret}-declaration-tva", ['date' => date('Y-m-d'), 'siret' => $eFarm['siret']]);
 
 	}
 
@@ -128,8 +128,7 @@ class PdfUi {
 
 	public static function filenameBook(\farm\Farm $eFarm): string {
 
-		// TODO SIRET eu lieu de ID
-		return s("{date}-{company}-grand-livre", ['date' => date('Y-m-d'), 'company' => $eFarm['id']]);
+		return s("{date}-{siret}-grand-livre", ['date' => date('Y-m-d'), 'siret' => $eFarm['siret']]);
 
 	}
 

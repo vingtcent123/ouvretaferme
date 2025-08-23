@@ -89,7 +89,7 @@ class PageLib {
 				throw new \NotExpectedAction('Accounting feature not activated.');
 			}
 
-			if($data->eFarm['company']->notEmpty()) {
+			if($data->eFarm['hasAccounting']) {
 
 				\company\CompanyLib::connectSpecificDatabaseAndServer($data->eFarm);
 

@@ -1,35 +1,24 @@
 <?php
-new \company\CompanyPage(
-	function($data) {
-		\user\ConnectionLib::checkLogged();
-	}
-)
-	->create(function ($data) {
-
-		$data->eFarm = \farm\FarmLib::getById(GET('farm'))->validate('canManage');
-
-		throw new ViewAction($data);
-
-});
-
 new Page(
 	function($data) {
 		\user\ConnectionLib::checkLogged();
-		$data->eFarm = \farm\FarmLib::getById(POST('farm'));
+		$data->eFarm = \farm\FarmLib::getById(REQUEST('farm'));
 		$data->eFarm->canManage();
-	}
-)
-	->post('doCreate', function($data) {
-
-		$data->eCompany = \company\CompanyLib::getByFarm($data->eFarm);
-
-		if($data->eCompany->notEmpty()) {
+		if($data->eFarm['hasAccounting']) {
 			throw new RedirectAction(\company\CompanyUi::urlJournal($data->eFarm).'/operations');
 		}
+	}
+)
+	->get('create', function ($data) {
+
+		throw new ViewAction($data);
+
+	})
+	->post('doCreate', function($data) {
 
 		$fw = new FailWatch();
 
-		\company\CompanyLib::createCompanyAndFinancialYear($data->eFarm, $_POST);
+		\company\CompanyLib::initializeAccounting($data->eFarm, $_POST);
 
 		$fw->validate();
 

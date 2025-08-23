@@ -61,6 +61,7 @@ Farm:
   hasShops: bool = FALSE
   hasSales: bool = FALSE
   hasCultivations: bool = FALSE
+  hasAccounting: bool = FALSE
   startedAt: ?int16(PHP(date('Y') - 100), PHP(date('Y') + 10))
   createdAt: datetime = SPECIAL(now)
   status: enum(ACTIVE, CLOSED) = ACTIVE
@@ -93,6 +94,8 @@ Farmer:
   viewAnalyzeComposition: enum(COMPOSITION, INGREDIENT) = COMPOSITION
   viewAnalyzeYear: ?int16(0, null)
   viewAccountingYear: ?int16(0, null)
+  viewAccountingType: enum(ACCRUAL, CASH) = CASH
+  viewAccountingHasVat: ?bool
   viewAccountingFinancials: enum(BANK, CHARGES, RESULTS) = BANK
   viewAccountingStatements: enum(BALANCE_SHEET, TRIAL_BALANCE) = BALANCE_SHEET
   viewSeason: ?int16(0, null)

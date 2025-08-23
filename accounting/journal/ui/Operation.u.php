@@ -233,7 +233,7 @@ class OperationUi {
 
 			$h .= '<div style="display: flex;">';
 
-				$h .= $form->hidden('company', $eFarm['id']);
+				$h .= $form->hidden('farm', $eFarm['id']);
 				$h .= $form->hidden('financialYear', $eFinancialYear['id']);
 
 				$index = 0;
@@ -290,7 +290,7 @@ class OperationUi {
 
 	}
 
-	private static function getCreateHeader(\farm\Farm $eFarm, bool $isFromCashflow): string {
+	private static function getCreateHeader(\account\FinancialYear $eFinancialYear, bool $isFromCashflow): string {
 
 		$h = '<div class="create-operation create-operation-headers">';
 
@@ -324,7 +324,7 @@ class OperationUi {
 
 			if($isFromCashflow === FALSE) {
 
-				$mandatory = $eFarm['company']->isCashAccounting() ? ' '.\util\FormUi::asterisk() : '';
+				$mandatory = $eFinancialYear->isCashAccounting() ? ' '.\util\FormUi::asterisk() : '';
 				$h .= '<div class="create-operation-header">'.self::p('paymentDate')->label.$mandatory.'</div>';
 				$h .= '<div class="create-operation-header">'.self::p('paymentMethod')->label.$mandatory.'</div>';
 
@@ -372,7 +372,7 @@ class OperationUi {
 		$cAssetGrant = $assetData['grant'] ?? new \Collection();
 		$cAssetToLinkToGrant = $assetData['asset'] ?? new \Collection();
 
-		if($eFarm['company']->isAccrualAccounting() and $index > 0) {
+		if($eFinancialYear->isAccrualAccounting() and $index > 0) {
 			$disabled[] = 'thirdParty';
 		}
 
@@ -399,7 +399,7 @@ class OperationUi {
 						'max' => $eFinancialYear['endDate'],
 						'data-date' => $form->getId(),
 						'data-index' => $index,
-						'data-accounting-type' => $eFarm['company']['accountingType'],
+						'data-accounting-type' => $eFinancialYear['accountingType'],
 					]);
 			$h .='</div>';
 
@@ -608,7 +608,7 @@ class OperationUi {
 						'paymentMethod'.$suffix,
 						$cPaymentMethod,
 						$defaultValues['paymentMethod'] ?? '',
-						['mandatory' => $eFarm['company']->isCashAccounting()],
+						['mandatory' => $eFinancialYear->isCashAccounting()],
 					);
 				$h .= '</div>';
 
@@ -672,7 +672,7 @@ class OperationUi {
 
 		$h = '<div id="create-operation-list" class="create-operations-container" data-columns="1" data-cashflow="'.($isFromCashflow ? '1' : '0').'">';
 
-			$h .= self::getCreateHeader($eFarm, $isFromCashflow);
+			$h .= self::getCreateHeader($eFinancialYear, $isFromCashflow);
 			$h .= self::getFieldsCreateGrid($eFarm, $form, $eOperation, $eFinancialYear, $suffix, $defaultValues, [], $assetData, $cPaymentMethod);
 
 			if($isFromCashflow === TRUE) {
@@ -797,7 +797,7 @@ class OperationUi {
 
 				$d->values = fn(Operation $e) => $e['cPaymentMethod'] ?? $e->expects(['cPaymentMethod']);
 				$d->attributes = function(\util\FormUi $form, Operation $eOperation) use($property) {
-					if($eOperation['farm']['company']->isCashAccounting()) {
+					if($eOperation['financialYear']->isCashAccounting()) {
 						return ['mandatory' => TRUE];
 					}
 					return [];

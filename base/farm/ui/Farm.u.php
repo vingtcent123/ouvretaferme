@@ -895,7 +895,7 @@ class FarmUi {
 			},
 
 			'journal' => match($name) {
-				'operations' => ($eFarm['company']->empty() or $eFarm['company']->isCashAccounting()) ? s("Journal comptable") : s("Journaux"),
+				'operations' => ($eFarm->getView('viewAccountingType') === \account\FinancialYear::CASH) ? s("Journal comptable") : s("Journaux"),
 				'accounts' => s("Comptes"),
 				'book' => s("Grand livre"),
 				'vat' => s("Journaux de TVA"),
@@ -1684,14 +1684,14 @@ class FarmUi {
 					'operations'
 				];
 
-				$eFarm['company'] ??= new \company\Company();
-
-				if($eFarm['company']->empty() or $eFarm['company']->isAccrualAccounting()) {
+				if($eFarm->getView('viewAccountingType') === \account\FinancialYear::ACCRUAL) {
 					$categories[] = 'accounts';
 				}
 
 				$categories[] = 'book';
-				$categories[] = 'vat';
+				if($eFarm->getView('viewAccountingHasVat')) {
+					$categories[] = 'vat';
+				}
 
 				return $categories;
 

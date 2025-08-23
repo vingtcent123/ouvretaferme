@@ -5,7 +5,6 @@ class CompanyUi {
 
 	public function __construct() {
 		\Asset::css('company', 'company.css');
-		\Asset::js('company', 'company.js');
 	}
 
 	public static function link(\farm\Farm $eFarm, bool $newTab = FALSE): string {
@@ -56,8 +55,6 @@ class CompanyUi {
 
 	public function create(\farm\Farm $eFarm): string {
 
-		$eCompany = new Company();
-
 		\Asset::js('account', 'financialYear.js');
 
 		$h = '';
@@ -89,14 +86,11 @@ class CompanyUi {
 
 		$h .= '<br/><br/>';
 
-		$h .= '<h2>'.s("Paramétrage de la comptabilité").'</h2>';
+		$h .= '<h2>'.s("Paramétrage du premier exercice comptable").'</h2>';
 
 		$h .= $form->hidden('farm', $eFarm['id']);
-		$h .= $form->dynamicGroups($eCompany, ['accountingType']);
 
-		$h .= $form->group(content: '<h3>'.s("Premier exercice comptable").'</h3>');
-
-		$h .= $form->dynamicGroups(new \account\FinancialYear(), ['startDate*', 'endDate*', 'hasVat*', 'vatFrequency*', 'taxSystem*'], [
+		$h .= $form->dynamicGroups(new \account\FinancialYear(), ['accountingType', 'startDate*', 'endDate*', 'hasVat*', 'vatFrequency*', 'taxSystem*'], [
 			'hasVat*' => function($d) use($form) {
 				$d->attributes['callbackRadioAttributes'] = fn() => ['onclick' => 'FinancialYear.changeHasVat(this)'];
 			},
@@ -119,10 +113,6 @@ class CompanyUi {
 
 		$h = '<h3>'.s("Général").'</h3>';
 
-		$form = new \util\FormUi();
-
-		$h .= $form->openAjax('/'.$eFarm['id'].'/company/company:doUpdate', ['id' => 'company-update', 'autocomplete' => 'off']);
-
 		$h .= '<div>';
 			$h .= s("Vous avez configuré certains paramètres pour votre ferme. Pour les modifier, rendez-vous <link>dans les paramètres généraux de votre ferme</link>.", ['link' => '<a href="/farm/farm:update?id='.$eFarm['id'].'">']);
 		$h .= '</div>';
@@ -143,19 +133,6 @@ class CompanyUi {
 
 			$h .= '</dl>';
 		$h .= '</div>';
-
-
-		$h .= '<h3>'.s("Paramètres de comptabilité").'</h3>';
-		$h .= $form->asteriskInfo();
-
-		$h .= $form->hidden('id', $eFarm['company']['id']);
-		$h .= $form->dynamicGroups($eFarm['company'], ['accountingType']);
-
-		$h .= $form->group(
-			content: $form->submit(s("Enregistrer"))
-		);
-
-		$h .= $form->close();
 
 		return $h;
 
@@ -199,28 +176,6 @@ class CompanyUi {
 			$h .= '</div>';
 
 		return $h;
-
-	}
-
-	public static function p(string $property): \PropertyDescriber {
-
-		$d = Company::model()->describer($property, [
-			'accountingType' => s("Type de comptabilité"),
-		]);
-
-		switch($property) {
-
-			case 'accountingType' :
-				$d->values = [
-					CompanyElement::ACCRUAL => s("Comptabilité à l'engagement"),
-					CompanyElement::CASH => s("Comptabilité de trésorerie"),
-				];
-				$d->after = \util\FormUi::info(s("Généralement, la comptabilité de <b>trésorerie</b> est choisie en <b>micro-BA</b> ou <b>régime simplifié</b>.<br />La comptabilité à l'<b>engagement</b> est choisie en <b>régime réel</b> (normal ou simplifié)"));
-				break;
-
-		}
-
-		return $d;
 
 	}
 

@@ -31,7 +31,7 @@ class StockUi {
 
 		$h = '';
 
-		$h .= $form->hidden('company', $eFarm['id']);
+		$h .= $form->hidden('farm', $eFarm['id']);
 		$h .= $form->hidden('financialYear', $eFinancialYear['id']);
 
 		$h .= $form->dynamicGroups($eStock, ['account', 'accountLabel', 'type', 'variationAccount', 'variationAccountLabel', 'initialStock', 'finalStock', 'variation'], [
@@ -110,7 +110,7 @@ class StockUi {
 		$h .= '</div>';
 
 
-		$h .= $form->hidden('company', $eFarm['id']);
+		$h .= $form->hidden('farm', $eFarm['id']);
 		$h .= $form->hidden('id', $eStock['id']);
 		$h .= $form->hidden('financialYear', $eFinancialYear['id']);
 
