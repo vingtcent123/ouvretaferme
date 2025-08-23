@@ -395,7 +395,7 @@ class Farm extends FarmElement {
 
 	public function getContactLimit(): int {
 		if(LIME_ENV === 'dev') {
-			return 999;
+			return 100;
 		} else {
 			return $this['id'] === 7 ? $this->getContactMemberLimit() : 1;
 		}

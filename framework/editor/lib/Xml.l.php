@@ -793,6 +793,7 @@ class XmlLib {
 						return $this->cleanLinkNode($node);
 
 					case 'span' :
+					case 'br' :
 						return 0;
 
 					default :

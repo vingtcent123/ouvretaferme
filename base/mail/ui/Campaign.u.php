@@ -355,7 +355,7 @@ class CampaignUi {
 								$h .= '</td>';
 								$h .= '<td>';
 									if($eEmail['status'] === Email::OPENED) {
-										$h .= s("Ouvert le {date}", ['date' => \util\DateUi::numeric($eEmail['openedAt'])]);
+										$h .= s("Ouvert le {date}", ['date' => \util\DateUi::numeric($eEmail['openedAt'], \util\DateUi::DATE)]);
 									}
 								$h .= '</td>';
 							$h .= '</tr>';
