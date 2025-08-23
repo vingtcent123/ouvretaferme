@@ -156,7 +156,7 @@ class CampaignLib extends CampaignCrud {
 
 	public static function sendOne(\farm\Farm $eFarm, Campaign $eCampaign, string $to, bool $test = FALSE): void {
 
-			$libSend = \mail\SendLib()
+			$libSend = new \mail\SendLib()
 				->setFarm($eFarm)
 				->setReplyTo($eFarm['legalEmail'])
 				->setFromName($eFarm['name'])
