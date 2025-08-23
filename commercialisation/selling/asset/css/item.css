@@ -214,6 +214,15 @@ td.item-item-composition-number {
 	margin-bottom: 0.25rem;
 }
 
+@media (min-width: 576px) {
+
+    .item-day-sales:has(> :nth-child(n + 3)) {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        grid-column-gap: 1rem;
+    }
+
+}
 
 @media (max-width: 575px) {
 
