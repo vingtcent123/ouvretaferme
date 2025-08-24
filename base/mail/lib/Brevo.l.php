@@ -100,14 +100,31 @@ class BrevoLib {
 
 			if($mode === 'prod') {
 
+				Email::model()->beginTransaction();
+
 				$eEmail = Email::model()
 					->select(Email::getSelection())
 					->whereId($id)
 					->get();
 
-				if($eEmail->notEmpty()) {
-					self::updateEmail($eEmail, $payload);
+				if(
+					$eEmail->notEmpty() and
+					$eEmail['to'] === $payload['email']
+				) {
+
+					// Les webhook n'arrivent pas forcément dans le bon ordre
+					// UN mail ouvert doit d'abord être délivré
+					if(
+						in_array($payload['event'], ['unique_opened', 'opened']) and
+						$eEmail['status'] === Email::SENT
+					) {
+						self::updateEmail($eEmail, 'delivered');
+					}
+
+					self::updateEmail($eEmail, $payload['event']);
 				}
+
+				Email::model()->commit();
 
 			}
 
@@ -115,17 +132,13 @@ class BrevoLib {
 
 	}
 
-	public static function updateEmail(Email $eEmail, array $payload): void {
+	public static function updateEmail(Email $eEmail, string $event): void {
 
 		$eEmail->expects(['to']);
 
-		if($eEmail['to'] !== $payload['email']) {
-			return;
-		}
-
 		$properties = ['status'];
 
-		switch($payload['event']) {
+		switch($event) {
 
 			case 'delivered' :
 				$eEmail['status'] = Email::DELIVERED;
@@ -137,6 +150,7 @@ class BrevoLib {
 				$eEmail['status'] = Email::OPENED;
 				$eEmail['openedAt'] = new \Sql('NOW()');
 				$properties[] = 'openedAt';
+				Email::model()->whereStatus(Email::DELIVERED);
 				break;
 
 			case 'spam' :
