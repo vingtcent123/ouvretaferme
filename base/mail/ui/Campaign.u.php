@@ -342,7 +342,7 @@ class CampaignUi {
 								$h .= '<td>'.encode($eEmail['to']).'</td>';
 								$h .= '<td>';
 
-									$h .= self::getIcon($eEmail['status']).' ';
+									$h .= self::getIcon($eEmail['status']).' ';
 
 									$h .= match($eEmail['status']) {
 										Email::WAITING, Email::SENDING => s("En attente"),
