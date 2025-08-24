@@ -57,7 +57,6 @@ Farm:
   stockNotes: ?text16
   stockNotesUpdatedAt: ?datetime
   stockNotesUpdatedBy: ?user\User
-  hasCampaign: bool = FALSE
   hasShops: bool = FALSE
   hasSales: bool = FALSE
   hasCultivations: bool = FALSE
@@ -88,7 +87,7 @@ Farmer:
   viewSellingSales: enum(ALL, PRIVATE, PRO, LABEL) = ALL
   viewSellingCategory: enum(ITEM, CUSTOMER, SHOP, PERIOD) = ITEM
   viewSellingCategoryCurrent: ?selling\Category
-  viewMailingCategory: enum(CAMPAIGN, CONTACT) = CONTACT
+  viewMailingCategory: enum(CAMPAIGN, CONTACT) = CAMPAIGN
   viewShopCatalogCurrent: ?shop\Catalog
   viewAnalyzeChart: enum(TURNOVER, QUANTITY) = TURNOVER
   viewAnalyzeComposition: enum(COMPOSITION, INGREDIENT) = COMPOSITION

@@ -202,7 +202,7 @@ class FarmerModel extends \ModuleModel {
 				return Farmer::ITEM;
 
 			case 'viewMailingCategory' :
-				return Farmer::CONTACT;
+				return Farmer::CAMPAIGN;
 
 			case 'viewAnalyzeChart' :
 				return Farmer::TURNOVER;
