@@ -104,7 +104,7 @@ class MainTemplate extends BaseTemplate {
 				if(OTF_DEMO) {
 					$h .= '&nbsp;&nbsp;<a href="'.Lime::getUrl().'" class="btn btn-transparent">'.Asset::icon('escape').' '.s("Quitter la démo").'</a>';
 				} else {
-					$h .= '<a href="'.Lime::getUrl().'">'.Lime::getDomain().'</a>';
+					$h .= '<a href="'.Lime::getUrl().'">'.Lime::getName().'</a>';
 				}
 			$h .= '</div>';
 
