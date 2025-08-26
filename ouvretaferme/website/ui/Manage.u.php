@@ -602,7 +602,7 @@ class ManageUi {
 		$h .= $form->hidden('id', $eWebsite['id']);
 
 		$h .= $form->group(
-			s("Bandeau").\util\FormUi::info(s("Le titre de la page sera incrusté dans ce bandeau qui sera affiché en haut de toutes les pages du site")),
+			s("Bandeau").\util\FormUi::info(s("Le titre de la page sera incrusté dans ce bandeau qui sera affiché en haut de toutes les pages du site qui n'ont pas de bandeau personnalisé")),
 			new \media\WebsiteBannerUi()->getCamera($eWebsite, width: '24rem', height: '8rem')
 		);
 
