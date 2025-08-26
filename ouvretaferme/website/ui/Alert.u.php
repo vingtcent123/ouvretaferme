@@ -13,6 +13,7 @@ class AlertUi {
 
 			'Website::internalDomain.check' => s("Merci de saisir une adresse uniquement composées de caractères alphanumériques et de tirets."),
 			'Website::internalDomain.duplicate' => s("Cette adresse est déjà utilisée par une autre ferme."),
+			'Website::customWidth.check' => s("La valeur minimale est de {value} pixels.", Website::model()->getPropertyRange('customWidth')[0]),
 			'Website::domain.check' => s("Votre nom de domaine ne semble pas valable."),
 			'Website::domain.duplicate' => s("Ce nom de domaine est déjà utilisé par une autre ferme."),
 			'Website::farm.duplicate' => s("Vous avez déjà créé un site internet pour votre ferme."),

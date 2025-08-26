@@ -45,6 +45,7 @@ class WebsiteUi {
 		if(get_exists('customDesign')) {
 			$url .= '?'.http_build_query([
 				'customDesign' => GET('customDesign'),
+				'customWidth' => GET('customWidth'),
 				'customText' => GET('customText'),
 				'customBackground' => GET('customBackground'),
 				'customColor' => GET('customColor'),
@@ -117,6 +118,7 @@ class WebsiteUi {
 			'customColor' => s("Couleur contrastante"),
 			'customLinkColor' => s("Couleur des liens"),
 			'customDesign' => s("Template"),
+			'customWidth' => s("Largeur minimale du contenu"),
 			'customFont' => s("Police pour le texte"),
 			'customTitleFont' => s("Police pour le titre principal des pages"),
 			'internalDomain' => s("Adresse du site sur <u>{siteName}</u>"),
@@ -151,6 +153,11 @@ class WebsiteUi {
 			case 'customDesign':
 				$d->values = fn(Website $e) => $e['cDesign'] ?? $e->expects(['cDesign']);
 				$d->attributes = ['mandatory' => TRUE];
+				break;
+
+			case 'customWidth':
+				$d->append = 'pixels';
+				$d->labelAfter = \util\FormUi::info(s("La valeur par défaut de {value} pixels est généralement un bon compromis.", Website::model()->getDefaultValue('customWidth')));
 				break;
 
 			case 'customText':

@@ -35,6 +35,7 @@ class DesignUi {
 			$families[] = 'family='.($titleFont['link'] ?? $titleFont['label']);
 		}
 
+		$containerMaxWidth = Website::GET('customWidth', 'customWidth', $eWebsite['customWidth']);
 		$text = Website::GET('customText', 'customText', $eWebsite['customText']);
 
 		if($families) {
@@ -51,7 +52,7 @@ class DesignUi {
 		$h .= ':root {
 			--background: '.$background.';
 			--primary: '.$color.';
-			--containerMaxWidth: '.$eWebsite['customDesign']['maxWidth'].';
+			--containerMaxWidth: '.$containerMaxWidth.'px;
 			--customFont: '.($font ? $font['value'] : "'Open Sans', sans-serif").';
 			--customTitleFont: '.($titleFont ? $titleFont['value'] : "'Open Sans', sans-serif").';
 			--border: '.($text === Website::BLACK ? '#8883' : '#8883').';

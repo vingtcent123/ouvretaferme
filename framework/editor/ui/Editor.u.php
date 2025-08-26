@@ -154,18 +154,22 @@ class EditorUi {
 
 		}
 
-		if($options['intro']) {
+		$h .= '<div class="editor-wrapper">';
 
-			$h .= '<div class="editor-intro">';
-				$h .= '<span>'.s("Éditeur de texte").'</span>';
-				$h .= '<div class="editor-intro-help">';
-					$h .= '<a href="/doc/editor" target="_blank">'.s("Aide").'</a> '.\Asset::icon('person-raised-hand');
+			if($options['intro']) {
+
+				$h .= '<div class="editor-intro">';
+					$h .= '<span>'.s("Éditeur de texte").'</span>';
+					$h .= '<div class="editor-intro-help">';
+						$h .= '<a href="/doc/editor" target="_blank">'.s("Aide").'</a> '.\Asset::icon('person-raised-hand');
+					$h .= '</div>';
 				$h .= '</div>';
-			$h .= '</div>';
 
-		}
+			}
 
-		$h .= '<div contenteditable="true" id="'.$id.'" '.$data.' data-editor="true" data-started="0" data-name="'.$name.'" data-progress="'.s("Veuillez patienter le temps que toutes les images soient téléchargées...").'" data-placeholder-empty="'.encode($placeholderEmpty).'" class="readitor editor form-control '.$class.'" '.attrs($attributes).'>'.$defaultValue.'</div>';
+			$h .= '<div contenteditable="true" id="'.$id.'" '.$data.' data-editor="true" data-started="0" data-name="'.$name.'" data-progress="'.s("Veuillez patienter le temps que toutes les images soient téléchargées...").'" data-placeholder-empty="'.encode($placeholderEmpty).'" class="readitor editor form-control '.$class.'" '.attrs($attributes).'>'.$defaultValue.'</div>';
+
+		$h .= '</div>';
 
 		$js = '<script type="text/javascript">';
 			$js .= 'Editor.startInstance("#'.$id.'");';

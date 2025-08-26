@@ -117,7 +117,7 @@ class WebpageUi {
 
 		$eWebpage->expects([
 			'website' => [
-				'customDesign' => ['maxWidth']
+				'customWidth'
 			]
 		]);
 
@@ -136,9 +136,9 @@ class WebpageUi {
 
 			$h .= $form->hidden('id', $eWebpage['id']);
 
-			$h .= $form->dynamicField($eWebpage, 'content', function($d) use($eWebpage) {
-				$d->attributes['style'] = 'max-width: '.$eWebpage['website']['customDesign']['maxWidth'];
-			});
+			$h .= '<div style="max-width: '.$eWebpage['website']['customWidth'].'px">';
+				$h .= $form->dynamicField($eWebpage, 'content');
+			$h .= '</div>';
 
 			$h .= '<br/>';
 

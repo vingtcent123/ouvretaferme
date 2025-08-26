@@ -38,26 +38,11 @@ class DesignModel extends \ModuleModel {
 		$this->properties = array_merge($this->properties, [
 			'id' => ['serial32', 'cast' => 'int'],
 			'name' => ['text8', 'min' => 1, 'max' => NULL, 'cast' => 'string'],
-			'maxWidth' => ['text8', 'cast' => 'string'],
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'name', 'maxWidth'
+			'id', 'name'
 		]);
-
-	}
-
-	public function getDefaultValue(string $property) {
-
-		switch($property) {
-
-			case 'maxWidth' :
-				return "100%";
-
-			default :
-				return parent::getDefaultValue($property);
-
-		}
 
 	}
 
@@ -75,10 +60,6 @@ class DesignModel extends \ModuleModel {
 
 	public function whereName(...$data): DesignModel {
 		return $this->where('name', ...$data);
-	}
-
-	public function whereMaxWidth(...$data): DesignModel {
-		return $this->where('maxWidth', ...$data);
 	}
 
 

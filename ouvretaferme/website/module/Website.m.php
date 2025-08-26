@@ -70,12 +70,13 @@ class WebsiteModel extends \ModuleModel {
 			'customDisabledFooter' => ['bool', 'cast' => 'bool'],
 			'customTitleFont' => ['text8', 'cast' => 'string'],
 			'customFont' => ['text8', 'cast' => 'string'],
+			'customWidth' => ['int32', 'min' => 800, 'max' => NULL, 'cast' => 'int'],
 			'createdAt' => ['datetime', 'cast' => 'string'],
 			'status' => ['enum', [\website\Website::ACTIVE, \website\Website::INACTIVE], 'cast' => 'enum'],
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'farm', 'internalDomain', 'domain', 'domainStatus', 'domainTry', 'logo', 'favicon', 'name', 'description', 'customDesign', 'customText', 'customColor', 'customLinkColor', 'customBackground', 'customDisabledFooter', 'customTitleFont', 'customFont', 'createdAt', 'status'
+			'id', 'farm', 'internalDomain', 'domain', 'domainStatus', 'domainTry', 'logo', 'favicon', 'name', 'description', 'customDesign', 'customText', 'customColor', 'customLinkColor', 'customBackground', 'customDisabledFooter', 'customTitleFont', 'customFont', 'customWidth', 'createdAt', 'status'
 		]);
 
 		$this->propertiesToModule += [
@@ -118,6 +119,9 @@ class WebsiteModel extends \ModuleModel {
 
 			case 'customFont' :
 				return "'PT Serif', serif";
+
+			case 'customWidth' :
+				return 1000;
 
 			case 'createdAt' :
 				return new \Sql('NOW()');
@@ -230,6 +234,10 @@ class WebsiteModel extends \ModuleModel {
 
 	public function whereCustomFont(...$data): WebsiteModel {
 		return $this->where('customFont', ...$data);
+	}
+
+	public function whereCustomWidth(...$data): WebsiteModel {
+		return $this->where('customWidth', ...$data);
 	}
 
 	public function whereCreatedAt(...$data): WebsiteModel {

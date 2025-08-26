@@ -14,7 +14,6 @@ Contact:
 Design:
   id: serial32
   name: text8(1, null)
-  maxWidth: text8 = PHP("100%")
 
 Menu:
   id: serial32
@@ -97,6 +96,7 @@ Website:
   customDisabledFooter: bool = FALSE
   customTitleFont: text8 = PHP("'PT Serif', serif")
   customFont: text8 = PHP("'PT Serif', serif")
+  customWidth: int(800, null) = 1000
   createdAt: datetime = SPECIAL(now)
   status: enum(ACTIVE, INACTIVE) = ACTIVE
   UNIQUE: [
