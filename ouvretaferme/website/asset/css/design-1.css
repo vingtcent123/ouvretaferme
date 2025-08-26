@@ -167,14 +167,6 @@ body[data-background="#FFFFFF"] nav {
 @media (max-width: 767px) {
 
 	nav {
-		width: 33vw;
-	}
-
-}
-
-@media (max-width: 767px) {
-
-	nav {
 		width: 100%;
 		padding: 1rem;
 		position: sticky;
