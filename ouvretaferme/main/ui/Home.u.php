@@ -68,7 +68,7 @@ class HomeUi {
 			$h .= '</div>';
 			$h .= '<div>';
 				$h .= '<h4 class="mb-0 color-secondary">'.s("29 janvier 2025 dans le Puy-de-Dôme (63)").'</h4>';
-				$h .= '<h2 class="font-oswald">';
+				$h .= '<h2>';
 					$h .= s("Formation sur {siteName} !");
 				$h .= '</h2>';
 				$h .= '<div>';
@@ -98,17 +98,17 @@ class HomeUi {
 			$h = '<h2>'.s("Quoi de neuf sur {value} ?", $logo).'</h2>';
 
 			$h .= '<div class="mb-2 bg-info util-block">';
-				$h .= '<p class="font-oswald" style="font-size: 1.3rem; line-height: 1.3">'.s("Suivez le blog de {siteName} pour retrouver les annonces de nouvelles fonctionnalités, la feuille de route avec les priorités de développement pour les mois à venir  et des ressources pour faciliter la prise en main du site !").'</p>';
+				$h .= '<p style="font-size: 1.3rem; line-height: 1.3">'.s("Suivez le blog de {siteName} pour retrouver les annonces de nouvelles fonctionnalités, la feuille de route avec les priorités de développement pour les mois à venir  et des ressources pour faciliter la prise en main du site !").'</p>';
 				$h .= '<a href="https://blog.ouvretaferme.org/" target="_blank" class="btn btn-secondary">'.\Asset::icon('chevron-right').' '.s("Découvrir le blog").'</a>';
 			$h .= '</div>';
 
 		} else {
 
-			$h = '<h2>'.s("Du nouveau sur {value} ?", $logo).'</h2>';
+			$h = '<h2>'.s("Du nouveau sur {value}", $logo).'</h2>';
 
 			$h .= '<div class="mb-2 bg-info util-block">';
-				$h .= '<h4 class="mb-0 color-secondary">'.\util\DateUi::textual($eNews['publishedAt'], \util\DateUi::DATE).'</h4>';
-				$h .= '<h2 class="font-oswald">';
+				$h .= '<h4 class="color-secondary" style="margin-bottom: 0.5rem">'.\util\DateUi::textual($eNews['publishedAt'], \util\DateUi::DATE).'</h4>';
+				$h .= '<h2 style="font-weight: bold">';
 					$h .= encode($eNews['title']);
 				$h .= '</h2>';
 				$h .= '<div>';
