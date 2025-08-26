@@ -106,12 +106,11 @@ class HomeUi {
 
 			$h = '<h2>'.s("Du nouveau sur {value}", $logo).'</h2>';
 
-			$h .= '<div class="mb-2 bg-info util-block">';
-				$h .= '<h4 class="color-secondary" style="margin-bottom: 0.5rem">'.\util\DateUi::textual($eNews['publishedAt'], \util\DateUi::DATE).'</h4>';
+			$h .= '<div class="mb-2 bg-info util-block flex-justify-space-between flex-align-center">';
 				$h .= '<h2 style="font-weight: bold" class="mb-0">';
-					$h .= encode($eNews['title']).'   ';
-					$h .= '<a href="https://blog.ouvretaferme.org/" target="_blank" class="btn btn-secondary">'.s("En savoir plus").'</a>';
+					$h .= encode($eNews['title']).'   <span style="font-weight: normal; font-size: 70%; white-space: nowrap; color: var(--secondary)">'.\util\DateUi::textual($eNews['publishedAt'], \util\DateUi::DATE).'</span>';
 				$h .= '</h2>';
+				$h .= '<a href="https://blog.ouvretaferme.org/" target="_blank" class="btn btn-secondary mt-1 mb-1">'.s("En savoir plus").'</a>';
 			$h .= '</div>';
 
 		}

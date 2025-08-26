@@ -39,7 +39,6 @@ class NewsLib extends NewsCrud {
 			->select(News::getSelection())
 			->whereStatus(News::READY)
 			->where('NOW() >= publishedAt')
-			->where('publishedAt > NOW() - INTERVAL 14 DAY') // On sélectionne les nouvelles fraiches
 			->whereFarm(\Setting::get('blogFarm'))
 			->sort(['publishedAt' => SORT_DESC])
 			->get();
