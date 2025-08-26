@@ -7,6 +7,23 @@ class WebpageUi {
 
 	}
 
+	public static function getBanner(Webpage $eWebpage, string $width): string {
+
+		$eWebpage->expects(['id', 'banner']);
+
+		$ui = new \media\WebpageBannerUi();
+
+		$class = 'media-banner-view'.' ';
+		$style = '';
+
+		if($eWebpage['banner'] !== NULL) {
+			$style .= 'background-image: url('.$ui->getUrlByElement($eWebpage, 's').');';
+		}
+
+		return '<div class="'.$class.'" style="width: '.$width.'; max-width: 100%; height: auto; aspect-ratio: 3; '.$style.'"></div>';
+
+	}
+
 	public function create(Website $eWebsite): \Panel {
 
 		$form = new \util\FormUi();

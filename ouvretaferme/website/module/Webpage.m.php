@@ -44,6 +44,7 @@ class WebpageModel extends \ModuleModel {
 			'website' => ['element32', 'website\Website', 'cast' => 'element'],
 			'farm' => ['element32', 'farm\Farm', 'cast' => 'element'],
 			'template' => ['element32', 'website\Template', 'cast' => 'element'],
+			'banner' => ['textFixed', 'min' => 30, 'max' => 30, 'charset' => 'ascii', 'null' => TRUE, 'cast' => 'string'],
 			'url' => ['text8', 'min' => 0, 'max' => 50, 'cast' => 'string'],
 			'description' => ['text8', 'min' => 1, 'max' => 200, 'null' => TRUE, 'cast' => 'string'],
 			'content' => ['editor24', 'null' => TRUE, 'cast' => 'string'],
@@ -52,7 +53,7 @@ class WebpageModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'title', 'website', 'farm', 'template', 'url', 'description', 'content', 'createdAt', 'status'
+			'id', 'title', 'website', 'farm', 'template', 'banner', 'url', 'description', 'content', 'createdAt', 'status'
 		]);
 
 		$this->propertiesToModule += [
@@ -128,6 +129,10 @@ class WebpageModel extends \ModuleModel {
 
 	public function whereTemplate(...$data): WebpageModel {
 		return $this->where('template', ...$data);
+	}
+
+	public function whereBanner(...$data): WebpageModel {
+		return $this->where('banner', ...$data);
 	}
 
 	public function whereUrl(...$data): WebpageModel {

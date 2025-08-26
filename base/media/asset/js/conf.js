@@ -57,6 +57,16 @@ class ImageConf {
 			height: 256,
 			error: "La résolution de votre image n'est pas suffisante (le minimum est 256x256 pixels)"
 		},
+		'website-banner': {
+			width: 1800,
+			height: 600,
+			error: "La résolution de votre image n'est pas suffisante (le minimum est 1800x600 pixels)"
+		},
+		'webpage-banner': {
+			width: 1800,
+			height: 600,
+			error: "La résolution de votre image n'est pas suffisante (le minimum est 1800x600 pixels)"
+		},
 		'shop-logo': {
 			width: 512,
 			height: 512,

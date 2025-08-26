@@ -59,7 +59,8 @@ class WebsiteModel extends \ModuleModel {
 			'domainStatus' => ['enum', [\website\Website::PENDING, \website\Website::CONFIGURED_UNSECURED, \website\Website::PINGED_UNSECURED, \website\Website::FAILURE_UNSECURED, \website\Website::CERTIFICATE_CREATED, \website\Website::FAILURE_CERTIFICATE_CREATED, \website\Website::CONFIGURED_SECURED, \website\Website::PINGED_SECURED, \website\Website::FAILURE_SECURED], 'null' => TRUE, 'cast' => 'enum'],
 			'domainTry' => ['int16', 'min' => 0, 'max' => NULL, 'cast' => 'int'],
 			'logo' => ['textFixed', 'min' => 30, 'max' => 30, 'charset' => 'ascii', 'null' => TRUE, 'cast' => 'string'],
-			'favicon' => ['textFixed', 'min' => 30, 'max' => 30, 'null' => TRUE, 'cast' => 'string'],
+			'favicon' => ['textFixed', 'min' => 30, 'max' => 30, 'charset' => 'ascii', 'null' => TRUE, 'cast' => 'string'],
+			'banner' => ['textFixed', 'min' => 30, 'max' => 30, 'charset' => 'ascii', 'null' => TRUE, 'cast' => 'string'],
 			'name' => ['text8', 'min' => 1, 'max' => 40, 'cast' => 'string'],
 			'description' => ['text8', 'min' => 1, 'max' => 200, 'null' => TRUE, 'cast' => 'string'],
 			'customDesign' => ['element32', 'website\Design', 'cast' => 'element'],
@@ -76,7 +77,7 @@ class WebsiteModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'farm', 'internalDomain', 'domain', 'domainStatus', 'domainTry', 'logo', 'favicon', 'name', 'description', 'customDesign', 'customText', 'customColor', 'customLinkColor', 'customBackground', 'customDisabledFooter', 'customTitleFont', 'customFont', 'customWidth', 'createdAt', 'status'
+			'id', 'farm', 'internalDomain', 'domain', 'domainStatus', 'domainTry', 'logo', 'favicon', 'banner', 'name', 'description', 'customDesign', 'customText', 'customColor', 'customLinkColor', 'customBackground', 'customDisabledFooter', 'customTitleFont', 'customFont', 'customWidth', 'createdAt', 'status'
 		]);
 
 		$this->propertiesToModule += [
@@ -194,6 +195,10 @@ class WebsiteModel extends \ModuleModel {
 
 	public function whereFavicon(...$data): WebsiteModel {
 		return $this->where('favicon', ...$data);
+	}
+
+	public function whereBanner(...$data): WebsiteModel {
+		return $this->where('banner', ...$data);
 	}
 
 	public function whereName(...$data): WebsiteModel {

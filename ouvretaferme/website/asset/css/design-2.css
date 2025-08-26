@@ -53,22 +53,6 @@ div.website-wrapper {
 
 }
 
-@media (min-width: 768px) {
-
-	div.website-wrapper {
-		padding-right: 1rem;
-	}
-
-}
-
-@media (min-width: 992px) {
-
-	div.website-wrapper {
-		padding-right: 2rem;
-	}
-
-}
-
 @media (max-width: 767px) {
 
 	div.website-wrapper {
@@ -92,6 +76,10 @@ h1 {
 	position: relative;
 	line-height: 1.3;
 	margin-bottom: 0;
+}
+
+.website-banner h1 {
+    color: white;
 }
 
 @media (max-width: 991px) {
@@ -123,7 +111,8 @@ main, footer {
 @media (max-width: 767px) {
 
 	header, footer {
-		margin: 0 0.5rem;
+		padding-left: 0.5rem;
+		padding-right: 0.5rem;
 	}
 
 }
@@ -245,7 +234,7 @@ nav {
 		left: 0;
 		right: 0;
 		border-radius: var(--radius);
-		top: calc(25vw + 1rem);
+		top: calc(100% + 1rem);
 		padding: 1rem;
 		z-index: 100;
 	}
@@ -307,7 +296,7 @@ ul.website-menu a.selected {
 
 	.website-logo img {
 		width: 100%;
-		max-width: 10rem;
+		max-width: 12rem;
 	}
 
 }
@@ -372,14 +361,52 @@ ul.website-menu a.selected {
 
 }
 
-header {
-	padding: 3rem 3rem 1rem;
-	text-align: center;
+
+.website-banner {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 20rem;
+    background-size: cover;
+    background-position: center center;
+    color: white;
+    position: relative;
+    z-index: 1;
+    margin: 1rem 3rem 0 3rem;
 }
 
 @media (max-width: 767px) {
 
-	header {
+    .website-banner {
+        margin-left: 0;
+        margin-right: 0;
+    }
+
+}
+
+.website-banner:after {
+    content: ' ';
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #0003;
+}
+
+.website-header {
+    text-align: center;
+    padding: 3rem 3rem 1rem;
+}
+
+.website-banner .website-header {
+    z-index: 2;
+}
+
+@media (max-width: 767px) {
+
+	.website-header {
 		padding: 2rem 1rem;
 	}
 
@@ -423,7 +450,7 @@ div.website-menu-news-wrapper h4 {
 @media (min-width: 768px) {
 
 	div.website-menu-news-wrapper h4 a {
-		color: var(--muted);
+		color: #fff9;
 	}
 
 }
@@ -449,7 +476,7 @@ div.website-menu-news-wrapper a.website-menu-news small {
 @media (min-width: 768px) {
 
 	div.website-menu-news-wrapper a.website-menu-news small {
-		color: var(--muted);
+		color: #fff9;
 	}
 
 }

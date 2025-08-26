@@ -79,6 +79,23 @@ class WebsiteUi {
 
 	}
 
+	public static function getBanner(Website $eWebsite, string $width): string {
+
+		$eWebsite->expects(['id', 'banner']);
+
+		$ui = new \media\WebsiteBannerUi();
+
+		$class = 'media-banner-view'.' ';
+		$style = '';
+
+		if($eWebsite['banner'] !== NULL) {
+			$style .= 'background-image: url('.$ui->getUrlByElement($eWebsite, 's').');';
+		}
+
+		return '<div class="'.$class.'" style="width: '.$width.'; max-width: 100%; height: auto; aspect-ratio: 3; '.$style.'"></div>';
+
+	}
+
 	public static function getLogoImage(Website $eWebsite): string {
 
 		$eWebsite->expects(['id', 'logo']);

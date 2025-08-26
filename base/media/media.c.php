@@ -32,12 +32,27 @@ function getMediaLogo() {
 
 }
 
+function getMediaBanner() {
+
+	return [
+		'imageFormat' => [
+			's' => [240, 80],
+			'l' => [1800, 600]
+		],
+		'imageResizeReference' => ['l'],
+		'imageOutputType' => [IMAGETYPE_JPEG],
+		'imageMaxLength' => 1800,
+		'imageRequiredSize' => 'l'
+	];
+
+}
+
 Setting::register('media', [
 
 	// Max size of an image in Mo (change also rewrite.cfg if needed : client_max_body_size 20m;)
 	'maxImageSize' => 20,
 
-	'images' => ['user-vignette', 'editor', 'plant-vignette', 'gallery', 'farm-vignette', 'farm-logo', 'farm-banner', 'product-vignette', 'tool-vignette', 'website-logo', 'website-favicon', 'shop-logo', 'pdf-content'],
+	'images' => ['user-vignette', 'editor', 'plant-vignette', 'gallery', 'farm-vignette', 'farm-logo', 'farm-banner', 'product-vignette', 'tool-vignette', 'website-logo', 'website-favicon', 'website-banner', 'webpage-banner', 'shop-logo', 'pdf-content'],
 
 	'user-vignette' => [
 		'class' => 'UserVignette',
@@ -158,6 +173,18 @@ Setting::register('media', [
 		'element' => 'website\Website',
 		'field' => 'logo'
 	] + getMediaLogo(),
+
+	'website-banner' => [
+		'class' => 'WebsiteBanner',
+		'element' => 'website\Website',
+		'field' => 'banner'
+	] + getMediaBanner(),
+
+	'webpage-banner' => [
+		'class' => 'WebpageBanner',
+		'element' => 'website\Webpage',
+		'field' => 'banner'
+	] + getMediaBanner(),
 
 	'imageCropRequiredFactor' => 1.1,
 	'imageResizeRequiredFactor' => 1.15,

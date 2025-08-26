@@ -2138,15 +2138,8 @@ class FarmUi {
 		$class = 'farm-banner-view media-rectangle-view'.' ';
 		$style = '';
 
-		if($eFarm['emailBanner'] === NULL) {
-
-			$class .= ' media-banner-default';
-			$style .= '';
-
-		} else {
-
+		if($eFarm['emailBanner'] !== NULL) {
 			$style .= 'background-image: url('.$ui->getUrlByElement($eFarm, 'm').');';
-
 		}
 
 		return '<div class="'.$class.'" style="width: '.$width.'; max-width: 100%; height: auto; aspect-ratio: 5; '.$style.'"></div>';

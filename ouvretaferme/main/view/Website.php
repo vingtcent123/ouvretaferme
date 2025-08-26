@@ -73,21 +73,45 @@ class WebsiteTemplate extends BaseTemplate {
 		$h = '';
 		if($this->title !== NULL) {
 
-			$h .= '<h1>'.$this->title.'</h1>';
+			if($this->data->eWebpage['banner'] !== NULL) {
+				$banner = new \media\WebpageBannerUi()->getUrlByElement($this->data->eWebpage, 'l');
+			} else if($this->data->eWebsite['banner'] !== NULL) {
+				$banner = new \media\WebsiteBannerUi()->getUrlByElement($this->data->eWebsite, 'l');
+			} else {
+				$banner = NULL;
+			}
 
-			if(
-				get_exists('customize') === FALSE and
-				$this->data->eWebsite->canWrite() and
-				$this->data->eWebpage->notEmpty()
-			) {
+			if($banner !== NULL) {
 
-				$h .= '<div class="website-admin">';
+				$h .= '<div class="website-banner" style="background-image: url('.$banner.')">';
 
-					$h .= '<a href="'.Lime::getUrl().'/website/manage?id='.$this->data->eWebsite['farm']['id'].'&tab=pages" class="btn btn-secondary" title="'.s("Modifier cette page").'">'.Asset::icon('pencil-fill').'</a>';
+			}
 
-					if($this->data->eWebpage['template']['fqn'] === 'news') {
-						$h .= ' <a href="'.Lime::getUrl().'/website/manage?id='.$this->data->eWebsite['farm']['id'].'&tab=news" class="btn btn-secondary" title="'.s("Gérer les actualités").'">'.Asset::icon('newspaper').'</a>';
+				$h .= '<div class="website-header">';
+
+					$h .= '<h1>'.$this->title.'</h1>';
+
+					if(
+						get_exists('customize') === FALSE and
+						$this->data->eWebsite->canWrite() and
+						$this->data->eWebpage->notEmpty()
+					) {
+
+						$h .= '<div class="website-admin">';
+
+							$h .= '<a href="'.Lime::getUrl().'/website/manage?id='.$this->data->eWebsite['farm']['id'].'&tab=pages" class="btn btn-secondary" title="'.s("Modifier cette page").'">'.Asset::icon('pencil-fill').'</a>';
+
+							if($this->data->eWebpage['template']['fqn'] === 'news') {
+								$h .= ' <a href="'.Lime::getUrl().'/website/manage?id='.$this->data->eWebsite['farm']['id'].'&tab=news" class="btn btn-secondary" title="'.s("Gérer les actualités").'">'.Asset::icon('newspaper').'</a>';
+							}
+
+						$h .= '</div>';
+
 					}
+
+				$h .= '</div>';
+
+			if($banner !== NULL) {
 
 				$h .= '</div>';
 

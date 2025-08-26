@@ -339,12 +339,13 @@ class ManageUi {
 			$h .= '<a href="/website/webpage:create?website='.$eWebsite['id'].'" class="btn btn-secondary">'.\Asset::icon('plus-circle').' '.s("Nouvelle page").'</a>';
 		$h.= '</div>';
 
-		$h .= '<div class="website-page-wrapper stick-xs">';
+		$h .= '<div class="website-page-wrapper util-overflow-md stick-xs">';
 
 		$h .= '<table class="tr-even website-page-table">';
 
 			$h .= '<tr>';
-				$h .= '<th class="website-page-url">'.s("Adresse").'</th>';
+				$h .= '<th class="td-min-content website-page-url">'.s("Adresse").'</th>';
+				$h .= '<th class="td-min-content">'.s("Bandeau").'</th>';
 				$h .= '<th>'.s("Titre").'</th>';
 				$h .= '<th class="website-page-content">'.s("Contenu").'</th>';
 				$h .= '<th>'.s("Statut").'</th>';
@@ -355,8 +356,12 @@ class ManageUi {
 
 				$h .= '<tr>';
 
-					$h .= '<td class="website-page-url">';
+					$h .= '<td class="td-min-content website-page-url">';
 						$h .= '/'.$eWebpage['url'];
+					$h .= '</td>';
+
+					$h .= '<td class="td-min-content">';
+						$h .= new \media\WebpageBannerUi()->getCamera($eWebpage, width: '12rem', height: '4rem');
 					$h .= '</td>';
 
 					$h .= '<td>';
@@ -371,7 +376,7 @@ class ManageUi {
 						}
 					$h .= '</td>';
 
-					$h .= '<td>';
+					$h .= '<td class="td-min-content">';
 						$h .= match($eWebpage['status']) {
 							Webpage::ACTIVE => '<span class="color-success">'.\Asset::icon('check-lg').' '.s("En ligne").'</span>',
 							Webpage::INACTIVE => '<span class="color-muted">'.\Asset::icon('pause-fill').' '.s("Hors-ligne").'</span>',
@@ -595,6 +600,11 @@ class ManageUi {
 		$h .= $form->openAjax('/website/manage:doCustomize', ['id' => 'website-customize']);
 
 		$h .= $form->hidden('id', $eWebsite['id']);
+
+		$h .= $form->group(
+			s("Bandeau").\util\FormUi::info(s("Le titre de la page sera incrusté dans ce bandeau qui sera affiché en haut de toutes les pages du site")),
+			new \media\WebsiteBannerUi()->getCamera($eWebsite, width: '24rem', height: '8rem')
+		);
 
 		$h .= $form->dynamicGroups($eWebsite, ['customDesign', 'customWidth', 'customText', 'customColor', 'customLinkColor', 'customBackground', 'customFont', 'customTitleFont']);
 

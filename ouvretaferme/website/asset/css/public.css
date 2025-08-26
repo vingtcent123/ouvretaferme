@@ -36,9 +36,12 @@ main a:hover {
 div.website-admin {
 	position: absolute;
 	top: 1rem;
-	right: 0;
+	right: 1rem;
 }
 
+.website-banner div.website-admin a {
+	border: 1px solid white;
+}
 
 div.website-menu-news-wrapper a.website-menu-news:hover {
 	text-decoration: underline;
