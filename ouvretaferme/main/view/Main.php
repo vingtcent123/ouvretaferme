@@ -86,18 +86,6 @@ class MainTemplate extends BaseTemplate {
 
 	}
 
-	protected function getLogo(string $size): string {
-
-		$h = '<div class="logo-wrapper" style="width: '.$size.'; height: '.$size.'">';
-			$h .= '<div class="logo-top-left-circle"></div>';
-			$h .= '<div class="logo-bottom-right-circle"></div>';
-			$h .= '<div class="logo-middle-circle"></div>';
-		$h .= '</div>';
-
-		return $h;
-
-	}
-
 	protected function getNav(): string {
 		return $this->getDefaultNav();
 	}
@@ -113,11 +101,6 @@ class MainTemplate extends BaseTemplate {
 		if($center === NULL) {
 
 			$h .= '<div class="nav-title">';
-				$h .= '<a class="nav-logo" href="'.Lime::getUrl().'">';
-					$h .= $this->getLogo('100%');
-					$h .= '<div class="nav-logo-home">'.\Asset::icon('house-door-fill').'</div>';
-				$h .= '</a>';
-
 				if(OTF_DEMO) {
 					$h .= '&nbsp;&nbsp;<a href="'.Lime::getUrl().'" class="btn btn-transparent">'.Asset::icon('escape').' '.s("Quitter la démo").'</a>';
 				} else {

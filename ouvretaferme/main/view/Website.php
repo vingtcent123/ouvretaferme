@@ -73,7 +73,7 @@ class WebsiteTemplate extends BaseTemplate {
 		$h = '';
 		if($this->title !== NULL) {
 
-			if($this->data->eWebpage['banner'] !== NULL) {
+			if($this->data->eWebpage->notEmpty() and $this->data->eWebpage['banner'] !== NULL) {
 				$banner = new \media\WebpageBannerUi()->getUrlByElement($this->data->eWebpage, 'l');
 			} else if($this->data->eWebsite['banner'] !== NULL) {
 				$banner = new \media\WebsiteBannerUi()->getUrlByElement($this->data->eWebsite, 'l');

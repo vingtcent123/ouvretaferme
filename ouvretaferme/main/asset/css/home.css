@@ -57,35 +57,6 @@ body[data-template^="home-"] header h4 {
 	text-align: center;
 }
 
-.home-blog {
-	display: grid;
-	grid-template-columns: max-content 1fr;
-	grid-column-gap: 2rem;
-	align-items: center;
-}
-
-.home-blog:not(:last-child) {
-	margin-bottom: 2rem;
-}
-
-.home-blog img {
-	width: 10rem;
-	height: 10rem;
-}
-
-@media (max-width: 575px) {
-
-	.home-blog img {
-		width: 5rem;
-		height: 5rem;
-	}
-
-}
-
-.home-blog div.util-block {
-	margin-bottom: 0;
-}
-
 .home-domain {
 	color: white;
 	text-align: center;

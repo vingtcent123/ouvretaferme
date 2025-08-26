@@ -361,71 +361,6 @@ body > nav a {
 	color: white;
 }
 
-body > nav a.nav-logo {
-	display: inline-block;
-	width: 1.75rem;
-	min-width: 1.75rem;
-	height: 1.75rem;
-	position: relative;
-	align-self: center;
-	margin-right: 1rem;
-}
-
-body > nav a.nav-logo div.logo-wrapper {
-	transition: all 0.5s;
-	transition-delay: 0s;
-}
-
-body > nav a.nav-logo div.logo-wrapper div.logo-top-left-circle,
-body > nav a.nav-logo div.logo-wrapper div.logo-bottom-right-circle {
-	transition: all 0.5s;
-	transition-delay: 0s;
-}
-
-body > nav a.nav-logo:hover div.logo-wrapper {
-	transition-delay: 0.5s;
-	transform: rotate(-360deg);
-	letter-spacing: 30px;
-	color: transparent;
-	opacity: 0;
-
-}
-
-body > nav a.nav-logo:hover div.logo-wrapper div.logo-top-left-circle {
-	transition-delay: 0.5s;
-	top: -100%;
-	left: -100%;
-}
-
-
-body > nav a.nav-logo:hover div.logo-wrapper div.logo-bottom-right-circle {
-	transition-delay: 0.5s;
-	top: 100%;
-	left: 100%;
-}
-
-body > nav a.nav-logo div.nav-logo-home {
-	position: absolute;
-	left: 0;
-	right: 0;
-	bottom: 0;
-	top: 0;
-	opacity: 0;
-	transition: all 0.5s;
-	transition-delay: 0s;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-}
-
-body > nav a.nav-logo:hover div.nav-logo-home {
-	opacity: 1;
-	transition-delay: 0.5s;
-}
-
-body > nav a.nav-logo svg {
-	font-size: 2rem;
-}
 
 div.nav-wrapper {
 	display: flex;
@@ -571,44 +506,6 @@ body > nav .nav-user > *:not(:first-child) {
 	margin-left: .5rem;
 }
 
-
-/* Logo */
-div.logo-wrapper {
-	position: relative;
-}
-
-div.logo-middle-circle {
-	position: absolute;
-	left: 28%;
-	top: 28%;
-	background-color: white;
-	border-radius: 50%;
-	width: 44%;
-	height: 44%;
-	box-shadow: 0 0 0.5rem rgba(0, 0, 0, 0.3);
-}
-
-div.logo-top-left-circle {
-	position: absolute;
-	left: 0;
-	top: 0;
-	width: 50%;
-	height: 50%;
-	border-top-left-radius: 100%;
-	background-color: white;
-	opacity: 0.25;
-}
-
-div.logo-bottom-right-circle {
-	position: absolute;
-	left: 50%;
-	top: 50%;
-	width: 50%;
-	height: 50%;
-	border-bottom-right-radius: 100%;
-	background-color: white;
-	opacity: 0.25;
-}
 
 /* Main */
 main {

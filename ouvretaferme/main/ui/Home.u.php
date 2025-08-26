@@ -87,38 +87,32 @@ class HomeUi {
 
 	public function getBlog(\website\News $eNews, bool $displayFallback): string {
 
+		$logo = \Asset::image('main', 'logo.png', ['style' => 'width: auto; height: 4rem; margin-top: -0.7rem']);
+
 		if($eNews->empty()) {
 
 			if($displayFallback === FALSE) {
 				return '';
 			}
 
-			$h = '<h2>'.s("Quoi de neuf sur Ouvretaferme ?").'</h2>';
+			$h = '<h2>'.s("Quoi de neuf sur {value} ?", $logo).'</h2>';
 
-			$h .= '<div class="home-blog bg-info util-block">';
-				$h .= \Asset::image('main', 'favicon.png', ['style' => 'width: 6rem; height: 6rem']);
-				$h .= '<div>';
-					$h .= '<p class="font-oswald" style="font-size: 1.3rem; line-height: 1.3">'.s("Suivez le blog de {siteName} pour retrouver les annonces de nouvelles fonctionnalités, la feuille de route avec les priorités de développement pour les mois à venir  et des ressources pour faciliter la prise en main du site !").'</p>';
-					$h .= '<a href="https://blog.ouvretaferme.org/" target="_blank" class="btn btn-secondary">'.\Asset::icon('chevron-right').' '.s("Découvrir le blog").'</a>';
-				$h .= '</div>';
+			$h .= '<div class="mb-2 bg-info util-block">';
+				$h .= '<p class="font-oswald" style="font-size: 1.3rem; line-height: 1.3">'.s("Suivez le blog de {siteName} pour retrouver les annonces de nouvelles fonctionnalités, la feuille de route avec les priorités de développement pour les mois à venir  et des ressources pour faciliter la prise en main du site !").'</p>';
+				$h .= '<a href="https://blog.ouvretaferme.org/" target="_blank" class="btn btn-secondary">'.\Asset::icon('chevron-right').' '.s("Découvrir le blog").'</a>';
 			$h .= '</div>';
 
 		} else {
 
-			$h = '<h2>'.s("Du nouveau sur Ouvretaferme !").'</h2>';
+			$h = '<h2>'.s("Du nouveau sur {value} ?", $logo).'</h2>';
 
-			$h .= '<div class="home-blog bg-info util-block">';
+			$h .= '<div class="mb-2 bg-info util-block">';
+				$h .= '<h4 class="mb-0 color-secondary">'.\util\DateUi::textual($eNews['publishedAt'], \util\DateUi::DATE).'</h4>';
+				$h .= '<h2 class="font-oswald">';
+					$h .= encode($eNews['title']);
+				$h .= '</h2>';
 				$h .= '<div>';
-					$h .= \Asset::image('main', 'favicon.png').'';
-				$h .= '</div>';
-				$h .= '<div>';
-					$h .= '<h4 class="mb-0 color-secondary">'.\util\DateUi::textual($eNews['publishedAt'], \util\DateUi::DATE).'</h4>';
-					$h .= '<h2 class="font-oswald">';
-						$h .= encode($eNews['title']);
-					$h .= '</h2>';
-					$h .= '<div>';
-						$h .= '<a href="https://blog.ouvretaferme.org/" target="_blank" class="btn btn-secondary">'.\Asset::icon('chevron-right').' '.s("En savoir plus").'</a>';
-					$h .= '</div>';
+					$h .= '<a href="https://blog.ouvretaferme.org/" target="_blank" class="btn btn-secondary">'.\Asset::icon('chevron-right').' '.s("En savoir plus").'</a>';
 				$h .= '</div>';
 			$h .= '</div>';
 
