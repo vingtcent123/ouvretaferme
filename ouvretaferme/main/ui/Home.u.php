@@ -87,15 +87,13 @@ class HomeUi {
 
 	public function getBlog(\website\News $eNews, bool $displayFallback): string {
 
-		$logo = \Asset::image('main', 'logo.png', ['style' => 'width: auto; height: 4rem; margin-top: -0.7rem']);
-
 		if($eNews->empty()) {
 
 			if($displayFallback === FALSE) {
 				return '';
 			}
 
-			$h = '<h2>'.s("Quoi de neuf sur {value} ?", $logo).'</h2>';
+			$h = '<h2>'.s("Quoi de neuf sur {siteName} ?").'</h2>';
 
 			$h .= '<div class="mb-2 bg-info util-block">';
 				$h .= '<p style="font-size: 1.3rem; line-height: 1.3">'.s("Suivez le blog de {siteName} pour retrouver les annonces de nouvelles fonctionnalités, la feuille de route avec les priorités de développement pour les mois à venir  et des ressources pour faciliter la prise en main du site !").'</p>';
@@ -104,7 +102,7 @@ class HomeUi {
 
 		} else {
 
-			$h = '<h2>'.s("Du nouveau sur {value}", $logo).'</h2>';
+			$h = '<h2>'.s("Du nouveau sur {siteName}").'</h2>';
 
 			$h .= '<div class="mb-2 bg-info util-block flex-justify-space-between flex-align-center">';
 				$h .= '<h2 style="font-weight: bold" class="mb-0">';
