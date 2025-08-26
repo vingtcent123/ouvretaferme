@@ -108,12 +108,10 @@ class HomeUi {
 
 			$h .= '<div class="mb-2 bg-info util-block">';
 				$h .= '<h4 class="color-secondary" style="margin-bottom: 0.5rem">'.\util\DateUi::textual($eNews['publishedAt'], \util\DateUi::DATE).'</h4>';
-				$h .= '<h2 style="font-weight: bold">';
-					$h .= encode($eNews['title']);
+				$h .= '<h2 style="font-weight: bold" class="mb-0">';
+					$h .= encode($eNews['title']).'   ';
+					$h .= '<a href="https://blog.ouvretaferme.org/" target="_blank" class="btn btn-secondary">'.s("En savoir plus").'</a>';
 				$h .= '</h2>';
-				$h .= '<div>';
-					$h .= '<a href="https://blog.ouvretaferme.org/" target="_blank" class="btn btn-secondary">'.\Asset::icon('chevron-right').' '.s("En savoir plus").'</a>';
-				$h .= '</div>';
 			$h .= '</div>';
 
 		}
