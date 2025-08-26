@@ -72,9 +72,11 @@ class WebsiteTemplate extends BaseTemplate {
 
 		$h = '';
 		if($this->title !== NULL) {
+
 			$h .= '<h1>'.$this->title.'</h1>';
 
 			if(
+				get_exists('customize') === FALSE and
 				$this->data->eWebsite->canWrite() and
 				$this->data->eWebpage->notEmpty()
 			) {
