@@ -7,6 +7,7 @@ class DesignLib extends DesignCrud {
 
 		return Design::model()
 			->select('id', 'name')
+			->sort(['name' => SORT_ASC])
 			->getCollection();
 
 	}
