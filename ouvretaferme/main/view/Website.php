@@ -173,8 +173,23 @@ class WebsiteTemplate extends BaseTemplate {
 					$h .= '<input type="checkbox" id="website-menu-input"/>';
 
 					$h .= '<ul class="website-menu">';
+
+						$position = 0;
+
 						foreach($this->data->cMenu as $eMenu) {
-							$h .= '<li>';
+
+							$position++;
+
+							$h .= '<li';
+
+								if($position === 1) {
+									$h .= ' class="website-menu-list-first"';
+								} else if($position === $this->data->cMenu->count()) {
+									$h .= ' class="website-menu-list-last"';
+								}
+
+							$h .= '>';
+
 								if($eMenu['url'] !== NULL) {
 
 									// Shop
@@ -193,14 +208,16 @@ class WebsiteTemplate extends BaseTemplate {
 									$class = ($this->data->eWebpage->notEmpty() and $eMenu['webpage']['id'] === $this->data->eWebpage['id']) ? 'selected' : '';
 									$h .= '<a href="'.\website\WebsiteUi::path($this->data->eWebsite, '/'.$eMenu['webpage']['url']).'" class="website-menu-item '.$class.'">'.encode($eMenu['label']).'</a>';
 								}
+
 							$h .= '</li>';
+
 						}
 
 						if(
 							$this->data->eWebpageNews['status'] === \website\Webpage::ACTIVE and
 							$this->data->cNews->notEmpty()
 						) {
-							$h .= '<li>';
+							$h .= '<li class="website-menu-list-news">';
 								$h .= new \website\NewsUi()->getForMenu($this->data->eWebsite, $this->data->eWebpage, $this->data->eWebpageNews, $this->data->cNews, 3);
 							$h .= '</li>';
 						}

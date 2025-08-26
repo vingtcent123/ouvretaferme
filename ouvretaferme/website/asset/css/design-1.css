@@ -267,7 +267,6 @@ ul.website-menu {
 	list-style-type: none;
 	padding: 0;
 	margin: 0;
-	font-size: calc(1rem + 1px);
 }
 
 ul.website-menu a,
