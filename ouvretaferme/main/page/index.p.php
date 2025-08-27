@@ -23,7 +23,7 @@ new Page()
 			$data->cInvoice = new Collection();
 		}
 
-		$data->eNews = \website\NewsLib::getLastForBlog();
+		$data->cNews = \website\NewsLib::getLastForBlog();
 
 		throw new ViewAction($data, path: ':logged');
 

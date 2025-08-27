@@ -197,7 +197,7 @@ new AdaptativeView('logged', function($data, MainTemplate $t) {
 		echo new \main\HomeUi()->getTraining();
 
 		if($data->cFarmUser->notEmpty()) {
-			echo new \main\HomeUi()->getBlog($data->eNews, TRUE);
+			echo new \main\HomeUi()->getBlog($data->cNews);
 		}
 
 	}

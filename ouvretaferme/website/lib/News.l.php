@@ -33,16 +33,15 @@ class NewsLib extends NewsCrud {
 
 	}
 
-	public static function getLastForBlog(): News {
+	public static function getLastForBlog(): \Collection {
 
 		return News::model()
 			->select(News::getSelection())
 			->whereStatus(News::READY)
 			->where('NOW() >= publishedAt')
-			->where('publishedAt > NOW() - INTERVAL 14 DAY') // On sélectionne les nouvelles fraiches
 			->whereFarm(\Setting::get('blogFarm'))
 			->sort(['publishedAt' => SORT_DESC])
-			->get();
+			->getCollection(0, 5);
 
 	}
 

@@ -85,18 +85,14 @@ class HomeUi {
 
 	}
 
-	public function getBlog(\website\News $eNews, bool $displayFallback): string {
+	public function getBlog(\Collection $cNews): string {
 
-		if($eNews->empty()) {
-
-			if($displayFallback === FALSE) {
-				return '';
-			}
+		if($cNews->empty()) {
 
 			$h = '<h2>'.s("Quoi de neuf sur {siteName} ?").'</h2>';
 
 			$h .= '<div class="mb-2 bg-info util-block">';
-				$h .= '<p style="font-size: 1.3rem; line-height: 1.3">'.s("Suivez le blog de {siteName} pour retrouver les annonces de nouvelles fonctionnalités, la feuille de route avec les priorités de développement pour les mois à venir  et des ressources pour faciliter la prise en main du site !").'</p>';
+				$h .= '<h3 style="font-weight: normal">'.s("Suivez le blog de {siteName} pour retrouver les annonces de nouvelles fonctionnalités, la feuille de route avec les priorités de développement pour les mois à venir  et des ressources pour faciliter la prise en main du site !").'</h3>';
 				$h .= '<a href="https://blog.ouvretaferme.org/" target="_blank" class="btn btn-secondary">'.\Asset::icon('chevron-right').' '.s("Découvrir le blog").'</a>';
 			$h .= '</div>';
 
@@ -104,12 +100,22 @@ class HomeUi {
 
 			$h = '<h2>'.s("Du nouveau sur {siteName}").'</h2>';
 
-			$h .= '<div class="mb-2 bg-info util-block flex-justify-space-between flex-align-center">';
-				$h .= '<h2 style="font-weight: bold" class="mb-0">';
-					$h .= encode($eNews['title']).'   <span style="font-weight: normal; font-size: 70%; white-space: nowrap; color: var(--secondary)">'.\util\DateUi::textual($eNews['publishedAt'], \util\DateUi::DATE).'</span>';
-				$h .= '</h2>';
-				$h .= '<a href="https://blog.ouvretaferme.org/" target="_blank" class="btn btn-secondary mt-1 mb-1">'.s("En savoir plus").'</a>';
-			$h .= '</div>';
+				$h .= '<table class="tr-bordered">';
+					$h .= '<tbody>';
+
+						foreach($cNews as $position => $eNews) {
+							$h .= '<tr '.($position === 0 ? 'style="font-weight: bold; font-size: 1.1rem"' : '').'>';
+								$h .= '<td class="'.($position === 0 ? '' : 'color-muted').' text-end td-min-content">'.\util\DateUi::textual($eNews['publishedAt'], \util\DateUi::DATE).'</td> ';
+								$h .= '<td>';
+									$h .=  '<a href="https://blog.ouvretaferme.org/#news-'.$eNews['id'].'">'.encode($eNews['title']).'</a>';
+								$h .= '</td> ';
+							$h .= '</tr>';
+						}
+					$h .= '</tbody>';
+				$h .= '</table>';
+				$h .= '<div class="mb-2">';
+					$h .= '<a href="https://blog.ouvretaferme.org/" target="_blank" class="btn btn-secondary">'.\Asset::icon('chevron-right').' '.s("Toutes les actualités").'</a>';
+				$h .= '</div>';
 
 		}
 
