@@ -99,7 +99,7 @@ class WebsiteTemplate extends BaseTemplate {
 
 						$h .= '<div class="website-admin">';
 
-							$h .= '<a href="'.Lime::getUrl().'/website/manage?id='.$this->data->eWebsite['farm']['id'].'&tab=pages" class="btn btn-secondary" title="'.s("Modifier cette page").'">'.Asset::icon('pencil-fill').'</a>';
+							$h .= '<a href="'.Lime::getUrl().'/website/webpage:updateContent?id='.$this->data->eWebpage['id'].'" class="btn btn-secondary" title="'.s("Modifier cette page").'">'.Asset::icon('pencil-fill').'</a>';
 
 							if($this->data->eWebpage['template']['fqn'] === 'news') {
 								$h .= ' <a href="'.Lime::getUrl().'/website/manage?id='.$this->data->eWebsite['farm']['id'].'&tab=news" class="btn btn-secondary" title="'.s("Gérer les actualités").'">'.Asset::icon('newspaper').'</a>';
