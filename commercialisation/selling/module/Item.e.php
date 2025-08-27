@@ -170,6 +170,7 @@ class Item extends ItemElement {
 			->setCallback('unitPriceDiscount.check', function(?string &$unitPriceDiscount) use($p, $input): bool {
 
 				if($p->isBuilt('unitPrice') === FALSE) {
+					$unitPriceDiscount = NULL;
 					return TRUE;
 				}
 
