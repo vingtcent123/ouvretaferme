@@ -300,7 +300,7 @@ class Editor {
 						// Garbage collector for nasty browsers
 						// Destroy empty lists and p
 						if(
-							(node.tagName === 'OL' || node.tagName === 'UL' || node.tagName === 'P') &&
+							(node.tagName === 'OL' || node.tagName === 'UL' || node.tagName === 'P' || node.tagName === 'H2' || node.tagName === 'H3' || node.tagName === 'H4') &&
 							node.innerHTML === ''
 						) {
 							node.parentElement.removeChild(node);
@@ -345,7 +345,7 @@ class Editor {
 
 	// returns first ancestor that matchs the given tag
 	static isBaseNode(node) {
-		return ['P', 'UL', 'OL', 'FIGURE'].includes(node.tagName);
+		return ['P', 'UL', 'OL', 'H2', 'H3', 'H4', 'FIGURE'].includes(node.tagName);
 	}
 
 	// returns first ancestor that matchs the given tag
@@ -359,7 +359,7 @@ class Editor {
 				return null;
 			}
 
-			if(['P', 'UL', 'OL', 'FIGURE'].includes(nodeCheck.tagName)) {
+			if(this.isBaseNode(nodeCheck)) {
 				return nodeCheck;
 			}
 
@@ -550,22 +550,6 @@ document.delegateEventListener('keyup', '.editor', function(e) {
 	}
 
 	const range = selection.getRangeAt(0);
-
-	// New line
-	if(e.which === 13) {
-
-		if(selection.rangeCount > 0) {
-
-			// Remove header if exists
-			const nodeP = Editor.getFirstAncestor(range.startContainer, 'P');
-
-			if(nodeP !== null && nodeP.hasAttribute('data-header')) {
-				nodeP.removeAttribute('data-header');
-			}
-
-		}
-
-	}
 
 	EditorFormat.updateLine(instanceId, range);
 
@@ -1486,7 +1470,12 @@ class EditorFormat {
 
 			const rangeSelector = range.commonAncestorContainer;
 
-			selector = Editor.getFirstAncestor(rangeSelector, 'P') || Editor.getFirstAncestor(rangeSelector, 'UL') || Editor.getFirstAncestor(rangeSelector, 'OL');
+			selector = Editor.getFirstAncestor(rangeSelector, 'P') ||
+                Editor.getFirstAncestor(rangeSelector, 'UL') ||
+                Editor.getFirstAncestor(rangeSelector, 'OL') ||
+                Editor.getFirstAncestor(rangeSelector, 'H2') ||
+                Editor.getFirstAncestor(rangeSelector, 'H3') ||
+                Editor.getFirstAncestor(rangeSelector, 'H4');
 
 		}
 
@@ -2119,7 +2108,7 @@ class EditorFormat {
 
 	static _align(instanceId, action) {
 
-		const nodes = EditorRange.browseTags('P');
+		const nodes = EditorRange.browseTags(['P', 'H2', 'H3', 'H4']);
 
 		if(nodes.length === 0) {
 			return;
@@ -2141,46 +2130,57 @@ class EditorFormat {
 
 	static _header(instanceId) {
 
-		EditorRange.saveState();
-
-		const nodes = EditorRange.browseTags('P');
+		const nodes = EditorRange.browseBaseTags(['P', 'H2', 'H3', 'H4']);
 
 		if(nodes.length === 0) {
 			return;
 		}
 
-		// Calc new header size
-		const firstNodeP = nodes[0];
+        let newHeaderSize;
 
-		let newHeaderSize;
+        switch(nodes[0].tagName) {
+            
+            case 'P' :
+                newHeaderSize = 'H2';
+                break;
 
-		if(firstNodeP.hasAttribute('data-header')) {
-			newHeaderSize = parseInt(firstNodeP.getAttribute('data-header'));
-			if(isNaN(newHeaderSize) || ++newHeaderSize > 2) {
-				newHeaderSize = null;
-			}
-		} else {
-			newHeaderSize = 0;
-		}
+            case 'H2' :
+                newHeaderSize = 'H3';
+                break;
+
+            case 'H3' :
+                newHeaderSize = 'H4';
+                break;
+
+            case 'H4' :
+                newHeaderSize = 'P';
+                break;
+            
+        }
 
 		// Apply new header size
+        let firstNode, lastNode;
+
 		for(let i = 0; i < nodes.length; i++) {
 
-			const nodeP = nodes[i];
+            const newNode = nodes[i].renameNode(newHeaderSize);
 
-			if(newHeaderSize === null) {
-				nodeP.removeAttribute('data-header');
-				nodeP.removeAttribute('class');
-			} else {
-
-				nodeP.setAttribute('data-header', newHeaderSize);
-				nodeP.removeAttribute('class');
-
-			}
+            if(i === 0) {
+                firstNode = newNode;
+            }
+            if(i === nodes.length - 1) {
+                lastNode = newNode;
+            }
 
 		}
 
-		EditorRange.applyState();
+        const newRange = document.createRange();
+        newRange.setStart(firstNode, 0);
+        newRange.setEnd(lastNode, lastNode.childNodes.length);
+
+        const selection = window.getSelection();
+        selection.removeAllRanges();
+        selection.addRange(newRange);
 
 		EditorFormat._restyleIcons(instanceId);
 
@@ -2293,20 +2293,16 @@ class EditorFormat {
 
 			case 'header' :
 
-				const nodeHeader = EditorRange.browseFirstTag('P');
+				const nodeHeader = EditorRange.browseFirstTag(['H2', 'H3', 'H4']);
 
-				if(nodeHeader !== null) {
-					return nodeHeader.hasAttribute('data-header') ? node : false
-				} else {
-					return false;
-				}
+				return (nodeHeader !== null);
 
 			case 'align-left' :
 			case 'align-center' :
 			case 'align-right' :
 			case 'align-justify' :
 
-				const nodeAlign = EditorRange.browseFirstTag('P');
+				const nodeAlign = EditorRange.browseFirstTag(['P', 'H2', 'H3', 'H4']);
 
 				if(nodeAlign !== null) {
 
@@ -2333,7 +2329,7 @@ class EditorFormat {
 
 	static _restyleIcons(instanceId) {
 
-		const nodes = EditorRange.browseTags('P');
+		const nodes = EditorRange.browseBaseTags(['P', 'H2', 'H3', 'H4']);
 
 		if(nodes.length === 0) {
 
@@ -2357,19 +2353,12 @@ class EditorFormat {
 		EditorFormat._iconStyle(instanceId, 'foreColor');
 
 		if(EditorFormat._iconStyle(instanceId, 'header')) {
-
-			EditorFormat._iconDisable(instanceId, 'bold');
-			EditorFormat._iconDisable(instanceId, 'italic');
-			EditorFormat._iconDisable(instanceId, 'underline');
 			EditorFormat._iconDisable(instanceId, 'link-open');
-
-		} else {
-
-			EditorFormat._iconStyle(instanceId, 'bold');
-			EditorFormat._iconStyle(instanceId, 'italic');
-			EditorFormat._iconStyle(instanceId, 'underline');
-
 		}
+
+        EditorFormat._iconStyle(instanceId, 'bold');
+        EditorFormat._iconStyle(instanceId, 'italic');
+        EditorFormat._iconStyle(instanceId, 'underline');
 
 	};
 
@@ -2763,8 +2752,49 @@ class EditorRange {
 
 	};
 
+	// Browse each base node of the current range
+	static browseBase(callback) {
+
+		const current = window.getSelection().getRangeAt(0).cloneRange();
+
+		if(
+			current.collapsed ||
+			current.startContainer === current.endContainer
+		) {
+
+            const nodeBase = Editor.getBaseAncestor(current.startContainer);
+            callback(nodeBase);
+
+		} else {
+
+			let node = current.startContainer;
+			const nodeEnd = current.endContainer;
+
+            let nodeBase = Editor.getBaseAncestor(node);
+
+            while(nodeBase !== null) {
+
+                callback(nodeBase);
+
+                if(nodeBase.contains(nodeEnd)) {
+                    break;
+                }
+
+                nodeBase = nodeBase.nextSibling;
+
+
+            }
+
+		}
+
+	};
+
 	// Browse parent tag of the current range
-	static browseFirstTag(tag) {
+	static browseFirstTag(tags) {
+
+        if(typeof tags === 'string') {
+            tags = [tags];
+        }
 
 		let nodeFound = null;
 
@@ -2772,7 +2802,7 @@ class EditorRange {
 
 			EditorRange.browse(function(node) {
 
-				if(node.nodeName === tag) {
+                if(tags.includes(node.nodeName)) {
 					nodeFound = node;
 					throw 'found';
 				}
@@ -2789,13 +2819,37 @@ class EditorRange {
 
 	};
 
-	static browseTags(tag) {
+	static browseTags(tags) {
+
+        if(typeof tags === 'string') {
+            tags = [tags];
+        }
 
 		const nodesFound = [];
 
 		EditorRange.browse(function(node) {
 
-			if(node.nodeName === tag) {
+			if(tags.includes(node.nodeName)) {
+				nodesFound[nodesFound.length] = node;
+			}
+
+		});
+
+		return nodesFound;
+
+	};
+
+	static browseBaseTags(tags) {
+
+        if(typeof tags === 'string') {
+            tags = [tags];
+        }
+
+		const nodesFound = [];
+
+		EditorRange.browseBase(function(node) {
+
+			if(tags.includes(node.nodeName)) {
 				nodesFound[nodesFound.length] = node;
 			}
 
@@ -3940,7 +3994,8 @@ class EditorMutation {
 			if(browser.isSafari === false) {
 
 				if(
-					(node.tagName === 'OL' || node.tagName === 'UL' || node.tagName === 'P') &&
+                    node.nodeType === Node.ELEMENT_NODE &&
+                    ['P', 'UL', 'OL', 'H2', 'H3', 'H4'].includes(node.tagName) &&
 					node.innerHTML === ''
 				) {
 					node.parentElement.removeChild(node);
@@ -3958,7 +4013,10 @@ class EditorMutation {
 						node.nodeValue.trim() !== ''
 					)
 				) ||
-				(node.nodeType === Node.ELEMENT_NODE && node.tagName !== 'OL' && node.tagName !== 'UL' && node.tagName !== 'BLOCKQUOTE' && node.tagName !== 'FIGURE' && node.tagName !== 'P')
+				(
+                    node.nodeType === Node.ELEMENT_NODE &&
+                    Editor.isBaseNode(node) === false
+                )
 			) {
 
 				if(currentP === null) {
@@ -4154,6 +4212,9 @@ class EditorMutation {
 			case 'I' :
 			case 'S' :
 			case 'U' :
+			case 'H2' :
+			case 'H3' :
+			case 'H4' :
 				return EditorMutation._nodeAttributes(node, [], 'style');
 
 			case 'IMG' :
@@ -4214,7 +4275,7 @@ class EditorMutation {
 
 					EditorNode.trim(node);
 
-					return EditorMutation._nodeAttributes(node, [], ['data-embed', 'data-header']);
+					return EditorMutation._nodeAttributes(node, [], ['data-embed']);
 
 				}
 				// Others <p/div/...> are evil
@@ -4235,9 +4296,6 @@ class EditorMutation {
 			case 'A' :
 				return EditorMutation._nodeAttributes(node, ['href'], [], true);
 
-			// Browsers add span because contenteditable SUCKS
-			// Keep these <span> empty (can't remove them because it break Ctrl+Z)
-			// A better solution would be to use <span> for formatting (<b>, <i>, <u>, ...)
 			case 'SPAN' :
 				return EditorMutation._nodeAttributes(node, [], ['style']);
 

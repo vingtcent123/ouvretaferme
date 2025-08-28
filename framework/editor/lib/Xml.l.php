@@ -107,6 +107,11 @@ class XmlLib {
 			case 'p' :
 				return $this->cleanParagraphNode($node);
 
+			case 'h2' :
+			case 'h3' :
+			case 'h4' :
+				return $this->cleanHeaderNode($node);
+
 			case 'ol' :
 			case 'ul' :
 				return $this->cleanListNode($node);
@@ -727,30 +732,14 @@ class XmlLib {
 
 	protected function createParagraphElement(\DOMNode $node, array $attributes): int {
 
-		if($node->hasAttribute('data-header')) {
+		\util\DomLib::trimNode($node);
+		$this->cleanChildTextNodes($node);
 
-			$this->cleanChildHeaderNodes($node);
+		$this->cleanNodeAttributes($node, $attributes);
+		$this->safeRenameNodeAttributes($node, $attributes);
 
-			$attributes['data-header'] = 'size';
+		return 0;
 
-			$this->cleanNodeAttributes($node, $attributes);
-			$this->safeRenameNodeAttributes($node, $attributes);
-
-			\util\DomLib::renameNode($this->dom, $node, 'header');
-
-			return 0;
-
-		} else {
-
-			\util\DomLib::trimNode($node);
-			$this->cleanChildTextNodes($node);
-
-			$this->cleanNodeAttributes($node, $attributes);
-			$this->safeRenameNodeAttributes($node, $attributes);
-
-			return 0;
-
-		}
 	}
 
 	/**
@@ -849,9 +838,26 @@ class XmlLib {
 			return 0;
 		}
 
-		$this->cleanChildHeaderNodes($node);
+		switch($node->nodeName) {
 
-		return $this->cleanTextNode($node);
+			case 'h2' :
+				$size = '0';
+				break;
+
+			case 'h3' :
+				$size = '1';
+				break;
+
+			case 'h4' :
+				$size = '2';
+				break;
+
+		}
+
+		$newNode = \util\DomLib::renameNode($this->dom, $node, 'header');
+		$newNode->setAttribute('size', $size);
+
+		return $this->cleanParagraphNode($node);
 
 	}
 
@@ -939,23 +945,6 @@ class XmlLib {
 			$childNode = $node->childNodes[$i];
 
 			$i += $this->cleanTextNode($childNode);
-
-		}
-
-	}
-
-	/**
-	 * Same as cleanNodes() about header
-	 *
-	 * @param \DOMNode $node
-	 */
-	protected function cleanChildHeaderNodes(\DOMNode $node) {
-
-		for($i = 0; $i < $node->childNodes->length; $i++) {
-
-			$childNode = $node->childNodes[$i];
-
-			$i += $this->cleanHeaderNode($childNode);
 
 		}
 
@@ -1071,7 +1060,7 @@ class XmlLib {
 
 	protected function repair(\DOMNode $main) {
 
-		$allowed = ['p', 'header', 'ol', 'ul', 'figure'];
+		$allowed = ['p', 'h2', 'h3', 'h4', 'ol', 'ul', 'figure'];
 
 		$i = 0;
 		$nodeFix = NULL;

@@ -107,22 +107,19 @@ div.editor p a {
 	pointer-events: none;
 }
 
-div.reador h2,
-div.editor p[data-header="0"] {
+div.readitor h2 {
 	font-size: 1.6rem;
 	line-height: 1.5;
 	margin-bottom: 1.2rem;
 }
 
-div.reador h3,
-div.editor p[data-header="1"] {
+div.readitor h3 {
 	font-size: 1.4rem;
 	line-height: 1.5;
 	margin-bottom: 0.8rem;
 }
 
-div.reador h4,
-div.editor p[data-header="2"] {
+div.readitor h4 {
 	font-size: 1.2rem;
 	line-height: 1.5;
 	margin-bottom: 0.8rem;
@@ -131,18 +128,15 @@ div.editor p[data-header="2"] {
 
 @media (max-width: 767px) {
 
-	div.reador h2,
-	div.editor p[data-header="0"] {
+	div.readitor h2 {
 		font-size: 1.5rem;
 	}
 
-	div.reador h3,
-	div.editor p[data-header="1"] {
+	div.readitor h3 {
 		font-size: 1.3rem;
 	}
 
-	div.reador h4,
-	div.editor p[data-header="2"] {
+	div.readitor h4 {
 		font-size: 1.15rem;
 	}
 
@@ -150,25 +144,21 @@ div.editor p[data-header="2"] {
 
 @media (max-width: 575px) {
 
-	div.reador h2,
-	div.editor p[data-header="0"] {
+	div.readitor h2 {
 		font-size: 1.4rem;
 	}
 
-	div.reador h3,
-	div.editor p[data-header="1"] {
+	div.readitor h3 {
 		font-size: 1.2rem;
 	}
 
-	div.reador h4,
-	div.editor p[data-header="2"] {
+	div.readitor h4 {
 		font-size: 1.1rem;
 	}
 
 }
 
-div.reador h3 a,
-div.editor p[data-header="1"] a {
+div.readitor h3 a {
 	color: inherit;
 }
 

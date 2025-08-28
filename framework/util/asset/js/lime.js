@@ -248,6 +248,19 @@ Node.prototype.ref = function(ref, each, empty, cssSelector) {
 
 }
 
+Node.prototype.renameNode = function(newName) {
+
+    const newNode = this.ownerDocument.createElement(newName);
+    Array.from(this.attributes).forEach(attribute => newNode.setAttribute(attribute.localName, attribute.value));
+    Array.from(this.childNodes).forEach(childNode => newNode.appendChild(childNode));
+
+    this.parentElement.insertBefore(newNode, this);
+    this.parentElement.removeChild(this);
+
+    return newNode;
+
+}
+
 /**
  * Search for first parent node that matches the given selector
  */

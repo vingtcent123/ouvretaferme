@@ -903,26 +903,19 @@ abstract class FormatterUi {
 	 */
 	protected function convertHeaderNode(\DOMNode $node): int {
 
-		if($this->for === 'editor') {
-			$newNode = $this->dom->createElement('p');
-			$newNode->setAttribute('data-header', $node->getAttribute('size'));
-		} else {
+		switch($node->getAttribute('size')) {
 
-			switch($node->getAttribute('size')) {
+			case '0' :
+				$newNode = $this->dom->createElement('h2');
+				break;
 
-				case '0' :
-					$newNode = $this->dom->createElement('h2');
-					break;
+			case '1' :
+				$newNode = $this->dom->createElement('h3');
+				break;
 
-				case '1' :
-					$newNode = $this->dom->createElement('h3');
-					break;
-
-				case '2' :
-					$newNode = $this->dom->createElement('h4');
-					break;
-
-			}
+			case '2' :
+				$newNode = $this->dom->createElement('h4');
+				break;
 
 		}
 
