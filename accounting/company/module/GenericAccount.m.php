@@ -7,6 +7,9 @@ abstract class GenericAccountElement extends \Element {
 
 	private static ?GenericAccountModel $model = NULL;
 
+	const AGRICULTURAL = 'agricultural';
+	const ASSOCIATION = 'association';
+
 	public static function getSelection(): array {
 		return GenericAccount::model()->getProperties();
 	}
@@ -42,10 +45,11 @@ class GenericAccountModel extends \ModuleModel {
 			'visible' => ['bool', 'cast' => 'bool'],
 			'vatAccount' => ['element32', 'account\Account', 'null' => TRUE, 'cast' => 'element'],
 			'vatRate' => ['decimal', 'digits' => 5, 'decimal' => 2, 'null' => TRUE, 'cast' => 'float'],
+			'type' => ['enum', [\company\GenericAccount::AGRICULTURAL, \company\GenericAccount::ASSOCIATION], 'cast' => 'enum'],
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'class', 'description', 'visible', 'vatAccount', 'vatRate'
+			'id', 'class', 'description', 'visible', 'vatAccount', 'vatRate', 'type'
 		]);
 
 		$this->propertiesToModule += [
@@ -71,6 +75,20 @@ class GenericAccountModel extends \ModuleModel {
 
 			default :
 				return parent::getDefaultValue($property);
+
+		}
+
+	}
+
+	public function encode(string $property, $value) {
+
+		switch($property) {
+
+			case 'type' :
+				return ($value === NULL) ? NULL : (string)$value;
+
+			default :
+				return parent::encode($property, $value);
 
 		}
 
@@ -106,6 +124,10 @@ class GenericAccountModel extends \ModuleModel {
 
 	public function whereVatRate(...$data): GenericAccountModel {
 		return $this->where('vatRate', ...$data);
+	}
+
+	public function whereType(...$data): GenericAccountModel {
+		return $this->where('type', ...$data);
 	}
 
 

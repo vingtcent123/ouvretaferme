@@ -93,6 +93,7 @@ class CompanyLib {
 		// Copy Account content from package main to package accounting
 		$cAccount = \company\GenericAccount::model()
 			->select(\company\GenericAccount::getSelection())
+			->whereType(GenericAccount::AGRICULTURAL)
 			->getCollection();
 		foreach($cAccount as $eAccount) {
 			\account\Account::model()->insert($eAccount);

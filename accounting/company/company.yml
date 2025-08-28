@@ -5,6 +5,7 @@ GenericAccount:
   visible: bool = TRUE
   vatAccount: ?account\Account
   vatRate: ?decimal(5, 2) = 0.00
+  type: enum(AGRICULTURAL, ASSOCIATION)
   INDEX: [
     ["id"],
     ["class"]
