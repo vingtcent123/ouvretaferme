@@ -70,7 +70,7 @@ class CompanyLib {
 	public static function createSpecificDatabaseAndTables(\farm\Farm $eFarm): void {
 
 		// Create database
-		new \ModuleAdministration('company\Company')->createDatabase(CompanyLib::getDatabaseNameFromCompany($eFarm));
+		new \ModuleAdministration('company\GenericAccount')->createDatabase(CompanyLib::getDatabaseNameFromCompany($eFarm));
 
 		// Connect database
 		self::connectSpecificDatabaseAndServer($eFarm);
