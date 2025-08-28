@@ -1,0 +1,14 @@
+History:
+  id: serial32
+  farm: ?farm\Farm
+  amount: decimal(8, 2, 0.01, null)
+  membership: ?int(2025, null)
+  checkoutId: ?text8
+  paymentIntentId: ?text8
+  paymentStatus: ?enum(INITIALIZED, SUCCESS, FAILURE, EXPIRED)
+  createdAt: datetime = SPECIAL(now)
+  paidAt: ?datetime
+  INDEX: [
+    ["farm"]
+  ]
+

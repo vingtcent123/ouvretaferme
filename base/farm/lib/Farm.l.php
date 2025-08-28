@@ -126,7 +126,7 @@ class FarmLib extends FarmCrud {
 
 		Farm::model()->beginTransaction();
 
-		// Les notes de stocks laissées vide reste à '' pour éviter de les désactiver
+		// Les notes de stocks laissées vides restent à '' pour éviter de les désactiver
 		if(in_array('stockNotes', $properties)) {
 
 			if($e['stockNotes'] === NULL) {

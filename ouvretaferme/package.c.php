@@ -3,6 +3,7 @@ Package::setList([
 	'account' => 'accounting',
 	'analyze' => 'ouvretaferme',
 	'asset' => 'accounting',
+	'association' => 'ouvretaferme',
 	'bank' => 'accounting',
 	'company' => 'accounting',
 	'core' => 'framework',

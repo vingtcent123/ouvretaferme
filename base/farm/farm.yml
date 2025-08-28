@@ -61,6 +61,7 @@ Farm:
   hasSales: bool = FALSE
   hasCultivations: bool = FALSE
   hasAccounting: bool = FALSE
+  membership: ?bool = FALSE
   startedAt: ?int16(PHP(date('Y') - 100), PHP(date('Y') + 10))
   createdAt: datetime = SPECIAL(now)
   status: enum(ACTIVE, CLOSED) = ACTIVE
