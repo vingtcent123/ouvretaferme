@@ -353,6 +353,11 @@ Route::register([
 			'priority' => 1,
 			'route' => ['public', '{domain}', 'robots.txt'],
 		],
+		'/public/{domain}/sitemap.xml' => [
+			'request' => 'website/public',
+			'priority' => 1,
+			'route' => ['public', '{domain}', 'sitemap.xml'],
+		],
 		'/public/{domain}/{page}' => [
 			'request' => 'website/public',
 			'priority' => 5,

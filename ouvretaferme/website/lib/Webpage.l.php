@@ -12,7 +12,7 @@ class WebpageLib extends WebpageCrud {
 			if($e['template']['fqn'] === 'homepage') {
 				return ['title', 'description'];
 			} else {
-				return ['url', 'title', 'description'];
+				return ['url', 'title', 'public', 'description'];
 			}
 		};
 	}
@@ -27,11 +27,13 @@ class WebpageLib extends WebpageCrud {
 
 	}
 
-	public static function getByWebsite(Website $eWebsite): \Collection {
+	public static function getByWebsite(Website $eWebsite, bool $onlyActive = FALSE, bool $onlyPublic = FALSE): \Collection {
 
 		return Webpage::model()
 			->select(Webpage::getSelection())
 			->whereWebsite($eWebsite)
+			->whereStatus(Webpage::ACTIVE, if: $onlyActive)
+			->wherePublic(TRUE, if: $onlyPublic)
 			->sort(['url' => SORT_ASC])
 			->getCollection(NULL, NULL, 'id');
 

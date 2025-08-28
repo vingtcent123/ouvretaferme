@@ -17,7 +17,7 @@ class DesignUi {
 
 	}
 
-	public static function getStyles(Website $eWebsite): string {
+	public static function getStyles(Website $eWebsite, string $context = ':root'): string {
 
 		$fontLabel = ($eWebsite->canWrite() and get_exists('customFont')) ? GET('customFont') : $eWebsite['customFont'];
 		$titleFontLabel = ($eWebsite->canWrite() and get_exists('customTitleFont')) ? GET('customTitleFont') : $eWebsite['customTitleFont'];
@@ -49,19 +49,19 @@ class DesignUi {
 		$background = ($eWebsite->canWrite() and get_exists('customBackground')) ? GET('customBackground') : $eWebsite['customBackground'];
 
 		$h .= '<style>';
-		$h .= ':root {
-			--background: '.$background.';
-			--primary: '.$color.';
-			--containerMaxWidth: '.$containerMaxWidth.'px;
-			--customFont: '.($font ? $font['value'] : "'Open Sans', sans-serif").';
-			--customTitleFont: '.($titleFont ? $titleFont['value'] : "'Open Sans', sans-serif").';
-			--border: '.($text === Website::BLACK ? '#8883' : '#8883').';
-			--textColor: '.($text === Website::BLACK ? 'var(--text)' : 'white').';
-			--defaultLinkColor: '.($text === Website::BLACK ? 'black' : 'white').';
-			--linkColor: '.($linkColor ?: 'var(--defaultLinkColor)').';
-			--muted: '.($text === Website::BLACK ? '#888' : '#CCC').';
-			--transparent: '.($text === Website::BLACK ? '#FFF8' : '#0002').';
-		}';
+			$h .= $context.' {
+				--background: '.$background.';
+				--primary: '.$color.';
+				--containerMaxWidth: '.$containerMaxWidth.'px;
+				--customFont: '.($font ? $font['value'] : "'Open Sans', sans-serif").';
+				--customTitleFont: '.($titleFont ? $titleFont['value'] : "'Open Sans', sans-serif").';
+				--border: '.($text === Website::BLACK ? '#8883' : '#8883').';
+				--textColor: '.($text === Website::BLACK ? 'var(--text)' : 'white').';
+				--defaultLinkColor: '.($text === Website::BLACK ? 'black' : 'white').';
+				--linkColor: '.($linkColor ?: 'var(--defaultLinkColor)').';
+				--muted: '.($text === Website::BLACK ? '#888' : '#CCC').';
+				--transparent: '.($text === Website::BLACK ? '#FFF8' : '#0002').';
+			}';
 		$h .= '</style>';
 
 		return $h;

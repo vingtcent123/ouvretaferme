@@ -69,6 +69,7 @@ Webpage:
   url: text8(0, 50)
   description: ?text8(1, 200)
   content: ?editor24
+  public: bool = TRUE
   createdAt: datetime = SPECIAL(now)
   status: enum(ACTIVE, INACTIVE) = INACTIVE
   INDEX: [

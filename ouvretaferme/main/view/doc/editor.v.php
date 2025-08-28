@@ -133,7 +133,7 @@ new AdaptativeView('index', function($data, DocTemplate $t) {
 			],
 			[
 				'Maj + Entrée',
-				s("Passer en la ligne sans laisser d'espace entre les paragraphes"),
+				s("Passer à la ligne sans laisser d'espace entre les paragraphes"),
 				s("Ligne 1").'<br/>'.s("Ligne 2")
 			],
 		];

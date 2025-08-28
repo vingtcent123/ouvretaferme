@@ -3015,7 +3015,7 @@ class EditorFigure {
                         html += '<span class="separator">&nbsp;</span>';
                         html += '<div>';
                             html += '<button class="dropdown-toggle" data-dropdown="bottom-start" title="'+ Editor.labels.resize +'">'+ Lime.Asset.icon('grid-fill') +'<span class="editor-box-figure-label hide-md-down">'+ Editor.labels.resizeLabel +'</span></button>';
-                            html += '<div class="dropdown-list">';
+                            html += '<div class="dropdown-list editor-box-figure-list">';
                                 html += '<button class="dropdown-item" data-action-run="1" data-action="resize" data-size="compressed" data-instance="'+ instanceId +'" data-figure="'+ figureId +'">'+ Editor.labels.resizeCompress +'</button>';
                                 html += '<button class="dropdown-item" data-action-run="1" data-action="resize" data-size="left" data-instance="'+ instanceId +'" data-figure="'+ figureId +'">'+ Editor.labels.resizeLeft +'</button>';
                                 html += '<button class="dropdown-item" data-action-run="1" data-action="resize" data-size="right" data-instance="'+ instanceId +'" data-figure="'+ figureId +'">'+ Editor.labels.resizeRight +'</button>';

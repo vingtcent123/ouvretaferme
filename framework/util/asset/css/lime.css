@@ -2498,14 +2498,6 @@ body.dropdown-fullscreen-open[data-touch="no"] {
 	padding: 0.5rem 0;
 }
 
-.dropdown-list:not(.dropdown-list-unstyled):not(.dropdown-list-minimalist).dropdown-list-bottom {
-	background: linear-gradient(to bottom, rgba(0, 0, 0, 0.25) 0, transparent 100%);
-}
-
-.dropdown-list:not(.dropdown-list-unstyled):not(.dropdown-list-minimalist).dropdown-list-top {
-	background: linear-gradient(to top, rgba(0, 0, 0, 0.25) 0, transparent 100%);
-}
-
 .dropdown-list.fullscreen-closing {
 	opacity: 0;
 }

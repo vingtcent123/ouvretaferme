@@ -108,12 +108,14 @@ div.editor p a {
 }
 
 div.readitor h2 {
+    font-weight: normal;
 	font-size: 1.6rem;
 	line-height: 1.5;
 	margin-bottom: 1.2rem;
 }
 
 div.readitor h3 {
+    font-weight: normal;
 	font-size: 1.4rem;
 	line-height: 1.5;
 	margin-bottom: 0.8rem;
@@ -160,6 +162,12 @@ div.readitor h4 {
 
 div.readitor h3 a {
 	color: inherit;
+}
+
+div.readitor h2 a,
+div.readitor h3 a,
+div.readitor h4 a {
+	text-decoration: underline;
 }
 
 div.editor p button {
@@ -232,6 +240,10 @@ div.editor-box-figure div.editor-box-figure-container {
 	display: inline-flex;
 	align-items: center;
 	justify-content: space-between;
+}
+
+div.editor-box-figure-list {
+	background-color: black;
 }
 
 div.editor-box-figure [data-action="figure-move"] {

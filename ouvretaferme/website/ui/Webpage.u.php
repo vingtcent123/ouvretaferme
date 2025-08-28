@@ -87,6 +87,10 @@ class WebpageUi {
 
 			$h .= $form->dynamicGroups($eWebpage, ['title', 'description']);
 
+			if($eWebpage['template']['fqn'] !== 'homepage') {
+				$h .= $form->dynamicGroup($eWebpage, 'public');
+			}
+
 			$h .= $form->group(
 				content: $form->submit(s("Modifier la page"))
 			);
@@ -140,20 +144,21 @@ class WebpageUi {
 
 		$form = new \util\FormUi();
 
-		$h = '<div class="util-title mb-2">';
-			$h .= '<h2>'.encode($eWebpage['title']).'</h2>';
-			$h .= '<a href="'.WebsiteUi::url($eWebpage['website'], '/'.$eWebpage['url']).'" class="btn btn-secondary" target="_blank">'.s("Consulter la page").'</a>';
-		$h .= '</div>';
+		$h = \website\DesignUi::getStyles($eWebpage['website'], '#webpage-update-content');
+		$h .= $form->openAjax('/website/webpage:doUpdateContent', ['id' => 'webpage-update-content']);
 
-		if($eWebpage['content'] === NULL) {
-			$h .= '<p class="util-info">'.s("L'éditeur de texte vous permet de rédiger le contenu de cette page en ajoutant des textes et des photos.").'</p>';
-		}
+			$h .= '<div class="util-title mb-2">';
+				$h .= '<h1 style="font-family: var(--customTitleFont);">'.encode($eWebpage['title']).'</h1>';
+				$h .= '<a href="'.WebsiteUi::url($eWebpage['website'], '/'.$eWebpage['url']).'" class="btn btn-secondary" target="_blank">'.s("Consulter la page").'</a>';
+			$h .= '</div>';
 
-		$h .= $form->openAjax('/website/webpage:doUpdateContent');
+			if($eWebpage['content'] === NULL) {
+				$h .= '<p class="util-info">'.s("L'éditeur de texte vous permet de rédiger le contenu de cette page en ajoutant des textes et des photos.").'</p>';
+			}
 
 			$h .= $form->hidden('id', $eWebpage['id']);
 
-			$h .= '<div style="max-width: '.$eWebpage['website']['customWidth'].'px">';
+			$h .= '<div style="font-family: var(--customFont); max-width: '.$eWebpage['website']['customWidth'].'px">';
 				$h .= $form->dynamicField($eWebpage, 'content');
 			$h .= '</div>';
 
@@ -173,6 +178,7 @@ class WebpageUi {
 			'url' => s("Adresse de la page"),
 			'title' => s("Titre de la page"),
 			'description' => s("Description de la page"),
+			'public' => s("Autoriser les moteurs de recherche à référencer cette page"),
 		]);
 
 		switch($property) {
@@ -191,6 +197,11 @@ class WebpageUi {
 				$d->options = [
 					'acceptFigure' => TRUE
 				];
+				break;
+
+			case 'public' :
+				$d->field = 'yesNo';
+				$d->labelAfter = \util\FormUi::info(s("Cela ne garantit pas que les moteurs de recherche référenceront réellement cette page."));
 				break;
 
 		}

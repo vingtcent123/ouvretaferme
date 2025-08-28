@@ -11,6 +11,27 @@ class WebsiteLib extends WebsiteCrud {
 		return ['internalDomain', 'domain', 'name', 'description'];
 	}
 
+	public static function getSitemap(Website $eWebsite): string {
+
+		$cWebpage = WebpageLib::getByWebsite($eWebsite, onlyActive: TRUE, onlyPublic: TRUE);
+
+		$sitemapArray = [];
+
+		foreach($cWebpage as $eWebpage) {
+
+			$sitemapArray[] = [
+				'loc' => WebsiteUi::url($eWebsite, '/'.$eWebpage['url']),
+				'lastmod' => NULL,
+				'changefreq' => 'weekly',
+				'priority' => '1'
+			];
+
+		}
+
+		return \main\SitemapLib::generateSitemap($sitemapArray);
+
+	}
+
 	public static function getByFarm(\farm\Farm $eFarm): Website {
 
 		return Website::model()

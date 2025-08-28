@@ -48,12 +48,13 @@ class WebpageModel extends \ModuleModel {
 			'url' => ['text8', 'min' => 0, 'max' => 50, 'cast' => 'string'],
 			'description' => ['text8', 'min' => 1, 'max' => 200, 'null' => TRUE, 'cast' => 'string'],
 			'content' => ['editor24', 'null' => TRUE, 'cast' => 'string'],
+			'public' => ['bool', 'cast' => 'bool'],
 			'createdAt' => ['datetime', 'cast' => 'string'],
 			'status' => ['enum', [\website\Webpage::ACTIVE, \website\Webpage::INACTIVE], 'cast' => 'enum'],
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'title', 'website', 'farm', 'template', 'banner', 'url', 'description', 'content', 'createdAt', 'status'
+			'id', 'title', 'website', 'farm', 'template', 'banner', 'url', 'description', 'content', 'public', 'createdAt', 'status'
 		]);
 
 		$this->propertiesToModule += [
@@ -75,6 +76,9 @@ class WebpageModel extends \ModuleModel {
 	public function getDefaultValue(string $property) {
 
 		switch($property) {
+
+			case 'public' :
+				return TRUE;
 
 			case 'createdAt' :
 				return new \Sql('NOW()');
@@ -145,6 +149,10 @@ class WebpageModel extends \ModuleModel {
 
 	public function whereContent(...$data): WebpageModel {
 		return $this->where('content', ...$data);
+	}
+
+	public function wherePublic(...$data): WebpageModel {
+		return $this->where('public', ...$data);
 	}
 
 	public function whereCreatedAt(...$data): WebpageModel {

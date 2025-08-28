@@ -73,6 +73,16 @@ new Page()
 		throw new DataAction($data, 'text/txt');
 
 	})
+	->get([[
+		'/public/{domain}/sitemap.xml',
+		'@priority' => 1
+	]], function($data) {
+
+		$sitemap = \website\WebsiteLib::getSitemap($data->eWebsite);
+
+		throw new DataAction($sitemap, 'text/xml');
+
+	})
 	->get('/public/{domain}', function($data) {
 		throw new PermanentRedirectAction(LIME_REQUEST_PATH.'/'.LIME_REQUEST_ARGS);
 	})
