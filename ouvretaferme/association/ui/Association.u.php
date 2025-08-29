@@ -9,8 +9,16 @@ class AssociationUi {
 
 	}
 
-	public function getProductName(): string {
-		return s("Adhésion Ouvretaferme");
+	public function getProductName(bool $withDonation): string {
+
+		$year = date('Y');
+
+		if($withDonation) {
+			return s("Adhésion {year} Ouvretaferme et don (merci !)", ['year' => $year]);
+		}
+
+		return s("Adhésion {year} Ouvretaferme", ['year' => $year]);
+
 	}
 
 	public static function confirmationUrl(\farm\Farm $eFarm): string {

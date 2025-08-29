@@ -3,6 +3,12 @@ namespace association;
 
 class MembershipUi {
 
+	public function __construct() {
+
+		\Asset::css('association', 'association.css');
+		\Asset::js('association', 'association.js');
+
+	}
 	public function membership(): string {
 
 		$h = '<div class="util-success">';
@@ -15,20 +21,26 @@ class MembershipUi {
 
 	public function joinForm(\farm\Farm $eFarm, \user\User $eUser): string {
 
-		$h = '';
+		$h = '<h2>'.s("Informations sur la ferme").'</h2>';
 
 		$h .= '<div class="join-identity util-block stick-xs">';
 			$h .= '<dl class="util-presentation util-presentation-2">';
 				$h .= '<dt>'.s("Raison sociale").'</dt>';
 				$h .= '<dd>'.encode($eFarm['legalName']).'</dd>';
+				$h .= '<dt>'.s("Adresse e-mail").'</dt>';
+				$h .= '<dd>'.encode($eFarm['legalEmail']).'</dd>';
 				$h .= '<dt>'.s("N° SIRET").'</dt>';
 				$h .= '<dd>'.encode($eFarm['siret']).'</dd>';
-				$h .= '<dt>'.s("Forme juridique").'</dt>';
-				$h .= '<dd></dd>';
 				$h .= '<dt>'.s("Contact").'</dt>';
 				$h .= '<dd>'.$eUser->getName().'</dd>';
+				$h .= '<dt>'.s("Forme juridique").'</dt>';
+				$h .= '<dd><span data-field="legalForm"></span></dd>';
+				$h .= '<dt>'.s("Adresse").'</dt>';
+				$h .= '<dd>'.$eFarm->getLegalAddress('html').'</dd>';
 			$h .= '</dl>';
 		$h .= '</div>';
+
+		$h .= '<h2>'.s("Bulletin d'adhésion").'</h2>';
 
 		$h .= '<div class="util-info">';
 			$h .= s("Votre ferme <b>{farmName}</b> n'a pas encore adhéré à l'association pour l'année <b>{year}</b>. L'adhésion se fait pour l'année civile en cours et se terminera donc le <b>{date}</b>.", ['farmName' => encode($eFarm['name']), 'year' => date('Y'), 'date' => date('31/12/Y')]);
@@ -41,24 +53,36 @@ class MembershipUi {
 
 		$fee = \Setting::get('association\membershipFee');
 
-		$h .= $form->openAjax('/association/membership:doCreatePayment', ['id' => 'association-join']);
+		$h .= $form->openAjax('/association/membership:doCreatePayment', ['id' => 'association-join', 'onrender' => 'Association.getLegalForm('.encode(str_replace(' ', '', $eFarm['siret'])).');']);
 
 		$h .= $form->hidden('farm', $eFarm['id']);
+		$h .= $form->hidden('legalForm', '');
 
-		$h .= $form->group('', content: s("Le montant de l'adhésion pour l'année en cours est de <b>{amount}</b>.", ['amount' => \util\TextUi::money($fee, precision: 0)]));
+		$h .= '<p>';
+			$h .= s("Le montant de l'adhésion pour une année civile est de <b>{amount}</b>. Le règlement s'effectue par un paiement en ligne avec {icon} Stripe après validation du montant et acceptation des statuts et du règlement intérieur. En outre, si vous souhaitez soutenir l'association, vous pouvez également ajouter un don à votre adhésion :", ['icon' => \Asset::icon('stripe'), 'amount' => \util\TextUi::money($fee, precision: 0)]);
+		$h .= '</p>';
 
-		$h .= $form->group(
-			s("Cotisation"),
-			$form->radio('amountType', 'origin', s("Je verse la cotisation de {amount}", ['amount' => \util\TextUi::money($fee, precision: 0)])).
-			$form->radio('amountType', 'custom', '<span class="flex-align-center">'.s("Je souhaite, en plus, faire un don : {formInput}", ['formInput' => $form->inputGroup($form->number('amount', 50, ['min' => $fee, 'step' => 1]).$form->addon('€'))]).'</span>', attributes: ['class' => 'flex-align-center'])
-		);
+		$h .= '<div class="amount-container">';
+			for($amount = $fee; $amount <= $fee + 40; $amount += 20) {
+				$h .= '<a class="block-amount" data-amount="'.$amount.'" onclick="Association.select(this);">'.\util\TextUi::money($amount, precision: 0).'</a>';
+			}
+			$h .= '<div>'.$form->number('custom-amount', NULL, [
+				'class' => 'block-amount',
+					'min' => \Setting::get('association\membershipFee'),
+					'onfocus' => 'Association.customFocus(this);',
+					'onfocusout' => 'Association.validateCustom(this);'
+				]).
+				\util\FormUi::info(s("Montant personnalisé")).'</div>';
+		$h .= '</div>';
 
-		$h .= $form->group('', content: $form->checkbox('terms', 'yes', [
+		$h .= $form->hidden('amount');
+
+		$h .= $form->checkbox('terms', 'yes', [
 			'mandatory' => TRUE,
 			'callbackLabel' => fn($input) => $input.'  '.$form->addon(s("J'accepte les <linkStatus>statuts</linkStatus> et le <linkRules>règlement intérieur</linkRules> de l'association", ['linkStatus' => '<a href="">', 'linkRules' => '<a href="">']))
-		]));
+		]);
 
-		$h .= $form->group('', content: $form->submit(s("J'adhère !")));
+		$h .= $form->inputGroup($form->submit(s("J'adhère !")), ['class' => 'mt-2']);
 
 		$h .= '</div>';
 
