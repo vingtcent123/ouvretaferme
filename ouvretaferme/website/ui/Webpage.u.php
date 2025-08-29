@@ -158,7 +158,18 @@ class WebpageUi {
 
 			$h .= $form->hidden('id', $eWebpage['id']);
 
-			$h .= '<div style="font-family: var(--customFont); max-width: '.$eWebpage['website']['customWidth'].'px">';
+			$h .= '<style>';
+				$h .= '#webpage-editor .editor {';
+					$h .= 'font-family: var(--customFont);';
+					$h .= 'color: var(--textColor);';
+					$h .= 'background-color: var(--background);';
+				$h .= '}';
+				$h .= '#webpage-editor .editor a {';
+					$h .= 'color: var(--linkColor);';
+				$h .= '}';
+			$h .= '</style>';
+
+			$h .= '<div id="webpage-editor" style="max-width: '.$eWebpage['website']['customWidth'].'px">';
 				$h .= $form->dynamicField($eWebpage, 'content');
 			$h .= '</div>';
 

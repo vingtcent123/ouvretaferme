@@ -109,7 +109,7 @@ div.editor p a {
 
 div.readitor h2 {
     font-weight: normal;
-	font-size: 1.6rem;
+	font-size: 1.7rem;
 	line-height: 1.5;
 	margin-bottom: 1.2rem;
 }
@@ -160,10 +160,6 @@ div.readitor h4 {
 
 }
 
-div.readitor h3 a {
-	color: inherit;
-}
-
 div.readitor h2 a,
 div.readitor h3 a,
 div.readitor h4 a {
@@ -199,6 +195,7 @@ div.editor-box-figure button,
 	background-color: transparent;
 	text-align: left;
 	appearance: none;
+    padding: 0.25rem 0;
 }
 
 div.editor-box-figure button i,
@@ -803,6 +800,41 @@ div.readitor figure[data-interactive="false"] > div.editor-media[data-type="imag
 	overflow: hidden;
 }
 
+div.readitor figure[data-interactive="false"] > div.editor-media[data-border] {
+	border-width: 2px;
+    border-radius: var(--radius);
+}
+
+div.readitor figure[data-interactive="false"] > div.editor-media[data-border="solid-grey"] {
+	border-style: solid;
+    border-color: #8883;
+}
+
+div.readitor figure[data-interactive="false"] > div.editor-media[data-border="solid-primary"] {
+	border-style: solid;
+    border-color: var(--primary);
+}
+
+div.readitor figure[data-interactive="false"] > div.editor-media[data-border="solid-text"] {
+	border-style: solid;
+    border-color: var(--textColor);
+}
+
+div.readitor figure[data-interactive="false"] > div.editor-media[data-border="dashed-grey"] {
+	border-style: dashed;
+    border-color: #8883;
+}
+
+div.readitor figure[data-interactive="false"] > div.editor-media[data-border="dashed-primary"] {
+	border-style: dashed;
+    border-color: var(--primary);
+}
+
+div.readitor figure[data-interactive="false"] > div.editor-media[data-border="dashed-text"] {
+	border-style: dashed;
+    border-color: var(--textColor);
+}
+
 div.editor figure [data-action="media-move"]:hover {
 	cursor: move;
 }
@@ -1176,7 +1208,7 @@ div.readitor div.editor-grid[data-columns="4"] {
 }
 
 div.editor div.editor-grid > * {
-	border: 2px dashed var(--border);
+	border: 1px dashed var(--border);
 }
 
 div.readitor div.editor-quote {
@@ -1197,6 +1229,21 @@ div.readitor div.editor-quote > div.editor-quote-image {
 	justify-content: center;
 	line-height: 1;
 	font-size: 45px;
+}
+
+div.readitor div.editor-media[data-border="solid-text"] div.editor-quote-image,
+div.readitor div.editor-media[data-border="dashed-text"] div.editor-quote-image {
+	color: var(--textColor);
+}
+
+div.readitor div.editor-media[data-border="solid-primary"] div.editor-quote-image,
+div.readitor div.editor-media[data-border="dashed-primary"] div.editor-quote-image {
+	color: var(--primary);
+}
+
+div.readitor div.editor-media[data-border="solid-grey"] div.editor-quote-image,
+div.readitor div.editor-media[data-border="dashed-grey"] div.editor-quote-image {
+	color: #8888;
 }
 
 div.editor div.editor-quote {
@@ -1236,11 +1283,11 @@ div.readitor div.editor-quote > blockquote {
 }
 
 div.editor div.editor-quote > blockquote {
-	border: 2px dashed var(--border);
+	border: 1px dashed var(--border);
 }
 
-div.readitor div.editor-quote > blockquote > * {
-	margin-bottom: 0;
+div.readitor div.editor-quote > blockquote > *:last-child {
+	margin-bottom: 0 !important;
 }
 
 div.reador div.reador-cut-link {

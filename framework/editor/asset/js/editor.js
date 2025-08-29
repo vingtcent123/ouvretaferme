@@ -1343,8 +1343,8 @@ class EditorFormat {
                         if(onlyImage === '0') {
 
                             html += '<button class="editor-action" data-action="show-editor-video" data-instance="'+ instanceId +'" title="'+ Editor.labels.video +'">'+ Lime.Asset.icon('camera-video-fill') +'</button>'+
-                            '<button class="editor-action" data-action="show-editor-grid" data-instance="'+ instanceId +'" title="'+ Editor.labels.grid +'">'+ Lime.Asset.icon('grid-fill') +'</button>'+
-                            '<button class="editor-action" data-action="quote" data-instance="'+ instanceId +'" title="'+ Editor.labels.quote +'">'+ Lime.Asset.icon('chat-quote-fill') +'</button>'+
+                            '<button class="editor-action" data-action="show-editor-grid" data-instance="'+ instanceId +'" title="'+ Editor.labels.grid +'">'+ Lime.Asset.icon('grid-3x3') +'</button>'+
+                            '<button class="editor-action" data-action="quote" data-instance="'+ instanceId +'" title="'+ Editor.labels.quote +'">'+ Lime.Asset.icon('card-text') +'</button>'+
                             '<button class="editor-action" data-action="hr" data-instance="'+ instanceId +'" title="'+ Editor.labels.separator +'">'+ Lime.Asset.icon('dash') +'</button>';
 
                         }
@@ -1389,6 +1389,8 @@ class EditorFormat {
 
 		let html = '<div class="editor-box-media">';
 			html += '<div class="editor-box-media-content">';
+
+            html += '<a class="editor-action editor-box-media-action" data-action="media-border" data-instance="'+ instanceId +'" data-figure="'+ figureId +'" title="'+ Editor.labels.border +'" tabindex="-1">'+ Lime.Asset.icon('border-style') +'</a>';
 
 			if(
 				figureSelector.getAttribute('data-interactive') === 'true' &&
@@ -1762,6 +1764,28 @@ class EditorFormat {
 
 	}
 
+	static actionMediaBorder(instanceId) {
+
+		const mediaSelector = EditorFormat.currentMedia[instanceId];
+
+        const borders = ['solid-grey', 'solid-primary', 'solid-text', 'dashed-grey', 'dashed-primary', 'dashed-text'];
+
+        if(mediaSelector.dataset.border === 'undefined') {
+            mediaSelector.dataset.border = borders[0];
+        } else {
+
+            const index = borders.indexOf(mediaSelector.dataset.border);
+
+            if(index === borders.length - 1) {
+                delete mediaSelector.dataset.border;
+            } else {
+                mediaSelector.dataset.border = borders[index + 1];
+            }
+
+        }
+
+	}
+
 	static actionMediaRemove(instanceId) {
 
 		const mediaSelector = EditorFormat.currentMedia[instanceId];
@@ -2014,6 +2038,9 @@ class EditorFormat {
 
 			case 'figure-image' :
 				return this.actionFigureImage(instanceId, selectedElement);
+
+			case 'media-border' :
+				return this.actionMediaBorder(instanceId);
 
 			case 'media-remove' :
 				return this.actionMediaRemove(instanceId);

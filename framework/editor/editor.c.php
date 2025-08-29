@@ -5,7 +5,8 @@ Setting::register('editor', [
 
 	'mediaTitleLimit' => 80,
 
-	'quotes' => ['quote', 'food', 'localization', 'calendar', 'money', 'gooddeal', 'like']
+	'quoteIcons' => ['quote', 'food', 'localization', 'calendar', 'money', 'gooddeal', 'like'],
+	'quoteBorder' => ['solid-grey', 'solid-primary', 'solid-text', 'dashed-grey', 'dashed-primary', 'dashed-text']
 
 ]);
 ?>

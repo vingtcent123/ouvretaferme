@@ -479,11 +479,19 @@ class XmlLib {
 
 			$about = $node->getAttribute('data-about');
 
-			if(in_array($about, \Setting::get('editor\quotes')) === FALSE) {
-				$about = \Setting::get('editor\quotes')[0];
+			if(in_array($about, \Setting::get('editor\quoteIcons')) === FALSE) {
+				$about = \Setting::get('editor\quoteIcons')[0];
 			}
 
 			$newNode->setAttribute('about', $about);
+
+			$border = $node->getAttribute('data-border');
+
+			if(in_array($border, \Setting::get('editor\quoteBorder')) === FALSE) {
+				$border = \Setting::get('editor\quoteBorder')[0];
+			}
+
+			$newNode->setAttribute('border', $border);
 
 			$node->parentNode->replaceChild($newNode, $node);
 			return 0;

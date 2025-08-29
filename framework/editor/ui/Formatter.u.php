@@ -797,6 +797,10 @@ abstract class FormatterUi {
 		$divNode = $this->dom->createElement('div');
 		$divNode->setAttribute('class', 'editor-quote');
 
+		if($node->hasAttribute('border')) {
+			$newNode->setAttribute('data-border', $node->getAttribute('border'));
+		}
+
 		$icons = self::getQuoteIcons();
 
 		$divIcon = $this->dom->createDocumentFragment();
