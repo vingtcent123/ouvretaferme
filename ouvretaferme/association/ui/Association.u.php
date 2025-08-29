@@ -9,15 +9,16 @@ class AssociationUi {
 
 	}
 
-	public function getProductName(bool $withDonation): string {
+	public function getProductDonationName(): string {
+
+		return s("Don à l'association Ouvretaferme (merci !)");
+
+	}
+	public function getProductName(): string {
 
 		$year = date('Y');
 
-		if($withDonation) {
-			return s("Adhésion {year} Ouvretaferme et don (merci !)", ['year' => $year]);
-		}
-
-		return s("Adhésion {year} Ouvretaferme", ['year' => $year]);
+		return s("Adhésion {year} à l'association Ouvretaferme", ['year' => $year]);
 
 	}
 
