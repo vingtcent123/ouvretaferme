@@ -37,29 +37,21 @@ class MembershipLib {
 
 	public static function createPayment(\farm\Farm $eFarm): string {
 
-		$eFarm->expects(['id']);
+		$eFarm->expects(['id', 'siret']);
 
 		$fw = new \FailWatch();
 
-		$type = POST('amountType');
-		if($type === NULL or in_array($type, ['origin', 'custom']) === FALSE) {
-			\Fail::log('Membership::amountType');
-		}
+		$amount = POST('amount', 'int');
 
 		if(empty(POST('terms'))) {
 			\Fail::log('Membership::terms');
 		}
 
-		$amount = POST('amount');
-		if($type === 'custom' and $amount < \Setting::get('association\membershipFee')) {
+		if($amount === NULL or $amount < \Setting::get('association\membershipFee')) {
 			\Fail::log('Membership::amount');
 		}
 
 		$fw->validate();
-
-		if($type === 'origin') {
-			$amount = \Setting::get('association\membershipFee');
-		}
 
 		$eStripeFarm = self::getAssociationStripeFarm();
 
@@ -67,13 +59,18 @@ class MembershipLib {
 			throw new \Exception('Missing stripe configuration for OTF');
 		}
 
+		$curl = new \util\CurlLib();
+		$url = 'https://suggestions.pappers.fr/v2?cibles=siret&q='.urlencode(str_replace(' ', '', $eFarm['siret']));
+		$result = json_decode($curl->exec($url, []));
+		$legalForm = $result->resultats_siret[0]->forme_juridique ?? '';
+
 		$items = [];
 		$items[] = [
 			'quantity' => 1,
 			'price_data' => [
 				'currency' => 'EUR',
 				'product_data' => [
-					'name' => new AssociationUi()->getProductName(),
+					'name' => new AssociationUi()->getProductName($amount > \Setting::get('association\membershipFee')),
 				],
 				'unit_amount' => ($amount * 100), // in cents, how much to charge
 			]
@@ -111,6 +108,7 @@ class MembershipLib {
 				'amount' => $amount,
 				'membership' => $membershipYear,
 				'paymentStatus' => History::INITIALIZED,
+				'legalForm' => $legalForm,
 			]);
 
 			History::model()->insert($eHistory);
@@ -122,6 +120,7 @@ class MembershipLib {
 					'checkoutId' => $stripeSession['id'],
 					'amount' => $amount,
 					'paymentStatus' => History::INITIALIZED,
+					'legalForm' => $legalForm,
 				]
 			);
 

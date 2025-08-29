@@ -8,8 +8,6 @@ new AdaptativeView('adherer', function($data, FarmTemplate $t) {
 
 	$t->mainTitle = new \association\AssociationUi()->getTitle();
 
-	echo '<h2>'.s("Mon adhésion").'</h2>';
-
 	if($data->eFarm['membership'] === FALSE) {
 
 		echo new \association\MembershipUi()->joinForm($data->eFarm, $data->eUser);

@@ -28,7 +28,7 @@ class HistoryUi {
 							$h .= '<td>'.encode($eHistory['membership']).'</td>';
 							$h .= '<td>'.\util\TextUi::money($eHistory['amount']).'</td>';
 							$h .= '<td>'.self::p('paymentStatus')->values[$eHistory['paymentStatus']].'</td>';
-							$h .= '<td>'.($eHistory['paidAt'] ? \util\DateUi::numeric($eHistory['paidAt']) : '').'</td>';
+							$h .= '<td>'.\util\DateUi::numeric($eHistory['paidAt'] ?? $eHistory['createdAt']).'</td>';
 						$h .= '</tr>';
 					}
 
