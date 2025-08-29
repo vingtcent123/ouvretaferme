@@ -34,7 +34,7 @@ class MembershipUi {
 				$h .= '<dt>'.s("Contact").'</dt>';
 				$h .= '<dd>'.$eUser->getName().'</dd>';
 				$h .= '<dt>'.s("Forme juridique").'</dt>';
-				$h .= '<dd><span data-field="legalForm"></span></dd>';
+				$h .= '<dd>'.encode(\farm\FarmUi::p('legalForm')->values[$eFarm['legalForm']]).'</dd>';
 				$h .= '<dt>'.s("Adresse").'</dt>';
 				$h .= '<dd>'.$eFarm->getLegalAddress('html').'</dd>';
 			$h .= '</dl>';
@@ -53,10 +53,9 @@ class MembershipUi {
 
 		$fee = \Setting::get('association\membershipFee');
 
-		$h .= $form->openAjax('/association/membership:doCreatePayment', ['id' => 'association-join', 'onrender' => 'Association.getLegalForm('.encode(str_replace(' ', '', $eFarm['siret'])).');']);
+		$h .= $form->openAjax('/association/membership:doCreatePayment', ['id' => 'association-join']);
 
 		$h .= $form->hidden('farm', $eFarm['id']);
-		$h .= $form->hidden('legalForm', '');
 
 		$h .= '<p>';
 			$h .= s("Le montant de l'adhésion pour une année civile est de <b>{amount}</b>. Le règlement s'effectue par un paiement en ligne avec {icon} Stripe après validation du montant et acceptation des statuts et du règlement intérieur. En outre, si vous souhaitez soutenir l'association, vous pouvez également ajouter un don à votre adhésion :", ['icon' => \Asset::icon('stripe'), 'amount' => \util\TextUi::money($fee, precision: 0)]);

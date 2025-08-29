@@ -5,6 +5,12 @@
 	margin: 1rem 0 2rem;
 }
 
+@media (max-width: 575px) {
+	.amount-container {
+		grid-template-columns: 1fr 1fr;
+	}
+}
+
 input[type="number"].block-amount,
 .block-amount {
 	display: flex;
@@ -15,6 +21,7 @@ input[type="number"].block-amount,
 	font-size: x-large;
 	cursor: pointer;
 	width: 100%;
+	border: 2px solid #fff8;
 }
 input[type="number"].block-amount {
 	text-align: right;
@@ -23,13 +30,13 @@ input[type="number"].block-amount {
 	color: inherit;
 }
 input[type="number"].block-amount.selected {
-	border-color: var(--selling);
+	border-color: var(--primary);
 }
 a.block-amount {
-	background-color: var(--secondary);
+	background-color: rgba(var(--primary-rgb), 0.7);
 	color: white;
 }
 
 .block-amount.selected {
-	background-color: var(--selling);
+	background-color: var(--primary);
 }
