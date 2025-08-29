@@ -710,7 +710,7 @@ class EditorKeyboard {
 
 				if(nodeUl !== null) {
 					e.preventDefault();
-					return EditorKeyboard.list(nodeUl, 'ul');
+					return EditorKeyboard.list(nodeUl, 'ul', false);
 				}
 
 
@@ -718,7 +718,7 @@ class EditorKeyboard {
 
 				if(nodeLi !== null) {
 					e.preventDefault();
-					return EditorKeyboard.list(nodeLi, 'ol');
+					return EditorKeyboard.list(nodeLi, 'ol', false);
 				}
 
 				break;
@@ -822,19 +822,26 @@ class EditorKeyboard {
 
 	};
 
-	static list(nodeExisting, type) {
+	static list(nodeExisting, type, copy) {
 
 		const nodeUl = document.createElement(type);
 		const nodeLi = document.createElement('li');
 		nodeUl.appendChild(nodeLi);
 
-		const nodeBr = document.createElement('br');
-
-		nodeLi.appendChild(nodeBr);
+        if(copy) {
+            Array.from(nodeExisting.childNodes).forEach(childNode => nodeLi.appendChild(childNode));
+        } else {
+            const nodeBr = document.createElement('br');
+            nodeLi.appendChild(nodeBr);
+        }
 
 		nodeExisting.parentElement.replaceChild(nodeUl, nodeExisting);
 
-		EditorRange.replace(nodeBr, 0);
+        const lastChild = nodeLi.childNodes[nodeLi.childNodes.length - 1];
+
+		EditorRange.replace(lastChild, (lastChild.nodeType === Node.ELEMENT_NODE) ?
+            lastChild.childNodes.length :
+            lastChild.length);
 
 		return true;
 
@@ -1323,15 +1330,15 @@ class EditorFormat {
 						'<div class="editor-box-line-helper" style="visibility: hidden;">'+ instance.getAttribute('data-placeholder-empty') +'</div>'+
 					'</div>';
 					html += '<div class="editor-box-line-content">';
-						html += '<button class="editor-action" data-action="list-ul" data-instance="'+ instanceId +'" title="'+ Editor.labels.listBullet +'">'+
-							Lime.Asset.icon('list-ul') +
-						'</button>'+
-						'<button class="editor-action" data-action="list-ol" data-instance="'+ instanceId +'" title="'+ Editor.labels.listDigit +'">'+
-							Lime.Asset.icon('list-ol') +
-						'</button>'+
-						'<button class="editor-action" data-action="line-image" data-instance="'+ instanceId +'" title="'+ Editor.labels.image +'">'+
-							Lime.Asset.icon('image') +
-						'</button>';
+						html += '<button class="editor-action" data-action="list-ul" data-instance="'+ instanceId +'" title="'+ Editor.labels.listBullet +'">';
+                            html += Lime.Asset.icon('list-ul');
+                        html += '</button>';
+                        html += '<button class="editor-action" data-action="list-ol" data-instance="'+ instanceId +'" title="'+ Editor.labels.listDigit +'">';
+                            html += Lime.Asset.icon('list-ol');
+                        html += '</button>';
+                        html += '<button class="editor-action" data-action="line-image" data-instance="'+ instanceId +'" title="'+ Editor.labels.image +'">';
+                            html += Lime.Asset.icon('image');
+                        html += '</button>';
 
                         if(onlyImage === '0') {
 
@@ -1728,9 +1735,11 @@ class EditorFormat {
 
 	static actionList(instanceId, type) {
 
-        const nodeCurrent = EditorFormat.getCurrentLine();
+        const nodeCurrent = EditorFormat.getCurrentLine({onEmpty: function(baseNode) {
+            return baseNode.nodeName === 'P' ? 'keep' : 'create'
+        }});
 
-        EditorKeyboard.list(nodeCurrent, type);
+        EditorKeyboard.list(nodeCurrent, type, true);
 		EditorFormat.action('line-close', instanceId);
 
 	}
@@ -2452,6 +2461,10 @@ class EditorFormat {
 
 		options = options || {};
 
+        if(options.onEmpty === undefined) {
+            options.onEmpty = () => 'new';
+        }
+
 		let nodeHost;
 
 		if(options.nodeHost) {
@@ -2471,7 +2484,10 @@ class EditorFormat {
 
 			const baseNode = Editor.getBaseAncestor(nodeHost) || nodeHost;
 
-			if(EditorKeyboard.isEmptyLine(baseNode)) {
+			if(
+                options.onEmpty(baseNode) === 'keep' ||
+                EditorKeyboard.isEmptyLine(baseNode)
+            ) {
                 nodeCurrent = baseNode;
 			} else {
                 nodeCurrent = EditorParagraph.getEmpty();
