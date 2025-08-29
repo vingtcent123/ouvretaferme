@@ -59,11 +59,6 @@ class MembershipLib {
 			throw new \Exception('Missing stripe configuration for OTF');
 		}
 
-		$curl = new \util\CurlLib();
-		$url = 'https://suggestions.pappers.fr/v2?cibles=siret&q='.urlencode(str_replace(' ', '', $eFarm['siret']));
-		$result = json_decode($curl->exec($url, []));
-		$legalForm = $result->resultats_siret[0]->forme_juridique ?? '';
-
 		$items = [];
 		$items[] = [
 			'quantity' => 1,
@@ -108,7 +103,6 @@ class MembershipLib {
 				'amount' => $amount,
 				'membership' => $membershipYear,
 				'paymentStatus' => History::INITIALIZED,
-				'legalForm' => $legalForm,
 			]);
 
 			History::model()->insert($eHistory);
@@ -120,7 +114,6 @@ class MembershipLib {
 					'checkoutId' => $stripeSession['id'],
 					'amount' => $amount,
 					'paymentStatus' => History::INITIALIZED,
-					'legalForm' => $legalForm,
 				]
 			);
 

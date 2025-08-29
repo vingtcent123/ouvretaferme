@@ -8,7 +8,7 @@ class AlertUi {
 		return match($fqn) {
 
 			'Membership::terms' => s("Veuillez accepter les statuts et le règlement intérieur."),
-			'Membership::amount' => s("Le montant doit être au moins égal à la cotisation de base ({amount}).", ['amount' => \util\TextUi::money(\Setting::get('association\membershipFee'))]),
+			'Membership::amount' => s("Le montant doit être au moins égal à la cotisation de base ({amount}).", ['amount' => \util\TextUi::money(\Setting::get('association\membershipFee'), precision: 0)]),
 
 			default => NULL
 

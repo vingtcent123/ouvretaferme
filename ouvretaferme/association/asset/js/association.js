@@ -1,21 +1,5 @@
 class Association {
 
-	static getLegalForm(siret) {
-
-		new Ajax.Query()
-			.method('get')
-			.url('https://suggestions.pappers.fr/v2?cibles=siret&q='+ siret)
-			.fetch()
-			.then((response) => {
-				if(response.resultats_siret[0] === undefined) {
-					return;
-				}
-				qs('[name="legalForm"]').value = response.resultats_siret[0].forme_juridique;
-				qs('[data-field="legalForm"]').innerHTML = response.resultats_siret[0].forme_juridique;
-			});
-
-	}
-
 	static select(element) {
 
 		const amount = parseInt(element.dataset.amount);

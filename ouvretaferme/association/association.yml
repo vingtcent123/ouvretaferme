@@ -1,7 +1,6 @@
 History:
   id: serial32
   farm: ?farm\Farm
-  legalForm: text8
   amount: decimal(8, 2, 0.01, null)
   membership: ?int(2025, null)
   checkoutId: ?text8

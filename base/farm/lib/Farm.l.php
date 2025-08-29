@@ -10,7 +10,7 @@ class FarmLib extends FarmCrud {
 	}
 
 	public static function getPropertiesUpdate(): array {
-		return ['name', 'legalName', 'legalEmail', 'siret', 'legalStreet1', 'legalStreet2', 'legalPostcode', 'legalCity', 'description', 'startedAt', 'place', 'placeLngLat', 'url', 'quality'];
+		return ['name', 'legalName', 'legalEmail', 'siret', 'legalForm', 'legalStreet1', 'legalStreet2', 'legalPostcode', 'legalCity', 'description', 'startedAt', 'place', 'placeLngLat', 'url', 'quality'];
 	}
 
 	public static function getOnline(): \Collection {

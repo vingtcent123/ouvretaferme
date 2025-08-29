@@ -43,7 +43,6 @@ class HistoryModel extends \ModuleModel {
 		$this->properties = array_merge($this->properties, [
 			'id' => ['serial32', 'cast' => 'int'],
 			'farm' => ['element32', 'farm\Farm', 'null' => TRUE, 'cast' => 'element'],
-			'legalForm' => ['text8', 'cast' => 'string'],
 			'amount' => ['decimal', 'digits' => 8, 'decimal' => 2, 'min' => 0.01, 'max' => NULL, 'cast' => 'float'],
 			'membership' => ['int32', 'min' => 2025, 'max' => NULL, 'null' => TRUE, 'cast' => 'int'],
 			'checkoutId' => ['text8', 'null' => TRUE, 'cast' => 'string'],
@@ -54,7 +53,7 @@ class HistoryModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'farm', 'legalForm', 'amount', 'membership', 'checkoutId', 'paymentIntentId', 'paymentStatus', 'createdAt', 'paidAt'
+			'id', 'farm', 'amount', 'membership', 'checkoutId', 'paymentIntentId', 'paymentStatus', 'createdAt', 'paidAt'
 		]);
 
 		$this->propertiesToModule += [
@@ -109,10 +108,6 @@ class HistoryModel extends \ModuleModel {
 
 	public function whereFarm(...$data): HistoryModel {
 		return $this->where('farm', ...$data);
-	}
-
-	public function whereLegalForm(...$data): HistoryModel {
-		return $this->where('legalForm', ...$data);
 	}
 
 	public function whereAmount(...$data): HistoryModel {

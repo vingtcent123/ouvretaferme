@@ -388,18 +388,26 @@ class FarmUi {
 
 	}
 
-	public function updateLegal(Farm $eFarm): string {
+	public function updateLegal(Farm $eFarm, array $requiredProperties = ['legalEmail', 'legalName']): string {
 
 		$form = new \util\FormUi();
+
+		$properties = [];
+		foreach(['legalEmail', 'siret', 'legalName', 'legalForm'] as $property) {
+			if(in_array($property, $requiredProperties)) {
+				$properties[] = $property.'*';
+			} else {
+				$properties[] = $property;
+			}
+		}
 
 		$h = $form->openAjax('/farm/farm:doUpdateLegal', ['autocomplete' => 'off']);
 
 			$h .= $form->hidden('id', $eFarm['id']);
 			$h .= $form->asteriskInfo();
 
-			$h .= $form->dynamicGroups($eFarm, ['legalEmail*']);
-				$h .= $form->dynamicGroups($eFarm, ['siret', 'legalName*']);
-				$h .= $form->addressGroup(s("Siège social de la ferme").\util\FormUi::asterisk(), 'legal', $eFarm);
+			$h .= $form->dynamicGroups($eFarm, $properties);
+			$h .= $form->addressGroup(s("Siège social de la ferme").\util\FormUi::asterisk(), 'legal', $eFarm);
 
 			$h .= $form->group(
 				content: $form->submit(s("Valider"))
@@ -2166,6 +2174,7 @@ class FarmUi {
 			'name' => s("Nom de la ferme"),
 			'legalName' => s("Raison sociale de la ferme"),
 			'legalEmail' => s("Adresse e-mail de la ferme"),
+			'legalForm' => s("Forme juridique de la ferme"),
 			'siret' => s("Numéro d'immatriculation SIRET"),
 			'vignette' => s("Photo de présentation"),
 			'description' => s("Présentation de la ferme"),
@@ -2194,6 +2203,16 @@ class FarmUi {
 
 			case 'place' :
 				new \main\PlaceUi()->query($d);
+				break;
+
+			case 'legalForm' :
+				$d->values = [
+					Farm::EI => s("Entreprise individuelle"),
+					Farm::GAEC => s("GAEC"),
+					Farm::EARL => s("EARL"),
+					Farm::SCEA => s("SCEA"),
+				];
+				$d->attributes['mandatory'] = TRUE;
 				break;
 
 			case 'placeLngLat' :
