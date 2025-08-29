@@ -1390,7 +1390,11 @@ class EditorFormat {
 		let html = '<div class="editor-box-media">';
 			html += '<div class="editor-box-media-content">';
 
-            html += '<a class="editor-action editor-box-media-action" data-action="media-border" data-instance="'+ instanceId +'" data-figure="'+ figureId +'" title="'+ Editor.labels.border +'" tabindex="-1">'+ Lime.Asset.icon('border-style') +'</a>';
+            if(mediaSelector.dataset.type === 'quote') {
+
+                html += '<a class="editor-action editor-box-media-action" data-action="media-border" data-instance="'+ instanceId +'" data-figure="'+ figureId +'" title="'+ Editor.labels.border +'" tabindex="-1">'+ Lime.Asset.icon('border-style') +'</a>';
+
+            }
 
 			if(
 				figureSelector.getAttribute('data-interactive') === 'true' &&
