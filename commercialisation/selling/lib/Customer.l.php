@@ -242,6 +242,15 @@ class CustomerLib extends CustomerCrud {
 
 	}
 
+	public static function getBySiret(\farm\Farm $eFarm, string $siret): Customer {
+
+		return Customer::model()
+			->select(Customer::getSelection())
+			->whereSiret($siret)
+			->whereFarm($eFarm)
+			->get();
+
+	}
 	public static function getByUserAndFarm(\user\User $eUser, \farm\Farm $eFarm, bool $autoCreate = FALSE, ?string $autoCreateType = NULL): Customer {
 
 		if($eUser->empty()) {

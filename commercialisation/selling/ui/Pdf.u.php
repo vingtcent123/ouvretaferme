@@ -779,9 +779,9 @@ class PdfUi {
 			$h .= '<td class="pdf-document-item-header">'.s("Désignation").'</td>';
 			$h .= '<td class="pdf-document-item-header"></td>';
 			if($withPackaging) {
-				$h .= '<td class="pdf-document-item-header pdf-document-packaging">'.s("Colis<br/>livrés").'</td>';
+				$h .= '<td class="pdf-document-item-header pdf-document-packaging">'.($type === Pdf::DELIVERY_NOTE ? s("Colis<br/>livrés") : s("Colis")).'</td>';
 			}
-			$h .= '<td class="pdf-document-item-header pdf-document-number">'.s("Quantité<br/>livrée").'</td>';
+			$h .= '<td class="pdf-document-item-header pdf-document-number">'.($type === Pdf::DELIVERY_NOTE ? s("Quantité<br/>livrée") : s("Quantité")).'</td>';
 			$h .= '<td class="pdf-document-item-header pdf-document-unit-price">';
 				$h .= s("Prix unitaire");
 				$h .= $taxes;

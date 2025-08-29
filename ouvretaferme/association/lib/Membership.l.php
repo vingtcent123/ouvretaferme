@@ -65,11 +65,25 @@ class MembershipLib {
 			'price_data' => [
 				'currency' => 'EUR',
 				'product_data' => [
-					'name' => new AssociationUi()->getProductName($amount > \Setting::get('association\membershipFee')),
+					'name' => new AssociationUi()->getProductName(),
 				],
-				'unit_amount' => ($amount * 100), // in cents, how much to charge
+				'unit_amount' => (\Setting::get('association\membershipFee') * 100),
 			]
 		];
+
+		if($amount > \Setting::get('association\membershipFee')) {
+
+			$items[] = [
+				'quantity' => 1,
+				'price_data' => [
+					'currency' => 'EUR',
+					'product_data' => [
+						'name' => new AssociationUi()->getProductDonationName(),
+					],
+					'unit_amount' => (($amount - \Setting::get('association\membershipFee')) * 100),
+				]
+			];
+		}
 
 		$successUrl = AssociationUi::confirmationUrl($eFarm);
 		$cancelUrl = AssociationUi::url($eFarm);
@@ -179,8 +193,93 @@ class MembershipLib {
 			'paidAt' => new \Sql('NOW()'),
 		]);
 
-		$eHistory['farm']['membership'] = TRUE;
-		\farm\FarmLib::update($eHistory['farm'], ['membership']);
+		$eFarm = $eHistory['farm'];
+		$eFarm['membership'] = TRUE;
+		\farm\FarmLib::update($eFarm, ['membership']);
+
+		$eFarmOtf = \farm\FarmLib::getById(\Setting::get('association\farm'));
+
+		// Création d'une vente
+		$eCustomer = \selling\CustomerLib::getBySiret($eFarmOtf, $eFarm['siret']);
+		$ePaymentMethod = \payment\MethodLib::getByFqn(\payment\MethodLib::ONLINE_CARD);
+
+		if($eCustomer->empty()) {
+
+			$eUser = \user\ConnectionLib::getOnline();
+			$eCustomer = new \selling\Customer([
+				'category' => \selling\Customer::PRO,
+				'firstName' => $eUser['firstName'],
+				'lastName' => $eUser['lastName'],
+				'name' => $eFarm['name'],
+				'legalName' => $eFarm['legalName'],
+				'invoiceStreet1' => $eFarm['legalStreet1'],
+				'invoiceStreet2' => $eFarm['legalStreet2'],
+				'invoicePostcode' => $eFarm['legalPostcode'],
+				'invoiceCity' => $eFarm['legalCity'],
+				'invoiceEmail' => $eFarm['legalEmail'],
+				'siret' => $eFarm['siret'],
+				'invoiceVat' => $eFarm->getSelling('invoiceVat'),
+				'defaultPaymentMethod' => $ePaymentMethod,
+				'phone' => $eUser['phone'],
+				'type' => \selling\Customer::PRO,
+				'farm' => $eFarmOtf,
+			]);
+			\selling\CustomerLib::create($eCustomer);
+
+		}
+
+		$eSale = new \selling\Sale([
+			'farm' => $eFarmOtf,
+			'customer'=> $eCustomer,
+			'origin' => \selling\Sale::SALE,
+			'shop' => new \shop\Shop(),
+			'taxes' => \selling\Sale::EXCLUDING,
+			'type' => \selling\Sale::PRO,
+			'hasVat' => FALSE,
+			'priceGross' => $amountExpected,
+			'priceExcludingVat' => NULL,
+			'priceIncludingVat' => $amountExpected,
+			'preparationStatus' => \selling\Sale::DELIVERED,
+			'paymentMethod' => $ePaymentMethod,
+			'paymentStatus' => \selling\Sale::PAID,
+			'onlinePaymentStatus' => \selling\Sale::SUCCESS,
+			'deliveredAt' => new \Sql('NOW()'),
+		]);
+		\selling\SaleLib::create($eSale);
+
+		$cItem = new \Collection(
+			[
+				new \selling\Item([
+					'farm' => $eFarm,
+					'sale' => $eSale,
+					'name' => new \association\AssociationUi()->getProductName(),
+					'customer' => $eCustomer,
+					'unitPrice' => $amountExpected,
+					'number' => 1,
+					'product' => new \selling\Product(),
+					'locked' => \selling\Item::PRICE,
+					'packaging' => NULL,
+				]),
+			]
+		);
+
+		if($amountExpected > \Setting::get('association\membershipFee')) {
+			$cItem->append(
+				new \selling\Item([
+					'farm' => $eFarm,
+					'sale' => $eSale,
+					'name' => new \association\AssociationUi()->getProductDonationName(),
+					'customer' => $eCustomer,
+					'unitPrice' => ($amountExpected - \Setting::get('association\membershipFee')),
+					'number' => 1,
+					'product' => new \selling\Product(),
+					'locked' => \selling\Item::PRICE,
+					'packaging' => NULL,
+				])
+			);
+		}
+
+		\selling\ItemLib::createCollection($eSale, $cItem);
 
 		History::model()->commit();
 	}
