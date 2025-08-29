@@ -236,9 +236,9 @@ class MembershipLib {
 			'taxes' => \selling\Sale::EXCLUDING,
 			'type' => \selling\Sale::PRO,
 			'hasVat' => FALSE,
-			'priceGross' => $amountExpected,
+			'priceGross' => $eHistory['amount'],
 			'priceExcludingVat' => NULL,
-			'priceIncludingVat' => $amountExpected,
+			'priceIncludingVat' => $eHistory['amount'],
 			'preparationStatus' => \selling\Sale::DELIVERED,
 			'paymentMethod' => $ePaymentMethod,
 			'paymentStatus' => \selling\Sale::PAID,
@@ -254,7 +254,7 @@ class MembershipLib {
 					'sale' => $eSale,
 					'name' => new \association\AssociationUi()->getProductName(),
 					'customer' => $eCustomer,
-					'unitPrice' => $amountExpected,
+					'unitPrice' => \Setting::get('association\membershipFee'),
 					'number' => 1,
 					'product' => new \selling\Product(),
 					'locked' => \selling\Item::PRICE,
@@ -263,14 +263,14 @@ class MembershipLib {
 			]
 		);
 
-		if($amountExpected > \Setting::get('association\membershipFee')) {
+		if($eHistory['amount'] > \Setting::get('association\membershipFee')) {
 			$cItem->append(
 				new \selling\Item([
 					'farm' => $eFarm,
 					'sale' => $eSale,
 					'name' => new \association\AssociationUi()->getProductDonationName(),
 					'customer' => $eCustomer,
-					'unitPrice' => ($amountExpected - \Setting::get('association\membershipFee')),
+					'unitPrice' => ($eHistory['amount'] - \Setting::get('association\membershipFee')),
 					'number' => 1,
 					'product' => new \selling\Product(),
 					'locked' => \selling\Item::PRICE,
