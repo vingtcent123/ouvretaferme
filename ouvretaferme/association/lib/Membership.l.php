@@ -240,8 +240,6 @@ class MembershipLib {
 			'priceExcludingVat' => NULL,
 			'priceIncludingVat' => $eHistory['amount'],
 			'preparationStatus' => \selling\Sale::DELIVERED,
-			'paymentMethod' => $ePaymentMethod,
-			'paymentStatus' => \selling\Sale::PAID,
 			'onlinePaymentStatus' => \selling\Sale::SUCCESS,
 			'deliveredAt' => new \Sql('NOW()'),
 		]);
@@ -280,6 +278,12 @@ class MembershipLib {
 		}
 
 		\selling\ItemLib::createCollection($eSale, $cItem);
+
+		$eSale['paymentStatus'] = \selling\Sale::PAID;
+		$eSale['paymentMethod'] = $ePaymentMethod;
+		\selling\Sale::model()
+			->select(['paymentStatus', 'paymentMethod'])
+			->update($eSale);
 
 		History::model()->commit();
 	}
