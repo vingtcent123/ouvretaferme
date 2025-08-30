@@ -38,6 +38,11 @@ Route::register([
 			'priority' => 5,
 			'route' => ['factures', 'particuliers'],
 		],
+		'/ferme/{farm}/adherer' => [
+			'request' => 'association/membership',
+			'priority' => 5,
+			'route' => ['ferme', '{farm}', 'adherer'],
+		],
 		'/ferme/{id}/analyses/cultures' => [
 			'request' => 'farm/index',
 			'priority' => 5,

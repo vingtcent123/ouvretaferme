@@ -10,7 +10,7 @@ class FarmLib extends FarmCrud {
 	}
 
 	public static function getPropertiesUpdate(): array {
-		return ['name', 'legalName', 'legalEmail', 'siret', 'legalStreet1', 'legalStreet2', 'legalPostcode', 'legalCity', 'description', 'startedAt', 'place', 'placeLngLat', 'url', 'quality'];
+		return ['name', 'legalName', 'legalEmail', 'siret', 'legalForm', 'legalStreet1', 'legalStreet2', 'legalPostcode', 'legalCity', 'description', 'startedAt', 'place', 'placeLngLat', 'url', 'quality'];
 	}
 
 	public static function getOnline(): \Collection {
@@ -126,7 +126,7 @@ class FarmLib extends FarmCrud {
 
 		Farm::model()->beginTransaction();
 
-		// Les notes de stocks laissées vide reste à '' pour éviter de les désactiver
+		// Les notes de stocks laissées vides restent à '' pour éviter de les désactiver
 		if(in_array('stockNotes', $properties)) {
 
 			if($e['stockNotes'] === NULL) {

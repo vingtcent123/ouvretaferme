@@ -143,7 +143,7 @@ class StripeFarmUi {
 						$h .= '<h4>'.s("Obtenir la clé API").'</h4>';
 						$h .= '<p>'.s("La clé API limitée peut être récupérée dans la section <i>Développeurs</i> de {icon} Stripe. Le mode opératoire pour créer une clé API limitée :", ['icon' => \Asset::icon('stripe')]).'</p>';
 						$h .= '<ul>';
-							$h .= '<li>'.s("Allez dans la section développeurs de {icon} Stripe, puis sur l'onglet <i>Clés API</i>").'  '.\Asset::icon('arrow-right').'  <a href="https://dashboard.stripe.com/apikeys" class="btn btn-secondary btn-sm" target="_blank">'.\Asset::icon('link').' '.s("Lien direct").'</a></li>';
+							$h .= '<li>'.s("Allez dans la section développeurs de {icon} Stripe, puis sur l'onglet <i>Clés API</i>", ['icon' => \Asset::icon('stripe')]).'  '.\Asset::icon('arrow-right').'  <a href="https://dashboard.stripe.com/apikeys" class="btn btn-secondary btn-sm" target="_blank">'.\Asset::icon('link').' '.s("Lien direct").'</a></li>';
 							$h .= '<li>'.s("Cliquez sur <i>Créer une clé limitée</i>").'</li>';
 							$h .= '<li>'.s("Choisissez l'option <i>Fournir cette clé à un autre site Web</i>").'</li>';
 							$h .= '<li>';

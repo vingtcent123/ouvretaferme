@@ -243,6 +243,15 @@ class Farm extends FarmElement {
 
 	}
 
+	public function isLegalCompleteForMembership(): bool {
+
+		return (
+			$this->isLegalComplete() and
+			$this['legalForm'] !== NULL
+		);
+
+	}
+
 	public function canCreate(): bool {
 		return (\user\ConnectionLib::getOnline()->isRole('customer') === FALSE);
 	}

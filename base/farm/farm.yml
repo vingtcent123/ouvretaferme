@@ -26,6 +26,7 @@ Farm:
   id: serial32
   name: text8(1, null) @collate(general)
   legalName: ?text8
+  legalForm: ?enum(EI, GAEC, EARL, SCEA)
   legalEmail: ?email
   siret: ?text8
   legalStreet1: ?text8
@@ -61,6 +62,7 @@ Farm:
   hasSales: bool = FALSE
   hasCultivations: bool = FALSE
   hasAccounting: bool = FALSE
+  membership: ?bool = FALSE
   startedAt: ?int16(PHP(date('Y') - 100), PHP(date('Y') + 10))
   createdAt: datetime = SPECIAL(now)
   status: enum(ACTIVE, CLOSED) = ACTIVE

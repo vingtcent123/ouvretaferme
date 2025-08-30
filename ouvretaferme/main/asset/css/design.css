@@ -16,7 +16,9 @@
 	--background-odd: #fafafc;
 	--background-even: #ededf1;
 	--primary: #373737;
+	--primary-rgb: 55, 55, 55;
 	--secondary: #4a4a70;
+	--secondary-rgb: 74, 74, 112;
 	--training: #fdf7c9;
 	--shop: #006d6b;
 	--border: #ddd;

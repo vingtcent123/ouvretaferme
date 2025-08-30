@@ -48,7 +48,7 @@ new \farm\FarmPage()
 		throw new ViewAction($data);
 
 	}, page: 'updateEmail')
-	->doUpdateProperties('doUpdateLegal', ['legalName', 'legalEmail', 'siret', 'legalStreet1', 'legalStreet2', 'legalPostcode', 'legalCity'], fn() => throw new ReloadAction('farm', 'Farm::updatedLegal'))
+	->doUpdateProperties('doUpdateLegal', ['legalName', 'legalEmail', 'legalForm', 'siret', 'legalStreet1', 'legalStreet2', 'legalPostcode', 'legalCity'], fn() => throw new ReloadAction('farm', 'Farm::updatedLegal'))
 	->doUpdateProperties('doUpdateEmail', ['emailFooter', 'emailDefaultTime'], fn() => throw new ReloadAction('farm', 'Farm::updatedEmail'))
 	->doUpdateProperties('doUpdatePlanningDelayedMax', ['planningDelayedMax'], fn() => throw new ReloadAction())
 	->read('calendarMonth', function($data) {
