@@ -1343,8 +1343,8 @@ class EditorFormat {
                         if(onlyImage === '0') {
 
                             html += '<button class="editor-action" data-action="show-editor-video" data-instance="'+ instanceId +'" title="'+ Editor.labels.video +'">'+ Lime.Asset.icon('camera-video-fill') +'</button>'+
-                            '<button class="editor-action" data-action="show-editor-grid" data-instance="'+ instanceId +'" title="'+ Editor.labels.grid +'">'+ Lime.Asset.icon('grid-3x3') +'</button>'+
-                            '<button class="editor-action" data-action="quote" data-instance="'+ instanceId +'" title="'+ Editor.labels.quote +'">'+ Lime.Asset.icon('card-text') +'</button>'+
+                            '<button class="editor-action" data-action="show-editor-grid" data-instance="'+ instanceId +'" title="'+ Editor.labels.grid +'">'+ Lime.Asset.icon('grid-fill') +'</button>'+
+                            '<button class="editor-action" data-action="quote" data-instance="'+ instanceId +'" title="'+ Editor.labels.quote +'">'+ Lime.Asset.icon('quote') +'</button>'+
                             '<button class="editor-action" data-action="hr" data-instance="'+ instanceId +'" title="'+ Editor.labels.separator +'">'+ Lime.Asset.icon('dash') +'</button>';
 
                         }
@@ -1390,7 +1390,10 @@ class EditorFormat {
 		let html = '<div class="editor-box-media">';
 			html += '<div class="editor-box-media-content">';
 
-            if(mediaSelector.dataset.type === 'quote') {
+            if(
+                mediaSelector.dataset.type === 'quote' ||
+                mediaSelector.dataset.type === 'grid'
+            ) {
 
                 html += '<a class="editor-action editor-box-media-action" data-action="media-background" data-instance="'+ instanceId +'" data-figure="'+ figureId +'" title="'+ Editor.labels.background +'" tabindex="-1">'+ Lime.Asset.icon('paint-bucket') +'</a>';
                 html += '<a class="editor-action editor-box-media-action" data-action="media-border" data-instance="'+ instanceId +'" data-figure="'+ figureId +'" title="'+ Editor.labels.border +'" tabindex="-1">'+ Lime.Asset.icon('border-style') +'</a>';

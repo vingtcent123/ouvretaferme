@@ -61,6 +61,10 @@ div.editor:not(:focus):empty:before {
 	display: block; /* For Firefox */
 }
 
+div.editor [contenteditable]:focus {
+    outline: 0px solid transparent;
+}
+
 div.reador {
 	position: relative;
 }
@@ -716,14 +720,34 @@ div.readitor figure[data-size="left"] div.editor-media[data-type="video"] {
 	z-index: 1;
 }
 
-div.editor figure {
+div.editor figure[data-interactive="true"] {
 	padding: 8px 0.625rem 12px 0.625rem;
-	margin: 22px -0.625rem 18px -0.625rem;
+	margin: 2rem -0.625rem;
 	border-top: 2px solid transparent;
+}
+
+div.readitor figure[data-interactive="true"] > div.editor-media {
+	padding: 0px 5px 5px 0px;
+}
+
+@media (max-width: 991px) {
+
+	div.readitor figure[data-interactive="true"] > div.editor-media {
+		padding: 0px 3px 3px 0px;
+	}
+
+}
+
+div.readitor figure[data-interactive="false"] {
+	margin: 2rem 0;
 }
 
 div.readitor figure:first-child {
 	margin-top: 0;
+}
+
+div.readitor figure:last-child {
+	margin-bottom: 0;
 }
 
 body.template-editor-first div.editor figure {
@@ -809,12 +833,17 @@ div.readitor figure[data-interactive="false"] > div.editor-media[data-type="imag
 	overflow: hidden;
 }
 
-div.readitor div.editor-media[data-background="primary"] {
-	background-color: var(--primary);
-    color: white;
+div.readitor div.editor-media[data-type="grid"][data-background] {
+    padding: 0.5rem;
 }
 
-div.readitor div.editor-media[data-background="primary"] div.editor-quote-image {
+div.readitor div.editor-media[data-background="primary"] {
+    background-color: var(--primary);
+    color: white;
+    border-radius: var(--radius);
+}
+
+div.readitor div.editor-media[data-type="quote"][data-background="primary"] div.editor-quote div.editor-quote-image {
     color: white !important;
 }
 
@@ -823,9 +852,13 @@ div.readitor div.editor-media[data-border] {
     border-radius: var(--radius);
 }
 
+div.readitor div.editor-media[data-type="grid"][data-border] {
+    padding: 0.5rem;
+}
+
 div.readitor div.editor-media[data-border="solid-grey"] {
 	border-style: solid;
-    border-color: #8883;
+    border-color: #888;
 }
 
 div.readitor div.editor-media[data-border="solid-primary"] {
@@ -840,7 +873,7 @@ div.readitor div.editor-media[data-border="solid-text"] {
 
 div.readitor div.editor-media[data-border="dashed-grey"] {
 	border-style: dashed;
-    border-color: #8883;
+    border-color: #888;
 }
 
 div.readitor div.editor-media[data-border="dashed-primary"] {
@@ -1121,19 +1154,6 @@ div.editor figure > figcaption:empty:not(:focus):before {
 }
 
 /* Default style for figures */
-
-div.readitor figure > div.editor-media {
-	padding: 0px 5px 5px 0px;
-}
-
-@media (max-width: 991px) {
-
-	div.readitor figure > div.editor-media {
-		padding: 0px 3px 3px 0px;
-	}
-
-}
-
 div.readitor figure > div.editor-media.gallery-right {
 	padding-right: 0px;
 }
@@ -1167,24 +1187,8 @@ div.readitor div.editor-grid[data-columns="2"] {
 	grid-template-columns: 1fr 1fr;
 }
 
-@media (min-width: 992px) {
-
-	div.readitor div.editor-grid[data-columns="2"] {
-		grid-gap: 2rem;
-	}
-
-}
-
 div.readitor div.editor-grid[data-columns="3"] {
 	grid-template-columns: 1fr 1fr 1fr;
-}
-
-@media (min-width: 992px) {
-
-	div.readitor div.editor-grid[data-columns="3"] {
-		grid-gap: 1.5rem;
-	}
-
 }
 
 div.readitor div.editor-grid[data-columns="4"] {

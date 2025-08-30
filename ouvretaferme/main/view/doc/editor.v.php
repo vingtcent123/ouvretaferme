@@ -76,8 +76,8 @@ new AdaptativeView('index', function($data, DocTemplate $t) {
 				s("Insérer une grille avec un nombre lignes et de colonnes de votre choix")
 			],
 			[
-				Asset::icon('chat-quote-fill'),
-				s("Insérer une citation")
+				Asset::icon('quote'),
+				s("Insérer une bloc avec une icône")
 			],
 			[
 				Asset::icon('dash'),

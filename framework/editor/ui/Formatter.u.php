@@ -746,13 +746,26 @@ abstract class FormatterUi {
 	public static function getQuoteIcons(): array {
 		return [
 			'quote' => 'quote',
-			'localization' => 'geo-alt-fill',
-			'calendar' => 'calendar-week',
-			'money' => 'piggy-bank',
+			'chat' => 'chat',
+			'localization' => 'geo-alt',
+			'calendar' => 'calendar',
 			'gooddeal' => 'lightbulb',
+			'warning' => 'exclamation-circle',
+			'info' => 'info-circle',
+			'person' => 'person',
+			'people' => 'people',
+			'search' => 'search',
+			'phone' => 'telephone',
+			'chat' => 'chat',
+			'house' => 'house',
+			'bag' => 'bag',
+			'basket' => 'basket',
 			'like' => 'heart',
+			'star' => 'star',
 			'food' => 'egg-fried',
-			'stop' => 'sign-stop'
+			'leaf' => 'leaf',
+			'flower' => 'flower1',
+			'thumbs' => 'hand-thumbs-up'
 		];
 	}
 
@@ -827,6 +840,14 @@ abstract class FormatterUi {
 	protected function convertGridNode(\DOMNode $node, \DOMNode $newNode) {
 
 		$columns = $node->getAttribute('columns') ?: 2;
+
+		if($node->hasAttribute('border')) {
+			$newNode->setAttribute('data-border', $node->getAttribute('border'));
+		}
+
+		if($node->hasAttribute('background')) {
+			$newNode->setAttribute('data-background', $node->getAttribute('background'));
+		}
 
 		$newGridNode = $this->dom->createElement('div');
 		$newGridNode->setAttribute('class', 'editor-grid');

@@ -479,7 +479,7 @@ class XmlLib {
 
 			$about = $node->getAttribute('data-about');
 
-			if(in_array($about, \Setting::get('editor\quoteIcons'))) {
+			if(array_key_exists($about, FormatterUi::getQuoteIcons())) {
 				$newNode->setAttribute('about', $about);
 			}
 
@@ -584,6 +584,20 @@ class XmlLib {
 		}
 
 		$newNode = $this->dom->createElement('grid');
+
+
+		$border = $node->getAttribute('data-border');
+
+		if(in_array($border, \Setting::get('editor\quoteBorder'))) {
+			$newNode->setAttribute('border', $border);
+		}
+
+
+		$background = $node->getAttribute('data-background');
+
+		if(in_array($background, \Setting::get('editor\quoteBackground'))) {
+			$newNode->setAttribute('background', $background);
+		}
 
 		// Only <p> as children for blockquote
 		foreach($cells as $cell) {
