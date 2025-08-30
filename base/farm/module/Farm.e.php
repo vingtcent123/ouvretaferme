@@ -217,6 +217,12 @@ class Farm extends FarmElement {
 
 	}
 
+	public function isMembership(): bool {
+
+		return ($this['membership'] === TRUE);
+
+	}
+
 	public function isEmail(): bool {
 
 		return (
@@ -239,15 +245,6 @@ class Farm extends FarmElement {
 		return (
 			$this->isLegal() and
 			$this['legalCity'] !== NULL
-		);
-
-	}
-
-	public function isLegalCompleteForMembership(): bool {
-
-		return (
-			$this->isLegalComplete() and
-			$this['legalForm'] !== NULL
 		);
 
 	}

@@ -26,7 +26,6 @@ Farm:
   id: serial32
   name: text8(1, null) @collate(general)
   legalName: ?text8
-  legalForm: ?enum(EI, GAEC, EARL, SCEA)
   legalEmail: ?email
   siret: ?text8
   legalStreet1: ?text8

@@ -21,7 +21,7 @@ class MembershipUi {
 
 	public function joinForm(\farm\Farm $eFarm, \user\User $eUser): string {
 
-		$h = '<h2>'.s("Informations sur la ferme").'</h2>';
+		$h = '<h2>'.s("Informations sur l'adhérent").'</h2>';
 
 		$h .= '<div class="join-identity util-block stick-xs">';
 			$h .= '<dl class="util-presentation util-presentation-2">';
@@ -29,12 +29,10 @@ class MembershipUi {
 				$h .= '<dd>'.encode($eFarm['legalName']).'</dd>';
 				$h .= '<dt>'.s("Adresse e-mail").'</dt>';
 				$h .= '<dd>'.encode($eFarm['legalEmail']).'</dd>';
-				$h .= '<dt>'.s("N° SIRET").'</dt>';
+				$h .= '<dt>'.s("SIRET").'</dt>';
 				$h .= '<dd>'.encode($eFarm['siret']).'</dd>';
 				$h .= '<dt>'.s("Contact").'</dt>';
 				$h .= '<dd>'.$eUser->getName().'</dd>';
-				$h .= '<dt>'.s("Forme juridique").'</dt>';
-				$h .= '<dd>'.encode(\farm\FarmUi::p('legalForm')->values[$eFarm['legalForm']]).'</dd>';
 				$h .= '<dt>'.s("Adresse").'</dt>';
 				$h .= '<dd>'.$eFarm->getLegalAddress('html').'</dd>';
 			$h .= '</dl>';
@@ -65,13 +63,16 @@ class MembershipUi {
 			for($amount = $fee; $amount <= $fee + 40; $amount += 20) {
 				$h .= '<a class="block-amount" data-amount="'.$amount.'" onclick="Association.select(this);">'.\util\TextUi::money($amount, precision: 0).'</a>';
 			}
-			$h .= '<div>'.$form->number('custom-amount', NULL, [
-				'class' => 'block-amount',
+			$h .= '<div>';
+				$h .= '<div class="amount-custom-label">'.s("Montant personnalisé").'</div>';
+				$h .= $form->number('custom-amount', NULL, [
+					'class' => 'block-amount',
+					'data-label' => s("Montant personnalisé"),
 					'min' => \Setting::get('association\membershipFee'),
 					'onfocus' => 'Association.customFocus(this);',
-					'onfocusout' => 'Association.validateCustom(this);'
-				]).
-				\util\FormUi::info(s("Montant personnalisé")).'</div>';
+					'onfocusout' => 'Association.validateCustom(this);',
+				]);
+			$h .= '</div>';
 		$h .= '</div>';
 
 		$h .= $form->hidden('amount');

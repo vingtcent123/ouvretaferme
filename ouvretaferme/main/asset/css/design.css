@@ -16,7 +16,6 @@
 	--background-odd: #fafafc;
 	--background-even: #ededf1;
 	--primary: #373737;
-	--primary-rgb: 55, 55, 55;
 	--secondary: #4a4a70;
 	--secondary-rgb: 74, 74, 112;
 	--training: #fdf7c9;
@@ -377,56 +376,18 @@ body > nav ul > li > form > button {
 	color: black;
 }
 
-body > nav a.nav-news {
+body > nav .nav-actions {
 	display: flex;
-	justify-content: center;
-	flex-direction: column;
-	margin: 0;
-	padding: 0 .5rem;
-	background-color: #fff4;
-	line-height: 1.3;
-}
-
-@media (min-width: 576px) {
-
-	body > nav a.nav-news {
-		padding: 0 1rem;
-	}
-
-}
-
-body > nav .nav-news-title {
-	font-size: 0.9rem;
-	letter-spacing: 0.2px;
-}
-
-body > nav .nav-news-name {
-	color: #fffa;
-	font-size: 0.8rem;
-	letter-spacing: -0.1px;
-	text-align: right;
-}
-
-body > nav ul.nav-actions {
-	display: flex;
-	justify-content: flex-end;
+	justify-content: space-between;
 	list-style-type: none;
 	margin: 0;
 	padding: 0;
 }
 
-body > nav ul.nav-actions li {
+body > nav .nav-actions > * {
 	display: flex;
 	align-items: center;
 	padding: 0;
-}
-
-@media (max-width: 575px) {
-
-	body > nav ul.nav-actions li.nav-action-optional {
-		display: none;
-	}
-
 }
 
 body > nav .nav-item {
@@ -445,17 +406,17 @@ body > nav .nav-item {
 
 }
 
-body > nav ul.nav-actions a.nav-item:hover {
+body > nav .nav-actions a.nav-item:hover {
 	background-color: #ffffff20;
 }
 
-body > nav ul.nav-actions li > a.nav-icon {
+body > nav .nav-actions > * > a.nav-icon {
 	font-weight: bold;
 }
 
 @media (max-width: 575px) {
 
-	body > nav ul.nav-actions li > a.nav-icon {
+	body > nav .nav-actions > * > a.nav-icon {
 		font-size: 0.9rem;
 	}
 
@@ -464,7 +425,7 @@ body > nav ul.nav-actions li > a.nav-icon {
 
 @media (min-width: 576px) and (max-width: 767px) {
 
-	body > nav ul.nav-actions li > a.nav-icon {
+	body > nav .nav-actions > * > a.nav-icon {
 		font-size: 0.9rem;
 	}
 
@@ -479,14 +440,7 @@ body > nav ul.nav-actions li > a.nav-icon {
 .nav-deleted a,
 .nav-deleted a:hover {
 	font-weight: bold;
-}
-
-@media (max-width: 767px) {
-
-	.nav-deleted {
-		display: none;
-	}
-
+    font-size: 0.8rem;
 }
 
 body > nav a:active:not(.dropdown-item),

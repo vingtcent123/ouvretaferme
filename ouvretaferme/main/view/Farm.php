@@ -178,11 +178,15 @@ class FarmTemplate extends MainTemplate {
 				$canNavigate = ($this->data->cFarmUser->count() > 1);
 
 				$farm .= '<div class="nav-title-farm">';
-					$farm .= '<div>'.\farm\FarmUi::getVignette($this->data->eFarm, '4rem').'</div>';
+					$farm .= '<div>'.\farm\FarmUi::getVignette($this->data->eFarm, $this->data->eFarm->isMembership() ? '4rem' : '3rem').'</div>';
 
 					if($canUpdate or $canNavigate) {
 
-						$farm .= '<a data-dropdown="bottom-start" data-dropdown-hover="true">'.encode($this->data->eFarm['name']).'  '.Asset::icon('chevron-down').'</a>';
+						$farm .= '<a data-dropdown="bottom-start" data-dropdown-hover="true">';
+							if($this->data->eFarm->isMembership()) {
+								$farm .= Asset::icon('star-fill', ['style' => 'color: #ff0a']).'  ';
+							}
+							$farm .= encode($this->data->eFarm['name']).'  '.Asset::icon('chevron-down').'</a>';
 						$farm .= '<div class="dropdown-list bg-primary">';
 
 							if($canUpdate) {
@@ -242,7 +246,35 @@ class FarmTemplate extends MainTemplate {
 						$farm .= encode($this->data->eFarm['name']);
 					}
 
+					if(
+						$this->data->eFarm->isMembership() === FALSE and
+						$this->data->eFarm->canManage()
+					) {
+
+						$farm .= '<div>';
+
+							$farm .= '<a class="util-badge" data-dropdown="bottom" data-dropdown-hover="true" style="border: 1px solid white; text-align: center">';
+								$farm .= Asset::icon('star').' '.s("Adhérer");
+								//$farm .= \Asset::icon('chevron-down');
+							$farm .= '</a>';
+
+							$farm .= '<div class="dropdown-list bg-primary">';
+
+							$farm .= '<div class="dropdown-title">'.Lime::getName().' '.Asset::icon('plus').' '.encode($this->data->eFarm['name']).'</div>';
+
+								$farm .= '<a href="https://asso.ouvretaferme.org/" target="_blank" class="dropdown-item">'.s("Découvrir l'association {siteName}").'</a>';
+								$farm .= '<a href="'.Lime::getUrl().'" class="dropdown-item">'.s("Pourquoi soutenir l'association ?").'</a>';
+								$farm .= '<div class="dropdown-divider"></div>';
+								$farm .= '<a href="'.\association\AssociationUi::url($this->data->eFarm).'" class="dropdown-item">'.Asset::icon('star-fill', ['style' => 'color: #ff0a']).'  '.s("Adhérer à l'association pour ma ferme").'</a>';
+
+							$farm .= '</div>';
+
+						$farm .= '</div>';
+
+					}
+
 				$farm .= '</div>';
+
 
 			}
 

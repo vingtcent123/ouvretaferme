@@ -5,12 +5,11 @@ new AdaptativeView('adherer', function($data, FarmTemplate $t) {
 	$t->subNav = 'report';
 
 	$t->title = s("Adhérer à l'association Ouvretaferme");
-
-	$t->mainTitle = new \association\AssociationUi()->getTitle();
+	$t->mainTitle = '<h1>'.$t->title.'</h1>';
 
 	if($data->cHistory->count() === 0) {
 
-		if($data->eFarm->isLegalCompleteForMembership()) {
+		if($data->eFarm->isLegalComplete()) {
 
 			echo new \association\MembershipUi()->joinForm($data->eFarm, $data->eUser);
 
@@ -20,10 +19,10 @@ new AdaptativeView('adherer', function($data, FarmTemplate $t) {
 
 				echo '<h4>'.s("Vous êtes sur la page qui vous permet d'adhérer à l'association Ouvretaferme qui édite le logiciel que vous êtes actuellement en train d'utiliser").'</h4>';
 
-				echo '<p class="mt-1 mb-2">'.s("Certaines informations sont nécessaires pour adhérer à l'association :").'</p>';
-				echo new \farm\FarmUi()->updateLegal($data->eFarm, ['legalEmail', 'siret', 'legalName', 'legalForm']);
-
 			echo '</div>';
+
+				echo '<p class="mt-1 mb-2">'.s("Certaines informations sont nécessaires pour adhérer à l'association :").'</p>';
+				echo new \farm\FarmUi()->updateLegal($data->eFarm, ['legalEmail', 'siret', 'legalName']);
 
 		}
 

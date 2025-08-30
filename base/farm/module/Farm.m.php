@@ -7,11 +7,6 @@ abstract class FarmElement extends \Element {
 
 	private static ?FarmModel $model = NULL;
 
-	const EI = 'ei';
-	const GAEC = 'gaec';
-	const EARL = 'earl';
-	const SCEA = 'scea';
-
 	const ORGANIC = 'organic';
 	const NATURE_PROGRES = 'nature-progres';
 	const CONVERSION = 'conversion';
@@ -51,7 +46,6 @@ class FarmModel extends \ModuleModel {
 			'id' => ['serial32', 'cast' => 'int'],
 			'name' => ['text8', 'min' => 1, 'max' => NULL, 'collate' => 'general', 'cast' => 'string'],
 			'legalName' => ['text8', 'null' => TRUE, 'cast' => 'string'],
-			'legalForm' => ['enum', [\farm\Farm::EI, \farm\Farm::GAEC, \farm\Farm::EARL, \farm\Farm::SCEA], 'null' => TRUE, 'cast' => 'enum'],
 			'legalEmail' => ['email', 'null' => TRUE, 'cast' => 'string'],
 			'siret' => ['text8', 'null' => TRUE, 'cast' => 'string'],
 			'legalStreet1' => ['text8', 'null' => TRUE, 'cast' => 'string'],
@@ -94,7 +88,7 @@ class FarmModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'name', 'legalName', 'legalForm', 'legalEmail', 'siret', 'legalStreet1', 'legalStreet2', 'legalPostcode', 'legalCity', 'vignette', 'place', 'placeLngLat', 'url', 'description', 'logo', 'emailBanner', 'emailFooter', 'emailDefaultTime', 'seasonFirst', 'seasonLast', 'rotationYears', 'rotationExclude', 'quality', 'defaultBedLength', 'defaultBedWidth', 'defaultAlleyWidth', 'calendarMonthStart', 'calendarMonthStop', 'planningDelayedMax', 'featureTime', 'featureStock', 'stockNotes', 'stockNotesUpdatedAt', 'stockNotesUpdatedBy', 'hasShops', 'hasSales', 'hasCultivations', 'hasAccounting', 'membership', 'startedAt', 'createdAt', 'status'
+			'id', 'name', 'legalName', 'legalEmail', 'siret', 'legalStreet1', 'legalStreet2', 'legalPostcode', 'legalCity', 'vignette', 'place', 'placeLngLat', 'url', 'description', 'logo', 'emailBanner', 'emailFooter', 'emailDefaultTime', 'seasonFirst', 'seasonLast', 'rotationYears', 'rotationExclude', 'quality', 'defaultBedLength', 'defaultBedWidth', 'defaultAlleyWidth', 'calendarMonthStart', 'calendarMonthStop', 'planningDelayedMax', 'featureTime', 'featureStock', 'stockNotes', 'stockNotesUpdatedAt', 'stockNotesUpdatedBy', 'hasShops', 'hasSales', 'hasCultivations', 'hasAccounting', 'membership', 'startedAt', 'createdAt', 'status'
 		]);
 
 		$this->propertiesToModule += [
@@ -163,9 +157,6 @@ class FarmModel extends \ModuleModel {
 
 		switch($property) {
 
-			case 'legalForm' :
-				return ($value === NULL) ? NULL : (string)$value;
-
 			case 'placeLngLat' :
 				return $value === NULL ? NULL : new \Sql($this->pdo()->api->getPoint($value));
 
@@ -220,10 +211,6 @@ class FarmModel extends \ModuleModel {
 
 	public function whereLegalName(...$data): FarmModel {
 		return $this->where('legalName', ...$data);
-	}
-
-	public function whereLegalForm(...$data): FarmModel {
-		return $this->where('legalForm', ...$data);
 	}
 
 	public function whereLegalEmail(...$data): FarmModel {

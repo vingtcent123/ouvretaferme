@@ -175,7 +175,7 @@ body[data-template~="farm"] main .container.farm-template-main-title.farm-templa
 @media (min-width: 1100px) and (min-height: 650px) {
 
 	:root {
-		--nav-height: 8.5rem;
+		--nav-height: 9rem;
 		--sections-height: 4rem;
 	}
 
@@ -319,6 +319,7 @@ body[data-template~="farm"] main .container.farm-template-main-title.farm-templa
 		position: absolute;
 		top: 0;
 		left: 0;
+        right: 0;
 	}
 
 	body[data-template~="farm"] nav .nav-actions .nav-item {
@@ -327,9 +328,6 @@ body[data-template~="farm"] main .container.farm-template-main-title.farm-templa
 
 	body[data-template~="farm"] nav .nav-actions .nav-user .media-vignette-image {
 		border: 1px solid white;
-		width: 2rem;
-		height: 2rem;
-		min-width: 2rem;
 	}
 
 	body[data-template~="farm"] .nav-title {

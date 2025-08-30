@@ -3,12 +3,6 @@ namespace association;
 
 class AssociationUi {
 
-	public function getTitle(): string {
-
-		return '<h1>'.s("Association Ouvretaferme").'</h1>';
-
-	}
-
 	public function getProductDonationName(): string {
 
 		return s("Don à l'association Ouvretaferme (merci !)");
