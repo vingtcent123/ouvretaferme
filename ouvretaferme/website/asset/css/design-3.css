@@ -250,11 +250,11 @@ ul.website-menu a.selected {
 }
 
 .website-logo {
-	margin: 1rem;
+	margin: 0.5rem;
 }
 
 .website-logo img {
-	height: 2.5rem;
+	height: 2.75rem;
     width: auto;
 }
 
