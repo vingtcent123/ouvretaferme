@@ -254,7 +254,8 @@ ul.website-menu a.selected {
 }
 
 .website-logo img {
-	height: 4rem;
+	height: 2.5rem;
+    width: auto;
 }
 
 @media (max-width: 767px) {
