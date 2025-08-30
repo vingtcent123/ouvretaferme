@@ -997,11 +997,16 @@ class SeriesLib extends SeriesCrud {
 
 		parent::update($e, $properties);
 
-		if(in_array('season', $properties)) {
+		if(
+			in_array('season', $properties) and
+			$e['oldSeason'] !== $e['season']
+		) {
 
 			$updateCultivation['season'] = $e['season'];
 			$updateTask['season'] = $e['season'];
 			$updatePlace['season'] = $e['season'];
+
+			self::recalculate($e['farm'], $e);
 
 		}
 

@@ -123,7 +123,12 @@ class Series extends SeriesElement {
 				);
 
 			})
-			->setCallback('season.check', function(int $season): bool {
+			->setCallback('season.check', function(int $season) use ($p): bool {
+
+				if($p->for === 'update') {
+					$this->expects(['season']);
+					$this['oldSeason'] = $this['season'];
+				}
 
 				$this->expects(['farm']);
 
