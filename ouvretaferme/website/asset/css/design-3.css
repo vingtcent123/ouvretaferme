@@ -114,6 +114,7 @@ body[data-background="#FFFFFF"] main  {
 }
 
 .website-nav {
+    min-height: 5rem;
 	align-items: center;
 	background-color: var(--primary);
 	color: white;
