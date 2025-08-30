@@ -843,6 +843,10 @@ div.readitor div.editor-media[data-background="primary"] {
     border-radius: var(--radius);
 }
 
+div.readitor div.editor-media[data-background="primary"] a {
+    color: white !important;
+}
+
 div.readitor div.editor-media[data-type="quote"][data-background="primary"] div.editor-quote div.editor-quote-image {
     color: white !important;
 }
