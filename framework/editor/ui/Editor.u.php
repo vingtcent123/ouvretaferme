@@ -311,7 +311,7 @@ class EditorUi {
 			$form->open('editor-grid-form').
 				$form->group(
 					s("Nombre de colonnes"),
-					$form->number('columns', 2, ['min' => 2, 'max' => 4])
+					$form->number('columns', 2, ['min' => 1, 'max' => 4])
 				).
 				$form->group(
 					s("Nombre de lignes"),

@@ -3663,7 +3663,7 @@ class EditorGrid {
 			return;
 		}
 
-		columns = Math.min(Math.max(2, columns), 4);
+		columns = Math.min(Math.max(1, columns), 4);
 		rows = Math.min(Math.max(1, rows), 5);
 
 		const cells = columns * rows;

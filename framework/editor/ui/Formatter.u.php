@@ -748,7 +748,7 @@ abstract class FormatterUi {
 			'quote' => 'quote',
 			'chat' => 'chat',
 			'localization' => 'geo-alt',
-			'calendar' => 'calendar',
+			'calendar' => 'calendar3',
 			'gooddeal' => 'lightbulb',
 			'warning' => 'exclamation-circle',
 			'info' => 'info-circle',
