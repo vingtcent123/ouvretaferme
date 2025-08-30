@@ -135,7 +135,7 @@ class WebsiteUi {
 			'customColor' => s("Couleur contrastante"),
 			'customLinkColor' => s("Couleur des liens"),
 			'customDesign' => s("Template"),
-			'customWidth' => s("Largeur minimale du contenu"),
+			'customWidth' => s("Largeur maximale du contenu"),
 			'customFont' => s("Police pour le texte"),
 			'customTitleFont' => s("Police pour le titre principal des pages"),
 			'internalDomain' => s("Adresse du site sur <u>{siteName}</u>"),

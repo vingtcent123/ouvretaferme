@@ -153,7 +153,21 @@ class LegalUi {
 				$h .= '<li>'.s("Probablement des collègues qui utilisent l'outil et pourraient vous aider !").'</li>';
 			$h .= '</ul>';
 
-			$h .= '<p>'.s("Si malgré cela, vous avez des problèmes avec le site ou n'êtes pas satisfait des fonctionnalités ou de l'ergonomie, <b>n'utilisez pas {siteName}</b>. Il y a des alternatives payantes (elzeard.co, Brinjel), gratuite et Open Source (Qrop), le tableur (LibreOffice), le couple crayon / papier ou encore votre mémoire.").'</p>';
+			$h .= '<p>'.s("Si malgré cela, vous avez des problèmes avec le site ou n'êtes pas satisfait des fonctionnalités ou de l'ergonomie, <b>n'utilisez pas {siteName}</b>. Il y a des alternatives !").'</p>';
+
+			$h .= '<h3>'.s("Alternatives pour la production").'</h3>';
+			$h .= '<ul>';
+				$h .= '<li>'.s("Gratuites et libres :").' <a href="https://greli.net/potaleger.html">Potaléger</a>, <a href="https://qrop.frama.io/">Qrop</a></li>';
+				$h .= '<li>'.s("Payante et libre :").' <a href="https://brinjel.com/">Brinjel</a></li>';
+				$h .= '<li>'.s("Commerciales :").' <a href="https://www.elzeard.co/">Elzeard</a>, <a href="https://heirloom.ag/">Heirloom</a></li>';
+				$h .= '<li>'.s("Ou à défaut un tableur ou un crayon !").'</li>';
+			$h .= '</ul>';
+
+			$h .= '<h3>'.s("Alternatives pour la commercialisation").'</h3>';
+			$h .= '<ul>';
+				$h .= '<li>'.s("Gratuite et libre :").' <a href="https://latourneedesproducteurs.com/">La Tournée des Producteurs</a></li>';
+				$h .= '<li>'.s("Un nombre incalculable d'initiatives payantes (Ciboulette, Socleo, Kuupanda, Coopcircuits, Cagette, Local.direct...)").'</li>';
+			$h .= '</ul>';
 
 		$h .= '</div>';
 
