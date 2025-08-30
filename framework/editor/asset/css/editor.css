@@ -834,7 +834,7 @@ div.readitor figure[data-interactive="false"] > div.editor-media[data-type="imag
 }
 
 div.readitor div.editor-media[data-type="grid"][data-background] {
-    padding: 0.5rem;
+    padding: 1rem;
 }
 
 div.readitor div.editor-media[data-background="primary"] {
@@ -853,7 +853,7 @@ div.readitor div.editor-media[data-border] {
 }
 
 div.readitor div.editor-media[data-type="grid"][data-border] {
-    padding: 0.5rem;
+    padding: 1rem;
 }
 
 div.readitor div.editor-media[data-border="solid-grey"] {
