@@ -839,7 +839,7 @@ abstract class FormatterUi {
 	 */
 	protected function convertGridNode(\DOMNode $node, \DOMNode $newNode) {
 
-		$columns = $node->getAttribute('columns') ?: 2;
+		$columns = $node->getAttribute('columns') ?: 1;
 
 		if($node->hasAttribute('border')) {
 			$newNode->setAttribute('data-border', $node->getAttribute('border'));

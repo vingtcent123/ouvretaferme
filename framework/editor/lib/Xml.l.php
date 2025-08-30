@@ -618,8 +618,8 @@ class XmlLib {
 
 		$columns = $node->firstChild->getAttribute('data-columns');
 
-		if($columns < 2 or $columns > 4) {
-			$columns = 2;
+		if($columns < 1 or $columns > 4) {
+			$columns = 1;
 		}
 
 		$newNode->setAttribute('columns', $columns);
