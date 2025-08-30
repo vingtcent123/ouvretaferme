@@ -1392,6 +1392,7 @@ class EditorFormat {
 
             if(mediaSelector.dataset.type === 'quote') {
 
+                html += '<a class="editor-action editor-box-media-action" data-action="media-background" data-instance="'+ instanceId +'" data-figure="'+ figureId +'" title="'+ Editor.labels.background +'" tabindex="-1">'+ Lime.Asset.icon('paint-bucket') +'</a>';
                 html += '<a class="editor-action editor-box-media-action" data-action="media-border" data-instance="'+ instanceId +'" data-figure="'+ figureId +'" title="'+ Editor.labels.border +'" tabindex="-1">'+ Lime.Asset.icon('border-style') +'</a>';
 
             }
@@ -1768,13 +1769,25 @@ class EditorFormat {
 
 	}
 
+	static actionMediaBackground(instanceId) {
+
+		const mediaSelector = EditorFormat.currentMedia[instanceId];
+
+        if(mediaSelector.dataset.background === undefined) {
+            mediaSelector.dataset.background = 'primary';
+        } else {
+            delete mediaSelector.dataset.background;
+        }
+
+	}
+
 	static actionMediaBorder(instanceId) {
 
 		const mediaSelector = EditorFormat.currentMedia[instanceId];
 
         const borders = ['solid-grey', 'solid-primary', 'solid-text', 'dashed-grey', 'dashed-primary', 'dashed-text'];
 
-        if(mediaSelector.dataset.border === 'undefined') {
+        if(mediaSelector.dataset.border === undefined) {
             mediaSelector.dataset.border = borders[0];
         } else {
 
@@ -2042,6 +2055,9 @@ class EditorFormat {
 
 			case 'figure-image' :
 				return this.actionFigureImage(instanceId, selectedElement);
+
+			case 'media-background' :
+				return this.actionMediaBackground(instanceId);
 
 			case 'media-border' :
 				return this.actionMediaBorder(instanceId);
@@ -2445,6 +2461,31 @@ class EditorFormat {
 					selector.qs('span.editor-header').classList.add('selected');
 					break;
 
+                case 'foreColor' :
+
+				    const colors = EditorRange.browseTags('SPAN').reduce((value, item) => {
+                        if(
+                            item.hasAttribute('style') &&
+                            item.style.color != undefined
+                        ) {
+                            value[value.length] = item.style.color;
+                        } else {
+                            value[value.length] = null;
+                        }
+                        return value;
+                    }, []);
+
+                    const uniqueColors = colors.filter((value, index) => colors.indexOf(value) === index);
+
+                    selector.classList.add('selected');
+
+                    if(uniqueColors.length === 1) {
+                        selector.nextSibling.value = EditorFormat.convertColor(uniqueColors[0]);
+                    } else {
+                        selector.nextSibling.value = '#000000';
+                    }
+					break;
+
 				default :
 					selector.classList.add('selected');
 					break;
@@ -2455,6 +2496,14 @@ class EditorFormat {
 
 		} else {
 
+			switch(command) {
+
+                case 'foreColor' :
+                    selector.nextSibling.value = '#000000';
+					break;
+
+			}
+
 			selector.classList.remove('selected');
 			selector.childNodes.forEach(node => node.classList.remove('selected'));
 			return false;
@@ -2463,6 +2512,9 @@ class EditorFormat {
 
 	};
 
+    static convertColor(code) {
+        return code.startsWith('#') ? code : ((color) => '#' + (1 << 24 | color[0] << 16 | color[1] << 8 | color[2]).toString(16).slice(1))(code.match(/\d+/g));
+    }
 
 	// Create a new and empty figure
 	static newLine(instanceId, newNode, options) {
@@ -3531,8 +3583,7 @@ class EditorQuote {
 		nodeImage.setAttribute('class', 'editor-quote-image');
 		nodeImage.setAttribute('data-action', 'quote-image');
 		nodeImage.setAttribute('title', Editor.labels.quoteIcon);
-		nodeImage.setAttribute('placeholder', icons[firstIcon]['label']);
-		nodeImage.innerHTML = Lime.Asset.icon(icons[firstIcon]['icon']);
+		nodeImage.innerHTML = Lime.Asset.icon(icons[firstIcon]);
 
 		nodeQuote.appendChild(nodeImage);
 
@@ -3589,8 +3640,7 @@ class EditorQuote {
 		}
 
 		quoteSelector.setAttribute('data-about', newIcon);
-		imageSelector.setAttribute('placeholder', icons[newIcon]['label']);
-		imageSelector.innerHTML = Lime.Asset.icon(icons[newIcon]['icon']);
+		imageSelector.innerHTML = Lime.Asset.icon(icons[newIcon]);
 
 
 	};

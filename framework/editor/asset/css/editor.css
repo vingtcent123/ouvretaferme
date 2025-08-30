@@ -613,7 +613,7 @@ div.editor-box-media a.editor-box-media-action {
 	width: 32px;
 	height: 32px;
 	margin: 0.25rem;
-	background-color: rgba(0, 0, 0, 0.5);
+	background-color: rgba(0, 0, 0, 0.66);
 	border: 2px solid rgba(255, 255, 255, 0.75);
 	color: white !important;
 	display: inline-flex;
@@ -640,6 +640,14 @@ div.editor-box-media a.editor-box-media-action.editor-box-media-action-disabled 
 	cursor: default;
 	border-color: rgba(255, 255, 255, 0.33);
 	color: rgba(255, 255, 255, 0.33) !important;
+}
+
+div.editor-media[data-border] .editor-action[data-action="media-border"] {
+    color: #afa !important;
+}
+
+div.editor-media[data-background] .editor-action[data-action="media-background"] {
+    color: #afa !important;
 }
 
 #editor-media-configure {
@@ -801,37 +809,46 @@ div.readitor figure[data-interactive="false"] > div.editor-media[data-type="imag
 	overflow: hidden;
 }
 
-div.readitor figure[data-interactive="false"] > div.editor-media[data-border] {
+div.readitor div.editor-media[data-background="primary"] {
+	background-color: var(--primary);
+    color: white;
+}
+
+div.readitor div.editor-media[data-background="primary"] div.editor-quote-image {
+    color: white !important;
+}
+
+div.readitor div.editor-media[data-border] {
 	border-width: 2px;
     border-radius: var(--radius);
 }
 
-div.readitor figure[data-interactive="false"] > div.editor-media[data-border="solid-grey"] {
+div.readitor div.editor-media[data-border="solid-grey"] {
 	border-style: solid;
     border-color: #8883;
 }
 
-div.readitor figure[data-interactive="false"] > div.editor-media[data-border="solid-primary"] {
+div.readitor div.editor-media[data-border="solid-primary"] {
 	border-style: solid;
     border-color: var(--primary);
 }
 
-div.readitor figure[data-interactive="false"] > div.editor-media[data-border="solid-text"] {
+div.readitor div.editor-media[data-border="solid-text"] {
 	border-style: solid;
     border-color: var(--textColor);
 }
 
-div.readitor figure[data-interactive="false"] > div.editor-media[data-border="dashed-grey"] {
+div.readitor div.editor-media[data-border="dashed-grey"] {
 	border-style: dashed;
     border-color: #8883;
 }
 
-div.readitor figure[data-interactive="false"] > div.editor-media[data-border="dashed-primary"] {
+div.readitor div.editor-media[data-border="dashed-primary"] {
 	border-style: dashed;
     border-color: var(--primary);
 }
 
-div.readitor figure[data-interactive="false"] > div.editor-media[data-border="dashed-text"] {
+div.readitor div.editor-media[data-border="dashed-text"] {
 	border-style: dashed;
     border-color: var(--textColor);
 }
@@ -1257,24 +1274,6 @@ div.editor div.editor-quote > div.editor-quote-image {
 
 div.editor figure:hover div.editor-quote > div.editor-quote-image:hover {
 	cursor: pointer;
-}
-
-div.editor figure:hover div.editor-quote > div.editor-quote-image:after {
-	content: attr(placeholder);
-	font-size: 0.85rem;
-	font-weight: lighter;
-	line-height: 1.2;
-	color: var(--muted);
-	height: 20px;
-	text-align: center;
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	position: absolute;
-	bottom: -12px;
-	left: 0;
-	right: 0;
-	border-radius: var(--radius);
 }
 
 div.readitor div.editor-quote > blockquote {

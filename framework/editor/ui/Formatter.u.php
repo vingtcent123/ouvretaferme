@@ -745,38 +745,14 @@ abstract class FormatterUi {
 
 	public static function getQuoteIcons(): array {
 		return [
-			'quote' => [
-				'icon' => 'quote',
-				'label' => s("Citation")
-			],
-			'localization' => [
-				'icon' => 'geo-alt-fill',
-				'label' => s("Localisation")
-			],
-			'calendar' => [
-				'icon' => 'calendar-week',
-				'label' => s("Quand ?")
-			],
-			'money' => [
-				'icon' => 'piggy-bank',
-				'label' => s("Argent")
-			],
-			'gooddeal' => [
-				'icon' => 'lightbulb',
-				'label' => s("Bon plan")
-			],
-			'like' => [
-				'icon' => 'heart',
-				'label' => s("J'ai aimé")
-			],
-			'food' => [
-				'icon' => 'egg-fried',
-				'label' => s("Nourriture")
-			],
-			'stop' => [
-				'icon' => 'sign-stop',
-				'label' => s("Stop")
-			],
+			'quote' => 'quote',
+			'localization' => 'geo-alt-fill',
+			'calendar' => 'calendar-week',
+			'money' => 'piggy-bank',
+			'gooddeal' => 'lightbulb',
+			'like' => 'heart',
+			'food' => 'egg-fried',
+			'stop' => 'sign-stop'
 		];
 	}
 
@@ -801,10 +777,14 @@ abstract class FormatterUi {
 			$newNode->setAttribute('data-border', $node->getAttribute('border'));
 		}
 
+		if($node->hasAttribute('background')) {
+			$newNode->setAttribute('data-background', $node->getAttribute('background'));
+		}
+
 		$icons = self::getQuoteIcons();
 
 		$divIcon = $this->dom->createDocumentFragment();
-		$divIcon->appendXML(\Asset::icon($icons[$about]['icon']));
+		$divIcon->appendXML(\Asset::icon($icons[$about]));
 
 		$divImageNode = $this->dom->createElement('div');
 		$divImageNode->setAttribute('class', 'editor-quote-image');
@@ -812,7 +792,6 @@ abstract class FormatterUi {
 
 		if($this->for === 'editor') {
 			$divImageNode->setAttribute('data-action', 'quote-image');
-			$divImageNode->setAttribute('placeholder', $icons[$about]['label']);
 			$divImageNode->setAttribute('title', new \editor\EditorUi()->labels()['quoteIcon']);
 		}
 

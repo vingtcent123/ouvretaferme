@@ -257,6 +257,7 @@ class EditorUi {
 			'moveFigure' => s("Déplacer la mosaïque"),
 			'captionFigure' => s("Tapez une légende (facultatif)"),
 			'captionLimit' => s("Au delà de {value} caractères, la légende est tronquée à l'affichage.", \Setting::get('editor\captionLimit')),
+			'background' => s("Couleur d'arrière plan"),
 			'border' => s("Bordure"),
 			'move' => s("Déplacer"),
 			'configure' => s("Paramétrer"),
