@@ -118,7 +118,7 @@ class MembershipUi {
 
 	}
 
-	private function amountBlocks(\util\FormUi $form, array $amounts): string {
+	public function amountBlocks(\util\FormUi $form, array $amounts): string {
 
 		$h = '<div class="association-amount-container">';
 			foreach($amounts as $amount) {

@@ -16,12 +16,80 @@ class AssociationUi {
 
 	}
 
-	public static function confirmationUrl(\farm\Farm $eFarm, string $type): string {
-		return self::url($eFarm).'?success=association:Membership::'.$type.'.created';
+	public static function confirmationUrl(History $eHistory, string $type): string {
+
+		if($eHistory['farm']->empty()) {
+
+			return \Lime::getUrl().'/donner?success=association:Membership::'.$type.'.created&email='.urlencode($eHistory['customer']['invoiceEmail']).'&customer='.$eHistory['customer']['id'];
+
+		}
+
+		return self::url($eHistory['farm']).'?success=association:Membership::'.$type.'.created';
 	}
 
 	public static function url(\farm\Farm $eFarm): string {
+
+		if($eFarm->empty()) {
+			return \Lime::getUrl().'/donner';
+		}
+
 		return \Lime::getUrl().'/ferme/'.$eFarm['id'].'/adherer';
+	}
+
+	public function donationThankYou(History $eHistory): string {
+
+		if($eHistory->empty()) {
+
+			$h = '<h1>'.s("Merci pour votre don !").'</h1>';
+
+			$h .= '<p>'.s("Toute l'équipe de Ouvretaferme vous remercie pour votre générosité. Vous allez recevoir dans quelques minutes votre reçu par e-mail à l'adresse indiquée lorsque vous avez rempli votre don.").'</p>';
+
+			return $h;
+
+		}
+
+		\Asset::js('association', 'association.js');
+
+		$h = '<h1 onrender="Association.cleanArgs();">'.s("Merci pour votre don !").'</h1>';
+
+		$h .= '<p>'.s("Nous avons bien reçu votre don de {amount}. Vous allez recevoir dans quelques minutes votre reçu par e-mail à l'adresse {email}.", ['amount' => \util\TextUi::money($eHistory['amount'], precision: 0), 'email' => '<b>'.$eHistory['customer']['invoiceEmail'].'</b>']).'</p>';
+
+
+		$h .= '<p>'.s("Toute l'équipe de Ouvretaferme vous remercie pour votre générosité.").'</p>';
+
+		return $h;
+
+	}
+
+	public function donationForm(\user\User $eUser): string {
+
+		\Asset::css('main', 'design.css');
+		\Asset::css('association', 'association.css');
+		\Asset::js('association', 'association.js');
+
+		$h = '<div id="association-donate-form-container">';
+
+			$h .= '<div class="join-form">';
+
+				$form = new \util\FormUi([
+				]);
+
+				$h .= $form->openAjax('/association/donation:doCreatePayment', ['id' => 'association-donate']);
+
+				$h .= $form->dynamicGroups($eUser, ['email', 'firstName', 'lastName', 'phone']);
+				$h .= $form->addressGroup(s("Adresse"), NULL, $eUser);
+
+				$h.= new MembershipUi()->amountBlocks($form, [10, 20, 30]);
+
+				$h .= $form->inputGroup($form->submit(s("Je donne")), ['class' => 'mt-1']);
+
+				$h .= $form->close();
+
+			$h .= '</div>';
+
+		$h .= '</div>';
+
+		return $h;
 	}
 
 	public function getDocumentFilename(History $eHistory): string {
@@ -196,7 +264,11 @@ Cordialement,
 			$h .= '<div class="pdf-document-customer">';
 
 				$h .= '<div class="pdf-document-customer-name">';
-					$h .= encode($eCustomer->getLegalName()).'<br/>';
+					if($eCustomer['type'] === \selling\Customer::PRO) {
+						$h .= encode($eCustomer->getLegalName()).'<br/>';
+					} else {
+						$h .= encode($eCustomer['firstName']).' '.encode($eCustomer['lastName']);
+					}
 				$h .= '</div>';
 
 				if($eCustomer->hasInvoiceAddress()) {

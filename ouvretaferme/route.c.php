@@ -23,6 +23,11 @@ Route::register([
 			'priority' => 5,
 			'route' => ['commandes', 'professionnels', '{farm}'],
 		],
+		'/donner' => [
+			'request' => 'association/donation',
+			'priority' => 5,
+			'route' => ['donner'],
+		],
 		'/espece/{id@int}' => [
 			'request' => 'plant/plant',
 			'priority' => 5,

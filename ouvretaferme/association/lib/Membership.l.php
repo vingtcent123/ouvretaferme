@@ -35,17 +35,58 @@ class MembershipLib {
 
 	}
 
-	public static function getAssociationStripeFarm(): \payment\StripeFarm {
+	public static function getAssociationStripeFarm(\farm\Farm $eFarmOtf = new \farm\Farm()): \payment\StripeFarm {
 
-		$eFarmOTF = \farm\FarmLib::getById(\Setting::get('association\farm'));
+		if($eFarmOtf->empty()) {
 
-		return \payment\StripeLib::getByFarm($eFarmOTF);
+			$eFarmOtf = \farm\FarmLib::getById(\Setting::get('association\farm'));
+
+		}
+
+		return \payment\StripeLib::getByFarm($eFarmOtf);
 		
 	}
 
 	public static function createPayment(\farm\Farm $eFarm, string $type): string {
 
-		$eFarm->expects(['id', 'siret']);
+		$eFarmOtf = \farm\FarmLib::getById(\Setting::get('association\farm'));
+
+		if($eFarm->notEmpty()) {
+
+			$eFarm->expects(['id', 'siret']);
+			$eCustomer = \selling\CustomerLib::getBySiret($eFarmOtf, $eFarm['siret']);
+			$eUser = \user\ConnectionLib::getOnline();
+
+		} else {
+
+			$eUser = new \user\User(['visibility' => \user\User::PRIVATE]);
+
+			$email = cast($_POST['email'] ?? NULL, 'string');
+			if($email !== NULL) {
+				$eUser['email'] = $email;
+			}
+
+			$fw = new \FailWatch();
+
+			$eUser->build(['firstName', 'lastName', 'phone', 'street1', 'street2', 'postcode', 'city'], $_POST);
+
+			$fw->validate();
+
+			$eCustomer = \selling\Customer::model()
+				->select(\selling\Customer::getSelection())
+				->whereInvoiceEmail($eUser['email'])
+				->whereFarm($eFarmOtf)
+				->whereFirstName($eUser['firstName'])
+				->whereLastName($eUser['lastName'])
+				->wherePhone($eUser['phone'])
+				->whereInvoiceStreet1($eUser['street1'])
+				->whereInvoiceStreet2($eUser['street2'])
+				->whereInvoicePostcode($eUser['postcode'])
+				->whereInvoiceCity($eUser['city'])
+				->sort(['createdAt' => SORT_DESC])
+				->get();
+
+		}
 
 		$fw = new \FailWatch();
 
@@ -54,10 +95,57 @@ class MembershipLib {
 
 		$fw->validate();
 
-		$eStripeFarm = self::getAssociationStripeFarm();
+		$eStripeFarm = self::getAssociationStripeFarm($eFarmOtf);
 
 		if($eStripeFarm->empty()) {
 			throw new \Exception('Missing stripe configuration for OTF');
+		}
+
+		History::model()->beginTransaction();
+
+		// Création du customer
+		$ePaymentMethod = \payment\MethodLib::getByFqn(\payment\MethodLib::ONLINE_CARD);
+
+		if($eCustomer->empty()) {
+
+			$eCustomer = new \selling\Customer([
+				'firstName' => $eUser['firstName'],
+				'lastName' => $eUser['lastName'],
+				'defaultPaymentMethod' => $ePaymentMethod,
+				'phone' => $eUser['phone'],
+				'farm' => $eFarmOtf,
+			]);
+
+			if($eFarm->notEmpty()) {
+
+				$eCustomer->merge([
+					'type' => \selling\Customer::PRO,
+					'name' => $eFarm['name'],
+					'legalName' => $eFarm['legalName'],
+					'invoiceStreet1' => $eFarm['legalStreet1'],
+					'invoiceStreet2' => $eFarm['legalStreet2'],
+					'invoicePostcode' => $eFarm['legalPostcode'],
+					'invoiceCity' => $eFarm['legalCity'],
+					'invoiceEmail' => $eFarm['legalEmail'],
+					'siret' => $eFarm['siret'],
+				]);
+
+			} else {
+
+				$eCustomer->merge([
+					'type' => \selling\Customer::PRIVATE,
+					'destination' => \selling\Customer::INDIVIDUAL,
+					'invoiceStreet1' => $eUser['street1'],
+					'invoiceStreet2' => $eUser['street2'],
+					'invoicePostcode' => $eUser['postcode'],
+					'invoiceCity' => $eUser['city'],
+					'invoiceEmail' => $eUser['email'],
+				]);
+
+			}
+
+			\selling\CustomerLib::create($eCustomer);
+
 		}
 
 		$items = [];
@@ -72,38 +160,23 @@ class MembershipLib {
 			]
 		];
 
-		$successUrl = AssociationUi::confirmationUrl($eFarm, $type);
-		$cancelUrl = AssociationUi::url($eFarm);
-
-		$arguments = [
-			'payment_intent_data' => [
-				'metadata' => ['source' => 'otf', 'type' => 'membership']
-			],
-			'expires_at' => time() + 60 * 45,
-			'client_reference_id' => $eFarm['id'],
-			'line_items' => $items,
-			'success_url' => $successUrl,
-			'cancel_url' => $cancelUrl,
-		];
-
-		$stripeSession = \payment\StripeLib::createCheckoutSession($eStripeFarm, $arguments);
 		$membershipYear = $type === History::MEMBERSHIP ? date('Y') : NULL;
 
 		$eHistoryDb = History::model()
-			->select(History::getSelection())
-			->whereFarm($eFarm)
-			->whereType($eHistory['type'])
-			->whereMembership($membershipYear)
-			->wherePaymentStatus(History::INITIALIZED)
-			->get();
+     ->select(History::getSelection() + ['customer' => ['id', 'invoiceEmail']])
+     ->whereCustomer($eCustomer)
+     ->whereType($eHistory['type'])
+     ->whereMembership($membershipYear)
+     ->wherePaymentStatus(History::INITIALIZED)
+     ->get();
 
 		if($eHistoryDb->empty()) {
 
 			$eHistory->merge([
 				'farm' => $eFarm,
-				'checkoutId' => $stripeSession['id'],
 				'membership' => $membershipYear,
 				'paymentStatus' => History::INITIALIZED,
+				'customer' => $eCustomer,
 			]);
 
 			History::model()->insert($eHistory);
@@ -113,13 +186,38 @@ class MembershipLib {
 			History::model()->update(
 				$eHistoryDb, [
 					'amount' => $eHistory['amount'],
-					'checkoutId' => $stripeSession['id'],
 					'paymentStatus' => History::INITIALIZED,
 					'updatedAt' => new \Sql('NOW()'),
 				]
 			);
 
+			$eHistory = $eHistoryDb;
+
 		}
+
+		$successUrl = AssociationUi::confirmationUrl($eHistory, $type);
+		$cancelUrl = AssociationUi::url($eFarm);
+
+		$arguments = [
+			'payment_intent_data' => [
+				'metadata' => ['source' => 'otf', 'type' => 'membership']
+			],
+			'expires_at' => time() + 60 * 45,
+			'client_reference_id' => $eCustomer['id'],
+			'line_items' => $items,
+			'success_url' => $successUrl,
+			'cancel_url' => $cancelUrl,
+		];
+
+		$stripeSession = \payment\StripeLib::createCheckoutSession($eStripeFarm, $arguments);
+
+		History::model()->update(
+			$eHistory, [
+				'checkoutId' => $stripeSession['id'],
+			]
+		);
+
+		History::model()->commit();
 
 		return $stripeSession['url'];
 
@@ -187,31 +285,7 @@ class MembershipLib {
 		$ePaymentMethod = \payment\MethodLib::getByFqn(\payment\MethodLib::ONLINE_CARD);
 
 		// Récupération ou création du customer
-		$eCustomer = \selling\CustomerLib::getBySiret($eFarmOtf, $eFarm['siret']);
-		if($eCustomer->empty()) {
-
-			$eUser = \user\ConnectionLib::getOnline();
-			$eCustomer = new \selling\Customer([
-				'category' => \selling\Customer::PRO,
-				'firstName' => $eUser['firstName'],
-				'lastName' => $eUser['lastName'],
-				'name' => $eFarm['name'],
-				'legalName' => $eFarm['legalName'],
-				'invoiceStreet1' => $eFarm['legalStreet1'],
-				'invoiceStreet2' => $eFarm['legalStreet2'],
-				'invoicePostcode' => $eFarm['legalPostcode'],
-				'invoiceCity' => $eFarm['legalCity'],
-				'invoiceEmail' => $eFarm['legalEmail'],
-				'siret' => $eFarm['siret'],
-				'invoiceVat' => $eFarm->getSelling('invoiceVat'),
-				'defaultPaymentMethod' => $ePaymentMethod,
-				'phone' => $eUser['phone'],
-				'type' => \selling\Customer::PRO,
-				'farm' => $eFarmOtf,
-			]);
-			\selling\CustomerLib::create($eCustomer);
-
-		}
+		$eCustomer = \selling\CustomerLib::getById($eHistory['customer']['id']);
 
 		// Création d'une vente et de l'item
 		$eSale = new \selling\Sale([
@@ -232,7 +306,7 @@ class MembershipLib {
 		\selling\SaleLib::create($eSale);
 
 		$eItem = new \selling\Item([
-				'farm' => $eFarm,
+				'farm' => $eFarmOtf,
 				'sale' => $eSale,
 				'name' => self::getProductName($eHistory['type']),
 				'customer' => $eCustomer,
@@ -267,7 +341,7 @@ class MembershipLib {
 			->setFarm($eFarmOtf)
 			->setCustomer($eCustomer)
 			->setFromName($eFarmOtf['name'])
-			->setTo($eCustomer['email'])
+			->setTo($eCustomer['invoiceEmail'])
 			->setReplyTo($eFarmOtf['legalEmail'])
 			->setContent(...new AssociationUi()->getDocumentMail($eFarmOtf, $eHistory))
 			->addAttachment($pdfContent, new AssociationUi()->getDocumentFilename($eHistory).'.pdf', 'application/pdf')

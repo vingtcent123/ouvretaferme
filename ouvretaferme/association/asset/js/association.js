@@ -46,4 +46,11 @@ class Association {
 
 	}
 
+	static cleanArgs() {
+
+		setTimeout(() => history.removeArgument('email'), 2500);
+		setTimeout(() => history.removeArgument('customer'), 2500);
+
+	}
+
 }

@@ -22,7 +22,7 @@ new Page(function($data) {
 new Page()
 	->post('doCreatePayment', function($data) {
 
-		$data->eFarm = \farm\FarmLib::getById(INPUT('farm'));
+		$data->eFarm = \farm\FarmLib::getById(INPUT('farm'))->validate('canManage');
 
 		$fw = new FailWatch();
 
@@ -37,7 +37,7 @@ new Page()
 	})
 	->post('doDonate', function($data) {
 
-		$data->eFarm = \farm\FarmLib::getById(INPUT('farm'));
+		$data->eFarm = \farm\FarmLib::getById(INPUT('farm'))->validate('canManage');
 
 		$fw = new FailWatch();
 
