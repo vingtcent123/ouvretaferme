@@ -16,7 +16,9 @@ class Association {
 
 	static validateCustom(element) {
 
-		qs('[name="amount"]').value = element.value;
+		const form = element.firstParent('form');
+
+		form.qs('[name="amount"]').value = element.value;
 
 	}
 

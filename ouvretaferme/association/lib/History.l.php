@@ -10,6 +10,7 @@ class HistoryLib extends HistoryCrud {
 				History::getSelection()
 				+ ['farm' => \farm\Farm::getSelection()]
 				+ ['sale' => \selling\Sale::getSelection()]
+				+ ['customer' => \selling\Customer::getSelection()]
 			)
 			->whereId($id)
 			->get();

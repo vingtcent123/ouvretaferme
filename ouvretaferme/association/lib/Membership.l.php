@@ -111,7 +111,8 @@ class MembershipLib {
 		} else {
 
 			History::model()->update(
-				$eHistory, [
+				$eHistoryDb, [
+					'amount' => $eHistory['amount'],
 					'checkoutId' => $stripeSession['id'],
 					'paymentStatus' => History::INITIALIZED,
 					'updatedAt' => new \Sql('NOW()'),
@@ -212,7 +213,7 @@ class MembershipLib {
 
 		}
 
-		// Création d'une vente et du produit
+		// Création d'une vente et de l'item
 		$eSale = new \selling\Sale([
 			'farm' => $eFarmOtf,
 			'customer'=> $eCustomer,
@@ -257,9 +258,20 @@ class MembershipLib {
 			'sale' => $eSale,
 		]);
 
-		HistoryLib::generateDocument($eHistory);
-
 		History::model()->commit();
+
+		$pdfContent = HistoryLib::generateDocument($eHistory);
+
+		// Envoi d'un email
+		new \mail\SendLib()
+			->setFarm($eFarmOtf)
+			->setCustomer($eCustomer)
+			->setFromName($eFarmOtf['name'])
+			->setTo($eCustomer['email'])
+			->setReplyTo($eFarmOtf['legalEmail'])
+			->setContent(...new AssociationUi()->getDocumentMail($eFarmOtf, $eHistory))
+			->addAttachment($pdfContent, new AssociationUi()->getDocumentFilename($eHistory).'.pdf', 'application/pdf')
+			->send();
 	}
 
 	private static function getHistoryFromPaymentIntent(array $event): History {

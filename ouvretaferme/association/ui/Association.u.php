@@ -25,7 +25,40 @@ class AssociationUi {
 	}
 
 	public function getDocumentFilename(History $eHistory): string {
-		return s("ouvretaferme-attestation-paiement-{date}-{id}", ['date' => substr($eHistory['paidAt'], 0, 10), 'id' => $eHistory['id']]);
+		return s("ouvretaferme-attestation-paiement-{id}", ['id' => $eHistory['id']]);
+	}
+
+	public function getDocumentMail(\farm\Farm $eFarm, History $eHistory): array {
+
+		$template = match($eHistory['type']) {
+			History::MEMBERSHIP => s("Bonjour,
+
+Merci pour votre soutien !
+
+Vous trouverez en pièce jointe votre attestation de paiement pour votre adhésion d'un montant de @amount.
+
+Cordialement,
+@farm"),
+			History::DONATION => s("Bonjour,
+
+Merci pour votre générosité !
+
+Vous trouverez en pièce jointe votre attestation de paiement pour votre don d'un montant de @amount.
+
+Cordialement,
+@farm")
+};
+		$variables = ['farm' => encode($eFarm['name']), 'amount' => \util\TextUi::money($eHistory['amount'], precision: 0)];
+
+		$title = match($eHistory['type']) {
+			History::MEMBERSHIP => s("Reçu de votre adhésion {year} à l'association Ouvretaferme", ['year' => encode($eHistory['membership'])]),
+			History::DONATION => s("Reçu de votre don à l'association Ouvretaferme"),
+		};
+
+		$content = \mail\CustomizeUi::convertTemplate($template, $variables);
+
+		return \mail\DesignUi::format($eFarm, $title, $content);
+
 	}
 
 	public function getPdfTitle(): string {
@@ -116,7 +149,7 @@ class AssociationUi {
 
 	protected function getDocumentTop(History $eHistory, \farm\Farm $eFarm): string {
 
-		$eCustomer = $eHistory['sale']['customer'];
+		$eCustomer = $eHistory['customer'];
 		$logo = new \media\FarmLogoUi()->getUrlByElement($eFarm, 'm');
 
 		$h = '<div class="pdf-document-header">';
@@ -126,7 +159,7 @@ class AssociationUi {
 					$h .= '<div class="pdf-document-vendor-logo" style="background-image: url('.$logo.')"></div>';
 				}
 				$h .= '<div class="pdf-document-vendor-name">';
-					$h .= encode($eFarm['legalName'] ?? '').'<br/>';
+					$h .= encode($eFarm['legalName']).'<br/>';
 				$h .= '</div>';
 			$h .= '<div class="pdf-document-vendor-address">';
 				$h .= $eFarm->getLegalAddress('html');
