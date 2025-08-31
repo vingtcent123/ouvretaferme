@@ -345,6 +345,12 @@ body[data-template~="farm"] main .container.farm-template-main-title.farm-templa
 		text-align: center;
 	}
 
+	body[data-template~="farm"] .nav-title-member {
+        border: 1px solid white;
+        text-align: center;
+        margin-top: 0.25rem;
+	}
+
 	#farm-nav {
 		overflow: auto;
 		top: var(--nav-height);

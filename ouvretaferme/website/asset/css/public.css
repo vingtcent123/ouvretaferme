@@ -115,3 +115,13 @@ div.website-wrapper div.website-widget-header-block,
 div.website-wrapper div.website-widget-shop-order a {
 	background-color: var(--transparent);
 }
+
+div.website-footer {
+    border-top: 1px solid var(--border);
+    padding: 2rem;
+}
+
+div.website-ad {
+    border-top: 1px solid var(--border);
+    padding-top: 1rem;
+}

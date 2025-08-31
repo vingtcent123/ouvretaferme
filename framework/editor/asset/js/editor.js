@@ -3541,28 +3541,6 @@ class EditorHr {
 
 }
 
-// Handle list in the editor
-class EditorList {
-
-	static create(instanceId, type) {
-
-		const figureId = EditorFigure.create(instanceId, {
-			interactive: false
-		});
-
-		if(figureId === null) {
-			return;
-		}
-
-		const nodeHr = document.createElement('div');
-		nodeHr.setAttribute('class', 'editor-hr');
-		nodeHr.innerHTML = '&#149; &#149; &#149;';
-
-		EditorFigure.addNode(instanceId, figureId, nodeHr, 'hr', null, null, {});
-	};
-
-}
-
 // Handle quotes in the editor
 class EditorQuote {
 

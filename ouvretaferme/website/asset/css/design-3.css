@@ -66,8 +66,17 @@ header, main, footer {
 	width: 100%;
 }
 
-main, footer {
+main {
 	padding: 2rem;
+}
+
+footer {
+	text-align: center;
+	font-weight: lighter;
+	font-size: 0.9rem;
+    margin-top: 2rem;
+    margin-bottom: 2rem;
+	font-family: "Open Sans";
 }
 
 @media (max-width: 767px) {
@@ -335,15 +344,6 @@ ul.website-menu a.selected {
 		padding: 3rem 2rem 2rem;
 	}
 
-}
-
-footer {
-	border-top: 1px solid var(--border);
-	text-align: center;
-	font-weight: lighter;
-	font-size: 0.9rem;
-	padding: 2rem;
-	font-family: "Open Sans";
 }
 
 div.website-menu-news-wrapper {

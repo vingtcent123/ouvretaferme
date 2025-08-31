@@ -271,9 +271,18 @@ class WebsiteTemplate extends BaseTemplate {
 
 		if($this->footer === NULL) {
 
+			$h = '';
+
+			if($this->data->eWebsite['footer'] !== NULL) {
+				$h .= '<div class="website-footer">';
+					$h .= new \editor\EditorUi()->value($this->data->eWebsite['footer']);
+				$h .= '</div>';
+			}
+
 			if($this->data->eWebsite['customDisabledFooter'] === FALSE) {
-				$h = '<div>';
-				$h .= s("/ Ce site a été créé avec {link} /<br/><small>Logiciel ouvert pour les producteurs</small>", ['link' => '<a href="' . Lime::getUrl() . '">' . Lime::getDomain() . '</a>']);
+
+				$h .= '<div class="website-ad">';
+					$h .= s("Ce site a été créé avec {link}<br/><small>Logiciel pour organiser le travail à la ferme de la production à la vente</small>", ['link' => '<a href="'.Lime::getUrl().'">'.Lime::getDomain().'</a>']);
 				$h .= '</div>';
 
 				return $h;

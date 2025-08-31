@@ -47,6 +47,10 @@ class Website extends WebsiteElement {
 					)
 				);
 			})
+			->setCallback('footer.prepare', function(string &$value): bool {
+				$value = new \editor\XmlLib()->fromHtml($value, ['acceptFigure' => TRUE]);
+				return TRUE;
+			})
 			->setCallback('customFont.check', function(string $customFont): bool {
 				return DesignLib::isCustomFont($customFont, 'customFonts');
 			})

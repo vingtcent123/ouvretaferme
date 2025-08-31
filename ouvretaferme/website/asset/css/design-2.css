@@ -83,14 +83,14 @@ header, main, footer {
 	position: relative;
 }
 
-main, footer {
+main {
 	padding: 2rem;
 }
 
 
 @media (max-width: 767px) {
 
-	header, footer {
+	header {
 		padding-left: 0.5rem;
 		padding-right: 0.5rem;
 	}
@@ -401,11 +401,10 @@ ul.website-menu a.selected {
 }
 
 footer {
-	border-top: 1px solid var(--border);
 	text-align: center;
 	font-weight: lighter;
 	font-size: 0.9rem;
-	padding: 3rem;
+    margin: 2rem;
 	font-family: "Open Sans";
 }
 

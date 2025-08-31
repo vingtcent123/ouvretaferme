@@ -90,6 +90,7 @@ Website:
   favicon: ?textFixed(30, 30) @charset(ascii)
   banner: ?textFixed(30, 30) @charset(ascii)
   name: text8(1, 40)
+  footer: ?editor24
   description: ?text8(1, 200)
   customDesign: website\Design = PHP(\Setting::get('website\designDefaultId'))
   customText: enum(BLACK, WHITE) = BLACK

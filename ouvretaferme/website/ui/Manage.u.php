@@ -56,7 +56,7 @@ class ManageUi {
 
 			$h .= $form->hidden('id', $eWebsite['id']);
 
-			$h .= $form->dynamicGroups($eWebsite, ['internalDomain', 'domain', 'name', 'description']);
+			$h .= $form->dynamicGroups($eWebsite, ['internalDomain', 'domain', 'name', 'description', 'footer']);
 
 			$h .= $form->group(
 				content: $form->submit(s("Modifier"))

@@ -8,7 +8,7 @@ class WebsiteLib extends WebsiteCrud {
 	}
 
 	public static function getPropertiesUpdate(): array {
-		return ['internalDomain', 'domain', 'name', 'description'];
+		return ['internalDomain', 'domain', 'name', 'description', 'footer'];
 	}
 
 	public static function getSitemap(Website $eWebsite): string {

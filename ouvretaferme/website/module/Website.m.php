@@ -62,6 +62,7 @@ class WebsiteModel extends \ModuleModel {
 			'favicon' => ['textFixed', 'min' => 30, 'max' => 30, 'charset' => 'ascii', 'null' => TRUE, 'cast' => 'string'],
 			'banner' => ['textFixed', 'min' => 30, 'max' => 30, 'charset' => 'ascii', 'null' => TRUE, 'cast' => 'string'],
 			'name' => ['text8', 'min' => 1, 'max' => 40, 'cast' => 'string'],
+			'footer' => ['editor24', 'null' => TRUE, 'cast' => 'string'],
 			'description' => ['text8', 'min' => 1, 'max' => 200, 'null' => TRUE, 'cast' => 'string'],
 			'customDesign' => ['element32', 'website\Design', 'cast' => 'element'],
 			'customText' => ['enum', [\website\Website::BLACK, \website\Website::WHITE], 'cast' => 'enum'],
@@ -77,7 +78,7 @@ class WebsiteModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'farm', 'internalDomain', 'domain', 'domainStatus', 'domainTry', 'logo', 'favicon', 'banner', 'name', 'description', 'customDesign', 'customText', 'customColor', 'customLinkColor', 'customBackground', 'customDisabledFooter', 'customTitleFont', 'customFont', 'customWidth', 'createdAt', 'status'
+			'id', 'farm', 'internalDomain', 'domain', 'domainStatus', 'domainTry', 'logo', 'favicon', 'banner', 'name', 'footer', 'description', 'customDesign', 'customText', 'customColor', 'customLinkColor', 'customBackground', 'customDisabledFooter', 'customTitleFont', 'customFont', 'customWidth', 'createdAt', 'status'
 		]);
 
 		$this->propertiesToModule += [
@@ -203,6 +204,10 @@ class WebsiteModel extends \ModuleModel {
 
 	public function whereName(...$data): WebsiteModel {
 		return $this->where('name', ...$data);
+	}
+
+	public function whereFooter(...$data): WebsiteModel {
+		return $this->where('footer', ...$data);
 	}
 
 	public function whereDescription(...$data): WebsiteModel {

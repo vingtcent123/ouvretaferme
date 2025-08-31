@@ -143,6 +143,7 @@ class WebsiteUi {
 			'logo' => s("Logo"),
 			'name' => s("Titre du site"),
 			'description' => s("Description du site"),
+			'footer' => s("Pied de page"),
 		]);
 
 		switch($property) {
@@ -165,6 +166,13 @@ class WebsiteUi {
 				$d->field = 'textarea';
 				$d->attributes = ['data-limit' => Website::model()->getPropertyRange('description')[1]];
 				$d->label .= \util\FormUi::info(s("Utilisée pour les moteurs de recherche"));
+				break;
+
+			case 'footer' :
+				$d->options = [
+					'acceptFigure' => TRUE
+				];
+				$d->labelAfter = \util\FormUi::info(s("Le pied de page est affiché sur toutes les pages de votre site."));
 				break;
 
 			case 'customDesign':

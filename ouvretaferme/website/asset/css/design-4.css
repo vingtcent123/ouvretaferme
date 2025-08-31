@@ -66,7 +66,16 @@ h1 {
 	width: 100%;
 }
 
-main, footer {
+footer {
+	text-align: center;
+	font-weight: lighter;
+	font-size: 0.9rem;
+    margin-top: 2rem;
+    margin-bottom: 2rem;
+	font-family: "Open Sans";
+}
+
+main {
 	padding: 2rem;
 }
 
@@ -311,15 +320,6 @@ ul.website-menu a.selected {
 
 .website-banner .website-header {
     z-index: 2;
-}
-
-footer {
-	border-top: 1px solid var(--border);
-	text-align: center;
-	font-weight: lighter;
-	font-size: 0.9rem;
-	padding: 2rem;
-	font-family: "Open Sans";
 }
 
 div.website-menu-news-wrapper {
