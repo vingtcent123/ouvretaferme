@@ -257,6 +257,8 @@ class MembershipLib {
 			'sale' => $eSale,
 		]);
 
+		HistoryLib::generateDocument($eHistory);
+
 		History::model()->commit();
 	}
 

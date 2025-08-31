@@ -16,6 +16,7 @@ class HistoryUi {
 						$h .= '<th>'.s("Type").'</th>';
 						$h .= '<th class="text-end">'.s("Montant").'</th>';
 						$h .= '<th>'.s("Statut").'</th>';
+						$h .= '<th></th>';
 					$h .= '</tr>';
 
 				$h .= '</thead>';
@@ -33,6 +34,9 @@ class HistoryUi {
 							$h .= '<td>'.$type.'</td>';
 							$h .= '<td class="text-end">'.\util\TextUi::money($eHistory['amount']).'</td>';
 							$h .= '<td>'.self::p('paymentStatus')->values[$eHistory['paymentStatus']].'</td>';
+							$h .= '<td>';
+								$h .= '<a href="/association/pdf:document?id='.$eHistory['id'].'" data-ajax-navigation="never" class="btn btn-outline-secondary">'.\Asset::icon('download').'</a> ';
+							$h .= '</td>';
 						$h .= '</tr>';
 					}
 

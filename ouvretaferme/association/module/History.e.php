@@ -11,6 +11,15 @@ class History extends HistoryElement {
 
 	}
 
+	public function canRead(): bool {
+
+		$this->expects(['farm']);
+
+		return $this['farm']->canManage();
+
+	}
+
+
 	public function build(array $properties, array $input, \Properties $p = new \Properties()): void {
 
 		$p

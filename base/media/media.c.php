@@ -52,7 +52,7 @@ Setting::register('media', [
 	// Max size of an image in Mo (change also rewrite.cfg if needed : client_max_body_size 20m;)
 	'maxImageSize' => 20,
 
-	'images' => ['user-vignette', 'editor', 'plant-vignette', 'gallery', 'farm-vignette', 'farm-logo', 'farm-banner', 'product-vignette', 'tool-vignette', 'website-logo', 'website-favicon', 'website-banner', 'webpage-banner', 'shop-logo', 'pdf-content'],
+	'images' => ['user-vignette', 'editor', 'plant-vignette', 'gallery', 'farm-vignette', 'farm-logo', 'farm-banner', 'product-vignette', 'tool-vignette', 'website-logo', 'website-favicon', 'website-banner', 'webpage-banner', 'shop-logo', 'pdf-content', 'association-document'],
 
 	'user-vignette' => [
 		'class' => 'UserVignette',
@@ -70,6 +70,12 @@ Setting::register('media', [
 		'class' => 'PdfContent',
 		'element' => 'selling\PdfContent',
 		'field' => 'hash'
+	],
+
+	'association-document' => [
+		'class' => 'AssociationDocument',
+		'element' => 'association\History',
+		'field' => 'document'
 	],
 
 	'editor' => [

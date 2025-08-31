@@ -3,6 +3,18 @@ namespace association;
 
 class HistoryLib extends HistoryCrud {
 
+	public static function getForDocument(int $id): History {
+
+		return History::model()
+			->select(
+				History::getSelection()
+				+ ['farm' => \farm\Farm::getSelection()]
+				+ ['sale' => \selling\Sale::getSelection()]
+			)
+			->whereId($id)
+			->get();
+	}
+
 	public static function getByFarm(\farm\Farm $eFarm): \Collection {
 
 		return History::model()
@@ -68,5 +80,57 @@ class HistoryLib extends HistoryCrud {
 
 	}
 
+	public static function generateDocument(History $eHistory): ?string {
+
+		$eContent = new \pdf\Content();
+
+		$hash = NULL;
+		$content = self::generateDocumentContent($eHistory);
+
+		new \media\AssociationDocumentLib()->send($eContent, $hash, $content, 'pdf');
+
+		History::model()->update($eHistory, ['document' => $hash]);
+
+		return self::getPdfContent($hash);
+
+	}
+
+	public static function getPdfContent(string $document): ?string {
+
+		$path = \storage\DriverLib::directory().'/'.new \media\AssociationDocumentUi()->getBasenameByHash($document);
+		return file_get_contents($path);
+
+	}
+
+	private static function generateDocumentContent(History $eHistory): string {
+
+		$url = \Lime::getUrl().'/association/pdf?id='.$eHistory['id'].'&remoteKey='.\Lime::getRemoteKey('selling');
+
+		$title = new AssociationUi()->getPdfTitle();
+
+		return \Cache::redis()->lock(
+			'pdf-'.$url, function () use ($title, $url) {
+
+			$file = tempnam('/tmp', 'pdf-').'.pdf';
+
+			$args = '"--url='.$url.'"';
+			$args .= ' "--destination='.$file.'"';
+			$args .= ' "--title='.rawurlencode($title).'"';
+
+			exec('node '.LIME_DIRECTORY.'/ouvretaferme/main/nodejs/pdf.js '.$args.' 2>&1');
+
+			if(LIME_ENV === 'dev') {
+				d('node '.LIME_DIRECTORY.'/ouvretaferme/main/nodejs/pdf.js '.$args.' 2>&1');
+			}
+
+			$content = file_get_contents($file);
+
+			unlink($file);
+
+			return $content;
+
+		}, fn() => throw new \FailAction('association\History::fileLocked'), 5);
+
+	}
 }
 ?>
