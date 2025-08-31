@@ -114,6 +114,7 @@ main {
 	padding: 0 1rem;
 	position: relative;
 	white-space: nowrap;
+    background-color: var(--background);
 }
 
 @media (max-width: 575px) {
