@@ -787,6 +787,11 @@ Route::register([
 			'priority' => 5,
 			'route' => ['public', '{domain}', ':doContact'],
 		],
+		'/public/{domain}/:doDonate' => [
+			'request' => 'website/public',
+			'priority' => 5,
+			'route' => ['public', '{domain}', ':doDonate'],
+		],
 		'/public/{domain}/:doNewsletter' => [
 			'request' => 'website/public',
 			'priority' => 5,

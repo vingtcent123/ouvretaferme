@@ -30,6 +30,7 @@ class WidgetLib {
 
 				$eWebpage['widgets'][$original] = match($app) {
 					'contactForm' => self::getContactForm($eWebsite),
+					'donationForm' => self::getDonationForm($eWebsite),
 					'newsletterForm' => self::getNewsletterForm($eWebsite),
 					'shop' => $value ? self::getShop($eFarm, (int)$value, 'limited') : '',
 					'fullShop' => $value ? self::getShop($eFarm, (int)$value, 'full') : '',
@@ -70,8 +71,14 @@ class WidgetLib {
 
 	}
 
+	public static function getDonationForm(Website $eWebsite): ?\Closure {
+
+		return fn() => new \association\AssociationUi()->donationForm(eWebsite: $eWebsite);
+
+	}
+
 	public static function getList(): array {
-		return ['shop', 'fullShop', 'contactForm', 'newsletterForm'];
+		return ['shop', 'fullShop', 'contactForm', 'donationForm', 'newsletterForm'];
 	}
 
 }

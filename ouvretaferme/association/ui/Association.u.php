@@ -16,11 +16,11 @@ class AssociationUi {
 
 	}
 
-	public static function confirmationUrl(History $eHistory, string $type): string {
+	public static function confirmationUrl(History $eHistory, string $type, string $fromPage): string {
 
 		if($eHistory['farm']->empty()) {
 
-			return \Lime::getUrl().'/donner?success=association:Membership::'.$type.'.created&email='.urlencode($eHistory['customer']['invoiceEmail']).'&customer='.$eHistory['customer']['id'];
+			return $fromPage.'?success=association:Membership::'.$type.'.created&email='.urlencode($eHistory['customer']['invoiceEmail']).'&customer='.$eHistory['customer']['id'];
 
 		}
 
@@ -61,7 +61,7 @@ class AssociationUi {
 
 	}
 
-	public function donationForm(\user\User $eUser): string {
+	public function donationForm(\user\User $eUser = new \user\User(), \website\Website $eWebsite = new \website\Website()): string {
 
 		\Asset::css('main', 'design.css');
 		\Asset::css('association', 'association.css');
@@ -74,8 +74,13 @@ class AssociationUi {
 				$form = new \util\FormUi([
 				]);
 
-				$h .= $form->openAjax('/association/donation:doCreatePayment', ['id' => 'association-donate']);
+				if($eWebsite->empty()) {
+					$h .= $form->openAjax('/association/donation:doCreatePayment', ['id' => 'association-donate']);
+				} else {
+					$h = $form->openAjax(\website\WebsiteUi::url($eWebsite, '/:doDonate'), ['id' => 'website-donate', 'onrender' => 'Association.cleanArgs();']);
+				}
 
+				$h .= $form->hidden('from', LIME_URL);
 				$h .= $form->dynamicGroups($eUser, ['email', 'firstName', 'lastName', 'phone']);
 				$h .= $form->addressGroup(s("Adresse"), NULL, $eUser);
 

@@ -195,7 +195,7 @@ class MembershipLib {
 
 		}
 
-		$successUrl = AssociationUi::confirmationUrl($eHistory, $type);
+		$successUrl = AssociationUi::confirmationUrl($eHistory, $type, POST('from'));
 		$cancelUrl = AssociationUi::url($eFarm);
 
 		$arguments = [
