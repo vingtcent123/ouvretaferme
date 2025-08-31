@@ -285,10 +285,9 @@ class WebsiteTemplate extends BaseTemplate {
 					$h .= s("Ce site a été créé avec {link}<br/><small>Logiciel pour organiser le travail à la ferme de la production à la vente</small>", ['link' => '<a href="'.Lime::getUrl().'">'.Lime::getDomain().'</a>']);
 				$h .= '</div>';
 
-				return $h;
-			} else {
-				return '';
 			}
+
+			return $h;
 
 		} else {
 			return $this->footer;
