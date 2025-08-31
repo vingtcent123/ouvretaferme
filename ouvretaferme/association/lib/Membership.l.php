@@ -251,6 +251,7 @@ class MembershipLib {
 			->update($eSale);
 
 		HistoryLib::updateByPaymentIntentId($object['id'], [
+			'customer' => $eCustomer,
 			'paymentStatus' => \selling\Payment::SUCCESS,
 			'paidAt' => new \Sql('NOW()'),
 			'sale' => $eSale,
