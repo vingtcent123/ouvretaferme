@@ -140,6 +140,11 @@ body[data-template^="farm"] header a:hover {
 	gap: 0.5rem;
 }
 
+.nav-title-member {
+    text-align: center;
+    margin-top: 0.25rem;
+}
+
 .nav-year {
 	display: inline-block;
 	font-size: 1.2rem;

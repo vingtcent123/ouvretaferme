@@ -11,6 +11,9 @@ new AdaptativeView('/ferme/{farm}/adherer', function($data, FarmTemplate $t) {
 
 		if($data->eFarm->isLegalComplete()) {
 
+			echo '<div>';
+			echo '</div>';
+
 			echo new \association\MembershipUi()->memberInformation($data->eFarm, $data->eUser);
 			echo new \association\MembershipUi()->joinForm($data->eFarm);
 			echo new \association\MembershipUi()->donateForm($data->eFarm, FALSE);
@@ -44,8 +47,6 @@ new AdaptativeView('/ferme/{farm}/adherer', function($data, FarmTemplate $t) {
 		echo new \association\MembershipUi()->donateForm($data->eFarm, date('m-d') < Setting::get('association\canJoinForNextYearFrom') or $hasJoinedForNextYear);
 
 	}
-
-	echo new \association\MembershipUi()->gdprInfo();
 
 	if($data->cHistory->count() > 0) {
 
