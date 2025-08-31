@@ -8,7 +8,7 @@ class AssociationUi {
 		return s("Don à l'association Ouvretaferme (merci !)");
 
 	}
-	public function getProductName(): string {
+	public function getMembershipProductName(): string {
 
 		$year = date('Y');
 
@@ -16,8 +16,8 @@ class AssociationUi {
 
 	}
 
-	public static function confirmationUrl(\farm\Farm $eFarm): string {
-		return self::url($eFarm).'?success=association:Membership::created';
+	public static function confirmationUrl(\farm\Farm $eFarm, string $type): string {
+		return self::url($eFarm).'?success=association:Membership::'.$type.'.created';
 	}
 
 	public static function url(\farm\Farm $eFarm): string {

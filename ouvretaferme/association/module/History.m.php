@@ -7,6 +7,9 @@ abstract class HistoryElement extends \Element {
 
 	private static ?HistoryModel $model = NULL;
 
+	const MEMBERSHIP = 'membership';
+	const DONATION = 'donation';
+
 	const INITIALIZED = 'initialized';
 	const SUCCESS = 'success';
 	const FAILURE = 'failure';
@@ -43,21 +46,26 @@ class HistoryModel extends \ModuleModel {
 		$this->properties = array_merge($this->properties, [
 			'id' => ['serial32', 'cast' => 'int'],
 			'farm' => ['element32', 'farm\Farm', 'null' => TRUE, 'cast' => 'element'],
+			'type' => ['enum', [\association\History::MEMBERSHIP, \association\History::DONATION], 'cast' => 'enum'],
 			'amount' => ['decimal', 'digits' => 8, 'decimal' => 2, 'min' => 0.01, 'max' => NULL, 'cast' => 'float'],
 			'membership' => ['int32', 'min' => 2025, 'max' => NULL, 'null' => TRUE, 'cast' => 'int'],
 			'checkoutId' => ['text8', 'null' => TRUE, 'cast' => 'string'],
 			'paymentIntentId' => ['text8', 'null' => TRUE, 'cast' => 'string'],
 			'paymentStatus' => ['enum', [\association\History::INITIALIZED, \association\History::SUCCESS, \association\History::FAILURE, \association\History::EXPIRED], 'null' => TRUE, 'cast' => 'enum'],
+			'sale' => ['element32', 'selling\Sale', 'null' => TRUE, 'cast' => 'element'],
+			'document' => ['textFixed', 'min' => 20, 'max' => 20, 'charset' => 'ascii', 'null' => TRUE, 'cast' => 'string'],
 			'createdAt' => ['datetime', 'cast' => 'string'],
+			'updatedAt' => ['datetime', 'cast' => 'string'],
 			'paidAt' => ['datetime', 'null' => TRUE, 'cast' => 'string'],
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'farm', 'amount', 'membership', 'checkoutId', 'paymentIntentId', 'paymentStatus', 'createdAt', 'paidAt'
+			'id', 'farm', 'type', 'amount', 'membership', 'checkoutId', 'paymentIntentId', 'paymentStatus', 'sale', 'document', 'createdAt', 'updatedAt', 'paidAt'
 		]);
 
 		$this->propertiesToModule += [
 			'farm' => 'farm\Farm',
+			'sale' => 'selling\Sale',
 		];
 
 		$this->indexConstraints = array_merge($this->indexConstraints, [
@@ -73,6 +81,9 @@ class HistoryModel extends \ModuleModel {
 			case 'createdAt' :
 				return new \Sql('NOW()');
 
+			case 'updatedAt' :
+				return new \Sql('NOW()');
+
 			default :
 				return parent::getDefaultValue($property);
 
@@ -83,6 +94,9 @@ class HistoryModel extends \ModuleModel {
 	public function encode(string $property, $value) {
 
 		switch($property) {
+
+			case 'type' :
+				return ($value === NULL) ? NULL : (string)$value;
 
 			case 'paymentStatus' :
 				return ($value === NULL) ? NULL : (string)$value;
@@ -110,6 +124,10 @@ class HistoryModel extends \ModuleModel {
 		return $this->where('farm', ...$data);
 	}
 
+	public function whereType(...$data): HistoryModel {
+		return $this->where('type', ...$data);
+	}
+
 	public function whereAmount(...$data): HistoryModel {
 		return $this->where('amount', ...$data);
 	}
@@ -130,8 +148,20 @@ class HistoryModel extends \ModuleModel {
 		return $this->where('paymentStatus', ...$data);
 	}
 
+	public function whereSale(...$data): HistoryModel {
+		return $this->where('sale', ...$data);
+	}
+
+	public function whereDocument(...$data): HistoryModel {
+		return $this->where('document', ...$data);
+	}
+
 	public function whereCreatedAt(...$data): HistoryModel {
 		return $this->where('createdAt', ...$data);
+	}
+
+	public function whereUpdatedAt(...$data): HistoryModel {
+		return $this->where('updatedAt', ...$data);
 	}
 
 	public function wherePaidAt(...$data): HistoryModel {

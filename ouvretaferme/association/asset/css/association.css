@@ -1,4 +1,4 @@
-.amount-container {
+.association-amount-container {
 	display: grid;
 	grid-template-columns: 1fr 1fr 1fr 1fr;
 	grid-gap: 2rem;
@@ -7,13 +7,13 @@
 }
 
 @media (max-width: 575px) {
-	.amount-container {
+	.association-amount-container {
 		grid-template-columns: 1fr 1fr;
 	}
 }
 
-input[type="number"].block-amount,
-.block-amount {
+input[type="number"].association-amount-block,
+.association-amount-block {
 	display: flex;
 	align-items: center;
 	justify-content: center;
@@ -27,29 +27,29 @@ input[type="number"].block-amount,
     transition: 0.25s all;
 }
 
-input[type="number"].block-amount {
+input[type="number"].association-amount-block {
 	color: inherit;
     text-align: center;
     position: relative;
 }
 
-input[type="number"].block-amount:hover,
-input[type="number"].block-amount.selected {
+input[type="number"].association-amount-block:hover,
+input[type="number"].association-amount-block.selected {
 	background-color: var(--secondary);
     color: white;
 }
 
-a.block-amount {
+a.association-amount-block {
     text-decoration: none;
 }
 
-.block-amount:hover,
-.block-amount.selected {
+.association-amount-block:hover,
+.association-amount-block.selected {
     background-color: var(--secondary);
     color: white;
 }
 
-.amount-custom-label {
+.association-amount-custom-label {
     text-align: center;
     margin-bottom: 0.5rem;
     color: var(--secondary);

@@ -3,12 +3,13 @@ class Association {
 	static select(element) {
 
 		const amount = parseInt(element.dataset.amount);
+		const form = element.firstParent('form');
 
-		Association.unselectAll();
+		Association.unselectAll(form);
 
-		qs('[name="amount"]').value = amount;
+		form.qs('[name="amount"]').value = amount;
 
-		qsa('.block-amount', node => node.classList.remove('selected'));
+		form.qsa('.association-amount-block', node => node.classList.remove('selected'));
 		element.classList.add('selected');
 
 	}
@@ -21,16 +22,26 @@ class Association {
 
 	static customFocus(element) {
 
-		Association.unselectAll();
+		const form = element.firstParent('form');
+
+		Association.unselectAll(form);
 		element.classList.add('selected');
 
 	}
 
-	static unselectAll() {
+	static unselectAll(form) {
 
-		qsa('.block-amount', node => node.classList.remove('selected'));
-		qs('[name="amount"]').value = '';
-		qs('input.block-amount').value = '';
+		form.qsa('.association-amount-block', node => node.classList.remove('selected'));
+		form.qs('[name="amount"]').value = '';
+		form.qs('input.association-amount-block').value = '';
 
 	}
+
+	static showDonationForm() {
+
+		qs('#association-join-form-container').hide();
+		qs('#association-donate-form-container').removeHide();
+
+	}
+
 }

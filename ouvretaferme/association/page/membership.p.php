@@ -26,7 +26,22 @@ new Page()
 
 		$fw = new FailWatch();
 
-		$url = \association\MembershipLib::createPayment($data->eFarm);
+		$url = \association\MembershipLib::createPayment($data->eFarm, \association\History::MEMBERSHIP);
+
+		$fw->validate();
+
+		if($fw->ok()) {
+			throw new RedirectAction($url);
+		}
+
+	})
+	->post('doDonate', function($data) {
+
+		$data->eFarm = \farm\FarmLib::getById(INPUT('farm'));
+
+		$fw = new FailWatch();
+
+		$url = \association\MembershipLib::createPayment($data->eFarm, \association\History::DONATION);
 
 		$fw->validate();
 

@@ -1,14 +1,17 @@
 History:
   id: serial32
   farm: ?farm\Farm
+  type: enum(MEMBERSHIP, DONATION)
   amount: decimal(8, 2, 0.01, null)
   membership: ?int(2025, null)
   checkoutId: ?text8
   paymentIntentId: ?text8
   paymentStatus: ?enum(INITIALIZED, SUCCESS, FAILURE, EXPIRED)
+  sale: ?selling\Sale
+  document: ?textFixed(20, 20) @charset(ascii)
   createdAt: datetime = SPECIAL(now)
+  updatedAt: datetime = SPECIAL(now)
   paidAt: ?datetime
   INDEX: [
     ["farm"]
   ]
-

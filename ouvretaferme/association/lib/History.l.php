@@ -8,7 +8,7 @@ class HistoryLib extends HistoryCrud {
 		return History::model()
 			->select(History::getSelection())
 			->whereFarm($eFarm)
-			->sort(['paidAt' => SORT_DESC, 'createdAt' => SORT_DESC])
+			->sort(['updatedAt' => SORT_DESC])
 			->getCollection();
 
 	}

@@ -8,7 +8,8 @@ class AlertUi {
 		return match($fqn) {
 
 			'Membership::terms' => s("Veuillez accepter les statuts et le règlement intérieur."),
-			'Membership::amount' => s("Le montant doit être au moins égal à la cotisation de base ({amount}).", ['amount' => \util\TextUi::money(\Setting::get('association\membershipFee'), precision: 0)]),
+			'Membership::amountMembership' => s("Le montant doit être au moins égal à la cotisation de base ({amount}).", ['amount' => \util\TextUi::money(\Setting::get('association\membershipFee'), precision: 0)]),
+			'Membership::amount' => s("Quel montant souhaitez-vous donner ?"),
 
 			default => NULL
 
@@ -20,7 +21,8 @@ class AlertUi {
 
 		return match($fqn) {
 
-			'Membership::created' => s("Votre adhésion a bien été prise en compte, toute l'équipe de Ouvretaferme vous souhaite la bienvenue et vous remercie pour votre engagement 🥳"),
+			'Membership::donation.created' => s("Nous avons bien reçu votre don, toute l'équipe de Ouvretaferme vous remercie pour votre générosité 🥳"),
+			'Membership::membership.created' => s("Votre adhésion a bien été prise en compte, toute l'équipe de Ouvretaferme vous souhaite la bienvenue et vous remercie pour votre engagement 🥳"),
 
 			default => NULL
 

@@ -7,11 +7,13 @@ new AdaptativeView('adherer', function($data, FarmTemplate $t) {
 	$t->title = s("Adhérer à l'association Ouvretaferme");
 	$t->mainTitle = '<h1>'.$t->title.'</h1>';
 
-	if($data->cHistory->count() === 0) {
+	if($data->eFarm['membership'] === FALSE) {
 
 		if($data->eFarm->isLegalComplete()) {
 
-			echo new \association\MembershipUi()->joinForm($data->eFarm, $data->eUser);
+			echo new \association\MembershipUi()->memberInformation($data->eFarm, $data->eUser);
+			echo new \association\MembershipUi()->joinForm($data->eFarm);
+			echo new \association\MembershipUi()->donateForm($data->eFarm, FALSE);
 
 		} else {
 
@@ -26,15 +28,14 @@ new AdaptativeView('adherer', function($data, FarmTemplate $t) {
 
 		}
 
-	} else if($data->eFarm['membership'] === FALSE) {
-
-			echo new \association\MembershipUi()->joinForm($data->eFarm, $data->eUser);
-
 	} else {
 
 		echo new \association\MembershipUi()->membership();
+		echo new \association\MembershipUi()->donateForm($data->eFarm, TRUE);
 
 	}
+
+	echo new \association\MembershipUi()->gdprInfo();
 
 	if($data->cHistory->count() > 0) {
 

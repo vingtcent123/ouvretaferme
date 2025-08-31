@@ -12,7 +12,7 @@ class HistoryUi {
 				$h .= '<thead>';
 
 					$h .= '<tr>';
-						$h .= '<th>'.s("Année").'</th>';
+						$h .= '<th>'.s("Type").'</th>';
 						$h .= '<th>'.s("Montant").'</th>';
 						$h .= '<th>'.s("Statut").'</th>';
 						$h .= '<th>'.s("Date").'</th>';
@@ -24,11 +24,15 @@ class HistoryUi {
 
 					foreach($cHistory as $eHistory) {
 
+						$type = self::p('type')->values[$eHistory['type']];
+						if($eHistory['type'] === History::MEMBERSHIP) {
+							$type .= ' '.s('(année {year})', ['year' => $eHistory['membership']]);
+						}
 						$h .= '<tr>';
-							$h .= '<td>'.encode($eHistory['membership']).'</td>';
+							$h .= '<td>'.$type.'</td>';
 							$h .= '<td>'.\util\TextUi::money($eHistory['amount']).'</td>';
 							$h .= '<td>'.self::p('paymentStatus')->values[$eHistory['paymentStatus']].'</td>';
-							$h .= '<td>'.\util\DateUi::numeric($eHistory['paidAt'] ?? $eHistory['createdAt']).'</td>';
+							$h .= '<td>'.\util\DateUi::numeric($eHistory['paidAt'] ?? $eHistory['updatedAt']).'</td>';
 						$h .= '</tr>';
 					}
 
@@ -46,15 +50,23 @@ class HistoryUi {
 			'paymentStatus' => s("Statut"),
 			'membership' => s("Année"),
 			'amount' => s("Montant"),
-			'paidAt' => s("Adhésion du"),
+			'paidAt' => s("Payé le"),
+			'type' => s("Type"),
 		]);
 
 		switch($property) {
 
+			case 'type' :
+				$d->values = [
+					History::DONATION => s("Don"),
+					History::MEMBERSHIP => s("Adhésion"),
+				];
+				break;
+
 			case 'paymentStatus' :
 				$d->values = [
 					History::INITIALIZED => s("Paiement initialisé"),
-					History::SUCCESS => s("Payé"),
+					History::SUCCESS => s("Paiement terminé"),
 					History::FAILURE => s("Paiement en échec"),
 					History::EXPIRED => s("Paiement expiré"),
 				];

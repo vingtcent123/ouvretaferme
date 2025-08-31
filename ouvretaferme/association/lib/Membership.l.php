@@ -3,6 +3,14 @@ namespace association;
 
 class MembershipLib {
 
+	private static function getProductName(string $type) {
+
+		return match($type) {
+			History::MEMBERSHIP => new AssociationUi()->getMembershipProductName(),
+			History::DONATION => new AssociationUi()->getProductDonationName(),
+		};
+
+	}
 	public static function expires(): void {
 
 		$ccHistory = History::model()
@@ -35,7 +43,7 @@ class MembershipLib {
 		
 	}
 
-	public static function createPayment(\farm\Farm $eFarm): string {
+	public static function createPayment(\farm\Farm $eFarm, string $type): string {
 
 		$eFarm->expects(['id', 'siret']);
 
@@ -43,11 +51,19 @@ class MembershipLib {
 
 		$amount = POST('amount', 'int');
 
-		if(empty(POST('terms'))) {
-			\Fail::log('Membership::terms');
+		if($type === History::MEMBERSHIP) {
+
+			if($amount === 0 or $amount < \Setting::get('association\membershipFee')) {
+				\Fail::log('Membership::amountMembership');
+			}
+
+			if(empty(POST('terms'))) {
+				\Fail::log('Membership::terms');
+			}
+
 		}
 
-		if($amount === NULL or $amount < \Setting::get('association\membershipFee')) {
+		if($type === History::DONATION and $amount === 0) {
 			\Fail::log('Membership::amount');
 		}
 
@@ -65,27 +81,13 @@ class MembershipLib {
 			'price_data' => [
 				'currency' => 'EUR',
 				'product_data' => [
-					'name' => new AssociationUi()->getProductName(),
+					'name' => self::getProductName($type),
 				],
-				'unit_amount' => (\Setting::get('association\membershipFee') * 100),
+				'unit_amount' => ($amount * 100),
 			]
 		];
 
-		if($amount > \Setting::get('association\membershipFee')) {
-
-			$items[] = [
-				'quantity' => 1,
-				'price_data' => [
-					'currency' => 'EUR',
-					'product_data' => [
-						'name' => new AssociationUi()->getProductDonationName(),
-					],
-					'unit_amount' => (($amount - \Setting::get('association\membershipFee')) * 100),
-				]
-			];
-		}
-
-		$successUrl = AssociationUi::confirmationUrl($eFarm);
+		$successUrl = AssociationUi::confirmationUrl($eFarm, $type);
 		$cancelUrl = AssociationUi::url($eFarm);
 
 		$arguments = [
@@ -100,11 +102,12 @@ class MembershipLib {
 		];
 
 		$stripeSession = \payment\StripeLib::createCheckoutSession($eStripeFarm, $arguments);
-		$membershipYear = date('Y');
+		$membershipYear = $type === History::MEMBERSHIP ? date('Y') : NULL;
 
 		$eHistory = History::model()
 			->select(History::getSelection())
 			->whereFarm($eFarm)
+			->whereType($type)
 			->whereMembership($membershipYear)
 			->wherePaymentStatus(History::INITIALIZED)
 			->get();
@@ -112,6 +115,7 @@ class MembershipLib {
 		if($eHistory->empty()) {
 
 			$eHistory = new History([
+				'type' => $type,
 				'farm' => $eFarm,
 				'checkoutId' => $stripeSession['id'],
 				'amount' => $amount,
@@ -128,6 +132,7 @@ class MembershipLib {
 					'checkoutId' => $stripeSession['id'],
 					'amount' => $amount,
 					'paymentStatus' => History::INITIALIZED,
+					'updatedAt' => new \Sql('NOW()'),
 				]
 			);
 
@@ -150,7 +155,7 @@ class MembershipLib {
 			case 'payment_intent.partially_funded' :
 			case 'payment_intent.payment_failed' :
 			case 'payment_intent.canceled':
-				self::paymentFailed($eHistory, $event);
+				self::paymentFailed($event);
 				break;
 
 			case 'payment_intent.succeeded' :
@@ -161,7 +166,7 @@ class MembershipLib {
 
 	}
 
-	public static function paymentFailed(History $eHistory, array $event): void {
+	public static function paymentFailed(array $event): void {
 
 		$object = $event['data']['object'];
 
@@ -171,9 +176,6 @@ class MembershipLib {
 
 	}
 
-	/**
-	 * Validation d'un paiement par carte bancaire
-	 */
 	public static function paymentSucceeded(History $eHistory, array $event): void {
 
 		$object = $event['data']['object'];
@@ -182,27 +184,27 @@ class MembershipLib {
 		$amountExpected = (int)round($eHistory['amount'] * 100);
 
 		if($amountReceived !== $amountExpected) {
-			trigger_error('Amount received '.($object['amount_received'] / 100).' different from amount expected '.($eHistory['amount']).' in membership #'.$eHistory['id'].' (event #'.$object['id'].')', E_USER_WARNING);
+			trigger_error('Amount received '.($object['amount_received'] / 100).' different from amount expected '.($eHistory['amount']).' in history #'.$eHistory['id'].' (event #'.$object['id'].')', E_USER_WARNING);
 			return;
 		}
 
 		History::model()->beginTransaction();
 
-		HistoryLib::updateByPaymentIntentId($object['id'], [
-			'paymentStatus' => \selling\Payment::SUCCESS,
-			'paidAt' => new \Sql('NOW()'),
-		]);
-
 		$eFarm = $eHistory['farm'];
-		$eFarm['membership'] = TRUE;
-		\farm\FarmLib::update($eFarm, ['membership']);
+
+		if($eHistory['type'] === History::MEMBERSHIP) {
+
+			$eFarm['membership'] = TRUE;
+			\farm\FarmLib::update($eFarm, ['membership']);
+
+		}
 
 		$eFarmOtf = \farm\FarmLib::getById(\Setting::get('association\farm'));
 
-		// Création d'une vente
-		$eCustomer = \selling\CustomerLib::getBySiret($eFarmOtf, $eFarm['siret']);
 		$ePaymentMethod = \payment\MethodLib::getByFqn(\payment\MethodLib::ONLINE_CARD);
 
+		// Récupération ou création du customer
+		$eCustomer = \selling\CustomerLib::getBySiret($eFarmOtf, $eFarm['siret']);
 		if($eCustomer->empty()) {
 
 			$eUser = \user\ConnectionLib::getOnline();
@@ -228,6 +230,7 @@ class MembershipLib {
 
 		}
 
+		// Création d'une vente et du produit
 		$eSale = new \selling\Sale([
 			'farm' => $eFarmOtf,
 			'customer'=> $eCustomer,
@@ -245,45 +248,31 @@ class MembershipLib {
 		]);
 		\selling\SaleLib::create($eSale);
 
-		$cItem = new \Collection(
-			[
-				new \selling\Item([
-					'farm' => $eFarm,
-					'sale' => $eSale,
-					'name' => new \association\AssociationUi()->getProductName(),
-					'customer' => $eCustomer,
-					'unitPrice' => \Setting::get('association\membershipFee'),
-					'number' => 1,
-					'product' => new \selling\Product(),
-					'locked' => \selling\Item::PRICE,
-					'packaging' => NULL,
-				]),
-			]
-		);
+		$eItem = new \selling\Item([
+				'farm' => $eFarm,
+				'sale' => $eSale,
+				'name' => self::getProductName($eHistory['type']),
+				'customer' => $eCustomer,
+				'unitPrice' => $eHistory['amount'],
+				'number' => 1,
+				'product' => new \selling\Product(),
+				'locked' => \selling\Item::PRICE,
+				'packaging' => NULL,
+		]);
 
-		if($eHistory['amount'] > \Setting::get('association\membershipFee')) {
-			$cItem->append(
-				new \selling\Item([
-					'farm' => $eFarm,
-					'sale' => $eSale,
-					'name' => new \association\AssociationUi()->getProductDonationName(),
-					'customer' => $eCustomer,
-					'unitPrice' => ($eHistory['amount'] - \Setting::get('association\membershipFee')),
-					'number' => 1,
-					'product' => new \selling\Product(),
-					'locked' => \selling\Item::PRICE,
-					'packaging' => NULL,
-				])
-			);
-		}
-
-		\selling\ItemLib::createCollection($eSale, $cItem);
+		\selling\ItemLib::create($eItem);
 
 		$eSale['paymentStatus'] = \selling\Sale::PAID;
 		$eSale['paymentMethod'] = $ePaymentMethod;
 		\selling\Sale::model()
 			->select(['paymentStatus', 'paymentMethod'])
 			->update($eSale);
+
+		HistoryLib::updateByPaymentIntentId($object['id'], [
+			'paymentStatus' => \selling\Payment::SUCCESS,
+			'paidAt' => new \Sql('NOW()'),
+			'sale' => $eSale,
+		]);
 
 		History::model()->commit();
 	}
