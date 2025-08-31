@@ -71,12 +71,10 @@ main {
 }
 
 footer {
-	text-align: center;
 	font-weight: lighter;
 	font-size: 0.9rem;
     margin-top: 2rem;
     margin-bottom: 2rem;
-	font-family: "Open Sans";
 }
 
 @media (max-width: 767px) {

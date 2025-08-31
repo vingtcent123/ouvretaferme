@@ -401,11 +401,9 @@ ul.website-menu a.selected {
 }
 
 footer {
-	text-align: center;
 	font-weight: lighter;
 	font-size: 0.9rem;
     margin: 2rem;
-	font-family: "Open Sans";
 }
 
 div.website-menu-news-wrapper {
