@@ -303,11 +303,6 @@ Route::register([
 			'priority' => 5,
 			'route' => ['presentation', 'invitation'],
 		],
-		'/presentation/legal' => [
-			'request' => 'main/index',
-			'priority' => 5,
-			'route' => ['presentation', 'legal'],
-		],
 		'/presentation/producteur' => [
 			'request' => 'main/index',
 			'priority' => 5,

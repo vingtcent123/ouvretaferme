@@ -400,31 +400,6 @@ new AdaptativeView('/presentation/formations', function($data, MainTemplate $t) 
 
 });
 
-new AdaptativeView('/presentation/legal', function($data, MainTemplate $t) {
-
-	$t->title = s("Mentions légales");
-	$t->metaNoindex = TRUE;
-	$t->template = 'home-legal';
-
-	Asset::css('main', 'font-ptserif.css');
-
-	Asset::css('main', 'home.css');
-
-	$t->header = '<h1>'.s("Mentions légales").'</h1>';
-
-	echo '<h2>'.s("Directeur de la publication").'</h2>';
-	echo '<p>'.s("Un maraîcher (ancien informaticien) du Puy-de-Dôme.").'</p>';
-
-	echo '<br/>';
-
-	echo '<h2>'.s("Hébergeur").'</h2>';
-	echo '<ul>';
-		echo '<li>'.s("Siège social : 2 rue Kellermann, 59100 Roubaix").'</li>';
-		echo '<li>'.s("Numéro de téléphone : 09 72 10 10 07").'</li>';
-	echo '</ul>';
-
-});
-
 new AdaptativeView('/presentation/service', function($data, MainTemplate $t) {
 
 	$t->title = s("Conditions d'utilisation du service");
