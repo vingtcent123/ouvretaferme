@@ -12,10 +12,10 @@ class HistoryUi {
 				$h .= '<thead>';
 
 					$h .= '<tr>';
-						$h .= '<th>'.s("Type").'</th>';
-						$h .= '<th>'.s("Montant").'</th>';
-						$h .= '<th>'.s("Statut").'</th>';
 						$h .= '<th>'.s("Date").'</th>';
+						$h .= '<th>'.s("Type").'</th>';
+						$h .= '<th class="text-end">'.s("Montant").'</th>';
+						$h .= '<th>'.s("Statut").'</th>';
 					$h .= '</tr>';
 
 				$h .= '</thead>';
@@ -29,10 +29,10 @@ class HistoryUi {
 							$type .= ' '.s('(année {year})', ['year' => $eHistory['membership']]);
 						}
 						$h .= '<tr>';
-							$h .= '<td>'.$type.'</td>';
-							$h .= '<td>'.\util\TextUi::money($eHistory['amount']).'</td>';
-							$h .= '<td>'.self::p('paymentStatus')->values[$eHistory['paymentStatus']].'</td>';
 							$h .= '<td>'.\util\DateUi::numeric($eHistory['paidAt'] ?? $eHistory['updatedAt']).'</td>';
+							$h .= '<td>'.$type.'</td>';
+							$h .= '<td class="text-end">'.\util\TextUi::money($eHistory['amount']).'</td>';
+							$h .= '<td>'.self::p('paymentStatus')->values[$eHistory['paymentStatus']].'</td>';
 						$h .= '</tr>';
 					}
 

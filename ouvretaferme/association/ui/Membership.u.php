@@ -66,23 +66,7 @@ class MembershipUi {
 						$h .= s("Vous pouvez choisir le montant de votre adhésion, le montant minimum pour une année civile étant de <b>{amount}</b>. Le règlement s'effectue par un paiement en ligne avec {icon} Stripe après sélection du montant et acceptation des statuts et du règlement intérieur.", ['icon' => \Asset::icon('stripe'), 'amount' => \util\TextUi::money($fee, precision: 0)]);
 					$h .= '</p>';
 
-					$h .= '<div class="association-amount-container">';
-						for($amount = $fee; $amount <= $fee + 40; $amount += 20) {
-							$h .= '<a class="association-amount-block" data-amount="'.$amount.'" onclick="Association.select(this);">'.\util\TextUi::money($amount, precision: 0).'</a>';
-						}
-						$h .= '<div>';
-							$h .= '<div class="association-amount-custom-label">'.s("Montant personnalisé").'</div>';
-							$h .= $form->number('custom-amount', NULL, [
-								'class' => 'association-amount-block',
-								'data-label' => s("Montant personnalisé"),
-								'min' => \Setting::get('association\membershipFee'),
-								'onfocus' => 'Association.customFocus(this);',
-								'onfocusout' => 'Association.validateCustom(this);',
-							]);
-						$h .= '</div>';
-					$h .= '</div>';
-
-					$h .= $form->hidden('amount');
+					$h .= $this->amountBlocks($form, [$fee, $fee + 20, $fee + 40]);
 
 					$h .= $form->checkbox('terms', 'yes', [
 						'mandatory' => TRUE,
@@ -120,22 +104,7 @@ class MembershipUi {
 					$h .= s("Vous pouvez soutenir l'association Ouvretaferme avec un don ici. Le don sera effectué par un paiement par {icon} Stripe.", ['icon' => \Asset::icon('stripe')]);
 				$h .= '</p>';
 
-				$h .= '<div class="association-amount-container">';
-					for($amount = 10; $amount <= 30; $amount += 10) {
-						$h .= '<a class="association-amount-block" data-amount="'.$amount.'" onclick="Association.select(this);">'.\util\TextUi::money($amount, precision: 0).'</a>';
-					}
-					$h .= '<div>';
-						$h .= '<div class="association-amount-custom-label">'.s("Montant personnalisé").'</div>';
-						$h .= $form->number('custom-amount', NULL, [
-							'class' => 'association-amount-block',
-							'data-label' => s("Montant personnalisé"),
-							'onfocus' => 'Association.customFocus(this);',
-							'onfocusout' => 'Association.validateCustom(this);',
-						]);
-					$h .= '</div>';
-				$h .= '</div>';
-
-				$h .= $form->hidden('amount');
+				$h.= $this->amountBlocks($form, [10, 20, 30]);
 
 				$h .= $form->inputGroup($form->submit(s("Je donne")), ['class' => 'mt-1']);
 
@@ -144,6 +113,29 @@ class MembershipUi {
 			$h .= '</div>';
 
 		$h .= '</div>';
+
+		return $h;
+
+	}
+
+	private function amountBlocks(\util\FormUi $form, array $amounts): string {
+
+		$h = '<div class="association-amount-container">';
+			foreach($amounts as $amount) {
+				$h .= '<a class="association-amount-block" data-amount="'.$amount.'" onclick="Association.select(this);">'.\util\TextUi::money($amount, precision: 0).'</a>';
+			}
+			$h .= '<div>';
+				$h .= '<div class="association-amount-custom-label">'.s("Montant personnalisé").'</div>';
+				$h .= $form->number('custom-amount', NULL, [
+					'class' => 'association-amount-block',
+					'data-label' => s("Montant personnalisé"),
+					'onfocus' => 'Association.customFocus(this);',
+					'onfocusout' => 'Association.validateCustom(this);',
+				]);
+			$h .= '</div>';
+		$h .= '</div>';
+
+		$h .= $form->hidden('amount');
 
 		return $h;
 

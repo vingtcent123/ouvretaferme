@@ -49,23 +49,8 @@ class MembershipLib {
 
 		$fw = new \FailWatch();
 
-		$amount = POST('amount', 'int');
-
-		if($type === History::MEMBERSHIP) {
-
-			if($amount === 0 or $amount < \Setting::get('association\membershipFee')) {
-				\Fail::log('Membership::amountMembership');
-			}
-
-			if(empty(POST('terms'))) {
-				\Fail::log('Membership::terms');
-			}
-
-		}
-
-		if($type === History::DONATION and $amount === 0) {
-			\Fail::log('Membership::amount');
-		}
+		$eHistory = new History();
+		$eHistory->build(['type', 'amount', 'terms'], $_POST + ['type' => $type]);
 
 		$fw->validate();
 
@@ -83,7 +68,7 @@ class MembershipLib {
 				'product_data' => [
 					'name' => self::getProductName($type),
 				],
-				'unit_amount' => ($amount * 100),
+				'unit_amount' => ($eHistory['amount'] * 100),
 			]
 		];
 
@@ -104,21 +89,19 @@ class MembershipLib {
 		$stripeSession = \payment\StripeLib::createCheckoutSession($eStripeFarm, $arguments);
 		$membershipYear = $type === History::MEMBERSHIP ? date('Y') : NULL;
 
-		$eHistory = History::model()
+		$eHistoryDb = History::model()
 			->select(History::getSelection())
 			->whereFarm($eFarm)
-			->whereType($type)
+			->whereType($eHistory['type'])
 			->whereMembership($membershipYear)
 			->wherePaymentStatus(History::INITIALIZED)
 			->get();
 
-		if($eHistory->empty()) {
+		if($eHistoryDb->empty()) {
 
-			$eHistory = new History([
-				'type' => $type,
+			$eHistory->merge([
 				'farm' => $eFarm,
 				'checkoutId' => $stripeSession['id'],
-				'amount' => $amount,
 				'membership' => $membershipYear,
 				'paymentStatus' => History::INITIALIZED,
 			]);
@@ -130,7 +113,6 @@ class MembershipLib {
 			History::model()->update(
 				$eHistory, [
 					'checkoutId' => $stripeSession['id'],
-					'amount' => $amount,
 					'paymentStatus' => History::INITIALIZED,
 					'updatedAt' => new \Sql('NOW()'),
 				]
