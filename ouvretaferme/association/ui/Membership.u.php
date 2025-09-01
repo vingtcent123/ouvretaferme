@@ -116,7 +116,7 @@ class MembershipUi {
 
 				$h .= $form->checkbox('terms', 'yes', [
 					'mandatory' => TRUE,
-					'callbackLabel' => fn($input) => $input.'  '.$form->addon(s("J'accepte les <linkStatus>statuts</linkStatus> et le <linkRules>règlement intérieur</linkRules> de l'association", ['linkStatus' => '<a href="">', 'linkRules' => '<a href="">']))
+					'callbackLabel' => fn($input) => $input.'  '.$form->addon(s("J'accepte les <linkStatus>statuts</linkStatus> et le <linkRules>règlement intérieur</linkRules> de l'association", ['linkStatus' => '<a data-ajax-navigation="never" target="_blank" href="'.\Asset::getPath('association', 'document/statuts.pdf').'">', 'linkRules' => '<a data-ajax-navigation="never" target="_blank" href="'.\Asset::getPath('association', 'document/reglement_interieur.pdf').'">']))
 				]);
 
 				$h .= $form->inputGroup($form->submit(s("J'adhère"), ['class' => 'btn btn-primary btn-lg']), ['class' => 'mt-2']);

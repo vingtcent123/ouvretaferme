@@ -176,8 +176,6 @@ Cordialement,
 					$h .= '<thead>';
 						$h .= '<tr>';
 							$h .= '<td class="pdf-document-item-header">'.s("Désignation").'</td>';
-							$h .= '<td class="pdf-document-item-header pdf-document-number">'.s("Quantité").'</td>';
-							$h .= '<td class="pdf-document-item-header pdf-document-unit-price">'.s("Prix unitaire").'</td>';
 							$h .= '<td class="pdf-document-item-header pdf-document-price">'.s("Montant").'</td>';
 						$h .= '</tr>';
 					$h .= '</thead>';
@@ -190,12 +188,10 @@ Cordialement,
 									History::DONATION => s("Don"),
 								};
 							$h .= '</td>';
-							$h .= '<td class="pdf-document-number">1</td>';
-							$h .= '<td class="pdf-document-unit-price">'.\util\TextUi::money($eHistory['amount']).'</td>';
 							$h .= '<td class="pdf-document-price">'.\util\TextUi::money($eHistory['amount']).'</td>';
 						$h .= '</tr>';
 						$h .= '<tr class="pdf-document-item-total">';
-						$h .= '<td colspan="4">';
+						$h .= '<td colspan="2">';
 							$h .= '<div class="pdf-document-total">';
 								$h .= '<div class="pdf-document-total-label">Total</div>';
 								$h .= '<div class="pdf-document-total-value">'.\util\TextUi::money($eHistory['amount']).'</div>';
