@@ -98,7 +98,7 @@ class VatDeclarationUi {
 		$dialogClose = $form->close();
 
 		$footer = '</div>'
-			.'<div class="create-operation-button-add">'.$form->submit(s("Créer ma déclaration")).'</div>'
+			.'<div class="operation-create-button-add">'.$form->submit(s("Créer ma déclaration")).'</div>'
 		.'</div>';
 
 		return new \Panel(
