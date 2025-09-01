@@ -9,11 +9,17 @@ class MembershipUi {
 		\Asset::js('association', 'association.js');
 
 	}
-	public function membership(): string {
+	public function membership(\Collection $cHistory): string {
 
-		$h = '<div class="util-success">';
-			$h .= s("Vous avez adhéré à l'association pour l'année {year}. Merci !", ['year' => date('Y')]);
+		$h = '<h2>'.s("Adhésion de ma ferme").'</h2>';
+
+		$h .= '<div class="util-block">';
+
+			$h .= '<p>'.s("Vous avez adhéré à l'association pour l'année {year}. Merci !", ['year' => date('Y')]).'</p>';
+
 		$h .= '</div>';
+
+		$h .= '<a class="btn btn-outline-primary" data-ajax-navigation="never" href="/association/pdf:document?id='.$cHistory->first()['id'].'">'.\Asset::icon('download').' '.s("Télécharger mon attestation de paiement").'</a>';
 
 		return $h;
 

@@ -30,7 +30,7 @@ new AdaptativeView('/ferme/{farm}/adherer', function($data, FarmTemplate $t) {
 
 	} else {
 
-		echo new \association\MembershipUi()->membership();
+		echo new \association\MembershipUi()->membership($data->cHistory);
 		echo new \association\MembershipUi()->donateForm($data->eFarm, TRUE);
 
 	}
