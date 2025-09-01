@@ -226,9 +226,9 @@ class MainTemplate extends BaseTemplate {
 						$h .= '<div>';
 							$h .= '<h4>'.s("Usage").'</h4>';
 							$h .= '<a href="/presentation/faq">'.s("Questions fréquentes").'</a><br/>';
-							$h .= '<a href="https://asso.ouvretaferme.org/mentions-legales">'.s("Mentions légales").'</a><br/>';
+							$h .= '<a href="'.\Setting::get('association\url').'/mentions-legales">'.s("Mentions légales").'</a><br/>';
 							$h .= '<a href="/presentation/service">'.s("Conditions d'utilisation").'</a><br/>';
-							$h .= '<a href="https://asso.ouvretaferme.org/nous-contacter">'.s("Nous contacter").'</a><br/>';
+							$h .= '<a href="'.\Setting::get('association\url').'/nous-contacter">'.s("Nous contacter").'</a><br/>';
 						$h .= '</div>';
 					$h .= '</div>';
 				$h .= '</div>';

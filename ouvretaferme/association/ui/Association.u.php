@@ -46,14 +46,13 @@ class AssociationUi {
 
 		\Asset::js('association', 'association.js');
 
-		//$h = '<div class="util-block" onrender="Association.cleanArgs();">';
-		$h = '<div class="util-block">';
+		$h = '<div class="util-block" onrender="Association.cleanArgs();">';
 
 			$h .= '<p>'.s("Nous avons bien reçu votre don de {amount}.", ['amount' => '<b>'.\util\TextUi::money($eHistory['amount'], precision: 0).'</b>']).'</p>';
 			$h .= '<p>'.s("Vous allez recevoir dans quelques minutes votre attestation de paiement par e-mail à l'adresse {email}.", ['email' => '<b>'.$eHistory['customer']['invoiceEmail'].'</b>']).'</p>';
 			$h .= '<p class="mt-2 mb-1">'.s("Toute l'équipe de Ouvretaferme vous remercie pour votre générosité.").'</p>';
 
-			$h .= '<a class="btn btn-outline-primary" href="https://asso.ouvretaferme.org/">'.s("Consulter le site de l'association").'</a>';
+			$h .= '<a class="btn btn-outline-primary" href="'.\Setting::get('association\url').'">'.s("Consulter le site de l'association").'</a>';
 
 		$h .= '</div>';
 
