@@ -348,12 +348,18 @@ body[data-template~="farm"] main .container.farm-template-main-title.farm-templa
 	}
 
 	body[data-template~="farm"] .nav-title-member-link {
-		border: 1px solid white;
+		background-color: #fff1;
 		border-radius: var(--radius);
 		text-align: center;
-		padding: 0.25rem 0.5rem;
+		padding: 0.4rem 0.5rem;
 		font-size: 0.9rem;
 		letter-spacing: 0.5px;
+	}
+
+	body[data-template~="farm"] .nav-title-member-link img {
+		height: 1.66rem;
+		width: auto;
+		margin-top: -2px;
 	}
 
 	#farm-nav {
