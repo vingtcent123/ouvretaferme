@@ -18,6 +18,13 @@ new Page(function($data) {
 
 		throw new ViewAction($data);
 
+	})
+	->get('/ferme/{farm}/donner', function($data) {
+
+		$data->eFarm = \farm\FarmLib::getById(INPUT('farm'))->validate('canManage');
+
+		throw new ViewAction($data);
+
 	});
 
 new Page()

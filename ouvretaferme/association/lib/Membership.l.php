@@ -230,7 +230,7 @@ class MembershipLib {
 		}
 
 		$successUrl = AssociationUi::confirmationUrl($eHistory, $type, POST('from'));
-		$cancelUrl = AssociationUi::url($eFarm);
+		$cancelUrl = $eFarm->empty() ? POST('from') : AssociationUi::url($eFarm);
 
 		$arguments = [
 			'payment_intent_data' => [

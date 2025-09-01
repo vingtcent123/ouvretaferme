@@ -8,17 +8,21 @@ new AdaptativeView('/ferme/{farm}/adherer', function($data, FarmTemplate $t) {
 	$t->mainTitle = Asset::image('main', 'logo.png', ['style' => 'height: 3rem; width: auto; margin-bottom: 0.5rem']).'<h1>'.$t->title.'</h1>';
 
 	if(get_exists('membership')) {
+
 		echo '<div class="util-box-success mb-2">';
 			echo '<h4>'.s("Votre adhésion a bien été prise en compte !").'</h4>';
 			echo '<div>'.s("Toute l'équipe de Ouvretaferme vous souhaite la bienvenue et vous remercie pour votre engagement 🥳").'</div>';
 		echo '</div>';
+
 	}
 
 	if(get_exists('donation')) {
+
 		echo '<div class="util-box-success mb-2">';
 			echo '<h4>'.s("Nous avons bien reçu votre don !").'</h4>';
 			echo '<div>'.s("Toute l'équipe de Ouvretaferme vous remercie pour votre générosité 🥳").'</div>';
 		echo '</div>';
+
 	} else {
 
 		echo new \association\MembershipUi()->getMembership($data->eFarm, $data->hasJoinedForNextYear);
@@ -30,7 +34,6 @@ new AdaptativeView('/ferme/{farm}/adherer', function($data, FarmTemplate $t) {
 		if($data->eFarm->isLegalComplete()) {
 
 			echo new \association\MembershipUi()->getJoinForm($data->eFarm, $data->eUser);
-			echo new \association\MembershipUi()->getDonateForm($data->eFarm, FALSE);
 
 		} else {
 
@@ -56,8 +59,6 @@ new AdaptativeView('/ferme/{farm}/adherer', function($data, FarmTemplate $t) {
 
 		}
 
-		echo new \association\MembershipUi()->getDonateForm($data->eFarm, date('m-d') < Setting::get('association\canJoinForNextYearFrom') or $data->hasJoinedForNextYear);
-
 	}
 
 	if($data->cHistory->count() > 0) {
@@ -78,5 +79,11 @@ new AdaptativeView('adherer', function ($data, MainTemplate $t) {
 	echo '<h3>'.s("Avec quelle ferme souhaitez-vous adhérer à l'association Ouvretaferme ?").'</h3>';
 
 	echo new \association\MembershipUi()->getMyFarms($data->cFarmUser);
+
+});
+
+new AdaptativeView('/ferme/{farm}/donner', function($data, PanelTemplate $t) {
+
+	return new \association\MembershipUi()->getDonateForm($data->eFarm);
 
 });

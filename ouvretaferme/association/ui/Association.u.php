@@ -38,25 +38,41 @@ class AssociationUi {
 
 		if($eHistory->empty()) {
 
-			return '<div class="util-block">'.s("Toute l'équipe de Ouvretaferme vous remercie pour votre générosité. Vous allez recevoir dans quelques minutes votre reçu par e-mail à l'adresse indiquée lorsque vous avez rempli votre don.").'</div>';
+			return '<div class="util-box-success">'.s("Toute l'équipe de Ouvretaferme vous remercie pour votre générosité. Vous allez recevoir dans quelques minutes votre reçu par e-mail à l'adresse indiquée lorsque vous avez rempli votre don.").'</div>';
 
 		}
 
 		\Asset::js('association', 'association.js');
 
-		$h = '<div class="util-block" onrender="Association.cleanArgs();">';
+		$h = '<div class="util-box-success" onrender="Association.cleanArgs();">';
 
 			$h .= '<p>'.s("Nous avons bien reçu votre don de {amount}.", ['amount' => '<b>'.\util\TextUi::money($eHistory['amount'], precision: 0).'</b>']).'</p>';
 			$h .= '<p>'.s("Vous allez recevoir dans quelques minutes votre attestation de paiement par e-mail à l'adresse {email}.", ['email' => '<b>'.$eHistory['customer']['invoiceEmail'].'</b>']).'</p>';
-			$h .= '<p class="mt-2 mb-1">'.s("Toute l'équipe de Ouvretaferme vous remercie pour votre générosité.").'</p>';
-
-			$h .= '<a class="btn btn-outline-primary" href="'.\Setting::get('association\url').'">'.s("Consulter le site de l'association").'</a>';
+			$h .= s("Toute l'équipe de Ouvretaferme vous remercie pour votre générosité 🥳");
 
 		$h .= '</div>';
 
 
+		$h .= '<a class="btn btn-outline-primary" href="'.\Setting::get('association\url').'">'.s("Consulter le site de l'association").'</a>';
+
 
 		return $h;
+
+	}
+
+	public function donationIntroduction(): string {
+
+		$h = '<div class="util-block-secondary">'.s("Tout d'abord, un grand merci pour votre démarche !").'</div>';
+
+		$h .= '<div class="util-summarize mb-2">';
+
+			$h .= '<p>'.s("Ouvretaferme est un logiciel mis à disposition gratuitement pour les producteurs et les productrices en agriculture biologique et développé entièrement bénévolement. Vos dons sont précieux pour le maintenir et le faire vivre.").'</p>';
+
+			$h .= '<a target="_blank" class="btn btn-outline-primary" href="'.\Setting::get('association\url').'/nous-soutenir">'.s("Lire plus d'informations sur l'association").' '.\Asset::icon('box-arrow-up-right').'</a>';
+
+		$h .= '</div>';
+
+				return $h;
 
 	}
 
@@ -67,23 +83,33 @@ class AssociationUi {
 
 		$h = '<div id="association-donate-form-container">';
 
-				$form = new \util\FormUi();
+			$form = new \util\FormUi();
+
+			if($eWebsite->empty()) {
+				$h .= $form->openAjax('/association/donation:doCreatePayment', ['id' => 'association-donate']);
+			} else {
+				$h .= $form->openAjax(\website\WebsiteUi::url($eWebsite, '/:doDonate'), ['id' => 'website-donate', 'onrender' => 'Association.cleanArgs();']);
+			}
 
 				if($eWebsite->empty()) {
-					$h .= $form->openAjax('/association/donation:doCreatePayment', ['id' => 'association-donate']);
-				} else {
-					$h .= $form->openAjax(\website\WebsiteUi::url($eWebsite, '/:doDonate'), ['id' => 'website-donate', 'onrender' => 'Association.cleanArgs();']);
+					$h .= '<h3>'.s("Vos informations personnelles").'</h3>';
+
+					$h .= '<div class="util-annotation mb-1">'.s("Pour éditer le reçu de votre don, nous vous demandons quelques informations personnelles. Le paiement s'effectuera sur {icon} Stripe à l'étape suivante.", ['icon' => \Asset::icon('stripe')]).'</div>';
 				}
 
-					$h .= $form->hidden('from', LIME_URL);
-					$h .= $form->dynamicGroups($eUser, ['email', 'firstName', 'lastName', 'phone']);
-					$h .= $form->addressGroup(s("Adresse"), NULL, $eUser);
+				$h .= $form->hidden('from', LIME_URL);
+				$h .= $form->dynamicGroups($eUser, ['email', 'firstName', 'lastName', 'phone']);
+				$h .= $form->addressGroup(s("Adresse"), NULL, $eUser);
 
-					$h .= new MembershipUi()->getAmountBlocks($form, [10, 20, 30]);
+				if($eWebsite->empty()) {
+					$h .= '<h3>'.s("Montant de votre don").'</h3>';
+				}
 
-					$h .= $form->inputGroup($form->submit(s("Je donne")), ['class' => 'mt-1']);
+				$h .= new MembershipUi()->getAmountBlocks($form, [10, 20, 30]);
 
-				$h .= $form->close();
+				$h .= $form->inputGroup($form->submit(s("Je donne"), ['class' => 'btn btn-primary btn-lg']), ['class' => 'mt-1']);
+
+			$h .= $form->close();
 
 		$h .= '</div>';
 

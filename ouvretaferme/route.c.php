@@ -53,6 +53,11 @@ Route::register([
 			'priority' => 5,
 			'route' => ['ferme', '{farm}', 'adherer'],
 		],
+		'/ferme/{farm}/donner' => [
+			'request' => 'association/membership',
+			'priority' => 5,
+			'route' => ['ferme', '{farm}', 'donner'],
+		],
 		'/ferme/{id}/analyses/cultures' => [
 			'request' => 'farm/index',
 			'priority' => 5,

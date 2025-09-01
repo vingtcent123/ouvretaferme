@@ -35,7 +35,7 @@ class MembershipUi {
 
 		if($eFarm['membership'] === FALSE) {
 			$h .= '<p>';
-				$h .= '<a onclick="Association.showDonationForm();" class="btn btn-outline-secondary">'.s("Je veux plutôt faire un don").'</a>';
+				$h .= '<a href="'.\farm\FarmUi::url($eFarm).'/donner" class="btn btn-outline-secondary">'.s("Je veux plutôt faire un don").'</a>';
 			$h .= '</p>';
 		}
 
@@ -119,9 +119,7 @@ class MembershipUi {
 					'callbackLabel' => fn($input) => $input.'  '.$form->addon(s("J'accepte les <linkStatus>statuts</linkStatus> et le <linkRules>règlement intérieur</linkRules> de l'association", ['linkStatus' => '<a href="">', 'linkRules' => '<a href="">']))
 				]);
 
-				$h .= '<div class="mt-2">';
-					$h .= $form->submit(s("J'adhère !"));
-				$h .= '</div>';
+				$h .= $form->inputGroup($form->submit(s("J'adhère"), ['class' => 'btn btn-primary btn-lg']), ['class' => 'mt-2']);
 
 			$h .= $form->close();
 
@@ -131,11 +129,9 @@ class MembershipUi {
 
 	}
 
-	public function getDonateForm(\farm\Farm $eFarm, bool $isVisible): string {
+	public function getDonateForm(\farm\Farm $eFarm): \Panel {
 
-		$h = '<div id="association-donate-form-container" class="'.($isVisible ? '' : 'hide').'">';
-
-			$h .= '<h2>'.s("Faire un don").'</h2>';
+		$h = '<div id="association-donate-form-container">';
 
 			$form = new \util\FormUi();
 
@@ -149,13 +145,17 @@ class MembershipUi {
 
 				$h.= $this->getAmountBlocks($form, [10, 20, 30]);
 
-				$h .= $form->inputGroup($form->submit(s("Je donne")), ['class' => 'mt-1']);
+				$h .= $form->inputGroup($form->submit(s("Je donne"), ['class' => 'btn btn-primary btn-lg']), ['class' => 'mt-1']);
 
 			$h .= $form->close();
 
 		$h .= '</div>';
 
-		return $h;
+		return new \Panel(
+			id: 'panel-association-donation',
+			title: s("Soutenir l'association Ouvretaferme avec un don"),
+			body: $h
+		);
 
 	}
 

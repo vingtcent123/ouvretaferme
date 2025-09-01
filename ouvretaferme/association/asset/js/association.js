@@ -39,13 +39,6 @@ class Association {
 
 	}
 
-	static showDonationForm() {
-
-		qs('#association-join-form-container').hide();
-		qs('#association-donate-form-container').removeHide();
-
-	}
-
 	static cleanArgs() {
 
 		setTimeout(() => history.removeArgument('email'), 2500);
