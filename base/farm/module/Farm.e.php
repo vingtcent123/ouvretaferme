@@ -440,6 +440,41 @@ class Farm extends FarmElement {
 			->setCallback('legalEmail.empty', function(?string $email) {
 				return ($email !== NULL);
 			})
+			->setCallback('legalName.empty', function(?string $legalName) use($p) {
+				if($p->for !== 'legal') {
+					return TRUE;
+				}
+				return ($legalName !== NULL);
+			})
+			->setCallback('siret.empty', function(?string $siret) use($p) {
+				if($p->for !== 'legal') {
+					return TRUE;
+				}
+				return ($siret !== NULL);
+			})
+			->setCallback('legalCity.empty', function(?string $legalCity) use($p) {
+
+				if($p->for !== 'legal') {
+					return TRUE;
+				}
+
+				$fw = new \FailWatch();
+
+				if($this['legalStreet1'] === NULL) {
+					Farm::fail('legalStreet1.empty');
+				}
+
+				if($this['legalPostcode'] === NULL) {
+					Farm::fail('legalPostcode.empty');
+				}
+
+				if($legalCity === NULL) {
+					Farm::fail('legalCity.empty');
+				}
+
+				return $fw->ok();
+
+			})
 			->setCallback('placeLngLat.check', function(?array &$placeLngLat) {
 
 				$this->expects(['place']);
