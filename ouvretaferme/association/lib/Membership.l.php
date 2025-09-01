@@ -65,17 +65,21 @@ class MembershipLib {
 
 		} else {
 
-			$eUser = new \user\User(['visibility' => \user\User::PRIVATE]);
-
-			$email = cast($_POST['email'] ?? NULL, 'string');
-			if($email !== NULL) {
-				$eUser['email'] = $email;
-			}
+			$eUser = new \user\User(['visibility' => \user\User::PUBLIC]);
 
 			$fw = new \FailWatch();
 
+			if(\Filter::check('email', $_POST['email'])) {
+				$eUser['email'] = $_POST['email'];
+			} else {
+				\user\User::fail('email.check');
+			}
+
 			$eUser->build(['firstName', 'lastName', 'phone', 'street1', 'street2', 'postcode', 'city'], $_POST);
 
+			if($eUser['street1'] === NULL and $eUser['street2'] === NULL and $eUser['postcode'] === NULL and $eUser['city'] === NULL) {
+				\user\User::fail('address.check');
+			}
 			$fw->validate();
 
 			$eCustomer = \selling\Customer::model()
