@@ -36,7 +36,7 @@ class Deferral extends DeferralElement {
 
 				foreach($cFinancialYear as $eFinancialYear) {
 
-					if($date >= $eFinancialYear['startDate'] && $date <= $eFinancialYear['endDate']) {
+					if($date >= $eFinancialYear['startDate'] and $date <= $eFinancialYear['endDate']) {
 						return TRUE;
 					}
 

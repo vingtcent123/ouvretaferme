@@ -204,9 +204,9 @@ class CashflowUi {
 
 					$h .= '<td>';
 							if(
-								$eFinancialYearSelected['status'] === \account\FinancialYear::OPEN
-								&& $eCashflow['date'] <= $eFinancialYearSelected['endDate']
-								&& $eCashflow['date'] >= $eFinancialYearSelected['startDate']
+								$eFinancialYearSelected['status'] === \account\FinancialYear::OPEN and
+								$eCashflow['date'] <= $eFinancialYearSelected['endDate'] and
+								$eCashflow['date'] >= $eFinancialYearSelected['startDate']
 							) {
 								$h .= $this->getUpdate($eFarm, $eCashflow);
 							}

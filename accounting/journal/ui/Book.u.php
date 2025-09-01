@@ -55,22 +55,15 @@ class BookUi {
 		foreach($cOperation as $eOperation) {
 
 			if(
-				$currentAccountLabel !== NULL
-				&& $currentClass !== NULL
-				&& ($eOperation['class'] !== $currentClass
-				|| $eOperation['accountLabel'] !== $currentAccountLabel)
+				$currentAccountLabel !== NULL and $currentClass !== NULL and
+				($eOperation['class'] !== $currentClass  or $eOperation['accountLabel'] !== $currentAccountLabel)
 			) {
 
 				$h .= self::getSubTotal($currentAccountLabel, $debit, $credit);
 
 			}
 
-			if(
-				$currentAccountLabel === NULL
-				|| $currentClass === NULL
-				|| $eOperation['class'] !== $currentClass
-				|| $eOperation['accountLabel'] !== $currentAccountLabel
-			) {
+			if($currentAccountLabel === NULL or $currentClass === NULL or $eOperation['class'] !== $currentClass  or $eOperation['accountLabel'] !== $currentAccountLabel) {
 				$debit = 0;
 				$credit = 0;
 				$currentClass = $eOperation['class'];

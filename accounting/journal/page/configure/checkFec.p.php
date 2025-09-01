@@ -50,7 +50,7 @@ new Page()
 			$dates = [3, 9, 14, 15, 16]; // index des champs date
 			foreach ($dates as $i) {
 				$champ = $champs[$i];
-				if ($champ !== '' && !preg_match('/^\d{8}$/', $champ)) {
+				if ($champ !== '' and !preg_match('/^\d{8}$/', $champ)) {
 					$erreurs[] = "Ligne $nLigne : date invalide dans " . $entetes[$i] . " : '$champ'";
 				} elseif ($champ !== '') {
 					$y = substr($champ, 0, 4);
@@ -66,7 +66,7 @@ new Page()
 			$montants = [11, 12, 16];
 			foreach ($montants as $i) {
 				$champ = $champs[$i];
-				if ($champ !== '' && !is_numeric($champ)) {
+				if ($champ !== '' and !is_numeric($champ)) {
 					$erreurs[] = "Ligne $nLigne : champ numérique invalide (" . $entetes[$i] . ") : '$champ'";
 				}
 			}
