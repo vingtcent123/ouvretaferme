@@ -3,33 +3,39 @@ namespace association;
 
 class MembershipLib {
 
-	private static function getProductName(string $type) {
+	private static function getProductName(string $type, ?int $year) {
 
 		return match($type) {
-			History::MEMBERSHIP => new AssociationUi()->getMembershipProductName(),
+			History::MEMBERSHIP => new AssociationUi()->getMembershipProductName($year),
 			History::DONATION => new AssociationUi()->getProductDonationName(),
 		};
 
 	}
+
+	// à ne faire tourner qu'une fois en début d'année
 	public static function expires(): void {
 
-		$ccHistory = History::model()
+		$cFarm = \farm\Farm::model()
+			->select(\farm\Farm::getSelection())
+			->whereMembership(TRUE)
+			->getCollection();
+
+		$cHistoryNextYear = History::model()
 			->select(History::getSelection())
+			->whereFarm($cFarm)
+			->whereType(History::MEMBERSHIP)
+			->whereMembership(date('Y'))
 			->wherePaymentStatus(History::SUCCESS)
-			->sort(['membership' => SORT_DESC])
-			->getCollection(NULL, NULL, ['farm', 'membership']);
+			->getCollection(NULL, NULL, 'farm');
 
-		foreach($ccHistory as $cHistory) {
+		foreach($cFarm as $eFarm) {
 
-			$eHistory = $cHistory->first();
-
-			if($eHistory['membership'] < date('Y')) {
-
-				$eFarm = $eHistory['farm'];
-				$eFarm['membership'] = FALSE;
-				\farm\FarmLib::update($eFarm, ['membership']);
-
+			if($cHistoryNextYear->offsetExists($eFarm['id'])) {
+				continue;
 			}
+
+			$eFarm['membership'] = FALSE;
+			\farm\FarmLib::update($eFarm, ['membership']);
 
 		}
 
@@ -148,19 +154,43 @@ class MembershipLib {
 
 		}
 
+		if($type === History::MEMBERSHIP) {
+
+			$currentYear = date('Y');
+
+			// On cotise pour l'année prochaine
+			if(
+				History::model()
+					->whereFarm($eFarm)
+					->whereMembership($currentYear)
+					->whereType(History::MEMBERSHIP)
+					->wherePaymentStatus(History::SUCCESS)
+					->exists()
+			) {
+
+				$membershipYear = (int)date('Y') + 1;
+
+			} else {
+
+				$membershipYear = $currentYear;
+
+			}
+
+		} else {
+			$membershipYear = NULL;
+		}
+
 		$items = [];
 		$items[] = [
 			'quantity' => 1,
 			'price_data' => [
 				'currency' => 'EUR',
 				'product_data' => [
-					'name' => self::getProductName($type),
+					'name' => self::getProductName($type, $membershipYear),
 				],
 				'unit_amount' => ($eHistory['amount'] * 100),
 			]
 		];
-
-		$membershipYear = $type === History::MEMBERSHIP ? date('Y') : NULL;
 
 		$eHistoryDb = History::model()
      ->select(History::getSelection() + ['customer' => ['id', 'invoiceEmail']])
@@ -308,7 +338,7 @@ class MembershipLib {
 		$eItem = new \selling\Item([
 				'farm' => $eFarmOtf,
 				'sale' => $eSale,
-				'name' => self::getProductName($eHistory['type']),
+				'name' => self::getProductName($eHistory['type'], $eHistory['membership']),
 				'customer' => $eCustomer,
 				'unitPrice' => $eHistory['amount'],
 				'number' => 1,

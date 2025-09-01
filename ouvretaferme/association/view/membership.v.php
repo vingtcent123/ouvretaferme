@@ -31,7 +31,17 @@ new AdaptativeView('/ferme/{farm}/adherer', function($data, FarmTemplate $t) {
 	} else {
 
 		echo new \association\MembershipUi()->membership($data->cHistory);
-		echo new \association\MembershipUi()->donateForm($data->eFarm, TRUE);
+
+		$nextYear = (int)date('Y') + 1;
+		$hasJoinedForNextYear = $data->cHistory->find(fn($e) => $e['paymentStatus'] === \selling\Payment::SUCCESS and $e['membership'] === $nextYear)->count() > 0;
+
+		if(date('m-d') >= Setting::get('association\canJoinForNextYearFrom') and $hasJoinedForNextYear === FALSE) {
+
+			echo new \association\MembershipUi()->joinForm($data->eFarm);
+
+		}
+
+		echo new \association\MembershipUi()->donateForm($data->eFarm, date('m-d') < Setting::get('association\canJoinForNextYearFrom') or $hasJoinedForNextYear);
 
 	}
 

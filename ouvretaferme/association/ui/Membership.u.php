@@ -11,15 +11,26 @@ class MembershipUi {
 	}
 	public function membership(\Collection $cHistory): string {
 
+		$nextYear = (int)date('Y') + 1;
+		$hasJoinedForNextYear = $cHistory->find(fn($e) => $e['paymentStatus'] === \selling\Payment::SUCCESS and $e['membership'] === $nextYear)->count() > 0;
+
 		$h = '<h2>'.s("Adhésion de ma ferme").'</h2>';
 
 		$h .= '<div class="util-block">';
 
-			$h .= '<p>'.s("Vous avez adhéré à l'association pour l'année {year}. Merci !", ['year' => date('Y')]).'</p>';
+			if($hasJoinedForNextYear) {
+
+				$h .= '<p>'.s("Vous avez adhéré à l'association pour les années {year} et {nextYear}. Merci pour votre soutien !", ['year' => '<b>'.date('Y').'</b>', 'nextYear' => '<b>'.$nextYear.'</b>']).'</p>';
+
+			} else {
+
+				$h .= '<p>'.s("Vous avez adhéré à l'association pour l'année {year}. Merci !", ['year' => date('Y')]).'</p>';
+
+			}
 
 		$h .= '</div>';
 
-		$h .= '<a class="btn btn-outline-primary" data-ajax-navigation="never" href="/association/pdf:document?id='.$cHistory->first()['id'].'">'.\Asset::icon('download').' '.s("Télécharger mon attestation de paiement").'</a>';
+		$h .= '<a class="btn btn-outline-primary mb-2" data-ajax-navigation="never" href="/association/pdf:document?id='.$cHistory->first()['id'].'">'.\Asset::icon('download').' '.s("Télécharger mon attestation de paiement").'</a>';
 
 		return $h;
 
@@ -50,11 +61,25 @@ class MembershipUi {
 
 	public function joinForm(\farm\Farm $eFarm): string {
 
-		$h = '<div id="association-join-form-container">';
+		$h = '<div id="association-join-form-container" class="mb-2">';
 			$h .= '<h2>'.s("Bulletin d'adhésion").'</h2>';
 
 			$h .= '<div class="util-info">';
-				$h .= s("Votre ferme <b>{farmName}</b> n'a pas encore adhéré à l'association pour l'année <b>{year}</b>. L'adhésion se fait pour l'année civile en cours et se terminera donc le <b>{date}</b>.", ['farmName' => encode($eFarm['name']), 'year' => date('Y'), 'date' => date('31/12/Y')]);
+
+				if($eFarm['membership']) {
+
+					$h .= s("Votre ferme {farmName} est adhérente pour l'année {year} mais vous pouvez dès aujourd'hui adhérer pour l'année {nextYear} à venir. L'adhésion se fait pour une année civile et se terminera donc le {date}.", [
+						'farmName' => '<b>'.encode($eFarm['name']).'</b>',
+						'year' => '<b>'.date('Y').'</b>',
+						'nextYear' => '<b>'.((int)date('Y') + 1).'</b>',
+						'date' => '<b>'.date('31/12/Y', strtotime('next year')).'</b>'
+					]);
+
+				} else {
+
+					$h .= s("Votre ferme <b>{farmName}</b> n'a pas encore adhéré à l'association pour l'année <b>{year}</b>. L'adhésion se fait pour l'année civile en cours et se terminera donc le <b>{date}</b>.", ['farmName' => encode($eFarm['name']), 'year' => date('Y'), 'date' => date('31/12/Y')]);
+				}
+
 			$h .= '</div>';
 
 			$h .= '<div class="join-form">';
@@ -95,7 +120,7 @@ class MembershipUi {
 
 		$h = '<div id="association-donate-form-container" class="'.($isVisible ? '' : 'hide').'">';
 
-			$h .= '<h2 class="mt-2">'.s("Faire un don").'</h2>';
+			$h .= '<h2>'.s("Faire un don").'</h2>';
 
 			$h .= '<div class="join-form">';
 
@@ -107,7 +132,7 @@ class MembershipUi {
 				$h .= $form->hidden('farm', $eFarm['id']);
 
 				$h .= '<p>';
-					$h .= s("Vous pouvez soutenir l'association Ouvretaferme avec un don ici. Le don sera effectué par un paiement par carte bancaire avec {icon} Stripe.", ['icon' => \Asset::icon('stripe')]);
+					$h .= s("Vous pouvez aussi soutenir l'association Ouvretaferme avec un don. Le don sera effectué par un paiement par carte bancaire avec {icon} Stripe.", ['icon' => \Asset::icon('stripe')]);
 				$h .= '</p>';
 
 				$h.= $this->amountBlocks($form, [10, 20, 30]);

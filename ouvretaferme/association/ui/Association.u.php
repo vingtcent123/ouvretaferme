@@ -8,9 +8,7 @@ class AssociationUi {
 		return s("Don à l'association Ouvretaferme (merci !)");
 
 	}
-	public function getMembershipProductName(): string {
-
-		$year = date('Y');
+	public function getMembershipProductName(?int $year): string {
 
 		return s("Adhésion {year} à l'association Ouvretaferme", ['year' => $year]);
 
