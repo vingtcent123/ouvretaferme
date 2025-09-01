@@ -707,6 +707,10 @@ function currentYear(): int {
 	return date('Y');
 }
 
+function nextYear(): int {
+	return date('Y') + 1;
+}
+
 function currentDate(): string {
 	return toDate(time());
 }

@@ -140,11 +140,6 @@ body[data-template^="farm"] header a:hover {
 	gap: 0.5rem;
 }
 
-.nav-title-member {
-    text-align: center;
-    margin-top: 0.25rem;
-}
-
 .nav-year {
 	display: inline-block;
 	font-size: 1.2rem;
@@ -349,10 +344,17 @@ body[data-template~="farm"] main .container.farm-template-main-title.farm-templa
 	}
 
 	body[data-template~="farm"] .nav-title-member {
-        border: 1px solid white;
-        text-align: center;
         margin-top: 0.25rem;
 	}
+
+	body[data-template~="farm"] .nav-title-member-link {
+        border: 1px solid white;
+        border-radius: var(--radius);
+        text-align: center;
+        padding: 0.25rem 0.5rem;
+        font-size: 0.9rem;
+        letter-spacing: 0.5px;
+    }
 
 	#farm-nav {
 		overflow: auto;

@@ -11,7 +11,7 @@ class MembershipUi {
 	}
 	public function membership(\Collection $cHistory): string {
 
-		$nextYear = (int)date('Y') + 1;
+		$nextYear = nextYear();
 		$hasJoinedForNextYear = $cHistory->find(fn($e) => $e['paymentStatus'] === \selling\Payment::SUCCESS and $e['membership'] === $nextYear)->count() > 0;
 
 		$h = '<h2>'.s("Adhésion de ma ferme").'</h2>';
@@ -30,17 +30,45 @@ class MembershipUi {
 
 		$h .= '</div>';
 
-		$h .= '<a class="btn btn-outline-primary mb-2" data-ajax-navigation="never" href="/association/pdf:document?id='.$cHistory->first()['id'].'">'.\Asset::icon('download').' '.s("Télécharger mon attestation de paiement").'</a>';
+		return $h;
+
+	}
+
+	public function getMembership(\farm\Farm $eFarm, bool $hasJoinedForNextYear): string {
+
+		$h = '<div class="util-block-secondary mb-2">';
+
+			if($eFarm['membership']) {
+
+				if($hasJoinedForNextYear) {
+
+					$h .= '<p>'.s("Vous avez adhéré à l'association pour les années {year} et {nextYear}. Merci pour votre soutien !", ['year' => '<b>'.currentYear().'</b>', 'nextYear' => '<b>'.nextYear().'</b>']).'</p>';
+
+				} else {
+
+					$h .= '<p>'.s("Vous avez adhéré à l'association pour l'année {year}. Merci !", ['year' => currentYear()]).'</p>';
+
+				}
+
+			} else {
+
+				$h .= s("Votre ferme <b>{farmName}</b> n'a pas encore adhéré à l'association Ouvretaferme pour l'année <b>{year}</b>. L'adhésion se fait pour l'année civile en cours et se terminera donc le <b>{date}</b>.", ['farmName' => encode($eFarm['name']), 'year' => date('Y'), 'date' => date('31/12/Y')]);
+			}
+
+		$h .= '</div>';
 
 		return $h;
 
 	}
 
-	public function memberInformation(\farm\Farm $eFarm, \user\User $eUser): string {
+	public function getMemberInformation(\farm\Farm $eFarm, \user\User $eUser): string {
 
-		$h = '<h2>'.s("Informations sur l'adhérent").'</h2>';
+		$h = '<div class="util-title">';
+			$h .= '<h3>'.s("Adhérent").'</h3>';
+			$h .= '<a href="/farm/farm:update?id='.$eFarm['id'].'" class="btn btn-outline-primary">'.s("Mettre à jour").'</a>';
+		$h .= '</div>';
 
-		$h .= '<div class="join-identity util-block stick-xs">';
+		$h .= '<div class="util-block stick-xs mb-2">';
 			$h .= '<dl class="util-presentation util-presentation-2">';
 				$h .= '<dt>'.s("Raison sociale").'</dt>';
 				$h .= '<dd>'.encode($eFarm['legalName']).'</dd>';
@@ -59,29 +87,28 @@ class MembershipUi {
 
 	}
 
-	public function joinForm(\farm\Farm $eFarm): string {
+	public function getJoinForm(\farm\Farm $eFarm, \user\User $eUser): string {
 
 		$h = '<div id="association-join-form-container" class="mb-2">';
+
 			$h .= '<h2>'.s("Bulletin d'adhésion").'</h2>';
 
-			$h .= '<div class="util-info">';
+			if($eFarm['membership']) {
 
-				if($eFarm['membership']) {
-
-					$h .= s("Votre ferme {farmName} est adhérente pour l'année {year} mais vous pouvez dès aujourd'hui adhérer pour l'année {nextYear} à venir. L'adhésion se fait pour une année civile et se terminera donc le {date}.", [
+				$h .= '<div>';
+					$h .= s("Votre ferme {farmName} est déjà adhérente pour l'année {year} mais vous pouvez dès aujourd'hui adhérer pour l'année {nextYear} à venir. L'adhésion se fait pour une année civile et se terminera donc le {date}.", [
 						'farmName' => '<b>'.encode($eFarm['name']).'</b>',
 						'year' => '<b>'.date('Y').'</b>',
-						'nextYear' => '<b>'.((int)date('Y') + 1).'</b>',
+						'nextYear' => '<b>'.nextYear().'</b>',
 						'date' => '<b>'.date('31/12/Y', strtotime('next year')).'</b>'
 					]);
+				$h .= '</div>';
 
-				} else {
+			}
 
-					$h .= s("Votre ferme <b>{farmName}</b> n'a pas encore adhéré à l'association pour l'année <b>{year}</b>. L'adhésion se fait pour l'année civile en cours et se terminera donc le <b>{date}</b>.", ['farmName' => encode($eFarm['name']), 'year' => date('Y'), 'date' => date('31/12/Y')]);
-				}
+			$h .= $this->getMemberInformation($eFarm, $eUser);
 
-			$h .= '</div>';
-
+			$h .= '<h3>'.s("Montant de l'adhésion").'</h3>';
 			$h .= '<div class="join-form">';
 
 				$form = new \util\FormUi([
@@ -116,7 +143,7 @@ class MembershipUi {
 
 	}
 
-	public function donateForm(\farm\Farm $eFarm, bool $isVisible): string {
+	public function getDonateForm(\farm\Farm $eFarm, bool $isVisible): string {
 
 		$h = '<div id="association-donate-form-container" class="'.($isVisible ? '' : 'hide').'">';
 

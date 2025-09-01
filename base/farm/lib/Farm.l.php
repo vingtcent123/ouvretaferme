@@ -88,7 +88,7 @@ class FarmLib extends FarmCrud {
 		Farm::model()->beginTransaction();
 
 		$e['seasonFirst'] = date('Y');
-		$e['seasonLast'] = date('n') >= (\Setting::get('farm\newSeason') - 1) ? date('Y') + 1 : date('Y');
+		$e['seasonLast'] = date('n') >= (\Setting::get('farm\newSeason') - 1) ? nextYear() : date('Y');
 
 		Farm::model()->insert($e);
 
@@ -206,7 +206,7 @@ class FarmLib extends FarmCrud {
 
 	public static function createNextSeason(): void {
 
-		$newSeason = date('Y') + 1;
+		$newSeason = nextYear();
 
 		Farm::model()
 			->where('seasonLast < '.$newSeason)

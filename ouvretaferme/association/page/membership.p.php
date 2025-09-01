@@ -14,6 +14,7 @@ new Page(function($data) {
 	->get('/ferme/{farm}/adherer', function($data) {
 
 		$data->cHistory = \association\HistoryLib::getByFarm($data->eFarm);
+		$data->hasJoinedForNextYear = $data->cHistory->contains(fn($e) => $e['paymentStatus'] === \selling\Payment::SUCCESS and $e['membership'] === nextYear());
 
 		throw new ViewAction($data);
 

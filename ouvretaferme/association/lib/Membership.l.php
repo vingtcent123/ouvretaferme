@@ -168,7 +168,7 @@ class MembershipLib {
 					->exists()
 			) {
 
-				$membershipYear = (int)date('Y') + 1;
+				$membershipYear = nextYear();
 
 			} else {
 

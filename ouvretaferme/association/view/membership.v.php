@@ -4,19 +4,17 @@ new AdaptativeView('/ferme/{farm}/adherer', function($data, FarmTemplate $t) {
 	$t->nav = 'selling';
 	$t->subNav = '';
 
-	$t->title = s("Adhérer à l'association Ouvretaferme");
-	$t->mainTitle = '<h1>'.$t->title.'</h1>';
+	$t->title = s("Adhérer à l'association");
+	$t->mainTitle = Asset::image('main', 'logo.png', ['style' => 'height: 3rem; width: auto; margin-bottom: 0.5rem']).'<h1>'.$t->title.'</h1>';
+
+	echo new \association\MembershipUi()->getMembership($data->eFarm, $data->hasJoinedForNextYear);
 
 	if($data->eFarm['membership'] === FALSE) {
 
 		if($data->eFarm->isLegalComplete()) {
 
-			echo '<div>';
-			echo '</div>';
-
-			echo new \association\MembershipUi()->memberInformation($data->eFarm, $data->eUser);
-			echo new \association\MembershipUi()->joinForm($data->eFarm);
-			echo new \association\MembershipUi()->donateForm($data->eFarm, FALSE);
+			echo new \association\MembershipUi()->getJoinForm($data->eFarm, $data->eUser);
+			echo new \association\MembershipUi()->getDonateForm($data->eFarm, FALSE);
 
 		} else {
 
@@ -33,18 +31,16 @@ new AdaptativeView('/ferme/{farm}/adherer', function($data, FarmTemplate $t) {
 
 	} else {
 
-		echo new \association\MembershipUi()->membership($data->cHistory);
+		if(
+			date('m-d') >= Setting::get('association\canJoinForNextYearFrom') and
+			$data->hasJoinedForNextYear === FALSE
+		) {
 
-		$nextYear = (int)date('Y') + 1;
-		$hasJoinedForNextYear = $data->cHistory->find(fn($e) => $e['paymentStatus'] === \selling\Payment::SUCCESS and $e['membership'] === $nextYear)->count() > 0;
-
-		if(date('m-d') >= Setting::get('association\canJoinForNextYearFrom') and $hasJoinedForNextYear === FALSE) {
-
-			echo new \association\MembershipUi()->joinForm($data->eFarm);
+			echo new \association\MembershipUi()->getJoinForm($data->eFarm, $data->eUser);
 
 		}
 
-		echo new \association\MembershipUi()->donateForm($data->eFarm, date('m-d') < Setting::get('association\canJoinForNextYearFrom') or $hasJoinedForNextYear);
+		echo new \association\MembershipUi()->getDonateForm($data->eFarm, date('m-d') < Setting::get('association\canJoinForNextYearFrom') or $data->hasJoinedForNextYear);
 
 	}
 
