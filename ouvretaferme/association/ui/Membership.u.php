@@ -45,7 +45,6 @@ class MembershipUi {
 		$h .= '<ul>';
 			$h .= '<li>'.s("Un immense soutien pour nous aider à développer Ouvretaferme").'</li>';
 			$h .= '<li>'.s("Envoyer jusqu'à {value} e-mails par semaine avec les campagnes d'e-mailing", \farm\Farm::getCampaignMemberLimit()).'</li>';
-			$h .= '<li>'.s("Vous impliquer dans l'association si vous le souhaitez !").'</li>';
 		$h .= '</ul>';
 
 		return $h;
