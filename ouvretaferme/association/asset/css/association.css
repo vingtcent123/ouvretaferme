@@ -37,6 +37,7 @@ input.association-amount-block::placeholder {
 	color: var(--secondary);
 }
 
+input.association-amount-block:hover::placeholder,
 input.association-amount-block:focus::placeholder {
 	color: white;
 }

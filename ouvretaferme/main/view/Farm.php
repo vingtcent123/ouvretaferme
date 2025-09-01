@@ -259,9 +259,9 @@ class FarmTemplate extends MainTemplate {
 
 							$farm .= '<div class="dropdown-list bg-primary">';
 
-							$farm .= '<div class="dropdown-title">'.Lime::getName().' '.Asset::icon('plus').' '.encode($this->data->eFarm['name']).'</div>';
+							$farm .= '<div class="dropdown-title">'.s("L'association Ouvretaferme").'</div>';
 
-								$farm .= '<a href="'.\Setting::get('association\url').'" target="_blank" class="dropdown-item">'.s("Découvrir l'association {siteName}").'</a>';
+								$farm .= '<a href="'.\Setting::get('association\url').'" target="_blank" class="dropdown-item">'.s("Découvrir l'association").'</a>';
 								$farm .= '<a href="'.\Setting::get('association\url').'/nous-soutenir" target="_blank" class="dropdown-item">'.s("Pourquoi soutenir l'association ?").'</a>';
 								$farm .= '<div class="dropdown-divider"></div>';
 								$farm .= '<a href="'.\association\AssociationUi::url($this->data->eFarm).'" class="dropdown-item">'.Asset::icon('star-fill', ['style' => 'color: #fff4']).'  '.s("Adhérer à l'association").'</a>';

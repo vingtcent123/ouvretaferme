@@ -17,9 +17,7 @@ class AssociationUi {
 	public static function confirmationUrl(History $eHistory, string $type, string $fromPage): string {
 
 		if($eHistory['farm']->empty()) {
-
-			return $fromPage.'?success=association:Membership::'.$type.'.created&email='.urlencode($eHistory['customer']['invoiceEmail']).'&customer='.$eHistory['customer']['id'];
-
+			return $fromPage.'?'.$type.'&email='.urlencode($eHistory['customer']['invoiceEmail']).'&customer='.$eHistory['customer']['id'];
 		}
 
 		return self::url($eHistory['farm']).'?'.$type;
@@ -81,37 +79,45 @@ class AssociationUi {
 		\Asset::css('association', 'association.css');
 		\Asset::js('association', 'association.js');
 
-		$h = '<div id="association-donate-form-container">';
+		if(get_exists('donation')) {
 
-			$form = new \util\FormUi();
+			return new \association\MembershipUi()->getDonationSuccess();
 
-			if($eWebsite->empty()) {
-				$h .= $form->openAjax('/association/donation:doCreatePayment', ['id' => 'association-donate']);
-			} else {
-				$h .= $form->openAjax(\website\WebsiteUi::url($eWebsite, '/:doDonate'), ['id' => 'website-donate', 'onrender' => 'Association.cleanArgs();']);
-			}
+		} else {
 
-				if($eWebsite->empty()) {
-					$h .= '<h3>'.s("Vos informations personnelles").'</h3>';
+			$h = '<div id="association-donate-form-container">';
 
-					$h .= '<div class="util-annotation mb-1">'.s("Pour éditer le reçu de votre don, nous vous demandons quelques informations personnelles. Le paiement s'effectuera sur {icon} Stripe à l'étape suivante.", ['icon' => \Asset::icon('stripe')]).'</div>';
-				}
-
-				$h .= $form->hidden('from', LIME_URL);
-				$h .= $form->dynamicGroups($eUser, ['email', 'firstName', 'lastName', 'phone']);
-				$h .= $form->addressGroup(s("Adresse"), NULL, $eUser);
+				$form = new \util\FormUi();
 
 				if($eWebsite->empty()) {
-					$h .= '<h3>'.s("Montant de votre don").'</h3>';
+					$h .= $form->openAjax('/association/donation:doCreatePayment', ['id' => 'association-donate']);
+				} else {
+					$h .= $form->openAjax(\website\WebsiteUi::url($eWebsite, '/:doDonate'), ['id' => 'website-donate', 'onrender' => 'Association.cleanArgs();']);
 				}
 
-				$h .= new MembershipUi()->getAmountBlocks($form, [10, 20, 30]);
+					if($eWebsite->empty()) {
+						$h .= '<h3>'.s("Vos informations personnelles").'</h3>';
 
-				$h .= $form->inputGroup($form->submit(s("Je donne"), ['class' => 'btn btn-primary btn-lg']), ['class' => 'mt-1']);
+						$h .= '<div class="util-annotation mb-1">'.s("Pour éditer le reçu de votre don, nous vous demandons quelques informations personnelles. Le paiement s'effectuera sur {icon} Stripe à l'étape suivante.", ['icon' => \Asset::icon('stripe')]).'</div>';
+					}
 
-			$h .= $form->close();
+					$h .= $form->hidden('from', LIME_URL);
+					$h .= $form->dynamicGroups($eUser, ['email', 'firstName', 'lastName', 'phone']);
+					$h .= $form->addressGroup(s("Adresse"), NULL, $eUser);
 
-		$h .= '</div>';
+					if($eWebsite->empty()) {
+						$h .= '<h3>'.s("Montant de votre don").'</h3>';
+					}
+
+					$h .= new MembershipUi()->getAmountBlocks($form, [10, 20, 30]);
+
+					$h .= $form->inputGroup($form->submit(s("Je donne"), ['class' => 'btn btn-primary btn-lg']), ['class' => 'mt-1']);
+
+				$h .= $form->close();
+
+			$h .= '</div>';
+
+		}
 
 		return $h;
 	}

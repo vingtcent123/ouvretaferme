@@ -1,7 +1,7 @@
 <?php
 new Page()
 	->get('/donner', function($data) {
-
+dd('en cours...');
 		$data->eHistory = new \association\History();
 
 		if(GET('success') === 'association:Membership::donation.created') {

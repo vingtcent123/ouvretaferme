@@ -10,6 +10,28 @@ class MembershipUi {
 
 	}
 
+	public function getMembershipSuccess(): string {
+
+		$h = '<div class="util-box-success mb-2">';
+			$h .= '<h4>'.s("Votre adhésion a bien été prise en compte !").'</h4>';
+			$h .= '<div>'.s("Toute l'équipe de Ouvretaferme vous souhaite la bienvenue et vous remercie pour votre engagement 🥳").'</div>';
+		$h .= '</div>';
+
+		return $h;
+
+	}
+
+	public function getDonationSuccess(): string {
+
+		$h = '<div class="util-box-success mb-2">';
+			$h .= '<h4>'.s("Nous avons bien reçu votre don !").'</h4>';
+			$h .= '<div>'.s("Toute l'équipe de Ouvretaferme vous remercie pour votre générosité 🥳").'</div>';
+		$h .= '</div>';
+
+		return $h;
+
+	}
+
 	public function getMembership(\farm\Farm $eFarm, bool $hasJoinedForNextYear): string {
 
 		$h = '<div class="util-block-secondary">';

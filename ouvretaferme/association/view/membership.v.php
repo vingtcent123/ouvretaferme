@@ -8,20 +8,12 @@ new AdaptativeView('/ferme/{farm}/adherer', function($data, FarmTemplate $t) {
 	$t->mainTitle = Asset::image('main', 'logo.png', ['style' => 'height: 3rem; width: auto; margin-bottom: 0.5rem']).'<h1>'.$t->title.'</h1>';
 
 	if(get_exists('membership')) {
-
-		echo '<div class="util-box-success mb-2">';
-			echo '<h4>'.s("Votre adhésion a bien été prise en compte !").'</h4>';
-			echo '<div>'.s("Toute l'équipe de Ouvretaferme vous souhaite la bienvenue et vous remercie pour votre engagement 🥳").'</div>';
-		echo '</div>';
-
+		echo new \association\MembershipUi()->getMembershipSuccess();
 	}
 
 	if(get_exists('donation')) {
 
-		echo '<div class="util-box-success mb-2">';
-			echo '<h4>'.s("Nous avons bien reçu votre don !").'</h4>';
-			echo '<div>'.s("Toute l'équipe de Ouvretaferme vous remercie pour votre générosité 🥳").'</div>';
-		echo '</div>';
+		echo new \association\MembershipUi()->getDonationSuccess();
 
 	} else {
 
