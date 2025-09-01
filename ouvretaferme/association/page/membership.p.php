@@ -65,7 +65,7 @@ new Page()
 		\user\ConnectionLib::checkLogged();
 
 		$data->eUser = \user\ConnectionLib::getOnline();
-		$data->cFarmUser = \farm\FarmLib::getOnline();
+		$data->cFarmUser = \farm\FarmLib::getOnline()->find(fn($eFarm) => $eFarm->canManage());
 
 		switch($data->cFarmUser->count()) {
 
