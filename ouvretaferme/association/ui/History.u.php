@@ -30,12 +30,12 @@ class HistoryUi {
 							$type .= ' '.s('(année {year})', ['year' => $eHistory['membership']]);
 						}
 						$h .= '<tr>';
-							$h .= '<td>'.\util\DateUi::numeric($eHistory['paidAt'] ?? $eHistory['updatedAt']).'</td>';
+							$h .= '<td>'.\util\DateUi::numeric($eHistory['paidAt'] ?? $eHistory['updatedAt'], \util\DateUi::DATE_HOUR_MINUTE).'</td>';
 							$h .= '<td>'.$type.'</td>';
 							$h .= '<td class="text-end">'.\util\TextUi::money($eHistory['amount']).'</td>';
 							$h .= '<td>'.self::p('paymentStatus')->values[$eHistory['paymentStatus']].'</td>';
-							$h .= '<td>';
-								$h .= '<a href="/association/pdf:document?id='.$eHistory['id'].'" data-ajax-navigation="never" class="btn btn-outline-secondary">'.\Asset::icon('download').'</a> ';
+							$h .= '<td class="text-end">';
+								$h .= '<a href="/association/pdf:document?id='.$eHistory['id'].'" data-ajax-navigation="never" class="btn btn-outline-secondary">'.\Asset::icon('download').'  '.s("Reçu").'</a> ';
 							$h .= '</td>';
 						$h .= '</tr>';
 					}

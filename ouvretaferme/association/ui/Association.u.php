@@ -5,7 +5,7 @@ class AssociationUi {
 
 	public function getProductDonationName(): string {
 
-		return s("Don à l'association Ouvretaferme (merci !)");
+		return s("Don à l'association Ouvretaferme");
 
 	}
 	public function getMembershipProductName(?int $year): string {
@@ -22,7 +22,7 @@ class AssociationUi {
 
 		}
 
-		return self::url($eHistory['farm']).'?success=association:Membership::'.$type.'.created';
+		return self::url($eHistory['farm']).'?'.$type;
 	}
 
 	public static function url(\farm\Farm $eFarm): string {
@@ -68,28 +68,23 @@ class AssociationUi {
 
 		$h = '<div id="association-donate-form-container">';
 
-			$h .= '<div class="join-form">';
-
-				$form = new \util\FormUi([
-				]);
+				$form = new \util\FormUi();
 
 				if($eWebsite->empty()) {
 					$h .= $form->openAjax('/association/donation:doCreatePayment', ['id' => 'association-donate']);
 				} else {
-					$h = $form->openAjax(\website\WebsiteUi::url($eWebsite, '/:doDonate'), ['id' => 'website-donate', 'onrender' => 'Association.cleanArgs();']);
+					$h .= $form->openAjax(\website\WebsiteUi::url($eWebsite, '/:doDonate'), ['id' => 'website-donate', 'onrender' => 'Association.cleanArgs();']);
 				}
 
-				$h .= $form->hidden('from', LIME_URL);
-				$h .= $form->dynamicGroups($eUser, ['email', 'firstName', 'lastName', 'phone']);
-				$h .= $form->addressGroup(s("Adresse"), NULL, $eUser);
+					$h .= $form->hidden('from', LIME_URL);
+					$h .= $form->dynamicGroups($eUser, ['email', 'firstName', 'lastName', 'phone']);
+					$h .= $form->addressGroup(s("Adresse"), NULL, $eUser);
 
-				$h.= new MembershipUi()->amountBlocks($form, [10, 20, 30]);
+					$h .= new MembershipUi()->getAmountBlocks($form, [10, 20, 30]);
 
-				$h .= $form->inputGroup($form->submit(s("Je donne")), ['class' => 'mt-1']);
+					$h .= $form->inputGroup($form->submit(s("Je donne")), ['class' => 'mt-1']);
 
 				$h .= $form->close();
-
-			$h .= '</div>';
 
 		$h .= '</div>';
 
