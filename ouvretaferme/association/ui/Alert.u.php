@@ -21,9 +21,6 @@ class AlertUi {
 
 		return match($fqn) {
 
-			'Membership::donation.created' => s("Nous avons bien reçu votre don, toute l'équipe de Ouvretaferme vous remercie pour votre générosité 🥳"),
-			'Membership::membership.created' => s("Votre adhésion a bien été prise en compte, toute l'équipe de Ouvretaferme vous souhaite la bienvenue et vous remercie pour votre engagement 🥳"),
-
 			default => NULL
 
 		};

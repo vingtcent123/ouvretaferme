@@ -4,7 +4,7 @@ new Page()
 dd('en cours...');
 		$data->eHistory = new \association\History();
 
-		if(GET('success') === 'association:Membership::donation.created') {
+		if(get_exists('donation')) {
 
 			$eFarmOtf = \farm\FarmLib::getById(Setting::get('association\farm'));
 			$eCustomer = \selling\Customer::model()

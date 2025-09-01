@@ -1241,10 +1241,10 @@ a.util-badge {
 	padding: 1rem;
 }
 
-.util-block p:last-child,
-.util-block-secondary p:last-child,
-.util-block-help p:last-child,
-.util-card p:last-child {
+.util-block *:last-child,
+.util-block-secondary *:last-child,
+.util-block-help *:last-child,
+.util-card *:last-child {
 	margin-bottom: 0;
 }
 

@@ -184,7 +184,7 @@ class FarmTemplate extends MainTemplate {
 
 						$farm .= '<a data-dropdown="bottom-start" data-dropdown-hover="true">';
 							if($this->data->eFarm->isMembership()) {
-								$farm .= Asset::icon('star-fill', ['style' => 'color: #fff4']).'  ';
+								$farm .= Asset::icon('star-fill').'  ';
 							}
 							$farm .= encode($this->data->eFarm['name']).'  '.Asset::icon('chevron-down').'</a>';
 						$farm .= '<div class="dropdown-list bg-primary">';
@@ -197,8 +197,13 @@ class FarmTemplate extends MainTemplate {
 									$farm .= '<a href="/farm/farm:update?id='.$this->data->eFarm['id'].'" class="dropdown-item">'.Asset::icon('gear-fill').'  '.s("Paramétrer la ferme").'</a>';
 									$farm .= '<a href="'.\farm\FarmerUi::urlManage($this->data->eFarm).'" class="dropdown-item">'.Asset::icon('people-fill').'  '.s("Gérer l'équipe de la ferme").'</a>';
 								}
+
 								if($this->data->eFarm->canPersonalData()) {
 									$farm .= '<a href="/farm/farm:export?id='.$this->data->eFarm['id'].'" class="dropdown-item">'.Asset::icon('database-fill').'  '.s("Exporter les données").'</a>';
+								}
+
+								if($this->data->eFarm->isMembership()) {
+									$farm .= '<a href="'.\association\AssociationUi::url($this->data->eFarm).'" class="dropdown-item">'.Asset::icon('star-fill').'  '.s("Adhésion à {icon}", ['icon' => Asset::image('main', 'favicon.png', ['style' => 'height: 1.75rem; width: auto'])]).'</a>';
 								}
 
 							}

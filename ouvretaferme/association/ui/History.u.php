@@ -25,13 +25,14 @@ class HistoryUi {
 
 					foreach($cHistory as $eHistory) {
 
-						$type = self::p('type')->values[$eHistory['type']];
-						if($eHistory['type'] === History::MEMBERSHIP) {
-							$type .= ' '.s('(année {year})', ['year' => $eHistory['membership']]);
-						}
 						$h .= '<tr>';
 							$h .= '<td>'.\util\DateUi::numeric($eHistory['paidAt'] ?? $eHistory['updatedAt'], \util\DateUi::DATE_HOUR_MINUTE).'</td>';
-							$h .= '<td>'.$type.'</td>';
+							$h .= '<td>';
+								$h .= match($eHistory['type']) {
+									History::DONATION => s("Don"),
+									History::MEMBERSHIP => s("Adhésion pour l'année {value}", $eHistory['membership'])
+								};
+							$h .= '</td>';
 							$h .= '<td class="text-end">'.\util\TextUi::money($eHistory['amount']).'</td>';
 							$h .= '<td>'.self::p('paymentStatus')->values[$eHistory['paymentStatus']].'</td>';
 							$h .= '<td class="text-end">';

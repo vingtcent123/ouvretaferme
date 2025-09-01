@@ -389,10 +389,10 @@ class Farm extends FarmElement {
 	}
 
 	public function getCampaignLimit(): int {
-		return $this['id'] === 7 ? $this->getCampaignMemberLimit() : 50;
+		return $this->isMembership() ? self::getCampaignMemberLimit() : 50;
 	}
 
-	public function getCampaignMemberLimit(): int {
+	public static function getCampaignMemberLimit(): int {
 		return 1000;
 	}
 
@@ -400,11 +400,11 @@ class Farm extends FarmElement {
 		if(LIME_ENV === 'dev') {
 			return 100;
 		} else {
-			return $this['id'] === 7 ? $this->getContactMemberLimit() : 1;
+			return $this->isMembership() ? self::getContactMemberLimit() : 1;
 		}
 	}
 
-	public function getContactMemberLimit(): int {
+	public static function getContactMemberLimit(): int {
 		return 3;
 	}
 

@@ -10,11 +10,18 @@ class MembershipUi {
 
 	}
 
-	public function getMembershipSuccess(): string {
+	public function getMembershipSuccess(\Collection $cHistory): string {
+
+		$years = $cHistory->find(fn($eHistory) => $eHistory['type'] === History::MEMBERSHIP and $eHistory['paymentStatus'] === History::SUCCESS)->count();
 
 		$h = '<div class="util-box-success mb-2">';
-			$h .= '<h4>'.s("Votre adhésion a bien été prise en compte !").'</h4>';
-			$h .= '<div>'.s("Toute l'équipe de Ouvretaferme vous souhaite la bienvenue et vous remercie pour votre engagement 🥳").'</div>';
+			if($years >= 2) {
+				$h .= '<h4>'.s("Votre réadhésion a bien été prise en compte !").'</h4>';
+				$h .= '<div>'.s("Toujours fidèle au poste 🥳").'</div>';
+			} else {
+				$h .= '<h4>'.s("Votre adhésion a bien été prise en compte !").'</h4>';
+				$h .= '<div>'.s("Toute l'équipe de Ouvretaferme vous souhaite la bienvenue et vous remercie pour votre engagement 🥳").'</div>';
+			}
 		$h .= '</div>';
 
 		return $h;
@@ -32,31 +39,48 @@ class MembershipUi {
 
 	}
 
+	public function getBenefits(): string {
+
+		$h = '<h4>'.s("Ce que l'adhésion apporte :").'</h4>';
+		$h .= '<ul>';
+			$h .= '<li>'.s("Un immense soutien pour nous aider à développer Ouvretaferme").'</li>';
+			$h .= '<li>'.s("Envoyer jusqu'à {value} e-mails par semaine avec les campagnes d'e-mailing", \farm\Farm::getCampaignMemberLimit()).'</li>';
+			$h .= '<li>'.s("Vous impliquer dans l'association si vous le souhaitez !").'</li>';
+		$h .= '</ul>';
+
+		return $h;
+
+	}
+
 	public function getMembership(\farm\Farm $eFarm, bool $hasJoinedForNextYear): string {
 
 		$h = '<div class="util-block-secondary">';
 
 			if($eFarm['membership']) {
 
-				if($hasJoinedForNextYear) {
+				$h .= '<p>';
+					$h .= \Asset::icon('star-fill').' ';
 
-					$h .= s("Vous avez adhéré à l'association pour les années {year} et {nextYear}. Merci pour votre soutien !", ['year' => '<b>'.currentYear().'</b>', 'nextYear' => '<b>'.nextYear().'</b>']);
+					if($hasJoinedForNextYear) {
+						$h .= s("Vous avez adhéré à l'association pour les années {year} et {nextYear}. Merci pour votre soutien !", ['year' => '<b>'.currentYear().'</b>', 'nextYear' => '<b>'.nextYear().'</b>']);
+					} else {
+						$h .= s("Vous avez adhéré à l'association pour l'année {year} !", ['year' => currentYear()]);
+					}
 
-				} else {
-
-					$h .= s("Vous avez adhéré à l'association pour l'année {year}. Merci !", ['year' => currentYear()]);
-
-				}
+				$h .= '</p>';
+				$h .= $this->getBenefits();
 
 			} else {
 
-				$h .= s("Votre ferme <b>{farmName}</b> n'a pas encore adhéré à l'association Ouvretaferme pour l'année <b>{year}</b>.", ['farmName' => encode($eFarm['name']), 'year' => date('Y')]);
+				$h .= '<p>'.s("Votre ferme <b>{farmName}</b> n'a pas encore adhéré à l'association Ouvretaferme pour l'année <b>{year}</b>.", ['farmName' => encode($eFarm['name']), 'year' => date('Y')]).'</p>';
+				$h .= $this->getBenefits();
 			}
 
 		$h .= '</div>';
 
 		if($eFarm['membership'] === FALSE) {
 			$h .= '<p>';
+				$h .= '<a href="'.\Setting::get('association\url').'" class="btn btn-secondary">'.s("Voir le site de l'association").'</a> ';
 				$h .= '<a href="'.\farm\FarmUi::url($eFarm).'/donner" class="btn btn-outline-secondary">'.s("Je veux plutôt faire un don").'</a>';
 			$h .= '</p>';
 		}
@@ -103,15 +127,18 @@ class MembershipUi {
 
 			if($eFarm['membership']) {
 
-				$h .= s("Votre ferme {farmName} est déjà adhérente pour l'année {year} mais vous pouvez dès aujourd'hui adhérer pour l'année {nextYear} à venir. L'adhésion se fait pour une année civile et se terminera donc le {date}.", [
+				$h .= s("Votre ferme {farmName} est déjà adhérente pour l'année {year} mais vous pouvez dès aujourd'hui adhérer pour l'année {nextYear} à venir.", [
 					'farmName' => '<b>'.encode($eFarm['name']).'</b>',
-					'year' => '<b>'.date('Y').'</b>',
+					'year' => '<b>'.currentYear().'</b>',
 					'nextYear' => '<b>'.nextYear().'</b>',
 					'date' => '<b>'.date('31/12/Y', strtotime('next year')).'</b>'
 				]);
 
+				$for = nextYear();
+
 			} else {
 				$h .= s("Les adhésions se font par année civile et votre adhésion se terminera donc le <b>{date}</b>.", ['farmName' => encode($eFarm['name']), 'year' => date('Y'), 'date' => date('31/12/Y')]);
+				$for = currentYear();
 			}
 
 			$h .= '</p>';
@@ -141,7 +168,7 @@ class MembershipUi {
 					'callbackLabel' => fn($input) => $input.'  '.$form->addon(s("J'accepte les <linkStatus>statuts</linkStatus> et le <linkRules>règlement intérieur</linkRules> de l'association", ['linkStatus' => '<a data-ajax-navigation="never" target="_blank" href="'.\Asset::getPath('association', 'document/statuts.pdf').'">', 'linkRules' => '<a data-ajax-navigation="never" target="_blank" href="'.\Asset::getPath('association', 'document/reglement_interieur.pdf').'">']))
 				]);
 
-				$h .= $form->inputGroup($form->submit(s("J'adhère"), ['class' => 'btn btn-primary btn-lg']), ['class' => 'mt-2']);
+				$h .= $form->inputGroup($form->submit(s("J'adhère pour {value}", $for), ['class' => 'btn btn-primary btn-lg']), ['class' => 'mt-2']);
 
 			$h .= $form->close();
 

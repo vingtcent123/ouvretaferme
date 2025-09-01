@@ -190,7 +190,7 @@ Cordialement,
 						$h .= '<tr class="pdf-document-item">';
 							$h .= '<td class="pdf-document-product">';
 								$h .= match($eHistory['type']) {
-									History::MEMBERSHIP => s("Adhésion {year} à l'association Ouvretaferme", ['year' => $eHistory['membership']]),
+									History::MEMBERSHIP => $this->getMembershipProductName($eHistory['membership']),
 									History::DONATION => s("Don"),
 								};
 							$h .= '</td>';

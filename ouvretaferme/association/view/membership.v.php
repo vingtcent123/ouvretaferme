@@ -8,7 +8,7 @@ new AdaptativeView('/ferme/{farm}/adherer', function($data, FarmTemplate $t) {
 	$t->mainTitle = Asset::image('main', 'logo.png', ['style' => 'height: 3rem; width: auto; margin-bottom: 0.5rem']).'<h1>'.$t->title.'</h1>';
 
 	if(get_exists('membership')) {
-		echo new \association\MembershipUi()->getMembershipSuccess();
+		echo new \association\MembershipUi()->getMembershipSuccess($data->cHistory);
 	}
 
 	if(get_exists('donation')) {
@@ -29,14 +29,15 @@ new AdaptativeView('/ferme/{farm}/adherer', function($data, FarmTemplate $t) {
 
 		} else {
 
+			echo '<h2>'.s("Bulletin d'adhésion").'</h2>';
+
 			echo '<div class="util-block-help">';
 
-				echo '<h4>'.s("Vous êtes sur la page qui vous permet d'adhérer à l'association Ouvretaferme qui édite le logiciel que vous êtes actuellement en train d'utiliser").'</h4>';
+				echo s("Nous avons besoin de quelques informations relatives à votre ferme pour adhérer à l'association.");
 
 			echo '</div>';
 
-				echo '<p class="mt-1 mb-2">'.s("Certaines informations sont nécessaires pour adhérer à l'association :").'</p>';
-				echo new \farm\FarmUi()->updateLegal($data->eFarm, ['legalEmail', 'siret', 'legalName']);
+			echo new \farm\FarmUi()->updateLegal($data->eFarm, ['legalEmail', 'siret', 'legalName']);
 
 		}
 
