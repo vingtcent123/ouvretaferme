@@ -12,7 +12,7 @@
 	}
 }
 
-input[type="number"].association-amount-block,
+input.association-amount-block,
 .association-amount-block {
 	display: flex;
 	align-items: center;
@@ -27,18 +27,22 @@ input[type="number"].association-amount-block,
 	transition: 0.25s all;
 }
 
-input[type="number"].association-amount-block {
+input.association-amount-block {
 	color: inherit;
 	text-align: center;
 	position: relative;
 }
 
-input[type="number"].association-amount-block::placeholder {
+input.association-amount-block::placeholder {
 	color: var(--secondary);
 }
 
-input[type="number"].association-amount-block:hover,
-input[type="number"].association-amount-block.selected {
+input.association-amount-block:focus::placeholder {
+	color: white;
+}
+
+input.association-amount-block:hover,
+input.association-amount-block.selected {
 	background-color: var(--secondary);
 	color: white;
 }

@@ -167,7 +167,7 @@ class MembershipUi {
 			}
 			$h .= '<div>';
 				$h .= '<div class="association-amount-custom-label">'.s("Montant personnalisé").'</div>';
-				$h .= $form->number('custom-amount', NULL, [
+				$h .= $form->text('custom-amount', NULL, [
 					'class' => 'association-amount-block',
 					'data-label' => s("Montant personnalisé"),
 					'onfocus' => 'Association.customFocus(this);',
