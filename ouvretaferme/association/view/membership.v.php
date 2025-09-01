@@ -1,8 +1,8 @@
 <?php
-new AdaptativeView('adherer', function($data, FarmTemplate $t) {
+new AdaptativeView('/ferme/{farm}/adherer', function($data, FarmTemplate $t) {
 
-	$t->nav = 'analyze-commercialisation';
-	$t->subNav = 'report';
+	$t->nav = 'selling';
+	$t->subNav = '';
 
 	$t->title = s("Adhérer à l'association Ouvretaferme");
 	$t->mainTitle = '<h1>'.$t->title.'</h1>';
@@ -45,5 +45,15 @@ new AdaptativeView('adherer', function($data, FarmTemplate $t) {
 
 	}
 
+
+});
+
+new AdaptativeView('adherer', function ($data, MainTemplate $t) {
+
+	$t->title = s("Adhérer à l'association Ouvretaferme");
+
+	echo '<h3>'.s("Avec quelle ferme souhaitez-vous adhérer à l'association Ouvretaferme ?").'</h3>';
+
+	echo new \association\MembershipUi()->getMyFarms($data->cFarmUser);
 
 });

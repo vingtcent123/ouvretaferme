@@ -15,7 +15,7 @@ new Page(function($data) {
 
 		$data->cHistory = \association\HistoryLib::getByFarm($data->eFarm);
 
-		throw new ViewAction($data, ':adherer');
+		throw new ViewAction($data);
 
 	});
 
@@ -47,6 +47,29 @@ new Page()
 
 		if($fw->ok()) {
 			throw new RedirectAction($url);
+		}
+
+	});
+
+new Page()
+	->get('/adherer', function($data) {
+
+		\user\ConnectionLib::checkLogged();
+
+		$data->eUser = \user\ConnectionLib::getOnline();
+		$data->cFarmUser = \farm\FarmLib::getOnline();
+
+		switch($data->cFarmUser->count()) {
+
+			case 0 :
+				throw new RedirectAction('/donner');
+
+			case 1 :
+				throw new RedirectAction(\farm\FarmUi::url($data->cFarmUser->first()).'/adherer');
+
+			default:
+				throw new ViewAction($data, ':adherer');
+
 		}
 
 	});

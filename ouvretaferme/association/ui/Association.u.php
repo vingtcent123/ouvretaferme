@@ -40,22 +40,24 @@ class AssociationUi {
 
 		if($eHistory->empty()) {
 
-			$h = '<h1>'.s("Merci pour votre don !").'</h1>';
-
-			$h .= '<p>'.s("Toute l'équipe de Ouvretaferme vous remercie pour votre générosité. Vous allez recevoir dans quelques minutes votre reçu par e-mail à l'adresse indiquée lorsque vous avez rempli votre don.").'</p>';
-
-			return $h;
+			return '<div class="util-block">'.s("Toute l'équipe de Ouvretaferme vous remercie pour votre générosité. Vous allez recevoir dans quelques minutes votre reçu par e-mail à l'adresse indiquée lorsque vous avez rempli votre don.").'</div>';
 
 		}
 
 		\Asset::js('association', 'association.js');
 
-		$h = '<h1 onrender="Association.cleanArgs();">'.s("Merci pour votre don !").'</h1>';
+		//$h = '<div class="util-block" onrender="Association.cleanArgs();">';
+		$h = '<div class="util-block">';
 
-		$h .= '<p>'.s("Nous avons bien reçu votre don de {amount}. Vous allez recevoir dans quelques minutes votre reçu par e-mail à l'adresse {email}.", ['amount' => \util\TextUi::money($eHistory['amount'], precision: 0), 'email' => '<b>'.$eHistory['customer']['invoiceEmail'].'</b>']).'</p>';
+			$h .= '<p>'.s("Nous avons bien reçu votre don de {amount}.", ['amount' => '<b>'.\util\TextUi::money($eHistory['amount'], precision: 0).'</b>']).'</p>';
+			$h .= '<p>'.s("Vous allez recevoir dans quelques minutes votre attestation de paiement par e-mail à l'adresse {email}.", ['email' => '<b>'.$eHistory['customer']['invoiceEmail'].'</b>']).'</p>';
+			$h .= '<p class="mt-2 mb-1">'.s("Toute l'équipe de Ouvretaferme vous remercie pour votre générosité.").'</p>';
+
+			$h .= '<a class="btn btn-outline-primary" href="https://asso.ouvretaferme.org/">'.s("Consulter le site de l'association").'</a>';
+
+		$h .= '</div>';
 
 
-		$h .= '<p>'.s("Toute l'équipe de Ouvretaferme vous remercie pour votre générosité.").'</p>';
 
 		return $h;
 

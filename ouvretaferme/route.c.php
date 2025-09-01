@@ -3,6 +3,11 @@ Route::register([
 	'DELETE' => [
 	],
 	'GET' => [
+		'/adherer' => [
+			'request' => 'association/membership',
+			'priority' => 5,
+			'route' => ['adherer'],
+		],
 		'/client/{id}' => [
 			'request' => 'selling/customer',
 			'priority' => 5,

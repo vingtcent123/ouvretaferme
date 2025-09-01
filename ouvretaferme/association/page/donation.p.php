@@ -2,6 +2,8 @@
 new Page()
 	->get('/donner', function($data) {
 
+		$data->eHistory = new \association\History();
+
 		if(GET('success') === 'association:Membership::donation.created') {
 
 			$eFarmOtf = \farm\FarmLib::getById(Setting::get('association\farm'));

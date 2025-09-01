@@ -101,7 +101,7 @@ class MembershipUi {
 				$h .= $form->hidden('farm', $eFarm['id']);
 
 				$h .= '<p>';
-					$h .= s("Vous pouvez soutenir l'association Ouvretaferme avec un don ici. Le don sera effectué par un paiement par {icon} Stripe.", ['icon' => \Asset::icon('stripe')]);
+					$h .= s("Vous pouvez soutenir l'association Ouvretaferme avec un don ici. Le don sera effectué par un paiement par carte bancaire avec {icon} Stripe.", ['icon' => \Asset::icon('stripe')]);
 				$h .= '</p>';
 
 				$h.= $this->amountBlocks($form, [10, 20, 30]);
@@ -150,6 +150,54 @@ class MembershipUi {
 
 		return $h;
 
+	}
+
+	public function getMyFarms(\Collection $cFarm): string {
+
+		$h = '<div class="association-farmer-farms farmer-farms">';
+
+		foreach($cFarm as $eFarm) {
+			$h .= $this->getPanel($eFarm);
+		}
+
+		return $h;
+
+	}
+
+	public function getPanel(\farm\Farm $eFarm): string {
+
+		\Asset::css('farm', 'farm.css');
+
+		$h = '<a class="farmer-farms-item" href="'.\farm\FarmUi::url($eFarm).'/adherer"';
+			if($eFarm['membership']) {
+				$h .= ' title="'.s("Vous avez déjà adhéré cette année avec {farmName}, mais vous pouvez toujours faire un don !", ['farmName' => encode($eFarm['name'])]).'"';
+			}
+		$h .= '>';
+
+			$h .= '<div class="farmer-farms-item-vignette">';
+				$h .= \farm\FarmUi::getVignette($eFarm, '4rem');
+			$h .= '</div>';
+
+			$h .= '<div class="farmer-farms-item-content">';
+
+				$h .= '<h4>';
+					if($eFarm['membership']) {
+						$h .= \Asset::icon('star-fill').'  ';
+					}
+					$h .= encode($eFarm['name']);
+				$h .= '</h4>';
+
+				$h .= '<div class="farmer-farms-item-infos">';
+					if($eFarm['place']) {
+						$h .= \Asset::icon('geo-fill').' '.encode($eFarm['place']);
+					}
+				$h .= '</div>';
+
+			$h .= '</div>';
+
+		$h .= '</a>';
+
+		return $h;
 	}
 
 
