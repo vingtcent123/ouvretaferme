@@ -170,7 +170,7 @@ class CashflowUi {
 						$h .= '<td class="td-description color-primary">';
 							$h .= '<div>';
 								if($eCashflow['cInvoice']->notEmpty()) {
-									$h .= '<span class="cashflow-invoice" title="'.s("Une facture en attente de paiement a été trouvée").'">'.\Asset::icon('magic').'</span>&nbsp;';
+									$h .= '<span class="color-success" style="cursor: help" title="'.s("Une facture en attente de paiement a été trouvée").'">'.\Asset::icon('magic').'</span>&nbsp;';
 								}
 								$h .= encode($eCashflow['memo']);
 							$h .= '</div>';
@@ -389,14 +389,14 @@ class CashflowUi {
 				]
 			);
 		$subtitle .= '</h2>';
-		$subtitle .= '<div class="cashflow-create-operation-general">';
-			$subtitle .= '<div class="cashflow-operation-create-title">'.\journal\OperationUi::p('paymentDate').'</div>';
+		$subtitle .= '<div class="create-operation-cashflow-general mt-1">';
+			$subtitle .= '<div class="create-operation-cashflow-title">'.\journal\OperationUi::p('paymentDate').'</div>';
 			$subtitle .= $form->date(
 				'paymentDate',
 					$defaultValues['paymentDate'] ?? '',
 				['min' => $eFinancialYear['startDate'], 'max' => $eFinancialYear['endDate']],
 			);
-			$subtitle .= '<div class="cashflow-operation-create-title">'.\journal\OperationUi::p('paymentMethod').'</div>';
+			$subtitle .= '<div class="create-operation-cashflow-title">'.\journal\OperationUi::p('paymentMethod').'</div>';
 			$subtitle .= $form->select(
 				'paymentMethod',
 				$cPaymentMethod,
@@ -460,7 +460,7 @@ class CashflowUi {
 			dialogClose: $form->close(),
 			body       : $h,
 			header     : $title.$subtitle,
-			footer     : $amountWarning.'<div class="operation-create-buttons">'.$addButton.$saveButton.'</div>',
+			footer     : $amountWarning.'<div class="create-operation-buttons">'.$addButton.$saveButton.'</div>',
 		);
 
 	}

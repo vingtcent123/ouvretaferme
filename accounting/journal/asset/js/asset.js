@@ -15,22 +15,22 @@ class Asset {
         // assetClass & grantAssetClass
         if(!accountClass || (!isAsset && !isGrant)) {
 
-            e.delegateTarget.firstParent('.operation-create').classList.remove('is-asset');
+            e.delegateTarget.firstParent('.create-operation').classList.remove('is-asset');
 
-            const hasAsset = qsa('.operation-create:not(.operation-create-headers).is-asset').length > 0;
+            const hasAsset = qsa('.create-operation:not(.create-operation-headers).is-asset').length > 0;
 
             if(hasAsset === false) {
-                qs('.operation-create-headers').classList.remove('is-asset');
-                e.delegateTarget.firstParent('.operation-create-several-container').classList.remove('has-asset')
+                qs('.create-operation-headers').classList.remove('is-asset');
+                e.delegateTarget.firstParent('.create-operations-container').classList.remove('has-asset')
             }
 
             return;
         }
 
 
-        e.delegateTarget.firstParent('.operation-create').classList.add('is-asset');
-        e.delegateTarget.firstParent('.operation-create-several-container').classList.add('has-asset');
-        qs('.operation-create-headers').classList.add('is-asset');
+        e.delegateTarget.firstParent('.create-operation').classList.add('is-asset');
+        e.delegateTarget.firstParent('.create-operations-container').classList.add('has-asset');
+        qs('.create-operation-headers').classList.add('is-asset');
 
         Asset.initializeData(index);
 

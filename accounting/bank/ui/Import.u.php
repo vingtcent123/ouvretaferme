@@ -52,7 +52,7 @@ class ImportUi {
 		array $imports,
 		\account\FinancialYear $eFinancialYearSelected,
 	): string {
-		\Asset::css('bank', 'import.css');
+		\Asset::css('bank', 'flow.css');
 
 		if($cImport->empty() === TRUE) {
 			return '<div class="util-info">'.
@@ -60,10 +60,10 @@ class ImportUi {
 				'</div>';
 		}
 
-		$h = '<div class="import-timeline-wrapper stick-xs">';
+		$h = '<div class="flow-timeline-wrapper stick-xs">';
 
 			// Timeline header
-			$h .= '<div class="import-timeline import-timeline-header">';
+			$h .= '<div class="flow-timeline flow-timeline-header">';
 
 				$h .= '<div class="util-grid-header util-grid-icon text-center">';
 					$h .= \Asset::icon('calendar-week');
@@ -71,13 +71,13 @@ class ImportUi {
 
 			$h .= '</div>';
 
-			$h .= '<div class="import-timeline-body">';
+			$h .= '<div class="flow-timeline-body">';
 
 			foreach(array_reverse($imports) as $import) {
 				$eImport = $import['import'];
-				$h .= '<div class="import-timeline import-timeline-only">';
-					$h .= '<div class="import-timeline-item">';
-						$h .= '<div class="import-timeline-circle">';
+				$h .= '<div class="flow-timeline flow-timeline-only">';
+					$h .= '<div class="flow-timeline-item">';
+						$h .= '<div class="flow-timeline-circle">';
 							if($import['endPeriod'] === date('Y-m-d')) {
 								$h .= s("Aujourd'hui");
 							} else {
@@ -87,8 +87,8 @@ class ImportUi {
 							$h .= $this->getPeriod($import['startPeriod'], $eFinancialYearSelected);
 						$h .= '</div>';
 					$h .= '</div>';
-					$h .= '<div class="import-timeline-action">';
-						$h .= '<div class="import-timeline-action-title">';
+					$h .= '<div class="flow-timeline-action">';
+						$h .= '<div class="flow-timeline-action-title">';
 							if($eImport->empty()) {
 								$h .= '<div class="util-warning-outline mt-1 mb-1">';
 									$h .= \Asset::icon('exclamation-circle', ['class' => 'mr-1']).'&nbsp;'.s("Aucun import n'a couvert cette période");
@@ -139,7 +139,7 @@ class ImportUi {
 
 				if(in_array($eImport['status'], [ImportElement::FULL, ImportElement::PARTIAL]) === TRUE) {
 
-					$h.= '<a href="'.\company\CompanyUi::urlBank($eFarm).'/cashimport?import='.$eImport['id'].'" class="color-text">';
+					$h.= '<a href="'.\company\CompanyUi::urlBank($eFarm).'/cashflow?import='.$eImport['id'].'" class="color-text">';
 						$h.= \Asset::icon('chevron-right', ['class' => 'mr-1']);
 						$h.= p(
 							"{number} mouvement enregistré",

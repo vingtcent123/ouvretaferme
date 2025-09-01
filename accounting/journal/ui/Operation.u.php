@@ -45,7 +45,7 @@ class OperationUi {
 
 		$h .= $form->group(
 			s("Type de paiement").\util\FormUi::asterisk(),
-			'<div class="form-control field-radio-group operation-payment-type-radio">'
+			'<div class="form-control field-radio-group payment-type-radio">'
 					.'<label>'
 						.s("Encaissement : ")
 						.$form->radios(
@@ -113,7 +113,7 @@ class OperationUi {
 			dialogOpen: $dialogOpen,
 			dialogClose: $dialogClose,
 			body: $h,
-			footer: '<div class="operation-create-buttons">'.$saveButton.'</div>',
+			footer: '<div class="create-operation-buttons">'.$saveButton.'</div>',
 		);
 
 	}
@@ -241,7 +241,7 @@ class OperationUi {
 
 				$h .= self::getCreateGrid($eFarm, $eOperation, $eFinancialYear, $index, $form, $defaultValues, $assetData, $cPaymentMethod);
 
-				$h .= '<div class="operation-invoice-preview hide">';
+				$h .= '<div class="invoice-preview hide">';
 					$h .= '<embed class="hide"/>';
 					$h .= '<img class="hide"/>';
 					$h .= $form->hidden('invoiceFile', '');
@@ -267,7 +267,7 @@ class OperationUi {
 
 		$dialogClose = $form->close();
 
-		$footer = '<div class="operation-create-buttons">'
+		$footer = '<div class="create-operation-buttons">'
 			.'<div class="import-invoice-button">';
 
 				$footer .= '<label class="btn btn-outline-secondary" onclick="Operation.openInvoiceFileForm();">'
@@ -275,7 +275,7 @@ class OperationUi {
 					.'</label>';
 
 			$footer .= '</div>'
-			.'<div class="operation-create-button-add">'.$addButton.$saveButton.'</div>'
+			.'<div class="create-operation-button-add">'.$addButton.$saveButton.'</div>'
 		.'</div>';
 
 		$defaultTitle = s("Ajouter une écriture");
@@ -292,18 +292,18 @@ class OperationUi {
 
 	private static function getCreateHeader(\account\FinancialYear $eFinancialYear, bool $isFromCashflow): string {
 
-		$h = '<div class="operation-create operation-create-headers">';
+		$h = '<div class="create-operation create-operation-headers">';
 
 			$h .= '<h4>&nbsp;</h4>';
-			$h .= '<div class="operation-create-header">'.self::p('date')->label.' '.\util\FormUi::asterisk().'</div>';
-			$h .= '<div class="operation-create-header">'.self::p('document')->label.'</div>';
-			$h .= '<div class="operation-create-header">'.self::p('thirdParty')->label.' '.\util\FormUi::asterisk().'</div>';
-			$h .= '<div class="operation-create-header">'.self::p('account')->label.' '.\util\FormUi::asterisk().'</div>';
-			$h .= '<div class="operation-create-header">'.self::p('accountLabel')->label.' '.\util\FormUi::asterisk().'</div>';
-			$h .= '<div class="operation-create-header">'.self::p('description')->label.' '.\util\FormUi::asterisk().'</div>';
-			$h .= '<div class="operation-create-header">'.self::p('comment')->label.'</div>';
-			$h .= '<div class="operation-create-header">'.s("Montant TTC").'</div>';
-			$h .= '<div class="operation-create-header">'.self::p('amount')->label.' '.\util\FormUi::asterisk().'</div>';
+			$h .= '<div class="create-operation-header">'.self::p('date')->label.' '.\util\FormUi::asterisk().'</div>';
+			$h .= '<div class="create-operation-header">'.self::p('document')->label.'</div>';
+			$h .= '<div class="create-operation-header">'.self::p('thirdParty')->label.' '.\util\FormUi::asterisk().'</div>';
+			$h .= '<div class="create-operation-header">'.self::p('account')->label.' '.\util\FormUi::asterisk().'</div>';
+			$h .= '<div class="create-operation-header">'.self::p('accountLabel')->label.' '.\util\FormUi::asterisk().'</div>';
+			$h .= '<div class="create-operation-header">'.self::p('description')->label.' '.\util\FormUi::asterisk().'</div>';
+			$h .= '<div class="create-operation-header">'.self::p('comment')->label.'</div>';
+			$h .= '<div class="create-operation-header">'.s("Montant TTC").'</div>';
+			$h .= '<div class="create-operation-header">'.self::p('amount')->label.' '.\util\FormUi::asterisk().'</div>';
 
 			$h .= '<div class="operation-asset" data-is-asset="1">';
 				$h .= '<h4>'.s("Immobilisation").'</h4>';
@@ -318,15 +318,15 @@ class OperationUi {
 			$h .= '<div class="operation-asset" data-is-asset="1">'.\asset\AssetUi::p('value')->label.' '.\util\FormUi::asterisk().'</div>';
 			$h .= '<div class="operation-asset" data-is-asset="1">'.\asset\AssetUi::p('duration')->label.' '.\util\FormUi::asterisk().'</div>';
 
-			$h .= '<div class="operation-create-header">'.self::p('type')->label.' '.\util\FormUi::asterisk().'</div>';
-			$h .= '<div class="operation-create-header">'.self::p('vatRate')->label.' '.\util\FormUi::asterisk().'</div>';
-			$h .= '<div class="operation-create-header" data-wrapper="vatValue">'.self::p('vatValue')->label.' '.\util\FormUi::asterisk().'</div>';
+			$h .= '<div class="create-operation-header">'.self::p('type')->label.' '.\util\FormUi::asterisk().'</div>';
+			$h .= '<div class="create-operation-header">'.self::p('vatRate')->label.' '.\util\FormUi::asterisk().'</div>';
+			$h .= '<div class="create-operation-header" data-wrapper="vatValue">'.self::p('vatValue')->label.' '.\util\FormUi::asterisk().'</div>';
 
 			if($isFromCashflow === FALSE) {
 
 				$mandatory = $eFinancialYear->isCashAccounting() ? ' '.\util\FormUi::asterisk() : '';
-				$h .= '<div class="operation-create-header">'.self::p('paymentDate')->label.$mandatory.'</div>';
-				$h .= '<div class="operation-create-header">'.self::p('paymentMethod')->label.$mandatory.'</div>';
+				$h .= '<div class="create-operation-header">'.self::p('paymentDate')->label.$mandatory.'</div>';
+				$h .= '<div class="create-operation-header">'.self::p('paymentMethod')->label.$mandatory.'</div>';
 
 			}
 
@@ -376,19 +376,19 @@ class OperationUi {
 			$disabled[] = 'thirdParty';
 		}
 
-		$h = '<div class="operation-create" data-index="'.$index.'">';
-			$h .= '<div class="operation-create-title">';
+		$h = '<div class="create-operation" data-index="'.$index.'">';
+			$h .= '<div class="create-operation-title">';
 				$h .= '<h4>'.s("Écriture #{number}", ['number' => $index + 1]).'</h4>';
 
-					$h .= '<div class="operation-create-actions">';
+					$h .= '<div class="create-operation-actions">';
 						if($isFromCashflow === TRUE) {
 
-							$h .= '<div data-index="'.$index.'">';
+							$h .= '<div class="create-operation-magic" data-index="'.$index.'">';
 								$h .= '<a onclick="Cashflow.recalculate('.$index.')" class="btn btn-outline-primary" title="'.s("Réinitialiser par rapport aux autres écritures").'">'.\Asset::icon('magic').'</a>';
 							$h .= '</div>';
 
 						}
-					$h .= '<div class="hide" data-index="'.$index.'">';
+					$h .= '<div class="create-operation-delete hide" data-index="'.$index.'">';
 						$h .= '<a onclick="Operation.deleteOperation(this)" class="btn btn-outline-primary">'.\Asset::icon('trash').'</a>';
 					$h .= '</div>';
 				$h .= '</div>';
@@ -622,33 +622,33 @@ class OperationUi {
 
 	private static function getCreateValidate(): string {
 
-		$h = '<div class="operation-create operation-create-validation">';
+		$h = '<div class="create-operation create-operation-validation">';
 
 			$h .= '<h4></h4>';
-			$h .= '<div class="cashflow-create-operation-validate"></div>';
-			$h .= '<div class="cashflow-create-operation-validate"></div>';
-			$h .= '<div class="cashflow-create-operation-validate"></div>';
-			$h .= '<div class="cashflow-create-operation-validate"></div>';
-			$h .= '<div class="cashflow-create-operation-validate cashflow-warning">';
+			$h .= '<div class="create-operation-validate"></div>';
+			$h .= '<div class="create-operation-validate"></div>';
+			$h .= '<div class="create-operation-validate"></div>';
+			$h .= '<div class="create-operation-validate"></div>';
+			$h .= '<div class="create-operation-validate cashflow-warning">';
 				$h .= '<div>';
 					$h .= '<span id="cashflow-allocate-difference-warning" class="warning hide">';
 					$h .= s("⚠️ Différence de <span></span>", ['span' => '<span id="cashflow-allocate-difference-value">']);
 					$h .= '</span>';
 				$h .= '</div>';
 			$h .= '</div>';
-			$h .= '<div class="cashflow-create-operation-validate" data-field="amountIncludingVAT"><div><span>=</span><span data-type="value"></span></div></div>';
-			$h .= '<div class="cashflow-create-operation-validate" data-field="amount"><div><span>=</span><span data-type="value"></span></div></div>';
+			$h .= '<div class="create-operation-validate" data-field="amountIncludingVAT"><div><span>=</span><span data-type="value"></span></div></div>';
+			$h .= '<div class="create-operation-validate" data-field="amount"><div><span>=</span><span data-type="value"></span></div></div>';
 
-			$h .= '<div class="cashflow-create-operation-validate operation-asset" data-is-asset="1"><h4></h4></div>';
-			$h .= '<div class="cashflow-create-operation-validate operation-asset" data-is-asset="1"></div>';
-			$h .= '<div class="cashflow-create-operation-validate operation-asset" data-is-asset="1"></div>';
-			$h .= '<div class="cashflow-create-operation-validate operation-asset" data-is-asset="1"></div>';
-			$h .= '<div class="cashflow-create-operation-validate operation-asset" data-is-asset="1" data-field="assetValue"><div><span>=</span><span data-type="value"></span></div></div>';
-			$h .= '<div class="cashflow-create-operation-validate operation-asset" data-is-asset="1"></div>';
+			$h .= '<div class="create-operation-validate operation-asset" data-is-asset="1"><h4></h4></div>';
+			$h .= '<div class="create-operation-validate operation-asset" data-is-asset="1"></div>';
+			$h .= '<div class="create-operation-validate operation-asset" data-is-asset="1"></div>';
+			$h .= '<div class="create-operation-validate operation-asset" data-is-asset="1"></div>';
+			$h .= '<div class="create-operation-validate operation-asset" data-is-asset="1" data-field="assetValue"><div><span>=</span><span data-type="value"></span></div></div>';
+			$h .= '<div class="create-operation-validate operation-asset" data-is-asset="1"></div>';
 
-			$h .= '<div class="cashflow-create-operation-validate"></div>';
-			$h .= '<div class="cashflow-create-operation-validate"></div>';
-			$h .= '<div class="cashflow-create-operation-validate" data-field="vatValue"><div><span>=</span><span data-type="value"></span></div></div>';
+			$h .= '<div class="create-operation-validate"></div>';
+			$h .= '<div class="create-operation-validate"></div>';
+			$h .= '<div class="create-operation-validate" data-field="vatValue"><div><span>=</span><span data-type="value"></span></div></div>';
 
 		$h .= '</div>';
 
@@ -670,7 +670,7 @@ class OperationUi {
 		$suffix = '['.$index.']';
 		$isFromCashflow = ($defaultValues['cashflow']->exists() === TRUE);
 
-		$h = '<div id="operation-create-list" class="operation-create-several-container" data-columns="1" data-cashflow="'.($isFromCashflow ? '1' : '0').'">';
+		$h = '<div id="create-operation-list" class="create-operations-container" data-columns="1" data-cashflow="'.($isFromCashflow ? '1' : '0').'">';
 
 			$h .= self::getCreateHeader($eFinancialYear, $isFromCashflow);
 			$h .= self::getFieldsCreateGrid($eFarm, $form, $eOperation, $eFinancialYear, $suffix, $defaultValues, [], $assetData, $cPaymentMethod);

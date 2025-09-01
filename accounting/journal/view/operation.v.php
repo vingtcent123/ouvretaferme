@@ -22,18 +22,18 @@ new JsonView('readInvoice', function($data, AjaxTemplate $t) {
 	$form = new \util\FormUi();
 	$form->open('journal-operation-create');
 
-	$t->qs('.operation-invoice-preview')->removeHide();
+	$t->qs('.invoice-preview')->removeHide();
 	$t->js()->eval('Operation.deactivateInvoiceImport()');
 
 	if($data->operation['mimetype'] === 'application/pdf') {
 
-		$t->qs('.operation-invoice-preview > embed')->setAttribute('src', 'data:'.$data->operation['mimetype'].';base64,'.base64_encode(file_get_contents($data->operation['filepath'])));
-		$t->qs('.operation-invoice-preview > embed')->removeHide();
+		$t->qs('.invoice-preview > embed')->setAttribute('src', 'data:'.$data->operation['mimetype'].';base64,'.base64_encode(file_get_contents($data->operation['filepath'])));
+		$t->qs('.invoice-preview > embed')->removeHide();
 
 	} else {
 
-		$t->qs('.operation-invoice-preview > img')->setAttribute('src', 'data:'.$data->operation['mimetype'].';base64,'.base64_encode(file_get_contents($data->operation['filepath'])));
-		$t->qs('.operation-invoice-preview > img')->removeHide();
+		$t->qs('.invoice-preview > img')->setAttribute('src', 'data:'.$data->operation['mimetype'].';base64,'.base64_encode(file_get_contents($data->operation['filepath'])));
+		$t->qs('.invoice-preview > img')->removeHide();
 
 	}
 
@@ -61,8 +61,8 @@ new JsonView('readInvoice', function($data, AjaxTemplate $t) {
 		$defaultValues = $data->operation['shipping'] + ['type' => $data->operation['type']];
 		$eOperation = new \journal\Operation($defaultValues);
 
-		$t->qs('#operation-create-list')->setAttribute('data-columns', $index + 1);
-		$t->qs('.operation-create[data-index="'.($index - 1).'"]')->insertAdjacentHtml(
+		$t->qs('#create-operation-list')->setAttribute('data-columns', $index + 1);
+		$t->qs('.create-operation[data-index="'.($index - 1).'"]')->insertAdjacentHtml(
 			'afterend',
 			new \journal\OperationUi()::getFieldsCreateGrid(
 				$data->eFarm,
@@ -165,8 +165,8 @@ new JsonView('addOperation', function($data, AjaxTemplate $t) {
 	$form->open('journal-operation-create');
 	$defaultValues = [];
 
-	$t->qs('#operation-create-list')->setAttribute('data-columns', $data->index + 1);
-	$t->qs('.operation-create[data-index="'.($data->index - 1).'"]')->insertAdjacentHtml(
+	$t->qs('#create-operation-list')->setAttribute('data-columns', $data->index + 1);
+	$t->qs('.create-operation[data-index="'.($data->index - 1).'"]')->insertAdjacentHtml(
 		'afterend',
 		new \journal\OperationUi()::getFieldsCreateGrid(
 			$data->eFarm,

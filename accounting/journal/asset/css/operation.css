@@ -1,138 +1,125 @@
 :root {
-    --operation-create-rows: 15;
-    --operation-create-rows-with-asset: 22;
+    --create-operation-rows: 15;
+    --create-operation-rows-with-asset: 22;
 }
 @supports (grid-template-columns: subgrid) {
 
-    .operation-create-several-container:not(.has-asset) {
-        grid-template-rows: repeat(var(--operation-create-rows), auto);
+    .create-operations-container:not(.has-asset) {
+        grid-template-rows: repeat(var(--create-operation-rows), auto);
     }
-    .operation-create-several-container.has-asset {
-        grid-template-rows: repeat(var(--operation-create-rows-with-asset), auto);
+    .create-operations-container.has-asset {
+        grid-template-rows: repeat(var(--create-operation-rows-with-asset), auto);
     }
 
 }
 
-.operation-create-several-container[data-cashflow="1"] {
+.create-operations-container[data-cashflow="1"] {
     display: grid;
     grid-template-columns: 15rem 1fr 10rem;
 }
-.operation-create-several-container[data-cashflow="1"][data-columns="2"] {
+.create-operations-container[data-cashflow="1"][data-columns="2"] {
     grid-template-columns: 15rem repeat(2, 1fr) 10rem;
 }
-.operation-create-several-container[data-cashflow="1"][data-columns="3"] {
+.create-operations-container[data-cashflow="1"][data-columns="3"] {
     grid-template-columns: 15rem repeat(3, 1fr) 10rem;
 }
-.operation-create-several-container[data-cashflow="1"][data-columns="4"] {
+.create-operations-container[data-cashflow="1"][data-columns="4"] {
     grid-template-columns: auto repeat(4, 1fr) auto;
 }
-.operation-create-several-container[data-cashflow="1"][data-columns="5"] {
+.create-operations-container[data-cashflow="1"][data-columns="5"] {
     grid-template-columns: auto repeat(5, 1fr) auto;
 }
 
-.operation-create-several-container[data-cashflow="0"] {
+.create-operations-container[data-cashflow="0"] {
     display: grid;
     grid-template-columns: 15rem 1fr;
 }
-.operation-create-several-container[data-cashflow="0"][data-columns="2"] {
+.create-operations-container[data-cashflow="0"][data-columns="2"] {
     grid-template-columns: 15rem repeat(2, 1fr);
 }
-.operation-create-several-container[data-cashflow="0"][data-columns="3"] {
+.create-operations-container[data-cashflow="0"][data-columns="3"] {
     grid-template-columns: 15rem repeat(3, 1fr);
 }
-.operation-create-several-container[data-cashflow="0"][data-columns="4"] {
+.create-operations-container[data-cashflow="0"][data-columns="4"] {
     grid-template-columns: auto repeat(4, 1fr);
 }
-.operation-create-several-container[data-cashflow="0"][data-columns="5"] {
+.create-operations-container[data-cashflow="0"][data-columns="5"] {
     grid-template-columns: auto repeat(5, 1fr);
 }
 
-.operation-create-validation {
-    margin-left: 0.5rem;
-}
-
-.operation-create-validation > .btn {
-    display: block;
-}
-
 @supports (grid-template-columns: subgrid) {
-    .operation-create,
-    .operation-create-validation {
+    .create-operation,
+    .create-operation-validation {
         grid-template-rows: subgrid;
     }
-    .operation-create-several-container:not(.has-asset) .operation-create,
-    .operation-create-several-container:not(.has-asset) .operation-create-validation {
-        grid-row: span var(--operation-create-rows);
+    .create-operations-container:not(.has-asset) .create-operation,
+    .create-operations-container:not(.has-asset) .create-operation-validation {
+        grid-row: span var(--create-operation-rows);
     }
-    .operation-create-several-container.has-asset .operation-create,
-    .operation-create-several-container.has-asset .operation-create-validation {
-        grid-row: span var(--operation-create-rows-with-asset);
+    .create-operations-container.has-asset .create-operation,
+    .create-operations-container.has-asset .create-operation-validation {
+        grid-row: span var(--create-operation-rows-with-asset);
     }
 }
-.operation-create {
+.create-operation {
     display: grid;
     transition: border-color 0.5s;
     color: var(--text);
     border-radius: 8px;
 }
-.operation-create > * {
+.create-operation > * {
     padding: 0.5rem;
     height: 100%;
     align-content: center;
 }
-.operation-create div div.input-group {
+.create-operation div div.input-group {
     align-items: stretch;
 }
 
-.operation-create-several-container {
+.create-operations-container {
     overflow-x: auto;
 }
 
-.operation-create-several-container > div:nth-child(2n + 1) {
+.create-operations-container > div:nth-child(2n + 1) {
     background-color: var(--background-light);
 }
 
 .operation-asset {
     background-color: #0001;
 }
-.operation-create-several-container.has-asset .operation-asset {
+.create-operations-container.has-asset .operation-asset {
     display: flex;
 }
-.operation-create-several-container.has-asset div.operation-create:not(.is-asset):not(.operation-create-headers) div.operation-asset > * {
+.create-operations-container.has-asset div.create-operation:not(.is-asset):not(.create-operation-headers) div.operation-asset > * {
     visibility: hidden;
 }
-.operation-create-several-container:not(.has-asset) div.operation-asset {
+.create-operations-container:not(.has-asset) div.operation-asset {
     display: none;
 }
 
-.panel-header-content .operation-create-several-container > div:nth-child(2n+1),
-.panel-header-content .operation-create-several-container > * {
-    background-color: transparent !important;
-}
-
-.operation-create div.operation-asset:not([data-index]) {
+.create-operation div.operation-asset:not([data-index]) {
     padding-left: 0.5rem;
     border-left: 3px solid #0001;
 }
-.operation-create-buttons {
+.create-operation-buttons {
     display: flex;
     justify-content: space-between;
 }
-.operation-create-button-add {
+.create-operation-button-add {
     display: flex;
     justify-content: end;
     gap: 1rem;
 }
-.operation-create-actions {
+.create-operation-actions {
     display: flex;
     column-gap: 1rem;
 }
-.operation-create-title {
+.create-operation-title {
     display: flex;
     justify-content: space-between;
     align-content: center;
 }
-.operation-create-header {
+.create-operation-header {
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -158,50 +145,50 @@
     text-decoration: none;
 }
 
-#operation-create-list {
+#create-operation-list {
     flex: 1;
 }
-#operation-create-list .operation-create-headers,
-#operation-create-list .operation-create-validation {
+#create-operation-list .create-operation-headers,
+#create-operation-list .create-operation-validation {
     background-color: transparent !important;
 }
-#operation-create-list .operation-create-headers > :nth-child(2),
-#operation-create-list .operation-create-validation > :nth-child(2) {
+#create-operation-list .create-operation-headers > :nth-child(2),
+#create-operation-list .create-operation-validation > :nth-child(2) {
     border-top-left-radius: var(--radius);
     border-top-right-radius: var(--radius);
 }
-#operation-create-list .operation-create-headers > :nth-child(n + 2),
-#operation-create-list .operation-create-validation > :nth-child(n + 2) {
+#create-operation-list .create-operation-headers > :nth-child(n + 2),
+#create-operation-list .create-operation-validation > :nth-child(n + 2) {
     background-color: var(--background-light);
 }
-#operation-create-list .operation-create-headers > :last-child,
-#operation-create-list .operation-create-validation > :last-child {
+#create-operation-list .create-operation-headers > :last-child,
+#create-operation-list .create-operation-validation > :last-child {
     border-bottom-left-radius: var(--radius);
     border-bottom-right-radius: var(--radius);
 }
-#operation-create-list.has-asset .operation-create-validation div.operation-asset div,
-#operation-create-list .operation-create-validation div:not(.operation-asset) div {
+#create-operation-list.has-asset .create-operation-validation div.operation-asset div,
+#create-operation-list .create-operation-validation div:not(.operation-asset) div {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
     font-size: 1.3rem;
 }
 
-.operation-invoice-preview {
+.invoice-preview {
     width: 500px;
 }
-.operation-invoice-preview embed {
+.invoice-preview embed {
     height: 730px;
     width: 500px;
 }
-.operation-invoice-preview img {
+.invoice-preview img {
     max-height: 730px;
     max-width: 500px;
 }
 
-.field-radio-group.operation-payment-type-radio > label:hover {
+.field-radio-group.payment-type-radio > label:hover {
     background-color: transparent;
 }
-.field-radio-group.operation-payment-type-radio {
+.field-radio-group.payment-type-radio {
     border: none;
 }
