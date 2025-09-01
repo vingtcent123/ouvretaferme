@@ -269,7 +269,7 @@ class FarmTemplate extends MainTemplate {
 								$farm .= '<a href="'.\Setting::get('association\url').'" target="_blank" class="dropdown-item">'.s("Découvrir l'association").'</a>';
 								$farm .= '<a href="'.\Setting::get('association\url').'/nous-soutenir" target="_blank" class="dropdown-item">'.s("Pourquoi soutenir l'association ?").'</a>';
 								$farm .= '<div class="dropdown-divider"></div>';
-								$farm .= '<a href="'.\association\AssociationUi::url($this->data->eFarm).'" class="dropdown-item">'.Asset::icon('star-fill', ['style' => 'color: #fff4']).'  '.s("Adhérer à l'association").'</a>';
+								$farm .= '<a href="'.\association\AssociationUi::url($this->data->eFarm).'" class="dropdown-item">'.Asset::icon('star').'  '.s("Adhérer à l'association").'</a>';
 
 							$farm .= '</div>';
 
