@@ -62,7 +62,7 @@ class MembershipUi {
 					$h .= \Asset::icon('star-fill').' ';
 
 					if($hasJoinedForNextYear) {
-						$h .= s("Vous avez adhéré à l'association pour les années {year} et {nextYear}. Merci pour votre soutien !", ['year' => '<b>'.currentYear().'</b>', 'nextYear' => '<b>'.nextYear().'</b>']);
+						$h .= s("Vous avez adhéré à l'association pour les années {year} et {nextYear}.", ['year' => '<b>'.currentYear().'</b>', 'nextYear' => '<b>'.nextYear().'</b>']);
 					} else {
 						$h .= s("Vous avez adhéré à l'association pour l'année {year} !", ['year' => currentYear()]);
 					}
