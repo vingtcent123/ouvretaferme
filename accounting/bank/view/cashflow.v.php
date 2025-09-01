@@ -45,8 +45,8 @@ new AdaptativeView('allocate', function($data, PanelTemplate $t) {
 
 new JsonView('addAllocate', function($data, AjaxTemplate $t) {
 
-	$t->qs('#create-operation-list')->setAttribute('data-columns', $data->index + 1);
-	$t->qs('.create-operation[data-index="'.($data->index - 1).'"]')->insertAdjacentHtml('afterend', new \bank\CashflowUi()->addAllocate($data->eFarm, $data->eOperation, $data->eFinancialYear, $data->eCashflow, $data->index, ['grant' => $data->cAssetGrant, 'asset' => $data->cAssetToLinkToGrant]));
+	$t->qs('#operation-create-list')->setAttribute('data-columns', $data->index + 1);
+	$t->qs('.operation-create[data-index="'.($data->index - 1).'"]')->insertAdjacentHtml('afterend', new \bank\CashflowUi()->addAllocate($data->eFarm, $data->eOperation, $data->eFinancialYear, $data->eCashflow, $data->index, ['grant' => $data->cAssetGrant, 'asset' => $data->cAssetToLinkToGrant]));
 	$t->qs('#add-operation')->setAttribute('post-index', $data->index + 1);
 	if($data->index >= 4) {
 		$t->qs('#add-operation')->addClass('not-visible');

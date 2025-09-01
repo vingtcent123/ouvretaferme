@@ -21,10 +21,6 @@
 
 }
 
-.sale-payment-status-allocated {
-    background-color: var(--success);
-}
-
 .cashflow-status-waiting {
     color: var(--todo);
 }
@@ -38,15 +34,15 @@
     color: var(--success);
 }
 
-
 /* Allocating form */
-.create-operation-cashflow-general {
+.cashflow-create-operation-general {
     display: grid;
     grid-template-columns: 1fr 2fr 1fr 2fr;
     grid-gap: 0.5rem;
     align-items: center;
+    margin-bottom: 1rem;
 }
-.create-operation-cashflow-title {
+.cashflow-operation-create-title {
     background-color: var(--background-light);
     height: 100%;
     display: flex;
@@ -54,18 +50,13 @@
     padding: 0.5rem;
     border-radius: var(--radius);
 }
-.create-operation .create-operation-validate div {
+.operation-create .cashflow-create-operation-validate div {
     display: flex;
     flex-direction: row;
     align-items: center;
     justify-content: right;
     padding: 0.5rem;
     border-radius: 8px;
-}
-
-.panel-header-content .create-operations-container > div:nth-child(2n+1),
-.panel-header-content .create-operations-container > * {
-    background-color: transparent !important;
 }
 
 #bank-cashflow-allocate > div.panel-header > a {
@@ -77,43 +68,10 @@
     align-items: center;
 }
 
-.create-operation-total {
-    display: flex !important;
-    flex-direction: column;
-    align-self: baseline;
-    justify-content: end;
-}
-
-.create-operation-total .amount {
-    font-size: 1.3rem;
-    text-align: center;
-    background-color: var(--primary);
-    color: white;
-    border-radius: 8px;
-}
-.create-operation-total .warning {
-    font-size: 0.9rem;
-    color: white;
-    background-color: var(--danger);
-    border-radius: 8px;
-    margin-top: 0.5rem;
-    text-align: center;
-}
-@supports (grid-template-columns: subgrid) {
-
-    .create-operation-total {
-        grid-row: span 2 !important;
-    }
-
-    .cashflow-warning {
-        grid-row: span 3;
-    }
-
-}
 #cashflow-allocate-difference-value {
     font-weight: bold;
 }
-.create-operation-validate.danger > div {
+.cashflow-create-operation-validate.danger > div {
     color: white;
     background-color: var(--danger) !important;
 }
@@ -123,23 +81,20 @@
 #cashflow-allocate-difference-warning {
     text-align: center;
 }
-.create-operation-validate.warning {
+.cashflow-create-operation-validate.warning {
     align-content: baseline;
     margin-top: -0.5rem;
 }
-.create-operation-validate.warning > div {
+.cashflow-create-operation-validate.warning > div {
     color: white;
     background-color: var(--warning) !important;
 }
 
-.create-operation-validation {
-    margin-left: 0.5rem;
-}
-
-.create-operation-validation > .btn {
-    display: block;
-}
-
-.create-operation .create-operation-validate {
+.operation-create .cashflow-create-operation-validate {
     color: var(--primary);
+}
+
+.cashflow-invoice {
+    color: var(--success);
+    cursor: help;
 }

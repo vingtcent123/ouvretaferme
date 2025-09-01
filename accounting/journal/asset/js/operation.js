@@ -1,4 +1,4 @@
-document.delegateEventListener('focus', '.create-operation [name^="amount"], .create-operation [name^="vat"]', function() {
+document.delegateEventListener('focus', '.operation-create [name^="amount"], .operation-create [name^="vat"]', function() {
     this.select();
 });
 
@@ -11,22 +11,22 @@ document.delegateEventListener('autocompleteBeforeQuery', '[data-third-party="ba
 });
 
 document.delegateEventListener('autocompleteBeforeQuery', '[data-account="journal-operation-create"], [data-account="bank-cashflow-allocate"]', function(e) {
-    if(e.detail.input.firstParent('div.create-operation').qs('[name^="thirdParty["]') !== null) {
-        const thirdParty = e.detail.input.firstParent('div.create-operation').qs('[name^="thirdParty["]').getAttribute('value');
+    if(e.detail.input.firstParent('div.operation-create').qs('[name^="thirdParty["]') !== null) {
+        const thirdParty = e.detail.input.firstParent('div.operation-create').qs('[name^="thirdParty["]').getAttribute('value');
         e.detail.body.append('thirdParty', thirdParty);
     }
-    Array.from(qsa('div.create-operation [name^="account["]')).map(element => e.detail.body.append('accountAlready[]', element.value ? parseInt(element.value) : ''));
+    Array.from(qsa('div.operation-create [name^="account["]')).map(element => e.detail.body.append('accountAlready[]', element.value ? parseInt(element.value) : ''));
 });
 
 document.delegateEventListener('autocompleteBeforeQuery', '[data-account-label="journal-operation-create"], [data-account-label="bank-cashflow-allocate"]', function(e) {
 
-    if(e.detail.input.firstParent('div.create-operation').qs('[name^="thirdParty["]') !== null) {
-        const thirdParty = e.detail.input.firstParent('div.create-operation').qs('[name^="thirdParty["]').getAttribute('value');
+    if(e.detail.input.firstParent('div.operation-create').qs('[name^="thirdParty["]') !== null) {
+        const thirdParty = e.detail.input.firstParent('div.operation-create').qs('[name^="thirdParty["]').getAttribute('value');
         e.detail.body.append('thirdParty', thirdParty);
     }
 
-    if(e.detail.input.firstParent('div.create-operation').qs('[name^="account["]') !== null) {
-        const account = e.detail.input.firstParent('div.create-operation').qs('[name^="account["]').getAttribute('value');
+    if(e.detail.input.firstParent('div.operation-create').qs('[name^="account["]') !== null) {
+        const account = e.detail.input.firstParent('div.operation-create').qs('[name^="account["]').getAttribute('value');
         e.detail.body.append('account', account);
     }
 
@@ -161,7 +161,7 @@ class Operation {
 
     static updateThirdParty(index, detail) {
 
-        const columns = qs('#create-operation-list').getAttribute('data-columns');
+        const columns = qs('#operation-create-list').getAttribute('data-columns');
         detail.input.firstParent('form').qs('#add-operation').setAttribute('post-third-party', detail.value);
 
         for(let i = 0; i < columns; i++) {
@@ -175,7 +175,7 @@ class Operation {
 
     static deleteOperation(target) {
 
-        target.firstParent('.create-operation').remove();
+        target.firstParent('.operation-create').remove();
         const index = Number(qs('#add-operation').getAttribute('post-index'));
         qs('#add-operation').setAttribute('post-index', index - 1);
         qs('#add-operation').classList.remove('not-visible');
@@ -187,11 +187,11 @@ class Operation {
 
     static showOrHideDeleteOperation() {
 
-        const operations = qsa('#create-operation-list .create-operation:not(.create-operation-headers):not(.create-operation-validation)').length;
+        const operations = qsa('#operation-create-list .operation-create:not(.operation-create-headers):not(.operation-create-validation)').length;
 
-        qsa('.create-operation-delete', node => (operations > 1 && Number(node.getAttribute('data-index')) === operations - 1) ? node.classList.remove('hide') : node.classList.add('hide'));
+        qsa('.operation-create-delete', node => (operations > 1 && Number(node.getAttribute('data-index')) === operations - 1) ? node.classList.remove('hide') : node.classList.add('hide'));
 
-        qs('#create-operation-list').setAttribute('data-columns', operations);
+        qs('#operation-create-list').setAttribute('data-columns', operations);
 
         if(operations > 1) {
 
@@ -203,7 +203,7 @@ class Operation {
 
     static updateSingularPluralText() {
 
-        const operations = qsa('#create-operation-list .create-operation:not(.create-operation-headers)').length;
+        const operations = qsa('#operation-create-list .operation-create:not(.operation-create-headers)').length;
 
         qs('#submit-save-operation').innerHTML = qs('#submit-save-operation').getAttribute(operations > 1 ? 'data-text-plural' : 'data-text-singular');
 
@@ -357,7 +357,7 @@ class Operation {
         }
 
         const index = e.delegateTarget.getAttribute('data-index');
-        const paymentDateElement = e.delegateTarget.firstParent('div.create-operation').qs('[name="paymentDate[' + index + ']"]');
+        const paymentDateElement = e.delegateTarget.firstParent('div.operation-create').qs('[name="paymentDate[' + index + ']"]');
 
         if(!paymentDateElement.value) {
             paymentDateElement.setAttribute('value', e.delegateTarget.value);
@@ -489,7 +489,7 @@ class Operation {
 
     static openInvoiceFileForm() {
 
-        const columns = qs('#create-operation-list').getAttribute('data-columns');
+        const columns = qs('#operation-create-list').getAttribute('data-columns');
 
         if(columns > 1) {
             return false;

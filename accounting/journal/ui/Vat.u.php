@@ -286,7 +286,7 @@ Class VatUi {
 
 			if($lastAccountLabel === NULL or $currentAccountLabel !== $lastAccountLabel) {
 
-				$h .= '<div class="account-title">';
+				$h .= '<div class="vat-account-title">';
 					$h .= '<div class="title">'.s("Compte").'</div>';
 					$h .= '<div class="label">'.encode($eOperation['accountLabel']).'&nbsp;-&nbsp;'.encode($eOperation['account']['description']).'</div>';
 				$h .= '</div>';

@@ -26,7 +26,7 @@ class Cashflow {
             const targetVatValue = qs('[name="vatValue[' + index + ']"');
             const vatValue = CalculationField.getValue(targetVatValue);
 
-            const type = Array.from(qsa('#create-operation-list [name="type[' + index + ']"]')).find((checkboxType) => checkboxType.checked === true);
+            const type = Array.from(qsa('#operation-create-list [name="type[' + index + ']"]')).find((checkboxType) => checkboxType.checked === true);
 
             const amountToAdd = Math.abs(isNaN(amount) ? 0 : amount);
             const vatAmountToAdd = Math.abs(isNaN(vatValue) ? 0 : vatValue);
@@ -83,7 +83,7 @@ class Cashflow {
 
         const documentValue = target.value;
 
-        const operations = qsa('#create-operation-list [name^="document"]');
+        const operations = qsa('#operation-create-list [name^="document"]');
         Array.from(operations).forEach((operation) => {
             if(operation.getAttribute('value') !== '' && operation.getAttribute('value') !== null) {
                 return;
@@ -179,21 +179,21 @@ class Cashflow {
         }).filter(asset => asset)
             .reduce((acc, value) => acc + parseFloat(value.value || 0), 0);
 
-        qs('.create-operation-validate[data-field="amountIncludingVAT"] [data-type="value"]').innerHTML = money(amountIncludingVAT);
-        qs('.create-operation-validate[data-field="amount"] [data-type="value"]').innerHTML = money(amount);
-        qs('.create-operation-validate[data-field="vatValue"] [data-type="value"]').innerHTML = money(vatValue);
-        qs('.create-operation-validate[data-field="assetValue"] [data-type="value"]').innerHTML = money(assetValue);
+        qs('.cashflow-create-operation-validate[data-field="amountIncludingVAT"] [data-type="value"]').innerHTML = money(amountIncludingVAT);
+        qs('.cashflow-create-operation-validate[data-field="amount"] [data-type="value"]').innerHTML = money(amount);
+        qs('.cashflow-create-operation-validate[data-field="vatValue"] [data-type="value"]').innerHTML = money(vatValue);
+        qs('.cashflow-create-operation-validate[data-field="assetValue"] [data-type="value"]').innerHTML = money(assetValue);
 
         if(sum !== totalAmount) {
             var difference = round(totalAmount - sum);
-            qs('.create-operation-validate[data-field="amountIncludingVAT"]').classList.add('danger');
-            qs('.create-operation-validate[data-field="amountIncludingVAT"]').previousSibling.classList.add('danger');
+            qs('.cashflow-create-operation-validate[data-field="amountIncludingVAT"]').classList.add('danger');
+            qs('.cashflow-create-operation-validate[data-field="amountIncludingVAT"]').previousSibling.classList.add('danger');
             qs('#cashflow-allocate-difference-warning').classList.remove('hide');
             qs('#cashflow-allocate-difference-value').innerHTML = money(Math.abs(difference));
             qs('#submit-save-operation').setAttribute('data-confirm', qs('#submit-save-operation').getAttribute('data-confirm-text'));
         } else {
-            qs('.create-operation-validate[data-field="amountIncludingVAT"]').previousSibling.classList.remove('danger');
-            qs('.create-operation-validate[data-field="amountIncludingVAT"]').classList.remove('danger');
+            qs('.cashflow-create-operation-validate[data-field="amountIncludingVAT"]').previousSibling.classList.remove('danger');
+            qs('.cashflow-create-operation-validate[data-field="amountIncludingVAT"]').classList.remove('danger');
             qs('#cashflow-allocate-difference-warning').classList.add('hide');
             qs('#submit-save-operation').removeAttribute('data-confirm');
         }
@@ -206,9 +206,9 @@ class Cashflow {
         }
 
         if(on === true) {
-            qs('.create-operation-validate[data-field="vatValue"]').classList.add('warning');
+            qs('.cashflow-create-operation-validate[data-field="vatValue"]').classList.add('warning');
         } else {
-            qs('.create-operation-validate[data-field="vatValue"]').classList.remove('warning');
+            qs('.cashflow-create-operation-validate[data-field="vatValue"]').classList.remove('warning');
         }
     }
 }
