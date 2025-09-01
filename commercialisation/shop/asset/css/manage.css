@@ -75,9 +75,9 @@ div.shop-write-fqn label {
 		grid-template-columns: 8rem 20rem 10rem 5rem;
 	}
 
-    .date-products-multiple {
-        text-align: center;
-    }
+	.date-products-multiple {
+		text-align: center;
+	}
 
 }
 
@@ -102,26 +102,26 @@ div.shop-write-fqn label {
 		padding-top: 1rem;
 	}
 
-    @media (max-width: 767px) {
+	@media (max-width: 767px) {
 
-        .date-products .date-products-fields {
-            padding: 1rem;
-        }
+		.date-products .date-products-fields {
+			padding: 1rem;
+		}
 
-    }
+	}
 
 	.date-products .date-products-fields > * {
 		display: grid;
 		grid-template-columns: 2fr 3fr;
 	}
 
-    @media (max-width: 399px) {
+	@media (max-width: 399px) {
 
-        .date-products .date-products-fields > * {
-            grid-template-columns: 1fr;
-        }
+		.date-products .date-products-fields > * {
+			grid-template-columns: 1fr;
+		}
 
-    }
+	}
 
 	.date-products:not(.selected) .date-products-fields {
 		display: none;

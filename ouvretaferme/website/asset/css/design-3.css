@@ -73,8 +73,8 @@ main {
 footer {
 	font-weight: lighter;
 	font-size: 0.9rem;
-    margin-top: 2rem;
-    margin-bottom: 2rem;
+	margin-top: 2rem;
+	margin-bottom: 2rem;
 }
 
 @media (max-width: 767px) {
@@ -121,7 +121,7 @@ body[data-background="#FFFFFF"] main  {
 }
 
 .website-nav {
-    min-height: 5rem;
+	min-height: 5rem;
 	align-items: center;
 	background-color: var(--primary);
 	color: white;
@@ -250,7 +250,7 @@ ul.website-menu a.selected {
 ul.website-menu a:hover {
 	text-decoration: none;
 	background-color: rgba(200, 200, 200, 0.2);
-    color: white;
+	color: white;
 }
 
 ul.website-menu a.selected {
@@ -263,7 +263,7 @@ ul.website-menu a.selected {
 
 .website-logo img {
 	height: 2.75rem;
-    width: auto;
+	width: auto;
 }
 
 @media (max-width: 767px) {
@@ -304,41 +304,41 @@ ul.website-menu a.selected {
 }
 
 .website-banner {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 20rem;
-    background-size: cover;
-    background-position: center center;
-    color: white;
-    position: relative;
-    z-index: 1;
-    margin-bottom: -0.25rem;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	min-height: 20rem;
+	background-size: cover;
+	background-position: center center;
+	color: white;
+	position: relative;
+	z-index: 1;
+	margin-bottom: -0.25rem;
 }
 
 .website-banner:after {
-    content: ' ';
-    display: block;
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: #0003;
+	content: ' ';
+	display: block;
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background-color: #0003;
 }
 
 .website-header {
-    text-align: center;
-    padding: 3rem 2rem 1rem;
+	text-align: center;
+	padding: 3rem 2rem 1rem;
 }
 
 .website-banner .website-header {
-    z-index: 2;
+	z-index: 2;
 }
 
 @media (max-width: 767px) {
 
-    .website-header {
+	.website-header {
 		padding: 3rem 2rem 2rem;
 	}
 
@@ -349,7 +349,7 @@ div.website-menu-news-wrapper {
 }
 
 li.website-menu-list-news {
-    display: none;
+	display: none;
 }
 
 div.website-menu-news-wrapper h4 {

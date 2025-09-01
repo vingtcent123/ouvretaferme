@@ -222,8 +222,8 @@ h1 {
 
 @media (max-width: 575px) {
 
-   h1 {
-      font-size: 2rem;
+	h1 {
+		font-size: 2rem;
 	}
 
 }
@@ -440,7 +440,7 @@ body > nav .nav-actions > * > a.nav-icon {
 .nav-deleted a,
 .nav-deleted a:hover {
 	font-weight: bold;
-    font-size: 0.8rem;
+	font-size: 0.8rem;
 }
 
 body > nav a:active:not(.dropdown-item),

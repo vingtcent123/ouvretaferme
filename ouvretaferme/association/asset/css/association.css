@@ -2,7 +2,7 @@
 	display: grid;
 	grid-template-columns: 1fr 1fr 1fr 1fr;
 	grid-gap: 2rem;
-    align-items: end;
+	align-items: end;
 	margin: 1rem 0 2rem;
 }
 
@@ -23,37 +23,41 @@ input[type="number"].association-amount-block,
 	cursor: pointer;
 	width: 100%;
 	border: 2px solid var(--secondary);
-    background-color: white;
-    transition: 0.25s all;
+	background-color: white;
+	transition: 0.25s all;
 }
 
 input[type="number"].association-amount-block {
 	color: inherit;
-    text-align: center;
-    position: relative;
+	text-align: center;
+	position: relative;
+}
+
+input[type="number"].association-amount-block::placeholder {
+	color: var(--secondary);
 }
 
 input[type="number"].association-amount-block:hover,
 input[type="number"].association-amount-block.selected {
 	background-color: var(--secondary);
-    color: white;
+	color: white;
 }
 
 a.association-amount-block {
-    text-decoration: none;
+	text-decoration: none;
 }
 
 .association-amount-block:hover,
 .association-amount-block.selected {
-    background-color: var(--secondary);
-    color: white;
+	background-color: var(--secondary);
+	color: white;
 	text-decoration: none;
 }
 
 .association-amount-custom-label {
-    text-align: center;
-    margin-bottom: 0.5rem;
-    color: var(--secondary);
+	text-align: center;
+	margin-bottom: 0.5rem;
+	color: var(--secondary);
 }
 
 .association-farmer-farms a.farmer-farms-item:hover {

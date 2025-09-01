@@ -7,7 +7,7 @@ div.bed-item-wrapper {
 div.bed-item-grid {
 	display: grid;
 	align-items: baseline;
-   background-color: white;
+	background-color: white;
 }
 
 div.bed-item-grid > *:first-child {
@@ -15,7 +15,7 @@ div.bed-item-grid > *:first-child {
 }
 
 div.bed-item-grid-header {
-   background-color: white;
+	background-color: white;
 }
 
 @media (min-width: 768px) {
@@ -29,7 +29,7 @@ div.bed-item-grid-header {
 }
 
 div.bed-item-header {
-   padding-top: 0.5rem;
+	padding-top: 0.5rem;
 }
 
 div.bed-item-grid-plan:not(.bed-item-grid-header):nth-child(even) {
@@ -224,9 +224,9 @@ div.bed-item-grid div.bed-item-cultivation-plant {
 
 @media (max-width: 767px) {
 
-   .bed-update-grid {
-      grid-template-columns: auto 1fr auto auto auto auto 1fr;
-   }
+	.bed-update-grid {
+		grid-template-columns: auto 1fr auto auto auto auto 1fr;
+	}
 
 	.bed-configure-actions {
 		grid-column: span 6;
@@ -240,7 +240,7 @@ div.bed-item-grid div.bed-item-cultivation-plant {
 }
 
 .bed-update-grid > *:not(.bed-update-grid-group) {
-   border-bottom: 1px dashed var(--border);
+	border-bottom: 1px dashed var(--border);
 }
 
 .bed-update-grid label.bed-update-grid-select {
@@ -296,9 +296,9 @@ div.bed-item-grid div.bed-item-cultivation-plant {
 
 @media (max-width: 767px) {
 
-   .bed-update-grid div.bed-update-grid-actions {
-      display: none;
-   }
+	.bed-update-grid div.bed-update-grid-actions {
+		display: none;
+	}
 
 }
 
@@ -363,7 +363,7 @@ div.bed-write-size-area[data-area="0"] {
 }
 
 #bed-map-line {
-   width: 100%;
-   height: 500px;
+	width: 100%;
+	height: 500px;
 	max-height: 70vh;
 }

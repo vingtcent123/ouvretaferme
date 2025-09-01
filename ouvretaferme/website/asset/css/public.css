@@ -19,7 +19,7 @@ html {
 }
 
 nav {
-   grid-area: nav;
+	grid-area: nav;
 }
 
 body {
@@ -32,11 +32,11 @@ header {
 }
 
 main {
-   grid-area: main;
+	grid-area: main;
 }
 
 footer {
-   grid-area: footer;
+	grid-area: footer;
 }
 
 .website-logo {
@@ -117,12 +117,12 @@ div.website-wrapper div.website-widget-shop-order a {
 }
 
 div.website-footer {
-    border-top: 1px solid var(--border);
-    padding: 2rem;
+	border-top: 1px solid var(--border);
+	padding: 2rem;
 }
 
 div.website-ad {
-    border-top: 1px solid var(--border);
-    padding-top: 1rem;
-    text-align: center;
+	border-top: 1px solid var(--border);
+	padding-top: 1rem;
+	text-align: center;
 }

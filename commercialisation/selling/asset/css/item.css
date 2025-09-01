@@ -216,11 +216,11 @@ td.item-item-composition-number {
 
 @media (min-width: 576px) {
 
-    .item-day-sales:has(> :nth-child(n + 3)) {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        grid-column-gap: 1rem;
-    }
+	.item-day-sales:has(> :nth-child(n + 3)) {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		grid-column-gap: 1rem;
+	}
 
 }
 
@@ -329,18 +329,18 @@ td.item-item-composition-number {
 		padding: 1rem;
 	}
 
-    .items-products .items-products-fields > * {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-    }
+	.items-products .items-products-fields > * {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+	}
 
-    @media (max-width: 399px) {
+	@media (max-width: 399px) {
 
-        .items-products .items-products-fields > * {
-            grid-template-columns: 1fr;
-        }
+		.items-products .items-products-fields > * {
+			grid-template-columns: 1fr;
+		}
 
-    }
+	}
 
 }
 

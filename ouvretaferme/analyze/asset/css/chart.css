@@ -1,14 +1,14 @@
 div.analyze-chart-table {
-   display: grid;
-   grid-template:
-      "pie" auto
-      "values" auto / 1fr;
-   grid-row-gap: 1rem;
+	display: grid;
+	grid-template:
+		"pie" auto
+		"values" auto / 1fr;
+	grid-row-gap: 1rem;
 	margin-bottom: 1rem;
 }
 
 div.analyze-chart-table .analyze-values {
-   grid-area: values;
+	grid-area: values;
 }
 
 .analyze-values-balance {
@@ -17,7 +17,7 @@ div.analyze-chart-table .analyze-values {
 
 .analyze-values-private,
 .analyze-values-pro {
-   font-size: 0.8rem;
+	font-size: 0.8rem;
 	text-align: center;
 	white-space: nowrap;
 	overflow: hidden;
@@ -43,66 +43,66 @@ div.analyze-chart-table .analyze-values-private + .analyze-values-pro {
 }
 
 div.analyze-chart-table .analyze-pie {
-   grid-area: pie;
+	grid-area: pie;
 }
 
 div.analyze-chart-table .analyze-bar {
-   grid-area: pie;
+	grid-area: pie;
 }
 
 .analyze-bar {
-   height: 300px;
+	height: 300px;
 }
 
 @media (min-width: 768px) {
 
-   div.analyze-chart-table {
-      grid-column-gap: 2rem;
-      align-items: start;
+	div.analyze-chart-table {
+		grid-column-gap: 2rem;
+		align-items: start;
 		grid-template: "values pie" auto / 3fr 2fr;
-   }
+	}
 
 }
 
 div.analyze-charts {
-   display: grid;
+	display: grid;
 }
 
 @media (max-width: 767px) {
 
-   div.analyze-charts {
-      grid-template-columns: 1fr;
-   }
+	div.analyze-charts {
+		grid-template-columns: 1fr;
+	}
 
 }
 
 @media (min-width: 768px) {
 
-   div.analyze-charts {
-      grid-template-columns: 1fr 1fr;
-      grid-column-gap: 2rem;
-   }
+	div.analyze-charts {
+		grid-template-columns: 1fr 1fr;
+		grid-column-gap: 2rem;
+	}
 
 }
 
 .analyze-pie {
-   overflow-y: auto;
+	overflow-y: auto;
 }
 
 .analyze-pie > h5 {
-   text-align: center;
+	text-align: center;
 }
 
 .analyze-pie > .analyze-pie-canvas {
-   height: 300px;
+	height: 300px;
 }
 
 .analyze-total {
-   font-weight: bold;
+	font-weight: bold;
 }
 
 .analyze-lost {
-   opacity: 0.33;
+	opacity: 0.33;
 }
 
 .analyze-empty {

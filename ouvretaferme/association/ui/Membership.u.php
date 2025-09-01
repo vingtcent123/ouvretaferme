@@ -189,6 +189,7 @@ class MembershipUi {
 					'data-label' => s("Montant personnalisé"),
 					'onfocus' => 'Association.customFocus(this);',
 					'onfocusout' => 'Association.validateCustom(this);',
+					'placeholder' => s("_ _ _ €")
 				]);
 			$h .= '</div>';
 		$h .= '</div>';

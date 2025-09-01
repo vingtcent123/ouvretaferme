@@ -51,7 +51,7 @@ body[data-touch="no"] {
 
 h1 {
 	font-family: var(--customTitleFont);
-    color: var(--primary);
+	color: var(--primary);
 	font-size: 3rem;
 	position: relative;
 	line-height: 1.3;
@@ -59,7 +59,7 @@ h1 {
 }
 
 .website-banner h1 {
-    color: white;
+	color: white;
 }
 
 @media (max-width: 991px) {
@@ -107,7 +107,7 @@ nav {
 		position: sticky;
 		height: 100vh;
 		top: 0;
-        background-color: var(--primary);
+		background-color: var(--primary);
 	}
 
 	body[data-text="black"] nav {
@@ -229,11 +229,11 @@ ul.website-menu {
 
 ul.website-menu a,
 ul.website-menu a:hover {
-    color: white;
+	color: white;
 }
 
 ul.website-menu li:not(.website-menu-list-last) {
-    border-bottom: 1px solid #fff3;
+	border-bottom: 1px solid #fff3;
 }
 
 ul.website-menu a {
@@ -343,45 +343,45 @@ ul.website-menu a.selected {
 
 
 .website-banner {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 20rem;
-    background-size: cover;
-    background-position: center center;
-    color: white;
-    position: relative;
-    z-index: 1;
-    margin: 1rem 3rem 0 3rem;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	min-height: 20rem;
+	background-size: cover;
+	background-position: center center;
+	color: white;
+	position: relative;
+	z-index: 1;
+	margin: 1rem 3rem 0 3rem;
 }
 
 @media (max-width: 767px) {
 
-    .website-banner {
-        margin-left: 0;
-        margin-right: 0;
-    }
+	.website-banner {
+		margin-left: 0;
+		margin-right: 0;
+	}
 
 }
 
 .website-banner:after {
-    content: ' ';
-    display: block;
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: #0003;
+	content: ' ';
+	display: block;
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background-color: #0003;
 }
 
 .website-header {
-    text-align: center;
-    padding: 3rem 3rem 1rem;
+	text-align: center;
+	padding: 3rem 3rem 1rem;
 }
 
 .website-banner .website-header {
-    z-index: 2;
+	z-index: 2;
 }
 
 @media (max-width: 767px) {
@@ -403,7 +403,7 @@ ul.website-menu a.selected {
 footer {
 	font-weight: lighter;
 	font-size: 0.9rem;
-    margin: 2rem;
+	margin: 2rem;
 }
 
 div.website-menu-news-wrapper {

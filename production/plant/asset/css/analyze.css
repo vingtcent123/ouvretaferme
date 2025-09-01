@@ -1,16 +1,16 @@
 div.analyze-plant-cycle-tabs {
-    border-bottom: 0;
-    margin-bottom: 0;
+	border-bottom: 0;
+	margin-bottom: 0;
 }
 
 div.analyze-plant-cycle-tabs .tab-item.selected {
-    background-color: var(--background);
-    color: var(--text);
+	background-color: var(--background);
+	color: var(--text);
 }
 
 div.analyze-plant-cycle-panel {
-    padding: 1rem;
-    background-color: var(--background);
+	padding: 1rem;
+	background-color: var(--background);
 }
 
 @media (max-width: 991px) {

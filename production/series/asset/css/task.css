@@ -631,7 +631,7 @@ div.tasks-planning-item-more {
 }
 
 div.tasks-planning-item-more:not(:first-child) {
-    margin-top: 0.125rem;
+	margin-top: 0.125rem;
 }
 
 div.tasks-planning-item-more > *:not(:last-child):after {

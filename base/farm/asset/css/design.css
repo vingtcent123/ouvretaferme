@@ -319,7 +319,7 @@ body[data-template~="farm"] main .container.farm-template-main-title.farm-templa
 		position: absolute;
 		top: 0;
 		left: 0;
-        right: 0;
+		right: 0;
 	}
 
 	body[data-template~="farm"] nav .nav-actions .nav-item {
@@ -344,17 +344,17 @@ body[data-template~="farm"] main .container.farm-template-main-title.farm-templa
 	}
 
 	body[data-template~="farm"] .nav-title-member {
-        margin-top: 0.25rem;
+		margin-top: 0.25rem;
 	}
 
 	body[data-template~="farm"] .nav-title-member-link {
-        border: 1px solid white;
-        border-radius: var(--radius);
-        text-align: center;
-        padding: 0.25rem 0.5rem;
-        font-size: 0.9rem;
-        letter-spacing: 0.5px;
-    }
+		border: 1px solid white;
+		border-radius: var(--radius);
+		text-align: center;
+		padding: 0.25rem 0.5rem;
+		font-size: 0.9rem;
+		letter-spacing: 0.5px;
+	}
 
 	#farm-nav {
 		overflow: auto;

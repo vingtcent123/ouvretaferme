@@ -15,7 +15,7 @@ body[data-template="home-start"] header {
 }
 
 body[data-template="home-farmer"] header {
-   background-image: url(/asset/ouvretaferme/main/image/banner-farmer.jpg);
+	background-image: url(/asset/ouvretaferme/main/image/banner-farmer.jpg);
 }
 
 body[data-template="home-legal"] header {
@@ -44,9 +44,9 @@ body[data-template^="home"] header h1 {
 
 @media (max-width: 767px) {
 
-   body[data-template^="home"] header h1 {
-      font-size: 3rem;
-   }
+	body[data-template^="home"] header h1 {
+		font-size: 3rem;
+	}
 
 }
 
@@ -66,29 +66,29 @@ body[data-template^="home-"] header h4 {
 }
 
 .home-presentation {
-   display: grid;
-   grid-template-columns: 1fr 1fr;
-   grid-gap: 2rem;
-   margin: 1rem 0 2rem;
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	grid-gap: 2rem;
+	margin: 1rem 0 2rem;
 }
 
 @media (max-width: 767px) {
 
-   .home-presentation {
-      grid-template-columns: 1fr;
-   }
+	.home-presentation {
+		grid-template-columns: 1fr;
+	}
 
 
 }
 
 .home-presentation-description {
-    padding: 1.5rem;
-    display: grid;
-    grid-template-columns: 1fr;
-    grid-template-rows: auto 1fr auto;
-    border-radius: var(--radius);
-    line-height: 1.4;
-    background-color: white;
+	padding: 1.5rem;
+	display: grid;
+	grid-template-columns: 1fr;
+	grid-template-rows: auto 1fr auto;
+	border-radius: var(--radius);
+	line-height: 1.4;
+	background-color: white;
 	border: 1px solid var(--border);
 }
 
@@ -135,11 +135,11 @@ body[data-template^="home-"] header h4 {
 
 @media (max-width: 767px) {
 
-   .home-points {
-      display: grid;
-      grid-gap: 1rem;
-      grid-template-columns: 1fr 1fr;
-   }
+	.home-points {
+		display: grid;
+		grid-gap: 1rem;
+		grid-template-columns: 1fr 1fr;
+	}
 
 
 }
@@ -156,12 +156,12 @@ body[data-template^="home-"] header h4 {
 }
 
 .home-point svg {
-   font-size: 3rem;
-   margin: 1rem 0;
+	font-size: 3rem;
+	margin: 1rem 0;
 }
 
 .home-point h4 {
-   margin-bottom: 0rem;
+	margin-bottom: 0rem;
 }
 
 div.home-user-types {
