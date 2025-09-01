@@ -113,38 +113,12 @@ table.pdf-document-items {
 	break-inside: avoid;
 }
 
-.pdf-document-item.pdf-document-item-main td {
-	padding-top: 1rem;
-	padding-bottom: 1rem;
-	text-transform: uppercase;
-}
-
-.pdf-document-item.pdf-document-item-detail td {
-	padding-top: 0.05cm;
-	padding-bottom: 0.05cm;
-	color: var(--muted);
-	font-size: 0.9em;
-	background-color: #fafafa;
-}
-
-.pdf-document-item.pdf-document-item-detail td .font-sm {
-	font-size: 0.8rem;
-}
-
-.pdf-document-item.pdf-document-item-detail td:first-child {
-	padding-left: 1cm;
-	min-width: 9cm;
-}
-
 .pdf-document-product {
 	flex-direction: column;
 	justify-content: center;
 	align-items: flex-start;
 }
 
-.pdf-document-number,
-.pdf-document-unit-price,
-.pdf-document-vat,
 .pdf-document-price {
 	text-align: right;
 	white-space: nowrap;
@@ -154,19 +128,6 @@ table.pdf-document-items {
 	width: 3cm;
 }
 
-table.pdf-document-items tbody tr.pdf-document-item {
-	border-bottom: 1px dashed var(--background);
-}
-
-table.pdf-document-items tbody tr.pdf-document-item-total {
-	border-top: 1px solid var(--border);
-}
-
-table.pdf-document-items tbody tr.pdf-document-item-total td {
-	padding-top: 0.5cm;
-	vertical-align: top;
-}
-
 .pdf-document-item-header {
 	font-weight: bold;
 	border-bottom: 1px solid var(--border);
@@ -174,29 +135,9 @@ table.pdf-document-items tbody tr.pdf-document-item-total td {
 	vertical-align: top;
 }
 
-.pdf-document-item-header.pdf-document-number,
-.pdf-document-item-header.pdf-document-unit-price,
 .pdf-document-item-header.pdf-document-price {
 	text-align: right;
 }
-
-.pdf-document-total {
-	break-inside: avoid;
-	display: grid;
-	align-items: center;
-	justify-content: end;
-	grid-template-columns: 2.5cm 2cm;
-	grid-row-gap: 1.5rem;
-}
-
-.pdf-document-total-label {
-	font-weight: bold;
-}
-
-.pdf-document-total-value {
-	text-align: right;
-}
-
 
 .pdf-document-custom-bottom {
 	margin-top: .5cm;
@@ -205,11 +146,9 @@ table.pdf-document-items tbody tr.pdf-document-item-total td {
 	break-inside: avoid;
 }
 
-
 .pdf-document-custom-bottom p {
 	margin-bottom: 0.25rem;
 }
-
 
 @media print{
 	@page {

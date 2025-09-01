@@ -187,7 +187,7 @@ Cordialement,
 					$h .= '</thead>';
 
 					$h .= '<tbody>';
-						$h .= '<tr class="pdf-document-item pdf-document-item-last">';
+						$h .= '<tr class="pdf-document-item">';
 							$h .= '<td class="pdf-document-product">';
 								$h .= match($eHistory['type']) {
 									History::MEMBERSHIP => s("Adhésion {year} à l'association Ouvretaferme", ['year' => $eHistory['membership']]),
@@ -196,45 +196,42 @@ Cordialement,
 							$h .= '</td>';
 							$h .= '<td class="pdf-document-price">'.\util\TextUi::money($eHistory['amount']).'</td>';
 						$h .= '</tr>';
-						$h .= '<tr class="pdf-document-item-total">';
-						$h .= '<td colspan="2">';
-							$h .= '<div class="pdf-document-total">';
-								$h .= '<div class="pdf-document-total-label">Total</div>';
-								$h .= '<div class="pdf-document-total-value">'.\util\TextUi::money($eHistory['amount']).'</div>';
-							$h .= '</div>';
-						$h .= '</td>';
+					$h .= '</tbody>';
 
-					$h .= '</tr>';
-				$h .= '</tbody>';
+				$h .= '</table>';
 
-			$h .= '</table>';
+				$h .= '<div class="pdf-document-custom-bottom">';
 
-			$h .= '<p>';
-				$h .= s("Paiement réalisé le {date}", ['date' => \util\DateUi::numeric($eHistory['paidAt'])]);
-			$h .= '</p>';
-			$h .= '<p>';
-				$h .= s("Moyen de paiement : {paymentMethod}", ['paymentMethod' => encode($eHistory['sale']['paymentMethod']['name'])]);
-			$h .= '</p>';
+					$h .= '<p>';
+						$h .= s("Paiement réalisé le {date}", ['date' => \util\DateUi::numeric($eHistory['paidAt'])]);
+					$h .= '</p>';
 
-			$h .= '<div class="pdf-document-custom-bottom">';
-				if($eHistory['type'] === History::DONATION) {
+					$h .= '<p>';
+						$h .= s("Moyen de paiement : {paymentMethod}", ['paymentMethod' => encode($eHistory['sale']['paymentMethod']['name'])]);
+					$h .= '</p>';
 
-					$h .= s("L'association <b>Ouvretaferme</b> vous remercie pour votre générosité !");
+				$h .= '</div>';
 
-				} else {
+				$h .= '<div class="pdf-document-custom-bottom">';
 
-					if($eHistory['amount'] > \Setting::get('association\membershipFee')) {
+					if($eHistory['type'] === History::DONATION) {
 
-						$h .= s("L'association <b>Ouvretaferme</b> vous remercie pour votre engagement et votre soutien !");
+						$h .= s("L'association <b>Ouvretaferme</b> vous remercie pour votre générosité !");
 
 					} else {
 
-						$h .= s("L'association <b>Ouvretaferme</b> vous remercie pour votre engagement !");
+						if($eHistory['amount'] > \Setting::get('association\membershipFee')) {
 
+							$h .= s("L'association <b>Ouvretaferme</b> vous remercie pour votre engagement et votre soutien !");
+
+						} else {
+
+							$h .= s("L'association <b>Ouvretaferme</b> vous remercie pour votre engagement !");
+
+						}
 					}
-				}
+				$h .= '</div>';
 			$h .= '</div>';
-		$h .= '</div>';
 		$h .= '</div>';
 
 		return $h;
