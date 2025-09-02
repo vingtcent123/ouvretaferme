@@ -5,9 +5,9 @@ tr.user-admin-status-closed td {
 
 div.user-admin-stats {
 	display: grid;
-	grid-template-columns: repeat(4, 1fr);
+	grid-template-columns: repeat(6, 1fr);
 	column-gap: 1rem;
-	max-width: 50rem;
+	max-width: 70rem;
 	margin-bottom: 2rem;
 }
 
@@ -44,6 +44,7 @@ div.user-admin-stats-role {
 
 span.user-admin-stats-emoji {
 	font-size: 1.5rem;
+	margin-right: 0.5rem;
 }
 
 div.user-admin-stats-value {

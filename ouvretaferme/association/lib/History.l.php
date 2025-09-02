@@ -3,6 +3,15 @@ namespace association;
 
 class HistoryLib extends HistoryCrud {
 
+	public static function countByYears(array $years): \Collection {
+
+		return History::model()
+			->select(['count' => new \Sql('COUNT(*)'), 'membership'])
+			->whereMembership('IN', $years)
+			->group(['membership'])
+			->getCollection(NULL, NULL, 'count');
+
+	}
 	public static function getForDocument(int $id): History {
 
 		return History::model()

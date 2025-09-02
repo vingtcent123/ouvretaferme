@@ -10,6 +10,7 @@
 				'id' => GET('id'),
 				'name' => GET('name'),
 				'user' => GET('user'),
+				'userId' => GET('userId'),
 			], REQUEST('sort', default: 'id-'));
 
 			list($data->cFarm, $data->nFarm) = \farm\AdminLib::getFarms($data->page, $data->search);

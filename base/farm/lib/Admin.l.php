@@ -29,6 +29,16 @@ class AdminLib {
 
 		}
 
+		if($search->get('userId')) {
+
+			$eUser = \user\UserLib::getById($search->get('userId'));
+
+			$cFarmOwned = FarmLib::getByUser($eUser);
+
+			Farm::model()->whereId('IN', $cFarmOwned);
+
+		}
+
 		if($search->get('name')) {
 			Farm::model()->whereName('LIKE', '%'.$search->get('name').'%');
 		}

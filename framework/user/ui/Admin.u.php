@@ -57,7 +57,7 @@ class AdminUi {
 
 	}
 
-	public function displayStats(\Collection $cRole, \Collection $cUserDaily, \Collection $cUserActive): string {
+	public function displayStats(\Collection $cRole, \Collection $cUserDaily, \Collection $cUserActive, \Collection $cAssociationHistory): string {
 
 		$h = '<div class="user-admin-stats">';
 
@@ -66,6 +66,18 @@ class AdminUi {
 
 			$h .= '<div class="user-admin-stats-period">'.s("30 jours").'</div>';
 			$h .= $this->getPeriodStats($cRole, $cUserActive);
+
+			$h .= '<div class="user-admin-stats-period">'.s("Adhérents").'</div>';
+			$h .= '<div class="user-admin-stats-roles">';
+				foreach($cAssociationHistory as $eHistory) {
+					$h .= '<div class="user-admin-stats-role">';
+						$h .= '<span class="user-admin-stats-emoji">⭐️</span>'.encode($eHistory['membership']);
+					$h .= '</div>';
+					$h .= '<div class="user-admin-stats-value">';
+						$h .= encode($eHistory['count']);
+					$h .= '</div>';
+				}
+			$h .= '</div>';
 
 		$h .= '</div>';
 
@@ -193,6 +205,11 @@ class AdminUi {
 									$h .= '<a href="/user/admin/ban?type=active&user='.$eUser['id'].'" class="dropdown-item">';
 										$h .= s("Voir les bannissements");
 									$h .= '</a>';
+									if($eUser['role']['fqn'] === 'farmer') {
+										$h .= '<a href="/farm/admin/?userId='.$eUser['id'].'" class="dropdown-item">';
+											$h .= s("Voir les fermes");
+										$h .= '</a>';
+									}
 									$h .= '<a '.attrs($connectionOptions).' title="'.$connectionTitle.'">';
 										$h .= s("Se connecter en tant que...");
 									$h .= '</a> ';
@@ -241,7 +258,7 @@ class AdminUi {
 		$h = '<h4>'.encode($eUser['email']).'</h4>';
 
 		if($eUserAuth === NULL) {
-			$h .= '<p class="util-warning">'.p("Cet utilisateur n'est pas éligible au changement de mot de passe.").'</p>';
+			$h .= '<p class="util-warning">'.s("Cet utilisateur n'est pas éligible au changement de mot de passe.").'</p>';
 		} else {
 
 			$h .= '<p class="util-info">'.p("Le lien suivant est à communiquer à l'utilisateur et expirera dans {value} jour.", "Le lien suivant est à communiquer à l'utilisateur et expirera dans {value} jours.", $expires).'</p>';
