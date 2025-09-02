@@ -1,3 +1,8 @@
+body[data-template~="farm"] .nav-title-member-link img {
+	height: 1.66rem;
+	width: auto;
+	margin-top: -2px;
+}
 
 #farm-nav {
 	padding: 0;
@@ -354,12 +359,6 @@ body[data-template~="farm"] main .container.farm-template-main-title.farm-templa
 		padding: 0.4rem 0.5rem;
 		font-size: 0.9rem;
 		letter-spacing: 0.5px;
-	}
-
-	body[data-template~="farm"] .nav-title-member-link img {
-		height: 1.66rem;
-		width: auto;
-		margin-top: -2px;
 	}
 
 	#farm-nav {
