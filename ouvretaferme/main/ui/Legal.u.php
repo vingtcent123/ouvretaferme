@@ -46,8 +46,8 @@ class LegalUi {
 		$h = '<ul>';
 			$h .= '<li><a href="/presentation/faq#why">'.s("Pourquoi {siteName} ?").'</a></li>';
 			$h .= '<li><a href="/presentation/faq#how">'.s("Comment accéder au service ?").'</a></li>';
+			$h .= '<li><a href="/presentation/faq#who">'.s("Qui est derrière Ouvretaferme ?").'</a></li>';
 			$h .= '<li><a href="/presentation/faq#much">'.s("Combien ça coûte ?").'</a></li>';
-			$h .= '<li><a href="/presentation/faq#time">'.s("Quelle est la pérennité du service ?").'</a></li>';
 			$h .= '<li><a href="/presentation/faq#help">'.s("Comment obtenir de l'aide pour utiliser le site ?").'</a></li>';
 			$h .= '<li><a href="/presentation/faq#sales">'.s("Comment vendre ma production avec {siteName} ?").'</a></li>';
 			$h .= '<li><a href="/presentation/faq#online">'.s("Comment utiliser le paiement par carte bancaire sur la boutique en ligne ?").'</a></li>';
@@ -94,6 +94,17 @@ class LegalUi {
 
 		$h .= '</div>';
 
+		$h .= '<div id="who"></div>';
+		$h .= '<br/>';
+		$h .= '<h2>'.s("Qui est derrière Ouvretaferme ?").'</h2>';
+
+		$h .= '<div class="home-category">';
+
+			$h .= '<p>'.s("Initialement créé par un maraîcher bénévole, Ouvretaferme est géré par une association depuis 2025. Ouvretaferme est donc un projet collectif au service des producteurs et productrices en agriculture biologique.").'</p>';
+			$h .= '<a href="'.\Setting::get('association\url').'" class="btn btn-secondary">'.s("Découvrir l'association").'</a>';
+
+		$h .= '</div>';
+
 		$h .= '<div id="much"></div>';
 		$h .= '<br/>';
 		$h .= '<h2>'.s("Combien ça coûte ?").'</h2>';
@@ -102,8 +113,9 @@ class LegalUi {
 
 			$h .= '<h4>'.s("Pour le développement, {siteName} c'est :").'</h4>';
 			$h .= '<ul>';
-				$h .= '<li>'.s("200 € de charges par an pour le serveur, le nom de domaine et l'envoi des e-mails").'</li>';
-				$h .= '<li>'.s("1500 heures de travail par an pour le code informatique, soit l'équivalent de 60 000 € par an s'il fallait recruter un informaticien pour cela").'</li>';
+				$h .= '<li>'.s("Environ 1000 € de charges par an pour le serveur, le nom de domaine et l'envoi des e-mails").'</li>';
+				$h .= '<li>'.s("Des frais 1000 € de charges par an pour le serveur, le nom de domaine et l'envoi des e-mails").'</li>';
+				$h .= '<li>'.s("3000 heures de travail par an pour le code informatique, soit l'équivalent de 120 000 € par an s'il fallait recruter un informaticien pour cela").'</li>';
 			$h .= '</ul>';
 
 			$h .= '<h4>'.s("Pour les producteurs, {siteName} c'est :").'</h4>';
@@ -112,29 +124,8 @@ class LegalUi {
 				$h .= '<li>'.s("0 % de commission sur vos ventes").'</li>';
 			$h .= '</ul>';
 
-			$h .= '<p>'.s("Les coûts d'opérations sont supportables sans qu'il soit nécessaire de faire payer le service. Le temps de développement restera lui toujours bénévole. À l'avenir, si les coûts d'opérations deviennent trop importants, il pourra être envisageable de faire appel à des contributions sous la forme du volontariat, mais ce n'est pas à l'ordre du jour pour le moment.").'</p>';
-
-		$h .= '</div>';
-
-		$h .= '<div id="time"></div>';
-		$h .= '<br/>';
-		$h .= '<h2>'.s("Quelle est la pérennité du service ?").'</h2>';
-
-		$h .= '<div class="home-category">';
-
-			$h .= '<p>'.s("Les logiciels commerciaux sont en général moins durables que les logiciels ouverts comme {siteName} :").'</p>';
-			$h .= '<ul>';
-				$h .= '<li>'.s("ils sont soumis à des contraintes de rentabilité, sous peine de disparaître, voire de voir l'entreprise disparaître elle-même,").'</li>';
-				$h .= '<li>'.s("ils ne peuvent être repris par une communauté de développeurs si l'entreprise modifie ses priorités,").'</li>';
-				$h .= '<li>'.s("leur tarification peut changer sans préavis, piégeant ainsi les utilisateurs.").'</li>';
-			$h .= '</ul>';
-
-			$h .= '<p>'.s("La pérennité de {siteName} est garantie pour de nombreuses années :").'</p>';
-			$h .= '<ul>';
-				$h .= '<li>'.s("le développement du logiciel a commencé en 2019, et n'a jamais été aussi actif que cette année,").'</li>';
-				$h .= '<li>'.s("le développeur principal en est devenu dépendant dans son exploitation maraichère et n'a donc pas d'autre choix que de le maintenir 😁,").'</li>';
-				$h .= '<li>'.s("les coûts de maintenance et d'exploitation sont très faibles.").'</li>';
-			$h .= '</ul>';
+			$h .= '<p>'.s("Si vous voulez soutenir le projet, vous pouvez adhérer à l'association !").'</p>';
+			$h .= '<a href="/adherer" class="btn btn-secondary">'.s("Adhérer à l'association").'</a>';
 
 		$h .= '</div>';
 
