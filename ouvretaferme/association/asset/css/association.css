@@ -1,0 +1,72 @@
+.association-amount-container {
+	display: grid;
+	grid-template-columns: 1fr 1fr 1fr 1fr;
+	grid-gap: 2rem;
+	align-items: end;
+	margin: 1rem 0 2rem;
+}
+
+@media (max-width: 575px) {
+	.association-amount-container {
+		grid-template-columns: 1fr 1fr;
+	}
+}
+
+input.association-amount-block,
+.association-amount-block {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	border-radius: var(--radius);
+	height: 8rem;
+	font-size: 2.5rem;
+	cursor: pointer;
+	width: 100%;
+	border: 2px solid var(--secondary);
+	background-color: white;
+	transition: 0.25s all;
+}
+
+input.association-amount-block {
+	color: inherit;
+	text-align: center;
+	position: relative;
+}
+
+input.association-amount-block::placeholder {
+	color: var(--secondary);
+}
+
+input.association-amount-block:hover::placeholder,
+input.association-amount-block:focus::placeholder {
+	color: white;
+}
+
+input.association-amount-block:hover,
+input.association-amount-block.selected {
+	background-color: var(--secondary);
+	color: white;
+}
+
+a.association-amount-block {
+	text-decoration: none;
+}
+
+.association-amount-block:hover,
+.association-amount-block.selected {
+	background-color: var(--secondary);
+	color: white;
+	text-decoration: none;
+}
+
+.association-amount-custom-label {
+	text-align: center;
+	margin-bottom: 0.5rem;
+	color: var(--secondary);
+}
+
+.association-farmer-farms a.farmer-farms-item:hover {
+	text-decoration: none;
+	box-shadow: 0 0 1rem #0003;
+	transition: box-shadow 0.3s;
+}

@@ -388,18 +388,26 @@ class FarmUi {
 
 	}
 
-	public function updateLegal(Farm $eFarm): string {
+	public function updateLegal(Farm $eFarm, array $requiredProperties = ['legalEmail', 'legalName']): string {
 
 		$form = new \util\FormUi();
+
+		$properties = [];
+		foreach(['legalEmail', 'siret', 'legalName'] as $property) {
+			if(in_array($property, $requiredProperties)) {
+				$properties[] = $property.'*';
+			} else {
+				$properties[] = $property;
+			}
+		}
 
 		$h = $form->openAjax('/farm/farm:doUpdateLegal', ['autocomplete' => 'off']);
 
 			$h .= $form->hidden('id', $eFarm['id']);
 			$h .= $form->asteriskInfo();
 
-			$h .= $form->dynamicGroups($eFarm, ['legalEmail*']);
-				$h .= $form->dynamicGroups($eFarm, ['siret', 'legalName*']);
-				$h .= $form->addressGroup(s("Siège social de la ferme").\util\FormUi::asterisk(), 'legal', $eFarm);
+			$h .= $form->dynamicGroups($eFarm, $properties);
+			$h .= $form->addressGroup(s("Siège social de la ferme").\util\FormUi::asterisk(), 'legal', $eFarm);
 
 			$h .= $form->group(
 				content: $form->submit(s("Valider"))

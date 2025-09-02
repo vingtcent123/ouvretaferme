@@ -10,25 +10,25 @@ div.editor {
 }
 
 div.editor-intro {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-size: 0.9rem;
-    background: #8881;
-    color: #0009;
-    padding: 0.25rem 0.5rem;
-    margin-left: var(--radius);
-    margin-right: var(--radius);
-    border-top-left-radius: var(--radius);
-    border-top-right-radius: var(--radius);
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	font-size: 0.9rem;
+	background: #8881;
+	color: #0009;
+	padding: 0.25rem 0.5rem;
+	margin-left: var(--radius);
+	margin-right: var(--radius);
+	border-top-left-radius: var(--radius);
+	border-top-right-radius: var(--radius);
 }
 
 div.editor-intro-help a {
-    color: var(--secondary);
+	color: var(--secondary);
 }
 
 div.editor-intro-help {
-    color: var(--secondary);
+	color: var(--secondary);
 }
 
 div.editor:after {
@@ -62,7 +62,7 @@ div.editor:not(:focus):empty:before {
 }
 
 div.editor [contenteditable]:focus {
-    outline: 0px solid transparent;
+	outline: 0px solid transparent;
 }
 
 div.reador {
@@ -112,14 +112,14 @@ div.editor p a {
 }
 
 div.readitor h2 {
-    font-weight: normal;
+	font-weight: normal;
 	font-size: 1.7rem;
 	line-height: 1.5;
 	margin-bottom: 1.2rem;
 }
 
 div.readitor h3 {
-    font-weight: normal;
+	font-weight: normal;
 	font-size: 1.4rem;
 	line-height: 1.5;
 	margin-bottom: 0.8rem;
@@ -199,7 +199,7 @@ div.editor-box-figure button,
 	background-color: transparent;
 	text-align: left;
 	appearance: none;
-    padding: 0.25rem 0;
+	padding: 0.25rem 0;
 }
 
 div.editor-box-figure button i,
@@ -428,17 +428,17 @@ div.editor-box-selection-link a[data-action="link-close"] {
 }
 
 div.editor-box-selection-link ::-webkit-input-placeholder {
-   color: var(--background-light);
+	color: var(--background-light);
 	font-style: italic;
 }
 
 div.editor-box-selection-link ::-moz-placeholder {
-   color: var(--background-light);
+	color: var(--background-light);
 	font-style: italic;
 }
 
 div.editor-box-selection-link :-ms-input-placeholder {
-   color: var(--background-light);
+	color: var(--background-light);
 	font-style: italic;
 }
 
@@ -558,7 +558,7 @@ div.editor-box-line button.editor-action {
 	border: 1px solid #515151;
 	background-color: white;
 	border-radius: 50%;
-    padding: 0.375rem;
+	padding: 0.375rem;
 	display: flex;
 	justify-content: center;
 	align-items: center;
@@ -647,11 +647,11 @@ div.editor-box-media a.editor-box-media-action.editor-box-media-action-disabled 
 }
 
 div.editor-media[data-border] .editor-action[data-action="media-border"] {
-    color: #afa !important;
+	color: #afa !important;
 }
 
 div.editor-media[data-background] .editor-action[data-action="media-background"] {
-    color: #afa !important;
+	color: #afa !important;
 }
 
 #editor-media-configure {
@@ -834,60 +834,60 @@ div.readitor figure[data-interactive="false"] > div.editor-media[data-type="imag
 }
 
 div.readitor div.editor-media[data-type="grid"][data-background] {
-    padding: 1rem;
+	padding: 1rem;
 }
 
 div.readitor div.editor-media[data-background="primary"] {
-    background-color: var(--primary);
-    color: white;
-    border-radius: var(--radius);
+	background-color: var(--primary);
+	color: white;
+	border-radius: var(--radius);
 }
 
 div.readitor div.editor-media[data-background="primary"] a {
-    color: white !important;
+	color: white !important;
 }
 
 div.readitor div.editor-media[data-type="quote"][data-background="primary"] div.editor-quote div.editor-quote-image {
-    color: white !important;
+	color: white !important;
 }
 
 div.readitor div.editor-media[data-border] {
 	border-width: 2px;
-    border-radius: var(--radius);
+	border-radius: var(--radius);
 }
 
 div.readitor div.editor-media[data-type="grid"][data-border] {
-    padding: 1rem;
+	padding: 1rem;
 }
 
 div.readitor div.editor-media[data-border="solid-grey"] {
 	border-style: solid;
-    border-color: #888;
+	border-color: #888;
 }
 
 div.readitor div.editor-media[data-border="solid-primary"] {
 	border-style: solid;
-    border-color: var(--primary);
+	border-color: var(--primary);
 }
 
 div.readitor div.editor-media[data-border="solid-text"] {
 	border-style: solid;
-    border-color: var(--textColor);
+	border-color: var(--textColor);
 }
 
 div.readitor div.editor-media[data-border="dashed-grey"] {
 	border-style: dashed;
-    border-color: #888;
+	border-color: #888;
 }
 
 div.readitor div.editor-media[data-border="dashed-primary"] {
 	border-style: dashed;
-    border-color: var(--primary);
+	border-color: var(--primary);
 }
 
 div.readitor div.editor-media[data-border="dashed-text"] {
 	border-style: dashed;
-    border-color: var(--textColor);
+	border-color: var(--textColor);
 }
 
 div.editor figure [data-action="media-move"]:hover {
@@ -923,13 +923,13 @@ div.readitor .editor-image .nav-right {
 
 div.readitor div.editor-video .nav-left,
 div.readitor .editor-image .nav-left {
-    left: 0rem;
+	left: 0rem;
 }
 
 
 div.readitor div.editor-video .nav-right,
 div.readitor .editor-image .nav-right {
-    right: 0rem;
+	right: 0rem;
 }
 
 div.readitor figure > div.editor-media > .editor-image {

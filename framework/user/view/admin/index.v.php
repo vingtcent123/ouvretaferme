@@ -11,7 +11,7 @@ new AdaptativeView('index', function($data, MainTemplate $t) {
 		$t->header .= $uiAdmin->getUsersForm($data->search, $data->nUser);
 	$t->header .= '</div>';
 
-	echo $uiAdmin->displayStats($data->cRole, $data->cUserDaily, $data->cUserActive);
+	echo $uiAdmin->displayStats($data->cRole, $data->cUserDaily, $data->cUserActive, $data->cAssociationHistory);
 	echo $uiAdmin->displayUsers($data->cUser, $data->nUser, $data->page, $data->search, $data->isExternalConnected);
 
 });

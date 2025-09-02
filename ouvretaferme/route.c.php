@@ -3,6 +3,11 @@ Route::register([
 	'DELETE' => [
 	],
 	'GET' => [
+		'/adherer' => [
+			'request' => 'association/membership',
+			'priority' => 5,
+			'route' => ['adherer'],
+		],
 		'/client/{id}' => [
 			'request' => 'selling/customer',
 			'priority' => 5,
@@ -23,6 +28,11 @@ Route::register([
 			'priority' => 5,
 			'route' => ['commandes', 'professionnels', '{farm}'],
 		],
+		'/donner' => [
+			'request' => 'association/donation',
+			'priority' => 5,
+			'route' => ['donner'],
+		],
 		'/espece/{id@int}' => [
 			'request' => 'plant/plant',
 			'priority' => 5,
@@ -37,6 +47,16 @@ Route::register([
 			'request' => 'selling/order',
 			'priority' => 5,
 			'route' => ['factures', 'particuliers'],
+		],
+		'/ferme/{farm}/adherer' => [
+			'request' => 'association/membership',
+			'priority' => 5,
+			'route' => ['ferme', '{farm}', 'adherer'],
+		],
+		'/ferme/{farm}/donner' => [
+			'request' => 'association/membership',
+			'priority' => 5,
+			'route' => ['ferme', '{farm}', 'donner'],
 		],
 		'/ferme/{id}/analyses/cultures' => [
 			'request' => 'farm/index',
@@ -776,6 +796,11 @@ Route::register([
 			'request' => 'website/public',
 			'priority' => 5,
 			'route' => ['public', '{domain}', ':doContact'],
+		],
+		'/public/{domain}/:doDonate' => [
+			'request' => 'website/public',
+			'priority' => 5,
+			'route' => ['public', '{domain}', ':doDonate'],
 		],
 		'/public/{domain}/:doNewsletter' => [
 			'request' => 'website/public',

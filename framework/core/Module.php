@@ -5280,9 +5280,9 @@ abstract class ModulePage extends Page {
 
 	}
 
-	public function doUpdate(\Closure $action, ?array $propertiesUpdate = NULL, array|string $page = 'doUpdate', array $validate = ['canUpdate'], ?Closure $onKo = NULL): ModulePage {
+	public function doUpdate(\Closure $action, ?array $propertiesUpdate = NULL, array|string $page = 'doUpdate', array $validate = ['canUpdate'], ?Closure $onKo = NULL, string $for = 'update'): ModulePage {
 
-		$this->post($page, function($data) use($action, $propertiesUpdate, $validate, $onKo) {
+		$this->post($page, function($data) use($action, $propertiesUpdate, $validate, $onKo, $for) {
 
 			$e = $this->element->call($this, $data);
 
@@ -5305,7 +5305,7 @@ abstract class ModulePage extends Page {
 
 			$properties = $this->getPropertiesUpdate($e, $propertiesUpdate);
 
-			$e->build($properties, $_POST, new \Properties('update'));
+			$e->build($properties, $_POST, new \Properties($for));
 
 			$fw->validate(onKo: $onKo);
 
@@ -5402,9 +5402,9 @@ abstract class ModulePage extends Page {
 
 	}
 
-	public function doUpdateProperties(string $page, array|Closure $properties, \Closure $action, array $validate = ['canUpdate']): ModulePage {
+	public function doUpdateProperties(string $page, array|Closure $properties, \Closure $action, array $validate = ['canUpdate'], string $for = 'update'): ModulePage {
 
-		$this->post($page, function($data) use($properties, $action, $validate) {
+		$this->post($page, function($data) use($properties, $action, $validate, $for) {
 
 			$e = $this->element->call($this, $data);
 
@@ -5429,7 +5429,7 @@ abstract class ModulePage extends Page {
 				$properties = $properties->call($this, $e);
 			}
 
-			$e->build($properties, $_POST, new \Properties('update'));
+			$e->build($properties, $_POST, new \Properties($for));
 
 			$fw->validate();
 

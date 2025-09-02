@@ -159,7 +159,7 @@ table.tr-even tbody tr:nth-of-type(even) {
 }
 
 table.tr-even tbody tr:nth-of-type(odd):not(tr.tr-title) {
-    background-color: var(--background-odd);
+	background-color: var(--background-odd);
 }
 
 table.tr-bordered tr {
@@ -177,11 +177,11 @@ tr.tr-disabled {
 }
 
 div.div-even > *:nth-of-type(even) {
-    background-color: white;
+	background-color: white;
 }
 
 div.div-even > *:nth-of-type(odd) {
-    background-color: var(--background-odd);
+	background-color: var(--background-odd);
 }
 
 @media (min-width: 768px) {
@@ -1241,10 +1241,10 @@ a.util-badge {
 	padding: 1rem;
 }
 
-.util-block p:last-child,
-.util-block-secondary p:last-child,
-.util-block-help p:last-child,
-.util-card p:last-child {
+.util-block *:last-child,
+.util-block-secondary *:last-child,
+.util-block-help *:last-child,
+.util-card *:last-child {
 	margin-bottom: 0;
 }
 
@@ -1261,17 +1261,17 @@ table.util-block tbody:last-child tr:last-child td:last-child {
 }
 
 .util-block-bordered {
-    border: 2px solid var(--border);
+	border: 2px solid var(--border);
 }
 
 .util-block-secondary {
 	background: var(--secondary);
-    color: white;
+	color: white;
 }
 
 .util-block-secondary a{
-    color: white;
-    text-decoration: underline;
+	color: white;
+	text-decoration: underline;
 }
 
 .util-block-separator {
@@ -2516,7 +2516,7 @@ body.dropdown-fullscreen-open[data-touch="no"] {
 }
 
 body[data-touch="no"] .dropdown-list.dropdown-list-open:not(.dropdown-list-unstyled) {
-   box-shadow: 0 0 1rem rgb(0 0 0 / 20%);
+	box-shadow: 0 0 1rem rgb(0 0 0 / 20%);
 }
 
 body[data-touch="yes"] .dropdown-list.dropdown-list-open {
@@ -2800,7 +2800,7 @@ div.tabs-item + div.tabs-panel.util-block {
 	align-items: stretch;
 	margin-bottom: 1.5rem;
 	border-bottom: 1px solid var(--secondary);
-   overflow-x: auto;
+	overflow-x: auto;
 }
 
 div.tabs-v > div.tabs-item {
@@ -2887,7 +2887,7 @@ a.tab-item.selected {
 @media (max-width: 449px) {
 
 	.tab-item {
-      padding: 1rem 0.5rem;
+		padding: 1rem 0.5rem;
 	}
 
 	:not(div.tabs-v) .tab-item {

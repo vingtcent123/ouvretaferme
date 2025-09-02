@@ -21,7 +21,7 @@ class AdminLib {
 				'firstName', 'lastName', 'visibility',
 				'vignette',
 				'createdAt', 'ping', 'email', 'status',
-				'role' => ['name', 'emoji'],
+				'role' => ['name', 'emoji', 'fqn'],
 				'auths' => \user\UserAuth::model()
 					->select('type')
 					->delegateCollection('user'),

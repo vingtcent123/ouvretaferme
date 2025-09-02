@@ -178,11 +178,15 @@ class FarmTemplate extends MainTemplate {
 				$canNavigate = ($this->data->cFarmUser->count() > 1);
 
 				$farm .= '<div class="nav-title-farm">';
-					$farm .= '<div>'.\farm\FarmUi::getVignette($this->data->eFarm, '4rem').'</div>';
+					$farm .= '<div>'.\farm\FarmUi::getVignette($this->data->eFarm, $this->data->eFarm->isMembership() ? '4rem' : '3rem').'</div>';
 
 					if($canUpdate or $canNavigate) {
 
-						$farm .= '<a data-dropdown="bottom-start" data-dropdown-hover="true">'.encode($this->data->eFarm['name']).'  '.Asset::icon('chevron-down').'</a>';
+						$farm .= '<a data-dropdown="bottom-start" data-dropdown-hover="true">';
+							if($this->data->eFarm->isMembership()) {
+								$farm .= Asset::icon('star-fill').'  ';
+							}
+							$farm .= encode($this->data->eFarm['name']).'  '.Asset::icon('chevron-down').'</a>';
 						$farm .= '<div class="dropdown-list bg-primary">';
 
 							if($canUpdate) {
@@ -193,8 +197,13 @@ class FarmTemplate extends MainTemplate {
 									$farm .= '<a href="/farm/farm:update?id='.$this->data->eFarm['id'].'" class="dropdown-item">'.Asset::icon('gear-fill').'  '.s("Paramétrer la ferme").'</a>';
 									$farm .= '<a href="'.\farm\FarmerUi::urlManage($this->data->eFarm).'" class="dropdown-item">'.Asset::icon('people-fill').'  '.s("Gérer l'équipe de la ferme").'</a>';
 								}
+
 								if($this->data->eFarm->canPersonalData()) {
 									$farm .= '<a href="/farm/farm:export?id='.$this->data->eFarm['id'].'" class="dropdown-item">'.Asset::icon('database-fill').'  '.s("Exporter les données").'</a>';
+								}
+
+								if($this->data->eFarm->isMembership()) {
+									$farm .= '<a href="'.\association\AssociationUi::url($this->data->eFarm).'" class="dropdown-item">'.Asset::icon('star-fill').'  '.s("Adhésion à {icon}", ['icon' => Asset::image('main', 'favicon.png', ['style' => 'height: 1.75rem; width: auto'])]).'</a>';
 								}
 
 							}
@@ -242,7 +251,34 @@ class FarmTemplate extends MainTemplate {
 						$farm .= encode($this->data->eFarm['name']);
 					}
 
+					if(
+						$this->data->eFarm->isMembership() === FALSE and
+						$this->data->eFarm->canManage()
+					) {
+
+						$farm .= '<div class="nav-title-member">';
+
+							$farm .= '<a class="nav-title-member-link" data-dropdown="bottom" data-dropdown-hover="true">';
+								$farm .= s("Adhérer à {value}", Asset::image('main', 'favicon.png'));
+							$farm .= '</a>';
+
+							$farm .= '<div class="dropdown-list bg-primary">';
+
+							$farm .= '<div class="dropdown-title">'.s("L'association Ouvretaferme").'</div>';
+
+								$farm .= '<a href="'.\Setting::get('association\url').'" target="_blank" class="dropdown-item">'.s("Découvrir l'association").'</a>';
+								$farm .= '<a href="'.\Setting::get('association\url').'/nous-soutenir" target="_blank" class="dropdown-item">'.s("Pourquoi soutenir l'association ?").'</a>';
+								$farm .= '<div class="dropdown-divider"></div>';
+								$farm .= '<a href="'.\association\AssociationUi::url($this->data->eFarm).'" class="dropdown-item">'.Asset::icon('star').'  '.s("Adhérer à l'association").'</a>';
+
+							$farm .= '</div>';
+
+						$farm .= '</div>';
+
+					}
+
 				$farm .= '</div>';
+
 
 			}
 

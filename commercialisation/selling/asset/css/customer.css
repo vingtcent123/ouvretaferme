@@ -74,25 +74,25 @@ tr.customer-item-details {
 
 /* Prices */
 .customer-price td {
-    line-height: 1.4;
+	line-height: 1.4;
 }
 @media (min-width: 992px) {
 
-    .customer-price thead br {
-        display: none;
-    }
+	.customer-price thead br {
+		display: none;
+	}
 
 }
 
 .customer-price input {
-    min-width: 5rem;
+	min-width: 5rem;
 }
 
 @media (max-width: 991px) {
 
-    .customer-price-product {
-        max-width: 10rem;
-    }
+	.customer-price-product {
+		max-width: 10rem;
+	}
 
 }
 

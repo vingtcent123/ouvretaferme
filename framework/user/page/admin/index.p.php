@@ -17,6 +17,8 @@
 		$data->cUserDaily = new \user\UserLib()->getDailyUsersStats($data->cRole);
 		$data->cUserActive = new \user\UserLib()->getActiveUsersStats($data->cRole);
 
+		$data->cAssociationHistory = \association\HistoryLib::countByYears([date('Y'), date('Y', strtotime('next year'))]);
+
 		$data->isExternalConnected = \session\SessionLib::exists('userOld');
 
 		throw new ViewAction($data);

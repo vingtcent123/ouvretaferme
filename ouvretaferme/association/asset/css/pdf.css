@@ -1,0 +1,157 @@
+.pdf-document-wrapper {
+	display: grid;
+	grid-template-rows: auto 1fr auto;
+}
+
+.pdf-document-header {
+	display: grid;
+	grid-column-gap: 1rem;
+	grid-template-columns: 6cm 1fr;
+	height: 8cm;
+	overflow: hidden;
+	margin-bottom: 0.75cm;
+}
+
+.pdf-document-vendor {
+	background-color: var(--background-light);
+	border-radius: var(--radius);
+	padding: 0.5cm;
+	display: grid;
+	grid-row-gap: 0.5rem;
+	height: 100%;
+	text-align: center;
+}
+
+.pdf-document-vendor:not(.pdf-document-vendor-with-logo) {
+	align-content: center;
+}
+
+.pdf-document-vendor.pdf-document-vendor-with-logo {
+	grid-template-rows: 1fr auto;
+}
+
+.pdf-document-vendor-logo {
+	width: 100%;
+	height: 100%;
+	background-size: contain;
+	background-repeat: no-repeat;
+	background-position: center center;
+	max-height: 3cm;
+	align-self: center;
+}
+
+.pdf-document-vendor-name {
+	display: flex;
+	justify-content: center;
+	font-weight: bold;
+	font-size: 1.3rem;
+}
+
+.pdf-document-vendor-with-logo .pdf-document-vendor-name {
+	padding-top: 0.5rem;
+	font-size: 1rem;
+}
+
+.pdf-document-vendor-address {
+	text-align: center;
+}
+
+.pdf-document-top {
+	display: flex;
+	flex-direction: column;
+	justify-content: space-evenly;
+	align-items: center;
+}
+
+.pdf-document-structure {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+}
+
+h2.pdf-document-title {
+	font-weight: bold;
+	text-align: center;
+	margin-bottom: 0.2cm;
+	font-size: 0.8cm;
+}
+
+.pdf-document-details {
+	display: grid;
+	grid-template-columns: auto 1fr;
+	grid-column-gap: 1rem;
+	grid-row-gap: .25rem;
+}
+
+.pdf-document-detail-label {
+	text-align: right;
+}
+
+.pdf-document-customer {
+	border: 1px solid var(--border);
+	border-radius: var(--radius);
+	padding: 0.5cm;
+	display: grid;
+	grid-template-columns: 1fr;
+	grid-row-gap: 0.25rem;
+}
+
+.pdf-document-customer-name {
+	font-weight: bold;
+}
+
+.pdf-document-customer-email {
+	text-decoration: underline;
+}
+
+table.pdf-document-items {
+	margin-bottom: 0;
+}
+
+.pdf-document-item {
+	break-inside: avoid;
+}
+
+.pdf-document-product {
+	flex-direction: column;
+	justify-content: center;
+	align-items: flex-start;
+}
+
+.pdf-document-price {
+	text-align: right;
+	white-space: nowrap;
+}
+
+.pdf-document-price {
+	width: 3cm;
+}
+
+.pdf-document-item-header {
+	font-weight: bold;
+	border-bottom: 1px solid var(--border);
+	align-self: stretch;
+	vertical-align: top;
+}
+
+.pdf-document-item-header.pdf-document-price {
+	text-align: right;
+}
+
+.pdf-document-custom-bottom {
+	margin-top: .5cm;
+	padding-top: .5cm;
+	border-top: 1px solid var(--border);
+	break-inside: avoid;
+}
+
+.pdf-document-custom-bottom p {
+	margin-bottom: 0.25rem;
+}
+
+@media print{
+	@page {
+		size: landscape
+	}
+}

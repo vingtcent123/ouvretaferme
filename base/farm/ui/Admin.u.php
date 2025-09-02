@@ -97,7 +97,12 @@ class AdminUi {
 							}
 						$h .= '</td>';
 						$h .= '<td>';
-							$h .= '<a href="'.FarmUi::urlPlanningWeekly($eFarm).'">'.encode($eFarm['name']).'</a>';
+							$h .= '<a href="'.FarmUi::urlPlanningWeekly($eFarm).'">';
+								if($eFarm['membership']) {
+									$h .= \Asset::icon('star-fill').' ';
+								}
+								$h .= encode($eFarm['name']);
+							$h .= '</a>';
 						$h .= '</td>';
 						$h .= '<td>';
 							if($eFarm['place'] !== NULL) {

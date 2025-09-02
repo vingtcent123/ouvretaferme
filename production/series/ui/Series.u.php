@@ -465,7 +465,7 @@ class SeriesUi {
 					if($season < date('Y')) {
 
 						if(date('m') >= \Setting::get('farm\newSeason')) {
-							$nextSeason = s("{value1} ou {value2}", ['value1' => date('Y'), 'value2' => date('Y') + 1]);
+							$nextSeason = s("{value1} ou {value2}", ['value1' => date('Y'), 'value2' => nextYear()]);
 						} else {
 							$nextSeason = date('Y');
 						}

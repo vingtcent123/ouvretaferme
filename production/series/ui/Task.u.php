@@ -3674,7 +3674,7 @@ class TaskUi {
 
 		$seasons = '';
 
-		for($i = max(date('Y') - 1, $e['farm']['seasonFirst']); $i <= min(date('Y') + 1, $e['farm']['seasonLast']); $i++) {
+		for($i = max(date('Y') - 1, $e['farm']['seasonFirst']); $i <= min(nextYear(), $e['farm']['seasonLast']); $i++) {
 
 			$action = $e['action']->notEmpty() ? $e['action']['id'] : '';
 

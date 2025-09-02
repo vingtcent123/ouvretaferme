@@ -128,6 +128,19 @@ new Page()
 		throw new ViewAction($data, ':doNewsletter');
 
 	})
+	->post('/public/{domain}/:doDonate', function($data) {
+
+		$fw = new FailWatch();
+
+		$url = \association\MembershipLib::createPayment(new \farm\Farm(), \association\History::DONATION);
+
+		$fw->validate();
+
+		if($fw->ok()) {
+			throw new RedirectAction($url);
+		}
+
+	})
 	->get(['/public/{domain}/', '/public/{domain}/{page}'], function($data) {
 
 		if(

@@ -1,5 +1,5 @@
 input[type="number"] {
-   width: 5rem;
+	width: 5rem;
 }
 
 input[type="file"] {
@@ -218,7 +218,7 @@ input[type="checkbox"] {
 	font-size: .9rem;
 	padding: 0.25rem 0 0 0;
 	text-align: right;
-    color: var(--secondary);
+	color: var(--secondary);
 }
 
 .field-action.columns-2 {
@@ -227,7 +227,7 @@ input[type="checkbox"] {
 }
 
 .field-action a {
-    color: var(--secondary);
+	color: var(--secondary);
 }
 
 .form-control + .form-info,

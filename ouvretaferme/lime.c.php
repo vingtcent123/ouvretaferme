@@ -4,7 +4,7 @@ Lime::setUrls([
 	'prod' => 'https://www.ouvretaferme.org'
 ]);
 
-Lime::setApps(['framework', 'agora', 'ouvretaferme', 'base', 'commercialisation', 'production', 'accounting']);
+Lime::setApps(['framework', 'agora', 'ouvretaferme', 'base', 'commercialisation', 'production', 'accounting', 'association']);
 
 L::setLang('fr_FR');
 L::setVariables([
@@ -45,6 +45,8 @@ switch(LIME_ENV) {
 			'selling' => 'ouvretaferme',
 			'website' => 'ouvretaferme',
 
+			'association' => 'ouvretaferme',
+
 			'company' => 'ouvretaferme',
 			'account' => 'ouvretaferme',
 
@@ -77,6 +79,8 @@ switch(LIME_ENV) {
 			'hr' => 'dev_ouvretaferme',
 			'selling' => 'dev_ouvretaferme',
 			'website' => 'dev_ouvretaferme',
+
+			'association' => 'dev_ouvretaferme',
 
 			'company' => 'dev_ouvretaferme',
 			'account' => 'dev_ouvretaferme',

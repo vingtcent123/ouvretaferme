@@ -217,6 +217,12 @@ class Farm extends FarmElement {
 
 	}
 
+	public function isMembership(): bool {
+
+		return ($this['membership'] === TRUE);
+
+	}
+
 	public function isEmail(): bool {
 
 		return (
@@ -383,10 +389,10 @@ class Farm extends FarmElement {
 	}
 
 	public function getCampaignLimit(): int {
-		return $this['id'] === 7 ? $this->getCampaignMemberLimit() : 50;
+		return $this->isMembership() ? self::getCampaignMemberLimit() : 50;
 	}
 
-	public function getCampaignMemberLimit(): int {
+	public static function getCampaignMemberLimit(): int {
 		return 1000;
 	}
 
@@ -394,11 +400,11 @@ class Farm extends FarmElement {
 		if(LIME_ENV === 'dev') {
 			return 100;
 		} else {
-			return $this['id'] === 7 ? $this->getContactMemberLimit() : 1;
+			return $this->isMembership() ? self::getContactMemberLimit() : 1;
 		}
 	}
 
-	public function getContactMemberLimit(): int {
+	public static function getContactMemberLimit(): int {
 		return 3;
 	}
 
@@ -433,6 +439,41 @@ class Farm extends FarmElement {
 			})
 			->setCallback('legalEmail.empty', function(?string $email) {
 				return ($email !== NULL);
+			})
+			->setCallback('legalName.empty', function(?string $legalName) use($p) {
+				if($p->for !== 'legal') {
+					return TRUE;
+				}
+				return ($legalName !== NULL);
+			})
+			->setCallback('siret.empty', function(?string $siret) use($p) {
+				if($p->for !== 'legal') {
+					return TRUE;
+				}
+				return ($siret !== NULL);
+			})
+			->setCallback('legalCity.empty', function(?string $legalCity) use($p) {
+
+				if($p->for !== 'legal') {
+					return TRUE;
+				}
+
+				$fw = new \FailWatch();
+
+				if($this['legalStreet1'] === NULL) {
+					Farm::fail('legalStreet1.empty');
+				}
+
+				if($this['legalPostcode'] === NULL) {
+					Farm::fail('legalPostcode.empty');
+				}
+
+				if($legalCity === NULL) {
+					Farm::fail('legalCity.empty');
+				}
+
+				return $fw->ok();
+
 			})
 			->setCallback('placeLngLat.check', function(?array &$placeLngLat) {
 

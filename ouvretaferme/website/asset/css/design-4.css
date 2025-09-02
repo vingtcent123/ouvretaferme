@@ -69,8 +69,8 @@ h1 {
 footer {
 	font-weight: lighter;
 	font-size: 0.9rem;
-    margin-top: 2rem;
-    margin-bottom: 2rem;
+	margin-top: 2rem;
+	margin-bottom: 2rem;
 }
 
 main {
@@ -95,18 +95,18 @@ main {
 
 @media (min-width: 768px) {
 
-    body[data-text="black"] nav {
-       background-color: #00000005;
-    }
+	body[data-text="black"] nav {
+		background-color: #00000005;
+	}
 
-    body[data-text="white"] nav {
-       background-color: #00000020;
-    }
+	body[data-text="white"] nav {
+		background-color: #00000020;
+	}
 
 }
 
 .website-nav {
-    min-height: 5rem;
+	min-height: 5rem;
 	align-items: center;
 	color: white;
 	display: flex;
@@ -114,6 +114,7 @@ main {
 	padding: 0 1rem;
 	position: relative;
 	white-space: nowrap;
+	background-color: var(--background);
 }
 
 @media (max-width: 575px) {
@@ -211,7 +212,7 @@ ul.website-menu li {
 ul.website-menu a {
 	display: block;
 	padding: 0.25rem;
-    margin: 0 0.5rem;
+	margin: 0 0.5rem;
 	text-decoration: none;
 }
 
@@ -224,26 +225,26 @@ ul.website-menu a svg {
 
 	ul.website-menu a {
 		color: white;
-        padding: 0.5rem 0;
-    }
+		padding: 0.5rem 0;
+	}
 
-    ul.website-menu li {
-        width: 100%;
-        border-bottom: 1px solid #FFF7;
-    }
+	ul.website-menu li {
+		width: 100%;
+		border-bottom: 1px solid #FFF7;
+	}
 
 }
 
 @media (min-width: 767px) {
 
-    ul.website-menu a:hover,
-    ul.website-menu a.selected {
-        color: var(--primary);
-    }
+	ul.website-menu a:hover,
+	ul.website-menu a.selected {
+		color: var(--primary);
+	}
 
-    ul.website-menu li:not(.website-menu-list-last) {
-        border-right: 1px solid #0003;
-    }
+	ul.website-menu li:not(.website-menu-list-last) {
+		border-right: 1px solid #0003;
+	}
 
 }
 
@@ -257,7 +258,7 @@ ul.website-menu a.selected {
 
 .website-logo img {
 	height: 2.75rem;
-    width: auto;
+	width: auto;
 }
 
 .website-name {
@@ -289,35 +290,35 @@ ul.website-menu a.selected {
 }
 
 .website-banner {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 20rem;
-    background-size: cover;
-    background-position: center center;
-    color: white;
-    position: relative;
-    z-index: 1;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	min-height: 20rem;
+	background-size: cover;
+	background-position: center center;
+	color: white;
+	position: relative;
+	z-index: 1;
 }
 
 .website-banner:after {
-    content: ' ';
-    display: block;
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: #0003;
+	content: ' ';
+	display: block;
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background-color: #0003;
 }
 
 .website-header {
-    text-align: center;
-    padding: 3rem 2rem 1rem;
+	text-align: center;
+	padding: 3rem 2rem 1rem;
 }
 
 .website-banner .website-header {
-    z-index: 2;
+	z-index: 2;
 }
 
 div.website-menu-news-wrapper {
@@ -325,7 +326,7 @@ div.website-menu-news-wrapper {
 }
 
 li.website-menu-list-news {
-    display: none;
+	display: none;
 }
 
 div.website-menu-news-wrapper h4 {

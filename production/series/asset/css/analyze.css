@@ -91,25 +91,25 @@ div.analyze-working-time-wrapper span.task-time-minutes {
 
 
 .analyze-tasks-wrapper {
-   overflow-y: auto;
+	overflow-y: auto;
 }
 
 .analyze-tasks {
-   min-width: 500px;
+	min-width: 500px;
 }
 
 .analyze-tasks .tasks-planning-item-series {
-   margin-bottom: 0.25rem;
+	margin-bottom: 0.25rem;
 }
 
 .analyze-tasks .tasks-item-users-list {
-   margin-top: 0.25rem;
+	margin-top: 0.25rem;
 }
 
 @media (max-width: 767px) {
 
-   .analyze-tasks-users {
-      display: none;
-   }
+	.analyze-tasks-users {
+		display: none;
+	}
 
 }

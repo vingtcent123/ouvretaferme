@@ -3,7 +3,7 @@ div.doc-wrapper {
 	grid-template:
 		"menu header" auto
 		"menu content" auto / minmax(15rem, 20vw) 1fr;
-    min-width: 700px;
+	min-width: 700px;
 }
 
 div.doc-menu {
@@ -28,24 +28,24 @@ div.doc-menu a.selected {
 }
 
 div.doc-header {
-   background-position: center center;
-   background-size: cover;
-   min-height: 20rem;
+	background-position: center center;
+	background-size: cover;
+	min-height: 20rem;
 	padding: 5rem 0;
-   display: flex;
+	display: flex;
 	flex-direction: column;
-   align-items: center;
-   justify-content: center;
+	align-items: center;
+	justify-content: center;
 	background: linear-gradient(145deg, var(--secondary) 0, var(--primary) 100%);
 	color: white;
 	margin-bottom: 2rem;
 }
 
 div.doc-header h1 {
-   color: white;
-   text-align: center;
-   font-family: 'Itim', cursive;
-   font-size: 4rem;
+	color: white;
+	text-align: center;
+	font-family: 'Itim', cursive;
+	font-size: 4rem;
 	max-width: 80rem;
 	margin: auto;
 }
@@ -53,8 +53,8 @@ div.doc-header h1 {
 @media (max-width: 767px) {
 
 	div.doc-header h1 {
-      font-size: 3rem;
-   }
+		font-size: 3rem;
+	}
 
 }
 
@@ -83,11 +83,11 @@ div.doc-content pre {
 }
 
 div.doc-content img {
-    display: block;
-    max-width: 100%;
-    border: 2px solid var(--border);
-    border-radius: var(--radius);
-    margin-bottom: 1rem;
+	display: block;
+	max-width: 100%;
+	border: 2px solid var(--border);
+	border-radius: var(--radius);
+	margin-bottom: 1rem;
 }
 
 div.doc-example {

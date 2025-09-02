@@ -554,7 +554,9 @@ class CampaignUi {
 				$h .= '<li>'.s("{value} envois d'e-mails", $eFarm->getCampaignLimit()).'</li>';
 				$h .= '<li>'.p("{value} envois d'e-mail par contact", "{value} envois d'e-mails par contact", $eFarm->getContactLimit()).'</li>';
 			$h .= '</ul>';
-			$h .= '<p class="color-secondary">'.s("L'envoi d'e-mails est limité en nombre pour réduire les risques de spam et parce que l'envoi des e-mails est une source de coût pour l'association {siteName}. Il sera bientôt possible d'envoyer plus d'e-mails en adhérant à l'association. ").'</p>';
+			if($eFarm->isMembership() === FALSE) {
+				$h .= '<p class="color-secondary">'.s("L'envoi d'e-mails est limité en nombre pour réduire les risques de spam et parce que l'envoi des e-mails est une source de coût pour l'association {siteName}. Il est possible d'envoyer plus d'e-mails <link><u>en adhérant à l'association</u></link>.", ['link' => '<a href="'.\association\AssociationUi::url($eFarm).'">']).'</p>';
+			}
 		$h .= '</div>';
 
 		if(array_sum($scheduledByWeek) > 0) {
