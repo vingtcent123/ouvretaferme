@@ -42,7 +42,9 @@ class HistoryUi {
 								}
 							$h .= '</td>';
 							$h .= '<td class="text-end">';
-								$h .= '<a href="/association/pdf:document?id='.$eHistory['id'].'" data-ajax-navigation="never" class="btn btn-outline-secondary">'.\Asset::icon('download').'  '.s("Reçu").'</a> ';
+								if($eHistory->canReadDocument()) {
+									$h .= '<a href="/association/pdf:document?id='.$eHistory['id'].'" data-ajax-navigation="never" class="btn btn-outline-secondary">'.\Asset::icon('download').'  '.s("Reçu").'</a> ';
+								}
 							$h .= '</td>';
 						$h .= '</tr>';
 					}

@@ -11,11 +11,11 @@ class History extends HistoryElement {
 
 	}
 
-	public function canRead(): bool {
+	public function canReadDocument(): bool {
 
 		$this->expects(['farm']);
 
-		return $this['farm']->canManage();
+		return $this['paymentStatus'] === History::SUCCESS and $this['farm']->canManage();
 
 	}
 

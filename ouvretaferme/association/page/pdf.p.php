@@ -2,7 +2,7 @@
 new Page()
 	->get('document', function($data) {
 
-		$data->eHistory = \association\HistoryLib::getById(GET('id'))->validate('canRead');
+		$data->eHistory = \association\HistoryLib::getById(GET('id'))->validate('canReadDocument');
 
 		if($data->eHistory['document'] === NULL) {
 
