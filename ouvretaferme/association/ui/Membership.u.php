@@ -137,7 +137,14 @@ class MembershipUi {
 				$for = nextYear();
 
 			} else {
-				$h .= s("Les adhésions se font par année civile et votre adhésion se terminera donc le <b>{date}</b>.", ['farmName' => encode($eFarm['name']), 'year' => date('Y'), 'date' => date('31/12/Y')]);
+
+				// Promo adhésion 2025-2026
+				if(currentYear() === 2025) {
+					$h .= s("Les adhésions se font habituellement par année civile, mais exceptionnellement pour le lancement de l'association, les adhésions réalisées en 2025 resteront actives jusqu'au 31/12/2026 !");
+				} else {
+					$h .= s("Les adhésions se font par année civile et votre adhésion se terminera donc le <b>{date}</b>.", ['year' => date('Y'), 'date' => date('31/12/Y')]);
+				}
+
 				$for = currentYear();
 			}
 
@@ -168,7 +175,12 @@ class MembershipUi {
 					'callbackLabel' => fn($input) => $input.'  '.$form->addon(s("J'accepte les <linkStatus>statuts</linkStatus> et le <linkRules>règlement intérieur</linkRules> de l'association", ['linkStatus' => '<a data-ajax-navigation="never" target="_blank" href="'.\Asset::getPath('association', 'document/statuts.pdf').'">', 'linkRules' => '<a data-ajax-navigation="never" target="_blank" href="'.\Asset::getPath('association', 'document/reglement_interieur.pdf').'">']))
 				]);
 
-				$h .= $form->inputGroup($form->submit(s("J'adhère pour {value}", $for), ['class' => 'btn btn-primary btn-lg']), ['class' => 'mt-2']);
+				// Promo adhésion 2025-2026
+				if(currentYear() === 2025) {
+					$h .= $form->inputGroup($form->submit(s("J'adhère pour 2025 et 2026"), ['class' => 'btn btn-primary btn-lg']), ['class' => 'mt-2']);
+				} else {
+					$h .= $form->inputGroup($form->submit(s("J'adhère pour {value}", $for), ['class' => 'btn btn-primary btn-lg']), ['class' => 'mt-2']);
+				}
 
 			$h .= $form->close();
 
@@ -240,6 +252,8 @@ class MembershipUi {
 			$h .= $this->getPanel($eFarm);
 		}
 
+		$h .= '</div>';
+
 		return $h;
 
 	}
@@ -248,11 +262,7 @@ class MembershipUi {
 
 		\Asset::css('farm', 'farm.css');
 
-		$h = '<a class="farmer-farms-item" href="'.\farm\FarmUi::url($eFarm).'/adherer"';
-			if($eFarm['membership']) {
-				$h .= ' title="'.s("Vous avez déjà adhéré cette année avec {farmName}, mais vous pouvez toujours faire un don !", ['farmName' => encode($eFarm['name'])]).'"';
-			}
-		$h .= '>';
+		$h = '<a class="farmer-farms-item" href="'.\farm\FarmUi::url($eFarm).'/adherer">';
 
 			$h .= '<div class="farmer-farms-item-vignette">';
 				$h .= \farm\FarmUi::getVignette($eFarm, '4rem');
@@ -261,17 +271,14 @@ class MembershipUi {
 			$h .= '<div class="farmer-farms-item-content">';
 
 				$h .= '<h4>';
-					if($eFarm['membership']) {
-						$h .= \Asset::icon('star-fill').'  ';
-					}
 					$h .= encode($eFarm['name']);
 				$h .= '</h4>';
 
-				$h .= '<div class="farmer-farms-item-infos">';
-					if($eFarm['place']) {
-						$h .= \Asset::icon('geo-fill').' '.encode($eFarm['place']);
-					}
-				$h .= '</div>';
+				if($eFarm['membership']) {
+					$h .= '<div class="farmer-farms-item-infos">';
+						$h .= \Asset::icon('star-fill').' '.s("Cette ferme a déjà adhéré à {siteName}, mais vous pouvez toujours faire un don !");
+					$h .= '</div>';
+				}
 
 			$h .= '</div>';
 
