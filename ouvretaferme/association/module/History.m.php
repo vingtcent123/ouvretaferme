@@ -15,6 +15,10 @@ abstract class HistoryElement extends \Element {
 	const FAILURE = 'failure';
 	const EXPIRED = 'expired';
 
+	const PROCESSING = 'processing';
+	const VALID = 'valid';
+	const INVALID = 'invalid';
+
 	public static function getSelection(): array {
 		return History::model()->getProperties();
 	}
@@ -53,6 +57,7 @@ class HistoryModel extends \ModuleModel {
 			'checkoutId' => ['text8', 'null' => TRUE, 'cast' => 'string'],
 			'paymentIntentId' => ['text8', 'null' => TRUE, 'cast' => 'string'],
 			'paymentStatus' => ['enum', [\association\History::INITIALIZED, \association\History::SUCCESS, \association\History::FAILURE, \association\History::EXPIRED], 'null' => TRUE, 'cast' => 'enum'],
+			'status' => ['enum', [\association\History::PROCESSING, \association\History::VALID, \association\History::INVALID], 'cast' => 'enum'],
 			'sale' => ['element32', 'selling\Sale', 'null' => TRUE, 'cast' => 'element'],
 			'document' => ['textFixed', 'min' => 20, 'max' => 20, 'charset' => 'ascii', 'null' => TRUE, 'cast' => 'string'],
 			'createdAt' => ['datetime', 'cast' => 'string'],
@@ -61,7 +66,7 @@ class HistoryModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'farm', 'customer', 'type', 'amount', 'membership', 'checkoutId', 'paymentIntentId', 'paymentStatus', 'sale', 'document', 'createdAt', 'updatedAt', 'paidAt'
+			'id', 'farm', 'customer', 'type', 'amount', 'membership', 'checkoutId', 'paymentIntentId', 'paymentStatus', 'status', 'sale', 'document', 'createdAt', 'updatedAt', 'paidAt'
 		]);
 
 		$this->propertiesToModule += [
@@ -79,6 +84,9 @@ class HistoryModel extends \ModuleModel {
 	public function getDefaultValue(string $property) {
 
 		switch($property) {
+
+			case 'status' :
+				return History::PROCESSING;
 
 			case 'createdAt' :
 				return new \Sql('NOW()');
@@ -101,6 +109,9 @@ class HistoryModel extends \ModuleModel {
 				return ($value === NULL) ? NULL : (string)$value;
 
 			case 'paymentStatus' :
+				return ($value === NULL) ? NULL : (string)$value;
+
+			case 'status' :
 				return ($value === NULL) ? NULL : (string)$value;
 
 			default :
@@ -152,6 +163,10 @@ class HistoryModel extends \ModuleModel {
 
 	public function wherePaymentStatus(...$data): HistoryModel {
 		return $this->where('paymentStatus', ...$data);
+	}
+
+	public function whereStatus(...$data): HistoryModel {
+		return $this->where('status', ...$data);
 	}
 
 	public function whereSale(...$data): HistoryModel {

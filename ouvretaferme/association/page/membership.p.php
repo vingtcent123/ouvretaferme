@@ -14,7 +14,7 @@ new Page(function($data) {
 	->get('/ferme/{farm}/adherer', function($data) {
 
 		$data->cHistory = \association\HistoryLib::getByFarm($data->eFarm);
-		$data->hasJoinedForNextYear = $data->cHistory->contains(fn($e) => $e['paymentStatus'] === \selling\Payment::SUCCESS and $e['membership'] === nextYear());
+		$data->hasJoinedForNextYear = $data->cHistory->contains(fn($e) => $e['status'] === \association\History::VALID and $e['membership'] === nextYear());
 
 		throw new ViewAction($data);
 
@@ -70,6 +70,9 @@ new Page()
 		switch($data->cFarmUser->count()) {
 
 			case 0 :
+				if(!Setting::get('association\isDonnerPageActive')) {
+					throw new RedirectAction(Setting::get('association\url').'/nous-soutenir');
+				}
 				throw new RedirectAction('/donner');
 
 			case 1 :

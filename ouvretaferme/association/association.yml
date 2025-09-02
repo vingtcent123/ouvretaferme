@@ -8,6 +8,7 @@ History:
   checkoutId: ?text8
   paymentIntentId: ?text8
   paymentStatus: ?enum(INITIALIZED, SUCCESS, FAILURE, EXPIRED)
+  status: enum(PROCESSING, VALID, INVALID) = PROCESSING
   sale: ?selling\Sale
   document: ?textFixed(20, 20) @charset(ascii)
   createdAt: datetime = SPECIAL(now)

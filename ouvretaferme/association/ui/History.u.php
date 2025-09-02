@@ -34,7 +34,13 @@ class HistoryUi {
 								};
 							$h .= '</td>';
 							$h .= '<td class="text-end">'.\util\TextUi::money($eHistory['amount']).'</td>';
-							$h .= '<td>'.self::p('paymentStatus')->values[$eHistory['paymentStatus']].'</td>';
+							$h .= '<td>';
+								$h .= self::p('status')->values[$eHistory['status']];
+								if($eHistory['checkoutId'] !== NULL) {
+									$h .= '<br />';
+									$h .= '<div class="util-annotation">'.self::p('paymentStatus')->values[$eHistory['paymentStatus']].'</div>';
+								}
+							$h .= '</td>';
 							$h .= '<td class="text-end">';
 								$h .= '<a href="/association/pdf:document?id='.$eHistory['id'].'" data-ajax-navigation="never" class="btn btn-outline-secondary">'.\Asset::icon('download').'  '.s("Reçu").'</a> ';
 							$h .= '</td>';
@@ -52,7 +58,8 @@ class HistoryUi {
 	public static function p(string $property): \PropertyDescriber {
 
 		$d = History::model()->describer($property, [
-			'paymentStatus' => s("Statut"),
+			'paymentStatus' => s("Statut de paiement"),
+			'status' => s("Statut"),
 			'membership' => s("Année"),
 			'amount' => s("Montant"),
 			'paidAt' => s("Payé le"),
@@ -74,6 +81,14 @@ class HistoryUi {
 					History::SUCCESS => s("Paiement terminé"),
 					History::FAILURE => s("Paiement en échec"),
 					History::EXPIRED => s("Paiement expiré"),
+				];
+				break;
+
+			case 'status' :
+				$d->values = [
+					History::PROCESSING => s("En attente"),
+					History::VALID => s("Valide"),
+					History::INVALID => s("Invalide"),
 				];
 				break;
 

@@ -1,7 +1,11 @@
 <?php
 new Page()
 	->get('/donner', function($data) {
-dd('en cours...');
+
+		if(!Setting::get('association\isDonnerPageActive')) {
+			throw new RedirectAction(Setting::get('association\url').'/nous-soutenir');
+		}
+
 		$data->eHistory = new \association\History();
 
 		if(get_exists('donation')) {
@@ -19,7 +23,7 @@ dd('en cours...');
 				$data->eHistory = \association\History::model()
 					->select(\association\History::getSelection())
 					->whereCustomer($eCustomer)
-					->wherePaymentStatus(\association\History::SUCCESS)
+					->whereStatus(\association\History::VALID)
 					->sort(['updatedAt' => SORT_DESC])
 					->get();
 

@@ -25,7 +25,7 @@ class MembershipLib {
 			->whereFarm($cFarm)
 			->whereType(History::MEMBERSHIP)
 			->whereMembership(date('Y'))
-			->wherePaymentStatus(History::SUCCESS)
+			->whereStatus(History::VALID)
 			->getCollection(NULL, NULL, 'farm');
 
 		foreach($cFarm as $eFarm) {
@@ -168,7 +168,7 @@ class MembershipLib {
 					->whereFarm($eFarm)
 					->whereMembership($currentYear)
 					->whereType(History::MEMBERSHIP)
-					->wherePaymentStatus(History::SUCCESS)
+					->whereStatus(History::VALID)
 					->exists()
 			) {
 
@@ -210,6 +210,7 @@ class MembershipLib {
 				'farm' => $eFarm,
 				'membership' => $membershipYear,
 				'paymentStatus' => History::INITIALIZED,
+				'status' => History::PROCESSING,
 				'customer' => $eCustomer,
 			]);
 
@@ -221,6 +222,7 @@ class MembershipLib {
 				$eHistoryDb, [
 					'amount' => $eHistory['amount'],
 					'paymentStatus' => History::INITIALIZED,
+					'status' => History::PROCESSING,
 					'updatedAt' => new \Sql('NOW()'),
 				]
 			);
@@ -286,7 +288,8 @@ class MembershipLib {
 		$object = $event['data']['object'];
 
 		HistoryLib::updateByPaymentIntentId($object['id'], [
-			'paymentStatus' => \selling\Payment::FAILURE,
+			'paymentStatus' => History::FAILURE,
+			'status' => History::INVALID
 		]);
 
 	}
@@ -361,7 +364,8 @@ class MembershipLib {
 
 		HistoryLib::updateByPaymentIntentId($object['id'], [
 			'customer' => $eCustomer,
-			'paymentStatus' => \selling\Payment::SUCCESS,
+			'paymentStatus' => History::SUCCESS,
+			'status' => History::VALID,
 			'paidAt' => new \Sql('NOW()'),
 			'sale' => $eSale,
 		]);

@@ -12,7 +12,7 @@ class MembershipUi {
 
 	public function getMembershipSuccess(\Collection $cHistory): string {
 
-		$years = $cHistory->find(fn($eHistory) => $eHistory['type'] === History::MEMBERSHIP and $eHistory['paymentStatus'] === History::SUCCESS)->count();
+		$years = $cHistory->find(fn($eHistory) => $eHistory['type'] === History::MEMBERSHIP and $eHistory['status'] === History::VALID)->count();
 
 		$h = '<div class="util-box-success mb-2">';
 			if($years >= 2) {
