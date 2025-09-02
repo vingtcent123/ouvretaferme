@@ -12,7 +12,8 @@ class MembershipUi {
 
 	public function getMembershipSuccess(\Collection $cHistory): string {
 
-		$years = $cHistory->find(fn($eHistory) => $eHistory['type'] === History::MEMBERSHIP and $eHistory['status'] === History::VALID)->count();
+		// Promo adhésion 2025-2026
+		$years = $cHistory->find(fn($eHistory) => $eHistory['type'] === History::MEMBERSHIP and $eHistory['status'] === History::VALID and $eHistory['membership'] !== 2025)->count();
 
 		$h = '<div class="util-box-success mb-2">';
 			if($years >= 2) {

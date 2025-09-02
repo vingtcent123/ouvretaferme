@@ -370,6 +370,23 @@ class MembershipLib {
 			'sale' => $eSale,
 		]);
 
+		// Promo adhésion 2025-2026
+		// Promotion : toute adhésion en 2025 donne droit à une adhésion pour 2026
+		if($eHistory['type'] === History::MEMBERSHIP and $eHistory['membership'] === 2025) {
+
+			$eHistory2026 = new History([
+				'farm' => $eFarm,
+				'customer' => $eCustomer,
+				'membership' => 2026,
+				'type' => History::MEMBERSHIP,
+				'status' => History::VALID,
+				'amount' => 0,
+			]);
+
+			History::model()->insert($eHistory2026);
+
+		}
+
 		History::model()->commit();
 
 		$pdfContent = HistoryLib::generateDocument($eHistory);

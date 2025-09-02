@@ -33,7 +33,13 @@ class HistoryUi {
 									History::MEMBERSHIP => s("Adhésion pour l'année {value}", $eHistory['membership'])
 								};
 							$h .= '</td>';
-							$h .= '<td class="text-end">'.\util\TextUi::money($eHistory['amount']).'</td>';
+							$h .= '<td class="text-end">';
+								if($eHistory['amount'] === 0.0) {
+									$h .= s("Offert");
+								} else {
+									$h .= \util\TextUi::money($eHistory['amount']);
+								}
+							$h .= '</td>';
 							$h .= '<td>';
 								$h .= self::p('status')->values[$eHistory['status']];
 								if($eHistory['checkoutId'] !== NULL) {
