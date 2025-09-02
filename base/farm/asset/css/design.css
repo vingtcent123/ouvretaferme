@@ -1,3 +1,7 @@
+body[data-template~="farm"] .nav-title-member-link {
+	white-space: nowrap;
+}
+
 body[data-template~="farm"] .nav-title-member-link img {
 	height: 1.66rem;
 	width: auto;
@@ -824,6 +828,10 @@ body[data-template~="farm"] main .container.farm-template-main-title.farm-templa
 		height: 1.75rem !important;
 		min-width: 1.75rem !important;
 		font-size: 1rem !important;
+	}
+
+	body[data-template~="farm"] .nav-title-member-link {
+		margin-left: 0.25rem;
 	}
 
 	.farm-tabs {
