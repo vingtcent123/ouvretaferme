@@ -9,7 +9,8 @@ class HistoryLib extends HistoryCrud {
 			->select(['count' => new \Sql('COUNT(*)'), 'membership'])
 			->whereMembership('IN', $years)
 			->group(['membership'])
-			->getCollection(NULL, NULL, 'count');
+			->whereStatus(History::VALID)
+			->getCollection(NULL, NULL, 'membership');
 
 	}
 	public static function getForDocument(int $id): History {
