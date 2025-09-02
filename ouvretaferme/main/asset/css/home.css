@@ -119,11 +119,35 @@ body[data-template^="home-"] header h4 {
 	color: var(--secondary);
 }
 
+.home-story-wrapper {
+	display: grid;
+	grid-template-columns: 1fr auto;
+	grid-gap: 1rem;
+	margin-bottom: 2rem;
+}
+
 .home-story {
 	padding: 1rem;
 	background-color: var(--background);
-	margin-bottom: 2rem;
 	border-radius: var(--radius);
+}
+
+.home-story-wrapper img {
+	width: auto;
+	height: 12rem;
+}
+
+@media (max-width: 767px) {
+
+	.home-story-wrapper {
+		grid-template-columns: 1fr;
+	}
+
+	.home-story-wrapper img {
+		width: 100%;
+		height: auto;
+	}
+
 }
 
 .home-points {

@@ -163,12 +163,17 @@ new AdaptativeView('anonymous', function($data, MainTemplate $t) {
 
 	echo new \main\HomeUi()->getTraining();
 
-	echo '<h2>'.s("En savoir plus sur Ouvretaferme").'</h2>';
+	echo '<h2 class="mb-2">'.s("En savoir plus sur Ouvretaferme").'</h2>';
 
-	echo '<h3>'.s("Philosophie du projet 👩‍🌾").'</h3>';
+	echo '<h3>'.s("Philosophie du projet").'</h3>';
 
-	echo '<div class="home-story">';
-		echo s("Le logiciel {siteName} a été lancé en 2021 pour combler l'absence d'un logiciel ouvert, gratuit et intuitif destiné aux producteurs en agriculture biologique. Conçu pour simplifier l'organisation du travail à la ferme, ce logiciel complet accompagne les producteurs agricoles, du plan de culture à la vente de leurs produits. Notre mission : fournir aux producteurs les outils nécessaires pour contribuer à réaliser les finalités des fermes.");
+	echo '<div class="home-story-wrapper">';
+		echo '<div class="home-story">';
+			echo '<p>'.s("Le logiciel {siteName} est un projet associatif lancé en 2021 pour combler l'absence d'un logiciel ouvert, gratuit et intuitif destiné aux producteurs en agriculture biologique. Conçu pour simplifier l'organisation du travail à la ferme, ce logiciel complet accompagne les producteurs agricoles, du plan de culture à la vente de leurs produits. Notre mission : fournir aux producteurs les outils nécessaires pour contribuer à réaliser les finalités des fermes.").'</p>';
+			echo '<a href="'.\Setting::get('association\url').'" target="_blank" class="btn btn-secondary">'.S("Découvrir l'association").'</a> ';
+			echo '<a href="'.\Setting::get('association\url').'/nous-soutenir" target="_blank" class="btn btn-outline-secondary">'.S("Nous soutenir").'</a>';
+		echo '</div>';
+		echo Asset::image('main', 'cube.png');
 	echo '</div>';
 
 	echo new \main\HomeUi()->getPoints();
