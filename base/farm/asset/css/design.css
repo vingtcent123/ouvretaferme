@@ -5,7 +5,6 @@ body[data-template~="farm"] .nav-title-member-link {
 body[data-template~="farm"] .nav-title-member-link img {
 	height: 1.66rem;
 	width: auto;
-	margin-top: -2px;
 }
 
 #farm-nav {
@@ -360,9 +359,13 @@ body[data-template~="farm"] main .container.farm-template-main-title.farm-templa
 		background-color: #fff1;
 		border-radius: var(--radius);
 		text-align: center;
-		padding: 0.4rem 0.5rem;
-		font-size: 0.9rem;
+		padding: 0.5rem 0.5rem 0.4rem;
+		font-size: 0.85rem;
 		letter-spacing: 0.5px;
+	}
+
+	body[data-template~="farm"] .nav-title-member-link img {
+		margin-top: -4px;
 	}
 
 	#farm-nav {
@@ -832,6 +835,10 @@ body[data-template~="farm"] main .container.farm-template-main-title.farm-templa
 
 	body[data-template~="farm"] .nav-title-member-link {
 		margin-left: 0.25rem;
+	}
+
+	body[data-template~="farm"] .nav-title-member-link img {
+		margin-top: -2px;
 	}
 
 	.farm-tabs {
