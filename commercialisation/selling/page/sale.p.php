@@ -505,11 +505,11 @@ new \selling\SalePage()
 			$data->e->acceptDeleteStatus() === FALSE or
 			$data->e->acceptDeletePaymentStatus() === FALSE
 		) {
-			Sale::fail('deletedNotDraft');
+			\selling\Sale::fail('deletedNotDraft');
 		} else if($data->e->acceptDeleteMarket() === FALSE) {
-			Sale::fail('deletedMarket');
+			\selling\Sale::fail('deletedMarket');
 		} else if($data->e->acceptDeleteMarketSale() === FALSE) {
-			Sale::fail('deletedMarketSale');
+			\selling\Sale::fail('deletedMarketSale');
 		}
 
 		$fw->validate();
