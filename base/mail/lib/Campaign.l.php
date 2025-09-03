@@ -118,6 +118,7 @@ class CampaignLib extends CampaignCrud {
 					Email::model()
 						->whereTo($to)
 						->whereCampaign('!=', NULL)
+						->whereSentAt('>', new \Sql('NOW() - INTERVAL 7 DAY'))
 						->count() >= $eFarm->getContactLimit()
 				) {
 
