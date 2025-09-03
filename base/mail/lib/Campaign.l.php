@@ -88,7 +88,10 @@ class CampaignLib extends CampaignCrud {
 
 			$affected = \mail\Campaign::model()
 				->whereStatus(Campaign::CONFIRMED)
-				->update($eCampaign, ['status' => \mail\Campaign::SENT]);
+				->update($eCampaign, [
+					'status' => \mail\Campaign::SENT,
+					'sentAt' => new \Sql('NOW()')
+				]);
 
 			if($affected === 0) {
 				continue;
