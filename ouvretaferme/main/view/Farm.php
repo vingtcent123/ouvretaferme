@@ -259,7 +259,7 @@ class FarmTemplate extends MainTemplate {
 						$farm .= '<div class="nav-title-member">';
 
 							$farm .= '<a class="nav-title-member-link" data-dropdown="bottom" data-dropdown-hover="true">';
-								$farm .= s("Adhérer à {value}", Asset::image('main', 'favicon.png'));
+								$farm .= s("Soutenir {value}", Asset::image('main', 'favicon.png'));
 							$farm .= '</a>';
 
 							$farm .= '<div class="dropdown-list bg-primary">';
