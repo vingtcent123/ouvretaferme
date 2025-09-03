@@ -143,6 +143,7 @@ class MembershipLib {
 			} else {
 
 				$eCustomer->merge([
+					'name' => $eUser->getName(),
 					'type' => \selling\Customer::PRIVATE,
 					'destination' => \selling\Customer::INDIVIDUAL,
 					'invoiceStreet1' => $eUser['street1'],
