@@ -23,6 +23,19 @@ class CampaignLib extends CampaignCrud {
 
 	}
 
+	public static function update(Campaign $e, array $properties): void {
+
+		if(in_array('to', $properties)) {
+
+			$e['scheduled'] = count($e['to']);
+			$properties[] = 'scheduled';
+
+		}
+
+		parent::update($e, $properties);
+
+	}
+
 
 	public static function countByFarm(\farm\Farm $eFarm): int {
 
