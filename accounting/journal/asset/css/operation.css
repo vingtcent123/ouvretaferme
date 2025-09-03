@@ -105,6 +105,11 @@
 	display: none;
 }
 
+.panel-header-content .operation-create-several-container > div:nth-child(2n+1),
+.panel-header-content .operation-create-several-container > * {
+	background-color: transparent !important;
+}
+
 .operation-create div.operation-asset:not([data-index]) {
 	padding-left: 0.5rem;
 	border-left: 3px solid #0001;
@@ -182,21 +187,21 @@
 	font-size: 1.3rem;
 }
 
-.invoice-preview {
+.operation-invoice-preview {
 	width: 500px;
 }
-.invoice-preview embed {
+.operation-invoice-preview embed {
 	height: 730px;
 	width: 500px;
 }
-.invoice-preview img {
+.operation-invoice-preview img {
 	max-height: 730px;
 	max-width: 500px;
 }
 
-.field-radio-group.payment-type-radio > label:hover {
+.field-radio-group.operation-payment-type-radio > label:hover {
 	background-color: transparent;
 }
-.field-radio-group.payment-type-radio {
+.field-radio-group.operation-payment-type-radio {
 	border: none;
 }
