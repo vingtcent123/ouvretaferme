@@ -215,7 +215,7 @@ class MainTemplate extends BaseTemplate {
 						$h .= '<div>';
 							$h .= '<h4>'.s("Ressources").'</h4>';
 							$h .= '<a href="https://blog.ouvretaferme.org/" target="_blank">'.s("Blog").'</a><br/>';
-				$h .= '<a href="/presentation/faq">'.s("Questions fréquentes").'</a><br/>';
+							$h .= '<a href="/presentation/faq">'.s("Questions fréquentes").'</a><br/>';
 							$h .= '<a href="'.OTF_DEMO_URL.'/ferme/'.\farm\Farm::DEMO.'/series?view=area">'.s("Explorer la ferme démo").'</a><br/>';
 							$h .= '<a href="/presentation/producteur">'.s("Liste des fonctionnalités").'</a>';
 						$h .= '</div>';
@@ -229,7 +229,7 @@ class MainTemplate extends BaseTemplate {
 							$h .= '<a href="'.\Setting::get('association\url').'">'.s("L'association Ouvretaferme").'</a><br/>';
 							$h .= '<a href="'.\Setting::get('association\url').'/mentions-legales">'.s("Mentions légales").'</a><br/>';
 							$h .= '<a href="'.\Setting::get('association\url').'/nous-contacter">'.s("Nous contacter").'</a><br/>';
-				$h .= '<a href="/presentation/service">'.s("Conditions d'utilisation").'</a><br/>';
+							$h .= '<a href="/presentation/service">'.s("Conditions d'utilisation").'</a><br/>';
 						$h .= '</div>';
 					$h .= '</div>';
 				$h .= '</div>';
