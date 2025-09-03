@@ -468,8 +468,10 @@ class ProductLib extends ProductCrud {
 
 	public static function getReallyAvailable(Product $eProduct, \selling\Product $eProductSelling, \Collection $cItem): ?float {
 
+		$eProductSelling->expects(['id']);
+
 		if($cItem->notEmpty()) {
-			$eItem = $cItem->find(fn($eItem) => $eItem['product']['id'] === $eProductSelling['id'], limit: 1);
+			$eItem = $cItem->find(fn($eItem) => $eProductSelling->is($eItem['product']), limit: 1);
 			$number = $eItem->empty() ? 0 : $eItem['number'];
 		} else {
 			$number = 0;
