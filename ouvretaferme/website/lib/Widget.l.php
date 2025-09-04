@@ -34,6 +34,7 @@ class WidgetLib {
 					'newsletterForm' => self::getNewsletterForm($eWebsite),
 					'shop' => $value ? self::getShop($eFarm, (int)$value, 'limited') : '',
 					'fullShop' => $value ? self::getShop($eFarm, (int)$value, 'full') : '',
+					default => throw new \Exception('Missing widget '.$app)
 				} ?? $original;
 
 			}
