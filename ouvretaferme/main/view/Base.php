@@ -196,13 +196,13 @@ class BaseTemplate extends SmartTemplate {
 		}
 
 		// Open graph data
-		$h .= '<meta property="og:title" content="'.$ogTitle.'" />';
-		$h .= '<meta property="og:site_name" content="'.$ogSiteName.'"/>';
-		$h .= '<meta property="og:url" content="'.$ogUrl.'" />';
-		$h .= '<meta property="og:image" content="'.$ogImg.'" />';
-		$h .= '<meta property="og:type" content="'.$ogType.'" />';
-		$h .= '<meta property="og:description" content="'.$ogDescription.'" />';
-		$h .= '<meta property="og:locale" content="'.L::getLang().'" />';
+		$h .= '<meta property="og:title" content="'.encode($ogTitle).'"/>';
+		$h .= '<meta property="og:site_name" content="'.encode($ogSiteName).'"/>';
+		$h .= '<meta property="og:url" content="'.$ogUrl.'"/>';
+		$h .= '<meta property="og:image" content="'.$ogImg.'"/>';
+		$h .= '<meta property="og:type" content="'.$ogType.'"/>';
+		$h .= '<meta property="og:description" content="'.encode($ogDescription).'"/>';
+		$h .= '<meta property="og:locale" content="'.L::getLang().'"/>';
 
 		return $h;
 
