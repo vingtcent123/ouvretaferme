@@ -20,7 +20,7 @@ class AdminUi {
 
 			$h .= '<a href="/user/admin/" class="nav-link '.($selection === 'user' ? 'active' : '').'">'.s("Parcourir").'</a>';
 
-		if(\Feature::get('user\ban')) {
+		if(UserSetting::$featureBan) {
 			$h .= '<a href="/user/admin/ban" class="nav-link '.($selection === 'ban' ? 'active' : '').'">'.s("Bannissements").'</a>';
 		}
 

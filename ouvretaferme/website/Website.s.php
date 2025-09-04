@@ -1,16 +1,19 @@
 <?php
-Privilege::register('website', [
-	'admin' => FALSE,
-]);
+namespace website;
 
-Setting::register('website', [
+class WebsiteSetting extends \Settings  {
 
-	'dnsIP' => '51.83.98.183',
-	'domain' => 'site.'.Lime::getDomain(),
-	'domainMaxTry' => 3,
-	'blogFarm' => 98,
-	'designDefaultId' => 1,
-	'customFonts' => [
+	public static function domain(): string {
+		return 'site.'.\Lime::getDomain();
+	}
+
+	const DOMAIN_MAX_TRY = 3;
+
+	const BLOG_FARM = 98;
+
+	const DESIGN_DEFAULT_ID = 1;
+
+	const CUSTOM_FONTS = [
 		['label' => 'Cairo', 'value' => "'Cairo', sans-serif"],
 		['label' =>'Figtree', 'value' => "'Figtree', serif"],
 		['label' =>'Genos', 'value' => "'Genos', sans-serif"],
@@ -29,8 +32,9 @@ Setting::register('website', [
 		['label' => 'Sail', 'value' => "'Sail', cursive"],
 		['label' => 'Source Sans Pro', 'value' => "'Source Sans Pro', sans-serif"],
 		['label' => 'Titillium Web', 'value' => "'Titillium Web', sans-serif"],
-	],
-	'customTitleFonts' => [
+	];
+
+	const CUSTOM_TITLE_FONTS = [
 		['label' => 'Acme', 'value' => "'Acme', sans-serif"],
 		['label' => 'Anton', 'value' => "'Anton', sans-serif"],
 		['label' => 'Barriecito', 'value' => "'Barriecito', serif"],
@@ -61,7 +65,8 @@ Setting::register('website', [
 		['label' => 'PT Serif', 'value' => "'PT Serif', serif"],
 		['label' => 'Schoolbell', 'value' => "'Schoolbell', serif"],
 		['label' => 'Shizuru', 'value' => "'Shizuru', cursive"],
-	],
+	];
 
-]);
+}
+
 ?>

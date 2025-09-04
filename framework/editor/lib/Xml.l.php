@@ -398,9 +398,9 @@ class XmlLib {
 
 		if(
 			$title and
-			mb_strlen($title) > \Setting::get('editor\mediaTitleLimit')
+			mb_strlen($title) > EditorSetting::MEDIA_TITLE_LIMIT
 		) {
-			$node->setAttribute('data-title', mb_substr($title, 0, \Setting::get('editor\mediaTitleLimit')));
+			$node->setAttribute('data-title', mb_substr($title, 0, EditorSetting::MEDIA_TITLE_LIMIT));
 		}
 
 		$attributes = [
@@ -486,14 +486,14 @@ class XmlLib {
 
 			$border = $node->getAttribute('data-border');
 
-			if(in_array($border, \Setting::get('editor\quoteBorder'))) {
+			if(in_array($border, EditorSetting::QUOTE_BORDER)) {
 				$newNode->setAttribute('border', $border);
 			}
 
 
 			$background = $node->getAttribute('data-background');
 
-			if(in_array($background, \Setting::get('editor\quoteBackground'))) {
+			if(in_array($background, EditorSetting::QUOTE_BACKGROUND)) {
 				$newNode->setAttribute('background', $background);
 			}
 
@@ -588,14 +588,14 @@ class XmlLib {
 
 		$border = $node->getAttribute('data-border');
 
-		if(in_array($border, \Setting::get('editor\quoteBorder'))) {
+		if(in_array($border, EditorSetting::QUOTE_BORDER)) {
 			$newNode->setAttribute('border', $border);
 		}
 
 
 		$background = $node->getAttribute('data-background');
 
-		if(in_array($background, \Setting::get('editor\quoteBackground'))) {
+		if(in_array($background, EditorSetting::QUOTE_BACKGROUND)) {
 			$newNode->setAttribute('background', $background);
 		}
 
@@ -900,7 +900,7 @@ class XmlLib {
 			'style?' => NULL,
 		];
 
-		if(\Privilege::can('user\admin')) {
+		if(\user\ConnectionLib::getOnline()->isAdmin()) {
 
 			$attributesLink += [
 				'data-button?' => 'button'

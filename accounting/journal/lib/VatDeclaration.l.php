@@ -62,8 +62,8 @@ class VatDeclarationLib extends VatDeclarationCrud {
 
 	public static function sumByVatType(\Collection $cOperation): array {
 
-		$collectedVat = $cOperation->sum(fn($e) => mb_substr($e['accountLabel'], 0, mb_strlen(\Setting::get('account\vatSellClassPrefix'))) === \Setting::get('account\vatSellClassPrefix') ? $e['amount'] : 0);
-		$deductibleVat = $cOperation->sum(fn($e) => mb_substr($e['accountLabel'], 0, mb_strlen(\Setting::get('account\vatBuyClassPrefix'))) === \Setting::get('account\vatBuyClassPrefix') ? $e['amount'] : 0);
+		$collectedVat = $cOperation->sum(fn($e) => mb_substr($e['accountLabel'], 0, mb_strlen(\account\AccountSetting::VAT_SELL_CLASS_PREFIX)) === \account\AccountSetting::VAT_SELL_CLASS_PREFIX ? $e['amount'] : 0);
+		$deductibleVat = $cOperation->sum(fn($e) => mb_substr($e['accountLabel'], 0, mb_strlen(\account\AccountSetting::VAT_BUY_CLASS_PREFIX)) === \account\AccountSetting::VAT_BUY_CLASS_PREFIX ? $e['amount'] : 0);
 
 		$dueVat = $collectedVat - $deductibleVat;
 

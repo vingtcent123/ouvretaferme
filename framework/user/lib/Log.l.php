@@ -28,7 +28,7 @@ class LogLib {
 	public static function clean() {
 
 		Log::model()
-			->where('createdAt < NOW() - INTERVAL '.\Setting::get('keepLogs').' DAY')
+			->where('createdAt < NOW() - INTERVAL '.UserSetting::KEEP_LOGS.' DAY')
 			->union()
 			->delete();
 

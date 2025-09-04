@@ -52,10 +52,10 @@ class Website extends WebsiteElement {
 				return TRUE;
 			})
 			->setCallback('customFont.check', function(string $customFont): bool {
-				return DesignLib::isCustomFont($customFont, 'customFonts');
+				return DesignLib::isCustomFont($customFont, WebsiteSetting::CUSTOM_FONTS);
 			})
 			->setCallback('customTitleFont.check', function(string $customFont): bool {
-				return DesignLib::isCustomFont($customFont, 'customTitleFonts');
+				return DesignLib::isCustomFont($customFont, WebsiteSetting::CUSTOM_TITLE_FONTS);
 			});
 
 		parent::build($properties, $input, $p);

@@ -143,7 +143,7 @@ class ParserLib {
 		$currentStringPlural = FALSE;
 
 		// Handle special functions
-		$methods = \Setting::get('customMethods');
+		$methods = LanguageSetting::CUSTOM_METHODS;
 		$currentMethod = NULL;
 		$currentMethodStart = NULL;
 		$currentMethodArguments = NULL;

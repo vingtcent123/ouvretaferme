@@ -13,7 +13,7 @@ new Page()
 		}
 
 		$sizeString = GET('size');
-		$sizeInt = Setting::get('storage\\'.$type)['imageFormat'][$sizeString] ?? NULL;
+		$sizeInt = \storage\StorageSetting::$types['imageFormat'][$sizeString] ?? NULL;
 
 		if($sizeInt === NULL) {
 			throw new LineAction('Error: Invalid size='.$sizeString.' (see setting \'imageFormat\')');
@@ -43,7 +43,7 @@ new Page()
 
 			$pathSource = substr($fileSource, strlen(\storage\DriverLib::directory()) + 1);
 
-			$bounds = \Setting::get('media\mediaDriver')->getMetadata($pathSource)['crop'] ?? NULL;
+			$bounds = \media\MediaSetting::$mediaDriver->getMetadata($pathSource)['crop'] ?? NULL;
 
 			$resource = new \Imagick($fileSource);
 
@@ -51,7 +51,7 @@ new Page()
 				\storage\ImageLib::extractImagePortion($bounds, $resource, $type);
 			}
 
-			\storage\ImageLib::resize($sizeInt, $resource, \Setting::get('storage\\'.$type)['imageFormatConstraint'] ?? NULL);
+			\storage\ImageLib::resize($sizeInt, $resource, \storage\StorageSetting::$types['imageFormatConstraint'] ?? NULL);
 
 			\storage\ServerLib::buildImage($type, $sizeString, $resource, $pathDestination, $typeSource);
 

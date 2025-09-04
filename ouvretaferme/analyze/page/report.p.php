@@ -63,7 +63,7 @@ new \analyze\ReportPage(function($data) {
 				$data->e['firstSaleAt'] = $eReportFrom['firstSaleAt'];
 				$data->e['lastSaleAt'] = $eReportFrom['lastSaleAt'];
 			} else {
-				$data->e['firstSaleAt'] = $data->season.'-'.Setting::get('farm\seasonBegin');
+				$data->e['firstSaleAt'] = $data->season.'-'.\farm\FarmSetting::SEASON_BEGIN;
 				$data->e['lastSaleAt'] = date('Y-m-d', strtotime($data->e['firstSaleAt'].' + 1 YEAR - 1 DAY'));
 			}
 

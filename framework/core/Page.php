@@ -433,7 +433,7 @@ class Page {
 		if(strpos($interval, 'permanent@') === 0) {
 
 			$frequency = (int)substr($interval, 10);
-			$end = time() + Setting::get('dev\cronPermanentLifetime') - 1;
+			$end = time() + \dev\DevSetting::CRON_PERMANENT_LIFETIME - 1;
 
 			while($end > time()) {
 

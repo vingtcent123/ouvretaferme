@@ -315,10 +315,10 @@ class Shop extends ShopElement {
 
 			})
 			->setCallback('customFont.check', function(?string $customFont): bool {
-				return $customFont === NULL or \website\DesignLib::isCustomFont($customFont, 'customFonts');
+				return $customFont === NULL or \website\DesignLib::isCustomFont($customFont, \website\WebsiteSetting::CUSTOM_FONTS);
 			})
 			->setCallback('customTitleFont.check', function(?string $customFont): bool {
-				return $customFont === NULL or \website\DesignLib::isCustomFont($customFont, 'customTitleFonts');
+				return $customFont === NULL or \website\DesignLib::isCustomFont($customFont, \website\WebsiteSetting::CUSTOM_TITLE_FONTS);
 			})
 			->setCallback('shopShare.empty', function(?string $value): bool {
 				return ($value !== NULL);

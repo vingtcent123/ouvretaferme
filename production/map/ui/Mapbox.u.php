@@ -17,8 +17,8 @@ class MapboxUi {
 		\Asset::css('map', 'mapbox.css');
 
 		\Asset::jsContent('<script>
-			mapboxToken = "'.\Setting::get('map\mapboxToken').'";
-			mapboxgl.accessToken = "'.\Setting::get('map\mapboxToken').'";
+			mapboxToken = "'.MapSetting::$mapboxToken.'";
+			mapboxgl.accessToken = "'.MapSetting::$mapboxToken.'";
 		</script>');
 
 	}

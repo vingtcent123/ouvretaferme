@@ -20,7 +20,7 @@ $put = function($data, AjaxTemplate $t) {
 		$media['urls']['original'] = $uiMedia->getUrlByElement($data->eElement, NULL);
 	}
 
-	foreach(Setting::get('media\\'.$data->type)['imageFormat'] as $format => $size) {
+	foreach(\media\MediaSetting::$types[$data->type]['imageFormat'] as $format => $size) {
 
 		if($data->eElement->empty()) {
 			$url = $uiMedia->getUrlByHash($data->hash, $format, $media['version']);

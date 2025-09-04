@@ -752,7 +752,7 @@ class FormUi {
 
 			try {
 
-				$eUser = \Setting::get('main\onlineUser');
+				$eUser = \main\MainSetting::$onlineUser;
 
 				if(
 					$eUser->notEmpty() and

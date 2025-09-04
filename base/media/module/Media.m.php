@@ -43,7 +43,7 @@ class MediaModel extends \ModuleModel {
 			'id' => ['serial32', 'cast' => 'int'],
 			'user' => ['element32', 'user\User', 'null' => TRUE, 'cast' => 'element'],
 			'updatedAt' => ['datetime', 'cast' => 'string'],
-			'type' => ['enum', \Setting::get('media\images'), 'cast' => 'enum'],
+			'type' => ['enum', MediaSetting::$images, 'cast' => 'enum'],
 			'status' => ['enum', [\media\Media::ACTIVE, \media\Media::SEARCHING, \media\Media::DELETED], 'cast' => 'enum'],
 			'hash' => ['textFixed', 'min' => 20, 'max' => 20, 'charset' => 'ascii', 'cast' => 'string'],
 		]);

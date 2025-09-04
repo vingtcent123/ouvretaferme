@@ -10,13 +10,13 @@ class LimeObserverLib {
 
 		$data = 'class ImageConf {'."\n";
 
-		$data .= '	static sizeMax = '.\Setting::get('media\maxImageSize').';'."\n";
-		$data .= '	static imageCropRequiredFactor = '.\Setting::get('media\imageCropRequiredFactor').';'."\n";
+		$data .= '	static sizeMax = '.MediaSetting::MAX_IMAGE_SIZE.';'."\n";
+		$data .= '	static imageCropRequiredFactor = '.\storage\StorageSetting::IMAGE_CROP_REQUIRED_FACTOR.';'."\n";
 
 		$data .= '	static imagesRequiredSize = {'."\n";
-		foreach(\Setting::get('media\images') as $type) {
+		foreach(MediaSetting::$images as $type) {
 
-			$settings = \Setting::get($type);
+			$settings = MediaSetting::$types[$type];
 
 			if(empty($settings['imageFormat'])) {
 				continue;

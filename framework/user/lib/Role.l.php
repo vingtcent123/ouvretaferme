@@ -12,7 +12,7 @@ class RoleLib extends RoleCrud {
 	 */
 	public static function getForSignUp(): \Collection {
 
-		$roles = \Setting::get('user\signUpRoles');
+		$roles = UserSetting::$signUpRoles;
 
 		return Role::model()
 			->select(['id', 'fqn', 'name', 'emoji'])

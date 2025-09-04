@@ -27,7 +27,7 @@ class ThirdParty extends ThirdPartyElement {
 		$p
 			->setCallback('clientAccountLabel.format', function(?string $clientAccountLabel): bool {
 
-				return ClassLib::isFromClass($clientAccountLabel, \Setting::get('account\thirdAccountClientReceivableClass'));
+				return ClassLib::isFromClass($clientAccountLabel, AccountSetting::THIRD_ACCOUNT_RECEIVABLE_DEBT_CLASS);
 
 			})
 			->setCallback('clientAccountLabel.duplicate', function(?string $clientAccountLabel): bool {
@@ -40,7 +40,7 @@ class ThirdParty extends ThirdPartyElement {
 			})
 			->setCallback('supplierAccountLabel.format', function(?string $clientAccountLabel): bool {
 
-				return ClassLib::isFromClass($clientAccountLabel, \Setting::get('account\thirdAccountSupplierDebtClass'));
+				return ClassLib::isFromClass($clientAccountLabel, AccountSetting::THIRD_ACCOUNT_SUPPLIER_DEBT_CLASS);
 
 			})
 			->setCallback('supplierAccountLabel.duplicate', function(?string $supplierAccountLabel): bool {

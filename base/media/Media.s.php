@@ -1,4 +1,6 @@
 <?php
+namespace media;
+
 function getMediaVignette() {
 
 	return [
@@ -47,12 +49,58 @@ function getMediaBanner() {
 
 }
 
-Setting::register('media', [
+class MediaSetting extends \Settings {
 
 	// Max size of an image in Mo (change also rewrite.cfg if needed : client_max_body_size 20m;)
-	'maxImageSize' => 20,
+	const MAX_IMAGE_SIZE = 20;
 
-	'images' => ['user-vignette', 'editor', 'plant-vignette', 'gallery', 'farm-vignette', 'farm-logo', 'farm-banner', 'product-vignette', 'tool-vignette', 'website-logo', 'website-favicon', 'website-banner', 'webpage-banner', 'shop-logo', 'pdf-content', 'association-document'],
+	public static $images = ['user-vignette', 'editor', 'plant-vignette', 'gallery', 'farm-vignette', 'farm-logo', 'farm-banner', 'product-vignette', 'tool-vignette', 'website-logo', 'website-favicon', 'website-banner', 'webpage-banner', 'shop-logo', 'pdf-content', 'association-document'];
+
+	public static $types;
+
+	const IMAGE_CROP_REQUIRED_FACTOR = 1.1;
+
+	const IMAGE_RESIZE_REQUIRED_FACTOR = 1.15;
+
+	const DEFAULT_QUALITY = [
+		IMAGETYPE_JPEG => 85,
+		IMAGETYPE_PNG => 9,
+		IMAGETYPE_GIF => NULL
+	];
+
+	const IMAGES_INPUT_TYPE = [IMAGETYPE_JPEG, IMAGETYPE_PNG, IMAGETYPE_GIF, IMAGETYPE_BMP];
+
+	const IMAGES_EXTENSIONS = [
+		'p' => 'png',
+		'j' => 'jpg',
+		'g' => 'gif',
+		'f' => 'pdf',
+	];
+
+	const BASE_PATH = '/var/www/storage';
+
+	public static $mediaDriver;
+
+}
+
+MediaSetting::$mediaDriver = new \storage\DriverLib();
+function mediaUrl () {
+
+	$driver = MediaSetting::$mediaDriver;
+
+	if($driver instanceof \storage\DriverLib) {
+
+		if(LIME_ENV === 'dev') {
+			return 'http://media.dev-ouvretaferme.org';
+		} else {
+			return 'https://media.ouvretaferme.org';
+		}
+
+	}
+
+};
+
+MediaSetting::$types = [
 
 	'user-vignette' => [
 		'class' => 'UserVignette',
@@ -192,50 +240,7 @@ Setting::register('media', [
 		'field' => 'banner'
 	] + getMediaBanner(),
 
-	'imageCropRequiredFactor' => 1.1,
-	'imageResizeRequiredFactor' => 1.15,
 
-	'defaultQuality' => [
-		IMAGETYPE_JPEG => 85,
-		IMAGETYPE_PNG => 9,
-		IMAGETYPE_GIF => NULL
-	],
+];
 
-	'imagesInputType' => [IMAGETYPE_JPEG, IMAGETYPE_PNG, IMAGETYPE_GIF, IMAGETYPE_BMP],
-
-	'imagesExtensions' => [
-		'p' => 'png',
-		'j' => 'jpg',
-		'g' => 'gif',
-		'f' => 'pdf',
-	],
-
-	'basePath' => '/var/www/storage',
-
-	'mediaDriver' => function () {
-		return new \storage\DriverLib();
-	},
-
-	// URL of the images
-	'mediaUrl' => function() {
-
-		$driver = Setting::get('mediaDriver');
-
-		if($driver instanceof \storage\DriverLib) {
-
-			if(LIME_ENV === 'dev') {
-				return 'http://media.dev-ouvretaferme.org';
-			} else {
-				return 'https://media.ouvretaferme.org';
-			}
-
-
-		}
-
-
-	}
-
-]);
-
-Setting::copy('media', 'storage');
 ?>

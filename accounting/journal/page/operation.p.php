@@ -34,7 +34,7 @@ new \journal\OperationPage(
 		$label = '';
 		if(get_exists('accountLabel') and mb_strlen(GET('accountLabel') > 0)) {
 			$label = GET('accountLabel');
-		} elseif($eAccount->exists() === TRUE and $eAccount['class'] === \Setting::get('account\bankAccountClass')) {
+		} elseif($eAccount->exists() === TRUE and $eAccount['class'] === \account\AccountSetting::BANK_ACCOUNT_CLASS) {
 			$eAccountBank = \bank\BankAccountLib::getDefaultAccount();
 			if($eAccountBank->exists() === TRUE) {
 				$label = $eAccountBank['accountLabel'];

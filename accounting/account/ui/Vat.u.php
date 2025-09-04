@@ -23,9 +23,9 @@ class VatUi {
 	public function getVatLabel(string $account): string {
 
 		return match($account) {
-			\Setting::get('account\vatBuyClassPrefix') => s("TVA versée"),
-			\Setting::get('account\vatSellClassPrefix') => s("TVA / ventes"),
-			\Setting::get('account\collectedVatClass') => s("TVA / ventes"),
+			AccountSetting::VAT_BUY_CLASS_PREFIX => s("TVA versée"),
+			AccountSetting::VAT_SELL_CLASS_PREFIX => s("TVA / ventes"),
+			AccountSetting::COLLECTED_VAT_CLASS => s("TVA / ventes"),
 			default => throw new \NotExpectedAction('Unknown account for Vat Label'),
 		};
 

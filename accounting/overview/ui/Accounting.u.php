@@ -82,7 +82,7 @@ class AccountingUi {
 
 		\Asset::css('company', 'design.css');
 
-		$categories = \Setting::get('account\summaryAccountingBalanceCategories');
+		$categories = \account\AccountSetting::$summaryAccountingBalanceCategories;
 
 		if(empty($accountingBalanceSheet) === TRUE) {
 			return '<div class="util-info">'.s("Il n'y a rien à afficher pour le moment.").'</div>';

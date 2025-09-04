@@ -20,7 +20,7 @@ class FarmVignetteLib extends MediaLib {
 		if($eFarm->canManage() === FALSE) {
 
 			// L'utilisateur n'est pas non plus admin
-			if(\Privilege::can('farm\admin') === FALSE) {
+			if(\user\ConnectionLib::getOnline()->isAdmin() === FALSE) {
 				throw new \NotAllowedAction();
 			}
 

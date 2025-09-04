@@ -70,7 +70,7 @@ class CategoryLib extends CategoryCrud {
 			->whereFarm($e['farm'])
 			->count();
 
-		if($categories === \Setting::get('farm\categoriesLimit')) {
+		if($categories === FarmSetting::CATEGORIES_LIMIT) {
 
 			Category::fail('limitReached');
 

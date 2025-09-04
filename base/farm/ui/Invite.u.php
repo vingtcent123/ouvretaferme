@@ -198,7 +198,7 @@ class InviteUi {
 					$description .= '<li>'.s("Ses commandes passées et futures").'</li>';
 					$description .= '<li>'.s("Ses données personnelles (numéro de téléphone, adresse de livraison...)").'</li>';
 				$description .= '</ul>';
-				$description .= '<p>'.s("Pour permettre à ce client de créer son compte, saisissez son adresse e-mail. Il recevra un e-mail lui donnant les instructions à suivre, et devra les réaliser dans un délai de {value} jours.", \Setting::get('farm\inviteDelay')).'</p>';
+				$description .= '<p>'.s("Pour permettre à ce client de créer son compte, saisissez son adresse e-mail. Il recevra un e-mail lui donnant les instructions à suivre, et devra les réaliser dans un délai de {value} jours.", FarmSetting::INVITE_DELAY).'</p>';
 			$description .= '</div>';
 
 			$h .= $form->group(content: $description);

@@ -11,7 +11,7 @@ class PageLib {
 
 		$data->browserObsolete = \util\HttpLib::isObsolete();
 
-		if(LIME_REQUEST_PATH !== '/maintenance' and \Setting::get('main\maintenance') === TRUE) {
+		if(LIME_REQUEST_PATH !== '/maintenance' and MainSetting::MAINTENANCE === TRUE) {
 			throw new \RedirectAction('/maintenance');
 		}
 
@@ -51,8 +51,6 @@ class PageLib {
 
 		// Add log info
 		$data->isLogged = \user\ConnectionLib::isLogged();
-
-		\user\UserLib::registerPrivileges($data->eUserOnline);
 
 		if($data->isLogged) {
 
@@ -103,7 +101,7 @@ class PageLib {
 		$data->nFarmUser = $data->cFarmUser->count();
 
 		// In some specific cases of redirections after network login we need to load datas before displaying a message
-		if(\Feature::get('user\ban')) {
+		if(\user\UserSetting::$featureBan) {
 
 			$error = GET('error');
 			if(

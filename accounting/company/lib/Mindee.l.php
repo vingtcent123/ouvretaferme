@@ -40,7 +40,7 @@ Class MindeeLib {
 
 			$options = [
 				CURLOPT_HTTPHEADER => [
-					'Authorization: Token '.\Setting::get('company\mindeeApiKey'),
+					'Authorization: Token '.CompanySetting::$mindeeApiKey,
 					'Content-Type: multipart/form-data',
 					CURLOPT_RETURNTRANSFER => true,
 				],

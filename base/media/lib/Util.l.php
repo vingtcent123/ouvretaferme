@@ -19,7 +19,7 @@ class UtilLib {
 
 			$url = $eMedia['type'].'/'.$eMedia['hash']; // TODO OVH : il ne manque pas l'extension ?
 
-			\Setting::get('media\mediaDriver')->delete($url);
+			MediaSetting::$mediaDriver->delete($url);
 			Media::model()->delete($eMedia);
 
 		}

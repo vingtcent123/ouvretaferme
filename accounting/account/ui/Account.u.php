@@ -167,7 +167,7 @@ class AccountUi {
 		$itemHtml = encode($eAccount['class'].' '.$eAccount['description']);
 		if(
 			$search->get('classPrefix')
-			and $search->get('classPrefix') === (string)\Setting::get('account\vatClass')
+			and $search->get('classPrefix') === (string)AccountSetting::VAT_CLASS
 			and $eAccount['vatRate'] !== NULL
 		) {
 			$itemHtml .= ' ('.$eAccount['vatRate'].'%)';
@@ -629,7 +629,7 @@ class AccountUi {
 					];
 				};
 				$d->group += ['wrapper' => 'vatAccount'];
-				new \account\AccountUi()->query($d, GET('farm', '?int'), query: ['classPrefix' => \Setting::get('account\vatClass')]);
+				new \account\AccountUi()->query($d, GET('farm', '?int'), query: ['classPrefix' => AccountSetting::VAT_CLASS]);
 				break;
 
 			case 'class':

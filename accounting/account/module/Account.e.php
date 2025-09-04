@@ -43,7 +43,7 @@ class Account extends AccountElement {
 
 				$eAccountVatDb = AccountLib::getById($eAccountVat['id']);
 
-				return str_starts_with($eAccountVatDb['class'], \Setting::get('account\vatClass'));
+				return str_starts_with($eAccountVatDb['class'], AccountSetting::VAT_CLASS);
 
 			});
 

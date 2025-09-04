@@ -58,8 +58,8 @@ class BackupLib {
 
 	private static function getHostData(): array {
 
-		$serverUser = \Setting::get('main\backupServer')['user'];
-		$serverHostname = \Setting::get('main\backupServer')['hostname'];
+		$serverUser = MainSetting::$backupServer['user'];
+		$serverHostname = MainSetting::$backupServer['hostname'];
 
 		if(strlen($serverUser) === 0 or strlen($serverHostname) === 0) {
 			throw new \Exception('backupServer must be configured.');

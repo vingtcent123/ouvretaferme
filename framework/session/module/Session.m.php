@@ -74,7 +74,7 @@ class SessionModel extends \ModuleModel {
 	}
 
 	public function split($sid): int {
-		return crc32($sid) % SETTING(split);
+		return crc32($sid) % SETTING(SPLIT);
 	}
 
 	public function select(...$fields): SessionModel {

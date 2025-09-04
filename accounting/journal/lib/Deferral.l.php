@@ -30,9 +30,9 @@ class DeferralLib extends DeferralCrud {
 		foreach($cDeferral as $eDeferral) {
 
 			if($eDeferral['type'] === Deferral::CHARGE) {
-				$class = \Setting::get('account\prepaidExpenseClass');
+				$class = \account\AccountSetting::PREPAID_EXPENSE_CLASS;
 			} else {
-				$class = \Setting::get('account\accruedIncomeClass');
+				$class = \account\AccountSetting::ACCRUED_EXPENSE_CLASS;
 			}
 
 			$eOperationCredit = new Operation([
@@ -88,9 +88,9 @@ class DeferralLib extends DeferralCrud {
 		foreach($cDeferral as $eDeferral) {
 
 			if($eDeferral['type'] === Deferral::CHARGE) {
-				$class = \Setting::get('account\prepaidExpenseClass');
+				$class = \account\AccountSetting::PREPAID_EXPENSE_CLASS;
 			} else {
-				$class = \Setting::get('account\accruedIncomeClass');
+				$class = \account\AccountSetting::ACCRUED_EXPENSE_CLASS;
 			}
 
 			$eOperationDebit = new Operation([
@@ -181,8 +181,8 @@ class DeferralLib extends DeferralCrud {
 			throw new \NotExpectedAction('Unable to defer operation');
 		}
 
-		$isCharge = \account\ClassLib::isFromClass($eOperation['accountLabel'], \Setting::get('account\chargeAccountClass'));
-		$isProduct = \account\ClassLib::isFromClass($eOperation['accountLabel'], \Setting::get('account\productAccountClass'));
+		$isCharge = \account\ClassLib::isFromClass($eOperation['accountLabel'], \account\AccountSetting::CHARGE_ACCOUNT_CLASS);
+		$isProduct = \account\ClassLib::isFromClass($eOperation['accountLabel'], \account\AccountSetting::PRODUCT_ACCOUNT_CLASS);
 
 		if($isCharge === FALSE and $isProduct === FALSE) {
 			throw new \NotExpectedAction('Unable to defer operation (not a charge nor a product)');

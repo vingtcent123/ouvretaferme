@@ -21,6 +21,14 @@
 
 }
 
+.cashflow-status-allocated {
+	color: var(--success);
+}
+
+.cashflow-status-label.cashflow-status-allocated {
+	background-color: var(--success);
+	color: white;
+}
 .cashflow-status-waiting {
 	color: var(--todo);
 }

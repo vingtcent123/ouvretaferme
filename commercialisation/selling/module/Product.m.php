@@ -102,7 +102,7 @@ class ProductModel extends \ModuleModel {
 		switch($property) {
 
 			case 'unit' :
-				return \Setting::get('selling\unitDefaultId');
+				return \selling\SellingSetting::UNIT_DEFAULT_ID;
 
 			case 'private' :
 				return TRUE;

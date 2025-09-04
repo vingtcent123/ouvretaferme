@@ -19,7 +19,7 @@ class MediaUi {
 			lcfirst(substr(get_class($this), 6, -2))
 		);
 
-		$this->settings = \Setting::get($this->type);
+		$this->settings = MediaSetting::$types[$this->type];
 		$this->field = $this->settings['field'];
 
 		\Asset::js('media', 'media.js');
@@ -39,7 +39,7 @@ class MediaUi {
 	 */
 	public static function getInstance(string $type): MediaUi {
 
-		$class = \Setting::get($type)['class'] ?? NULL;
+		$class = MediaSetting::$types[$type]['class'] ?? NULL;
 
 		if($class) {
 			$class = '\media\\'.$class.'Ui';
@@ -67,7 +67,7 @@ class MediaUi {
 	public static function getExtension($hash): string {
 
 		$letter = substr($hash, 19, 1);
-		return \Setting::get('imagesExtensions')[$letter];
+		return MediaSetting::IMAGES_EXTENSIONS[$letter];
 
 	}
 
@@ -160,7 +160,7 @@ class MediaUi {
 		$basename = $this->getBasenameByHash($hash, $size);
 
 		if($basename !== NULL) {
-			$basename = \Setting::get('mediaUrl').'/'.$basename;
+			$basename = mediaUrl().'/'.$basename;
 		}
 
 		if($version !== NULL) {
@@ -501,7 +501,7 @@ class MediaUi {
 			$checkSize = $size;
 		}
 
-		$formats = \Setting::get($this->type)['imageFormat'];
+		$formats = MediaSetting::$types[$this->type]['imageFormat'];
 
 		foreach($formats as $name => $value) {
 

@@ -102,7 +102,7 @@ class WebsiteModel extends \ModuleModel {
 				return 0;
 
 			case 'customDesign' :
-				return \Setting::get('website\designDefaultId');
+				return \website\WebsiteSetting::DESIGN_DEFAULT_ID;
 
 			case 'customText' :
 				return Website::BLACK;

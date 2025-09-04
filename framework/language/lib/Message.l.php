@@ -296,7 +296,7 @@ class MessageLib {
 
 		$errors = [];
 
-		$tagsAllowed = \Setting::get('allowedTags');
+		$tagsAllowed = LanguageSetting::ALLOWED_TAGS;
 
 		foreach($messages as $id => $text) {
 

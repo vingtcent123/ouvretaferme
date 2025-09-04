@@ -1,5 +1,5 @@
 <?php
-(new Page(fn() => Privilege::check('dev\admin')))
+new Page(fn() => \user\ConnectionLib::getOnline()->checkIsAdmin())
 	->get('index', function($data) {
 
 		$data->page = GET('page', 'int');

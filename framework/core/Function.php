@@ -46,8 +46,9 @@ spl_autoload_register(function (string $class) {
 	if(strpos($class, '\\') !== FALSE) {
 
 		list($package, $base) = explode('\\', $class, 2);
-
-		if(str_ends_with($base, 'ObserverLib')) {
+		if(str_ends_with($base, 'Setting')) {
+			$path = Package::getFile(substr($base, 0, -7), 'setting', $package);
+		} else if(str_ends_with($base, 'ObserverLib')) {
 			$path = Package::getFile(substr($base, 0, -11), 'observer-lib', $package);
 		} else if(str_ends_with($base, 'Lib')) {
 			$path = Package::getFile(substr($base, 0, -3), 'lib', $package);
@@ -221,7 +222,7 @@ function str_is(string $input, $keys, ?callable $callback = NULL) {
 
 		if($callback === NULL) {
 
-			$callback = function(array $input) {
+			$callback = function(string $input) {
 				throw new Exception('Input \''.$input.'\' is not as expected');
 			};
 
@@ -708,7 +709,7 @@ function currentYear(): int {
 }
 
 function nextYear(): int {
-	return date('Y') + 1;
+	return (int)date('Y') + 1;
 }
 
 function currentDate(): string {

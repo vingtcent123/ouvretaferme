@@ -14,7 +14,7 @@ new Page()
 
 		if(get_exists('size')) {
 
-			$possibleFormats = \Setting::get('storage\\'.$type)['imageFormat'];
+			$possibleFormats = \storage\StorageSetting::$types['imageFormat'];
 
 			$size = GET('size');
 
@@ -32,7 +32,7 @@ new Page()
 
 			echo 'No format=? provided, take all of them...'."\n";
 
-			$formats = \Setting::get('storage\\'.$type)['imageFormat'];
+			$formats = \storage\StorageSetting::$types['imageFormat'];
 
 			foreach($formats as $key => $format) {
 

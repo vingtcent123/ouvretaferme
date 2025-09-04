@@ -402,7 +402,7 @@ class PdfLib extends PdfCrud {
 
 		// Nettoyage des PDF
 		Pdf::model()
-			->where('createdAt < NOW() - INTERVAL '.\Setting::get('selling\documentExpires').' MONTH')
+			->where('createdAt < NOW() - INTERVAL '.SellingSetting::DOCUMENT_EXPIRES.' MONTH')
 			->whereContent('!=', NULL)
 			->update([
 				'content' => NULL

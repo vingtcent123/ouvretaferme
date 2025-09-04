@@ -33,7 +33,7 @@ class Stock extends StockElement {
 
 				$eAccount = \account\AccountLib::getById($eAccount['id']);
 
-				return $eAccount->notEmpty() and in_array($eAccount['class'], array_keys(\Setting::get('account\stockVariationClasses')));
+				return $eAccount->notEmpty() and in_array($eAccount['class'], array_keys(\account\AccountSetting::STOCK_VARIATION_CLASSES));
 
 			})
 			->setCallback('accountLabel.inconsistency', function(?string $accountLabel): bool {
@@ -49,7 +49,7 @@ class Stock extends StockElement {
 
 				$eAccount = \account\AccountLib::getById($eAccount['id']);
 
-				return $eAccount->notEmpty() and in_array($eAccount['class'], \Setting::get('account\stockVariationClasses'));
+				return $eAccount->notEmpty() and in_array($eAccount['class'], \account\AccountSetting::STOCK_VARIATION_CLASSES);
 
 			})
 			->setCallback('variationAccountLabel.inconsistency', function(?string $accountLabel): bool {

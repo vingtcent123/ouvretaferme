@@ -1408,7 +1408,7 @@ class TaskUi {
 		if($eTask['series']->empty() === FALSE) {
 			$name = '<span class="tasks-planning-item-series-name">'.SeriesUi::name($eTask['series']).'</span>';
 			$place .= s("Série {value}", $name);
-			$place .= \sequence\CropUi::start($eTask['cultivation'], \Setting::get('farm\mainActions'));
+			$place .= \sequence\CropUi::start($eTask['cultivation'], \farm\FarmSetting::$mainActions);
 			if($eTask['series']['cccPlace']->notEmpty()) {
 				$place .= ' - <div class="tasks-planning-item-series-places">'.new CultivationUi()->displayPlaces($eTask['series']['use'], $eTask['series']['cccPlace']).'</div>';
 			}
@@ -1530,7 +1530,7 @@ class TaskUi {
 				$h .= '<div class="tasks-planning-item-description">';
 
 					$h .= '<div class="tasks-planning-item-label">';
-						$h .= $this->getAction($eTask, \Setting::get('farm\mainActions'));
+						$h .= $this->getAction($eTask, \farm\FarmSetting::$mainActions);
 					$h .= '</div>';
 
 				$h .= '</div>';
@@ -3537,7 +3537,7 @@ class TaskUi {
 							$h .= '<div class="task-field-link">';
 								$h .= SeriesUi::link($eSeries, newTab: TRUE);
 								if($association === FALSE) {
-									$h .= ' '.\sequence\CropUi::start($cCultivation->first(), \Setting::get('farm\mainActions'));
+									$h .= ' '.\sequence\CropUi::start($cCultivation->first(), \farm\FarmSetting::$mainActions);
 								}
 							$h .= '</div>';
 							$h .= '<div class="task-field-place">';
@@ -3580,7 +3580,7 @@ class TaskUi {
 								foreach($eSeries['cCultivation'] as $eCultivation) {
 
 									$label = \plant\PlantUi::getVignette($eCultivation['plant'], '2rem').' '.encode($eCultivation['plant']['name']);
-									$label .= ' '.\sequence\CropUi::start($eCultivation, \Setting::get('farm\mainActions'));
+									$label .= ' '.\sequence\CropUi::start($eCultivation, \farm\FarmSetting::$mainActions);
 
 									$h .= '<label class="series-field-cultivation">';
 										$h .= $form->inputRadio('cultivation['.$eSeries['id'].']', $eCultivation['id'], $label, attributes: [

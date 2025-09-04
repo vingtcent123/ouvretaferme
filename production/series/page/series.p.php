@@ -51,7 +51,7 @@ new \series\CultivationPage(function($data) {
 
 						if(
 							$selectedYear < $eSeries['season'] and
-							($cFlow->first()['weekOnly'] ?? $cFlow->first()['weekStart']) < \Setting::get('sequence\minWeekN-1')
+							($cFlow->first()['weekOnly'] ?? $cFlow->first()['weekStart']) < \sequence\SequenceSetting::MIN_WEEK_MINUS_1
 						) {
 							\sequence\Flow::fail('weekTooSoonAnnualNeutral', ['season' => $eSeries['season']]);
 							$fw->validate();
@@ -318,7 +318,7 @@ new \series\SeriesPage()
 
 		$copies = POST('copies', 'int');
 
-		if($copies < 1 or $copies > Setting::get('series\duplicateLimit')) {
+		if($copies < 1 or $copies > \series\SeriesSetting::DUPLICATE_LIMIT) {
 			throw new NotExpectedAction('Invalid copies');
 		}
 

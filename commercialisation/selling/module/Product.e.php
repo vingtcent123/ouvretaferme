@@ -123,7 +123,7 @@ class Product extends ProductElement {
 
 		$this->expects(['vat', 'proPrice']);
 
-		return vat_from_excluding($this['proPrice'], \Setting::get('selling\vatRates')[$this['vat']]);
+		return vat_from_excluding($this['proPrice'], SellingSetting::VAT_RATES[$this['vat']]);
 
 	}
 
@@ -131,7 +131,7 @@ class Product extends ProductElement {
 
 		$this->expects(['vat', 'privatePrice']);
 
-		return vat_from_including($this['privatePrice'], \Setting::get('selling\vatRates')[$this['vat']]);
+		return vat_from_including($this['privatePrice'], SellingSetting::VAT_RATES[$this['vat']]);
 
 	}
 

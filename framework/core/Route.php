@@ -198,7 +198,8 @@ abstract class Route {
 	 */
 	protected function loadConf(string $request) {
 
-		require Lime::getPath().'/lime.c.php';
+		require_once Lime::getPath().'/package.c.php';
+		require Lime::getPath().'/Lime.s.php';
 
 		if(LIME_ENV === 'dev') {
 
@@ -216,7 +217,6 @@ abstract class Route {
 
 		}
 
-		require_once Lime::getPath().'/package.c.php';
 		require_once Lime::getPath().'/route.c.php';
 
 		if(LIME_ENV === 'dev') {

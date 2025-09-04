@@ -31,7 +31,7 @@ class BufferLib {
 
 			if($affected > 0) {
 	
-				$formats = \Setting::get($type)['imageFormat'];
+				$formats = StorageSetting::$types[$type]['imageFormat'];
 
 				$path = ServerLib::getAbsolutePath($type, NULL, $basename);
 				self::recompress($path);

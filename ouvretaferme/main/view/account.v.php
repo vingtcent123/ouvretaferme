@@ -12,7 +12,7 @@ new AdaptativeView('index', function($data, MainTemplate $t) {
 
 	$h = '<div class="util-buttons">';
 
-		if(Privilege::can('farm\access')) {
+		if(\user\ConnectionLib::getOnline()->isFarmer()) {
 			$h .= '<a href="/farm/farm:create" class="util-button">';
 
 				$h .= '<div>';

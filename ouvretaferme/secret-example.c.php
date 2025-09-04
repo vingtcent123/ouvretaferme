@@ -9,17 +9,13 @@ Database::addServer([
 	'bases' => ['dev_ouvretaferme', 'demo_ouvretaferme']
 ]);
 
-Setting::set('selling\remoteKey', '[KEY]');
-
 RedisCache::addServer('default', 'redis-otf', 6379, ['timeout' => 2]);
 
-Setting::register('mail', [
+require_once Lime::getPath().'/package.c.php';
 
-	'devSendOnly' => ['[EMAIL]'],
+\map\MapSetting::$mapboxToken = '[TOKEN]';
 
-]);
+\selling\SellingSetting::$remoteKey = '[KEY]';
 
-Setting::register('map', [
-	'mapboxToken' => '[TOKEN]',
-]);
+\mail\MailSetting::$devSendOnly = ['[EMAIL]'];
 ?>

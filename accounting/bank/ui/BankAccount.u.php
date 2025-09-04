@@ -66,7 +66,7 @@ class BankAccountUi {
 							if($canUpdate === TRUE) {
 								$eBankAccount->setQuickAttribute('farm', $eFarm['id']);
 								$eBankAccount->setQuickAttribute('app', 'accounting');
-								$h .= $eBankAccount->quick('label', $eBankAccount['label'] ? encode($eBankAccount['label']) : '<i>'.\Setting::get('account\defaultBankAccountLabel').'&nbsp;'.s("(Par défaut)").'</i>');
+								$h .= $eBankAccount->quick('label', $eBankAccount['label'] ? encode($eBankAccount['label']) : '<i>'.\account\AccountSetting::DEFAULT_BANK_ACCOUNT_LABEL.'&nbsp;'.s("(Par défaut)").'</i>');
 							} else {
 								$h .= encode($eBankAccount['label']);
 							}

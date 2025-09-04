@@ -100,9 +100,9 @@ class DeferralUi {
 					foreach($cDeferral as $eDeferral) {
 
 						if($eDeferral['type'] === Deferral::CHARGE) {
-							$class = \Setting::get('account\prepaidExpenseClass');
+							$class = \account\AccountSetting::PREPAID_EXPENSE_CLASS;
 						} else {
-							$class = \Setting::get('account\accruedIncomeClass');
+							$class = \account\AccountSetting::ACCRUED_EXPENSE_CLASS;
 						}
 
 
@@ -215,8 +215,8 @@ class DeferralUi {
 								if($eOperation['deferral']->canDelete()) {
 
 									$confirm = match((int)substr($eOperation['accountLabel'], 0, 1)) {
-										\Setting::get('account\chargeAccountClass') => s("Voulez-vous vraiment supprimer cette charge constatée d'avance ?"),
-										\Setting::get('account\productAccountClass') => s("Voulez-vous vraiment supprimer ce produit constaté d'avance ?"),
+										\account\AccountSetting::CHARGE_ACCOUNT_CLASS => s("Voulez-vous vraiment supprimer cette charge constatée d'avance ?"),
+										\account\AccountSetting::PRODUCT_ACCOUNT_CLASS => s("Voulez-vous vraiment supprimer ce produit constaté d'avance ?"),
 									};
 
 									$action = '<a data-ajax="'.\company\CompanyUi::urlJournal($eFarm).'/deferral:doDelete" post-id="'.$eOperation['deferral']['id'].'" title="'.s("Supprimer").'" data-confirm="'.$confirm.'" class="btn btn-outline-danger">'.\Asset::icon('trash').'</a>';
@@ -255,8 +255,8 @@ class DeferralUi {
 							$h .= '<tr id="'.$eOperation['id'].'" class="'.$class.'">';
 
 								$h .= '<td>'.match((int)substr($eOperation['accountLabel'], 0, 1)) {
-									\Setting::get('account\productAccountClass') => s("Produit"),
-									\Setting::get('account\chargeAccountClass') => s("Charge"),
+									\account\AccountSetting::PRODUCT_ACCOUNT_CLASS => s("Produit"),
+									\account\AccountSetting::CHARGE_ACCOUNT_CLASS => s("Charge"),
 								}.'</td>';
 								$h .= '<td>'.\util\DateUi::numeric($eOperation['date'], \util\DateUi::DATE).'</td>';
 								$h .= '<td>'.encode($eOperation['accountLabel']).'</td>';

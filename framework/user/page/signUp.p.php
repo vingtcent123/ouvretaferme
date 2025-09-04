@@ -1,7 +1,7 @@
 <?php
 new Page(function($data) {
-		Feature::check('user\signUp');
-	})
+	\user\UserSetting::checkFeature(\user\UserSetting::$featureSignUp);
+})
 	/**
 	 * Display sign up form
 	 */
@@ -24,7 +24,7 @@ new Page(function($data) {
 
 		user\ConnectionLib::loadSignUp($data);
 
-		throw new ViewAction($data, path: Setting::get('user\signUpView'));
+		throw new ViewAction($data, path: \user\UserSetting::$signUpView);
 
 	})
 	/**

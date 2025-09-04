@@ -56,7 +56,7 @@ class MinifyLib {
 
 	public static function clean(): void {
 
-		$directories = glob(\Setting::get('dev\minifyDirectory').'/'.LIME_APP.'/*');
+		$directories = glob(DevSetting::MINIFY_DIRECTORY.'/'.LIME_APP.'/*');
 
 		foreach($directories as $directory) {
 

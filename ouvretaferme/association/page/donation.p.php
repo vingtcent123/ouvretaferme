@@ -2,15 +2,15 @@
 new Page()
 	->get('/donner', function($data) {
 
-		if(!Setting::get('association\isDonnerPageActive')) {
-			throw new RedirectAction(Setting::get('association\url').'/nous-soutenir');
+		if(\association\AssociationSetting::IS_DONNER_PAGE_ACTIVE === FALSE) {
+			throw new RedirectAction(\association\AssociationSetting::FARM.'/nous-soutenir');
 		}
 
 		$data->eHistory = new \association\History();
 
 		if(get_exists('donation')) {
 
-			$eFarmOtf = \farm\FarmLib::getById(Setting::get('association\farm'));
+			$eFarmOtf = \farm\FarmLib::getById(\association\AssociationSetting::FARM);
 			$eCustomer = \selling\Customer::model()
 				->select(\selling\Customer::getSelection())
 				->whereInvoiceEmail(GET('email'))

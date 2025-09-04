@@ -23,12 +23,12 @@ class DropUi {
 
 		} else {
 
-			$h .= '<div class="util-info">'.s("Lorsque vous fermez votre compte, vous disposez d'un délai de réflexion de {value} jours pour revenir sur votre décision. Passé ce délai, votre compte est désactivé, vos données seront supprimées et vous ne pourrez plus vous connecter.", \Setting::get('user\closeTimeout')).'</div>';
+			$h .= '<div class="util-info">'.s("Lorsque vous fermez votre compte, vous disposez d'un délai de réflexion de {value} jours pour revenir sur votre décision. Passé ce délai, votre compte est désactivé, vos données seront supprimées et vous ne pourrez plus vous connecter.", UserSetting::CLOSE_TIMEOUT).'</div>';
 
 			if($canCloseDelay) {
 				$h .= '<a data-ajax="/user/close:do" class="btn btn-danger">'.s("Fermer mon compte").'</a>';
 			} else {
-				$h .= '<b>'.s("Par sécurité, vous ne pouvez fermer votre compte que {value} minutes après vous être connecté. Vous devez donc vous déconnecter et vous reconnecter sur cette page pour effectuer cette action.", \Setting::get('user\closeTimeLimit')).'</b>';
+				$h .= '<b>'.s("Par sécurité, vous ne pouvez fermer votre compte que {value} minutes après vous être connecté. Vous devez donc vous déconnecter et vous reconnecter sur cette page pour effectuer cette action.", UserSetting::CLOSE_TIME_LIMIT).'</b>';
 			}
 
 		}

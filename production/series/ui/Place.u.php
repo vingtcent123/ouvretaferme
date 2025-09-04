@@ -722,7 +722,7 @@ class PlaceUi {
 
 			if($ePlace['positionStart'] !== NULL) {
 
-				$position = $ePlace['positionStart'] + \Setting::get('missingWeeks') + ($ePlace['series']['season'] - $season) * 100;
+				$position = $ePlace['positionStart'] + SeriesSetting::MISSING_WEEKS + ($ePlace['series']['season'] - $season) * 100;
 				$positionSeason = floor($position / 100);
 				$positionWeek = $position - $positionSeason * 100;
 

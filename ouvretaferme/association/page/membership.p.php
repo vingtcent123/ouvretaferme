@@ -70,10 +70,10 @@ new Page()
 		switch($data->cFarmUser->count()) {
 
 			case 0 :
-				if(Setting::get('association\isDonnerPageActive')) {
+				if(\association\AssociationSetting::IS_DONNER_PAGE_ACTIVE) {
 					throw new RedirectAction('/donner');
 				} else {
-					throw new RedirectAction(Setting::get('association\url').'/nous-soutenir');
+					throw new RedirectAction(\association\AssociationSetting::URL.'/nous-soutenir');
 				}
 
 			case 1 :

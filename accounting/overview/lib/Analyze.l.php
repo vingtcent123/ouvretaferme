@@ -9,12 +9,12 @@ class AnalyzeLib {
 
 		\journal\Operation::model()
        ->select([
-         'charge' => new \Sql('SUM(IF(SUBSTRING(m2.class, 1, 1) = "'.\Setting::get('account\chargeAccountClass').'", amount, 0))'),
-         'product' => new \Sql('SUM(IF(SUBSTRING(m2.class, 1, 1) = "'.\Setting::get('account\productAccountClass').'", amount, 0))'),
+         'charge' => new \Sql('SUM(IF(SUBSTRING(m2.class, 1, 1) = "'.\account\AccountSetting::CHARGE_ACCOUNT_CLASS.'", amount, 0))'),
+         'product' => new \Sql('SUM(IF(SUBSTRING(m2.class, 1, 1) = "'.\account\AccountSetting::PRODUCT_ACCOUNT_CLASS.'", amount, 0))'),
        ])
        ->whereDate('>=', $eFinancialYear['startDate'])
        ->whereDate('<=', $eFinancialYear['endDate'])
-       ->where(new \Sql('SUBSTRING(m2.class, 1, 1) = "'.\Setting::get('account\chargeAccountClass').'" OR SUBSTRING(m2.class, 1, 1) = "'.\Setting::get('account\productAccountClass').'"'))
+       ->where(new \Sql('SUBSTRING(m2.class, 1, 1) = "'.\account\AccountSetting::CHARGE_ACCOUNT_CLASS.'" OR SUBSTRING(m2.class, 1, 1) = "'.\account\AccountSetting::PRODUCT_ACCOUNT_CLASS.'"'))
        ->join(\account\Account::model(), 'm1.account = m2.id')
 			->get($eOperation);
 
@@ -32,7 +32,7 @@ class AnalyzeLib {
 			])
 			->whereDate('>=', $eFinancialYear['startDate'])
 			->whereDate('<=', $eFinancialYear['endDate'])
-			->where(new \Sql('SUBSTRING(m2.class, 1, 1) = "'.\Setting::get('account\chargeAccountClass').'" OR SUBSTRING(m2.class, 1, 1) = "'.\Setting::get('account\productAccountClass').'"'))
+			->where(new \Sql('SUBSTRING(m2.class, 1, 1) = "'.\account\AccountSetting::CHARGE_ACCOUNT_CLASS.'" OR SUBSTRING(m2.class, 1, 1) = "'.\account\AccountSetting::PRODUCT_ACCOUNT_CLASS.'"'))
 			->join(\account\Account::model(), 'm1.account = m2.id')
 			->group(['class'])
 			->sort(['class' => SORT_ASC])
@@ -49,12 +49,12 @@ class AnalyzeLib {
 		return \journal\Operation::model()
 			->select([
 				'month' => new \Sql('DATE_FORMAT(date, "%Y-%m")'),
-				'charge' => new \Sql('SUM(IF(SUBSTRING(m2.class, 1, 1) = "'.\Setting::get('account\chargeAccountClass').'", amount, 0))'),
-				'product' => new \Sql('SUM(IF(SUBSTRING(m2.class, 1, 1) = "'.\Setting::get('account\productAccountClass').'", amount, 0))'),
+				'charge' => new \Sql('SUM(IF(SUBSTRING(m2.class, 1, 1) = "'.\account\AccountSetting::CHARGE_ACCOUNT_CLASS.'", amount, 0))'),
+				'product' => new \Sql('SUM(IF(SUBSTRING(m2.class, 1, 1) = "'.\account\AccountSetting::PRODUCT_ACCOUNT_CLASS.'", amount, 0))'),
 			])
 			->whereDate('>=', $eFinancialYear['startDate'])
 			->whereDate('<=', $eFinancialYear['endDate'])
-			->where(new \Sql('SUBSTRING(m2.class, 1, 1) = "'.\Setting::get('account\chargeAccountClass').'" OR SUBSTRING(m2.class, 1, 1) = "'.\Setting::get('account\productAccountClass').'"'))
+			->where(new \Sql('SUBSTRING(m2.class, 1, 1) = "'.\account\AccountSetting::CHARGE_ACCOUNT_CLASS.'" OR SUBSTRING(m2.class, 1, 1) = "'.\account\AccountSetting::PRODUCT_ACCOUNT_CLASS.'"'))
 			->join(\account\Account::model(), 'm1.account = m2.id')
 			->group(['m1_month'])
 			->getCollection(NULL, NULL, ['month']);
@@ -68,7 +68,7 @@ class AnalyzeLib {
 				'class',
 				'description' => new \Sql('LOWER(description)'),
 			])
-			->where(new \Sql('SUBSTRING(class, 1, 1) = "'.\Setting::get('account\chargeAccountClass').'"'))
+			->where(new \Sql('SUBSTRING(class, 1, 1) = "'.\account\AccountSetting::CHARGE_ACCOUNT_CLASS.'"'))
 			->where('LENGTH(class) = 2')
 			->sort(['description' => SORT_ASC])
 			->getCollection();
@@ -80,7 +80,7 @@ class AnalyzeLib {
 			])
 			->whereDate('>=', $eFinancialYear['startDate'])
 			->whereDate('<=', $eFinancialYear['endDate'])
-			->where(new \Sql('SUBSTRING(m2.class, 1, 1) = "'.\Setting::get('account\chargeAccountClass').'"'))
+			->where(new \Sql('SUBSTRING(m2.class, 1, 1) = "'.\account\AccountSetting::CHARGE_ACCOUNT_CLASS.'"'))
 			->join(\account\Account::model(), 'm1.account = m2.id')
 			->group(['m1_big_class'])
 			->getCollection(NULL, NULL, 'big_class');
@@ -91,7 +91,7 @@ class AnalyzeLib {
 
 	public static function getBankOperationsByMonth(\account\FinancialYear $eFinancialYear, string $type): \Collection {
 
-		$accountClass = $type === 'bank' ? \Setting::get('account\bankAccountClass') : \Setting::get('account\cashAccountClass');
+		$accountClass = $type === 'bank' ? \account\AccountSetting::BANK_ACCOUNT_CLASS : \account\AccountSetting::CASH_ACCOUNT_CLASS;
 
 		$cOperation = \journal\Operation::model()
 			->select([

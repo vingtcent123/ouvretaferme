@@ -30,7 +30,7 @@ class AlertUi {
 			'imageTypeSeveral' => s("Certaines des images sélectionnées n'étaient pas au format JPEG ou PNG et n'ont pas été téléchargées."),
 			'imageTypeOne' => s("Veuillez sélectionner une image valide."),
 			'imageTypeAll' => s("Veuillez sélectionner des images valides."),
-			'imageSize' => s("L'image sélectionnée est trop grosse, elle doit peser moins de {maxSize}Mo.", ['maxSize' => \Setting::get('media\maxImageSize')]),
+			'imageSize' => s("L'image sélectionnée est trop grosse, elle doit peser moins de {maxSize}Mo.", ['maxSize' => MediaSetting::MAX_IMAGE_SIZE]),
 			'imageNoZoom' => s("La qualité de l'image est insuffisante pour proposer le zoom"),
 			'imageNoResize' => s("La qualité de l'image est insuffisante pour permettre un recadrage")
 		];

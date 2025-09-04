@@ -20,7 +20,7 @@ class MapboxLib {
 
 	protected static function call(string $uri, array $arguments = []): array {
 
-		$arguments['access_token'] = \Setting::get('map\mapboxToken');
+		$arguments['access_token'] = MapSetting::$mapboxToken;
 
 		$url = 'https://api.mapbox.com'.$uri;
 		$values = new \util\CurlLib()->exec($url, $arguments);

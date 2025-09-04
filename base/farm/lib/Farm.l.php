@@ -88,7 +88,7 @@ class FarmLib extends FarmCrud {
 		Farm::model()->beginTransaction();
 
 		$e['seasonFirst'] = date('Y');
-		$e['seasonLast'] = date('n') >= (\Setting::get('farm\newSeason') - 1) ? nextYear() : date('Y');
+		$e['seasonLast'] = date('n') >= (FarmSetting::NEW_SEASON - 1) ? nextYear() : date('Y');
 
 		Farm::model()->insert($e);
 
@@ -180,7 +180,7 @@ class FarmLib extends FarmCrud {
 		}
 
 		Farm::model()
-			->where('seasonLast + '.$increment.' BETWEEN seasonFirst AND '.(date('Y') + 10).'')
+			->where('seasonLast + '.$increment.' BETWEEN seasonFirst AND '.((int)date('Y') + 10).'')
 			->update($e, [
 				'seasonLast' => new \Sql('seasonLast + '.$increment)
 			]);

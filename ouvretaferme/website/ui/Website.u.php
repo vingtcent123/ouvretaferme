@@ -22,7 +22,7 @@ class WebsiteUi {
 		) {
 			$domain = $eWebsite['domain'];
 		} else {
-			$domain = \Setting::get('domain').'/'.encode($eWebsite['internalDomain']);
+			$domain = WebsiteSetting::domain().'/'.encode($eWebsite['internalDomain']);
 		}
 
 		return $showProtocol ? match(LIME_ENV) {
@@ -149,7 +149,7 @@ class WebsiteUi {
 		switch($property) {
 
 			case 'internalDomain' :
-				$d->prepend = \Lime::getProtocol().'://'.\Setting::get('domain').'/';
+				$d->prepend = \Lime::getProtocol().'://'.WebsiteSetting::domain().'/';
 				$d->after = \util\FormUi::info(s("Uniquement des chiffres, des lettres ou des tirets"));
 				break;
 
@@ -197,7 +197,7 @@ class WebsiteUi {
 			case 'customFont':
 				$d->field = 'select';
 				$d->attributes = ['mandatory' => TRUE];
-				$d->values = \Setting::get('website\customFonts');
+				$d->values = WebsiteSetting::CUSTOM_FONTS;
 				break;
 
 			case 'customColor':
@@ -212,7 +212,7 @@ class WebsiteUi {
 			case 'customTitleFont':
 				$d->field = 'select';
 				$d->attributes = ['mandatory' => TRUE];
-				$d->values = \Setting::get('website\customTitleFonts');
+				$d->values = WebsiteSetting::CUSTOM_TITLE_FONTS;
 				break;
 		}
 

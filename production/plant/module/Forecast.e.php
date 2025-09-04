@@ -32,7 +32,7 @@ class Forecast extends ForecastElement {
 			->setCallback('farm.check', function(\farm\Farm $eFarm): bool {
 
 				return (
-					(\Privilege::can('plant\admin') and $eFarm->empty()) or
+					(\user\ConnectionLib::getOnline()->isAdmin() and $eFarm->empty()) or
 					$eFarm->canManage()
 				);
 

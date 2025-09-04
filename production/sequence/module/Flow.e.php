@@ -278,13 +278,13 @@ class Flow extends FlowElement {
 			switch($this['yearOnly']) {
 
 				case -1 :
-					if($this['weekOnly'] < \Setting::get('minWeekN-1')) {
+					if($this['weekOnly'] < SequenceSetting::MIN_WEEK_MINUS_1) {
 						Flow::fail('weekOnly.consistency0');
 					}
 					break;
 
 				case 1 :
-					if($this['weekOnly'] > \Setting::get('maxWeekN+1')) {
+					if($this['weekOnly'] > SequenceSetting::MIN_WEEK_PLUS_1) {
 						Flow::fail('weekOnly.consistency2');
 					}
 					break;
@@ -343,13 +343,13 @@ class Flow extends FlowElement {
 				switch($this['year'.$key]) {
 
 					case -1 :
-						if($this['week'.$key] < \Setting::get('minWeekN-1')) {
+						if($this['week'.$key] < SequenceSetting::MIN_WEEK_MINUS_1) {
 							Flow::fail('week'.$key.'.consistency0');
 						}
 						break;
 
 					case 1 :
-						if($this['week'.$key] > \Setting::get('maxWeekN+1')) {
+						if($this['week'.$key] > SequenceSetting::MIN_WEEK_PLUS_1) {
 							Flow::fail('week'.$key.'.consistency2');
 						}
 						break;

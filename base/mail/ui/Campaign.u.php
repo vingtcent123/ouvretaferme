@@ -225,7 +225,7 @@ class CampaignUi {
 
 			$h .= $form->dynamicGroup($eCampaign, 'subject');
 
-			$content = '<div class="util-block mb-0" style="max-width: '.\Setting::get('mail\maxWidth').'px">'.$form->dynamicField($eCampaign, 'content').'</div>';
+			$content = '<div class="util-block mb-0" style="max-width: '.MailSetting::MAX_WIDTH.'px">'.$form->dynamicField($eCampaign, 'content').'</div>';
 
 			if(
 				$eCampaign->exists() === FALSE and
@@ -383,7 +383,7 @@ class CampaignUi {
 
 		$h .= '<h2>'.s("Contenu").'</h2>';
 
-		$h .= '<div class="util-block" style="max-width: '.\Setting::get('mail\maxWidth').'px">'.new \editor\ReadorFormatterUi()->getFromXml($e['content'], ['isEmail' => TRUE]).'</div>';
+		$h .= '<div class="util-block" style="max-width: '.MailSetting::MAX_WIDTH.'px">'.new \editor\ReadorFormatterUi()->getFromXml($e['content'], ['isEmail' => TRUE]).'</div>';
 
 		return $h;
 

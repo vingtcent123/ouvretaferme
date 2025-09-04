@@ -77,11 +77,11 @@ class CronLib {
 
 		$interval = $page['interval'];
 
-		$command = \Setting::get('php').' '.LIME_DIRECTORY.'/framework/lime.php -a '.LIME_APP;
+		$command = DevSetting::PHP.' '.LIME_DIRECTORY.'/framework/lime.php -a '.LIME_APP;
 
 		if(strpos($interval, 'permanent@') === 0) {
 
-			$lifetime = \Setting::get('cronPermanentLifetime');
+			$lifetime = DevSetting::CRON_PERMANENT_LIFETIME;
 
 			if($lifetime < 3600) {
 				$interval = '*/'.(int)($lifetime / 60).' * * * *';
@@ -111,7 +111,7 @@ class CronLib {
 			return;
 		}
 
-		$directory = \Package::getPath().\Setting::get('cronSaveDirectory');
+		$directory = \Package::getPath().DevSetting::CRON_SAVE_DIRECTORY;
 
 		if(is_dir($directory) === FALSE) {
 			mkdir($directory);

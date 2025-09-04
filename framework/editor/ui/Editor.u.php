@@ -130,7 +130,7 @@ class EditorUi {
 			$class = '';
 		}
 
-		$data = 'data-admin="'.((int)\Privilege::can('user\admin')).'"';
+		$data = 'data-admin="'.((int)\user\ConnectionLib::getOnline()->isAdmin()).'"';
 		$data .= ' data-speed="'.$options['speed'].'"';
 
 		if($options['acceptFigure']) {
@@ -212,7 +212,7 @@ class EditorUi {
 		$h = '<script type="text/javascript">';
 			$h .= 'Editor.labels = '.json_encode($this->labels()).';';
 			$h .= 'Editor.conf = {';
-				$h .= 'captionLimit: '.\Setting::get('captionLimit');
+				$h .= 'captionLimit: '.EditorSetting::CAPTION_LIMIT;
 			$h .= '};';
 		$h .= '</script>';
 
@@ -256,7 +256,7 @@ class EditorUi {
 			'removeFigure' => s("Supprimer la mosaïque"),
 			'moveFigure' => s("Déplacer la mosaïque"),
 			'captionFigure' => s("Tapez une légende (facultatif)"),
-			'captionLimit' => s("Au delà de {value} caractères, la légende est tronquée à l'affichage.", \Setting::get('editor\captionLimit')),
+			'captionLimit' => s("Au delà de {value} caractères, la légende est tronquée à l'affichage.", EditorSetting::CAPTION_LIMIT),
 			'background' => s("Couleur d'arrière plan"),
 			'border' => s("Bordure"),
 			'move' => s("Déplacer"),
@@ -336,7 +336,7 @@ class EditorUi {
 			$h .= $form->hidden('url', $url);
 			$h .= $form->group(
 				s("Titre :"),
-				$form->text('title', $title, ['placeholder' => s("Donnez un titre à cette photo"), 'maxlength' => \Setting::get('mediaTitleLimit'), 'data-limit' => \Setting::get('mediaTitleLimit')])
+				$form->text('title', $title, ['placeholder' => s("Donnez un titre à cette photo"), 'maxlength' => EditorSetting::MEDIA_TITLE_LIMIT, 'data-limit' => EditorSetting::MEDIA_TITLE_LIMIT])
 			);
 			$h .= $form->group(
 				s("Lien :"),

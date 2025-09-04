@@ -3,7 +3,7 @@ Session:
   content: text16(0, PHP(SessionLib::MAX_LENGTH))
   updatedAt: datetime = SPECIAL(now)
   user: ?user\User
-  SPLIT: ["sid", "SETTING(split)"]
+  SPLIT: ["sid", "SETTING(SPLIT)"]
   UNIQUE: [
     ["sid"]
   ]

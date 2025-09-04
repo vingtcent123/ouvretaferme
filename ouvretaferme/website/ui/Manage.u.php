@@ -259,11 +259,11 @@ class ManageUi {
 						};
 						if(in_array($eWebsite['domainStatus'], [Website::FAILURE_UNSECURED, Website::FAILURE_SECURED])) {
 
-							if($eWebsite['domainTry'] >= \Setting::get('domainMaxTry')) {
+							if($eWebsite['domainTry'] >= WebsiteSetting::DOMAIN_MAX_TRY) {
 								$h .= ' '.s("(nombre maximal de tentatives atteint)");
 								$h .= ' <a data-ajax="/website/manage:doUpdateDomainTry" post-id="'.$eWebsite['id'].'" post-domain-try="0" class="btn btn-danger">'.s("Réessayer").'</a>';
 							} else {
-								$h .= ' '.s("(essai {current} / {max})", ['current' => $eWebsite['domainTry'], 'max' => \Setting::get('domainMaxTry')]);
+								$h .= ' '.s("(essai {current} / {max})", ['current' => $eWebsite['domainTry'], 'max' => WebsiteSetting::DOMAIN_MAX_TRY]);
 							}
 
 						}

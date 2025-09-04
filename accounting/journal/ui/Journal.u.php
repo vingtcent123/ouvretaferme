@@ -8,7 +8,6 @@ class JournalUi {
 		\Asset::css('company', 'company.css');
 	}
 
-
 	public function getJournalTitle(\farm\Farm $eFarm, \account\FinancialYear $eFinancialYear): string {
 
 		$h = '<div class="util-action">';
@@ -452,9 +451,9 @@ class JournalUi {
 
 		}
 
-		$canAddShipping = ($eOperation->isClassAccount(\Setting::get('account\chargeAccountClass')) === TRUE
+		$canAddShipping = ($eOperation->isClassAccount(\account\AccountSetting::CHARGE_ACCOUNT_CLASS) === TRUE
 			// On ne rajoute pas des frais de port sur des frais de port
-			and \account\ClassLib::isFromClass($eOperation['accountLabel'], \Setting::get('account\shippingChargeAccountClass')) === FALSE);
+			and \account\ClassLib::isFromClass($eOperation['accountLabel'], \account\AccountSetting::SHIPPING_CHARGE_ACCOUNT_CLASS) === FALSE);
 
 		$h = '<a data-dropdown="bottom-end" class="dropdown-toggle btn btn-outline-secondary btn-xs">'.\Asset::icon('gear-fill').'</a>';
 		$h .= '<div class="dropdown-list">';
@@ -470,8 +469,8 @@ class JournalUi {
 			if($canAddShipping) {
 
 				$args = [
-					'accountPrefix' => \Setting::get('account\shippingChargeAccountClass'),
-					'accountLabel' => encode(OperationUi::getAccountLabelFromAccountPrefix(\Setting::get('account\shippingChargeAccountClass'))),
+					'accountPrefix' => \account\AccountSetting::SHIPPING_CHARGE_ACCOUNT_CLASS,
+					'accountLabel' => encode(OperationUi::getAccountLabelFromAccountPrefix(\account\AccountSetting::SHIPPING_CHARGE_ACCOUNT_CLASS)),
 					'document' => $eOperation['document'],
 					'type' => $eOperation['type'],
 					'date' => $eOperation['date'],

@@ -13,7 +13,7 @@ class CompileVersionLib {
 	 */
 	public static function image(string $app): array {
 
-		if(Feature::get('compileImageVersion') === FALSE) {
+		if(DevSetting::$featureCompileImageVersion === FALSE) {
 			return [];
 		}
 
@@ -70,7 +70,7 @@ class CompileVersionLib {
 	 */
 	protected static function code(string $app, string $type): array {
 
-		if(Feature::get('compileCodeVersion') === FALSE) {
+		if(DevSetting::$featureCompileCodeVersion === FALSE) {
 			return [];
 		}
 

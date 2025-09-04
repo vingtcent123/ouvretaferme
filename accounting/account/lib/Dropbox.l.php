@@ -201,8 +201,8 @@ Class DropboxLib {
 		$params = [
 			'grant_type' => 'refresh_token',
 			'refresh_token' => $ePartner['params']['refresh_token'],
-			'client_id' => \Setting::get('account\dropbox')['appKey'],
-			'client_secret' => \Setting::get('account\dropbox')['appSecret'],
+			'client_id' => AccountSetting::$dropbox['appKey'],
+			'client_secret' => AccountSetting::$dropbox['appSecret'],
 		];
 
 		$curl = new \util\CurlLib();
@@ -243,8 +243,8 @@ Class DropboxLib {
 		$params = [
 			'code' => $authorizationCode,
 			'grant_type' => 'authorization_code',
-			'client_id' => \Setting::get('account\dropbox')['appKey'],
-			'client_secret' => \Setting::get('account\dropbox')['appSecret'],
+			'client_id' => AccountSetting::$dropbox['appKey'],
+			'client_secret' => AccountSetting::$dropbox['appSecret'],
 			'redirect_uri' => self::getRedirectUri($eFarm),
 		];
 
@@ -272,7 +272,7 @@ Class DropboxLib {
 	public static function getAuthorizeUrl(\farm\Farm $eFarm): string {
 
 		$params = [
-			'client_id' => \Setting::get('account\dropbox')['appKey'],
+			'client_id' => AccountSetting::$dropbox['appKey'],
 			'response_type' => 'code',
 			'redirect_uri' => self::getRedirectUri(),
 			'token_access_type' => 'offline',

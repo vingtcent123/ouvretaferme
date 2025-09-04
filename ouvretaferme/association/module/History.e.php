@@ -29,7 +29,7 @@ class History extends HistoryElement {
 					return TRUE;
 				}
 
-				if($amount === NULL or $amount < \Setting::get('association\membershipFee')) {
+				if($amount === NULL or $amount < AssociationSetting::MEMBERSHIP_FEE) {
 					return FALSE;
 				}
 

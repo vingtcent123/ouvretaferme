@@ -32,7 +32,7 @@ class HomeUi {
 
 	public function getTraining(bool $hide = FALSE): string {
 
-		if(currentDate() > \Setting::get('main\limitTraining')) {
+		if(currentDate() > MainSetting::LIMIT_TRAINING) {
 			return '';
 		}
 
@@ -41,7 +41,7 @@ class HomeUi {
 			$eUser = \user\ConnectionLib::getOnline();
 
 			$key = 'pub-2025001-'.$eUser['id'];
-			$expires = strtotime(\Setting::get('main\limitTraining').' + 7 DAYS');
+			$expires = strtotime(MainSetting::LIMIT_TRAINING.' + 7 DAYS');
 
 			if(get_exists('training')) {
 				\Cache::redis()->set($key, 5);

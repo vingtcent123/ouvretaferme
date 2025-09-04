@@ -448,7 +448,7 @@ class FarmerUi {
 			$description = '<div class="util-block-help">';
 				$description .= '<p>'.s("En invitant un utilisateur à rejoindre l'équipe de votre ferme, vous lui permettrez d'accéder à un grand nombre de données sur votre ferme. Choisissez le rôle que vous donnez à vos invités avec soin :").'</p>';
 				$description .= $this->getRoles();
-				$description .= '<p>'.s("Pour inviter un utilisateur, saisissez son adresse e-mail. Il recevra un e-mail lui donnant les instructions à suivre, et devra les réaliser dans un délai de {value} jours.", \Setting::get('farm\inviteDelay')).'</p>';
+				$description .= '<p>'.s("Pour inviter un utilisateur, saisissez son adresse e-mail. Il recevra un e-mail lui donnant les instructions à suivre, et devra les réaliser dans un délai de {value} jours.", FarmSetting::INVITE_DELAY).'</p>';
 			$description .= '</div>';
 
 			$h .= $form->group(content: $description);

@@ -21,7 +21,7 @@ switch(LIME_ENV) {
 
 	case 'prod' :
 
-		Setting::set('dev\minify', TRUE);
+		\dev\DevSetting::$minify = TRUE;
 		Asset::setVersion(hash_file('crc32', LIME_DIRECTORY.'/.git/FETCH_HEAD'));
 
 		Database::setPackages([
@@ -56,7 +56,7 @@ switch(LIME_ENV) {
 
 	case 'dev' :
 
-		Setting::set('dev\minify', FALSE);
+		\dev\DevSetting::$minify = FALSE;
 		Database::setDebug(get_exists('sql'));
 
 		Database::setPackages([
@@ -91,14 +91,12 @@ switch(LIME_ENV) {
 
 }
 
-Package::setConfFile('storage', LIME_DIRECTORY.'/base/media/media.c.php');
+\user\UserSetting::$featureBan = TRUE;
 
-Feature::set('user\ban', TRUE);
-
-Setting::set('user\checkTos', TRUE);
-Setting::set('user\signUpRoles', ['farmer', 'customer']);
-Setting::set('user\statsRoles', ['farmer', 'customer']);
-Setting::set('user\signUpView', 'main/index:signUp');
+\user\UserSetting::$checkTos = TRUE;
+\user\UserSetting::$signUpRoles =  ['farmer', 'customer'];
+\user\UserSetting::$statsRoles =  ['farmer', 'customer'];
+\user\UserSetting::$signUpView =  'main/index:signUp';
 
 Page::construct(function($data) {
 

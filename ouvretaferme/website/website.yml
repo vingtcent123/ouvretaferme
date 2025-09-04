@@ -92,7 +92,7 @@ Website:
   name: text8(1, 40)
   footer: ?editor24
   description: ?text8(1, 200)
-  customDesign: website\Design = PHP(\Setting::get('website\designDefaultId'))
+  customDesign: website\Design = PHP(\website\WebsiteSetting::DESIGN_DEFAULT_ID)
   customText: enum(BLACK, WHITE) = BLACK
   customColor: color = PHP("#4a4a70")
   customLinkColor: ?color

@@ -249,7 +249,7 @@ Product:
   size: ?text8(1, null)
   origin: ?text8(1, null)
   farm: farm\Farm
-  unit: ?selling\Unit = PHP(\Setting::get('selling\unitDefaultId'))
+  unit: ?selling\Unit = PHP(\selling\SellingSetting::UNIT_DEFAULT_ID)
   private: bool = TRUE
   privatePrice: ?decimal(8, 2)
   privatePriceInitial: ?decimal(8, 2)

@@ -37,7 +37,7 @@ class Size extends SizeElement {
 			->setCallback('farm.check', function(\farm\Farm $eFarm): bool {
 
 				return (
-					(\Privilege::can('plant\admin') and $eFarm->empty()) or
+					(\user\ConnectionLib::getOnline()->isAdmin() and $eFarm->empty()) or
 					$eFarm->canManage()
 				);
 
@@ -47,7 +47,7 @@ class Size extends SizeElement {
 				$this->expects(['farm']);
 
 				return (
-					(\Privilege::can('plant\admin') and $ePlant->empty()) or
+					(\user\ConnectionLib::getOnline()->isAdmin() and $ePlant->empty()) or
 					Plant::model()
 						->where('farm IS NULL or farm = '.Plant::model()->format($this['farm']))
 						->exists($ePlant)

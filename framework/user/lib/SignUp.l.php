@@ -15,7 +15,7 @@ class SignUpLib {
 
 		$tos = (bool)($input['tos'] ?? FALSE);
 
-		if(\Setting::get('user\checkTos') and $tos === FALSE) {
+		if(UserSetting::$checkTos and $tos === FALSE) {
 			User::fail('tos.accepted');
 		}
 
@@ -72,7 +72,7 @@ class SignUpLib {
 			// The user might come from social connection
 			if($eUser['auth']->empty()) {
 
-				self::match('update', UserAuth::BASIC, $eUser, $input);
+				self::match('update', $eUser, $input);
 
 				if(UserAuth::model()->whereLogin($eUser['email'])->whereType(UserAuth::BASIC)->exists()) {
 					User::fail('email.duplicate');
@@ -99,7 +99,7 @@ class SignUpLib {
 			->setCallback('password.check', function($password) {
 				return (
 					$password !== NULL and
-					strlen($password) >= \Setting::get('passwordSizeMin')
+					strlen($password) >= UserSetting::PASSWORD_SIZE_MIN
 				);
 			})
 			->setCallback('password.hash', function(&$password) {
@@ -142,7 +142,7 @@ class SignUpLib {
 		$eUser['onlineToday'] = FALSE;
 
 		// We check if this IP is banned before creating the account
-		if(\Feature::get('user\ban')) {
+		if(UserSetting::$featureBan) {
 
 			$eBan = BanLib::getByIp(getIp());
 
