@@ -20,7 +20,4 @@ class FarmSetting extends \Settings {
 
 }
 
-FarmSetting::setPrivilege('admin', FALSE);
-FarmSetting::setPrivilege('access', FALSE);
-
 ?>

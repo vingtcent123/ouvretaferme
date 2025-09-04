@@ -9,6 +9,4 @@ class SequenceSetting extends \Settings {
 
 }
 
-SequenceSetting::setPrivilege('admin', FALSE);
-
 ?>

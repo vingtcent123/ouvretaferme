@@ -69,6 +69,4 @@ class WebsiteSetting extends \Settings  {
 
 }
 
-WebsiteSetting::setPrivilege('admin', FALSE);
-
 ?>

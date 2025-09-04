@@ -34,9 +34,4 @@ class UserSetting extends \Settings {
 	const LOG_SPLIT = 1;
 }
 
-
-UserSetting::setPrivilege('admin', FALSE);
-UserSetting::setPrivilege('ban', FALSE);
-UserSetting::setPrivilege('privilege', FALSE);
-
 ?>

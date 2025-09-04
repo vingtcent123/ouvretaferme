@@ -16,7 +16,7 @@ class Plant extends PlantElement {
 		$this->expects(['farm']);
 
 		if(
-			PlantSetting::getPrivilege('admin') and
+			\user\ConnectionLib::getOnline()->isAdmin() and
 			$this['farm']->empty()
 		) {
 			return TRUE;
@@ -49,7 +49,7 @@ class Plant extends PlantElement {
 		$this->expects(['farm', 'fqn']);
 
 		if(
-			PlantSetting::getPrivilege('admin') and
+			\user\ConnectionLib::getOnline()->isAdmin() and
 			$this['farm']->empty() and
 			$this['fqn'] !== NULL
 		) {

@@ -692,7 +692,7 @@ abstract class FormatterUi {
 
 	protected function buildDownload(\DOMNode $node): string {
 
-		if(EditorSetting::getPrivilege('admin')) {
+		if(\user\ConnectionLib::getOnline()->isAdmin()) {
 
 			$url = preg_replace('/\/photo\/([0-9]{3,4})\//', '/photo/', $node->getAttribute('url'));
 			return '<div><input onclick="this.select(); document.execCommand(&quot;copy&quot;);" value="'.$node->getAttribute('xyz').'" class="form-control"/>&nbsp;/&nbsp;<a href="'.$url.'?&amp;download=1" target="_blank">'.\Asset::icon('download').' '.s("Télécharger").'</a>&nbsp;/&nbsp;</div>';

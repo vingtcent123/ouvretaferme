@@ -2,7 +2,7 @@
 new Page(function($data) {
 
 	\user\UserSetting::checkFeature(\user\UserSetting::$featureBan);
-	\user\UserSetting::checkPrivilege('ban');
+	\user\ConnectionLib::getOnline()->checkIsAdmin();
 
 	})
 	/**

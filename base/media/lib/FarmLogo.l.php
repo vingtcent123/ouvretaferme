@@ -20,7 +20,7 @@ class FarmLogoLib extends MediaLib {
 		if($eFarm->canManage() === FALSE) {
 
 			// L'utilisateur n'est pas non plus admin
-			if(\farm\FarmSetting::getPrivilege('admin') === FALSE) {
+			if(\user\ConnectionLib::getOnline()->isAdmin() === FALSE) {
 				throw new \NotAllowedAction();
 			}
 

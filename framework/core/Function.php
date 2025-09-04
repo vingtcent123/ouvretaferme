@@ -49,10 +49,6 @@ spl_autoload_register(function (string $class) {
 
 		if(str_ends_with($base, 'Setting')) {
 			$path = Package::getFile(substr($base, 0, -7), 'setting', $package);
-		} else if(str_ends_with($base, 'Feature')) {
-			$path = Package::getFile(substr($base, 0, -7), 'setting', $package);
-		} else if(str_ends_with($base, 'Privilege')) {
-			$path = Package::getFile(substr($base, 0, -9), 'setting', $package);
 		} else if(str_ends_with($base, 'ObserverLib')) {
 			$path = Package::getFile(substr($base, 0, -11), 'observer-lib', $package);
 		} else if(str_ends_with($base, 'Lib')) {

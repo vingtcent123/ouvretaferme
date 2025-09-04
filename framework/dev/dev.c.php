@@ -43,7 +43,4 @@ class DevSetting extends \Settings {
 	public static bool $featureCompileImageVersion = TRUE;
 }
 
-// Enable or disable access to monitoring admin pages
-DevSetting::setPrivilege('admin', FALSE);
-
 ?>

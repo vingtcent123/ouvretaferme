@@ -130,7 +130,7 @@ class EditorUi {
 			$class = '';
 		}
 
-		$data = 'data-admin="'.((int)\user\UserSetting::getPrivilege('admin')).'"';
+		$data = 'data-admin="'.((int)\user\ConnectionLib::getOnline()->isAdmin()).'"';
 		$data .= ' data-speed="'.$options['speed'].'"';
 
 		if($options['acceptFigure']) {

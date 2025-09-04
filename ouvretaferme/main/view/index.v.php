@@ -195,7 +195,7 @@ new AdaptativeView('logged', function($data, MainTemplate $t) {
 
 	}
 
-	if(\farm\FarmSetting::getPrivilege('access')) {
+	if(\user\ConnectionLib::getOnline()->isFarmer()) {
 
 		echo new \main\HomeUi()->getFarms($data->cFarmUser);
 

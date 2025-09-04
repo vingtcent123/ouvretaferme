@@ -115,28 +115,6 @@ class UserLib extends UserCrud {
 	}
 
 	/**
-	 * Register privileges of the given user
-	 */
-	public static function registerPrivileges(User $eUser) {
-
-		if($eUser->empty()) {
-			return;
-		}
-
-		$eUser->expects(['role']);
-
-		$can = $eUser['role']['can'];
-
-		foreach($can as $package => $privileges) {
-			foreach($privileges as $privilege => $value) {
-				$settingsClassName = '\\'.$package.'\\'.ucfirst($package).'Setting';
-				$settingsClassName::setPrivilege($privilege, $value);
-			}
-		}
-
-	}
-
-	/**
 	 * Checks that the email can be used to reset the password
 	 */
 	public static function checkForgottenPasswordLink(string $email, int $expires = 1): ?UserAuth {

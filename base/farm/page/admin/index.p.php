@@ -1,5 +1,5 @@
 <?php
-new Page(fn() => \farm\FarmSetting::checkPrivilege('admin'))
+new Page(fn() => \user\ConnectionLib::getOnline()->checkIsAdmin())
 	->match(
 		['get', 'post'],
 		'index', function($data) {

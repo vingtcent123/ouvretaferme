@@ -20,7 +20,7 @@ class WebsiteLogoLib extends MediaLib {
 		if($eWebsite->canWrite() === FALSE) {
 
 			// L'utilisateur n'est pas non plus admin
-			if(\website\WebsiteSetting::getPrivilege('admin') === FALSE) {
+			if(\user\ConnectionLib::getOnline()->isAdmin() === FALSE) {
 				throw new \NotAllowedAction();
 			}
 

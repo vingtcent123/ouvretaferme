@@ -7,7 +7,5 @@ class MapSetting extends \Settings {
 
 }
 
-MapSetting::setPrivilege('admin', FALSE);
-
 MapSetting::$mapboxToken = fn() => throw new \Exception('Missing mapbox token');
 ?>

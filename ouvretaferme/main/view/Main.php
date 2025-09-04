@@ -195,7 +195,7 @@ class MainTemplate extends BaseTemplate {
 
 		}
 
-		if(\user\UserSetting::getPrivilege('admin')) {
+		if(\user\ConnectionLib::getOnline()->isAdmin()) {
 			$h .= '<div class="dropdown-divider"></div>';
 			$h .= '<a href="'.Lime::getUrl().'/user/admin/" class="dropdown-item">'.\Asset::icon('server').' '.s("Administrer").'</a>';
 		}

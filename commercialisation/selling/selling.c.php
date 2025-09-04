@@ -27,8 +27,6 @@ class SellingSetting extends \Settings {
 	public static $remoteKey;
 }
 
-SellingSetting::setPrivilege('admin', FALSE);
-
 SellingSetting::$remoteKey = fn() => throw new \Exception('Undefined remote key');
 
 ?>

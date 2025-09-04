@@ -8,7 +8,4 @@ class ShopSetting extends \Settings {
 
 ShopSetting::$domain = 'boutique.'.\Lime::getDomain();
 
-ShopSetting::setPrivilege('admin', FALSE);
-ShopSetting::setPrivilege('access', FALSE);
-
 ?>

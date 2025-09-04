@@ -9,6 +9,4 @@ class SeriesSetting extends \Settings {
 
 }
 
-SeriesSetting::setPrivilege('admin', FALSE);
-
 ?>

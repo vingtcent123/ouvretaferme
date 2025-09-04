@@ -430,28 +430,6 @@ class ObserverOutput extends Exception {
 
 class Settings {
 
-	private static array $privileges = [];
-
-	public static function setPrivilege(string $privilege, mixed $value): void {
-		self::$privileges[$privilege] = $value;
-	}
-
-	public static function getPrivilege(string $privilege): mixed {
-		if(array_key_exists($privilege, self::$privileges) === FALSE) {
-			throw new Exception('Privilege '.$privilege.' does not exist');
-		}
-		return self::$privileges[$privilege];
-	}
-
-	public static function checkPrivilege(string $privilege): void {
-
-		$can = self::getPrivilege($privilege);
-		if($can === FALSE) {
-			throw new DisabledPage('Privilege '.$privilege);
-		}
-
-	}
-
 	/**
 	 * Throws a DisabledPage exception if the given feature is disabled
 	 *

@@ -900,7 +900,7 @@ class XmlLib {
 			'style?' => NULL,
 		];
 
-		if(\user\UserSetting::getPrivilege('admin')) {
+		if(\user\ConnectionLib::getOnline()->isAdmin()) {
 
 			$attributesLink += [
 				'data-button?' => 'button'

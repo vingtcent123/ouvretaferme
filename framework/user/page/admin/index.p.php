@@ -1,5 +1,5 @@
 <?php
-new Page(fn() => \user\UserSetting::checkPrivilege('admin'))
+new Page(fn() => \user\ConnectionLib::getOnline()->checkIsAdmin())
 	->match(['get', 'post'], 'index', function($data) {
 
 		$data->page = REQUEST('page', 'int');
@@ -26,9 +26,7 @@ new Page(fn() => \user\UserSetting::checkPrivilege('admin'))
 	});
 
 new \user\UserPage(
-		function($data) {
-			\user\UserSetting::checkPrivilege('admin');
-		},
+		fn() => \user\ConnectionLib::getOnline()->checkIsAdmin(),
 		propertiesUpdate: ['email', 'birthdate', 'firstName', 'lastName']
 	)
 	->read('forgottenPassword', function($data) {

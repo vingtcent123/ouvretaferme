@@ -42,12 +42,33 @@ class User extends UserElement {
 		return $this->isRole('admin');
 	}
 
+	public function checkIsAdmin(): bool {
+		if($this->isAdmin()) {
+			return TRUE;
+		}
+		throw new \DisabledPage('admin');
+	}
+
 	public function isFarmer(): bool {
 		return $this->isRole('admin') or $this->isRole('farmer');
 	}
 
+	public function checkIsFarmer(): bool {
+		if($this->isFarmer()) {
+			return TRUE;
+		}
+		throw new \DisabledPage('farmer');
+	}
+
 	public function isCustomer(): bool {
 		return $this->isRole('admin') or $this->isRole('farmer') or $this->isRole('customer');
+	}
+
+	public function checkIsCustomer(): bool {
+		if($this->isCustomer()) {
+			return TRUE;
+		}
+		throw new \DisabledPage('customer');
 	}
 
 	public function active(): bool {
@@ -126,7 +147,7 @@ class User extends UserElement {
 						->select('fqn')
 						->get($eRole) and (
 						in_array($eRole['fqn'], UserSetting::$signUpRoles) or // Allowed role
-						UserSetting::getPrivilege('privilege') // Admin guy
+						ConnectionLib::getOnline()->isAdmin() // Admin guy
 					)
 				);
 

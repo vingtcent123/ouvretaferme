@@ -12,7 +12,7 @@ class Action extends ActionElement {
 		$this->expects(['farm']);
 
 		return (
-			\sequence\SequenceSetting::getPrivilege('admin') or
+			\user\ConnectionLib::getOnline()->isAdmin() or
 			(
 				$this['farm']->empty() === FALSE and
 				$this['farm']->canManage()

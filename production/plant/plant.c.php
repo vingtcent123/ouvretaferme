@@ -5,6 +5,4 @@ class PlantSetting extends \Settings {
 
 }
 
-PlantSetting::setPrivilege('admin', FALSE);
-
 ?>

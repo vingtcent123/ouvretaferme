@@ -52,8 +52,6 @@ class PageLib {
 		// Add log info
 		$data->isLogged = \user\ConnectionLib::isLogged();
 
-		\user\UserLib::registerPrivileges($data->eUserOnline);
-
 		if($data->isLogged) {
 
 			$data->userDeletedAt = \session\SessionLib::get('userDeletedAt');
