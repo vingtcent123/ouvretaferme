@@ -20,20 +20,6 @@ class Package {
 	private static $observers = [];
 
 	/**
-	 * Packages that have already been loaded
-	 *
-	 * @var array
-	 */
-	private static $confLoaded = [];
-
-	/**
-	 * Conf files
-	 *
-	 * @var array
-	 */
-	private static $confFiles = [];
-
-	/**
 	 * Save lists
 	 *
 	 * @param array $lists
@@ -97,31 +83,6 @@ class Package {
 	 */
 	public static function getObservers(): array {
 		return self::$observers;
-	}
-
-	public static function setConfFile(string $package, string $file) {
-		self::$confFiles[$package] = $file;
-	}
-
-	/**
-	 * Load config.php file for the given package
-	 *
-	 * @param string $package
-	 */
-	public static function loadConf(string $package) {
-
-		if(isset(self::$confLoaded[$package])) {
-			return;
-		}
-
-		$path = array_key_exists($package, self::$confFiles) ? self::$confFiles[$package] : self::getElement($package.'.c.php', $package);
-
-		if($path !== NULL) {
-			require_once $path;
-		}
-
-		self::$confLoaded[$package] = TRUE;
-
 	}
 
 	/**

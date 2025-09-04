@@ -91,8 +91,6 @@ switch(LIME_ENV) {
 
 }
 
-Package::setConfFile('storage', LIME_DIRECTORY.'/base/media/media.c.php');
-
 \user\UserSetting::$featureBan = TRUE;
 
 \user\UserSetting::$checkTos = TRUE;
