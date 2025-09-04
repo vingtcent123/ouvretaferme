@@ -199,7 +199,7 @@ abstract class Route {
 	protected function loadConf(string $request) {
 
 		require_once Lime::getPath().'/package.c.php';
-		require Lime::getPath().'/lime.c.php';
+		require Lime::getPath().'/Lime.s.php';
 
 		if(LIME_ENV === 'dev') {
 

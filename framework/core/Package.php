@@ -191,7 +191,7 @@ class Package {
 				return self::getElement('conf/'.$file.'.c.php', $package);
 
 			case 'setting' :
-				return self::getElement($file.'.c.php', $package);
+				return self::getElement($file.'.s.php', $package);
 
 			case 'module' :
 				return self::getElement('module/'.$file.'.m.php', $package);

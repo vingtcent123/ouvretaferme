@@ -46,7 +46,6 @@ spl_autoload_register(function (string $class) {
 	if(strpos($class, '\\') !== FALSE) {
 
 		list($package, $base) = explode('\\', $class, 2);
-
 		if(str_ends_with($base, 'Setting')) {
 			$path = Package::getFile(substr($base, 0, -7), 'setting', $package);
 		} else if(str_ends_with($base, 'ObserverLib')) {
