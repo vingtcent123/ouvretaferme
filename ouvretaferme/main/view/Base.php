@@ -180,7 +180,7 @@ class BaseTemplate extends SmartTemplate {
 		$h .= '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">';
 
 		if($this->metaDescription !== NULL) {
-			$h .= '<meta name="description" content="'.$this->metaDescription.'" />';
+			$h .= '<meta name="description" content="'.encode($this->metaDescription).'" />';
 		}
 
 		$h .= '<meta name="viewport" content="width=device-width, initial-scale=1.0" />';
